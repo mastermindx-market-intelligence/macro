@@ -158,3 +158,42 @@ the exact source hash with no blocking finding. Root adjudicated the source and
 source review, not a new live-source or publication qualification.
 Root made the small direct edit because dispatch/reintegration cost exceeded
 the bounded repair; independent review uses admitted Fabric.
+
+
+## Current report screen — October 12
+
+The [CEA manufacturing report page](https://www.whitehouse.gov/research/2026/10/the-state-of-american-manufacturing/)
+is dated October 10. Its [14-page PDF](https://www.whitehouse.gov/wp-content/uploads/2026/10/The-State-of-American-Manufacturing_Oct2026.pdf)
+provides a current report-release premise, but does not make the cited company
+commitments new issuer events. This is a parent source screen only: no retained
+PDF ingestion, rights receipt, planner admission or Press draft was created.
+
+Bounded findings from the primary sources:
+
+- The report's printed page 1 cites 72,000 manufacturing jobs and 101,000 durable-goods jobs added in 2026. These are attributed CEA observations with their own periods, not new Mastermind calculations or company sales.
+- Printed page 3 lists Apple's $600 billion commitment. [Apple's original release](https://www.apple.com/newsroom/2025/08/apple-increases-us-commitment-to-600-billion-usd-announces-ambitious-program/) dates the $100 billion increase to August 6, 2025, bringing a four-year commitment to $600 billion. Do not call that an October 2026 announcement or realized capital expenditure.
+- The same report page describes Micron's $250 billion in terms of memory plants. [Micron's September 15 release](https://investors.micron.com/news/press-release/2026/Micron-Appoints-Deirdre-Hanford-to-Lead-Micron-Research-Labs/default.aspx) describes its previously announced plan as more than $250 billion across manufacturing **and R&D**. The category, horizon and vintage require reconciliation before a factory-capex claim.
+- Printed pages 1 and 4 refer to nine versus fourteen consecutive months of manufacturing expansion. The latter names S&P PMI; the former does not identify the same series clearly. This is an unresolved series-definition ambiguity, not proof that either count is false.
+- The PDF includes company quotations and vendor-derived S&P material. Government hosting alone is not blanket permission to reproduce those texts, charts or series. A short original factual report would need its own source-specific rights and editorial qualification.
+
+The bounded candidate question is: which parts of the newly released government
+investment tally represent older pledges, and what existing company evidence
+shows subsequent delivery? AAPL is explicitly associated with the report; its
+canonical stock page, and MU's, exist in cc5d3116 (`git cat-file -e
+cc5d31160dd3584b067453bc3b11d78440133000:site/stocks/AAPL.html`, likewise MU).
+This does not establish current hosted page behavior or new investment effects.
+
+Five external observations are not five first-party analytical receipts. The
+next qualification remains consumption of existing company/economic evidence,
+with exact revisions and permitted access, followed by a relevant analytical
+result. The RSS planning reader intentionally does not ingest PDF claims; this
+screen does not bypass that interface or invent a replacement pipeline.
+
+The attempted bounded Grok review
+`mmx-press-current-report-review-20261012-001` was refused before launch on
+Ubuntu0 with `SUPPORT_POLICY_STALE_ACTIVE_REFUSED` / `SUPPORT_PUBLICATION_REFUSED`.
+Same-ID status reports `TERMINAL_FAILURE`, rc75, signal `prelaunch_failure`,
+`result_available=false`. No review result was accepted, no worker is running,
+and no alternate host/carrier retry occurred. This root screen used the already
+permitted public web read path; it did not retry the refused support-publication
+effect. Original Press delivery continues independently.

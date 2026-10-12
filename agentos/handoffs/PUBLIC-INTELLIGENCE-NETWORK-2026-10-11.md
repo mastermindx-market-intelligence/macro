@@ -326,3 +326,14 @@ Use this recovery branch in the existing SSD attempt-recovery worktree; the
 single-attempt worktree currently carries the original PR refresh branch. Both
 remain owned, preserved and separately recoverable; do not mutate the shared
 primary's dirty accounting. The live Terminal screenshot remains bound to8520e5d7.
+
+
+Current-source screen: SOURCE_RETENTION.md now records the October10 CEA report
+and two original issuer sources. A current report-release premise exists, while
+old Apple pledges and Micron manufacturing/R&D categories cannot be presented as
+new company capex. No candidate, rights or publication admission was created.
+The optional Grok review's original ID mmx-press-current-report-review-20261012-001
+is a proven prelaunch TERMINAL_FAILURE (rc75, stale active support policy on
+Ubuntu0), without a returned result or alternate-host retry. Root's public-source
+screen is separate from that refused support-publication operation. Original
+cc5d3116 CI38191946377 continues; all installed Terminal proof remains accepted.
