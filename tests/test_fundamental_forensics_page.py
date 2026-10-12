@@ -20,6 +20,7 @@ from scripts.build_fundamental_forensics import (
     read_public_summary,
     render_shell,
 )
+from engine.fundamental_forensics.peer_cohort import CohortDefinition
 
 
 def test_atomic_private_state_gzip_is_path_independent_and_deterministic(tmp_path: Path):
@@ -169,6 +170,237 @@ def _render_into(tmp_path: Path, root: Path, *, summary=None) -> str:
     if summary is not None:
         _write_public_summary(tmp_path, summary)
     return render_shell(tmp_path, state_summary=summary).read_text(encoding="utf-8")
+
+
+# ---------------------------------------------------------------------------
+# FIF P1-b state data contract (items I1, I2, I4, I5)
+# ---------------------------------------------------------------------------
+
+GEN_AT = "2026-10-12T00:00:00+00:00"
+
+
+def _write_workbench_panel(
+    root: Path,
+    *,
+    cik: int | None = None,
+    period_start_by_year: dict[int, str | None] | None = None,
+) -> None:
+    """Write the synthetic TST quarterly+annual panel (the contract-test shape)."""
+    q_dir = root / "data" / "edgar"
+    q_dir.mkdir(parents=True, exist_ok=True)
+
+    def _row(fy: int, end: str, filed: str, **overrides):
+        base = _q(fiscal_year=fy, period_end=end, filed=filed)
+        base.update(overrides)
+        return base
+
+    quarterly_rows = [
+        _row(2024, "2024-06-30", "2024-08-01"),
+        _row(2025, "2025-06-30", "2025-08-01"),
+        _row(
+            2026, "2026-06-30", "2026-08-01",
+            revenue=105.0, gross_profit=36.75, receivables=35.0,
+            inventory=40.0, capex=30.0, op_income=16.0,
+        ),
+    ]
+    if period_start_by_year is not None:
+        for row in quarterly_rows:
+            row["period_start"] = period_start_by_year.get(row["fiscal_year"])
+    pd.DataFrame(quarterly_rows).to_parquet(q_dir / "statements_quarterly.parquet", index=False)
+    annual = pd.DataFrame([
+        {"ticker": "TST", "fy": 2023, "period_end": "2023-12-31", "ni": 10.0, "cfo": 14.0, "assets": 100.0},
+        {"ticker": "TST", "fy": 2024, "period_end": "2024-12-31", "ni": 12.0, "cfo": 13.0, "assets": 100.0},
+        {"ticker": "TST", "fy": 2025, "period_end": "2025-12-31", "ni": 18.0, "cfo": 10.0, "assets": 100.0},
+    ])
+    annual.to_parquet(q_dir / "statements.parquet", index=False)
+    if cik is not None:
+        pd.DataFrame({"cik": [cik]}, index=["TST"]).to_parquet(q_dir / "fundamentals.parquet")
+
+
+def _write_issuer_master(root: Path, rows: list[dict]) -> None:
+    target = root / "data" / "reference" / "issuer_master.parquet"
+    target.parent.mkdir(parents=True, exist_ok=True)
+    pd.DataFrame(rows).to_parquet(target, index=False)
+
+
+def test_compose_state_carries_entity_id_only_from_issuer_master(tmp_path: Path):
+    """I1: entity_id is JOINED from issuer_master by exact CIK, never minted."""
+    import scripts.build_fundamental_forensics as bff
+
+    # (a) an authority row matching TST's panel CIK binds that row's issuer id.
+    _write_workbench_panel(tmp_path, cik=1234)
+    _write_issuer_master(
+        tmp_path, [{"issuer_id": "ISS:US-XNAS-TST", "cik": "0000001234", "legal_name": "Test"}]
+    )
+    state = compose_state(tmp_path, generated_at=GEN_AT)
+    company = state["companies"]["TST"]
+    assert company["entity_id"] == "ISS:US-XNAS-TST"
+    assert company["entity_id_reason"] == "issuer_master_row"
+
+    # (b) no master file at all: every company null with the unavailable reason.
+    bare = tmp_path / "bare"
+    _write_workbench_panel(bare, cik=1234)
+    bare_state = compose_state(bare, generated_at=GEN_AT)
+    assert bare_state["companies"]["TST"]["entity_id"] is None
+    assert bare_state["companies"]["TST"]["entity_id_reason"] == "issuer_master_unavailable"
+    assert "ISS:" not in json.dumps(bare_state["companies"]["TST"])
+
+    # (c) a master row absent for the panel CIK: null + the absent-row reason,
+    # and no issuer id substring is synthesized anywhere in the companies.
+    other = tmp_path / "other"
+    _write_workbench_panel(other, cik=1234)
+    _write_issuer_master(other, [{"issuer_id": "ISS:US-XNYS-OTH", "cik": "0000999999"}])
+    other_state = compose_state(other, generated_at=GEN_AT)
+    assert other_state["companies"]["TST"]["entity_id"] is None
+    assert other_state["companies"]["TST"]["entity_id_reason"] == "issuer_master_row_absent_for_cik"
+    assert "ISS:" not in json.dumps(other_state["companies"])
+
+    # ambiguous authority (two issuer ids for one CIK) stays null, not a pick.
+    amb = tmp_path / "amb"
+    _write_workbench_panel(amb, cik=1234)
+    _write_issuer_master(amb, [
+        {"issuer_id": "ISS:US-XNAS-TST", "cik": "0000001234"},
+        {"issuer_id": "ISS:US-XNYS-TST", "cik": "0000001234"},
+    ])
+    amb_state = compose_state(amb, generated_at=GEN_AT)
+    assert amb_state["companies"]["TST"]["entity_id"] is None
+    assert amb_state["companies"]["TST"]["entity_id_reason"] == "issuer_master_ambiguous_for_cik"
+
+    # no CIK in the panel: the reason names the panel, not the master.
+    nocik = tmp_path / "nocik"
+    _write_workbench_panel(nocik)
+    _write_issuer_master(nocik, [{"issuer_id": "ISS:US-XNAS-TST", "cik": "0000001234"}])
+    nocik_state = compose_state(nocik, generated_at=GEN_AT)
+    assert nocik_state["companies"]["TST"]["entity_id"] is None
+    assert nocik_state["companies"]["TST"]["entity_id_reason"] == "cik_absent_in_panel"
+
+    # no ticker→issuer-id path exists anywhere in the builder source.
+    assert "ISS:" not in Path(bff.__file__).read_text(encoding="utf-8")
+
+
+def test_state_periods_are_query_legal_or_explicit_null(tmp_path: Path):
+    """I2: {kind,start,end,label} on every period; a missing start is an explicit null."""
+    _write_workbench_panel(
+        tmp_path,
+        period_start_by_year={2024: "2024-04-01", 2025: None, 2026: "2026-03-29"},
+    )
+    state = compose_state(tmp_path, generated_at=GEN_AT)
+    periods = state["companies"]["TST"]["periods"]
+    assert periods
+    saw_start = saw_null = False
+    for period in periods:
+        assert period["kind"] == "duration"
+        assert isinstance(period["end"], str) and period["end"]
+        assert period["label"] == f"FY{period['fiscal_year']} Q{period['fiscal_quarter']}"
+        assert period["start"] != ""  # never an empty placeholder
+        if period["start"] is None:
+            assert period["period_start_basis"] == "absent_in_projection"
+            saw_null = True
+        else:
+            assert isinstance(period["start"], str) and len(period["start"]) == 10
+            assert period["period_start_basis"] == "companyfacts_duration_start"
+            saw_start = True
+        # the four-key projection is exactly a lawful query period payload.
+        assert {key: period[key] for key in ("kind", "start", "end", "label")} == {
+            "kind": "duration",
+            "start": period["start"],
+            "end": period["period_end"],
+            "label": f"FY{period['fiscal_year']} Q{period['fiscal_quarter']}",
+        }
+    assert saw_start and saw_null
+
+
+def test_state_findings_carry_explicit_occurrence_absence(tmp_path: Path):
+    """I4: occurrence_id/source_span are explicit JSON nulls with a basis, never fabricated."""
+    _write_workbench_panel(tmp_path)
+    state = compose_state(tmp_path, generated_at=GEN_AT)
+    encoded = json.dumps(state["companies"]["TST"])
+    findings = state["companies"]["TST"]["findings"]
+    assert findings, "the panel fixture must trigger at least one finding"
+    for finding in findings:
+        assert finding["occurrence_id"] is None
+        assert finding["source_span"] is None
+        assert finding["occurrence_basis"] == "panel_projection_not_occurrence_bound"
+    assert '"source_span": [' not in encoded
+    assert '"occurrence_id": "null"' not in encoded  # never the string "null"
+
+
+def test_state_payload_peer_cohort_envelope(tmp_path: Path, monkeypatch):
+    """I5: the payload envelope, the imported policy echo, and the byte budget."""
+    import base64
+    import random
+
+    import scripts.build_fundamental_forensics as bff
+
+    _write_workbench_panel(tmp_path)
+    state = compose_state(tmp_path, generated_at=GEN_AT)
+    payload = state["payload"]
+    assert payload["schema"] == "fundamental_forensics_state_payload.v1"
+    # this root carries no coverage contract: a typed absence, never a silent null
+    assert payload["peer_cohort"] is None
+    assert payload["peer_cohort_reason"] == "production_dataset_absent"
+    lowered = json.dumps(state).lower()
+    assert '"rank"' not in lowered
+    assert '"fraud"' not in lowered
+
+    # injected table: to_dict() passes through key-for-key plus the policy echo
+    probe = CohortDefinition(cohort_id="", anchor_issuer_id="", members=(), metric_ids=())
+    assert (probe.alignment_mode, probe.period_tolerance_days, probe.min_n) == ("exclude", 45, 3)
+    injected = {
+        "contract_id": "synthetic_v1",
+        "policy": {
+            "alignment_mode": probe.alignment_mode,
+            "period_tolerance_days": probe.period_tolerance_days,
+            "min_n": probe.min_n,
+        },
+        "tables": [{
+            "cohort_id": "synthetic_v1:ISS:US-XNAS-TST",
+            "members_n": 1,
+            "members": [],
+            "emissions": [{
+                "metric_id": "revenue",
+                "emission_state": "ranked",
+                "eligible_n": 1,
+                "rows": [{"issuer_id": "ISS:US-XNAS-TST", "metric_id": "revenue",
+                          "value": "101", "period_end": "2026-06-30",
+                          "period_label": "2026-06-30", "shifted": False}],
+                "ranks": {"ISS:US-XNAS-TST": 1},
+                "percentiles": {"ISS:US-XNAS-TST": "0.0000"},
+                "mean": "101",
+            }],
+            "exclusions": [],
+            "authority": {"class": "context_only", "display_only": True},
+            "anchor_issuer_id": "ISS:US-XNAS-TST",
+        }],
+        "member_exclusions": [],
+    }
+    monkeypatch.setattr(bff, "_compose_peer_cohort", lambda root, index: (injected, None))
+    carried = compose_state(tmp_path, generated_at=GEN_AT)
+    assert carried["payload"]["peer_cohort"] == injected
+    assert carried["payload"]["peer_cohort_reason"] is None
+    assert '"ranks"' in json.dumps(carried["payload"])
+    # the carried state remains a lawful transport document end to end
+    _write_state_atomic(tmp_path / "state.json.gz", carried)
+    lowered = json.dumps(carried).lower()
+    assert '"rank"' not in lowered
+    assert '"fraud"' not in lowered
+
+    # an over-budget payload is dropped whole with the typed reason — never truncated
+    noise = base64.b64encode(random.Random(0).randbytes(96 * 1024)).decode("ascii")
+    oversized = dict(injected)
+    oversized["tables"] = [{"rows": [{"value": noise}]}]
+    monkeypatch.setattr(bff, "_compose_peer_cohort", lambda root, index: (oversized, None))
+    monkeypatch.setattr(bff, "MAX_COMPRESSED_BYTES", 2048)
+    dropped = compose_state(tmp_path, generated_at=GEN_AT)
+    assert dropped["payload"]["peer_cohort"] is None
+    assert dropped["payload"]["peer_cohort_reason"] == "state_byte_budget_exceeded"
+    assert noise not in json.dumps(dropped)
+
+    monkeypatch.setattr(bff, "MAX_COMPRESSED_BYTES", 5 * 1024 * 1024)
+    monkeypatch.setattr(bff, "MAX_DECOMPRESSED_BYTES", 512)
+    dropped_raw = compose_state(tmp_path, generated_at=GEN_AT)
+    assert dropped_raw["payload"]["peer_cohort"] is None
+    assert dropped_raw["payload"]["peer_cohort_reason"] == "state_byte_budget_exceeded"
 
 
 def test_public_summary_projection_emits_only_the_two_free_counts():
