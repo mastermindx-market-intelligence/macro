@@ -10,6 +10,7 @@ import gzip
 import hashlib
 import json
 import os
+import shutil
 from pathlib import Path
 
 import pytest
@@ -465,13 +466,21 @@ def test_read_retained_packages_digest_verifies(tmp_path) -> None:
         pacer=lane["pacer"],
         recorded_at=CAPTURE_CLOCK,
     )
-    packages = read_retained_fif_packages(lane["archive_root"], cik=lane["identity"]["cik"])
+    packages = read_retained_fif_packages(
+        lane["archive_root"],
+        cik=lane["identity"]["cik"],
+        accessions=lane["identity"]["accessions"],
+    )
     assert [package.accession for package in packages] == sorted(lane["identity"]["accessions"])
     victim = packages[0].package_dir / "members"
     member_file = next(path for path in sorted(victim.iterdir()))
     member_file.write_bytes(member_file.read_bytes()[:-1])
     with pytest.raises(FifMemberCaptureError) as caught:
-        read_retained_fif_packages(lane["archive_root"], cik=lane["identity"]["cik"])
+        read_retained_fif_packages(
+        lane["archive_root"],
+        cik=lane["identity"]["cik"],
+        accessions=lane["identity"]["accessions"],
+    )
     assert caught.value.code == "package_bytes_mismatch"
 
 
@@ -678,6 +687,149 @@ def test_repository_fixture_inputs_are_refused() -> None:
     refuse_repository_fixture_inputs(ROOT / "engine")  # lawful root passes
 
 
+def test_d4_stray_non_contract_package_dir_is_ignored(tmp_path) -> None:
+    """D4: the reader iterates the CONTRACT accessions only, never a directory
+    listing — a stray (dropped-from-contract or foreign) accession directory
+    under the CIK is never read back, even when it holds a valid package."""
+    lane = _materialized_lane(tmp_path)
+    identity = lane["identity"]
+    capture_fif_filing_packages(
+        raw_root=lane["raw_root"],
+        archive_root=lane["archive_root"],
+        issuers=lane["issuers"],
+        collector=lane["collector"],
+        pacer=lane["pacer"],
+        recorded_at=CAPTURE_CLOCK,
+    )
+    # Clone one finished package under a stray accession name (valid manifest,
+    # valid digests — only the directory name is foreign).
+    stray_accession = identity["accessions"][0][:-1] + "9"
+    if stray_accession in identity["accessions"]:
+        stray_accession = identity["accessions"][0][:-1] + "8"
+    assert stray_accession not in identity["accessions"]
+    source = package_dir_for(lane["archive_root"], identity["cik"], identity["accessions"][0])
+    stray = package_dir_for(lane["archive_root"], identity["cik"], stray_accession)
+    shutil.copytree(source, stray)
+    packages = read_retained_fif_packages(
+        lane["archive_root"],
+        cik=identity["cik"],
+        accessions=identity["accessions"],
+    )
+    assert [package.accession for package in packages] == sorted(identity["accessions"])
+
+
+def test_d4_missing_manifest_is_package_manifest_malformed(tmp_path) -> None:
+    """D4: a non-empty package directory without package_manifest.json is a
+    typed refusal — never the old silent skip (a half-restored package must
+    never quietly shrink or poison the admitted set)."""
+    lane = _materialized_lane(tmp_path)
+    identity = lane["identity"]
+    capture_fif_filing_packages(
+        raw_root=lane["raw_root"],
+        archive_root=lane["archive_root"],
+        issuers=lane["issuers"],
+        collector=lane["collector"],
+        pacer=lane["pacer"],
+        recorded_at=CAPTURE_CLOCK,
+    )
+    victim = package_dir_for(
+        lane["archive_root"], identity["cik"], identity["accessions"][0]
+    )
+    (victim / "package_manifest.json").unlink()
+    with pytest.raises(FifMemberCaptureError) as caught:
+        read_retained_fif_packages(
+            lane["archive_root"],
+            cik=identity["cik"],
+            accessions=identity["accessions"],
+        )
+    assert caught.value.code == "package_manifest_malformed"
+
+
+def test_d4_malformed_manifest_is_package_manifest_malformed(tmp_path) -> None:
+    """D4 (pin): non-JSON manifest bytes keep the typed refusal on the
+    contract-scoped read path. (This case was already typed inside
+    _verify_retained_package before rev1 — pinned here so the reader's new
+    iteration shape cannot lose it.)"""
+    lane = _materialized_lane(tmp_path)
+    identity = lane["identity"]
+    capture_fif_filing_packages(
+        raw_root=lane["raw_root"],
+        archive_root=lane["archive_root"],
+        issuers=lane["issuers"],
+        collector=lane["collector"],
+        pacer=lane["pacer"],
+        recorded_at=CAPTURE_CLOCK,
+    )
+    victim = package_dir_for(
+        lane["archive_root"], identity["cik"], identity["accessions"][0]
+    )
+    (victim / "package_manifest.json").write_text("{ truncated", encoding="utf-8")
+    with pytest.raises(FifMemberCaptureError) as caught:
+        read_retained_fif_packages(
+            lane["archive_root"],
+            cik=identity["cik"],
+            accessions=identity["accessions"],
+        )
+    assert caught.value.code == "package_manifest_malformed"
+
+
+def _rewrite_manifest_field(lane: dict, accession: str, field: str, value: str) -> None:
+    manifest_path = (
+        package_dir_for(lane["archive_root"], lane["identity"]["cik"], accession)
+        / "package_manifest.json"
+    )
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    manifest[field] = value
+    manifest_path.write_text(json.dumps(manifest), encoding="utf-8")
+
+
+def test_d4_manifest_cik_mismatch_is_package_manifest_malformed(tmp_path) -> None:
+    """D4: the verified manifest's cik must equal the path's CIK — a package
+    cross-claimed under another issuer's directory is a typed refusal."""
+    lane = _materialized_lane(tmp_path)
+    identity = lane["identity"]
+    capture_fif_filing_packages(
+        raw_root=lane["raw_root"],
+        archive_root=lane["archive_root"],
+        issuers=lane["issuers"],
+        collector=lane["collector"],
+        pacer=lane["pacer"],
+        recorded_at=CAPTURE_CLOCK,
+    )
+    other_cik = identity["cik"][:-1] + str((int(identity["cik"][-1]) + 1) % 10)
+    _rewrite_manifest_field(lane, identity["accessions"][0], "cik", other_cik)
+    with pytest.raises(FifMemberCaptureError) as caught:
+        read_retained_fif_packages(
+            lane["archive_root"],
+            cik=identity["cik"],
+            accessions=identity["accessions"],
+        )
+    assert caught.value.code == "package_manifest_malformed"
+
+
+def test_d4_manifest_accession_mismatch_is_package_manifest_malformed(tmp_path) -> None:
+    """D4: the verified manifest's accession must equal the path's accession."""
+    lane = _materialized_lane(tmp_path)
+    identity = lane["identity"]
+    capture_fif_filing_packages(
+        raw_root=lane["raw_root"],
+        archive_root=lane["archive_root"],
+        issuers=lane["issuers"],
+        collector=lane["collector"],
+        pacer=lane["pacer"],
+        recorded_at=CAPTURE_CLOCK,
+    )
+    invented = identity["accessions"][0][:-1] + "7"
+    _rewrite_manifest_field(lane, identity["accessions"][0], "accession", invented)
+    with pytest.raises(FifMemberCaptureError) as caught:
+        read_retained_fif_packages(
+            lane["archive_root"],
+            cik=identity["cik"],
+            accessions=identity["accessions"],
+        )
+    assert caught.value.code == "package_manifest_malformed"
+
+
 def test_golden_schema_manifest_is_refused(tmp_path) -> None:
     lane = _materialized_lane(tmp_path)
     identity = lane["identity"]
@@ -693,7 +845,9 @@ def test_golden_schema_manifest_is_refused(tmp_path) -> None:
         json.dumps(manifest), encoding="utf-8"
     )
     with pytest.raises(FifMemberCaptureError) as caught:
-        read_retained_fif_packages(lane["archive_root"], cik=identity["cik"])
+        read_retained_fif_packages(
+        lane["archive_root"], cik=identity["cik"], accessions=identity["accessions"]
+    )
     assert caught.value.code == "golden_input_refused"
 
 
@@ -857,7 +1011,9 @@ def test_leftover_staging_dir_is_ignored_by_readers_and_capture(tmp_path) -> Non
     )
     hidden.mkdir(parents=True)
     (hidden / "junk").write_bytes(b"junk")
-    packages = read_retained_fif_packages(lane["archive_root"], cik=identity["cik"])
+    packages = read_retained_fif_packages(
+        lane["archive_root"], cik=identity["cik"], accessions=identity["accessions"]
+    )
     assert [package.accession for package in packages] == sorted(identity["accessions"])
     fetched_before = list(lane["collector"].fetched)
     report = capture_fif_filing_packages(

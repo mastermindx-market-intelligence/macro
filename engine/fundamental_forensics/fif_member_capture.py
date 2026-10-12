@@ -41,7 +41,7 @@ import shutil
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Mapping
+from typing import Any, Mapping, Sequence
 from xml.etree import ElementTree as ET
 
 from collectors.fundamental_forensics_acquisition import read_verified_submissions
@@ -634,27 +634,50 @@ def _verify_retained_package(package_dir: Path) -> RetainedFifPackage:
 
 
 def read_retained_fif_packages(
-    archive_root: Path, *, cik: str
+    archive_root: Path, *, cik: str, accessions: Sequence[str]
 ) -> tuple[RetainedFifPackage, ...]:
-    """Every digest-verified retained package for one CIK, in accession order.
+    """Every digest-verified retained package for one CIK, over the CONTRACT
+    accessions only — never a directory listing (D4).
 
-    A leftover staging directory (or any dot-prefixed sibling) is never read
-    back as a package: staging lives under ``fif-packages/.staging/`` and is
-    structurally outside every ``<cik>/`` path, and this listing skips
-    dot-entries defensively as well.
+    Iterating the listing trusted the warm cache: an accession dropped by a
+    later contract edit, or a foreign partially-restored directory, was read
+    back and handed to admission. Now only the contract's accession paths are
+    visited, so a stray directory is invisible by construction. A package
+    directory that exists and is non-empty but carries no
+    ``package_manifest.json`` is the typed refusal
+    ``package_manifest_malformed`` (ERRATA E1-A: no silent skip); an absent or
+    EMPTY directory is authoritative absence (the accession was never
+    captured). The verified manifest's ``cik``/``accession`` must equal the
+    path's — a cross-claimed package is the same typed refusal. Staging lives
+    under ``fif-packages/.staging/`` and is never an accession path.
     """
-    root = Path(archive_root) / PACKAGE_PREFIX / cik
-    if not root.is_dir():
-        return ()
     out: list[RetainedFifPackage] = []
-    for accession_dir in sorted(root.iterdir()):
-        if accession_dir.name.startswith("."):
+    for accession in sorted({str(entry) for entry in accessions}):
+        package_dir = package_dir_for(Path(archive_root), cik, accession)
+        if not package_dir.exists():
             continue
-        if not accession_dir.is_dir():
-            continue
-        if not (accession_dir / MANIFEST_NAME).is_file():
-            continue
-        out.append(_verify_retained_package(accession_dir))
+        if not package_dir.is_dir():
+            raise FifMemberCaptureError(
+                f"retained package path is not a directory: {package_dir}",
+                code="package_manifest_malformed",
+            )
+        if not any(package_dir.iterdir()):
+            continue  # empty placeholder: authoritative absence
+        if not (package_dir / MANIFEST_NAME).is_file():
+            raise FifMemberCaptureError(
+                f"retained package directory exists without {MANIFEST_NAME} "
+                f"(partial restore?): {package_dir}",
+                code="package_manifest_malformed",
+            )
+        retained = _verify_retained_package(package_dir)
+        if retained.cik != cik or retained.accession != accession:
+            raise FifMemberCaptureError(
+                "retained package manifest identity disagrees with its path: "
+                f"{package_dir} (manifest cik={retained.cik} "
+                f"accession={retained.accession})",
+                code="package_manifest_malformed",
+            )
+        out.append(retained)
     return tuple(out)
 
 

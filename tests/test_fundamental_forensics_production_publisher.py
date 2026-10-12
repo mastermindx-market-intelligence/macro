@@ -538,7 +538,9 @@ def test_published_lineage_round_trips_and_equals_a_direct_mint(
 
     # Rebuild the SAME admitted set + ledger the producer published from (same
     # retained order, same admission call, same converter composition).
-    retained = read_retained_fif_packages(lane["archive_root"], cik=identity["cik"])
+    retained = read_retained_fif_packages(
+        lane["archive_root"], cik=identity["cik"], accessions=identity["accessions"]
+    )
     admitted = tuple(
         admit_retained_filing_package(
             index_bytes=package.index_bytes,

@@ -473,7 +473,13 @@ def _run_publish(args: argparse.Namespace) -> int:
             continue
         cik = str(issuer["cik"])
         try:
-            retained = read_retained_fif_packages(archive_root, cik=cik)
+            retained = read_retained_fif_packages(
+                archive_root,
+                cik=cik,
+                accessions=[
+                    str(entry["accession"]) for entry in issuer.get("accessions") or []
+                ],
+            )
         except FifMemberCaptureError as exc:
             if exc.code == "golden_input_refused":
                 # Golden contamination is a run-level integrity refusal, never
