@@ -22944,8 +22944,8 @@ jobs:
     paths:
       - "contracts/news_impact/**"
       - "tests/test_news_impact_contracts.py"
-      - "engine/company_intelligence/documents.py"
-      - "engine/company_intelligence/events.py"
+      - "engine/company_intelligence/**"
+      - "engine/earnings_narrative/contracts.py"
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
@@ -22954,7 +22954,7 @@ jobs:
         with:
           python-version: "3.12"
       - name: install news impact contract test dependencies
-        run: pip install pytest jsonschema
+        run: pip install pytest jsonschema pyyaml
       - name: news impact contract freeze and owner payload conformance
         run: python -m pytest tests/test_news_impact_contracts.py -q
 
