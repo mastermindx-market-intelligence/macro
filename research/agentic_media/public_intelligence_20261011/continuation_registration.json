@@ -9,7 +9,7 @@
   "interval_minutes": 20,
   "prompt_sha256": "7cfd90c3a660d388ff4cdf7b7fd4504ab96859c9721c8a1d305448433c7db9ee",
   "scope": "Complete original PR8786 release and browser verification, then ship tested aggregate-feed follow-on",
-  "first_scheduled_execution_observed": false,
+  "first_scheduled_execution_observed": true,
   "foreground_observer": {
     "pid": 13739,
     "exec_session": 83265,
@@ -22,5 +22,7 @@
   "current_prompt_readback_at": "2026-10-12T08:28:40.349219+00:00",
   "current_original_pr_head": "de63b3a93eb3715cc9f84a86d1ae034b822b9fd5",
   "current_follow_on_head": "8f392a4022b234a65fbf30cfb0bc018fd0bfcf30",
-  "current_ci_run": 38223150169
+  "current_ci_run": 38223150169,
+  "first_scheduled_execution_at": "2026-10-12T08:31:49.007Z",
+  "execution_evidence": "Native same-thread user heartbeat carrying automation_id complete-press-delivery"
 }

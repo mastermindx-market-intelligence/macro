@@ -21,7 +21,7 @@ waves:
     title: Verify publication, signup and explicit follow continuation
     status: in_progress
     depends_on: [qualified-story]
-next_action: Original PR8786 is pushed and re-armed atde63b3a9; fresh CI38223150169 is running. Consume that exact head and protected landing, then install and verify the browser paths. The same follow-on branch integrates this repaired carrier while retaining its separate aggregate-feed change; ship it after8786. App continuation complete-press-delivery remains ACTIVE; publication remains unapproved.
+next_action: Original PR8786 is pushed and re-armed atde63b3a9; exact-head CI38223150169 completed SUCCESS at09:06:28Z with all12packs andci-gate green. Consume the protected landing, then install and verify the browser paths. The same follow-on branch integrates this repaired carrier while retaining its separate aggregate-feed change; ship it after8786. App continuation complete-press-delivery remains ACTIVE; publication remains unapproved.
 artifacts:
   - https://github.com/mastermindx-market-intelligence/macro/pull/8786
   - https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/956

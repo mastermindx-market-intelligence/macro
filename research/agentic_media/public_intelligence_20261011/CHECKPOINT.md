@@ -6,13 +6,17 @@ Mission complete: **false**. Publication approved: **false**.
 ## Current active release
 
 Original PR8786 is OPEN and re-armed atde63b3a93eb3715cc9f84a86d1ae034b822b9fd5.
-Fresh exact-head CI38223150169 is running. No old green run proves this head.
+Fresh exact-head CI38223150169 completed SUCCESS at09:06:28Z. All12packs,
+contract-delta andci-gate passed; binding fences/authority passed. Exact proof
+is pr8786_de63_exact_head_ci.json. The09:11read still found the PR OPEN
+with no merge commit. Protected landing is still required.
 This follow-on branch now integrates that repaired carrier; its only merge
 conflicts were these three root-owned continuity records. The separate
 aggregate-feed application source is preserved. Continue exact-head CI,
 protected landing, installation and browser verification before shipping
 this follow-on. The same-chat continuation remains ACTIVE and quiet on
-unchanged state; first scheduled execution remains unobserved.
+unchanged state. Its first scheduled execution was observed at08:31:49.007Z;
+this is an actual same-thread wake, not merely registration.
 The integrated follow-on's four affected suites pass186tests; raw proof is
 aggregate_feed_de63_green.txt. Both implementation/test hashes match the
 accepted aggregate-feed repair. No second source review is inferred or needed

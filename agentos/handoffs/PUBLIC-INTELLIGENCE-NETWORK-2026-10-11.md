@@ -572,3 +572,16 @@ The tested repair was subsequently pushed to original8786asde63b3a9,
 read back and re-armed. Fresh CI38223150169 is running. Protected landing,
 installation and browser acceptance remain unproven. This follow-on now
 integrates that repaired carrier; only root-owned continuity prose conflicted.
+
+## October12 exact-head CI completed
+
+PR8786 head de63b3a93eb3715cc9f84a86d1ae034b822b9fd5 completed CI38223150169
+SUCCESS at09:06:28Z. All12packs, contract-delta andci-gate passed; binding
+fences andauthority passed. The nonbinding inactive merge-queue-pilot remains
+outside the release decision. Verified with gh pr view8786 and gh run view38223150169;
+exact arguments andresults are pr8786_de63_exact_head_ci.json. The09:11read
+found OPEN, merge-on-green, and no merge commit. This is hosted proof only.
+Protected landing, installation and actual browser acceptance remain outstanding,
+followed by the separately tested aggregate-feed release. No source or release
+gate changed. Native continuation first actually woke at08:31:49.007Z; its
+registration receipt now distinguishes observed execution from initial setup.
