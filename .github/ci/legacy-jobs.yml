@@ -5756,6 +5756,7 @@ jobs:
           tests/test_capital_structure_sec_discovery_clock.py
           tests/test_capital_structure_document_terms.py
           tests/test_capital_structure_instrument_candidates.py
+          tests/test_c19_wp14_capital_observation_pins.py
           tests/test_capital_structure_event_spine.py
           tests/test_capital_structure_graph.py
           tests/test_capital_structure_legacy_compat.py
