@@ -22573,6 +22573,7 @@ jobs:
       - "scripts/check_signal_gate_coherence.py"
       - "scripts/check_stretch_oracle_contract.py"
       - "scripts/migrate_qbus_news.py"
+      - "scripts/qbus_news_cluster_audit.py"
       - "scripts/query_k3e_expectation_surface.py"
       - "scripts/run_qbus_news.py"
       - "scripts/security_state_producer.py"
@@ -22623,6 +22624,8 @@ jobs:
       - "tests/test_build_qbus_news_universe.py"
       - "tests/test_massive_benzinga_news.py"
       - "tests/test_qbus_news_cluster.py"
+      - "tests/test_qbus_news_cluster_adversarial.py"
+      - "tests/test_qbus_news_cluster_audit.py"
       - "tests/test_qbus_news_contract.py"
       - "tests/test_qbus_news_migration.py"
       - "tests/test_qbus_news_receipts.py"
@@ -22661,6 +22664,8 @@ jobs:
           tests/test_build_qbus_news_universe.py
           tests/test_massive_benzinga_news.py
           tests/test_qbus_news_cluster.py
+          tests/test_qbus_news_cluster_adversarial.py
+          tests/test_qbus_news_cluster_audit.py
           tests/test_qbus_news_contract.py
           tests/test_qbus_news_migration.py
           tests/test_qbus_news_receipts.py
