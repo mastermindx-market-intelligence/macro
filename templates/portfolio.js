@@ -284,10 +284,20 @@
     if (wl && wl.items) wl.items.forEach(function (it) { want[marketOf(it.t)] = 1; });
     return Object.keys(want);
   }
+  /* S3-01: loadIndexes() is fail-OPEN — a market whose index read failed comes back
+     empty, and nothing here asked again until a reload. idxRx re-asks once that
+     market's failure window closes, and again when the tab is shown or the network
+     returns (no polling); a recovered read repaints the names and signal states. */
+  var idxRx = null;
   function ensureIndex() {
     if (!window.SD || !window.SD.loadIndexes) return Promise.resolve(null);
     return window.SD.loadIndexes(marketsInPlay()).then(function (r) {
-      sdIndex = r; return r;
+      sdIndex = r;
+      if (!idxRx && window.SD.indexRecovery) {
+        idxRx = window.SD.indexRecovery(marketsInPlay, function (fresh) { sdIndex = fresh; render(); });
+      }
+      if (idxRx) idxRx.check();
+      return r;
     }).catch(function () { return null; });
   }
   function idxRec(t) {
@@ -1576,6 +1586,9 @@
         retried = true;
         window.SD.loadIndexes(['us', 'cn', 'hk', 'ca', 'intl']).then(function (r) {
           sdIndex = r; paint(v);
+          // a market that failed to load is asked for again on a later keystroke
+          // (the loader itself holds the re-read back until its failure window closes)
+          if (window.SD.indexRetryAt && window.SD.indexRetryAt(['us', 'cn', 'hk', 'ca', 'intl']) != null) retried = false;
         });
       }
       if (!matches.length) { suggEl.innerHTML = ''; suggEl.style.display = 'none'; return; }

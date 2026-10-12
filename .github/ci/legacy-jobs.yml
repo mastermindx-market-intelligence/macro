@@ -7810,6 +7810,15 @@ jobs:
       # bounded window (Retry-After clamped 30 s..10 min). Node VM harness, no browser.
       - name: stockdata.js cache resilience — index validation, dedupe, transient TTL (site20 S3)
         run: node --test tests/js/stockdata_cache_resilience.test.mjs
+      # S3-01 consumer half: a consumer whose first index read landed inside a
+      # transient failure re-asks ONCE after the failure window (Retry-After honoured),
+      # then only on visibilitychange->visible / online — never a polling loop. The
+      # mjs suite pins the loader-side recovery API; the pytest drives the REAL
+      # portfolio.js under fake timers (503 once -> names fill after the window).
+      - name: stockdata.js consumer recovery — one re-ask after the failure window (S3-01)
+        run: node --test tests/js/stockdata_consumer_recovery.test.mjs
+      - name: portfolio consumer recovery — names fill after a transient index failure (S3-01)
+        run: python -m pytest tests/test_stockdata_consumer_recovery_js.py -q
       # Sector names are the one label on this page with no zh twin in the source:
       # they arrive as raw English on stockdata/index.json and are painted
       # client-side, so they rendered in English under data-lang="zh" while

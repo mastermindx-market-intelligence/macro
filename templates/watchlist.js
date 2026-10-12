@@ -1916,9 +1916,15 @@
 
   // ---- search-to-add ------------------------------------------------------
   var sugg, q, sel = -1, sItems = [];
+  // Module-level so a recovered index read (S3-01) can hand search a fresh list by
+  // calling wireSearch() again — that swaps the list and re-opens the widen; the
+  // listeners below are bound once.
+  var searchList = [], widened = false, searchWired = false;
   function wireSearch(list) {
     if (!q || !sugg) return;
-    var searchList = list, widened = false;
+    searchList = list; widened = false;
+    if (searchWired) return;
+    searchWired = true;
 
     function paint() {
       var v = q.value.trim().toLowerCase(); sel = -1;
@@ -1940,6 +1946,9 @@
         widened = true;
         window.SD.loadIndexes(['us', 'cn', 'hk', 'ca', 'intl']).then(function (r) {
           searchList = r.list; idxBy = r.byTicker; paint();
+          // a market that failed to load is asked for again on a later keystroke
+          // (the loader itself holds the re-read back until its failure window closes)
+          if (window.SD.indexRetryAt && window.SD.indexRetryAt(['us', 'cn', 'hk', 'ca', 'intl']) != null) widened = false;
         });
       }
       sugg.innerHTML = sItems.map(function (x, i) {
@@ -2407,14 +2416,13 @@
        same path as an index failure and paint the workspace bare, which is exactly
        the anonymous funnel state. */
     if (!window.SD || !window.SD.loadIndexes) { render(); return; }
-    var markets = { us: 1 };
-    if (window.MB) blob.items.forEach(function (it) { markets[window.MB.marketOf(it.t)] = 1; });
-    window.SD.loadIndexes(Object.keys(markets)).then(function (r) {
+    window.SD.loadIndexes(blobMarkets()).then(function (r) {
       idxBy = r.byTicker;
       wireSearch(r.list);
       consumeShareHash();   // a #wl= link merges before first visible paint
-      publishSeenDiff();
+      publishSeenDiffOnce();
       render();
+      recoverIndex(render);
     }).catch(function () { render(); });
   }
 
@@ -2443,15 +2451,14 @@
     document.addEventListener('bk-change', lgRender);
 
     if (!window.SD || !window.SD.loadIndexes) { lgRender(); return; }
-    var markets = { us: 1 };
-    if (window.MB) blob.items.forEach(function (it) { markets[window.MB.marketOf(it.t)] = 1; });
-    window.SD.loadIndexes(Object.keys(markets)).then(function (r) {
+    window.SD.loadIndexes(blobMarkets()).then(function (r) {
       idxBy = r.byTicker;
       wireSearch(r.list);
       if (q) q.placeholder = L('lgPh');
       consumeShareHash();
       lgRender();
-      publishSeenDiff();
+      publishSeenDiffOnce();
+      recoverIndex(lgRender);
     }).catch(function () { lgRender(); });
   }
 
@@ -2471,6 +2478,47 @@
       else { ta.value = url; ta.select(); document.execCommand && document.execCommand('copy'); refresh(); done(); }
     });
     impBtn.addEventListener('click', function () { importCode(imp.value.trim()); imp.value = ''; });
+  }
+
+  /* ---- index recovery (S3-01) ---------------------------------------------
+     loadIndexes() is fail-OPEN: a market whose index read failed comes back empty,
+     and both init paths above used to ask exactly once — so one transient failure
+     at page load left the cards nameless and stateless until a reload. The loader's
+     recovery controller re-asks once that market's failure window closes, and again
+     when the tab is shown or the network returns (no polling, and the loader's one
+     shared in-flight read is reused). A recovered read refills the index, the search
+     list, and the page. The share-link merge is NOT re-run: it belongs to the first
+     paint only. */
+  function blobMarkets() {
+    var markets = { us: 1 };
+    if (window.MB) blob.items.forEach(function (it) { markets[window.MB.marketOf(it.t)] = 1; });
+    return Object.keys(markets);
+  }
+  var idxRx = null;
+  function recoverIndex(repaint) {
+    if (!window.SD || !window.SD.indexRecovery) return;
+    if (!idxRx) {
+      idxRx = window.SD.indexRecovery(blobMarkets, function (r) {
+        idxBy = r.byTicker;
+        wireSearch(r.list);
+        publishSeenDiffOnce();
+        repaint();
+      });
+    }
+    idxRx.check();
+  }
+  /* The seen-diff writes the visit snapshot as it diffs, and may run once per load.
+     Run it on a degraded read and the names whose market failed are dropped from the
+     snapshot — the "since your last visit" memory for them is gone, and a later
+     recovered read could not tell what changed. So it waits for the first read in
+     which no market on the list is waiting out a failure; if that never comes this
+     visit, the snapshot is left as it was. */
+  var seenPublished = false;
+  function publishSeenDiffOnce() {
+    if (seenPublished) return;
+    if (window.SD && window.SD.indexRetryAt && window.SD.indexRetryAt(blobMarkets()) != null) return;
+    seenPublished = true;
+    publishSeenDiff();
   }
 
   /* "N changed since your last visit" — computed over the FULL set, never the
