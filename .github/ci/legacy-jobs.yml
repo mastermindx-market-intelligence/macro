@@ -4557,6 +4557,9 @@ jobs:
           tests/test_intraday_flow_w11_r5.py
           tests/test_fundamental_forensics_sec_request_pacer.py
           tests/test_fundamental_forensics_filing_observation_state.py
+          tests/test_fundamental_forensics_member_capture.py
+          tests/test_fundamental_forensics_production_publisher.py
+          tests/test_fif_publication_workflow_shape.py
           tests/test_fundamental_forensics_public_summary_freshness.py
           tests/test_intraday_flow_ncp_js.py
           tests/test_standout_audit.py
@@ -22484,6 +22487,7 @@ jobs:
       - "engine/fundamental_forensics/context_projection.py"
       - "engine/fundamental_forensics/disclosure_diff.py"
       - "engine/fundamental_forensics/excel_export.py"
+      - "engine/fundamental_forensics/fif_member_capture.py"
       - "engine/fundamental_forensics/filing_attestation.py"
       - "engine/fundamental_forensics/filing_package.py"
       - "engine/fundamental_forensics/financial_intelligence_packet.py"
@@ -22838,6 +22842,7 @@ jobs:
       - "scripts/check_signal_gate_coherence.py"
       - "scripts/check_stretch_oracle_contract.py"
       - "scripts/migrate_qbus_news.py"
+      - "scripts/publish_fif_production_datasets.py"
       - "scripts/qbus_news_cluster_audit.py"
       - "scripts/query_k3e_expectation_surface.py"
       - "scripts/run_qbus_news.py"
