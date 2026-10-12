@@ -64,3 +64,12 @@ def test_no_empty_capacity_spawning_or_automatic_permission_escalation():
     assert "does not" in PLAYBOOK
     assert "explicit tool/permission" in PLAYBOOK.lower()
     assert "94" not in PLAYBOOK  # avoid baking a historical utilization number into law
+
+
+def test_assigned_codex_principal_avoids_redundant_full_file_context():
+    assert "For an explicitly" in AGENTS and "assigned Codex Meta-CEO only" in AGENTS
+    assert "Do not redundantly ingest the entire Claude guide" in AGENTS
+    assert "at minimum:" in AGENTS
+    assert "This does not waive required source laws" in AGENTS
+    assert "Assigned Codex Meta-CEO selective-read rule" in CLAUDE
+    assert "ordinary Codex" in CLAUDE and "Claude-native sessions" in CLAUDE
