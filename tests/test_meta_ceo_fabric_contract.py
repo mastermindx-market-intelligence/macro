@@ -44,7 +44,7 @@ def test_installed_adapter_route_is_root_bound_and_preserves_existing_carrier():
     )
     for phrase in expected:
         assert phrase in PLAYBOOK, phrase
-    assert "not a paid Fabric worker" in PLAYBOOK
+    assert "spawn_agent" in PLAYBOOK and "is **not** a paid Fabric worker" in PLAYBOOK
     assert "new scheduler" in PLAYBOOK
 
 
@@ -62,5 +62,5 @@ def test_no_empty_capacity_spawning_or_automatic_permission_escalation():
     assert "per-root fair-share" in PLAYBOOK
     assert "workspace custody" in PLAYBOOK
     assert "does not" in PLAYBOOK
-    assert "real permission" in PLAYBOOK.lower()
+    assert "explicit tool/permission" in PLAYBOOK.lower()
     assert "94" not in PLAYBOOK  # avoid baking a historical utilization number into law
