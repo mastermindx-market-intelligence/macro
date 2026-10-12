@@ -462,8 +462,16 @@ def build_event_packet(
         if sid in blocked:
             continue
         ids = entry.get("evidence_ids")
-        if isinstance(ids, (list, tuple)):
-            attested_evidence[sid] = {i for i in ids if isinstance(i, str) and _SOURCE_ID.fullmatch(i)}
+        verified_ids = ({i for i in ids if isinstance(i, str) and _SOURCE_ID.fullmatch(i)}
+                        if isinstance(ids, (list, tuple)) else set())
+        # A duplicate source ID with different documentary evidence is an
+        # ambiguous identity even when URL/title/publication are identical.
+        # The second row must never upgrade the first source's evidence.
+        if sid in attested_evidence and attested_evidence[sid] != verified_ids:
+            blocked.add(sid)
+            accepted.pop(sid, None)
+            continue
+        attested_evidence.setdefault(sid, verified_ids)
         url = _safe_url(entry.get("url"), sec_only=earnings and sid == primary_source_id)
         primary_digest = observation.document_sha256 if observation and sid == primary_source_id else ""
         grant = (_allowed(sid, url, rights_resolver, now,
@@ -517,7 +525,7 @@ def build_event_packet(
     out["source_refs"] = list(accepted.values())
     out["sources"] = list(accepted.values())
     out["rights_receipt_ids"] = sorted({g.receipt_id for g in grants if g.source_id in accepted})
-    expiry = min([now + timedelta(minutes=5), event_time + max_age,
+    expiry = min([now + timedelta(minutes=5), event_time + effective_age,
                   *[g.expires_at_utc for g in grants if g.source_id in accepted]])
     out["cache_expires_at_utc"] = _stamp(expiry)
 
@@ -548,6 +556,14 @@ def build_event_packet(
                                     "evidence_ids": [], "source_ids": [primary_source_id]})
         out["missing_data"].append("numerical_claims_not_qualified")
 
+    known_evidence_ids = {row["evidence_id"] for row in out["evidence"]}
+    source_evidence_owner: dict[str, str] = {}
+    ambiguous_source_evidence: set[str] = set()
+    for source_id, ids in attested_evidence.items():
+        for evidence_id in ids:
+            incumbent = source_evidence_owner.setdefault(evidence_id, source_id)
+            if incumbent != source_id:
+                ambiguous_source_evidence.add(evidence_id)
     for relation in relationships:
         if not isinstance(relation, Mapping) or relation.get("relationship") != "EVIDENCED_INDIRECT":
             continue
@@ -565,7 +581,10 @@ def build_event_packet(
         relkind = relation.get("relation_type")
         if not isinstance(sid, str) or not isinstance(eid, str) or not _SOURCE_ID.fullmatch(eid):
             continue
-        if (relkind not in _RELATION_COPY or not relation.get("source_anchor")
+        anchor = relation.get("source_anchor")
+        if (relkind not in _RELATION_COPY or not isinstance(anchor, str)
+                or not 0 < len(anchor.strip()) <= 256
+                or eid in known_evidence_ids or eid in ambiguous_source_evidence
                 or eid not in attested_evidence.get(sid, set())):
             continue
         if sid not in accepted:
@@ -576,6 +595,7 @@ def build_event_packet(
             continue
         out["evidence"].append({"evidence_id": eid, "source_id": sid, "kind": "relationship",
                                 "relation_type": relkind})
+        known_evidence_ids.add(eid)
         out["affected_tickers"].append({"ticker": target,
                 "relationship": "EVIDENCED_INDIRECT", "relation_type": relkind,
                 "relation_evidence_ids": [eid], "summary": _RELATION_COPY[relkind]})

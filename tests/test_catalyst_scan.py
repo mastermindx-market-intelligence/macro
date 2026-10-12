@@ -393,3 +393,55 @@ def test_stage_a_current_window_cannot_certify_old_snapshot_or_uncovered_issuer(
                             as_of=NOW, coverage=wrong_scope)
     assert rejected["publication_state"] == "UNAVAILABLE"
     assert rejected["results"][0]["sources"] == []
+
+
+def test_v2_packet_never_publishes_without_complete_current_source_coverage():
+    new = verified_packet()
+    unsafe = compose_scan(["PFE"], packets=[new],
+                          issuers=UNIVERSE, as_of=NOW)
+    assert unsafe["publication_state"] == "UNAVAILABLE"
+    assert unsafe["results"][0]["status"] == "TEMPORARILY_UNAVAILABLE"
+    assert unsafe["results"][0]["sources"] == unsafe["results"][0]["what_changed"] == []
+    # A legacy packet cannot hide a new event lacking completeness.
+    mixed = compose_scan(["PFE"], packets=[packet(), new],
+                         issuers=UNIVERSE, as_of=NOW)
+    assert mixed["publication_state"] == "UNAVAILABLE"
+    assert mixed["results"][0]["sources"] == []
+    good = compose_scan(["PFE"], packets=[new],
+                        issuers=UNIVERSE, as_of=NOW,
+                        coverage=coverage_receipt())
+    assert good["results"][0]["status"] == "SUPPORTED"
+    assert good["schema"] == "catalyst.scan/v2"
+
+
+def test_stage_a_event_freshness_expires_at_seven_day_acceptance_boundary():
+    from dataclasses import replace
+    from engine.marketing.catalyst_packets import VerifiedDocumentObservation
+    accepted = datetime(2026, 8, 4, 11, 2, 43, tzinfo=UTC)
+    built_at = accepted + timedelta(days=7) - timedelta(minutes=2)
+    overdue = accepted + timedelta(days=7) + timedelta(seconds=1)
+    retained = VerifiedDocumentObservation(
+        source_id=PRIMARY, document_url=RAW["source_url"],
+        document_sha256="a" * 64,
+        receipt_id="test-successful-filing-observation",
+        owner_ref="test-incumbent-source",
+        first_verified_at_utc="2026-08-04T11:03:10Z",
+        checked_at_utc=built_at,
+        source_snapshot_version="test-snapshot-001",
+        official_published_at_utc=None,
+    )
+    raw = dict(RAW)
+    raw.pop("publication_time_utc")
+    def extended_rights(sid, when):
+        return replace(resolver(sid,when),document_sha256="a" * 64,
+                       expires_at_utc=overdue + timedelta(days=1))
+    p = build_event_packet(raw, issuers=UNIVERSE, rights_resolver=extended_rights,
+                           as_of=built_at, document_observation=retained)
+    assert p["public_disposition"] == "PUBLIC_READY"
+    eligible = replace(coverage_receipt(),
+                       window_start_utc=built_at - timedelta(days=7),
+                       window_end_utc=built_at, checked_at_utc=built_at)
+    after = compose_scan(["PFE"],packets=[p],issuers=UNIVERSE,
+                         as_of=overdue,coverage=eligible)
+    assert after["results"][0]["status"] == "TEMPORARILY_UNAVAILABLE"
+    assert not after["results"][0]["what_changed"]

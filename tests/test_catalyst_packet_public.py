@@ -637,3 +637,52 @@ def test_real_earnings_wire_adjusted_and_gaap_bases_never_conflated():
     assert "GAAP EPS of 0.77" not in texts
     assert "beat" not in texts.lower() and "expected" not in texts.lower()
     assert "consensus_not_independently_evidenced" in public["missing_data"]
+
+
+def test_conflicting_secondary_evidence_id_cannot_reassign_primary_eps_citation():
+    from hashlib import sha256
+    event_id = build()["event_id"]
+    eps_id = sha256(f"{event_id}:0:eps_actual".encode()).hexdigest()[:24]
+    source = {
+        "source_id": "secondary_issuer_release",
+        "title": "Synthetic supplier relationship documentation",
+        "url": "https://example.com/issuer",
+        "published_at_utc": "2026-08-04T13:58:00Z",
+        "evidence_ids": [eps_id],
+    }
+    relation = {
+        "ticker": "TST", "issuer_id": "cik:0000123456",
+        "primary_issuer_id": "cik:0000078003",
+        "relationship": "EVIDENCED_INDIRECT", "relation_type": "supplier",
+        "source_id": source["source_id"], "evidence_id": eps_id,
+        "source_anchor": "document:section-1",
+    }
+    p = build(source_refs=[source], relationships=[relation])
+    assert p["public_disposition"] == "PUBLIC_READY"
+    assert len({e["evidence_id"] for e in p["evidence"]}) == len(p["evidence"])
+    assert all(r["ticker"] != "TST" for r in p["affected_tickers"])
+    from engine.marketing.catalyst_scan import compose_scan
+    result = compose_scan(["PFE"],packets=[p],issuers=universe(),as_of=NOW)
+    assert result["results"][0]["status"] == "SUPPORTED"
+    assert all(
+        row["evidence_ids"] == [SEC_ID]
+        for row in result["results"][0]["what_changed"]
+    )
+
+
+def test_duplicate_source_id_with_different_attested_evidence_is_quarantined():
+    one = {"source_id": "issuer_contract_888", "title": "Synthetic contract",
+           "url": "https://example.com/official-contract",
+           "published_at_utc": "2026-08-04T13:58:00Z",
+           "evidence_ids": ["contract_real"]}
+    two = {**one, "evidence_ids": ["contract_injected"]}
+    relation = {"ticker":"TST","issuer_id":"cik:0000123456",
+                "primary_issuer_id":"cik:0000078003",
+                "relationship":"EVIDENCED_INDIRECT","relation_type":"supplier",
+                "source_id":one["source_id"],"evidence_id":"contract_injected",
+                "source_anchor":"document:section-2"}
+    p = build(source_refs=[one,two],relationships=[relation])
+    assert p["public_disposition"] == "PUBLIC_READY"
+    assert all(s["source_id"] != one["source_id"] for s in p["sources"])
+    assert all(row["ticker"] != "TST" for row in p["affected_tickers"])
+    assert "Synthetic contract" not in str(p)

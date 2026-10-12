@@ -327,6 +327,14 @@ def compose_scan(tickers: Sequence[str], *, packets: Sequence[Mapping],
     names = normalize_tickers(tickers)
     if event_id is not None and (not isinstance(event_id, str) or len(event_id) > 128):
         raise ValueError("invalid event reference")
+    # Do not launder a v2 first-availability event through the v1 read-model
+    # path. v2 requires the incumbent's complete-current snapshot, even when
+    # called directly by cards/partners rather than scan_tickers/HTTP.
+    if coverage is None and any(isinstance(packet, Mapping)
+                                and packet.get("schema") == STAGE_A_PACKET_SCHEMA
+                                for packet in packets):
+        return compose_scan(names, packets=(), issuers=issuers, as_of=now,
+                            event_id=event_id)
     if coverage is not None and not _complete_current_coverage(
             coverage, names=names, packets=packets, issuers=issuers, now=now):
         return compose_scan(names, packets=(), issuers=issuers, as_of=now,
