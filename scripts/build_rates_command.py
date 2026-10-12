@@ -114,6 +114,55 @@ def _append_forward_log(outdir: Path, artifact: dict) -> None:
         log.warning("forward_log: append failed: %s", exc)
 
 
+def _attach_regime_outlook(artifact: dict, old_artifact: dict | None, data_dir: Path) -> None:
+    """Attach the regime-outlook projection as ``artifact["regime_outlook"]``.
+
+    Reads the owner artifacts named by the mapping from ``data_dir``,
+    composes the projection (``engine.rates_command_outlook_compose``) and,
+    when the compose fails for any reason, announces a GitHub warning and
+    carries the previous read forward unchanged (its own cutoff shows it is
+    the earlier read). Never raises, never touches any other key of
+    ``artifact``, and never blocks the board.
+    """
+    previous = old_artifact.get("regime_outlook") if isinstance(old_artifact, dict) else None
+    try:
+        from engine import rates_command_outlook as rco
+        from engine import rates_command_outlook_compose as roc
+        from lib.nyse_calendar import expected_last_session
+
+        mapping = rco.load_mapping()
+        problems = rco.lint_mapping(mapping)
+        if problems:
+            raise ValueError(f"mapping lint: {problems[0]}")
+        cutoff = datetime.now(timezone.utc)
+        input_bytes: dict[str, bytes | None] = {}
+        for letter, rel in mapping["artifacts"].items():
+            parts = Path(rel).parts
+            if not parts or parts[0] != "data":
+                input_bytes[letter] = None
+                continue
+            try:
+                input_bytes[letter] = data_dir.joinpath(*parts[1:]).read_bytes()
+            except OSError:
+                input_bytes[letter] = None
+        artifact["regime_outlook"] = roc.compose_outlook(
+            mapping,
+            input_bytes,
+            mapping_sha256=rco.mapping_sha256(),
+            analysis_cutoff=cutoff,
+            built_at=datetime.now(timezone.utc),
+            session_of=expected_last_session,
+            previous=previous,
+        )
+    except Exception as exc:  # the board must still publish
+        print(
+            f"::warning title=regime-outlook-compose-failed::{type(exc).__name__}: {exc}",
+            flush=True,
+        )
+        if isinstance(previous, dict):
+            artifact["regime_outlook"] = previous
+
+
 def main() -> int:
     try:
         from lib import config
@@ -153,6 +202,9 @@ def main() -> int:
         artifact["prev_state"] = prev_state
     except Exception as exc:
         log.warning("build_changes failed: %s", exc)
+
+    # Attach the regime-outlook projection (additive key; never blocks the board)
+    _attach_regime_outlook(artifact, old_artifact, data_dir)
 
     # Mark build timestamp
     artifact["built"] = datetime.now(timezone.utc).isoformat()

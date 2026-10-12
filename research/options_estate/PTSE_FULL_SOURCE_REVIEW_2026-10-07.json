@@ -1,0 +1,637 @@
+{
+  "carrier": {
+    "candidate_identity": "LOCAL_COMPLETED_SOURCE_BOUND_BY_EXACT_MODULE_MANIFEST_NOT_AN_ASSERTED_PUBLISHED_HEAD",
+    "implementation_pr": 8364,
+    "operation_id": "market-tide-research-20260924-sol-001",
+    "parent_issue": 7925,
+    "remote_parent_commit_prefix_supplied_by_root": "413c6050",
+    "repository": "mastermindx-market-intelligence/macro"
+  },
+  "coverage": {
+    "research/options_estate/ptse_action_context.py": {
+      "review_basis": "peer-reported nonauthor six-module full source review; unchanged source hash verified here",
+      "reviewer": "/root/ptse_publication_preflight",
+      "status": "PASS"
+    },
+    "research/options_estate/ptse_baseline.py": {
+      "review_basis": "full source read plus targeted independent repair verification where changed",
+      "reviewer": "/root/market_tide_recovery",
+      "status": "PASS"
+    },
+    "research/options_estate/ptse_breadth_observation.py": {
+      "review_basis": "full source read plus targeted independent repair verification where changed",
+      "reviewer": "/root/market_tide_recovery",
+      "status": "PASS"
+    },
+    "research/options_estate/ptse_candidate_relation.py": {
+      "review_basis": "peer-reported nonauthor six-module full source review; unchanged source hash verified here",
+      "reviewer": "/root/ptse_publication_preflight",
+      "status": "PASS"
+    },
+    "research/options_estate/ptse_contract.py": {
+      "review_basis": "full source read plus targeted independent repair verification where changed",
+      "reviewer": "/root/market_tide_recovery",
+      "status": "PASS"
+    },
+    "research/options_estate/ptse_event_observation.py": {
+      "review_basis": "full source read plus targeted independent repair verification where changed",
+      "reviewer": "/root/market_tide_recovery",
+      "status": "PASS"
+    },
+    "research/options_estate/ptse_new_entry_context.py": {
+      "review_basis": "peer-reported nonauthor six-module full source review; unchanged source hash verified here",
+      "reviewer": "/root/ptse_publication_preflight",
+      "status": "PASS"
+    },
+    "research/options_estate/ptse_options_observation.py": {
+      "review_basis": "full source read plus targeted independent repair verification where changed",
+      "reviewer": "/root/market_tide_recovery",
+      "status": "PASS"
+    },
+    "research/options_estate/ptse_owner_observation.py": {
+      "review_basis": "full source read plus targeted independent repair verification where changed",
+      "reviewer": "/root/market_tide_recovery",
+      "status": "PASS"
+    },
+    "research/options_estate/ptse_plan_relation.py": {
+      "review_basis": "peer-reported nonauthor six-module full source review; unchanged source hash verified here",
+      "reviewer": "/root/ptse_publication_preflight",
+      "status": "PASS"
+    },
+    "research/options_estate/ptse_post_entry_context.py": {
+      "review_basis": "peer-reported nonauthor six-module full source review; unchanged source hash verified here",
+      "reviewer": "/root/ptse_publication_preflight",
+      "status": "PASS"
+    },
+    "research/options_estate/ptse_prospective_readiness.py": {
+      "review_basis": "full source read plus targeted independent repair verification where changed",
+      "reviewer": "/root/market_tide_recovery",
+      "status": "PASS"
+    },
+    "research/options_estate/ptse_pullback_buy_context.py": {
+      "closure_reviewer": "/root/market_tide_recovery",
+      "original_reviewer": "/root/ptse_publication_preflight",
+      "review_basis": "peer discovered original blocker; closure reviewer read complete repaired module and diff, verified direct/dispatcher refusal and opaque-ID compatibility",
+      "status": "PASS"
+    },
+    "research/options_estate/ptse_shadow_enrollment.py": {
+      "review_basis": "unchanged exact source bytes from prior independent three-module review",
+      "reviewer": "/root/market_tide_recovery",
+      "status": "PASS"
+    },
+    "research/options_estate/ptse_shadow_outcome.py": {
+      "review_basis": "unchanged exact source bytes from prior independent three-module review",
+      "reviewer": "/root/market_tide_recovery",
+      "status": "PASS"
+    },
+    "research/options_estate/ptse_w3_publication.py": {
+      "review_basis": "unchanged exact source bytes from prior independent three-module review",
+      "reviewer": "/root/market_tide_recovery",
+      "status": "PASS"
+    }
+  },
+  "disposition": "SOURCE_ONLY_NONAUTHOR_TECHNICAL_REVIEW_PASS",
+  "effects": {
+    "c1_read_import_or_test": false,
+    "canonical_host_source_mutation": false,
+    "formal_github_approval": false,
+    "live_data_writes": false,
+    "provider_or_protected_outcome_reads": false,
+    "publication_or_decision_authority": false,
+    "remote_writes_by_this_reviewer": false,
+    "scratch_review_evidence_written": true,
+    "source_edits_by_this_reviewer": false
+  },
+  "limits": [
+    "This is genuine nonauthor technical source review for the source-only acceptance gate. It is not a GitHub approval event.",
+    "External receipt authenticity, owner admission and raw source-file identity remain outside these pure parsed-payload validators.",
+    "No physical W3 owner acceptance, durable natural issuance, production API/BFF/UI release, or user-visible degraded/rollback proof is established.",
+    "B0 source qualification and protocol ratification remain unproven; synthetic tests do not evaluate a timing edge or read protected outcomes.",
+    "Retained expired context on RELATION_REFUSED rows remains held evidence, never prospective enrollment or READY publication.",
+    "No program-complete, merge, deployment or production-acceptance claim."
+  ],
+  "module_manifest": {
+    "research/options_estate/ptse_action_context.py": {
+      "bytes": 5619,
+      "git_blob_sha1": "097b355f93f7cec6db6c4353fa0692ef5880a878",
+      "sha256": "126de67e81311cd806612e54076099993eeed42201f0bd0db9a29465ed13741a"
+    },
+    "research/options_estate/ptse_baseline.py": {
+      "bytes": 18539,
+      "git_blob_sha1": "c099bb53bb5b594e2ac5195a34e344953e2fb144",
+      "sha256": "e53ef6512c24c28110b65ad023ff7ca1cb1b415b20fc57b6ccbdc0324e8e2895"
+    },
+    "research/options_estate/ptse_breadth_observation.py": {
+      "bytes": 14329,
+      "git_blob_sha1": "eb10a7c00b34c9cedbcccebf469ef00d06f17230",
+      "sha256": "5dccd3a80db7686ab17db195ffa14d58673cc97454953e4d87f6730b19e15576"
+    },
+    "research/options_estate/ptse_candidate_relation.py": {
+      "bytes": 3125,
+      "git_blob_sha1": "f32e1f62abb135bbe7f7b9cb3a883db5768b02e6",
+      "sha256": "8c79d3531fd4f25ad0993b5e6c7c87a345be2f118bf45c04456ff5b8cf5a0480"
+    },
+    "research/options_estate/ptse_contract.py": {
+      "bytes": 33872,
+      "git_blob_sha1": "13e7585332500069b7d5ea32a1bcd0b5afa7b45b",
+      "sha256": "e6b704f02298987e3ca2deee1e2a98e4c8a99e135c90cae76d7393f522e47b14"
+    },
+    "research/options_estate/ptse_event_observation.py": {
+      "bytes": 13328,
+      "git_blob_sha1": "73f2ed833377af29ac08cd0b69eefade1e99964c",
+      "sha256": "b059fc5aec6be4ab9ea347a14ad5b106b41364313193c723a24173c21c01f7bc"
+    },
+    "research/options_estate/ptse_new_entry_context.py": {
+      "bytes": 14878,
+      "git_blob_sha1": "fb147c75511d6f9d85f614cb339aaaef655eea42",
+      "sha256": "8299e4b6b5fd87fee67fbaae88141d59ede425ce88ff721cc61688721fdfa9b4"
+    },
+    "research/options_estate/ptse_options_observation.py": {
+      "bytes": 10484,
+      "git_blob_sha1": "04ac1c7675426143a4d0fdda52a8083b431a554c",
+      "sha256": "6037ad0cc21476ed266f27112133ad1e4843f053b4bfad3e77ee992691091817"
+    },
+    "research/options_estate/ptse_owner_observation.py": {
+      "bytes": 17110,
+      "git_blob_sha1": "a5f6ab9d3bf974efde70b31243b1d3c0d09b080f",
+      "sha256": "f6f16221132dd20069c050414035251193933586cbf20d7a205149333e11b83f"
+    },
+    "research/options_estate/ptse_plan_relation.py": {
+      "bytes": 7244,
+      "git_blob_sha1": "c944c93ab2f94be985c94d00ba3d690acf76e9d3",
+      "sha256": "7f8438beea3cb2a77464d31fe30c709b202755a88421460bce51568e0e73c543"
+    },
+    "research/options_estate/ptse_post_entry_context.py": {
+      "bytes": 4016,
+      "git_blob_sha1": "88fdce24f795a124eb4474a2b9106a76b6db289b",
+      "sha256": "6df672295cf46cee8189afe7c5c93c915a63aee00cc00842a3a1f05b9156ccfb"
+    },
+    "research/options_estate/ptse_prospective_readiness.py": {
+      "bytes": 5136,
+      "git_blob_sha1": "780252a70d38268d31717eebdacaf86e1e4f130e",
+      "sha256": "1f945b5d1b85fd9bb73066d24ed764fadac31a7052e235ead5a9bbad1c2c1eff"
+    },
+    "research/options_estate/ptse_pullback_buy_context.py": {
+      "bytes": 6516,
+      "git_blob_sha1": "4d4f7fb6048038cd2a6e00df4c155d7de0dfdf83",
+      "sha256": "c57c0e1a49f292adee2fb89ca1152ddf214a9a2a02f64cf0d19baad9e1b784df"
+    },
+    "research/options_estate/ptse_shadow_enrollment.py": {
+      "bytes": 10638,
+      "git_blob_sha1": "b1c7c0396ab1c0e61cc608e0cae71a07daafc64f",
+      "sha256": "7eeb639638ac331d297cd88dd502933f05d026af9ca245de528e69e78cd7354f"
+    },
+    "research/options_estate/ptse_shadow_outcome.py": {
+      "bytes": 9973,
+      "git_blob_sha1": "2a7a974a8be445c77cc39227b52b082b308576f6",
+      "sha256": "f898ceea59a210f09f0cced3260363b137b288a5de1a136404532985f5219fe1"
+    },
+    "research/options_estate/ptse_w3_publication.py": {
+      "bytes": 19295,
+      "git_blob_sha1": "1e1b1a050f63d3862b2a5aeecd339e08ba1259fe",
+      "sha256": "bd917feed936431fade8852a5b1e143bfc8c45ef1ea5582e5ec8a35bfc243817"
+    }
+  },
+  "module_manifest_sha256": "7e4dd81fce500cd8f02dcfac289888006552f35401466029612425e1c7fd1c7d",
+  "phase1_reused_review": {
+    "exact_source_bytes_unchanged": true,
+    "focused_tests": {
+      "elapsed_seconds": 4.143,
+      "errors": 0,
+      "exit_code": 0,
+      "failures": 0,
+      "log_path": "/workspace/scratch/f085cc5024b5/market_tide_recovery/ptse_packet_independent_tests.log",
+      "log_sha256": "073505b345c7fdbd93f8945e0a24aef71e7c6e00adc2b59e4161a43900969bb4",
+      "modules": [
+        "tests.test_ptse_shadow_enrollment",
+        "tests.test_ptse_shadow_outcome",
+        "tests.test_ptse_shadow_integrity",
+        "tests.test_ptse_w3_publication"
+      ],
+      "skips": 0,
+      "tests_run": 59
+    },
+    "independent_probe_count": 15,
+    "path": "/workspace/scratch/f085cc5024b5/market_tide_recovery/PTSE_W3_SOURCE_REVIEW_2026-10-07.json",
+    "reuse_limit": "The prior 59 tests and 15 probes were run at the prior dependency state. Their unchanged three-module source review is reused; they were not represented as rerun in this phase. Current 304-test compatibility evidence is separate.",
+    "reviewed_at": "2026-10-07T05:56:41.732025+00:00",
+    "scope_note": "An expired-issuance context on a RELATION_REFUSED row can be retained structurally. Its packet remains RELATION_REFUSED, never READY, and publication authority is false. This review does not classify that retained context as prospective-ready.",
+    "sha256": "50fe3257e46841be96beb03bad73c8267ac9356c616b49ff3ef1bcd1e58b99ef",
+    "source_files": {
+      "research/options_estate/ptse_shadow_enrollment.py": {
+        "bytes": 10638,
+        "git_blob_sha1": "b1c7c0396ab1c0e61cc608e0cae71a07daafc64f",
+        "sha256": "7eeb639638ac331d297cd88dd502933f05d026af9ca245de528e69e78cd7354f"
+      },
+      "research/options_estate/ptse_shadow_outcome.py": {
+        "bytes": 9973,
+        "git_blob_sha1": "2a7a974a8be445c77cc39227b52b082b308576f6",
+        "sha256": "f898ceea59a210f09f0cced3260363b137b288a5de1a136404532985f5219fe1"
+      },
+      "research/options_estate/ptse_w3_publication.py": {
+        "bytes": 19295,
+        "git_blob_sha1": "1e1b1a050f63d3862b2a5aeecd339e08ba1259fe",
+        "sha256": "bd917feed936431fade8852a5b1e143bfc8c45ef1ea5582e5ec8a35bfc243817"
+      }
+    }
+  },
+  "phase2_core_discovery": {
+    "discovery_checkpoint_at": "2026-10-07T06:18:51Z",
+    "findings": [
+      {
+        "author": "/root",
+        "before": "Observation issuance at 20:02 and expiry at 21:00, with assessment issuance at 22:00, returned READY. Both issuance clocks exactly at 21:00 also returned READY. The consumer had no available instant.",
+        "fix": "Require max(observation.issued_at, assessment.issued_at) < observation.valid_until; retain typed ISSUED_AFTER_EXPIRY refusal.",
+        "function": "qualify_prospective_observation",
+        "id": "CORE-01",
+        "independent_reviewer": "/root/market_tide_recovery",
+        "module": "ptse_prospective_readiness.py",
+        "reproduction": "from tests.test_ptse_contract import inputs\nfrom research.options_estate.ptse_contract import build_context\nfrom research.options_estate.ptse_prospective_readiness import qualify_prospective_observation\no,a=inputs(); o['evidence_grade']='PROSPECTIVE_FIRST_SEEN'; o['facts'][0]['evidence_grade']='PROSPECTIVE_FIRST_SEEN'; a['issued_at']='2026-10-02T22:00:00Z'\nqualify_prospective_observation(build_context(o,a))",
+        "status": "CLOSED_BY_INDEPENDENT_REPROBE"
+      },
+      {
+        "author": "/root/ptse_integration_frontier",
+        "before": "Fit at 2026-01-28T22:00Z admitted five training labels first matured at 2026-01-23T21:00Z for test decisions at 2026-01-20T20:00Z and 2026-01-21T20:00Z. The original January 15 fit correctly rejected insufficient training.",
+        "fix": "Fit timestamp cannot follow any frozen test-window decision, including immature origins; compare aware timestamps before maturity filtering.",
+        "function": "run_b0",
+        "id": "CORE-02",
+        "independent_reviewer": "/root/market_tide_recovery",
+        "module": "ptse_baseline.py",
+        "reproduction": "from dataclasses import replace\nfrom tests.test_ptse_baseline import ROWS,FOLD,protocol\nfrom research.options_estate.ptse_baseline import run_b0\nlate=[replace(r,label_matured_at='2026-01-23T21:00:00Z') if r.market_session<='2026-01-08' else r for r in ROWS]\nrun_b0(protocol(),[replace(FOLD,fit_cutoff_at='2026-01-28T22:00:00Z')],late)",
+        "status": "CLOSED_BY_INDEPENDENT_REPROBE"
+      },
+      {
+        "author": "/root/ptse_integration_frontier",
+        "before": "A row with trend63 = 0.2 and momentum5 = -0.1 accepted supplied indicator 0; synthetic ridge MSE changed from 0.24799769175527142 to 0.2962129340277781 under the frozen feature name.",
+        "fix": "Validate indicator == int(trend63 > 0 and momentum5 < 0); reject mismatch with INDICATOR_DERIVATION_MISMATCH.",
+        "function": "_row",
+        "id": "CORE-03",
+        "independent_reviewer": "/root/market_tide_recovery",
+        "module": "ptse_baseline.py",
+        "reproduction": "from dataclasses import replace\nfrom tests.test_ptse_baseline import ROWS,FOLD,protocol\nfrom research.options_estate.ptse_baseline import run_b0\nbad=list(ROWS); bad[3]=replace(bad[3],positive_trend_negative_momentum=0.0)\nrun_b0(protocol(),[FOLD],bad)",
+        "status": "CLOSED_BY_INDEPENDENT_REPROBE"
+      },
+      {
+        "author": "/root/ptse_publication_preflight",
+        "before": "market_state raw_score 57 -> 99, regime breadth_pct_above_50 48.5 -> 99, Options atm_iv 34.2 -> 99 and call_wall 300 -> 350 all sealed under unchanged artifact receipts correctly hashed from the original payloads.",
+        "canonicalization": "json.dumps(dict(payload), sort_keys=True, separators=(',', ':'), ensure_ascii=False, allow_nan=False).encode('utf-8')",
+        "fix": "Each adapter verifies the SHA256 of its entire parsed JSON mapping, including unprojected fields; key order is canonical. External owner authentication/admission remains caller-owned.",
+        "id": "CORE-04",
+        "independent_reviewer": "/root/market_tide_recovery",
+        "modules": [
+          "ptse_owner_observation.py",
+          "ptse_options_observation.py"
+        ],
+        "receipt_boundary": "Parsed JSON content identity, not raw source-file bytes and not independent owner authentication.",
+        "status": "CLOSED_BY_INDEPENDENT_REPROBE"
+      },
+      {
+        "author": "/root/ptse_publication_preflight",
+        "before": "Finite nonnegative annualized atm_iv = 150 and rv20 = 125 were rejected by the percentile ceiling of 100.",
+        "fix": "Keep rank fields in [0, 100]; allow finite nonnegative annualized volatility percentages above 100. High-volatility context seals with every authority bit literally False.",
+        "function": "_validate_number",
+        "id": "CORE-05",
+        "independent_reviewer": "/root/market_tide_recovery",
+        "module": "ptse_options_observation.py",
+        "status": "CLOSED_BY_INDEPENDENT_REPROBE"
+      }
+    ],
+    "full_source_modules": [
+      "research/options_estate/ptse_contract.py",
+      "research/options_estate/ptse_prospective_readiness.py",
+      "research/options_estate/ptse_baseline.py",
+      "research/options_estate/ptse_owner_observation.py",
+      "research/options_estate/ptse_event_observation.py",
+      "research/options_estate/ptse_breadth_observation.py",
+      "research/options_estate/ptse_options_observation.py"
+    ],
+    "no_additional_blocking_findings": [
+      "ptse_contract.py",
+      "ptse_event_observation.py",
+      "ptse_breadth_observation.py"
+    ],
+    "reviewer": "/root/market_tide_recovery",
+    "synthetic_probe_count": 15
+  },
+  "phase2_independent_repair_verification": {
+    "closed_findings": [
+      {
+        "author": "/root",
+        "before": "Observation issuance at 20:02 and expiry at 21:00, with assessment issuance at 22:00, returned READY. Both issuance clocks exactly at 21:00 also returned READY. The consumer had no available instant.",
+        "fix": "Require max(observation.issued_at, assessment.issued_at) < observation.valid_until; retain typed ISSUED_AFTER_EXPIRY refusal.",
+        "function": "qualify_prospective_observation",
+        "id": "CORE-01",
+        "independent_reviewer": "/root/market_tide_recovery",
+        "module": "ptse_prospective_readiness.py",
+        "reproduction": "from tests.test_ptse_contract import inputs\nfrom research.options_estate.ptse_contract import build_context\nfrom research.options_estate.ptse_prospective_readiness import qualify_prospective_observation\no,a=inputs(); o['evidence_grade']='PROSPECTIVE_FIRST_SEEN'; o['facts'][0]['evidence_grade']='PROSPECTIVE_FIRST_SEEN'; a['issued_at']='2026-10-02T22:00:00Z'\nqualify_prospective_observation(build_context(o,a))",
+        "status": "CLOSED_BY_INDEPENDENT_REPROBE"
+      },
+      {
+        "author": "/root/ptse_integration_frontier",
+        "before": "Fit at 2026-01-28T22:00Z admitted five training labels first matured at 2026-01-23T21:00Z for test decisions at 2026-01-20T20:00Z and 2026-01-21T20:00Z. The original January 15 fit correctly rejected insufficient training.",
+        "fix": "Fit timestamp cannot follow any frozen test-window decision, including immature origins; compare aware timestamps before maturity filtering.",
+        "function": "run_b0",
+        "id": "CORE-02",
+        "independent_reviewer": "/root/market_tide_recovery",
+        "module": "ptse_baseline.py",
+        "reproduction": "from dataclasses import replace\nfrom tests.test_ptse_baseline import ROWS,FOLD,protocol\nfrom research.options_estate.ptse_baseline import run_b0\nlate=[replace(r,label_matured_at='2026-01-23T21:00:00Z') if r.market_session<='2026-01-08' else r for r in ROWS]\nrun_b0(protocol(),[replace(FOLD,fit_cutoff_at='2026-01-28T22:00:00Z')],late)",
+        "status": "CLOSED_BY_INDEPENDENT_REPROBE"
+      },
+      {
+        "author": "/root/ptse_integration_frontier",
+        "before": "A row with trend63 = 0.2 and momentum5 = -0.1 accepted supplied indicator 0; synthetic ridge MSE changed from 0.24799769175527142 to 0.2962129340277781 under the frozen feature name.",
+        "fix": "Validate indicator == int(trend63 > 0 and momentum5 < 0); reject mismatch with INDICATOR_DERIVATION_MISMATCH.",
+        "function": "_row",
+        "id": "CORE-03",
+        "independent_reviewer": "/root/market_tide_recovery",
+        "module": "ptse_baseline.py",
+        "reproduction": "from dataclasses import replace\nfrom tests.test_ptse_baseline import ROWS,FOLD,protocol\nfrom research.options_estate.ptse_baseline import run_b0\nbad=list(ROWS); bad[3]=replace(bad[3],positive_trend_negative_momentum=0.0)\nrun_b0(protocol(),[FOLD],bad)",
+        "status": "CLOSED_BY_INDEPENDENT_REPROBE"
+      },
+      {
+        "author": "/root/ptse_publication_preflight",
+        "before": "market_state raw_score 57 -> 99, regime breadth_pct_above_50 48.5 -> 99, Options atm_iv 34.2 -> 99 and call_wall 300 -> 350 all sealed under unchanged artifact receipts correctly hashed from the original payloads.",
+        "canonicalization": "json.dumps(dict(payload), sort_keys=True, separators=(',', ':'), ensure_ascii=False, allow_nan=False).encode('utf-8')",
+        "fix": "Each adapter verifies the SHA256 of its entire parsed JSON mapping, including unprojected fields; key order is canonical. External owner authentication/admission remains caller-owned.",
+        "id": "CORE-04",
+        "independent_reviewer": "/root/market_tide_recovery",
+        "modules": [
+          "ptse_owner_observation.py",
+          "ptse_options_observation.py"
+        ],
+        "receipt_boundary": "Parsed JSON content identity, not raw source-file bytes and not independent owner authentication.",
+        "status": "CLOSED_BY_INDEPENDENT_REPROBE"
+      },
+      {
+        "author": "/root/ptse_publication_preflight",
+        "before": "Finite nonnegative annualized atm_iv = 150 and rv20 = 125 were rejected by the percentile ceiling of 100.",
+        "fix": "Keep rank fields in [0, 100]; allow finite nonnegative annualized volatility percentages above 100. High-volatility context seals with every authority bit literally False.",
+        "function": "_validate_number",
+        "id": "CORE-05",
+        "independent_reviewer": "/root/market_tide_recovery",
+        "module": "ptse_options_observation.py",
+        "status": "CLOSED_BY_INDEPENDENT_REPROBE"
+      },
+      {
+        "author": "/root",
+        "before": "A B4-admitted artifact_id sha256:222...222 paired with sha256 fff...fff sealed APPLICABLE pullback context.",
+        "closure_controls": [
+          "direct tamper refused",
+          "dispatcher tamper refused",
+          "distinct opaque geometry receipt accepted with literal-False authority"
+        ],
+        "discovered_by": "/root/ptse_publication_preflight",
+        "fix": "For sha256: receipt IDs, require suffix to equal geometry_ref.sha256. Preserve incumbent opaque owner receipt IDs and their external admission boundary.",
+        "function": "build_pullback_buy_context",
+        "id": "ACTION-01",
+        "independent_reviewer": "/root/market_tide_recovery",
+        "module": "ptse_pullback_buy_context.py",
+        "original_source_sha256": "b7d7bd3a529b84e0e7b6ed3e41f270cc0a76d077ab7623f5d912dfd61317e041",
+        "status": "CLOSED_BY_INDEPENDENT_REPROBE"
+      }
+    ],
+    "cwd": "/workspace/scratch/f085cc5024b5/ptse_integration",
+    "errors": 0,
+    "failures": 0,
+    "independent_probe_count": 29,
+    "independent_probes": [
+      {
+        "probe": "original_late_fit_repro",
+        "result": "FIT_AFTER_TEST_DECISION"
+      },
+      {
+        "probe": "original_indicator_repro",
+        "result": "INDICATOR_DERIVATION_MISMATCH"
+      },
+      {
+        "probe": "fit_one_microsecond_after_first_decision",
+        "result": "FIT_AFTER_TEST_DECISION"
+      },
+      {
+        "probe": "same_instant_different_timezone",
+        "result": "ACCEPTED",
+        "test_rows": 2
+      },
+      {
+        "probe": "earliest_immature_origin_still_binds_clock",
+        "result": "FIT_AFTER_TEST_DECISION"
+      },
+      {
+        "probe": "assessment_after_expiry",
+        "result": "ISSUED_AFTER_EXPIRY"
+      },
+      {
+        "probe": "both_at_expiry",
+        "result": "ISSUED_AFTER_EXPIRY"
+      },
+      {
+        "probe": "assessment_at_expiry",
+        "result": "ISSUED_AFTER_EXPIRY"
+      },
+      {
+        "consumer_reason": "OBSERVED_CONTEXT_ONLY",
+        "probe": "last_usable_microsecond",
+        "result": "READY_FOR_EXISTING_PUBLICATION_OWNER"
+      },
+      {
+        "probe": "equivalent_offset_expiry",
+        "result": "ISSUED_AFTER_EXPIRY"
+      },
+      {
+        "probe": "market_state_old_receipt_mutation",
+        "result": "OWNER_ARTIFACT_REF_MISMATCH"
+      },
+      {
+        "probe": "market_state_unprojected_mutation",
+        "result": "OWNER_ARTIFACT_REF_MISMATCH"
+      },
+      {
+        "probe": "market_state_recursive_key_reorder",
+        "result": "PASS"
+      },
+      {
+        "probe": "regime_vector_old_receipt_mutation",
+        "result": "OWNER_ARTIFACT_REF_MISMATCH"
+      },
+      {
+        "probe": "regime_vector_unprojected_mutation",
+        "result": "OWNER_ARTIFACT_REF_MISMATCH"
+      },
+      {
+        "probe": "regime_vector_recursive_key_reorder",
+        "result": "PASS"
+      },
+      {
+        "probe": "options_vol_old_receipt_mutation",
+        "result": "OWNER_ARTIFACT_REF_MISMATCH"
+      },
+      {
+        "probe": "options_vol_unprojected_mutation",
+        "result": "OWNER_ARTIFACT_REF_MISMATCH"
+      },
+      {
+        "probe": "options_vol_recursive_key_reorder",
+        "result": "PASS"
+      },
+      {
+        "probe": "options_gex_old_receipt_mutation",
+        "result": "OWNER_ARTIFACT_REF_MISMATCH"
+      },
+      {
+        "probe": "options_gex_unprojected_mutation",
+        "result": "OWNER_ARTIFACT_REF_MISMATCH"
+      },
+      {
+        "probe": "options_gex_recursive_key_reorder",
+        "result": "PASS"
+      },
+      {
+        "probe": "owner_nonfinite_unprojected_content",
+        "result": "OWNER_PAYLOAD_NOT_CANONICAL"
+      },
+      {
+        "probe": "options_nonfinite_unprojected_content",
+        "result": "OWNER_PAYLOAD_NOT_CANONICAL"
+      },
+      {
+        "probe": "above_100_annualized_volatility_seals_with_zero_authority",
+        "result": "PASS"
+      },
+      {
+        "probe": "rank_upper_and_volatility_lower_bounds_remain_closed_4_subcases",
+        "result": "PASS"
+      },
+      {
+        "probe": "pullback_direct_digest_tamper",
+        "result": "GEOMETRY_REF_DIGEST_MISMATCH"
+      },
+      {
+        "probe": "pullback_dispatch_digest_tamper",
+        "result": "GEOMETRY_REF_DIGEST_MISMATCH"
+      },
+      {
+        "probe": "opaque_geometry_receipt_compatibility",
+        "result": "PASS"
+      }
+    ],
+    "interpreter": "/workspace/scratch/f085cc5024b5/market_tide_recovery/test_env/bin/python -B",
+    "owner_options_pullback_evidence": {
+      "path": "/workspace/scratch/f085cc5024b5/market_tide_recovery/PTSE_OWNER_OPTIONS_PULLBACK_REPAIR_REVIEW_2026-10-07.json",
+      "sha256": "9eff99643277e71dfbf27a60ad148d6551a339b11b8b3b340952df5a95b59162"
+    },
+    "reviewer": "/root/market_tide_recovery",
+    "runs": [
+      {
+        "scope": "B0 repair methods",
+        "seconds": 0.004,
+        "tests": 4
+      },
+      {
+        "scope": "readiness repair methods",
+        "seconds": 0.007,
+        "tests": 2
+      },
+      {
+        "runner_output": "............\n----------------------------------------------------------------------\nRan 12 tests in 0.043s\n\nOK\n",
+        "scope": "owner/options/pullback repair methods",
+        "tests": 12
+      }
+    ],
+    "skipped": 0,
+    "targeted_test_names": [
+      "tests.test_ptse_baseline.PTSEB0Test.test_late_fit_cannot_admit_labels_unavailable_at_test_decisions",
+      "tests.test_ptse_baseline.PTSEB0Test.test_fit_clock_checks_even_an_immature_test_origin",
+      "tests.test_ptse_baseline.PTSEB0Test.test_fit_at_first_test_decision_is_allowed_in_equivalent_timezone",
+      "tests.test_ptse_baseline.PTSEB0Test.test_derived_indicator_must_match_frozen_strict_sign_condition",
+      "tests.test_ptse_prospective_readiness.PTSEProspectiveReadinessTest.test_both_issuance_clocks_must_precede_exclusive_expiry",
+      "tests.test_ptse_prospective_readiness.PTSEProspectiveReadinessTest.test_distinct_issuance_clocks_with_a_usable_window_remain_ready",
+      "tests.test_ptse_owner_observation.PTSEOwnerObservationTest.test_market_and_regime_payload_changes_cannot_reuse_original_receipt",
+      "tests.test_ptse_owner_observation.PTSEOwnerObservationTest.test_whole_payload_receipt_includes_unprojected_fields",
+      "tests.test_ptse_owner_observation.PTSEOwnerObservationTest.test_owner_payload_key_order_does_not_change_content_binding",
+      "tests.test_ptse_owner_observation.PTSEOwnerObservationTest.test_noncanonical_owner_payload_is_typed_refusal",
+      "tests.test_ptse_options_observation.PTSEOptionsObservationTest.test_vol_and_gex_payload_changes_cannot_reuse_original_receipt",
+      "tests.test_ptse_options_observation.PTSEOptionsObservationTest.test_full_options_payload_including_unprojected_arrays_is_bound",
+      "tests.test_ptse_options_observation.PTSEOptionsObservationTest.test_options_payload_key_order_does_not_change_content_binding",
+      "tests.test_ptse_options_observation.PTSEOptionsObservationTest.test_annualized_volatility_percent_can_exceed_one_hundred",
+      "tests.test_ptse_options_observation.PTSEOptionsObservationTest.test_volatility_stays_nonnegative_and_ranks_keep_their_upper_bound",
+      "tests.test_ptse_pullback_buy_context.PTSEPullbackBuyContextTest.test_geometry_digest_must_match_admitted_b4_receipt_identity",
+      "tests.test_ptse_pullback_buy_context.PTSEPullbackBuyContextTest.test_opaque_owner_geometry_receipt_remains_supported",
+      "tests.test_ptse_action_context.PTSEActionContextTest.test_pullback_dispatch_rejects_geometry_digest_substitution"
+    ],
+    "targeted_tests_run": 18
+  },
+  "phase2_peer_six_module_review": {
+    "controls_reviewed": [
+      "Exact candidate stamp/ticker/board event key, missing/ambiguous/expected-episode refusals, no ticker fallback.",
+      "Frozen board-row digest; one exact plan origin; asset/ticker/board definition consistency; exact receipt bytes and canonical B1 identity.",
+      "B3/B4 validator reuse; candidate/generation/security/epoch/session/decision clock agreement; cohort and eligibility payload SHA; H5 distinct from tactical and holding horizons.",
+      "Post-entry actions remain UNKNOWN with null missing owner references and literal-False authority.",
+      "Dispatcher blocks owner/candidate/B4/geometry inputs on unresolved post-entry actions and retains distinct entry/pullback paths."
+    ],
+    "discriminating_synthetic_probe_count": 1,
+    "evidence_origin": "Existing earlier source review recovered through collaboration messages; no saved separate receipt was claimed.",
+    "limit": "Peer review did not independently review its own W3 or owner/options repairs; market_tide_recovery covers those.",
+    "original_blocker": {
+      "author": "/root",
+      "before": "A B4-admitted artifact_id sha256:222...222 paired with sha256 fff...fff sealed APPLICABLE pullback context.",
+      "closure_controls": [
+        "direct tamper refused",
+        "dispatcher tamper refused",
+        "distinct opaque geometry receipt accepted with literal-False authority"
+      ],
+      "discovered_by": "/root/ptse_publication_preflight",
+      "fix": "For sha256: receipt IDs, require suffix to equal geometry_ref.sha256. Preserve incumbent opaque owner receipt IDs and their external admission boundary.",
+      "function": "build_pullback_buy_context",
+      "id": "ACTION-01",
+      "independent_reviewer": "/root/market_tide_recovery",
+      "module": "ptse_pullback_buy_context.py",
+      "original_source_sha256": "b7d7bd3a529b84e0e7b6ed3e41f270cc0a76d077ab7623f5d912dfd61317e041",
+      "status": "CLOSED_BY_INDEPENDENT_REPROBE"
+    },
+    "original_module_sha256": {
+      "research/options_estate/ptse_action_context.py": "126de67e81311cd806612e54076099993eeed42201f0bd0db9a29465ed13741a",
+      "research/options_estate/ptse_candidate_relation.py": "8c79d3531fd4f25ad0993b5e6c7c87a345be2f118bf45c04456ff5b8cf5a0480",
+      "research/options_estate/ptse_new_entry_context.py": "8299e4b6b5fd87fee67fbaae88141d59ede425ce88ff721cc61688721fdfa9b4",
+      "research/options_estate/ptse_plan_relation.py": "7f8438beea3cb2a77464d31fe30c709b202755a88421460bce51568e0e73c543",
+      "research/options_estate/ptse_post_entry_context.py": "6df672295cf46cee8189afe7c5c93c915a63aee00cc00842a3a1f05b9156ccfb",
+      "research/options_estate/ptse_pullback_buy_context.py": "b7d7bd3a529b84e0e7b6ed3e41f270cc0a76d077ab7623f5d912dfd61317e041"
+    },
+    "reviewer": "/root/ptse_publication_preflight"
+  },
+  "recorded_at": "2026-10-07T06:26:35.793537+00:00",
+  "remaining_blocking_findings": [],
+  "review_roles": {
+    "/root": "Author of readiness/pullback and prior enrollment/outcome repairs, independently reviewed by market_tide_recovery; owns remote publication and acceptance decision.",
+    "/root/market_tide_recovery": "No source authoring. Independent review of seven core modules, prior enrollment/outcome/W3 source and repaired pullback source. This agent only wrote scratch evidence receipts.",
+    "/root/ptse_integration_frontier": "Author of B0 repairs, independently reviewed by market_tide_recovery; independently recorded current dependency compatibility suite.",
+    "/root/ptse_publication_preflight": "Nonauthor review of six action/relation modules. Author of W3 and current owner/options repairs; those authored modules were independently reviewed by market_tide_recovery."
+  },
+  "schema": "ptse.combined_nonauthor_source_review/v1-research",
+  "scope": "All sixteen PTSE source modules; immutable source/payload integrity, identity, clock, provenance and action/feature-definition checks. No live-product, efficacy, protected-data or owner-admission acceptance.",
+  "separate_current_dependency_compatibility": {
+    "all_33_candidate_source_and_test_files_still_match_compatibility_manifest": true,
+    "candidate_manifest_path": "/workspace/scratch/f085cc5024b5/ptse_current_base_compat_36f61a/_ptse_candidate_manifest.json",
+    "candidate_manifest_sha256": "48ecc26077776a8ef7e067daffdba2c3c28b964d5c1432b1eb2e2e2c4cc676d7",
+    "candidate_python_file_count": 33,
+    "changed_dependency_paths": [],
+    "classification": "EQUIVALENT_CURRENT_SOURCE_DEPENDENCY_SNAPSHOT",
+    "dependency_count": 30,
+    "executor": "/root/ptse_integration_frontier",
+    "incumbent_source_ref": "36f61afb71657279fb6b85f9ea64f99f7e09093a",
+    "limits": [
+      "NOT_FULL_REPOSITORY_MERGE_REF_CI",
+      "NOT_PRODUCTION_ACCEPTANCE",
+      "NO_SOURCE_QUALIFICATION_OR_SCIENTIFIC_RESULT",
+      "NO_C1_OR_PROTECTED_OUTCOME_READS"
+    ],
+    "receipt_path": "/workspace/scratch/f085cc5024b5/ptse_current_base_compat_36f61a/_current_base_compatibility_receipt.json",
+    "receipt_sha256": "d5866bc1cab1e6167074930473041fcbf4c01ae0a2dd8b4258937a48a4dc080d",
+    "reviewer_did_not_rerun_full_suite": true,
+    "test_result": {
+      "exit_code": 0,
+      "result": "PASS",
+      "seconds": 5.469,
+      "tests": 304
+    }
+  }
+}

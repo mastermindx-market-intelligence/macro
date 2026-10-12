@@ -2611,7 +2611,7 @@
       + '.hm-read{display:flex;align-items:center;gap:8px;font-size:11.5px;color:var(--muted);flex-wrap:wrap;}'
       + '.hm-read-br{font-variant-numeric:tabular-nums;font-weight:700;}'
       + '.hm-dot{width:7px;height:7px;border-radius:50%;background:var(--muted);display:inline-block;}'
-      + '.hm-dot.live{background:var(--up);box-shadow:0 0 0 3px color-mix(in srgb,var(--up) 24%,transparent);}'
+      + '.hm-dot.live{background:var(--ok);box-shadow:0 0 0 3px var(--ring-ok);}'
       + '.hm-dot.break{background:var(--warn);box-shadow:none;}'
       + '.hm-dot.auction{background:var(--act);box-shadow:0 0 0 3px color-mix(in srgb,var(--act) 20%,transparent);}'
       + '.hm-dot.closed{background:var(--muted);box-shadow:none;}'

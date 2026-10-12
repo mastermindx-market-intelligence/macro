@@ -15,16 +15,290 @@ Important honesty boundaries:
 
 from __future__ import annotations
 
+import json
+import math
 from dataclasses import dataclass
 from datetime import date, datetime, timezone
+from pathlib import Path
 from typing import Any
 
+import numpy as np
 import pandas as pd
 import yaml
 
 from lib import config
 
 SCHEMA = "international_macro_dashboard.v1"
+
+# --------------------------------------------------------------------------- #
+# Rights-gated country-dossier plane (MO-PAID-006 schema child, ruling D18).
+#
+# A second top-level `dossier` plane is rendered alongside `policy` and `events`
+# for the international-macro country view. Items are sourced exclusively from
+# VERIFIED_PUBLIC_REUSE wires (ec_presscorner / boe_news via the existing
+# engine.europe_news_intel read model — its parquet at
+# `data/europe_news_vector/events.parquet`), plus the optional GOV.UK HM
+# Treasury fact set in `engine.uk_policy_brain.latest()` for the UK (Crown
+# copyright, OGL v3.0). Leadership is printed as a literal null for every
+# country — the owner's data contract (docs/INTERNATIONAL_MACRO_DATA_CONTRACT.md
+# :70-71, :86-88) forbids storing release prose or fabricating a policy
+# decision. JP / KR / IN carry `state = "no_coverage"` by design.
+# --------------------------------------------------------------------------- #
+
+DOSSIER_SCHEMA = "intl_country_dossier.v1"
+DOSSIER_STATES: frozenset[str] = frozenset({"covered", "no_coverage", "source_outage"})
+DOSSIER_JURISDICTIONS: frozenset[str] = frozenset({"EU", "UK"})
+DOSSIER_PROSE_KEYS: frozenset[str] = frozenset({"body", "text", "summary", "prose"})
+DOSSIER_LEADERSHIP_NULL = "no rights-cleared source"
+DOSSIER_ITEM_CAP = 5
+
+# Source key -> jurisdiction for the dossier plane. The keys MUST match the
+# `key` values in `config.europe_news_intel.sources` — the rights vocabulary is
+# owned by engine/europe_news_intel.py; this module never invents a second one.
+_DOSSIER_SOURCE_JURISDICTION: dict[str, str] = {
+    "ec_presscorner": "EU",
+    "boe_news": "UK",
+}
+
+# Country code -> list of source keys in display order. EC for the Euro Area and
+# BoE for the UK. JP / KR / IN intentionally carry no entries — the acceptance
+# gate per ruling D18.
+_DOSSIER_COUNTRY_SOURCES: dict[str, tuple[str, ...]] = {
+    "EZ": ("ec_presscorner",),
+    "GB": ("boe_news",),
+}
+
+
+def _publisher_label(source_key: str) -> str:
+    """Publisher label for a europe_news_intel source key — never a fabricated
+    name. Reads config.europe_news_intel.sources so any update there flows."""
+    try:
+        from engine import europe_news_intel as _eni
+
+        for spec in _eni.sources():
+            if str(spec.get("key") or "") == source_key:
+                pub = str(spec.get("publisher") or "").strip()
+                if pub:
+                    return pub
+    except Exception:  # noqa: BLE001 — degrade, never raise
+        pass
+    return "Official source"
+
+
+def _rights_basis_for(source_key: str, df: pd.DataFrame | None) -> str:
+    """Pull the rights_basis from the parquet row when present; otherwise emit
+    an empty string so the validator catches it (no fabricated basis)."""
+    if df is None or len(df) == 0:
+        return ""
+    matches = df[df["source"] == source_key]
+    if matches.empty:
+        return ""
+    raw = matches.iloc[-1].get("rights_basis", "")
+    return str(raw or "").strip()
+
+
+def _read_dossier_items(source_key: str, asof: date) -> tuple[list[dict[str, Any]], bool]:
+    """Read up to DOSSIER_ITEM_CAP items from the europe_news_intel parquet.
+
+    Returns (items, ok). When the read fails (no module, no parquet, parse
+    error) ok=False and items=[]. Items are sorted newest-first by seendate.
+
+    `rights_state` is per-source (config), not per-row, so the rights claim
+    lives at the source-key lookup in `_DOSSIER_SOURCE_JURISDICTION` (the only
+    keys wired in are VERIFIED_PUBLIC_REUSE). Any source we don't recognise
+    returns a typed outage rather than letting unsafe content through.
+    """
+    if source_key not in _DOSSIER_SOURCE_JURISDICTION:
+        return ([], False)
+    out: list[dict[str, Any]] = []
+    try:
+        from engine import europe_news_intel as _eni
+
+        df = _eni.read_events(asof)
+    except Exception:  # noqa: BLE001 — never raise into build
+        return ([], False)
+    if df is None or len(df) == 0:
+        return ([], True)  # parquet missing but no exception: honest outage
+    try:
+        sub = df[df["source"] == source_key].copy()
+    except Exception:  # noqa: BLE001
+        return ([], False)
+    if sub.empty:
+        return ([], True)
+    sub["_sort"] = pd.to_datetime(sub["seendate"], utc=True, errors="coerce")
+    sub = sub.dropna(subset=["_sort"]).sort_values("_sort", ascending=False)
+    publisher = _publisher_label(source_key)
+    for _, r in sub.head(DOSSIER_ITEM_CAP).iterrows():
+        out.append({
+            "publisher": publisher,
+            "source_key": source_key,
+            "jurisdiction": _DOSSIER_SOURCE_JURISDICTION[source_key],
+            "title": str(r.get("title", "")),
+            "url": str(r.get("url", "")),
+            "published": str(r.get("seendate", "") or ""),
+            "known_at": str(r.get("first_seen_utc", "") or ""),
+            "rights_basis": str(r.get("rights_basis", "") or "").strip(),
+            "rights_state": "VERIFIED_PUBLIC_REUSE",
+        })
+    return (out, True)
+
+
+# The UK stance is a DATA contract, never a module import: the dossier reads
+# the artifact `engine/uk_policy_brain.py` publishes (`_artifact_path` ->
+# site/uk_policy.json) so the LLM desk keeps exactly ONE importer
+# (`scripts/build_whitehouse.py`; fence:
+# tests/test_uk_policy_brain.py::test_no_scoring_path_imports_this_desk —
+# measured red on #8276 ci-pack-5, 2026-10-02, when two lazy imports slipped in).
+_UK_POLICY_ARTIFACT = ("site", "uk_policy.json")
+
+# Display vocabulary for the UK stance — mirrors `engine/uk_policy_brain._STANCES`
+# WITHOUT importing the desk (fence above). The producer clamps every persisted
+# `stance` to that closed set (`_norm_stance`), so a label outside this mirror
+# degrades to None (no stance shown), never to a wrong label. Widen both together.
+_UK_STANCES_FROZEN = frozenset({"supportive", "restrictive", "mixed", "routine"})
+
+
+def _uk_stance(root: Path | None = None) -> dict[str, Any] | None:
+    """Optional UK stance from the uk_policy_brain ARTIFACT (OGL v3.0). The
+    stance label is LLM-classified by the desk (engine/uk_policy_brain.py
+    `_norm_stance` clamps it before persisting); the dossier always carries
+    `authoritative: false` per the LLM-facing rule. None when the artifact is
+    missing, unreadable, not a dict, or carries no stance inside the display
+    vocabulary. Read as DATA — never `from engine import uk_policy_brain`.
+    """
+    try:
+        base = Path(root) if root else Path(config.ROOT)
+        record = json.loads(base.joinpath(*_UK_POLICY_ARTIFACT).read_text())
+    except Exception:  # noqa: BLE001 — degrade, never raise
+        return None
+    if not isinstance(record, dict):
+        return None
+    label = record.get("stance")
+    if label is None:
+        return None
+    label = str(label).strip()
+    if label not in _UK_STANCES_FROZEN:
+        return None
+    provider = str(record.get("provider_label") or "").strip()
+    return {
+        "label": label,
+        "provider_label": provider,
+        "authoritative": False,
+    }
+
+
+def _build_dossier(cc: str, asof: date) -> dict[str, Any]:
+    """Build the country-dossier plane. Never raises — every failure path lands
+    on the typed `source_outage` state with items=[]."""
+    sources = _DOSSIER_COUNTRY_SOURCES.get(cc)
+    if not sources:
+        # JP / KR / IN have no rights-cleared wires at this commit. Honest null
+        # per ruling D18.
+        return {
+            "schema": DOSSIER_SCHEMA,
+            "state": "no_coverage",
+            "items": [],
+            "stance": None,
+            "leadership": DOSSIER_LEADERSHIP_NULL,
+        }
+    items: list[dict[str, Any]] = []
+    any_outage = False
+    any_missing = False
+    for source_key in sources:
+        src_items, ok = _read_dossier_items(source_key, asof)
+        items.extend(src_items)
+        if not ok:
+            any_outage = True
+        if not src_items:
+            any_missing = True
+    items.sort(key=lambda x: x.get("published") or "", reverse=True)
+    items = items[:DOSSIER_ITEM_CAP]
+    if items:
+        state = "source_outage" if any_outage and any_missing else "covered"
+    else:
+        state = "source_outage" if (any_outage or any_missing) else "no_coverage"
+    stance = _uk_stance() if cc == "GB" else None
+    return {
+        "schema": DOSSIER_SCHEMA,
+        "state": state,
+        "items": items,
+        "stance": stance,
+        "leadership": DOSSIER_LEADERSHIP_NULL,
+    }
+
+
+def validate_dossier(dossier: dict[str, Any]) -> None:
+    """Stand-alone rights-gated contract check for the dossier plane. Distinct
+    error message per rule so the build / tests can attribute the cause."""
+    if not isinstance(dossier, dict):
+        raise ValueError("dossier must be a dict")
+    if dossier.get("schema") != DOSSIER_SCHEMA:
+        raise ValueError("dossier schema must be intl_country_dossier.v1")
+    state = dossier.get("state")
+    if state not in DOSSIER_STATES:
+        raise ValueError(
+            f"dossier state must be one of {sorted(DOSSIER_STATES)}; got {state!r}"
+        )
+    items = dossier.get("items")
+    if not isinstance(items, list):
+        raise ValueError("dossier items must be a list")
+    if state == "covered" and not items:
+        raise ValueError("dossier state 'covered' requires non-empty items")
+    for idx, item in enumerate(items):
+        if not isinstance(item, dict):
+            raise ValueError(f"dossier items[{idx}] must be a dict")
+        forbidden = sorted(set(item.keys()) & DOSSIER_PROSE_KEYS)
+        if forbidden:
+            raise ValueError(
+                f"dossier items[{idx}] carries prose-shaped key(s) {forbidden}; "
+                "release prose is forbidden by the owner's data contract"
+            )
+        if not str(item.get("title") or ""):
+            raise ValueError(f"dossier items[{idx}] requires non-empty title")
+        url = str(item.get("url") or "")
+        if not (url.startswith("https://") or url.startswith("http://")):
+            raise ValueError(f"dossier items[{idx}] requires an http(s) URL")
+        if item.get("rights_state") != "VERIFIED_PUBLIC_REUSE":
+            raise ValueError(
+                f"dossier items[{idx}] rights_state must be VERIFIED_PUBLIC_REUSE; "
+                f"got {item.get('rights_state')!r}"
+            )
+        if not str(item.get("rights_basis") or "").strip():
+            raise ValueError(
+                f"dossier items[{idx}] requires a non-empty rights_basis"
+            )
+        if str(item.get("jurisdiction") or "") not in DOSSIER_JURISDICTIONS:
+            raise ValueError(
+                f"dossier items[{idx}] jurisdiction must be one of "
+                f"{sorted(DOSSIER_JURISDICTIONS)}"
+            )
+        if not str(item.get("publisher") or "").strip():
+            raise ValueError(f"dossier items[{idx}] requires a publisher label")
+        if not str(item.get("published") or "").strip():
+            raise ValueError(f"dossier items[{idx}] requires a published timestamp")
+        if not str(item.get("known_at") or "").strip():
+            raise ValueError(f"dossier items[{idx}] requires a known_at timestamp")
+        if not str(item.get("source_key") or "").strip():
+            raise ValueError(f"dossier items[{idx}] requires a source_key")
+    stance = dossier.get("stance")
+    if stance is not None:
+        if not isinstance(stance, dict):
+            raise ValueError("dossier stance must be None or a dict")
+        if stance.get("authoritative") is not False:
+            raise ValueError(
+                "dossier stance authoritative must be False (LLM-classified labels "
+                "are context, never authoritative)"
+            )
+        if stance.get("label") not in _UK_STANCES_FROZEN:
+            raise ValueError(
+                f"dossier stance label must be one of {sorted(_UK_STANCES_FROZEN)}"
+            )
+    if dossier.get("leadership") != DOSSIER_LEADERSHIP_NULL:
+        raise ValueError(
+            f"dossier leadership must be the literal {DOSSIER_LEADERSHIP_NULL!r}; "
+            f"leadership content is forbidden by the owner's data contract"
+        )
+
 
 
 @dataclass(frozen=True)
@@ -1101,6 +1375,7 @@ def build_country_view(
         "sources": source_rows,
         "caveat_en": spec.caveat_en,
         "caveat_zh": spec.caveat_zh,
+        "dossier": _build_dossier(cc, today),
         "navigation": [
             {
                 "cc": other.cc,
@@ -1116,14 +1391,136 @@ def build_country_view(
     }
 
 
-def load_history(cc: str) -> pd.DataFrame | None:
-    path = config.data_dir() / "intl_regime" / f"{cc}_history.parquet"
-    if not path.exists():
-        return None
+def load_history_result(cc: str) -> dict[str, object]:
+    """Read the existing reconstruction once, retaining distinct failure states.
+
+    This internal receipt contains a DataFrame. Its acquisition clock and relative
+    artifact name are neither historical first-known times nor a source version
+    or disclosure grant. Public projections must apply their own admitted inputs.
+    """
+    result: dict[str, object] = {
+        "status": "failed", "market_id": None, "artifact_ref": None,
+        "read_at": datetime.now(timezone.utc).isoformat(),
+        "method_ref": None, "frame": None,
+    }
+    if (type(cc) is not str or len(cc) != 2 or not cc.isascii()
+            or not cc.isalpha() or not cc.isupper()):
+        result["status"] = "unsupported"
+        return result
     try:
-        return pd.read_parquet(path)
-    except Exception:  # noqa: BLE001 — a missing parquet engine/history degrades the chart
-        return None
+        countries = config.load()["intl"]["countries"]
+        if type(countries) is not dict:
+            return result
+        if cc not in countries:
+            result["status"] = "unsupported"
+            return result
+        result["market_id"] = cc
+        result["artifact_ref"] = f"intl_regime/{cc}_history.parquet"
+        path = config.data_dir() / "intl_regime" / f"{cc}_history.parquet"
+        try:
+            path.stat()
+        except FileNotFoundError:
+            result["status"] = "missing"
+            return result
+        frame = pd.read_parquet(path)
+        if (not isinstance(frame, pd.DataFrame)
+                or not isinstance(frame.index, pd.DatetimeIndex)
+                or frame.index.hasnans or frame.index.has_duplicates
+                or not frame.index.is_monotonic_increasing
+                or frame.columns.has_duplicates
+                or not {"growth_score", "inflation_score"}.issubset(frame.columns)):
+            result["status"] = "invalid"
+            return result
+        result["status"] = "empty" if frame.empty else "ready"
+        result["frame"] = frame
+    except Exception:  # noqa: BLE001 — fixed failure receipt, no private exception details
+        result["status"] = "failed"
+    return result
+
+
+def load_history(cc: str) -> pd.DataFrame | None:
+    """Compatibility wrapper for existing country dashboards."""
+    result = load_history_result(cc)
+    return result["frame"] if result["status"] in {"ready", "empty"} else None
+
+
+def project_history_read(receipt: dict[str, object], *, return_basis: str = "price",
+                         universe: str | None = None) -> dict[str, object]:
+    """Detach one already loaded history receipt; acquire and grant nothing."""
+    from lib.intl_workspace_history import _validate as validate_history
+
+    integer_types = {int, np.int8, np.int16, np.int32, np.int64,
+                     np.uint8, np.uint16, np.uint32, np.uint64, np.intp, np.uintp, np.longlong, np.ulonglong}
+    float_types = {float, np.float16, np.float32, np.float64, np.longdouble}
+
+    def scalar(value):
+        # Check exact concrete types before invoking any user-defined conversion.
+        if value is None or value is pd.NA:
+            return None
+        if type(value) in integer_types:
+            return int(value)
+        if type(value) in float_types:
+            number = float(value)
+            if math.isnan(number):
+                return None
+            if math.isfinite(number):
+                return number
+        raise ValueError
+
+    try:
+        keys = {"status", "market_id", "artifact_ref", "read_at", "method_ref", "frame"}
+        if (type(receipt) is not dict or any(type(key) is not str for key in receipt)
+                or set(receipt) != keys):
+            raise ValueError
+        status = receipt["status"]
+        if type(status) is not str or status not in {
+                "ready", "empty", "missing", "failed", "invalid", "unsupported"}:
+            raise ValueError
+        for value in (receipt["market_id"], receipt["artifact_ref"], receipt["read_at"],
+                      receipt["method_ref"], universe):
+            if value is not None and (type(value) is not str or not value or value.strip() != value):
+                raise ValueError
+        if type(return_basis) is not str or return_basis != "price":
+            raise ValueError
+        frame = receipt["frame"]
+        points, identity = [], None
+        if status in {"ready", "empty"}:
+            if (type(frame) is not pd.DataFrame or type(frame.index) is not pd.DatetimeIndex
+                    or type(frame.columns) is not pd.Index
+                    or any(type(column) is not str for column in frame.columns)
+                    or frame.index.hasnans or frame.index.has_duplicates
+                    or not frame.index.is_monotonic_increasing or frame.columns.has_duplicates
+                    or not {"growth_score", "inflation_score"}.issubset(frame.columns)
+                    or (status == "empty") != (len(frame.index) == 0)):
+                raise ValueError
+            growth, inflation = frame["growth_score"], frame["inflation_score"]
+            if any(column.dtype.kind in "mM" for column in (growth, inflation)):
+                raise ValueError
+            for position, timestamp in enumerate(frame.index):
+                points.append({"observation_at": timestamp.isoformat(),
+                               "growth_score": scalar(growth.iloc[position]),
+                               "inflation_score": scalar(inflation.iloc[position])})
+            identity = {"market_id": receipt["market_id"], "unit": "score",
+                        "return_basis": return_basis, "universe": universe,
+                        "method_ref": receipt["method_ref"]}
+        elif frame is not None:
+            raise ValueError
+        result = {key: receipt[key] for key in keys if key != "frame"}
+        result.update(identity=identity, points=points)
+        # Reuse the accepted schema owner, including exact clocks and path rules.
+        # These validation-only context values do not select or transform scores.
+        validate_history(
+            {"selected_market": receipt["market_id"], "horizon": "1m",
+             "currency_basis": "local", "return_basis": return_basis},
+            result, [], None,
+            {**{key: {"metadata": "unknown", "value": "unknown"}
+                for key in ("history_source", "events", "track_record")},
+             "snapshot_compare": {"left_observation_at": None, "right_observation_at": None}},
+            {},
+        )
+        return result
+    except (ValueError, TypeError, KeyError, IndexError, AttributeError, OverflowError, RecursionError):
+        raise ValueError("invalid_history_read_projection") from None
 
 
 def validate_view(view: dict[str, Any]) -> None:
@@ -1137,6 +1534,8 @@ def validate_view(view: dict[str, Any]) -> None:
         raise ValueError("decision score must be an integer in [0, 100]")
     if not view.get("metrics") or not view.get("sources") or not view.get("lenses"):
         raise ValueError("dashboard view is missing required evidence planes")
+    if "dossier" in view:
+        validate_dossier(view["dossier"])
 
 
 def source_catalog() -> dict[str, list[dict[str, str]]]:

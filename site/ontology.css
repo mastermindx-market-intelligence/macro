@@ -52,6 +52,31 @@ html[data-lang="zh"] .blk>.l-zh{display:block!important}
 .ox-stance{margin:14px 0 0;font-size:var(--fs-md);color:var(--text);max-width:64ch}
 .ox-asof{font-family:var(--font-mono);font-size:var(--fs-sm);color:var(--muted)}
 
+
+/* R23/R24 answer-first summary: owner truth before ontology depth. */
+.ox-answer-summary{display:grid;grid-template-columns:minmax(150px,.75fr) minmax(220px,1.25fr);
+  gap:14px;margin:20px 0 0;padding:16px 18px;background:var(--panel);
+  border:1px solid var(--line);border-radius:var(--r-card,12px);box-shadow:var(--card-shadow)}
+.ox-answer-metric{display:flex;flex-direction:column;gap:3px;min-width:0}
+.ox-answer-label{font-family:var(--font-mono);font-size:var(--fs-micro);letter-spacing:.1em;
+  text-transform:uppercase;color:var(--muted)}
+.ox-answer-metric strong{font-size:var(--fs-h2);line-height:1.25;color:var(--text);font-weight:700}
+.ox-answer-count{font-family:var(--font-mono);font-size:var(--fs-num-lg,22px)!important;
+  letter-spacing:-.02em}
+.ox-answer-note{font-size:var(--fs-sm);color:var(--muted)}
+.ox-answer-flags{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:8px;padding-top:12px;
+  border-top:1px solid var(--line)}
+.ox-answer-flag{display:inline-flex;align-items:center;min-height:28px;padding:0 10px;
+  border:1px solid var(--line);border-radius:var(--r-pill,999px);font-size:var(--fs-micro);
+  font-weight:650;letter-spacing:.04em;color:var(--muted);background:var(--panel-2)}
+.ox-answer-flag[data-tone="warn"]{color:var(--ink-warn,var(--warn));
+  border-color:var(--warn)}
+.ox-answer-flag[data-tone="ok"]{color:var(--ink-ok,var(--ok));
+  border-color:var(--ok)}
+.ox-action.ox-hero-action{margin-top:14px;background:var(--info);color:var(--bg);
+  border-color:var(--info);justify-content:center}
+.ox-action.ox-hero-action:hover{color:var(--bg);filter:brightness(1.06)}
+
 /* FILL tokens (--ok / --act / --warn) paint the dots, rails and sever marks.
    TEXT never uses them: measured on the light canvas, --act reads 4.32:1 and
    --ok 3.60:1 at 12.5px, both under the 4.5 floor. theme.css already ships the
@@ -72,6 +97,7 @@ html[data-lang="zh"] .blk>.l-zh{display:block!important}
 .station[data-leg="true"] .st-dot{border-color:var(--ok);background:var(--ok)}
 .station[data-leg="false"] .st-dot{border-color:var(--muted)}
 .station[data-leg="unobserved"] .st-dot{border-style:dashed;border-color:var(--warn)}
+.station[data-leg="unreadable"] .st-dot{border-style:dashed;border-color:var(--act)}
 .station[data-blocking="1"] .st-dot{border-color:var(--act);border-width:3px;
   box-shadow:0 0 0 4px color-mix(in srgb,var(--act) 18%,transparent)}
 
@@ -93,6 +119,7 @@ html[data-lang="zh"] .blk>.l-zh{display:block!important}
   line-height:1.3}
 .st-verdict{font-size:var(--fs-sm);color:var(--muted)}
 .station[data-leg="true"] .st-verdict{color:var(--ink-ok, var(--ok))}
+.station[data-leg="unreadable"] .st-verdict{color:var(--ink-act,var(--act));font-weight:600}
 .station[data-blocking="1"] .st-verdict{color:var(--ink-act, var(--act));font-weight:600}
 
 /* ---- answer blocks ------------------------------------------------------ */
@@ -144,6 +171,10 @@ html[data-lang="zh"] .blk>.l-zh{display:block!important}
 .ox-action:hover{border-color:var(--info);color:var(--ink-info,var(--info))}
 .ox-action[disabled]{cursor:default;color:var(--muted);border-color:var(--line)}
 .ox-action[disabled]:hover{border-color:var(--line);color:var(--muted)}
+.ox-brain-action{margin-top:12px;color:var(--ink-link,var(--info));
+  border-color:var(--info)}
+.ox-brain-action::after{content:"→";margin-left:10px;font-family:var(--font-mono)}
+.ox-brain-action[disabled]::after{content:"";margin:0}
 
 .ox-more{margin:12px 0 0;font-size:var(--fs-sm)}
 .ox-more a{color:var(--ink-link,var(--info));text-decoration:none;
@@ -177,6 +208,7 @@ html[data-lang="zh"] .blk>.l-zh{display:block!important}
   border-radius:var(--r-btn,10px);background:var(--info);color:var(--bg);font-size:var(--fs-body);
   font-weight:600;border:0;cursor:pointer;text-decoration:none}
 .ox-cta:hover{filter:brightness(1.06)}
+.ox-cta:disabled{cursor:wait;filter:saturate(.65);opacity:.82}
 .ox-cta.secondary{background:transparent;color:var(--text);border:1px solid var(--line)}
 
 .ox-skeleton .st-name,.ox-skeleton .ox-state-word{color:transparent;
@@ -233,6 +265,9 @@ html[data-theme="light"] .ox-card[data-tone="watch"]{box-shadow:var(--popover-sh
   /* Stacked, the separator rules read as bullets in a list nobody wrote. */
   .ox-meta{flex-direction:column;align-items:flex-start}
   .ox-meta-item + .ox-meta-item::before{display:none}
+  .ox-answer-summary{grid-template-columns:minmax(0,1fr);padding:15px 16px}
+  .ox-answer-flags{grid-column:1}
+  .ox-hero-action,.ox-brain-action{width:100%;justify-content:center;text-align:center}
 }
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 
@@ -242,3 +277,31 @@ html[data-theme="light"] .ox-card[data-tone="watch"]{box-shadow:var(--popover-sh
 .ox-detail--flush{border-top:0;padding-top:26px}
 .ox-detail-h2{font-size:var(--fs-h2);margin:0 0 8px}
 .ox-note--prose{max-width:66ch}
+
+
+/* R23/R24 composition extracted from native Paper: explanation first, owner
+   status alongside it. Shared tokens own both materials; no alternate shell. */
+.ox-hero--answer{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(300px,1fr);
+  align-items:start;gap:var(--sp-6,24px);padding:var(--sp-8,44px) 0 var(--sp-6,24px)}
+.ox-hero-lead{min-width:0}
+.ox-answer-title{margin:0;font-size:clamp(var(--fs-h1),3.4vw,var(--fs-display));
+  line-height:1.15;font-weight:800;letter-spacing:-.035em;max-width:28ch;overflow-wrap:anywhere}
+.ox-answer-subject{display:inline-block;max-width:100%;vertical-align:top}
+.ox-hero--answer .ox-eyebrow{color:var(--ink-link,var(--info));margin-bottom:var(--sp-4,16px)}
+.ox-hero--answer .ox-answer-summary{margin:0;grid-template-columns:minmax(108px,.9fr) minmax(0,1.1fr);
+  gap:var(--sp-5,20px);padding:var(--sp-6,24px);background:var(--panel-2)}
+.ox-hero--answer .ox-state{grid-column:1/-1;gap:var(--sp-3,12px)}
+.ox-hero--answer .ox-state-word{font-size:var(--fs-label);line-height:1.4;
+  letter-spacing:.08em;text-transform:uppercase;font-weight:700}
+.ox-hero--answer .ox-answer-count{font-size:var(--fs-num-xl)!important}
+.ox-hero--answer .ox-answer-label{font-size:var(--fs-label)}
+.ox-hero--answer .ox-answer-flags{grid-column:1/-1;gap:var(--sp-2,8px)}
+html[data-theme="light"] .ox-hero--answer .ox-answer-summary{
+  background:var(--panel);box-shadow:var(--popover-shadow)}
+html:not([data-theme="light"]) .ox-hero--answer .ox-answer-summary{
+  box-shadow:inset 0 1px 0 var(--line)}
+@media (max-width:860px){
+  .ox-hero--answer{grid-template-columns:minmax(0,1fr);padding-top:var(--sp-6,24px)}
+  .ox-answer-title{font-size:var(--fs-h1);max-width:none}
+  .ox-hero--answer .ox-answer-summary{padding:var(--sp-5,20px)}
+}

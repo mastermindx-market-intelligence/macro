@@ -395,9 +395,10 @@ def build_features(pit_basis: str | None = None,
                 "spread_10y3m", "breakeven_5y", "us5y_real"]:
         put(col, series.get(col))
     f["spread_10y3m"] = f["spread_10y3m"].combine_first(f["us10y"] - f["us3m"])
-    # term-premium-adjusted curve slope: strips the term-premium distortion that
-    # mechanically inverted the curve in 2019 and 2022-24 without a recession.
-    f["curve_tp_adj"] = f["spread_2s10s"] + f["term_premium_10y"].fillna(0)
+    # Legacy TP10 curve heuristic retained for compatibility with existing consumers:
+    # 2s10s + the 10y term-premium model estimate. This is NOT a matched-maturity
+    # expectations-only decomposition. Preserve missingness rather than fabricating TP10=0.
+    f["curve_tp_adj"] = f["spread_2s10s"] + f["term_premium_10y"]
 
     # CBOE SKEW (tail-risk pricing) + EBP (credit risk appetite).
     skew = store.read("cboe", "skew")

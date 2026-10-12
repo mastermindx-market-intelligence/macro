@@ -583,79 +583,85 @@ def run_readiness_post_step(root: Path, n_graded_today: int, n_open: int,
     4. Fires first-cross Telegram/Discord alerts (deduped via readiness_alerts_fired.json).
     5. Checks grader-quiet condition (n_graded_today==0 for >=2 days with open claims).
 
-    Non-fatal — any crash returns an error summary without affecting grades.
+    Ordinary crashes return an error summary; claims integrity failures propagate.
     """
+    from engine.qledger_store import ClaimsReadScope
+    from engine.qledger_store_protocol import SnapshotIntegrityError
+
     try:
-        families = _load_qual_ladder_families(root)
-        readiness = compute_promotion_readiness(root, families, today=today)
+        with ClaimsReadScope(root):
+            families = _load_qual_ladder_families(root)
+            readiness = compute_promotion_readiness(root, families, today=today)
 
-        # Merge into track_record.json
-        if not dry_run:
-            tr_path = root.joinpath(*q._TRACK_FILE)
-            try:
-                payload: dict = json.loads(tr_path.read_text(encoding="utf-8")) \
-                    if tr_path.exists() else {}
-            except Exception:  # noqa: BLE001
-                payload = {}
-            payload["promotion_readiness"] = readiness
-            payload["promotion_readiness_at"] = datetime.now(timezone.utc).isoformat()
-            tr_path.write_text(json.dumps(payload, ensure_ascii=False, indent=2),
-                               encoding="utf-8")
+            # Merge into track_record.json
+            if not dry_run:
+                tr_path = root.joinpath(*q._TRACK_FILE)
+                try:
+                    payload: dict = json.loads(tr_path.read_text(encoding="utf-8")) \
+                        if tr_path.exists() else {}
+                except Exception:  # noqa: BLE001
+                    payload = {}
+                payload["promotion_readiness"] = readiness
+                payload["promotion_readiness_at"] = datetime.now(timezone.utc).isoformat()
+                tr_path.write_text(json.dumps(payload, ensure_ascii=False, indent=2),
+                                   encoding="utf-8")
 
-        # Summary for run_status.json
-        families_ready, families_approaching = _summarise_readiness(readiness)
+            # Summary for run_status.json
+            families_ready, families_approaching = _summarise_readiness(readiness)
 
-        # First-cross alert (two-sided dedup: a family×horizon that drops back
-        # to ready=False releases its key, so a later genuine re-cross alerts
-        # again — otherwise an entry fired under a since-withdrawn gate would
-        # suppress the honest cross forever)
-        if not dry_run:
-            fired = _load_fired(root)
-            fired_dirty = False
-            for fam, horizons in readiness.items():
-                if fam.startswith("_"):
-                    continue
-                for h_str, rec in horizons.items():
-                    key = f"{fam}@{h_str}d"
-                    if rec.get("ready") and not fired.get(key):
-                        _fire_readiness_alert(fam, int(h_str), rec)
-                        fired[key] = {
-                            "fired_at": datetime.now(timezone.utc).isoformat(),
-                            "n_dates": rec["n_dates"],
-                            "wilson_ci_low": rec["wilson_ci_low"],
-                        }
-                        fired_dirty = True
-                    elif not rec.get("ready") and key in fired:
-                        log.info("readiness dedup released: %s ready=False "
-                                 "(ci_low=%s) — will alert on next cross",
-                                 key, rec.get("wilson_ci_low"))
-                        del fired[key]
-                        fired_dirty = True
-            if fired_dirty:
-                _save_fired(root, fired)
-
-        # Grader-quiet check
-        quiet_days = 0
-        if not dry_run:
-            quiet_days = _update_grader_quiet_log(root, n_graded_today, n_open)
-            if quiet_days >= 2:
-                # Only alert once per quiet episode (use fired map as dedup)
+            # First-cross alert (two-sided dedup: a family×horizon that drops back
+            # to ready=False releases its key, so a later genuine re-cross alerts
+            # again — otherwise an entry fired under a since-withdrawn gate would
+            # suppress the honest cross forever)
+            if not dry_run:
                 fired = _load_fired(root)
-                alert_key = f"__grader_quiet_{date.today().isoformat()}"
-                if not fired.get(alert_key):
-                    _fire_grader_quiet_alert(n_open, quiet_days)
-                    fired[alert_key] = {"fired_at": datetime.now(timezone.utc).isoformat(),
-                                        "quiet_days": quiet_days}
+                fired_dirty = False
+                for fam, horizons in readiness.items():
+                    if fam.startswith("_"):
+                        continue
+                    for h_str, rec in horizons.items():
+                        key = f"{fam}@{h_str}d"
+                        if rec.get("ready") and not fired.get(key):
+                            _fire_readiness_alert(fam, int(h_str), rec)
+                            fired[key] = {
+                                "fired_at": datetime.now(timezone.utc).isoformat(),
+                                "n_dates": rec["n_dates"],
+                                "wilson_ci_low": rec["wilson_ci_low"],
+                            }
+                            fired_dirty = True
+                        elif not rec.get("ready") and key in fired:
+                            log.info("readiness dedup released: %s ready=False "
+                                     "(ci_low=%s) — will alert on next cross",
+                                     key, rec.get("wilson_ci_low"))
+                            del fired[key]
+                            fired_dirty = True
+                if fired_dirty:
                     _save_fired(root, fired)
 
-        return {
-            "n_families_ready": len(families_ready),
-            "n_families_approaching": len(families_approaching),
-            "families_ready": families_ready,
-            "families_approaching": families_approaching,
-            "grader_quiet_days": quiet_days,
-        }
+            # Grader-quiet check
+            quiet_days = 0
+            if not dry_run:
+                quiet_days = _update_grader_quiet_log(root, n_graded_today, n_open)
+                if quiet_days >= 2:
+                    # Only alert once per quiet episode (use fired map as dedup)
+                    fired = _load_fired(root)
+                    alert_key = f"__grader_quiet_{date.today().isoformat()}"
+                    if not fired.get(alert_key):
+                        _fire_grader_quiet_alert(n_open, quiet_days)
+                        fired[alert_key] = {"fired_at": datetime.now(timezone.utc).isoformat(),
+                                            "quiet_days": quiet_days}
+                        _save_fired(root, fired)
 
+            return {
+                "n_families_ready": len(families_ready),
+                "n_families_approaching": len(families_approaching),
+                "families_ready": families_ready,
+                "families_approaching": families_approaching,
+                "grader_quiet_days": quiet_days,
+            }
+
+    except SnapshotIntegrityError:
+        raise
     except Exception as e:  # noqa: BLE001
         log.warning("run_readiness_post_step failed (non-fatal): %s", e)
         return {"error": str(e)}
@@ -691,6 +697,9 @@ def run(root: Path | str | None = None, today: date | None = None,
     dict with keys: n_open, n_graded_today, n_blocked_by_coverage,
                     n_ungradeable, n_already_graded, generated_at.
     """
+    from engine.qledger_store import ClaimsReadScope
+    from engine.qledger_store_protocol import SnapshotIntegrityError
+
     root = Path(root) if root else config.ROOT
     today_dt = today or date.today()
 
@@ -701,161 +710,169 @@ def run(root: Path | str | None = None, today: date | None = None,
     if not dry_run:
         try:
             regime_backfill = q.backfill_regime_stamps(root)
-        except Exception as exc:  # noqa: BLE001 — never sink the grader
+        except SnapshotIntegrityError:
+            raise
+        except Exception as exc:  # noqa: BLE001 — ordinary backfill failures are non-fatal
             log.warning("regime stamp backfill failed: %s", exc)
 
-    claims = q.load_claims(root)
-    open_claims = [c for c in claims if c.get("status") == q.STATUS_OPEN]
-    existing_keys = _existing_grade_keys(root)
+    # Capture claims only after backfill; nested output reads reuse this snapshot.
+    with ClaimsReadScope(root):
+        claims = q.load_claims(root)
+        open_claims = [c for c in claims if c.get("status") == q.STATUS_OPEN]
+        existing_keys = _existing_grade_keys(root)
 
-    grades_p = root.joinpath(*q._GRADES_FILE)
-    if not dry_run:
-        grades_p.parent.mkdir(parents=True, exist_ok=True)
+        grades_p = root.joinpath(*q._GRADES_FILE)
+        if not dry_run:
+            grades_p.parent.mkdir(parents=True, exist_ok=True)
 
-    n_open = len(open_claims)
-    n_graded_today = 0
-    n_blocked_by_coverage = 0
-    n_ungradeable = 0
-    n_already_graded = 0
+        n_open = len(open_claims)
+        n_graded_today = 0
+        n_blocked_by_coverage = 0
+        n_ungradeable = 0
+        n_already_graded = 0
 
-    # Collect new grade rows; we'll write them in a single pass.
-    new_rows: list[dict] = []
+        # Collect new grade rows; we'll write them in a single pass.
+        new_rows: list[dict] = []
 
-    for claim in open_claims:
-        cid = claim.get("claim_id")
+        for claim in open_claims:
+            cid = claim.get("claim_id")
 
-        # Check gradeable at all (timestamp_quality gate).
-        gradeable, _ = q._embargo_ok(claim)
-        if not gradeable:
-            n_ungradeable += 1
-            continue
-
-        scope = claim.get("scope") or {}
-        subject = scope.get("key")
-        bench = claim.get("bench") or q._DEFAULT_BENCH
-        control = claim.get("control")
-        start = q._entry_date(claim)
-
-        try:
-            horizon_d = int(claim.get("horizon_d"))
-        except Exception:  # noqa: BLE001
-            n_ungradeable += 1
-            continue
-
-        for h in q.in_scope_horizons(horizon_d):
-            key = (cid, h)
-            if key in existing_keys:
-                n_already_graded += 1
+            # Check gradeable at all (timestamp_quality gate).
+            gradeable, _ = q._embargo_ok(claim)
+            if not gradeable:
+                n_ungradeable += 1
                 continue
 
-            legs = [subject, bench] + ([control] if control else [])
-            # P0a — THE PRE-GATE MUST USE THE CLAIM'S OWN CLOCK. This cheap
-            # "is it time yet" check exists so the loop skips immature claims
-            # without paying for grade_claim's price reads. It used to run the
-            # LEGACY calendar maturity function for EVERY claim, explicit-clock
-            # ones included, with no unit dispatch — so a `trading_days` h=21
-            # claim opened on roughly the calendar clock: it could be admitted
-            # up to ~9 days early (grade_claim then refused it and it counted as
-            # blocked), or, under `calendar_days`, held past its real exit.
-            # Dispatched here through the SAME `claim_window` grade_claim uses,
-            # so the pre-gate and the grader can never disagree about which
-            # window is being asked about. A declared-unit claim whose window
-            # cannot resolve is blocked, not silently skipped.
-            window = q.claim_window(claim, h, entry_anchor=start)
-            if q.claim_horizon_unit(claim) is None:
-                matured = q._matured(root, start, h, today_dt, legs)
-            else:
-                matured = (window is not None
-                           and q._matured_window(root, window, today_dt, legs))
-            if not matured:
-                # Not yet elapsed or price not yet available — count as blocked.
-                n_blocked_by_coverage += 1
+            scope = claim.get("scope") or {}
+            subject = scope.get("key")
+            bench = claim.get("bench") or q._DEFAULT_BENCH
+            control = claim.get("control")
+            start = q._entry_date(claim)
+
+            try:
+                horizon_d = int(claim.get("horizon_d"))
+            except Exception:  # noqa: BLE001
+                n_ungradeable += 1
                 continue
 
-            # grade_claim handles all the price maths; we filter to this horizon.
-            rows = q.grade_claim(claim, root=root, today=today_dt)
-            matched = [r for r in rows if int(r.get("horizon_d", -1)) == h]
+            for h in q.in_scope_horizons(horizon_d):
+                key = (cid, h)
+                if key in existing_keys:
+                    n_already_graded += 1
+                    continue
 
-            if matched:
-                new_rows.extend(matched)
-                n_graded_today += len(matched)
-            else:
-                # Matured but prices unavailable → coverage miss.
-                n_blocked_by_coverage += 1
+                legs = [subject, bench] + ([control] if control else [])
+                # P0a — THE PRE-GATE MUST USE THE CLAIM'S OWN CLOCK. This cheap
+                # "is it time yet" check exists so the loop skips immature claims
+                # without paying for grade_claim's price reads. It used to run the
+                # LEGACY calendar maturity function for EVERY claim, explicit-clock
+                # ones included, with no unit dispatch — so a `trading_days` h=21
+                # claim opened on roughly the calendar clock: it could be admitted
+                # up to ~9 days early (grade_claim then refused it and it counted as
+                # blocked), or, under `calendar_days`, held past its real exit.
+                # Dispatched here through the SAME `claim_window` grade_claim uses,
+                # so the pre-gate and the grader can never disagree about which
+                # window is being asked about. A declared-unit claim whose window
+                # cannot resolve is blocked, not silently skipped.
+                window = q.claim_window(claim, h, entry_anchor=start)
+                if q.claim_horizon_unit(claim) is None:
+                    matured = q._matured(root, start, h, today_dt, legs)
+                else:
+                    matured = (window is not None
+                               and q._matured_window(root, window, today_dt, legs))
+                if not matured:
+                    # Not yet elapsed or price not yet available — count as blocked.
+                    n_blocked_by_coverage += 1
+                    continue
 
-    # Write grades (append-only).
-    if new_rows and not dry_run:
-        with grades_p.open("a", encoding="utf-8") as fh:
-            for row in new_rows:
-                fh.write(json.dumps(row, ensure_ascii=False) + "\n")
+                # grade_claim handles all the price maths; we filter to this horizon.
+                rows = q.grade_claim(claim, root=root, today=today_dt)
+                matched = [r for r in rows if int(r.get("horizon_d", -1)) == h]
 
-    # Recompute and emit track_record.json, then overlay the §3 promotion-ladder
-    # verdicts (per claim_family × horizon) so the ladder state is always current
-    # alongside the grade stats. emit_ladder_states merges into the file written by
-    # emit_track_record. Non-fatal: a ladder-emit crash must not lose the grades.
-    if not dry_run:
-        q.emit_track_record(root)
-        try:
-            q.emit_ladder_states(root, today=today_dt)
-        except Exception as e:  # noqa: BLE001
-            log.warning("emit_ladder_states failed (non-fatal): %s", e)
+                if matched:
+                    new_rows.extend(matched)
+                    n_graded_today += len(matched)
+                else:
+                    # Matured but prices unavailable → coverage miss.
+                    n_blocked_by_coverage += 1
 
-    # W6 post-step: promotion-readiness monitor (alerts + registry sync).
-    # Non-fatal: a crash here must not affect run_status output.
-    w6_readiness: dict = {}
-    if not dry_run:
-        try:
-            w6_readiness = run_readiness_post_step(
-                root, n_graded_today=n_graded_today, n_open=n_open,
-                dry_run=dry_run, today=today_dt
-            )
-        except Exception as e:  # noqa: BLE001
-            log.warning("run_readiness_post_step failed (non-fatal): %s", e)
-            w6_readiness = {"error": str(e)}
+        # Write grades (append-only).
+        if new_rows and not dry_run:
+            with grades_p.open("a", encoding="utf-8") as fh:
+                for row in new_rows:
+                    fh.write(json.dumps(row, ensure_ascii=False) + "\n")
 
-    # P0a — the refused-clock population, counted rather than invisible. A claim
-    # whose declared clock cannot resolve (unknown/mixed/uncalendared market, or
-    # an anchor outside the calendar's modelled span) is REJECTED at registration
-    # instead of registering open-forever with check_by=None. Publishing the count
-    # here is what makes "fail closed" auditable: a lane that starts refusing
-    # everything shows up as a number on the nightly instead of as claims that
-    # quietly never grade.
-    clock_refused = q.count_unresolvable_clock_claims(claims=claims)
+        # Recompute and emit track_record.json, then overlay the §3 promotion-ladder
+        # verdicts (per claim_family × horizon) so the ladder state is always current
+        # alongside the grade stats. emit_ladder_states merges into the file written by
+        # emit_track_record. Non-fatal: a ladder-emit crash must not lose the grades.
+        if not dry_run:
+            q.emit_track_record(root)
+            try:
+                q.emit_ladder_states(root, today=today_dt)
+            except SnapshotIntegrityError:
+                raise
+            except Exception as e:  # noqa: BLE001
+                log.warning("emit_ladder_states failed (non-fatal): %s", e)
 
-    summary = {
-        "generated_at": datetime.now(timezone.utc).isoformat(),
-        "as_of": today_dt.isoformat(),
-        "n_open": n_open,
-        "n_graded_today": n_graded_today,
-        "n_blocked_by_coverage": n_blocked_by_coverage,
-        "n_ungradeable": n_ungradeable,
-        "n_already_graded": n_already_graded,
-        "clock_unresolvable_claims": clock_refused,
-        "dry_run": dry_run,
-        "w6_readiness": w6_readiness,
-        "regime_stamp_backfill": regime_backfill,
-    }
+        # W6 post-step: promotion-readiness monitor (alerts + registry sync).
+        # Non-fatal: a crash here must not affect run_status output.
+        w6_readiness: dict = {}
+        if not dry_run:
+            try:
+                w6_readiness = run_readiness_post_step(
+                    root, n_graded_today=n_graded_today, n_open=n_open,
+                    dry_run=dry_run, today=today_dt
+                )
+            except SnapshotIntegrityError:
+                raise
+            except Exception as e:  # noqa: BLE001
+                log.warning("run_readiness_post_step failed (non-fatal): %s", e)
+                w6_readiness = {"error": str(e)}
 
-    # Write run_status.json — broken != quiet.
-    if not dry_run:
-        status_p = root.joinpath(*_STATUS_FILE)
-        status_p.parent.mkdir(parents=True, exist_ok=True)
-        status_p.write_text(json.dumps(summary, ensure_ascii=False, indent=2),
-                            encoding="utf-8")
+        # P0a — the refused-clock population, counted rather than invisible. A claim
+        # whose declared clock cannot resolve (unknown/mixed/uncalendared market, or
+        # an anchor outside the calendar's modelled span) is REJECTED at registration
+        # instead of registering open-forever with check_by=None. Publishing the count
+        # here is what makes "fail closed" auditable: a lane that starts refusing
+        # everything shows up as a number on the nightly instead of as claims that
+        # quietly never grade.
+        clock_refused = q.count_unresolvable_clock_claims(claims=claims)
 
-    msg = (
-        f"[grade_qledger] open={n_open} graded_today={n_graded_today} "
-        f"blocked={n_blocked_by_coverage} ungradeable={n_ungradeable} "
-        f"already_graded={n_already_graded} "
-        f"clock_unresolvable={clock_refused.get('n', 0)} "
-        f"regime_backfilled={regime_backfill.get('n_backfilled', 0)} "
-        f"regime_unstamped={regime_backfill.get('n_unstamped', 0)}"
-        + (" [DRY RUN]" if dry_run else "")
-    )
-    log.info(msg)
-    print(msg, flush=True)
+        summary = {
+            "generated_at": datetime.now(timezone.utc).isoformat(),
+            "as_of": today_dt.isoformat(),
+            "n_open": n_open,
+            "n_graded_today": n_graded_today,
+            "n_blocked_by_coverage": n_blocked_by_coverage,
+            "n_ungradeable": n_ungradeable,
+            "n_already_graded": n_already_graded,
+            "clock_unresolvable_claims": clock_refused,
+            "dry_run": dry_run,
+            "w6_readiness": w6_readiness,
+            "regime_stamp_backfill": regime_backfill,
+        }
 
-    return summary
+        # Write run_status.json — broken != quiet.
+        if not dry_run:
+            status_p = root.joinpath(*_STATUS_FILE)
+            status_p.parent.mkdir(parents=True, exist_ok=True)
+            status_p.write_text(json.dumps(summary, ensure_ascii=False, indent=2),
+                                encoding="utf-8")
+
+        msg = (
+            f"[grade_qledger] open={n_open} graded_today={n_graded_today} "
+            f"blocked={n_blocked_by_coverage} ungradeable={n_ungradeable} "
+            f"already_graded={n_already_graded} "
+            f"clock_unresolvable={clock_refused.get('n', 0)} "
+            f"regime_backfilled={regime_backfill.get('n_backfilled', 0)} "
+            f"regime_unstamped={regime_backfill.get('n_unstamped', 0)}"
+            + (" [DRY RUN]" if dry_run else "")
+        )
+        log.info(msg)
+        print(msg, flush=True)
+
+        return summary
 
 
 # --------------------------------------------------------------------------- #
@@ -863,9 +880,13 @@ def run(root: Path | str | None = None, today: date | None = None,
 # --------------------------------------------------------------------------- #
 def run_as_collect_step(root: Path | str | None = None) -> None:
     """Called from scripts/collect.py as an end-of-collect step. Non-fatal:
-    a grader crash must not abort the nightly collection run."""
+    ordinary grader crashes do not abort collection; claims integrity failures do."""
+    from engine.qledger_store_protocol import SnapshotIntegrityError
+
     try:
         run(root=root)
+    except SnapshotIntegrityError:
+        raise
     except Exception as exc:  # noqa: BLE001
         log.error("[grade_qledger] grader crashed (non-fatal): %s", exc)
 

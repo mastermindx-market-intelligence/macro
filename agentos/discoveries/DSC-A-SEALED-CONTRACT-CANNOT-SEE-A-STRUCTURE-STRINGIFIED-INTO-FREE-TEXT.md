@@ -45,14 +45,19 @@ so_what: >-
   the planted key and the planted value, case-folded. A search for the literal key alone
   called an upper-cased rendering, or one publishing only the mapping's values, clean
   (found by the round-2 review; hashed, encoded or truncated renderings stay beyond it).
-  (4) The composer is not total over malformed owner input. A structure given as a
-  source_family, as a slice_id, as a market price_basis or as a metric name raises TypeError or
-  AttributeError. That failure is closed for a leak, but it is open for the page: one
-  malformed owner field takes down the whole projection instead of rendering its missing
-  state in words.
+  (4) Gate a lookup as well as a publication. On #8121's head the composer was not total:
+  a structure given as a source_family, a slice_id, a market price_basis or a metric name
+  raised TypeError or AttributeError inside the composer, 7 of 847 mutations at 5 sites. Each
+  site looked the value up in a mapping or set, or lowered it as text. `_owner_key` (a
+  string, or None) now gates all five, and no mutation raises: 5 of the 7 compose a valid
+  document with that field in its missing state, and 2 (a structure as a source_family, or
+  as a metric name) are refused by the contract, because the same value is also published.
+  A contract refusal still refuses the whole document, exactly as it does for every sealed
+  case. That is the fail-closed design, so totality turns a crash into a named refusal, and
+  only a field that is looked up and never published degrades to its missing state.
 kind: landmine
 verified_at: 2026-09-28
-verified_by: "tests/test_finance_intelligence_projection.py::test_an_owner_value_crosses_into_free_text_only_as_a_scalar (847 mutations over six fixtures: 657 clean, 183 sealed by the contract, 7 refused, 0 leaked with the fix; 29 LEAKED with 6c78279feacb swapped in), ::test_the_owner_value_fence_fires_on_a_stringified_owner_metric[str,upper,values] (LEAKED with the seam rendering a structure as is, upper-cased or as its values; upper and values read clean under a literal-key oracle) and ::test_every_owner_key_the_composer_reads_is_planted"
+verified_by: "tests/test_finance_intelligence_projection.py::test_an_owner_value_crosses_into_free_text_only_as_a_scalar (847 mutations over six fixtures: 662 clean, 185 sealed by the contract, 0 refused, 0 leaked; 657/183/7/0 on #8121's head a37094ff1756, before the lookup gate; 29 LEAKED with 6c78279feacb swapped in), ::test_a_malformed_owner_value_is_refused_by_the_contract_never_by_a_crash (no mutation raises inside the composer), ::test_the_owner_value_fence_fires_on_an_ungated_owner_lookup (a structure given as a source_family raises again with `_owner_key` made the identity), ::test_the_owner_value_fence_fires_on_a_stringified_owner_metric[str,upper,values] (LEAKED with the seam rendering a structure as is, upper-cased or as its values; upper and values read clean under a literal-key oracle) and ::test_every_owner_key_the_composer_reads_is_planted"
 scope:
   - macro
   - engine/sector_intelligence/finance_projection.py

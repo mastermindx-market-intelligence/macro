@@ -652,6 +652,24 @@ def test_write_earnings_pulse_emits_the_named_artifact(tmp_path, monkeypatch):
         assert validate_pulse(obj) == []
 
 
+def test_same_day_premarket_and_postclose_one_report_event():
+    """Pre-open 8-K plus after-hours 8-K/A on one filing_date -> one same-day session."""
+    sessions = pd.bdate_range("2024-05-01", periods=10)
+    fd = "2024-05-03"
+    eightk = pd.DataFrame([
+        {"ticker": "ZZ", "cik": 1, "filing_date": fd,
+         "acceptance_datetime": f"{fd}T11:00:00.000Z", "items": "2.02"},
+        {"ticker": "ZZ", "cik": 1, "filing_date": fd,
+         "acceptance_datetime": f"{fd}T21:00:00.000Z", "items": "2.02,9.01"},
+    ])
+    out = ge.build_report_events(["ZZ"], sessions, None, eightk)
+    assert len(out["ZZ"]) == 1
+    same_day = pd.Timestamp(fd).normalize().as_unit("ms")
+    assert out["ZZ"][0]["event_date"] == same_day
+    next_sess = sessions[sessions.searchsorted(same_day, side="right")]
+    assert out["ZZ"][0]["event_date"] != next_sess
+
+
 def test_end_to_end_sympathy_ratio_is_the_fixtures_arithmetic(pulse):
     """Quiet sessions move each member +1% SPY-adjusted, member report days +2%. A leg that
     skipped the benchmark subtraction would read 2.1/1.1 = 1.91, not 2.0."""

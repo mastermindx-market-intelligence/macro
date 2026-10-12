@@ -66,6 +66,8 @@ import re
 from datetime import date, timedelta
 from typing import Iterable
 
+from engine.chronicle import schema as _schema
+
 # Fixed by construction: this module performs no causal identification, so it
 # can never emit a label stronger than an uncalibrated association regardless
 # of event kind, weight_hint, or theme overlap.
@@ -153,6 +155,38 @@ FLIP_UNSTABLE_ZH = "本周两度转向——尚不稳定"
 # Families that can whipsaw inside one window. Two or more flips of the
 # same series collapse to the latest state plus the unstable note.
 GLANCE_FLIP_FAMILIES = frozenset({"regime_flip", "risk_band"})
+
+# Fair-share / family_tally labels (NEVER render the raw family slug).
+# Mirrors the wording already shipped by plain_glance_titles so the tip
+# stays one voice with the cards. Tier-2 surface (≤80 words total).
+_FAMILY_LABELS: dict[str, tuple[str, str]] = {
+    "earnings": ("Earnings reports", "业绩公告"),
+    "earnings_call": ("Earnings calls", "业绩电话会"),
+    "research_vault": ("Research notes", "研究纪要"),
+    "macro_release": ("Economic data", "经济数据"),
+    "regime_flip": ("Macro backdrop shifts", "宏观环境转向"),
+    "risk_band": ("Risk radar shifts", "风险雷达变化"),
+}
+# State phrases — {in_window} and {named} are filled by the template.
+_FAMILY_STATE_PHRASES: dict[str, tuple[str, str]] = {
+    "named": ("{in_window} events, {named} name a stock",
+              "{in_window}个事件，{named}个点名个股"),
+    "none_named": ("{in_window} events, none name a single stock",
+                   "{in_window}个事件，均未点名个股"),
+    "no_events": ("no events this week",
+                  "本周无事件"),
+}
+FAMILY_TIP_LEAD_EN = "This week by event type — "
+FAMILY_TIP_LEAD_ZH = "本周按事件类型——"
+FAMILY_TIP_CLOSE_EN = "Cards show only events that name a stock."
+FAMILY_TIP_CLOSE_ZH = "卡片仅展示点名的个股事件。"
+# ZH uses full-width parentheses U+FF08/U+FF09 and colon U+FF1A inside
+# the tip — never ASCII. EN uses ASCII; segments are joined with "; "
+# and the close is preceded by ". ".
+_FAMILY_TIP_EN_JOIN = "; "
+_FAMILY_TIP_ZH_JOIN = "；"
+_FAMILY_TIP_EN_CLOSE_JOIN = ". "
+_FAMILY_TIP_ZH_CLOSE_JOIN = "。"
 
 _MONTH_EN = (
     "Jan", "Feb", "Mar", "Apr", "May", "Jun",
@@ -605,23 +639,18 @@ def _glance_series_key(family: str, raw_title: str, event_id: str) -> str | None
     return None
 
 
-def _union_series_tickers(members: list[dict]) -> tuple[list[str], list[str]]:
-    """Union direct / second-order tickers across one series (overlap → direct)."""
+def _union_series_tickers(members: list[dict]) -> list[str]:
+    """Union direct tickers across one series (Q1=strip: second-order
+    is not carried on glance rows, so no overlap-reduction branch).
+    """
     direct: list[str] = []
-    second: list[str] = []
-    seen_direct: set[str] = set()
-    seen_second: set[str] = set()
+    seen: set[str] = set()
     for member in members:
         for ticker in member.get("direct_tickers") or []:
-            if ticker and ticker not in seen_direct:
-                seen_direct.add(ticker)
+            if ticker and ticker not in seen:
+                seen.add(ticker)
                 direct.append(ticker)
-        for ticker in member.get("second_order_tickers") or []:
-            if ticker and ticker not in seen_second:
-                seen_second.add(ticker)
-                second.append(ticker)
-    second = [ticker for ticker in second if ticker not in seen_direct]
-    return direct, second
+    return direct
 
 
 def _collapse_flip_series(rows: list[dict]) -> list[dict]:
@@ -630,11 +659,12 @@ def _collapse_flip_series(rows: list[dict]) -> list[dict]:
     Series identity and latest-state are computed over every in-window
     projection of the series, before the exposure filter. The collapsed
     row carries the latest flip's state and date. Its named exposure is
-    the union of direct / second-order tickers across that series'
-    in-window rows (one series, one exposure semantics). The unstable
-    note applies whenever the series flipped two or more times in the
-    window, regardless of which flips carried tickers. An empty union
-    yields no row — never a stale direction.
+    the union of direct tickers across that series' in-window rows
+    (one series, one exposure semantics). The unstable note applies
+    whenever the series flipped two or more times in the window,
+    regardless of which flips carried tickers. An empty union
+    yields no row — never a stale direction. Q1=strip removes the
+    second-order "Also watching" branch from the glance surface.
     """
     groups: dict[str, list[dict]] = {}
     passthrough: list[dict] = []
@@ -655,11 +685,10 @@ def _collapse_flip_series(rows: list[dict]) -> list[dict]:
             reverse=True,
         )
         latest = dict(members[0])
-        direct, second = _union_series_tickers(members)
-        if not direct and not second:
+        direct = _union_series_tickers(members)
+        if not direct:
             continue
         latest["direct_tickers"] = direct
-        latest["second_order_tickers"] = second
         if len(members) >= 2:
             latest["note_en"] = FLIP_UNSTABLE_EN
             latest["note_zh"] = FLIP_UNSTABLE_ZH
@@ -915,6 +944,71 @@ def plain_glance_titles(proj: dict) -> tuple[str, str]:
     )
 
 
+def _format_family_state(state: str, in_window: int, named: int) -> tuple[str, str]:
+    """Return the (en, zh) state phrase for a family_tally entry.
+
+    EN pluralization is R2: ``1 event`` (singular) vs ``N events`` (plural).
+    The named clause is the literal phrase ``{named} name a stock`` for EVERY
+    count — the source string (``_FAMILY_STATE_PHRASES["named"]``) is a
+    single fixed template and is NOT inflected per count. ZH pluralization is
+    handled by 个 (no surface change). ``none_named`` always uses the plural
+    form because the count is necessarily >= 1.
+    """
+    if state == "no_events":
+        return _FAMILY_STATE_PHRASES["no_events"]
+    if state == "named":
+        ev_word = "event" if in_window == 1 else "events"
+        return (
+            f"{in_window} {ev_word}, {named} name a stock",
+            f"{in_window}个事件，{named}个点名个股",
+        )
+    # none_named: in_window >= 1, named == 0.
+    ev_word = "event" if in_window == 1 else "events"
+    return (
+        f"{in_window} {ev_word}, none name a single stock",
+        f"{in_window}个事件，均未点名个股",
+    )
+
+
+def build_family_tally_tip(family_tally: list[dict]) -> tuple[str, str]:
+    """Build the (en, zh) LENS tip strings from a finalized family_tally list.
+
+    Called AFTER the water-fill so ``ft["shown"]`` reflects the actual
+    chosen row count per family. The template renders the result verbatim
+    into ``data-tip-en`` / ``data-tip-zh`` and the ``aria-label``.
+
+    R1 (seat ruling): ZH uses full-width parentheses U+FF08/U+FF09 and
+    colon U+FF1A; segments are joined with ``；``. EN uses ASCII with
+    segments joined by ``; `` and the close preceded by ``. ``. The
+    lead is NOT part of the join — its trailing space is the delimiter
+    between header and first segment.
+    """
+    en_segments: list[str] = []
+    zh_segments: list[str] = []
+    for ft in family_tally:
+        in_w = int(ft.get("in_window") or 0)
+        named_n = int(ft.get("named") or 0)
+        shown_n = int(ft.get("shown") or 0)
+        phr_en, phr_zh = _format_family_state(ft["state"], in_w, named_n)
+        en_segments.append(f"{ft['label_en']} ({shown_n}/{in_w}): {phr_en}")
+        zh_segments.append(
+            f"{ft['label_zh']}（{shown_n}/{in_w}）：{phr_zh}"
+        )
+    en_tip = (
+        FAMILY_TIP_LEAD_EN
+        + _FAMILY_TIP_EN_JOIN.join(en_segments)
+        + _FAMILY_TIP_EN_CLOSE_JOIN
+        + FAMILY_TIP_CLOSE_EN
+    )
+    zh_tip = (
+        FAMILY_TIP_LEAD_ZH
+        + _FAMILY_TIP_ZH_JOIN.join(zh_segments)
+        + _FAMILY_TIP_ZH_CLOSE_JOIN
+        + FAMILY_TIP_CLOSE_ZH
+    )
+    return en_tip, zh_tip
+
+
 def glance_consequence_surface(
     events: list[dict],
     *,
@@ -924,8 +1018,11 @@ def glance_consequence_surface(
 
     A glance row must belong to a public market-event family (earnings,
     earnings_call, macro_release, regime/risk shifts, or research_vault)
-    and carry at least one direct or second-order ticker. There is no
-    family exemption — rows without a named exposure never render.
+    and carry at least one direct ticker. There is no family exemption
+    — events whose closed-key projection has no direct exposure never
+    render as cards. Second-order-only projections are filtered out
+    here; they still count toward ``family_tally.in_window`` (the family
+    tally reflects what the window saw, not what survived selection).
     ``prophet_ledger`` is a typed exclusion — those rows are the product's
     own trade ledger, not market events, and never appear on the anonymous
     News glance.
@@ -940,19 +1037,21 @@ def glance_consequence_surface(
     as-of (``window_label_en`` / ``window_label_zh``), or the fallback label
     when the newest-200 path fires.
 
-    Calibrated impact stays null + reason. Size is not part of this
-    surface — the glance names exposures only. Empty / missing input
-    prints an honest null state rather than fabricating rows. Row titles are
-    dual-locale plain-word (``title_en`` / ``title_zh``); the raw spine
-    ``title`` is kept for diagnostics only and must not be rendered on the
-    glance surface. Series identity and latest-state are computed over the
-    pre-filter projections inside the window. The collapsed row carries
-    the latest flip's state and date; its named exposure is the union of
-    direct / second-order tickers across that series' in-window rows
-    (one series, one exposure semantics). The unstable note applies
-    whenever the series flipped two or more times in the window
-    regardless of which flips carried tickers. If the union is empty the
-    series renders no row (never a stale direction).
+    Size is not part of this surface — the glance names exposures only.
+    Calibrated impact, calibrated reason, and causal labels are absent
+    from the closed-key row contract; second-order keys are stripped too.
+    Empty / missing input prints an honest null state rather than
+    fabricating rows. Row titles are dual-locale plain-word
+    (``title_en`` / ``title_zh``); the raw spine ``title`` is kept for
+    diagnostics only and must not be rendered on the glance surface.
+    Series identity and latest-state are computed over the pre-filter
+    projections inside the window. The collapsed row carries the latest
+    flip's state and date; its named exposure is the union of direct
+    tickers across that series' in-window rows (one series, one
+    exposure semantics). The unstable note applies whenever the series
+    flipped two or more times in the window regardless of which flips
+    carried tickers. If the union is empty the series renders no row
+    (never a stale direction).
     """
     if not events:
         return {
@@ -967,6 +1066,10 @@ def glance_consequence_surface(
             "window_label_en": None,
             "window_label_zh": None,
             "families": {},
+            "family_tally": [],
+            "family_views": [],
+            "family_tally_tip_en": "",
+            "family_tally_tip_zh": "",
             "rows": [],
             "event_count": 0,
         }
@@ -983,6 +1086,23 @@ def glance_consequence_surface(
     # a different eligibility set).
     eligible_themes = _eligible_themes(events)
     projections = project_events_impact(window, eligible_themes=eligible_themes)
+    # Eligible families in schema.SOURCES index order (prophet_ledger
+    # never appears — typed exclusion for the News Feed).
+    eligible_order = [fam for fam in _schema.SOURCES if fam in GLANCE_ELIGIBLE_FAMILIES]
+    # Pre-filter in-window pool per eligible source — ticker-less events
+    # count toward family_tally.in_window here, BEFORE the exposure
+    # filter below. Without it, none_named could never fire for a
+    # non-series family (the row would never have been built, so the
+    # per-family bucket would be empty and the state would collapse to
+    # no_events).
+    in_window_pool: dict[str, list[dict]] = {fam: [] for fam in eligible_order}
+    for proj in projections:
+        family = (proj.get("source") or "").strip()
+        if family in GLANCE_EXCLUDED_FAMILIES:
+            continue
+        if family not in GLANCE_ELIGIBLE_FAMILIES:
+            continue
+        in_window_pool.setdefault(family, []).append(proj)
     rows = []
     for proj in projections:
         family = (proj.get("source") or "").strip()
@@ -991,20 +1111,26 @@ def glance_consequence_surface(
         if family not in GLANCE_ELIGIBLE_FAMILIES:
             continue
         direct = [e["ticker"] for e in proj["exposures"] if e.get("materiality") == MATERIALITY_DIRECT]
-        second = [e["ticker"] for e in proj["exposures"] if e.get("materiality") == MATERIALITY_SECOND_ORDER]
         series_key = _glance_series_key(
             family, proj.get("title") or "", proj.get("event_id") or "",
         )
         title_en, title_zh = plain_glance_titles(proj)
-        # Non-series rows still require a named exposure and a title now.
-        # Series members enter pre-filter so identity, latest-state, and
-        # the unstable count see every in-window flip.
+        # Non-series rows require a direct ticker now (Q1=strip — the
+        # closed-key row carries direct_tickers only; a second-order-
+        # only projection has no direct exposure to render). Series
+        # members enter pre-filter so identity, latest-state, and the
+        # unstable count see every in-window flip; the collapse at
+        # :func:`_collapse_flip_series` drops empty-union series.
         if series_key is None:
-            if not direct and not second:
+            if not direct:
                 continue
             if not title_en or not title_zh:
                 continue
         time_en, time_zh = _plain_event_date(proj["event_time"])
+        # Closed-key row (Candidate A + F10/NO-CALIBRATED-FIELD): the glance
+        # names exposures only. calibrated_impact, calibrated_impact_reason,
+        # causal_label and second_order_* (Q1=strip) are absent. The
+        # projector (:func:`project_event_impact`) is unchanged.
         rows.append({
             "event_id": proj["event_id"],
             "event_time": proj["event_time"],
@@ -1016,27 +1142,127 @@ def glance_consequence_surface(
             "title_en": title_en,
             "title_zh": title_zh,
             "direct_tickers": direct,
-            "second_order_tickers": second,
-            "second_order_truncated": bool(proj.get("second_order_truncated")),
-            "second_order_candidate_count": proj.get("second_order_candidate_count", 0),
-            "second_order_dropped_count": proj.get("second_order_dropped_count", 0),
             "note_en": None,
             "note_zh": None,
-            "calibrated_impact": None,
-            "calibrated_impact_reason": CALIBRATED_IMPACT_GATE_REASON,
-            "causal_label": CAUSAL_LABEL,
         })
     # Collapse a regime/risk series over the pre-filter in-window rows,
-    # drop any leftover empty-union / untitled series, then newest-first.
+    # then bucket by family for fair-share selection (replaces the prior
+    # global newest-first cap that let the same family take all 8 slots).
+    # The collapse can drop empty-union series; the dead `second_order_*`
+    # row-filter from earlier passes is now redundant — closed-key rows
+    # carry direct_tickers and the non-series filter above drops everything
+    # else.
     rows = _collapse_flip_series(rows)
     rows = [
         row for row in rows
-        if (row.get("direct_tickers") or row.get("second_order_tickers"))
-        and row.get("title_en") and row.get("title_zh")
+        if row.get("title_en") and row.get("title_zh")
     ]
-    rows.sort(key=lambda r: (r.get("event_time") or "", r.get("event_id") or ""), reverse=True)
+    # Family order is schema.SOURCES index (newest head event_time desc,
+    # tie-break by index asc); per-family buckets are newest-first.
+    buckets: dict[str, list[dict]] = {fam: [] for fam in eligible_order}
+    for row in rows:
+        buckets.setdefault(row["family"], []).append(row)
+    for fam in buckets:
+        buckets[fam].sort(
+            key=lambda r: (r.get("event_time") or "", r.get("event_id") or ""),
+            reverse=True,
+        )
+    # family_tally — data-derived per-family state, in schema.SOURCES
+    # order over GLANCE_ELIGIBLE_FAMILIES (prophet_ledger untallied).
+    # in_window counts every event that entered the eligible pool for that
+    # family (BEFORE the exposure filter at the row builder above) — so a
+    # ticker-less macro_release still records as in_window=1, named=0 →
+    # state `none_named`. named counts the events in that pool with at
+    # least one direct ticker.
+    family_tally: list[dict] = []
+    for fam in eligible_order:
+        pool_for_fam = in_window_pool.get(fam, [])
+        in_window_count = len(pool_for_fam)
+        named_count = sum(
+            1 for proj in pool_for_fam
+            if any(
+                e.get("materiality") == MATERIALITY_DIRECT
+                for e in proj.get("exposures") or []
+            )
+        )
+        if in_window_count == 0:
+            state = "no_events"
+        elif named_count >= 1:
+            state = "named"
+        else:
+            state = "none_named"
+        family_tally.append({
+            "family": fam,
+            "label_en": _FAMILY_LABELS[fam][0],
+            "label_zh": _FAMILY_LABELS[fam][1],
+            "state": state,
+            "in_window": in_window_count,
+            "named": named_count,
+            "shown": 0,  # filled by the water-fill below
+        })
+    # Inspection uses the same eligible, collapsed, sorted rows BEFORE the
+    # overview cap. Counts are display records, not raw event fires; retain
+    # source-event counts separately so an empty family is explained honestly.
+    family_views = [
+        {
+            "family": ft["family"],
+            "label_en": ft["label_en"],
+            "label_zh": ft["label_zh"],
+            "state": ft["state"],
+            "in_window": ft["in_window"],
+            "available_count": len(buckets[ft["family"]]),
+            "rows": buckets[ft["family"]][:4],
+        }
+        for ft in family_tally
+    ]
+    # Bucket order for the water-fill: by newest head event_time desc,
+    # ties broken by schema.SOURCES index asc. prophet_ledger never
+    # appears (typed exclusion above).
+    def _bucket_sort_key(ft: dict) -> tuple:
+        bucket = buckets.get(ft["family"], [])
+        head_time = bucket[0].get("event_time") or "" if bucket else ""
+        return (head_time, -_schema.SOURCES.index(ft["family"]))
+    bucket_order = sorted(family_tally, key=_bucket_sort_key, reverse=True)
+    # Water-fill: one slot per family per pass until cap=8, in bucket order.
     cap = max(1, int(limit))
-    rows = rows[:cap]
+    chosen: list[dict] = []
+    while len(chosen) < cap:
+        added = 0
+        for ft in bucket_order:
+            bucket = buckets.get(ft["family"], [])
+            idx = ft["shown"]
+            if idx < len(bucket):
+                chosen.append(bucket[idx])
+                ft["shown"] = idx + 1
+                added += 1
+                if len(chosen) >= cap:
+                    break
+        if added == 0:
+            break
+    # Merge the chosen rows newest-first for display.
+    chosen.sort(
+        key=lambda r: (r.get("event_time") or "", r.get("event_id") or ""),
+        reverse=True,
+    )
+    rows = chosen[:cap]
+    # Build the LENS tip AFTER the water-fill so ft["shown"] reflects the
+    # actual chosen count per family (D1 — the prior builder assembled
+    # the strings pre-fill, so every "shown" read 0). The template reads
+    # family_tally_tip_en/zh verbatim into data-tip-* and aria-label.
+    # R8: the newest-200 fallback path emits NO tip — the build-site
+    # fallback dict carries no family_tally, and inventing fallback copy
+    # is design work that is out of scope. family_tally is still emitted
+    # so the section can render the typed empty cleanly.
+    if window_mode == GLANCE_WINDOW_FALLBACK:
+        family_tally_tip_en = ""
+        family_tally_tip_zh = ""
+    else:
+        family_tally_tip_en, family_tally_tip_zh = build_family_tally_tip(
+            family_tally,
+        )
+    # families — kept byte-compatible with the prior payload (shown count
+    # per family in the final cap, not the in-window count). Avoids a
+    # silent type change in a key no renderer reads.
     families: dict[str, int] = {}
     for row in rows:
         families[row["family"]] = families.get(row["family"], 0) + 1
@@ -1054,6 +1280,10 @@ def glance_consequence_surface(
             "window_label_en": label_en,
             "window_label_zh": label_zh,
             "families": {},
+            "family_tally": family_tally,
+            "family_views": family_views,
+            "family_tally_tip_en": family_tally_tip_en,
+            "family_tally_tip_zh": family_tally_tip_zh,
             "rows": [],
             "event_count": len(window),
         }
@@ -1070,6 +1300,10 @@ def glance_consequence_surface(
         "window_label_en": label_en,
         "window_label_zh": label_zh,
         "families": families,
+        "family_tally": family_tally,
+        "family_views": family_views,
+        "family_tally_tip_en": family_tally_tip_en,
+        "family_tally_tip_zh": family_tally_tip_zh,
         "rows": rows,
         "event_count": len(window),
     }

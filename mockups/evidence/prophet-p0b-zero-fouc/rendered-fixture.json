@@ -496,11 +496,11 @@
         {
           "path": "templates/hk.html.j2",
           "role": "jinja_template",
-          "sha256": "2fb1a5e1fb8b901e4dc4bc64cc7916542d0acb508547ee445676166b4edad86c"
+          "sha256": "b9d4299a4fafbb5b7d22d97d42d71888c4c7a41ce3c452ed6bb7873f115407e8"
         }
       ],
       "output": "hk_stocks.html",
-      "output_sha256": "ed9a9e7550d6d4430d9239653393d7d060b60a19b66df439483cde7cd705a337",
+      "output_sha256": "bb512b6652f31549ced331c3157500dade94f4bce23677cf355e5f129807e782",
       "owner_cases": {
         "normal": {
           "input_transform": {
@@ -633,7 +633,7 @@
             "sha256": "bc7ae67276a8a7c677af1ab1f69a8c08e6304a3a9b904285abd2454f5356c0e7"
           },
           "output": "hk_stocks.html",
-          "output_sha256": "ed9a9e7550d6d4430d9239653393d7d060b60a19b66df439483cde7cd705a337",
+          "output_sha256": "bb512b6652f31549ced331c3157500dade94f4bce23677cf355e5f129807e782",
           "owner_population": {
             "board": 39,
             "intersection": [],
@@ -769,7 +769,7 @@
             "sha256": "7f3de426f8a9f756fa155df0fc0dfe5685ed3280579dbbd25817c22f5ed441b9"
           },
           "output": "hk_stocks.null-buy.html",
-          "output_sha256": "725f2916078308a142c0a554f8e052ccc68da2cf82d42d864e877336194b0de0",
+          "output_sha256": "4ae39a4ee6af18ef16e1da77d54f806ed687f02f53a97f803fccec1c53993801",
           "owner_population": {
             "board": null,
             "intersection": null,
@@ -905,7 +905,7 @@
             "sha256": "5229a4fca6654bf6be5c88f015225586f11104cd49c1ab1726c52a35c8dc1ecf"
           },
           "output": "hk_stocks.watch-only.html",
-          "output_sha256": "015bf290ca36fe8742dd8cab5d01b2a73d54c025e75b5cceb8e4aa1cc3d08126",
+          "output_sha256": "e9fb26f3abdf5ca77905d166de034d379523902d6a2d7aca20cc320b9885cf60",
           "owner_population": {
             "board": 36,
             "intersection": [],

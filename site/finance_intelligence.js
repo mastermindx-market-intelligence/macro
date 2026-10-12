@@ -1486,17 +1486,23 @@
     }
   }
 
+  // recordId names the record to show. '' is the bare drawer (the contents
+  // link, which cites nothing); null is a section whose evidence list is empty.
   function renderDrawer(recordId) {
     var fields = state.ui.evidenceFields;
     if (!fields) return;
     var records = asArray(state.doc && state.doc.source_records);
-    var rec = records.filter(function (r) { return r.record_id === recordId; })[0];
+    var rec = recordId ? records.filter(function (r) { return r.record_id === recordId; })[0] : undefined;
     state.drawer.source = rec;
     if (!rec) {
       fields.innerHTML = '';
-      // A named record that is not in source_records says so; only the bare
-      // drawer asks the reader to choose an evidence action.
-      show(state.ui.evidenceEmpty, !recordId);
+      // A named record that is not in source_records says so, and so does a
+      // section that cites no evidence: the read model publishes no reading
+      // that owner evidence does not back. Only the bare drawer asks the
+      // reader to choose an evidence action.
+      var none = recordId === null;
+      show(state.ui.evidenceEmpty, !recordId && !none);
+      show(state.ui.evidenceNone, none);
       show(state.ui.evidenceMissing, !!recordId);
       show(state.ui.evidencePrivate, false);
       return;
@@ -1506,6 +1512,7 @@
     var rights = rec.rights_state || '';
     var suppress = !(rights === 'DIRECT_DISPLAY_OK' || rights === 'DERIVED_DISPLAY_OK');
     show(state.ui.evidenceEmpty, false);
+    show(state.ui.evidenceNone, false);
     show(state.ui.evidenceMissing, false);
     show(state.ui.evidencePrivate, suppress);
 
@@ -1676,6 +1683,7 @@
     state.ui.evidenceFields = document.querySelector('[data-fi-mount="evidence-fields"]');
     state.ui.evidenceEmpty = document.querySelector('[data-fi-mount="evidence-empty"]');
     state.ui.evidenceMissing = document.querySelector('[data-fi-mount="evidence-missing"]');
+    state.ui.evidenceNone = document.querySelector('[data-fi-mount="evidence-none"]');
     state.ui.evidencePrivate = document.querySelector('[data-fi-mount="evidence-private-notice"]');
     state.ui.notice = document.querySelector('[data-fi-mount="notice"]');
     state.ui.noticeEn = document.querySelector('[data-fi-mount="notice-en"]');
@@ -1716,10 +1724,14 @@
       if (btn) {
         if (btn.classList.contains('fi-slice-open')) return;
         ev.preventDefault();
-        var ids = btn.getAttribute('data-evidence-ids') || '';
+        // The contents link carries no evidence list and opens the bare
+        // drawer. A section button always carries one, and when it is empty
+        // the drawer says no evidence is on file rather than asking the
+        // reader to choose again.
+        var ids = btn.getAttribute('data-evidence-ids');
         if (ids) openEvidence(ids);
         else {
-          renderDrawer('');
+          renderDrawer(ids === null ? '' : null);
           setDrawer(true);
         }
       }

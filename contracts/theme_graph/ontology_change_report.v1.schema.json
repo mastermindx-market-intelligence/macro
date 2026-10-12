@@ -1,0 +1,70 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mastermind-x.com/contracts/theme_graph/ontology_change_report.v1.schema.json",
+  "title": "GMI neighborhood change explanation",
+  "description": "Read-only comparison of two existing reader documents; not a new graph, ThemeState or flow measurement.",
+  "type": "object", "additionalProperties": false,
+  "required": ["schema", "authority_ceiling", "node_id", "comparison_basis", "availability", "baseline", "target", "relation_changes", "proposal_changes", "subject_changed_fields", "mapping_changed", "curation_changed", "summary", "input_digests", "limitations"],
+  "properties": {
+    "schema": {"const": "gmi.theme_ontology_changes/v1"},
+    "authority_ceiling": {"const": "research_internal_only"},
+    "node_id": {"type": "string", "minLength": 1},
+    "comparison_basis": {"enum": ["IDENTICAL_CLOCKS", "KNOWLEDGE_REVISION", "EFFECTIVE_DATE_CHANGE", "BOTH_CLOCKS_CHANGED"]},
+    "availability": {
+      "type": "object", "additionalProperties": false, "required": ["state", "reason"],
+      "properties": {"state": {"enum": ["OK", "BASELINE_UNAVAILABLE", "TARGET_UNAVAILABLE", "BOTH_UNAVAILABLE"]}, "reason": {"type": ["string", "null"]}}
+    },
+    "baseline": {"$ref": "ontology_neighborhood.v1.schema.json"},
+    "target": {"$ref": "ontology_neighborhood.v1.schema.json"},
+    "relation_changes": {"type": "array", "items": {"$ref": "#/$defs/relationChange"}},
+    "proposal_changes": {"type": "array", "items": {"$ref": "#/$defs/proposalChange"}},
+    "subject_changed_fields": {"$ref": "#/$defs/fields"},
+    "mapping_changed": {"type": ["boolean", "null"]},
+    "curation_changed": {"type": ["boolean", "null"]},
+    "summary": {"anyOf": [{"type": "null"}, {"$ref": "#/$defs/summary"}]},
+    "input_digests": {"type": "object", "additionalProperties": false, "required": ["baseline", "target"], "properties": {"baseline": {"$ref": "#/$defs/digest"}, "target": {"$ref": "#/$defs/digest"}}},
+    "limitations": {"type": "array", "minItems": 1, "items": {"type": "string"}}
+  },
+  "$defs": {
+    "digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "count": {"type": "integer", "minimum": 0},
+    "fields": {"type": "array", "uniqueItems": true, "items": {"type": "string"}},
+    "change": {"enum": ["ADDED", "REMOVED", "UPDATED"]},
+    "relationChange": {
+      "type": "object", "additionalProperties": false,
+      "required": ["type", "direction", "peer_node_id", "change", "before", "after", "changed_fields"],
+      "properties": {
+        "type": {"type": "string"}, "direction": {"enum": ["INCOMING", "OUTGOING", "SELF"]},
+        "peer_node_id": {"type": "string", "minLength": 1}, "change": {"$ref": "#/$defs/change"},
+        "before": {"type": "array", "items": {"$ref": "ontology_neighborhood.v1.schema.json#/$defs/relation"}},
+        "after": {"type": "array", "items": {"$ref": "ontology_neighborhood.v1.schema.json#/$defs/relation"}},
+        "changed_fields": {"$ref": "#/$defs/fields"}
+      }
+    },
+    "proposalChange": {
+      "type": "object", "additionalProperties": false,
+      "required": ["proposal_id", "change", "before", "after", "changed_fields"],
+      "properties": {
+        "proposal_id": {"type": "string", "pattern": "^prop:[0-9a-f]{16}$"},
+        "change": {"$ref": "#/$defs/change"},
+        "before": {"type": "array", "items": {"$ref": "ontology_neighborhood.v1.schema.json#/$defs/proposal"}},
+        "after": {"type": "array", "items": {"$ref": "ontology_neighborhood.v1.schema.json#/$defs/proposal"}},
+        "changed_fields": {"$ref": "#/$defs/fields"}
+      }
+    },
+    "summary": {
+      "type": "object", "additionalProperties": false,
+      "required": ["relations_added", "relations_removed", "relations_updated", "proposals_added", "proposals_removed", "proposals_updated", "memberships_added", "memberships_removed"],
+      "properties": {
+        "relations_added": {"$ref": "#/$defs/count"}, "relations_removed": {"$ref": "#/$defs/count"}, "relations_updated": {"$ref": "#/$defs/count"},
+        "proposals_added": {"$ref": "#/$defs/count"}, "proposals_removed": {"$ref": "#/$defs/count"}, "proposals_updated": {"$ref": "#/$defs/count"},
+        "memberships_added": {"$ref": "#/$defs/count"}, "memberships_removed": {"$ref": "#/$defs/count"}
+      }
+    }
+  },
+  "allOf": [{
+    "if": {"properties": {"availability": {"properties": {"state": {"const": "OK"}}}}},
+    "then": {"properties": {"summary": {"type": "object"}, "mapping_changed": {"type": "boolean"}, "curation_changed": {"type": "boolean"}}},
+    "else": {"properties": {"summary": {"type": "null"}, "mapping_changed": {"type": "null"}, "curation_changed": {"type": "null"}, "relation_changes": {"maxItems": 0}, "proposal_changes": {"maxItems": 0}, "subject_changed_fields": {"maxItems": 0}}}
+  }]
+}

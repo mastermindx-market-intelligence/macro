@@ -4,11 +4,19 @@
 # AND this row in the same PR (receipt discipline of #5600/#5618). Never re-pin a
 # fingerprint to whatever a stale line number currently points at. Targets must be
 # non-blank and unique in their file; data/ and site/ anchors are receipt-only.
+# Re-pin discipline for BOTH this file and r2_delivery_macro_evidence_files.v1.tsv:
+# that file's `# source_snapshot=` line is the CENSUS IDENTITY tag (it must equal
+# source_snapshots.macro in the registry and in r2_delivery_external_evidence.v1.json
+# and names the commit the census report describes). It is NOT a content claim about
+# its rows, and never has been — measured 2026-09-30, ZERO of the 84 rows then
+# present reproduced that commit's bytes (.github/workflows/daily.yml was pinned at
+# 7126 lines, was 6804 at the snapshot, and 6500 on main). So NEVER 'repair' a
+# drifted receipt by bumping the snapshot: that breaks the census linkage and
+# re-pins nothing. Source/control receipts are LIVE pins re-read from the working
+# tree; data/ and site/ receipts are historical and deliberately never re-verified.
 # path	line	text
-.github/workflows/daily.yml	2811	mkdir -p "$CHECKPOINT_DIR/$(dirname "$rel")"
-.github/workflows/daily.yml	5208	bash scripts/ci/options_signal_nightly.sh require-clean-broad-start
 app/billing.py	60	def _commercial_emit(kind: str, **fields) -> None:
-app/biocatalyst.py	2333	@router.get("/api/biocatalyst/v1/health")
+app/biocatalyst.py	2349	@router.get("/api/biocatalyst/v1/health")
 collectors/biocatalyst/clinicaltrials_history.py	501	def _receipt(
 collectors/biocatalyst/clinicaltrials_v2.py	442	def _version_receipt(
 collectors/biocatalyst/clinicaltrials_v2.py	455	"""Render one sanitized, hash-bound immutable ``/version`` receipt."""
@@ -19,13 +27,13 @@ collectors/sec_capital_structure_companyfacts.py	107	HEAD_GUARD_KEY = "capital_s
 collectors/wiki_pageviews.py	1	"""Offshore (en.wikipedia.org) per-ticker pageviews -> a DISPLAY-ONLY abnormal-
 config/site_access.yml	23	#   * every per-ticker <market>stockdata/*.json graded emit;
 config/site_access.yml	24	#   * every other data path not named under `public` below.
-config/site_access.yml	297	# THIS LIST IS THE EXCEPTION, NOT THE PREFIX. Everything else under /live/
-config/site_access.yml	299	# /live/prophet_live.json (Prophet Live provisional states, masterplan §4.4a)
-config/site_access.yml	303	# (The armed trigger LEVELS are not in it; they stay in the R2 pack.) It is
-config/site_access.yml	348	# client-side arithmetic only — every heavy per-symbol panel is fetched from R2
-config/synapse.yml	5940	gamma_flow, 0DTE pct) is reliable. Accrual store: data/options_flow/summary_<SYM>.parquet
-config/synapse.yml	6137	path: data/options_entry/state.parquet
-config/synapse.yml	11574	# --- prophet-ledger: Prophet forward outcome ledger ---
+config/site_access.yml	322	# THIS LIST IS THE EXCEPTION, NOT THE PREFIX. Everything else under /live/
+config/site_access.yml	324	# /live/prophet_live.json (Prophet Live provisional states, masterplan §4.4a)
+config/site_access.yml	328	# (The armed trigger LEVELS are not in it; they stay in the R2 pack.) It is
+config/site_access.yml	373	# client-side arithmetic only — every heavy per-symbol panel is fetched from R2
+config/synapse.yml	5950	gamma_flow, 0DTE pct) is reliable. Accrual store: data/options_flow/summary_<SYM>.parquet
+config/synapse.yml	6147	path: data/options_entry/state.parquet
+config/synapse.yml	11618	# --- prophet-ledger: Prophet forward outcome ledger ---
 engine/biocatalyst/activation.py	577	"contract_id": "biocatalyst_retention_preflight.v1",
 engine/biocatalyst/prospective.py	509	def build_public_model(
 engine/biocatalyst/publication.py	1185	def build_private_mirror_manifest(
@@ -36,7 +44,7 @@ engine/capital_structure/source_store.py	24	SEC_OBJECT_PREFIX = "capital_structu
 engine/capital_structure/source_store.py	187	or isinstance(max_byte_length, bool)
 engine/earnings_narrative/private_publication.py	33	PRIVATE_PREFIX = "earnings_wire_private/v1"
 engine/fundamental_forensics/attested_history_store.py	1	"""Read-only store for the DEDICATED attested-history bucket.
-engine/fundamental_forensics/broad_sec_store.py	56	PREFIX = "fundamental_forensics/broad-sec/v1"
+engine/fundamental_forensics/broad_sec_store.py	65	PREFIX = "fundamental_forensics/broad-sec/v1"
 engine/fundamental_forensics/disclosure_bundle.py	56	DISCLOSURE_BUNDLE_PREFIX = "fundamental_forensics/disclosures/v1"
 engine/fundamental_forensics/private_state.py	25	STATE_KEY = "fundamental_forensics/state.json.gz"
 engine/fundamental_forensics/query_snapshots.py	57	QUERY_SNAPSHOT_PREFIX = "fundamental_forensics/query-snapshots/v1"
@@ -54,13 +62,13 @@ engine/options_focused_quote.py	34	W0A_INDEX_KEY = "options_structure/msc_intrad
 engine/options_focused_quote.py	760	prefix = f"private/options_focused_quote/v1/attempts/{digest}"
 engine/prophet_live/r2io.py	32	PACK_KEY = "live_flow/prophet_live_armed.json"
 engine/prophet_live/r2io.py	33	LIVE_KEY = "live_flow/prophet_live.json"
-engine/research_vault/catalog.py	30	CATALOG_KEY = "research_vault/catalog.json"
-engine/research_vault/corpus.py	447	CORPUS_KEY = "research_vault/corpus.sqlite"   # mirrors ingest CORPUS_KEY
-engine/research_vault/ingest.py	59	INBOX_PREFIX = "research_inbox/"
-engine/research_vault/ingest.py	61	PROCESSED_PREFIX = "research_inbox/_processed/"
-engine/research_vault/ingest.py	62	VAULT_PREFIX = "research_vault/"
-engine/research_vault/ingest.py	63	CORPUS_KEY = "research_vault/corpus.sqlite"
-engine/research_vault/ingest.py	149	def _receipt_key(item_id: str) -> str:
+engine/research_vault/catalog.py	35	CATALOG_KEY = "research_vault/catalog.json"
+engine/research_vault/corpus.py	780	CORPUS_KEY = "research_vault/corpus.sqlite"   # mirrors ingest CORPUS_KEY
+engine/research_vault/ingest.py	61	INBOX_PREFIX = "research_inbox/"
+engine/research_vault/ingest.py	63	PROCESSED_PREFIX = "research_inbox/_processed/"
+engine/research_vault/ingest.py	64	VAULT_PREFIX = "research_vault/"
+engine/research_vault/ingest.py	65	CORPUS_KEY = "research_vault/corpus.sqlite"
+engine/research_vault/ingest.py	151	def _receipt_key(item_id: str) -> str:
 engine/research_vault/r2_store.py	1	"""research_vault.r2_store — object store for the PRIVATE research bucket.
 lib/commercial_path.py	75	return Path(os.environ.get("MACRO_API_STATE_DIR", "/var/lib/macro-api")) / "commercial_path"
 lib/commercial_path.py	79	return state_dir(root) / "events" / f"{_utc(day).strftime('%Y-%m-%d')}.jsonl"
@@ -74,45 +82,49 @@ scripts/biocatalyst_worker.py	2732	# Construct the dedicated client only after e
 scripts/build_agg_greek_trend.py	5	``data/live_flow_out/options_hub/aggtrend/{ROOT}.json`` (the published payload),
 scripts/build_basket_washout_state.py	1	"""Nightly basket-washout state + history -> site/factordata/basket_washout_{state,history}.json.
 scripts/build_basket_washout_state.py	481	out = Path(a.out) if a.out else config.site_dir() / "factordata" / "basket_washout_state.json"
-scripts/build_ext_quotes.py	108	R2_KEY = "live_flow/ext_quotes.json"
+scripts/build_ext_quotes.py	57	R2_KEY = "live_flow/ext_quotes.json"
 scripts/build_feeds.py	91	latest = _read_json(data / "regime" / "latest.json") or {}
-scripts/build_flow_surface.py	88	R2_SURFACE_PREFIX = "live_flow/surface/"
+scripts/build_flow_surface.py	91	R2_SURFACE_PREFIX = "live_flow/surface/"
 scripts/build_options_dislocation.py	3	Accrues data/options_dislocation/snapshots.parquet (one row per date × underlying) and
 scripts/build_options_entry_state.py	3	Writes data/options_entry/state.parquet (display-only per-ticker fusion table per RO-1).
 scripts/build_options_flow.py	12	• data/options_flow/summary_<KEY>.parquet — 1 row/day accrual (for the future
 scripts/build_options_hub_nightly.py	70	R2_PREFIX = "options_hub/"
 scripts/build_options_hub_nightly.py	345	_upload_r2(s3, bucket, oi_path,  f"{R2_PREFIX}oi_movers.json")
 scripts/build_options_hub_nightly.py	592	I/O per root is the prior OI year(s) needed for the 18-month oi_time window
-scripts/build_options_matrix.py	55	R2_PREFIX = "options_structure/matrix/"
+scripts/build_options_matrix.py	63	R2_PREFIX = "options_structure/matrix/"
+scripts/build_options_payoff_lab.py	7	Never open the store. Write site/options_payoff_lab/latest.json.
 scripts/build_options_prophet.py	1171	def _default_paths() -> dict[str, Path]:
+scripts/build_options_skew.py	223	"""Write site/options_skew/latest.json from the ledger. No chain provider.
 scripts/build_options_structure_intraday.py	1	#!/usr/bin/env python3
-scripts/build_prophet.py	267	# Landing showcase slice — public teaser payload for the marketing landing
-scripts/build_prophet.py	2275	active_entries.append({
+scripts/build_prophet.py	353	# Landing showcase slice — public teaser payload for the marketing landing
+scripts/build_prophet.py	2362	active_entries.append({
 scripts/build_prophet_marks.py	87	SCHEMA = "prophet.live_marks/v1"
 scripts/build_prophet_marks.py	88	R2_KEY = "live_flow/prophet_marks.json"
-scripts/build_prophet_marks.py	1174	def _private_observation_path(
+scripts/build_prophet_marks.py	1164	def _private_observation_path(
 scripts/build_session_digest.py	104	R2_SURFACE_PREFIX = "live_flow/surface/"
-scripts/build_stock_library.py	3615	dchread = dchain.hiring_read(headcount_by_ticker[ticker], rec.get("revisions"))
-scripts/build_stock_library.py	4035	# amended at FS-5.
-scripts/build_stock_library.py	4412	_calls = _collect_potential_calls(to_write)
+scripts/build_stock_library.py	4001	dchread = dchain.hiring_read(headcount_by_ticker[ticker], rec.get("revisions"))
+scripts/build_stock_library.py	4446	# amended at FS-5.
+scripts/build_stock_library.py	4823	_calls = _collect_potential_calls(to_write)
 scripts/build_tape_flow_daily.py	12	Storage:
 scripts/build_tape_flow_daily.py	18	State file      : data/tape_flow/_state.json          (resumability + round-robin cursor)
 scripts/calibrate_thetadata_tape_sessions.py	12	to data/options_flow/tape_signing_sessions.jsonl (append-only; never rewritten).
+scripts/ci/daily_engine_commit_outputs.sh	51	bash scripts/ci/options_signal_nightly.sh require-clean-broad-start
+scripts/ci/daily_engine_prophet_checkpoint.sh	126	mkdir -p "$CHECKPOINT_DIR/$(dirname "$rel")"
 scripts/close_pass_publish.py	51	BOARD_KEY = "live_flow/us_board_provisional.json"
 scripts/close_pass_reconcile.py	39	RECEIPT_KEY = "live_flow/us_board_confirmation.json"
 scripts/commercial_path_sentinel.py	59	def _transports(now: datetime):
 scripts/freshness_sentinel.py	49	Read from the served tree on disk (SERVED_DIR, default the Caddyfile's
 scripts/institutional_13f_r2_conformance.py	36	CONFORMANCE_KEY_PREFIX = f"{EVIDENCE_PREFIX}/conformance/v1"
 scripts/live_flow_poller.py	30	New R2 objects emitted each cycle (live_flow/ prefix):
-scripts/live_flow_poller.py	1897	R2_PREFIX + f"events/{candidate}.jsonl",
-scripts/live_flow_poller.py	1979	kw: dict = {"Bucket": bucket, "Prefix": R2_PREFIX + "archive/"}
-scripts/live_flow_poller.py	3233	_upload_r2(s3, bucket, feed_path, R2_PREFIX + "feed_current.json")
-scripts/live_flow_poller.py	3235	_upload_r2(s3, bucket, meta_path, R2_PREFIX + "meta.json")
+scripts/live_flow_poller.py	2519	R2_PREFIX + f"events/{candidate}.jsonl",
+scripts/live_flow_poller.py	2601	kw: dict = {"Bucket": bucket, "Prefix": R2_PREFIX + "archive/"}
+scripts/live_flow_poller.py	4061	_upload_r2(s3, bucket, feed_path, R2_PREFIX + "feed_current.json")
+scripts/live_flow_poller.py	4063	_upload_r2(s3, bucket, meta_path, R2_PREFIX + "meta.json")
 scripts/mirror_flow_idx.py	57	R2_KEY = "live_flow/flow_idx.json"
 scripts/mirror_flow_idx.py	66	OPTIONS_PROPHET_R2_KEY = "options_prophet/index.json"
 scripts/mirror_gex_state_r2.py	49	PREFIX = "options_structure/gex_state"
 scripts/mirror_terminal_context_r2.py	42	import sys
-scripts/ops_train_flow_score.py	1216	enabled_env = r2_cfg.get("enabled_env", "R2_ENDPOINT")
+scripts/ops_train_flow_score.py	1424	enabled_env = r2_cfg.get("enabled_env", "R2_ENDPOINT")
 scripts/publish_company_institutional_context_r2.py	25	PREFIX = "company_institutional_context"
 scripts/publish_company_intelligence_r2.py	26	_PREFIX = "company_intelligence"
 scripts/publish_company_theme_exposure_r2.py	25	PREFIX = "company_theme_exposure"
@@ -134,13 +146,16 @@ scripts/publish_r2.py	122	# massive_stock_day pattern. See research/ODDS_DESK.md
 scripts/publish_r2.py	127	# reports/slf048-wiki-attention-phase0.md §Nightly wiring.
 scripts/publish_r2.py	128	"price_pressure",  # DRL W1 event ledger (data/price_pressure/events.parquet,
 scripts/publish_r2.py	147	# host that holds the ThetaData store, and a lost host means a lost
-scripts/publish_r2.py	152	# gitignored — a CI runner checkout holds just the committed _manifest.json +
-scripts/publish_r2.py	171	_DATA_DIR_MIN_FILES_OVERRIDE = {"index_gex_history": 5, "price_pressure": 3}
-scripts/publish_r2.py	346	def _uploadable(d: str, base: Path, files: list[Path]) -> list[Path]:
-scripts/publish_r2.py	446	files = _uploadable(d, base, [p for p in base.rglob("*") if p.is_file()])
+scripts/publish_r2.py	152	"options_skew",  # MO-PAID-013 W2-2 (A-F03-W2-2): ThetaData skew-accrual lane
+scripts/publish_r2.py	172	"options_payoff_lab",  # MO-A3 W2-5a (A-F03-W2-5a, 2026-09-23): options
+scripts/publish_r2.py	188	# gitignored — a CI runner checkout holds just the committed _manifest.json +
+scripts/publish_r2.py	209	_DATA_DIR_MIN_FILES_OVERRIDE = {"index_gex_history": 4, "price_pressure": 3,
+scripts/publish_r2.py	485	def _uploadable(d: str, base: Path, files: list[Path]) -> list[Path]:
+scripts/publish_r2.py	624	files = _uploadable(d, base, _walk_files(base))
 scripts/repair_gex_history.py	63	R2_PREFIX = "options_hub/gex_history/"
 scripts/run_brain_eval.py	61	R2_SUMMARY_PREFIX = "mastermind_response_evals/summary"
 scripts/seal_levels_ledger.py	44	R2_PREFIX = "levels_ledger/"
 templates/data_base.js	12	window.DATA_BASE = window.DATA_BASE || "https://pub-f7ffb4441c5f4ad983ca56ec7c651c61.r2.dev";  // R2 public data plane (flip: clear to revert to Pages)
 templates/data_base.js	16	// the per-ticker stores that live in R2 (mirror scripts/publish_r2.py DEFAULT_DIRS)
-templates/theme.js	630	{ key: 'us',   lib: 'stockdata/index.json',       target: 'stock.html',        flag: '🇺🇸', mkt: 'US',     mktZh: '美国',   examples: ['NVDA', 'AAPL', 'MSFT'] },
+templates/theme.js	667	{ key: 'us',   lib: 'stockdata/index.json',       target: 'stock.html',        flag: '🇺🇸', mkt: 'US',     mktZh: '美国',   examples: ['NVDA', 'AAPL', 'MSFT'] },
+scripts/build_ext_quotes.py	373	def public_boats_payload(payload: dict, now: datetime | None = None) -> dict:

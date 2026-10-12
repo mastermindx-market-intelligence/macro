@@ -82,6 +82,7 @@ RUNTIME_WORKFLOWS = {
     "mastermindx-market-intelligence/macro/.github/workflows/engine-render.yml@refs/heads/main",
     "mastermindx-market-intelligence/macro/.github/workflows/render.yml@refs/heads/main",
     "mastermindx-market-intelligence/macro/.github/workflows/trusted-ci-executor.yml@refs/heads/main",
+    "mastermindx-market-intelligence/macro/.github/workflows/options-intel.yml@refs/heads/main",
 }
 TRUSTED_EXECUTOR_CALL = (
     "mastermindx-market-intelligence/macro/.github/workflows/"
@@ -90,6 +91,16 @@ TRUSTED_EXECUTOR_CALL = (
 FOUR_SLOT_PREFLIGHT_ROUTE = (
     ".github/workflows/selfhosted-ci-canary.yml",
     "four-slot-preflight",
+)
+OPTIONS_INTEL_WORKFLOW = ".github/workflows/options-intel.yml"
+OPTIONS_INTEL_JOB = "options_intel"
+OPTIONS_INTEL_LABELS = ("self-hosted", "m1-theta")
+OPTIONS_INTEL_BROAD_LABELS = (
+    "macstudio",
+    "macstudio-light",
+    "theta-m1",
+    "codex",
+    "render-heavy",
 )
 SAME_REPO_PR = (
     "github.event.pull_request.head.repo.full_name == github.repository"
@@ -428,6 +439,130 @@ def _label_registry_findings(registry: dict, documents: dict[str, dict]) -> list
                             f"{relative}:{job_id} is triggered by {fired} onto orphaned label {label!r} — an unattended job on a dead label holds its concurrency group until GitHub's 24h kill while every firing behind it is superseded (the 2026-09-25 render-lane outage)",
                         )
                     )
+    return findings
+
+
+def _options_intel_route_findings(document: dict | None) -> list[Finding]:
+    """R15: the AD-1T2 producer lane's exact contract.
+
+    Deliberately NOT routed through ``custom_routes``/R5: this lane must fire
+    on BOTH ``workflow_dispatch`` (W4's canary/measurement carrier) AND
+    ``workflow_run`` on ``daily`` completion (so the nightly's same-cycle
+    inputs land before the M1 read). R5's hosted-trust-gate contract forbids
+    workflow_run, and the broad ``macstudio`` / ``theta-m1`` / ``codex`` /
+    ``render-heavy`` labels would silently pull a heavyweight job onto the
+    wrong host.
+
+    The route is exact:
+
+    * the workflow file is ``.github/workflows/options-intel.yml`` and the
+      job id is ``options_intel`` — the only job in the file
+    * triggers are EXACTLY ``workflow_dispatch`` and ``workflow_run``
+    * ``workflow_run`` targets ``daily`` only and only on completion with
+      a ``success`` conclusion (the engine-success gate upstream reinforces
+      this, but the policy surface names the contract)
+    * the job's ``runs-on`` carries exactly ``[self-hosted, m1-theta]`` —
+      the host-confirmed store-bearing runner, and never any broad M1/M2
+      production label
+    * inactive-by-default: the job's ``if`` must include
+      ``vars.AD1_M1_LANE == 'on'`` so the lane stays skipped while W4 has
+      not flipped the activation switch
+    """
+
+    findings: list[Finding] = []
+    if document is None:
+        # Caller knows the workflow is absent and reports it under R0/R1; the
+        # R15 contract only fires on a present file.
+        return findings
+
+    jobs = document.get("jobs") or {}
+    job = jobs.get(OPTIONS_INTEL_JOB)
+    if not isinstance(job, dict):
+        findings.append(
+            Finding(
+                "R15",
+                f"{OPTIONS_INTEL_WORKFLOW}:{OPTIONS_INTEL_JOB} job is missing",
+            )
+        )
+        return findings
+
+    if set(jobs) != {OPTIONS_INTEL_JOB}:
+        findings.append(
+            Finding(
+                "R15",
+                f"{OPTIONS_INTEL_WORKFLOW} must contain exactly one job: "
+                f"{OPTIONS_INTEL_JOB}; found {sorted(jobs)}",
+            )
+        )
+
+    text = runs_on_text(job)
+    expected_labels = set(OPTIONS_INTEL_LABELS)
+    labels_found = {label for label in expected_labels if label in text}
+    if labels_found != expected_labels:
+        findings.append(
+            Finding(
+                "R15",
+                f"{OPTIONS_INTEL_WORKFLOW}:{OPTIONS_INTEL_JOB} runs-on must include "
+                f"exactly {sorted(expected_labels)}, found {sorted(labels_found)} in {text!r}",
+            )
+        )
+    leaked = sorted(label for label in OPTIONS_INTEL_BROAD_LABELS if label in text)
+    if leaked:
+        findings.append(
+            Finding(
+                "R15",
+                f"{OPTIONS_INTEL_WORKFLOW}:{OPTIONS_INTEL_JOB} leaked broad production "
+                f"label(s) {leaked}",
+            )
+        )
+
+    triggers_set = triggers(document)
+    if triggers_set != {"workflow_dispatch", "workflow_run"}:
+        findings.append(
+            Finding(
+                "R15",
+                f"{OPTIONS_INTEL_WORKFLOW} triggers must be exactly "
+                f"{{workflow_dispatch, workflow_run}}, found {sorted(triggers_set)}",
+            )
+        )
+
+    trigger_config = document.get("on", document.get(True, {})) or {}
+    workflow_run_config = trigger_config.get("workflow_run") or {}
+    if set(workflow_run_config.get("workflows") or []) != {"daily"}:
+        findings.append(
+            Finding(
+                "R15",
+                f"{OPTIONS_INTEL_WORKFLOW} workflow_run.workflows must be exactly "
+                f"['daily'], found {workflow_run_config.get('workflows')!r}",
+            )
+        )
+    if set(workflow_run_config.get("types") or []) != {"completed"}:
+        findings.append(
+            Finding(
+                "R15",
+                f"{OPTIONS_INTEL_WORKFLOW} workflow_run.types must be exactly "
+                f"['completed'], found {workflow_run_config.get('types')!r}",
+            )
+        )
+
+    job_if = str(job.get("if") or "")
+    if "vars.AD1_M1_LANE" not in job_if or "'on'" not in job_if:
+        findings.append(
+            Finding(
+                "R15",
+                f"{OPTIONS_INTEL_WORKFLOW}:{OPTIONS_INTEL_JOB} must be inactive-by-default "
+                f"via vars.AD1_M1_LANE == 'on' in its job-level if",
+            )
+        )
+    if "workflow_run.conclusion" not in job_if or "success" not in job_if:
+        findings.append(
+            Finding(
+                "R15",
+                f"{OPTIONS_INTEL_WORKFLOW}:{OPTIONS_INTEL_JOB} workflow_run path must "
+                f"require the triggering daily run's conclusion to be 'success'",
+            )
+        )
+
     return findings
 
 
@@ -1066,6 +1201,16 @@ def evaluate(root: Path, registry_path: Path, workflows_dir: Path) -> list[Findi
                 f"{sorted(expected_group_consumers)}; found {sorted(runner_group_consumers)}",
             )
         )
+
+    # AD-1T2 producer lane (R15). Run BEFORE the R6 allowed-set check so the
+    # exact route is registered in `allowed_custom` ONLY when its contract
+    # passes. The clause reuses the existing `runs_on_text`, `triggers` and
+    # label-text validators above — no duplicated policy parser.
+    options_intel_document = documents.get(OPTIONS_INTEL_WORKFLOW)
+    options_intel_findings = _options_intel_route_findings(options_intel_document)
+    findings.extend(options_intel_findings)
+    if not options_intel_findings and options_intel_document is not None:
+        allowed_custom.add((OPTIONS_INTEL_WORKFLOW, OPTIONS_INTEL_JOB))
 
     for workflow, document in documents.items():
         for job_id, job in (document.get("jobs") or {}).items():

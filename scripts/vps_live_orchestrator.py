@@ -403,7 +403,7 @@ class Orchestrator:
         quote_result = self.module(
             "full_quotes",
             "scripts.build_live_quotes",
-            ["--out", str(snapshot_stage)],
+            ["--private-provenance", "--out", str(snapshot_stage)],
             outputs=((snapshot_stage, snapshot_live),),
             timeout=230,
             validator=lambda path: quote_snapshot_error(

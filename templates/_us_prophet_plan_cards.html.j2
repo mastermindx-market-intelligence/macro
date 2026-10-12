@@ -9,6 +9,8 @@
 {% import "_prophet_card.html.j2" as pv %}
 {%- set _LIFE_LABEL_EN = {'watch':'Watch','ready':'Ready','entered':'Entered','delivering':'Delivering','overtime':'Overtime','invalidated':'Invalidated','resolved':'Resolved'} -%}
 {%- set _LIFE_LABEL_ZH = {'watch':'观察','ready':'就绪','entered':'入场','delivering':'达标','overtime':'超时','invalidated':'失效','resolved':'已结'} -%}
+{% macro life_label_en(code) -%}{{ {'watch':'Watch','ready':'Ready','entered':'Entered','delivering':'Delivering','overtime':'Overtime','invalidated':'Invalidated','resolved':'Resolved'}.get(code, 'Unmapped status') }}{%- endmacro %}
+{% macro life_label_zh(code) -%}{{ {'watch':'观察','ready':'就绪','entered':'入场','delivering':'达标','overtime':'超时','invalidated':'失效','resolved':'已结'}.get(code, '状态未映射') }}{%- endmacro %}
 {% for p in items %}
 {%- set _candidate = cand_map.get(p.asset) -%}
 {%- set cand = _candidate if _candidate is mapping else {} -%}

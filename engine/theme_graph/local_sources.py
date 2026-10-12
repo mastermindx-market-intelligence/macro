@@ -307,6 +307,9 @@ class THSInterval:
     valid_to: str | None
     source_shape: str
     closed_by: str | None = None
+    opening_collection_id: str | None = None
+    closing_collection_id: str | None = None
+    closure_basis: str | None = None
 
 
 def membership_intervals(ladder: Ladder) -> list[Interval]:
@@ -357,49 +360,13 @@ def ths_membership_intervals(
     a mapping we do not historically possess. Pass an explicit broader set only in
     tests that intentionally exercise dump-row behaviour.
     """
+    from engine import basket_membership_pit
+
     rows = history.to_dict("records") if hasattr(history, "to_dict") else list(history)
     allowed = frozenset(shapes)
-    snapshots: dict[str, dict[tuple[str, str], str]] = {}
-    for row in rows:
-        shape = str(row.get("source_shape") or "").strip() or "unknown"
-        if shape not in allowed:
-            continue
-        date = str(row.get("snapshot_date") or "").strip()
-        basket = str(row.get("basket_id") or "").strip()
-        ticker = str(row.get("ticker") or "").strip()
-        if not date or not basket or not ticker:
-            continue
-        snapshots.setdefault(date, {}).setdefault((basket, ticker), shape)
-    pairs = sorted({pair for entries in snapshots.values() for pair in entries})
-    # The presence axis MUST be the dates on which THAT basket was actually
-    # collected, never the global set of snapshot dates. A multi-basket THS
-    # store is collected per-basket and staggered: a date on which basket A
-    # was observed but basket B was not must read as a GAP for B, never as
-    # an absence that closes/reopens B's interval (see local_sources tests
-    # for a staggered-collection regression).
-    basket_date_sets: dict[str, set[str]] = {}
-    for date, entries in snapshots.items():
-        for basket, _ticker in entries:
-            basket_date_sets.setdefault(basket, set()).add(date)
-    basket_dates = {basket: sorted(dates) for basket, dates in basket_date_sets.items()}
-    out: list[THSInterval] = []
-    for basket, ticker in pairs:
-        dates = basket_dates.get(basket, [])
-        opened: int | None = None
-        shape = "unknown"
-        for index, present in enumerate(
-                [(basket, ticker) in snapshots[date] for date in dates] + [False]):
-            if present and opened is None:
-                opened = index
-                shape = snapshots[dates[index]][(basket, ticker)]
-            elif not present and opened is not None:
-                out.append(THSInterval(
-                    basket_id=basket, ticker=ticker, valid_from=dates[opened],
-                    valid_to=dates[index] if index < len(dates) else None,
-                    source_shape=shape,
-                    closed_by=dates[index] if index < len(dates) else None))
-                opened = None
-    return sorted(out, key=lambda iv: (iv.valid_from, iv.basket_id, iv.ticker))
+    selected = [row for row in rows if row.get("source_shape") in allowed]
+    return [THSInterval(**interval) for interval in
+            basket_membership_pit.membership_intervals_from_history(selected, include_receipt_refs=True)]
 
 
 def subtheme_registry(ladder: Ladder,

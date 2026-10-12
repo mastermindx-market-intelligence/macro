@@ -1,0 +1,56 @@
+{
+  "as_of": "2026-09-26",
+  "buy": [
+    {
+      "ticker": "TEST1",
+      "lane": "bottoming",
+      "state": "setting_up",
+      "entry_signal": {
+        "status": "bounce_wait",
+        "headline": "Wait for confirmation",
+        "buy_zone": {
+          "low": 171.0,
+          "high": 176.0
+        },
+        "stop": 164.0,
+        "chase_above": 184.0
+      },
+      "signal": {
+        "above200": true,
+        "weekly_bull": true,
+        "provisional": false
+      },
+      "hold": {
+        "invalidation": 158.0
+      },
+      "price": 178.42,
+      "stage": "basing",
+      "envelope": {
+        "as_of": "2026-09-26"
+      },
+      "signal_asof": "2026-09-26"
+    }
+  ],
+  "watch": [],
+  "candidate_pool": {
+    "status": "ready",
+    "as_of": "2026-09-26",
+    "source_digest": "fixed-string",
+    "counts": {
+      "eligible": 12,
+      "in_buy_lane": 1,
+      "off_buy_lane": 0
+    },
+    "rows": [
+      {
+        "ticker": "TEST1",
+        "lane": "bottoming",
+        "in_buy_lane": true,
+        "lane_reasons": [
+          "cleared_admission"
+        ],
+        "headline_reason": "cleared_admission"
+      }
+    ]
+  }
+}

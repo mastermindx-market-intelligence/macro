@@ -14,6 +14,12 @@ from pathlib import Path
 from typing import Any
 
 
+PUBLIC_QUOTE_FIELDS = (
+    "price", "ts", "source", "basis", "prevClose", "changePct", "currency",
+    "delayMin", "tsSynthetic", "vol", "hi", "lo",
+)
+
+
 def _has_price(value: Any) -> bool:
     if not isinstance(value, dict):
         return False
@@ -38,7 +44,10 @@ def build_payload(base: dict[str, Any], snapshot: dict[str, Any]) -> dict[str, A
     if not isinstance(source_quotes, dict):
         raise ValueError("full quote snapshot has no quote map")
     quotes = {
-        symbol: source_quotes[symbol]
+        # The full snapshot may contain server-only provenance. Publish only
+        # existing public fields, preserving their values and optional absence.
+        symbol: {field: source_quotes[symbol][field]
+                 for field in PUBLIC_QUOTE_FIELDS if field in source_quotes[symbol]}
         for symbol in symbols
         if symbol in source_quotes and _has_price(source_quotes[symbol])
     }

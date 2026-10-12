@@ -28,6 +28,8 @@ owns_paths:
 depends_on:
   - WS:GMI-THEME-GRAPH
   - WS:EARNINGS-INTELLIGENCE-OS
+decisions:
+  - DEC:CHAIRMAN-INDUSTRY-INTELLIGENCE-META-CEO-CONSOLIDATION-2026-10-11
 waves:
   - id: MIN-W1
     title: "T01' consumption harness: synthetic casebook, dependency-binding validator, typed route_unbound client, gate:code job mining-economic-dossier"
@@ -36,7 +38,7 @@ waves:
   - id: MIN-W2
     title: "T02 FCX/MP native profile factories + byte receipts (after CDV-1 #7905 merges) || T04a closed Mining definitions, own schema, synthetic composition"
     status: in_progress
-    next_action: "T04a is DONE and at PRODUCTION_PROOF 2026-09-27: PR #7950 merged aff8b76cba6afa6ed03298a1814b059e317070a0 at 03:33:28Z on CONCLUDED green (run 36288053731 completed/success at head c05368b31a6; 26 checks, 0 pending, sole red the sanctioned ci-authority/codex/merge-queue-pilot), the merge is an ancestor of origin/main, and Audit B's frozen GREEN gate re-run against main's own bytes gives 53 passed. mining_theme_research.py, its v1 schema, mining_casebook.py and test_mining_composition.py resolve on main; mining_issuer_profiles.py correctly does NOT (T02 mints it). Three fabric rounds were consumed by freeze-then-repair (R1 REJECT 3B/6M; R2 REJECT 1B/5M letter-gaming - leg values synthesised from period_kind; R2 probes + the R-MIN-31 truth table frozen RED at a848ad54 before round 3 ran). Round 3 delivered real numeric legs and derived polarity and the letter-gaming class is verified dead. ROUND-3 REVIEW TACTIC CHANGED (R-MIN-33e): two Opus red-team spawns returned NO verdict, each exhausting its turn budget on discovery, so the SEAT ran the adversarial battery itself and delegated only scoping/severity to a READ_ONLY auditor with the code excerpt and measured outputs INLINE - 0 tool calls, 65k tokens, complete rulings, three seat severities upgraded and two defects the seat had missed. Four defects fixed under R-MIN-33/33a/33b/33c: duplicate pair names published contradictory rows; a source-declared range shipped as a point estimate the schema pins const false; unit/perimeter/period were carried and never read, so 1700 Mlbs vs 1680 kt published an INVERTED polarity; NaN passed the numeric gate. Receipt: reviews/OPUS_T04A_PR_REVIEW_R3_2026-09-26.md. THE WAVE IS NOT DONE: T02 is still ahead of it and still gated on #7905, which another seat holds DRAFT under its own R7 audit - do not poll it and do not arm a watcher on it. T02 dispatch is SYNTHETIC-ONLY; its packet excludes plan §4 bullet 1 (Audit A F1's unauthorized source-acquisition act), which cannot be deleted at source because the plan is reachable only from carrier #7795."
+    next_action: "T04a is DONE and at PRODUCTION_PROOF 2026-09-27: PR #7950 merged aff8b76cba6afa6ed03298a1814b059e317070a0 at 03:33:28Z on CONCLUDED green (run 36288053731 completed/success at head c05368b31a6; 26 checks, 0 pending, sole red the sanctioned ci-authority/codex/merge-queue-pilot), the merge is an ancestor of origin/main, and Audit B's frozen GREEN gate re-run against main's own bytes gives 53 passed. mining_theme_research.py, its v1 schema, mining_casebook.py and test_mining_composition.py resolve on main; mining_issuer_profiles.py correctly does NOT (T02 mints it). Three fabric rounds were consumed by freeze-then-repair (R1 REJECT 3B/6M; R2 REJECT 1B/5M letter-gaming - leg values synthesised from period_kind; R2 probes + the R-MIN-31 truth table frozen RED at a848ad54 before round 3 ran). Round 3 delivered real numeric legs and derived polarity and the letter-gaming class is verified dead. ROUND-3 REVIEW TACTIC CHANGED (R-MIN-33e): two Opus red-team spawns returned NO verdict, each exhausting its turn budget on discovery, so the SEAT ran the adversarial battery itself and delegated only scoping/severity to a READ_ONLY auditor with the code excerpt and measured outputs INLINE - 0 tool calls, 65k tokens, complete rulings, three seat severities upgraded and two defects the seat had missed. Four defects fixed under R-MIN-33/33a/33b/33c: duplicate pair names published contradictory rows; a source-declared range shipped as a point estimate the schema pins const false; unit/perimeter/period were carried and never read, so 1700 Mlbs vs 1680 kt published an INVERTED polarity; NaN passed the numeric gate. Receipt: reviews/OPUS_T04A_PR_REVIEW_R3_2026-09-26.md. THE WAVE IS NOT DONE: T02 is still ahead of it and still gated on #7905, which another seat holds DRAFT under its own R7 audit - do not poll it and do not arm a watcher on it. T02 dispatch is SYNTHETIC-ONLY; its packet excludes plan §4 bullet 1 (Audit A F1's unauthorized source-acquisition act), which cannot be deleted at source because the plan is reachable only from carrier #7795. 2026-10-11 UPDATE (DEC:CHAIRMAN-INDUSTRY-INTELLIGENCE-META-CEO-CONSOLIDATION-2026-10-11): #7905 MERGED 2026-09-30T01:42Z as cdce3023fbba, an ancestor of main a4d48836a69e, so the #7905 condition on T02 is satisfied and the no-poll/no-watch instruction on #7905 is moot; T02 stays SYNTHETIC-ONLY and dispatches as packet P-MIN-1 per the workstream next_action."
     depends_on: [MIN-W1]
   - id: MIN-W3
     title: "T03 definition-safe economic inputs (signed blocks, missing_derivation, IR-01/IR-02 consumer rules) -> T04b integrated positive witnesses"
@@ -52,6 +54,13 @@ waves:
     depends_on: [MIN-W4]
     next_action: "Wait for Semiconductor B's shared route/client/mount on main and the incumbent-intake G2 source admission; never build against #7870's branch."
 next_action: >
+  2026-10-11 CONSOLIDATION (DEC:CHAIRMAN-INDUSTRY-INTELLIGENCE-META-CEO-CONSOLIDATION-2026-10-11): the T02 gate is OPEN.
+  CDV-1 #7905 MERGED 2026-09-30T01:42Z as cdce3023fbba, so the "waits on #7905 reaching main"
+  condition below is satisfied and no longer binds. Verified against main per the rule below, not
+  against #7905: at main a4d48836a69e, `git show a4d48836a69e:engine/company_intelligence/issuer_profiles.py | grep -n fiscal_scope`
+  returns 4 hits (profile_for_ticker kwarg at :1294; private PG guard at :1306-1309). T02 dispatch stays SYNTHETIC-ONLY per the
+  existing ruling; it shares the issuer_profiles.py seam with Industrials #8250 and CDV-1. Packet P-MIN-1.
+  .
   MIN-W2 IS PARTLY DELIVERED AND STILL OPEN. T04a is at PRODUCTION_PROOF (#7950 merged
   aff8b76cba6, 53 passed against origin/main). The wave's other half, T02, has not started.
   DISPATCH POSITION, stated explicitly because two successive handoffs got it wrong in opposite
@@ -169,6 +178,31 @@ next_action: >
   and its pin are one artifact, so a rewritten justification owes a re-checked citation in the same
   commit. The screen is deliberately kept a SCREEN and not a gate -- a pin may assert a mechanism
   in different words, so a zero score orders a READING, never a verdict.
+
+  WAVE 11 audited the rows the instruments CANNOT REACH, and the defect was there. Wave 10's
+  pin-relevance screen scores a row's note against its cited test body, so a note naming no
+  backticked symbol scores 0 of 0 and is excluded -- five rows sat in that exclusion, and all five
+  justified their status by the delivered test's NAME plus a suite-wide pass count, which is the
+  one thing this ledger's own authority block forbids. The count had been stale for two waves.
+  Measured by SUBJECT against the obligation statements read from the carrier trace: three confirmed
+  (two of them stronger than the row claimed -- MGD-09 is two-armed because its fixture supplies a
+  complete economics block and omits only the issuer, and MGD-34 holds over all 11 payloads against
+  an oracle literal with a falsy-but-not-False negative control); two had a clause NO delivered test
+  reached and both were PINNED in this wave with control arms and mutation probes; one moved status.
+  MGD-12 -> PARTIAL_BY_CONSTRUCTION, and T08 §5's mechanism for it is withdrawn as WRONG: it
+  recorded a 'dedup path' and there is none -- two rows sharing one subject id go in and two come
+  out, as that test itself asserts. The obligation's operative verb has no construct on main to
+  violate, enumerated over all 11 cases with a positive control on the walk.
+  Three things generalise. FIRST: a rule a file states about its own method is not a rule its rows
+  obey -- audit the stated rule against the rows EXEMPT from your instruments, never the rows they
+  score. SECOND: report a screen's REACH beside its score. 'pin_relevance 14 of 14' was true and
+  invited exactly the wrong conclusion; the honest line is 14 of 40 rows scored, and wave 11 moved
+  it to 19 of 40 by making five vague notes specific. THIRD: a screen that names its own blind spot
+  tells you where to look next -- this one named 'a stale count in a sibling record', and two
+  do_not_redo entries asserting a two-wave-old pass count in the present tense were found by grep
+  minutes later. Both are now dated rather than rewritten, as is MGD-08's closure receipt, which
+  the stale-count screen flagged as a FALSE POSITIVE of its own making (174 was the seven-suite
+  total; the screen compared it to the single-suite figure).
   WAVE 8 (records only) fixed a gate that could not execute. T02's §5 sibling-regression gate
   required `tests/test_issuer_profiles.py` and `tests/test_event_workspace_build.py` green and
   NEITHER FILE EXISTS; the suites it means are `tests/test_issuer_profiles_a5a.py`,
@@ -208,7 +242,7 @@ do_not_redo:
   - "Shared requests 5809132661 / 5809893850 and the accepted R4/R12 architecture answers on #7870 are consumed - never repeat them; an acknowledgment is not interface delivery."
   - "Original plan T01 (generic kernel extraction) is a shared-owner proposal, not Mining work; never create or copy engine/market_ontology/theme_research.py, a generic response schema, route, publisher, client or page shell."
   - "Canonical P05 blob is 42c90b46; the excluded local blob 587ee020 is never republished. Healthcare #7787 stays settled and separate."
-  - "T04a is spent: #7950 is merged and proven green on main (53 passed). Three fabric rounds and three Opus reviews are consumed and R-MIN-31/32/33/33a-33g are tabled - never re-spec or re-review it."
+  - "T04a is spent: #7950 is merged and proven green on main (53 passed AS MEASURED AT THAT MERGE - a receipt of that head, not a current gate; the same suite passes 61 today). Three fabric rounds and three Opus reviews are consumed and R-MIN-31/32/33/33a-33g are tabled - never re-spec or re-review it."
   - "Never re-derive the MGD partition by grepping test names. Planned names resolve 0/40 on main and 2/40 at #7950, so a name audit reports 38 false gaps. MGD_EXECUTION_STATUS.json is keyed by obligation id for exactly that reason."
 landmines:
   - "Shared files (issuer_profiles.py, event_workspace_build.py, receipts.py, legacy-jobs.yml, test_ci_pack.py, config/theme_sources.yml, the shared theme-research client/mount) stay owned by their incumbents and are touched only at named seams."

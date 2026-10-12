@@ -1,0 +1,2366 @@
+{
+  "lane": "E",
+  "status": "DELIVERED",
+  "repo_head": "052e02d085b01f29baf499357e224c836d8eb224",
+  "verdict_rule": "Pre-declared rule (Lane E):\n  For each (family f, partition P) in 6×2 = 12 primary tests:\n    I(f, P) = [mean(y | T3, A) − mean(y | T1, A)] − [mean(y | T3, B) − mean(y | T1, B)]\n    where (A, B) = (EXPANSION, CONTRACTION) for P1 growth or (STRESSED, CALM) for P2 stress.\n    y = excess_h10_net on the PRIMARY event set (variant == '1D').\n  WINNER(S): every (f, P) with Holm-adjusted p < 0.05 on H10 net,\n    the same sign of I in both eras (2014-2019 and 2020-2026),\n    AND all cells above floor (≥ 24 months, ≥ 100 names, ≥ 300 events, both eras present)\n    — floors are evaluated on the eight (tercile ∈ {T1,T3}) × (state) × (era) cells,\n    ranked by |I|/SE.\n  SCOPED NULL: no (f, P) meets the winner rule AND at least 8 of 12 tests had all cells above floor.\n  INSUFFICIENT SUPPORT: fewer than 8 of 12 tests had all cells above floor, OR the B1 repaired panel is absent.\nHolm step-down over the 12 primary tests at α = 0.05; report raw and adjusted p.",
+  "data_class": {
+    "vintage": "final",
+    "universe": "B1 survivor-selected baskets, current membership only",
+    "panel": "B1 ROUND 3"
+  },
+  "inputs": {
+    "events_panel": "research/prophet_v4/astra_regime_indicator_handoff_20261004/results/B1/events_panel.parquet",
+    "panel_sha256": "209e224686955cf14401b6d65b9cf06464ce17e3c9cf092aef968319334d7ef8",
+    "panel_sha256_load": "209e224686955cf14401b6d65b9cf06464ce17e3c9cf092aef968319334d7ef8",
+    "panel_sha256_writeout": "209e224686955cf14401b6d65b9cf06464ce17e3c9cf092aef968319334d7ef8",
+    "confirmation_pairs": "research/prophet_v4/astra_regime_indicator_handoff_20261004/results/B1/confirmation_pairs.parquet",
+    "pairs_sha256": "d20cd4056e8e6b1fbb6e9545ddfda50109cb65cbf030af60461bf90cf41f61ae",
+    "pairs_sha256_load": "d20cd4056e8e6b1fbb6e9545ddfda50109cb65cbf030af60461bf90cf41f61ae",
+    "pairs_sha256_writeout": "d20cd4056e8e6b1fbb6e9545ddfda50109cb65cbf030af60461bf90cf41f61ae",
+    "b1_result_md": "research/prophet_v4/astra_regime_indicator_handoff_20261004/results/B1/RESULT.md",
+    "regime_file": "data/regime/regime_v2_pit.parquet",
+    "regime_sha256": "c8ce6bf563f3c5d8de0c10f9a3c60dcc899f26b356536c9b6172a0c3b775b690",
+    "universe_manifest": "research/prophet_v4/astra_regime_indicator_handoff_20261004/results/B1/code/universe_manifest.json",
+    "universe_manifest_sha256": "5eb50de00ee87f5261a9e6c1ef866aa03bd6117417f9d7700907e309d5b688b6",
+    "b1_k_inverted_marked_in_panel": true,
+    "b1_round": 3,
+    "n_1d_rows": 296637
+  },
+  "regime_clock": {
+    "engine_module": "scripts/build_regime_v2_pit.py",
+    "citations": [
+      {
+        "file": "scripts/build_regime_v2_pit.py",
+        "line": 376,
+        "quote": "f_pit = build_features(overrides=overrides)"
+      },
+      {
+        "file": "engine/inputs.py",
+        "line": 171,
+        "quote": "idx = pd.bdate_range(closes.index.min(), end)"
+      },
+      {
+        "file": "engine/inputs.py",
+        "line": 262,
+        "quote": "basket_index(closes, g[\"cyclical_basket\"]).reindex(idx).ffill(limit=5)",
+        "note": "lines 262-267: basket_index(...).reindex(idx).ffill(limit=5); row d includes closes at d"
+      },
+      {
+        "file": "scripts/build_regime_v2_pit.py",
+        "line": 103,
+        "quote": "def pit_availability_panel(vintages: pd.DataFrame, sid: str) -> pd.Series:",
+        "note": "lines 103-105: as-of d by reindex+ffill"
+      }
+    ],
+    "row_dated_t_uses_data_through": "t (same-day closes included)",
+    "observed_semantics": "regime_v2_pit.parquet row at date d carries features that use data THROUGH d: scripts/build_regime_v2_pit.py:376 `f_pit = build_features(overrides=overrides)`; engine/inputs.py:171 `idx = pd.bdate_range(closes.index.min(), end)` and :262-267 `basket_index(...).reindex(idx).ffill(limit=5)` (row d includes the closes at d); macro legs via pit_availability_panel (scripts/build_regime_v2_pit.py:103-105, as-of d by reindex+ffill). The E join is conservative: merge_asof direction='backward' with allow_exact_matches=False picks the strictly-prior row, so events at signal_date use regime data through ≤ signal_date − 1 calendar day.",
+    "regime_index": {
+      "freq": "business-daily",
+      "start": "1971-01-04",
+      "end": "2026-07-02",
+      "n_rows": 14479
+    }
+  },
+  "design": {
+    "outcome_primary": "excess_h10_net",
+    "outcome_secondary": "excess_h21_net",
+    "primary_set": "B1 events_panel.parquet with variant == '1D'",
+    "secondary_set": "B1 confirmation_pairs.parquet variant == '3D.p0' AND no_confirmation == False, joined to 3D.p0 events_panel row",
+    "join": "merge_asof direction=backward allow_exact_matches=False",
+    "fallback_max_days": 7,
+    "regime_columns_used": [
+      "growth_score",
+      "n_flags",
+      "quad",
+      "recession",
+      "transition_ratcheted"
+    ],
+    "partitions": {
+      "P1_growth": "EXPANSION if growth_score>0 else CONTRACTION",
+      "P2_stress": "STRESSED if n_flags>=1 else CALM",
+      "P3_quad": "Q1/Q2/Q3/Q4 — DESCRIPTIVE ONLY"
+    },
+    "families": {
+      "trend": "close_t / SMA200_t − 1",
+      "momentum": "close_{t-21} / close_{t-252} − 1 (12-1 momentum)",
+      "compression": "std(log_ret over 20 sessions) / std(log_ret over 120 sessions) (low = compressed)",
+      "participation": "share of universe names with close_t > SMA50_t on SPY session date t (date-level; valid SMA50 only)",
+      "rs": "(close_t / close_{t-63}) / (SPY_t / SPY_{t-63}) − 1",
+      "structure": "close_t / max(close over last 252 sessions) − 1 (0 = at 52-week high)"
+    },
+    "binning": "fixed terciles computed on the PRIMARY event set over the whole sample",
+    "statistic": {
+      "spread(f, S)": "mean(y | T3, S) − mean(y | T1, S)",
+      "I(f, P)": "spread(f, A) − spread(f, B), A=EXPANSION or STRESSED"
+    },
+    "bootstrap": {
+      "kind": "entry-month cluster resample WITH replacement, multiplicity weights (np.bincount)",
+      "n_draws": 1000,
+      "seed": 20261004,
+      "pairing": "per test (one month-draw sequence per test; not shared across the 12 tests)"
+    },
+    "holm_stepdown": {
+      "scope": "12 primary tests (6 families × 2 partitions) at α = 0.05"
+    },
+    "floors": {
+      "events": 300,
+      "months": 24,
+      "names": 100,
+      "eras_present": [
+        "2014-2019",
+        "2020-2026"
+      ],
+      "cells": "eight (tercile in {T1,T3}) × (state) × (era) cells"
+    }
+  },
+  "tercile_cuts": {
+    "trend": {
+      "lo": -0.04931613754972625,
+      "hi": 0.09808779601764057
+    },
+    "momentum": {
+      "lo": -0.06812409188445644,
+      "hi": 0.22812597644715207
+    },
+    "compression": {
+      "lo": 0.8008760432412769,
+      "hi": 1.0446185993872512
+    },
+    "participation": {
+      "lo": 0.46828814049231676,
+      "hi": 0.6337973704563031
+    },
+    "rs": {
+      "lo": -0.07930961420301864,
+      "hi": 0.05123013157448044
+    },
+    "structure": {
+      "lo": -0.25974194957426666,
+      "hi": -0.0851870554904007
+    }
+  },
+  "drops_by_reason": [
+    {
+      "reason": "no_prior_regime_row",
+      "n": 0
+    },
+    {
+      "reason": "match_older_than_7d",
+      "n": 4696
+    },
+    {
+      "reason": "regime_series_ended_late_2026",
+      "n": 4696
+    },
+    {
+      "reason": "feature_nan_trend",
+      "n": 0
+    },
+    {
+      "reason": "feature_nan_momentum",
+      "n": 0
+    },
+    {
+      "reason": "feature_nan_compression",
+      "n": 0
+    },
+    {
+      "reason": "feature_nan_participation",
+      "n": 0
+    },
+    {
+      "reason": "feature_nan_rs",
+      "n": 0
+    },
+    {
+      "reason": "feature_nan_structure",
+      "n": 0
+    }
+  ],
+  "n_events_after_join": 291941,
+  "n_primary_1d": 296637,
+  "context": {
+    "recession_share": 0.062159819963622784,
+    "transition_ratcheted_share": 0.23852764770963997
+  },
+  "regime_main_effect": {
+    "P1_growth": {
+      "EXPANSION": {
+        "observed": -0.005314396632040644,
+        "ci_lo": -0.009147016218724326,
+        "ci_hi": -0.001103741794400479,
+        "se": 0.002034270918156947,
+        "p_two_sided": 0.014,
+        "n_events": 144519,
+        "n_months": 127
+      },
+      "CONTRACTION": {
+        "observed": -0.005761264341519794,
+        "ci_lo": -0.009536512881155585,
+        "ci_hi": -0.002031609277832271,
+        "se": 0.0019082941963249652,
+        "p_two_sided": 0.0,
+        "n_events": 147422,
+        "n_months": 114
+      }
+    },
+    "P2_stress": {
+      "STRESSED": {
+        "observed": -0.004518841935636545,
+        "ci_lo": -0.007476738162360708,
+        "ci_hi": -0.0010256452710292198,
+        "se": 0.0016506626675308017,
+        "p_two_sided": 0.014,
+        "n_events": 170272,
+        "n_months": 132
+      },
+      "CALM": {
+        "observed": -0.006969204518461621,
+        "ci_lo": -0.010658923037022162,
+        "ci_hi": -0.003358796163623127,
+        "se": 0.0018958622386977804,
+        "p_two_sided": 0.0,
+        "n_events": 121669,
+        "n_months": 119
+      }
+    }
+  },
+  "family_main_effect": {
+    "trend": {
+      "observed": 0.0016421708278357983,
+      "ci_lo": -0.0029193175467503445,
+      "ci_hi": 0.006282011020126541,
+      "se": 0.0024403690564133835,
+      "p_two_sided": 0.496,
+      "n_events_t3": 96666,
+      "n_events_t1": 97647
+    },
+    "momentum": {
+      "observed": 0.0012972541153430939,
+      "ci_lo": -0.0036257216182004415,
+      "ci_hi": 0.005959977223891267,
+      "se": 0.0024123132409273945,
+      "p_two_sided": 0.554,
+      "n_events_t3": 96775,
+      "n_events_t1": 97586
+    },
+    "compression": {
+      "observed": -0.0013733482919633389,
+      "ci_lo": -0.004913945759805865,
+      "ci_hi": 0.0014521966328225387,
+      "se": 0.001625797591387295,
+      "p_two_sided": 0.38,
+      "n_events_t3": 97330,
+      "n_events_t1": 97600
+    },
+    "participation": {
+      "observed": -0.0017015100456774235,
+      "ci_lo": -0.007774135690861877,
+      "ci_hi": 0.004663557395472555,
+      "se": 0.0032886736501872263,
+      "p_two_sided": 0.588,
+      "n_events_t3": 97668,
+      "n_events_t1": 98879
+    },
+    "rs": {
+      "observed": -0.0005374057218432426,
+      "ci_lo": -0.0048736075325927,
+      "ci_hi": 0.0037681348759795643,
+      "se": 0.0022006252632140576,
+      "p_two_sided": 0.846,
+      "n_events_t3": 96927,
+      "n_events_t1": 97438
+    },
+    "structure": {
+      "observed": 0.004057357087731361,
+      "ci_lo": -0.001307745789629956,
+      "ci_hi": 0.00922880911618805,
+      "se": 0.0026942110886380927,
+      "p_two_sided": 0.148,
+      "n_events_t3": 97101,
+      "n_events_t1": 97256
+    }
+  },
+  "tests_12": [
+    {
+      "family": "trend",
+      "partition": "P1_growth",
+      "state_a": "EXPANSION",
+      "state_b": "CONTRACTION",
+      "observed": 0.002265232542853517,
+      "ci_lo": -0.006825659512867334,
+      "ci_hi": 0.010276008113398547,
+      "se": 0.004542829444609245,
+      "p_two_sided": 0.616,
+      "era_2014_2019": 0.011379838804714382,
+      "era_2020_2026": -0.0015296153724193573,
+      "same_sign_eras": false,
+      "floor_pass": true,
+      "failing_cells": [],
+      "cells": [
+        {
+          "cell_name": "2014-2019/T1/EXPANSION",
+          "tercile": "T1",
+          "state": "EXPANSION",
+          "era": "2014-2019",
+          "n_events": 12371,
+          "n_months": 51,
+          "n_names": 1769,
+          "mean_y": -0.011842982843518257,
+          "above_floor": true,
+          "recession_share": 0.013903483954409506,
+          "transition_ratcheted_share": 0.26279201358014714
+        },
+        {
+          "cell_name": "2020-2026/T1/EXPANSION",
+          "tercile": "T1",
+          "state": "EXPANSION",
+          "era": "2020-2026",
+          "n_events": 28142,
+          "n_months": 76,
+          "n_names": 2567,
+          "mean_y": -0.005097491666674614,
+          "above_floor": true,
+          "recession_share": 0.013076540402245753,
+          "transition_ratcheted_share": 0.2436216331461872
+        },
+        {
+          "cell_name": "2014-2019/T1/CONTRACTION",
+          "tercile": "T1",
+          "state": "CONTRACTION",
+          "era": "2014-2019",
+          "n_events": 16416,
+          "n_months": 45,
+          "n_names": 1869,
+          "mean_y": -0.0019390011439099908,
+          "above_floor": true,
+          "recession_share": 0.3534965886939571,
+          "transition_ratcheted_share": 0.19578460038986356
+        },
+        {
+          "cell_name": "2020-2026/T1/CONTRACTION",
+          "tercile": "T1",
+          "state": "CONTRACTION",
+          "era": "2020-2026",
+          "n_events": 40718,
+          "n_months": 69,
+          "n_names": 2581,
+          "mean_y": -0.008712604641914368,
+          "above_floor": true,
+          "recession_share": 0.10273097892823813,
+          "transition_ratcheted_share": 0.18176236553858244
+        },
+        {
+          "cell_name": "2014-2019/T3/EXPANSION",
+          "tercile": "T3",
+          "state": "EXPANSION",
+          "era": "2014-2019",
+          "n_events": 17309,
+          "n_months": 51,
+          "n_names": 1873,
+          "mean_y": -0.004039967432618141,
+          "above_floor": true,
+          "recession_share": 0.004968513490091859,
+          "transition_ratcheted_share": 0.27950777052400483
+        },
+        {
+          "cell_name": "2020-2026/T3/EXPANSION",
+          "tercile": "T3",
+          "state": "EXPANSION",
+          "era": "2020-2026",
+          "n_events": 38816,
+          "n_months": 76,
+          "n_names": 2571,
+          "mean_y": -0.004705594386905432,
+          "above_floor": true,
+          "recession_share": 0.0016230420445177247,
+          "transition_ratcheted_share": 0.22570589447650452
+        },
+        {
+          "cell_name": "2014-2019/T3/CONTRACTION",
+          "tercile": "T3",
+          "state": "CONTRACTION",
+          "era": "2014-2019",
+          "n_events": 13239,
+          "n_months": 45,
+          "n_names": 1852,
+          "mean_y": -0.0055158245377242565,
+          "above_floor": true,
+          "recession_share": 0.1055215650728907,
+          "transition_ratcheted_share": 0.282045471712365
+        },
+        {
+          "cell_name": "2020-2026/T3/CONTRACTION",
+          "tercile": "T3",
+          "state": "CONTRACTION",
+          "era": "2020-2026",
+          "n_events": 27302,
+          "n_months": 69,
+          "n_names": 2563,
+          "mean_y": -0.0067910924553871155,
+          "above_floor": true,
+          "recession_share": 0.01886308695333675,
+          "transition_ratcheted_share": 0.2608600102556589
+        }
+      ],
+      "p_holm": 1.0
+    },
+    {
+      "family": "trend",
+      "partition": "P2_stress",
+      "state_a": "STRESSED",
+      "state_b": "CALM",
+      "observed": -0.005076376021699449,
+      "ci_lo": -0.011838218497242177,
+      "ci_hi": 0.0020457018059343753,
+      "se": 0.0034790659286780476,
+      "p_two_sided": 0.154,
+      "era_2014_2019": 0.00168341095559299,
+      "era_2020_2026": -0.007911042077466846,
+      "same_sign_eras": false,
+      "floor_pass": true,
+      "failing_cells": [],
+      "cells": [
+        {
+          "cell_name": "2014-2019/T1/STRESSED",
+          "tercile": "T1",
+          "state": "STRESSED",
+          "era": "2014-2019",
+          "n_events": 16135,
+          "n_months": 53,
+          "n_names": 1859,
+          "mean_y": -0.007778789382427931,
+          "above_floor": true,
+          "recession_share": 0.14620390455531454,
+          "transition_ratcheted_share": 0.2924078091106291
+        },
+        {
+          "cell_name": "2020-2026/T1/STRESSED",
+          "tercile": "T1",
+          "state": "STRESSED",
+          "era": "2020-2026",
+          "n_events": 38320,
+          "n_months": 79,
+          "n_names": 2577,
+          "mean_y": -0.0031410681549459696,
+          "above_floor": true,
+          "recession_share": 0.0238517745302714,
+          "transition_ratcheted_share": 0.2901356993736952
+        },
+        {
+          "cell_name": "2014-2019/T1/CALM",
+          "tercile": "T1",
+          "state": "CALM",
+          "era": "2014-2019",
+          "n_events": 12652,
+          "n_months": 48,
+          "n_names": 1857,
+          "mean_y": -0.00417557917535305,
+          "above_floor": true,
+          "recession_share": 0.2858046158710085,
+          "transition_ratcheted_share": 0.13808093582042366
+        },
+        {
+          "cell_name": "2020-2026/T1/CALM",
+          "tercile": "T1",
+          "state": "CALM",
+          "era": "2020-2026",
+          "n_events": 30540,
+          "n_months": 71,
+          "n_names": 2577,
+          "mean_y": -0.012372221797704697,
+          "above_floor": true,
+          "recession_share": 0.11908971840209562,
+          "transition_ratcheted_share": 0.10278323510150622
+        },
+        {
+          "cell_name": "2014-2019/T3/STRESSED",
+          "tercile": "T3",
+          "state": "STRESSED",
+          "era": "2014-2019",
+          "n_events": 19378,
+          "n_months": 53,
+          "n_names": 1877,
+          "mean_y": -0.005381562281399965,
+          "above_floor": true,
+          "recession_share": 0.03942615336980081,
+          "transition_ratcheted_share": 0.3309423057075034
+        },
+        {
+          "cell_name": "2020-2026/T3/STRESSED",
+          "tercile": "T3",
+          "state": "STRESSED",
+          "era": "2020-2026",
+          "n_events": 37957,
+          "n_months": 79,
+          "n_names": 2569,
+          "mean_y": -0.005004493054002523,
+          "above_floor": true,
+          "recession_share": 0.006639091603656769,
+          "transition_ratcheted_share": 0.31622625602655635
+        },
+        {
+          "cell_name": "2014-2019/T3/CALM",
+          "tercile": "T3",
+          "state": "CALM",
+          "era": "2014-2019",
+          "n_events": 11170,
+          "n_months": 48,
+          "n_names": 1826,
+          "mean_y": -0.0034617630299180746,
+          "above_floor": true,
+          "recession_share": 0.06436884512085944,
+          "transition_ratcheted_share": 0.19328558639212176
+        },
+        {
+          "cell_name": "2020-2026/T3/CALM",
+          "tercile": "T3",
+          "state": "CALM",
+          "era": "2020-2026",
+          "n_events": 28161,
+          "n_months": 71,
+          "n_names": 2562,
+          "mean_y": -0.006324605084955692,
+          "above_floor": true,
+          "recession_share": 0.011576293455488086,
+          "transition_ratcheted_share": 0.13777919818188275
+        }
+      ],
+      "p_holm": 1.0
+    },
+    {
+      "family": "momentum",
+      "partition": "P1_growth",
+      "state_a": "EXPANSION",
+      "state_b": "CONTRACTION",
+      "observed": -0.0014500573484180638,
+      "ci_lo": -0.00979225325702435,
+      "ci_hi": 0.006959906382830495,
+      "se": 0.004335996425819199,
+      "p_two_sided": 0.894,
+      "era_2014_2019": 0.013511289609596133,
+      "era_2020_2026": -0.007795171346515417,
+      "same_sign_eras": false,
+      "floor_pass": true,
+      "failing_cells": [],
+      "cells": [
+        {
+          "cell_name": "2014-2019/T1/EXPANSION",
+          "tercile": "T1",
+          "state": "EXPANSION",
+          "era": "2014-2019",
+          "n_events": 14537,
+          "n_months": 51,
+          "n_names": 1738,
+          "mean_y": -0.013247101567685604,
+          "above_floor": true,
+          "recession_share": 0.008873907959001169,
+          "transition_ratcheted_share": 0.24489234367476095
+        },
+        {
+          "cell_name": "2020-2026/T1/EXPANSION",
+          "tercile": "T1",
+          "state": "EXPANSION",
+          "era": "2020-2026",
+          "n_events": 33961,
+          "n_months": 76,
+          "n_names": 2563,
+          "mean_y": -0.004000703804194927,
+          "above_floor": true,
+          "recession_share": 0.011189305379700244,
+          "transition_ratcheted_share": 0.21969317746827244
+        },
+        {
+          "cell_name": "2014-2019/T1/CONTRACTION",
+          "tercile": "T1",
+          "state": "CONTRACTION",
+          "era": "2014-2019",
+          "n_events": 14106,
+          "n_months": 45,
+          "n_names": 1737,
+          "mean_y": -0.0017742628697305918,
+          "above_floor": true,
+          "recession_share": 0.2936339146462498,
+          "transition_ratcheted_share": 0.20884729902169288
+        },
+        {
+          "cell_name": "2020-2026/T1/CONTRACTION",
+          "tercile": "T1",
+          "state": "CONTRACTION",
+          "era": "2020-2026",
+          "n_events": 34982,
+          "n_months": 69,
+          "n_names": 2561,
+          "mean_y": -0.009455762803554535,
+          "above_floor": true,
+          "recession_share": 0.07217997827454119,
+          "transition_ratcheted_share": 0.19575781830655767
+        },
+        {
+          "cell_name": "2014-2019/T3/EXPANSION",
+          "tercile": "T3",
+          "state": "EXPANSION",
+          "era": "2014-2019",
+          "n_events": 15425,
+          "n_months": 51,
+          "n_names": 1814,
+          "mean_y": -0.0035169755574315786,
+          "above_floor": true,
+          "recession_share": 0.006742301458670988,
+          "transition_ratcheted_share": 0.30437601296596434
+        },
+        {
+          "cell_name": "2020-2026/T3/EXPANSION",
+          "tercile": "T3",
+          "state": "EXPANSION",
+          "era": "2020-2026",
+          "n_events": 34216,
+          "n_months": 76,
+          "n_names": 2548,
+          "mean_y": -0.007393375970423222,
+          "above_floor": true,
+          "recession_share": 0.0013444002805704934,
+          "transition_ratcheted_share": 0.2533902267944821
+        },
+        {
+          "cell_name": "2014-2019/T3/CONTRACTION",
+          "tercile": "T3",
+          "state": "CONTRACTION",
+          "era": "2014-2019",
+          "n_events": 15175,
+          "n_months": 45,
+          "n_names": 1841,
+          "mean_y": -0.005555425770580769,
+          "above_floor": true,
+          "recession_share": 0.14616144975288303,
+          "transition_ratcheted_share": 0.2802635914332784
+        },
+        {
+          "cell_name": "2020-2026/T3/CONTRACTION",
+          "tercile": "T3",
+          "state": "CONTRACTION",
+          "era": "2020-2026",
+          "n_events": 31959,
+          "n_months": 69,
+          "n_names": 2558,
+          "mean_y": -0.0050532640889286995,
+          "above_floor": true,
+          "recession_share": 0.03595231390218718,
+          "transition_ratcheted_share": 0.2521981288525924
+        }
+      ],
+      "p_holm": 1.0
+    },
+    {
+      "family": "momentum",
+      "partition": "P2_stress",
+      "state_a": "STRESSED",
+      "state_b": "CALM",
+      "observed": -0.004631865058227274,
+      "ci_lo": -0.011848616849791162,
+      "ci_hi": 0.0021170659003123624,
+      "se": 0.003620138501704466,
+      "p_two_sided": 0.192,
+      "era_2014_2019": 0.0007550439331680536,
+      "era_2020_2026": -0.006943987682461739,
+      "same_sign_eras": false,
+      "floor_pass": true,
+      "failing_cells": [],
+      "cells": [
+        {
+          "cell_name": "2014-2019/T1/STRESSED",
+          "tercile": "T1",
+          "state": "STRESSED",
+          "era": "2014-2019",
+          "n_events": 15916,
+          "n_months": 53,
+          "n_names": 1745,
+          "mean_y": -0.00857403315603733,
+          "above_floor": true,
+          "recession_share": 0.11774315154561447,
+          "transition_ratcheted_share": 0.29077657702940435
+        },
+        {
+          "cell_name": "2020-2026/T1/STRESSED",
+          "tercile": "T1",
+          "state": "STRESSED",
+          "era": "2020-2026",
+          "n_events": 37913,
+          "n_months": 79,
+          "n_names": 2567,
+          "mean_y": -0.0027664978988468647,
+          "above_floor": true,
+          "recession_share": 0.023158283438398437,
+          "transition_ratcheted_share": 0.2898478094584971
+        },
+        {
+          "cell_name": "2014-2019/T1/CALM",
+          "tercile": "T1",
+          "state": "CALM",
+          "era": "2014-2019",
+          "n_events": 12727,
+          "n_months": 48,
+          "n_names": 1725,
+          "mean_y": -0.006375152617692947,
+          "above_floor": true,
+          "recession_share": 0.18833975013750295,
+          "transition_ratcheted_share": 0.14756030486367566
+        },
+        {
+          "cell_name": "2020-2026/T1/CALM",
+          "tercile": "T1",
+          "state": "CALM",
+          "era": "2020-2026",
+          "n_events": 31030,
+          "n_months": 71,
+          "n_names": 2558,
+          "mean_y": -0.011658498086035252,
+          "above_floor": true,
+          "recession_share": 0.06532388011601675,
+          "transition_ratcheted_share": 0.10699323235578473
+        },
+        {
+          "cell_name": "2014-2019/T3/STRESSED",
+          "tercile": "T3",
+          "state": "STRESSED",
+          "era": "2014-2019",
+          "n_events": 20248,
+          "n_months": 53,
+          "n_names": 1855,
+          "mean_y": -0.0050163245759904385,
+          "above_floor": true,
+          "recession_share": 0.05319043856183327,
+          "transition_ratcheted_share": 0.3347984986171474
+        },
+        {
+          "cell_name": "2020-2026/T3/STRESSED",
+          "tercile": "T3",
+          "state": "STRESSED",
+          "era": "2020-2026",
+          "n_events": 40177,
+          "n_months": 79,
+          "n_names": 2564,
+          "mean_y": -0.0054979161359369755,
+          "above_floor": true,
+          "recession_share": 0.005724668342584066,
+          "transition_ratcheted_share": 0.32919331956094283
+        },
+        {
+          "cell_name": "2014-2019/T3/CALM",
+          "tercile": "T3",
+          "state": "CALM",
+          "era": "2014-2019",
+          "n_events": 10352,
+          "n_months": 48,
+          "n_names": 1771,
+          "mean_y": -0.0035724882036447525,
+          "above_floor": true,
+          "recession_share": 0.12026661514683153,
+          "transition_ratcheted_share": 0.20952472952086554
+        },
+        {
+          "cell_name": "2020-2026/T3/CALM",
+          "tercile": "T3",
+          "state": "CALM",
+          "era": "2020-2026",
+          "n_events": 25998,
+          "n_months": 71,
+          "n_names": 2544,
+          "mean_y": -0.007445928640663624,
+          "above_floor": true,
+          "recession_share": 0.03711823986460497,
+          "transition_ratcheted_share": 0.13477959843064852
+        }
+      ],
+      "p_holm": 1.0
+    },
+    {
+      "family": "compression",
+      "partition": "P1_growth",
+      "state_a": "EXPANSION",
+      "state_b": "CONTRACTION",
+      "observed": -0.0015954060769348853,
+      "ci_lo": -0.007287906272280932,
+      "ci_hi": 0.0047377578909639775,
+      "se": 0.003029417186904463,
+      "p_two_sided": 0.534,
+      "era_2014_2019": -0.00250283011700958,
+      "era_2020_2026": -0.0010697869583964348,
+      "same_sign_eras": true,
+      "floor_pass": true,
+      "failing_cells": [],
+      "cells": [
+        {
+          "cell_name": "2014-2019/T1/EXPANSION",
+          "tercile": "T1",
+          "state": "EXPANSION",
+          "era": "2014-2019",
+          "n_events": 18164,
+          "n_months": 51,
+          "n_names": 1930,
+          "mean_y": -0.006628334056586027,
+          "above_floor": true,
+          "recession_share": 0.004404316229905308,
+          "transition_ratcheted_share": 0.2616163840563753
+        },
+        {
+          "cell_name": "2020-2026/T1/EXPANSION",
+          "tercile": "T1",
+          "state": "EXPANSION",
+          "era": "2020-2026",
+          "n_events": 34358,
+          "n_months": 76,
+          "n_names": 2586,
+          "mean_y": -0.003881306853145361,
+          "above_floor": true,
+          "recession_share": 0.0058501659002270215,
+          "transition_ratcheted_share": 0.21660166482333082
+        },
+        {
+          "cell_name": "2014-2019/T1/CONTRACTION",
+          "tercile": "T1",
+          "state": "CONTRACTION",
+          "era": "2014-2019",
+          "n_events": 14632,
+          "n_months": 45,
+          "n_names": 1938,
+          "mean_y": -0.004503314383327961,
+          "above_floor": true,
+          "recession_share": 0.11857572443958447,
+          "transition_ratcheted_share": 0.28635866593767084
+        },
+        {
+          "cell_name": "2020-2026/T1/CONTRACTION",
+          "tercile": "T1",
+          "state": "CONTRACTION",
+          "era": "2020-2026",
+          "n_events": 30446,
+          "n_months": 69,
+          "n_names": 2584,
+          "mean_y": -0.0065711261704564095,
+          "above_floor": true,
+          "recession_share": 0.02693293043421139,
+          "transition_ratcheted_share": 0.24144386783157065
+        },
+        {
+          "cell_name": "2014-2019/T3/EXPANSION",
+          "tercile": "T3",
+          "state": "EXPANSION",
+          "era": "2014-2019",
+          "n_events": 15912,
+          "n_months": 51,
+          "n_names": 1925,
+          "mean_y": -0.006540266331285238,
+          "above_floor": true,
+          "recession_share": 0.015208647561588738,
+          "transition_ratcheted_share": 0.28877576671694316
+        },
+        {
+          "cell_name": "2020-2026/T3/EXPANSION",
+          "tercile": "T3",
+          "state": "EXPANSION",
+          "era": "2020-2026",
+          "n_events": 26688,
+          "n_months": 76,
+          "n_names": 2585,
+          "mean_y": -0.007265253458172083,
+          "above_floor": true,
+          "recession_share": 0.003372302158273381,
+          "transition_ratcheted_share": 0.251423860911271
+        },
+        {
+          "cell_name": "2014-2019/T3/CONTRACTION",
+          "tercile": "T3",
+          "state": "CONTRACTION",
+          "era": "2014-2019",
+          "n_events": 18976,
+          "n_months": 45,
+          "n_names": 1949,
+          "mean_y": -0.0019124163081869483,
+          "above_floor": true,
+          "recession_share": 0.3247259696458685,
+          "transition_ratcheted_share": 0.19988406408094436
+        },
+        {
+          "cell_name": "2020-2026/T3/CONTRACTION",
+          "tercile": "T3",
+          "state": "CONTRACTION",
+          "era": "2020-2026",
+          "n_events": 35754,
+          "n_months": 69,
+          "n_names": 2585,
+          "mean_y": -0.008885284885764122,
+          "above_floor": true,
+          "recession_share": 0.10172288415282206,
+          "transition_ratcheted_share": 0.20948705039995524
+        }
+      ],
+      "p_holm": 1.0
+    },
+    {
+      "family": "compression",
+      "partition": "P2_stress",
+      "state_a": "STRESSED",
+      "state_b": "CALM",
+      "observed": 0.002298044800414418,
+      "ci_lo": -0.002975452422018086,
+      "ci_hi": 0.007872644334577407,
+      "se": 0.0028018210366993522,
+      "p_two_sided": 0.46,
+      "era_2014_2019": -0.0016912859864532948,
+      "era_2020_2026": 0.0046446300111711025,
+      "same_sign_eras": false,
+      "floor_pass": true,
+      "failing_cells": [],
+      "cells": [
+        {
+          "cell_name": "2014-2019/T1/STRESSED",
+          "tercile": "T1",
+          "state": "STRESSED",
+          "era": "2014-2019",
+          "n_events": 21370,
+          "n_months": 53,
+          "n_names": 1947,
+          "mean_y": -0.005988634657114744,
+          "above_floor": true,
+          "recession_share": 0.041881141787552645,
+          "transition_ratcheted_share": 0.3184370613008891
+        },
+        {
+          "cell_name": "2020-2026/T1/STRESSED",
+          "tercile": "T1",
+          "state": "STRESSED",
+          "era": "2020-2026",
+          "n_events": 36951,
+          "n_months": 79,
+          "n_names": 2586,
+          "mean_y": -0.003904846031218767,
+          "above_floor": true,
+          "recession_share": 0.01036507807637141,
+          "transition_ratcheted_share": 0.30237341343941976
+        },
+        {
+          "cell_name": "2014-2019/T1/CALM",
+          "tercile": "T1",
+          "state": "CALM",
+          "era": "2014-2019",
+          "n_events": 11426,
+          "n_months": 48,
+          "n_names": 1909,
+          "mean_y": -0.005103485193103552,
+          "above_floor": true,
+          "recession_share": 0.08051811657622965,
+          "transition_ratcheted_share": 0.18702958165587258
+        },
+        {
+          "cell_name": "2020-2026/T1/CALM",
+          "tercile": "T1",
+          "state": "CALM",
+          "era": "2020-2026",
+          "n_events": 27853,
+          "n_months": 71,
+          "n_names": 2585,
+          "mean_y": -0.006790310610085726,
+          "above_floor": true,
+          "recession_share": 0.022905970631529816,
+          "transition_ratcheted_share": 0.12996804652999677
+        },
+        {
+          "cell_name": "2014-2019/T3/STRESSED",
+          "tercile": "T3",
+          "state": "STRESSED",
+          "era": "2014-2019",
+          "n_events": 19432,
+          "n_months": 53,
+          "n_names": 1940,
+          "mean_y": -0.005164530128240585,
+          "above_floor": true,
+          "recession_share": 0.14404075751338,
+          "transition_ratcheted_share": 0.3088719637710992
+        },
+        {
+          "cell_name": "2020-2026/T3/STRESSED",
+          "tercile": "T3",
+          "state": "STRESSED",
+          "era": "2020-2026",
+          "n_events": 34500,
+          "n_months": 79,
+          "n_names": 2585,
+          "mean_y": -0.004823253955692053,
+          "above_floor": true,
+          "recession_share": 0.01855072463768116,
+          "transition_ratcheted_share": 0.3119710144927536
+        },
+        {
+          "cell_name": "2014-2019/T3/CALM",
+          "tercile": "T3",
+          "state": "CALM",
+          "era": "2014-2019",
+          "n_events": 15456,
+          "n_months": 48,
+          "n_names": 1944,
+          "mean_y": -0.0025880946777760983,
+          "above_floor": true,
+          "recession_share": 0.23324275362318841,
+          "transition_ratcheted_share": 0.1543737060041408
+        },
+        {
+          "cell_name": "2020-2026/T3/CALM",
+          "tercile": "T3",
+          "state": "CALM",
+          "era": "2020-2026",
+          "n_events": 27942,
+          "n_months": 71,
+          "n_names": 2586,
+          "mean_y": -0.012353350408375263,
+          "above_floor": true,
+          "recession_share": 0.11047884904444921,
+          "transition_ratcheted_share": 0.12300479564812826
+        }
+      ],
+      "p_holm": 1.0
+    },
+    {
+      "family": "participation",
+      "partition": "P1_growth",
+      "state_a": "EXPANSION",
+      "state_b": "CONTRACTION",
+      "observed": 0.004941988013884905,
+      "ci_lo": -0.0067155886918216015,
+      "ci_hi": 0.015075976548491332,
+      "se": 0.005659595755011296,
+      "p_two_sided": 0.388,
+      "era_2014_2019": 0.008817567633741419,
+      "era_2020_2026": 0.0038735338021069765,
+      "same_sign_eras": true,
+      "floor_pass": false,
+      "failing_cells": [
+        "2014-2019/T1/EXPANSION",
+        "2014-2019/T3/CONTRACTION"
+      ],
+      "cells": [
+        {
+          "cell_name": "2014-2019/T1/EXPANSION",
+          "tercile": "T1",
+          "state": "EXPANSION",
+          "era": "2014-2019",
+          "n_events": 6587,
+          "n_months": 17,
+          "n_names": 1864,
+          "mean_y": -0.006950367242097855,
+          "above_floor": false,
+          "recession_share": 0.0593593441627448,
+          "transition_ratcheted_share": 0.20160923030211023
+        },
+        {
+          "cell_name": "2020-2026/T1/EXPANSION",
+          "tercile": "T1",
+          "state": "EXPANSION",
+          "era": "2020-2026",
+          "n_events": 13046,
+          "n_months": 38,
+          "n_names": 2553,
+          "mean_y": -0.002087255474179983,
+          "above_floor": true,
+          "recession_share": 0.0,
+          "transition_ratcheted_share": 0.33021615820941286
+        },
+        {
+          "cell_name": "2014-2019/T1/CONTRACTION",
+          "tercile": "T1",
+          "state": "CONTRACTION",
+          "era": "2014-2019",
+          "n_events": 22498,
+          "n_months": 25,
+          "n_names": 1948,
+          "mean_y": -1.574550333316438e-05,
+          "above_floor": true,
+          "recession_share": 0.4138145612943373,
+          "transition_ratcheted_share": 0.14330162681127212
+        },
+        {
+          "cell_name": "2020-2026/T1/CONTRACTION",
+          "tercile": "T1",
+          "state": "CONTRACTION",
+          "era": "2020-2026",
+          "n_events": 56748,
+          "n_months": 46,
+          "n_names": 2586,
+          "mean_y": -0.006497145630419254,
+          "above_floor": true,
+          "recession_share": 0.09690209346584902,
+          "transition_ratcheted_share": 0.16552125185028546
+        },
+        {
+          "cell_name": "2014-2019/T3/EXPANSION",
+          "tercile": "T3",
+          "state": "EXPANSION",
+          "era": "2014-2019",
+          "n_events": 26382,
+          "n_months": 37,
+          "n_names": 1958,
+          "mean_y": -0.007247069850564003,
+          "above_floor": true,
+          "recession_share": 0.0,
+          "transition_ratcheted_share": 0.19392009703585777
+        },
+        {
+          "cell_name": "2020-2026/T3/EXPANSION",
+          "tercile": "T3",
+          "state": "EXPANSION",
+          "era": "2020-2026",
+          "n_events": 49612,
+          "n_months": 50,
+          "n_names": 2586,
+          "mean_y": -0.003601955948397517,
+          "above_floor": true,
+          "recession_share": 0.006974119164718213,
+          "transition_ratcheted_share": 0.19015560751431104
+        },
+        {
+          "cell_name": "2014-2019/T3/CONTRACTION",
+          "tercile": "T3",
+          "state": "CONTRACTION",
+          "era": "2014-2019",
+          "n_events": 8950,
+          "n_months": 22,
+          "n_names": 1948,
+          "mean_y": -0.009130015037953854,
+          "above_floor": false,
+          "recession_share": 0.028379888268156423,
+          "transition_ratcheted_share": 0.22145251396648044
+        },
+        {
+          "cell_name": "2020-2026/T3/CONTRACTION",
+          "tercile": "T3",
+          "state": "CONTRACTION",
+          "era": "2020-2026",
+          "n_events": 12724,
+          "n_months": 25,
+          "n_names": 2550,
+          "mean_y": -0.011885380372405052,
+          "above_floor": true,
+          "recession_share": 0.0,
+          "transition_ratcheted_share": 0.29723357434768943
+        }
+      ],
+      "p_holm": 1.0
+    },
+    {
+      "family": "participation",
+      "partition": "P2_stress",
+      "state_a": "STRESSED",
+      "state_b": "CALM",
+      "observed": 0.00023580645612242832,
+      "ci_lo": -0.0094128717965536,
+      "ci_hi": 0.010060495999992909,
+      "se": 0.004921851397409778,
+      "p_two_sided": 0.944,
+      "era_2014_2019": -0.004282650625100359,
+      "era_2020_2026": 0.0022309431806206703,
+      "same_sign_eras": false,
+      "floor_pass": false,
+      "failing_cells": [
+        "2014-2019/T1/CALM"
+      ],
+      "cells": [
+        {
+          "cell_name": "2014-2019/T1/STRESSED",
+          "tercile": "T1",
+          "state": "STRESSED",
+          "era": "2014-2019",
+          "n_events": 14469,
+          "n_months": 27,
+          "n_names": 1910,
+          "mean_y": -0.0003428935306146741,
+          "above_floor": true,
+          "recession_share": 0.27396502868200984,
+          "transition_ratcheted_share": 0.2579998617734467
+        },
+        {
+          "cell_name": "2020-2026/T1/STRESSED",
+          "tercile": "T1",
+          "state": "STRESSED",
+          "era": "2020-2026",
+          "n_events": 43958,
+          "n_months": 49,
+          "n_names": 2586,
+          "mean_y": -0.004663708154112101,
+          "above_floor": true,
+          "recession_share": 0.026411574684926522,
+          "transition_ratcheted_share": 0.27742390463624367
+        },
+        {
+          "cell_name": "2014-2019/T1/CALM",
+          "tercile": "T1",
+          "state": "CALM",
+          "era": "2014-2019",
+          "n_events": 14616,
+          "n_months": 20,
+          "n_names": 1944,
+          "mean_y": -0.002817117376253009,
+          "above_floor": false,
+          "recession_share": 0.3925150519978106,
+          "transition_ratcheted_share": 0.05603448275862069
+        },
+        {
+          "cell_name": "2020-2026/T1/CALM",
+          "tercile": "T1",
+          "state": "CALM",
+          "era": "2020-2026",
+          "n_events": 25836,
+          "n_months": 37,
+          "n_names": 2583,
+          "mean_y": -0.0073898062109947205,
+          "above_floor": true,
+          "recession_share": 0.16790524849047841,
+          "transition_ratcheted_share": 0.058290757083139806
+        },
+        {
+          "cell_name": "2014-2019/T3/STRESSED",
+          "tercile": "T3",
+          "state": "STRESSED",
+          "era": "2014-2019",
+          "n_events": 19922,
+          "n_months": 35,
+          "n_names": 1967,
+          "mean_y": -0.008512784726917744,
+          "above_floor": true,
+          "recession_share": 0.012749723923300874,
+          "transition_ratcheted_share": 0.2549442827025399
+        },
+        {
+          "cell_name": "2020-2026/T3/STRESSED",
+          "tercile": "T3",
+          "state": "STRESSED",
+          "era": "2020-2026",
+          "n_events": 31113,
+          "n_months": 44,
+          "n_names": 2585,
+          "mean_y": -0.0028098709881305695,
+          "above_floor": true,
+          "recession_share": 0.011120753382830329,
+          "transition_ratcheted_share": 0.32327322983961687
+        },
+        {
+          "cell_name": "2014-2019/T3/CALM",
+          "tercile": "T3",
+          "state": "CALM",
+          "era": "2014-2019",
+          "n_events": 15410,
+          "n_months": 31,
+          "n_names": 1939,
+          "mean_y": -0.006704356521368027,
+          "above_floor": true,
+          "recession_share": 0.0,
+          "transition_ratcheted_share": 0.1310188189487346
+        },
+        {
+          "cell_name": "2020-2026/T3/CALM",
+          "tercile": "T3",
+          "state": "CALM",
+          "era": "2020-2026",
+          "n_events": 31223,
+          "n_months": 40,
+          "n_names": 2585,
+          "mean_y": -0.007766911759972572,
+          "above_floor": true,
+          "recession_share": 0.0,
+          "transition_ratcheted_share": 0.10114338788713448
+        }
+      ],
+      "p_holm": 1.0
+    },
+    {
+      "family": "rs",
+      "partition": "P1_growth",
+      "state_a": "EXPANSION",
+      "state_b": "CONTRACTION",
+      "observed": 0.0004296883997696888,
+      "ci_lo": -0.00824217327106762,
+      "ci_hi": 0.008249972119047622,
+      "se": 0.0040818558836059615,
+      "p_two_sided": 0.858,
+      "era_2014_2019": 0.010667727328836918,
+      "era_2020_2026": -0.003582801902666688,
+      "same_sign_eras": false,
+      "floor_pass": true,
+      "failing_cells": [],
+      "cells": [
+        {
+          "cell_name": "2014-2019/T1/EXPANSION",
+          "tercile": "T1",
+          "state": "EXPANSION",
+          "era": "2014-2019",
+          "n_events": 13122,
+          "n_months": 51,
+          "n_names": 1884,
+          "mean_y": -0.01185130700469017,
+          "above_floor": true,
+          "recession_share": 0.0075445816186556925,
+          "transition_ratcheted_share": 0.2690138698369151
+        },
+        {
+          "cell_name": "2020-2026/T1/EXPANSION",
+          "tercile": "T1",
+          "state": "EXPANSION",
+          "era": "2020-2026",
+          "n_events": 31840,
+          "n_months": 76,
+          "n_names": 2584,
+          "mean_y": -0.003195821540430188,
+          "above_floor": true,
+          "recession_share": 0.008385678391959799,
+          "transition_ratcheted_share": 0.24252512562814071
+        },
+        {
+          "cell_name": "2014-2019/T1/CONTRACTION",
+          "tercile": "T1",
+          "state": "CONTRACTION",
+          "era": "2014-2019",
+          "n_events": 14452,
+          "n_months": 45,
+          "n_names": 1903,
+          "mean_y": -0.001458465587347746,
+          "above_floor": true,
+          "recession_share": 0.25124550235261556,
+          "transition_ratcheted_share": 0.23623027954608358
+        },
+        {
+          "cell_name": "2020-2026/T1/CONTRACTION",
+          "tercile": "T1",
+          "state": "CONTRACTION",
+          "era": "2020-2026",
+          "n_events": 38024,
+          "n_months": 69,
+          "n_names": 2586,
+          "mean_y": -0.008038834668695927,
+          "above_floor": true,
+          "recession_share": 0.06885125184094257,
+          "transition_ratcheted_share": 0.21941405428150643
+        },
+        {
+          "cell_name": "2014-2019/T3/EXPANSION",
+          "tercile": "T3",
+          "state": "EXPANSION",
+          "era": "2014-2019",
+          "n_events": 17075,
+          "n_months": 51,
+          "n_names": 1907,
+          "mean_y": -0.004751304630190134,
+          "above_floor": true,
+          "recession_share": 0.011595900439238653,
+          "transition_ratcheted_share": 0.27420204978038065
+        },
+        {
+          "cell_name": "2020-2026/T3/EXPANSION",
+          "tercile": "T3",
+          "state": "EXPANSION",
+          "era": "2020-2026",
+          "n_events": 34405,
+          "n_months": 76,
+          "n_names": 2582,
+          "mean_y": -0.006758868228644133,
+          "above_floor": true,
+          "recession_share": 0.004301700334253742,
+          "transition_ratcheted_share": 0.21037639877924721
+        },
+        {
+          "cell_name": "2014-2019/T3/CONTRACTION",
+          "tercile": "T3",
+          "state": "CONTRACTION",
+          "era": "2014-2019",
+          "n_events": 15059,
+          "n_months": 45,
+          "n_names": 1923,
+          "mean_y": -0.00502619007602334,
+          "above_floor": true,
+          "recession_share": 0.2215286539610864,
+          "transition_ratcheted_share": 0.23839564380104922
+        },
+        {
+          "cell_name": "2020-2026/T3/CONTRACTION",
+          "tercile": "T3",
+          "state": "CONTRACTION",
+          "era": "2020-2026",
+          "n_events": 30388,
+          "n_months": 69,
+          "n_names": 2582,
+          "mean_y": -0.008019079454243183,
+          "above_floor": true,
+          "recession_share": 0.05535079636698697,
+          "transition_ratcheted_share": 0.21445965512702383
+        }
+      ],
+      "p_holm": 1.0
+    },
+    {
+      "family": "rs",
+      "partition": "P2_stress",
+      "state_a": "STRESSED",
+      "state_b": "CALM",
+      "observed": -0.0012494425361747026,
+      "ci_lo": -0.007120302434865784,
+      "ci_hi": 0.004550427356958776,
+      "se": 0.002992191138814527,
+      "p_two_sided": 0.698,
+      "era_2014_2019": 0.003008267842233181,
+      "era_2020_2026": -0.0028502854984253645,
+      "same_sign_eras": false,
+      "floor_pass": true,
+      "failing_cells": [],
+      "cells": [
+        {
+          "cell_name": "2014-2019/T1/STRESSED",
+          "tercile": "T1",
+          "state": "STRESSED",
+          "era": "2014-2019",
+          "n_events": 16185,
+          "n_months": 53,
+          "n_names": 1918,
+          "mean_y": -0.007986622862517834,
+          "above_floor": true,
+          "recession_share": 0.09533518690145196,
+          "transition_ratcheted_share": 0.31770157553290085
+        },
+        {
+          "cell_name": "2020-2026/T1/STRESSED",
+          "tercile": "T1",
+          "state": "STRESSED",
+          "era": "2020-2026",
+          "n_events": 40237,
+          "n_months": 79,
+          "n_names": 2586,
+          "mean_y": -0.0028880268801003695,
+          "above_floor": true,
+          "recession_share": 0.01702413201779457,
+          "transition_ratcheted_share": 0.31060963789546936
+        },
+        {
+          "cell_name": "2014-2019/T1/CALM",
+          "tercile": "T1",
+          "state": "CALM",
+          "era": "2014-2019",
+          "n_events": 11389,
+          "n_months": 48,
+          "n_names": 1880,
+          "mean_y": -0.004155511036515236,
+          "above_floor": true,
+          "recession_share": 0.19202739485468434,
+          "transition_ratcheted_share": 0.15822284660637456
+        },
+        {
+          "cell_name": "2020-2026/T1/CALM",
+          "tercile": "T1",
+          "state": "CALM",
+          "era": "2020-2026",
+          "n_events": 29627,
+          "n_months": 71,
+          "n_names": 2584,
+          "mean_y": -0.009829482063651085,
+          "above_floor": true,
+          "recession_share": 0.07425659027238668,
+          "transition_ratcheted_share": 0.12039693522800149
+        },
+        {
+          "cell_name": "2014-2019/T3/STRESSED",
+          "tercile": "T3",
+          "state": "STRESSED",
+          "era": "2014-2019",
+          "n_events": 19823,
+          "n_months": 53,
+          "n_names": 1928,
+          "mean_y": -0.005195368081331253,
+          "above_floor": true,
+          "recession_share": 0.08056298239418856,
+          "transition_ratcheted_share": 0.30686576199364374
+        },
+        {
+          "cell_name": "2020-2026/T3/STRESSED",
+          "tercile": "T3",
+          "state": "STRESSED",
+          "era": "2020-2026",
+          "n_events": 35561,
+          "n_months": 79,
+          "n_names": 2583,
+          "mean_y": -0.005504137836396694,
+          "above_floor": true,
+          "recession_share": 0.012682433002446501,
+          "transition_ratcheted_share": 0.29180844183234445
+        },
+        {
+          "cell_name": "2014-2019/T3/CALM",
+          "tercile": "T3",
+          "state": "CALM",
+          "era": "2014-2019",
+          "n_events": 12311,
+          "n_months": 48,
+          "n_names": 1889,
+          "mean_y": -0.004372524097561836,
+          "above_floor": true,
+          "recession_share": 0.1573389651531151,
+          "transition_ratcheted_share": 0.17780846397530664
+        },
+        {
+          "cell_name": "2020-2026/T3/CALM",
+          "tercile": "T3",
+          "state": "CALM",
+          "era": "2020-2026",
+          "n_events": 29232,
+          "n_months": 71,
+          "n_names": 2581,
+          "mean_y": -0.00959530845284462,
+          "above_floor": true,
+          "recession_share": 0.04717432950191571,
+          "transition_ratcheted_share": 0.11555829228243021
+        }
+      ],
+      "p_holm": 1.0
+    },
+    {
+      "family": "structure",
+      "partition": "P1_growth",
+      "state_a": "EXPANSION",
+      "state_b": "CONTRACTION",
+      "observed": 0.0021311239704276284,
+      "ci_lo": -0.00718431606375261,
+      "ci_hi": 0.01151996054743217,
+      "se": 0.004697632268153961,
+      "p_two_sided": 0.598,
+      "era_2014_2019": 0.012502227677032351,
+      "era_2020_2026": -0.0009783657733350992,
+      "same_sign_eras": false,
+      "floor_pass": true,
+      "failing_cells": [],
+      "cells": [
+        {
+          "cell_name": "2014-2019/T1/EXPANSION",
+          "tercile": "T1",
+          "state": "EXPANSION",
+          "era": "2014-2019",
+          "n_events": 11365,
+          "n_months": 51,
+          "n_names": 1289,
+          "mean_y": -0.015349917113780975,
+          "above_floor": true,
+          "recession_share": 0.010998680158380994,
+          "transition_ratcheted_share": 0.2557853057633084
+        },
+        {
+          "cell_name": "2020-2026/T1/EXPANSION",
+          "tercile": "T1",
+          "state": "EXPANSION",
+          "era": "2020-2026",
+          "n_events": 32422,
+          "n_months": 76,
+          "n_names": 2449,
+          "mean_y": -0.006077249068766832,
+          "above_floor": true,
+          "recession_share": 0.01027080377521436,
+          "transition_ratcheted_share": 0.23009067916846584
+        },
+        {
+          "cell_name": "2014-2019/T1/CONTRACTION",
+          "tercile": "T1",
+          "state": "CONTRACTION",
+          "era": "2014-2019",
+          "n_events": 13404,
+          "n_months": 45,
+          "n_names": 1511,
+          "mean_y": -0.002898268401622772,
+          "above_floor": true,
+          "recession_share": 0.3188600417785736,
+          "transition_ratcheted_share": 0.20389435989256938
+        },
+        {
+          "cell_name": "2020-2026/T1/CONTRACTION",
+          "tercile": "T1",
+          "state": "CONTRACTION",
+          "era": "2020-2026",
+          "n_events": 40065,
+          "n_months": 69,
+          "n_names": 2525,
+          "mean_y": -0.009030794724822044,
+          "above_floor": true,
+          "recession_share": 0.09439660551603644,
+          "transition_ratcheted_share": 0.18624734805940346
+        },
+        {
+          "cell_name": "2014-2019/T3/EXPANSION",
+          "tercile": "T3",
+          "state": "EXPANSION",
+          "era": "2014-2019",
+          "n_events": 22477,
+          "n_months": 51,
+          "n_names": 1826,
+          "mean_y": -0.0028313379734754562,
+          "above_floor": true,
+          "recession_share": 0.007830226453708235,
+          "transition_ratcheted_share": 0.28629265471370735
+        },
+        {
+          "cell_name": "2020-2026/T3/EXPANSION",
+          "tercile": "T3",
+          "state": "EXPANSION",
+          "era": "2020-2026",
+          "n_events": 31944,
+          "n_months": 76,
+          "n_names": 2496,
+          "mean_y": -0.0037672878243029118,
+          "above_floor": true,
+          "recession_share": 0.0015965439519158527,
+          "transition_ratcheted_share": 0.23422238918106686
+        },
+        {
+          "cell_name": "2014-2019/T3/CONTRACTION",
+          "tercile": "T3",
+          "state": "CONTRACTION",
+          "era": "2014-2019",
+          "n_events": 18220,
+          "n_months": 45,
+          "n_names": 1798,
+          "mean_y": -0.0028819176368415356,
+          "above_floor": true,
+          "recession_share": 0.14626783754116357,
+          "transition_ratcheted_share": 0.2818331503841932
+        },
+        {
+          "cell_name": "2020-2026/T3/CONTRACTION",
+          "tercile": "T3",
+          "state": "CONTRACTION",
+          "era": "2020-2026",
+          "n_events": 24460,
+          "n_months": 69,
+          "n_names": 2441,
+          "mean_y": -0.00574246933683753,
+          "above_floor": true,
+          "recession_share": 0.015249386753883891,
+          "transition_ratcheted_share": 0.27260834014717905
+        }
+      ],
+      "p_holm": 1.0
+    },
+    {
+      "family": "structure",
+      "partition": "P2_stress",
+      "state_a": "STRESSED",
+      "state_b": "CALM",
+      "observed": -0.006866534909574407,
+      "ci_lo": -0.014530989403544706,
+      "ci_hi": 0.00044147415842987325,
+      "se": 0.003902221984864351,
+      "p_two_sided": 0.068,
+      "era_2014_2019": -0.0010702292202040553,
+      "era_2020_2026": -0.008144993800669909,
+      "same_sign_eras": true,
+      "floor_pass": true,
+      "failing_cells": [],
+      "cells": [
+        {
+          "cell_name": "2014-2019/T1/STRESSED",
+          "tercile": "T1",
+          "state": "STRESSED",
+          "era": "2014-2019",
+          "n_events": 13857,
+          "n_months": 53,
+          "n_names": 1384,
+          "mean_y": -0.009522865526378155,
+          "above_floor": true,
+          "recession_share": 0.12333116836256044,
+          "transition_ratcheted_share": 0.29443602511366096
+        },
+        {
+          "cell_name": "2020-2026/T1/STRESSED",
+          "tercile": "T1",
+          "state": "STRESSED",
+          "era": "2020-2026",
+          "n_events": 40410,
+          "n_months": 79,
+          "n_names": 2489,
+          "mean_y": -0.00358661450445652,
+          "above_floor": true,
+          "recession_share": 0.021430339024993812,
+          "transition_ratcheted_share": 0.287428854243999
+        },
+        {
+          "cell_name": "2014-2019/T1/CALM",
+          "tercile": "T1",
+          "state": "CALM",
+          "era": "2014-2019",
+          "n_events": 10912,
+          "n_months": 48,
+          "n_names": 1479,
+          "mean_y": -0.007454350590705872,
+          "above_floor": true,
+          "recession_share": 0.2465175953079179,
+          "transition_ratcheted_share": 0.1429618768328446
+        },
+        {
+          "cell_name": "2020-2026/T1/CALM",
+          "tercile": "T1",
+          "state": "CALM",
+          "era": "2020-2026",
+          "n_events": 32077,
+          "n_months": 71,
+          "n_names": 2510,
+          "mean_y": -0.01290395762771368,
+          "above_floor": true,
+          "recession_share": 0.10128752688842473,
+          "transition_ratcheted_share": 0.10309567602955388
+        },
+        {
+          "cell_name": "2014-2019/T3/STRESSED",
+          "tercile": "T3",
+          "state": "STRESSED",
+          "era": "2014-2019",
+          "n_events": 26080,
+          "n_months": 53,
+          "n_names": 1837,
+          "mean_y": -0.00398131413385272,
+          "above_floor": true,
+          "recession_share": 0.05832055214723927,
+          "transition_ratcheted_share": 0.3307898773006135
+        },
+        {
+          "cell_name": "2020-2026/T3/STRESSED",
+          "tercile": "T3",
+          "state": "STRESSED",
+          "era": "2020-2026",
+          "n_events": 32370,
+          "n_months": 79,
+          "n_names": 2496,
+          "mean_y": -0.004124295432120562,
+          "above_floor": true,
+          "recession_share": 0.005004633920296571,
+          "transition_ratcheted_share": 0.3267840593141798
+        },
+        {
+          "cell_name": "2014-2019/T3/CALM",
+          "tercile": "T3",
+          "state": "CALM",
+          "era": "2014-2019",
+          "n_events": 14617,
+          "n_months": 48,
+          "n_names": 1771,
+          "mean_y": -0.0008425699197687209,
+          "above_floor": true,
+          "recession_share": 0.09030580830539782,
+          "transition_ratcheted_share": 0.20134090442635288
+        },
+        {
+          "cell_name": "2020-2026/T3/CALM",
+          "tercile": "T3",
+          "state": "CALM",
+          "era": "2020-2026",
+          "n_events": 24034,
+          "n_months": 71,
+          "n_names": 2471,
+          "mean_y": -0.005296645220369101,
+          "above_floor": true,
+          "recession_share": 0.010901223267038362,
+          "transition_ratcheted_share": 0.14862278438878257
+        }
+      ],
+      "p_holm": 0.8160000000000001
+    }
+  ],
+  "holm_stepdown": {
+    "raw_p": [
+      0.616,
+      0.154,
+      0.894,
+      0.192,
+      0.534,
+      0.46,
+      0.388,
+      0.944,
+      0.858,
+      0.698,
+      0.598,
+      0.068
+    ],
+    "p_holm": [
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      0.8160000000000001
+    ],
+    "alpha": 0.05,
+    "scope": "6 families × 2 partitions = 12 tests on H10 net (primary set)"
+  },
+  "n_tests_above_floor": 10,
+  "winners": [],
+  "verdict": "SCOPED_NULL",
+  "verdict_reasons": [
+    "no (f,P) meets the winner rule",
+    "10/12 tests had all cells above floor"
+  ],
+  "h21_secondary_12": [
+    {
+      "family": "trend",
+      "partition": "P1_growth",
+      "observed": 0.008752630518698963,
+      "ci_lo": -0.0033825671455083592,
+      "ci_hi": 0.020584470475465105,
+      "se": 0.006224973386077405,
+      "p_two_sided": 0.152,
+      "era_2014_2019": 0.012521224562078714,
+      "era_2020_2026": 0.007308098487555981
+    },
+    {
+      "family": "trend",
+      "partition": "P2_stress",
+      "observed": -0.00780616969035151,
+      "ci_lo": -0.018172813846817296,
+      "ci_hi": 0.002540059852679995,
+      "se": 0.005438881330678425,
+      "p_two_sided": 0.142,
+      "era_2014_2019": 0.00406032707542181,
+      "era_2020_2026": -0.012857371475547552
+    },
+    {
+      "family": "momentum",
+      "partition": "P1_growth",
+      "observed": -0.0004998981235347678,
+      "ci_lo": -0.012313634901200063,
+      "ci_hi": 0.01049178298119114,
+      "se": 0.005921032613286062,
+      "p_two_sided": 0.902,
+      "era_2014_2019": 0.01533167902380228,
+      "era_2020_2026": -0.007317055016756058
+    },
+    {
+      "family": "momentum",
+      "partition": "P2_stress",
+      "observed": -0.00964061379084934,
+      "ci_lo": -0.019122594644397098,
+      "ci_hi": 3.804633352727204e-05,
+      "se": 0.004980624962409852,
+      "p_two_sided": 0.052,
+      "era_2014_2019": -0.0036381103564053774,
+      "era_2020_2026": -0.012362024746835232
+    },
+    {
+      "family": "compression",
+      "partition": "P1_growth",
+      "observed": -0.00033282154977557973,
+      "ci_lo": -0.008124515299875745,
+      "ci_hi": 0.008731927876519328,
+      "se": 0.004248148749123569,
+      "p_two_sided": 0.922,
+      "era_2014_2019": -0.0010931296274065971,
+      "era_2020_2026": -0.00018296809867024422
+    },
+    {
+      "family": "compression",
+      "partition": "P2_stress",
+      "observed": 0.00015907580280009014,
+      "ci_lo": -0.00788836492152201,
+      "ci_hi": 0.007789272590704708,
+      "se": 0.003941711427648161,
+      "p_two_sided": 0.966,
+      "era_2014_2019": -0.002132568508386612,
+      "era_2020_2026": 0.0013535935431718826
+    },
+    {
+      "family": "participation",
+      "partition": "P1_growth",
+      "observed": 0.0004446380768172399,
+      "ci_lo": -0.014436914485603742,
+      "ci_hi": 0.016595423472483127,
+      "se": 0.008042222492517842,
+      "p_two_sided": 0.94,
+      "era_2014_2019": -0.0017046290449798107,
+      "era_2020_2026": 0.00213543139398098
+    },
+    {
+      "family": "participation",
+      "partition": "P2_stress",
+      "observed": -0.001256861874880044,
+      "ci_lo": -0.01446626161377522,
+      "ci_hi": 0.011753507327372875,
+      "se": 0.006996184336682842,
+      "p_two_sided": 0.898,
+      "era_2014_2019": -0.00414351825020276,
+      "era_2020_2026": -0.00024990784004330635
+    },
+    {
+      "family": "rs",
+      "partition": "P1_growth",
+      "observed": 0.002880405574869129,
+      "ci_lo": -0.009170422882502124,
+      "ci_hi": 0.014564526825750497,
+      "se": 0.005928009312177943,
+      "p_two_sided": 0.618,
+      "era_2014_2019": 0.011917456984519958,
+      "era_2020_2026": -0.0006560459733009338
+    },
+    {
+      "family": "rs",
+      "partition": "P2_stress",
+      "observed": -0.0012438061931402036,
+      "ci_lo": -0.010397577728000325,
+      "ci_hi": 0.007406869085430121,
+      "se": 0.004490414599901037,
+      "p_two_sided": 0.754,
+      "era_2014_2019": 0.005842921789735556,
+      "era_2020_2026": -0.003941243514418602
+    },
+    {
+      "family": "structure",
+      "partition": "P1_growth",
+      "observed": 0.008376256071404227,
+      "ci_lo": -0.0035717643179931026,
+      "ci_hi": 0.020092980766661186,
+      "se": 0.006235070948639874,
+      "p_two_sided": 0.17,
+      "era_2014_2019": 0.014938850421458483,
+      "era_2020_2026": 0.00696876086294651
+    },
+    {
+      "family": "structure",
+      "partition": "P2_stress",
+      "observed": -0.008741285476633736,
+      "ci_lo": -0.0183306181411981,
+      "ci_hi": 0.001377535141023537,
+      "se": 0.005227533703618273,
+      "p_two_sided": 0.11,
+      "era_2014_2019": 0.002918662503361702,
+      "era_2020_2026": -0.01275192154571414
+    }
+  ],
+  "three_d_p0_confirmed_secondary": {
+    "n_events_in_set": 78182,
+    "n_events_after_join": 77167,
+    "drops": [
+      {
+        "reason": "no_prior_regime_row",
+        "n": 0
+      },
+      {
+        "reason": "match_older_than_7d",
+        "n": 1015
+      },
+      {
+        "reason": "regime_series_ended_late_2026",
+        "n": 1015
+      }
+    ],
+    "tests_12": [
+      {
+        "family": "trend",
+        "partition": "P1_growth",
+        "observed": 0.00523278097183968,
+        "ci_lo": -0.002215364188315657,
+        "ci_hi": 0.012760072807013726,
+        "se": 0.003953279010918428,
+        "p_two_sided": 0.214,
+        "era_2014_2019": 0.003139994340017438,
+        "era_2020_2026": 0.006217086571268737
+      },
+      {
+        "family": "trend",
+        "partition": "P2_stress",
+        "observed": 0.0019425653743150532,
+        "ci_lo": -0.005637459195662308,
+        "ci_hi": 0.009700711631626077,
+        "se": 0.003941794789117965,
+        "p_two_sided": 0.59,
+        "era_2014_2019": 0.010002408176660538,
+        "era_2020_2026": -0.0016377830179408193
+      },
+      {
+        "family": "momentum",
+        "partition": "P1_growth",
+        "observed": 0.0005821997924838293,
+        "ci_lo": -0.007253887511894443,
+        "ci_hi": 0.008875515919299491,
+        "se": 0.004078587371921772,
+        "p_two_sided": 0.88,
+        "era_2014_2019": 0.010256549343466759,
+        "era_2020_2026": -0.0040297312662005424
+      },
+      {
+        "family": "momentum",
+        "partition": "P2_stress",
+        "observed": 0.003391103435972454,
+        "ci_lo": -0.004250038821711143,
+        "ci_hi": 0.011148871082471916,
+        "se": 0.00398345459530289,
+        "p_two_sided": 0.38,
+        "era_2014_2019": 0.00042250845581293106,
+        "era_2020_2026": 0.0043956707522738725
+      },
+      {
+        "family": "compression",
+        "partition": "P1_growth",
+        "observed": 0.0023502814092208166,
+        "ci_lo": -0.004674203306619117,
+        "ci_hi": 0.008974424010072977,
+        "se": 0.0036201373673930004,
+        "p_two_sided": 0.56,
+        "era_2014_2019": 0.001313821878284216,
+        "era_2020_2026": 0.0035544796264730394
+      },
+      {
+        "family": "compression",
+        "partition": "P2_stress",
+        "observed": 0.00046386800340516557,
+        "ci_lo": -0.006564904280144642,
+        "ci_hi": 0.007842916456685762,
+        "se": 0.003758729938696333,
+        "p_two_sided": 0.916,
+        "era_2014_2019": 0.0012276028282940388,
+        "era_2020_2026": -2.8435897547751665e-05
+      },
+      {
+        "family": "participation",
+        "partition": "P1_growth",
+        "observed": 0.0025481745592808545,
+        "ci_lo": -0.008316692570392746,
+        "ci_hi": 0.013654073940672825,
+        "se": 0.005478531381052513,
+        "p_two_sided": 0.628,
+        "era_2014_2019": 0.0035953442566096783,
+        "era_2020_2026": 0.002490252971256268
+      },
+      {
+        "family": "participation",
+        "partition": "P2_stress",
+        "observed": -0.0028022842718773314,
+        "ci_lo": -0.013342571485282959,
+        "ci_hi": 0.007896849434342422,
+        "se": 0.005387812517835338,
+        "p_two_sided": 0.604,
+        "era_2014_2019": 0.0039658506866544485,
+        "era_2020_2026": -0.0055541457259096205
+      },
+      {
+        "family": "rs",
+        "partition": "P1_growth",
+        "observed": 0.0034787067200855656,
+        "ci_lo": -0.005294513459615339,
+        "ci_hi": 0.012765808550636207,
+        "se": 0.0045345026600467145,
+        "p_two_sided": 0.444,
+        "era_2014_2019": 0.004185786470770836,
+        "era_2020_2026": 0.0035758172161877155
+      },
+      {
+        "family": "rs",
+        "partition": "P2_stress",
+        "observed": 0.0040243255850492005,
+        "ci_lo": -0.0026006893235532144,
+        "ci_hi": 0.011203188536532818,
+        "se": 0.003446713163175132,
+        "p_two_sided": 0.232,
+        "era_2014_2019": 0.009840057697147131,
+        "era_2020_2026": 0.0017061967519111931
+      },
+      {
+        "family": "structure",
+        "partition": "P1_growth",
+        "observed": 0.0023385096526709285,
+        "ci_lo": -0.006149944614417598,
+        "ci_hi": 0.010347932598221851,
+        "se": 0.004331685987828073,
+        "p_two_sided": 0.582,
+        "era_2014_2019": 0.0113700064830482,
+        "era_2020_2026": -0.000268590563791804
+      },
+      {
+        "family": "structure",
+        "partition": "P2_stress",
+        "observed": -0.0007588998014634567,
+        "ci_lo": -0.008922168153847552,
+        "ci_hi": 0.0075381786513145106,
+        "se": 0.004255140426954158,
+        "p_two_sided": 0.854,
+        "era_2014_2019": 0.0022476420272141695,
+        "era_2020_2026": -0.0009246082045137882
+      }
+    ]
+  },
+  "quad_descriptive": [
+    {
+      "quad": "Q1",
+      "n_events": 59130,
+      "n_months": 43,
+      "n_names": 2586,
+      "mean_h10_net": -0.005926931742578745
+    },
+    {
+      "quad": "Q2",
+      "n_events": 128120,
+      "n_months": 92,
+      "n_names": 2586,
+      "mean_h10_net": -0.006340647581964731
+    },
+    {
+      "quad": "Q3",
+      "n_events": 32132,
+      "n_months": 22,
+      "n_names": 2585,
+      "mean_h10_net": -0.005124369170516729
+    },
+    {
+      "quad": "Q4",
+      "n_events": 72559,
+      "n_months": 52,
+      "n_names": 2586,
+      "mean_h10_net": -0.00399521691724658
+    }
+  ],
+  "answer_first": "SCOPED_NULL: no family×partition meets the winner rule (Holm-adjusted p<0.05, same sign in both eras, all eight era-cells above floor); 10/12 tests had all cells above floor",
+  "round0_comparison": {
+    "round0_verdict": "INSUFFICIENT_SUPPORT",
+    "round0_n_tests_above_floor": 0,
+    "round0_n_events_after_join": 291955,
+    "round0_drops_7d": 4714,
+    "round0_panel_note": "round 0 consumed ROUND-2 panel (recorded sha 1a63ce44…) while B1 was rewriting; this round pins B1 ROUND 3 sha 209e2246… (296,637 1D rows; −32 1D rows vs the in-flight r2 count implied by round 0 join+drops)",
+    "max_abs_delta_I": 0.0008605071583623856,
+    "max_abs_delta_I_excluding_participation": 1.4559422454718703e-05,
+    "expected_max_abs_delta_I_from_panel_swap": 1.5e-05,
+    "rows": [
+      {
+        "family": "trend",
+        "partition": "P1_growth",
+        "round0_I": 0.0022688736207783222,
+        "round1_I": 0.002265232542853517,
+        "delta_I": -3.6410779248050376e-06,
+        "round1_se": 0.004542829444609245,
+        "round1_p": 0.616,
+        "round1_holm": 1.0,
+        "round1_floor_pass": true
+      },
+      {
+        "family": "trend",
+        "partition": "P2_stress",
+        "round0_I": -0.005083437077701092,
+        "round1_I": -0.005076376021699449,
+        "delta_I": 7.061056001642606e-06,
+        "round1_se": 0.0034790659286780476,
+        "round1_p": 0.154,
+        "round1_holm": 1.0,
+        "round1_floor_pass": true
+      },
+      {
+        "family": "momentum",
+        "partition": "P1_growth",
+        "round0_I": -0.0014492813497781754,
+        "round1_I": -0.0014500573484180638,
+        "delta_I": -7.759986398883992e-07,
+        "round1_se": 0.004335996425819199,
+        "round1_p": 0.894,
+        "round1_holm": 1.0,
+        "round1_floor_pass": true
+      },
+      {
+        "family": "momentum",
+        "partition": "P2_stress",
+        "round0_I": -0.004627033602446318,
+        "round1_I": -0.004631865058227274,
+        "delta_I": -4.831455780956659e-06,
+        "round1_se": 0.003620138501704466,
+        "round1_p": 0.192,
+        "round1_holm": 1.0,
+        "round1_floor_pass": true
+      },
+      {
+        "family": "compression",
+        "partition": "P1_growth",
+        "round0_I": -0.0015953350812196732,
+        "round1_I": -0.0015954060769348853,
+        "delta_I": -7.099571521212295e-08,
+        "round1_se": 0.003029417186904463,
+        "round1_p": 0.534,
+        "round1_holm": 1.0,
+        "round1_floor_pass": true
+      },
+      {
+        "family": "compression",
+        "partition": "P2_stress",
+        "round0_I": 0.0022999667562544346,
+        "round1_I": 0.002298044800414418,
+        "delta_I": -1.921955840016726e-06,
+        "round1_se": 0.0028018210366993522,
+        "round1_p": 0.46,
+        "round1_holm": 1.0,
+        "round1_floor_pass": true
+      },
+      {
+        "family": "participation",
+        "partition": "P1_growth",
+        "round0_I": 0.005802495172247291,
+        "round1_I": 0.004941988013884905,
+        "delta_I": -0.0008605071583623856,
+        "round1_se": 0.005659595755011296,
+        "round1_p": 0.388,
+        "round1_holm": 1.0,
+        "round1_floor_pass": false
+      },
+      {
+        "family": "participation",
+        "partition": "P2_stress",
+        "round0_I": 0.00013546901755034924,
+        "round1_I": 0.00023580645612242832,
+        "delta_I": 0.00010033743857207908,
+        "round1_se": 0.004921851397409778,
+        "round1_p": 0.944,
+        "round1_holm": 1.0,
+        "round1_floor_pass": false
+      },
+      {
+        "family": "rs",
+        "partition": "P1_growth",
+        "round0_I": 0.0004352484829723835,
+        "round1_I": 0.0004296883997696888,
+        "delta_I": -5.560083202694674e-06,
+        "round1_se": 0.0040818558836059615,
+        "round1_p": 0.858,
+        "round1_holm": 1.0,
+        "round1_floor_pass": true
+      },
+      {
+        "family": "rs",
+        "partition": "P2_stress",
+        "round0_I": -0.0012525361962616444,
+        "round1_I": -0.0012494425361747026,
+        "delta_I": 3.0936600869417227e-06,
+        "round1_se": 0.002992191138814527,
+        "round1_p": 0.698,
+        "round1_holm": 1.0,
+        "round1_floor_pass": true
+      },
+      {
+        "family": "structure",
+        "partition": "P1_growth",
+        "round0_I": 0.002145683392882347,
+        "round1_I": 0.0021311239704276284,
+        "delta_I": -1.4559422454718703e-05,
+        "round1_se": 0.004697632268153961,
+        "round1_p": 0.598,
+        "round1_holm": 1.0,
+        "round1_floor_pass": true
+      },
+      {
+        "family": "structure",
+        "partition": "P2_stress",
+        "round0_I": -0.006872418336570263,
+        "round1_I": -0.006866534909574407,
+        "delta_I": 5.883426995856138e-06,
+        "round1_se": 0.003902221984864351,
+        "round1_p": 0.068,
+        "round1_holm": 0.8160000000000001,
+        "round1_floor_pass": true
+      }
+    ],
+    "movers": [
+      {
+        "cause": "panel r2→r3",
+        "delta": "−32 1D rows; point estimates I expected to move by at most ~1.5e-05"
+      },
+      {
+        "cause": "bootstrap repair (K2 weights)",
+        "delta": "SE/p (structure×P2 SE round0 0.00289 / p 0.014 → ~0.0038 / ~0.06)"
+      },
+      {
+        "cause": "floor repair (K1 eight era cells)",
+        "delta": "verdict INSUFFICIENT_SUPPORT (0/12) → expected SCOPED_NULL (10/12); participation×P1 and participation×P2 remain INSUFFICIENT"
+      }
+    ]
+  },
+  "identity": {
+    "tests_12_sha256_run_a": "cb16e951115df666c21ca164440b80e5beef9e3df9c982cde30a6998a471b92d",
+    "tests_12_sha256_run_b": "cb16e951115df666c21ca164440b80e5beef9e3df9c982cde30a6998a471b92d",
+    "byte_identical": true
+  },
+  "provenance": {
+    "host": {
+      "hostname": "m2studio",
+      "python_executable": "/opt/homebrew/opt/python@3.14/bin/python3.14",
+      "python_version": "3.14.7",
+      "pandas": "3.0.5",
+      "numpy": "2.5.2",
+      "pyarrow": "25.0.1",
+      "scipy": "1.18.0",
+      "pytest": "9.1.1"
+    },
+    "wall_seconds_compute": 35.70835781097412
+  },
+  "pytest_summary": "17 passed in 2.19s",
+  "pytest_summary_counts": "17 passed",
+  "gaps": [
+    "participation x P1 extra under-floor cell 2014-2019/T3/CONTRACTION (22 months) from K8 tercile shift; expected named cells 17 months @ 2014-2019/T1/EXPANSION and 20 months @ 2014-2019/T1/CALM are present",
+    "SCOPED NULL closes this construction (one feature per family, whole-sample terciles, P1/P2, month-cluster bootstrap, Holm-12), not the search space",
+    "bootstrap pairing is per test, not one shared month-draw across all 12 cells (K9)"
+  ],
+  "deviations": [
+    "Bootstrap draws are per test (SeedSequence(20261004).spawn(4) then spawn(12) per branch); pairing holds within a test, not across all 12 cells (K9).",
+    "hashes.txt pins the panel, pairs, regime, manifest, B1 RESULT.md, cited engine/regime scripts, and lane outputs — not every basket parquet (manifest already carries per-name sha256; disk is near full)."
+  ],
+  "k_repairs": {
+    "K1": {
+      "where": "research/prophet_v4/astra_regime_indicator_handoff_20261004/results/E/code/stats.py:168",
+      "how": "floors on eight T1/T3 × state × era cells; pooled-6 mutant in tests"
+    },
+    "K2": {
+      "where": "research/prophet_v4/astra_regime_indicator_handoff_20261004/results/E/code/stats.py:330",
+      "how": "month multiplicity weights; isin mutant fails analytic-SE test"
+    },
+    "K3": {
+      "where": "research/prophet_v4/astra_regime_indicator_handoff_20261004/results/E/code/run.py:138",
+      "how": "SeedSequence(20261004).spawn; no builtin hash(); two-pass sha recorded"
+    },
+    "K4": {
+      "where": "research/prophet_v4/astra_regime_indicator_handoff_20261004/results/E/code/run.py:62",
+      "how": "hash at load and write-out; abort INPUT_CHANGED; pin 209e2246 / d20cd405"
+    },
+    "K5": {
+      "where": "research/prophet_v4/astra_regime_indicator_handoff_20261004/results/E/code/run.py:75",
+      "how": "real citations; test_regime_clock_citation_resolves"
+    },
+    "K6": {
+      "where": "research/prophet_v4/astra_regime_indicator_handoff_20261004/results/E/code/test_E.py:357",
+      "how": "unclustered SE ≥30% below clustered; mutation B keep-all fails the invariant"
+    },
+    "K7": {
+      "where": "research/prophet_v4/astra_regime_indicator_handoff_20261004/results/E/code/run.py:273",
+      "how": "H21 and 3D.p0 secondary rows carry both era values"
+    },
+    "K8": {
+      "where": "research/prophet_v4/astra_regime_indicator_handoff_20261004/results/E/code/features.py:119",
+      "how": "SMA50 NaN excluded from num and denom; warmup test"
+    },
+    "K9": {
+      "where": "research/prophet_v4/astra_regime_indicator_handoff_20261004/results/E/code/run.py:785",
+      "how": "pytest counts folded; per-test pairing disclosed as a deviation"
+    },
+    "K10": {
+      "where": "research/prophet_v4/astra_regime_indicator_handoff_20261004/results/E/code/run.py:98",
+      "how": "round-0 headlines beside round-1; max|ΔI| reported"
+    },
+    "K11": {
+      "where": "research/prophet_v4/astra_regime_indicator_handoff_20261004/results/E/code/run.py:1063",
+      "how": "json/md → pytest → fold → hashes LAST → post-hoc pytest → DONE"
+    },
+    "K12": {
+      "where": "research/prophet_v4/astra_regime_indicator_handoff_20261004/results/E/code/stats.py:96",
+      "how": "drop count by reason; PIT ends 2026-07-02 stated in RESULT.md"
+    }
+  },
+  "mutation_failing_tests": {
+    "floor_mutant_pooled_six": "test_floor_gate_counts_eight_cells",
+    "mutation_B_keep_all_months": "test_unclustered_resample_fails_cluster_invariant",
+    "isin_mutant": "test_cluster_bootstrap_matches_analytic_se"
+  },
+  "pytest_first_rc": 0
+}

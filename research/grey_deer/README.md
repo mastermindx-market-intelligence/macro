@@ -1,8 +1,10 @@
 # Grey Deer Risk Intelligence & Capital Protection — canonical index
 
 **Program key:** `WS:GREY-DEER-RISK-INTELLIGENCE` · registry key `grey-deer-risk-intelligence`
-(`config/mastermind_programs.yml`) · **Status:** architecture frozen 2026-08-19; no runtime
-behavior exists yet. This README is an index only — it duplicates no architecture.
+(`config/mastermind_programs.yml`) · **Status:** architecture frozen 2026-08-19; GD-3 production acceptance
+passed 2026-08-27; pullback operation `risk-radar-pullback-20261009` under the Fable seat since
+2026-10-11 (resumption file: `GREY_DEER_CONTINUATION_HANDOFF_2026-10-11.md`). This README is an
+index only — it duplicates no architecture.
 
 ## Canonical files (this directory)
 
@@ -12,6 +14,11 @@ behavior exists yet. This README is an index only — it duplicates no architect
 | `GREY_DEER_FABLE_EXECUTION_COMMAND_PACKET_2026-08-19.md` | Fable COO execution packet: wave packets GD-0..GD-11, laws, routing, acceptance, stop conditions. |
 | `GREY_DEER_WAVE_GRAPH_AND_PR_ACCEPTANCE_MATRIX_2026-08-19.md` | Mechanical index: wave DAG, PR cards, path fences, collision fences, authority checkpoints. |
 | `GD1_GROK_SCIENTIFIC_REPLAY_HANDOFF_2026-08-19.md` | GD-1A/GD-1B research protocol for the Grok operator (prereg-first PIT replay). Outputs land under `research/grey_deer/gd1/`. |
+| `GREY_DEER_CONTINUATION_HANDOFF_2026-10-11.md` | Fable seat resumption file for the pullback operation: wave plan + exit gates, lane matrix, DECIDED / FACTS / OPEN / NEXT, denial register. Updated at wave boundaries. |
+| `GREY_DEER_FABLE_HANDOFF_2026-10-11.md` | Sol's end-to-end handoff packet — PR #8772 (DRAFT, not on main as of 2026-10-11; the seat consumed the same packet from the Chairman-delivered zip): frontier table, collision pairs, pinned revisions. |
+| `PULLBACK_SOURCE_RIGHTS_QUALIFICATION_2026-10-11.md` | O1/T02 versioned eligible-input manifest v1.0.0: per-input producer, rights, vintage, basis and disposition; evidence classes; frozen qualified sample; open determinations G1–G6 routed to owners. An owner projection, not a source store. |
+| `PULLBACK_PREREGISTRATION_2026-10-11.md` | O8/T22 pullback probability-and-depth preregistration v1: frozen Massive SPY sample by content sha256, targets, populations, fixed baselines and simple models, purged expanding folds, paired block bootstrap, Bonferroni-adjusted gates and verdict mapping. Frozen before any outcome on the sample was computed; one execution per revision. |
+| `incidents/2026-10-11_PUBLICATION_HEALTH_HEARTBEAT_STALL_REPAIR.md` | O7/T03 publication-health note: the QLedger GH001 block on the US nightly collection (routed to the QLedger owner), #8042 throughput is not size proof, and the heartbeat stall-marker repair with its production replay. The held 2026-10-08 note lives in PR #8648 and is not written here. |
 
 AgentOS records: `agentos/workstreams/WS-GREY-DEER-RISK-INTELLIGENCE.md`, eight
 `agentos/decisions/DEC-RISK-*.md` / `DEC-PROPHET-RANK-*` / `DEC-REPAIR-*` / `DEC-PORTFOLIO-*` /
@@ -31,7 +38,18 @@ AgentOS records: `agentos/workstreams/WS-GREY-DEER-RISK-INTELLIGENCE.md`, eight
 
 The wave matrix is a mechanical index under 3. The GD-1 packet governs GD-1 research conduct under 2–3.
 
-## Current next action (updated 2026-08-27, GD-3 acceptance handoff)
+## Current next action (updated 2026-10-11, Fable seat O8/T22)
+
+- Read `GREY_DEER_CONTINUATION_HANDOFF_2026-10-11.md` §0 and §3 NEXT, then the latest
+  `agentos/handoffs/GREY-DEER-RISK-INTELLIGENCE-2026-10-11-FABLE-W0.md`. Merged: W0 records (PR #8785),
+  O1/T02 qualification (PR #8833, manifest v1.0.0) and O7/T03 note + heartbeat repair (PR #8835,
+  production read pending). O8/T22 preregistration: `PULLBACK_PREREGISTRATION_2026-10-11.md`.
+  Order from here: observed-move primitives (W2) → one execution of the frozen protocol and consumer
+  qualification (W3, PR #8721 read-only).
+- Incumbents are never written by a new seat: PR #8721 (live writer) and PR #8188 (HOLD-FOR-SOL).
+- Everything in the 2026-08-27 block below is DONE and DO_NOT_REDO.
+
+## Prior next action (2026-08-27, GD-3 acceptance handoff — closed)
 
 - **GD-1 closed:** GD-1A DONE; GD-1B ACCEPTED_NO_PROMOTION — zero GD-5 promotions
   (`DEC:GD1-ACCEPTED-NO-PROMOTION`). Dossier: `gd1/`. **GD-1C closed** DONE /

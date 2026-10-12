@@ -24,6 +24,7 @@ from __future__ import annotations
 import json
 import logging
 import os
+import re
 from datetime import date, datetime, timezone
 from pathlib import Path
 
@@ -309,6 +310,31 @@ def _ticker_to_sec_code(ticker: str) -> tuple[str, str] | None:
     return code, exch
 
 
+
+_CNINFO_STATIC_BASE = "https://static.cninfo.com.cn/"
+_CNINFO_RELATIVE_PATH = re.compile(r"^finalpage/[A-Za-z0-9._/-]+$")
+
+
+def _cninfo_source_url(adjunct_url: str | None) -> str | None:
+    """Return a safe absolute CNInfo PDF URL for the stored relative source path.
+
+    The filing owner stores adjunct_url exactly as CNInfo supplied it and never
+    fetches the body. This reader may expose a user-navigable source reference,
+    but it must not turn arbitrary stored text into an outbound URL. Only the
+    observed CNInfo finalpage/ path family is accepted; absolute URLs,
+    traversal, backslashes and control characters fail closed.
+    """
+    raw = str(adjunct_url or "").strip()
+    if not raw or "://" in raw or "\\" in raw or ".." in raw:
+        return None
+    if any(ord(ch) < 32 for ch in raw):
+        return None
+    rel = raw.lstrip("/")
+    if not _CNINFO_RELATIVE_PATH.fullmatch(rel):
+        return None
+    return _CNINFO_STATIC_BASE + rel
+
+
 def _load_visits_context() -> dict:
     """One-time load of the whole china_visits plane for this build: rows
     grouped by sec_code, plus the plane's coverage_start and health record.
@@ -576,7 +602,10 @@ def _visit_block(ticker: str, visit_ctx: dict) -> dict:
                 "title": r.get("title"),
                 "kind_en": r.get("kind_en") or "investor visit",
                 "kind_zh": r.get("kind_zh") or "机构调研",
+                "announcement_id": r.get("announcement_id"),
                 "source_published_at": r.get("source_published_at"),
+                "system_recorded_at": r.get("system_recorded_at"),
+                "source_url": _cninfo_source_url(r.get("adjunct_url")),
                 "visitor_raw": r.get("visitor_raw"),
                 "visitor_class": r.get("visitor_class"),
                 "ontology_version": r.get("ontology_version"),
@@ -962,6 +991,107 @@ def _read_for(stage: str, lean: int, dirs: dict, edge_score: int, gap: int,
             f"温和偏积极（剩余边际约 {pct}%）。")
 
 
+# ── Bounded company evidence packet (CIE-04/05/06) ─────────────────────────── #
+
+_COMPANY_EVIDENCE_SCHEMA = "china_intel.company_evidence.v1"
+
+
+def _company_evidence_block(
+    visits: dict | None,
+    traj: dict | None,
+    concern_en: str | None,
+    concern_zh: str | None,
+) -> dict:
+    """Compose owner-native company evidence without creating a new authority.
+
+    This is a read-time packet inside the existing China Hub command artifact,
+    not a persistent evidence store. It preserves the visit plane's exact typed
+    coverage state, source/publication/recording clocks, existing market
+    context, and current Hub risk/contradiction text. It never scores, ranks,
+    gates, sizes, mutates an owner store, or performs a network/model call.
+    """
+    visits = visits or {"state": "no_coverage", "recent": []}
+    traj = traj or {}
+    state = str(visits.get("state") or "no_coverage")
+    recent = list(visits.get("recent") or [])[:5]
+
+    evidence: list[dict] = []
+    unknowns: list[str] = []
+    for row in recent:
+        visitor_class = row.get("visitor_class")
+        visitor_unknown = visitor_class in (None, "", "not_yet_available", "unresolved")
+        if visitor_unknown:
+            unknowns.append("visitor_identity_not_available")
+        evidence.append({
+            "kind": "institutional_visit_filing",
+            "source": "CNInfo",
+            "source_id": row.get("announcement_id"),
+            "source_url": row.get("source_url"),
+            "title": row.get("title"),
+            "source_published_at": row.get("source_published_at"),
+            "system_recorded_at": row.get("system_recorded_at"),
+            "visitor_identity_state": "unknown" if visitor_unknown else "resolved",
+        })
+
+    state_unknown = {
+        "no_coverage": "visit_coverage_not_started",
+        "stale": "visit_source_stale",
+        "source_failure": "visit_source_unavailable",
+        "not_yet_available": "visit_observation_incomplete",
+    }.get(state)
+    if state_unknown:
+        unknowns.append(state_unknown)
+    if visits.get("coverage_exception"):
+        unknowns.append("visit_coverage_incomplete")
+
+    latest = evidence[0] if evidence else {}
+    previous = evidence[1] if len(evidence) > 1 else {}
+    market_context = {
+        "ret_20d": traj.get("ret_20d"),
+        "rs_20d": traj.get("rs_20d"),
+        "rs_60d": traj.get("rs_60d"),
+        "off_high_pct": traj.get("off_high_pct"),
+        "rolling_over": bool(traj.get("rolling_over")) if traj else None,
+    }
+    if not traj:
+        unknowns.append("market_context_unavailable")
+
+    contradictions = []
+    if concern_en:
+        contradictions.append({
+            "basis": "existing_hub_risk_context",
+            "detail_en": concern_en,
+            "detail_zh": concern_zh or concern_en,
+        })
+
+    return {
+        "schema": _COMPANY_EVIDENCE_SCHEMA,
+        "is_context_only": True,
+        "authority": {
+            "identity": "existing_hub_ticker",
+            "ranking": "none",
+            "prophet": "none",
+            "trade": "none",
+        },
+        "source_state": state,
+        "coverage_start": visits.get("coverage_start"),
+        "evidence": evidence,
+        "change": {
+            "basis": "observed_visit_filing_sequence",
+            "latest_source_published_at": latest.get("source_published_at"),
+            "previous_source_published_at": previous.get("source_published_at"),
+        },
+        "clocks": {
+            "coverage_start": visits.get("coverage_start"),
+            "latest_source_published_at": latest.get("source_published_at"),
+            "latest_system_recorded_at": latest.get("system_recorded_at"),
+        },
+        "market_context": market_context,
+        "contradictions": contradictions,
+        "unknowns": sorted(set(unknowns)),
+    }
+
+
 # ── Per-ticker dossier ────────────────────────────────────────────────────── #
 
 def _dossier(ticker: str, altdata_row: dict | None, radar_row: dict | None,
@@ -1019,6 +1149,15 @@ def _dossier(ticker: str, altdata_row: dict | None, radar_row: dict | None,
 
     read, read_zh = _read_for(stage, lean, dirs, edge_rec["score"], gap_rec["gap"], altdata_row)
 
+    # CIE-04/05/06 owner-native context packet. Compute after every scoring
+    # input is already fixed so this packet cannot feed the rank calculation.
+    visits = _visit_block(
+        ticker,
+        visit_ctx or {"by_code": {}, "coverage_start": None,
+                      "health": {"status": "no_coverage"}},
+    )
+    company_evidence = _company_evidence_block(visits, traj, fals, fals_zh)
+
     # desk directions matrix for display (present=True/False + direction)
     desk_matrix = {
         "news":    {"present": news_items is not None,   "dir": dirs["news"]},
@@ -1068,8 +1207,10 @@ def _dossier(ticker: str, altdata_row: dict | None, radar_row: dict | None,
         # Descriptive only — NEVER a desk, NEVER a score/rank input (masterplan
         # §11.4 serial firewall). visit_ctx absent (e.g. a test that does not
         # pass it) degrades to the plane's honest no_coverage state.
-        "visits": _visit_block(ticker, visit_ctx or {"by_code": {}, "coverage_start": None,
-                                                       "health": {"status": "no_coverage"}}),
+        "visits": visits,
+        # CIE-04/05/06: bounded read-time evidence composition. It carries no
+        # scoring/ranking/Prophet/trade authority and creates no owner store.
+        "company_evidence": company_evidence,
         "traj": {
             "ret_20d": traj.get("ret_20d"),
             "rs_20d": traj.get("rs_20d"),

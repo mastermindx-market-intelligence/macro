@@ -1,0 +1,21 @@
+{
+  "source_commit": "395e5d6089e95aa907c48fae811ecb918fb26f95",
+  "sha256": "e2b2e6b95408bf3d83ceb76058fab0f73527165aa348182760ac917916518f00",
+  "bytes": 81628,
+  "original_order": [
+    "## Required context at the start of every task",
+    "## Navigation source-of-truth",
+    "## Design system (any user-facing surface)",
+    "## Workspace and git",
+    "## Signal-state interpretation (operator 2026-08-09)",
+    "## Adjudication coverage gate (operator 2026-08-10)",
+    "## Kill-registry citations (DO_NOT_REBUILD.md)",
+    "## Agent OS knowledge plane",
+    "## Model routing",
+    "## Context economy (frontier burn is CONTEXT \u00d7 TURNS)",
+    "## Execution continuation law",
+    "## Definition of done"
+  ],
+  "default_project_doc_bytes": 32768,
+  "scope": "Instruction section ordering only. No text, guard, settings, memory or admission changes."
+}

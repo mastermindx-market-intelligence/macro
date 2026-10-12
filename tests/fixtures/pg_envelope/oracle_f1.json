@@ -1,0 +1,2909 @@
+{
+  "family": "F1_pg_workiva_ex991",
+  "authored_by": "GLM (Z.ai)",
+  "independence": "authored from ./src raw bytes only; no repository code read or run",
+  "documents": [
+    {
+      "file": "fy2425q4amj8-kexhibit991.htm",
+      "sha256": "6c625f3b78ba710da8a682e3ef5d5a57b157fd962f2d486154d9654ae25dcb6a",
+      "accession": "0000080424-25-000067",
+      "fiscal_year": 2025,
+      "fiscal_quarter": 4,
+      "quarter_start": "2025-04-01",
+      "quarter_end": "2025-06-30",
+      "headline": "Q4 ’25: Net Sales +2%; Organic Sales +2%; Diluted EPS +17%; Core EPS +6%",
+      "metrics": {
+        "pg_reported_sales_growth_pct": {
+          "expected": 2.0,
+          "unit": "percent",
+          "absence_reason": null,
+          "cell_text": "2%",
+          "locator": {
+            "table_ordinal": 3,
+            "table_title": "April-June Quarter Business Discussion",
+            "period_header": "April - June 2025",
+            "row_label": "Total P&G",
+            "column_header": "Net Sales"
+          },
+          "also_found": [
+            {
+              "table_ordinal": 6,
+              "table_title": "Consolidated Earnings Information",
+              "period_header": "Three Months Ended June 30, 2025",
+              "row_label": "TOTAL",
+              "column_header": "Net Sales Growth",
+              "cell_text": "2%"
+            },
+            {
+              "table_ordinal": 4,
+              "table_title": "Consolidated Earnings Information",
+              "period_header": "Three Months Ended June 30, 2025",
+              "row_label": "NET SALES",
+              "column_header": "% Chg",
+              "cell_text": "2%"
+            },
+            {
+              "table_ordinal": 13,
+              "table_title": "Organic sales growth : The reconciliation of reported sales growth to organic sales is as follows:",
+              "period_header": "April - June 2025",
+              "row_label": "Total Company",
+              "column_header": "Net Sales Growth",
+              "cell_text": "2%"
+            },
+            {
+              "table_ordinal": 2,
+              "table_title": "Fourth Quarter ($ billions, except EPS)",
+              "period_header": "Fourth Quarter ($ billions, except EPS)",
+              "row_label": "Net Sales",
+              "column_header": "% Change",
+              "cell_text": "2%"
+            },
+            {
+              "table_ordinal": 1,
+              "table_title": "P&G ANNOUNCES FOURTH QUARTER AND FISCAL YEAR 2025 RESULTS",
+              "period_header": null,
+              "row_label": null,
+              "column_header": null,
+              "cell_text": "Q4 ’25: Net Sales +2%; Organic Sales +2%; Diluted EPS +17%; Core EPS +6%"
+            }
+          ],
+          "notes": "Total company reported (GAAP) net sales growth for the quarter."
+        },
+        "pg_total_volume_growth_pct": {
+          "expected": 0.0,
+          "unit": "percent",
+          "absence_reason": null,
+          "cell_text": "—%",
+          "locator": {
+            "table_ordinal": 3,
+            "table_title": "April-June Quarter Business Discussion",
+            "period_header": "April - June 2025",
+            "row_label": "Total P&G",
+            "column_header": "Volume"
+          },
+          "also_found": [
+            {
+              "table_ordinal": 6,
+              "table_title": "Consolidated Earnings Information",
+              "period_header": "Three Months Ended June 30, 2025",
+              "row_label": "TOTAL",
+              "column_header": "Volume with Acquisitions & Divestitures",
+              "cell_text": "—%"
+            }
+          ],
+          "notes": "This release's drivers table labels all-in volume simply 'Volume'; it is the 'Volume with Acquisitions & Divestitures' measure (the exhibit drivers table in the Q4 releases uses that full label)."
+        },
+        "pg_organic_volume_growth_pct": {
+          "expected": 0.0,
+          "unit": "percent",
+          "absence_reason": null,
+          "cell_text": "—%",
+          "locator": {
+            "table_ordinal": 3,
+            "table_title": "April-June Quarter Business Discussion",
+            "period_header": "April - June 2025",
+            "row_label": "Total P&G",
+            "column_header": "Organic Volume"
+          },
+          "also_found": [
+            {
+              "table_ordinal": 6,
+              "table_title": "Consolidated Earnings Information",
+              "period_header": "Three Months Ended June 30, 2025",
+              "row_label": "TOTAL",
+              "column_header": "Volume Excluding Acquisitions & Divestitures",
+              "cell_text": "—%"
+            }
+          ],
+          "notes": "'Organic Volume' is volume excluding acquisitions and divestitures."
+        },
+        "pg_price_contribution_pp": {
+          "expected": 1.0,
+          "unit": "percent",
+          "absence_reason": null,
+          "cell_text": "1%",
+          "locator": {
+            "table_ordinal": 3,
+            "table_title": "April-June Quarter Business Discussion",
+            "period_header": "April - June 2025",
+            "row_label": "Total P&G",
+            "column_header": "Price"
+          },
+          "also_found": [
+            {
+              "table_ordinal": 6,
+              "table_title": "Consolidated Earnings Information",
+              "period_header": "Three Months Ended June 30, 2025",
+              "row_label": "TOTAL",
+              "column_header": "Price",
+              "cell_text": "1%"
+            }
+          ],
+          "notes": "Contribution of higher pricing to reported net sales growth for the quarter."
+        },
+        "pg_mix_contribution_pp": {
+          "expected": 1.0,
+          "unit": "percent",
+          "absence_reason": null,
+          "cell_text": "1%",
+          "locator": {
+            "table_ordinal": 3,
+            "table_title": "April-June Quarter Business Discussion",
+            "period_header": "April - June 2025",
+            "row_label": "Total P&G",
+            "column_header": "Mix"
+          },
+          "also_found": [
+            {
+              "table_ordinal": 6,
+              "table_title": "Consolidated Earnings Information",
+              "period_header": "Three Months Ended June 30, 2025",
+              "row_label": "TOTAL",
+              "column_header": "Mix",
+              "cell_text": "1%"
+            }
+          ],
+          "notes": "Contribution of mix to reported net sales growth for the quarter."
+        },
+        "pg_fx_contribution_pp": {
+          "expected": 0.0,
+          "unit": "percent",
+          "absence_reason": null,
+          "cell_text": "—%",
+          "locator": {
+            "table_ordinal": 3,
+            "table_title": "April-June Quarter Business Discussion",
+            "period_header": "April - June 2025",
+            "row_label": "Total P&G",
+            "column_header": "Foreign Exchange"
+          },
+          "also_found": [
+            {
+              "table_ordinal": 6,
+              "table_title": "Consolidated Earnings Information",
+              "period_header": "Three Months Ended June 30, 2025",
+              "row_label": "TOTAL",
+              "column_header": "Foreign Exchange",
+              "cell_text": "—%"
+            },
+            {
+              "table_ordinal": 13,
+              "table_title": "Organic sales growth : The reconciliation of reported sales growth to organic sales is as follows:",
+              "period_header": "April - June 2025",
+              "row_label": "Total Company",
+              "column_header": "Foreign Exchange Impact",
+              "cell_text": "—%"
+            }
+          ],
+          "notes": "Drivers table shows foreign exchange as a contribution to reported net sales growth. The organic-sales reconciliation prints the same item with the opposite sign as 'Foreign Exchange Impact' (the amount deducted from reported growth to arrive at organic growth); both describe the same FX effect."
+        },
+        "pg_other_contribution_pp": {
+          "expected": 0.0,
+          "unit": "percent",
+          "absence_reason": null,
+          "cell_text": "—%",
+          "locator": {
+            "table_ordinal": 3,
+            "table_title": "April-June Quarter Business Discussion",
+            "period_header": "April - June 2025",
+            "row_label": "Total P&G",
+            "column_header": "Other (2)"
+          },
+          "also_found": [
+            {
+              "table_ordinal": 6,
+              "table_title": "Consolidated Earnings Information",
+              "period_header": "Three Months Ended June 30, 2025",
+              "row_label": "TOTAL",
+              "column_header": "Other (2)",
+              "cell_text": "—%"
+            }
+          ],
+          "notes": "'Other' per the table footnote includes the sales mix impact from acquisitions and divestitures and rounding impacts necessary to reconcile volume to net sales."
+        },
+        "pg_organic_sales_growth_pct": {
+          "expected": 2.0,
+          "unit": "percent",
+          "absence_reason": null,
+          "cell_text": "2%",
+          "locator": {
+            "table_ordinal": 13,
+            "table_title": "Organic sales growth : The reconciliation of reported sales growth to organic sales is as follows:",
+            "period_header": "April - June 2025",
+            "row_label": "Total Company",
+            "column_header": "Organic Sales Growth"
+          },
+          "also_found": [
+            {
+              "table_ordinal": 3,
+              "table_title": "April-June Quarter Business Discussion",
+              "period_header": "April - June 2025",
+              "row_label": "Total P&G",
+              "column_header": "Organic Sales",
+              "cell_text": "2%"
+            },
+            {
+              "table_ordinal": 2,
+              "table_title": "Fourth Quarter ($ billions, except EPS)",
+              "period_header": "Fourth Quarter ($ billions, except EPS)",
+              "row_label": "Organic Sales",
+              "column_header": "% Change",
+              "cell_text": "+2%"
+            },
+            {
+              "table_ordinal": 1,
+              "table_title": "P&G ANNOUNCES FOURTH QUARTER AND FISCAL YEAR 2025 RESULTS",
+              "period_header": null,
+              "row_label": null,
+              "column_header": null,
+              "cell_text": "Q4 ’25: Net Sales +2%; Organic Sales +2%; Diluted EPS +17%; Core EPS +6%"
+            }
+          ],
+          "notes": "Total-company organic sales growth for the quarter from the reported-to-organic reconciliation; agrees with the drivers table and the highlights table."
+        },
+        "pg_diluted_eps": {
+          "expected": 1.48,
+          "unit": "USD per share",
+          "absence_reason": null,
+          "cell_text": "1.48",
+          "locator": {
+            "table_ordinal": 4,
+            "table_title": "Consolidated Earnings Information",
+            "period_header": "Three Months Ended June 30, 2025",
+            "row_label": "Diluted",
+            "column_header": "2025"
+          },
+          "also_found": [
+            {
+              "table_ordinal": 2,
+              "table_title": "Fourth Quarter ($ billions, except EPS)",
+              "period_header": "Fourth Quarter ($ billions, except EPS)",
+              "row_label": "Diluted EPS",
+              "column_header": "2025",
+              "cell_text": "$1.48"
+            }
+          ],
+          "notes": "GAAP diluted net earnings per common share for the quarter. The '$' sign is printed in the adjacent cell of the same row; the numeric cell text is recorded."
+        },
+        "pg_prior_diluted_eps": {
+          "expected": 1.27,
+          "unit": "USD per share",
+          "absence_reason": null,
+          "cell_text": "1.27",
+          "locator": {
+            "table_ordinal": 4,
+            "table_title": "Consolidated Earnings Information",
+            "period_header": "Three Months Ended June 30, 2024",
+            "row_label": "Diluted",
+            "column_header": "2024"
+          },
+          "also_found": [
+            {
+              "table_ordinal": 2,
+              "table_title": "Fourth Quarter ($ billions, except EPS)",
+              "period_header": "Fourth Quarter ($ billions, except EPS)",
+              "row_label": "Diluted EPS",
+              "column_header": "2024",
+              "cell_text": "$1.27"
+            }
+          ],
+          "notes": "Year-ago quarter diluted EPS as printed in this release (comparative column of the same statement)."
+        },
+        "pg_reported_eps_growth_pct": {
+          "expected": 17.0,
+          "unit": "percent",
+          "absence_reason": null,
+          "cell_text": "17%",
+          "locator": {
+            "table_ordinal": 4,
+            "table_title": "Consolidated Earnings Information",
+            "period_header": "Three Months Ended June 30, 2025",
+            "row_label": "Diluted",
+            "column_header": "% Chg"
+          },
+          "also_found": [
+            {
+              "table_ordinal": 11,
+              "table_title": "Reconciliation of Non-GAAP Measures",
+              "period_header": "Three Months Ended June 30, 2025",
+              "row_label": "Diluted EPS",
+              "column_header": "CHANGE VERSUS YEAR AGO",
+              "cell_text": "17"
+            },
+            {
+              "table_ordinal": 2,
+              "table_title": "Fourth Quarter ($ billions, except EPS)",
+              "period_header": "Fourth Quarter ($ billions, except EPS)",
+              "row_label": "Diluted EPS",
+              "column_header": "% Change",
+              "cell_text": "17%"
+            },
+            {
+              "table_ordinal": 1,
+              "table_title": "P&G ANNOUNCES FOURTH QUARTER AND FISCAL YEAR 2025 RESULTS",
+              "period_header": null,
+              "row_label": null,
+              "column_header": null,
+              "cell_text": "FY ’25: Net Sales 0%; Organic Sales +2%; Diluted EPS +8%; Core EPS +4%"
+            }
+          ],
+          "notes": "% change in quarterly GAAP diluted EPS, literally as printed. In the 'CHANGE VERSUS YEAR AGO' block the value and the '%' sign sit in adjacent cells."
+        },
+        "pg_core_eps": {
+          "expected": 1.48,
+          "unit": "USD per share",
+          "absence_reason": null,
+          "cell_text": "1.48",
+          "locator": {
+            "table_ordinal": 11,
+            "table_title": "Reconciliation of Non-GAAP Measures",
+            "period_header": "Three Months Ended June 30, 2025",
+            "row_label": "Diluted net earnings per common share (2)",
+            "column_header": "As Reported (GAAP) (1)"
+          },
+          "also_found": [
+            {
+              "table_ordinal": 2,
+              "table_title": "Fourth Quarter ($ billions, except EPS)",
+              "period_header": "Fourth Quarter ($ billions, except EPS)",
+              "row_label": "Core EPS",
+              "column_header": "2025",
+              "cell_text": "$1.48"
+            }
+          ],
+          "notes": "Core (non-GAAP) EPS for the quarter from the reported-to-Core reconciliation. The '$' sign is printed in the adjacent cell. Footnote (1) to this table states that for the three months ended June 30, 2025 there were no adjustments to or reconciling items for Core EPS, so Core EPS equals As Reported GAAP diluted EPS of $1.48."
+        },
+        "pg_prior_core_eps": {
+          "expected": 1.4,
+          "unit": "USD per share",
+          "absence_reason": null,
+          "cell_text": "1.40",
+          "locator": {
+            "table_ordinal": 11,
+            "table_title": "Reconciliation of Non-GAAP Measures",
+            "period_header": "Three Months Ended June 30, 2024",
+            "row_label": "Diluted net earnings per common share (2)",
+            "column_header": "Core (Non-GAAP)"
+          },
+          "also_found": [
+            {
+              "table_ordinal": 2,
+              "table_title": "Fourth Quarter ($ billions, except EPS)",
+              "period_header": "Fourth Quarter ($ billions, except EPS)",
+              "row_label": "Core EPS",
+              "column_header": "2024",
+              "cell_text": "$1.40"
+            }
+          ],
+          "notes": "Year-ago quarter value from the 'Core (Non-GAAP)' column of the same reconciliation table; the current-quarter column is headed 'As Reported (GAAP) (1)' because footnote (1) states there were no adjustments to or reconciling items for Core EPS for the three months ended June 30, 2025."
+        },
+        "pg_core_eps_growth_pct": {
+          "expected": 6.0,
+          "unit": "percent",
+          "absence_reason": null,
+          "cell_text": "6",
+          "locator": {
+            "table_ordinal": 11,
+            "table_title": "Reconciliation of Non-GAAP Measures",
+            "period_header": "Three Months Ended June 30, 2025",
+            "row_label": "Core EPS",
+            "column_header": "CHANGE VERSUS YEAR AGO"
+          },
+          "also_found": [
+            {
+              "table_ordinal": 2,
+              "table_title": "Fourth Quarter ($ billions, except EPS)",
+              "period_header": "Fourth Quarter ($ billions, except EPS)",
+              "row_label": "Core EPS",
+              "column_header": "% Change",
+              "cell_text": "+6%"
+            },
+            {
+              "table_ordinal": 1,
+              "table_title": "P&G ANNOUNCES FOURTH QUARTER AND FISCAL YEAR 2025 RESULTS",
+              "period_header": null,
+              "row_label": null,
+              "column_header": null,
+              "cell_text": "FY ’25: Net Sales 0%; Organic Sales +2%; Diluted EPS +8%; Core EPS +4%"
+            }
+          ],
+          "notes": "% change in quarterly Core EPS, literally as printed. Value and '%' sign are adjacent cells; the same percentage appears in the highlights table with the '%' attached."
+        },
+        "pg_core_reconciliation_context": {
+          "expected": "Diluted net earnings per share were $1.48, an increase of seventeen percent versus the prior year driven primarily by higher restructuring charges in the prior year related to the substantial liquidation of operations in certain Enterprise Markets, including Nigeria. Core net earnings per share increased six percent to $1.48.",
+          "unit": "text",
+          "absence_reason": null,
+          "cell_text": "Diluted net earnings per share were $1.48, an increase of seventeen percent versus the prior year driven primarily by higher restructuring charges in the prior year related to the substantial liquidation of operations in certain Enterprise Markets, including Nigeria. Core net earnings per share increased six percent to $1.48.",
+          "locator": {
+            "table_ordinal": 2,
+            "table_title": "April-June Quarter Results",
+            "period_header": "Three Months Ended June 30, 2025",
+            "row_label": null,
+            "column_header": null
+          },
+          "also_found": [
+            {
+              "table_ordinal": null,
+              "table_title": null,
+              "period_header": null,
+              "row_label": "Exhibit 1 - Non-GAAP Measures, 'Core EPS and Currency-neutral Core EPS' definition",
+              "column_header": null,
+              "cell_text": "Core EPS and Currency-neutral Core EPS: Core earnings per share, or Core EPS, is a measure of diluted net earnings per common share (diluted EPS) adjusted for items as indicated."
+            },
+            {
+              "table_ordinal": null,
+              "table_title": null,
+              "period_header": null,
+              "row_label": "Exhibit 1 - Non-GAAP Measures, 'Incremental restructuring' bullet",
+              "column_header": null,
+              "cell_text": "The adjustment to Core earnings includes the restructuring charges that exceed the normal, recurring level of restructuring charges."
+            }
+          ],
+          "notes": "Release narrative explaining how the quarter's Core EPS differs from GAAP diluted EPS and which items are excluded. Not a table cell; located by the section heading and the nearest preceding table. Verbatim, within the 400-character limit."
+        },
+        "pg_beauty_organic_sales_growth_pct": {
+          "expected": 1.0,
+          "unit": "percent",
+          "absence_reason": null,
+          "cell_text": "1%",
+          "locator": {
+            "table_ordinal": 13,
+            "table_title": "Organic sales growth : The reconciliation of reported sales growth to organic sales is as follows:",
+            "period_header": "April - June 2025",
+            "row_label": "Beauty",
+            "column_header": "Organic Sales Growth"
+          },
+          "also_found": [
+            {
+              "table_ordinal": 3,
+              "table_title": "April-June Quarter Business Discussion",
+              "period_header": "April - June 2025",
+              "row_label": "Beauty",
+              "column_header": "Organic Sales",
+              "cell_text": "1%"
+            }
+          ],
+          "notes": "Reported-to-organic reconciliation for the quarter; agrees with the 'Organic Sales' column of the drivers table."
+        },
+        "pg_grooming_organic_sales_growth_pct": {
+          "expected": 1.0,
+          "unit": "percent",
+          "absence_reason": null,
+          "cell_text": "1%",
+          "locator": {
+            "table_ordinal": 13,
+            "table_title": "Organic sales growth : The reconciliation of reported sales growth to organic sales is as follows:",
+            "period_header": "April - June 2025",
+            "row_label": "Grooming",
+            "column_header": "Organic Sales Growth"
+          },
+          "also_found": [
+            {
+              "table_ordinal": 3,
+              "table_title": "April-June Quarter Business Discussion",
+              "period_header": "April - June 2025",
+              "row_label": "Grooming",
+              "column_header": "Organic Sales",
+              "cell_text": "1%"
+            }
+          ],
+          "notes": "Reported-to-organic reconciliation for the quarter; agrees with the 'Organic Sales' column of the drivers table."
+        },
+        "pg_health_care_organic_sales_growth_pct": {
+          "expected": 2.0,
+          "unit": "percent",
+          "absence_reason": null,
+          "cell_text": "2%",
+          "locator": {
+            "table_ordinal": 13,
+            "table_title": "Organic sales growth : The reconciliation of reported sales growth to organic sales is as follows:",
+            "period_header": "April - June 2025",
+            "row_label": "Health Care",
+            "column_header": "Organic Sales Growth"
+          },
+          "also_found": [
+            {
+              "table_ordinal": 3,
+              "table_title": "April-June Quarter Business Discussion",
+              "period_header": "April - June 2025",
+              "row_label": "Health Care",
+              "column_header": "Organic Sales",
+              "cell_text": "2%"
+            }
+          ],
+          "notes": "Reported-to-organic reconciliation for the quarter; agrees with the 'Organic Sales' column of the drivers table."
+        },
+        "pg_fabric_home_organic_sales_growth_pct": {
+          "expected": 1.0,
+          "unit": "percent",
+          "absence_reason": null,
+          "cell_text": "1%",
+          "locator": {
+            "table_ordinal": 13,
+            "table_title": "Organic sales growth : The reconciliation of reported sales growth to organic sales is as follows:",
+            "period_header": "April - June 2025",
+            "row_label": "Fabric & Home Care",
+            "column_header": "Organic Sales Growth"
+          },
+          "also_found": [
+            {
+              "table_ordinal": 3,
+              "table_title": "April-June Quarter Business Discussion",
+              "period_header": "April - June 2025",
+              "row_label": "Fabric & Home Care",
+              "column_header": "Organic Sales",
+              "cell_text": "1%"
+            }
+          ],
+          "notes": "Reported-to-organic reconciliation for the quarter; agrees with the 'Organic Sales' column of the drivers table."
+        },
+        "pg_baby_feminine_family_organic_sales_growth_pct": {
+          "expected": 1.0,
+          "unit": "percent",
+          "absence_reason": null,
+          "cell_text": "1%",
+          "locator": {
+            "table_ordinal": 13,
+            "table_title": "Organic sales growth : The reconciliation of reported sales growth to organic sales is as follows:",
+            "period_header": "April - June 2025",
+            "row_label": "Baby, Feminine & Family Care",
+            "column_header": "Organic Sales Growth"
+          },
+          "also_found": [
+            {
+              "table_ordinal": 3,
+              "table_title": "April-June Quarter Business Discussion",
+              "period_header": "April - June 2025",
+              "row_label": "Baby, Feminine & Family Care",
+              "column_header": "Organic Sales",
+              "cell_text": "1%"
+            }
+          ],
+          "notes": "Reported-to-organic reconciliation for the quarter; agrees with the 'Organic Sales' column of the drivers table."
+        }
+      },
+      "fiscal_year_tables_present": "Fiscal-year (twelve months ended June 30, 2025) figures are also printed and were ignored for these quarter metrics: highlights table 2 'Fiscal Year' block; statement of earnings table 4 fiscal-year columns; segment tables 7 and 8; non-GAAP reconciliation table 12; adjusted-free-cash-flow tables 18 and 20."
+    },
+    {
+      "file": "fy2526q1jas8-kexhibit991.htm",
+      "sha256": "f3c987b34434671b6cad1f09c6fd42aa10701ac3c2a1fc62644b65c44e0dad96",
+      "accession": "0000080424-25-000240",
+      "fiscal_year": 2026,
+      "fiscal_quarter": 1,
+      "quarter_start": "2025-07-01",
+      "quarter_end": "2025-09-30",
+      "headline": "Net Sales +3%; Organic Sales +2% | Diluted EPS $1.95, +21%; Core EPS $1.99, +3%",
+      "metrics": {
+        "pg_reported_sales_growth_pct": {
+          "expected": 3.0,
+          "unit": "percent",
+          "absence_reason": null,
+          "cell_text": "3%",
+          "locator": {
+            "table_ordinal": 3,
+            "table_title": "July - September Quarter Discussion",
+            "period_header": "July - September 2025",
+            "row_label": "Total P&G",
+            "column_header": "Net Sales"
+          },
+          "also_found": [
+            {
+              "table_ordinal": 6,
+              "table_title": "Consolidated Earnings Information",
+              "period_header": "Three Months Ended September 30, 2025",
+              "row_label": "Total Company",
+              "column_header": "Net Sales",
+              "cell_text": "3%"
+            },
+            {
+              "table_ordinal": 4,
+              "table_title": "Consolidated Earnings Information",
+              "period_header": "Three Months Ended September 30, 2025",
+              "row_label": "NET SALES",
+              "column_header": "% Chg",
+              "cell_text": "3%"
+            },
+            {
+              "table_ordinal": 12,
+              "table_title": "Organic sales growth",
+              "period_header": "July - September 2025",
+              "row_label": "Total Company",
+              "column_header": "Net Sales Growth",
+              "cell_text": "3%"
+            },
+            {
+              "table_ordinal": 2,
+              "table_title": "First Quarter ($ billions, except EPS)",
+              "period_header": "First Quarter ($ billions, except EPS)",
+              "row_label": "Net Sales",
+              "column_header": "% Change",
+              "cell_text": "3%"
+            },
+            {
+              "table_ordinal": 1,
+              "table_title": "P&G ANNOUNCES FISCAL YEAR 2026 FIRST QUARTER RESULTS",
+              "period_header": null,
+              "row_label": null,
+              "column_header": null,
+              "cell_text": "Net Sales +3%; Organic Sales +2%"
+            }
+          ],
+          "notes": "Total company reported (GAAP) net sales growth for the quarter."
+        },
+        "pg_total_volume_growth_pct": {
+          "expected": 0.0,
+          "unit": "percent",
+          "absence_reason": null,
+          "cell_text": "—%",
+          "locator": {
+            "table_ordinal": 3,
+            "table_title": "July - September Quarter Discussion",
+            "period_header": "July - September 2025",
+            "row_label": "Total P&G",
+            "column_header": "Volume"
+          },
+          "also_found": [
+            {
+              "table_ordinal": 6,
+              "table_title": "Consolidated Earnings Information",
+              "period_header": "Three Months Ended September 30, 2025",
+              "row_label": "Total Company",
+              "column_header": "Volume",
+              "cell_text": "—%"
+            }
+          ],
+          "notes": "This release's drivers table labels all-in volume simply 'Volume'; it is the 'Volume with Acquisitions & Divestitures' measure (the exhibit drivers table in the Q4 releases uses that full label)."
+        },
+        "pg_organic_volume_growth_pct": {
+          "expected": 0.0,
+          "unit": "percent",
+          "absence_reason": null,
+          "cell_text": "—%",
+          "locator": {
+            "table_ordinal": 3,
+            "table_title": "July - September Quarter Discussion",
+            "period_header": "July - September 2025",
+            "row_label": "Total P&G",
+            "column_header": "Organic Volume"
+          },
+          "also_found": [
+            {
+              "table_ordinal": 6,
+              "table_title": "Consolidated Earnings Information",
+              "period_header": "Three Months Ended September 30, 2025",
+              "row_label": "Total Company",
+              "column_header": "Organic Volume",
+              "cell_text": "—%"
+            }
+          ],
+          "notes": "'Organic Volume' is volume excluding acquisitions and divestitures."
+        },
+        "pg_price_contribution_pp": {
+          "expected": 1.0,
+          "unit": "percent",
+          "absence_reason": null,
+          "cell_text": "1%",
+          "locator": {
+            "table_ordinal": 3,
+            "table_title": "July - September Quarter Discussion",
+            "period_header": "July - September 2025",
+            "row_label": "Total P&G",
+            "column_header": "Price"
+          },
+          "also_found": [
+            {
+              "table_ordinal": 6,
+              "table_title": "Consolidated Earnings Information",
+              "period_header": "Three Months Ended September 30, 2025",
+              "row_label": "Total Company",
+              "column_header": "Price",
+              "cell_text": "1%"
+            }
+          ],
+          "notes": "Contribution of higher pricing to reported net sales growth for the quarter."
+        },
+        "pg_mix_contribution_pp": {
+          "expected": 1.0,
+          "unit": "percent",
+          "absence_reason": null,
+          "cell_text": "1%",
+          "locator": {
+            "table_ordinal": 3,
+            "table_title": "July - September Quarter Discussion",
+            "period_header": "July - September 2025",
+            "row_label": "Total P&G",
+            "column_header": "Mix"
+          },
+          "also_found": [
+            {
+              "table_ordinal": 6,
+              "table_title": "Consolidated Earnings Information",
+              "period_header": "Three Months Ended September 30, 2025",
+              "row_label": "Total Company",
+              "column_header": "Mix",
+              "cell_text": "1%"
+            }
+          ],
+          "notes": "Contribution of mix to reported net sales growth for the quarter."
+        },
+        "pg_fx_contribution_pp": {
+          "expected": 1.0,
+          "unit": "percent",
+          "absence_reason": null,
+          "cell_text": "1%",
+          "locator": {
+            "table_ordinal": 3,
+            "table_title": "July - September Quarter Discussion",
+            "period_header": "July - September 2025",
+            "row_label": "Total P&G",
+            "column_header": "Foreign Exchange"
+          },
+          "also_found": [
+            {
+              "table_ordinal": 6,
+              "table_title": "Consolidated Earnings Information",
+              "period_header": "Three Months Ended September 30, 2025",
+              "row_label": "Total Company",
+              "column_header": "Foreign Exchange",
+              "cell_text": "1%"
+            },
+            {
+              "table_ordinal": 12,
+              "table_title": "Organic sales growth",
+              "period_header": "July - September 2025",
+              "row_label": "Total Company",
+              "column_header": "Foreign Exchange Impact",
+              "cell_text": "(1)%"
+            }
+          ],
+          "notes": "Drivers table shows foreign exchange as a contribution to reported net sales growth. The organic-sales reconciliation prints the same item with the opposite sign as 'Foreign Exchange Impact' (the amount deducted from reported growth to arrive at organic growth); both describe the same FX effect."
+        },
+        "pg_other_contribution_pp": {
+          "expected": 0.0,
+          "unit": "percent",
+          "absence_reason": null,
+          "cell_text": "—%",
+          "locator": {
+            "table_ordinal": 3,
+            "table_title": "July - September Quarter Discussion",
+            "period_header": "July - September 2025",
+            "row_label": "Total P&G",
+            "column_header": "Other (2)"
+          },
+          "also_found": [
+            {
+              "table_ordinal": 6,
+              "table_title": "Consolidated Earnings Information",
+              "period_header": "Three Months Ended September 30, 2025",
+              "row_label": "Total Company",
+              "column_header": "Other (2)",
+              "cell_text": "—%"
+            }
+          ],
+          "notes": "'Other' per the table footnote includes the sales mix impact from acquisitions and divestitures and rounding impacts necessary to reconcile volume to net sales."
+        },
+        "pg_organic_sales_growth_pct": {
+          "expected": 2.0,
+          "unit": "percent",
+          "absence_reason": null,
+          "cell_text": "2%",
+          "locator": {
+            "table_ordinal": 12,
+            "table_title": "Organic sales growth",
+            "period_header": "July - September 2025",
+            "row_label": "Total Company",
+            "column_header": "Organic Sales Growth"
+          },
+          "also_found": [
+            {
+              "table_ordinal": 3,
+              "table_title": "July - September Quarter Discussion",
+              "period_header": "July - September 2025",
+              "row_label": "Total P&G",
+              "column_header": "Organic Sales",
+              "cell_text": "2%"
+            },
+            {
+              "table_ordinal": 2,
+              "table_title": "First Quarter ($ billions, except EPS)",
+              "period_header": "First Quarter ($ billions, except EPS)",
+              "row_label": "Organic Sales",
+              "column_header": "% Change",
+              "cell_text": "2%"
+            },
+            {
+              "table_ordinal": 1,
+              "table_title": "P&G ANNOUNCES FISCAL YEAR 2026 FIRST QUARTER RESULTS",
+              "period_header": null,
+              "row_label": null,
+              "column_header": null,
+              "cell_text": "Net Sales +3%; Organic Sales +2%"
+            }
+          ],
+          "notes": "Total-company organic sales growth for the quarter from the reported-to-organic reconciliation; agrees with the drivers table and the highlights table."
+        },
+        "pg_diluted_eps": {
+          "expected": 1.95,
+          "unit": "USD per share",
+          "absence_reason": null,
+          "cell_text": "1.95",
+          "locator": {
+            "table_ordinal": 4,
+            "table_title": "Consolidated Earnings Information",
+            "period_header": "Three Months Ended September 30, 2025",
+            "row_label": "Diluted",
+            "column_header": "2025"
+          },
+          "also_found": [
+            {
+              "table_ordinal": 2,
+              "table_title": "First Quarter ($ billions, except EPS)",
+              "period_header": "First Quarter ($ billions, except EPS)",
+              "row_label": "Diluted EPS",
+              "column_header": "2025",
+              "cell_text": "1.95"
+            }
+          ],
+          "notes": "GAAP diluted net earnings per common share for the quarter. The '$' sign is printed in the adjacent cell of the same row; the numeric cell text is recorded."
+        },
+        "pg_prior_diluted_eps": {
+          "expected": 1.61,
+          "unit": "USD per share",
+          "absence_reason": null,
+          "cell_text": "1.61",
+          "locator": {
+            "table_ordinal": 4,
+            "table_title": "Consolidated Earnings Information",
+            "period_header": "Three Months Ended September 30, 2024",
+            "row_label": "Diluted",
+            "column_header": "2024"
+          },
+          "also_found": [
+            {
+              "table_ordinal": 2,
+              "table_title": "First Quarter ($ billions, except EPS)",
+              "period_header": "First Quarter ($ billions, except EPS)",
+              "row_label": "Diluted EPS",
+              "column_header": "2024",
+              "cell_text": "1.61"
+            }
+          ],
+          "notes": "Year-ago quarter diluted EPS as printed in this release (comparative column of the same statement)."
+        },
+        "pg_reported_eps_growth_pct": {
+          "expected": 21.0,
+          "unit": "percent",
+          "absence_reason": null,
+          "cell_text": "21%",
+          "locator": {
+            "table_ordinal": 4,
+            "table_title": "Consolidated Earnings Information",
+            "period_header": "Three Months Ended September 30, 2025",
+            "row_label": "Diluted",
+            "column_header": "% Chg"
+          },
+          "also_found": [
+            {
+              "table_ordinal": 10,
+              "table_title": "CHANGE VERSUS YEAR AGO",
+              "period_header": "Three Months Ended September 30, 2025",
+              "row_label": "Diluted EPS",
+              "column_header": "CHANGE VERSUS YEAR AGO",
+              "cell_text": "21"
+            },
+            {
+              "table_ordinal": 2,
+              "table_title": "First Quarter ($ billions, except EPS)",
+              "period_header": "First Quarter ($ billions, except EPS)",
+              "row_label": "Diluted EPS",
+              "column_header": "% Change",
+              "cell_text": "21%"
+            },
+            {
+              "table_ordinal": 1,
+              "table_title": "P&G ANNOUNCES FISCAL YEAR 2026 FIRST QUARTER RESULTS",
+              "period_header": null,
+              "row_label": null,
+              "column_header": null,
+              "cell_text": "Diluted EPS $1.95, +21%; Core EPS $1.99, +3%"
+            }
+          ],
+          "notes": "% change in quarterly GAAP diluted EPS, literally as printed. In the 'CHANGE VERSUS YEAR AGO' block the value and the '%' sign sit in adjacent cells."
+        },
+        "pg_core_eps": {
+          "expected": 1.99,
+          "unit": "USD per share",
+          "absence_reason": null,
+          "cell_text": "1.99",
+          "locator": {
+            "table_ordinal": 9,
+            "table_title": "Reconciliation of Non-GAAP Measures",
+            "period_header": "Three Months Ended September 30, 2025",
+            "row_label": "Diluted net earnings per common share (1)",
+            "column_header": "Core (Non-GAAP)"
+          },
+          "also_found": [
+            {
+              "table_ordinal": 2,
+              "table_title": "First Quarter ($ billions, except EPS)",
+              "period_header": "First Quarter ($ billions, except EPS)",
+              "row_label": "Core EPS",
+              "column_header": "2025",
+              "cell_text": "1.99"
+            }
+          ],
+          "notes": "Core (non-GAAP) EPS for the quarter from the reported-to-Core reconciliation. The '$' sign is printed in the adjacent cell. Adjusting column(s) printed between As Reported and Core in this table: Incremental Restructuring."
+        },
+        "pg_prior_core_eps": {
+          "expected": 1.93,
+          "unit": "USD per share",
+          "absence_reason": null,
+          "cell_text": "1.93",
+          "locator": {
+            "table_ordinal": 11,
+            "table_title": "Reconciliation of Non-GAAP Measures",
+            "period_header": "Three Months Ended September 30, 2024",
+            "row_label": "Diluted net earnings per common share (1)",
+            "column_header": "Core (Non-GAAP)"
+          },
+          "also_found": [
+            {
+              "table_ordinal": 2,
+              "table_title": "First Quarter ($ billions, except EPS)",
+              "period_header": "First Quarter ($ billions, except EPS)",
+              "row_label": "Core EPS",
+              "column_header": "2024",
+              "cell_text": "1.93"
+            }
+          ],
+          "notes": "Year-ago quarter value from the separate prior-year reconciliation table in the same exhibit."
+        },
+        "pg_core_eps_growth_pct": {
+          "expected": 3.0,
+          "unit": "percent",
+          "absence_reason": null,
+          "cell_text": "3",
+          "locator": {
+            "table_ordinal": 10,
+            "table_title": "CHANGE VERSUS YEAR AGO",
+            "period_header": "Three Months Ended September 30, 2025",
+            "row_label": "Core EPS",
+            "column_header": "CHANGE VERSUS YEAR AGO"
+          },
+          "also_found": [
+            {
+              "table_ordinal": 2,
+              "table_title": "First Quarter ($ billions, except EPS)",
+              "period_header": "First Quarter ($ billions, except EPS)",
+              "row_label": "Core EPS",
+              "column_header": "% Change",
+              "cell_text": "3%"
+            },
+            {
+              "table_ordinal": 1,
+              "table_title": "P&G ANNOUNCES FISCAL YEAR 2026 FIRST QUARTER RESULTS",
+              "period_header": null,
+              "row_label": null,
+              "column_header": null,
+              "cell_text": "Diluted EPS $1.95, +21%; Core EPS $1.99, +3%"
+            }
+          ],
+          "notes": "% change in quarterly Core EPS, literally as printed. Value and '%' sign are adjacent cells; the same percentage appears in the highlights table with the '%' attached."
+        },
+        "pg_core_reconciliation_context": {
+          "expected": "Diluted net earnings per share increased by 21% to $1.95, driven primarily by higher restructuring charges related to the substantial liquidation of operations in certain Enterprise Markets, including Argentina, in the prior year period. Core earnings per share and currency-neutral core EPS increased three percent to $1.99.",
+          "unit": "text",
+          "absence_reason": null,
+          "cell_text": "Diluted net earnings per share increased by 21% to $1.95, driven primarily by higher restructuring charges related to the substantial liquidation of operations in certain Enterprise Markets, including Argentina, in the prior year period. Core earnings per share and currency-neutral core EPS increased three percent to $1.99.",
+          "locator": {
+            "table_ordinal": 3,
+            "table_title": "July - September Quarter Discussion",
+            "period_header": "Three Months Ended September 30, 2025",
+            "row_label": null,
+            "column_header": null
+          },
+          "also_found": [
+            {
+              "table_ordinal": null,
+              "table_title": null,
+              "period_header": null,
+              "row_label": "Exhibit 1 - Non-GAAP Measures, 'Core EPS and Currency-neutral Core EPS' definition",
+              "column_header": null,
+              "cell_text": "Core EPS and Currency-neutral Core EPS: Core earnings per share, or Core EPS, is a measure of diluted net earnings per common share (diluted EPS) adjusted for items as indicated."
+            },
+            {
+              "table_ordinal": null,
+              "table_title": null,
+              "period_header": null,
+              "row_label": "Exhibit 1 - Non-GAAP Measures, 'Incremental restructuring' bullet",
+              "column_header": null,
+              "cell_text": "The adjustment to Core earnings includes the restructuring charges that exceed the normal, recurring level of restructuring charges."
+            }
+          ],
+          "notes": "Release narrative explaining how the quarter's Core EPS differs from GAAP diluted EPS and which items are excluded. Not a table cell; located by the section heading and the nearest preceding table. Verbatim, within the 400-character limit."
+        },
+        "pg_beauty_organic_sales_growth_pct": {
+          "expected": 6.0,
+          "unit": "percent",
+          "absence_reason": null,
+          "cell_text": "6%",
+          "locator": {
+            "table_ordinal": 12,
+            "table_title": "Organic sales growth",
+            "period_header": "July - September 2025",
+            "row_label": "Beauty",
+            "column_header": "Organic Sales Growth"
+          },
+          "also_found": [
+            {
+              "table_ordinal": 3,
+              "table_title": "July - September Quarter Discussion",
+              "period_header": "July - September 2025",
+              "row_label": "Beauty",
+              "column_header": "Organic Sales",
+              "cell_text": "6%"
+            }
+          ],
+          "notes": "Reported-to-organic reconciliation for the quarter; agrees with the 'Organic Sales' column of the drivers table."
+        },
+        "pg_grooming_organic_sales_growth_pct": {
+          "expected": 3.0,
+          "unit": "percent",
+          "absence_reason": null,
+          "cell_text": "3%",
+          "locator": {
+            "table_ordinal": 12,
+            "table_title": "Organic sales growth",
+            "period_header": "July - September 2025",
+            "row_label": "Grooming",
+            "column_header": "Organic Sales Growth"
+          },
+          "also_found": [
+            {
+              "table_ordinal": 3,
+              "table_title": "July - September Quarter Discussion",
+              "period_header": "July - September 2025",
+              "row_label": "Grooming",
+              "column_header": "Organic Sales",
+              "cell_text": "3%"
+            }
+          ],
+          "notes": "Reported-to-organic reconciliation for the quarter; agrees with the 'Organic Sales' column of the drivers table."
+        },
+        "pg_health_care_organic_sales_growth_pct": {
+          "expected": 1.0,
+          "unit": "percent",
+          "absence_reason": null,
+          "cell_text": "1%",
+          "locator": {
+            "table_ordinal": 12,
+            "table_title": "Organic sales growth",
+            "period_header": "July - September 2025",
+            "row_label": "Health Care",
+            "column_header": "Organic Sales Growth"
+          },
+          "also_found": [
+            {
+              "table_ordinal": 3,
+              "table_title": "July - September Quarter Discussion",
+              "period_header": "July - September 2025",
+              "row_label": "Health Care",
+              "column_header": "Organic Sales",
+              "cell_text": "1%"
+            }
+          ],
+          "notes": "Reported-to-organic reconciliation for the quarter; agrees with the 'Organic Sales' column of the drivers table."
+        },
+        "pg_fabric_home_organic_sales_growth_pct": {
+          "expected": 0.0,
+          "unit": "percent",
+          "absence_reason": null,
+          "cell_text": "—%",
+          "locator": {
+            "table_ordinal": 12,
+            "table_title": "Organic sales growth",
+            "period_header": "July - September 2025",
+            "row_label": "Fabric & Home Care",
+            "column_header": "Organic Sales Growth"
+          },
+          "also_found": [
+            {
+              "table_ordinal": 3,
+              "table_title": "July - September Quarter Discussion",
+              "period_header": "July - September 2025",
+              "row_label": "Fabric & Home Care",
+              "column_header": "Organic Sales",
+              "cell_text": "—%"
+            }
+          ],
+          "notes": "Reported-to-organic reconciliation for the quarter; agrees with the 'Organic Sales' column of the drivers table."
+        },
+        "pg_baby_feminine_family_organic_sales_growth_pct": {
+          "expected": 0.0,
+          "unit": "percent",
+          "absence_reason": null,
+          "cell_text": "—%",
+          "locator": {
+            "table_ordinal": 12,
+            "table_title": "Organic sales growth",
+            "period_header": "July - September 2025",
+            "row_label": "Baby, Feminine & Family Care",
+            "column_header": "Organic Sales Growth"
+          },
+          "also_found": [
+            {
+              "table_ordinal": 3,
+              "table_title": "July - September Quarter Discussion",
+              "period_header": "July - September 2025",
+              "row_label": "Baby, Feminine & Family Care",
+              "column_header": "Organic Sales",
+              "cell_text": "—%"
+            }
+          ],
+          "notes": "Reported-to-organic reconciliation for the quarter; agrees with the 'Organic Sales' column of the drivers table."
+        }
+      }
+    },
+    {
+      "file": "fy2526q2ond8-kexhibit991.htm",
+      "sha256": "f6d79042f16c6131100c6c6e678e96f43dd666b410356cc23cd43d7d1e032503",
+      "accession": "0000080424-26-000006",
+      "fiscal_year": 2026,
+      "fiscal_quarter": 2,
+      "quarter_start": "2025-10-01",
+      "quarter_end": "2025-12-31",
+      "headline": "Net Sales +1%; Organic Sales 0% | Diluted EPS $1.78, -5%; Core EPS $1.88, 0%",
+      "metrics": {
+        "pg_reported_sales_growth_pct": {
+          "expected": 1.0,
+          "unit": "percent",
+          "absence_reason": null,
+          "cell_text": "1%",
+          "locator": {
+            "table_ordinal": 3,
+            "table_title": "October - December Quarter Discussion",
+            "period_header": "October - December 2025",
+            "row_label": "Total P&G",
+            "column_header": "Net Sales"
+          },
+          "also_found": [
+            {
+              "table_ordinal": 6,
+              "table_title": "Consolidated Earnings Information",
+              "period_header": "Three Months Ended December 31, 2025",
+              "row_label": "Total Company",
+              "column_header": "Net Sales",
+              "cell_text": "1%"
+            },
+            {
+              "table_ordinal": 4,
+              "table_title": "Consolidated Earnings Information",
+              "period_header": "Three Months Ended December 31, 2025",
+              "row_label": "NET SALES",
+              "column_header": "% Chg",
+              "cell_text": "1%"
+            },
+            {
+              "table_ordinal": 11,
+              "table_title": "Organic sales growth",
+              "period_header": "October - December 2025",
+              "row_label": "Total Company",
+              "column_header": "Net Sales Growth",
+              "cell_text": "1%"
+            },
+            {
+              "table_ordinal": 2,
+              "table_title": "Second Quarter ($ billions, except EPS)",
+              "period_header": "Second Quarter ($ billions, except EPS)",
+              "row_label": "Net Sales",
+              "column_header": "% Change",
+              "cell_text": "1%"
+            },
+            {
+              "table_ordinal": 1,
+              "table_title": "P&G ANNOUNCES FISCAL YEAR 2026 SECOND QUARTER RESULTS",
+              "period_header": null,
+              "row_label": null,
+              "column_header": null,
+              "cell_text": "Net Sales +1%; Organic Sales 0%"
+            }
+          ],
+          "notes": "Total company reported (GAAP) net sales growth for the quarter."
+        },
+        "pg_total_volume_growth_pct": {
+          "expected": -1.0,
+          "unit": "percent",
+          "absence_reason": null,
+          "cell_text": "(1)%",
+          "locator": {
+            "table_ordinal": 3,
+            "table_title": "October - December Quarter Discussion",
+            "period_header": "October - December 2025",
+            "row_label": "Total P&G",
+            "column_header": "Volume"
+          },
+          "also_found": [
+            {
+              "table_ordinal": 6,
+              "table_title": "Consolidated Earnings Information",
+              "period_header": "Three Months Ended December 31, 2025",
+              "row_label": "Total Company",
+              "column_header": "Volume",
+              "cell_text": "(1)%"
+            }
+          ],
+          "notes": "This release's drivers table labels all-in volume simply 'Volume'; it is the 'Volume with Acquisitions & Divestitures' measure (the exhibit drivers table in the Q4 releases uses that full label)."
+        },
+        "pg_organic_volume_growth_pct": {
+          "expected": -1.0,
+          "unit": "percent",
+          "absence_reason": null,
+          "cell_text": "(1)%",
+          "locator": {
+            "table_ordinal": 3,
+            "table_title": "October - December Quarter Discussion",
+            "period_header": "October - December 2025",
+            "row_label": "Total P&G",
+            "column_header": "Organic Volume"
+          },
+          "also_found": [
+            {
+              "table_ordinal": 6,
+              "table_title": "Consolidated Earnings Information",
+              "period_header": "Three Months Ended December 31, 2025",
+              "row_label": "Total Company",
+              "column_header": "Organic Volume",
+              "cell_text": "(1)%"
+            }
+          ],
+          "notes": "'Organic Volume' is volume excluding acquisitions and divestitures."
+        },
+        "pg_price_contribution_pp": {
+          "expected": 1.0,
+          "unit": "percent",
+          "absence_reason": null,
+          "cell_text": "1%",
+          "locator": {
+            "table_ordinal": 3,
+            "table_title": "October - December Quarter Discussion",
+            "period_header": "October - December 2025",
+            "row_label": "Total P&G",
+            "column_header": "Price"
+          },
+          "also_found": [
+            {
+              "table_ordinal": 6,
+              "table_title": "Consolidated Earnings Information",
+              "period_header": "Three Months Ended December 31, 2025",
+              "row_label": "Total Company",
+              "column_header": "Price",
+              "cell_text": "1%"
+            }
+          ],
+          "notes": "Contribution of higher pricing to reported net sales growth for the quarter."
+        },
+        "pg_mix_contribution_pp": {
+          "expected": 0.0,
+          "unit": "percent",
+          "absence_reason": null,
+          "cell_text": "—%",
+          "locator": {
+            "table_ordinal": 3,
+            "table_title": "October - December Quarter Discussion",
+            "period_header": "October - December 2025",
+            "row_label": "Total P&G",
+            "column_header": "Mix"
+          },
+          "also_found": [
+            {
+              "table_ordinal": 6,
+              "table_title": "Consolidated Earnings Information",
+              "period_header": "Three Months Ended December 31, 2025",
+              "row_label": "Total Company",
+              "column_header": "Mix",
+              "cell_text": "—%"
+            }
+          ],
+          "notes": "Contribution of mix to reported net sales growth for the quarter."
+        },
+        "pg_fx_contribution_pp": {
+          "expected": 1.0,
+          "unit": "percent",
+          "absence_reason": null,
+          "cell_text": "1%",
+          "locator": {
+            "table_ordinal": 3,
+            "table_title": "October - December Quarter Discussion",
+            "period_header": "October - December 2025",
+            "row_label": "Total P&G",
+            "column_header": "Foreign Exchange"
+          },
+          "also_found": [
+            {
+              "table_ordinal": 6,
+              "table_title": "Consolidated Earnings Information",
+              "period_header": "Three Months Ended December 31, 2025",
+              "row_label": "Total Company",
+              "column_header": "Foreign Exchange",
+              "cell_text": "1%"
+            },
+            {
+              "table_ordinal": 11,
+              "table_title": "Organic sales growth",
+              "period_header": "October - December 2025",
+              "row_label": "Total Company",
+              "column_header": "Foreign Exchange Impact",
+              "cell_text": "(1)%"
+            }
+          ],
+          "notes": "Drivers table shows foreign exchange as a contribution to reported net sales growth. The organic-sales reconciliation prints the same item with the opposite sign as 'Foreign Exchange Impact' (the amount deducted from reported growth to arrive at organic growth); both describe the same FX effect."
+        },
+        "pg_other_contribution_pp": {
+          "expected": 0.0,
+          "unit": "percent",
+          "absence_reason": null,
+          "cell_text": "—%",
+          "locator": {
+            "table_ordinal": 3,
+            "table_title": "October - December Quarter Discussion",
+            "period_header": "October - December 2025",
+            "row_label": "Total P&G",
+            "column_header": "Other (2)"
+          },
+          "also_found": [
+            {
+              "table_ordinal": 6,
+              "table_title": "Consolidated Earnings Information",
+              "period_header": "Three Months Ended December 31, 2025",
+              "row_label": "Total Company",
+              "column_header": "Other (2)",
+              "cell_text": "—%"
+            }
+          ],
+          "notes": "'Other' per the table footnote includes the sales mix impact from acquisitions and divestitures and rounding impacts necessary to reconcile volume to net sales."
+        },
+        "pg_organic_sales_growth_pct": {
+          "expected": 0.0,
+          "unit": "percent",
+          "absence_reason": null,
+          "cell_text": "—%",
+          "locator": {
+            "table_ordinal": 11,
+            "table_title": "Organic sales growth",
+            "period_header": "October - December 2025",
+            "row_label": "Total Company",
+            "column_header": "Organic Sales Growth"
+          },
+          "also_found": [
+            {
+              "table_ordinal": 3,
+              "table_title": "October - December Quarter Discussion",
+              "period_header": "October - December 2025",
+              "row_label": "Total P&G",
+              "column_header": "Organic Sales",
+              "cell_text": "—%"
+            },
+            {
+              "table_ordinal": 2,
+              "table_title": "Second Quarter ($ billions, except EPS)",
+              "period_header": "Second Quarter ($ billions, except EPS)",
+              "row_label": "Organic Sales",
+              "column_header": "% Change",
+              "cell_text": "—%"
+            },
+            {
+              "table_ordinal": 1,
+              "table_title": "P&G ANNOUNCES FISCAL YEAR 2026 SECOND QUARTER RESULTS",
+              "period_header": null,
+              "row_label": null,
+              "column_header": null,
+              "cell_text": "Net Sales +1%; Organic Sales 0%"
+            }
+          ],
+          "notes": "Total-company organic sales growth for the quarter from the reported-to-organic reconciliation; agrees with the drivers table and the highlights table."
+        },
+        "pg_diluted_eps": {
+          "expected": 1.78,
+          "unit": "USD per share",
+          "absence_reason": null,
+          "cell_text": "1.78",
+          "locator": {
+            "table_ordinal": 4,
+            "table_title": "Consolidated Earnings Information",
+            "period_header": "Three Months Ended December 31, 2025",
+            "row_label": "Diluted",
+            "column_header": "2025"
+          },
+          "also_found": [
+            {
+              "table_ordinal": 2,
+              "table_title": "Second Quarter ($ billions, except EPS)",
+              "period_header": "Second Quarter ($ billions, except EPS)",
+              "row_label": "Diluted EPS",
+              "column_header": "2025",
+              "cell_text": "1.78"
+            }
+          ],
+          "notes": "GAAP diluted net earnings per common share for the quarter. The '$' sign is printed in the adjacent cell of the same row; the numeric cell text is recorded."
+        },
+        "pg_prior_diluted_eps": {
+          "expected": 1.88,
+          "unit": "USD per share",
+          "absence_reason": null,
+          "cell_text": "1.88",
+          "locator": {
+            "table_ordinal": 4,
+            "table_title": "Consolidated Earnings Information",
+            "period_header": "Three Months Ended December 31, 2024",
+            "row_label": "Diluted",
+            "column_header": "2024"
+          },
+          "also_found": [
+            {
+              "table_ordinal": 2,
+              "table_title": "Second Quarter ($ billions, except EPS)",
+              "period_header": "Second Quarter ($ billions, except EPS)",
+              "row_label": "Diluted EPS",
+              "column_header": "2024",
+              "cell_text": "1.88"
+            }
+          ],
+          "notes": "Year-ago quarter diluted EPS as printed in this release (comparative column of the same statement)."
+        },
+        "pg_reported_eps_growth_pct": {
+          "expected": -5.0,
+          "unit": "percent",
+          "absence_reason": null,
+          "cell_text": "(5)%",
+          "locator": {
+            "table_ordinal": 4,
+            "table_title": "Consolidated Earnings Information",
+            "period_header": "Three Months Ended December 31, 2025",
+            "row_label": "Diluted",
+            "column_header": "% Chg"
+          },
+          "also_found": [
+            {
+              "table_ordinal": 10,
+              "table_title": "CHANGE VERSUS YEAR AGO",
+              "period_header": "Three Months Ended December 31, 2025",
+              "row_label": "Diluted EPS",
+              "column_header": "CHANGE VERSUS YEAR AGO",
+              "cell_text": "(5)"
+            },
+            {
+              "table_ordinal": 2,
+              "table_title": "Second Quarter ($ billions, except EPS)",
+              "period_header": "Second Quarter ($ billions, except EPS)",
+              "row_label": "Diluted EPS",
+              "column_header": "% Change",
+              "cell_text": "(5)%"
+            },
+            {
+              "table_ordinal": 1,
+              "table_title": "P&G ANNOUNCES FISCAL YEAR 2026 SECOND QUARTER RESULTS",
+              "period_header": null,
+              "row_label": null,
+              "column_header": null,
+              "cell_text": "Diluted EPS $1.78, -5%; Core EPS $1.88, 0%"
+            }
+          ],
+          "notes": "% change in quarterly GAAP diluted EPS, literally as printed. In the 'CHANGE VERSUS YEAR AGO' block the value and the '%' sign sit in adjacent cells."
+        },
+        "pg_core_eps": {
+          "expected": 1.88,
+          "unit": "USD per share",
+          "absence_reason": null,
+          "cell_text": "1.88",
+          "locator": {
+            "table_ordinal": 9,
+            "table_title": "Reconciliation of Non-GAAP Measures",
+            "period_header": "Three Months Ended December 31, 2025",
+            "row_label": "Diluted net earnings per common share (2)",
+            "column_header": "Core (Non-GAAP)"
+          },
+          "also_found": [
+            {
+              "table_ordinal": 2,
+              "table_title": "Second Quarter ($ billions, except EPS)",
+              "period_header": "Second Quarter ($ billions, except EPS)",
+              "row_label": "Core EPS",
+              "column_header": "2025",
+              "cell_text": "1.88"
+            }
+          ],
+          "notes": "Core (non-GAAP) EPS for the quarter from the reported-to-Core reconciliation. The '$' sign is printed in the adjacent cell. Adjusting column(s) printed between As Reported and Core in this table: Incremental Restructuring."
+        },
+        "pg_prior_core_eps": {
+          "expected": 1.88,
+          "unit": "USD per share",
+          "absence_reason": null,
+          "cell_text": "1.88",
+          "locator": {
+            "table_ordinal": 9,
+            "table_title": "Reconciliation of Non-GAAP Measures",
+            "period_header": "Three Months Ended December 31, 2024",
+            "row_label": "Diluted net earnings per common share (2)",
+            "column_header": "As Reported (GAAP) (1)"
+          },
+          "also_found": [
+            {
+              "table_ordinal": 2,
+              "table_title": "Second Quarter ($ billions, except EPS)",
+              "period_header": "Second Quarter ($ billions, except EPS)",
+              "row_label": "Core EPS",
+              "column_header": "2024",
+              "cell_text": "1.88"
+            }
+          ],
+          "notes": "Year-ago quarter value printed in the same reconciliation table under 'As Reported (GAAP) (1)'; footnote (1) states there were no adjustments to or reconciling items for Core EPS for that period, so As Reported equals Core."
+        },
+        "pg_core_eps_growth_pct": {
+          "expected": 0.0,
+          "unit": "percent",
+          "absence_reason": null,
+          "cell_text": "—",
+          "locator": {
+            "table_ordinal": 10,
+            "table_title": "CHANGE VERSUS YEAR AGO",
+            "period_header": "Three Months Ended December 31, 2025",
+            "row_label": "Core EPS",
+            "column_header": "CHANGE VERSUS YEAR AGO"
+          },
+          "also_found": [
+            {
+              "table_ordinal": 2,
+              "table_title": "Second Quarter ($ billions, except EPS)",
+              "period_header": "Second Quarter ($ billions, except EPS)",
+              "row_label": "Core EPS",
+              "column_header": "% Change",
+              "cell_text": "—%"
+            },
+            {
+              "table_ordinal": 1,
+              "table_title": "P&G ANNOUNCES FISCAL YEAR 2026 SECOND QUARTER RESULTS",
+              "period_header": null,
+              "row_label": null,
+              "column_header": null,
+              "cell_text": "Diluted EPS $1.78, -5%; Core EPS $1.88, 0%"
+            }
+          ],
+          "notes": "% change in quarterly Core EPS, literally as printed. Value and '%' sign are adjacent cells; the same percentage appears in the highlights table with the '%' attached."
+        },
+        "pg_core_reconciliation_context": {
+          "expected": "Diluted net earnings per share decreased by five percent versus the prior year to $1.78, driven primarily by higher restructuring charges. Core earnings per share was unchanged at $1.88 and currency-neutral core EPS decreased two percent to $1.85.",
+          "unit": "text",
+          "absence_reason": null,
+          "cell_text": "Diluted net earnings per share decreased by five percent versus the prior year to $1.78, driven primarily by higher restructuring charges. Core earnings per share was unchanged at $1.88 and currency-neutral core EPS decreased two percent to $1.85.",
+          "locator": {
+            "table_ordinal": 3,
+            "table_title": "October - December Quarter Discussion",
+            "period_header": "Three Months Ended December 31, 2025",
+            "row_label": null,
+            "column_header": null
+          },
+          "also_found": [
+            {
+              "table_ordinal": null,
+              "table_title": null,
+              "period_header": null,
+              "row_label": "Exhibit 1 - Non-GAAP Measures, 'Core EPS and Currency-neutral Core EPS' definition",
+              "column_header": null,
+              "cell_text": "Core EPS and Currency-neutral Core EPS: Core earnings per share, or Core EPS, is a measure of diluted net earnings per common share (diluted EPS) adjusted for items as indicated."
+            },
+            {
+              "table_ordinal": null,
+              "table_title": null,
+              "period_header": null,
+              "row_label": "Exhibit 1 - Non-GAAP Measures, 'Incremental restructuring' bullet",
+              "column_header": null,
+              "cell_text": "The adjustment to Core earnings includes the restructuring charges that exceed the normal, recurring level of restructuring charges."
+            }
+          ],
+          "notes": "Release narrative explaining how the quarter's Core EPS differs from GAAP diluted EPS and which items are excluded. Not a table cell; located by the section heading and the nearest preceding table. Verbatim, within the 400-character limit."
+        },
+        "pg_beauty_organic_sales_growth_pct": {
+          "expected": 4.0,
+          "unit": "percent",
+          "absence_reason": null,
+          "cell_text": "4%",
+          "locator": {
+            "table_ordinal": 11,
+            "table_title": "Organic sales growth",
+            "period_header": "October - December 2025",
+            "row_label": "Beauty",
+            "column_header": "Organic Sales Growth"
+          },
+          "also_found": [
+            {
+              "table_ordinal": 3,
+              "table_title": "October - December Quarter Discussion",
+              "period_header": "October - December 2025",
+              "row_label": "Beauty",
+              "column_header": "Organic Sales",
+              "cell_text": "4%"
+            }
+          ],
+          "notes": "Reported-to-organic reconciliation for the quarter; agrees with the 'Organic Sales' column of the drivers table."
+        },
+        "pg_grooming_organic_sales_growth_pct": {
+          "expected": 0.0,
+          "unit": "percent",
+          "absence_reason": null,
+          "cell_text": "—%",
+          "locator": {
+            "table_ordinal": 11,
+            "table_title": "Organic sales growth",
+            "period_header": "October - December 2025",
+            "row_label": "Grooming",
+            "column_header": "Organic Sales Growth"
+          },
+          "also_found": [
+            {
+              "table_ordinal": 3,
+              "table_title": "October - December Quarter Discussion",
+              "period_header": "October - December 2025",
+              "row_label": "Grooming",
+              "column_header": "Organic Sales",
+              "cell_text": "—%"
+            }
+          ],
+          "notes": "Reported-to-organic reconciliation for the quarter; agrees with the 'Organic Sales' column of the drivers table."
+        },
+        "pg_health_care_organic_sales_growth_pct": {
+          "expected": 3.0,
+          "unit": "percent",
+          "absence_reason": null,
+          "cell_text": "3%",
+          "locator": {
+            "table_ordinal": 11,
+            "table_title": "Organic sales growth",
+            "period_header": "October - December 2025",
+            "row_label": "Health Care",
+            "column_header": "Organic Sales Growth"
+          },
+          "also_found": [
+            {
+              "table_ordinal": 3,
+              "table_title": "October - December Quarter Discussion",
+              "period_header": "October - December 2025",
+              "row_label": "Health Care",
+              "column_header": "Organic Sales",
+              "cell_text": "3%"
+            }
+          ],
+          "notes": "Reported-to-organic reconciliation for the quarter; agrees with the 'Organic Sales' column of the drivers table."
+        },
+        "pg_fabric_home_organic_sales_growth_pct": {
+          "expected": 0.0,
+          "unit": "percent",
+          "absence_reason": null,
+          "cell_text": "—%",
+          "locator": {
+            "table_ordinal": 11,
+            "table_title": "Organic sales growth",
+            "period_header": "October - December 2025",
+            "row_label": "Fabric & Home Care",
+            "column_header": "Organic Sales Growth"
+          },
+          "also_found": [
+            {
+              "table_ordinal": 3,
+              "table_title": "October - December Quarter Discussion",
+              "period_header": "October - December 2025",
+              "row_label": "Fabric & Home Care",
+              "column_header": "Organic Sales",
+              "cell_text": "—%"
+            }
+          ],
+          "notes": "Reported-to-organic reconciliation for the quarter; agrees with the 'Organic Sales' column of the drivers table."
+        },
+        "pg_baby_feminine_family_organic_sales_growth_pct": {
+          "expected": -4.0,
+          "unit": "percent",
+          "absence_reason": null,
+          "cell_text": "(4)%",
+          "locator": {
+            "table_ordinal": 11,
+            "table_title": "Organic sales growth",
+            "period_header": "October - December 2025",
+            "row_label": "Baby, Feminine & Family Care",
+            "column_header": "Organic Sales Growth"
+          },
+          "also_found": [
+            {
+              "table_ordinal": 3,
+              "table_title": "October - December Quarter Discussion",
+              "period_header": "October - December 2025",
+              "row_label": "Baby, Feminine & Family Care",
+              "column_header": "Organic Sales",
+              "cell_text": "(4)%"
+            }
+          ],
+          "notes": "Reported-to-organic reconciliation for the quarter; agrees with the 'Organic Sales' column of the drivers table."
+        }
+      }
+    },
+    {
+      "file": "fy2526q3jfm8-kexhibit991.htm",
+      "sha256": "eeef9d0de613e44ba3e4444c084431100491dd3a28a3b6226f0e8163ca770b84",
+      "accession": "0000080424-26-000056",
+      "fiscal_year": 2026,
+      "fiscal_quarter": 3,
+      "quarter_start": "2026-01-01",
+      "quarter_end": "2026-03-31",
+      "headline": "Net Sales +7%; Organic Sales 3% | Diluted EPS $1.63, +6%; Core EPS $1.59, +3%",
+      "metrics": {
+        "pg_reported_sales_growth_pct": {
+          "expected": 7.0,
+          "unit": "percent",
+          "absence_reason": null,
+          "cell_text": "7%",
+          "locator": {
+            "table_ordinal": 3,
+            "table_title": "January - March Quarter Discussion",
+            "period_header": "January - March 2026",
+            "row_label": "Total P&G",
+            "column_header": "Net Sales"
+          },
+          "also_found": [
+            {
+              "table_ordinal": 6,
+              "table_title": "Consolidated Earnings Information",
+              "period_header": "Three Months Ended March 31, 2026",
+              "row_label": "Total Company",
+              "column_header": "Net Sales",
+              "cell_text": "7%"
+            },
+            {
+              "table_ordinal": 4,
+              "table_title": "Consolidated Earnings Information",
+              "period_header": "Three Months Ended March 31, 2026",
+              "row_label": "NET SALES",
+              "column_header": "% Chg",
+              "cell_text": "7%"
+            },
+            {
+              "table_ordinal": 11,
+              "table_title": "Organic sales growth",
+              "period_header": "January - March 2026",
+              "row_label": "Total Company",
+              "column_header": "Net Sales Growth",
+              "cell_text": "7%"
+            },
+            {
+              "table_ordinal": 2,
+              "table_title": "Third Quarter ($ billions, except EPS)",
+              "period_header": "Third Quarter ($ billions, except EPS)",
+              "row_label": "Net Sales",
+              "column_header": "% Change",
+              "cell_text": "7%"
+            },
+            {
+              "table_ordinal": 1,
+              "table_title": "P&G ANNOUNCES FISCAL YEAR 2026 THIRD QUARTER RESULTS",
+              "period_header": null,
+              "row_label": null,
+              "column_header": null,
+              "cell_text": "Net Sales +7%; Organic Sales 3%"
+            }
+          ],
+          "notes": "Total company reported (GAAP) net sales growth for the quarter."
+        },
+        "pg_total_volume_growth_pct": {
+          "expected": 2.0,
+          "unit": "percent",
+          "absence_reason": null,
+          "cell_text": "2%",
+          "locator": {
+            "table_ordinal": 3,
+            "table_title": "January - March Quarter Discussion",
+            "period_header": "January - March 2026",
+            "row_label": "Total P&G",
+            "column_header": "Volume"
+          },
+          "also_found": [
+            {
+              "table_ordinal": 6,
+              "table_title": "Consolidated Earnings Information",
+              "period_header": "Three Months Ended March 31, 2026",
+              "row_label": "Total Company",
+              "column_header": "Volume",
+              "cell_text": "2%"
+            }
+          ],
+          "notes": "This release's drivers table labels all-in volume simply 'Volume'; it is the 'Volume with Acquisitions & Divestitures' measure (the exhibit drivers table in the Q4 releases uses that full label)."
+        },
+        "pg_organic_volume_growth_pct": {
+          "expected": 2.0,
+          "unit": "percent",
+          "absence_reason": null,
+          "cell_text": "2%",
+          "locator": {
+            "table_ordinal": 3,
+            "table_title": "January - March Quarter Discussion",
+            "period_header": "January - March 2026",
+            "row_label": "Total P&G",
+            "column_header": "Organic Volume"
+          },
+          "also_found": [
+            {
+              "table_ordinal": 6,
+              "table_title": "Consolidated Earnings Information",
+              "period_header": "Three Months Ended March 31, 2026",
+              "row_label": "Total Company",
+              "column_header": "Organic Volume",
+              "cell_text": "2%"
+            }
+          ],
+          "notes": "'Organic Volume' is volume excluding acquisitions and divestitures."
+        },
+        "pg_price_contribution_pp": {
+          "expected": 1.0,
+          "unit": "percent",
+          "absence_reason": null,
+          "cell_text": "1%",
+          "locator": {
+            "table_ordinal": 3,
+            "table_title": "January - March Quarter Discussion",
+            "period_header": "January - March 2026",
+            "row_label": "Total P&G",
+            "column_header": "Price"
+          },
+          "also_found": [
+            {
+              "table_ordinal": 6,
+              "table_title": "Consolidated Earnings Information",
+              "period_header": "Three Months Ended March 31, 2026",
+              "row_label": "Total Company",
+              "column_header": "Price",
+              "cell_text": "1%"
+            }
+          ],
+          "notes": "Contribution of higher pricing to reported net sales growth for the quarter."
+        },
+        "pg_mix_contribution_pp": {
+          "expected": 0.0,
+          "unit": "percent",
+          "absence_reason": null,
+          "cell_text": "—%",
+          "locator": {
+            "table_ordinal": 3,
+            "table_title": "January - March Quarter Discussion",
+            "period_header": "January - March 2026",
+            "row_label": "Total P&G",
+            "column_header": "Mix"
+          },
+          "also_found": [
+            {
+              "table_ordinal": 6,
+              "table_title": "Consolidated Earnings Information",
+              "period_header": "Three Months Ended March 31, 2026",
+              "row_label": "Total Company",
+              "column_header": "Mix",
+              "cell_text": "—%"
+            }
+          ],
+          "notes": "Contribution of mix to reported net sales growth for the quarter."
+        },
+        "pg_fx_contribution_pp": {
+          "expected": 4.0,
+          "unit": "percent",
+          "absence_reason": null,
+          "cell_text": "4%",
+          "locator": {
+            "table_ordinal": 3,
+            "table_title": "January - March Quarter Discussion",
+            "period_header": "January - March 2026",
+            "row_label": "Total P&G",
+            "column_header": "Foreign Exchange"
+          },
+          "also_found": [
+            {
+              "table_ordinal": 6,
+              "table_title": "Consolidated Earnings Information",
+              "period_header": "Three Months Ended March 31, 2026",
+              "row_label": "Total Company",
+              "column_header": "Foreign Exchange",
+              "cell_text": "4%"
+            },
+            {
+              "table_ordinal": 11,
+              "table_title": "Organic sales growth",
+              "period_header": "January - March 2026",
+              "row_label": "Total Company",
+              "column_header": "Foreign Exchange Impact",
+              "cell_text": "(4)%"
+            }
+          ],
+          "notes": "Drivers table shows foreign exchange as a contribution to reported net sales growth. The organic-sales reconciliation prints the same item with the opposite sign as 'Foreign Exchange Impact' (the amount deducted from reported growth to arrive at organic growth); both describe the same FX effect."
+        },
+        "pg_other_contribution_pp": {
+          "expected": 0.0,
+          "unit": "percent",
+          "absence_reason": null,
+          "cell_text": "—%",
+          "locator": {
+            "table_ordinal": 3,
+            "table_title": "January - March Quarter Discussion",
+            "period_header": "January - March 2026",
+            "row_label": "Total P&G",
+            "column_header": "Other (2)"
+          },
+          "also_found": [
+            {
+              "table_ordinal": 6,
+              "table_title": "Consolidated Earnings Information",
+              "period_header": "Three Months Ended March 31, 2026",
+              "row_label": "Total Company",
+              "column_header": "Other (2)",
+              "cell_text": "—%"
+            }
+          ],
+          "notes": "'Other' per the table footnote includes the sales mix impact from acquisitions and divestitures and rounding impacts necessary to reconcile volume to net sales."
+        },
+        "pg_organic_sales_growth_pct": {
+          "expected": 3.0,
+          "unit": "percent",
+          "absence_reason": null,
+          "cell_text": "3%",
+          "locator": {
+            "table_ordinal": 11,
+            "table_title": "Organic sales growth",
+            "period_header": "January - March 2026",
+            "row_label": "Total Company",
+            "column_header": "Organic Sales Growth"
+          },
+          "also_found": [
+            {
+              "table_ordinal": 3,
+              "table_title": "January - March Quarter Discussion",
+              "period_header": "January - March 2026",
+              "row_label": "Total P&G",
+              "column_header": "Organic Sales",
+              "cell_text": "3%"
+            },
+            {
+              "table_ordinal": 2,
+              "table_title": "Third Quarter ($ billions, except EPS)",
+              "period_header": "Third Quarter ($ billions, except EPS)",
+              "row_label": "Organic Sales",
+              "column_header": "% Change",
+              "cell_text": "3%"
+            },
+            {
+              "table_ordinal": 1,
+              "table_title": "P&G ANNOUNCES FISCAL YEAR 2026 THIRD QUARTER RESULTS",
+              "period_header": null,
+              "row_label": null,
+              "column_header": null,
+              "cell_text": "Net Sales +7%; Organic Sales 3%"
+            }
+          ],
+          "notes": "Total-company organic sales growth for the quarter from the reported-to-organic reconciliation; agrees with the drivers table and the highlights table."
+        },
+        "pg_diluted_eps": {
+          "expected": 1.63,
+          "unit": "USD per share",
+          "absence_reason": null,
+          "cell_text": "1.63",
+          "locator": {
+            "table_ordinal": 4,
+            "table_title": "Consolidated Earnings Information",
+            "period_header": "Three Months Ended March 31, 2026",
+            "row_label": "Diluted",
+            "column_header": "2026"
+          },
+          "also_found": [
+            {
+              "table_ordinal": 2,
+              "table_title": "Third Quarter ($ billions, except EPS)",
+              "period_header": "Third Quarter ($ billions, except EPS)",
+              "row_label": "Diluted EPS",
+              "column_header": "2026",
+              "cell_text": "1.63"
+            }
+          ],
+          "notes": "GAAP diluted net earnings per common share for the quarter. The '$' sign is printed in the adjacent cell of the same row; the numeric cell text is recorded."
+        },
+        "pg_prior_diluted_eps": {
+          "expected": 1.54,
+          "unit": "USD per share",
+          "absence_reason": null,
+          "cell_text": "1.54",
+          "locator": {
+            "table_ordinal": 4,
+            "table_title": "Consolidated Earnings Information",
+            "period_header": "Three Months Ended March 31, 2025",
+            "row_label": "Diluted",
+            "column_header": "2025"
+          },
+          "also_found": [
+            {
+              "table_ordinal": 2,
+              "table_title": "Third Quarter ($ billions, except EPS)",
+              "period_header": "Third Quarter ($ billions, except EPS)",
+              "row_label": "Diluted EPS",
+              "column_header": "2025",
+              "cell_text": "1.54"
+            }
+          ],
+          "notes": "Year-ago quarter diluted EPS as printed in this release (comparative column of the same statement)."
+        },
+        "pg_reported_eps_growth_pct": {
+          "expected": 6.0,
+          "unit": "percent",
+          "absence_reason": null,
+          "cell_text": "6%",
+          "locator": {
+            "table_ordinal": 4,
+            "table_title": "Consolidated Earnings Information",
+            "period_header": "Three Months Ended March 31, 2026",
+            "row_label": "Diluted",
+            "column_header": "% Chg"
+          },
+          "also_found": [
+            {
+              "table_ordinal": 10,
+              "table_title": "CHANGE VERSUS YEAR AGO",
+              "period_header": "Three Months Ended March 31, 2026",
+              "row_label": "Diluted EPS",
+              "column_header": "CHANGE VERSUS YEAR AGO",
+              "cell_text": "6"
+            },
+            {
+              "table_ordinal": 2,
+              "table_title": "Third Quarter ($ billions, except EPS)",
+              "period_header": "Third Quarter ($ billions, except EPS)",
+              "row_label": "Diluted EPS",
+              "column_header": "% Change",
+              "cell_text": "6%"
+            },
+            {
+              "table_ordinal": 1,
+              "table_title": "P&G ANNOUNCES FISCAL YEAR 2026 THIRD QUARTER RESULTS",
+              "period_header": null,
+              "row_label": null,
+              "column_header": null,
+              "cell_text": "Diluted EPS $1.63, +6%; Core EPS $1.59, +3%"
+            }
+          ],
+          "notes": "% change in quarterly GAAP diluted EPS, literally as printed. In the 'CHANGE VERSUS YEAR AGO' block the value and the '%' sign sit in adjacent cells."
+        },
+        "pg_core_eps": {
+          "expected": 1.59,
+          "unit": "USD per share",
+          "absence_reason": null,
+          "cell_text": "1.59",
+          "locator": {
+            "table_ordinal": 9,
+            "table_title": "Reconciliation of Non-GAAP Measures",
+            "period_header": "Three Months Ended March 31, 2026",
+            "row_label": "Diluted net earnings per common share (2)",
+            "column_header": "Core (Non-GAAP)"
+          },
+          "also_found": [
+            {
+              "table_ordinal": 2,
+              "table_title": "Third Quarter ($ billions, except EPS)",
+              "period_header": "Third Quarter ($ billions, except EPS)",
+              "row_label": "Core EPS",
+              "column_header": "2026",
+              "cell_text": "1.59"
+            }
+          ],
+          "notes": "Core (non-GAAP) EPS for the quarter from the reported-to-Core reconciliation. The '$' sign is printed in the adjacent cell. Adjusting column(s) printed between As Reported and Core in this table: Incremental Restructuring; Glad Joint Venture Agreement."
+        },
+        "pg_prior_core_eps": {
+          "expected": 1.54,
+          "unit": "USD per share",
+          "absence_reason": null,
+          "cell_text": "1.54",
+          "locator": {
+            "table_ordinal": 9,
+            "table_title": "Reconciliation of Non-GAAP Measures",
+            "period_header": "Three Months Ended March 31, 2025",
+            "row_label": "Diluted net earnings per common share (2)",
+            "column_header": "As Reported (GAAP) (1)"
+          },
+          "also_found": [
+            {
+              "table_ordinal": 2,
+              "table_title": "Third Quarter ($ billions, except EPS)",
+              "period_header": "Third Quarter ($ billions, except EPS)",
+              "row_label": "Core EPS",
+              "column_header": "2025",
+              "cell_text": "1.54"
+            }
+          ],
+          "notes": "Year-ago quarter value printed in the same reconciliation table under 'As Reported (GAAP) (1)'; footnote (1) states there were no adjustments to or reconciling items for Core EPS for that period, so As Reported equals Core."
+        },
+        "pg_core_eps_growth_pct": {
+          "expected": 3.0,
+          "unit": "percent",
+          "absence_reason": null,
+          "cell_text": "3",
+          "locator": {
+            "table_ordinal": 10,
+            "table_title": "CHANGE VERSUS YEAR AGO",
+            "period_header": "Three Months Ended March 31, 2026",
+            "row_label": "Core EPS",
+            "column_header": "CHANGE VERSUS YEAR AGO"
+          },
+          "also_found": [
+            {
+              "table_ordinal": 2,
+              "table_title": "Third Quarter ($ billions, except EPS)",
+              "period_header": "Third Quarter ($ billions, except EPS)",
+              "row_label": "Core EPS",
+              "column_header": "% Change",
+              "cell_text": "3%"
+            },
+            {
+              "table_ordinal": 1,
+              "table_title": "P&G ANNOUNCES FISCAL YEAR 2026 THIRD QUARTER RESULTS",
+              "period_header": null,
+              "row_label": null,
+              "column_header": null,
+              "cell_text": "Diluted EPS $1.63, +6%; Core EPS $1.59, +3%"
+            }
+          ],
+          "notes": "% change in quarterly Core EPS, literally as printed. Value and '%' sign are adjacent cells; the same percentage appears in the highlights table with the '%' attached."
+        },
+        "pg_core_reconciliation_context": {
+          "expected": "Diluted net earnings per share increased by six percent versus the prior year to $1.63, driven by a gain from the dissolution of the Glad joint venture business. Core earnings per share increased three percent to $1.59 and currency-neutral core EPS was unchanged at $1.54.",
+          "unit": "text",
+          "absence_reason": null,
+          "cell_text": "Diluted net earnings per share increased by six percent versus the prior year to $1.63, driven by a gain from the dissolution of the Glad joint venture business. Core earnings per share increased three percent to $1.59 and currency-neutral core EPS was unchanged at $1.54.",
+          "locator": {
+            "table_ordinal": 3,
+            "table_title": "January - March Quarter Discussion",
+            "period_header": "Three Months Ended March 31, 2026",
+            "row_label": null,
+            "column_header": null
+          },
+          "also_found": [
+            {
+              "table_ordinal": null,
+              "table_title": null,
+              "period_header": null,
+              "row_label": "Exhibit 1 - Non-GAAP Measures, 'Core EPS and Currency-neutral Core EPS' definition",
+              "column_header": null,
+              "cell_text": "Core EPS and Currency-neutral Core EPS: Core earnings per share, or Core EPS, is a measure of diluted net earnings per common share (diluted EPS) adjusted for items as indicated."
+            },
+            {
+              "table_ordinal": null,
+              "table_title": null,
+              "period_header": null,
+              "row_label": "Exhibit 1 - Non-GAAP Measures, 'Incremental restructuring' bullet",
+              "column_header": null,
+              "cell_text": "The adjustment to Core earnings includes the restructuring charges that exceed the normal, recurring level of restructuring charges."
+            }
+          ],
+          "notes": "Release narrative explaining how the quarter's Core EPS differs from GAAP diluted EPS and which items are excluded. Not a table cell; located by the section heading and the nearest preceding table. Verbatim, within the 400-character limit."
+        },
+        "pg_beauty_organic_sales_growth_pct": {
+          "expected": 7.0,
+          "unit": "percent",
+          "absence_reason": null,
+          "cell_text": "7%",
+          "locator": {
+            "table_ordinal": 11,
+            "table_title": "Organic sales growth",
+            "period_header": "January - March 2026",
+            "row_label": "Beauty",
+            "column_header": "Organic Sales Growth"
+          },
+          "also_found": [
+            {
+              "table_ordinal": 3,
+              "table_title": "January - March Quarter Discussion",
+              "period_header": "January - March 2026",
+              "row_label": "Beauty",
+              "column_header": "Organic Sales",
+              "cell_text": "7%"
+            }
+          ],
+          "notes": "Reported-to-organic reconciliation for the quarter; agrees with the 'Organic Sales' column of the drivers table."
+        },
+        "pg_grooming_organic_sales_growth_pct": {
+          "expected": 1.0,
+          "unit": "percent",
+          "absence_reason": null,
+          "cell_text": "1%",
+          "locator": {
+            "table_ordinal": 11,
+            "table_title": "Organic sales growth",
+            "period_header": "January - March 2026",
+            "row_label": "Grooming",
+            "column_header": "Organic Sales Growth"
+          },
+          "also_found": [
+            {
+              "table_ordinal": 3,
+              "table_title": "January - March Quarter Discussion",
+              "period_header": "January - March 2026",
+              "row_label": "Grooming",
+              "column_header": "Organic Sales",
+              "cell_text": "1%"
+            }
+          ],
+          "notes": "Reported-to-organic reconciliation for the quarter; agrees with the 'Organic Sales' column of the drivers table."
+        },
+        "pg_health_care_organic_sales_growth_pct": {
+          "expected": 2.0,
+          "unit": "percent",
+          "absence_reason": null,
+          "cell_text": "2%",
+          "locator": {
+            "table_ordinal": 11,
+            "table_title": "Organic sales growth",
+            "period_header": "January - March 2026",
+            "row_label": "Health Care",
+            "column_header": "Organic Sales Growth"
+          },
+          "also_found": [
+            {
+              "table_ordinal": 3,
+              "table_title": "January - March Quarter Discussion",
+              "period_header": "January - March 2026",
+              "row_label": "Health Care",
+              "column_header": "Organic Sales",
+              "cell_text": "2%"
+            }
+          ],
+          "notes": "Reported-to-organic reconciliation for the quarter; agrees with the 'Organic Sales' column of the drivers table."
+        },
+        "pg_fabric_home_organic_sales_growth_pct": {
+          "expected": 3.0,
+          "unit": "percent",
+          "absence_reason": null,
+          "cell_text": "3%",
+          "locator": {
+            "table_ordinal": 11,
+            "table_title": "Organic sales growth",
+            "period_header": "January - March 2026",
+            "row_label": "Fabric & Home Care",
+            "column_header": "Organic Sales Growth"
+          },
+          "also_found": [
+            {
+              "table_ordinal": 3,
+              "table_title": "January - March Quarter Discussion",
+              "period_header": "January - March 2026",
+              "row_label": "Fabric & Home Care",
+              "column_header": "Organic Sales",
+              "cell_text": "3%"
+            }
+          ],
+          "notes": "Reported-to-organic reconciliation for the quarter; agrees with the 'Organic Sales' column of the drivers table."
+        },
+        "pg_baby_feminine_family_organic_sales_growth_pct": {
+          "expected": 3.0,
+          "unit": "percent",
+          "absence_reason": null,
+          "cell_text": "3%",
+          "locator": {
+            "table_ordinal": 11,
+            "table_title": "Organic sales growth",
+            "period_header": "January - March 2026",
+            "row_label": "Baby, Feminine & Family Care",
+            "column_header": "Organic Sales Growth"
+          },
+          "also_found": [
+            {
+              "table_ordinal": 3,
+              "table_title": "January - March Quarter Discussion",
+              "period_header": "January - March 2026",
+              "row_label": "Baby, Feminine & Family Care",
+              "column_header": "Organic Sales",
+              "cell_text": "3%"
+            }
+          ],
+          "notes": "Reported-to-organic reconciliation for the quarter; agrees with the 'Organic Sales' column of the drivers table."
+        }
+      }
+    },
+    {
+      "file": "fy2526q4amj8-kexhibit991.htm",
+      "sha256": "9fe6812066a4ef6a1ca8b53b394ae0dbf2796eaef0c5141d2ae60fe94521dcbc",
+      "accession": "0000080424-26-000093",
+      "fiscal_year": 2026,
+      "fiscal_quarter": 4,
+      "quarter_start": "2026-04-01",
+      "quarter_end": "2026-06-30",
+      "headline": "Q4 ’26: Net Sales +2%; Organic Sales 0%; Diluted EPS -15%; Core EPS -3%",
+      "metrics": {
+        "pg_reported_sales_growth_pct": {
+          "expected": 2.0,
+          "unit": "percent",
+          "absence_reason": null,
+          "cell_text": "2%",
+          "locator": {
+            "table_ordinal": 3,
+            "table_title": "April-June Quarter Business Discussion",
+            "period_header": "April - June 2026",
+            "row_label": "Total P&G",
+            "column_header": "Net Sales"
+          },
+          "also_found": [
+            {
+              "table_ordinal": 6,
+              "table_title": "Consolidated Earnings Information",
+              "period_header": "Three Months Ended June 30, 2026",
+              "row_label": "TOTAL",
+              "column_header": "Net Sales Growth",
+              "cell_text": "2%"
+            },
+            {
+              "table_ordinal": 4,
+              "table_title": "Consolidated Earnings Information",
+              "period_header": "Three Months Ended June 30, 2026",
+              "row_label": "NET SALES",
+              "column_header": "% Chg",
+              "cell_text": "2%"
+            },
+            {
+              "table_ordinal": 13,
+              "table_title": "Organic sales growth : The reconciliation of reported sales growth to organic sales is as follows:",
+              "period_header": "April - June 2026",
+              "row_label": "Total Company",
+              "column_header": "Net Sales Growth",
+              "cell_text": "2%"
+            },
+            {
+              "table_ordinal": 2,
+              "table_title": "Fourth Quarter ($ billions, except EPS)",
+              "period_header": "Fourth Quarter ($ billions, except EPS)",
+              "row_label": "Net Sales",
+              "column_header": "% Change",
+              "cell_text": "+2%"
+            },
+            {
+              "table_ordinal": 1,
+              "table_title": "P&G ANNOUNCES FOURTH QUARTER AND FISCAL YEAR 2026 RESULTS",
+              "period_header": null,
+              "row_label": null,
+              "column_header": null,
+              "cell_text": "Q4 ’26: Net Sales +2%; Organic Sales 0%; Diluted EPS -15%; Core EPS -3%"
+            }
+          ],
+          "notes": "Total company reported (GAAP) net sales growth for the quarter."
+        },
+        "pg_total_volume_growth_pct": {
+          "expected": 0.0,
+          "unit": "percent",
+          "absence_reason": null,
+          "cell_text": "—%",
+          "locator": {
+            "table_ordinal": 3,
+            "table_title": "April-June Quarter Business Discussion",
+            "period_header": "April - June 2026",
+            "row_label": "Total P&G",
+            "column_header": "Volume"
+          },
+          "also_found": [
+            {
+              "table_ordinal": 6,
+              "table_title": "Consolidated Earnings Information",
+              "period_header": "Three Months Ended June 30, 2026",
+              "row_label": "TOTAL",
+              "column_header": "Volume with Acquisitions & Divestitures",
+              "cell_text": "—%"
+            }
+          ],
+          "notes": "This release's drivers table labels all-in volume simply 'Volume'; it is the 'Volume with Acquisitions & Divestitures' measure (the exhibit drivers table in the Q4 releases uses that full label)."
+        },
+        "pg_organic_volume_growth_pct": {
+          "expected": 0.0,
+          "unit": "percent",
+          "absence_reason": null,
+          "cell_text": "—%",
+          "locator": {
+            "table_ordinal": 3,
+            "table_title": "April-June Quarter Business Discussion",
+            "period_header": "April - June 2026",
+            "row_label": "Total P&G",
+            "column_header": "Organic Volume"
+          },
+          "also_found": [
+            {
+              "table_ordinal": 6,
+              "table_title": "Consolidated Earnings Information",
+              "period_header": "Three Months Ended June 30, 2026",
+              "row_label": "TOTAL",
+              "column_header": "Volume Excluding Acquisitions & Divestitures",
+              "cell_text": "—%"
+            }
+          ],
+          "notes": "'Organic Volume' is volume excluding acquisitions and divestitures."
+        },
+        "pg_price_contribution_pp": {
+          "expected": 0.0,
+          "unit": "percent",
+          "absence_reason": null,
+          "cell_text": "—%",
+          "locator": {
+            "table_ordinal": 3,
+            "table_title": "April-June Quarter Business Discussion",
+            "period_header": "April - June 2026",
+            "row_label": "Total P&G",
+            "column_header": "Price"
+          },
+          "also_found": [
+            {
+              "table_ordinal": 6,
+              "table_title": "Consolidated Earnings Information",
+              "period_header": "Three Months Ended June 30, 2026",
+              "row_label": "TOTAL",
+              "column_header": "Price",
+              "cell_text": "—%"
+            }
+          ],
+          "notes": "Contribution of higher pricing to reported net sales growth for the quarter."
+        },
+        "pg_mix_contribution_pp": {
+          "expected": 0.0,
+          "unit": "percent",
+          "absence_reason": null,
+          "cell_text": "—%",
+          "locator": {
+            "table_ordinal": 3,
+            "table_title": "April-June Quarter Business Discussion",
+            "period_header": "April - June 2026",
+            "row_label": "Total P&G",
+            "column_header": "Mix"
+          },
+          "also_found": [
+            {
+              "table_ordinal": 6,
+              "table_title": "Consolidated Earnings Information",
+              "period_header": "Three Months Ended June 30, 2026",
+              "row_label": "TOTAL",
+              "column_header": "Mix",
+              "cell_text": "—%"
+            }
+          ],
+          "notes": "Contribution of mix to reported net sales growth for the quarter."
+        },
+        "pg_fx_contribution_pp": {
+          "expected": 1.0,
+          "unit": "percent",
+          "absence_reason": null,
+          "cell_text": "1%",
+          "locator": {
+            "table_ordinal": 3,
+            "table_title": "April-June Quarter Business Discussion",
+            "period_header": "April - June 2026",
+            "row_label": "Total P&G",
+            "column_header": "Foreign Exchange"
+          },
+          "also_found": [
+            {
+              "table_ordinal": 6,
+              "table_title": "Consolidated Earnings Information",
+              "period_header": "Three Months Ended June 30, 2026",
+              "row_label": "TOTAL",
+              "column_header": "Foreign Exchange",
+              "cell_text": "1%"
+            },
+            {
+              "table_ordinal": 13,
+              "table_title": "Organic sales growth : The reconciliation of reported sales growth to organic sales is as follows:",
+              "period_header": "April - June 2026",
+              "row_label": "Total Company",
+              "column_header": "Foreign Exchange Impact",
+              "cell_text": "(1)%"
+            }
+          ],
+          "notes": "Drivers table shows foreign exchange as a contribution to reported net sales growth. The organic-sales reconciliation prints the same item with the opposite sign as 'Foreign Exchange Impact' (the amount deducted from reported growth to arrive at organic growth); both describe the same FX effect."
+        },
+        "pg_other_contribution_pp": {
+          "expected": 1.0,
+          "unit": "percent",
+          "absence_reason": null,
+          "cell_text": "1%",
+          "locator": {
+            "table_ordinal": 3,
+            "table_title": "April-June Quarter Business Discussion",
+            "period_header": "April - June 2026",
+            "row_label": "Total P&G",
+            "column_header": "Other (2)"
+          },
+          "also_found": [
+            {
+              "table_ordinal": 6,
+              "table_title": "Consolidated Earnings Information",
+              "period_header": "Three Months Ended June 30, 2026",
+              "row_label": "TOTAL",
+              "column_header": "Other (2)",
+              "cell_text": "1%"
+            }
+          ],
+          "notes": "'Other' per the table footnote includes the sales mix impact from acquisitions and divestitures and rounding impacts necessary to reconcile volume to net sales."
+        },
+        "pg_organic_sales_growth_pct": {
+          "expected": 0.0,
+          "unit": "percent",
+          "absence_reason": null,
+          "cell_text": "—%",
+          "locator": {
+            "table_ordinal": 13,
+            "table_title": "Organic sales growth : The reconciliation of reported sales growth to organic sales is as follows:",
+            "period_header": "April - June 2026",
+            "row_label": "Total Company",
+            "column_header": "Organic Sales Growth"
+          },
+          "also_found": [
+            {
+              "table_ordinal": 3,
+              "table_title": "April-June Quarter Business Discussion",
+              "period_header": "April - June 2026",
+              "row_label": "Total P&G",
+              "column_header": "Organic Sales",
+              "cell_text": "—%"
+            },
+            {
+              "table_ordinal": 2,
+              "table_title": "Fourth Quarter ($ billions, except EPS)",
+              "period_header": "Fourth Quarter ($ billions, except EPS)",
+              "row_label": "Organic Sales",
+              "column_header": "% Change",
+              "cell_text": "—%"
+            },
+            {
+              "table_ordinal": 1,
+              "table_title": "P&G ANNOUNCES FOURTH QUARTER AND FISCAL YEAR 2026 RESULTS",
+              "period_header": null,
+              "row_label": null,
+              "column_header": null,
+              "cell_text": "Q4 ’26: Net Sales +2%; Organic Sales 0%; Diluted EPS -15%; Core EPS -3%"
+            }
+          ],
+          "notes": "Total-company organic sales growth for the quarter from the reported-to-organic reconciliation; agrees with the drivers table and the highlights table."
+        },
+        "pg_diluted_eps": {
+          "expected": 1.26,
+          "unit": "USD per share",
+          "absence_reason": null,
+          "cell_text": "1.26",
+          "locator": {
+            "table_ordinal": 4,
+            "table_title": "Consolidated Earnings Information",
+            "period_header": "Three Months Ended June 30, 2026",
+            "row_label": "Diluted",
+            "column_header": "2026"
+          },
+          "also_found": [
+            {
+              "table_ordinal": 2,
+              "table_title": "Fourth Quarter ($ billions, except EPS)",
+              "period_header": "Fourth Quarter ($ billions, except EPS)",
+              "row_label": "Diluted EPS",
+              "column_header": "2026",
+              "cell_text": "$1.26"
+            }
+          ],
+          "notes": "GAAP diluted net earnings per common share for the quarter. The '$' sign is printed in the adjacent cell of the same row; the numeric cell text is recorded."
+        },
+        "pg_prior_diluted_eps": {
+          "expected": 1.48,
+          "unit": "USD per share",
+          "absence_reason": null,
+          "cell_text": "1.48",
+          "locator": {
+            "table_ordinal": 4,
+            "table_title": "Consolidated Earnings Information",
+            "period_header": "Three Months Ended June 30, 2025",
+            "row_label": "Diluted",
+            "column_header": "2025"
+          },
+          "also_found": [
+            {
+              "table_ordinal": 2,
+              "table_title": "Fourth Quarter ($ billions, except EPS)",
+              "period_header": "Fourth Quarter ($ billions, except EPS)",
+              "row_label": "Diluted EPS",
+              "column_header": "2025",
+              "cell_text": "$1.48"
+            }
+          ],
+          "notes": "Year-ago quarter diluted EPS as printed in this release (comparative column of the same statement)."
+        },
+        "pg_reported_eps_growth_pct": {
+          "expected": -15.0,
+          "unit": "percent",
+          "absence_reason": null,
+          "cell_text": "(15)%",
+          "locator": {
+            "table_ordinal": 4,
+            "table_title": "Consolidated Earnings Information",
+            "period_header": "Three Months Ended June 30, 2026",
+            "row_label": "Diluted",
+            "column_header": "% Chg"
+          },
+          "also_found": [
+            {
+              "table_ordinal": 11,
+              "table_title": "Reconciliation of Non-GAAP Measures",
+              "period_header": "Three Months Ended June 30, 2026",
+              "row_label": "Diluted EPS",
+              "column_header": "CHANGE VERSUS YEAR AGO",
+              "cell_text": "(15)"
+            },
+            {
+              "table_ordinal": 2,
+              "table_title": "Fourth Quarter ($ billions, except EPS)",
+              "period_header": "Fourth Quarter ($ billions, except EPS)",
+              "row_label": "Diluted EPS",
+              "column_header": "% Change",
+              "cell_text": "(15)%"
+            },
+            {
+              "table_ordinal": 1,
+              "table_title": "P&G ANNOUNCES FOURTH QUARTER AND FISCAL YEAR 2026 RESULTS",
+              "period_header": null,
+              "row_label": null,
+              "column_header": null,
+              "cell_text": "FY ’26: Net Sales +3%; Organic Sales +1%; Diluted EPS +2%; Core EPS +1%"
+            }
+          ],
+          "notes": "% change in quarterly GAAP diluted EPS, literally as printed. In the 'CHANGE VERSUS YEAR AGO' block the value and the '%' sign sit in adjacent cells."
+        },
+        "pg_core_eps": {
+          "expected": 1.43,
+          "unit": "USD per share",
+          "absence_reason": null,
+          "cell_text": "1.43",
+          "locator": {
+            "table_ordinal": 11,
+            "table_title": "Reconciliation of Non-GAAP Measures",
+            "period_header": "Three Months Ended June 30, 2026",
+            "row_label": "Diluted net earnings per common share (2)",
+            "column_header": "Core (Non-GAAP)"
+          },
+          "also_found": [
+            {
+              "table_ordinal": 2,
+              "table_title": "Fourth Quarter ($ billions, except EPS)",
+              "period_header": "Fourth Quarter ($ billions, except EPS)",
+              "row_label": "Core EPS",
+              "column_header": "2026",
+              "cell_text": "$1.43"
+            }
+          ],
+          "notes": "Core (non-GAAP) EPS for the quarter from the reported-to-Core reconciliation. The '$' sign is printed in the adjacent cell. Adjusting column(s) printed between As Reported and Core in this table: Incremental Restructuring."
+        },
+        "pg_prior_core_eps": {
+          "expected": 1.48,
+          "unit": "USD per share",
+          "absence_reason": null,
+          "cell_text": "1.48",
+          "locator": {
+            "table_ordinal": 11,
+            "table_title": "Reconciliation of Non-GAAP Measures",
+            "period_header": "Three Months Ended June 30, 2025",
+            "row_label": "Diluted net earnings per common share (2)",
+            "column_header": "As Reported (GAAP) (1)"
+          },
+          "also_found": [
+            {
+              "table_ordinal": 2,
+              "table_title": "Fourth Quarter ($ billions, except EPS)",
+              "period_header": "Fourth Quarter ($ billions, except EPS)",
+              "row_label": "Core EPS",
+              "column_header": "2025",
+              "cell_text": "$1.48"
+            }
+          ],
+          "notes": "Year-ago quarter value printed in the same reconciliation table under 'As Reported (GAAP) (1)'; footnote (1) states there were no adjustments to or reconciling items for Core EPS for that period, so As Reported equals Core."
+        },
+        "pg_core_eps_growth_pct": {
+          "expected": -3.0,
+          "unit": "percent",
+          "absence_reason": null,
+          "cell_text": "(3)",
+          "locator": {
+            "table_ordinal": 11,
+            "table_title": "Reconciliation of Non-GAAP Measures",
+            "period_header": "Three Months Ended June 30, 2026",
+            "row_label": "Core EPS",
+            "column_header": "CHANGE VERSUS YEAR AGO"
+          },
+          "also_found": [
+            {
+              "table_ordinal": 2,
+              "table_title": "Fourth Quarter ($ billions, except EPS)",
+              "period_header": "Fourth Quarter ($ billions, except EPS)",
+              "row_label": "Core EPS",
+              "column_header": "% Change",
+              "cell_text": "(3)%"
+            },
+            {
+              "table_ordinal": 1,
+              "table_title": "P&G ANNOUNCES FOURTH QUARTER AND FISCAL YEAR 2026 RESULTS",
+              "period_header": null,
+              "row_label": null,
+              "column_header": null,
+              "cell_text": "FY ’26: Net Sales +3%; Organic Sales +1%; Diluted EPS +2%; Core EPS +1%"
+            }
+          ],
+          "notes": "% change in quarterly Core EPS, literally as printed. Value and '%' sign are adjacent cells; the same percentage appears in the highlights table with the '%' attached."
+        },
+        "pg_core_reconciliation_context": {
+          "expected": "Diluted net earnings per share were $1.26, a decrease of fifteen percent versus the prior year as an increase in net sales was more than offset by an increase in selling, general and administrative costs (SG&A) and a decrease in gross margin. Core net earnings per share decreased three percent to $1.43.",
+          "unit": "text",
+          "absence_reason": null,
+          "cell_text": "Diluted net earnings per share were $1.26, a decrease of fifteen percent versus the prior year as an increase in net sales was more than offset by an increase in selling, general and administrative costs (SG&A) and a decrease in gross margin. Core net earnings per share decreased three percent to $1.43.",
+          "locator": {
+            "table_ordinal": 2,
+            "table_title": "April-June Quarter Results",
+            "period_header": "Three Months Ended June 30, 2026",
+            "row_label": null,
+            "column_header": null
+          },
+          "also_found": [
+            {
+              "table_ordinal": null,
+              "table_title": null,
+              "period_header": null,
+              "row_label": "Exhibit 1 - Non-GAAP Measures, 'Core EPS and Currency-neutral Core EPS' definition",
+              "column_header": null,
+              "cell_text": "Core EPS and Currency-neutral Core EPS: Core earnings per share, or Core EPS, is a measure of diluted net earnings per common share (diluted EPS) adjusted for items as indicated."
+            },
+            {
+              "table_ordinal": null,
+              "table_title": null,
+              "period_header": null,
+              "row_label": "Exhibit 1 - Non-GAAP Measures, 'Incremental restructuring' bullet",
+              "column_header": null,
+              "cell_text": "The adjustment to Core earnings includes the restructuring charges that exceed the normal, recurring level of restructuring charges."
+            }
+          ],
+          "notes": "Release narrative explaining how the quarter's Core EPS differs from GAAP diluted EPS and which items are excluded. Not a table cell; located by the section heading and the nearest preceding table. Verbatim, within the 400-character limit."
+        },
+        "pg_beauty_organic_sales_growth_pct": {
+          "expected": 4.0,
+          "unit": "percent",
+          "absence_reason": null,
+          "cell_text": "4%",
+          "locator": {
+            "table_ordinal": 13,
+            "table_title": "Organic sales growth : The reconciliation of reported sales growth to organic sales is as follows:",
+            "period_header": "April - June 2026",
+            "row_label": "Beauty",
+            "column_header": "Organic Sales Growth"
+          },
+          "also_found": [
+            {
+              "table_ordinal": 3,
+              "table_title": "April-June Quarter Business Discussion",
+              "period_header": "April - June 2026",
+              "row_label": "Beauty",
+              "column_header": "Organic Sales",
+              "cell_text": "4%"
+            }
+          ],
+          "notes": "Reported-to-organic reconciliation for the quarter; agrees with the 'Organic Sales' column of the drivers table."
+        },
+        "pg_grooming_organic_sales_growth_pct": {
+          "expected": 0.0,
+          "unit": "percent",
+          "absence_reason": null,
+          "cell_text": "—%",
+          "locator": {
+            "table_ordinal": 13,
+            "table_title": "Organic sales growth : The reconciliation of reported sales growth to organic sales is as follows:",
+            "period_header": "April - June 2026",
+            "row_label": "Grooming",
+            "column_header": "Organic Sales Growth"
+          },
+          "also_found": [
+            {
+              "table_ordinal": 3,
+              "table_title": "April-June Quarter Business Discussion",
+              "period_header": "April - June 2026",
+              "row_label": "Grooming",
+              "column_header": "Organic Sales",
+              "cell_text": "—%"
+            }
+          ],
+          "notes": "Reported-to-organic reconciliation for the quarter; agrees with the 'Organic Sales' column of the drivers table."
+        },
+        "pg_health_care_organic_sales_growth_pct": {
+          "expected": -1.0,
+          "unit": "percent",
+          "absence_reason": null,
+          "cell_text": "(1)%",
+          "locator": {
+            "table_ordinal": 13,
+            "table_title": "Organic sales growth : The reconciliation of reported sales growth to organic sales is as follows:",
+            "period_header": "April - June 2026",
+            "row_label": "Health Care",
+            "column_header": "Organic Sales Growth"
+          },
+          "also_found": [
+            {
+              "table_ordinal": 3,
+              "table_title": "April-June Quarter Business Discussion",
+              "period_header": "April - June 2026",
+              "row_label": "Health Care",
+              "column_header": "Organic Sales",
+              "cell_text": "(1)%"
+            }
+          ],
+          "notes": "Reported-to-organic reconciliation for the quarter; agrees with the 'Organic Sales' column of the drivers table."
+        },
+        "pg_fabric_home_organic_sales_growth_pct": {
+          "expected": 0.0,
+          "unit": "percent",
+          "absence_reason": null,
+          "cell_text": "—%",
+          "locator": {
+            "table_ordinal": 13,
+            "table_title": "Organic sales growth : The reconciliation of reported sales growth to organic sales is as follows:",
+            "period_header": "April - June 2026",
+            "row_label": "Fabric & Home Care",
+            "column_header": "Organic Sales Growth"
+          },
+          "also_found": [
+            {
+              "table_ordinal": 3,
+              "table_title": "April-June Quarter Business Discussion",
+              "period_header": "April - June 2026",
+              "row_label": "Fabric & Home Care",
+              "column_header": "Organic Sales",
+              "cell_text": "—%"
+            }
+          ],
+          "notes": "Reported-to-organic reconciliation for the quarter; agrees with the 'Organic Sales' column of the drivers table."
+        },
+        "pg_baby_feminine_family_organic_sales_growth_pct": {
+          "expected": -2.0,
+          "unit": "percent",
+          "absence_reason": null,
+          "cell_text": "(2)%",
+          "locator": {
+            "table_ordinal": 13,
+            "table_title": "Organic sales growth : The reconciliation of reported sales growth to organic sales is as follows:",
+            "period_header": "April - June 2026",
+            "row_label": "Baby, Feminine & Family Care",
+            "column_header": "Organic Sales Growth"
+          },
+          "also_found": [
+            {
+              "table_ordinal": 3,
+              "table_title": "April-June Quarter Business Discussion",
+              "period_header": "April - June 2026",
+              "row_label": "Baby, Feminine & Family Care",
+              "column_header": "Organic Sales",
+              "cell_text": "(2)%"
+            }
+          ],
+          "notes": "Reported-to-organic reconciliation for the quarter; agrees with the 'Organic Sales' column of the drivers table."
+        }
+      },
+      "fiscal_year_tables_present": "Fiscal-year (twelve months ended June 30, 2026) figures are also printed and were ignored for these quarter metrics: highlights table 2 'Fiscal Year' block; statement of earnings table 4 fiscal-year columns; segment tables 7 and 8; non-GAAP reconciliation table 12; adjusted-free-cash-flow tables 18 and 20."
+    }
+  ]
+}

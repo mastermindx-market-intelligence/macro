@@ -1570,6 +1570,11 @@ def _tool_read_theme_state(root: Path, params: dict) -> dict:
         "note": "data/neuralweb/theme_state.json absent — run scripts/build_thematic_state.py",
     }
 
+    from .theme_state_generation_reader import legacy_consumer_barrier
+    barrier = legacy_consumer_barrier(root)
+    if barrier is not None:
+        return barrier
+
     if not state_path.exists():
         return dict(_null)
 
@@ -1585,7 +1590,7 @@ def _tool_read_theme_state(root: Path, params: dict) -> dict:
         if theme_id_filter:
             matched = [t for t in themes if isinstance(t, dict) and t.get("theme_id") == theme_id_filter]
             if not matched:
-                return {
+                return legacy_consumer_barrier(root) or {
                     "available": True,
                     "theme_id": theme_id_filter,
                     "found": False,
@@ -1595,7 +1600,7 @@ def _tool_read_theme_state(root: Path, params: dict) -> dict:
                 }
             th = matched[0]
             foresight = th.get("foresight") or {}
-            return {
+            return legacy_consumer_barrier(root) or {
                 "available": True,
                 "theme_id": theme_id_filter,
                 "found": True,
@@ -1635,7 +1640,7 @@ def _tool_read_theme_state(root: Path, params: dict) -> dict:
             except Exception:  # noqa: BLE001
                 pass
 
-        return {
+        return legacy_consumer_barrier(root) or {
             "available": True,
             "as_of": raw_state.get("as_of"),
             "n_themes": raw_state.get("n_themes") or len(themes),
@@ -1674,6 +1679,11 @@ def _tool_read_theme_thesis(root: Path, params: dict) -> dict:
         "note": "site/neuralwebdata/theme_thesis.json absent",
     }
 
+    from .theme_state_generation_reader import legacy_consumer_barrier
+    barrier = legacy_consumer_barrier(root)
+    if barrier is not None:
+        return barrier
+
     if not thesis_path.exists():
         return dict(_null)
 
@@ -1702,14 +1712,14 @@ def _tool_read_theme_thesis(root: Path, params: dict) -> dict:
         if theme_id_filter:
             matched = [t for t in theses if isinstance(t, dict) and t.get("theme_id") == theme_id_filter]
             if not matched:
-                return {
+                return legacy_consumer_barrier(root) or {
                     "available": True,
                     "theme_id": theme_id_filter,
                     "found": False,
                     "is_context_only": True,
                     "display_only": True,
                 }
-            return {
+            return legacy_consumer_barrier(root) or {
                 "available": True,
                 "theme_id": theme_id_filter,
                 "found": True,
@@ -1719,7 +1729,7 @@ def _tool_read_theme_thesis(root: Path, params: dict) -> dict:
                 "note": "not advice — context only",
             }
 
-        return {
+        return legacy_consumer_barrier(root) or {
             "available": True,
             "as_of": raw.get("as_of"),
             "n_theses": raw.get("n_theses") or len(theses),
@@ -2573,7 +2583,8 @@ def _memo_quote_response(
 # Core tool dispatcher (read-only, mirrors cortex.dispatch_tool)
 # ---------------------------------------------------------------------------
 
-def _dispatch_read_tool(tool_name: str, tool_params: dict, root: Path) -> dict:
+def _dispatch_read_tool(tool_name: str, tool_params: dict, root: Path, *,
+                        include_risk_context: bool = False) -> dict:
     """Dispatch a read-only tool call.  Refuses write tools by name.
 
     Every result passes through the chat plain-word projection
@@ -2585,7 +2596,24 @@ def _dispatch_read_tool(tool_name: str, tool_params: dict, root: Path) -> dict:
     cortex/metabolism loop (cortex.dispatch_tool) keep the raw enums.
     """
     from engine.neuralweb.chat_plain_words import project_plain_words  # noqa: PLC0415
-    return project_plain_words(_dispatch_read_tool_raw(tool_name, tool_params, root))
+    from engine.neuralweb.rotation_risk_context import redact_new_context  # noqa: PLC0415
+    # This flag is trusted server context, never a model-supplied tool parameter.
+    # Block direct envelope reads before I/O, including normalized path aliases.
+    if not include_risk_context and tool_name == "read_artifact":
+        try:
+            target = (root / str(tool_params.get("path") or "")).resolve()
+            protected = (root / "data" / "risk_envelope", root / "data" / "risk_envelope_live")
+            direct = (root / "site" / "riskdata" / "risk_envelope.json",
+                      root / "site" / "riskdata" / "risk_envelope_live.json",
+                      root / "site" / "live" / "risk_envelope.json")
+            if any(target == p.resolve() or p.resolve() in target.parents for p in protected) or any(target == p.resolve() for p in direct):
+                return {"error": "Detailed risk context requires the existing site membership."}
+        except (OSError, ValueError, RuntimeError):
+            return {"error": "Artifact path could not be qualified."}
+    result = _dispatch_read_tool_raw(tool_name, tool_params, root)
+    if not include_risk_context:
+        result = redact_new_context(result)
+    return project_plain_words(result)
 
 
 def _dispatch_read_tool_raw(tool_name: str, tool_params: dict, root: Path) -> dict:

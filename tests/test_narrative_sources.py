@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import json
 import sys
+from datetime import date
 from pathlib import Path
 from unittest.mock import MagicMock, patch
 
@@ -346,11 +347,28 @@ def _make_ticker_parquet(tmp_path, group, tickers):
     pd.DataFrame(index=tickers).to_parquet(grp_dir / "constituents.parquet")
 
 
+def _pin_today(monkeypatch, ns):
+    """Pin the 8-K window to the fixture clock.
+
+    The adapter keeps 8-Ks filed within lookback_days (the registry's 30) of
+    date.today(). At 2026-07-10 the 07-08 and 07-05 filings count and 06-01
+    falls outside; unpinned, both counted filings left the window on
+    2026-08-08 and the adapter returns an empty frame.
+    """
+    class _FixtureDate(date):
+        @classmethod
+        def today(cls):
+            return date(2026, 7, 10)
+
+    monkeypatch.setattr(ns, "date", _FixtureDate)
+
+
 def test_edgar_adapter_counts(tmp_path, monkeypatch):
     """Adapter correctly counts 8-K forms per ticker per date."""
     import collectors.narrative_sources as ns  # noqa: PLC0415
     monkeypatch.setattr(ns.config, "data_dir", lambda: tmp_path)
     monkeypatch.setattr(ns, "_load_registry", lambda: _REGISTRY_CONTENT)
+    _pin_today(monkeypatch, ns)
 
     # Write breadth universe
     _make_ticker_parquet(tmp_path, "breadth", ["AAPL", "NVDA"])
@@ -389,6 +407,7 @@ def test_edgar_adapter_pit_columns(tmp_path, monkeypatch):
     import collectors.narrative_sources as ns  # noqa: PLC0415
     monkeypatch.setattr(ns.config, "data_dir", lambda: tmp_path)
     monkeypatch.setattr(ns, "_load_registry", lambda: _REGISTRY_CONTENT)
+    _pin_today(monkeypatch, ns)
 
     _make_ticker_parquet(tmp_path, "breadth", ["MSFT"])
     edgar_dir = tmp_path / "edgar"
@@ -410,6 +429,7 @@ def test_edgar_adapter_dedup(tmp_path, monkeypatch):
     import collectors.narrative_sources as ns  # noqa: PLC0415
     monkeypatch.setattr(ns.config, "data_dir", lambda: tmp_path)
     monkeypatch.setattr(ns, "_load_registry", lambda: _REGISTRY_CONTENT)
+    _pin_today(monkeypatch, ns)
 
     _make_ticker_parquet(tmp_path, "breadth", ["GOOGL"])
     edgar_dir = tmp_path / "edgar"
@@ -457,6 +477,7 @@ def test_edgar_adapter_parquet_columns(tmp_path, monkeypatch):
     import collectors.narrative_sources as ns  # noqa: PLC0415
     monkeypatch.setattr(ns.config, "data_dir", lambda: tmp_path)
     monkeypatch.setattr(ns, "_load_registry", lambda: _REGISTRY_CONTENT)
+    _pin_today(monkeypatch, ns)
 
     _make_ticker_parquet(tmp_path, "breadth", ["AMD"])
     edgar_dir = tmp_path / "edgar"

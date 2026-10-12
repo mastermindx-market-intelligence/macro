@@ -183,3 +183,33 @@ def test_real_tree_handlers_and_curly_clean():
         pytest.skip("site/templates not present")
     assert guard.find_bad_handlers(dirs) == []
     assert guard.find_curly_contamination(dirs) == []
+
+
+@needs_node
+def test_the_pass_verdict_states_how_many_files_it_checked(tmp_path, capsys):
+    """An empty offender list is produced identically by a clean tree and by NO tree, so the
+    count is the only part of the OK line that tells a reader which one happened.
+
+    This is the pin the sparse-refusal suite cannot provide: that suite asserts exit codes,
+    and a mutation dropping this count from the verdict kept every one of its cases green.
+    """
+    _write(tmp_path, "one.html", CLEAN)
+    _write(tmp_path, "two.html", EXTERNAL)
+
+    assert guard.main([str(tmp_path)]) == 0
+    out = capsys.readouterr()
+    blob = out.out + out.err
+
+    assert "checked 2 file(s)" in blob, f"pass verdict omits its reach:\n{blob}"
+
+
+@needs_node
+def test_a_zero_reach_pass_says_zero_rather_than_implying_clean(tmp_path, capsys):
+    """A genuinely empty directory in a FULL checkout is an honest zero and still passes —
+    but it must SAY zero. This is the case that used to read exactly like a clean site."""
+    assert guard.main([str(tmp_path)]) == 0
+    out = capsys.readouterr()
+    blob = out.out + out.err
+
+    assert "checked 0 file(s)" in blob, (
+        f"a run that examined nothing reads as a clean pass:\n{blob}")

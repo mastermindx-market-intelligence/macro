@@ -1,0 +1,9 @@
+{
+  "result_sha256": "777d9ff1e83bce61f962e6a9ec6aa876691da0451e2380d79e36132a7aefc209",
+  "archive_sha256": "b365749f6f1bfad2484b8f539197d3fc8874863bf49067ffb70c7fe8ec9bfafc",
+  "script_sha256": "384979af2c62fa7a134ed60be905108a1dffdbef3b7f712c58d0ccc1ec9606d8",
+  "protocol_sha256": "3e931f5a98e3b1002971e4ef2b36378bb50654b37037b4032dcfdbdc6833c2bd",
+  "exact_result_reproduced": true,
+  "io_only_reproduction_change": true,
+  "native_outcomes_accessed": false
+}

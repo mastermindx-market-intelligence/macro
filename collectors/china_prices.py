@@ -27,6 +27,11 @@ class ChinaPriceAdapter(Adapter):
     name = "china_prices"
     group = "china"
 
+    def session_calendar_for_series(self, name: str) -> str | None:
+        # Regional price baskets can include FX/futures; only cash observations opt in.
+        from lib.market_session import cash_market_for_symbol
+        return cash_market_for_symbol(name)
+
     def __init__(self) -> None:
         self.cfg = config.load()["china"]["yahoo"]
 

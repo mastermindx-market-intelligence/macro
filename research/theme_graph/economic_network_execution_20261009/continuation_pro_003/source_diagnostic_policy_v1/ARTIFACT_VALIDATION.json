@@ -1,0 +1,56 @@
+{
+  "schema": "research.gmi.wp02.selection_policy_artifact_validation/v1",
+  "validated_at_utc": "2026-10-09T11:18:50.187115+00:00",
+  "result": "PASS_STRUCTURAL_AND_PRESERVATION_ONLY",
+  "checks": {
+    "strict_json_loads": true,
+    "five_strata_24_each_total120": true,
+    "six_activity_groups_four_each": true,
+    "size_slots_60_30_30": true,
+    "INT_8_8_8": true,
+    "42_relative_reference_pools": true,
+    "EU27_unique_country_codes": true,
+    "primary_source_ids_unique_and_policy_refs_resolve": true,
+    "public_source_raw_hashes_not_asserted": true,
+    "unadopted_unselected_unadmitted_state_retained": true,
+    "prior_21_file_inventory_and_all_digests_unchanged": true
+  },
+  "primary_sources": 19,
+  "core_artifact_bindings": [
+    {
+      "path": "PRIMARY_SOURCE_REGISTER.json",
+      "bytes": 15881,
+      "sha256": "cf2521ad18316785ecd48c34cbdd132ab4606214041132548b0ff4898cfa2b43"
+    },
+    {
+      "path": "RECOMMENDED_SELECTION_POLICY.json",
+      "bytes": 31323,
+      "sha256": "03881ee568f6f08f06ef88a2fad0e33ff2fe14b3ab1db526c35221d642cfe9fd"
+    },
+    {
+      "path": "SELECTION_POLICY_ADJUDICATION_MEMO.md",
+      "bytes": 38864,
+      "sha256": "763f8724b1ec9e88a60b94dd65b3d61befe6af79ff28f64f472f0a87ecf9a582"
+    }
+  ],
+  "prior_frame_binding": {
+    "path": "../source_diagnostic_frame_v1/PACKAGE_MANIFEST.json",
+    "sha256": "f2bb5d6393ee6a82388062d00a883713cd2e45505d796aa87c8c0d4b911ccd6c",
+    "files_including_manifest": 21,
+    "total_bytes": 300059
+  },
+  "execution_limits": {
+    "actual_selector_built": false,
+    "actual_selector_run": false,
+    "actual_capitalizations_computed": false,
+    "actual_INT_flow_tested": false,
+    "current_universe_census": false,
+    "application_imports": false,
+    "native_effects": false,
+    "Git_effects": false,
+    "provider_jobs": false,
+    "source_capture": false
+  },
+  "semantic_review": "Author consistency review of policy choices and memo. Not an independent implementation test or principal adoption.",
+  "scope": "Scratch policy research only; principal owns adoption and future selector scope."
+}

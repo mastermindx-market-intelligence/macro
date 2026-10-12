@@ -487,7 +487,7 @@
     // Keep the dynamic dependency cache-safe too. theme.js itself is
     // content-hashed in every page; this explicit release key prevents a
     // year-cached account.js from pinning an older navigation loader.
-    s.src = pfx + 'account.js?v=20260913-account-actions'; s.async = true;
+    s.src = pfx + 'account.js?v=20261011-account-identity'; s.async = true;
     document.head.appendChild(s);
   })();
 
@@ -3987,7 +3987,15 @@
      (not per blob), so an account that has only ever had `prefs`, and one that is
      half migrated, both read correctly. Nothing writes the nested blob any more;
      it survives as a read-only fallback. The Terminal half of this change is
-     terminal/lib/accountPrefs.ts (readSharedPrefs / sharedPrefsPatch). */
+     terminal/lib/accountPrefs.ts (readSharedPrefs / sharedPrefsPatch).
+
+     Single owner (site-20 S1 follow-up): account.js owns the `theme` and `lang`
+     writes whenever its panel is mounted with a loaded signed-in account — it
+     posts them to /api/account/prefs with its own queued/sent/acked/failed state.
+     _savePrefToServer asks MMAccount.claimsPref(key) and skips a claimed key, so
+     one request owns each key and a failed save is never masked by a second
+     silent writer. `theme_auto` is browser-only and stays here; a page without
+     the account panel (no MMAccount) keeps this path as the writer. */
   var _prefSyncing = false, _prefSaveTimer = null, _prefSavePending = null;
 
   /* v2 atomic if valid, else the legacy nested sibling. Per FIELD. */
@@ -4000,6 +4008,15 @@
   function _isTheme(v) { return v === 'light' || v === 'dark'; }
   function _isFlag(v) { return v === '1' || v === '0'; }
   function _isLang(v) { return v === 'en' || v === 'zh'; }
+  /* True when the mounted account panel owns the write for this key (single-owner
+     note above). Any error reads as "not claimed": this path keeps writing rather
+     than dropping the pref. */
+  function _acctOwnsPref(which) {
+    try {
+      var acc = window.MMAccount;
+      return !!(acc && typeof acc.claimsPref === 'function' && acc.claimsPref(which));
+    } catch (e) { return false; }
+  }
 
   function _applyServerPrefs(user) {
     if (!user) return;
@@ -4024,11 +4041,16 @@
   function _savePrefToServer(which) {
     if (_prefSyncing || !_curUser || !_authEnabled) return;
     var patch = _prefSavePending || {};
+    // account.js owns theme/lang while its panel holds a signed-in account; this path
+    // then carries only the browser-only theme_auto flag, which is never claimed.
+    var owned = _acctOwnsPref(which);
     if (which === 'theme') {
-      try { patch.theme = localStorage.getItem('theme') || curTheme(); } catch (e) { patch.theme = curTheme(); }
+      if (!owned) {
+        try { patch.theme = localStorage.getItem('theme') || curTheme(); } catch (e) { patch.theme = curTheme(); }
+      }
       try { patch.theme_auto = localStorage.getItem('themeAuto') || '0'; } catch (e) { patch.theme_auto = '0'; }
     } else if (which === 'lang') {
-      patch.lang = curLang();
+      if (!owned) patch.lang = curLang();
     }
     if (!Object.keys(patch).length) return;
     _prefSavePending = patch;
@@ -5849,6 +5871,8 @@
     });
   }, true);
   window.addEventListener('resize', function () { if (isOpen()) hide(); });
+  // Fragment navigation ends a transient explanation, including a pending hover.
+  window.addEventListener('hashchange', hide);
 
   /* Upgrade the legacy help() icons site-wide to this same popover system.
      The old help() macro renders EXACTLY
@@ -5928,6 +5952,14 @@
   if (window.__pvSetupBound || typeof HTMLDialogElement === 'undefined') return;
   window.__pvSetupBound = true;
   var dialog = null, active = null;
+  /* PR 8801 follow-up — ONE transient, in-memory context for the most recent
+     candidate→Plan journey. It is not a router, a store, a history or a second
+     navigation surface: it holds only the live nodes of the origin this owner has
+     just released, so the reader can come back to the SAME row with the SAME view.
+     It is dropped on source replacement/removal/recycling, a published generation
+     change, loss of access, any unrelated navigation, a second journey, or removal
+     of the exact Plan target. */
+  var journey = null, journeyBtn = null, journeyPass = null, journeyCheckQueued = false;
   function node(tag, cls, text) {
     var x = document.createElement(tag); if (cls) x.className = cls;
     if (text !== undefined) x.textContent = text; return x;
@@ -5986,10 +6018,12 @@
       if (fallback) fallback.focus({preventScroll: true});
     }
     window.scrollTo({left:old.x, top:old.y, behavior:'instant'});
+    if (journey) mountJourney();   // the Plan detail closed: the one action is still usable, outside it
   }
   function dismiss(restoreFocus) {
-    release(restoreFocus);
+    // End native modal inertness before restoring focus to the source row.
     if (dialog && dialog.open) dialog.close();
+    release(restoreFocus);
   }
   // Copy only the already-painted publisher geometry, not markup strings or live quote overlays.
   // This bounded display guard is not a data sanitizer service or a new chart engine.
@@ -6020,6 +6054,99 @@
   function sourceStamp(row) {
     var scope = row.closest('#us-candidate-pool,#us-standouts');
     return scope ? ['data-source-digest','data-as-of','data-board-asof'].map(function (k) {return scope.getAttribute(k) || '';}).join('|') : '';
+  }
+  function journeyNative(row) {
+    var link = row.querySelector('.pv-setup-stock-link,.pv-record-link,.ucp-identity>a,.stf-tkr');
+    return link ? link.getAttribute('href') : null;
+  }
+  /* The origin is only serviceable while it is the SAME live source: exact nodes,
+     the same published generation digest/as-of, the same native identity/link, the
+     exact Plan target still in the page, and no access/withhold marker. Zero rects
+     alone is NOT access loss — while Plans is selected the candidate population is
+     hidden by the source-mode rule, which is why `reachable` is only demanded at the
+     moment of return, after the source mode and view have been restored. */
+  function journeyUsable(j, reachable) {
+    if (!j || !j.row.isConnected || !j.details.isConnected || !j.trigger.isConnected ||
+        !j.row.contains(j.details) || !j.details.contains(j.trigger)) return false;
+    if (sourceStamp(j.row) !== j.stamp) return false;
+    if (journeyNative(j.row) !== j.href) return false;
+    if ((j.details.dataset.setupTicker || j.row.dataset.ticker || '') !== j.ticker) return false;
+    if (!j.planCard.isConnected || j.planCard.getAttribute('id') !== j.targetId) return false;
+    if (j.row.closest('[aria-hidden="true"],[hidden],.mx-tier-hidden,.mx-tier-blurred')) return false;
+    if (reachable && (!j.row.getClientRects().length || !j.trigger.getClientRects().length)) return false;
+    return true;
+  }
+  function journeyState(on) {
+    if (document.body && document.body.dataset) document.body.dataset.pvsCandidateReturn = on ? 'available' : 'clear';
+  }
+  /* One canonical bilingual action, existing header link-button styling, no new
+     component and no duplicated Today/Screener/Plans navigation. */
+  function journeyButton() {
+    if (journeyBtn) return journeyBtn;
+    journeyBtn = bilingual(node('button', 'gbtn mx-sec-link'), 'Return to candidate', '返回候选');
+    journeyBtn.type = 'button';
+    journeyBtn.setAttribute('data-pvs-return', 'candidate');
+    journeyBtn.addEventListener('click', function (e) { if (e && e.preventDefault) e.preventDefault(); returnToCandidate(); });
+    return journeyBtn;
+  }
+  /* Existing owner rendering only: the action lives in the source owner's own panel
+     header row, or — while THAT journey's Plan detail is open — in this dialog's own
+     footer. The same single node is re-hosted, never duplicated. */
+  function mountJourney() {
+    var parent = null;
+    if (dialog && dialog.open && active && journey && active.row === journey.planCard) {
+      parent = dialog.querySelector('.pvs-dialog-foot');
+    }
+    if (!parent) {
+      var owner = window.USProphetSource;
+      parent = owner && owner.returnHost ? owner.returnHost() : null;
+    }
+    if (!journey || !parent || !parent.append) {
+      if (journeyBtn) journeyBtn.remove();
+      journeyState(false);
+      return;
+    }
+    var btn = journeyButton();
+    if (btn.parentNode !== parent) { btn.remove(); parent.append(btn); }
+    journeyState(true);
+  }
+  function clearJourney() {
+    journey = null; journeyPass = null;
+    if (journeyBtn) journeyBtn.remove();
+    journeyState(false);
+  }
+  /* Live quote ticks mutate this page constantly; the browser already coalesces
+     MutationObserver delivery into a microtask, so one revalidation per turn is both
+     prompt (before the next paint) and bounded. */
+  function queueJourneyCheck() {
+    if (journeyCheckQueued) return;
+    journeyCheckQueued = true;
+    Promise.resolve().then(function () {
+      journeyCheckQueued = false;
+      if (journey && !journeyUsable(journey, false)) clearJourney();
+    });
+  }
+  function returnToCandidate() {
+    if (!journey || !journeyUsable(journey, false)) { clearJourney(); return false; }
+    var j = journey, want = j.mode || 'candidates';
+    // Release the Plan dialog before restoring the origin scroll. Its close owner
+    // otherwise restores the Plan scroll while the candidate is being reopened.
+    if (active) dismiss(false);
+    journeyPass = want;                       // the return hop is the journey's own
+    if (window.USProphetSource && window.USProphetSource.set) {
+      try { window.USProphetSource.set(want); } catch (e) {}
+    }
+    journeyPass = null;
+    /* Existing view owner: applyView only re-arms classes/aria, so the exact source
+       row is never re-rendered away. */
+    if (j.view && window.USStockTable && window.USStockTable._setView) {
+      try { window.USStockTable._setView(j.view); } catch (e) {}
+    }
+    window.scrollTo({left: j.x, top: j.y, behavior: 'instant'});
+    if (!journeyUsable(j, true)) { clearJourney(); return false; }
+    if (open(j.trigger, j.details, j.row) !== true) { clearJourney(); return false; }
+    clearJourney();                           // home again: nothing left to return from
+    return true;
   }
   function open(trigger, details, row) {
     if (!row.isConnected || !row.getClientRects().length || !trigger.getClientRects().length ||
@@ -6065,8 +6192,12 @@
       if (svg) slot.append(svg);
       slot.append(bilingual(node('p'), svg ? 'Published mini-chart · no new price series' : 'Chart unavailable for this source row', svg ? '来源迷你图 · 不新增价格序列' : '此来源记录未提供可用图表'));
     }
+    /* Any detail opened for another source is an explicit navigation away from the
+       journey in flight; only that journey's own exact Plan keeps it alive. */
+    if (journey && row !== journey.planCard) clearJourney();
     active = {trigger: trigger, row: row, details: details, moved: [], x: window.scrollX, y: window.scrollY,
-      hadLock: document.documentElement.classList.contains('pv-setup-lock'), sourceStamp: sourceStamp(row)};
+      hadLock: document.documentElement.classList.contains('pv-setup-lock'), sourceStamp: sourceStamp(row),
+      href: nativeHref, ticker: details.dataset.setupTicker || row.dataset.ticker || ''};
     var title = details.dataset.setupTicker || row.dataset.ticker || '';
     if (row.dataset.recordOnly === '1') title += ' · ' + (row.id || '').replace(/^pv-/, '');
     dialog.querySelector('#pvs-dialog-title').textContent = title;
@@ -6075,6 +6206,7 @@
     nodes.forEach(function (n) { var home = n.parentNode, mark = document.createComment('pv-setup-home'); n.before(mark); active.moved.push({node:n,mark:mark,home:home,owner:holder || details}); target.append(n); });
     document.documentElement.classList.add('pv-setup-lock');
     if (!dialog.open) dialog.showModal(); dialog.scrollTop = 0; dialog.querySelector('.pvs-close').focus({preventScroll:true});
+    mountJourney();
     return true;
   }
   document.addEventListener('click', function (e) {
@@ -6086,16 +6218,60 @@
     if (open(trigger, details, row) === true) e.preventDefault();
   });
   // Existing owner events. The detail never decides entitlement or fetches a missing row.
-  document.addEventListener('candidate-pool-hydrated', function () { dismiss(true); }, true);
+  /* Hydration replaces the current board, and an auth/tier turn can take
+     entitlement away with it: both end any journey. A language turn does not — the
+     action carries its own EN/ZH pair — but the open detail still returns to its row. */
+  document.addEventListener('candidate-pool-hydrated', function () { dismiss(true); clearJourney(); }, true);
   document.addEventListener('langchange', function () { dismiss(true); });
-  window.addEventListener('mdx-auth', function () { dismiss(true); });
-  window.addEventListener('mmx-access-tier', function () { dismiss(true); });
+  window.addEventListener('mdx-auth', function () { dismiss(true); clearJourney(); });
+  window.addEventListener('mmx-access-tier', function () { dismiss(true); clearJourney(); });
   new MutationObserver(function () {
+    if (journey) queueJourneyCheck();
     if (!active) return;
     if (!active.row.isConnected || !active.details.isConnected || !active.row.getClientRects().length ||
         sourceStamp(active.row) !== active.sourceStamp ||
         !active.row.contains(active.details) ||
         active.moved.some(function (p) { return !p.owner.isConnected || !p.home.contains(p.mark) ||
           !(p.owner === active.details || active.details.contains(p.owner)); })) dismiss(true);
-  }).observe(document.documentElement, {childList:true, subtree:true, attributes:true, attributeFilter:['hidden','data-prophet-src','data-source-digest','data-as-of','data-board-asof']});
+  }).observe(document.documentElement, {childList:true, subtree:true, attributes:true, attributeFilter:['hidden','aria-hidden','class','id','href','data-setup-ticker','data-ticker','data-prophet-src','data-source-digest','data-as-of','data-board-asof']});
+  /* The plan-link owner in dashboard.html.j2 is the only caller: it snapshots while
+     this owner still holds the live candidate source (before its own .pvs-close),
+     and only claims the journey after USProphetLife.selectPlan confirmed the target. */
+  window.PVSetupReturn = {
+    snapshot: function (origin) {
+      if (active && !active.row.closest('#us-plan-block,#us-life-grid')) {
+        journeyPass = 'plans';                // armed for this journey's own Plans hop
+        return {trigger: active.trigger, details: active.details, row: active.row,
+          stamp: active.sourceStamp, href: active.href, ticker: active.ticker,
+          x: active.x, y: active.y, mode: origin && origin.mode, view: origin && origin.view};
+      }
+      // Re-clicking the same candidate's link (a double click, or coming back for the
+      // same record) has no live detail to snapshot; the bound origin has not changed,
+      // so this hop must not cost the reader the return they already have.
+      if (journey) journeyPass = 'plans';
+      return null;
+    },
+    claim: function (mode) {
+      if (journeyPass === mode) { journeyPass = null; return true; }
+      return false;
+    },
+    establish: function (snap, targetId, planCard) {
+      journeyPass = null;
+      if (!snap) {
+        if (journey && journey.targetId === targetId && journey.planCard === planCard) return true;
+        clearJourney();
+        return false;
+      }
+      if (!targetId || !planCard || (snap.stamp !== sourceStamp(snap.row))) { clearJourney(); return false; }
+      journey = {trigger: snap.trigger, details: snap.details, row: snap.row, stamp: snap.stamp,
+        href: snap.href, ticker: snap.ticker, x: snap.x, y: snap.y,
+        mode: snap.mode || 'candidates', view: snap.view || 'grid', targetId: targetId, planCard: planCard};
+      mountJourney();
+      return true;
+    },
+    abandon: function () { clearJourney(); },
+    clear: function () { clearJourney(); },
+    available: function () { return !!journey && journeyUsable(journey, false); },
+    run: function () { return returnToCandidate(); }
+  };
 })();

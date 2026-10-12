@@ -122,12 +122,18 @@ def cmd_status(cfg: Config, args) -> int:
     conn = _open_conn(cfg)
     counts = db.counts_by_status(conn)
     last = db.get_meta(conn, "last_successful_run", "never")
+    auth = db.producer_auth_health(conn)
     conn.close()
     total = sum(counts.values())
     print(f"papers total: {total}")
     for status, n in sorted(counts.items()):
         print(f"  {status:<14} {n}")
     print(f"last_successful_run: {last}")
+    print(f"producer_auth_state: {auth['state']}")
+    print(f"producer_auth_observed_at: {auth['observed_at'] or 'unknown'}")
+    if auth["state"] == db.AUTH_REQUIRED:
+        print(f"producer_auth_required_at: {auth['required_at'] or 'unknown'}")
+        print(f"producer_auth_reason: {auth['reason'] or 'NO_AUTHENTICATED_PROFILE'}")
     return 0
 
 

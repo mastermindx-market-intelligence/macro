@@ -5,10 +5,9 @@ Takes a list of live_flow.feed/v1 event dicts (from feed_current.json) and
 emits a list of enriched events per the flow.enrich/v1 schema (§5 of spec).
 
 Detectors (all deterministic, no LLM):
-  MULTI_LEG    — event.swept=True (poller's sweep-heuristic flag is the closest
-                 available proxy; has_multileg/spread_type/cluster_type are NOT
-                 emitted by live_flow.py — confirmed via engine/live_flow.py:699).
-                 When MULTI_LEG fires, direction_discounted=True (direction ambiguous).
+  PACKAGE      — intentionally unavailable on live_flow.feed/v1. The current
+                 event.swept flag is single-contract multi-print urgency and MUST
+                 NOT be relabeled MULTI_LEG or used to infer package structure.
   LADDER       — repeated contract appearing across multiple strikes (same root/right/exp)
   REPEAT_HITTER — same root appears in >= 3 distinct events in the session
   SIZE_VS_OI   — size > OI (vol_gt_oi == True with premium >= $500k floor)
@@ -34,7 +33,7 @@ Thresholds (trailing-sessions percentiles, spec §3):
 
 HOUSE LAWS (binding):
   - Display-tier only; no user-facing "signal" or "validated" strings.
-  - direction_discounted=True whenever MULTI_LEG fires (direction ambiguous on spreads).
+  - swept is urgency only; no current field proves a multi-leg package or authorizes package-based direction discounting.
   - ELITE session_tier requires both q >= elite threshold AND premium >= $1M.
   - EARNINGS_WINDOW detector skipped (no PIT-clean earnings source consumable inline).
   - OI data comes from event field vol_gt_oi (OI[t-1] law already honoured upstream).
@@ -249,17 +248,18 @@ def compute_q_score(event: dict) -> dict:
 # ═══════════════════════════════════════════════════════════════════════════════
 
 def detect_multi_leg(event: dict, _session_events: list[dict]) -> bool:
-    """MULTI_LEG: event is flagged as a sweep by the poller (swept=True).
+    """Return False until the canonical event carries qualified package evidence.
 
-    The live_flow.py poller (engine/live_flow.py:699) emits `swept` (bool) as
-    its spread/multi-print heuristic flag (>= 3 prints, >= 2 exchanges, <= 2s
-    span). The fields has_multileg, spread_type, and cluster_type are NOT in
-    the live feed — using them caused 0 MULTI_LEG fires on all real sessions.
+    `live_flow.feed/v1` currently emits one exact-contract event plus a `swept`
+    urgency flag. That flag means repeated prints across venues in a short window;
+    it does not identify common-order legs, customer intent, or a package.
 
-    When this detector fires, direction_discounted is set True in the envelope,
-    indicating the direction read is ambiguous (spread or accumulated sweep).
+    Keep the function as a compatibility seam for callers/tests, but fail closed.
+    A later package implementation must introduce a separately reviewed,
+    source-qualified state contract rather than reinterpreting `swept`.
     """
-    return bool(event.get("swept"))
+    _ = event
+    return False
 
 
 def detect_ladder(event: dict, session_events: list[dict]) -> bool:
@@ -342,7 +342,9 @@ def detect_z_outlier(event: dict, _session_events: list[dict]) -> bool:
 # ── detector registry (ordered for badge output) ─────────────────────────────
 
 _DETECTORS: list[tuple[str, Any]] = [
-    ("MULTI_LEG",     detect_multi_leg),
+    # No MULTI_LEG detector is registered: current live-flow events have no
+    # qualified package-association field. The raw swept flag remains pass-through
+    # urgency evidence for consumers that label it honestly.
     ("LADDER",        detect_ladder),
     ("REPEAT_HITTER", detect_repeat_hitter),
     ("SIZE_VS_OI",    detect_size_vs_oi),
@@ -354,10 +356,6 @@ _DETECTORS: list[tuple[str, Any]] = [
 # ── bilingual badge rationale strings (spec §4: every badge carries why/why_zh) ─
 
 _BADGE_WHY: dict[str, tuple[str, str]] = {
-    "MULTI_LEG":     (
-        "Sweep flag active — direction is ambiguous; treat as spread or accumulated order.",
-        "探测到扫单标志——方向不明确，视为价差单或累积订单。",
-    ),
     "LADDER":        (
         "Same expiry appears across 3+ distinct strikes — possible staged accumulation.",
         "同一到期日出现3个以上不同行权价——可能为梯形建仓。",
@@ -604,7 +602,9 @@ def build_enrich_envelope(
             q_score  = q_result["q_score"]
             q_tier   = q_result["q_tier"]
 
-            # Detectors
+            # Detectors. Package-based direction discounting is deliberately
+            # unavailable until a qualified package-association contract exists;
+            # `swept` is single-contract urgency only.
             badges: list[str] = []
             direction_discounted = False
             for badge_name, detector_fn in _DETECTORS:
@@ -614,8 +614,6 @@ def build_enrich_envelope(
                     fires = False
                 if fires:
                     badges.append(badge_name)
-                    if badge_name == "MULTI_LEG":
-                        direction_discounted = True
 
             # Tier from thresholds (spec §3: elite requires q >= threshold AND premium >= $1M)
             premium_val = float(ev.get("premium", 0) or 0)

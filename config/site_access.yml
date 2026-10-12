@@ -282,6 +282,9 @@ public:
     - /tablesort.js
     - /charts.js
     - /risk_state_live.js
+    # Public presentation code only. The live/risk_envelope.json payload remains
+    # separately registration/tier-gated; do not open the market-data feed.
+    - /risk_envelope_live.js
     - /china_risk_state_live.js
     - /release_publications_live.js
     - /heatmap.js

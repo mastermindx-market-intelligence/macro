@@ -101,6 +101,7 @@ evidence:
   - "Corrected census, 807 trees, PR state instead of ancestry: 318 detached / 107 open PR / 69 MERGED (misfiled by the ancestry gate) / 7 closed / 60 no-PR-in-window / 43 undecidable / 154 zero-ahead / 47 squash-matched -- real abandonment 8-14%, and the fleet ships ~61 PRs/day against ~54 trees/day minted"
   - "Squash-vs-ancestry measurement, PR #8086: `git merge-base --is-ancestor f9425697 origin/main` exit 0 (squash commit), same test on branch tip 0a47bc1f exit 1"
   - "Scope, not judgment: 580 of 807 trees (72%) sit outside config/worktree_gc.json `roots`, where worktree_gc.py refuses any target 'outside configured roots' -- /Volumes/Mastermind/agent-workspaces (354 trees, .../claude alone 462 GiB, mandated by the SSD placement policy) and /Volumes/Mastermind/worktrees (142)"
+  - "PARTLY FALSIFIED 2026-09-28 -- the scope finding stands, the SIZE of the widening act does not. worktree_gc.py decides session-tree-vs-host from repo-RELATIVE path segments, never from `roots`: rel_roots (~861) drops every absolute and ~ entry and path_under_session_root (165) segment-matches only .claude/worktrees + 6 siblings, so every /Volumes/Mastermind path is a HOST and is refused at the belt (~688). Measured over 804 registrations: adding both SSD subtrees moves in_scope 225->721 (+496 REPORTED) and belt-reachable 225->226 (+1: /Volumes/Mastermind/agent-workspaces/maintenance/.claude/worktrees/ssd-worktree-policy-20260906, reachable only via its own .claude/worktrees segment). So widening is a near-INERT operator act, and the 527 human-driven SSD checkouts are protected by an accidental naming heuristic that the obvious repair removes -- see DSC:A-HOST-CHECKOUT-BELT-MAKES-A-WIDER-ROOTS-LIST-INERT"
   - "Second scope defect: report-only run verdicted 364 trees / 305.2 GiB LOCKED, but 285 / 221.6 GiB carry only the content-free stamps ('mastermind-external-storage: removable volume protection' x282, 'initializing' x3); LOCKED short-circuits at worktree_gc.py:501 so landedness is never computed, and re-running the skipped checks by hand found 41 trees / 26.6 GiB clean, unoccupied and provably landed. worktree_gc.py has NO lock-reason config key, and its `worktree remove --force` at line 706 refuses a locked tree outright"
   - "Report-only run over widened roots (armed:false scratch config): SAFE_MERGED 34 / 47.9 GiB + SAFE_REMOTE 7 / 12.8 GiB = 41 trees / 60.8 GiB; kept LOCKED 364 / 305.2, DIRTY 107 / 221.3, RECENT 66 / 122.4, UNPUSHED 100 / 86.7, OPEN_PR 19 / 33.1, LIVE_PROC 7 / 27.6, ORPHAN 8 / 4.9"
   - "Reflog entry epochs of the 59: 5 had git activity within 6h of conversion; 33 were 1-3d idle; 21 were >3d"
@@ -142,7 +143,16 @@ there":
    60.8 GiB reclaimable now**, plus **41 trees / 26.6 GiB clean-and-landed behind a
    content-free lock stamp** the tool short-circuits on. This IS uncollected garbage, so this
    enforcement point is the right instrument — what limited it was SCOPE (`roots`, and the
-   blanket lock), not judgment. The genuinely unreachable remainder is DIRTY + UNPUSHED
+   blanket lock), not judgment. **AMENDED 2026-09-28: "under a configured root" is necessary but
+   not sufficient, and widening `roots` does not by itself deliver either pool.** A second belt
+   sits behind it — `host_checkouts` classifies any path matching no repo-RELATIVE session-root
+   segment as a host checkout and the deletion belt refuses it — so every
+   `/Volumes/Mastermind/…` tree is unreachable whatever `roots` says (measured: widening moves
+   belt-reachable 225 → 226). Both pools above therefore need a third change, session-tree
+   detection following the configured roots, and that change is the one that would strip the
+   only protection the 527 human-driven SSD checkouts have; it must not ship without a
+   `human_driven_roots` deny-list in the same commit.
+   (`DSC:A-HOST-CHECKOUT-BELT-MAKES-A-WIDER-ROOTS-LIST-INERT`) The genuinely unreachable remainder is DIRTY + UNPUSHED
    (~308 GiB of actual work) and the 318 detached lanes, which belong to `refs/salvage/*` and
    to a lane-exit receipt respectively.
 3. **At a ceiling — a hard per-root population cap**, evicting landed-and-clean trees

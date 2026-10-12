@@ -3,9 +3,9 @@
   "authority": {
     "tier": "context_only"
   },
-  "built": "2026-09-27T13:00:51.919481+00:00",
-  "asof": "2026-09-24",
-  "phase": "REPAIR",
+  "built": "2026-10-11T15:13:29.696621+00:00",
+  "asof": "2026-10-09",
+  "phase": "GRINDING_BEAR",
   "confidence": 0.8,
   "evidence": [
     "turnover_z20_null"
@@ -29,8 +29,8 @@
     }
   ],
   "allowed_actions": [
-    "watch_for_base",
-    "reversal_only"
+    "monitor_only",
+    "cash_is_option"
   ],
   "data_gaps": [],
   "era_table": [

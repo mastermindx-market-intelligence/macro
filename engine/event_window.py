@@ -35,6 +35,7 @@ from __future__ import annotations
 
 import logging
 from datetime import date, timedelta
+from pathlib import Path
 from typing import Sequence
 
 import numpy as np
@@ -478,39 +479,108 @@ def seasonality(close: pd.Series, fwd_days: int = 5) -> dict:
 # ---------------------------------------------------------------------------
 # Ex-ante release-risk read (night before a print, T-1 stamp)
 # ---------------------------------------------------------------------------
-def _read_mri_surprise_dispersion(release_type: str) -> dict | None:
-    """Read MRI surprise-dispersion (predicted vs benchmark spread in σ-surprise units)
-    from the committed release_forecast artifact. Returns None on any failure.
+_MRI_RELEASE_TYPE_MAP = {"CPI": "cpi_headline", "NFP": "nfp", "PPI": "ppi_finaldemand", "PCE": "pce_headline", "CLAIMS": "claims"}
 
-    Deterministic read — no network, no new math. The release_forecast.v2 artifact
-    is written by scripts/build_release_forecast.py (MRI program); this function
-    reads the committed site payload for display annotation.
+
+def _mri_release_forecast_paths() -> list[Path]:
+    """Committed release_forecast.v2 artifacts, in read order (first existing wins)."""
+    from lib import config
+    return [config.ROOT / "data" / "release_forecast" / "latest.json",
+            config.ROOT / "site" / "macrodata" / "release_forecast.json"]
+
+
+def _read_mri_surprise_dispersion(
+    release_type: str, today: date | None = None, *, paths: Sequence[Path] | None = None
+) -> dict | None:
+    """Read the MRI surprise-dispersion context for `release_type` from the committed
+    release_forecast.v2 artifact. Returns None on any failure.
+
+    Sources, in order: data/release_forecast/latest.json (written nightly by
+    scripts/build_release_forecast.py), then site/macrodata/release_forecast.json
+    (byte-copy published by scripts/build_site.py). The first existing candidate is
+    the source; none exists → None.
+
+    Envelope gate: the payload must be a dict whose "schema" starts with
+    "release_forecast.v2" and whose "upcoming" is a list. Legacy uppercase-keyed
+    payloads (no schema/upcoming) are rejected outright — never a partial read.
+
+    Selection: the caller's key (e.g. "CPI") is mapped through _MRI_RELEASE_TYPE_MAP
+    to the producer's release_type (e.g. "cpi_headline"; unknown keys are lowercased).
+    Elements match by EXACT release_type equality (never prefix — "CPI" must not hit
+    cpi_core); elements whose release_date is None, missing or unparseable are
+    skipped; of the remaining elements with release_date >= `today`, the nearest
+    (smallest) release_date wins. No candidate → None.
+
+    Field meaning: `sigma_surprise` is the STANDARDIZED surprise skew
+    (surprise_skew["sigma"] — no sigma_scale_pp fallback); `sigma_scale_pp` carries
+    the pp scale separately; `pred_spread_sigma` is retained as None for the
+    forward-log columns (no producer writes prediction_spread_sigma). `asof` and
+    `consumed_asof` carry the artifact's top-level asof stamp.
+
+    Nightly order: the event-windows build runs BEFORE build_release_forecast, so
+    this reader consumes the PREVIOUS night's forecast; _attach_evw_context on the
+    forecast side consumes the event-windows snapshot the other way. The exchange
+    is context-only in both directions, each side stamped with the consumed asof.
 
     MRI-R20 law: this read NEVER shifts a projection value. Display context only."""
     try:
         import json
-        from lib import config
-        p = config.ROOT / "site" / "release_forecast" / "latest.json"
-        if not p.exists():
+        today = today or date.today()
+        candidates = list(paths) if paths is not None else _mri_release_forecast_paths()
+        source = None
+        for cand in candidates:
+            if cand.exists():
+                source = cand
+                break
+        if source is None:
             return None
-        payload = json.loads(p.read_text())
-        # Navigate to the release-type sub-section
-        # Schema: release_forecast.v2 has sections keyed by release type (CPI, NFP, etc.)
-        section = (payload or {}).get(release_type.upper())
-        if not section:
+        payload = json.loads(source.read_text())
+        if not (
+            isinstance(payload, dict)
+            and isinstance(payload.get("schema"), str)
+            and payload["schema"].startswith("release_forecast.v2")
+            and isinstance(payload.get("upcoming"), list)
+        ):
             return None
-        surprise_skew = section.get("surprise_skew") or {}
-        sigma = surprise_skew.get("sigma") or surprise_skew.get("sigma_scale_pp")
-        pred_spread = section.get("prediction_spread_sigma")
+        rt = (release_type or "").strip()
+        target = _MRI_RELEASE_TYPE_MAP.get(rt.upper(), rt.lower())
+        best_rd: date | None = None
+        best_el: dict | None = None
+        for el in payload["upcoming"]:
+            if not isinstance(el, dict) or el.get("release_type") != target:
+                continue
+            if el.get("release_date") is None:
+                continue
+            try:
+                rd = date.fromisoformat(str(el["release_date"]))
+            except ValueError:
+                continue
+            if rd < today:
+                continue
+            if best_rd is None or rd < best_rd:
+                best_rd = rd
+                best_el = el
+        if best_el is None:
+            return None
+        skew = best_el.get("surprise_skew") if isinstance(best_el.get("surprise_skew"), dict) else {}
+        sigma = skew.get("sigma")
+        pp = skew.get("sigma_scale_pp")
         # Expectation read (MRI-R22): predicted vs market+nowcast expectation
-        expectation = section.get("expectation_read")
         return {
             "release_type": release_type,
             "sigma_surprise": float(sigma) if sigma is not None else None,
-            "pred_spread_sigma": float(pred_spread) if pred_spread is not None else None,
-            "expectation_read": expectation,
-            "asof": payload.get("asof") or section.get("asof"),
+            "pred_spread_sigma": None,  # dead field, kept for the forward-log columns
+            "expectation_read": best_el.get("expectation_read"),
+            "asof": payload.get("asof"),
             "available": sigma is not None,
+            "sigma_scale_pp": float(pp) if pp is not None else None,
+            "skew_tag": skew.get("tag"),
+            "consumed_asof": payload.get("asof"),
+            "release_date": best_rd.isoformat(),
+            "period": best_el.get("period"),
+            "forecast_release_type": target,
+            "source_path": str(source),
+            "is_context_only": True,
         }
     except Exception:  # noqa: BLE001
         return None
@@ -607,7 +677,7 @@ def ex_ante_read(
     Returns a dict with is_context_only=True always. All sub-fields nullable (null
     degrades gracefully — the chip renders with available=False when inputs absent)."""
     today = today or date.today()
-    mri = _read_mri_surprise_dispersion(release_type)
+    mri = _read_mri_surprise_dispersion(release_type, today=today)
     implied = _read_implied_event_move(spy_vol_payload)
     read: dict = {
         "schema": "event_window.ex_ante.v1",
@@ -633,12 +703,11 @@ def ex_ante_read(
     if mri and mri.get("available"):
         sigma = mri.get("sigma_surprise")
         if sigma is not None:
-            parts_en.append(f"Trailing surprise σ: {sigma:.2f}pp")
-            parts_zh.append(f"历史惊喜标准差：{sigma:.2f}个百分点")
-        pred_spread = mri.get("pred_spread_sigma")
-        if pred_spread is not None:
-            parts_en.append(f"Model spread vs benchmark: {pred_spread:+.1f}σ")
-            parts_zh.append(f"模型预测 vs 基准偏差：{pred_spread:+.1f}σ")
+            pp = mri.get("sigma_scale_pp")
+            scale_en = f" (scale {pp:.2f}pp)" if pp is not None else ""
+            scale_zh = f"（尺度 {pp:.2f} 个百分点）" if pp is not None else ""
+            parts_en.append(f"Surprise skew: {sigma:+.2f}σ{scale_en}")
+            parts_zh.append(f"惊喜偏斜：{sigma:+.2f}σ{scale_zh}")
     if implied and implied.get("available"):
         m = implied.get("implied_1d_move_pct")
         if m is not None:

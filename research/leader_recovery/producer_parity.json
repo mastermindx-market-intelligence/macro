@@ -1,0 +1,29 @@
+{
+  "passed": true,
+  "n_names": 173,
+  "as_of": "2026-10-09",
+  "incumbent_all_payload_fields_equal": true,
+  "excluded_additive_fields": [
+    "display_chips.leader_recovery",
+    "display_chips.rs_high_watch",
+    "recovery_roster",
+    "rs_high_roster"
+  ],
+  "additive_row_chip_scope": "stripped from every row-like dict recursively (top-level rows and embedded row lists); counts recorded",
+  "additive_row_chips_stripped_from_candidate": {
+    "rs_high_watch": 215,
+    "leader_recovery": 215
+  },
+  "additive_row_chips_found_in_baseline": {},
+  "excluded_nondeterministic_fields": [
+    "built_at",
+    "elapsed_s",
+    "freshness.built_at"
+  ],
+  "baseline_builder_sha256": "61007482e4fa61546fbf28a7d55bd36df3c632160ee1458e6c164de474b54fb4",
+  "baseline_builder_source": "origin/main scripts/build_leader_radar.py (blob 0ff389d12010951ee88857c0595d4050c27910bd)",
+  "candidate_builder_sha256": "7de8837fe95f814be3670c64f391f6c6aeb1bf5d49dca24c3e0a651f31057388",
+  "capture_default_disabled": true,
+  "method": "both builders run read-only against the same licensed stores (COLLECT_LANE unset, no data/ writes; 177 operational store files hashed unchanged before/after); full payload deep-compared after removing only the listed additive and nondeterministic fields",
+  "n_differences_outside_exclusions": 0
+}

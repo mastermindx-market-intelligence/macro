@@ -1150,8 +1150,16 @@ def test_a_pack_close_that_matches_the_feeds_previous_close_evaluates_normally()
     assert ba["checked_n"] == 1 and ba["unchecked_n"] == 0 and ba["mismatched"] == {}
 
 
+def _with_complete_basis_provenance(p):
+    p["price_adjustment"] = LS.DEFAULT_PACK_ADJUSTMENT
+    p["meta"]["price_adjustment_counts"] = {
+        LS.DEFAULT_PACK_ADJUSTMENT: len(p["names"])
+    }
+    return p
+
+
 def test_a_checked_matching_basis_emits_positive_per_name_relation_receipt():
-    art = _run(pack({"BBB": buyable()}),
+    art = _run(_with_complete_basis_provenance(pack({"BBB": buyable()})),
                quotes_with_prev({"BBB": 100.0}, {"BBB": 100.0}))
     state = art["states"]["BBB"]
     assert state["basis_status"] == "RESOLVED"
@@ -1160,9 +1168,120 @@ def test_a_checked_matching_basis_emits_positive_per_name_relation_receipt():
     assert art["meta"]["price_adjustment"]["relation_schema"] == \
         "prophet_live.basis_relation/v1"
 
-    shifted = _run(pack({"BBB": buyable()}),
+    shifted = _run(_with_complete_basis_provenance(pack({"BBB": buyable()})),
                    quotes_with_prev({"BBB": 100.0}, {"BBB": 100.2}))
     assert shifted["states"]["BBB"]["basis_receipt"] != state["basis_receipt"]
+
+
+def test_missing_basis_provenance_never_mints_positive_relation_receipt():
+    art = _run(pack({"BBB": buyable()}),
+               quotes_with_prev({"BBB": 100.0}, {"BBB": 100.0}))
+    assert "basis_status" not in art["states"]["BBB"]
+    assert "basis_receipt" not in art["states"]["BBB"]
+
+
+def test_producer_declared_unknown_basis_never_mints_positive_relation_receipt():
+    p = pack({"BBB": buyable()})
+    p["price_adjustment"] = LS.DEFAULT_PACK_ADJUSTMENT
+    p["meta"]["price_adjustment_counts"] = {"unknown": 1}
+    art = _run(p, quotes_with_prev({"BBB": 100.0}, {"BBB": 100.0}))
+    assert "basis_status" not in art["states"]["BBB"]
+    assert "basis_receipt" not in art["states"]["BBB"]
+
+
+def test_unregistered_basis_token_never_mints_positive_relation_receipt():
+    p = pack({"BBB": buyable()})
+    p["price_adjustment"] = "some_other_basis"
+    p["meta"]["price_adjustment_counts"] = {"some_other_basis": 1}
+    art = _run(p, quotes_with_prev({"BBB": 100.0}, {"BBB": 100.0}))
+    assert "basis_status" not in art["states"]["BBB"]
+    assert "basis_receipt" not in art["states"]["BBB"]
+
+
+def test_malformed_explicit_basis_never_falls_back_to_pack_default():
+    row = buyable()
+    row["price_adjustment"] = 7
+    p = _with_complete_basis_provenance(pack({"BBB": row}))
+    art = _run(p, quotes_with_prev({"BBB": 100.0}, {"BBB": 100.0}))
+    assert "basis_status" not in art["states"]["BBB"]
+    assert "basis_receipt" not in art["states"]["BBB"]
+
+
+def test_partial_census_only_resolves_explicit_known_exception():
+    raw = LS.LIVE_QUOTE_ADJUSTMENT
+    rows = {"AAA": buyable(), "BBB": buyable(), "CCC": buyable()}
+    rows["BBB"]["price_adjustment"] = raw
+    p = pack(rows)
+    p["price_adjustment"] = LS.DEFAULT_PACK_ADJUSTMENT
+    p["meta"]["price_adjustment_counts"] = {
+        LS.DEFAULT_PACK_ADJUSTMENT: 1,
+        raw: 1,
+        "unknown": 1,
+    }
+    art = _run(
+        p,
+        quotes_with_prev(
+            {"AAA": 100.0, "BBB": 100.0, "CCC": 100.0},
+            {"AAA": 100.0, "BBB": 100.0, "CCC": 100.0},
+        ),
+    )
+    assert "basis_receipt" not in art["states"]["AAA"]
+    assert art["states"]["BBB"]["basis_status"] == "RESOLVED"
+    assert "basis_receipt" not in art["states"]["CCC"]
+
+
+def test_mixed_basis_census_without_row_exceptions_never_resolves_implicit_rows():
+    raw = LS.LIVE_QUOTE_ADJUSTMENT
+    p = pack({"AAA": buyable(), "BBB": buyable()})
+    p["price_adjustment"] = LS.DEFAULT_PACK_ADJUSTMENT
+    p["meta"]["price_adjustment_counts"] = {
+        LS.DEFAULT_PACK_ADJUSTMENT: 1,
+        raw: 1,
+    }
+    art = _run(
+        p,
+        quotes_with_prev({"AAA": 100.0, "BBB": 100.0}, {"AAA": 100.0, "BBB": 100.0}),
+    )
+    for ticker in ("AAA", "BBB"):
+        assert "basis_status" not in art["states"][ticker]
+        assert "basis_receipt" not in art["states"][ticker]
+
+
+def test_mixed_basis_census_resolves_when_nondefault_exception_is_explicit():
+    raw = LS.LIVE_QUOTE_ADJUSTMENT
+    rows = {"AAA": buyable(), "BBB": buyable()}
+    rows["BBB"]["price_adjustment"] = raw
+    p = pack(rows)
+    p["price_adjustment"] = LS.DEFAULT_PACK_ADJUSTMENT
+    p["meta"]["price_adjustment_counts"] = {
+        LS.DEFAULT_PACK_ADJUSTMENT: 1,
+        raw: 1,
+    }
+    art = _run(
+        p,
+        quotes_with_prev({"AAA": 100.0, "BBB": 100.0}, {"AAA": 100.0, "BBB": 100.0}),
+    )
+    assert art["states"]["AAA"]["basis_status"] == "RESOLVED"
+    assert art["states"]["BBB"]["basis_status"] == "RESOLVED"
+    assert art["states"]["BBB"]["levels_adjustment"] == raw
+
+
+def test_contradictory_basis_census_does_not_resolve_unrelated_implicit_rows():
+    raw = LS.LIVE_QUOTE_ADJUSTMENT
+    rows = {"AAA": buyable(), "BBB": buyable()}
+    rows["BBB"]["price_adjustment"] = raw
+    p = pack(rows)
+    p["price_adjustment"] = LS.DEFAULT_PACK_ADJUSTMENT
+    p["meta"]["price_adjustment_counts"] = {
+        LS.DEFAULT_PACK_ADJUSTMENT: 2,
+        raw: 0,
+    }
+    art = _run(
+        p,
+        quotes_with_prev({"AAA": 100.0, "BBB": 100.0}, {"AAA": 100.0, "BBB": 100.0}),
+    )
+    assert "basis_receipt" not in art["states"]["AAA"]
+    assert "basis_receipt" not in art["states"]["BBB"]
 
 
 def test_unchecked_basis_never_mints_a_positive_relation_receipt():
@@ -1264,9 +1383,14 @@ def test_a_name_whose_levels_are_on_another_basis_says_so_on_its_own_row():
     header's — the rule is written down, so nothing is derived."""
     entry = buyable()
     entry["price_adjustment"] = LS.LIVE_QUOTE_ADJUSTMENT
-    art = _run(pack({"AAA": buyable(), "BBB": entry}),
-               quotes_with_prev({"AAA": 100.0, "BBB": 100.0},
-                                {"AAA": 100.0, "BBB": 100.0}))
+    p = pack({"AAA": buyable(), "BBB": entry})
+    p["price_adjustment"] = LS.DEFAULT_PACK_ADJUSTMENT
+    p["meta"]["price_adjustment_counts"] = {
+        LS.DEFAULT_PACK_ADJUSTMENT: 1,
+        LS.LIVE_QUOTE_ADJUSTMENT: 1,
+    }
+    art = _run(p, quotes_with_prev({"AAA": 100.0, "BBB": 100.0},
+                                   {"AAA": 100.0, "BBB": 100.0}))
     assert "levels_adjustment" not in art["states"]["AAA"]
     assert art["states"]["BBB"]["levels_adjustment"] == LS.LIVE_QUOTE_ADJUSTMENT
     assert art["states"]["AAA"]["basis_status"] == "RESOLVED"

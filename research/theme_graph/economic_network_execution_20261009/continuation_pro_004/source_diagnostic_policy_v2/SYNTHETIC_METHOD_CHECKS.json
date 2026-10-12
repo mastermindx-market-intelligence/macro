@@ -1,0 +1,108 @@
+{
+  "actual_INT_flow": null,
+  "actual_population_count": null,
+  "actual_selector_run": false,
+  "application_or_native_effects": false,
+  "check_count": 12,
+  "checks": {
+    "INT_duplicate_toy_identity_rejected": {
+      "pass": true
+    },
+    "INT_isolated_self_use_and_zero_target": {
+      "current_candidate_must_not_remain": true,
+      "pass": true,
+      "scope": "ISOLATED_RESIDUAL_SUBPROBLEM"
+    },
+    "INT_residual_procedure_vs_bruteforce": {
+      "actual_INT_solver_or_population": false,
+      "input_permutations": 720,
+      "pass": true,
+      "residual_targets": [
+        2,
+        1,
+        0
+      ],
+      "toy_selected_priorities": [
+        0,
+        1,
+        5
+      ]
+    },
+    "R1_mismatched_event_state_rejected": {
+      "pass": true
+    },
+    "R1_reverse_and_forward_exact_sets": {
+      "equal_counts_alone_insufficient": true,
+      "pass": true,
+      "removed_post_D_admission": "toy_F",
+      "restored_post_D_removal": "toy_E"
+    },
+    "R1_survivor_roster_changes_quantiles": {
+      "D_bands": {
+        "100": "S",
+        "200": "M",
+        "300": "L",
+        "400": "L",
+        "500": "L"
+      },
+      "D_count": 5,
+      "later_survivors": 4,
+      "pass": true,
+      "survivor_bands": {
+        "200": "S",
+        "300": "M",
+        "400": "L",
+        "500": "L"
+      }
+    },
+    "R2_cyclic_revision_rejected": {
+      "pass": true
+    },
+    "R2_exact_unit_equivalence": {
+      "pass": true
+    },
+    "R2_measurement_order_and_no_older_fallback": {
+      "pass": true
+    },
+    "R2_newer_publication_is_not_correction": {
+      "pass": true,
+      "possible_reference_caps": [
+        1900000000,
+        2100000000
+      ],
+      "relative_1900m": "M",
+      "relative_2100m": "L",
+      "result": {
+        "active": [
+          "a",
+          "b"
+        ],
+        "state": "CAP_COMPONENT_CONFLICT",
+        "value": null
+      }
+    },
+    "R2_scope_of_proved_supersession": {
+      "pass": true,
+      "real_source_supersession_verified": false,
+      "unreconciled_independent_assertion_still_conflicts": true,
+      "with_proved_edge": {
+        "active": [
+          "b"
+        ],
+        "state": "RESOLVED",
+        "value": "210000000"
+      }
+    },
+    "R2_stale_price_share_unit_bridge": {
+      "before_and_corrected_value": "1000",
+      "pass": true,
+      "unbridged_value": "2000"
+    }
+  },
+  "limits": "Embedded synthetic arithmetic, reversible set transitions and small exhaustive feasibility only. No actual historical-source completeness or publisher-supersession evidence was tested.",
+  "real_issuer_inputs": false,
+  "real_source_proof_or_entitlement_verified": false,
+  "result": "PASS_SYNTHETIC_CONTROLS_ONLY",
+  "schema": "research.gmi.wp02.synthetic_correction_checks/v2",
+  "source_receipt_validator_implemented": false
+}

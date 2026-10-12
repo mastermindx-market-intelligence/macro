@@ -1,0 +1,882 @@
+{
+  "schema": "options_research.source_census/v1",
+  "researched_at_date": "2026-10-03",
+  "primary_pin": "6f5e78e94e8808582a650cdfa0fc3357040a179c",
+  "candidate_supplement_pin": "a15ba9ae77826bf6a1d6fcb40022b6816b705e43",
+  "scope": "Bounded read-only immutable Macro source census; no runtime, credentials, tests, data/session inspection, or external/source writes.",
+  "limitations": [
+    "Static source proves encoded behavior and committed schema/settings only.",
+    "Source comments about measured production incidents were not independently reverified.",
+    "Candidate supplement is not described as merged or runtime-active.",
+    "Repository search was discovery only; source claims cite immutable file reads.",
+    "No current provider entitlement, data completeness, deployment identity, current gate value or rank influence is established.",
+    "Local source cache may differ in terminal newline from original tool content; git_blob_sha comes from GitHub, not a recomputed cache hash."
+  ],
+  "ownership": "Preserve all incumbent C0 owners and Terminal #599 lane; no new owner/store/state machine.",
+  "sources": [
+    {
+      "repository": "mastermindx-market-intelligence/macro",
+      "pin": "6f5e78e94e8808582a650cdfa0fc3357040a179c",
+      "path": "collectors/thetadata.py",
+      "git_blob_sha": "d3e0e4a97a872dcaad555c26e1e35bd934a00a20",
+      "immutable_url": "https://github.com/mastermindx-market-intelligence/macro/blob/6f5e78e94e8808582a650cdfa0fc3357040a179c/collectors/thetadata.py",
+      "evidence_class": "immutable_source_only",
+      "ranges": [
+        {
+          "start_line": 1512,
+          "end_line": 1524,
+          "url": "https://github.com/mastermindx-market-intelligence/macro/blob/6f5e78e94e8808582a650cdfa0fc3357040a179c/collectors/thetadata.py#L1512-L1524",
+          "support": "single-contract provenance"
+        },
+        {
+          "start_line": 1729,
+          "end_line": 1761,
+          "url": "https://github.com/mastermindx-market-intelligence/macro/blob/6f5e78e94e8808582a650cdfa0fc3357040a179c/collectors/thetadata.py#L1729-L1761",
+          "support": "bulk provenance"
+        },
+        {
+          "start_line": 795,
+          "end_line": 830,
+          "url": "https://github.com/mastermindx-market-intelligence/macro/blob/6f5e78e94e8808582a650cdfa0fc3357040a179c/collectors/thetadata.py#L795-L830",
+          "support": "EOD clock selection"
+        },
+        {
+          "start_line": 929,
+          "end_line": 949,
+          "url": "https://github.com/mastermindx-market-intelligence/macro/blob/6f5e78e94e8808582a650cdfa0fc3357040a179c/collectors/thetadata.py#L929-L949",
+          "support": "OI date normalization"
+        },
+        {
+          "start_line": 1058,
+          "end_line": 1099,
+          "url": "https://github.com/mastermindx-market-intelligence/macro/blob/6f5e78e94e8808582a650cdfa0fc3357040a179c/collectors/thetadata.py#L1058-L1099",
+          "support": "Greek normalization"
+        },
+        {
+          "start_line": 1142,
+          "end_line": 1188,
+          "url": "https://github.com/mastermindx-market-intelligence/macro/blob/6f5e78e94e8808582a650cdfa0fc3357040a179c/collectors/thetadata.py#L1142-L1188",
+          "support": "snapshot normalization"
+        },
+        {
+          "start_line": 1659,
+          "end_line": 1726,
+          "url": "https://github.com/mastermindx-market-intelligence/macro/blob/6f5e78e94e8808582a650cdfa0fc3357040a179c/collectors/thetadata.py#L1659-L1726",
+          "support": "bulk identity validation"
+        },
+        {
+          "start_line": 1330,
+          "end_line": 1372,
+          "url": "https://github.com/mastermindx-market-intelligence/macro/blob/6f5e78e94e8808582a650cdfa0fc3357040a179c/collectors/thetadata.py#L1330-L1372",
+          "support": "lossy helper"
+        },
+        {
+          "start_line": 1002,
+          "end_line": 1040,
+          "url": "https://github.com/mastermindx-market-intelligence/macro/blob/6f5e78e94e8808582a650cdfa0fc3357040a179c/collectors/thetadata.py#L1002-L1040",
+          "support": "EOD Greek request"
+        },
+        {
+          "start_line": 1204,
+          "end_line": 1227,
+          "url": "https://github.com/mastermindx-market-intelligence/macro/blob/6f5e78e94e8808582a650cdfa0fc3357040a179c/collectors/thetadata.py#L1204-L1227",
+          "support": "snapshot request"
+        },
+        {
+          "start_line": 1405,
+          "end_line": 1414,
+          "url": "https://github.com/mastermindx-market-intelligence/macro/blob/6f5e78e94e8808582a650cdfa0fc3357040a179c/collectors/thetadata.py#L1405-L1414",
+          "support": "single trade request"
+        },
+        {
+          "start_line": 1633,
+          "end_line": 1646,
+          "url": "https://github.com/mastermindx-market-intelligence/macro/blob/6f5e78e94e8808582a650cdfa0fc3357040a179c/collectors/thetadata.py#L1633-L1646",
+          "support": "bulk trade request"
+        },
+        {
+          "start_line": 1126,
+          "end_line": 1139,
+          "url": "https://github.com/mastermindx-market-intelligence/macro/blob/6f5e78e94e8808582a650cdfa0fc3357040a179c/collectors/thetadata.py#L1126-L1139",
+          "support": "snapshot capability labels"
+        }
+      ]
+    },
+    {
+      "repository": "mastermindx-market-intelligence/macro",
+      "pin": "6f5e78e94e8808582a650cdfa0fc3357040a179c",
+      "path": "scripts/live_flow_poller.py",
+      "git_blob_sha": "d6af1b0951a2adcd727c63802a53d919115bddd8",
+      "immutable_url": "https://github.com/mastermindx-market-intelligence/macro/blob/6f5e78e94e8808582a650cdfa0fc3357040a179c/scripts/live_flow_poller.py",
+      "evidence_class": "immutable_source_only",
+      "ranges": [
+        {
+          "start_line": 1233,
+          "end_line": 1250,
+          "url": "https://github.com/mastermindx-market-intelligence/macro/blob/6f5e78e94e8808582a650cdfa0fc3357040a179c/scripts/live_flow_poller.py#L1233-L1250",
+          "support": "actual collector calls"
+        },
+        {
+          "start_line": 2429,
+          "end_line": 2437,
+          "url": "https://github.com/mastermindx-market-intelligence/macro/blob/6f5e78e94e8808582a650cdfa0fc3357040a179c/scripts/live_flow_poller.py#L2429-L2437",
+          "support": "post-response observation"
+        },
+        {
+          "start_line": 2519,
+          "end_line": 2525,
+          "url": "https://github.com/mastermindx-market-intelligence/macro/blob/6f5e78e94e8808582a650cdfa0fc3357040a179c/scripts/live_flow_poller.py#L2519-L2525",
+          "support": "observation injection"
+        },
+        {
+          "start_line": 2554,
+          "end_line": 2569,
+          "url": "https://github.com/mastermindx-market-intelligence/macro/blob/6f5e78e94e8808582a650cdfa0fc3357040a179c/scripts/live_flow_poller.py#L2554-L2569",
+          "support": "processing receipt and decision clock"
+        }
+      ]
+    },
+    {
+      "repository": "mastermindx-market-intelligence/macro",
+      "pin": "6f5e78e94e8808582a650cdfa0fc3357040a179c",
+      "path": "engine/live_flow.py",
+      "git_blob_sha": "323be029c88ef8ee03d97c2ae3a878fce95ba191",
+      "immutable_url": "https://github.com/mastermindx-market-intelligence/macro/blob/6f5e78e94e8808582a650cdfa0fc3357040a179c/engine/live_flow.py",
+      "evidence_class": "immutable_source_only",
+      "ranges": [
+        {
+          "start_line": 1068,
+          "end_line": 1075,
+          "url": "https://github.com/mastermindx-market-intelligence/macro/blob/6f5e78e94e8808582a650cdfa0fc3357040a179c/engine/live_flow.py#L1068-L1075",
+          "support": "event source versus observation time"
+        },
+        {
+          "start_line": 252,
+          "end_line": 276,
+          "url": "https://github.com/mastermindx-market-intelligence/macro/blob/6f5e78e94e8808582a650cdfa0fc3357040a179c/engine/live_flow.py#L252-L276",
+          "support": "time and event identity"
+        },
+        {
+          "start_line": 754,
+          "end_line": 856,
+          "url": "https://github.com/mastermindx-market-intelligence/macro/blob/6f5e78e94e8808582a650cdfa0fc3357040a179c/engine/live_flow.py#L754-L856",
+          "support": "source-row admission"
+        },
+        {
+          "start_line": 858,
+          "end_line": 903,
+          "url": "https://github.com/mastermindx-market-intelligence/macro/blob/6f5e78e94e8808582a650cdfa0fc3357040a179c/engine/live_flow.py#L858-L903",
+          "support": "sequence watermark and processing order"
+        },
+        {
+          "start_line": 148,
+          "end_line": 187,
+          "url": "https://github.com/mastermindx-market-intelligence/macro/blob/6f5e78e94e8808582a650cdfa0fc3357040a179c/engine/live_flow.py#L148-L187",
+          "support": "soft signing filter and ordering"
+        },
+        {
+          "start_line": 297,
+          "end_line": 330,
+          "url": "https://github.com/mastermindx-market-intelligence/macro/blob/6f5e78e94e8808582a650cdfa0fc3357040a179c/engine/live_flow.py#L297-L330",
+          "support": "signed-share denominator"
+        },
+        {
+          "start_line": 379,
+          "end_line": 448,
+          "url": "https://github.com/mastermindx-market-intelligence/macro/blob/6f5e78e94e8808582a650cdfa0fc3357040a179c/engine/live_flow.py#L379-L448",
+          "support": "microstructure validity"
+        },
+        {
+          "start_line": 474,
+          "end_line": 545,
+          "url": "https://github.com/mastermindx-market-intelligence/macro/blob/6f5e78e94e8808582a650cdfa0fc3357040a179c/engine/live_flow.py#L474-L545",
+          "support": "measurement denominators and fields"
+        },
+        {
+          "start_line": 900,
+          "end_line": 925,
+          "url": "https://github.com/mastermindx-market-intelligence/macro/blob/6f5e78e94e8808582a650cdfa0fc3357040a179c/engine/live_flow.py#L900-L925",
+          "support": "empty signing result"
+        },
+        {
+          "start_line": 1019,
+          "end_line": 1050,
+          "url": "https://github.com/mastermindx-market-intelligence/macro/blob/6f5e78e94e8808582a650cdfa0fc3357040a179c/engine/live_flow.py#L1019-L1050",
+          "support": "notability and measurement attachment"
+        },
+        {
+          "start_line": 930,
+          "end_line": 951,
+          "url": "https://github.com/mastermindx-market-intelligence/macro/blob/6f5e78e94e8808582a650cdfa0fc3357040a179c/engine/live_flow.py#L930-L951",
+          "support": "per-print live signed premium"
+        }
+      ]
+    },
+    {
+      "repository": "mastermindx-market-intelligence/macro",
+      "pin": "6f5e78e94e8808582a650cdfa0fc3357040a179c",
+      "path": "engine/thetadata_store.py",
+      "git_blob_sha": "5a832cf30ee09c956ca7d77692f19611121626fe",
+      "immutable_url": "https://github.com/mastermindx-market-intelligence/macro/blob/6f5e78e94e8808582a650cdfa0fc3357040a179c/engine/thetadata_store.py",
+      "evidence_class": "immutable_source_only",
+      "ranges": [
+        {
+          "start_line": 127,
+          "end_line": 205,
+          "url": "https://github.com/mastermindx-market-intelligence/macro/blob/6f5e78e94e8808582a650cdfa0fc3357040a179c/engine/thetadata_store.py#L127-L205",
+          "support": "resolver classifications"
+        },
+        {
+          "start_line": 234,
+          "end_line": 247,
+          "url": "https://github.com/mastermindx-market-intelligence/macro/blob/6f5e78e94e8808582a650cdfa0fc3357040a179c/engine/thetadata_store.py#L234-L247",
+          "support": "resolver scope"
+        },
+        {
+          "start_line": 312,
+          "end_line": 337,
+          "url": "https://github.com/mastermindx-market-intelligence/macro/blob/6f5e78e94e8808582a650cdfa0fc3357040a179c/engine/thetadata_store.py#L312-L337",
+          "support": "unknown resolution warning"
+        },
+        {
+          "start_line": 429,
+          "end_line": 482,
+          "url": "https://github.com/mastermindx-market-intelligence/macro/blob/6f5e78e94e8808582a650cdfa0fc3357040a179c/engine/thetadata_store.py#L429-L482",
+          "support": "general parquet read and cache"
+        },
+        {
+          "start_line": 517,
+          "end_line": 580,
+          "url": "https://github.com/mastermindx-market-intelligence/macro/blob/6f5e78e94e8808582a650cdfa0fc3357040a179c/engine/thetadata_store.py#L517-L580",
+          "support": "narrow OI read"
+        },
+        {
+          "start_line": 757,
+          "end_line": 817,
+          "url": "https://github.com/mastermindx-market-intelligence/macro/blob/6f5e78e94e8808582a650cdfa0fc3357040a179c/engine/thetadata_store.py#L757-L817",
+          "support": "same-date chain joins"
+        },
+        {
+          "start_line": 939,
+          "end_line": 990,
+          "url": "https://github.com/mastermindx-market-intelligence/macro/blob/6f5e78e94e8808582a650cdfa0fc3357040a179c/engine/thetadata_store.py#L939-L990",
+          "support": "provider spot and T calculation"
+        },
+        {
+          "start_line": 876,
+          "end_line": 912,
+          "url": "https://github.com/mastermindx-market-intelligence/macro/blob/6f5e78e94e8808582a650cdfa0fc3357040a179c/engine/thetadata_store.py#L876-L912",
+          "support": "IV coverage definition"
+        }
+      ]
+    },
+    {
+      "repository": "mastermindx-market-intelligence/macro",
+      "pin": "6f5e78e94e8808582a650cdfa0fc3357040a179c",
+      "path": "scripts/build_options_intel_brief.py",
+      "git_blob_sha": "9d8165a6247dffa431dca8f4bc3eb77cdc7ca717",
+      "immutable_url": "https://github.com/mastermindx-market-intelligence/macro/blob/6f5e78e94e8808582a650cdfa0fc3357040a179c/scripts/build_options_intel_brief.py",
+      "evidence_class": "immutable_source_only",
+      "ranges": [
+        {
+          "start_line": 422,
+          "end_line": 475,
+          "url": "https://github.com/mastermindx-market-intelligence/macro/blob/6f5e78e94e8808582a650cdfa0fc3357040a179c/scripts/build_options_intel_brief.py#L422-L475",
+          "support": "role-specific session membership"
+        },
+        {
+          "start_line": 1070,
+          "end_line": 1085,
+          "url": "https://github.com/mastermindx-market-intelligence/macro/blob/6f5e78e94e8808582a650cdfa0fc3357040a179c/scripts/build_options_intel_brief.py#L1070-L1085",
+          "support": "universe receipt and missing anchor"
+        },
+        {
+          "start_line": 1310,
+          "end_line": 1319,
+          "url": "https://github.com/mastermindx-market-intelligence/macro/blob/6f5e78e94e8808582a650cdfa0fc3357040a179c/scripts/build_options_intel_brief.py#L1310-L1319",
+          "support": "AD1 GEX hard disable"
+        }
+      ]
+    },
+    {
+      "repository": "mastermindx-market-intelligence/macro",
+      "pin": "6f5e78e94e8808582a650cdfa0fc3357040a179c",
+      "path": "engine/options_intel_brief.py",
+      "git_blob_sha": "07fb36de8c4dc6f040b3bb3cf905717823097518",
+      "immutable_url": "https://github.com/mastermindx-market-intelligence/macro/blob/6f5e78e94e8808582a650cdfa0fc3357040a179c/engine/options_intel_brief.py",
+      "evidence_class": "immutable_source_only",
+      "ranges": [
+        {
+          "start_line": 1229,
+          "end_line": 1258,
+          "url": "https://github.com/mastermindx-market-intelligence/macro/blob/6f5e78e94e8808582a650cdfa0fc3357040a179c/engine/options_intel_brief.py#L1229-L1258",
+          "support": "source coverage and staleness"
+        },
+        {
+          "start_line": 503,
+          "end_line": 531,
+          "url": "https://github.com/mastermindx-market-intelligence/macro/blob/6f5e78e94e8808582a650cdfa0fc3357040a179c/engine/options_intel_brief.py#L503-L531",
+          "support": "settled OI lean"
+        },
+        {
+          "start_line": 584,
+          "end_line": 627,
+          "url": "https://github.com/mastermindx-market-intelligence/macro/blob/6f5e78e94e8808582a650cdfa0fc3357040a179c/engine/options_intel_brief.py#L584-L627",
+          "support": "directional hypothesis law"
+        },
+        {
+          "start_line": 630,
+          "end_line": 688,
+          "url": "https://github.com/mastermindx-market-intelligence/macro/blob/6f5e78e94e8808582a650cdfa0fc3357040a179c/engine/options_intel_brief.py#L630-L688",
+          "support": "fallback and confidence arithmetic"
+        },
+        {
+          "start_line": 16,
+          "end_line": 24,
+          "url": "https://github.com/mastermindx-market-intelligence/macro/blob/6f5e78e94e8808582a650cdfa0fc3357040a179c/engine/options_intel_brief.py#L16-L24",
+          "support": "Q_flow and Prophet scope"
+        },
+        {
+          "start_line": 1512,
+          "end_line": 1547,
+          "url": "https://github.com/mastermindx-market-intelligence/macro/blob/6f5e78e94e8808582a650cdfa0fc3357040a179c/engine/options_intel_brief.py#L1512-L1547",
+          "support": "inferred evidence output"
+        }
+      ]
+    },
+    {
+      "repository": "mastermindx-market-intelligence/macro",
+      "pin": "6f5e78e94e8808582a650cdfa0fc3357040a179c",
+      "path": "contracts/options/OPTIONS_INTEL_BRIEF_V1.md",
+      "git_blob_sha": "c6de918f0cb69cc906a562b94cc8fe55f30ebaa2",
+      "immutable_url": "https://github.com/mastermindx-market-intelligence/macro/blob/6f5e78e94e8808582a650cdfa0fc3357040a179c/contracts/options/OPTIONS_INTEL_BRIEF_V1.md",
+      "evidence_class": "immutable_source_only",
+      "ranges": [
+        {
+          "start_line": 54,
+          "end_line": 76,
+          "url": "https://github.com/mastermindx-market-intelligence/macro/blob/6f5e78e94e8808582a650cdfa0fc3357040a179c/contracts/options/OPTIONS_INTEL_BRIEF_V1.md#L54-L76",
+          "support": "separate coverage and eligibility gates"
+        },
+        {
+          "start_line": 520,
+          "end_line": 533,
+          "url": "https://github.com/mastermindx-market-intelligence/macro/blob/6f5e78e94e8808582a650cdfa0fc3357040a179c/contracts/options/OPTIONS_INTEL_BRIEF_V1.md#L520-L533",
+          "support": "brief authority boundary"
+        }
+      ]
+    },
+    {
+      "repository": "mastermindx-market-intelligence/macro",
+      "pin": "6f5e78e94e8808582a650cdfa0fc3357040a179c",
+      "path": "engine/flow_signing.py",
+      "git_blob_sha": "bc012baeeeedda73d90d15521c63df3853202f11",
+      "immutable_url": "https://github.com/mastermindx-market-intelligence/macro/blob/6f5e78e94e8808582a650cdfa0fc3357040a179c/engine/flow_signing.py",
+      "evidence_class": "immutable_source_only",
+      "ranges": [
+        {
+          "start_line": 22,
+          "end_line": 32,
+          "url": "https://github.com/mastermindx-market-intelligence/macro/blob/6f5e78e94e8808582a650cdfa0fc3357040a179c/engine/flow_signing.py#L22-L32",
+          "support": "quote/tick fallback"
+        }
+      ]
+    },
+    {
+      "repository": "mastermindx-market-intelligence/macro",
+      "pin": "6f5e78e94e8808582a650cdfa0fc3357040a179c",
+      "path": "engine/options_flow.py",
+      "git_blob_sha": "ab0b7b3a7ac903a176bf0cce35d5b2ec950be39d",
+      "immutable_url": "https://github.com/mastermindx-market-intelligence/macro/blob/6f5e78e94e8808582a650cdfa0fc3357040a179c/engine/options_flow.py",
+      "evidence_class": "immutable_source_only",
+      "ranges": [
+        {
+          "start_line": 79,
+          "end_line": 105,
+          "url": "https://github.com/mastermindx-market-intelligence/macro/blob/6f5e78e94e8808582a650cdfa0fc3357040a179c/engine/options_flow.py#L79-L105",
+          "support": "legacy minute signing"
+        },
+        {
+          "start_line": 122,
+          "end_line": 151,
+          "url": "https://github.com/mastermindx-market-intelligence/macro/blob/6f5e78e94e8808582a650cdfa0fc3357040a179c/engine/options_flow.py#L122-L151",
+          "support": "legacy net-premium arithmetic"
+        }
+      ]
+    },
+    {
+      "repository": "mastermindx-market-intelligence/macro",
+      "pin": "6f5e78e94e8808582a650cdfa0fc3357040a179c",
+      "path": "scripts/build_options_flow.py",
+      "git_blob_sha": "4f40ea6a28852cba0bfa1de2cd685896bc95b909",
+      "immutable_url": "https://github.com/mastermindx-market-intelligence/macro/blob/6f5e78e94e8808582a650cdfa0fc3357040a179c/scripts/build_options_flow.py",
+      "evidence_class": "immutable_source_only",
+      "ranges": [
+        {
+          "start_line": 89,
+          "end_line": 122,
+          "url": "https://github.com/mastermindx-market-intelligence/macro/blob/6f5e78e94e8808582a650cdfa0fc3357040a179c/scripts/build_options_flow.py#L89-L122",
+          "support": "legacy snapshot selection and target guard"
+        },
+        {
+          "start_line": 132,
+          "end_line": 175,
+          "url": "https://github.com/mastermindx-market-intelligence/macro/blob/6f5e78e94e8808582a650cdfa0fc3357040a179c/scripts/build_options_flow.py#L132-L175",
+          "support": "legacy writes"
+        }
+      ]
+    },
+    {
+      "repository": "mastermindx-market-intelligence/macro",
+      "pin": "6f5e78e94e8808582a650cdfa0fc3357040a179c",
+      "path": "data/options_flow/signing_gate.json",
+      "git_blob_sha": "bf8321732647310edde099c19314123261a95a99",
+      "immutable_url": "https://github.com/mastermindx-market-intelligence/macro/blob/6f5e78e94e8808582a650cdfa0fc3357040a179c/data/options_flow/signing_gate.json",
+      "evidence_class": "immutable_source_only",
+      "ranges": [
+        {
+          "start_line": 1,
+          "end_line": 10,
+          "url": "https://github.com/mastermindx-market-intelligence/macro/blob/6f5e78e94e8808582a650cdfa0fc3357040a179c/data/options_flow/signing_gate.json#L1-L10",
+          "support": "pinned legacy signing gate"
+        }
+      ]
+    },
+    {
+      "repository": "mastermindx-market-intelligence/macro",
+      "pin": "6f5e78e94e8808582a650cdfa0fc3357040a179c",
+      "path": "scripts/build_chain_heat.py",
+      "git_blob_sha": "61af2c74d09bc29674c095c0687f586de1ed37f1",
+      "immutable_url": "https://github.com/mastermindx-market-intelligence/macro/blob/6f5e78e94e8808582a650cdfa0fc3357040a179c/scripts/build_chain_heat.py",
+      "evidence_class": "immutable_source_only",
+      "ranges": [
+        {
+          "start_line": 106,
+          "end_line": 133,
+          "url": "https://github.com/mastermindx-market-intelligence/macro/blob/6f5e78e94e8808582a650cdfa0fc3357040a179c/scripts/build_chain_heat.py#L106-L133",
+          "support": "categorical ask-share reconstruction"
+        },
+        {
+          "start_line": 176,
+          "end_line": 193,
+          "url": "https://github.com/mastermindx-market-intelligence/macro/blob/6f5e78e94e8808582a650cdfa0fc3357040a179c/scripts/build_chain_heat.py#L176-L193",
+          "support": "null substitution and source clock"
+        }
+      ]
+    },
+    {
+      "repository": "mastermindx-market-intelligence/macro",
+      "pin": "6f5e78e94e8808582a650cdfa0fc3357040a179c",
+      "path": "engine/options_structure.py",
+      "git_blob_sha": "16afab8ceb8b74902b49e63bdd2e86d22d98fe45",
+      "immutable_url": "https://github.com/mastermindx-market-intelligence/macro/blob/6f5e78e94e8808582a650cdfa0fc3357040a179c/engine/options_structure.py",
+      "evidence_class": "immutable_source_only",
+      "ranges": [
+        {
+          "start_line": 191,
+          "end_line": 200,
+          "url": "https://github.com/mastermindx-market-intelligence/macro/blob/6f5e78e94e8808582a650cdfa0fc3357040a179c/engine/options_structure.py#L191-L200",
+          "support": "lean thresholds"
+        },
+        {
+          "start_line": 285,
+          "end_line": 291,
+          "url": "https://github.com/mastermindx-market-intelligence/macro/blob/6f5e78e94e8808582a650cdfa0fc3357040a179c/engine/options_structure.py#L285-L291",
+          "support": "proxy weighting"
+        },
+        {
+          "start_line": 327,
+          "end_line": 368,
+          "url": "https://github.com/mastermindx-market-intelligence/macro/blob/6f5e78e94e8808582a650cdfa0fc3357040a179c/engine/options_structure.py#L327-L368",
+          "support": "aggregate and authority labels"
+        }
+      ]
+    },
+    {
+      "repository": "mastermindx-market-intelligence/macro",
+      "pin": "6f5e78e94e8808582a650cdfa0fc3357040a179c",
+      "path": "engine/stock_score.py",
+      "git_blob_sha": "2db2024224ad2cd4cd63ea763310416d15657554",
+      "immutable_url": "https://github.com/mastermindx-market-intelligence/macro/blob/6f5e78e94e8808582a650cdfa0fc3357040a179c/engine/stock_score.py",
+      "evidence_class": "immutable_source_only",
+      "ranges": [
+        {
+          "start_line": 631,
+          "end_line": 644,
+          "url": "https://github.com/mastermindx-market-intelligence/macro/blob/6f5e78e94e8808582a650cdfa0fc3357040a179c/engine/stock_score.py#L631-L644",
+          "support": "gate reader"
+        },
+        {
+          "start_line": 687,
+          "end_line": 709,
+          "url": "https://github.com/mastermindx-market-intelligence/macro/blob/6f5e78e94e8808582a650cdfa0fc3357040a179c/engine/stock_score.py#L687-L709",
+          "support": "gated risk contribution"
+        },
+        {
+          "start_line": 838,
+          "end_line": 892,
+          "url": "https://github.com/mastermindx-market-intelligence/macro/blob/6f5e78e94e8808582a650cdfa0fc3357040a179c/engine/stock_score.py#L838-L892",
+          "support": "gated entry tilt"
+        }
+      ]
+    },
+    {
+      "repository": "mastermindx-market-intelligence/macro",
+      "pin": "6f5e78e94e8808582a650cdfa0fc3357040a179c",
+      "path": "data/gex/gate.json",
+      "git_blob_sha": "040cce7327499d575a78e49d2f7fe782e631b5fd",
+      "immutable_url": "https://github.com/mastermindx-market-intelligence/macro/blob/6f5e78e94e8808582a650cdfa0fc3357040a179c/data/gex/gate.json",
+      "evidence_class": "immutable_source_only",
+      "ranges": [
+        {
+          "start_line": 1,
+          "end_line": 5,
+          "url": "https://github.com/mastermindx-market-intelligence/macro/blob/6f5e78e94e8808582a650cdfa0fc3357040a179c/data/gex/gate.json#L1-L5",
+          "support": "committed closed gate"
+        }
+      ]
+    },
+    {
+      "repository": "mastermindx-market-intelligence/macro",
+      "pin": "6f5e78e94e8808582a650cdfa0fc3357040a179c",
+      "path": "scripts/build_stock_library.py",
+      "git_blob_sha": "41f6dbfee3cc7390d1cace95626b87ed7a16aaa0",
+      "immutable_url": "https://github.com/mastermindx-market-intelligence/macro/blob/6f5e78e94e8808582a650cdfa0fc3357040a179c/scripts/build_stock_library.py",
+      "evidence_class": "immutable_source_only",
+      "ranges": [
+        {
+          "start_line": 478,
+          "end_line": 498,
+          "url": "https://github.com/mastermindx-market-intelligence/macro/blob/6f5e78e94e8808582a650cdfa0fc3357040a179c/scripts/build_stock_library.py#L478-L498",
+          "support": "GEX artifact loader"
+        },
+        {
+          "start_line": 3894,
+          "end_line": 3908,
+          "url": "https://github.com/mastermindx-market-intelligence/macro/blob/6f5e78e94e8808582a650cdfa0fc3357040a179c/scripts/build_stock_library.py#L3894-L3908",
+          "support": "confirmer call sites"
+        },
+        {
+          "start_line": 5639,
+          "end_line": 5646,
+          "url": "https://github.com/mastermindx-market-intelligence/macro/blob/6f5e78e94e8808582a650cdfa0fc3357040a179c/scripts/build_stock_library.py#L5639-L5646",
+          "support": "board verdict propagation"
+        },
+        {
+          "start_line": 5770,
+          "end_line": 5793,
+          "url": "https://github.com/mastermindx-market-intelligence/macro/blob/6f5e78e94e8808582a650cdfa0fc3357040a179c/scripts/build_stock_library.py#L5770-L5793",
+          "support": "canonical rank call"
+        }
+      ]
+    },
+    {
+      "repository": "mastermindx-market-intelligence/macro",
+      "pin": "6f5e78e94e8808582a650cdfa0fc3357040a179c",
+      "path": "engine/gex_confirm.py",
+      "git_blob_sha": "1f622a7f095052d69f019f6785a1f2694f0ec33c",
+      "immutable_url": "https://github.com/mastermindx-market-intelligence/macro/blob/6f5e78e94e8808582a650cdfa0fc3357040a179c/engine/gex_confirm.py",
+      "evidence_class": "immutable_source_only",
+      "ranges": [
+        {
+          "start_line": 69,
+          "end_line": 104,
+          "url": "https://github.com/mastermindx-market-intelligence/macro/blob/6f5e78e94e8808582a650cdfa0fc3357040a179c/engine/gex_confirm.py#L69-L104",
+          "support": "confirmer normalization and guards"
+        },
+        {
+          "start_line": 114,
+          "end_line": 190,
+          "url": "https://github.com/mastermindx-market-intelligence/macro/blob/6f5e78e94e8808582a650cdfa0fc3357040a179c/engine/gex_confirm.py#L114-L190",
+          "support": "confirmer mechanics and OPEX"
+        }
+      ]
+    },
+    {
+      "repository": "mastermindx-market-intelligence/macro",
+      "pin": "6f5e78e94e8808582a650cdfa0fc3357040a179c",
+      "path": "engine/us_board_rank.py",
+      "git_blob_sha": "26c29080c7d5cedd20d9a540aa11964128261ad7",
+      "immutable_url": "https://github.com/mastermindx-market-intelligence/macro/blob/6f5e78e94e8808582a650cdfa0fc3357040a179c/engine/us_board_rank.py",
+      "evidence_class": "immutable_source_only",
+      "ranges": [
+        {
+          "start_line": 1161,
+          "end_line": 1192,
+          "url": "https://github.com/mastermindx-market-intelligence/macro/blob/6f5e78e94e8808582a650cdfa0fc3357040a179c/engine/us_board_rank.py#L1161-L1192",
+          "support": "fusion activation and fallback"
+        },
+        {
+          "start_line": 1582,
+          "end_line": 1591,
+          "url": "https://github.com/mastermindx-market-intelligence/macro/blob/6f5e78e94e8808582a650cdfa0fc3357040a179c/engine/us_board_rank.py#L1582-L1591",
+          "support": "sort order"
+        }
+      ]
+    },
+    {
+      "repository": "mastermindx-market-intelligence/macro",
+      "pin": "6f5e78e94e8808582a650cdfa0fc3357040a179c",
+      "path": "engine/us_prophet_fusion.py",
+      "git_blob_sha": "210e070103b36f10bbbf19981420a17bb9fdc4fc",
+      "immutable_url": "https://github.com/mastermindx-market-intelligence/macro/blob/6f5e78e94e8808582a650cdfa0fc3357040a179c/engine/us_prophet_fusion.py",
+      "evidence_class": "immutable_source_only",
+      "ranges": [
+        {
+          "start_line": 258,
+          "end_line": 268,
+          "url": "https://github.com/mastermindx-market-intelligence/macro/blob/6f5e78e94e8808582a650cdfa0fc3357040a179c/engine/us_prophet_fusion.py#L258-L268",
+          "support": "GEX F5 registration"
+        },
+        {
+          "start_line": 429,
+          "end_line": 456,
+          "url": "https://github.com/mastermindx-market-intelligence/macro/blob/6f5e78e94e8808582a650cdfa0fc3357040a179c/engine/us_prophet_fusion.py#L429-L456",
+          "support": "GEX extraction"
+        },
+        {
+          "start_line": 479,
+          "end_line": 543,
+          "url": "https://github.com/mastermindx-market-intelligence/macro/blob/6f5e78e94e8808582a650cdfa0fc3357040a179c/engine/us_prophet_fusion.py#L479-L543",
+          "support": "admission floors"
+        },
+        {
+          "start_line": 612,
+          "end_line": 680,
+          "url": "https://github.com/mastermindx-market-intelligence/macro/blob/6f5e78e94e8808582a650cdfa0fc3357040a179c/engine/us_prophet_fusion.py#L612-L680",
+          "support": "deduplication and fusion arithmetic"
+        }
+      ]
+    },
+    {
+      "repository": "mastermindx-market-intelligence/macro",
+      "pin": "6f5e78e94e8808582a650cdfa0fc3357040a179c",
+      "path": "engine/options_entry_state.py",
+      "git_blob_sha": "bec3cce9abc61bde1a18ee1d65daf5afcc38685f",
+      "immutable_url": "https://github.com/mastermindx-market-intelligence/macro/blob/6f5e78e94e8808582a650cdfa0fc3357040a179c/engine/options_entry_state.py",
+      "evidence_class": "immutable_source_only",
+      "ranges": [
+        {
+          "start_line": 483,
+          "end_line": 507,
+          "url": "https://github.com/mastermindx-market-intelligence/macro/blob/6f5e78e94e8808582a650cdfa0fc3357040a179c/engine/options_entry_state.py#L483-L507",
+          "support": "legacy summary reader"
+        },
+        {
+          "start_line": 775,
+          "end_line": 797,
+          "url": "https://github.com/mastermindx-market-intelligence/macro/blob/6f5e78e94e8808582a650cdfa0fc3357040a179c/engine/options_entry_state.py#L775-L797",
+          "support": "entry-state confirmer"
+        },
+        {
+          "start_line": 849,
+          "end_line": 875,
+          "url": "https://github.com/mastermindx-market-intelligence/macro/blob/6f5e78e94e8808582a650cdfa0fc3357040a179c/engine/options_entry_state.py#L849-L875",
+          "support": "entry-state output vintages"
+        }
+      ]
+    },
+    {
+      "repository": "mastermindx-market-intelligence/macro",
+      "pin": "a15ba9ae77826bf6a1d6fcb40022b6816b705e43",
+      "path": "contracts/options/options.alpha_candidate_feed.v1.schema.json",
+      "git_blob_sha": "ac28362659605b2e2ff681d0e6c80d2149d47cd7",
+      "immutable_url": "https://github.com/mastermindx-market-intelligence/macro/blob/a15ba9ae77826bf6a1d6fcb40022b6816b705e43/contracts/options/options.alpha_candidate_feed.v1.schema.json",
+      "evidence_class": "immutable_source_only",
+      "ranges": [
+        {
+          "start_line": 1,
+          "end_line": 84,
+          "url": "https://github.com/mastermindx-market-intelligence/macro/blob/a15ba9ae77826bf6a1d6fcb40022b6816b705e43/contracts/options/options.alpha_candidate_feed.v1.schema.json#L1-L84",
+          "support": "inactive candidate feed"
+        },
+        {
+          "start_line": 251,
+          "end_line": 295,
+          "url": "https://github.com/mastermindx-market-intelligence/macro/blob/a15ba9ae77826bf6a1d6fcb40022b6816b705e43/contracts/options/options.alpha_candidate_feed.v1.schema.json#L251-L295",
+          "support": "strict candidate identity and clocks"
+        },
+        {
+          "start_line": 570,
+          "end_line": 605,
+          "url": "https://github.com/mastermindx-market-intelligence/macro/blob/a15ba9ae77826bf6a1d6fcb40022b6816b705e43/contracts/options/options.alpha_candidate_feed.v1.schema.json#L570-L605",
+          "support": "candidate false-authority vocabulary"
+        }
+      ]
+    },
+    {
+      "repository": "mastermindx-market-intelligence/macro",
+      "pin": "6f5e78e94e8808582a650cdfa0fc3357040a179c",
+      "path": "research/options_estate/options_alpha_candidate_formation_policy_v1.json",
+      "git_blob_sha": "eb90c503a7edc55299d58b712f3ce1d70838b56f",
+      "immutable_url": "https://github.com/mastermindx-market-intelligence/macro/blob/6f5e78e94e8808582a650cdfa0fc3357040a179c/research/options_estate/options_alpha_candidate_formation_policy_v1.json",
+      "evidence_class": "immutable_source_only",
+      "ranges": [
+        {
+          "start_line": 62,
+          "end_line": 99,
+          "url": "https://github.com/mastermindx-market-intelligence/macro/blob/6f5e78e94e8808582a650cdfa0fc3357040a179c/research/options_estate/options_alpha_candidate_formation_policy_v1.json#L62-L99",
+          "support": "formation policy clock and authority spellings"
+        }
+      ]
+    },
+    {
+      "repository": "mastermindx-market-intelligence/macro",
+      "pin": "6f5e78e94e8808582a650cdfa0fc3357040a179c",
+      "path": "contracts/options/options.signal_episode_outcome.v1.schema.json",
+      "git_blob_sha": "905e9a4df19d5e25a0a3722cd39aee5fc4e6e552",
+      "immutable_url": "https://github.com/mastermindx-market-intelligence/macro/blob/6f5e78e94e8808582a650cdfa0fc3357040a179c/contracts/options/options.signal_episode_outcome.v1.schema.json",
+      "evidence_class": "immutable_source_only",
+      "ranges": [
+        {
+          "start_line": 114,
+          "end_line": 154,
+          "url": "https://github.com/mastermindx-market-intelligence/macro/blob/6f5e78e94e8808582a650cdfa0fc3357040a179c/contracts/options/options.signal_episode_outcome.v1.schema.json#L114-L154",
+          "support": "episode option-null and research-only law"
+        }
+      ]
+    },
+    {
+      "repository": "mastermindx-market-intelligence/macro",
+      "pin": "6f5e78e94e8808582a650cdfa0fc3357040a179c",
+      "path": "contracts/options/options.signal_campaign_outcome.v1.schema.json",
+      "git_blob_sha": "520578b2a3ab052b86ab0231bf3d451d46d290aa",
+      "immutable_url": "https://github.com/mastermindx-market-intelligence/macro/blob/6f5e78e94e8808582a650cdfa0fc3357040a179c/contracts/options/options.signal_campaign_outcome.v1.schema.json",
+      "evidence_class": "immutable_source_only",
+      "ranges": [
+        {
+          "start_line": 1,
+          "end_line": 43,
+          "url": "https://github.com/mastermindx-market-intelligence/macro/blob/6f5e78e94e8808582a650cdfa0fc3357040a179c/contracts/options/options.signal_campaign_outcome.v1.schema.json#L1-L43",
+          "support": "campaign identity and anchor"
+        },
+        {
+          "start_line": 79,
+          "end_line": 125,
+          "url": "https://github.com/mastermindx-market-intelligence/macro/blob/6f5e78e94e8808582a650cdfa0fc3357040a179c/contracts/options/options.signal_campaign_outcome.v1.schema.json#L79-L125",
+          "support": "incumbent outcome stores"
+        },
+        {
+          "start_line": 171,
+          "end_line": 210,
+          "url": "https://github.com/mastermindx-market-intelligence/macro/blob/6f5e78e94e8808582a650cdfa0fc3357040a179c/contracts/options/options.signal_campaign_outcome.v1.schema.json#L171-L210",
+          "support": "campaign authority"
+        }
+      ]
+    },
+    {
+      "repository": "mastermindx-market-intelligence/macro",
+      "pin": "6f5e78e94e8808582a650cdfa0fc3357040a179c",
+      "path": "contracts/options/options.alpha_exact_option_outcome_policy.v1.schema.json",
+      "git_blob_sha": "d854655dd4f62ca0d5fce6c1754b206d40766bee",
+      "immutable_url": "https://github.com/mastermindx-market-intelligence/macro/blob/6f5e78e94e8808582a650cdfa0fc3357040a179c/contracts/options/options.alpha_exact_option_outcome_policy.v1.schema.json",
+      "evidence_class": "immutable_source_only",
+      "ranges": [
+        {
+          "start_line": 182,
+          "end_line": 209,
+          "url": "https://github.com/mastermindx-market-intelligence/macro/blob/6f5e78e94e8808582a650cdfa0fc3357040a179c/contracts/options/options.alpha_exact_option_outcome_policy.v1.schema.json#L182-L209",
+          "support": "exact-option policy authority"
+        }
+      ]
+    }
+  ],
+  "additional_index_only": {
+    "candidate_pr_8310": [
+      {
+        "path": "contracts/options/options.alpha_candidate_feed.v1.schema.json",
+        "sha": "ac28362659605b2e2ff681d0e6c80d2149d47cd7"
+      },
+      {
+        "path": "contracts/options/options.alpha_candidate_feed_activation_receipt.v1.schema.json",
+        "sha": "a9225a59309ce65016f72340d15679114c052cc1"
+      },
+      {
+        "path": "contracts/options/options.trade_nbbo_microstructure.v1.schema.json",
+        "sha": "a80492f0cebecff010a9c130e6847897b31dd973"
+      },
+      {
+        "path": "engine/options_alpha_candidate_feed.py",
+        "sha": "f287d9d6968c8109ff1fa2a8262fe5ab1b70fa0e"
+      },
+      {
+        "path": "engine/options_signal_campaign.py",
+        "sha": "c086ff6ffce19ac82be375b09e55a7bb2883686d"
+      },
+      {
+        "path": "tests/test_options_alpha_candidate_feed.py",
+        "sha": "5ddbdf21ddc962dc39d2fa1f26335820704020f1"
+      }
+    ],
+    "preregistration_pr_7290": [
+      {
+        "path": "contracts/options/options.alpha_candidate_formation_policy.v1.schema.json",
+        "sha": "941cb6f6887c4d4408091c9d397b414225a4debc"
+      },
+      {
+        "path": "research/options_estate/OPTIONS_ALPHA_CANDIDATE_FORMATION_PREREG_V1.md",
+        "sha": "a43f36654de5ca07fdf9e5c65543955fd261951d"
+      },
+      {
+        "path": "research/options_estate/options_alpha_candidate_formation_policy_v1.json",
+        "sha": "eb90c503a7edc55299d58b712f3ce1d70838b56f"
+      }
+    ]
+  },
+  "findings": [
+    {
+      "id": "collector_provenance",
+      "level": "source_observed",
+      "summary": "Real trade_quote/bulk_trade_quote retain both source clocks and raw conditions/venues/sizes; old lossy helper is not the inspected poller call path."
+    },
+    {
+      "id": "greek_provenance",
+      "level": "source_observed",
+      "summary": "EOD Greek time normalizes to date; underlying timestamp and model/rate/TTE/unit-version metadata are absent from output projection."
+    },
+    {
+      "id": "receipt_boundary",
+      "level": "source_observed",
+      "summary": "Poller observation time is assigned after fetch-future completion; it is a root-payload receipt, not per-print SIP or exchange time."
+    },
+    {
+      "id": "resolver",
+      "level": "source_observed",
+      "summary": "Provably empty stores rejected; unreadability resolves as unknown with warning; directory presence is not data health."
+    },
+    {
+      "id": "sign_measurement_split",
+      "level": "source_observed",
+      "summary": "Measured NBBO excludes future/locked/crossed quotes and keeps presign denominator; soft signing checks bid>0 ask>=bid without quote-time or condition policy."
+    },
+    {
+      "id": "sequence_policy",
+      "level": "static_inference",
+      "summary": "Per-contract max-sequence watermark does not implement an amendment ledger and has no explicit same-batch identity dedup in inspected block."
+    },
+    {
+      "id": "chain_heat_proxy",
+      "level": "source_observed",
+      "summary": "Missing ask_share is reconstructed from side as .8/.2/.5; not literal at_ask_share."
+    },
+    {
+      "id": "prophet_gex_boundary",
+      "level": "source_observed",
+      "summary": "Committed stock_score GEX gate false does not govern separate US Prophet F5 fusion registration/admission; nightly influence unproved."
+    },
+    {
+      "id": "ad1",
+      "level": "source_observed",
+      "summary": "Producer hard-disables GEX; directional classifier is Q_oi/Q_skew+salience heuristic; no Q_flow implementation."
+    },
+    {
+      "id": "candidate_extension",
+      "level": "source_observed",
+      "summary": "Head-pinned inactive candidate schema has no options_context slot, additionalProperties=false, 15 false authority flags; existing outcome stores/schemas preserve null option P&L."
+    }
+  ],
+  "artifacts": {
+    "report": "/tmp/options-macro-census.md",
+    "manifest": "/tmp/options-macro-census-sources.json"
+  }
+}

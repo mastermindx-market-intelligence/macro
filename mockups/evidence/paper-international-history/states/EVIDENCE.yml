@@ -1,0 +1,10 @@
+schema: mastermind.page_evidence_receipt.v1
+changed_paths:
+- templates/intl_workspace_history.css
+- templates/intl_workspace/history.html.j2
+- templates/intl_workspace/shell.html.j2
+- templates/intl_workspace.js
+- templates/intl.html.j2
+- site/intl_workspace.js
+- site/intl_workspace_history.css
+manifest: mockups/evidence/paper-international-history/states/manifest.json

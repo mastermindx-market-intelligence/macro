@@ -33,6 +33,136 @@ from app import billing
 WHSEC = "whsec_test_secret_123"
 
 
+def _get_api_me(app):
+    """Exercise the HTTP issuer without httpx, absent from the billing CI install."""
+    scope = {
+        "type": "http", "asgi": {"version": "3.0", "spec_version": "2.3"},
+        "http_version": "1.1", "method": "GET", "scheme": "http",
+        "path": "/api/me", "raw_path": b"/api/me", "query_string": b"",
+        "root_path": "", "headers": [(b"host", b"testserver")],
+        "client": ("testclient", 50000), "server": ("testserver", 80),
+    }
+    messages = []
+
+    async def receive():
+        return {"type": "http.request", "body": b"", "more_body": False}
+
+    async def send(message):
+        messages.append(message)
+
+    asyncio.run(app(scope, receive, send))
+    status = next(m["status"] for m in messages if m["type"] == "http.response.start")
+    body = b"".join(m.get("body", b"") for m in messages if m["type"] == "http.response.body")
+    return status, json.loads(body)
+
+
+@pytest.mark.parametrize("status", [
+    "past_due", "canceled", "unpaid", "incomplete", "incomplete_expired", "paused",
+])
+def test_private_feature_is_revoked_for_inactive_pro_even_with_stale_keys(status):
+    """No inactive subscription can retain the private capability through stale keys."""
+    row = billing._entitlement_from_state(
+        [{"status": status, "tier": "pro", "current_period_end": 1900000000}],
+        ["site_full", "company_intelligence_private_read"],
+    )
+    assert row["tier"] == "free" and row["status"] == status
+    assert row["features"] == []
+
+
+@pytest.mark.parametrize("status", ["active", "trialing"])
+def test_private_feature_explicit_stripe_keys_are_authoritative(status):
+    """A Pro label never supplements a nonempty explicit Stripe feature list."""
+    subs = [{"status": status, "tier": "pro", "current_period_end": 1900000000}]
+    keys = ["site_full", "chat_opus"]
+    assert billing._entitlement_from_state(subs, keys)["features"] == keys
+    granted = keys + ["company_intelligence_private_read"]
+    assert billing._entitlement_from_state(subs, granted)["features"] == granted
+
+
+def test_private_feature_uses_existing_fallback_when_stripe_feature_read_fails(monkeypatch):
+    """The existing provider-lag fallback remains an authoritative catalog computation."""
+    stripe = _fake_stripe([_sub("trialing", "pro_monthly", 1900000000)], [])
+
+    def unavailable(**kwargs):
+        raise RuntimeError("offline simulated entitlement propagation failure")
+
+    stripe.entitlements.ActiveEntitlement.list = unavailable
+    monkeypatch.setattr(billing, "_stripe", lambda: stripe)
+    row = billing._compute_entitlement("cus_private_test")
+    assert row["tier"] == "pro" and row["status"] == "trialing"
+    assert "company_intelligence_private_read" in row["features"]
+
+
+def test_api_me_private_feature_requires_verified_principal(monkeypatch):
+    from app import main
+
+    monkeypatch.setattr(billing, "read_entitlement", lambda uid: pytest.fail(
+        "unverified caller must never reach entitlement issuance",
+    ))
+    status, _ = _get_api_me(main.app)
+    assert status == 401
+
+
+@pytest.mark.parametrize(
+    "status,lookup_key,keys,read_failed,expected_private",
+    [
+        ("active", "pro_monthly", [], False, True),
+        ("trialing", "pro_annual", [], False, True),
+        ("active", "insider_monthly", [], False, False),
+        ("active", "unrecognized_price", [], False, False),
+        ("active", "pro_monthly", ["site_full", "chat_opus"], False, False),
+        ("canceled", "pro_monthly", ["company_intelligence_private_read"], False, False),
+        ("active", "pro_monthly", [], True, False),
+    ],
+)
+def test_private_feature_recompute_row_reaches_api_me(
+    monkeypatch, status, lookup_key, keys, read_failed, expected_private,
+):
+    """The existing issuer forwards persisted features, including under an unlimited label.
+
+    This exercises the compute/write/read/HTTP chain with isolated Stripe and PostgREST
+    transports. It proves source behavior, never external provisioning or real user grants.
+    """
+    from app import main
+
+    stored = []
+
+    def fake_pg(method, path, **kwargs):
+        assert path.startswith("user_entitlements?")
+        if method == "POST":
+            stored[:] = kwargs["body"]
+            return []
+        assert method == "GET" and "user_id=eq.user_private_test" in path
+        if read_failed:
+            raise RuntimeError("offline simulated persisted-row read failure")
+        return stored
+
+    monkeypatch.setattr(billing, "_pg", fake_pg)
+    monkeypatch.setattr(billing, "SUPABASE_SERVICE_ROLE_KEY", "offline-test-key")
+    monkeypatch.setattr(
+        billing, "_stripe",
+        lambda: _fake_stripe([_sub(status, lookup_key, 1900000000)], keys),
+    )
+    monkeypatch.setattr(
+        main, "_brain_module",
+        lambda: types.SimpleNamespace(
+            get_user_quotas=lambda *a, **kw: {"tier": "unlimited", "quotas": {}},
+        ),
+    )
+    monkeypatch.setitem(
+        main.app.dependency_overrides, main.require_user,
+        lambda: {"id": "user_private_test", "role": "authenticated"},
+    )
+    ent = billing._compute_entitlement("cus_private_test")
+    billing._upsert_entitlement("user_private_test", "cus_private_test", ent)
+    response_status, issued = _get_api_me(main.app)
+    assert response_status == 200
+    assert ent["features"] == stored[0]["features"]
+    assert issued["features"] == ([] if read_failed else ent["features"])
+    assert ("company_intelligence_private_read" in issued["features"]) is expected_private
+    assert issued["tier"] == "unlimited"  # display overlay grants no additional feature
+
+
 # --------------------------------------------------------------------------- #
 # helpers
 # --------------------------------------------------------------------------- #

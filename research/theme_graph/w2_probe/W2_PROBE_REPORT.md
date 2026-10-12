@@ -558,3 +558,15 @@ Owner-territory items this probe found and deliberately did not touch (prereg §
 
 No store was mutated by this run: the reserved-null axis columns on `edges.parquet` stay
 null, no synapse entry was minted, and no user surface ships from W2.
+
+
+## 10. Append-only erratum — common shrinkage and Spearman (2026-10-04)
+
+The explanation in deviation 9 that common display shrinkage would inflate H3
+rank stability is corrected by the [original-custody erratum](W2_COMMON_SHRINKAGE_SPEARMAN_ERRATUM_2026-10-04.md).
+The implemented `b' = 0.66*b + 0.34*mean(b)` preserves each cross-sectional
+ordering and tie in exact arithmetic on identical observations. It reduces
+dispersion but does not inflate the H2/H3 Spearman statistics on those observations.
+The original preregistration, raw-beta choice, historical results, qualified
+verdicts and refused constructions remain unchanged. No W2 outcome was rerun and
+no predictive authority or qualified capture is claimed by this correction.

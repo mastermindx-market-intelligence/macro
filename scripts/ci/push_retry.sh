@@ -82,6 +82,10 @@ push_retry_init() {
   PUSH_N_OTHER=0
   PUSH_FAIL_CLASS=""
   PUSH_STOP=""
+  # A definite GH001 is terminal for this operation. Retain its first status
+  # and captured output; only a new explicit init clears the receipt.
+  PUSH_TERMINAL_RC=0
+  PUSH_TERMINAL_OUTPUT=""
   PUSH_ATTEMPT_ANCHOR_VALID=0
   PUSH_ATTEMPT_ANCHOR_GIT_DIR=""
   PUSH_ATTEMPT_ANCHOR_BRANCH=""
@@ -96,6 +100,42 @@ push_retry_init() {
   # later attempt may recapture authority from the damaged post-failure state.
   PUSH_RECOVERY_FAILED=0
   return 0
+}
+
+# Internal operation state only; no Git or filesystem discovery.
+_push_terminal_failure() {
+  [ "${PUSH_TERMINAL_RC:-0}" -ne 0 ]
+}
+
+
+
+# Query the claims owner's one production selector. The current selector is
+# unconditionally legacy. Explicit native APIs are tested separately; there is
+# no environment or filesystem activation switch in this command.
+push_qledger_preflight() {
+  local boundary="$1" library_root py
+  shift
+  library_root=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/../.." && pwd -P) || return 1
+  # Prefer the explicit Python 3 executable over a legacy system python.
+  if command -v python3 >/dev/null 2>&1; then py=python3; else py=python; fi
+  PYTHONPATH="$library_root${PYTHONPATH:+:$PYTHONPATH}" "$py" \
+    -m scripts.ci.qledger_publication --repo "$(pwd -P)" --boundary "$boundary" "$@"
+}
+
+# A native integrity/classification failure is terminal for this retry. Keep
+# the first receipt and stop before any inherited cleanup, stash or live push.
+push_qledger_guard() {
+  if _push_terminal_failure; then return "$PUSH_TERMINAL_RC"; fi
+  local out rc=0
+  out=$(push_qledger_preflight "$@" 2>&1) || rc=$?
+  if [ "$rc" -eq 0 ]; then return 0; fi
+  PUSH_TERMINAL_RC="$rc"
+  PUSH_TERMINAL_OUTPUT="$out"
+  PUSH_FAIL_CLASS="qledger-integrity"
+  PUSH_STOP="QLedger publication verification failed; automatic mutation and retry stopped"
+  PUSH_N_OTHER=$(( ${PUSH_N_OTHER:-0} + 1 ))
+  [ -z "$out" ] || printf '%s\n' "$out" >&2
+  return "$rc"
 }
 
 # Capture the exact tracked state of this retry at the last verified boundary
@@ -201,6 +241,8 @@ push_restore_attempt_anchor() {
 # permitted only when the current job is on an attached branch with no unmerged
 # entries and its exact tracked state can be captured independently of that metadata.
 push_prepare_inherited_rebase() {
+  if _push_terminal_failure; then return "$PUSH_TERMINAL_RC"; fi
+  push_qledger_guard pre-rebase || return $?
   local gd=""
   [ "${PUSH_RECOVERY_FAILED:-0}" -eq 0 ] || return 1
   gd=$(git rev-parse --absolute-git-dir 2>/dev/null) || { PUSH_RECOVERY_FAILED=1; return 1; }
@@ -245,6 +287,7 @@ push_prepare_inherited_rebase() {
 # or the wall-clock deadline is spent (PUSH_STOP records which). The FIRST attempt is
 # always allowed regardless of the deadline.
 push_attempt() {
+  if _push_terminal_failure; then return 1; fi
   if [ "${PUSH_RECOVERY_FAILED:-0}" -eq 1 ]; then
     PUSH_STOP="recovery failed earlier in this retry operation"
     return 1
@@ -273,6 +316,20 @@ push_attempt() {
 # Pure (no git calls) so tests can drive the table directly.
 push_classify() {
   local rc="$1" out="$2"
+  if _push_terminal_failure; then return 0; fi
+  # A definite server rejection outranks contention hints and an alarm that
+  # arrives after the rejection. A filename mentioning GH001 is not enough.
+  if [ "$rc" -ne 0 ]; then
+    case "$out" in
+      *"error: GH001:"*)
+        PUSH_FAIL_CLASS="push-size-rejected"
+        PUSH_TERMINAL_RC="$rc"
+        PUSH_TERMINAL_OUTPUT="$out"
+        PUSH_STOP="GH001 large-file rejection; automatic retry stopped"
+        PUSH_N_OTHER=$(( ${PUSH_N_OTHER:-0} + 1 ))
+        return 0 ;;
+    esac
+  fi
   if [ "$rc" -eq 142 ]; then
     PUSH_FAIL_CLASS="push-timeout"
     return 0
@@ -295,7 +352,15 @@ push_classify() {
 
 # `git push` with classification. Extra args are passed through. Returns push's status.
 push_do() {
-  local out rc=0
+  if _push_terminal_failure; then return "$PUSH_TERMINAL_RC"; fi
+  local out rc=0 qledger_arg
+  local -a qledger_args=()
+  if [ "$#" -eq 0 ]; then
+    push_qledger_guard publish-candidate || return $?
+  else
+    for qledger_arg in "$@"; do qledger_args+=("--push-arg=$qledger_arg"); done
+    push_qledger_guard publish-candidate "${qledger_args[@]}" || return $?
+  fi
   if [ -n "${PUSH_ALARM}" ]; then
     out=$(perl -e 'alarm shift @ARGV; exec @ARGV or die' -- "${PUSH_ALARM}" git push "$@" 2>&1) || rc=$?
   else
@@ -486,6 +551,8 @@ push_exact_paths_replay_commit() {
 # A rebase left IN PROGRESS is the tell for a real conflict — that is the one case that
 # deserves the conflict remedy and the long backoff, so record it before aborting.
 push_abort_rebase() {
+  # A terminal push rejection grants no cleanup or retry authority.
+  if _push_terminal_failure; then return 0; fi
   local gd="" unmerged=""
   # push_fetch_main_for_rebase marks metadata that existed before this retry.
   # Never let a later generic cleanup call normal-abort that inherited state.
@@ -726,9 +793,12 @@ push_quarantine_untracked_collisions() {
 # collision containment against that exact object.  Do not replace this with
 # `git fetch origin main`: that only promises FETCH_HEAD, recreating #30727439896.
 push_fetch_main_for_rebase() {
+  if _push_terminal_failure; then return "$PUSH_TERMINAL_RC"; fi
+  push_qledger_guard pre-rebase || return $?
   # Reconcile retained metadata before any fetch/rebase action can mistake an
   # older invocation's Git control state for this retry's recovery authority.
   if ! push_prepare_inherited_rebase; then
+    if _push_terminal_failure; then return "$PUSH_TERMINAL_RC"; fi
     PUSH_FAIL_CLASS="rebase-conflict"
     return 1
   fi
@@ -774,6 +844,8 @@ push_fetch_main_for_rebase() {
 # ---------------------------------------------------------------------------
 
 push_autostash_ok() {
+  if _push_terminal_failure; then return "$PUSH_TERMINAL_RC"; fi
+  push_qledger_guard pre-rebase || return $?
   # A stored `autostash`-subject entry after a pull means the re-apply FAILED
   # (conflicted, or refused over an untracked file — git stores the entry in
   # both cases). Drop it by exact subject match only — anything else (operator
@@ -883,6 +955,8 @@ push_why() {
     autostash-conflict) printf '%s' "autostash re-apply conflicted — leftovers discarded, retrying on a clean tree" ;;
     push-timeout)       printf '%s' "push exceeded the ${PUSH_ALARM}s alarm" ;;
     push-error)         printf '%s' "push rejected for a non-contention reason — see the output above" ;;
+    push-size-rejected) printf '%s' "GitHub rejected a large file (GH001) — automatic retry stopped" ;;
+    qledger-integrity)  printf '%s' "QLedger publication verification failed — automatic mutation stopped" ;;
     *)                  printf '%s' "fetch/rebase leg failed before the push" ;;
   esac
   return 0
@@ -891,6 +965,8 @@ push_why() {
 # Sleep before the next attempt, on a jittered ladder chosen by failure class, clamped
 # to whatever is left of the wall-clock budget.
 push_backoff() {
+  # A terminal push rejection grants no cleanup or retry authority.
+  if _push_terminal_failure; then return 0; fi
   local base cap secs left now
   case "${PUSH_FAIL_CLASS}" in
     contention)
@@ -942,7 +1018,16 @@ push_won() {
 }
 
 push_lost() {
-  # No-op unless the loop actually ran out of budget. Only push_attempt sets PUSH_STOP,
+  if _push_terminal_failure; then
+    local terminal_title="GH001 push stopped"
+    if [ "${PUSH_FAIL_CLASS:-}" = qledger-integrity ]; then terminal_title="QLedger publication stopped"; fi
+    printf '::error title=%s::%s: %s\n' "$terminal_title" "$PUSH_LABEL" "$PUSH_STOP" >&2
+    push_summary "NOT pushed — ${PUSH_STOP}"
+    # Standard bash -e callers stop here rather than reaching a warning-only
+    # success tail. Conditional callers must consume this nonzero return.
+    return "$PUSH_TERMINAL_RC"
+  fi
+  # Legacy no-op unless the loop ran out of budget. Only push_attempt sets that stop,
   # so a loop that left on a WIN never claims a loss — asia-close's data commit exits
   # its loop with `break` (it sits inside an if/else) and so runs the give-up tail on
   # the success path too. Guarding here keeps every call site safe.

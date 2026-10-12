@@ -3591,12 +3591,17 @@ INCIDENT_4607_FILES = [
 ]
 PROVEN_AT_0742 = "2026-08-05T07:42:00Z"
 MAIN_MOVED_AT_1026 = "2026-08-05T10:26:00Z"
-# #7958 (2026-09-24): a records-only pull request — handoff prose plus served
-# browser evidence — whose files own no `paths:` entry of any path-filtered gate.
+#: The #7958 footprint as a records-only pull request. As filed (2026-09-24) it
+#: also carried two `mockups/evidence/` captures; since #8287 (2026-10-02) ci.yml
+#: owns `mockups/evidence/**` ON PURPOSE — an evidence-only diff must run the
+#: receipt-corpus gate (#8278 landed a malformed receipt through that gap) — so
+#: those captures no longer model "owned by no path-filtered gate". The exemplar
+#: keeps only the handoff records, which no workflow path filter owns;
+#: `test_incident_7958_a_records_only_pull_request_merges_on_its_concluded_green`
+#: asserts exactly that and is what demanded this change.
 INCIDENT_7958_FILES = [
     "agentos/handoffs/WS-F04-X1-2026-09-24.md",
-    "mockups/evidence/f04-x1-wti-live-trace/served-2026-09-24/desktop-light.png",
-    "mockups/evidence/f04-x1-wti-live-trace/served-2026-09-24/desktop-dark.png",
+    "agentos/handoffs/WS-F04-X1-2026-09-24-R2.md",
 ]
 
 
@@ -4193,9 +4198,11 @@ def test_incident_7958_a_records_only_pull_request_merges_on_its_concluded_green
 ):
     """#7958 (2026-09-24), against the REAL workflow gates.
 
-    Files only under `agentos/handoffs/` and `mockups/evidence/`; main takes
-    product commits inside `engine/**` and `scripts/` after the head's proof
-    concluded green. The sweeper refreshed this shape three times
+    Files only under `agentos/handoffs/` (the `mockups/evidence/` captures the
+    real #7958 carried are a gated surface since #8287, 2026-10-02 — see
+    INCIDENT_7958_FILES); main takes product commits inside `engine/**` and
+    `scripts/` after the head's proof concluded green. The sweeper refreshed
+    this shape three times
     (0ee772f1 -> d3f8bd8a -> fad0e00d -> 25e4a451), the third 25 s after run
     36052314696 at fad0e00d had concluded green, logging "the pull request's own
     changed files could not be established". They could: they were simply owned

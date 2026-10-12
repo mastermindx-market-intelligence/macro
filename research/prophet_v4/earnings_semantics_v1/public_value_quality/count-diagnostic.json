@@ -1,0 +1,108 @@
+{
+  "schema": "prophet.public_value_quality_count_diagnostic/v1",
+  "archive_sha256": "d199ecf6fa92fdd4cc6228baf0c0e8a3e95591bd7eb2b039e1abf7044da8b54f",
+  "observed_after_return_result": true,
+  "purpose": "Explain composition risk; no outcome-driven cell deletion, changed weights or reselected strategy",
+  "corner_cells": [
+    {
+      "column": "BIG HiBM HiOP",
+      "size": 2,
+      "book_to_market_quartile": 4,
+      "profitability_quartile": 4,
+      "full_min": 1,
+      "full_median": 6.0,
+      "recent_min": 1,
+      "recent_median": 4.0,
+      "recent_months_below_10_firms": 188,
+      "recent_months": 200
+    },
+    {
+      "column": "BIG HiBM LoOP",
+      "size": 2,
+      "book_to_market_quartile": 4,
+      "profitability_quartile": 1,
+      "full_min": 60,
+      "full_median": 100.5,
+      "recent_min": 67,
+      "recent_median": 105.0,
+      "recent_months_below_10_firms": 0,
+      "recent_months": 200
+    },
+    {
+      "column": "BIG LoBM HiOP",
+      "size": 2,
+      "book_to_market_quartile": 1,
+      "profitability_quartile": 4,
+      "full_min": 81,
+      "full_median": 127.0,
+      "recent_min": 117,
+      "recent_median": 141.0,
+      "recent_months_below_10_firms": 0,
+      "recent_months": 200
+    },
+    {
+      "column": "BIG LoBM LoOP",
+      "size": 2,
+      "book_to_market_quartile": 1,
+      "profitability_quartile": 1,
+      "full_min": 1,
+      "full_median": 28.0,
+      "recent_min": 26,
+      "recent_median": 51.0,
+      "recent_months_below_10_firms": 0,
+      "recent_months": 200
+    },
+    {
+      "column": "SMALL HiBM HiOP",
+      "size": 1,
+      "book_to_market_quartile": 4,
+      "profitability_quartile": 4,
+      "full_min": 1,
+      "full_median": 43.0,
+      "recent_min": 20,
+      "recent_median": 28.0,
+      "recent_months_below_10_firms": 0,
+      "recent_months": 200
+    },
+    {
+      "column": "SMALL HiBM LoOP",
+      "size": 1,
+      "book_to_market_quartile": 4,
+      "profitability_quartile": 1,
+      "full_min": 81,
+      "full_median": 374.0,
+      "recent_min": 152,
+      "recent_median": 298.0,
+      "recent_months_below_10_firms": 0,
+      "recent_months": 200
+    },
+    {
+      "column": "SMALL LoBM HiOP",
+      "size": 1,
+      "book_to_market_quartile": 1,
+      "profitability_quartile": 4,
+      "full_min": 106,
+      "full_median": 309.0,
+      "recent_min": 106,
+      "recent_median": 190.0,
+      "recent_months_below_10_firms": 0,
+      "recent_months": 200
+    },
+    {
+      "column": "SMALL LoBM LoOP",
+      "size": 1,
+      "book_to_market_quartile": 1,
+      "profitability_quartile": 1,
+      "full_min": 44,
+      "full_median": 395.5,
+      "recent_min": 277,
+      "recent_median": 358.5,
+      "recent_months_below_10_firms": 0,
+      "recent_months": 200
+    }
+  ],
+  "limitations": [
+    "Firm counts are not holding weights, issuer concentration or investable capacity.",
+    "This extra source-quality diagnostic was not a pre-specified return contrast."
+  ]
+}

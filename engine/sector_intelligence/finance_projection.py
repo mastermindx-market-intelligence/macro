@@ -30,9 +30,9 @@ from __future__ import annotations
 import hashlib
 import json
 import re
-from dataclasses import dataclass
-from datetime import datetime, date
-from typing import Any, Iterable, Mapping, Sequence
+from dataclasses import dataclass, fields, replace
+from datetime import datetime, date, time, timezone
+from typing import Any, Iterable, Iterator, Mapping, Sequence
 
 
 # ---------------------------------------------------------------------------
@@ -347,6 +347,14 @@ def _owner_refs(values: Any) -> list[str]:
     return [ref for ref in map(_owner_ref, values) if ref]
 
 
+def _owner_key(value: Any) -> str | None:
+    """An owner value the composer looks up or compares as text: a string, or
+    None. A mapping or list is unhashable, so a membership test on one raised
+    inside the composer before the contract could refuse anything; it names no
+    slice, rights family, price basis or metric, so it is treated as absent."""
+    return value if isinstance(value, str) else None
+
+
 def _hash_inputs(inputs: FinanceOwnerInputs, composer_version: str) -> str:
     payload = {
         "composer_version": composer_version,
@@ -363,8 +371,49 @@ def _hash_inputs(inputs: FinanceOwnerInputs, composer_version: str) -> str:
         "slice_catalog": list(inputs.slice_catalog),
         "rights_snapshot": dict(inputs.rights_snapshot),
     }
-    serialized = json.dumps(payload, sort_keys=True, separators=(",", ":"), default=str)
+    serialized = _json_text(_digest_form(payload))
     return hashlib.sha256(serialized.encode("utf-8")).hexdigest()
+
+
+def _json_text(value: Any) -> str:
+    return json.dumps(value, sort_keys=True, separators=(",", ":"))
+
+
+def _digest_form(value: Any) -> Any:
+    """``value`` as the JSON the input digest hashes: a function of what it
+    holds, never of the container that holds it.
+
+    Text, a number, a boolean and None are themselves. A mapping whose keys
+    are all text is an object; any other mapping is a list of [key, value]
+    pairs, so a key of another type neither stops the sort nor collides
+    with its own text. A set is a list in the order of its members' JSON,
+    which the hash seed does not change. Any other iterable (a list, a
+    tuple, a deque, an iterator) is a list. Anything else, and an iterable
+    that refuses to iterate, is its str(), as the digest has always hashed
+    a date. So an input a JSON adapter can produce hashes exactly as it did
+    before: only a container JSON cannot hold used to hash by its repr, its
+    address, or not at all. Such a container now hashes as the JSON of what
+    it holds, so it hashes as that JSON does: a set as the sorted list of
+    its members, and a mapping keyed by numbers as the list of its pairs.
+
+    The walk recurses, so a structure nested deeper than the interpreter's
+    recursion limit (about a thousand levels) raises RecursionError, as a
+    cyclic one does. json.dumps alone used to write one that deep."""
+    if value is None or isinstance(value, (str, int, float)):
+        return value
+    if isinstance(value, Mapping):
+        if all(isinstance(key, str) for key in value):
+            return {key: _digest_form(item) for key, item in value.items()}
+        return sorted(([_digest_form(key), _digest_form(item)] for key, item in value.items()), key=_json_text)
+    if isinstance(value, (set, frozenset)):
+        return sorted((_digest_form(item) for item in value), key=_json_text)
+    if isinstance(value, Iterable) and not isinstance(value, (bytes, bytearray)):
+        try:
+            items = iter(value)
+        except TypeError:
+            return str(value)
+        return [_digest_form(item) for item in items]
+    return str(value)
 
 
 def _parse_iso_date(value: str | date | None) -> date | None:
@@ -383,6 +432,13 @@ def _parse_iso_date(value: str | date | None) -> date | None:
         text = text.split("T", 1)[0]
     try:
         return date.fromisoformat(text)
+    except ValueError:
+        pass
+    # A timestamp that parts its date and time with a space, not a T,
+    # names an instant to _contract_instant, so it dates its row here too:
+    # the date it was written in, which an offset does not move into UTC.
+    try:
+        return datetime.fromisoformat(text[:-1] + "+00:00" if text.endswith("Z") else text).date()
     except ValueError:
         return None
 
@@ -452,11 +508,10 @@ def _coerce_rights_state(
     source_family: str | None,
     rights_snapshot: Mapping[str, str],
 ) -> str:
-    if not source_family:
+    family = _owner_key(source_family)
+    if not family or family not in rights_snapshot:
         return "SOURCE_RIGHTS_HELD"
-    if source_family not in rights_snapshot:
-        return "SOURCE_RIGHTS_HELD"
-    cls = rights_snapshot.get(source_family)
+    cls = rights_snapshot.get(family)
     if cls == "internal_only":
         return "INTERNAL_ONLY"
     if cls == "unresolved":
@@ -466,13 +521,6 @@ def _coerce_rights_state(
     if cls == "derived_display_ok":
         return "DERIVED_DISPLAY_OK"
     return "SOURCE_RIGHTS_HELD"
-
-
-def _source_record_evidence_ref(rec: Mapping[str, Any]) -> str | None:
-    ref = _owner_text(rec.get("evidence_ref"))
-    if ref is None:
-        return _owner_ref(rec.get("record_id"))
-    return ref.strip() or None
 
 
 def _source_record_observed_at(rec: Mapping[str, Any]) -> date | None:
@@ -662,6 +710,246 @@ def _strip_correction_extras(correction: Any) -> dict[str, Any]:
 
 
 # ---------------------------------------------------------------------------
+# Point in time: the owner inputs as they stood at the knowledge cutoff
+# ---------------------------------------------------------------------------
+
+# The clocks that say when a row became knowable. A row that any of them
+# dates past the knowledge cutoff could not be known at the cutoff. The
+# clocks that say when a row holds in the world (a report period, an
+# effective_at, a record's business validity) are not listed: a row can be
+# known before the time it describes.
+_OBSERVATION_KNOWN_CLOCKS = ("as_of", "observed_at", "published_at")
+_CELL_KNOWN_CLOCKS = ("evidence_date",) + _OBSERVATION_KNOWN_CLOCKS
+_SOURCE_KNOWN_CLOCKS = ("published_at", "observed_at", "retained_at")
+
+
+def _contract_instant(value: Any) -> datetime | None:
+    """The UTC instant the shared contracts read from a clock
+    (contracts._parse_temporal): a bare date is the start of its day in UTC,
+    a time without an offset is UTC, and an offset is honoured. None when
+    the value names no instant: it does not parse, it is a time of day with
+    no date, or its offset carries it outside the range of a datetime."""
+    try:
+        # Structural check: datetime has a ``time`` part, date does not.
+        # Survives a monkey-patched ``datetime`` symbol.
+        if hasattr(value, "hour") and hasattr(value, "minute"):
+            if not hasattr(value, "date"):
+                return None
+            parsed = value
+        elif isinstance(value, date):
+            return datetime.combine(value, time.min, tzinfo=timezone.utc)
+        elif isinstance(value, str):
+            text = value.strip()
+            if re.fullmatch(r"[0-9]{4}-[0-9]{2}-[0-9]{2}", text):
+                return datetime.combine(date.fromisoformat(text), time.min, tzinfo=timezone.utc)
+            parsed = datetime.fromisoformat(text[:-1] + "+00:00" if text.endswith("Z") else text)
+        else:
+            return None
+        if getattr(parsed, "tzinfo", None) is None:
+            return parsed.replace(tzinfo=timezone.utc)
+        return parsed.astimezone(timezone.utc)
+    except (AttributeError, OverflowError, TypeError, ValueError):
+        return None
+
+
+def _known_by(clocks: Any, names: Sequence[str], cutoff: datetime) -> bool:
+    """False when any named clock dates the row past the cutoff instant.
+
+    A clock is read two ways, and either one past the cutoff withholds the
+    row: as the instant the shared contracts read from it, and as the date
+    this composer publishes for it, the calendar date the clock was written
+    in. So every date the document publishes from a row is on or before the
+    cutoff. A time written late on the cutoff's date in a zone behind UTC is
+    past the cutoff by its instant; a time written early on the next day in
+    a zone ahead of UTC is withheld by its date, although its instant is
+    not past the cutoff. A clock that is absent or does not parse says
+    nothing, so it never removes a row: how an undated row is read stays
+    each reader's rule."""
+    if not isinstance(clocks, Mapping):
+        return True
+    cutoff_day = cutoff.date()
+    for name in names:
+        value = clocks.get(name)
+        instant = _contract_instant(value)
+        if instant is not None and instant > cutoff:
+            return False
+        day = _coerce_date(value)
+        if day is not None and day > cutoff_day:
+            return False
+    return True
+
+
+def _drained(value: Any) -> Any:
+    """``value`` with every one-shot iterator in it (a generator, a map
+    object) read once into a list, through mappings, lists and tuples.
+
+    A one-shot iterator yields its rows to its first reader only, so the
+    knowledge gate, each reader and the input digest would each read
+    different rows from it: the digest of a generator the gate had read
+    was the digest of no rows. Read once where the inputs enter, it is one
+    list they all read. A mapping, list or tuple is rebuilt only when it
+    held an iterator, and anything else passes unchanged. A mapping is read
+    as a mapping even when it is also an iterator.
+
+    Only an Iterator is drained. An object whose __iter__ hands out one
+    stored iterator also yields its rows to its first reader only, and it
+    is not detected; nor is an iterator held in a deque or a set."""
+    if isinstance(value, Mapping):
+        mapping: dict[Any, Any] = {}
+        changed = False
+        for key, item in value.items():
+            mapping[key] = drained = _drained(item)
+            changed = changed or drained is not item
+        return mapping if changed else value
+    if isinstance(value, Iterator):
+        return [_drained(item) for item in value]
+    if isinstance(value, (list, tuple)):
+        items = [_drained(item) for item in value]
+        if any(drained is not item for drained, item in zip(items, value)):
+            return tuple(items) if isinstance(value, tuple) else items
+    return value
+
+
+def _drained_inputs(inputs: FinanceOwnerInputs) -> FinanceOwnerInputs:
+    return replace(inputs, **{field.name: _drained(getattr(inputs, field.name)) for field in fields(inputs)})
+
+
+@dataclass
+class _RowCount:
+    """How many rows of one owner input the knowledge gate read, and how
+    many of them it kept."""
+
+    read: int = 0
+    kept: int = 0
+
+
+def _known_rows(
+    rows: Any, names: Sequence[str], cutoff: datetime, clocks_at: str | None = None, count: _RowCount | None = None
+) -> Any:
+    """The rows of an owner sequence known at the cutoff, judged by each
+    row's own clocks or by the mapping it holds under ``clocks_at``.
+
+    Every iterable of rows is gated, since a reader iterates whatever it is
+    given: a list stays a list, a tuple a tuple, and any other iterable
+    becomes a list. A string, bytes or a mapping is not a row sequence and
+    passes unchanged, so each reader keeps its own handling of a malformed
+    input. ``count``, when given, adds the rows read and kept, so a receipt
+    answers from the rows the gate read, whatever held them."""
+    if rows is None or isinstance(rows, (str, bytes, bytearray, Mapping)):
+        return rows
+    try:
+        iterator = iter(rows)
+    except TypeError:
+        return rows
+    kept = []
+    for row in iterator:
+        known = not isinstance(row, Mapping) or _known_by(row.get(clocks_at) if clocks_at else row, names, cutoff)
+        if known:
+            kept.append(row)
+        if count is not None:
+            count.read += 1
+            count.kept += known
+    return tuple(kept) if isinstance(rows, tuple) else kept
+
+
+def _known_sources(rows: Any, cutoff: datetime) -> Any:
+    """Theme evidence or source records known at the cutoff, judged by the
+    clocks of the source each row holds."""
+    return _known_rows(rows, _SOURCE_KNOWN_CLOCKS, cutoff, clocks_at="source")
+
+
+def _knowledge_cutoff_instant(knowledge_cutoff: Any) -> datetime:
+    """The instant the shared contracts read from the published
+    knowledge_cutoff. A cutoff that names no instant is refused: the
+    contracts cannot read the document's point in time from it, so no row
+    can be judged known or not by it."""
+    cutoff = _contract_instant(knowledge_cutoff)
+    if cutoff is None:
+        raise ValueError(f"knowledge_cutoff names no instant: {knowledge_cutoff!r}")
+    return cutoff
+
+
+def theme_evidence_known_at(theme_evidence: Any, knowledge_cutoff: Any) -> Any:
+    """The theme evidence rows compose_finance_projection reads at
+    ``knowledge_cutoff``.
+
+    A reader outside the composer that walks the owner's theme evidence
+    reads it through this, so it reads exactly the rows the composer read.
+    The document publishes only the set of curation revisions it read, and
+    a revision does not identify one row: a row the cutoff withheld can
+    carry the revision of a row it read."""
+    return _known_sources(theme_evidence, _knowledge_cutoff_instant(knowledge_cutoff))
+
+
+def _known_packet(packet: Any, cutoff: datetime, count: _RowCount | None = None) -> Any:
+    if not isinstance(packet, Mapping):
+        return packet
+    known = dict(packet)
+    for plane in ("operating", "valuation"):
+        block = known.get(plane)
+        if not isinstance(block, Mapping):
+            continue
+        block = dict(block)
+        for key, names in (("observations", _OBSERVATION_KNOWN_CLOCKS), ("cells", _CELL_KNOWN_CLOCKS)):
+            if key in block:
+                block[key] = _known_rows(block[key], names, cutoff, count=count)
+        known[plane] = block
+    return known
+
+
+def _known_per_slice(observations: Any, cutoff: datetime, count: _RowCount | None = None) -> Any:
+    if not isinstance(observations, Mapping):
+        return observations
+    return {
+        slice_id: _known_rows(rows, _OBSERVATION_KNOWN_CLOCKS, cutoff, count=count)
+        for slice_id, rows in observations.items()
+    }
+
+
+def _known_at_cutoff(inputs: FinanceOwnerInputs, cutoff: datetime) -> tuple[FinanceOwnerInputs, frozenset[str]]:
+    """The owner inputs as they stood at the knowledge cutoff, and the
+    input receipts whose every row the cutoff withheld.
+
+    The shared contracts state the rule as feature.point_in_time: an
+    observation cannot postdate the knowledge cutoff. It is applied here,
+    once, before any reader runs, to every dated owner row a reader can
+    publish: operating and valuation observations and cells, expectation
+    and market observations, and theme evidence and source records, by
+    their source's clocks. Only the valuation anchor used to apply the
+    cutoff. Every other plane, the company cells, the source records, the
+    curation revisions, freshness and conflicts read rows dated after it,
+    and the contract accepted the document.
+
+    The gate keeps the keyed maps of packets, expectation and market rows,
+    so an input whose every row the cutoff withheld is not empty, but the
+    document holds none of its rows: its receipt reads DEGRADED, as an
+    empty input's does. The gate answers that from the rows it read and
+    kept, never from a length, since a sequence of rows need not have one.
+    Theme evidence and source records need no entry: the gate empties
+    their lists.
+    """
+    counts = {owner: _RowCount() for owner in ("financial_intelligence", "expectations_revisions", "market_data")}
+    packets = inputs.financial_packets
+    if isinstance(packets, Mapping):
+        packets = {
+            ticker: _known_packet(packet, cutoff, counts["financial_intelligence"])
+            for ticker, packet in packets.items()
+        }
+    known = replace(
+        inputs,
+        financial_packets=packets,
+        expectation_observations=_known_per_slice(
+            inputs.expectation_observations, cutoff, counts["expectations_revisions"]
+        ),
+        market_observations=_known_per_slice(inputs.market_observations, cutoff, counts["market_data"]),
+        theme_evidence=_known_sources(inputs.theme_evidence, cutoff),
+        source_records=_known_sources(inputs.source_records, cutoff),
+    )
+    withheld = frozenset(owner for owner, count in counts.items() if count.read and not count.kept)
+    return known, withheld
+
+
+# ---------------------------------------------------------------------------
 # Slice state machines
 # ---------------------------------------------------------------------------
 
@@ -709,42 +997,29 @@ def _observation_value(obs: Mapping[str, Any]) -> Any:
     return None
 
 
-def _observation_unit(obs: Mapping[str, Any]) -> str | None:
-    unit = _owner_text(obs.get("unit"))
-    if unit is not None:
-        return unit
-    metric = obs.get("metric")
-    if isinstance(metric, Mapping):
-        return _owner_text(metric.get("unit"))
-    return None
+def _observation_date(obs: Mapping[str, Any]) -> date | None:
+    """The date an owner observation carries: its ``as_of``, else its
+    ``observed_at``, each read as _coerce_date reads it.
+
+    The plane clock publishes it, and so every reader dates an observation
+    by it: the planes rank their readings by it, and the expectations
+    history, the slice's freshness and common_as_of read it. (Only the clock
+    and the valuation anchor used to read ``observed_at``. Everything else
+    read ``as_of`` alone, so an observation dated only by ``observed_at``
+    was dated in its clock and undated everywhere else.)"""
+    return _coerce_date(obs.get("as_of")) or _coerce_date(obs.get("observed_at"))
 
 
-def _plane_evidence_refs(
-    expectation_obs: Sequence[Mapping[str, Any]],
-    market_obs: Sequence[Mapping[str, Any]],
-    source_records: Sequence[Mapping[str, Any]],
-) -> list[str]:
-    refs: set[str] = set()
-    for obs in expectation_obs:
-        ref = _owner_ref(obs.get("source")) if isinstance(obs, Mapping) else None
-        if ref:
-            refs.add(ref)
-    for obs in market_obs:
-        if isinstance(obs, Mapping):
-            ref = _owner_ref(obs.get("source")) or _owner_ref(obs.get("evidence_ref"))
-            if ref:
-                refs.add(ref)
-    for rec in source_records:
-        rid = _owner_ref(rec.get("record_id")) if isinstance(rec, Mapping) else None
-        if rid:
-            refs.add(rid)
-    return sorted(refs)
+def _observation_day(obs: Mapping[str, Any]) -> str | None:
+    """_observation_date as the contract writes a date, or None."""
+    observed = _observation_date(obs)
+    return observed.isoformat() if observed is not None else None
 
 
 def _plane_clock(obs: Mapping[str, Any] | None) -> dict[str, Any] | None:
     if obs is None:
         return None
-    observed = _coerce_date(obs.get("as_of")) or _coerce_date(obs.get("observed_at"))
+    observed = _observation_date(obs)
     if observed is None:
         return None
     published = _coerce_date(obs.get("published_at"))
@@ -916,33 +1191,62 @@ def _has_forbidden_key(value: Any) -> bool:
     return False
 
 
-def _operating_plane(
+def _filed_under(obs: Mapping[str, Any], slice_id: str) -> bool:
+    """Whether an owner observation belongs to this slice.
+
+    It does when the owner tags it with the slice, or leaves it untagged,
+    which means company data. Only an absent or null tag is untagged. Any
+    other value that is not this slice's id, an empty string or a malformed
+    non-string included, files the observation somewhere else, so it never
+    reaches this slice. (A falsy malformed tag used to count as untagged, so
+    it reached every slice.)
+    """
+    tag = obs.get("slice_id")
+    return tag is None or tag == slice_id
+
+
+def _operating_reading(
     slice_id: str,
     financial_packets: Mapping[str, Mapping[str, Any]],
-    regime_breaks: Sequence[Mapping[str, Any]],
-    evidence_refs: list[str],
-) -> dict[str, Any]:
-    # Pick the freshest operating observation across all financial_packets
-    # that carries an explicit ``direction``. Source records are display-tier
-    # (schema-strict) and never carry direction.
-    candidates: list[tuple[date | None, Mapping[str, Any]]] = []
-    for label, packet in financial_packets.items():
+) -> Mapping[str, Any] | None:
+    """The operating observation the slice publishes, or None.
+
+    It is the freshest operating observation filed under the slice that
+    carries an explicit ``direction``, dated by _observation_date. An
+    undated one counts as the oldest, as on the price plane, so it is
+    published only when no dated observation with a direction is filed
+    under the slice. The date decides first: on one date, an observation
+    the owner tags with this slice outranks an untagged one, as it does
+    for the valuation anchor, and two filed the same way keep the owner's
+    order. (An undated observation used to outrank every dated one, and
+    one dated only by observed_at counted as undated, so the plane could
+    publish a reading older than one it passed over.) Source records are
+    display-tier (schema-strict) and never carry direction. The conflict
+    grammar reads this same observation.
+    """
+    candidates: list[tuple[tuple[date, bool], Mapping[str, Any]]] = []
+    for packet in financial_packets.values():
         if not isinstance(packet, Mapping):
             continue
         operating = packet.get("operating")
         if isinstance(operating, Mapping):
             for obs in operating.get("observations") or ():
-                if not isinstance(obs, Mapping):
-                    continue
-                if _direction(obs) is None:
-                    continue
-                # The composer is per-slice; only consume observations that
-                # explicitly tag the slice or that have no tag (interpreted
-                # as universal company data).
-                if not obs.get("slice_id") or obs.get("slice_id") == slice_id:
-                    candidates.append((_coerce_date(obs.get("as_of")), obs))
-
+                if isinstance(obs, Mapping) and _direction(obs) is not None and _filed_under(obs, slice_id):
+                    observed = _observation_date(obs) or date.min
+                    candidates.append(((observed, obs.get("slice_id") == slice_id), obs))
     if not candidates:
+        return None
+    candidates.sort(key=lambda c: c[0])
+    return candidates[-1][1]
+
+
+def _operating_plane(
+    slice_id: str,
+    freshest: Mapping[str, Any] | None,
+    regime_breaks: Sequence[Mapping[str, Any]],
+    evidence_refs: list[str],
+) -> dict[str, Any]:
+    if freshest is None:
         if _plane_is_regime_break(regime_breaks, slice_id, "operating"):
             return _plane_block(
                 state="REGIME_BREAK",
@@ -961,8 +1265,6 @@ def _operating_plane(
             note="Operating evidence is not available for this slice.",
         )
 
-    candidates.sort(key=lambda c: (c[0] or date.max))
-    freshest = candidates[-1][1]
     primary = _build_primary_metric(freshest)
     clock = _plane_clock(freshest)
 
@@ -999,7 +1301,7 @@ def _expectations_plane(
         history_state = "DATED_CONSENSUS_AVAILABLE"
         history_obs = [
             {
-                "as_of": row.get("as_of"),
+                "as_of": _observation_day(row),
                 "source": row.get("source"),
                 "metric": row.get("metric"),
                 "value": row.get("value"),
@@ -1007,7 +1309,7 @@ def _expectations_plane(
             }
             for row in dated
         ]
-        freshest = max(dated, key=lambda r: _coerce_date(r.get("as_of")) or date.min)
+        freshest = max(dated, key=lambda r: _observation_date(r) or date.min)
         primary = _build_primary_metric(freshest)
         clock = _plane_clock(freshest)
         state = "MISSING" if _plane_is_regime_break(regime_breaks, slice_id, "expectations") else "OBSERVED"
@@ -1029,7 +1331,7 @@ def _expectations_plane(
     if guidance_rows:
         history_obs = [
             {
-                "as_of": row.get("as_of"),
+                "as_of": _observation_day(row),
                 "source": row.get("source"),
                 "metric": row.get("metric"),
                 "value": row.get("value"),
@@ -1064,28 +1366,60 @@ def _expectations_plane(
     }
 
 
-def _valuation_plane(
+def _valuation_anchor(
     slice_id: str,
     financial_packets: Mapping[str, Mapping[str, Any]],
-    market_obs: Sequence[Mapping[str, Any]],
-    evidence_refs: list[str],
-    regime_breaks: Sequence[Mapping[str, Any]],
-) -> dict[str, Any]:
-    anchor_obs: Mapping[str, Any] | None = None
-    for label, packet in financial_packets.items():
+) -> Mapping[str, Any] | None:
+    """The valuation observation the slice publishes as its anchor, or None.
+
+    The anchor is the slice's freshest dated valuation observation filed
+    under the slice (_filed_under). An observation tagged with another slice
+    never anchors this one. (The anchor used to be the first observation of
+    whichever packet iterated last, so every slice with a qualified price
+    basis published that one slice's multiple.) The conflict grammar reads
+    this same observation.
+
+    The anchor's date is published as the slice's information clock, so:
+    - an observation with no date (neither as_of nor observed_at, the dates
+      _plane_clock reads) never anchors: the contract requires the clock and
+      would refuse the whole document;
+    - on one date, an observation the owner tags with this slice anchors
+      over an untagged one, because it is the more specific filing.
+    Two observations filed the same way on one date keep the owner's order:
+    which company's reading anchors a slice is not decided here. An
+    observation that a knowledge clock dates past the knowledge cutoff never
+    reaches the anchor: _known_at_cutoff removes it before any plane reads.
+    """
+    candidates: list[tuple[tuple[date, bool], Mapping[str, Any]]] = []
+    for packet in financial_packets.values():
         if not isinstance(packet, Mapping):
             continue
         valuation = packet.get("valuation")
         if isinstance(valuation, Mapping):
             for obs in valuation.get("observations") or ():
-                if isinstance(obs, Mapping):
-                    anchor_obs = obs
-                    break
+                if not isinstance(obs, Mapping) or not _filed_under(obs, slice_id):
+                    continue
+                observed = _observation_date(obs)
+                if observed is not None:
+                    candidates.append(((observed, obs.get("slice_id") == slice_id), obs))
+    if not candidates:
+        return None
+    candidates.sort(key=lambda c: c[0])
+    return candidates[-1][1]
+
+
+def _valuation_plane(
+    slice_id: str,
+    anchor_obs: Mapping[str, Any] | None,
+    market_obs: Sequence[Mapping[str, Any]],
+    evidence_refs: list[str],
+    regime_breaks: Sequence[Mapping[str, Any]],
+) -> dict[str, Any]:
     price_basis: str | None = None
     for obs in market_obs:
         if not isinstance(obs, Mapping):
             continue
-        basis = obs.get("price_basis")
+        basis = _owner_key(obs.get("price_basis"))
         if basis in _PRICE_BASIS_QUALIFIED:
             price_basis = basis
             break
@@ -1154,18 +1488,31 @@ def _valuation_plane(
     )
 
 
+def _price_reading(market_obs: Sequence[Mapping[str, Any]]) -> Mapping[str, Any] | None:
+    """The market observation the slice's price plane publishes, or None.
+
+    It is the freshest observation on a qualified price basis, dated by
+    _observation_date; an undated one counts as the oldest. The conflict
+    grammar reads this same observation.
+    """
+    qualified = [
+        o
+        for o in market_obs
+        if isinstance(o, Mapping) and _owner_key(o.get("price_basis")) in _PRICE_BASIS_QUALIFIED
+    ]
+    if not qualified:
+        return None
+    return max(qualified, key=lambda o: _observation_date(o) or date.min)
+
+
 def _price_plane(
     slice_id: str,
+    freshest: Mapping[str, Any] | None,
     market_obs: Sequence[Mapping[str, Any]],
     evidence_refs: list[str],
     regime_breaks: Sequence[Mapping[str, Any]],
 ) -> dict[str, Any]:
-    qualified = [
-        o
-        for o in market_obs
-        if isinstance(o, Mapping) and o.get("price_basis") in _PRICE_BASIS_QUALIFIED
-    ]
-    if not qualified:
+    if freshest is None:
         for obs in market_obs:
             if isinstance(obs, Mapping) and obs.get("price_basis") == "ADJUSTED_HISTORICAL":
                 return _plane_block(
@@ -1184,7 +1531,6 @@ def _price_plane(
             evidence_refs=evidence_refs,
             note="No qualified price basis is admitted for the price plane.",
         )
-    freshest = max(qualified, key=lambda o: _coerce_date(o.get("as_of")) or date.min)
     primary = _build_price_primary_metric(freshest)
     clock = _plane_clock(freshest)
     if _plane_is_regime_break(regime_breaks, slice_id, "price"):
@@ -1305,12 +1651,12 @@ def _slice_freshness(
                 observed_dates.append(d)
     for obs in expectation_obs:
         if isinstance(obs, Mapping):
-            d = _coerce_date(obs.get("as_of"))
+            d = _observation_date(obs)
             if d is not None:
                 observed_dates.append(d)
     for obs in market_obs:
         if isinstance(obs, Mapping):
-            d = _coerce_date(obs.get("as_of"))
+            d = _observation_date(obs)
             if d is not None:
                 observed_dates.append(d)
     if not observed_dates:
@@ -1343,12 +1689,28 @@ def _slice_evidence_refs(
             ref = _owner_ref(obs.get("source")) or _owner_ref(obs.get("evidence_ref"))
             if ref:
                 refs.add(ref)
-    if not refs:
-        # Fall back to the slice id as a synthetic ref so the schema's
-        # non-empty evidence_refs requirement is satisfied when no
-        # owner-supplied ref is present.
-        refs.add("slice:" + slice_id)
+    # Never mint a ref. A slice no owner ref backs publishes an empty list,
+    # and its planes publish no reading (see _withhold_unevidenced). A
+    # synthetic "slice:<id>" ref used to sit here to satisfy the contract's
+    # rule that an OBSERVED plane cites evidence; it pointed at no record, so
+    # that rule could never fail.
     return sorted(refs)
+
+
+def _withhold_unevidenced(plane: dict[str, Any], missing_note: str) -> dict[str, Any]:
+    """A plane publishes a reading only when an owner evidence ref backs it.
+
+    An OBSERVED plane with no owner ref is published as MISSING, in words,
+    with its reading withheld. Any other state keeps its state and words and
+    loses only the reading. The contract's OBSERVED rule then holds because
+    the evidence exists, and no conflict is drawn from a reading the page
+    could not back: the conflict detector reads these planes."""
+    if plane.get("evidence_refs") or plane.get("primary_metric") is None:
+        return plane
+    withheld = dict(plane, primary_metric=None, clock=None)
+    if plane.get("state") == "OBSERVED":
+        withheld.update(state="MISSING", comparability_state=None, note=missing_note)
+    return withheld
 
 
 # ---------------------------------------------------------------------------
@@ -1432,15 +1794,21 @@ def _conflicts_for(
     regime_breaks: Sequence[Mapping[str, Any]],
     material_changes: Sequence[Mapping[str, Any]],
     macro_context: Mapping[str, Any],
-    operating_observations: Sequence[Mapping[str, Any]] = (),
-    valuation_observations: Sequence[Mapping[str, Any]] = (),
-    market_observations: Sequence[Mapping[str, Any]] = (),
+    operating_reading: Mapping[str, Any] | None = None,
+    valuation_reading: Mapping[str, Any] | None = None,
+    price_reading: Mapping[str, Any] | None = None,
 ) -> list[dict[str, Any]]:
     conflicts: list[dict[str, Any]] = []
 
-    operating_direction = _direction_from_observations(operating_observations)
-    valuation_direction = _direction_from_observations(valuation_observations)
-    price_direction = _direction_from_observations(market_observations)
+    # A conflict judges the readings its planes publish, so each direction is
+    # read from the observation that plane selected; nothing is re-selected
+    # here. (Directions used to be re-selected from every observation by a
+    # rule of their own, so a document could publish a rising P/E beside a
+    # "P/E down" conflict, the direction taken from an observation the
+    # valuation plane had passed over.)
+    operating_direction = _direction(operating_reading) if operating_reading is not None else None
+    valuation_direction = _direction(valuation_reading) if valuation_reading is not None else None
+    price_direction = _direction(price_reading) if price_reading is not None else None
 
     if (
         operating["state"] == "OBSERVED"
@@ -1460,7 +1828,7 @@ def _conflicts_for(
         support = macro_for_slice.get("policy_rates_support") or macro_for_slice.get("support")
         if support:
             for obs in (operating.get("primary_metric") or {},):
-                if (obs.get("native_metric_name") or "").lower().startswith("nim") and operating_direction == "DOWN":
+                if (_owner_key(obs.get("native_metric_name")) or "").lower().startswith("nim") and operating_direction == "DOWN":
                     conflicts.append(_new_conflict(
                         "conflict-" + slice_id + "-policy-support-nim-pressure",
                         "POLICY_SUPPORT_NIM_PRESSURE",
@@ -1507,43 +1875,6 @@ def _conflicts_for(
                 break
 
     return conflicts
-
-
-def _plane_direction(plane: dict[str, Any]) -> str | None:
-    metric = plane.get("primary_metric")
-    if not isinstance(metric, Mapping):
-        return None
-    direction = metric.get("direction")
-    if direction is None:
-        return None
-    text = str(direction).strip().upper()
-    if text in ("UP", "DOWN", "FLAT"):
-        return text
-    return None
-
-
-def _direction_from_observations(observations: Sequence[Mapping[str, Any]]) -> str | None:
-    """Pick the direction from the freshest observation that carries one.
-
-    Conflicts compare explicit directions across planes; if no observation
-    carries one the direction is ``None`` and the rule fires only when the
-    rule's other preconditions are already met.
-    """
-    candidates: list[tuple[date | None, str]] = []
-    for obs in observations or ():
-        if not isinstance(obs, Mapping):
-            continue
-        direction = _direction(obs)
-        if direction is None:
-            continue
-        as_of = _coerce_date(obs.get("as_of")) if hasattr(obs.get("as_of", None), "__class__") else None
-        if as_of is None and isinstance(obs.get("as_of"), str):
-            as_of = _coerce_date(obs.get("as_of"))
-        candidates.append((as_of, direction))
-    if not candidates:
-        return None
-    candidates.sort(key=lambda c: (c[0] or date.max))
-    return candidates[-1][1]
 
 
 def _new_conflict(
@@ -2052,7 +2383,13 @@ def _constraints_for(inputs: FinanceOwnerInputs, slices: Sequence[Mapping[str, A
     for rec in inputs.source_records:
         if not isinstance(rec, Mapping):
             continue
-        slice_id = rec.get("slice_id")
+        # A record is filed under its business_scope, the schema's scope field,
+        # and its record_id is evidence of that slice only, so its constraints
+        # are published under that slice. (They used to be published under a
+        # slice_id extra outside the record schema: a foreign extra filed a
+        # constraint under a slice its evidence is not filed under, and a record
+        # carrying no extra had its constraints dropped.)
+        slice_id = _owner_key(rec.get("business_scope"))
         constraints = rec.get("constraints")
         if not isinstance(constraints, list) or slice_id not in by_slice:
             continue
@@ -2068,7 +2405,7 @@ def _constraints_for(inputs: FinanceOwnerInputs, slices: Sequence[Mapping[str, A
     return out
 
 
-def _input_receipts(inputs: FinanceOwnerInputs) -> list[dict[str, Any]]:
+def _input_receipts(inputs: FinanceOwnerInputs, withheld: frozenset[str] = frozenset()) -> list[dict[str, Any]]:
     receipts: list[dict[str, Any]] = []
     if inputs.sector_dossier is None:
         receipts.append({
@@ -2093,19 +2430,19 @@ def _input_receipts(inputs: FinanceOwnerInputs) -> list[dict[str, Any]]:
     receipts.append({
         "owner": "financial_intelligence",
         "generation": "financial_packet_v1",
-        "state": "READ" if inputs.financial_packets else "DEGRADED",
+        "state": "READ" if inputs.financial_packets and "financial_intelligence" not in withheld else "DEGRADED",
         "note": "Financial Intelligence packets are consumed for supported facts only.",
     })
     receipts.append({
         "owner": "expectations_revisions",
         "generation": "expectation_observations_v1",
-        "state": "READ" if inputs.expectation_observations else "DEGRADED",
+        "state": "READ" if inputs.expectation_observations and "expectations_revisions" not in withheld else "DEGRADED",
         "note": "Dated consensus and management guidance are admitted without inference.",
     })
     receipts.append({
         "owner": "market_data",
         "generation": "market_observations_v1",
-        "state": "READ" if inputs.market_observations else "DEGRADED",
+        "state": "READ" if inputs.market_observations and "market_data" not in withheld else "DEGRADED",
         "note": "Market observations are admitted as supplied by the owner.",
     })
     receipts.append({
@@ -2218,22 +2555,34 @@ def compose_finance_projection(
     (``generated_at`` / ``knowledge_cutoff`` are parameters; ``common_as_of``
     is the minimum over the input as-of dates actually consumed, never
     ``now``).
+
+    An owner row that a knowledge clock dates past ``knowledge_cutoff``, by
+    its instant or by the date published for it, is never read
+    (_known_at_cutoff). The dates derived from the cutoff are its date in
+    UTC, so the zone it is written in changes only the knowledge_cutoff the
+    document publishes. A ``knowledge_cutoff`` that names no instant raises
+    ValueError.
     """
-    slice_catalog = {c.get("slice_id"): c for c in inputs.slice_catalog if isinstance(c, Mapping)}
-    slice_id_to_atlas_id: dict[str, str] = {}
-    for slice_id in _FINANCE_SLICE_IDS:
-        if slice_id in slice_catalog:
-            slice_id_to_atlas_id[slice_id] = slice_id
-        else:
-            slice_id_to_atlas_id[slice_id] = slice_id
+    # Every Finance slice is its own atlas id. (A lookup into the owner's
+    # catalog used to sit here; both of its branches mapped a slice to itself,
+    # so it changed nothing and raised on an unhashable catalog slice_id.)
+    slice_id_to_atlas_id: dict[str, str] = {slice_id: slice_id for slice_id in _FINANCE_SLICE_IDS}
+
+    # The instant the published knowledge_cutoff states, as the shared
+    # contracts read it. Every reader below reads the inputs as they stood
+    # at that instant. The dates derived from the cutoff (staleness, the
+    # bound on common_as_of) are its date in UTC: the contracts read a
+    # published date as the start of its day in UTC, so the date the cutoff
+    # was written in can fall after its instant. The digest still
+    # identifies the snapshot the owner supplied. A one-shot iterator in it
+    # is read once, here, so the gate, the readers and the digest all read
+    # the rows it yields.
+    cutoff = _knowledge_cutoff_instant(knowledge_cutoff)
+    knowledge_cutoff_date = cutoff.date()
+    owner_inputs = _drained_inputs(inputs)
+    inputs, withheld = _known_at_cutoff(owner_inputs, cutoff)
 
     source_records, source_record_extras = _source_records_block(inputs)
-    # Structural check: datetime has a ``time`` part, date does not.
-    # Survives a monkey-patched ``datetime`` symbol.
-    if hasattr(knowledge_cutoff, "hour") and hasattr(knowledge_cutoff, "minute"):
-        knowledge_cutoff_date = knowledge_cutoff.date()
-    else:
-        knowledge_cutoff_date = knowledge_cutoff
 
     all_slice_ids = _all_slices_sorted()
     rights_profiles: set[str] = set()
@@ -2242,6 +2591,8 @@ def compose_finance_projection(
 
     slices_out: list[dict[str, Any]] = []
     all_observed_dates: list[date] = []
+    used_observations: list[Mapping[str, Any]] = []
+    readings_by_slice: dict[str, tuple[Mapping[str, Any] | None, Mapping[str, Any] | None, Mapping[str, Any] | None]] = {}
     for slice_id in all_slice_ids:
         per_slice = _slice_inputs_for(slice_id, inputs)
         expectation_obs = per_slice["expectation_obs"]
@@ -2250,38 +2601,28 @@ def compose_finance_projection(
         regime = per_slice["regime"]
         evidence_refs = _slice_evidence_refs(slice_id, source_records, expectation_obs, market_obs)
 
+        # Each plane selects the observation it publishes once; the conflict
+        # grammar reads the same observations, in both passes.
+        operating_reading = _operating_reading(slice_id, inputs.financial_packets)
+        valuation_reading = _valuation_anchor(slice_id, inputs.financial_packets)
+        price_reading = _price_reading(market_obs)
+        readings_by_slice[slice_id] = (operating_reading, valuation_reading, price_reading)
         operating = _operating_plane(
             slice_id,
-            inputs.financial_packets,
+            operating_reading,
             regime,
             evidence_refs,
         )
         expectations = _expectations_plane(slice_id, expectation_obs, evidence_refs, regime)
-        valuation = _valuation_plane(slice_id, inputs.financial_packets, market_obs, evidence_refs, regime)
-        price = _price_plane(slice_id, market_obs, evidence_refs, regime)
+        valuation = _valuation_plane(slice_id, valuation_reading, market_obs, evidence_refs, regime)
+        price = _price_plane(slice_id, price_reading, market_obs, evidence_refs, regime)
+        operating = _withhold_unevidenced(operating, "Operating evidence is not available for this slice.")
+        expectations = _withhold_unevidenced(expectations, "Expectations evidence is not available for this slice.")
+        valuation = _withhold_unevidenced(valuation, "Valuation evidence is not available for this slice.")
+        price = _withhold_unevidenced(price, "Price evidence is not available for this slice.")
 
         material_changes = _material_changes_for(slice_id, inputs.source_records)
         company_rows_for_slice: list[dict[str, Any]] = []  # populated below
-        # Collect operating and valuation observations across all
-        # financial_packets for this slice so the conflict grammar can
-        # read the freshest direction.
-        op_observations: list[Mapping[str, Any]] = []
-        val_observations: list[Mapping[str, Any]] = []
-        for label, packet in inputs.financial_packets.items():
-            if not isinstance(packet, Mapping):
-                continue
-            operating_packet = packet.get("operating")
-            if isinstance(operating_packet, Mapping):
-                for obs in operating_packet.get("observations") or ():
-                    if isinstance(obs, Mapping):
-                        if not obs.get("slice_id") or obs.get("slice_id") == slice_id:
-                            op_observations.append(obs)
-            valuation_packet = packet.get("valuation")
-            if isinstance(valuation_packet, Mapping):
-                for obs in valuation_packet.get("observations") or ():
-                    if isinstance(obs, Mapping):
-                        if not obs.get("slice_id") or obs.get("slice_id") == slice_id:
-                            val_observations.append(obs)
         conflicts = _conflicts_for(
             slice_id,
             company_rows_for_slice,
@@ -2291,17 +2632,24 @@ def compose_finance_projection(
             regime,
             material_changes,
             inputs.macro_context,
-            operating_observations=op_observations,
-            valuation_observations=val_observations,
-            market_observations=list(market_obs),
+            operating_reading=operating_reading,
+            valuation_reading=valuation_reading,
+            price_reading=price_reading,
         )
 
         slice_state = _slice_state_for(slice_id, operating, expectations, valuation, price, rights_profiles)
+        # A slice no owner ref backs publishes no reading (_withhold_unevidenced),
+        # and so none of its inputs' dates either: its freshness says there is
+        # no evidence, and no date of its reaches the document's freshness or
+        # common_as_of.
+        dated = (source_records, expectation_obs, market_obs) if evidence_refs else ((), (), ())
         slice_freshness, latest_obs = _slice_freshness(
-            slice_id, source_records, expectation_obs, market_obs, knowledge_cutoff_date, stale_after_days
+            slice_id, *dated, knowledge_cutoff_date, stale_after_days
         )
         if latest_obs is not None:
             all_observed_dates.append(latest_obs)
+        if evidence_refs:
+            used_observations.extend((*expectation_obs, *market_obs))
 
         name_en, name_zh = _name_pair(slice_id)
         slice_doc = {
@@ -2349,30 +2697,13 @@ def compose_finance_projection(
         slice_id = slice_doc["slice_id"]
         per_slice = _slice_inputs_for(slice_id, inputs)
         expectation_obs = per_slice["expectation_obs"]
-        market_obs = per_slice["market_obs"]
         evidence_refs = slice_doc["evidence_refs"]
         operating = slice_doc["rerating"]["operating"]
         valuation = slice_doc["rerating"]["valuation"]
         price = slice_doc["rerating"]["price"]
         material_changes = _material_changes_for(slice_id, inputs.source_records)
         rows_for_slice = company_rows_by_slice.get(slice_id, [])
-        op_observations: list[Mapping[str, Any]] = []
-        val_observations: list[Mapping[str, Any]] = []
-        for label, packet in inputs.financial_packets.items():
-            if not isinstance(packet, Mapping):
-                continue
-            operating_packet = packet.get("operating")
-            if isinstance(operating_packet, Mapping):
-                for obs in operating_packet.get("observations") or ():
-                    if isinstance(obs, Mapping):
-                        if not obs.get("slice_id") or obs.get("slice_id") == slice_id:
-                            op_observations.append(obs)
-            valuation_packet = packet.get("valuation")
-            if isinstance(valuation_packet, Mapping):
-                for obs in valuation_packet.get("observations") or ():
-                    if isinstance(obs, Mapping):
-                        if not obs.get("slice_id") or obs.get("slice_id") == slice_id:
-                            val_observations.append(obs)
+        operating_reading, valuation_reading, price_reading = readings_by_slice[slice_id]
         # Always re-compute conflicts: the first pass used an empty
         # company-row list because rows were built later. Re-running with
         # the now-final rows gives every slice a deterministic
@@ -2386,9 +2717,9 @@ def compose_finance_projection(
             per_slice["regime"],
             material_changes,
             inputs.macro_context,
-            operating_observations=op_observations,
-            valuation_observations=val_observations,
-            market_observations=list(market_obs),
+            operating_reading=operating_reading,
+            valuation_reading=valuation_reading,
+            price_reading=price_reading,
         )
         slice_doc["conflict_ids"] = [c["conflict_id"] for c in conflicts]
         conflicts_out.extend(conflicts)
@@ -2415,24 +2746,20 @@ def compose_finance_projection(
     # System views
     system_views_doc = _system_views(slices_out)
 
-    # common_as_of = min over the input as-ofs actually used, never now.
+    # common_as_of = min over the input as-ofs actually used, never now. An
+    # observation is used only when a slice published it: a slice no owner ref
+    # backs withholds its readings, and an observation filed under no Finance
+    # slice is never read.
     as_of_candidates: list[date] = []
     for rec in source_records:
         d = _source_record_observed_at(rec)
         if d is not None:
             as_of_candidates.append(d)
-    for obs in (inputs.expectation_observations or {}).values():
-        for row in obs or ():
-            if isinstance(row, Mapping):
-                d = _coerce_date(row.get("as_of"))
-                if d is not None:
-                    as_of_candidates.append(d)
-    for obs in (inputs.market_observations or {}).values():
-        for row in obs or ():
-            if isinstance(row, Mapping):
-                d = _coerce_date(row.get("as_of"))
-                if d is not None:
-                    as_of_candidates.append(d)
+    for row in used_observations:
+        if isinstance(row, Mapping):
+            d = _observation_date(row)
+            if d is not None:
+                as_of_candidates.append(d)
     as_of_candidates.append(knowledge_cutoff_date)
     common_as_of = _min_date(as_of_candidates) or knowledge_cutoff_date
 
@@ -2468,7 +2795,7 @@ def compose_finance_projection(
     degraded = _degraded_sections(inputs, company_rows)
 
     # Input receipts
-    input_receipts = _input_receipts(inputs)
+    input_receipts = _input_receipts(inputs, withheld)
 
     document: dict[str, Any] = {
         "contract_id": "finance_intelligence_read_model.v1",
@@ -2480,7 +2807,7 @@ def compose_finance_projection(
         "outer_dossier_ref": outer,
         "snapshot_identity": {
             "composer_version": composer_version,
-            "input_digest": _hash_inputs(inputs, composer_version),
+            "input_digest": _hash_inputs(owner_inputs, composer_version),
             "curation_revision_set": _curation_revisions(inputs.theme_evidence),
             "rights_profile": _rights_profile(inputs.rights_snapshot),
             "view_scope": "first_vertical",

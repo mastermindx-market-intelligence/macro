@@ -1,4 +1,4 @@
-"""Seven guards must refuse a VACUOUS pass on a sparse tree — scripts/sparse_guard.py.
+"""Nine guards must refuse a VACUOUS pass on a sparse tree — scripts/sparse_guard.py.
 
 Session worktrees are sparse by default (policy R8): `data/`, `site/`, `mockups/`
 and `verify_shots/` are omitted from the cone. Every guard below enumerates its
@@ -14,6 +14,25 @@ this change — all seven exited 0:
     check_cycle_consistency    "CYCLE-CONSISTENCY: PASS — 0 same-tape group(s) agree…"
     check_ms_board_coherence   "ms-board coherence: OK (0 page(s) scanned)"
     check_ohlc_basis_coherence "…nothing to check" (after WRITING its marker)
+
+Two more were MISSED by that sweep and measured on 2026-09-29, in this same sparse
+worktree — both exited 0:
+
+    check_inline_js            "OK — inline scripts and on*= handlers under site parse cleanly."
+    check_board_contradictions "OK — site/factordata/us_standouts.json passes all 5 board
+                                invariants (a … e)."
+
+The second is the sharper one, and it is NOT the same bug as the other eight. Its
+`_check()` returns `[]` for an absent artifact ON PURPOSE (first run, or the nightly has
+not emitted yet) and that tolerance is correct; the defect was that `main()` read an empty
+violation list as COMPLIANCE, so the absent case and the clean case printed one
+indistinguishable sentence — a positive claim about a file that does not exist. Two repairs
+were therefore needed, and only the first is this helper's: the sparse lie gets
+`refuse_if_vacuous`, while the honest zero gets a `checked 0 of 1` SKIPPED line that never
+again says an unread artifact passed. `site/factordata/us_standouts.json` is TRACKED, so a
+full CI checkout does have it and neither guard was vacuous in CI — the trap was latent,
+waiting on a rename or a relocation of that path, with 60+ tests that would not have
+noticed because every one of them writes a `tmp_path` artifact first.
 
 WHAT IS PINNED, AND WHY EACH HALF MATTERS
 -----------------------------------------
@@ -51,7 +70,9 @@ from pathlib import Path
 import pytest
 
 from scripts import check_badge_passport as badge
+from scripts import check_board_contradictions as board
 from scripts import check_cycle_consistency as ccc
+from scripts import check_inline_js as inline_js
 from scripts import check_ms_board_coherence as ms
 from scripts import check_nav_gap as nav_gap
 from scripts import check_nav_mega as nav_mega
@@ -107,6 +128,9 @@ def _redirect(monkeypatch, repo: Path) -> None:
     monkeypatch.setattr(badge, "_ROOT", repo)
     monkeypatch.setattr(ms, "ROOT", repo)
     monkeypatch.setattr(ms, "SITE_DIR", repo / "site")
+    # check_board_contradictions resolves a relative artifact AND invariant (e)'s companion
+    # artifacts against its own ROOT; without this the real checkout would answer.
+    monkeypatch.setattr(board, "ROOT", repo)
 
 
 # ── per-guard fixtures: how to give each one exactly ONE real item ───────────
@@ -139,6 +163,18 @@ def _items_cycle(repo: Path) -> None:
         "EWJ": {"ticker": "EWJ",
                 "now": {"pos_v2": 51.0, "phase_v2": "Expansion", "basis": "etf_tr"}},
     }), encoding="utf-8")
+
+
+def _items_board(repo: Path) -> None:
+    """One real artifact, ordered legally under invariant (d): live -> setting_up -> blocked."""
+    d = repo / "site" / "factordata"
+    d.mkdir(parents=True, exist_ok=True)
+    (d / "us_standouts.json").write_text(json.dumps({"buy": [
+        {"ticker": "AAA", "stage": "live", "prophet": {"score": 88.0}, "lane": "continuation"},
+        {"ticker": "BBB", "stage": "setting_up", "prophet": {"score": 60.0},
+         "lane": "continuation"},
+        {"ticker": "CCC", "stage": "blocked", "prophet": {"score": 90.0}, "lane": "continuation"},
+    ]}), encoding="utf-8")
 
 
 def _items_ohlc(repo: Path) -> None:
@@ -178,6 +214,14 @@ def _run_ms(repo: Path) -> int:
     return ms.main([])
 
 
+def _run_inline_js(repo: Path) -> int:
+    return inline_js.main([str(repo / "site")])
+
+
+def _run_board(repo: Path) -> int:
+    return board.main([str(repo / "site" / "factordata" / "us_standouts.json")])
+
+
 def _run_ohlc(repo: Path) -> int:
     return ohlc.run(repo / "data")
 
@@ -190,6 +234,10 @@ GUARDS = {
     "check_badge_passport": (_items_badge, _run_badge, 1),
     "check_cycle_consistency": (_items_cycle, _run_cycle, 1),
     "check_ms_board_coherence": (_items_page, _run_ms, 1),
+    # A page with no inline script is a real ITEM for this guard (its reach is every
+    # .html/.j2 file it can read), and a clean one, so it also serves the pass cases.
+    "check_inline_js": (_items_page, _run_inline_js, 1),
+    "check_board_contradictions": (_items_board, _run_board, 1),
     # 2 is this guard's "could not evaluate" code; 3 means a split was found and
     # would be a lie about a tree it never read.
     "check_ohlc_basis_coherence": (_items_ohlc, _run_ohlc, 2),
@@ -198,7 +246,12 @@ GUARDS = {
 ALL_GUARDS = sorted(GUARDS)
 # check_site_js shells out to `node --check` on its pass paths; its REFUSAL path
 # (the mutation-critical one) is hermetic and never skips.
-NODE_GUARDS = {"check_site_js"}
+NODE_GUARDS = {"check_site_js", "check_inline_js"}
+# `check_inline_js.main` resolves `node` BEFORE it resolves its work set and returns its
+# documented exit 2 when node is absent, so — unlike check_site_js — its REFUSAL path is not
+# hermetic either. Reordering a published exit code to suit a test would be the wrong trade,
+# so the skip is declared here instead of hidden.
+REFUSAL_NEEDS_NODE = {"check_inline_js"}
 
 
 def _commit_items(repo: Path, populate) -> None:
@@ -218,6 +271,8 @@ def _needs_node(name: str) -> None:
 def test_guard_refuses_a_vacuous_pass_on_a_sparse_tree(name, repo, monkeypatch, capsys):
     """The tree HAS content at HEAD and is simply not materialized — the exact
     session-worktree shape. Zero items must not read as zero problems."""
+    if name in REFUSAL_NEEDS_NODE:
+        _needs_node(name)
     populate, invoke, want_rc = GUARDS[name]
     _commit_items(repo, populate)
     _make_sparse(repo)
@@ -236,6 +291,8 @@ def test_guard_refuses_a_vacuous_pass_on_a_sparse_tree(name, repo, monkeypatch, 
 def test_refusal_emits_a_github_annotation_at_line_start(name, repo, monkeypatch, capsys):
     """GitHub only parses a workflow command when `::` opens the line — a refusal
     routed through a logger would be silently dropped from the Actions summary."""
+    if name in REFUSAL_NEEDS_NODE:
+        _needs_node(name)
     populate, invoke, _ = GUARDS[name]
     _commit_items(repo, populate)
     _make_sparse(repo)
@@ -373,7 +430,8 @@ def test_every_wired_guard_imports_the_shared_helper():
     modules = {"check_site_js": site_js, "check_nav_gap": nav_gap,
                "check_nav_mega": nav_mega, "check_badge_passport": badge,
                "check_cycle_consistency": ccc, "check_ms_board_coherence": ms,
-               "check_ohlc_basis_coherence": ohlc}
+               "check_ohlc_basis_coherence": ohlc, "check_inline_js": inline_js,
+               "check_board_contradictions": board}
     assert set(modules) == set(GUARDS), "GUARDS and the wiring census disagree"
     for name, mod in modules.items():
         assert getattr(mod, "refuse_if_vacuous", None) is SG.refuse_if_vacuous, (
