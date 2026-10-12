@@ -33,12 +33,17 @@ Guard thresholds are overridable via the config `quality:` block. A guarded suit
 the other suites still reconcile, then the error propagates and aborts the collect run
 exactly like the data-quality gate's >5% abort.
 
-U.S. STRUCTURAL AUDIT: data/baskets remains human/PIT curated and is NEVER auto-mutated
-here because the current S&P constituent snapshot cannot tell us the historical effective
-date of an add/delete/GICS move. The same END-OF-COLLECT run nevertheless compares the
-eleven us_sector_* active rosters against data/breadth/constituents.parquet and writes the
-drift into membership_reconcile.json. Drift emits a GitHub warning and waits for an
-evidence-backed dated membership edit; it does not prune/add/move a member automatically.
+U.S. STRUCTURAL AUDIT (audit_us_sector_membership — a separate, observational entry):
+data/baskets remains human/PIT curated and is NEVER auto-mutated here because the current S&P
+constituent snapshot cannot tell us the historical effective date of an add/delete/GICS move.
+The audit compares the eleven us_sector_* active rosters against
+data/breadth/constituents.parquet and writes data/quality/us_sector_membership_audit.json.
+It is deliberately NOT part of run(): scripts/collect.py calls it on every collect whose
+registry includes breadth -- including the partial nightly lane (--exclude-group asia) that
+skips the all-universe gate and therefore never runs this reconciler -- and only when THIS
+run's breadth status qualifies (ok/stale). A failed/missing breadth run writes no receipt,
+so a stale parquet left on disk is never audited as current. Drift emits a GitHub warning and
+waits for an evidence-backed dated membership edit; it never prunes/adds/moves a member.
 
 EXPLICIT NON-GOAL: data/baskets_china_ths is snapshot-driven with its own add/remove
 lifecycle in its seeder and is not touched here.
@@ -88,6 +93,12 @@ US_SECTOR_BASKETS: dict[str, str] = {
     "us_sector_realestate": "Real Estate",
     "us_sector_materials": "Materials",
 }
+
+# Receipt of the observational U.S. audit (data/quality/). Written only for a qualified
+# same-run breadth reference; never by run().
+US_SECTOR_AUDIT_RECEIPT = "us_sector_membership_audit.json"
+# breadth fetch() returned and wrote constituents.parquet in THIS run.
+US_SECTOR_QUALIFIED_STATUSES = frozenset({"ok", "stale"})
 
 _DEFAULTS = {
     "membership_min_present": 3,       # floor: min cache-present member rows a basket must keep
@@ -391,29 +402,37 @@ def _audit_us_sector_membership(
         result["note"] = "PIT-active structural rosters match this run's qualified breadth reference"
     return result
 
-def run(cfg: dict | None = None, asof: date | None = None,
-        data_dir: Path | None = None, out_dir: Path | None = None,
-        dry_run: bool = False,
-        us_sector_reference_status: str | None = None) -> dict:
-    """Reconcile every suite, write data/quality/membership_reconcile.json, and THEN raise
-    PruneGuardError if any suite refused (healthy suites are healed either way; the summary
-    doc is on disk before the abort so the evidence survives). Test seams mirror the audit_*
-    scripts: cfg / asof / data_dir / out_dir."""
-    cfg = cfg or reconcile_cfg()
+def audit_us_sector_membership(
+    reference_status: str | None,
+    *,
+    asof: date | None = None,
+    data_dir: Path | None = None,
+    out_dir: Path | None = None,
+    dry_run: bool = False,
+) -> dict | None:
+    """Observational U.S. structural-roster audit; safe on ANY collect lane.
+
+    Never mutates membership, never touches the regional suites, never raises
+    PruneGuardError. `reference_status` is the breadth adapter's status in THIS
+    collect invocation. Unqualified (failed/dead/blocked/missing) returns None and
+    writes nothing: the parquet on disk may be from an older run, and the previous
+    receipt keeps its own asof. Qualified (ok/stale) writes
+    data/quality/us_sector_membership_audit.json (unless dry_run) and returns it.
+    """
+    if reference_status not in US_SECTOR_QUALIFIED_STATUSES:
+        log.warning(
+            "[us-sector-audit] skipped: this run's breadth status=%s is not a qualified "
+            "structural reference; no receipt written.", reference_status or "unavailable")
+        return None
     asof = asof or date.today()
     data_dir = data_dir or config.data_dir()
-
-    suites = [_reconcile_suite(s, c, lb, data_dir, asof, cfg, dry_run) for s, c, lb in SUITES]
-    reasons = [r for s in suites for r in s["reasons"]]
     try:
-        us_sector_audit = _audit_us_sector_membership(
-            data_dir, asof=asof, reference_status=us_sector_reference_status
-        )
-    except Exception as exc:  # noqa: BLE001 — observational audit never masks prune refusal
-        us_sector_audit = {
+        doc = _audit_us_sector_membership(data_dir, asof=asof, reference_status=reference_status)
+    except Exception as exc:  # noqa: BLE001 — an observational audit must never abort collect
+        doc = {
             "membership": "data/baskets/membership.json",
             "reference": "data/breadth/constituents.parquet",
-            "reference_status": us_sector_reference_status,
+            "reference_status": reference_status,
             "asof": asof.isoformat(),
             "skipped": True,
             "note": f"U.S. structural audit internal failure: {type(exc).__name__}: {exc}",
@@ -423,6 +442,25 @@ def run(cfg: dict | None = None, asof: date | None = None,
             "missing_baskets": [],
             "baskets": [],
         }
+    if not dry_run:
+        out_dir = out_dir or (data_dir / "quality")
+        out_dir.mkdir(parents=True, exist_ok=True)
+        (out_dir / US_SECTOR_AUDIT_RECEIPT).write_text(json.dumps(doc, indent=1))
+    return doc
+
+
+def run(cfg: dict | None = None, asof: date | None = None,
+        data_dir: Path | None = None, out_dir: Path | None = None,
+        dry_run: bool = False) -> dict:
+    """Reconcile every suite, write data/quality/membership_reconcile.json, and THEN raise
+    PruneGuardError if any suite refused (healthy suites are healed either way; the summary
+    doc is on disk before the abort so the evidence survives). Test seams mirror the audit_*
+    scripts: cfg / asof / data_dir / out_dir."""
+    cfg = cfg or reconcile_cfg()
+    asof = asof or date.today()
+    data_dir = data_dir or config.data_dir()
+
+    suites = [_reconcile_suite(s, c, lb, data_dir, asof, cfg, dry_run) for s, c, lb in SUITES]
     n_pruned = sum(len(s["pruned"]) for s in suites)
     doc = {
         "asof": asof.isoformat(),
@@ -431,13 +469,13 @@ def run(cfg: dict | None = None, asof: date | None = None,
         "n_pruned": n_pruned,
         "n_refused": sum(1 for s in suites if s["refused"]),
         "suites": suites,
-        "us_sector_audit": us_sector_audit,
     }
     if not dry_run:
         out_dir = out_dir or (data_dir / "quality")
         out_dir.mkdir(parents=True, exist_ok=True)
         (out_dir / "membership_reconcile.json").write_text(json.dumps(doc, indent=1))
 
+    reasons = [r for s in suites for r in s["reasons"]]
     if reasons:
         raise PruneGuardError(
             "[reconcile] membership prune REFUSED:\n  - " + "\n  - ".join(reasons))
