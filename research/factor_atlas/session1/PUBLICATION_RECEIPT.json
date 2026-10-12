@@ -1,0 +1,157 @@
+{
+  "schema": "factor_atlas_research_publication.v1",
+  "issue": 8676,
+  "pull_request": 8680,
+  "kind": "EXACT_ORIGINAL_SOURCE_IMPORT",
+  "original_files": [
+    {
+      "path": "01_FACTOR_MODEL_AND_PIT_RESEARCH.md",
+      "sha256": "6c5a54b58be80bb78a95ead5abd00265b590e192cb6d4b36f017ee39c3d6e2c2",
+      "bytes": 73642
+    },
+    {
+      "path": "02_IMPLEMENTATION_HANDOFF.md",
+      "sha256": "f57f84924e26f670d2a8a7ca19453320498c47b13575f92355da6f7f29cca8cd",
+      "bytes": 16714
+    },
+    {
+      "path": "03_LIQN_EVIDENCE_AND_COMPARISON.md",
+      "sha256": "46ced0a92015bd9e0e81072072142d3d210c86f687fd9ffd9eb4dabbeb405f80",
+      "bytes": 8669
+    },
+    {
+      "path": "README.md",
+      "sha256": "7a677a5cdfd557b85f5e4572e28a078bd7a69920d1f9b056d5af69173e512a36",
+      "bytes": 4032
+    },
+    {
+      "path": "conformance/contract_check.py",
+      "sha256": "ab89dd5cd475e354c253df86c04530b6467e4807fa243da868bef685e0eca496",
+      "bytes": 5042
+    },
+    {
+      "path": "conformance/fixtures.py",
+      "sha256": "870a98187540044b3106bd04591373dc22a88593d5837d8fa03f5395e636016a",
+      "bytes": 3235
+    },
+    {
+      "path": "conformance/oracle.py",
+      "sha256": "183efed09b2e007f6b032c3f564aba6a102c3f83ac6a7dd3a0449bfeff09c563",
+      "bytes": 11714
+    },
+    {
+      "path": "conformance/reproduce.py",
+      "sha256": "482ce1ea44d9e8c3297cd98c930728c60da5aebbef0840b5a9fd26fad0ff3f88",
+      "bytes": 3077
+    },
+    {
+      "path": "conformance/requirements.txt",
+      "sha256": "4bd6cfab825a710d7548c1f69233dfef0ad8bc0e0f8b8f45c06358e4049256d3",
+      "bytes": 83
+    },
+    {
+      "path": "conformance/test_contract.py",
+      "sha256": "9e91e7f9cb5e6478903d3f5e1a542181e3b42b63e6c370479fc7b498cb7b4748",
+      "bytes": 5503
+    },
+    {
+      "path": "conformance/test_oracle.py",
+      "sha256": "38eb583725bf19ece6920d5c00e3efaba9cd0aa53bc9b3284c2a19d28d3b6f24",
+      "bytes": 12832
+    },
+    {
+      "path": "contracts/build_contracts.py",
+      "sha256": "8d36555ff65a71ab481a8606466ca471bf9c5fe4a9e212ac03fd741e82958ff2",
+      "bytes": 13268
+    },
+    {
+      "path": "contracts/example.synthetic.v0.json",
+      "sha256": "cb2f821fa02fdbf25892064e7725940954a1f9fcb1bab3be8de8c550123529b3",
+      "bytes": 6641
+    },
+    {
+      "path": "contracts/factor_read_model.v0.schema.json",
+      "sha256": "2ab6b6baffdb16ce2a34c9367d5867d9d1e4eecbc2667af56bf7720cf593ba81",
+      "bytes": 22953
+    },
+    {
+      "path": "contracts/metrics_policy.v0.json",
+      "sha256": "a8b957693aef813ef86c5e8711f1b7d6073f747aa15916e4420fd1c62024c87d",
+      "bytes": 4371
+    },
+    {
+      "path": "evidence/SELF_REVIEW.md",
+      "sha256": "131dbe25795776f7f0356afaaf80303f4d36e74b4d6337bf525e17b2ab0a0418",
+      "bytes": 2561
+    },
+    {
+      "path": "evidence/SESSION_FRONTIER.json",
+      "sha256": "3c5dfbbafd2cef8da0b1172e9186a674c24264762e29814f653bc8ea958088b7",
+      "bytes": 2800
+    },
+    {
+      "path": "evidence/build_source_register.py",
+      "sha256": "9afa32c7c96894199841f20086e0686fab873b383fab2aecdeb591c076e8eb46",
+      "bytes": 7820
+    },
+    {
+      "path": "evidence/requirement_coverage.json",
+      "sha256": "a05902abf1d41eebd88a2afd76e99a677c6de927ac9c660e9ecfc5401ccdad05",
+      "bytes": 3229
+    },
+    {
+      "path": "evidence/source_register.json",
+      "sha256": "c0b79b2869d5b26545352571db1c5ce6e4ed5946a745d2ed7d6ecf6c0b16058f",
+      "bytes": 16333
+    },
+    {
+      "path": "evidence/synthetic_result_hashseed_1.json",
+      "sha256": "cce7e5595376fe97d4f30d61d1193452d158ff966e1d57fbd251be0dc4b391bf",
+      "bytes": 1957
+    },
+    {
+      "path": "evidence/synthetic_result_hashseed_777.json",
+      "sha256": "cce7e5595376fe97d4f30d61d1193452d158ff966e1d57fbd251be0dc4b391bf",
+      "bytes": 1957
+    },
+    {
+      "path": "evidence/verification.json",
+      "sha256": "204c302e4ed281f380b654c8f68d303bf5e8bcefb54cb2f5c49e1623f47b92ee",
+      "bytes": 3757
+    }
+  ],
+  "omitted_logs": [
+    {
+      "path": "evidence/all_green_initial.log",
+      "sha256": "daf5f7ae0dbf6ff90fe6d628a7de3013863f8640736a43d9be2ae1a084fded65",
+      "reason": "raw test log retained in original conversation archive, not source publication"
+    },
+    {
+      "path": "evidence/conformance_green_initial.log",
+      "sha256": "1afcaa35c1942b784676c800b62288c1a730318d2a534f0e4fd75dac5e384287",
+      "reason": "raw test log retained in original conversation archive, not source publication"
+    },
+    {
+      "path": "evidence/conformance_red.log",
+      "sha256": "3f7518c4b865610ad968069b9e6d00e8e568e2fa960b16b5ffcc2a858a77a86a",
+      "reason": "raw test log retained in original conversation archive, not source publication"
+    },
+    {
+      "path": "evidence/contract_red.log",
+      "sha256": "ce6b8e5ec2a8227053ced3a4f2e0de7bb9c240a489e54d8f2d078659674ccb8a",
+      "reason": "raw test log retained in original conversation archive, not source publication"
+    },
+    {
+      "path": "evidence/tests_hashseed_1.log",
+      "sha256": "e43a88a4dd56df4918498f1000004e57450abe7e0300bfdd7130f8fb4ab78384",
+      "reason": "raw test log retained in original conversation archive, not source publication"
+    },
+    {
+      "path": "evidence/tests_hashseed_777.log",
+      "sha256": "22d39017bf155ff6f7ffa91b29dcfebdc5a150f50b6defa7e7795b664f1ae583",
+      "reason": "raw test log retained in original conversation archive, not source publication"
+    }
+  ],
+  "original_manifest_sha256": "bee8d54bae39b05b2a62dad2099f77aa10ee348f0591f7ff2f87075b7ca0e558",
+  "historical_disposition": "Original reports retain their pre-implementation disposition; IMPLEMENTATION_STATUS.md records later native work. Source publication does not grant method, data or consumer admission."
+}

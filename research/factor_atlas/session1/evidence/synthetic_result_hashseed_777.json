@@ -1,0 +1,65 @@
+{
+  "concentration_after_drift": {
+    "effective_n": 2.6666666666666665,
+    "hhi": 0.375,
+    "top1": 0.5,
+    "top10": 1.0,
+    "top5": 1.0
+  },
+  "correction_input_identity": {
+    "corrected_sha256": "4824de451179d6ee6baf6799140c52b4f56c992dcea2c1f77f2f77983d92b038",
+    "numeric_value_equal": true,
+    "original_sha256": "163f9c3f6d0366196ad9ecacdeb78599a9402a4c5725e6b68774426baee26735"
+  },
+  "known_actions": {
+    "cash_merger_return_fraction": -0.050000000000000044,
+    "dividend_total_return_fraction": 0.010000000000000009,
+    "missing_spinoff_value": null,
+    "spinoff_return_fraction": 0.0,
+    "split_return_fraction": 0.0
+  },
+  "linked_attribution": {
+    "A": 0.046,
+    "B": -0.009199999999999998
+  },
+  "market_data_read": false,
+  "missing_holding": {
+    "available_weight": 0.8,
+    "index_with_unresolved_gap": [
+      100.0,
+      110.00000000000001,
+      null,
+      null
+    ],
+    "return_fraction": null
+  },
+  "native_owner_source_files_read": [],
+  "network_calls": 0,
+  "oracle_sha256": "183efed09b2e007f6b032c3f564aba6a102c3f83ac6a7dd3a0449bfeff09c563",
+  "partial_advance_breadth": {
+    "advancing": 2,
+    "count_coverage": 0.8,
+    "declining": 1,
+    "eligible": 5,
+    "missing": 1,
+    "observed": 4,
+    "small_n": true,
+    "status": "PARTIAL",
+    "unchanged": 1,
+    "value": 0.5,
+    "weight_coverage": 0.8
+  },
+  "policy_sha256": "a8b957693aef813ef86c5e8711f1b7d6073f747aa15916e4420fd1c62024c87d",
+  "remote_writes": 0,
+  "round_trip": {
+    "daily_reset_return_fraction": 0.11111111111111116,
+    "monthly_drift_return_fraction": 0.0
+  },
+  "schema_sha256": "2ab6b6baffdb16ce2a34c9367d5867d9d1e4eecbc2667af56bf7720cf593ba81",
+  "scope": "ORIGINAL_SYNTHETIC_MATHEMATICAL_CONFORMANCE_NOT_NATIVE_PILOT",
+  "synthetic_cohort_comparison": {
+    "current_roster_return_fraction": 0.05,
+    "pit_return_fraction": 0.0,
+    "qualification": "fixture calculation, not historical owner membership evidence"
+  }
+}
