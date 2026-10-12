@@ -132,3 +132,57 @@ def test_theme_state_and_selection_cohort_do_not_read_node_store():
         text = (REPO_ROOT / rel).read_text()
         assert "read_nodes" not in text
         assert "nodes.parquet" not in text
+
+
+def _sub_theme_overlay(existing_theme: str = "theme:gold"):
+    """Hierarchy overlay plus theme→sub_theme→micro_theme PARENT_OF edges."""
+    nodes, edges = _hierarchy_overlay(existing_theme)
+    nodes = nodes + [
+        _node("theme:test_sub_x", tier="sub_theme", name_en="Sub X", name_zh="子X"),
+    ]
+    edges = edges + [
+        edge(
+            "psub", "PARENT_OF", existing_theme, "theme:test_sub_x",
+            source_class="curated", date_provenance="crosswalk",
+        ),
+        edge(
+            "pmicro_via_sub", "PARENT_OF", "theme:test_sub_x", "theme:test_micro_x",
+            source_class="curated", date_provenance="crosswalk",
+        ),
+    ]
+    return nodes, edges
+
+
+def test_exposure_map_refuses_sub_theme_tier():
+    nodes, edges = _sub_theme_overlay()
+    store = NodesFakeStore(edges, nodes=nodes)
+    m = _compose(store, _spec(["theme:test_sub_x"]))
+    theme = m.themes[0]
+    assert theme.state == "IDENTITY_UNRESOLVED"
+    assert theme.theme_plane is None
+    assert theme.rights_family is None
+    assert theme.unavailable is not None
+    assert theme.unavailable["detail"] == "non_theme_tier:sub_theme"
+
+
+def test_exposure_map_invariant_with_sub_theme_nodes():
+    base_store = NodesFakeStore(_gold_fixture_edges(), nodes=_gold_fixture_nodes())
+    extra_nodes, extra_edges = _sub_theme_overlay()
+    extended_store = NodesFakeStore(extra_edges, nodes=extra_nodes)
+    spec = _spec(["theme:gold"])
+    base_map = to_json(_compose(base_store, spec))
+    extended_map = to_json(_compose(extended_store, spec))
+    assert base_map == extended_map
+
+
+def test_selection_cohort_invariant_with_sub_theme_nodes():
+    source, kw = selection(), inputs()
+    before = compose_selection_cohort(source, **kw)
+    nodes, _edges = _sub_theme_overlay()
+    # selection_cohort composes from injected receipts only; a sub_theme overlay cannot appear.
+    after = compose_selection_cohort(copy.deepcopy(source), **copy.deepcopy(kw))
+    assert before == after
+    rendered = repr(after)
+    for row in nodes:
+        if row.get("tier") != "theme":
+            assert row["node_id"] not in rendered
