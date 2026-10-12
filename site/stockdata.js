@@ -67,6 +67,7 @@
   var _mkt = {}, _mktLoading = {};   // market -> {list, byTicker} / in-flight promise
   var _indexLoading = null;          // the ONE in-flight US index read (direct + indirect callers)
   var _mktNeg = {};                  // market -> epoch ms before which a FAILED index is not refetched
+  var _recoverSubs = [];             // recovery controllers, told when a FAILED market loads (any reader)
 
   // Build {list, byTicker} OFF TO THE SIDE so a malformed payload never reaches the
   // successful cache. A non-array top level throws; a non-object row (null or a
@@ -98,6 +99,7 @@
       var built = _buildIndex(raw, function (x) { return x.mkt || 'us'; });
       _index = built.list; _indexBy = built.byTicker;
       _mkt.us = { list: _index, byTicker: _indexBy };
+      _loadedAfterFailure('us');
       return { list: _index, byTicker: _indexBy };
     });
     _indexLoading = p;
@@ -122,6 +124,7 @@
       return r.json();
     }).then(function (raw) {
       _mkt[m] = _buildIndex(raw, function () { return m; });
+      _loadedAfterFailure(m);
       return _mkt[m];
     })).then(function (res) {
       delete _mktNeg[m];
@@ -162,8 +165,9 @@
      empty part and the caller cannot tell "nothing here" from "not loaded yet". The
      loader re-fetches after its failure window, but only when someone asks again —
      and the pages ask once, at init. These two read-only additions let a consumer
-     ask again without polling. Nothing above changes: same caches, same failure
-     windows, same shared in-flight reads (a re-ask goes through loadIndexes).
+     ask again without polling. Nothing above changes beyond one notice when a
+     failed market loads: same caches, same failure windows, same shared in-flight
+     reads (a re-ask goes through loadIndexes).
 
      indexRetryAt(markets) -> epoch ms of the earliest failure window among the named
        markets that are still unloaded, or null when none failed. It may already be
@@ -172,11 +176,13 @@
      indexRecovery(marketsFn, onRecover) -> { check }. The consumer calls check()
        after it applies a read. While a market in marketsFn() is unloaded after a
        failure, it arms ONE timer per failed market for when that market's window
-       closes, and re-asks on `visibilitychange` (visible) and `online`. onRecover(r)
-       runs with the fresh merged read whenever a re-ask loads a market that had
-       failed. A timed re-ask that fails again is not re-timed — from then on only
-       those page events re-ask, so an outage costs one extra read per market, not a
-       loop. */
+       closes, and re-asks on `visibilitychange` (visible) and `online`. A timed
+       re-ask that fails again is not re-timed — from then on only those page events
+       re-ask, so an outage costs one extra read per market per controller, not a
+       loop. onRecover(r) runs once for every market this consumer last saw failed
+       that has since loaded — by this controller's re-ask OR by any other reader of
+       the shared cache (a search widen, an import dialog) — with the merged read of
+       the loaded markets, taken from the cache, never a fetch. */
   function _failedMkts(markets) {
     var want = [];
     (markets || ['us']).forEach(function (m) {
@@ -191,14 +197,22 @@
     _failedMkts(markets).forEach(function (m) { if (at == null || _mktNeg[m] < at) at = _mktNeg[m]; });
     return at;
   }
+  // a market that had failed just loaded: every controller settles on its own, after
+  // the read that loaded it has finished (a microtask — never inside the loader)
+  function _loadedAfterFailure(m) {
+    if (_mktNeg[m] == null) return;
+    _recoverSubs.slice().forEach(function (fn) { Promise.resolve().then(fn); });
+  }
   var RECOVER_SLACK = 250;   // ms past the window, so the re-ask never lands inside it
   function indexRecovery(marketsFn, onRecover) {
-    var timer = null, busy = false, wired = false, timed = {};
+    var timer = null, timerAt = 0, busy = false, wired = false, timed = {}, owed = {};
     function markets() { try { return marketsFn() || ['us']; } catch (e) { return ['us']; } }
     function hidden() { return typeof document !== 'undefined' && document.hidden === true; }
     function offline() { return typeof navigator !== 'undefined' && navigator.onLine === false; }
     function arm(at) {
-      if (timer) return;
+      if (timer && timerAt <= at) return;          // an earlier window replaces a later timer
+      if (timer) clearTimeout(timer);
+      timerAt = at;
       timer = setTimeout(fire, Math.max(0, at - Date.now()) + RECOVER_SLACK);
     }
     function fire() {
@@ -208,25 +222,39 @@
       if (hidden() || offline()) return;   // the visible / online event re-asks instead
       reask();
     }
+    // report what this consumer still holds as failed but the cache now has. Reads
+    // only markets already loaded, so it can never start a fetch.
+    function settle() {
+      var got = Object.keys(owed).filter(function (m) { return !!_mkt[m]; });
+      if (!got.length) return;
+      got.forEach(function (m) { delete owed[m]; });
+      var ms = markets().filter(function (m) { return !!_mkt[normMkt(m)]; });
+      if (!ms.length) return;
+      loadIndexes(ms).then(function (r) {
+        try { if (onRecover) onRecover(r); } finally { check(); }
+      });
+    }
     function reask() {
       if (busy) return;
-      var ms = markets(), before = _failedMkts(ms).length;
-      if (!before) return;
+      var ms = markets();
+      if (!_failedMkts(ms).length) { settle(); return; }
       busy = true;
-      loadIndexes(ms).then(function (r) {
+      loadIndexes(ms).then(function () {
         busy = false;
-        if (_failedMkts(ms).length < before && onRecover) onRecover(r);
+        settle();
         check();
       }, function () { busy = false; });
     }
     function onEvent() {
       if (hidden()) return;
+      settle();
       var at = indexRetryAt(markets());
       if (at == null) return;
       if (Date.now() >= at) reask(); else arm(at);
     }
     function check() {
       var failed = _failedMkts(markets());
+      failed.forEach(function (m) { owed[m] = 1; });
       if (!failed.length) {
         if (timer) { clearTimeout(timer); timer = null; }
         return false;
@@ -235,6 +263,7 @@
         wired = true;
         if (typeof document !== 'undefined' && document.addEventListener) document.addEventListener('visibilitychange', onEvent);
         if (typeof window !== 'undefined' && window.addEventListener) window.addEventListener('online', onEvent);
+        _recoverSubs.push(settle);
       }
       var at = null;
       failed.forEach(function (m) { if (!timed[m] && (at == null || _mktNeg[m] < at)) at = _mktNeg[m]; });

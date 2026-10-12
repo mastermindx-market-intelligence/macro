@@ -287,14 +287,20 @@
   /* S3-01: loadIndexes() is fail-OPEN — a market whose index read failed comes back
      empty, and nothing here asked again until a reload. idxRx re-asks once that
      market's failure window closes, and again when the tab is shown or the network
-     returns (no polling); a recovered read repaints the names and signal states. */
+     returns (no polling); a recovered read repaints the names and signal states —
+     whichever reader (this page, the add dialog's widen, the import dialog) loaded it.
+     Each of these reads covers only the markets in play, so it re-opens the add
+     dialog's one all-market widen instead of leaving its suggestions narrowed. */
   var idxRx = null;
+  var suggestWidened = false;
   function ensureIndex() {
     if (!window.SD || !window.SD.loadIndexes) return Promise.resolve(null);
     return window.SD.loadIndexes(marketsInPlay()).then(function (r) {
-      sdIndex = r;
+      sdIndex = r; suggestWidened = false;
       if (!idxRx && window.SD.indexRecovery) {
-        idxRx = window.SD.indexRecovery(marketsInPlay, function (fresh) { sdIndex = fresh; render(); });
+        idxRx = window.SD.indexRecovery(marketsInPlay, function (fresh) {
+          sdIndex = fresh; suggestWidened = false; render();
+        });
       }
       if (idxRx) idxRx.check();
       return r;
@@ -1572,7 +1578,6 @@
   function wireTickerSuggest() {
     var input = el('pfm_ticker'); if (!input) return;
     var suggEl = el('pfm_sugg'); if (!suggEl) return;
-    var retried = false;
 
     function paint(v) {
       var vl = v.toLowerCase();
@@ -1582,13 +1587,13 @@
                (x.n && x.n.toLowerCase().indexOf(vl) >= 0);
       }).slice(0, 8);
       // a suffixed query or a miss: pull the remaining market indexes once, then retry
-      if ((!matches.length || v.indexOf('.') >= 0) && !retried && window.SD && window.SD.loadIndexes) {
-        retried = true;
+      if ((!matches.length || v.indexOf('.') >= 0) && !suggestWidened && window.SD && window.SD.loadIndexes) {
+        suggestWidened = true;
         window.SD.loadIndexes(['us', 'cn', 'hk', 'ca', 'intl']).then(function (r) {
           sdIndex = r; paint(v);
           // a market that failed to load is asked for again on a later keystroke
           // (the loader itself holds the re-read back until its failure window closes)
-          if (window.SD.indexRetryAt && window.SD.indexRetryAt(['us', 'cn', 'hk', 'ca', 'intl']) != null) retried = false;
+          if (window.SD.indexRetryAt && window.SD.indexRetryAt(['us', 'cn', 'hk', 'ca', 'intl']) != null) suggestWidened = false;
         });
       }
       if (!matches.length) { suggEl.innerHTML = ''; suggEl.style.display = 'none'; return; }

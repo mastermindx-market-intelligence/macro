@@ -335,3 +335,135 @@ test('a definitive 404 on a regional store waits its long window — no early re
   await advance(60 * 60 * 1000);
   assert.equal(count(calls, HK_INDEX), 2, 'and no loop after it');
 });
+
+// A failure the module's own `.then` lets escape (a throwing onRecover) must not reach
+// node:test's per-test handler; capture it instead so the test can assert on it.
+async function withRejections(fn) {
+  const saved = process.listeners('unhandledRejection');
+  process.removeAllListeners('unhandledRejection');
+  const seen = [];
+  const mine = (e) => seen.push(String(e && e.message));
+  process.on('unhandledRejection', mine);
+  try { await fn(); await flush(); } finally {
+    process.off('unhandledRejection', mine);
+    saved.forEach((l) => process.on('unhandledRejection', l));
+  }
+  return seen;
+}
+
+test('another reader recovering the index repaints the consumer, with no fetch of its own', async () => {
+  // The controller's one timed re-ask fails, so it waits on page events. A different
+  // reader on the same page (a search widen, the add dialog) later loads US: the
+  // consumer must still hear about it, from the cache.
+  const { SD, calls, timers, advance } = makeCtx(usPlan([FAIL_503, FAIL_503, OK_US]));
+  await SD.loadIndexes(['us']);
+  const seen = [];
+  SD.indexRecovery(() => ['us'], (r) => seen.push(plain(r).list.map((x) => x.t))).check();
+  await advance(TTL_NET + SLACK);
+  assert.equal(count(calls, US_INDEX), 2, 'the timed re-ask happened and failed');
+  assert.equal(timers.q.length, 0);
+
+  await advance(TTL_NET + SLACK);
+  const other = await SD.loadIndexes(['us']);   // not the controller
+  await flush();
+  assert.equal(other.list.length, 2);
+  assert.equal(count(calls, US_INDEX), 3, 'only the other reader fetched');
+  assert.deepEqual(seen, [['AAA', 'BBB']], 'onRecover ran once, with the recovered index');
+  assert.equal(timers.q.length, 0);
+  await advance(60 * 60 * 1000);
+  assert.equal(count(calls, US_INDEX), 3, 'and nothing reads after it');
+  assert.deepEqual(seen.length, 1);
+});
+
+test('a market failing with an EARLIER window re-arms the timer instead of waiting on the later one', async () => {
+  let usFails = true;
+  let hkFails = true;
+  const route = (url) => {
+    if (url === US_INDEX) {
+      if (usFails) { usFails = false; return respond(429, {}, { 'Retry-After': '120' }); }
+      return respond(200, US_ROWS);
+    }
+    if (url === HK_INDEX) {
+      if (hkFails) { hkFails = false; return respond(503, {}); }
+      return respond(200, HK_ROWS);
+    }
+    return respond(404, {});
+  };
+  const { SD, calls, clock, advance } = makeCtx(route);
+  const t0 = clock.t;
+  let ms = ['us'];
+  await SD.loadIndexes(ms);
+  const rx = SD.indexRecovery(() => ms, () => {});
+  rx.check();                                  // armed for US at +120 s
+
+  await advance(10 * 1000);
+  ms = ['us', 'hk'];                           // the book grew a HK name
+  await SD.loadIndexes(ms);                    // HK fails: 30 s window from +10 s
+  assert.equal(SD.indexRetryAt(['hk']), t0 + 10 * 1000 + TTL_NET);
+  rx.check();
+
+  await advance(TTL_NET + SLACK);
+  assert.equal(count(calls, HK_INDEX), 2, 'HK re-asked at its own (earlier) window');
+  assert.equal(count(calls, US_INDEX), 1, 'US still inside its Retry-After window');
+  await advance(120 * 1000);
+  assert.equal(count(calls, US_INDEX), 2, 'US re-asked once its window closes');
+  assert.equal(SD.indexRetryAt(ms), null);
+});
+
+test('a throwing onRecover still lets the controller re-arm the markets that are still failing', async () => {
+  let usPlanI = 0;
+  const usSteps = [FAIL_503, FAIL_503, OK_US];
+  let hkFails = true;
+  const route = (url) => {
+    if (url === US_INDEX) {
+      const s = usSteps[Math.min(usPlanI++, usSteps.length - 1)];
+      return respond(s.status, s.body);
+    }
+    if (url === HK_INDEX) {
+      if (hkFails) { hkFails = false; return respond(503, {}); }
+      return respond(200, HK_ROWS);
+    }
+    return respond(404, {});
+  };
+  const { SD, calls, advance } = makeCtx(route);
+  let ms = ['us'];
+  await SD.loadIndexes(ms);
+  let n = 0;
+  SD.indexRecovery(() => ms, () => { n += 1; if (n === 1) throw new Error('repaint failed'); }).check();
+  await advance(TTL_NET + SLACK);              // US timed re-ask fails → US is spent
+  assert.equal(count(calls, US_INDEX), 2);
+
+  const thrown = await withRejections(async () => {
+    ms = ['us', 'hk'];
+    await SD.loadIndexes(['hk']);              // another reader: HK fails
+    await advance(TTL_NET + SLACK);
+    await SD.loadIndexes(['us']);              // another reader: US recovers → onRecover throws
+    await flush();
+  });
+  assert.deepEqual(thrown, ['repaint failed']);
+  assert.equal(n, 1);
+
+  await advance(TTL_NET + SLACK);
+  assert.equal(count(calls, HK_INDEX), 2, 'HK was still re-armed after the throw');
+  assert.equal(n, 2, 'and its recovery reached the consumer');
+  assert.equal(SD.indexRetryAt(ms), null);
+});
+
+test('listeners are wired once per controller however often check() runs', async () => {
+  const { SD, docBus, winBus } = makeCtx(usPlan([FAIL_503]));
+  await SD.loadIndexes(['us']);
+  const rx = SD.indexRecovery(() => ['us'], () => {});
+  for (let i = 0; i < 5; i++) rx.check();
+  assert.equal(docBus.count('visibilitychange'), 1);
+  assert.equal(winBus.count('online'), 1);
+});
+
+test('the timed re-ask lands just after the window closes, never at its edge', async () => {
+  const { SD, calls, advance } = makeCtx(usPlan([FAIL_503, OK_US]));
+  await SD.loadIndexes(['us']);
+  SD.indexRecovery(() => ['us'], () => {}).check();
+  await advance(TTL_NET);
+  assert.equal(count(calls, US_INDEX), 1, 'nothing at the exact deadline');
+  await advance(SLACK);
+  assert.equal(count(calls, US_INDEX), 2);
+});

@@ -11,7 +11,9 @@ timers and a fake fetch whose US index answers 503 once, then 200:
 * the portfolio table renders WITHOUT the index-backed company name after the 503;
 * advancing the fake clock past the failure window (30 s + slack) re-asks the
   loader exactly once and the table repaints WITH the name;
-* nothing re-asks after that (no polling).
+* nothing re-asks after that (no polling);
+* when the consumer's own re-ask is spent, ANOTHER reader's successful read still
+  repaints the table from the cache.
 
 Red-first: point STOCKDATA_JS / PORTFOLIO_JS at the pre-fix copies and the
 "fills after the window" assertion fails — the consumer never asks again.
@@ -167,3 +169,40 @@ def test_portfolio_renders_the_names_after_the_failure_window_closes():
 def test_portfolio_does_not_poll_after_recovering():
     out = _run(BODY)
     assert out["finalHits"] == 2
+    # Nothing is left scheduled once the index has recovered.
+    assert out["pendingTimers"] == 0
+
+
+# The controller's own timed re-ask fails too, so it is spent; a DIFFERENT reader on the
+# page (the add dialog's widen, a search) later loads US. The table must still repaint,
+# from the cache, without the consumer fetching again.
+EXTERNAL_BODY = """
+__indexPlan = [503, 503, 200];
+localStorage.setItem('mdash.pf.v1', JSON.stringify(""" + ANON_SEED + """));
+boot();
+await drain(12);
+await advance(30000 + 1500);
+var spent = { hits: __indexHits, html: node('tbl_pf').innerHTML, timers: __timers.length };
+await advance(60000);
+await window.SD.loadIndexes(['us']);
+await drain(12);
+OUT({
+  spent: spent,
+  hits: __indexHits,
+  html: node('tbl_pf').innerHTML,
+  pendingTimers: __timers.length
+});
+"""
+
+
+@needs_node
+def test_portfolio_repaints_when_another_reader_recovers_the_index():
+    out = _run(EXTERNAL_BODY)
+    # The one timed re-ask failed; nothing further is scheduled and the name is absent.
+    assert out["spent"]["hits"] == 2
+    assert out["spent"]["timers"] == 0
+    assert NAME_A not in out["spent"]["html"]
+    # Another reader's successful read repaints the table with no extra fetch.
+    assert out["hits"] == 3
+    assert NAME_A in out["html"]
+    assert out["pendingTimers"] == 0
