@@ -2481,7 +2481,9 @@ body.ff-modal-open #mmb-launch {
 .ff-workspace.ff-gated .ff-evidence,
 .ff-workspace.ff-gated .ff-receipt-inspector { display: none; }
 
-.ff-workspace.ff-gated .ff-hero { padding-bottom: 6px; }
+/* The desk header is workbench chrome: it hides with the workbench when the
+   gate replaces it (§1.5) — a stranger never meets issuer controls. */
+.ff-workspace.ff-gated .ff-desk-header { display: none; }
 
 /* Light is a design target, not a token swap. The tint that reads as a soft
    wash on the dark canvas becomes a highlighter smear on white, so it drops to
@@ -2549,11 +2551,13 @@ html[data-theme="light"] .ff-gate-slot-index { background: #fff; }
   --ff-card: color-mix(in srgb, var(--panel) 94%, transparent);
 }
 
+/* P2 R8: the canvas wash rides theme tokens only — the retired indigo/cyan
+   hexes are gone, so light and dark each mix their own canvas. */
 body.ff-page {
   background:
-    radial-gradient(circle at 4% 4%, color-mix(in srgb, var(--ff-indigo) 14%, transparent), transparent 31rem),
-    radial-gradient(circle at 92% 15%, color-mix(in srgb, var(--ff-cyan) 11%, transparent), transparent 30rem),
-    linear-gradient(160deg, color-mix(in srgb, var(--bg) 94%, var(--ff-indigo)), var(--bg) 46%, color-mix(in srgb, var(--bg) 96%, var(--ff-cyan)));
+    radial-gradient(circle at 4% 4%, color-mix(in srgb, var(--info) 11%, transparent), transparent 31rem),
+    radial-gradient(circle at 92% 15%, color-mix(in srgb, var(--act) 8%, transparent), transparent 30rem),
+    linear-gradient(160deg, color-mix(in srgb, var(--bg) 94%, var(--info)), var(--bg) 46%, color-mix(in srgb, var(--bg) 96%, var(--act)));
 }
 
 .ff-workspace { width: min(100%, 1540px); gap: 20px; }
@@ -2631,19 +2635,6 @@ body.ff-page {
 .ff-compare-arc { position: absolute; top: 16px; left: 52px; width: 184px; color: var(--ff-cyan); opacity: .7; }
 .ff-visual-caption { position: absolute; right: 21px; bottom: 1px; padding: 5px 9px; border-radius: 999px; color: var(--ff-indigo); background: color-mix(in srgb, var(--ff-indigo) 11%, var(--panel)); font-size: 9px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; }
 
-.ff-run-meta {
-  width: calc(100% - 28px);
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  margin: -16px auto 0;
-  padding: 11px 14px;
-  border: 1px solid var(--ff-border);
-  border-radius: 14px;
-  background: color-mix(in srgb, var(--panel) 93%, transparent);
-  box-shadow: 0 18px 45px -35px rgba(0, 0, 0, .7);
-  backdrop-filter: blur(18px);
-}
-.ff-run-meta > div { padding: 0 14px; border-left: 1px solid var(--ff-border); }
-.ff-run-meta > div:first-child { border-left: 0; }
 .ff-run-meta dd { max-width: 100%; font-family: var(--font-ui); font-size: 10px; font-weight: 650; }
 
 .ff-context-card { margin-top: 16px; grid-template-columns: minmax(260px, .9fr) minmax(260px, 1.25fr) auto; min-height: 96px; padding: 16px 18px; border-radius: 18px; }
@@ -2677,20 +2668,20 @@ body.ff-page {
 .ff-overview-status[data-state="watch"] { border-color: color-mix(in srgb, var(--ff-amber) 44%, var(--ff-border)); color: var(--ff-amber); background: color-mix(in srgb, var(--ff-amber) 8%, var(--panel)); }
 .ff-overview-status[data-state="clear"] { border-color: color-mix(in srgb, var(--ok) 38%, var(--ff-border)); color: var(--ink-ok, var(--ok)); background: color-mix(in srgb, var(--ok) 7%, var(--panel)); }
 
-.ff-quick-signal { position: relative; display: grid; grid-template-columns: 56px minmax(0, 1fr) auto; align-items: center; min-height: 145px; margin-top: 19px; padding: 18px; overflow: hidden; border: 1px solid color-mix(in srgb, var(--ff-indigo) 32%, var(--ff-border)); border-radius: 18px; background: linear-gradient(132deg, color-mix(in srgb, var(--ff-indigo) 11%, var(--panel2)), color-mix(in srgb, var(--ff-cyan) 5%, var(--panel)) 76%); gap: 16px; }
-.ff-quick-signal::after { position: absolute; width: 150px; height: 150px; top: -90px; right: -40px; border: 22px solid color-mix(in srgb, var(--ff-cyan) 8%, transparent); border-radius: 50%; content: ""; }
-.ff-quick-signal[data-priority="high"] { border-color: color-mix(in srgb, var(--ff-coral) 43%, var(--ff-border)); background: linear-gradient(132deg, color-mix(in srgb, var(--ff-coral) 10%, var(--panel2)), color-mix(in srgb, var(--ff-indigo) 5%, var(--panel)) 78%); }
+.ff-quick-signal { position: relative; display: grid; grid-template-columns: 56px minmax(0, 1fr) auto; align-items: center; min-height: 145px; margin-top: 19px; padding: 18px; overflow: hidden; border: 1px solid color-mix(in srgb, var(--info) 32%, var(--ff-border)); border-radius: 18px; background: linear-gradient(132deg, color-mix(in srgb, var(--info) 11%, var(--panel2)), color-mix(in srgb, var(--info) 5%, var(--panel)) 76%); gap: 16px; }
+.ff-quick-signal::after { position: absolute; width: 150px; height: 150px; top: -90px; right: -40px; border: 22px solid color-mix(in srgb, var(--info) 8%, transparent); border-radius: 50%; content: ""; }
+.ff-quick-signal[data-priority="high"] { border-color: color-mix(in srgb, var(--act) 43%, var(--ff-border)); background: linear-gradient(132deg, color-mix(in srgb, var(--act) 10%, var(--panel2)), color-mix(in srgb, var(--info) 5%, var(--panel)) 78%); }
 .ff-quick-signal[data-priority="clear"] { border-color: color-mix(in srgb, var(--ok) 34%, var(--ff-border)); background: linear-gradient(132deg, color-mix(in srgb, var(--ok) 8%, var(--panel2)), var(--panel)); }
-.ff-quick-signal-icon { display: grid; width: 56px; height: 56px; place-items: center; border-radius: 17px; color: var(--ff-indigo); background: color-mix(in srgb, var(--ff-indigo) 12%, var(--panel)); }
-.ff-quick-signal[data-priority="high"] .ff-quick-signal-icon { color: var(--ff-coral); background: color-mix(in srgb, var(--ff-coral) 12%, var(--panel)); }
+.ff-quick-signal-icon { display: grid; width: 56px; height: 56px; place-items: center; border-radius: 17px; color: var(--info); background: color-mix(in srgb, var(--info) 12%, var(--panel)); }
+.ff-quick-signal[data-priority="high"] .ff-quick-signal-icon { color: var(--act); background: color-mix(in srgb, var(--act) 12%, var(--panel)); }
 .ff-quick-signal-icon svg { width: 32px; height: 32px; }
 .ff-quick-signal-copy { position: relative; z-index: 1; min-width: 0; }
-.ff-quick-signal-label { color: var(--ff-indigo); font-size: 9px; font-weight: 850; letter-spacing: .08em; text-transform: uppercase; }
-.ff-quick-signal[data-priority="high"] .ff-quick-signal-label { color: var(--ff-coral); }
+.ff-quick-signal-label { color: var(--info); font-size: 9px; font-weight: 850; letter-spacing: .08em; text-transform: uppercase; }
+.ff-quick-signal[data-priority="high"] .ff-quick-signal-label { color: var(--act); }
 .ff-quick-signal h3 { margin: 4px 0 0; font-size: 18px; line-height: 1.2; letter-spacing: -.02em; }
 .ff-quick-signal p { max-width: 690px; margin: 7px 0 0; color: var(--ff-ink-soft); font-size: 11px; line-height: 1.55; }
-.ff-quick-signal-open { position: relative; z-index: 2; min-height: 42px; padding: 8px 13px; border: 1px solid color-mix(in srgb, var(--ff-indigo) 38%, var(--ff-border)); border-radius: 11px; color: var(--text); background: color-mix(in srgb, var(--ff-indigo) 10%, var(--panel)); font-size: 10px; font-weight: 800; cursor: pointer; white-space: nowrap; }
-.ff-quick-signal-open:hover { background: color-mix(in srgb, var(--ff-indigo) 16%, var(--panel)); }
+.ff-quick-signal-open { position: relative; z-index: 2; min-height: 42px; padding: 8px 13px; border: 1px solid color-mix(in srgb, var(--info) 38%, var(--ff-border)); border-radius: 11px; color: var(--text); background: color-mix(in srgb, var(--info) 10%, var(--panel)); font-size: 10px; font-weight: 800; cursor: pointer; white-space: nowrap; }
+.ff-quick-signal-open:hover { background: color-mix(in srgb, var(--info) 16%, var(--panel)); }
 
 .ff-overview-side { display: grid; grid-template-rows: auto 1fr; padding: 18px; border-left: 1px solid var(--ff-border); background: color-mix(in srgb, var(--panel2) 43%, transparent); gap: 13px; }
 .ff-snapshot-stats { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 9px; }
@@ -2774,12 +2765,11 @@ body.ff-page {
 
 .ff-workspace.ff-gated .ff-overview { display: none; }
 
-html[data-theme="light"] .ff-hero { background: linear-gradient(118deg, #f1f2ff 0%, rgba(255,255,255,.96) 56%, #edfafd 100%); }
 html[data-theme="light"] .ff-overview,
 html[data-theme="light"] .ff-evidence,
-html[data-theme="light"] .ff-panel { background: rgba(255,255,255,.91); }
-html[data-theme="light"] .ff-quick-signal { background: linear-gradient(132deg, #f3f2ff, #f2fbfd 76%); }
-html[data-theme="light"] .ff-quick-signal[data-priority="high"] { background: linear-gradient(132deg, #fff3f2, #f6f4ff 78%); }
+html[data-theme="light"] .ff-panel { background: var(--panel); }
+html[data-theme="light"] .ff-quick-signal { border-color: var(--line); background: var(--panel); }
+html[data-theme="light"] .ff-quick-signal[data-priority="high"] { border-color: color-mix(in srgb, var(--act) 30%, var(--line)); background: var(--panel); }
 
 @media (min-width: 1100px) {
   body.ff-page { padding-right: max(28px, calc((100vw - 1540px) / 2)); padding-left: max(28px, calc((100vw - 1540px) / 2)); }
@@ -2865,4 +2855,124 @@ html[data-theme="light"] .ff-quick-signal[data-priority="high"] { background: li
   .ff-evidence-body { padding: 14px 14px 28px; }
   .ff-signal-meaning { padding: 12px; }
   .ff-view-guide { min-height: 280px; }
+}
+
+/* ── P2 desk header + lead brief (spec §1.2–§1.4) ─────────────────────────
+   DARK TREATMENT (command centre): .ff-desk-header sits as a var(--panel)
+   slab on the token-mixed canvas; the active as-of carries a restrained
+   --info fill plus a 1px ring — no drop-shadow bloom, no second aurora.
+   LIGHT TREATMENT (research workspace): white var(--panel) material, a
+   hairline var(--line) edge and the theme's --card-shadow elevation token —
+   shadow instead of glow, and the active as-of drops the ring for a 1px
+   --info hairline with a 4% tint. The two themes intentionally differ in
+   mechanism, not just tokens (R8 / AM2). */
+.ff-desk-header {
+  display: grid;
+  gap: 8px;
+  padding: 12px 16px 10px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--panel);
+}
+.ff-desk-row {
+  display: grid;
+  grid-template-columns: minmax(220px, 1.1fr) minmax(180px, .9fr) minmax(160px, .7fr) minmax(140px, .6fr) auto;
+  align-items: end;
+  gap: 12px;
+}
+.ff-desk-stamp {
+  margin: 0;
+  color: var(--muted);
+  font-size: var(--fs-micro);
+  font-variant-numeric: tabular-nums;
+}
+.ff-desk-asof > label,
+.ff-desk-export { align-self: end; }
+.ff-asof-controls { display: flex; gap: 6px; align-items: center; }
+.ff-asof-latest,
+.ff-export-btn,
+.ff-export-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 36px;
+  padding: 0 12px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--panel2);
+  color: var(--text);
+  font-size: var(--fs-label);
+  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
+}
+.ff-asof-latest.is-active {
+  border-color: color-mix(in srgb, var(--info) 45%, var(--line));
+  color: var(--text);
+  background: color-mix(in srgb, var(--info) 18%, var(--panel));
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--info) 35%, transparent);
+}
+.ff-asof-input {
+  min-height: 36px;
+  padding: 0 10px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--panel2);
+  color: var(--text);
+}
+.ff-export-btn:disabled,
+.ff-source-control:disabled {
+  opacity: .46;
+  cursor: not-allowed;
+}
+/* The run-meta strip is desk furniture now: no floating card, no backdrop. */
+.ff-run-meta {
+  display: grid;
+  grid-template-columns: auto auto;
+  gap: 8px;
+  width: auto;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+  backdrop-filter: none;
+}
+#ff-overview { margin-top: 12px; }
+.ff-quick-signal {
+  grid-template-columns: 48px minmax(0, 1fr) auto;
+  min-height: 0;
+}
+.ff-quick-signal-magnitude {
+  margin: 6px 0 0;
+  font-family: var(--font-mono);
+  font-size: var(--fs-md);
+  font-variant-numeric: tabular-nums;
+}
+
+/* LIGHT TREATMENT: white material + hairline + elevation token (AM2/R-C —
+   the spec's rgba shadow literal is served by --card-shadow instead). */
+html[data-theme="light"] .ff-desk-header {
+  border: 1px solid var(--line);
+  background: var(--panel);
+  box-shadow: var(--card-shadow);
+}
+html[data-theme="light"] .ff-asof-latest.is-active {
+  border-color: var(--info);
+  background: color-mix(in srgb, var(--info) 4%, var(--panel));
+  box-shadow: none;
+}
+html[data-theme="light"] .ff-quick-signal { box-shadow: none; }
+
+@media (min-width: 1100px) {
+  .ff-overview { grid-template-columns: minmax(0, 1.6fr) minmax(240px, .55fr); }
+}
+@media (max-width: 700px) {
+  .ff-desk-row { grid-template-columns: minmax(0, 1fr); }
+  .ff-run-meta { width: auto; margin: 0; padding: 0; }
+  .ff-desk-export { justify-self: stretch; }
+  .ff-export-btn,
+  .ff-export-link { width: 100%; }
+  .ff-quick-signal { grid-template-columns: 40px minmax(0, 1fr); }
+  .ff-quick-signal-open { grid-column: 1 / -1; width: 100%; }
 }

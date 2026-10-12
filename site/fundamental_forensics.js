@@ -116,6 +116,13 @@
     ui.freshnessStatus = byId('ff-freshness-status');
     ui.runMeta = byId('ff-run-meta');
     ui.sourceLabel = byId('ff-source-label');
+    ui.deskHeader = byId('ff-desk-header');
+    ui.deskStamp = byId('ff-desk-stamp');
+    ui.deskAsOf = byId('ff-desk-asof');
+    ui.asofLatest = byId('ff-asof-latest');
+    ui.asofInput = byId('ff-asof-input');
+    ui.exportLink = byId('ff-export-link');
+    ui.exportBtn = byId('ff-export-btn');
     ui.search = byId('ff-company-search');
     ui.searchClear = byId('ff-search-clear');
     ui.companyOptions = byId('ff-company-options');
@@ -128,6 +135,7 @@
     ui.quickSignalLabel = byId('ff-quick-signal-label');
     ui.quickSignalTitle = byId('ff-quick-signal-title');
     ui.quickSignalSummary = byId('ff-quick-signal-summary');
+    ui.quickSignalMagnitude = byId('ff-quick-signal-magnitude');
     ui.statAttention = byId('ff-stat-attention');
     ui.statWatch = byId('ff-stat-watch');
     ui.statCoverage = byId('ff-stat-coverage');
@@ -924,6 +932,14 @@
       localized(source.label, lang()) || localized(source.basis, lang()), lang()
     ) || '—';
     if (ui.sourceLabel) ui.sourceLabel.textContent = sourceName;
+    // One as-of line for the desk (doctrine Law 4): the hidden dd cells above
+    // keep their ids for renderRunMeta and the tests, and the stamp carries the
+    // same two facts in one band.
+    var stampDate = (state.asOfDate || filing || snapshot || '').toString();
+    var stampText = formatDate(stampDate) || '—';
+    if (ui.deskStamp) {
+      ui.deskStamp.innerHTML = pair('As of ' + stampText + ' · ' + copy[0], '截止 ' + stampText + ' · ' + copy[1]);
+    }
   }
 
   function renderCompany() {
@@ -1002,6 +1018,10 @@
 
     if (!first) {
       ui.quickSignal.setAttribute('data-priority', 'clear');
+      if (ui.quickSignalMagnitude) {
+        ui.quickSignalMagnitude.innerHTML = '';
+        ui.quickSignalMagnitude.hidden = true;
+      }
       ui.quickSignalLabel.innerHTML = pair('Latest covered comparison', '最新已覆盖对比');
       ui.quickSignalTitle.innerHTML = pair('No unusual change surfaced', '暂无异常变化');
       ui.quickSignalSummary.innerHTML = pair(
@@ -1018,16 +1038,30 @@
     }
 
     ui.quickSignal.setAttribute('data-priority', first.priority || 'watch');
-    ui.quickSignalLabel.innerHTML = first.priority === 'high'
-      ? pair('First thing to understand', '首先需要了解')
-      : pair('Worth keeping an eye on', '值得持续观察');
+    ui.quickSignalLabel.innerHTML = pair('Why it matters', '为什么重要');
     ui.quickSignalTitle.innerHTML = fieldPair(first, 'title', 'Filing change');
     ui.quickSignalSummary.innerHTML = fieldPair(first, 'summary', 'Open this signal to see the numbers and source.');
+    // R2: magnitude is a value on the card, never the sort key — the ranking
+    // stays orderedFindings (review priority, then recency).
+    if (ui.quickSignalMagnitude) {
+      var firstValue = Array.isArray(first.values) && objectValue(first.values[0]) ? first.values[0] : null;
+      var magnitude = firstValue && firstValue.delta != null && firstValue.delta !== '' ? firstValue.delta : null;
+      if (magnitude != null) {
+        ui.quickSignalMagnitude.innerHTML = pair(
+          'Change ' + formatSigned(magnitude, firstValue.format),
+          '变化 ' + formatSigned(magnitude, firstValue.format)
+        );
+        ui.quickSignalMagnitude.hidden = false;
+      } else {
+        ui.quickSignalMagnitude.innerHTML = '';
+        ui.quickSignalMagnitude.hidden = true;
+      }
+    }
     var trigger = ui.quickSignal.querySelector('.ff-quick-signal-open');
     if (trigger) {
       trigger.setAttribute('data-open-primary-finding', '');
       trigger.removeAttribute('data-go-tab');
-      trigger.innerHTML = pair('Open signal analysis', '打开信号分析') + ' <span aria-hidden="true">→</span>';
+      trigger.innerHTML = pair('Open source', '打开来源') + ' <span aria-hidden="true">→</span>';
     }
   }
 
