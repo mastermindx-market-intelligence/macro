@@ -817,9 +817,9 @@ from engine.fundamental_forensics.production_provider import (  # noqa: E402
 _D3_ADMITTED = datetime(2026, 10, 1, 0, 0, tzinfo=timezone.utc)
 
 
-def _d3_production_query_provider() -> ProductionFinancialQueryProvider:
+def _d3_production_material() -> PDS.ProductionDatasetMaterial:
     base = fip1_fixture_dataset(ROOT)
-    material = PDS.ProductionDatasetMaterial(
+    return PDS.ProductionDatasetMaterial(
         binding=base.binding,
         entity=EntityInput(
             entity_id=base.binding.entity_id,
@@ -835,8 +835,11 @@ def _d3_production_query_provider() -> ProductionFinancialQueryProvider:
         admitted_at=_D3_ADMITTED,
         source_recorded_at_floor=datetime(2026, 8, 1, tzinfo=timezone.utc),
     )
+
+
+def _d3_production_query_provider() -> ProductionFinancialQueryProvider:
     store = PDS.InMemoryStrictConditionalStore()
-    PDS.publish_production_dataset(store, material)
+    PDS.publish_production_dataset(store, _d3_production_material())
     return ProductionFinancialQueryProvider(store)
 
 
@@ -1175,8 +1178,270 @@ def test_health_reports_mode_and_generation_names_only(router_app, monkeypatch) 
     for token in ("object_key", "STATE_KEY", "R2_ACCESS", "SECRET", "credential"):
         assert token not in rendered
 
-    # An invalid mode refuses health too — never a silent report.
+    # An invalid mode refuses health too — never a silent report, and never
+    # an unhandled 500: the same private 503 the financial POSTs use (A15).
     monkeypatch.setenv("FIF_FINANCIAL_DATASET_MODE", "nonsense")
     with TestClient(router_app, raise_server_exceptions=False) as client:
         refused = client.get("/api/forensics/health")
-    assert refused.status_code == 500
+    assert refused.status_code == 503
+    _assert_private_headers(refused)
+
+
+# ---------------------------------------------------------------------------
+# FIF P1: OPTIONS/TRACE method bypass, health 503, adapter-byte equality
+# (A38), and per-user policy isolation (A23).
+# ---------------------------------------------------------------------------
+
+_FINANCIAL_PATHS = (
+    _QUERY_PATH,
+    "/api/forensics/v1/financial/revisions",
+    "/api/forensics/v1/financial/packet",
+    "/api/forensics/v1/financial/statements",
+)
+
+
+@pytest.mark.parametrize("method", ["OPTIONS", "TRACE"])
+@pytest.mark.parametrize("path", _FINANCIAL_PATHS)
+def test_options_and_trace_go_through_the_private_wrapper(
+    router_app, monkeypatch, method: str, path: str
+) -> None:
+    """F7: auth dependency first, then the private 405; nothing constructed."""
+
+    def _forbidden_factory(name: str):
+        def _factory():
+            raise AssertionError(f"{name} provider factory constructed for a method bypass")
+
+        return _factory
+
+    monkeypatch.setattr(forensics_api, "_financial_query_provider", _forbidden_factory("query"))
+    monkeypatch.setattr(forensics_api, "_financial_revision_provider", _forbidden_factory("revision"))
+    monkeypatch.setattr(forensics_api, "_financial_packet_provider", _forbidden_factory("packet"))
+    monkeypatch.setattr(forensics_api, "_financial_statement_provider", _forbidden_factory("statement"))
+
+    # Anonymous: 401 with the private policy, nothing constructed.
+    with TestClient(router_app, raise_server_exceptions=False) as client:
+        response = client.request(method, path)
+    assert response.status_code == 401
+    _assert_private_headers(response)
+
+    # Entitled: 405 with the private policy, nothing constructed.
+    router_app.dependency_overrides[forensics_api.require_site_full_user] = lambda: {"id": "paid-user"}
+    with TestClient(router_app, raise_server_exceptions=False) as client:
+        response = client.request(method, path)
+    assert response.status_code == 405
+    _assert_private_headers(response)
+
+
+def test_invalid_dataset_mode_refuses_health_with_private_503(router_app, monkeypatch) -> None:
+    monkeypatch.setattr(
+        forensics_api,
+        "evaluate_health",
+        lambda _root, **_kwargs: {"schema": "fundamental_forensics.health/v1"},
+    )
+    monkeypatch.setenv("FIF_FINANCIAL_DATASET_MODE", "staging")
+    router_app.dependency_overrides[forensics_api.require_site_full_user] = lambda: {"id": "paid-user"}
+    with TestClient(router_app, raise_server_exceptions=False) as client:
+        response = client.get("/api/forensics/health")
+    assert response.status_code == 503
+    _assert_private_headers(response)
+    assert response.json()["detail"] == "forensics health temporarily unavailable"
+    assert "x-fif-financial-dataset-mode" not in response.headers
+
+
+def _p1_aapl_material():
+    from engine.fundamental_forensics import production_datasets as PDS
+    from engine.fundamental_forensics.financial_intelligence_packet import EntityInput
+    from engine.fundamental_forensics.ixbrl_raw_ledger import (
+        GOLDEN_AAPL_QUERY_ACCESSIONS,
+        parse_and_convert_golden_packages,
+    )
+    from engine.fundamental_forensics.query_service import CanonicalEntityBinding
+    from engine.fundamental_forensics.statement_graph import load_golden_aapl_package
+
+    packages = [
+        load_golden_aapl_package(ROOT, accession=accession)
+        for accession in GOLDEN_AAPL_QUERY_ACCESSIONS
+    ]
+    ledger, filing_metadata, _report = parse_and_convert_golden_packages(packages)
+    return PDS.ProductionDatasetMaterial(
+        binding=CanonicalEntityBinding(
+            entity_id="ISS:US-XNAS-AAPL",
+            cik="0000320193",
+            ticker="AAPL",
+            source_entity_id="0000320193",
+        ),
+        entity=EntityInput(
+            entity_id="ISS:US-XNAS-AAPL",
+            cik="0000320193",
+            ticker="AAPL",
+            name="Apple Inc.",
+            identity_basis="sec-cik",
+            source_entity_id="0000320193",
+        ),
+        ledger=ledger,
+        filing_metadata=filing_metadata,
+        registry_payload=PDS.snapshot_core_registry_payload(ROOT),
+        admitted_at=datetime(2026, 10, 1, tzinfo=timezone.utc),
+        packages=tuple(packages),
+        security_id="SEC:US-XNAS-AAPL",
+        listing_key="US-XNAS-AAPL",
+    )
+
+
+def _p1_aapl_body(path: str, *, recorded_at: str = "2026-10-05T00:00:00Z") -> bytes:
+    if path.endswith("/statements"):
+        payload = {
+            "schema": "fundamental_forensics.financial_statement_request/v1",
+            "entity_id": "ISS:US-XNAS-AAPL",
+            "accession": "0000320193-25-000079",
+        }
+    else:
+        payload = {
+            "schema": (
+                "fundamental_forensics.financial_revision_request/v1"
+                if path.endswith("/revisions")
+                else "fundamental_forensics.financial_query_request/v1"
+            ),
+            "entity_id": "ISS:US-XNAS-AAPL",
+            "policy": {
+                "selection": "latest_known_as_of",
+                "source_snapshot_at": "2025-12-31T23:59:59Z",
+                "recorded_at": recorded_at,
+            },
+            "metric_ids": ["revenue"],
+            "periods": [
+                {"kind": "duration", "start": "2023-01-01", "end": "2023-12-31", "label": "FY2023"}
+            ],
+        }
+    return json.dumps(payload, separators=(",", ":")).encode("utf-8")
+
+
+def _p1_fip1_body(path: str, *, recorded_at: str = "2026-10-05T00:00:00Z") -> bytes:
+    """Packet-servable FIP1 request bodies (occurrence-keyed corpus)."""
+    payload = {
+        "schema": (
+            "fundamental_forensics.financial_revision_request/v1"
+            if path.endswith("/revisions")
+            else "fundamental_forensics.financial_query_request/v1"
+        ),
+        "entity_id": "mmx.issuer.fip1",
+        "policy": {
+            "selection": "latest_known_as_of",
+            "source_snapshot_at": "2025-12-31T23:59:59Z",
+            "recorded_at": recorded_at,
+        },
+        "metric_ids": ["revenue"],
+        "periods": [
+            {"kind": "duration", "start": "2023-01-01", "end": "2023-12-31", "label": "FY2023"}
+        ],
+    }
+    return json.dumps(payload, separators=(",", ":")).encode("utf-8")
+
+
+def test_production_adapter_bytes_equal_http_bytes(router_app, monkeypatch) -> None:
+    """A38: kernel adapter bytes are the HTTP response bytes, sha-for-sha."""
+    from engine.fundamental_forensics import production_datasets as PDS
+    from engine.fundamental_forensics.production_provider import (
+        ProductionFinancialPacketProvider,
+        ProductionFinancialQueryProvider,
+        ProductionFinancialStatementProvider,
+    )
+    from engine.fundamental_forensics.query_service import execute_financial_query
+    from engine.fundamental_forensics.revision_service import execute_financial_revisions
+    from engine.fundamental_forensics.statement_service import execute_financial_statements
+
+    # The FIP1 corpus is occurrence-keyed, so query AND revisions are servable
+    # from it; statements need the package-carrying AAPL corpus.
+    fip1_store = PDS.InMemoryStrictConditionalStore()
+    PDS.publish_production_dataset(fip1_store, _d3_production_material())
+    aapl_store = PDS.InMemoryStrictConditionalStore()
+    PDS.publish_production_dataset(aapl_store, _p1_aapl_material())
+
+    query_provider = ProductionFinancialQueryProvider(fip1_store)
+    packet_provider = ProductionFinancialPacketProvider(fip1_store, repo_root=ROOT)
+    statement_provider = ProductionFinancialStatementProvider(aapl_store)
+
+    monkeypatch.setenv("FIF_FINANCIAL_DATASET_MODE", "production")
+    monkeypatch.setattr(forensics_api, "_production_query_provider", lambda: query_provider)
+    monkeypatch.setattr(forensics_api, "_production_packet_provider", lambda: packet_provider)
+    monkeypatch.setattr(forensics_api, "_production_statement_provider", lambda: statement_provider)
+    router_app.dependency_overrides[forensics_api.require_site_full_user] = lambda: {"id": "paid-user"}
+
+    cases = {
+        _QUERY_PATH: (
+            _p1_fip1_body(_QUERY_PATH),
+            lambda body: execute_financial_query(body=body, provider=query_provider),
+        ),
+        "/api/forensics/v1/financial/revisions": (
+            _p1_fip1_body("/api/forensics/v1/financial/revisions"),
+            lambda body: execute_financial_revisions(
+                body=body, provider_factory=lambda: packet_provider
+            ),
+        ),
+        "/api/forensics/v1/financial/statements": (
+            _p1_aapl_body("/api/forensics/v1/financial/statements"),
+            lambda body: execute_financial_statements(
+                body=body, repo_root=ROOT, provider_factory=lambda: statement_provider
+            ),
+        ),
+    }
+    with TestClient(router_app, raise_server_exceptions=False) as client:
+        for path, (body, adapter) in cases.items():
+            result = adapter(body)
+            response = client.post(path, content=body, headers={"content-type": "application/json"})
+            assert response.status_code == 200, (path, response.text[:200])
+            _assert_private_headers(response)
+            assert result.body == response.content, path
+            assert response.headers["x-fif-response-sha256"] == result.sha256, path
+            assert (
+                response.headers["x-fif-response-sha256"]
+                == hashlib.sha256(response.content).hexdigest()
+            ), path
+            assert json.loads(response.content)["delivery"]["kind"] == "production_issuer_dataset"
+
+
+def test_two_users_two_policies_share_no_answer_object(router_app, monkeypatch) -> None:
+    """A23: one production provider, two entitled users, two recorded_at
+    policies — policy-different bodies, both private/no-store, and a repeat
+    by the first user is byte-identical (no cross-user answer object)."""
+    from engine.fundamental_forensics import production_datasets as PDS
+    from engine.fundamental_forensics.production_provider import (
+        ProductionFinancialQueryProvider,
+    )
+
+    store = PDS.InMemoryStrictConditionalStore()
+    PDS.publish_production_dataset(store, _p1_aapl_material())
+    # The ONE production provider singleton, shared by every request.
+    provider = ProductionFinancialQueryProvider(store)
+    monkeypatch.setenv("FIF_FINANCIAL_DATASET_MODE", "production")
+    monkeypatch.setattr(forensics_api, "_production_query_provider", lambda: provider)
+
+    bodies: dict[str, bytes] = {}
+    with TestClient(router_app, raise_server_exceptions=False) as client:
+        for user, recorded_at in (
+            ("paid-user-a", "2026-10-05T00:00:00Z"),
+            ("paid-user-b", "2026-10-06T00:00:00Z"),
+        ):
+            router_app.dependency_overrides[forensics_api.require_site_full_user] = lambda u=user: {
+                "id": u
+            }
+            response = client.post(
+                _QUERY_PATH,
+                content=_p1_aapl_body(_QUERY_PATH, recorded_at=recorded_at),
+                headers={"content-type": "application/json"},
+            )
+            assert response.status_code == 200
+            assert response.headers["cache-control"] == "private, no-store"
+            bodies[user] = response.content
+        # The first user repeats its exact policy: byte-identical answer.
+        router_app.dependency_overrides[forensics_api.require_site_full_user] = lambda: {
+            "id": "paid-user-a"
+        }
+        repeat = client.post(
+            _QUERY_PATH,
+            content=_p1_aapl_body(_QUERY_PATH, recorded_at="2026-10-05T00:00:00Z"),
+            headers={"content-type": "application/json"},
+        )
+    assert bodies["paid-user-a"] != bodies["paid-user-b"]
+    assert repeat.status_code == 200
+    assert repeat.content == bodies["paid-user-a"]
