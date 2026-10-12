@@ -56,12 +56,14 @@ from .metric_registry import (
 )
 from .periods import CalendarKind, PeriodKind, TypedPeriod
 from .lineage_evidence import (
+    CONFIRMATION_CHAIN_RULE_VERSION,
     MAX_LINEAGE_RECEIPTS,
     REFUSAL_EVIDENCE_DOES_NOT_MATCH_SOURCE,
     REFUSAL_MISSING_OCCURRENCE,
     LineageEvidenceError,
     LineageEvidenceReceipt,
     _approved_taxonomy_uri,
+    _chain_accepted_by_accession,
     _freeze_evidence,
     _positive_evidence_payload,
     evaluate_confirmation,
@@ -5133,15 +5135,60 @@ class BitemporalMetricQueryEngine:
                 raise LineageEvidenceError("lineage evidence is not a v1 positive for this ledger")
             by_key.setdefault(receipt.logical_key, []).append(receipt)
         for key, values in by_key.items():
-            accessions: set[str] = set()
-            for receipt in values:
-                for occurrence_id in (receipt.parent_occurrence_id, receipt.child_occurrence_id):
-                    accessions.add(self._event_by_occurrence_id[occurrence_id].source.accession)
-            if len(accessions) > 2:
-                # v1 admits exactly one parent and one child per logical key.
-                # Chained receipts across three filings have no unique parent.
+            versions = {receipt.evidence_rule_version for receipt in values}
+            if len(versions) != 1:
                 raise LineageEvidenceError(
-                    "lineage evidence spans more than two filings for one logical key"
+                    "lineage evidence mixes confirmation rule versions for one logical key"
+                )
+            if values[0].evidence_rule_version != CONFIRMATION_CHAIN_RULE_VERSION:
+                accessions: set[str] = set()
+                for receipt in values:
+                    for occurrence_id in (receipt.parent_occurrence_id, receipt.child_occurrence_id):
+                        accessions.add(self._event_by_occurrence_id[occurrence_id].source.accession)
+                if len(accessions) > 2:
+                    # v1 admits exactly one parent and one child per logical key.
+                    # Chained receipts across three filings have no unique parent.
+                    raise LineageEvidenceError(
+                        "lineage evidence spans more than two filings for one logical key"
+                    )
+                continue
+            # FIF S2 (A05): the versioned v2 chain rule admits 3+ filings of one
+            # logical key, but only as ONE strictly ordered adjacent path over
+            # every filing the ledger holds for the key — L is rebuilt from the
+            # dataset's own events via ``_event_by_occurrence_id``.  A skip
+            # edge, a fork, a cycle, or a missing accession is a malformed
+            # provider, not a smaller answer.
+            chain_by_accession: dict[str, list[RawFactOccurrence]] = {}
+            for event in self._event_by_occurrence_id.values():
+                if event.logical_key == key:
+                    chain_by_accession.setdefault(event.source.accession, []).append(event)
+            _times, ordered_accessions = _chain_accepted_by_accession(
+                chain_by_accession
+            )
+            if (
+                len(chain_by_accession) < 3
+                or ordered_accessions is None
+                or len(values) != len(chain_by_accession) - 1
+            ):
+                raise LineageEvidenceError(
+                    "chain lineage evidence must form one strictly ordered path "
+                    "across every filing of its logical key"
+                )
+            edge_pairs = sorted(
+                (
+                    self._event_by_occurrence_id[receipt.parent_occurrence_id].source.accession,
+                    self._event_by_occurrence_id[receipt.child_occurrence_id].source.accession,
+                )
+                for receipt in values
+            )
+            expected_pairs = sorted(
+                (ordered_accessions[index], ordered_accessions[index + 1])
+                for index in range(len(ordered_accessions) - 1)
+            )
+            if edge_pairs != expected_pairs:
+                raise LineageEvidenceError(
+                    "chain lineage evidence must form one strictly ordered path "
+                    "across every filing of its logical key"
                 )
         return MappingProxyType(
             {
@@ -5385,6 +5432,10 @@ class BitemporalMetricQueryEngine:
         receipts = self._confirmations_by_logical_key.get(logical_key, ())
         if not receipts:
             return _EMPTY_ROOT_MAP
+        # FIF S2: admission proves the receipts of one key are
+        # version-homogeneous, so the first receipt names the rule the whole
+        # union-find below runs under.
+        chain_rule = receipts[0].evidence_rule_version == CONFIRMATION_CHAIN_RULE_VERSION
         cache_key = (logical_key, policy.source_snapshot_at, policy.recorded_at)
         cached = self._effective_root_cache.get(cache_key)
         if cached is not None:
@@ -5419,17 +5470,23 @@ class BitemporalMetricQueryEngine:
             parent_of.setdefault(child_meta.root_duplicate_group_key, child_meta.root_duplicate_group_key)
             union(parent_meta.root_duplicate_group_key, child_meta.root_duplicate_group_key)
         resolved = {node: find(node) for node in parent_of}
-        # v1 admits exactly one parent and one child. A component that has
-        # transitively accumulated a third filing has an ambiguous parent, so
-        # refuse the whole component rather than chaining across vintages: the
-        # cell then keeps the honest unlinked-vintage refusal. Widening this is
-        # a separately adjudicated v2 question, not an implementation detail.
-        sizes: dict[str, int] = {}
-        for label in resolved.values():
-            sizes[label] = sizes.get(label, 0) + 1
-        resolved = {
-            node: label for node, label in resolved.items() if sizes[label] <= 2
-        }
+        # FIF S2: for a version-2 key keep every component.  Admission already
+        # proved the receipts are one strictly ordered adjacent path over
+        # every filing of the key, so a still-proving cutoff-visible subset is
+        # a union of contiguous sub-paths — no rounded or skip link can join a
+        # component, and unification can never outrun the admitted path.
+        if not chain_rule:
+            # v1 admits exactly one parent and one child. A component that has
+            # transitively accumulated a third filing has an ambiguous parent, so
+            # refuse the whole component rather than chaining across vintages: the
+            # cell then keeps the honest unlinked-vintage refusal. Widening this is
+            # a separately adjudicated v2 question, not an implementation detail.
+            sizes: dict[str, int] = {}
+            for label in resolved.values():
+                sizes[label] = sizes.get(label, 0) + 1
+            resolved = {
+                node: label for node, label in resolved.items() if sizes[label] <= 2
+            }
         projection = MappingProxyType(resolved)
         # Bounded even if an engine is pooled and callers vary cutoffs: the
         # cache is a speed aid, never a correctness input, so evicting is safe.

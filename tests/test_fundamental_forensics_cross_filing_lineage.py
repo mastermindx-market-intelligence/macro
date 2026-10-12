@@ -1037,14 +1037,26 @@ def test_backdated_availability_cannot_flip_not_evaluable_end_to_end(
         )
 
 
-@pytest.mark.parametrize("version", [2, True])
+# FIF S2 admitted version 2 as the multi-filing chain rule, so a forged v2
+# envelope carrying a v1-era clock is now refused as BACKDATED (its clock
+# predates the v2 rule) rather than as a rule mismatch; a version no admitted
+# rule ever minted (3) keeps the rule-mismatch refusal. Both stay refused at
+# both gates.
+@pytest.mark.parametrize(
+    ("version", "refusal_name"),
+    [
+        (2, "REFUSAL_RECEIPT_SYSTEM_AVAILABILITY_BACKDATED"),
+        (3, "REFUSAL_RECEIPT_RULE_MISMATCH"),
+        (True, "REFUSAL_RECEIPT_RULE_MISMATCH"),
+    ],
+)
 def test_envelope_rule_version_mismatch_is_refused_at_both_gates(
-    version, golden_receipts, golden_lineage_dataset
+    version, refusal_name, golden_receipts, golden_lineage_dataset
 ):
-    """A version the current rule never minted is not evidence, bool included."""
-    from engine.fundamental_forensics.lineage_evidence import (
-        REFUSAL_RECEIPT_RULE_MISMATCH,
-    )
+    """A version no admitted rule minted on this clock is not evidence, bool included."""
+    from engine.fundamental_forensics import lineage_evidence
+
+    expected_refusal = getattr(lineage_evidence, refusal_name)
     from engine.fundamental_forensics.query import (
         BitemporalMetricQueryEngine,
         QueryPolicy,
@@ -1073,7 +1085,7 @@ def test_envelope_rule_version_mismatch_is_refused_at_both_gates(
                 selection="latest_known_as_of",
             ),
         )
-        == REFUSAL_RECEIPT_RULE_MISMATCH
+        == expected_refusal
     )
     with pytest.raises(LineageEvidenceError) as excinfo:
         BitemporalMetricQueryEngine(
@@ -1082,7 +1094,7 @@ def test_envelope_rule_version_mismatch_is_refused_at_both_gates(
             entities={"AAPL": "0000320193"},
             lineage_evidence=(forged,),
         )
-    assert REFUSAL_RECEIPT_RULE_MISMATCH in str(excinfo.value)
+    assert expected_refusal in str(excinfo.value)
 
 
 def test_envelope_rule_id_mismatch_is_refused_at_both_gates(

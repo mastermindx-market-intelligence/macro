@@ -4,8 +4,10 @@ Contract only: no fetch, no retention, no attestation. Stdlib + pytest + pyyaml.
 """
 from __future__ import annotations
 
+import hashlib
 import json
 import re
+import subprocess
 from datetime import date
 from pathlib import Path
 
@@ -51,6 +53,12 @@ EXPECTED_CIKS = {
     "BAC": "0000070858",
     "GOOGL": "0001652044",
 }
+SUBMISSIONS_DIR = (
+    ROOT / "tests" / "fixtures" / "fundamental_forensics" / "five_issuer_submissions"
+)
+CAPTURE_MANIFEST_PATH = SUBMISSIONS_DIR / "capture_manifest.json"
+SECURITY_MASTER_PARQUET = ROOT / "data" / "reference" / "security_master.parquet"
+DECLARED_USER_AGENT = "Mastermind FIF research lane fif-lane@mastermind.local"
 
 
 @pytest.fixture(scope="module")
@@ -240,3 +248,101 @@ def test_human_contract_exists_and_mentions_every_cik() -> None:
     assert "five_issuer_v1" in text
     assert "reconstruction" in text
     assert "GOLDEN_AAPL_QUERY_ACCESSIONS" in text
+
+
+@pytest.fixture(scope="module")
+def capture_manifest() -> dict:
+    return json.loads(CAPTURE_MANIFEST_PATH.read_text(encoding="utf-8"))
+
+
+def test_capture_manifest_is_canonical_and_covers_every_cik(
+    capture_manifest: dict,
+) -> None:
+    assert CAPTURE_MANIFEST_PATH.read_bytes() == (
+        json.dumps(capture_manifest, indent=2, sort_keys=True).encode("utf-8") + b"\n"
+    )
+    assert sorted(capture_manifest) == sorted(EXPECTED_CIKS.values())
+    for cik, entry in capture_manifest.items():
+        assert entry["cik"] == cik
+        assert entry["ticker"] in TICKER_ORDER
+        assert entry["source_url"] == f"https://data.sec.gov/submissions/CIK{cik}.json"
+        assert entry["bytes"] > 0
+        assert entry["retrieved_at"].endswith("Z")
+        assert entry["user_agent_declared"] == DECLARED_USER_AGENT
+        assert entry["budget_owner"] == "collectors.edgar_forensics:SecForensicsCollector"
+
+
+def test_retained_capture_bytes_match_manifest_and_contract_sic_source(
+    contract: dict, capture_manifest: dict
+) -> None:
+    for issuer in contract["issuers"]:
+        cik = issuer["cik"]
+        entry = capture_manifest[cik]
+        sic_source = issuer["sic_source"]
+        capture_path = ROOT / sic_source["capture_path"]
+        assert capture_path.is_file(), sic_source["capture_path"]
+        body = capture_path.read_bytes()
+        digest = hashlib.sha256(body).hexdigest()
+        assert digest == entry["sha256"], cik
+        assert entry["bytes"] == len(body), cik
+        assert digest == sic_source["sha256"], cik
+        assert entry["ticker"] == issuer["ticker"]
+        assert entry["source_url"] == sic_source["source_url"]
+        assert entry["retrieved_at"] == sic_source["retrieved_at"]
+
+
+def test_contract_sic_pins_match_retained_capture_bytes(
+    contract: dict, capture_manifest: dict
+) -> None:
+    for issuer in contract["issuers"]:
+        cik = issuer["cik"]
+        body = (ROOT / issuer["sic_source"]["capture_path"]).read_bytes()
+        doc = json.loads(body)
+        assert str(doc["cik"]).zfill(10) == cik
+        assert issuer["sic"] == str(doc["sic"]), cik
+        assert issuer["sic"].isdigit(), cik
+        assert issuer["sic_source"]["sic_description"] == doc["sicDescription"], cik
+        assert str(doc["cik"]).zfill(10) == capture_manifest[cik]["cik"]
+
+
+def test_security_master_binding_matches_reference_parquet(contract: dict) -> None:
+    if not SECURITY_MASTER_PARQUET.is_file():
+        pytest.skip(
+            "data/reference/security_master.parquet is absent from this sparse "
+            "checkout (opt in: python3 scripts/worktree_sparse.py full)"
+        )
+    try:
+        import pandas as pd
+    except ImportError:  # pragma: no cover - dependency guard for minimal steps
+        pytest.skip("pandas is not installed in this environment")
+    blob = subprocess.run(
+        ["git", "-C", str(ROOT), "rev-parse", "HEAD:data/reference/security_master.parquet"],
+        capture_output=True,
+        text=True,
+    )
+    if blob.returncode != 0:
+        pytest.skip(f"git rev-parse unavailable: {blob.stderr.strip()}")
+    expected_blob = blob.stdout.strip()
+    frame = pd.read_parquet(SECURITY_MASTER_PARQUET)
+    cik10 = frame["issuer_cik"].astype(str).str.zfill(10)
+    for issuer in contract["issuers"]:
+        binding = issuer["security_master_binding"]
+        assert binding is not None, issuer["ticker"]
+        assert binding["security_master_blob"] == expected_blob, issuer["ticker"]
+        active = frame[(cik10 == issuer["cik"]) & (frame["superseded_by"].isna())]
+        match = active[
+            active["listing_key"].str.rsplit("-", n=1).str[-1] == issuer["ticker"]
+        ]
+        assert len(match) == 1, issuer["ticker"]
+        row = match.iloc[0]
+        state = row["security_state"]
+        assert binding == {
+            "issuer_id": row["issuer_id"],
+            "security_id": row["security_id"],
+            "listing_key": row["listing_key"],
+            "mic": row["mic"],
+            "issuer_cik": str(row["issuer_cik"]).zfill(10),
+            "security_state": None if pd.isna(state) else str(state),
+            "effective_at": row["effective_at"].isoformat(),
+            "security_master_blob": expected_blob,
+        }, issuer["ticker"]
