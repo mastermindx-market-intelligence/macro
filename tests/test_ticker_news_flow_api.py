@@ -551,6 +551,9 @@ def test_no_multi_security_or_sorted_flow_route():
         "/api/ticker-news/{ticker}/changes",
         "/api/ticker-news/{ticker}",
         "/api/ticker-news/{ticker}/stream",
+        # W11 D1: the private catch-all, registered last (see
+        # tests/test_ticker_news_private_errors.py route-order census).
+        "/api/ticker-news/{rest:path}",
     }
     assert all("flow" not in path for path in paths)
 
@@ -725,6 +728,8 @@ def test_old_terminal_parser_shape_unaffected(monkeypatch, tmp_path):
     expected_keys = [
         "schema", "ticker", "security_id", "state", "rows",
         "next_cursor", "has_more", "source_health", "annotations",
+        # W11-07 additive provenance keys (tests/test_ticker_news_snapshot_provenance.py).
+        "universe_known_at", "rights_basis",
     ]
     assert list(first) == expected_keys
     assert list(second) == expected_keys + ["flow"]
