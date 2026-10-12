@@ -698,3 +698,193 @@ def test_forged_uri_is_also_refused_at_admission():
             entities={"AAPL": "0000320193"},
             lineage_evidence=(tampered,),
         )
+
+
+# ---------------------------------------------------------------------------
+# FIF T1 — complete lineage evidence binding (MASTERPLAN §4.4)
+#
+# The receipt hash proves only internal self-consistency.  Every one of the
+# eighteen positive-evidence fields must also still equal what the canonical
+# builder reconstructs from the CURRENT eligible ledger, at admission and at
+# revalidation, so a forged payload with a correctly recomputed receipt_id —
+# a valid digest over invented evidence — fails closed.  Genuine receipts
+# keep byte-identical responses.
+# ---------------------------------------------------------------------------
+
+# Response pins captured on main 5267c66846e7733bc1eb30edc1524daff51598ca
+# before the T1 repair: the full golden metrics/periods body under the four
+# valid policy cases (response sha256, then receipt query_hash).  The
+# pre-lineage historical cutoff pin equals the accepted FIF-3A3 constants
+# pinned above, which cross-checks the capture procedure itself.
+_T1_VALID_CASE_PINS = {
+    ("latest_known_as_of", _A4_SOURCE, _A4_RECORDED): (
+        "e0173c107af89a6a075d6112707d476bedb2bd0eb4e9f7bc06e5373013b735fa",
+        "f0c98ed0d5040c5b105fe8f539d6b1c80d37212e6e2a3f2625006166f192d2b2",
+    ),
+    ("as_reported", _A4_SOURCE, _A4_RECORDED): (
+        "1bbba5c6130737828321e2fa152b646d3359225c016cdd0aa3d6ab003eac414d",
+        "fa2e5abcb8014560495f477e3c54f9710f7a1b9e6b2fe7efc0009cdfce82dbfa",
+    ),
+    ("latest_restated", _A4_SOURCE, _A4_RECORDED): (
+        "3b28e6ba9a10fd73952cd8283bf8c50d895801a7a8117d38fb5cb84c6050d5f8",
+        "d3f4bddde31eafede693a7fe48da6913f417dc9f1119c3f1570cc88527db0363",
+    ),
+    ("latest_known_as_of", _A3_SOURCE, _A3_RECORDED): (
+        "58972cb88f82483e86acc9d9fc3b1cbce046f466ff8665ae214909d90ab078b0",
+        "f8f6dc3134592c817001738cbdefb09ee1b71798ef24a8e64dc75685a6f9c7a1",
+    ),
+}
+
+_T1_ALL_EVIDENCE_KEYS = (
+    "concept_qname",
+    "parent_accession",
+    "child_accession",
+    "parent_document_id",
+    "child_document_id",
+    "parent_taxonomy_uri",
+    "child_taxonomy_uri",
+    "parent_source_occurrence_keys",
+    "child_source_occurrence_keys",
+    "parsed_value",
+    "decimals",
+    "precision",
+    "dimensions_known",
+    "is_nil",
+    "parent_accepted_at",
+    "child_accepted_at",
+    "parent_recorded_at",
+    "child_recorded_at",
+)
+
+# Plausible-but-wrong same-shape values for the fields that carry literals.
+# The golden Assets fact reports precision as null, so the forged precision is
+# the other canonical XBRL accuracy token shape ("10").
+_T1_FORGED_LITERALS = {
+    "concept_qname": "us-gaap:AssetsCurrent",
+    "parent_accession": "0000320193-25-000080",
+    "child_accession": "0000320193-26-000021",
+    "parent_document_id": "sec_document_" + "e" * 64,
+    "child_document_id": "sec_document_" + "f" * 64,
+    "parent_taxonomy_uri": "http://fasb.org/us-gaap/2024",
+    "child_taxonomy_uri": "http://fasb.org/us-gaap/2024",
+    "parsed_value": "359242000000",
+    "decimals": "-3",
+    "precision": "10",
+}
+
+
+def _t1_forged_value(key, evidence):
+    """A plausible but wrong value of the same shape as the genuine field."""
+    from datetime import timedelta
+
+    if key.endswith("_source_occurrence_keys"):
+        return tuple(f"{item}-forged" for item in evidence[key])
+    if key.endswith("_accepted_at") or key.endswith("_recorded_at"):
+        moment = datetime.strptime(evidence[key], "%Y-%m-%dT%H:%M:%S.%fZ")
+        return (moment + timedelta(days=1)).strftime("%Y-%m-%dT%H:%M:%S.%fZ")
+    if key in ("dimensions_known", "is_nil"):
+        return not evidence[key]
+    return _T1_FORGED_LITERALS[key]
+
+
+def _t1_assets_confirmation(golden_receipts):
+    for receipt in golden_receipts:
+        if (
+            receipt.parent_occurrence_id == _A1_ASSETS_OCCURRENCE
+            and receipt.child_occurrence_id == _A2_ASSETS_OCCURRENCE
+        ):
+            return receipt
+    raise AssertionError("golden A1->A2 Assets confirmation receipt missing")
+
+
+def _t1_forged_receipt(genuine, key):
+    """A receipt whose ONE evidence field was forged, digest recomputed."""
+    evidence = dict(genuine.positive_evidence)
+    evidence[key] = _t1_forged_value(key, genuine.positive_evidence)
+    return LineageEvidenceReceipt(
+        parent_occurrence_id=genuine.parent_occurrence_id,
+        child_occurrence_id=genuine.child_occurrence_id,
+        logical_key=genuine.logical_key,
+        source_known_at=genuine.source_known_at,
+        system_available_at=genuine.system_available_at,
+        positive_evidence=evidence,
+    )
+
+
+@pytest.fixture(scope="module")
+def golden_lineage_dataset():
+    return _lineage_provider().resolve(_GOLDEN_ENTITY)
+
+
+@pytest.mark.parametrize("key", _T1_ALL_EVIDENCE_KEYS)
+def test_forged_evidence_field_is_refused_at_runtime_and_admission(
+    key, golden_receipts, golden_lineage_dataset
+):
+    """A01: one forged field + recomputed hash fails closed at both gates."""
+    from engine.fundamental_forensics.lineage_evidence import (
+        REFUSAL_EVIDENCE_DOES_NOT_MATCH_SOURCE,
+    )
+    from engine.fundamental_forensics.query import (
+        BitemporalMetricQueryEngine,
+        QueryPolicy,
+    )
+
+    genuine = _t1_assets_confirmation(golden_receipts)
+    forged = _t1_forged_receipt(genuine, key)
+    # The forgery is internally self-consistent: a fresh, valid digest over
+    # invented evidence.
+    assert forged.receipt_id != genuine.receipt_id
+
+    policy = QueryPolicy(
+        source_snapshot_at=_A4_SOURCE,
+        recorded_at=_A4_RECORDED,
+        selection="latest_known_as_of",
+    )
+    # An engine that admitted no bundle still re-proves any receipt against
+    # the current eligible ledger.  The genuine twin still proves (control);
+    # the forged one is reported unavailable with the named reason, so the
+    # comparative cell it would have unified falls back to not_evaluable.
+    engine = BitemporalMetricQueryEngine(
+        golden_lineage_dataset.ledger,
+        golden_lineage_dataset.registry,
+        entities={"AAPL": "0000320193"},
+        lineage_evidence=(),
+    )
+    assert engine._receipt_still_proves_confirmation(genuine, policy) is None
+    assert (
+        engine._receipt_still_proves_confirmation(forged, policy)
+        == REFUSAL_EVIDENCE_DOES_NOT_MATCH_SOURCE
+    )
+
+    # Admission refuses the forged bundle outright: the receipt never becomes
+    # visible to any selection.
+    with pytest.raises(LineageEvidenceError) as excinfo:
+        BitemporalMetricQueryEngine(
+            golden_lineage_dataset.ledger,
+            golden_lineage_dataset.registry,
+            entities={"AAPL": "0000320193"},
+            lineage_evidence=(forged,),
+        )
+    assert REFUSAL_EVIDENCE_DOES_NOT_MATCH_SOURCE in str(excinfo.value)
+
+
+def test_valid_policy_responses_stay_byte_identical_after_the_t1_repair():
+    """A02: the four valid policy cases keep their pristine response hashes."""
+    assert _T1_VALID_CASE_PINS[("latest_known_as_of", _A3_SOURCE, _A3_RECORDED)] == (
+        _AAPL_QUERY_RESPONSE_SHA,
+        _AAPL_QUERY_HASH,
+    )
+    provider = _lineage_provider()
+    for (selection, source, recorded), (body_sha, query_hash) in _T1_VALID_CASE_PINS.items():
+        result = execute_financial_query(
+            body=_body(
+                metric_ids=_GOLDEN_METRICS,
+                periods=_GOLDEN_PERIODS,
+                source=source,
+                recorded=recorded,
+                selection=selection,
+            ),
+            provider=provider,
+        )
+        assert result.sha256 == body_sha, (selection, source, recorded)
+        assert result.envelope["receipt"]["query_hash"] == query_hash
