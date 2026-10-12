@@ -65,13 +65,20 @@ def _labels(close: pd.Series) -> tuple[pd.Series, pd.Series]:
     a missing calendar day are unscored. Non-date indices use H observations.
     A full future horizon is required even when a partial window has crossed a
     barrier, so evaluation cohorts do not depend on which outcome arrives first.
+    Boolean and non-finite closes are not prices and do not complete a window.
     """
     if not close.index.is_monotonic_increasing or close.index.has_duplicates:
         raise ValueError("Impulse labels require unique increasing observations")
     dated = isinstance(close.index, pd.DatetimeIndex)
     if dated and not close.index.equals(close.index.normalize()):
         raise ValueError("Impulse labels require daily observation dates")
-    numeric = pd.to_numeric(close, errors="coerce")
+    if pd.api.types.is_bool_dtype(close):
+        numeric = pd.Series(np.nan, index=close.index, dtype="float64")
+    else:
+        cleaned = close
+        if close.dtype == object:
+            cleaned = close.mask(close.map(lambda v: isinstance(v, (bool, np.bool_))))
+        numeric = pd.to_numeric(cleaned, errors="coerce")
     valid_price = (np.isfinite(numeric) & (numeric > 0)).fillna(False)
     usable = numeric.where(valid_price)
     idx = pd.api.indexers.FixedForwardWindowIndexer(window_size=LABEL_H)
