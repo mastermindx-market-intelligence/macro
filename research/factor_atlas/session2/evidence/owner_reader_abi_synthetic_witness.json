@@ -1,0 +1,34 @@
+{
+  "actual_source_read": false,
+  "future_owner_read": {
+    "reader_late_refusal": true,
+    "stage": "OWNER_BASIS_UNPROVEN"
+  },
+  "market_pilot_admitted": false,
+  "no_retained_rows": {
+    "missing": 12,
+    "stage": "OWNER_READER_UNAVAILABLE"
+  },
+  "observed_pr": "mastermindx-market-intelligence/macro#8623",
+  "owner_reader_file_blob": "95b53bba32eb2ebd6e7804052c31271bf1b65eed",
+  "owner_source_head": "6cff6ef8aba28dc7ee6f7779a81ef18856d9b3b6",
+  "owner_source_installed": false,
+  "schema": "factor_atlas.held_reader_abi_synthetic_witness.v1",
+  "source_kind": "SYNTHETIC_DECODER_ROW_CONTRACT_NO_RAW_SOURCE",
+  "structurally_complete_12row_case": {
+    "expected": 12,
+    "mapped": 12,
+    "metadata_complete": false,
+    "missing": 0,
+    "public_authority": false,
+    "refusal_reasons": [
+      "DATASET_RIGHTS_UNPROVEN",
+      "LISTING_IDENTITY_UNPROVEN",
+      "MONETARY_BASIS_UNPROVEN",
+      "REVISION_SELECTION_UNPROVEN"
+    ],
+    "rights_verified": false,
+    "source_authenticated": false,
+    "stage": "OWNER_BASIS_UNPROVEN"
+  }
+}

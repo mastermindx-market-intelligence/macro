@@ -1,0 +1,757 @@
+{
+  "$comment": "Research candidate, never independently certifies source rights, arithmetic, corrected revisions, membership or publication.",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "mode": {
+            "const": "corrected_history"
+          }
+        },
+        "required": [
+          "mode"
+        ]
+      },
+      "then": {
+        "properties": {
+          "known_at_utc_s": {
+            "type": "null"
+          }
+        }
+      }
+    }
+  ],
+  "properties": {
+    "additive_market_flow_allowed": {
+      "const": false
+    },
+    "authority": {
+      "maxItems": 5,
+      "minItems": 5,
+      "prefixItems": [
+        {
+          "maxItems": 2,
+          "minItems": 2,
+          "prefixItems": [
+            {
+              "const": "may_rank"
+            },
+            {
+              "const": false
+            }
+          ],
+          "type": "array"
+        },
+        {
+          "maxItems": 2,
+          "minItems": 2,
+          "prefixItems": [
+            {
+              "const": "may_alert"
+            },
+            {
+              "const": false
+            }
+          ],
+          "type": "array"
+        },
+        {
+          "maxItems": 2,
+          "minItems": 2,
+          "prefixItems": [
+            {
+              "const": "may_size"
+            },
+            {
+              "const": false
+            }
+          ],
+          "type": "array"
+        },
+        {
+          "maxItems": 2,
+          "minItems": 2,
+          "prefixItems": [
+            {
+              "const": "may_trade"
+            },
+            {
+              "const": false
+            }
+          ],
+          "type": "array"
+        },
+        {
+          "maxItems": 2,
+          "minItems": 2,
+          "prefixItems": [
+            {
+              "const": "may_publish"
+            },
+            {
+              "const": false
+            }
+          ],
+          "type": "array"
+        }
+      ],
+      "type": "array"
+    },
+    "customer_publishable": {
+      "const": false
+    },
+    "duplicated_gross_usd": {
+      "minimum": 0,
+      "type": "number"
+    },
+    "end_utc_s": {
+      "minimum": 1,
+      "type": "integer"
+    },
+    "estimator_id": {
+      "maxLength": 512,
+      "minLength": 1,
+      "type": "string"
+    },
+    "evaluated_cutoff_utc_s": {
+      "minimum": 1,
+      "type": "integer"
+    },
+    "factors": {
+      "items": {
+        "additionalProperties": false,
+        "allOf": [
+          {
+            "if": {
+              "properties": {
+                "status": {
+                  "const": "PARTIAL_COVERAGE"
+                }
+              },
+              "required": [
+                "status"
+              ]
+            },
+            "then": {
+              "properties": {
+                "gross_full_usd": {
+                  "type": "null"
+                },
+                "inferred_buy_full_usd": {
+                  "type": "null"
+                },
+                "inferred_sell_full_usd": {
+                  "type": "null"
+                },
+                "missing_cells": {
+                  "minimum": 1,
+                  "type": "integer"
+                },
+                "net_full_usd": {
+                  "type": "null"
+                },
+                "pressure_ratio_full": {
+                  "type": "null"
+                }
+              }
+            }
+          }
+        ],
+        "properties": {
+          "confidence": {
+            "type": "null"
+          },
+          "contributions": {
+            "items": {
+              "additionalProperties": false,
+              "properties": {
+                "directionally_usable_gross_usd": {
+                  "minimum": 0,
+                  "type": "number"
+                },
+                "estimated_net_observed_usd": {
+                  "type": "number"
+                },
+                "expected_cells": {
+                  "minimum": 1,
+                  "type": "integer"
+                },
+                "first_missing_utc_s": {
+                  "anyOf": [
+                    {
+                      "minimum": 1,
+                      "type": "integer"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "observed_cells": {
+                  "minimum": 0,
+                  "type": "integer"
+                },
+                "observed_gross_usd": {
+                  "minimum": 0,
+                  "type": "number"
+                },
+                "other_estimated_gross_usd": {
+                  "minimum": 0,
+                  "type": "number"
+                },
+                "policy_neutral_gross_usd": {
+                  "minimum": 0,
+                  "type": "number"
+                },
+                "security_ref": {
+                  "maxLength": 512,
+                  "minLength": 1,
+                  "type": "string"
+                },
+                "unestimated_gross_usd": {
+                  "minimum": 0,
+                  "type": "number"
+                }
+              },
+              "required": [
+                "security_ref",
+                "expected_cells",
+                "observed_cells",
+                "first_missing_utc_s",
+                "observed_gross_usd",
+                "estimated_net_observed_usd",
+                "directionally_usable_gross_usd",
+                "policy_neutral_gross_usd",
+                "other_estimated_gross_usd",
+                "unestimated_gross_usd"
+              ],
+              "type": "object"
+            },
+            "minItems": 1,
+            "type": "array"
+          },
+          "customer_publishable": {
+            "const": false
+          },
+          "directional_notional_coverage": {
+            "maximum": 1,
+            "minimum": 0,
+            "type": "number"
+          },
+          "directionally_usable_gross_usd": {
+            "minimum": 0,
+            "type": "number"
+          },
+          "effective_n_gross": {
+            "minimum": 0,
+            "type": "number"
+          },
+          "estimated_net_observed_usd": {
+            "type": "number"
+          },
+          "expected_cells": {
+            "minimum": 1,
+            "type": "integer"
+          },
+          "factor_ref": {
+            "maxLength": 512,
+            "minLength": 1,
+            "type": "string"
+          },
+          "gross_baseline": {
+            "additionalProperties": false,
+            "properties": {
+              "coverage": {
+                "maximum": 1,
+                "minimum": 0,
+                "type": "number"
+              },
+              "floor_applied": {
+                "type": "boolean"
+              },
+              "mad": {
+                "anyOf": [
+                  {
+                    "minimum": 0,
+                    "type": "number"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "median": {
+                "anyOf": [
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "n": {
+                "minimum": 0,
+                "type": "integer"
+              },
+              "percentile": {
+                "anyOf": [
+                  {
+                    "maximum": 1,
+                    "minimum": 0,
+                    "type": "number"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "reference_digest": {
+                "pattern": "^[a-f0-9]{64}$",
+                "type": "string"
+              },
+              "scale": {
+                "anyOf": [
+                  {
+                    "minimum": 0,
+                    "type": "number"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "scheduled_sessions": {
+                "minimum": 1,
+                "type": "integer"
+              },
+              "status": {
+                "enum": [
+                  "OK",
+                  "FLOORED_SCALE",
+                  "ZERO_SCALE",
+                  "INSUFFICIENT_OBSERVATIONS",
+                  "INSUFFICIENT_COVERAGE",
+                  "WITHHELD_CORRECTED_HISTORY",
+                  "WITHHELD_INCOMPLETE_WINDOW",
+                  "WITHHELD_DIRECTION_UNAVAILABLE",
+                  "WITHHELD_ZERO_ACTIVITY",
+                  "WITHHELD_DIRECTIONAL_COVERAGE",
+                  "WITHHELD_NO_COMPLETE_REFERENCE"
+                ]
+              },
+              "z_display": {
+                "anyOf": [
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "z_raw": {
+                "anyOf": [
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              }
+            },
+            "required": [
+              "status",
+              "n",
+              "scheduled_sessions",
+              "coverage",
+              "median",
+              "mad",
+              "scale",
+              "floor_applied",
+              "z_raw",
+              "z_display",
+              "percentile",
+              "reference_digest"
+            ],
+            "type": "object"
+          },
+          "gross_full_usd": {
+            "minimum": 0,
+            "type": "number"
+          },
+          "gross_observed_usd": {
+            "minimum": 0,
+            "type": "number"
+          },
+          "inferred_buy_full_usd": {
+            "minimum": 0,
+            "type": "number"
+          },
+          "inferred_sell_full_usd": {
+            "minimum": 0,
+            "type": "number"
+          },
+          "intersects": {
+            "items": {
+              "maxLength": 512,
+              "minLength": 1,
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "known_at_utc_s": {
+            "minimum": 1,
+            "type": "integer"
+          },
+          "member_coverage": {
+            "maximum": 1,
+            "minimum": 0,
+            "type": "number"
+          },
+          "membership_basis": {
+            "enum": [
+              "point_in_time",
+              "current_cohort"
+            ]
+          },
+          "membership_version": {
+            "maxLength": 512,
+            "minLength": 1,
+            "type": "string"
+          },
+          "missing_cells": {
+            "minimum": 0,
+            "type": "integer"
+          },
+          "model_neutral_gross_fraction": {
+            "maximum": 1,
+            "minimum": 0,
+            "type": "number"
+          },
+          "net_baseline": {
+            "additionalProperties": false,
+            "properties": {
+              "coverage": {
+                "anyOf": [
+                  {
+                    "maximum": 1,
+                    "minimum": 0,
+                    "type": "number"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "floor_applied": {
+                "type": "boolean"
+              },
+              "mad": {
+                "anyOf": [
+                  {
+                    "minimum": 0,
+                    "type": "number"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "median": {
+                "anyOf": [
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "n": {
+                "anyOf": [
+                  {
+                    "minimum": 0,
+                    "type": "integer"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "percentile": {
+                "anyOf": [
+                  {
+                    "maximum": 1,
+                    "minimum": 0,
+                    "type": "number"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "reference_digest": {
+                "anyOf": [
+                  {
+                    "pattern": "^[a-f0-9]{64}$",
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "scale": {
+                "anyOf": [
+                  {
+                    "minimum": 0,
+                    "type": "number"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "scheduled_sessions": {
+                "minimum": 1,
+                "type": "integer"
+              },
+              "status": {
+                "enum": [
+                  "OK",
+                  "FLOORED_SCALE",
+                  "ZERO_SCALE",
+                  "INSUFFICIENT_OBSERVATIONS",
+                  "INSUFFICIENT_COVERAGE",
+                  "WITHHELD_CORRECTED_HISTORY",
+                  "WITHHELD_INCOMPLETE_WINDOW",
+                  "WITHHELD_DIRECTION_UNAVAILABLE",
+                  "WITHHELD_ZERO_ACTIVITY",
+                  "WITHHELD_DIRECTIONAL_COVERAGE",
+                  "WITHHELD_NO_COMPLETE_REFERENCE"
+                ]
+              },
+              "z_display": {
+                "anyOf": [
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "z_raw": {
+                "anyOf": [
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              }
+            },
+            "required": [
+              "status",
+              "n",
+              "scheduled_sessions",
+              "coverage",
+              "median",
+              "mad",
+              "scale",
+              "floor_applied",
+              "z_raw",
+              "z_display",
+              "percentile",
+              "reference_digest"
+            ],
+            "type": "object"
+          },
+          "net_full_usd": {
+            "type": "number"
+          },
+          "observed_cells": {
+            "minimum": 0,
+            "type": "integer"
+          },
+          "other_estimated_gross_usd": {
+            "minimum": 0,
+            "type": "number"
+          },
+          "policy_neutral_gross_usd": {
+            "minimum": 0,
+            "type": "number"
+          },
+          "predicted_return": {
+            "type": "null"
+          },
+          "pressure_ratio_full": {
+            "anyOf": [
+              {
+                "maximum": 1,
+                "minimum": -1,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "status": {
+            "enum": [
+              "PARTIAL_COVERAGE",
+              "DIRECTION_UNAVAILABLE",
+              "ZERO_ACTIVITY",
+              "FULL_ESTIMATE"
+            ]
+          },
+          "top_member_gross_share": {
+            "maximum": 1,
+            "minimum": 0,
+            "type": "number"
+          },
+          "unestimated_gross_usd": {
+            "minimum": 0,
+            "type": "number"
+          }
+        },
+        "required": [
+          "factor_ref",
+          "membership_version",
+          "membership_basis",
+          "status",
+          "expected_cells",
+          "observed_cells",
+          "missing_cells",
+          "member_coverage",
+          "gross_observed_usd",
+          "gross_full_usd",
+          "estimated_net_observed_usd",
+          "net_full_usd",
+          "inferred_buy_full_usd",
+          "inferred_sell_full_usd",
+          "pressure_ratio_full",
+          "directionally_usable_gross_usd",
+          "directional_notional_coverage",
+          "policy_neutral_gross_usd",
+          "model_neutral_gross_fraction",
+          "other_estimated_gross_usd",
+          "unestimated_gross_usd",
+          "top_member_gross_share",
+          "effective_n_gross",
+          "known_at_utc_s",
+          "gross_baseline",
+          "net_baseline",
+          "contributions",
+          "intersects",
+          "confidence",
+          "predicted_return",
+          "customer_publishable"
+        ],
+        "type": "object"
+      },
+      "minItems": 1,
+      "type": "array"
+    },
+    "known_at_utc_s": {
+      "minimum": 1,
+      "type": "integer"
+    },
+    "market_pilot_admitted": {
+      "const": false
+    },
+    "mode": {
+      "enum": [
+        "as_observed",
+        "corrected_history"
+      ]
+    },
+    "model_input_digest": {
+      "pattern": "^[a-f0-9]{64}$",
+      "type": "string"
+    },
+    "observation_class": {
+      "const": "MODEL_INFERRED_BAR_PROXY"
+    },
+    "overlap": {
+      "items": {
+        "maxItems": 2,
+        "minItems": 2,
+        "prefixItems": [
+          {
+            "maxLength": 512,
+            "minLength": 1,
+            "type": "string"
+          },
+          {
+            "items": {
+              "maxLength": 512,
+              "minLength": 1,
+              "type": "string"
+            },
+            "minItems": 2,
+            "type": "array",
+            "uniqueItems": true
+          }
+        ],
+        "type": "array"
+      },
+      "type": "array"
+    },
+    "schema": {
+      "const": "factor_atlas.capital_pressure.read.v1"
+    },
+    "session_id": {
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$",
+      "type": "string"
+    },
+    "source_quality": {
+      "const": "NOT_ADMITTED"
+    },
+    "source_window_digest": {
+      "pattern": "^[a-f0-9]{64}$",
+      "type": "string"
+    },
+    "start_utc_s": {
+      "minimum": 1,
+      "type": "integer"
+    },
+    "sum_factor_observed_gross_usd": {
+      "minimum": 0,
+      "type": "number"
+    },
+    "union_observed_gross_usd": {
+      "minimum": 0,
+      "type": "number"
+    }
+  },
+  "required": [
+    "schema",
+    "mode",
+    "session_id",
+    "start_utc_s",
+    "end_utc_s",
+    "evaluated_cutoff_utc_s",
+    "known_at_utc_s",
+    "estimator_id",
+    "observation_class",
+    "source_quality",
+    "market_pilot_admitted",
+    "customer_publishable",
+    "union_observed_gross_usd",
+    "sum_factor_observed_gross_usd",
+    "duplicated_gross_usd",
+    "overlap",
+    "additive_market_flow_allowed",
+    "factors",
+    "source_window_digest",
+    "model_input_digest",
+    "authority"
+  ],
+  "type": "object"
+}

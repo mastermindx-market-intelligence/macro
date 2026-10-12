@@ -1,0 +1,105 @@
+{
+  "PIT_listing_identity_attested": false,
+  "actual_market_cohort_admitted": false,
+  "candidate_sha_is_source_attestation": false,
+  "ci_suite_paths": [
+    "research/factor_atlas/session2/prototype/test_disclosed_profile.py",
+    "research/factor_atlas/session2/prototype/test_intake_bridge.py",
+    "research/factor_atlas/session2/prototype/test_owner_reader_abi.py",
+    "research/factor_atlas/session2/prototype/test_pressure.py",
+    "research/factor_atlas/session2/prototype/test_pressure_oos.py",
+    "research/factor_atlas/session2/prototype/test_quote_calibration.py",
+    "research/factor_atlas/session2/prototype/test_quote_reference.py",
+    "research/factor_atlas/session2/prototype/test_quote_study.py",
+    "research/factor_atlas/session2/prototype/test_read_contract_schema.py",
+    "research/factor_atlas/session2/prototype/test_source_preflight.py",
+    "research/factor_atlas/session2/prototype/test_window_pipeline.py",
+    "research/factor_atlas/session2/prototype/test_window_pressure.py",
+    "research/factor_atlas/session2/prototype/test_witnesses.py"
+  ],
+  "ci_workflow_sha256": "e61df86a7aaf302279d985d12596e6665af56b1d921ee07ac0351cdcb0b3fc11",
+  "compatible_skillpack": "mastermind.sol_skillpack.v1/1.0.1/bootstrap1",
+  "corporate_action_monetary_basis_proven": false,
+  "custody_or_revision_signatures_attested": false,
+  "customer_release_or_trading_authority": false,
+  "full_thirteen_suite_local_passed": 392,
+  "held_decoder_source_blob": "95b53bba32eb2ebd6e7804052c31271bf1b65eed",
+  "held_decoder_source_path": "engine/entry_radar/replay/terminal_minute_observations.py",
+  "impossible_ohlc_refusal_added": true,
+  "initial_unimplemented_method_red": true,
+  "integrity_witness_path": "session2/evidence/owner_reader_abi_integrity_witness.json",
+  "integrity_witness_sha256": "71383e4a268aa8c39eceb844335dc7fcb2718fb63a0824991f6ffc4f25be00b7",
+  "market_trial_executed": false,
+  "new_adversarial_cases_failing_before_fix": 8,
+  "new_files": {
+    "session2/OWNER_READER_ABI_CONFORMANCE.md": {
+      "bytes": 7712,
+      "sha256": "ab9075120173e7a854b994e02a71859781fdc827cca897b680f55650553553e6"
+    },
+    "session2/evidence/owner_reader_abi_synthetic_witness.json": {
+      "bytes": 1056,
+      "sha256": "1337dba1b7e27b135aba3af3e40c3d03e8f506a68db0e6776409e5a45c2600ad"
+    },
+    "session2/prototype/owner_reader_abi.py": {
+      "bytes": 10132,
+      "sha256": "de1375954c2f4f65097b1b7424087c2863e90f253000e87a7eb918ae6af3fd1a"
+    },
+    "session2/prototype/test_owner_reader_abi.py": {
+      "bytes": 13100,
+      "sha256": "8a53cab59f3f5a640675a26c06001badbde7c521d0be6369aabc50f779800549"
+    }
+  },
+  "new_native_tests_passed": 35,
+  "observation": "SYNTHETIC_DECODED_OWNER_CONTRACT_ONLY",
+  "owner_basis_refusal_unchanged": true,
+  "owner_source_head": "6cff6ef8aba28dc7ee6f7779a81ef18856d9b3b6",
+  "owner_source_pr": "mastermindx-market-intelligence/macro#8623",
+  "predecessor_head": "f19efea3c21e4deec8e05e8067746993b5909ff7",
+  "prepared_at_utc": "2026-10-11T09:19:57.823763+00:00",
+  "previous_acceptance": {
+    "head": "f19efea3c21e4deec8e05e8067746993b5909ff7",
+    "local_suite_tests": 384,
+    "new_owner_abi_tests": 27
+  },
+  "prior_head_checks": {
+    "fences": "success",
+    "fences_run": 38126344307,
+    "full_ci": "in_progress_on_last_check",
+    "full_ci_run": 38126344550,
+    "native_fixture": "success",
+    "native_fixture_run": 38126344346
+  },
+  "protected_mastermind": "f381af6758533906865361373addbb0514f86d7d",
+  "real_source_read": false,
+  "row_price_volume_fingerprint_collision_closed": true,
+  "run_proof": {
+    "owner-abi-evidence-green.txt": {
+      "bytes": 99,
+      "sha256": "c6dd1cadf295f29bc407d4cfafa2265cccce90527534bf2c9d7c8ac727f8eeb3"
+    },
+    "owner-abi-evidence-red.txt": {
+      "bytes": 9510,
+      "sha256": "3079f6e4a4ca28b219ead05b8a1da133119b959489d780b2336a9f93e561eb85"
+    },
+    "owner-abi-evidence-thirteen-green.txt": {
+      "bytes": 501,
+      "sha256": "6f8ba212cd8f645df141668bf5efa368ca7694fa8773efb502b25ac659d78772"
+    },
+    "owner-abi-red.txt": {
+      "bytes": 1751,
+      "sha256": "c14b6fd1318f3c0f5fd4b783a56589c805c7cf8c4ad4a1d113c76b0ba853d602"
+    },
+    "owner-abi-second.txt": {
+      "bytes": 99,
+      "sha256": "cec34160d2ec7e8a76253c251485c32c7dff1a3a2a4412de4000f1730618fb82"
+    },
+    "owner-abi-thirteen-green.txt": {
+      "bytes": 500,
+      "sha256": "b09e93d85abc6cd2656246d4c65dbfab670cf0dce0b02f763e40a65506facc9a"
+    }
+  },
+  "schema": "factor_atlas.held_owner_reader_interop_receipt.v1",
+  "source_owner_installed": false,
+  "source_rights_attested": false,
+  "unchanged_uncommitted_rejected_read_model": true
+}

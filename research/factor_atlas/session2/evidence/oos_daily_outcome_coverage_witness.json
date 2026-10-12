@@ -1,0 +1,854 @@
+{
+  "actual_model_freeze_authenticated": false,
+  "actual_research_dataset_rights_proven": false,
+  "customer_publishable": false,
+  "exactly_eighty_percent_every_day": {
+    "authority": [
+      [
+        "may_rank",
+        false
+      ],
+      [
+        "may_alert",
+        false
+      ],
+      [
+        "may_size",
+        false
+      ],
+      [
+        "may_trade",
+        false
+      ],
+      [
+        "may_publish",
+        false
+      ]
+    ],
+    "control_mse_bps2": 1.0,
+    "customer_publishable": false,
+    "day_clusters": 20,
+    "day_equal_loss_improvement_bps2": 1.0,
+    "expected_slots": 200,
+    "input_digest": "94375cd2fa65cae4a54b7e295c3a2601f005f85a66012391d389afe7e1daa19d",
+    "is_confidence_interval": false,
+    "is_statistical_accuracy_study": false,
+    "knowledge_class": "FORECAST_PAIR_DIAGNOSTIC_NOT_TRADING_ALPHA",
+    "leave_one_day_out_high": 1.0,
+    "leave_one_day_out_low": 1.0,
+    "low_coverage_sessions": [],
+    "matured_matched_slots": 160,
+    "observed_forecast_slots": 160,
+    "observed_population_ref": "HOUSE_PIT_PROPOSED",
+    "outcome_coverage": 0.8,
+    "per_day": [
+      {
+        "control_day_mse_bps2": 1.0,
+        "expected_slots": 10,
+        "improvement_bps2": 1.0,
+        "matured_slots": 8,
+        "pressure_day_mse_bps2": 0.0,
+        "session_id": "2026-02-02"
+      },
+      {
+        "control_day_mse_bps2": 1.0,
+        "expected_slots": 10,
+        "improvement_bps2": 1.0,
+        "matured_slots": 8,
+        "pressure_day_mse_bps2": 0.0,
+        "session_id": "2026-02-03"
+      },
+      {
+        "control_day_mse_bps2": 1.0,
+        "expected_slots": 10,
+        "improvement_bps2": 1.0,
+        "matured_slots": 8,
+        "pressure_day_mse_bps2": 0.0,
+        "session_id": "2026-02-04"
+      },
+      {
+        "control_day_mse_bps2": 1.0,
+        "expected_slots": 10,
+        "improvement_bps2": 1.0,
+        "matured_slots": 8,
+        "pressure_day_mse_bps2": 0.0,
+        "session_id": "2026-02-05"
+      },
+      {
+        "control_day_mse_bps2": 1.0,
+        "expected_slots": 10,
+        "improvement_bps2": 1.0,
+        "matured_slots": 8,
+        "pressure_day_mse_bps2": 0.0,
+        "session_id": "2026-02-06"
+      },
+      {
+        "control_day_mse_bps2": 1.0,
+        "expected_slots": 10,
+        "improvement_bps2": 1.0,
+        "matured_slots": 8,
+        "pressure_day_mse_bps2": 0.0,
+        "session_id": "2026-02-09"
+      },
+      {
+        "control_day_mse_bps2": 1.0,
+        "expected_slots": 10,
+        "improvement_bps2": 1.0,
+        "matured_slots": 8,
+        "pressure_day_mse_bps2": 0.0,
+        "session_id": "2026-02-10"
+      },
+      {
+        "control_day_mse_bps2": 1.0,
+        "expected_slots": 10,
+        "improvement_bps2": 1.0,
+        "matured_slots": 8,
+        "pressure_day_mse_bps2": 0.0,
+        "session_id": "2026-02-11"
+      },
+      {
+        "control_day_mse_bps2": 1.0,
+        "expected_slots": 10,
+        "improvement_bps2": 1.0,
+        "matured_slots": 8,
+        "pressure_day_mse_bps2": 0.0,
+        "session_id": "2026-02-12"
+      },
+      {
+        "control_day_mse_bps2": 1.0,
+        "expected_slots": 10,
+        "improvement_bps2": 1.0,
+        "matured_slots": 8,
+        "pressure_day_mse_bps2": 0.0,
+        "session_id": "2026-02-13"
+      },
+      {
+        "control_day_mse_bps2": 1.0,
+        "expected_slots": 10,
+        "improvement_bps2": 1.0,
+        "matured_slots": 8,
+        "pressure_day_mse_bps2": 0.0,
+        "session_id": "2026-02-16"
+      },
+      {
+        "control_day_mse_bps2": 1.0,
+        "expected_slots": 10,
+        "improvement_bps2": 1.0,
+        "matured_slots": 8,
+        "pressure_day_mse_bps2": 0.0,
+        "session_id": "2026-02-17"
+      },
+      {
+        "control_day_mse_bps2": 1.0,
+        "expected_slots": 10,
+        "improvement_bps2": 1.0,
+        "matured_slots": 8,
+        "pressure_day_mse_bps2": 0.0,
+        "session_id": "2026-02-18"
+      },
+      {
+        "control_day_mse_bps2": 1.0,
+        "expected_slots": 10,
+        "improvement_bps2": 1.0,
+        "matured_slots": 8,
+        "pressure_day_mse_bps2": 0.0,
+        "session_id": "2026-02-19"
+      },
+      {
+        "control_day_mse_bps2": 1.0,
+        "expected_slots": 10,
+        "improvement_bps2": 1.0,
+        "matured_slots": 8,
+        "pressure_day_mse_bps2": 0.0,
+        "session_id": "2026-02-20"
+      },
+      {
+        "control_day_mse_bps2": 1.0,
+        "expected_slots": 10,
+        "improvement_bps2": 1.0,
+        "matured_slots": 8,
+        "pressure_day_mse_bps2": 0.0,
+        "session_id": "2026-02-23"
+      },
+      {
+        "control_day_mse_bps2": 1.0,
+        "expected_slots": 10,
+        "improvement_bps2": 1.0,
+        "matured_slots": 8,
+        "pressure_day_mse_bps2": 0.0,
+        "session_id": "2026-02-24"
+      },
+      {
+        "control_day_mse_bps2": 1.0,
+        "expected_slots": 10,
+        "improvement_bps2": 1.0,
+        "matured_slots": 8,
+        "pressure_day_mse_bps2": 0.0,
+        "session_id": "2026-02-25"
+      },
+      {
+        "control_day_mse_bps2": 1.0,
+        "expected_slots": 10,
+        "improvement_bps2": 1.0,
+        "matured_slots": 8,
+        "pressure_day_mse_bps2": 0.0,
+        "session_id": "2026-02-26"
+      },
+      {
+        "control_day_mse_bps2": 1.0,
+        "expected_slots": 10,
+        "improvement_bps2": 1.0,
+        "matured_slots": 8,
+        "pressure_day_mse_bps2": 0.0,
+        "session_id": "2026-02-27"
+      }
+    ],
+    "pressure_mse_bps2": 0.0,
+    "real_market_data_admitted": false,
+    "relative_mse_improvement": 1.0,
+    "scheduled_day_clusters": 20,
+    "source_rights_proven": false,
+    "status": "DESCRIPTIVE_OOS_COMPARISON",
+    "target_ref": "NEXT_30M_RESIDUAL_RETURN_BPS",
+    "unavailable_slots": 40
+  },
+  "fixed_minimum_global_and_each_day_coverage": 0.8,
+  "market_pilot_admitted": false,
+  "nineteen_days_full_one_day_one_of_ten": {
+    "authority": [
+      [
+        "may_rank",
+        false
+      ],
+      [
+        "may_alert",
+        false
+      ],
+      [
+        "may_size",
+        false
+      ],
+      [
+        "may_trade",
+        false
+      ],
+      [
+        "may_publish",
+        false
+      ]
+    ],
+    "control_mse_bps2": null,
+    "customer_publishable": false,
+    "day_clusters": 20,
+    "day_equal_loss_improvement_bps2": null,
+    "expected_slots": 200,
+    "input_digest": "f17a4372da4179944701f4975446e881fd06c83dc8e6194761736a23a1f667c0",
+    "is_confidence_interval": false,
+    "is_statistical_accuracy_study": false,
+    "knowledge_class": "FORECAST_PAIR_DIAGNOSTIC_NOT_TRADING_ALPHA",
+    "leave_one_day_out_high": null,
+    "leave_one_day_out_low": null,
+    "low_coverage_sessions": [
+      "2026-02-27"
+    ],
+    "matured_matched_slots": 191,
+    "observed_forecast_slots": 191,
+    "observed_population_ref": "HOUSE_PIT_PROPOSED",
+    "outcome_coverage": 0.955,
+    "per_day": [
+      {
+        "control_day_mse_bps2": 1.0,
+        "expected_slots": 10,
+        "improvement_bps2": 1.0,
+        "matured_slots": 10,
+        "pressure_day_mse_bps2": 0.0,
+        "session_id": "2026-02-02"
+      },
+      {
+        "control_day_mse_bps2": 1.0,
+        "expected_slots": 10,
+        "improvement_bps2": 1.0,
+        "matured_slots": 10,
+        "pressure_day_mse_bps2": 0.0,
+        "session_id": "2026-02-03"
+      },
+      {
+        "control_day_mse_bps2": 1.0,
+        "expected_slots": 10,
+        "improvement_bps2": 1.0,
+        "matured_slots": 10,
+        "pressure_day_mse_bps2": 0.0,
+        "session_id": "2026-02-04"
+      },
+      {
+        "control_day_mse_bps2": 1.0,
+        "expected_slots": 10,
+        "improvement_bps2": 1.0,
+        "matured_slots": 10,
+        "pressure_day_mse_bps2": 0.0,
+        "session_id": "2026-02-05"
+      },
+      {
+        "control_day_mse_bps2": 1.0,
+        "expected_slots": 10,
+        "improvement_bps2": 1.0,
+        "matured_slots": 10,
+        "pressure_day_mse_bps2": 0.0,
+        "session_id": "2026-02-06"
+      },
+      {
+        "control_day_mse_bps2": 1.0,
+        "expected_slots": 10,
+        "improvement_bps2": 1.0,
+        "matured_slots": 10,
+        "pressure_day_mse_bps2": 0.0,
+        "session_id": "2026-02-09"
+      },
+      {
+        "control_day_mse_bps2": 1.0,
+        "expected_slots": 10,
+        "improvement_bps2": 1.0,
+        "matured_slots": 10,
+        "pressure_day_mse_bps2": 0.0,
+        "session_id": "2026-02-10"
+      },
+      {
+        "control_day_mse_bps2": 1.0,
+        "expected_slots": 10,
+        "improvement_bps2": 1.0,
+        "matured_slots": 10,
+        "pressure_day_mse_bps2": 0.0,
+        "session_id": "2026-02-11"
+      },
+      {
+        "control_day_mse_bps2": 1.0,
+        "expected_slots": 10,
+        "improvement_bps2": 1.0,
+        "matured_slots": 10,
+        "pressure_day_mse_bps2": 0.0,
+        "session_id": "2026-02-12"
+      },
+      {
+        "control_day_mse_bps2": 1.0,
+        "expected_slots": 10,
+        "improvement_bps2": 1.0,
+        "matured_slots": 10,
+        "pressure_day_mse_bps2": 0.0,
+        "session_id": "2026-02-13"
+      },
+      {
+        "control_day_mse_bps2": 1.0,
+        "expected_slots": 10,
+        "improvement_bps2": 1.0,
+        "matured_slots": 10,
+        "pressure_day_mse_bps2": 0.0,
+        "session_id": "2026-02-16"
+      },
+      {
+        "control_day_mse_bps2": 1.0,
+        "expected_slots": 10,
+        "improvement_bps2": 1.0,
+        "matured_slots": 10,
+        "pressure_day_mse_bps2": 0.0,
+        "session_id": "2026-02-17"
+      },
+      {
+        "control_day_mse_bps2": 1.0,
+        "expected_slots": 10,
+        "improvement_bps2": 1.0,
+        "matured_slots": 10,
+        "pressure_day_mse_bps2": 0.0,
+        "session_id": "2026-02-18"
+      },
+      {
+        "control_day_mse_bps2": 1.0,
+        "expected_slots": 10,
+        "improvement_bps2": 1.0,
+        "matured_slots": 10,
+        "pressure_day_mse_bps2": 0.0,
+        "session_id": "2026-02-19"
+      },
+      {
+        "control_day_mse_bps2": 1.0,
+        "expected_slots": 10,
+        "improvement_bps2": 1.0,
+        "matured_slots": 10,
+        "pressure_day_mse_bps2": 0.0,
+        "session_id": "2026-02-20"
+      },
+      {
+        "control_day_mse_bps2": 1.0,
+        "expected_slots": 10,
+        "improvement_bps2": 1.0,
+        "matured_slots": 10,
+        "pressure_day_mse_bps2": 0.0,
+        "session_id": "2026-02-23"
+      },
+      {
+        "control_day_mse_bps2": 1.0,
+        "expected_slots": 10,
+        "improvement_bps2": 1.0,
+        "matured_slots": 10,
+        "pressure_day_mse_bps2": 0.0,
+        "session_id": "2026-02-24"
+      },
+      {
+        "control_day_mse_bps2": 1.0,
+        "expected_slots": 10,
+        "improvement_bps2": 1.0,
+        "matured_slots": 10,
+        "pressure_day_mse_bps2": 0.0,
+        "session_id": "2026-02-25"
+      },
+      {
+        "control_day_mse_bps2": 1.0,
+        "expected_slots": 10,
+        "improvement_bps2": 1.0,
+        "matured_slots": 10,
+        "pressure_day_mse_bps2": 0.0,
+        "session_id": "2026-02-26"
+      },
+      {
+        "control_day_mse_bps2": 1.0,
+        "expected_slots": 10,
+        "improvement_bps2": 1.0,
+        "matured_slots": 1,
+        "pressure_day_mse_bps2": 0.0,
+        "session_id": "2026-02-27"
+      }
+    ],
+    "pressure_mse_bps2": null,
+    "real_market_data_admitted": false,
+    "relative_mse_improvement": null,
+    "scheduled_day_clusters": 20,
+    "source_rights_proven": false,
+    "status": "INSUFFICIENT_DAY_OUTCOME_COVERAGE",
+    "target_ref": "NEXT_30M_RESIDUAL_RETURN_BPS",
+    "unavailable_slots": 9
+  },
+  "nineteen_days_full_one_day_seven_of_ten": {
+    "authority": [
+      [
+        "may_rank",
+        false
+      ],
+      [
+        "may_alert",
+        false
+      ],
+      [
+        "may_size",
+        false
+      ],
+      [
+        "may_trade",
+        false
+      ],
+      [
+        "may_publish",
+        false
+      ]
+    ],
+    "control_mse_bps2": null,
+    "customer_publishable": false,
+    "day_clusters": 20,
+    "day_equal_loss_improvement_bps2": null,
+    "expected_slots": 200,
+    "input_digest": "f02702a4dbc2bb3a4ef95ee275e5ba8f7aa1e3e2810f20e073728dca110272d7",
+    "is_confidence_interval": false,
+    "is_statistical_accuracy_study": false,
+    "knowledge_class": "FORECAST_PAIR_DIAGNOSTIC_NOT_TRADING_ALPHA",
+    "leave_one_day_out_high": null,
+    "leave_one_day_out_low": null,
+    "low_coverage_sessions": [
+      "2026-02-27"
+    ],
+    "matured_matched_slots": 197,
+    "observed_forecast_slots": 197,
+    "observed_population_ref": "HOUSE_PIT_PROPOSED",
+    "outcome_coverage": 0.985,
+    "per_day": [
+      {
+        "control_day_mse_bps2": 1.0,
+        "expected_slots": 10,
+        "improvement_bps2": 1.0,
+        "matured_slots": 10,
+        "pressure_day_mse_bps2": 0.0,
+        "session_id": "2026-02-02"
+      },
+      {
+        "control_day_mse_bps2": 1.0,
+        "expected_slots": 10,
+        "improvement_bps2": 1.0,
+        "matured_slots": 10,
+        "pressure_day_mse_bps2": 0.0,
+        "session_id": "2026-02-03"
+      },
+      {
+        "control_day_mse_bps2": 1.0,
+        "expected_slots": 10,
+        "improvement_bps2": 1.0,
+        "matured_slots": 10,
+        "pressure_day_mse_bps2": 0.0,
+        "session_id": "2026-02-04"
+      },
+      {
+        "control_day_mse_bps2": 1.0,
+        "expected_slots": 10,
+        "improvement_bps2": 1.0,
+        "matured_slots": 10,
+        "pressure_day_mse_bps2": 0.0,
+        "session_id": "2026-02-05"
+      },
+      {
+        "control_day_mse_bps2": 1.0,
+        "expected_slots": 10,
+        "improvement_bps2": 1.0,
+        "matured_slots": 10,
+        "pressure_day_mse_bps2": 0.0,
+        "session_id": "2026-02-06"
+      },
+      {
+        "control_day_mse_bps2": 1.0,
+        "expected_slots": 10,
+        "improvement_bps2": 1.0,
+        "matured_slots": 10,
+        "pressure_day_mse_bps2": 0.0,
+        "session_id": "2026-02-09"
+      },
+      {
+        "control_day_mse_bps2": 1.0,
+        "expected_slots": 10,
+        "improvement_bps2": 1.0,
+        "matured_slots": 10,
+        "pressure_day_mse_bps2": 0.0,
+        "session_id": "2026-02-10"
+      },
+      {
+        "control_day_mse_bps2": 1.0,
+        "expected_slots": 10,
+        "improvement_bps2": 1.0,
+        "matured_slots": 10,
+        "pressure_day_mse_bps2": 0.0,
+        "session_id": "2026-02-11"
+      },
+      {
+        "control_day_mse_bps2": 1.0,
+        "expected_slots": 10,
+        "improvement_bps2": 1.0,
+        "matured_slots": 10,
+        "pressure_day_mse_bps2": 0.0,
+        "session_id": "2026-02-12"
+      },
+      {
+        "control_day_mse_bps2": 1.0,
+        "expected_slots": 10,
+        "improvement_bps2": 1.0,
+        "matured_slots": 10,
+        "pressure_day_mse_bps2": 0.0,
+        "session_id": "2026-02-13"
+      },
+      {
+        "control_day_mse_bps2": 1.0,
+        "expected_slots": 10,
+        "improvement_bps2": 1.0,
+        "matured_slots": 10,
+        "pressure_day_mse_bps2": 0.0,
+        "session_id": "2026-02-16"
+      },
+      {
+        "control_day_mse_bps2": 1.0,
+        "expected_slots": 10,
+        "improvement_bps2": 1.0,
+        "matured_slots": 10,
+        "pressure_day_mse_bps2": 0.0,
+        "session_id": "2026-02-17"
+      },
+      {
+        "control_day_mse_bps2": 1.0,
+        "expected_slots": 10,
+        "improvement_bps2": 1.0,
+        "matured_slots": 10,
+        "pressure_day_mse_bps2": 0.0,
+        "session_id": "2026-02-18"
+      },
+      {
+        "control_day_mse_bps2": 1.0,
+        "expected_slots": 10,
+        "improvement_bps2": 1.0,
+        "matured_slots": 10,
+        "pressure_day_mse_bps2": 0.0,
+        "session_id": "2026-02-19"
+      },
+      {
+        "control_day_mse_bps2": 1.0,
+        "expected_slots": 10,
+        "improvement_bps2": 1.0,
+        "matured_slots": 10,
+        "pressure_day_mse_bps2": 0.0,
+        "session_id": "2026-02-20"
+      },
+      {
+        "control_day_mse_bps2": 1.0,
+        "expected_slots": 10,
+        "improvement_bps2": 1.0,
+        "matured_slots": 10,
+        "pressure_day_mse_bps2": 0.0,
+        "session_id": "2026-02-23"
+      },
+      {
+        "control_day_mse_bps2": 1.0,
+        "expected_slots": 10,
+        "improvement_bps2": 1.0,
+        "matured_slots": 10,
+        "pressure_day_mse_bps2": 0.0,
+        "session_id": "2026-02-24"
+      },
+      {
+        "control_day_mse_bps2": 1.0,
+        "expected_slots": 10,
+        "improvement_bps2": 1.0,
+        "matured_slots": 10,
+        "pressure_day_mse_bps2": 0.0,
+        "session_id": "2026-02-25"
+      },
+      {
+        "control_day_mse_bps2": 1.0,
+        "expected_slots": 10,
+        "improvement_bps2": 1.0,
+        "matured_slots": 10,
+        "pressure_day_mse_bps2": 0.0,
+        "session_id": "2026-02-26"
+      },
+      {
+        "control_day_mse_bps2": 1.0,
+        "expected_slots": 10,
+        "improvement_bps2": 1.0,
+        "matured_slots": 7,
+        "pressure_day_mse_bps2": 0.0,
+        "session_id": "2026-02-27"
+      }
+    ],
+    "pressure_mse_bps2": null,
+    "real_market_data_admitted": false,
+    "relative_mse_improvement": null,
+    "scheduled_day_clusters": 20,
+    "source_rights_proven": false,
+    "status": "INSUFFICIENT_DAY_OUTCOME_COVERAGE",
+    "target_ref": "NEXT_30M_RESIDUAL_RETURN_BPS",
+    "unavailable_slots": 3
+  },
+  "ninety_percent_every_day": {
+    "authority": [
+      [
+        "may_rank",
+        false
+      ],
+      [
+        "may_alert",
+        false
+      ],
+      [
+        "may_size",
+        false
+      ],
+      [
+        "may_trade",
+        false
+      ],
+      [
+        "may_publish",
+        false
+      ]
+    ],
+    "control_mse_bps2": 1.0,
+    "customer_publishable": false,
+    "day_clusters": 20,
+    "day_equal_loss_improvement_bps2": 1.0,
+    "expected_slots": 200,
+    "input_digest": "709b4aaed6476c6bf03026dac0dfce594df099c5e0b525076cbe1ba5d82a2154",
+    "is_confidence_interval": false,
+    "is_statistical_accuracy_study": false,
+    "knowledge_class": "FORECAST_PAIR_DIAGNOSTIC_NOT_TRADING_ALPHA",
+    "leave_one_day_out_high": 1.0,
+    "leave_one_day_out_low": 1.0,
+    "low_coverage_sessions": [],
+    "matured_matched_slots": 180,
+    "observed_forecast_slots": 180,
+    "observed_population_ref": "HOUSE_PIT_PROPOSED",
+    "outcome_coverage": 0.9,
+    "per_day": [
+      {
+        "control_day_mse_bps2": 1.0,
+        "expected_slots": 10,
+        "improvement_bps2": 1.0,
+        "matured_slots": 9,
+        "pressure_day_mse_bps2": 0.0,
+        "session_id": "2026-02-02"
+      },
+      {
+        "control_day_mse_bps2": 1.0,
+        "expected_slots": 10,
+        "improvement_bps2": 1.0,
+        "matured_slots": 9,
+        "pressure_day_mse_bps2": 0.0,
+        "session_id": "2026-02-03"
+      },
+      {
+        "control_day_mse_bps2": 1.0,
+        "expected_slots": 10,
+        "improvement_bps2": 1.0,
+        "matured_slots": 9,
+        "pressure_day_mse_bps2": 0.0,
+        "session_id": "2026-02-04"
+      },
+      {
+        "control_day_mse_bps2": 1.0,
+        "expected_slots": 10,
+        "improvement_bps2": 1.0,
+        "matured_slots": 9,
+        "pressure_day_mse_bps2": 0.0,
+        "session_id": "2026-02-05"
+      },
+      {
+        "control_day_mse_bps2": 1.0,
+        "expected_slots": 10,
+        "improvement_bps2": 1.0,
+        "matured_slots": 9,
+        "pressure_day_mse_bps2": 0.0,
+        "session_id": "2026-02-06"
+      },
+      {
+        "control_day_mse_bps2": 1.0,
+        "expected_slots": 10,
+        "improvement_bps2": 1.0,
+        "matured_slots": 9,
+        "pressure_day_mse_bps2": 0.0,
+        "session_id": "2026-02-09"
+      },
+      {
+        "control_day_mse_bps2": 1.0,
+        "expected_slots": 10,
+        "improvement_bps2": 1.0,
+        "matured_slots": 9,
+        "pressure_day_mse_bps2": 0.0,
+        "session_id": "2026-02-10"
+      },
+      {
+        "control_day_mse_bps2": 1.0,
+        "expected_slots": 10,
+        "improvement_bps2": 1.0,
+        "matured_slots": 9,
+        "pressure_day_mse_bps2": 0.0,
+        "session_id": "2026-02-11"
+      },
+      {
+        "control_day_mse_bps2": 1.0,
+        "expected_slots": 10,
+        "improvement_bps2": 1.0,
+        "matured_slots": 9,
+        "pressure_day_mse_bps2": 0.0,
+        "session_id": "2026-02-12"
+      },
+      {
+        "control_day_mse_bps2": 1.0,
+        "expected_slots": 10,
+        "improvement_bps2": 1.0,
+        "matured_slots": 9,
+        "pressure_day_mse_bps2": 0.0,
+        "session_id": "2026-02-13"
+      },
+      {
+        "control_day_mse_bps2": 1.0,
+        "expected_slots": 10,
+        "improvement_bps2": 1.0,
+        "matured_slots": 9,
+        "pressure_day_mse_bps2": 0.0,
+        "session_id": "2026-02-16"
+      },
+      {
+        "control_day_mse_bps2": 1.0,
+        "expected_slots": 10,
+        "improvement_bps2": 1.0,
+        "matured_slots": 9,
+        "pressure_day_mse_bps2": 0.0,
+        "session_id": "2026-02-17"
+      },
+      {
+        "control_day_mse_bps2": 1.0,
+        "expected_slots": 10,
+        "improvement_bps2": 1.0,
+        "matured_slots": 9,
+        "pressure_day_mse_bps2": 0.0,
+        "session_id": "2026-02-18"
+      },
+      {
+        "control_day_mse_bps2": 1.0,
+        "expected_slots": 10,
+        "improvement_bps2": 1.0,
+        "matured_slots": 9,
+        "pressure_day_mse_bps2": 0.0,
+        "session_id": "2026-02-19"
+      },
+      {
+        "control_day_mse_bps2": 1.0,
+        "expected_slots": 10,
+        "improvement_bps2": 1.0,
+        "matured_slots": 9,
+        "pressure_day_mse_bps2": 0.0,
+        "session_id": "2026-02-20"
+      },
+      {
+        "control_day_mse_bps2": 1.0,
+        "expected_slots": 10,
+        "improvement_bps2": 1.0,
+        "matured_slots": 9,
+        "pressure_day_mse_bps2": 0.0,
+        "session_id": "2026-02-23"
+      },
+      {
+        "control_day_mse_bps2": 1.0,
+        "expected_slots": 10,
+        "improvement_bps2": 1.0,
+        "matured_slots": 9,
+        "pressure_day_mse_bps2": 0.0,
+        "session_id": "2026-02-24"
+      },
+      {
+        "control_day_mse_bps2": 1.0,
+        "expected_slots": 10,
+        "improvement_bps2": 1.0,
+        "matured_slots": 9,
+        "pressure_day_mse_bps2": 0.0,
+        "session_id": "2026-02-25"
+      },
+      {
+        "control_day_mse_bps2": 1.0,
+        "expected_slots": 10,
+        "improvement_bps2": 1.0,
+        "matured_slots": 9,
+        "pressure_day_mse_bps2": 0.0,
+        "session_id": "2026-02-26"
+      },
+      {
+        "control_day_mse_bps2": 1.0,
+        "expected_slots": 10,
+        "improvement_bps2": 1.0,
+        "matured_slots": 9,
+        "pressure_day_mse_bps2": 0.0,
+        "session_id": "2026-02-27"
+      }
+    ],
+    "pressure_mse_bps2": 0.0,
+    "real_market_data_admitted": false,
+    "relative_mse_improvement": 1.0,
+    "scheduled_day_clusters": 20,
+    "source_rights_proven": false,
+    "status": "DESCRIPTIVE_OOS_COMPARISON",
+    "target_ref": "NEXT_30M_RESIDUAL_RETURN_BPS",
+    "unavailable_slots": 20
+  },
+  "schema": "factor_atlas.pressure_oos_day_label_coverage_falsifier.v1",
+  "source": "FABRICATED_PRE_FROZEN_FORECASTS_AND_EVENTUAL_LABELS",
+  "statistical_accuracy_proven": false
+}

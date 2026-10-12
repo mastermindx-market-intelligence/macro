@@ -1,0 +1,42 @@
+{
+  "checks": {
+    "complete_claim": {
+      "admission_state": "NOT_ADMITTED",
+      "authority_false": true,
+      "expected": 12,
+      "fingerprint": "f2e41e21e1bee216afafc014df2d7b7d572172e0944929e9aa0834b33070e789",
+      "metadata_complete": true,
+      "owner_review_required": true,
+      "represented": 12
+    },
+    "empty_claim": {
+      "expected": 12,
+      "missing": 12,
+      "unknown": 12
+    },
+    "late_reader": {
+      "reasons": [
+        "READER_AFTER_CUTOFF"
+      ]
+    },
+    "unproven_basis": {
+      "reasons": [
+        "MONETARY_BASIS_UNPROVEN"
+      ]
+    }
+  },
+  "data_kind": "FABRICATED_METADATA_NOT_LIVE_MARKET_DATA",
+  "license_attested": false,
+  "market_pilot_admitted": false,
+  "remains_unverified": [
+    "UNCHECKED_CUSTODY",
+    "INPUT_DIGEST_NOT_AUTHENTICATED",
+    "EXTERNAL_SOURCE_RIGHTS_UNPROVEN",
+    "SOURCE_BASIS_OWNER_UNVERIFIED",
+    "CALENDAR_OWNER_UNVERIFIED",
+    "LISTING_IDENTITY_OWNER_UNVERIFIED",
+    "DATASET_CONDITIONS_UNVERIFIED"
+  ],
+  "schema": "factor_atlas.source_preflight_synthetic_witness.v1",
+  "source_owner_attested": false
+}
