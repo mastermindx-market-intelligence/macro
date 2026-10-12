@@ -18,6 +18,7 @@ import sys
 import tempfile
 import unittest
 from pathlib import Path
+from unittest import mock
 
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parent
@@ -345,6 +346,279 @@ class SideEffectTests(unittest.TestCase):
                 re.search(rf"^\s*(import|from)\s+{name}\b", source, re.MULTILINE),
                 f"adapter must not import {name}",
             )
+
+
+# ── Q02-U1: as-of receipt, scaler causality, no-rescue and label refusals ──
+
+def _reference_module():
+    raw, _ = adapter.read_pinned_bytes(str(REFERENCE), "reference", adapter.EXPECTED_REFERENCE_SHA256)
+    return adapter.load_validated_reference(raw, str(REFERENCE))
+
+
+def _mutant_reference(testcase, old: bytes, new: bytes):
+    raw, _ = adapter.read_pinned_bytes(str(REFERENCE), "reference", adapter.EXPECTED_REFERENCE_SHA256)
+    testcase.assertEqual(raw.count(old), 1)
+    return adapter.load_validated_reference(
+        raw.replace(old, new), str(REFERENCE), name="options_p3_reference_mutant"
+    )
+
+
+# Inline copy of the reference chronology row (pilot-p3-reference.py:404-410).
+_BASE_RECORD = {
+    "id": "historical-a",
+    "source_revision_id": "synthetic-source-a",
+    "feature_revision_id": "synthetic-feature-a",
+    "baseline_revision_id": "synthetic-baseline-a",
+    "label_revision_id": "synthetic-label-a",
+    "formation_at_ns": 1000,
+    "label_mature_at_ns": 2000,
+    "label_revision_available_at_ns": 2000,
+    "feature_input_available_at_ns": 900,
+    "feature_published_at_ns": 950,
+    "feature_received_at_ns": 980,
+    "nuisance_fit_at_ns": 800,
+    "nuisance_latest_training_label_mature_at_ns": 790,
+    "baseline_input_available_at_ns": 900,
+    "baseline_fit_at_ns": 850,
+    "baseline_latest_training_label_mature_at_ns": 840,
+    "baseline_published_at_ns": 960,
+    "baseline_received_at_ns": 990,
+}
+
+
+def _scaler_history():
+    # Inline copy of the reference scaler census (pilot-p3-reference.py:426-427).
+    return [
+        {
+            "root": "SYNTHETIC",
+            "clock_bin": "09:35",
+            "session": f"session-{i:03d}",
+            "formation_at_ns": 100 + i,
+            "available_at_ns": 101 + i,
+            "eligible": True,
+            "value": float(i),
+        }
+        for i in range(65)
+    ]
+
+
+def _no_rescue_violations(report) -> list[str]:
+    violations = []
+    expected_policy = {
+        "beta_domain": [-1, 1],
+        "bracket_tolerance": 1e-10,
+        "max_iterations": 100,
+        "intercept": False,
+        "epsilon_floor": False,
+        "failed_row_fallback": False,
+    }
+    if report.get("reference_solver_policy") != expected_policy:
+        violations.append("reference_solver_policy")
+    expected_codes = {
+        "negative_target_is_not_dropped": "INVALID_DOMAIN",
+        "zero_baseline_is_not_floored": "INVALID_DOMAIN",
+        "nonfinite_feature_is_not_clipped": "NONFINITE_INPUT",
+        "positive_variance_underflow_is_not_zero": "POSITIVE_UNDERFLOW",
+        "zero_weight_does_not_drop_failed_row": "INVALID_DOMAIN",
+        "empty_fit_does_not_fallback": "NO_TRAINING_ROWS",
+        "scaler_zero_MAD_refuses": "ZERO_MAD",
+        "invalid_scale_cannot_epsilon_rescue": "INVALID_SCALE",
+    }
+    cases = {}
+    for case in report.get("reference_cases") or []:
+        if isinstance(case, dict):
+            cases[case.get("case")] = case
+    for name, code in expected_codes.items():
+        case = cases.get(name)
+        if case is None:
+            violations.append(f"missing:{name}")
+            continue
+        if case.get("result") != "PASS":
+            violations.append(f"result:{name}")
+        if case.get("refusal") != code:
+            violations.append(f"refusal:{name}")
+    clipped = cases.get("RZ_is_unclipped")
+    if clipped is None:
+        violations.append("missing:RZ_is_unclipped")
+    else:
+        if clipped.get("result") != "PASS":
+            violations.append("result:RZ_is_unclipped")
+        if "refusal" in clipped:
+            violations.append("refusal:RZ_is_unclipped")
+        observed = clipped.get("observed")
+        z_value = observed.get("z") if isinstance(observed, dict) else None
+        if isinstance(z_value, bool) or not isinstance(z_value, (int, float)) or not z_value > 1000:
+            violations.append("observed.z:RZ_is_unclipped")
+    return violations
+
+
+def _increment_claims(obj, path="$") -> list[str]:
+    """Path of every dict key or string containing 'increment', case-insensitive."""
+    found = []
+    if isinstance(obj, dict):
+        for key, value in obj.items():
+            child = f"{path}.{key}"
+            if isinstance(key, str) and "increment" in key.lower():
+                found.append(child)
+            found.extend(_increment_claims(value, child))
+    elif isinstance(obj, list):
+        for index, value in enumerate(obj):
+            found.extend(_increment_claims(value, f"{path}[{index}]"))
+    elif isinstance(obj, str) and "increment" in obj.lower():
+        found.append(path)
+    return found
+
+
+class Q02U1CausalityAndNoRescueTests(unittest.TestCase):
+    def test_reference_refuses_late_baseline_board_receipt(self):
+        ref = _reference_module()
+        self.assertEqual(
+            ref.validate_training_chronology([_BASE_RECORD], 3000, 4000)["status"],
+            "ORDERING_VALID",
+        )
+        expected_detail = "baseline:historical-a"
+        overrides = (
+            {"baseline_received_at_ns": 1001},
+            {"baseline_published_at_ns": 1001, "baseline_received_at_ns": 1001},
+            {"baseline_input_available_at_ns": 961},
+            {"baseline_input_available_at_ns": 1001},
+        )
+        for override in overrides:
+            row = {**_BASE_RECORD, **override}
+            with self.assertRaises(ref.Refusal) as ctx:
+                ref.validate_training_chronology([row], 3000, 4000)
+            self.assertEqual(ctx.exception.code, "PREDICTION_NOT_ASOF")
+            self.assertEqual(ctx.exception.detail, expected_detail)
+
+        mutant = _mutant_reference(
+            self,
+            b'for prefix in ("feature", "baseline"):',
+            b'for prefix in ("feature",):',
+        )
+        for override in overrides:
+            row = {**_BASE_RECORD, **override}
+            result = mutant.validate_training_chronology([row], 3000, 4000)
+            self.assertEqual(result["status"], "ORDERING_VALID")
+
+    def test_reference_refuses_feature_input_after_publication_or_formation(self):
+        ref = _reference_module()
+        expected_detail = "feature:historical-a"
+        overrides = (
+            {"feature_input_available_at_ns": 951},
+            {"feature_input_available_at_ns": 1001},
+        )
+        for override in overrides:
+            row = {**_BASE_RECORD, **override}
+            with self.assertRaises(ref.Refusal) as ctx:
+                ref.validate_training_chronology([row], 3000, 4000)
+            self.assertEqual(ctx.exception.code, "PREDICTION_NOT_ASOF")
+            self.assertEqual(ctx.exception.detail, expected_detail)
+
+        mutant = _mutant_reference(
+            self,
+            b'clocks[f"{prefix}_input_available_at_ns"] <= ',
+            b"",
+        )
+        for override in overrides:
+            row = {**_BASE_RECORD, **override}
+            result = mutant.validate_training_chronology([row], 3000, 4000)
+            self.assertEqual(result["status"], "ORDERING_VALID")
+
+    def test_scaler_refuses_observation_at_fit_and_inverted_availability(self):
+        ref = _reference_module()
+        history = _scaler_history()
+        self.assertEqual(
+            ref.robust_scaler(history, 1000, "SYNTHETIC", "09:35")["status"],
+            "SCALER_FIT",
+        )
+        expected_code = "SCALER_FUTURE_INFORMATION"
+        variant_at_fit = history[:-1] + [
+            {**history[-1], "formation_at_ns": 1000, "available_at_ns": 1000}
+        ]
+        variant_inverted = history[:-1] + [{**history[-1], "available_at_ns": 163}]
+        for variant in (variant_at_fit, variant_inverted):
+            with self.assertRaises(ref.Refusal) as ctx:
+                ref.robust_scaler(variant, 1000, "SYNTHETIC", "09:35")
+            self.assertEqual(ctx.exception.code, expected_code)
+            self.assertEqual(ctx.exception.detail, "session-064")
+
+        drop_observed_bound = _mutant_reference(self, b"observed >= cutoff or ", b"")
+        self.assertEqual(
+            drop_observed_bound.robust_scaler(variant_at_fit, 1000, "SYNTHETIC", "09:35")["status"],
+            "SCALER_FIT",
+        )
+        drop_inverted_bound = _mutant_reference(self, b" or available < observed", b"")
+        self.assertEqual(
+            drop_inverted_bound.robust_scaler(variant_inverted, 1000, "SYNTHETIC", "09:35")["status"],
+            "SCALER_FIT",
+        )
+
+    def test_reference_solver_policy_and_nine_no_rescue_cases_pinned(self):
+        completed = run_cli(
+            "--spec", str(SPEC), "--mode", "synthetic-p3", "--reference", str(REFERENCE)
+        )
+        self.assertEqual(completed.returncode, 0, completed.stdout + completed.stderr)
+        report = parse_stdout(completed)
+        self.assertEqual(_no_rescue_violations(report), [])
+
+        missing_case = copy.deepcopy(report)
+        missing_case["reference_cases"] = [
+            case for case in missing_case["reference_cases"]
+            if case.get("case") != "empty_fit_does_not_fallback"
+        ]
+        self.assertNotEqual(_no_rescue_violations(missing_case), [])
+
+        floored = copy.deepcopy(report)
+        floored["reference_solver_policy"] = {
+            **floored["reference_solver_policy"],
+            "epsilon_floor": True,
+        }
+        self.assertNotEqual(_no_rescue_violations(floored), [])
+
+        failed_row = copy.deepcopy(report)
+        for case in failed_row["reference_cases"]:
+            if case.get("case") == "zero_baseline_is_not_floored":
+                case["result"] = "FAIL"
+        self.assertNotEqual(_no_rescue_violations(failed_row), [])
+
+        rescued = copy.deepcopy(report)
+        for case in rescued["reference_cases"]:
+            if case.get("case") == "scaler_zero_MAD_refuses":
+                case["refusal"] = "SCALER_FIT"
+        self.assertNotEqual(_no_rescue_violations(rescued), [])
+
+        clipped = copy.deepcopy(report)
+        for case in clipped["reference_cases"]:
+            if case.get("case") == "RZ_is_unclipped":
+                case["observed"]["z"] = 1000
+        self.assertNotEqual(_no_rescue_violations(clipped), [])
+
+    def test_reports_never_claim_incumbent_information_incrementality(self):
+        expected_role = "RESEARCH_INFORMATION_ADAPTER_NOT_RANKER"
+        inspect_run = run_cli("--spec", str(SPEC), "--mode", "inspect")
+        synthetic_run = run_cli(
+            "--spec", str(SPEC), "--mode", "synthetic-p3", "--reference", str(REFERENCE)
+        )
+        empirical_run = run_cli("--spec", str(SPEC), "--mode", "empirical")
+        self.assertEqual(inspect_run.returncode, 0, inspect_run.stdout + inspect_run.stderr)
+        self.assertEqual(synthetic_run.returncode, 0, synthetic_run.stdout + synthetic_run.stderr)
+        inspect_report = parse_stdout(inspect_run)
+        synthetic_report = parse_stdout(synthetic_run)
+        empirical_report = parse_stdout(empirical_run)
+        for report in (inspect_report, synthetic_report, empirical_report):
+            self.assertEqual(_increment_claims(report), [])
+        self.assertEqual(inspect_report["b1_ri_role"], expected_role)
+        self.assertEqual(synthetic_report["b1_ri_role"], expected_role)
+        for pilot in inspect_report["pilots"]:
+            self.assertEqual(pilot["b1_ri_role"], expected_role)
+        self.assertEqual(empirical_report["status"], "REFUSED")
+
+        spec, digest = adapter.load_spec(str(SPEC))
+        patched_note = adapter.B1_RI_NOTE + " Demonstrates incumbent-information incrementality."
+        with mock.patch.object(adapter, "B1_RI_NOTE", patched_note):
+            forged = adapter.build_inspect_report(spec, digest, None)
+        self.assertEqual(_increment_claims(forged), ["$.b1_ri_note"])
+        self.assertNotEqual(_increment_claims({"incrementality_label": "x"}), [])
 
 
 if __name__ == "__main__":

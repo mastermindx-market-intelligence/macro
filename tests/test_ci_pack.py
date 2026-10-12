@@ -4284,6 +4284,12 @@ def test_workspace_runtime_contracts_can_start_the_ci_that_validates_them() -> N
 # ---------------------------------------------------------------------------
 
 CURATED_EXCLUSIVE = {
+    # PR #7861: Options matrix source/session/retention checks are hermetic.
+    # The exclusive manifest scope retains both suites, their concrete import
+    # closure, config.yml fallback and the retention-fixture wildcard. This
+    # removes only the filesystem probes' unrelated opaque fallback scopes;
+    # the code gate, closure audit and packing ceilings remain unchanged.
+    "options-matrix-code",
     "push-retry-policy",
     # Paper International: retain the measured ITR closure, dropping opaque fallback.
     "itr-turn-rotation",
@@ -4652,6 +4658,11 @@ CURATED_EXCLUSIVE = {
     # 2026-10-09 PR #8667: file and pinned-source relationship inspection.
     # Register the reviewed 68-path owner; closure audits and ceilings stay fixed.
     "company-relationship-candidates",
+    # WP02 source-diagnostic research kernel: exact inputs and shared pytest imports.
+    # Preserve closure audits, packing limits and incumbent owner declarations.
+    "gmi-source-diagnostic-kernel",
+    # Reviewed template-root curation; preserve other opaque domains and ceilings.
+    "integrated-answer-v0",
     # 2026-10-11 PR #8758: bounded Data OS readers and canonical Lab access.
     # Register the reviewed 42-path owner; closure audits and ceilings stay fixed.
     "dataos-web-workspace",
@@ -4676,6 +4687,8 @@ CURATED_EXCLUSIVE = {
     # the closure against a FULL checkout: the two site/ JSON literals are
     # invisible on a sparse tree, exactly as the options-estate-guards note warns.
     "leader-radar-unit",
+    # The private runtime boundary has a closed helper/unit/updater/test scope.
+    "company-intelligence-private-runtime",
     # 2026-10-11 SNI E0/M0 (#8837): the Alibaba/Tencent coverage-profile suite
     # reads only its own config/contracts trees; its 3-path owner is the whole
     # closure (closure findings 0, gated-unrun 0), so no inference fallback.

@@ -91,7 +91,7 @@ scripts/build_options_flow.py	12	• data/options_flow/summary_<KEY>.parquet —
 scripts/build_options_hub_nightly.py	70	R2_PREFIX = "options_hub/"
 scripts/build_options_hub_nightly.py	345	_upload_r2(s3, bucket, oi_path,  f"{R2_PREFIX}oi_movers.json")
 scripts/build_options_hub_nightly.py	592	I/O per root is the prior OI year(s) needed for the 18-month oi_time window
-scripts/build_options_matrix.py	55	R2_PREFIX = "options_structure/matrix/"
+scripts/build_options_matrix.py	63	R2_PREFIX = "options_structure/matrix/"
 scripts/build_options_payoff_lab.py	7	Never open the store. Write site/options_payoff_lab/latest.json.
 scripts/build_options_prophet.py	1171	def _default_paths() -> dict[str, Path]:
 scripts/build_options_skew.py	223	"""Write site/options_skew/latest.json from the ledger. No chain provider.

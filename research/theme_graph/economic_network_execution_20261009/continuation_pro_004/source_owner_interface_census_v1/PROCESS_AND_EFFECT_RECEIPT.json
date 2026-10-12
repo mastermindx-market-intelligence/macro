@@ -1,0 +1,138 @@
+{
+  "schema": "research.read_only_process_effect_receipt.v1",
+  "device_id": "3f5ce987-e3eb-40a3-af9f-4b0ae54919cc",
+  "workspace": "/Volumes/Mastermind/agent-workspaces/macro/web/gmi-economic-source-diagnostic-20261009-pro-004",
+  "initial_head": "c4cd21d597521603fb75fe7a4602424e088c6bfa",
+  "final_head": "c4cd21d597521603fb75fe7a4602424e088c6bfa",
+  "initial_git_status_porcelain": "",
+  "final_git_status_porcelain": "",
+  "reported_native_processes": [
+    {
+      "pid": 92396,
+      "start_step": "01 pin and scoped path discovery",
+      "exit_code": 0,
+      "runtime": "0.33s",
+      "exit_status": "COMPLETED"
+    },
+    {
+      "pid": 93729,
+      "start_step": "02 interface and venue discovery",
+      "exit_code": 0,
+      "runtime": "0.63s",
+      "exit_status": "COMPLETED"
+    },
+    {
+      "pid": 94614,
+      "start_step": "03 source interface field discovery",
+      "exit_code": 0,
+      "runtime": "0.14s",
+      "exit_status": "COMPLETED"
+    },
+    {
+      "pid": 95626,
+      "start_step": "04 source catalog and rights interface definitions",
+      "exit_code": 0,
+      "runtime": "0.11s",
+      "exit_status": "COMPLETED"
+    },
+    {
+      "pid": 97184,
+      "start_step": "05 Data OS catalog and actual scope records",
+      "exit_code": 0,
+      "runtime": "0.36s",
+      "exit_status": "COMPLETED"
+    },
+    {
+      "pid": 98421,
+      "start_step": "06 actual admission and app-observation definitions",
+      "exit_code": 0,
+      "runtime": "0.13s",
+      "exit_status": "COMPLETED"
+    },
+    {
+      "pid": 99580,
+      "start_step": "07 bounded actual venue source census and Data OS registry",
+      "exit_code": 0,
+      "runtime": "0.23s",
+      "exit_status": "COMPLETED"
+    },
+    {
+      "pid": 1086,
+      "start_step": "08 accepted candidates and concrete universe route definitions",
+      "exit_code": 0,
+      "runtime": "0.08s",
+      "exit_status": "COMPLETED"
+    },
+    {
+      "pid": 3399,
+      "start_step": "09 exact reader trust boundaries and registry identities",
+      "exit_code": 0,
+      "runtime": "0.13s",
+      "exit_status": "COMPLETED"
+    },
+    {
+      "pid": 4819,
+      "start_step": "10 source attestation versus source permission and clock limits",
+      "exit_code": 0,
+      "runtime": "0.08s",
+      "exit_status": "COMPLETED"
+    },
+    {
+      "pid": 8493,
+      "start_step": "11 remaining exact venue routes and scoped test evidence",
+      "exit_code": 0,
+      "runtime": "0.29s",
+      "exit_status": "COMPLETED"
+    },
+    {
+      "pid": 10340,
+      "start_step": "12 full source pins",
+      "exit_code": 0,
+      "runtime": "2.69s",
+      "exit_status": "COMPLETED"
+    },
+    {
+      "pid": 12581,
+      "start_step": "13 final unchanged native workspace check",
+      "exit_code": 0,
+      "runtime": "0.65s",
+      "exit_status": "COMPLETED"
+    },
+    {
+      "pid": 15002,
+      "start_step": "14 identifier-stem cross-check and JPX test imports",
+      "exit_code": 0,
+      "runtime": "0.28s",
+      "exit_status": "COMPLETED"
+    },
+    {
+      "pid": 16755,
+      "start_step": "15 final supplemental pins and unchanged workspace",
+      "exit_code": 0,
+      "runtime": "0.54s",
+      "exit_status": "COMPLETED"
+    }
+  ],
+  "all_reported_pids_exited": true,
+  "remaining_lane_native_processes": 0,
+  "child_command_caveats": [
+    "Two scoped rg path-discovery child invocations exited 2 solely because data/ is not materialized in the clean checkout. Subsequent scopes omitted that unavailable directory.",
+    "No-match rg queries exited 1 as documented, not a failed data acquisition. Outer Python/read shell processes exited 0."
+  ],
+  "effects": {
+    "native_source_code_edits": false,
+    "git_mutations": false,
+    "fetches": false,
+    "installs": false,
+    "data_acquisition": false,
+    "authenticated_website_or_session_probe": false,
+    "credentials_requested_or_printed": false,
+    "messages_to_people": false,
+    "purchases": false,
+    "new_registry": false,
+    "runtime_or_tests_executed": false,
+    "scratch_packet_written": true,
+    "environment_detail": "Final read-only metadata/status check copied os.environ into a subprocess environment solely to set GIT_OPTIONAL_LOCKS=0. No values inspected/output or named secrets queried. This unnecessary dictionary access is disclosed; no claim of zero environment dictionary access."
+  },
+  "stop": "No more native commands or onward workers; only local scratch validation/freeze completes this packet."
+}
