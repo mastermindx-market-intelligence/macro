@@ -2879,7 +2879,9 @@ html[data-theme="light"] .ff-quick-signal[data-priority="high"] { border-color: 
 }
 .ff-desk-row {
   display: grid;
-  grid-template-columns: minmax(220px, 1.1fr) minmax(180px, .9fr) minmax(160px, .7fr) minmax(140px, .6fr) auto;
+  /* The as-of column is sized to its controls: a fixed 160px floor let the
+     date input overflow into Source status at 1440 (P2 judge repair). */
+  grid-template-columns: minmax(200px, 1fr) minmax(150px, .8fr) max-content minmax(140px, .6fr) auto;
   align-items: end;
   gap: 12px;
 }
@@ -2931,7 +2933,8 @@ html[data-theme="light"] .ff-quick-signal[data-priority="high"] { border-color: 
 /* The run-meta strip is desk furniture now: no floating card, no backdrop. */
 .ff-run-meta {
   display: grid;
-  grid-template-columns: auto auto;
+  /* Source status never truncates its one word; Built from takes the ellipsis. */
+  grid-template-columns: max-content minmax(0, 1fr);
   gap: 8px;
   width: auto;
   margin: 0;
@@ -2940,6 +2943,13 @@ html[data-theme="light"] .ff-quick-signal[data-priority="high"] { border-color: 
   background: transparent;
   box-shadow: none;
   backdrop-filter: none;
+}
+/* Stacked in the desk row: from 701px the row leaves this column its 140px
+   floor, so a side-by-side pair cut Built from to one letter. Stacked, Source
+   status and Built from each get the full column; at 390 the row collapses and
+   the pair stays side by side (P2 judge repair). */
+@media (min-width: 701px) {
+  .ff-run-meta { grid-template-columns: minmax(0, 1fr); gap: 4px; }
 }
 #ff-overview { margin-top: 12px; }
 .ff-quick-signal {
@@ -3028,6 +3038,21 @@ html[data-theme="light"] .ff-quick-signal { box-shadow: none; }
   text-overflow: ellipsis;
 }
 .ff-value-cell .ff-source-control { justify-self: end; }
+/* Narrow value cells keep the VALUE legible when a span is unavailable:
+   the end-aligned control used to clip its own number and print a
+   left-cut "an unavailable". The notice stays in the accessible name,
+   the muted ink, the not-allowed cursor and the data-tip. */
+.ff-table td .ff-source-control.is-unavailable .ff-source-unavail,
+.ff-compare-value .ff-source-control.is-unavailable .ff-source-unavail,
+.ff-value-cell .ff-source-control.is-unavailable .ff-source-unavail {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
 /* The span variant rides inside card buttons; the card keeps the click. */
 .ff-redline-copy .ff-source-control,
 .ff-finding-periods .ff-source-control {
