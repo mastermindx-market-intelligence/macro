@@ -388,3 +388,72 @@ def adapt_workspace_bea_history(
         "scan_complete": True,
     }
     return history
+
+
+def compose_bea_industry_accounting_change(
+    response: Mapping[str, Any], *, industry_code: str, commodity_code: str,
+    purpose: str = "private_research", as_of: object = None,
+) -> dict[str, Any]:
+    """Deterministic descriptive 2023->2024 brief over the incumbent Data OS read.
+
+    The source is a retrospectively revised *imputed* import-allocation matrix.
+    A signed dollar change is arithmetic only; it asserts no causation, named
+    counterparty, demand forecast, company exposure or historical availability.
+    """
+    history = adapt_workspace_bea_history(
+        response, industry_code=industry_code, commodity_code=commodity_code,
+        purpose=purpose, as_of=as_of,
+    )
+    earlier, latest = history["observations"][-2:]
+    if earlier["accounting_year"] != 2023 or latest["accounting_year"] != 2024:
+        raise BEAContextRefused("only exact 2023->2024 research comparison admitted")
+    region_changes = {
+        name: (latest["regional_import_million_USD"][name]
+               - earlier["regional_import_million_USD"][name])
+        for name, _ in REGIONS
+    }
+    return {
+        "schema": "market_ontology.bea_industry_accounting_change_research/v1",
+        "authority": "PRIVATE_RESEARCH_ONLY",
+        "measurement_class": "BEA_IMPUTED_INDUSTRY_IMPORT_ALLOCATION",
+        "source_methodology": latest["source_methodology"],
+        "source": latest["source"],
+        "reader_provenance": history["reader_provenance"],
+        "using_industry": latest["using_industry"],
+        "input_commodity": latest["input_commodity"],
+        "periods": {
+            "earlier_year": 2023,
+            "latest_year": 2024,
+            "original_historical_known_at": None,
+        },
+        "annual_observations": [
+            {
+                "accounting_year": row["accounting_year"],
+                "total_use_million_USD": row["total_use_million_USD"],
+                "world_import_million_USD": row["world_import_million_USD"],
+                "regional_import_million_USD": row["regional_import_million_USD"],
+                "regional_origin_fraction_of_world": row[
+                    "regional_origin_fraction_of_world"
+                ],
+                "ratio_null_reasons": row["ratio_null_reasons"],
+            }
+            for row in history["observations"]
+        ],
+        "signed_change_2024_minus_2023_million_USD": {
+            "total_use": (latest["total_use_million_USD"]
+                          - earlier["total_use_million_USD"]),
+            "world_import": (latest["world_import_million_USD"]
+                             - earlier["world_import_million_USD"]),
+            "regions": region_changes,
+        },
+        "publisher_day_precision_only": True,
+        "historical_pit_eligible": False,
+        "source_bytes_authenticated_by_this_projection": False,
+        "dataos_native_admitted": False,
+        "named_company_relationship": False,
+        "estimated_allocation_not_observed_purchase": True,
+        "may_publish": False,
+        "may_rank": False,
+        "may_train": False,
+        "may_trade": False,
+    }

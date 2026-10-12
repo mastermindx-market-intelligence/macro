@@ -18,6 +18,7 @@ from engine.market_ontology.bea_industry_context import (
     adapt_eight_year_input_history,
     adapt_industry_commodity_input,
     adapt_workspace_bea_history,
+    compose_bea_industry_accounting_change,
 )
 
 _KEYS = (
@@ -464,6 +465,96 @@ class BEADataWorkspaceResearchConsumerTests(unittest.TestCase):
             response["result"][field] = value
             with self.subTest(field=field), self.assertRaises(BEAContextRefused):
                 adapt_workspace_bea_history(
+                    response, industry_code="3341", commodity_code="3344",
+                )
+
+
+class BEAAccountingChangeBriefTests(unittest.TestCase):
+    def test_signed_research_change_and_denominator_nulls_are_not_renamed(self):
+        response = _synthetic_workspace_response()
+        response["result"]["rows"][6] = synthetic_row(
+            year=2023, use=700, world=212,
+        )
+        tiny_2024 = dict(zip(_KEYS, (0, 10, 0, 0, 0, 0, 9)))
+        response["result"]["rows"][7] = synthetic_row(
+            year=2024, use=710, world=19, regions=tiny_2024,
+        )
+        brief = compose_bea_industry_accounting_change(
+            response, industry_code="3341", commodity_code="3344",
+        )
+        self.assertEqual(brief["schema"],
+                         "market_ontology.bea_industry_accounting_change_research/v1")
+        self.assertEqual(brief["authority"], "PRIVATE_RESEARCH_ONLY")
+        self.assertEqual(brief["measurement_class"],
+                         "BEA_IMPUTED_INDUSTRY_IMPORT_ALLOCATION")
+        self.assertEqual(brief["periods"]["earlier_year"], 2023)
+        self.assertEqual(brief["periods"]["latest_year"], 2024)
+        self.assertEqual(brief["signed_change_2024_minus_2023_million_USD"][
+            "total_use"], 10)
+        self.assertEqual(brief["signed_change_2024_minus_2023_million_USD"][
+            "world_import"], -193)
+        self.assertEqual(brief["signed_change_2024_minus_2023_million_USD"][
+            "regions"]["china"], -49)
+        self.assertEqual(len(brief["annual_observations"]), 8)
+        prior = brief["annual_observations"][-2]
+        latest = brief["annual_observations"][-1]
+        self.assertIsNotNone(prior["regional_origin_fraction_of_world"])
+        self.assertIsNone(latest["regional_origin_fraction_of_world"])
+        self.assertEqual(latest["ratio_null_reasons"],
+                         ["RESEARCH_DENOMINATOR_BELOW_50M_FLOOR"])
+        for flag in ("may_publish", "may_rank", "may_train", "may_trade",
+                     "dataos_native_admitted", "named_company_relationship",
+                     "historical_pit_eligible",
+                     "source_bytes_authenticated_by_this_projection"):
+            with self.subTest(flag=flag):
+                self.assertIs(brief[flag], False)
+        self.assertTrue(brief["estimated_allocation_not_observed_purchase"])
+        self.assertTrue(brief["publisher_day_precision_only"])
+
+    def test_negative_accounting_changes_survive_brief(self):
+        response = _synthetic_workspace_response()
+        adjustments = dict(zip(_KEYS, (-8, 0, -60, 0, 0, -1, -1)))
+        response["result"]["rows"][-1] = synthetic_row(
+            year=2024, use=-2, world=-69, regions=adjustments,
+        )
+        brief = compose_bea_industry_accounting_change(
+            response, industry_code="3341", commodity_code="3344",
+        )
+        changes = brief["signed_change_2024_minus_2023_million_USD"]
+        self.assertEqual(changes["world_import"], -281)
+        self.assertEqual(changes["total_use"], -803)
+        self.assertEqual(brief["annual_observations"][-1][
+            "regional_import_million_USD"]["europe"], -60)
+        self.assertIsNone(brief["annual_observations"][-1][
+            "regional_origin_fraction_of_world"])
+        self.assertIn("SOURCE_NEGATIVE_REGION_ADJUSTMENT",
+                      brief["annual_observations"][-1]["ratio_null_reasons"])
+
+    def test_brief_never_accepts_public_or_historical_callers(self):
+        for choice in (
+            {"purpose": "public_display"},
+            {"purpose": "train"},
+            {"purpose": "trade"},
+            {"as_of": "2023-12-31T00:00:00+00:00"},
+        ):
+            with self.subTest(choice=choice), self.assertRaises(BEAContextRefused):
+                compose_bea_industry_accounting_change(
+                    _synthetic_workspace_response(),
+                    industry_code="3341", commodity_code="3344", **choice,
+                )
+
+    def test_partial_or_spoofed_reader_causes_no_brief(self):
+        for component,field,bad in (
+            ("result", "scan_complete", False),
+            ("result", "next_offset", 1120),
+            ("result", "rows", []),
+            ("query", "equals", {"commodity_code_exact": "OTHER"}),
+            ("source", "registry_admission", "PRODUCED"),
+        ):
+            response = _synthetic_workspace_response()
+            response[component][field] = bad
+            with self.subTest(field=field), self.assertRaises(BEAContextRefused):
+                compose_bea_industry_accounting_change(
                     response, industry_code="3341", commodity_code="3344",
                 )
 
