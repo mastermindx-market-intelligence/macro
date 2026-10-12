@@ -32,36 +32,42 @@ waves:
   - id: consumer-delivery
     title: Integrate incumbent Data OS and Quote Hub, release and prove live
     status: in_progress
-    pr: [8698, 945, 955, 8986, 9004, 9018, 9020]
+    pr: [8698, 945, 955, 8986, 9004, 9018, 9020, 9022]
 next_action: >-
-  Original EOD wave11 is fully settled and qualified: 5000 successful requests,
-  zero failures, 4968 nonempty histories, 32 empty responses and 10531732 bars.
-  Eighteen accepted snapshots close every original request. Continue original
-  disjoint wave12, actually started 2026-10-12 18:29:54 UTC after successful prior
-  settlement and fresh quota/source/storage/collision checks. Its first 232
-  qualified responses bring the census to 28416 nonempty histories and 61901655
-  bars, with 100 empty and 19173 uncaptured desired windows. Verify only new
-  completed responses and accept the actual full admission trace after settlement.
-  Source 9018 and evidence 9020 are merged; the unchanged reviewed module is
-  actually running through the original collector. Prepared wave13 reserves all
-  wave12 selections and has zero preflight collisions; require successful prior
-  settlement and fresh quota/source/resource/collision checks before launch.
-  Preserve all sixteen held symbols, source/key custody, four in flight, rolling
-  local admissions no faster than four per five seconds, the 24 GiB byte stop
-  threshold and 40 GiB admission floor. Evidence 9020 merged b169a57fffe07ecff91fca0b830870e8b6318a96
-  after all twelve original CI packs/final gate and active protections passed.
-  Macro 8986's immutable installed release remains 0b204cde017b88a9fec03ddb583f6b5e02ea4886;
-  its accepted actual Lab trial and installed reads remain valid. Four contracts
-  are PRODUCED and twenty remain PROPOSED. At the wave11 closure frontier,
-  Terminal 955 remains OPEN/BLOCKED at 1a74e3cf93368a5c5381f0110b80601dff0ae3e3.
-  All twelve original dispatched jobs passed on 38272365047; original PR run
-  38272372019 is still action_required and the required aggregate is absent.
-  Preserve its original approval refusal before protected landing and fresh VPS
-  builder preflight. Next published BOATS opening is 2026-10-13 00:00 UTC; no
-  subscriber or scheduler is launched. Standalone split and SHW/PFE failures are
-  held. The 75 accepted fundamental captures across 25 companies serve roughly
-  three years; deep/all-symbol serving, dated identity, PIT and responsive live
-  BOATS acceptance remain open. Save material deltas and continue ready work.
+  Original wave12 settled 2026-10-12 20:14:21 UTC: 5000 successful captures, zero
+  capture failures, 8103921 served row hints and 1772986058 uncompressed bytes.
+  Its final quality partition accounts for all original selections exactly once:
+  4999 qualified responses (4987 nonempty, 12 empty, 8099778 bars) and one retained
+  WTFNF source-quality quarantine. One negative raw/adjusted volume row correctly
+  failed unchanged validation; the entire receipt remains unprojected, with no
+  value repair or provider retry. Original failed prefix18 was reconciled: 194
+  valid receipts, 145 existing views reused and 49 new. Independent review passed
+  the quarantine and disjoint continuation. Actual local admission trace passed:
+  four-admission minimum separation 5.000027 seconds, maximum 2879 per half-open
+  hour. The census is 33171 nonempty histories, 69804547 bars, 112 empty responses,
+  14405 uncaptured windows and one captured quality quarantine. Deduplicate the
+  quarantine by receipt identity; missing qualified windows are not a retry queue.
+  Continue original wave13, actually started at 20:17:46 UTC after successful
+  prior raw settlement and fresh source/collision/quota/storage checks. Its 5000
+  selections exclude every wave12 reservation, including WTFNF. Qualify only new
+  owned completed responses; preserve source/key custody, four in flight, rolling
+  local admissions no faster than four per five seconds, 24 GiB raw byte stop
+  threshold and 40 GiB admission floor. Save truthful partition and actual timing
+  evidence after settlement, then start the next disjoint ready capture.
+  Macro source/evidence 9018, 9020 and 9022 are merged. New safe proof lives in
+  docs/tiingo-evidence/20261012-wave12-quality-partition/. The immutable installed
+  research release remains 0b204cde017b88a9fec03ddb583f6b5e02ea4886; accepted real
+  Lab/reader proof remains valid. Four contracts are PRODUCED, twenty PROPOSED.
+  Fresh Terminal 955 remains OPEN/BLOCKED at 1a74e3cf93368a5c5381f0110b80601dff0ae3e3;
+  its original PR run 38272372019 remains action_required, required aggregate
+  absent, incumbent auto-merge retained. Original dispatched all-twelve success
+  38272365047 is accepted for that exact head. Preserve the actual approval
+  refusal and require protected landing before the existing VPS builder path.
+  Next published BOATS opening is 2026-10-13 00:00 UTC; no subscriber or scheduler
+  is launched. All sixteen prior provider failure exclusions, standalone split
+  and SHW/PFE holds remain. The 75 accepted fundamental captures across 25
+  companies serve roughly three years. Deep/all-symbol serving, dated identity,
+  PIT and responsive live BOATS acceptance remain open. Continue ready work.
 owns_paths:
   - collectors/tiingo_archive.py
   - lib/dataos/tiingo_*.py
@@ -69,6 +75,7 @@ owns_paths:
   - docs/TIINGO_DATA_OS_INGESTION_20261009.md
   - docs/tiingo-evidence/
 artifacts:
+  - docs/tiingo-evidence/20261012-wave12-quality-partition/
   - docs/TIINGO_DATA_OS_INGESTION_20261009.md
   - docs/tiingo-evidence/20261011-producer-integrity/
   - docs/tiingo-evidence/20261011-live-qualification/
