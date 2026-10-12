@@ -270,3 +270,33 @@ The October8 candidate's15/17 replay is historical as ofOctober11; the existing
 planner refuses it atOctober12. Never backdate generation to preserve eligibility.
 The fixed baseline workflow can qualify historical analytical data after landing,
 but a live article still needs a current source and the full editorial gates.
+
+
+## Installed acquisition repair and Press refresh hold — 2026-10-12
+
+Terminal PR956 merged as8520e5d77e9f0b83973a988cf4f4adff300994cf after CI38185449454
+completedSUCCESS onexact2fd1b1a9. Root invoked the incumbent
+`/opt/terminal/terminal-build.sh --target-sha 8520e5d77e9f0b83973a988cf4f4adff300994cf`.
+Its mandatory preflight wasCLEAN, the exact protected target was admitted, the
+staged build completed, health/identity checks passed and the script exited0.
+Fresh source audit isCLEAN with receipt8abe9115cdd6e5ee21a2219726289be54b397bed9aa7e54aea457591541c083d;
+canonicalHEAD and deployment marker both match the merged target, serviceactive.
+The BUILD_ID string remained unchanged and is not used as unique revision proof.
+
+Real Chrome verification submitted saved credentials once on the legitimate app
+origin. The busy sheet closed automatically without dismissal or recovery
+navigation, retainingNVDA and the earnings-source query. The existingNVDA
+watchlist entry remained visible after a fresh reload. No new account or follow
+write occurred. Actual sanitized screenshot, exact receipt and build excerpt:
+terminal956_live_acceptance.json, live-terminal956-signin-complete.jpg and
+terminal956_install_excerpt.txt. A first large screenshot timed out; the supported
+smaller privacy-safe capture succeeded. No credential value is retained.
+
+Macro CI38186335600 completedSUCCESS at00:45:04UTC ond425 with21binding checks.
+Controller38189419480 nevertheless requires fresh proof because maincommitde0c202a0165
+changed canonicalCIdefinitions. It deferred refresh at10indexed runs/cap8, without
+changing the carrier. Exact target lines are inprotected_refresh_38189419480.txt.
+The originalPR remains the delivery carrier; no release bypass or competing sweep.
+A read-only live-host plan onOctober12 produced noBrief slots; its16771Chronicle
+rows and both local source copies endOctober8. No old event was restamped or
+provider attempt repeated. OriginalPress installation and publication remain unproven.

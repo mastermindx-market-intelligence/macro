@@ -19,9 +19,9 @@ waves:
     depends_on: [press-staging]
   - id: live-journey
     title: Verify publication, signup and explicit follow continuation
-    status: todo
+    status: in_progress
     depends_on: [qualified-story]
-next_action: Complete original PR8786 at d425cc87f5da4214f53fa1fbc0ee72f0284870f5 after consuming incumbent PR8870 calendar-scope fix with authorship preserved, then verify merged installation and public browser routes and run the prepared nonpromoting earnings audit. Terminal956 is now2fd1b1a9 with integrated104unit/typecheck/18browser local proof and accepted Fabric review, pending hostedCI38185449454 and protected installation. Separate Press baseline qualification source01097050608b is pushed and tested but has no live fetch, staging or publication admission. Integrate the retained-source follow-on from fresh main after8786 lands.
+next_action: Original PR8786 head d425cc87f5da4214f53fa1fbc0ee72f0284870f5 passed CI38186335600 and all21 binding checks, but controller38189419480 requires fresh proof after de0c202a0165 changed canonical check definitions and deferred refresh at10indexed runs/cap8. Retain the original carrier and wait for admitted refresh, then merge/install/browser/audit. Terminal956 merged as8520e5d77e9f0b83973a988cf4f4adff300994cf, is installed with CLEAN post-install audit and real one-submit automatic sign-in completion plus reload proof. Integrate the tested Press follow-on from fresh main after8786 lands; the older October8 candidate is no longer a current Brief slot onOctober12.
 artifacts:
   - https://github.com/mastermindx-market-intelligence/macro/pull/8786
   - https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/956

@@ -1,0 +1,51 @@
+{
+  "schema": "mmx.public_intelligence.terminal_release/v1",
+  "operation": "mmx-public-intelligence-delivery-20261011-local-ceo-001",
+  "recorded_at": "2026-10-12T00:59:37.086891+00:00",
+  "pr": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/956",
+  "tested_head": "2fd1b1a9abd197bced0366d2489613e3d6c832fa",
+  "ci": {
+    "run_id": 38185449454,
+    "conclusion": "success",
+    "completed_at": "2026-10-12T00:40:16Z"
+  },
+  "merge_commit": "8520e5d77e9f0b83973a988cf4f4adff300994cf",
+  "installed_commit": "8520e5d77e9f0b83973a988cf4f4adff300994cf",
+  "builder_sha256": "7870780dd471076e26e4b9840980414a6ebc59c942f4ac1957c2ad7b770c9ea9",
+  "entrance_receipt": "e1d70bc723db239c65433ee6feb3d17bd67b2acaa0c8496f79f4431c140caddd",
+  "post_install_source_audit": {
+    "accepted_sha": "8520e5d77e9f0b83973a988cf4f4adff300994cf",
+    "receipt_id": "8abe9115cdd6e5ee21a2219726289be54b397bed9aa7e54aea457591541c083d",
+    "receipt_path": "/var/lib/mastermind-terminal/release-preflight/20261012T005316Z-8520e5d77e9f0b83973a988cf4f4adff300994cf-8abe9115cdd6e5ee21a2219726289be54b397bed9aa7e54aea457591541c083d.json",
+    "result": "CLEAN",
+    "schema": "mastermind.terminal.release_preflight_receipt.v1",
+    "source_audit_receipt_id": "354be96577775cf9dce1dc0dce6b44e5bc8a2112df464cb30a15e242b46800f2"
+  },
+  "service": "terminal",
+  "service_active": true,
+  "build_id": "build-TfctsWXpff2fKS",
+  "build_id_is_unique_revision_proof": false,
+  "browser": {
+    "origin": "https://app.mastermind-x.com",
+    "path": "/terminal",
+    "query_retained": {
+      "sym": "NVDA",
+      "utm_source": "earnings_wire",
+      "utm_medium": "organic_research",
+      "utm_campaign": "company_intelligence"
+    },
+    "saved_credential_submissions": 1,
+    "credentials_in_evidence": false,
+    "busy_sheet_closed_automatically": true,
+    "manual_dismissal_or_recovery_navigation_required": false,
+    "existing_nvda_watchlist_entry_visible": true,
+    "same_results_after_fresh_reload": true,
+    "new_account_created": false,
+    "new_follow_write": false,
+    "screenshot": "live-terminal956-signin-complete.jpg",
+    "screenshot_bytes": 61367,
+    "screenshot_sha256": "d3f73f8899054705086a7e727ad692bf30f1f09a6ea2546a859602189c0cd1ef",
+    "screenshot_scope": "Actual tool capture of public chart and product chrome; account and watchlist excluded."
+  },
+  "scope": "Installed sign-in completion and existing authenticated NVIDIA continuation. Does not prove a new signup, new follow write, Press article publication or transcript redistribution rights."
+}
