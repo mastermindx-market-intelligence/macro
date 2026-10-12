@@ -1,11 +1,12 @@
 """FIF C0-b: filing-forensics-sec workflow shape + CI wiring guards (A7).
 
-The two new lane steps are HARD gates and the schedule stays the only proof
-path: ``set -euo pipefail``, zero ``continue-on-error``, zero ``|| true``,
-secrets referenced by name only, no ticker or CIK literal, and no new
-``workflow_dispatch`` input surface. The three new suites must be wired into
-engine-render-guards' rot sweep, and the new producer paths into the owning
-curated job.
+The two publication lane steps are HARD gates and the schedule stays the only
+proof path: ``set -euo pipefail``, zero ``|| true``, secrets referenced by
+name only, no ticker or CIK literal, and no new ``workflow_dispatch`` input
+surface. D13 adds the ISOLATED, non-gating contract acquire step: its
+``continue-on-error`` is the isolation mechanism, so it is the one lawful
+exception, and the three new suites must be wired into engine-render-guards'
+rot sweep with the new producer paths in the owning curated job.
 """
 from __future__ import annotations
 
@@ -19,9 +20,15 @@ ROOT = Path(__file__).resolve().parents[1]
 WORKFLOW_PATH = ROOT / ".github" / "workflows" / "filing-forensics-sec.yml"
 LEGACY_JOBS_PATH = ROOT / ".github" / "ci" / "legacy-jobs.yml"
 
+INCUMBENT_STEP = "restore, acquire, project, and sync Filing Forensics SEC sources (hard gate)"
+BUNDLE_STEP = "publish disclosure-projection bundle (the engine's render input)"
+SELFCHECK_STEP = "restore self-check (byte-verified roundtrip of the published bundle)"
+CONTRACT_ACQUIRE_STEP = "acquire contract-issuer filings (isolated, non-gating)"
+CONTRACT_CRASH_STEP = "fail on contract-acquire crash"
 CAPTURE_STEP = "capture FIF filing packages (contract issuers)"
 PUBLISH_STEP = "publish FIF production datasets (hard gate)"
 NEW_STEPS = (CAPTURE_STEP, PUBLISH_STEP)
+CONTRACT_RESULT_PATH = "fif-contract-acquire-result-${GITHUB_RUN_ID}.json"
 NEW_TEST_SUITES = (
     "tests/test_fundamental_forensics_member_capture.py",
     "tests/test_fundamental_forensics_production_publisher.py",
@@ -63,9 +70,14 @@ def test_new_steps_exist_and_are_hard_gates() -> None:
         assert "set -euo pipefail" in step["run"]
         assert "|| true" not in step["run"]
         assert step["run"].count("publish_fif_production_datasets") >= 1
-    # No step anywhere in the lane may soften failures.
+    # No step anywhere in the lane may soften failures EXCEPT the D13 contract
+    # acquire step, whose continue-on-error IS the isolation mechanism (a
+    # contract crash must never mark the incumbent steps' job outcome red; the
+    # final crash step turns it into a job failure instead).
     for step in steps:
-        assert "continue-on-error" not in step
+        if step.get("name") == CONTRACT_ACQUIRE_STEP:
+            continue
+        assert "continue-on-error" not in step, step.get("name")
     assert "|| true" not in WORKFLOW_PATH.read_text(encoding="utf-8")
 
 
@@ -99,47 +111,103 @@ def test_no_ticker_or_cik_literal_in_the_workflow() -> None:
             assert accession["accession"] not in text
 
 
-def test_first_wave2_invocation_consumes_derived_targets() -> None:
+def test_d13_t1_hard_gated_incumbent_step_keeps_mains_semantics() -> None:
+    """D13 T1: the hard-gated incumbent invocation is MAIN's semantics exactly —
+    the incumbent pinned targets file, both calls at ``--max-tickers 12``, the
+    strict-acquisition gate kept, and NO contract derivation anywhere near it."""
     workflow = _workflow()
     steps = _steps(workflow)
-    acquire = next(
-        step
-        for step in steps
-        if step.get("name", "").startswith("restore, acquire, project, and sync")
-    )
+    acquire = next(step for step in steps if step.get("name") == INCUMBENT_STEP)
     run = acquire["run"]
-    assert "publish_fif_production_datasets targets" in run
-    assert "--coverage-file config/fundamental_forensics/coverage/five_issuer_v1.json" in run
-    assert "$CONTRACT_TARGETS" in run
-    assert '--max-tickers "$MAX_TICKERS"' in run
-    # The bundle publish step keeps the incumbent pinned file ALONE, so the
-    # render bundle stays at the incumbent universe.
-    bundle = next(
-        step
-        for step in steps
-        if step.get("name", "").startswith("publish disclosure-projection bundle")
-    )
-    assert "--targets-file" in bundle["run"]
-    assert "$CONTRACT_TARGETS" not in bundle["run"]
-    assert re.search(r"--target\b", bundle["run"]) is None  # no per-issuer extras
+    assert "CONTRACT_TARGETS" not in run
+    assert "MAX_TICKERS" not in run
+    assert "publish_fif_production_datasets" not in run  # no targets derivation
+    assert "--require-complete-acquisition" in run
+    assert "--targets-file config/fundamental_forensics/wave2_targets.v1.json" in run
+    assert run.count("--max-tickers 12") == 2  # both calls at main's value
+    assert not re.search(r"--max-tickers\s+(?!12\b)", run)
+    # The bundle publish + restore self-check stay incumbent-universe only.
+    bundle = next(step for step in steps if step.get("name") == BUNDLE_STEP)
+    selfcheck = next(step for step in steps if step.get("name") == SELFCHECK_STEP)
+    for step in (bundle, selfcheck):
+        assert "--targets-file config/fundamental_forensics/wave2_targets.v1.json" in step["run"]
+        assert "$CONTRACT_TARGETS" not in step["run"]
+        assert re.search(r"--target\b", step["run"]) is None  # no per-issuer extras
 
 
-def test_ticker_cap_is_single_sourced_at_fifteen() -> None:
-    """ERRATA E2-R (T6): the cap literal 15 appears EXACTLY once in the workflow
-    and EVERY --max-tickers use (targets call + both wave-2 calls) reads it."""
+def test_d13_t2_ticker_cap_fifteen_only_on_the_derivation() -> None:
+    """D13 T2 (cap half): ``--max-tickers 15`` appears EXACTLY once in the
+    workflow — on the contract step's ``targets`` derivation line, where the
+    union bound is checked — and every acquire invocation (both incumbent
+    calls and the contract call) runs at main's 12. No cap variable exists."""
     text = WORKFLOW_PATH.read_text(encoding="utf-8")
-    assert text.count("MAX_TICKERS=15") == 1
+    cap_lines = [
+        line
+        for line in text.splitlines()
+        if "--max-tickers 15" in line and not line.lstrip().startswith("#")
+    ]
+    assert len(cap_lines) == 1, cap_lines
     uses = []
     for line in text.splitlines():
         if line.lstrip().startswith("#"):
             continue  # prose mentions are not call sites
-        uses.extend(re.findall(r'--max-tickers\s+"[^"]*"', line))
-    assert len(uses) == 3, uses  # targets + first wave-2 + second wave-2
-    assert all(use == '--max-tickers "$MAX_TICKERS"' for use in uses), uses
-    # No bare numeric cap anywhere: the value lives only in MAX_TICKERS=15.
-    assert not re.search(r"--max-tickers\s+[0-9]+", text)
-    # No second definition of the variable.
-    assert len(re.findall(r"^\s*MAX_TICKERS=", text, re.MULTILINE)) == 1
+        uses.extend(re.findall(r"--max-tickers\s+[0-9]+", line))
+    assert sorted(uses) == [
+        "--max-tickers 12",
+        "--max-tickers 12",
+        "--max-tickers 12",
+        "--max-tickers 15",
+    ], uses
+    assert "MAX_TICKERS" not in text  # the D13 shape has no cap variable
+
+
+def test_d13_t2_contract_step_is_isolated_and_non_gating() -> None:
+    """D13 T2: the contract acquire step exists with the isolation mechanics —
+    id ``contract_acquire``, ``continue-on-error: true``, an integer
+    ``timeout-minutes`` <= 15, positioned after the restore self-check and
+    before capture — and its wave-2 call carries ONLY the non-gating acquire
+    shape over ``$CONTRACT_TARGETS``."""
+    workflow = _workflow()
+    steps = _steps(workflow)
+    names = [step.get("name") for step in steps]
+    contract = next(step for step in steps if step.get("name") == CONTRACT_ACQUIRE_STEP)
+    assert contract["id"] == "contract_acquire"
+    assert contract["continue-on-error"] is True
+    timeout = contract["timeout-minutes"]
+    assert type(timeout) is int and 0 < timeout <= 15, timeout
+    assert names.index(SELFCHECK_STEP) < names.index(CONTRACT_ACQUIRE_STEP) < names.index(CAPTURE_STEP)
+    run = contract["run"]
+    assert "set -euo pipefail" in run
+    assert "$CONTRACT_TARGETS" in run
+    assert CONTRACT_RESULT_PATH in run  # stdout result capture
+    # The forbidden flags are banned from the WAVE-2 INVOCATION (the
+    # derivation line legitimately passes --targets-file to `targets`).
+    wave2 = run[run.index("run_fundamental_forensics_wave2") : run.index("contract-acquire-summary")]
+    assert "--acquire" in wave2
+    assert "--reuse-local-archive" in wave2
+    assert "--sync --incremental-sync" in wave2
+    assert "--max-tickers 12" in wave2
+    assert "--require-complete-acquisition" not in wave2
+    assert "--restore" not in wave2.replace("--reuse-local-archive", "")
+    assert "--targets-file" not in wave2
+    assert not re.search(r"--max-(submissions|document|ticker|total)-bytes", wave2)
+    assert "--build-projections" not in wave2  # the contract call builds no projections
+    # The derivation (the ONLY place 15 appears) feeds this step's targets.
+    assert "publish_fif_production_datasets targets" in run
+    assert "--max-tickers 15" in run
+    # ...and the wave-2 call consumes the derived targets verbatim.
+    assert "$CONTRACT_TARGETS" in wave2
+    # The sync needs the private store: the same four secrets the incumbent
+    # step uses, and nothing else.
+    env = contract.get("env", {})
+    assert set(env) == {
+        "R2_RESEARCH_ENDPOINT",
+        "R2_RESEARCH_ACCESS_KEY_ID",
+        "R2_RESEARCH_SECRET_ACCESS_KEY",
+        "R2_RESEARCH_BUCKET",
+    }
+    # A separate observation root so incumbent observation bytes never move.
+    assert "observations-contract" in run
 
 
 def test_d6_capture_report_written_and_consumed() -> None:
@@ -154,6 +222,55 @@ def test_d6_capture_report_written_and_consumed() -> None:
     assert '--report-path "$CAPTURE_REPORT"' in capture["run"]
     assert pattern in publish["run"]
     assert '--capture-report "$CAPTURE_REPORT"' in publish["run"]
+
+
+def test_d13_t3_isolation_confinement_and_crash_gate() -> None:
+    """D13 T3: ``CONTRACT_TARGETS`` lives in the contract step ALONE; no
+    incumbent step is gated on the contract lane; capture + publish carry the
+    known-state success gate; the job's LAST step is the crash gate with the
+    exact ``if:`` and a line-start ``::error`` + ``exit 1``; and the
+    always-upload carries the two contract files."""
+    workflow = _workflow()
+    steps = _steps(workflow)
+    names = [step.get("name") for step in steps]
+    for step in steps:
+        run = step.get("run") or ""
+        if step.get("name") == CONTRACT_ACQUIRE_STEP:
+            assert "CONTRACT_TARGETS" in run
+            continue
+        assert "CONTRACT_TARGETS" not in run, step.get("name") or step.get("uses")
+    # Incumbents are never conditioned on the contract lane.
+    for step in steps:
+        if step.get("name") in (INCUMBENT_STEP, BUNDLE_STEP, SELFCHECK_STEP):
+            assert "contract_acquire" not in str(step.get("if", "")), step["name"]
+    gate = "steps.contract_acquire.outcome == 'success'"
+    capture = next(step for step in steps if step.get("name") == CAPTURE_STEP)
+    publish = next(step for step in steps if step.get("name") == PUBLISH_STEP)
+    assert capture["if"] == gate
+    assert publish["if"] == gate
+    # The capture step consumes the contract acquire summary into its report.
+    assert '--contract-acquire-report "$CONTRACT_ACQUIRE_SUMMARY"' in capture["run"]
+    assert "fif-contract-acquire-summary-${GITHUB_RUN_ID}.json" in capture["run"]
+    # W5: the job's LAST step fails the job on a contract crash, never before.
+    assert names[-1] == CONTRACT_CRASH_STEP
+    crash = steps[-1]
+    assert crash["if"] == "always() && steps.contract_acquire.outcome == 'failure'"
+    crash_lines = crash["run"].strip().splitlines()
+    assert any(
+        line.lstrip().startswith('echo "::error title=fif-contract-acquire::') for line in crash_lines
+    ), crash["run"]
+    assert any(line.strip() == "exit 1" for line in crash_lines)
+
+
+def test_d13_w4_upload_carries_the_contract_files() -> None:
+    """D13 W4: the always-upload artifact gains the contract acquire result +
+    summary, so a crashed contract night still leaves its evidence behind."""
+    workflow = _workflow()
+    steps = _steps(workflow)
+    upload = next(step for step in steps if step.get("name") == UPLOAD_STEP)
+    run_text = str(upload["with"]["path"])
+    assert "fif-contract-acquire-result-${{ github.run_id }}.json" in run_text
+    assert "fif-contract-acquire-summary-${{ github.run_id }}.json" in run_text
 
 
 UPLOAD_STEP = "upload FIF publication reports (always)"
