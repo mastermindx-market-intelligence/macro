@@ -64,6 +64,10 @@ _REQUIRED_COLUMNS = (
 
 _MASTER_RELATIVE = Path("data") / "reference" / "security_master.parquet"
 
+#: The repo root the default master resolves against when ``root`` is empty or
+#: None — derived from this file's location, never the process cwd.
+_REPO_ROOT = Path(__file__).resolve().parents[2]
+
 
 def _clean(value: object) -> object:
     """None for the missing-cell shapes pandas can hand back (None, NaN, NaT)."""
@@ -103,8 +107,7 @@ def _missing(
 
 
 def _master_path(root: str | Path | None) -> Path:
-    base = Path(root) if root is not None else Path(__file__).resolve().parents[2]
-    return base / _MASTER_RELATIVE
+    return Path(root or _REPO_ROOT) / _MASTER_RELATIVE
 
 
 def read_geography(
@@ -125,8 +128,9 @@ def read_geography(
     ``SOURCE_ARTIFACT`` under ``root`` (default: the repo root) on every call.
 
     Deterministic: no wall clock, no caching, stable ordering inside the value
-    and across identical calls. Raises only what ``cell.parse_subject`` raises
-    for a malformed subject id; every other failure is a typed null cell.
+    and across identical calls.
+    Raises ``cell.AxisCellError`` (a ``ValueError``) for a malformed ``subject_id`` (from ``cell.parse_subject``) or an invalid ``as_of`` (from ``cell.make_cell`` validation); every other failure is a typed null cell.
+    ``root`` scopes only ``SOURCE_ARTIFACT`` (the security master read when ``master`` is None); identity resolution goes through the incumbent resolver, which reads ``lib.config.data_dir()`` — inject ``resolve=`` to change it.
     """
     kind, _rest = cell.parse_subject(subject_id)
     if kind not in SUBJECT_KINDS:
