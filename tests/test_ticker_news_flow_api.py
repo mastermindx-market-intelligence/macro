@@ -626,7 +626,7 @@ def _seed_restricted_report(db, *, item_id, title, minute, expected_cursor):
 
 def test_flow_counts_match_visible_rows_under_rights(monkeypatch, tmp_path):
     rights = store_mod.NewsReadRights(allowed_sources=frozenset({"benzinga"}))
-    _ticker_news, app, db = _app(monkeypatch, tmp_path)
+    _ticker_news, app, db = _app(monkeypatch, tmp_path, rights=rights)
     with store_mod.NewsStore(db, source_key="benzinga-rest") as store:
         store.commit(
             [
