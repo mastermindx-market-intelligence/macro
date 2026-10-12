@@ -43,8 +43,11 @@ from __future__ import annotations
 
 import argparse
 import json
+import shutil
 import sys
+import tempfile
 import traceback
+from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Mapping, Sequence
@@ -79,10 +82,12 @@ from engine.fundamental_forensics.production_lineage import (  # noqa: E402
     mint_production_lineage_evidence,
 )
 from engine.fundamental_forensics.production_datasets import (  # noqa: E402
+    ProductionDatasetError,
     ProductionDatasetMaterial,
     build_production_dataset_store,
     load_latest_generation,
     lineage_from_role_payload,
+    production_manifest_key,
     publish_production_dataset,
     snapshot_core_registry_payload,
 )
@@ -110,6 +115,12 @@ PUBLISHER_ERROR_CODES = frozenset(
         # exits non-zero after its report, and publish refuses before any
         # store write. Never a per-issuer exclusion.
         "retained_package_integrity",
+        # ERRATA-3 1.a: a latest.json that exists but cannot be verified is a
+        # hard typed failure, never treated as absence.
+        "latest_pointer_unreadable",
+        # ERRATA-3 1.c: changed content with no lawful clock later than the
+        # latest published clock refuses instead of rewinding the pointer.
+        "admission_clock_not_after_latest",
     }
 )
 
@@ -415,93 +426,25 @@ def _issuer_binding(issuer: Mapping[str, Any]) -> CanonicalEntityBinding | None:
     )
 
 
-def _publish_one_issuer(
-    *,
-    store: Any,
-    issuer: Mapping[str, Any],
-    binding: CanonicalEntityBinding,
-    admitted_packages: tuple[Any, ...],
-    capture_clocks: list[datetime],
-    registry_payload: Mapping[str, Any],
-    registry_clocks: list[datetime],
-    repo_root: Path,
-) -> dict[str, Any]:
-    ledger, filing_metadata, _report = _convert_admitted_packages(admitted_packages)
-    admitted_at = max(
-        [
-            *capture_clocks,
-            *_rule_clocks(),
-            *registry_clocks,
-        ]
-    )
-    floor = min(capture_clocks)
-    # The S2-p seam, DIRECT (spec §3): the module-level import above names
-    # ``mint_production_lineage_evidence`` and nothing else — never a mint
-    # layer or golden provider. One call per published issuer, clock-equal to
-    # the material's admission clock, return landing UNCHANGED. D11: the seam
-    # call rides the wrapper so a LineageEvidenceError is typed
-    # lineage_mint_failed instead of generic publish_failed.
-    lineage_evidence = _mint_lineage_evidence(
-        ledger, admitted_packages, system_available_at=admitted_at
-    )
-    material_binding = binding
-    material = ProductionDatasetMaterial(
-        binding=material_binding,
-        entity=EntityInput(
-            entity_id=binding.entity_id,
-            cik=binding.cik,
-            ticker=binding.ticker,
-            name=str(issuer.get("legal_name") or binding.ticker),
-            identity_basis="sec-cik",
-            source_entity_id=binding.source_entity_id,
-        ),
-        ledger=ledger,
-        filing_metadata=filing_metadata,
-        registry_payload=registry_payload,
-        admitted_at=admitted_at,
-        source_recorded_at_floor=floor,
-        packages=tuple(admitted_packages),
-        lineage_evidence=tuple(lineage_evidence),
-        security_id=str(issuer["security_master_binding"].get("security_id") or "") or None,
-        listing_key=str(issuer["security_master_binding"].get("listing_key") or "") or None,
-    )
-    publication = publish_production_dataset(store, material)
-    # Read-back self-check: the POINTER must NAME the generation just written,
-    # not merely exist beside it.
-    latest = load_latest_generation(store, binding.entity_id)
-    if latest is None or latest.generation_id != publication.generation_id:
-        _fail(
-            f"latest.json does not name the published generation for {binding.entity_id}",
-            code="verify_failed",
-        )
-    return {
-        "entity_id": binding.entity_id,
-        "ticker": binding.ticker,
-        "cik": binding.cik,
-        "generation_id": publication.generation_id,
-        "manifest_key": publication.manifest_key,
-        "admitted_at": publication.admitted_at,
-        "source_recorded_at_floor": utc_text(floor) or "",
-        "admitted_accessions": [
-            str(package.manifest["accession"]) for package in admitted_packages
-        ],
-        "lineage_receipt_count": len(tuple(lineage_evidence)),
-    }
+@dataclass(frozen=True)
+class _StagedIssuer:
+    """One contract issuer with its admitted package set, ready to plan."""
+
+    issuer: Mapping[str, Any]
+    binding: CanonicalEntityBinding
+    admitted_packages: tuple[Any, ...]
+    capture_clocks: tuple[datetime, ...]
 
 
-def _run_publish(args: argparse.Namespace) -> int:
-    contract = load_fif_coverage_contract(args.coverage_file)
-    raw_root = Path(args.raw_root)
-    archive_root = Path(args.archive_root)
-    refuse_repository_fixture_inputs(raw_root, archive_root)
-    recorded_at = _require_clock(args.recorded_at, "--recorded-at")
-    registry_payload = snapshot_core_registry_payload(Path(args.repo_root))
-    registry_clocks = _registry_available_clocks(registry_payload)
-
-    published: list[dict[str, Any]] = []
+def _stage_contract_issuers(
+    issuers: Sequence[Mapping[str, Any]], *, archive_root: Path
+) -> tuple[list[_StagedIssuer], list[dict[str, Any]]]:
+    """Stage every contract issuer: bind identity, read + admit the CONTRACT
+    accessions' retained packages, and collect their capture clocks. Every
+    non-publishing issuer gets exactly one typed exclusion row."""
+    staged: list[_StagedIssuer] = []
     excluded: list[dict[str, Any]] = []
-    staged: list[tuple[Mapping[str, Any], CanonicalEntityBinding, tuple[Any, ...], list[datetime]]] = []
-    for issuer in contract["issuers"]:
+    for issuer in issuers:
         ticker = str(issuer["ticker"])
         binding = _issuer_binding(issuer)
         if binding is None:
@@ -572,14 +515,280 @@ def _run_publish(args: argparse.Namespace) -> int:
                 }
             )
             continue
-        staged.append((issuer, binding, tuple(admitted), capture_clocks))
+        staged.append(
+            _StagedIssuer(
+                issuer=issuer,
+                binding=binding,
+                admitted_packages=tuple(admitted),
+                capture_clocks=tuple(capture_clocks),
+            )
+        )
+    return staged, excluded
 
-    # FUTURE-CLOCK REFUSAL (seat amendment (a)): every issuer's CLOCK RULE is
-    # computed BEFORE any store exists or writes — a later admitted_at than
-    # the run's recorded-at refuses the whole run, never clamps a clock, and
-    # never mints a future-dated generation.
-    for issuer, _binding, _packages, capture_clocks in staged:
-        computed = max([*capture_clocks, *_rule_clocks(), *registry_clocks])
+
+def _content_clock(
+    capture_clocks: Sequence[datetime], registry_clocks: Sequence[datetime]
+) -> datetime:
+    """T_c (ERRATA-3): max(capture clocks, rule clocks, registry clocks)."""
+    return max([*capture_clocks, *_rule_clocks(), *registry_clocks])
+
+
+def _build_material(
+    staged: _StagedIssuer,
+    *,
+    registry_payload: Mapping[str, Any],
+    registry_clocks: Sequence[datetime],
+    admitted_at: datetime,
+) -> ProductionDatasetMaterial:
+    """Build one issuer's material at the GIVEN clock (never now())."""
+    ledger, filing_metadata, _report = _convert_admitted_packages(
+        staged.admitted_packages
+    )
+    floor = min(staged.capture_clocks)
+    # The S2-p seam, DIRECT (spec §3): the module-level import above names
+    # ``mint_production_lineage_evidence`` and nothing else — never a mint
+    # layer or golden provider. One call per published issuer, clock-equal to
+    # the material's admission clock, return landing UNCHANGED. D11: the seam
+    # call rides the wrapper so a LineageEvidenceError is typed
+    # lineage_mint_failed instead of generic publish_failed.
+    lineage_evidence = _mint_lineage_evidence(
+        ledger, staged.admitted_packages, system_available_at=admitted_at
+    )
+    binding = staged.binding
+    issuer = staged.issuer
+    return ProductionDatasetMaterial(
+        binding=binding,
+        entity=EntityInput(
+            entity_id=binding.entity_id,
+            cik=binding.cik,
+            ticker=binding.ticker,
+            name=str(issuer.get("legal_name") or binding.ticker),
+            identity_basis="sec-cik",
+            source_entity_id=binding.source_entity_id,
+        ),
+        ledger=ledger,
+        filing_metadata=filing_metadata,
+        registry_payload=registry_payload,
+        admitted_at=admitted_at,
+        source_recorded_at_floor=floor,
+        packages=tuple(staged.admitted_packages),
+        lineage_evidence=tuple(lineage_evidence),
+        security_id=str(issuer["security_master_binding"].get("security_id") or "") or None,
+        listing_key=str(issuer["security_master_binding"].get("listing_key") or "") or None,
+    )
+
+
+@dataclass
+class _IssuerPlan:
+    """One issuer's ERRATA-3 plan: outcome, clock basis, and the material
+    built at the chosen clock (the commit phase reuses it verbatim)."""
+
+    staged: _StagedIssuer
+    outcome: str
+    clock_basis: str
+    admitted_at: datetime
+    generation_id: str
+    manifest_key: str
+    lineage_receipt_count: int
+    material: Any = field(repr=False, default=None)
+
+
+def _plan_issuer(
+    staged: _StagedIssuer,
+    *,
+    real_store: Any,
+    scratch_store: Any,
+    registry_payload: Mapping[str, Any],
+    registry_clocks: Sequence[datetime],
+    recorded_at: datetime,
+) -> _IssuerPlan:
+    """ERRATA-3 1: plan ONE issuer with ZERO real-store writes.
+
+    a. Read L = load_latest_generation; a pointer that exists but cannot be
+       verified is the typed ``latest_pointer_unreadable``, never absence.
+    b. Clock-independent UNCHANGED test: with L present and
+       ``floor <= L.admitted_at``, build the candidate at L's own admission
+       clock into the SCRATCH store and compare generation ids — equal means
+       outcome ``unchanged`` and NO real-store write for this issuer. Any
+       exception in that comparison build means CHANGED (the authoritative
+       build below re-raises real errors).
+    c. Clock choice: T_c if (L is None or T_c > L.published_at); else T_r if
+       T_r > L.published_at; else the typed ``admission_clock_not_after_latest``
+       naming T_c, T_r and L.published_at, raised before any real-store write.
+       L.published_at == L.admitted_at by the pointer payload's construction
+       (``production_datasets._pointer_payload`` writes published_at=admitted_at).
+    e. Build the authoritative candidate at the chosen clock in the scratch
+       store — the lineage mint and every role must build before ANY real
+       write begins.
+    """
+    binding = staged.binding
+    t_c = _content_clock(staged.capture_clocks, registry_clocks)
+    floor = min(staged.capture_clocks)
+    try:
+        latest = load_latest_generation(real_store, binding.entity_id)
+    except ProductionDatasetError as exc:
+        raise PublisherError(
+            f"latest.json for {binding.entity_id} exists but cannot be verified "
+            f"(latest_pointer_unreadable): {exc}",
+            code="latest_pointer_unreadable",
+        ) from exc
+    if latest is not None and floor <= latest.admitted_at:
+        try:
+            comparison_material = _build_material(
+                staged,
+                registry_payload=registry_payload,
+                registry_clocks=registry_clocks,
+                admitted_at=latest.admitted_at,
+            )
+            comparison = publish_production_dataset(scratch_store, comparison_material)
+        except Exception:  # noqa: BLE001 - treat as CHANGED; the plan below re-raises
+            comparison = None
+        else:
+            if comparison.generation_id == latest.generation_id:
+                return _IssuerPlan(
+                    staged=staged,
+                    outcome="unchanged",
+                    clock_basis="latest_unchanged",
+                    admitted_at=latest.admitted_at,
+                    generation_id=latest.generation_id,
+                    manifest_key=production_manifest_key(
+                        binding.entity_id, latest.generation_id
+                    ),
+                    lineage_receipt_count=len(
+                        tuple(comparison_material.lineage_evidence)
+                    ),
+                    material=comparison_material,
+                )
+    if latest is None or t_c > latest.admitted_at:
+        chosen, basis = t_c, "content"
+    elif recorded_at > latest.admitted_at:
+        chosen, basis = recorded_at, "run_recorded_at"
+    else:
+        raise PublisherError(
+            "admission_clock_not_after_latest: neither the content clock "
+            f"t_c={utc_text(t_c)} nor the run clock "
+            f"t_r={utc_text(recorded_at)} is later than the latest published "
+            f"clock latest_published_at={utc_text(latest.admitted_at)} for "
+            f"{binding.entity_id}, and no clock is ever clamped, rewound, or "
+            "re-stamped to force agreement",
+            code="admission_clock_not_after_latest",
+        )
+    material = _build_material(
+        staged,
+        registry_payload=registry_payload,
+        registry_clocks=registry_clocks,
+        admitted_at=chosen,
+    )
+    scratch_publication = publish_production_dataset(scratch_store, material)
+    return _IssuerPlan(
+        staged=staged,
+        outcome="published",
+        clock_basis=basis,
+        admitted_at=chosen,
+        generation_id=scratch_publication.generation_id,
+        manifest_key=scratch_publication.manifest_key,
+        lineage_receipt_count=len(tuple(material.lineage_evidence)),
+        material=material,
+    )
+
+
+def _issuer_summary(plan: _IssuerPlan) -> dict[str, Any]:
+    binding = plan.staged.binding
+    return {
+        "entity_id": binding.entity_id,
+        "ticker": binding.ticker,
+        "cik": binding.cik,
+    }
+
+
+def _report_row(
+    plan: _IssuerPlan,
+    *,
+    generation_id: str,
+    manifest_key: str,
+    admitted_at: datetime | str,
+) -> dict[str, Any]:
+    """One ``published`` report row (outcome published OR unchanged)."""
+    admitted_text = (
+        admitted_at if isinstance(admitted_at, str) else (utc_text(admitted_at) or "")
+    )
+    return {
+        **_issuer_summary(plan),
+        "outcome": plan.outcome,
+        "clock_basis": plan.clock_basis,
+        "generation_id": generation_id,
+        "manifest_key": manifest_key,
+        "admitted_at": admitted_text,
+        "source_recorded_at_floor": utc_text(min(plan.staged.capture_clocks)) or "",
+        "admitted_accessions": [
+            str(package.manifest["accession"])
+            for package in plan.staged.admitted_packages
+        ],
+        "lineage_receipt_count": plan.lineage_receipt_count,
+    }
+
+
+def _commit_code(exc: BaseException) -> str:
+    """The typed publisher code a COMMIT-phase failure reports (ERRATA-3 2)."""
+    if isinstance(exc, PublisherError):
+        return exc.code
+    if isinstance(exc, FifMemberCaptureError):
+        if exc.code == "golden_input_refused":
+            return "golden_input_refused"
+        if exc.code in RETAINED_PACKAGE_INTEGRITY_CODES:
+            return "retained_package_integrity"
+    return "publish_failed"
+
+
+def _report_base(
+    recorded_at: datetime, registry_clocks: Sequence[datetime]
+) -> dict[str, Any]:
+    return {
+        "schema": PUBLISH_REPORT_SCHEMA,
+        "recorded_at": utc_text(recorded_at) or "",
+        "rule_clocks": {
+            "confirmation_rule_available_at": utc_text(CONFIRMATION_RULE_AVAILABLE_AT),
+            "confirmation_chain_rule_available_at": utc_text(
+                CONFIRMATION_CHAIN_RULE_AVAILABLE_AT
+            ),
+            "registry_available_at": sorted(
+                {utc_text(clock) for clock in registry_clocks}
+            ),
+        },
+    }
+
+
+def _write_report(report: Mapping[str, Any], report_path_value: Any) -> None:
+    if not report_path_value:
+        return
+    target = Path(report_path_value)
+    target.parent.mkdir(parents=True, exist_ok=True)
+    target.write_text(
+        json.dumps(report, ensure_ascii=False, sort_keys=True, indent=2) + "\n",
+        encoding="utf-8",
+    )
+
+
+def _run_publish(args: argparse.Namespace) -> int:
+    contract = load_fif_coverage_contract(args.coverage_file)
+    raw_root = Path(args.raw_root)
+    archive_root = Path(args.archive_root)
+    refuse_repository_fixture_inputs(raw_root, archive_root)
+    recorded_at = _require_clock(args.recorded_at, "--recorded-at")
+    registry_payload = snapshot_core_registry_payload(Path(args.repo_root))
+    registry_clocks = _registry_available_clocks(registry_payload)
+
+    staged, excluded = _stage_contract_issuers(
+        contract["issuers"], archive_root=archive_root
+    )
+
+    # FUTURE-CLOCK REFUSAL (seat amendment (a)) — still FIRST and unchanged
+    # (ERRATA-3 1.d): every issuer's CLOCK RULE is computed BEFORE any store
+    # exists or writes — a later admitted_at than the run's recorded-at
+    # refuses the whole run, never clamps a clock, never mints a future-dated
+    # generation. The chosen clock is therefore always <= T_r.
+    for staged_row in staged:
+        computed = _content_clock(staged_row.capture_clocks, registry_clocks)
         if computed > recorded_at:
             _fail(
                 "admitted_at_after_recorded_at: computed admitted_at "
@@ -594,41 +803,101 @@ def _run_publish(args: argparse.Namespace) -> int:
     )
     if store is None:
         _fail("production dataset store is not configured", code="publish_failed")
-    for issuer, binding, admitted_packages, capture_clocks in staged:
-        row = _publish_one_issuer(
-            store=store,
-            issuer=issuer,
-            binding=binding,
-            admitted_packages=admitted_packages,
-            capture_clocks=capture_clocks,
-            registry_payload=registry_payload,
-            registry_clocks=registry_clocks,
-            repo_root=Path(args.repo_root),
+
+    # ERRATA-3 1 + 4: PLAN over ALL issuers into a SCRATCH store (a fresh
+    # tempdir local store — no engine "pure plan" split; production_datasets
+    # stays unowned and untouched). No real write begins until EVERY issuer's
+    # plan succeeds; publish order is deterministic by entity_id.
+    scratch_dir = tempfile.mkdtemp(prefix="fif-production-plan-")
+    try:
+        scratch_store = build_production_dataset_store(local_dir=Path(scratch_dir))
+        plans = [
+            _plan_issuer(
+                staged_row,
+                real_store=store,
+                scratch_store=scratch_store,
+                registry_payload=registry_payload,
+                registry_clocks=registry_clocks,
+                recorded_at=recorded_at,
+            )
+            for staged_row in sorted(staged, key=lambda item: item.binding.entity_id)
+        ]
+    finally:
+        shutil.rmtree(scratch_dir, ignore_errors=True)
+
+    # COMMIT (ERRATA-3 2): publish each planned non-unchanged issuer to the
+    # REAL store at its chosen clock, then read-back-verify the pointer NAMES
+    # the generation. A commit-phase failure still writes the PARTIAL report
+    # (committed / failed + typed code / not-attempted) to --report-path
+    # before exiting non-zero.
+    published: list[dict[str, Any]] = []
+    failed: dict[str, Any] | None = None
+    not_attempted: list[dict[str, Any]] = []
+    for plan in plans:
+        if failed is not None:
+            not_attempted.append(_issuer_summary(plan))
+            continue
+        if plan.outcome == "unchanged":
+            # Equal generation id at L's own clock: NO real-store write for
+            # this issuer; latest.json already names the generation.
+            published.append(
+                _report_row(
+                    plan,
+                    generation_id=plan.generation_id,
+                    manifest_key=plan.manifest_key,
+                    admitted_at=plan.admitted_at,
+                )
+            )
+            continue
+        try:
+            publication = publish_production_dataset(store, plan.material)
+            # Read-back self-check: the POINTER must NAME the generation just
+            # written, not merely exist beside it.
+            latest = load_latest_generation(store, plan.staged.binding.entity_id)
+            if latest is None or latest.generation_id != publication.generation_id:
+                _fail(
+                    "latest.json does not name the published generation for "
+                    f"{plan.staged.binding.entity_id}",
+                    code="verify_failed",
+                )
+        except Exception as exc:  # noqa: BLE001 - partial report, then typed exit
+            failed = {
+                **_issuer_summary(plan),
+                "code": _commit_code(exc),
+                "error": f"{type(exc).__name__}: {exc}",
+            }
+            continue
+        published.append(
+            _report_row(
+                plan,
+                generation_id=publication.generation_id,
+                manifest_key=publication.manifest_key,
+                admitted_at=publication.admitted_at,
+            )
         )
-        published.append(row)
+
+    if failed is not None:
+        partial = {
+            **_report_base(recorded_at, registry_clocks),
+            "published": published,
+            "excluded": excluded,
+            "failed": failed,
+            "not_attempted": not_attempted,
+        }
+        _write_report(partial, args.report_path)
+        print(json.dumps(partial, ensure_ascii=False, sort_keys=True, indent=2), flush=True)
+        _fail(
+            f"commit-phase publish failure for {failed['ticker']} "
+            f"({failed['code']}): {failed['error']}",
+            code=failed["code"],
+        )
 
     report = {
-        "schema": PUBLISH_REPORT_SCHEMA,
-        "recorded_at": utc_text(recorded_at) or "",
-        "rule_clocks": {
-            "confirmation_rule_available_at": utc_text(CONFIRMATION_RULE_AVAILABLE_AT),
-            "confirmation_chain_rule_available_at": utc_text(
-                CONFIRMATION_CHAIN_RULE_AVAILABLE_AT
-            ),
-            "registry_available_at": sorted(
-                {utc_text(clock) for clock in registry_clocks}
-            ),
-        },
+        **_report_base(recorded_at, registry_clocks),
         "published": published,
         "excluded": excluded,
     }
-    if args.report_path:
-        report_path = Path(args.report_path)
-        report_path.parent.mkdir(parents=True, exist_ok=True)
-        report_path.write_text(
-            json.dumps(report, ensure_ascii=False, sort_keys=True, indent=2) + "\n",
-            encoding="utf-8",
-        )
+    _write_report(report, args.report_path)
     print(json.dumps(report, ensure_ascii=False, sort_keys=True, indent=2), flush=True)
     verify_report(report, store)
     return 0
@@ -673,6 +942,20 @@ def verify_report(report: Mapping[str, Any], store: Any) -> None:
         entity_id = str(row.get("entity_id") or "")
         if not generation_id or not entity_id:
             _fail("published row is missing its generation identity", code="verify_failed")
+        # ERRATA-3 3: closed vocabularies for the per-issuer outcome columns.
+        outcome = str(row.get("outcome") or "")
+        clock_basis = str(row.get("clock_basis") or "")
+        if outcome not in ("published", "unchanged"):
+            _fail(
+                f"published row outcome is outside the closed vocabulary: {outcome}",
+                code="verify_failed",
+            )
+        if clock_basis not in ("content", "run_recorded_at", "latest_unchanged"):
+            _fail(
+                "published row clock_basis is outside the closed vocabulary: "
+                f"{clock_basis}",
+                code="verify_failed",
+            )
         latest = load_latest_generation(store, entity_id)
         if latest is None or latest.generation_id != generation_id:
             _fail(

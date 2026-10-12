@@ -15,6 +15,7 @@ import ast
 import gzip
 import hashlib
 import json
+import shutil
 import subprocess
 import sys
 from datetime import datetime, timezone
@@ -27,6 +28,7 @@ from collectors.sec_document_spine import (
     retain_filing_manifest,
     with_document_retrievals,
 )
+from engine.research_vault.r2_store import LocalStore
 from collectors.sec_request_pacer import SecRequestPacer
 from engine.fundamental_forensics.admitted_filing_package import (
     admit_retained_filing_package,
@@ -45,6 +47,7 @@ from engine.fundamental_forensics.production_lineage import (
 )
 from engine.fundamental_forensics.sec_document_spine import build_filing_manifests
 from engine.fundamental_forensics.statement_graph import GOLDEN_AAPL_FIXTURES
+from engine.fundamental_forensics.query_service import CanonicalEntityBinding
 import scripts.publish_fif_production_datasets as producer
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -55,6 +58,10 @@ CAPTURE_CLOCK = "2026-10-13T02:31:00Z"           # captured AFTER 2026-10-12
 RUN_CLOCK = "2026-10-13T02:35:00Z"
 NEXT_NIGHT_CAPTURE = "2026-10-14T02:31:00Z"
 NEXT_NIGHT_RUN = "2026-10-14T02:35:00Z"
+THIRD_NIGHT_RUN = "2026-10-15T02:35:00Z"
+# A run clock EQUAL to the content clock (T_c) — used by ERRATA-3 (iv), where
+# neither T_c nor T_r is strictly later than L.published_at.
+RUN_CLOCK_EQUAL_TO_CONTENT = "2026-10-13T02:31:00Z"
 EARLY_RUN_CLOCK = "2026-10-12T00:00:00Z"
 MID_RULES_CAPTURE = "2026-09-01T00:00:00Z"
 MID_RULES_RUN = "2026-09-01T00:05:00Z"
@@ -1399,3 +1406,378 @@ def test_targets_cap_boundary_fifteen_passes_sixteen_refuses(tmp_path, capsys) -
     assert any(
         "targets_overflow" in line for line in _stderr_error_lines(capsys)
     )
+
+
+# ---------------------------------------------------------------------------
+# ERRATA-3 (D1+D2): clock advance for changed content — plan/commit/report
+# ---------------------------------------------------------------------------
+
+
+def _empty_mint(_ledger, _packages, *, system_available_at):
+    """A changed S2-p mint output (an empty receipt tuple is lawful): moves the
+    generation id WITHOUT moving any content clock — exactly the ERRATA-3
+    registry/code-output-change scenario."""
+    return ()
+
+
+def test_errata3_i_identical_rerun_is_unchanged_zero_real_writes(
+    tmp_path, monkeypatch, offline_collector
+) -> None:
+    """(i) rerun with identical inputs -> outcome unchanged, ZERO real-store
+    writes (store object listing byte-identical before/after)."""
+    lane = _materialize_lane(tmp_path)
+    identity = lane["identity"]
+    contract = _write_contract(tmp_path, identity, None)
+    assert _capture_cli(lane, contract) == 0
+    store = tmp_path / "store"
+    report_path = tmp_path / "publish_report.json"
+    assert _publish_cli(lane, contract, store, report_path) == 0
+    first = json.loads(report_path.read_text(encoding="utf-8"))
+    assert first["published"][0]["outcome"] == "published"
+    files_before = _store_files(store)
+    latest_before = _latest_json_path(store, identity["entity_id"]).read_bytes()
+    assert files_before  # night 1 really wrote a generation
+
+    assert _publish_cli(lane, contract, store, report_path, clock=NEXT_NIGHT_RUN) == 0
+    second = json.loads(report_path.read_text(encoding="utf-8"))
+    row = second["published"][0]
+    assert row["outcome"] == "unchanged"
+    assert row["clock_basis"] == "latest_unchanged"
+    assert row["generation_id"] == first["published"][0]["generation_id"]
+    assert row["admitted_at"] == first["published"][0]["admitted_at"]
+    # ZERO real-store writes: identical object listing, identical pointer.
+    assert _store_files(store) == files_before
+    assert _latest_json_path(store, identity["entity_id"]).read_bytes() == latest_before
+    # verify accepts `unchanged` because latest.json NAMES the generation.
+    assert (
+        producer.main(
+            [
+                "verify",
+                "--coverage-file", str(contract),
+                "--report-path", str(report_path),
+                "--store-dir", str(store),
+            ]
+        )
+        == 0
+    )
+
+
+def test_errata3_ii_content_change_publishes_at_run_clock(
+    tmp_path, monkeypatch, offline_collector
+) -> None:
+    """(ii) mint output changes with the same captures -> new generation at
+    T_r (--recorded-at), pointer advances, clock_basis=run_recorded_at."""
+    lane = _materialize_lane(tmp_path)
+    identity = lane["identity"]
+    contract = _write_contract(tmp_path, identity, None)
+    assert _capture_cli(lane, contract) == 0
+    store = tmp_path / "store"
+    report_path = tmp_path / "publish_report.json"
+    assert _publish_cli(lane, contract, store, report_path) == 0
+    first = json.loads(report_path.read_text(encoding="utf-8"))
+    first_generation = first["published"][0]["generation_id"]
+
+    monkeypatch.setattr(producer, "mint_production_lineage_evidence", _empty_mint)
+    assert _publish_cli(lane, contract, store, report_path, clock=NEXT_NIGHT_RUN) == 0
+    second = json.loads(report_path.read_text(encoding="utf-8"))
+    row = second["published"][0]
+    assert row["outcome"] == "published"
+    assert row["clock_basis"] == "run_recorded_at"
+    assert datetime.fromisoformat(row["admitted_at"].replace("Z", "+00:00")) == datetime(
+        2026, 10, 14, 2, 35, tzinfo=timezone.utc
+    )  # admitted_at == T_r (the run's --recorded-at)
+    assert row["generation_id"] != first_generation
+    pointer = json.loads(_latest_json_path(store, identity["entity_id"]).read_text())
+    assert pointer["generation_id"] == row["generation_id"]  # pointer ADVANCED
+
+
+def test_errata3_iii_night_after_change_is_unchanged_no_churn(
+    tmp_path, monkeypatch, offline_collector
+) -> None:
+    """(iii) the night after (ii), no further change -> unchanged, no churn."""
+    lane = _materialize_lane(tmp_path)
+    identity = lane["identity"]
+    contract = _write_contract(tmp_path, identity, None)
+    assert _capture_cli(lane, contract) == 0
+    store = tmp_path / "store"
+    report_path = tmp_path / "publish_report.json"
+    assert _publish_cli(lane, contract, store, report_path) == 0
+    monkeypatch.setattr(producer, "mint_production_lineage_evidence", _empty_mint)
+    assert _publish_cli(lane, contract, store, report_path, clock=NEXT_NIGHT_RUN) == 0
+    second = json.loads(report_path.read_text(encoding="utf-8"))
+    files_after_change = _store_files(store)
+    latest_after_change = _latest_json_path(store, identity["entity_id"]).read_bytes()
+
+    assert _publish_cli(lane, contract, store, report_path, clock=THIRD_NIGHT_RUN) == 0
+    third = json.loads(report_path.read_text(encoding="utf-8"))
+    row = third["published"][0]
+    assert row["outcome"] == "unchanged"
+    assert row["clock_basis"] == "latest_unchanged"
+    assert row["generation_id"] == second["published"][0]["generation_id"]
+    assert _store_files(store) == files_after_change  # no new generation minted
+    assert (
+        _latest_json_path(store, identity["entity_id"]).read_bytes() == latest_after_change
+    )
+
+
+def test_errata3_iv_clock_not_after_latest_refuses_store_byte_identical(
+    tmp_path, monkeypatch, offline_collector, capsys
+) -> None:
+    """(iv) T_r <= L.published_at with changed content -> typed
+    admission_clock_not_after_latest naming T_c, T_r and L.published_at,
+    raised before any real-store write: store byte-identical, no orphans."""
+    lane = _materialize_lane(tmp_path)
+    identity = lane["identity"]
+    contract = _write_contract(tmp_path, identity, None)
+    assert _capture_cli(lane, contract) == 0
+    store = tmp_path / "store"
+    report_path = tmp_path / "publish_report.json"
+    assert _publish_cli(lane, contract, store, report_path) == 0
+    files_before = _store_files(store)
+    latest_before = _latest_json_path(store, identity["entity_id"]).read_bytes()
+    report_before = report_path.read_bytes()
+
+    monkeypatch.setattr(producer, "mint_production_lineage_evidence", _empty_mint)
+    # T_c == L.published_at == 2026-10-13T02:31:00 and T_r equals it — neither
+    # clock is strictly later than the latest published clock.
+    rc = _publish_cli(lane, contract, store, report_path, clock=RUN_CLOCK_EQUAL_TO_CONTENT)
+    assert rc == 1
+    error_lines = _stderr_error_lines(capsys)
+    assert any("admission_clock_not_after_latest" in line for line in error_lines)
+    joined = " ".join(error_lines)
+    # The refusal NAMES all three clocks (here they coincide at 02:31:00Z).
+    for role in ("t_c=", "t_r=", "latest_published_at="):
+        assert role in joined, role
+    assert "2026-10-13T02:31:00" in joined  # T_c and T_r and L.published_at
+    assert _store_files(store) == files_before  # byte-identical, no orphan objects
+    assert _latest_json_path(store, identity["entity_id"]).read_bytes() == latest_before
+    # No report was written by the refusing run (night 1's report stands).
+    assert report_path.read_bytes() == report_before
+
+
+def test_errata3_v_first_publication_uses_content_clock(
+    tmp_path, monkeypatch, offline_collector
+) -> None:
+    """(v) first publication -> clock T_c, clock_basis=content."""
+    lane = _materialize_lane(tmp_path)
+    identity = lane["identity"]
+    contract = _write_contract(tmp_path, identity, None)
+    assert _capture_cli(lane, contract) == 0
+    store = tmp_path / "store"
+    report_path = tmp_path / "publish_report.json"
+    assert _publish_cli(lane, contract, store, report_path) == 0
+    row = json.loads(report_path.read_text(encoding="utf-8"))["published"][0]
+    assert row["outcome"] == "published"
+    assert row["clock_basis"] == "content"
+    assert datetime.fromisoformat(row["admitted_at"].replace("Z", "+00:00")) == datetime(
+        2026, 10, 13, 2, 31, tzinfo=timezone.utc
+    )  # T_c: the content clock, not the run clock
+
+
+def test_errata3_vi_new_capture_advances_content_clock(
+    tmp_path, monkeypatch, offline_collector
+) -> None:
+    """(vi) a new capture with a later clock -> T_c > L.published_at ->
+    clock_basis=content at the NEW content clock, pointer advances."""
+    lane = _materialize_lane(tmp_path)
+    identity = lane["identity"]
+    contract = _write_contract(tmp_path, identity, None)
+    assert _capture_cli(lane, contract) == 0
+    store = tmp_path / "store"
+    report_path = tmp_path / "publish_report.json"
+    assert _publish_cli(lane, contract, store, report_path) == 0
+    first = json.loads(report_path.read_text(encoding="utf-8"))
+
+    # Re-capture ONE accession with a later clock: delete its (finished)
+    # package dir so the accession is absent, then capture at the later clock.
+    victim = (
+        lane["archive_root"]
+        / "fif-packages"
+        / identity["cik"]
+        / identity["accessions"][0]
+    )
+    shutil.rmtree(victim)
+    assert _capture_cli(lane, contract, clock=NEXT_NIGHT_CAPTURE) == 0
+
+    assert _publish_cli(lane, contract, store, report_path, clock=NEXT_NIGHT_RUN) == 0
+    row = json.loads(report_path.read_text(encoding="utf-8"))["published"][0]
+    assert row["outcome"] == "published"
+    assert row["clock_basis"] == "content"
+    assert datetime.fromisoformat(row["admitted_at"].replace("Z", "+00:00")) == datetime(
+        2026, 10, 14, 2, 31, tzinfo=timezone.utc
+    )  # T_c moved with the new capture
+    assert row["generation_id"] != first["published"][0]["generation_id"]
+    pointer = json.loads(_latest_json_path(store, identity["entity_id"]).read_text())
+    assert pointer["generation_id"] == row["generation_id"]
+
+
+def _stage_three_issuers(monkeypatch) -> None:
+    """Fabricate a three-issuer staged lane over the ONE real admitted set.
+
+    Issuer rows are contract-level data; the D1/D2 plan/commit machinery is
+    the object under test, so every fabricated issuer still converts, mints
+    and publishes through the REAL path (a synthetic second CIK cannot ride
+    the fixture bytes — admission binds the package CIK to the filing's own
+    dei EntityCentralIndexKey — so the rows are cloned bindings, not cloned
+    packages). Identities are DERIVED at runtime; no literals.
+    """
+    real_stage = producer._stage_contract_issuers
+
+    def _staged(issuers, *, archive_root):
+        staged, excluded = real_stage(issuers, archive_root=archive_root)
+        assert len(staged) == 1
+        base = staged[0]
+        base_binding = base.binding
+        for suffix in ("2", "3"):
+            cik = base_binding.cik[:-1] + str(
+                (int(base_binding.cik[-1]) + int(suffix)) % 10
+            )
+            issuer = dict(base.issuer)
+            issuer["cik"] = cik
+            issuer["ticker"] = base_binding.ticker + suffix
+            issuer["security_master_binding"] = {
+                **dict(base.issuer["security_master_binding"]),
+                "issuer_id": base_binding.entity_id + suffix,
+                "issuer_cik": cik,
+            }
+            staged.append(
+                producer._StagedIssuer(
+                    issuer=issuer,
+                    binding=CanonicalEntityBinding(
+                        entity_id=base_binding.entity_id + suffix,
+                        cik=cik,
+                        ticker=base_binding.ticker + suffix,
+                        source_entity_id=cik,
+                    ),
+                    admitted_packages=base.admitted_packages,
+                    capture_clocks=base.capture_clocks,
+                )
+            )
+        return staged, excluded
+
+    monkeypatch.setattr(producer, "_stage_contract_issuers", _staged)
+
+
+class _FlakyPointerStore(LocalStore):
+    """A REAL local store whose SECOND latest.json CAS raises — a synthetic
+    commit-phase fault on the second committed issuer. (A delegating wrapper
+    cannot pass the engine's runtime-Protocol isinstance: Python 3.12 checks
+    protocol attrs statically and never sees __getattr__ delegation, so the
+    fault has to ride a genuine LocalStore subclass.)"""
+
+    def __init__(self, root) -> None:
+        super().__init__(root)
+        self.pointer_writes = 0
+
+    def put_bytes_strict_conditional(self, key, data, **kwargs):
+        if key.endswith("latest.json"):
+            self.pointer_writes += 1
+            if self.pointer_writes == 2:
+                raise OSError("synthetic commit-phase pointer fault")
+        return super().put_bytes_strict_conditional(key, data, **kwargs)
+
+
+def test_errata3_vii_commit_fault_writes_partial_report(
+    tmp_path, monkeypatch, offline_collector, capsys
+) -> None:
+    """(vii) a mid-commit write failure (injected store fault on issuer 2 of
+    3) -> the PARTIAL report names committed / failed+typed code /
+    not-attempted issuers before the non-zero exit."""
+    lane = _materialize_lane(tmp_path)
+    identity = lane["identity"]
+    contract = _write_contract(tmp_path, identity, None)
+    assert _capture_cli(lane, contract) == 0
+    store = tmp_path / "store"
+    report_path = tmp_path / "publish_report.json"
+    _stage_three_issuers(monkeypatch)
+    real_builder = producer.build_production_dataset_store
+
+    def _factory(local_dir=None):
+        built = real_builder(local_dir)
+        if local_dir is not None and Path(local_dir) == store:
+            return _FlakyPointerStore(store)
+        return built  # plan-phase scratch stores stay honest
+
+    monkeypatch.setattr(producer, "build_production_dataset_store", _factory)
+
+    rc = _publish_cli(lane, contract, store, report_path)
+    assert rc == 1
+    partial = json.loads(report_path.read_text(encoding="utf-8"))
+    entity_ids = [identity["entity_id"], identity["entity_id"] + "2", identity["entity_id"] + "3"]
+    assert [row["entity_id"] for row in partial["published"]] == [entity_ids[0]]
+    assert partial["published"][0]["outcome"] == "published"
+    assert partial["failed"]["entity_id"] == entity_ids[1]
+    assert partial["failed"]["code"]  # typed code present (store fault -> publish_failed family)
+    assert [row["entity_id"] for row in partial["not_attempted"]] == [entity_ids[2]]
+    # Issuer 1 committed for real; issuers 2 and 3 never moved a pointer.
+    assert _latest_json_path(store, entity_ids[0]).is_file()
+    assert not _latest_json_path(store, entity_ids[1]).exists()
+    assert not _latest_json_path(store, entity_ids[2]).exists()
+    assert any(
+        "publish_failed" in line or partial["failed"]["code"] in line
+        for line in _stderr_error_lines(capsys)
+    )
+
+
+def test_d2_plan_failure_on_second_of_three_issuers_leaves_store_byte_identical(
+    tmp_path, monkeypatch, offline_collector, capsys
+) -> None:
+    """D2: the PLAN is all-or-nothing over ALL issuers — issuer 2's plan
+    failure (mint refusal) leaves the real store byte-identical with no
+    pointer moved and no report minted."""
+    lane = _materialize_lane(tmp_path)
+    identity = lane["identity"]
+    contract = _write_contract(tmp_path, identity, None)
+    assert _capture_cli(lane, contract) == 0
+    store = tmp_path / "store"
+    report_path = tmp_path / "publish_report.json"
+    _stage_three_issuers(monkeypatch)
+    real_mint = producer.mint_production_lineage_evidence
+    calls = {"count": 0}
+
+    def _explode_on_second(ledger, packages, *, system_available_at):
+        calls["count"] += 1
+        if calls["count"] == 2:
+            raise LineageEvidenceError("synthetic second-issuer mint refusal")
+        return real_mint(ledger, packages, system_available_at=system_available_at)
+
+    monkeypatch.setattr(producer, "mint_production_lineage_evidence", _explode_on_second)
+    rc = _publish_cli(lane, contract, store, report_path)
+    assert rc == 1
+    assert any(
+        "lineage_mint_failed" in line for line in _stderr_error_lines(capsys)
+    )
+    # ALL-or-nothing: nothing was written for ANY issuer.
+    assert _store_files(store) == []
+    for suffix in ("", "2", "3"):
+        assert not _latest_json_path(store, identity["entity_id"] + suffix).exists()
+    assert not report_path.exists()
+
+
+def test_d1_latest_pointer_unreadable_is_typed(
+    tmp_path, monkeypatch, offline_collector, capsys
+) -> None:
+    """D1 (ERRATA-3 1.a): a pointer that exists but cannot be verified is the
+    typed latest_pointer_unreadable failure — never treated as absent (which
+    would mint a first-publication clock over a broken pointer), and raised
+    in PLAN so the store keeps no orphan writes."""
+    lane = _materialize_lane(tmp_path)
+    identity = lane["identity"]
+    contract = _write_contract(tmp_path, identity, None)
+    assert _capture_cli(lane, contract) == 0
+    store = tmp_path / "store"
+    report_path = tmp_path / "publish_report.json"
+    assert _publish_cli(lane, contract, store, report_path) == 0
+    files_before = _store_files(store)
+    _latest_json_path(store, identity["entity_id"]).write_text(
+        "{ not a pointer", encoding="utf-8"
+    )
+    files_corrupt = _store_files(store)
+
+    rc = _publish_cli(lane, contract, store, report_path, clock=NEXT_NIGHT_RUN)
+    assert rc == 1
+    assert any(
+        "latest_pointer_unreadable" in line for line in _stderr_error_lines(capsys)
+    )
+    assert _store_files(store) == files_corrupt  # no writes beyond the corruption
+    assert len(files_corrupt) == len(files_before)
