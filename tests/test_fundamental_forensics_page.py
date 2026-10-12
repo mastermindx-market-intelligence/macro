@@ -11,10 +11,12 @@ from scripts.build_fundamental_forensics import (
     PUBLIC_SUMMARY_RELATIVE,
     PUBLIC_SUMMARY_SCHEMA as SCHEMA_PUBLIC,
     SCHEMA,
+    _period_label,
     _write_public_summary,
     _write_state_atomic,
     compose_state,
     detector_evaluability,
+    detect_accruals,
     detect_quarterly,
     public_summary_projection,
     read_public_summary,
@@ -490,3 +492,118 @@ def test_public_summary_stops_being_published_once_it_outlives_its_build(tmp_pat
         bff.read_public_summary = real_read
     assert "companies read" not in html
     assert "1,240" not in html
+
+
+# ---------------------------------------------------------------------------
+# FIF E-FIX: ratio differences are percentage points, accruals cite annual rows
+# ---------------------------------------------------------------------------
+
+
+def test_margin_compression_summary_uses_percentage_points_growth_stays_percent():
+    """A margin difference is percentage points; revenue growth keeps '%'."""
+    prior = pd.Series(_q())  # revenue 100, gross_profit 40 -> 40% margin
+    current = pd.Series(_q(
+        fiscal_year=2026,
+        period_end="2026-06-30",
+        revenue=110.0,       # +10.0% growth
+        gross_profit=40.7,   # 37% margin -> exactly a 3.0pp fall
+    ))
+    findings = detect_quarterly(current, prior, None)
+    margin = next(f for f in findings if f["detector"] == "margin_compression_despite_revenue_growth")
+
+    assert "gross margin fell 3.0 percentage points" in margin["summary_en"]
+    assert "fell 3.0%" not in margin["summary_en"]
+    assert "Revenue rose 10.0%" in margin["summary_en"]
+    assert "毛利率下降 3.0 个百分点" in margin["summary_zh"]
+    assert "收入同比增长 10.0%" in margin["summary_zh"]
+
+
+def test_receivables_gap_summary_uses_percentage_points():
+    prior = pd.Series(_q())  # revenue 100, receivables 20
+    current = pd.Series(_q(
+        fiscal_year=2026, period_end="2026-06-30",
+        revenue=105.0, gross_profit=42.0, receivables=25.0,  # +5% vs +25% -> 20.0pp
+    ))
+    findings = detect_quarterly(current, prior, None)
+    stretch = next(f for f in findings if f["detector"] == "receivables_stretch")
+
+    assert "Receivables grew 20.0 percentage points faster than revenue" in stretch["summary_en"]
+    assert "20.0%" not in stretch["summary_en"]
+    assert "应收账款增速比收入快 20.0 个百分点" in stretch["summary_zh"]
+    assert "%" not in stretch["summary_zh"]
+
+
+def test_inventory_gap_summary_uses_percentage_points():
+    prior = pd.Series(_q())  # revenue 100, inventory 20
+    current = pd.Series(_q(
+        fiscal_year=2026, period_end="2026-06-30",
+        revenue=105.0, gross_profit=42.0, inventory=25.0,  # +5% vs +25% -> 20.0pp
+    ))
+    findings = detect_quarterly(current, prior, None)
+    build = next(f for f in findings if f["detector"] == "inventory_build")
+
+    assert "Inventory grew 20.0 percentage points faster than revenue" in build["summary_en"]
+    assert "20.0%" not in build["summary_en"]
+    assert "库存增速比收入快 20.0 个百分点" in build["summary_zh"]
+    assert "%" not in build["summary_zh"]
+
+
+def test_capex_gap_summary_uses_percentage_points():
+    prior = pd.Series(_q())  # revenue 100, capex 10
+    current = pd.Series(_q(
+        fiscal_year=2026, period_end="2026-06-30",
+        revenue=105.0, gross_profit=42.0, capex=15.0, op_income=0.0,  # +5% vs +50% -> 45.0pp
+    ))
+    findings = detect_quarterly(current, prior, None)
+    capex = next(f for f in findings if f["detector"] == "capital_intensity_rising")
+
+    assert "at least 45.0 percentage points" in capex["summary_en"]
+    assert "45.0%" not in capex["summary_en"]
+    assert "资本开支增速至少比经营增长快 45.0 个百分点" in capex["summary_zh"]
+    assert "%" not in capex["summary_zh"]
+
+
+def _annual_panel(latest_ni: float, *, filed: bool = False) -> pd.DataFrame:
+    """Three consecutive FYs: base -1.0%, middle 0.0%, latest (latest_ni-10)/100."""
+    rows = [
+        {"ticker": "TST", "fy": 2023, "period_end": "2023-12-31", "ni": 9.0, "cfo": 10.0, "assets": 100.0},
+        {"ticker": "TST", "fy": 2024, "period_end": "2024-12-31", "ni": 10.0, "cfo": 10.0, "assets": 100.0},
+        {"ticker": "TST", "fy": 2025, "period_end": "2025-12-31", "ni": latest_ni, "cfo": 10.0, "assets": 100.0},
+    ]
+    if filed:
+        for row, stamp in zip(rows, ("2024-02-28", "2025-02-28", "2026-02-28")):
+            row["filed"] = stamp
+    return pd.DataFrame(rows)
+
+
+def test_accruals_finding_is_anchored_to_measured_annual_periods():
+    """The finding stamps the FY rows it measures, never the standing quarter."""
+    quarter = pd.Series(_q(fiscal_year=2026, fiscal_quarter=3))
+    prior_q = pd.Series(_q())
+
+    # R-E4 pin: 2.9pp does not fire; 3.0pp fires watch; 5.0pp fires high.
+    assert detect_accruals(_annual_panel(11.9), quarter, prior_q, None) is None
+    high = detect_accruals(_annual_panel(14.0), quarter, prior_q, None)
+    assert high is not None and high["priority"] == "high"
+
+    watch = detect_accruals(_annual_panel(12.0), quarter, prior_q, 320193)
+    assert watch is not None
+    assert watch["id"] == "accruals_trending_up:fy2025"
+    assert watch["period_current"] == "FY2025"
+    assert watch["period_prior"] == "FY2023"
+    assert watch["priority"] == "watch"
+    assert watch["summary_en"] == "Accrual intensity rose 3.0 percentage points across FY2023–FY2025."
+    assert watch["summary_zh"] == "FY2023–FY2025 应计强度上升 3.0 个百分点。"
+    # the annual frame carries no `filed` column: evidence date is empty, never
+    # the quarterly row's filing date
+    assert watch["evidence"][0]["date"] == ""
+
+    # an annual frame that DOES carry `filed` stamps the latest measured FY's filing
+    stamped = detect_accruals(_annual_panel(12.0, filed=True), quarter, prior_q, 320193)
+    assert stamped is not None and stamped["evidence"][0]["date"] == "2026-02-28"
+
+
+def test_period_label_keeps_quarterly_form_and_supports_annual_rows():
+    assert _period_label(pd.Series({"fiscal_year": 2026, "fiscal_quarter": 3})) == "FY2026 Q3"
+    assert _period_label(pd.Series({"fiscal_year": 2025})) == "FY2025"
+    assert _period_label(pd.Series({"fiscal_year": 2025, "fiscal_quarter": float("nan")})) == "FY2025"
