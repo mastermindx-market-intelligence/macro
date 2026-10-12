@@ -74,9 +74,8 @@ def test_backfill_and_future_crawl_never_backdate_local_availability():
     old = tn.normalize_article(article(), received_at=datetime(2026, 10, 11, tzinfo=UTC))
     assert old["is_historical_backfill"]
     assert old["first_available_at"] == "2026-10-11T00:00:00+00:00"
-    future = tn.normalize_article(article(crawlDate="2026-10-10T07:10:00Z"), received_at=NOW)
-    assert future["first_available_at"] == "2026-10-10T07:10:00+00:00"
-    assert future["is_historical_backfill"] is False
+    with pytest.raises(tn.TiingoArticleError, match="clock_after_receipt"):
+        tn.normalize_article(article(crawlDate="2026-10-10T07:10:00Z"), received_at=NOW)
 
 
 @pytest.mark.parametrize("overrides", [
@@ -110,8 +109,12 @@ def test_fetch_uses_header_auth_and_sorted_bounded_payload():
     captured = {}
     class Response:
         status_code = 200
-        def json(self):
-            return [article()]
+        headers = {"Content-Type": "application/json; charset=utf-8"}
+        closed = False
+        def iter_content(self, chunk_size):
+            yield json.dumps([article()]).encode()
+        def close(self):
+            self.closed = True
     def fake_get(url, **kwargs):
         captured.update(url=url, **kwargs)
         return Response()
@@ -121,7 +124,9 @@ def test_fetch_uses_header_auth_and_sorted_bounded_payload():
     assert "fake-token" not in captured["url"]
     assert captured["headers"]["Authorization"] == "Token fake-token-test-only"
     assert captured["params"] == {"sortBy": "crawlDate", "limit": 1}
-    assert captured["timeout"] <= 20
+    assert captured["timeout"] == (5, 15)
+    assert captured["allow_redirects"] is False
+    assert captured["stream"] is True
 
 
 def test_fetch_unavailable_and_bad_response_fail_closed():
@@ -132,8 +137,11 @@ def test_fetch_unavailable_and_bad_response_fail_closed():
     assert tn.fetch_articles("stub", get=lambda *a, **kw: Response())[1] == "http_403"
     class Malformed:
         status_code = 200
-        def json(self):
-            return {"articles": []}
+        headers = {"Content-Type": "application/json"}
+        def iter_content(self, chunk_size):
+            yield b'{"articles": []}'
+        def close(self):
+            pass
     assert tn.fetch_articles("stub", get=lambda *a, **kw: Malformed())[1] == "invalid_response"
     def failure(*args, **kwargs):
         raise RuntimeError("sensitive upstream request details")
@@ -277,3 +285,170 @@ def test_tiingo_stories_flow_into_ticker_index_without_changing_other_provider_s
     assert result["providers_detail"]["tiingo"] == "ok"
     assert "tiingo" not in result["providers"]  # prior boolean schema intentionally preserved
     assert "Data sourced by Tiingo" in result["disclaimer"]
+
+
+@pytest.mark.parametrize("url", [
+    "https://[broken/story", "https://reuters.com:invalid/story",
+    "https://reuters.com:444/story", "https://reuters.com/a\\b",
+    "https://reuters.com/a\nmore", "https://reuters.com/a\x7fmore",
+])
+def test_malformed_url_has_stable_refusal_not_an_uncaught_parser_error(url):
+    with pytest.raises(tn.TiingoArticleError, match="url_invalid"):
+        tn.normalize_article(article(url=url), received_at=NOW)
+
+
+@pytest.mark.parametrize("received", [None, "2026-10-09", 0, False])
+def test_non_datetime_receipt_is_rejected(received):
+    with pytest.raises(tn.TiingoArticleError, match="received_at_invalid"):
+        tn.normalize_article(article(), received_at=received)
+
+
+@pytest.mark.parametrize("field", ["publishedDate", "crawlDate"])
+def test_future_provider_clock_is_quarantined(field):
+    with pytest.raises(tn.TiingoArticleError, match="clock_after_receipt"):
+        tn.normalize_article(article(**{field: "2026-10-09T08:00:01Z"}), received_at=NOW)
+
+
+def test_publication_fallback_and_delay_are_not_misrepresented_as_sla():
+    obs = tn.normalize_article(article(), received_at=NOW)
+    report = tn.audit_sample([article()], received_at=NOW)
+    assert obs["publication_time_basis"] == "publisher_or_tiingo_discovery_fallback"
+    assert obs["available_at"] == NOW.isoformat()
+    assert report["editorial_accuracy"] == "not_measured"
+    assert report["entity_precision"] == "not_measured"
+    assert report["historical_completeness"] == "not_measured"
+
+
+def test_provider_tags_resolve_only_unique_existing_universe_keys():
+    universe = {"AAPL": {}, "MU": {}, "BRK-B": {}, "TPC": {}, "TpC": {}}
+    resolution = tn.resolve_ticker_candidates(["aapl", "mu", "brk.b", "tpc", "unlisted"], universe)
+    assert resolution["tickers"] == ["AAPL", "BRK-B", "MU"]
+    assert resolution["ambiguous"] == ["tpc"]
+    assert resolution["unresolved"] == ["unlisted"]
+    assert "TPC" not in resolution["tickers"]
+    assert universe == {"AAPL": {}, "MU": {}, "BRK-B": {}, "TPC": {}, "TpC": {}}
+
+
+class _StreamResponse:
+    def __init__(self, payload=b"[]", status=200, media="application/json"):
+        self.payload = payload
+        self.status_code = status
+        self.headers = {"Content-Type": media}
+        self.closed = False
+    def iter_content(self, chunk_size):
+        yield self.payload
+    def close(self):
+        self.closed = True
+
+
+@pytest.mark.parametrize("status", [301, 302, 401, 403, 429, 500])
+def test_http_errors_and_redirects_make_one_request_and_close(status):
+    response = _StreamResponse(status=status)
+    calls = []
+    def get(url, **kwargs):
+        calls.append((url, kwargs))
+        return response
+    assert tn.fetch_articles("fixture-token", get=get) == ([], f"http_{status}")
+    assert len(calls) == 1
+    assert calls[0][1]["allow_redirects"] is False
+    assert response.closed
+
+
+def test_response_byte_budget_is_enforced_and_response_closed(monkeypatch):
+    monkeypatch.setattr(tn, "MAX_RESPONSE_BYTES", 10)
+    response = _StreamResponse(b" " * 11)
+    assert tn.fetch_articles("fixture-token", get=lambda *a, **kw: response) == ([], "response_too_large")
+    assert response.closed
+
+
+def test_response_deadline_is_enforced_and_response_closed(monkeypatch):
+    clock = iter([0, 21])
+    monkeypatch.setattr(tn, "monotonic", lambda: next(clock))
+    response = _StreamResponse()
+    assert tn.fetch_articles("fixture-token", get=lambda *a, **kw: response) == ([], "response_deadline")
+    assert response.closed
+
+
+@pytest.mark.parametrize("payload,media,expected", [
+    (b"<html>login</html>", "text/html", "invalid_content_type"),
+    (b"{}", "application/json", "invalid_response"),
+    (b"[{},{}]", "application/json", "invalid_response"),
+    (b"not-json", "application/json", "request_failed"),
+])
+def test_unusable_response_cannot_be_a_success(payload, media, expected):
+    response = _StreamResponse(payload, media=media)
+    assert tn.fetch_articles("fixture-token", limit=1, get=lambda *a, **kw: response) == ([], expected)
+    assert response.closed
+
+
+def test_tiingo_only_model_batch_never_acquires_a_provider(monkeypatch):
+    from engine import news_llm
+    row = {"provider": "tiingo", "title": "Example headline", "summary": ""}
+    payload = [row]
+    monkeypatch.setattr(news_llm, "_cfg", lambda: pytest.fail("model configuration accessed"))
+    assert news_llm.annotate(payload) is payload
+    assert row == {"provider": "tiingo", "title": "Example headline", "summary": ""}
+
+
+def test_model_enrichment_cannot_copy_a_duplicate_into_tiingo(monkeypatch):
+    from engine import news_llm
+    from scripts import build_news
+    tiingo = {"provider": "tiingo", "title": "Same headline", "domain": "reuters.com", "summary": ""}
+    legacy = {"provider": "polygon", "title": "Same headline", "domain": "reuters.com", "summary": ""}
+    calls = []
+    def annotate(rows):
+        calls.append(list(rows))
+        assert all(row.get("provider") != "tiingo" for row in rows)
+        for row in rows:
+            row.update(summary="Fixture model summary", llm_importance=40)
+        return rows
+    monkeypatch.setattr(news_llm, "annotate", annotate)
+    monkeypatch.setattr(news_llm, "provider_label", lambda: "fixture")
+    monkeypatch.setattr(build_news.nc, "rank_score", lambda row, now: 1)
+    build_news._enrich([[legacy, tiingo]])
+    assert len(calls) == 1 and calls[0] == [legacy]
+    assert legacy["summary"] == "Fixture model summary"
+    assert tiingo["summary"] == ""
+    assert "llm_importance" not in tiingo
+
+
+def test_tiingo_only_build_enrichment_never_selects_model_credentials(monkeypatch):
+    from engine import news_llm
+    from scripts import build_news
+    row = {"provider": "tiingo", "title": "Example headline", "summary": ""}
+    monkeypatch.setattr(news_llm, "provider_label", lambda: pytest.fail("provider selected"))
+    monkeypatch.setattr(build_news.nc, "rank_score", lambda row, now: 1)
+    assert build_news._enrich([[row]]) == ""
+    assert row["summary"] == ""
+
+
+def test_compact_ticker_output_preserves_tiingo_lineage_without_claiming_first_seen(monkeypatch):
+    from engine import financial_news as fin
+    monkeypatch.setattr(fin.nc, "build_entity_map", lambda: {"tickers": {"MU": {}}})
+    row = {
+        "provider": "tiingo", "provider_id": 81234,
+        "title": "Fixture headline", "url": "", "source": "reuters.com",
+        "seendate": "2026-10-09T07:00:00Z", "summary": "",
+        "provider_crawled_at": "2026-10-09T07:10:00+00:00",
+        "first_available_at": NOW.isoformat(),
+        "model_processing_allowed": True,
+        "private_account_detail": "must-not-be-projected",
+    }
+    result = fin.mastermind_by_ticker({"by_ticker": {"MU": [row]}})["MU"]["top"][0]
+    assert result["provider"] == "tiingo" and result["provider_id"] == 81234
+    assert result["observation_received_at"] == NOW.isoformat()
+    assert result["provider_crawled_at"] == row["provider_crawled_at"]
+    assert result["publication_time_basis"] == tn.PUBLICATION_TIME_BASIS
+    assert result["model_processing_allowed"] is False
+    assert result["data_attribution"] == "Data sourced by Tiingo"
+    assert "first_available_at" not in result
+    assert "private_account_detail" not in result
+
+
+def test_other_providers_keep_the_existing_compact_row_shape(monkeypatch):
+    from engine import financial_news as fin
+    monkeypatch.setattr(fin.nc, "build_entity_map", lambda: {"tickers": {"MU": {}}})
+    row = {"provider": "polygon", "title": "Fixture legacy headline", "url": "u",
+           "source": "Reuters", "seendate": "date", "summary": "summary"}
+    result = fin.mastermind_by_ticker({"by_ticker": {"MU": [row]}})["MU"]["top"][0]
+    assert set(result) == {"title", "url", "source", "published", "sentiment", "summary"}

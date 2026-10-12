@@ -111,6 +111,10 @@ def _enrich(sections: list[list[dict]]) -> str:
     groups: dict[str, list[dict]] = {}
     for sec in sections:
         for h in sec:
+            # Do not send Tiingo to the model or copy a separately licensed
+            # duplicate's generated text back onto its source record.
+            if h.get("provider") == "tiingo" or h.get("model_processing_allowed") is False:
+                continue
             i = nc.event_id(h.get("title", ""), h.get("domain", ""))
             groups.setdefault(i, []).append(h)
             if i not in reps:
@@ -144,6 +148,8 @@ def _enrich(sections: list[list[dict]]) -> str:
                 except Exception:  # noqa: BLE001 — display order only, never raises
                     h["rank_score"] = 0.0
         sec.sort(key=lambda h: h.get("rank_score", 0.0), reverse=True)
+    if not order:
+        return ""
     try:
         return news_llm.provider_label()
     except Exception:  # noqa: BLE001

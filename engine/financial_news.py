@@ -989,6 +989,24 @@ def feed(today: date | None = None, use_cache: bool = True) -> dict | None:
     return out
 
 
+def _tiingo_compact_provenance(headline: dict) -> dict:
+    """Preserve source identity on the existing compact read projection."""
+    if headline.get("provider") != "tiingo":
+        return {}
+    return {
+        "provider": "tiingo",
+        "provider_id": headline.get("provider_id"),
+        "provider_crawled_at": headline.get("provider_crawled_at"),
+        # This legacy field is the current response receipt, not a proven
+        # first-ever observation. Do not export a misleading first-seen label.
+        "observation_received_at": headline.get("first_available_at"),
+        "publication_time_basis": _tiingo_news_api.PUBLICATION_TIME_BASIS,
+        "model_processing_allowed": False,
+        "data_attribution": "Data sourced by Tiingo",
+        "data_attribution_url": "https://www.tiingo.com",
+    }
+
+
 def mastermind_by_ticker(feed_dict: dict | None) -> dict:
     """Compact per-ticker signal for the Mastermind 'news_flow' lens.
 
@@ -1030,7 +1048,8 @@ def mastermind_by_ticker(feed_dict: dict | None) -> dict:
             "top": [{"title": h.get("title"), "url": h.get("url"),
                      "source": h.get("source"), "published": h.get("seendate"),
                      "sentiment": (h.get("per_ticker_sentiment") or {}).get(t) or h.get("sentiment"),
-                     "summary": h.get("summary", "")}
+                     "summary": h.get("summary", ""),
+                     **_tiingo_compact_provenance(h)}
                     for h in items[:4]],
             "note": "Public-record financial news flow. Context-only — informs narrative, never sizes alone.",
         }

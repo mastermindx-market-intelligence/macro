@@ -20274,6 +20274,20 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "tests/test_news_llm.py"
+      # Tiingo News regression suite: canonical tracked-tree closure, additive only.
+      - "engine/financial_news.py"
+      - "engine/macro_news.py"
+      - "engine/news_ai_feed.py"
+      - "engine/news_event_ledger.py"
+      - "engine/news_events.py"
+      - "engine/news_llm.py"
+      - "engine/news_rss.py"
+      - "engine/news_vector.py"
+      - "engine/tiingo_news.py"
+      - "lib/massive_ticker.py"
+      - "scripts/build_news.py"
+      - "tests/test_tiingo_news.py"
       # Rotation/risk context extends this owner's actual transitive read closure.
       - "engine/neuralweb/rotation_risk_context.py"
       - "lib/us_cash_calendar.py"
@@ -21001,6 +21015,8 @@ jobs:
           tests/test_qbus_news_contract.py
           tests/test_qbus_news_migration.py
           tests/test_qbus_news_receipts.py
+          tests/test_tiingo_news.py
+          tests/test_news_llm.py
           tests/test_qbus_news_reducer.py
           tests/test_qbus_news_store.py
           tests/test_qbus_news_store_api_reads.py
