@@ -648,6 +648,70 @@ datasets:
       research/licenses/MASSIVE_ENTITLEMENT_RECORD.md; dataset-specific vendor
       conditions, if any, remain authoritative.
 
+  # ── China benchmark index closes (Risk Radar measured pullback) ───────────
+  # BUILT_PENDING_NATURAL_ACCEPTANCE: PROPOSED until the first ordinary scheduled
+  # asia-close run writes the store on protected main and a reviewed receipt binds it.
+  - dataset_id: index.cn.sse_composite.close
+    layer: L1
+    status: PROPOSED
+    owner: macro-dashboard
+    producer: collectors/tushare_index_daily.py
+    storage: data/tushare/index_daily.parquet
+    format: parquet
+    grain: [ticker, trade_date]
+    identity:
+      id_column: ticker
+      id_type: symbol
+    temporal_profile: BARS
+    timezone: Asia/Shanghai
+    frequency: 1d
+    adjustment: none
+    vendor: tushare
+    endpoint: index_daily
+    conflict_policy: PRIMARY_ONLY
+    quality_checks: [uniqueness, validity, freshness, continuity]
+    version: "1.0.0"
+    schema:
+      ticker:
+        dtype: string
+        nullable: false
+        note: >-
+          000001.SS only (Shanghai Composite). The vendor client remaps the
+          requested .SH code to .SS on every returned row.
+      trade_date:
+        dtype: date
+        nullable: false
+        clock: point_in_time
+        note: >-
+          SSE session date, YYYY-MM-DD. A session is knowable only after its
+          15:00 Asia/Shanghai close settles.
+      close:
+        dtype: float64
+        unit: index_points
+        basis: raw
+        renames_to: close_raw
+        nullable: false
+        note: >-
+          Settled index close, 4 dp. An index level carries no split or dividend
+          adjustment.
+      first_seen:
+        dtype: RFC3339_UTC
+        nullable: false
+        clock: point_in_time
+        note: First collector run that held this session's close.
+    code_consumers: [lib/cn_pullback_observation.py]
+    notes: >-
+      Fixed 2023-01-01 anchor, merge by session. A vendor close that disagrees
+      with a held session rejects the whole fetch and keeps the last-good store;
+      a revision is accepted only by deleting the store in a reviewed commit and
+      rebuilding from the anchor. DISPLAY/CONTEXT ONLY: the China Risk Radar
+      measured-pullback section reads it through lib.pullback_observation; no
+      score, forecast, probability or sizing reads it. Rights: TuShare compliance
+      is Chairman-verified-private/SATISFIED under
+      DEC:CNLI-TUSHARE-COMPLIANCE-IS-CHAIRMAN-VERIFIED-PRIVATE; private agreement
+      material is deliberately not a repository input. Product surfaces never
+      name the vendor.
+
   # ── Existing Prophet inputs consumed by V4-B1 ─────────────────────────────
   # These stores retain their incumbent producers and owners. Registration as B1
   # lineage does not transfer ranking, Door, or Radar authority to B1.
