@@ -4,11 +4,19 @@ The dataset registry and committed decisions remain the authority. The private
 current pointer selects their already-published immutable projection; it cannot
 grant purpose, identity or correction authority. This module never chooses R2
 credentials, retrieves a URL, creates directories or starts a producer.
+
+Identity continuity: the recorded C01 receipts inside the protected
+specification stay byte-exact and continue to bind the native fact decision
+digests. A separate, explicit, versioned continuity policy may admit a fresher
+current observation of the same semantic identity whose only drift is
+provenance (source commit and reference Parquet digests). Absence of the
+policy keeps the original exact-equality contract; there is no generic
+relaxation and no silent fallback.
 """
 from __future__ import annotations
 
 from dataclasses import dataclass, replace
-from datetime import datetime, timezone
+from datetime import date, datetime, timezone
 import hashlib
 import json
 import os
@@ -34,6 +42,17 @@ SPEC_PATH = BASE + 'C01_NATIVE_OWNER.json'
 RULING_PATH = BASE + 'C01_CHAIRMAN_SOURCE_PURPOSE_RULING.json'
 REGISTRY_PATH = 'config/dataset_registry.yml'
 CURRENT_KEY = 'current.json'
+OWNER_SCHEMA_V1 = 'company_intelligence.native_owner_decision/v1'
+OWNER_SCHEMA_V2 = 'company_intelligence.native_owner_decision/v2'
+CONTINUITY_SCHEMA = 'company_intelligence.identity_continuity_policy/v1'
+CONTINUITY_BINDING_SCHEMA = 'company_intelligence.identity_continuity_binding/v1'
+# Semantic/evidence fields must match the recorded decision exactly; only the
+# provenance fields may refresh, and only under the explicit v2 policy.
+SEMANTIC_IDENTITY_FIELDS = ('schema', 'identity_mode', 'issuer_id', 'evidenced_cik',
+                            'evidence_source', 'evidence_snapshot')
+PROVENANCE_IDENTITY_FIELDS = ('source_commit', 'sources')
+IDENTITY_SOURCES = ('security_master', 'vendor_aliases', 'issuer_master')
+IDENTITY_PARTIES = ('MU', 'NVDA')
 
 
 def digest(raw: bytes) -> str:
@@ -115,6 +134,93 @@ def _json(raw: bytes) -> dict:
     return value
 
 
+def _validate_identity_receipt(receipt: dict) -> None:
+    """Closed receipt shape; unknown or malformed identity fields refuse."""
+    native._closed(receipt, {'schema', 'identity_mode', 'issuer_id', 'evidenced_cik',
+                             'source_commit', 'sources', 'evidence_source', 'evidence_snapshot'})
+    native._require(receipt['schema'] == context.RECEIPT_SCHEMA
+                    and receipt['identity_mode'] == 'current'
+                    and type(receipt['issuer_id']) is str and bool(receipt['issuer_id'])
+                    and type(receipt['source_commit']) is str
+                    and re.fullmatch('[0-9a-f]{40}', receipt['source_commit']) is not None
+                    and type(receipt['evidenced_cik']) is str
+                    and re.fullmatch('[0-9]{10}', receipt['evidenced_cik']) is not None
+                    and int(receipt['evidenced_cik']) > 0, 'IDENTITY_RECEIPT_INVALID')
+    sources = receipt['sources']
+    native._closed(sources, set(IDENTITY_SOURCES))
+    for name in IDENTITY_SOURCES:
+        reference = native._closed(sources[name], {'sha256', 'byte_length'})
+        native._digest(reference['sha256'])
+        native._integer(reference['byte_length'], 1, context.MAX_REFERENCE_BYTES)
+    native._require(type(receipt['evidence_source']) is str and bool(receipt['evidence_source'])
+                    and type(receipt['evidence_snapshot']) is str
+                    and re.fullmatch('[0-9]{4}-[0-9]{2}-[0-9]{2}', receipt['evidence_snapshot']) is not None,
+                    'IDENTITY_RECEIPT_INVALID')
+    try:
+        valid_date = date.fromisoformat(receipt['evidence_snapshot']).isoformat() == receipt['evidence_snapshot']
+    except ValueError:
+        valid_date = False
+    native._require(valid_date, 'IDENTITY_RECEIPT_INVALID')
+
+
+def _validate_continuity(policy: dict) -> None:
+    """The policy is literal: no free-form fields, no other policy name."""
+    native._require(type(policy) is dict and set(policy) == {'schema', 'policy', 'semantic_fields', 'provenance_fields', 'parties'},
+                    'IDENTITY_CONTINUITY_POLICY_INVALID')
+    native._require(policy['schema'] == CONTINUITY_SCHEMA
+                    and policy['policy'] == 'provenance_refresh'
+                    and type(policy['semantic_fields']) is list
+                    and policy['semantic_fields'] == list(SEMANTIC_IDENTITY_FIELDS)
+                    and type(policy['provenance_fields']) is list
+                    and policy['provenance_fields'] == list(PROVENANCE_IDENTITY_FIELDS)
+                    and type(policy['parties']) is list
+                    and policy['parties'] == list(IDENTITY_PARTIES),
+                    'IDENTITY_CONTINUITY_POLICY_INVALID')
+
+
+def _same_generation(left: dict, right: dict) -> bool:
+    return left['source_commit'] == right['source_commit'] and left['sources'] == right['sources']
+
+
+def _qualify_identities(spec: dict, identities: dict) -> bytes:
+    """Validate recorded and fresh receipts; return observed canonical bytes.
+
+    The recorded receipts remain the immutable identity decision: their digests
+    are pinned inside the native fact. A fresh observation is admitted either by
+    exact equality or, only when the explicit spec continuity policy is present,
+    by provenance-only drift with all six semantic/evidence fields equal for
+    that party. Because the receipt shape is closed, any difference that
+    survives semantic equality is provenance-only by construction, and the
+    refreshed provenance has already been fully shape-validated above. Both
+    parties must additionally observe one shared current source generation.
+    Any split generation, missing policy, malformed receipt or semantic change
+    refuses.
+    """
+    continuity = spec.get('identity_continuity')
+    native._require(type(identities) is dict and type(spec['identities']) is dict
+                    and set(identities) == set(spec['identities']) == set(IDENTITY_PARTIES),
+                    'CURRENT_IDENTITY_CHANGED')
+    for receipt in (spec['identities']['MU'], spec['identities']['NVDA'],
+                    identities['MU'], identities['NVDA']):
+        _validate_identity_receipt(receipt)
+    if continuity is not None:
+        _validate_continuity(continuity)
+    for symbol, party, field in [('MU', 'subject_id', 'subject_identity'),
+                                ('NVDA', 'object_id', 'object_identity')]:
+        recorded, current = spec['identities'][symbol], identities[symbol]
+        native._require(current['issuer_id'] == spec['fact'][party], 'IDENTITY_BINDING_MISMATCH')
+        if native._canonical(current) != native._canonical(recorded):
+            native._require(continuity is not None, 'CURRENT_IDENTITY_CHANGED')
+            native._require(all(current[k] == recorded[k] for k in SEMANTIC_IDENTITY_FIELDS),
+                            'CURRENT_IDENTITY_CHANGED')
+        # The recorded decision, never the fresh observation, binds the fact.
+        native._require(digest(native._canonical(recorded)) == spec['fact'][field],
+                        'IDENTITY_BINDING_MISMATCH')
+    native._require(_same_generation(identities['MU'], identities['NVDA']),
+                    'IDENTITY_GENERATION_SPLIT')
+    return native._canonical(identities)
+
+
 @dataclass(frozen=True)
 class OwnerSnapshot:
     code_version: str
@@ -122,6 +228,7 @@ class OwnerSnapshot:
     ruling_revision: str
     adoption_revision: str
     dataset_status: str
+    current_identities_raw: bytes | None = None
 
     @property
     def spec(self):
@@ -132,6 +239,49 @@ class OwnerSnapshot:
         return {'spec': digest(self.spec_bytes), 'purpose': self.ruling_revision,
                 'adoption': self.adoption_revision}
 
+    @property
+    def identity_continuity(self):
+        return self.spec.get('identity_continuity')
+
+    @property
+    def current_identities(self):
+        """Observed fresh receipts frozen as canonical bytes at qualification.
+
+        The default (absent observation) exists only for the pre-existing
+        five-argument synthetic fixture constructor. It is safe solely because
+        a v1 specification admits no drift at all, so the recorded receipts are
+        the only admissible observation. Production qualification always stores
+        observed bytes, and a v2 specification with missing observed bytes
+        refuses outright in both properties below; no runtime fallback re-reads
+        or re-derives identity from the environment.
+        """
+        raw = self.current_identities_raw
+        if raw is None:
+            native._require(self.identity_continuity is None, 'CURRENT_IDENTITY_CHANGED')
+            return self.spec['identities']
+        return _json(raw)
+
+    @property
+    def identity_binding(self):
+        """Digest binding the recorded receipts, the observed receipts and the
+        protected continuity policy into one in-flight identity decision.
+
+        This is deliberately separate from ``bindings`` (spec/purpose/adoption),
+        which stay pinned to the protected immutable records and therefore do
+        not move when only reference provenance refreshes.
+        """
+        raw = self.current_identities_raw
+        if raw is None:
+            native._require(self.identity_continuity is None, 'CURRENT_IDENTITY_CHANGED')
+            raw = native._canonical(self.spec['identities'])
+        material = {'schema': CONTINUITY_BINDING_SCHEMA,
+                    'recorded': digest(native._canonical(self.spec['identities'])),
+                    'current': digest(raw)}
+        continuity = self.identity_continuity
+        if continuity is not None:
+            material['policy'] = digest(native._canonical(continuity))
+        return digest(native._canonical(material))
+
 
 def qualify_records(code_version: str, spec_raw: bytes, ruling_raw: bytes,
                     registry_raw: bytes, identities: dict) -> OwnerSnapshot:
@@ -139,10 +289,15 @@ def qualify_records(code_version: str, spec_raw: bytes, ruling_raw: bytes,
     import yaml
     native._require(re.fullmatch('[0-9a-f]{40}', code_version) is not None, 'CODE_VERSION_INVALID')
     spec, ruling = _json(spec_raw), _json(ruling_raw)
-    native._closed(spec, {'schema', 'case_id', 'ruling_reference', 'edition', 'fact',
-                         'identities', 'temporal_decision', 'correction_decision', 'semantic_review'})
-    native._require(spec['schema'] == 'company_intelligence.native_owner_decision/v1'
-                    and spec['case_id'] == ruling['case_id'] == 'C01-micron-planned-product-integration'
+    continuity = spec.get('identity_continuity')
+    closed = {'schema', 'case_id', 'ruling_reference', 'edition', 'fact', 'identities',
+              'temporal_decision', 'correction_decision', 'semantic_review'}
+    native._require((spec.get('schema') == OWNER_SCHEMA_V1 and continuity is None and set(spec) == closed)
+                    or (spec.get('schema') == OWNER_SCHEMA_V2 and continuity is not None
+                        and set(spec) == closed | {'identity_continuity'}), 'OWNER_SPEC_INVALID')
+    if continuity is not None:
+        _validate_continuity(continuity)
+    native._require(spec['case_id'] == ruling['case_id'] == 'C01-micron-planned-product-integration'
                     and spec['ruling_reference'] == object_ref(ruling_raw), 'RULING_BINDING_MISMATCH')
     native._require(ruling['decision'] == 'covered' and ruling['rights_evidence_task_complete'] is True
                     and ruling['evidence_kind'] == 'direct_chairman_source_rights_confirmation',
@@ -162,15 +317,7 @@ def qualify_records(code_version: str, spec_raw: bytes, ruling_raw: bytes,
         (source['sha256'], source['byte_length']), 'RULING_SOURCE_MISMATCH')
     native._require(all(fact[k] == use[k] for k in
         ['kind', 'lifecycle', 'product', 'platform', 'amount', 'economic_share']), 'RULING_FACT_MISMATCH')
-    native._require(set(identities) == set(spec['identities']) == {'MU', 'NVDA'}
-                    and identities == spec['identities'], 'CURRENT_IDENTITY_CHANGED')
-    for symbol, party, field in [('MU', 'subject_id', 'subject_identity'),
-                                ('NVDA', 'object_id', 'object_identity')]:
-        identity = identities[symbol]
-        native._require(identity['schema'] == 'company_intelligence.current_issuer_identity/v1'
-                        and identity['identity_mode'] == 'current'
-                        and identity['issuer_id'] == fact[party]
-                        and digest(native._canonical(identity)) == fact[field], 'IDENTITY_BINDING_MISMATCH')
+    observed = _qualify_identities(spec, identities)
     temporal, correction = spec['temporal_decision'], spec['correction_decision']
     native._require(temporal == {'identity_mode': 'current', 'historical_admitted': False,
                     'published_date': edition['published_date'], 'published_at': edition['published_at'],
@@ -195,7 +342,7 @@ def qualify_records(code_version: str, spec_raw: bytes, ruling_raw: bytes,
     native._require({'computed_at', 'code_version', 'input_cutoffs'} <= set(row.schema),
                     'DATASET_CLOCKS_MISSING')
     return OwnerSnapshot(code_version, spec_raw, digest(ruling_raw),
-                         digest(native._canonical(rows[0])), row.status.value)
+                         digest(native._canonical(rows[0])), row.status.value, observed)
 
 
 class CommittedDisclosureSource:
@@ -214,7 +361,7 @@ class CommittedDisclosureSource:
         self.git._git('merge-base', '--is-ancestor', head, 'refs/remotes/origin/main')
         blobs = self.git._read(self.git._objects(head, (SPEC_PATH, RULING_PATH, REGISTRY_PATH)))
         identities = {symbol: context.read_company_context(self.identity_owner, symbol,
-            purpose=PURPOSE, audience=AUDIENCE)['identity_receipt'] for symbol in ('MU', 'NVDA')}
+            purpose=PURPOSE, audience=AUDIENCE)['identity_receipt'] for symbol in IDENTITY_PARTIES}
         result = qualify_records(head, blobs[SPEC_PATH], blobs[RULING_PATH], blobs[REGISTRY_PATH], identities)
         native._require(self.git._head() == head, 'SOURCE_GENERATION_CHANGED')
         return result
@@ -238,11 +385,15 @@ def admission(snapshot: OwnerSnapshot, manifest: dict, request: native.Request,
     spec, fact = snapshot.spec, snapshot.spec['fact']
     native._require(request.mode == 'current' and request.fact_id == fact['fact_id']
                     and (request.purpose, request.audience) == (PURPOSE, AUDIENCE), 'SOURCE_NOT_ADMITTED')
-    identity = spec['identities']['MU']
+    # The subject binding names the exact current observation; the decision
+    # revision stays the original recorded fact identity. The aggregate
+    # identity revision binds both full current receipts plus the protected
+    # continuity policy, separately from the manifest's protected decisions.
+    identity = snapshot.current_identities['MU']
     raw_identity = native._canonical(identity)
     return native.Admission(request, native.validate_fact(fact), native.validate_edition(spec['edition']),
         digest(native._canonical(manifest)), DATASET, 'DERIVED', snapshot.adoption_revision,
-        snapshot.ruling_revision, digest(native._canonical(spec['identities'])),
+        snapshot.ruling_revision, snapshot.identity_binding,
         digest(native._canonical(spec['temporal_decision'])), digest(native._canonical(spec['correction_decision'])),
         fact['known_at'], spec['edition']['publication_precision'], 'current', native._FIELDS,
         operation, native.SubjectIdentityBinding(identity['issuer_id'], identity['evidenced_cik'],
@@ -270,9 +421,11 @@ class CurrentDisclosureOwner:
         native._require(self.source.accepts_revision(manifest['code_version']), 'GENERATION_CODE_INVALID')
         expected = make_manifest(replace(snapshot, code_version=manifest['code_version']), manifest['computed_at'])
         native._require(manifest == expected, 'CURRENT_DECISION_CHANGED')
-        native._require(self.source.snapshot().bindings == snapshot.bindings and
-            self.state.get_bytes_strict_bounded(CURRENT_KEY, native.MAX_OBJECT_BYTES) == pointer_raw,
-            'CURRENT_GENERATION_CHANGED')
+        later = self.source.snapshot()
+        native._require(later.bindings == snapshot.bindings
+                        and later.identity_binding == snapshot.identity_binding
+                        and self.state.get_bytes_strict_bounded(CURRENT_KEY, native.MAX_OBJECT_BYTES) == pointer_raw,
+                        'CURRENT_GENERATION_CHANGED')
         return snapshot, manifest
 
     def resolve(self, request):

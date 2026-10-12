@@ -53,15 +53,18 @@ from .metric_registry import (
     MappingRule,
     MetricContract,
     MetricRegistry,
+    qualify_metric,
 )
 from .periods import CalendarKind, PeriodKind, TypedPeriod
 from .lineage_evidence import (
+    CONFIRMATION_CHAIN_RULE_VERSION,
     MAX_LINEAGE_RECEIPTS,
     REFUSAL_EVIDENCE_DOES_NOT_MATCH_SOURCE,
     REFUSAL_MISSING_OCCURRENCE,
     LineageEvidenceError,
     LineageEvidenceReceipt,
     _approved_taxonomy_uri,
+    _chain_accepted_by_accession,
     _freeze_evidence,
     _positive_evidence_payload,
     evaluate_confirmation,
@@ -85,6 +88,7 @@ from .raw_ledger import (
     stable_id,
     utc_text,
 )
+from .detectors import issuer_class_for_sic
 
 # An empty projection for the overwhelmingly common no-evidence path, so a
 # FIF-3A3 query allocates nothing new.
@@ -204,11 +208,19 @@ MetricQueryPolicy = BitemporalPolicy
 
 
 class CellState(str, Enum):
-    """A cell has a value, lacks evidence, or is unsafe to evaluate."""
+    """A cell has a value, lacks evidence, is unsafe to evaluate, or is refused.
+
+    ``NOT_APPLICABLE`` is the metric-qualification refusal state (S1-b): the
+    issuer class or a declared denominator places this metric outside the
+    governed contract's applicability.  It is unreachable under the
+    constraint-free production catalog, which declares no applicability or
+    denominator constraints.
+    """
 
     VALUE = "value"
     MISSING = "missing"
     NOT_EVALUABLE = "not_evaluable"
+    NOT_APPLICABLE = "not_applicable"
 
 
 MetricCellState = CellState
@@ -703,6 +715,11 @@ class QueryEntity:
 
     ticker: str
     entity_id: str
+    # Optional issuer SIC for metric applicability (S1-b).  Normalized to a
+    # digit-string or ``None``; an unparseable spelling passes through
+    # unchanged and E0's classifier maps it to the ``unknown`` issuer class —
+    # this class adds no parsing policy of its own.
+    issuer_sic: str | int | None = None
 
     def __post_init__(self) -> None:
         ticker = _require_text(self.ticker, field_name="ticker").upper()
@@ -710,9 +727,27 @@ class QueryEntity:
             raise QueryValidationError(f"invalid ticker: {self.ticker!r}")
         object.__setattr__(self, "ticker", ticker)
         object.__setattr__(self, "entity_id", _require_text(self.entity_id, field_name="entity_id"))
+        sic = self.issuer_sic
+        if sic is None or isinstance(sic, bool):
+            # bool is an int subclass but is not a SIC spelling; fall through
+            # to the passthrough text below so it classifies as unknown.
+            normalized_sic = None if sic is None else str(sic)
+        elif isinstance(sic, int):
+            normalized_sic = str(sic)
+        elif isinstance(sic, str):
+            text = sic.strip()
+            normalized_sic = text if text else None
+        else:
+            raise QueryValidationError(
+                f"issuer_sic must be a string, integer, or None: {sic!r}"
+            )
+        object.__setattr__(self, "issuer_sic", normalized_sic)
 
     def to_dict(self) -> dict[str, str]:
-        return {"ticker": self.ticker, "entity_id": self.entity_id}
+        payload = {"ticker": self.ticker, "entity_id": self.entity_id}
+        if self.issuer_sic is not None:
+            payload["issuer_sic"] = self.issuer_sic
+        return payload
 
 
 @dataclass(frozen=True)
@@ -951,6 +986,11 @@ class CellProvenance:
     dependency_cell_ids: tuple[str, ...] = ()
     selected_raw_fact: RawFactOccurrence | None = None
     reason: str | None = None
+    # Issuer-class applicability verdict (S1-b).  Printed only on metric
+    # qualification refusals, where a class was determined; absent from every
+    # other receipt so existing bytes stay identical.
+    issuer_class: str | None = None
+    issuer_class_basis: str | None = None
 
     def __post_init__(self) -> None:
         try:
@@ -1045,6 +1085,8 @@ class CellProvenance:
             "formula_pack_version",
             "confidence",
             "reason",
+            "issuer_class",
+            "issuer_class_basis",
         ):
             object.__setattr__(
                 self,
@@ -1257,6 +1299,8 @@ class CellProvenance:
                 self.source_occurrence_ids,
                 self.dependency_cell_ids,
                 self.selected_raw_fact,
+                self.issuer_class,
+                self.issuer_class_basis,
             )
             if any(value not in (None, (), []) for value in excluded):
                 raise QueryValidationError("opaque provenance cannot expose receipt details")
@@ -1353,7 +1397,7 @@ class CellProvenance:
             )
 
     def to_dict(self) -> dict[str, Any]:
-        return {
+        payload = {
             "kind": self.kind.value,
             "evaluation_policy": (
                 self.evaluation_policy.value if self.evaluation_policy is not None else None
@@ -1413,6 +1457,14 @@ class CellProvenance:
             ),
             "reason": self.reason,
         }
+        # The issuer-class verdict is conditional: absent key <=> None <=>
+        # omitted on re-emit, so every receipt without a verdict keeps its
+        # exact historical bytes.
+        if self.issuer_class is not None:
+            payload["issuer_class"] = self.issuer_class
+        if self.issuer_class_basis is not None:
+            payload["issuer_class_basis"] = self.issuer_class_basis
+        return payload
 
     @classmethod
     def from_dict(cls, value: Mapping[str, Any]) -> "CellProvenance":
@@ -1674,13 +1726,17 @@ def _cell_provenance_from_dict(value: Any) -> CellProvenance:
             "dependency_cell_ids",
             "selected_raw_fact",
             "reason",
+            # Optional issuer-class verdict keys (S1-b): absent <=> None, so
+            # historical receipts replay unchanged and refusals parse back.
+            "issuer_class",
+            "issuer_class_basis",
         }
     )
     raw = _strict_wire_mapping(
         value,
         field_name="cell.provenance",
         allowed=allowed,
-        required=allowed,
+        required=allowed - {"issuer_class", "issuer_class_basis"},
     )
     selected = (
         _raw_fact_from_dict(raw["selected_raw_fact"])
@@ -1810,7 +1866,9 @@ class CellNode:
                 raise QueryValidationError("value cells require a unit")
         else:
             if self.value is not None:
-                raise QueryValidationError("missing/not_evaluable cells cannot contain a value")
+                raise QueryValidationError(
+                    "missing/not_evaluable/not_applicable cells cannot contain a value"
+                )
             parsed_value = None
         metric_id = _require_text(self.metric_id, field_name="metric_id")
         entity_id = _require_text(self.entity_id, field_name="entity_id")
@@ -1819,7 +1877,9 @@ class CellNode:
         if state is CellState.VALUE and reason is not None:
             raise QueryValidationError("value cells cannot carry a reason")
         if state is not CellState.VALUE and reason is None:
-            raise QueryValidationError("missing/not_evaluable cells require a reason")
+            raise QueryValidationError(
+                "missing/not_evaluable/not_applicable cells require a reason"
+            )
         if reason != self.provenance.reason:
             raise QueryValidationError("cell reason must exactly match provenance.reason")
         if state is CellState.VALUE:
@@ -2239,7 +2299,11 @@ def _enforce_matrix_wire_budget(
         "proof_scope": RECEIPT_PROOF_SCOPE,
         "selection_proof": RECEIPT_SELECTION_PROOF,
         "policy": policy.to_dict(),
-        "entities": [item.to_dict() for item in entities],
+        # Mirror the wire form exactly (identity-only entities; see
+        # MetricMatrix._unsigned_dict).
+        "entities": [
+            {"ticker": item.ticker, "entity_id": item.entity_id} for item in entities
+        ],
         "metric_ids": list(metric_ids),
         "periods": [item.to_dict() for item in periods],
         "governance_bundle": governance_bundle.to_dict(),
@@ -2678,12 +2742,92 @@ def _validate_period_rejection_provenance(
         )
 
 
+def _validate_qualification_refusal_provenance(
+    provenance: CellProvenance,
+    *,
+    allow_mapping_inventory: bool,
+) -> None:
+    """A qualification refusal occurs before any source evidence is read.
+
+    Mirrors :func:`_validate_period_rejection_provenance` for the S1-b issuer
+    stage.  ``issuer_class``/``issuer_class_basis`` are the refusal's own
+    printed verdict and are explicitly allowed here; everything source-shaped
+    is forbidden.
+    """
+    forbidden = (
+        provenance.source_entity_id,
+        provenance.source,
+        provenance.accession,
+        provenance.document_id,
+        provenance.source_url,
+        provenance.source_body_sha256,
+        provenance.form,
+        provenance.filed_at,
+        provenance.filing_metadata_available_at,
+        provenance.filing_metadata_content_sha256,
+        provenance.accepted_at,
+        provenance.recorded_at,
+        provenance.mapping_available_at,
+        provenance.computed_at,
+        provenance.published_at,
+        provenance.source_ready_at,
+        provenance.system_ready_at,
+        provenance.concept_qname,
+        provenance.taxonomy,
+        provenance.concept,
+        provenance.unit,
+        provenance.mapping_rule_id,
+        provenance.mapping_rule_version,
+        provenance.mapping_digest,
+        provenance.alias_priority,
+        provenance.source_occurrence_ids,
+        provenance.dependency_cell_ids,
+        provenance.selected_raw_fact,
+    )
+    if any(value not in (None, (), []) for value in forbidden):
+        raise QueryValidationError(
+            "qualification refusal provenance must be governance-only"
+        )
+    if not allow_mapping_inventory and any(
+        value
+        for value in (
+            provenance.mapping_rule_ids,
+            provenance.mapping_rule_versions,
+            provenance.mapping_digests,
+        )
+    ):
+        raise QueryValidationError(
+            "qualification refusal provenance must be governance-only"
+        )
+    # Bind the printed verdict to the refusal reason: a class-based refusal
+    # must name the class it determined; an unknown-class refusal cannot.
+    expected_class_present = provenance.reason == "not_applicable_for_issuer_class"
+    if (provenance.issuer_class is not None) is not expected_class_present:
+        raise QueryValidationError(
+            "qualification refusal issuer-class receipt does not match its reason"
+        )
+
+
 _DIRECT_SOURCELESS_NON_VALUE_OUTCOMES = {
     "no governed concept alias applies to the requested taxonomy period": CellState.MISSING,
     "missing_standard_fact: no governed concept alias supplied an exact eligible source interval": CellState.MISSING,
     "no eligible explicitly typed reported revision vintage": CellState.MISSING,
     "ambiguous governed alias priorities across visible mapping rules": CellState.NOT_EVALUABLE,
     "visible source history exceeds the synchronous per-cell bound": CellState.NOT_EVALUABLE,
+    # Metric-qualification issuer refusals (S1-b) are governance-only verdicts
+    # emitted before any source evidence is read.  The denominator refusal
+    # reasons carry a dynamic ``:<input_id>`` suffix and can only attach to
+    # formula nodes (direct contracts carry no denominator constraints), so
+    # they live in the formula-side recompute, not in these closed tables.
+    "not_applicable_for_issuer_class": CellState.NOT_APPLICABLE,
+    "issuer_class_unknown": CellState.NOT_EVALUABLE,
+}
+# The exact-match table the pre-source qualification branches dispatch on;
+# kept separate from the outcome tables above so the branch can also bind the
+# issuer-class receipt fields to the refusal reason.
+_QUALIFICATION_ISSUER_REFUSAL_OUTCOMES = {
+    "not_applicable_for_issuer_class": CellState.NOT_APPLICABLE,
+    "issuer_class_unknown": CellState.NOT_EVALUABLE,
 }
 _DIRECT_ALIAS_EVIDENCE_NON_VALUE_OUTCOMES = {
     "selected source vintage is withdrawn": CellState.MISSING,
@@ -2913,6 +3057,24 @@ def _validate_direct_node(node: CellNode, contract: MetricContract) -> None:
         ):
             raise QueryValidationError("direct period rejection does not match governance")
         return
+    qualification_state = _QUALIFICATION_ISSUER_REFUSAL_OUTCOMES.get(node.reason or "")
+    if qualification_state is not None:
+        # S1-b issuer-stage refusal: governance-only verdict emitted before
+        # any alias or source evidence is consulted.
+        _validate_qualification_refusal_provenance(
+            provenance,
+            allow_mapping_inventory=True,
+        )
+        if (
+            node.state is not qualification_state
+            or node.value is not None
+            or node.unit != (contract.units[0] if contract.units else None)
+            or provenance.selected_raw_fact is not None
+        ):
+            raise QueryValidationError(
+                "direct qualification refusal does not match governance"
+            )
+        return
     applicable_aliases = _applicable_direct_alias_identities(contract, node.period)
     has_ambiguous_priorities = _has_ambiguous_direct_alias_priorities(
         applicable_aliases
@@ -3026,10 +3188,52 @@ def _validate_direct_node(node: CellNode, contract: MetricContract) -> None:
         raise QueryValidationError("selected raw fact dimensions violate metric contract")
 
 
+def _expected_denominator_refusal(
+    dependencies: Sequence[CellNode],
+    formula: FormulaRule,
+) -> tuple[CellState, str] | None:
+    """Replay parity for the kernel's pre-triage denominator stage (S1-b).
+
+    Mirrors ``qualify_metric``'s constraint loop over the dependency nodes: a
+    declared denominator that is not a VALUE dependency counts as missing; a
+    non-positive VALUE dependency is an applicability refusal.  The first
+    failing input decides (single ``<input_id>``, no joining).
+    """
+    inputs = {
+        item.metric_id: (item.value if item.state is CellState.VALUE else None)
+        for item in dependencies
+    }
+    for input_id in formula.denominator_constraints:
+        value = inputs[input_id] if input_id in inputs else None
+        if value is None:
+            return CellState.NOT_EVALUABLE, f"denominator_missing:{input_id}"
+        if value <= 0:
+            return CellState.NOT_APPLICABLE, f"denominator_not_positive:{input_id}"
+    return None
+
+
 def _expected_formula_outcome(
     dependencies: Sequence[CellNode],
     formula: FormulaRule,
 ) -> tuple[CellState, Decimal | None, str | None]:
+    # Denominator qualification runs before the dependency triage, exactly as
+    # the kernel's _evaluate_formula stage does, so a constraint-named
+    # denominator that is missing or non-positive wins over the generic
+    # dependency vocabulary below.
+    refusal = _expected_denominator_refusal(dependencies, formula)
+    if refusal is not None:
+        return refusal[0], None, refusal[1]
+    not_applicable = [item for item in dependencies if item.state is CellState.NOT_APPLICABLE]
+    if not_applicable:
+        return (
+            CellState.NOT_APPLICABLE,
+            None,
+            "not_applicable_dependency: "
+            + ", ".join(
+                f"{item.metric_id} ({item.reason or 'not_applicable'})"
+                for item in not_applicable
+            ),
+        )
     not_evaluable = [item for item in dependencies if item.state is CellState.NOT_EVALUABLE]
     if not_evaluable:
         return (
@@ -3105,6 +3309,25 @@ def _validate_formula_node(
             or node.unit != formula.output_unit
         ):
             raise QueryValidationError("formula period rejection does not match governance")
+        return
+    qualification_state = _QUALIFICATION_ISSUER_REFUSAL_OUTCOMES.get(node.reason or "")
+    if qualification_state is not None:
+        # S1-b issuer-stage refusal on a formula metric: the verdict fires in
+        # _evaluate before any dependency is assembled, so the receipt is
+        # governance-only and pre-dependency by construction.
+        _validate_qualification_refusal_provenance(
+            node.provenance,
+            allow_mapping_inventory=False,
+        )
+        if (
+            node.state is not qualification_state
+            or node.value is not None
+            or node.unit != (contract.units[0] if contract.units else None)
+            or node.provenance.dependency_cell_ids
+        ):
+            raise QueryValidationError(
+                "formula qualification refusal does not match governance"
+            )
         return
     provenance = node.provenance
     if provenance.unit != formula.output_unit:
@@ -3444,7 +3667,14 @@ class MetricMatrix:
             "proof_scope": self.proof_scope,
             "selection_proof": self.selection_proof,
             "policy": self.policy.to_dict(),
-            "entities": [item.to_dict() for item in self.entities],
+            # Identity fields only: the matrix hash and its wire form bind
+            # ticker/entity_id membership.  An issuer SIC is an evaluation
+            # input (like the policy clocks), visible through the cells when
+            # it changes an outcome and byte-inert when it does not.
+            "entities": [
+                {"ticker": item.ticker, "entity_id": item.entity_id}
+                for item in self.entities
+            ],
             "metric_ids": list(self.metric_ids),
             "periods": [item.to_dict() for item in self.periods],
             "governance_bundle": self.governance_bundle.to_dict(),
@@ -4130,11 +4360,20 @@ class BitemporalMetricQueryEngine:
             if isinstance(item, QueryEntity):
                 entity = item
             elif isinstance(item, Mapping):
+                # The optional ``issuer_sic`` wire key widens the allowed set
+                # only when the mapping actually carries it (one keyed probe;
+                # ``Mapping.__contains__`` reads no iterator items).  A
+                # sic-less entity therefore parses against exactly the
+                # historical two-key allowance, hostile-iterator bound
+                # included.
+                entity_allowed = frozenset({"ticker", "entity_id"})
+                if "issuer_sic" in item:
+                    entity_allowed = entity_allowed | {"issuer_sic"}
                 entity = QueryEntity(
                     **_strict_wire_mapping(
                         item,
                         field_name="entity",
-                        allowed=frozenset({"ticker", "entity_id"}),
+                        allowed=entity_allowed,
                         required=frozenset({"ticker", "entity_id"}),
                     )
                 )
@@ -4460,7 +4699,12 @@ class BitemporalMetricQueryEngine:
     def _entity_for(self, ticker: str | QueryEntity) -> QueryEntity:
         if isinstance(ticker, QueryEntity):
             known = self._entities.get(ticker.ticker)
-            if known is not None and known != ticker:
+            # Identity fields only: a caller-supplied entity may carry an
+            # issuer SIC the engine map lacks; identity decides the match and
+            # the caller's (richer) entity wins evaluation.
+            if known is not None and (
+                known.ticker != ticker.ticker or known.entity_id != ticker.entity_id
+            ):
                 raise QueryValidationError(f"ticker maps to a different entity_id: {ticker.ticker}")
             return ticker
         normalized = _require_text(ticker, field_name="ticker").upper()
@@ -4896,6 +5140,53 @@ class BitemporalMetricQueryEngine:
             )
             cache[cache_key] = result
             return result
+        # Issuer qualification stage (S1-b): the pure applicability gate from
+        # the metric registry, fired after contract resolution and before any
+        # cycle guard, dispatch, or source read.  Default-inert by
+        # construction — an empty class policy admits every issuer, and
+        # formula=None keeps the denominator branch out of this stage (the
+        # formula is qualified in _evaluate_formula once its dependency values
+        # exist).
+        issuer_class = (
+            issuer_class_for_sic(entity.issuer_sic) if entity.issuer_sic is not None else None
+        )
+        qualification = qualify_metric(contract, None, issuer_class, {})
+        if qualification.state != "applicable":
+            reason = qualification.reason
+            provenance_overrides: dict[str, Any] = {}
+            if issuer_class is not None:
+                provenance_overrides["issuer_class"] = issuer_class
+                provenance_overrides[
+                    "issuer_class_basis"
+                ] = contract.applicability.issuer_class_basis
+            result = self._new_cell(
+                entity=entity,
+                governance_bundle=projection.governance_bundle,
+                metric_id=metric_id,
+                period=period,
+                state=(
+                    CellState.NOT_APPLICABLE
+                    if qualification.state == "not_applicable"
+                    else CellState.NOT_EVALUABLE
+                ),
+                value=None,
+                unit=contract.units[0] if contract.units else None,
+                provenance=self._base_provenance(
+                    projection,
+                    policy,
+                    contract,
+                    kind=(
+                        ProvenanceKind.FORMULA
+                        if metric_id in projection.formulas_by_metric
+                        else ProvenanceKind.DIRECT
+                    ),
+                    reason=reason,
+                    **provenance_overrides,
+                ),
+                reason=reason,
+            )
+            cache[cache_key] = result
+            return result
         if metric_id in stack:
             # Registry construction rejects formula cycles; retain a safe guard
             # here so a hand-built registry cannot recurse forever.
@@ -5133,15 +5424,60 @@ class BitemporalMetricQueryEngine:
                 raise LineageEvidenceError("lineage evidence is not a v1 positive for this ledger")
             by_key.setdefault(receipt.logical_key, []).append(receipt)
         for key, values in by_key.items():
-            accessions: set[str] = set()
-            for receipt in values:
-                for occurrence_id in (receipt.parent_occurrence_id, receipt.child_occurrence_id):
-                    accessions.add(self._event_by_occurrence_id[occurrence_id].source.accession)
-            if len(accessions) > 2:
-                # v1 admits exactly one parent and one child per logical key.
-                # Chained receipts across three filings have no unique parent.
+            versions = {receipt.evidence_rule_version for receipt in values}
+            if len(versions) != 1:
                 raise LineageEvidenceError(
-                    "lineage evidence spans more than two filings for one logical key"
+                    "lineage evidence mixes confirmation rule versions for one logical key"
+                )
+            if values[0].evidence_rule_version != CONFIRMATION_CHAIN_RULE_VERSION:
+                accessions: set[str] = set()
+                for receipt in values:
+                    for occurrence_id in (receipt.parent_occurrence_id, receipt.child_occurrence_id):
+                        accessions.add(self._event_by_occurrence_id[occurrence_id].source.accession)
+                if len(accessions) > 2:
+                    # v1 admits exactly one parent and one child per logical key.
+                    # Chained receipts across three filings have no unique parent.
+                    raise LineageEvidenceError(
+                        "lineage evidence spans more than two filings for one logical key"
+                    )
+                continue
+            # FIF S2 (A05): the versioned v2 chain rule admits 3+ filings of one
+            # logical key, but only as ONE strictly ordered adjacent path over
+            # every filing the ledger holds for the key — L is rebuilt from the
+            # dataset's own events via ``_event_by_occurrence_id``.  A skip
+            # edge, a fork, a cycle, or a missing accession is a malformed
+            # provider, not a smaller answer.
+            chain_by_accession: dict[str, list[RawFactOccurrence]] = {}
+            for event in self._event_by_occurrence_id.values():
+                if event.logical_key == key:
+                    chain_by_accession.setdefault(event.source.accession, []).append(event)
+            _times, ordered_accessions = _chain_accepted_by_accession(
+                chain_by_accession
+            )
+            if (
+                len(chain_by_accession) < 3
+                or ordered_accessions is None
+                or len(values) != len(chain_by_accession) - 1
+            ):
+                raise LineageEvidenceError(
+                    "chain lineage evidence must form one strictly ordered path "
+                    "across every filing of its logical key"
+                )
+            edge_pairs = sorted(
+                (
+                    self._event_by_occurrence_id[receipt.parent_occurrence_id].source.accession,
+                    self._event_by_occurrence_id[receipt.child_occurrence_id].source.accession,
+                )
+                for receipt in values
+            )
+            expected_pairs = sorted(
+                (ordered_accessions[index], ordered_accessions[index + 1])
+                for index in range(len(ordered_accessions) - 1)
+            )
+            if edge_pairs != expected_pairs:
+                raise LineageEvidenceError(
+                    "chain lineage evidence must form one strictly ordered path "
+                    "across every filing of its logical key"
                 )
         return MappingProxyType(
             {
@@ -5385,6 +5721,10 @@ class BitemporalMetricQueryEngine:
         receipts = self._confirmations_by_logical_key.get(logical_key, ())
         if not receipts:
             return _EMPTY_ROOT_MAP
+        # FIF S2: admission proves the receipts of one key are
+        # version-homogeneous, so the first receipt names the rule the whole
+        # union-find below runs under.
+        chain_rule = receipts[0].evidence_rule_version == CONFIRMATION_CHAIN_RULE_VERSION
         cache_key = (logical_key, policy.source_snapshot_at, policy.recorded_at)
         cached = self._effective_root_cache.get(cache_key)
         if cached is not None:
@@ -5419,17 +5759,23 @@ class BitemporalMetricQueryEngine:
             parent_of.setdefault(child_meta.root_duplicate_group_key, child_meta.root_duplicate_group_key)
             union(parent_meta.root_duplicate_group_key, child_meta.root_duplicate_group_key)
         resolved = {node: find(node) for node in parent_of}
-        # v1 admits exactly one parent and one child. A component that has
-        # transitively accumulated a third filing has an ambiguous parent, so
-        # refuse the whole component rather than chaining across vintages: the
-        # cell then keeps the honest unlinked-vintage refusal. Widening this is
-        # a separately adjudicated v2 question, not an implementation detail.
-        sizes: dict[str, int] = {}
-        for label in resolved.values():
-            sizes[label] = sizes.get(label, 0) + 1
-        resolved = {
-            node: label for node, label in resolved.items() if sizes[label] <= 2
-        }
+        # FIF S2: for a version-2 key keep every component.  Admission already
+        # proved the receipts are one strictly ordered adjacent path over
+        # every filing of the key, so a still-proving cutoff-visible subset is
+        # a union of contiguous sub-paths — no rounded or skip link can join a
+        # component, and unification can never outrun the admitted path.
+        if not chain_rule:
+            # v1 admits exactly one parent and one child. A component that has
+            # transitively accumulated a third filing has an ambiguous parent, so
+            # refuse the whole component rather than chaining across vintages: the
+            # cell then keeps the honest unlinked-vintage refusal. Widening this is
+            # a separately adjudicated v2 question, not an implementation detail.
+            sizes: dict[str, int] = {}
+            for label in resolved.values():
+                sizes[label] = sizes.get(label, 0) + 1
+            resolved = {
+                node: label for node, label in resolved.items() if sizes[label] <= 2
+            }
         projection = MappingProxyType(resolved)
         # Bounded even if an engine is pooled and callers vary cutoffs: the
         # cache is a speed aid, never a correctness input, so evicting is safe.
@@ -6233,6 +6579,65 @@ class BitemporalMetricQueryEngine:
                     cache,
                     stack=stack,
                 )
+            )
+        # Denominator qualification stage (S1-b): runs after the dependency
+        # cells are assembled and before the not_evaluable/missing triage, so
+        # a constraint-named denominator that could not be assembled (or is a
+        # non-positive VALUE) yields the explicit qualification vocabulary
+        # instead of the generic dependency vocabulary.  The issuer branch
+        # here re-passes deterministically: _evaluate already refused
+        # non-applicable issuers for this metric before dispatch.
+        denominator_inputs = {
+            dependency_id: (
+                cell.value if cell.state is CellState.VALUE else None
+            )
+            for dependency_id, cell in zip(formula.dependencies, dependency_cells)
+        }
+        issuer_class = (
+            issuer_class_for_sic(entity.issuer_sic) if entity.issuer_sic is not None else None
+        )
+        qualification = qualify_metric(contract, formula, issuer_class, denominator_inputs)
+        if qualification.state != "applicable":
+            reason = qualification.reason
+            return self._new_cell(
+                entity=entity,
+                governance_bundle=projection.governance_bundle,
+                metric_id=contract.metric_id,
+                period=period,
+                state=(
+                    CellState.NOT_APPLICABLE
+                    if qualification.state == "not_applicable"
+                    else CellState.NOT_EVALUABLE
+                ),
+                value=None,
+                unit=formula.output_unit,
+                provenance=self._formula_provenance(
+                    projection, policy, contract, formula, dependency_cells, reason=reason
+                ),
+                dependency_cells=dependency_cells,
+                reason=reason,
+            )
+        not_applicable = [
+            item for item in dependency_cells if item.state is CellState.NOT_APPLICABLE
+        ]
+        if not_applicable:
+            reason = "not_applicable_dependency: " + ", ".join(
+                f"{item.metric_id} ({item.reason or 'not_applicable'})"
+                for item in not_applicable
+            )
+            return self._new_cell(
+                entity=entity,
+                governance_bundle=projection.governance_bundle,
+                metric_id=contract.metric_id,
+                period=period,
+                state=CellState.NOT_APPLICABLE,
+                value=None,
+                unit=formula.output_unit,
+                provenance=self._formula_provenance(
+                    projection, policy, contract, formula, dependency_cells, reason=reason
+                ),
+                dependency_cells=dependency_cells,
+                reason=reason,
             )
         not_evaluable = [item for item in dependency_cells if item.state is CellState.NOT_EVALUABLE]
         if not_evaluable:
