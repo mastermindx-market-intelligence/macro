@@ -453,17 +453,6 @@ def test_universe_and_ticker_failures(monkeypatch, tmp_path):
         assert raised.value.headers["X-Content-Type-Options"] == "nosniff"
 
 
-@pytest.mark.xfail(
-    strict=True,
-    raises=AssertionError,
-    reason=(
-        "GAP(owner: app/ticker_news.py — lane n-ann / PR #8897; Wave B): "
-        "Starlette decodes %2F, so GET /api/ticker-news/..%2Fx splits into the "
-        "two-segment path /api/ticker-news/../x, matches no /{ticker} route "
-        "(app/ticker_news.py:438), and the framework default 404 never passes "
-        "through _private_error (app/ticker_news.py:70)"
-    ),
-)
 def test_http_slash_ticker_is_422_with_private_cache_control(monkeypatch, tmp_path):
     surface = _arm(monkeypatch, tmp_path)
     response = surface["client"].get("/api/ticker-news/..%2Fx")
@@ -483,18 +472,6 @@ def test_query_validation_rejects_out_of_range_queries(monkeypatch, tmp_path):
         assert detail[0]["type"] in {"greater_than_equal", "less_than_equal"}
 
 
-@pytest.mark.xfail(
-    strict=True,
-    raises=AssertionError,
-    reason=(
-        "GAP(owner: app/ticker_news.py — lane n-ann / PR #8897; Wave B): "
-        "out-of-range Query constraints are rejected by FastAPI's default "
-        "RequestValidationError handler before the route body runs and no "
-        "handler for it is registered on this router, so the 422 never passes "
-        "through _private_error (Query app/ticker_news.py:405-406,441-442,553; "
-        "_private_error app/ticker_news.py:70)"
-    ),
-)
 def test_query_validation_422_carries_private_cache_control(monkeypatch, tmp_path):
     surface = _arm(monkeypatch, tmp_path)
     for path in _VALIDATION_PATHS:
