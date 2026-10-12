@@ -5255,6 +5255,7 @@ jobs:
       # load-bearing for the Prophet Lab adapter, so its PR owner must be this
       # gate:code job rather than only neural-web-core's nightly data lane.
       - "tests/test_company_intelligence_workspace_chain.py"
+      - "tests/test_company_intelligence_event_evolution.py"
       - "tests/test_prophet_lab_timeparse.py"
       - "tests/test_prophet_lab_commissioning.py"
       - "tests/fixtures/prophet_lab/**"
@@ -5306,6 +5307,7 @@ jobs:
           tests/test_prophet_lab.py tests/test_intelligence_vector_units.py
           tests/test_prophet_lab_api.py
           tests/test_company_intelligence_workspace_chain.py
+          tests/test_company_intelligence_event_evolution.py
           tests/test_prophet_lab_timeparse.py
           tests/test_prophet_lab_commissioning.py
           tests/test_caddy_hub_boundary.py -q
@@ -24079,6 +24081,30 @@ jobs:
         run: pip install pytest
       - name: WP02 source diagnostic kernel contracts
         run: python -m pytest tests/test_gmi_source_diagnostic_kernel.py -q
+
+  # Guards the news-impact Phase 0 freeze contract (closed templates, evidence
+  # binding, F3 basis consts) and its owner-payload conformance (documents.py /
+  # events.py minted spans, absences and fiscal periods).
+  news-impact-contracts:
+    if: ${{ false }}
+    gate: code
+    scope: exclusive
+    paths:
+      - "contracts/news_impact/**"
+      - "tests/test_news_impact_contracts.py"
+      - "engine/company_intelligence/**"
+      - "engine/earnings_narrative/contracts.py"
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install news impact contract test dependencies
+        run: pip install pytest jsonschema pyyaml
+      - name: news impact contract freeze and owner payload conformance
+        run: python -m pytest tests/test_news_impact_contracts.py -q
 
   site20-s4-chart-brief-js:
     if: ${{ false }}
