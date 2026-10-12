@@ -4121,8 +4121,8 @@ body.page-macro.mx4-grid #sx-risk-v2 .sxg-face{display:none!important;}
   body.page-macro.mx4-grid #sx-v5-fed,
   body.page-macro.mx4-grid #sx-v5-sentiment,
   body.page-macro.mx4-grid #sx-v5-sector{grid-column:span 6;}
-  body.page-macro.mx4-grid #sx-news-v2{grid-column:span 6;}
-  body.page-macro.mx4-grid #sx-aibrief-v2{grid-column:span 6;}
+  /* AI Brief and Alerts inherit .sx's tablet span. ID-specific spans here
+     would outrank the full-width .sx rule at <=700px. */
 }
 /* ≤700px — full width stack */
 @media(max-width:700px){
