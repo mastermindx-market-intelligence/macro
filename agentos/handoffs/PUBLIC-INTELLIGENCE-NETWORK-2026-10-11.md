@@ -598,3 +598,39 @@ and.txt. Preserve the existing controller; do not manually refresh around
 admission. Next is admitted refresh, new exact-head CI, protected landing,
 then source/page review and installed/browser checks. No application source,
 release gate, staging, provider or publication effect changed.
+
+## October12 21:07 corrective integration
+
+Admitted head1be6efa3 failed CI38250975435 on packing weights and three
+T11 receipt-pairing checks. Root disarmed the exact original PR, read back
+auto-merge null andno open refresh lease, fast-forwarded the owned tree,
+then merged protected maine901b0fa conflict-free as11bd476b. Existing
+PR9028 supplies the T11 repair; no test ceiling or assertion was waived.
+Local tests:55T11 cases pass in7.37s; packing regression passes in97.85s;
+69generated pages match. All290main CI jobs/paths and21Press source
+hashes survive. Details and full check status are in
+pr8786_1be6_corrective_integration.json. Fresh protected CI, merge, install
+and browser acceptance remain required before the aggregate-feed release.
+
+Final corrective-integration validation: python3 -m pytest tests/test_ci_pack.py
+-q --tb=short passes166tests with2existing mockups-dependent skips in328.96s.
+python3 scripts/check_contract_delta.py --base e901b0fabe37b5834fefe6a865e114cd6d239186
+reports0introduced and0inherited in272.5s. All three weights remain under
+unchanged ceilings (5790/5593/5553). AgentOS1698records validates with0errors
+and145advisories. Pre-push git merge-tree against currentmain3ca6eb200da3
+exits0, conflict-free. Exact raw results are retained under the existing
+research/agentic_media/public_intelligence_20261011 directory.
+
+## October12 21:21 original repair pushed and follow-on retested
+
+Normal push1be6→ba599a70fb747290f54abdbd4f1e6acaed9b9d2e succeeded on
+original8786. Exact remote/PR readback:OPEN,merge-on-green,auto-merge null.
+Fresh CI38310079309 started21:21:04Z. Immediate capacity census4/8 and
+no refresh lease; protected release remains intact. The follow-on integrates
+ba599separately, preserves both accepted application hashes, and passes
+186tests in7.05s (aggregate_feed_ba599_green.txt). Its only conflicts were
+root-owned continuity records, resolved with the already-cumulative incoming
+versions. No follow-on PR, installation or publication is claimed. Portable
+acceptance preparation is pr8786_ba599_acceptance_preparation.json; execute
+its actual-merge-bound checks after protected landing and then verify browser
+paths before creating the separate aggregate-feed PR.

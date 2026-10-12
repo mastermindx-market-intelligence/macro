@@ -4,15 +4,33 @@ Cross-source clustering is intentionally asymmetric toward false negatives: sour
 identity is exact; fuzzy joining requires a shared canonical security, compatible
 event family, a bounded time window, compatible material discriminators, and an
 immutable-anchor title match.
+
+v2 keeps that bias and stops merging different amount scales (million versus
+billion, 5bn versus 9bn), compact or spelled fiscal periods (2Q, 2Q25, second
+quarter), and contraction negation (isn't, cannot).
+
+Under the same v2 id (seat ruling 2026-10-12) it also stops merging opposite
+earnings outcomes (beats versus misses), rating moves to opposite target
+classes (to Buy versus to Sell), terminated versus ongoing actions (ends
+talks versus in talks), and opposite move directions (raises versus cuts,
+lifts versus lowers, including past forms).
 """
 from __future__ import annotations
 
+import dataclasses
 from dataclasses import dataclass
 from datetime import datetime
 import hashlib
 import re
 
 from engine import qkernel
+
+# Discriminator behavior changed in v2 (word/stuck amount scales, compact and
+# spelled fiscal periods, contraction negation). new_cluster_id is unchanged.
+CLUSTER_POLICY_VERSION = "qbus_news_cluster.v2"
+# Label for a cluster row minted before the column existed (NULL), or a
+# member whose cluster row is missing.
+UNKNOWN_CLUSTER_POLICY_VERSION = "unknown (pre-column)"
 
 
 @dataclass(frozen=True, slots=True)
@@ -46,6 +64,23 @@ class ClusterPolicy:
     max_candidates: int = 128
 
 
+def cluster_policy_version(policy: ClusterPolicy) -> str:
+    """Return the provenance stamp naming exactly the policy in force.
+
+    A default-constructed ClusterPolicy is stamped with the bare
+    CLUSTER_POLICY_VERSION constant.
+    A non-default policy is stamped with that constant plus every field as
+    ``name=repr(value)`` in declaration order, which never contains the
+    `` + `` provenance join separator.
+    """
+    if policy == ClusterPolicy():
+        return CLUSTER_POLICY_VERSION
+    return f"{CLUSTER_POLICY_VERSION} (" + ", ".join(
+        f"{f.name}={getattr(policy, f.name)!r}"
+        for f in dataclasses.fields(policy)
+    ) + ")"
+
+
 @dataclass(frozen=True, slots=True)
 class ClusterDecision:
     action: str
@@ -57,13 +92,34 @@ class ClusterDecision:
     candidate_truncated: bool
 
 
+# Single-letter scales stay on their own alternative so "$5B" is not rewritten
+# onto "$5 billion" / "$5bn" (that collapse would start joining pairs the prior
+# tokens kept apart). Stuck forms (5bn, 5mm) and words (5 million) are captured
+# only so two different scales stop comparing as the same digits.
 _NUM_RE = re.compile(
-    r"(?<![A-Za-z0-9])(?:[$€£])?\d+(?:[.,]\d+)*(?:\s?(?:%|[KMBT]))?\b",
+    r"(?<![A-Za-z0-9])(?:[$€£])?\d+(?:[.,]\d+)*"
+    r"(?:"
+    r"(?:\s?(?:%|[KMBT]))(?=\b)"
+    r"|"
+    r"\s*(?:million|billion|trillion|thousand|bln|mln|trn|bn|mn|mm|tn)"
+    r")?\b",
     re.I,
 )
-_PERIOD_RE = re.compile(r"\b(?:Q[1-4]|H[12]|FY\s*\d{2,4}|CY\s*\d{2,4})\b", re.I)
+_PERIOD_RE = re.compile(
+    r"\b(?:Q[1-4]|[1-4]Q(?:\d{2,4})?|H[12]|FY\s*\d{2,4}|CY\s*\d{2,4})\b",
+    re.I,
+)
+_COMPACT_QUARTER_RE = re.compile(r"([1-4])Q(\d{2,4})?")
+_SPELLED_QUARTER_RE = (
+    ("Q1", re.compile(r"\b(?:first|1st)[\s-]+quarters?\b", re.I)),
+    ("Q2", re.compile(r"\b(?:second|2nd)[\s-]+quarters?\b", re.I)),
+    ("Q3", re.compile(r"\b(?:third|3rd)[\s-]+quarters?\b", re.I)),
+    ("Q4", re.compile(r"\b(?:fourth|4th)[\s-]+quarters?\b", re.I)),
+)
+# "n't" has no leading word boundary: in "isn't" the n is still inside the stem.
 _NEG_RE = re.compile(
-    r"\b(?:not|no|denies?|rejects?|fails?|without|won't|will not)\b", re.I
+    r"\b(?:not|no|denies?|rejects?|fails?|without|won't|will not|cannot)\b|n't\b",
+    re.I,
 )
 _ACTIONS = (
     (
@@ -97,6 +153,61 @@ _RATING_VERB_RE = re.compile(
     r"\b(?:upgrade[sd]?|downgrade[sd]?|raises?|cuts?)\b", re.I
 )
 _GENERIC_ACTORS = {"broker", "analyst", "company", "firm", "bank"}
+# Earnings-outcome polarity: a beat-family-only title never merges with a
+# miss-family-only one. Two titles from the same family stay compatible.
+_BEAT_RE = re.compile(
+    r"\b(?:beat|beats|tops|topped|exceeds|exceeded|surpasses|surpassed)\b"
+    r"|\babove\s+(?:estimates?|expectations?)\b",
+    re.I,
+)
+_MISS_RE = re.compile(
+    r"\b(?:miss|misses|missed)\b"
+    r"|\b(?:falls|fell)\s+short\b"
+    r"|\bbelow\s+(?:estimates?|expectations?)\b",
+    re.I,
+)
+# Rating moves are compared by the class of the target they name, not by the
+# surface verb, so "upgraded to Buy" still merges with "raised to Buy". The
+# neutral spellings accept hyphen, space and the Mkt abbreviation, so
+# "Equal Weight", "Equal-Weight", "In Line", "Mkt Perform" and "Market
+# Perform" all land in the same class. An optional opening quote is read
+# past, so "to 'Buy'" and "to ‘Buy’" classify too.
+_RATING_TARGET_RE = re.compile(
+    r"\bto\s+['\"‘“]?(strong\s+buy|outperform|overweight|accumulate|buy|add|"
+    r"strong\s+sell|underperform|underweight|sell|reduce|hold|neutral|"
+    r"equal[-\s]+weight|(?:market|mkt)\s+perform|sector\s+perform|"
+    r"in[-\s]+line|peer\s+perform)\b",
+    re.I,
+)
+_BULLISH_TARGETS = frozenset(
+    {"strong buy", "buy", "outperform", "overweight", "accumulate", "add"}
+)
+_BEARISH_TARGETS = frozenset(
+    {"strong sell", "sell", "underperform", "underweight", "reduce"}
+)
+# Terminated versus ongoing actions compare like negation: an ended deal never
+# merges with a live one. Only inflected forms are listed; bare "end"/"halt"
+# stay free ("end of year", "halt" alone are not termination signals).
+_TERMINATED_RE = re.compile(
+    r"\b(?:ends|ended|terminates|terminated|calls\s+off|called\s+off|"
+    r"abandons|abandoned|scraps|scrapped|walks\s+away|walked\s+away|"
+    r"breaks\s+off|broke\s+off|halts|halted|suspends|suspended|"
+    r"collapses|collapsed)\b",
+    re.I,
+)
+# Move directions compare like outcome polarity: an up-move headline never
+# merges with a down-move one, whatever surface verb (or past form) carries
+# the direction. Bare "ups" stays off the list ("UPS" the ticker).
+_MOVE_UP_RE = re.compile(
+    r"\b(?:raise[sd]?|hike[sd]?|lift(?:s|ed)?|boost(?:s|ed)?|"
+    r"increase[sd]?|upgrade[sd]?)\b",
+    re.I,
+)
+_MOVE_DOWN_RE = re.compile(
+    r"\b(?:cuts?|lower(?:s|ed)?|trim(?:s|med)?|slash(?:es|ed)?|"
+    r"decrease[sd]?|reduce[sd]?|downgrade[sd]?)\b",
+    re.I,
+)
 
 
 def new_cluster_id(item: ClusterItem) -> str:
@@ -111,13 +222,71 @@ def _numbers(title: str) -> frozenset[str]:
 
 
 def _periods(title: str) -> frozenset[str]:
-    return frozenset(
-        re.sub(r"\s+", "", x).upper() for x in _PERIOD_RE.findall(title)
+    found: list[str] = []
+    for raw in _PERIOD_RE.findall(title):
+        token = re.sub(r"\s+", "", raw).upper()
+        compact = _COMPACT_QUARTER_RE.fullmatch(token)
+        if compact:
+            found.append("Q" + compact.group(1))
+            if compact.group(2):
+                found.append("FY" + compact.group(2))
+        else:
+            found.append(token)
+    for label, rx in _SPELLED_QUARTER_RE:
+        if rx.search(title):
+            found.append(label)
+    return frozenset(found)
+
+
+def _negated(title: str) -> bool:
+    folded = (
+        title.replace("\u2019", "'")
+        .replace("\u2018", "'")
+        .replace("\u02bc", "'")
     )
+    return bool(_NEG_RE.search(folded))
 
 
 def _actions(title: str) -> frozenset[str]:
     return frozenset(name for name, rx in _ACTIONS if rx.search(title))
+
+
+def _outcome_polarity(title: str) -> frozenset[str]:
+    """Beat/miss families found in the title ("beat", "miss", both, or none)."""
+    found: set[str] = set()
+    if _BEAT_RE.search(title):
+        found.add("beat")
+    if _MISS_RE.search(title):
+        found.add("miss")
+    return frozenset(found)
+
+
+def _rating_target_classes(title: str) -> frozenset[str]:
+    """Classes of the rating targets a title moves to (bullish/bearish/neutral)."""
+    classes: set[str] = set()
+    for match in _RATING_TARGET_RE.finditer(title):
+        rating = re.sub(r"\s+", " ", match.group(1).lower())
+        if rating in _BULLISH_TARGETS:
+            classes.add("bullish")
+        elif rating in _BEARISH_TARGETS:
+            classes.add("bearish")
+        else:
+            classes.add("neutral")
+    return frozenset(classes)
+
+
+def _terminated(title: str) -> bool:
+    return bool(_TERMINATED_RE.search(title))
+
+
+def _move_polarity(title: str) -> frozenset[str]:
+    """Move directions found in the title ("up", "down", both, or none)."""
+    found: set[str] = set()
+    if _MOVE_UP_RE.search(title):
+        found.add("up")
+    if _MOVE_DOWN_RE.search(title):
+        found.add("down")
+    return frozenset(found)
 
 
 def _analyst_actor(title: str) -> str | None:
@@ -137,7 +306,7 @@ def _compatible(a: str, b: str) -> bool:
     pa, pb = _periods(a), _periods(b)
     if pa and pb and pa != pb:
         return False
-    if bool(_NEG_RE.search(a)) != bool(_NEG_RE.search(b)):
+    if _negated(a) != _negated(b):
         return False
     aa, ab = _actions(a), _actions(b)
     if aa and ab and not (aa & ab):
@@ -146,6 +315,17 @@ def _compatible(a: str, b: str) -> bool:
     rating_a = bool(_RATING_VERB_RE.search(a))
     rating_b = bool(_RATING_VERB_RE.search(b))
     if rating_a and rating_b and actor_a and actor_b and actor_a != actor_b:
+        return False
+    da, db = _move_polarity(a), _move_polarity(b)
+    if da and db and not (da & db):
+        return False
+    oa, ob = _outcome_polarity(a), _outcome_polarity(b)
+    if oa and ob and not (oa & ob):
+        return False
+    ta, tb = _rating_target_classes(a), _rating_target_classes(b)
+    if ta and tb and not (ta & tb):
+        return False
+    if _terminated(a) != _terminated(b):
         return False
     return True
 

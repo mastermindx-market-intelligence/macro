@@ -82,9 +82,10 @@ def test_real_local_generation_read_and_selection_have_one_binding_without_write
         response['fact']['subject_id'], purpose=o.PURPOSE, audience=o.AUDIENCE)
     assert selection['generation'] == response['generation']
     assert selection['selections'][0]['fact_reference'] == response['reference']
-    assert selection['issuer_binding']['identity_snapshot_reference']['sha256'] == source.value.spec['fact']['subject_identity']
+    assert selection['issuer_binding']['identity_snapshot_reference']['sha256'] == o.digest(
+        n._canonical(source.value.current_identities['MU']))
     assert files == {str(p): p.read_bytes() for root in [state.root, artifacts.root]
-                     for p in root.rglob('*') if p.is_file()}
+             for p in root.rglob('*') if p.is_file()}
     assert not hasattr(read, 'put_bytes_strict_conditional')
     assert current.authorize_publication(request(case), current.resolve(request(case)).reference) is None
 
@@ -98,7 +99,9 @@ def test_owner_records_cannot_self_grant_or_substitute_inputs(case, change):
     elif change in {'purpose','audience'}: ruling['permitted_use'][change] = 'other'
     elif change == 'source': ruling['source']['sha256'] = '0'*64
     elif change == 'claim': ruling['permitted_use']['product'] = 'different'
-    elif change == 'identity': identities['MU']['source_commit'] = 'b'*40
+    # Under the v2 continuity policy a provenance-only commit change is exactly
+    # what the policy admits, so the discriminating tamper is the semantic CIK.
+    elif change == 'identity': identities['MU']['evidenced_cik'] = '9999999999'
     elif change == 'historical': spec['temporal_decision']['historical_admitted'] = True
     elif change == 'correction': spec['correction_decision']['status'] = 'retracted'
     elif change == 'review': spec['semantic_review']['decision'] = 'refused'
@@ -108,6 +111,46 @@ def test_owner_records_cannot_self_grant_or_substitute_inputs(case, change):
     if change != 'ruling_hash': spec['ruling_reference'] = o.object_ref(changed)
     with pytest.raises(n.DisclosureError):
         o.qualify_records('a'*40, n._canonical(spec), changed, registry, identities)
+
+
+def test_legacy_exact_specification_refuses_provenance_only_refresh(case):
+    source, _, _, _, rraw, registry = case
+    spec = deepcopy(source.value.spec)
+    del spec['identity_continuity']
+    spec['schema'] = o.OWNER_SCHEMA_V1
+    drifted = deepcopy(spec['identities'])
+    drifted['MU']['source_commit'] = 'b'*40
+    with pytest.raises(n.DisclosureError, match='CURRENT_IDENTITY_CHANGED'):
+        o.qualify_records('a'*40, n._canonical(spec), rraw, registry, drifted)
+    exact = o.qualify_records('a'*40, n._canonical(spec), rraw, registry, spec['identities'])
+    assert exact.current_identities == spec['identities']
+    assert exact.identity_binding == o.digest(
+        n._canonical({'schema': o.CONTINUITY_BINDING_SCHEMA,
+                      'recorded': o.digest(n._canonical(spec['identities'])),
+                      'current': o.digest(n._canonical(spec['identities']))}))
+
+
+def test_snapshot_identity_default_covers_legacy_fixture_and_refuses_v2_absence(case):
+    # The pre-existing five-argument synthetic constructor keeps working: with a
+    # v1 specification the recorded receipts are the only admissible observation.
+    source, *_ = case
+    spec = source.value.spec
+    v1_bytes = n._canonical({k: v for k, v in spec.items() if k != 'identity_continuity'} |
+                            {'schema': o.OWNER_SCHEMA_V1})
+    legacy = o.OwnerSnapshot('a'*40, v1_bytes, source.value.ruling_revision,
+                             source.value.adoption_revision, 'PRODUCED')
+    assert legacy.current_identities == spec['identities']
+    manifest = o.make_manifest(legacy, '2026-10-12T00:00:00+00:00')
+    admitted = o.admission(legacy, manifest, request(case))
+    assert admitted.subject_binding.decision_revision == spec['fact']['subject_identity']
+    # A v2 specification without observed bytes is a hard refusal, never a
+    # silent fallback to the recorded receipts.
+    v2 = o.OwnerSnapshot('a'*40, source.value.spec_bytes, source.value.ruling_revision,
+                         source.value.adoption_revision, 'PRODUCED')
+    with pytest.raises(n.DisclosureError, match='CURRENT_IDENTITY_CHANGED'):
+        v2.current_identities
+    with pytest.raises(n.DisclosureError, match='CURRENT_IDENTITY_CHANGED'):
+        o.admission(v2, manifest, request(case))
 
 
 def test_read_refuses_revoked_metadata_before_any_artifact_access(case):
@@ -124,7 +167,10 @@ def test_proposed_registry_never_becomes_adopted_by_private_pointer(case, route)
     source, state, _, _, ruling, _ = case
     spec = source.value.spec
     source.value = o.qualify_records('a'*40, n._canonical(spec), ruling,
-                                    Path(o.REGISTRY_PATH).read_bytes(), spec['identities'])
+                                    Path(o.REGISTRY_PATH).read_bytes().replace(
+                                        b'dataset_id: company_intelligence.issuer_disclosure_generations\n    layer: L3\n    status: PRODUCED',
+                                        b'dataset_id: company_intelligence.issuer_disclosure_generations\n    layer: L3\n    status: PROPOSED'),
+                                    spec['identities'])
     result = publish(case)
     assert result['status'] == 'MEMBERS_OBSERVED_NOT_ADOPTED'
     assert result['pointer_written'] is False and not (state.root/o.CURRENT_KEY).exists()
@@ -138,6 +184,43 @@ def test_proposed_registry_never_becomes_adopted_by_private_pointer(case, route)
             current.resolve(request(case))
         else:
             current.resolve_issuer(case[0].value.spec['fact']['subject_id'], o.PURPOSE, o.AUDIENCE)
+
+
+@pytest.mark.parametrize('adopted_code', ['a'*40, 'b'*40])
+def test_protected_adoption_requires_new_intent_and_preserves_staged_members(case, adopted_code):
+    source, state, artifacts, factory, ruling, registry = case
+    proposed = registry.replace(
+        b'dataset_id: company_intelligence.issuer_disclosure_generations\n    layer: L3\n    status: PRODUCED',
+        b'dataset_id: company_intelligence.issuer_disclosure_generations\n    layer: L3\n    status: PROPOSED')
+    source.value = o.qualify_records('a'*40, source.value.spec_bytes, ruling,
+                                    proposed, source.value.current_identities)
+    staged = publish(case)
+    assert staged['status'] == 'MEMBERS_OBSERVED_NOT_ADOPTED'
+    assert not (state.root/o.CURRENT_KEY).exists()
+    members = {str(path.relative_to(artifacts.root)): path.read_bytes()
+               for path in artifacts.root.rglob('*') if path.is_file()}
+    stage_manifest = state.get_bytes_strict_bounded_versioned(
+        'generations/' + staged['generation'] + '.json', n.MAX_OBJECT_BYTES)
+    source.value = o.qualify_records(adopted_code, source.value.spec_bytes, ruling,
+                                    registry, source.value.current_identities)
+    with pytest.raises(n.DisclosureError, match='PUBLICATION_INTENT_CHANGED'):
+        p.publish_generation(source, state, artifacts, factory, intent=staged['intent'])
+    assert not (state.root/o.CURRENT_KEY).exists()
+    promoted = publish(case)
+    assert promoted['intent']['mode'] == 'PROMOTE_CURRENT'
+    assert promoted['generation'] != staged['generation']
+    assert promoted['decisions']['adoption'] != staged['decisions']['adoption']
+    assert promoted['status'] == 'COMMITTED_OBSERVED' and promoted['pointer_written']
+    assert promoted['production_accepted'] is False
+    assert promoted['identity_binding'] == staged['identity_binding']
+    for result in (staged, promoted):
+        assert result['intent']['expected_current_version'] is None
+        assert result['intent']['expected_current_sha256'] is None
+    # Preserve both immutable STAGE bytes and their store version.
+    assert stage_manifest == state.get_bytes_strict_bounded_versioned(
+        'generations/' + staged['generation'] + '.json', n.MAX_OBJECT_BYTES)
+    assert members == {str(path.relative_to(artifacts.root)): path.read_bytes()
+                       for path in artifacts.root.rglob('*') if path.is_file()}
 
 
 @pytest.mark.parametrize('changes', [dict(mode='historical',as_of='2026-10-10T00:00:00Z'),

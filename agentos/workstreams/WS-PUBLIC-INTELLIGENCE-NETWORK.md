@@ -21,7 +21,7 @@ waves:
     title: Verify publication, signup and explicit follow continuation
     status: in_progress
     depends_on: [qualified-story]
-next_action: Original PR8786 is pushed and re-armed atde63b3a9; exact-head CI38223150169 completed SUCCESS at09:06:28Z with all12packs andci-gate green. Controller38229687409 marks its proof stale after main74031a83236f changed CI definitions; refresh admission is deferred at12active CI runs against cap8. Consume the existing controller admitted refresh and fresh exact-head proof, then protected landing, installation and browser checks. The same follow-on branch integrates this repaired carrier while retaining its separate aggregate-feed change; ship it after8786. App continuation complete-press-delivery remains ACTIVE; publication remains unapproved.
+next_action: Original8786 is pushed and re-armed atba599a70; fresh exact-head CI38310079309 started21:21:04Z after the tested corrective integration. Consume protected CI andlanding, use the ba599portable bundle for installed andbrowser acceptance, then ship the separate aggregate-feed follow-on. Its accepted source hashes are unchanged and186tests pass after integration. Publication remains unapproved.
 artifacts:
   - https://github.com/mastermindx-market-intelligence/macro/pull/8786
   - https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/956

@@ -3,7 +3,63 @@
 Operation: `mmx-public-intelligence-delivery-20261011-local-ceo-001`
 Mission complete: **false**. Publication approved: **false**.
 
-## Current protected release constraint — October12 09:31 UTC
+## Current armed carrier — October12 21:21 UTC
+
+Original PR8786 is pushed and re-armed atba599a70fb747290f54abdbd4f1e6acaed9b9d2e.
+Fresh CI38310079309 started21:21:04Z on that exact head. Remote SHA, OPEN,
+merge-on-green andauto-merge null were read back. The immediate pre-push
+capacity census was4active PR CI runs against cap8, with no refresh leases.
+The normal fast-forward push corrected admitted1be6's real failures using
+landed main repairs; no source gate, test ceiling, assertion or controller
+was changed. All earlier CI greens are historical for this new candidate.
+
+This separate aggregate-feed branch now integrates the repaired original
+carrier. Only the three root-owned continuity records conflicted; the full
+cumulative incoming versions preserve all prior follow-on records. The two
+accepted aggregate-feed files retain their hashes and all186affected tests
+pass in7.05s. No follow-on code was pushed to8786; no follow-on PR exists.
+
+The portable acceptance bundle is now
+/Users/chriswong/agent-evidence/mmx-public-intelligence-20261011/postlanding/ba599a70fb747290f54abdbd4f1e6acaed9b9d2e/.
+All21source and3page hashes still match the prior reviewed bytes; scripts
+compile and have no temporary-file dependencies. It remains unexecuted.
+Use the actual protected merge SHA only after landing. Then verify stable
+/opt/macro source/site/site.served, read-only staging via the installed
+.venv/bin/python -B, and real browser paths. After8786is installed and
+browser-accepted, merge its protected main into this follow-on and ship
+one protected PR through its own installed consumer verification.
+
+## Corrective integration — October12 21:07 UTC continuation
+
+The admitted refresh advanced8786to1be6efa3a504960ec26b0049e5a2b7e37e401459.
+CI38250975435 then failed contract-delta andpack0 on two packing weights
+(5802>5800 and5605>5600), plus three T11 macro-page assertions inpack10.
+These are retained in pr8786_1be6_red_summary.txt; the earlierde63green
+is historical only. Root disarmed the original PR with merge-blocked,
+read back exact1be6andauto-merge null, and confirmed no open refresh lease.
+
+The same owned source tree fast-forwarded to1be6then integrated protected
+maine901b0fabe37b5834fefe6a865e114cd6d239186 without conflicts, producing
+11bd476b178e2cc90b2c46071e7d2ad29e17dde8. It consumes existing T11 repair
+PR9028/b958b35d2c6e rather than copying or weakening assertions. Local T11
+55tests pass in7.37s; the packing regression passes in97.85s;69generated
+pages are byte-identical. All290main jobs and their existing paths survive.
+All21Press acceptance source hashes and all3acceptance pages are unchanged.
+Full validation is green:166manifest tests pass with2existing mockups skips
+in328.96s; differential contract0introduced/0inherited in272.5s. The
+three packing weights are5790/5593/5553, all below unchanged ceilings. Results are recorded in
+pr8786_1be6_corrective_integration.json. The current workload census is2
+active PR CI runs against cap8; no open refresh lease was observed. This
+is corrective integration of real failures, not an empty stale-proof refresh.
+
+No follow-on application code was added to8786. The aggregate-feed branch
+remains separate. Local validation is complete. Submit this repaired original carrier, read back its
+exact remote head and fresh CI, then re-arm protected landing. Installation
+and browser acceptance still require the actual protected merge commit.
+Publication and cutover remain false; the12:07provider attempt remains
+EFFECT_UNKNOWN without replay.
+
+## Historical protected release constraint — October12 09:31 UTC
 
 Original PR8786 remains OPEN atde63b3a93eb3715cc9f84a86d1ae034b822b9fd5,
 armed with merge-on-green. CI38223150169 passed that exact head, but controller
