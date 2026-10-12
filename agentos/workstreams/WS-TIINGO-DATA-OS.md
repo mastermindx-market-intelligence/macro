@@ -32,30 +32,31 @@ waves:
   - id: consumer-delivery
     title: Integrate incumbent Data OS and Quote Hub, release and prove live
     status: in_progress
-    pr: [8698, 945, 955]
+    pr: [8698, 945, 955, 8986]
 next_action: >-
-  Continue original finite EOD operation eod-wave8-fixed-unattempted-20261012-01a12ab6
-  and qualify only its completed immutable responses, excluding twelve held requests.
-  Latest accepted snapshot covers 11690 nonempty histories and 24600974 distinct bars;
-  capture is running and whole-batch completion is not claimed. The temporary harness
-  credential/counter collision was reproduced offline, corrected without changing
-  the collector or credential, independently reviewed at SHA 9c471937, and verified
-  by consecutive real successful captures. Exact failed requests remain held. Existing
-  Data and Lab consumed new EBAY/DWCH histories and three modes each for JPM and AXP.
-  Land and install the independently reviewed four-contract descriptive PRODUCED
-  change; it corrects bounded research discovery without granting PIT, canonical
-  identity, availability or publication. The other twenty contracts remain PROPOSED.
-  Current Terminal 955 head de8aca83cd6a3072eba861ce494d9e644baca75f passed all twelve
-  dispatched jobs on 38214240947. Original PR run 38214248199 remains action_required
-  and requires actual maintainer approval before protected landing and fresh VPS
-  builder preflight. Preserve the prior automatic approval refusal. Standalone AAPL
-  split history returned HTTP 403 and its cohort stopped; do not retry it. Thirty
-  plus forty-five new fundamentals requests passed across two cohorts but serve
-  roughly three years, with 1598 changed original/revised fiscal metric values.
-  SHW and PFE exact originally reported requests returned 400 and are not retried.
-  Full history, dated identity, PIT admission
-  and real BOATS production/consumer acceptance remain open. Save material deltas
-  and continue ready work; a checkpoint is not a mission stop.
+  Continue original finite EOD operation eod-wave9-new-unreserved-20261012-01a12ab6
+  and qualify only new completed immutable responses. Prefix09 accepts 17103
+  nonempty histories and 36073078 distinct bars; the capture is running and whole
+  finite-scope completion is not claimed. The disjoint following 5000-request plan
+  is prepared only, excluding all sixteen known held symbols, prior selections and
+  existing captures; require actual prior settlement and fresh quota/source/storage
+  checks before launch. Macro 8986 merged as 0b204cde017b88a9fec03ddb583f6b5e02ea4886
+  after all twelve original CI packs, contract-delta, ci-gate, trusted authority and
+  fences passed on 9255dba36c9b8e62852582da2368134426d994c4. The existing Data and Lab
+  launcher now selects its verified immutable 1883-file release. Its real canonical
+  CHFN Lab trial and fresh installed EOD/fundamental reads passed. Exactly four
+  contracts are PRODUCED; the other twenty remain PROPOSED, with read-only bindings
+  and availability/production qualifiers preserved. Current Terminal 955 head
+  0e63c97ddb5d60a19c4c6ade1487f1a662b73199 passed all twelve original dispatched jobs
+  on 38237161644. Original PR run 38237168665 requires actual maintainer approval
+  before protected landing and fresh VPS builder preflight. Preserve the original
+  automatic approval refusal. The next published BOATS opening is 2026-10-13
+  00:00 UTC; no future subscriber or scheduler is launched. Standalone AAPL split
+  HTTP 403 and SHW/PFE statement HTTP 400 effects remain held. The 75 successful
+  fundamental captures across 25 companies serve roughly three years, with 1598
+  changed original/revised fiscal metric values; broader serving is unproven.
+  Full history, dated identity, PIT and responsive live BOATS consumer acceptance
+  remain open. Save material deltas and continue ready work in the same mission.
 owns_paths:
   - collectors/tiingo_archive.py
   - lib/dataos/tiingo_*.py
@@ -73,13 +74,14 @@ artifacts:
   - docs/tiingo-evidence/20261012-real-open-case-repair/
   - docs/tiingo-evidence/20261012-delivery-frontier/
   - docs/tiingo-evidence/20261012-research-contracts/
+  - docs/tiingo-evidence/20261012-installed-research/
 landmines:
   - Keep one owner per conflicting partition/effect, existing collector and admitted runtime/relay writer; preserve peer intraday captures and News PR 8697. Any actual wider archive lease remains binding.
   - Disjoint immutable append requires trusted stable archive ancestors; directory-swap TOCTOU remains and no ancestor renames or incumbent writer displacement are authorized.
   - Full fundamentals activation is Chairman-attested but AMD current-key responses still expose evaluation restrictions; do not infer absent purchase or purchase again.
   - Authentic BOATS controls and historical bars do not prove actual Q/T/B or session coverage.
   - Reviewed source admits a complete BOATS-only public projection; installation and old object/cache replacement still need proof. Never inject BOATS under a legacy provider label.
-  - Exactly four EOD/fundamentals contracts describe completed authenticated research existence; all other twenty stay PROPOSED. Dated identity, PIT, availability, live publication and new installed release remain separate gates.
+  - Exactly four EOD/fundamentals contracts and their selected immutable research release are verified; all other twenty stay PROPOSED. Dated identity, PIT, availability and live publication remain separate gates.
 do_not_redo:
   - Do not publish the previously blocked untracked CEO handoff by another route.
   - Do not reacquire the accepted ticker ZIP or re-download already verified histories merely to obtain another checkpoint.

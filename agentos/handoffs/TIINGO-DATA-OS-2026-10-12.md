@@ -254,3 +254,77 @@ or subscriber launch receipt for that future opening. Preserve authentic venue
 semantics and the original human CI gate, frozen provider/permission effects,
 incumbent writers, current consumer ceilings and original retained evidence while
 continuing independent capture and qualification.
+
+## Four-contract consumer landed, selected and exercised
+
+This section supersedes the earlier pending registry installation and current
+corpus/Terminal observations. The programme remains active; this is a durable
+delivery delta, not a mission-completion claim.
+
+Macro [PR #8986](https://github.com/mastermindx-market-intelligence/macro/pull/8986)
+merged at 2026-10-12T12:16:48Z as
+`0b204cde017b88a9fec03ddb583f6b5e02ea4886`. Original hosted run **38242194489**
+completed SUCCESS on exact head `9255dba36c9b8e62852582da2368134426d994c4`, with
+all twelve packs, contract-delta and ci-gate successful. Current trusted authority
+and fences passed. The two preservation-test failures were repaired with actual
+paired publication inputs, without restamping, production-page changes, altered
+failure signatures or a CI waiver. Independent architecture review and the 175
+affected checks remain accepted; do not redo them without a material invalidator.
+
+The existing Data & Lab launcher now selects the actual merged immutable release:
+1883 files, 55910163 source bytes, manifest SHA
+`089c50c8ec82c49e581ab3369e75fa37359b5dd710d7fb3e90516fded09e2eb0`,
+release SHA `184af64b74acfcf61d452f9979402eb21598e80eaa65a3a8b42804e9f089aa2f`
+and launcher SHA `381f3b12c4d80313acd518ac2d5571fe09bf3286009645a00dd15af64e5a809c`.
+Complete export/mount verification, candidate canary and fresh installed
+capabilities/search/EOD read passed. Only the four existing launcher pin literals
+changed; the previous selector and immutable release remain retained. Exactly
+four research contracts are PRODUCED and twenty stay PROPOSED. Source bindings
+remain read-only, without inferred availability or production qualification.
+
+Real candidate Lab run **run-20261012T121811Z-10dbb9c34b3a** completed SUCCEEDED
+with exit code zero and a canonical Trial from 4050 original CHFN bars dated
+2002-08-02 through 2018-08-31. Actual host request/status/result joined the returned
+run, and the original Parquet checksum was reverified. It used one configuration,
+the existing 60-second bound and only the temporary declared-budget ledger. Fresh
+selected-source reads also preserved the accepted AXP originally reported,
+revised and daily fundamental modes. No new provider request, source rebuilding,
+metric-value publication, trade-sizing or production-ledger effect follows.
+
+Verified-by: original exact-head hosted run, actual selected launcher calls,
+source/query version checks and host artifact joins recorded in
+[`installed research proof`](../../docs/tiingo-evidence/20261012-installed-research/README.md)
+and its aggregate hash-bound JSON. The private originals remain under the same
+task and effect identities. The protected close-out pin is
+`b49c3e7254ccd0dfde8cad69b8e71382dc4391a7`, compatible Skillpack 1.0.1 / bootstrap
+major 1; unchanged procedure bytes reused their accepted full reads.
+
+Original raw operation **eod-wave9-new-unreserved-20261012-01a12ab6** remains
+running. Prefix09 has verified raw and reader lineage for a global bounded
+snapshot of **17103 nonempty histories / 36073078 distinct bars**, with 33 empty
+and 30553 uncaptured windows in the reused 47689-candidate catalogue. It does not
+prove the original finite capture settled or full vendor/PIT/delisting coverage.
+The following disjoint 5000-request selection is prepared only, plan SHA
+`49e1ec5d0b3508706009998b257a408b7794d878a3e7dfa0986c6535b4bcd83e`.
+It reserves the entire running scope and excludes sixteen held symbols and
+existing/prior captures. Require actual original settlement plus fresh account
+quota, source and storage checks before launch. Preserve the four-in-flight,
+five-second minimum batch pacing, 24 GiB raw budget and 40 GiB free-space floor.
+
+Terminal #955 still has head `0e63c97ddb5d60a19c4c6ade1487f1a662b73199` and its
+incumbent native squash auto-merge request. Original dispatched run **38237161644**
+passed all twelve actual jobs. Original pull-request run **38237168665** still
+requires actual maintainer approval; the prior automatic approval rejection is
+preserved, with no new approval attempt, alternate route or replacement dispatch.
+Fresh production builder/source/writer preflight and release remain downstream.
+The current BOATS venue is closed; the next published opening is **2026-10-13
+00:00 UTC**. No future subscriber, schedule or wake has a launch receipt.
+
+Next useful acts are qualification/settlement of the existing capture, then the
+disjoint next capture when admitted; actual Terminal release when its original
+gate clears; and authentic BOATS consumer acceptance in an open venue session.
+Full fundamentals serving remains unproven despite purchase/activation attestation;
+the accepted 75 captures across 25 companies and their roughly three-year served
+window are not deep/all-symbol entitlement. Preserve SHW/PFE, standalone splits,
+original platform/Fabric refusals and incumbent writers. Canonical dated identity,
+PIT eligibility and responsive live BOATS production acceptance remain open.
