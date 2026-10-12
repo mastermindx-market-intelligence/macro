@@ -34,16 +34,23 @@ waves:
     status: in_progress
     pr: [8698, 945, 955]
 next_action: >-
-  Conclude genuine main baseline 38187866979 after the accepted one-path CI repair
-  landed as de0c202a. Land the independently reviewed BOATS ASCII casing repair
-  from fresh branch claude/tiingo-boats-vendor-case-20261012 after exact-head hosted
-  acceptance. Verify protected Terminal 955 at 88bdb412 and deploy its actual merge
-  with the existing VPS builder. Prepare and review one finite attended publisher
-  through the original exec carrier after actual source, consumer, relay-writer,
-  target, resource and clock proof; persistent publication remains refused. Settle
-  the existing 1000-request EOD wave six before materialization and lineage
-  qualification, then continue full history and served fundamentals diagnosis.
-  Preserve peer MAG 7 intraday captures and all retrospective/PIT boundaries.
+  Continue original finite EOD operation eod-wave8-fixed-unattempted-20261012-01a12ab6
+  and qualify only its completed immutable responses, excluding twelve held requests.
+  Latest accepted snapshot covers 9916 nonempty histories and 20761012 distinct bars;
+  capture is running and whole-batch completion is not claimed. The temporary harness
+  credential/counter collision was reproduced offline, corrected without changing
+  the collector or credential, independently reviewed at SHA 9c471937, and verified
+  by consecutive real successful captures. Exact failed requests remain held. Existing
+  Data and Lab consumed new EBAY/DWCH histories and three new JPM fundamentals modes.
+  Current Terminal 955 head de8aca83cd6a3072eba861ce494d9e644baca75f passed all twelve
+  dispatched jobs on 38214240947. Original PR run 38214248199 remains action_required
+  and requires actual maintainer approval before protected landing and fresh VPS
+  builder preflight. Preserve the prior automatic approval refusal. Standalone AAPL
+  split history returned HTTP 403 and its cohort stopped; do not retry it. Thirty
+  new fundamentals requests passed but serve roughly three years, with 518 changed
+  original/revised fiscal metric values. Full history, dated identity, PIT admission
+  and real BOATS production/consumer acceptance remain open. Save material deltas
+  and continue ready work; a checkpoint is not a mission stop.
 owns_paths:
   - collectors/tiingo_archive.py
   - lib/dataos/tiingo_*.py
@@ -59,6 +66,7 @@ artifacts:
   - docs/tiingo-evidence/20261011-history-wave3/
   - docs/tiingo-evidence/20261011-boats-source/
   - docs/tiingo-evidence/20261012-real-open-case-repair/
+  - docs/tiingo-evidence/20261012-delivery-frontier/
 landmines:
   - Keep one owner per conflicting partition/effect, existing collector and admitted runtime/relay writer; preserve peer intraday captures and News PR 8697. Any actual wider archive lease remains binding.
   - Disjoint immutable append requires trusted stable archive ancestors; directory-swap TOCTOU remains and no ancestor renames or incumbent writer displacement are authorized.
@@ -308,3 +316,63 @@ hash-bound judgments are retained in docs/tiingo-evidence/20261012-real-open-cas
 Fabric's original prelaunch failures remain on their IDs; diagnosis shows a log
 override alone would orphan installed status/result/stdin paths outside the grant.
 No retry, replacement operation or alternate ledger was created.
+
+## Installed research consumer and held production frontier
+
+The safe, source-bound receipt in
+`docs/tiingo-evidence/20261012-delivery-frontier/safe-frontier.json` supersedes the
+earlier wave-six and pending-producer observations. Macro #8875 landed the
+hosted-accepted casing source; the existing immutable Data & Lab release selector
+now discovers 24 Tiingo contracts and reads a real EOD slice. A canonical-store Lab
+compatibility canary passed. These are installed research capabilities; source
+statuses remain PROPOSED and no canonical identity or PIT admission follows.
+
+All own raw operations settled. Qualification verifies 9,722 nonempty histories
+and 20,230,153 distinct bars. The reused catalogue census has 18 empty candidate
+responses and 37,949 uncaptured windows. Absence of an accepted capture does not
+prove absence of an attempted request: the latest original continuation retained
+one success and a DVVDF HTTP 403, which was not retried. No peer partition or old
+view was rewritten. Full vendor history and served fundamentals scope remain open.
+
+Terminal #955's same-head dispatched CI passed all 12 jobs at `0bc4850632c1496e3e216cac7a25260baa76ed82`.
+The original pull-request CI run `38202937001` instead requires maintainer
+approval, and GitHub shows its three protected contexts as Expected. The exact
+approval attempt was rejected before execution by automatic approval review. No
+alternate-account approval, replacement CI admission or protection change occurs.
+The last observed VPS source and marker were `e0c405a09b6897df3b5e4a2f22344f3560b800a4`;
+there is no #955 release, finite BOATS publication or full live acceptance claim.
+The current principal requested the precise human approval and retains this
+frontier; this knowledge record schedules no future work.
+
+The controller subsequently refreshed the branch to `aadf407e101b99f2fbe23b43d277c792a32571d2` from
+protected settings base `9493fd80`. The 66 changed paths preserve Tiingo, BOATS,
+startup and workflow files, but the earlier green run does not accept this new
+head. Current dispatched run `38209476208` is queued; current original PR run
+`38209480199` also awaits maintainer approval. The earlier approval question
+link is superseded by this current original run. No new approval attempt occurred.
+
+Active continuation, 2026-10-12 08:46 UTC: the previous DVVDF/DVXB/DVYA/EA
+failures do not establish ticker-specific entitlement. Offline proof found the
+credential argument being overwritten by a counter iterator in the temporary
+continuation helper. Original collector bytes and provisioned key were unchanged.
+The corrected finite helper passed independent Fabric review on its stable run;
+parent adjudication accepted the code. The Fabric ledger acceptance write was
+denied at its lock and remains unrecorded on that carrier. No denied write or
+failed provider request was retried. The new operation excludes all twelve prior
+failed exact windows and has produced multiple consecutive HTTP 200 captures.
+
+A new completed-response snapshot qualified 191 histories / 517183 bars, bringing
+the accepted archive to 9916 histories / 20761012 distinct bars. The reused catalogue
+census now has 37755 uncaptured windows and 18 empty responses; capture completion,
+vendor availability and bar completeness remain separate. Installed release 2c90e1c0
+read 128 rows from each new EBAY/DWCH view, preserving raw/adjusted distinctions and
+source receipt lineage. Thirty new original/revised/daily fundamentals requests for
+ten companies produced 58501 projected rows, 9940 unambiguous compared fiscal keys
+and 518 changed values. The installed selector read all three new JPM modes.
+
+The first standalone corporate-action request `/tiingo/corporate-actions/aapl/splits`
+returned HTTP 403 with the correct stable credential argument. Its finite cohort
+stopped after that one request, with no successful response or projection. EOD
+embedded split/dividend evidence remains a distinct accepted source and does not
+clear the standalone endpoint refusal. No purchase, support email or account change
+was made. Safe current receipts are in the existing delivery-frontier directory.
