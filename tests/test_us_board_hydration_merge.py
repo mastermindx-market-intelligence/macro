@@ -390,6 +390,7 @@ def _find(tree, identity):
 
 @pytest.fixture(scope="module")
 def loader_scene():
+    binding = {"source_sha256": "sha256:" + "a" * 64, "pair_id": "b" * 32}
     rows = [_board_row(ticker=ticker, featured=True, stage="live", signal_asof="2026-10-08",
                        entry_signal={"status": status, "headline": status})
             for ticker, status in (("MSCI", "buy_soon"), ("ADSK", "partial"), ("ABBV", "buy_now"))]
@@ -398,7 +399,8 @@ def loader_scene():
                             "ranking": {"featured_count": 3}},
               gate={"payload": "/premiumdata/us_stocks.json", "tier": "essential",
                     "preview": 2, "total": 3, "locked": 1,
-                    "stage_counts": {"live": 3}}, pgate=None, life_gate=None)
+                    "stage_counts": {"live": 3}}, pgate=None, life_gate=None,
+              us_today_source_binding=binding)
     env = _env()
     env.autoescape = True
     page = env.get_template("dashboard.html.j2").render(**vm, mode="stocks")
@@ -415,6 +417,7 @@ def loader_scene():
             "fragment": _Tree(cards).root["children"],
             "payload": {"schema": "tier_payload.v1", "page": "us_stocks",
                         "today_cards_html": cards, "today_preview": 3, "today_total": 3,
+                        "today_source_binding": binding,
                         "rows": rows[2:]}}
 
 

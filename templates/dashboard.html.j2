@@ -16881,7 +16881,7 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
       {%- set _today_visible = _today.rows[:3] -%}
       {%- set _today_total = (_today_declared if (_today_declared is number and _today_declared is not boolean and _today_declared >= (_today.rows|length)) else (_today.rows|length)) -%}
       {%- set _today_more = [_today_total - (_today_visible|length), 0] | max -%}
-      <section class="mx-sec" id="us-today" data-today-total="{{ _today_total }}" data-today-visible="{{ _today_visible|length }}">
+      <section class="mx-sec" id="us-today" data-today-total="{{ _today_total }}" data-today-visible="{{ _today_visible|length }}" data-today-source-sha256="{{ (us_today_source_binding or {}).get('source_sha256', '') }}" data-today-pair-id="{{ (us_today_source_binding or {}).get('pair_id', '') }}">
         <div class="mx-sec-hd">
           <h2 class="mx-sec-h2">{{ t('Today', '今日') }}</h2>
           <span class="mx-sec-total"><span class="l-en"><b>{{ _today_visible|length }}</b> of <b>{{ _today_total }}</b> Featured</span><span class="l-zh">精选 <b>{{ _today_visible|length }}</b> / <b>{{ _today_total }}</b></span></span>
@@ -20611,19 +20611,40 @@ if (document.readyState === 'loading') {
     root.dispatchEvent(new Event('candidate-pool-hydrated'));
   }
 
-  function hydrateToday(html, preview, total){
-    if (!html) return;
+  function hydrateToday(html, preview, total, sourceBinding){
     var root = document.getElementById('us-today');
+    /* Two-field source gate: the payload's binding must be well-formed AND
+       exactly equal to this shell's server-baked pins before anything is
+       parsed or mutated. Missing/malformed/mismatched input — including a
+       same-count changed source — leaves the honest Today shell untouched. */
+    if (!root || !sourceBinding || typeof sourceBinding !== 'object' ||
+        Array.isArray(sourceBinding) ||
+        typeof sourceBinding.source_sha256 !== 'string' ||
+        !/^sha256:[0-9a-f]{64}$/.test(sourceBinding.source_sha256) ||
+        typeof sourceBinding.pair_id !== 'string' ||
+        !/^[0-9a-f]{32}$/.test(sourceBinding.pair_id) ||
+        sourceBinding.source_sha256 !== root.getAttribute('data-today-source-sha256') ||
+        sourceBinding.pair_id !== root.getAttribute('data-today-pair-id')) return;
+    if (typeof html !== 'string' || !html) return;
     preview = Number(preview) || 0;
     total = Number(total) || 0;
-    if (!root || preview < 1 || total < preview) return;
+    if (preview < 1 || total < preview) return;
 
     /* Parse and validate before touching the shell. The payload owns this bounded
        shelf; an incomplete/malformed response leaves the honest shell untouched. */
     var box = document.createElement('template');
     box.innerHTML = html;
     var cards = box.content.querySelectorAll('.pvcard[data-ticker]');
-    if (cards.length !== preview) return;
+    var allCards = box.content.querySelectorAll('.pvcard');
+    /* A second malformed card cannot hide outside the selected-card query: the
+       TOTAL pvcard count, the selected count and every ticker attribute must
+       all check out before anything visible changes. Repeated nonblank tickers
+       are valid rows and are never collapsed. */
+    if (allCards.length !== preview || cards.length !== preview) return;
+    for (var _ci = 0; _ci < cards.length; _ci++){
+      var _tk = cards[_ci].getAttribute('data-ticker');
+      if (!_tk || !_tk.trim()) return;
+    }
 
     var grid = root.querySelector('#us-today-grid');
     if (!grid){
@@ -20665,7 +20686,8 @@ if (document.readyState === 'loading') {
   }
 
   function hydratePanels(payload){
-    hydrateToday(payload.today_cards_html, payload.today_preview, payload.today_total);
+    hydrateToday(payload.today_cards_html, payload.today_preview, payload.today_total,
+                 payload.today_source_binding);
     hydrateCandidatePool(payload.candidate_pool_html, payload.candidate_pool_source);
     hydrateLeaderObservations(payload.leader_observations_html);
     appendTo('#us-standouts .topsetups:not(.leaders-strip) .ts-tbl tbody', payload.setups_html);

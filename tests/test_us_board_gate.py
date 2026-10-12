@@ -982,7 +982,8 @@ def test_fold_controls_are_suppressed_while_gated_and_rebuilt_on_hydrate():
     assert "function restoreFold(" in gated
     assert "hydratePanels(payload)" in gated
     assert "function hydrateToday(" in gated
-    assert "hydrateToday(payload.today_cards_html, payload.today_preview, payload.today_total)" in gated
+    assert re.search(r"hydrateToday\(payload\.today_cards_html,\s*payload\.today_preview,\s*"
+                     r"payload\.today_total,\s*payload\.today_source_binding\)", gated)
 
 
 def test_hydration_targets_every_panel_it_withholds():
@@ -1420,3 +1421,19 @@ def test_candidate_reason_wording_matches_refusal_shelf_for_shared_codes():
     assert why
     mismatches = {key: (why.get(key), copy) for key, copy in REFUSAL_COPY.items() if why.get(key) != copy}
     assert not mismatches, f"shared decision codes differ from REFUSAL_COPY: {mismatches}"
+
+# ═══ Today two-field source binding (append-only; deep suite lives in
+# tests/test_us_today_source_binding.py) ══════════════════════════════════════
+
+
+def test_write_us_payload_default_is_explicit_none_ungated(tmp_path):
+    build_site = pytest.importorskip("scripts.build_site")
+    from tests.test_dashboard_template_render import _env
+    build_site._write_us_payload(_env(), tmp_path, None, locked_rows=[],
+                                 us_standouts={}, top_setups=None, built="t")
+    path = tmp_path / build_site.US_PAYLOAD_DIR / build_site.US_PAYLOAD_NAME
+    payload = json.loads(path.read_text(encoding="utf-8"))
+    assert payload["today_source_binding"] is None
+    assert payload["gated"] is False
+    assert payload["today_cards_html"] == ""
+    assert payload["today_preview"] == 0 and payload["today_total"] == 0

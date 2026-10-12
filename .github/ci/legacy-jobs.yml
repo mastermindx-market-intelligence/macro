@@ -16711,6 +16711,14 @@ jobs:
       # ledgers and would otherwise fail for a borrowed reason.
       # No dependency widened: probed at RUN time, both load only
       # pandas/numpy/pyarrow/pyyaml, all already on the install line above.
+      # Source binding reaches the full builder import graph. Keep this new
+      # hermetic check in the existing unscoped board owner; shipped-artifact
+      # assertions retain their existing nightly data owners unchanged.
+      - name: Today source binding and private hydration (hermetic)
+        run: >-
+          python -m pytest tests/test_us_today_source_binding.py
+          tests/test_us_board_gate.py tests/test_us_board_hydration_merge.py
+          -q -k "not test_shipped"
       - name: Prophet source clocks and immutable correction provenance
         run: python -m pytest tests/test_prophet_plan_chronology_audit.py tests/test_prophet_integrity.py -q
       - name: grade_us_board outcome ledgers + tenure stamp + the strip it renders

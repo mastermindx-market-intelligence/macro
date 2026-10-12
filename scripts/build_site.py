@@ -5055,6 +5055,34 @@ def _us_today_featured_preview(
     return [row for row in rows if row.get("featured")][:limit]
 
 
+def _us_today_source_binding(
+    raw_sha: "str | None", owner_doc: "dict | None"
+) -> "dict | None":
+    """Exact Today provenance pair from two facts this build already owns.
+
+    `raw_sha` is the frozen lowercase 64-hex sha256 of the raw
+    us_standouts.json bytes (computed once at read time) and `owner_doc` is
+    the ORIGINAL json.loads of those same bytes, captured BEFORE
+    _attach_board_display_chips enriches the board. Valid input returns
+    {"source_sha256": "sha256:" + raw_sha, "pair_id": <emit.pair_id>};
+    anything malformed or unavailable returns None. No re-hash, no re-read,
+    no normalization: uppercase or padded values are refused, never repaired.
+    """
+    if (not isinstance(raw_sha, str) or len(raw_sha) != 64
+            or any(c not in "0123456789abcdef" for c in raw_sha)):
+        return None
+    if not isinstance(owner_doc, dict):
+        return None
+    emit = owner_doc.get("emit")
+    if not isinstance(emit, dict):
+        return None
+    pair_id = emit.get("pair_id")
+    if (not isinstance(pair_id, str) or len(pair_id) != 32
+            or any(c not in "0123456789abcdef" for c in pair_id)):
+        return None
+    return {"source_sha256": "sha256:" + raw_sha, "pair_id": pair_id}
+
+
 def _split_us_board(us_standouts: "dict | None", preview_rows: int, *, gated: bool = True):
     """Tier-preview split for the US Prophet board.
 
@@ -5457,6 +5485,7 @@ def _write_us_payload(env: Environment, site: Path, gate: "dict | None", *,
                        locked_rows: list[dict], us_standouts: "dict | None",
                        top_setups: "dict | None", built: str,
                        today_rows: "list[dict] | None" = None,
+                       today_source_binding: "dict | None" = None,
                        pgate: "dict | None" = None,
                        panel_blocks: "dict | None" = None,
                        life_gate: "dict | None" = None,
@@ -5482,6 +5511,8 @@ def _write_us_payload(env: Environment, site: Path, gate: "dict | None", *,
     past `life_gate['preview']`), so the migrated grid's hydrated cards can
     never drift from its server-rendered ones. Independent switch from `gate`
     (§8b: "a re-plumb, never a re-draw" — same mechanism, different array).
+    `today_source_binding` carries the exact raw-source pair to every payload
+    shape, or explicit None when unavailable, for the shell hydration gate.
     """
     # Add only the presentation for this same entitled row. Failure keeps its
     # native flat facts, with no detail action, rather than dropping the payload.
@@ -5508,6 +5539,7 @@ def _write_us_payload(env: Environment, site: Path, gate: "dict | None", *,
         payload = {"schema": "tier_payload.v1", "page": "us_stocks", "gated": False,
                    "built": built, "cards_html": "", "rows": [],
                    "today_cards_html": "", "today_preview": 0, "today_total": 0}
+        payload["today_source_binding"] = today_source_binding
     else:
         full_buy = (us_standouts or {}).get("buy") or []
         # sg_any/bs_adj/xu_allfeat/trg_map mirror dashboard.html.j2's own derivation
@@ -5579,6 +5611,7 @@ def _write_us_payload(env: Environment, site: Path, gate: "dict | None", *,
             "today_cards_html": today_cards_html,
             "today_preview": len(today_rows),
             "today_total": _today_total,
+            "today_source_binding": today_source_binding,
         }
     if pgate:
         payload["panels"] = {k: v for k, v in pgate.items()
@@ -6138,6 +6171,7 @@ def main() -> int:
     _us_w3c = None
     _us_w3c_refusal = None
     _us_w3c_binding = None
+    _us_today_binding = None
     _us = site / "factordata" / "us_standouts.json"
     if _us.exists():
         try:
@@ -6171,6 +6205,8 @@ def main() -> int:
                 log.warning("W3C US source binding unavailable (%s)", _us_w3c_e)
         except Exception as e:  # noqa: BLE001 — additive, never fatal
             log.warning("us_standouts.json unreadable (%s)", e)
+        # Bind the existing frozen raw SHA to the original decoded source.
+        _us_today_binding = _us_today_source_binding(_us_w3c_binding, us_standouts)
     # DISPLAY-ONLY board attaches (personality chips + RLT-R6 sector-stance) — factored
     # into _attach_board_display_chips so the post-build_library re-render (one-build-lag
     # fix, below) reuses the EXACT same enrichment and can never silently diverge.
@@ -7077,6 +7113,7 @@ def main() -> int:
         us_standouts=us_standouts,
         # Internal machine binding only; no template/public-rights/tier expansion.
         us_selection_cohort_internal=_us_w3c,
+        us_today_source_binding=_us_today_binding,
         us_candidate_visibility=us_candidate_visibility,
         us_prophet_book=us_prophet_book,
         us_leader_observations=us_leader_observations,
@@ -7425,6 +7462,7 @@ def main() -> int:
                        us_standouts=vm.get("us_standouts"),
                        top_setups=vm.get("top_setups"), built=generated,
                        today_rows=_us_today_featured,
+                       today_source_binding=vm.get("us_today_source_binding"),
                        pgate=_us_pgate,
                        panel_blocks=_render_us_panel_payload(
                                        env, _us_pgate, _us_plocked, vm,
@@ -7764,6 +7802,7 @@ def main() -> int:
             _fresh_w3c = None
             _fresh_w3c_refusal = None
             _fresh_w3c_binding = None
+            _fresh_today_binding = None
             if _fresh_source_bytes is not None:
                 try:
                     from hashlib import sha256 as _w3c_sha256
@@ -7789,8 +7828,15 @@ def main() -> int:
                             log.warning("W3C US qualified reads refused (%s); receipt-only", _fresh_w3c_read["reason_codes"])
                 except Exception as _fresh_w3c_e:  # noqa: BLE001 — keep ordinary fresh-board rendering
                     log.warning("W3C fresh US source binding unavailable (%s)", _fresh_w3c_e)
-            _fresh_su = _attach_board_display_chips(
-                site, json.loads(_fresh_source_bytes)) if _fresh_source_bytes is not None else None
+            _fresh_owner_doc = (json.loads(_fresh_source_bytes)
+                                if _fresh_source_bytes is not None else None)
+            _fresh_su = None
+            if _fresh_owner_doc is not None:
+                # Same first/fresh rule: bind the frozen raw SHA to the ORIGINAL
+                # decoded doc BEFORE display attachment touches it.
+                _fresh_today_binding = _us_today_source_binding(
+                    _fresh_w3c_binding, _fresh_owner_doc)
+                _fresh_su = _attach_board_display_chips(site, _fresh_owner_doc)
             _prior_as_of = (us_standouts or {}).get("as_of")
             _prior_stale = (us_standouts or {}).get("staleness") or {}
             _fresh_candidate_visibility = project_candidate_visibility(
@@ -7809,6 +7855,7 @@ def main() -> int:
                 vm["us_selection_cohort_internal"] = _fresh_w3c
                 _us_w3c_binding = _fresh_w3c_binding
                 _us_w3c_refusal = _fresh_w3c_refusal
+                vm["us_today_source_binding"] = _fresh_today_binding
                 vm["us_standouts"] = _fresh_su
                 vm["us_candidate_visibility"] = _fresh_candidate_visibility
                 # §6.9 R5: the "passed on tonight" shelf is DERIVED from this board, so
@@ -7889,6 +7936,7 @@ def main() -> int:
                                    us_standouts=vm.get("us_standouts"),
                                    top_setups=vm.get("top_setups"), built=generated,
                                    today_rows=_us_today_featured2,
+                                   today_source_binding=vm.get("us_today_source_binding"),
                                    pgate=_us_pgate2,
                                    panel_blocks=_render_us_panel_payload(
                                        env, _us_pgate2, _us_plocked2, vm,
