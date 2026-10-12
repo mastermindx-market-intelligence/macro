@@ -34,13 +34,18 @@ waves:
     status: in_progress
     pr: [8698, 945, 955]
 next_action: >-
-  Finish current protected Terminal 955 source checks and the incumbent VPS release,
-  using the accepted feature-copy repair with 554 files / 9,141 tests and six EN/ZH browser passes; Terminal 945 is
-  already merged, installed and healthy. Settle/materialize/audit the attended
-  interrupted fourth 1000-request EOD wave: 838 raw responses / 835 new views verified and full archive qualified at 4,386 histories / 8,919,835 bars; settle the active 161-request continuation within the original combined cap.
-  Before real BOATS publication, qualify exact producer source/CI, original runtime
-  controls, sole writer and object/cache replacement. Reconcile the existing
-  account's served fundamentals HTTP 400 discrepancy; the intended Chrome Chris profile is already signed in with BOATS ACTIVE and current quota remaining.
+  Complete hosted acceptance for the fresh-main CI continuation: original Macro
+  8698 merged before CI settled and its contract-delta gate then proved the missing
+  NYSE-calendar path in the Data OS job. The one-path repair passes the local
+  differential checker; do not infer CI acceptance from landing. Qualify the
+  settled fifth EOD wave's 500 HTTP-200 responses through the existing EOD-only
+  materializer and full lineage reader. Reconcile four separate intraday receipts
+  before another raw capture. Verify Terminal 955's exact protected aggregate and
+  merge, then use the existing VPS release path; 945 is already deployed. Complete
+  actual BOATS archive/relay/Hub/API/responsive-browser acceptance only after its
+  source, runtime, sole-writer, target, resource and clock gates are met. The Chris
+  browser is signed in with BOATS ACTIVE; fundamentals served scope remains a
+  separate current-key Dow-30 discrepancy, with no purchase or support email.
 owns_paths:
   - collectors/tiingo_archive.py
   - lib/dataos/tiingo_*.py
@@ -245,3 +250,14 @@ Dated wave-four qualification, 2026-10-11 22:49 UTC: all 4,403 receipts were che
 Wave-four continuation settled: 161/161 succeeded, 343,787 row hints / 80,194,781 raw bytes in 368.882 seconds. Combined original batch: 999 verified bodies (996 nonempty / three empty), one absent BAFE timeout; all 4,564 archive receipts inspected. Materializer settled rc=0, final archive qualification running. Protected main 3a92cf50 integrated without source conflict; five LIVE receipt changes and three unchanged unique anchor relocations passed independent review d7ae07de, then 21 classification tests passed. CI additions retain all prior tests and add actual BOATS display coverage. No raw writer is active.
 
 Final wave-four qualification: 2026-10-11T22:56:35.691310+00:00, 4,547 nonempty EOD histories / 9,263,622 bars / 4,564 receipts; raw/checksum/exact-context/row-lineage/date/economic-overlap proof passed. Physical archive 604,537,634 bytes, free 255.4 GiB, reserve 35 GiB. Safe exact proof and timeout are retained under docs/tiingo-evidence/20261011-history-wave4/. Original Macro #8698 accepted source is pushed at 82feebf630999c0b5a4a3ec6c922ec92f720105f; current hosted gates remain separate.
+
+## CI continuation at 2026-10-11 23:29 UTC
+
+The original Macro carrier landed prematurely at `fba80a12`; hosted contract-delta
+run `38182746681` then found the missing calendar dependency. The fresh-main
+continuation widens the existing job by one path and preserves producer/archive
+bytes. `python3 scripts/check_contract_delta.py --base
+8ad47787d83be8625fb387e279220b5a40efc7b2` passed with zero introduced/inherited
+findings in 440.3 seconds. Actual red/green/parity/landing evidence is retained at
+`docs/tiingo-evidence/20261011-ci-continuation/`. This does not establish hosted
+acceptance, publication or full-programme completion.
