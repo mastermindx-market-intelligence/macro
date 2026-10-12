@@ -1,0 +1,221 @@
+{
+  "schema": "terminal.audit20.review_snapshot.v1",
+  "root": "01a10f92-900c-7363-89d0-010e8eec9e05",
+  "mission_complete": false,
+  "all20_original_start_verified": true,
+  "scope": "Knowledge and review evidence only; no dispatch, ownership or live-activity authority",
+  "evidence_root": "/Volumes/Mastermind/evidence/terminal-audit20-01a10f92",
+  "missions": [
+    {
+      "mission": "A01",
+      "outcome": "Pine request.security: eliminate silent symbol substitution and future-data leakage",
+      "original_started": true,
+      "whole_mission_accepted": false,
+      "review_status": "SCOPED_PINE_HISTORY_DEPLOYED; ACTUAL_EDITOR_WARNING_VERIFIED",
+      "evidence_summary": "PR835 landed/deployed8f3 historically. On Oct7 actual authenticated Scripts editor served52b9107; unsaved 1W script warned that an unconfirmed ISO-week tail returns the prior confirmed value or na; foreign symbol warned and returns na. Built-in diagnosis uses synthetic130 daily bars with SYNTH, not live chart bars. Original editable buffer restored byte-identically; no Save/Add to Chart. Actual viewport1525x936. Chart-attached weekly plotting and broader Pine parity remain unproven."
+    },
+    {
+      "mission": "A02",
+      "outcome": "Pine worker containment: bounded compilation, cancellation and disposal",
+      "original_started": true,
+      "whole_mission_accepted": false,
+      "review_status": "SCOPED_SOURCE_ACCEPTED; MERGED; DEPLOY_PRE_EFFECT_REFUSED_NO_SPACE",
+      "evidence_summary": "Reviewed candidateab267 passed required CI and merged asd660. Authorized targetd660 git-gated deployment failed at preflight mktemp before fetch/service stop: diskfree0. Current source/marker52b9107 and terminal/quote-hub active. /opt/macro/.git33GB with active producer; no destructive cleanup. Containment production and whole-mission acceptance remain owed.",
+      "source_head": "ab267daa5b740fbd008cf190f567bd78222b1b73",
+      "pr": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/834",
+      "merge_commit": "d660d98b1ebc0bdf0d1b16d66202b1760f6cc94a"
+    },
+    {
+      "mission": "A03",
+      "outcome": "Pine editor saving: preserve edits across concurrent saves, switching and external revisions",
+      "original_started": true,
+      "whole_mission_accepted": false,
+      "review_status": "SCOPED_SOURCE_ACCEPTED; OWNER_CALLER_BINDING",
+      "evidence_summary": "r7Grog cleanuptrue; parent40pass0skip and actual fullsourcepreviewTSC0 after fourexactfixtureimportsrestored. SoleactualShellrenamefunction and microsecond order qualified; no sourcewriter/CI/liveclaim."
+    },
+    {
+      "mission": "A04",
+      "outcome": "Drawing persistence: transactional replacement, conflict detection and unknown-outcome recovery",
+      "original_started": true,
+      "whole_mission_accepted": false,
+      "review_status": "SCOPED_TRANSACTION_SQL_ACCEPTED; ACTUAL_SOURCE_OWNER_AND_MIGRATION_GATES",
+      "evidence_summary": "Higher GrokUbuntu2 r6 rc0/STARTtrue/cleanuptrue/residual0; actualPostgreSQL17.11 33guard+11transaction cases passed0skip/psql0/containerremoved, independently reviewed. Exactfunction1bb8d863 andguard1b9d5472 unchanged; independent actualtwo-session conflict/replay/admittedrollback3cases passed. Current8f3 four sourceblobs match64c1. TerminalShell callerowner597/legacybootstrap/client/outbox/migration/production17.6/browser/live remain owed."
+    },
+    {
+      "mission": "A05",
+      "outcome": "Live Flow transport: prevent fallback polling from rolling back a recovered SSE feed",
+      "original_started": true,
+      "whole_mission_accepted": false,
+      "review_status": "SCOPED_SOURCE_ACCEPTED_FOR_EXISTING_OWNER",
+      "evidence_summary": "12pass; existing686 HOLD; old poll/cache and real-path gates remain"
+    },
+    {
+      "mission": "A06",
+      "outcome": "SSE connection lifecycle: access expiry and bounded slow-client buffering",
+      "original_started": true,
+      "whole_mission_accepted": false,
+      "review_status": "SCOPED_ROUTE_ORACLE_ACCEPTED_FOR_EXISTING_OWNER",
+      "evidence_summary": "33pass after Grog oracle repair; existing668; real private request/feed path remains"
+    },
+    {
+      "mission": "A07",
+      "outcome": "Persistent JSON cache: invalidation must fence in-flight IndexedDB readback",
+      "original_started": true,
+      "whole_mission_accepted": false,
+      "review_status": "SCOPED_CACHE_REPAIR_ACCEPTED_FOR_EXISTING_OWNER",
+      "evidence_summary": "43pass; existing707 HOLD/merge-blocked; real IndexedDB reload gates remain"
+    },
+    {
+      "mission": "A08",
+      "outcome": "A08 \u2014 Copilot evidence integrity: unknown freshness, mixed GEX snapshots and truncation",
+      "original_started": true,
+      "whole_mission_accepted": false,
+      "review_status": "SCOPED_EXACT_OWNER_PR8526_PROPOSAL_ACCEPTED; OWNER_INTEGRATION_OWED",
+      "evidence_summary": "Automatic GLM5.3 Mini2 r5 consumed; minimal inherited-key repair accepted after parent actual widget proof. Exact PR8526 head53a contribution preserves mobile/focus changes;20 asset/source checks and5 browser cases passed0skip. Widget SHAe3bc0580/loader digestmatch. Synthetic SSE fixture stopped. No owner branch/source writer/live acceptance; canonical contribution research/terminal_audit20/A08_PR8526."
+    },
+    {
+      "mission": "A09",
+      "outcome": "Portfolio monetary integrity: currency-aware cost, value and exposure",
+      "original_started": true,
+      "whole_mission_accepted": false,
+      "review_status": "SCOPED_PER_CLAIM_REPAIR_ACCEPTED_WITH_28_CAUSAL_TESTS",
+      "evidence_summary": "Grok r3 rs_20261006T140344Z_4488 rc0/STARTtrue/cleanuptrue/residual0; parent28pass0skip. Explicit different report unit needs verified conversion, unknown nonzero-cost lot blocks whole-book concentration. Pure proposal only; runtime consumers/schema/source/live owed."
+    },
+    {
+      "mission": "A10",
+      "outcome": "Account portability: export the user\u2019s actual research and chart work",
+      "original_started": true,
+      "whole_mission_accepted": false,
+      "review_status": "SCOPED_EXPORT_DEPLOYED_AND_AUTHENTICATED_DOWNLOAD_VERIFIED",
+      "evidence_summary": "PR836 merged69dfda2e and git-gated VPS deploy/healthy public marker69df; authenticated JSON+CSV completed. Native JSON schema and populated four existing collections verified; CSV content and filesystem byte hash unverified. Whole declared archive scope remains partial."
+    },
+    {
+      "mission": "A11",
+      "outcome": "Chart Bar Replay: one truthful historical instant through layout and timeframe changes",
+      "original_started": true,
+      "whole_mission_accepted": false,
+      "review_status": "SCOPED_MODULE_REPAIR_ACCEPTED_FOR_EXISTING_OWNER",
+      "evidence_summary": "68pass; existing643 merge-blocked; actual UI close-availability integration remains"
+    },
+    {
+      "mission": "A12",
+      "outcome": "Order-block event timing: formation anchors must not become earlier knowledge",
+      "original_started": true,
+      "whole_mission_accepted": false,
+      "review_status": "SCOPED_STAMP_REPAIR_ACCEPTED_OWNER_PATCH",
+      "evidence_summary": "PR631 bb97 owner-addressed stamp repair: parent121/121 across actual detector/resampler/event-to-alert controls; new macro source geometry143/confirmed147 and forming-prefix refusal verified. No owner carrier takeover; chart/sidecar/CI/live outstanding."
+    },
+    {
+      "mission": "A13",
+      "outcome": "Expiry exposure truth: missing Greeks must not become a complete total",
+      "original_started": true,
+      "whole_mission_accepted": false,
+      "review_status": "SCOPED_PROJECTION_ORACLE_ACCEPTED_FOR_EXISTING_OWNER",
+      "evidence_summary": "107pass; existing768 contribution into723 only; runtime aggregation and source/live gates remain"
+    },
+    {
+      "mission": "A14",
+      "outcome": "Volatility investigation: exact expiry, explicit gaps and defensible IV context",
+      "original_started": true,
+      "whole_mission_accepted": false,
+      "review_status": "SCOPED_CURRENT_MODULE_WITNESS_ACCEPTED",
+      "evidence_summary": "29pass sourceunchanged; existing780 changes-requested; panel/runtime/source/live gates remain"
+    },
+    {
+      "mission": "A15",
+      "outcome": "Heatmap economic sizing: propagate genuine capitalization and disclose coverage",
+      "original_started": true,
+      "whole_mission_accepted": false,
+      "review_status": "SCOPED_SOURCE_ACCEPTED; CURRENT_HEAD_REAL_CI_RED; AUTOMATION_ENROLLMENT_PENDING",
+      "evidence_summary": "Six reviewed source files unchanged after controller refresh toa496. Chairman approved older94dff run37650481196; newer PR run37707997477 still action_required. Current dispatch37707991707 failed one real mobile Seasonal SVG hover. Exact existing owner846 one-line fix passed affected actual Next case desktop/tablet/mobile3pass0skip; temporary checkout restored, fixture stopped, source custody retained. App automation PR850 c47ee8e source qualified40parent tests, draft until one-time enrollment and required CI. Merge/deploy/actual USD CAP remain owed.",
+      "source_head": "a49629399ad380516bd062dc072cedbb6e801fa6",
+      "pr": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/839"
+    },
+    {
+      "mission": "A16",
+      "outcome": "Options coverage discovery: expose quiet covered roots without fabricating coverage",
+      "original_started": true,
+      "whole_mission_accepted": false,
+      "review_status": "SCOPED_CURRENT_MODULE_WITNESS_ACCEPTED",
+      "evidence_summary": "29pass sourceunchanged; existing686 HOLD; actual quiet-root UI/live gates remain"
+    },
+    {
+      "mission": "A17",
+      "outcome": "Options Plan: finish deterministic multi-leg payoff planning as a real workflow",
+      "original_started": true,
+      "whole_mission_accepted": false,
+      "review_status": "SCOPED_PAYOFF_ORACLE_ACCEPTED_FOR_EXISTING_OWNER",
+      "evidence_summary": "39pass after corrected independent ratio arithmetic; sourceunchanged existing781; UI/live gates remain"
+    },
+    {
+      "mission": "A18",
+      "outcome": "Prophet performance history: replace placeholder with private, interpretable outcomes",
+      "original_started": true,
+      "whole_mission_accepted": false,
+      "review_status": "SCOPED_COMPONENT_SCHEMA_WITNESS_ACCEPTED",
+      "evidence_summary": "20pass exact candidate fixtures restored; existing668; auth/private backend/live remain"
+    },
+    {
+      "mission": "A19",
+      "outcome": "Follow a Prophet opportunity: material changes through the existing Alerts plane",
+      "original_started": true,
+      "whole_mission_accepted": false,
+      "review_status": "OWNER_BINDING_CONTRACT_NOT_ADMITTED",
+      "evidence_summary": "Actual Terminal legacy private planbook has no confirmed current B1 episode join; no follow/notification effects"
+    },
+    {
+      "mission": "A20",
+      "outcome": "Signed webhook delivery: prove real alert-to-recipient integrity and recovery",
+      "original_started": true,
+      "whole_mission_accepted": false,
+      "review_status": "SCOPED_STOPPED_OUTCOME_REPAIR_ACCEPTED_FOR_INCUMBENT_582",
+      "evidence_summary": "C3 Grok r4 STARTtrue/timeout124/cleanuptrue; parent68pass0skip across5files. Existing failed terminal/null clock preserves prior timeout receipt; actual API count verified. Incumbent582/0026/recipient live gates remain."
+    }
+  ],
+  "accepted_validation_artifacts": {
+    "A04_guard_sha256": "1b9d5472005a585beb231e44b4f20cfcb107411df6731f54f28a1ca894bdfcf1",
+    "A04_regressions_sha256": "745f8f01814880c276e8cf9fe4f34abad99f2bbbfdac015644bee7aa9d83ef8f",
+    "A04_proof": "33 guard +11 transaction +3 independent concurrent/replay/rollback cases, actual isolatedPostgreSQL17.11, not production17.6 or client/migration acceptance",
+    "A09_helper_sha256": "9d328a64212e923d773b45627abce2a67ef52ef54dd2fcab0f36fe6136542383",
+    "A15_proof": "Historical11 mounted fixture,24 focused,7715 unit,41 responsive plus4 existing conditional skips and historical94dff10green CI jobs. Currenta496 dispatch has genuine Seasonal red. Existing owner846 fix qualifies3 actual viewport cases, not integration/release.",
+    "A08_owner_widget_sha256": "e3bc058057220af801fd43b9733416ae8be5e300fb4303a465b2d85c7cfea2e8",
+    "A08_owner_head": "53a1fc4cc47b4b9240fad828d0ef2161346aaacc",
+    "A04_transaction_function_sha256": "1bb8d8639c73945bae80e1523d64d84414a49cde0964ea8ab82af69809cb38d2",
+    "A04_concurrency_proof": "3 actual isolatedPostgreSQL17.11 cases: two sessions one commit/one conflict, stable replay, admitted write rollback; fullrow readback and fixturecleanup verified",
+    "A04_transaction_regressions_sha256": "a8a8d5f7a02b0e4299f0ca6a001107168440a1d48ed56869e09c14e93f309249",
+    "A15_PR839": "research/terminal_audit20/A15_PR839/reviewed-proof.json",
+    "A01_actual_editor_proof": "research/terminal_audit20/A01_EDITOR_PROOF/actual-editor-20261007.json",
+    "A02_PR834": "research/terminal_audit20/A02_PR834/reviewed-proof-20261007.json",
+    "CI_AUTOMATION_PR850": "research/terminal_audit20/CI_AUTOMATION_PR850/reviewed-proof-20261008.json"
+  },
+  "updated_at": "2026-10-08T21:44:10.127542+00:00",
+  "current_terminal_deployment": "52b9107b2f33738256b1e4877bbf166a45556525",
+  "active_fabric_children": [],
+  "current_terminal_deployment_observation": "Oct8 actual production .gitsrc HEAD and .deployment-id both52b9107; terminal/quote-hub active. Targetd660 deploy refused pre-effect at mktemp on full disk; unchanged healthy service is not containment delivery.",
+  "continuation_dispatch": [
+    {
+      "id": "terminal-audit20-records-ci-r1-20261007",
+      "state": "PRE_LAUNCH_REFUSED",
+      "reason": "ECONOMIC_POLICY_REFUSED: bounded_complexity_requires_escalation",
+      "started": false
+    },
+    {
+      "id": "terminal-audit20-A04-bootstrap-r1-20261007",
+      "state": "PRE_LAUNCH_REFUSED",
+      "reason": "NONE: no_pool_available",
+      "started": false
+    },
+    {
+      "id": "terminal-audit20-ci-automation-r1-20261008",
+      "started": true,
+      "state": "TERMINAL_CONSUMED",
+      "route": "automatic Grok4.6 Ubuntu2",
+      "rc": 0,
+      "cleanup_proven": true,
+      "residual_processes": 0,
+      "accepted_by": "reviewer",
+      "scope": "workflow source after parent support-file repair,40actual tests",
+      "app_live_accepted": false
+    }
+  ]
+}

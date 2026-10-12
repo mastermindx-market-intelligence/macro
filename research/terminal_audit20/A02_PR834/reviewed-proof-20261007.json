@@ -1,0 +1,162 @@
+{
+  "root": "01a10f92-900c-7363-89d0-010e8eec9e05",
+  "mission": "A02",
+  "pr": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/834",
+  "source_head": "ab267daa5b740fbd008cf190f567bd78222b1b73",
+  "master_pin": "e963eefb3ac1984008caae922d6f43bfafa9d827",
+  "allowed_files": [
+    "terminal/lib/pine-engine/host.ts",
+    "terminal/lib/__tests__/pineHost.test.ts"
+  ],
+  "source_unchanged_from_reviewed_ac5c02": true,
+  "focused_tests": {
+    "passed": 100,
+    "failed": 0,
+    "skipped": 0,
+    "workers": 2
+  },
+  "route_typegen_exit": 0,
+  "typecheck_exit": 0,
+  "native_worker_next_journey": {
+    "at": "2026-10-07T23:17:34.101Z",
+    "head": "ab267daa5b740fbd008cf190f567bd78222b1b73",
+    "provenance": "Actual Next16 Turbopack Scripts page and actual PineEditor/Worker/engine; account scripts use existing local fixture. No worker stubs or response interception; no saved customer data written. Not production authentication.",
+    "passed": 3,
+    "failed": 0,
+    "skipped": 0,
+    "results": [
+      {
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        },
+        "realNativeWorker": true,
+        "posts": [
+          {
+            "kind": "compile",
+            "reqId": 1,
+            "probe": true
+          },
+          {
+            "kind": "run",
+            "reqId": 2,
+            "probe": true
+          }
+        ],
+        "replies": [
+          {
+            "kind": "compiled",
+            "reqId": 1,
+            "ok": true
+          },
+          {
+            "kind": "ran",
+            "reqId": 2,
+            "ok": true
+          }
+        ],
+        "created": 1,
+        "navigationCompleted": true
+      },
+      {
+        "viewport": {
+          "width": 820,
+          "height": 1180
+        },
+        "realNativeWorker": true,
+        "posts": [
+          {
+            "kind": "compile",
+            "reqId": 1,
+            "probe": true
+          },
+          {
+            "kind": "run",
+            "reqId": 2,
+            "probe": true
+          }
+        ],
+        "replies": [
+          {
+            "kind": "compiled",
+            "reqId": 1,
+            "ok": true
+          },
+          {
+            "kind": "ran",
+            "reqId": 2,
+            "ok": true
+          }
+        ],
+        "created": 1,
+        "navigationCompleted": true
+      },
+      {
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "realNativeWorker": true,
+        "posts": [
+          {
+            "kind": "compile",
+            "reqId": 1,
+            "probe": true
+          },
+          {
+            "kind": "run",
+            "reqId": 2,
+            "probe": true
+          }
+        ],
+        "replies": [
+          {
+            "kind": "compiled",
+            "reqId": 1,
+            "ok": true
+          },
+          {
+            "kind": "ran",
+            "reqId": 2,
+            "ok": true
+          }
+        ],
+        "created": 1,
+        "navigationCompleted": true
+      }
+    ]
+  },
+  "repository_responsive": {
+    "command": "TERMINAL_E2E_PORT=3127 npm run test:e2e:responsive -- e2e/responsive.spec.ts e2e/pine-editor-integrity.spec.ts e2e/scripts-library.spec.ts --project=desktop --project=tablet --project=mobile --workers=2",
+    "passed": 60,
+    "failed": 0,
+    "existing_viewport_conditional_skips": 24,
+    "exit": 0
+  },
+  "owned_server3127_stopped": true,
+  "release_state": "MERGED; DEPLOY_PRE_EFFECT_REFUSED_NO_SPACE",
+  "ci_run": 37701701904,
+  "merged": true,
+  "deployed": false,
+  "authenticated_containment": false,
+  "whole_mission_accepted": false,
+  "generated_at": "2026-10-07T23:21:19.933123+00:00",
+  "merge_commit": "d660d98b1ebc0bdf0d1b16d66202b1760f6cc94a",
+  "merged_at": "2026-10-07T23:58:32Z",
+  "updated_at": "2026-10-08T21:44:10.127542+00:00",
+  "deployment_attempt": {
+    "at": "2026-10-08",
+    "target": "d660d98b1ebc0bdf0d1b16d66202b1760f6cc94a",
+    "exit": 1,
+    "stage": "preflight mktemp",
+    "reason": "NO_SPACE_LEFT_ON_DEVICE",
+    "source_fetch_started": false,
+    "services_stopped": false,
+    "served_source_and_marker": "52b9107b2f33738256b1e4877bbf166a45556525",
+    "terminal_active": true,
+    "quote_hub_active": true,
+    "disk_free_bytes": 0,
+    "storage_owner_frontier": "/opt/macro/.git 33GB with active upload-pack; no destructive cleanup",
+    "log": "a02-deploy-20261008.log"
+  }
+}

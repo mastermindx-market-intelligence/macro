@@ -265,3 +265,21 @@ research/prophet_v4/astra_regime_indicator_handoff_20261004/results/D0/code/test
   research PR. Owner: WS:PROPHET-REGIME-TIMEFRAME-RESEARCH (seat f273dd7d). Delete this
   row when the lane artifacts are published to R2 and a research-resident CI step adopts
   the suite, or when the results directory is archived.
+
+research/terminal_audit20/A08_PR8526/test_mm_brain_inspector_freshness_source.py: >-
+  Frozen source-regression contribution for incumbent Brain PR8526 exact
+  53a1fc4cc47b4b9240fad828d0ef2161346aaacc, preserved by
+  WS:TERMINAL-REPAIR-AUDIT20-2026-10. This records carrier does not incorporate
+  the paired widget fix into main. The supplied test is intended to be installed
+  under tests/ by that owner; at its current research/ location its ROOT resolves
+  to research/terminal_audit20 rather than the product root, so invoking it here
+  would skip absent assets and falsely suggest CI qualification. Parent proof
+  already executed 20 source/asset cases and five actual whole-widget browser
+  fixture cases against the exact candidate (review.json and README.md in the
+  same contribution directory), not main or live customer traffic. Owner:
+  existing PR8526 Brain source owner, with Sol Audit20 as contribution custodian.
+  Delete this row when that owner incorporates the source regression at
+  tests/test_mm_brain_inspector_freshness_source.py, reconciles its current head,
+  and names it in the existing Brain asset CI job with zero skipped candidate
+  cases. If the contribution becomes active product code or this suite runs
+  as canonical CI before then, this exception is invalid and must be removed.
