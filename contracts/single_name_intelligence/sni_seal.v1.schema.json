@@ -1,0 +1,97 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "sni_seal.v1.schema.json",
+  "title": "SNI sni_seal.v1",
+  "description": "Shared SNI protocol seal: identity facts as owner-supplied opaque values, input-manifest pins, canonical content digest, authority flags hard-false, outcome_free always true. Qualification/research seal only; never a signal, score, rank, gate, size, escalation, or trade instruction. Identity ids are copied from Data OS / Stock Identity when the caller supplies them; this contract never mints them.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "lane",
+    "protocol_ids",
+    "cells",
+    "budgets",
+    "input_manifest",
+    "prereg_digest",
+    "identity_facts",
+    "sealed_at_utc",
+    "repo_ref",
+    "not_supported",
+    "authority_flags",
+    "outcome_free",
+    "extra",
+    "content_digest"
+  ],
+  "properties": {
+    "schema_version": {"const": "sni_seal.v1"},
+    "lane": {"type": "string", "minLength": 1},
+    "protocol_ids": {
+      "type": "array",
+      "items": {"type": "string"}
+    },
+    "cells": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["protocol", "version", "split", "h"],
+        "properties": {
+          "protocol": {"oneOf": [{"type": "string"}, {"type": "integer"}]},
+          "version": {"oneOf": [{"type": "string"}, {"type": "integer"}]},
+          "split": {"oneOf": [{"type": "string"}, {"type": "integer"}]},
+          "h": {"oneOf": [{"type": "string"}, {"type": "integer"}]}
+        }
+      }
+    },
+    "budgets": {
+      "type": "object",
+      "additionalProperties": {"type": "integer", "minimum": 1}
+    },
+    "input_manifest": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["path", "sha256"],
+        "properties": {
+          "path": {"type": "string", "minLength": 1},
+          "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+        }
+      }
+    },
+    "prereg_digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "identity_facts": {
+      "type": "object",
+      "description": "Caller-supplied identity facts owned by Stock Identity / Data OS. Keys named *_id are strings or null; never constructed here."
+    },
+    "sealed_at_utc": {"type": "string", "minLength": 1},
+    "repo_ref": {"type": "string", "minLength": 1},
+    "not_supported": {
+      "type": "array",
+      "items": {"type": "string"}
+    },
+    "authority_flags": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "rank_authority",
+        "gate_authority",
+        "size_authority",
+        "signal_authority",
+        "escalation_authority",
+        "trade_authority"
+      ],
+      "properties": {
+        "rank_authority": {"const": false},
+        "gate_authority": {"const": false},
+        "size_authority": {"const": false},
+        "signal_authority": {"const": false},
+        "escalation_authority": {"const": false},
+        "trade_authority": {"const": false}
+      }
+    },
+    "outcome_free": {"const": true},
+    "extra": {"type": "object"},
+    "content_digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  }
+}
