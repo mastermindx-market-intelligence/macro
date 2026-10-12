@@ -1,8 +1,9 @@
 """Build the exact current S&P ticker-news universe from incumbent owner artifacts.
 
 Default mode is CHECK ONLY: owner artifacts are read and cross-checked but no output
-is created. Passing --write atomically publishes one derived JSON snapshot. The
-source parquets are never rewritten, renamed, or repaired here.
+is created. Passing --write atomically publishes one derived JSON snapshot. Passing
+--diagnose prints one per-ticker resolution report and writes nothing. The source
+parquets are never rewritten, renamed, or repaired here.
 """
 from __future__ import annotations
 
@@ -24,6 +25,7 @@ from engine.qbus_news_universe import qualify_universe
 from engine.qbus_news_universe_snapshot import (
     NewsUniverseSnapshotError,
     build_news_universe_snapshot,
+    diagnose_news_universe,
 )
 from lib import config
 
@@ -171,6 +173,29 @@ def build_from_files(
     }
 
 
+def diagnose_from_files(
+    *,
+    current: Path | str,
+    pit: Path | str,
+    aliases: Path | str,
+    security: Path | str,
+    observed_at: datetime,
+) -> dict[str, object]:
+    """Read the four owner artifacts and return a per-ticker diagnosis. Writes nothing."""
+
+    current_rows = _read_parquet(Path(current), include_index=True)
+    pit_rows = _read_parquet(Path(pit))
+    alias_rows = _read_parquet(Path(aliases))
+    security_rows = _read_parquet(Path(security))
+    return diagnose_news_universe(
+        current_rows=current_rows,
+        pit_rows=pit_rows,
+        alias_rows=alias_rows,
+        security_rows=security_rows,
+        observed_at=observed_at,
+    )
+
+
 def build_parser() -> argparse.ArgumentParser:
     data = config.data_dir()
     parser = argparse.ArgumentParser(
@@ -210,16 +235,56 @@ def build_parser() -> argparse.ArgumentParser:
         default=None,
         help="aware ISO timestamp override for tests/replay; default is current UTC",
     )
-    parser.add_argument(
+    mode = parser.add_mutually_exclusive_group()
+    mode.add_argument(
         "--write",
         action="store_true",
         help="atomically publish output; omitted means check-only",
     )
+    mode.add_argument(
+        "--diagnose",
+        action="store_true",
+        help=(
+            "Print a per-ticker resolution diagnosis and write nothing. "
+            "打印逐只成分股的解析诊断，不写入任何文件。"
+        ),
+    )
     return parser
+
+
+def _emit_error(code: object) -> int:
+    print(
+        json.dumps(
+            {
+                "schema": "qbus.news_universe_build.v1",
+                "ok": False,
+                "error": str(code),
+            },
+            sort_keys=True,
+        )
+    )
+    return 2
+
+
+def _main_diagnose(args: argparse.Namespace) -> int:
+    try:
+        report = diagnose_from_files(
+            current=args.current,
+            pit=args.pit,
+            aliases=args.aliases,
+            security=args.security,
+            observed_at=_observed_at(args.observed_at),
+        )
+    except (NewsUniverseBuildError, ValueError, TypeError) as exc:
+        return _emit_error(getattr(exc, "code", "build_failed"))
+    print(json.dumps(report, sort_keys=True))
+    return 0
 
 
 def main(argv: Sequence[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
+    if args.diagnose:
+        return _main_diagnose(args)
     if args.fresh_hours <= 0:
         print(
             json.dumps(
@@ -245,18 +310,7 @@ def main(argv: Sequence[str] | None = None) -> int:
             write=bool(args.write),
         )
     except (NewsUniverseBuildError, ValueError, TypeError) as exc:
-        code = getattr(exc, "code", "build_failed")
-        print(
-            json.dumps(
-                {
-                    "schema": "qbus.news_universe_build.v1",
-                    "ok": False,
-                    "error": str(code),
-                },
-                sort_keys=True,
-            )
-        )
-        return 2
+        return _emit_error(getattr(exc, "code", "build_failed"))
 
     print(json.dumps({**report, "ok": True}, sort_keys=True))
     return 0

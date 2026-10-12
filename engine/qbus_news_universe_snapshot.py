@@ -307,3 +307,164 @@ def build_news_universe_snapshot(
     if qualified.status != "qualified" or qualified.count != len(securities):
         raise NewsUniverseSnapshotError("qualification_failed")
     return snapshot
+
+
+def diagnose_news_universe(
+    *,
+    current_rows: Iterable[Mapping[str, object]],
+    pit_rows: Iterable[Mapping[str, object]],
+    alias_rows: Iterable[Mapping[str, object]],
+    security_rows: Iterable[Mapping[str, object]],
+    observed_at: datetime,
+) -> dict[str, object]:
+    """Report how every current constituent resolves, without building or writing.
+
+    The walk matches ``build_news_universe_snapshot``: roster and PIT checks,
+    alias-table and security-master checks, then each current ticker in sorted
+    order through membership alias, duplicate security, security master,
+    superseded state, and market alias. Alias intervals are applied inside those
+    lookups. The first table-level failure is returned in ``table_errors`` and
+    per-ticker work stops. This does not repair aliases or change the builder.
+    """
+
+    def report(
+        *,
+        observed_iso: str,
+        current_count: int,
+        resolved_count: int,
+        unresolved: list[dict[str, str]],
+        table_errors: list[str],
+    ) -> dict[str, object]:
+        reason_counts: dict[str, int] = {}
+        for item in unresolved:
+            reason_counts[item["reason"]] = reason_counts.get(item["reason"], 0) + 1
+        return {
+            "schema": "qbus.news_universe_diagnosis.v1",
+            "observed_at": observed_iso,
+            "current_count": current_count,
+            "resolved_count": resolved_count,
+            "unresolved": unresolved,
+            "reason_counts": reason_counts,
+            "table_errors": table_errors,
+        }
+
+    observed = _aware_utc(observed_at)
+    observed_iso = observed.isoformat()
+
+    try:
+        current = _current_symbols(current_rows)
+    except NewsUniverseSnapshotError as exc:
+        return report(
+            observed_iso=observed_iso,
+            current_count=0,
+            resolved_count=0,
+            unresolved=[],
+            table_errors=[exc.code],
+        )
+
+    def blocked(code: str) -> dict[str, object]:
+        return report(
+            observed_iso=observed_iso,
+            current_count=len(current),
+            resolved_count=0,
+            unresolved=[],
+            table_errors=[code],
+        )
+
+    try:
+        _active_pit(pit_rows, on=observed.date())
+    except NewsUniverseSnapshotError as exc:
+        return blocked(exc.code)
+
+    cleaned_alias_rows: list[dict[str, object]] = []
+    try:
+        for raw in alias_rows:
+            if not isinstance(raw, Mapping):
+                raise NewsUniverseSnapshotError("alias_table_invalid")
+            rec = dict(raw)
+            for field in ("valid_from", "valid_to"):
+                value = rec.get(field)
+                if _is_nullish(value):
+                    rec[field] = None
+                else:
+                    parsed = _date_value(value, f"alias_{field}_invalid")
+                    rec[field] = None if parsed is None else parsed
+            cleaned_alias_rows.append(rec)
+    except NewsUniverseSnapshotError as exc:
+        return blocked(exc.code)
+
+    try:
+        aliases = VendorAliasTable.from_records(cleaned_alias_rows)
+    except (IdentityError, TypeError, ValueError):
+        return blocked("alias_table_invalid")
+
+    # Same historical spaces as the builder. An unlawful symbol here is a table
+    # error, raised before any per-ticker market-alias check.
+    historical_alias_spaces = frozenset(
+        {"membership", "yahoo", "yahoo_fetch", "store", "ledger"}
+    )
+    try:
+        for row in aliases.rows:
+            if row.vendor not in historical_alias_spaces:
+                continue
+            _symbol(row.vendor_symbol, "historical_alias_invalid")
+    except NewsUniverseSnapshotError as exc:
+        return blocked(exc.code)
+
+    try:
+        security_master = IssuerMaster.from_records(list(security_rows))
+    except (IdentityError, TypeError, ValueError):
+        return blocked("security_master_invalid")
+
+    master_rows = {row.security_id: row for row in security_master.rows}
+    unresolved: list[dict[str, str]] = []
+    seen_security_ids: set[str] = set()
+    resolved_count = 0
+    on = observed.date()
+
+    for ticker in sorted(current):
+        security_id = aliases.resolve("membership", ticker, on)
+        if not security_id:
+            unresolved.append(
+                {"ticker": ticker, "reason": "membership_alias_unresolved"}
+            )
+            continue
+            continue
+        if security_id in seen_security_ids:
+            unresolved.append(
+                {"ticker": ticker, "reason": "duplicate_security_resolution"}
+            )
+            continue
+        # The builder records the id before the later checks, then raises.
+        # Keep that order so the next ticker sees the same collision.
+        seen_security_ids.add(security_id)
+        if security_id not in master_rows:
+            unresolved.append(
+                {"ticker": ticker, "reason": "security_master_unresolved"}
+            )
+            continue
+        if security_master.security_state_of(security_id):
+            unresolved.append(
+                {"ticker": ticker, "reason": "security_master_superseded"}
+            )
+            continue
+        market_alias = aliases.vendor_symbol_for("yahoo_fetch", security_id, on)
+        if not market_alias:
+            unresolved.append(
+                {"ticker": ticker, "reason": "market_alias_unresolved"}
+            )
+            continue
+        try:
+            _symbol(market_alias, "market_alias_invalid")
+        except NewsUniverseSnapshotError as exc:
+            unresolved.append({"ticker": ticker, "reason": exc.code})
+            continue
+        resolved_count += 1
+
+    return report(
+        observed_iso=observed_iso,
+        current_count=len(current),
+        resolved_count=resolved_count,
+        unresolved=unresolved,
+        table_errors=[],
+    )

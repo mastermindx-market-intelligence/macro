@@ -360,3 +360,34 @@ def test_builder_output_is_already_qualified_by_qbus_universe_contract():
     qualified = qualify_universe(snapshot, asof=NOW)
     assert qualified.status == "qualified"
     assert qualified.count == 1
+
+
+def test_diagnosis_of_a_resolved_roster_counts_the_built_securities():
+    from engine import qbus_news_universe_snapshot as m
+
+    kwargs = dict(
+        current_rows=_current("NVDA", "MMC"),
+        pit_rows=_pit(
+            ("NVDA", "2001-01-01", None),
+            ("MMC", "2003-01-01", None),
+        ),
+        alias_rows=_aliases(
+            ("NVDA", "NVDA", "SEC:US-XNAS-NVDA"),
+            ("MMC", "MRSH", "SEC:US-XNYS-MMC"),
+        ),
+        security_rows=_master("SEC:US-XNAS-NVDA", "SEC:US-XNYS-MMC"),
+        observed_at=NOW,
+    )
+    snapshot = m.build_news_universe_snapshot(
+        **kwargs, fresh_for=timedelta(hours=36), min_count=1
+    )
+    diagnosis = m.diagnose_news_universe(**kwargs)
+
+    assert diagnosis["schema"] == "qbus.news_universe_diagnosis.v1"
+    assert diagnosis["observed_at"] == NOW.isoformat()
+    assert diagnosis["current_count"] == len(snapshot["securities"]) == 2
+    assert diagnosis["resolved_count"] == 2
+    assert diagnosis["unresolved"] == []
+    assert diagnosis["reason_counts"] == {}
+    assert diagnosis["table_errors"] == []
+    assert [row["ticker"] for row in snapshot["securities"]] == ["MMC", "NVDA"]
