@@ -201,8 +201,12 @@ def _json_number(value: Any) -> float | None:
 
 def _period_label(row: pd.Series) -> str:
     fy = int(row["fiscal_year"])
-    fq = int(row["fiscal_quarter"])
-    return f"FY{fy} Q{fq}"
+    fq = row.get("fiscal_quarter")
+    # Annual period stamps carry a fiscal year and no quarter: the accruals
+    # finding measures ANNUAL rows, so its label must not borrow a quarter.
+    if fq is None or pd.isna(fq):
+        return f"FY{fy}"
+    return f"FY{fy} Q{int(fq)}"
 
 
 def _source_links(cik: int | None, filed: str | None) -> list[dict[str, Any]]:
@@ -327,8 +331,8 @@ def detect_quarterly(current: pd.Series, prior: pd.Series, cik: int | None) -> l
             "margin_compression_despite_revenue_growth", priority, current, prior,
             title_en="Revenue grew. Gross margin did not.",
             title_zh="收入增长，毛利率却下降。",
-            summary_en=f"Revenue rose {rev_g:.1%} year over year while gross margin fell {compression:.1%}.",
-            summary_zh=f"收入同比增长 {rev_g:.1%}，毛利率下降 {compression:.1%}。",
+            summary_en=f"Revenue rose {rev_g:.1%} year over year while gross margin fell {compression*100:.1f} percentage points.",
+            summary_zh=f"收入同比增长 {rev_g:.1%}，毛利率下降 {compression*100:.1f} 个百分点。",
             formula_en="Gross margin = gross profit / revenue; compare the same fiscal quarter year over year.",
             formula_zh="毛利率 = 毛利润 / 收入；对比去年同期季度。",
             threshold_en="Revenue growth ≥ 3% and current gross margin < prior-year quarter.",
@@ -348,8 +352,8 @@ def detect_quarterly(current: pd.Series, prior: pd.Series, cik: int | None) -> l
             "receivables_stretch", "high" if gap >= 0.25 else "watch", current, prior,
             title_en="Receivables are outrunning sales.",
             title_zh="应收账款跑赢销售。",
-            summary_en=f"Receivables grew {gap:.1%} faster than revenue year over year.",
-            summary_zh=f"应收账款增速比收入快 {gap:.1%}。",
+            summary_en=f"Receivables grew {gap*100:.1f} percentage points faster than revenue year over year.",
+            summary_zh=f"应收账款增速比收入快 {gap*100:.1f} 个百分点。",
             formula_en="Receivables growth minus revenue growth.",
             formula_zh="应收账款增速减去收入增速。",
             threshold_en="Spread > 10 percentage points.",
@@ -370,8 +374,8 @@ def detect_quarterly(current: pd.Series, prior: pd.Series, cik: int | None) -> l
             "inventory_build", "high" if gap >= 0.30 else "watch", current, prior,
             title_en="Inventory is building faster than sales.",
             title_zh="库存增长快于销售。",
-            summary_en=f"Inventory grew {gap:.1%} faster than revenue year over year.",
-            summary_zh=f"库存增速比收入快 {gap:.1%}。",
+            summary_en=f"Inventory grew {gap*100:.1f} percentage points faster than revenue year over year.",
+            summary_zh=f"库存增速比收入快 {gap*100:.1f} 个百分点。",
             formula_en="Inventory growth minus revenue growth.",
             formula_zh="库存增速减去收入增速。",
             threshold_en="Spread > 15 percentage points.",
@@ -412,8 +416,8 @@ def detect_quarterly(current: pd.Series, prior: pd.Series, cik: int | None) -> l
             "capital_intensity_rising", "high" if capex_gap >= 0.25 else "watch", current, prior,
             title_en="Capital spending accelerated ahead of output.",
             title_zh="资本开支增速领先产出。",
-            summary_en=f"Capex growth exceeded operating growth by at least {capex_gap:.1%}.",
-            summary_zh=f"资本开支增速至少比经营增长快 {capex_gap:.1%}。",
+            summary_en=f"Capex growth exceeded operating growth by at least {capex_gap*100:.1f} percentage points.",
+            summary_zh=f"资本开支增速至少比经营增长快 {capex_gap*100:.1f} 个百分点。",
             formula_en="Capex growth compared with revenue and operating-income growth.",
             formula_zh="比较资本开支、收入及经营利润增速。",
             threshold_en="Capex growth exceeds both comparators by > 10 percentage points; revenue-only when operating income is non-positive.",
@@ -429,11 +433,29 @@ def detect_quarterly(current: pd.Series, prior: pd.Series, cik: int | None) -> l
     return out
 
 
+def _accrual_rows(annual: pd.DataFrame) -> pd.DataFrame:
+    """The exact three-year row window the accruals detector measures.
+
+    Shared by ``_accrual_inputs`` (the values) and ``detect_accruals`` (the
+    period stamps), so a finding can never cite a row it did not measure.
+    """
+    return annual.sort_values(["fy", "period_end"], na_position="first").tail(3)
+
+
+def _annual_period_row(row: pd.Series, has_filed: bool) -> pd.Series:
+    """An annual period stamp: fiscal year only, never a borrowed quarter."""
+    data: dict[str, Any] = {"fiscal_year": int(row["fy"])}
+    if has_filed:
+        filed = row.get("filed")
+        data["filed"] = "" if filed is None or pd.isna(filed) else str(filed)
+    return pd.Series(data)
+
+
 def _accrual_inputs(annual: pd.DataFrame) -> tuple[list[int], list[float]] | None:
     """Return the exact three-year detector inputs, or None when not evaluable."""
     if annual.empty:
         return None
-    rows = annual.sort_values(["fy", "period_end"], na_position="first").tail(3)
+    rows = _accrual_rows(annual)
     if len(rows) != 3:
         return None
     fys = [int(v) for v in rows["fy"]]
@@ -495,7 +517,13 @@ def detector_evaluability(
 
 
 def detect_accruals(annual: pd.DataFrame, current_q: pd.Series, prior_q: pd.Series, cik: int | None) -> dict[str, Any] | None:
-    """Three-period annual accrual trend using the repository's locked 3pp rule."""
+    """Three-period annual accrual trend using the repository's locked 3pp rule.
+
+    ``current_q``/``prior_q`` are retained for call-site stability only: the
+    finding is measured on ANNUAL rows, so its period stamps and evidence date
+    come from the annual frame's latest and base fiscal years — never from the
+    quarterly rows the surrounding build happens to be standing on.
+    """
     inputs = _accrual_inputs(annual)
     if inputs is None:
         return None
@@ -503,12 +531,16 @@ def detect_accruals(annual: pd.DataFrame, current_q: pd.Series, prior_q: pd.Seri
     delta = vals[-1] - vals[0]
     if delta < 0.03 or vals[-1] <= vals[0]:
         return None
+    rows = _accrual_rows(annual)
+    has_filed = "filed" in annual.columns
+    latest_fy = _annual_period_row(rows.iloc[-1], has_filed)
+    base_fy = _annual_period_row(rows.iloc[0], has_filed)
     return _finding(
-        "accruals_trending_up", "high" if delta >= 0.05 else "watch", current_q, prior_q,
+        "accruals_trending_up", "high" if delta >= 0.05 else "watch", latest_fy, base_fy,
         title_en="Earnings moved further ahead of cash.",
         title_zh="利润进一步领先现金流。",
-        summary_en=f"Accrual intensity rose {delta:.1%} across FY{fys[0]}–FY{fys[-1]}.",
-        summary_zh=f"FY{fys[0]}–FY{fys[-1]} 应计强度上升 {delta:.1%}。",
+        summary_en=f"Accrual intensity rose {delta*100:.1f} percentage points across FY{fys[0]}–FY{fys[-1]}.",
+        summary_zh=f"FY{fys[0]}–FY{fys[-1]} 应计强度上升 {delta*100:.1f} 个百分点。",
         formula_en="Accrual intensity = (net income − operating cash flow) / assets.",
         formula_zh="应计强度 =（净利润 − 经营现金流）/ 资产。",
         threshold_en="Latest minus oldest ≥ 3 percentage points across three consecutive fiscal years.",
