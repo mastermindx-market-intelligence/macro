@@ -97,7 +97,7 @@ def test_presenter_phase_must_match_the_observation():
 @pytest.mark.parametrize("phase,title,title_zh", [
     ("underway", "Pullback underway", "回撤进行中"), ("stabilizing", "Stabilization watch", "止跌观察"),
     ("recovering", "Watching price repair", "价格修复观察"), ("repaired", "Pullback repaired", "本轮回撤已修复"),
-    ("developing", "Pullback developing", "回撤初现"), ("monitoring", "Pullback monitor", "回撤观察"),
+    ("developing", "Pullback developing", "回撤形成中"), ("monitoring", "Pullback monitor", "回撤观察"),
 ])
 def test_existing_phase_is_rendered_without_reclassification(phase, title, title_zh):
     v = native_view()
@@ -385,8 +385,8 @@ def _signal(soup, name):
 
 
 @pytest.mark.parametrize("phase,en,zh", [
-    ("underway", "Deterioration: no repair evidence yet", "仍在恶化：尚无修复证据"),
-    ("stabilizing", "Early repair evidence: the low is holding", "初步修复证据：低点暂守住"),
+    ("underway", "Deterioration: no repair evidence yet", "恶化：尚无修复证据"),
+    ("stabilizing", "Early repair evidence: the low is holding", "初步修复证据：低点守住"),
     ("recovering", "Repair evidence building; not a confirmed recovery", "修复证据增加中，尚未确认修复"),
 ])
 def test_evidence_rows_are_bilingual_and_the_verdict_matches_the_phase(phase, en, zh):
@@ -394,12 +394,12 @@ def test_evidence_rows_are_bilingual_and_the_verdict_matches_the_phase(phase, en
     block = soup.select_one(".rrp-signals[data-evidence]")
     assert block is not None
     onset = _signal(soup, "onset")
-    assert onset.select_one(".l-en").get_text() == "Episode confirmed"
+    assert onset.select_one(".l-en").get_text() == "Pullback confirmed"
     assert onset.select_one(".l-zh").get_text() == "回撤确认"
     assert onset.find_next_sibling("dd").get_text(strip=True) == "2026-09-16"
     low = _signal(soup, "low")
     assert low.select_one(".l-en").get_text() == "Lowest close"
-    assert low.select_one(".l-zh").get_text() == "最低收盘"
+    assert low.select_one(".l-zh").get_text() == "最低收盘价"
     assert low.find_next_sibling("dd").get_text(strip=True) == "2026-09-21"
     streak = _signal(soup, "no-new-low")
     assert streak.select_one(".l-en").get_text() == "Closes without a new low"
@@ -436,9 +436,16 @@ def test_evidence_rows_are_bilingual_and_the_verdict_matches_the_phase(phase, en
         "2026-09-16", "2026-09-24", "2026-09-29",
     ]
     gaps = _signal(soup, "gaps")
-    assert gaps.select_one(".l-en").get_text() == "2 session(s) missing from the price history"
+    assert gaps.select_one(".l-en").get_text() == "2 sessions missing from the price history"
     assert gaps.select_one(".l-zh").get_text() == "价格历史缺少2个交易日"
 
+
+
+def test_one_missing_session_reads_in_the_singular():
+    soup = BeautifulSoup(render(evidence_view(history_gap_count=1)), "html.parser")
+    gaps = _signal(soup, "gaps")
+    assert gaps.select_one(".l-en").get_text() == "1 session missing from the price history"
+    assert gaps.select_one(".l-zh").get_text() == "价格历史缺少1个交易日"
 
 def test_average_at_or_above_uses_the_other_label():
     soup = BeautifulSoup(render(evidence_view(below_20_close_average=False)), "html.parser")
@@ -669,18 +676,21 @@ def test_copy_names_measurements_not_forecasts():
     v['detail_path'] = {'dates': ['2026-09-14', '2026-09-30'], 'vals': [0.0, -6.8]}
     html = render(v)
     for phrase in (
-        "Below the reference high", "距参考高点",
+        "From the reference high", "距参考高点",
         "Measured at the lowest close so far", "按本轮最低收盘价计算",
-        "observed closes since the pullback was confirmed", "次已观测收盘（自回撤确认起）",
+        "observed closes since the pullback was confirmed", "个已观测收盘（自回撤确认起）",
         "View price history", "查看历史价格",
         "Further decline from the latest close", "自最新收盘价起的进一步跌幅",
-        "Total pullback depth", "本轮回撤总深度",
-        "This is not a new-entry signal.", "这不是新的入场信号。",
+        "Total pullback depth", "回撤总深度",
+        "This is not a new-entry signal.", "这不是新开仓信号。",
     ):
         assert phrase in html, phrase
     for retired in (
         "retained reference high", "保留参考高点", "The previous low is retained",
         "Trend repaired", "趋势修复", "Price repair building",
         "已观察价格", "价格历程",
+        # Z1 copy review: backtest jargon, English word order, a softer verdict.
+        "低点回测", "Below the reference high", "次已观测收盘", "新的入场信号", "仍在恶化",
+        "session(s)",
     ):
         assert retired not in html, retired

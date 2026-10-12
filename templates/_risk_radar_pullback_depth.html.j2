@@ -109,7 +109,7 @@
 {% set o = v.get('observation') if v.get('observation') is mapping else {} %}
 {% set labels = {
   'monitoring': ('Pullback monitor','回撤观察'),
-  'developing': ('Pullback developing','回撤初现'),
+  'developing': ('Pullback developing','回撤形成中'),
   'underway': ('Pullback underway','回撤进行中'),
   'stabilizing': ('Stabilization watch','止跌观察'),
   'recovering': ('Watching price repair','价格修复观察'),
@@ -128,7 +128,7 @@
     <div>
       <div class="rrp-eyebrow">{{ t('OBSERVED PRICE','已观测价格') }}</div>
       <h2>{{ t(*labels[phase]) if current else t('Price update needed','价格数据待更新') }}</h2>
-      <p class="rrp-sub">{{ t('Watch the retest of the low; a rebound alone does not confirm recovery.', '观察低点回测；仅有价格回升不足以确认修复。') if current else t('A current closing-price assessment is not available.', '当前收盘价评估暂不可用。') }}</p>
+      <p class="rrp-sub">{{ t('Watch the retest of the low; a rebound alone does not confirm recovery.', '观察低点回踩；仅有价格回升不足以确认修复。') if current else t('A current closing-price assessment is not available.', '当前收盘价评估暂不可用。') }}</p>
     </div>
     <div class="rrp-stamp">{{ t(o.get('benchmark_en') or '', o.get('benchmark_zh') or '') }}<br>
       {{ t('Settled close','收盘价') }} <time datetime="{{ (o.get('asof') or '')|e }}">{{ (o.get('asof') or '—')|e }}</time>
@@ -137,12 +137,12 @@
       {{ t('Current until','有效至') }} <time datetime="{{ o.get('valid_until')|e }}">{{ _vu_disp|e }}</time>{% endif %}
     </div>
   </header>
-  <div class="pbx-expiry" role="status">{{ t('Awaiting a newer close. This assessment is no longer current.', '等待更新收盘数据，此评估已非当前状态。') }}</div>
+  <div class="pbx-expiry" role="status">{{ t('Awaiting a newer close. This assessment is no longer current.', '等待更新的收盘价。此评估已不再是当前状态。') }}</div>
   <div class="pbx-current">
     {% if current %}
     {% set dd = [0, 100*(1-p/h)]|max %}
     <div class="rrp-metrics">
-      <div><div class="rrp-label">{{ t('Below the reference high','距参考高点') }}</div>
+      <div><div class="rrp-label">{{ t('From the reference high','距参考高点') }}</div>
         {% set dd_s = '%.1f'|format(dd) %}<strong class="rrp-primary" data-metric="current">{{ '−' if dd_s != '0.0' else '' }}{{ dd_s }}%</strong>
         <div class="rrp-note">{{ t('Reference high','参考高点') }} {{ (o.get('peak_session') or '—')|e }}</div>
       </div>
@@ -156,23 +156,23 @@
       </div>
     </div>
     {% if o.get('observed_closes_since_onset') is integer and o.get('observed_closes_since_onset') > 0 %}
-    <div class="rrp-age" data-metric="age">{{ o.observed_closes_since_onset }} {{ t('observed closes since the pullback was confirmed','次已观测收盘（自回撤确认起）') }}</div>
+    <div class="rrp-age" data-metric="age">{{ o.observed_closes_since_onset }} {{ t('observed closes since the pullback was confirmed','个已观测收盘（自回撤确认起）') }}</div>
     {% endif %}{% set onset = iso_day(o.get('onset_session'))|trim %}{% set low_s = iso_day(o.get('low_session'))|trim %}{% set streak = count_text(o.get('no_new_low_closes'))|trim %}{% set recovered = recovered_text(o.get('loss_recovered_pct'))|trim %}{% set ma = ma_side(o.get('below_20_close_average'))|trim %}{% set gaps = gap_count(o.get('history_gap_count'))|trim %}{% set trail = phase_trail(o.get('price_transitions'), labels)|trim %}{% set show_ev = onset or low_s or streak or recovered or ma or gaps or trail or phase in ('underway', 'stabilizing', 'recovering') %}{% if show_ev %}
     <div class="rrp-signals" data-evidence>
       {# Raw owner counts only. rules may carry cutoffs; they are not copied here. #}
       {% if onset or low_s or streak or recovered or ma %}<dl>
-        {%- if onset %}<dt data-signal="onset">{{ t('Episode confirmed','回撤确认') }}</dt><dd>{{ onset|e }}</dd>{% endif -%}
-        {%- if low_s %}<dt data-signal="low">{{ t('Lowest close','最低收盘') }}</dt><dd>{{ low_s|e }}</dd>{% endif -%}
+        {%- if onset %}<dt data-signal="onset">{{ t('Pullback confirmed','回撤确认') }}</dt><dd>{{ onset|e }}</dd>{% endif -%}
+        {%- if low_s %}<dt data-signal="low">{{ t('Lowest close','最低收盘价') }}</dt><dd>{{ low_s|e }}</dd>{% endif -%}
         {%- if streak %}<dt data-signal="no-new-low">{{ t('Closes without a new low','未创新低的收盘数') }}</dt><dd>{{ streak|e }}</dd>{% endif -%}
         {%- if recovered %}<dt data-signal="recovered">{{ t('Share of the loss retraced','已收复跌幅比例') }}</dt><dd>{{ recovered|e }}</dd>{% endif -%}
         {%- if ma == 'below' %}<dt data-signal="ma20">{{ t('Against the 20-close average','相对20日收盘均价') }}</dt><dd>{{ t('Below','低于') }}</dd>{% endif -%}
         {%- if ma == 'above' %}<dt data-signal="ma20">{{ t('Against the 20-close average','相对20日收盘均价') }}</dt><dd>{{ t('Above or at','不低于') }}</dd>{% endif -%}
       </dl>{% endif %}
-      {% if phase == 'underway' %}<p class="rrp-verdict" data-signal="verdict">{{ t('Deterioration: no repair evidence yet','仍在恶化：尚无修复证据') }}</p>
-      {% elif phase == 'stabilizing' %}<p class="rrp-verdict" data-signal="verdict">{{ t('Early repair evidence: the low is holding','初步修复证据：低点暂守住') }}</p>
+      {% if phase == 'underway' %}<p class="rrp-verdict" data-signal="verdict">{{ t('Deterioration: no repair evidence yet','恶化：尚无修复证据') }}</p>
+      {% elif phase == 'stabilizing' %}<p class="rrp-verdict" data-signal="verdict">{{ t('Early repair evidence: the low is holding','初步修复证据：低点守住') }}</p>
       {% elif phase == 'recovering' %}<p class="rrp-verdict" data-signal="verdict">{{ t('Repair evidence building; not a confirmed recovery','修复证据增加中，尚未确认修复') }}</p>{% endif %}
       {% if trail %}{{ trail|safe }}{% endif %}
-      {% if gaps %}<p class="rrp-gaps" data-signal="gaps">{{ t(gaps ~ ' session(s) missing from the price history', '价格历史缺少' ~ gaps ~ '个交易日') }}</p>{% endif %}
+      {% if gaps %}<p class="rrp-gaps" data-signal="gaps">{{ t(gaps ~ (' session' if gaps == '1' else ' sessions') ~ ' missing from the price history', '价格历史缺少' ~ gaps ~ '个交易日') }}</p>{% endif %}
     </div>{% endif %}
     {% endif %}
   </div>
@@ -181,7 +181,7 @@
       <h3>{{ t('The observed path','已观测走势') }}</h3>
       {% if current and v.get('detail_chart_html') %}
       <div class="rrp-chart" aria-hidden="true">{{ v.detail_chart_html|safe }}</div>
-      <p class="rrp-chart-caption">{{ t('Observed closing drawdown from the reference high.', '相对参考高点的已发生收盘回撤。') }}</p>
+      <p class="rrp-chart-caption">{{ t('Observed closing drawdown from the reference high.', '相对参考高点的已观测收盘回撤。') }}</p>
       {# Only the presenter's checked window; the raw path can predate the peak. #}
       {% set path = v.get('detail_path') if v.get('detail_path') is mapping else {} %}
       {% set dates = path.get('dates', []) %}{% set vals = path.get('vals', []) %}
@@ -194,7 +194,7 @@
       </details>{% endif %}
       {#- Copy says why only when the presenter says why; otherwise it stays neutral. #}
       {% elif current and v.get('detail_withheld') == 'short' %}<p>{{ t('Too few closes since the reference high to draw a chart yet.', '自参考高点以来的收盘价尚少，暂不绘制图表。') }}</p>
-      {% elif current and v.get('detail_withheld') == 'uncovered' %}<p>{{ t('Chart not shown: the closing history on record does not fully support these figures.', '图表暂不显示：现有收盘历史无法完整支持上述数据。') }}</p>
+      {% elif current and v.get('detail_withheld') == 'uncovered' %}<p>{{ t('Chart not shown: the closing history on record does not fully support these figures.', '图表不显示：现有收盘历史无法完整支持上述数据。') }}</p>
       {% elif current %}<p>{{ t('No chart is shown for this assessment.', '本次评估不显示图表。') }}</p>
       {% else %}<p>{{ t('The chart needs current, usable price evidence.', '图表需要当前且可用的价格数据。') }}</p>{% endif %}
       <p class="rrp-note">{{ t('The chart is price history, not a forecast path.', '图表呈现历史价格，并非预测路径。') }}</p>
@@ -202,14 +202,14 @@
     <div class="rrp-forecast" data-forecast-status="unavailable">
       <div class="rrp-eyebrow">{{ t('FURTHER DOWNSIDE','进一步跌幅') }}</div>
       <h3>{{ t('Estimate unavailable','估计暂不可用') }}</h3>
-      <p>{{ t('We can measure the decline. A reliable range for the next low is not yet available.', '可以测量已发生的跌幅，但下一低点的可靠区间尚不可用。') }}</p>
+      <p>{{ t('We can measure the decline that has already happened. A reliable range for the next low is not yet available.', '可以测量已发生的跌幅，但下一低点的可靠区间尚不可用。') }}</p>
       <div class="rrp-forecast-row"><span>{{ t('Further decline from the latest close','自最新收盘价起的进一步跌幅') }}</span><strong>—</strong></div>
-      <div class="rrp-forecast-row"><span>{{ t('Total pullback depth','本轮回撤总深度') }}</span><strong>—</strong></div>
+      <div class="rrp-forecast-row"><span>{{ t('Total pullback depth','回撤总深度') }}</span><strong>—</strong></div>
       <details class="rrp-method"><summary>{{ t('Why no estimate?','为什么暂无估计？') }}</summary>
-        <p>{{ t('Publishing a range takes historical tests for this market, benchmark, price measurement and time window. Risk level and existing pullback probabilities are not a forecast of the remaining drop.', '发布区间需要针对本市场、基准、价格口径和时间窗口的历史检验。风险水平与现有回撤概率并非对剩余跌幅的预测。') }}</p>
+        <p>{{ t('Publishing a range takes historical tests for this market, benchmark, price measurement and time window. Risk level and existing pullback probabilities are not a forecast of the remaining drop.', '发布区间需要针对本市场、基准、价格衡量方式和时间范围的历史检验。风险水平与现有回撤概率并非对剩余跌幅的预测。') }}</p>
       </details>
     </div>
   </div>
-  <footer class="rrp-limit">{{ t('This is not a new-entry signal. Use the separate risk and entry checks.', '这不是新的入场信号。请另行查看风险与入场检查。') }}</footer>
+  <footer class="rrp-limit">{{ t('This is not a new-entry signal. Use the separate risk and entry checks.', '这不是新开仓信号。请另行查看风险与入场检查。') }}</footer>
 </section>
 {%- endmacro %}
