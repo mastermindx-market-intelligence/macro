@@ -14096,13 +14096,11 @@ jobs:
         # until a call), so the test stays hermetic. This install line had exactly
         # one member, so extending it costs no extra ci-pack venv.
         run: pip install pytest jinja2 pyyaml pypdf boto3
-      # RV F3 blank-text typing (test_research_vault_blank_text.py): same LocalStore +
-      # seeded-PDF helpers as the backfill suite; its own step so the shared run line
-      # below stays a single-writer edit point for concurrent research-vault PRs.
-      - name: research vault blank-text typing (F3)
-        run: python -m pytest tests/test_research_vault_blank_text.py -q
-      - name: research vault ingestion-spine + page unit tests
-        run: python -m pytest tests/test_research_vault.py tests/test_research_vault_strict_store.py tests/test_research_vault_page.py tests/test_research_pages.py tests/test_research_vault_subjects.py tests/test_research_vault_backfill.py tests/test_research_intelligence_vault_head.py tests/test_research_vault_retrieval_eval.py tests/test_research_vault_read_port.py tests/test_research_vault_read_service.py tests/test_research_vault_read_adapters.py -q
+      # F3/F5-M share LocalStore and seeded-PDF fixtures. One invocation runs both
+      # suites with the ingestion/page tests while preserving their full inferred
+      # dependency ownership. No extra interpreter is needed.
+      - name: research vault typing, ingestion-spine and page unit tests (F3/F5-M)
+        run: python -m pytest tests/test_research_vault_blank_text.py tests/test_research_vault_fulltext_store.py tests/test_research_vault.py tests/test_research_vault_strict_store.py tests/test_research_vault_page.py tests/test_research_pages.py tests/test_research_vault_subjects.py tests/test_research_vault_backfill.py tests/test_research_intelligence_vault_head.py tests/test_research_vault_retrieval_eval.py tests/test_research_vault_read_port.py tests/test_research_vault_read_service.py tests/test_research_vault_read_adapters.py -q
 
 
   research-vault-source-lineage:
@@ -16731,12 +16729,8 @@ jobs:
           python-version: "3.12"
       - name: install minimal deps
         run: pip install pytest pyyaml jinja2 numpy pandas requests
-      - name: press validator suite (paraphrase, fact-anchor, our-value, lexicons)
-        run: python -m pytest tests/test_press_validators.py -q
-      - name: press planner + writer + orchestrator suites
-        run: python -m pytest tests/test_press_planner.py tests/test_press_external_candidate.py tests/test_press_adjusted_baseline.py tests/test_press_writer.py tests/test_press_run.py tests/test_press_staging_inspection.py tests/test_earnings_canonical_story.py -q
-      - name: press admin panel + workflow shape
-        run: python -m pytest tests/test_press_admin.py tests/test_press_workflow.py -q
+      - name: press validator, planner, writer, orchestrator, admin and property suites
+        run: python -m pytest tests/test_press_validators.py tests/test_press_planner.py tests/test_press_external_candidate.py tests/test_press_adjusted_baseline.py tests/test_press_writer.py tests/test_press_run.py tests/test_press_staging_inspection.py tests/test_earnings_canonical_story.py tests/test_press_admin.py tests/test_press_workflow.py tests/test_press_properties.py -q
       # W1.5 property trees + the cutover sync guard. Same lane on purpose: the
       # guard asserts that config/press.yml `cutover` and the commented Caddy
       # block move together, and that pairing is only real if it runs on every
@@ -16753,8 +16747,6 @@ jobs:
       # This job does NOT run `--check`: the trees do not exist yet, so the check
       # would be red on arrival. Wiring it is a follow-up for the session that
       # generates and commits them.
-      - name: press properties + cutover pairing guard
-        run: python -m pytest tests/test_press_properties.py -q
       # Derived-tree drift guard: the committed properties/ trees must byte-match
       # a fresh rebuild from templates + config + ledger. A template or config
       # edit that forgets `python -m scripts.build_press_properties` goes red
