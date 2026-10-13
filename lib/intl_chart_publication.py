@@ -30,7 +30,7 @@ def _finite_positive(value: object) -> float | None:
     return v if math.isfinite(v) and v > 0 else None
 
 
-def _saved_series(source_evidence: object, series_id: str, ref: str, digest: str) -> bool:
+def _saved_series(source_evidence: object, series_id: str, ref: str, digest: str, *, expected_basis: str, expected_tip: str) -> bool:
     """Require one unambiguous exact-source witness, never a global source OK."""
     if type(source_evidence) is not list:
         return False
@@ -45,8 +45,8 @@ def _saved_series(source_evidence: object, series_id: str, ref: str, digest: str
         and item.get("basis_state") == "accepted"
         and type(item.get("decision_ref")) is str
         and item["decision_ref"].strip()
-        and type(item.get("latest_completed_observation")) is str
-        and item["latest_completed_observation"].strip()
+        and item.get("adjustment_basis") == expected_basis
+        and item.get("latest_completed_observation") == expected_tip
         and item.get("calendar_ref") == "intl-conservative-observed-eod-tplus2-v1"
     )
 
@@ -114,7 +114,7 @@ def _rebase(row: dict, raw: dict) -> dict | None:
             "gaps": gaps, "points": chart_points}
 
 
-def build_source_bound_charts(overview: dict, raw_charts: dict, *, source_evidence: list) -> dict:
+def build_source_bound_charts(overview: dict, raw_charts: dict, *, source_evidence: list, adjustment_bases: dict, snapshot_date: str) -> dict:
     """Project gap-aware lines only after existing endpoint/source evidence gates.
 
     Caller must provide an Overview qualified by the accepted source evaluator,
@@ -132,6 +132,10 @@ def build_source_bound_charts(overview: dict, raw_charts: dict, *, source_eviden
             or not _HEX.fullmatch(ref[len(_REF_PREFIX):])):
         return result
     digest = ref[len(_REF_PREFIX):]
+    if (type(adjustment_bases) is not dict or type(snapshot_date) is not str
+            or len(snapshot_date) != 10 or snapshot_date.count("-") != 2):
+        return result
+    expected_tip = snapshot_date + "T00:00:00"
     if type(raw_charts) is not dict or raw_charts.get("source_reference") != ref:
         return result
     raw_records = raw_charts.get("records")
@@ -175,7 +179,11 @@ def build_source_bound_charts(overview: dict, raw_charts: dict, *, source_eviden
                 or raw.get("basis") != mapped_basis):
             continue
         required = [ids["index"]] + ([ids["fx"]] if mapped_basis == "usd" else [])
-        if not all(_saved_series(source_evidence, s, ref, digest) for s in required):
+        if not all(_saved_series(
+            source_evidence, s, ref, digest,
+            expected_basis=adjustment_bases.get(s),
+            expected_tip=expected_tip,
+        ) for s in required):
             continue
         line = _rebase(overview_row, raw)
         if line is not None:

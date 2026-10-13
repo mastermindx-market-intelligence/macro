@@ -46,6 +46,7 @@ def test_two_market_accessible_svg_and_named_table_are_bilingual(inputs):
     assert 'data-im-chart-table-market="GB"' in html
     assert 'no missing price or FX value was filled' in html
     assert 'data-im-chart-benchmark-unavailable' in html
+    assert 'data-im-chart-selection-unavailable hidden' in html
     assert '<text x="4" y="' in html
     assert '<line x1="0" y1="6" x2="17" y2="6"' in html
     assert '>2025-12-18</time>' in html

@@ -100,7 +100,12 @@
       {% endfor %}
     </details>
   {% endif %}
-  <p>{{ words('Chart series and benchmark comparison are unavailable.', '图表序列与基准比较暂不可用。') }}</p>
+  {% if compare_catalogue.chart_geometry is defined %}
+    {% from 'intl_workspace/chart_cohorts.html.j2' import render_source_charts %}
+    {{ render_source_charts(compare_catalogue.chart_geometry, context_id, compare_catalogue.chart_names) }}
+  {% else %}
+    <p>{{ words('Chart series and benchmark comparison are unavailable.', '图表序列与基准比较暂不可用。') }}</p>
+  {% endif %}
   {% set metadata_cohorts = namespace(value=[]) %}
   {% for cohort in cohorts %}{% set metadata_cohorts.value = metadata_cohorts.value + [{'id': cohort.id, 'order_slots': cohort.order_slots}] %}{% endfor %}
   <script type="application/json" data-im-compare-catalogue>{{ {'schema': compare_catalogue.schema, 'slot_order': compare_catalogue.slot_order, 'cohorts': metadata_cohorts.value}|tojson }}</script>

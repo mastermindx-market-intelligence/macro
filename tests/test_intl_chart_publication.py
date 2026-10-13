@@ -42,6 +42,7 @@ def _case(inputs, *, basis="usd_unhedged", drop_fx=False, data=None):
     evidence = [
         {"series_id":s, "source_reference":REF,
          "content_sha256":"a" * 64, "basis_state":"accepted",
+         "adjustment_basis":"yfinance:auto_adjust=true:observed-close",
          "latest_completed_observation":frame.index[-1].isoformat(),
          "calendar_ref":"intl-conservative-observed-eod-tplus2-v1",
          "decision_ref":"saved-parquet:sha256:"+"b"*64}
@@ -51,7 +52,13 @@ def _case(inputs, *, basis="usd_unhedged", drop_fx=False, data=None):
 
 
 def _project(view, chart, evidence):
-    return build_source_bound_charts(view, chart, source_evidence=evidence)
+    from engine.intl_inputs import countries
+    bases = {symbol:"yfinance:auto_adjust=true:observed-close"
+             for m in countries().values() for symbol in (m["index"],m["fx"])}
+    date = chart["records"][0]["window"]["end"][:10]
+    return build_source_bound_charts(
+        view, chart, source_evidence=evidence,
+        adjustment_bases=bases, snapshot_date=date)
 
 
 def test_two_owner_qualified_markets_rebase_to_100_without_recomputing_return(inputs):
@@ -218,4 +225,20 @@ def test_conflicting_duplicate_saved_series_id_cannot_select_an_arbitrary_witnes
     bad["basis_state"] = "unknown"
     conflicting.append(bad)
     result = _project(view, chart, conflicting)
+    assert [line["market_id"] for line in result["series"]] == ["GB"]
+
+
+def test_source_witness_with_old_tip_cannot_be_published_even_if_snapshot_digest_matches(inputs):
+    view, chart, evidence = _case(inputs)
+    old = deepcopy(evidence)
+    next(row for row in old if row["series_id"]=="^N225")["latest_completed_observation"] = "2025-12-30T00:00:00"
+    result = _project(view, chart, old)
+    assert [line["market_id"] for line in result["series"]] == ["GB"]
+
+
+def test_wrong_adjustment_basis_withholds_only_affected_chart(inputs):
+    view, chart, evidence = _case(inputs)
+    bad = deepcopy(evidence)
+    next(row for row in bad if row["series_id"]=="^N225")["adjustment_basis"] = "unknown-or-unadjusted"
+    result = _project(view, chart, bad)
     assert [line["market_id"] for line in result["series"]] == ["GB"]

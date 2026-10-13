@@ -12,6 +12,9 @@
     <h3>{{ words('Same starting point. Different paths.', '相同起点，不同走势。') }}</h3>
     <p>{{ words('Price levels rebased to 100 at each observed start. Only identical calculation windows can share an axis.', '每组从可观测起点基准化至 100。仅相同计算区间的市场共用坐标轴。') }}</p>
   </header>
+  <p data-im-chart-selection-unavailable hidden>
+    {{ words('Chart unavailable for these selected markets because source evidence or calculation windows do not align.', '由于数据来源依据或计算区间不一致，所选市场的图表暂不可用。') }}
+  </p>
   {% set palette = ['var(--info)', 'var(--warn)', 'var(--down)', 'var(--up)'] %}
   {% for cohort in geometry.cohorts %}
     {% set identity = context_id ~ '-chart-' ~ cohort.id %}
