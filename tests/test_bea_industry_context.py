@@ -21,6 +21,7 @@ from engine.market_ontology.bea_industry_context import (
     adapt_workspace_bea_history,
     compose_bea_industry_accounting_change,
     read_private_bea_accounting_brief,
+    compare_private_bea_using_industries,
 )
 
 _EXPECTED_SOURCE_RELATIVE = (
@@ -826,6 +827,142 @@ class BEAHostBoundQueryTests(unittest.TestCase):
                 read_private_bea_accounting_brief(
                     object(), industry_code="3341",
                     commodity_code="3344", **forbidden,
+                )
+
+
+class BEAIndustryCohortResearchTests(unittest.TestCase):
+    """Bounded GMI industry-input comparison over the actual DataWorkspace API."""
+
+    @staticmethod
+    def _workspace(root: Path):
+        from lib.dataos.web_workspace import DataWorkspace, RootBinding
+        return DataWorkspace(
+            (RootBinding(alias="free_source_research",
+                         path=root, evidence_kind="research_capture"),),
+            Path(__file__).resolve().parents[1] / "config" / "dataset_registry.yml",
+            source_revision="synthetic-gmi-industry-cohort",
+        )
+
+    @staticmethod
+    def _source(root: Path, code: str, *,
+                negative_2024: bool = False, wrong_using_code: bool = False):
+        location = (root / "bea_2024_public_itable_research"
+                    / "bea_2017_2022_may2026_remaining_six_regions"
+                    / "data_workspace_views_20261011")
+        location.mkdir(parents=True, exist_ok=True)
+        rows = []
+        actual_code = "9999" if wrong_using_code else code
+        negative = dict(zip(_KEYS, (-8, 0, -60, 0, 0, -1, -1)))
+        for year in range(2017, 2025):
+            if negative_2024 and year == 2024:
+                row = synthetic_row(
+                    year=year, industry=actual_code, world=-69, use=-2,
+                    regions=negative,
+                )
+            else:
+                row = synthetic_row(year=year, industry=actual_code)
+            rows.append(row)
+            rows.extend(
+                synthetic_row(year=year, industry=actual_code,
+                              commodity=f"A{k:03d}")
+                for k in range(1, 139)
+            )
+        assert len(rows) == 1112
+        (location / f"industry_{code}.jsonl").write_text(
+            "".join(json.dumps(row, sort_keys=True) + "\n" for row in rows),
+            encoding="utf-8",
+        )
+
+    def test_two_using_industries_preserve_request_order_and_retrospective_clocks(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            self._source(root, "3341")
+            self._source(root, "5241X", negative_2024=True)
+            report = compare_private_bea_using_industries(
+                self._workspace(root),
+                industry_codes=("5241X", "3341"), commodity_code="3344",
+            )
+            self.assertEqual(report["requested_using_industry_codes"],
+                             ["5241X", "3341"])
+            self.assertEqual(report["returned_using_industry_count"], 2)
+            self.assertEqual(report["source_records_scanned"], 2 * 1112)
+            self.assertTrue(report["complete_requested_cohort"])
+            self.assertEqual(report["exact_code_namespace"],
+                             "BEA_APP157_MAY2026_EXACT")
+            self.assertEqual(report["publisher_edition_date"], "2026-05-21")
+            self.assertEqual(report["publisher_edition_precision"], "DAY")
+            briefs = report["industry_research_briefs"]
+            self.assertEqual([x["using_industry"]["code"] for x in briefs],
+                             ["5241X", "3341"])
+            self.assertEqual(briefs[0]["using_industry"]["legacy_mapping"],
+                             "UNRESOLVED_5241X_VS_5241XX")
+            self.assertEqual(briefs[0]["annual_observations"][-1][
+                "world_import_million_USD"], -69)
+            self.assertIn("SOURCE_NEGATIVE_REGION_ADJUSTMENT",
+                          briefs[0]["annual_observations"][-1]["ratio_null_reasons"])
+            self.assertEqual(len(briefs[1][
+                "consecutive_year_signed_changes_million_USD"]), 7)
+            self.assertFalse(report["named_company_supplier_buyer_evidence"])
+            for key in ("historical_pit_eligible", "may_rank", "may_train",
+                        "may_trade", "may_publish", "dataos_native_admitted",
+                        "source_bytes_authenticated_by_this_projection"):
+                with self.subTest(field=key):
+                    self.assertIs(report[key], False)
+
+    def test_missing_or_wrong_industry_fails_whole_cohort_not_partial_zero(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            self._source(root, "3341")
+            workspace = self._workspace(root)
+            with self.assertRaises(BEAContextRefused):
+                compare_private_bea_using_industries(
+                    workspace, industry_codes=("3341", "5241X"),
+                    commodity_code="3344",
+                )
+            self._source(root, "5241X", wrong_using_code=True)
+            with self.assertRaises(BEAContextRefused):
+                compare_private_bea_using_industries(
+                    workspace, industry_codes=("3341", "5241X"),
+                    commodity_code="3344",
+                )
+
+    def test_invalid_duplicate_or_unbounded_request_refuses_before_source_access(self):
+        requests = (
+            (),
+            ("3341", "3341"),
+            ("3341", "../etc"),
+            ("3341", "5241XX/"),
+            tuple(f"A{k:03d}" for k in range(13)),
+            "3341",
+            (x for x in ("3341",)),
+        )
+        for industries in requests:
+            with self.subTest(request_type=type(industries).__name__):
+                with self.assertRaises(BEAContextRefused):
+                    compare_private_bea_using_industries(
+                        object(), industry_codes=industries,
+                        commodity_code="3344",
+                    )
+        for purpose in ("trade", "training", "public_display"):
+            with self.subTest(purpose=purpose), self.assertRaises(BEAContextRefused):
+                compare_private_bea_using_industries(
+                    object(), industry_codes=("3341",),
+                    commodity_code="3344", purpose=purpose,
+                )
+        with self.assertRaises(BEAContextRefused):
+            compare_private_bea_using_industries(
+                object(), industry_codes=("3341",),
+                commodity_code="3344", as_of="2024-12-31",
+            )
+
+    def test_valid_missing_commodity_is_not_silently_assigned_zero(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            self._source(root, "3341")
+            with self.assertRaises(BEAContextRefused):
+                compare_private_bea_using_industries(
+                    self._workspace(root), industry_codes=("3341",),
+                    commodity_code="BBBB",
                 )
 
 

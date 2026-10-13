@@ -10,7 +10,7 @@ source registry. Native source admission belongs to the existing Data OS owner.
 """
 from __future__ import annotations
 
-from collections.abc import Iterable, Mapping
+from collections.abc import Iterable, Mapping, Sequence
 from decimal import Decimal, ROUND_HALF_EVEN
 import hashlib
 import json
@@ -26,6 +26,8 @@ EXACT_CODE_NAMESPACE = "BEA_APP157_MAY2026_EXACT"
 SOURCE_KIND = "industry_commodity_input"
 # Accepted immutable view-build receipt: 8 accounting years x 139 commodities.
 SOURCE_ROWS_PER_INDUSTRY = 8 * 139
+# Bound interactive private research reads; this is not a 138-file bulk producer.
+MAX_COMPARISON_INDUSTRIES = 12
 RESEARCH_VIEW_SUBDIR = (
     "bea_2024_public_itable_research/"
     "bea_2017_2022_may2026_remaining_six_regions/"
@@ -561,3 +563,75 @@ def read_private_bea_accounting_brief(
         result, industry_code=industry_code, commodity_code=commodity_code,
         purpose=purpose, as_of=as_of,
     )
+
+
+def compare_private_bea_using_industries(
+    workspace: Any, *, industry_codes: Sequence[str], commodity_code: str,
+    purpose: str = "private_research", as_of: object = None,
+) -> dict[str, Any]:
+    """Compare one imputed commodity input across bounded BEA using industries.
+
+    Preserves caller order rather than ranking. An imported commodity *input*
+    is neither a company-to-company relationship nor an observed supply route.
+    Every source is read through the existing DataWorkspace with a separately
+    verified 1,112-record industry view and original exact source code.
+    Any missing, version-changed, or refused member aborts the whole result.
+    """
+    if purpose != "private_research" or as_of is not None:
+        raise BEAContextRefused("cross-industry research is not public or PIT eligible")
+    if not isinstance(commodity_code, str) or not _CODE.fullmatch(commodity_code):
+        raise BEAContextRefused("exact BEA input commodity code required")
+    if (not isinstance(industry_codes, (tuple, list))
+            or not 1 <= len(industry_codes) <= MAX_COMPARISON_INDUSTRIES
+            or any(not isinstance(code, str) or not _CODE.fullmatch(code)
+                   for code in industry_codes)
+            or len(set(industry_codes)) != len(industry_codes)):
+        raise BEAContextRefused(
+            "one to twelve distinct exact BEA using-industry codes required"
+        )
+    from lib.dataos.web_workspace import DataWorkspace
+    if type(workspace) is not DataWorkspace:
+        raise BEAContextRefused("host-bound DataWorkspace required")
+
+    briefs: list[dict[str, Any]] = []
+    for code in industry_codes:
+        # Do not degrade a missing industry to zero, and never return a partial
+        # cross-industry panel. Only the host-owned reader may open source files.
+        brief = read_private_bea_accounting_brief(
+            workspace, industry_code=code, commodity_code=commodity_code,
+            purpose=purpose, as_of=as_of,
+        )
+        if (brief["using_industry"]["code"] != code
+                or brief["input_commodity"]["code"] != commodity_code
+                or brief["source"]["edition_date"] != PUBLISHER_EDITION_DATE
+                or brief["reader_provenance"]["source_records_scanned"]
+                != SOURCE_ROWS_PER_INDUSTRY):
+            raise BEAContextRefused("source history differs across using industries")
+        briefs.append(brief)
+
+    return {
+        "schema": "market_ontology.bea_cross_industry_input_research/v1",
+        "authority": "PRIVATE_RESEARCH_ONLY",
+        "measurement_class": "BEA_IMPUTED_INDUSTRY_IMPORT_ALLOCATION",
+        "source_kind": SOURCE_KIND,
+        "exact_code_namespace": EXACT_CODE_NAMESPACE,
+        "input_commodity_code_exact": commodity_code,
+        "publisher_edition_date": PUBLISHER_EDITION_DATE,
+        "publisher_edition_precision": "DAY",
+        "requested_using_industry_codes": list(industry_codes),
+        "returned_using_industry_count": len(briefs),
+        "source_records_scanned": SOURCE_ROWS_PER_INDUSTRY * len(briefs),
+        "complete_requested_cohort": True,
+        "industry_research_briefs": briefs,
+        "comparability": "SAME_SOURCE_EDITION_SAME_COMMODITY_DISTINCT_USING_INDUSTRIES",
+        "industry_input_allocation_is_estimate": True,
+        "named_company_supplier_buyer_evidence": False,
+        "original_historical_known_at": None,
+        "historical_pit_eligible": False,
+        "source_bytes_authenticated_by_this_projection": False,
+        "dataos_native_admitted": False,
+        "may_publish": False,
+        "may_rank": False,
+        "may_train": False,
+        "may_trade": False,
+    }
