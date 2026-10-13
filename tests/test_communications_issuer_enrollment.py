@@ -71,13 +71,20 @@ def test_meta_ttd_mgni_stay_unenrolled() -> None:
         assert profile_for_ticker(ticker) is None
 
 
-def test_production_registry_does_not_gain_alphabet() -> None:
+def test_production_registry_excludes_communications_tickers() -> None:
+    """GOOGL, GOOG, META, TTD, and MGNI stay off the registry.
+
+    The four homebuilders stay. This does not freeze the rest of the ticker
+    list, so a later issuer rebase can add listings without enrolling these.
+    """
     registry = production_registry()
-    tickers = sorted(
+    tickers = {
         listing.ticker for issuer in registry for listing in issuer.listings
-    )
-    assert tickers == ["AAPL", "DHI", "KBH", "PHM", "TOL"]
-    assert len(registry) == 5
+    }
+    for ticker in ("GOOGL", "GOOG", "META", "TTD", "MGNI"):
+        assert ticker not in tickers
+    for ticker in ("DHI", "PHM", "KBH", "TOL"):
+        assert ticker in tickers
 
 
 def test_homebuilder_lookup_unchanged() -> None:
