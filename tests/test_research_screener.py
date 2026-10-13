@@ -642,6 +642,9 @@ def test_en_margin_pluralisation():
 
 
 _STAMP_RE = re.compile(r'(theme|research_screener)\.css\?v=[0-9a-f]{8}')
+# Whitehouse banner tag the post-build injector adds to shipped pages (see
+# scripts/inject_wh_banner.py; same shape as scripts/build_free_content.py).
+_WHB_TAG_RE = re.compile(r"[ \t]*<script[^>]*\bdata-whb\b[^>]*></script>\n?")
 
 
 def test_committed_page_uses_stamped_stylesheet_helper():
@@ -658,5 +661,9 @@ def test_fresh_bake_matches_committed_site_html():
     payload = json.loads((REPO / "site" / "research_screener.json").read_text(encoding="utf-8"))
     baked = bake_html(REPO, payload)
     committed = (REPO / "site" / "research_screener.html").read_text(encoding="utf-8")
-    assert baked == committed
+    # The nightly's post-build injector (scripts/inject_wh_banner.py) appends
+    # one `<script defer data-whb …>` tag to the committed page AFTER the bake;
+    # bake_html does not emit it (scripts/build_free_content.py strips the same
+    # tag before comparing). Compare the bake, not the injection.
+    assert _WHB_TAG_RE.sub("", baked) == _WHB_TAG_RE.sub("", committed)
     assert _STAMP_RE.search(baked)

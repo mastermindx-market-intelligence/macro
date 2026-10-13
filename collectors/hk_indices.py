@@ -59,6 +59,7 @@ class HkIndicesAdapter(Adapter):
 
     name = "hk_indices"
     group = "hk"
+    session_calendar = "HK"  # observation dates follow the cash/Connect session
     stale_after_days = 6   # trading-day series; tolerate a long weekend / HK holiday
 
     def __init__(self) -> None:

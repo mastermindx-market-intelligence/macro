@@ -2,36 +2,21 @@
   "_debounce": {
     "label": {},
     "lead": {
-      "displayed": "intl_banks",
+      "displayed": "intl_semis",
       "pending": {
-        "bucket": "2026-09-22",
+        "bucket": "2026-10-09",
         "count": 1,
-        "tid": "intl_tech_hw"
+        "tid": "intl_japan"
       }
     },
-    "reco": {
-      "intl_tech_hw": {
-        "bucket": "2026-09-22",
-        "count": 1,
-        "from": "hold",
-        "to": "accumulate"
-      }
-    }
+    "reco": {}
   },
-  "intl_korea": {
-    "label": "deteriorating",
-    "name": "Korea Tech & Industry",
-    "name_zh": "\u97e9\u56fd\u79d1\u6280\u4e0e\u5de5\u4e1a",
-    "rank": 2,
-    "reco": "avoid",
-    "score": 57
-  },
-  "intl_tech_hw": {
-    "label": "dominant",
-    "name": "Tech Hardware & Components",
-    "name_zh": "\u79d1\u6280\u786c\u4ef6\u4e0e\u96f6\u90e8\u4ef6",
+  "intl_japan": {
+    "label": "neutral",
+    "name": "Japan Inc.",
+    "name_zh": "\u65e5\u672c\u4f01\u4e1a",
     "rank": 1,
-    "reco": "accumulate",
-    "score": 64
+    "reco": "hold",
+    "score": 61
   }
 }

@@ -1,0 +1,118 @@
+{
+  "document_kind": "PROPOSED_BRANCH_GATES_NOT_RUNTIME_ADMISSION",
+  "gates": [
+    {
+      "id": "G01",
+      "unit": "B06",
+      "branch": "admissible historical analysis",
+      "requires_builds": [
+        "B00",
+        "B01",
+        "B02"
+      ],
+      "requires_decisions": [
+        "D03",
+        "D06",
+        "D07",
+        "D08"
+      ],
+      "note": "Does not require live B4 to be complete; must satisfy source and scientific registration gates."
+    },
+    {
+      "id": "G02",
+      "unit": "B06",
+      "branch": "prospective B4 policy-cell capture",
+      "requires_builds": [
+        "B05"
+      ],
+      "requires_decisions": [
+        "D01",
+        "D04",
+        "D06",
+        "D08"
+      ],
+      "note": "All exact existing #7751 prerequisites remain; no historic backfill or duplicate outcome store."
+    },
+    {
+      "id": "G03",
+      "unit": "B11",
+      "branch": "live rank promotion",
+      "requires_builds": [
+        "B10"
+      ],
+      "requires_decisions": [
+        "D06",
+        "D07",
+        "D11"
+      ],
+      "note": "Research model existence is not live ranking authority."
+    },
+    {
+      "id": "G04",
+      "unit": "B12",
+      "branch": "new early-entry permission",
+      "requires_builds": [
+        "B05",
+        "B06"
+      ],
+      "requires_decisions": [
+        "D02",
+        "D04",
+        "D06",
+        "D08"
+      ],
+      "note": "Incumbent strategy confluence is not waived by adapter/UI."
+    },
+    {
+      "id": "G05",
+      "unit": "B15",
+      "branch": "earnings model/policy promotion",
+      "requires_builds": [
+        "B08",
+        "B14",
+        "B06"
+      ],
+      "requires_decisions": [
+        "D03",
+        "D04",
+        "D06",
+        "D07",
+        "D08"
+      ],
+      "note": "Absent estimates can hold revision branch without freezing qualified issuer-evidence research."
+    },
+    {
+      "id": "G06",
+      "unit": "B19",
+      "branch": "core/add recommendations",
+      "requires_builds": [
+        "B17",
+        "B18",
+        "B05"
+      ],
+      "requires_decisions": [
+        "D03",
+        "D04",
+        "D05",
+        "D06",
+        "D08"
+      ],
+      "note": "Scenario dossier is not proven survival/recovery probability or allocation authority."
+    },
+    {
+      "id": "G07",
+      "unit": "B26",
+      "branch": "flagship public claims/cutover",
+      "requires_builds": [
+        "B25"
+      ],
+      "requires_decisions": [
+        "D09",
+        "D10",
+        "D11",
+        "D12"
+      ],
+      "note": "Actual release and normal refresh proof; stale green is never fallback."
+    }
+  ]
+}

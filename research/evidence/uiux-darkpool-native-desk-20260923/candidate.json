@@ -1,0 +1,16 @@
+{
+  "base": "4815acf7fcd7ed5ad7bf7a5aacac00aff8c0bdac",
+  "page_sha256": "c054311fb192ccc777e1a4393f57a3fc97c4d9fce0526de0890a27ab8e7dfcb3",
+  "css": "170de2e0",
+  "rows": 372,
+  "data_sha256": "49bbe0538d3fd31af08a641ca21062a62c26da951a65ce31c861da668ba97c2d",
+  "raw_json_unchanged": true,
+  "comparator_filter_export_unchanged": true,
+  "sort_buttons": 13,
+  "preset_buttons": 4,
+  "narrow_status_wrap": true,
+  "empty_data_distinguished": true,
+  "sticky_ticker": true,
+  "integration_base": "fc6db6c1f9a76cadc180c44e386ae928c1a9ccbc",
+  "continued_from": "https://github.com/mastermindx-market-intelligence/macro/pull/7781#issuecomment-5793072526"
+}

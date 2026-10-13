@@ -46,7 +46,11 @@
       {%- else %}
       <span class="mx-chg-what mc-move-what">
         <strong class="mc-move-current">{{ t((row.current ~ ' ' ~ (row.scale.en if row.scale else 'index reading')), (row.current ~ ' ' ~ (row.scale.zh if row.scale else '指数读数'))) }}</strong>
-        {%- if row.move_words %}<span class="mc-move-words">{{ bl(row.move_words) }}</span>{% endif %}
+        {#- The tone class is the row's measured-vs-absent claim: `mq-delta-flat`
+            says "we compared, nothing moved", and its absence on a movement row
+            would read as a comparison never made. P5 (#6985) rebuilt this row
+            without it while its own hub test kept asserting it. -#}
+        {%- if row.move_words %}<span class="mc-move-words{% if row.sign %} mq-delta-{{ row.sign }}{% endif %}">{{ bl(row.move_words) }}</span>{% endif %}
       </span>
       {%- endif %}
     </li>

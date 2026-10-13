@@ -298,11 +298,36 @@ def test_stale_friday_to_wednesday_is_stale():
 # ── empty / zero-covered books ───────────────────────────────────────────────
 
 def test_empty_book():
-    b = compose_brief(_ctx(), [], TODAY, GENERATED_AT)
+    """A DECLARED population with zero names is a genuinely empty set — the store
+    answered — so the add-names invitation is the truthful headline."""
+    b = compose_brief(_ctx(), [], TODAY, GENERATED_AT, population="watchlist_union")
     assert b["book"] == {"n": 0, "covered": 0, "uncovered": []}
     assert b["sections"] == []
+    assert "add names" in b["headline"]["en"].lower()
     assert "watchlist" in b["headline"]["en"].lower()
     assert b["headline"]["zh"]  # non-empty zh
+
+
+def test_zero_names_with_unknown_population_is_not_an_empty_watchlist_cta():
+    """Terminal#169 / macro#6819 (C2, 2026-10-04): the loaders return ([], 'unspecified')
+    when a private-store query did not answer. Zero names + unknown population must not
+    be narrated as an empty watchlist — the desk never read one. The headline says
+    nothing reached the desk and explicitly disclaims the empty-watchlist reading, in
+    plain words (no internal state names), and the payload shape is unchanged."""
+    for pop in (None, "unspecified"):
+        b = compose_brief(_ctx(), [], TODAY, GENERATED_AT, population=pop)
+        en = b["headline"]["en"].lower()
+        assert "add names" not in en, en
+        assert "nothing to show" in en
+        assert "not a read of an empty watchlist" in en
+        assert "your book" not in en
+        assert "unspecified" not in en and "unspecified" not in b["headline"]["zh"]
+        assert b["headline"]["zh"] and "并不是对空观察列表的判读" in b["headline"]["zh"]
+        assert b["population"]["mode"] == "unspecified"
+        assert b["book"] == {"n": 0, "covered": 0, "uncovered": []}
+        assert b["sections"] == []
+        assert b["data"]["book"]["n"] == 0 and b["data"]["book"]["population"] == "unspecified"
+        assert set(b["data"]) >= {"book", "state_digest", "cursor", "not_computed"}
 
 
 def test_zero_covered_book():

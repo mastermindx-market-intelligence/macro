@@ -1,0 +1,46 @@
+Independent BOATS consumer localization/base-integration addendum — 2026-10-11
+
+Verdict: PASS for this bounded consumer repair and integration at c0bf8a744a0d963360de45dab8c655a575776280. No actionable source defect was found. This source verdict does not claim successful hosted CI at the new merge head or expand runtime authority.
+
+Carrier: /Volumes/Mastermind/agent-workspaces/claude/5600d31ffa29643a/tiingo-boats-quotehub-b2b25c10fd296613
+Current reviewed HEAD: c0bf8a744a0d963360de45dab8c655a575776280
+Integrated protected base: 85ad93866dcd9daf203c89a7d5e23280b5d6ed50
+Localization repair commit: 886c77102
+Previously accepted consumer source: 07c777035b132e376b905a793065d1d611cc8918
+
+The 07c7770-to-886c77102 two-file diff replaces the two inline bilingual BOATS last-trade labels in TerminalShell with t("boatsLatestTrade") and adds the identical English/Chinese pair to the existing LEX dictionary. Both strings preserve the previously accepted single-venue/latest-qualifying-trade semantics. No price selection, event/receipt/publication/expiry checks, request-order barrier or regular-price computation changes in this repair.
+
+The 886c77102-to-current TerminalShell integration diff contains the protected DataInspector, pane-focus, fullscreen/table behavior, mobile table action and news userId hunks. I checked their separation from the BOATS changes and did not re-adjudicate that unrelated protected feature work. The diff from protected base 85ad938 to current confirms the accepted BOATS freshness guards, source-specific ingestion, monotonic response barrier, independent expiration timer, generic-quote fallback removal and regular-price separation survive. The only BOATS copy difference is the reviewed translation lookup.
+
+Fresh hashes show the other fifteen previously accepted consumer source/test files are byte-identical. TerminalShell has the localized labels plus protected-base integration; i18n.tsx is the seventeenth file in this bounded current inventory.
+
+Evidence inspected
+
+- terminal-boats-plain-language-green.log labels its remaining diagnostics as legacy/pre-existing/nonblocking. The owner reports the guard passed; the new inline BOATS diagnostic is no longer present.
+- terminal-boats-i18n-typecheck.log is empty; successful typecheck is owner-supplied execution status, not inferred solely from an empty file.
+- terminal-boats-i18n-browser.log reports six passed cases for EN/ZH labels, age and independent expiry across desktop/tablet/mobile.
+- The earlier exact-07c full hosted unit/typecheck result remains evidence only for that earlier source. Its later plain-language failure remains retained; this addendum does not restate the whole hosted run as green.
+
+No tests, network, runtime or source mutations were performed by this reviewer. Required hosted checks must complete for current merge head c0bf8a744a0d963360de45dab8c655a575776280 before release. Any dependent Macro current-source receipt that still binds the earlier TerminalShell hash must be refreshed and linked to this addendum before claiming current integrated-source parity; the earlier registry review remains bound to its recorded bytes.
+
+Prior HOLD/PASS and registry reports are preserved. The unchanged Macro producer acceptance remains separate and is not expanded by this consumer addendum. No installed consumer, live BOATS market evidence, runtime scheduling, publication or deployment acceptance follows. The original combined-action runtime/scheduling refusal remains controlling for that effect.
+
+Current SHA-256 inventory — seventeen source/test files
+
+hub/lib/extfeed.js d1d37df326828e3040ce82ab577fc6e904587ab3caacbdc90ba1d43a8b243277
+hub/lib/quotes.js 744f60814053481bc20839fe868fdfb7efce1d6ee3c69377d277ef266a6b8ecd
+hub/lib/store.js 0be314c0c5dec623144205058fa2e8b23252fe772b01e8540909e8f691011498
+hub/tests/boatsrelay.test.js c72f71fb45dec108444473e364855ba9b8a8d123aefdf80dca4b123403ed65ed
+terminal/app/api/ext-quote/route.ts bd4e2ad9509d1006775c83c22b051ed1376204b337ad77a71220536b30b64ebc
+terminal/app/api/quote/route.ts 289c3ac0d0d1932d8d3e565fd8da9a6be7fd8a6d9b42cbcb2ea37075efd42bd0
+terminal/components/TerminalShell.tsx ccf0d87917db9dcf0ee6e6b9863ceab78e2d124efe64203a476b3ee68cfd0212
+terminal/e2e/responsive.spec.ts ce085c7b21b34ef117edcca3b18051539be52a9eec9db26243af5c5822e036e0
+terminal/e2e/watchlist-ext-percent.spec.ts 4aa3224aef43807d5f090b95c73e646ff160c4589991a6dd033f5e66dc32d991
+terminal/e2e/boats-display.spec.ts 917713f86e383f26dd2abf4ef5b1552bffc19473ba7adfea9b505486e4fbda0b
+terminal/e2e/fixtures/boatsQuote.ts dbd53b7836e9129fc8f29b3ddb0c050bf38e22f7ed158e8dad8e6a6bc82036a2
+terminal/lib/__tests__/extQuoteRoute.test.ts 4787f5686de72a64b9bb42c928330e8e67a862a54cd862ea3a3b36e7f97a99d8
+terminal/lib/__tests__/quoteRouteView.test.ts db26d1572947b02f67a7901f94b1ce70b9ee9b925a159b22f81e5c943e09e19c
+terminal/lib/__tests__/extQuoteFreshness.test.ts 749c682d394ff6bff39df5a868ec4ad62b01e7db09a4d932a57640d8e5bed79b
+terminal/lib/extQuoteFreshness.ts f860c445bdb9c9a42629c9f44a9fc3908ee4d31b9cd0ae810ff5a9c032595d76
+terminal/lib/liveCandle.ts 7e8cd7df90b520ad369bb1a315033a042787b45426b7e90ab7b4d6d1151f191d
+terminal/lib/i18n.tsx 8d9ee17bdc5bb429a116beb5622d9eb78926cb62a49d9930ea89dd9105324217

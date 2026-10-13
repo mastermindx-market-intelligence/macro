@@ -1,6 +1,6 @@
 {
   "schema": "gsc_index_status.v1",
-  "as_of": "2026-09-20",
+  "as_of": "2026-10-11",
   "available": true,
   "reason": null,
   "property": "sc-domain:mastermind-x.com",
@@ -12,18 +12,18 @@
       {
         "path": "https://www.mastermind-x.com/sitemap.xml",
         "lastSubmitted": "2026-08-02T07:18:18.537Z",
-        "lastDownloaded": "2026-09-20T14:48:09.883Z",
+        "lastDownloaded": "2026-10-11T04:33:43.039Z",
         "isPending": false,
         "isSitemapsIndex": false,
         "type": "sitemap",
         "warnings": 0,
         "errors": 0,
-        "submitted": 4462,
+        "submitted": 5547,
         "indexed": 0,
         "contents": [
           {
             "type": "web",
-            "submitted": 4462,
+            "submitted": 5547,
             "indexed": 0
           }
         ]
@@ -40,11 +40,11 @@
       "coverageState": "Submitted and indexed",
       "robotsTxtState": "ALLOWED",
       "indexingState": "INDEXING_ALLOWED",
-      "lastCrawlTime": "2026-09-04T22:26:32Z",
+      "lastCrawlTime": "2026-10-09T04:26:03Z",
       "pageFetchState": "SUCCESSFUL",
       "googleCanonical": "https://www.mastermind-x.com/",
       "userCanonical": "https://www.mastermind-x.com/",
-      "inspectionResultLink": "https://search.google.com/search-console/inspect?resource_id=sc-domain:mastermind-x.com&id=a1JS8sIMp5m3JyMMmBtVhQ&utm_medium=link&utm_source=api",
+      "inspectionResultLink": "https://search.google.com/search-console/inspect?resource_id=sc-domain:mastermind-x.com&id=4Mm1jxsMzElrUYfC_EGMlQ&utm_medium=link&utm_source=api",
       "indexed": true
     },
     {
@@ -58,7 +58,7 @@
       "pageFetchState": "PAGE_FETCH_STATE_UNSPECIFIED",
       "googleCanonical": null,
       "userCanonical": null,
-      "inspectionResultLink": "https://search.google.com/search-console/inspect?resource_id=sc-domain:mastermind-x.com&id=XEQLB4WA7maVFP09_CODJg&utm_medium=link&utm_source=api",
+      "inspectionResultLink": "https://search.google.com/search-console/inspect?resource_id=sc-domain:mastermind-x.com&id=cbLIDbCqWmVcl6gTlwGQDQ&utm_medium=link&utm_source=api",
       "indexed": false
     },
     {
@@ -72,7 +72,7 @@
       "pageFetchState": "SUCCESSFUL",
       "googleCanonical": "https://www.mastermind-x.com/macro.html",
       "userCanonical": "https://www.mastermind-x.com/macro.html",
-      "inspectionResultLink": "https://search.google.com/search-console/inspect?resource_id=sc-domain:mastermind-x.com&id=o2wDOlp462JctTTre9_v6g&utm_medium=link&utm_source=api",
+      "inspectionResultLink": "https://search.google.com/search-console/inspect?resource_id=sc-domain:mastermind-x.com&id=6zwpBM-ocaLtUa4V2_-CNA&utm_medium=link&utm_source=api",
       "indexed": true
     },
     {
@@ -86,25 +86,11 @@
       "pageFetchState": "PAGE_FETCH_STATE_UNSPECIFIED",
       "googleCanonical": null,
       "userCanonical": null,
-      "inspectionResultLink": "https://search.google.com/search-console/inspect?resource_id=sc-domain:mastermind-x.com&id=TZ7W3fwE-6qy2akroKJaww&utm_medium=link&utm_source=api",
+      "inspectionResultLink": "https://search.google.com/search-console/inspect?resource_id=sc-domain:mastermind-x.com&id=Dw8Esm3pGxtbShjbpD-R1w&utm_medium=link&utm_source=api",
       "indexed": false
     },
     {
       "url": "https://www.mastermind-x.com/plans.html",
-      "error": null,
-      "verdict": "NEUTRAL",
-      "coverageState": "URL is unknown to Google",
-      "robotsTxtState": "ROBOTS_TXT_STATE_UNSPECIFIED",
-      "indexingState": "INDEXING_STATE_UNSPECIFIED",
-      "lastCrawlTime": null,
-      "pageFetchState": "PAGE_FETCH_STATE_UNSPECIFIED",
-      "googleCanonical": null,
-      "userCanonical": null,
-      "inspectionResultLink": "https://search.google.com/search-console/inspect?resource_id=sc-domain:mastermind-x.com&id=5aBKr_gvR__WETC7k6KhLg&utm_medium=link&utm_source=api",
-      "indexed": false
-    },
-    {
-      "url": "https://www.mastermind-x.com/start.html",
       "error": null,
       "verdict": "NEUTRAL",
       "coverageState": "Discovered - currently not indexed",
@@ -114,7 +100,21 @@
       "pageFetchState": "PAGE_FETCH_STATE_UNSPECIFIED",
       "googleCanonical": null,
       "userCanonical": null,
-      "inspectionResultLink": "https://search.google.com/search-console/inspect?resource_id=sc-domain:mastermind-x.com&id=dGgxU5-W--uQ_Ce4hPhAsw&utm_medium=link&utm_source=api",
+      "inspectionResultLink": "https://search.google.com/search-console/inspect?resource_id=sc-domain:mastermind-x.com&id=lf-w7aCa2Bpf78Wi7TZXVg&utm_medium=link&utm_source=api",
+      "indexed": false
+    },
+    {
+      "url": "https://www.mastermind-x.com/start.html",
+      "error": null,
+      "verdict": "NEUTRAL",
+      "coverageState": "URL is unknown to Google",
+      "robotsTxtState": "ROBOTS_TXT_STATE_UNSPECIFIED",
+      "indexingState": "INDEXING_STATE_UNSPECIFIED",
+      "lastCrawlTime": null,
+      "pageFetchState": "PAGE_FETCH_STATE_UNSPECIFIED",
+      "googleCanonical": null,
+      "userCanonical": null,
+      "inspectionResultLink": "https://search.google.com/search-console/inspect?resource_id=sc-domain:mastermind-x.com&id=hZoXv2O1qhWluKcQ86kj3g&utm_medium=link&utm_source=api",
       "indexed": false
     },
     {
@@ -128,21 +128,21 @@
       "pageFetchState": "PAGE_FETCH_STATE_UNSPECIFIED",
       "googleCanonical": null,
       "userCanonical": null,
-      "inspectionResultLink": "https://search.google.com/search-console/inspect?resource_id=sc-domain:mastermind-x.com&id=M8AvaakUII3ZaUYoXDzIOg&utm_medium=link&utm_source=api",
+      "inspectionResultLink": "https://search.google.com/search-console/inspect?resource_id=sc-domain:mastermind-x.com&id=rFQz4OvFmlc2WZp4mrulgg&utm_medium=link&utm_source=api",
       "indexed": false
     },
     {
       "url": "https://www.mastermind-x.com/research/index.html",
       "error": null,
       "verdict": "NEUTRAL",
-      "coverageState": "Discovered - currently not indexed",
+      "coverageState": "URL is unknown to Google",
       "robotsTxtState": "ROBOTS_TXT_STATE_UNSPECIFIED",
       "indexingState": "INDEXING_STATE_UNSPECIFIED",
       "lastCrawlTime": null,
       "pageFetchState": "PAGE_FETCH_STATE_UNSPECIFIED",
       "googleCanonical": null,
       "userCanonical": null,
-      "inspectionResultLink": "https://search.google.com/search-console/inspect?resource_id=sc-domain:mastermind-x.com&id=nCWBWCZSmrxISGCjOBf2WQ&utm_medium=link&utm_source=api",
+      "inspectionResultLink": "https://search.google.com/search-console/inspect?resource_id=sc-domain:mastermind-x.com&id=UBqgvaLp-OvKAQw_UAFiXA&utm_medium=link&utm_source=api",
       "indexed": false
     },
     {
@@ -156,7 +156,7 @@
       "pageFetchState": "PAGE_FETCH_STATE_UNSPECIFIED",
       "googleCanonical": null,
       "userCanonical": null,
-      "inspectionResultLink": "https://search.google.com/search-console/inspect?resource_id=sc-domain:mastermind-x.com&id=G1bCNKKn1HUQ9G8M28z0QQ&utm_medium=link&utm_source=api",
+      "inspectionResultLink": "https://search.google.com/search-console/inspect?resource_id=sc-domain:mastermind-x.com&id=weuVw_MbIDs_DaQ5hAG-7A&utm_medium=link&utm_source=api",
       "indexed": false
     },
     {
@@ -170,7 +170,7 @@
       "pageFetchState": "PAGE_FETCH_STATE_UNSPECIFIED",
       "googleCanonical": null,
       "userCanonical": null,
-      "inspectionResultLink": "https://search.google.com/search-console/inspect?resource_id=sc-domain:mastermind-x.com&id=SDNieQFuv4KxksPQuKemAw&utm_medium=link&utm_source=api",
+      "inspectionResultLink": "https://search.google.com/search-console/inspect?resource_id=sc-domain:mastermind-x.com&id=I-ZjKYo13Z-i2FyORge1yQ&utm_medium=link&utm_source=api",
       "indexed": false
     },
     {
@@ -184,7 +184,7 @@
       "pageFetchState": "PAGE_FETCH_STATE_UNSPECIFIED",
       "googleCanonical": null,
       "userCanonical": null,
-      "inspectionResultLink": "https://search.google.com/search-console/inspect?resource_id=sc-domain:mastermind-x.com&id=VWY9SoPnUYgwzTye00M1lg&utm_medium=link&utm_source=api",
+      "inspectionResultLink": "https://search.google.com/search-console/inspect?resource_id=sc-domain:mastermind-x.com&id=9g4B44_iNeWAP_Enkv9GGQ&utm_medium=link&utm_source=api",
       "indexed": false
     },
     {
@@ -198,7 +198,7 @@
       "pageFetchState": "PAGE_FETCH_STATE_UNSPECIFIED",
       "googleCanonical": null,
       "userCanonical": null,
-      "inspectionResultLink": "https://search.google.com/search-console/inspect?resource_id=sc-domain:mastermind-x.com&id=6HttIqnx0WgbJfByb71l2A&utm_medium=link&utm_source=api",
+      "inspectionResultLink": "https://search.google.com/search-console/inspect?resource_id=sc-domain:mastermind-x.com&id=DUXzSQ83O05FlWLKFEfwug&utm_medium=link&utm_source=api",
       "indexed": false
     }
   ]

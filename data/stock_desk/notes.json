@@ -1,172 +1,172 @@
 {
   "schema": "stock_desk.v1",
-  "as_of": "2026-09-21",
-  "generated_at": "2026-09-23T10:27:38.261701+00:00",
+  "as_of": "2026-10-08",
+  "generated_at": "2026-10-13T00:55:15.509256+00:00",
   "degraded": null,
   "notes": [
     {
-      "id": "2026-09-21-FIX-20260923102738-1",
-      "ticker": "FIX",
-      "name": "Comfort Systems USA",
-      "lean": "neutral",
-      "conviction": "low",
-      "horizon_d": 21,
-      "thesis": "The deterministic verdict is a top-of-board leader with an entry brake, but the accounting warning, weak quality axes, and deterioration in its Power & Grid Buildout basket cancel the constructive edge; with a mixed weekly timeframe and contracting liquidity the read is watch, not act.",
-      "evidence": [
-        "verdict 'Leader \u00b7 accounting warning \u2014 verify before buying'",
-        "quality z -0.5 with accounting flags 'warn'",
-        "cautions: weak accounting quality and below-trend Power & Grid Buildout basket",
-        "macro: US net liquidity contracting headwind",
-        "cycle not blocked but mixed regime"
-      ],
-      "dissent": "FIX is the strongest selection on the board (selection z 1.2975, SUE z 2.04) and true leaders tend to keep leading, so cautiousness could be wrong if the accounting flag is a false positive.",
-      "falsifier": {
-        "text": "No bearish conviction: if the accounting flag resolves clean and price reclaims its 50-day MA decisively, the neutral stance is simply no position rather than a short.",
-        "check": {
-          "kind": "soft",
-          "reason": "neutral lean \u2014 not scored"
-        }
-      },
-      "check_by": "2026-10-20",
-      "engine_verdict": "Leader \u00b7 accounting warning \u2014 verify before buying"
-    },
-    {
-      "id": "2026-09-21-VTRS-20260923102738-2",
-      "ticker": "VTRS",
-      "name": "Viatris",
-      "lean": "neutral",
-      "conviction": "low",
-      "horizon_d": 21,
-      "thesis": "The deterministic verdict is 'no clear edge': SUE is negative, momentum is only context-level, quality is a watch flag, and its Health Care basket is deteriorating; the bottoming turn is partial with a mixed weekly picture, so there is no edge to express.",
-      "evidence": [
-        "verdict 'Neutral \u2014 no clear edge'",
-        "SUE z -0.45 (negative)",
-        "quality z -0.86 with accounting 'watch' flag",
-        "cautions: Health Care basket deteriorating",
-        "macro liquidity headwind"
-      ],
-      "dissent": "The daily bottoming turn with price above both 50/200-day averages and a positive MACD could be an early base that the neutral read is too slow to recognize.",
-      "falsifier": {
-        "text": "Price decisively reclaiming the 52-week high while its Health Care basket stops deteriorating would show the neutral read was too defensive.",
-        "check": {
-          "kind": "soft",
-          "reason": "neutral lean \u2014 not scored"
-        }
-      },
-      "check_by": "2026-10-20",
-      "engine_verdict": "Neutral \u2014 no clear edge"
-    },
-    {
-      "id": "2026-09-21-MEDP-20260923102738-3",
-      "ticker": "MEDP",
-      "name": "Medpace",
+      "id": "2026-10-08-MSCI-20261013005515-1",
+      "ticker": "MSCI",
+      "name": "MSCI",
       "lean": "constructive",
-      "conviction": "medium",
-      "horizon_d": 21,
-      "thesis": "The strongest clean setup on the board: fresh buy zone with the weekly timeframe agreeing (bullish regime), a high validated SUE of 3.0 (fresh within 23 days), quality z 1.88 with clean accounting, and no cautions; the only risk legs are the contracting-liquidity macro headwind and a late-cycle investor phase.",
+      "conviction": "low",
+      "horizon_d": 20,
+      "thesis": "The validated selection leg and an unblocked bottoming entry support a tentative relative rebound, but the risk controls argue for restraint because earnings are eight days away, the weekly trend has not turned, and the sector basket is deteriorating. The weak historical accuracy of constructive leans keeps conviction low.",
       "evidence": [
-        "regime BULLISH / FRESH BUY / BUY NOW entry",
-        "SUE z 3.0, validated, fresh 23 days",
-        "quality z 1.88 with accounting 'clean'",
-        "no cautions, cycle not blocked",
-        "net margin 17.8%, ROE 98.3%"
+        "Verdict: Constructive \u2014 building a base",
+        "Selection axis: z 0.31, 55th percentile",
+        "Entry axis: unblocked, 60th percentile",
+        "Price reclaimed a rising 10-day average and remains above the 50-day average",
+        "Risk control: earnings in 8 days"
       ],
-      "dissent": "The investor phase is 'late' and RSI is 64 at the 52-week high, so this may be a late-stage entry into a crowded quality name where the validated edge has already been priced in.",
+      "dissent": "The stock remains below its 200-day average, quality is exceptionally weak at z -2.94, and the earnings event could erase the nascent turn.",
       "falsifier": {
-        "text": "Price printing a fresh 52-week high followed by a close below the 10-day average and a breakdown in the validated SUE-supporting earnings trend.",
+        "text": "An earnings reaction that leaves the stock below both its 10-day and 50-day averages while the weekly trend remains unturned.",
         "check": {
           "kind": "rel_return",
-          "subject_ticker": "MEDP",
+          "subject_ticker": "MSCI",
           "vs": "SPY",
           "op": "<",
           "threshold": -0.05,
-          "horizon_d": 21
+          "horizon_d": 20
         }
       },
-      "check_by": "2026-10-20",
+      "check_by": "2026-11-05",
       "engine_verdict": "Constructive \u2014 building a base"
     },
     {
-      "id": "2026-09-21-USPH-20260923102738-4",
-      "ticker": "USPH",
-      "name": "U.S. Physical Therapy, Inc.",
-      "lean": "cautious",
-      "conviction": "low",
-      "horizon_d": 21,
-      "thesis": "The deterministic verdict is a laggard (relative weakness): selection z is negative with a negative SUE and negative momentum, quality is a watch flag, and the board shows an extended hold state with an entry caution; the daily botomming turn is only partial against a mixed weekly picture, supporting a relative-underweight lean.",
-      "evidence": [
-        "verdict 'Lagging \u2014 relative weakness'",
-        "selection z -0.7547 with SUE z -1.28 and momentum z -0.84",
-        "quality z -0.355 with accounting 'watch' flag",
-        "board state 'HOLD \u2014 EXTENDED' with urgency 'caution'",
-        "cautions: accounting quality worth a second look"
-      ],
-      "dissent": "The daily bottoming turn is real (above 50/200-day, positive MACD), and with such a small-cap name a single earnings surprise could reverse the relative-weakness read quickly.",
-      "falsifier": {
-        "text": "Price exceeding its 52-week high on a fresh volume while a positive SUE prints would show the laggard read was too bearish.",
-        "check": {
-          "kind": "rel_return",
-          "subject_ticker": "USPH",
-          "vs": "SPY",
-          "op": ">",
-          "threshold": 0.05,
-          "horizon_d": 21
-        }
-      },
-      "check_by": "2026-10-20",
-      "engine_verdict": "Lagging \u2014 relative weakness"
-    },
-    {
-      "id": "2026-09-21-REXR-20260923102738-5",
-      "ticker": "REXR",
-      "name": "Rexford Industrial Realty",
+      "id": "2026-10-08-ADSK-20261013005515-2",
+      "ticker": "ADSK",
+      "name": "Autodesk",
       "lean": "neutral",
       "conviction": "low",
-      "horizon_d": 21,
-      "thesis": "The deterministic verdict is 'no clear edge': SUE is deeply negative at -3.0, momentum is negative, and only the entry axis (off-high, RSI 63) offers a partial turn; with the weekly timeframe mixed and a macro headwind, there is no directional edge to express.",
+      "horizon_d": 20,
+      "thesis": "The bottoming signal and clean quality profile are offset by weak residual selection, negative revisions and momentum, and an unconfirmed weekly trend. With the deterministic verdict finding no clear edge, there is insufficient evidence for relative direction.",
       "evidence": [
-        "verdict 'Neutral \u2014 no clear edge'",
-        "SUE z -3.0, validated but negative",
-        "momentum z -1.11 (context negative)",
-        "macro liquidity contracting headwind",
-        "entry only (urgency, off-high, rsi) supports the turn"
+        "Verdict: Neutral \u2014 no clear edge",
+        "Selection axis: z -0.39, 44th percentile",
+        "Quality axis: z 1.15, 67th percentile; accounting clean",
+        "Weekly timeframe has not turned",
+        "Below the 200-day average despite reclaiming the 10-day average"
       ],
-      "dissent": "The entry axis is the strongest on the board (z 0.7733), and a clean accounting flag with rising revisions (z 1.14) could mean the SUE negative is a one-off and the daily bottom is the start of a repair.",
+      "dissent": "A sustained recovery above the 200-day average could convert the recent swing low and positive MACD into a durable trend reversal.",
       "falsifier": {
-        "text": "Price reclaiming the 52-week high while SUE flips positive would show the neutral read was too cautious on an early base.",
+        "text": "The weekly trend turns bullish and the stock holds above its 200-day average.",
         "check": {
           "kind": "soft",
           "reason": "neutral lean \u2014 not scored"
         }
       },
-      "check_by": "2026-10-20",
+      "check_by": "2026-11-05",
       "engine_verdict": "Neutral \u2014 no clear edge"
     },
     {
-      "id": "2026-09-21-PRU-20260923102738-6",
-      "ticker": "PRU",
-      "name": "Prudential Financial",
+      "id": "2026-10-08-ABBV-20261013005515-3",
+      "ticker": "ABBV",
+      "name": "Abbvie Inc",
       "lean": "neutral",
       "conviction": "low",
-      "horizon_d": 21,
-      "thesis": "The deterministic verdict is a constructive base but the band is neutral: SUE is barely positive, momentum is context-level, and the Financials basket is deteriorating; the daily turn is incomplete (still below the 10-day average) and the weekly picture is mixed, so the constructive base is not yet actionable.",
+      "horizon_d": 20,
+      "thesis": "The bullish weekly alignment and fresh-buy cycle argue against shorting strength, while the extension brake at a 52-week high argues against assuming further relative upside. The neutral verdict and middling selection leave the direction unresolved.",
       "evidence": [
-        "verdict 'Constructive \u2014 building a base' but band 'neutral'",
-        "SUE z 0.07 and momentum z 0.18 (weak positive)",
-        "cautions: Financials basket deteriorating",
-        "still below 10-day average with a swing-low printed only",
-        "macro liquidity contracting headwind"
+        "Verdict: Neutral \u2014 no clear edge",
+        "Ladder: FRESH BUY with bullish bigger-picture trend",
+        "Above both 50-day and 200-day averages",
+        "At its 52-week high with RSI 67",
+        "Selection axis: 51st percentile"
       ],
-      "dissent": "Quality is clean (z 0.55), value is strong (z 1.086), and the entry axis is strong (z 0.8533); if the base completes above the 10-day average with the weekly turning, the constructive read could accelerate.",
+      "dissent": "Strong trend alignment, positive MACD and high quality could sustain momentum and produce clear outperformance despite the extension.",
       "falsifier": {
-        "text": "Price closing below the swing low while the Financials basket keeps deteriorating would show the constructive base read was premature.",
+        "text": "The stock continues holding above both major moving averages and establishes new highs while outperforming the S&P 500 over the horizon.",
         "check": {
           "kind": "soft",
           "reason": "neutral lean \u2014 not scored"
         }
       },
-      "check_by": "2026-10-20",
-      "engine_verdict": "Constructive \u2014 building a base"
+      "check_by": "2026-11-05",
+      "engine_verdict": "Neutral \u2014 no clear edge"
+    },
+    {
+      "id": "2026-10-08-BEKE-20261013005515-4",
+      "ticker": "BEKE",
+      "name": "KE Holdings (ADR)",
+      "lean": "neutral",
+      "conviction": "low",
+      "horizon_d": 20,
+      "thesis": "The unblocked bottoming entry is offset by weak residual selection, a mixed weekly picture and a left-translated prior cycle. Those opposing signals support the deterministic no-clear-edge verdict rather than a directional call.",
+      "evidence": [
+        "Verdict: Neutral \u2014 no clear edge",
+        "Entry axis: 62nd percentile and unblocked",
+        "Selection axis: z -0.25, 46th percentile",
+        "Prior cycle was left-translated",
+        "Weekly timeframe has not turned"
+      ],
+      "dissent": "Price is above both major moving averages with positive MACD, so the swing-low recovery could develop into renewed relative leadership.",
+      "falsifier": {
+        "text": "The weekly trend turns bullish and the stock sustains its advance above both the 50-day and 200-day averages.",
+        "check": {
+          "kind": "soft",
+          "reason": "neutral lean \u2014 not scored"
+        }
+      },
+      "check_by": "2026-11-05",
+      "engine_verdict": "Neutral \u2014 no clear edge"
+    },
+    {
+      "id": "2026-10-08-PG-20261013005515-5",
+      "ticker": "PG",
+      "name": "Procter + Gamble Co/The",
+      "lean": "neutral",
+      "conviction": "low",
+      "horizon_d": 20,
+      "thesis": "The fresh-buy signal and bullish weekly trend prevent a bearish lean, but weak residual selection, a left-translated prior cycle and the deteriorating defensives basket temper the setup. The validated risk reshape supports watching the turn without asserting relative outperformance.",
+      "evidence": [
+        "Verdict: Neutral \u2014 no clear edge",
+        "Ladder: FRESH BUY with bullish bigger-picture trend",
+        "Entry axis: 64th percentile and unblocked",
+        "Selection axis: z -0.48, 43rd percentile",
+        "Prior cycle was left-translated"
+      ],
+      "dissent": "An early investor-cycle phase, positive MACD and alignment above both major moving averages could allow the fresh buy signal to outperform.",
+      "falsifier": {
+        "text": "The stock sustains the fresh-buy trend above both major moving averages and outperforms the S&P 500 over the horizon.",
+        "check": {
+          "kind": "soft",
+          "reason": "neutral lean \u2014 not scored"
+        }
+      },
+      "check_by": "2026-11-05",
+      "engine_verdict": "Neutral \u2014 no clear edge"
+    },
+    {
+      "id": "2026-10-08-ZTS-20261013005515-6",
+      "ticker": "ZTS",
+      "name": "Zoetis",
+      "lean": "cautious",
+      "conviction": "medium",
+      "horizon_d": 20,
+      "thesis": "This is genuine relative weakness rather than mere extension: the lagging verdict, deeply negative momentum and revisions, and position below both major moving averages outweigh the short-term bottoming attempt. Cautious calls have been the better-calibrated historical lean, though the sample record still falls short of the stated chance benchmark overall.",
+      "evidence": [
+        "Verdict: Lagging \u2014 relative weakness",
+        "Selection axis: z -0.96, 35th percentile",
+        "Momentum z -2.82 and revisions z -1.10",
+        "Below the 50-day average and 24.7% below the 200-day average",
+        "49.9% below the 52-week high"
+      ],
+      "dissent": "The recent swing low, positive MACD and strong cash generation could mark an early recovery before the weekly trend confirms.",
+      "falsifier": {
+        "text": "The stock reclaims and holds above its 50-day average while outperforming the S&P 500 over the horizon.",
+        "check": {
+          "kind": "rel_return",
+          "subject_ticker": "ZTS",
+          "vs": "SPY",
+          "op": ">",
+          "threshold": 0.05,
+          "horizon_d": 20
+        }
+      },
+      "check_by": "2026-11-05",
+      "engine_verdict": "Lagging \u2014 relative weakness"
     }
   ],
   "disclaimer": "Accountable AI judgment on the deterministic top picks. The cross-sectional rank has no validated forward edge; these leans are fallible, falsifiable conditionals graded against reality \u2014 never position sizes. See the track record."
