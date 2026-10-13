@@ -16,7 +16,7 @@ changed:
   - path: docs/superpowers/plans/2026-09-24-mining-integration-plan-addendum.md
     what: "Required 2268-word review supplement: consumed shared returns, upstream-only foundation assignment, seven findings and exact G1-G7 closing evidence."
   - path: agentos/handoffs/GMI-MINING-MASTER-FABLE-CEO-HANDOFF-2026-09-24.md
-    what: "2004-word master packet: reading order, eight-pass index, two positive tasks, Fable/worker split, action-scoped holds and full-sector continuation; not dispatched."
+    what: "2004-word master packet body: reading order, eight-pass index, two positive tasks, Fable/worker split, action-scoped holds and full-sector continuation; not dispatched."
   - path: research/mining/check_mining_handoff.py
     what: "Offline immutable-input, trace and packet-label verification; no product or native imports."
   - path: research/mining/MINING_HANDOFF_REVIEW_CHECKS_2026-09-24.json
