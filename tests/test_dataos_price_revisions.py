@@ -237,3 +237,23 @@ def test_P02_04_supersedes_naming_an_absent_id_is_NO_ELIGIBLE_REVISION() -> None
         revisions.resolve(POST_CORRECTION)
     assert raised.value.reason is RefusalReason.NO_ELIGIBLE_REVISION
     assert raised.value.event_id == "B"
+
+
+# ── R02 heal (M1) — one event id names exactly one record ──────────────────
+def test_R02_M1_duplicate_event_id_refuses_in_split_factor() -> None:
+    revisions = ActionRevisionSet(
+        "dup", (event("s1", known_at=ANNOUNCED), event("s1", known_at=ANNOUNCED))
+    )
+    with pytest.raises(ViewRefusal) as raised:
+        split_factor(ROW_DAY, revisions, AS_AT)
+    assert raised.value.reason is RefusalReason.DUPLICATE_EVENT_ID
+    assert raised.value.event_id == "s1"
+
+
+def test_R02_M1_a_correction_under_a_new_id_still_resolves() -> None:
+    original = event("s1", ratio=Fraction(2), known_at=ANNOUNCED)
+    correction = event("s1-c1", ratio=Fraction(3), known_at=known(2026, 4, 1), supersedes="s1")
+    revisions = ActionRevisionSet("corr-new-id", (original, correction))
+    assert split_factor(ROW_DAY, revisions, PRE_CORRECTION) == Fraction(2)
+    assert split_factor(ROW_DAY, revisions, POST_CORRECTION) == Fraction(3)
+    assert split_factor(ROW_DAY, revisions, AS_AT) == Fraction(3)
