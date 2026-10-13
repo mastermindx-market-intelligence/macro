@@ -1,14 +1,14 @@
 {
   "schema": "neuralweb.daily_brief.v1",
-  "produced_at": "2026-10-13T08:48:26.559521+00:00",
+  "produced_at": "2026-10-13T11:35:50.825629+00:00",
   "as_of": "2026-10-09",
   "status": "degraded",
-  "phase": "engine",
+  "phase": "final",
   "did_the_brain_run": {
     "cortex_status": "degraded",
     "tool_call_batches": 0,
     "individual_tool_calls": 0,
-    "context_stale": true,
+    "context_stale": false,
     "summary": "cortex degraded — model_unavailable"
   },
   "what_changed": [
@@ -766,12 +766,6 @@
       "action_type": "ops_fix"
     },
     {
-      "priority": 1,
-      "area": "cortex",
-      "summary": "cortex context was stale at run time — check world_state freshness",
-      "action_type": "inspect"
-    },
-    {
       "priority": 2,
       "area": "government-revenue-latest",
       "summary": "lobe government-revenue-latest is warn — age 1016.81h vs SLA 36h",
@@ -1200,7 +1194,7 @@
     {
       "priority": 3,
       "area": "evidence_clock",
-      "summary": "123 evidence-clock items overdue — see admin Observatory",
+      "summary": "126 evidence-clock items overdue — see admin Observatory",
       "action_type": "follow_up"
     }
   ],
@@ -1209,24 +1203,24 @@
   },
   "evidence_clock": {
     "available": true,
-    "as_of": "2026-10-11",
+    "as_of": "2026-10-13",
     "counts": {
-      "overdue": 123,
-      "due": 23,
+      "overdue": 126,
+      "due": 36,
       "human_review": 0,
       "missing": 1,
       "stale": 1,
       "blocked": 2,
       "not_ready": 0,
       "promotion_eligible": 0,
-      "accruing": 175,
+      "accruing": 159,
       "n_acknowledged": 0
     },
     "top_due": {
       "clock_id": "qledger:placebo",
       "due_at": "2026-06-22"
     },
-    "morning_line": "123 overdue, 23 due, 1 missing, 1 stale, 2 blocked, 175 accruing. Top due: qledger:placebo."
+    "morning_line": "126 overdue, 36 due, 1 missing, 1 stale, 2 blocked, 159 accruing. Top due: qledger:placebo."
   },
   "china_market_state": {
     "available": true,
