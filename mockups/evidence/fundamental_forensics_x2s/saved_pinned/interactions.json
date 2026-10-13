@@ -7,6 +7,7 @@
       "notice_has_strong": false,
       "notice_newer_generation": false,
       "notice_state": "hidden",
+      "notice_text": "",
       "notice_visible": false,
       "options": [
         "Choose a saved view",
@@ -14,6 +15,9 @@
         "Apple latest check",
         "Apple check (older format) · unavailable"
       ],
+      "select_inner_px": 425,
+      "selected_text_fits": true,
+      "selected_text_px": 252,
       "value": "CDEFGHIJKLMNOPQRSTUVWX"
     },
     "force_state": "saved_pinned",
@@ -32,6 +36,7 @@
       "notice_has_strong": false,
       "notice_newer_generation": false,
       "notice_state": "hidden",
+      "notice_text": "",
       "notice_visible": false,
       "options": [
         "Choose a saved view",
@@ -39,6 +44,9 @@
         "Apple latest check",
         "Apple check (older format) · unavailable"
       ],
+      "select_inner_px": 425,
+      "selected_text_fits": true,
+      "selected_text_px": 252,
       "value": "CDEFGHIJKLMNOPQRSTUVWX"
     },
     "force_state": "saved_pinned",
@@ -57,6 +65,7 @@
       "notice_has_strong": false,
       "notice_newer_generation": false,
       "notice_state": "hidden",
+      "notice_text": "",
       "notice_visible": false,
       "options": [
         "选择已存视图",
@@ -64,6 +73,9 @@
         "Apple latest check",
         "Apple check (older format) · 不可用"
       ],
+      "select_inner_px": 504,
+      "selected_text_fits": true,
+      "selected_text_px": 245.8011932373047,
       "value": "CDEFGHIJKLMNOPQRSTUVWX"
     },
     "force_state": "saved_pinned",
@@ -82,6 +94,7 @@
       "notice_has_strong": false,
       "notice_newer_generation": false,
       "notice_state": "hidden",
+      "notice_text": "",
       "notice_visible": false,
       "options": [
         "选择已存视图",
@@ -89,6 +102,9 @@
         "Apple latest check",
         "Apple check (older format) · 不可用"
       ],
+      "select_inner_px": 504,
+      "selected_text_fits": true,
+      "selected_text_px": 245.8011932373047,
       "value": "CDEFGHIJKLMNOPQRSTUVWX"
     },
     "force_state": "saved_pinned",
@@ -107,6 +123,7 @@
       "notice_has_strong": false,
       "notice_newer_generation": false,
       "notice_state": "hidden",
+      "notice_text": "",
       "notice_visible": false,
       "options": [
         "Choose a saved view",
@@ -114,6 +131,9 @@
         "Apple latest check",
         "Apple check (older format) · unavailable"
       ],
+      "select_inner_px": 346,
+      "selected_text_fits": true,
+      "selected_text_px": 252,
       "value": "CDEFGHIJKLMNOPQRSTUVWX"
     },
     "force_state": "saved_pinned",
@@ -132,6 +152,7 @@
       "notice_has_strong": false,
       "notice_newer_generation": false,
       "notice_state": "hidden",
+      "notice_text": "",
       "notice_visible": false,
       "options": [
         "Choose a saved view",
@@ -139,6 +160,9 @@
         "Apple latest check",
         "Apple check (older format) · unavailable"
       ],
+      "select_inner_px": 346,
+      "selected_text_fits": true,
+      "selected_text_px": 252,
       "value": "CDEFGHIJKLMNOPQRSTUVWX"
     },
     "force_state": "saved_pinned",
@@ -157,6 +181,7 @@
       "notice_has_strong": false,
       "notice_newer_generation": false,
       "notice_state": "hidden",
+      "notice_text": "",
       "notice_visible": false,
       "options": [
         "选择已存视图",
@@ -164,6 +189,9 @@
         "Apple latest check",
         "Apple check (older format) · 不可用"
       ],
+      "select_inner_px": 346,
+      "selected_text_fits": true,
+      "selected_text_px": 245.8011932373047,
       "value": "CDEFGHIJKLMNOPQRSTUVWX"
     },
     "force_state": "saved_pinned",
@@ -182,6 +210,7 @@
       "notice_has_strong": false,
       "notice_newer_generation": false,
       "notice_state": "hidden",
+      "notice_text": "",
       "notice_visible": false,
       "options": [
         "选择已存视图",
@@ -189,6 +218,9 @@
         "Apple latest check",
         "Apple check (older format) · 不可用"
       ],
+      "select_inner_px": 346,
+      "selected_text_fits": true,
+      "selected_text_px": 245.8011932373047,
       "value": "CDEFGHIJKLMNOPQRSTUVWX"
     },
     "force_state": "saved_pinned",

@@ -5,4 +5,6 @@ changed_paths:
   - "templates/fundamental_forensics.html.j2"
   - "site/fif_saved_briefcase.js"
   - "site/fundamental_forensics.js"
+  - "templates/fundamental_forensics.css"
+  - "site/fundamental_forensics.css"
 manifest: "mockups/evidence/fundamental_forensics_x2s/saved_unavailable/manifest.json"

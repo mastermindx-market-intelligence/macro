@@ -52,7 +52,7 @@
           "viewport": "desktop"
         },
         "panel_count": 0,
-        "payload_bytes_total": 3370837,
+        "payload_bytes_total": 2981152,
         "raw_slug_hit_count": 0,
         "raw_slug_hits": [],
         "request_count": 28,
@@ -72,7 +72,7 @@
     "base_url": null,
     "kind": "site_dir",
     "resolved_gitdir_or_none": "/home/ubuntu2/lanes/repos/macro/.git/worktrees/fif-x2s-cap-20261013",
-    "resolved_sha_or_none": "6a6bfb3c75dd6ba302e9435b31afcdb0257612ae",
+    "resolved_sha_or_none": "ed102396631e7908765344052ef034f70b63838b",
     "resolved_sha_source": "HEAD of the nearest git directory at or above --site-dir: /home/ubuntu2/lanes/repos/macro/.git/worktrees/fif-x2s-cap-20261013 (nearest-above is git's own rule; that this checkout produced --site-dir is not verified)",
     "site_dir": "/home/ubuntu2/lanes/wt/fif-x2s-cap-20261013/site"
   },
