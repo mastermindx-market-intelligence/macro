@@ -3,90 +3,116 @@ workstream: WS:CHAIRMAN-CONTROL-ROOM
 session: claude/meta-ceo-office-r2-20261012; Codex root01a13315-332b-7102-b7c8-0c7fc01fa92c
 model: codex
 ended_because: ci_handoff
-mission: Implement the Chairman-supplied R2 Mastermind Meta-CEO office plan end to end. The current Codex session
-  holds the assigned Meta-CEO function with three Sol coordinators and existing M2 Fabric for eligible labor. This
-  is an active checkpoint, not a programme completion or transfer of incumbent effects.
-state_before: 'The supplied R2 plan was local-only. Protected #1380 supplied selected-session continuation; principal
-  Dot selection, native Project Chat and a complete question/ruling/worker/parent consumption loop were unqualified.
-  Existing principal, callback and context carriers remain separate.'
+mission: Implement the supplied Mastermind Meta-CEO R2 plan end to end. Root01a13315-332b-7102-b7c8-0c7fc01fa92c
+  remains the assigned principal; Sol coordinators use the installed M2 Fabric for eligible labor. This active checkpoint
+  neither completes the programme nor transfers incumbent effects.
+state_before: Previous checkpoint, merged in Macro PR9073, recorded the first source foundation. This update records
+  protected principal source, reviewed event and observation increments, compiled Office qualification, native two-turn
+  qualification and the exact remaining recovery/install gates.
 changed:
-- path: mastermind:research/mastermind_meta_ceo_master_plan_r2_2026-10-12.md
-  what: Published the supplied R2 plan byte-for-byte on PR1394.
-- path: mastermind:docs/superpowers/specs/2026-10-12-meta-ceo-office-r2-implementation.md
-  what: Published and corrected the implementation contract after independent Fabric review; original intent, context
-    continuity, autonomy envelope, comparative qualification, native and seven-day requirements remain binding.
-- path: mastermind:app/mastermind_os/src/conversations/awaiting-answer-port.ts
-  what: Published a two-phase recovery port over the existing OperationController plus real-controller test artifacts.
-    Office caller/host integration remains pending.
-- path: mastermind:app/mastermind_os/browser-proof.html
-  what: Published a separate localhost-only real-App/synthetic-transport browser fixture and separate compiled artifact
-    workflow; never a production entry or live proof.
-- path: mastermind:research/mastermind_os/R2_QUALIFICATION_2026-10-12.md
-  what: Published sanitized Dot/native/context/runtime qualification with actual limitations and original evidence
-    digests.
+- path: mastermind:integrations/session_bridge/runtime_return.py
+  what: PR1240 principal RULING/admission source merged as babac2a23aa1eec095e21ea6ba2597accc31122f. Source acceptance
+    only; external writer synchronization and live parent adoption remain separate.
+- path: mastermind:integrations/session_bridge/runtime_reply_delivery.py
+  what: 'Original PR1362 now at d9ca1fe43624b8eed01ccfcf5589a9907e21a2e5: authenticated original-request READ grant,
+    sealed subscription persistence and one-shot delivery composition. Default-disabled consumer; no live credentials,
+    callbacks or installation.'
+- path: mastermind:scripts/executive_wake_reconcile.py
+  what: PR1402 at40c14c569bb6d96d507fc86f24428d783f6b8eae adds observe-only through the existing read-only Runtime,
+    distinguishing planned from applied actions. No campaign or scheduler.
+- path: mastermind:app/mastermind_os/src/meta-ceo/MetaCeoOffice.tsx
+  what: PR1394 hosted6b26f69cc040b46c8099a17a7ef94d3242f5386e remains draft. Local reviewed caller-v8/layout-v9/copy
+    changes and browser evidence are preserved; six original reply-consumer paths remain held unchanged pending
+    original-operation recovery.
 verified:
-- claim: Original R2 document retained byte-for-byte.
-  command: hashlib.sha256 over supplied file and published artifact; GitHub branch/tree readback
-  result: a5c534ddabcd1034372354a1ec645dffe1a2520795035a757e4f7def8300c62d
-- claim: Independent contract review consumed and its findings applied.
-  command: fabric_task.py result/status/accept r2-acceptance-operator-01a13315 --by reviewer
-  result: TERMINAL rc0, result9103bytes, SHA256b6e7ab40bb3337c6775c598c47275502e0fb8bc331e6601849652a9258923153,
-    ACCEPTED reviewer; nested child budget unused.
-- claim: Runtime read outage recovered; no target exposed in later read.
-  command: Executive executive_state and Session Bridge session_targets, bounded authenticated reads
-  result: 2026-10-13T02:40:06Z executive read succeeded, installedMastermind e93feb33 and Macro88804ed7; later session_targets
-    ok=true data=[]. No source/install/runtime acceptance implied.
-- claim: Native-app observation reached an explicit tool safety refusal.
-  command: CUA getApp /Applications/ChatGPT.app after inventory
-  result: Computer Use is not allowed to use the app 'com.openai.codex' for safety reasons. No alternate app/browser/account
-    used to obtain that refused effect.
-- claim: Native automated target route unqualified at protected source.
-  command: Canonical managed open_surface preflight plus exact-source Session Bridge/Wake reader inspection
-  result: unsupported_surface; target kinds fabric_attempt/codex/claude do not prove native Project Chat account/context/mode/continuation.
-- claim: The first hosted source candidate failed typecheck before functional tests; its exact narrow fixture repair
-    is now published.
-  command: gh run view38340563086; gh run view --job115110364605/115110364764 --log-failed; exact artifact publication
-    readback; gh pr view1394 statusCheckRollup; actions/runs/38341626620/artifacts
-  result: At01be1d94 both app jobs reported TS18047 saved possibly null in test line26; explicit !saved guard published
-    in d64fe3ab. Run38341626620 frontend and native-macos both SUCCESS on head d64fe3ab; compiled integration1d4cbc379196c462850a5fb424343fda2d92dda2.
-    General test job remains pending; compiled-fixture browser observation started separately.
+- claim: Original plan and independent interpretation remain unchanged.
+  command: Prior accepted contract review and source SHA retained; no material invalidator.
+  result: Original plan SHA256 a5c534ddabcd1034372354a1ec645dffe1a2520795035a757e4f7def8300c62d; accepted Fabric
+    contract review retained, not repeated.
+- claim: PR1240 protected source landed.
+  command: GitHub protected merge readback.
+  result: Merged2026-10-13T07:18:43Z as babac2a23aa1eec095e21ea6ba2597accc31122f; no installation or H1-H7 live
+    acceptance implied.
+- claim: Composed PR1362 source passed affected checks and independent review.
+  command: 235 affected tests on4a9d15ad9b3c69368779c66ce506bc7d5c8c0452, plus accepted reviewer retained result
+    and source manifests.
+  result: 235PASS/0skip/62.88s; published d9ca1fe changes only its dated checkpoint afterward. Independent Fabric
+    review4537B SHA256 fc425e12083c4b43c1006bd2c4874f70200e3c4f495031cbfe0ccebf8cec79a6 consumed and accepted by
+    actual assigning parent. PR-head CodeQL passed; test38365030515 still running at08:14Z.
+- claim: Observation CLI source passed affected checks and independent review.
+  command: 95 affected tests on protected babac source; exact two-postimage review.
+  result: 95PASS/0skip/10.44s; PR1402 exact40c14c5 CodeQL passed; test38366217342 still running at08:14Z. Logical
+    read-only guarantee allows SQLite SHM reader bookkeeping; no atomic population or seven-day proof.
+- claim: Actual compiled Office caller/layout journey completed with synthetic backend authority and transport.
+  command: Real App/IndexedDB browser journey, v9/v10 compiled builds, EN/ZH x dark/light x1440/390 captures.
+  result: READ recovered the exact answer while SEND withheld; answer DOM existed before pointer clear. Late Alpha
+    answer remained hidden on Beta; return to Alpha recovered the same original request without duplicate SEND.
+    Auth generation change retired private answer. Answer precedes observation panel; copy distinguishes missing
+    current-window observation. 47 affected tests and typecheck/build passed; copy assertions2PASS. Six held consumer
+    files and full union remain unaccepted.
+- claim: Ordinary native Project Chat performed initial review and one correction in the same conversation.
+  command: Approved initial/correction sends in existing MastermindX Business Project, Chrome Person1; retained
+    AX, screenshots and parent-consumption receipt.
+  result: Conversation6acdc43f-1ec8-83e8-8294-5373c70b231c, visible Extra High, Project-only memory; actual responses
+    preserved original intent and READ/SEND correction. Served model unknown; root consumed review, not Runtime
+    RULING/worker ACK or autonomous Secretary qualification.
+- claim: Context owner advanced the original recovery operations and protected release.
+  command: 'Existing #1206 canonical checkpoint issuecomment6104932112, owner return2026-10-13T08:10:42Z.'
+  result: 'PR1401 unchanged d19e9dba36d534b8f7e9d1f9b79d6906869c23ef Ready and queued; actual integrated candidate252ac93de7696fea861161d4686d6fb47014e6d0
+    checks started. Existing two-SSD router allowed same-operation acquisitions for #1273/#1216 with effectNOT_APPLIED;
+    no archive cleanup, source transfer or installed acceptance.'
 unverified:
-- claim: Installed central office direction-to-accepted-outcome loop.
-  what_would_verify: Protected and authorized installed source plus real intent, work admission, ordinary question,
-    principal ruling, worker resume, independent review, parent consumption and honest app projection.
-- claim: Eligible principal Dot account/connection/cloud grants and comparative selection.
-  what_would_verify: Independently permitted account-owner evidence and the normalized-context/realistic-surface
-    held-out comparison in R2.
-- claim: Native Project Chat and genuine seven-day campaign.
-  what_would_verify: Eligible exact account/Project/conversation/mode/context/return/continuation proof, followed
-    by seven actual installed days with complete obligations and measured economics.
+- claim: Installed central office, principal admission and complete direction-to-accepted-outcome loop.
+  what_would_verify: Required protected source and authorized installation plus actual principal action, ordinary
+    question/ruling, resumed worker, independent intent review, original-parent consumption and honest app projection.
+- claim: Native Project Chat automation and comparative principal selection.
+  what_would_verify: Admitted Secretary/direct participating-session route, real audience/current grants, exact
+    continuation and consumed return; normalized-context and realistic-tool held-out comparison. Two attended native
+    turns are narrower proof.
+- claim: Genuine Stage4 capacity campaign.
+  what_would_verify: Seven actual installed days with eligible demand coverage, intervention/cost/occupancy and
+    backlog receipts, causal dispositions and original-parent consumption.
 unresolved:
-- PR1394 draft head d64fe3abde7b62c5ac5facedf23d9dd1fb99e5c8; foundation/fixture published and app jobs PASS. App+host
-  integration and principal guard pending. General test and browser proof remain in progress. No merge/install/deploy/full
-  acceptance.
-- Office App source retains its original unsettled carrier; reply-consumer return is being repaired before acceptance.
-  Wrapper run settled SLOT_TIMEOUT before model turn. Principal guard run settled rc65 artifact delivery contract
-  failure; its patch remains unaccepted and original-carrier recovery only.
-- 'Incumbent #1240 RULING, #1271 principal host, #1360 disarmed worker, #1362 callback, #1273/#1307/#1316 context/acceptance
-  source retain their actual custody/review obligations.'
-- External SSD worktree helper refused below160GiB; no internal fallback, shared-checkout mutation or reclaim occurred.
-  Owned GitHub API branch publication uses no local checkout.
+- Office original r2-office-reply-review-repair-20261012-01 remains unsettled. One supported collect returned rc75
+  REFUSED/original_delivery_unconfirmed/retry_authorized=false. Fabric owner source diagnosis found retained remote
+  UNAVAILABLE/original_file_owner_mode_type_or_size; diagnostic parser repair is separate. No retry, alternate reader,
+  permission change, replacement worker or six-path mutation is authorized by that diagnosis.
+- PR1362 and PR1402 required test jobs remain running at this checkpoint; both remain draft. Original event review
+  r2-event-composition-review-01a133c9 remains unresolved and is not acceptance for newer independently accepted
+  packages.
+- Installed post-COMMIT event consumer still needs an actually admitted current original-account READ supplier,
+  subscription selection and host key custody. Inbound JWT verification does not mint a background account grant;
+  native worker authority is not subscriber authority. Callback failure must retain the successful native reply
+  receipt.
+- Actual Dot app observation safety refusal remains closed. Native Project Chat Stage0B was independently permitted
+  and does not clear the refused Stage0A effect.
+- The sole Mastermind OS host owner reports no build/install/grant/qualification started; its explicit babac target
+  decision remains pending in that existing chat. No root deployment, restart or parallel installer.
+- 'Context #1273/#1216 original source-holder obligations remain; #1307 filesystem releasable does not settle original
+  native-context-v2-static-review-20261009-001 EFFECT_UNKNOWN/reply_unavailable. Existing owner and observer continue.'
+- Secretary regression/playbook census and remaining R2 acceptance mapping continue under the existing qualification
+  and authority Sol coordinators, with M2 Fabric for eligible leaf work.
 next_actions:
-- Office coordinator consumes its same-id returns and produces exact full-file artifacts for durable original-answer
-  recovery; independent review precedes acceptance.
-- 'Authority coordinator reconciles original r2-principal-commit-fence-01a13316 artifact failure, then verifies
-  any qualified candidate with actual-lock, rollback and accepted/concurrent-replay tests; preserve #1240 overlapping
-  source.'
-- Root integrates reviewed artifacts on PR1394, consumes exact-head CI and compiled browser evidence, then carries
-  eligible source through protected merge and separately authorized installation.
-- Persist actual native/Dot boundaries and admitted return/capacity proof; never relabel Fabric or Work as ordinary
-  native Project Chat.
+- Root consumes terminal matching-head CI, makes reviewed source eligible for the normal protected merge queue,
+  and preserves actual integrated-check gates.
+- Existing Fabric Integration owner diagnoses only the original retained Office refusal; actual assigning parent
+  must consume any lawfully recovered result before root acceptance. Preserve unresolved effect and exact six-file
+  candidate.
+- Root integrates qualified Office union only after same-operation recovery and independent acceptance; preserve
+  already accepted caller/layout/visual evidence unless source or contract materially changes.
+- Existing Context and OS installed owners continue their exact carriers; root prepares concrete current integration
+  evidence without sending unauthorized separate-chat messages or duplicating their effects.
+- Continue missing owner-local source work and canonical acceptance mapping; actual Stage0/1/2/3/4 proof remains
+  required before full programme completion.
 do_not_redo:
-- 'Do not rebuild #1380 continuation or duplicate #1240 principal RULING source or the #1362 callback service.'
-- Do not resubmit unsettled Fabric ids, change diagnostic allowlists, bypass prior credential/app refusals, or infer
-  cancellation from a stopped UI.
-- Do not repeat accepted contract review absent material change; all findings are preserved in the current contract.
-- 'Do not change existing WS waves or declare old #355/#633/#689 effects resolved from this new programme.'
+- 'Do not recreate #1380 continuation, #1240 RULING, #1362 callback store/delivery or a second context/queue/permission
+  owner.'
+- Do not replay unsettled/refused Fabric or native-context operations, alter diagnostic allowlists or credentials,
+  or infer worker death from a missing local controller PID.
+- Do not repeat accepted unchanged tests/reviews merely because a new turn or protected disjoint source movement
+  occurs.
+- Do not treat compiled synthetic App journeys, attended native reviews, source merges, SQLite observation or queued
+  jobs as installed autonomous acceptance.
 danger_areas:
 - Caller role text, account labels and navigation surfaces do not establish current authority; receiving service
   must resolve it.
@@ -95,13 +121,20 @@ danger_areas:
 - Current strategic autonomous-production-deploy prohibition remains unless scoped release authority changes.
 prs:
 - 1394
+- 1240
+- 1362
+- 1402
+- 1401
 ---
 
+# R2 active programme checkpoint — 2026-10-13
 
-# R2 active programme checkpoint
+This updates the existing Chairman Control Room continuity record. Root remains active; the schema value `ci_handoff` records a durable save, not mission completion or transfer. The previous revision remains in Macro PR9073 history.
 
-This record adds an active R2 continuation to the existing Chairman Control Room knowledge plane. It does not replace an incumbent workstream owner, restart a held historical operation, or assert any unfinished wave is done. The `ci_handoff` field describes the published candidate/evidence checkpoint; the assigning root remains active.
+Original root: `01a13315-332b-7102-b7c8-0c7fc01fa92c`. Office coordinator: `01a13316-b2f9-7070-9d93-902a633b3207`; authority: `01a13316-f8f4-77a0-8951-14b3f5ed5e4b`; qualification: `01a13317-49d5-7eb0-98f0-cd315346d48a`; event integration: `01a133c9` (full binding remains in its retained package). Each native coordinator preserves the original root and its own actual immediate-parent identity. No permanent conversation or new orchestration system is appointed.
 
-The root's three native children are Office `01a13316-b2f9-7070-9d93-902a633b3207`, authority `01a13316-f8f4-77a0-8951-14b3f5ed5e4b`, and qualification/context `01a13317-49d5-7eb0-98f0-cd315346d48a`. They preserve the original root and use their own verified identity as each Fabric child's immediate parent. No permanent Fable or Sol conversation is appointed.
+Evidence root: `/Volumes/Mastermind/evidence/meta-ceo-r2-20261012-01a13315`. Source/review manifests reside in `r2-event-integration-20261013`, `r2-stage4-campaign-20261013` and `r2-office-20261012`. The exact Office refusal is retained in `original-reply-collection-attempt.json`; its original carrier stays frozen. Compiled visual evidence is under root `office-v9-layout/browser` and `office-observation-copy`.
 
-Implementation carrier: https://github.com/mastermindx-market-intelligence/Mastermind/pull/1394, branch `claude/meta-ceo-office-r2-20261012`. Current source candidate at this checkpoint: `d64fe3abde7b62c5ac5facedf23d9dd1fb99e5c8`. Source baseline is `e93feb33fe3f30a36b1a15bd8686cc42773f9a9d`; later protected `dcafbf7eb4b2159cfbb4fd14f82fdccd209b2525` changes release law only, which the root adopted without rebasing unaffected source.
+Current source carriers: [Office1394](https://github.com/mastermindx-market-intelligence/Mastermind/pull/1394), [principal1240](https://github.com/mastermindx-market-intelligence/Mastermind/pull/1240), [events1362](https://github.com/mastermindx-market-intelligence/Mastermind/pull/1362), [observation1402](https://github.com/mastermindx-market-intelligence/Mastermind/pull/1402), [context compatibility1401](https://github.com/mastermindx-market-intelligence/Mastermind/pull/1401). Context continuity stays in the [existing1206 checkpoint](https://github.com/mastermindx-market-intelligence/Mastermind/issues/1206#issuecomment-6104932112).
+
+The current two-volume SSD policy preserves its admission floor and uses admitted overflow placement under `/Volumes/Mastermind 2`; the earlier below-floor refusal is historical, not current blanket incapacity. Shared dirty checkouts and incumbent host router bytes remain untouched by root.
