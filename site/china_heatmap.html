@@ -281,7 +281,7 @@
   <script src="logo_config.js?v=b37d33d3" defer></script>
   <script src="stock-logos.js?v=cc29be53" defer></script>
   <script src="live_config.js?v=52943e92" defer></script>
-  <script src="live.js?v=2464239d" defer></script>
+  <script src="live.js?v=1ba1e562" defer></script>
   <div class="nav-search">
     <span class="mag" aria-hidden="true"><svg viewBox="0 0 20 20" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="8.7" cy="8.7" r="5.6"></circle><path d="m12.9 12.9 4 4"></path></svg></span>
     <input type="text" autocomplete="off" aria-label="Search stocks"
@@ -311,6 +311,78 @@
     </div>
     
     <span class="hm-live-badge" data-live-label></span>
+  </div>
+  <div id="hm-ssr">
+    <div class="hx-pulse down">
+      <div class="hx-pulse-top">
+        <span class="hx-stance"><span class="ic"></span><span class="l-en">Broad decline</span><span class="l-zh">普跌</span></span>
+        <span class="hx-pulse-lab"><span class="l-en">Market pulse</span><span class="l-zh">市场脉搏</span></span>
+        <span class="hx-pulse-when">2026-10-13</span>
+      </div><div class="hx-pulse-read">
+        <span class="l-en"><b>36%</b> of names advancing · median <b>−1.26%</b>. Strength in <b>Energy</b>, <b>Communication Services</b> — weakness in <b>A-share</b>, <b>Technology</b>.</span>
+        <span class="l-zh"><b>36%</b> 个股上涨 · 中位数 <b>−1.26%</b>。资金流向：<b>能源</b>、<b>通信服务</b> 走强，<b>其他</b>、<b>信息技术</b> 走弱。</span>
+      </div>
+    </div>
+
+    <div class="hx-stats">
+      <div class="hx-stat hx-stat-br">
+        <div class="k"><span class="l-en">Breadth · advancing vs declining</span><span class="l-zh">市场广度 · 涨跌家数</span></div>
+        <div class="v">36% <span class="u"><span class="l-en">advancing</span><span class="l-zh">上涨</span></span></div>
+        <div class="hx-bbar"><i class="adv" style="width:35.86%"></i><i class="flt" style="width:1.81%"></i><i class="dec" style="width:62.33%"></i></div>
+        <div class="hx-bleg"><span class="hx-up">▲ 615</span><span class="hx-dn">1,069 ▼</span></div>
+        <div class="hx-bscope"><span class="l-en">Map sample · 1,715 names</span><span class="l-zh">本图样本 · 1,715 只</span></div>
+        <div class="hx-bscope hm-observation-coverage" role="status">
+          <span class="l-en">1715 / 1720 names have observed endpoint pairs · 5 unavailable.</span>
+          <span class="l-zh">1715 / 1720 个标的具备有效区间行情 · 5 个不可用。</span>
+        </div>
+      </div>
+      <div class="hx-stat">
+        <div class="k"><span class="l-en">Median move</span><span class="l-zh">涨跌中位数</span></div>
+        <div class="v down">−1.26%</div>
+        <div class="m"><span class="l-en">Tilted lower</span><span class="l-zh">偏弱</span></div>
+      </div>
+      <div class="hx-stat">
+        <div class="k"><span class="l-en">Strongest sector</span><span class="l-zh">最强板块</span></div>
+        <div class="v up">+4.78%</div>
+        <div class="m"><span class="l-en">Energy</span><span class="l-zh">能源</span></div>
+      </div>
+      <div class="hx-stat">
+        <div class="k"><span class="l-en">Weakest sector</span><span class="l-zh">最弱板块</span></div>
+        <div class="v down">−11.2%</div>
+        <div class="m"><span class="l-en">A-share</span><span class="l-zh">其他</span></div>
+      </div>
+    </div>
+
+    <div class="hx-boards">
+      <div class="hx-board"><h3><span class="tag up">▲</span><span class="l-en">Biggest gainers</span><span class="l-zh">涨幅榜</span></h3>
+        <div class="hx-row"><span class="tk">300821</span><span class="nm"><span class="l-en">Shandong Dongyue Organosilicon Materials Co., Ltd.</span><span class="l-zh">东岳硅材</span></span><span class="pc hx-up">+34.5%</span><span class="bar"><i style="width:100%;background:var(--up)"></i></span></div>
+        <div class="hx-row"><span class="tk">600812</span><span class="nm"><span class="l-en">North China Pharmaceutical Company.Ltd</span><span class="l-zh">华北制药</span></span><span class="pc hx-up">+19.9%</span><span class="bar"><i style="width:58%;background:var(--up)"></i></span></div>
+        <div class="hx-row"><span class="tk">300133</span><span class="nm"><span class="l-en">Zhejiang Huace Film & TV Co., Ltd.</span><span class="l-zh">华策影视</span></span><span class="pc hx-up">+19.9%</span><span class="bar"><i style="width:58%;background:var(--up)"></i></span></div>
+        <div class="hx-row"><span class="tk">601595</span><span class="nm"><span class="l-en">Shanghai Film Co., Ltd.</span><span class="l-zh">上海电影</span></span><span class="pc hx-up">+19.8%</span><span class="bar"><i style="width:57%;background:var(--up)"></i></span></div>
+        <div class="hx-row"><span class="tk">301658</span><span class="nm"><span class="l-en">Shenzhen SOFARSOLAR Co., Ltd.</span><span class="l-zh">首航新能</span></span><span class="pc hx-up">+17.4%</span><span class="bar"><i style="width:50%;background:var(--up)"></i></span></div>
+      </div>
+      <div class="hx-board"><h3><span class="tag dn">▼</span><span class="l-en">Biggest losers</span><span class="l-zh">跌幅榜</span></h3>
+        <div class="hx-row"><span class="tk">001309</span><span class="nm"><span class="l-en">Shenzhen Techwinsemi Technology Co., Ltd.</span><span class="l-zh">德明利</span></span><span class="pc hx-dn">−34.8%</span><span class="bar"><i style="width:100%;background:var(--down)"></i></span></div>
+        <div class="hx-row"><span class="tk">688578</span><span class="nm"><span class="l-en">Shanghai Allist Pharmaceuticals Co., Ltd.</span><span class="l-zh">艾力斯</span></span><span class="pc hx-dn">−29.8%</span><span class="bar"><i style="width:86%;background:var(--down)"></i></span></div>
+        <div class="hx-row"><span class="tk">688498</span><span class="nm"><span class="l-en">Yuanjie Semiconductor Technology Co., Ltd.</span><span class="l-zh">源杰科技</span></span><span class="pc hx-dn">−27.9%</span><span class="bar"><i style="width:80%;background:var(--down)"></i></span></div>
+        <div class="hx-row"><span class="tk">688048</span><span class="nm"><span class="l-en">Suzhou Everbright Photonics Co., Ltd.</span><span class="l-zh">长光华芯</span></span><span class="pc hx-dn">−27.9%</span><span class="bar"><i style="width:80%;background:var(--down)"></i></span></div>
+        <div class="hx-row"><span class="tk">688796</span><span class="nm"><span class="l-en">BIOCYTOGEN PHARMACEUTICALS (BEI</span><span class="l-zh">百奥赛图</span></span><span class="pc hx-dn">−27.7%</span><span class="bar"><i style="width:80%;background:var(--down)"></i></span></div>
+      </div>
+      <div class="hx-board hx-board-sec"><h3><span class="l-en">Sector leaders &amp; laggards</span><span class="l-zh">板块强弱</span></h3>
+        <div class="hx-sec"><span class="nm"><span class="l-en">Energy</span><span class="l-zh">能源</span></span><span class="track"><i style="width:43%;background:var(--up)"></i></span><span class="pc hx-up">+4.78%</span></div>
+        <div class="hx-sec"><span class="nm"><span class="l-en">Communication Services</span><span class="l-zh">通信服务</span></span><span class="track"><i style="width:34%;background:var(--up)"></i></span><span class="pc hx-up">+3.81%</span></div>
+        <div class="hx-sec"><span class="nm"><span class="l-en">Financial Services</span><span class="l-zh">金融</span></span><span class="track"><i style="width:16%;background:var(--up)"></i></span><span class="pc hx-up">+1.76%</span></div>
+        <div class="hx-sec"><span class="nm"><span class="l-en">Utilities</span><span class="l-zh">公用事业</span></span><span class="track"><i style="width:14%;background:var(--up)"></i></span><span class="pc hx-up">+1.60%</span></div>
+        <div class="hx-sec"><span class="nm"><span class="l-en">Consumer Defensive</span><span class="l-zh">必需消费</span></span><span class="track"><i style="width:4%;background:var(--up)"></i></span><span class="pc hx-up">+0.38%</span></div>
+        <div class="hx-sec"><span class="nm"><span class="l-en">Industrials</span><span class="l-zh">工业</span></span><span class="track"><i style="width:11%;background:var(--down)"></i></span><span class="pc hx-dn">−1.21%</span></div>
+        <div class="hx-sec"><span class="nm"><span class="l-en">Consumer Cyclical</span><span class="l-zh">非必需消费</span></span><span class="track"><i style="width:12%;background:var(--down)"></i></span><span class="pc hx-dn">−1.38%</span></div>
+        <div class="hx-sec"><span class="nm"><span class="l-en">Basic Materials</span><span class="l-zh">材料</span></span><span class="track"><i style="width:18%;background:var(--down)"></i></span><span class="pc hx-dn">−2.05%</span></div>
+        <div class="hx-sec"><span class="nm"><span class="l-en">Healthcare</span><span class="l-zh">医疗保健</span></span><span class="track"><i style="width:33%;background:var(--down)"></i></span><span class="pc hx-dn">−3.68%</span></div>
+        <div class="hx-sec"><span class="nm"><span class="l-en">Real Estate</span><span class="l-zh">房地产</span></span><span class="track"><i style="width:44%;background:var(--down)"></i></span><span class="pc hx-dn">−4.91%</span></div>
+        <div class="hx-sec"><span class="nm"><span class="l-en">Technology</span><span class="l-zh">信息技术</span></span><span class="track"><i style="width:63%;background:var(--down)"></i></span><span class="pc hx-dn">−7.08%</span></div>
+        <div class="hx-sec"><span class="nm"><span class="l-en">A-share</span><span class="l-zh">其他</span></span><span class="track"><i style="width:100%;background:var(--down)"></i></span><span class="pc hx-dn">−11.2%</span></div>
+      </div>
+    </div>
   </div>
   <div id="heatmap-full" data-hm-gated="1" data-hm-maps='[{"key":"china","icon":"🔥","label_en":"China A-shares","label_zh":"A股","url":"marketdata/china_heatmap.json"}]'></div>
   <div class="gate-note" id="hm-gate-note">
