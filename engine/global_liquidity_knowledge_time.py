@@ -30,8 +30,10 @@ wall clock and every as_of instant. Stdlib only.
 """
 
 import calendar
+import math
 from dataclasses import dataclass
 from datetime import date, datetime, timedelta, timezone
+from decimal import Decimal
 from enum import Enum
 from typing import Iterable
 from zoneinfo import ZoneInfo
@@ -230,6 +232,10 @@ class Observation:
             )
 
         # The published END must not fall before the economic period even started.
+        # For the default ``period_end`` anchor a same-day publication is lawful
+        # by design: end-of-day fixings (e.g. ECB reference rates) publish on
+        # the economic_period_end day itself. ``month_end`` (C09) is strict and
+        # requires publication after that day has fully elapsed (below).
         period_zone = zone if zone is not None else ZoneInfo("UTC")
         period_day_start = _local_midnight_utc(self.economic_period_end, period_zone)
         if published_start < period_day_start:
@@ -301,6 +307,21 @@ def _root_original(record: Observation, by_id: "dict[str, Observation]") -> Obse
         seen.add(current.observation_id)
         current = by_id[current.supersedes]
     return current
+
+
+def _is_null_value(value: "int | float | Decimal | None") -> bool:
+    """``None``, NaN or infinite (float or Decimal) is a null component value.
+
+    A non-finite value is not coverage: it is reported in
+    ``null_value_required`` exactly like ``None`` and never counts as present.
+    """
+    if value is None:
+        return True
+    if isinstance(value, Decimal):
+        return not value.is_finite()
+    if isinstance(value, float):
+        return not math.isfinite(value)
+    return False
 
 
 def eligible_as_of(
@@ -437,7 +458,7 @@ def eligible_as_of(
             missing_required.append(series_id)
             continue
         latest = max(rows_by_series[series_id], key=lambda r: r.economic_period_end)
-        if latest.value is None:
+        if _is_null_value(latest.value):
             null_value_required.append(series_id)
 
     return EligibilityResult(

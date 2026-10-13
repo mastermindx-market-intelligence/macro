@@ -584,3 +584,24 @@ def test_module_never_reads_the_system_clock():
     assert kt.CLAIM_LEVEL == "knowledge_time_law_display_tier"
     # cutoff_utc is a pure function of its arguments.
     assert cutoff_utc(date(2026, 8, 5), "Asia/Tokyo") == _aware(2026, 8, 4, 15)
+
+
+@pytest.mark.parametrize(
+    "bad",
+    [float("nan"), float("inf"), float("-inf"), Decimal("NaN"), Decimal("Infinity")],
+)
+def test_non_finite_required_component_value_is_null_not_present(bad):
+    # Seat finding S7: a NaN/inf component is null coverage, never "present".
+    a = Observation(
+        series_id="A",
+        observation_id="a-nonfinite",
+        economic_period_end=date(2026, 6, 30),
+        published_at=_aware(2026, 7, 5, 12),
+        evidence_available_at=_aware(2026, 7, 5, 12),
+        vintage_id="v1",
+        value=bad,
+    )
+    res = eligible_as_of([a], _aware(2026, 8, 1), wall_clock=WALL, required_series=("A",))
+    assert res.missing_required == ()
+    assert res.null_value_required == ("A",)
+    assert res.coverage_complete is False
