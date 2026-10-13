@@ -133,6 +133,15 @@
         return;
       }
     }
+    // Opt-in flat cut-off (crypto board sets data-flat): a move inside it
+    // reads as an unsigned 0.0% with no tone class, matching the baked chip.
+    var flat = el.dataset ? parseFloat(el.dataset.flat) : NaN;
+    if (isFinite(flat) && chg != null && isFinite(Number(chg)) && Math.abs(Number(chg)) < flat) {
+      el.textContent = "0.0%";
+      el.classList.remove("up", "down", "dn", "stale");
+      if (stale) el.classList.add("stale");
+      return;
+    }
     if (Math.abs(Number(chg)) < 0.005) chg = 0;
     var up = chg >= 0;
     el.textContent = (up ? "+" : "") + Number(chg).toFixed(2) + "%";
