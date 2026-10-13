@@ -2321,6 +2321,60 @@ def test_d3_paths_missing_join_target_loads_full_store(
         module.cmd_validate(args)
 
 
+def _cycle_ws(key: str, depends_on: str) -> str:
+    """A schema-valid workstream whose only edge is one workstream depends_on."""
+    return _D3_WS.replace("key: DRAFT-ROUNDTRIP\n", f"key: {key}\n").replace(
+        "next_action: Nothing for this fixture.\n---\n",
+        "next_action: Nothing for this fixture.\n"
+        "depends_on:\n"
+        f"  - {depends_on}\n"
+        "---\n",
+    )
+
+
+def test_d3_partial_paths_report_outside_workstream_cycle(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str],
+) -> None:
+    """--paths names the handoff and one member of a two-workstream cycle.
+
+    The other workstream is on disk and is not a handoff join, so the partial
+    loader must read that file and exit 1 with workstream-cycle. It must not
+    call load_store, and the unparseable sibling must stay unjudged.
+    """
+    module = _load_agentos_module()
+    _boom_on_full_store(module, monkeypatch)
+    handoff = _handoff_doc(
+        state_before="previous",
+        changed_what="No live pin.",
+        unresolved=["one"],
+        body="Narrative only.\n",
+    ).replace("workstream: WS:DRAFT-ROUNDTRIP\n", "workstream: WS:CYCLE-NAMED\n")
+    root = _write_tree(tmp_path, {
+        "workstreams/WS-CYCLE-NAMED.md": _cycle_ws("CYCLE-NAMED", "WS:CYCLE-OUTSIDE"),
+        "workstreams/WS-CYCLE-OUTSIDE.md": _cycle_ws("CYCLE-OUTSIDE", "WS:CYCLE-NAMED"),
+        "handoffs/CYCLE-NAMED-2026-10-12.md": handoff,
+        "handoffs/GARBAGE-2026-10-12.md": "---\nthis: no\n---\n\nSee above.\n",
+    })
+    named = root / "workstreams" / "WS-CYCLE-NAMED.md"
+    handoff_path = root / "handoffs" / "CYCLE-NAMED-2026-10-12.md"
+    args = argparse.Namespace(
+        root=str(root),
+        quiet=False,
+        strict=False,
+        snapshot=None,
+        paths=[str(handoff_path), str(named)],
+    )
+    result = module.cmd_validate(args)
+    captured = capsys.readouterr()
+    assert result == 1, captured.out + captured.err
+    assert "workstream-cycle" in captured.out
+    assert "WS:CYCLE-NAMED" in captured.out
+    assert "WS:CYCLE-OUTSIDE" in captured.out
+    assert "dangling-ref" not in captured.out
+    assert "unparseable" not in captured.out
+    assert "2 records (1 workstreams, 0 decisions, 0 discoveries, 1 handoffs)" in captured.out
+
+
 def test_d3_no_network_or_gh_in_agentos() -> None:
     source = CLI.read_text(encoding="utf-8")
     assert source.count("subprocess.run") == 1

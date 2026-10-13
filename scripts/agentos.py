@@ -44,7 +44,11 @@ Subcommands:
     validate          schema + referential integrity over agentos/ (Phase 0).
                       ``--paths`` judges only the named records. When those paths
                       already include every handoff join (workstream, decisions,
-                      discoveries), the other records are not loaded. ``--strict``
+                      discoveries), records outside that list are not loaded,
+                      except workstream files reached by ``depends_on`` from a
+                      named workstream. Those files are read so a cycle that
+                      leaves the path list is still ``workstream-cycle``. The
+                      store directory is not walked. ``--strict``
                       (with ``--snapshot`` and ``--paths``) also fails on schema
                       warnings for those records and compares pins to the seat
                       snapshot. ``--snapshot`` alone reports PR counts and adds
@@ -2270,13 +2274,60 @@ def _drop_partial_false_findings(store: Store) -> None:
     store.problems = kept
 
 
+def _read_outside_workstream_dependencies(store: Store) -> None:
+    """Parse workstream files a named ``depends_on`` reaches, and follow them.
+
+    The partial path does not walk the store and does not call
+    :func:`load_store`. A cycle that leaves ``--paths`` is invisible unless
+    each cited workstream file is opened and its ``depends_on`` edges join
+    the graph. One file per key, at ``workstreams/WS-<KEY>.md`` only. The
+    extra records are not counted, and their schema findings are not
+    recorded: this invocation did not name them.
+    """
+    named = {ident[3:] for ident in store.records if ident.startswith("WS/")}
+    pending = [
+        dep
+        for ident, rec in list(store.records.items())
+        if ident.startswith("WS/")
+        for dep in _refs(rec.get("depends_on"), "WS")
+        if dep not in named
+    ]
+    seen = set(named)
+    while pending:
+        key = pending.pop()
+        if key in seen:
+            continue
+        seen.add(key)
+        if not KEY_RE.match(key):
+            continue
+        path = _citation_path(store.root, "WS", key)
+        if path is None or not path.is_file():
+            continue
+        try:
+            rec, body = parse_record(path)
+        except ValueError:
+            continue
+        if rec.get("key") != key:
+            continue
+        rec["_body"] = body
+        ident = f"WS/{key}"
+        if ident in store.records:
+            continue
+        store.records[ident] = rec
+        store.paths[ident] = path
+        pending.extend(
+            dep for dep in _refs(rec.get("depends_on"), "WS") if dep not in seen
+        )
+
+
 def _load_named_store(
     root: Path, path_args: list[str], programs: set[str] | None,
 ) -> Store:
     """Parse and check only ``path_args``. Never calls :func:`load_store`.
 
-    Per-file checks match ``load_store``. A cycle that runs through a
-    workstream outside this set is not recomputed here.
+    Per-file checks match ``load_store``. Workstream files reached by
+    ``depends_on`` are parsed too, so a cycle that leaves this set is
+    still ``workstream-cycle``. The store directory is not walked.
     """
     store = Store(root)
     seen: set[Path] = set()
@@ -2321,6 +2372,9 @@ def _load_named_store(
             checker(rec, path, programs) if checker is check_workstream
             else checker(rec, path)
         )
+    # Knowledge plane only: these edges name records. They do not dispatch,
+    # schedule, or decide whether a workstream may run.
+    _read_outside_workstream_dependencies(store)
     store.problems.extend(check_references(store.records, store.paths))
     _drop_partial_false_findings(store)
     return store
