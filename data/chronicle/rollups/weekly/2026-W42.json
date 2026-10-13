@@ -1,9 +1,9 @@
 {
-  "as_of": "2026-10-12",
+  "as_of": "2026-10-13",
   "coverage": {
-    "end": "2026-10-12",
+    "end": "2026-10-13",
     "note": "weekly rollup spans up to 13 ISO weeks ending 2026-W42; 13 week(s) have events so far; chronicle event store begins 2013-04-02; trimmed lowest-salience events to fit the display budget",
-    "start": "2026-07-13"
+    "start": "2026-07-14"
   },
   "iso_week": "2026-W42",
   "schema": "chronicle.rollup.weekly/v1",
@@ -666,7 +666,7 @@
     {
       "clusters": [
         {
-          "n_events": 52,
+          "n_events": 51,
           "source": "earnings",
           "theme": "earnings",
           "top_events": []
@@ -678,15 +678,15 @@
           "top_events": []
         },
         {
-          "n_events": 3,
-          "source": "risk_band",
-          "theme": "risk",
+          "n_events": 2,
+          "source": "prophet_ledger",
+          "theme": null,
           "top_events": []
         },
         {
           "n_events": 2,
-          "source": "prophet_ledger",
-          "theme": null,
+          "source": "risk_band",
+          "theme": "risk",
           "top_events": []
         },
         {

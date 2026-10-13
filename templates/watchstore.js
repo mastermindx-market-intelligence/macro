@@ -95,6 +95,10 @@
 
   var SECTION = 'Watchlist';
   var LIST_NAME = 'Watchlist';   // the primary list's name; created if absent
+  // X2-n designated list (seat ruling R2): ONE verbatim stored system name.
+  // Declared HERE, above its first reader, because resolveBoundList()'s branch
+  // 2 must exclude it by name (seat ruling R1) — see _firstNonDesignated().
+  var FIF_LIST_NAME = 'Filing Forensics';
   var CACHE_PREFIX = 'mdash.wl.';
   var CACHE_SUFFIX = '.v1';
 
@@ -623,14 +627,31 @@
     return null;
   }
 
+  /* The first list by (position, created_at) whose name is NOT the designated
+     FIF list — the branch-2 bind candidate under seat ruling R1 (X2-n r1).
+     A sorted COPY, not listsCache order: the cache is sorted by listsFetch but
+     _rememberList appends, so "first by (position, created_at)" is restated
+     here rather than trusting the cache's incidental order. Returns null when
+     every list is the designated list (branch 2 declines, branch 3 creates). */
+  function _firstNonDesignated() {
+    var sorted = listsCache.slice().sort(_byPositionThenCreated);
+    for (var i = 0; i < sorted.length; i++) {
+      if (sorted[i].name !== FIF_LIST_NAME) return sorted[i];
+    }
+    return null;
+  }
+
   /* WHICH LIST THIS PAGE IS BOUND TO — Commissioning ruling R1 (2026-08-12), which
      supersedes the packet's bare "created if absent" for BINDING. The FOLD's
      create-if-absent is a separate question, resolved below.
 
        1. a list named exactly 'Watchlist' exists -> bind it
-       2. else the user has >= 1 list            -> bind the FIRST by (position,
-                                                    created_at) and CREATE NOTHING
-       3. else (zero lists)                      -> create 'Watchlist' and bind it
+       2. else the user has >= 1 non-designated list
+                                                -> bind the FIRST such list by
+                                                    (position, created_at) and
+                                                    CREATE NOTHING
+       3. else (zero lists, or only the designated list)
+                                               -> create 'Watchlist' and bind it
 
      Branch 2 is the ruling's substance, and it is a deliberate non-creation. A
      Terminal-native account's only list is called 'Default'. Minting an empty
@@ -639,12 +660,19 @@
      list picker once W1b makes lists server-backed. Binding the first list is exactly
      the pre-W1a behaviour for that cohort, and W2's switcher makes the choice explicit.
 
+     The designated-list exclusion (X2-n seat ruling R1) is what keeps the
+     subscription surface off this page's write path: on an account whose first
+     act was fifWatch, listCreate('Filing Forensics') holds position 0, and the
+     pre-R1 `listsCache[0]` bind aimed every ordinary star and pushList diff at
+     the subscription list. Branch 3 (not branch 2) now serves that account.
+
      PRECONDITION: listsFetch() has run — pull() always calls it first, and its ordering
      (`position`, then `created_at`) is what makes "first" well-defined here. */
   function resolveBoundList() {
     var named = _namedPrimary();
     if (named) return Promise.resolve(named);
-    if (listsCache.length > 0) return Promise.resolve(listsCache[0].id);
+    var bindable = _firstNonDesignated();
+    if (bindable) return Promise.resolve(bindable.id);
     return _createPrimary();
   }
 
@@ -1931,6 +1959,82 @@
     });
   }
 
+  // ---- FIF X2-n designated list (seat ruling R2) ------------------------------
+  /* The issuer-watch subscription surface: ONE designated watchlist named
+     "Filing Forensics". DATA FUNCTIONS ONLY — no DOM of its own, no styling,
+     and NO caller is wired anywhere in this repo (the FIF watch toggle is a
+     later, separately owned lane). Laws:
+       • created LAZILY, only on an explicit watch action — never auto-created,
+         never backfilled. findList() never creates; ensureList() is the only
+         creator, and a two-tab create race adopts the winner (listCreate's
+         23505 path).
+       • identified by the verbatim stored NAME: the watchlists schema carries
+         no kind/system/metadata column (Terminal 0001_init.sql:29-36), so the
+         unique (user_id, name) index is the identity. The FIF UI shows a
+         localized label; the stored row keeps this exact name (the hoisted
+         FIF_LIST_NAME constant, declared beside LIST_NAME at the top so
+         resolveBoundList's branch-2 exclusion reads the same value).
+       • ordered BEHIND the primary: on an account with no other list,
+         ensureList() creates 'Watchlist' FIRST so the designated list can
+         never hold position 0 — the page's default bind (seat ruling R1).
+       • removing the symbol (or the whole list) IS the unsubscribe — the
+         producer treats absence as "no subscription".
+     Composed strictly from the registered multi-list primitives above; no
+     other watchlist semantics change. Signed-out callers get rejected
+     promises from _listsGuard() — zero network when signed out. Symbols are
+     normalized to uppercase tickers here so the producer's read (which
+     uppercases) and the Terminal rows agree. */
+  function fifFindList() {
+    return _listsGuard().then(function () { return _findListByName(FIF_LIST_NAME); });
+  }
+  function fifEnsureList() {
+    return fifFindList().then(function (found) {
+      if (found) return found;
+      /* Seat ruling R1 (X2-n r1): the designated list must never be creatable
+         into position 0 of a list-less account — that slot is the page's
+         default bind (resolveBoundList branch 2, pre-R1). Refresh the cache
+         through listsFetch(), the same fetch pull() uses, so the decision
+         rests on server truth; then, ONLY when no non-designated list exists,
+         create the primary 'Watchlist' FIRST so the designated list lands at
+         position >= 1. When a non-designated list exists (e.g. a
+         Terminal-native 'Default'), nothing extra is minted and the
+         designated list takes max(position)+1 as listCreate already does. */
+      return listsFetch().then(function () {
+        var prep = _firstNonDesignated()
+          ? Promise.resolve(null)
+          : _createPrimary();
+        return prep.then(function () { return listCreate(FIF_LIST_NAME); });
+      });
+    });
+  }
+  function fifWatch(symbol) {
+    var t = String(symbol == null ? '' : symbol).trim().toUpperCase();
+    if (!t) return Promise.reject(new Error('bad-args'));
+    return fifEnsureList().then(function (list) {
+      return symbolAdd(list.id, t).then(function (r) { return { list: list, result: r }; });
+    });
+  }
+  function fifUnwatch(symbol) {
+    var t = String(symbol == null ? '' : symbol).trim().toUpperCase();
+    if (!t) return Promise.reject(new Error('bad-args'));
+    return fifFindList().then(function (list) {
+      // No designated list = already unsubscribed; never create to delete.
+      if (!list) return { removed: false };
+      return symbolRemove(list.id, t).then(function (r) { return { removed: true, result: r }; });
+    });
+  }
+  function fifIsWatched(symbol) {
+    var t = String(symbol == null ? '' : symbol).trim().toUpperCase();
+    if (!t) return Promise.resolve(false);
+    return fifFindList().then(function (list) {
+      if (!list) return false;
+      return symbolsFetch(list.id).then(function () {
+        var c = _cloudOf(list.id);
+        return !!(c && c.set[t]);
+      });
+    });
+  }
+
   // ---- public API ------------------------------------------------------------
   window.WatchStore = {
     status: status,
@@ -1957,6 +2061,16 @@
       add: symbolAdd,
       remove: symbolRemove,
       push: pushList                 // full-membership diff, scoped to one list
+    },
+    // FIF X2-n designated-list helper (R2): the issuer-watch subscription
+    // surface. Data functions only; no call site ships in this wave.
+    fif: {
+      listName: function () { return FIF_LIST_NAME; },
+      findList: fifFindList,
+      ensureList: fifEnsureList,
+      watch: fifWatch,
+      unwatch: fifUnwatch,
+      isWatched: fifIsWatched
     },
     portfolio: {
       list: portfolioList,
@@ -2253,6 +2367,7 @@
       portfolio: window.WatchStore.portfolio,
       lists: window.WatchStore.lists,
       symbols: window.WatchStore.symbols,
+      fif: window.WatchStore.fif,
       pull: pull,
       pushList: pushList,
       resolveBoundList: resolveBoundList,
