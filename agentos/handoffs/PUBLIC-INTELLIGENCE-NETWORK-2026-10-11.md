@@ -38,7 +38,7 @@ unresolved:
   - Publication is not approved; cutover remains false, News TLS and Research CNAME failures remain, and paired cutover is unreleased.
   - Incoming named Chairman handoff file was not accessible; direct commission supplies scope.
 next_actions:
-  - Continue armed PR8786 at9019 through the existing controller after the main-red repair8960; consume the admitted refresh and fresh exact-head CI, protected merge, installed source and browser checks. The aggregate follow-on integrates mainc40e39c7 asfbc73b77 and passes186 affected tests; ship it afterward.
+  - Ship the separate aggregate-feed follow-on after protected main integration489fa3a0 and186passed tests; original PR8786 is merged4aabf95f and installed490432d5 with scoped browser acceptance. Complete the follow-on protected CI/merge/installed consumer probe; publication remains unapproved.
   - The tested next phase includes single-attempt staging 2343aaec13bb and audit discovery b6428b419058, integrated with protected main as 1c7b997f92fb. See SINGLE_ATTEMPT_QUALIFICATION.md and STORY_DISCOVERY.md.
   - Consume a successful existing full-audit discovery artifact after landing, qualify the actual packet and rights directly, and use scripts/stage_earnings_story_press.py when its real read-only credential/release gates are available. Do not create a second compiler or substitute publisher credentials.
   - Complete D14 mixed-desk and editorial acceptance before publishing a story or enabling paired property cutover.
@@ -620,3 +620,96 @@ unchanged ceilings (5790/5593/5553). AgentOS1698records validates with0errors
 and145advisories. Pre-push git merge-tree against currentmain3ca6eb200da3
 exits0, conflict-free. Exact raw results are retained under the existing
 research/agentic_media/public_intelligence_20261011 directory.
+
+## October12 21:21 original repair pushed and follow-on retested
+
+Normal push1be6→ba599a70fb747290f54abdbd4f1e6acaed9b9d2e succeeded on
+original8786. Exact remote/PR readback:OPEN,merge-on-green,auto-merge null.
+Fresh CI38310079309 started21:21:04Z. Immediate capacity census4/8 and
+no refresh lease; protected release remains intact. The follow-on integrates
+ba599separately, preserves both accepted application hashes, and passes
+186tests in7.05s (aggregate_feed_ba599_green.txt). Its only conflicts were
+root-owned continuity records, resolved with the already-cumulative incoming
+versions. No follow-on PR, installation or publication is claimed. Portable
+acceptance preparation is pr8786_ba599_acceptance_preparation.json; execute
+its actual-merge-bound checks after protected landing and then verify browser
+paths before creating the separate aggregate-feed PR.
+
+## Current controller-admitted carrier — October 12 22:01 UTC
+
+PR #8786 is OPEN and armed at `ff37582d18cb6b4ac27ae760da76963f1962e287`.
+CI `38310079309` passed the previous `ba599a70` head: all 12 packs,
+contract-delta and ci-gate succeeded, terminal at 21:55:40Z. Controller
+`38313651542` admitted a main refresh at 21:56:12Z because protected main
+`3ca6eb200da3` changed check definitions. The admitted merge has parents
+`ba599a70fb747290f54abdbd4f1e6acaed9b9d2e` and
+`37ccd914a3694e8fb5e2bdb92fcf32df110f2105`. Admission load was 5 active
+PR proofs against cap 8. New CI `38313710071` is running on `ff37582d`.
+The prior green remains valid historical evidence, not current landing proof.
+
+Read-only `git show` verification confirms all 21 accepted Press source hashes
+and all 3 reviewed page hashes are unchanged. The CI-manifest refresh adds only
+the existing main qbus URI-path regression to its existing job. The portable
+bundle is now `/Users/chriswong/agent-evidence/mmx-public-intelligence-20261011/postlanding/ff37582d18cb6b4ac27ae760da76963f1962e287/`.
+All three scripts compile; expected hash values are unchanged. It remains
+unexecuted and requires the actual protected merge SHA after landing.
+
+The separate aggregate-feed implementation remains at `0b5bacd5` plus continuity
+receipts, with the accepted two-file repair and 186 tests passing in 7.05s.
+No application change or duplicate CI was launched. No follow-on PR exists.
+Next: consume exact-head protected CI and landing, verify installed ancestry,
+source/site/site.served and read-only staging, then real browser paths. After
+that acceptance, merge landed main into the same follow-on and ship its own PR.
+Press publication/cutover remain false; preserve the original EFFECT_UNKNOWN.
+
+## Protected release installed; aggregate follow-on ready — October 13 00:01 UTC
+
+PR #8786 landed at `4aabf95fd05079bd14b07bbbe554186531d65ddf`, October 12
+23:13:55Z. Exact final candidate `eafd88c788adb69052017352f478b8f8841cdfbd`
+passed CI `38317681840` (all 12 packs, contract-delta and ci-gate).
+Controller `38320992479` confirmed proof current and performed protected landing.
+
+Installed `/opt/macro` was stable at `490432d59ff6606e5f90bcc5a87e5a124eb55c6f`.
+All 21 source hashes and 3 pages matched in source/site/site.served; all three
+public HTTP pages were byte-identical. The shallow VPS clone cannot traverse
+missing parents. Its direct merge-base false is retained, while a complete
+nine-object canonical commit chain verifies every hash and parent edge and is
+bound to the stable exact installed HEAD. One valid/five invalid ancestry
+controls passed. No production Git mutation or manual deployment occurred.
+The portable bundle and executed results are now committed in
+`pr8786_live_acceptance/` as well as the original local evidence directory.
+
+Read-only installed staging inspection passed: zero staged items, unchanged
+input hashes, stable HEAD, cutover false and publication unapproved. Chrome
+functional acceptance verifies Blog, Learn and nested Position Size Calculator
+research links at 1440 and 390 widths, without horizontal overflow; actual
+Glossary and Morning Edition navigation worked, and the calculator example
+returns 50 shares/$100 risk/$2500 position. Screenshots are hash-bound in the
+live receipt. Limitations: the signed-in Chinese selection retained English;
+Morning Edition shows stale inputs. This is scoped navigation acceptance, not
+language-toggle persistence, current market coverage or new visual design approval.
+Terminal #956's previous sign-in/existing NVDA membership proof is reused.
+
+The same aggregate-feed branch now integrates landed main `490432d5` as
+`489fa3a0977bc92027edd817a775115c66fd9a70`. Only its two accepted application
+files differ from that main; both accepted hashes are unchanged. Four affected
+suites pass **186 tests in 5.66s**. The standalone installed-consumer probe was
+locally validated: two positive historical routes and five negative controls,
+zero provider calls, zero staging writes and unchanged input hashes. It uses
+temporary fixtures and does not require installing pytest on production.
+
+A local Git prefetch problem was recovered before checkout: a requested object
+already existed locally with its exact SHA-1, while Git scanned all promisor
+packs. Root captured the owned index and clean state, interrupted only its own
+pre-checkout merge, verified unchanged HEAD/index/worktree, and retried the same
+merge normally. Six expected add/add conflicts preserved the accepted two-file
+implementation and four cumulative owner records. No shared checkout or store
+was cleaned/reset, and no foreign writer was affected.
+
+Next: create one protected aggregate-feed PR, complete exact-head CI and protected
+landing, verify its actual installed source and run the prepared consumer probe
+with `/opt/macro/.venv/bin/python -B`. Do not claim a current qualified article:
+source rights, first-party receipt floors, editorial acceptance and publication
+remain unmet. Dedicated earnings R2 read-only credential names were still absent
+at the current repository-secret-name read, so no doomed audit was dispatched.
+The original 12:07 provider EFFECT_UNKNOWN remains preserved without replay.

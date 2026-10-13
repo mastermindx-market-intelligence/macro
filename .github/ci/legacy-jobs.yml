@@ -3552,6 +3552,12 @@ jobs:
     # 846 tracked / 127 concrete. Subject packages stay globbed.
     scope: exclusive
     paths:
+      # Native DailyBrief registration/producer import closure (PR #9037).
+      - "engine/prophet_candidate_state.py"
+      - "engine/prophet_daily_brief.py"
+      - "engine/prophet_entry_availability.py"
+      - "engine/prophet_strategy_definition.py"
+      - "research/prophet_v4/PROPHET_STRATEGY_PLATFORM_AND_CYCLE_CAPTURE_ARCHITECTURE_FREEZE_2026-08-30.md"
       - "research/prophet_v4/d2/D2B2_CN_HK_FROZEN_CONTRACT_2026-08-20.md"
       - "research/prophet_v4/d2/D2B2_US_FROZEN_CONTRACT_2026-08-21.md"
       - "scripts/build_security_master.py"
@@ -4569,6 +4575,13 @@ jobs:
       # as the step above.
       - name: options + render assertions that read committed data (the data_gate half)
         run: python -m pytest tests/test_options_session_guards.py tests/test_options_unit_seams.py tests/test_render_dead_asset_gate.py -m data_gate -q
+      # The data_gate half of tests/test_fif_p2_evidence_capture.py (FIF P2 #9011,
+      # 2026-10-12): the three tests that build or query the FIF kernel over committed
+      # data/edgar, data/universe, data/breadth and data/reference parquet, so a nightly
+      # commit alone can move their verdict. The other half runs in fif-kernel-guards on
+      # the code gate. Last, after the options/render data_gate half, for the same reason.
+      - name: FIF P2 evidence-capture assertions that read committed data (the data_gate half)
+        run: python -m pytest tests/test_fif_p2_evidence_capture.py -m data_gate -q
 
   c19-wp13-debt-maturity-as-of:
     if: ${{ false }}
@@ -5366,6 +5379,13 @@ jobs:
       - "tests/fixtures/us_candidate_episode/**"
       - "engine/prophet_object_change.py"
       - "tests/test_prophet_object_change.py"
+      # Native DailyBrief is a read-only projection over the incumbent Today owner.
+      - "app/prophet_daily_brief.py"
+      - "app/main.py"
+      - "engine/us_context_vector.py"
+      - "scripts/build_stock_library.py"
+      - "tests/test_prophet_today_provenance.py"
+      - "tests/test_prophet_daily_brief_api.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -5405,6 +5425,10 @@ jobs:
         run: python -m pytest tests/test_prophet_early_observations.py tests/test_prophet_observations_api.py -q
       - name: Prophet per-object change — native identity, separate clocks and unavailable comparisons
         run: python -m pytest tests/test_prophet_object_change.py -q
+      - name: Prophet native DailyBrief — source binding, B1 reconciliation and private API
+        run: >-
+          python -m pytest tests/test_prophet_today_provenance.py
+          tests/test_prophet_daily_brief_api.py -q
       - name: install observation browser
         run: python -m playwright install --with-deps chromium
       - name: Prophet observation discovery — full-population search, access failure and theme geometry
@@ -5728,6 +5752,13 @@ jobs:
     # every concrete static import-closure path (curated_exclusive_closure_findings
     # gates it) plus the measured runtime in-tree reads of every class-A suite.
     paths:
+      # Native DailyBrief registration/producer import closure (PR #9037).
+      - "app/prophet_daily_brief.py"
+      - "engine/prophet_candidate_state.py"
+      - "engine/prophet_daily_brief.py"
+      - "engine/prophet_entry_availability.py"
+      - "engine/prophet_strategy_definition.py"
+      - "research/prophet_v4/PROPHET_STRATEGY_PLATFORM_AND_CYCLE_CAPTURE_ARCHITECTURE_FREEZE_2026-08-30.md"
       - "engine/fundamental_forensics/**"
       - "app/forensics.py"
       - "config/fundamental_forensics/**"
@@ -6413,6 +6444,7 @@ jobs:
       - "scripts/build_stock_library.py"
       - "scripts/build_thematic_state.py"
       - "scripts/capture_fif_issuer_packages.py"
+      - "scripts/capture_page_evidence.py"
       - "scripts/check_board_contradictions.py"
       - "scripts/check_signal_gate_coherence.py"
       - "scripts/check_stretch_oracle_contract.py"
@@ -6443,9 +6475,12 @@ jobs:
       - "tests/__init__.py"
       - "tests/conftest.py"
       - "tests/test_fif_gsrc_capture.py"
+      - "tests/test_fif_p2_evidence_capture.py"
       - "tests/test_fif_publication_workflow_shape.py"
       - "tests/test_filing_forensics_broad_sec_lane.py"
+      - "tests/test_filing_forensics_sec_lane.py"
       - "tests/test_forensics_api.py"
+      - "tests/tools/fif_p2_evidence_capture.py"
       # Static data-path references the app/ import closure carries (contract-delta, 2026-10-12).
       - "site/basketdata/baskets.json"
       - "site/basketdata/fear_greed.json"
@@ -6492,6 +6527,7 @@ jobs:
           tests/test_fif_gsrc_capture.py
           tests/test_fif_publication_workflow_shape.py
           tests/test_filing_forensics_broad_sec_lane.py
+          tests/test_filing_forensics_sec_lane.py
           tests/test_forensics_api.py
           tests/test_fundamental_forensics_acquisition.py
           tests/test_fundamental_forensics_admitted_filing_package.py
@@ -6552,6 +6588,17 @@ jobs:
           tests/test_fundamental_forensics_ui.py
           tests/test_fundamental_forensics_wave2_operator.py
           -q
+      # tests/test_fif_p2_evidence_capture.py (FIF P2 #9011, 2026-10-12): its tree-only and
+      # fixture-built tests run here on the code gate. The three that build or query the
+      # kernel over nightly-advanced data/edgar, data/universe, data/breadth and
+      # data/reference parquet carry @pytest.mark.data_gate (tests/conftest.py); they are
+      # deselected here and run last in engine-render-guards on the data gate.
+      # test_fence2_app_and_engine_never_import_the_tool scans all of app/** and engine/**
+      # source. Those trees are deliberately not in paths above (they would select this job
+      # on nearly every code PR and breach the PACKING_PROBES), so an app- or engine-only
+      # PR that imports tests.tools is caught by the main ci.yml baseline, not here.
+      - name: FIF P2 evidence-capture suite (code half)
+        run: python -m pytest tests/test_fif_p2_evidence_capture.py -q -m "not data_gate"
   collector-registry:
     if: ${{ false }}
     gate: code
@@ -7388,6 +7435,8 @@ jobs:
     # narrow those.
     scope: exclusive
     paths:
+      # Native DailyBrief registration/producer import closure (PR #9037).
+      - "research/prophet_v4/PROPHET_STRATEGY_PLATFORM_AND_CYCLE_CAPTURE_ARCHITECTURE_FREEZE_2026-08-30.md"
       - "collectors/flow_signals.py"
       - "collectors/sec_request_pacer.py"
       - "lib/live_flow_event_stage.py"
@@ -11950,6 +11999,19 @@ jobs:
     # Curated named closure: integrity fixtures scan only pytest tmp_path;
     # opaque artifact traversal must not claim unrelated template ownership.
     paths:
+      # Native DailyBrief registration/producer import closure (PR #9037).
+      - "engine/path_risk_signals.py"
+      - "engine/prophet_candidate_state.py"
+      - "engine/prophet_daily_brief.py"
+      - "engine/prophet_entry_availability.py"
+      - "engine/prophet_strategy_definition.py"
+      - "engine/stock_identity/__init__.py"
+      - "engine/stock_identity/authority.py"
+      - "engine/stock_identity/fingerprint.py"
+      - "engine/stock_identity/plane.py"
+      - "engine/us_candidate_episode.py"
+      - "engine/us_candidate_episode_intake.py"
+      - "research/prophet_v4/PROPHET_STRATEGY_PLATFORM_AND_CYCLE_CAPTURE_ARCHITECTURE_FREEZE_2026-08-30.md"
       - "collectors/flow_signals.py"
       - "collectors/sec_request_pacer.py"
       - "config/flow_detector.yml"
@@ -14012,6 +14074,12 @@ jobs:
     # genuine import edges.
     scope: exclusive
     paths:
+      # Native DailyBrief registration/producer import closure (PR #9037).
+      - "engine/prophet_candidate_state.py"
+      - "engine/prophet_daily_brief.py"
+      - "engine/prophet_entry_availability.py"
+      - "engine/prophet_strategy_definition.py"
+      - "research/prophet_v4/PROPHET_STRATEGY_PLATFORM_AND_CYCLE_CAPTURE_ARCHITECTURE_FREEZE_2026-08-30.md"
       - "engine/options_signal_episode.py"
       - "engine/options_signal_episode_contract.py"
       - "research/prophet_v4/d2/D2B2_CN_HK_FROZEN_CONTRACT_2026-08-20.md"
@@ -14723,6 +14791,12 @@ jobs:
     # 846 tracked / 74 concrete.
     scope: exclusive
     paths:
+      # Native DailyBrief registration/producer import closure (PR #9037).
+      - "engine/prophet_candidate_state.py"
+      - "engine/prophet_daily_brief.py"
+      - "engine/prophet_entry_availability.py"
+      - "engine/prophet_strategy_definition.py"
+      - "research/prophet_v4/PROPHET_STRATEGY_PLATFORM_AND_CYCLE_CAPTURE_ARCHITECTURE_FREEZE_2026-08-30.md"
       - "engine/options_signal_episode.py"
       - "engine/options_signal_episode_contract.py"
       - "research/prophet_v4/d2/D2B2_CN_HK_FROZEN_CONTRACT_2026-08-20.md"
@@ -16715,29 +16789,40 @@ jobs:
       # ledgers and would otherwise fail for a borrowed reason.
       # No dependency widened: probed at RUN time, both load only
       # pandas/numpy/pyarrow/pyyaml, all already on the install line above.
-      - name: Prophet source clocks and immutable correction provenance
-        run: python -m pytest tests/test_prophet_plan_chronology_audit.py tests/test_prophet_integrity.py -q
-      - name: grade_us_board outcome ledgers + tenure stamp + the strip it renders
-        run: python -m pytest tests/test_board_tenure_stamp.py tests/test_us_board_outcomes.py tests/test_us_board_outcomes_strip.py tests/test_entry_status_stamping.py tests/test_us_board_price_basis_era.py -q
-      - name: grade_us_board zero-accrual + truncated-history alarms
         # The nightly recorded nothing for nine days (2026-07-31..08-06) while the step
         # concluded `success`; these pin that the alarms fire, name the cause, and stay
         # quiet on a healthy night. An unrun guard is not a guard — this suite is named
         # here because ci.yml has no broad `pytest tests/`.
-        run: python -m pytest tests/test_us_board_zero_accrual_alarm.py -q
-      - name: claim accountability + track-record dialog + onboarding compare matrix
-        run: python -m pytest tests/test_claim_accountability.py tests/test_track_record_dlg.py tests/test_onboard_compare_matrix.py -q
       # Board continuity — both suites shipped 2026-08-05 (#4554, #4557) named by
       # NO workflow, so the VALE class they were written for was never guarded in
       # CI. Separate step from the outcome ledgers above so a red names the law
       # that broke: row-persistence/outage continuity (grade_us_board::emit_ledger)
       # vs the same-as_of Jaccard guard (build_stock_library::_board_continuity_warning).
-      - name: board ledger row-persistence + same-as_of continuity guard
         # Price-specific snapshot clocks import the same actual producer and use
         # committed synthetic series only; keep this guard on the existing code gate.
-        run: python -m pytest tests/test_us_board_ledger_continuity.py tests/test_us_board_continuity_guard.py tests/test_build_stock_library_price_clock.py -q
-      - name: Canada canonical selection and exact source binding
-        run: python -m pytest tests/test_canada_canonical_board.py -q
+      # 2026-10-13: consolidate the historical groups above into one actual pytest
+      # process. Keep every full-suite file and order; pytest still names each
+      # failed node. All 311 nodes equal the six original command collections.
+      - name: Board source clocks, outcome ledgers, accountability, continuity and Canada binding
+        run: >-
+          python -m pytest
+          tests/test_prophet_plan_chronology_audit.py
+          tests/test_prophet_integrity.py
+          tests/test_board_tenure_stamp.py
+          tests/test_us_board_outcomes.py
+          tests/test_us_board_outcomes_strip.py
+          tests/test_entry_status_stamping.py
+          tests/test_us_board_price_basis_era.py
+          tests/test_us_board_zero_accrual_alarm.py
+          tests/test_claim_accountability.py
+          tests/test_track_record_dlg.py
+          tests/test_onboard_compare_matrix.py
+          tests/test_us_board_ledger_continuity.py
+          tests/test_us_board_continuity_guard.py
+          tests/test_build_stock_library_price_clock.py
+          tests/test_canada_canonical_board.py
+          -q
+
 
   unrun-intl-libraries:
     # China / HK / Canada library writers behind the international surfaces.
@@ -16976,6 +17061,8 @@ jobs:
     # the five scripts are closure imports, not tree scans.
     scope: exclusive
     paths:
+      # Native DailyBrief registration/producer import closure (PR #9037).
+      - "research/prophet_v4/PROPHET_STRATEGY_PLATFORM_AND_CYCLE_CAPTURE_ARCHITECTURE_FREEZE_2026-08-30.md"
       - "research/prophet_v4/d2/D2B2_CN_HK_FROZEN_CONTRACT_2026-08-20.md"
       - "research/prophet_v4/d2/D2B2_US_FROZEN_CONTRACT_2026-08-21.md"
       - "scripts/build_security_master.py"
@@ -17387,6 +17474,12 @@ jobs:
     # no named closure file was removed.
     scope: exclusive
     paths:
+      # Native DailyBrief registration/producer import closure (PR #9037).
+      - "engine/prophet_candidate_state.py"
+      - "engine/prophet_daily_brief.py"
+      - "engine/prophet_entry_availability.py"
+      - "engine/prophet_strategy_definition.py"
+      - "research/prophet_v4/PROPHET_STRATEGY_PLATFORM_AND_CYCLE_CAPTURE_ARCHITECTURE_FREEZE_2026-08-30.md"
       - "engine/options_signal_episode.py"
       - "engine/options_signal_episode_contract.py"
       - "research/prophet_v4/d2/D2B2_CN_HK_FROZEN_CONTRACT_2026-08-20.md"
@@ -18837,6 +18930,19 @@ jobs:
     # the declared-scope coverage audit re-checks them on every load.
     scope: exclusive
     paths:
+      # Native DailyBrief registration/producer import closure (PR #9037).
+      - "engine/path_risk_signals.py"
+      - "engine/prophet_candidate_state.py"
+      - "engine/prophet_daily_brief.py"
+      - "engine/prophet_entry_availability.py"
+      - "engine/prophet_strategy_definition.py"
+      - "engine/stock_identity/__init__.py"
+      - "engine/stock_identity/authority.py"
+      - "engine/stock_identity/fingerprint.py"
+      - "engine/stock_identity/plane.py"
+      - "engine/us_candidate_episode.py"
+      - "engine/us_candidate_episode_intake.py"
+      - "research/prophet_v4/PROPHET_STRATEGY_PLATFORM_AND_CYCLE_CAPTURE_ARCHITECTURE_FREEZE_2026-08-30.md"
       - "engine/options_signal_episode.py"
       - "engine/options_signal_episode_contract.py"
       - "engine/session_digest.py"
@@ -21459,6 +21565,12 @@ jobs:
     # 846 tracked / 74 concrete. Subject packages stay globbed.
     scope: exclusive
     paths:
+      # Native DailyBrief registration/producer import closure (PR #9037).
+      - "engine/prophet_candidate_state.py"
+      - "engine/prophet_daily_brief.py"
+      - "engine/prophet_entry_availability.py"
+      - "engine/prophet_strategy_definition.py"
+      - "research/prophet_v4/PROPHET_STRATEGY_PLATFORM_AND_CYCLE_CAPTURE_ARCHITECTURE_FREEZE_2026-08-30.md"
       - "engine/options_signal_episode.py"
       - "engine/options_signal_episode_contract.py"
       - "research/prophet_v4/d2/D2B2_CN_HK_FROZEN_CONTRACT_2026-08-20.md"
@@ -22993,6 +23105,13 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      # Native DailyBrief registration/producer import closure (PR #9037).
+      - "app/prophet_daily_brief.py"
+      - "engine/prophet_candidate_state.py"
+      - "engine/prophet_daily_brief.py"
+      - "engine/prophet_entry_availability.py"
+      - "engine/prophet_strategy_definition.py"
+      - "research/prophet_v4/PROPHET_STRATEGY_PLATFORM_AND_CYCLE_CAPTURE_ARCHITECTURE_FREEZE_2026-08-30.md"
       # Immutable Press dossier binding reaches the existing page inventory.
       - "lib/pages.py"
       - "collectors/flow_signals.py"
@@ -24358,6 +24477,12 @@ jobs:
     # An unlisted closure file is an uncovered path. No tests/** catch-all.
     scope: exclusive
     paths:
+      # Native DailyBrief registration/producer import closure (PR #9037).
+      - "engine/stock_identity/__init__.py"
+      - "engine/stock_identity/authority.py"
+      - "engine/stock_identity/fingerprint.py"
+      - "engine/stock_identity/plane.py"
+      - "research/prophet_v4/PROPHET_STRATEGY_PLATFORM_AND_CYCLE_CAPTURE_ARCHITECTURE_FREEZE_2026-08-30.md"
       - scripts/build_international_macro.py
       - scripts/build_intl.py
       - scripts/build_intl_library.py
