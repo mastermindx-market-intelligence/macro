@@ -21,6 +21,14 @@ changed:
     what: Test exact declared arithmetic, categories, provenance, rights at final return, stable ordering and hostile ambient Decimal context.
   - path: research/market_memory/RETRIEVAL_PROTOCOL_2026_10_12.json
     what: Freeze the pre-label evaluation design while requiring exact corpus, split, seed, reviewer and code registration before operational admission.
+  - path: engine/neuralweb/market_memory_experience_accrual.py
+    what: Add a pure bounded outcome-blind census seam with no recovery writes; preserve original writer defaults.
+  - path: engine/neuralweb/market_memory_population.py
+    what: Produce complete frozen W2C denominator and separate audit identity, exact source closure and current-rights capability.
+  - path: contracts/market_memory/population_manifest.v1.schema.json
+    what: Freeze strict bounded W2C manifest identity, counts, references, reasons and false authority claims.
+  - path: tests/test_market_memory_population.py
+    what: Verify real matured admission and outcome state, rights, denominator, integrity, immutable capability and read-budget refusal without writes.
 verified:
   - claim: The final feature and comparison suites pass together.
     command: python3 -m pytest tests/test_market_memory_episode_features.py tests/test_market_memory_episode_comparison.py -q
@@ -37,6 +45,12 @@ verified:
     result: >
       PASS for design only at protocol SHA256
       5821074f0ad1564780759a7e5d7ca6595cd8d411f119629f31ee431f2a481ca6.
+  - claim: Repaired P0 source preserves the actual existing experience owner.
+    command: python3 -m pytest tests/test_market_memory_experience_accrual.py -q
+    result: 124 passed in 197.97 seconds; one environment deprecation warning, unchanged writer defaults.
+  - claim: P0 is a read-only outcome-blind census over authenticated owner fixtures.
+    command: python3 -m pytest tests/test_market_memory_population.py -q
+    result: 36 passed in the final combined run; pending-only and pending-beside-final matured outcomes refuse with store byte snapshots unchanged.
 unverified:
   - claim: Current source usage and operational population admit comparison.
     what_would_verify: >
@@ -51,13 +65,13 @@ unverified:
       Final same-carrier population integration, existing backend code-lane
       registration and exact-head checks, normal merge/install and real-path proof.
 unresolved:
-  - The original P0 Fabric operation is terminal with its retained result available and under assigning-parent review; no duplicate dispatch or owner-file edit before acceptance.
+  - The original P0 worker bytes were rejected for a hidden recovery-write path and corruption misclassification. The principal repair is independently source-accepted with 36 new and all 124 existing owner tests; hosted CI, merge, installation and live owner qualification remain open.
   - V1 raw file census observed 40 opportunities, 12 abstained and 28 missed, with zero admitted; 107 retained macro outputs are not pilot membership.
   - V2 admitted records bind a REST bar and technical capture but contain no original trusted macro projection; never attach one retrospectively to claim timely ownership.
   - Two existing trusted-owner fixture tests hit inherited options-ledger row/byte bounds; no cap increase or data pruning was performed.
   - Exact corpus/query/split/guide/seed/reviewer/code registry and independent evaluation are still required before labels and efficacy claims.
 next_actions:
-  - Consume and qualify only the original P0 retained result, then integrate its accepted owner seam in this carrier.
+  - Ship the independently repaired P0 owner seam on this same carrier; preserve the original rejected worker result and exact repair evidence.
   - Register final owning suites in the appropriate existing backend code lane and complete the protected ship chain.
   - Adjudicate a distinct prospective same-owner profile for any REST, technical and macro binding required by real retrieval.
   - Continue held UI adoption and all three consumers, three modes, rights, recovery and scientific acceptance under PR 6528.
