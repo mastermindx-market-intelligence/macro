@@ -14,24 +14,17 @@ from datetime import datetime, timezone
 from pathlib import Path
 from urllib.parse import urlsplit
 
-try:
-    from scripts.verify_risk_radar_pullback_served import (
-        ACTIVE_PHASES,
-        EM_DASH,
-        FORECAST_LINES,
-        FORECAST_TEXT_ALLOW,
-        forecast_block_parts,
-        forecast_lines_ok,
-    )
-except ImportError:  # invoked as a file, so scripts/ is on sys.path
-    from verify_risk_radar_pullback_served import (
-        ACTIVE_PHASES,
-        EM_DASH,
-        FORECAST_LINES,
-        FORECAST_TEXT_ALLOW,
-        forecast_block_parts,
-        forecast_lines_ok,
-    )
+_ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(_ROOT))
+
+from scripts.verify_risk_radar_pullback_served import (  # noqa: E402
+    ACTIVE_PHASES,
+    EM_DASH,
+    FORECAST_LINES,
+    FORECAST_TEXT_ALLOW,
+    forecast_block_parts,
+    forecast_lines_ok,
+)
 
 SCHEMA = "risk_radar_pullback_matrix.v1"
 EXPECTED_HEADING = {"en": "Estimate unavailable", "zh": "估计暂不可用"}
