@@ -12,11 +12,12 @@ ceiling: the six interpretation flags are literal false.
 """
 from __future__ import annotations
 
+from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
 from hashlib import sha256
 from pathlib import Path
 import re
-from typing import Any, Mapping
+from typing import Any
 
 from engine.company_intelligence import pg_profile
 from engine.company_intelligence.pg_profile import PgPreparationRefused, prepare_pg_workspace
@@ -246,16 +247,19 @@ def augment_private_stage(
 
 
 def _carries_private_profile(value: Any, depth: int) -> bool:
+    """True when private PG metric ids or the private rights profile are present."""
     if depth > 32:
         raise PrivateEconomicStageError("over_limit")
-    if type(value) is dict:
+    if isinstance(value, Mapping):
         metric = value.get("metric")
         if type(metric) is str and metric in _PRIVATE_METRICS:
             return True
         if value.get("rights_profile") == pg_profile.PG_PRIVATE_RIGHTS_PROFILE:
             return True
         return any(_carries_private_profile(item, depth + 1) for item in value.values())
-    if type(value) is list or type(value) is tuple:
+    if isinstance(value, (str, bytes, bytearray)):
+        return False
+    if isinstance(value, Sequence):
         return any(_carries_private_profile(item, depth + 1) for item in value)
     return False
 

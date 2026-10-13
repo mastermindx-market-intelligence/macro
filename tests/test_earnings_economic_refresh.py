@@ -18,6 +18,7 @@ from engine.earnings_narrative.generation import EvidencePair, write_generation
 from engine.earnings_narrative.private_economic_stage import (
     AUTHORITY_CEILING,
     PriorClosureUnavailable,
+    PrivateEconomicStageError,
     assert_public_workspace_admission,
     load_verified_prior,
 )
@@ -391,6 +392,42 @@ def test_public_apple_and_legacy_pg_teaser_stay_admitted() -> None:
         "authority": "context_only",
     }
     assert_public_workspace_admission(teaser)
+
+
+def test_public_admission_refuses_private_content_outside_a_plain_dict() -> None:
+    """The guard reads metric ids and the rights profile, not the container type."""
+    from collections import OrderedDict
+    from types import MappingProxyType
+
+    from engine.company_intelligence.pg_profile import PG_PRIVATE_RIGHTS_PROFILE
+
+    ordered = OrderedDict((
+        ("private", False),
+        ("metric", "pg_diluted_eps"),
+    ))
+    with pytest.raises(PrivateEconomicStageError, match="private_workspace_refused"):
+        assert_public_workspace_admission(ordered)
+
+    nested_rights = {
+        "private": False,
+        "facts": MappingProxyType({
+            "rows": (
+                {
+                    "metric": "revenue",
+                    "source_span": {"rights_profile": PG_PRIVATE_RIGHTS_PROFILE},
+                },
+            ),
+        }),
+    }
+    with pytest.raises(PrivateEconomicStageError, match="private_workspace_refused"):
+        assert_public_workspace_admission(nested_rights)
+
+    public_proxy = MappingProxyType({
+        "issuer": {"company_id": "cik:0000320193", "ticker": "AAPL"},
+        "facts": [{"metric": "revenue", "source_span": {"rights_profile": "rp_public_primary_v1"}}],
+        "authority": "context_only",
+    })
+    assert_public_workspace_admission(public_proxy)
 
 
 def test_clean_v1_baseline_has_no_native_stage(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
