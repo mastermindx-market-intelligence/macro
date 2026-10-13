@@ -182,17 +182,17 @@ def build_inventory(
     known_at = _zulu(current)
     path = Path(database)
     try:
-        # pathlib re-raises EACCES and friends instead of reporting the
-        # path as absent, so an untraversable state directory must map to
-        # the same fail-closed refusal as every other unreadable store.
-        if not path.exists():
-            raise InventoryError("database_missing")
+        # Stat before deciding whether the file is absent. In Python 3.14+
+        # Path.exists() hides EACCES as False, incorrectly downgrading an
+        # unreadable state directory to a missing database.
+        metadata = path.stat()
         if not path.is_file():
             raise InventoryError("database_unreadable")
-
-        size = path.stat().st_size
+    except FileNotFoundError as exc:
+        raise InventoryError("database_missing") from exc
     except OSError as exc:
         raise InventoryError("database_unreadable") from exc
+    size = metadata.st_size
 
     try:
         store = NewsStore.open_readonly(path, source_key="ticker-news-inventory")
