@@ -113,6 +113,7 @@ from lib.dataos.read_contract import (
     replay,
     resolve_revisions,
     select_generation,
+    selected_input_sha256s,
 )
 from lib.dataos.registry import (
     ConflictPolicy,
@@ -155,6 +156,7 @@ __all__ = [
     "ReadRefusal", "ViewContract", "ReadRequest", "GenerationRef", "Dependency",
     "CurrentEvidence", "RetainedOutput", "ReadResult", "eligible_rows",
     "resolve_revisions", "select_generation", "reconstruct", "current", "replay",
+    "selected_input_sha256s",
     # price (§D4)
     "PriceError", "AdjustmentBasis", "PriceField", "Session", "VenueScope",
     "canonical_column", "parse_column", "AMBIGUOUS_NAMES", "is_ambiguous",
