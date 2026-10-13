@@ -25459,6 +25459,7 @@ jobs:
   grey-deer-pullback-stage1:
     if: ${{ false }}
     gate: code
+    scope: exclusive
     # Grey Deer W3 (WS:GREY-DEER-RISK-INTELLIGENCE): pullback stage-1 executing
     # script frozen by research/grey_deer/PULLBACK_PREREGISTRATION_2026-10-11.md
     # (blob 49a68b5e9c6543d662044b0aa391c4b6e6e6052e). Hermetic: synthetic series only.
@@ -25469,6 +25470,47 @@ jobs:
       - "lib/observed_moves.py"
       - "engine/vol_forecast.py"
       - "lib/nyse_calendar.py"
+      - "collectors/base.py"
+      - "collectors/fred.py"
+      - "collectors/massive_flatfiles.py"
+      - "collectors/massive_stock_day.py"
+      - "engine/__init__.py"
+      - "engine/axes.py"
+      - "engine/base_effect.py"
+      - "engine/canon.py"
+      - "engine/election_cycle.py"
+      - "engine/indicators.py"
+      - "engine/inputs.py"
+      - "engine/oracle/__init__.py"
+      - "engine/oracle/washout_counterread.py"
+      - "engine/pit.py"
+      - "engine/pit_lag_recorder.py"
+      - "engine/regime.py"
+      - "engine/regime_one.py"
+      - "engine/risk_radar.py"
+      - "engine/risk_radar_backtest.py"
+      - "engine/trial_ledger.py"
+      - "engine/yield_momentum.py"
+      - "lib/__init__.py"
+      - "lib/cn_calendar.py"
+      - "lib/config.py"
+      - "lib/exchange_holidays.py"
+      - "lib/hk_calendar.py"
+      - "lib/market_observations.py"
+      - "lib/market_session.py"
+      - "lib/massive_ticker.py"
+      - "lib/store.py"
+      - "lib/tsx_calendar.py"
+      - "lib/us_cash_calendar.py"
+      - "research/grey_deer/PULLBACK_PREREGISTRATION_2026-10-11.md"
+      - "research/grey_deer/PULLBACK_SOURCE_RIGHTS_QUALIFICATION_2026-10-11.md"
+      - "research/grey_deer/RISK_RADAR_DISPLAYED_PROBABILITY_AUDIT_PREREG_2026-09-22.md"
+      - "research/grey_deer/RISK_RADAR_DISPLAYED_PROBABILITY_AUDIT_RESULTS_2026-09-22.md"
+      - "research/grey_deer/RISK_RADAR_STATE_LADDER_CALIBRATION_PREREG_2026-09-21.md"
+      - "research/grey_deer/RISK_RADAR_STATE_LADDER_CALIBRATION_RESULTS_2026-09-21.md"
+      - "scripts/research/risk_radar_displayed_probability_audit.py"
+      - "scripts/research/risk_radar_state_ladder_calibration.py"
+      - "scripts/validate_regime_fwd.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -25476,7 +25518,7 @@ jobs:
         with:
           python-version: "3.12"
       - name: install minimal deps
-        run: pip install pytest pandas numpy scipy pyarrow
+        run: pip install pytest pandas numpy scipy pyarrow pyyaml
       - name: pullback stage-1 synthetic tests
         run: python -m pytest tests/test_grey_deer_pullback_stage1.py -q
 

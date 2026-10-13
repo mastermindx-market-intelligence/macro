@@ -193,8 +193,7 @@ from scipy.special import expit
 from scipy.stats import rankdata
 
 ROOT = Path(__file__).resolve().parents[2]
-if str(ROOT) not in sys.path:
-    sys.path.insert(0, str(ROOT))
+sys.path.insert(0, str(ROOT))
 
 from engine import trial_ledger
 from engine.vol_forecast import realized_vol
