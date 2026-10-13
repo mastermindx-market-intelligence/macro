@@ -1697,7 +1697,7 @@
           "id": "radar-confluence-STX-2026-10-13",
           "problem_or_desire": "$STX: confluence combo Weekly short-term uptrend + 21/100 golden cross + reclaims 100-day line firing, test WR 66%",
           "expected_value": 0.55,
-          "score": 0.521577,
+          "score": 0.519009,
           "half_life_class": "weekly_signal",
           "status": "open"
         },
@@ -1705,7 +1705,7 @@
           "id": "radar-confluence-SW-2026-10-13",
           "problem_or_desire": "$SW: confluence combo Weekly reclaims 100-day line + weekly RSI stack curls up + RSI-21 washed out firing, test WR 65%",
           "expected_value": 0.55,
-          "score": 0.521577,
+          "score": 0.519009,
           "half_life_class": "weekly_signal",
           "status": "open"
         },
@@ -1713,7 +1713,7 @@
           "id": "radar-confluence-STX-2026-10-11",
           "problem_or_desire": "$STX: confluence combo Weekly short-term uptrend + 21/100 golden cross + reclaims 100-day line firing, test WR 66%",
           "expected_value": 0.55,
-          "score": 0.427868,
+          "score": 0.425762,
           "half_life_class": "weekly_signal",
           "status": "open"
         }
@@ -1985,7 +1985,7 @@
     }
   ],
   "content": {
-    "total_posts": 29,
+    "total_posts": 26,
     "signal_posts": 3,
     "charts": 162,
     "accounts": 13,
@@ -2000,7 +2000,7 @@
   ],
   "schema_version": 1,
   "produced_by": "engine/neuralweb/marketing_governor.py",
-  "produced_at": "2026-10-13T12:51:39Z",
-  "inputs_hash": "sha256:89041b69eb3ae4ee5bf93631e6de76e078fd4c922c126e3782b1d8afbecd0169",
+  "produced_at": "2026-10-13T14:03:25Z",
+  "inputs_hash": "sha256:f09bb44fcce695f9350cffb2a194d877b4efffec0a2ad2caf1793d92c1361698",
   "tier": "display"
 }
