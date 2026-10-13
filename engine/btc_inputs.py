@@ -31,6 +31,26 @@ def _col(group: str, name: str, col: str | None = None) -> pd.Series | None:
     return s[~s.index.duplicated(keep="last")].sort_index()
 
 
+def _funding() -> pd.Series | None:
+    """Select the current stored rate by identity, never physical column order.
+
+    The multi-value collector also stores markPrice, which is not a rate.
+    Legacy single-value history has not been proven equivalent in units, venue
+    or settlement period: do not splice/fallback merely to extend coverage.
+    This selector preserves the currently consumed values without asserting
+    that the downstream eight-hour annualization is source-qualified.
+    """
+    df = store.read("bgeo", "funding_rate")
+    field = "funding_rate_fundingRate"
+    if df is None or df.empty or list(df.columns).count(field) != 1:
+        log.warning("btc_inputs: exact funding-rate field unavailable or ambiguous")
+        return None
+    s = pd.to_numeric(df[field], errors="coerce").copy()
+    s = s.where(np.isfinite(s))
+    s.index = pd.to_datetime(s.index)
+    return s[~s.index.duplicated(keep="last")].sort_index()
+
+
 def load_price() -> pd.DataFrame:
     """Daily OHLCV: Coinbase quality where available, Yahoo for the 2014-15 tail."""
     cb = store.read("coinbase", "btc_daily")
@@ -95,7 +115,7 @@ def load_all() -> dict[str, pd.Series | pd.DataFrame | None]:
         "miner_df": store.read("bgeo", "miner_sell_pressure"),  # outflow/reserve cols for MPI
         "coinbase_premium": _col("bgeo", "coinbase_premium",
                                  "coinbase_premium_coinbasePremiumIndex"),  # US institutional demand
-        "funding": _col("bgeo", "funding_rate"),
+        "funding": _funding(),
         "open_interest": _col("bgeo", "open_interest_futures"),
         "open_interest_df": store.read("bgeo", "open_interest_futures"),  # all 15 venue cols
         "okx_ls_ratio": _col("okx", "ls_account_ratio"),     # OKX retail account long/short breadth (DISPLAY)
