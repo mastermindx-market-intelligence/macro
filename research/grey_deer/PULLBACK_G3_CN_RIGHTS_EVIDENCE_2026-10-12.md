@@ -305,7 +305,7 @@ URL: `https://legal.yahoo.com/us/en/yahoo/terms/otos/index.html` · HTTP 200 · 
 | Quote (≤15 words) | What it sits next to |
 |---|---|
 | "exploit for any commercial purposes" | A ban on exploiting the Services, "including content, advertisements, APIs, and software", for commercial purposes. |
-| "personal, royalty-free, non-transferable, non-assignable, revocable, and non-exclusive license" | The software-and-API license, "for the sole purpose of enabling you to use and enjoy the benefit of the Services". |
+| "personal, royalty-free, non-transferable, non-assignable, revocable, and non-exclusive license" | The software-and-API license, limited in purpose to "enabling you to use and enjoy the benefit of the Services". |
 | "high volume activity without our prior written consent" | Ban on commercial activity on non-commercial properties, or high-volume activity, without prior written consent. |
 | "Yahoo Finance which is provided by Yahoo Finance LLC" | US defined terms. Yahoo Finance is called out as Yahoo Finance LLC, not Yahoo Inc. |
 
