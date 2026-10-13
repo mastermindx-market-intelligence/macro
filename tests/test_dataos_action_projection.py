@@ -78,7 +78,12 @@ def contract(dataset_id: str, status: str = "PRODUCED") -> DatasetContract:
     )
 
 
-def pair(observation_map: dict, registry: Registry | None = None) -> tuple:
+#: The default registry every synthetic case runs against: the fixture source
+#: is registered and PRODUCED, so each rule below is reached exactly as before.
+TESTFIX_REGISTRY = Registry([contract("equity.actions.splits.testfix")])
+
+
+def pair(observation_map: dict, registry: Registry = TESTFIX_REGISTRY) -> tuple:
     """The (status, reason) pair — what a refusal actually branches on."""
     verdict = qualify_action_input(observation_map, registry=registry)
     return (verdict.status, verdict.reason)
@@ -88,7 +93,7 @@ def pair(observation_map: dict, registry: Registry | None = None) -> tuple:
 def test_confirmed_is_reachable_and_only_via_rule_8() -> None:
     """The fully qualified as-observed observation IS confirmed — and every
     one-field defect on it lands somewhere else, so rule 8 is the ONLY door."""
-    verdict = qualify_action_input(observation())
+    verdict = qualify_action_input(observation(), registry=TESTFIX_REGISTRY)
     assert verdict.status is ActionInputStatus.CONFIRMED
     assert verdict.reason == "AS_OBSERVED"
 
@@ -128,7 +133,7 @@ def test_confirmed_is_reachable_and_only_via_rule_8() -> None:
 
 
 def test_a_verified_verdict_is_frozen_and_self_identifying() -> None:
-    verdict = qualify_action_input(observation())
+    verdict = qualify_action_input(observation(), registry=TESTFIX_REGISTRY)
     assert isinstance(verdict, ActionInputVerdict)
     with pytest.raises(dataclasses.FrozenInstanceError):
         verdict.reason = "SOMETHING_ELSE"  # type: ignore[misc]
@@ -136,7 +141,9 @@ def test_a_verified_verdict_is_frozen_and_self_identifying() -> None:
     # report never has to re-read the input
     assert verdict.dataset_id == "equity.actions.splits.testfix"
     assert verdict.receipt == "mastermind.tiingo.raw_receipt.v1:rq-abc123-rawdef456"
-    assert qualify_action_input(observation(receipt=None)).receipt is None
+    assert qualify_action_input(
+        observation(receipt=None), registry=TESTFIX_REGISTRY
+    ).receipt is None
     # StrEnum (the lib.dataos.price idiom): the member IS the loggable string
     assert verdict.status == "CONFIRMED"
     assert {s.value for s in ActionInputStatus} == {
@@ -159,7 +166,8 @@ def test_p0101_provider_label_with_adjusted_flag_is_never_confirmed() -> None:
     """THE discriminating counterexample: `provider="tiingo", adjusted_flag=True,
     receipt=None` is not an observation of anything — it is a vendor label."""
     verdict = qualify_action_input(
-        observation(receipt=None, provider="tiingo", adjusted_flag=True)
+        observation(receipt=None, provider="tiingo", adjusted_flag=True),
+        registry=TESTFIX_REGISTRY,
     )
     assert verdict.status is not ActionInputStatus.CONFIRMED
     assert (verdict.status, verdict.reason) == (
@@ -193,7 +201,9 @@ def test_p0101_an_adjusted_flag_set_to_false_is_still_a_label() -> None:
 def test_p0102_discontinuity_with_a_full_receipt_is_suspected() -> None:
     """THE discriminating counterexample: even a perfect receipt attached to a
     price-jump inference authenticates the INFERENCE, not an event (D00.D3)."""
-    verdict = qualify_action_input(observation(origin="price_discontinuity"))
+    verdict = qualify_action_input(
+        observation(origin="price_discontinuity"), registry=TESTFIX_REGISTRY
+    )
     assert verdict.status is not ActionInputStatus.CONFIRMED
     assert (verdict.status, verdict.reason) == (
         ActionInputStatus.SUSPECTED, "DISCONTINUITY_INFERRED"
@@ -222,7 +232,8 @@ def test_p0104_cumulative_factor_with_a_perfect_receipt_is_unqualified() -> None
     """THE discriminating counterexample: a cumulative vendor adjustment factor
     with a flawless receipt and endpoint is still not an as-observed ratio."""
     verdict = qualify_action_input(
-        observation(field_convention="cumulative_adjustment_factor")
+        observation(field_convention="cumulative_adjustment_factor"),
+        registry=TESTFIX_REGISTRY,
     )
     assert verdict.status is not ActionInputStatus.CONFIRMED
     assert (verdict.status, verdict.reason) == (
@@ -250,7 +261,10 @@ def test_p0104_the_admissible_conventions_are_the_only_other_members() -> None:
         ActionInputStatus.CONFIRMED, "AS_OBSERVED"
     )
     with pytest.raises(ValueError, match="field_convention"):
-        qualify_action_input(observation(field_convention="vendor_dividend_flag"))
+        qualify_action_input(
+            observation(field_convention="vendor_dividend_flag"),
+            registry=TESTFIX_REGISTRY,
+        )
 
 
 # ── decision order (first match wins) ────────────────────────────────────────
@@ -361,9 +375,29 @@ def test_the_registry_argument_must_be_a_registry() -> None:
 )
 def test_structurally_impossible_observations_raise_value_error(broken) -> None:
     with pytest.raises(ValueError):
-        qualify_action_input(broken(observation()))
+        qualify_action_input(broken(observation()), registry=TESTFIX_REGISTRY)
 
 
 def test_a_non_mapping_observation_raises_type_error() -> None:
     with pytest.raises(TypeError, match="Mapping"):
-        qualify_action_input("provider=tiingo, adjusted=true")  # type: ignore[arg-type]
+        qualify_action_input(
+            "provider=tiingo, adjusted=true", registry=TESTFIX_REGISTRY
+        )  # type: ignore[arg-type]
+
+
+# ── R02 heal (M3) — the registry is a REQUIRED argument (seat ruling D00.D3/D00.D6) ──
+def test_R02_M3_registry_is_required() -> None:
+    with pytest.raises(TypeError, match="registry"):
+        qualify_action_input(observation(dataset_id="nonexistent.dataset"))  # type: ignore[call-arg]
+
+
+def test_R02_M3_registry_none_refuses() -> None:
+    with pytest.raises(TypeError, match="Registry"):
+        qualify_action_input(observation(), registry=None)  # type: ignore[arg-type]
+
+
+def test_R02_M3_unregistered_dataset_with_the_real_registry_is_unqualified() -> None:
+    assert pair(observation(dataset_id="nonexistent.dataset"), registry=load_registry()) == (
+        ActionInputStatus.UNQUALIFIED,
+        "UNREGISTERED_SOURCE",
+    )

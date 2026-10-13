@@ -648,7 +648,7 @@ def _cycles(registry: Registry) -> list[str]:
 # current-share cash amount, an adjusted close series — is one of the refusals
 # below, each with its own stable reason code, so P02–P04 never have to re-
 # argue the distinction per call site.  Pure stdlib, no I/O: the caller brings
-# the observation dict and (optionally) an already-loaded :class:`Registry`.
+# the observation dict and the already-loaded :class:`Registry` (required).
 
 #: The keys an action observation MUST carry.  Absence is a caller bug
 #: (``ValueError``), not a missing-data status — an observation that cannot say
@@ -749,7 +749,7 @@ class ActionInputVerdict:
 
 
 def qualify_action_input(
-    observation: Mapping[str, Any], *, registry: Registry | None = None
+    observation: Mapping[str, Any], *, registry: Registry
 ) -> ActionInputVerdict:
     """May this corporate-action observation enter a split/dividend factor?
 
@@ -777,8 +777,12 @@ def qualify_action_input(
     7. ``response is None`` → UNCAPTURED / ``NO_RESPONSE``.
     8. otherwise CONFIRMED / ``AS_OBSERVED`` — reachable ONLY here.
 
-    With ``registry`` given (a :class:`Registry`), the source checks run AFTER
-    rule 1 and BEFORE rule 2: an unknown ``dataset_id`` → UNQUALIFIED /
+    ``registry`` (a loaded :class:`Registry`) is REQUIRED (seat ruling on
+    D00.D3/D00.D6, R02 M3): an observation can never be CONFIRMED against a
+    source nobody registered, so there is no registry-free call shape.  A
+    non-``Registry`` value raises ``TypeError`` before any rule runs.  The
+    source checks run AFTER rule 1 and BEFORE rule 2: an unknown
+    ``dataset_id`` → UNQUALIFIED /
     ``UNREGISTERED_SOURCE``; a row whose status is not PRODUCED (PROPOSED,
     RETIRED) → UNQUALIFIED / ``SOURCE_NOT_PRODUCED`` (R00.04: the PROPOSED
     Tiingo contracts stay PROPOSED until their original owner produces them).
@@ -791,6 +795,8 @@ def qualify_action_input(
         raise TypeError(
             f"observation must be a Mapping, got {type(observation).__name__}"
         )
+    if not isinstance(registry, Registry):
+        raise TypeError(f"registry must be a Registry, got {type(registry).__name__}")
     known = set(ACTION_INPUT_FIELDS) | set(ACTION_INPUT_OPTIONAL_FIELDS)
     unknown = sorted(set(observation) - known)
     if unknown:
@@ -862,19 +868,14 @@ def qualify_action_input(
 
     # Registry step — source checks run after rule 1, before rule 2: a produced
     # source is a precondition for ANY capture question below.
-    if registry is not None:
-        if not isinstance(registry, Registry):
-            raise TypeError(
-                f"registry must be a Registry, got {type(registry).__name__}"
-            )
-        contract = registry.get(dataset_id)
-        if contract is None:
-            return verdict(ActionInputStatus.UNQUALIFIED, "UNREGISTERED_SOURCE")
-        if contract.status is not DatasetStatus.PRODUCED:
-            # PROPOSED stays PROPOSED until its original owner produces it
-            # (R00.04); RETIRED no longer exists to witness new events.  Both
-            # refuse under one code: the source is not (currently) produced.
-            return verdict(ActionInputStatus.UNQUALIFIED, "SOURCE_NOT_PRODUCED")
+    contract = registry.get(dataset_id)
+    if contract is None:
+        return verdict(ActionInputStatus.UNQUALIFIED, "UNREGISTERED_SOURCE")
+    if contract.status is not DatasetStatus.PRODUCED:
+        # PROPOSED stays PROPOSED until its original owner produces it
+        # (R00.04); RETIRED no longer exists to witness new events.  Both
+        # refuse under one code: the source is not (currently) produced.
+        return verdict(ActionInputStatus.UNQUALIFIED, "SOURCE_NOT_PRODUCED")
 
     # Rule 2 — rights-limited capture (an unsupported family, D00.D3) is never
     # coerced into one (P01.03); refusal precedes the receipt/label questions.
