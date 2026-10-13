@@ -20,6 +20,7 @@ VERTICAL_PREFIXES = (
     "technology_",
     "nuclear_",
     "robotics_",
+    "communications_",
 )
 
 MOVED = (
