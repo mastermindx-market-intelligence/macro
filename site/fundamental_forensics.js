@@ -1925,10 +1925,12 @@
     var target = company();
     if (!target) return;
     // X2-s: a restored PINNED view re-POSTs its stored request bytes verbatim
-    // for the latest-known leg (and its clocks for the other two selections);
-    // otherwise the desk builds the body exactly as before.
+    // on every leg — the latest-known leg too is the STORED bytes with only
+    // policy.selection switched to latest_known_as_of, so a pinned view saved
+    // under as_reported still compares like against like; without a pinned
+    // view the desk builds each leg exactly as before.
     var pinnedBody = activePinnedRequest();
-    var latestBody = pinnedBody || buildQueryBody('latest_known_as_of');
+    var latestBody = pinnedBody ? pinnedVariant('latest_known_as_of') : buildQueryBody('latest_known_as_of');
     if (!latestBody.entity_id) {
       state.financial = { phase: 'no-entity' };
       renderRevisions();
@@ -1946,7 +1948,10 @@
     }
     var token = state.financialToken + 1;
     state.financialToken = token;
-    state.financial = { phase: 'loading', queryBody: latestBody };
+    // X2-s r1: the exported body is the pinned bytes while the pinned view is
+    // active, otherwise the DESK's own selection (buildQueryBody() with no
+    // argument) — never the forced latest_known_as_of leg above.
+    state.financial = { phase: 'loading', queryBody: pinnedBody || buildQueryBody() };
     renderRevisions();
     var latestMeta = {};
     Promise.all([
@@ -1964,7 +1969,7 @@
         restated: queryNodesFrom(answers[2]),
         revisions: revisionsRowsFrom(answers[3]),
         receiptPolicy: objectValue(objectValue(answers[1] && answers[1].receipt) && objectValue(answers[1].receipt).policy) || {},
-        queryBody: latestBody,
+        queryBody: pinnedBody || buildQueryBody(),
         // X2-s: the verified digest and the dataset generation the answer was
         // served from — refs for saved_against, never values.
         responseSha256: latestMeta.responseSha256 || '',
@@ -2395,6 +2400,7 @@
   var SAVED_COPY = {
     listLabel: ['Saved views', '已存视图'],
     empty: ['No saved views yet', '暂无已存视图'],
+    choose: ['Choose a saved view', '选择已存视图'],
     save: ['Save this view', '保存当前视图'],
     rename: ['Rename', '重命名'],
     remove: ['Delete', '删除'],
@@ -2407,6 +2413,14 @@
     unavailableIssuerCopy: [
       'This view\'s company is not covered by the current run, so it cannot be opened.',
       '当前更新未覆盖此视图的公司，因此无法打开。'
+    ],
+    unavailableMissingCopy: [
+      'This saved view is no longer on this device — it may have been deleted in another tab.',
+      '此已存视图已不在本设备上——可能已在其他标签页中删除。'
+    ],
+    unavailableStoreCopy: [
+      'Saved views on this device could not be read, so they are left untouched. Saving is paused here.',
+      '无法读取本设备上的已存视图，因此保持原样不作改动。此处暂停保存。'
     ],
     pinnedTo: ['Pinned to', '固定于'],
     latest: ['latest', '最新'],
@@ -2512,6 +2526,8 @@
       state.savedActiveId = result.view.id;
       state.savedRefusal = '';
       state.pinnedRequest = result.view.pinned ? result.view.request : null;
+    } else if (result.reason === 'storage') {
+      state.savedRefusal = 'store';
     }
     renderSavedUI();
     return result;
@@ -2560,10 +2576,15 @@
   }
 
   function savedNoticeHtml(kind) {
-    var copy = kind === 'contract' ? SAVED_COPY.unavailableContractCopy : SAVED_COPY.unavailableIssuerCopy;
-    return '<span class="ff-notice-icon" aria-hidden="true">i</span><div>' +
+    var copy = kind === 'issuer' ? SAVED_COPY.unavailableIssuerCopy
+      : kind === 'missing' ? SAVED_COPY.unavailableMissingCopy
+      : kind === 'store' ? SAVED_COPY.unavailableStoreCopy
+      : SAVED_COPY.unavailableContractCopy;
+    // Existing classes only: the notice is an icon span plus a title element
+    // and a copy element inside one container div (X2-s r1, MINOR-5).
+    return '<span class="ff-notice-icon" aria-hidden="true">i</span><div><strong>' +
       pair(SAVED_COPY.unavailableTitle[0], SAVED_COPY.unavailableTitle[1]) +
-      ' ' + pair(copy[0], copy[1]) + '</div>';
+      '</strong><div>' + pair(copy[0], copy[1]) + '</div></div>';
   }
 
   function renderSavedUI() {
@@ -2578,8 +2599,11 @@
     var peerSave = byId('ff-peer-save');
     var listing = savedBriefcase.list();
     var current = lang();
+    // X2-s r1: a populated list offers a choice; only a truly empty list says
+    // "No saved views yet".
+    var placeholder = listing.length ? SAVED_COPY.choose : SAVED_COPY.empty;
 
-    var options = '<option value="">' + (current === 'zh' ? SAVED_COPY.empty[1] : SAVED_COPY.empty[0]) + '</option>';
+    var options = '<option value="">' + (current === 'zh' ? placeholder[1] : placeholder[0]) + '</option>';
     listing.forEach(function (entry) {
       var label = entry.name;
       if (!entry.available) label += ' · ' + (current === 'zh' ? SAVED_COPY.unavailable[1] : SAVED_COPY.unavailable[0]);
@@ -2588,22 +2612,26 @@
     select.innerHTML = options;
     select.value = state.savedActiveId || '';
 
+    // X2-s r1 (MAJOR-3): an unreadable store is read-only — Save/peer-save
+    // stay disabled and Rename/Delete stay hidden through attributes only,
+    // and the notice names the paused store instead of a contract drift.
+    var storeReadOnly = savedBriefcase.readOnly();
     var phase = savedSavePhase();
     var name = nameInput && nameInput.value ? String(nameInput.value).trim() : '';
     if (saveBtn) {
-      saveBtn.disabled = phase !== 'ready' || !name;
+      saveBtn.disabled = storeReadOnly || phase !== 'ready' || !name;
       saveBtn.setAttribute('data-label-en', SAVED_COPY.save[0]);
       saveBtn.setAttribute('data-label-zh', SAVED_COPY.save[1]);
       saveBtn.setAttribute('aria-label', current === 'zh' ? SAVED_COPY.save[1] : SAVED_COPY.save[0]);
     }
     if (peerSave) {
-      peerSave.disabled = phase !== 'ready';
+      peerSave.disabled = storeReadOnly || phase !== 'ready';
       peerSave.innerHTML = pair(SAVED_COPY.peerSave[0], SAVED_COPY.peerSave[1]);
     }
-    var active = savedActiveView();
+    var active = storeReadOnly ? null : savedActiveView();
     var renameable = !!active;
     if (renameBtn) renameBtn.hidden = !renameable;
-    if (deleteBtn) deleteBtn.hidden = !state.savedActiveId;
+    if (deleteBtn) deleteBtn.hidden = !state.savedActiveId || storeReadOnly;
 
     if (badge) {
       if (active && active.pinned) {
@@ -2631,8 +2659,11 @@
         notice.innerHTML = '<span class="ff-notice-icon" aria-hidden="true">i</span><div>' +
           pair(SAVED_COPY.newerGeneration[0], SAVED_COPY.newerGeneration[1]) + action + '</div>';
         notice.hidden = false;
+      } else if (storeReadOnly) {
+        notice.innerHTML = savedNoticeHtml('store');
+        notice.hidden = false;
       } else if (state.savedRefusal) {
-        notice.innerHTML = savedNoticeHtml(state.savedRefusal === 'issuer' ? 'issuer' : 'contract');
+        notice.innerHTML = savedNoticeHtml(state.savedRefusal);
         notice.hidden = false;
       } else {
         notice.hidden = true;
@@ -2680,7 +2711,9 @@
     var result = savedBriefcase.load(id);
     state.savedActiveId = String(id || '');
     if (!result.ok) {
-      state.savedRefusal = result.reason === 'missing' ? 'contract' : result.reason;
+      // 'missing' keeps its own kind (its own notice copy): the view was on
+      // this device and is gone now; everything else keeps its refusal reason.
+      state.savedRefusal = result.reason;
       state.pinnedRequest = null;
       renderSavedUI();
       return result;
@@ -2688,9 +2721,13 @@
     state.savedRefusal = '';
     var view = result.view;
     // issuer is display/index metadata; the query identity stays
-    // request.entity_id and is never inferred from the ticker.
+    // request.entity_id and is never inferred from the ticker. The ticker
+    // must resolve AND the resolved issuer must still carry the stored
+    // entity_id — a ticker that resolves to a different entity refuses as
+    // 'issuer' BEFORE any desk-state mutation.
     var resolved = view.issuer && view.issuer.ticker ? resolveSymbol(view.issuer.ticker) : '';
-    if (!resolved) {
+    var resolvedCompany = resolved ? companies()[resolved] : null;
+    if (!resolvedCompany || String(resolvedCompany.entity_id) !== String(view.request.entity_id)) {
       state.savedRefusal = 'issuer';
       state.pinnedRequest = null;
       renderSavedUI();
@@ -2698,17 +2735,20 @@
     }
     // Desk state first, then setCompany: the financial query it triggers must
     // see the restored policy, cutoff and pinned bytes, not the defaults.
-    state.policy = String((view.request.policy || {}).selection || 'latest_known_as_of');
-    state.asOfDate = view.pinned ? String((view.request.policy || {}).source_snapshot_at || '').slice(0, 10) : '';
-    state.cohortId = String((view.peers || {}).cohort || '');
-    state.peerMetric = String((view.peers || {}).peer_metric || '');
-    state.peerAlign = (view.peers || {}).align === 'shift_labeled' ? 'shift_labeled' : 'exclude';
-    state.peerN = numberValue((view.peers || {}).peer_n) != null ? numberValue(view.peers.peer_n) : 3;
-    state.peerTol = numberValue((view.peers || {}).peer_tol) != null ? numberValue(view.peers.peer_tol) : 45;
+    // checkView guarantees every field read below exists in canonical form —
+    // no defaults are applied here; an un-appliable value refuses at load as
+    // a contract refusal, never silently coerces.
+    state.policy = view.request.policy.selection;
+    state.asOfDate = view.pinned ? view.request.policy.source_snapshot_at.slice(0, 10) : '';
+    state.cohortId = view.peers.cohort == null ? '' : view.peers.cohort;
+    state.peerMetric = view.peers.peer_metric == null ? '' : view.peers.peer_metric;
+    state.peerAlign = view.peers.align === 'shift_labeled' ? 'shift_labeled' : 'exclude';
+    state.peerN = view.peers.peer_n;
+    state.peerTol = view.peers.peer_tol;
     state.pinnedRequest = view.pinned ? view.request : null;
     setCompany(resolved, false);
-    setTab(String((view.view || {}).tab || 'radar'), false);
-    if (view.view && view.view.finding && state.tab === 'radar') {
+    setTab(view.view.tab, false);
+    if (view.view.finding && state.tab === 'radar') {
       state.findingId = String(view.view.finding);
       state.evidenceKind = 'finding';
       renderFindings();
@@ -2724,6 +2764,7 @@
   function savedRenameActive(name) {
     if (!savedBriefcase || !state.savedActiveId) return { ok: false, reason: 'missing' };
     var result = savedBriefcase.update(state.savedActiveId, { name: name });
+    if (!result.ok && result.reason === 'storage') state.savedRefusal = 'store';
     renderSavedUI();
     return result;
   }
@@ -2735,6 +2776,8 @@
       state.savedActiveId = '';
       state.savedRefusal = '';
       state.pinnedRequest = null;
+    } else if (result.reason === 'storage') {
+      state.savedRefusal = 'store';
     }
     renderSavedUI();
     return result;
@@ -5298,7 +5341,8 @@
       buildSavedViewInput: buildSavedViewInput,
       activePinnedRequest: activePinnedRequest,
       savedSavePhase: savedSavePhase,
-      savedGenerationStale: savedGenerationStale
+      savedGenerationStale: savedGenerationStale,
+      exportQueryBody: exportQueryBody
     };
   } else if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', init, { once: true });

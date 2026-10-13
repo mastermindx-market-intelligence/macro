@@ -15,7 +15,9 @@
  * version. A load REFUSES — plain "saved view unavailable", never a crash,
  * never a repair, never a migration, never a silent drop — when any contract
  * check fails. A refused view stays listed (as unavailable) and may be
- * deleted.
+ * deleted. A container whose own bytes are unreadable (unparseable, drifted
+ * contract, wrong shape) turns the whole store READ-ONLY for the session —
+ * nothing is written back, so the user's bytes are never blanked to "heal".
  */
 (function (root) {
   'use strict';
@@ -40,6 +42,25 @@
   var POLICY_KEYS = ['selection', 'source_snapshot_at', 'recorded_at'];
   var PERIOD_KEYS = ['kind', 'start', 'end', 'label'];
   var SELECTIONS = ['as_reported', 'latest_known_as_of', 'latest_restated'];
+  // The declared refusal set: every reason a stored view (or the container
+  // itself) can refuse with. tests/test_fundamental_forensics_saved_store_schema.py
+  // pins this list exactly, both directions, and the Node suites pin each
+  // reason behaviourally. Call outcomes that are not contract refusals
+  // ('missing', 'name', 'request', 'limit', 'module') stay off the list.
+  var REFUSAL_REASONS = [
+    'schema',
+    'request_contract',
+    'request_schema',
+    'request_root',
+    'request_canonical',
+    'pinned_type',
+    'peers',
+    'view',
+    'pinned_cutoffs',
+    'id',
+    'unavailable',
+    'storage'
+  ];
 
   function object(value) {
     return !!value && typeof value === 'object' && !Array.isArray(value);
@@ -145,9 +166,34 @@
     };
   }
 
+  // Key-order-insensitive structural equality: plain objects compare by key
+  // set, arrays element-by-element in order, primitives by ===.
+  function deepEqual(a, b) {
+    if (a === b) return true;
+    if (Array.isArray(a) || Array.isArray(b)) {
+      if (!Array.isArray(a) || !Array.isArray(b) || a.length !== b.length) return false;
+      for (var index = 0; index < a.length; index += 1) {
+        if (!deepEqual(a[index], b[index])) return false;
+      }
+      return true;
+    }
+    if (object(a) && object(b)) {
+      var aKeys = Object.keys(a);
+      if (aKeys.length !== Object.keys(b).length) return false;
+      for (var keyIndex = 0; keyIndex < aKeys.length; keyIndex += 1) {
+        if (!Object.prototype.hasOwnProperty.call(b, aKeys[keyIndex])) return false;
+        if (!deepEqual(a[aKeys[keyIndex]], b[aKeys[keyIndex]])) return false;
+      }
+      return true;
+    }
+    return false;
+  }
+
   // ── Saved-view shape ────────────────────────────────────────────────────
-  // Refusal reasons (each has a test): 'schema', 'request_contract',
-  // 'request_schema', 'request_root', 'pinned_cutoffs'. A view that fails any
+  // Refusal reasons (each has a test; REFUSAL_REASONS is the declared set the
+  // schema suite pins exactly): 'schema', 'request_contract', 'request_schema',
+  // 'request_root', 'request_canonical', 'pinned_type', 'peers', 'view',
+  // 'pinned_cutoffs', 'id', 'unavailable', 'storage'. A view that fails any
   // check is listed as unavailable and may be deleted, never repaired.
   function checkView(raw) {
     if (!object(raw)) return { ok: false, reason: 'schema' };
@@ -156,11 +202,32 @@
     if (!object(raw.request)) return { ok: false, reason: 'request_schema' };
     if (raw.request.schema !== raw.request_contract) return { ok: false, reason: 'request_schema' };
     if (!exactKeys(raw.request, ROOT_REQUEST_KEYS)) return { ok: false, reason: 'request_root' };
+    // A pinned view names its missing clock before the canonical check, so
+    // the more specific reason wins (canonicalRequest also refuses an empty
+    // clock, which would otherwise make this reason unreachable).
     if (raw.pinned === true) {
       var policy = object(raw.request.policy) ? raw.request.policy : {};
       if (!policy.source_snapshot_at || !policy.recorded_at) {
         return { ok: false, reason: 'pinned_cutoffs' };
       }
+    }
+    // The embedded request must be EXACTLY its own canonical form: a
+    // well-shaped but drifted blob (extra policy key, period missing a label,
+    // selection outside the enum) refuses as request_canonical — never loads,
+    // never repairs.
+    var canon = canonicalRequest(raw.request);
+    if (!canon || !deepEqual(canon, raw.request)) {
+      return { ok: false, reason: 'request_canonical' };
+    }
+    // pinned is stored as a real boolean — "true"/1/null all refuse.
+    if (typeof raw.pinned !== 'boolean') return { ok: false, reason: 'pinned_type' };
+    // peers/view must already BE their normalised form; the page never
+    // silently defaults a stored value it cannot apply.
+    if (!object(raw.peers) || !deepEqual(normalPeers(raw.peers), raw.peers)) {
+      return { ok: false, reason: 'peers' };
+    }
+    if (!object(raw.view) || !deepEqual(normalViewMeta(raw.view), raw.view)) {
+      return { ok: false, reason: 'view' };
     }
     return { ok: true, view: raw };
   }
@@ -224,24 +291,41 @@
     return { tab: tab, finding: text(value.finding, 128) || null };
   }
 
-  // ── Container (GovRev discipline: contract-checked, self-healing blank) ──
+  // ── Container (GovRev discipline: contract-checked; an unreadable store
+  // goes READ-ONLY and never self-heals to blank) ──────────────────────────
   function blankContainer() {
     return { contract: SAVED_SCHEMA, saved_views: [] };
   }
 
-  function normalContainer(value) {
-    if (!object(value) || value.contract !== SAVED_SCHEMA) return blankContainer();
-    var container = blankContainer();
-    var seenIds = {};
-    array(value.saved_views).forEach(function (row) {
-      if (!object(row)) return;
-      if (container.saved_views.length >= MAX_VIEWS) return;
-      var id = text(row.id, 64);
-      if (!id || Object.prototype.hasOwnProperty.call(seenIds, id)) return;
-      seenIds[id] = true;
-      container.saved_views.push(copy(row)); // kept verbatim — refused or not
-    });
-    return container;
+  // A lawful read keeps EVERY row verbatim — no dropping, no truncation, no
+  // normalisation; rows are judged lazily by listing()/load(). Only the
+  // container's own shape decides readability: an absent key (or no storage
+  // at all) is a blank writable container; ANYTHING else unreadable — a
+  // throwing getItem, unparseable bytes, a non-object root, wrong root keys,
+  // a drifted contract, saved_views not an array — makes the whole store
+  // READ-ONLY so the user's stored bytes are never overwritten.
+  function readStored(storage) {
+    if (!storage || typeof storage.getItem !== 'function') {
+      return { ok: true, container: blankContainer() };
+    }
+    var raw = null;
+    try {
+      raw = storage.getItem(STORAGE_KEY);
+    } catch (error) {
+      return { ok: false };
+    }
+    if (raw === null || raw === undefined) return { ok: true, container: blankContainer() };
+    var parsed = null;
+    try {
+      parsed = JSON.parse(raw);
+    } catch (error) {
+      return { ok: false };
+    }
+    if (!object(parsed)) return { ok: false };
+    if (!exactKeys(parsed, ['contract', 'saved_views'])) return { ok: false };
+    if (parsed.contract !== SAVED_SCHEMA) return { ok: false };
+    if (!Array.isArray(parsed.saved_views)) return { ok: false };
+    return { ok: true, container: { contract: SAVED_SCHEMA, saved_views: parsed.saved_views } };
   }
 
   // ── Module factory ──────────────────────────────────────────────────────
@@ -284,16 +368,12 @@
       return id;
     }
 
-    function read() {
-      if (!storage || typeof storage.getItem !== 'function') return blankContainer();
-      try {
-        return normalContainer(JSON.parse(storage.getItem(STORAGE_KEY) || 'null'));
-      } catch (error) {
-        return blankContainer();
-      }
-    }
-
-    var container = read();
+    var stored = readStored(storage);
+    var container = stored.container;
+    // READ-ONLY: the stored bytes could not be read as a lawful container.
+    // commit() is never called in this state, so the user's bytes are never
+    // overwritten; every operation answers 'unavailable' instead.
+    var readOnly = !stored.ok;
 
     function commit() {
       var persisted = false;
@@ -306,29 +386,64 @@
       return persisted;
     }
 
+    function rowId(row) {
+      return object(row) ? text(row.id, 64) : '';
+    }
+
+    // Every row gets an address: a row that is a plain object carrying a
+    // lawful, first-seen id is addressed by that id; anything else (not a
+    // plain object, missing/empty/non-string id, repeated id) is addressed
+    // as 'row:<index>' — listed unavailable, refused on load, removable by
+    // exactly that key, never silently dropped.
+    function rowAddresses() {
+      var seen = {};
+      return container.saved_views.map(function (row, index) {
+        var id = rowId(row);
+        if (id && !Object.prototype.hasOwnProperty.call(seen, id)) {
+          seen[id] = true;
+          return { key: id, index: index, row: row, idProblem: false };
+        }
+        return { key: 'row:' + index, index: index, row: row, idProblem: true };
+      });
+    }
+
+    function pseudoRowAddress(id) {
+      var match = /^row:(\d+)$/.exec(text(id, 64));
+      if (!match) return null;
+      var index = Number(match[1]);
+      var addresses = rowAddresses();
+      if (index < 0 || index >= addresses.length || !addresses[index].idProblem) return null;
+      return addresses[index];
+    }
+
     function rowById(id) {
       var wanted = text(id, 64);
+      if (!wanted) return null;
       for (var index = 0; index < container.saved_views.length; index += 1) {
-        if (text(container.saved_views[index].id, 64) === wanted) return container.saved_views[index];
+        if (rowId(container.saved_views[index]) === wanted) return container.saved_views[index];
       }
       return null;
     }
 
     function listing() {
-      return container.saved_views.map(function (row) {
-        var checked = checkView(row);
+      if (readOnly) return [];
+      return rowAddresses().map(function (address) {
+        var safe = object(address.row) ? address.row : {};
+        var checked = checkView(address.row);
         return {
-          id: text(row.id, 64),
-          name: text(row.name, MAX_NAME_LENGTH),
-          pinned: row.pinned === true,
-          updated_at: text(row.updated_at, 80),
-          available: checked.ok,
-          reason: checked.ok ? '' : checked.reason
+          id: address.key,
+          name: text(safe.name, MAX_NAME_LENGTH),
+          pinned: safe.pinned === true,
+          updated_at: text(safe.updated_at, 80),
+          available: checked.ok && !address.idProblem,
+          reason: address.idProblem ? 'id' : (checked.ok ? '' : checked.reason)
         };
       });
     }
 
     function load(id) {
+      if (readOnly) return { ok: false, reason: 'unavailable' };
+      if (pseudoRowAddress(id)) return { ok: false, reason: 'id' };
       var row = rowById(id);
       if (!row) return { ok: false, reason: 'missing' };
       var checked = checkView(row);
@@ -337,6 +452,7 @@
     }
 
     function save(input) {
+      if (readOnly) return { ok: false, reason: 'unavailable' };
       input = object(input) ? input : {};
       if (container.saved_views.length >= MAX_VIEWS) return { ok: false, reason: 'limit' };
       var name = text(input.name, MAX_NAME_LENGTH);
@@ -365,14 +481,26 @@
         watch: { issuer: input.watch && object(input.watch) ? input.watch.issuer === true : false }
       };
       container.saved_views.push(view);
-      commit();
+      if (!commit()) {
+        // Roll the in-memory change back: a failed persistence must not
+        // leave a phantom row the next reload would not have.
+        container.saved_views.pop();
+        return { ok: false, reason: 'storage' };
+      }
       return { ok: true, view: copy(view) };
     }
 
     function update(id, input) {
+      if (readOnly) return { ok: false, reason: 'unavailable' };
       input = object(input) ? input : {};
+      if (pseudoRowAddress(id)) return { ok: false, reason: 'id' };
       var row = rowById(id);
       if (!row) return { ok: false, reason: 'missing' };
+      // A refused row stays refused, and its stored bytes never change
+      // through update(): check the CURRENT bytes first, and never re-stamp
+      // the contract fields below — an editable row already carries them.
+      var current = checkView(row);
+      if (!current.ok) return { ok: false, reason: current.reason };
       var next = copy(row);
       if (Object.prototype.hasOwnProperty.call(input, 'name')) {
         var name = text(input.name, MAX_NAME_LENGTH);
@@ -394,27 +522,42 @@
       if (Object.prototype.hasOwnProperty.call(input, 'saved_against')) {
         next.saved_against = normalSavedAgainst(input.saved_against);
       }
-      next.schema = SAVED_SCHEMA;
-      next.request_contract = REQUEST_CONTRACT;
       var checked = checkView(next);
       if (!checked.ok) return { ok: false, reason: checked.reason };
       next.updated_at = stamp();
       var replaced = copy(next);
-      for (var index = 0; index < container.saved_views.length; index += 1) {
-        if (container.saved_views[index] === row) container.saved_views[index] = replaced;
+      var index = container.saved_views.indexOf(row);
+      if (index === -1) return { ok: false, reason: 'missing' };
+      container.saved_views[index] = replaced;
+      if (!commit()) {
+        // Restore the previous row at its index: no half-updated bytes.
+        container.saved_views[index] = row;
+        return { ok: false, reason: 'storage' };
       }
-      commit();
       return { ok: true, view: copy(replaced) };
     }
 
     function remove(id) {
+      if (readOnly) return { ok: false, reason: 'unavailable' };
       var wanted = text(id, 64);
-      var before = container.saved_views.length;
-      container.saved_views = container.saved_views.filter(function (row) {
-        return text(row.id, 64) !== wanted;
-      });
-      if (container.saved_views.length === before) return { ok: true, deleted: false };
-      commit();
+      var address = pseudoRowAddress(wanted);
+      var index = -1;
+      if (address) {
+        index = address.index;
+      } else if (wanted) {
+        // A real id acts on the FIRST row carrying it; later duplicates are
+        // reachable only through their 'row:<index>' address.
+        for (var scan = 0; scan < container.saved_views.length; scan += 1) {
+          if (rowId(container.saved_views[scan]) === wanted) { index = scan; break; }
+        }
+      }
+      if (index === -1) return { ok: true, deleted: false };
+      var previous = container.saved_views.slice();
+      container.saved_views.splice(index, 1);
+      if (!commit()) {
+        container.saved_views = previous;
+        return { ok: false, reason: 'storage' };
+      }
       return { ok: true, deleted: true };
     }
 
@@ -423,7 +566,8 @@
       load: load,
       save: save,
       update: update,
-      remove: remove
+      remove: remove,
+      readOnly: function () { return readOnly; }
     };
   }
 
@@ -496,6 +640,7 @@
     REQUEST_CONTRACT: REQUEST_CONTRACT,
     STORAGE_KEY: STORAGE_KEY,
     CARRIER_KEY: CARRIER_KEY,
+    REFUSAL_REASONS: REFUSAL_REASONS,
     create: createFifSavedBriefcase,
     toInvestigationManifestV2: toInvestigationManifestV2,
     fromInvestigationManifestV2: fromInvestigationManifestV2

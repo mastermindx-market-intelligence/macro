@@ -78,3 +78,15 @@ on its cutoff until you ask for the latest, and never changes on its own.
 A view saved by an older version of this desk, or for a company the current
 run does not cover, cannot be opened here; it can still be deleted.
 / 由旧版工作台保存、或当前更新未覆盖其公司的视图无法在此打开；仍可将其删除。
+
+## Saved view missing
+
+A view that was on this device but is gone now — it may have been deleted in
+another tab — is simply not there anymore; the rest of the desk is unchanged.
+/ 此前保存在本设备的视图现已不在——可能已在其他标签页中删除；工作台其余状态不变。
+
+## Saved views paused
+
+When this device's saved views cannot be read, they are left untouched and
+saving is paused here; nothing is overwritten to make the list readable again.
+/ 无法读取本设备的已存视图时，将保持原样不作改动并暂停保存；绝不为了恢复显示而覆盖任何内容。

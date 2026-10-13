@@ -13,11 +13,15 @@ this file, mirroring ``tests/test_fundamental_forensics_ui.py``'s node spawns).
 
 from __future__ import annotations
 
+import copy
 import json
+import os
 import re
 import shutil
 import subprocess
 from pathlib import Path
+
+import pytest
 
 from engine.fundamental_forensics.api_client import encode_query_request
 from engine.fundamental_forensics.query_service import (
@@ -48,7 +52,14 @@ _T1_REFUSAL_REASONS = (
     "request_contract",
     "request_schema",
     "request_root",
+    "request_canonical",
+    "pinned_type",
+    "peers",
+    "view",
     "pinned_cutoffs",
+    "id",
+    "unavailable",
+    "storage",
 )
 
 
@@ -74,26 +85,51 @@ def _walk(value, path, visit):
             _walk(item, f"{path}.{key}", visit)
 
 
+def _violations(view: object, base: str) -> list[str]:
+    """Run the allow-list walk over ONE saved view; list every violation.
+
+    The walk is the load-bearing half: a helper that never calls ``_walk``
+    would vacuously report ``[]`` for every fixture (the r1 review finding).
+    """
+    violations: list[str] = []
+
+    def visit(node_path: str, value: object) -> None:
+        assert not isinstance(value, float), f"float stored at {base}{node_path}"
+        relative = node_path.split(".", 1)[1] if "." in node_path else node_path
+        parts = tuple(re.sub(r"\[\d+\]", "", relative).split("."))
+        # r1: the span elements land at parts ("evidence_refs", "source_span")
+        # once their [index] segments are stripped — the pre-r1 matcher demanded
+        # parts[2] and never matched anything, because it never ran. This is
+        # the documented allow-list (module docstring), not a new allowance.
+        in_span = (
+            len(parts) >= 2
+            and parts[0] == "evidence_refs"
+            and parts[-1] == "source_span"
+        )
+        if parts not in _ALLOWED_NUMERIC_PATHS and not in_span:
+            violations.append(f"{base}{node_path}={value}")
+
+    _walk(view, "", visit)
+    return violations
+
+
 def test_every_fixture_walk_refuses_numbers_outside_the_allow_list() -> None:
     for path in _fixtures():
         container = json.loads(path.read_text(encoding="utf-8"))
         for index, view in enumerate(container["saved_views"]):
             base = f"{path.name}#saved_views[{index}]"
-            violations: list[str] = []
+            assert _violations(view, base) == [], path.name
 
-            def visit(node_path: str, value: object) -> None:
-                assert not isinstance(value, float), f"float stored at {base}{node_path}"
-                relative = node_path.split(".", 1)[1] if "." in node_path else node_path
-                parts = tuple(re.sub(r"\[\d+\]", "", relative).split("."))
-                in_span = (
-                    len(parts) >= 3
-                    and parts[0] == "evidence_refs"
-                    and parts[2] == "source_span"
-                )
-                if parts not in _ALLOWED_NUMERIC_PATHS and not in_span:
-                    violations.append(f"{base}{node_path}={value}")
 
-            assert not violations, f"unaudited numbers stored: {violations}"
+def test_the_walk_reports_an_unaudited_number_at_exactly_its_path() -> None:
+    # Permanent mutation check (X2-s r1): an unaudited number planted deep
+    # inside a committed view must surface at exactly its path — proving the
+    # fixture test above can fail.
+    container = json.loads((FIXTURE_DIR / "saved_pinned.json").read_text(encoding="utf-8"))
+    view = copy.deepcopy(container["saved_views"][0])
+    view["view"]["zoom"] = 3
+    base = "saved_pinned.json#saved_views[0]"
+    assert _violations(view, base) == [f"{base}.view.zoom=3"]
 
 
 def test_fixture_containers_carry_the_contract_and_no_inbox_key() -> None:
@@ -142,7 +178,22 @@ def test_js_store_constants_equal_the_engine_contract() -> None:
     assert constant("STORAGE_KEY") == STORAGE_KEY
 
 
+def _declared_refusal_reasons() -> tuple[str, ...]:
+    source = BRIEFCASE_JS.read_text(encoding="utf-8")
+    match = re.search(r"var REFUSAL_REASONS = \[(.*?)\];", source, re.DOTALL)
+    assert match, "REFUSAL_REASONS not declared in fif_saved_briefcase.js"
+    return tuple(re.findall(r"'([^']+)'", match.group(1)))
+
+
 def test_module_declares_every_t1_refusal_reason_and_the_suite_pins_each() -> None:
+    # The pinned list and the module's declared set must match EXACTLY, both
+    # directions: a reason the module refuses with but no test pins, or a test
+    # pinning a reason the module never returns, both fail here.
+    declared = _declared_refusal_reasons()
+    assert len(declared) == len(set(declared)), "a refusal reason is declared twice"
+    assert set(declared) == set(_T1_REFUSAL_REASONS), (
+        f"declared {sorted(declared)} != pinned {sorted(_T1_REFUSAL_REASONS)}"
+    )
     source = BRIEFCASE_JS.read_text(encoding="utf-8")
     for reason in _T1_REFUSAL_REASONS:
         assert f"'{reason}'" in source, f"refusal reason {reason} missing from the store"
@@ -166,8 +217,8 @@ def test_recorded_response_fixture_is_a_lawful_envelope() -> None:
 
 def test_node_roundtrip_and_url_state_suites() -> None:
     node = shutil.which("node")
-    if node is None:  # pragma: no cover - mirrors test_fundamental_forensics_ui.py
-        return
+    if node is None:  # pragma: no cover - a missing binary is a SKIP, never a silent pass
+        pytest.skip(f"node binary not found: which(node)={node!r} PATH={os.environ.get('PATH', '')!r}")
     for suite in (
         "fundamental_forensics_saved_research_roundtrip.test.mjs",
         "fundamental_forensics_saved_url_state.test.mjs",

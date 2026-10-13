@@ -6,15 +6,17 @@
 //   - save -> reload (fresh module instance, same storage) -> identical bytes
 //   - fixture identity: the module's saved object for fixed inputs equals the
 //     committed fixture JSON (the Python schema suite walks the same files)
-//   - restore of a pinned view re-POSTs the stored request bytes verbatim and
-//     the stubbed X-FIF-Response-SHA256 matches the served body
+//   - restore of a pinned view re-POSTs the stored request bytes verbatim on
+//     every leg (latest leg included) and the stubbed X-FIF-Response-SHA256
+//     matches the served body
 //   - direct link (P2 URL reader) and Back (popstate) restore
 //     subject/policy/cutoff/cohort exactly
-//   - every T1 refusal reason, the self-healing blank container, refused
-//     views staying listed + deletable
+//   - every T1 refusal reason (exact strings), refused views staying listed +
+//     deletable, and a drifted container going READ-ONLY, never blanked
 //   - the store makes zero network calls, signed in and signed out, and
 //     writes only its own localStorage key
 //   - the A->B manifest mapping round-trips every fixture losslessly
+//   - the evidence-harness seed container (rows 1-2 load, drift row refuses)
 import assert from 'node:assert/strict';
 import { createHash, webcrypto } from 'node:crypto';
 import { readFileSync } from 'node:fs';
@@ -75,6 +77,29 @@ function memoryStorage(initial) {
     getItem: (key) => (rows.has(key) ? rows.get(key) : null),
     setItem: (key, value) => { rows.set(key, String(value)); written.push(key); },
     removeItem: (key) => { rows.delete(key); },
+  };
+}
+
+// A storage whose writes always fail (MINOR-1: rollback + 'storage').
+function failingStorage(existing) {
+  const rows = new Map(existing || []);
+  return {
+    getItem: (key) => (rows.has(key) ? rows.get(key) : null),
+    setItem: () => { throw new Error('quota exceeded'); },
+    removeItem: (key) => { rows.delete(key); },
+  };
+}
+
+// A storage whose FIRST write fails and can then be repaired, proving the
+// failed attempt left no phantom state behind.
+function onceFailingStorage() {
+  const rows = new Map();
+  let broken = true;
+  return {
+    getItem: (key) => (rows.has(key) ? rows.get(key) : null),
+    setItem: (key, value) => { if (broken) throw new Error('quota exceeded'); rows.set(key, String(value)); },
+    removeItem: (key) => { rows.delete(key); },
+    repair: () => { broken = false; },
   };
 }
 
@@ -295,11 +320,15 @@ test('fixture identity: the module output for fixed inputs equals the committed 
   sameJson(result.view, pinned);
 
   const cohortBriefcase = freshBriefcase(memoryStorage(), 1);
+  const committedCohort = fixtureContainer('saved_cohort.json').saved_views[0];
   const cohort = cohortBriefcase.create({ now: () => '2026-10-12T00:00:00Z' })
     .save({
       name: 'Apple vs mega-cap peers',
       issuer: pinned.issuer,
-      request: JSON.parse(JSON.stringify(pinned.request)),
+      // The committed cohort fixture's OWN request bytes — clocks included —
+      // so the comparison below needs no clock substitution and nothing is
+      // overwritten before being compared.
+      request: JSON.parse(JSON.stringify(committedCohort.request)),
       peers: { cohort: 'cohort_2026q3_megacap', peer_metric: 'revenue', align: 'shift_labeled', peer_n: 5, peer_tol: 60 },
       view: { tab: 'peers', finding: null },
       pinned: false,
@@ -307,12 +336,10 @@ test('fixture identity: the module output for fixed inputs equals the committed 
       evidence_refs: [],
       watch: { issuer: false }
     });
-  const committedCohort = fixtureContainer('saved_cohort.json').saved_views[0];
   assert.equal(cohort.ok, true, cohort.reason || 'save refused');
-  // request clocks differ (pinned fixture has the June cutoff) — the committed
-  // cohort fixture carries the latest clocks; rebuild the comparison on the
-  // committed request.
-  cohort.view.request = committedCohort.request;
+  // Assert BEFORE any assignment: the module's stored request IS the
+  // committed fixture's request, byte for byte — then the whole object.
+  sameJson(cohort.view.request, committedCohort.request);
   sameJson(cohort.view, committedCohort);
 });
 
@@ -445,9 +472,9 @@ test('Back (popstate) restores the previous frame and clears the restored view',
   assert.equal(api.state.savedActiveId, '', 'the restored view no longer describes this frame');
 });
 
-test('every T1 refusal reason refuses the load and stays listed + deletable', () => {
+test('every T1 refusal reason refuses the load with its exact reason and stays listed + deletable', () => {
   const base = fixtureContainer('saved_single_issuer.json').saved_views[0];
-  function refusal(name, mutate) {
+  function refusal(name, mutate, expected) {
     const row = JSON.parse(JSON.stringify(base));
     row.id = 'refusal' + Math.abs(name.length);
     mutate(row);
@@ -456,35 +483,65 @@ test('every T1 refusal reason refuses the load and stays listed + deletable', ()
     const listing = store.list();
     assert.equal(listing.length, 1, name + ' stays listed');
     assert.equal(listing[0].available, false, name + ' listed unavailable');
+    assert.equal(listing[0].reason, expected, name + ' lists its exact reason');
     const loaded = store.load(row.id);
     assert.equal(loaded.ok, false, name + ' refuses the load');
+    assert.equal(loaded.reason, expected, name + ' refuses with the exact reason');
     const removed = store.remove(row.id);
     sameJson(removed, { ok: true, deleted: true });
     assert.equal(store.list().length, 0, name + ' deletable');
   }
-  refusal('schema', (row) => { row.schema = 'fundamental_forensics.saved_research.v9'; });
-  refusal('request_contract', (row) => { row.request_contract = 'fundamental_forensics.financial_query_request/v2'; });
-  refusal('request_schema', (row) => { row.request.schema = 'fundamental_forensics.financial_query_request/v2'; });
-  refusal('request_root', (row) => { row.request.extra_key = 'x'; });
+  refusal('schema', (row) => { row.schema = 'fundamental_forensics.saved_research.v9'; }, 'schema');
+  refusal('request_contract', (row) => { row.request_contract = 'fundamental_forensics.financial_query_request/v2'; }, 'request_contract');
+  refusal('request_schema', (row) => { row.request.schema = 'fundamental_forensics.financial_query_request/v2'; }, 'request_schema');
+  refusal('request_root', (row) => { row.request.extra_key = 'x'; }, 'request_root');
+  refusal('request_canonical (period missing label)', (row) => { delete row.request.periods[0].label; }, 'request_canonical');
+  refusal('request_canonical (extra policy key)', (row) => { row.request.policy.extra = 'x'; }, 'request_canonical');
+  refusal('pinned_type', (row) => { row.pinned = 'true'; }, 'pinned_type');
+  refusal('peers', (row) => { row.peers.align = 'sometimes'; }, 'peers');
+  refusal('view', (row) => { row.view.tab = 'statements2'; }, 'view');
+  // A pinned view with an empty clock names the clock: the pinned_cutoffs
+  // check runs BEFORE the deep canonical check, so this reason stays
+  // reachable and specific.
   refusal('pinned_cutoffs', (row) => {
     row.pinned = true;
     row.request.policy.source_snapshot_at = '';
-  });
+  }, 'pinned_cutoffs');
+  // The same empty clock on an UNPINNED view is a canonical-form drift.
+  refusal('request_canonical (unpinned, empty clock)', (row) => {
+    row.pinned = false;
+    row.request.policy.source_snapshot_at = '';
+  }, 'request_canonical');
 });
 
-test('a container whose own contract drifts self-heals to a blank (GovRev discipline)', () => {
-  const storage = memoryStorage([[STORE_KEY, JSON.stringify({
-    contract: 'government_procurement_local_state.v1',
-    saved_views: [{ schema: 'fundamental_forensics.saved_research.v1', id: 'x' }]
-  })]]);
-  const store = freshBriefcase(storage, 0).create({ now: () => '2026-10-12T00:00:00Z' });
-  assert.equal(store.list().length, 0, 'a drifted container heals to a blank');
-  const loaded = store.load('x');
-  assert.equal(loaded.ok, false);
+test('a container whose own bytes drift goes READ-ONLY and is never overwritten (GovRev discipline)', () => {
+  const variants = {
+    'unparseable bytes': '{"contract":',
+    'contract v2': JSON.stringify({ contract: 'fundamental_forensics.saved_research.v2', saved_views: [] }),
+    'saved_views not an array': JSON.stringify({ contract: 'fundamental_forensics.saved_research.v1', saved_views: {} }),
+    'extra root key': JSON.stringify({ contract: 'fundamental_forensics.saved_research.v1', saved_views: [], inbox: [] })
+  };
+  const base = fixtureContainer('saved_single_issuer.json').saved_views[0];
+  const input = (row) => ({
+    name: row.name, issuer: row.issuer, request: row.request, peers: row.peers,
+    view: row.view, pinned: row.pinned, saved_against: row.saved_against,
+    evidence_refs: row.evidence_refs, watch: row.watch
+  });
+  for (const [name, bytes] of Object.entries(variants)) {
+    const storage = memoryStorage([[STORE_KEY, bytes]]);
+    const store = freshBriefcase(storage, 0).create({ now: () => '2026-10-12T00:00:00Z' });
+    assert.equal(store.readOnly(), true, name + ': the store is read-only');
+    assert.equal(store.list().length, 0, name + ': lists nothing');
+    const saved = store.save(input(base));
+    assert.equal(saved.ok, false, name + ': the save attempt refuses');
+    assert.equal(saved.reason, 'unavailable', name + ': exact reason unavailable');
+    assert.equal(storage.getItem(STORE_KEY), bytes, name + ': stored bytes are byte-identical afterwards');
+  }
 });
 
 test('the store makes zero network calls and writes only its own key, signed in and signed out', () => {
   for (const signedIn of [true, false]) {
+    const label = signedIn ? 'signed in' : 'signed out';
     const storage = memoryStorage();
     const Briefcase = freshBriefcase(storage, 3);
     const store = Briefcase.create({ storage, now: () => '2026-10-12T00:00:00Z' });
@@ -494,7 +551,7 @@ test('the store makes zero network calls and writes only its own key, signed in 
       view: base.view, pinned: base.pinned, saved_against: base.saved_against,
       evidence_refs: base.evidence_refs, watch: base.watch
     });
-    assert.equal(saved.ok, true);
+    assert.equal(saved.ok, true, label + ': the save succeeded');
     store.list();
     store.load(saved.view.id);
     store.update(saved.view.id, { name: 'Renamed' });
@@ -502,12 +559,13 @@ test('the store makes zero network calls and writes only its own key, signed in 
     Briefcase.toInvestigationManifestV2(saved.view);
     Briefcase.fromInvestigationManifestV2(Briefcase.toInvestigationManifestV2(base));
     // Signed in or signed out makes no difference to a module that owns no
-    // transport: the throwing fetch/XHR stubs were never reached.
-    assert.equal(Briefcase.__networkProbe.fetches, 0, signedIn ? 'signed in: no fetch' : 'signed out: no fetch');
-    assert.equal(Briefcase.__networkProbe.xhrs, 0, 'no XMLHttpRequest');
+    // transport: the throwing fetch/XHR stubs were never reached. EVERY
+    // iteration asserts the whole contract, named for its iteration.
+    assert.equal(Briefcase.__networkProbe.fetches, 0, label + ': zero fetches');
+    assert.equal(Briefcase.__networkProbe.xhrs, 0, label + ': zero XMLHttpRequests');
     assert.equal(/fetch\(|XMLHttpRequest|navigator\.sendBeacon/.test(BRIEFCASE_SOURCE), false,
-      'the store module contains no transport calls');
-    assert.deepEqual([...new Set(storage.written)], [STORE_KEY], 'only its own key is written');
+      label + ': the store module contains no transport calls');
+    assert.deepEqual([...new Set(storage.written)], [STORE_KEY], label + ': only its own key is written');
   }
 });
 
@@ -542,6 +600,291 @@ test('an issuer that left the run refuses with the unavailable state', () => {
   assert.equal(result.ok, false);
   assert.equal(result.reason, 'issuer');
   assert.equal(drive.api.state.savedRefusal, 'issuer');
+});
+
+// ── X2-s r1 NEGATIVE suite (one test per refusal, exact reason strings) ───
+
+function containerBytes(row) {
+  return JSON.stringify({ contract: 'fundamental_forensics.saved_research.v1', saved_views: [row] });
+}
+
+test('NEGATIVE 1: a malformed inner request refuses request_canonical exactly', () => {
+  const base = fixtureContainer('saved_single_issuer.json').saved_views[0];
+  delete base.request.periods[0].label;
+  const storage = memoryStorage([[STORE_KEY, containerBytes(base)]]);
+  const store = freshBriefcase(storage, 0).create({ now: () => '2026-10-12T00:00:00Z' });
+  const listing = store.list();
+  assert.equal(listing.length, 1);
+  assert.equal(listing[0].available, false);
+  assert.equal(listing[0].reason, 'request_canonical');
+  const loaded = store.load(base.id);
+  assert.equal(loaded.ok, false);
+  assert.equal(loaded.reason, 'request_canonical');
+});
+
+test('NEGATIVE 2: a pinned view whose policy.selection is outside the enum refuses request_canonical exactly', () => {
+  const base = fixtureContainer('saved_pinned.json').saved_views[0];
+  base.request.policy.selection = 'sometimes';
+  const storage = memoryStorage([[STORE_KEY, containerBytes(base)]]);
+  const store = freshBriefcase(storage, 0).create({ now: () => '2026-10-12T00:00:00Z' });
+  const loaded = store.load(base.id);
+  assert.equal(loaded.ok, false);
+  assert.equal(loaded.reason, 'request_canonical');
+});
+
+test('NEGATIVE 3: a ticker that resolves to a different entity refuses issuer and leaves the desk untouched', () => {
+  const base = fixtureContainer('saved_pinned.json').saved_views[0];
+  base.request.entity_id = 'ISS:US-XNAS-MSFT';
+  const drive = harness();
+  drive.storage.setItem(STORE_KEY, containerBytes(base));
+  drive.api.initSavedBriefcase();
+  drive.api.state.symbol = 'MSFT';
+  const before = {
+    symbol: drive.api.state.symbol,
+    policy: drive.api.state.policy,
+    asOfDate: drive.api.state.asOfDate,
+    cohortId: drive.api.state.cohortId,
+    peerMetric: drive.api.state.peerMetric,
+    peerAlign: drive.api.state.peerAlign,
+    peerN: drive.api.state.peerN,
+    peerTol: drive.api.state.peerTol,
+    pinnedRequest: drive.api.state.pinnedRequest,
+    tab: drive.api.state.tab
+  };
+  const result = drive.api.restoreSavedView(base.id);
+  assert.equal(result.ok, false);
+  assert.equal(result.reason, 'issuer');
+  assert.equal(drive.api.state.savedRefusal, 'issuer');
+  const after = {
+    symbol: drive.api.state.symbol,
+    policy: drive.api.state.policy,
+    asOfDate: drive.api.state.asOfDate,
+    cohortId: drive.api.state.cohortId,
+    peerMetric: drive.api.state.peerMetric,
+    peerAlign: drive.api.state.peerAlign,
+    peerN: drive.api.state.peerN,
+    peerTol: drive.api.state.peerTol,
+    pinnedRequest: drive.api.state.pinnedRequest,
+    tab: drive.api.state.tab
+  };
+  assert.deepEqual(after, before, 'the desk state is exactly its pre-restore snapshot');
+  assert.equal(drive.nodes['ff-saved-notice'].hidden, false, 'the unavailable notice shows');
+  assert.match(drive.nodes['ff-saved-notice'].innerHTML, /not covered by the current run/);
+});
+
+test('NEGATIVE 4: update() on a refused row refuses with that row\'s reason and never changes stored bytes', () => {
+  const base = fixtureContainer('saved_single_issuer.json').saved_views[0];
+  base.pinned = 'true';
+  const bytes = containerBytes(base);
+  const storage = memoryStorage([[STORE_KEY, bytes]]);
+  const store = freshBriefcase(storage, 0).create({ now: () => '2026-10-12T00:00:00Z' });
+  const updated = store.update(base.id, { name: 'Renamed anyway' });
+  assert.equal(updated.ok, false);
+  assert.equal(updated.reason, 'pinned_type');
+  assert.equal(storage.getItem(STORE_KEY), bytes, 'the stored bytes are byte-identical');
+  assert.equal(store.list()[0].name, base.name, 'the in-memory row was not rewritten either');
+});
+
+test('NEGATIVE 5: a failed persistence returns storage, rolls back, and a later good save works', () => {
+  const storage = onceFailingStorage();
+  const store = freshBriefcase(storage, 0).create({ now: () => '2026-10-12T00:00:00Z' });
+  const base = fixtureContainer('saved_single_issuer.json').saved_views[0];
+  const first = store.save({
+    name: base.name, issuer: base.issuer, request: base.request, peers: base.peers,
+    view: base.view, pinned: base.pinned, saved_against: base.saved_against,
+    evidence_refs: base.evidence_refs, watch: base.watch
+  });
+  assert.equal(first.ok, false);
+  assert.equal(first.reason, 'storage');
+  assert.equal(store.list().length, 0, 'the in-memory list is unchanged (the pushed row was dropped)');
+  storage.repair();
+  const second = store.save({
+    name: base.name, issuer: base.issuer, request: base.request, peers: base.peers,
+    view: base.view, pinned: base.pinned, saved_against: base.saved_against,
+    evidence_refs: base.evidence_refs, watch: base.watch
+  });
+  assert.equal(second.ok, true, second.reason || 'the later good save works');
+  assert.equal(store.list().length, 1);
+});
+
+test('NEGATIVE 6: a drifted container refuses a save attempt with unavailable and stays byte-identical', () => {
+  const bytes = JSON.stringify({
+    contract: 'government_procurement_local_state.v1',
+    saved_views: [{ schema: 'fundamental_forensics.saved_research.v1', id: 'x' }]
+  });
+  const storage = memoryStorage([[STORE_KEY, bytes]]);
+  const store = freshBriefcase(storage, 0).create({ now: () => '2026-10-12T00:00:00Z' });
+  const base = fixtureContainer('saved_single_issuer.json').saved_views[0];
+  const saved = store.save({
+    name: base.name, issuer: base.issuer, request: base.request, peers: base.peers,
+    view: base.view, pinned: base.pinned, saved_against: base.saved_against,
+    evidence_refs: base.evidence_refs, watch: base.watch
+  });
+  assert.equal(saved.ok, false);
+  assert.equal(saved.reason, 'unavailable');
+  assert.equal(storage.getItem(STORE_KEY), bytes, 'the drifted bytes are preserved byte-identically');
+});
+
+// ── X2-s r1 page-side repairs ─────────────────────────────────────────────
+
+test('a pinned view saved under as_reported posts every leg from the stored bytes, latest leg included', async () => {
+  const container = fixtureContainer('saved_pinned.json');
+  const row = container.saved_views[0];
+  row.request.policy.selection = 'as_reported';
+  const { api, fetchCalls, storage } = harness();
+  storage.setItem(STORE_KEY, JSON.stringify(container));
+  api.initSavedBriefcase();
+  api.state.symbol = 'MSFT';
+  const result = api.restoreSavedView(row.id);
+  assert.equal(result.ok, true, result.reason || 'restore refused');
+  await untilFinancialSettled(api);
+  const queryPosts = fetchCalls.filter((call) => call.url.indexOf('/api/forensics/v1/financial/query') >= 0);
+  const selections = queryPosts.map((call) => JSON.parse(call.body).policy.selection);
+  assert.deepEqual(selections, ['as_reported', 'latest_known_as_of', 'latest_restated'],
+    'the three legs post exactly as the code orders them');
+  const stored = row.request;
+  queryPosts.forEach((call, index) => {
+    const body = JSON.parse(call.body);
+    const expected = JSON.parse(JSON.stringify(stored));
+    expected.policy.selection = selections[index];
+    assert.deepEqual(body, expected,
+      'leg ' + selections[index] + ' is the stored request with only policy.selection changed');
+  });
+});
+
+test('with ?policy=as_reported and no pinned view the export body keeps the desk selection', async () => {
+  const drive = harness();
+  drive.location.search = '?symbol=AAPL&policy=as_reported';
+  drive.api.applyUrlState(true);
+  drive.api.setTab('compare', false);
+  await untilFinancialSettled(drive.api);
+  assert.equal(drive.api.state.policy, 'as_reported');
+  assert.equal(drive.api.state.financial.phase, 'ready');
+  const body = drive.api.exportQueryBody();
+  assert.equal(body.policy.selection, 'as_reported',
+    'the export body follows the desk policy, not the forced latest leg');
+});
+
+test('a missing view shows the missing copy, never the contract copy', () => {
+  const drive = harness();
+  drive.api.initSavedBriefcase();
+  const result = drive.api.restoreSavedView('GONEFROMTHISDEVICE00');
+  assert.equal(result.ok, false);
+  assert.equal(result.reason, 'missing');
+  assert.equal(drive.api.state.savedRefusal, 'missing');
+  assert.equal(drive.nodes['ff-saved-notice'].hidden, false);
+  assert.match(drive.nodes['ff-saved-notice'].innerHTML, /no longer on this device/);
+  assert.doesNotMatch(drive.nodes['ff-saved-notice'].innerHTML, /older contract/);
+});
+
+test('an unreadable store pauses saving and shows the store notice', () => {
+  const drive = harness();
+  drive.storage.setItem(STORE_KEY, '{"contract":');
+  drive.api.initSavedBriefcase();
+  drive.api.renderSavedUI();
+  assert.equal(drive.nodes['ff-saved-save'].disabled, true, 'Save stays disabled');
+  assert.equal(drive.nodes['ff-saved-rename'].hidden, true, 'Rename stays hidden');
+  assert.equal(drive.nodes['ff-saved-delete'].hidden, true, 'Delete stays hidden');
+  assert.equal(drive.nodes['ff-saved-notice'].hidden, false);
+  assert.match(drive.nodes['ff-saved-notice'].innerHTML, /could not be read/);
+  assert.equal(drive.storage.getItem(STORE_KEY), '{"contract":', 'the unreadable bytes are untouched');
+});
+
+test('a failed persistence surfaces the store notice through the save path', () => {
+  const drive = harness({ storage: failingStorage() });
+  drive.api.initSavedBriefcase();
+  const result = drive.api.performSavedSave('Apple pinned at June cutoff');
+  assert.equal(result.ok, false);
+  assert.equal(result.reason, 'storage');
+  assert.equal(drive.api.state.savedRefusal, 'store');
+  assert.equal(drive.nodes['ff-saved-notice'].hidden, false);
+  assert.match(drive.nodes['ff-saved-notice'].innerHTML, /Saving is paused here/);
+});
+
+test('the saved list offers a choice when populated and says empty only when empty', () => {
+  const drive = harness();
+  drive.storage.setItem(STORE_KEY, JSON.stringify(fixtureContainer('saved_latest.json')));
+  drive.api.initSavedBriefcase();
+  drive.api.renderSavedUI();
+  const populated = drive.nodes['ff-saved-select'].innerHTML;
+  assert.match(populated, /<option value="">Choose a saved view<\/option>/);
+  assert.doesNotMatch(populated, /No saved views yet/);
+
+  const empty = harness();
+  empty.api.initSavedBriefcase();
+  empty.api.renderSavedUI();
+  assert.match(empty.nodes['ff-saved-select'].innerHTML, /<option value="">No saved views yet<\/option>/);
+});
+
+test('the unavailable notice carries a title element (MINOR-5 shape)', () => {
+  const base = fixtureContainer('saved_single_issuer.json').saved_views[0];
+  base.request_contract = 'fundamental_forensics.financial_query_request/v0';
+  const drive = harness();
+  drive.storage.setItem(STORE_KEY, containerBytes(base));
+  drive.api.initSavedBriefcase();
+  drive.api.restoreSavedView(base.id);
+  drive.api.renderSavedUI();
+  const html = drive.nodes['ff-saved-notice'].innerHTML;
+  assert.match(html, /^<span class="ff-notice-icon" aria-hidden="true">i<\/span><div><strong>/);
+  assert.match(html, /<\/strong><div>/);
+  assert.match(html, /older contract/);
+});
+
+test('id-problem rows stay listed under row:<index>, refuse load, and are removable by that key', () => {
+  const good = fixtureContainer('saved_single_issuer.json').saved_views[0];
+  const noId = JSON.parse(JSON.stringify(good));
+  delete noId.id;
+  const dup = JSON.parse(JSON.stringify(good));
+  const rows = [good, noId, dup];
+  const storage = memoryStorage([[STORE_KEY, JSON.stringify({
+    contract: 'fundamental_forensics.saved_research.v1', saved_views: rows
+  })]]);
+  const store = freshBriefcase(storage, 0).create({ now: () => '2026-10-12T00:00:00Z' });
+  const listing = store.list();
+  assert.equal(listing.length, 3, 'every row stays listed — nothing is dropped');
+  assert.equal(listing[0].id, good.id);
+  assert.equal(listing[0].available, true);
+  assert.equal(listing[1].id, 'row:1');
+  assert.equal(listing[1].available, false);
+  assert.equal(listing[1].reason, 'id');
+  assert.equal(listing[2].id, 'row:2');
+  assert.equal(listing[2].available, false);
+  assert.equal(listing[2].reason, 'id');
+  assert.equal(store.load('row:1').reason, 'id');
+  assert.equal(store.load('row:2').reason, 'id');
+  assert.equal(store.update('row:2', { name: 'Renamed anyway' }).reason, 'id');
+  // A real id acts on the FIRST row carrying it.
+  const byId = store.load(good.id);
+  assert.equal(byId.ok, true);
+  sameJson(byId.view, good);
+  const removed = store.remove('row:2');
+  sameJson(removed, { ok: true, deleted: true });
+  assert.equal(store.list().map((entry) => entry.id).join(','), good.id + ',row:1',
+    'the duplicate row is gone; renumbered addresses follow the surviving rows');
+});
+
+test('the evidence harness seed loads rows 1-2 and refuses the drift row as schema', () => {
+  const container = fixtureContainer('evidence_briefcase_seed.json');
+  const storage = memoryStorage([[STORE_KEY, JSON.stringify(container)]]);
+  const store = freshBriefcase(storage, 0).create({ now: () => '2026-10-12T00:00:00Z' });
+  const listing = store.list();
+  assert.equal(listing.length, 3, 'all three rows stay listed');
+  assert.equal(listing[0].id, 'CDEFGHIJKLMNOPQRSTUVWX');
+  assert.equal(listing[0].available, true, 'row 1 (saved_pinned verbatim) is available');
+  assert.equal(listing[1].id, 'DEFGHIJKLMNOPQRSTUVWXY');
+  assert.equal(listing[1].available, true, 'row 2 (saved_latest verbatim) is available');
+  assert.equal(listing[2].id, 'EFGHIJKLMNOPQRSTUVWXYZ');
+  assert.equal(listing[2].available, false, 'the drift row is unavailable');
+  assert.equal(listing[2].reason, 'schema');
+  const pinned = store.load('CDEFGHIJKLMNOPQRSTUVWX');
+  const latest = store.load('DEFGHIJKLMNOPQRSTUVWXY');
+  assert.equal(pinned.ok, true, 'row 1 loads');
+  assert.equal(latest.ok, true, 'row 2 loads');
+  sameJson(pinned.view, fixtureContainer('saved_pinned.json').saved_views[0]);
+  sameJson(latest.view, fixtureContainer('saved_latest.json').saved_views[0]);
+  const drift = store.load('EFGHIJKLMNOPQRSTUVWXYZ');
+  assert.equal(drift.ok, false);
+  assert.equal(drift.reason, 'schema');
 });
 
 test('the A->B manifest mapping round-trips every fixture losslessly', () => {
