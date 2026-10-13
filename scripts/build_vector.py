@@ -796,7 +796,8 @@ def emit_crypto_cockpit_json(
     """
     from engine import btc_decision
 
-    budget = btc_decision.project_budget(decision)
+    page_as_of = pd.Timestamp(sig.index[-1]).strftime("%Y-%m-%d")
+    budget = btc_decision.project_budget(decision, page_as_of=page_as_of)
     payload = {
         "schema": "crypto.cockpit/v1",
         "contract_phase": "w0",
@@ -839,13 +840,60 @@ def emit_crypto_cockpit_json(
 # --------------------------------------------------------------------------- #
 # view-model computations
 # --------------------------------------------------------------------------- #
-def alloc_equity(close: pd.Series, alloc: pd.Series) -> pd.Series:
+def _index_pos(index: pd.Index, label) -> int:
+    loc = index.get_loc(label)
+    if isinstance(loc, slice):
+        return int(loc.start or 0)
+    if isinstance(loc, (int, np.integer)):
+        return int(loc)
+    return int(np.flatnonzero(np.asarray(loc, dtype=bool))[0])
+
+
+def _observed_alloc_window(close: pd.Series, alloc: pd.Series):
+    """Drop the leading in-index run where the allocation is missing.
+
+    Returns (kept_close, kept_alloc, withheld_days). The kept window starts at
+    the first non-null allocation on ``close.index`` and is scored with the
+    original shift(1) / ffill / fillna(0) one-liner, so the mechanical lag on
+    that first *observed* day stays a flat 0. An all-present series therefore
+    returns the original objects and withheld_days 0. Later holes stay inside
+    the window: ffill carry is unchanged. All-null → empty kept frames.
+    """
+    aligned = alloc.reindex(close.index)
+    first = aligned.first_valid_index()
+    if first is None:
+        return close.iloc[0:0], aligned.iloc[0:0], int(len(close))
+    loc = _index_pos(close.index, first)
+    if loc == 0:
+        return close, alloc, 0
+    return close.iloc[loc:], aligned.iloc[loc:], int(loc)
+
+
+def _equity_one_liner(close: pd.Series, alloc: pd.Series) -> pd.Series:
     ret = close.pct_change().fillna(0)
     pos = alloc.shift(1).reindex(ret.index).ffill().fillna(0)
     return (1 + pos * ret).cumprod()
 
 
-def scorecard(close: pd.Series, alloc: pd.Series) -> dict:
+def alloc_equity(close: pd.Series, alloc: pd.Series) -> pd.Series:
+    """Strategy equity. A missing leading allocation is a gap, not a flat 0 position."""
+    kept_close, kept_alloc, n_withheld = _observed_alloc_window(close, alloc)
+    if kept_close.empty:
+        return pd.Series(np.nan, index=close.index, dtype="float64")
+    eq = _equity_one_liner(kept_close, kept_alloc)
+    if n_withheld == 0:
+        return eq
+    gap = pd.Series(np.nan, index=close.index[:n_withheld], dtype="float64")
+    return pd.concat([gap, eq])
+
+
+_SCORECARD_KEYS = (
+    "cagr", "sharpe", "sortino", "maxdd", "in_market",
+    "hodl_cagr", "hodl_sharpe", "hodl_maxdd", "x_hodl",
+)
+
+
+def _scorecard_one_liner(close: pd.Series, alloc: pd.Series) -> dict:
     ret = close.pct_change().fillna(0)
     pos = alloc.shift(1).reindex(ret.index).ffill().fillna(0)
     strat = pos * ret
@@ -874,6 +922,42 @@ def scorecard(close: pd.Series, alloc: pd.Series) -> dict:
     }
 
 
+def _unavailable_scorecard(n_withheld: int) -> dict:
+    card = {k: float("nan") for k in _SCORECARD_KEYS}
+    card["withheld_days"] = int(n_withheld)
+    return card
+
+
+def scorecard(close: pd.Series, alloc: pd.Series) -> dict:
+    """Same metrics as the historical one-liner, on rows with an observed allocation.
+
+    ``withheld_days`` counts leading rows excluded because the allocation was
+    missing. It is 0 when nothing was withheld. An all-null allocation yields
+    unavailable metrics, never zeros.
+    """
+    kept_close, kept_alloc, n_withheld = _observed_alloc_window(close, alloc)
+    if kept_close.empty:
+        return _unavailable_scorecard(n_withheld)
+    card = _scorecard_one_liner(kept_close, kept_alloc)
+    card["withheld_days"] = int(n_withheld)
+    return card
+
+
+def _scorecard_for_json(cards: dict) -> dict:
+    """null for non-finite metrics so cards|tojson survives JSON.parse.
+
+    A finite card is unchanged, including the extra withheld_days key. The
+    inline script reads only data-m attributes and ignores that key.
+    """
+    safe = {}
+    for name, card in cards.items():
+        row = {}
+        for key, value in card.items():
+            row[key] = None if isinstance(value, float) and pd.isna(value) else value
+        safe[name] = row
+    return safe
+
+
 def alloc_sizing(last: pd.Series, eq: pd.Series, acfg: dict) -> dict:
     """Decompose the live optimal allocation into the Point-4 factors that now SIZE it,
     so the % on the page is explained, not a bare number: the conviction multiplier
@@ -882,10 +966,18 @@ def alloc_sizing(last: pd.Series, eq: pd.Series, acfg: dict) -> dict:
     This is what closes the old 'conviction is just a label' gap on the dashboard."""
     from engine import btc_signals
     cp = float(last["cycle_position"]) if pd.notna(last.get("cycle_position")) else 0.5
-    dd = float(eq.iloc[-1] / eq.cummax().iloc[-1] - 1.0)
+    # A leading withheld gap is NaN. cummax would poison the whole curve and
+    # round() would raise, which would change the live brake read. Finite
+    # equity (no gap) is unchanged: dropna is a no-op and the formula matches.
+    eq_obs = eq.dropna()
+    dd = (float(eq_obs.iloc[-1] / eq_obs.cummax().iloc[-1] - 1.0)
+          if len(eq_obs) else float("nan"))
     thr, decay = float(acfg.get("dd_threshold", 0.25)), float(acfg.get("dd_decay", 1.0))
     floor = float(acfg.get("dd_floor", 0.40))
-    cap = min(1.0, max(floor, 1.0 - decay * max(0.0, (-dd) - thr)))
+    if pd.isna(dd):
+        cap = float("nan")
+    else:
+        cap = min(1.0, max(floor, 1.0 - decay * max(0.0, (-dd) - thr)))
     # bottom-detector overlay (adds size at washout lows the brake would otherwise sit out)
     b_thr = float(acfg.get("bottom_thr", 0.30))
     b_boost = float(acfg.get("bottom_boost", 0.40))
@@ -895,9 +987,9 @@ def alloc_sizing(last: pd.Series, eq: pd.Series, acfg: dict) -> dict:
     return {
         "tier": btc_signals.conviction_tier(cp, acfg),
         "mult": round(float(btc_signals.conviction_multiplier(cp, acfg)), 2),
-        "brake_active": bool(cap < 0.999),
-        "brake_cap": round(100 * cap),
-        "dd": round(100 * dd),
+        "brake_active": bool(pd.notna(cap) and cap < 0.999),
+        "brake_cap": round(100 * cap) if pd.notna(cap) else None,
+        "dd": round(100 * dd) if pd.notna(dd) else None,
         "bottom_pressure": round(100 * bp),
         "bottom_active": bool(b_add > 0.005),
         "bottom_add": round(100 * b_add),
@@ -971,9 +1063,11 @@ def env_probabilities(df: pd.DataFrame, cfg: dict) -> dict:
     p, n, cell, tilt = _cond_up_prob(df, cfg, h)
     now = df["momentum_state"].iloc[-1] if "momentum_state" in df else None
     if p is None:
-        return {"now": now, "p_bull_7d": None, "p_bear_7d": None}
+        return {"now": now, "p_bull_7d": None, "p_bear_7d": None,
+                "probability_issued": False}
     return {"now": now, "p_bull_7d": round(100 * p), "p_bear_7d": round(100 * (1 - p)),
-            "n": n, "cell": cell, "tilt": tilt, "horizon": h}  # tilt = macro + cycle prior
+            "n": n, "cell": cell, "tilt": tilt, "horizon": h,
+            "probability_issued": True}  # tilt = macro + cycle prior
 
 
 def scenarios_3d(df: pd.DataFrame, cfg: dict, high: pd.Series, low: pd.Series) -> dict:
@@ -996,6 +1090,7 @@ def scenarios_3d(df: pd.DataFrame, cfg: dict, high: pd.Series, low: pd.Series) -
     a1, a2, ai = 1.5 * vscale * atr, 2.5 * vscale * atr, 1.0 * atr
     return {
         "bull_prob": bull, "bear_prob": 100 - bull, "cell": cell, "n": n, "tilt": tilt,
+        "probability_issued": p is not None,
         "vscale": round(vscale, 2),
         "bull_target": px + a1, "bull_target2": max(swing_hi, px + a2), "bull_invalid": px - ai,
         "bear_target": px - a1, "bear_target2": min(swing_lo, px - a2), "bear_invalid": px + ai,
@@ -1197,7 +1292,8 @@ def _conviction(p_bull, n, tilt, tape_sign, verdict_sign, min_cell_n, bands=(3, 
     tilt = tilt or 0
     if p_bull is None:
         return {"state": "TOSS-UP", "dir": 0, "lean": 0, "conf": "thin", "n": n,
-                "tape": "neutral", "confirmed": False, "p_bull": 50, "p_bear": 50, "tilt": tilt}
+                "tape": "neutral", "confirmed": False, "p_bull": 50, "p_bear": 50, "tilt": tilt,
+                "probability_issued": False}
     lean = abs(p_bull - 50)
     prob_dir = 1 if p_bull > 50 else (-1 if p_bull < 50 else 0)
     toss_pp, edge_pp = bands
@@ -1233,7 +1329,8 @@ def _conviction(p_bull, n, tilt, tape_sign, verdict_sign, min_cell_n, bands=(3, 
         state = "LEAN"
     return {"state": state, "dir": prob_dir, "lean": lean, "conf": conf, "n": n,
             "tape": tape, "confirmed": confirmed,
-            "p_bull": p_bull, "p_bear": 100 - p_bull, "tilt": tilt}
+            "p_bull": p_bull, "p_bear": 100 - p_bull, "tilt": tilt,
+            "probability_issued": True}
 
 
 def _conviction_why(c: dict, cell, n, horizon: int):
@@ -4218,7 +4315,12 @@ def build_override_shadow(sig: pd.DataFrame, gate: dict, ct: dict, acfg: dict,
         eq_r = alloc_equity(close, raw["alloc_optimal"])
         t0 = pd.Timestamp(year=int(asof.year), month=1, day=1)
         if bool(gate.get("active")) and close.index.min() <= t0:
-            seg_g, seg_r = eq_g.loc[eq_g.index >= t0], eq_r.loc[eq_r.index >= t0]
+            # dropna: a withheld leading gap must not make iloc[0] NaN and then
+            # `regret or 0` publish a fake 0pp. A fully finite window is unchanged.
+            seg_g = eq_g.loc[eq_g.index >= t0].dropna()
+            seg_r = eq_r.loc[eq_r.index >= t0].dropna()
+            if seg_g.empty or seg_r.empty:
+                raise ValueError("allocation withheld over the gate window")
             g_ret = 100 * (seg_g.iloc[-1] / seg_g.iloc[0] - 1)
             r_ret = 100 * (seg_r.iloc[-1] / seg_r.iloc[0] - 1)
             rebased = pd.DataFrame({"gated": seg_g / seg_g.iloc[0],
@@ -4231,8 +4333,8 @@ def build_override_shadow(sig: pd.DataFrame, gate: dict, ct: dict, acfg: dict,
                     continue
                 rel_y = btc_signals._us_election_date(y) - pd.Timedelta(
                     days=int(mg_cfg.get("buy_lead_days", 0)))
-                w = eq_r.loc[(eq_r.index >= j1) & (eq_r.index <= j1 + pd.Timedelta(days=elapsed))]
-                fw = eq_r.loc[(eq_r.index >= j1) & (eq_r.index <= rel_y)]
+                w = eq_r.loc[(eq_r.index >= j1) & (eq_r.index <= j1 + pd.Timedelta(days=elapsed))].dropna()
+                fw = eq_r.loc[(eq_r.index >= j1) & (eq_r.index <= rel_y)].dropna()
                 if len(w) < 30 or len(fw) < 30:
                     continue
                 prior.append({
@@ -4364,7 +4466,8 @@ def _derivatives_flow_view(regime) -> dict:
     out = dict(state='unavailable', buy_share_pct=None, observed_at=None,
                evaluated_at=None, n_hours=None, window_24h_complete=False,
                window_72h_complete=False, historical_gap=False,
-               scope=None, causally_qualified=False)
+               scope=None, causally_qualified=False, elapsed_coverage=None,
+               venue=None, instrument=None, unit=None)
     if not isinstance(regime, Mapping):
         return out
     legs = regime.get('context_legs')
@@ -4399,7 +4502,33 @@ def _derivatives_flow_view(regime) -> dict:
                evaluated_at=evaluated.strftime('%Y-%m-%d %H:%M UTC'),
                window_24h_complete=bool(n >= 24 and raw.get('window_24h_complete') is True),
                window_72h_complete=bool(n >= 72 and raw.get('window_72h_complete') is True),
-               historical_gap=raw.get('gap_detected') is True)
+               historical_gap=raw.get('gap_detected') is True,
+               venue='OKX', instrument='BTC derivatives', unit='unavailable')
+    coverage = raw.get('elapsed_coverage')
+    if coverage is not None:
+        rows = coverage.get('rows') if isinstance(coverage, Mapping) else None
+        elapsed = coverage.get('elapsed_hours') if isinstance(coverage, Mapping) else None
+        completeness = coverage.get('completeness') if isinstance(coverage, Mapping) else None
+        first_ts = coverage.get('first_ts') if isinstance(coverage, Mapping) else None
+        last_ts = coverage.get('last_ts') if isinstance(coverage, Mapping) else None
+        rows_ok = isinstance(rows, Integral) and not isinstance(rows, (bool, np.bool_)) and int(rows) >= 0
+        elapsed_ok = elapsed is None or (
+            isinstance(elapsed, Real) and not isinstance(elapsed, (bool, np.bool_))
+            and np.isfinite(float(elapsed)) and float(elapsed) >= 0)
+        stamps_ok = all(v is None or isinstance(v, str) for v in (first_ts, last_ts))
+        state_ok = completeness in ('complete', 'incomplete', 'unavailable')
+        consistent = completeness != 'complete' or (rows == 24 and float(elapsed) == 23.0)
+        if not (rows_ok and elapsed_ok and stamps_ok and state_ok and consistent):
+            out.update(state='unavailable', buy_share_pct=None, window_24h_complete=False,
+                       elapsed_coverage=None)
+            return out
+        out['elapsed_coverage'] = {
+            'rows': int(rows), 'first_ts': first_ts, 'last_ts': last_ts,
+            'elapsed_hours': None if elapsed is None else float(elapsed),
+            'completeness': completeness,
+        }
+        if completeness != 'complete':
+            out['window_24h_complete'] = False
     if raw['stale'] or (evaluated-observed) > pd.Timedelta(hours=STALE_AFTER_H):
         out['state'] = 'stale'
         return out
@@ -4790,6 +4919,7 @@ def main() -> int:
 
     vm = {
         "as_of": sig.index.max().strftime("%b %d, %Y"),
+        "decision_page_as_of": pd.Timestamp(sig.index.max()).strftime("%Y-%m-%d"),
         "built": datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC"),
         "price": close.iloc[-1], "chg24": chg24,
         "risk_on": risk_on,
@@ -5030,7 +5160,7 @@ def main() -> int:
         "scn": scnd,
         "sizing": sizing,
         "catalyst": catalyst,
-        "cards": cards,
+        "cards": _scorecard_for_json(cards),
         "chart_contract": chart_contract,
         "cross": cross_asset(close),
         "calib": calib,

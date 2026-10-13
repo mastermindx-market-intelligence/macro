@@ -93,7 +93,9 @@ def test_vector_uses_in_page_brain_entry_and_suppresses_floating_launcher() -> N
 def test_vector_brain_entry_is_not_a_second_chat_owner() -> None:
     source = TEMPLATE.read_text(encoding="utf-8")
 
-    assert "MM_BRAIN_CFG" not in source
+    # The page may read the shared host object and set getAiContext. It must
+    # not replace that object (theme.js anchor/symbol) or load a second widget.
+    assert "window.MM_BRAIN_CFG=" not in source and "window.MM_BRAIN_CFG =" not in source
     assert "mm_brain.js" not in source
     assert "fetch('/api/brain" not in source
 

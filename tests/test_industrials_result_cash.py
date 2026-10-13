@@ -726,6 +726,122 @@ def test_qualify_operands_refuses_unknown_basis() -> None:
     assert any("required_basis_unknown" in lim for lim in q["limitations"])
 
 
+# strip() in _parse_operand is only the non-finite predicate. value_text is
+# stored raw. basis is the caller's mapping. A stripped casefold equal to
+# "unknown" is a missing basis.
+_ACCOUNTING_UNKNOWN_CASES = (
+    ("unknown", True),
+    ("Unknown", True),
+    ("UNKNOWN", True),
+    (" unknown ", True),
+    ("Unknown ", True),
+    ("UNKNOWN ", True),
+    (" unknown", True),
+    # Whitespace-only is not the token unknown: the raw string is truthy and
+    # its stripped casefold is empty, so qualify and derive stay ready.
+    ("   ", False),
+    (" ", False),
+)
+
+
+@pytest.mark.parametrize(
+    ("accounting", "refused"),
+    _ACCOUNTING_UNKNOWN_CASES,
+    ids=[
+        "unknown",
+        "Unknown",
+        "UNKNOWN",
+        "padded",
+        "Unknown_trailing",
+        "UNKNOWN_trailing",
+        "leading_space",
+        "whitespace_only",
+        "single_space",
+    ],
+)
+def test_unknown_accounting_token_casing(accounting: str, refused: bool) -> None:
+    """A stripped casefold of the accounting token ``unknown`` is a missing basis.
+
+    Both operands carry the token, recast is present, and every receipt gate
+    is checked. ``unknown``, ``Unknown``, ``UNKNOWN``, ``" unknown "``,
+    ``"Unknown "``, ``"UNKNOWN "``, and ``" unknown"`` refuse with
+    ``required_basis_unknown`` and publish no number. Whitespace-only
+    ``"   "`` and ``" "`` stay qualify ready, derive ready, value ``"10"``.
+    GAAP and IFRS on both sides still certify growth ``10``.
+    """
+    checked_all = {
+        name: True
+        for name in (
+            "basis",
+            "currency",
+            "scale",
+            "duration",
+            "perimeter",
+            "definition",
+            "source_mode",
+        )
+    }
+    basis = {"accounting": accounting, "recast": "as_reported"}
+    cells = [
+        cell(
+            "110",
+            metric="revenue_current",
+            owner_ref="synthetic:cell:sf02-current",
+            basis=basis,
+        ),
+        cell(
+            "100",
+            metric="revenue_prior",
+            owner_ref="synthetic:cell:sf02-prior",
+            basis=basis,
+        ),
+    ]
+    receipt = build_comparison_receipt("year_over_year", cells, checked=checked_all)
+    qualified = qualify_operands(
+        "year_over_year",
+        cells,
+        comparison_receipt=receipt,
+        formula="growth_pct",
+    )
+    derived = derive_result_cash("growth_pct", cells, comparison_receipt=receipt)
+    if refused:
+        assert qualified["status"] == "refused", qualified
+        assert "required_basis_unknown" in qualified["limitations"], qualified
+        assert derived["status"] == "refused", derived
+        assert derived["value"] is None, derived
+        assert "required_basis_unknown" in derived["limitations"], derived
+    else:
+        assert qualified["status"] == "ready", qualified
+        assert derived["status"] == "ready", derived
+        assert derived["value"] == "10", derived
+        assert "required_basis_unknown" not in derived["limitations"], derived
+
+    for standard in ("GAAP", "IFRS"):
+        present = {"accounting": standard, "recast": "as_reported"}
+        ok_cells = [
+            cell(
+                "110",
+                metric="revenue_current",
+                owner_ref="synthetic:cell:sf02-current",
+                basis=present,
+            ),
+            cell(
+                "100",
+                metric="revenue_prior",
+                owner_ref="synthetic:cell:sf02-prior",
+                basis=present,
+            ),
+        ]
+        ok_receipt = build_comparison_receipt(
+            "year_over_year", ok_cells, checked=checked_all
+        )
+        ok = derive_result_cash(
+            "growth_pct", ok_cells, comparison_receipt=ok_receipt
+        )
+        assert ok["status"] == "ready", (standard, ok)
+        assert ok["value"] == "10", (standard, ok)
+
+
 def test_qualify_operands_refuses_scale_mismatch_without_conversion() -> None:
     cells = [
         cell("100", metric="revenue_current", scale=1, currency="USD"),
