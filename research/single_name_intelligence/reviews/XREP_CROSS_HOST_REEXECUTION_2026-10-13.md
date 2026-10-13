@@ -226,3 +226,15 @@ Each attack below found no difference. Bounds are the search or command actually
 - Uncompared files that the evidence runners do not write were regenerated with `build_seal.py --out-dir /tmp/...` (commands 7–8). That is the code path that writes them; default S1 `--out-dir` is repo-relative `RUNS_REL` and was not used.
 - S1 `--check` still requires `--out-dir`; the value `/tmp/xrep_s1_unused` is unused in the `--check` branch (`run_s1.py:1189-1200`) and that directory was not created.
 - Environment recording used the system `python3` with user-local numpy/pandas/pyarrow. No venv and no `pip install`.
+
+## Closure (SCHK)
+
+Lane SCHK. Independent full-coverage verifier `research/single_name_intelligence/evaluation/seal_full_check.py`. Residual tree id at this HEAD remains `f9f4bf6442a948b7500228f9f963fc50a2ac7168`. S2 v1.1 does not embed a `code_tree_sha` pin. Generators under `residual/` and `event_response/` were not edited; XREP-03/04 path facts are named exceptions.
+
+- **XREP-01** CLOSED-BY-VERIFIER — `walk_compare` + `test_schk_04_comparator_covers_every_committed_file` + `test_schk_05_full_regeneration_s1`. S1 committed files visited = 48; full regeneration: files compared=48 identical=45 named-exception passes=3 failures=0.
+- **XREP-02** CLOSED-BY-VERIFIER — `walk_compare` + `test_schk_04_comparator_covers_every_committed_file` + `test_schk_06_full_regeneration_s2`. S2 committed files visited = 23; full regeneration: files compared=23 identical=22 named-exception passes=2 failures=0.
+- **XREP-03** RECORDED-AS-NAMED-EXCEPTION — `XREP03_S1_SEAL_LEDGER_PATH` (`test_schk_02_named_exception_tolerates_only_its_field`). Committed `trial_ledger_path` = `research/single_name_intelligence/runs/s1_residual_v1_1/trial_ledger.jsonl` on both `SEAL_AND_BUDGET.json` and `SEAL_AND_BUDGET.md`. A `/tmp` regeneration falls back to `research/single_name_intelligence/runs/s1_residual/trial_ledger.jsonl`. Any other differing field is a failure.
+- **XREP-04** RECORDED-AS-NAMED-EXCEPTION — `XREP04_S2_SEAL_V1_LEDGER_PATH` (`test_schk_03_xrep04_inconsistency_pinned`). Committed `SEAL_AND_BUDGET.json` `trial_ledger_path` = `research/single_name_intelligence/runs/s2_event_response/trial_ledger.jsonl`; committed `LANE_MANIFEST.json` `trial_ledger_path` = `research/single_name_intelligence/runs/s2_event_response_v1_1/trial_ledger.jsonl`. Assertion on committed bytes only.
+- **XREP-05** CLOSED-BY-VERIFIER — `walk_compare` directory walk (`test_schk_04_comparator_covers_every_committed_file`). S2 files visited = 23, including every file under `results/` and `observations/` plus the seven top-level names `run_check`'s fixed tuple omits.
+
+No additional SCHK-nn host/out-dir path exceptions were observed. Ledger `ts` fields reuse S1 `_ledger_equal` (imported) and S2's ts-dropping compare (run_s2.py L1072-1078). Full `--study all` counts on this host match the regeneration tests above.
