@@ -48,9 +48,15 @@ Subcommands:
                       except workstream files reached by ``depends_on`` and
                       decision files on a ``supersedes`` / ``superseded_by``
                       edge with a named decision. An incoming ``supersedes``
-                      is not on the named record, so ``decisions/`` is listed
-                      once and only a file that cites a named decision is
-                      parsed. The rest of the store is not walked.
+                      is not on the named record, so ``decisions/DEC-*.md``
+                      is listed once. A file is parsed when it cites a named
+                      decision, or a named decision cites that file's own
+                      key, including when the stem is not ``DEC-<key>``.
+                      Schema findings on that file are not recorded. A
+                      ``depends_on`` cycle among those workstreams is
+                      reported on the named workstream that reaches it when
+                      no cycle member was named. The rest of the store is
+                      not walked.
                       ``uncited-discovery`` is omitted for a subset: citation
                       counts need every record, and unscoped ``validate``
                       still reports that rule. ``--strict``
@@ -2326,13 +2332,23 @@ def _read_outside_workstream_dependencies(store: Store) -> None:
 
 
 def _outside_decision(path: Path) -> tuple[str, dict[str, Any]] | None:
-    """A decision file worth joining, or None. Schema findings are not kept."""
+    """A decision file worth joining, or None. Schema findings are not kept.
+
+    The graph key is the record's own ``key``, the same index
+    :func:`load_store` uses. A stem other than ``DEC-<key>`` is still
+    joined: the full store keeps that record and reports
+    ``filename-mismatch`` beside it. This read skips that schema finding
+    and keeps the edge. A name that does not start with ``DEC-`` is not
+    indexed by the full store either.
+    """
     try:
         rec, body = parse_record(path)
     except ValueError:
         return None
     key = rec.get("key")
-    if not isinstance(key, str) or not KEY_RE.match(key) or path.stem != f"DEC-{key}":
+    if not isinstance(key, str) or not KEY_RE.match(key):
+        return None
+    if not path.name.startswith("DEC-"):
         return None
     rec["_body"] = body
     return key, rec
@@ -2341,18 +2357,25 @@ def _outside_decision(path: Path) -> tuple[str, dict[str, Any]] | None:
 def _read_outside_decision_supersession(store: Store) -> None:
     """Parse decisions that share a supersession edge with a named decision.
 
-    Outgoing ``supersedes`` / ``superseded_by`` name ``decisions/DEC-<KEY>.md``,
-    one file per key, the same way ``depends_on`` names a workstream. The
-    unreciprocated finding sits on the named record, and the ``supersedes``
-    list that produces it lives on a file that record does not cite, so
-    ``decisions/DEC-*.md`` is listed once and a file is kept only when that
-    list or ``superseded_by`` names a named decision. Extra records are not
-    counted and their schema findings are not recorded. Does not call
-    :func:`load_store`.
+    Outgoing ``supersedes`` / ``superseded_by`` open ``decisions/DEC-<KEY>.md``
+    when that file's own key is KEY. The unreciprocated finding sits on the
+    named record, and the ``supersedes`` list that produces it lives on a
+    file the named record does not cite, so ``decisions/DEC-*.md`` is listed
+    once. A file is kept when that list or ``superseded_by`` names a named
+    decision, or when its own key is one a named decision cites. The key is
+    the record id, not the stem. Extra records are not counted and their
+    schema findings are not recorded. Does not call :func:`load_store`.
     """
     named = {ident[4:] for ident in store.records if ident.startswith("DEC/")}
     if not named:
         return
+    cited_by_named: set[str] = set()
+    for key in named:
+        rec = store.records.get(f"DEC/{key}")
+        if rec is None:
+            continue
+        for field in ("supersedes", "superseded_by"):
+            cited_by_named.update(_refs(rec.get(field), "DEC"))
 
     def _keep(path: Path, rec_key: str, rec: dict[str, Any]) -> None:
         ident = f"DEC/{rec_key}"
@@ -2376,6 +2399,11 @@ def _read_outside_decision_supersession(store: Store) -> None:
                 if parsed is None:
                     continue
                 other_key, other_rec = parsed
+                # The conventional path is this citation only when its content
+                # key agrees. A mismatched stem is joined from the directory
+                # pass below, under the record's own key.
+                if other_key != other:
+                    continue
                 _keep(path, other_key, other_rec)
 
     folder = store.root / "decisions"
@@ -2391,10 +2419,60 @@ def _read_outside_decision_supersession(store: Store) -> None:
         other_key, other_rec = parsed
         cites = set(_refs(other_rec.get("supersedes"), "DEC"))
         cites.update(_refs(other_rec.get("superseded_by"), "DEC"))
-        if cites.isdisjoint(named):
+        if cites.isdisjoint(named) and other_key not in cited_by_named:
             continue
         _keep(path, other_key, other_rec)
         known.add(path.resolve())
+
+
+def _report_reached_outside_cycles(store: Store, path_args: list[str]) -> None:
+    """Report an outside-only ``depends_on`` cycle on the named workstream that reaches it.
+
+    :func:`check_references` attributes ``workstream-cycle`` to cycle members.
+    When every member sits outside ``--paths``, the path filter would drop
+    the finding. The named workstream whose edges reached that cycle still
+    fails. A cycle that already lands on a named path is left as written.
+    """
+    named_paths = {Path(raw).resolve() for raw in path_args}
+    cycles = [problem for problem in store.problems if problem.rule == "workstream-cycle"]
+    if not cycles or any(problem.path.resolve() in named_paths for problem in cycles):
+        return
+    member_keys = {
+        problem.path.stem[3:]
+        for problem in cycles
+        if problem.path.stem.startswith("WS-") and len(problem.path.stem) > 3
+    }
+    if not member_keys:
+        return
+    graph = {
+        ident[3:]: _refs(rec.get("depends_on"), "WS")
+        for ident, rec in store.records.items()
+        if ident.startswith("WS/")
+    }
+
+    def _reaches(start: str) -> bool:
+        seen: set[str] = set()
+        pending = list(graph.get(start, ()))
+        while pending:
+            key = pending.pop()
+            if key in seen:
+                continue
+            seen.add(key)
+            if key in member_keys:
+                return True
+            pending.extend(graph.get(key, ()))
+        return False
+
+    message = cycles[0].message
+    for ident in list(store.records):
+        if not ident.startswith("WS/"):
+            continue
+        path = store.paths.get(ident)
+        if path is None or path.resolve() not in named_paths:
+            continue
+        if not _reaches(ident[3:]):
+            continue
+        store.problems.append(Problem(path, "workstream-cycle", message, hard=True))
 
 
 def _load_named_store(
@@ -2458,6 +2536,7 @@ def _load_named_store(
     _read_outside_decision_supersession(store)
     store.problems.extend(check_references(store.records, store.paths))
     _drop_partial_false_findings(store)
+    _report_reached_outside_cycles(store, path_args)
     return store
 
 

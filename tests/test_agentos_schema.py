@@ -2561,6 +2561,151 @@ def test_d3_paths_help_documents_uncited_discovery_drop(
     assert "uncited-discovery" in help_run.stdout
 
 
+def test_d3_partial_paths_report_misnamed_stem_supersession(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str],
+) -> None:
+    """A decision stem that is not DEC-<key> still joins on the record's own key.
+
+    DEC-MISNAMED.md carries key OTHER-DEC and supersedes the named DEC-OLD-DEC.
+    load_store indexes that content key and reports unreciprocated-supersession
+    on the named record. --paths naming the handoff, the workstream, and
+    DEC-OLD-DEC must report the same edge, must not call load_store, and must
+    not count the outside file or judge its filename-mismatch.
+    """
+    module = _load_agentos_module()
+    root = _write_tree(tmp_path, {
+        "workstreams/WS-DRAFT-ROUNDTRIP.md": _D3_WS,
+        "decisions/DEC-OLD-DEC.md": _decision_doc("OLD-DEC"),
+        "decisions/DEC-MISNAMED.md": _decision_doc(
+            "OTHER-DEC", "supersedes:\n  - DEC:OLD-DEC\n",
+        ),
+        "handoffs/DRAFT-ROUNDTRIP-2026-10-12.md": _plain_handoff(),
+        "handoffs/GARBAGE-2026-10-12.md": "---\nthis: no\n---\n\nSee above.\n",
+    })
+    full = module.load_store(root, None)
+    inbound = [
+        problem for problem in full.problems
+        if problem.rule == "unreciprocated-supersession"
+        and problem.path.name == "DEC-OLD-DEC.md"
+    ]
+    assert inbound, [(problem.rule, problem.path.name) for problem in full.problems]
+    assert "DEC:OTHER-DEC" in inbound[0].message
+    _boom_on_full_store(module, monkeypatch)
+    paths = [
+        root / "handoffs" / "DRAFT-ROUNDTRIP-2026-10-12.md",
+        root / "workstreams" / "WS-DRAFT-ROUNDTRIP.md",
+        root / "decisions" / "DEC-OLD-DEC.md",
+    ]
+    snap = _dump_json(tmp_path, "snap.json", {"prs": []})
+    args = _strict_paths_args(root, paths, snap)
+    assert module._paths_cover_handoff_joins(root, args.paths) is True
+    result = module.cmd_validate(args)
+    captured = capsys.readouterr()
+    assert result == 1, captured.out + captured.err
+    assert "unreciprocated-supersession" in captured.out
+    assert "DEC:OTHER-DEC" in captured.out
+    assert "filename-mismatch" not in captured.out
+    assert "dangling-ref" not in captured.out
+    assert "one-sided-supersession" not in captured.out
+    assert "unparseable" not in captured.out
+    assert "3 records (1 workstreams, 1 decisions, 0 discoveries, 1 handoffs)" in captured.out
+
+
+def test_d3_partial_paths_resolve_misnamed_decision_by_content_key(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str],
+) -> None:
+    """A named superseded_by resolves a decision whose stem is not DEC-<key>.
+
+    The file is decisions/DEC-MISNAMED.md and its key is OTHER-DEC. The full
+    store reports one-sided-supersession on DEC-OLD-DEC, not a dangling ref.
+    --paths naming that decision must resolve the same edge and must not call
+    load_store. filename-mismatch stays on the outside file only.
+    """
+    module = _load_agentos_module()
+    root = _write_tree(tmp_path, {
+        "workstreams/WS-DRAFT-ROUNDTRIP.md": _D3_WS,
+        "decisions/DEC-OLD-DEC.md": _decision_doc("OLD-DEC", "superseded_by: DEC:OTHER-DEC\n"),
+        "decisions/DEC-MISNAMED.md": _decision_doc("OTHER-DEC"),
+        "handoffs/DRAFT-ROUNDTRIP-2026-10-12.md": _plain_handoff(),
+        "handoffs/GARBAGE-2026-10-12.md": "---\nthis: no\n---\n\nSee above.\n",
+    })
+    full = module.load_store(root, None)
+    sided = [
+        problem for problem in full.problems
+        if problem.rule == "one-sided-supersession" and problem.path.name == "DEC-OLD-DEC.md"
+    ]
+    assert sided, [(problem.rule, problem.path.name) for problem in full.problems]
+    assert "DEC:OTHER-DEC" in sided[0].message
+    assert not any(
+        problem.rule == "dangling-ref" and "OTHER-DEC" in problem.message
+        for problem in full.problems
+    )
+    _boom_on_full_store(module, monkeypatch)
+    paths = [
+        root / "handoffs" / "DRAFT-ROUNDTRIP-2026-10-12.md",
+        root / "workstreams" / "WS-DRAFT-ROUNDTRIP.md",
+        root / "decisions" / "DEC-OLD-DEC.md",
+    ]
+    snap = _dump_json(tmp_path, "snap.json", {"prs": []})
+    args = _strict_paths_args(root, paths, snap)
+    assert module._paths_cover_handoff_joins(root, args.paths) is True
+    result = module.cmd_validate(args)
+    captured = capsys.readouterr()
+    assert result == 1, captured.out + captured.err
+    assert "one-sided-supersession" in captured.out
+    assert "DEC:OTHER-DEC" in captured.out
+    assert "dangling-ref" not in captured.out
+    assert "filename-mismatch" not in captured.out
+    assert "unreciprocated-supersession" not in captured.out
+    assert "unparseable" not in captured.out
+    assert "0 error(s), 1 warning(s)" in captured.out
+    assert "3 records (1 workstreams, 1 decisions, 0 discoveries, 1 handoffs)" in captured.out
+
+
+def test_d3_partial_paths_report_reached_outside_cycle(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str],
+) -> None:
+    """A depends_on cycle that contains no named workstream still fails the one that reaches it.
+
+    WS-REACH depends on WS-OUT-B, and WS-OUT-B cycles with WS-OUT-C. Neither
+    cycle member is a handoff join. The full store reports workstream-cycle.
+    --paths naming the handoff and WS-REACH must too, on WS-REACH, without
+    calling load_store. The outside records stay uncounted.
+    """
+    module = _load_agentos_module()
+    handoff = _plain_handoff().replace(
+        "workstream: WS:DRAFT-ROUNDTRIP\n",
+        "workstream: WS:REACH\n",
+    )
+    root = _write_tree(tmp_path, {
+        "workstreams/WS-REACH.md": _cycle_ws("REACH", "WS:OUT-B"),
+        "workstreams/WS-OUT-B.md": _cycle_ws("OUT-B", "WS:OUT-C"),
+        "workstreams/WS-OUT-C.md": _cycle_ws("OUT-C", "WS:OUT-B"),
+        "handoffs/REACH-2026-10-12.md": handoff,
+        "handoffs/GARBAGE-2026-10-12.md": "---\nthis: no\n---\n\nSee above.\n",
+    })
+    full = module.load_store(root, None)
+    assert any(problem.rule == "workstream-cycle" for problem in full.problems)
+    _boom_on_full_store(module, monkeypatch)
+    paths = [
+        root / "handoffs" / "REACH-2026-10-12.md",
+        root / "workstreams" / "WS-REACH.md",
+    ]
+    snap = _dump_json(tmp_path, "snap.json", {"prs": []})
+    args = _strict_paths_args(root, paths, snap)
+    assert module._paths_cover_handoff_joins(root, args.paths) is True
+    result = module.cmd_validate(args)
+    captured = capsys.readouterr()
+    assert result == 1, captured.out + captured.err
+    assert "workstream-cycle" in captured.out
+    assert "WS-REACH.md" in captured.out
+    assert "WS:OUT-B" in captured.out
+    assert "WS:OUT-C" in captured.out
+    assert "dangling-ref" not in captured.out
+    assert "unparseable" not in captured.out
+    assert "2 records (1 workstreams, 0 decisions, 0 discoveries, 1 handoffs)" in captured.out
+
+
 def test_d3_no_network_or_gh_in_agentos() -> None:
     source = CLI.read_text(encoding="utf-8")
     assert source.count("subprocess.run") == 1
