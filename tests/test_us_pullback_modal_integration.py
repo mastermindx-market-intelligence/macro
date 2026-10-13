@@ -227,7 +227,9 @@ def test_tab_trap_wraps_over_the_closed_forward_risk_disclosure():
     """Run the shipped `_tabStop`/`_trapTab` bodies against the popup's stop order.
 
     The forward-risk evidence now sits in a closed <details>. A trap that counts its
-    hidden controls never sees focus reach `last`, so Tab walks out of the modal."""
+    hidden controls never sees focus reach `last`, so Tab walks out of the modal.
+    A trap that leaves middle stops to the engine lets WebKit's button-less order
+    walk Shift+Tab out from the summary after the close button."""
     src = _between("templates/dashboard.html.j2", "function _tabStop(el){", "function _prefReduced(")
     _node(r"""
 const src = require('node:fs').readFileSync(0, 'utf8');
@@ -245,10 +247,21 @@ assert.equal(doc.activeElement, close);
 e = tab(close, true);
 assert.equal(e.prevented, true);
 assert.equal(doc.activeElement, legacySummary);
+// Every Tab is stepped by the trap, not the engine: WebKit leaves buttons out of
+// its own order, so Shift+Tab from the first summary used to leave the modal.
+e = tab(whySummary, true);
+assert.equal(e.prevented, true);
+assert.equal(doc.activeElement, close);
+e = tab(whySummary);
+assert.equal(e.prevented, true);
+assert.equal(doc.activeElement, legacySummary);
 // Opened: its own controls become stops, a nested closed disclosure keeps only its summary.
 legacy.open = true;
 e = tab(legacySummary);
-assert.equal(e.prevented, false);
+assert.equal(e.prevented, true);
+assert.equal(doc.activeElement, driver);
+e = tab(methodSummary, true);
+assert.equal(doc.activeElement, driver);
 e = tab(methodSummary);
 assert.equal(e.prevented, true);
 assert.equal(doc.activeElement, close);

@@ -15267,12 +15267,15 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
         dlg.querySelectorAll('button:not(:disabled),a[href],input:not(:disabled),select:not(:disabled),textarea:not(:disabled),summary,[tabindex]:not([tabindex="-1"])'),
         _tabStop);
       if(!focusable.length) return;
-      var first = focusable[0], last = focusable[focusable.length-1];
       /* The trap listens on the document while the dialog is open, so it also sees
          Tabs whose focus has strayed outside the dialog (backdrop click target, a
-         stray programmatic focus) and pulls it back to the near end. */
-      if(e.shiftKey){ if(act===first || !dlg.contains(act)){ e.preventDefault(); last.focus(); } }
-      else { if(act===last || !dlg.contains(act)){ e.preventDefault(); first.focus(); } }
+         stray programmatic focus) and pulls it back to the near end. It steps every
+         Tab through these stops itself: WebKit leaves buttons out of its own Tab
+         order, so Shift+Tab from the stop after the close button walked out. */
+      var i = focusable.indexOf(act), n = focusable.length;
+      e.preventDefault();
+      if(e.shiftKey) focusable[i <= 0 ? n-1 : i-1].focus();
+      else focusable[i < 0 || i === n-1 ? 0 : i+1].focus();
     }
 
     function _prefReduced(){

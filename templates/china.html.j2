@@ -4664,9 +4664,12 @@ window.__CHART_SWAP__ = {
     if(!risk)return;
     var focusable=Array.from(risk.querySelectorAll(_RISK_STOPS)).filter(_riskTabStop);
     if(!focusable.length)return;
-    var first=focusable[0],last=focusable[focusable.length-1];
-    if(e.shiftKey&&(act===first||!risk.contains(act))){e.preventDefault();last.focus();}
-    else if(!e.shiftKey&&(act===last||!risk.contains(act))){e.preventDefault();first.focus();}
+    /* Every Tab steps through these stops: WebKit leaves buttons out of its own
+       Tab order, so Shift+Tab from the stop after the close button walked out. */
+    var i=focusable.indexOf(act),n=focusable.length;
+    e.preventDefault();
+    if(e.shiftKey)focusable[i<=0?n-1:i-1].focus();
+    else focusable[i<0||i===n-1?0:i+1].focus();
   }
   function cnxOpenDlg(id){
     var el=document.getElementById(id);

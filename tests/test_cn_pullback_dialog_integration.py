@@ -183,9 +183,12 @@ let e = tab(legacySummary);
 assert.equal(e.prevented, true); assert.equal(doc.activeElement, close);
 e = tab(close, true);
 assert.equal(e.prevented, true); assert.equal(doc.activeElement, legacySummary);
-// A middle stop is left to the browser.
+// Middle stops are stepped too: WebKit leaves buttons out of its own Tab order,
+// so Shift+Tab from the summary after the close button used to leave the dialog.
+e = tab(whySummary, true);
+assert.equal(e.prevented, true); assert.equal(doc.activeElement, close);
 e = tab(whySummary);
-assert.equal(e.prevented, false); assert.equal(doc.activeElement, whySummary);
+assert.equal(e.prevented, true); assert.equal(doc.activeElement, legacySummary);
 // Focus that escaped the dialog is pulled back to the near end.
 e = tab(outside);
 assert.equal(e.prevented, true); assert.equal(doc.activeElement, close);
