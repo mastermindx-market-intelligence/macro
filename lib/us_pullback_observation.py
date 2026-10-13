@@ -222,6 +222,6 @@ def present(observation: dict, radar: dict | None = None) -> dict:
     """
     return core.present(
         observation, market="us",
-        aria_en="Observed SPY price closing drawdown from the retained episode high",
+        aria_en="Observed SPY price closing drawdown from the reference high",
         aria_zh="SPY实际收盘价相对本轮参考高点的回撤",
     )

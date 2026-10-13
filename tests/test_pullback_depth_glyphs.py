@@ -7,6 +7,10 @@ lib/illus.py formats visible numbers with str.format, which always emits ASCII
 "-". The fix is an opt-in option: every other illus.illus caller in the repo
 must stay byte-identical, so this file pins their output to the BASE renderer.
 
+The chart's accessible name belongs to the product vocabulary too: the visible
+copy calls the peak the "reference high" (参考高点), so both presenters'
+aria_en must say that, never the internal "retained episode" wording.
+
 Every close path below is synthetic and is observed through the real
 ``lib.pullback_observation.observe()`` and presented by the real presenter,
 the way tests/test_pullback_depth_presenter_properties.py does (helpers
@@ -203,3 +207,22 @@ def test_minus_option_changes_only_the_sign_glyph(tmp_path):
     assert swapped == plain.replace(">-6.1<", f">{MINUS}6.1<")
     tag = BeautifulSoup(swapped, "html.parser").select_one("span.ilx-tag")
     assert tag is not None and tag.get_text() == f"{MINUS}6.1"
+
+
+# --------------------------------------------------------------------------- #
+# 4 — the presenters' chart label names the reference high
+# --------------------------------------------------------------------------- #
+def test_both_presenters_name_the_reference_high_in_the_chart_label():
+    from tests.test_pullback_depth_a11y import EVIDENCE, RAW_PATH, _observation
+
+    checked = 0
+    for market in ("us", "cn"):
+        view = _observation(market, "underway", path=RAW_PATH, **EVIDENCE)
+        chart = view["detail_chart_html"]
+        assert chart, market
+        found = re.search(r'aria-label="([^"]*)"', chart)
+        assert found, market
+        assert "reference high" in found.group(1), (market, found.group(1))
+        assert "retained episode" not in found.group(1), (market, found.group(1))
+        checked += 1
+    assert checked == 2
