@@ -111,6 +111,17 @@ def test_value_that_rounds_to_zero_prints_unsigned_in_chart_and_metric():
     assert _metric_text(html) == "0.0%"
 
 
+def test_close_just_above_the_high_that_rounds_to_zero_prints_unsigned():
+    """A recovering close 0.04% above the reference high rounds to 0.0, so the
+    metric prints it unsigned, the same way the chart's end tag does. The
+    neighbour that rounds to 0.1 keeps its plus sign."""
+    chart, html = _presented([100.0] * 62 + [90.0, 95.0, 98.0, 100.04])
+    assert _end_tag_text(chart) == "0.0%"
+    assert _metric_text(html) == "0.0%"
+    _chart, html = _presented([100.0] * 62 + [90.0, 95.0, 98.0, 100.06])
+    assert _metric_text(html) == "+0.1%"
+
+
 # --------------------------------------------------------------------------- #
 # 3 — byte-identity: no other caller's output moves
 # --------------------------------------------------------------------------- #

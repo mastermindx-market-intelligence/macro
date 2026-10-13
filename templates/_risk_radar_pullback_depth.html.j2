@@ -143,7 +143,7 @@
     {% if current %}
     <div class="rrp-metrics">
       <div><div class="rrp-label">{{ t('Above the reference high','高于参考高点') if p > h else t('From the reference high','距参考高点') }}</div>
-        {% if p > h %}{% set up_s = '%.1f'|format(100*(p/h-1)) %}<strong class="rrp-primary" data-metric="current">+{{ up_s }}%</strong>
+        {% if p > h %}{% set up_s = '%.1f'|format(100*(p/h-1)) %}<strong class="rrp-primary" data-metric="current">{{ '+' if up_s != '0.0' else '' }}{{ up_s }}%</strong>
         {% else %}{% set dd = [0, 100*(1-p/h)]|max %}{% set dd_s = '%.1f'|format(dd) %}<strong class="rrp-primary" data-metric="current">{{ '−' if dd_s != '0.0' else '' }}{{ dd_s }}%</strong>{% endif %}
         <div class="rrp-note">{{ t('Reference high','参考高点') }} {{ (o.get('peak_session') or '—')|e }}</div>
       </div>
