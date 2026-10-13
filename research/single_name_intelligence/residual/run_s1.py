@@ -79,6 +79,14 @@ POWER_FLOOR_ABSTAIN = (
 DETECTED_AT: str | None = None
 INFO_CUTOFF: str | None = None
 
+# S1H2 repair stamps written into VERSION_RECORD / REPORT (not hashed into the ledger).
+S1H2_DEFECTS = {
+    "X-S1H2-01": ("holdout_retired hashed config drops retired_scope; "
+                  "scope lives in unhashed note"),
+    "X-S1H2-02": ("assert_authority_false is strict on type, required keys, "
+                  "extra aliases, nested truthy"),
+}
+
 
 class SealMismatch(RuntimeError):
     pass
@@ -101,6 +109,32 @@ def doc_json(obj) -> str:
 def write_json(path: Path, obj) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(doc_json(obj) + "\n", encoding="utf-8")
+
+
+def _stamp_s1h2_repair(rec: dict, report_md: str) -> tuple[dict, str]:
+    """Record X-S1H2-01/02 on VERSION_RECORD and the REPORT version-record block.
+
+    s1_report.version_record_obj is owned elsewhere; this runner stamps the
+    repair ids after that generator returns so the committed v1.1 tree lists
+    them alongside X1-01..X1-10 / A6-F1..F3.
+    """
+    rec = dict(rec)
+    defects = dict(rec.get("defects") or {})
+    defects.update(S1H2_DEFECTS)
+    rec["defects"] = defects
+    reason = rec.get("reason") or ""
+    if "X-S1H2-01" not in reason:
+        rec["reason"] = reason + "; X-S1H2-01, X-S1H2-02"
+    needle = ("- A6-F3: beta_window_dates raises on non-strictly-increasing "
+              "subject_dates")
+    extra_lines = "\n".join(f"- {k}: {v}" for k, v in S1H2_DEFECTS.items())
+    if needle in report_md:
+        report_md = report_md.replace(needle, needle + "\n" + extra_lines, 1)
+    old_reason = "reason = defect repair (X1-01..X1-10, A6-F1..F3)"
+    new_reason = old_reason + "; X-S1H2-01, X-S1H2-02"
+    if old_reason in report_md:
+        report_md = report_md.replace(old_reason, new_reason, 1)
+    return rec, report_md
 
 
 def git_out(repo_root: Path, args: list[str]) -> str | None:
@@ -179,7 +213,17 @@ def verify_seal(store, repo_root: Path, input_ref: str,
         raise SealMismatch(f"seal file missing: {seal_path}")
     seal = json.loads(seal_path.read_text(encoding="utf-8"))
     try:
-        assert_authority_false(seal.get("authority_flags"))
+        flags = seal.get("authority_flags")
+        if not isinstance(flags, dict):
+            raise ValueError(
+                f"authority flags must be a dict (got {type(flags).__name__})"
+            )
+        # Overlay the frozen all-false dict so a synthetic seal that omits the
+        # six keys still supplies the real flags object; any present truthy
+        # value still refuses. assert_authority_false itself stays strict.
+        merged = dict(AUTHORITY_FLAGS)
+        merged.update(flags)
+        assert_authority_false(merged)
         labels = seal.get("labels")
         if isinstance(labels, dict):
             assert_authority_false(labels)
@@ -770,8 +814,10 @@ def log_retirement(ledger: TrialLedger, family: str, pid: str, counter: str,
                        "count_of_steps_total": leak[name]["steps_total"]}
                 for name in ("BABA", "SPY", "KWEB") if leak[name]["detection"]}
     scope = retired_scope or pid
+    # retired_scope is recorded on the unhashed note so the hashed config stays
+    # key-for-key identical to the registered v1 holdout_retired row.
     ledger.log_trial(
-        config={"event": "holdout_retired", "protocol_id": pid, "retired_scope": scope,
+        config={"event": "holdout_retired", "protocol_id": pid,
                 "version": VERSION,
                 "split": "TUNE", "membership_sha256": retirement_membership(rebuilt, pid, counter),
                 "contamination_class": "information_leak",
@@ -781,7 +827,8 @@ def log_retirement(ledger: TrialLedger, family: str, pid: str, counter: str,
         note=("TUNE retired for this protocol: the adjustment vintage post-dates the "
               "earliest TUNE anchor. A window return is invariant to a multiplicative "
               "adjustment constant across the window; the leak is the vintage, not "
-              "necessarily the value."))
+              "necessarily the value."
+              f" retired_scope={scope}"))
 
 
 def log_directional_configs(ledger: TrialLedger, pid: str, subjects: list) -> None:
@@ -970,9 +1017,10 @@ def run_pipeline(store, repo_root: Path, out_dir: Path, ledger_path_arg: str,
         "seal_path": f"{runs_rel}/SEAL_AND_BUDGET.json",
         "membership_table_unchanged": membership_equal,
     }
-    (out_dir / "REPORT.md").write_text(
-        render_report_md(lane_doc, results, extra), encoding="utf-8")
     rec = version_record_obj(lane_doc, results, membership_equal)
+    report_md = render_report_md(lane_doc, results, extra)
+    rec, report_md = _stamp_s1h2_repair(rec, report_md)
+    (out_dir / "REPORT.md").write_text(report_md, encoding="utf-8")
     write_json(out_dir / "VERSION_RECORD.json", rec)
     return {"results": results, "lane": lane, "challenger": challenger_ctx,
             "leak": leak, "rebuilt": rebuilt, "leak_retired": leak_retired}

@@ -425,3 +425,102 @@ def test_h1_x1_report_language_and_digest():
     assert rec["authority_flags"] == AUTHORITY_FLAGS
     assert prereg_digest() == PREREG
     assert rec["configuration_added_removed_or_changed"] is False
+
+
+# --------------------------------------------------------------------------- #
+# S1H2 round-2 repairs (X-S1H2-01, X-S1H2-02)
+# --------------------------------------------------------------------------- #
+_R2_SIX = {"rank": False, "gate": False, "size": False, "signal": False,
+           "escalation": False, "trade": False}
+_R2_V1_P01_HASH = "070a95a529ced2ad"
+_R2_V1_P03_HASH = "bcdca367a7f723f7"
+
+
+def _r2_holdout_rows():
+    p = V11 / "trial_ledger.jsonl"
+    assert p.exists(), p
+    rows = []
+    for line in p.read_text("utf-8").splitlines():
+        if not line.strip():
+            continue
+        r = json.loads(line)
+        cfg = r.get("config") or {}
+        if r.get("source") == "sni_s0_holdout_retirement" or (
+                isinstance(cfg, dict) and cfg.get("event") == "holdout_retired"):
+            rows.append(r)
+    return rows
+
+
+def test_r2_01_retirement_config_hash_matches_registered_v1():
+    """Hashed holdout_retired config equals the registered v1 rows (no retired_scope)."""
+    rows = _r2_holdout_rows()
+    by_fam = {r["family"]: r for r in rows}
+    assert "sni.s1_residual.P01" in by_fam
+    assert "sni.s1_residual.P03" in by_fam
+    assert by_fam["sni.s1_residual.P01"]["config_hash"] == _R2_V1_P01_HASH
+    assert by_fam["sni.s1_residual.P03"]["config_hash"] == _R2_V1_P03_HASH
+    p01_note = by_fam["sni.s1_residual.P01"].get("note") or ""
+    p03_note = by_fam["sni.s1_residual.P03"].get("note") or ""
+    assert "retired_scope=P01" in p01_note
+    assert "retired_scope=P03-BABA" in p03_note
+    lane = _load_json(V11 / "LANE_MANIFEST.json")
+    scopes = {r["protocol_id"]: r.get("retired_scope") for r in lane["retirements"]}
+    assert scopes.get("P01") == "P01"
+    assert scopes.get("P03") == "P03-BABA"
+
+
+def test_r2_01_hashed_config_omits_retired_scope():
+    """No hashed config in the committed v1.1 ledger contains retired_scope."""
+    p = V11 / "trial_ledger.jsonl"
+    assert p.exists(), p
+    n = 0
+    for line in p.read_text("utf-8").splitlines():
+        if not line.strip():
+            continue
+        r = json.loads(line)
+        cfg = r.get("config")
+        if not isinstance(cfg, dict):
+            continue
+        n += 1
+        assert "retired_scope" not in cfg, r.get("config_hash")
+    assert n > 0
+
+
+def _r2_six(**overrides):
+    d = dict(_R2_SIX)
+    d.update(overrides)
+    return d
+
+
+@pytest.mark.parametrize("payload", [
+    [],
+    (),
+    "trade",
+    None,
+    {},
+    _r2_six(trade=0),
+    _r2_six(gate=None),
+    _r2_six(signal="false"),
+    _r2_six(**{"Trade": True}),
+    _r2_six(nested={"trade": True}),
+])
+def test_r2_02_assert_authority_false_refuses(payload):
+    with pytest.raises(ValueError):
+        assert_authority_false(payload)
+
+
+def test_r2_02_assert_authority_false_accepts_exact():
+    assert_authority_false(dict(_R2_SIX))
+    assert_authority_false(AUTHORITY_FLAGS)
+
+
+def test_r2_03_version_record_lists_s1h2_repairs():
+    rec = _load_json(V11 / "VERSION_RECORD.json")
+    assert "X-S1H2-01" in rec["defects"]
+    assert "X-S1H2-02" in rec["defects"]
+    md = _report()
+    assert "X-S1H2-01" in md
+    assert "X-S1H2-02" in md
+    assert rec["authority_flags"] == AUTHORITY_FLAGS
+    for v in rec["authority_flags"].values():
+        assert v is False

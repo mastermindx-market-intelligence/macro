@@ -105,21 +105,65 @@ POWER_FLOOR_N = 153
 # constant stays the v1 default so the prereg digest is unchanged.
 
 
+_AUTHORITY_KEYS = ("rank", "gate", "size", "signal", "escalation", "trade")
+_AUTHORITY_NAMES = frozenset(_AUTHORITY_KEYS)
+
+
+def _authority_name(key) -> str:
+    return str(key).strip().casefold()
+
+
+def _forbidden_truthy_authority(obj, *, path: str = "") -> None:
+    """Walk nested dict/list values; raise if a forbidden authority key is not False."""
+    if isinstance(obj, dict):
+        for k, v in obj.items():
+            name = _authority_name(k)
+            here = f"{path}.{k}" if path else str(k)
+            if name in _AUTHORITY_NAMES or name.endswith("_authority"):
+                if v is not False:
+                    raise ValueError(
+                        f"authority flag {k!r} is not literal False (got {v!r})"
+                    )
+            if isinstance(v, (dict, list)):
+                _forbidden_truthy_authority(v, path=here)
+    elif isinstance(obj, list):
+        for i, item in enumerate(obj):
+            if isinstance(item, (dict, list)):
+                _forbidden_truthy_authority(item, path=f"{path}[{i}]")
+
+
 def assert_authority_false(flags) -> None:
-    """Raise ValueError naming the key when any authority value is not literal False."""
-    if isinstance(flags, (list, tuple, str)):
-        return
+    """Raise ValueError naming the key when any authority value is not literal False.
+
+    Strict: non-dict input (list, tuple, str, None) raises; every one of the six
+    keys rank/gate/size/signal/escalation/trade must be present; each value must
+    satisfy ``is False`` (0, None, "false", numpy False all refuse); an extra
+    key whose casefolded stripped name equals one of the six or ends with
+    ``_authority`` refuses unless its value is False; nested dict/list values
+    are walked for the same forbidden-truthy-authority check.
+    """
     if not isinstance(flags, dict):
         raise ValueError(
             f"authority flags must be a dict (got {type(flags).__name__})"
         )
-    for key in ("rank", "gate", "size", "signal", "escalation", "trade"):
+    for key in _AUTHORITY_KEYS:
         if key not in flags:
-            continue
+            raise ValueError(f"authority flag {key!r} is missing")
         if flags[key] is not False:
             raise ValueError(
                 f"authority flag {key!r} is not literal False (got {flags[key]!r})"
             )
+    for k, v in flags.items():
+        if k in _AUTHORITY_KEYS:
+            continue
+        name = _authority_name(k)
+        if name in _AUTHORITY_NAMES or name.endswith("_authority"):
+            if v is not False:
+                raise ValueError(
+                    f"authority flag {k!r} is not literal False (got {v!r})"
+                )
+        if isinstance(v, (dict, list)):
+            _forbidden_truthy_authority(v, path=str(k))
 
 
 def build_spec() -> dict:
