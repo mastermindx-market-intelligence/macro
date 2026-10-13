@@ -16736,6 +16736,8 @@ jobs:
         # Price-specific snapshot clocks import the same actual producer and use
         # committed synthetic series only; keep this guard on the existing code gate.
         run: python -m pytest tests/test_us_board_ledger_continuity.py tests/test_us_board_continuity_guard.py tests/test_build_stock_library_price_clock.py -q
+      - name: Canada canonical selection and exact source binding
+        run: python -m pytest tests/test_canada_canonical_board.py -q
 
   unrun-intl-libraries:
     # China / HK / Canada library writers behind the international surfaces.
