@@ -9,6 +9,7 @@ from __future__ import annotations
 import json
 import sys
 import tempfile
+import pytest
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
@@ -207,3 +208,240 @@ def _run() -> None:
 if __name__ == "__main__":
     _run()
     print("all whitehouse_build tests passed")
+
+
+# Source retention is host-local evidence, outside the public repository.
+@pytest.fixture(autouse=True)
+def isolated_source_store(tmp_path, monkeypatch):
+    from engine import whitehouse_feed as wf
+    directory = tmp_path.parent / (tmp_path.name + '-sources')
+    monkeypatch.setattr(wf, 'SOURCE_DOCUMENT_ROOT', directory)
+    return directory
+
+def _source_item(body='Original government source text.'):
+    from engine import whitehouse_feed as wf
+    xml = (f'<rss xmlns:content="http://purl.org/rss/1.0/modules/content/"><channel><item>'
+           f'<title>Science announcement</title><link>https://www.whitehouse.gov/fact-sheets/2026/10/science/</link>'
+           f'<guid>science-1</guid><pubDate>Thu, 08 Oct 2026 15:05:06 +0000</pubDate>'
+           f'<content:encoded><![CDATA[<p>{body}</p>]]></content:encoded></item></channel></rss>')
+    return wf._parse(xml.encode(), 'fact-sheets')[0]
+
+
+def test_source_capture_is_immutable_and_private(tmp_path):
+    import hashlib
+    from engine import whitehouse_feed as wf
+    item = _source_item()
+    ref = wf.retain_source_document(tmp_path, item)
+    path = tmp_path / ref['path']
+    raw = path.read_bytes()
+    obj = json.loads(raw)
+    assert hashlib.sha256(raw).hexdigest() == ref['sha256']
+    assert obj['body'] == item['body']
+    assert obj['body_sha256'] == hashlib.sha256(item['body'].encode()).hexdigest()
+    assert obj['body_origin'] == 'content_encoded'
+    assert obj['body_truncated'] is False
+    assert obj['rights_status'] == 'unqualified'
+    assert obj['allow_stage'] is False and obj['allow_emit'] is False
+    before = path.stat().st_mtime_ns
+    assert wf.retain_source_document(tmp_path, item) == ref
+    assert path.stat().st_mtime_ns == before
+    assert not (tmp_path / 'site').exists()
+    assert not (tmp_path / 'data/whitehouse/processed.json').exists()
+
+
+def test_source_correction_keeps_both_versions(tmp_path):
+    from engine import whitehouse_feed as wf
+    old = wf.retain_source_document(tmp_path, _source_item())
+    new = wf.retain_source_document(tmp_path, _source_item('Corrected source text.'))
+    assert old['path'] != new['path']
+    assert (tmp_path / old['path']).exists() and (tmp_path / new['path']).exists()
+
+
+def test_source_capture_refuses_to_replace_corruption(tmp_path):
+    import pytest
+    from engine import whitehouse_feed as wf
+    item = _source_item()
+    ref = wf.retain_source_document(tmp_path, item)
+    path = tmp_path / ref['path']
+    path.write_text('damaged retained evidence')
+    with pytest.raises(ValueError, match='existing source document'):
+        wf.retain_source_document(tmp_path, item)
+    assert path.read_text() == 'damaged retained evidence'
+
+
+def test_source_capture_does_not_promote_excerpt_or_truncated_text(tmp_path):
+    from engine import whitehouse_feed as wf
+    long = _source_item('x' * 12001)
+    assert len(long['body']) == 12000 and long['body_truncated'] is True
+    doc = json.loads((tmp_path / wf.retain_source_document(tmp_path, long)['path']).read_text())
+    assert doc['body_truncated'] is True and doc['allow_stage'] is False
+    xml = b'<rss><channel><item><title>Excerpt</title><link>https://www.whitehouse.gov/news/x/</link><pubDate>Thu, 08 Oct 2026 15:05:06 +0000</pubDate><description>Summary only.</description></item></channel></rss>'
+    excerpt = wf._parse(xml, 'news')[0]
+    assert excerpt['body_origin'] == 'description'
+    doc = json.loads((tmp_path / wf.retain_source_document(tmp_path, excerpt)['path']).read_text())
+    assert doc['body_origin'] == 'description' and doc['allow_emit'] is False
+
+
+def test_source_capture_rejects_unknown_provenance_and_foreign_origin(tmp_path):
+    import pytest
+    from engine import whitehouse_feed as wf
+    item = _source_item()
+    for bad in ({**item, 'url': 'https://whitehouse.gov.attacker.invalid/story'},
+                {**item, 'url': 'https://user@www.whitehouse.gov/story'},
+                {**item, 'published': ''},
+                {k:v for k,v in item.items() if k != 'body_origin'}):
+        with pytest.raises(ValueError):
+            wf.retain_source_document(tmp_path, bad)
+    assert not (tmp_path / 'data').exists()
+
+
+def test_source_capture_publish_failure_leaves_no_partial_document(tmp_path, monkeypatch):
+    import pytest
+    from engine import whitehouse_feed as wf
+    def failed_link(*args, **kwargs):
+        raise OSError('simulated atomic-link failure')
+    monkeypatch.setattr(wf.os, 'link', failed_link)
+    with pytest.raises(OSError, match='atomic-link failure'):
+        wf.retain_source_document(tmp_path, _source_item())
+    assert not list(bw.wf.SOURCE_DOCUMENT_ROOT.iterdir())
+
+
+def _stub_source_build(monkeypatch, tmp_path, item):
+    from engine import whitehouse_feed as wf
+    monkeypatch.setattr(config, 'ROOT', tmp_path)
+    monkeypatch.setattr(config, 'load', lambda: {})
+    monkeypatch.setattr(bw.wb, '_cfg', lambda: {})
+    monkeypatch.setattr(wf, 'collect', lambda: [item])
+    monkeypatch.setattr(bw, '_refresh_tga', lambda *_: None)
+    from engine import treasury_watch
+    monkeypatch.setattr(treasury_watch, 'detect_events', lambda *_: [])
+    monkeypatch.setattr(bw, '_write_treasury_watch', lambda *_: None)
+    monkeypatch.setattr(bw, '_rebuild_artifacts', lambda *_: 0)
+    monkeypatch.setattr(bw.wb, 'provider_label', lambda *_: '')
+    monkeypatch.setattr(bw.wb, 'enabled', lambda: False)
+    monkeypatch.setattr(bw.wb, 'evaluate', lambda *_: (_ for _ in ()).throw(AssertionError('unexpected provider call')))
+
+
+def test_sentinel_retains_sources_without_enabling_brain(tmp_path, monkeypatch):
+    item = _source_item()
+    _stub_source_build(monkeypatch, tmp_path, item)
+    assert bw.build() == 0
+    files = list(bw.wf.SOURCE_DOCUMENT_ROOT.glob('*.json'))
+    assert len(files) == 1
+    assert json.loads(files[0].read_text())['body'] == item['body']
+    assert not (tmp_path / 'data/whitehouse/alerts.jsonl').exists()
+    assert not (tmp_path / 'site').exists()
+
+
+def test_page_only_never_collects_or_retains_sources(tmp_path, monkeypatch):
+    _stub_source_build(monkeypatch, tmp_path, _source_item())
+    monkeypatch.setattr(bw.wf, 'collect', lambda: (_ for _ in ()).throw(AssertionError('unexpected poll')))
+    assert bw.build(page_only=True) == 0
+    assert not (tmp_path / 'data').exists()
+
+
+def test_capture_failure_does_not_replay_or_change_desk_decisions(tmp_path, monkeypatch):
+    _stub_source_build(monkeypatch, tmp_path, _source_item())
+    monkeypatch.setattr(bw.wf, 'retain_source_document', lambda *_: (_ for _ in ()).throw(OSError('disk refusal')))
+    assert bw.build() == 0
+    assert not (tmp_path / 'data/whitehouse/alerts.jsonl').exists()
+
+
+def test_concurrent_source_capture_publishes_one_complete_document(tmp_path):
+    from concurrent.futures import ThreadPoolExecutor
+    from engine import whitehouse_feed as wf
+    item = _source_item()
+    with ThreadPoolExecutor(max_workers=4) as pool:
+        refs = list(pool.map(lambda _: wf.retain_source_document(tmp_path, item), range(8)))
+    assert all(ref == refs[0] for ref in refs)
+    files = list(bw.wf.SOURCE_DOCUMENT_ROOT.iterdir())
+    assert len(files) == 1 and files[0].suffix == '.json'
+    assert json.loads(files[0].read_text())['body'] == item['body']
+
+
+def test_seen_source_is_retained_without_replaying_brain(tmp_path, monkeypatch):
+    item = _source_item()
+    _stub_source_build(monkeypatch, tmp_path, item)
+    state = {'seen': {}}
+    bw.wf.mark_seen(state, item, activated=False, importance=1)
+    bw.wf.save_processed(tmp_path, state)
+    monkeypatch.setattr(bw.wb, 'enabled', lambda: True)
+    monkeypatch.setattr(bw.wb, 'provider_label', lambda *_: 'test-provider')
+    assert bw.build() == 0
+    assert len(list(bw.wf.SOURCE_DOCUMENT_ROOT.glob('*.json'))) == 1
+    assert bw.wf.load_processed(tmp_path) == state
+
+
+def test_capture_failure_keeps_single_existing_brain_evaluation(tmp_path, monkeypatch):
+    item = _source_item()
+    _stub_source_build(monkeypatch, tmp_path, item)
+    monkeypatch.setattr(bw.wf, 'retain_source_document', lambda *_: (_ for _ in ()).throw(OSError('disk refusal')))
+    monkeypatch.setattr(bw.wb, 'enabled', lambda: True)
+    monkeypatch.setattr(bw.wb, 'provider_label', lambda *_: 'test-provider')
+    calls = []
+    def evaluate(item, *_):
+        calls.append(item['id'])
+        return {'id': item['id'], 'activated': False, 'importance': 1}
+    monkeypatch.setattr(bw.wb, 'evaluate', evaluate)
+    assert bw.build() == 0
+    assert calls == [item['id']]
+    assert item['guid'] in bw.wf.load_processed(tmp_path)['seen']
+
+
+def test_source_capture_never_enters_sentinel_git_publication(tmp_path):
+    import subprocess
+    from engine import whitehouse_feed as wf
+    subprocess.run(['git', 'init', '-q', str(tmp_path)], check=True)
+    ledger = tmp_path / 'data/whitehouse/processed.json'
+    ledger.parent.mkdir(parents=True)
+    ledger.write_text('{}')
+    ref = wf.retain_source_document(tmp_path, _source_item())
+    subprocess.run(['git', '-C', str(tmp_path), 'add', 'data/whitehouse'], check=True)
+    staged = subprocess.check_output(['git', '-C', str(tmp_path), 'diff', '--cached', '--name-only'], text=True)
+    assert staged.splitlines() == ['data/whitehouse/processed.json']
+    assert not Path(ref['path']).is_relative_to(tmp_path)
+    assert Path(ref['path']).stat().st_mode & 0o777 == 0o600
+    assert Path(ref['path']).parent.stat().st_mode & 0o777 == 0o700
+    assert not (tmp_path / 'data/whitehouse/source_documents').exists()
+
+
+def test_source_capture_refuses_repository_local_and_symlinked_output(tmp_path):
+    from engine import whitehouse_feed as wf
+    public = tmp_path / 'site'
+    public.mkdir()
+    alias = tmp_path.parent / (tmp_path.name + '-alias')
+    alias.symlink_to(public, target_is_directory=True)
+    for directory in (public, alias):
+        with pytest.raises(ValueError, match='outside all Git checkouts'):
+            wf.retain_source_document(tmp_path, _source_item(), capture_dir=directory)
+    assert not list(public.iterdir())
+
+
+def test_source_capture_refuses_other_git_checkout(tmp_path):
+    from engine import whitehouse_feed as wf
+    other = tmp_path.parent / (tmp_path.name + '-other-repo')
+    other.mkdir()
+    (other / '.git').write_text('gitdir: /unrelated/shared/store')
+    with pytest.raises(ValueError, match='outside all Git checkouts'):
+        wf.retain_source_document(tmp_path, _source_item(), capture_dir=other / 'data')
+    assert not (other / 'data').exists()
+
+
+def test_source_capture_refuses_permissive_existing_directory(tmp_path):
+    from engine import whitehouse_feed as wf
+    directory = wf.SOURCE_DOCUMENT_ROOT
+    directory.mkdir(mode=0o755)
+    with pytest.raises(ValueError, match='mode 0700'):
+        wf.retain_source_document(tmp_path, _source_item())
+    assert not list(directory.iterdir())
+    assert directory.stat().st_mode & 0o777 == 0o755
+
+
+def test_source_capture_refuses_publicly_readable_existing_document(tmp_path):
+    from engine import whitehouse_feed as wf
+    ref = wf.retain_source_document(tmp_path, _source_item())
+    path = Path(ref['path'])
+    path.chmod(0o644)
+    with pytest.raises(ValueError, match='existing source document'):
+        wf.retain_source_document(tmp_path, _source_item())
+    assert path.stat().st_mode & 0o777 == 0o644
