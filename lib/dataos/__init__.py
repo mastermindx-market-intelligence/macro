@@ -45,11 +45,14 @@ import to translate a ticker.
 from __future__ import annotations
 
 from lib.dataos.identity import (
+    AliasResolution,
     AliasRow,
     CNBoard,
     IdentityError,
     KNOWN_MICS,
     ListingKey,
+    ReferenceReadReceipt,
+    ReferenceSnapshot,
     VendorAliasTable,
     cn_board,
     fx_id,
@@ -68,6 +71,7 @@ from lib.dataos.identity import (
     parse_listing_key,
     parse_option_contract_id,
     security_id,
+    validate_reference_snapshot,
 )
 from lib.dataos.nulls import MissingReason, NullPolicy, validate_value
 from lib.dataos.price import (
@@ -93,6 +97,27 @@ from lib.dataos.quality import (
     check_uniqueness,
     check_validity_ohlc,
     emit_annotations,
+)
+from lib.dataos.read_contract import (
+    READ_CONTRACT_VERSION,
+    CurrentEvidence,
+    Dependency,
+    GenerationRef,
+    ReadContractError,
+    ReadMode,
+    ReadRefusal,
+    ReadRequest,
+    ReadResult,
+    RefusalCode,
+    RetainedOutput,
+    ViewContract,
+    current,
+    eligible_rows,
+    reconstruct,
+    replay,
+    resolve_revisions,
+    select_generation,
+    selected_input_sha256s,
 )
 from lib.dataos.registry import (
     ConflictPolicy,
@@ -127,9 +152,17 @@ __all__ = [
     "CNBoard", "cn_board", "is_legacy_bse_code",
     "normalize_cn_symbol", "normalize_hk_symbol",
     "AliasRow", "VendorAliasTable",
+    "AliasResolution", "ReferenceReadReceipt", "ReferenceSnapshot",
+    "validate_reference_snapshot",
     # temporal (§D3)
     "TemporalError", "PointInTimeError", "Clock", "TemporalProfile",
     "KNOWN_AT_CLOCKS", "utc", "known_at", "assert_pit_readable", "as_of_filter",
+    # read contract (D00.D1: CURRENT / RECONSTRUCT / REPLAY above temporal)
+    "READ_CONTRACT_VERSION", "ReadMode", "RefusalCode", "ReadContractError",
+    "ReadRefusal", "ViewContract", "ReadRequest", "GenerationRef", "Dependency",
+    "CurrentEvidence", "RetainedOutput", "ReadResult", "eligible_rows",
+    "resolve_revisions", "select_generation", "reconstruct", "current", "replay",
+    "selected_input_sha256s",
     # price (§D4)
     "PriceError", "AdjustmentBasis", "PriceField", "Session", "VenueScope",
     "canonical_column", "parse_column", "AMBIGUOUS_NAMES", "is_ambiguous",
