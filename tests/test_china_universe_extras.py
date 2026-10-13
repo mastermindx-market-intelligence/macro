@@ -420,7 +420,7 @@ def test_settled_china_search_cannot_accept_a_phantom_all_null_day():
         cu.repair_settled_search_closes(
             closes, members, now=dt.datetime(2026, 10, 12, 12,
                                             tzinfo=dt.timezone.utc),
-            fetcher=blank, max_workers=4,
+            fetcher=blank, local_reader=lambda _: None, max_workers=4,
         )
     assert len(calls) == 100
     assert closes.loc["2026-10-12"].isna().all(), "failure must not mutate caller data"
@@ -440,7 +440,7 @@ def test_settled_china_search_accepts_basis_checked_real_candles_only():
     fixed = cu.repair_settled_search_closes(
         closes, members, now=dt.datetime(2026, 10, 12, 12,
                                         tzinfo=dt.timezone.utc),
-        fetcher=qualified, max_workers=8,
+        fetcher=qualified, local_reader=lambda _: None, max_workers=8,
     )
     assert int(fixed.loc["2026-10-12"].notna().sum()) == 96
     assert fixed.at[pd.Timestamp("2026-10-12"), members[0]] == 11
@@ -460,7 +460,7 @@ def test_settled_china_search_fails_when_95pct_cannot_be_source_verified():
         cu.repair_settled_search_closes(
             closes, members, now=dt.datetime(2026, 10, 12, 12,
                                             tzinfo=dt.timezone.utc),
-            fetcher=partial, max_workers=8,
+            fetcher=partial, local_reader=lambda _: None, max_workers=8,
         )
     assert closes.loc["2026-10-12"].isna().all()
 
@@ -473,7 +473,7 @@ def test_settled_china_search_ignores_future_and_preclose_vendor_candles():
         cu.repair_settled_search_closes(
             closes, members, now=dt.datetime(2026, 10, 12, 12,
                                             tzinfo=dt.timezone.utc),
-            fetcher=future_only, max_workers=4,
+            fetcher=future_only, local_reader=lambda _: None, max_workers=4,
         )
 
 
@@ -484,7 +484,67 @@ def test_settled_china_search_skips_secondary_provider_for_healthy_source():
     out = cu.repair_settled_search_closes(
         closes, members, now=dt.datetime(2026, 10, 12, 12,
                                         tzinfo=dt.timezone.utc),
-        fetcher=should_not_call,
+        fetcher=should_not_call, local_reader=should_not_call,
     )
     assert int(out.loc["2026-10-12"].notna().sum()) == 96
     assert (out.loc["2026-10-09"].dropna() == 10).all()
+
+
+
+def test_china_search_uses_existing_adjusted_stock_store_without_network():
+    """Recovery of real closed bars stays inside the original store graph."""
+    closes,members=_wide_settled_fixture(100,0)
+    reads=[]
+    def canonical_adjusted(ticker):
+        reads.append(ticker)
+        if ticker==members[98]:
+            return _settled_qfq_frame(prior=10.2)
+        if ticker==members[99]:
+            return None
+        return _settled_qfq_frame()
+    def network(*_args):
+        raise AssertionError(">=95% local evidence must skip all vendor calls")
+    fixed=cu.repair_settled_search_closes(
+        closes,members,now=dt.datetime(2026,10,12,12,tzinfo=dt.timezone.utc),
+        local_reader=canonical_adjusted,fetcher=network)
+    assert len(reads)==100
+    assert int(fixed.loc["2026-10-12"].notna().sum())==98
+    assert fixed.at[pd.Timestamp("2026-10-12"),members[0]]==11.0
+    assert pd.isna(fixed.at[pd.Timestamp("2026-10-12"),members[98]])
+    assert pd.isna(fixed.at[pd.Timestamp("2026-10-12"),members[99]])
+    assert closes.loc["2026-10-12"].isna().all()
+    assert (fixed.loc["2026-10-09"].dropna()==10.0).all()
+
+
+def test_china_search_uses_existing_provider_only_after_local_undercoverage():
+    """One existing Tencent close can complete the gap; same basis law still applies."""
+    closes,members=_wide_settled_fixture(100,0)
+    candidates=set()
+    def local(ticker):
+        return _settled_qfq_frame() if ticker in members[:94] else None
+    def fallback(ticker,count,retries):
+        candidates.add(ticker)
+        assert count==12 and retries==1
+        return _settled_qfq_frame() if ticker==members[94] else None
+    fixed=cu.repair_settled_search_closes(
+        closes,members,now=dt.datetime(2026,10,12,12,tzinfo=dt.timezone.utc),
+        local_reader=local,fetcher=fallback,max_workers=4)
+    assert int(fixed.loc["2026-10-12"].notna().sum())==95
+    assert candidates==set(members[94:])
+    assert closes.loc["2026-10-12"].isna().all()
+
+
+def test_china_search_never_splices_incompatible_local_adjustment_basis():
+    closes,members=_wide_settled_fixture(100,0)
+    calls=[]
+    def local(ticker):
+        return _settled_qfq_frame(prior=10.3) if ticker in members[94:] else _settled_qfq_frame()
+    def would_bypass_basis(ticker,*_args):
+        calls.append(ticker)
+        return _settled_qfq_frame()
+    with pytest.raises(RuntimeError,match="94/100"):
+        cu.repair_settled_search_closes(
+            closes,members,now=dt.datetime(2026,10,12,12,tzinfo=dt.timezone.utc),
+            local_reader=local,fetcher=would_bypass_basis,max_workers=4)
+    assert calls==[], "a different vendor cannot silently bless a known basis mismatch"
+    assert closes.loc["2026-10-12"].isna().all()

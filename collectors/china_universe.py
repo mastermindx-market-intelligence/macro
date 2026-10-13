@@ -108,22 +108,24 @@ def repair_settled_search_closes(
     *,
     now: datetime | None = None,
     fetcher=None,
+    local_reader=None,
     min_coverage: float = 0.95,
     max_workers: int = 16,
     max_wait_s: float = 600.0,
 ) -> pd.DataFrame:
-    """Close the existing China search panel with source-verified Tencent qfq tails.
+    """Recover a coherent China close in the original China search store.
 
-    Yahoo owns the historical adjusted panel, but can return a completely empty
-    current-session row. The collector must NOT commit that row as proof of a
-    settled close. Reuse the incumbent China stock Tencent qfq fetcher and its
-    adjustment-basis overlap validator. Never use a current intraday tick as a
-    daily bar, replay an old close as today's, or modify stored bytes on failure.
-
-    A failed/partial repair raises, so the normal single-owner collector never
-    publishes the unqualified panel or overwrites its previously committed store.
+    Prefer the ALREADY-PERSISTED, adjusted China per-stock OHLC canon
+    (china_stocks/<ticker>.parquet) before any additional vendor request.
+    Its existing collector owns acquisition, source-clock and adjustment basis.
+    Verify exact settled-day marks against the last three valid adjusted
+    overlaps in the search matrix; a stock on another basis stays unfilled.
+    Only if local coverage is under 95% consult the incumbent Tencent qfq
+    history repair transport for eligible missing names. No intraday price is
+    converted to a daily close, no synthetic session is created, and no other
+    store/collector/job owns these outputs.
     """
-    from lib import cn_calendar
+    from lib import cn_calendar, store
     from collectors import china_stock_tencent as tencent
 
     now = now or datetime.now(tencent._SHANGHAI)
@@ -150,65 +152,100 @@ def repair_settled_search_closes(
     if len(valid) / count >= min_coverage:
         return df
 
-    # Sources with post-settle data need a completed-session repair, not a new
-    # analysis store. A single quote is insufficient: require a real daily
-    # vendor bar and matching adjusted historical overlaps.
+    # The per-name canonical adjusted-price source already holds daily
+    # completed bars for many stocks even when the search-wide Yahoo
+    # downloader omitted the session (measured 2026-10-12: 1,711/1,720
+    # per-name marks qualified with overlap, vs zero in the search matrix).
+    # Reuse one existing store, not another data owner or scheduler.
     candidates = [t for t in current if t not in valid and t in df.columns]
     observed: dict[str, float] = {}
-    skipped_basis = skipped_source = 0
-    supplier = fetcher or tencent.fetch_tencent
-    pool = ThreadPoolExecutor(max_workers=max(1, min(max_workers, 16)))
-    futures = {pool.submit(supplier, ticker, 12, 1): ticker for ticker in candidates}
-    try:
+    bad_basis: set[str] = set()
+    unavailable_local = 0
+
+    def qualified_adjusted_price(ticker: str, candle: pd.DataFrame | None) -> tuple[float | None, str]:
+        if candle is None or candle.empty or "close" not in candle.columns:
+            return None, "unavailable"
         try:
-            completed = as_completed(futures, timeout=max_wait_s)
-            for future in completed:
-                ticker = futures[future]
-                try:
-                    candle = future.result()
-                except Exception:
-                    skipped_source += 1
-                    continue
-                if candle is None or candle.empty:
-                    skipped_source += 1
-                    continue
-                recent = candle.copy()
-                recent.index = pd.to_datetime(recent.index).tz_localize(None).normalize()
-                if expected not in recent.index:
-                    skipped_source += 1
-                    continue
-                px = pd.to_numeric(pd.Series([recent.at[expected, "close"]]), errors="coerce").iloc[0]
-                if pd.isna(px) or float(px) <= 0:
-                    skipped_source += 1
-                    continue
-                historical = pd.to_numeric(df[ticker], errors="coerce").dropna()
-                historical = historical.loc[historical.index < expected]
-                overlap = historical.index.intersection(recent.index)
-                if len(overlap) == 0:
-                    skipped_basis += 1
-                    continue
-                overlap = overlap.sort_values()[-3:]
-                yahoo_basis = historical.loc[overlap].to_frame("close")
-                vendor_basis = recent.loc[overlap, ["close"]]
-                if not tencent._compatible_overlap(yahoo_basis, vendor_basis, 0.005):
-                    skipped_basis += 1
-                    continue
-                observed[ticker] = float(px)
-        except FutureTimeout:
-            skipped_source += sum(not future.done() for future in futures)
-    finally:
-        # Cancel queued work immediately after the bounded scan. Already running
-        # provider calls remain bounded by the existing Tencent per-request
-        # timeout; no extra permanent worker or background scheduler exists.
-        pool.shutdown(wait=False, cancel_futures=True)
+            recent = candle[["close"]].copy()
+            recent.index = pd.to_datetime(recent.index).tz_localize(None).normalize()
+            if recent.index.has_duplicates or expected not in recent.index:
+                return None, "unavailable"
+            value = pd.to_numeric(pd.Series([recent.at[expected, "close"]]), errors="coerce").iloc[0]
+            if pd.isna(value) or float(value) <= 0:
+                return None, "unavailable"
+            historical = pd.to_numeric(df[ticker], errors="coerce").dropna()
+            historical = historical.loc[(historical.index < expected) & (historical > 0)]
+            overlap = historical.index.intersection(recent.index).sort_values()[-3:]
+            # At least two independent settled observations constrain basis:
+            # one coincidental price match after an ex-dividend is insufficient.
+            if len(overlap) < 2:
+                return None, "basis"
+            ref = historical.loc[overlap].to_frame("close")
+            candidate = recent.loc[overlap, ["close"]]
+            if not tencent._compatible_overlap(ref, candidate, 0.005):
+                return None, "basis"
+            return float(value), "ok"
+        except (KeyError, ValueError, TypeError, IndexError):
+            return None, "unavailable"
+
+    read_pername = local_reader or (lambda ticker: store.read("china_stocks", ticker))
+    for ticker in candidates:
+        try:
+            source = read_pername(ticker)
+        except (OSError, ValueError, TypeError):
+            source = None
+        mark, why = qualified_adjusted_price(ticker, source)
+        if mark is not None:
+            observed[ticker] = mark
+        elif why == "basis":
+            bad_basis.add(ticker)
+        else:
+            unavailable_local += 1
+
+    local_recovered = len(observed)
+    remote_recovered = 0
+    skipped_basis = len(bad_basis)
+    skipped_source = unavailable_local
+    if (len(valid) + len(observed)) / count < min_coverage:
+        # Use the pre-existing bounded Tencent QFQ reader only for names
+        # absent from BOTH Yahoo and the verified local adjusted store. Names
+        # found to be on another basis are refused (never silently spliced).
+        supplier = fetcher or tencent.fetch_tencent
+        remote_candidates = [t for t in candidates if t not in observed and t not in bad_basis]
+        pool = ThreadPoolExecutor(max_workers=max(1, min(max_workers, 16)))
+        futures = {pool.submit(supplier, ticker, 12, 1): ticker for ticker in remote_candidates}
+        try:
+            try:
+                for future in as_completed(futures, timeout=max_wait_s):
+                    ticker = futures[future]
+                    try:
+                        source = future.result()
+                    except Exception:
+                        skipped_source += 1
+                        continue
+                    mark, why = qualified_adjusted_price(ticker, source)
+                    if mark is not None:
+                        observed[ticker] = mark
+                        remote_recovered += 1
+                    elif why == "basis":
+                        skipped_basis += 1
+                    else:
+                        skipped_source += 1
+            except FutureTimeout:
+                skipped_source += sum(not future.done() for future in futures)
+        finally:
+            # The source fetcher itself has a bounded per-request timeout.
+            # Cancel waiting work immediately; never create a durable worker.
+            pool.shutdown(wait=False, cancel_futures=True)
 
     total_valid = len(valid) + len(observed)
     coverage = total_valid / count
     log.info(
-        "china_search settled qfq repair: session=%s Yahoo=%d Tencent=%d "
-        "current=%d/%d (%.1f%%), basis_rejected=%d unresolved=%d",
-        expected.date(), len(valid), len(observed), total_valid, count,
-        100 * coverage, skipped_basis, skipped_source,
+        "china_search settled qualified repair: session=%s Yahoo=%d "
+        "existing_adjusted=%d Tencent=%d current=%d/%d (%.1f%%), "
+        "basis_rejected=%d unavailable=%d",
+        expected.date(), len(valid), local_recovered, remote_recovered,
+        total_valid, count, 100 * coverage, skipped_basis, skipped_source,
     )
     if coverage < min_coverage:
         raise RuntimeError(
