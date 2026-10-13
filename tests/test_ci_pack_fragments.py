@@ -597,6 +597,91 @@ def test_merge3_replay_of_appended_jobs_is_clean_where_merge_file_conflicts(
     assert theirs_path.read_text(encoding="utf-8") == theirs
 
 
+def test_merge3_mid_file_insert_and_end_appends_where_merge_file_conflicts(
+    tmp_path: Path,
+) -> None:
+    """Mid-file insert beside the shared end-append fixture.
+
+    Ours inserts ``research-vault-source-lineage`` after the middle anchor
+    ``beta`` and appends ``market-ontology-f09-usgs-mcs``. Theirs appends
+    ``recurring-briefs`` at that same end. ``merge3`` keeps the insert after
+    its anchor and the two end jobs ours-then-theirs. ``git merge-file`` in
+    ``tmp_path`` still conflicts. The inputs are fixture text, so this case
+    does not read a commit or repository history.
+    """
+    base = _doc(
+        [
+            ("alpha", "echo alpha"),
+            ("beta", "echo beta"),
+            ("gamma", "echo gamma"),
+        ]
+    )
+    ours = _append(
+        _insert_after(
+            base, "beta", "research-vault-source-lineage", "echo lineage"
+        ),
+        "market-ontology-f09-usgs-mcs",
+        "echo usgs-mcs",
+    )
+    theirs = _append(base, "recurring-briefs", "echo recurring-briefs")
+    assert _job_keys(ours) == [
+        "alpha",
+        "beta",
+        "research-vault-source-lineage",
+        "gamma",
+        "market-ontology-f09-usgs-mcs",
+    ]
+    assert _job_keys(theirs) == [
+        "alpha",
+        "beta",
+        "gamma",
+        "recurring-briefs",
+    ]
+    result = merge3(base, ours, theirs)
+
+    assert result.conflicts == ()
+    assert ("<" * 7) not in result.text
+    keys = _job_keys(result.text)
+    assert keys == [
+        "alpha",
+        "beta",
+        "research-vault-source-lineage",
+        "gamma",
+        "market-ontology-f09-usgs-mcs",
+        "recurring-briefs",
+    ]
+    assert keys.index("beta") + 1 == keys.index("research-vault-source-lineage")
+    assert keys.index("market-ontology-f09-usgs-mcs") + 1 == keys.index(
+        "recurring-briefs"
+    )
+    _assert_loadable(result)
+
+    base_path = tmp_path / "base.yml"
+    ours_path = tmp_path / "ours.yml"
+    theirs_path = tmp_path / "theirs.yml"
+    base_path.write_text(base, encoding="utf-8")
+    ours_path.write_text(ours, encoding="utf-8")
+    theirs_path.write_text(theirs, encoding="utf-8")
+    proc = subprocess.run(
+        [
+            "git",
+            "merge-file",
+            "-p",
+            "-q",
+            str(ours_path),
+            str(base_path),
+            str(theirs_path),
+        ],
+        cwd=tmp_path,
+        capture_output=True,
+    )
+    assert 0 < proc.returncode < 128
+    assert ("<" * 7).encode() in proc.stdout
+    assert ours_path.read_text(encoding="utf-8") == ours
+    assert base_path.read_text(encoding="utf-8") == base
+    assert theirs_path.read_text(encoding="utf-8") == theirs
+
+
 def test_merge3_d6d1342b53_replay_when_commits_resolve(tmp_path: Path) -> None:
     """Replay d6d1342b53 when both parent commits are in this checkout.
 
@@ -813,6 +898,39 @@ def test_merge3_identical_order_only_permutation_is_taken_once() -> None:
     assert different.text == _conflict_block(swapped, other)
 
 
+def test_merge3_same_key_order_different_glue_is_order_conflict() -> None:
+    """Same job-key order is taken only when the two texts are equal.
+
+    A positional swap and a whole-fragment swap of the same pair are both
+    order-only and share a key order. The separator stays in the slot or
+    moves with the job, so the texts differ and the merge stays ``__order__``.
+    ``merge3(base, swapped, swapped).text == swapped`` still holds.
+    """
+    base = _doc(
+        [
+            ("alpha", "echo alpha"),
+            ("beta", "echo beta"),
+            ("gamma", "echo gamma"),
+        ]
+    )
+    positional = _positional_swap(base, "alpha", "beta")
+    whole = _swap_fragments(base, "alpha", "beta")
+    assert _job_keys(positional) == _job_keys(whole) == ["beta", "alpha", "gamma"]
+    assert positional != whole
+
+    from_ours = merge3(base, positional, whole)
+    from_theirs = merge3(base, whole, positional)
+    assert from_ours.conflicts == ("__order__",)
+    assert from_theirs.conflicts == ("__order__",)
+    assert from_ours.text == _conflict_block(positional, whole)
+    assert from_theirs.text == _conflict_block(whole, positional)
+
+    swapped = positional
+    same = merge3(base, swapped, swapped)
+    assert same.conflicts == ()
+    assert same.text == swapped
+
+
 def test_merge3_order_only_permutation_applies_with_nonoverlapping_edit(
     tmp_path: Path,
 ) -> None:
@@ -917,16 +1035,13 @@ def test_merge3_order_only_permutation_applies_with_nonoverlapping_edit(
 def test_merge3_positional_swap_of_leading_real_jobs_returns_that_side() -> None:
     """Positional swap of the first two real jobs must not invent a third text.
 
-    ``company-intelligence-private-runtime`` and
-    ``microstructure-pressure-response-r0`` trade places. The separator newline
-    stays in the gap, so the fragment texts differ from base by that glue
-    alone. One side is order-only and the other side is the base, so the merge
-    is that side's original bytes.
+    Those two jobs trade places. The separator newline stays in the gap, so
+    the fragment texts differ from base by that glue alone. One side is
+    order-only and the other side is the base, so the merge is that side's
+    original bytes. Assertions cover that swap only, not the live job ids.
     """
     base = _text()
     keys = _job_keys(base)
-    assert keys[0] == "company-intelligence-private-runtime"
-    assert keys[1] == "microstructure-pressure-response-r0"
     swapped = _positional_swap(base, keys[0], keys[1])
     assert join(split(swapped)) == swapped
     assert swapped != base

@@ -23,9 +23,11 @@ marker pair. Three shapes are clean instead.
 
 An order-only change on exactly one side, while the other side's fragment
 texts equal the base, returns that side's original bytes. The same order-only
-permutation on both sides is taken once: the job-key orders match, so the
-result is that side's original bytes and there is no conflict. Two different
-permutations still conflict.
+permutation on both sides is taken once only when the two texts are equal:
+the job-key orders match and the job texts match, so the result is that
+side's original bytes and there is no conflict. The same key order with
+different job text, including separator glue, stays an ``__order__``
+conflict. Two different permutations still conflict.
 
 An order-only permutation on one side together with a text edit on the other
 is also clean when the edit side's job keys stay in base order. Merged jobs
@@ -690,7 +692,12 @@ def merge3(base: str, ours: str, theirs: str) -> MergeResult:
             and _fragment_texts_equal(ours_frags, base_frags)
         ):
             return MergeResult(theirs, ())
-        if ours_only and theirs_only and ours_keys == theirs_keys:
+        if (
+            ours_only
+            and theirs_only
+            and ours_keys == theirs_keys
+            and ours == theirs
+        ):
             return MergeResult(ours, ())
         if ours_only and not theirs_only and theirs_keys == base_keys:
             applied = _apply_order_and_edits(
@@ -799,9 +806,9 @@ def _merge3_main(argv: list[str]) -> int:
             "1 when a fragment conflicts."
         ),
     )
-    parser.add_argument("base", type=Path, help="ancestor file (%O)")
-    parser.add_argument("ours", type=Path, help="current file (%A), overwritten")
-    parser.add_argument("theirs", type=Path, help="other file (%B)")
+    parser.add_argument("base", type=Path, help="ancestor file (%%O)")
+    parser.add_argument("ours", type=Path, help="current file (%%A), overwritten")
+    parser.add_argument("theirs", type=Path, help="other file (%%B)")
     args = parser.parse_args(argv)
     try:
         result = merge3(
