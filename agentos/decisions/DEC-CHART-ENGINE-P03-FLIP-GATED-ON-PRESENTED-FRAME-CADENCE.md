@@ -70,6 +70,7 @@ confidence: high
 reversibility: easy
 decided_by: coo-fable (seat session 6dfa7fe4-64c1-4a36-a3bc-af2fa0e5ba79)
 decided_at: 2026-10-13
+superseded_by: DEC:CHART-ENGINE-Q03-PAN-LIFTED-ZOOM-RULES-ON-INPUT-LATENCY
 ---
 
 # DEC-CHART-ENGINE-P03-FLIP-GATED-ON-PRESENTED-FRAME-CADENCE
