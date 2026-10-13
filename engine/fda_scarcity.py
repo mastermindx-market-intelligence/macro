@@ -347,8 +347,10 @@ def summarize_supply(rows, *, capture, now, max_capture_age: timedelta | None) -
             failed_refresh = refresh_note
     elif qualified is False and _capture_is_incomplete(observation):
         capture_incomplete = True
-    elif qualified is True and observation.get("complete") is False:
-        # complete=False is an unfinished sweep even if the caller passed qualified=True.
+    elif qualified is True and _capture_is_incomplete(observation):
+        # An unfinished sweep stays incomplete even when the caller passed
+        # qualified=True. complete=False and an incomplete failure_code both
+        # count. FIRST_PAGE_OUTAGE is outside _INCOMPLETE_SWEEP_FAILURES.
         capture_incomplete = True
         qualified = False
     counts = {
@@ -734,6 +736,7 @@ def format_theme_feed_chip(scarcity_row: dict | None, theme_key: str) -> dict | 
         "rationale": rationale,
         "n_active": _published_n_active(summary),
         "n_resolved": _published_n_active(summary, "resolved"),
+        "n_discontinued": _published_n_active(summary, "discontinued"),
         "source_status": status,
         "freshness": summary["freshness"],
     }

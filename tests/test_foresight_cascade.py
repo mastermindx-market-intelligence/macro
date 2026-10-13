@@ -1998,6 +1998,7 @@ def test_incomplete_sweep_publishes_zero_resolved_and_discontinued(monkeypatch):
     assert resolved["n_discontinued"] == 0
     assert resolved["summary"]["counts"]["resolved"] == 1
     assert chip["n_resolved"] == 0
+    assert chip["n_discontinued"] == 0
     assert chip["source_status"] == "UNAVAILABLE"
 
     discontinued = observed("To Be Discontinued")
@@ -2064,3 +2065,53 @@ def test_detail_line_renders_previous_discontinued_with_status_words(monkeypatch
     assert "to_be_discontinued" not in detail
     assert "status changed from discontinued at 2026-09-23" in row["summary"]["label"]
     assert row["summary"]["rows"][0]["previous_regulator_status"] == "to_be_discontinued"
+
+
+def test_qualified_true_incomplete_failure_without_complete_key_is_unavailable():
+    """qualified=True does not bypass _capture_is_incomplete.
+
+    One Current row, failure_code PAGE_FAILED, and no complete key is an
+    unfinished sweep: UNAVAILABLE, capture_incomplete, published n_active 0,
+    while counts.current stays 1. FIRST_PAGE_OUTAGE stays outside that set.
+    """
+    from engine.fda_scarcity import format_theme_feed_chip, summarize_supply
+
+    now = datetime(2026, 9, 23, 12, tzinfo=UTC)
+    out = summarize_supply(
+        [_d1_row()],
+        capture={
+            "qualified": True,
+            "failure_code": "PAGE_FAILED",
+            "source_generation": "2026-09-23",
+            "finished_at": now.isoformat(),
+        },
+        now=now,
+        max_capture_age=None,
+    )
+    assert out["source_status"] == "UNAVAILABLE"
+    assert out["freshness"]["capture_incomplete"] is True
+    assert out["freshness"]["capture_qualified"] is False
+    assert out["counts"]["current"] == 1
+    chip = format_theme_feed_chip(_computed_row_for_summary(out), "glp1_obesity")
+    assert chip["n_active"] == 0
+    assert chip["source_status"] == "UNAVAILABLE"
+    assert "shortage: current" not in out["label"]
+    assert "capture incomplete" in out["label"]
+
+    retained = summarize_supply(
+        [_d1_row()],
+        capture={
+            "qualified": True,
+            "failure_code": "FIRST_PAGE_OUTAGE",
+            "source_generation": "2026-09-23",
+            "finished_at": now.isoformat(),
+        },
+        now=now,
+        max_capture_age=None,
+    )
+    assert retained["source_status"] == "CURRENT_REPORTED"
+    assert retained["freshness"]["capture_incomplete"] is False
+    retained_chip = format_theme_feed_chip(
+        _computed_row_for_summary(retained), "glp1_obesity",
+    )
+    assert retained_chip["n_active"] == 1
