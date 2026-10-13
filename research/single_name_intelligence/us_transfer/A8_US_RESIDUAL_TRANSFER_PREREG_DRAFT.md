@@ -144,7 +144,7 @@ Pins are blob shas from `git ls-tree origin/main`. Files are never opened. `data
 
 | key | path | blob |
 |---|---|---|
-| REG | research/single_name_intelligence/protocols/S0_PROTOCOL_REGISTER.md | `18cb5aa3a611bf1bc394d49d690e2059f68c4225` |
+| REG | research/single_name_intelligence/protocols/S0_PROTOCOL_REGISTER.md | `5cea5c88335133e7684200b694f0d170ca4ae5b2` |
 | IL | research/single_name_intelligence/protocols/S0_INDEPENDENCE_LAW.md | `6ec4b097ce3fd24261da12061b3418fde945efaf` |
 | SL | research/single_name_intelligence/protocols/S0_SPLIT_AND_CONTAMINATION_LAW.md | `c06a91beee22626eab1912aaa8a3baa6856913a2` |
 

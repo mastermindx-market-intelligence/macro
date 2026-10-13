@@ -61,7 +61,7 @@
     "effect": "a step inside the split window with |step| above tolerance RETIRES the split automatically, class information_leak, before any outcome is read. A used-bar revision detected by cross_vintage_detector does not silently pass: the episode is marked VINTAGE_UNVERIFIABLE and excluded (listed with reason).",
     "clock_law": "detection clock precedes outcome clock; the detector is run, and any retirement or VINTAGE_UNVERIFIABLE exclusion is recorded, before outcomes are loaded",
     "then_known": "historical facts known only after as_of_utc are never used as if known on that date",
-    "descriptive_not_causal": "a residual or stress statistic computed after a clean vintage check is DESCRIPTIVE, never causal, never news-impact",
+    "descriptive_not_causal": "a residual or stress statistic computed after a clean vintage check is DESCRIPTIVE, never causal, never a statement about what the news did to the price",
     "hk_series": "VINTAGE_UNVERIFIABLE when no close/close_price pair exists; disclosed; not retired",
     "train": "TRAIN is never retired (SL §8 step 6); TRAIN episodes are still excluded per cross_vintage_detector when a used bar differs across vintages",
     "per_episode_pin": "every episode reads its inputs from the vintage pinned at its own D(s)",

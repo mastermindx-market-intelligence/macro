@@ -12,7 +12,7 @@ unknown identity stays UNRESOLVED / null.
 
 **amends:** `research/single_name_intelligence/protocols/S0_PROTOCOL_REGISTER.md`
 
-**amends_blob:** `18cb5aa3a611bf1bc394d49d690e2059f68c4225` (origin/main `git rev-parse` blob)
+**amends_blob:** `5cea5c88335133e7684200b694f0d170ca4ae5b2` (origin/main `git rev-parse` blob)
 
 **drafted_by:** grok-4.6 lane S0D under seat 508c3757
 

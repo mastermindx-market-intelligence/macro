@@ -61,7 +61,7 @@ BANNED_EXCEPTIONS = (
     "is not admission",
     "UNRESOLVED",
 )
-ORIGIN_MAIN_REGISTER_BLOB = "18cb5aa3a611bf1bc394d49d690e2059f68c4225"
+ORIGIN_MAIN_REGISTER_BLOB = "5cea5c88335133e7684200b694f0d170ca4ae5b2"
 ORIGIN_MAIN_BLOBS = {
     "data/yahoo/TCEHY.parquet": "0c03b5f83178ddf2ed9c25f39ef7688139ed24be",
     "data/yahoo/KWEB.parquet": "d42bd75db56f8ad5c2530ee415262a0c68b913bd",
