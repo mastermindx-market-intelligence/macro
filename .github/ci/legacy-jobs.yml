@@ -84,6 +84,9 @@ jobs:
     # reads by a joined path the resolver cannot derive.
     scope: exclusive
     paths:
+      - engine/neuralweb/market_memory_lineage.py
+      - engine/neuralweb/market_memory_projection.py
+      - engine/neuralweb/market_memory_trusted.py
       - "lib/exchange_holidays.py"
       - "collectors/__init__.py"
       - "collectors/edgar.py"
@@ -2942,7 +2945,9 @@ jobs:
       - "lib/dataos/__init__.py"
       - "lib/dataos/nulls.py"
       - "lib/dataos/price.py"
+      - "lib/dataos/price_views.py"
       - "lib/dataos/quality.py"
+      - "lib/dataos/read_contract.py"
       - "lib/dataos/registry.py"
       - "lib/dataos/temporal.py"
       - "engine/composite_score.py"
@@ -4741,6 +4746,7 @@ jobs:
       - "engine/intl_performance_records.py"
       - "engine/intl_performance_charts.py"
       - "engine/intl_workspace_overview.py"
+      - "lib/intl_eod_publication.py"
       - "engine/international_macro_dashboard.py"
       - "engine/intl_regime.py"
       - "engine/intl_run.py"
@@ -4763,6 +4769,8 @@ jobs:
       - "tests/test_intl_performance_records.py"
       - "tests/test_intl_source_snapshot.py"
       - "tests/test_intl_source_qualification.py"
+      - "tests/test_intl_eod_publication.py"
+      - "tests/test_intl_eod_publication_review.py"
       - "tests/test_intl_performance_charts.py"
       - "tests/test_intl_workspace_overview.py"
       - "lib/intl_library_view.py"
@@ -4989,7 +4997,7 @@ jobs:
       - name: install numerical test dependencies
         run: pip install pytest pandas numpy pyyaml pyarrow
       - name: International return identity, windows and observation provenance
-        run: python -m pytest tests/test_intl_performance_records.py tests/test_intl_source_snapshot.py tests/test_intl_source_qualification.py tests/test_intl_performance_charts.py tests/test_intl_workspace_overview.py tests/test_intl_library_view.py tests/test_intl_library_public_copy.py tests/test_intl_library_mount.py tests/test_intl_inspector_view.py tests/test_intl_compare_view.py tests/test_intl_compare_mount.py tests/test_intl_history_read_receipt.py tests/test_intl_history_read_projection.py tests/test_intl_history_projection_regression.py tests/test_intl_history_projection_independent.py tests/test_intl_cycle_component_evidence.py tests/test_intl_regime.py tests/test_intl_compare.py tests/test_intl_workspace_macro.py tests/test_intl_ecb_deposit_admission.py tests/test_intl_macro_mount.py tests/test_intl_macro_publication.py tests/test_intl_workspace_risk.py tests/test_intl_workspace_risk_regression.py tests/test_intl_workspace_risk_currency.py tests/test_intl_workspace_risk_currency_independent.py tests/test_intl_workspace_risk_currency_numerical.py tests/test_intl_workspace_risk_pressure.py tests/test_intl_workspace_risk_pressure_independent.py tests/test_intl_workspace_risk_section.py tests/test_intl_risk_mount.py tests/test_intl_workspace_risk_section_independent.py tests/test_intl_policy_comparison.py tests/test_intl_policy_comparison_independent.py tests/test_intl_workspace_history.py tests/test_intl_workspace_history_independent.py tests/test_intl_history_mount.py -q
+        run: python -m pytest tests/test_intl_performance_records.py tests/test_intl_source_snapshot.py tests/test_intl_source_qualification.py tests/test_intl_eod_publication.py tests/test_intl_eod_publication_review.py tests/test_intl_performance_charts.py tests/test_intl_workspace_overview.py tests/test_intl_library_view.py tests/test_intl_library_public_copy.py tests/test_intl_library_mount.py tests/test_intl_inspector_view.py tests/test_intl_compare_view.py tests/test_intl_compare_mount.py tests/test_intl_history_read_receipt.py tests/test_intl_history_read_projection.py tests/test_intl_history_projection_regression.py tests/test_intl_history_projection_independent.py tests/test_intl_cycle_component_evidence.py tests/test_intl_regime.py tests/test_intl_compare.py tests/test_intl_workspace_macro.py tests/test_intl_ecb_deposit_admission.py tests/test_intl_macro_mount.py tests/test_intl_macro_publication.py tests/test_intl_workspace_risk.py tests/test_intl_workspace_risk_regression.py tests/test_intl_workspace_risk_currency.py tests/test_intl_workspace_risk_currency_independent.py tests/test_intl_workspace_risk_currency_numerical.py tests/test_intl_workspace_risk_pressure.py tests/test_intl_workspace_risk_pressure_independent.py tests/test_intl_workspace_risk_section.py tests/test_intl_risk_mount.py tests/test_intl_workspace_risk_section_independent.py tests/test_intl_policy_comparison.py tests/test_intl_policy_comparison_independent.py tests/test_intl_workspace_history.py tests/test_intl_workspace_history_independent.py tests/test_intl_history_mount.py -q
 
   international-workspace-browser:
     if: ${{ false }}
@@ -5050,6 +5058,9 @@ jobs:
       - "templates/account.js"
       - "templates/terminal_overlay.js"
       - "scripts/build_intl.py"
+      - "lib/intl_eod_publication.py"
+      - "tests/test_intl_eod_publication.py"
+      - "tests/test_intl_eod_publisher_integration.py"
       - "engine/__init__.py"
       - "engine/i18n.py"
       - "engine/canon.py"
@@ -5315,7 +5326,7 @@ jobs:
           npm install --no-save --package-lock=false playwright@1.63.0
           npx playwright install --with-deps chromium
       - name: Actual International builder and template contracts
-        run: python -m pytest tests/test_intl_workspace_overview_render.py tests/test_intl_workspace_library_render.py tests/test_intl_workspace_integration.py tests/test_intl_workspace_inspector_render.py tests/test_intl_inspector_mount.py tests/test_intl_workspace_compare_render.py tests/test_intl_compare_integration.py tests/test_intl_workspace_generation_mount.py tests/test_intl_workspace_macro_render.py tests/test_intl_macro_publication_build.py tests/test_intl_risk_publication_build.py tests/test_intl_workspace_risk_render.py tests/test_intl_workspace_risk_ui_independent.py tests/test_intl_history_publication_build.py tests/test_intl_history_publication_independent.py tests/test_intl_workspace_history_render.py tests/test_intl_workspace_history_ui_independent.py -q
+        run: python -m pytest tests/test_intl_eod_publisher_integration.py tests/test_intl_workspace_overview_render.py tests/test_intl_workspace_library_render.py tests/test_intl_workspace_integration.py tests/test_intl_workspace_inspector_render.py tests/test_intl_inspector_mount.py tests/test_intl_workspace_compare_render.py tests/test_intl_compare_integration.py tests/test_intl_workspace_generation_mount.py tests/test_intl_workspace_macro_render.py tests/test_intl_macro_publication_build.py tests/test_intl_risk_publication_build.py tests/test_intl_workspace_risk_render.py tests/test_intl_workspace_risk_ui_independent.py tests/test_intl_history_publication_build.py tests/test_intl_history_publication_independent.py tests/test_intl_workspace_history_render.py tests/test_intl_workspace_history_ui_independent.py -q
       - name: Actual DOM controller and page entry in Chromium
         run: node --test tests/intl_workspace_generation_controller.test.cjs tests/intl_workspace_generation_integration.test.cjs tests/intl_workspace_compare_controller.test.cjs tests/intl_workspace_controller.test.cjs tests/intl_workspace_page.test.cjs tests/intl_workspace_legacy_navigation.test.cjs tests/intl_workspace_library_controller.test.cjs tests/intl_workspace_inspector_integration.test.cjs tests/intl_workspace_risk_controller.test.cjs tests/intl_workspace_history_controller.test.cjs tests/intl_workspace_history_independent.test.cjs
       - name: Generic table sort/filter in Chromium (templates/tablesort.js)
@@ -5816,6 +5827,7 @@ jobs:
     # every concrete static import-closure path (curated_exclusive_closure_findings
     # gates it) plus the measured runtime in-tree reads of every class-A suite.
     paths:
+      - engine/neuralweb/market_memory_lineage.py
       # Native DailyBrief registration/producer import closure (PR #9037).
       - "app/prophet_daily_brief.py"
       - "engine/prophet_candidate_state.py"
@@ -6467,7 +6479,9 @@ jobs:
       - "lib/dataos/identity.py"
       - "lib/dataos/nulls.py"
       - "lib/dataos/price.py"
+      - "lib/dataos/price_views.py"
       - "lib/dataos/quality.py"
+      - "lib/dataos/read_contract.py"
       - "lib/dataos/registry.py"
       - "lib/dataos/temporal.py"
       - "lib/delisted_symbols.py"
@@ -7335,20 +7349,16 @@ jobs:
         run: python -m pytest tests/test_synapse_read_gate.py tests/test_horizon_firewall.py tests/test_delivery_waterfall.py tests/test_pricing_power_monitor.py tests/test_risk_envelope.py tests/test_live_risk_envelope.py tests/test_rotation_risk_envelope.py tests/test_rotation_risk_consumers.py -q
       - name: factor deescalation shadow + boundary guard tests
         run: python -m pytest tests/test_factor_deescalation_shadow.py -q
-      # Share one pytest session across the three existing offline EDGAR suites.
+      # Share one pytest session across the five existing offline EDGAR suites.
       # Test inventory, dependencies and ordinary scope inference are unchanged.
-      - name: edgar 8-K item-code expansion unit tests (LHB-R7) and all existing owning contracts in one pytest session
-        run: python -m pytest tests/test_edgar_8k_items.py tests/test_edgar_8k_counterparty.py tests/test_edgar_quarterly_tags.py -q
+      - name: EDGAR item, counterparty, quarterly, universe and first-request guards in one pytest session
+        run: python -m pytest tests/test_edgar_8k_items.py tests/test_edgar_8k_counterparty.py tests/test_edgar_quarterly_tags.py tests/test_edgar_universe_widening.py tests/test_edgar_fts_confirmed_absent_first_request.py -q
       # GR3b: 8-K counterparty extraction unlock. GR3 (#5008) measured the column
       # as null in all 50,667 committed rows -- the name leg was gated behind the
       # dollar leg, the "primary document" selector was reading the EDGAR submission
       # HEADER page (index.json's `type` field is the listing ICON name, never a form
       # type), and the fetched HTML was never stripped to prose. All three, plus the
       # bounded exhibit reads and the enrich_rev backfill bookkeeping, are pinned here.
-      - name: edgar fundamentals universe widening (W2-A — R2000 via committed constituents)
-        run: python -m pytest tests/test_edgar_universe_widening.py -q
-      - name: edgar FTS first-request abort guard fires on _CONFIRMED_ABSENT too (no network)
-        run: python -m pytest tests/test_edgar_fts_confirmed_absent_first_request.py -q
       # Trend Persistence Wave C-0 (PR #8403): the S&P 1500 point-in-time sector
       # substrate for the 1,083 index leavers. It belongs in THIS job and not a new one
       # because its subject is this job's subject one layer down: a collectors/ module
@@ -7502,6 +7512,7 @@ jobs:
     # narrow those.
     scope: exclusive
     paths:
+      - lib/intl_eod_publication.py
       # Native DailyBrief registration/producer import closure (PR #9037).
       - "research/prophet_v4/PROPHET_STRATEGY_PLATFORM_AND_CYCLE_CAPTURE_ARCHITECTURE_FREEZE_2026-08-30.md"
       - "collectors/flow_signals.py"
@@ -8522,14 +8533,12 @@ jobs:
         run: pip install pytest pyyaml
       - name: DAG conformance check (hard — exits 1 on undeclared lane drift)
         run: python scripts/check_dag_conformance.py --verbose
-      - name: DAG conformance selftest + live conformance tests
-        run: python -m pytest tests/test_dag_conformance.py -q
+      - name: complete existing dag-conformance contracts
+        run: python -m pytest tests/test_dag_conformance.py tests/test_tech_lab_offrender_budget.py tests/test_nightly_timings.py tests/test_daily_et_gate.py tests/test_workflow_file_size.py tests/test_daily_graph_shadow_state_step.py tests/test_nightly_liveness.py tests/test_runner_queue_hostage.py -q
       # Same family, one layer down: dag.yml pins WHAT the nightly lane runs,
       # this pins that the lane's timeout still lets it finish. tech_lab_offrender
       # was cancelled at its 40m cap every night 2026-07-19→07-26 — the declared
       # step sequence was perfectly conformant, and the publish tail never ran.
-      - name: nightly lane budgets (tech_lab_offrender publish tail)
-        run: python -m pytest tests/test_tech_lab_offrender_budget.py -q
       # Third layer of the same family: W2 runtime telemetry (masterplan
       # 2026-08-06). Every self-hosted daily.yml job must carry the job-start
       # mark as its FIRST step and the always() timings/85%-tripwire finish as
@@ -8537,26 +8546,18 @@ jobs:
       # (a cap raise that skips the arg silently rescales the tripwire — the
       # tech_lab stale-label class), and a synthetic 86% run must trip the
       # line-start ::warning (masterplan §0.2 acceptance gate).
-      - name: nightly runtime telemetry (W2 wiring + 85% tripwire behavior)
-        run: python -m pytest tests/test_nightly_timings.py -q
       # Fourth layer, same family: daily.yml's schedule is a DST cron PAIR and the
       # root et_gate job keeps exactly one firing. The suite EXTRACTS the inline gate
       # script out of the live workflow and executes it against instants either side
       # of both DST flips, then pins the cron pair to the script's constants and that
       # every job still reaches the gate. A drifted gate skips the sole authoritative
       # nightly with nothing going red — the same silent class as the two above.
-      - name: daily ET regime gate (DST pair disambiguator + wiring pins)
-        run: python -m pytest tests/test_daily_et_gate.py -q
       # 2026-08-12 (#5416): a workflow FILE over ~512,000 bytes stops being
       # processed SILENTLY — cron stops firing and dispatched runs queue with
       # zero jobs, uncancellable. The budget test reds growth before the cap.
-      - name: workflow file size stays under GitHub's silent processing cap
-        run: python -m pytest tests/test_workflow_file_size.py -q
       # Gate #8 (seat ruling G1-RC1, 2026-10-06): the GMI graph shadow theme_state
       # step stays in oracle_offrender (off-render, bounded, continue-on-error) and
       # never moves into the engine job's render budget.
-      - name: GMI graph shadow-state step pin (oracle_offrender)
-        run: python -m pytest tests/test_daily_graph_shadow_state_step.py -q
       # Same incident, other half. The size guard stops daily.yml being stranded
       # AGAIN; this one notices when the nightly stops producing runs for ANY
       # reason — strand, cancellation, or a green run that never advances the
@@ -8564,8 +8565,6 @@ jobs:
       # every instrument we had measured DATA staleness on weekend-safe budgets.
       - name: nightly liveness guard selftest (scripts/check_nightly_liveness.py)
         run: python3 scripts/check_nightly_liveness.py --selftest
-      - name: nightly liveness dead-man switch (checks + wiring pins)
-        run: python -m pytest tests/test_nightly_liveness.py -q
       # Third instrument in the same lane, added 2026-09-25. The two above watch
       # daily.yml; this one watches the QUEUE, which is what neither of them can
       # see. daily.yml routes `macstudio` — a live label — so it ran green through
@@ -8576,8 +8575,6 @@ jobs:
       # test is a watchdog that silently stops being true.
       - name: runner queue hostage guard selftest (scripts/check_runner_queue_hostage.py)
         run: python3 scripts/check_runner_queue_hostage.py --selftest
-      - name: runner queue hostage dead-man switch (checks + wiring pins)
-        run: python -m pytest tests/test_runner_queue_hostage.py -q
 
   push-retry-policy:
     if: ${{ false }}
@@ -8808,7 +8805,9 @@ jobs:
       - "lib/dataos/identity.py"
       - "lib/dataos/nulls.py"
       - "lib/dataos/price.py"
+      - "lib/dataos/price_views.py"
       - "lib/dataos/quality.py"
+      - "lib/dataos/read_contract.py"
       - "lib/dataos/registry.py"
       - "lib/dataos/temporal.py"
       - "lib/nyse_calendar.py"
@@ -8938,7 +8937,7 @@ jobs:
         with:
           python-version: "3.12"
       - name: install minimal deps
-        run: pip install pytest pyyaml
+        run: pip install pytest pyyaml pandas numpy
       - name: authority guard (hard fail on Article-2 forbidden reads)
         run: python scripts/check_research_factory_authority.py
       - name: authority guard selftest (gate fires on planted violation)
@@ -8949,6 +8948,9 @@ jobs:
           tests/test_research_factory_state.py
           tests/test_research_factory_schema.py
           tests/test_research_factory_market_memory.py
+          tests/test_research_codegen_accounting_contract.py
+          tests/test_research_codegen_evaluation.py
+          tests/test_research_codegen_transport.py
           -q
 
   cycle-pattern-authority:
@@ -9751,10 +9753,8 @@ jobs:
         # renders the ONE shipped template line that publishes window.WL_SECTOR_ZH, to
         # prove an undefined context still emits `{}` rather than a bare `=`.
         run: pip install pytest pandas numpy pyarrow pyyaml markupsafe jinja2
-      - name: risk_core.js math — §7 sanity anchors + structural invariants
-        run: python -m pytest tests/test_risk_core_js.py -q
-      - name: watchlist_risk.js chain lane — node-shelled helper tests (TXI W4)
-        run: python -m pytest tests/test_watchlist_chains_js.py -q
+      - name: complete existing wri-risk-core contracts
+        run: python -m pytest tests/test_risk_core_js.py tests/test_watchlist_chains_js.py tests/test_watchlist_books_js.py tests/test_watchstore_multilist_js.py tests/test_watchlist_workspace_js.py tests/test_stockdata_consumer_recovery_js.py tests/test_watchlist_sector_i18n.py tests/test_watchlist_drawer_js.py tests/test_portfolio_state_js.py tests/test_portfolio_truth_a1a_js.py tests/test_portfolio_auth_transition_js.py tests/test_portfolio_import_a1b_js.py tests/test_no_absolute_path_symlinks.py tests/test_factor_exposure.py tests/test_factor_exposure_stress.py -q
       # UWP/W1a: the watchlist+portfolio STORE (templates/watchstore.js), same
       # node-shelling idiom as the two steps above. test_watchlist_books_js.py was
       # named by no run: step in any workflow since it landed (P5 in
@@ -9762,16 +9762,10 @@ jobs:
       # "never on an empty book") on the file W1a rewrites, so it is wired here
       # rather than left dark. The multilist suite pins the list-scoped push diff:
       # a full-membership delete that escapes its list wipes a sibling watchlist.
-      - name: watchstore.js store — local books + one-shot folds
-        run: python -m pytest tests/test_watchlist_books_js.py -q
-      - name: watchstore.js store — registered multi-list seam (W1a)
-        run: python -m pytest tests/test_watchstore_multilist_js.py -q
       # W2 workspace layer over that store: the bulk-entry parser (the anonymous
       # funnel's front door), the weighting model, the engine-state -> plain-word
       # stage map (which may only ever DE-ESCALATE), delta-since-visit, and the
       # read-side guard that stops a focus refetch from reverting a just-made edit.
-      - name: watchlist workspace — entry parser, stage map, focus-refetch guard (W2)
-        run: python -m pytest tests/test_watchlist_workspace_js.py -q
       # site20 S3: templates/stockdata.js — index validated before it is cached,
       # one in-flight US index read, regional/ticker transient failures retried on a
       # bounded window (Retry-After clamped 30 s..10 min). Node VM harness, no browser.
@@ -9784,8 +9778,6 @@ jobs:
       # portfolio.js under fake timers (503 once -> names fill after the window).
       - name: stockdata.js consumer recovery — one re-ask after the failure window (S3-01)
         run: node --test tests/js/stockdata_consumer_recovery.test.mjs
-      - name: portfolio consumer recovery — names fill after a transient index failure (S3-01)
-        run: python -m pytest tests/test_stockdata_consumer_recovery_js.py -q
       # Sector names are the one label on this page with no zh twin in the source:
       # they arrive as raw English on stockdata/index.json and are painted
       # client-side, so they rendered in English under data-lang="zh" while
@@ -9793,8 +9785,6 @@ jobs:
       # untranslated name renders perfectly — so the guard covers all four ways it
       # goes quiet: a taxonomy the glossary has gone blind to, the build not
       # handing the map over, the lookup itself, and a print site that bypasses it.
-      - name: watchlist sector names — glossary, build wiring, print sites (zh)
-        run: python -m pytest tests/test_watchlist_sector_i18n.py -q
       # W4 per-ticker Intelligence Drawer over that workspace. The load-bearing gate is
       # honest absence: every section builder is run over an EMPTY payload and must
       # return a row that NAMES what is missing, because a section that renders nothing
@@ -9802,32 +9792,18 @@ jobs:
       # attribute-escaping slot in the shared row painter (a silent breakout), the
       # dossier route (`stock.html` reads location.hash only — `?t=` is a 200 that opens
       # empty), and the anonymous lock shell.
-      - name: watchlist drawer — honest absence, glance vocabulary, canonical routes (W4)
-        run: python -m pytest tests/test_watchlist_drawer_js.py -q
-      - name: portfolio_state.js — snapshot authority + weighting law (A1A)
-        run: python -m pytest tests/test_portfolio_state_js.py -q
-      - name: portfolio truth — A1A mutation battery + page wiring (A1A)
-        run: python -m pytest tests/test_portfolio_truth_a1a_js.py -q
       # Consumer-level auth-transition proof (Sol blocker 2, A1A closure): drives the
       # REAL watchstore.js + portfolio.js + portfolio_state.js together over a genuine
       # event bus — the delayed-cloud window, a permanently-failed Supabase client
       # init, and write-failure honesty (blocker 3) end to end.
-      - name: portfolio auth-transition — consumer-level proof (A1A closure)
-        run: python -m pytest tests/test_portfolio_auth_transition_js.py -q
       # A1B fast start: the frozen paste grammar plus the REAL Portfolio store's
       # atomic local save, N-row cloud receipt, lost-response reconciliation,
       # auth-generation fence, and UUID-preserving local-to-cloud fold.
-      - name: portfolio import — exact draft + failure-safe batch persistence (A1B)
-        run: python -m pytest tests/test_portfolio_import_a1b_js.py -q
       # Repo hygiene, wired here because this wave introduced the class it closes: a crop
       # harness borrows site/stockdata/ from the main checkout for the duration of a
       # shoot, and an aborted run once left the symlink behind long enough for a broad
       # `git add` to commit a machine-local ABSOLUTE path into the shipping tree. It
       # needs no node and no artifacts, so it is cheap wherever it runs.
-      - name: repo hygiene — no tracked absolute-path symlinks
-        run: python -m pytest tests/test_no_absolute_path_symlinks.py -q
-      - name: factor-exposure engine — orthogonalization, betas, crypto universe (W6.1)
-        run: python -m pytest tests/test_factor_exposure.py tests/test_factor_exposure_stress.py -q
 
   house-law-registry:
     if: ${{ false }}
@@ -11858,6 +11834,7 @@ jobs:
     # Explicit measured closure: avoid unrelated opaque fallback selection.
     scope: exclusive
     paths:
+      - lib/intl_eod_publication.py
       - "lib/intl_history_mount.py"
       - "lib/intl_workspace_history.py"
       - "lib/intl_risk_mount.py"
@@ -12164,6 +12141,7 @@ jobs:
     # Curated named closure: integrity fixtures scan only pytest tmp_path;
     # opaque artifact traversal must not claim unrelated template ownership.
     paths:
+      - lib/intl_eod_publication.py
       # Native DailyBrief registration/producer import closure (PR #9037).
       - "engine/path_risk_signals.py"
       - "engine/prophet_candidate_state.py"
@@ -13132,7 +13110,9 @@ jobs:
       - lib/dataos/__init__.py
       - lib/dataos/nulls.py
       - lib/dataos/price.py
+      - lib/dataos/price_views.py
       - lib/dataos/quality.py
+      - lib/dataos/read_contract.py
       - lib/dataos/registry.py
       - lib/dataos/temporal.py
       - tests/test_theme_graph_structural_owner_binding.py
@@ -14140,13 +14120,11 @@ jobs:
         # until a call), so the test stays hermetic. This install line had exactly
         # one member, so extending it costs no extra ci-pack venv.
         run: pip install pytest jinja2 pyyaml pypdf boto3
-      # RV F3 blank-text typing (test_research_vault_blank_text.py): same LocalStore +
-      # seeded-PDF helpers as the backfill suite; its own step so the shared run line
-      # below stays a single-writer edit point for concurrent research-vault PRs.
-      - name: research vault blank-text typing (F3)
-        run: python -m pytest tests/test_research_vault_blank_text.py -q
-      - name: research vault ingestion-spine + page unit tests
-        run: python -m pytest tests/test_research_vault.py tests/test_research_vault_strict_store.py tests/test_research_vault_page.py tests/test_research_pages.py tests/test_research_vault_subjects.py tests/test_research_vault_backfill.py tests/test_research_intelligence_vault_head.py tests/test_research_vault_retrieval_eval.py tests/test_research_vault_read_port.py tests/test_research_vault_read_service.py tests/test_research_vault_read_adapters.py -q
+      # F3/F5-M share LocalStore and seeded-PDF fixtures. One invocation runs both
+      # suites with the ingestion/page tests while preserving their full inferred
+      # dependency ownership. No extra interpreter is needed.
+      - name: research vault typing, ingestion-spine and page unit tests (F3/F5-M)
+        run: python -m pytest tests/test_research_vault_blank_text.py tests/test_research_vault_fulltext_store.py tests/test_research_vault.py tests/test_research_vault_strict_store.py tests/test_research_vault_page.py tests/test_research_pages.py tests/test_research_vault_subjects.py tests/test_research_vault_backfill.py tests/test_research_intelligence_vault_head.py tests/test_research_vault_retrieval_eval.py tests/test_research_vault_read_port.py tests/test_research_vault_read_service.py tests/test_research_vault_read_adapters.py -q
 
 
   research-vault-source-lineage:
@@ -16775,12 +16753,8 @@ jobs:
           python-version: "3.12"
       - name: install minimal deps
         run: pip install pytest pyyaml jinja2 numpy pandas requests
-      - name: press validator suite (paraphrase, fact-anchor, our-value, lexicons)
-        run: python -m pytest tests/test_press_validators.py -q
-      - name: press planner + writer + orchestrator suites
-        run: python -m pytest tests/test_press_planner.py tests/test_press_external_candidate.py tests/test_press_adjusted_baseline.py tests/test_press_writer.py tests/test_press_run.py tests/test_press_staging_inspection.py tests/test_earnings_canonical_story.py -q
-      - name: press admin panel + workflow shape
-        run: python -m pytest tests/test_press_admin.py tests/test_press_workflow.py -q
+      - name: press validator, planner, writer, orchestrator, admin and property suites
+        run: python -m pytest tests/test_press_validators.py tests/test_press_planner.py tests/test_press_external_candidate.py tests/test_press_adjusted_baseline.py tests/test_press_writer.py tests/test_press_run.py tests/test_press_staging_inspection.py tests/test_earnings_canonical_story.py tests/test_press_admin.py tests/test_press_workflow.py tests/test_press_properties.py -q
       # W1.5 property trees + the cutover sync guard. Same lane on purpose: the
       # guard asserts that config/press.yml `cutover` and the commented Caddy
       # block move together, and that pairing is only real if it runs on every
@@ -16797,8 +16771,6 @@ jobs:
       # This job does NOT run `--check`: the trees do not exist yet, so the check
       # would be red on arrival. Wiring it is a follow-up for the session that
       # generates and commits them.
-      - name: press properties + cutover pairing guard
-        run: python -m pytest tests/test_press_properties.py -q
       # Derived-tree drift guard: the committed properties/ trees must byte-match
       # a fresh rebuild from templates + config + ledger. A template or config
       # edit that forgets `python -m scripts.build_press_properties` goes red
@@ -16906,6 +16878,7 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - engine/neuralweb/market_memory_lineage.py
       - app/__init__.py
       - app/account_actions.py
       - app/account_prefs.py
@@ -17530,7 +17503,9 @@ jobs:
       - lib/dataos/identity.py
       - lib/dataos/nulls.py
       - lib/dataos/price.py
+      - lib/dataos/price_views.py
       - lib/dataos/quality.py
+      - lib/dataos/read_contract.py
       - lib/dataos/registry.py
       - lib/dataos/temporal.py
       - lib/delisted_symbols.py
@@ -19906,6 +19881,7 @@ jobs:
     # contract-delta closure on 673a0a5a (a sparse worktree omits those trees).
     scope: exclusive
     paths:
+      - lib/intl_eod_publication.py
       - "tests/fixtures/prophet_live/**"
       - "tests/fixtures/us_candidate_episode/**"
       - "config/fundamental_forensics/coverage/**"
@@ -20546,6 +20522,7 @@ jobs:
       - "lib/hk_calendar.py"
       - "lib/intl_compare_mount.py"
       - "lib/intl_compare_view.py"
+      - "lib/intl_eod_publication.py"
       - "lib/intl_history_mount.py"
       - "lib/intl_inspector_mount.py"
       - "lib/intl_inspector_view.py"
@@ -20743,7 +20720,7 @@ jobs:
       - "tests/test_us_turn_watch.py"
       - "tests/test_vps_live_orchestration.py"
       - "tests/test_washout_turn.py"
-    timeout-minutes: 5
+    timeout-minutes: 12
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -20801,7 +20778,7 @@ jobs:
       - name: Prophet detector, organ and disposition contracts (one native process)
         run: python -m pytest tests/test_prophet_doors.py tests/test_gate_crash_failopen.py tests/test_prophet_arena.py tests/test_washout_turn.py tests/test_mtf_upturn.py tests/test_oracle_memory_analogues_step.py tests/test_stock_events.py tests/test_event_atlas.py tests/test_us_leader_pullback.py tests/test_us_leader_pullback_coverage.py tests/test_mi_s2_theme_relative_intraday_registration.py tests/test_us_turn_watch.py tests/test_us_basket_turn.py tests/test_prophet_b2_disposition.py -q
       - name: Prophet native Plan source-origin binding and malformed-input guards
-        run: python -m pytest tests/test_prophet_plan_clock.py tests/test_prophet_bridge.py -q -k 'PlanSourceOrigin or source_origin_extension or (test_validate_trade_plan and not (engines_required or schema_mismatch or invalid_direction or every_referenced))'
+        run: python -m pytest tests/test_prophet_plan_clock.py tests/test_prophet_bridge.py -q -k 'PlanNativeSourceRead or PlanSourceOrigin or source_origin_extension or (test_validate_trade_plan and not (engines_required or schema_mismatch or invalid_direction or every_referenced))'
       - name: Prophet B4 producer basis and disclosed freshness guards
         run: python -m pytest tests/test_prophet_live_evaluator.py -q -k 'dark_artifact_discloses or malformed_threshold or row_exception_material or zero_or_negative or cfg_stamps or meta_discloses or stripping_only or basis_material or the_disclosure'
 
@@ -24252,6 +24229,8 @@ jobs:
     # contract-delta closure on 673a0a5a (a sparse worktree omits those trees).
     scope: exclusive
     paths:
+      - engine/neuralweb/market_memory_lineage.py
+      - tests/test_market_memory_lineage.py
       - "config/intelligence_workspace/**"
       - "engine/prophet_lab/**"
       - "research/research_panels/**"
@@ -24940,7 +24919,9 @@ jobs:
       - "lib/dataos/identity.py"
       - "lib/dataos/nulls.py"
       - "lib/dataos/price.py"
+      - "lib/dataos/price_views.py"
       - "lib/dataos/quality.py"
+      - "lib/dataos/read_contract.py"
       - "lib/dataos/registry.py"
       - "lib/dataos/temporal.py"
       - "lib/delisted_symbols.py"
@@ -25144,7 +25125,8 @@ jobs:
           tests/test_market_memory_episode_comparison.py
           tests/test_market_memory_experience_accrual.py
           tests/test_market_memory_retained_context_cohort.py
-          tests/test_market_memory_episode_retrieval.py -q
+          tests/test_market_memory_episode_retrieval.py
+          tests/test_market_memory_lineage.py -q
       # The command includes all original source/temporal owner tests plus
       # retained population, label-free projection, comparison and retrieval.
       # Original DATA registration remains; current rights use real tmp owners.
@@ -26073,7 +26055,9 @@ jobs:
       - lib/dataos/identity.py
       - lib/dataos/nulls.py
       - lib/dataos/price.py
+      - lib/dataos/price_views.py
       - lib/dataos/quality.py
+      - lib/dataos/read_contract.py
       - lib/dataos/registry.py
       - lib/dataos/temporal.py
       - lib/dataos/web_api.py
@@ -26090,6 +26074,7 @@ jobs:
       - tests/test_dataos_web_lab_worker.py
       - tests/test_dataos_web_readers.py
       - tests/test_dataos_web_workspace.py
+      - tests/test_dataos_rights_matrix.py
       - tests/test_tiingo_produced_contracts.py
       - docs/tiingo-evidence/20261012-research-contracts/accepted-corpus.json
     timeout-minutes: 8
@@ -26106,6 +26091,7 @@ jobs:
           PYTHONDONTWRITEBYTECODE=1 python -m pytest
           tests/test_dataos_web_api.py tests/test_dataos_web_lab.py
           tests/test_dataos_web_lab_worker.py tests/test_dataos_web_readers.py
+          tests/test_dataos_rights_matrix.py
           tests/test_dataos_web_workspace.py tests/test_tiingo_produced_contracts.py -q -rs
 
   dataos-foundation:
@@ -26158,15 +26144,49 @@ jobs:
       # V4-D2B2-US: same shape — the us_gmi_admission receipt block names its
       # binding contract path as a string.
       - research/prophet_v4/d2/D2B2_US_FROZEN_CONTRACT_2026-08-21.md
+      # Data OS completion R00 (#9150): tests/test_dataos_registry_consumers.py
+      # names D00 and the DataWorkspace consumer (lib/dataos/web_workspace.py) as
+      # string literals, so the inferred closure reaches these four tracked paths;
+      # contract-delta requires the declared scope to cover them (widening is the
+      # safe direction — this job is still pytest + pyyaml only).
+      - research/data_os_completion/2026-10-13/D00_SEMANTIC_DECISIONS.md
+      - scripts/data_workspace.py
+      - site/factordata/factors.json
+      - site/factordata/insider_signals.json
+      # Round 2 (same check): scripts/data_workspace.py above names engine/lab.py
+      # in a literal path list and engine/lab.py's lazy imports reach the engine
+      # indicator stack; the suite also cites the Data OS architecture doc. Cover
+      # them explicitly (plain rows, no globs — the curation probes are untouched).
+      - engine/__init__.py
+      - engine/canon.py
+      - engine/conditions.py
+      - engine/indicators.py
+      - engine/lab.py
+      - engine/predictive_signals.py
+      - engine/stock_technicals.py
+      - engine/strategy_signals.py
+      - engine/tech_catalog.py
+      - engine/tech_stars.py
+      - engine/technicals.py
+      - engine/trial_ledger.py
+      - engine/validation.py
+      - research/MASTERMIND_DATA_OS_ARCHITECTURE.md
       - .github/ci/legacy-jobs.yml
       - .github/workflows/ci.yml
       - config/dataset_registry.yml
       - lib/dataos/**
       - tests/test_dataos_identity.py
+      - tests/test_dataos_action_projection.py
+      - tests/test_dataos_reference_read.py
       - tests/test_dataos_nulls.py
       - tests/test_dataos_price.py
+      - tests/test_dataos_price_views.py
+      - tests/test_dataos_price_revisions.py
       - tests/test_dataos_quality.py
+      - tests/test_dataos_read_coherence.py
+      - tests/test_dataos_read_contract.py
       - tests/test_dataos_registry.py
+      - tests/test_dataos_registry_consumers.py
       - tests/test_dataos_temporal.py
     timeout-minutes: 8
     runs-on: ubuntu-latest
@@ -26181,10 +26201,17 @@ jobs:
         run: >-
           PYTHONDONTWRITEBYTECODE=1 python -m pytest
           tests/test_dataos_identity.py
+          tests/test_dataos_action_projection.py
+          tests/test_dataos_reference_read.py
           tests/test_dataos_temporal.py
           tests/test_dataos_price.py
+          tests/test_dataos_price_views.py
+          tests/test_dataos_price_revisions.py
           tests/test_dataos_nulls.py
+          tests/test_dataos_read_contract.py
+          tests/test_dataos_read_coherence.py
           tests/test_dataos_registry.py
+          tests/test_dataos_registry_consumers.py
           tests/test_dataos_quality.py -q -rs
 
   dataos-identity-seams:
@@ -26270,6 +26297,7 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - engine/neuralweb/market_memory_lineage.py
       # Native DailyBrief registration/producer import closure (PR #9037).
       - "app/prophet_daily_brief.py"
       - "engine/prophet_candidate_state.py"
@@ -26918,7 +26946,9 @@ jobs:
       - "lib/dataos/identity.py"
       - "lib/dataos/nulls.py"
       - "lib/dataos/price.py"
+      - "lib/dataos/price_views.py"
       - "lib/dataos/quality.py"
+      - "lib/dataos/read_contract.py"
       - "lib/dataos/registry.py"
       - "lib/dataos/temporal.py"
       - "lib/delisted_symbols.py"
@@ -28490,7 +28520,9 @@ jobs:
       - lib/dataos/identity.py
       - lib/dataos/nulls.py
       - lib/dataos/price.py
+      - lib/dataos/price_views.py
       - lib/dataos/quality.py
+      - lib/dataos/read_contract.py
       - lib/dataos/registry.py
       - lib/dataos/temporal.py
       - research/theme_graph/economic_network_execution_20261009/MICRON_SOURCE_CASE.json
@@ -28863,6 +28895,47 @@ jobs:
         run: pip install pytest pandas numpy pyarrow pyyaml
       - name: c19-wp11-reader-pins
         run: python -m pytest tests/test_c19_wp11_reader_pins.py -q -p no:cacheprovider
+  c19-wp24-superseded-generations:
+    if: ${{ false }}
+    gate: code
+    # C19 WP24 DQ2 (MAS-263): FINRA short volume / short interest + IBKR borrow superseded-generation witnesses and the BCPC/BCpC case-fold pin. Hermetic: tmp_path only, no data/ reads, no network.
+    timeout-minutes: 10
+    paths:
+      - "collectors/finra.py"
+      - "collectors/finra_short_volume.py"
+      - "collectors/ibkr_borrow.py"
+      - "scripts/backfill_finra_short_volume.py"
+      - "tests/test_c19_wp24_superseded_generations.py"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install minimal deps
+        run: pip install pytest pandas numpy pyarrow pyyaml requests
+      - name: c19-wp24-superseded-generations
+        run: python -m pytest tests/test_c19_wp24_superseded_generations.py -q -p no:cacheprovider
+  c19-wp24-consumer-states:
+    if: ${{ false }}
+    gate: code
+    # C19 WP24 DQ3 (MAS-263): named short-data consumer states (unavailable / parse_error / no_observation / partial / observed_zero) and the censored 999.99 days-to-cover flag. Hermetic: tmp_path only, no data/ reads, no network.
+    timeout-minutes: 10
+    paths:
+      - "collectors/finra.py"
+      - "engine/short_volume.py"
+      - "engine/stock_fundamentals.py"
+      - "tests/test_c19_wp24_consumer_states.py"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install minimal deps
+        run: pip install pytest pandas numpy pyarrow pyyaml requests
+      - name: c19-wp24-consumer-states
+        run: python -m pytest tests/test_c19_wp24_consumer_states.py -q -p no:cacheprovider
   c19-wp29-hk-southbound-two-period:
     if: ${{ false }}
     gate: code
@@ -28882,3 +28955,22 @@ jobs:
         run: pip install pytest pandas numpy pyarrow pyyaml
       - name: c19-wp29-hk-southbound-two-period
         run: python -m pytest tests/test_c19_wp29_hk_southbound_two_period.py -q -p no:cacheprovider
+  c19-short-pressure-availability:
+    if: ${{ false }}
+    gate: code
+    # C19 WP24-G: the short-pressure availability leg never prints absent or censored borrow supply as an exact count.
+    timeout-minutes: 10
+    paths:
+      - "engine/short_pressure.py"
+      - ".github/ci/legacy-jobs.yml"
+      - "tests/test_c19_wp24_short_pressure_availability.py"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install minimal deps
+        run: pip install pytest pandas numpy pyarrow pyyaml
+      - name: short-pressure availability guard
+        run: python -m pytest tests/test_c19_wp24_short_pressure_availability.py -q -p no:cacheprovider

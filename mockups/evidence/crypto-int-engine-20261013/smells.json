@@ -50,7 +50,7 @@
           "viewport": "desktop"
         },
         "panel_count": 1,
-        "payload_bytes_total": 64592,
+        "payload_bytes_total": 642110,
         "raw_slug_hit_count": 0,
         "raw_slug_hits": [],
         "request_count": 21,
@@ -59,7 +59,7 @@
         "source_present": true,
         "todo_placeholder_hit_count": 0,
         "todo_placeholder_hits": [],
-        "visible_word_count": 946
+        "visible_word_count": 945
       },
       "page_id": "macro:crypto",
       "route": "/crypto.html"

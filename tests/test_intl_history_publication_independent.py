@@ -155,7 +155,10 @@ def _workspace_fixture():
 def _publication_workspace(monkeypatch, attach_history_fn=attach_history, overviews=None):
     workspace, generation, markets = _workspace_fixture()
     if overviews is None:
-        overviews = lambda closes, workspace_generation=None: deepcopy(workspace)
+        def overviews(closes, *, workspace_generation=None, production_inputs=None):
+            # This History-only fixture supplies no EOD permission or data.
+            assert production_inputs is None
+            return deepcopy(workspace)
 
     fake_inputs = types.ModuleType("engine.intl_inputs")
     fake_inputs.countries = lambda: {
@@ -170,6 +173,8 @@ def _publication_workspace(monkeypatch, attach_history_fn=attach_history, overvi
 
     log = _Log()
     namespace = {
+        "Path": Path,
+        "config": types.SimpleNamespace(load=lambda: {"intl": {}}),
         "uuid4": lambda: generation.split(":", 1)[1],
         "_workspace_overviews": overviews,
         "attach_macros": lambda ws, **kwargs: {**ws, "macros_attached": True},

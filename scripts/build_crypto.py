@@ -89,6 +89,19 @@ def _pct(value, digits: int = 1, signed: bool = True) -> str:
     return f"{sign}{float(value):,.{digits}f}%"
 
 
+# |24h change| under this reads flat: an unsigned "0.0%" with no tone class.
+# One cut-off for the label (_chg_label), the chg_sign macro (template global)
+# and the live repaint (data-flat on the board chip, honoured by live.js).
+FLAT_CHG_PCT = 0.05
+
+
+def _chg_label(value) -> str:
+    """24H chip label: a move inside the flat cut-off reads as an unsigned 0.0%."""
+    if value is not None and not pd.isna(value) and abs(float(value)) < FLAT_CHG_PCT:
+        return "0.0%"
+    return _pct(value)
+
+
 def _state_zh(state: str) -> str:
     return {
         "Rising": "上升",
@@ -200,7 +213,7 @@ def _enrich_universe(rows: list[dict]) -> list[dict]:
         else:
             row["spark"] = ""
         row["price_label"] = _money(row.get("price"))
-        row["change_label"] = _pct(row.get("change_24h"))
+        row["change_label"] = _chg_label(row.get("change_24h"))
         row["state_zh"] = _state_zh(row["state"])
         row["live_symbol"] = f"{row['symbol']}-USD"
     return rows
@@ -679,9 +692,11 @@ def build(site_dir: Path | None = None) -> Path:
     try:
         from engine import i18n
 
-        env.globals.update(td=i18n.td, tr=i18n.tr)
+        env.globals.update(td=i18n.td, tr=i18n.tr, t_pctile=i18n.t_pctile)
     except Exception:
-        env.globals.update(td=lambda value: value, tr=lambda value: value)
+        env.globals.update(td=lambda value: value, tr=lambda value: value,
+                           t_pctile=lambda n: f"{int(round(float(n)))} percentile")
+    env.globals["FLAT_CHG_PCT"] = FLAT_CHG_PCT
     html = env.get_template("crypto.html.j2").render(**vm)
     html = re.sub(r">\s+<", "> <", html)
     output = site / "crypto.html"

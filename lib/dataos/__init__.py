@@ -45,11 +45,14 @@ import to translate a ticker.
 from __future__ import annotations
 
 from lib.dataos.identity import (
+    AliasResolution,
     AliasRow,
     CNBoard,
     IdentityError,
     KNOWN_MICS,
     ListingKey,
+    ReferenceReadReceipt,
+    ReferenceSnapshot,
     VendorAliasTable,
     cn_board,
     fx_id,
@@ -68,6 +71,7 @@ from lib.dataos.identity import (
     parse_listing_key,
     parse_option_contract_id,
     security_id,
+    validate_reference_snapshot,
 )
 from lib.dataos.nulls import MissingReason, NullPolicy, validate_value
 from lib.dataos.price import (
@@ -82,6 +86,29 @@ from lib.dataos.price import (
     is_ambiguous,
     parse_column,
 )
+from lib.dataos.price_views import (
+    ActionFamily,
+    RefusalReason,
+    ViewRefusal,
+    CONFIRMED,
+    SUPPORTED_FAMILIES,
+    UNSUPPORTED_FAMILIES,
+    CASH_BASES,
+    ActionEvent,
+    ActionRevisionSet,
+    AdjustmentReference,
+    PriceView,
+    split_factor,
+    adjust_quantity,
+    return_vector,
+    qualified_return,
+    raw_view,
+    sadj_view,
+    ReinvestPolicy,
+    TotalReturnPolicy,
+    TotalReturnView,
+    total_return_view,
+)
 from lib.dataos.quality import (
     CheckFamily,
     Finding,
@@ -94,7 +121,35 @@ from lib.dataos.quality import (
     check_validity_ohlc,
     emit_annotations,
 )
+from lib.dataos.read_contract import (
+    READ_CONTRACT_VERSION,
+    CurrentEvidence,
+    Dependency,
+    GenerationRef,
+    ReadContractError,
+    ReadMode,
+    ReadRefusal,
+    ReadRequest,
+    ReadResult,
+    RefusalCode,
+    RetainedOutput,
+    ViewContract,
+    current,
+    eligible_rows,
+    reconstruct,
+    replay,
+    resolve_revisions,
+    select_generation,
+    selected_input_sha256s,
+)
 from lib.dataos.registry import (
+    ACTION_FIELD_CONVENTIONS,
+    ACTION_INPUT_FIELDS,
+    ACTION_INPUT_OPTIONAL_FIELDS,
+    ACTION_INPUT_ORIGINS,
+    ACTION_INPUT_RESPONSES,
+    ActionInputStatus,
+    ActionInputVerdict,
     ConflictPolicy,
     DatasetContract,
     DatasetStatus,
@@ -103,6 +158,7 @@ from lib.dataos.registry import (
     Registry,
     RegistryError,
     load_registry,
+    qualify_action_input,
     validate_registry,
 )
 from lib.dataos.temporal import (
@@ -127,9 +183,17 @@ __all__ = [
     "CNBoard", "cn_board", "is_legacy_bse_code",
     "normalize_cn_symbol", "normalize_hk_symbol",
     "AliasRow", "VendorAliasTable",
+    "AliasResolution", "ReferenceReadReceipt", "ReferenceSnapshot",
+    "validate_reference_snapshot",
     # temporal (§D3)
     "TemporalError", "PointInTimeError", "Clock", "TemporalProfile",
     "KNOWN_AT_CLOCKS", "utc", "known_at", "assert_pit_readable", "as_of_filter",
+    # read contract (D00.D1: CURRENT / RECONSTRUCT / REPLAY above temporal)
+    "READ_CONTRACT_VERSION", "ReadMode", "RefusalCode", "ReadContractError",
+    "ReadRefusal", "ViewContract", "ReadRequest", "GenerationRef", "Dependency",
+    "CurrentEvidence", "RetainedOutput", "ReadResult", "eligible_rows",
+    "resolve_revisions", "select_generation", "reconstruct", "current", "replay",
+    "selected_input_sha256s",
     # price (§D4)
     "PriceError", "AdjustmentBasis", "PriceField", "Session", "VenueScope",
     "canonical_column", "parse_column", "AMBIGUOUS_NAMES", "is_ambiguous",
@@ -138,6 +202,31 @@ __all__ = [
     "RegistryError", "Layer", "DatasetStatus", "ConflictPolicy",
     "DatasetContract", "Registry", "REGISTRY_PATH", "load_registry",
     "validate_registry",
+    "ActionInputStatus", "ActionInputVerdict", "qualify_action_input",
+    "ACTION_INPUT_FIELDS", "ACTION_INPUT_OPTIONAL_FIELDS", "ACTION_INPUT_ORIGINS",
+    "ACTION_INPUT_RESPONSES", "ACTION_FIELD_CONVENTIONS",
+    # price_views (D00.D3 action projection, split/distribution/total-return views)
+    "ActionFamily",
+    "RefusalReason",
+    "ViewRefusal",
+    "CONFIRMED",
+    "SUPPORTED_FAMILIES",
+    "UNSUPPORTED_FAMILIES",
+    "CASH_BASES",
+    "ActionEvent",
+    "ActionRevisionSet",
+    "AdjustmentReference",
+    "PriceView",
+    "split_factor",
+    "adjust_quantity",
+    "return_vector",
+    "qualified_return",
+    "raw_view",
+    "sadj_view",
+    "ReinvestPolicy",
+    "TotalReturnPolicy",
+    "TotalReturnView",
+    "total_return_view",
     # nulls (§D6)
     "MissingReason", "NullPolicy", "validate_value",
     # quality (§D8)
