@@ -434,6 +434,30 @@ def test_public_admission_refuses_private_content_outside_a_plain_dict() -> None
     assert_public_workspace_admission(public_proxy)
 
 
+def test_public_admission_refuses_str_subclass_private_metric_id() -> None:
+    """A str-subclass metric id equal to pg_diluted_eps is the private profile."""
+
+    class _MetricId(str):
+        pass
+
+    private_metric = {
+        "private": False,
+        "facts": [{"metric": _MetricId("pg_diluted_eps")}],
+    }
+    with pytest.raises(PrivateEconomicStageError, match="private_workspace_refused"):
+        assert_public_workspace_admission(private_metric)
+
+    public_metric = {
+        "issuer": {"company_id": "cik:0000320193", "ticker": "AAPL"},
+        "facts": [{
+            "metric": _MetricId("revenue"),
+            "source_span": {"rights_profile": "rp_public_primary_v1"},
+        }],
+        "authority": "context_only",
+    }
+    assert_public_workspace_admission(public_metric)
+
+
 def test_clean_v1_baseline_has_no_native_stage(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     _permit(monkeypatch, tmp_path)
     receipt = run_economic_wire_fixture(tmp_path, wire="w1", source=None)

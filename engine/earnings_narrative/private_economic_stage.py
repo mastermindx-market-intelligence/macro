@@ -254,7 +254,7 @@ def _carries_private_profile(value: Any, depth: int) -> bool:
         raise PrivateEconomicStageError("over_limit")
     if isinstance(value, Mapping):
         metric = value.get("metric")
-        if type(metric) is str and metric in _PRIVATE_METRICS:
+        if isinstance(metric, str) and metric in _PRIVATE_METRICS:
             return True
         if value.get("rights_profile") == pg_profile.PG_PRIVATE_RIGHTS_PROFILE:
             return True
