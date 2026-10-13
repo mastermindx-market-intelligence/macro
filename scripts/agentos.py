@@ -42,7 +42,9 @@ by running ``status`` with sockets disabled.
 
 Subcommands:
     validate          schema + referential integrity over agentos/ (Phase 0).
-                      ``--paths`` judges only the named records. ``--strict``
+                      ``--paths`` judges only the named records. When those paths
+                      already include every handoff join (workstream, decisions,
+                      discoveries), the other records are not loaded. ``--strict``
                       (with ``--snapshot`` and ``--paths``) also fails on schema
                       warnings for those records and compares pins to the seat
                       snapshot. ``--snapshot`` alone reports PR counts and adds
@@ -2182,14 +2184,157 @@ def _schema_problems_outside_store(
     return found
 
 
+# Handoff joins checked by ``check_references``. A named set that already
+# holds each target does not need the rest of the store for that join.
+_HANDOFF_JOIN_FIELDS = (
+    ("workstream", "WS"),
+    ("decisions", "DEC"),
+    ("discoveries", "DSC"),
+)
+_DANGLING_REF_RE = re.compile(r"\b(WS|DEC|DSC):([A-Z0-9-]+)")
+
+
+def _citation_path(root: Path, prefix: str, key: str) -> Path | None:
+    for folder, spec_prefix, fileprefix, _checker in SPECS:
+        if spec_prefix == prefix:
+            return root / folder / f"{fileprefix}{key}.md"
+    return None
+
+
+def _cited_record_exists(root: Path, prefix: str, key: str) -> bool:
+    """True when the conventional file parses as that record.
+
+    An unparseable sibling is not a resolved join: the full store leaves it
+    out of ``records`` and reports ``dangling-ref``.
+    """
+    path = _citation_path(root, prefix, key)
+    if path is None or not path.is_file():
+        return False
+    try:
+        rec, _body = parse_record(path)
+    except ValueError:
+        return False
+    if prefix == "HND":
+        return path.stem == key
+    return rec.get("key") == key
+
+
+def _paths_cover_handoff_joins(root: Path, path_args: list[str]) -> bool:
+    """True when every named handoff's joins already point at a named path.
+
+    A path list with no handoff is not covered, so a lone decision or
+    workstream still takes the full store. A join target that is not named
+    is not covered: the caller loads the store, and a missing record still
+    comes back ``dangling-ref``.
+    """
+    wanted = {Path(raw).resolve() for raw in path_args}
+    saw_handoff = False
+    for raw in path_args:
+        path = Path(raw)
+        spec = _spec_for(path)
+        if spec is None or spec[1] != "HND":
+            continue
+        saw_handoff = True
+        if not path.is_file():
+            return False
+        try:
+            rec, _body = parse_record(path)
+        except ValueError:
+            continue
+        for field, prefix in _HANDOFF_JOIN_FIELDS:
+            for key in _refs(rec.get(field), prefix):
+                target = _citation_path(root, prefix, key)
+                if target is None or target.resolve() not in wanted:
+                    return False
+    return saw_handoff
+
+
+def _drop_partial_false_findings(store: Store) -> None:
+    """Drop subset findings that are artifacts of not loading the whole store.
+
+    A named handoff join is in ``store.records``, so a real dangling ref
+    still stands. A workstream citation whose file exists but was not named
+    must not become ``dangling-ref``. ``uncited-discovery`` counts every
+    citation in the store; the named subset cannot decide it, and unscoped
+    ``validate`` still does.
+    """
+    kept: list[Problem] = []
+    for problem in store.problems:
+        if problem.rule == "uncited-discovery":
+            continue
+        if problem.rule == "dangling-ref":
+            match = _DANGLING_REF_RE.search(problem.message)
+            if match and _cited_record_exists(store.root, match.group(1), match.group(2)):
+                continue
+        kept.append(problem)
+    store.problems = kept
+
+
+def _load_named_store(
+    root: Path, path_args: list[str], programs: set[str] | None,
+) -> Store:
+    """Parse and check only ``path_args``. Never calls :func:`load_store`.
+
+    Per-file checks match ``load_store``. A cycle that runs through a
+    workstream outside this set is not recomputed here.
+    """
+    store = Store(root)
+    seen: set[Path] = set()
+    for raw in path_args:
+        path = Path(raw)
+        resolved = path.resolve()
+        if resolved in seen:
+            continue
+        seen.add(resolved)
+        if not path.is_file():
+            continue
+        spec = _spec_for(path)
+        if spec is None:
+            continue
+        folder, prefix, fileprefix, checker = spec
+        if fileprefix and not path.name.startswith(fileprefix):
+            store.problems.append(
+                Problem(path, "bad-filename",
+                        f"{folder}/ files must start with '{fileprefix}'", hard=True)
+            )
+            continue
+        try:
+            rec, body = parse_record(path)
+        except ValueError as exc:
+            store.problems.append(Problem(path, "unparseable", str(exc), hard=True))
+            continue
+        rec["_body"] = body
+        store.counts[folder] += 1
+        key = path.stem if prefix == "HND" else rec.get("key")
+        if isinstance(key, str) and key:
+            ident = f"{prefix}/{key}"
+            if ident in store.records:
+                store.problems.append(
+                    Problem(path, "duplicate-key",
+                            f"key {key!r} already defined at {store.paths[ident]}",
+                            hard=True)
+                )
+            else:
+                store.records[ident] = rec
+                store.paths[ident] = path
+        store.problems.extend(
+            checker(rec, path, programs) if checker is check_workstream
+            else checker(rec, path)
+        )
+    store.problems.extend(check_references(store.records, store.paths))
+    _drop_partial_false_findings(store)
+    return store
+
+
 def _named_record_problems(
     store: Store, path_args: list[str], programs: set[str] | None,
 ) -> tuple[list[Problem], dict[str, int]]:
     """Schema findings for the named files only.
 
-    The store is still loaded so a handoff's workstream join can resolve.
-    Findings on every other file stay out of this invocation: a stale or
-    malformed sibling must not fail a path-scoped check.
+    The caller passes either the whole store or, when ``--paths`` already
+    holds every handoff join, only those files. Findings on every other
+    file stay out of this invocation: a stale or malformed sibling must
+    not fail a path-scoped check.
     """
     counts = {"workstreams": 0, "decisions": 0, "discoveries": 0, "handoffs": 0}
     wanted = [Path(raw).resolve() for raw in path_args]
@@ -2283,7 +2428,12 @@ def cmd_validate(args: argparse.Namespace) -> int:
         print("::warning title=agentos::config/mastermind_programs.yml unreadable — "
               "program keys not validated (fail-open join)", flush=True)
 
-    store = load_store(store_root, programs)
+    # Knowledge plane only. Skipping the directory walk does not dispatch,
+    # rank, or decide whether a record's work may run.
+    if path_args and _paths_cover_handoff_joins(store_root, path_args):
+        store = _load_named_store(store_root, path_args, programs)
+    else:
+        store = load_store(store_root, programs)
     if path_args:
         problems, counts = _named_record_problems(store, path_args, programs)
     else:

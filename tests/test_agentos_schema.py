@@ -14,6 +14,7 @@ print, never through a logger.
 """
 from __future__ import annotations
 
+import argparse
 import datetime as _dt
 import importlib.util
 import json
@@ -2210,6 +2211,114 @@ def test_d3_sockets_disabled(tmp_path: Path) -> None:
     reported = _agentos("validate", "--root", str(root), "--snapshot", str(snap), env=env)
     assert reported.returncode == 0, reported.stdout + reported.stderr
     assert "network access attempted" not in (reported.stdout + reported.stderr)
+
+
+_OUTSIDE_DECISION = """---
+key: OUTSIDE-PATH
+question: Cited by the workstream and left out of --paths.
+answer: The file is on disk.
+rationale: A partial load must not call this citation dangling.
+alternatives:
+  - option: Load every record.
+    why_not: The handoff joins are already named.
+evidence:
+  - scripts/agentos.py:2185
+affects:
+  - WS:DRAFT-ROUNDTRIP
+confidence: high
+reversibility: easy
+decided_by: lane
+decided_at: "2026-10-12"
+---
+"""
+
+
+def _join_fixture(tmp_path: Path) -> tuple[Path, Path, Path]:
+    """Handoff plus its workstream, and a decision the workstream cites.
+
+    The decision is a sibling of the named set: it is a real record, and it
+    is not a handoff join target. A garbage handoff sits beside them so a
+    full-store load is observable when the test does not block it.
+    """
+    workstream = _D3_WS.replace(
+        "next_action: Nothing for this fixture.\n---\n",
+        "next_action: Nothing for this fixture.\n"
+        "decisions:\n"
+        "  - DEC:OUTSIDE-PATH\n"
+        "---\n",
+    )
+    handoff = _handoff_doc(
+        state_before="previous",
+        changed_what="No live pin.",
+        unresolved=["one"],
+        body="Narrative only.\n",
+    )
+    root = _write_tree(tmp_path, {
+        "workstreams/WS-DRAFT-ROUNDTRIP.md": workstream,
+        "decisions/DEC-OUTSIDE-PATH.md": _OUTSIDE_DECISION,
+        "handoffs/DRAFT-ROUNDTRIP-2026-10-12.md": handoff,
+        "handoffs/GARBAGE-2026-10-12.md": "---\nthis: no\n---\n\nSee above.\n",
+    })
+    return (
+        root,
+        root / "handoffs" / "DRAFT-ROUNDTRIP-2026-10-12.md",
+        root / "workstreams" / "WS-DRAFT-ROUNDTRIP.md",
+    )
+
+
+def _boom_on_full_store(module: object, monkeypatch: pytest.MonkeyPatch) -> None:
+    def _boom(root: Path, programs: set[str] | None) -> object:
+        raise RuntimeError("full-store load")
+
+    monkeypatch.setattr(module, "load_store", _boom)
+
+
+def test_d3_self_contained_paths_skip_full_store(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str],
+) -> None:
+    """Named paths that already hold every handoff join must not load the store.
+
+    The workstream cites DEC:OUTSIDE-PATH, which is on disk and not named.
+    That citation is not a handoff join. It must not come back dangling, and
+    the garbage sibling must not be judged.
+    """
+    module = _load_agentos_module()
+    _boom_on_full_store(module, monkeypatch)
+    root, handoff, workstream = _join_fixture(tmp_path)
+    snap = _dump_json(tmp_path, "snap.json", {"prs": []})
+    args = argparse.Namespace(
+        root=str(root),
+        quiet=False,
+        strict=True,
+        snapshot=str(snap),
+        paths=[str(handoff), str(workstream)],
+    )
+    result = module.cmd_validate(args)
+    captured = capsys.readouterr()
+    assert result == 0, captured.out + captured.err
+    assert "dangling-ref" not in captured.out
+    assert "unparseable" not in captured.out
+    assert "context-free-handoff" not in captured.out
+    assert "2 records (1 workstreams, 0 decisions, 0 discoveries, 1 handoffs)" in captured.out
+
+
+def test_d3_paths_missing_join_target_loads_full_store(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """A handoff join that is not in --paths still loads the whole store."""
+    module = _load_agentos_module()
+    _boom_on_full_store(module, monkeypatch)
+    root, handoff, _workstream = _join_fixture(tmp_path)
+    snap = _dump_json(tmp_path, "snap.json", {"prs": []})
+    args = argparse.Namespace(
+        root=str(root),
+        quiet=False,
+        strict=True,
+        snapshot=str(snap),
+        paths=[str(handoff)],
+    )
+    with pytest.raises(RuntimeError, match="full-store load"):
+        module.cmd_validate(args)
 
 
 def test_d3_no_network_or_gh_in_agentos() -> None:
