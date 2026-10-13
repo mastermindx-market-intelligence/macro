@@ -137,7 +137,7 @@
         {
           "path": "templates/_risk_radar_pullback_depth.html.j2",
           "role": "jinja_template",
-          "sha256": "f78435df51fd83528cda6e813add95655ea9f87c451fffe8b0d4c6c306ad2f68"
+          "sha256": "eead00d1bb0145dd959e9e2af8086e32bd5cea4dc7ae5526ffd36857f0fd7b26"
         },
         {
           "path": "templates/_seo_head.html.j2",
@@ -491,7 +491,7 @@
         {
           "path": "templates/_risk_radar_pullback_depth.html.j2",
           "role": "jinja_template",
-          "sha256": "f78435df51fd83528cda6e813add95655ea9f87c451fffe8b0d4c6c306ad2f68"
+          "sha256": "eead00d1bb0145dd959e9e2af8086e32bd5cea4dc7ae5526ffd36857f0fd7b26"
         },
         {
           "path": "templates/_seo_head.html.j2",
