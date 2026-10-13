@@ -472,6 +472,14 @@ def test_t10_production_clock_path_writes_shadow(production_world, monkeypatch, 
         return real_datetime.fromisoformat(value.replace("Z", "+00:00"))
 
     assert _parse_instant(loaded["generated_at"]) >= _parse_instant(loaded["known_at"])
+    observed = theme_state.read_theme_state(
+        loaded, "theme:grid", effective_at=loaded["effective_at"],
+        known_at=loaded["generated_at"], expected_generation_id=loaded["generation_id"],
+    )
+    assert "SOURCE_AFTER_CUTOFF" not in observed["reason_codes"], observed["reason_codes"]
+    assert observed["status"] == "UNAVAILABLE"
+    assert {"IDENTITY_UNAVAILABLE", "MEMBERSHIP_UNAVAILABLE", "RIGHTS_NOT_ADMITTED",
+            "RIGHTS_UNAVAILABLE"} <= set(observed["reason_codes"])
     assert "shadow_graph_state=written" in out
 
 
@@ -570,3 +578,41 @@ def test_t15_capture_memo_reads_each_owner_frame_once_bundle_unchanged(productio
         "read_nodes": 2, "read_node_lifecycle": 1, "read_edges": 1, "read_proposals": 1}
     assert calls.count("read_edges") == len(subjects)
     assert _wall_clock_masked(memo.payload_json) == _wall_clock_masked(direct.payload_json)
+
+
+@pytest.mark.parametrize("failure", ["midnight", "native_mutation", "qualification_mutation"])
+def test_live_capture_refusal_preserves_previous_shadow(production_world, monkeypatch, capsys, failure):
+    from engine.neuralweb import theme_state_adapter as adapter
+    from engine.neuralweb import thematic_state as legacy
+    from tests.test_theme_state_owner_adapter import _live_capture_clock
+
+    prior = _write_prior(production_world)
+    instants = ("2026-10-04T23:59:59Z", "2026-10-05T00:00:01Z") if failure == "midnight" else (
+        "2026-10-04T12:00:00Z", "2026-10-04T12:00:03Z")
+    _live_capture_clock(monkeypatch, *instants)
+
+    def mutate():
+        (production_world / legacy._NARRATIVE_PATH).write_text('{"as_of":"2026-10-03","narratives":[]}')
+
+    if failure == "native_mutation":
+        original = adapter.ontology.compose_neighborhood
+
+        def during_native(*args, **kwargs):
+            result = original(*args, **kwargs)
+            mutate()
+            return result
+        monkeypatch.setattr(adapter.ontology, "compose_neighborhood", during_native)
+    elif failure == "qualification_mutation":
+        class Reader:
+            def read_state_qualification(self, **kwargs):
+                mutate()
+                return None
+        original = adapter.capture_owner_bundle
+        monkeypatch.setattr(adapter, "capture_owner_bundle",
+                            lambda *args, **kwargs: original(*args, owner_readers=Reader(), **kwargs))
+
+    assert builder.build(production_world, mode=MODE) == 0
+    assert (production_world / SHADOW).read_bytes() == prior
+    out = capsys.readouterr().out
+    assert "shadow_graph_state=skipped" in out
+    assert "day changed" in out if failure == "midnight" else "source changed" in out

@@ -1,0 +1,2582 @@
+{
+  "schema_version": "gmi.source_rights_review_candidate.v2",
+  "as_of": "2026-10-08",
+  "artifact_role": "Rights/provenance and adoption-review inventory; not a truth store, adopted dataset, entitlement authorization or PIT proof",
+  "owners": {
+    "dataos_interfaces": {
+      "identity": "Incumbent issuer/security/listing/instrument identity spine; non-security mint/correction rules require adoption receipts",
+      "registry_and_temporal": "Registered dataset/profile contract and lib.dataos.temporal.known_at/as_of_filter",
+      "source_policy": "Incumbent source/entitlement policy interface; not universal fact or retention custody",
+      "source_refs": [
+        "C01",
+        "C02",
+        "C03"
+      ]
+    },
+    "native_fact_custody": "Existing specialist owners retain facts; each proposed binding is null/PENDING_ADOPTION until owner receipt is provided",
+    "projection_consumer_candidates": [
+      "ThemeGraph",
+      "F04 within existing composition boundary",
+      "K3-D within existing held hypothesis boundary"
+    ],
+    "production_or_procurement_authorization": "Existing commission and canonical decision owners; none granted by register",
+    "boundary_source_refs": [
+      "C01",
+      "C04"
+    ]
+  },
+  "procedure_pin": {
+    "repository": "mastermindx-market-intelligence/Mastermind",
+    "commit": "c7e47c859eb2925c5626931fd511800773ba09ac",
+    "skillpack_version": "1.0.1",
+    "pin_provided_by_parent": true
+  },
+  "rights_status_enum": [
+    "allowed_by_documented_license",
+    "conditional",
+    "prohibited_by_default",
+    "unknown"
+  ],
+  "null_reason_enum": [
+    "UNDISCLOSED",
+    "ANONYMIZED",
+    "NOT_COVERED",
+    "NOT_ENTITLED",
+    "FETCH_BLOCKED",
+    "PARSE_FAILED",
+    "UNIT_UNKNOWN",
+    "DENOMINATOR_UNKNOWN",
+    "CLOCK_UNPROVEN",
+    "STALE_REVIEW_PENDING",
+    "ESTIMATE_ONLY",
+    "PENDING_ADOPTION"
+  ],
+  "asset_classes": [
+    "source_document",
+    "extracted_assertion",
+    "feature_vector_or_metric",
+    "embedding_or_search_index",
+    "training_or_evaluation_input",
+    "public_display_or_customer_api",
+    "active_retention",
+    "post_termination_retention"
+  ],
+  "default_control": "Fail unresolved purpose admission; retain unknown as typed null; do not convert unknown into universal license or universal confidence",
+  "source_records": [
+    {
+      "source_id": "S01",
+      "canonical_urls": [
+        "https://www.sec.gov/search-filings/edgar-application-programming-interfaces"
+      ],
+      "locator": "data.sec.gov/submissions; XBRL APIs; Bulk Data; Update Schedule, lines24–80",
+      "inspection_note": "Original inspected; last reviewed Apr8 2025.",
+      "retrieved_on": "2026-10-08",
+      "publisher_assertion_only": false,
+      "inspection_status": "inspected_primary_relevant_sections",
+      "production_entitlement_verified": false,
+      "executed_contract": null,
+      "observed_dataset_sample": false,
+      "rights_profile_ids": [
+        "SEC_PUBLIC_ACCESS"
+      ],
+      "evidence_kind": "official_rule_or_public_policy"
+    },
+    {
+      "source_id": "S02",
+      "canonical_urls": [
+        "https://www.sec.gov/about/privacy-information"
+      ],
+      "locator": "Internet Security Policy, lines95–103",
+      "inspection_note": "Original inspected.",
+      "retrieved_on": "2026-10-08",
+      "publisher_assertion_only": false,
+      "inspection_status": "inspected_primary_relevant_sections",
+      "production_entitlement_verified": false,
+      "executed_contract": null,
+      "observed_dataset_sample": false,
+      "rights_profile_ids": [
+        "SEC_PUBLIC_ACCESS"
+      ],
+      "evidence_kind": "official_rule_or_public_policy"
+    },
+    {
+      "source_id": "S03",
+      "canonical_urls": [
+        "https://www.sec.gov/about/developer-resources"
+      ],
+      "locator": "Fair Access / scripted access guidance",
+      "inspection_note": "Original inspected; API link lineage.",
+      "retrieved_on": "2026-10-08",
+      "publisher_assertion_only": false,
+      "inspection_status": "inspected_primary_relevant_sections",
+      "production_entitlement_verified": false,
+      "executed_contract": null,
+      "observed_dataset_sample": false,
+      "rights_profile_ids": [
+        "SEC_PUBLIC_ACCESS"
+      ],
+      "evidence_kind": "official_rule_or_public_policy"
+    },
+    {
+      "source_id": "S04",
+      "canonical_urls": [
+        "https://www.supplychainreports.apple/Apple-Supplier-List"
+      ],
+      "locator": "PDF p1 cover; p2+ names/primary manufacturing locations",
+      "inspection_note": "Original 27-page PDF inspected relevant cover/table; current landing links FY2023.",
+      "retrieved_on": "2026-10-08",
+      "publisher_assertion_only": false,
+      "inspection_status": "inspected_primary_relevant_sections",
+      "production_entitlement_verified": false,
+      "executed_contract": null,
+      "observed_dataset_sample": false,
+      "rights_profile_ids": [
+        "ISSUER_DOCUMENT_CASE_BY_CASE"
+      ],
+      "evidence_kind": "issuer_document"
+    },
+    {
+      "source_id": "S05",
+      "canonical_urls": [
+        "https://www.gleif.org/en/about/open-data"
+      ],
+      "locator": "Open Data, lines355–360",
+      "inspection_note": "Original inspected: free access/CC0.",
+      "retrieved_on": "2026-10-08",
+      "publisher_assertion_only": false,
+      "inspection_status": "inspected_primary_relevant_sections",
+      "production_entitlement_verified": false,
+      "executed_contract": null,
+      "observed_dataset_sample": false,
+      "rights_profile_ids": [
+        "GLEIF_CC0"
+      ],
+      "evidence_kind": "official_rule_or_public_policy"
+    },
+    {
+      "source_id": "S06",
+      "canonical_urls": [
+        "https://www.gleif.org/en/lei-data/access-and-use-lei-data/level-2-data-who-owns-whom"
+      ],
+      "locator": "Level2 section, lines381–386",
+      "inspection_note": "Original inspected relevant section.",
+      "retrieved_on": "2026-10-08",
+      "publisher_assertion_only": false,
+      "inspection_status": "inspected_primary_relevant_sections",
+      "production_entitlement_verified": false,
+      "executed_contract": null,
+      "observed_dataset_sample": false,
+      "rights_profile_ids": [
+        "GLEIF_CC0"
+      ],
+      "evidence_kind": "official_rule_or_public_policy"
+    },
+    {
+      "source_id": "S07",
+      "canonical_urls": [
+        "https://www.gov.uk/government/organisations/companies-house/about/about-our-services"
+      ],
+      "locator": "Data products, lines108–121",
+      "inspection_note": "Original inspected; no API key obtained.",
+      "retrieved_on": "2026-10-08",
+      "publisher_assertion_only": false,
+      "inspection_status": "inspected_primary_relevant_sections",
+      "production_entitlement_verified": false,
+      "executed_contract": null,
+      "observed_dataset_sample": false,
+      "rights_profile_ids": [
+        "UK_REGISTRY_ACCESS"
+      ],
+      "evidence_kind": "official_rule_or_public_policy"
+    },
+    {
+      "source_id": "S08",
+      "canonical_urls": [
+        "https://www.csrc.gov.cn/csrc/c101954/c7547588/content.shtml",
+        "https://www.csrc.gov.cn/csrc/c101954/c7547588/7547588/files/%E9%99%84%E4%BB%B61%EF%BC%9A%E5%85%AC%E5%BC%80%E5%8F%91%E8%A1%8C%E8%AF%81%E5%88%B8%E7%9A%84%E5%85%AC%E5%8F%B8%E4%BF%A1%E6%81%AF%E6%8A%AB%E9%9C%B2%E5%86%85%E5%AE%B9%E4%B8%8E%E6%A0%BC%E5%BC%8F%E5%87%86%E5%88%99%E7%AC%AC2%E5%8F%B7%E2%80%94%E2%80%94%E5%B9%B4%E5%BA%A6%E6%8A%A5%E5%91%8A%E7%9A%84%E5%86%85%E5%AE%B9%E4%B8%8E%E6%A0%BC%E5%BC%8F.pdf"
+      ],
+      "locator": "Announcement 2025 No3; official Attachment1 Article5 pp2, Article25 printed pp14–15 (PDF indexes13–14)",
+      "inspection_note": "First fetch timeout; later successful original HTML and 59-page attachment inspected.",
+      "retrieved_on": "2026-10-08",
+      "publisher_assertion_only": false,
+      "inspection_status": "inspected_primary_disclosure_rule_relevant_clauses",
+      "production_entitlement_verified": false,
+      "executed_contract": null,
+      "observed_dataset_sample": false,
+      "rights_profile_ids": [
+        "CHINA_DISCLOSURE_RULE"
+      ],
+      "evidence_kind": "official_rule_or_public_policy"
+    },
+    {
+      "source_id": "S09",
+      "canonical_urls": [
+        "https://www1.hkexnews.hk/listedco/listconews/sehk/2025/1231/2025123100025.pdf"
+      ],
+      "locator": "Business printed pp294–300; PDF indexes304–310, customer/supplier tables and overlap section",
+      "inspection_note": "Original relevant tables inspected from 716-page issuer prospectus; no whole-document claim.",
+      "retrieved_on": "2026-10-08",
+      "publisher_assertion_only": false,
+      "inspection_status": "inspected_primary_relevant_sections",
+      "production_entitlement_verified": false,
+      "executed_contract": null,
+      "observed_dataset_sample": false,
+      "rights_profile_ids": [
+        "ISSUER_DOCUMENT_CASE_BY_CASE"
+      ],
+      "evidence_kind": "issuer_document"
+    },
+    {
+      "source_id": "S10",
+      "canonical_urls": [
+        "https://systems.securities-administrators.ca/terms-of-use/"
+      ],
+      "locator": "§§2,3,5, lines27–70",
+      "inspection_note": "Current original inspected; states last updated Apr28 2023.",
+      "retrieved_on": "2026-10-08",
+      "publisher_assertion_only": false,
+      "inspection_status": "inspected_primary_relevant_sections",
+      "production_entitlement_verified": false,
+      "executed_contract": null,
+      "observed_dataset_sample": false,
+      "rights_profile_ids": [
+        "SEDAR_PUBLIC_DEFAULT"
+      ],
+      "evidence_kind": "official_rule_or_public_policy"
+    },
+    {
+      "source_id": "S11",
+      "canonical_urls": [
+        "https://apps.bea.gov/scb/issues/2026/08-august/0826-bea-accounts-national.htm"
+      ],
+      "locator": "Industry Accounts; Estimation methods / benchmark/balancing, lines60,108–117",
+      "inspection_note": "Original inspected.  IO landing extracted only 12 lines: https://www.bea.gov/industry/input-output-accounts-data was insufficient for latest file inventory.",
+      "retrieved_on": "2026-10-08",
+      "publisher_assertion_only": false,
+      "inspection_status": "inspected_primary_relevant_sections",
+      "production_entitlement_verified": false,
+      "executed_contract": null,
+      "observed_dataset_sample": false,
+      "rights_profile_ids": [
+        "BEA_IO"
+      ],
+      "evidence_kind": "official_rule_or_public_policy"
+    },
+    {
+      "source_id": "S12",
+      "canonical_urls": [
+        "https://www.oecd.org/en/data/datasets/inter-country-input-output-tables.html"
+      ],
+      "locator": "Inter-Country IO tables / 2025 edition, lines3719–3749",
+      "inspection_note": "Original inspected; second revision Jan2026, years through2022.",
+      "retrieved_on": "2026-10-08",
+      "publisher_assertion_only": false,
+      "inspection_status": "inspected_primary_relevant_sections",
+      "production_entitlement_verified": false,
+      "executed_contract": null,
+      "observed_dataset_sample": false,
+      "rights_profile_ids": [
+        "OECD_DATA_QUALIFIED"
+      ],
+      "evidence_kind": "official_rule_or_public_policy"
+    },
+    {
+      "source_id": "S13",
+      "canonical_urls": [
+        "https://www.rug.nl/ggdc/valuechain/wiod/wiod-2016-release?lang=en"
+      ],
+      "locator": "Release intro, Input-output tables, license, lines99–117",
+      "inspection_note": "Original inspected. DOI10.34894/PJ2M1C; CC BY4.0.",
+      "retrieved_on": "2026-10-08",
+      "publisher_assertion_only": false,
+      "inspection_status": "inspected_primary_relevant_sections",
+      "production_entitlement_verified": false,
+      "executed_contract": null,
+      "observed_dataset_sample": false,
+      "rights_profile_ids": [
+        "WIOD_CC_BY_4"
+      ],
+      "evidence_kind": "official_rule_or_public_policy"
+    },
+    {
+      "source_id": "S14",
+      "canonical_urls": [
+        "https://www.oecd.org/en/about/terms-conditions.html"
+      ],
+      "locator": "§3 Data / Permitted Use / API, lines3773–3790",
+      "inspection_note": "Original inspected. Data-specific/third-party restriction qualification preserved.",
+      "retrieved_on": "2026-10-08",
+      "publisher_assertion_only": false,
+      "inspection_status": "inspected_primary_relevant_sections",
+      "production_entitlement_verified": false,
+      "executed_contract": null,
+      "observed_dataset_sample": false,
+      "rights_profile_ids": [
+        "OECD_DATA_QUALIFIED"
+      ],
+      "evidence_kind": "official_rule_or_public_policy"
+    },
+    {
+      "source_id": "S15",
+      "canonical_urls": [
+        "https://insight.factset.com/supply-chain-signals-enhancing-the-customer-momentum-strategy-with-network-centrality"
+      ],
+      "locator": "Analysis of Supply Chain Relationships, lines35–37",
+      "inspection_note": "Official original inspected; Mar2 2026. Do not attribute alpha validation to this memo.",
+      "retrieved_on": "2026-10-08",
+      "publisher_assertion_only": true,
+      "inspection_status": "inspected_primary_vendor_advertised_or_documented_capability",
+      "production_entitlement_verified": false,
+      "executed_contract": null,
+      "observed_dataset_sample": false,
+      "rights_profile_ids": [
+        "FACTSET_CONTRACT_PENDING"
+      ],
+      "evidence_kind": "vendor_product_documentation_or_price_display"
+    },
+    {
+      "source_id": "S16",
+      "canonical_urls": [
+        "https://insight.factset.com/tariff-uncertainty-unveiling-hidden-revenue-and-supply-chain-risks"
+      ],
+      "locator": "GeoRev/Supply Chain/RBICS, lines35–44; estimate labels",
+      "inspection_note": "Official original inspected; Aug20 2025.",
+      "retrieved_on": "2026-10-08",
+      "publisher_assertion_only": true,
+      "inspection_status": "inspected_primary_vendor_advertised_or_documented_capability",
+      "production_entitlement_verified": false,
+      "executed_contract": null,
+      "observed_dataset_sample": false,
+      "rights_profile_ids": [
+        "FACTSET_CONTRACT_PENDING"
+      ],
+      "evidence_kind": "vendor_product_documentation_or_price_display"
+    },
+    {
+      "source_id": "S17",
+      "canonical_urls": [
+        "https://www.spglobal.com/market-intelligence/en/solutions/products/business-relationships-analytics"
+      ],
+      "locator": "Intro lines1358–1359; FAQs lines1449–1473",
+      "inspection_note": "Official original inspected. BRA observed links/estimated values, quarterly.  Marketplace BRA tile extracted zero lines, not independent evidence.",
+      "retrieved_on": "2026-10-08",
+      "publisher_assertion_only": true,
+      "inspection_status": "inspected_primary_vendor_advertised_or_documented_capability",
+      "production_entitlement_verified": false,
+      "executed_contract": null,
+      "observed_dataset_sample": false,
+      "rights_profile_ids": [
+        "SPGLOBAL_CONTRACT_PENDING"
+      ],
+      "evidence_kind": "vendor_product_documentation_or_price_display"
+    },
+    {
+      "source_id": "S18",
+      "canonical_urls": [
+        "https://docs.kensho.com/llmreadyapi/overview"
+      ],
+      "locator": "Overview / Getting Started, lines111–131",
+      "inspection_note": "Official original inspected; API/MCP access.",
+      "retrieved_on": "2026-10-08",
+      "publisher_assertion_only": true,
+      "inspection_status": "inspected_primary_vendor_advertised_or_documented_capability",
+      "production_entitlement_verified": false,
+      "executed_contract": null,
+      "observed_dataset_sample": false,
+      "rights_profile_ids": [
+        "SPGLOBAL_CONTRACT_PENDING"
+      ],
+      "evidence_kind": "vendor_product_documentation_or_price_display"
+    },
+    {
+      "source_id": "S19",
+      "canonical_urls": [
+        "https://docs.kensho.com/llmreadyapi/faqs"
+      ],
+      "locator": "Data & Accuracy, lines192–208",
+      "inspection_note": "Official original inspected; refresh channel qualification.  Base Business Relationships marketplace click had zero extracted body.",
+      "retrieved_on": "2026-10-08",
+      "publisher_assertion_only": true,
+      "inspection_status": "inspected_primary_vendor_advertised_or_documented_capability",
+      "production_entitlement_verified": false,
+      "executed_contract": null,
+      "observed_dataset_sample": false,
+      "rights_profile_ids": [
+        "SPGLOBAL_CONTRACT_PENDING"
+      ],
+      "evidence_kind": "vendor_product_documentation_or_price_display"
+    },
+    {
+      "source_id": "S20",
+      "canonical_urls": [
+        "https://professional.bloomberg.com/institutions/corporations/supply-chain/"
+      ],
+      "locator": "Explore 500,000 unique relationships, lines185–188; Supply Chain Data,239–243",
+      "inspection_note": "Official original inspected.",
+      "retrieved_on": "2026-10-08",
+      "publisher_assertion_only": true,
+      "inspection_status": "inspected_primary_vendor_advertised_or_documented_capability",
+      "production_entitlement_verified": false,
+      "executed_contract": null,
+      "observed_dataset_sample": false,
+      "rights_profile_ids": [
+        "BLOOMBERG_CONTRACT_PENDING"
+      ],
+      "evidence_kind": "vendor_product_documentation_or_price_display"
+    },
+    {
+      "source_id": "S21",
+      "canonical_urls": [
+        "https://developers.lseg.com/en/article-catalog/article/enhanced-corporate-bond-risk-analysis-through-value-chain-inspection"
+      ],
+      "locator": "Introduction / Imports, lines35–63; attenuation assumptions49–51; supplier traversal lines566–633 and1012–1038 (relationship confidence filter)",
+      "inspection_note": "Official developer article inspected; Dec27 2024, author university student. Tutorial is not audited product capability or recommended propagation law.",
+      "retrieved_on": "2026-10-08",
+      "publisher_assertion_only": true,
+      "inspection_status": "inspected_primary_vendor_advertised_or_documented_capability",
+      "production_entitlement_verified": false,
+      "executed_contract": null,
+      "observed_dataset_sample": false,
+      "rights_profile_ids": [
+        "LSEG_CONTRACT_PENDING"
+      ],
+      "evidence_kind": "vendor_product_documentation_or_price_display"
+    },
+    {
+      "source_id": "S22",
+      "canonical_urls": [
+        "https://quartr.com/products/quartr-api"
+      ],
+      "locator": "First-party.Structured.Live,143–152; datasets232+",
+      "inspection_note": "Official original inspected; counts vendor claims.",
+      "retrieved_on": "2026-10-08",
+      "publisher_assertion_only": true,
+      "inspection_status": "inspected_primary_vendor_advertised_or_documented_capability",
+      "production_entitlement_verified": false,
+      "executed_contract": null,
+      "observed_dataset_sample": false,
+      "rights_profile_ids": [
+        "QUARTR_INTERNAL_US2026_1"
+      ],
+      "evidence_kind": "vendor_product_documentation_or_price_display"
+    },
+    {
+      "source_id": "S23",
+      "canonical_urls": [
+        "https://quartr.com/pricing"
+      ],
+      "locator": "Quartr API,25–32",
+      "inspection_note": "Official pricing inspected; contact sales.",
+      "retrieved_on": "2026-10-08",
+      "publisher_assertion_only": true,
+      "inspection_status": "inspected_primary_vendor_advertised_or_documented_capability",
+      "production_entitlement_verified": false,
+      "executed_contract": null,
+      "observed_dataset_sample": false,
+      "rights_profile_ids": [
+        "QUARTR_INTERNAL_US2026_1"
+      ],
+      "evidence_kind": "vendor_product_documentation_or_price_display"
+    },
+    {
+      "source_id": "S24",
+      "canonical_urls": [
+        "https://a.storyblok.com/f/182663/x/2bdb9a55bd/quartr-api-subscription-terms-us-internal-2026.pdf"
+      ],
+      "locator": "US2026:1 §§2.2–2.3,3.2 PDF p1;5.4,6.2 PDF p2",
+      "inspection_note": "Official terms-index link original 4-page PDF inspected relevant clauses.  Index https://quartr.com/terms-of-service.",
+      "retrieved_on": "2026-10-08",
+      "publisher_assertion_only": false,
+      "inspection_status": "inspected_public_standard_terms_not_executed_agreement",
+      "production_entitlement_verified": false,
+      "executed_contract": null,
+      "observed_dataset_sample": false,
+      "rights_profile_ids": [
+        "QUARTR_INTERNAL_US2026_1"
+      ],
+      "evidence_kind": "public_standard_terms"
+    },
+    {
+      "source_id": "S25",
+      "canonical_urls": [
+        "https://a.storyblok.com/f/182663/x/f08fd08953/quartr-api-standard-subscription-terms-us-redistribution-2026.pdf"
+      ],
+      "locator": "US2026:1 §§2.2,3.2,3.4 PDF p1;5.4 PDF p2",
+      "inspection_note": "Official terms-index link original inspected relevant clauses.  Non-US terms not inspected; executed Order overrides general terms.",
+      "retrieved_on": "2026-10-08",
+      "publisher_assertion_only": false,
+      "inspection_status": "inspected_public_standard_terms_not_executed_agreement",
+      "production_entitlement_verified": false,
+      "executed_contract": null,
+      "observed_dataset_sample": false,
+      "rights_profile_ids": [
+        "QUARTR_REDISTRIBUTION_US2026_1"
+      ],
+      "evidence_kind": "public_standard_terms"
+    },
+    {
+      "source_id": "S26",
+      "canonical_urls": [
+        "https://docs.fiscal.ai/docs/api-reference"
+      ],
+      "locator": "Segments/KPIs(v2), lines1125–1178",
+      "inspection_note": "Official original inspected relevant endpoint.",
+      "retrieved_on": "2026-10-08",
+      "publisher_assertion_only": true,
+      "inspection_status": "inspected_primary_vendor_advertised_or_documented_capability",
+      "production_entitlement_verified": false,
+      "executed_contract": null,
+      "observed_dataset_sample": false,
+      "rights_profile_ids": [
+        "FISCAL_API_RIGHTS_PENDING"
+      ],
+      "evidence_kind": "vendor_product_documentation_or_price_display"
+    },
+    {
+      "source_id": "S27",
+      "canonical_urls": [
+        "https://docs.fiscal.ai/docs/guides/free-trial"
+      ],
+      "locator": "Free Trial / Rate Limit / Included Companies,212–234",
+      "inspection_note": "Official original inspected; restricted set, no enrollment.",
+      "retrieved_on": "2026-10-08",
+      "publisher_assertion_only": true,
+      "inspection_status": "inspected_primary_vendor_advertised_or_documented_capability",
+      "production_entitlement_verified": false,
+      "executed_contract": null,
+      "observed_dataset_sample": false,
+      "rights_profile_ids": [
+        "FISCAL_API_RIGHTS_PENDING"
+      ],
+      "evidence_kind": "vendor_product_documentation_or_price_display"
+    },
+    {
+      "source_id": "S28",
+      "canonical_urls": [
+        "https://developer.alpha-sense.com/agent-api/credits-and-limits"
+      ],
+      "locator": "Credit Costs / Rate Limits,47–71",
+      "inspection_note": "Official original inspected. Credit units not dollars.",
+      "retrieved_on": "2026-10-08",
+      "publisher_assertion_only": true,
+      "inspection_status": "inspected_primary_vendor_advertised_or_documented_capability",
+      "production_entitlement_verified": false,
+      "executed_contract": null,
+      "observed_dataset_sample": false,
+      "rights_profile_ids": [
+        "ALPHASENSE_CONTRACT_PENDING"
+      ],
+      "evidence_kind": "vendor_product_documentation_or_price_display"
+    },
+    {
+      "source_id": "S29",
+      "canonical_urls": [
+        "https://www.alpha-sense.com/pricing/"
+      ],
+      "locator": "How Much Does AlphaSense Cost,73–75",
+      "inspection_note": "Official original inspected; annual/quote.",
+      "retrieved_on": "2026-10-08",
+      "publisher_assertion_only": true,
+      "inspection_status": "inspected_primary_vendor_advertised_or_documented_capability",
+      "production_entitlement_verified": false,
+      "executed_contract": null,
+      "observed_dataset_sample": false,
+      "rights_profile_ids": [
+        "ALPHASENSE_CONTRACT_PENDING"
+      ],
+      "evidence_kind": "vendor_product_documentation_or_price_display"
+    },
+    {
+      "source_id": "S30",
+      "canonical_urls": [
+        "https://www.ravenpack.com/blog/supply-chain-analytics/"
+      ],
+      "locator": "Announcement, lines68–78",
+      "inspection_note": "Official original inspected; Sep10 2019 historical announcement. Current purchasability unproven.",
+      "retrieved_on": "2026-10-08",
+      "publisher_assertion_only": true,
+      "inspection_status": "inspected_primary_vendor_advertised_or_documented_capability",
+      "production_entitlement_verified": false,
+      "executed_contract": null,
+      "observed_dataset_sample": false,
+      "rights_profile_ids": [
+        "RAVENPACK_CONNECTIONS_PENDING"
+      ],
+      "evidence_kind": "vendor_product_documentation_or_price_display"
+    },
+    {
+      "source_id": "S31",
+      "canonical_urls": [
+        "https://bigdata.com/pricing"
+      ],
+      "locator": "Starter/Pro/Max lines33–80; enterprise84+; cost-estimator117+",
+      "inspection_note": "Official original inspected. Displayed current promotional/monthly amounts; estimator not independent workload measurement.",
+      "retrieved_on": "2026-10-08",
+      "publisher_assertion_only": true,
+      "inspection_status": "inspected_primary_vendor_advertised_or_documented_capability",
+      "production_entitlement_verified": false,
+      "executed_contract": null,
+      "observed_dataset_sample": false,
+      "rights_profile_ids": [
+        "BIGDATA_DEFAULT_GROUNDING"
+      ],
+      "evidence_kind": "vendor_product_documentation_or_price_display"
+    },
+    {
+      "source_id": "S32",
+      "canonical_urls": [
+        "https://bigdata.com/terms-and-conditions"
+      ],
+      "locator": "§§4.2,4.5,4.6; derivative survival; ZDR requirement",
+      "inspection_note": "Official original inspected.  Rights claim limited to default terms; custom order unknown.",
+      "retrieved_on": "2026-10-08",
+      "publisher_assertion_only": false,
+      "inspection_status": "inspected_public_standard_terms_not_executed_agreement",
+      "production_entitlement_verified": false,
+      "executed_contract": null,
+      "observed_dataset_sample": false,
+      "rights_profile_ids": [
+        "BIGDATA_DEFAULT_GROUNDING"
+      ],
+      "evidence_kind": "public_standard_terms"
+    },
+    {
+      "source_id": "S33",
+      "canonical_urls": [
+        "https://www.ifrs.org/content/dam/ifrs/publications/html-standards/english/2026/issued/ifrs8.html"
+      ],
+      "locator": "Paragraph34 lines228–230; paragraph36B historical effective-date context",
+      "inspection_note": "Official original inspected. Customer concentration versus anonymity established; no claim all prospective amendments elsewhere are currently effective.",
+      "retrieved_on": "2026-10-08",
+      "publisher_assertion_only": false,
+      "inspection_status": "inspected_primary_disclosure_rule_relevant_clauses",
+      "production_entitlement_verified": false,
+      "executed_contract": null,
+      "observed_dataset_sample": false,
+      "rights_profile_ids": [
+        "RULE_TEXT_REFERENCES"
+      ],
+      "evidence_kind": "official_rule_or_public_policy"
+    },
+    {
+      "source_id": "S34",
+      "canonical_urls": [
+        "https://www.ecfr.gov/current/title-17/chapter-II/part-229/subpart-229.100/section-229.101"
+      ],
+      "locator": "§(c)(1)(i), lines137–146; §(h)(4)(v)–(vi),198–206",
+      "inspection_note": "Official current regulation inspected. No universal named-customer10% claim or uninspected US GAAP conclusion.",
+      "retrieved_on": "2026-10-08",
+      "publisher_assertion_only": false,
+      "inspection_status": "inspected_primary_disclosure_rule_relevant_clauses",
+      "production_entitlement_verified": false,
+      "executed_contract": null,
+      "observed_dataset_sample": false,
+      "rights_profile_ids": [
+        "RULE_TEXT_REFERENCES"
+      ],
+      "evidence_kind": "official_rule_or_public_policy"
+    },
+    {
+      "source_id": "G01",
+      "canonical_urls": [
+        "https://www.factset.com/marketplace/catalog/product/factset-supply-chain-relationships",
+        "https://developer.factset.com/api-catalog/factset-supply-chain-api"
+      ],
+      "locator": "Marketplace/API",
+      "inspection_note": "Opens returned zero extracted lines. Search showed fact-set.com hyphenated URLs; those were not assumed official or relied upon.",
+      "retrieved_on": "2026-10-08",
+      "publisher_assertion_only": false,
+      "inspection_status": "access_or_extraction_gap",
+      "production_entitlement_verified": false,
+      "executed_contract": null,
+      "observed_dataset_sample": false,
+      "rights_profile_ids": [
+        "FACTSET_CONTRACT_PENDING"
+      ],
+      "evidence_kind": "inspection_gap"
+    },
+    {
+      "source_id": "G02",
+      "canonical_urls": [
+        "https://en-rules.hkex.com.hk/rulebook/1840",
+        "https://www.hkex.com.hk/-/media/HKEX-Market/Listing/Rules-and-Guidance/Interpretation-and-Guidance/Guidance-Materials-for-Listed-Issuers/GM_consolidated.pdf"
+      ],
+      "locator": "Annual disclosure rules/guidance",
+      "inspection_note": "Original fetches failed/timeouts. Discovery snippets only, no full-rule conclusion.",
+      "retrieved_on": "2026-10-08",
+      "publisher_assertion_only": false,
+      "inspection_status": "access_or_extraction_gap",
+      "production_entitlement_verified": false,
+      "executed_contract": null,
+      "observed_dataset_sample": false,
+      "rights_profile_ids": [
+        "RULE_TEXT_REFERENCES"
+      ],
+      "evidence_kind": "inspection_gap"
+    },
+    {
+      "source_id": "G03",
+      "canonical_urls": [
+        "https://www.ifrs.org/content/dam/ifrs/publications/pdf-standards/english/2021/issued/part-a/ifrs-8-operating-segments.pdf",
+        "https://www.hkicpa.org.hk/-/media/HKICPA-Website/Members-Handbook/volumeII/hkfrs8.pdf"
+      ],
+      "locator": "Legacy IFRS8 PDF route",
+      "inspection_note": "Subscription redirect; no authentication attempted. HKICPA discovery mirror returned404. Material rule gap later resolved through S33 official2026 HTML.",
+      "retrieved_on": "2026-10-08",
+      "publisher_assertion_only": false,
+      "inspection_status": "access_or_extraction_gap",
+      "production_entitlement_verified": false,
+      "executed_contract": null,
+      "observed_dataset_sample": false,
+      "rights_profile_ids": [
+        "RULE_TEXT_REFERENCES"
+      ],
+      "evidence_kind": "inspection_gap"
+    },
+    {
+      "source_id": "G04",
+      "canonical_urls": [
+        "https://fiscal.ai/api-terms/"
+      ],
+      "locator": "API license",
+      "inspection_note": "HTTP403; no alternate/prohibited endpoint attempted. Rights unresolved.",
+      "retrieved_on": "2026-10-08",
+      "publisher_assertion_only": false,
+      "inspection_status": "access_or_extraction_gap",
+      "production_entitlement_verified": false,
+      "executed_contract": null,
+      "observed_dataset_sample": false,
+      "rights_profile_ids": [
+        "FISCAL_API_RIGHTS_PENDING"
+      ],
+      "evidence_kind": "inspection_gap"
+    },
+    {
+      "source_id": "G05",
+      "canonical_urls": [
+        "https://data.bloomberg.com/tos/"
+      ],
+      "locator": "Enterprise site terms",
+      "inspection_note": "Open returned13 lines; insufficient substantive terms. Do not treat search snippet as reviewed enterprise feed agreement.",
+      "retrieved_on": "2026-10-08",
+      "publisher_assertion_only": false,
+      "inspection_status": "access_or_extraction_gap",
+      "production_entitlement_verified": false,
+      "executed_contract": null,
+      "observed_dataset_sample": false,
+      "rights_profile_ids": [
+        "BLOOMBERG_CONTRACT_PENDING"
+      ],
+      "evidence_kind": "inspection_gap"
+    },
+    {
+      "source_id": "C01",
+      "canonical_urls": [
+        "https://github.com/mastermindx-market-intelligence/macro/blob/4f4e80ca9ba9309ccb8bb211ff4d0a1ecff00272/research/economic_propagation/COMMISSION4_EFFECTIVE_DATED_ECONOMIC_EXPOSURE_SUPPLY_CHAIN_GRAPH_2026-10-04.md"
+      ],
+      "locator": "E2/E5/G/K Phase0/L; ownership/adoption and temporal compatibility",
+      "inspection_note": "Inspected pinned local primary original; research candidate not execution authority.",
+      "retrieved_on": "2026-10-08",
+      "publisher_assertion_only": false,
+      "inspection_status": "inspected_pinned_local_primary_original",
+      "production_entitlement_verified": false,
+      "executed_contract": null,
+      "observed_dataset_sample": false,
+      "rights_profile_ids": [],
+      "evidence_kind": "native_contract_or_owner_witness"
+    },
+    {
+      "source_id": "C02",
+      "canonical_urls": [
+        "https://github.com/mastermindx-market-intelligence/macro/blob/7e6ce338a9f88aaa60834bdeaf5ee2fe90dab477/lib/dataos/temporal.py"
+      ],
+      "locator": "TemporalProfile; required_clocks/required_fields; KNOWN_AT_CLOCKS; utc; known_at; as_of_filter",
+      "inspection_note": "Inspected pinned local primary implementation.",
+      "retrieved_on": "2026-10-08",
+      "publisher_assertion_only": false,
+      "inspection_status": "inspected_pinned_local_primary_original",
+      "production_entitlement_verified": false,
+      "executed_contract": null,
+      "observed_dataset_sample": false,
+      "rights_profile_ids": [],
+      "evidence_kind": "native_contract_or_owner_witness"
+    },
+    {
+      "source_id": "C03",
+      "canonical_urls": [
+        "https://github.com/mastermindx-market-intelligence/macro/blob/7e6ce338a9f88aaa60834bdeaf5ee2fe90dab477/config/dataset_registry.yml"
+      ],
+      "locator": "Header; PRODUCED/PROPOSED status; dataset_id/owner/producer/temporal_profile contracts",
+      "inspection_note": "Inspected pinned local primary registry; no exact adapter binding established.",
+      "retrieved_on": "2026-10-08",
+      "publisher_assertion_only": false,
+      "inspection_status": "inspected_pinned_local_primary_original",
+      "production_entitlement_verified": false,
+      "executed_contract": null,
+      "observed_dataset_sample": false,
+      "rights_profile_ids": [],
+      "evidence_kind": "native_contract_or_owner_witness"
+    },
+    {
+      "source_id": "C04",
+      "canonical_urls": [
+        "https://github.com/mastermindx-market-intelligence/macro/blob/7e6ce338a9f88aaa60834bdeaf5ee2fe90dab477/agentos/decisions/DEC-GMI-THEME-GRAPH-END-TO-END-COMPLETION-OWNERSHIP-SEQUENCING.md"
+      ],
+      "locator": "answer; rejected W4/W5/W6; supersession boundary",
+      "inspection_note": "Inspected pinned local primary ownership decision.",
+      "retrieved_on": "2026-10-08",
+      "publisher_assertion_only": false,
+      "inspection_status": "inspected_pinned_local_primary_original",
+      "production_entitlement_verified": false,
+      "executed_contract": null,
+      "observed_dataset_sample": false,
+      "rights_profile_ids": [],
+      "evidence_kind": "native_contract_or_owner_witness"
+    }
+  ],
+  "rights_profiles": [
+    {
+      "profile_id": "SEC_PUBLIC_ACCESS",
+      "source_ids": [
+        "S01",
+        "S02",
+        "S03"
+      ],
+      "asset_rights": {
+        "source_document": "conditional",
+        "extracted_assertion": "conditional",
+        "feature_vector_or_metric": "unknown",
+        "embedding_or_search_index": "unknown",
+        "training_or_evaluation_input": "unknown",
+        "public_display_or_customer_api": "unknown",
+        "active_retention": "unknown",
+        "post_termination_retention": "unknown"
+      },
+      "interpretation": "Supported API collection is documented; issuer/exhibit downstream reuse rights are not universally settled.",
+      "conditions": [
+        "Identified User-Agent",
+        "Shared ceiling at most 10 requests/second regardless of machine count",
+        "Prefer official bulk bootstrap",
+        "Source-specific issuer/third-party corpus and purpose review",
+        "Preserve original accession and availability clock"
+      ],
+      "authority": "Purpose-specific contract review candidate; adopted native custodians execute approved policy through incumbent source/entitlement interfaces. No fact custody or authorization granted here.",
+      "status": "review_candidate",
+      "revocation_owner": null,
+      "propagation_consumers": [
+        "ThemeGraph projections",
+        "feature/index owners",
+        "training manifests",
+        "public display/export consumers"
+      ],
+      "revocation_owner_status": "PENDING_ADOPTION",
+      "revocation_owner_receipt": null,
+      "adoption_source_refs": [
+        "C01",
+        "C04"
+      ]
+    },
+    {
+      "profile_id": "ISSUER_DOCUMENT_CASE_BY_CASE",
+      "source_ids": [
+        "S04",
+        "S09"
+      ],
+      "asset_rights": {
+        "source_document": "unknown",
+        "extracted_assertion": "unknown",
+        "feature_vector_or_metric": "unknown",
+        "embedding_or_search_index": "unknown",
+        "training_or_evaluation_input": "unknown",
+        "public_display_or_customer_api": "unknown",
+        "active_retention": "unknown",
+        "post_termination_retention": "unknown"
+      },
+      "interpretation": "Browser visibility does not settle automated collection, corpus, derivative database, model or public display rights.",
+      "conditions": [
+        "Admit finite issuer/carrier allowlist with actual rights",
+        "Do not equate anonymous aliases with identified counterparties"
+      ],
+      "authority": "Purpose-specific contract review candidate; adopted native custodians execute approved policy through incumbent source/entitlement interfaces. No fact custody or authorization granted here.",
+      "status": "review_candidate",
+      "revocation_owner": null,
+      "propagation_consumers": [
+        "ThemeGraph projections",
+        "feature/index owners",
+        "training manifests",
+        "public display/export consumers"
+      ],
+      "revocation_owner_status": "PENDING_ADOPTION",
+      "revocation_owner_receipt": null,
+      "adoption_source_refs": [
+        "C01",
+        "C04"
+      ]
+    },
+    {
+      "profile_id": "GLEIF_CC0",
+      "source_ids": [
+        "S05",
+        "S06"
+      ],
+      "asset_rights": {
+        "source_document": "allowed_by_documented_license",
+        "extracted_assertion": "allowed_by_documented_license",
+        "feature_vector_or_metric": "allowed_by_documented_license",
+        "embedding_or_search_index": "allowed_by_documented_license",
+        "training_or_evaluation_input": "allowed_by_documented_license",
+        "public_display_or_customer_api": "allowed_by_documented_license",
+        "active_retention": "allowed_by_documented_license",
+        "post_termination_retention": "allowed_by_documented_license"
+      },
+      "interpretation": "CC0 applies to the eligible GLEIF data; proprietary crosswalk/identifier rights are separate.",
+      "conditions": [
+        "Bind specific dataset/file/version",
+        "Keep third-party crosswalk inputs independently licensed",
+        "Record source lineage despite lack of attribution requirement"
+      ],
+      "authority": "Purpose-specific contract review candidate; adopted native custodians execute approved policy through incumbent source/entitlement interfaces. No fact custody or authorization granted here.",
+      "status": "review_candidate",
+      "revocation_owner": null,
+      "propagation_consumers": [
+        "ThemeGraph projections",
+        "feature/index owners",
+        "training manifests",
+        "public display/export consumers"
+      ],
+      "revocation_owner_status": "PENDING_ADOPTION",
+      "revocation_owner_receipt": null,
+      "adoption_source_refs": [
+        "C01",
+        "C04"
+      ]
+    },
+    {
+      "profile_id": "UK_REGISTRY_ACCESS",
+      "source_ids": [
+        "S07"
+      ],
+      "asset_rights": {
+        "source_document": "conditional",
+        "extracted_assertion": "unknown",
+        "feature_vector_or_metric": "unknown",
+        "embedding_or_search_index": "unknown",
+        "training_or_evaluation_input": "unknown",
+        "public_display_or_customer_api": "unknown",
+        "active_retention": "unknown",
+        "post_termination_retention": "unknown"
+      },
+      "interpretation": "Official bulk/API routes documented; this inspection does not prove all downstream rights or supplier relationships.",
+      "conditions": [
+        "Dataset/API and source-file metadata/terms admission",
+        "No claim of observed trading links"
+      ],
+      "authority": "Purpose-specific contract review candidate; adopted native custodians execute approved policy through incumbent source/entitlement interfaces. No fact custody or authorization granted here.",
+      "status": "review_candidate",
+      "revocation_owner": null,
+      "propagation_consumers": [
+        "ThemeGraph projections",
+        "feature/index owners",
+        "training manifests",
+        "public display/export consumers"
+      ],
+      "revocation_owner_status": "PENDING_ADOPTION",
+      "revocation_owner_receipt": null,
+      "adoption_source_refs": [
+        "C01",
+        "C04"
+      ]
+    },
+    {
+      "profile_id": "CHINA_DISCLOSURE_RULE",
+      "source_ids": [
+        "S08"
+      ],
+      "asset_rights": {
+        "source_document": "unknown",
+        "extracted_assertion": "unknown",
+        "feature_vector_or_metric": "unknown",
+        "embedding_or_search_index": "unknown",
+        "training_or_evaluation_input": "unknown",
+        "public_display_or_customer_api": "unknown",
+        "active_retention": "unknown",
+        "post_termination_retention": "unknown"
+      },
+      "interpretation": "Disclosure law supports report content expectations, not carrier collection or data-reuse permission.",
+      "conditions": [
+        "CNINFO/exchange/issuer automated-access and reuse agreement required",
+        "Respect original Chinese IDs",
+        "No universal named-counterparty guarantee"
+      ],
+      "authority": "Purpose-specific contract review candidate; adopted native custodians execute approved policy through incumbent source/entitlement interfaces. No fact custody or authorization granted here.",
+      "status": "review_candidate",
+      "revocation_owner": null,
+      "propagation_consumers": [
+        "ThemeGraph projections",
+        "feature/index owners",
+        "training manifests",
+        "public display/export consumers"
+      ],
+      "revocation_owner_status": "PENDING_ADOPTION",
+      "revocation_owner_receipt": null,
+      "adoption_source_refs": [
+        "C01",
+        "C04"
+      ]
+    },
+    {
+      "profile_id": "SEDAR_PUBLIC_DEFAULT",
+      "source_ids": [
+        "S10"
+      ],
+      "asset_rights": {
+        "source_document": "conditional",
+        "extracted_assertion": "conditional",
+        "feature_vector_or_metric": "prohibited_by_default",
+        "embedding_or_search_index": "prohibited_by_default",
+        "training_or_evaluation_input": "unknown",
+        "public_display_or_customer_api": "prohibited_by_default",
+        "active_retention": "conditional",
+        "post_termination_retention": "conditional"
+      },
+      "interpretation": "Limited research/internal copies are conditional; public-site commercial database and automated-copying routes are prohibited.",
+      "conditions": [
+        "No bulk commercial graph or database from public site by default",
+        "Separate ASC/license or independently permitted issuer/SEC carrier",
+        "Limited copies consistent with objective and source-attribution conditions",
+        "Removal obligations can apply"
+      ],
+      "authority": "Purpose-specific contract review candidate; adopted native custodians execute approved policy through incumbent source/entitlement interfaces. No fact custody or authorization granted here.",
+      "status": "review_candidate",
+      "revocation_owner": null,
+      "propagation_consumers": [
+        "ThemeGraph projections",
+        "feature/index owners",
+        "training manifests",
+        "public display/export consumers"
+      ],
+      "revocation_owner_status": "PENDING_ADOPTION",
+      "revocation_owner_receipt": null,
+      "adoption_source_refs": [
+        "C01",
+        "C04"
+      ]
+    },
+    {
+      "profile_id": "BEA_IO",
+      "source_ids": [
+        "S11"
+      ],
+      "asset_rights": {
+        "source_document": "unknown",
+        "extracted_assertion": "unknown",
+        "feature_vector_or_metric": "unknown",
+        "embedding_or_search_index": "unknown",
+        "training_or_evaluation_input": "unknown",
+        "public_display_or_customer_api": "unknown",
+        "active_retention": "unknown",
+        "post_termination_retention": "unknown"
+      },
+      "interpretation": "Official aggregate methodology inspected; selected dataset file metadata/license still requires admission.",
+      "conditions": [
+        "Industry flows are macro priors, not observed company purchases",
+        "Pin selected table and revision"
+      ],
+      "authority": "Purpose-specific contract review candidate; adopted native custodians execute approved policy through incumbent source/entitlement interfaces. No fact custody or authorization granted here.",
+      "status": "review_candidate",
+      "revocation_owner": null,
+      "propagation_consumers": [
+        "ThemeGraph projections",
+        "feature/index owners",
+        "training manifests",
+        "public display/export consumers"
+      ],
+      "revocation_owner_status": "PENDING_ADOPTION",
+      "revocation_owner_receipt": null,
+      "adoption_source_refs": [
+        "C01",
+        "C04"
+      ]
+    },
+    {
+      "profile_id": "OECD_DATA_QUALIFIED",
+      "source_ids": [
+        "S12",
+        "S14"
+      ],
+      "asset_rights": {
+        "source_document": "conditional",
+        "extracted_assertion": "conditional",
+        "feature_vector_or_metric": "conditional",
+        "embedding_or_search_index": "conditional",
+        "training_or_evaluation_input": "conditional",
+        "public_display_or_customer_api": "conditional",
+        "active_retention": "conditional",
+        "post_termination_retention": "conditional"
+      },
+      "interpretation": "General data terms permit commercial download/adaptation/sharing unless additional dataset/third-party restrictions apply.",
+      "conditions": [
+        "Inspect selected ICIO dataset metadata/source rights",
+        "Required attribution and downstream acknowledgment",
+        "API capacity/format/access may change",
+        "Pin release/revision separately from observation year"
+      ],
+      "authority": "Purpose-specific contract review candidate; adopted native custodians execute approved policy through incumbent source/entitlement interfaces. No fact custody or authorization granted here.",
+      "status": "review_candidate",
+      "revocation_owner": null,
+      "propagation_consumers": [
+        "ThemeGraph projections",
+        "feature/index owners",
+        "training manifests",
+        "public display/export consumers"
+      ],
+      "revocation_owner_status": "PENDING_ADOPTION",
+      "revocation_owner_receipt": null,
+      "adoption_source_refs": [
+        "C01",
+        "C04"
+      ]
+    },
+    {
+      "profile_id": "WIOD_CC_BY_4",
+      "source_ids": [
+        "S13"
+      ],
+      "asset_rights": {
+        "source_document": "allowed_by_documented_license",
+        "extracted_assertion": "allowed_by_documented_license",
+        "feature_vector_or_metric": "allowed_by_documented_license",
+        "embedding_or_search_index": "allowed_by_documented_license",
+        "training_or_evaluation_input": "allowed_by_documented_license",
+        "public_display_or_customer_api": "allowed_by_documented_license",
+        "active_retention": "allowed_by_documented_license",
+        "post_termination_retention": "allowed_by_documented_license"
+      },
+      "interpretation": "CC BY4.0 supplies qualified table reuse rights with attribution.",
+      "conditions": [
+        "Retain attribution and change indication",
+        "Pin WIOD2016 dataset/version and DOI",
+        "Tables describe historical modeled sector flows"
+      ],
+      "authority": "Purpose-specific contract review candidate; adopted native custodians execute approved policy through incumbent source/entitlement interfaces. No fact custody or authorization granted here.",
+      "status": "review_candidate",
+      "revocation_owner": null,
+      "propagation_consumers": [
+        "ThemeGraph projections",
+        "feature/index owners",
+        "training manifests",
+        "public display/export consumers"
+      ],
+      "revocation_owner_status": "PENDING_ADOPTION",
+      "revocation_owner_receipt": null,
+      "adoption_source_refs": [
+        "C01",
+        "C04"
+      ]
+    },
+    {
+      "profile_id": "FACTSET_CONTRACT_PENDING",
+      "source_ids": [
+        "S15",
+        "S16",
+        "G01"
+      ],
+      "asset_rights": {
+        "source_document": "unknown",
+        "extracted_assertion": "unknown",
+        "feature_vector_or_metric": "unknown",
+        "embedding_or_search_index": "unknown",
+        "training_or_evaluation_input": "unknown",
+        "public_display_or_customer_api": "unknown",
+        "active_retention": "unknown",
+        "post_termination_retention": "unknown"
+      },
+      "interpretation": "Inspected official product discussions establish advertised capabilities, not executed GMI rights.",
+      "conditions": [
+        "Obtain relationship/GeoRev/RBICS and source/derived/training/display packages separately",
+        "Verify API schema and point-in-time vintage semantics"
+      ],
+      "authority": "Purpose-specific contract review candidate; adopted native custodians execute approved policy through incumbent source/entitlement interfaces. No fact custody or authorization granted here.",
+      "status": "review_candidate",
+      "revocation_owner": null,
+      "propagation_consumers": [
+        "ThemeGraph projections",
+        "feature/index owners",
+        "training manifests",
+        "public display/export consumers"
+      ],
+      "revocation_owner_status": "PENDING_ADOPTION",
+      "revocation_owner_receipt": null,
+      "adoption_source_refs": [
+        "C01",
+        "C04"
+      ]
+    },
+    {
+      "profile_id": "SPGLOBAL_CONTRACT_PENDING",
+      "source_ids": [
+        "S17",
+        "S18",
+        "S19"
+      ],
+      "asset_rights": {
+        "source_document": "unknown",
+        "extracted_assertion": "unknown",
+        "feature_vector_or_metric": "unknown",
+        "embedding_or_search_index": "unknown",
+        "training_or_evaluation_input": "unknown",
+        "public_display_or_customer_api": "unknown",
+        "active_retention": "unknown",
+        "post_termination_retention": "unknown"
+      },
+      "interpretation": "BRA and base Business Relationships are distinct; Kensho is an access channel.",
+      "conditions": [
+        "Separate BRA estimated weights from disclosed values",
+        "Verify entitled dataset, source locators and historical clocks",
+        "API/bulk availability does not establish redistribution or neural training"
+      ],
+      "authority": "Purpose-specific contract review candidate; adopted native custodians execute approved policy through incumbent source/entitlement interfaces. No fact custody or authorization granted here.",
+      "status": "review_candidate",
+      "revocation_owner": null,
+      "propagation_consumers": [
+        "ThemeGraph projections",
+        "feature/index owners",
+        "training manifests",
+        "public display/export consumers"
+      ],
+      "revocation_owner_status": "PENDING_ADOPTION",
+      "revocation_owner_receipt": null,
+      "adoption_source_refs": [
+        "C01",
+        "C04"
+      ]
+    },
+    {
+      "profile_id": "BLOOMBERG_CONTRACT_PENDING",
+      "source_ids": [
+        "S20",
+        "G05"
+      ],
+      "asset_rights": {
+        "source_document": "unknown",
+        "extracted_assertion": "unknown",
+        "feature_vector_or_metric": "unknown",
+        "embedding_or_search_index": "unknown",
+        "training_or_evaluation_input": "unknown",
+        "public_display_or_customer_api": "unknown",
+        "active_retention": "unknown",
+        "post_termination_retention": "unknown"
+      },
+      "interpretation": "Enterprise Data License route is documented; product pricing and specific GMI rights not established.",
+      "conditions": [
+        "Executed feed entitlement required",
+        "Terminal access is not server ingestion/redistribution permission",
+        "Source/history/revision and quantitative-origin sample"
+      ],
+      "authority": "Purpose-specific contract review candidate; adopted native custodians execute approved policy through incumbent source/entitlement interfaces. No fact custody or authorization granted here.",
+      "status": "review_candidate",
+      "revocation_owner": null,
+      "propagation_consumers": [
+        "ThemeGraph projections",
+        "feature/index owners",
+        "training manifests",
+        "public display/export consumers"
+      ],
+      "revocation_owner_status": "PENDING_ADOPTION",
+      "revocation_owner_receipt": null,
+      "adoption_source_refs": [
+        "C01",
+        "C04"
+      ]
+    },
+    {
+      "profile_id": "LSEG_CONTRACT_PENDING",
+      "source_ids": [
+        "S21"
+      ],
+      "asset_rights": {
+        "source_document": "unknown",
+        "extracted_assertion": "unknown",
+        "feature_vector_or_metric": "unknown",
+        "embedding_or_search_index": "unknown",
+        "training_or_evaluation_input": "unknown",
+        "public_display_or_customer_api": "unknown",
+        "active_retention": "unknown",
+        "post_termination_retention": "unknown"
+      },
+      "interpretation": "Official tutorial documents an illustrative supplier traversal; live entitlement and commercial rights unproven.",
+      "conditions": [
+        "Obtain schema, current server access and contract",
+        "Do not adopt tutorial risk assumptions as validated causal propagation"
+      ],
+      "authority": "Purpose-specific contract review candidate; adopted native custodians execute approved policy through incumbent source/entitlement interfaces. No fact custody or authorization granted here.",
+      "status": "review_candidate",
+      "revocation_owner": null,
+      "propagation_consumers": [
+        "ThemeGraph projections",
+        "feature/index owners",
+        "training manifests",
+        "public display/export consumers"
+      ],
+      "revocation_owner_status": "PENDING_ADOPTION",
+      "revocation_owner_receipt": null,
+      "adoption_source_refs": [
+        "C01",
+        "C04"
+      ]
+    },
+    {
+      "profile_id": "QUARTR_INTERNAL_US2026_1",
+      "source_ids": [
+        "S22",
+        "S23",
+        "S24"
+      ],
+      "asset_rights": {
+        "source_document": "conditional",
+        "extracted_assertion": "conditional",
+        "feature_vector_or_metric": "conditional",
+        "embedding_or_search_index": "unknown",
+        "training_or_evaluation_input": "prohibited_by_default",
+        "public_display_or_customer_api": "conditional",
+        "active_retention": "conditional",
+        "post_termination_retention": "conditional"
+      },
+      "interpretation": "Inspected standard internal-use terms; executed Order may override.",
+      "conditions": [
+        "Approved internal use-case; transformed Subscriber Works sharing conditions",
+        "AI inputs cannot be retained/trained on by AI service",
+        "Training/fine-tuning/evaluation/development prohibited by default",
+        "Delete/return; restricted backups cannot remain active",
+        "Graph/embedding/competition scope requires executed Order"
+      ],
+      "authority": "Purpose-specific contract review candidate; adopted native custodians execute approved policy through incumbent source/entitlement interfaces. No fact custody or authorization granted here.",
+      "status": "review_candidate",
+      "revocation_owner": null,
+      "propagation_consumers": [
+        "ThemeGraph projections",
+        "feature/index owners",
+        "training manifests",
+        "public display/export consumers"
+      ],
+      "retention_rules": {
+        "raw_data": "delete/return on termination",
+        "retained_backup_or_required_records": "restricted no-active-use exception",
+        "derived_assertions_features_embeddings": "executed agreement must determine scope and deletion",
+        "subscriber_works": "ownership documented; surviving reuse requires complete agreement interpretation"
+      },
+      "revocation_owner_status": "PENDING_ADOPTION",
+      "revocation_owner_receipt": null,
+      "adoption_source_refs": [
+        "C01",
+        "C04"
+      ]
+    },
+    {
+      "profile_id": "QUARTR_REDISTRIBUTION_US2026_1",
+      "source_ids": [
+        "S25"
+      ],
+      "asset_rights": {
+        "source_document": "conditional",
+        "extracted_assertion": "conditional",
+        "feature_vector_or_metric": "unknown",
+        "embedding_or_search_index": "unknown",
+        "training_or_evaluation_input": "prohibited_by_default",
+        "public_display_or_customer_api": "conditional",
+        "active_retention": "conditional",
+        "post_termination_retention": "conditional"
+      },
+      "interpretation": "Inspected standard redistribution terms are not an unlimited public data or training license.",
+      "conditions": [
+        "Approved Product/Authorized Users",
+        "Attribution and usage reporting",
+        "AI input carveout retains no-retention/no-training restriction",
+        "Database/bulk use only as expressly permitted",
+        "Delete/return and end customer access on termination",
+        "Executed Order and exact GMI use required"
+      ],
+      "authority": "Purpose-specific contract review candidate; adopted native custodians execute approved policy through incumbent source/entitlement interfaces. No fact custody or authorization granted here.",
+      "status": "review_candidate",
+      "revocation_owner": null,
+      "propagation_consumers": [
+        "ThemeGraph projections",
+        "feature/index owners",
+        "training manifests",
+        "public display/export consumers"
+      ],
+      "retention_rules": {
+        "raw_data": "delete/return on termination and end Authorized User access",
+        "retained_backup_or_required_records": "restricted no-active-use exception",
+        "derived_graph_or_embeddings": "approved-product contract proof required"
+      },
+      "revocation_owner_status": "PENDING_ADOPTION",
+      "revocation_owner_receipt": null,
+      "adoption_source_refs": [
+        "C01",
+        "C04"
+      ]
+    },
+    {
+      "profile_id": "FISCAL_API_RIGHTS_PENDING",
+      "source_ids": [
+        "S26",
+        "S27",
+        "G04"
+      ],
+      "asset_rights": {
+        "source_document": "unknown",
+        "extracted_assertion": "unknown",
+        "feature_vector_or_metric": "unknown",
+        "embedding_or_search_index": "unknown",
+        "training_or_evaluation_input": "unknown",
+        "public_display_or_customer_api": "unknown",
+        "active_retention": "unknown",
+        "post_termination_retention": "unknown"
+      },
+      "interpretation": "Documented segments/KPI endpoint and restricted free trial; API terms403 means downstream rights remain unknown.",
+      "conditions": [
+        "No trial enrolled",
+        "Eligible free set of 100 companies and 250 calls per day",
+        "Verify as-reported/recast, rollup and source provenance",
+        "Executed commercial graph/embedding/model/display rights required"
+      ],
+      "authority": "Purpose-specific contract review candidate; adopted native custodians execute approved policy through incumbent source/entitlement interfaces. No fact custody or authorization granted here.",
+      "status": "review_candidate",
+      "revocation_owner": null,
+      "propagation_consumers": [
+        "ThemeGraph projections",
+        "feature/index owners",
+        "training manifests",
+        "public display/export consumers"
+      ],
+      "revocation_owner_status": "PENDING_ADOPTION",
+      "revocation_owner_receipt": null,
+      "adoption_source_refs": [
+        "C01",
+        "C04"
+      ]
+    },
+    {
+      "profile_id": "ALPHASENSE_CONTRACT_PENDING",
+      "source_ids": [
+        "S28",
+        "S29"
+      ],
+      "asset_rights": {
+        "source_document": "unknown",
+        "extracted_assertion": "unknown",
+        "feature_vector_or_metric": "unknown",
+        "embedding_or_search_index": "unknown",
+        "training_or_evaluation_input": "unknown",
+        "public_display_or_customer_api": "unknown",
+        "active_retention": "unknown",
+        "post_termination_retention": "unknown"
+      },
+      "interpretation": "Credit and pricing structure documented; API and third-party content rights need agreement.",
+      "conditions": [
+        "Dollar credit price and quotas unknown",
+        "Named-seat entitlement not assumed to include Agent API",
+        "Broker/expert content and downstream model/output rights separately checked"
+      ],
+      "authority": "Purpose-specific contract review candidate; adopted native custodians execute approved policy through incumbent source/entitlement interfaces. No fact custody or authorization granted here.",
+      "status": "review_candidate",
+      "revocation_owner": null,
+      "propagation_consumers": [
+        "ThemeGraph projections",
+        "feature/index owners",
+        "training manifests",
+        "public display/export consumers"
+      ],
+      "revocation_owner_status": "PENDING_ADOPTION",
+      "revocation_owner_receipt": null,
+      "adoption_source_refs": [
+        "C01",
+        "C04"
+      ]
+    },
+    {
+      "profile_id": "RAVENPACK_CONNECTIONS_PENDING",
+      "source_ids": [
+        "S30"
+      ],
+      "asset_rights": {
+        "source_document": "unknown",
+        "extracted_assertion": "unknown",
+        "feature_vector_or_metric": "unknown",
+        "embedding_or_search_index": "unknown",
+        "training_or_evaluation_input": "unknown",
+        "public_display_or_customer_api": "unknown",
+        "active_retention": "unknown",
+        "post_termination_retention": "unknown"
+      },
+      "interpretation": "Historical official launch, not proved current commercial dataset or rights.",
+      "conditions": [
+        "Request current schema/delivery/SLA/license",
+        "Separate attention intensity from economic dependence"
+      ],
+      "authority": "Purpose-specific contract review candidate; adopted native custodians execute approved policy through incumbent source/entitlement interfaces. No fact custody or authorization granted here.",
+      "status": "review_candidate",
+      "revocation_owner": null,
+      "propagation_consumers": [
+        "ThemeGraph projections",
+        "feature/index owners",
+        "training manifests",
+        "public display/export consumers"
+      ],
+      "revocation_owner_status": "PENDING_ADOPTION",
+      "revocation_owner_receipt": null,
+      "adoption_source_refs": [
+        "C01",
+        "C04"
+      ]
+    },
+    {
+      "profile_id": "BIGDATA_DEFAULT_GROUNDING",
+      "source_ids": [
+        "S31",
+        "S32"
+      ],
+      "asset_rights": {
+        "source_document": "prohibited_by_default",
+        "extracted_assertion": "conditional",
+        "feature_vector_or_metric": "unknown",
+        "embedding_or_search_index": "prohibited_by_default",
+        "training_or_evaluation_input": "prohibited_by_default",
+        "public_display_or_customer_api": "conditional",
+        "active_retention": "prohibited_by_default",
+        "post_termination_retention": "conditional"
+      },
+      "interpretation": "One-time inference grounding; derivative output survival does not grant systematic persistent GMI graph extraction.",
+      "conditions": [
+        "One-time inference with ZDR; no underlying content retention",
+        "No training/evaluation or systematic/competing-product extraction",
+        "Third-party product needs express permission",
+        "Derived output survival is conditional on other terms; custom agreement unknown"
+      ],
+      "authority": "Purpose-specific contract review candidate; adopted native custodians execute approved policy through incumbent source/entitlement interfaces. No fact custody or authorization granted here.",
+      "status": "review_candidate",
+      "revocation_owner": null,
+      "propagation_consumers": [
+        "ThemeGraph projections",
+        "feature/index owners",
+        "training manifests",
+        "public display/export consumers"
+      ],
+      "retention_rules": {
+        "underlying_content": "no retention past Consumption",
+        "lawful_inference_derivative_output": "may survive termination, subject to noncompetition/systematic-extraction/third-party-use constraints",
+        "persistent_graph_or_feature_database": "unapproved; requires written agreement",
+        "source_evidence_metadata": "exact permitted retention scope must be established"
+      },
+      "revocation_owner_status": "PENDING_ADOPTION",
+      "revocation_owner_receipt": null,
+      "adoption_source_refs": [
+        "C01",
+        "C04"
+      ]
+    },
+    {
+      "profile_id": "RULE_TEXT_REFERENCES",
+      "source_ids": [
+        "S33",
+        "S34",
+        "G02",
+        "G03"
+      ],
+      "asset_rights": {
+        "source_document": "unknown",
+        "extracted_assertion": "unknown",
+        "feature_vector_or_metric": "unknown",
+        "embedding_or_search_index": "unknown",
+        "training_or_evaluation_input": "unknown",
+        "public_display_or_customer_api": "unknown",
+        "active_retention": "unknown",
+        "post_termination_retention": "unknown"
+      },
+      "interpretation": "Standards/regulations support disclosure interpretation, not dataset product rights.",
+      "conditions": [
+        "IFRS 8 paragraph 34 customer identity optional; at least 10 percent revenue/segment detail required",
+        "Current Regulation S-K has no universal 10 percent named-customer claim",
+        "FASB direct text not inspected",
+        "HKEX rule text gap remains"
+      ],
+      "authority": "Purpose-specific contract review candidate; adopted native custodians execute approved policy through incumbent source/entitlement interfaces. No fact custody or authorization granted here.",
+      "status": "review_candidate",
+      "revocation_owner": null,
+      "propagation_consumers": [
+        "ThemeGraph projections",
+        "feature/index owners",
+        "training manifests",
+        "public display/export consumers"
+      ],
+      "revocation_owner_status": "PENDING_ADOPTION",
+      "revocation_owner_receipt": null,
+      "adoption_source_refs": [
+        "C01",
+        "C04"
+      ]
+    }
+  ],
+  "adapters": [
+    {
+      "adapter_id": "SEC_ACCESSION",
+      "stage": "A",
+      "canonical_owner": null,
+      "sources": [
+        "S01",
+        "S02",
+        "S03"
+      ],
+      "outputs": [
+        "source_id",
+        "accession",
+        "CIK",
+        "filing_acceptance_or_dissemination_at",
+        "filing_date",
+        "period_start",
+        "period_end",
+        "document_hash",
+        "original_tag",
+        "original_context",
+        "source_locator",
+        "available_in_gmi_at",
+        "correction_of"
+      ],
+      "required_tests": [
+        "amendment_keeps_prior_revision",
+        "custom_segment_context_preserved",
+        "shared_rate_budget",
+        "same_accession_evidence_recomputation",
+        "typed_fetch_failure",
+        "exact_owner_and_registry_binding_receipt",
+        "native_profile_required_fields_and_precision",
+        "native_known_at_only_no_local_clock_rule",
+        "filter_each_native_input_before_derive_or_accepted_replay"
+      ],
+      "canonical_owner_ref": null,
+      "owner_adoption_status": "PENDING_ADOPTION",
+      "owner_family_candidate": "Existing filing/fundamental owner; reuse already-normalized issuer evidence",
+      "owner_family_is_exact_adopted_owner": false,
+      "ownership_source_refs": [
+        "C01",
+        "C04"
+      ],
+      "adapter_status": "REUSE_OR_ADOPTION_PROPOSAL_NOT_IMPLEMENTED",
+      "new_ingestion_permitted_by_register": false,
+      "outputs_are_proposed_source_metadata_not_native_clock_authority": true,
+      "native_dataset_binding": {
+        "dataset_id": null,
+        "registry_receipt": null,
+        "registry_version": null,
+        "registry_status": null,
+        "native_owner_receipt": null,
+        "native_producer_ref": null,
+        "native_contract_ref": null,
+        "temporal_profile": null,
+        "native_clock_crosswalk": null,
+        "binding_status": "PENDING_ADOPTION",
+        "required_contract_fields": [
+          "dataset_id",
+          "registry_receipt",
+          "registry_version",
+          "registry_status",
+          "native_owner_receipt",
+          "native_producer_ref",
+          "native_contract_ref",
+          "temporal_profile",
+          "profile_required_clocks",
+          "profile_required_fields",
+          "native_clock_crosswalk",
+          "temporal_precision",
+          "source_revision",
+          "processing_generation",
+          "correction_lineage",
+          "identity_resolution_receipt",
+          "entitlement_id",
+          "allowed_consumer_purposes"
+        ],
+        "source_refs": [
+          "C01",
+          "C02",
+          "C03"
+        ]
+      },
+      "source_provenance_clock_fields": [
+        "filing_acceptance_or_dissemination_at",
+        "available_in_gmi_at"
+      ],
+      "source_provenance_clock_rule": "Preserve source meaning and precision; mapping to canonical clocks remains null until registered native owner crosswalk is approved. first_observed is actual system capture, never backdated."
+    },
+    {
+      "adapter_id": "ISSUER_ALLOWLIST",
+      "stage": "A",
+      "canonical_owner": null,
+      "sources": [
+        "S04",
+        "S09"
+      ],
+      "outputs": [
+        "legal_entity_candidates",
+        "original_language",
+        "document_hash",
+        "publication_at",
+        "observed_period",
+        "exact_locator",
+        "assertion_predicate",
+        "quantity_denominator",
+        "evidence_status"
+      ],
+      "required_tests": [
+        "current_access_not_current_observation",
+        "missing_list_member_not_termination",
+        "announced_not_realized",
+        "aliases_not_guessed",
+        "exact_owner_and_registry_binding_receipt",
+        "native_profile_required_fields_and_precision",
+        "native_known_at_only_no_local_clock_rule",
+        "filter_each_native_input_before_derive_or_accepted_replay"
+      ],
+      "canonical_owner_ref": null,
+      "owner_adoption_status": "PENDING_ADOPTION",
+      "owner_family_candidate": "Existing filing/fundamental or Research Vault evidence owner; exact carrier custody unresolved",
+      "owner_family_is_exact_adopted_owner": false,
+      "ownership_source_refs": [
+        "C01",
+        "C04"
+      ],
+      "adapter_status": "REUSE_OR_ADOPTION_PROPOSAL_NOT_IMPLEMENTED",
+      "new_ingestion_permitted_by_register": false,
+      "outputs_are_proposed_source_metadata_not_native_clock_authority": true,
+      "native_dataset_binding": {
+        "dataset_id": null,
+        "registry_receipt": null,
+        "registry_version": null,
+        "registry_status": null,
+        "native_owner_receipt": null,
+        "native_producer_ref": null,
+        "native_contract_ref": null,
+        "temporal_profile": null,
+        "native_clock_crosswalk": null,
+        "binding_status": "PENDING_ADOPTION",
+        "required_contract_fields": [
+          "dataset_id",
+          "registry_receipt",
+          "registry_version",
+          "registry_status",
+          "native_owner_receipt",
+          "native_producer_ref",
+          "native_contract_ref",
+          "temporal_profile",
+          "profile_required_clocks",
+          "profile_required_fields",
+          "native_clock_crosswalk",
+          "temporal_precision",
+          "source_revision",
+          "processing_generation",
+          "correction_lineage",
+          "identity_resolution_receipt",
+          "entitlement_id",
+          "allowed_consumer_purposes"
+        ],
+        "source_refs": [
+          "C01",
+          "C02",
+          "C03"
+        ]
+      },
+      "source_provenance_clock_fields": [
+        "publication_at"
+      ],
+      "source_provenance_clock_rule": "Preserve source meaning and precision; mapping to canonical clocks remains null until registered native owner crosswalk is approved. first_observed is actual system capture, never backdated."
+    },
+    {
+      "adapter_id": "IDENTITY_QUALIFIED",
+      "stage": "A",
+      "canonical_owner": null,
+      "sources": [
+        "S05",
+        "S06",
+        "S07"
+      ],
+      "outputs": [
+        "legal_entity_id",
+        "LEI",
+        "registry_id",
+        "name_original",
+        "name_aliases",
+        "parent_assertion",
+        "listing_mapping",
+        "resolution_status",
+        "resolution_method_version"
+      ],
+      "required_tests": [
+        "reversible_merge_lineage",
+        "cross_listing_not_duplicate_issuer",
+        "parent_not_supplier",
+        "exact_owner_and_registry_binding_receipt",
+        "native_profile_required_fields_and_precision",
+        "native_known_at_only_no_local_clock_rule",
+        "filter_each_native_input_before_derive_or_accepted_replay"
+      ],
+      "canonical_owner_ref": null,
+      "owner_adoption_status": "PENDING_ADOPTION",
+      "owner_family_candidate": "Incumbent Data OS issuer/security/listing/instrument identity spine plus existing legal/corporate owner where present; exact collector and non-security custody unresolved",
+      "owner_family_is_exact_adopted_owner": false,
+      "ownership_source_refs": [
+        "C01",
+        "C04"
+      ],
+      "adapter_status": "REUSE_OR_ADOPTION_PROPOSAL_NOT_IMPLEMENTED",
+      "new_ingestion_permitted_by_register": false,
+      "outputs_are_proposed_source_metadata_not_native_clock_authority": true,
+      "native_dataset_binding": {
+        "dataset_id": null,
+        "registry_receipt": null,
+        "registry_version": null,
+        "registry_status": null,
+        "native_owner_receipt": null,
+        "native_producer_ref": null,
+        "native_contract_ref": null,
+        "temporal_profile": null,
+        "native_clock_crosswalk": null,
+        "binding_status": "PENDING_ADOPTION",
+        "required_contract_fields": [
+          "dataset_id",
+          "registry_receipt",
+          "registry_version",
+          "registry_status",
+          "native_owner_receipt",
+          "native_producer_ref",
+          "native_contract_ref",
+          "temporal_profile",
+          "profile_required_clocks",
+          "profile_required_fields",
+          "native_clock_crosswalk",
+          "temporal_precision",
+          "source_revision",
+          "processing_generation",
+          "correction_lineage",
+          "identity_resolution_receipt",
+          "entitlement_id",
+          "allowed_consumer_purposes"
+        ],
+        "source_refs": [
+          "C01",
+          "C02",
+          "C03"
+        ]
+      },
+      "source_provenance_clock_fields": [],
+      "source_provenance_clock_rule": "Preserve source meaning and precision; mapping to canonical clocks remains null until registered native owner crosswalk is approved. first_observed is actual system capture, never backdated."
+    },
+    {
+      "adapter_id": "MACRO_IO_QUALIFIED",
+      "stage": "B",
+      "canonical_owner": null,
+      "sources": [
+        "S11",
+        "S12",
+        "S13",
+        "S14"
+      ],
+      "outputs": [
+        "table_vintage",
+        "published_at",
+        "revision_at",
+        "country_code",
+        "industry_code",
+        "units",
+        "valuation_convention",
+        "cell_coordinate",
+        "coefficient",
+        "concordance_version",
+        "unknown_allocation_remainder",
+        "prior_method_version"
+      ],
+      "required_tests": [
+        "no_named_supplier_observation_from_prior",
+        "reject_later_revision_historical_replay",
+        "units_and_denominator_reconcile",
+        "exact_owner_and_registry_binding_receipt",
+        "native_profile_required_fields_and_precision",
+        "native_known_at_only_no_local_clock_rule",
+        "filter_each_native_input_before_derive_or_accepted_replay"
+      ],
+      "canonical_owner_ref": null,
+      "owner_adoption_status": "PENDING_ADOPTION",
+      "owner_family_candidate": "Existing macro/physical native source adapter owner; modeled-prior projection owner unresolved",
+      "owner_family_is_exact_adopted_owner": false,
+      "ownership_source_refs": [
+        "C01",
+        "C04"
+      ],
+      "adapter_status": "REUSE_OR_ADOPTION_PROPOSAL_NOT_IMPLEMENTED",
+      "new_ingestion_permitted_by_register": false,
+      "outputs_are_proposed_source_metadata_not_native_clock_authority": true,
+      "native_dataset_binding": {
+        "dataset_id": null,
+        "registry_receipt": null,
+        "registry_version": null,
+        "registry_status": null,
+        "native_owner_receipt": null,
+        "native_producer_ref": null,
+        "native_contract_ref": null,
+        "temporal_profile": null,
+        "native_clock_crosswalk": null,
+        "binding_status": "PENDING_ADOPTION",
+        "required_contract_fields": [
+          "dataset_id",
+          "registry_receipt",
+          "registry_version",
+          "registry_status",
+          "native_owner_receipt",
+          "native_producer_ref",
+          "native_contract_ref",
+          "temporal_profile",
+          "profile_required_clocks",
+          "profile_required_fields",
+          "native_clock_crosswalk",
+          "temporal_precision",
+          "source_revision",
+          "processing_generation",
+          "correction_lineage",
+          "identity_resolution_receipt",
+          "entitlement_id",
+          "allowed_consumer_purposes"
+        ],
+        "source_refs": [
+          "C01",
+          "C02",
+          "C03"
+        ]
+      },
+      "source_provenance_clock_fields": [
+        "published_at",
+        "revision_at"
+      ],
+      "source_provenance_clock_rule": "Preserve source meaning and precision; mapping to canonical clocks remains null until registered native owner crosswalk is approved. first_observed is actual system capture, never backdated."
+    },
+    {
+      "adapter_id": "LICENSED_RELATIONSHIP_SAMPLE",
+      "stage": "C",
+      "canonical_owner": null,
+      "sources": [
+        "S15",
+        "S16",
+        "S17",
+        "S18",
+        "S19",
+        "S20",
+        "S21"
+      ],
+      "outputs": [
+        "vendor_entity_id",
+        "source_assertion_id",
+        "source_locator",
+        "predicate",
+        "valid_from",
+        "valid_to",
+        "valid_time_semantics",
+        "vendor_first_available_at",
+        "reported_period",
+        "quantity",
+        "units",
+        "denominator",
+        "origin_observed_or_estimated",
+        "estimate_method_version",
+        "correction_of",
+        "closure_basis",
+        "entitlement_id"
+      ],
+      "required_tests": [
+        "observed_estimated_separation",
+        "vendor_end_date_semantics",
+        "original_provenance_readback",
+        "revocation_projection_test",
+        "unknown_first_available_remains_null",
+        "exact_owner_and_registry_binding_receipt",
+        "native_profile_required_fields_and_precision",
+        "native_known_at_only_no_local_clock_rule",
+        "filter_each_native_input_before_derive_or_accepted_replay"
+      ],
+      "canonical_owner_ref": null,
+      "owner_adoption_status": "PENDING_ADOPTION",
+      "owner_family_candidate": "Existing licensed-source evidence custodian and Graph-1 normalized/projection owners unresolved",
+      "owner_family_is_exact_adopted_owner": false,
+      "ownership_source_refs": [
+        "C01",
+        "C04"
+      ],
+      "adapter_status": "REUSE_OR_ADOPTION_PROPOSAL_NOT_IMPLEMENTED",
+      "new_ingestion_permitted_by_register": false,
+      "outputs_are_proposed_source_metadata_not_native_clock_authority": true,
+      "native_dataset_binding": {
+        "dataset_id": null,
+        "registry_receipt": null,
+        "registry_version": null,
+        "registry_status": null,
+        "native_owner_receipt": null,
+        "native_producer_ref": null,
+        "native_contract_ref": null,
+        "temporal_profile": null,
+        "native_clock_crosswalk": null,
+        "binding_status": "PENDING_ADOPTION",
+        "required_contract_fields": [
+          "dataset_id",
+          "registry_receipt",
+          "registry_version",
+          "registry_status",
+          "native_owner_receipt",
+          "native_producer_ref",
+          "native_contract_ref",
+          "temporal_profile",
+          "profile_required_clocks",
+          "profile_required_fields",
+          "native_clock_crosswalk",
+          "temporal_precision",
+          "source_revision",
+          "processing_generation",
+          "correction_lineage",
+          "identity_resolution_receipt",
+          "entitlement_id",
+          "allowed_consumer_purposes"
+        ],
+        "source_refs": [
+          "C01",
+          "C02",
+          "C03"
+        ]
+      },
+      "source_provenance_clock_fields": [
+        "vendor_first_available_at"
+      ],
+      "source_provenance_clock_rule": "Preserve source meaning and precision; mapping to canonical clocks remains null until registered native owner crosswalk is approved. first_observed is actual system capture, never backdated."
+    },
+    {
+      "adapter_id": "DOCUMENT_KPI_OR_INFERENCE_BY_PURPOSE",
+      "stage": "C",
+      "canonical_owner": null,
+      "sources": [
+        "S22",
+        "S23",
+        "S24",
+        "S25",
+        "S26",
+        "S27",
+        "S28",
+        "S29",
+        "S30",
+        "S31",
+        "S32"
+      ],
+      "outputs": [
+        "document_or_response_reference",
+        "period",
+        "KPI_id",
+        "segment_rollup",
+        "source_locator",
+        "retrieved_at",
+        "rights_profile_id",
+        "permitted_purpose"
+      ],
+      "required_tests": [
+        "no_inference_content_cache_when_disallowed",
+        "no_implicit_training_grant",
+        "recast_segment_lineage",
+        "rightful_public_output",
+        "exact_owner_and_registry_binding_receipt",
+        "native_profile_required_fields_and_precision",
+        "native_known_at_only_no_local_clock_rule",
+        "filter_each_native_input_before_derive_or_accepted_replay"
+      ],
+      "canonical_owner_ref": null,
+      "owner_adoption_status": "PENDING_ADOPTION",
+      "owner_family_candidate": "Existing filing/KPI or Research Vault evidence owner by purpose; inference-only route must not create a persistent content corpus",
+      "owner_family_is_exact_adopted_owner": false,
+      "ownership_source_refs": [
+        "C01",
+        "C04"
+      ],
+      "adapter_status": "REUSE_OR_ADOPTION_PROPOSAL_NOT_IMPLEMENTED",
+      "new_ingestion_permitted_by_register": false,
+      "outputs_are_proposed_source_metadata_not_native_clock_authority": true,
+      "native_dataset_binding": {
+        "dataset_id": null,
+        "registry_receipt": null,
+        "registry_version": null,
+        "registry_status": null,
+        "native_owner_receipt": null,
+        "native_producer_ref": null,
+        "native_contract_ref": null,
+        "temporal_profile": null,
+        "native_clock_crosswalk": null,
+        "binding_status": "PENDING_ADOPTION",
+        "required_contract_fields": [
+          "dataset_id",
+          "registry_receipt",
+          "registry_version",
+          "registry_status",
+          "native_owner_receipt",
+          "native_producer_ref",
+          "native_contract_ref",
+          "temporal_profile",
+          "profile_required_clocks",
+          "profile_required_fields",
+          "native_clock_crosswalk",
+          "temporal_precision",
+          "source_revision",
+          "processing_generation",
+          "correction_lineage",
+          "identity_resolution_receipt",
+          "entitlement_id",
+          "allowed_consumer_purposes"
+        ],
+        "source_refs": [
+          "C01",
+          "C02",
+          "C03"
+        ]
+      },
+      "source_provenance_clock_fields": [
+        "retrieved_at"
+      ],
+      "source_provenance_clock_rule": "Preserve source meaning and precision; mapping to canonical clocks remains null until registered native owner crosswalk is approved. first_observed is actual system capture, never backdated."
+    }
+  ],
+  "projection_contract": {
+    "consumer": "Proposed eligible ThemeGraph/F04/K3-D consumers within existing native boundaries; no authority granted",
+    "example": {
+      "assertion_id": null,
+      "legal_entity_id": null,
+      "predicate": null,
+      "product_id": null,
+      "reporting_period": null,
+      "quantity": null,
+      "quantity_null_reason": "UNDISCLOSED",
+      "units": null,
+      "denominator": null,
+      "quantity_origin": null,
+      "source_locator": null,
+      "source_document_id": null,
+      "clock_null_reason": "CLOCK_UNPROVEN",
+      "extraction_confidence": null,
+      "extraction_confidence_scale": null,
+      "entity_match_confidence": null,
+      "entity_match_confidence_scale": null,
+      "vendor_confidence": null,
+      "vendor_confidence_scale": null,
+      "economic_weight_interval": null,
+      "economic_weight_method_version": null,
+      "entitlement_id": null,
+      "allowed_consumer_purposes": [],
+      "rights_status": "unknown",
+      "source_provenance_clocks": {
+        "original_public_available_at": null,
+        "vendor_first_available_at": null,
+        "gmi_available_at": null,
+        "first_observed": null
+      },
+      "dataset_id": null,
+      "registry_receipt": null,
+      "registry_version": null,
+      "registry_status": null,
+      "native_owner_receipt": null,
+      "native_producer_ref": null,
+      "native_contract_ref": null,
+      "temporal_profile": null,
+      "profile_required_clocks": null,
+      "profile_required_fields": null,
+      "native_clock_crosswalk": null,
+      "temporal_precision": "UNKNOWN",
+      "published_at": null,
+      "ingested_at": null,
+      "served_at": null,
+      "source_revision": null,
+      "processing_generation": null,
+      "correction_lineage": null,
+      "identity_resolution_receipt": null,
+      "pit_admission_state": "PENDING_NATIVE_OWNER_PROFILE_CROSSWALK",
+      "binding_null_reason": "PENDING_ADOPTION"
+    },
+    "example_is_real_record": false,
+    "adoption_status": "PENDING_ADOPTION",
+    "pit_eligibility_established": false,
+    "required_native_contract_fields": [
+      "dataset_id",
+      "registry_receipt",
+      "registry_version",
+      "registry_status",
+      "native_owner_receipt",
+      "native_producer_ref",
+      "native_contract_ref",
+      "temporal_profile",
+      "profile_required_clocks",
+      "profile_required_fields",
+      "native_clock_crosswalk",
+      "temporal_precision",
+      "source_revision",
+      "processing_generation",
+      "correction_lineage",
+      "identity_resolution_receipt",
+      "entitlement_id",
+      "allowed_consumer_purposes"
+    ],
+    "eligibility_rule": "Native registered profile and known_at only; metadata timestamps do not confer PIT eligibility. Filter owner inputs before derive or accepted served-artifact replay.",
+    "source_refs": [
+      "C01",
+      "C02",
+      "C03"
+    ]
+  },
+  "evaluation": {
+    "sample_size": 120,
+    "sample_type": "balanced diagnostic, not probability representative",
+    "strata": [
+      {
+        "label": "US",
+        "issuers": 24
+      },
+      {
+        "label": "CN_MAINLAND",
+        "issuers": 24
+      },
+      {
+        "label": "HK",
+        "issuers": 24
+      },
+      {
+        "label": "CA",
+        "issuers": 24
+      },
+      {
+        "label": "INT",
+        "issuers": 24
+      }
+    ],
+    "international_allocation": {
+      "UK": 8,
+      "Japan": 8,
+      "EU": 8
+    },
+    "sectors": [
+      "semiconductor_cloud",
+      "industrials",
+      "consumer",
+      "energy_materials",
+      "financials",
+      "healthcare"
+    ],
+    "issuers_per_sector_per_stratum": 4,
+    "size_allocation_per_sector_per_stratum": {
+      "large": 2,
+      "mid": 1,
+      "small": 1
+    },
+    "market_cap_thresholds": null,
+    "market_cap_date": null,
+    "company_ids": null,
+    "company_ids_status": "must_freeze_before_vendor_outputs",
+    "periods": [
+      2023,
+      2024,
+      2025
+    ],
+    "include_latest_available_2026_interim_or_material_event": true,
+    "independent_adjudication_cases": 30,
+    "independent_adjudication_per_stratum": 6,
+    "stress_labels": [
+      "IDENTITY_ALIAS",
+      "ANON_CONCENTRATION",
+      "DUAL_FLOW",
+      "TERMINATION_EXPLICIT",
+      "SUPPLIER_LIST_STALE",
+      "SEGMENT_RECAST",
+      "DIMENSION_CUSTOM",
+      "QUANTITY_DENOMINATOR"
+    ],
+    "ground_truth_status": "not_collected",
+    "denominators": {
+      "issuer_coverage": "All 120 eligible issuers; disaggregate each stratum including zero results.",
+      "named_link_recall": "All manually evidenced named eligible benchmark links; anonymous links excluded and reported separately.",
+      "quantitative_completeness": "All eligible returned edges; a usable period, unit, denominator and origin flag are required.",
+      "temporal_fidelity": "Historical records with proved registered owner/profile eligibility and revision lineage / all sampled historical records; separately report provenance-clock proof, date-only precision and pending crosswalks.",
+      "identity_resolution": "All sampled named endpoint mentions; ambiguous cases count against resolved coverage.",
+      "cost": "Actual costs per usable edge, issuer and refresh cycle.",
+      "verified_support_yield": "Independently supported sampled proposed links / all sampled proposed links; freeze denominator before adjudication; unknowns and abstentions remain included.",
+      "conditional_adjudicated_precision": "TP/(TP+FP) among independently resolved cases for declared predicate/direction/cutoff; report selection limits.",
+      "unknown_unresolved_share": "U/(TP+FP+U) among all sampled proposed links; no disclosure is not false; report coverage-undetermined separately."
+    },
+    "nulls": "typed; neverzero_fill",
+    "numeric_match_tolerance": "respect original displayed rounding intervals, units and currency; no universal numerical tolerance",
+    "pilot_is_precision_gate_proof": false,
+    "automatic_admission": "Separate qualified independent stratified adjudication under Commission4 proposed baseline; this diagnostic pilot does not establish admission.",
+    "unknown_case_sensitivity": {
+      "lower": "TP/(TP+FP+U)",
+      "upper": "(TP+U)/(TP+FP+U)",
+      "assumption": "Correct independently resolved labels; unknown cases range from all false to all true. Conditional precision selection may not represent unresolved population.",
+      "coverage_undetermined_report": "Separate from FP and retrieval/issuer coverage; freeze sampled proposed-link denominator before adjudication so post-sampling abstention cannot improve yield."
+    },
+    "metric_source_refs": [
+      "C01"
+    ],
+    "zero_denominator_result": null,
+    "zero_denominator_rule": "Report undefined/zero-denominator metric as typed null, never 0; preserve numerator and denominator counts."
+  },
+  "cost_assumptions": {
+    "status": "hypothetical_internal_planning_only",
+    "manual_minutes_per_case": [
+      30,
+      90
+    ],
+    "manual_hours": [
+      60,
+      180
+    ],
+    "adjudication_minutes_per_case": [
+      30,
+      60
+    ],
+    "adjudication_hours": [
+      15,
+      30
+    ],
+    "connector_engineer_weeks": [
+      1,
+      3
+    ],
+    "hours_per_engineer_week": 40,
+    "connector_engineer_hours": [
+      40,
+      120
+    ],
+    "loaded_analyst_hourly_rate": null,
+    "loaded_engineer_hourly_rate": null,
+    "vendor_sample_fee": null,
+    "production_vendor_quote": null,
+    "formula": "sample_fee+API+OCR+LLM+storage+analyst_hours*loaded_analyst_rate+engineer_hours*loaded_engineer_rate"
+  },
+  "public_price_observations": [
+    {
+      "vendor": "Bigdata.com",
+      "source_id": "S31",
+      "observed_on": "2026-10-08",
+      "currency_symbol": "$",
+      "currency_code": null,
+      "starter_displayed_monthly_price": 0,
+      "starter_one_time_credits": 10,
+      "pro_displayed_price_per_month": 40,
+      "pro_regular_reference": 50,
+      "pro_monthly_credit": 50,
+      "max_displayed_price_per_month": 160,
+      "max_regular_reference": 200,
+      "max_monthly_credit": 200,
+      "billing_basis_and_offer_expiry_verified": false,
+      "enterprise_quote": null,
+      "does_not_establish_graph_embedding_training_license": true
+    },
+    {
+      "vendor": "Fiscal.ai API",
+      "source_id": "S27",
+      "free_company_set_size": 100,
+      "free_calls_per_day": 250,
+      "enrolled": false,
+      "production_quote": null
+    },
+    {
+      "vendor": "AlphaSense",
+      "source_id": "S28",
+      "credit_units_per_request": {
+        "fast": 10,
+        "auto": 10,
+        "thinkLonger": 25,
+        "deepResearch": 100
+      },
+      "dollar_per_credit": null,
+      "commercial_quota": null
+    },
+    {
+      "vendors": [
+        "FactSet",
+        "S&P_Global",
+        "Bloomberg",
+        "LSEG",
+        "Quartr_API",
+        "Fiscal_API_enterprise",
+        "RavenPack_current_feed"
+      ],
+      "current_GMI_rights_package_price": null,
+      "status": "quote_required_unknown"
+    }
+  ],
+  "go_no_go": {
+    "internal_research": [
+      "permitted_carrier_access",
+      "approved_purpose",
+      "limited_evidence_retention"
+    ],
+    "persistent_graph": [
+      "positive_database_derived_assertion_rights",
+      "source_lineage",
+      "material_target_coverage",
+      "incumbent_owner_adoption_map",
+      "registered_dataset_profile_native_crosswalk",
+      "declared_consumer_temporal_eligibility",
+      "filter_before_derive_or_accepted_replay_if_historical"
+    ],
+    "embedding_inference": [
+      "processing_and_subprocessor_rights",
+      "retention_and_ZDR_compliance"
+    ],
+    "training_evaluation": [
+      "explicit_positive_training_evaluation_rights",
+      "manifest_lineage",
+      "revocation_model_survival_policy"
+    ],
+    "public_display_API": [
+      "audience_and_redistribution_rights",
+      "approved_outputs",
+      "attribution"
+    ],
+    "no_go_for_affected_use": [
+      "absent_quantity_origin_flags",
+      "absent_denominator_definition",
+      "missing_required_availability_history",
+      "unlicensed_purpose",
+      "unresolved_required_native_owner_binding",
+      "unresolved_required_dataset_profile_clock_crosswalk",
+      "generic_DERIVED_latest_state_used_for_PIT"
+    ],
+    "executed_gate_results": null,
+    "historical_backtest": [
+      "all_input_native_dataset_owner_profile_receipts",
+      "profile_required_clocks_and_precision",
+      "native_known_at_as_of_filter_before_derive_or_accepted_replay",
+      "revision_and_cutoff_lineage"
+    ],
+    "rights_inventory_is_pit_proof": false
+  },
+  "unperformed_actions": [
+    "procurement",
+    "trial_enrollment",
+    "credential_change",
+    "prohibited_scraping",
+    "production_ingestion",
+    "production_edit",
+    "outside_messaging",
+    "public_publication",
+    "vendor_sample_validation",
+    "training"
+  ],
+  "remaining_gaps": [
+    "target_universe_measured_recall",
+    "executed_vendor_contracts",
+    "historical_availability_and_correction_schemas",
+    "current_HKEX_listing_rules",
+    "direct_FASB_USGAAP_rule",
+    "mainland_production_API_and_reuse_rights",
+    "Canadian_licensed_acquisition_quote",
+    "registry_crosswalk_rights"
+  ],
+  "procurement_evidence_required": [
+    "Target-universe coverage by market/sector/size/language with company IDs and delisted history",
+    "Typed schema, entity scope, direction and product/facility attribution",
+    "Observed/estimated quantity flags, denominators, units, model versions and validation",
+    "Original sources/locators, publication/vendor availability/revision clocks and closure semantics",
+    "Entitled bulk/API transport, pagination, quotas/concurrency, delivery refresh/SLA",
+    "Raw/derived/database/feature/embedding and third-party LLM processing rights",
+    "Separate training/evaluation/synthetic-data/model-survival grants",
+    "Audience/display/customer API/redistribution and attribution scope",
+    "Retention/termination/revocation and third-party-geographic terms",
+    "Actual written sample/setup/minimum/consumption/overage/AI/redistribution quote and renewal conditions"
+  ],
+  "ownership_adoption_gate": {
+    "status": "PENDING_ADOPTION",
+    "new_ingestion_permitted": false,
+    "raw_relationship_evidence_owner": null,
+    "normalized_contract_owner": null,
+    "projection_materialization_owner": null,
+    "identity_mint_correction_receipts": null,
+    "chosen_materialization_mode": null,
+    "consumer_boundary_receipts": null,
+    "source_policy_and_revocation_custodians": null,
+    "required_boundaries": [
+      "GMI",
+      "K3-D",
+      "F04",
+      "GovRev",
+      "Research Vault",
+      "Evidence Foundation"
+    ],
+    "required_before_modifying": "One incumbent-approved adoption map and registry/temporal/identity compatibility receipts; reuse existing native producers wherever present",
+    "source_refs": [
+      "C01",
+      "C04"
+    ]
+  },
+  "temporal_contract": {
+    "status": "PENDING_NATIVE_BINDINGS",
+    "rights_profiles_are_temporal_profiles": false,
+    "register_supplies_pit_proof": false,
+    "canonical_eligibility_api": "lib.dataos.temporal.known_at(row, registered TemporalProfile) and native as_of_filter",
+    "profile_selection": "Only actual owner registry profile; do not infer profile from adapter name or public carrier",
+    "local_availability_clock_or_max_coalesce_permitted": false,
+    "inspected_native_order": {
+      "BARS": [
+        "published_at",
+        "ingested_at"
+      ],
+      "REVISABLE_RELEASE": [
+        "published_at",
+        "ingested_at"
+      ],
+      "SNAPSHOT_SERIES": [
+        "published_at",
+        "ingested_at"
+      ],
+      "EVENT": [
+        "published_at",
+        "ingested_at"
+      ],
+      "INTELLIGENCE": [
+        "served_at"
+      ],
+      "DERIVED": []
+    },
+    "required_contract_fields": [
+      "dataset_id",
+      "registry_receipt",
+      "registry_version",
+      "registry_status",
+      "native_owner_receipt",
+      "native_producer_ref",
+      "native_contract_ref",
+      "temporal_profile",
+      "profile_required_clocks",
+      "profile_required_fields",
+      "native_clock_crosswalk",
+      "temporal_precision",
+      "source_revision",
+      "processing_generation",
+      "correction_lineage",
+      "identity_resolution_receipt",
+      "entitlement_id",
+      "allowed_consumer_purposes"
+    ],
+    "precision_enum": [
+      "INSTANT",
+      "DATE",
+      "UNKNOWN"
+    ],
+    "date_only_or_naive_as_exact_instant": "REFUSE; same-day intraday eligibility fails closed absent lawful instant proof",
+    "source_clock_names": "Provenance metadata only until approved source-to-native mapping; no independent known_at/available_at/discovered_at/belief_time authority",
+    "first_observed": "Actual system capture only; not a reconstructed historical public timestamp",
+    "derived_pit_policy": "DERIVED remains PIT-forbidden even with added timestamps. Filter each native owner observation under its registered profile and cutoff before rederiving state, or use separately governed accepted replay-capable served artifact. Current-rule recomputation is not historical system replay.",
+    "latest_derived_state_historical_substitution_permitted": false,
+    "source_refs": [
+      "C01",
+      "C02",
+      "C03"
+    ]
+  }
+}

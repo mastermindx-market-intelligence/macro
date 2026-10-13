@@ -111,6 +111,9 @@ def _clock_reason(doc: Mapping[str, Any], as_of: Any, session: Any,
     if availability is not None and not isinstance(availability, Mapping):
         return "malformed_availability"
     if isinstance(availability, Mapping):
+        status = availability.get("status")
+        if status is not None and not isinstance(status, str):
+            return "malformed_availability"
         clocks.append(("available_at", availability.get("available_at")))
     # Validate every supplied native clock, not just a preferred alias. A valid
     # backdated alias must not hide another explicit future availability clock.
@@ -131,6 +134,13 @@ def _clock_reason(doc: Mapping[str, Any], as_of: Any, session: Any,
             return "malformed_source_clock"
         if now is not None and stamp > now.astimezone(timezone.utc):
             return "source_not_available" if key == "available_at" else "future_production_clock"
+    expiry = doc.get("stale_after")
+    if expiry is not None:
+        stamp = _instant(expiry)
+        if stamp is None:
+            return "malformed_source_expiry"
+        if now is not None and stamp <= now.astimezone(timezone.utc):
+            return "source_expired"
     fresh = doc.get("freshness")
     if fresh is not None and not isinstance(fresh, Mapping):
         return "malformed_freshness"
@@ -158,12 +168,41 @@ def _market_lineage(doc: Mapping[str, Any]) -> dict[str, Any]:
     }
 
 
+def _compact_clock_receipt(doc: Mapping[str, Any]) -> dict[str, Any]:
+    """Retain schema-compatible original clock values without coercion or defaults.
+
+    _clock_reason independently excludes malformed timing. This projection must
+    stay schema-valid even when the optional source is excluded: omitting an
+    invalid JSON type here does not qualify the source or replace its reason.
+    A parent's generated clock remains production, never original availability.
+    """
+    out = {key: doc[key] for key in (
+        "generated_utc", "produced_at", "available_at", "stale_after",
+    ) if key in doc and (doc[key] is None or isinstance(doc[key], str))}
+    for key, fields in (("availability", ("status", "available_at")),
+                        ("freshness", ("stale",))):
+        if key not in doc:
+            continue
+        value = doc[key]
+        if value is None:
+            out[key] = None
+        elif isinstance(value, Mapping):
+            if key == "availability":
+                out[key] = {name: value[name] for name in fields if name in value
+                            and (value[name] is None or isinstance(value[name], str))}
+            else:
+                out[key] = {name: value[name] for name in fields if name in value
+                            and isinstance(value[name], bool)}
+    return out
+
+
 def _compact_early_context(early: Mapping[str, Any]) -> dict[str, Any]:
     """Bound product receipts; lineage lives once in source provenance."""
     fields = ("schema", "definition_id", "as_of", "produced_at", "available_at",
               "availability", "display_only", "state", "reason_codes", "coverage",
               "prior_loser_constituent_claim")
     out = {key: early[key] for key in fields if key in early}
+    out.update(_compact_clock_receipt(early))
     pairs = early.get("pairs")
     pairs = pairs if isinstance(pairs, list) else []
     out["pairs"] = [{k: v for k, v in pair.items() if k != "lineage"}
@@ -197,6 +236,7 @@ def _rotation_read(doc: Mapping[str, Any] | None, session: str | None, *,
         reason = "early_context_missing_or_malformed"
     elif early.get("state") not in ROTATION_EARLY_STATES:
         reason = reason or "early_context_unavailable"
+    parent_clocks = _compact_clock_receipt(doc)
     active = doc.get("active")
     confirmed = None
     if isinstance(active, list) and all(isinstance(item, Mapping) for item in active):
@@ -219,6 +259,7 @@ def _rotation_read(doc: Mapping[str, Any] | None, session: str | None, *,
             "lineage": dict(early["lineage"]) if early and isinstance(early.get("lineage"), Mapping) else {},
             "excluded_reason": reason,
             "availability_basis": "source_recorded" if early and early.get("available_at") else "original_availability_unknown",
+            **({"source_clock_receipt": parent_clocks} if parent_clocks else {}),
         },
     )
 

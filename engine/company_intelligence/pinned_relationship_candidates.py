@@ -24,6 +24,7 @@ from engine.fundamental_forensics.filing_attestation import (
 )
 from engine.fundamental_forensics.sec_document_spine import (
     FilingManifestError, HARD_MAX_FILING_MANIFEST_BYTES, manifest_from_json_bytes,
+    manifest_storage_key,
 )
 from engine.fundamental_forensics.source_sync import SourceSyncError
 from engine.research_vault.r2_store import BoundedReadError
@@ -116,8 +117,6 @@ def inspect_pinned_candidate(
             maximum_bytes=HARD_MAX_FILING_MANIFEST_BYTES,
         )
         manifest = manifest_from_json_bytes(manifest_read.content)
-        from collectors.sec_document_spine import manifest_storage_key
-
         _require(manifest_storage_key(manifest) == manifest_key, "MANIFEST_SELECTOR_MISMATCH")
         selected = [row for row in manifest["documents"] if row["document_id"] == document_id]
         _require(len(selected) == 1, "DOCUMENT_NOT_UNIQUELY_SELECTED")

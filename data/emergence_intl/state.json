@@ -2,16 +2,16 @@
   "2c85fe224982": {
     "name_en": "Cross-sector cluster \u00b7 Information Technology + Financials",
     "name_zh": "\u8de8\u677f\u5757\u96c6\u7fa4 \u00b7 Information Technology + Financials",
-    "score": 52.1
+    "score": 47.8
   },
   "ab7471204e50": {
     "name_en": "Cross-sector cluster \u00b7 Consumer Staples + Industrials",
     "name_zh": "\u8de8\u677f\u5757\u96c6\u7fa4 \u00b7 Consumer Staples + Industrials",
-    "score": 54.4
+    "score": 55.9
   },
-  "f42f52188d74": {
-    "name_en": "Cross-sector cluster \u00b7 Information Technology + Communication",
-    "name_zh": "\u8de8\u677f\u5757\u96c6\u7fa4 \u00b7 Information Technology + Communication",
-    "score": 44.4
+  "c99d68747be1": {
+    "name_en": "Cross-sector cluster \u00b7 Information Technology + Consumer Discretionary",
+    "name_zh": "\u8de8\u677f\u5757\u96c6\u7fa4 \u00b7 Information Technology + Consumer Discretionary",
+    "score": 47.6
   }
 }

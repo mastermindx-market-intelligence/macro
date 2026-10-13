@@ -1,0 +1,145 @@
+{
+  "schema": "gmi.ci_import_enrollment_static_check/v1",
+  "method": "AST only of prepared bytes independently confirmed equal to native hashes; includes TYPE_CHECKING and embedded child source",
+  "owner_path_count": 71,
+  "imports": {
+    "engine/company_intelligence/relationship_observations.py": [
+      {
+        "where": "file",
+        "line": 18,
+        "module": "engine.company_intelligence.relationship_candidates",
+        "names": [
+          "inspect_candidate"
+        ],
+        "resolved_owner_paths": [
+          "engine/__init__.py",
+          "engine/company_intelligence/__init__.py",
+          "engine/company_intelligence/relationship_candidates.py"
+        ]
+      },
+      {
+        "where": "file",
+        "line": 21,
+        "module": "engine.research_vault.r2_store",
+        "names": [
+          "StrictConditionalWriteStore"
+        ],
+        "resolved_owner_paths": [
+          "engine/__init__.py",
+          "engine/research_vault/__init__.py",
+          "engine/research_vault/r2_store.py"
+        ]
+      }
+    ],
+    "tests/test_company_relationship_observations.py": [
+      {
+        "where": "file",
+        "line": 14,
+        "module": "engine.company_intelligence",
+        "names": [
+          "relationship_observations"
+        ],
+        "resolved_owner_paths": [
+          "engine/__init__.py",
+          "engine/company_intelligence/__init__.py",
+          "engine/company_intelligence/relationship_observations.py"
+        ]
+      },
+      {
+        "where": "file",
+        "line": 15,
+        "module": "engine.company_intelligence.relationship_candidates",
+        "names": [
+          "inspect_candidate"
+        ],
+        "resolved_owner_paths": [
+          "engine/__init__.py",
+          "engine/company_intelligence/__init__.py",
+          "engine/company_intelligence/relationship_candidates.py"
+        ]
+      },
+      {
+        "where": "file",
+        "line": 16,
+        "module": "engine.earnings_release.receipts",
+        "names": [
+          "receipt_for_char_span",
+          "sha256_text"
+        ],
+        "resolved_owner_paths": [
+          "engine/__init__.py",
+          "engine/earnings_release/__init__.py",
+          "engine/earnings_release/receipts.py"
+        ]
+      },
+      {
+        "where": "file",
+        "line": 17,
+        "module": "engine.research_vault.r2_store",
+        "names": [
+          "LocalStore"
+        ],
+        "resolved_owner_paths": [
+          "engine/__init__.py",
+          "engine/research_vault/__init__.py",
+          "engine/research_vault/r2_store.py"
+        ]
+      },
+      {
+        "where": "file",
+        "line": 18,
+        "module": "lib.dataos.registry",
+        "names": [
+          "Registry"
+        ],
+        "resolved_owner_paths": [
+          "lib/__init__.py",
+          "lib/dataos/__init__.py",
+          "lib/dataos/registry.py"
+        ]
+      },
+      {
+        "where": "embedded_child",
+        "line": 113,
+        "module": "engine.research_vault.r2_store",
+        "names": [
+          "LocalStore"
+        ],
+        "resolved_owner_paths": [
+          "engine/__init__.py",
+          "engine/research_vault/__init__.py",
+          "engine/research_vault/r2_store.py"
+        ]
+      },
+      {
+        "where": "embedded_child",
+        "line": 114,
+        "module": "engine.company_intelligence.relationship_observations",
+        "names": [
+          "read_relationship_observation"
+        ],
+        "resolved_owner_paths": [
+          "engine/__init__.py",
+          "engine/company_intelligence/__init__.py",
+          "engine/company_intelligence/relationship_observations.py"
+        ]
+      },
+      {
+        "where": "embedded_child",
+        "line": 115,
+        "module": "lib.dataos.registry",
+        "names": [
+          "Registry"
+        ],
+        "resolved_owner_paths": [
+          "lib/__init__.py",
+          "lib/dataos/__init__.py",
+          "lib/dataos/registry.py"
+        ]
+      }
+    ]
+  },
+  "missing_direct_first_party_owner_paths": [],
+  "unexecuted_dynamic_guard_imports": "Intentional denied-name controls are not imported application dependencies; native closure gate remains required",
+  "transitive_closure": "Reuses accepted owner paths; actual existing curated-closure test not run by this reviewer"
+}
