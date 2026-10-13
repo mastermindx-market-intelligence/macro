@@ -1,0 +1,508 @@
+{
+  "axes": {
+    "access": [
+      "fixture_backed_golden_local"
+    ],
+    "force_states": [
+      {
+        "attribute": "data-ff-evidence-interaction",
+        "kind": "attribute",
+        "name": "saved_unavailable",
+        "spec": "saved_unavailable:[data-ff-evidence-interaction=saved_open_unavailable]",
+        "value": "saved_open_unavailable"
+      }
+    ],
+    "locales": [
+      "en",
+      "zh"
+    ],
+    "themes": [
+      "dark",
+      "light"
+    ],
+    "viewports": {
+      "desktop": [
+        1440,
+        900
+      ],
+      "mobile": [
+        390,
+        844
+      ]
+    }
+  },
+  "evidence_source": {
+    "aborted_hosts": [
+      "cloud.umami.is"
+    ],
+    "briefcase_seed": "briefcase_seed.json",
+    "entitlement": "app.dependency_overrides[app.forensics.require_site_full_user] = lambda: {\"id\": \"fif-evidence-local\"} — the repository router-test convention; no credential",
+    "entitlement_fence": "entitled crops = fixture-backed golden, local, entitlement satisfied by test dependency override; not production entitlement proof",
+    "financial_dataset_mode": "golden",
+    "fold_measurement": "fold_measurement.json",
+    "generator_command": "python3 -m tests.tools.fif_p2_evidence_capture --mode populated --out-dir mockups/evidence/fundamental_forensics_x2s/saved_unavailable --as-of 2026-10-12T00:00:00Z --generated-at 2026-10-12T00:00:00Z --briefcase-seed tests/fixtures/fundamental_forensics/fif_saved_research/evidence_briefcase_seed.json --fold-selector nav=nav.site-nav --fold-selector 'lead=#ff-quick-signal' --fold-selector 'saved=#ff-saved-controls' --force-state 'saved_unavailable:[data-ff-evidence-interaction=saved_open_unavailable]' --changed-path templates/fif_saved_briefcase.js --changed-path templates/fundamental_forensics.js --changed-path templates/fundamental_forensics.html.j2 --changed-path site/fif_saved_briefcase.js --changed-path site/fundamental_forensics.js",
+    "host_rewrite": "127.0.0.1 -> fif-evidence.localhost",
+    "interactions": "interactions.json",
+    "label": "fixture-backed (golden), local",
+    "mode": "populated",
+    "network_log": "network_log.json",
+    "scrubbed_env_names": [],
+    "state": {
+      "builder": "scripts.build_fundamental_forensics.compose_state",
+      "bytes": 760424,
+      "generated_at": "2026-10-12T00:00:00Z",
+      "sha256": "bb1425d4825c300f5edc93462c48764380a50318adc97ca562188a16622c6921"
+    },
+    "wrapper_module": "tests/tools/fif_p2_evidence_capture.py",
+    "wrapper_module_sha256": "b40fcb4a7081c191e229b108c9cf30bdc0957dc18ce5b3e9eaa639187a4f1fb3"
+  },
+  "excluded": [],
+  "generated_at": "2026-10-12T00:00:00Z",
+  "honesty": {
+    "access": "fixture-backed (golden), local: private-API responses produced in-process by the real FIF kernel in golden mode (AAPL golden) through app.forensics.router; entitlement satisfied by the repository's router-test dependency override, no credential entered, stored or synthesized; not a production capture",
+    "authority": "this tool measures and screenshots; it scores, ranks, and judges nothing",
+    "cell_id_access": "cell_id strings carry the capture tool's fixed 'anonymous' access token; the per-state 'access' field and axes.access carry this run's real access mode",
+    "entitlement": "entitled crops = fixture-backed golden, local, entitlement satisfied by test dependency override; not production entitlement proof",
+    "force_states": "a forced state is either a class/attribute toggled on <body> or a real browser hover/focus applied to a selector before the shot; it shows that state's presentation, not data the page returned; metrics are measured on the rest cells only, and a state that did not take is recorded as a gap",
+    "gaps": "states that were not captured are recorded with a reason; nothing is inferred for them"
+  },
+  "outcome": "captured",
+  "pages": [
+    {
+      "console_errors": [
+        {
+          "source_url": "https://cloud.umami.is/script.js",
+          "text": "Failed to load resource: net::ERR_BLOCKED_BY_CLIENT.Inspector"
+        }
+      ],
+      "failed_responses": [],
+      "gaps": [
+        {
+          "captured": false,
+          "dimension": "access",
+          "reason": "requires authenticated session; not automatable without approved fixtures",
+          "value": "free"
+        },
+        {
+          "captured": false,
+          "dimension": "access",
+          "reason": "requires authenticated session; not automatable without approved fixtures",
+          "value": "essential"
+        },
+        {
+          "captured": false,
+          "dimension": "access",
+          "reason": "requires authenticated session; not automatable without approved fixtures",
+          "value": "pro"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "loading"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "empty"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "stale"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "error"
+        }
+      ],
+      "metrics": {
+        "asof_present": true,
+        "by_viewport": {
+          "desktop": {
+            "document_height_px": 1374,
+            "elements_wider_than_viewport": 0,
+            "horizontal_overflow": false
+          },
+          "mobile": {
+            "document_height_px": 1784,
+            "elements_wider_than_viewport": 0,
+            "horizontal_overflow": false
+          }
+        },
+        "console_error_count": 1,
+        "document_height_px": 1374,
+        "duplicate_heading_texts": [
+          "earnings moved further ahead of cash."
+        ],
+        "elements_wider_than_viewport": 0,
+        "heading_counts": {
+          "h1": 1,
+          "h2": 3,
+          "h3": 5,
+          "h4": 0,
+          "h5": 0,
+          "h6": 0
+        },
+        "horizontal_overflow": false,
+        "long_paragraph_count": 0,
+        "measured_in": {
+          "access": "fixture_backed_golden_local",
+          "locale": "en",
+          "theme": "dark",
+          "viewport": "desktop"
+        },
+        "panel_count": 0,
+        "payload_bytes_total": 3370837,
+        "raw_slug_hit_count": 0,
+        "raw_slug_hits": [],
+        "request_count": 28,
+        "screenshot_completion": 1.0,
+        "section_count": 14,
+        "source_present": false,
+        "todo_placeholder_hit_count": 0,
+        "todo_placeholder_hits": [],
+        "visible_word_count": 411
+      },
+      "page_id": "fundamental_forensics.html?symbol=AAPL",
+      "registry_route": "/fundamental_forensics.html?symbol=AAPL",
+      "route": "/fundamental_forensics.html?symbol=AAPL",
+      "route_kind": "explicit_override",
+      "states": [
+        {
+          "access": "fixture_backed_golden_local",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 542972,
+          "captured": true,
+          "evidence_label": "fixture-backed (golden), local",
+          "file": "9b9d417704df690f.png",
+          "force_state": null,
+          "height": 1374,
+          "locale": "en",
+          "sha256": "9b9d417704df690fc479a2825c4d9eacb5802849092e7205c9e6ecd69d8816b7",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "fixture_backed_golden_local",
+          "applied_force_state": "saved_unavailable",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 562024,
+          "captured": true,
+          "evidence_label": "fixture-backed (golden), local",
+          "file": "83729cf71df23d36--saved_unavailable.png",
+          "force_state": "saved_unavailable",
+          "height": 1444,
+          "locale": "en",
+          "sha256": "83729cf71df23d36dd3aa22ac149d41cce1528cef01d742ac8724238d3ff0609",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "fixture_backed_golden_local",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 285612,
+          "captured": true,
+          "evidence_label": "fixture-backed (golden), local",
+          "file": "49e9df156ff811c5.png",
+          "force_state": null,
+          "height": 1374,
+          "locale": "en",
+          "sha256": "49e9df156ff811c51438ff0fdc2de743805ef3831ac9040cf74b5994e2b4f2a7",
+          "theme": "light",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "fixture_backed_golden_local",
+          "applied_force_state": "saved_unavailable",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 293978,
+          "captured": true,
+          "evidence_label": "fixture-backed (golden), local",
+          "file": "2f1b4d45363b87a4--saved_unavailable.png",
+          "force_state": "saved_unavailable",
+          "height": 1444,
+          "locale": "en",
+          "sha256": "2f1b4d45363b87a4f77751baa9eb850870a8ab2f11a5a5e772d00087d9c69645",
+          "theme": "light",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "fixture_backed_golden_local",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "bytes": 545536,
+          "captured": true,
+          "evidence_label": "fixture-backed (golden), local",
+          "file": "bc93c7837e64b80a.png",
+          "force_state": null,
+          "height": 1346,
+          "locale": "zh",
+          "sha256": "bc93c7837e64b80ad3cdbe5e987fe0b3372daa454f085bf175fcc77da19280f2",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "fixture_backed_golden_local",
+          "applied_force_state": "saved_unavailable",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "bytes": 570102,
+          "captured": true,
+          "evidence_label": "fixture-backed (golden), local",
+          "file": "eea64ae1018b22c4--saved_unavailable.png",
+          "force_state": "saved_unavailable",
+          "height": 1416,
+          "locale": "zh",
+          "sha256": "eea64ae1018b22c48e295bf8000269fa839a2098a7dbe779f83bc60b07744250",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "fixture_backed_golden_local",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 306706,
+          "captured": true,
+          "evidence_label": "fixture-backed (golden), local",
+          "file": "bdbd0bba9d80b63f.png",
+          "force_state": null,
+          "height": 1346,
+          "locale": "zh",
+          "sha256": "bdbd0bba9d80b63f5a98c17b50eb606427980e1ed64eab3d21f0b33f41f7951f",
+          "theme": "light",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "fixture_backed_golden_local",
+          "applied_force_state": "saved_unavailable",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 320761,
+          "captured": true,
+          "evidence_label": "fixture-backed (golden), local",
+          "file": "7a6d613d4d0dd2c2--saved_unavailable.png",
+          "force_state": "saved_unavailable",
+          "height": 1416,
+          "locale": "zh",
+          "sha256": "7a6d613d4d0dd2c2b8ec27729baac1eedb8df5422c6d674c5e3b3a070a2ea622",
+          "theme": "light",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "fixture_backed_golden_local",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 237156,
+          "captured": true,
+          "evidence_label": "fixture-backed (golden), local",
+          "file": "18d56d2b54389ba3.png",
+          "force_state": null,
+          "height": 1784,
+          "locale": "en",
+          "sha256": "18d56d2b54389ba3fbb3994cf3c706e15e4bb775599b25cbcc5c7d12bc502154",
+          "theme": "dark",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "fixture_backed_golden_local",
+          "applied_force_state": "saved_unavailable",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 248616,
+          "captured": true,
+          "evidence_label": "fixture-backed (golden), local",
+          "file": "0d6cd3ea19b216fa--saved_unavailable.png",
+          "force_state": "saved_unavailable",
+          "height": 1871,
+          "locale": "en",
+          "sha256": "0d6cd3ea19b216fa6c28a22decb4ca6b43814e9554c5b1749e4ece859b9fe030",
+          "theme": "dark",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "fixture_backed_golden_local",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 147693,
+          "captured": true,
+          "evidence_label": "fixture-backed (golden), local",
+          "file": "9fe18a7a5fb858c3.png",
+          "force_state": null,
+          "height": 1784,
+          "locale": "en",
+          "sha256": "9fe18a7a5fb858c35c6c53e9a58415a33688d78f54a580c917648c5a3b3d19bc",
+          "theme": "light",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "fixture_backed_golden_local",
+          "applied_force_state": "saved_unavailable",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 156233,
+          "captured": true,
+          "evidence_label": "fixture-backed (golden), local",
+          "file": "990513f4c9c9dfd4--saved_unavailable.png",
+          "force_state": "saved_unavailable",
+          "height": 1871,
+          "locale": "en",
+          "sha256": "990513f4c9c9dfd404a4c4f9d6bf41074cec615c6edd049861932e4c55a502e7",
+          "theme": "light",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "fixture_backed_golden_local",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "bytes": 242275,
+          "captured": true,
+          "evidence_label": "fixture-backed (golden), local",
+          "file": "c30fb27418eac669.png",
+          "force_state": null,
+          "height": 1716,
+          "locale": "zh",
+          "sha256": "c30fb27418eac6697925c776d497aa2ffdcc8afaac367d73c12b2fb75a8068e0",
+          "theme": "dark",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "fixture_backed_golden_local",
+          "applied_force_state": "saved_unavailable",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "bytes": 256788,
+          "captured": true,
+          "evidence_label": "fixture-backed (golden), local",
+          "file": "c7804cf8b797e5c3--saved_unavailable.png",
+          "force_state": "saved_unavailable",
+          "height": 1787,
+          "locale": "zh",
+          "sha256": "c7804cf8b797e5c39236a5f57c1273826de9e5e6c2adc9e0b8bb9aa5c7771824",
+          "theme": "dark",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "fixture_backed_golden_local",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 162913,
+          "captured": true,
+          "evidence_label": "fixture-backed (golden), local",
+          "file": "839e431867787a45.png",
+          "force_state": null,
+          "height": 1716,
+          "locale": "zh",
+          "sha256": "839e431867787a45c91fec9793fb91d93ecc3ef1b5083bb865332e64f4540f41",
+          "theme": "light",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "fixture_backed_golden_local",
+          "applied_force_state": "saved_unavailable",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 174434,
+          "captured": true,
+          "evidence_label": "fixture-backed (golden), local",
+          "file": "cf4995a38de7315a--saved_unavailable.png",
+          "force_state": "saved_unavailable",
+          "height": 1787,
+          "locale": "zh",
+          "sha256": "cf4995a38de7315aab3d08f6875612d2da71e0670c6000cfde490b15fda94572",
+          "theme": "light",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        }
+      ]
+    }
+  ],
+  "schema": "mastermind.p0_evidence.v2",
+  "selection": {
+    "explicit_routes": [
+      "/fundamental_forensics.html?symbol=AAPL"
+    ],
+    "max_pages": 30,
+    "mode": "explicit_routes",
+    "note": "--routes overrode registry selection; the --priority and --repo filters were not applied",
+    "priority": null,
+    "registry": "data/product_experience/page_registry.json",
+    "registry_rows": 331,
+    "repo": null,
+    "selected": 1
+  },
+  "target": {
+    "base_url": null,
+    "kind": "site_dir",
+    "resolved_gitdir_or_none": "/home/ubuntu2/lanes/repos/macro/.git/worktrees/fif-x2s-cap-20261013",
+    "resolved_sha_or_none": "6a6bfb3c75dd6ba302e9435b31afcdb0257612ae",
+    "resolved_sha_source": "HEAD of the nearest git directory at or above --site-dir: /home/ubuntu2/lanes/repos/macro/.git/worktrees/fif-x2s-cap-20261013 (nearest-above is git's own rule; that this checkout produced --site-dir is not verified)",
+    "site_dir": "/home/ubuntu2/lanes/wt/fif-x2s-cap-20261013/site"
+  },
+  "tool": {
+    "module_ref": "scripts/capture_page_evidence.py",
+    "module_sha256": "8d753e2859d5261eb0d0bad3f626f8870eedf03e23a7f87b4b588bd792e88f16",
+    "user_agent": "mastermind-page-census/1.0 (internal product observability)",
+    "version": "1.3.0"
+  },
+  "totals": {
+    "pages": 1,
+    "states_attempted": 16,
+    "states_captured": 16
+  }
+}

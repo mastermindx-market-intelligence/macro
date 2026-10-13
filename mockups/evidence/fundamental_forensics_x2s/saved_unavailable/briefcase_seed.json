@@ -1,0 +1,5 @@
+{
+  "path": "tests/fixtures/fundamental_forensics/fif_saved_research/evidence_briefcase_seed.json",
+  "sha256": "251e95a855d6ac5b7e1514eee5ef1301a8d42d8798b02f4e30bb61124082e373",
+  "storage_key": "mastermind.filing_forensics.saved_research.v1"
+}
