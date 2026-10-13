@@ -283,7 +283,7 @@ def test_e6_us_split_like_tip_listing_the_benchmark_is_a_discontinuity(monkeypat
     frame = us_frame(days, [100.0, 100.0, 80.0])
 
     def actions(session):
-        return CorpActions(session=session, complete=True,
+        return CorpActions(session=session, complete=True, splits_n=1,
                            tickers=frozenset({us_pullback_observation.BENCHMARK}))
 
     calls = patch_us(monkeypatch, frame, actions=actions)
@@ -291,6 +291,23 @@ def test_e6_us_split_like_tip_listing_the_benchmark_is_a_discontinuity(monkeypat
     assert ("actions", SESSION.isoformat()) in calls
     assert ("closes", SESSION.isoformat()) not in calls
     assert_unavailable(view, "price_basis_discontinuity")
+
+
+def test_e6_us_benchmark_listed_for_a_dividend_alone_stays_measurable(monkeypatch):
+    """The same move with a dividend-only record is a market move, not a basis break."""
+    days = _us_days(3)
+    frame = us_frame(days, [100.0, 100.0, 80.0])
+
+    def actions(session):
+        return CorpActions(session=session, complete=True, splits_n=0, dividends_n=1,
+                           tickers=frozenset({us_pullback_observation.BENCHMARK}))
+
+    calls = patch_us(monkeypatch, frame, actions=actions)
+    view = call_hook(build_site._us_pullback_risk_popup, US_NOW)
+    assert ("actions", SESSION.isoformat()) in calls
+    assert view is not None
+    assert view["observation"]["quality"] not in {
+        "price_basis_discontinuity", "corporate_action_guard_down"}
 
 
 def _settle_instant(day, zone, settle):
