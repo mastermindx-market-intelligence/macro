@@ -373,6 +373,39 @@ if (which === 'reopen') {
   h.panel.dispatchEvent({type: 'transitionend', target: h.panel, propertyName: 'transform'});
   assert.equal(h.dlg.classList.contains('open'), false, 'second close finished');
   assert.equal(h.doc.activeElement, h.opener, 'original tile');
+} else if (which === 'handoff') {
+  // R3: B opens while focus is still in A, which that open hides. Closing B
+  // returns to A's opener, never to a control inside the hidden A.
+  {
+    const h = boot();
+    h.doc.activeElement = h.opener;
+    h.open('dlg-risk');
+    flushRaf();
+    h.close();
+    advance(50);
+    assert.equal(h.doc.activeElement, h.closeBtn, 'focus on the closing Close');
+    h.open('dlg-markets');
+    flushRaf();
+    assert.equal(h.dlg.classList.contains('open'), false, 'cancelled exit hid risk');
+    h.close();
+    advance(400);
+    assert.equal(h.markets.classList.contains('open'), false, 'markets closed');
+    assert.equal(h.doc.activeElement, h.opener, 'mid-exit hand-off returns to the tile');
+  }
+  {
+    const h = boot();
+    h.doc.activeElement = h.opener;
+    h.open('dlg-risk');
+    flushRaf();
+    assert.equal(h.doc.activeElement, h.closeBtn, 'risk took focus');
+    h.open('dlg-markets');
+    flushRaf();
+    assert.equal(h.dlg.classList.contains('open'), false, 'switch tore risk down');
+    assert.ok(h.markets.contains(h.doc.activeElement), 'focus entered markets');
+    h.close();
+    advance(400);
+    assert.equal(h.doc.activeElement, h.opener, 'switch returns to the tile');
+  }
 } else {
   throw new Error('U2_CASE');
 }
@@ -421,6 +454,14 @@ def test_other_dialog_opened_during_close_keeps_focus():
 def test_reopen_during_close_restores_the_original_opener():
     """Reopening during the exit must not recapture the dialog's own Close button."""
     _lifecycle("same")
+
+
+def test_dialog_opened_from_a_hidden_dialog_returns_to_its_opener():
+    """A dialog opened from inside one it hides returns focus to that one's opener.
+
+    Covers an exit cancelled mid-animation and a direct switch between dialogs.
+    """
+    _lifecycle("handoff")
 
 
 _HIDDEN_TRAP_JS = r"""

@@ -15318,14 +15318,18 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
       /* Close any open scorecard popovers first */
       if(window.mx5CloseAllPopovers) window.mx5CloseAllPopovers();
       /* Switching dialogs: tear the previous one down instantly (no lingering animation). */
-      if(_dlgActive){ _dlgTeardown(_dlgActive, false); _dlgActive = null; }
+      var hidden = [];
+      if(_dlgActive){ hidden.push(_dlgActive); _dlgTeardown(_dlgActive, false); _dlgActive = null; }
       var dlg = document.getElementById(id);
       if(!dlg) return;
       /* China cnxOpenDlg cancels every pending _cnxCancelClose. Reopening this
          dialog during its own exit must not let that exit strip .open; opening
          a different one must not let the stale exit refocus the old tile. */
       var closing = _dlgClosing.slice();
-      for(var pi = 0; pi < closing.length; pi++) _mx5CancelClose(closing[pi], closing[pi] !== dlg);
+      for(var pi = 0; pi < closing.length; pi++){
+        _mx5CancelClose(closing[pi], closing[pi] !== dlg);
+        if(closing[pi] !== dlg) hidden.push(closing[pi]);
+      }
       /* Heatmap adoption: on first open of dlg-markets, move #heatmap-scorecard into the
          dialog placeholder so it renders at 920px dialog scale (idempotent). */
       if(id === 'dlg-markets'){
@@ -15340,8 +15344,12 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
       }
       /* China cnxOpenDlg stores the opener only when focus is outside the dialog
          being opened. During the exit, focus is still on Close; recapturing it
-         would return focus into the hidden dialog on the next close. */
-      if(!dlg.contains(document.activeElement)) _dlgTrigger = document.activeElement;
+         would return focus into the hidden dialog on the next close. Focus left
+         in a dialog this open just hid keeps that dialog's opener for the same
+         reason. */
+      var fromHidden = false;
+      for(var hi = 0; hi < hidden.length; hi++) if(hidden[hi].contains(document.activeElement)) fromHidden = true;
+      if(!dlg.contains(document.activeElement) && !fromHidden) _dlgTrigger = document.activeElement;
       _dlgActive = dlg;
       dlg.classList.remove('mx5-dlg-closing');
       /* 1) make it displayed (start state painted) */
