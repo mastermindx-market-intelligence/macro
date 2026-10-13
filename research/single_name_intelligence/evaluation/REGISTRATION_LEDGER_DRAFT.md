@@ -1,5 +1,7 @@
 # SNI evaluation registration ledger (R1-gated draft)
 
+registered: false
+
 ## Purpose
 
 This is the SNI-local DRAFT contract for the immutable evaluation loop
@@ -20,8 +22,32 @@ owned by Stock Identity / Data OS.
 Authority flags stay false everywhere this draft writes them:
 `rank_authority`, `gate_authority`, `size_authority`, `signal_authority`,
 `escalation_authority`, `trade_authority`. A payload that carries any of
-those keys is refused. Nothing in this ledger feeds a ranker, gate,
-sizer, signal, escalation, or trade path.
+those keys (nested, list-wrapped, or case/whitespace variants) with a
+value other than literal `False` is refused. Nothing in this ledger
+feeds a ranker, gate, sizer, signal, escalation, or trade path.
+
+## OWNERS
+
+This draft CONSUMES owner-supplied values. It does not re-implement:
+
+- `engine/trial_ledger.py` `TrialLedger._append_rows` (~:134-144)
+  durable JSONL append (flush + fsync) and `log_declared_budget` (~:202).
+- `engine/qledger.py` `register` (~:2026) claim registration and
+  `grade_claim` (~:2698) horizon grading.
+- `engine/grading_stats.py` `brier_decomposition` (~:914) Murphy
+  Brier decomposition of probability/outcome arrays.
+
+The ONE invariant this draft holds that those owners do not: every
+row is re-validated on replay against the state folded from the rows
+before it (the same `_validate_*` gates as append). A hash-valid file
+that skips REGISTER or BUDGET, or that scores an outcome observed
+before registration, is refused. Those owners append, register, and
+grade without that prefix-replay evaluation gate.
+
+This module is a contract sketch to be replaced by an adapter at
+Registration. `brier()` stays local: `brier_decomposition` returns
+`round(mean squared error, 6)` and requires numpy; this draft's SCORE
+gate matches the unrounded mean within `1e-12`.
 
 ## Row kinds and the chain
 
@@ -41,11 +67,17 @@ Every JSONL row is:
 {seq, kind, written_at_utc, payload, prev_hash, row_hash}
 ```
 
-`row_hash` is sha256 of the canonical JSON of the row without
-`row_hash`. `prev_hash` is the previous row's `row_hash`, or `null` on
-the first row. `append` writes one line and fsyncs. `verify_chain`
-recomputes every hash and prev link. A tampered middle line is a
-violation.
+`row_hash` is sha256 of the canonical JSON of every row field except
+`row_hash` itself (so adding a field later is automatically covered).
+`prev_hash` is the previous row's `row_hash`, or `null` on the first
+row. `append` writes one line and fsyncs. `verify_chain` recomputes
+every hash and prev link, then re-runs the same `_validate_*` gate
+for each row against the state folded from the rows before it. A
+tampered middle line is a violation. A hash-valid row that would
+have been refused at append time is a violation naming the line
+number and the refusal code; `state()` / `_rebuild` raise
+`LedgerRefused` with that code. Validation does not consult
+wall-clock time.
 
 Replay invariant (A27): `state()` rebuilt from scratch by folding every
 row equals the incremental fold maintained on `append`, and equals
@@ -66,16 +98,24 @@ version, split, or `h` is a new key.
 
 `BUDGET` payload: `{family_id, declared_trials}` with `declared_trials`
 an integer `> 0`. It must precede any `PUBLISH` or `ABSTAIN` for that
-family (`BUDGET_REQUIRED`). Each `PUBLISH` and each `ABSTAIN` consumes
-one trial. The `(n+1)`th trial raises `BUDGET_EXCEEDED` and is not
-written. A second budget for the same family raises `DUPLICATE_BUDGET`.
+family (`BUDGET_REQUIRED`). A `BUDGET` before `REGISTER` raises
+`FAMILY_NOT_REGISTERED` and writes zero rows. Each `PUBLISH` and each
+`ABSTAIN` consumes one trial. The `(n+1)`th trial raises
+`BUDGET_EXCEEDED` and is not written. A second budget for the same
+family raises `DUPLICATE_BUDGET`.
 
 ## Immutable publication and replay (A27)
 
 `PUBLISH` payload: `{forecast_id, family_id, p, inputs_digest,
 published_at_utc, horizon_end_utc}` with optional `declared_reason`.
 `p` is a float in `(0, 1)`. The family must already be registered (any
-key whose `family_id` matches).
+key whose `family_id` matches). Timestamps require an explicit `Z` or
+a numeric UTC offset; a naive timestamp is `INVALID_PAYLOAD`.
+
+`published_at_utc` must be `>=` that family's `REGISTER`
+`written_at_utc` (`PUBLISH_BEFORE_REGISTER`). `horizon_end_utc` must
+be `>=` `published_at_utc` (`HORIZON_BEFORE_PUBLISH`). A refusal
+writes zero rows.
 
 A second `PUBLISH` with the same `forecast_id` raises
 `IMMUTABLE_PUBLICATION` whether or not `p` differs. Outcome arrival is
@@ -110,6 +150,9 @@ terminals.
 
 - `MATURED` requires `outcome` in `{0, 1}` and `observed_at_utc >=
   horizon_end_utc` (`MATURED_OUTCOME_REQUIRED`, `HORIZON_NOT_REACHED`).
+- `MATURED` also requires `observed_at_utc >=` the forecast's
+  `published_at_utc` and `>=` the family's `REGISTER` `written_at_utc`
+  (`OUTCOME_BEFORE_REGISTER`).
 - `CENSORED` and `UNPRICEABLE` require `outcome` `null`
   (`OUTCOME_FORBIDDEN`).
 - A second `RESOLVE` of the same forecast_id raises `ALREADY_RESOLVED`.
@@ -123,17 +166,26 @@ map to `UNPRICEABLE` | `CENSORED` | `MATURED`.
 ## Proper scoring vs frozen baselines (A29)
 
 `brier(ledger, family_id)` is the mean of `(p - outcome)^2` over
-`MATURED` forecasts of that family only. It is a DESCRIPTIVE residual
+`MATURED` forecasts of that family only. Censored, unpriceable, and
+pending ids stay excluded from that mean. It is a DESCRIPTIVE residual
 statistic, never causal, never "news impact".
 
 `SCORE` payload: `{family_id, baseline_id, baseline_digest,
-scored_forecast_ids, brier, baseline_brier, n, descriptive_only}`.
+scored_forecast_ids, brier, baseline_brier, n, n_censored,
+n_unpriceable, n_pending, descriptive_only}`.
 `descriptive_only` must be `true`. `scored_forecast_ids` is the sorted
 list of every matured forecast_id for the family. The module recomputes
 Brier and refuses `BRIER_MISMATCH` unless the payload `brier` matches
-within `1e-12`. A scored id that is not `MATURED` raises `NOT_MATURED`.
-`n` must equal the matured count (`N_MISMATCH`, `NO_MATURED_FORECASTS`,
-`SCORED_IDS_UNSORTED`, `DESCRIPTIVE_ONLY_REQUIRED`).
+within `1e-12`. `brier` and `baseline_brier` must be finite numbers
+(bool is not a number). A scored id that is not `MATURED` raises
+`NOT_MATURED`. `n` must equal the matured count (`N_MISMATCH`,
+`NO_MATURED_FORECASTS`, `SCORED_IDS_UNSORTED`,
+`DESCRIPTIVE_ONLY_REQUIRED`).
+
+`n_censored`, `n_unpriceable`, and `n_pending` are required integers
+and must each equal the folded count of that state for the family
+(`INVALID_PAYLOAD` on mismatch or if a key is missing). Those ids
+stay excluded from the Brier mean.
 
 The baseline is caller-supplied (`baseline_id`, `baseline_digest`,
 `baseline_brier`). This module never constructs a baseline.
@@ -177,7 +229,7 @@ acceptance cases.
 | `NO_MATURED_FORECASTS` | A29 | `SCORE` / `brier` with no matured forecasts. |
 | `FAMILY_NOGO` | A30 | `PUBLISH` or `ABSTAIN` after `NOGO` for that family. |
 | `ALREADY_NOGO` | A30 | Second `NOGO` for the same family_id. |
-| `AUTHORITY_FLAG_REFUSED` | — | An authority key is present in the payload. |
+| `AUTHORITY_FLAG_REFUSED` | — | An authority key is present with a value other than literal `False`. |
 | `FAMILY_NOT_REGISTERED` | — | Family_id has no `REGISTER` key. |
 | `ALREADY_PUBLISHED` | — | `ABSTAIN` of a forecast_id that was published. |
 | `ALREADY_ABSTAINED` | — | `PUBLISH` of a forecast_id that was abstained. |
@@ -189,11 +241,14 @@ acceptance cases.
 | `INVALID_P` | — | `p` is not a finite float in `(0, 1)`. |
 | `INVALID_DECLARED_TRIALS` | — | `declared_trials` is not an integer `> 0`. |
 | `EMPTY_REASON` | — | Empty `reason` on `ABSTAIN` or `NOGO`. |
+| `OUTCOME_BEFORE_REGISTER` | — | `MATURED` `observed_at_utc` before publish or before family `REGISTER`. |
+| `HORIZON_BEFORE_PUBLISH` | — | `horizon_end_utc` before `published_at_utc`. |
+| `PUBLISH_BEFORE_REGISTER` | — | `published_at_utc` before the family's `REGISTER` `written_at_utc`. |
 
 ## What this is not
 
 - This is an R1-gated draft on a lane branch. It is not a pull request
-  and it is not accepted Evaluation OS.
+  and it is not accepted Evaluation OS. `registered: false`.
 - It is SNI-local. It consumes qledger vocabulary; it does not replace
   qledger, the Evaluation owner, or any owner named in the commission
   (Data OS identity, Company Event/Earnings, FIF, Capital Structure,

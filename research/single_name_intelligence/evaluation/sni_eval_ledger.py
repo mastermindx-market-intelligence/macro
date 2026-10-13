@@ -14,8 +14,10 @@ identifiers.
 
 Authority flags stay false: a payload that carries any of
 rank_authority, gate_authority, size_authority, signal_authority,
-escalation_authority, trade_authority is refused. Nothing here feeds
-a ranker, gate, sizer, signal, escalation, or trade path.
+escalation_authority, trade_authority is refused unless the value is
+literal False. Nested dicts, list elements, and case/whitespace
+variants of those keys are walked. Nothing here feeds a ranker, gate,
+sizer, signal, escalation, or trade path.
 
 Scores are DESCRIPTIVE residual statistics against a caller-supplied
 frozen baseline (A24/A29). They are never causal and never "news
@@ -24,7 +26,34 @@ unestimable family abstains with a named reason.
 
 Row kinds: REGISTER, BUDGET, PUBLISH, ABSTAIN, RESOLVE, SCORE, NOGO.
 The ledger is append-only JSONL with a sha256 hash chain. Replay of
-the file must reproduce the same state as an incremental fold (A27).
+the file re-runs the same _validate_* gates against the prefix and
+must reproduce the same state as an incremental fold (A27).
+
+REGISTERED = False. This file is an R1-gated draft. It is not
+Evaluation OS and does not write qledger.
+
+OWNERS
+------
+This draft CONSUMES owner-supplied values. It does not re-implement:
+
+- engine/trial_ledger.py TrialLedger._append_rows (~:134-144) durable
+  JSONL append (flush + fsync) and log_declared_budget (~:202).
+- engine/qledger.py register (~:2026) claim registration and
+  grade_claim (~:2698) horizon grading.
+- engine/grading_stats.py brier_decomposition (~:914) Murphy
+  Brier decomposition of probability/outcome arrays.
+
+The ONE invariant this draft holds that those owners do not: every
+row is re-validated on replay against the state folded from the rows
+before it (the same _validate_* gates as append). A hash-valid file
+that skips REGISTER or BUDGET, or that scores an outcome observed
+before registration, is refused. Those owners append, register, and
+grade without that prefix-replay evaluation gate.
+
+This module is a contract sketch to be replaced by an adapter at
+Registration. brier() stays local: brier_decomposition returns
+round(mean squared error, 6) and requires numpy; this draft's SCORE
+gate matches the unrounded mean within 1e-12.
 """
 
 from __future__ import annotations
@@ -36,6 +65,8 @@ import math
 import os
 from dataclasses import dataclass
 from pathlib import Path
+
+REGISTERED = False
 
 REGISTER = "REGISTER"
 BUDGET = "BUDGET"
@@ -63,6 +94,7 @@ AUTHORITY_KEYS = (
     "escalation_authority",
     "trade_authority",
 )
+_AUTHORITY_FOLDED = frozenset(k.casefold() for k in AUTHORITY_KEYS)
 
 REFUSAL_CODES = frozenset({
     "ALREADY_REGISTERED",
@@ -99,6 +131,9 @@ REFUSAL_CODES = frozenset({
     "DUPLICATE_BUDGET",
     "ALREADY_NOGO",
     "NO_MATURED_FORECASTS",
+    "OUTCOME_BEFORE_REGISTER",
+    "HORIZON_BEFORE_PUBLISH",
+    "PUBLISH_BEFORE_REGISTER",
 })
 
 _HEX = "0123456789abcdef"
@@ -135,6 +170,16 @@ class LedgerRow:
         }
 
 
+class _PrefixLedger:
+    """Ledger-like view of a prefix of rows for SCORE validation on replay."""
+
+    def __init__(self, rows):
+        self._rows = rows
+
+    def rows(self):
+        return self._rows
+
+
 def _refuse(code, detail=""):
     raise LedgerRefused(code, detail)
 
@@ -148,7 +193,8 @@ def _sha256_text(text):
 
 
 def _row_hash(row):
-    body = {k: v for k, v in row.items() if k != "row_hash"}
+    """Hash the canonical form of every row field except row_hash itself."""
+    body = {k: row[k] for k in row if k != "row_hash"}
     return _sha256_text(_canonical(body))
 
 
@@ -162,6 +208,14 @@ def _is_nonempty_str(value):
 
 def _is_int(value):
     return isinstance(value, int) and not isinstance(value, bool)
+
+
+def _is_finite_number(value):
+    return (
+        not isinstance(value, bool)
+        and isinstance(value, (int, float))
+        and math.isfinite(value)
+    )
 
 
 def _now_utc():
@@ -184,7 +238,7 @@ def _parse_utc(value, field):
     except ValueError:
         _refuse("INVALID_PAYLOAD", "unparseable %s" % field)
     if dt.tzinfo is None:
-        dt = dt.replace(tzinfo=datetime.timezone.utc)
+        _refuse("INVALID_PAYLOAD", "naive timestamp %s (need Z or numeric UTC offset)" % field)
     return dt
 
 
@@ -194,14 +248,18 @@ def _require_keys(payload, keys):
             _refuse("INVALID_PAYLOAD", "missing %s" % key)
 
 
-def _check_authority(payload):
-    if not isinstance(payload, dict):
-        _refuse("INVALID_PAYLOAD", "payload must be an object")
-    for key in AUTHORITY_KEYS:
-        if key in payload:
-            _refuse("AUTHORITY_FLAG_REFUSED", key)
-        if payload.get(key) is True:
-            _refuse("AUTHORITY_FLAG_REFUSED", key)
+def _check_authority(obj, path=""):
+    if isinstance(obj, dict):
+        for key, value in obj.items():
+            loc = "%s.%s" % (path, key) if path else str(key)
+            if isinstance(key, str) and key.strip().casefold() in _AUTHORITY_FOLDED:
+                if value is not False:
+                    _refuse("AUTHORITY_FLAG_REFUSED", loc)
+            _check_authority(value, loc)
+    elif isinstance(obj, list):
+        for i, item in enumerate(obj):
+            loc = "%s[%s]" % (path, i)
+            _check_authority(item, loc)
 
 
 def _reg_key(payload):
@@ -217,6 +275,7 @@ def _reg_key(payload):
 def _empty_state():
     st = {
         "registered": {},
+        "registered_at": {},
         "budgets": {},
         "published": {},
         "abstained": {},
@@ -248,6 +307,7 @@ def _refresh_counts(st, n_rows):
 def _clone_state(st):
     return {
         "registered": dict(st["registered"]),
+        "registered_at": dict(st["registered_at"]),
         "budgets": {k: dict(v) for k, v in st["budgets"].items()},
         "published": dict(st["published"]),
         "abstained": dict(st["abstained"]),
@@ -267,6 +327,7 @@ def _state_fingerprint(st):
         {"key": list(k), "prereg_digest": v}
         for k, v in sorted(st["registered"].items(), key=lambda kv: _canonical(list(kv[0])))
     ]
+    registered_at = {k: st["registered_at"][k] for k in sorted(st["registered_at"])}
     budgets = {k: dict(v) for k, v in sorted(st["budgets"].items())}
     published = {k: st["published"][k] for k in sorted(st["published"])}
     abstained = {k: st["abstained"][k] for k in sorted(st["abstained"])}
@@ -274,6 +335,7 @@ def _state_fingerprint(st):
     nogo = sorted(st["nogo"])
     blob = {
         "registered": registered,
+        "registered_at": registered_at,
         "budgets": budgets,
         "published": published,
         "abstained": abstained,
@@ -290,6 +352,9 @@ def _fold(st, row):
     payload = row["payload"]
     if kind == REGISTER:
         st["registered"][_reg_key(payload)] = payload["prereg_digest"]
+        family_id = payload["family_id"]
+        if family_id not in st["registered_at"]:
+            st["registered_at"][family_id] = row["written_at_utc"]
     elif kind == BUDGET:
         st["budgets"][payload["family_id"]] = {
             "declared_trials": payload["declared_trials"],
@@ -335,6 +400,23 @@ def _matured_ids(st, family_id):
     return ids
 
 
+def _exclusion_counts(st, family_id):
+    n_censored = 0
+    n_unpriceable = 0
+    n_pending = 0
+    for fid, pub in st["published"].items():
+        if pub["payload"].get("family_id") != family_id:
+            continue
+        res = st["resolved"].get(fid)
+        if res is None:
+            n_pending += 1
+        elif res == CENSORED:
+            n_censored += 1
+        elif res == UNPRICEABLE:
+            n_unpriceable += 1
+    return n_censored, n_unpriceable, n_pending
+
+
 def _brier_pairs(ledger, family_id):
     """(p, outcome) for MATURED publications of family_id, in forecast_id order."""
     rows = ledger.rows()
@@ -361,7 +443,12 @@ def _brier_pairs(ledger, family_id):
 
 
 def brier(ledger, family_id):
-    """Mean (p - outcome)^2 over MATURED forecasts of family_id. Descriptive only."""
+    """Mean (p - outcome)^2 over MATURED forecasts of family_id. Descriptive only.
+
+    Local (does not call engine.grading_stats.brier_decomposition): the owner
+    returns round(mean squared error, 6) and requires numpy. SCORE compares
+    against this unrounded mean within 1e-12.
+    """
     pairs = _brier_pairs(ledger, family_id)
     if not pairs:
         _refuse("NO_MATURED_FORECASTS", family_id)
@@ -374,6 +461,33 @@ def brier(ledger, family_id):
 def replay(path):
     """Fresh EvalLedger(path).state() rebuilt solely from the JSONL file."""
     return EvalLedger(path).state()
+
+
+def _validate_kind(kind, payload, st, ledger_view):
+    """Run the append-time gate for ``kind`` against prefix state ``st``.
+
+    Validation uses only row timestamps and folded state. It does not
+    consult wall-clock time.
+    """
+    if not isinstance(payload, dict):
+        _refuse("INVALID_PAYLOAD", "payload must be an object")
+    _check_authority(payload)
+    if kind == REGISTER:
+        _validate_register(st, payload)
+    elif kind == BUDGET:
+        _validate_budget(st, payload)
+    elif kind == PUBLISH:
+        _validate_publish(st, payload)
+    elif kind == ABSTAIN:
+        _validate_abstain(st, payload)
+    elif kind == RESOLVE:
+        _validate_resolve(st, payload)
+    elif kind == SCORE:
+        _validate_score(ledger_view, st, payload)
+    elif kind == NOGO:
+        _validate_nogo(st, payload)
+    else:
+        _refuse("UNKNOWN_KIND", repr(kind))
 
 
 def _validate_register(st, payload):
@@ -437,8 +551,13 @@ def _validate_publish(st, payload):
         _refuse("BUDGET_EXCEEDED", family_id)
     if not _is_hex64(payload["inputs_digest"]):
         _refuse("INVALID_INPUTS_DIGEST")
-    _parse_utc(payload["published_at_utc"], "published_at_utc")
-    _parse_utc(payload["horizon_end_utc"], "horizon_end_utc")
+    published_at = _parse_utc(payload["published_at_utc"], "published_at_utc")
+    horizon_end = _parse_utc(payload["horizon_end_utc"], "horizon_end_utc")
+    reg_at = _parse_utc(st["registered_at"][family_id], "written_at_utc")
+    if published_at < reg_at:
+        _refuse("PUBLISH_BEFORE_REGISTER")
+    if horizon_end < published_at:
+        _refuse("HORIZON_BEFORE_PUBLISH")
     p = payload["p"]
     if isinstance(p, bool) or not isinstance(p, (int, float)):
         _refuse("INVALID_P")
@@ -494,9 +613,14 @@ def _validate_resolve(st, payload):
     observed = _parse_utc(payload["observed_at_utc"], "observed_at_utc")
     pub = st["published"][forecast_id]
     horizon_end = _parse_utc(pub["payload"]["horizon_end_utc"], "horizon_end_utc")
+    published_at = _parse_utc(pub["payload"]["published_at_utc"], "published_at_utc")
+    family_id = pub["payload"]["family_id"]
+    reg_at = _parse_utc(st["registered_at"][family_id], "written_at_utc")
     if resolve_state == MATURED:
         if outcome is True or outcome is False or not _is_int(outcome) or outcome not in (0, 1):
             _refuse("MATURED_OUTCOME_REQUIRED")
+        if observed < published_at or observed < reg_at:
+            _refuse("OUTCOME_BEFORE_REGISTER")
         if observed < horizon_end:
             _refuse("HORIZON_NOT_REACHED")
     else:
@@ -515,6 +639,9 @@ def _validate_score(ledger, st, payload):
             "brier",
             "baseline_brier",
             "n",
+            "n_censored",
+            "n_unpriceable",
+            "n_pending",
             "descriptive_only",
         ),
     )
@@ -539,6 +666,16 @@ def _validate_score(ledger, st, payload):
     n = payload["n"]
     if not _is_int(n):
         _refuse("INVALID_PAYLOAD", "n")
+    for key in ("n_censored", "n_unpriceable", "n_pending"):
+        if not _is_int(payload[key]):
+            _refuse("INVALID_PAYLOAD", key)
+    n_censored, n_unpriceable, n_pending = _exclusion_counts(st, family_id)
+    if (
+        payload["n_censored"] != n_censored
+        or payload["n_unpriceable"] != n_unpriceable
+        or payload["n_pending"] != n_pending
+    ):
+        _refuse("INVALID_PAYLOAD", "exclusion counts")
     matured = _matured_ids(st, family_id)
     if not matured:
         _refuse("NO_MATURED_FORECASTS", family_id)
@@ -551,10 +688,10 @@ def _validate_score(ledger, st, payload):
     if n != len(ids) or n != len(matured) or ids != matured:
         _refuse("N_MISMATCH")
     reported = payload["brier"]
-    if isinstance(reported, bool) or not isinstance(reported, (int, float)):
+    if not _is_finite_number(reported):
         _refuse("INVALID_PAYLOAD", "brier")
     baseline_brier = payload["baseline_brier"]
-    if isinstance(baseline_brier, bool) or not isinstance(baseline_brier, (int, float)):
+    if not _is_finite_number(baseline_brier):
         _refuse("INVALID_PAYLOAD", "baseline_brier")
     recomputed = brier(ledger, family_id)
     if abs(float(reported) - recomputed) > 1e-12:
@@ -579,7 +716,7 @@ class EvalLedger:
 
     def __init__(self, path):
         self.path = Path(path)
-        self._incremental = _clone_state(self._rebuild())
+        self._incremental = _clone_state(self._rebuild(validate=False))
 
     def rows(self):
         if not self.path.exists() or self.path.stat().st_size == 0:
@@ -593,29 +730,43 @@ class EvalLedger:
                 out.append(json.loads(line))
         return out
 
-    def _rebuild(self):
+    def _rebuild(self, validate=True):
         st = _empty_state()
         rows = self.rows()
-        for row in rows:
+        prefix = []
+        for i, row in enumerate(rows, start=1):
+            if validate:
+                if not isinstance(row, dict):
+                    _refuse("INVALID_PAYLOAD", "row %s is not an object" % i)
+                _validate_kind(row.get("kind"), row.get("payload"), st, _PrefixLedger(prefix))
             _fold(st, row)
+            prefix.append(row)
         _refresh_counts(st, len(rows))
         return st
 
     def state(self):
-        """Rebuild ledger state purely from rows. No cache is consulted."""
-        return self._rebuild()
+        """Rebuild ledger state purely from rows. Re-validates every row."""
+        return self._rebuild(validate=True)
 
     def registered_count(self):
         return len(self.state()["registered"])
 
     def verify_chain(self):
-        """Return a list of violation strings; empty means the chain is intact."""
+        """Return a list of violation strings; empty means the chain is intact.
+
+        Recomputes every hash and prev link, then re-runs the same
+        ``_validate_*`` gate for each row against the prefix. A refused
+        row yields a violation naming the line number and the refusal
+        code. Validation does not consult wall-clock time.
+        """
         violations = []
         try:
             rows = self.rows()
         except json.JSONDecodeError as exc:
             return ["JSON_DECODE:%s" % exc]
         prev = None
+        st = _empty_state()
+        prefix = []
         for i, row in enumerate(rows, start=1):
             if not isinstance(row, dict):
                 violations.append("ROW_NOT_OBJECT:%s" % i)
@@ -632,6 +783,12 @@ class EvalLedger:
                 continue
             if row.get("row_hash") != expected:
                 violations.append("ROW_HASH_MISMATCH:%s" % i)
+            try:
+                _validate_kind(row.get("kind"), row.get("payload"), st, _PrefixLedger(prefix))
+            except LedgerRefused as exc:
+                violations.append("%s:%s" % (exc.code, i))
+            _fold(st, row)
+            prefix.append(row)
             prev = row.get("row_hash")
         return violations
 
@@ -650,22 +807,8 @@ class EvalLedger:
         if not isinstance(payload, dict):
             _refuse("INVALID_PAYLOAD", "payload must be an object")
         payload = json.loads(_canonical(payload))
-        _check_authority(payload)
         st = self.state()
-        if kind == REGISTER:
-            _validate_register(st, payload)
-        elif kind == BUDGET:
-            _validate_budget(st, payload)
-        elif kind == PUBLISH:
-            _validate_publish(st, payload)
-        elif kind == ABSTAIN:
-            _validate_abstain(st, payload)
-        elif kind == RESOLVE:
-            _validate_resolve(st, payload)
-        elif kind == SCORE:
-            _validate_score(self, st, payload)
-        elif kind == NOGO:
-            _validate_nogo(st, payload)
+        _validate_kind(kind, payload, st, self)
         existing = self.rows()
         prev_hash = existing[-1]["row_hash"] if existing else None
         row = {
