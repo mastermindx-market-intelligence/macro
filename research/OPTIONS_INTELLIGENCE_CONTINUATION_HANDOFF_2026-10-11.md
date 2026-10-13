@@ -581,10 +581,11 @@ minimax, grok, cursor, glm) → optional bounded workers. No native leaf swarm; 
 
 ## Lane matrix
 
-(D71 snapshot.) Rows superseding older rows below:
+(D72 13:00Z snapshot.) Rows superseding older rows below:
 
 | lane | state |
 |---|---|
+| PP2REV | ACCEPTED 13:00Z: `fable-pp2rev-r1-20261013` APPROVE of `bd76f2c9..d3a3bc33`, 0 defects; NP1–NP3 test gaps carried to the next serialized #723 writer packet; never reuse this ID (D72) |
 | PP2REV | `fable-pp2rev-r1-20261013` RUNNING on mb since 12:48:36Z (range `bd76f2c9..d3a3bc33`; LEASE_OK); watcher `bwfrzes4t`; hard end ~14:03Z (D71) |
 | PP1-D | FROZEN: ubuntu2 `/` 99% (14G free at 12:49Z, not our fill); no reroute, no deletion; watcher `bfcmghmnb` (D71) |
 | PP2-UI-b | `fable-pp2uib-r1-20261013` RUNNING on mb since 12:43:05Z from `d3a3bc33` (LEASE_OK, LAUNCH_ATTEMPT 1); watcher `be1h3mr4m`; hard end ~14:43Z (D70) |
@@ -1543,3 +1544,42 @@ INTENDED_RESUME_SURFACE: this Claude Code session; successor reads this file + #
   - PP2-UI-b: RUNNING (`be1h3mr4m`).
   - PP1-D: FROZEN on ubuntu2 disk (`bfcmghmnb`).
   - #948/#983: CI queued (`bp9vp9ip0`). #985: CI running (`bcmwl7zse`).
+
+### D72 (2026-10-13T13:00Z) — PP2REV independent review ACCEPTED: APPROVE of `bd76f2c9..d3a3bc33`, no DEFECT, 3 NOT-PROVEN test gaps carried
+
+- FACT `fable-pp2rev-r1-20261013` finished DONE rc=0 at 12:54Z (about 6 minutes after launch). The controller fence shows REMOTE_DONE, OUTPUT_CONTRACT_MATCHED and USAGE_RECEIPT_MISSING.
+  - Return: mb `~/lanes/returns/pp2rev-r1/return.md`, 330 lines, 29458 bytes. Seat copy: `leads/PP2REV/returns/r1-return.md`.
+  - The mb worktree `~/lanes/wt/pp2rev-20261013` ended at `d3a3bc33` with empty porcelain.
+  - VERDICT APPROVE. No BLOCKER, MAJOR or MINOR finding.
+- SEAT JUDGMENT (by artifact, because the runtime was short):
+  - Every falsifier row (contract 2, 3, 6, 7, 8, 9, 11, 12 and root 1–4) and every ruling row (PP2-UI-a 1–5, PP2-UI-c 1–8, R1–R4) carries file:line and a verdict.
+  - The seat read the cited lines at `d3a3bc33` through local `git show`. They match exactly, including:
+    - `MatrixCompanion.tsx:273` and `:275` (the `issueByField` from/to marks);
+    - `:311` (the previous-OI row);
+    - `:419-420` (`positiveGamma`/`negativeGamma`);
+    - `:344` (`data-options-scope`);
+    - `:107-113` (`parseApplied` re-qualifies against `data.session`);
+    - `:196-217` (exact Apply replaces only `norm`).
+  - The test counts reconcile with a static count of the files, after counting `describe.each`, `it.each` and loops:
+    - Exact: 18 static plus loop expansion = 29.
+    - Bounds: 14 plus a 4-case `.each` minus 1 = 17.
+    - Focus: 2 languages × 3 actions = 6.
+    - Receipts 12; Ui 22.
+    - Total 86. This matches the pasted vitest summary.
+  - Probes a–h each have a prediction and an actual. There are 6 mutations, 2 per test file, all RED.
+- SEAT NOTES (not defects, no repair round):
+  - Probe a's "an expired expiry is never selected" half could not fail, because the newer document lists no expiry before its session.
+    - That property is covered by the library test `optionsScopeBounds.test.ts` (aa) and by `parseApplied` (`:107-113`).
+    - The committed u8 test (`optionsScopeExact.test.tsx:390`) discriminates the new-session re-count. Re-counting from the old 07-09 session would empty the grid, and its `07-10` assertion would go RED.
+  - RETRACTION of the seat's own commission wording for probe c. It grouped `" 5"` with the invalid inputs. PP2-UI-c ruling 4 mandates trimming, so `" 5"` is a valid From. The reviewer's prediction and actual are correct.
+  - Probe b checked "no `0 strikes`" rather than "no `0` anywhere". Dates contain zeros, so the literal wording was not testable. Accepted.
+- CARRIED (into the next serialized #723 writer packet, after PP2-UI-b; never concurrently with it):
+  - NP1: assert that the `options-scale-basis` text in EN and ZH contains the square-root wording and never `asinh`.
+  - NP2: assert that the legend never renders a bare "Positive"/"Negative" polarity label without its "gamma" (or "hedge") qualifier.
+  - NP3: assert that a scope/apply/refresh/apply-newer/select flow leaves `localStorage` unchanged apart from the existing `mm.optionsCompanion.v1` preset key. This extends u9, which already proves `onPrefs` never receives the exact strings.
+- SCOPE: this approval covers `bd76f2c9..d3a3bc33` only. PP2-UI-b's commits need their own independent review, under a new run ID, after the seat accepts them.
+- Rungs at 13:00Z:
+  - PP2REV: ACCEPTANCE (review).
+  - PP2-UI-b: RUNNING (`be1h3mr4m`, elapsed 914s at 12:58Z).
+  - PP1-D: FROZEN (`bfcmghmnb`).
+  - #948/#983, #985, Macro #9080/#8920 and #9097: watchers armed, no new event.
