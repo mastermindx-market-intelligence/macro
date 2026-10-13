@@ -26344,3 +26344,21 @@ jobs:
         run: pip install pytest pandas numpy pyarrow pyyaml
       - name: c19-wp29-hk-southbound-two-period
         run: python -m pytest tests/test_c19_wp29_hk_southbound_two_period.py -q -p no:cacheprovider
+  c19-wp15-operating-driver-pins:
+    if: ${{ false }}
+    gate: code
+    # C19 WP15 (MAS-265/MAS-274) N2/N4 pins: beta is not a driver coefficient; margin is not markup (offline, stdlib).
+    timeout-minutes: 10
+    paths:
+      - "tests/test_operating_driver_scenario.py"
+      - "engine/operating_driver_scenario.py"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install minimal deps
+        run: pip install pytest pandas numpy pyarrow pyyaml
+      - name: c19-wp15-operating-driver-pins
+        run: python -m pytest tests/test_operating_driver_scenario.py -q -p no:cacheprovider
