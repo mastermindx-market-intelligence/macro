@@ -11,9 +11,9 @@
   },
   "current_vintage_projection": {
     "adapter": "engine/government_revenue/price_panel_adapter.py",
-    "adapter_sha256": "5b29b51bf136c1a00e74a9523191ff88928c19d71f75fe2d5fc053576a3df8a3",
+    "adapter_sha256": "9e85a007621adbcf77200c7621f90ec95b63d239e5fb7b1155308be68c8826eb",
     "complete_window": [
-      "2026-08-19",
+      "2025-10-01",
       "2026-10-09"
     ],
     "convention": "backward split-and-dividend-adjusted close ratio; not exact cash reinvestment",
@@ -29,10 +29,13 @@
       "issuance",
       "scientific_efficacy"
     ],
-    "price_vintage_id": "grv-price-19fed4ba5f8ade22fe3e4843c68886f416d8f9d4417ed08ce8138541237473c6",
-    "review_sha256": "bef295893f3c64b678e5473bb36cb6929bd1dc0279f27847c5889bb3f8aea5fd",
-    "reviewed_packet_sha256": "35f1c0e2d0ac590b3457240f48984bb3e28100621a0085885552039e2d86989c",
-    "sessions": 37,
+    "price_vintage_id": "grv-price-8e05b86fcdfd65a16e886c20a986b1ea656b04e40d8cc2659ff512282da06292",
+    "qualification_sha256": "7df91acf53f332fbb5dd8e64e42d749c3ab1b08373b3be1a5bf629ed08c2d605",
+    "qualified_at": "2026-10-13T20:48:10.877841+00:00",
+    "review_sha256": "6efd2c09aec9e645c48566ac92262018eead6c21996fca46ce3412a9e17a5e41",
+    "reviewed_packet_sha256": "6b62d7e6ef2c95c766f6089cde9c51994c0b869746546e86732dc4cdddf5285e",
+    "sessions": 258,
+    "source_observed_at": "2026-10-13T11:43:15.183797+00:00",
     "state": "independently_accepted_unwired_technical_projection",
     "symbols": [
       "SPY",
@@ -81,7 +84,7 @@
     "grading_or_issuance_effect": false,
     "new_ita_sha256": "621da7044552efdadf76b8618984299d85e42b1f57b09010b73ceb9b680e8f04",
     "new_rows": 1323,
-    "new_technical_vintage_qualified": false,
+    "new_technical_vintage_qualified": true,
     "observed_at": "2026-10-13T11:37:25.120632+00:00",
     "old_rows_preserved": 1322,
     "prior_missing_vintage_preserved": true,
@@ -104,7 +107,7 @@
     "transport": "Existing engine.close_pass.massive_close._default_fetch; exact existing same-account provisioned credential, no redirects",
     "transport_attempt_counts_not_instrumented_for_default_fetch": true
   },
-  "minimum_next_owner_step": "Qualify incumbent canonical-store custody and full-history preservation for the observed ITA August18 source row. Retain original missing vintage; acquire a fresh canonical receipt only after actual owner repair. Separately qualify security, rights, availability and issuer-panel inputs before any original Q3 enrollment.",
+  "minimum_next_owner_step": "Preserve both benchmark vintages and their original source-pin revisions. Qualify security continuity, rights, input availability and issuer-panel inputs, and reconcile the original Q3 carrier before any prospective enrollment. The 258-session technical benchmark projection remains unwired to issuance and grading.",
   "missing_ita_session_source_qualification": {
     "actual_observed_at": "2026-10-13T10:31:05.779230+00:00",
     "canonical_store_repaired": false,
@@ -149,6 +152,40 @@
     "dividend_factors": "https://massive.com/docs/rest/stocks/corporate-actions/dividends",
     "dividend_units": "https://massive.com/knowledge-base/article/does-massive-adjust-historic-dividends-for-splits"
   },
+  "prior_current_vintage_projections": [
+    {
+      "adapter": "engine/government_revenue/price_panel_adapter.py",
+      "adapter_sha256": "5b29b51bf136c1a00e74a9523191ff88928c19d71f75fe2d5fc053576a3df8a3",
+      "complete_window": [
+        "2026-08-19",
+        "2026-10-09"
+      ],
+      "convention": "backward split-and-dividend-adjusted close ratio; not exact cash reinvestment",
+      "factor_witnesses": 7,
+      "licensed_raw_sources_in_git": false,
+      "not_admitted": [
+        "historical_availability",
+        "identity_continuity",
+        "runtime_rights",
+        "issuer_panel",
+        "prospective_cohort",
+        "grading",
+        "issuance",
+        "scientific_efficacy"
+      ],
+      "price_vintage_id": "grv-price-19fed4ba5f8ade22fe3e4843c68886f416d8f9d4417ed08ce8138541237473c6",
+      "review_sha256": "bef295893f3c64b678e5473bb36cb6929bd1dc0279f27847c5889bb3f8aea5fd",
+      "reviewed_packet_sha256": "35f1c0e2d0ac590b3457240f48984bb3e28100621a0085885552039e2d86989c",
+      "sessions": 37,
+      "state": "independently_accepted_unwired_technical_projection",
+      "symbols": [
+        "SPY",
+        "ITA"
+      ],
+      "synthetic_tests_passed": 18,
+      "wired_to_grading_or_issuance": false
+    }
+  ],
   "prospective_acceptance": [
     "Original Q3 operation reconciled on same carrier, no replacement worker or writer",
     "Actual fresh non-late action meets frozen family before registered entry; old173 and diagnostic407 never re-clocked",

@@ -37,3 +37,26 @@ the earlier no-write frontier; it does not alter the retained missing vintage.
 A new current-observation receipt and independent wider-window qualification are
 still required before changing the adapter's pinned technical packet. No grading,
 issuance, historical-availability or efficacy admission follows from this repair.
+
+
+## Wider immutable benchmark vintage qualified at 20:48 UTC
+
+The new canonical read and independently assembled retained packet were reviewed
+against the original packet before a normal one-constant source-pin revision. All
+eight unaffected objects and their observation clocks are byte-identical. The ITA
+replacement preserves all 1,322 original rows and adds only the native August18
+row. Both manifest read-backs match. The packet is `6b62d7e6ef2c95c766f6089cde9c51994c0b869746546e86732dc4cdddf5285e`;
+its actual aggregate observation is October13 11:43:15.183797 UTC.
+
+The sole public loader now qualifies 258 complete SPY/ITA sessions from
+October1 2025 through October9 2026 and the same seven native-cash factor
+witnesses. Parent verification recomputed the complete public receipt seal and
+matched it to PriceBasis: `grv-price-8e05b86fcdfd65a16e886c20a986b1ea656b04e40d8cc2659ff512282da06292`.
+The eighteen synthetic source-binding tests passed in 4.96 seconds.
+Qualification receipt SHA256 `7df91acf53f332fbb5dd8e64e42d749c3ab1b08373b3be1a5bf629ed08c2d605`.
+
+The earlier 37-session packet, its missing-August18 refusal and its source-pin
+revision remain preserved. This new observation does not backdate availability or
+alter a prior issuance. The adapter remains unwired to grading and issuance;
+security continuity, rights, issuer panels, original Q3 recovery and prospective
+entry/maturity gates remain open. No scientific efficacy is inferred.

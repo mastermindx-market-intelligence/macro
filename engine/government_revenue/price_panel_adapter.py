@@ -18,7 +18,7 @@ from typing import Any, Mapping, Sequence
 from engine.government_revenue.candidate_grader import PriceBasis, PricePanel, SessionCalendar, canonical_bytes
 from engine.close_pass.massive_split_evidence import SplitEvidenceError, _validate_acquisition
 
-_REVIEWED_PACKET_SHA256 = "35f1c0e2d0ac590b3457240f48984bb3e28100621a0085885552039e2d86989c"
+_REVIEWED_PACKET_SHA256 = "6b62d7e6ef2c95c766f6089cde9c51994c0b869746546e86732dc4cdddf5285e"
 
 CONVENTION = "backward_adjusted_close_ratio_native_cash_previous_raw_close_v1"
 

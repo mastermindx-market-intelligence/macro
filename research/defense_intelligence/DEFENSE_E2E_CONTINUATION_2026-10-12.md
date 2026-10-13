@@ -612,3 +612,23 @@ page controller out of the critical document path without changing shared auth.
 All browser matrices must use the next built bytes. No sealed final proof,
 protected merge, installed acceptance, Terminal custody transfer, scientific
 issuance or efficacy is claimed. **MISSION_COMPLETE=false.**
+
+
+### October13 20:48 UTC resumed benchmark qualification
+
+Root preserved the prior delivery branch and incorporated protected main
+0f8ecf0bd6bed323113283f9f5a454888865bf81 as merge7f21033b3983. The only
+merge conflict was additive CI import ownership; both owners are retained.
+Original7175 and Terminal778 remain open at their original observed heads.
+The canonical ITA repair was not replayed. A reviewed new retained packet now
+passes the sole public price loader for258 sessions and7 factor witnesses;
+18 synthetic source-binding checks pass. See the updated existing-owner input
+readiness record for exact packet, source and receipt identities and limitations.
+No issuance, grading, financial-owner promotion or install occurred.
+
+Two current Sol coordinators recovered the latest acceptance census and isolated
+performance work. R4 extraction remains RED at3668.7ms; its old READY_MANIFEST
+was stale. The performance coordinator is repairing the measured late stylesheet
+discovery, while the acceptance coordinator qualifies useful six-theme existing-owner
+context. Neither old source-only green nor the recovered local test-principal
+browser constitutes final installed/entitled acceptance. Root remains sole writer.
