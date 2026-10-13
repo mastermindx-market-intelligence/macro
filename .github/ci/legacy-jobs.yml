@@ -26768,10 +26768,12 @@ jobs:
       - "tests/fixtures/robotics_theme_research/**"
       - "tests/robotics_research_helpers.py"
       - "tests/test_market_ontology_robotics_theme_research.py"
+      - "tests/test_robotics_known_revisions_replay.py"
       - "tests/test_robotics_owner_bundle.py"
       - "tests/test_robotics_research_composition.py"
       - "tests/test_robotics_research_inputs.py"
       - "tests/test_robotics_research_temporal.py"
+      - "tests/test_robotics_shared_type_mirror.py"
       - "tests/test_robotics_theme_non_regression.py"
     timeout-minutes: 8
     runs-on: ubuntu-latest
@@ -26786,9 +26788,11 @@ jobs:
         run: |
           TZ=UTC python -m pytest \
             tests/test_market_ontology_robotics_theme_research.py \
+            tests/test_robotics_known_revisions_replay.py \
             tests/test_robotics_owner_bundle.py \
             tests/test_robotics_research_composition.py \
             tests/test_robotics_research_inputs.py \
             tests/test_robotics_research_temporal.py \
+            tests/test_robotics_shared_type_mirror.py \
             tests/test_robotics_theme_non_regression.py \
             -q

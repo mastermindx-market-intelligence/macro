@@ -23,23 +23,24 @@ Laws this module is bound to (RBV-01..RBV-27 acceptance cases):
   quantities are never converted; totals are structurally null.
 - ``generation`` is a CONTENT fingerprint (sha256 over the definition
   version, rights revision, sorted revision tuple and the time-scoping query
-  fields). It is never an access token and never a simultaneity claim.
+  fields), minted by ``theme_research_binding.generation_fingerprint``.
+  It is never an access token and never a simultaneity claim.
 
-Private names (``_canonical_text``, ``_validate_query``, ``_passes_time_mode``,
-``_le``, ``_is_retrospective``) are imported from the shared owner rather
-than re-implemented; a public export has been requested of that seat and is
-pending. A local frozen mirror of the shared types keeps this module
-importable (and its tests green) on a base without #7870.
+``_passes_time_mode``, ``_is_retrospective``, ``ResearchQuery`` and
+``OwnerBundle`` are imported from the semiconductor owner (they are not shell
+functions). ``_le`` and ``_validate_query`` stay imported from that owner on
+the success path because this composer still calls them. The fingerprint
+calls the shell. The ``except ImportError`` arm mirrors ``ResearchQuery`` and
+``OwnerBundle`` (frozen, same field order) and does not redefine
+``_canonical_text``, ``_is_instant``, ``_parse_clock``, ``_parse_day``,
+``_le``, ``_validate_query`` or ``ResearchRefusal``.
 """
 
 from __future__ import annotations
 
 import copy
-import hashlib
-import json
 import math
 from dataclasses import dataclass
-from datetime import datetime, timezone
 from typing import Any, Mapping, Sequence
 
 from engine.theme_graph.curation_assertion import (
@@ -124,22 +125,18 @@ try:  # pinned to #7870 c6c67c87
         OwnerBundle,
         ResearchQuery,
         ResearchRefusal,
-        _canonical_text,
-        _is_instant,
         _is_retrospective,
         _le,
-        _parse_clock,
-        _parse_day,
         _passes_time_mode,
         _validate_query,
+    )
+    from engine.market_ontology.theme_research_binding import (
+        generation_fingerprint,
     )
 
     SHARED_TYPES = True
 except ImportError:  # pragma: no cover - carrier base fallback
     SHARED_TYPES = False
-
-    _MIN_LIMIT = 1
-    _MAX_LIMIT = 100
 
     @dataclass(frozen=True)
     class ResearchQuery:  # type: ignore[no-redef]
@@ -165,53 +162,20 @@ except ImportError:  # pragma: no cover - carrier base fallback
         native_refs: tuple
         omissions: tuple
 
-    class ResearchRefusal(ValueError):  # type: ignore[no-redef]
-        """A query/generation contract violation. ``str(exc)`` is ``.code``."""
-
-        def __init__(self, code: str):
-            super().__init__(code)
-            self.code = code
-
-    def _canonical_text(payload: Mapping[str, Any]) -> str:  # type: ignore[misc]
-        return json.dumps(payload, ensure_ascii=False, sort_keys=True,
-                          separators=(",", ":"), allow_nan=False)
-
-    def _is_instant(value: str) -> bool:  # type: ignore[misc]
-        return "T" in value
-
-    def _parse_clock(value: str) -> datetime:  # type: ignore[misc]
-        text = value[:-1] + "+00:00" if value.endswith("Z") else value
-        moment = datetime.fromisoformat(text)
-        if moment.tzinfo is None:
-            moment = moment.replace(tzinfo=timezone.utc)
-        return moment
-
-    def _parse_day(value: str):  # type: ignore[misc]
-        return _parse_clock(value).date() if _is_instant(value) \
-            else datetime.strptime(value, "%Y-%m-%d").date()
-
-    def _le(value: str, cutoff: str) -> bool:  # type: ignore[misc]
-        """date-vs-instant comparison without synthesizing a time."""
-        if not _is_instant(value) and not _is_instant(cutoff):
-            return _parse_day(value) <= _parse_day(cutoff)
-        if not _is_instant(value):
-            return _parse_day(value) <= _parse_clock(cutoff).date()
-        if not _is_instant(cutoff):
-            return _parse_clock(value).date() <= _parse_day(cutoff)
-        return _parse_clock(value) <= _parse_clock(cutoff)
-
-    def _validate_query(query: ResearchQuery) -> None:  # type: ignore[misc]
-        if not isinstance(query.limit, int) or isinstance(query.limit, bool) \
-                or not _MIN_LIMIT <= query.limit <= _MAX_LIMIT:
-            raise ResearchRefusal("limit_out_of_range")
-        if not isinstance(query.offset, int) or isinstance(query.offset, bool) \
-                or query.offset < 0:
-            raise ResearchRefusal("offset_negative")
-        if query.offset > 0 and query.expected_generation is None:
-            raise ResearchRefusal("expected_generation_required")
-        if query.time_mode == "system_replay" and (
-                query.source_cutoff is None or query.recorded_cutoff is None):
-            raise ResearchRefusal("replay_cutoffs_required")
+    # Shell names, bound when the foundation imports without the sibling
+    # composer. Not redefined here: a local copy is how the fingerprint and
+    # the clock helpers drifted.
+    try:
+        from engine.market_ontology.theme_research_binding import (  # type: ignore[assignment]
+            ResearchRefusal,
+            generation_fingerprint,
+            is_instant as _is_instant,
+            le as _le,
+            parse_clock as _parse_clock,
+            parse_day as _parse_day,
+        )
+    except ImportError:  # pragma: no cover - base without the shell
+        pass
 
     def _passes_time_mode(assertion: Mapping[str, Any],
                           query: ResearchQuery,
@@ -331,21 +295,32 @@ def _adapt_source(assertion: Mapping[str, Any]) -> dict[str, Any]:
 # Generation — content fingerprint, pagination excluded
 # ---------------------------------------------------------------------------
 
+def _raw_inputs_present(block: Mapping[str, Any], revisions: set[Any]) -> bool:
+    """True when every input revision is a string carried by the raw bundle.
+
+    The ``interpretation_inputs_absent`` count uses this. The display gate
+    does not: a revision the bundle carries but scope or time dropped is
+    present here and still unknown to ``_Selection._inputs_known``.
+    """
+    refs = block.get("input_revisions") or []
+    return all(isinstance(ref, str) and ref in revisions for ref in refs)
+
+
 def _generation(query: ResearchQuery, bundle: OwnerBundle) -> str:
-    payload = {
-        "definition_version": DEFINITION_VERSION,
-        "rights_revision": bundle.rights_revision,
-        "revision_tuple": sorted(list(pair) for pair in bundle.revision_tuple),
-        "slice_key": query.slice_key,
-        "view": query.view,
-        "time_mode": query.time_mode,
-        "source_cutoff": query.source_cutoff,
-        "recorded_cutoff": query.recorded_cutoff,
-        "anchor_theme_id": query.anchor_theme_id,
-    }
-    digest = hashlib.sha256(
-        _canonical_text(payload).encode("utf-8")).hexdigest()[:32]
-    return "gen_" + digest
+    """The shared fingerprint over this vertical's query dimensions."""
+    return generation_fingerprint(
+        definition_version=DEFINITION_VERSION,
+        rights_revision=bundle.rights_revision,
+        revision_tuple=bundle.revision_tuple,
+        fields={
+            "slice_key": query.slice_key,
+            "view": query.view,
+            "time_mode": query.time_mode,
+            "source_cutoff": query.source_cutoff,
+            "recorded_cutoff": query.recorded_cutoff,
+            "anchor_theme_id": query.anchor_theme_id,
+        },
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -397,11 +372,19 @@ class _Selection:
         self.assertions.sort(key=lambda a: a["curation_revision"])
         if slug_keyed:
             self.limitations.add(f"scope_slug_keyed:{slug_keyed}")
+        # Display set: revisions that already passed scope and time, before
+        # the review gate. A post-cutoff or cross-slice row is not here, so
+        # it cannot unlock prose. Review-excluded rows stay, so a held input
+        # can still be labelled stale rather than withheld.
         self.known_revisions = {
+            item.get("curation_revision") for item in self.assertions
+            if isinstance(item, Mapping)}
+        raw_revisions = {
             item.get("curation_revision") for item in bundle.assertions
             if isinstance(item, Mapping)}
-        absent = sum(1 for block in bundle.interpretation_blocks
-                     if not self._inputs_known(block))
+        absent = sum(
+            1 for block in bundle.interpretation_blocks
+            if not _raw_inputs_present(block, raw_revisions))
         if absent:
             self.limitations.add(f"interpretation_inputs_absent:{absent}")
         # RBV-27: partial rights show a partial state and NEVER name the
@@ -532,8 +515,10 @@ class _Selection:
                 # An input the bundle does not carry at all is what an
                 # upstream rights drop looks like from here, so the block is
                 # WITHHELD (counted once in limitations), never labelled
-                # through. Inputs that are present but not live stay the
-                # visible ``[stale interpretation]`` case.
+                # through. A carried input dropped by scope or time is
+                # withheld the same way and is not counted: the absent token
+                # names raw absence only. An admitted input that is no longer
+                # current stays the visible ``[stale interpretation]`` case.
                 continue
             if self.query.time_mode == "system_replay":
                 reviewed = block.get("reviewed_at")
