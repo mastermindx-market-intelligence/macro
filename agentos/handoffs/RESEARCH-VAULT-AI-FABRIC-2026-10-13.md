@@ -18,6 +18,8 @@ changed:
     what: "Pure comparison projection binds two literal source spans and compatible subject, horizon, units, currency and scenario; disagreement is not automatically contradiction."
   - path: engine/research_vault/retrieval_eval.py
     what: "Additive full-document evaluator retains unavailable/nonanswers in the denominator and separates retrieval, precision and exact source identity."
+  - path: engine/research_vault/evaluation_runner.py
+    what: "Frozen candidate execution receives only query/public quantities; validates admitted source scope and keeps failed READY cases in the denominator. Published in #9081 at a49444f815c59c1921c38cfba12cedd7cdf39ac2."
   - path: site/research_vault_app.js
     what: "Truthful catalog/search states and late-response fencing across account/catalog changes; unsupported hourly/full-text promises removed."
   - path: engine/research_vault/sidecar.py
@@ -27,9 +29,9 @@ changed:
   - path: engine/research_intelligence/schema.py
     what: "Malformed or over-limit raw support removes the whole assertion instead of silently retaining a subset; the mandatory thesis still requires support."
 verified:
-  - claim: "Integrated intelligence source and CI placement are qualified locally."
-    command: "Affected suites, source/AST review, unrun-suite audit, trigger closure and packing probe."
-    result: "73 passed, one snapshot-dependent skip; 2473 suites reachable with zero gaps; packing probe passed."
+  - claim: "Current intelligence source and additive evaluation-runner integration are locally qualified."
+    command: "Actual Research Vault manifest invocation, affected runner/scorer tests, indexed trigger closure and packing."
+    result: "Reconciled group: 922 passed, one skipped. Additive runner/scorer: 56 passed, one skipped. After staging the new suite, 2538 suites are reachable with zero trigger gaps and actual packing passes; protected a49444f CI started, not terminal."
   - claim: "The combined Research Vault invocation exposed only an unchanged title regression."
     command: "Actual combined CI pytest invocation, then narrow title checks and unchanged test-function red/green."
     result: "757 passed, four skipped, two title failures; 22 focused title tests passed after repair. Both unchanged failing test functions fail against pinned original bytes and pass against the candidate. The direct two-function rerun is not a full pytest-session rerun."
@@ -54,17 +56,17 @@ unverified:
   - claim: "Actual ChatGPT and Deep Research consume exact replayable evidence."
     what_would_verify: "Installed qualified runtime, actual Research Auth0 grants and private transport, separate C4 client journeys, correction/revocation and rollback proof."
 unresolved:
-  - "Macro #8622 materializer head 641adeb89ac501579e42632112c338d130bd7203: eleven packs passed; contract-delta and pack zero failed packing limits. Exact-source two-job process consolidation passed actual-carrier packing locally and is being published through the same PR; no ceiling waiver or producer dispatch."
+  - "Macro #8622 materializer merged at c4200e880dc5e737fb9a9a092f712bcc79ff4c91 on 2026-10-13T21:23:54Z after required checks passed. Root verified merged producer bytes and no active/queued ingest, then dispatched the single ordinary run38470395842 at21:24:46Z on exact c420. Original producer completedSUCCESS at21:35:19Z. Exact terminal logs/counters remain unread after CI guard; no alternate-reader bypass. Independent current-record audit26FULL/2848 (0.912921%),2717missing105digest_unknown at stable catalog23753d11; receipt-relative only, no common-generation95proof."
   - "Macro #9062 digest/date/H00 source merged at 75f38c3176f6e6ad4c0a9f19beeb77c2a8011690 (head 00161de57c93957575148a620648d90ae6984ff4), observed 2026-10-13 after the controller refresh."
   - "Four interrupted original Fabric operations retain unknown outcomes. The incumbent owner's collector diagnosis ended ORIGINAL_RECOVERY_UNAVAILABLE; no supported original artifact acquisition or settlement exists. No replacement, replay or inferred lease settlement."
-  - "F11 implementation and accepted revision/RIO patches are being reconciled, but F11 merge retains the real production 95 percent gate."
+  - "F11 accepted14 postimages committed6315184db6030d13a99852c57ec1eff8f32a49ab, then ordinary main merge41169ab276a8e8b7ecdcf7ae200bb287b22c3f20 incorporates the real merged materializer. All14 accepted postimages remain exact; current materializer blobs equal ce1da9761ae0cfcdd2cf2c7ae5a641b260bc1092. Eleven affected suites450PASS4skip22.59s; current merged-carrier packingPASS117.24s and2548trigger closures with zero gaps. Published draft #9177, unarmed. F11 merge retains real production95percent gate."
   - "Mastermind #1393 merged at 47aeed6514df522a411005f45297309b12fb1737; #1397 merged at def93fd69bf45560c4394336c56dbaa1250a9159. Neither is installed. Citation/runtime union #1403 merged at aa8c325481f2555100b239a60b1ed5103027c55d from exact head a59d1605a37207f7da3d27fe69baecad4f748b60. Required test, frontend, native-macOS and CodeQL checks passed; not installed."
   - "C4 Pro is authenticated: live browser profile confirmed chatgpt4@mastermind-x.com and Personal account on 2026-10-13. The earlier sign-in gate is cleared. The official Linux tunnel-client download returned 403 and remains uninstalled; no Research Vault connection or live client acceptance yet."
 next_actions:
-  - "Land the exact reviewed source through ordinary CI/merge controls; root alone dispatches the first post-merge producer run after an active-run check."
+  - "Consume original producer38470395842 terminal logs and current qualified-record census; preserve original run and ordinary producer owner, then assess throughput against actual measured results."
   - "Resume E04/E05/citation/U01 result consumption only if new supported original-run evidence becomes available, through the original assigning parent and exact retained bytes."
-  - "Publish qualified v2 and packing changes on existing #9081. The one real v2 canary at b66053d14eb6 returned invalid_model_output because mandatory thesis support lost unverified claims; no RIO was accepted. Qualify a body-bound source-selection protocol before another real call; preserve all three failed attempts."
-  - "Freeze accepted retrieval source before running the separately adjudicated private holdout; correction gold remains pending and candidate outcomes are not yet measured."
+  - "Same #9081 has published source at a49444f815c59c1921c38cfba12cedd7cdf39ac2. Original rv-delivery-01a13301-selector-v3-r1 returned, was consumed and exported by its actual parent, and remains NOT_ACCEPTED: review found v2-default, source-binding and byte/work-bound gaps. Parent repairs the same retained artifact with causal tests before root integration. Persist a closed recomputed partial-context receipt, preserve all-support/quotation law and all three failed development calls, then qualify one new real canary."
+  - "Private gold v4 is frozen at SHA0cc279f95669f0b307ae38b43528e8cbb760f0bacb52e2066a5fa79e57fad9a5:10READY cases/6strata. Root independently verified the publisher-explicit factual-unit correction with old unit UNKNOWN; all9prior accepted case objects remain exact. Bind final candidate/runtime before any evaluation; no quality, historical replay or95coverage claim."
   - "Complete actual Research Auth0 resource/client policy and immutable runtime deployment proposal; existing Executive tenant is selected, DCR operation #633 remains frozen."
 do_not_redo:
   - "Do not reopen the accepted October 11 source outage or republish the already merged F1-F15 source history."
@@ -74,7 +76,7 @@ do_not_redo:
 danger_areas:
   - "Publication, merge, installation, selection and actual client consumption are distinct. Current runtime readiness intentionally stays false until a qualified producer census exists."
   - "Do not reuse Executive/Workspace audience, Supabase Pro membership, or a tunnel workspace ID as the Research authorization principal."
-prs: [8438, 8622, 9062, 9081]
+prs: [8438, 8622, 9062, 9081, 9177]
 discoveries: []
 ---
 
