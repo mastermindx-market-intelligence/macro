@@ -5777,6 +5777,7 @@ jobs:
       - "tests/fixtures/fundamental_forensics_held_out/**"
       - "research/financial_intelligence_fabric/**"
       - "templates/fundamental_forensics.*"
+      - "templates/fif_saved_briefcase.js"
       - "scripts/build_financial_intelligence_packet.py"
       - "collectors/sec_request_pacer.py"
       - "tests/fundamental_forensics_*.test.mjs"
@@ -6587,6 +6588,7 @@ jobs:
           tests/test_fundamental_forensics_query_metric_qualification.py
           tests/test_fundamental_forensics_query_snapshots.py
           tests/test_fundamental_forensics_raw_ledger.py
+          tests/test_fundamental_forensics_saved_store_schema.py
           tests/test_fundamental_forensics_sec_request_pacer.py
           tests/test_fundamental_forensics_source_sync.py
           tests/test_fundamental_forensics_specialist_pack_contract.py
@@ -18977,6 +18979,13 @@ jobs:
       # code gate so a session-policy edit and the registration can red each other.
       # Daily Brief is a zero-I/O read model over owner receipts, not B4 policy.
       # Keep malformed-input, health-precedence and immutable-receipt regressions on CODE.
+      # Original-entry attribution and raw rank-era integrity are source contracts.
+      # The committed-ledger fixture classes stay in unrun-prophet-learning-loop
+      # (gate:data); this PR-time step runs the hermetic contract and legacy rules.
+      - name: Prophet learning original-entry and cohort-integrity contracts
+        run: >-
+          python -m pytest tests/test_prophet_postmortem.py -q
+          -k "not TestLoserCohortFixture and not TestLadderOnTheCommittedLedgers"
         # The TURN WATCH desk consumes the group-turn organ's artifact and R4's organ, so
         # all three ride one lane. test_us_basket_turn.py was named by NO run: step in any
         # workflow before this — the same unrun-suite hole this job's header records for
