@@ -20,11 +20,8 @@ A7 the "Estimate unavailable" block carries both languages, no figure, and is
 A8 every metric value has an adjacent text label (never colour or icon alone)
 A9 heading levels inside the section never skip
 
-Two known defects are pinned with strict xfail instead of being weakened or
-fixed here (templates are not this file's to edit): the unavailable render
-emits ``<time datetime="">`` for the settled-close stamp, and the price-history
-table has neither a caption / accessible name nor ``scope`` on its header
-cells. Both are listed in the returning notes as DEFECTs.
+The settled-close stamp omits ``<time>`` when asof is missing, and the
+price-history table carries a caption plus ``scope`` on its header cells.
 """
 from __future__ import annotations
 
@@ -336,31 +333,17 @@ def built(label):
     return root, hits[0]
 
 
-# Only the unavailable renders that have no asof at all stamp the broken
-# <time>; the source/delayed variants still carry the stale (parseable) date.
+# Unavailable renders with no asof at all. The settled close is a plain em dash
+# there, so those states have no empty datetime to reject.
 NO_ASOF_STATES = ("unavailable-none", "unavailable-empty")
 
 
 def a2_states():
-    params = []
-    for label in ALL_STATES:
-        if label in NO_ASOF_STATES:
-            params.append(pytest.param(label, marks=pytest.mark.xfail(
-                strict=True,
-                reason="DEFECT: the unavailable render stamps its settled close as "
-                       '<time datetime="">—</time> (asof is None), and an empty '
-                       "datetime attribute does not parse with datetime.fromisoformat")))
-        else:
-            params.append(label)
-    return params
+    return list(ALL_STATES)
 
 
 def a4_states():
-    return [pytest.param(label, marks=pytest.mark.xfail(
-        strict=True,
-        reason="DEFECT: the .rrp-history <table> carries no <caption> and no "
-               "aria-label/aria-labelledby, so its accessible name is empty; only "
-               "the enclosing disclosure's summary names it")) for label in TABLE_STATES]
+    return list(TABLE_STATES)
 
 
 # --------------------------------------------------------------------------- #
@@ -396,7 +379,8 @@ def test_a1_aria_and_label_references_resolve_in_the_same_render(label):
 def test_a2_time_elements_carry_parseable_datetimes(label):
     _, section = built(label)
     times = [node for node in section.iter() if node.tag == "time"]
-    assert times, "the section stamps its settled close with a <time> element"
+    # A missing asof is a plain em dash, not a <time datetime="">. Every time
+    # that is present still has to carry a parseable datetime.
     for node in times:
         stamp = node.attrs.get("datetime")
         assert stamp, f'<time> without a datetime attribute: {node.attrs}'

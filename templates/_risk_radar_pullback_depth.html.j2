@@ -131,7 +131,7 @@
       <p class="rrp-sub">{{ t('Watch the retest of the low; a rebound alone does not confirm recovery.', '观察低点回踩；仅有价格回升不足以确认修复。') if current else t('A current closing-price assessment is not available.', '当前收盘价评估暂不可用。') }}</p>
     </div>
     <div class="rrp-stamp">{{ t(o.get('benchmark_en') or '', o.get('benchmark_zh') or '') }}<br>
-      {{ t('Settled close','收盘价') }} <time datetime="{{ (o.get('asof') or '')|e }}">{{ (o.get('asof') or '—')|e }}</time>
+      {{ t('Settled close','收盘价') }} {% if o.get('asof') %}<time datetime="{{ o.get('asof')|e }}">{{ o.get('asof')|e }}</time>{% else %}—{% endif %}
       {%- set _vu_disp = valid_until_display(o.get('valid_until'))|trim -%}
       {%- if _vu_disp %}<br>
       {{ t('Current until','有效至') }} <time datetime="{{ o.get('valid_until')|e }}">{{ _vu_disp|e }}</time>{% endif %}
@@ -189,7 +189,7 @@
       {% set dates = path.get('dates', []) %}{% set vals = path.get('vals', []) %}
       {% if dates is sequence and dates is not string and vals is sequence and vals is not string and dates|length == vals|length and dates|length > 0 %}
       <details class="rrp-method rrp-history"><summary>{{ t('View price history','查看历史价格') }}</summary>
-        <table><thead><tr><th>{{ t('Session','交易日') }}</th><th>{{ t('From reference high','距参考高点') }}</th></tr></thead><tbody>
+        <table><caption>{{ t('Closing drawdown from the reference high by session','各交易日相对参考高点的收盘回撤') }}</caption><thead><tr><th scope="col">{{ t('Session','交易日') }}</th><th scope="col">{{ t('From reference high','距参考高点') }}</th></tr></thead><tbody>
         {% for day in dates %}{% set value = vals[loop.index0] %}
         <tr><td>{{ day|e }}</td><td>{% if (value is float or value is integer) and value-value == 0 and -100 <= value <= 0 %}{% set value_s = '%.2f'|format(0 - value) %}{{ '−' if value_s != '0.00' else '' }}{{ value_s }}%{% else %}{{ t('Unavailable','暂无') }}{% endif %}</td></tr>
         {% endfor %}</tbody></table>

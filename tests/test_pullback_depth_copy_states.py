@@ -126,6 +126,38 @@ def test_b2_close_above_the_reference_high_reads_as_above():
         assert en == REPAIR_EN and zh == REPAIR_ZH
 
 
+def _after_settled_close(soup):
+    """The node or text that follows the settled-close label."""
+    label = None
+    for node in soup.select(".rrp-stamp .l-zh"):
+        if node.get_text() == "收盘价":
+            label = node
+            break
+    assert label is not None
+    sibling = label.next_sibling
+    while isinstance(sibling, str) and not sibling.strip():
+        sibling = sibling.next_sibling
+    return sibling
+
+
+def test_c1_settled_close_is_a_time_only_when_asof_is_present():
+    read = observe_series([100] * 70 + [90, 94, 96])
+    assert read["asof"]
+    for market in ("us", "cn"):
+        held = _after_settled_close(soup_of(read, market))
+        assert getattr(held, "name", None) == "time"
+        assert held.get("datetime") == read["asof"]
+        assert held.get_text(strip=True) == read["asof"]
+        for blank in (None, ""):
+            cleared = dict(read, asof=blank)
+            soup = soup_of(cleared, market)
+            held = _after_settled_close(soup)
+            text = held.strip() if isinstance(held, str) else held.get_text(strip=True)
+            assert text == "—"
+            assert getattr(held, "name", None) != "time"
+            assert soup.select("time[datetime='']") == []
+
+
 def test_b2_close_equal_to_the_reference_high_stays_zero_under_the_old_label():
     read = observe_series([100] * 70 + [90, 100])
     assert read["phase"] == "recovering" and read["close"] == read["peak_close"]
