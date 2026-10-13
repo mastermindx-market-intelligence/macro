@@ -1,0 +1,717 @@
+{
+  "schema": "press.staging_inspection.v1",
+  "config_sha256": "95d87920e15d12131ef40462c7329b1c8076abe7d11c9d48782e98193af9f4bc",
+  "cutover": false,
+  "items": [
+    {
+      "path": "data/press/staging/press-brief-2026-10-11-6cf53bdfd11a.json",
+      "sha256": "8a4c56105b869c20ce7b5928b3bab42417785cd40f70cbacdb2616434e79cfb0",
+      "id": "press-brief-2026-10-11-6cf53bdfd11a",
+      "saved_status": "passed",
+      "validator_report": {
+        "ok": false,
+        "failed": [
+          "self_similarity"
+        ],
+        "checks": [
+          {
+            "name": "fact_anchor",
+            "ok": true,
+            "detail": "every number and quote resolves to a source fact",
+            "metrics": {
+              "numbers_checked": 20,
+              "unanchored": [],
+              "source_pool_size": 106,
+              "unsourced_quotes": []
+            }
+          },
+          {
+            "name": "claim_scope",
+            "ok": true,
+            "detail": "not a canonical claim-scoped slot",
+            "metrics": {
+              "active": false
+            }
+          },
+          {
+            "name": "close_paraphrase",
+            "ok": true,
+            "detail": "max block/source overlap 0.000 <= 0.18",
+            "metrics": {
+              "max_block_jaccard": 0.0,
+              "doc_jaccard": 0.0,
+              "threshold": 0.18,
+              "shingle_n": 5,
+              "worst_source": "",
+              "worst_block": ""
+            }
+          },
+          {
+            "name": "our_value",
+            "ok": true,
+            "detail": "our-value share 50.1% (>= floor 40%) over 22 sentence(s); 17 distinct receipt(s)",
+            "metrics": {
+              "our_value_share": 0.5014,
+              "floor": 0.4,
+              "our_words": 175,
+              "total_words": 349,
+              "granularity": "sentence",
+              "receipts": 17,
+              "receipt_values": [
+                2.63,
+                2.6,
+                53.0,
+                100.0,
+                70.0,
+                0.24,
+                27.0,
+                0.18,
+                87.0,
+                0.16,
+                62.3,
+                50.0,
+                35.3,
+                70.2,
+                21.0,
+                0.19,
+                52.0
+              ],
+              "sentences": [
+                {
+                  "words": 2,
+                  "tier": "neutral"
+                },
+                {
+                  "words": 20,
+                  "tier": "neutral"
+                },
+                {
+                  "words": 19,
+                  "tier": "first_party"
+                },
+                {
+                  "words": 23,
+                  "tier": "neutral"
+                },
+                {
+                  "words": 20,
+                  "tier": "neutral"
+                },
+                {
+                  "words": 3,
+                  "tier": "neutral"
+                },
+                {
+                  "words": 6,
+                  "tier": "neutral"
+                },
+                {
+                  "words": 16,
+                  "tier": "first_party"
+                },
+                {
+                  "words": 25,
+                  "tier": "first_party"
+                },
+                {
+                  "words": 22,
+                  "tier": "first_party"
+                },
+                {
+                  "words": 12,
+                  "tier": "neutral"
+                },
+                {
+                  "words": 7,
+                  "tier": "neutral"
+                },
+                {
+                  "words": 26,
+                  "tier": "first_party"
+                },
+                {
+                  "words": 14,
+                  "tier": "neutral"
+                },
+                {
+                  "words": 16,
+                  "tier": "neutral"
+                },
+                {
+                  "words": 3,
+                  "tier": "neutral"
+                },
+                {
+                  "words": 28,
+                  "tier": "first_party"
+                },
+                {
+                  "words": 15,
+                  "tier": "first_party"
+                },
+                {
+                  "words": 17,
+                  "tier": "neutral"
+                },
+                {
+                  "words": 24,
+                  "tier": "first_party"
+                },
+                {
+                  "words": 12,
+                  "tier": "neutral"
+                },
+                {
+                  "words": 19,
+                  "tier": "neutral"
+                }
+              ]
+            }
+          },
+          {
+            "name": "receipts",
+            "ok": true,
+            "detail": "17 distinct anchored receipt(s) (>= minimum 5)",
+            "metrics": {
+              "receipts": 17,
+              "minimum": 5,
+              "values": [
+                2.63,
+                2.6,
+                53.0,
+                100.0,
+                70.0,
+                0.24,
+                27.0,
+                0.18,
+                87.0,
+                0.16,
+                62.3,
+                50.0,
+                35.3,
+                70.2,
+                21.0,
+                0.19,
+                52.0
+              ]
+            }
+          },
+          {
+            "name": "quote_lint",
+            "ok": true,
+            "detail": "0 quote(s), longest 0 words",
+            "metrics": {
+              "quotes": 0,
+              "max_quotes": 2,
+              "max_quote_words": 25,
+              "oversized": []
+            }
+          },
+          {
+            "name": "banned_lexicon",
+            "ok": true,
+            "detail": "clean",
+            "metrics": {
+              "hits": []
+            }
+          },
+          {
+            "name": "advice_lexicon",
+            "ok": true,
+            "detail": "clean",
+            "metrics": {
+              "hits": []
+            }
+          },
+          {
+            "name": "cheese_test",
+            "ok": true,
+            "detail": "clean",
+            "metrics": {
+              "hits": []
+            }
+          },
+          {
+            "name": "ai_tells",
+            "ok": true,
+            "detail": "clean",
+            "metrics": {
+              "hits": [],
+              "not_only_but_also": 0,
+              "budget": 1
+            }
+          },
+          {
+            "name": "primary_source",
+            "ok": true,
+            "detail": "first-party slot: receipts carried inline (see our_value / receipts); no above-the-fold source link required",
+            "metrics": {
+              "kind": "first_party",
+              "url": null,
+              "named": null,
+              "linked": null
+            }
+          },
+          {
+            "name": "link_allowlist",
+            "ok": true,
+            "detail": "0 internal link(s), all public",
+            "metrics": {
+              "internal_links": 0,
+              "offenders": [],
+              "prefixes": [
+                "/research/",
+                "/blog/",
+                "/stocks/"
+              ]
+            }
+          },
+          {
+            "name": "byline",
+            "ok": true,
+            "detail": "desk byline present",
+            "metrics": {
+              "byline": "The Brief — Mastermind News desk",
+              "block": true,
+              "text": true
+            }
+          },
+          {
+            "name": "footer",
+            "ok": true,
+            "detail": "standing footer present",
+            "metrics": {
+              "block": true,
+              "text": true,
+              "required_text": "Educational content — not investment advice. Markets involve risk."
+            }
+          },
+          {
+            "name": "frontmatter",
+            "ok": true,
+            "detail": "frontmatter matches the free-estate contract",
+            "metrics": {
+              "title_len": 52,
+              "description_len": 140,
+              "slug": "ttwo-hits-first-prophet-target-as-market-stays-mixed",
+              "problems": [],
+              "upstream": ""
+            }
+          },
+          {
+            "name": "length",
+            "ok": true,
+            "detail": "349 words (budget 300–600)",
+            "metrics": {
+              "words": 349,
+              "min_words": 300,
+              "max_words": 600
+            }
+          },
+          {
+            "name": "self_similarity",
+            "ok": false,
+            "detail": "repeats our own staged:ai-flows-are-strong-but-narrow at 0.381 > 0.18: 'The breadth data makes that tension clearer. On 2026-10-08, 62.3% of the AI cohort was above its 50-day average, compare'",
+            "metrics": {
+              "max_jaccard": 0.381,
+              "threshold": 0.18,
+              "peers": 1,
+              "worst_slug": "staged:ai-flows-are-strong-but-narrow"
+            }
+          }
+        ],
+        "our_value_share": 0.5014,
+        "our_value_granularity": "sentence",
+        "receipts": 17,
+        "max_block_jaccard": 0.0,
+        "doc_jaccard": 0.0,
+        "words": 349,
+        "slug": "ttwo-hits-first-prophet-target-as-market-stays-mixed",
+        "desk": "brief",
+        "publication": "mastermind_news"
+      },
+      "validation_current": false,
+      "blockers": [
+        "current_validation_failed"
+      ]
+    },
+    {
+      "path": "data/press/staging/press-research_desk-2026-10-11-81675c403cda.json",
+      "sha256": "ae72a0afdce3e0ffc261d38f8de71b330f989597fe3c25abef4191ae55bbff3b",
+      "id": "press-research_desk-2026-10-11-81675c403cda",
+      "saved_status": "passed",
+      "validator_report": {
+        "ok": true,
+        "failed": [],
+        "checks": [
+          {
+            "name": "fact_anchor",
+            "ok": true,
+            "detail": "every number and quote resolves to a source fact",
+            "metrics": {
+              "numbers_checked": 25,
+              "unanchored": [],
+              "source_pool_size": 97,
+              "unsourced_quotes": []
+            }
+          },
+          {
+            "name": "claim_scope",
+            "ok": true,
+            "detail": "not a canonical claim-scoped slot",
+            "metrics": {
+              "active": false
+            }
+          },
+          {
+            "name": "close_paraphrase",
+            "ok": true,
+            "detail": "max block/source overlap 0.028 <= 0.18",
+            "metrics": {
+              "max_block_jaccard": 0.0275,
+              "doc_jaccard": 0.005,
+              "threshold": 0.18,
+              "shingle_n": 5,
+              "worst_source": "research_vault:marketdesk-f4gxuf5mmau-53a7ed",
+              "worst_block": "Retail activity provides the counterweight. CRWD represented 53% of retail call activity, with 1M calls at the 97th perc"
+            }
+          },
+          {
+            "name": "our_value",
+            "ok": true,
+            "detail": "our-value share 46.3% (>= floor 40%) over 31 sentence(s); 21 distinct receipt(s)",
+            "metrics": {
+              "our_value_share": 0.4626,
+              "floor": 0.4,
+              "our_words": 235,
+              "total_words": 508,
+              "granularity": "sentence",
+              "receipts": 21,
+              "receipt_values": [
+                21.0,
+                53.0,
+                1.0,
+                97.0,
+                63.0,
+                19.0,
+                30.0,
+                100.0,
+                70.0,
+                27.0,
+                62.3,
+                50.0,
+                35.3,
+                76.9,
+                1.59,
+                0.15,
+                0.92,
+                0.24,
+                70.2,
+                0.19,
+                52.0
+              ],
+              "sentences": [
+                {
+                  "words": 23,
+                  "tier": "first_party"
+                },
+                {
+                  "words": 17,
+                  "tier": "neutral"
+                },
+                {
+                  "words": 24,
+                  "tier": "neutral"
+                },
+                {
+                  "words": 4,
+                  "tier": "neutral"
+                },
+                {
+                  "words": 23,
+                  "tier": "neutral"
+                },
+                {
+                  "words": 20,
+                  "tier": "neutral"
+                },
+                {
+                  "words": 20,
+                  "tier": "neutral"
+                },
+                {
+                  "words": 5,
+                  "tier": "neutral"
+                },
+                {
+                  "words": 19,
+                  "tier": "first_party"
+                },
+                {
+                  "words": 16,
+                  "tier": "first_party"
+                },
+                {
+                  "words": 20,
+                  "tier": "neutral"
+                },
+                {
+                  "words": 4,
+                  "tier": "neutral"
+                },
+                {
+                  "words": 8,
+                  "tier": "neutral"
+                },
+                {
+                  "words": 11,
+                  "tier": "first_party"
+                },
+                {
+                  "words": 16,
+                  "tier": "first_party"
+                },
+                {
+                  "words": 19,
+                  "tier": "neutral"
+                },
+                {
+                  "words": 11,
+                  "tier": "neutral"
+                },
+                {
+                  "words": 22,
+                  "tier": "first_party"
+                },
+                {
+                  "words": 25,
+                  "tier": "first_party"
+                },
+                {
+                  "words": 6,
+                  "tier": "neutral"
+                },
+                {
+                  "words": 24,
+                  "tier": "first_party"
+                },
+                {
+                  "words": 15,
+                  "tier": "first_party"
+                },
+                {
+                  "words": 22,
+                  "tier": "neutral"
+                },
+                {
+                  "words": 5,
+                  "tier": "neutral"
+                },
+                {
+                  "words": 17,
+                  "tier": "neutral"
+                },
+                {
+                  "words": 28,
+                  "tier": "first_party"
+                },
+                {
+                  "words": 9,
+                  "tier": "neutral"
+                },
+                {
+                  "words": 24,
+                  "tier": "first_party"
+                },
+                {
+                  "words": 12,
+                  "tier": "first_party"
+                },
+                {
+                  "words": 18,
+                  "tier": "neutral"
+                },
+                {
+                  "words": 21,
+                  "tier": "neutral"
+                }
+              ]
+            }
+          },
+          {
+            "name": "receipts",
+            "ok": true,
+            "detail": "21 distinct anchored receipt(s) (>= minimum 4)",
+            "metrics": {
+              "receipts": 21,
+              "minimum": 4,
+              "values": [
+                21.0,
+                53.0,
+                1.0,
+                97.0,
+                63.0,
+                19.0,
+                30.0,
+                100.0,
+                70.0,
+                27.0,
+                62.3,
+                50.0,
+                35.3,
+                76.9,
+                1.59,
+                0.15,
+                0.92,
+                0.24,
+                70.2,
+                0.19,
+                52.0
+              ]
+            }
+          },
+          {
+            "name": "quote_lint",
+            "ok": true,
+            "detail": "0 quote(s), longest 0 words",
+            "metrics": {
+              "quotes": 0,
+              "max_quotes": 2,
+              "max_quote_words": 25,
+              "oversized": []
+            }
+          },
+          {
+            "name": "banned_lexicon",
+            "ok": true,
+            "detail": "clean",
+            "metrics": {
+              "hits": []
+            }
+          },
+          {
+            "name": "advice_lexicon",
+            "ok": true,
+            "detail": "clean",
+            "metrics": {
+              "hits": []
+            }
+          },
+          {
+            "name": "cheese_test",
+            "ok": true,
+            "detail": "clean",
+            "metrics": {
+              "hits": []
+            }
+          },
+          {
+            "name": "ai_tells",
+            "ok": true,
+            "detail": "clean",
+            "metrics": {
+              "hits": [],
+              "not_only_but_also": 0,
+              "budget": 1
+            }
+          },
+          {
+            "name": "primary_source",
+            "ok": true,
+            "detail": "first-party slot: receipts carried inline (see our_value / receipts); no above-the-fold source link required",
+            "metrics": {
+              "kind": "first_party",
+              "url": "https://www.mastermind-x.com/research/vanda-research-what-equity-flows-are-telling-us-under-the-hood-16sep20-53a7ed.html",
+              "named": null,
+              "linked": null
+            }
+          },
+          {
+            "name": "link_allowlist",
+            "ok": true,
+            "detail": "1 internal link(s), all public",
+            "metrics": {
+              "internal_links": 1,
+              "offenders": [],
+              "prefixes": [
+                "/research/",
+                "/blog/",
+                "/stocks/"
+              ]
+            }
+          },
+          {
+            "name": "byline",
+            "ok": true,
+            "detail": "desk byline present",
+            "metrics": {
+              "byline": "Research Desk — Mastermind Research",
+              "block": true,
+              "text": true
+            }
+          },
+          {
+            "name": "footer",
+            "ok": true,
+            "detail": "standing footer present",
+            "metrics": {
+              "block": true,
+              "text": true,
+              "required_text": "Educational content — not investment advice. Markets involve risk."
+            }
+          },
+          {
+            "name": "frontmatter",
+            "ok": true,
+            "detail": "frontmatter matches the free-estate contract",
+            "metrics": {
+              "title_len": 30,
+              "description_len": 144,
+              "slug": "ai-flows-are-strong-but-narrow",
+              "problems": [],
+              "upstream": ""
+            }
+          },
+          {
+            "name": "length",
+            "ok": true,
+            "detail": "508 words (budget 500–900)",
+            "metrics": {
+              "words": 508,
+              "min_words": 500,
+              "max_words": 900
+            }
+          },
+          {
+            "name": "self_similarity",
+            "ok": true,
+            "detail": "max overlap with our last 30 days + staged siblings is 0.174 <= 0.18",
+            "metrics": {
+              "max_jaccard": 0.1739,
+              "threshold": 0.18,
+              "peers": 1,
+              "worst_slug": "staged:ttwo-hits-first-prophet-target-as-market-stays-mixed"
+            }
+          }
+        ],
+        "our_value_share": 0.4626,
+        "our_value_granularity": "sentence",
+        "receipts": 21,
+        "max_block_jaccard": 0.0275,
+        "doc_jaccard": 0.005,
+        "words": 508,
+        "slug": "ai-flows-are-strong-but-narrow",
+        "desk": "research_desk",
+        "publication": "mastermind_research"
+      },
+      "validation_current": true,
+      "blockers": []
+    }
+  ],
+  "total": 2,
+  "validation_current": 1,
+  "blocked": 1,
+  "publication_approved": false,
+  "source_freshness_verified": false,
+  "scope": "Current deterministic validator replay against staged facts and local peers only; source freshness, source rights, editorial acceptance, release controls and live delivery require their existing owners."
+}

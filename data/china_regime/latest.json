@@ -222,48 +222,48 @@
     "home_price_breadth_6m_trend": 9,
     "climate_index": 91.45,
     "climate_trend": "falling",
-    "construction_demand_z": -0.42,
-    "cgb_10y": 1.685,
-    "cgb_10y2y_slope": 0.417,
-    "cgb_10y_chg_6m": -0.129,
+    "construction_demand_z": -0.31,
+    "cgb_10y": 1.672,
+    "cgb_10y2y_slope": 0.409,
+    "cgb_10y_chg_6m": -0.147,
     "property_etf_drawdown": -29.9,
     "note": "display/context only \u2014 A-shares mean-revert, not a scored signal"
   },
   "market_drivers": {
     "asof": "2026-10-09",
     "window_d": 5,
-    "verdict": "clear",
-    "verdict_zh": "\u660e\u786e",
+    "verdict": "quiet",
+    "verdict_zh": "\u5e73\u9759",
     "primary": "pboc_repricing",
     "primary_label": "PBoC / rates repricing",
     "primary_label_zh": "\u592e\u884c/\u5229\u7387\u91cd\u5b9a\u4ef7",
-    "direction": "rates repricing easier \u2014 SHIBOR & CGB yields down, liquidity added",
-    "direction_zh": "\u5229\u7387\u5bbd\u677e\u91cd\u5b9a\u4ef7 \u2014 SHIBOR\u4e0e\u56fd\u503a\u6536\u76ca\u7387\u4e0b\u884c\u3001\u6d41\u52a8\u6027\u6295\u653e",
-    "dir_sign": -1,
-    "confidence": "medium",
-    "confidence_zh": "\u4e2d",
-    "strength": 0.88,
-    "dominance_ratio": 1.76,
-    "agreement": 0.65,
+    "direction": "rates repricing tighter \u2014 SHIBOR & CGB yields up, liquidity drained",
+    "direction_zh": "\u5229\u7387\u6536\u7d27\u91cd\u5b9a\u4ef7 \u2014 SHIBOR\u4e0e\u56fd\u503a\u6536\u76ca\u7387\u4e0a\u884c\u3001\u6d41\u52a8\u6027\u56de\u6536",
+    "dir_sign": 1,
+    "confidence": "low",
+    "confidence_zh": "\u4f4e",
+    "strength": 0.56,
+    "dominance_ratio": 1.14,
+    "agreement": 1.0,
     "runner_up": "ai_semis",
     "runner_up_label": "AI / semis leadership",
     "runner_up_label_zh": "AI/\u534a\u5bfc\u4f53\u9886\u6da8",
-    "headline": "PBoC / rates repricing \u2014 rates repricing easier \u2014 SHIBOR & CGB yields down, liquidity added. 1y SHIBOR -1.6\u03c3, 3m SHIBOR -1.4\u03c3, 10y CGB yield +0.4\u03c3.",
+    "headline": "No dominant driver \u2014 China cross-asset moves are within their normal weekly range.",
     "evidence": [
-      "1y SHIBOR -1.6\u03c3",
-      "3m SHIBOR -1.4\u03c3",
+      "1y SHIBOR +0.6\u03c3",
+      "3m SHIBOR +0.8\u03c3",
       "10y CGB yield +0.4\u03c3"
     ],
     "evidence_legs": [
       {
         "en": "1y SHIBOR",
         "zh": "1\u5e74\u671fSHIBOR",
-        "z": -1.6
+        "z": 0.6
       },
       {
         "en": "3m SHIBOR",
         "zh": "3\u4e2a\u6708SHIBOR",
-        "z": -1.4
+        "z": 0.8
       },
       {
         "en": "10y CGB yield",
@@ -279,9 +279,9 @@
         "label": "PBoC / rates repricing",
         "label_zh": "\u592e\u884c/\u5229\u7387\u91cd\u5b9a\u4ef7",
         "family": "rates",
-        "projection": -0.88,
-        "strength": 0.88,
-        "direction": "rates repricing easier \u2014 SHIBOR & CGB yields down, liquidity added"
+        "projection": 0.56,
+        "strength": 0.56,
+        "direction": "rates repricing tighter \u2014 SHIBOR & CGB yields up, liquidity drained"
       },
       {
         "driver": "ai_semis",
@@ -293,6 +293,15 @@
         "direction": "AI/semis unwind \u2014 tech-led de-rating"
       },
       {
+        "driver": "liquidity_impulse",
+        "label": "Liquidity impulse",
+        "label_zh": "\u6d41\u52a8\u6027\u8109\u51b2",
+        "family": "liquidity",
+        "projection": -0.27,
+        "strength": 0.27,
+        "direction": "domestic liquidity draining \u2014 M1/M2 down, overnight dear, small-caps & margin sold"
+      },
+      {
         "driver": "china_stimulus",
         "label": "Stimulus tape",
         "label_zh": "\u523a\u6fc0\u884c\u60c5",
@@ -300,15 +309,6 @@
         "projection": -0.13,
         "strength": 0.13,
         "direction": "stimulus-off \u2014 CSI300, brokers, property & copper/rebar lead down"
-      },
-      {
-        "driver": "liquidity_impulse",
-        "label": "Liquidity impulse",
-        "label_zh": "\u6d41\u52a8\u6027\u8109\u51b2",
-        "family": "liquidity",
-        "projection": 0.11,
-        "strength": 0.11,
-        "direction": "domestic liquidity easing \u2014 M1/M2 up, overnight cheap, small-caps & margin bid"
       },
       {
         "driver": "southbound_appetite",
@@ -351,8 +351,8 @@
   },
   "conditions": {
     "roro": {
-      "roro": -0.04,
-      "roro_raw": -0.04,
+      "roro": -0.038,
+      "roro_raw": -0.038,
       "roro_state": "neutral",
       "china_roro_copper_gold": 1.709,
       "china_roro_breadth": -0.314,
@@ -361,7 +361,7 @@
       "china_roro_turnover": -0.851,
       "china_roro_qvix": 1.065,
       "china_roro_usdcnh": 0.353,
-      "china_roro_margin": -0.433,
+      "china_roro_margin": -0.422,
       "china_roro_ah_premium": -1.93,
       "legs": [
         {
@@ -417,7 +417,7 @@
           "key": "margin",
           "name_en": "Margin froth",
           "name_zh": "\u878d\u8d44\u62e5\u6324\u5ea6",
-          "value": -0.433,
+          "value": -0.422,
           "lean": "risk-off"
         },
         {
@@ -502,7 +502,7 @@
       "note_zh": "\u5df2\u752820\u5e74A\u80a1\u524d\u77bb\u6570\u636e\u6821\u51c6\uff1a\u65e0\u524d\u77bb\u56de\u64a4\u4f18\u52bf\uff08A\u80a1\u5747\u503c\u56de\u5f52 \u2014\u2014 \u9ad8\u8bfb\u6570\u504f\u5e73/\u9006\u5411\uff09\uff1b\u533a\u95f4\u4e3a\u5386\u53f2\u5206\u4f4d\u951a\u5b9a\u3002\u63cf\u8ff0\u6027\u80cc\u666f\uff0c\u4ece\u4e0d\u8ba1\u5165\u8bc4\u5206\u3002"
     },
     "drawdown_risk": {
-      "score": 9.5,
+      "score": 8.9,
       "band": "low",
       "uncalibrated": false,
       "calibrated": true,
@@ -2091,7 +2091,7 @@
           -0.152,
           -0.196,
           -0.086,
-          -0.04
+          -0.038
         ]
       },
       "recession": {
@@ -5251,7 +5251,7 @@
           4.6,
           4.7,
           7.6,
-          9.5
+          8.9
         ]
       },
       "fear_euphoria": {
@@ -6831,7 +6831,7 @@
           43.7,
           39.2,
           50.6,
-          56.4
+          56.5
         ]
       }
     },
@@ -6839,10 +6839,10 @@
     "note": "display-only conditioning lens \u2014 RORO + uncalibrated recession/drawdown gauges; never feeds china_axes / china_regime / china_playbook"
   },
   "fear_euphoria": {
-    "fe_score": 56,
+    "fe_score": 57,
     "band": "Neutral",
     "band_zh": "\u4e2d\u6027",
-    "roro": -0.04,
+    "roro": -0.038,
     "roro_state": "neutral",
     "legs": [
       {
@@ -6905,8 +6905,8 @@
         "key": "margin",
         "name_en": "Margin froth",
         "name_zh": "\u878d\u8d44\u62e5\u6324\u5ea6",
-        "value": -0.433,
-        "pct": 22,
+        "value": -0.422,
+        "pct": 24,
         "lean": "risk-off"
       },
       {
