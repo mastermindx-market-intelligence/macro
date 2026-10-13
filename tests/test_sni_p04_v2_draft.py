@@ -381,3 +381,15 @@ def test_r1_10_ladder_separated_from_labels() -> None:
     order["label_order"] = ["TESTED"]
     with pytest.raises(ValueError, match="label_order"):
         draft_loader.validate_draft(order)
+
+def test_x6r_06_no_alpha_token_in_p04_v2() -> None:
+    """X6-03: Type-I field is significance_level, never a word-boundary alpha."""
+    spec = json.loads(JSON_PATH.read_text(encoding="utf-8"))
+    assert spec["statistics"]["significance_level"] == 0.05
+    assert "alpha" not in spec["statistics"]
+    assert "one-sided significance level 0.05" in spec["minimum_evidence"]["derivation"]
+    pat = re.compile(r"\balpha\b", re.IGNORECASE)
+    for path in (JSON_PATH, MD_PATH):
+        blob = path.read_text(encoding="utf-8")
+        hits = pat.findall(blob)
+        assert hits == [], f"word-boundary alpha in {path.name}: {hits}"

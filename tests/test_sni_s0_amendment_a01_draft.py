@@ -61,14 +61,14 @@ BANNED_EXCEPTIONS = (
     "is not admission",
     "UNRESOLVED",
 )
-ORIGIN_MAIN_REGISTER_BLOB = "5cea5c88335133e7684200b694f0d170ca4ae5b2"
+REGISTER_BLOB = "5cea5c88335133e7684200b694f0d170ca4ae5b2"
 ORIGIN_MAIN_BLOBS = {
     "data/yahoo/TCEHY.parquet": "0c03b5f83178ddf2ed9c25f39ef7688139ed24be",
     "data/yahoo/KWEB.parquet": "d42bd75db56f8ad5c2530ee415262a0c68b913bd",
     "data/reference/security_master.parquet": "85ef75104840b6b5be3aceeac21f1dbfabad6472",
     "data/reference/issuer_master.parquet": "6643e7eae37940d800659f7b4589f242ec70ef45",
     "research/single_name_intelligence/protocols/S0_PROTOCOL_REGISTER.md": (
-        ORIGIN_MAIN_REGISTER_BLOB
+        REGISTER_BLOB
     ),
 }
 PATH_THEN_SHA_RE = re.compile(
@@ -373,7 +373,7 @@ def test_register_byte_identical_to_origin_main():
     doc = load_amendment()
     register_bytes = REGISTER_PATH.read_bytes()
     assert git_blob_sha(register_bytes) == doc["amends_blob"]
-    assert doc["amends_blob"] == ORIGIN_MAIN_REGISTER_BLOB
+    assert doc["amends_blob"] == REGISTER_BLOB
 
 
 def test_authority_true_refused():
@@ -542,3 +542,20 @@ def test_r1_05_us_pointer_merge_order_independent():
         "and does not claim it is registered."
     ) in md
     assert "exists_on_main" not in JSON_PATH.read_text(encoding="utf-8")
+
+def test_x6r_05_register_pin_matches_tree_bytes():
+    """A01 amends_blob is the git blob sha of the on-disk register, not a
+    caption of origin/main. 5cea5c88… is the register of the tree that
+    carries this draft (INT1); origin/main stays 18cb5aa3… until INT1 merges.
+    """
+    doc = load_amendment()
+    data = REGISTER_PATH.read_bytes()
+    assert git_blob_sha(data) == doc["amends_blob"]
+    assert doc["amends_blob"] == REGISTER_BLOB
+    sha = REGISTER_BLOB
+    for path in (MD_PATH, JSON_PATH):
+        for i, line in enumerate(path.read_text(encoding="utf-8").splitlines(), 1):
+            if sha in line or sha[:8] in line:
+                assert "origin/main" not in line, (
+                    f"{path.name}:{i} pairs register pin with origin/main: {line!r}"
+                )

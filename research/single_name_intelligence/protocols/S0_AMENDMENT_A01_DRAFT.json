@@ -5,6 +5,7 @@
   "applied": false,
   "amends": "research/single_name_intelligence/protocols/S0_PROTOCOL_REGISTER.md",
   "amends_blob": "5cea5c88335133e7684200b694f0d170ca4ae5b2",
+  "amends_blob_caption": "register blob of the tree that carries this draft (the INT1 integration branch); becomes the origin/main register blob when INT1 merges",
   "drafted_by": "grok-4.6 lane S0D under seat 508c3757",
   "drafted_at": "2026-10-13T03:11:37Z",
   "rank_authority": false,

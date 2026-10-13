@@ -138,7 +138,7 @@ Every name carries `canonical_issuer_id: null`, `security_id: null`, `issuer_lin
 
 ## 11. INPUT_PINS
 
-Pins are blob shas from `git ls-tree origin/main`. Files are never opened. `data_read` is false.
+The REG pin is the register blob of the tree that carries this draft (the INT1 integration branch). Subject and bench parquet pins are blob shas from `git ls-tree origin/main`. Files are never opened. `data_read` is false.
 
 **S0 blobs**
 
