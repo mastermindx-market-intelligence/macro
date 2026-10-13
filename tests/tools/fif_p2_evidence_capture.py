@@ -249,6 +249,7 @@ INTERACTION_TAB_KEYS = "tab_keys"
 INTERACTION_DRAWER_TRAP = "drawer_trap"
 INTERACTION_SAVED_RESTORE_PINNED = "saved_restore_pinned"
 INTERACTION_SAVED_OPEN_UNAVAILABLE = "saved_open_unavailable"
+INTERACTION_SAVED_WRITE_FAILURE = "saved_write_failure"
 INTERACTION_INPUTS = {
     INTERACTION_DRAWER_OPEN: "pointer: real click on [data-open-primary-finding]",
     INTERACTION_TAB_KEYS: "keyboard: real Tab presses to the selected tab, then ArrowRight",
@@ -264,6 +265,13 @@ INTERACTION_INPUTS = {
         "select: real #ff-saved-select change to the drift seed row "
         "(EFGHIJKLMNOPQRSTUVWXYZ)"
     ),
+    INTERACTION_SAVED_WRITE_FAILURE: (
+        "Restore the pinned saved view, make this capture page's browser refuse the "
+        "next write to the saved-views key (localStorage.setItem raises "
+        "QuotaExceededError for that one key only), type the name 'Apple write check' "
+        "and click Save this view. Shows the write-failure notice; the stored saved "
+        "views are unchanged."
+    ),
 }
 
 # X2-s r1 (H2): the saved-views desk selectors and the seed rows the two
@@ -271,8 +279,20 @@ INTERACTION_INPUTS = {
 SAVED_SELECT_SELECTOR = "#ff-saved-select"
 SAVED_BADGE_SELECTOR = "#ff-saved-badge"
 SAVED_NOTICE_SELECTOR = "#ff-saved-notice"
+SAVED_NAME_SELECTOR = "#ff-saved-name"
+SAVED_SAVE_SELECTOR = "#ff-saved-save"
 SAVED_PINNED_ROW_ID = "CDEFGHIJKLMNOPQRSTUVWX"
 SAVED_DRIFT_ROW_ID = "EFGHIJKLMNOPQRSTUVWXYZ"
+
+# X2-s r2 (C1): the setItem patch is KEY-SCOPED — it throws QuotaExceededError
+# only for the one storage key it is handed and delegates every other key to
+# the original untouched, so the refusal can never leak to another feature.
+_SAVED_WRITE_FAILURE_SETITEM_PATCH = (
+    "(key) => { const original = Storage.prototype.setItem; Storage.prototype.setItem"
+    " = function (k, v) { if (k === key) { throw new DOMException('storage refused in"
+    " capture', 'QuotaExceededError'); } return original.call(this, k, v); }; }"
+)
+_SAVED_STORED_BYTES_SCRIPT = "(key) => localStorage.getItem(key)"
 
 # X2-s r1 (H1): the device-local briefcase key the seed init script plants.
 BRIEFCASE_STORAGE_KEY = "mastermind.filing_forensics.saved_research.v1"
@@ -1035,6 +1055,27 @@ _SAVED_PROBE_SCRIPT = """
   const badge = document.querySelector('#ff-saved-badge');
   const notice = document.querySelector('#ff-saved-notice');
   const visible = (node) => !!(node && node.offsetParent !== null);
+  // X2-s r2 (C2): a read-only measurement of the selected option's text width
+  // against the select's inner width — canvas 2d, the select's computed font
+  // (fallback font string when the shorthand computes empty) plus the
+  // computed left+right padding. Nothing is styled and no style is injected;
+  // the fact is recorded for every saved interaction and gates nothing.
+  let selected_text_fits = null;
+  let selected_text_px = null;
+  let select_inner_px = null;
+  if (select) {
+    const styles = window.getComputedStyle(select);
+    const font = styles.font || (styles.fontWeight + ' ' + styles.fontSize + ' ' + styles.fontFamily);
+    select_inner_px = select.clientWidth;
+    const option = select.selectedOptions && select.selectedOptions[0];
+    const context = document.createElement('canvas').getContext('2d');
+    if (option && context) {
+      context.font = font;
+      selected_text_px = context.measureText(String(option.textContent || '')).width +
+        parseFloat(styles.paddingLeft || '0') + parseFloat(styles.paddingRight || '0');
+      selected_text_fits = selected_text_px <= select_inner_px + 0.5;
+    }
+  }
   return {
     value: select ? select.value : null,
     options: select ? Array.prototype.map.call(select.options, (o) => o.textContent) : [],
@@ -1042,6 +1083,10 @@ _SAVED_PROBE_SCRIPT = """
     notice_visible: visible(notice),
     notice_has_strong: !!(notice && notice.querySelector('strong')),
     notice_newer_generation: !!(notice && notice.querySelector('[data-saved-reresolve]')),
+    notice_text: notice ? String(notice.textContent || '') : '',
+    selected_text_fits: selected_text_fits,
+    selected_text_px: selected_text_px,
+    select_inner_px: select_inner_px,
   };
 }
 """
@@ -1082,12 +1127,51 @@ def _interact_saved_open_unavailable(page: Any) -> tuple[bool, dict[str, Any]]:
     return verified, dict(probe)
 
 
+def _interact_saved_write_failure(page: Any) -> tuple[bool, dict[str, Any]]:
+    _saved_select(page, SAVED_PINNED_ROW_ID)
+    # Refuse the NEXT write to the saved-views key only, then drive the real
+    # save path: fill re-renders on 'input' (which enables Save), the stored
+    # bytes are read right before the click, and the post-click probe plus a
+    # second read prove the refusal left them byte-identical.
+    page.evaluate(_SAVED_WRITE_FAILURE_SETITEM_PATCH, BRIEFCASE_STORAGE_KEY)
+    page.fill(SAVED_NAME_SELECTOR, "Apple write check", timeout=INTERACTION_TIMEOUT_MS)
+    before = page.evaluate(_SAVED_STORED_BYTES_SCRIPT, BRIEFCASE_STORAGE_KEY)
+    page.click(SAVED_SAVE_SELECTOR, timeout=INTERACTION_TIMEOUT_MS)
+    _settle(page)
+    mouse = getattr(page, "mouse", None)
+    if mouse is not None:
+        mouse.move(*POINTER_PARK)
+    after = page.evaluate(_SAVED_STORED_BYTES_SCRIPT, BRIEFCASE_STORAGE_KEY)
+    probe = dict(page.evaluate(_SAVED_PROBE_SCRIPT.strip()) or {})
+    before_sha = hashlib.sha256(str(before or "").encode("utf-8")).hexdigest()
+    after_sha = hashlib.sha256(str(after or "").encode("utf-8")).hexdigest()
+    notice_text = str(probe.get("notice_text") or "")
+    verified = bool(
+        probe.get("notice_visible")
+        and not probe.get("notice_has_strong")
+        and ("did not save this change" in notice_text or "浏览器未保存此更改" in notice_text)
+        and probe.get("value") == SAVED_PINNED_ROW_ID
+        and probe.get("badge_visible")
+        and before is not None
+        and after == before
+        and before_sha == after_sha
+    )
+    facts: dict[str, Any] = {
+        **probe,
+        "stored_sha256_before_click": before_sha,
+        "stored_sha256_after": after_sha,
+        "stored_unchanged": after == before,
+    }
+    return verified, facts
+
+
 _INTERACTIONS: dict[str, Callable[[Any], tuple[bool, dict[str, Any]]]] = {
     INTERACTION_DRAWER_OPEN: _interact_drawer_open,
     INTERACTION_TAB_KEYS: _interact_tab_keys,
     INTERACTION_DRAWER_TRAP: _interact_drawer_trap,
     INTERACTION_SAVED_RESTORE_PINNED: _interact_saved_restore_pinned,
     INTERACTION_SAVED_OPEN_UNAVAILABLE: _interact_saved_open_unavailable,
+    INTERACTION_SAVED_WRITE_FAILURE: _interact_saved_write_failure,
 }
 
 

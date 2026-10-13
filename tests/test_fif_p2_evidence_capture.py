@@ -1385,6 +1385,7 @@ def test_interaction_force_spec_parses_to_the_intercepted_payload_shape() -> Non
         tool.INTERACTION_DRAWER_TRAP,
         tool.INTERACTION_SAVED_RESTORE_PINNED,
         tool.INTERACTION_SAVED_OPEN_UNAVAILABLE,
+        tool.INTERACTION_SAVED_WRITE_FAILURE,
     }
     # X2-s r1 (H4): both saved-views interactions carry input text and are
     # registered on the dispatch table under their own handler.
@@ -1393,10 +1394,42 @@ def test_interaction_force_spec_parses_to_the_intercepted_payload_shape() -> Non
         assert name in tool._INTERACTIONS, name + " is registered"
     assert tool._INTERACTIONS[tool.INTERACTION_SAVED_RESTORE_PINNED] is tool._interact_saved_restore_pinned
     assert tool._INTERACTIONS[tool.INTERACTION_SAVED_OPEN_UNAVAILABLE] is tool._interact_saved_open_unavailable
+    # X2-s r2 (C3): the write-failure interaction names the browser refusal
+    # (QuotaExceededError) in its input text and is registered too.
+    assert tool.INTERACTION_INPUTS[tool.INTERACTION_SAVED_WRITE_FAILURE]
+    assert "QuotaExceededError" in tool.INTERACTION_INPUTS[tool.INTERACTION_SAVED_WRITE_FAILURE]
+    assert (
+        tool._INTERACTIONS[tool.INTERACTION_SAVED_WRITE_FAILURE]
+        is tool._interact_saved_write_failure
+    )
     assert not tool.is_interaction_payload(
         {"name": "empty", "kind": "attribute", "value": "", "attribute": "data-empty"}
     )
     assert not tool.is_interaction_payload(None)
+
+
+def test_saved_write_failure_setitem_patch_is_key_scoped() -> None:
+    """X2-s r2 (C3): the write-failure patch refuses ONLY the passed key.
+
+    Hermetic (no browser): the patch is a fixed script string whose refusal
+    branch is guarded by ``k === key`` — the argument handed in by the
+    interaction — and whose every other write is delegated verbatim to the
+    original ``setItem``, so the refusal can never leak to another key.
+    """
+    patch = tool._SAVED_WRITE_FAILURE_SETITEM_PATCH
+    assert patch.startswith("(key) =>")
+    assert "Storage.prototype.setItem" in patch
+    refuse_at = patch.index("if (k === key)")
+    throw_at = patch.index("throw new DOMException")
+    delegate_at = patch.index("return original.call(this, k, v)")
+    assert refuse_at < throw_at < delegate_at, "the throw sits inside the key guard"
+    assert "QuotaExceededError" in patch
+    # No other throw site and no concrete key literal: the one refusal names
+    # only the key passed in (the stored-bytes reader is key-parameterised
+    # too).
+    assert patch.count("throw ") == 1
+    assert "localStorage" not in patch
+    assert tool._SAVED_STORED_BYTES_SCRIPT == "(key) => localStorage.getItem(key)"
 
 
 def test_page_proxy_reports_applied_only_for_a_verified_interaction() -> None:
