@@ -9,7 +9,8 @@ I1  drawdown_pct is non-positive and equals its own definition;
 I2  the episode low never sits above the current close or the retained peak;
 I3  loss_recovered_pct is a clamped percentage or None;
 I4  active is True exactly for the three live phases;
-I5  the drawn price path is a clean, capped, non-positive series ending as-of;
+I5  the drawn price path is the unclipped percent from the frozen high,
+    capped, strictly dated, and ending as-of;
 I6  a recent-peak episode marks both peak and low on the drawn path;
 I7  no_new_low_closes is a bounded non-negative count;
 I8  tied lows resolve to the FIRST occurrence;
@@ -188,7 +189,16 @@ def _pool():
 # ── shared assertions ────────────────────────────────────────────────────────
 
 
-def _assert_well_formed(obs):
+def _assert_path_is_unclipped(rows, obs):
+    """Each drawn value is the unclipped percent from the frozen high."""
+    path = obs["price_path"]
+    by_date = dict(rows)
+    peak = obs["peak_close"]
+    for day, value in zip(path["dates"], path["vals"]):
+        assert value == round(100.0 * (by_date[day] / peak - 1.0), 4)
+
+
+def _assert_well_formed(obs, rows):
     """Every packet invariant that must hold on ANY available observation."""
     assert obs["schema"] == SCHEMA
     assert obs["phase"] in PHASES
@@ -203,7 +213,7 @@ def _assert_well_formed(obs):
     assert len(path["dates"]) == len(path["vals"])
     assert 0 < len(path["dates"]) <= PATH_MAX_CLOSES
     assert all(a < b for a, b in zip(path["dates"], path["dates"][1:]))
-    assert all(v <= 0 for v in path["vals"])
+    _assert_path_is_unclipped(rows, obs)
 
 
 def _record_distance(rows, session_iso):
@@ -274,14 +284,14 @@ def test_i4_active_is_true_exactly_for_the_live_phases():
 
 
 def test_i5_price_path_is_a_clean_capped_nonpositive_series_ending_asof():
-    for _rows, obs, _tags in _pool():
+    for rows, obs, _tags in _pool():
         path = obs["price_path"]
         dates, vals = path["dates"], path["vals"]
         assert len(dates) == len(vals)
         assert 0 < len(dates) <= PATH_MAX_CLOSES
         assert all(a < b for a, b in zip(dates, dates[1:]))
         assert dates[-1] == obs["asof"] == obs["expected_session"]
-        assert all(v <= 0 for v in vals)
+        _assert_path_is_unclipped(rows, obs)
 
 
 def test_i6_recent_peak_episode_marks_peak_and_low_on_the_drawn_path():
@@ -418,7 +428,7 @@ def test_i10_garbage_rows_never_raise_and_fail_closed(name):
             raise AssertionError(f"{name} raised {exc!r} on a {len(rows)}-row path") from exc
         if AVAILABLE_AFTER.get(name):
             assert obs["available"] is True
-            _assert_well_formed(obs)
+            _assert_well_formed(obs, garbage)
         else:
             assert obs["available"] is False
             _assert_unavailable(obs)

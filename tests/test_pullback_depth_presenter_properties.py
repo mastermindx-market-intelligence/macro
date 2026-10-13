@@ -401,10 +401,14 @@ def test_p3_last_plotted_value_is_the_observation_drawdown_ratio(sweep):
         obs = case["obs"]
         ratio = 100.0 * (obs["close"] / obs["peak_close"] - 1.0)
         last = view["detail_path"]["vals"][-1]
-        # The observation's own ratio, unrounded: no re-formatting drift.
-        assert last == pytest.approx(min(0.0, ratio), abs=1e-9)
-        # The printed metric is the same ratio at the owner's 4 dp round.
-        assert abs(last - obs["drawdown_pct"]) <= 5.0001e-5
+        # The chart end is the unclipped close/peak ratio. drawdown_pct stays
+        # clipped at 0 when the close has reclaimed the frozen high.
+        assert last == pytest.approx(ratio, abs=1e-9)
+        if obs["close"] <= obs["peak_close"]:
+            assert abs(last - obs["drawdown_pct"]) <= 5.0001e-5
+        else:
+            assert obs["drawdown_pct"] == 0.0
+            assert last > 0
 
 
 # --------------------------------------------------------------------------- #

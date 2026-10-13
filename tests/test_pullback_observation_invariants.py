@@ -34,7 +34,10 @@ active. ``canonical_reclaim_above_frozen_peak`` is one such close. A later
 close back below the peak leaves the overshoot in the window; the corpus
 violates the bound on that path.
 
-``price_path`` is display-only, capped at ``PATH_MAX_CLOSES``. Transition
+``price_path`` is display-only, capped at ``PATH_MAX_CLOSES``. Each value is
+the unclipped percent from the frozen high, rounded to 4 dp, so one close
+above that high is positive. ``drawdown_pct`` stays clipped at or below zero.
+Transition
 phases stay in ``TRANSITION_PHASES``, and transition dates strictly increase
 and never fall after the as-of. When a transition date or ``peak_session``
 predates the first drawn close, ``episode_window`` is None, so nothing
@@ -50,7 +53,7 @@ import random
 
 import pytest
 
-from lib.pullback_depth import episode_window
+from lib.pullback_depth import episode_window, present
 from lib.pullback_observation import PATH_MAX_CLOSES, RULES, _next_observation, _peak, observe
 
 
@@ -560,9 +563,14 @@ def i7_violations(rows, obs):
         bad.append("price path dates are not strictly increasing")
     if len(dates) > PATH_MAX_CLOSES or len(vals) != len(dates):
         bad.append(f"price path length {len(dates)} vals {len(vals)}")
-    if any(value > 0 for value in vals):
-        bad.append("price path has a positive drawdown")
-    if vals and vals[-1] != obs["drawdown_pct"]:
+    by_date = dict(rows)
+    peak = obs["peak_close"]
+    for day, value in zip(dates, vals):
+        expected = round(100.0 * (by_date[day] / peak - 1.0), 4)
+        if value != expected:
+            bad.append(f"path {day} {value} != unclipped {expected}")
+    if (vals and obs["close"] <= obs["peak_close"]
+            and vals[-1] != obs["drawdown_pct"]):
         bad.append(f"last path value {vals[-1]} != drawdown {obs['drawdown_pct']}")
     return bad
 
@@ -650,6 +658,7 @@ def test_i2_active_peak_bounds_every_close_except_an_unconfirmed_reclaim():
     assert got["peak_close"] == 100.0 and got["peak_session"] == "2024-03-27"
     witness_bad = i2_violations(witness, got)
     assert any(item.startswith("overshoot:") for item in witness_bad), witness_bad
+    _assert_given_back_reclaim_is_listed_above_the_high(witness, got)
     seen, failures, extra = _scan(i2_violations)
     assert seen >= 400
     if failures or extra:
@@ -823,3 +832,103 @@ def test_unavailable_paths_return_available_false_with_a_quality_reason():
     while not is_weekday_session(later):
         later += timedelta(days=1)
     assert_unavailable(settled, later, "delayed")
+
+
+def _render_observation(rows):
+    """present() plus the history fragment, with the adapter stamps the popup requires."""
+    from pathlib import Path
+
+    from bs4 import BeautifulSoup
+    from jinja2 import Environment, FileSystemLoader
+
+    obs = _observe(rows)
+    stamped = dict(obs)
+    stamped.update(
+        market="us",
+        clock="settled_close",
+        valid_until="2024-04-02T20:00:00+00:00",
+        benchmark="SPY",
+        benchmark_en="SPY",
+        benchmark_zh="SPY",
+    )
+    view = present(
+        stamped, market="us", aria_en="Observed drawdown", aria_zh="已观察回撤",
+    )
+    root = Path(__file__).resolve().parents[1]
+    env = Environment(loader=FileSystemLoader(root / "templates"), autoescape=False)
+    html = env.from_string(
+        '{% import "_risk_radar_pullback_depth.html.j2" as p %}{{ p.detail(market, v) }}'
+    ).render(market="us", v=view)
+    return obs, view, BeautifulSoup(html, "html.parser"), html
+
+
+def _chart_points(chart):
+    import re
+    water = float(re.search(r'class="ilx-water[^"]*" x1="0" y1="([^"]+)"', chart).group(1))
+    path_d = re.search(r'class="ilx-path[^"]*" d="([^"]+)"', chart).group(1)
+    points = [(float(x), float(y)) for x, y in re.findall(r"([\d.]+) ([\d.]+)", path_d)]
+    texts = [text for text in re.findall(r">([^<]*)<", chart) if text.strip()]
+    return water, points, texts
+
+
+def _assert_given_back_reclaim_is_listed_above_the_high(rows, obs):
+    """The 101 close on 2024-03-29 stays +1.0% after the giveback to 99."""
+    session = "2024-03-29"
+    dates = obs["price_path"]["dates"]
+    assert obs["price_path"]["vals"][dates.index(session)] == 1.0
+    window = episode_window(obs)
+    assert window is not None
+    assert window["vals"][window["dates"].index(session)] == 1.0
+    _obs, view, soup, _html = _render_observation(rows)
+    drawn = view["detail_path"]
+    assert drawn["vals"][drawn["dates"].index(session)] == 1.0
+    row = next(
+        tr for tr in soup.select(".rrp-history tbody tr")
+        if tr.select("td")[0].get_text() == session
+    )
+    assert row.select("td")[1].get_text() == "+1.0%"
+    assert "0.0%" not in row.get_text()
+    water, points, texts = _chart_points(view["detail_chart_html"])
+    assert points[drawn["dates"].index(session)][1] < water
+    assert texts == ["0", "2024-03-27", "2024-04-01", "\u22121.0%"]
+
+
+def test_recovering_close_above_the_reference_high_charts_the_positive_end():
+    """A recovering close of 101 against a frozen high of 100 ends above zero.
+
+    The history row prints ``+1.0%``. The shared chart's end tag prints the
+    unsigned ``1.0%`` its ``{:z.1f}`` format emits for a positive value, and
+    the end point sits above the zero line.
+    """
+    rows = to_rows([100.0] * 62 + [94.0, 97.0, 101.0])
+    obs, view, soup, _html = _render_observation(rows)
+    assert obs["phase"] == "recovering" and obs["active"] is True
+    assert obs["close"] == 101.0 and obs["peak_close"] == 100.0
+    assert obs["asof"] == "2024-04-01"
+    assert obs["drawdown_pct"] == 0.0
+    assert obs["price_path"]["vals"][-1] == 1.0
+    assert view["detail_path"]["vals"][-1] > 0
+    last = soup.select(".rrp-history tbody tr")[-1]
+    assert last.select("td")[0].get_text() == "2024-04-01"
+    assert last.select("td")[1].get_text() == "+1.0%"
+    assert soup.select_one('[data-metric="current"]').get_text(strip=True) == "+1.0%"
+    water, points, texts = _chart_points(view["detail_chart_html"])
+    assert points[-1][1] < water
+    assert texts == ["0", "2024-03-27", "2024-04-01", "1.0%"]
+    assert "0.0%" not in soup.select_one(".ilx-tag").get_text()
+
+
+# Rendered on BASE before the unclipped path, for a decline that never
+# clears the frozen high. The history cell's negative branch is unchanged,
+# so this fragment stays byte-identical.
+_NEVER_EXCEEDS_SHA256 = "03b36543bb30c3f762a32c860a6a5fa1ef556209214aa9e25ce16392b470776f"
+
+
+def test_underway_path_that_never_exceeds_the_high_matches_the_base_render():
+    import hashlib
+
+    rows = to_rows([100.0] * 62 + [94.0, 96.0, 95.0])
+    obs, _view, _soup, html = _render_observation(rows)
+    assert obs["phase"] == "underway" and obs["close"] < obs["peak_close"]
+    assert all(value <= 0 for value in obs["price_path"]["vals"])
+    assert hashlib.sha256(html.encode()).hexdigest() == _NEVER_EXCEEDS_SHA256

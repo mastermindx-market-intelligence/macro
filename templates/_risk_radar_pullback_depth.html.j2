@@ -192,7 +192,7 @@
       <details class="rrp-method rrp-history"><summary>{{ t('View price history','查看历史价格') }}</summary>
         <table><caption>{{ t('Closing drawdown from the reference high by session','各交易日相对参考高点的收盘回撤') }}</caption><thead><tr><th scope="col">{{ t('Session','交易日') }}</th><th scope="col">{{ t('From the reference high','距参考高点') }}</th></tr></thead><tbody>
         {% for day in dates %}{% set value = vals[loop.index0] %}
-        <tr><td>{{ day|e }}</td><td>{% if (value is float or value is integer) and value-value == 0 and -100 <= value <= 0 %}{% set value_s = '%.1f'|format(0 - value) %}{{ '−' if value_s != '0.0' else '' }}{{ value_s }}%{% else %}{{ t('Unavailable','暂无') }}{% endif %}</td></tr>
+        <tr><td>{{ day|e }}</td><td>{% if (value is float or value is integer) and value-value == 0 and -100 <= value <= 100 %}{% if value > 0 %}{% set value_s = '%.1f'|format(value) %}{{ '+' if value_s != '0.0' else '' }}{{ value_s }}%{% else %}{% set value_s = '%.1f'|format(0 - value) %}{{ '−' if value_s != '0.0' else '' }}{{ value_s }}%{% endif %}{% else %}{{ t('Unavailable','暂无') }}{% endif %}</td></tr>
         {% endfor %}</tbody></table>
       </details>{% endif %}
       {#- Copy says why only when the presenter says why; otherwise it stays neutral. #}

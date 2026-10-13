@@ -178,13 +178,14 @@ def episode_window(obs: dict) -> dict | None:
     if any(later <= earlier for earlier, later in zip(dates, dates[1:])):
         return None
     if not all(isinstance(v, Real) and not isinstance(v, bool) and isfinite(v)
-               and -100.0 <= v <= 0.0 for v in vals):
+               and -100.0 <= v <= 100.0 for v in vals):
         return None
     close, peak = positive(obs.get("close")), positive(obs.get("peak_close"))
     if close is None or peak is None:
         return None
-    # A reclaimed close sits at the 0% line, as the owner draws it.
-    end = min(0.0, 100.0 * (close / peak - 1.0))
+    # A close above the frozen high is a positive percent. The owner draws
+    # that unclipped ratio, and the history table prints the same number.
+    end = 100.0 * (close / peak - 1.0)
     if abs(vals[0]) > PATH_TOLERANCE_PP or abs(vals[-1] - end) > PATH_TOLERANCE_PP:
         return None
     if not no_episode:

@@ -290,7 +290,7 @@ def _finish(records: list[tuple[date, float]], view: dict, contiguous: int,
         missing_sessions += _missing_expected(
             records[i][0], records[i + 1][0], is_session)
     price_path = {"dates": [d.isoformat() for d, _ in records[chart_start:]],
-                  "vals": [round(min(0.0, 100.0 * (p / peak - 1.0)), 4)
+                  "vals": [round(100.0 * (p / peak - 1.0), 4)
                            for _, p in records[chart_start:]]}
     timeline = [{"kind": "peak", "date": peak_date.isoformat(), "close": peak}]
     if event:

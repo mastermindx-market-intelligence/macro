@@ -24,8 +24,8 @@ SHORT_CLOSES = [100.0, 92.6, 93.2]
 
 
 def _vals(closes, peak=PEAK):
-    """The owner's own rounding: each close against the peak, 4 dp, clamped."""
-    return [round(min(0.0, 100.0 * (p / peak - 1.0)), 4) for p in closes]
+    """The owner's rounding: each close against the peak, 4 dp, unclipped."""
+    return [round(100.0 * (p / peak - 1.0), 4) for p in closes]
 
 
 def _path(dates, closes, peak=PEAK):
@@ -242,7 +242,7 @@ def test_a_consistent_episode_window_draws_whole_with_the_metric_end():
     assert view["detail_withheld"] is None
     assert view["detail_path"]["dates"] == DATES
     assert view["detail_path"]["vals"][0] == 0.0
-    assert view["detail_path"]["vals"][-1] == min(0.0, 100.0 * (CLOSE / PEAK - 1.0))
+    assert view["detail_path"]["vals"][-1] == 100.0 * (CLOSE / PEAK - 1.0)
 
 
 def test_the_drawn_end_point_is_the_metrics_own_ratio_not_the_path_tail():
@@ -250,7 +250,7 @@ def test_the_drawn_end_point_is_the_metrics_own_ratio_not_the_path_tail():
     # its last value can sit half a tenth from the metric; the chart ends on
     # the metric's own ratio.
     obs = _obs(path={"dates": list(DATES), "vals": [0.0, -3.0, -7.4, -6.2, -6.8005]})
-    assert _present(obs)["detail_path"]["vals"][-1] == min(0.0, 100.0 * (CLOSE / PEAK - 1.0))
+    assert _present(obs)["detail_path"]["vals"][-1] == 100.0 * (CLOSE / PEAK - 1.0)
 
 
 def test_a_peak_outside_the_retained_path_is_refused_without_raising():
@@ -287,14 +287,15 @@ def test_the_first_point_must_sit_at_the_reference_high():
     assert core.episode_window(obs) is None
 
 
-def test_a_reclaimed_close_draws_at_the_zero_line():
-    # M30 (min clamp -> max): the owner draws a reclaimed close at 0%, never
-    # as a positive gain above the retained high.
+def test_a_reclaimed_close_draws_above_the_reference_high():
+    # A close above the frozen high is drawn at its own ratio, not flattened to 0.
+    end = 100.0 * (100.5 / PEAK - 1.0)
     obs = _obs(phase="repaired", active=False, close=100.5,
-               path={"dates": list(DATES), "vals": [0.0, -3.0, -7.4, -6.2, 0.0]})
+               path={"dates": list(DATES), "vals": [0.0, -3.0, -7.4, -6.2, round(end, 4)]})
     view = _present(obs)
     assert view["detail_path"] is not None
-    assert view["detail_path"]["vals"][-1] == 0.0
+    assert view["detail_path"]["vals"][-1] == end
+    assert end > 0
 
 
 def test_the_window_must_hold_the_episode_low():

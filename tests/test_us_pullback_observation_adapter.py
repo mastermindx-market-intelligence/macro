@@ -551,9 +551,9 @@ def _bump(index, value):
     # The path must end on the receipt's session at the metric's own value.
     ({"dates": PATH["dates"][:-1], "vals": PATH["vals"][:-1]}, {}),
     (_bump(-1, -5.8), {}),
-    # Not deeper than the retained low, never above the high, finite, ordered.
+    # Not deeper than the retained low, outside [-100, +100], non-finite, or unordered.
     (_bump(-2, -20.0), {}),
-    (_bump(-2, 3.0), {}),
+    (_bump(-2, 100.5), {}),
     (_bump(-2, float("nan")), {}),
     ({"dates": PATH["dates"][:4] + ["2026-09-17"] + PATH["dates"][5:], "vals": PATH["vals"]}, {}),
     ({"dates": PATH["dates"], "vals": PATH["vals"][1:]}, {}),
@@ -567,12 +567,25 @@ def test_chart_is_withheld_when_it_would_disagree_with_the_measured_figures(monk
     assert view["detail_withheld"] == "uncovered"
 
 
-def test_a_reclaimed_close_still_draws_at_the_zero_line(monkeypatch):
-    path = _bump(-1, 0.0)
+def test_a_reclaimed_close_draws_above_the_reference_high(monkeypatch):
+    end = 100.0 * (100.4 / 100.0 - 1.0)
+    path = _bump(-1, round(end, 4))
     obs = _qualified(path, peak_session="2026-09-16", close=100.4, phase="recovering",
                      low_close=97.5, low_session="2026-09-21")
     seen, view = _drawn(monkeypatch, obs)
-    assert seen == [{"dates": PATH["dates"][2:], "vals": path["vals"][2:]}]
+    window = {"dates": PATH["dates"][2:], "vals": path["vals"][2:-1] + [end]}
+    assert seen == [window]
+    assert view["detail_path"] == window
+    assert end > 0
+
+
+def test_an_interior_close_above_the_high_stays_on_the_chart(monkeypatch):
+    path = _bump(-2, 3.0)
+    obs = _qualified(path, peak_session="2026-09-16")
+    seen, view = _drawn(monkeypatch, obs)
+    assert view["detail_withheld"] is None
+    assert seen and 3.0 in seen[0]["vals"]
+    assert 3.0 in view["detail_path"]["vals"]
 
 
 def test_a_drawdown_that_rounds_to_zero_prints_without_a_minus():

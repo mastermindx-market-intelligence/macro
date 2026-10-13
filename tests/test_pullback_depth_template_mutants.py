@@ -320,8 +320,8 @@ def _chart_view():
     view = native_view()
     view["observation"]["below_20_close_average"] = True
     view["detail_path"] = {
-        "dates": ["2026-09-14", "2026-09-15", "2026-09-16", "2026-09-17"],
-        "vals": [0.0, -100.0, -6.8, 1.5],
+        "dates": ["2026-09-14", "2026-09-15", "2026-09-16", "2026-09-17", "2026-09-18"],
+        "vals": [0.0, -100.0, -6.8, 1.5, 101.0],
     }
     return view
 
@@ -420,9 +420,9 @@ def test_m_retracement_without_a_held_low_is_early_repair():
 
 
 def test_m_history_table_keeps_the_closed_percent_bounds():
-    """The history cell prints an exact 0 and an exact -100, and names anything outside that range.
+    """The history cell prints 0, -100, and a positive above the high, and names anything outside [-100, 100].
 
-    ``0.0%`` carries no sign. ``-100`` is inside the closed range, so it stays a percent. A positive cell is not a drawdown.
+    ``0.0%`` carries no sign. ``-100`` and ``+1.5`` stay percents. ``101`` is outside the closed range.
     """
     soup = _soup(_chart_view())
     rows = soup.select(".rrp-history tbody tr")
@@ -431,8 +431,9 @@ def test_m_history_table_keeps_the_closed_percent_bounds():
     assert _MINUS not in cells[0].get_text() and "+" not in cells[0].get_text()
     assert cells[1].get_text() == _MINUS + "100.0%"
     assert cells[2].get_text() == _MINUS + "6.8%"
-    assert cells[3].select_one(".l-en").get_text() == "Unavailable"
-    assert cells[3].select_one(".l-zh").get_text() == "暂无"
+    assert cells[3].get_text() == "+1.5%"
+    assert cells[4].select_one(".l-en").get_text() == "Unavailable"
+    assert cells[4].select_one(".l-zh").get_text() == "暂无"
 
 
 def test_m_withheld_chart_keeps_its_reason():
