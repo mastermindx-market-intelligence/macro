@@ -36,13 +36,15 @@ verified:
       Run the owning page suite and the focused CI authority, plan, semantic-change,
       loader and security regressions recorded in the source recovery PR.
     result: >
-      Final registered primary lane: 57 passed, one pre-existing deselection;
-      unchanged glossary lane: 43 passed plus its sparse-fixture parity case passed
-      after exact tracked asset hydration. Final loader/security checks: 10 passed.
-      Protected planner measured all three existing narrow-change probes within
-      their unchanged job, weight and pack ceilings, with identical selected job sets.
-      Earlier CI authority/plan/semantic checks passed 165 before final placement;
-      hosted exact-head contract-delta and code packs remain required.
+      Final combined render/page/glossary/finance command: 102 passed, one
+      pre-existing deselection. The same nine suites now share one pytest process;
+      explicit Node 20 runtime/preflight and all dependencies remain registered.
+      On current-main union aaa11157958c20643b273e582943d0f629f1f360, protected
+      planner measurements preserve every selected job and total weight on all
+      three narrow-change probes: 134/5797/10, 134/5600/10 and 129/5560/10
+      (jobs/weight/packs), within unchanged ceilings. Final applied-manifest
+      loader/security checks passed 10; hosted contract-delta and code packs remain required.
+
 unverified:
   - claim: Source repair is merged, installed and produces an authentic natural sealed capture.
     what_would_verify: >
