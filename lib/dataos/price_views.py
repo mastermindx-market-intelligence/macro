@@ -42,6 +42,7 @@ Lane O2-P02, programme DATA-OS-COMPLETION, base D00 (2026-10-13).
 """
 from __future__ import annotations
 
+import re
 from dataclasses import dataclass
 from datetime import date, datetime, timezone
 from decimal import Decimal
@@ -144,6 +145,8 @@ class RefusalReason(StrEnum):
     A refusal names the exact defect; it never silently drops a member or
     substitutes a fallback (D00.D4).  ``UNKNOWN_WITHHOLDING`` / ``UNKNOWN_FX`` /
     ``UNKNOWN_REINVESTMENT`` are added by lane O2-P04's total-return view.
+    ``DUPLICATE_EVENT_ID`` / ``ROW_AFTER_AS_AT`` / ``NON_POSITIVE_VALUE`` were
+    added by the R02 heal.
     """
 
     UNSUPPORTED_ACTION = "unsupported_action"
@@ -159,6 +162,9 @@ class RefusalReason(StrEnum):
     UNSUPPORTED_QUANTITY_CONVENTION = "unsupported_quantity_convention"
     NO_ELIGIBLE_REVISION = "no_eligible_revision"
     AMBIGUOUS_REVISION = "ambiguous_revision"
+    DUPLICATE_EVENT_ID = "duplicate_event_id"
+    ROW_AFTER_AS_AT = "row_after_as_at"
+    NON_POSITIVE_VALUE = "non_positive_value"
     NAIVE_TIMESTAMP = "naive_timestamp"
     CASH_BASIS_MISMATCH = "cash_basis_mismatch"
     UNKNOWN_ORDERING = "unknown_ordering"
@@ -356,13 +362,26 @@ class ActionRevisionSet:
         A record with ``supersedes=X`` replaces X; ``cancelled=True`` removes X
         (and the tombstone itself never acts as an event).  Two eligible
         records superseding the same id -> AMBIGUOUS_REVISION; ``supersedes``
-        naming an id absent from the set -> NO_ELIGIBLE_REVISION.  Records with
+        naming an id absent from the set -> NO_ELIGIBLE_REVISION.  Two visible
+        records sharing one ``event_id`` -> DUPLICATE_EVENT_ID.  Records with
         ``known_at > as_at`` are invisible to this resolution (a later
         correction can never rewrite an earlier as-of view).
         """
         _require_aware(as_at, what="as_at")
         all_ids = {event.event_id for event in self.events}
         eligible = [event for event in self.events if event.known_at <= as_at]
+        seen_ids: set[str] = set()
+        for event in eligible:
+            if event.event_id in seen_ids:
+                raise ViewRefusal(
+                    f"event_id {event.event_id!r} appears more than once among the "
+                    f"revisions visible at {as_at.isoformat()} in revision set "
+                    f"{self.revision_set_id!r}; an event id names exactly one record — "
+                    f"a correction is a NEW record with supersedes=<old id> (D00.D5)",
+                    reason=RefusalReason.DUPLICATE_EVENT_ID,
+                    event_id=event.event_id,
+                )
+            seen_ids.add(event.event_id)
         superseding: dict[str, list[ActionEvent]] = {}
         for event in eligible:
             if event.supersedes is None:
@@ -550,13 +569,19 @@ def return_vector(p0, p1, k0, k1) -> dict:
     ``original = p1/p0 - 1`` (both endpoints in one unit) and
     ``rebased = p1*k1/(p0*k0) - 1`` (each endpoint in its own share unit).
     ``equal`` states whether the two agree — a scalar common to both endpoints
-    cancels; a scalar on one endpoint does not.  This function never refuses on
-    economics; it only refuses non-exact inputs.
+    cancels; a scalar on one endpoint does not.  It refuses non-exact inputs
+    and a non-positive p0 / k0 / k1 (a return from a zero or negative price or
+    share unit is undefined); p1 = 0 is a total loss, not a refusal.
     """
     p0 = _exact_fraction(p0, what="p0")
     p1 = _exact_fraction(p1, what="p1")
     k0 = _exact_fraction(k0, what="k0")
     k1 = _exact_fraction(k1, what="k1")
+    if p0 <= 0 or k0 <= 0 or k1 <= 0:
+        raise ViewRefusal(
+            f"p0, k0 and k1 must be positive (p0={p0}, k0={k0}, k1={k1})",
+            reason=RefusalReason.NON_POSITIVE_VALUE,
+        )
     original = p1 / p0 - 1
     rebased = p1 * k1 / (p0 * k0) - 1
     return {"original": original, "rebased": rebased, "equal": original == rebased}
@@ -571,6 +596,11 @@ def qualified_return(p0, p1, k0, k1) -> Fraction:
     """
     k0 = _exact_fraction(k0, what="k0")
     k1 = _exact_fraction(k1, what="k1")
+    if k0 <= 0 or k1 <= 0:
+        raise ViewRefusal(
+            f"share unit must be positive (k0={k0}, k1={k1})",
+            reason=RefusalReason.NON_POSITIVE_VALUE,
+        )
     if k0 != k1:
         raise ViewRefusal(
             f"a split crosses the return interval (k0={k0} != k1={k1}); the "
@@ -579,6 +609,12 @@ def qualified_return(p0, p1, k0, k1) -> Fraction:
         )
     p0 = _exact_fraction(p0, what="p0")
     p1 = _exact_fraction(p1, what="p1")
+    if p0 <= 0:
+        raise ViewRefusal(
+            f"start price must be positive (p0={p0}); a return from a zero or "
+            f"negative price is undefined",
+            reason=RefusalReason.NON_POSITIVE_VALUE,
+        )
     return p1 / p0 - 1
 
 
@@ -648,7 +684,10 @@ def _price_columns(row: Mapping) -> list[tuple[str, PriceField, AdjustmentBasis]
     same principle — a bare ``PriceField`` name like ``"open"``): a name that
     names a price without naming its basis is an unlabelled unit and refuses
     AMBIGUOUS_BASIS.  Everything else (``date``, ``volume_raw``, ...) is not a
-    price column and passes through.
+    price column and passes through.  An unparseable key that still looks like
+    a price (``adjusted_close``, ``Adj Close``) refuses AMBIGUOUS_BASIS; an
+    unparseable key carrying a non-price token (``volume``, ``time``, ``date``,
+    ``interest`` …) is not a price column and passes through.
     """
     columns: list[tuple[str, PriceField, AdjustmentBasis]] = []
     for key in row:
@@ -664,7 +703,15 @@ def _price_columns(row: Mapping) -> list[tuple[str, PriceField, AdjustmentBasis]
         try:
             field, basis = parse_column(key)
         except PriceError:
-            continue  # not a price column (e.g. volume_raw)
+            if _looks_price_like(key):
+                raise ViewRefusal(
+                    f"unrecognised price-like column {key!r} — a price that does not "
+                    f"parse as {{field}}_{{raw|sadj|tradj}} is an unlabelled unit "
+                    f"(the D00.D4 naming law)",
+                    reason=RefusalReason.AMBIGUOUS_BASIS,
+                    column=key,
+                ) from None
+            continue  # not a price column (e.g. volume_raw, close_time)
         columns.append((key, field, basis))
     return columns
 
@@ -672,6 +719,27 @@ def _price_columns(row: Mapping) -> list[tuple[str, PriceField, AdjustmentBasis]
 #: Bare price-field names ("open", "high", ...) are unlabelled units exactly like
 #: the AMBIGUOUS_NAMES set; refused as AMBIGUOUS_BASIS rather than passed through.
 _BARE_FIELD_NAMES: frozenset[str] = frozenset(member.value for member in PriceField)
+
+#: Tokens that make an unparseable column name LOOK like a price (refuse it)
+#: and tokens that mark it as plainly not a price (let it pass through).
+_PRICE_LIKE_TOKENS: frozenset[str] = frozenset(m.value for m in PriceField) | frozenset(
+    {"adj", "adjusted", "adjclose", "price", "px"}
+)
+_NON_PRICE_TOKENS: frozenset[str] = frozenset(
+    {"volume", "size", "interest", "count", "qty", "quantity", "shares",
+     "time", "timestamp", "date", "datetime", "updated", "ts"}
+)
+
+
+def _looks_price_like(key: str) -> bool:
+    """True when an unparseable column name still names a price (m1)."""
+    if not isinstance(key, str):
+        return False
+    tokens = [t for t in re.split(r"[^a-z0-9]+", key.strip().lower()) if t]
+    if not tokens or any(t in _NON_PRICE_TOKENS for t in tokens):
+        return False
+    compact = "".join(tokens)
+    return any(t in _PRICE_LIKE_TOKENS for t in tokens) or "close" in compact or "price" in compact
 
 
 def _validate_price_columns(rows: tuple[Mapping, ...]) -> list[list[tuple[str, PriceField, AdjustmentBasis]]]:
@@ -714,18 +782,31 @@ def _validate_price_columns(rows: tuple[Mapping, ...]) -> list[list[tuple[str, P
 def raw_view(rows) -> PriceView:
     """The printed tape, validated as all-``<field>_raw`` and executable (D00.D3).
 
-    Rows pass through untouched (RAW is never adjusted); the column law above
-    still applies so a vendor-adjusted series can never be labelled RAW — the
-    exact DNR:KILL-CN-ADJUSTED-TAPE-LEGAL-LIMIT failure mode.
+    RAW is never adjusted, but it is EXACT: every price column and
+    ``volume_raw`` is coerced to a ``Fraction`` (float / bool / unparseable ->
+    NON_EXACT_INPUT, like every other view) in a COPY of each row; every other
+    key passes through unchanged and input rows are never mutated.  The column
+    law above still applies, so a vendor-adjusted series can never be labelled
+    RAW — the exact DNR:KILL-CN-ADJUSTED-TAPE-LEGAL-LIMIT failure mode.
     """
     materialized = tuple(rows)
     for row in materialized:
         if not isinstance(row, Mapping):
             raise TypeError(f"rows must be mappings, got {type(row).__name__}")
-    _validate_price_columns(materialized)
+    per_row = _validate_price_columns(materialized)
+    out_rows: list[dict] = []
+    for row, columns in zip(materialized, per_row):
+        out = dict(row)
+        for key, _, _ in columns:
+            out[key] = _exact_fraction(row[key], what=f"price column {key!r}", column=key)
+        if "volume_raw" in row:
+            out["volume_raw"] = _exact_fraction(
+                row["volume_raw"], what="volume_raw", column="volume_raw"
+            )
+        out_rows.append(out)
     return PriceView(
         basis="RAW",
-        rows=materialized,
+        rows=tuple(out_rows),
         reference=AdjustmentReference("RAW", None, None),
         executable=True,
     )
@@ -739,7 +820,8 @@ def sadj_view(rows, revisions: ActionRevisionSet, as_at: datetime, *, quantity_c
     Output rows carry only ``date``, ``<field>_sadj`` and ``volume_sadj``;
     input rows are never mutated.  The view is never executable and its
     reference names the action revision set and the ``as_at`` instant, so the
-    number is reproducible against the recorded revisions.
+    number is reproducible against the recorded revisions.  A row dated after
+    the UTC date of ``as_at`` refuses ROW_AFTER_AS_AT.
     """
     if quantity_convention != "shares":
         raise ViewRefusal(
@@ -747,6 +829,7 @@ def sadj_view(rows, revisions: ActionRevisionSet, as_at: datetime, *, quantity_c
             reason=RefusalReason.UNSUPPORTED_QUANTITY_CONVENTION,
         )
     _require_aware(as_at, what="as_at")
+    as_at_day = as_at.astimezone(timezone.utc).date()
     if not isinstance(revisions, ActionRevisionSet):
         raise TypeError(
             f"revisions must be an ActionRevisionSet, got {type(revisions).__name__}"
@@ -761,6 +844,14 @@ def sadj_view(rows, revisions: ActionRevisionSet, as_at: datetime, *, quantity_c
         if "date" not in row:
             raise TypeError(f"row is missing its 'date' member: {dict(row)!r}")
         day = _require_date(row["date"], what="row date")
+        if day > as_at_day:
+            raise ViewRefusal(
+                f"row date {day.isoformat()} is after the view's as_at "
+                f"{as_at.isoformat()} — an as-of view cannot carry a price printed "
+                f"later (point-in-time law)",
+                reason=RefusalReason.ROW_AFTER_AS_AT,
+                column="date",
+            )
         factor = split_factor(day, revisions, as_at)
         out: dict = {"date": day}
         for key, field, _ in columns:

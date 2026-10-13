@@ -945,3 +945,93 @@ def test_events_outside_the_window_never_touch_the_holding() -> None:
     )
     beyond = ActionRevisionSet("beyond", revisions.events + (spin_off,))
     assert total_return_view(V_ROWS, beyond, AS_AT, POLICY).cash == Fraction(0)
+
+
+# ── R02 heal (M1 m1 m2 m4) — refusals the first review found missing ──────
+def test_R02_M1_duplicate_event_id_refuses_in_sadj_view() -> None:
+    revisions = ActionRevisionSet("dup", (split("s1", Fraction(2)), split("s1", Fraction(2))))
+    with pytest.raises(ViewRefusal) as raised:
+        sadj_view([{"date": date(2026, 6, 9), "close_raw": 100}], revisions, AS_AT)
+    assert raised.value.reason is RefusalReason.DUPLICATE_EVENT_ID
+    assert raised.value.event_id == "s1"
+
+
+def test_R02_m1_raw_view_refuses_a_float_price() -> None:
+    with pytest.raises(ViewRefusal) as raised:
+        raw_view([{"date": date(2026, 6, 9), "close_raw": 100.25}])
+    assert raised.value.reason is RefusalReason.NON_EXACT_INPUT
+    assert raised.value.column == "close_raw"
+
+
+@pytest.mark.parametrize("name", ["adjusted_close", "Adj Close"])
+def test_R02_m1_raw_view_refuses_a_price_like_unknown_column(name: str) -> None:
+    with pytest.raises(ViewRefusal) as raised:
+        raw_view([{"date": date(2026, 6, 9), "close_raw": 100, name: 99}])
+    assert raised.value.reason is RefusalReason.AMBIGUOUS_BASIS
+    assert raised.value.column == name
+
+
+def test_R02_m1_raw_view_values_are_exact_fractions_and_inputs_untouched() -> None:
+    rows = [
+        {
+            "date": date(2026, 6, 9),
+            "close_raw": Decimal("100.25"),
+            "open_raw": "99.5",
+            "volume_raw": 3,
+            "note": "x",
+        }
+    ]
+    before = copy.deepcopy(rows)
+    out = raw_view(rows).rows[0]
+    assert out["close_raw"] == Fraction(401, 4)
+    assert out["open_raw"] == Fraction(199, 2)
+    assert out["volume_raw"] == Fraction(3)
+    assert all(type(out[key]) is Fraction for key in ("close_raw", "open_raw", "volume_raw"))
+    assert out["note"] == "x"
+    assert out["date"] == date(2026, 6, 9)
+    assert rows == before
+    assert type(rows[0]["close_raw"]) is Decimal and rows[0]["open_raw"] == "99.5"
+
+
+def test_R02_m1_non_price_columns_pass_through_unchanged() -> None:
+    row = {
+        "date": date(2026, 6, 9),
+        "close_raw": 100,
+        "close_time": "16:00",
+        "last_updated": "2026-06-09T20:00:00Z",
+        "open_interest": 12,
+        "volume_raw": 5,
+    }
+    out = raw_view([row]).rows[0]
+    for key in ("close_time", "last_updated", "open_interest"):
+        assert out[key] == row[key]
+    sadj_view([row], ActionRevisionSet("guard", (split("s1", Fraction(2)),)), AS_AT)
+
+
+def test_R02_m2_sadj_view_refuses_a_row_after_as_at() -> None:
+    revisions = ActionRevisionSet("late", (split("s1", Fraction(2)),))
+    with pytest.raises(ViewRefusal) as raised:
+        sadj_view([{"date": date(2026, 6, 21), "close_raw": 100}], revisions, AS_AT)
+    assert raised.value.reason is RefusalReason.ROW_AFTER_AS_AT
+    assert raised.value.column == "date"
+    view = sadj_view([{"date": date(2026, 6, 20), "close_raw": 100}], revisions, AS_AT)
+    assert view.rows[0]["close_sadj"] == Fraction(100)
+
+
+def test_R02_m4_non_positive_inputs_refuse_typed() -> None:
+    cases = [
+        (qualified_return, (0, 10, 1, 1)),
+        (qualified_return, (-5, 10, 1, 1)),
+        (qualified_return, (100, 90, 0, 0)),
+        (return_vector, (0, 10, 1, 1)),
+        (return_vector, (100, 90, 0, 1)),
+    ]
+    for fn, args in cases:
+        with pytest.raises(ViewRefusal) as raised:
+            fn(*args)
+        assert raised.value.reason is RefusalReason.NON_POSITIVE_VALUE, (fn.__name__, args)
+
+
+def test_R02_m4_a_zero_end_price_is_a_total_loss_not_a_refusal() -> None:
+    assert qualified_return(100, 0, 1, 1) == Fraction(-1)
+    assert return_vector(100, 0, 1, 1)["original"] == Fraction(-1)

@@ -322,3 +322,23 @@ def test_O2_P04_cash_cancellation_known_before_as_at_removes_the_cash() -> None:
     # the original observation remains recorded, untouched, in history()
     assert {record.event_id for record in revisions.history("D")} == {"D", "D3"}
     assert revisions.history("D")[0] is original
+
+
+# ── R02 heal (M1) — one event id names exactly one record ──────────────────
+def test_R02_M1_duplicate_event_id_refuses_in_split_factor() -> None:
+    revisions = ActionRevisionSet(
+        "dup", (event("s1", known_at=ANNOUNCED), event("s1", known_at=ANNOUNCED))
+    )
+    with pytest.raises(ViewRefusal) as raised:
+        split_factor(ROW_DAY, revisions, AS_AT)
+    assert raised.value.reason is RefusalReason.DUPLICATE_EVENT_ID
+    assert raised.value.event_id == "s1"
+
+
+def test_R02_M1_a_correction_under_a_new_id_still_resolves() -> None:
+    original = event("s1", ratio=Fraction(2), known_at=ANNOUNCED)
+    correction = event("s1-c1", ratio=Fraction(3), known_at=known(2026, 4, 1), supersedes="s1")
+    revisions = ActionRevisionSet("corr-new-id", (original, correction))
+    assert split_factor(ROW_DAY, revisions, PRE_CORRECTION) == Fraction(2)
+    assert split_factor(ROW_DAY, revisions, POST_CORRECTION) == Fraction(3)
+    assert split_factor(ROW_DAY, revisions, AS_AT) == Fraction(3)
