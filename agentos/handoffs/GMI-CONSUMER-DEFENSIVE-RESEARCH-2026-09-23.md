@@ -19,9 +19,12 @@ changed:
   - path: agentos/handoffs/GMI-CONSUMER-DEFENSIVE-RESEARCH-2026-09-23.md
     what: "Current cumulative continuation with precise placement and implementation frontier."
 verified:
-  - claim: "Full portable implementation plan matches the committed native Git blob."
+  - claim: "Current CDV-1 plan identity is the HEAD blob after the 2026-10-12 staleness note."
+    command: "git hash-object; shasum -a 256; wc -c -l -w on docs/superpowers/plans/2026-09-23-consumer-defensive-cdv1-implementation.md"
+    result: "blob 45ecaed0f388cfb0e62eda578ebd04531250246f; SHA-256 879c2f215ac67a24f7dd079833828f5e7f7efb076653e093137e9e57e893d809; 70997 bytes; 624 lines; 8706 words."
+  - claim: "The pre-note CDV-1 plan body matched the committed native Git blob."
     command: "create_file, immutable fetch_file and local Git-object hash computation"
-    result: "a30ed45c6d991c4a4e412bd9114de63f1656e181; blob c7cfb3e0271bf4016276daa42e4203e8b1a0bff5;70156bytes."
+    result: "Pre-note body (history): a30ed45c6d991c4a4e412bd9114de63f1656e181; blob c7cfb3e0271bf4016276daa42e4203e8b1a0bff5; 70156 bytes."
   - claim: "Authored plan structure and code-snippet syntax checked."
     command: "Container Python check_plan.py; fresh rerun and QA JSON readback"
     result: "32 checks PASS;8 tasks;36 acceptance cases;12 Python snippets parsed;0 product tests."
@@ -147,13 +150,13 @@ R6 implementation-read pin: `dd4d965de7d52f4c68f6dbc984c7a05a70e0d62b`. Original
 
 | Artifact | Immutable content commit | Blob |
 |---|---|---|
-| `docs/superpowers/plans/2026-09-23-consumer-defensive-cdv1-implementation.md` | `a30ed45c6d991c4a4e412bd9114de63f1656e181` | `c7cfb3e0271bf4016276daa42e4203e8b1a0bff5` |
+| `docs/superpowers/plans/2026-09-23-consumer-defensive-cdv1-implementation.md` | `232b91db59d2d1eb0bc5ef5d14585f51c3d3cc52` (current; pre-note body (history) `a30ed45c6d991c4a4e412bd9114de63f1656e181`) | `45ecaed0f388cfb0e62eda578ebd04531250246f` (pre-note body (history) `c7cfb3e0271bf4016276daa42e4203e8b1a0bff5`) |
 | `research/consumer_defensive/CONSUMER_DEFENSIVE_R6_PLAN_REVIEW_2026-09-23.md` | `3574ceb2dc43e759fc8e4ae2cf12ed82f518abde` | `7fdbd0822eeb8f4e88cdc27933fdd4b0d9714aa2` |
 | `agentos/handoffs/GMI-CONSUMER-DEFENSIVE-FABLE-INTEGRATION-PACKET-2026-09-23.md` | `df6d1509ecbbfa1b70e2c05ebc42c934a97369b7` | `a12d77634d88f3b5b61dcbb8c7185e9072b67f19` |
 
 The intermediate R6 checkpoint at `a8e86da1d75b3b480f6fc910437d697424ac3396` was verified before the large plan write. This cumulative record supersedes its next-action state, not its evidence. This record's own immutable revision is supplied by its write/readback receipt.
 
-Plan:622lines,8647 whitespace-separated words,70156UTF-8bytes. SHA-256 `8c91c8f3a187d500b388de49a6ce637af0f3095ee19c26e9b03004acc7c5d2b6`. Full local Git hash matched exact native readback. Portable local plan and QA exist under `/mnt/data/consumer_defensive_r6/`, but recovery relies on GitHub, not their survival. QA JSON4085bytes, SHA-256 `b393919ac533685ee882440c104fa0ce79cbc181d71a8fb456f6386a3f3268d2`.
+Current plan identity: HEAD blob `45ecaed0f388cfb0e62eda578ebd04531250246f`; 624 lines; 8706 whitespace-separated words; 70997 UTF-8 bytes; SHA-256 `879c2f215ac67a24f7dd079833828f5e7f7efb076653e093137e9e57e893d809`. Pre-note body (history): 622 lines, 8647 whitespace-separated words, 70156 UTF-8 bytes; SHA-256 `8c91c8f3a187d500b388de49a6ce637af0f3095ee19c26e9b03004acc7c5d2b6`; commit `a30ed45c6d991c4a4e412bd9114de63f1656e181`; blob `c7cfb3e0271bf4016276daa42e4203e8b1a0bff5`. The two identities differ by the 2026-10-12 staleness note, 2 insertions in commit `232b91db59d2d1eb0bc5ef5d14585f51c3d3cc52`. Full local Git hash matched exact native readback of that pre-note body. Portable local plan and QA exist under `/mnt/data/consumer_defensive_r6/`, but recovery relies on GitHub, not their survival. QA JSON4085bytes, SHA-256 `b393919ac533685ee882440c104fa0ce79cbc181d71a8fb456f6386a3f3268d2`.
 
 ## Retained R5 packet and research depth
 
