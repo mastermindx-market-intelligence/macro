@@ -8161,12 +8161,13 @@ jobs:
     gate: code
     scope: exclusive
     paths:
-      # The four suites and their measured import closure (inference's owned tier).
+      # The five suites and their measured import closure (inference's owned tier).
       - "tests/test_company_management_outlook_contract.py"
       - "tests/test_company_management_outlook.py"
       - "tests/test_market_ontology_technology_economic_change.py"
       - "tests/fixtures/technology_economic_change/conformant_assertion.json"
       - "tests/test_market_ontology_technology_research_registration.py"
+      - "tests/test_market_ontology_technology_dossier_page.py"
       - "contracts/company_intelligence/management_outlook_comparison.v1.schema.json"
       - "contracts/market_ontology/technology_economic_change.evidence.v1.schema.json"
       - "contracts/market_ontology/technology_economic_change.v1.schema.json"
@@ -8178,6 +8179,9 @@ jobs:
       - "engine/company_intelligence/views.py"
       - "engine/market_ontology/technology_economic_change.py"
       - "engine/market_ontology/technology_research_registration.py"
+      - "engine/market_ontology/technology_dossier_page.py"
+      # One fragment template, named literally. Do not widen this to templates/**.
+      - "templates/_technology_economic_change_page.html.j2"
       - "engine/theme_graph/__init__.py"
       # engine/market_ontology/__init__.py runs on every import of the two subjects
       # and loads exposure_map; inference does not follow implicit parent-package
@@ -8297,7 +8301,7 @@ jobs:
       - name: install deps
         run: pip install pytest pandas numpy pyarrow pyyaml jinja2 requests jsonschema
       - name: Technology ex-Semis boundary (comparison contract + calculator + economic-change composer)
-        run: TZ=UTC python -m pytest tests/test_company_management_outlook_contract.py tests/test_company_management_outlook.py tests/test_market_ontology_technology_economic_change.py tests/test_market_ontology_technology_research_registration.py -q
+        run: TZ=UTC python -m pytest tests/test_company_management_outlook_contract.py tests/test_company_management_outlook.py tests/test_market_ontology_technology_economic_change.py tests/test_market_ontology_technology_research_registration.py tests/test_market_ontology_technology_dossier_page.py -q
 
   cn-standout-audit:
     if: ${{ false }}
