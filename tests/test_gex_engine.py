@@ -418,3 +418,58 @@ def test_regime_non_boolean_is_call_is_unavailable(value):
     rows = [dict(K=100.0 + j * 0.01, T=WITNESS_T, iv=0.2, oi=100.0, is_call=value)
             for j in range(20)]
     assert _gamma_flip(pd.DataFrame(rows), 100.0, cfg) == (None, None, None)
+
+
+def test_multi_root_profile_discloses_all_crossings():
+    """Calls at K=80, puts at K=100, calls at K=120; oi 5000; T=30/365; iv 0.2;
+    spot 95.
+
+    A literal 3-row book is under the 20 usable-row floor, so gamma_profile
+    declines it (grid is None, zero crossings). Ten adjacent strikes at each of
+    those three levels is the book the current engine actually prices. Pinned
+    values are what that code returns: two crossings, and gamma_flip is the
+    nearer one (89.3409215755782, not 109.40949043969269).
+    """
+    rows = []
+    for j in range(10):
+        rows.append(dict(K=80.0 + j * 0.01, T=WITNESS_T, iv=0.2, oi=5000.0, is_call=True))
+        rows.append(dict(K=100.0 + j * 0.01, T=WITNESS_T, iv=0.2, oi=5000.0, is_call=False))
+        rows.append(dict(K=120.0 + j * 0.01, T=WITNESS_T, iv=0.2, oi=5000.0, is_call=True))
+    c = pd.DataFrame(rows)
+    spot = 95.0
+    grid, net, flips = gamma_profile(c, spot, dict(DEFAULTS))
+    assert grid is not None and net is not None
+    signs = np.where(np.abs(net) <= REGIME_EPS, 0, np.where(net > 0, 1, -1))
+    changes = int(np.sum((signs[1:] != 0) & (signs[:-1] != 0) & (signs[1:] != signs[:-1])))
+    assert changes >= 2
+    assert len(flips) >= 2
+    assert flips[0] == pytest.approx(89.3409215755782)
+    assert flips[1] == pytest.approx(109.40949043969269)
+    flip, _dist, _regime = _gamma_flip(c, spot, dict(DEFAULTS))
+    nearest = min(flips, key=lambda f: abs(f - spot))
+    assert flip == pytest.approx(nearest)
+    assert nearest == pytest.approx(89.3409215755782)
+
+
+@pytest.mark.xfail(strict=True, reason="M01-A02: later gex_engine-owner slice (B1 state vocabulary)")
+def test_in_band_sign_change_is_not_silently_dropped():
+    """A sampled sign change that passes through the REGIME_EPS band must still
+    be disclosed. _sampled_crossings requires both neighbours to sit outside
+    the band, so + → in-band → − is dropped."""
+    from engine.gex_engine import _sampled_crossings
+    grid = np.array([90.0, 100.0, 110.0])
+    net = np.array([1.0, REGIME_EPS / 2.0, -1.0])
+    flips = _sampled_crossings(grid, net)
+    assert len(flips) >= 1
+
+
+def test_cancelled_book_net_gex_is_zero_and_regime_none():
+    """A05 producer pin. 10 calls + 10 puts at K=100, T=30/365, iv 0.25, oi 1.
+    Current compute_gex: net_gex_bn == 0.0 and gamma_regime is None."""
+    rows = []
+    for _ in range(10):
+        rows.append(dict(K=100.0, T=WITNESS_T, iv=0.25, oi=1.0, is_call=True))
+        rows.append(dict(K=100.0, T=WITNESS_T, iv=0.25, oi=1.0, is_call=False))
+    out = compute_gex(pd.DataFrame(rows), 100.0)
+    assert out["net_gex_bn"] == 0.0
+    assert out["gamma_regime"] is None
