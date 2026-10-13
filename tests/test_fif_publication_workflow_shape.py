@@ -269,13 +269,15 @@ def test_d13_t3_isolation_confinement_and_crash_gate() -> None:
 
 def test_d13_w4_upload_carries_the_contract_files() -> None:
     """D13 W4: the always-upload artifact gains the contract acquire result +
-    summary, so a crashed contract night still leaves its evidence behind."""
+    summary, so a crashed contract night still leaves its evidence behind.
+    MINOR-3: the acquire-contract run report rides the same always-upload."""
     workflow = _workflow()
     steps = _steps(workflow)
     upload = next(step for step in steps if step.get("name") == UPLOAD_STEP)
     run_text = str(upload["with"]["path"])
     assert "fif-contract-acquire-result-${{ github.run_id }}.json" in run_text
     assert "fif-contract-acquire-summary-${{ github.run_id }}.json" in run_text
+    assert "fif-contract-acquire-acquire-report-${{ github.run_id }}.json" in run_text
 
 
 UPLOAD_STEP = "upload FIF publication reports (always)"

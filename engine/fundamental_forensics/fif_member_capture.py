@@ -371,7 +371,10 @@ def mint_acceptance_witness(
     bound field carries the same checks as the recent path. Only the
     ``source_url``/``source_path`` VALUES differ (``filings.files[<name>]
     [accessionNumber=<acc>]`` and the page URL); the JSON keys and sort order
-    are identical (E5-c).
+    are identical (E5-c). MAJOR-1: reuse is qualification-aware — a verified
+    retained page is reused only while it still contains the accession or its
+    derived range equals the current files[] entry's; a stale page (SEC
+    re-paged the shard) is refetched through the incumbent path.
 
     Returns ``(witness_bytes, bound_fields, page_info)`` where ``page_info``
     is None on the recent path and ``{"name", "charged_bytes", "reused"}`` on
@@ -413,6 +416,11 @@ def mint_acceptance_witness(
                 code="submissions_unavailable",
             )
         page_name = select_submissions_page(submissions, filing_date=filing_date)
+        # MAJOR-1 (3): the page_entry from the SAME verified latest.json (E5-d)
+        # rides with the accession so retain_submissions_page can qualify a
+        # retained page (containment or derived-range equality) instead of
+        # reusing any URL-matching bytes forever.
+        page_entry = submissions_page_entry(submissions, page_name)
         page_bytes, charged, reused = retain_submissions_page(
             raw_root=Path(raw_root),
             cik=cik,
@@ -425,6 +433,8 @@ def mint_acceptance_witness(
                 if page_ceiling_bytes is None
                 else page_ceiling_bytes
             ),
+            accession=accession,
+            page_entry=page_entry,
         )
         try:
             page_payload = json.loads(page_bytes.decode("utf-8"))
@@ -545,6 +555,38 @@ def select_submissions_page(
     return covering[0]
 
 
+def submissions_page_entry(
+    submissions: Mapping[str, Any], page_name: str
+) -> dict[str, Any]:
+    """MAJOR-1 (3): the UNIQUE ``filings.files[]`` entry with this name.
+
+    Read from the SAME verified latest.json document the recent path reads
+    (E5-d — no second Submissions fetch); it is the page_entry handed to
+    ``retain_submissions_page`` so retained-page qualification can compare a
+    candidate's derived range against the CURRENT inventory range. Typed
+    ``submissions_page_not_found`` when absent, ``submissions_page_ambiguous``
+    when the inventory names the page more than once.
+    """
+    files = (submissions.get("filings") or {}).get("files") or []
+    matches = [
+        dict(entry)
+        for entry in files
+        if isinstance(entry, Mapping) and entry.get("name") == page_name
+    ]
+    if not matches:
+        raise FifMemberCaptureError(
+            f"filings.files[] carries no page named {page_name!r} in the "
+            "verified latest.json",
+            code="submissions_page_not_found",
+        )
+    if len(matches) > 1:
+        raise FifMemberCaptureError(
+            f"filings.files[] names page {page_name!r} more than once",
+            code="submissions_page_ambiguous",
+        )
+    return matches[0]
+
+
 def _read_retrieval_object(raw_root: Path, receipt: Mapping[str, Any]) -> bytes:
     """Decompress one raw-root retrieval object addressed by its receipt."""
     object_path = str(receipt.get("object_path") or "")
@@ -569,20 +611,93 @@ def _read_retrieval_object(raw_root: Path, receipt: Mapping[str, Any]) -> bytes:
     return content
 
 
+def _decoded_page_object(content: bytes) -> Mapping[str, Any] | None:
+    """The page bytes as a JSON object, or None (verified but unusable)."""
+    try:
+        payload = json.loads(content.decode("utf-8"))
+    except (UnicodeDecodeError, json.JSONDecodeError):
+        return None
+    return payload if isinstance(payload, dict) else None
+
+
+def _page_candidate_qualifies(
+    content: bytes,
+    *,
+    accession: str | None,
+    page_entry: Mapping[str, Any] | None,
+) -> bool:
+    """MAJOR-1: does one VERIFIED retained page still serve this need?
+
+    With no filters given the incumbent behaviour holds (every verified
+    candidate qualifies — back-compat only; no production caller may rely on
+    it). Otherwise a candidate qualifies iff (a) its bytes decode to a JSON
+    object whose ``accessionNumber`` list contains ``accession``, or (b)
+    ``page_entry`` carries non-empty string filingFrom/filingTo AND the
+    candidate's DERIVED range [min, max] over its own non-empty string
+    ``filingDate`` cells equals [filingFrom, filingTo] exactly. Undecodable or
+    non-object bytes verified; they are simply unusable — never an integrity
+    refusal.
+    """
+    if accession is None and page_entry is None:
+        return True
+    payload: Mapping[str, Any] | None = None
+    if accession:
+        payload = _decoded_page_object(content)
+        if payload is not None:
+            accessions = payload.get("accessionNumber")
+            if isinstance(accessions, list) and accession in accessions:
+                return True
+    if page_entry is not None:
+        start = page_entry.get("filingFrom")
+        end = page_entry.get("filingTo")
+        if (
+            isinstance(start, str)
+            and start.strip()
+            and isinstance(end, str)
+            and end.strip()
+        ):
+            if payload is None:
+                payload = _decoded_page_object(content)
+            if payload is not None:
+                dates = payload.get("filingDate")
+                cells = [
+                    value
+                    for value in (dates if isinstance(dates, list) else [])
+                    if isinstance(value, str) and value.strip()
+                ]
+                if cells and (min(cells), max(cells)) == (start.strip(), end.strip()):
+                    return True
+    return False
+
+
 def find_verified_submissions_page(
-    raw_root: Path, *, cik: str, page_name: str
+    raw_root: Path,
+    *,
+    cik: str,
+    page_name: str,
+    accession: str | None = None,
+    page_entry: Mapping[str, Any] | None = None,
 ) -> tuple[bytes, dict[str, Any]] | None:
-    """ERRATA-5 E5-b: the newest VERIFIED retained page for this shard, or None.
+    """ERRATA-5 E5-b + MAJOR-1: the newest VERIFIED retained page for this
+    shard that still QUALIFIES, or None.
 
     Scans ``<raw_root>/<cik10>/submissions/*.receipt.json`` for receipts whose
-    ``url`` equals ``historical_submissions_url(cik, page_name)``; each
-    candidate's object must verify (sha256 + bytes, decompressed). A verified
-    receipt is reused with ZERO requests. A receipt whose object FAILS
-    verification is the run-level integrity refusal
-    ``submissions_page_receipt_mismatch`` — never a silent refetch-over (the
-    incumbent ``persist_response`` would repair the object on refetch, which is
-    exactly why this check must run first). Among verified receipts the NEWEST
-    by ``retrieved_at`` wins; ties break by lexically smallest ``sha256``.
+    ``url`` equals ``historical_submissions_url(cik, page_name)``; EVERY such
+    receipt's object must verify (sha256 + bytes, decompressed) — any failing
+    one raises the run-level integrity refusal
+    ``submissions_page_receipt_mismatch`` BEFORE any qualification and before
+    any fetch, never a silent refetch-over (the incumbent ``persist_response``
+    would repair the object on refetch, which is exactly why this check must
+    run first). Among verified receipts that QUALIFY for ``accession`` and/or
+    ``page_entry`` (containment or derived-range equality — see
+    ``_page_candidate_qualifies``; SEC re-pages these shards newest-first, so a
+    URL-matching retained page may be stale and unusable without being
+    corrupt), the NEWEST by ``retrieved_at`` wins; ties break by lexically
+    smallest ``sha256``. No qualifier -> None (the caller fetches through the
+    incumbent path; the stale receipt and its object are never deleted, moved
+    or rewritten — ``persist_response`` is content-addressed). With neither
+    filter given the incumbent behaviour holds (newest verified, period) —
+    kept only for back-compat; no production caller may use it.
     """
     from collectors.edgar_forensics import historical_submissions_url
 
@@ -615,9 +730,18 @@ def find_verified_submissions_page(
         )
     if not verified:
         return None
-    newest_at = max(item[0] for item in verified)
+    qualifying = [
+        item
+        for item in verified
+        if _page_candidate_qualifies(
+            item[2], accession=accession, page_entry=page_entry
+        )
+    ]
+    if not qualifying:
+        return None
+    newest_at = max(item[0] for item in qualifying)
     _retrieved_at, _sha, content, receipt = min(
-        (item for item in verified if item[0] == newest_at), key=lambda item: item[1]
+        (item for item in qualifying if item[0] == newest_at), key=lambda item: item[1]
     )
     return content, receipt
 
@@ -631,15 +755,24 @@ def retain_submissions_page(
     retrieved_at: str,
     budget_remaining: int,
     page_ceiling_bytes: int,
+    accession: str,
+    page_entry: Mapping[str, Any],
 ) -> tuple[bytes, int, bool]:
-    """ERRATA-5 rule 3 + E5-a: reuse-or-fetch ONE page under the run budget.
+    """ERRATA-5 rule 3 + E5-a + MAJOR-1: reuse-or-fetch ONE page under the run
+    budget, with qualification-aware reuse.
 
     Returns ``(page_bytes, charged_bytes, reused)``. A verified retained page
-    costs zero requests and zero budget (E5-b). Otherwise the page is fetched
-    ONLY through the incumbent
-    ``SecForensicsCollector.fetch_historical_submissions_file``
+    that still QUALIFIES for ``accession``/``page_entry`` (containment or
+    derived-range equality — see ``find_verified_submissions_page``) is reused
+    with zero requests and zero budget; a verified but STALE page (SEC re-paged
+    the shard under the same URL) no longer pins the issuer forever — it simply
+    does not qualify. Otherwise the page is fetched ONLY through the unchanged
+    incumbent ``SecForensicsCollector.fetch_historical_submissions_file``
     (``publish_latest=False``: the shard object + receipt land in the CIK
-    submissions namespace and ``latest.json`` never moves). E5-a: pre-fetch the
+    submissions namespace and ``latest.json`` never moves) and the FRESHLY
+    fetched bytes are returned and used; the stale receipt and its object are
+    never deleted, moved or rewritten (``persist_response`` is
+    content-addressed: new bytes -> new object + receipt). E5-a: pre-fetch the
     remaining budget must cover the page ceiling, else a typed budget refusal;
     post-fetch a verified page above the ceiling is
     ``submissions_page_oversize`` and is never used (the incumbent object is
@@ -648,7 +781,13 @@ def retain_submissions_page(
     (``DEFAULT_MAX_SUBMISSIONS_BYTES`` as ``max_response_bytes``,
     collectors/fundamental_forensics_acquisition.py:84,655).
     """
-    verified = find_verified_submissions_page(Path(raw_root), cik=cik, page_name=page_name)
+    verified = find_verified_submissions_page(
+        Path(raw_root),
+        cik=cik,
+        page_name=page_name,
+        accession=accession,
+        page_entry=page_entry,
+    )
     if verified is not None:
         content, _receipt = verified
         if len(content) > page_ceiling_bytes:
@@ -1586,6 +1725,7 @@ __all__ = [
     "package_dir_for",
     "retain_submissions_page",
     "select_submissions_page",
+    "submissions_page_entry",
     "read_retained_fif_packages",
     "find_verified_submissions_page",
     "refuse_repository_fixture_inputs",

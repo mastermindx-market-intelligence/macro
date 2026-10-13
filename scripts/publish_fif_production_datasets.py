@@ -1408,6 +1408,48 @@ def _write_report(report: Mapping[str, Any], report_path_value: Any) -> None:
     )
 
 
+def _demote_coverage_after_commit_failure(
+    coverage: Sequence[Mapping[str, Any]],
+    *,
+    failed_cik: str,
+    failed_code: str,
+    not_attempted_ciks: set[str],
+) -> list[dict[str, Any]]:
+    """MINOR-5: the PARTIAL report's coverage must reflect the commit loop.
+
+    Coverage is computed before planning and the commit loop, so without this
+    demotion the partial report would claim served=true for an issuer whose
+    commit failed or was never attempted. Every accession row of the FAILED
+    issuer gets served=False plus ``served_withheld: "commit_failed:<code>"``;
+    every NOT-ATTEMPTED issuer's rows get served=False plus
+    ``served_withheld: "commit_not_attempted"``; those issuers' ``served``
+    counts are recomputed. Published and unchanged issuers keep served.
+    REPORT ONLY — this never enters manifest or generation bytes.
+    """
+    demoted: dict[str, str] = {}
+    if failed_cik:
+        demoted[failed_cik] = f"commit_failed:{failed_code}"
+    for cik in not_attempted_ciks:
+        demoted.setdefault(cik, "commit_not_attempted")
+    if not demoted:
+        return [dict(row) for row in coverage]
+    out: list[dict[str, Any]] = []
+    for issuer_row in coverage:
+        row = dict(issuer_row)
+        withheld = demoted.get(str(row.get("cik") or ""))
+        if withheld is not None:
+            accessions = []
+            for item in row.get("accessions") or []:
+                entry = dict(item)
+                entry["served"] = False
+                entry["served_withheld"] = withheld
+                accessions.append(entry)
+            row["accessions"] = accessions
+            row["served"] = sum(1 for entry in accessions if entry["served"])
+        out.append(row)
+    return out
+
+
 def _run_publish(args: argparse.Namespace) -> int:
     contract = load_fif_coverage_contract(args.coverage_file)
     raw_root = Path(args.raw_root)
@@ -1536,6 +1578,18 @@ def _run_publish(args: argparse.Namespace) -> int:
         )
 
     if failed is not None:
+        # MINOR-5: demote coverage before writing the partial report — the
+        # failed issuer's rows are served=False + served_withheld
+        # commit_failed:<code>, the not-attempted issuer's rows are
+        # served=False + commit_not_attempted; committed issuers keep served.
+        coverage = _demote_coverage_after_commit_failure(
+            coverage,
+            failed_cik=str(failed.get("cik") or ""),
+            failed_code=str(failed.get("code") or ""),
+            not_attempted_ciks={
+                str(row.get("cik") or "") for row in not_attempted
+            },
+        )
         partial = {
             **_report_base(recorded_at, registry_clocks),
             "published": published,
@@ -1689,6 +1743,18 @@ def verify_report(report: Mapping[str, Any], store: Any) -> None:
                 if row.get("served") and not row.get("admitted"):
                     _fail(
                         "coverage row serves an unadmitted accession",
+                        code="verify_failed",
+                    )
+                # MINOR-5: served_withheld (partial-report demotion marker) is
+                # lawful only as a non-empty string on a NOT-served row.
+                withheld = row.get("served_withheld")
+                if withheld is not None and (
+                    not isinstance(withheld, str)
+                    or not withheld
+                    or row.get("served")
+                ):
+                    _fail(
+                        f"coverage served_withheld is malformed: {withheld!r}",
                         code="verify_failed",
                     )
         # r4/D1 (ERRATA-6 rule 4): every 8-K named admitted on an exclusion

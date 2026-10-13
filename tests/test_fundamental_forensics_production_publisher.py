@@ -25,6 +25,7 @@ import pytest
 
 from collectors.edgar_forensics import historical_submissions_url, persist_response
 from collectors.sec_document_spine import (
+    ArchiveResponseTooLarge,
     ArchiveStoreError,
     persist_archive_document,
     retain_filing_manifest,
@@ -226,10 +227,17 @@ class _FakeCollector:
         self.fetched.append(name)
         if name in self.fail_names:
             raise ArchiveStoreError(f"forced fetch failure: {name}")
+        payload = self._served[accession][name]
+        if max_document_bytes is not None and len(payload) > max_document_bytes:
+            # The real collector's streamed cap: refuse BEFORE anything is
+            # persisted, so an over-cap primary leaves no orphan object.
+            raise ArchiveResponseTooLarge(
+                f"forced streamed cap: {name} ({len(payload)} > {max_document_bytes})"
+            )
         return persist_archive_document(
             self.cache_root,
             document,
-            self._served[accession][name],
+            payload,
             retrieved_at=retrieved_at,
         )
 
@@ -2946,6 +2954,225 @@ def test_c0c_q9_acquire_failure_surfaces_in_both_reports(
     assert rows[lane["page_10q"]] == "no_retained_primary"
 
 
+def _retain_stale_acquire_page(
+    raw_root: Path, cik: str, page_name: str, page: dict, *, retrieved_at: str
+):
+    """Seed a VERIFIED retained page for one shard URL (incumbent
+    ``persist_response``, ``publish_latest=False``) — the re-paged shape."""
+    return persist_response(
+        raw_root,
+        cik=cik,
+        endpoint="submissions",
+        url=historical_submissions_url(cik, page_name),
+        content=json.dumps(page).encode("utf-8"),
+        retrieved_at=retrieved_at,
+        publish_latest=False,
+    )
+
+
+def test_c0c_q9_stale_retained_page_refetched_once_for_two_accessions(
+    tmp_path, monkeypatch, offline_acquire_collectors, capsys
+) -> None:
+    """(q9, MAJOR-1) Two contract accessions share ONE current page; the
+    retained verified page holds only the FIRST (SEC re-paged: its derived
+    range also disagrees with the current files[] entry). The run reuses the
+    retained page for the first accession, fetches the CURRENT page exactly
+    ONCE for the second, and both accessions acquire."""
+    identity = _fixture_identity()
+    raw_root = tmp_path / "raw"
+    archive_root = tmp_path / "archive"
+    raw_root.mkdir(parents=True)
+    archive_root.mkdir(parents=True)
+    ten_q = identity["accessions"][1]
+    primary_name = str(identity["manifests"][ten_q]["primary_document"])
+    acc1 = _clone_accession(ten_q, "8")
+    acc2 = _clone_accession(ten_q, "2")
+    page_name = _page_name_for(identity)
+    entry = {"name": page_name, "filingFrom": "2024-07-01", "filingTo": "2024-08-31"}
+    _write_acquire_submissions(
+        raw_root,
+        identity,
+        recent_rows=_identity_rows(identity),
+        page_rows=[],
+        files_override=[entry],
+    )
+    row1 = _acquire_row(identity, acc1, form="10-Q", filing_date="2024-07-31", primary=primary_name)
+    row2 = _acquire_row(identity, acc2, form="10-Q", filing_date="2024-08-15", primary=primary_name)
+    # The retained page: verified, but stale — it holds only acc1 and its
+    # derived range [2024-07-31, 2024-07-31] != the entry's [2024-07-01, 2024-08-31].
+    _retain_stale_acquire_page(
+        raw_root,
+        identity["cik"],
+        page_name,
+        {key: [row1[key]] for key in row1},
+        retrieved_at="2026-10-12T02:28:00Z",
+    )
+    # The collector serves the CURRENT page: both rows.
+    offline_acquire_collectors["pages"][page_name] = {
+        key: [row1[key], row2[key]] for key in row1
+    }
+    for clone in (acc1, acc2):
+        offline_acquire_collectors["served"][clone.replace("-", "")] = dict(
+            offline_acquire_collectors["served"][ten_q.replace("-", "")]
+        )
+    entries = [
+        {"accession": acc1, "form": "10-Q", "filing_date": "2024-07-31"},
+        {"accession": acc2, "form": "10-Q", "filing_date": "2024-08-15"},
+    ]
+    contract = _write_acquire_contract(tmp_path, identity, entries)
+    report = tmp_path / "acquire-report.json"
+    lane = {"raw_root": raw_root, "archive_root": archive_root}
+    assert _acquire_cli(lane, contract, report) == 0
+    assert _acquire_outcome(report, acc1)["outcome"] == "primary_retained"
+    assert _acquire_outcome(report, acc2)["outcome"] == "primary_retained"
+    # Exactly ONE page fetch in the run, and requests_issued counts it once
+    # (the two primary fetches plus the one page fetch).
+    assert offline_acquire_collectors["submissions"][0].page_fetches == [page_name]
+    acquire_report = json.loads(report.read_text(encoding="utf-8"))
+    assert acquire_report["requests_issued"] == 3
+
+
+def _acquire_row_outcome(report: dict, accession: str) -> str:
+    return next(
+        row["outcome"]
+        for issuer_row in report["issuers"]
+        for row in issuer_row["accessions"]
+        if row["accession"] == accession
+    )
+
+
+def test_c0c_q10_page_bytes_reduce_primary_budget(tmp_path) -> None:
+    """(q10, MINOR-4a) A primary that fits the ORIGINAL budget but not
+    budget-minus-page is refused ``run_budget_exceeded``: page bytes reduce the
+    run budget, and the refusal fires through the pre-storage cap."""
+    from engine.fundamental_forensics.fif_contract_acquisition import (
+        acquire_contract_primaries,
+    )
+    from engine.fundamental_forensics.sec_document_spine import content_storage_key
+
+    identity = _fixture_identity()
+    raw_root = tmp_path / "raw"
+    archive_root = tmp_path / "archive"
+    raw_root.mkdir(parents=True)
+    archive_root.mkdir(parents=True)
+    ten_q = identity["accessions"][1]
+    acc = _clone_accession(ten_q, "4")
+    primary_name = str(identity["manifests"][ten_q]["primary_document"])
+    inflated = (
+        ROOT / GOLDEN_AAPL_FIXTURES[ten_q] / "members" / primary_name
+    ).read_bytes() + (b"<!--" + b"p" * 200_000 + b"-->")
+    row = _acquire_row(identity, acc, form="10-Q", filing_date="2024-07-31", primary=primary_name)
+    page_name = _page_name_for(identity)
+    _write_acquire_submissions(
+        raw_root,
+        identity,
+        recent_rows=_identity_rows(identity),
+        page_rows=[],
+        files_override=[
+            {"name": page_name, "filingFrom": "2024-07-01", "filingTo": "2024-07-31"}
+        ],
+    )
+    page = {key: [row[key]] for key in row}
+    page_len = len(json.dumps(page).encode("utf-8"))
+    pacer = _no_sleep_pacer()
+    submissions_collector = _FakeSubmissionsCollector(raw_root, {page_name: page}, pacer)
+    archive_collector = _FakeCollector(
+        archive_root, {acc.replace("-", ""): {primary_name: inflated}}, pacer
+    )
+    issuers = [
+        {
+            "cik": identity["cik"],
+            "ticker": identity["ticker"],
+            "accessions": [{"accession": acc, "form": "10-Q", "filing_date": "2024-07-31"}],
+        }
+    ]
+    report = acquire_contract_primaries(
+        raw_root=raw_root,
+        archive_root=archive_root,
+        issuers=issuers,
+        submissions_collector=submissions_collector,
+        archive_collector=archive_collector,
+        pacer=pacer,
+        recorded_at=ACQUIRE_CLOCK,
+        # The ORIGINAL budget admits the page reservation plus the primary in
+        # full — but not the primary once the page's bytes are subtracted.
+        run_budget_bytes=len(inflated),
+        page_ceiling_bytes=page_len,
+    )
+    assert _acquire_row_outcome(report, acc) == "acquire_failed:run_budget_exceeded"
+    assert submissions_collector.page_fetches == [page_name]
+    # The page was charged; the over-budget primary left no object behind.
+    assert report["bytes_charged"] == page_len
+    assert not (
+        archive_root / content_storage_key(hashlib.sha256(inflated).hexdigest())
+    ).exists()
+
+
+def test_c0c_q11_over_budget_primary_refused_before_storage(tmp_path) -> None:
+    """(q11, MINOR-4b) An over-budget primary is refused by the incumbent
+    streamed cap BEFORE anything is persisted: typed ``run_budget_exceeded``
+    AND no primary object/receipt for that accession under the archive root
+    (the DECLARED manifest may remain — the incumbent discipline retains it
+    before the network leg)."""
+    from engine.fundamental_forensics.fif_contract_acquisition import (
+        acquire_contract_primaries,
+    )
+    from engine.fundamental_forensics.fif_member_capture import (
+        find_retained_primary_manifest,
+    )
+    from engine.fundamental_forensics.sec_document_spine import content_storage_key
+
+    identity = _fixture_identity()
+    raw_root = tmp_path / "raw"
+    archive_root = tmp_path / "archive"
+    raw_root.mkdir(parents=True)
+    archive_root.mkdir(parents=True)
+    ten_q = identity["accessions"][1]
+    acc = _clone_accession(ten_q, "6")
+    primary_name = str(identity["manifests"][ten_q]["primary_document"])
+    inflated = (
+        ROOT / GOLDEN_AAPL_FIXTURES[ten_q] / "members" / primary_name
+    ).read_bytes() + (b"<!--" + b"p" * 200_000 + b"-->")
+    row = _acquire_row(identity, acc, form="10-Q", filing_date="2024-07-31", primary=primary_name)
+    # A RECENT row: no page is involved, so only the primary touches the budget.
+    _write_acquire_submissions(
+        raw_root, identity, recent_rows=[*_identity_rows(identity), row], page_rows=[]
+    )
+    pacer = _no_sleep_pacer()
+    submissions_collector = _FakeSubmissionsCollector(raw_root, {}, pacer)
+    archive_collector = _FakeCollector(
+        archive_root, {acc.replace("-", ""): {primary_name: inflated}}, pacer
+    )
+    issuers = [
+        {
+            "cik": identity["cik"],
+            "ticker": identity["ticker"],
+            "accessions": [{"accession": acc, "form": "10-Q", "filing_date": "2024-07-31"}],
+        }
+    ]
+    report = acquire_contract_primaries(
+        raw_root=raw_root,
+        archive_root=archive_root,
+        issuers=issuers,
+        submissions_collector=submissions_collector,
+        archive_collector=archive_collector,
+        pacer=pacer,
+        recorded_at=ACQUIRE_CLOCK,
+        run_budget_bytes=len(inflated) // 2,
+    )
+    assert _acquire_row_outcome(report, acc) == "acquire_failed:run_budget_exceeded"
+    assert submissions_collector.page_fetches == []
+    assert not (
+        archive_root / content_storage_key(hashlib.sha256(inflated).hexdigest())
+    ).exists()
+    assert (
+        find_retained_primary_manifest(
+            archive_root, cik=identity["cik"], accession=acc
+        )
+        is None
+    )
+
+
 # ---------------------------------------------------------------------------
 # C0-c E4 + ERRATA-6: coverage row, 8-K publish path, AAPL pins (p8,p9,q8,t6,t8*)
 # ---------------------------------------------------------------------------
@@ -3240,6 +3467,48 @@ def test_c0c_t8b_later_captured_eight_k_is_unchanged_zero_writes(
         [lane["eight_k"], eight_k2]
     )
     assert _store_tree(store) == before
+
+
+def test_c0c_t8g_first_publish_eight_k_captured_after_ten_q_keeps_content_clock(
+    tmp_path, monkeypatch, offline_collector, capsys
+) -> None:
+    """(t8g, MINOR-1) FIRST publish (no prior generation) of an issuer whose
+    10-Q is captured at T1 and whose 8-K is captured LATER at T2 > T1: the
+    published row's admitted_at is the 10-Q-derived content clock (never T2)
+    and clock_basis == "content" — ERRATA-6 rule 3: the excluded 8-K's capture
+    clock does not contribute to T_c."""
+    lane = _eight_k_publish_lane(tmp_path, offline_collector)
+    identity = lane["identity"]
+    # Night 1: the contract carries ONLY the 10-Q -> its package is captured
+    # at T1 (CAPTURE_CLOCK).
+    document = json.loads(lane["contract"].read_text())
+    ten_q_entry = document["issuers"][0]["accessions"][0]
+    document["issuers"][0]["accessions"] = [ten_q_entry]
+    ten_q_only = tmp_path / "contract-ten-q-only.json"
+    ten_q_only.write_text(json.dumps(document, indent=1), encoding="utf-8")
+    assert _capture_cli(lane, ten_q_only, clock=CAPTURE_CLOCK) == 0
+    # Night 2: the 8-K joins the contract and is captured at T2 > T1 (the
+    # 10-Q package is retained_reused, so its capture clock stays T1).
+    assert _capture_cli(lane, lane["contract"], clock=NEXT_NIGHT_CAPTURE) == 0
+    store = tmp_path / "store"
+    report_path = tmp_path / "r1.json"
+    assert _publish_cli(lane, lane["contract"], store, report_path) == 0
+    report = json.loads(report_path.read_text(encoding="utf-8"))
+    row = report["published"][0]
+    assert row["outcome"] == "published"
+    assert row["clock_basis"] == "content"
+    # The content clock over the 10-Q's T1 plus the rule + registry clocks —
+    # nothing derived from the 8-K's later T2.
+    registry_clocks = producer._registry_available_clocks(
+        producer.snapshot_core_registry_payload(ROOT)
+    )
+    t1 = producer.parse_utc(CAPTURE_CLOCK, field="capture clock")
+    expected = producer.utc_text(producer._content_clock([t1], registry_clocks))
+    assert row["admitted_at"] == expected
+    # Guard: T2 is strictly later than the expected clock, so equality above
+    # proves the 8-K's T2 did not contribute.
+    assert expected < NEXT_NIGHT_CAPTURE
+    assert row["admitted_event_accessions"] == [lane["eight_k"]]
 
 
 def test_c0c_t8c_aapl_golden_pins_unchanged(
@@ -3870,3 +4139,98 @@ def test_c0c_m3_partial_report_reports_unchanged_after_failure(
     for entity_id in entity_ids[1:]:
         assert not _latest_json_path(store, entity_id).exists()
     assert _latest_json_path(store, entity_ids[0]).exists() is False
+
+
+def test_c0c_m4_partial_report_coverage_reflects_commit_outcome(
+    tmp_path, monkeypatch, offline_collector, capsys
+) -> None:
+    """(m4, MINOR-5) The PARTIAL report's coverage reflects the commit loop:
+    the failed issuer's accession rows get served=False plus
+    ``served_withheld: commit_failed:<code>`` and its served count is
+    recomputed; the not-attempted issuer's rows get served=False plus
+    ``commit_not_attempted``; only the committed (published) issuer keeps
+    served=True."""
+    lane = _materialize_lane(tmp_path)
+    identity = lane["identity"]
+    base_cik = identity["cik"]
+    # The derived CIKs _stage_three_issuers fabricates for suffixes "2"/"3",
+    # so every commit-outcome class owns a coverage row.
+    cik2 = base_cik[:-1] + str((int(base_cik[-1]) + 2) % 10)
+    cik3 = base_cik[:-1] + str((int(base_cik[-1]) + 3) % 10)
+    accessions = [
+        {
+            "accession": a,
+            "form": str(identity["manifests"][a]["form"]),
+            "filing_date": _row_value(identity, a, "filing_date"),
+        }
+        for a in identity["accessions"]
+    ]
+
+    def _issuer_row(cik: str, ticker: str, entity_id: str) -> dict:
+        return {
+            "cik": cik,
+            "ticker": ticker,
+            "legal_name": "Synthetic Lane Issuer",
+            "security_master_binding": {
+                "issuer_id": entity_id,
+                "issuer_cik": cik,
+                "security_id": identity["security_id"],
+                "listing_key": identity["listing_key"],
+                "mic": "XNAS",
+                "effective_at": "2023-05-09T00:00:00",
+            },
+            "accessions": accessions,
+        }
+
+    document = {
+        "schema": "fundamental_forensics.coverage_contract/v1",
+        "contract_id": "synthetic-c0c-m4-test",
+        "issuers": [
+            _issuer_row(base_cik, identity["ticker"], identity["entity_id"]),
+            _issuer_row(cik2, identity["ticker"] + "2", identity["entity_id"] + "2"),
+            _issuer_row(cik3, identity["ticker"] + "3", identity["entity_id"] + "3"),
+        ],
+    }
+    contract = tmp_path / "contract-three.json"
+    contract.write_text(json.dumps(document, indent=1), encoding="utf-8")
+    assert _capture_cli(lane, contract) == 0
+    store = tmp_path / "store"
+    report_path = tmp_path / "r.json"
+    _stage_three_issuers(monkeypatch)
+    real_builder = producer.build_production_dataset_store
+
+    def _factory(local_dir=None):
+        built = real_builder(local_dir)
+        if local_dir is not None and Path(local_dir) == store:
+            # Issuer 1 commits; issuer 2's pointer CAS faults; issuer 3 is
+            # never attempted.
+            return _FlakyPointerStore(store)
+        return built
+
+    monkeypatch.setattr(producer, "build_production_dataset_store", _factory)
+    rc = _publish_cli(lane, contract, store, report_path)
+    assert rc == 1
+    partial = json.loads(report_path.read_text(encoding="utf-8"))
+    assert partial["failed"]["cik"] == cik2
+    assert [row["cik"] for row in partial["not_attempted"]] == [cik3]
+    coverage = {row["cik"]: row for row in partial["coverage"]}
+    # Committed issuer keeps served.
+    base_row = coverage[base_cik]
+    assert base_row["served"] == len(identity["accessions"])
+    assert all(item["served"] for item in base_row["accessions"])
+    assert all("served_withheld" not in item for item in base_row["accessions"])
+    # Failed issuer: served demoted with the typed commit code.
+    failed_row = coverage[cik2]
+    withheld_code = f"commit_failed:{partial['failed']['code']}"
+    assert failed_row["served"] == 0
+    assert all(
+        item["served"] is False and item["served_withheld"] == withheld_code
+        for item in failed_row["accessions"]
+    )
+    # Not-attempted issuer: served demoted with the not-attempted marker.
+    skipped_row = coverage[cik3]
+    assert skipped_row["served"] == 0
+    assert all(
+        item["served"] is False and item["served_withheld"] == "commit_not_attempted"
+        for item in skipped_row["accessions"]
+    )

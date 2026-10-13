@@ -9,8 +9,12 @@ selector. Orchestration is over incumbent functions ONLY:
   unique covering ``filings.files[]`` page (E5 rule 2, ``select_submissions_page``);
 * a page is retained ONLY by the incumbent
   ``SecForensicsCollector.fetch_historical_submissions_file`` through
-  ``retain_submissions_page`` (E5-b reuse-first; no archive-root page
-  namespace, no new receipt schema, ``latest.json`` never moves);
+  ``retain_submissions_page`` (E5-b reuse-first with MAJOR-1 qualification: a
+  retained page is reused only while it still contains the accession or its
+  derived range equals the current files[] entry's — SEC re-pages these shards
+  newest-first, and a stale page is refetched through the incumbent path, not
+  reused forever; no archive-root page namespace, no new receipt schema,
+  ``latest.json`` never moves);
 * manifests come from the incumbent ``build_filing_manifests`` — the recent
   payload as is, or the page wrapped as ``{cik, name, filings: {recent: <page>}}``
   (pages share recent's columnar shape, proven on the census page);
@@ -26,7 +30,11 @@ are TYPED rows in the returned report (the run still completes); the only
 run-abort is the ERRATA-5 E5-e integrity refusal ``submissions_page_receipt_
 mismatch`` raised by the shared page helper. Page bytes and primary bytes both
 count against the caller's budget (DEFAULT_RUN_BUDGET_BYTES, imported from
-``fif_member_capture`` — no second number is minted here).
+``fif_member_capture`` — no second number is minted here): every charged page
+SUBTRACTS from the remaining budget, and the primary fetch is streamed-capped
+at min(remaining budget, the collector's max_document_bytes ceiling) so an
+over-budget primary is refused BEFORE anything is persisted (no orphan object)
+— the post-fetch length check stays only as defence.
 """
 from __future__ import annotations
 
@@ -40,6 +48,7 @@ from collectors.fundamental_forensics_acquisition import (
 )
 from collectors.sec_document_spine import (
     ArchiveResponseTooLarge,
+    DEFAULT_MAX_DOCUMENT_BYTES,
     find_reusable_primary_retrieval,
     retain_filing_manifest,
     with_document_retrievals,
@@ -52,6 +61,7 @@ from .fif_member_capture import (
     find_retained_primary_manifest,
     retain_submissions_page,
     select_submissions_page,
+    submissions_page_entry,
 )
 from .sec_document_spine import build_filing_manifests, canonical_cik
 
@@ -186,7 +196,10 @@ def acquire_contract_primaries(
     Per-accession typed failures land in the report (the run completes with
     status ``partial``); only a retained-page integrity refusal aborts the
     run. The report carries per-issuer rows, charged/reused byte accounting,
-    and the number of SEC requests this run issued.
+    and the number of SEC requests this run issued. Pages are cached per name
+    for the run; a cached REUSED page that lacks an accession gets ONE more
+    qualification-scoped retain (MAJOR-1), so at most ONE fetch happens per
+    page name per run.
     """
     ceiling = (
         DEFAULT_MAX_SUBMISSIONS_BYTES if page_ceiling_bytes is None else int(page_ceiling_bytes)
@@ -229,7 +242,42 @@ def acquire_contract_primaries(
         entity_name = str(submissions.get("name") or submissions.get("entityName") or "")
         recent_manifests_built = False
         manifests_by_accession: dict[str, Mapping[str, Any]] = {}
+        # MAJOR-1 (4): the in-run page cache remembers whether each cached
+        # page was FETCHED this run. At most ONE fetch per page name per run:
+        # a REUSED cached page that lacks an accession gets one more
+        # qualification-scoped retain (reuse a qualifying page or fetch once),
+        # while a page FETCHED this run already reflects the live shard.
         page_payloads: dict[str, dict[str, Any]] = {}
+
+        def _retain_page(page_name: str, page_entry: Mapping[str, Any], accession: str) -> dict[str, Any]:
+            nonlocal budget
+            page_bytes, charged, reused = retain_submissions_page(
+                raw_root=Path(raw_root),
+                cik=cik,
+                page_name=page_name,
+                submissions_collector=submissions_collector,
+                retrieved_at=str(recorded_at),
+                budget_remaining=budget,
+                page_ceiling_bytes=ceiling,
+                accession=accession,
+                page_entry=page_entry,
+            )
+            report["bytes_charged"] += charged
+            # MINOR-4 (a): page bytes leave the run budget, not just the report.
+            budget -= charged
+            if reused:
+                report["bytes_reused"] += len(page_bytes)
+            else:
+                report["requests_issued"] += 1
+            return {
+                "payload": {
+                    "cik": int(cik),
+                    "name": entity_name,
+                    "filings": {"recent": _decode_page(page_bytes)},
+                },
+                "fetched": not reused,
+            }
+
         for accession_entry in issuer.get("accessions") or []:
             accession = str(accession_entry["accession"])
             form = str(accession_entry.get("form") or "")
@@ -281,30 +329,31 @@ def acquire_contract_primaries(
                     page_name = select_submissions_page(
                         submissions, filing_date=filing_date
                     )
+                    page_entry = submissions_page_entry(submissions, page_name)
                     if page_name not in page_payloads:
-                        page_bytes, charged, reused = retain_submissions_page(
-                            raw_root=Path(raw_root),
-                            cik=cik,
-                            page_name=page_name,
-                            submissions_collector=submissions_collector,
-                            retrieved_at=str(recorded_at),
-                            budget_remaining=budget,
-                            page_ceiling_bytes=ceiling,
+                        page_payloads[page_name] = _retain_page(
+                            page_name, page_entry, accession
                         )
-                        report["bytes_charged"] += charged
-                        if reused:
-                            report["bytes_reused"] += len(page_bytes)
-                        else:
-                            report["requests_issued"] += 1
-                        page_payloads[page_name] = {
-                            "cik": int(cik),
-                            "name": entity_name,
-                            "filings": {"recent": _decode_page(page_bytes)},
-                        }
-                    payload = page_payloads[page_name]
-                    page_recent = payload["filings"]["recent"]
+                    cached = page_payloads[page_name]
+                    cached_accessions = (
+                        cached["payload"]["filings"]["recent"].get("accessionNumber")
+                        or []
+                    )
+                    if accession not in cached_accessions and not cached["fetched"]:
+                        # MAJOR-1 (4): a REUSED cached page may be stale (SEC
+                        # re-paged the shard under the same URL). One more
+                        # qualification-scoped retain for THIS accession: it
+                        # reuses a qualifying retained page or fetches once.
+                        page_payloads[page_name] = _retain_page(
+                            page_name, page_entry, accession
+                        )
+                        cached = page_payloads[page_name]
+                    page_recent = cached["payload"]["filings"]["recent"]
                     page_accessions = page_recent.get("accessionNumber") or []
                     if accession not in page_accessions:
+                        # Only a page FETCHED this run — or a reused page that
+                        # still lacks the accession after the second retain —
+                        # reaches here: the genuine typed refusal.
                         raise FifMemberCaptureError(
                             f"accession is absent from its covering submissions "
                             f"page: {accession}",
@@ -321,7 +370,7 @@ def acquire_contract_primaries(
                             {
                                 m["filing"]["accession"]: m
                                 for m in build_filing_manifests(
-                                    payload,
+                                    cached["payload"],
                                     cik=cik,
                                     ticker=ticker or None,
                                     recorded_at=str(recorded_at),
@@ -358,11 +407,36 @@ def acquire_contract_primaries(
                         "run byte budget exhausted before primary fetch",
                         code="run_budget_exceeded",
                     )
+                # MINOR-4 (b): cap the streamed primary fetch at min(budget,
+                # document ceiling) so an over-budget primary is refused by
+                # the incumbent streamed cap BEFORE anything is persisted —
+                # no orphan object. A budget-bound refusal (cap below the
+                # document ceiling) maps to run_budget_exceeded; a
+                # ceiling-bound one to primary_oversize.
+                document_ceiling = getattr(
+                    archive_collector, "max_document_bytes", None
+                )
+                if (
+                    isinstance(document_ceiling, bool)
+                    or not isinstance(document_ceiling, int)
+                    or document_ceiling < 1
+                ):
+                    document_ceiling = DEFAULT_MAX_DOCUMENT_BYTES
+                cap = min(budget, document_ceiling)
                 try:
                     materialized = archive_collector.fetch_primary_document(
-                        manifest, retrieved_at=str(recorded_at)
+                        manifest,
+                        retrieved_at=str(recorded_at),
+                        max_document_bytes=cap,
                     )
                 except ArchiveResponseTooLarge as exc:
+                    if cap < document_ceiling:
+                        raise FifContractAcquisitionError(
+                            f"primary fetch exceeds the remaining run byte "
+                            f"budget: {accession} (cap {cap} < ceiling "
+                            f"{document_ceiling})",
+                            code="run_budget_exceeded",
+                        ) from exc
                     raise FifContractAcquisitionError(
                         f"primary document exceeds the byte ceiling: {accession} "
                         f"({exc})",

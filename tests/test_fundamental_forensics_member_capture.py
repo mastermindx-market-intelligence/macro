@@ -1807,6 +1807,196 @@ def test_c0c_p7_d1_admits_a_page_bound_witness(tmp_path) -> None:
     assert admitted.manifest["accession"] == lane["outside"]
 
 
+def _retain_stale_submissions_page(
+    lane: dict, page_row: dict, *, retrieved_at: str
+) -> dict:
+    """Seed a VERIFIED retained page for the lane's page name (incumbent
+    ``persist_response``, ``publish_latest=False``) whose bytes carry exactly
+    the given row. Returns the object/receipt paths plus their BEFORE bytes so
+    a test can prove the stale artifacts are never rewritten."""
+    cik = lane["identity"]["cik"]
+    content = json.dumps({key: [value] for key, value in page_row.items()}).encode(
+        "utf-8"
+    )
+    receipt = persist_response(
+        lane["raw_root"],
+        cik=cik,
+        endpoint="submissions",
+        url=historical_submissions_url(cik, lane["page_name"]),
+        content=content,
+        retrieved_at=retrieved_at,
+        publish_latest=False,
+    )
+    object_path = lane["raw_root"] / str(receipt.object_path)
+    receipt_path = object_path.with_suffix(".receipt.json")
+    return {
+        "object_path": object_path,
+        "receipt_path": receipt_path,
+        "object_before": object_path.read_bytes(),
+        "receipt_before": receipt_path.read_bytes(),
+        "content": content,
+    }
+
+
+def _mint_page_witness(lane: dict, collector, accession: str):
+    """Drive ``mint_acceptance_witness`` over one page-row accession."""
+    identity = lane["identity"]
+    return CAP.mint_acceptance_witness(
+        raw_root=lane["raw_root"],
+        cik=identity["cik"],
+        accession=accession,
+        primary_document=str(
+            identity["manifests"][identity["accessions"][0]]["primary_document"]
+        ),
+        filing_date=lane["filing_date"],
+        submissions_collector=collector,
+        retrieved_at=CAPTURE_CLOCK,
+        budget_remaining=CAP.DEFAULT_RUN_BUDGET_BYTES,
+    )
+
+
+def test_c0c_p9_stale_retained_page_is_refetched_and_new_bytes_used(
+    tmp_path,
+) -> None:
+    """(p9) A VERIFIED retained page for the selected page name whose bytes
+    LACK the accession and whose derived range disagrees with the current
+    files[] entry is STALE (SEC re-paged): the page is re-fetched through the
+    incumbent path exactly once, the witness binds from the NEW row, and the
+    stale receipt + object bytes are never rewritten."""
+    from datetime import date, timedelta
+
+    lane = _page_witness_lane(tmp_path)
+    identity = lane["identity"]
+    filing_date = lane["filing_date"]
+    stale_date = (date.fromisoformat(filing_date) - timedelta(days=1)).isoformat()
+    stale_row = _page_row_for(identity, identity["accessions"][0][:-1] + "3", stale_date)
+    stale = _retain_stale_submissions_page(
+        lane, stale_row, retrieved_at="2026-10-12T02:31:00Z"
+    )
+    # The fake collector serves the CURRENT page bytes: the contract row.
+    new_row = _page_row_for(identity, lane["outside"], filing_date)
+    new_page = {key: [value] for key, value in new_row.items()}
+    new_bytes = json.dumps(new_page).encode("utf-8")
+    collector = _FakeSubmissionsCollector(lane["raw_root"], {lane["page_name"]: new_page}, lane["pacer"])
+    witness_bytes, bound, page_info = _mint_page_witness(lane, collector, lane["outside"])
+    # Exactly ONE fetch, for that page name; the FRESH bytes were used.
+    assert collector.page_fetches == [lane["page_name"]]
+    assert page_info["reused"] is False
+    assert page_info["charged_bytes"] == len(new_bytes)
+    # The witness binds from the NEW row (fields equal the new row).
+    witness = json.loads(witness_bytes.decode("utf-8"))
+    assert witness["form"] == new_row["form"]
+    assert witness["filingDate"] == new_row["filingDate"]
+    assert witness["reportDate"] == new_row["reportDate"]
+    assert witness["primaryDocument"] == new_row["primaryDocument"]
+    assert bound["filingDate"] == new_row["filingDate"]
+    # The stale receipt and its object are byte-identical before/after: new
+    # bytes mean a NEW content-addressed object + receipt, never a rewrite.
+    assert stale["object_path"].read_bytes() == stale["object_before"]
+    assert stale["receipt_path"].read_bytes() == stale["receipt_before"]
+
+
+def test_c0c_p10_matching_retained_page_reused_with_zero_requests(
+    tmp_path,
+) -> None:
+    """(p10) (a) A retained page CONTAINING the accession is reused with zero
+    fetch calls, reused=True, charged 0; (b) a retained page LACKING the
+    accession but whose derived range EQUALS the current files[] entry is
+    reused (zero fetch calls) and the refusal is the genuine typed
+    ``accession_not_in_submissions``."""
+    # (a) containment-qualifying retained page -> reuse, zero requests.
+    lane = _page_witness_lane(tmp_path)
+    matching_row = _page_row_for(lane["identity"], lane["outside"], lane["filing_date"])
+    _retain_stale_submissions_page(
+        lane, matching_row, retrieved_at="2026-10-12T02:31:00Z"
+    )
+    decoy = _page_row_for(
+        lane["identity"],
+        lane["identity"]["accessions"][0][:-1] + "6",
+        lane["filing_date"],
+    )
+    collector_a = _FakeSubmissionsCollector(
+        lane["raw_root"],
+        {lane["page_name"]: {key: [value] for key, value in decoy.items()}},
+        lane["pacer"],
+    )
+    witness_bytes, _bound, page_info = _mint_page_witness(
+        lane, collector_a, lane["outside"]
+    )
+    assert collector_a.page_fetches == []
+    assert page_info["reused"] is True
+    assert page_info["charged_bytes"] == 0
+    witness = json.loads(witness_bytes.decode("utf-8"))
+    assert witness["form"] == matching_row["form"]
+    assert witness["filingDate"] == matching_row["filingDate"]
+    assert witness["primaryDocument"] == matching_row["primaryDocument"]
+
+    # (b) range-equal retained page that lacks the accession -> reuse, then
+    # the genuine typed refusal — never a refetch.
+    lane_b = _page_witness_lane(tmp_path / "b")
+    sibling_row = _page_row_for(
+        lane_b["identity"],
+        lane_b["identity"]["accessions"][0][:-1] + "4",
+        lane_b["filing_date"],
+    )
+    _retain_stale_submissions_page(
+        lane_b, sibling_row, retrieved_at="2026-10-12T02:31:00Z"
+    )
+    collector_b = _FakeSubmissionsCollector(
+        lane_b["raw_root"],
+        {
+            lane_b["page_name"]: {
+                key: [value]
+                for key, value in _page_row_for(
+                    lane_b["identity"], lane_b["outside"], lane_b["filing_date"]
+                ).items()
+            }
+        },
+        lane_b["pacer"],
+    )
+    with pytest.raises(FifMemberCaptureError) as caught:
+        _mint_page_witness(lane_b, collector_b, lane_b["outside"])
+    assert caught.value.code == "accession_not_in_submissions"
+    assert collector_b.page_fetches == []
+
+
+def test_c0c_p6b_receipt_mismatch_refuses_even_beside_a_stale_sibling(
+    tmp_path,
+) -> None:
+    """(p6b) Two receipts share the page URL: one verifies but is stale, one
+    FAILS verification. The mismatch refuses with ZERO fetches — never a
+    refetch over the corrupt receipt, and never a silent fallback to the
+    (range-qualifying) stale sibling."""
+    lane = _page_witness_lane(tmp_path)
+    identity = lane["identity"]
+    stale_row = _page_row_for(
+        identity, identity["accessions"][0][:-1] + "3", lane["filing_date"]
+    )
+    _retain_stale_submissions_page(lane, stale_row, retrieved_at="2026-10-12T02:31:00Z")
+    corrupt = _retain_stale_submissions_page(
+        lane,
+        _page_row_for(identity, identity["accessions"][0][:-1] + "5", lane["filing_date"]),
+        retrieved_at="2026-10-13T01:00:00Z",
+    )
+    corrupt["object_path"].write_bytes(gzip.compress(b"corrupted page bytes"))
+    collector = _FakeSubmissionsCollector(
+        lane["raw_root"],
+        {
+            lane["page_name"]: {
+                key: [value]
+                for key, value in _page_row_for(
+                    identity, lane["outside"], lane["filing_date"]
+                ).items()
+            }
+        },
+        lane["pacer"],
+    )
+    with pytest.raises(FifMemberCaptureError) as caught:
+        _mint_page_witness(lane, collector, lane["outside"])
+    assert caught.value.code == "submissions_page_receipt_mismatch"
+    assert collector.page_fetches == []
+
+
 # ---------------------------------------------------------------------------
 # C0-c ERRATA-4: form-keyed 8-K member set (t1..t7)
 # ---------------------------------------------------------------------------

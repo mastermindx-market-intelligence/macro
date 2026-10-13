@@ -253,11 +253,14 @@ jobs:
           # primary receipts first. Retention is the incumbents' own: pages via
           # the historical-shard fetch (publish_latest=false) into the warm RAW
           # root, manifests via retain_filing_manifest into the warm ARCHIVE
-          # root — both ride tonight's sync and the incumbents' later
-          # root-wide non-pruning sync, so nothing is refetched nightly. A
-          # typed partial is a ::warning; a crash-class failure (e.g. a
-          # retained page failing receipt verification) fails this step AFTER
-          # the incumbents finished, exactly like the D13 crash path.
+          # root — those bytes live in the warm local RAW/ARCHIVE roots, where
+          # tonight's capture/publish read them (and the next night reuses
+          # them with zero requests); they reach R2 only through the NEXT
+          # night's incumbent root-wide non-pruning --sync, i.e. one night
+          # later. A typed partial is a ::warning; a crash-class failure
+          # (e.g. a retained page failing receipt verification) fails this
+          # step AFTER the incumbents finished, exactly like the D13 crash
+          # path.
           python -m scripts.publish_fif_production_datasets acquire-contract \
             --coverage-file config/fundamental_forensics/coverage/five_issuer_v1.json \
             --raw-root "$RAW" --archive-root "$ARCHIVE" \
@@ -346,6 +349,7 @@ jobs:
             ${{ runner.temp }}/fif-member-capture-report-${{ github.run_id }}.json
             ${{ runner.temp }}/fif-contract-acquire-result-${{ github.run_id }}.json
             ${{ runner.temp }}/fif-contract-acquire-summary-${{ github.run_id }}.json
+            ${{ runner.temp }}/fif-contract-acquire-acquire-report-${{ github.run_id }}.json
       - name: fail on contract-acquire crash
         # D13 W5: with continue-on-error, a contract crash or step timeout is
         # outcome=failure while the job is still green — and by construction
