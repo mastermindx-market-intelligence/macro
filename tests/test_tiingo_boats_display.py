@@ -212,3 +212,62 @@ def test_approved_empty_invalidation_uses_same_object_and_disables_cache(monkeyp
  assert writes[0]['Key']=='live_flow/ext_quotes.json'
  assert writes[0]['CacheControl']=='no-store, max-age=0'
  assert json.loads(writes[0]['Body'])['quotes']=={}
+
+
+def test_lowercase_live_vendor_trade_preserves_source_and_public_uppercase_key():
+ from collectors.tiingo_archive import decode_boats
+ from scripts.build_ext_quotes import public_boats_payload
+ r=BoatsLastTrade(['AMD'],'12345678-1234-1234-1234-123456789abc')
+ r.reset('connected',1)
+ raw=frame(symbol='amd',conditions=['@','','',''])
+ consume(r,raw)
+ assert json.loads(raw)['data'][3]=='amd'
+ assert decode_boats(json.loads(raw),NOW.isoformat())['ticker']=='amd'
+ payload=r.snapshot(NOW)
+ assert set(payload['quotes'])=={'AMD'}
+ assert payload['coverage_symbols']==['AMD']
+ assert public_boats_payload(payload,NOW)==payload
+
+
+def test_case_variants_share_one_trade_watermark():
+ r=reducer();consume(r,frame(symbol='amd',offset=2,price=102),2)
+ consume(r,frame(symbol='AMD',offset=1,price=101),3)
+ consume(r,frame(symbol='aMd',offset=2,price=99),3)
+ assert r.snapshot(NOW+timedelta(seconds=3))['quotes']['AMD']['extPrice']==102
+ assert set(r.watermarks)=={'AMD'}
+ assert r.watermarks['AMD']==int((NOW+timedelta(seconds=2)).timestamp())*1_000_000_000
+
+
+def test_lowercase_break_invalidates_and_only_newer_case_variant_restores():
+ r=reducer();consume(r,frame())
+ consume(r,frame('B',1,symbol='amd',conditions=['Z','@','F','X']),1)
+ assert r.snapshot(NOW+timedelta(seconds=1))['quotes']=={}
+ assert set(r.watermarks)=={'AMD'}
+ consume(r,frame(offset=1,symbol='AMD'),2)
+ assert r.snapshot(NOW+timedelta(seconds=2))['quotes']=={}
+ consume(r,frame(offset=3,symbol='aMd'),3)
+ assert set(r.snapshot(NOW+timedelta(seconds=3))['quotes'])=={'AMD'}
+
+
+def test_lowercase_quote_cannot_erase_refresh_or_advance_a_trade():
+ r=reducer();consume(r,frame())
+ before=dict(r.watermarks)
+ consume(r,frame('Q',20,symbol='amd'),20)
+ assert r.watermarks==before
+ assert r.snapshot(NOW+timedelta(seconds=20))['quotes']['AMD']['extTs']==NOW.timestamp()
+ assert r.snapshot(NOW+timedelta(seconds=31))['quotes']=={}
+
+
+@pytest.mark.parametrize('kind',['Q','T','B'])
+def test_uncovered_lowercase_frame_preserves_covered_quotes_and_watermarks(kind):
+ r=reducer();consume(r,frame())
+ quotes=dict(r.quotes);watermarks=dict(r.watermarks)
+ consume(r,frame(kind,1,symbol='msft'),1)
+ assert r.quotes==quotes and r.watermarks==watermarks
+
+
+@pytest.mark.parametrize('symbol',[None,True,123,[],{},' amd','amd ','amd\n','aｍd','ＡＭＤ','amd_','amd/','a'*33])
+def test_invalid_identity_is_refused_before_case_mapping(symbol):
+ r=reducer();consume(r,frame())
+ consume(r,frame(offset=1,symbol=symbol),1)
+ assert r.snapshot(NOW+timedelta(seconds=1))['quotes']=={}

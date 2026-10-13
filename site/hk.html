@@ -56,7 +56,7 @@
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <script>try{var t=localStorage.getItem('theme');document.documentElement.setAttribute('data-theme',t||'dark');var l=localStorage.getItem('lang')||(function(){try{var L=navigator.languages||[navigator.language||navigator.userLanguage||''],i;for(i=0;i<L.length;i++)if((L[i]||'').toLowerCase().slice(0,2)==='zh')return'zh';if(/Shanghai|Hong_Kong|Macau|Urumqi|Chongqing|Harbin|Kashgar|Chungking/.test(Intl.DateTimeFormat().resolvedOptions().timeZone||''))return'zh';}catch(e){}return'';})();if(l)document.documentElement.setAttribute('data-lang',l);}catch(e){}</script>
-<link rel="stylesheet" href="theme.css?v=d6d52074">
+<link rel="stylesheet" href="theme.css?v=311f121e">
 
 <script>
 (function(){
@@ -340,6 +340,17 @@
 
 <div class="grid">
 
+  
+  
+  
+  
+  
+  
+  <div class="panel span12 hk-fresh-stale" id="hk-freshness-banner">
+    <p class="hb-h">&#9888; <span class="l-en">HK data problem — numbers may be from an older session</span><span class="l-zh">港股数据异常 — 数值可能来自较早交易日</span></p>
+    <p class="hb-msg"><span class="l-en">HK data is stale — some numbers may be from an older session. Treat them as yesterday's until tonight's update. (today's prices came in older than yesterday's (back to 2026-10-12))</span><span class="l-zh">港股数据已过期 — 部分数值可能来自较早的交易日，在今晚更新前请当作昨日数据看待。（今日价格比昨日更旧（回退至 2026-10-12））</span></p>
+    <p class="hb-exp"><span class="l-en">Expected session 2026-10-12</span><span class="l-zh">预期交易日 2026-10-12</span></p>
+  </div>
   
   
 
@@ -887,15 +898,15 @@
     
     <div class="hkx-card hkx-cat" role="button" tabindex="0" onclick="hkxOpenDlg('hkx-dlg-policy')">
       <div class="cat-tag"><span class="l-en">Hang Seng Tech</span><span class="l-zh">恒生科技</span></div>
-      <div class="cat-val">4,198</div>
+      <div class="cat-val">4,170</div>
       
-      <div class="cat-chg hkx-tt-up">+124.5 +3.1%</div>
+      <div class="cat-chg hkx-tt-dn">-28.3 -0.7%</div>
       
       
       <div class="cat-mean"><span class="l-en">Hong Kong tech stocks today</span><span class="l-zh">今日港股科技</span></div>
       
       
-      <span class="cat-tone bull"><span class="l-en">Up</span><span class="l-zh">涨</span></span>
+      <span class="cat-tone bear"><span class="l-en">Down</span><span class="l-zh">跌</span></span>
       
     </div>
     
@@ -904,15 +915,15 @@
     
     <div class="hkx-card hkx-cat peg-warn warn" role="button" tabindex="0" onclick="hkxOpenDlg('hkx-dlg-policy')">
       <div class="cat-tag"><span class="l-en">HK dollar peg</span><span class="l-zh">港元联汇</span></div>
-      <div class="cat-val">7.8469</div>
+      <div class="cat-val">7.8474</div>
       
-      <div class="cat-chg hkx-tt-dn">-0.0003 -0.0%</div>
+      <div class="cat-chg hkx-tt-up">+0.0005 +0.0%</div>
       
       
       <div class="cat-mean"><span class="l-en">higher = a weaker HK dollar</span><span class="l-zh">数值升高 = 港元走弱</span></div>
       
       
-      <span class="cat-tone bear"><span class="l-en">Down</span><span class="l-zh">跌</span></span>
+      <span class="cat-tone bull"><span class="l-en">Up</span><span class="l-zh">涨</span></span>
       <div style="font-size:9px;color:var(--ink-warn, var(--warn));margin-top:2px"><span class="l-en">near weak edge</span><span class="l-zh">接近弱方</span></div>
     </div>
     
@@ -921,15 +932,15 @@
     
     <div class="hkx-card hkx-cat" role="button" tabindex="0" onclick="hkxOpenDlg('hkx-dlg-policy')">
       <div class="cat-tag"><span class="l-en">Offshore yuan</span><span class="l-zh">离岸人民币</span></div>
-      <div class="cat-val">6.663</div>
+      <div class="cat-val">6.665</div>
       
-      <div class="cat-chg hkx-tt-dn">-0.010 -0.1%</div>
+      <div class="cat-chg hkx-tt-up">+0.002 +0.0%</div>
       
       
       <div class="cat-mean"><span class="l-en">quoted as yuan per US dollar — higher = a weaker yuan</span><span class="l-zh">以美元兑人民币报价 — 数值升高 = 人民币走弱</span></div>
       
       
-      <span class="cat-tone bear"><span class="l-en">Down</span><span class="l-zh">跌</span></span>
+      <span class="cat-tone bull"><span class="l-en">Up</span><span class="l-zh">涨</span></span>
       
     </div>
     
@@ -1118,10 +1129,10 @@
       </div>
       
       <div class="hkx-stk">
-        <a class="hkx-tkr-btn" href="hk_lookup.html#9633.HK"><span class="l-en">Nongfu Spring</span><span class="l-zh">农夫山泉</span></a>
-        <div class="hkx-stk-meta"><b>9633.HK</b> · <span class="l-en">Consumer</span><span class="l-zh">消费</span></div>
+        <a class="hkx-tkr-btn" href="hk_lookup.html#0390.HK"><span class="l-en">China Railway Group</span><span class="l-zh">中国中铁</span></a>
+        <div class="hkx-stk-meta"><b>0390.HK</b> · <span class="l-en">Industrials &amp; Transport</span><span class="l-zh">工业与运输</span></div>
         
-        <span class="hkx-stage"><span class="l-en">Almost ready</span><span class="l-zh">接近就绪</span></span>
+        <span class="hkx-stage"><span class="l-en">Buy now</span><span class="l-zh">立即买入</span></span>
       </div>
       
       
@@ -1317,10 +1328,10 @@
       
       
       
-      <div class="hkx-bignum" style="color:var(--up)"><span class="l-en">~¥0.3bn</span><span class="l-zh">~3亿</span></div>
+      <div class="hkx-bignum" style="color:var(--up)"><span class="l-en">~¥2.6bn</span><span class="l-zh">~26亿</span></div>
       <div class="hkx-bigsub" style="color:var(--up)"><span class="l-en">Mainland money bought HK today</span><span class="l-zh">内地今日净买入港股</span></div>
       
-      <div class="hkx-kv"><span class="hkx-k"><span class="l-en">How often lately</span><span class="l-zh">近期频率</span></span><span class="hkx-v"><span class="l-en">bought on</span><span class="l-zh">净买入</span> 18 <span class="l-en">of last 20 days</span><span class="l-zh">天（近20日）</span></span></div>
+      <div class="hkx-kv"><span class="hkx-k"><span class="l-en">How often lately</span><span class="l-zh">近期频率</span></span><span class="hkx-v"><span class="l-en">bought on</span><span class="l-zh">净买入</span> 19 <span class="l-en">of last 20 days</span><span class="l-zh">天（近20日）</span></span></div>
       
       
       
@@ -1343,8 +1354,8 @@
       
       
       <div class="hkx-bbar">
-        <span class="hkx-bull" style="width:43%"></span>
-        <span class="hkx-bear" style="width:56%"></span>
+        <span class="hkx-bull" style="width:45%"></span>
+        <span class="hkx-bear" style="width:54%"></span>
       </div>
       
       
@@ -1367,30 +1378,30 @@
       <div class="hkx-fsum">
         <span class="l-en">This week:</span><span class="l-zh">本周：</span>
         <span><b class="u">0</b> <span class="l-en">buybacks</span><span class="l-zh">回购</span></span>
-        <span><b class="d">37</b> <span class="l-en">placements</span><span class="l-zh">配股</span></span>
-        <span><b class="i">24</b> <span class="l-en">results</span><span class="l-zh">业绩</span></span>
+        <span><b class="d">39</b> <span class="l-en">placements</span><span class="l-zh">配股</span></span>
+        <span><b class="i">20</b> <span class="l-en">results</span><span class="l-zh">业绩</span></span>
       </div>
       
       
       <div class="hkx-frw">
         <span class="hkx-tp placement"><span class="l-en">Placement</span><span class="l-zh">配股</span></span>
-        <span class="co">0860.HK</span>
+        <span class="co">6190.HK</span>
         <span class="rd"><span class="l-en">new shares — dilution</span><span class="l-zh">新发股份 — 稀释</span></span>
       </div>
       
       <div class="hkx-frw">
         <span class="hkx-tp placement"><span class="l-en">Placement</span><span class="l-zh">配股</span></span>
-        <span class="co">3313.HK</span>
+        <span class="co">0653.HK</span>
         <span class="rd"><span class="l-en">new shares — dilution</span><span class="l-zh">新发股份 — 稀释</span></span>
       </div>
       
       <div class="hkx-frw">
-        <span class="hkx-tp other"><span class="l-en">Filing</span><span class="l-zh">公告</span></span>
-        <span class="co">3738.HK</span>
-        <span class="rd"><span class="l-en">routine filing</span><span class="l-zh">常规公告</span></span>
+        <span class="hkx-tp placement"><span class="l-en">Placement</span><span class="l-zh">配股</span></span>
+        <span class="co">0428.HK</span>
+        <span class="rd"><span class="l-en">new shares — dilution</span><span class="l-zh">新发股份 — 稀释</span></span>
       </div>
       
-      <div class="hkx-view-all">3032 <span class="l-en">company filings</span><span class="l-zh">公司公告</span> · <span class="l-en">see all →</span><span class="l-zh">查看全部 →</span></div>
+      <div class="hkx-view-all">3030 <span class="l-en">company filings</span><span class="l-zh">公司公告</span> · <span class="l-en">see all →</span><span class="l-zh">查看全部 →</span></div>
       
     </div>
 
@@ -1440,8 +1451,8 @@
     <div class="hkx-card" role="button" tabindex="0" onclick="hkxOpenDlg('hkx-dlg-health')" style="align-self:start;cursor:pointer">
       <div class="hkx-ctitle"><span class="l-en">Data Health</span><span class="l-zh">数据状态</span></div>
       <div style="display:flex;align-items:center;gap:8px;font-size:12px">
-        <span style="width:8px;height:8px;border-radius:50%;background:var(--up);flex:0 0 8px;display:inline-block"></span>
-        <b><span class="l-en">OK</span><span class="l-zh">正常</span></b>
+        <span style="width:8px;height:8px;border-radius:50%;background:var(--warn);flex:0 0 8px;display:inline-block"></span>
+        <b><span class="l-en">Check data</span><span class="l-zh">请检查数据</span></b>
         <span style="margin-left:auto;opacity:.6;font-size:10px"><span class="l-en">tap for details</span><span class="l-zh">点击查看详情</span> ↓</span>
       </div>
     </div>
@@ -1660,12 +1671,12 @@
             
             <div style="display:flex;gap:12px;align-items:baseline;margin:2px 0 8px">
               
-              <span class="hkx-bignum" style="color:var(--up)"><span class="l-en">~¥0.3bn</span><span class="l-zh">~3亿</span></span>
+              <span class="hkx-bignum" style="color:var(--up)"><span class="l-en">~¥2.6bn</span><span class="l-zh">~26亿</span></span>
               
               <span class="hkx-alert-pill pill-buy" style="margin:0"><span class="l-en">NET BUYING</span><span class="l-zh">净买入</span></span>
             </div>
-            <div class="hkx-kv"><span class="hkx-k"><span class="l-en">Last 20 days</span><span class="l-zh">近20日</span></span><span class="hkx-v"><span class="l-en">~¥52bn</span><span class="l-zh">~523亿</span> <span class="l-en">total</span><span class="l-zh">合计</span></span></div>
-            <div class="hkx-kv"><span class="hkx-k"><span class="l-en">How often</span><span class="l-zh">频率</span></span><span class="hkx-v"><span class="l-en">bought on</span><span class="l-zh">买入</span> 18 <span class="l-en">of 20 days</span><span class="l-zh">天（共20日）</span></span></div>
+            <div class="hkx-kv"><span class="hkx-k"><span class="l-en">Last 20 days</span><span class="l-zh">近20日</span></span><span class="hkx-v"><span class="l-en">~¥65bn</span><span class="l-zh">~649亿</span> <span class="l-en">total</span><span class="l-zh">合计</span></span></div>
+            <div class="hkx-kv"><span class="hkx-k"><span class="l-en">How often</span><span class="l-zh">频率</span></span><span class="hkx-v"><span class="l-en">bought on</span><span class="l-zh">买入</span> 19 <span class="l-en">of 20 days</span><span class="l-zh">天（共20日）</span></span></div>
             
           </div>
           <div>
@@ -1684,14 +1695,14 @@
             <div class="hkx-val-pair">
               
               <div>
-                <div class="hkx-kv"><span class="hkx-k"><span class="l-en">P/E</span><span class="l-zh">市盈率</span></span><span class="hkx-v">13.1</span></div>
-                <div class="hkx-kv"><span class="hkx-k"><span class="l-en">Pctile</span><span class="l-zh">历史分位</span></span><span class="hkx-v">12<span class="l-en">th</span><span class="l-zh">百分位</span></span></div>
+                <div class="hkx-kv"><span class="hkx-k"><span class="l-en">P/E</span><span class="l-zh">市盈率</span></span><span class="hkx-v">12.9</span></div>
+                <div class="hkx-kv"><span class="hkx-k"><span class="l-en">Pctile</span><span class="l-zh">历史分位</span></span><span class="hkx-v">10<span class="l-en">th</span><span class="l-zh">百分位</span></span></div>
               </div>
               
               
               <div>
-                <div class="hkx-kv"><span class="hkx-k"><span class="l-en">P/B</span><span class="l-zh">市净率</span></span><span class="hkx-v">1.66</span></div>
-                <div class="hkx-kv"><span class="hkx-k"><span class="l-en">Pctile</span><span class="l-zh">历史分位</span></span><span class="hkx-v">47<span class="l-en">th</span><span class="l-zh">百分位</span></span></div>
+                <div class="hkx-kv"><span class="hkx-k"><span class="l-en">P/B</span><span class="l-zh">市净率</span></span><span class="hkx-v">1.64</span></div>
+                <div class="hkx-kv"><span class="hkx-k"><span class="l-en">Pctile</span><span class="l-zh">历史分位</span></span><span class="hkx-v">45<span class="l-en">th</span><span class="l-zh">百分位</span></span></div>
               </div>
               
             </div>
@@ -1702,7 +1713,7 @@
         
         <div class="hkx-sep"></div>
         <div class="hkx-eyebrow"><span class="l-en">Cumulative southbound flow</span><span class="l-zh">南向资金累计走势</span></div>
-        <div style="max-width:100%;overflow:hidden"><figure class="ilx ilx-baseline" style="color:var(--info);--ilx-len:2225.1;--ilx-h:190px" role="img" aria-label="Southbound 20-day rolling net flow, 2 years"><svg viewBox="0 0 560 190" preserveAspectRatio="none" aria-hidden="true"><defs><clipPath id="ilxct-3f8d39d1"><rect x="0" y="0" width="560" height="158.06"/></clipPath><clipPath id="ilxcb-3f8d39d1"><rect x="0" y="158.06" width="560" height="31.939999999999998"/></clipPath><linearGradient id="ilxgu-3f8d39d1" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="var(--up)" stop-opacity=".40"/><stop offset="1" stop-color="var(--up)" stop-opacity="0"/></linearGradient><linearGradient id="ilxgd-3f8d39d1" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="var(--down)" stop-opacity=".40"/><stop offset="1" stop-color="var(--down)" stop-opacity="0"/></linearGradient><path id="ilxa-3f8d39d1" d="M0.0 158.06 L0.0 131.45 L2.56 122.4 L5.11 121.13 L7.67 115.27 L10.23 111.72 L12.79 104.51 L15.34 104.07 L17.9 99.31 L20.46 98.64 L23.01 86.11 L25.57 94.13 L28.13 96.52 L30.68 86.83 L33.24 91.41 L35.8 88.37 L38.36 95.29 L40.91 89.29 L43.47 77.19 L46.03 82.57 L48.58 101.35 L51.14 98.29 L53.7 111.61 L56.26 111.94 L58.81 104.6 L61.37 105.27 L63.93 103.37 L66.48 109.52 L69.04 95.1 L71.6 89.68 L74.16 75.85 L76.71 76.27 L79.27 66.34 L81.83 66.13 L84.38 74.26 L86.94 75.87 L89.5 83.33 L92.05 80.74 L94.61 92.2 L97.17 103.72 L99.73 90.76 L102.28 101.11 L104.84 81.16 L107.4 75.93 L109.95 56.86 L112.51 62.93 L115.07 49.85 L117.63 42.09 L120.18 24.36 L122.74 26.52 L125.3 40.39 L127.85 42.97 L130.41 55.58 L132.97 69.28 L135.53 54.89 L138.08 43.37 L140.64 20.0 L143.2 37.84 L145.75 33.32 L148.31 35.54 L150.87 22.7 L153.42 46.54 L155.98 58.05 L158.54 51.82 L161.1 91.09 L163.65 111.08 L166.21 140.71 L168.77 143.14 L171.32 147.47 L173.88 159.8 L176.44 138.7 L179.0 137.32 L181.55 127.84 L184.11 129.66 L186.67 110.82 L189.22 112.01 L191.78 109.02 L194.34 114.66 L196.89 109.34 L199.45 106.92 L202.01 110.74 L204.57 113.94 L207.12 107.31 L209.68 105.62 L212.24 107.89 L214.79 103.14 L217.35 107.04 L219.91 100.78 L222.47 109.59 L225.02 100.81 L227.58 88.78 L230.14 75.98 L232.69 93.77 L235.25 78.7 L237.81 83.54 L240.37 86.53 L242.92 68.87 L245.48 62.86 L248.04 77.39 L250.59 79.23 L253.15 99.12 L255.71 81.41 L258.26 92.1 L260.82 92.45 L263.38 72.82 L265.94 62.23 L268.49 84.18 L271.05 59.57 L273.61 71.74 L276.16 72.72 L278.72 54.15 L281.28 61.51 L283.84 53.14 L286.39 57.93 L288.95 75.68 L291.51 83.52 L294.06 75.74 L296.62 90.13 L299.18 79.69 L301.74 86.33 L304.29 79.24 L306.85 78.34 L309.41 89.93 L311.96 90.53 L314.52 80.08 L317.08 79.65 L319.63 71.72 L322.19 75.38 L324.75 91.52 L327.31 96.29 L329.86 105.31 L332.42 107.64 L334.98 118.93 L337.53 121.76 L340.09 134.03 L342.65 135.32 L345.21 142.7 L347.76 146.58 L350.32 136.83 L352.88 135.97 L355.43 127.5 L357.99 126.28 L360.55 124.05 L363.11 127.36 L365.66 118.78 L368.22 122.41 L370.78 117.25 L373.33 128.44 L375.89 108.35 L378.45 103.6 L381.0 109.74 L383.56 105.0 L386.12 92.64 L388.68 109.75 L391.23 89.32 L393.79 107.52 L396.35 87.48 L398.9 97.72 L401.46 112.3 L404.02 104.69 L406.58 119.77 L409.13 132.14 L411.69 110.27 L414.25 142.21 L416.8 114.16 L419.36 125.6 L421.92 140.12 L424.47 148.13 L427.03 128.06 L429.59 144.32 L432.15 123.34 L434.7 138.91 L437.26 124.31 L439.82 129.77 L442.37 116.27 L444.93 132.62 L447.49 116.72 L450.05 125.63 L452.6 139.63 L455.16 143.08 L457.72 152.71 L460.27 148.91 L462.83 138.82 L465.39 145.04 L467.95 138.27 L470.5 134.87 L473.06 148.34 L475.62 151.67 L478.17 131.7 L480.73 138.34 L483.29 147.3 L485.84 155.64 L488.4 139.92 L490.96 137.45 L493.52 115.04 L496.07 114.12 L498.63 104.92 L501.19 106.61 L503.74 118.39 L506.3 108.88 L508.86 128.1 L511.42 126.88 L513.97 142.73 L516.53 143.79 L519.09 161.5 L521.64 152.05 L524.2 162.75 L526.76 170.0 L529.32 161.11 L531.87 153.2 L534.43 158.45 L536.99 149.29 L539.54 155.18 L542.1 150.75 L544.66 142.11 L547.21 149.85 L549.77 129.02 L552.33 133.44 L554.89 120.29 L557.44 125.01 L560.0 127.22 L560.0 158.06 Z"/><path id="ilxl-3f8d39d1" d="M0.0 131.45 L2.56 122.4 L5.11 121.13 L7.67 115.27 L10.23 111.72 L12.79 104.51 L15.34 104.07 L17.9 99.31 L20.46 98.64 L23.01 86.11 L25.57 94.13 L28.13 96.52 L30.68 86.83 L33.24 91.41 L35.8 88.37 L38.36 95.29 L40.91 89.29 L43.47 77.19 L46.03 82.57 L48.58 101.35 L51.14 98.29 L53.7 111.61 L56.26 111.94 L58.81 104.6 L61.37 105.27 L63.93 103.37 L66.48 109.52 L69.04 95.1 L71.6 89.68 L74.16 75.85 L76.71 76.27 L79.27 66.34 L81.83 66.13 L84.38 74.26 L86.94 75.87 L89.5 83.33 L92.05 80.74 L94.61 92.2 L97.17 103.72 L99.73 90.76 L102.28 101.11 L104.84 81.16 L107.4 75.93 L109.95 56.86 L112.51 62.93 L115.07 49.85 L117.63 42.09 L120.18 24.36 L122.74 26.52 L125.3 40.39 L127.85 42.97 L130.41 55.58 L132.97 69.28 L135.53 54.89 L138.08 43.37 L140.64 20.0 L143.2 37.84 L145.75 33.32 L148.31 35.54 L150.87 22.7 L153.42 46.54 L155.98 58.05 L158.54 51.82 L161.1 91.09 L163.65 111.08 L166.21 140.71 L168.77 143.14 L171.32 147.47 L173.88 159.8 L176.44 138.7 L179.0 137.32 L181.55 127.84 L184.11 129.66 L186.67 110.82 L189.22 112.01 L191.78 109.02 L194.34 114.66 L196.89 109.34 L199.45 106.92 L202.01 110.74 L204.57 113.94 L207.12 107.31 L209.68 105.62 L212.24 107.89 L214.79 103.14 L217.35 107.04 L219.91 100.78 L222.47 109.59 L225.02 100.81 L227.58 88.78 L230.14 75.98 L232.69 93.77 L235.25 78.7 L237.81 83.54 L240.37 86.53 L242.92 68.87 L245.48 62.86 L248.04 77.39 L250.59 79.23 L253.15 99.12 L255.71 81.41 L258.26 92.1 L260.82 92.45 L263.38 72.82 L265.94 62.23 L268.49 84.18 L271.05 59.57 L273.61 71.74 L276.16 72.72 L278.72 54.15 L281.28 61.51 L283.84 53.14 L286.39 57.93 L288.95 75.68 L291.51 83.52 L294.06 75.74 L296.62 90.13 L299.18 79.69 L301.74 86.33 L304.29 79.24 L306.85 78.34 L309.41 89.93 L311.96 90.53 L314.52 80.08 L317.08 79.65 L319.63 71.72 L322.19 75.38 L324.75 91.52 L327.31 96.29 L329.86 105.31 L332.42 107.64 L334.98 118.93 L337.53 121.76 L340.09 134.03 L342.65 135.32 L345.21 142.7 L347.76 146.58 L350.32 136.83 L352.88 135.97 L355.43 127.5 L357.99 126.28 L360.55 124.05 L363.11 127.36 L365.66 118.78 L368.22 122.41 L370.78 117.25 L373.33 128.44 L375.89 108.35 L378.45 103.6 L381.0 109.74 L383.56 105.0 L386.12 92.64 L388.68 109.75 L391.23 89.32 L393.79 107.52 L396.35 87.48 L398.9 97.72 L401.46 112.3 L404.02 104.69 L406.58 119.77 L409.13 132.14 L411.69 110.27 L414.25 142.21 L416.8 114.16 L419.36 125.6 L421.92 140.12 L424.47 148.13 L427.03 128.06 L429.59 144.32 L432.15 123.34 L434.7 138.91 L437.26 124.31 L439.82 129.77 L442.37 116.27 L444.93 132.62 L447.49 116.72 L450.05 125.63 L452.6 139.63 L455.16 143.08 L457.72 152.71 L460.27 148.91 L462.83 138.82 L465.39 145.04 L467.95 138.27 L470.5 134.87 L473.06 148.34 L475.62 151.67 L478.17 131.7 L480.73 138.34 L483.29 147.3 L485.84 155.64 L488.4 139.92 L490.96 137.45 L493.52 115.04 L496.07 114.12 L498.63 104.92 L501.19 106.61 L503.74 118.39 L506.3 108.88 L508.86 128.1 L511.42 126.88 L513.97 142.73 L516.53 143.79 L519.09 161.5 L521.64 152.05 L524.2 162.75 L526.76 170.0 L529.32 161.11 L531.87 153.2 L534.43 158.45 L536.99 149.29 L539.54 155.18 L542.1 150.75 L544.66 142.11 L547.21 149.85 L549.77 129.02 L552.33 133.44 L554.89 120.29 L557.44 125.01 L560.0 127.22"/></defs><use href="#ilxa-3f8d39d1" class="ilx-area" fill="url(#ilxgu-3f8d39d1)" clip-path="url(#ilxct-3f8d39d1)"/><use href="#ilxa-3f8d39d1" class="ilx-area" fill="url(#ilxgd-3f8d39d1)" clip-path="url(#ilxcb-3f8d39d1)"/><line class="ilx-water" x1="0" y1="158.06" x2="560" y2="158.06"/><use href="#ilxl-3f8d39d1" class="ilx-path ilx-up" clip-path="url(#ilxct-3f8d39d1)"/><use href="#ilxl-3f8d39d1" class="ilx-path ilx-down" clip-path="url(#ilxcb-3f8d39d1)"/><circle class="ilx-dot ilx-dot-up" cx="560.0" cy="127.22" r="3.2"/></svg><span class="ilx-d ilx-d0">2024-10-09</span><span class="ilx-d ilx-d1">2026-10-09</span><span class="ilx-tag">+523<span class="ilx-u"><span class="l-en">亿</span><span class="l-zh">亿</span></span></span></figure></div>
+        <div style="max-width:100%;overflow:hidden"><figure class="ilx ilx-baseline" style="color:var(--info);--ilx-len:2244.3;--ilx-h:190px" role="img" aria-label="Southbound 20-day rolling net flow, 2 years"><svg viewBox="0 0 560 190" preserveAspectRatio="none" aria-hidden="true"><defs><clipPath id="ilxct-021e7b2d"><rect x="0" y="0" width="560" height="158.06"/></clipPath><clipPath id="ilxcb-021e7b2d"><rect x="0" y="158.06" width="560" height="31.939999999999998"/></clipPath><linearGradient id="ilxgu-021e7b2d" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="var(--up)" stop-opacity=".40"/><stop offset="1" stop-color="var(--up)" stop-opacity="0"/></linearGradient><linearGradient id="ilxgd-021e7b2d" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="var(--down)" stop-opacity=".40"/><stop offset="1" stop-color="var(--down)" stop-opacity="0"/></linearGradient><path id="ilxa-021e7b2d" d="M0.0 158.06 L0.0 125.9 L2.56 115.27 L5.11 120.53 L7.67 107.98 L10.23 108.4 L12.79 102.81 L15.34 104.07 L17.9 97.03 L20.46 86.11 L23.01 95.49 L25.57 96.52 L28.13 87.49 L30.68 86.83 L33.24 92.29 L35.8 95.29 L38.36 86.27 L40.91 77.19 L43.47 101.35 L46.03 93.41 L48.58 105.27 L51.14 98.29 L53.7 111.94 L56.26 110.47 L58.81 104.3 L61.37 105.27 L63.93 101.77 L66.48 109.52 L69.04 83.85 L71.6 84.68 L74.16 67.36 L76.71 70.28 L79.27 66.13 L81.83 71.14 L84.38 76.21 L86.94 75.87 L89.5 84.99 L92.05 89.01 L94.61 103.72 L97.17 90.76 L99.73 101.11 L102.28 96.55 L104.84 68.43 L107.4 64.6 L109.95 54.87 L112.51 56.36 L115.07 39.22 L117.63 28.19 L120.18 24.36 L122.74 36.03 L125.3 49.58 L127.85 54.38 L130.41 65.26 L132.97 69.28 L135.53 41.76 L138.08 43.37 L140.64 20.0 L143.2 29.95 L145.75 35.54 L148.31 22.7 L150.87 46.54 L153.42 50.28 L155.98 68.18 L158.54 76.49 L161.1 123.68 L163.65 138.47 L166.21 144.72 L168.77 143.65 L171.32 159.8 L173.88 150.01 L176.44 127.84 L179.0 134.73 L181.55 124.26 L184.11 126.22 L186.67 110.82 L189.22 109.02 L191.78 113.3 L194.34 114.66 L196.89 106.92 L199.45 107.33 L202.01 110.74 L204.57 113.94 L207.12 107.31 L209.68 107.89 L212.24 103.14 L214.79 107.04 L217.35 100.78 L219.91 109.59 L222.47 100.81 L225.02 97.14 L227.58 75.98 L230.14 93.77 L232.69 80.05 L235.25 78.7 L237.81 86.04 L240.37 86.53 L242.92 62.86 L245.48 68.54 L248.04 83.66 L250.59 79.23 L253.15 99.12 L255.71 89.75 L258.26 92.45 L260.82 82.62 L263.38 62.23 L265.94 84.18 L268.49 69.96 L271.05 59.57 L273.61 72.72 L276.16 54.15 L278.72 63.06 L281.28 53.14 L283.84 67.17 L286.39 62.3 L288.95 83.52 L291.51 75.74 L294.06 83.95 L296.62 90.13 L299.18 79.69 L301.74 85.14 L304.29 78.34 L306.85 87.38 L309.41 90.53 L311.96 89.26 L314.52 76.56 L317.08 71.72 L319.63 82.64 L322.19 86.18 L324.75 96.29 L327.31 98.65 L329.86 107.64 L332.42 108.22 L334.98 126.12 L337.53 125.34 L340.09 135.32 L342.65 139.9 L345.21 146.58 L347.76 145.81 L350.32 132.29 L352.88 132.86 L355.43 126.28 L357.99 124.05 L360.55 127.36 L363.11 118.78 L365.66 122.41 L368.22 117.25 L370.78 127.31 L373.33 128.44 L375.89 103.6 L378.45 109.74 L381.0 105.0 L383.56 92.64 L386.12 109.75 L388.68 89.32 L391.23 103.65 L393.79 107.52 L396.35 87.48 L398.9 98.95 L401.46 117.96 L404.02 104.69 L406.58 132.14 L409.13 110.27 L411.69 131.83 L414.25 142.21 L416.8 114.16 L419.36 131.19 L421.92 148.13 L424.47 144.86 L427.03 128.06 L429.59 141.52 L432.15 123.34 L434.7 132.95 L437.26 124.31 L439.82 129.04 L442.37 116.27 L444.93 132.62 L447.49 116.72 L450.05 132.3 L452.6 143.08 L455.16 152.71 L457.72 146.73 L460.27 145.08 L462.83 138.82 L465.39 145.04 L467.95 134.87 L470.5 141.65 L473.06 151.67 L475.62 141.56 L478.17 131.7 L480.73 144.82 L483.29 155.64 L485.84 143.34 L488.4 129.05 L490.96 137.45 L493.52 114.12 L496.07 113.07 L498.63 104.92 L501.19 118.39 L503.74 108.88 L506.3 115.65 L508.86 128.1 L511.42 136.07 L513.97 143.79 L516.53 151.09 L519.09 161.5 L521.64 152.05 L524.2 166.4 L526.76 170.0 L529.32 154.18 L531.87 158.45 L534.43 152.15 L536.99 149.29 L539.54 155.18 L542.1 142.11 L544.66 149.85 L547.21 142.35 L549.77 129.02 L552.33 120.29 L554.89 125.01 L557.44 127.22 L560.0 119.78 L560.0 158.06 Z"/><path id="ilxl-021e7b2d" d="M0.0 125.9 L2.56 115.27 L5.11 120.53 L7.67 107.98 L10.23 108.4 L12.79 102.81 L15.34 104.07 L17.9 97.03 L20.46 86.11 L23.01 95.49 L25.57 96.52 L28.13 87.49 L30.68 86.83 L33.24 92.29 L35.8 95.29 L38.36 86.27 L40.91 77.19 L43.47 101.35 L46.03 93.41 L48.58 105.27 L51.14 98.29 L53.7 111.94 L56.26 110.47 L58.81 104.3 L61.37 105.27 L63.93 101.77 L66.48 109.52 L69.04 83.85 L71.6 84.68 L74.16 67.36 L76.71 70.28 L79.27 66.13 L81.83 71.14 L84.38 76.21 L86.94 75.87 L89.5 84.99 L92.05 89.01 L94.61 103.72 L97.17 90.76 L99.73 101.11 L102.28 96.55 L104.84 68.43 L107.4 64.6 L109.95 54.87 L112.51 56.36 L115.07 39.22 L117.63 28.19 L120.18 24.36 L122.74 36.03 L125.3 49.58 L127.85 54.38 L130.41 65.26 L132.97 69.28 L135.53 41.76 L138.08 43.37 L140.64 20.0 L143.2 29.95 L145.75 35.54 L148.31 22.7 L150.87 46.54 L153.42 50.28 L155.98 68.18 L158.54 76.49 L161.1 123.68 L163.65 138.47 L166.21 144.72 L168.77 143.65 L171.32 159.8 L173.88 150.01 L176.44 127.84 L179.0 134.73 L181.55 124.26 L184.11 126.22 L186.67 110.82 L189.22 109.02 L191.78 113.3 L194.34 114.66 L196.89 106.92 L199.45 107.33 L202.01 110.74 L204.57 113.94 L207.12 107.31 L209.68 107.89 L212.24 103.14 L214.79 107.04 L217.35 100.78 L219.91 109.59 L222.47 100.81 L225.02 97.14 L227.58 75.98 L230.14 93.77 L232.69 80.05 L235.25 78.7 L237.81 86.04 L240.37 86.53 L242.92 62.86 L245.48 68.54 L248.04 83.66 L250.59 79.23 L253.15 99.12 L255.71 89.75 L258.26 92.45 L260.82 82.62 L263.38 62.23 L265.94 84.18 L268.49 69.96 L271.05 59.57 L273.61 72.72 L276.16 54.15 L278.72 63.06 L281.28 53.14 L283.84 67.17 L286.39 62.3 L288.95 83.52 L291.51 75.74 L294.06 83.95 L296.62 90.13 L299.18 79.69 L301.74 85.14 L304.29 78.34 L306.85 87.38 L309.41 90.53 L311.96 89.26 L314.52 76.56 L317.08 71.72 L319.63 82.64 L322.19 86.18 L324.75 96.29 L327.31 98.65 L329.86 107.64 L332.42 108.22 L334.98 126.12 L337.53 125.34 L340.09 135.32 L342.65 139.9 L345.21 146.58 L347.76 145.81 L350.32 132.29 L352.88 132.86 L355.43 126.28 L357.99 124.05 L360.55 127.36 L363.11 118.78 L365.66 122.41 L368.22 117.25 L370.78 127.31 L373.33 128.44 L375.89 103.6 L378.45 109.74 L381.0 105.0 L383.56 92.64 L386.12 109.75 L388.68 89.32 L391.23 103.65 L393.79 107.52 L396.35 87.48 L398.9 98.95 L401.46 117.96 L404.02 104.69 L406.58 132.14 L409.13 110.27 L411.69 131.83 L414.25 142.21 L416.8 114.16 L419.36 131.19 L421.92 148.13 L424.47 144.86 L427.03 128.06 L429.59 141.52 L432.15 123.34 L434.7 132.95 L437.26 124.31 L439.82 129.04 L442.37 116.27 L444.93 132.62 L447.49 116.72 L450.05 132.3 L452.6 143.08 L455.16 152.71 L457.72 146.73 L460.27 145.08 L462.83 138.82 L465.39 145.04 L467.95 134.87 L470.5 141.65 L473.06 151.67 L475.62 141.56 L478.17 131.7 L480.73 144.82 L483.29 155.64 L485.84 143.34 L488.4 129.05 L490.96 137.45 L493.52 114.12 L496.07 113.07 L498.63 104.92 L501.19 118.39 L503.74 108.88 L506.3 115.65 L508.86 128.1 L511.42 136.07 L513.97 143.79 L516.53 151.09 L519.09 161.5 L521.64 152.05 L524.2 166.4 L526.76 170.0 L529.32 154.18 L531.87 158.45 L534.43 152.15 L536.99 149.29 L539.54 155.18 L542.1 142.11 L544.66 149.85 L547.21 142.35 L549.77 129.02 L552.33 120.29 L554.89 125.01 L557.44 127.22 L560.0 119.78"/></defs><use href="#ilxa-021e7b2d" class="ilx-area" fill="url(#ilxgu-021e7b2d)" clip-path="url(#ilxct-021e7b2d)"/><use href="#ilxa-021e7b2d" class="ilx-area" fill="url(#ilxgd-021e7b2d)" clip-path="url(#ilxcb-021e7b2d)"/><line class="ilx-water" x1="0" y1="158.06" x2="560" y2="158.06"/><use href="#ilxl-021e7b2d" class="ilx-path ilx-up" clip-path="url(#ilxct-021e7b2d)"/><use href="#ilxl-021e7b2d" class="ilx-path ilx-down" clip-path="url(#ilxcb-021e7b2d)"/><circle class="ilx-dot ilx-dot-up" cx="560.0" cy="119.78" r="3.2"/></svg><span class="ilx-d ilx-d0">2024-10-14</span><span class="ilx-d ilx-d1">2026-10-12</span><span class="ilx-tag">+649<span class="ilx-u"><span class="l-en">亿</span><span class="l-zh">亿</span></span></span></figure></div>
         
         
         
@@ -1713,15 +1724,15 @@
           <div>
             <div class="hkx-eyebrow" style="margin-top:0"><span class="l-en">Shanghai → HK</span><span class="l-zh">沪市港股通</span></div>
             
-            <div class="hkx-kv"><span class="hkx-k"><span class="l-en">Today</span><span class="l-zh">今日</span></span><span class="hkx-v hkx-dn"><span class="l-en">¥-2.3bn</span><span class="l-zh">-23亿</span></span></div>
-            <div class="hkx-kv"><span class="hkx-k"><span class="l-en">20d</span><span class="l-zh">20日</span></span><span class="hkx-v"><span class="l-en">¥+44bn</span><span class="l-zh">+440亿</span></span></div>
+            <div class="hkx-kv"><span class="hkx-k"><span class="l-en">Today</span><span class="l-zh">今日</span></span><span class="hkx-v hkx-up"><span class="l-en">¥+1.9bn</span><span class="l-zh">+20亿</span></span></div>
+            <div class="hkx-kv"><span class="hkx-k"><span class="l-en">20d</span><span class="l-zh">20日</span></span><span class="hkx-v"><span class="l-en">¥+51bn</span><span class="l-zh">+507亿</span></span></div>
           </div>
           
           
           <div>
             <div class="hkx-eyebrow" style="margin-top:0"><span class="l-en">Shenzhen → HK</span><span class="l-zh">深市港股通</span></div>
-            <div class="hkx-kv"><span class="hkx-k"><span class="l-en">Today</span><span class="l-zh">今日</span></span><span class="hkx-v hkx-up"><span class="l-en">¥+2.6bn</span><span class="l-zh">+26亿</span></span></div>
-            <div class="hkx-kv"><span class="hkx-k"><span class="l-en">20d</span><span class="l-zh">20日</span></span><span class="hkx-v"><span class="l-en">¥+8bn</span><span class="l-zh">+83亿</span></span></div>
+            <div class="hkx-kv"><span class="hkx-k"><span class="l-en">Today</span><span class="l-zh">今日</span></span><span class="hkx-v hkx-up"><span class="l-en">¥+0.7bn</span><span class="l-zh">+6亿</span></span></div>
+            <div class="hkx-kv"><span class="hkx-k"><span class="l-en">20d</span><span class="l-zh">20日</span></span><span class="hkx-v"><span class="l-en">¥+14bn</span><span class="l-zh">+142亿</span></span></div>
           </div>
           
         </div>
@@ -1799,7 +1810,7 @@
             
             
             
-            <div class="hkx-bbar"><span class="hkx-bull" style="width:43%"></span><span class="hkx-bear" style="width:56%"></span></div>
+            <div class="hkx-bbar"><span class="hkx-bull" style="width:45%"></span><span class="hkx-bear" style="width:54%"></span></div>
             
             
             
@@ -1807,7 +1818,7 @@
             
             
             
-            <div class="hkx-bbar"><span class="hkx-bull" style="width:88%"></span><span class="hkx-bear" style="width:11%"></span></div>
+            <div class="hkx-bbar"><span class="hkx-bull" style="width:89%"></span><span class="hkx-bear" style="width:10%"></span></div>
             
             
             
@@ -1836,79 +1847,79 @@
         <div class="hkx-fsum">
           <span class="l-en">This week:</span><span class="l-zh">本周：</span>
           <span><b class="u">0</b> <span class="l-en">buybacks</span><span class="l-zh">回购</span></span>
-          <span><b class="d">37</b> <span class="l-en">placements</span><span class="l-zh">配股</span></span>
-          <span><b class="i">24</b> <span class="l-en">results</span><span class="l-zh">业绩</span></span>
-          <span><b>15</b> <span class="l-en">other</span><span class="l-zh">其他</span></span>
+          <span><b class="d">39</b> <span class="l-en">placements</span><span class="l-zh">配股</span></span>
+          <span><b class="i">20</b> <span class="l-en">results</span><span class="l-zh">业绩</span></span>
+          <span><b>12</b> <span class="l-en">other</span><span class="l-zh">其他</span></span>
         </div>
         
+        
+        <div class="hkx-frw">
+          <span class="dt">2026-10-12</span>
+          <span class="hkx-tp placement"><span class="l-en">Placement</span><span class="l-zh">配股</span></span>
+          <span class="co">6190.HK</span>
+          <span class="rd"><span class="l-en">new shares — dilution</span><span class="l-zh">新发股份 — 稀释</span></span>
+        </div>
+        
+        <div class="hkx-frw">
+          <span class="dt">2026-10-12</span>
+          <span class="hkx-tp placement"><span class="l-en">Placement</span><span class="l-zh">配股</span></span>
+          <span class="co">0653.HK</span>
+          <span class="rd"><span class="l-en">new shares — dilution</span><span class="l-zh">新发股份 — 稀释</span></span>
+        </div>
+        
+        <div class="hkx-frw">
+          <span class="dt">2026-10-12</span>
+          <span class="hkx-tp placement"><span class="l-en">Placement</span><span class="l-zh">配股</span></span>
+          <span class="co">0428.HK</span>
+          <span class="rd"><span class="l-en">new shares — dilution</span><span class="l-zh">新发股份 — 稀释</span></span>
+        </div>
+        
+        <div class="hkx-frw">
+          <span class="dt">2026-10-12</span>
+          <span class="hkx-tp results"><span class="l-en">Results</span><span class="l-zh">业绩</span></span>
+          <span class="co">3939.HK</span>
+          <span class="rd"><span class="l-en">earnings update</span><span class="l-zh">业绩更新</span></span>
+        </div>
+        
+        <div class="hkx-frw">
+          <span class="dt">2026-10-12</span>
+          <span class="hkx-tp placement"><span class="l-en">Placement</span><span class="l-zh">配股</span></span>
+          <span class="co">2371.HK</span>
+          <span class="rd"><span class="l-en">new shares — dilution</span><span class="l-zh">新发股份 — 稀释</span></span>
+        </div>
+        
+        <div class="hkx-frw">
+          <span class="dt">2026-10-12</span>
+          <span class="hkx-tp placement"><span class="l-en">Placement</span><span class="l-zh">配股</span></span>
+          <span class="co">6082.HK</span>
+          <span class="rd"><span class="l-en">new shares — dilution</span><span class="l-zh">新发股份 — 稀释</span></span>
+        </div>
+        
+        <div class="hkx-frw">
+          <span class="dt">2026-10-12</span>
+          <span class="hkx-tp results"><span class="l-en">Results</span><span class="l-zh">业绩</span></span>
+          <span class="co">6610.HK</span>
+          <span class="rd"><span class="l-en">earnings update</span><span class="l-zh">业绩更新</span></span>
+        </div>
+        
+        <div class="hkx-frw">
+          <span class="dt">2026-10-12</span>
+          <span class="hkx-tp placement"><span class="l-en">Placement</span><span class="l-zh">配股</span></span>
+          <span class="co">1716.HK</span>
+          <span class="rd"><span class="l-en">new shares — dilution</span><span class="l-zh">新发股份 — 稀释</span></span>
+        </div>
+        
+        <div class="hkx-frw">
+          <span class="dt">2026-10-12</span>
+          <span class="hkx-tp placement"><span class="l-en">Placement</span><span class="l-zh">配股</span></span>
+          <span class="co">0271.HK</span>
+          <span class="rd"><span class="l-en">new shares — dilution</span><span class="l-zh">新发股份 — 稀释</span></span>
+        </div>
         
         <div class="hkx-frw">
           <span class="dt">2026-10-11</span>
           <span class="hkx-tp placement"><span class="l-en">Placement</span><span class="l-zh">配股</span></span>
           <span class="co">0860.HK</span>
-          <span class="rd"><span class="l-en">new shares — dilution</span><span class="l-zh">新发股份 — 稀释</span></span>
-        </div>
-        
-        <div class="hkx-frw">
-          <span class="dt">2026-10-09</span>
-          <span class="hkx-tp placement"><span class="l-en">Placement</span><span class="l-zh">配股</span></span>
-          <span class="co">3313.HK</span>
-          <span class="rd"><span class="l-en">new shares — dilution</span><span class="l-zh">新发股份 — 稀释</span></span>
-        </div>
-        
-        <div class="hkx-frw">
-          <span class="dt">2026-10-09</span>
-          <span class="hkx-tp other"><span class="l-en">Filing</span><span class="l-zh">公告</span></span>
-          <span class="co">3738.HK</span>
-          <span class="rd"><span class="l-en">routine filing</span><span class="l-zh">常规公告</span></span>
-        </div>
-        
-        <div class="hkx-frw">
-          <span class="dt">2026-10-09</span>
-          <span class="hkx-tp results"><span class="l-en">Results</span><span class="l-zh">业绩</span></span>
-          <span class="co">1763.HK</span>
-          <span class="rd"><span class="l-en">earnings update</span><span class="l-zh">业绩更新</span></span>
-        </div>
-        
-        <div class="hkx-frw">
-          <span class="dt">2026-10-09</span>
-          <span class="hkx-tp placement"><span class="l-en">Placement</span><span class="l-zh">配股</span></span>
-          <span class="co">2635.HK</span>
-          <span class="rd"><span class="l-en">new shares — dilution</span><span class="l-zh">新发股份 — 稀释</span></span>
-        </div>
-        
-        <div class="hkx-frw">
-          <span class="dt">2026-10-09</span>
-          <span class="hkx-tp results"><span class="l-en">Results</span><span class="l-zh">业绩</span></span>
-          <span class="co">8239.HK</span>
-          <span class="rd"><span class="l-en">earnings update</span><span class="l-zh">业绩更新</span></span>
-        </div>
-        
-        <div class="hkx-frw">
-          <span class="dt">2026-10-09</span>
-          <span class="hkx-tp results"><span class="l-en">Results</span><span class="l-zh">业绩</span></span>
-          <span class="co">3881.HK</span>
-          <span class="rd"><span class="l-en">earnings update</span><span class="l-zh">业绩更新</span></span>
-        </div>
-        
-        <div class="hkx-frw">
-          <span class="dt">2026-10-09</span>
-          <span class="hkx-tp results"><span class="l-en">Results</span><span class="l-zh">业绩</span></span>
-          <span class="co">0573.HK</span>
-          <span class="rd"><span class="l-en">earnings update</span><span class="l-zh">业绩更新</span></span>
-        </div>
-        
-        <div class="hkx-frw">
-          <span class="dt">2026-10-09</span>
-          <span class="hkx-tp results"><span class="l-en">Results</span><span class="l-zh">业绩</span></span>
-          <span class="co">0573.HK</span>
-          <span class="rd"><span class="l-en">earnings update</span><span class="l-zh">业绩更新</span></span>
-        </div>
-        
-        <div class="hkx-frw">
-          <span class="dt">2026-10-09</span>
-          <span class="hkx-tp placement"><span class="l-en">Placement</span><span class="l-zh">配股</span></span>
-          <span class="co">0931.HK</span>
           <span class="rd"><span class="l-en">new shares — dilution</span><span class="l-zh">新发股份 — 稀释</span></span>
         </div>
         
@@ -1930,7 +1941,7 @@
           
         </div>
         
-        <div class="hkx-fresh"><span class="l-en">Weakest evidence tier — news volume, not a buy signal.</span><span class="l-zh">最弱证据层 — 新闻热度，非买入信号。</span> · <span class="l-en">slow-moving</span><span class="l-zh">缓慢更新</span> · <span class="l-en">as of</span><span class="l-zh">截至</span> 2026-10-11</div>
+        <div class="hkx-fresh"><span class="l-en">Weakest evidence tier — news volume, not a buy signal.</span><span class="l-zh">最弱证据层 — 新闻热度，非买入信号。</span> · <span class="l-en">slow-moving</span><span class="l-zh">缓慢更新</span> · <span class="l-en">as of</span><span class="l-zh">截至</span> 2026-10-12</div>
         
         <div class="hkx-receipt"><span class="l-en">Official filings from the Hong Kong exchange. Buyback = company buying its own shares (supports price). Placement = new shares sold (dilution). News attention comes from English-language news volume; it is context, not a signal.</span><span class="l-zh">来自港交所的正式公告。回购 = 公司买回自家股份（支撑股价）。配股 = 新发股份（稀释）。新闻关注度来自英文媒体报道量，仅供参考，非信号。</span></div>
       </div>
@@ -2230,15 +2241,15 @@
           <span class="rrd-fread"><span class="l-en">normal</span><span class="l-zh">正常</span></span>
         </div>
         
-        <div class="rrd-frow tone-up" data-tip-en="Mainland money into Hong Kong over the last 20 sessions, net buyers on 18 of them. Hong Kong's steadiest source of demand — a cushion, not a buy signal." data-tip-zh="近20个交易日内地资金流入港股的净额，其中 18 日为净买入。这是港股最稳定的需求来源——是托底，而非买入信号。">
+        <div class="rrd-frow tone-up" data-tip-en="Mainland money into Hong Kong over the last 20 sessions, net buyers on 19 of them. Hong Kong's steadiest source of demand — a cushion, not a buy signal." data-tip-zh="近20个交易日内地资金流入港股的净额，其中 19 日为净买入。这是港股最稳定的需求来源——是托底，而非买入信号。">
           <span class="rrd-fname"><span class="l-en">Southbound flow</span><span class="l-zh">南向资金</span></span><span></span>
-          <span class="rrd-fval">+¥523亿</span>
+          <span class="rrd-fval">+¥649亿</span>
           <span class="rrd-fread"><span class="l-en">buying</span><span class="l-zh">净买入</span></span>
         </div>
         
         <div class="rrd-frow tone-muted" data-tip-en="Bull versus bear leveraged certificates outstanding on the Hang Seng (CBBC). Above 1 means more bets on the way up. When one side gets crowded, a move that way unwinds faster." data-tip-zh="恒指牛证与熊证未平仓量之比（牛熊证）。大于 1 表示看涨押注更多。一侧过度拥挤时，行情朝该方向运行会加速平仓。">
           <span class="rrd-fname"><span class="l-en">Leverage bets</span><span class="l-zh">杠杆仓位</span></span><span></span>
-          <span class="rrd-fval">0.77×</span>
+          <span class="rrd-fval">0.82×</span>
           <span class="rrd-fread"><span class="l-en">balanced</span><span class="l-zh">均衡</span></span>
         </div>
         
@@ -2426,7 +2437,7 @@
           
           <span class="hkx-chip turn"><span class="l-en">China Telecom</span><span class="l-zh">中国电信</span></span>
           
-          <span class="hkx-chip turn"><span class="l-en">Nongfu Spring</span><span class="l-zh">农夫山泉</span></span>
+          <span class="hkx-chip turn"><span class="l-en">China Railway Group</span><span class="l-zh">中国中铁</span></span>
           
           <span class="hkx-chip turn"><span class="l-en">JD Health</span><span class="l-zh">京东健康</span></span>
           
@@ -2436,17 +2447,17 @@
         <div class="hkx-eyebrow"><span class="l-en">Avoid — lagging or unconfirmed</span><span class="l-zh">回避 — 滞涨或未确认</span></div>
         <div class="hkx-chips">
           
-          <span class="hkx-chip hot"><span class="l-en">Hua Hong Semiconductor</span><span class="l-zh">华虹半导体</span></span>
-          
           <span class="hkx-chip hot"><span class="l-en">Prudential</span><span class="l-zh">保诚</span></span>
           
-          <span class="hkx-chip hot"><span class="l-en">SMIC</span><span class="l-zh">中芯国际</span></span>
-          
-          <span class="hkx-chip hot"><span class="l-en">Beijing Enterprises Water</span><span class="l-zh">北控水务</span></span>
+          <span class="hkx-chip hot"><span class="l-en">Hua Hong Semiconductor</span><span class="l-zh">华虹半导体</span></span>
           
           <span class="hkx-chip hot"><span class="l-en">Melco International</span><span class="l-zh">美高梅中国</span></span>
           
-          <span class="hkx-chip hot"><span class="l-en">Hengan International</span><span class="l-zh">恒安国际</span></span>
+          <span class="hkx-chip hot"><span class="l-en">Beijing Enterprises Water</span><span class="l-zh">北控水务</span></span>
+          
+          <span class="hkx-chip hot"><span class="l-en">SMIC</span><span class="l-zh">中芯国际</span></span>
+          
+          <span class="hkx-chip hot"><span class="l-en">China Unicom</span><span class="l-zh">中国联通</span></span>
           
         </div>
         
@@ -2827,14 +2838,16 @@ Hong Kong remains near the Growth-scare area. A firm dollar, weak market breadth
         <div class="hkx-plain"><span class="l-en">Each data feed has a freshness check. Stale feeds are noted here — values still display, but treat them with caution until the next nightly update.</span><span class="l-zh">每个数据来源都有新鲜度检查。过期数据在此标注 — 数值仍会显示，但在下次夜间更新前请谨慎对待。</span></div>
         <div class="hkx-eyebrow"><span class="l-en">Overall status</span><span class="l-zh">整体状态</span></div>
         <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
-          <span style="width:10px;height:10px;border-radius:50%;background:var(--up);flex:0 0 10px;display:inline-block"></span>
-          <b><span class="l-en">OK — all feeds current</span><span class="l-zh">正常 — 所有数据源最新</span></b>
+          <span style="width:10px;height:10px;border-radius:50%;background:var(--warn);flex:0 0 10px;display:inline-block"></span>
+          <b><span class="l-en">Degraded — some feeds behind</span><span class="l-zh">降级 — 部分数据来源落后</span></b>
         </div>
         
         
         
+        <div class="hkx-kv"><span class="hkx-k"><span class="l-en">Detail</span><span class="l-zh">详情</span></span><span class="hkx-v" style="color:var(--ink-warn, var(--warn))"><span class="l-en">HK data is stale — some numbers may be from an older session. Treat them as yesterday's until tonight's update. (today's prices came in older than yesterday's (back to 2026-10-12))</span><span class="l-zh">港股数据已过期 — 部分数值可能来自较早的交易日，在今晚更新前请当作昨日数据看待。（今日价格比昨日更旧（回退至 2026-10-12））</span></span></div>
         
-        <div class="hkx-kv"><span class="hkx-k"><span class="l-en">Expected session</span><span class="l-zh">预期交易日</span></span><span class="hkx-v">2026-10-09</span></div>
+        
+        <div class="hkx-kv"><span class="hkx-k"><span class="l-en">Expected session</span><span class="l-zh">预期交易日</span></span><span class="hkx-v">2026-10-12</span></div>
         
         
         
@@ -2845,7 +2858,7 @@ Hong Kong remains near the Growth-scare area. A firm dollar, weak market breadth
         
         <div class="hkx-kv"><span class="hkx-k"><span class="l-en">Regime as-of</span><span class="l-zh">周期截至</span></span><span class="hkx-v">2026-10-09</span></div>
         
-        <div class="hkx-kv"><span class="hkx-k"><span class="l-en">ADR bridge</span><span class="l-zh">ADR桥接</span></span><span class="hkx-v hkx-up"><span class="l-en">Current</span><span class="l-zh">正常</span></span></div>
+        <div class="hkx-kv"><span class="hkx-k"><span class="l-en">ADR bridge</span><span class="l-zh">ADR桥接</span></span><span class="hkx-v hkx-dn"><span class="l-en">Behind</span><span class="l-zh">落后</span></span></div>
         
         <div class="hkx-kv"><span class="hkx-k"><span class="l-en">Company filings</span><span class="l-zh">公司公告</span></span><span class="hkx-v hkx-dn"><span class="l-en">Fresh</span><span class="l-zh">新鲜</span></span></div>
         
@@ -2972,14 +2985,14 @@ Hong Kong remains near the Growth-scare area. A firm dollar, weak market breadth
 
 
 <div class="foot">
-  <span class="l-en">Built</span><span class="l-zh">生成于</span> 2026-10-11 23:03 UTC<br>
+  <span class="l-en">Built</span><span class="l-zh">生成于</span> 2026-10-13 02:56 UTC<br>
   <span class="made">© 2026 Mastermind Inc</span>
 </div>
 
-<script src="theme.js?v=f29b7083" defer></script>
+<script src="theme.js?v=80c7061d" defer></script>
 <script src="mtf.js?v=b62aea2f" defer></script>
 <script src="charts.js?v=84a79439" defer></script>
-<script src="tablesort.js?v=995ddaf8" defer></script>
+<script src="tablesort.js?v=dc424cb1" defer></script>
 
 <script defer src="illus.js?v=8e0a3779"></script>
 <script>

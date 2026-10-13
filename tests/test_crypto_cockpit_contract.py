@@ -2,6 +2,7 @@ import json
 
 import pandas as pd
 
+from engine.btc_decision import build_decision
 from scripts.build_vector import COCKPIT_AXIS_PRESENTATION, emit_crypto_cockpit_json
 
 
@@ -44,12 +45,14 @@ def test_crypto_cockpit_contract_pins_six_axes_and_final_allocation(tmp_path):
             }
         }
     }
+    decision = build_decision(sig, _master())
     emit_crypto_cockpit_json(
         tmp_path,
         sig,
         _master(),
         regime,
         {"active": True},
+        decision=decision,
         price=63_940.22,
         change_24h_pct=-0.2,
     )
@@ -59,6 +62,11 @@ def test_crypto_cockpit_contract_pins_six_axes_and_final_allocation(tmp_path):
     assert payload["display_only"] is True
     assert payload["hero"]["exposure_pct"] == 0
     assert payload["hero"]["gate_active"] is True
+    assert payload["decision"]["schema"] == "btc.decision/v1"
+    assert payload["decision"]["status"] == "ok"
+    assert payload["decision"]["integrity_ok"] is True
+    assert payload["decision"]["final_exposure_pct"] == 0
+    assert payload["authority"]["sizing_source"] == "btc.decision/v1.final.exposure_pct"
     assert [row["id"] for row in payload["axes"]] == [
         spec["id"] for spec in COCKPIT_AXIS_PRESENTATION
     ]
@@ -75,12 +83,14 @@ def test_crypto_cockpit_contract_degrades_missing_leverage_plainly(tmp_path):
         {"alloc_optimal": [0.25]},
         index=pd.to_datetime(["2026-07-29"]),
     )
+    decision = build_decision(sig, _master())
     emit_crypto_cockpit_json(
         tmp_path,
         sig,
         _master(),
         {"ok": False},
         {},
+        decision=decision,
         price=63_940,
         change_24h_pct=0,
     )
@@ -90,3 +100,35 @@ def test_crypto_cockpit_contract_degrades_missing_leverage_plainly(tmp_path):
     )
     assert leverage["primary"]["state_en"] == "Unavailable"
     assert leverage["primary"]["state_zh"] == "暂无"
+
+
+def test_crypto_cockpit_suppresses_exposure_when_canonical_decision_fails_integrity(tmp_path):
+    sig = pd.DataFrame(
+        {
+            "alloc_optimal": [0.40],
+            "alloc_optimal_raw": [0.80],
+            "override_active": [False],
+        },
+        index=pd.to_datetime(["2026-07-29"]),
+    )
+    decision = build_decision(sig, _master())
+    assert decision["status"] == "unavailable"
+    assert decision["integrity"]["ok"] is False
+
+    emit_crypto_cockpit_json(
+        tmp_path,
+        sig,
+        _master(),
+        {"ok": False},
+        {},
+        decision=decision,
+        price=63_940,
+        change_24h_pct=0,
+    )
+    payload = json.loads((tmp_path / "crypto_cockpit.json").read_text())
+
+    assert payload["hero"]["exposure_pct"] is None
+    assert payload["decision"]["status"] == "unavailable"
+    assert payload["decision"]["integrity_ok"] is False
+    assert payload["decision"]["final_exposure_pct"] is None
+    assert "RAW_FINAL_MISMATCH_WITHOUT_NAMED_OVERRIDE" in payload["decision"]["errors"]

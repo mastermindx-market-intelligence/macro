@@ -750,6 +750,43 @@ test('S2-04 r5 (NIT): a row the page hid inline stays hidden through a populatio
   });
 });
 
+test('S2-04 r6 (NIT count): a query matching only a page-hidden row announces noMatch, not 1 / N', async () => {
+  await withPage(doc(bigTable(12)), async page => {
+    // the PAGE hides name3 itself, before any query
+    await page.evaluate(() => {
+      const rows = document.querySelectorAll('table')[0].tBodies[0].rows;
+      Array.prototype.find.call(rows, r => r.cells[0].textContent === 'name3').style.display = 'none';
+    });
+    const input = page.locator('.tbl-filter input');
+    // name3 is the ONLY match and it stays hidden: no row is visible, so the
+    // status is the noMatch copy and the reset affordance is offered
+    await input.fill('name3');
+    await settleCount(page, 'No matching rows · 0 / 12');
+    assert.deepEqual(await visibleKeys(page, 0, 0), []);
+    assert.deepEqual(await hiddenState(page), {
+      hidden: ['name1', 'name10', 'name11', 'name12', 'name2', 'name3', 'name4', 'name5', 'name6', 'name7', 'name8', 'name9'],
+      marked: ['name1', 'name10', 'name11', 'name12', 'name2', 'name4', 'name5', 'name6', 'name7', 'name8', 'name9'],
+    });
+    assert.equal(await page.locator('.tbl-filter button[data-tablesort-reset]').count(), 1);
+    // a query matching every row counts only the visible ones; reset button gone
+    await input.fill('name');
+    await settleCount(page, '11 / 12');
+    assert.equal(await page.locator('.tbl-filter button[data-tablesort-reset]').count(), 0);
+    // langchange rewrites the same visible-only count in place
+    await input.fill('name3');
+    await settleCount(page, 'No matching rows · 0 / 12');
+    await page.evaluate(() => {
+      document.documentElement.setAttribute('data-lang', 'zh');
+      document.dispatchEvent(new CustomEvent('langchange'));
+    });
+    assert.equal(await page.locator('.tbl-filter .cnt').textContent(), '无匹配行 · 0 / 12');
+    // reset restores only the rows the filter hid; the page-hidden row stays hidden
+    await page.locator('.tbl-filter button[data-tablesort-reset]').click();
+    await settleCount(page, '');
+    assert.deepEqual(await hiddenState(page), {hidden: ['name3'], marked: []});
+  });
+});
+
 test('S2-01 r5 (F2 consumer): macro MTF-tape cells (arrow + RSI with a data-sort key) sort numerically, missing last', async () => {
   const cell = (key, inner) => '<td data-sort="' + key + '">' + inner + '</td>';
   const rsi = (arrow, v) => '<span class="ms-cell2"><span class="ar">' + arrow + '</span><span class="rsi">' + v + '</span></span>';

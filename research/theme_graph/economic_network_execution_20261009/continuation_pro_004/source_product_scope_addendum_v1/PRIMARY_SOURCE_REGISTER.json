@@ -1,0 +1,74 @@
+{
+  "actual_F": null,
+  "actual_cohort": null,
+  "actual_provider_calls": 0,
+  "decision": "PRESERVE_ACCEPTED_ENTITLEMENT_PRODUCT_AND_HISTORICAL_POPULATION_UNPROVEN",
+  "internal_source": {
+    "byte_length": 3652,
+    "git_blob": "3969a9aae918141b51baffbb0e17d8a2ec2485a0",
+    "id": "E1",
+    "path": "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md",
+    "ref": "c4cd21d597521603fb75fe7a4602424e088c6bfa",
+    "repository": "mastermindx-market-intelligence/macro",
+    "scope": "Full accepted operator record; private agreement not read",
+    "sha256": "82ad971b46d4159739117d3defe19a25a2a24ede45e5e8d28494c5849e757891",
+    "url": "https://github.com/mastermindx-market-intelligence/macro/blob/c4cd21d597521603fb75fe7a4602424e088c6bfa/research/licenses/MASSIVE_ENTITLEMENT_RECORD.md"
+  },
+  "principal_read_date_utc": "2026-10-09",
+  "public_sources": [
+    {
+      "id": "P1",
+      "raw_http_sha256": null,
+      "read_scope": "Relevant complete body through coverage and roadmap caveat",
+      "representation": "Rendered research-tool page text",
+      "retrieval_ref": "turn184view0",
+      "supports": "Documented standard US equity/option coverage, ADR distinction, coverage versus entitlement",
+      "url": "https://massive.com/knowledge-base/article/does-massive-offer-international-data"
+    },
+    {
+      "id": "P2",
+      "raw_http_sha256": null,
+      "read_scope": "43 returned lines; no feature-status body",
+      "representation": "Rendered research-tool navigation and Productboard link",
+      "retrieval_ref": "turn184view2",
+      "supports": "Official linked roadmap location only",
+      "url": "https://massive.com/product-roadmap"
+    },
+    {
+      "id": "P3",
+      "raw_http_sha256": null,
+      "read_scope": "No feature-status body returned",
+      "representation": "Tool URL metadata with zero content lines",
+      "retrieval_ref": "turn185view0",
+      "supports": "Retrieval limitation only; not absence of international coverage",
+      "url": "https://portal.productboard.com/tmthzss8d2cwq53wgesexd9r"
+    },
+    {
+      "does_not_prove": [
+        "Exact D universe acquired",
+        "Every page obtained",
+        "K-vintage archived revision",
+        "Canadian or Japanese primary universe",
+        "Purpose-specific source admission"
+      ],
+      "id": "P4",
+      "raw_http_sha256": null,
+      "read_scope": "Endpoint query/response specification and sample; no authenticated API execution",
+      "representation": "Rendered research-tool specification text",
+      "retrieval_ref": "turn184view1",
+      "supports": "date, active, exchange, pagination, update metadata",
+      "url": "https://massive.com/docs/rest/stocks/tickers/all-tickers"
+    }
+  ],
+  "real_pool_denominators": null,
+  "schema": "economic_network.primary_source_product_scope_register/v1",
+  "verification_search": {
+    "domains": [
+      "massive.com"
+    ],
+    "engine": "system1",
+    "query": "site:massive.com Canada Canadian TSX international stocks coverage",
+    "recency_days": 90,
+    "result": "No results returned; not used as an absence proof"
+  }
+}
