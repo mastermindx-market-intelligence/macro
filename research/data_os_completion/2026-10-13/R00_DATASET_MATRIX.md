@@ -88,3 +88,45 @@ stays true and is pinned by test).
 
 - Worktree inherited the shared clone's sparse profile (`research/`, `data/` not materialized); D00 was read via `git show HEAD:…` and this doc added by explicit path; `data/` was later materialized in-worktree via the repo's own `scripts/worktree_sparse.py add data` to obtain the true §6 baseline.
 - The packet's counterexample arrow "→ RegistryError" is realized as the module's frozen report-not-raise contract (see "The additive schema" above); `RegistryError` is reserved for unrepresentable structures, matching the existing `identity:`/`schema:` handling and the `temporal_profile` precedent.
+
+## P01 action-input census
+
+**Lane:** `O2-P01` (run `dataos-o2-p01-1`) · **Base:** stacked on R00 head `1cdffe673f90` · **Date:** 2026-10-13.
+Read-only census: no `data/` read, no Tiingo path or row touched. Method: a programmatic scan of all
+51 rows of `config/dataset_registry.yml` at this head, matching every schema COLUMN NAME against
+`split | dividend | cash | ratio | factor | adjust | action`.
+
+**Headline result: zero registry rows carry an action-like schema column.** Every source that is
+action-capable is action-named but declares NO schema block at all, so its field convention is
+`UNKNOWN -> GAP` — and P02–P04 must never infer a convention from a `dataset_id` NAME. Until a
+schema block is declared, `qualify_action_input` honestly refuses a convention-less observation of
+these rows (UNQUALIFIED / `UNIDENTIFIED_CONVENTION`, rule 4 of P01.01); it never guesses from the name.
+
+| dataset_id (status) | action-like column | convention it actually is | original receipt retained? (producer file:line) | typical `qualify_action_input` status |
+|---|---|---|---|---|
+| `reference.corporate_actions.massive_split_evidence` (PROPOSED) | none declared (no schema block; grain `acquisition_id`,`id`) | `UNKNOWN -> GAP` | YES — `engine/close_pass/massive_close.py:585-593` delegates to `engine/close_pass/massive_split_evidence.py`, whose per-acquisition receipt schema `market_memory.source_artifact_receipt.massive_split_history.v1` (:38) is validated with `receipt_id`/`artifact_sha256`/`capture_id` bound to the acquisition (:408-428); the artifact itself carries `acquisition_id` + `acquisition_sha256` (:204, :324) | with registry: UNQUALIFIED / `SOURCE_NOT_PRODUCED` · without: CONFIRMED / `AS_OBSERVED` |
+| `vendor.tiingo.raw.splits` (PROPOSED) | none declared | `UNKNOWN -> GAP` (endpoint semantics are an as-observed split ratio; the row does not declare it) | YES — producer `collectors/tiingo_archive.py::collect_one` (:398-403) → `Archive.store_response` assembles `mastermind.tiingo.raw_receipt.v1` and stamps `receipt_id = receipt_identity(receipt)` (:296-309), published once under `receipts/<source>/<day>/` (:310-315) with the guard "existing raw lacks its original observation receipt" (:314) | with registry: UNQUALIFIED / `SOURCE_NOT_PRODUCED` · without: CONFIRMED / `AS_OBSERVED` |
+| `vendor.tiingo.research.splits` (PROPOSED) | none declared | `UNKNOWN -> GAP` | YES — producer `scripts/tiingo_materialize.py::materialize_one` writes the manifest with `source_sha256` (:178) and `source_receipt_id` = `receipt_identity(receipt)` (:179, identity at :78) — the ORIGINAL raw receipt id, not merely a digest | with registry: UNQUALIFIED / `SOURCE_NOT_PRODUCED` · without: CONFIRMED / `AS_OBSERVED` |
+| `vendor.tiingo.raw.distributions` (PROPOSED) | none declared | `UNKNOWN -> GAP` (per-share cash semantics; undeclared) | YES — same receipt path as `vendor.tiingo.raw.splits` (`collectors/tiingo_archive.py:296-315`) | with registry: UNQUALIFIED / `SOURCE_NOT_PRODUCED` · without: CONFIRMED / `AS_OBSERVED` |
+| `vendor.tiingo.research.distributions` (PROPOSED) | none declared | `UNKNOWN -> GAP` | YES — same manifest binding as `vendor.tiingo.research.splits` (`scripts/tiingo_materialize.py:78, :178-179`) | with registry: UNQUALIFIED / `SOURCE_NOT_PRODUCED` · without: CONFIRMED / `AS_OBSERVED` |
+| `vendor.tiingo.raw.distribution_yield` (PROPOSED) | none declared | `UNKNOWN -> GAP` — a yield is a derived cash/price RATIO: it is not `as_declared_cash_amount` nor any other closed-set member, so the honest observation can name NO convention | YES — same receipt path (`collectors/tiingo_archive.py:296-315`) | UNQUALIFIED / `UNIDENTIFIED_CONVENTION` (rule 4) with or without registry |
+| `vendor.tiingo.research.distribution_yield` (PROPOSED) | none declared | `UNKNOWN -> GAP` (same yield objection) | YES — same manifest binding (`scripts/tiingo_materialize.py:78, :178-179`) | UNQUALIFIED / `UNIDENTIFIED_CONVENTION` (rule 4) with or without registry |
+
+"Typical observation" = `origin: source_record`, receipt present, endpoint present, `rights_limited: false`,
+`response: events`; the "without registry" column is shown only to separate source-production refusals from
+observation-quality refusals — P02–P04 always pass the registry (D00.D3 admits only produced sources).
+All seven rows are PROPOSED, so WITH the registry the answer is `SOURCE_NOT_PRODUCED` for every one of them
+today (R00.04); the census's forward value is the receipt-retention column: when these rows are produced,
+their observations can reach CONFIRMED without re-architecting capture.
+
+Adjacent rows, deliberately excluded from the table because they carry no action column but are the exact
+`adjusted_close_only` hazard (P01.04): `equity.bars.daily.yahoo.close` and `equity.bars.daily.stocks.close`
+(schema columns, `basis: tradj`) are vendor-adjusted price SERIES — presented as an action observation they
+return UNQUALIFIED / `ADJUSTED_SERIES_NOT_AN_EVENT`; `equity.bars.daily.massive.close` (`basis: raw`) is the
+printed price and carries no action content at all. Also excluded on purpose:
+`vendor.tiingo.{raw,research}.fund_fee_history` — fee history is not a corporate action (no
+split/dividend/cash-to-holders semantics). The function behind this census is
+`lib/dataos/registry.py::qualify_action_input` (+ `ActionInputStatus` / `ActionInputVerdict`), added
+additively this lane, pinned by `tests/test_dataos_action_projection.py` (P01.01–P01.04 each named by a
+test); it is NOT re-exported from `lib/dataos/__init__.py` (ORCH-1 owns that file — GAP, see the lane return
+packet).
