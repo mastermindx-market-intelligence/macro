@@ -191,6 +191,8 @@ def test_t12_declared_budget_is_counted_and_effective_n_never_falls_below_it(
     tmp_path, monkeypatch
 ):
     """§9: family floor 24 is counted, and effective_n never drops below it."""
+    canonical = Path(__file__).resolve().parents[1] / "data" / "trial_ledger.jsonl"
+    canonical_before = canonical.read_bytes() if canonical.exists() else None
     monkeypatch.setattr(trial_ledger, "DEFAULT_PATH", tmp_path / "not-the-canonical.jsonl")
     blind = trial_ledger.TrialLedger()
     assert blind.path == tmp_path / "not-the-canonical.jsonl"
@@ -232,7 +234,8 @@ def test_t12_declared_budget_is_counted_and_effective_n_never_falls_below_it(
     text = ledger_path.read_text(encoding="utf-8")
     assert FAMILY in text
     assert '"n": 24' in text
-    assert not Path("data/trial_ledger.jsonl").exists()
+    canonical_after = canonical.read_bytes() if canonical.exists() else None
+    assert canonical_after == canonical_before, "the canonical trial ledger must stay untouched"
 
 
 def _as_date(value) -> date:
