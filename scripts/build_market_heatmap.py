@@ -29,6 +29,7 @@ import argparse
 import json
 import logging
 import os
+import re
 import shutil
 import sys
 import tempfile
@@ -322,6 +323,63 @@ def _plausible_published_china_session(payload: object) -> str | None:
     return session
 
 
+def _validate_hk_completed_session(
+    payload: dict, closes: pd.DataFrame, cons: pd.DataFrame, now: datetime,
+) -> str:
+    """Fail-closed settled HK cash-session payload, with current-member coverage.
+
+    The HK breadth cache may be a runner-local restored snapshot while the
+    committed deep panel remains several sessions back. A regenerated timestamp
+    is never proof of fresh EOD marks. This is a local check on the incumbent
+    publisher, not an alternate store or exchange calendar.
+    """
+    from lib import hk_calendar
+    completed = hk_calendar.expected_last_session(now).isoformat()
+    current = list(dict.fromkeys(map(str, cons.index)))
+    if not current:
+        raise RuntimeError("HK heatmap missing curated membership")
+    source_idx = pd.to_datetime(closes.index).tz_localize(None).normalize()
+    source = closes.copy()
+    source.index = source_idx
+    session = pd.Timestamp(completed)
+    represented = [t for t in current if t in source.columns]
+    if session not in source.index:
+        raise RuntimeError(f"HK heatmap close stale: source missing {completed}")
+    current_values = pd.to_numeric(source.loc[session, represented], errors="coerce")
+    valid = sum(pd.notna(x) and float(x) > 0 for x in current_values)
+    if valid / len(current) < 0.95:
+        raise RuntimeError(
+            f"HK heatmap close stale: only {valid}/{len(current)} positive "
+            f"observations on required {completed}"
+        )
+    tiles = payload.get("tiles")
+    if (payload.get("market") != "hk" or payload.get("map_type") != "stocks"
+        or payload.get("source") != "daily-close"
+        or payload.get("asof") != completed or not isinstance(tiles, list)
+        or payload.get("n_tiles") != len(tiles)):
+        raise RuntimeError(f"HK heatmap payload session/identity disagrees with {completed}")
+    members = set(current)
+    shown = [tile.get("t") for tile in tiles if isinstance(tile, dict)]
+    if (len(shown) != len(tiles) or len(set(shown)) != len(shown)
+        or not set(shown).issubset(members)
+        or len(shown) / len(current) < 0.95):
+        raise RuntimeError("HK heatmap payload membership coverage/identity invalid")
+    return completed
+
+
+def _validate_hk_page(html: str, session: str) -> None:
+    """One SSR market-day receipt matching the exact committed HK JSON pair."""
+    if 'id="hm-ssr"' not in html or "marketdata/hk_heatmap.json" not in html:
+        raise RuntimeError("HK heatmap SSR missing its payload/summary anchor")
+    match = re.search(
+        r'class=["\'][^"\']*\bhx-pulse-when\b[^"\']*["\'][^>]*>\s*'
+        r'(\d{4}-\d{2}-\d{2})\s*</',
+        html,
+    )
+    if not match or match.group(1) != session:
+        raise RuntimeError(f"HK heatmap SSR session does not equal JSON {session}")
+
+
 def build(
     market: str, site: Path | None = None, *,
     generated_utc: str | None = None,
@@ -333,6 +391,14 @@ def build(
 
     clock = _normalise_now(now)
     generated_utc = generated_utc or clock.strftime("%Y-%m-%d %H:%M")
+    if market == "hk":
+        # Never allow a still-open HK cash session to leak through a Yahoo
+        # in-progress bar. The separate HK source collector validates marks.
+        from lib import hk_calendar
+        cutoff = pd.Timestamp(hk_calendar.expected_last_session(clock))
+        closes = closes.copy()
+        closes.index = pd.to_datetime(closes.index).tz_localize(None).normalize()
+        closes = closes.loc[closes.index <= cutoff]
     payload = hm.build_market_heatmap(
         market, cons, closes,
         caps=caps or None,
@@ -346,6 +412,8 @@ def build(
             payload, closes, now=clock,
             expected_tickers={str(t) for t in cons.index},
         )
+    elif market == "hk":
+        _validate_hk_completed_session(payload, closes, cons, clock)
 
     outdir = site / "marketdata"
     outdir.mkdir(parents=True, exist_ok=True)
@@ -545,6 +613,23 @@ def publish(
         clock = _normalise_now(now)
         payload = build(market, staged_site, generated_utc=generated_utc, now=clock)
         render_page(market, payload, staged_site, env=env)
+        if market == "hk":
+            _validate_hk_page(
+                (staged_site / "hk_heatmap.html").read_text(encoding="utf-8"),
+                str(payload["asof"]),
+            )
+            latest = site / "marketdata" / "hk_heatmap.json"
+            if latest.is_file():
+                try:
+                    old_hk = json.loads(latest.read_text(encoding="utf-8"))
+                except (OSError, ValueError):
+                    old_hk = None
+                if isinstance(old_hk, dict) and old_hk.get("market") == "hk":
+                    previous = str(old_hk.get("asof") or "")
+                    if re.fullmatch(r"\d{4}-\d{2}-\d{2}", previous) and previous > payload["asof"]:
+                        raise RuntimeError(
+                            f"HK heatmap regression refused: published={previous}, candidate={payload['asof']}"
+                        )
         if market == "china":
             current_json = site / "marketdata" / "china_heatmap.json"
             current_html = site / "china_heatmap.html"

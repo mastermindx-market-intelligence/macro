@@ -2400,6 +2400,15 @@ lanes:
           The Asia job repeats this checker before broad staging and after
           every rebase with a freshly sampled --now clock. It neither
           creates a second publisher nor overwrites a last-good pair.
+      - id: publish_hk_heatmap
+        module: scripts.build_market_heatmap
+        args: [--market, hk, --render-page]
+        note: >
+          The incumbent Asia close publisher now also advances the HK market
+          heatmap JSON+SSR pair after the verified HKEX settlement. It reuses
+          hk_breadth's source-qualified cache and the existing atomic
+          build_market_heatmap writer, and compensates HK independently if
+          source/session/coverage fails. No duplicate store or scheduler.
       - id: build_cn_live_pack
         module: scripts.build_cn_live_pack
         note: >

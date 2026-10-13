@@ -218,10 +218,10 @@ def _ohlc_frame(rows: list[tuple[str, float]]) -> pd.DataFrame:
     )
 
 
-def test_tencent_code_maps_a_share_suffixes_only():
+def test_tencent_code_maps_mainland_and_hk_suffixes():
     assert tx.tencent_code("600118.SS") == "sh600118"
     assert tx.tencent_code("000001.SZ") == "sz000001"
-    assert tx.tencent_code("0700.HK") is None
+    assert tx.tencent_code("0700.HK") == "hk00700"
     assert tx.tencent_code("AAPL") is None
 
 

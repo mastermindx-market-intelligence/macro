@@ -435,6 +435,30 @@ jobs:
             rm -f "$RUNNER_TEMP/china-heatmap-failed"
           fi
           exit "$rc"
+      - name: publish HK heatmap from settled close (payload + matching SSR shell)
+        timeout-minutes: 5
+        continue-on-error: true
+        # The same Asia source lane and the same atomic JSON/HTML publisher own
+        # HK. We do not wait for a US-evening generic site re-render, and a
+        # failed HK source must not invalidate healthy China outputs.
+        run: |
+          set +e
+          HK_HEATMAP_GENERATED_UTC=$(date -u '+%Y-%m-%d %H:%M')
+          printf 'HK_HEATMAP_GENERATED_UTC=%s\n' "$HK_HEATMAP_GENERATED_UTC" >> "$GITHUB_ENV"
+          hk_now="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          python -m scripts.build_market_heatmap --market hk --render-page \
+            --generated-utc "$HK_HEATMAP_GENERATED_UTC" --now "$hk_now" \
+            > "$RUNNER_TEMP/hk_heatmap_publish.log" 2>&1
+          rc=$?
+          cat "$RUNNER_TEMP/hk_heatmap_publish.log"
+          if [ "$rc" -ne 0 ]; then
+            touch "$RUNNER_TEMP/hk-heatmap-failed"
+            git checkout HEAD -- site/marketdata/hk_heatmap.json site/hk_heatmap.html
+            echo "::error title=HK settled heatmap publication held::source session, membership coverage or SSR parity failed"
+          else
+            rm -f "$RUNNER_TEMP/hk-heatmap-failed"
+          fi
+          exit "$rc"
       - name: CN Prophet Live arming pass (settled-close trigger pack -> R2)
         # AFTER build_china (the library rebuild is in-process there). Probes
         # per-name trigger/fade edges from settled adjusted closes and publishes
@@ -903,6 +927,16 @@ jobs:
             git checkout HEAD -- site/marketdata/china_heatmap.json site/china_heatmap.html
             echo "::warning title=China heatmap held before staging::freshness contract failed; other CN/HK outputs continue"
           fi
+          hk_now="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          if python -m scripts.build_market_heatmap --market hk --render-page \
+               --generated-utc "$HK_HEATMAP_GENERATED_UTC" --now "$hk_now" \
+               > "$RUNNER_TEMP/hk_heatmap_prestage.log" 2>&1; then
+            rm -f "$RUNNER_TEMP/hk-heatmap-failed"
+          else
+            touch "$RUNNER_TEMP/hk-heatmap-failed"
+            git checkout HEAD -- site/marketdata/hk_heatmap.json site/hk_heatmap.html
+            echo "::warning title=HK heatmap held before staging::HKEX completed-session source missing or incomplete"
+          fi
           # Asia must not acquire the Options PIT/campaign narrow roots owned by the
           # dedicated narrow publishers; the helper restores/cleans them around the
           # broad `git add` so the engine commit cannot smuggle an Options artifact
@@ -980,6 +1014,24 @@ jobs:
                 echo "::warning title=China heatmap repaired by compensation::settled-close check failed; origin/main pair restored; other CN/HK outputs continue"
               fi
               cat "$RUNNER_TEMP/china_heatmap_republish.log"
+              hk_now="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+              if python -m scripts.build_market_heatmap --market hk --render-page \
+                    --generated-utc "$HK_HEATMAP_GENERATED_UTC" --now "$hk_now" \
+                    > "$RUNNER_TEMP/hk_heatmap_republish.log" 2>&1; then
+                rm -f "$RUNNER_TEMP/hk-heatmap-failed"
+              else
+                touch "$RUNNER_TEMP/hk-heatmap-failed"
+                cat "$RUNNER_TEMP/hk_heatmap_republish.log"
+                if ! git checkout origin/main -- site/marketdata/hk_heatmap.json site/hk_heatmap.html; then
+                  echo "::error title=HK heatmap compensation unavailable::cannot restore last published pair"
+                  exit 1
+                fi
+                git add site/marketdata/hk_heatmap.json site/hk_heatmap.html
+                if ! git diff --cached --quiet; then
+                  git commit -m "render-heal: hold stale HK heatmap at origin main" || exit 1
+                fi
+                echo "::warning title=HK heatmap repaired by compensation::retained origin/main HK pair; other Asia results continue"
+              fi
               # post-rebase template↔site re-sync (ui.template_site_sync): externalize_css
               # above lifts the plain-copy landing/chat pages' inline <style> to hashed files,
               # diverging site/index.html + site/chat.html from their templates — and this lane
@@ -1063,14 +1115,21 @@ jobs:
             echo "### ❌ R2 data plane STALE/DARK — publish_r2 failed or was skipped (expired R2_* secrets?); the live site keeps serving OLD CN/HK per-ticker data. See scripts/audit_r2.py." >> "$GITHUB_STEP_SUMMARY"
             exit 1
           fi
-      - name: fail if China heatmap missed settled close
+      - name: fail if China/HK heatmap missed settled close
         if: always()
         run: |
+          failed=0
           if [ -f "$RUNNER_TEMP/china-heatmap-failed" ]; then
             echo "::error title=China heatmap stale::source, JSON, and SSR did not meet the completed-session contract"
-            echo "### ❌ China heatmap STALE — other Asia results were allowed to publish; repair input freshness and rerun" >> "$GITHUB_STEP_SUMMARY"
-            exit 1
+            echo "### ❌ China heatmap STALE — other Asia results were allowed to publish" >> "$GITHUB_STEP_SUMMARY"
+            failed=1
           fi
+          if [ -f "$RUNNER_TEMP/hk-heatmap-failed" ]; then
+            echo "::error title=HK heatmap stale::source, JSON, and SSR did not meet the HKEX completed-session contract"
+            echo "### ❌ HK heatmap STALE — other Asia results were allowed to publish" >> "$GITHUB_STEP_SUMMARY"
+            failed=1
+          fi
+          if [ "$failed" -ne 0 ]; then exit 1; fi
       # W2: per-band timings row + >85%-of-cap tripwire. always() so a job-cap cancel
       # still records the night in the grace window (elapsed ≈ cap → the warning fires).
       # LAST, deliberately — behind the R2 publish + freshness verify above, unlike

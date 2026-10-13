@@ -794,7 +794,7 @@ def test_post_rebase_tree_resamples_the_session_clock_and_isolates_failure() -> 
 def test_heatmap_failure_turns_the_job_red_only_after_publish_tail() -> None:
     workflow = WORKFLOW.read_text(encoding="utf-8")
     publish = workflow.index("name: publish CN/HK stores to R2")
-    failure = workflow.index("name: fail if China heatmap missed settled close", publish)
+    failure = workflow.index("name: fail if China/HK heatmap missed settled close", publish)
     timings = workflow.index("name: timings ledger + 85% budget tripwire", failure)
     end = workflow.index("\n  ths_rescrape:", timings)
     block = workflow[failure:end]
@@ -839,5 +839,7 @@ def test_dag_declares_settled_heatmap_producer_and_checker() -> None:
     spine = lane.index("module: scripts.build_china")
 
     assert spine < build < check
-    assert lane.count("module: scripts.build_market_heatmap") == 1
+    # One incumbent builder module, two venue-scoped invocations under the
+    # same Asia-close publisher; not two independent publication planes.
+    assert lane.count("module: scripts.build_market_heatmap") == 2
     assert lane.count("module: scripts.check_china_heatmap_freshness") == 1
