@@ -164,7 +164,8 @@ def _html(
 
 
 def _bind(body: str, *, cik: str, accession: str, ticker: str):
-    if "example.invalid" not in f"https://example.invalid/synthetic/{ticker.lower()}":
+    exhibit_url = f"https://example.invalid/synthetic/{ticker.lower()}-witness"
+    if "example.invalid" not in exhibit_url or "sec.gov" in exhibit_url:
         raise AssertionError("fixture host must be example.invalid")
     return bind_witness_release(
         cik=cik,
@@ -174,7 +175,7 @@ def _bind(body: str, *, cik: str, accession: str, ticker: str):
         filing_date="2026-07-23",
         acceptance_datetime="2026-07-23T13:00:00Z",
         report_date=PERIOD_END,
-        exhibit_url=f"https://example.invalid/synthetic/{ticker.lower()}-witness",
+        exhibit_url=exhibit_url,
         content_type="text/html",
     )
 
@@ -221,6 +222,47 @@ def test_synthetic_flag_is_required_and_the_false_state_is_refused() -> None:
     assert profile.ticker == "FCX"
     with pytest.raises(ValueError, match="synthetic-only"):
         _load("fcx", synthetic=False)
+
+
+def test_bind_rejects_a_misbound_exhibit_before_the_binder_runs() -> None:
+    """The guard must read the exhibit_url passed to bind_witness_release.
+
+    Substituting a URL that contains sec.gov for that argument raises inside
+    ``_bind`` before the binder runs. A different literal does not count.
+    """
+    bad = (
+        "https://example.invalid/synthetic/fcx-witness"
+        "?ref=https://www.sec.gov/Archives/edgar/data/999991/wrong-exhibit.htm"
+    )
+    text = Path(__file__).read_text(encoding="utf-8")
+    start = text.index("def _bind(")
+    source = text[start:text.index("\n\ndef ", start)]
+    passed = 'f"https://example.invalid/synthetic/{ticker.lower()}-witness"'
+    assert source.count(passed) == 1
+    calls: list[str] = []
+    real = bind_witness_release
+
+    def spy(**kwargs):
+        calls.append(kwargs.get("exhibit_url"))
+        return real(**kwargs)
+
+    namespace = dict(_bind.__globals__)
+    namespace["bind_witness_release"] = spy
+    exec(source.replace(passed, repr(bad), 1), namespace)
+    bound = None
+    raised = None
+    try:
+        bound = namespace["_bind"](
+            "<html><body>synthetic</body></html>",
+            cik=FCX_FIXTURE_CIK,
+            accession=FCX_ACCESSION,
+            ticker="fcx",
+        )
+    except AssertionError as exc:
+        raised = str(exc)
+    receipt_url = None if bound is None else bound.revision.exhibit_url
+    assert raised == "fixture host must be example.invalid", receipt_url
+    assert calls == []
 
 
 def test_identity_constants_are_ten_digit_and_not_repeated_in_this_file() -> None:
