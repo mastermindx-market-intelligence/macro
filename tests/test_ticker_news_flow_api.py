@@ -553,6 +553,8 @@ def test_no_multi_security_or_sorted_flow_route():
         "/api/ticker-news/{ticker}/stream",
         # W11 D1: the private catch-all, registered last (see
         # tests/test_ticker_news_private_errors.py route-order census).
+        # W12: the private bare root (GET + non-GET), registered after the real routes.
+        "/api/ticker-news",
         "/api/ticker-news/{rest:path}",
     }
     assert all("flow" not in path for path in paths)

@@ -31,6 +31,7 @@ from fastapi.encoders import jsonable_encoder
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse, StreamingResponse
 from fastapi.routing import APIRoute
+from starlette.exceptions import HTTPException as StarletteHTTPException
 from starlette.requests import Request
 from starlette.responses import Response
 
@@ -903,6 +904,25 @@ def ticker_news_stream(
     )
 
 
+_UNKNOWN_PATH_METHODS = ["POST", "PUT", "PATCH", "DELETE"]
+_CATCH_ALL_PATHS = frozenset(
+    {"/api/ticker-news", "/api/ticker-news/{rest:path}"}
+)
+
+
+@router.get("/api/ticker-news", include_in_schema=False)
+def ticker_news_root(
+    user: dict = Depends(require_site_full_user),
+) -> None:
+    """Private terminal answer for the bare ticker-news root.
+
+    Without an exact route here redirect_slashes answers the rootless path
+    with a 307 towards /api/ticker-news/, leaking the route family.
+    """
+    _rate_or_429(user)
+    raise _private_error(404, "not found")
+
+
 @router.get("/api/ticker-news/{rest:path}", include_in_schema=False)
 def ticker_news_unmatched(
     rest: str,
@@ -913,7 +933,65 @@ def ticker_news_unmatched(
     Starlette decodes %2F, so paths like /api/ticker-news/..%2Fx or any
     trailing/multi-segment shape never match a single-segment route; without
     this catch-all the framework default 404 leaks without private headers.
+    W12: an empty rest (the bare /api/ticker-news/ root) skips ticker
+    validation and answers the private 404 directly instead of a 422.
     """
     _rate_or_429(user)
-    _safe_ticker_or_422(rest.split("/", 1)[0])
+    if rest != "":
+        _safe_ticker_or_422(rest.split("/", 1)[0])
+    raise _private_error(404, "not found")
+
+
+def _real_route_method_not_allowed(rest: str) -> None:
+    """Preserve the router 405 for a non-GET method on a real GET path.
+
+    A non-GET catch-all at the same path would otherwise FULL-match and
+    shadow the router's 405+Allow on the real routes; this re-raises the
+    same Starlette 405 the router would have raised.  It assumes the router
+    is included without a prefix (app/main.py).
+    """
+    for route in router.routes:
+        if not isinstance(route, APIRoute):
+            continue
+        if route.path in _CATCH_ALL_PATHS:
+            continue
+        if route.path_regex.match("/api/ticker-news/" + rest):
+            raise StarletteHTTPException(
+                status_code=405,
+                headers={"Allow": ", ".join(route.methods)},
+            )
+    return None
+
+
+@router.api_route(
+    "/api/ticker-news",
+    methods=_UNKNOWN_PATH_METHODS,
+    include_in_schema=False,
+)
+def ticker_news_root_other_methods(
+    user: dict = Depends(require_site_full_user),
+) -> None:
+    """Private terminal answer for non-GET methods on the bare root."""
+    _rate_or_429(user)
+    raise _private_error(404, "not found")
+
+
+@router.api_route(
+    "/api/ticker-news/{rest:path}",
+    methods=_UNKNOWN_PATH_METHODS,
+    include_in_schema=False,
+    dependencies=[Depends(_real_route_method_not_allowed)],
+)
+def ticker_news_unmatched_other_methods(
+    rest: str,
+    user: dict = Depends(require_site_full_user),
+) -> None:
+    """Private terminal answer for non-GET methods on unmatched paths.
+
+    Re-raises the real-route 405 first (see _real_route_method_not_allowed),
+    then follows the GET catch-all chain.
+    """
+    _rate_or_429(user)
+    if rest != "":
+        _safe_ticker_or_422(rest.split("/", 1)[0])
     raise _private_error(404, "not found")
