@@ -332,6 +332,10 @@
   
   
   
+  <div class="panel span12" style="border-left:3px solid var(--warn);background:color-mix(in srgb,var(--warn) 7%,var(--panel));padding:9px 13px;font-size:12px;line-height:1.55">
+    <span class="l-en"><strong>⚠ BOARD DELAYED</strong> — prices as of 2026-10-09 (4d behind). Data is stale; entry signals may not reflect latest prices. Check a live quote before acting.</span><span class="l-zh"><strong>⚠ 数据延迟</strong> — 价格截至 2026-10-09（落后 4 天）。当前数据过期，入场信号可能不反映最新价格，操作前请确认最新报价。</span>
+  </div>
+  
 
   
   <!-- ===================== A-SHARE STOCK DASHBOARD HEADER ===================== -->
@@ -352,9 +356,9 @@
       <h1>🇨🇳 <span class="l-en">A-Share Stock Dashboard</span><span class="l-zh">A股个股看板</span>
         <span class="help">?<span class="tip"><span class="l-en">A stock-picking watchlist for China A-shares: names that sold off hard and just started turning back up. Rank means how ready a setup looks to buy — research context, not advice.</span><span class="l-zh">A股选股观察表：大幅回调后刚开始回升的个股。排序表示形态离买点有多近——研究参考，非投资建议。</span></span></span></h1>
       <div class="stk-head-meta">
-        <span class="stk-status is-delayed" data-tip-en="The date is the last A-share session this board has data for. Prices, buy zones and the ranking are rebuilt every session, so they are all as of this date. This session was only partly collected, so some names may be missing — the board is short, not wrong." data-tip-zh="此日期是本榜单最后一个有数据的A股交易日。价格、买区和排序每个交易日都会重算，因此都截至该日期。本交易日的数据只采集了一部分，可能有个股缺失——榜单是不全，而不是错误。">
+        <span class="stk-status is-delayed" data-tip-en="The date is the last A-share session this board has data for. Prices, buy zones and the ranking are rebuilt every session, so they are all as of this date. A delayed board keeps showing its last good data rather than nothing — check a live quote before you act." data-tip-zh="此日期是本榜单最后一个有数据的A股交易日。价格、买区和排序每个交易日都会重算，因此都截至该日期。数据延迟时，榜单会继续显示最后一批有效数据，而不是留空——操作前请先看一下实时报价。">
           <span class="stk-fresh-dot" aria-hidden="true"></span>
-          <span class="l-en">Partial data · data through</span><span class="l-zh">数据不全 · 数据截至</span>
+          <span class="l-en">Delayed · data through</span><span class="l-zh">数据延迟 · 数据截至</span>
           <strong>2026-10-09</strong>
         </span>
       
@@ -4569,7 +4573,7 @@
   
   
   
-  <div class="panel span12" id="standouts" data-stfacet="entry" data-board-asof="2026-10-09" data-board-delayed="0" data-board-partial="1">
+  <div class="panel span12" id="standouts" data-stfacet="entry" data-board-asof="2026-10-09" data-board-delayed="1" data-board-partial="0">
     <h2><span class="l-en">⚡ China Prophet — Live Board</span><span class="l-zh">⚡ 中国 Prophet — 实时榜单</span>
       <span class="lens-q" data-lens-kind="define" tabindex="0" role="button"
       aria-label="Only the ready ones — what this means">?<span class="lens-src" data-lens-kind="define" hidden>
@@ -4615,7 +4619,7 @@
     <div style="margin:6px 0 10px;padding:9px 13px;border-radius:9px;font-size:12px;line-height:1.5;border:1.5px solid var(--down);background:color-mix(in srgb,var(--down) 10%,var(--panel));color:var(--ink-down, var(--down))">
       
       ⚠ <b><span class="l-en">data coverage degraded — board incomplete today</span><span class="l-zh">数据覆盖下降 — 今日看板不完整</span></b>
-      <span class="muted" style="font-size:10.5px;display:block;margin-top:2px"><span class="l-en">same-day microstructure coverage 0.0% (<80%); same-day reversal input unavailable or incomplete (0.0% actionable coverage); board prices 1 session(s) behind. Probable data/collector coverage gap. The featured shelf is incomplete — treat with caution.</span><span class="l-zh">当日微观结构覆盖率0.0%（低于80%）；当日反转输入缺失或不完整（可操作标的覆盖率0.0%）；看板价格落后1个交易日。可能存在数据或采集覆盖缺口，精选区并不完整，请谨慎参考。</span></span>
+      <span class="muted" style="font-size:10.5px;display:block;margin-top:2px"><span class="l-en">same-day microstructure coverage 0.0% (<80%); same-day reversal input unavailable or incomplete (0.0% actionable coverage); board prices 2 session(s) behind. Probable data/collector coverage gap. The featured shelf is incomplete — treat with caution.</span><span class="l-zh">当日微观结构覆盖率0.0%（低于80%）；当日反转输入缺失或不完整（可操作标的覆盖率0.0%）；看板价格落后2个交易日。可能存在数据或采集覆盖缺口，精选区并不完整，请谨慎参考。</span></span>
     </div>
     
     
@@ -17038,7 +17042,7 @@
 </div>
 
 <div class="foot">
-  <span class="l-en">Built</span><span class="l-zh">生成于</span> 2026-10-13 10:50 UTC<br>
+  <span class="l-en">Built</span><span class="l-zh">生成于</span> 2026-10-13 12:29 UTC<br>
   <span class="made">© 2026 Mastermind Inc</span>
 </div>
 
