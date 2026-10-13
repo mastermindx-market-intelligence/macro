@@ -529,7 +529,11 @@ def _all_basis_present(operands: Sequence[_Operand]) -> bool:
     for op in operands:
         basis = op.basis or {}
         # "unknown" is truthy, so a bare get() would treat the token as a basis.
+        # Any casing is the same token. Do not strip: _parse_operand stores
+        # basis.accounting verbatim (only value_text is stripped).
         accounting = basis.get("accounting")
+        if isinstance(accounting, str):
+            accounting = accounting.casefold()
         if not accounting or accounting == "unknown":
             return False
         if "recast" not in basis:

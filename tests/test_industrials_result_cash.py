@@ -726,6 +726,99 @@ def test_qualify_operands_refuses_unknown_basis() -> None:
     assert any("required_basis_unknown" in lim for lim in q["limitations"])
 
 
+# basis.accounting is stored verbatim. _parse_operand copies the basis mapping
+# through; the only strip in this module is value_text. A padded token is a
+# present basis, not the accounting token "unknown".
+_ACCOUNTING_UNKNOWN_CASES = (
+    ("unknown", True),
+    ("Unknown", True),
+    ("UNKNOWN", True),
+    (" unknown ", False),
+)
+
+
+@pytest.mark.parametrize(
+    ("accounting", "refused"),
+    _ACCOUNTING_UNKNOWN_CASES,
+    ids=["unknown", "Unknown", "UNKNOWN", "padded"],
+)
+def test_unknown_accounting_token_casing(accounting: str, refused: bool) -> None:
+    """Any casing of the accounting token ``unknown`` is a missing basis.
+
+    Both operands carry the token, recast is present, and every receipt gate
+    is checked. Cased forms refuse with ``required_basis_unknown`` and publish
+    no number. ``" unknown "`` stays present because this field is not
+    stripped, and certifies growth ``10``. GAAP on both sides still certifies
+    growth ``10``.
+    """
+    checked_all = {
+        name: True
+        for name in (
+            "basis",
+            "currency",
+            "scale",
+            "duration",
+            "perimeter",
+            "definition",
+            "source_mode",
+        )
+    }
+    basis = {"accounting": accounting, "recast": "as_reported"}
+    cells = [
+        cell(
+            "110",
+            metric="revenue_current",
+            owner_ref="synthetic:cell:sf02-current",
+            basis=basis,
+        ),
+        cell(
+            "100",
+            metric="revenue_prior",
+            owner_ref="synthetic:cell:sf02-prior",
+            basis=basis,
+        ),
+    ]
+    receipt = build_comparison_receipt("year_over_year", cells, checked=checked_all)
+    qualified = qualify_operands(
+        "year_over_year",
+        cells,
+        comparison_receipt=receipt,
+        formula="growth_pct",
+    )
+    derived = derive_result_cash("growth_pct", cells, comparison_receipt=receipt)
+    if refused:
+        assert qualified["status"] == "refused", qualified
+        assert "required_basis_unknown" in qualified["limitations"], qualified
+        assert derived["status"] == "refused", derived
+        assert derived["value"] is None, derived
+        assert "required_basis_unknown" in derived["limitations"], derived
+    else:
+        assert qualified["status"] == "ready", qualified
+        assert derived["status"] == "ready", derived
+        assert derived["value"] == "10", derived
+        assert "required_basis_unknown" not in derived["limitations"], derived
+
+    present = {"accounting": "GAAP", "recast": "as_reported"}
+    ok_cells = [
+        cell(
+            "110",
+            metric="revenue_current",
+            owner_ref="synthetic:cell:sf02-current",
+            basis=present,
+        ),
+        cell(
+            "100",
+            metric="revenue_prior",
+            owner_ref="synthetic:cell:sf02-prior",
+            basis=present,
+        ),
+    ]
+    ok_receipt = build_comparison_receipt("year_over_year", ok_cells, checked=checked_all)
+    ok = derive_result_cash("growth_pct", ok_cells, comparison_receipt=ok_receipt)
+    assert ok["status"] == "ready", ok
+    assert ok["value"] == "10", ok
+
+
 def test_qualify_operands_refuses_scale_mismatch_without_conversion() -> None:
     cells = [
         cell("100", metric="revenue_current", scale=1, currency="USD"),
