@@ -25,6 +25,12 @@ hash check.
 
 B1-RI is a target-trained summary-information *research* baseline, not the live
 incumbent ranker. This adapter never claims rank authority.
+
+Q03G guards are pure predicates on caller-supplied arguments. They refuse a
+single published board as a historical universe, purge training rows by the
+actual label interval, refuse an unlawful or outcome-bearing split, keep P6
+unavailable without complete fills, and apply Holm only to the fixed six-pilot
+family. They bind no dates, build no manifest, run no power and seal no trial.
 """
 from __future__ import annotations
 
@@ -33,8 +39,10 @@ import hashlib
 import importlib.abc
 import importlib.util
 import json
+import math
 import os
 import sys
+from datetime import date, datetime, timedelta
 
 ADAPTER_SCHEMA = "options.pilot.study.adapter.v1"
 EXPECTED_SPEC_SHA256 = "e30796c158da18cffe1b581463ba6820ff33e9acbe8a4248b3fc068e67f70317"
@@ -92,6 +100,25 @@ REQUIRED_SYNTHETIC_CASES = (
 )
 
 FORBIDDEN_NETWORK_MODULES = ("urllib", "socket", "http", "requests", "ftplib", "asyncio")
+
+HOLM_ALPHA = 0.05
+HOLM_FAMILY_ID = "six-pilot-holm-v1"
+INSPECTED_SPAN_START = date(2017, 1, 1)
+INSPECTED_SPAN_END = date(2025, 12, 31)
+P1_LABEL_MINUTES = 30
+P3_LABEL_SESSIONS = 20
+_OUTCOME_MARKERS = ("loss", "label", "p_value", "pvalue", "q_value", "qvalue")
+_P6_SUBSTITUTE_FIELDS = (
+    "y",
+    "label",
+    "quote",
+    "oa3_quote",
+    "ask_quote",
+    "entry_quote",
+    "markout",
+    "simulated_markout",
+    "simulated_markout_diagnostic",
+)
 
 
 class Refusal(Exception):
@@ -398,6 +425,10 @@ def run_synthetic_p3(spec_digest: str, reference_path: str) -> dict:
         "mode": "synthetic-p3",
         "synthetic_only": True,
         "empirical_acceptance": False,
+        "cohort_guard": {
+            "equity_p3_promotes_index_0dte": False,
+            "endpoint": {"root": "SPX", "cohort": "0DTE"},
+        },
         "empirical_status": "BLOCKED_EMPIRICAL_RECEIPTS_UNAVAILABLE",
         "source_hashes": {
             "spec": build_spec_hash_block(spec_digest),
@@ -442,6 +473,372 @@ def run_empirical() -> None:
         "unavailable. No dataset was read and no fitting was performed. Synthetic "
         "spec metadata cannot authorize a real trial.",
     )
+
+
+def qualify_population_candidate(candidate) -> dict:
+    """Classify one population candidate.
+
+    A single published board, including the current 69-row extract, is a
+    one-receipt replay. Nothing this function can be given today makes
+    ``historical_universe`` true: only a real data-qualification receipt,
+    which is not in scope, could.
+    """
+    reasons = [
+        "a single published board is a one-receipt replay, not a P1-P4 historical universe",
+        "only a real data-qualification receipt, which is not in scope, could qualify a historical universe",
+    ]
+    if isinstance(candidate, dict) and candidate.get("as_of") is not None:
+        reasons.append(
+            f"candidate as_of {candidate.get('as_of')} is one published receipt, "
+            "not an admitted historical cohort"
+        )
+    return {
+        "historical_universe": False,
+        "kind": "single_receipt_replay",
+        "reasons": reasons,
+        "dataset_manifest": None,
+    }
+
+
+def label_interval(row, *, sessions):
+    """Return the actual ``(label_start, label_end)`` for one training row.
+
+    P1 is the next 30 minutes after ``decision_at``. P3 ends 20 sessions after
+    ``formation_session``, counted on ``sessions``. A caller-supplied
+    ``label_end`` is ignored. A holiday omitted from ``sessions`` does not
+    count toward the 20.
+    """
+    if not isinstance(row, dict):
+        raise Refusal("LABEL_PILOT_UNSUPPORTED", "row is not an object")
+    pilot = row.get("pilot")
+    if pilot == "P1":
+        start = row.get("decision_at")
+        if not isinstance(start, datetime):
+            raise Refusal("LABEL_CLOCK_INVALID", "P1 decision_at must be a datetime")
+        return start, start + timedelta(minutes=P1_LABEL_MINUTES)
+    if pilot == "P3":
+        formation = row.get("formation_session")
+        if isinstance(formation, datetime) or not isinstance(formation, date):
+            raise Refusal("LABEL_SESSION_INVALID", "P3 formation_session must be a date")
+        session_list = list(sessions)
+        try:
+            index = session_list.index(formation)
+        except ValueError as error:
+            raise Refusal(
+                "LABEL_SESSION_NOT_ON_CALENDAR",
+                f"formation session {formation.isoformat()} is not in sessions",
+            ) from error
+        end_index = index + P3_LABEL_SESSIONS
+        if end_index >= len(session_list):
+            raise Refusal(
+                "LABEL_SESSION_NOT_ON_CALENDAR",
+                "sessions do not contain 20 sessions after formation",
+            )
+        return formation, session_list[end_index]
+    raise Refusal("LABEL_PILOT_UNSUPPORTED", f"pilot {pilot!r} has no guard label interval")
+
+
+def _reaches_validation(label_end, validation_start) -> bool:
+    """True when the label interval reaches ``validation_start`` or later."""
+    if isinstance(label_end, datetime) and isinstance(validation_start, datetime):
+        if (label_end.tzinfo is None) != (validation_start.tzinfo is None):
+            raise Refusal(
+                "LABEL_CLOCK_INVALID",
+                "timestamp label and validation_start must share timezone awareness",
+            )
+        return label_end >= validation_start
+    end_day = label_end.date() if isinstance(label_end, datetime) else label_end
+    start_day = (
+        validation_start.date() if isinstance(validation_start, datetime) else validation_start
+    )
+    return end_day >= start_day
+
+
+def _mature_after_cutoff(row, training_cutoff) -> bool:
+    """True when the row is not yet mature at the training cutoff.
+
+    ``label_mature_at`` equal to the cutoff is still mature. A missing
+    maturity timestamp is not.
+    """
+    mature = row.get("label_mature_at")
+    if not isinstance(mature, datetime):
+        return True
+    return mature > training_cutoff
+
+
+def purge_training_rows(rows, *, training_cutoff, validation_start, sessions):
+    """Split training rows into ``(kept, purged)``.
+
+    A row is purged when its actual ``[label_start, label_end]`` reaches
+    ``validation_start`` or later, or when ``label_mature_at`` is after
+    ``training_cutoff``. Session horizons are measured on ``sessions``.
+    Intraday horizons are measured by timestamps.
+    """
+    kept = []
+    purged = []
+    for row in rows:
+        _start, end = label_interval(row, sessions=sessions)
+        if _reaches_validation(end, validation_start) or _mature_after_cutoff(row, training_cutoff):
+            purged.append(row)
+        else:
+            kept.append(row)
+    return kept, purged
+
+
+def _is_outcome_key(key: str) -> bool:
+    norm = key.strip().lower().replace("-", "_").replace(" ", "_")
+    if norm in _OUTCOME_MARKERS:
+        return True
+    return any(norm.endswith("_" + marker) for marker in _OUTCOME_MARKERS)
+
+
+def _outcome_hits(obj):
+    found = []
+    if isinstance(obj, dict):
+        for key, value in obj.items():
+            if _is_outcome_key(str(key)) and value is not None:
+                found.append(str(key))
+            else:
+                found.extend(_outcome_hits(value))
+    elif isinstance(obj, (list, tuple)):
+        for item in obj:
+            found.extend(_outcome_hits(item))
+    return found
+
+
+def _refuse_non_session_boundary(proposal, sessions):
+    if not isinstance(proposal, dict):
+        raise Refusal("NON_SESSION_BOUNDARY", "proposal is not an object")
+    session_set = set(sessions)
+    for name in SPLIT_DATE_FIELDS:
+        value = proposal.get(name)
+        if not isinstance(value, date) or isinstance(value, datetime) or value not in session_set:
+            raise Refusal(
+                "NON_SESSION_BOUNDARY",
+                f"{name} {value!r} is not a session boundary",
+            )
+
+
+def _refuse_holdout_inside_inspected_span(proposal):
+    test_start = proposal["test_start"]
+    test_end = proposal["test_end"]
+    if test_start <= INSPECTED_SPAN_END and test_end >= INSPECTED_SPAN_START:
+        raise Refusal(
+            "HOLDOUT_INSIDE_INSPECTED_SPAN",
+            "holdout intersects the inspected #8286 span 2017-01-01..2025-12-31",
+        )
+
+
+def _refuse_split_overlap(proposal):
+    training_start = proposal["training_start"]
+    training_fit_cutoff = proposal["training_fit_cutoff"]
+    validation_start = proposal["validation_start"]
+    validation_end = proposal["validation_end"]
+    sealed = proposal["test_model_sealed_at"]
+    test_start = proposal["test_start"]
+    test_end = proposal["test_end"]
+    ordered = (
+        training_start <= training_fit_cutoff
+        < validation_start
+        <= validation_end
+        < sealed
+        <= test_start
+        <= test_end
+    )
+    if not ordered:
+        raise Refusal(
+            "SPLIT_OVERLAP",
+            "training, validation and holdout are not strictly disjoint",
+        )
+
+
+def _refuse_family_id_mismatch(proposal):
+    family_id = proposal.get("multiplicity_family_id")
+    if family_id != HOLM_FAMILY_ID:
+        raise Refusal(
+            "FAMILY_ID_MISMATCH",
+            f"multiplicity_family_id {family_id!r} != {HOLM_FAMILY_ID}",
+        )
+
+
+def _refuse_seal_contains_outcome(proposal):
+    hits = _outcome_hits(proposal)
+    if hits:
+        raise Refusal(
+            "SEAL_CONTAINS_OUTCOME",
+            f"seal contains outcome field(s) {hits}",
+        )
+
+
+def validate_split_proposal(proposal, *, sessions) -> dict:
+    """Refuse an unlawful split, or return an outcome-blind receipt.
+
+    A lawful receipt carries the seven cutoffs, the Holm family id, null
+    outcome fields and ``accepted_trial_id`` null. This does not bind a trial.
+    """
+    _refuse_non_session_boundary(proposal, sessions)
+    _refuse_holdout_inside_inspected_span(proposal)
+    _refuse_split_overlap(proposal)
+    _refuse_family_id_mismatch(proposal)
+    _refuse_seal_contains_outcome(proposal)
+    receipt = {name: proposal[name] for name in SPLIT_DATE_FIELDS}
+    receipt["multiplicity_family_id"] = HOLM_FAMILY_ID
+    receipt["loss"] = None
+    receipt["label"] = None
+    receipt["p_value"] = None
+    receipt["q_value"] = None
+    receipt["accepted_trial_id"] = None
+    return receipt
+
+
+def _refuse_p6_substitute_label(order):
+    if not isinstance(order, dict):
+        raise Refusal("P6_SUBSTITUTE_LABEL_REFUSED", "order is not an object")
+    for field in _P6_SUBSTITUTE_FIELDS:
+        if order.get(field) is not None:
+            raise Refusal(
+                "P6_SUBSTITUTE_LABEL_REFUSED",
+                f"{field} is a quote or simulated markout, not the actual-fill primary",
+            )
+
+
+def _p6_unavailable(reason: str) -> dict:
+    return {
+        "status": "unavailable",
+        "confirmatory_p": 1.0,
+        "in_coverage_census": True,
+        "training_label": None,
+        "y_bps": None,
+        "reason": reason,
+    }
+
+
+def p6_primary_label(order) -> dict:
+    """Return the P6 primary, or refuse a quote or simulated markout.
+
+    Empty fills, a partial child-fill list, or a missing fee receipt stay
+    unavailable with confirmatory p = 1 and remain in the coverage census.
+    This function never computes a return from quotes.
+    """
+    _refuse_p6_substitute_label(order)
+    fills = order.get("child_fills") if isinstance(order, dict) else None
+    fee = order.get("fee_receipt") if isinstance(order, dict) else None
+    requested = order.get("requested_quantity") if isinstance(order, dict) else None
+    if not isinstance(fills, list) or len(fills) == 0:
+        return _p6_unavailable("child_fills_empty_or_missing")
+    filled = 0
+    for fill in fills:
+        if not isinstance(fill, dict):
+            return _p6_unavailable("child_fills_partial")
+        quantity = fill.get("quantity")
+        if isinstance(quantity, bool) or not isinstance(quantity, (int, float)):
+            return _p6_unavailable("child_fills_partial")
+        filled += quantity
+    if isinstance(requested, bool) or not isinstance(requested, (int, float)) or filled < requested:
+        return _p6_unavailable("child_fills_partial")
+    if fee is None:
+        return _p6_unavailable("fee_receipt_missing")
+    return _p6_unavailable("primary_not_emitted_by_refusal_adapter")
+
+
+def _refuse_multiplicity_family(family_id, procedure, qvalues, pvalues):
+    if family_id != HOLM_FAMILY_ID:
+        raise Refusal(
+            "MULTIPLICITY_FAMILY_REFUSED",
+            f"family_id {family_id!r} is not {HOLM_FAMILY_ID}",
+        )
+    procedure_norm = str(procedure).strip().lower().replace("_", "-").replace(" ", "-")
+    if procedure_norm != "holm":
+        raise Refusal(
+            "MULTIPLICITY_FAMILY_REFUSED",
+            f"procedure {procedure!r} is not Holm; Benjamini-Hochberg is a different family",
+        )
+    if qvalues is not None:
+        raise Refusal(
+            "MULTIPLICITY_FAMILY_REFUSED",
+            "q-values are not an input to the six-pilot Holm family",
+        )
+    if isinstance(pvalues, dict):
+        for key, value in pvalues.items():
+            if _is_outcome_key(str(key)) and value is not None:
+                raise Refusal(
+                    "MULTIPLICITY_FAMILY_REFUSED",
+                    f"outcome field {key!r} is not a Holm p-value",
+                )
+            if isinstance(value, dict) and _outcome_hits(value):
+                raise Refusal(
+                    "MULTIPLICITY_FAMILY_REFUSED",
+                    f"pilot {key!r} carries a q-value or other outcome field",
+                )
+
+
+def _refuse_missing_pilot_key(pvalues):
+    if not isinstance(pvalues, dict) or set(pvalues) != set(PILOT_IDS):
+        observed = set(pvalues) if isinstance(pvalues, dict) else set()
+        missing = sorted(set(PILOT_IDS) - observed)
+        extra = sorted(observed - set(PILOT_IDS))
+        raise Refusal(
+            "PILOT_KEY_MISSING",
+            f"Holm requires exactly P1..P6 and does not fill missing keys; missing={missing} extra={extra}",
+        )
+    for pilot in PILOT_IDS:
+        value = pvalues[pilot]
+        if isinstance(value, bool) or not isinstance(value, (int, float)):
+            raise Refusal("PILOT_KEY_MISSING", f"{pilot} p-value is not a real number")
+
+
+def _refuse_out_of_range_pvalue(pvalues):
+    for pilot in PILOT_IDS:
+        value = pvalues[pilot]
+        if not math.isfinite(value) or value < 0 or value > 1:
+            raise Refusal(
+                "PVALUE_OUT_OF_RANGE",
+                f"{pilot} p-value {value!r} is not a finite number in [0, 1]",
+            )
+
+
+def holm_six_pilot(pvalues, *, family_id=HOLM_FAMILY_ID, procedure="holm", qvalues=None) -> dict:
+    """Holm step-down on the fixed six-pilot family at alpha 0.05.
+
+    Alpha is ``HOLM_ALPHA`` and is not a parameter. Missing pilots must be
+    passed as 1.0; a missing key is refused rather than filled. Any other
+    family id, any q-value input, and any Benjamini-Hochberg route are refused.
+    A value that is not a finite number in [0, 1] is refused.
+    """
+    _refuse_multiplicity_family(family_id, procedure, qvalues, pvalues)
+    _refuse_missing_pilot_key(pvalues)
+    _refuse_out_of_range_pvalue(pvalues)
+    ordered = sorted(PILOT_IDS, key=lambda pilot: (float(pvalues[pilot]), pilot))
+    steps = []
+    rejected = []
+    for rank, pilot in enumerate(ordered, start=1):
+        threshold = HOLM_ALPHA / (7 - rank)
+        p_value = float(pvalues[pilot])
+        rejected_here = p_value <= threshold
+        steps.append(
+            {
+                "k": rank,
+                "pilot": pilot,
+                "p": p_value,
+                "threshold": threshold,
+                "rejected": rejected_here,
+            }
+        )
+        if rejected_here:
+            rejected.append(pilot)
+        else:
+            break
+    return {
+        "family_id": HOLM_FAMILY_ID,
+        "alpha": HOLM_ALPHA,
+        "procedure": "holm",
+        "family_size": len(PILOT_IDS),
+        "rejected": rejected,
+        "steps": steps,
+        "thresholds": [
+            {"k": rank, "threshold": HOLM_ALPHA / (7 - rank)} for rank in range(1, 7)
+        ],
+    }
 
 
 def build_parser() -> argparse.ArgumentParser:
