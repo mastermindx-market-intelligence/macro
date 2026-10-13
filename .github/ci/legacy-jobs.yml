@@ -20460,6 +20460,7 @@ jobs:
       - "lib/hk_calendar.py"
       - "lib/intl_compare_mount.py"
       - "lib/intl_compare_view.py"
+      - "lib/intl_eod_publication.py"
       - "lib/intl_history_mount.py"
       - "lib/intl_inspector_mount.py"
       - "lib/intl_inspector_view.py"
