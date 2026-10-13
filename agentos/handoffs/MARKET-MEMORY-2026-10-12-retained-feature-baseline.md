@@ -5,7 +5,8 @@ model: codex
 ended_because: ci_handoff
 mission: >
   Continue the full Market Memory program on parent PR 6528 with an exact
-  retained-output feature capability and an explicitly separate fixed comparison.
+  retained-output feature capability, pure W2C population census, and an
+  explicitly separate fixed comparison and retained-generation retrieval.
 state_before: >
   Existing v1 pilot opportunities and v2 raw-source opportunities did not supply
   an admitted operational analogue population. Source parser recovery continues
@@ -29,6 +30,16 @@ changed:
     what: Freeze strict bounded W2C manifest identity, counts, references, reasons and false authority claims.
   - path: tests/test_market_memory_population.py
     what: Verify real matured admission and outcome state, rights, denominator, integrity, immutable capability and read-budget refusal without writes.
+  - path: engine/neuralweb/market_memory_retained_context_cohort.py
+    what: Authenticate every capture in one exact trusted generation, separate actual subject and source rights, and group earliest captures before quality filtering.
+  - path: engine/neuralweb/market_memory_episode_retrieval.py
+    what: Exhaustively compare typed original features under the fixed L1 method with explicit exclusion windows, complete accounting, ties and current rights at disclosure.
+  - path: tests/test_market_memory_retained_context_cohort.py
+    what: Exercise actual owner fixtures, complete denominators, source and subject denial before payload reads, cached disclosure revocation and bounds.
+  - path: tests/test_market_memory_episode_retrieval.py
+    what: Exercise ranking, purge and embargo accounting, self exclusion, no label inputs, stable source identities and revocation of unreturned candidates.
+  - path: .github/ci/legacy-jobs.yml
+    what: Register all new suites and the actual existing experience owner in CODE research-price-panel, preserve its original suites, and consolidate three existing EDGAR pytest launches without changing inventory or selectors.
 verified:
   - claim: The final feature and comparison suites pass together.
     command: python3 -m pytest tests/test_market_memory_episode_features.py tests/test_market_memory_episode_comparison.py -q
@@ -51,6 +62,18 @@ verified:
   - claim: P0 is a read-only outcome-blind census over authenticated owner fixtures.
     command: python3 -m pytest tests/test_market_memory_population.py -q
     result: 36 passed in the final combined run; pending-only and pending-beside-final matured outcomes refuse with store byte snapshots unchanged.
+  - claim: The actual expanded backend command preserves all existing research suites and executes every new owning suite.
+    command: The exact research-price-panel pytest command from the committed legacy manifest.
+    result: 811 passed and 409 subtests passed in 178.35 seconds; all prior tests remain selected, with no new deselection.
+  - claim: The consolidated offline EDGAR command preserves its three suites.
+    command: python3 -m pytest tests/test_edgar_8k_items.py tests/test_edgar_8k_counterparty.py tests/test_edgar_quarterly_tags.py -q
+    result: 122 passed in 11.03 seconds; two fewer pytest launches, unchanged dependencies and scope.
+  - claim: Root adversarial review repaired requested-subject permission substitution.
+    command: Real trusted SPY capture, different requested subject, policy denying the actual subject and source, with payload-read tripwires.
+    result: Original proposal failed the boundary test. Repaired cohort and retrieval run passes 84 cases including 42 accepted dependency cases; actual subject and source permissions precede payload reads and per-row disclosure.
+  - claim: Ordinary packing and loader controls remain intact.
+    command: Three current-main packing probes, full job inventory comparison and bounded manifest loader checks.
+    result: 134 jobs at weight 5796 for templates/index.html, 134 at 5599 for build_free_content.py, and 129 at 5559 for plan_book.py; each uses 10 packs with zero breaches. All prior selected job IDs remain; 2 focused loader checks pass.
 unverified:
   - claim: Current source usage and operational population admit comparison.
     what_would_verify: >
@@ -71,8 +94,8 @@ unresolved:
   - Two existing trusted-owner fixture tests hit inherited options-ledger row/byte bounds; no cap increase or data pruning was performed.
   - Exact corpus/query/split/guide/seed/reviewer/code registry and independent evaluation are still required before labels and efficacy claims.
 next_actions:
-  - Ship the independently repaired P0 owner seam on this same carrier; preserve the original rejected worker result and exact repair evidence.
-  - Register final owning suites in the appropriate existing backend code lane and complete the protected ship chain.
+  - Complete independent final review and hosted CI for this same population/retrieval carrier, then normal merge, installed source and admitted real-path proof.
+  - Qualify exact current source-purpose rights and operational registrations before serving any actual cohort; fixed source tests and policy interfaces are not grants.
   - Adjudicate a distinct prospective same-owner profile for any REST, technical and macro binding required by real retrieval.
   - Continue held UI adoption and all three consumers, three modes, rights, recovery and scientific acceptance under PR 6528.
 do_not_redo:
@@ -89,3 +112,17 @@ prs: [6528, 8694, 9078]
 The assigned root is `01a1333c-a475-7052-95a8-72c623fb12e1`.
 All 28 tasks and 49 acceptance cases remain in scope. This is a durable source
 checkpoint while the same root continues delivery, not completed-program acceptance.
+
+
+The distinct retained-generation cohort covers every capture in its exact trusted
+store generation (maximum 256). It does not claim complete scheduled opportunities,
+constituent-source authentication, fitted normalization, label-interval coverage,
+independent trials or efficacy. It leaves W2C admission and its original L2 method
+unchanged. A newer method applied to an old output is explicitly hypothetical or
+current contextual support. Actual output bytes retain their original meaning.
+
+Source repair #9078 is merged and its exact bytes, existing runtime fences and
+loaded service/timer boundaries are verified installed. Its next natural source
+capture remains separate. UI #8694 is still on its original carrier and HOLD.
+The new lineage successor remains a separately reviewed implementation; no
+certificate publisher, store repair or source capture is activated by this change.
