@@ -15,8 +15,9 @@ descriptive, never causal, never a news-impact claim. Unestimable windows
 abstain (None), never a default 50/50.
 
 Closes are calendar-dated (date_iso, close) pairs. Returns are computed
-between consecutive rows of that series, then stock and benchmark returns
-are inner-joined on the return's end date before beta/residual. A missing,
+between consecutive rows of that series, then stock and benchmark return-end
+dates are compared. join_policy None (default) abstains on a calendar
+mismatch; join_policy "inner" emits the inner-join numbers. A missing,
 non-finite, or non-positive close leaves the date in the series and sets
 the returns that touch it to None (no bridged multi-day return).
 
@@ -49,9 +50,30 @@ _IDENTITY_ID_KEYS = (
     "canonical_security_id",
     "instrument_id",
     "listing_id",
+    "cik",
+    "figi",
+    "isin",
+    "cusip",
+    "permid",
+    "perm_id",
+    "lei",
+    "sedol",
 )
 
-_REFUSE_MSG = "stress profiles never carry identity ids"
+_AUTHORITY_CANONICAL = {name.casefold(): name for name in AUTHORITY_FLAG_NAMES}
+_AUTHORITY_FOLDED = set(_AUTHORITY_CANONICAL)
+_IDENTITY_FOLDED = {name.casefold() for name in _IDENTITY_ID_KEYS}
+
+_THEN_KNOWN_TICKER_FIELDS = ("ticker", "listing")
+_THEN_KNOWN_BENCH_FIELD = "sector_etf"
+
+
+def _authority_refuse(key):
+    return "authority flag %s must be literal False" % key
+
+
+def _identity_refuse(key):
+    return "identity key %s must be null" % key
 
 
 class AuthorityMap(dict):
@@ -62,8 +84,11 @@ class AuthorityMap(dict):
         self.update(*args, **kwargs)
 
     def __setitem__(self, key, value):
-        if key in AUTHORITY_FLAG_NAMES and value is not False:
-            raise ValueError(_REFUSE_MSG)
+        folded = key.strip().casefold() if isinstance(key, str) else None
+        if folded in _AUTHORITY_FOLDED:
+            canonical = _AUTHORITY_CANONICAL[folded]
+            if key != canonical or value is not False:
+                raise ValueError(_authority_refuse(key))
         super().__setitem__(key, value)
 
     def update(self, *args, **kwargs):
@@ -120,16 +145,33 @@ def _walk_refuse(obj):
     """Refuse non-False authority flags and non-null identity ids at any depth."""
     if isinstance(obj, dict):
         for key, value in obj.items():
-            if key in AUTHORITY_FLAG_NAMES and value is not False:
-                raise ValueError(_REFUSE_MSG)
-            if key in _IDENTITY_ID_KEYS and value is not None:
-                raise ValueError(_REFUSE_MSG)
-            if key == "issuer_link" and value is not None and value != "UNRESOLVED":
-                raise ValueError(_REFUSE_MSG)
+            folded = key.strip().casefold() if isinstance(key, str) else None
+            if folded in _AUTHORITY_FOLDED:
+                canonical = _AUTHORITY_CANONICAL[folded]
+                if key != canonical or value is not False:
+                    raise ValueError(_authority_refuse(key))
+            if folded in _IDENTITY_FOLDED and value is not None:
+                raise ValueError(_identity_refuse(key))
+            if folded == "issuer_link" and value is not None and value != "UNRESOLVED":
+                raise ValueError(_identity_refuse(key))
             _walk_refuse(value)
     elif isinstance(obj, (list, tuple)):
         for item in obj:
             _walk_refuse(item)
+
+
+def _check_cohort_selection(profile):
+    cs = profile.get("cohort_selection")
+    if cs is None:
+        return
+    if not isinstance(cs, dict):
+        raise ValueError("cohort_selection must be a mapping")
+    if cs.get("hindsight") is not True:
+        raise ValueError("cohort_selection.hindsight must be True")
+    if cs.get("survivorship") is not True:
+        raise ValueError("cohort_selection.survivorship must be True")
+    if cs.get("transfer_evidence") is not False:
+        raise ValueError("cohort_selection.transfer_evidence must be False")
 
 
 def check_profile(profile):
@@ -137,20 +179,25 @@ def check_profile(profile):
 
     Walks the whole profile recursively. Keys in the identity-id set whose
     value is not None raise. issuer_link must be the literal "UNRESOLVED"
-    or None. Authority flags that are present must satisfy `value is False`.
+    or None. Authority flags that are present must satisfy `value is False`
+    under the canonical spelling; case/spacing variants raise. A present
+    cohort_selection block must keep hindsight True, survivorship True, and
+    transfer_evidence False. then_known is optional (synthetic test profiles
+    may omit it).
     """
     if not isinstance(profile, dict):
-        raise ValueError(_REFUSE_MSG)
+        raise ValueError("profile must be a mapping")
     auth = profile.get("authority") or {}
     if not isinstance(auth, dict):
-        raise ValueError(_REFUSE_MSG)
+        raise ValueError("authority must be a mapping")
     _walk_refuse(profile)
+    _check_cohort_selection(profile)
     return profile
 
 
 def check_profiles(profiles):
     if not isinstance(profiles, dict):
-        raise ValueError(_REFUSE_MSG)
+        raise ValueError("profiles must be a mapping")
     for profile in profiles.values():
         check_profile(profile)
     return profiles
@@ -207,6 +254,7 @@ def _minimal_yaml_load(text):
 
     Limitation: no anchors, aliases, merge keys, flow {}/[], multiline
     scalars (|/>), tags, or '---' documents. PyYAML is used when importable.
+    List-of-map items with the first key on the dash line are supported.
     """
     lines = []
     for raw in text.splitlines():
@@ -225,14 +273,32 @@ def _minimal_yaml_load(text):
             item = lines[i][1][2:].strip()
             if item == "":
                 if i + 1 < n and lines[i + 1][0] > list_indent:
-                    child, i = parse_map(i + 1, lines[i + 1][0])
-                    result.append(child)
+                    nxt_indent, nxt = lines[i + 1]
+                    if nxt.startswith("- "):
+                        child, i = parse_list(i + 1, nxt_indent)
+                        result.append(child)
+                    else:
+                        child, i = parse_map(i + 1, nxt_indent)
+                        result.append(child)
                 else:
                     result.append(None)
                     i += 1
             else:
-                result.append(_parse_scalar(item))
-                i += 1
+                key, rest = _split_key_value(item)
+                if key is not None:
+                    child = {}
+                    if rest != "":
+                        child[key] = _parse_scalar(rest)
+                    else:
+                        child[key] = None
+                    i += 1
+                    if i < n and lines[i][0] > list_indent and not lines[i][1].startswith("- "):
+                        more, i = parse_map(i, lines[i][0])
+                        child.update(more)
+                    result.append(child)
+                else:
+                    result.append(_parse_scalar(item))
+                    i += 1
         return result, i
 
     def parse_map(i, map_indent):
@@ -287,7 +353,7 @@ def load_profiles(profiles_dir):
     for path in files:
         payload = _load_yaml(path.read_text(encoding="utf-8"))
         if not isinstance(payload, dict):
-            raise ValueError(_REFUSE_MSG)
+            raise ValueError("profile must be a mapping")
         auth = payload.get("authority")
         if isinstance(auth, dict):
             payload["authority"] = AuthorityMap(auth)
@@ -511,9 +577,10 @@ def _summary(values, dates=None):
     }
 
 
-def _empty_summary():
+def _empty_summary(reason="NO_CLOSES"):
     stats = _summary([])
     stats["n_shared_dates"] = 0
+    stats["reason"] = reason
     return stats
 
 
@@ -538,43 +605,188 @@ def _inner_join_returns(stock_rets, bench_rets):
     )
 
 
-def stress_table(profiles, closes_by_ticker, *, window=63):
+def _dropped_return_dates(stock_rets, bench_rets):
+    stock_dates = {d for d, _ in stock_rets}
+    bench_dates = {d for d, _ in bench_rets}
+    dropped_stock = sorted(stock_dates - bench_dates)
+    dropped_bench = sorted(bench_dates - stock_dates)
+    return dropped_stock, dropped_bench
+
+
+def _then_known_entries(profile):
+    entries = (profile or {}).get("then_known") or []
+    if not isinstance(entries, list):
+        return []
+    return [e for e in entries if isinstance(e, dict)]
+
+
+def _valid_from_of(entry):
+    vf = entry.get("valid_from")
+    if vf is None or vf == "":
+        return None
+    return vf
+
+
+def _has_then_known_valid_from(profile):
+    return any(_valid_from_of(e) is not None for e in _then_known_entries(profile))
+
+
+def _earliest_close_date(closes):
+    if not closes or not _looks_dated(closes):
+        return None
+    return min(row[0] for row in closes)
+
+
+def _ticker_then_known_violation(profile, stock_closes):
+    """Return (valid_from_date) if ticker/listing is not then-known, else None."""
+    earliest = _earliest_close_date(stock_closes)
+    if earliest is None:
+        return None
+    violated = []
+    for entry in _then_known_entries(profile):
+        if entry.get("field") not in _THEN_KNOWN_TICKER_FIELDS:
+            continue
+        vf = _valid_from_of(entry)
+        if vf is not None and earliest < vf:
+            violated.append(vf)
+    if not violated:
+        return None
+    return max(violated)
+
+
+def _bench_then_known_violation(profile, bench_name, bench_closes):
+    earliest = _earliest_close_date(bench_closes)
+    if earliest is None:
+        return None
+    violated = []
+    for entry in _then_known_entries(profile):
+        if entry.get("field") != _THEN_KNOWN_BENCH_FIELD:
+            continue
+        if entry.get("value") != bench_name:
+            continue
+        vf = _valid_from_of(entry)
+        if vf is not None and earliest < vf:
+            violated.append(vf)
+    if not violated:
+        return None
+    return max(violated)
+
+
+def _zero_variance_skip_count(stock_ret, bench_ret, window):
+    n_skip = 0
+    n = min(len(stock_ret), len(bench_ret))
+    for t in range(window, n):
+        s_win = stock_ret[t - window : t]
+        b_win = bench_ret[t - window : t]
+        if not _window_defined(s_win) or not _window_defined(b_win):
+            continue
+        if not _is_defined_number(stock_ret[t]) or not _is_defined_number(bench_ret[t]):
+            continue
+        if _beta(s_win, b_win) is None:
+            n_skip += 1
+    return n_skip
+
+
+def _attach_empty_n_reason(stats, *, aligned_len, window, n_zero):
+    if stats.get("n") != 0:
+        return stats
+    if aligned_len < 2 * window:
+        stats["reason"] = "WINDOW_TOO_SHORT"
+    elif n_zero > 0:
+        stats["reason"] = "ZERO_BENCHMARK_VARIANCE"
+    else:
+        stats["reason"] = "WINDOW_TOO_SHORT"
+    return stats
+
+
+def _fill_all_benches(profile, maker):
+    per_bench = {}
+    for bench in _benchmarks_of(profile):
+        per_bench[bench] = maker(bench)
+    return per_bench
+
+
+def stress_table(profiles, closes_by_ticker, *, window=63, join_policy=None):
     """Normalized-residual summaries per (profile ticker, benchmark).
 
     Closes are ordered (date_iso, close) pairs. Returns are formed between
-    consecutive rows of each series, then inner-joined on the return end
-    date before beta/residual. Undated close lists are accepted only when
-    both legs have the same length (caller already aligned them).
+    consecutive rows of each series. Dated calendars record dropped_stock_dates
+    and dropped_bench_dates. join_policy None abstains with DATE_JOIN_MISMATCH
+    when either dropped list is non-empty; join_policy "inner" emits the
+    inner-join numbers. Undated close lists are accepted only when both legs
+    have the same length (caller already aligned them).
+
+    then_known on a profile is optional. When present, a stock window that
+    starts before ticker or listing valid_from abstains all benchmarks
+    (TICKER_NOT_THEN_KNOWN); a benchmark window that starts before that
+    benchmark's sector_etf valid_from abstains that benchmark
+    (BENCH_NOT_THEN_KNOWN). Undated closes against a non-null valid_from
+    abstain (UNDATED_THEN_KNOWN_UNCHECKABLE).
 
     Descriptive only. The returned dict carries authority_flags (all false),
     descriptive_only True, window, and causal_claims "none". Each per-
     benchmark summary includes first_date, last_date (of defined normalized
-    residuals) and n_shared_dates (inner-join size).
+    residuals) and n_shared_dates (inner-join size). A summary with n == 0
+    carries a reason.
     """
+    if join_policy not in (None, "inner"):
+        raise ValueError("join_policy must be None or 'inner'")
     check_profiles(profiles)
     summaries = {}
     for ticker, profile in profiles.items():
         check_profile(profile)
         stock_closes = (closes_by_ticker or {}).get(ticker)
-        per_bench = {}
         if stock_closes is None:
-            for bench in _benchmarks_of(profile):
-                per_bench[bench] = _empty_summary()
-            summaries[ticker] = per_bench
+            summaries[ticker] = _fill_all_benches(
+                profile, lambda _b: _empty_summary("NO_CLOSES")
+            )
             continue
         stock_dated = _looks_dated(stock_closes)
+        if not stock_dated and _has_then_known_valid_from(profile):
+            summaries[ticker] = _fill_all_benches(
+                profile,
+                lambda _b: _empty_summary("UNDATED_THEN_KNOWN_UNCHECKABLE"),
+            )
+            continue
+        if stock_dated:
+            ticker_vf = _ticker_then_known_violation(profile, stock_closes)
+            if ticker_vf is not None:
+                def _ticker_abstain(_b, vf=ticker_vf):
+                    stats = _empty_summary("TICKER_NOT_THEN_KNOWN")
+                    stats["then_known_valid_from"] = vf
+                    return stats
+
+                summaries[ticker] = _fill_all_benches(profile, _ticker_abstain)
+                continue
         stock_rets = simple_returns(stock_closes)
+        per_bench = {}
         for bench in _benchmarks_of(profile):
             bench_closes = (closes_by_ticker or {}).get(bench)
             if bench_closes is None:
-                per_bench[bench] = _empty_summary()
+                per_bench[bench] = _empty_summary("NO_CLOSES")
                 continue
             bench_dated = _looks_dated(bench_closes)
             if stock_dated != bench_dated:
                 raise ValueError("stock and benchmark closes must both be dated or both undated")
             if stock_dated:
+                bench_vf = _bench_then_known_violation(profile, bench, bench_closes)
+                if bench_vf is not None:
+                    stats = _empty_summary("BENCH_NOT_THEN_KNOWN")
+                    stats["then_known_valid_from"] = bench_vf
+                    per_bench[bench] = stats
+                    continue
                 bench_rets = simple_returns(bench_closes)
+                dropped_stock, dropped_bench = _dropped_return_dates(
+                    stock_rets, bench_rets
+                )
                 dates, stock_al, bench_al = _inner_join_returns(stock_rets, bench_rets)
+                if join_policy is None and (dropped_stock or dropped_bench):
+                    stats = _empty_summary("DATE_JOIN_MISMATCH")
+                    stats["dropped_stock_dates"] = dropped_stock
+                    stats["dropped_bench_dates"] = dropped_bench
+                    stats["n_shared_dates"] = len(dates)
+                    per_bench[bench] = stats
+                    continue
             else:
                 bench_rets = simple_returns(bench_closes)
                 if len(stock_rets) != len(bench_rets):
@@ -584,10 +796,23 @@ def stress_table(profiles, closes_by_ticker, *, window=63):
                 dates = None
                 stock_al = stock_rets
                 bench_al = bench_rets
+                dropped_stock = None
+                dropped_bench = None
             resid = rolling_beta_residual(stock_al, bench_al, window=window)
+            n_zero = _zero_variance_skip_count(stock_al, bench_al, window)
             normed = hist_vol_normalize(resid, window=window)
             stats = _summary(normed, dates=dates)
             stats["n_shared_dates"] = len(stock_al)
+            if dropped_stock is not None:
+                stats["dropped_stock_dates"] = dropped_stock
+                stats["dropped_bench_dates"] = dropped_bench
+            if join_policy == "inner":
+                stats["join_policy"] = "inner"
+            if n_zero > 0:
+                stats["n_zero_variance_skipped"] = n_zero
+            _attach_empty_n_reason(
+                stats, aligned_len=len(stock_al), window=window, n_zero=n_zero
+            )
             per_bench[bench] = stats
         summaries[ticker] = per_bench
     return {
@@ -779,7 +1004,8 @@ def _write_table_report(out_dir, table, data_absent=False):
         "",
         "Residuals are descriptive contemporaneous leftovers after a trailing",
         "beta. They are not causal and they are not a news-impact claim.",
-        "Stock and benchmark returns are inner-joined on calendar date.",
+        "Stock and benchmark return calendars that do not match abstain",
+        "(DATE_JOIN_MISMATCH) unless join_policy is inner.",
         "",
     ]
     summaries = table.get("summaries") or {}
@@ -788,7 +1014,7 @@ def _write_table_report(out_dir, table, data_absent=False):
         for bench, stats in summaries[ticker].items():
             lines.append(
                 "- %s: n=%s mean=%s stdev=%s min=%s max=%s last=%s "
-                "first_date=%s last_date=%s n_shared_dates=%s"
+                "first_date=%s last_date=%s n_shared_dates=%s reason=%s"
                 % (
                     bench,
                     stats.get("n"),
@@ -800,6 +1026,7 @@ def _write_table_report(out_dir, table, data_absent=False):
                     stats.get("first_date"),
                     stats.get("last_date"),
                     stats.get("n_shared_dates"),
+                    stats.get("reason"),
                 )
             )
         lines.append("")

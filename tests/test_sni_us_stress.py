@@ -29,6 +29,7 @@ from stress_set import (  # noqa: E402
 ROOT = Path(__file__).resolve().parents[1]
 PROFILES_DIR = ROOT / "research/single_name_intelligence/us_stress/profiles"
 MODULE_PATH = ROOT / "research/single_name_intelligence/us_stress/stress_set.py"
+README_PATH = ROOT / "research/single_name_intelligence/us_stress/README.md"
 
 TICKERS = ["AAPL", "MSFT", "NVDA", "AMZN", "GOOGL", "META", "TSLA"]
 FORBIDDEN = TICKERS + ["BABA"]
@@ -42,6 +43,8 @@ FLAGS = [
 ]
 WINDOW = 63
 RNG_SEED = 7
+POST_RENAME = datetime.date(2023, 1, 3)
+COHORT_RULE = "largest-seven US market cap as of 2026-10-12"
 
 
 def _business_days(start, end):
@@ -130,6 +133,13 @@ def _try_pandas():
         return None
 
 
+def _iter_summaries(table):
+    summaries = (table or {}).get("summaries") or {}
+    for ticker, benches in summaries.items():
+        for bench, stats in benches.items():
+            yield ticker, bench, stats
+
+
 def test_no_ticker_branch_law():
     src = MODULE_PATH.read_text(encoding="utf-8")
     for tok in FORBIDDEN:
@@ -151,14 +161,14 @@ def test_profiles_load_and_refuse_authority():
         assert profile["stress_set"]["descriptive_only"] is True
     one_key = next(iter(profiles))
     bad = copy.deepcopy(profiles[one_key])
-    with pytest.raises(ValueError, match="stress profiles never carry identity ids"):
+    with pytest.raises(ValueError, match="rank_authority"):
         bad["authority"]["rank_authority"] = True
     bad2 = copy.deepcopy(profiles[one_key])
     bad2["authority"] = dict(bad2["authority"])
     bad2["authority"]["rank_authority"] = True
-    with pytest.raises(ValueError, match="stress profiles never carry identity ids"):
+    with pytest.raises(ValueError, match="rank_authority"):
         check_profile(bad2)
-    with pytest.raises(ValueError, match="stress profiles never carry identity ids"):
+    with pytest.raises(ValueError, match="rank_authority"):
         stress_table({one_key: bad2}, {one_key: [1.0, 1.1]})
 
 
@@ -210,7 +220,7 @@ def test_hist_vol_normalize():
 def test_stress_table_descriptive():
     rng = random.Random(RNG_SEED)
     profiles = load_profiles(PROFILES_DIR)
-    closes = {name: _closes(rng) for name in _needed_names(profiles)}
+    closes = {name: _closes(rng, start_date=POST_RENAME) for name in _needed_names(profiles)}
     table = stress_table(profiles, closes, window=WINDOW)
     assert table["descriptive_only"] is True
     assert table["causal_claims"] == "none"
@@ -256,7 +266,7 @@ def test_held_out_onboarding(tmp_path):
     assert len(loaded) == 8
     assert "ZZZZ" in loaded
     assert loaded["ZZZZ"]["canonical_issuer_id"] is None
-    closes = {name: _closes(rng) for name in _needed_names(loaded)}
+    closes = {name: _closes(rng, start_date=POST_RENAME) for name in _needed_names(loaded)}
     table = stress_table(loaded, closes, window=WINDOW)
     assert "ZZZZ" in table["summaries"]
     assert table["descriptive_only"] is True
@@ -311,6 +321,7 @@ def test_r1_01_date_alignment(tmp_path):
         profiles,
         {"STOCK": stock_closes, "BENCH": bench_closes},
         window=WINDOW,
+        join_policy="inner",
     )
     stats = table["summaries"]["STOCK"]["BENCH"]
     stock_al, bench_al, shared = _aligned_return_legs(stock_closes, bench_closes)
@@ -326,6 +337,7 @@ def test_r1_01_date_alignment(tmp_path):
         profiles,
         {"STOCK": stock_closes, "BENCH": trimmed},
         window=WINDOW,
+        join_policy="inner",
     )
     stock_al2, bench_al2, shared2 = _aligned_return_legs(stock_closes, trimmed)
     resid2 = rolling_beta_residual(stock_al2, bench_al2, window=WINDOW)
@@ -514,7 +526,7 @@ def test_r1_05_identity_ids_at_any_depth():
 def test_r1_06_reproducibility_fields():
     rng = random.Random(RNG_SEED)
     profiles = load_profiles(PROFILES_DIR)
-    closes = {name: _closes(rng) for name in _needed_names(profiles)}
+    closes = {name: _closes(rng, start_date=POST_RENAME) for name in _needed_names(profiles)}
     table = stress_table(profiles, closes, window=WINDOW)
     assert table["window"] == WINDOW
     assert table["descriptive_only"] is True
@@ -546,3 +558,301 @@ def test_r1_06_reproducibility_fields():
     assert empty["first_date"] is None
     assert empty["last_date"] is None
     assert empty["n_shared_dates"] == 0
+    assert empty["reason"] == "NO_CLOSES"
+
+
+def test_r2_03_cohort_selection_disclosed():
+    readme = README_PATH.read_text(encoding="utf-8")
+    assert "hindsight" in readme
+    assert "survivorship" in readme
+    profiles = load_profiles(PROFILES_DIR)
+    assert set(profiles) == set(TICKERS)
+    for profile in profiles.values():
+        cs = profile["cohort_selection"]
+        assert cs["rule"] == COHORT_RULE
+        assert cs["hindsight"] is True
+        assert cs["survivorship"] is True
+        assert cs["representative_sample"] is False
+        assert cs["transfer_evidence"] is False
+
+
+def test_r2_03_transfer_evidence_refused():
+    profiles = load_profiles(PROFILES_DIR)
+    bad = copy.deepcopy(next(iter(profiles.values())))
+    bad["cohort_selection"]["transfer_evidence"] = True
+    with pytest.raises(ValueError):
+        check_profile(bad)
+
+
+def test_r2_04_committed_profiles_carry_then_known():
+    profiles = load_profiles(PROFILES_DIR)
+    assert set(profiles) == set(TICKERS)
+    required = {"field", "value", "valid_from", "valid_to", "source", "verified"}
+    allowed_fields = {"ticker", "share_class", "sector_etf", "listing"}
+    for profile in profiles.values():
+        entries = profile["then_known"]
+        assert isinstance(entries, list) and entries
+        for entry in entries:
+            assert required <= set(entry)
+            assert entry["field"] in allowed_fields
+            assert isinstance(entry["source"], str) and entry["source"]
+            assert entry["verified"] is False or entry["verified"] is True
+
+
+def test_r2_04_meta_2015_abstains_ticker_not_then_known():
+    rng = random.Random(RNG_SEED)
+    profiles = load_profiles(PROFILES_DIR)
+    meta = {"META": profiles["META"]}
+    closes = {
+        name: _closes(rng, start_date=datetime.date(2015, 1, 2))
+        for name in _needed_names(meta)
+    }
+    table = stress_table(meta, closes, window=WINDOW)
+    benches = table["summaries"]["META"]
+    assert benches
+    for stats in benches.values():
+        assert stats["reason"] == "TICKER_NOT_THEN_KNOWN"
+        assert stats["mean"] is None
+        assert stats["n"] == 0
+        assert stats["stdev"] is None
+
+
+def test_r2_04_xlc_2017_abstains():
+    rng = random.Random(RNG_SEED)
+    profiles = load_profiles(PROFILES_DIR)
+    googl = {"GOOGL": profiles["GOOGL"]}
+    start = datetime.date(2017, 1, 3)
+    closes = {name: _closes(rng, start_date=start) for name in _needed_names(googl)}
+    table = stress_table(googl, closes, window=WINDOW)
+    benches = table["summaries"]["GOOGL"]
+    xlc = benches["XLC"]
+    assert xlc["reason"] == "BENCH_NOT_THEN_KNOWN"
+    assert xlc["mean"] is None
+    assert xlc["n"] == 0
+    for bench, stats in benches.items():
+        if bench == "XLC":
+            continue
+        assert stats["n"] > 0
+        assert stats["mean"] is not None
+
+
+def test_r2_04_meta_2023_numeric():
+    rng = random.Random(RNG_SEED)
+    profiles = load_profiles(PROFILES_DIR)
+    meta = {"META": profiles["META"]}
+    closes = {
+        name: _closes(rng, n=200, start_date=datetime.date(2023, 1, 3))
+        for name in _needed_names(meta)
+    }
+    table = stress_table(meta, closes, window=WINDOW)
+    benches = table["summaries"]["META"]
+    assert benches
+    for stats in benches.values():
+        assert stats["n"] > 0
+        assert stats["mean"] is not None
+        assert math.isfinite(float(stats["mean"]))
+
+
+def test_r2_04_undated_then_known_uncheckable():
+    profiles = load_profiles(PROFILES_DIR)
+    meta = {"META": profiles["META"]}
+    n = 200
+    closes = {name: [100.0 + i * 0.1 for i in range(n)] for name in _needed_names(meta)}
+    table = stress_table(meta, closes, window=WINDOW)
+    for stats in table["summaries"]["META"].values():
+        assert stats["reason"] == "UNDATED_THEN_KNOWN_UNCHECKABLE"
+        assert stats["mean"] is None
+        assert stats["n"] == 0
+
+
+@pytest.mark.parametrize(
+    "profile",
+    [
+        {"authority": {}, "cik": "x"},
+        {"authority": {}, "extra": {"CIK": "x"}},
+        {"authority": {}, "figi": "x"},
+        {"authority": {}, "items": [{"ISIN": "x"}]},
+        {"authority": {}, "cusip": "x"},
+        {"authority": {}, "PermID": "x"},
+        {"authority": {}, "lei": "x"},
+    ],
+)
+def test_r2_05_identity_alias_refused(profile):
+    with pytest.raises(ValueError):
+        check_profile(profile)
+    loaded = load_profiles(PROFILES_DIR)
+    assert len(loaded) == 7
+    assert set(loaded) == set(TICKERS)
+
+
+def _mismatch_closes():
+    rng = random.Random(RNG_SEED)
+    all_days = _business_days(datetime.date(2020, 1, 2), datetime.date(2020, 3, 31))
+    stock_dates = all_days[5:31]
+    bench_dates = all_days[0:18]
+    assert len(stock_dates) == 26
+    assert len(bench_dates) == 18
+
+    def series(dates, sigma):
+        px = 100.0
+        out = []
+        for i, d in enumerate(dates):
+            if i:
+                px *= 1.0 + rng.gauss(0.0, sigma)
+            out.append((d, px))
+        return out
+
+    return series(stock_dates, 0.01), series(bench_dates, 0.008)
+
+
+def test_r2_06_mismatch_abstains_by_default():
+    stock_closes, bench_closes = _mismatch_closes()
+    table = stress_table(
+        {"STOCK": _synth_profile(("BENCH",))},
+        {"STOCK": stock_closes, "BENCH": bench_closes},
+        window=3,
+    )
+    stats = table["summaries"]["STOCK"]["BENCH"]
+    assert stats["reason"] == "DATE_JOIN_MISMATCH"
+    assert stats["mean"] is None
+    assert stats["n"] == 0
+    assert stats["stdev"] is None
+    assert stats["dropped_stock_dates"]
+    assert stats["dropped_bench_dates"]
+
+
+def test_r2_06_inner_policy_emits_and_records():
+    stock_closes, bench_closes = _mismatch_closes()
+    table = stress_table(
+        {"STOCK": _synth_profile(("BENCH",))},
+        {"STOCK": stock_closes, "BENCH": bench_closes},
+        window=3,
+        join_policy="inner",
+    )
+    stats = table["summaries"]["STOCK"]["BENCH"]
+    assert stats["n"] > 0
+    assert stats["mean"] is not None
+    assert math.isfinite(float(stats["mean"]))
+    assert stats["join_policy"] == "inner"
+    assert stats["dropped_stock_dates"]
+    assert stats["dropped_bench_dates"]
+
+
+def test_r2_06_join_policy_other_raises():
+    stock_closes, bench_closes = _mismatch_closes()
+    with pytest.raises(ValueError):
+        stress_table(
+            {"STOCK": _synth_profile(("BENCH",))},
+            {"STOCK": stock_closes, "BENCH": bench_closes},
+            window=3,
+            join_policy="outer",
+        )
+
+
+def test_r2_13_window_too_short_reason():
+    rng = random.Random(RNG_SEED)
+    stock = _closes(rng, n=10, start_date=datetime.date(2020, 1, 2))
+    bench = _closes(rng, n=10, start_date=datetime.date(2020, 1, 2))
+    table = stress_table(
+        {"STOCK": _synth_profile(("BENCH",))},
+        {"STOCK": stock, "BENCH": bench},
+        window=WINDOW,
+    )
+    stats = table["summaries"]["STOCK"]["BENCH"]
+    assert stats["n"] == 0
+    assert stats["reason"] == "WINDOW_TOO_SHORT"
+
+
+def test_r2_13_zero_variance_reason():
+    dates = _business_days(datetime.date(2020, 1, 2), datetime.date(2020, 12, 31))
+    rng = random.Random(RNG_SEED)
+    px = 100.0
+    stock = []
+    bench = []
+    for i, d in enumerate(dates):
+        if i:
+            px *= 1.0 + rng.gauss(0.0, 0.01)
+        stock.append((d, px))
+        bench.append((d, 100.0))
+    table = stress_table(
+        {"STOCK": _synth_profile(("BENCH",))},
+        {"STOCK": stock, "BENCH": bench},
+        window=WINDOW,
+    )
+    stats = table["summaries"]["STOCK"]["BENCH"]
+    assert stats["n"] == 0
+    assert stats["reason"] == "ZERO_BENCHMARK_VARIANCE"
+
+
+def test_r2_13_every_empty_summary_has_reason():
+    rng = random.Random(RNG_SEED)
+    profiles = load_profiles(PROFILES_DIR)
+    tables = []
+    tables.append(stress_table(profiles, {}, window=WINDOW))
+    meta = {"META": profiles["META"]}
+    tables.append(
+        stress_table(
+            meta,
+            {
+                name: _closes(rng, start_date=datetime.date(2015, 1, 2))
+                for name in _needed_names(meta)
+            },
+            window=WINDOW,
+        )
+    )
+    stock10 = _closes(rng, n=10, start_date=datetime.date(2020, 1, 2))
+    bench10 = _closes(rng, n=10, start_date=datetime.date(2020, 1, 2))
+    tables.append(
+        stress_table(
+            {"STOCK": _synth_profile(("BENCH",))},
+            {"STOCK": stock10, "BENCH": bench10},
+            window=WINDOW,
+        )
+    )
+    stock_m, bench_m = _mismatch_closes()
+    tables.append(
+        stress_table(
+            {"STOCK": _synth_profile(("BENCH",))},
+            {"STOCK": stock_m, "BENCH": bench_m},
+            window=3,
+        )
+    )
+    empty_n = 0
+    for table in tables:
+        for _ticker, _bench, stats in _iter_summaries(table):
+            if stats["n"] == 0:
+                empty_n += 1
+                assert "reason" in stats
+                assert stats["reason"]
+    assert empty_n > 0
+
+
+@pytest.mark.parametrize(
+    "profile",
+    [
+        {"authority": {"Rank_Authority": True}},
+        {
+            "authority": dict(
+                {name: False for name in FLAGS},
+                TRADE_AUTHORITY=False,
+            )
+        },
+        {"authority": {" signal_authority ": True}},
+    ],
+)
+def test_r2_14_case_variant_authority_refused(profile):
+    with pytest.raises(ValueError):
+        check_profile(profile)
+
+
+def test_r2_16_messages_name_gate():
+    with pytest.raises(ValueError) as auth_err:
+        check_profile({"authority": {"rank_authority": True}})
+    auth_msg = str(auth_err.value)
+    assert "authority" in auth_msg.casefold()
+    assert "rank_authority" in auth_msg
+    with pytest.raises(ValueError) as id_err:
+        check_profile({"authority": {}, "cik": "x"})
+    id_msg = str(id_err.value)
+    assert "cik" in id_msg.casefold()
+    assert "authority" not in id_msg.casefold()

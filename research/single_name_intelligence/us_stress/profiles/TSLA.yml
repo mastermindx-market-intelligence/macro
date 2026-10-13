@@ -10,6 +10,12 @@
 schema_version: coverage_profile.v1
 as_of: "2026-10-12"
 profile_kind: qualification_facts
+cohort_selection:
+  rule: "largest-seven US market cap as of 2026-10-12"
+  hindsight: true
+  survivorship: true
+  representative_sample: false
+  transfer_evidence: false
 issuer_key: tesla
 display_name: Tesla, Inc.
 canonical_issuer_id: null
@@ -45,3 +51,28 @@ stress_set:
     - QQQ
   sector_etf: XLY
   descriptive_only: true
+then_known:
+  - field: ticker
+    value: TSLA
+    valid_from: null
+    valid_to: null
+    source: "ticker valid_from not seat-supplied; valid_from is null"
+    verified: false
+  - field: listing
+    value: NASDAQ
+    valid_from: "2010-06-29"
+    valid_to: null
+    source: "seat-supplied 2026-10-13, not verified against a repo source"
+    verified: false
+  - field: share_class
+    value: common
+    valid_from: null
+    valid_to: null
+    source: "share_class valid_from not seat-supplied; valid_from is null"
+    verified: false
+  - field: sector_etf
+    value: XLY
+    valid_from: "1998-12-22"
+    valid_to: null
+    source: "seat-supplied 2026-10-13, not verified against a repo source"
+    verified: false
