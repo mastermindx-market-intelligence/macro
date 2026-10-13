@@ -84,6 +84,19 @@ function boot(list, readyState = 'complete') {
       return list;
     },
     addEventListener(type, fn) { remember(listeners.document, type, fn); },
+    createElement(tag) {
+      return {
+        tag: tag,
+        className: '',
+        innerHTML: '',
+        parentNode: null,
+        attrs: {},
+        setAttribute(name, value) { this.attrs[name] = String(value); },
+        getAttribute(name) {
+          return Object.prototype.hasOwnProperty.call(this.attrs, name) ? this.attrs[name] : null;
+        },
+      };
+    },
   };
   const window = {
     setTimeout(fn, ms) {
@@ -475,5 +488,100 @@ ctx.document.activeElement = f.summary;
 ctx.window.mmPbExpire();
 assertExpired(f.sec, 'no close button');
 assert.equal(f.focused(), f.dlg, 'focus stays on the dialog itself');
+"""
+    )
+
+
+_EXPIRY_EN = "Awaiting a newer close. This assessment is no longer current."
+_EXPIRY_ZH = "等待更新的收盘价。此评估已不再是当前状态。"
+
+
+def test_x13_expiry_fills_the_live_region_once_and_a_future_stamp_stays_empty():
+    """A past stamp copies the inert EN and ZH message in once; a future stamp does not.
+
+    The region's announced text ignores the inert ``<template>`` carrier, which
+    is not in the accessibility tree. Calling expire() again must not duplicate it.
+    """
+    _run(
+        f"""
+const EN = { _EXPIRY_EN!r };
+const ZH = { _EXPIRY_ZH!r };
+function count(hay, needle) {{
+  let n = 0, i = 0;
+  while ((i = hay.indexOf(needle, i)) !== -1) {{ n += 1; i += needle.length; }}
+  return n;
+}}
+function expirySection(stamp) {{
+  const sec = section(stamp);
+  const carrier = {{
+    className: 'pbx-expiry-msg',
+    innerHTML: '<span class="l-en">' + EN + '</span><span class="l-zh">' + ZH + '</span>',
+    parentNode: null,
+  }};
+  const region = {{
+    attrs: {{}},
+    children: [],
+    getAttribute(name) {{
+      return Object.prototype.hasOwnProperty.call(this.attrs, name) ? this.attrs[name] : null;
+    }},
+    setAttribute(name, value) {{ this.attrs[name] = String(value); }},
+    querySelector(sel) {{
+      if (sel === '.pbx-expiry-live') {{
+        return this.children.find((child) => child.className === 'pbx-expiry-live') || null;
+      }}
+      return null;
+    }},
+    appendChild(child) {{
+      this.children.push(child);
+      child.parentNode = this;
+      return child;
+    }},
+    removeChild(child) {{
+      const at = this.children.indexOf(child);
+      if (at >= 0) this.children.splice(at, 1);
+      child.parentNode = null;
+      return child;
+    }},
+  }};
+  carrier.parentNode = region;
+  region.children.push(carrier);
+  const baseQuery = sec.querySelector.bind(sec);
+  sec.querySelector = (sel) => {{
+    if (sel === '.pbx-expiry') return region;
+    if (sel === 'template.pbx-expiry-msg') {{
+      return region.children.includes(carrier) ? carrier : null;
+    }}
+    return baseQuery(sel);
+  }};
+  sec.region = region;
+  sec.carrier = carrier;
+  return sec;
+}}
+function announced(sec) {{
+  return sec.region.children
+    .filter((child) => child !== sec.carrier && child.className === 'pbx-expiry-live')
+    .map((child) => child.innerHTML)
+    .join('');
+}}
+now = at('2026-10-12T09:00:00Z');
+const past = expirySection('2026-10-12T17:00:00+08:00');
+const ctx = boot([past]);
+assertExpired(past, 'past stamp');
+let text = announced(past);
+assert.equal(count(text, EN), 1, 'EN once after expire');
+assert.equal(count(text, ZH), 1, 'ZH once after expire');
+assert.equal(past.region.children.filter((child) => child.className === 'pbx-expiry-live').length, 1);
+ctx.window.mmPbExpire();
+text = announced(past);
+assert.equal(count(text, EN), 1, 'second expire duplicated EN');
+assert.equal(count(text, ZH), 1, 'second expire duplicated ZH');
+assert.equal(past.region.children.filter((child) => child.className === 'pbx-expiry-live').length, 1);
+
+now = at('2026-10-12T08:00:00Z');
+const future = expirySection('2026-10-12T17:00:00+08:00');
+boot([future]);
+assertCurrent(future, 'future stamp');
+assert.equal(announced(future), '', 'future region stays empty');
+assert.equal(future.region.getAttribute('data-pb-announced'), null);
 """
     )

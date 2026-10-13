@@ -23,6 +23,24 @@
       return;
     }
   }
+  /* The status region is already exposed and empty. Copy the inert message in
+     once the section is marked expired; a second pass must not repeat it. */
+  function announceExpiry(root) {
+    var region = root.querySelector('.pbx-expiry');
+    if (!region || region.getAttribute('data-pb-announced') === '1') return;
+    var carrier = root.querySelector('template.pbx-expiry-msg');
+    if (!carrier) return;
+    var markup = carrier.innerHTML || '';
+    if (!markup) return;
+    var live = document.createElement('span');
+    live.className = 'pbx-expiry-live';
+    live.innerHTML = markup;
+    region.appendChild(live);
+    if (carrier.parentNode && typeof carrier.parentNode.removeChild === 'function') {
+      carrier.parentNode.removeChild(carrier);
+    }
+    region.setAttribute('data-pb-announced', '1');
+  }
   function expire() {
     window.clearTimeout(timer);
     var now = Date.now(), next = Infinity;
@@ -39,6 +57,7 @@
           if (en) en.textContent = 'Price update needed';
           if (zh) zh.textContent = '价格数据待更新';
         }
+        announceExpiry(root);
       } else {
         next = Math.min(next, end);
       }

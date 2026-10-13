@@ -119,6 +119,64 @@ def test_expiry_uses_existing_owner_selectors_without_another_timer():
     assert 'role="dialog"' not in html  # the existing popup retains the shell
 
 
+_EXPIRY_EN = "Awaiting a newer close. This assessment is no longer current."
+_EXPIRY_ZH = "等待更新的收盘价。此评估已不再是当前状态。"
+
+
+def _direct_text(node):
+    return "".join(child for child in node.children if isinstance(child, str)).strip()
+
+
+def test_expiry_region_is_an_empty_live_region_with_an_inert_message():
+    """The status region stays empty until expiry; both languages sit in the carrier."""
+    soup = BeautifulSoup(render(native_view()), "html.parser")
+    region = soup.select_one(".pbx-expiry")
+    assert region.get("role") == "status"
+    assert region.get("aria-live") == "polite"
+    assert region.get("aria-atomic") == "true"
+    assert _direct_text(region) == ""
+    assert [el for el in region.select(".l-en") if el.find_parent("template") is None] == []
+    carrier = region.select_one("template.pbx-expiry-msg")
+    assert carrier is not None
+    # BeautifulSoup stores <template> text as TemplateString, which get_text() skips.
+    assert carrier.select_one(".l-en").string == _EXPIRY_EN
+    assert carrier.select_one(".l-zh").string == _EXPIRY_ZH
+
+
+def test_non_current_expiry_region_stays_empty():
+    """An unqualified section does not pre-fill the live region."""
+    soup = BeautifulSoup(render(None), "html.parser")
+    region = soup.select_one(".pbx-expiry")
+    assert region.get("role") == "status"
+    assert region.get("aria-live") == "polite"
+    assert region.get("aria-atomic") == "true"
+    assert _direct_text(region) == ""
+    assert [el for el in region.select(".l-en") if el.find_parent("template") is None] == []
+
+
+def test_expiry_css_clips_the_region_until_it_is_expired():
+    css = (ROOT / "templates" / "_risk_radar_pullback_depth.css.j2").read_text()
+    start = css.index(".rrp .pbx-expiry{")
+    body = css[start:css.index("}", start)]
+    for piece in (
+        "position:absolute",
+        "width:1px",
+        "height:1px",
+        "margin:-1px",
+        "overflow:hidden",
+        "clip:rect(0 0 0 0)",
+        "clip-path:inset(50%)",
+        "white-space:nowrap",
+    ):
+        assert piece in body, piece
+    assert "display:none" not in body
+    assert "visibility:hidden" not in body
+    expired = css[css.index(".rrp.pb-expired .pbx-expiry{"):]
+    expired = expired[:expired.index("}")]
+    assert "display:block" in expired
+    assert "padding:" in expired and "color:" in expired and "font-size:" in expired
+
+
 def test_dynamic_text_is_escaped_even_without_jinja_autoescape():
     v = native_view()
     v["observation"]["benchmark_en"] = '<img src=x onerror="alert(1)">'

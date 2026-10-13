@@ -137,7 +137,7 @@
       {{ t('Current until','有效至') }} <time datetime="{{ o.get('valid_until')|e }}">{{ _vu_disp|e }}</time>{% endif %}
     </div>
   </header>
-  <div class="pbx-expiry" role="status">{{ t('Awaiting a newer close. This assessment is no longer current.', '等待更新的收盘价。此评估已不再是当前状态。') }}</div>
+  <div class="pbx-expiry" role="status" aria-live="polite" aria-atomic="true"><template class="pbx-expiry-msg">{{ t('Awaiting a newer close. This assessment is no longer current.', '等待更新的收盘价。此评估已不再是当前状态。') }}</template></div>
   <div class="pbx-current">
     {% if current %}
     {% set dd = [0, 100*(1-p/h)]|max %}
