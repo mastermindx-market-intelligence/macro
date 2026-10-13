@@ -440,13 +440,18 @@ class ResearchReadService:
             return "EXTRACTION_UNAVAILABLE", extracted, segments, extra
 
         reader = self._source_digest_reader
-        if reader is not None:
-            try:
-                digest = reader(report_id)
-            except Exception:
-                digest = None
-            if _is_sha256(digest) and digest != extracted.get("source_pdf_sha256"):
-                return "SOURCE_REVISION_CHANGED", extracted, segments, extra
+        if reader is None:
+            return "EXTRACTION_UNAVAILABLE", None, None, extra
+        try:
+            digest = reader(report_id)
+        except Exception:
+            digest = None
+        # The derivative's recorded digest is not an authoritative current
+        # source check. If that check fails, do not return text or certify RIO.
+        if not _is_sha256(digest):
+            return "EXTRACTION_UNAVAILABLE", None, None, extra
+        if digest != extracted.get("source_pdf_sha256"):
+            return "SOURCE_REVISION_CHANGED", extracted, segments, extra
 
         if layer == "thin":
             extra.append("FULL_TEXT_PARTIAL")
