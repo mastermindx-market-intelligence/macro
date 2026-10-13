@@ -120,7 +120,7 @@ def test_expiry_uses_existing_owner_selectors_without_another_timer():
 
 
 _EXPIRY_EN = "Awaiting a newer close. This assessment is no longer current."
-_EXPIRY_ZH = "等待更新的收盘价。此评估已不再是当前状态。"
+_EXPIRY_ZH = "等待更新的收盘价。此评估已过时。"
 
 
 def _direct_text(node):
@@ -303,7 +303,7 @@ def test_figures_that_round_to_zero_print_without_a_sign():
     assert soup.select_one('[data-metric="worst"]').get_text(strip=True) == "0.0%"
     assert soup.select_one('[data-metric="rebound"]').get_text(strip=True) == "0.0%"
     cells = [r.select('td')[1].get_text() for r in soup.select('.rrp-history tbody tr')]
-    assert cells == ["0.00%", "\u22121.23%"]
+    assert cells == ["0.0%", "\u22121.2%"]
 
 
 @pytest.mark.parametrize("change, lead", [
@@ -512,6 +512,20 @@ def test_one_missing_session_reads_in_the_singular():
     gaps = _signal(soup, "gaps")
     assert gaps.select_one(".l-en").get_text() == "1 session missing from the closes used for this assessment"
     assert gaps.select_one(".l-zh").get_text() == "本次评估所用收盘价缺少1个交易日"
+
+
+@pytest.mark.parametrize("closes, en", [
+    (1, "1 observed close since the pullback was confirmed"),
+    (2, "2 observed closes since the pullback was confirmed"),
+    (12, "12 observed closes since the pullback was confirmed"),
+])
+def test_age_line_agrees_in_number(closes, en):
+    v = native_view()
+    v["observation"]["observed_closes_since_onset"] = closes
+    age = BeautifulSoup(render(v), "html.parser").select_one('[data-metric="age"]')
+    assert " ".join(age.get_text(" ", strip=True).split()).startswith(f"{closes} ")
+    assert age.select_one(".l-en").get_text() == en.split(" ", 1)[1]
+    assert age.select_one(".l-zh").get_text() == "个已观测收盘（自回撤确认起）"
 
 def test_average_at_or_above_uses_the_other_label():
     soup = BeautifulSoup(render(evidence_view(below_20_close_average=False)), "html.parser")

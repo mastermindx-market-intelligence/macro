@@ -493,7 +493,7 @@ assert.equal(f.focused(), f.dlg, 'focus stays on the dialog itself');
 
 
 _EXPIRY_EN = "Awaiting a newer close. This assessment is no longer current."
-_EXPIRY_ZH = "等待更新的收盘价。此评估已不再是当前状态。"
+_EXPIRY_ZH = "等待更新的收盘价。此评估已过时。"
 
 
 def test_x13_expiry_fills_the_live_region_once_and_a_future_stamp_stays_empty():

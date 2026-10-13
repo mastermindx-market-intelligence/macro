@@ -137,7 +137,7 @@
       {{ t('Current until','有效至') }} <time datetime="{{ o.get('valid_until')|e }}">{{ _vu_disp|e }}</time>{% endif %}
     </div>
   </header>
-  <div class="pbx-expiry" role="status" aria-live="polite" aria-atomic="true"><template class="pbx-expiry-msg">{{ t('Awaiting a newer close. This assessment is no longer current.', '等待更新的收盘价。此评估已不再是当前状态。') }}</template></div>
+  <div class="pbx-expiry" role="status" aria-live="polite" aria-atomic="true"><template class="pbx-expiry-msg">{{ t('Awaiting a newer close. This assessment is no longer current.', '等待更新的收盘价。此评估已过时。') }}</template></div>
   <div class="pbx-current">
     {% if current %}
     <div class="rrp-metrics">
@@ -156,7 +156,7 @@
       </div>
     </div>
     {% if o.get('observed_closes_since_onset') is integer and o.get('observed_closes_since_onset') > 0 %}
-    <div class="rrp-age" data-metric="age">{{ o.observed_closes_since_onset }} {{ t('observed closes since the pullback was confirmed','个已观测收盘（自回撤确认起）') }}</div>
+    <div class="rrp-age" data-metric="age">{{ o.observed_closes_since_onset }} {{ t('observed close' ~ ('' if o.observed_closes_since_onset == 1 else 's') ~ ' since the pullback was confirmed','个已观测收盘（自回撤确认起）') }}</div>
     {% endif %}{% set onset = iso_day(o.get('onset_session'))|trim %}{% set low_s = iso_day(o.get('low_session'))|trim %}{% set streak = count_text(o.get('no_new_low_closes'))|trim %}{% set recovered = recovered_text(o.get('loss_recovered_pct'))|trim %}{% set ma = ma_side(o.get('below_20_close_average'))|trim %}{% set gaps = gap_count(o.get('history_gap_count'))|trim %}{% set trail = phase_trail(o.get('price_transitions'), labels)|trim %}{% set show_ev = onset or low_s or streak or recovered or ma or gaps or trail or phase in ('underway', 'stabilizing', 'recovering') %}{% if show_ev %}
     <div class="rrp-signals" data-evidence>
       {# Raw owner counts only. rules may carry cutoffs; they are not copied here. #}
@@ -189,9 +189,9 @@
       {% set dates = path.get('dates', []) %}{% set vals = path.get('vals', []) %}
       {% if dates is sequence and dates is not string and vals is sequence and vals is not string and dates|length == vals|length and dates|length > 0 %}
       <details class="rrp-method rrp-history"><summary>{{ t('View price history','查看历史价格') }}</summary>
-        <table><caption>{{ t('Closing drawdown from the reference high by session','各交易日相对参考高点的收盘回撤') }}</caption><thead><tr><th scope="col">{{ t('Session','交易日') }}</th><th scope="col">{{ t('From reference high','距参考高点') }}</th></tr></thead><tbody>
+        <table><caption>{{ t('Closing drawdown from the reference high by session','各交易日相对参考高点的收盘回撤') }}</caption><thead><tr><th scope="col">{{ t('Session','交易日') }}</th><th scope="col">{{ t('From the reference high','距参考高点') }}</th></tr></thead><tbody>
         {% for day in dates %}{% set value = vals[loop.index0] %}
-        <tr><td>{{ day|e }}</td><td>{% if (value is float or value is integer) and value-value == 0 and -100 <= value <= 0 %}{% set value_s = '%.2f'|format(0 - value) %}{{ '−' if value_s != '0.00' else '' }}{{ value_s }}%{% else %}{{ t('Unavailable','暂无') }}{% endif %}</td></tr>
+        <tr><td>{{ day|e }}</td><td>{% if (value is float or value is integer) and value-value == 0 and -100 <= value <= 0 %}{% set value_s = '%.1f'|format(0 - value) %}{{ '−' if value_s != '0.0' else '' }}{{ value_s }}%{% else %}{{ t('Unavailable','暂无') }}{% endif %}</td></tr>
         {% endfor %}</tbody></table>
       </details>{% endif %}
       {#- Copy says why only when the presenter says why; otherwise it stays neutral. #}
