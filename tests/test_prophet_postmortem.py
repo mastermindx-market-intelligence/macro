@@ -1593,3 +1593,1192 @@ class TestLadderOnTheCommittedLedgers:
         and `tickers_no_price_path` should be re-read, not the test relaxed."""
         assert artifact["coverage"]["price_path_sources"].get(
             ppm.SOURCE_BASKET_OHLCV, 0) > 0
+
+
+# Q02/B22 descriptive source-cohort integrity
+"""Focused tests for the Q02/B22 descriptive learning-cohort integrity contract.
+
+What is pinned here, per the frozen contract:
+
+  1. two raw eras never share qualified rate denominators;
+  2. an existing episode crossing a source era boundary is `mixed` with its score and
+     return fields untouched;
+  3. a missing source stamp stays unknown (`unassigned`) — never a manufactured era;
+  4. same-date conflicting source/horizon stamps stay `conflict`;
+  5. disjoint source reach stays non-conflicting (documented reach, not disagreement);
+  6. membership disagreement between the sources is exposed on the receipt;
+  7. in-flight / unscored rows enter no rate in the qualified per-era summaries;
+  8. legacy summary equality and input immutability (the block is strictly additive);
+  9. deterministic ordering and idempotence;
+  10. old artifacts without the field render unchanged;
+  11. `--cohort-integrity-only` reads a preserved artifact and the membership sources,
+      forbids every scoring/outcome entrypoint, and writes nothing;
+ 12. the frozen original `as_of` cut: later membership vintages can never assign,
+      conflict or re-era an episode, and the excluded future reach is disclosed;
+ 13. observed membership gaps split an episode from later readmission stamps
+      (partial at best, never single); strict ISO calendar-date refusal everywhere;
+ 14. per-era wrappers carry descriptive_only plus an explicit no-promotion
+      authority, and conflicting original membership blocks clean rates.
+
+No fixture data, no study reruns: every input is synthetic and every scorer touch in
+the bypass tests is monkeypatched to raise.
+"""
+
+import copy
+import hashlib
+import json
+
+import pandas as pd
+import pytest
+
+from engine import postmortem as pm
+from scripts import prophet_postmortem as pp
+
+
+# --------------------------------------------------------------------------- #
+# builders
+# --------------------------------------------------------------------------- #
+def _integrity_ep(ticker, entry, exit_=None, maturity="matured"):
+    return {"ticker": ticker, "entry_date": entry, "board_exit_date": exit_,
+            "maturity": maturity}
+
+
+def _integrity_graded_row(ticker, entry, outcome=-10.0, excess=-9.0, maturity="matured",
+                exit_=None, labels=None, labels_null=None):
+    """A row shaped like an artifact episode row (only the fields integrity reads)."""
+    row = _integrity_ep(ticker, entry, exit_, maturity)
+    row.update({
+        "outcome_pct": outcome,
+        "excess_pct": excess,
+        "cohort": pm.cohort_of(outcome, excess),
+        "labels": labels or [],
+        "labels_null": labels_null or [],
+        # Rendered blocks read these; integrity itself only reads identity/maturity.
+        "path_tails": [],
+        "mae_pct": None,
+        "mfe_pct": None,
+        "held": None,
+    })
+    return row
+
+
+def _integrity_mem(retro=None, snap=None):
+    return {"retro": retro or {}, "snapshot": snap or {}}
+
+
+def _integrity_labelled(name, **trigger):
+    return {"label": name, "visible_at_entry": False, "trigger": dict(trigger)}
+
+
+@pytest.fixture()
+def _integrity_forbid_scoring(monkeypatch):
+    """Every scoring/outcome entrypoint raises — for the receipt-only path."""
+    def _boom(*_a, **_k):
+        raise AssertionError("scoring/outcome entrypoint invoked in receipt-only path")
+
+    monkeypatch.setattr(pp, "build_rows", _boom)
+    monkeypatch.setattr(pp.ts, "build_episodes", _boom)
+    monkeypatch.setattr(pp.ts, "score_episode", _boom)
+    monkeypatch.setattr(pp.pm, "classify", _boom)
+    monkeypatch.setattr(pp.pm, "aggregate", _boom)
+    monkeypatch.setattr(pp.pm, "entry_context", _boom)
+    return _boom
+
+
+def _integrity_write_ledger(root, retro_rows, snap_docs):
+    ledger = root / "data" / "us_board_ledger"
+    ledger.mkdir(parents=True, exist_ok=True)
+    pd.DataFrame(retro_rows).to_parquet(ledger / "retro_grades.parquet", index=False)
+    with (ledger / "snapshots.jsonl").open("w", encoding="utf-8") as fh:
+        for doc in snap_docs:
+            fh.write(json.dumps(doc) + "\n")
+
+
+# ===========================================================================
+# 1. two raw eras never share qualified rate denominators
+# ===========================================================================
+def test_two_raw_eras_never_share_qualified_denominators():
+    retro = {
+        "2026-07-01": {"AAA": ["us_prophet_v1"]},
+        "2026-08-10": {"BBB": ["us_prophet_v2"]},
+    }
+    rows = [
+        # era 1: one matured loser carrying sector_headwind (closed inside its era)
+        _integrity_graded_row("AAA", "2026-07-01", outcome=-10.0, excess=-9.0,
+                    exit_="2026-07-03",
+                    labels=[_integrity_labelled("sector_headwind", leg="theme_reco")]),
+        # era 2: one matured loser with the label decidable-but-unfired
+        _integrity_graded_row("BBB", "2026-08-10", outcome=-12.0, excess=-11.0,
+                    exit_="2026-08-12"),
+    ]
+    block = pm.cohort_integrity_block(_integrity_mem(retro=retro), rows,
+                                      as_of="2026-08-10")
+
+    assert sorted(block["per_era"]) == ["us_prophet_v1", "us_prophet_v2"]
+    e1 = block["per_era"]["us_prophet_v1"]["aggregate"]
+    e2 = block["per_era"]["us_prophet_v2"]["aggregate"]
+    # Each era's denominators count ONLY its own episode.
+    assert e1["n_episodes"] == 1 and e2["n_episodes"] == 1
+    assert e1["n_matured"] == 1 and e2["n_matured"] == 1
+    hw1 = next(f for f in e1["label_frequency"] if f["label"] == "sector_headwind")
+    hw2 = next(f for f in e2["label_frequency"] if f["label"] == "sector_headwind")
+    assert hw1["n_losers_evaluated"] == 1 and hw1["n_losers"] == 1
+    assert hw2["n_losers_evaluated"] == 1 and hw2["n_losers"] == 0
+    # The era-2 loser carries no headwind trigger, and none of era 1's evidence leaks
+    # into era 2's counts: 0 of 1, never 1 of 2.
+    assert hw2["loser_share_pct"] == 0.0
+    # And no pooled qualified block exists alongside the per-era ones.
+    assert not any(k in block for k in ("qualified", "pooled", "overall"))
+    # Every per-era block is a wrapper: descriptive_only plus an explicit
+    # no-promotion authority, with the legacy aggregate underneath unchanged.
+    for era in block["per_era"].values():
+        assert era["descriptive_only"] is True
+        assert era["promotion_authority"].startswith("none")
+        assert set(era["aggregate"]) >= {"n_episodes", "label_frequency"}
+
+
+# ===========================================================================
+# 2. an episode crossing a source era boundary is mixed, without mutation
+# ===========================================================================
+def test_era_crossing_episode_is_mixed_without_score_mutation():
+    retro = {
+        "2026-07-01": {"AAA": ["us_prophet_v1"]},
+        "2026-07-05": {"AAA": ["us_prophet_v2"]},
+    }
+    row = _integrity_graded_row("AAA", "2026-07-01", outcome=-10.0, excess=-9.0,
+                      exit_="2026-07-10",
+                      labels=[_integrity_labelled("gap_event", pct=-9.4)])
+    before = copy.deepcopy(row)
+    ep = _integrity_ep("AAA", "2026-07-01", "2026-07-10")
+    ep_before = copy.deepcopy(ep)
+
+    block = pm.cohort_integrity_block(_integrity_mem(retro=retro), [row],
+                                      as_of="2026-07-10")
+
+    a = block["episodes"][0]
+    assert a["partition"] == "mixed"
+    assert a["stamps"] == ["us_prophet_v1", "us_prophet_v2"]
+    assert a["stamp"] is None
+    assert a["n_stamped_records"] == 2 and a["n_missing_stamp_records"] == 0
+    # Score and return fields untouched — identity read, never written.
+    assert row == before
+    assert ep == ep_before
+    assert a["maturity"] == "matured"
+
+
+def test_conflict_outranks_mixed_in_precedence():
+    retro = {
+        "2026-07-01": {"AAA": ["us_prophet_v1"]},      # day 1: clean v1 stamp
+        "2026-07-03": {"AAA": ["us_prophet_v2", "v1"]},  # day 3: same-key conflict
+    }
+    block = pm.cohort_integrity_block(_integrity_mem(retro=retro),
+                                      [_integrity_ep("AAA", "2026-07-01", "2026-07-10")],
+                                      as_of="2026-07-10")
+    a = block["episodes"][0]
+    assert a["partition"] == "conflict"
+    assert block["partition_precedence"] == "conflict > mixed > partial > single > unassigned"
+    assert a["conflicts"] == [{"date": "2026-07-03",
+                               "stamps_by_source": {"retro": ["us_prophet_v2", "v1"]}}]
+
+
+# ===========================================================================
+# 3. a missing source stamp stays unknown
+# ===========================================================================
+def test_missing_stamp_stays_unassigned_never_legacy():
+    retro = {"2026-07-01": {"AAA": [None]}}
+    snap = {"2026-07-02": {"AAA": [""]}}          # empty string: explicitly missing too
+    block = pm.cohort_integrity_block(_integrity_mem(retro=retro, snap=snap),
+                                      [_integrity_ep("AAA", "2026-07-01", "2026-07-10")],
+                                      as_of="2026-07-02")
+    a = block["episodes"][0]
+    assert a["partition"] == "unassigned"
+    assert a["stamps"] == [] and a["stamp"] is None
+    assert a["n_membership_records"] == 2 and a["n_missing_stamp_records"] == 2
+    # No membership record at all is unassigned the same way.
+    block2 = pm.cohort_integrity_block(_integrity_mem(),
+                                       [_integrity_ep("ZZZ", "2026-07-01", "2026-07-10")],
+                                       as_of="2026-07-02")
+    assert block2["episodes"][0]["partition"] == "unassigned"
+    assert block2["episodes"][0]["n_membership_records"] == 0
+    # And per-era summaries never exist for a manufactured era name.
+    assert block["per_era"] == {} or "legacy" not in block.get("per_era", {})
+
+
+def test_nullish_spelling_folds_to_missing_but_real_strings_are_kept():
+    assert pm.integrity_stamp("us_prophet_v1") == "us_prophet_v1"
+    assert pm.integrity_stamp(" alpha ") == " alpha "      # real pre-ranker era
+    assert pm.integrity_stamp("legacy") == "legacy"      # recorded string, NOT invented
+    for missing in (None, "", "   ", "None", "nan", "NaN", "<NA>", "null", 7, 1.5, True):
+        assert pm.integrity_stamp(missing) is None, missing
+
+
+def test_partial_is_agreeing_stamps_plus_a_missing_record():
+    retro = {"2026-07-01": {"AAA": ["us_prophet_v1"]}}
+    snap = {"2026-07-02": {"AAA": [None]}}       # known stamp + a missing membership stamp
+    block = pm.cohort_integrity_block(_integrity_mem(retro=retro, snap=snap),
+                                      [_integrity_ep("AAA", "2026-07-01", "2026-07-10")],
+                                      as_of="2026-07-02")
+    a = block["episodes"][0]
+    assert a["partition"] == "partial"
+    assert a["stamp"] == "us_prophet_v1"
+    assert a["n_missing_stamp_records"] == 1
+    # A present stamp in one record never silently overrides the missing one: partial
+    # episodes are excluded from the qualified per-era slices, which are single-only.
+    assert block["per_era"] == {}
+
+
+# ===========================================================================
+# 4. same-date conflicting stamps (across sources, or across horizons)
+# ===========================================================================
+def test_same_date_conflict_between_sources_and_within_one_source():
+    retro = {"2026-07-01": {"AAA": ["us_prophet_v1", "alpha"]}}   # two horizons disagree
+    snap = {"2026-07-01": {"AAA": ["us_prophet_v1"]}}
+    block = pm.cohort_integrity_block(_integrity_mem(retro=retro, snap=snap),
+                                      [_integrity_ep("AAA", "2026-07-01", "2026-07-10")],
+                                      as_of="2026-07-02")
+    a = block["episodes"][0]
+    assert a["partition"] == "conflict"
+    # The same date also sits in the snapshot source, so the conflict record names
+    # every carrier of that date, not only the disagreeing one.
+    assert a["conflicts"] == [{"date": "2026-07-01",
+                               "stamps_by_source": {"retro": ["alpha", "us_prophet_v1"],
+                                                    "snapshot": ["us_prophet_v1"]}}]
+
+    retro2 = {"2026-07-01": {"BBB": ["us_prophet_v1"]}}
+    snap2 = {"2026-07-01": {"BBB": ["us_prophet_v2"]}}            # sources disagree
+    block2 = pm.cohort_integrity_block(_integrity_mem(retro=retro2, snap=snap2),
+                                       [_integrity_ep("BBB", "2026-07-01", "2026-07-10")],
+                                       as_of="2026-07-02")
+    a2 = block2["episodes"][0]
+    assert a2["partition"] == "conflict"
+    assert a2["conflicts"][0]["stamps_by_source"] == {
+        "retro": ["us_prophet_v1"], "snapshot": ["us_prophet_v2"]}
+    # A conflicting original membership record blocks clean rates entirely:
+    # per-era slices are single-only AND conflict-free.
+    assert "per_era" not in block2
+    assert block2["per_era_unavailable_reason"] == "conflicting_original_membership"
+
+
+# ===========================================================================
+# 5. disjoint source reach stays non-conflicting
+# ===========================================================================
+def test_disjoint_reach_is_not_a_conflict():
+    retro = {"2026-06-15": {"AAA": ["alpha"]}}          # retro-only date
+    snap = {"2026-07-20": {"BBB": ["us_prophet_v2"]}}   # snapshot-only date
+    rows = [_integrity_graded_row("AAA", "2026-06-15", exit_="2026-06-20"),
+            _integrity_graded_row("BBB", "2026-07-20", outcome=+9.0, excess=+1.0)]
+    block = pm.cohort_integrity_block(_integrity_mem(retro=retro, snap=snap), rows,
+                                      as_of="2026-07-20")
+
+    assert [a["partition"] for a in block["episodes"]] == ["single", "single"]
+    srcs = block["sources"]
+    assert srcs["per_source_only_dates"] == {"retro": ["2026-06-15"],
+                                             "snapshot": ["2026-07-20"]}
+    assert srcs["overlap_dates"] == []
+    assert srcs["n_overlap_dates_with_membership_difference"] == 0
+    assert all(not entry["conflicts"] for entry in block["episodes"])
+    assert srcs["note_en"]
+
+
+# ===========================================================================
+# 6. membership disagreement on an overlap date is exposed
+# ===========================================================================
+def test_membership_disagreement_is_exposed_on_the_receipt():
+    retro = {"2026-07-05": {"AAA": ["us_prophet_v1"], "GHOST_R": ["us_prophet_v1"]}}
+    snap = {"2026-07-05": {"AAA": ["us_prophet_v1"], "GHOST_S": ["us_prophet_v1"]}}
+    block = pm.cohort_integrity_block(_integrity_mem(retro=retro, snap=snap),
+                                      [_integrity_ep("AAA", "2026-07-05", "2026-07-10")],
+                                      as_of="2026-07-10")
+    per_date = block["sources"]["membership_on_overlap_dates"]
+    assert len(per_date) == 1
+    day = per_date[0]
+    assert day["date"] == "2026-07-05"
+    assert day["only_in"] == {"retro": ["GHOST_R"], "snapshot": ["GHOST_S"]}
+    assert day["membership_difference"] is True
+    assert block["sources"]["n_overlap_dates_with_membership_difference"] == 1
+    # The shared ticker itself is fine: both sources agree on its stamp.
+    assert block["episodes"][0]["partition"] == "single"
+
+
+def test_cross_source_stamp_disagreement_is_listed_per_overlap_date():
+    retro = {"2026-07-05": {"AAA": ["us_prophet_v1"]}}
+    snap = {"2026-07-05": {"AAA": ["us_prophet_v2"]}}
+    block = pm.cohort_integrity_block(_integrity_mem(retro=retro, snap=snap),
+                                      [_integrity_ep("AAA", "2026-07-05", "2026-07-10")],
+                                      as_of="2026-07-10")
+    day = block["sources"]["membership_on_overlap_dates"][0]
+    assert day["stamp_disagreements"] == [{
+        "ticker": "AAA",
+        "stamps_by_source": {"retro": ["us_prophet_v1"], "snapshot": ["us_prophet_v2"]},
+    }]
+    assert block["episodes"][0]["partition"] == "conflict"
+
+
+# ===========================================================================
+# 7. in-flight / unscored rows enter no qualified rate
+# ===========================================================================
+def test_inflight_and_unscored_rows_enter_no_rate():
+    retro = {"2026-07-01": {"AAA": ["v1"]},
+             "2026-07-02": {"BBB": ["v1"]},
+             "2026-07-03": {"CCC": ["v1"]}}
+    rows = [
+        _integrity_graded_row("AAA", "2026-07-01", outcome=-10.0, excess=-9.0, maturity="matured",
+                    exit_="2026-07-02"),
+        _integrity_graded_row("BBB", "2026-07-02", outcome=-30.0, excess=-25.0,
+                    maturity="in_flight", exit_="2026-07-03"),
+        _integrity_graded_row("CCC", "2026-07-03", outcome=None, excess=None, maturity="unscored"),
+    ]
+    block = pm.cohort_integrity_block(_integrity_mem(retro=retro), rows,
+                                      as_of="2026-07-03")
+    era = block["per_era"]["v1"]["aggregate"]
+    assert era["n_episodes"] == 3 and era["n_matured"] == 1
+    assert era["n_in_flight"] == 1 and era["n_unscored"] == 1
+    assert era["cohorts"]["n_losers"] == 1          # the in-flight mark is NOT a rate
+    assert era["in_flight"]["n"] == 1
+    assert era["n_board_dates"] == 1
+    # Maturity is disclosed per partition, not folded into rates anywhere.
+    assert block["partitions"]["single"]["maturity"] == {
+        "matured": 1, "in_flight": 1, "unscored": 1}
+
+
+# ===========================================================================
+# 8. legacy summary equality and input immutability
+# ===========================================================================
+def test_block_is_additive_and_leaves_rows_and_legacy_summary_equal():
+    retro = {"2026-07-01": {"AAA": ["us_prophet_v1"]},
+             "2026-07-05": {"AAA": ["us_prophet_v2"]}}
+    rows = [
+        _integrity_graded_row("AAA", "2026-07-01", outcome=-10.0, excess=-9.0,
+                    labels=[_integrity_labelled("sector_headwind", leg="theme_reco")],
+                    labels_null=[{"label": "thesis_break",
+                                  "reason": "no_stop_level_recorded"}]),
+        _integrity_graded_row("BBB", "2026-07-01", outcome=+9.0, excess=+1.0),
+    ]
+    rows_snapshot = copy.deepcopy(rows)
+    legacy = pm.aggregate(rows)
+
+    block = pm.cohort_integrity_block(_integrity_mem(retro=retro), rows,
+                                      as_of="2026-07-01")
+
+    assert rows == rows_snapshot                     # no row mutated
+    assert pm.aggregate(rows) == legacy              # legacy summary identical
+    assert pm.aggregate([r for r in rows]) == legacy
+    doc = {"summary": legacy, "cohort_integrity": block}
+    assert doc["summary"] == legacy                  # field coexists additively
+
+
+# ===========================================================================
+# 9. deterministic ordering / idempotence
+# ===========================================================================
+def test_deterministic_ordering_and_idempotence():
+    retro = {
+        "2026-07-02": {"B": ["v2"], "A": ["v2"]},
+        "2026-07-01": {"A": ["v1"]},
+        "2026-06-20": {"C": ["alpha"]},
+    }
+    eps = [_integrity_ep("B", "2026-07-02", "2026-07-06"),
+           _integrity_ep("A", "2026-07-01", "2026-07-06"),
+           _integrity_ep("C", "2026-06-20", "2026-06-24")]
+    one = pm.cohort_integrity_block(_integrity_mem(retro=retro), eps,
+                                    as_of="2026-07-06")
+    two = pm.cohort_integrity_block(_integrity_mem(retro=retro), eps,
+                                    as_of="2026-07-06")
+    assert json.dumps(one, sort_keys=True) == json.dumps(two, sort_keys=True)
+    assert [(a["entry_date"], a["ticker"]) for a in one["episodes"]] == sorted(
+        (a["entry_date"], a["ticker"]) for a in one["episodes"])
+    for src in one["sources"]["sources"].values():
+        assert src["dates"] == sorted(src["dates"])
+    # Membership-window bounds: exit date itself is EXCLUSIVE for closed episodes.
+    a_b = next(a for a in one["episodes"] if a["ticker"] == "B")
+    assert a_b["window_dates"] == ["2026-07-02"]        # 07-06 excluded
+    a_c = next(a for a in one["episodes"] if a["ticker"] == "C")
+    assert a_c["window_dates"] == ["2026-06-20"]
+    # Open episodes run to the latest board date INCLUSIVE.
+    block_open = pm.cohort_integrity_block(_integrity_mem(retro=retro),
+                                           [_integrity_ep("A", "2026-07-01")],
+                                           as_of="2026-07-06")
+    a_open = block_open["episodes"][0]
+    assert a_open["open_episode"] is True
+    assert a_open["window_dates"] == ["2026-07-01", "2026-07-02"]
+
+
+# ===========================================================================
+# 10. old frozen artifacts (no cohort_integrity) render unchanged
+# ===========================================================================
+def _integrity_legacy_doc() -> dict:
+    rows = [_integrity_graded_row("AAA", "2026-07-01", outcome=-10.0, excess=-9.0,
+                        exit_="2026-07-05")]
+    summary = pm.aggregate(rows)
+    summary["round_trips"] = pp._round_trip_counts(rows)
+    return {
+        "schema": pp.SCHEMA,
+        "as_of": "2026-07-31",
+        "method": {"horizon": 10},
+        "coverage": {
+            "n_episodes": len(rows), "board_dates": 1,
+            "board_date_first": "2026-07-01", "board_date_last": "2026-07-01",
+            "n_no_price_path": 0, "tickers_no_price_path": [],
+            "basket_revisions": 0, "basket_asof_first": None,
+            "basket_asof_last": None,
+        },
+        "caveats": [],
+        "summary": summary,
+        "episodes": rows,
+    }
+
+
+def test_old_artifact_renders_unchanged_and_new_section_is_additive():
+    old = _integrity_legacy_doc()
+    old_render = pp.render_report(old)
+    assert "Cohort integrity" not in old_render       # frozen doc, no new section
+
+    # Every old line survives, in order, when the field is present (additive render).
+    retro = {"2026-07-01": {"AAA": ["us_prophet_v1"]}}
+    new = copy.deepcopy(old)
+    new["cohort_integrity"] = pm.cohort_integrity_block(
+        _integrity_mem(retro=retro), copy.deepcopy(old["episodes"]), as_of="2026-07-01")
+    new_render = pp.render_report(new)
+    assert "## Cohort integrity — original source eras (descriptive receipt)" in new_render
+    assert "retained" in new_render and "compatibility" in new_render
+    old_lines = old_render.splitlines()
+    new_lines = new_render.splitlines()
+    it = iter(new_lines)
+    assert all(any(line == candidate for candidate in it) for line in old_lines)
+    # And the new section sits BEFORE the pooled taxonomy rates.
+    assert new_render.index("## Cohort integrity") < new_render.index("## Failure taxonomy")
+
+
+# ===========================================================================
+# 11. --cohort-integrity-only: read-only receipt, scoring forbidden, no writes
+# ===========================================================================
+def test_cohort_integrity_only_reads_artifact_forbids_scoring_and_writes_nothing(
+        tmp_path, monkeypatch, capsys, _integrity_forbid_scoring):
+    retro_rows = [
+        {"as_of": "2026-07-01", "ticker": "AAA", "lane": "buy", "horizon": 10,
+         "rank_by": "us_prophet_v1"},
+        {"as_of": "2026-07-05", "ticker": "AAA", "lane": "buy", "horizon": 10,
+         "rank_by": "us_prophet_v2"},
+        {"as_of": "2026-07-05", "ticker": "AAA", "lane": "buy", "horizon": 5,
+         "rank_by": "us_prophet_v2"},
+        {"as_of": "2026-07-05", "ticker": "AAA", "lane": "watch", "horizon": 10,
+         "rank_by": "should_never_add_membership"},
+    ]
+    snap_docs = [
+        {"as_of": "2026-07-05", "rank_by": "us_prophet_v2",
+         "buy": [{"ticker": "AAA"}, {"ticker": "BBB"}]},
+    ]
+    _integrity_write_ledger(tmp_path, retro_rows, snap_docs)
+
+    doc = {"schema": pp.SCHEMA, "as_of": "2026-07-05", "episodes": [
+        {"ticker": "AAA", "entry_date": "2026-07-01", "board_exit_date": "2026-07-10",
+         "maturity": "matured", "outcome_pct": -10.0},
+    ]}
+    art = tmp_path / "summary.json"
+    art.write_text(json.dumps(doc), encoding="utf-8")
+    art_bytes = art.read_bytes()
+
+    rc = pp.main(["--root", str(tmp_path), "--cohort-integrity-only",
+                  "--artifact", str(art)])
+    assert rc == 0
+    out = capsys.readouterr().out
+    receipt = json.loads(out)                     # stdout is ONLY the receipt JSON
+
+    a = receipt["episodes"][0]
+    assert a["partition"] == "mixed"              # v1 on entry night, v2 later in window
+    assert a["stamps"] == ["us_prophet_v1", "us_prophet_v2"]
+    # 1 retro record on entry night + 2 retro horizons + 1 snapshot record on 07-05;
+    # the `watch` row never added a record.
+    assert a["n_membership_records"] == 4
+    assert a["records_by_source"] == {"retro": 3, "snapshot": 1}
+    assert receipt["partitions"]["single"]["n_episodes"] == 0
+    assert receipt["sources"]["n_overlap_dates"] == 1
+    assert receipt["sources"]["membership_on_overlap_dates"][0]["only_in"] == {
+        "retro": [], "snapshot": ["BBB"]}
+    assert receipt["sources_read"]["retro"]["readable"] is True
+    assert receipt["sources_read"]["retro"]["n_buy_records"] == 3
+    # Receipt-only: no per-era rate summaries — the read-only path never re-aggregates.
+    assert "per_era" not in receipt
+    assert receipt["receipt_only_note_en"]
+    assert receipt["artifact"] == str(art)
+
+    # Input artifact byte-identical, and nothing was written anywhere under root.
+    assert art.read_bytes() == art_bytes
+    writes = [p for p in tmp_path.rglob("*")
+              if p.is_file() and p.resolve() not in (art.resolve(),)
+              and "us_board_ledger" not in p.parts]
+    assert writes == []
+
+
+def test_cohort_integrity_only_reports_unreadable_and_malformed_sources(
+        tmp_path, monkeypatch, capsys, _integrity_forbid_scoring):
+    ledger = tmp_path / "data" / "us_board_ledger"
+    ledger.mkdir(parents=True, exist_ok=True)
+    (ledger / "retro_grades.parquet").write_bytes(b"not a parquet file at all")
+    with (ledger / "snapshots.jsonl").open("w", encoding="utf-8") as fh:
+        fh.write("{this is not json\n")
+        fh.write(json.dumps({"as_of": "2026-07-05", "rank_by": "us_prophet_v2",
+                             "buy": [{"ticker": "AAA"}]}) + "\n")
+
+    doc = {"schema": pp.SCHEMA, "as_of": "2026-07-05", "episodes": [
+        {"ticker": "AAA", "entry_date": "2026-07-05", "board_exit_date": None,
+         "maturity": "in_flight"},
+    ]}
+    art = tmp_path / "summary.json"
+    art.write_text(json.dumps(doc), encoding="utf-8")
+
+    rc = pp.main(["--root", str(tmp_path), "--cohort-integrity-only",
+                  "--artifact", str(art)])
+    assert rc == 0
+    receipt = json.loads(capsys.readouterr().out)
+    retro_status = receipt["sources_read"]["retro"]
+    assert retro_status["readable"] is False and retro_status["error"]
+    snap_status = receipt["sources_read"]["snapshot"]
+    assert snap_status["readable"] is True and snap_status["n_malformed_lines"] == 1
+    # The snapshot stamp still resolves the episode; the broken parquet must NOT be
+    # allowed to look like validated source absence.
+    assert receipt["episodes"][0]["partition"] == "single"
+    assert receipt["episodes"][0]["records_by_source"] == {"snapshot": 1}
+
+
+def test_cohort_integrity_only_requires_artifact_path(_integrity_forbid_scoring):
+    with pytest.raises(SystemExit):
+        pp.main(["--cohort-integrity-only"])
+
+
+def test_generation_path_stamps_artifact_rows(tmp_path, monkeypatch):
+    """Full-run wiring: build_rows' own I/O layers stay mocked; only the integrity
+    loaders are exercised against synthetic ledgers, verifying the additive key."""
+    retro_rows = [{"as_of": "2026-07-01", "ticker": "AAA", "lane": "buy",
+                   "horizon": 10, "rank_by": "us_prophet_v1"}]
+    _integrity_write_ledger(tmp_path, retro_rows, [])
+
+    rows = [_integrity_graded_row("AAA", "2026-07-01", exit_="2026-07-04")]
+    monkeypatch.setattr(pp, "load_retro", lambda root: pd.DataFrame(retro_rows))
+    monkeypatch.setattr(pp, "load_snapshots", lambda root: {})
+    monkeypatch.setattr(pp, "load_closes", lambda root: pd.DataFrame())
+    monkeypatch.setattr(pp, "load_bench", lambda root: None)
+    monkeypatch.setattr(pp, "basket_history", lambda root: [])
+    monkeypatch.setattr(pp, "membership_map", lambda root: {})
+    monkeypatch.setattr(pp.ts, "build_episodes", lambda days: [
+        {"ticker": "AAA", "entry_date": "2026-07-01", "exit_date": "2026-07-04"}])
+    monkeypatch.setattr(pp.ts, "score_episode", lambda *a, **k: {
+        "matured": True, "fill_pending": False, "pnl": -10.0, "excess": -9.0,
+        "mark": -10.0, "mae": -10.0, "mfe": 0.5, "held": 3, "entry": 100.0,
+        "entry_date": "2026-07-02"})
+    monkeypatch.setattr(pp, "close_resolver", lambda root, closes: (
+        lambda tk: (pd.Series([100.0, 95.0, 92.0, 90.5],
+                              index=pd.to_datetime(
+                                  ["2026-07-01", "2026-07-02", "2026-07-03",
+                                   "2026-07-04"])),
+                    "closes_cache_UNADJUSTED")))
+    monkeypatch.setattr(pp, "prior_episodes", lambda scored, calendar: {})
+
+    doc = pp.build_rows(tmp_path)
+    ci = doc["cohort_integrity"]
+    assert ci["schema"] == pm.COHORT_INTEGRITY_SCHEMA
+    assert ci["episodes"][0]["partition"] == "single"
+    assert ci["episodes"][0]["stamp"] == "us_prophet_v1"
+    assert ci["per_era"]["us_prophet_v1"]["aggregate"]["n_matured"] == 1
+    # Legacy summary untouched by the additive block.
+    assert doc["summary"]["n_episodes"] == 1
+    assert doc["episodes"][0]["outcome_pct"] == -10.0
+    render = pp.render_report(doc)
+    assert "## Cohort integrity — original source eras (descriptive receipt)" in render
+
+
+def test_integrity_preserves_original_nonempty_stamp_bytes():
+    assert pm.integrity_stamp("  era-A  ") == "  era-A  "
+    assert pm.integrity_stamp("  NULL  ") is None
+    block = pm.cohort_integrity_block(_integrity_mem(retro={"2026-07-01": {"AAA": ["era-A", " era-A "]}}), [_integrity_ep("AAA", "2026-07-01")], as_of="2026-07-01", include_era_rates=False)
+    assert block["episodes"][0]["partition"] == "conflict"
+
+
+def test_integrity_later_stamp_cannot_attest_missing_original_admission():
+    row = _integrity_graded_row('AAA', '2026-07-01', exit_='2026-07-03')
+    before = copy.deepcopy(row)
+    block = pm.cohort_integrity_block(_integrity_mem(retro={'2026-07-02': {'AAA': ['later-era']}}), [row], as_of='2026-07-03')
+    assignment = block['episodes'][0]
+    assert assignment['partition'] == 'partial'
+    assert assignment['entry_attribution'] == {'state': 'unassigned', 'records': [], 'stamps': [], 'n_missing_stamp_records': 0}
+    assert block['per_era'] == {}
+    assert row == before
+
+
+def test_integrity_missing_entry_stamp_remains_partial_despite_later_stamp():
+    block = pm.cohort_integrity_block(_integrity_mem(retro={'2026-07-01': {'AAA': [None]}, '2026-07-02': {'AAA': ['later-era']}}), [_integrity_graded_row('AAA', '2026-07-01')], as_of='2026-07-02')
+    assignment = block['episodes'][0]
+    assert assignment['partition'] == 'partial'
+    assert assignment['entry_attribution']['state'] == 'unassigned'
+    assert assignment['entry_attribution']['n_missing_stamp_records'] == 1
+    assert block['per_era'] == {}
+
+
+def test_integrity_loader_projects_provenance_without_reading_outcomes(tmp_path, monkeypatch):
+    _integrity_write_ledger(tmp_path, [{'as_of': '2026-07-01', 'ticker': 'AAA', 'lane': 'buy', 'rank_by': 'raw-era', 'outcome_pct': 99}], [])
+    original = pd.read_parquet
+    reads = []
+    def provenance_only(path, *args, **kwargs):
+        columns = kwargs.get('columns')
+        assert columns == ['as_of', 'ticker', 'lane', 'rank_by']
+        reads.append(columns)
+        return original(path, *args, **kwargs)
+    monkeypatch.setattr(pd, 'read_parquet', provenance_only)
+    memberships, status = pp.load_retro_membership(tmp_path)
+    assert reads and status['readable']
+    assert memberships == {'2026-07-01': {'AAA': ['raw-era']}}
+
+
+def test_integrity_missing_membership_columns_are_explicit_unreadable(tmp_path):
+    directory = tmp_path / 'data/us_board_ledger'
+    directory.mkdir(parents=True)
+    pd.DataFrame([{'as_of': '2026-07-01', 'ticker': 'AAA', 'rank_by': 'raw-era'}]).to_parquet(directory / 'retro_grades.parquet', index=False)
+    memberships, status = pp.load_retro_membership(tmp_path)
+    assert memberships == {}
+    assert status['readable'] is False
+    assert status['error'] == 'missing_membership_columns: lane'
+
+
+@pytest.mark.parametrize('document', [{}, {'schema': 'other/v1', 'episodes': []}, {'schema': pp.SCHEMA, 'episodes': [None]}])
+def test_integrity_rejects_invalid_artifact_instead_of_empty_success(tmp_path, document, _integrity_forbid_scoring):
+    artifact = tmp_path / 'invalid.json'
+    artifact.write_text(json.dumps(document))
+    original = artifact.read_bytes()
+    with pytest.raises(SystemExit, match='prophet_postmortem/v1'):
+        pp.main(['--root', str(tmp_path), '--cohort-integrity-only', '--artifact', str(artifact)])
+    assert artifact.read_bytes() == original
+
+
+def test_integrity_recorded_zero_buy_date_is_coverage_not_source_absence(tmp_path):
+    _integrity_write_ledger(tmp_path, [{'as_of': '2026-07-01', 'ticker': 'AAA', 'lane': 'watch', 'rank_by': 'era'}], [{'as_of': '2026-07-01', 'rank_by': 'era', 'buy': [{'ticker': 'AAA'}]}])
+    block = pp._cohort_integrity_block(tmp_path, [], as_of="2026-07-01",
+                                       include_era_rates=False)
+    sources = block['sources']
+    assert sources['n_overlap_dates'] == 1
+    assert sources['n_overlap_dates_with_membership_difference'] == 1
+    assert sources['membership_on_overlap_dates'][0]['only_in'] == {'retro': [], 'snapshot': ['AAA']}
+    _integrity_write_ledger(tmp_path, [{'as_of': '2026-07-01', 'ticker': 'AAA', 'lane': 'buy', 'rank_by': 'era'}], [{'as_of': '2026-07-01', 'rank_by': 'era', 'buy': []}])
+    block = pp._cohort_integrity_block(tmp_path, [], as_of="2026-07-01",
+                                       include_era_rates=False)
+    assert block['sources']['n_overlap_dates'] == 1
+    assert block['sources']['membership_on_overlap_dates'][0]['only_in'] == {'retro': ['AAA'], 'snapshot': []}
+
+
+def test_integrity_incomplete_source_never_emits_per_era_rates(tmp_path, monkeypatch):
+    directory = tmp_path / 'data/us_board_ledger'
+    directory.mkdir(parents=True)
+    (directory / 'retro_grades.parquet').write_bytes(b'not parquet')
+    (directory / 'snapshots.jsonl').write_text(json.dumps({'as_of': '2026-07-01', 'rank_by': 'observed-era', 'buy': [{'ticker': 'AAA'}]}) + '\n')
+    def no_aggregate(*args, **kwargs):
+        raise AssertionError('Incomplete original sources cannot produce per-era rates')
+    monkeypatch.setattr(pm, 'aggregate', no_aggregate)
+    block = pp._cohort_integrity_block(tmp_path, [_integrity_graded_row('AAA', '2026-07-01')],
+                                       as_of='2026-07-01')
+    assert 'per_era' not in block
+    assert block['per_era_unavailable_reason'] == 'original_membership_source_incomplete'
+    assert block['source_validation']['state'] == 'incomplete'
+    assert block['episodes'][0]['partition'] == 'single'  # available-source observation only
+
+
+@pytest.mark.parametrize('buy_rows', [{}, None, [None], [{}]])
+def test_integrity_invalid_membership_is_disclosed_and_blocks_rates(tmp_path, monkeypatch, buy_rows):
+    _integrity_write_ledger(tmp_path, [
+        {'as_of': '2026-07-01', 'ticker': 'AAA', 'lane': 'buy', 'rank_by': 'era'},
+        {'as_of': '2026-07-01', 'ticker': None, 'lane': 'buy', 'rank_by': 'era'},
+    ], [{'as_of': '2026-07-01', 'rank_by': 'era', 'buy': buy_rows}])
+    def no_aggregate(*args, **kwargs):
+        raise AssertionError('Malformed original membership cannot produce per-era rates')
+    monkeypatch.setattr(pm, 'aggregate', no_aggregate)
+    block = pp._cohort_integrity_block(tmp_path, [_integrity_graded_row('AAA', '2026-07-01')],
+                                       as_of='2026-07-01')
+    assert block['sources_read']['retro']['n_invalid_membership_records'] == 1
+    assert block['sources_read']['snapshot']['n_invalid_membership_records'] == 1
+    assert block['source_validation']['state'] == 'incomplete'
+    assert block['per_era_unavailable_reason'] == 'original_membership_source_incomplete'
+    assert 'per_era' not in block
+
+
+def test_integrity_unreadable_snapshot_encoding_is_explicit_incomplete(tmp_path, monkeypatch):
+    _integrity_write_ledger(tmp_path, [
+        {'as_of': '2026-07-01', 'ticker': 'AAA', 'lane': 'buy', 'rank_by': 'era'},
+    ], [])
+    snapshot = tmp_path / 'data/us_board_ledger/snapshots.jsonl'
+    snapshot.write_bytes(b'\xff\n')
+    before = snapshot.read_bytes()
+    def no_aggregate(*args, **kwargs):
+        raise AssertionError('Unreadable original source cannot produce rates')
+    monkeypatch.setattr(pm, 'aggregate', no_aggregate)
+    block = pp._cohort_integrity_block(tmp_path, [_integrity_graded_row('AAA', '2026-07-01')],
+                                       as_of='2026-07-01')
+    assert block['sources_read']['snapshot']['readable'] is False
+    assert block['sources_read']['snapshot']['error'].startswith('UnicodeDecodeError:')
+    assert block['source_validation']['state'] == 'incomplete'
+    assert 'per_era' not in block
+    assert snapshot.read_bytes() == before
+
+
+# ===========================================================================
+# 12. Q02/B22 time-cut + source-integrity repair (frozen as_of, gaps, strict dates)
+# ===========================================================================
+def test_future_source_disagreement_cannot_withhold_cut_era_description():
+    retro = {"2026-07-01": {"AAA": ["era"]},
+             "2026-08-10": {"AAA": ["later-a", "later-b"]}}
+    snapshot = {"2026-07-01": {"AAA": ["era"]},
+                "2026-08-10": {"BBB": ["other"]}}
+    block = pm.cohort_integrity_block(_integrity_mem(retro=retro, snap=snapshot),
+            [_integrity_graded_row("AAA", "2026-07-01")], as_of="2026-07-31")
+    assert block["membership_conflict_free"] is True
+    assert block["per_era"]["era"]["aggregate"]["n_episodes"] == 1
+    assert block["as_of_cut"]["dates_after_cut"] == ["2026-08-10"]
+
+
+def test_future_duplicate_snapshot_conflict_cannot_withhold_cut_description(tmp_path):
+    _integrity_write_ledger(tmp_path, [
+        {"as_of": "2026-07-01", "ticker": "AAA", "lane": "buy", "rank_by": "era"},
+    ], [
+        {"as_of": "2026-07-01", "rank_by": "era", "buy": [{"ticker": "AAA"}]},
+        {"as_of": "2026-08-10", "rank_by": "later-a", "buy": [{"ticker": "AAA"}]},
+        {"as_of": "2026-08-10", "rank_by": "later-b", "buy": [{"ticker": "BBB"}]},
+    ])
+    block = pp._cohort_integrity_block(tmp_path,
+            [_integrity_graded_row("AAA", "2026-07-01")], as_of="2026-07-31")
+    assert block["sources_read"]["snapshot"]["n_conflicting_duplicate_observations"] == 1
+    assert block["source_validation"]["state"] == "complete"
+    assert block["per_era"]["era"]["aggregate"]["n_episodes"] == 1
+
+
+def test_membership_after_frozen_cut_cannot_assign_conflict_or_mixed():
+    retro = {"2026-07-01": {"AAA": ["v1"]}, "2026-08-10": {"AAA": ["v2"]}}
+    row = _integrity_graded_row("AAA", "2026-07-01")
+    before = copy.deepcopy(row)
+    block = pm.cohort_integrity_block(_integrity_mem(retro=retro), [row],
+                                      as_of="2026-07-31")
+    a = block["episodes"][0]
+    assert a["partition"] == "single" and a["stamp"] == "v1"
+    assert a["observed_gap"] is None
+    assert a["as_of"] == "2026-07-31"
+    cut = block["as_of_cut"]
+    assert cut["as_of"] == "2026-07-31"
+    assert cut["n_membership_records_after_cut"] == 1
+    assert cut["dates_after_cut"] == ["2026-08-10"]
+    assert block["per_era"]["v1"]["aggregate"]["n_episodes"] == 1
+    assert "v2" not in block["per_era"]
+    assert row == before
+
+
+def test_frozen_cut_removes_the_false_later_readmission_mix_bkr_shape():
+    # The reproduced counterexample, in miniature: BKR admitted 07-27 under v1,
+    # absent from every source while the board continued, then re-admitted 09-25
+    # under a later stamp. With the cut at the artifact's own as_of the later
+    # vintage never reaches the episode: single, not mixed.
+    retro = {
+        "2026-07-27": {"BKR": ["v1"], "AAA": ["v1"]},
+        "2026-09-20": {"AAA": ["v1"]},
+        "2026-09-25": {"BKR": ["v2"], "AAA": ["v1"]},
+    }
+    block = pm.cohort_integrity_block(_integrity_mem(retro=retro),
+                                      [_integrity_ep("BKR", "2026-07-27")],
+                                      as_of="2026-07-31")
+    a = block["episodes"][0]
+    assert a["partition"] == "single" and a["stamp"] == "v1"
+    assert a["stamps"] == ["v1"]
+    assert a["observed_gap"] is None
+    assert block["as_of_cut"]["dates_after_cut"] == ["2026-09-20", "2026-09-25"]
+    assert block["as_of_cut"]["n_membership_records_after_cut"] == 3
+
+
+def test_bkr_later_readmission_beyond_the_cut_is_gap_split_never_absorbed():
+    # Same sources, inspected at a LATER as_of: the re-admission is inside the
+    # window, so contiguity does the work the cut did — the first recorded date
+    # absent from ALL sources is a genuine gap, and the 09-25 stamp belongs to the
+    # later admission, never to the earlier episode.
+    retro = {
+        "2026-07-27": {"BKR": ["v1"], "AAA": ["v1"]},
+        "2026-09-20": {"AAA": ["v1"]},
+        "2026-09-25": {"BKR": ["v2"], "AAA": ["v1"]},
+    }
+    block = pm.cohort_integrity_block(_integrity_mem(retro=retro),
+                                      [_integrity_ep("BKR", "2026-07-27")],
+                                      as_of="2026-09-30")
+    a = block["episodes"][0]
+    assert a["stamps"] == ["v1"]
+    assert a["stamp"] == "v1"
+    assert a["observed_gap"]["date"] == "2026-09-20"
+    assert a["observed_gap"]["n_records_after_gap_excluded"] == 1
+    assert a["observed_gap"]["dates_after_gap"] == ["2026-09-25"]
+    # affected attribution can never enter the per-era summaries
+    assert a["partition"] == "partial"
+    assert block["per_era"] == {}
+
+
+def test_gap_inside_a_closed_window_excludes_later_reentry_and_discloses_it():
+    retro = {"2026-07-01": {"AAA": ["v1"]},
+             "2026-07-05": {"BBB": ["v1"]},
+             "2026-07-08": {"AAA": ["v2"]}}
+    ep = _integrity_ep("AAA", "2026-07-01", "2026-07-10")
+    before = copy.deepcopy(ep)
+    block = pm.cohort_integrity_block(_integrity_mem(retro=retro), [ep],
+                                      as_of="2026-07-10")
+    a = block["episodes"][0]
+    assert a["observed_gap"]["date"] == "2026-07-05"
+    assert a["observed_gap"]["n_records_after_gap_excluded"] == 1
+    assert a["stamps"] == ["v1"] and a["partition"] == "partial"
+    assert ep == before
+    # disclosure, not deletion: the receipt still counts every original record
+    assert block["sources"]["sources"]["retro"]["n_membership_records"] == 3
+
+
+def test_a_date_no_source_recorded_is_never_an_inferred_gap():
+    retro = {"2026-07-01": {"AAA": ["v1"]}, "2026-07-04": {"AAA": ["v1"]}}
+    block = pm.cohort_integrity_block(_integrity_mem(retro=retro),
+                                      [_integrity_ep("AAA", "2026-07-01", "2026-07-10")],
+                                      as_of="2026-07-10")
+    a = block["episodes"][0]
+    assert a["observed_gap"] is None
+    assert a["partition"] == "single" and a["stamp"] == "v1"
+
+
+def test_absence_from_one_source_alone_is_coverage_not_a_gap():
+    retro = {"2026-07-01": {"AAA": ["v1"]}}
+    snap = {"2026-07-02": {"AAA": ["v1"]}}
+    block = pm.cohort_integrity_block(_integrity_mem(retro=retro, snap=snap),
+                                      [_integrity_ep("AAA", "2026-07-01", "2026-07-10")],
+                                      as_of="2026-07-02")
+    a = block["episodes"][0]
+    assert a["observed_gap"] is None
+    assert a["partition"] == "single"
+
+
+@pytest.mark.parametrize("bad", [
+    "2026-7-31", "2026-13-01", "2026-02-30", "20260731", "2026-07-31T00:00:00",
+    "not-a-date", "", " 2026-07-01", "2026-07-31 ", None, 20260731, 31.0,
+])
+def test_engine_refuses_any_non_canonical_iso_as_of(bad):
+    with pytest.raises(ValueError):
+        pm.integrity_assignments({}, [], as_of=bad)
+    with pytest.raises(ValueError):
+        pm.cohort_integrity_block({}, [], as_of=bad)
+
+
+def test_engine_refuses_malformed_membership_date_keys_instead_of_lexical_compare():
+    with pytest.raises(ValueError):
+        pm.integrity_assignments({"retro": {"2026/07/01": {"AAA": ["v1"]}}},
+                                 [], as_of="2026-07-01")
+    with pytest.raises(ValueError):
+        pm.integrity_assignments({"retro": {"nan": {"AAA": ["v1"]}}},
+                                 [], as_of="2026-07-01")
+
+
+@pytest.mark.parametrize("bad_exit", ["2026-13-99", "2026-1-1", float("nan"),
+                                      20260731, ""])
+def test_invalid_board_exit_is_explicit_unavailability_never_a_window_bound(bad_exit):
+    retro = {"2026-07-01": {"AAA": ["v1"]}, "2026-07-05": {"AAA": ["v2"]}}
+    block = pm.cohort_integrity_block(
+        _integrity_mem(retro=retro),
+        [_integrity_ep("AAA", "2026-07-01", bad_exit)],
+        as_of="2026-07-31")
+    a = block["episodes"][0]
+    assert a["partition"] is None and a["identity_error"]
+    assert block["n_episodes_unavailable"] == 1
+    assert block["partitions"]["mixed"]["n_episodes"] == 0
+
+
+def test_nan_exit_is_not_treated_as_the_open_sentinel():
+    retro = {"2026-07-01": {"AAA": ["v1"]}, "2026-07-05": {"AAA": ["v2"]}}
+    block = pm.cohort_integrity_block(
+        _integrity_mem(retro=retro),
+        [_integrity_ep("AAA", "2026-07-01", float("nan"))],
+        as_of="2026-07-31")
+    a = block["episodes"][0]
+    assert a["unavailable"] is True
+    assert "NaN" in a["identity_error"]
+
+
+def test_one_source_receipt_never_claims_overlap_or_disagreement():
+    rec = pm.integrity_source_receipt(
+        {"retro": {"2026-07-01": {"AAA": ["v1"]}, "2026-07-02": {"BBB": ["v1"]}}})
+    assert rec["overlap_dates"] == []
+    assert rec["n_overlap_dates"] == 0
+    assert rec["n_overlap_dates_with_membership_difference"] == 0
+    assert rec["membership_on_overlap_dates"] == []
+    assert rec["dates_in_one_source_only"] == ["2026-07-01", "2026-07-02"]
+    assert rec["per_source_only_dates"] == {"retro": ["2026-07-01", "2026-07-02"]}
+    assert rec["within_source_stamp_disagreements"] == []
+    assert rec["n_within_source_stamp_disagreements"] == 0
+
+
+def test_within_source_horizon_disagreement_on_a_disjoint_date_is_published():
+    retro = {"2026-06-15": {"AAA": ["v1", "v2"]}, "2026-07-20": {"BBB": ["v1"]}}
+    snap = {"2026-07-21": {"CCC": ["v1"]}}
+    rows = [_integrity_graded_row("AAA", "2026-06-15", exit_="2026-06-16")]
+    block = pm.cohort_integrity_block(_integrity_mem(retro=retro, snap=snap), rows,
+                                      as_of="2026-07-21")
+    rec = block["sources"]
+    # the two sources share NO date, yet the within-source conflict is still published
+    assert rec["overlap_dates"] == []
+    assert rec["n_overlap_dates_with_membership_difference"] == 0
+    assert rec["within_source_stamp_disagreements"] == [
+        {"source": "retro", "date": "2026-06-15", "ticker": "AAA", "stamps": ["v1", "v2"]}]
+    assert block["episodes"][0]["partition"] == "conflict"
+    # conflicting original membership blocks clean rates
+    assert block["membership_conflict_free"] is False
+    assert "per_era" not in block
+    assert block["per_era_unavailable_reason"] == "conflicting_original_membership"
+
+
+def test_duplicate_same_date_snapshot_docs_with_differing_stamps_block_rates(tmp_path):
+    _integrity_write_ledger(tmp_path, [], [
+        {"as_of": "2026-07-01", "rank_by": "v1", "buy": [{"ticker": "AAA"}]},
+        {"as_of": "2026-07-01", "rank_by": "v2", "buy": [{"ticker": "AAA"}]},
+    ])
+    block = pp._cohort_integrity_block(
+        tmp_path, [_integrity_graded_row("AAA", "2026-07-01")],
+        as_of="2026-07-01")
+    st = block["sources_read"]["snapshot"]
+    assert st["n_duplicate_as_of_docs"] == 1
+    assert st["n_conflicting_duplicate_observations"] == 1
+    assert block["source_validation"]["state"] == "incomplete"
+    assert "per_era" not in block
+    # both original records stay counted; the same-source disagreement conflicts
+    assert block["episodes"][0]["n_membership_records"] == 2
+    assert block["episodes"][0]["partition"] == "conflict"
+
+
+def test_identical_duplicate_snapshot_docs_are_disclosed_without_invented_conflict(tmp_path):
+    doc = {"as_of": "2026-07-01", "rank_by": "v1", "buy": [{"ticker": "AAA"}]}
+    _integrity_write_ledger(
+        tmp_path,
+        [{"as_of": "2026-07-01", "ticker": "AAA", "lane": "buy", "rank_by": "v1"}],
+        [doc, doc])
+    block = pp._cohort_integrity_block(
+        tmp_path, [_integrity_graded_row("AAA", "2026-07-01")],
+        as_of="2026-07-01")
+    st = block["sources_read"]["snapshot"]
+    assert st["n_duplicate_as_of_docs"] == 1
+    assert st["n_conflicting_duplicate_observations"] == 0
+    assert block["source_validation"]["state"] == "complete"
+    assert block["episodes"][0]["partition"] == "single"
+    assert block["per_era"]["v1"]["aggregate"]["n_matured"] == 1
+
+
+def test_missing_rank_by_column_is_a_warning_and_missing_attribution(tmp_path):
+    ledger = tmp_path / "data" / "us_board_ledger"
+    ledger.mkdir(parents=True)
+    pd.DataFrame([{"as_of": "2026-07-01", "ticker": "AAA", "lane": "buy"}]).to_parquet(
+        ledger / "retro_grades.parquet", index=False)
+    with (ledger / "snapshots.jsonl").open("w", encoding="utf-8") as fh:
+        fh.write(json.dumps({"as_of": "2026-07-01", "rank_by": "snap-era",
+                             "buy": []}) + "\n")
+    block = pp._cohort_integrity_block(
+        tmp_path, [_integrity_graded_row("AAA", "2026-07-01")],
+        as_of="2026-07-01")
+    rs = block["sources_read"]["retro"]
+    assert rs["readable"] is True and rs["rank_by_column_present"] is False
+    assert rs["n_missing_stamp_records"] == 1
+    assert any("rank_by" in w for w in block["warnings"])
+    # read/schema integrity is fine; the missing STAMP is attribution, not a bad read
+    assert block["source_validation"]["state"] == "complete"
+    assert block["episodes"][0]["partition"] == "unassigned"
+
+
+def test_loaders_disclose_malformed_dates_and_invalid_tickers(tmp_path):
+    ledger = tmp_path / "data" / "us_board_ledger"
+    ledger.mkdir(parents=True)
+    pd.DataFrame([
+        {"as_of": "2026-07-01", "ticker": "AAA", "lane": "buy", "rank_by": "v1"},
+        {"as_of": "07/02/2026", "ticker": "AAA", "lane": "buy", "rank_by": "v1"},
+        {"as_of": "2026-07-01", "ticker": None, "lane": "buy", "rank_by": "v1"},
+    ]).to_parquet(ledger / "retro_grades.parquet", index=False)
+    memberships, status = pp.load_retro_membership(tmp_path)
+    assert memberships == {"2026-07-01": {"AAA": ["v1"]}}
+    assert status["n_malformed_dates"] == 1
+    assert status["n_invalid_membership_records"] == 1
+    assert status["n_buy_records"] == 1
+
+
+def test_retro_timestamp_as_of_keys_are_converted_never_stringified(tmp_path):
+    ledger = tmp_path / "data" / "us_board_ledger"
+    ledger.mkdir(parents=True)
+    pd.DataFrame([{"as_of": pd.Timestamp("2026-07-01"), "ticker": "AAA",
+                   "lane": "buy", "rank_by": "v1"}]).to_parquet(
+        ledger / "retro_grades.parquet", index=False)
+    memberships, status = pp.load_retro_membership(tmp_path)
+    assert status["readable"] is True
+    assert memberships == {"2026-07-01": {"AAA": ["v1"]}}
+    assert status["n_malformed_dates"] == 0
+
+
+def test_inspection_refuses_invalid_as_of_and_malformed_identity_rows(
+        tmp_path, _integrity_forbid_scoring):
+    art = tmp_path / "artifact.json"
+    good_row = {"ticker": "AAA", "entry_date": "2026-07-01",
+                "board_exit_date": None, "maturity": "matured"}
+    cases = [
+        {"schema": pp.SCHEMA, "as_of": "2026-7-1", "episodes": [dict(good_row)]},
+        {"schema": pp.SCHEMA, "as_of": None, "episodes": [dict(good_row)]},
+        {"schema": pp.SCHEMA, "as_of": "2026-07-01",
+         "episodes": [{**good_row, "entry_date": "2026-07-99"}]},
+        {"schema": pp.SCHEMA, "as_of": "2026-07-01",
+         "episodes": [{**good_row, "board_exit_date": "07/10/2026"}]},
+        {"schema": pp.SCHEMA, "as_of": "2026-07-01", "episodes": []},
+        {"schema": pp.SCHEMA, "as_of": "2026-07-01", "episodes": [None]},
+        {"schema": pp.SCHEMA, "as_of": "2026-07-01",
+         "episodes": [{**good_row, "ticker": ""}]},
+        [1, 2],
+    ]
+    for document in cases:
+        art.write_text(json.dumps(document), encoding="utf-8")
+        with pytest.raises(SystemExit):
+            pp.main(["--root", str(tmp_path), "--cohort-integrity-only",
+                     "--artifact", str(art)])
+        assert art.read_bytes()   # refused, never rewritten or removed
+
+
+def test_inspection_refuses_undecodable_artifact_bytes(tmp_path, _integrity_forbid_scoring):
+    art = tmp_path / "artifact.json"
+    art.write_bytes(b"\xff\xfe\x00 not utf-8")
+    with pytest.raises(SystemExit):
+        pp.main(["--root", str(tmp_path), "--cohort-integrity-only",
+                 "--artifact", str(art)])
+    art.write_text("{not json", encoding="utf-8")
+    with pytest.raises(SystemExit):
+        pp.main(["--root", str(tmp_path), "--cohort-integrity-only",
+                 "--artifact", str(art)])
+
+
+def test_artifact_flag_without_integrity_only_is_refused_before_generation(
+        tmp_path, _integrity_forbid_scoring):
+    art = tmp_path / "artifact.json"
+    art.write_text(json.dumps({
+        "schema": pp.SCHEMA, "as_of": "2026-07-01",
+        "episodes": [{"ticker": "AAA", "entry_date": "2026-07-01",
+                      "board_exit_date": None, "maturity": "matured"}]}), encoding="utf-8")
+    # build_rows is forbidden by the fixture: reaching the generation path would
+    # raise AssertionError, not SystemExit — the refusal must happen BEFORE it.
+    with pytest.raises(SystemExit):
+        pp.main(["--root", str(tmp_path), "--artifact", str(art)])
+
+
+@pytest.mark.parametrize("extra", [
+    ["--out", "x.json"], ["--report-dir", "r"], ["--dry-run"], ["--horizon", "5"],
+])
+def test_integrity_only_refuses_incompatible_generation_flags(
+        tmp_path, _integrity_forbid_scoring, extra):
+    with pytest.raises(SystemExit):
+        pp.main(["--root", str(tmp_path), "--cohort-integrity-only"] + extra)
+
+
+def test_full_input_byte_immutability_including_us_board_ledger(
+        tmp_path, capsys, _integrity_forbid_scoring):
+    _integrity_write_ledger(
+        tmp_path,
+        [{"as_of": "2026-07-01", "ticker": "AAA", "lane": "buy", "horizon": 10,
+          "rank_by": "v1"}],
+        [{"as_of": "2026-07-01", "rank_by": "v1", "buy": [{"ticker": "AAA"}]}])
+    art = tmp_path / "summary.json"
+    art.write_text(json.dumps({
+        "schema": pp.SCHEMA, "as_of": "2026-07-01",
+        "episodes": [{"ticker": "AAA", "entry_date": "2026-07-01",
+                      "board_exit_date": "2026-07-04", "maturity": "matured"}]}),
+        encoding="utf-8")
+
+    def snapshot_all() -> dict:
+        return {str(p): hashlib.sha256(p.read_bytes()).hexdigest()
+                for p in sorted(tmp_path.rglob("*")) if p.is_file()}
+
+    before = snapshot_all()
+    assert pp.main(["--root", str(tmp_path), "--cohort-integrity-only",
+                    "--artifact", str(art)]) == 0
+    assert snapshot_all() == before    # inputs AND artifact, byte for byte
+    json.loads(capsys.readouterr().out)
+
+
+def test_per_era_wrappers_carry_descriptive_only_and_no_promotion_authority():
+    retro = {"2026-07-01": {"AAA": ["v1"]}}
+    rows = [_integrity_graded_row("AAA", "2026-07-01", outcome=-10.0, excess=-9.0,
+                                  exit_="2026-07-02")]
+    block = pm.cohort_integrity_block(_integrity_mem(retro=retro), rows,
+                                      as_of="2026-07-02")
+    era = block["per_era"]["v1"]
+    assert era["descriptive_only"] is True
+    assert era["promotion_authority"].startswith("none")
+    assert era["aggregate"]["n_episodes"] == 1          # legacy behavior underneath
+    assert era["aggregate"]["n_matured"] == 1
+
+
+def test_integrity_duplicate_identity_is_explicit_without_row_loss():
+    rows = [_integrity_graded_row("AAA", "2026-07-01"),
+            _integrity_graded_row("AAA", "2026-07-01")]
+    rows[1]["horizon"] = 20
+    block = pm.cohort_integrity_block(_integrity_mem(retro={"2026-07-01": {"AAA": ["v1"]}}), rows, as_of="2026-07-02")
+    assert block["n_episode_rows"] == 2
+    assert block["n_episodes"] == sum(x["n_episodes"] for x in block["partitions"].values()) == 0
+    assert block["n_episodes_unavailable"] == 2
+    assert {a["episode_row_index"] for a in block["episodes"]} == {0, 1}
+    assert all(a["unavailable_reason"] == "ambiguous_episode_identity" for a in block["episodes"])
+    assert "per_era" not in block
+
+
+@pytest.mark.parametrize("entry,exit_,reason", [
+    ("2026-08-05", None, "episode_entry_after_cut"),
+    ("2026-07-02", "2026-07-01", "invalid_episode_interval"),
+    ("2026-07-02", "2026-07-02", "invalid_episode_interval"),
+])
+def test_integrity_invalid_interval_is_not_missing_attribution(entry, exit_, reason):
+    block = pm.cohort_integrity_block({}, [_integrity_ep("AAA", entry, exit_)], as_of="2026-07-31")
+    assert block["n_episode_rows"] == block["n_episodes_unavailable"] == 1
+    assert block["n_episodes"] == 0
+    assert block["episodes"][0]["unavailable_reason"] == reason
+
+
+@pytest.mark.parametrize("rows", [
+    [{"ticker": "AAA", "entry_date": "2026-08-05", "board_exit_date": None}],
+    [{"ticker": "AAA", "entry_date": "2026-07-02", "board_exit_date": "2026-07-01"}],
+    [{"ticker": "AAA", "entry_date": "2026-07-02", "board_exit_date": "2026-07-02"}],
+    [{"ticker": "AAA", "entry_date": "2026-07-01", "board_exit_date": None}] * 2,
+])
+def test_inspection_refuses_ambiguous_or_incoherent_episodes_without_effects(tmp_path, _integrity_forbid_scoring, rows):
+    art = tmp_path / "artifact.json"
+    raw = json.dumps({"schema": pp.SCHEMA, "as_of": "2026-07-31", "episodes": rows}).encode()
+    art.write_bytes(raw)
+    with pytest.raises(SystemExit):
+        pp.main(["--root", str(tmp_path), "--cohort-integrity-only", "--artifact", str(art)])
+    assert art.read_bytes() == raw
+
+
+@pytest.mark.parametrize("value", [pd.NaT, pd.Timestamp("NaT"), None, pd.NA, float("nan")])
+def test_integrity_source_null_date_rejected_before_native_date(value):
+    assert pp._iso_date_key(value) is None
+
+
+def test_integrity_nonobject_row_retained_unavailable():
+    block = pm.cohort_integrity_block({}, [None], as_of="2026-07-31")
+    assert block["n_episode_rows"] == block["n_episodes_unavailable"] == 1
+    assert block["episodes"][0]["unavailable_reason"] == "malformed_episode_identity"
+
+
+def test_integrity_overlapping_episode_intervals_are_ambiguous():
+    rows = [_integrity_ep("AAA", "2026-07-01", "2026-07-05"), _integrity_ep("AAA", "2026-07-03")]
+    block = pm.cohort_integrity_block({}, rows, as_of="2026-07-04")
+    assert block["n_episodes_unavailable"] == 2
+    assert all(a["unavailable_reason"] == "overlapping_episode_intervals" for a in block["episodes"])
+
+
+def test_integrity_adjacent_episode_intervals_keep_distinct_rows():
+    rows = [_integrity_ep("AAA", "2026-07-01", "2026-07-03"), _integrity_ep("AAA", "2026-07-03")]
+    block = pm.cohort_integrity_block({}, rows, as_of="2026-07-04")
+    assert block["n_episode_rows"] == block["n_episodes"] == 2
+    assert block["n_episodes_unavailable"] == 0
+
+
+def test_retro_nat_is_malformed_source_not_clean_absence(tmp_path):
+    ledger = tmp_path / "data" / "us_board_ledger"
+    ledger.mkdir(parents=True)
+    pd.DataFrame([
+        {"as_of": pd.Timestamp("2026-07-01"), "ticker": "AAA", "lane": "buy", "rank_by": "v1"},
+        {"as_of": pd.NaT, "ticker": "AAA", "lane": "buy", "rank_by": "v1"},
+    ]).to_parquet(ledger / "retro_grades.parquet", index=False)
+    memberships, status = pp.load_retro_membership(tmp_path)
+    assert memberships == {"2026-07-01": {"AAA": ["v1"]}}
+    assert status["n_malformed_dates"] == 1
+    block = pp._cohort_integrity_block(tmp_path, [_integrity_ep("AAA", "2026-07-01")], as_of="2026-07-01", include_era_rates=False)
+    assert block["source_validation"]["state"] == "incomplete"

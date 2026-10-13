@@ -1,16 +1,16 @@
 {
   "schema": "risk_radar_scorecard.v1",
-  "generated_at": "2026-10-13T00:30:15+00:00",
+  "generated_at": "2026-10-13T06:38:34+00:00",
   "markets": {
     "us": {
-      "asof_last_row": "2026-10-09",
+      "asof_last_row": "2026-10-12",
       "monitoring": {
         "log_fresh": true,
-        "last_logged_days_ago": 3,
+        "last_logged_days_ago": 0,
         "ungraded_backlog": 0,
         "awaiting_maturity": 17,
         "backlog_cutoff_bd": 28,
-        "graded_n": 47
+        "graded_n": 48
       },
       "windows": {
         "full": {
@@ -21,9 +21,9 @@
             "hit_rate": null
           },
           "watch_caution": {
-            "n": 40,
+            "n": 41,
             "tp": 0,
-            "tn": 40,
+            "tn": 41,
             "precursor_rate": 0.0
           },
           "calm": {
@@ -47,9 +47,9 @@
             "hit_rate": null
           },
           "watch_caution": {
-            "n": 40,
+            "n": 41,
             "tp": 0,
-            "tn": 40,
+            "tn": 41,
             "precursor_rate": 0.0
           },
           "calm": {
@@ -70,13 +70,14 @@
         "definition": "us_issued_probability_audit.v1",
         "as_of": "2026-10-12",
         "target": "SPY close-relative loss >=5%; future 5/10/21 closing observations",
-        "input_rows": 64,
+        "input_rows": 65,
         "min_display_n": 5,
         "horizons": {
           "h5": {
             "n": 47,
-            "excluded_n": 17,
+            "excluded_n": 18,
             "excluded": {
+              "invalid_or_future_receipt": 1,
               "ungraded": 17
             },
             "from": "2026-06-23",
@@ -136,8 +137,9 @@
           },
           "h10": {
             "n": 47,
-            "excluded_n": 17,
+            "excluded_n": 18,
             "excluded": {
+              "invalid_or_future_receipt": 1,
               "ungraded": 17
             },
             "from": "2026-06-23",
@@ -197,8 +199,9 @@
           },
           "h21": {
             "n": 47,
-            "excluded_n": 17,
+            "excluded_n": 18,
             "excluded": {
+              "invalid_or_future_receipt": 1,
               "ungraded": 17
             },
             "from": "2026-06-23",
@@ -272,13 +275,13 @@
           "latest_engine_source_sha256": "31668c7fe097cdf631edb6cca6e77990b40afdb3d4cb37d27596336689afe70d",
           "latest_source_bundle_sha256": "f1aaa20ed367052fd5cd24e354f7edeaabd1c2ff8b8cd650a6f9b49a65c56124",
           "latest_calibration_sha256": "801d15ae2b50d622c153b47863af0e27e1ce080d9fd7bc2d478cee2bc27ebc54",
-          "same_model_issued_n": 2,
+          "same_model_issued_n": 3,
           "same_model_graded_n": 0,
-          "awaiting_maturity": 2,
+          "awaiting_maturity": 3,
           "prior_model_issued_n": 9,
           "model_fingerprints_seen": 3,
           "from": "2026-10-08",
-          "through": "2026-10-09",
+          "through": "2026-10-12",
           "issue_excluded": {
             "missing_issue_receipt": 53
           },
@@ -345,10 +348,10 @@
             "current_model_validated": false,
             "public_validation_ready": false,
             "cohort": {
-              "issued_n": 2,
-              "span_days": 1,
+              "issued_n": 3,
+              "span_days": 4,
               "from": "2026-10-08",
-              "through": "2026-10-09"
+              "through": "2026-10-12"
             },
             "thresholds": {
               "min_issued_sessions": 252,
