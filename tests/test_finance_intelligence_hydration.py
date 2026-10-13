@@ -1292,6 +1292,46 @@ def test_a_phone_card_names_its_identity_state(lang) -> None:
     assert seen == set(words), seen
 
 
+def _unmeasured_case_row() -> dict:
+    fixture = (
+        Path(__file__).resolve().parent
+        / "fixtures"
+        / "finance_case_signal"
+        / "synthesis_v0.json"
+    )
+    document = json.loads(fixture.read_text(encoding="utf-8"))
+    return next(
+        row
+        for row in document["cases"]
+        if row["descriptive_evidence_state"] == "MARKET_AND_VALUATION_MEASURED"
+    )
+
+
+@needs_node
+def test_unmeasured_case_paints_not_yet_evaluable_falsifier() -> None:
+    """Projector output on the harness slice paints NOT_YET_EVALUABLE.
+
+    A document that never calls the projector keeps the falsifier list blank
+    (the painter clears it when falsifiers is empty).
+    """
+    from engine.sector_intelligence.finance_case_signal import (
+        attach_falsifiers,
+        project_falsifier,
+    )
+
+    row = _unmeasured_case_row()
+    falsifier = project_falsifier(row)
+    doc = copy.deepcopy(VALID_DOC)
+    attach_falsifiers(doc["slices"][0], [falsifier])
+    snap = _run({"routes": _route(doc)})
+    markup = snap["first"]["dom"]
+    assert 'data-state-falsifier="NOT_YET_EVALUABLE"' in markup
+    assert row["primary_limit"] in markup
+    item = _dom(snap["first"]).one("li", "fi-falsifier")
+    assert item.attrs.get("data-state-falsifier") == "NOT_YET_EVALUABLE"
+    assert item.one("span", "fi-falsifier-statement").text() == row["primary_limit"]
+
+
 @needs_node
 def test_a_phone_card_lists_its_table_rows_cells_in_column_order() -> None:
     """The card took the first six cells of any vertical: a company with a cell
