@@ -1814,15 +1814,33 @@ def main(argv: list[str] | None = None) -> int:
     )
     parser.add_argument("--workers", type=int, default=12)
     parser.add_argument("--timeout", type=float, default=30.0)
+    parser.add_argument(
+        "--economic-refresh",
+        type=Path,
+        default=None,
+        help="Local JSON object for the private economic stage. Omitted unless set.",
+    )
     args = parser.parse_args(argv)
     logging.basicConfig(level=logging.INFO, format="%(levelname)s %(name)s: %(message)s")
     try:
-        result = build(
-            out_dir=args.out_dir,
-            private_out_dir=args.private_out_dir,
-            source_base=args.source_base, offline=args.offline, force=args.force,
-            workers=args.workers, timeout=args.timeout,
-        )
+        build_kwargs: dict[str, Any] = {
+            "out_dir": args.out_dir,
+            "private_out_dir": args.private_out_dir,
+            "source_base": args.source_base,
+            "offline": args.offline,
+            "force": args.force,
+            "workers": args.workers,
+            "timeout": args.timeout,
+        }
+        if args.economic_refresh is not None:
+            try:
+                loaded = json.loads(Path(args.economic_refresh).read_text(encoding="utf-8"))
+            except (OSError, UnicodeError, json.JSONDecodeError) as exc:
+                raise PublicWireBuildError("economic refresh inputs must be a mapping") from exc
+            if type(loaded) is not dict:
+                raise PublicWireBuildError("economic refresh inputs must be a mapping")
+            build_kwargs["economic_refresh"] = loaded
+        result = build(**build_kwargs)
     except PublicWireBuildError as exc:
         log.error("earnings public wire failed: %s", exc)
         return 1

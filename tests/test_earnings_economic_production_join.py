@@ -7,6 +7,8 @@ from __future__ import annotations
 
 from datetime import datetime, timezone
 from inspect import signature
+import json
+import logging
 from pathlib import Path
 
 import pytest
@@ -20,6 +22,7 @@ from scripts.build_earnings_public_wire import (
     PRIVATE_RECORDS_DIRNAME,
     ROUTE_CATALOG_FILENAME,
     WIRE_SITEMAP_FILENAME,
+    BuildResult,
     PublicWireBuildError,
     build,
     publish_public_wire,
@@ -179,3 +182,65 @@ def test_stage_raise_leaves_feed_sitemap_and_catalog_unwritten(
     assert not (public / FEED_FILENAME).exists()
     assert not (public / WIRE_SITEMAP_FILENAME).exists()
     assert not (public / ROUTE_CATALOG_FILENAME).exists()
+
+
+def _install_build_spy(monkeypatch: pytest.MonkeyPatch, captured: dict[str, object]) -> None:
+    def fake_build(**kwargs: object) -> BuildResult:
+        captured.clear()
+        captured.update(kwargs)
+        out = kwargs.get("out_dir")
+        return BuildResult("manifest", "fresh", 0, Path(out) if out is not None else Path("."))
+
+    monkeypatch.setattr(wire_builder, "build", fake_build)
+
+
+def test_cli_without_the_flag_does_not_pass_economic_refresh(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    captured: dict[str, object] = {}
+    _install_build_spy(monkeypatch, captured)
+    assert wire_builder.main([]) == 0
+    assert captured.get("economic_refresh") is None
+
+
+def test_cli_economic_refresh_forwards_a_synthetic_mapping(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    payload = {
+        "acquisition": {"synthetic": True},
+        "prior_closure": None,
+        "observed_at": "2026-07-31T00:00:00Z",
+    }
+    refresh = tmp_path / "refresh.json"
+    refresh.write_text(json.dumps(payload), encoding="utf-8")
+    captured: dict[str, object] = {}
+    _install_build_spy(monkeypatch, captured)
+    assert wire_builder.main(["--economic-refresh", str(refresh)]) == 0
+    assert captured["economic_refresh"] == payload
+
+
+def test_cli_economic_refresh_with_offline_returns_1(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, caplog: pytest.LogCaptureFixture,
+) -> None:
+    refresh = tmp_path / "refresh.json"
+    refresh.write_text(json.dumps({"acquisition": {"synthetic": True}}), encoding="utf-8")
+    public = tmp_path / "public"
+    public.mkdir()
+    marker = public / "marker.txt"
+    marker.write_text("marker", encoding="utf-8")
+    before = _snapshot(public)
+
+    def _fetch(*_args: object, **_kwargs: object) -> bytes:
+        raise AssertionError("fetch must not run")
+
+    monkeypatch.setattr(wire_builder.requests, "get", _fetch)
+    with caplog.at_level(logging.ERROR, logger="build_earnings_public_wire"):
+        code = wire_builder.main([
+            "--out-dir", str(public),
+            "--offline",
+            "--economic-refresh", str(refresh),
+        ])
+    assert code == 1
+    assert "offline public wire build cannot apply an economic refresh" in caplog.text
+    assert _snapshot(public) == before
+    assert marker.read_text(encoding="utf-8") == "marker"
