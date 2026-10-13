@@ -1,8 +1,10 @@
 # Aggregate White House feed: qualified planning repair
 
 Operation: `mmx-public-intelligence-delivery-20261011-local-ceo-001`.
-This next phase is separate from the fixed release head of Macro PR8786,
-`9019a29c2e35da499fb5c822e515be9ce9c21027`. It must not restart that release's CI.
+This phase follows Macro PR8786, protected-merged at
+`4aabf95fd05079bd14b07bbbe554186531d65ddf` and accepted for installed source
+and scoped public navigation. Landed main490432d5 is integrated as489fa3a0.
+The application diff remains the accepted two-file aggregate-feed repair.
 
 The existing sentinel reads `/news/feed/` first and retains `section=news`.
 Canonical entries can live under `/fact-sheets/`, `/research/` and five other

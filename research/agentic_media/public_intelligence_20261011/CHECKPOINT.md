@@ -3,7 +3,59 @@
 Operation: `mmx-public-intelligence-delivery-20261011-local-ceo-001`
 Mission complete: **false**. Publication approved: **false**.
 
-## Current controller-admitted carrier — October 12 22:01 UTC
+## Protected release installed; aggregate follow-on ready — October 13 00:01 UTC
+
+PR #8786 landed at `4aabf95fd05079bd14b07bbbe554186531d65ddf`, October 12
+23:13:55Z. Exact final candidate `eafd88c788adb69052017352f478b8f8841cdfbd`
+passed CI `38317681840` (all 12 packs, contract-delta and ci-gate).
+Controller `38320992479` confirmed proof current and performed protected landing.
+
+Installed `/opt/macro` was stable at `490432d59ff6606e5f90bcc5a87e5a124eb55c6f`.
+All 21 source hashes and 3 pages matched in source/site/site.served; all three
+public HTTP pages were byte-identical. The shallow VPS clone cannot traverse
+missing parents. Its direct merge-base false is retained, while a complete
+nine-object canonical commit chain verifies every hash and parent edge and is
+bound to the stable exact installed HEAD. One valid/five invalid ancestry
+controls passed. No production Git mutation or manual deployment occurred.
+The portable bundle and executed results are now committed in
+`pr8786_live_acceptance/` as well as the original local evidence directory.
+
+Read-only installed staging inspection passed: zero staged items, unchanged
+input hashes, stable HEAD, cutover false and publication unapproved. Chrome
+functional acceptance verifies Blog, Learn and nested Position Size Calculator
+research links at 1440 and 390 widths, without horizontal overflow; actual
+Glossary and Morning Edition navigation worked, and the calculator example
+returns 50 shares/$100 risk/$2500 position. Screenshots are hash-bound in the
+live receipt. Limitations: the signed-in Chinese selection retained English;
+Morning Edition shows stale inputs. This is scoped navigation acceptance, not
+language-toggle persistence, current market coverage or new visual design approval.
+Terminal #956's previous sign-in/existing NVDA membership proof is reused.
+
+The same aggregate-feed branch now integrates landed main `490432d5` as
+`489fa3a0977bc92027edd817a775115c66fd9a70`. Only its two accepted application
+files differ from that main; both accepted hashes are unchanged. Four affected
+suites pass **186 tests in 5.66s**. The standalone installed-consumer probe was
+locally validated: two positive historical routes and five negative controls,
+zero provider calls, zero staging writes and unchanged input hashes. It uses
+temporary fixtures and does not require installing pytest on production.
+
+A local Git prefetch problem was recovered before checkout: a requested object
+already existed locally with its exact SHA-1, while Git scanned all promisor
+packs. Root captured the owned index and clean state, interrupted only its own
+pre-checkout merge, verified unchanged HEAD/index/worktree, and retried the same
+merge normally. Six expected add/add conflicts preserved the accepted two-file
+implementation and four cumulative owner records. No shared checkout or store
+was cleaned/reset, and no foreign writer was affected.
+
+Next: create one protected aggregate-feed PR, complete exact-head CI and protected
+landing, verify its actual installed source and run the prepared consumer probe
+with `/opt/macro/.venv/bin/python -B`. Do not claim a current qualified article:
+source rights, first-party receipt floors, editorial acceptance and publication
+remain unmet. Dedicated earnings R2 read-only credential names were still absent
+at the current repository-secret-name read, so no doomed audit was dispatched.
+The original 12:07 provider EFFECT_UNKNOWN remains preserved without replay.
+
+## Historical controller-admitted carrier — October 12 22:01 UTC
 
 PR #8786 is OPEN and armed at `ff37582d18cb6b4ac27ae760da76963f1962e287`.
 CI `38310079309` passed the previous `ba599a70` head: all 12 packs,
