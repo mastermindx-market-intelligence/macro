@@ -581,10 +581,14 @@ minimax, grok, cursor, glm) → optional bounded workers. No native leaf swarm; 
 
 ## Lane matrix
 
-(2026-10-13T06:30Z snapshot.) Rows superseding older rows below:
+(2026-10-13T11:20Z snapshot.) Rows superseding older rows below:
 
 | lane | state |
 |---|---|
+| PP2-UI-a run 2 | r2 reserved only (cap); r2b ran over the ceiling, was stopped and settled rc=143 REMOTE_CLEANED (D65); r2c packet `ab272ea5…` FROZEN, waiting for mb ELIGIBLE (watcher `b7sdg0xym`) |
+| PP1-D run 1 | packet `07d0d622…` FROZEN; gate held on ubuntu2 disk 139<150 (D65), ID unused; watcher `bfcmghmnb` |
+| #986 | MERGED `06a49a61`; deploy RUNNING, pid 671199 (watcher `bhoqa05g2`) |
+| #948 / #983 | #948 refreshed to `9fc0946a`, CI (watcher `bt4a20yu0`); #983 green but BEHIND, refreshed after #948 merges |
 | Paper parity PP1/PP2 | CONTRACT ACCEPTED by the Codex root (D57, SHA256 `bb5a6ceb…`); serialized on the #723 writer path after oi-1e; NOT STARTED |
 | oi-1e (#723) | RUNNING (D57): head `3a9dd064b23a`; item 8 tablet timing on ubuntu0; watcher `bhj9p7mmg` |
 | #723 CI | BLOCKED by the systemic 60-min tablet cap (D57) → carrier Terminal #984 (split), armed |
@@ -1289,3 +1293,39 @@ INTENDED_RESUME_SURFACE: this Claude Code session; successor reads this file + #
   - run 2 on mb eligibility → judge → PP2-UI-c launch (fill `<<BASE_SHA>>`);
   - PP1-D on ubuntu2 eligibility;
   - then PP2-UI-b (chart return with build identity across the sheet unmount), #723 integration, coordinated #599 release and authenticated production proof.
+
+### D65 (2026-10-13T11:20Z) — r2b settled; in-command eligibility gate; PP1-D held by the ubuntu2 disk gate; r2c scoped to the rail host; #948 refreshed; #986 deploying
+- FACT r2 (`fable-pp2uia-r2-20261013`) was refused at the lane cap before launch: reserved only, never leased or launched.
+  - r2b (`fable-pp2uia-r2b-20261013`) was launched with the explicit host `mb`, which skips host_pick's gates. Another session's lane took mb's third slot, so r2b ran over the lane ceiling.
+  - The seat stopped r2b at 11:03:31Z, before any commit. Fence log: `REMOTE_DONE rc=143`, `REMOTE_CLEANED transport=1 receipt_saved=1 usage_saved=0`, `DONE rc=143 signal=other reason=remote_nonzero` (11:04Z).
+  - There is no EFFECT_UNKNOWN. The mb worktree is clean at R `d088a793` and no process is left. Neither ID is ever reused.
+- DECIDED: every explicit-host `pool remote` launch is preceded, in the same command, by `pool hosts minimax | grep -q '^<host> ELIGIBLE' || exit 1`. A failed gate exits before `pool remote` runs, so no fence or reservation is created.
+- FACT PP1-D run-1 packet `$S/leads/PP1D/fabric/r1.md` (header plus commission, 486 lines, sha256 `07d0d622…`).
+  - Launching `fable-pp1d-r1-20261013` on ubuntu2 was held by the gate at 11:10Z: `disk=FAIL(139.2>=150)`, `thermal-recovery=FAIL(wait=143s)`. At 11:14Z the disk read 138.9.
+  - No fence exists and the ID is unused. The lane waits and is not rerouted (DNR: no routing around a host refusal). Watcher `bfcmghmnb` → `pr/host_u2b.sentinel`.
+- DECIDED amendment to the r2c packet (`$S/leads/PP2UIA/fabric/r2.md`, sha256 `ab272ea5…`; the as-launched r2b copy is kept as `r2b-as-launched.md`):
+  - The header ID becomes `fable-pp2uia-r2c-20261013`.
+  - The tablet `--matrix-rail-max-touch` is declared only as `.root:not(.page) .mapHost{…}`, inside the one-line coarse/≤860 media block of `OptionsCompanion.module.css`.
+  - Reason: PP1-D's desk wrapper `gex-matrix-map` sets `--matrix-rail-max` and `--matrix-rail-max-touch` as inherited properties for the page host (`.root.page`). Ruling 4's original "on `.mapHost`" would silently override the desk's value.
+  - Unchanged: the locked top-level `.mapHost{…}` rule (whose `optionsCompanionHost.test.tsx` regex anchors at line start) and the three `.scroll` strings.
+  - The header declares the stale r2b `return.md` void.
+  - mb was at lane-ceiling 3<3 (other sessions) at 11:14Z. Watcher `b7sdg0xym` → `pr/host_mb2.sentinel`.
+- DECIDED the PP2-UI-c commission budget drops from 150 to 105 minutes of wall clock, and it notes the controller's hard stop at 120 (sha256 `70ad706b…`).
+- FACT #986 is MERGED at master `06a49a6104f6`.
+  - The git-gated deploy runs with `--target-sha 06a49a61…`. Live was its parent `792405ed` and the preflight was CLEAN.
+  - VPS pid 671199, log `/opt/terminal/deploy-t986.log`. At 11:15Z it was at "Running TypeScript". Watcher `bhoqa05g2`.
+- FACT watcher `b55haalpp` on #948/#983 timed out at 7228 s. Both PRs were BEHIND with every required check green (strict protection).
+  - #948 was refreshed server-side with the user token (`update-branch`, expected head `d7e77daa`) to `9fc0946ab7f5`. Its parents are `d7e77daa` and master `06a49a61`, and its tree `f0027a45` equals the local `merge-tree` prediction. Watcher `bt4a20yu0`.
+  - #983 is refreshed after #948 merges. A parallel refresh would go BEHIND again at the first merge.
+- Watchers: `bfcmghmnb` ubuntu2, `b7sdg0xym` mb, `bhoqa05g2` the #986 deploy, `bt4a20yu0` #948, `bff4iyhaz` #985, `brq8ytnaj` Macro #9097, `b64amfv2n` Macro #9080/#8920.
+- Rungs at 11:20Z:
+  - r2c: FROZEN (not launched; mb refused).
+  - PP1-D: FROZEN (not launched; ubuntu2 refused).
+  - PP2-UI-c: FROZEN (behind run 2).
+  - #986: MERGED, deploy RUNNING.
+  - #948: CI on the refreshed head.
+  - #983: CI green but BEHIND.
+- NEXT:
+  - Verify the deploy: the three identities at `06a49a61` plus the served marker.
+  - Once #948 merges, refresh #983, then deploy the master tip.
+  - Launch r2c and PP1-D on eligibility, with the in-command gate.
