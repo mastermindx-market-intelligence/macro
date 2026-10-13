@@ -740,3 +740,103 @@ def test_a_heredoc_that_merely_mentions_polling_is_not_a_poll(_poll_state):
     )
     assert _nudged(doc) == ""
     assert _nudged(doc) == ""
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Shape 8 — physical-M2 admission for heavyweight manual workflow dispatches
+# ─────────────────────────────────────────────────────────────────────────────
+
+
+def _capacity_row(
+    workflow: str,
+    status: str = "in_progress",
+    minutes_ago: float = 2,
+    run_id: int = 35509999999,
+) -> dict:
+    return {
+        "path": f".github/workflows/{workflow}",
+        "status": status,
+        "created_at": _stamp(minutes_ago),
+        "id": run_id,
+        "html_url": f"https://example.test/run/{run_id}",
+    }
+
+
+def _capacity_runs(monkeypatch, *runs: dict) -> None:
+    monkeypatch.setenv("GH_SHIM_PAYLOAD", json.dumps({"workflow_runs": list(runs)}))
+
+
+@pytest.mark.parametrize("target", sorted(GUARD.HEAVY_M2_MANUAL_WORKFLOWS))
+def test_heavy_manual_m2_dispatch_refuses_while_daily_is_live(monkeypatch, target):
+    _capacity_runs(monkeypatch, _capacity_row("daily.yml", run_id=35508880001))
+    d = _run(f"gh workflow run {target} --ref main")
+    assert d and d.get("permissionDecision") == "deny"
+    reason = d["permissionDecisionReason"]
+    assert "M2 PHYSICAL HOST BUSY" in reason
+    assert "daily.yml" in reason
+    assert target in reason
+    assert "35508880001" in reason
+
+
+def test_heavy_manual_lanes_conflict_with_each_other(monkeypatch):
+    _capacity_runs(monkeypatch, _capacity_row("asia-close.yml", run_id=35508880002))
+    assert _denied("gh workflow run research-ingest.yml --ref main")
+
+
+@pytest.mark.parametrize("target", sorted(GUARD.HEAVY_M2_MANUAL_WORKFLOWS))
+def test_heavy_manual_dispatch_passes_when_m2_heavy_set_is_clear(monkeypatch, target):
+    _capacity_runs(monkeypatch)
+    assert not _denied(f"gh workflow run {target} --ref main")
+
+
+def test_unrelated_live_workflow_does_not_block_heavy_manual_dispatch(monkeypatch):
+    _capacity_runs(monkeypatch, _capacity_row("ci.yml", run_id=35508880003))
+    assert not _denied("gh workflow run research-ingest.yml --ref main")
+
+
+def test_old_queued_m2_run_is_treated_as_orphaned_for_capacity(monkeypatch):
+    _capacity_runs(monkeypatch, _capacity_row("daily.yml", status="queued", minutes_ago=95))
+    assert not _denied("gh workflow run research-ingest.yml --ref main")
+
+
+def test_long_running_m2_run_still_blocks_capacity(monkeypatch):
+    _capacity_runs(monkeypatch, _capacity_row("daily.yml", status="in_progress", minutes_ago=95))
+    assert _denied("gh workflow run research-ingest.yml --ref main")
+
+
+def test_off_main_heavy_dispatch_costs_no_capacity_probe(monkeypatch):
+    exploding = _ExplodingSubprocess()
+    monkeypatch.setattr(GUARD, "subprocess", exploding)
+    assert GUARD.check(
+        "gh workflow run research-ingest.yml --ref refs/heads/feature",
+        "/some/checkout",
+    ) is None
+    assert exploding.calls == []
+
+
+def test_capacity_probe_failure_fails_open_and_says_so(monkeypatch):
+    monkeypatch.setenv("GH_SHIM_EXIT", "1")
+    proc = _raw("gh workflow run research-ingest.yml --ref main")
+    assert proc.returncode == 0
+    assert proc.stdout.decode().strip() == ""
+    assert "fail-open" in proc.stderr.decode().lower()
+
+
+def test_capacity_guard_uses_one_probe_per_dispatch(monkeypatch):
+    calls = []
+
+    class _Result:
+        returncode = 0
+        stdout = json.dumps({"workflow_runs": []}).encode()
+        stderr = b""
+
+    class _OneProbe:
+        def run(self, *args, **kwargs):
+            calls.append((args, kwargs))
+            return _Result()
+
+    monkeypatch.setattr(GUARD, "subprocess", _OneProbe())
+    assert GUARD.check("gh workflow run research-ingest.yml --ref main") is None
+    assert len(calls) == 1
+    argv = calls[0][0][0]
+    assert "actions/runs?branch=main&per_page=100" in argv[-1]
