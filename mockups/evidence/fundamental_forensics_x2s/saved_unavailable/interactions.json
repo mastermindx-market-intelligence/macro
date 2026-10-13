@@ -1,0 +1,226 @@
+[
+  {
+    "capture": "full_page",
+    "cell_id": "fundamental_forensics.html?symbol=AAPL|desktop|en|dark|anonymous|saved_unavailable",
+    "facts": {
+      "badge_visible": false,
+      "notice_has_strong": true,
+      "notice_newer_generation": false,
+      "notice_text": "iSaved view unavailable已存视图不可用This view was saved against an older contract and cannot be opened here. You can still delete it.此视图基于较早的契约保存，无法在此打开。你仍可将其删除。",
+      "notice_visible": true,
+      "options": [
+        "Choose a saved view",
+        "Apple pinned at September cutoff",
+        "Apple latest check",
+        "Apple check (older format) · unavailable"
+      ],
+      "select_inner_px": 503,
+      "selected_text_fits": true,
+      "selected_text_px": 290,
+      "value": "EFGHIJKLMNOPQRSTUVWXYZ"
+    },
+    "force_state": "saved_unavailable",
+    "input": "select: real #ff-saved-select change to the drift seed row (EFGHIJKLMNOPQRSTUVWXYZ)",
+    "interaction": "saved_open_unavailable",
+    "locale": "en",
+    "theme": "dark",
+    "verified": true,
+    "viewport": "desktop"
+  },
+  {
+    "capture": "full_page",
+    "cell_id": "fundamental_forensics.html?symbol=AAPL|desktop|en|light|anonymous|saved_unavailable",
+    "facts": {
+      "badge_visible": false,
+      "notice_has_strong": true,
+      "notice_newer_generation": false,
+      "notice_text": "iSaved view unavailable已存视图不可用This view was saved against an older contract and cannot be opened here. You can still delete it.此视图基于较早的契约保存，无法在此打开。你仍可将其删除。",
+      "notice_visible": true,
+      "options": [
+        "Choose a saved view",
+        "Apple pinned at September cutoff",
+        "Apple latest check",
+        "Apple check (older format) · unavailable"
+      ],
+      "select_inner_px": 503,
+      "selected_text_fits": true,
+      "selected_text_px": 290,
+      "value": "EFGHIJKLMNOPQRSTUVWXYZ"
+    },
+    "force_state": "saved_unavailable",
+    "input": "select: real #ff-saved-select change to the drift seed row (EFGHIJKLMNOPQRSTUVWXYZ)",
+    "interaction": "saved_open_unavailable",
+    "locale": "en",
+    "theme": "light",
+    "verified": true,
+    "viewport": "desktop"
+  },
+  {
+    "capture": "full_page",
+    "cell_id": "fundamental_forensics.html?symbol=AAPL|desktop|zh|dark|anonymous|saved_unavailable",
+    "facts": {
+      "badge_visible": false,
+      "notice_has_strong": true,
+      "notice_newer_generation": false,
+      "notice_text": "iSaved view unavailable已存视图不可用This view was saved against an older contract and cannot be opened here. You can still delete it.此视图基于较早的契约保存，无法在此打开。你仍可将其删除。",
+      "notice_visible": true,
+      "options": [
+        "选择已存视图",
+        "Apple pinned at September cutoff",
+        "Apple latest check",
+        "Apple check (older format) · 不可用"
+      ],
+      "select_inner_px": 571,
+      "selected_text_fits": true,
+      "selected_text_px": 260.7382049560547,
+      "value": "EFGHIJKLMNOPQRSTUVWXYZ"
+    },
+    "force_state": "saved_unavailable",
+    "input": "select: real #ff-saved-select change to the drift seed row (EFGHIJKLMNOPQRSTUVWXYZ)",
+    "interaction": "saved_open_unavailable",
+    "locale": "zh",
+    "theme": "dark",
+    "verified": true,
+    "viewport": "desktop"
+  },
+  {
+    "capture": "full_page",
+    "cell_id": "fundamental_forensics.html?symbol=AAPL|desktop|zh|light|anonymous|saved_unavailable",
+    "facts": {
+      "badge_visible": false,
+      "notice_has_strong": true,
+      "notice_newer_generation": false,
+      "notice_text": "iSaved view unavailable已存视图不可用This view was saved against an older contract and cannot be opened here. You can still delete it.此视图基于较早的契约保存，无法在此打开。你仍可将其删除。",
+      "notice_visible": true,
+      "options": [
+        "选择已存视图",
+        "Apple pinned at September cutoff",
+        "Apple latest check",
+        "Apple check (older format) · 不可用"
+      ],
+      "select_inner_px": 571,
+      "selected_text_fits": true,
+      "selected_text_px": 260.7382049560547,
+      "value": "EFGHIJKLMNOPQRSTUVWXYZ"
+    },
+    "force_state": "saved_unavailable",
+    "input": "select: real #ff-saved-select change to the drift seed row (EFGHIJKLMNOPQRSTUVWXYZ)",
+    "interaction": "saved_open_unavailable",
+    "locale": "zh",
+    "theme": "light",
+    "verified": true,
+    "viewport": "desktop"
+  },
+  {
+    "capture": "full_page",
+    "cell_id": "fundamental_forensics.html?symbol=AAPL|mobile|en|dark|anonymous|saved_unavailable",
+    "facts": {
+      "badge_visible": false,
+      "notice_has_strong": true,
+      "notice_newer_generation": false,
+      "notice_text": "iSaved view unavailable已存视图不可用This view was saved against an older contract and cannot be opened here. You can still delete it.此视图基于较早的契约保存，无法在此打开。你仍可将其删除。",
+      "notice_visible": true,
+      "options": [
+        "Choose a saved view",
+        "Apple pinned at September cutoff",
+        "Apple latest check",
+        "Apple check (older format) · unavailable"
+      ],
+      "select_inner_px": 346,
+      "selected_text_fits": true,
+      "selected_text_px": 290,
+      "value": "EFGHIJKLMNOPQRSTUVWXYZ"
+    },
+    "force_state": "saved_unavailable",
+    "input": "select: real #ff-saved-select change to the drift seed row (EFGHIJKLMNOPQRSTUVWXYZ)",
+    "interaction": "saved_open_unavailable",
+    "locale": "en",
+    "theme": "dark",
+    "verified": true,
+    "viewport": "mobile"
+  },
+  {
+    "capture": "full_page",
+    "cell_id": "fundamental_forensics.html?symbol=AAPL|mobile|en|light|anonymous|saved_unavailable",
+    "facts": {
+      "badge_visible": false,
+      "notice_has_strong": true,
+      "notice_newer_generation": false,
+      "notice_text": "iSaved view unavailable已存视图不可用This view was saved against an older contract and cannot be opened here. You can still delete it.此视图基于较早的契约保存，无法在此打开。你仍可将其删除。",
+      "notice_visible": true,
+      "options": [
+        "Choose a saved view",
+        "Apple pinned at September cutoff",
+        "Apple latest check",
+        "Apple check (older format) · unavailable"
+      ],
+      "select_inner_px": 346,
+      "selected_text_fits": true,
+      "selected_text_px": 290,
+      "value": "EFGHIJKLMNOPQRSTUVWXYZ"
+    },
+    "force_state": "saved_unavailable",
+    "input": "select: real #ff-saved-select change to the drift seed row (EFGHIJKLMNOPQRSTUVWXYZ)",
+    "interaction": "saved_open_unavailable",
+    "locale": "en",
+    "theme": "light",
+    "verified": true,
+    "viewport": "mobile"
+  },
+  {
+    "capture": "full_page",
+    "cell_id": "fundamental_forensics.html?symbol=AAPL|mobile|zh|dark|anonymous|saved_unavailable",
+    "facts": {
+      "badge_visible": false,
+      "notice_has_strong": true,
+      "notice_newer_generation": false,
+      "notice_text": "iSaved view unavailable已存视图不可用This view was saved against an older contract and cannot be opened here. You can still delete it.此视图基于较早的契约保存，无法在此打开。你仍可将其删除。",
+      "notice_visible": true,
+      "options": [
+        "选择已存视图",
+        "Apple pinned at September cutoff",
+        "Apple latest check",
+        "Apple check (older format) · 不可用"
+      ],
+      "select_inner_px": 346,
+      "selected_text_fits": true,
+      "selected_text_px": 260.7382049560547,
+      "value": "EFGHIJKLMNOPQRSTUVWXYZ"
+    },
+    "force_state": "saved_unavailable",
+    "input": "select: real #ff-saved-select change to the drift seed row (EFGHIJKLMNOPQRSTUVWXYZ)",
+    "interaction": "saved_open_unavailable",
+    "locale": "zh",
+    "theme": "dark",
+    "verified": true,
+    "viewport": "mobile"
+  },
+  {
+    "capture": "full_page",
+    "cell_id": "fundamental_forensics.html?symbol=AAPL|mobile|zh|light|anonymous|saved_unavailable",
+    "facts": {
+      "badge_visible": false,
+      "notice_has_strong": true,
+      "notice_newer_generation": false,
+      "notice_text": "iSaved view unavailable已存视图不可用This view was saved against an older contract and cannot be opened here. You can still delete it.此视图基于较早的契约保存，无法在此打开。你仍可将其删除。",
+      "notice_visible": true,
+      "options": [
+        "选择已存视图",
+        "Apple pinned at September cutoff",
+        "Apple latest check",
+        "Apple check (older format) · 不可用"
+      ],
+      "select_inner_px": 346,
+      "selected_text_fits": true,
+      "selected_text_px": 260.7382049560547,
+      "value": "EFGHIJKLMNOPQRSTUVWXYZ"
+    },
+    "force_state": "saved_unavailable",
+    "input": "select: real #ff-saved-select change to the drift seed row (EFGHIJKLMNOPQRSTUVWXYZ)",
+    "interaction": "saved_open_unavailable",
+    "locale": "zh",
+    "theme": "light",
+    "verified": true,
+    "viewport": "mobile"
+  }
+]

@@ -2920,6 +2920,19 @@ html[data-theme="light"] .ff-quick-signal[data-priority="high"] { border-color: 
 .ff-desk-asof > label,
 .ff-desk-export { align-self: end; }
 .ff-asof-controls { display: flex; gap: 6px; align-items: center; }
+/* X2-s saved-views row (seat r2 R2-5/R2-6): a governed modifier on the
+   as-of control block. It wraps (at 390 the select, the name and the actions
+   fold onto their own lines), and the select column takes the free row width
+   so a pinned name and the unavailable marker read whole at 1440. */
+.ff-asof-controls--saved {
+  flex-wrap: wrap;
+  margin-top: 8px;
+}
+.ff-asof-controls--saved > .ff-topic-filter {
+  flex: 1 1 260px;
+  width: auto;
+  min-width: 0;
+}
 .ff-asof-latest,
 .ff-export-btn,
 .ff-export-link {
