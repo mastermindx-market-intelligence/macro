@@ -581,10 +581,15 @@ minimax, grok, cursor, glm) → optional bounded workers. No native leaf swarm; 
 
 ## Lane matrix
 
-(2026-10-13T11:20Z snapshot.) Rows superseding older rows below:
+(2026-10-13T11:35Z snapshot.) Rows superseding older rows below:
 
 | lane | state |
 |---|---|
+| PP2-UI-a run 2 | r2c `fable-pp2uia-r2c-20261013` RUNNING on mb since 11:22:35Z (LEASE_OK; watcher `bi9gsq0qz`) (D66) |
+| PP1-D run 1 | packet `07d0d622…` FROZEN; gate-held on ubuntu2 disk 139.3<150 (D66), ID unused; watcher `bfcmghmnb` |
+| #986 | PRODUCTION_PROOF at identity level: live = `06a49a61` on all three identities (D66) |
+| PP2-UI-b | mechanism amended to park-not-unmount (MobileSheet opt-in `keepMounted`) (D66); serialized after PP2-UI-c |
+| #948 / #983 | #948 refreshed to `9fc0946a`, CI (watcher `bt4a20yu0`); #983 green but BEHIND, refreshed after #948 merges |
 | PP2-UI-a run 2 | r2 reserved only (cap); r2b ran over the ceiling, was stopped and settled rc=143 REMOTE_CLEANED (D65); r2c packet `ab272ea5…` FROZEN, waiting for mb ELIGIBLE (watcher `b7sdg0xym`) |
 | PP1-D run 1 | packet `07d0d622…` FROZEN; gate held on ubuntu2 disk 139<150 (D65), ID unused; watcher `bfcmghmnb` |
 | #986 | MERGED `06a49a61`; deploy RUNNING, pid 671199 (watcher `bhoqa05g2`) |
@@ -1329,3 +1334,45 @@ INTENDED_RESUME_SURFACE: this Claude Code session; successor reads this file + #
   - Verify the deploy: the three identities at `06a49a61` plus the served marker.
   - Once #948 merges, refresh #983, then deploy the master tip.
   - Launch r2c and PP1-D on eligibility, with the in-command gate.
+
+### D66 (2026-10-13T11:35Z) — #986 live at identity level; r2c running; N03 upgrades already in #983; chart return parks the companion instead of unmounting it
+- FACT #986 reached PRODUCTION_PROOF at identity level.
+  - Deploy watcher `bhoqa05g2`: `state=EXITED pid=671199 elapsed=626s`, `[build] DONE — live = origin/master @ 06a49a6104f6 (app + runtime code, git-gated, healthy)`.
+  - `/opt/terminal/terminal/.deployment-id`, `git -C /opt/terminal/.gitsrc rev-parse HEAD` and the served `data-dpl-id` all read `06a49a6104f63e27d80c13292436f4549a6f7725`. The deploy also carries #981.
+  - Behavior is not separately observable on live: the surface is paywalled and the change needs a natural null-expiry row. No behavior claim is made beyond identity.
+- FACT r2c (`fable-pp2uia-r2c-20261013`) is RUNNING on mb.
+  - Watcher `b7sdg0xym` saw mb ELIGIBLE. The in-command gate passed (`mb ELIGIBLE score=0.5600`, saved in `pr/r2c_gate.txt`). Launched 11:22:35Z.
+  - Fence: `RUN_RESERVED explicit=1`, `REMOTE_PROJECT_CWD_PREFLIGHT_OK`, `LEASE_OK pool=minimax`, `SCP packet=r2.md`.
+  - Its launch task `bi9gsq0qz` is the one watcher. Return: `/Users/chriswong/lanes/returns/pp2-ui-a/return.md`.
+- FACT the N03 census upgrades 1–3 are already implemented in #983 (head `26620ac75cf8`).
+  - `lib/marketStructure.ts` `scenarioGrid` uses `dVolPts=[0]` when vanna is missing, null cells when no gamma is known, and a coverage record.
+  - The ScenarioCard footer prints `scenNoVanna`, `scenNoCharm`, the sign-convention label (or `scenConventionUnstated`) and `scenNotInterval`.
+  - No N03 lane is commissioned (DNR).
+- DECIDED: D60's chart-return mechanism is amended to "park, don't unmount". This covers Codex's build-identity edge.
+  - Cause: `MobileSheet.tsx:477` renders the panel (and `:508` its children) only while `open`, and `OptionsRail.tsx:46` builds the companion only while `showing`.
+  - So closing the phone sheet destroys `useOptionsSnapshot`'s held build A, its queued build B, the selection and the scroll.
+  - A return ticket can restore root, session, strike and scroll, but it cannot keep A without a second snapshot store. Codex ruled: reuse the existing owner.
+- The amended mechanism (PP2-UI-b):
+  - `MobileSheet` gains an opt-in `keepMounted` prop (default false, so the seven other callers are unchanged). While closed, it keeps the children laid out but `visibility:hidden`, `inert` and `aria-hidden`, with no scrim, no body scroll lock and no focus trap.
+  - `OptionsRail` keeps `OptionsCompanion` rendered while parked. "Show on chart" pins and parks; a return chip reopens.
+  - Held A, the newer-snapshot banner for B, the selection and `scrollTop` then survive in their existing owners.
+  - Root, session and entitlement changes still invalidate through the existing effects (`OptionsRail.tsx:43`, and the `MatrixCompanion` `[root, data?.session]` pin effect). A parked companion also unmounts on entitlement loss.
+  - The library-only leaf PP2-RL (a ticket resolver) is dropped. It was never launched and has no ID.
+- DECIDED serialization on `claude/ssd-pr-723-c89a753150e1dbd6`: run 2 (r2c), then PP2-UI-c, then PP2-UI-b.
+  - Both UI-c and UI-b own `MatrixCompanion.tsx` and `e2e/options-companion.spec.ts`.
+  - PP1-D stays on its own branch.
+- FACT hosts at 11:25Z:
+  - mb: `lane-ceiling=FAIL(3<3)`, with r2c holding one slot.
+  - ubuntu0: `thermal-recovery=FAIL(wait=39s)`.
+  - ubuntu1: `disk=FAIL(143.4>=150)`.
+  - ubuntu2: `disk=FAIL(139.3>=150)`.
+  - ubuntu3: `disk=FAIL(223.9>=300)`.
+  - PP1-D stays held on ubuntu2 (watcher `bfcmghmnb`). It is not rerouted.
+- Rungs at 11:35Z:
+  - #986: PRODUCTION_PROOF (identity).
+  - r2c: RUNNING.
+  - PP1-D: FROZEN (gate-held).
+  - PP2-UI-c: FROZEN (behind r2c).
+  - PP2-UI-b: SPEC (amended here).
+  - #948: CI on the refreshed head.
+  - #983: green but BEHIND.
