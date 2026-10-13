@@ -54,3 +54,45 @@ shown unchanged. / 简写是便于速读的取整形式；精确数值是披露�
 
 Which comparable companies count toward a rank, and which are left out with
 the reason stated. / 哪些可比公司计入排名，哪些被排除并附原因。
+
+## Saved views
+
+A view keeps this company, cutoff, policy and peer settings so the desk can
+reopen exactly that question; saved views live on this device only.
+/ 已存视图保留当前公司、截止日、策略与同业设置，便于原样重开这个问题；视图仅保存在本设备。
+
+## Pinned / latest
+
+A pinned view always reads the filings known by its saved cutoff day; a
+latest view re-reads whatever the newest run admits today.
+/ 固定视图始终读取其截止日已知的数据；最新视图读取当前最新一轮纳入的数据。
+
+## Newer filing generation
+
+When newer filings have landed since a pinned view was saved, the view stays
+on its cutoff until you ask for the latest, and never changes on its own.
+/ 固定视图保存后若有更新的财报数据，它会保持原截止日，直到你主动选择最新，绝不自行改动。
+
+## Saved view unavailable
+
+A view saved by an older version of this desk, or for a company the current
+run does not cover, cannot be opened here; it can still be deleted.
+/ 由旧版工作台保存、或当前更新未覆盖其公司的视图无法在此打开；仍可将其删除。
+
+## Saved view missing
+
+A view that was on this device but is gone now — it may have been deleted in
+another tab — is simply not there anymore; the rest of the desk is unchanged.
+/ 此前保存在本设备的视图现已不在——可能已在其他标签页中删除；工作台其余状态不变。
+
+## Saved views paused
+
+When this device's saved views cannot be read, they are left untouched and
+saving is paused here; nothing is overwritten to make the list readable again.
+/ 无法读取本设备的已存视图时，将保持原样不作改动并暂停保存；绝不为了恢复显示而覆盖任何内容。
+
+## Change not saved
+
+When this browser refuses to store a change (for example, its storage is full), that change is not saved and
+nothing else is changed; your saved views stay exactly as they were.
+/ 浏览器拒绝保存更改时（例如存储空间已满），该更改不会被保存，其他内容也不变；已存视图保持原样。

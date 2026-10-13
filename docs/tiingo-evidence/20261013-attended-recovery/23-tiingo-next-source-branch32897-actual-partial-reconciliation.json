@@ -1,0 +1,19 @@
+{
+  "schema": "tiingo.owned_source_branch_start_actual_partial_reconciliation/v1",
+  "recorded_at_utc": "2026-10-13T05:03:06.236130+00:00",
+  "original_tool_session": 32897,
+  "original_terminal_chunk": "d34099",
+  "original_outer_exit_code": 1,
+  "actual_original_terminal_return_consumed": true,
+  "actual_git_switch_nested_exit_code": 0,
+  "actual_branch": "claude/tiingo-attended-recovery-20261013-01a12ab6",
+  "actual_new_branch_base": "e2e2e7ff090c1d3fa254dbbae8686b93b9d8a6c0",
+  "current_canonical_main": "d50eccbb8fbdfd113fdd83393dfa5de4d1aa9ac9",
+  "earlier_observed_base": "21652b3a0ff316de74e66eb930251f33402c773a",
+  "post_switch_assert_detected_canonical_ref_advanced_during_switch": true,
+  "actual_branch_base_contains_accepted9075_merge": true,
+  "actual_branch_base_is_canonical_ancestor_or_tip": true,
+  "source_edit_commit_or_push_on_new_branch_not_yet_performed": true,
+  "branch_switch_not_repeated": true,
+  "runtime_or_archive_effects": false
+}
