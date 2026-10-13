@@ -766,3 +766,65 @@ def test_bilingual_why_zh_is_chinese_for_whale():
     # Chinese characters have codepoints in the CJK Unified Ideographs range
     has_chinese = any("一" <= ch <= "鿿" for ch in enriched["why_zh"])
     assert has_chinese, f"why_zh contains no Chinese characters: {enriched['why_zh']!r}"
+
+
+def _package_field_names(payload: dict) -> list[str]:
+    """Keys that would be package identity rather than single-contract urgency."""
+    return [
+        key for key in payload
+        if key.startswith("package_") or key.startswith("multi_leg")
+    ]
+
+
+# ════════════════════════════════════════════════════════════════════════════════
+# 29. swept stays urgency-only on the enriched event
+# Existing pins (do not duplicate their narrower claims):
+#   test_multi_leg_does_not_fire_on_swept_true
+#   test_multi_leg_stays_unresolved_on_swept_false
+#   test_multi_leg_stays_unresolved_when_swept_absent
+#   test_swept_urgency_is_preserved_without_multi_leg_or_direction_discount
+#   test_direction_discounted_false_for_sweep_urgency
+#   test_direction_discounted_false_without_package_evidence
+# ════════════════════════════════════════════════════════════════════════════════
+
+def test_swept_true_changes_urgency_only():
+    """swept=True passes through as urgency and changes no other enriched field.
+
+    No MULTI_LEG badge, no package/multi-leg field, and direction_discounted
+    stays False. An otherwise identical swept=False event enriches to the
+    same payload except the swept flag itself.
+    """
+    swept = _mk_event(swept=True)
+    quiet = _mk_event(swept=False)
+    thresholds = fe.compute_thresholds([swept, quiet])
+    swept_env = fe.build_enrich_envelope([swept], SESSION_DATE, ASOF, thresholds=thresholds)
+    quiet_env = fe.build_enrich_envelope([quiet], SESSION_DATE, ASOF, thresholds=thresholds)
+    swept_row = swept_env["events"][0]
+    quiet_row = quiet_env["events"][0]
+
+    assert swept_row["swept"] is True
+    assert quiet_row["swept"] is False
+    assert "MULTI_LEG" not in swept_row["badges"]
+    assert swept_row["direction_discounted"] is False
+    assert _package_field_names(swept_row) == []
+
+    swept_rest = {k: v for k, v in swept_row.items() if k != "swept"}
+    quiet_rest = {k: v for k, v in quiet_row.items() if k != "swept"}
+    assert swept_rest == quiet_rest
+
+
+def test_enriched_event_carries_no_new_package_or_multi_leg_field():
+    """Enrichment does not invent package_* or multi_leg* fields.
+
+    The input carries neither prefix. The enriched event may only carry such
+    a field when the input already did.
+    """
+    ev = _mk_event(swept=True)
+    assert _package_field_names(ev) == []
+    envelope = fe.build_enrich_envelope(
+        [ev], SESSION_DATE, ASOF,
+        thresholds=fe.compute_thresholds([ev]),
+    )
+    enriched = envelope["events"][0]
+    fabricated = [key for key in _package_field_names(enriched) if key not in ev]
+    assert fabricated == []
