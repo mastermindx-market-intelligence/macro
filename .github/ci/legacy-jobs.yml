@@ -16564,6 +16564,9 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
       - name: install minimal deps
         run: pip install pytest pyyaml jinja2
       # --deselect: test_build_site_renders_help_page_with_the_full_view_model imports
@@ -16579,21 +16582,19 @@ jobs:
       # pure text checks on sector-intelligence.yml / whitehouse-sentinel.yml. They
       # live HERE (gate: code, minimal deps) because the engine suites next to them
       # (express-render-guards, outcome-spine) are gate: data and never run in a PR pack.
-        run: python -m pytest tests/test_public_render_fastlane.py tests/test_help_directory.py tests/test_help_directory_contract.py tests/test_workflow_publish_chains.py -q --deselect tests/test_help_directory.py::test_build_site_renders_help_page_with_the_full_view_model
+      # Also validate the data-free Market Memory shell and owned read-API wiring.
+      # This test registration does not alter production render/publish inventory.
+        run: node --version && python -m pytest tests/test_public_render_fastlane.py tests/test_help_directory.py tests/test_help_directory_contract.py tests/test_workflow_publish_chains.py tests/test_build_market_memory_page.py tests/test_glossary.py tests/test_glossary_contract.py tests/test_glossary_letter_rail_js.py tests/test_finance_intelligence_site_wiring.py -q -rs --deselect tests/test_help_directory.py::test_build_site_renders_help_page_with_the_full_view_model
       # F13-1 (2026-09-06): the public glossary directory is built by the same
       # scripts/build_public_pages.py fast path and shares this job's exact
       # dependency line (pytest pyyaml jinja2) with the help-directory suites
       # immediately above.
-      - name: public glossary directory (view-model contract + rendered-page wiring)
-        run: python -m pytest tests/test_glossary.py tests/test_glossary_contract.py tests/test_glossary_letter_rail_js.py -q
       # Finance Intelligence site-builder hook (2026-09-25). The suite reads
       # scripts/build_site.py as TEXT, and this job already owns the site builder, so
       # hosting it here adds no owned path and no packing-probe match. #8010 ran it
       # in its own job instead. That job matched every one-file probe in
       # tests/test_ci_pack.py::test_exclusive_curation_narrows_ordinary_code_prs
       # (templates/index.html 134/133), which turned integration-baseline red on main.
-      - name: finance intelligence site-builder wiring (build_site carries the render hook)
-        run: python -m pytest tests/test_finance_intelligence_site_wiring.py -q
 
   press-lane:
     if: ${{ false }}  # executed inside ci-pack; keep the legacy status definition runner-free
@@ -22583,8 +22584,7 @@ jobs:
           tests/test_market_memory_trusted.py
           tests/test_market_memory_context_deploy.py
           tests/test_regime_latest_json_boundary.py
-          tests/test_release_target_truth.py
-          tests/test_build_market_memory_page.py -q
+          tests/test_release_target_truth.py -q
 
   group-pulse:
     # GR0 of the Group Reads program: engine/group_pulse.py, the basket-level
