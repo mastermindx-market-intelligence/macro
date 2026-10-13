@@ -23629,6 +23629,7 @@ jobs:
       - tests/test_dataos_price.py
       - tests/test_dataos_quality.py
       - tests/test_dataos_registry.py
+      - tests/test_dataos_registry_consumers.py
       - tests/test_dataos_temporal.py
     timeout-minutes: 8
     runs-on: ubuntu-latest
@@ -23647,6 +23648,7 @@ jobs:
           tests/test_dataos_price.py
           tests/test_dataos_nulls.py
           tests/test_dataos_registry.py
+          tests/test_dataos_registry_consumers.py
           tests/test_dataos_quality.py -q -rs
 
   dataos-identity-seams:
