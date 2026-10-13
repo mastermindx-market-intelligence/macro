@@ -423,10 +423,24 @@ def summarize_supply(rows, *, capture, now, max_capture_age: timedelta | None) -
             "source_generation_age_days": generation_age_days,
             "stale": stale,
             "failed_refresh": failed_refresh,
+            "capture_incomplete": capture_incomplete,
         },
         "label": label,
         "label_zh": label_zh,
     }
+
+
+def _published_n_active(summary) -> int:
+    """Current-shortage count on the scarcity row and the chip.
+
+    An incomplete capture is not a current shortage, so this is 0 even when
+    present rows still have regulator status current. counts['current'] keeps
+    that present-row tally.
+    """
+    freshness = summary.get("freshness") or {}
+    if freshness.get("capture_incomplete"):
+        return 0
+    return summary["counts"]["current"]
 
 
 def _all_themes():
@@ -573,7 +587,7 @@ def compute_fda_scarcity(df: pd.DataFrame | None = None) -> dict[str, dict | Non
             "band": band,
             "source_status": status,
             "summary": summary,
-            "n_active": summary["counts"]["current"],
+            "n_active": _published_n_active(summary),
             "n_resolved": summary["counts"]["resolved"],
             "n_discontinued": summary["counts"]["discontinued"],
             "details": details,
@@ -714,7 +728,7 @@ def format_theme_feed_chip(scarcity_row: dict | None, theme_key: str) -> dict | 
         "label_zh": summary["label_zh"],
         "tone": tone,
         "rationale": rationale,
-        "n_active": summary["counts"]["current"],
+        "n_active": _published_n_active(summary),
         "n_resolved": summary["counts"]["resolved"],
         "source_status": status,
         "freshness": summary["freshness"],

@@ -1911,6 +1911,9 @@ def test_incomplete_capture_on_the_production_seam_stays_unavailable(monkeypatch
     chip = format_theme_feed_chip(row, "glp1_obesity")
     assert row["source_status"] == "UNAVAILABLE"
     assert row["band"] == "NONE"
+    assert row["n_active"] == 0
+    assert chip["n_active"] == 0
+    assert row["summary"]["counts"]["current"] == 1
     assert chip["freshness"]["capture_qualified"] is False
     assert "capture incomplete" in chip["label"]
     assert "last qualified" not in chip["label"].casefold()
