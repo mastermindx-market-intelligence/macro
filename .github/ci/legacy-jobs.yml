@@ -4406,6 +4406,14 @@ jobs:
       # tests/test_capital_need.py (F09 guarded capital-need adapter, contract-delta
       # 2026-09-22) rides this step with the debt/cash contract tests: it exercises
       # engine.capital_need plus the same debt-maturity render boundary. No new job.
+      # Risk Radar pullback suites added on this branch ride the pullback cluster
+      # already on the line below (observation, depth, dialog, expiry owner, and
+      # the served-route matrix). Same pandas/pyarrow/jinja2/beautifulsoup4
+      # install. The expiry-owner suites execute shipped template JS under Node
+      # and fail closed when CI is set and Node is absent; ci-pack supplies Node
+      # 20 for every legacy job, the same contract as
+      # test_us_pullback_modal_integration.py already on this line. No Playwright
+      # and no new job.
       - name: render-guard + engine-contract tests (rot sweep 2026-07-02)
         run: >
           python -m pytest
@@ -4457,6 +4465,30 @@ jobs:
           tests/test_pullback_forward_minimum_labels.py
           tests/test_pullback_oos_baseline.py
           tests/test_pullback_causal_features.py
+          tests/test_cn_index_close_store_adversarial.py
+          tests/test_cn_pullback_mutants.py
+          tests/test_pullback_builder_end_to_end.py
+          tests/test_pullback_depth_a11y.py
+          tests/test_pullback_depth_contrast.py
+          tests/test_pullback_depth_copy_states.py
+          tests/test_pullback_depth_forced_colors.py
+          tests/test_pullback_depth_mutants.py
+          tests/test_pullback_depth_presenter_properties.py
+          tests/test_pullback_depth_print_aspect.py
+          tests/test_pullback_depth_static_contract.py
+          tests/test_pullback_expiry_owner_js.py
+          tests/test_pullback_expiry_owner_js_edge.py
+          tests/test_pullback_observation_adversarial.py
+          tests/test_pullback_observation_invariants.py
+          tests/test_pullback_observation_mutants.py
+          tests/test_pullback_scenario_replay.py
+          tests/test_pullback_snapshot_clock.py
+          tests/test_risk_radar_dlg_hkca_unchanged.py
+          tests/test_us_dialog_focus_lifecycle.py
+          tests/test_us_pullback_mutants.py
+          tests/test_us_pullback_split_gaps.py
+          tests/test_verify_risk_radar_pullback_matrix.py
+          tests/test_verify_risk_radar_pullback_served.py
           tests/test_risk_state_live_copy_sync.py
           tests/test_build_china_risk_state.py
           tests/test_china_connect_leaderboard_render.py
