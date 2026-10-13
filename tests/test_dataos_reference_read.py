@@ -34,7 +34,8 @@ I02.03  old snapshots cannot borrow newer master/issuer bytes
                 test_observation_snapshot_requires_exact_bytes_records_and_consumer_seals (byte level)
   new:          test_i02_03_old_receipt_refuses_newer_master_bytes
                 test_i02_03_old_receipt_refuses_newer_alias_bytes
-                test_i02_03_refusal_message_names_the_swapped_artifact  (strict xfail, see GAPS)
+                test_i02_03_refusal_message_names_the_swapped_artifact  (passes: refusals
+                                                                        now name the artifact)
 
 I02.04  receipt A/B equality is not "globally latest" and not ABA-proof
   pre-existing: test_observation_same_prefix_equivalent_generation_uses_earliest_actual_receipt
@@ -178,16 +179,24 @@ def test_i02_03_old_receipt_refuses_newer_alias_bytes():
     assert _obs_query(_obs_table(original, history, rows, snap), read).status == "BOUND"
 
 
-@pytest.mark.xfail(strict=True,
-                   reason="I02.03 defect: validate_reference_snapshot refusals ('artifact byte "
-                          "count' / 'artifact byte seal') never name the swapped artifact, so the "
-                          "refusal cannot tell security_master.parquet from vendor_aliases.parquet")
 def test_i02_03_refusal_message_names_the_swapped_artifact():
     original, history, rows, master = _obs_base()
     snap, _read = _obs_snapshot(original, history, rows, master)
     artifacts = dict(snap.artifact_bytes)
     artifacts["security_master.parquet"] = b"newer" + artifacts["security_master.parquet"][5:]
     with pytest.raises(IdentityError, match="security_master"):
+        validate_reference_snapshot(snap.receipt_bytes, artifacts, snap.receipt_bytes,
+                                    alias_records=rows, master_records=master)
+
+
+def test_i02_03_refusal_message_names_the_swapped_alias_artifact():
+    original, history, rows, master = _obs_base()
+    snap, _read = _obs_snapshot(original, history, rows, master)
+    artifacts = dict(snap.artifact_bytes)
+    # Same length, different content: only the byte seal can catch the swap, so
+    # the refusal itself must name WHICH artifact was swapped.
+    artifacts["vendor_aliases.parquet"] = b"newer" + artifacts["vendor_aliases.parquet"][5:]
+    with pytest.raises(IdentityError, match="vendor_aliases"):
         validate_reference_snapshot(snap.receipt_bytes, artifacts, snap.receipt_bytes,
                                     alias_records=rows, master_records=master)
 
