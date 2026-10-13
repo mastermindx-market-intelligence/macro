@@ -1,15 +1,39 @@
 #!/usr/bin/env python3
-"""Split and join ``.github/ci/legacy-jobs.yml`` at job boundaries.
+"""Split, join, and three-way-merge ``.github/ci/legacy-jobs.yml`` at job boundaries.
 
 The manifest stays the only committed source. ``split`` cuts it into ordered
 byte slices; ``join`` concatenates those slices. ``join(split(text))`` is the
 original text, so a later patch can edit one job's slice and reassemble
 without a second copy of the workflow.
 
+``merge3(base, ours, theirs)`` merges those slices. A job added on one side
+is kept. Jobs added on both sides are all kept, anchored after the base job
+that precedes them, ours' additions first then theirs', each side in its own
+order. The same new key is kept once; differing text for that key conflicts
+instead of writing two YAML keys. A one-sided edit is taken. An identical
+edit is taken once. Differing edits conflict. A job deleted on one side and
+unchanged on the other is deleted; delete-versus-edit conflicts. Preamble
+and trailer follow the same rules. A conflict wraps only that fragment in
+standard markers and records its key, in output order.
+
 A job fragment's owner is the single vertical directory named by its ``paths:``
 entries, or ``shared`` when the paths are not confined to one. Suite modules
 (``tests/**/test_*.py``) and package ``__init__.py`` markers do not locate a
 vertical: every job names its own suite. Preamble and trailer are ``shared``.
+
+Opt-in only. This module does not install a merge driver and does not write
+``.gitattributes`` or git config. To opt in, add this line to
+``.gitattributes``::
+
+    .github/ci/legacy-jobs.yml merge=cipack
+
+and set the driver command::
+
+    git config merge.cipack.driver "python3 scripts/ci_pack_fragments.py merge3 %O %A %B"
+
+The three arguments are git's ``%O %A %B`` (ancestor, current, other). The
+command writes the merged manifest to ``%A`` and exits 0 when clean, 1 when
+any fragment conflicts.
 """
 
 from __future__ import annotations
@@ -253,6 +277,219 @@ def join(fragments: list[Fragment]) -> str:
     return "".join(fragment.text for fragment in fragments)
 
 
+@dataclass(frozen=True)
+class MergeResult:
+    """Merged manifest text and the fragment keys that conflicted.
+
+    ``conflicts`` is in output order: preamble, then jobs, then trailer.
+    """
+
+    text: str
+    conflicts: tuple[str, ...]
+
+
+def _index(fragments: list[Fragment]) -> dict[str, Fragment]:
+    indexed: dict[str, Fragment] = {}
+    for fragment in fragments:
+        if fragment.key not in indexed:
+            indexed[fragment.key] = fragment
+    return indexed
+
+
+def _job_order(fragments: list[Fragment]) -> list[str]:
+    order: list[str] = []
+    seen: set[str] = set()
+    for fragment in fragments:
+        if fragment.kind != "job" or fragment.key in seen:
+            continue
+        seen.add(fragment.key)
+        order.append(fragment.key)
+    return order
+
+
+def _conflict_block(ours_text: str, theirs_text: str) -> str:
+    """Wrap one fragment in standard merge markers.
+
+    An empty side is a deletion. Fragment text that already ends in a newline
+    is not given another one, so a clean side stays byte-identical inside the
+    block.
+    """
+
+    def _body(text: str) -> str:
+        if text == "" or text.endswith("\n"):
+            return text
+        return text + "\n"
+
+    opener = "<" * 7
+    closer = ">" * 7
+    return (
+        f"{opener} ours\n{_body(ours_text)}{'=' * 7}\n"
+        f"{_body(theirs_text)}{closer} theirs\n"
+    )
+
+
+def _resolve_text(
+    base_text: str | None,
+    ours_text: str | None,
+    theirs_text: str | None,
+) -> tuple[str | None, bool]:
+    """Return ``(text, conflicted)``. ``None`` drops the key.
+
+    Absent (``None``) is a missing job. Empty text is a present fragment,
+    which is how a cleared preamble or trailer shows up: ``split`` always
+    emits those two keys.
+    """
+    if base_text is None:
+        if ours_text is None:
+            return theirs_text, False
+        if theirs_text is None or ours_text == theirs_text:
+            return ours_text, False
+        return _conflict_block(ours_text, theirs_text), True
+
+    if ours_text is None and theirs_text is None:
+        return None, False
+    if ours_text is None:
+        if theirs_text == base_text:
+            return None, False
+        return _conflict_block("", theirs_text or ""), True
+    if theirs_text is None:
+        if ours_text == base_text:
+            return None, False
+        return _conflict_block(ours_text, ""), True
+    if ours_text == theirs_text or theirs_text == base_text:
+        return ours_text, False
+    if ours_text == base_text:
+        return theirs_text, False
+    return _conflict_block(ours_text, theirs_text), True
+
+
+def _additions(
+    base_keys: list[str], side_keys: list[str]
+) -> list[tuple[str | None, str]]:
+    """Keys in ``side_keys`` that are not in base, with the preceding base key.
+
+    ``None`` means the addition sits before every base job. Order matches
+    the side. A repeated new key is kept at its first occurrence.
+    """
+    base_set = set(base_keys)
+    anchor: str | None = None
+    added: list[tuple[str | None, str]] = []
+    seen: set[str] = set()
+    for key in side_keys:
+        if key in base_set:
+            anchor = key
+            continue
+        if key in seen:
+            continue
+        seen.add(key)
+        added.append((anchor, key))
+    return added
+
+
+def _merged_job_order(
+    base_keys: list[str],
+    ours_keys: list[str],
+    theirs_keys: list[str],
+    dropped: set[str],
+) -> list[str]:
+    """Base order, with additions inserted after the base job they follow.
+
+    When both sides add after the same base job, ours' new keys come first,
+    then theirs'. A key added on both sides is emitted once, at ours' anchor.
+    """
+    ours_at: dict[str | None, list[str]] = {}
+    theirs_at: dict[str | None, list[str]] = {}
+    claimed: set[str] = set()
+    for anchor, key in _additions(base_keys, ours_keys):
+        claimed.add(key)
+        ours_at.setdefault(anchor, []).append(key)
+    for anchor, key in _additions(base_keys, theirs_keys):
+        if key in claimed:
+            continue
+        claimed.add(key)
+        theirs_at.setdefault(anchor, []).append(key)
+
+    order: list[str] = []
+    emitted: set[str] = set()
+
+    def emit(anchor: str | None) -> None:
+        for bucket in (ours_at, theirs_at):
+            for key in bucket.get(anchor, []):
+                if key in emitted or key in dropped:
+                    continue
+                emitted.add(key)
+                order.append(key)
+
+    emit(None)
+    for key in base_keys:
+        if key not in dropped and key not in emitted:
+            emitted.add(key)
+            order.append(key)
+        emit(key)
+    return order
+
+
+def _fragment_texts(
+    base_by: dict[str, Fragment],
+    ours_by: dict[str, Fragment],
+    theirs_by: dict[str, Fragment],
+    key: str,
+) -> tuple[str | None, str | None, str | None]:
+    base_fragment = base_by.get(key)
+    ours_fragment = ours_by.get(key)
+    theirs_fragment = theirs_by.get(key)
+    return (
+        None if base_fragment is None else base_fragment.text,
+        None if ours_fragment is None else ours_fragment.text,
+        None if theirs_fragment is None else theirs_fragment.text,
+    )
+
+
+def merge3(base: str, ours: str, theirs: str) -> MergeResult:
+    """Three-way merge of three legacy-jobs manifest texts.
+
+    See the module docstring for the keep, delete, and conflict rules.
+    """
+    base_frags = split(base)
+    ours_frags = split(ours)
+    theirs_frags = split(theirs)
+    base_by = _index(base_frags)
+    ours_by = _index(ours_frags)
+    theirs_by = _index(theirs_frags)
+    base_keys = _job_order(base_frags)
+
+    dropped: set[str] = set()
+    for key in base_keys:
+        text, _conflicted = _resolve_text(
+            *_fragment_texts(base_by, ours_by, theirs_by, key)
+        )
+        if text is None:
+            dropped.add(key)
+
+    conflicts: list[str] = []
+    pieces: list[str] = []
+
+    def emit(key: str) -> None:
+        text, conflicted = _resolve_text(
+            *_fragment_texts(base_by, ours_by, theirs_by, key)
+        )
+        if conflicted:
+            conflicts.append(key)
+        if text is not None:
+            pieces.append(text)
+
+    emit(PREAMBLE_KEY)
+    for key in _merged_job_order(
+        base_keys,
+        _job_order(ours_frags),
+        _job_order(theirs_frags),
+        dropped,
+    ):
+        emit(key)
+    emit(TRAILER_KEY)
+    return MergeResult("".join(pieces), tuple(conflicts))
+
+
 def format_report(fragments: list[Fragment]) -> str:
     """``jobs=N fragments=M owners={name: count, ...}`` with owners sorted."""
     counts: dict[str, int] = {}
@@ -291,7 +528,44 @@ def check_manifest(path: Path = DEFAULT_MANIFEST) -> str:
     return format_report(fragments)
 
 
+def _merge3_main(argv: list[str]) -> int:
+    """``merge3 BASE OURS THEIRS`` writes the merge to OURS.
+
+    Exit 0 when clean and 1 when any fragment conflicts, matching a git
+    merge driver invoked as ``%O %A %B``.
+    """
+    parser = argparse.ArgumentParser(
+        prog="ci_pack_fragments.py merge3",
+        description=(
+            "Three-way merge a legacy-jobs manifest at job boundaries. "
+            "Writes the merged text to OURS and exits 0 when clean, "
+            "1 when a fragment conflicts."
+        ),
+    )
+    parser.add_argument("base", type=Path, help="ancestor file (%O)")
+    parser.add_argument("ours", type=Path, help="current file (%A), overwritten")
+    parser.add_argument("theirs", type=Path, help="other file (%B)")
+    args = parser.parse_args(argv)
+    try:
+        result = merge3(
+            args.base.read_text(encoding="utf-8"),
+            args.ours.read_text(encoding="utf-8"),
+            args.theirs.read_text(encoding="utf-8"),
+        )
+        args.ours.write_bytes(result.text.encode("utf-8"))
+    except (OSError, UnicodeError) as exc:
+        print(str(exc), file=sys.stderr)
+        return 1
+    for key in result.conflicts:
+        print(f"conflict: {key}", file=sys.stderr)
+    return 1 if result.conflicts else 0
+
+
 def main(argv: list[str] | None = None) -> int:
+    if argv is None:
+        argv = sys.argv[1:]
+    if argv and argv[0] == "merge3":
+        return _merge3_main(argv[1:])
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
         "--check",
