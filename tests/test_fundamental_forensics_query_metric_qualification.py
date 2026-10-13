@@ -60,6 +60,7 @@ from engine.fundamental_forensics.query import (
     BitemporalPolicy,
     CellState,
     PeriodRequest,
+    ProvenanceKind,
     QueryEntity,
     QueryPolicy,
 )
@@ -273,6 +274,101 @@ def test_industrial_issuer_applicable_metric_value_byte_identical() -> None:
     assert margin.value == Decimal("0.4")
     assert margin.reason is None
     assert margin.provenance.issuer_class is None  # applicable: nothing printed
+
+
+INSTANT_PERIOD = PeriodRequest.instant("2025-12-31", label="FY2025I")
+_PERIOD_REJECTION_REASON = (
+    "outside_period_constraint: metric requires duration, requested instant"
+)
+
+
+def _instant_period_cell(issuer_sic: str | None):
+    """gross_margin (duration formula metric) asked on an INSTANT period.
+
+    Under the G0 catalog gross_margin is issuer-class restricted (bank
+    excluded), so this request is BOTH class-refusable and
+    period-rejected — the exact precedence probe of fix (a): the
+    receipt validators weigh the period contract above the issuer gate,
+    so the evaluated cell must carry the period rejection, never the
+    class refusal.  The literals asserted below are the pre-G0 build's
+    (BASE 99b9a7f61fc0, production registry) own cells, captured by
+    running the identical construction under the BASE sources: every
+    non-digest field is byte-equal, and the only differing leaves are
+    the digest family (cell_id, governance_bundle content_id,
+    catalog_digest — moved by the commissioned catalog content).
+    """
+    engine = _engine((), load_core_metric_registry(ROOT), issuer_sic=issuer_sic)
+    return engine.query_cell("AAA", "gross_margin", INSTANT_PERIOD, _policy())
+
+
+def test_period_rejection_outranks_bank_class_refusal() -> None:
+    """T-a1: bank SIC 6021 + instant period -> the period-rejection cell.
+
+    A bank issuer asking a restricted formula metric for a period that
+    violates its period contract gets the same verdict the pre-G0
+    build gave: NOT_EVALUABLE on the period contract, with no issuer
+    class stamped on the receipt.
+    """
+    cell = _instant_period_cell("6021")
+    assert cell.state is CellState.NOT_EVALUABLE
+    assert cell.value is None
+    assert cell.reason == _PERIOD_REJECTION_REASON
+    assert cell.provenance.issuer_class is None
+    assert cell.provenance.issuer_class_basis is None
+
+
+def test_period_rejection_outranks_unknown_issuer_class() -> None:
+    """T-a2: no resolved SIC + instant period -> period rejection, no raise.
+
+    The SIC-less (resolver-None) entity on the same period-rejected
+    formula metric must get the period-rejection cell — NOT
+    issuer_class_unknown — and construction must not raise
+    QueryValidationError (the class refusal would contradict the
+    validators' period-first reconciliation and raise instead of
+    returning a cell).
+    """
+    cell = _instant_period_cell(None)
+    assert cell.state is CellState.NOT_EVALUABLE
+    assert cell.value is None
+    assert cell.reason == _PERIOD_REJECTION_REASON
+    assert cell.provenance.issuer_class is None
+
+
+def test_period_rejected_cell_matches_pre_g0_receipt_field_by_field() -> None:
+    """T-a3: the period-rejected receipt is the pre-G0 receipt.
+
+    Field-by-field against the BASE build's captured cell; the digest
+    family (cell_id / governance bundle content id / catalog, rule and
+    formula digests) is the only thing the commissioned catalog change
+    may move.
+    """
+    cell = _instant_period_cell("6021")
+    assert cell.ticker == "AAA"
+    assert cell.entity_id == ENTITY
+    assert cell.metric_id == "gross_margin"
+    assert cell.period == INSTANT_PERIOD
+    assert cell.state is CellState.NOT_EVALUABLE
+    assert cell.value is None
+    assert cell.unit == "ratio"
+    assert cell.reason == _PERIOD_REJECTION_REASON
+    assert cell.dependency_nodes == ()
+    provenance = cell.provenance
+    assert provenance.kind is ProvenanceKind.FORMULA
+    assert provenance.reason == _PERIOD_REJECTION_REASON
+    assert provenance.issuer_class is None
+    assert provenance.issuer_class_basis is None
+    assert provenance.metric_rule_id == "metric.gross_margin/v1"
+    assert provenance.metric_rule_version == "1.0.0"
+    assert provenance.formula_rule_id == "formula.gross_margin/v1"
+    assert provenance.formula_rule_version == "1.0.0"
+    assert provenance.catalog_id == "fundamental_forensics_core_gaap_metrics"
+    assert provenance.dependency_cell_ids == ()
+    assert provenance.selected_raw_fact is None
+    # The period-rejection receipt replays canonically through the wire form.
+    replay = type(cell).from_dict(cell.to_dict())
+    assert replay.state is CellState.NOT_EVALUABLE
+    assert replay.reason == _PERIOD_REJECTION_REASON
+    assert replay.provenance.issuer_class is None
 
 
 def test_refusal_reason_string_equals_e0_detector_constant() -> None:
