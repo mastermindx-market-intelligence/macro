@@ -53,8 +53,7 @@ import pandas as pd
 from scipy.special import expit
 
 ROOT = Path(__file__).resolve().parents[2]
-if str(ROOT) not in sys.path:
-    sys.path.insert(0, str(ROOT))
+sys.path.insert(0, str(ROOT))
 
 from scripts.research import grey_deer_pullback_stage1 as s1
 from scripts.research.grey_deer_panel_adjust import (
