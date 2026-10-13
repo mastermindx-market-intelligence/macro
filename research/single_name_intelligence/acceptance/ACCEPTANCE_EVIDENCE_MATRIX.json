@@ -1,6 +1,6 @@
 {
   "schema_version": "sni_acceptance_matrix.v2",
-  "as_of_utc": "2026-10-13T06:25:37Z",
+  "as_of_utc": "2026-10-13T13:44:19Z",
   "sources": {
     "census_ref": "7906ef1cd646282cb762651df0e33e9f70397ed5",
     "census_path": "research/single_name_intelligence/e2e_20261011/CENSUS_AND_ACCEPTANCE.md",
@@ -48,6 +48,16 @@
           "ref": "main",
           "path": "research/single_name_intelligence/runs/s1_residual_v1_1/VERSION_RECORD.json",
           "note": "X1-02 exemplar table separates BABA ADS / 9988.HK / 0700.HK / TCEHY UNRESOLVED."
+        },
+        {
+          "ref": "main",
+          "path": "research/single_name_intelligence/reviews/A01_A02_DUAL_COUNTER_2026-10-13.md",
+          "note": "Summary: Alibaba ADS stays a distinct counter from ordinary HKD/RMB lines; DCP-F1 records the ADS:ordinary ratio as absent."
+        },
+        {
+          "ref": "main",
+          "path": "tests/test_sni_dual_counter_property.py",
+          "note": "test_dcp_01_counter_census and test_dcp_05_cross_listing_does_not_merge pin distinct class, venue, and currency for the ADS versus ordinary counters."
         }
       ],
       "gap": "C1/C4 ratio contract untested; no source-proven ADS interval test; August behavioral pilot is not current data."
@@ -83,9 +93,19 @@
           "ref": "main",
           "path": "research/single_name_intelligence/evidence/Tencent/E2_EVIDENCE_PACK_2026-10-11.md",
           "note": "80700 absence via substring scan, no minted id."
+        },
+        {
+          "ref": "main",
+          "path": "research/single_name_intelligence/reviews/A01_A02_DUAL_COUNTER_2026-10-13.md",
+          "note": "Summary: dual-counter relation set is byte-identical across 200 permutations; endpoints carry no minted ids; C1 relationship contract remains untested."
+        },
+        {
+          "ref": "main",
+          "path": "tests/test_sni_dual_counter_property.py",
+          "note": "test_dcp_03_relation_permutation_invariant and test_dcp_04_relations_carry_no_minted_ids pin permutation-safe dual-counter relations without minted ids."
         }
       ],
-      "gap": "C1 relationship contract not on main; no permutation-safe dual-counter identity test."
+      "gap": "C1 relationship contract not on main."
     },
     {
       "id": "A03",
@@ -118,9 +138,34 @@
           "ref": "main",
           "path": "tests/test_sni_us_stress.py",
           "note": "test_r1_05_identity_ids_at_any_depth refuses non-null identity ids."
+        },
+        {
+          "ref": "main",
+          "path": "research/single_name_intelligence/reviews/A03_A04_IDENTITY_REFUSALS_2026-10-13.md",
+          "note": "Summary: Tencent issuer-level fields stay UNRESOLVED; ID-key variants are refused on the SNI draft loader; C1/C4 owner test is still missing."
+        },
+        {
+          "ref": "main",
+          "path": "tests/test_sni_identity_refusals.py",
+          "note": "test_idr_02_tencent_issuer_stays_null and test_idr_03_key_variants_refused pin a null issuer and refuse ID-key spelling variants."
+        },
+        {
+          "ref": "main",
+          "path": "tests/test_sni_identity_refusals_hardening.py",
+          "note": "test_idrh_01 and test_idrh_04 refuse non-ASCII issuer keys and non-UNRESOLVED identity_state on the draft loader."
+        },
+        {
+          "ref": "main",
+          "path": "research/single_name_intelligence/reviews/INV_PROGRAM_INVARIANTS_2026-10-13.md",
+          "note": "Summary: identity-id values on the SNI tree are null, UNRESOLVED, or owner-supplied."
+        },
+        {
+          "ref": "main",
+          "path": "tests/test_sni_program_invariants.py",
+          "note": "test_inv_02_identity_ids_owner_supplied walks SNI JSON/YAML/Python identity keys and refuses minted values."
         }
       ],
-      "gap": "Missing test that ID-dependent SNI operations refuse on null issuer."
+      "gap": "C1/C4 owner test that ID-dependent operations refuse on null issuer is still missing."
     },
     {
       "id": "A04",
@@ -148,9 +193,24 @@
           "ref": "main",
           "path": "tests/test_sni_s2_selection.py",
           "note": "test_40700_never_matches_00700_even_as_substring_class."
+        },
+        {
+          "ref": "main",
+          "path": "research/single_name_intelligence/reviews/A03_A04_IDENTITY_REFUSALS_2026-10-13.md",
+          "note": "Summary: SNI-local alias, padding, and currency/venue checks exist; C1/C4 owner bind test is still missing."
+        },
+        {
+          "ref": "main",
+          "path": "tests/test_sni_identity_refusals.py",
+          "note": "test_idr_04_alias_cannot_cross_bind, test_idr_04_leading_zero_aliases_refused, and test_idr_05_currency_venue_mismatch pin alias and currency/venue behaviour."
+        },
+        {
+          "ref": "main",
+          "path": "tests/test_sni_identity_refusals_hardening.py",
+          "note": "test_idrh_02 and test_idrh_03 refuse leading-zero aliases and a TME ticker with a Tencent display_name on the draft loader."
         }
       ],
-      "gap": "No C1/C4 test that padding, alias, or currency mismatch cannot bind."
+      "gap": "C1/C4 test that padding, alias, or currency mismatch cannot bind is still missing."
     },
     {
       "id": "A05",
@@ -218,6 +278,36 @@
           "ref": "main",
           "path": "tests/test_sni_p04_v2_draft.py",
           "note": "test_r1_01_vintage_pin_fields_required and test_r1_02_as_of_utc_machine_checkable."
+        },
+        {
+          "ref": "main",
+          "path": "research/single_name_intelligence/reviews/A07_THEN_KNOWN_EXCLUSION_2026-10-13.md",
+          "note": "Summary: SNI-local guards on S1 vintage-leak, S2 info-leak, and US-stress then_known; the owner then-known compiler is unbuilt."
+        },
+        {
+          "ref": "main",
+          "path": "tests/test_sni_a07_then_known_exclusion.py",
+          "note": "test_a07_01_s1_boundary, test_a07_04_s2_scan_boundary, and test_a07_07_post_cutoff_fact_injection attack existing then-known guards without building a compiler."
+        },
+        {
+          "ref": "main",
+          "path": "tests/test_sni_us_stress_then_known.py",
+          "note": "test_every_verified_entry_has_resolvable_evidence and test_no_verified_entry_carries_contradiction pin then_known evidence pointers."
+        },
+        {
+          "ref": "main",
+          "path": "tests/test_sni_s2_nonfinite_abstain.py",
+          "note": "test_s2nf_04 reports an info-leak step dated on the scan anchor."
+        },
+        {
+          "ref": "main",
+          "path": "research/single_name_intelligence/reviews/MUTATION_SWEEP_DECOMP_INFOLEAK_2026-10-13.md",
+          "note": "Summary: MUT1C killing tests cover s1_decomposition and s1_infoleak survivors used by vintage-leak detection."
+        },
+        {
+          "ref": "main",
+          "path": "tests/test_sni_mutation_decomp_infoleak.py",
+          "note": "test_mut1c_s1_infoleak_detect_1 and test_mut1c_s1_infoleak_vintage_series_1 pin s1_infoleak mutants that would drop a vintage step."
         }
       ],
       "gap": "No then-known compiler test excluding post-cutoff filings or retrieval."
@@ -248,6 +338,16 @@
           "ref": "main",
           "path": "research/single_name_intelligence/event_response/s2_clocklaw.py",
           "note": "S2 session placement on HK and US clocks; not the SNI three-clock product view."
+        },
+        {
+          "ref": "main",
+          "path": "research/single_name_intelligence/reviews/A08_THREE_CLOCK_CENSUS_2026-10-13.md",
+          "note": "Summary: committed time fields are classified onto one clock each; the SNI three-clock VIEW is unbuilt (TCK-F1)."
+        },
+        {
+          "ref": "main",
+          "path": "tests/test_sni_three_clock_census.py",
+          "note": "test_tck_01_every_time_field_is_classified, test_tck_02_no_field_has_two_clocks, and test_tck_03_ordering_law census field names; they do not build the three-clock view."
         }
       ],
       "gap": "SNI three-clock view (economic / owner-known / publication) unbuilt; V1/C2 wait on R1."
@@ -273,9 +373,19 @@
           "ref": "main",
           "path": "research/single_name_intelligence/evidence/Tencent/E2_ADVERSARIAL_CASES_2026-10-11.md",
           "note": "Probe 3 segment recast SILENT_JOIN."
+        },
+        {
+          "ref": "main",
+          "path": "research/single_name_intelligence/reviews/A09_JOIN_GUARD_2026-10-13.md",
+          "note": "Summary: SNI-local DRAFT join guard refuses segment, GAAP, scale, period, and related mismatches; it is not wired into any owner join."
+        },
+        {
+          "ref": "main",
+          "path": "tests/test_sni_join_guard.py",
+          "note": "test_a09_e1p3_e2p3_segment_scheme_mismatch, test_a09_e1p5_e2p5_scale_mismatch, and test_a09_e1p4_e2p4_period_end_missing refuse mismatched joins with named reasons."
         }
       ],
-      "gap": "No automated refusal of mismatched joins."
+      "gap": "The join guard is a DRAFT module not wired into any owner join."
     },
     {
       "id": "A10",
@@ -298,9 +408,19 @@
           "ref": "main",
           "path": "research/single_name_intelligence/evidence/Alibaba/E1_EVIDENCE_PACK_2026-10-11.md",
           "note": "Nine-descriptor standard; inferred values stay PARTIAL."
+        },
+        {
+          "ref": "main",
+          "path": "research/single_name_intelligence/reviews/A10_MISSING_NOT_ZERO_2026-10-13.md",
+          "note": "Summary: missing US-stress and S1 closes are not filled with 0; the C3 KPI compiler is not on main; MNZ-F2 remains on S2 non-finite scoring."
+        },
+        {
+          "ref": "main",
+          "path": "tests/test_sni_missing_not_zero.py",
+          "note": "test_mnz_01_simple_returns_never_zero_fill, test_mnz_02_no_forward_fill, and test_mnz_03_summary_n_excludes_missing pin missing numerics as non-zero and not forward-filled."
         }
       ],
-      "gap": "C3 compiler not on main; no test that missing KPI stays non-zero."
+      "gap": "C3 compiler not on main."
     },
     {
       "id": "A11",
@@ -353,9 +473,24 @@
           "ref": "main",
           "path": "tests/test_sni_s2_clock.py",
           "note": "test_hk_midday_break_maps_to_next_session maps lunch for S2 events, not M0 session state."
+        },
+        {
+          "ref": "main",
+          "path": "research/single_name_intelligence/reviews/A12_CLOCKLAW_SESSIONS_2026-10-13.md",
+          "note": "Summary: S2 clock-law pins HK lunch, named holidays, and US DST; halt and M0 owner session-state remain unbuilt."
+        },
+        {
+          "ref": "main",
+          "path": "tests/test_sni_clocklaw_sessions.py",
+          "note": "test_clk_01_hk_lunch_boundaries, test_clk_02_hk_holidays, test_clk_04_us_holidays, and test_clk_05_us_dst_transitions pin lunch, holiday, and DST labels; test_clk_08_halt_gap_named records halt as unmodelled."
+        },
+        {
+          "ref": "main",
+          "path": "tests/test_sni_clocklaw_half_days.py",
+          "note": "test_clkhd_01 and test_clkhd_02 pin owner-published half-day early closes through session_part."
         }
       ],
-      "gap": "No SNI M0 test of lunch, holiday, halt, or DST declared session state."
+      "gap": "M0 owner session-state test unbuilt; halt and live venue state unmodelled."
     },
     {
       "id": "A13",
@@ -413,9 +548,29 @@
           "ref": "main",
           "path": "research/single_name_intelligence/evidence/Alibaba/E1_EVIDENCE_PACK_2026-10-11.md",
           "note": "Holdings and shorts read as owner facts."
+        },
+        {
+          "ref": "main",
+          "path": "research/single_name_intelligence/reviews/SNI_COPY_GUARD_A14_A30_2026-10-13.md",
+          "note": "Summary: A14 markdown copy on this tree is clean; product UI and rendered site remain unguarded."
+        },
+        {
+          "ref": "main",
+          "path": "tests/test_sni_copy_guard.py",
+          "note": "test_cg_02_a14_no_flow_or_intent_labels scans SNI markdown for holdings-family collocations with live-flow or intent labels."
+        },
+        {
+          "ref": "main",
+          "path": "research/single_name_intelligence/reviews/MUTATION_SWEEP_BRANCH_COPY_2026-10-13.md",
+          "note": "Summary: MUT3B killing tests cover sni_copy_guard survivors."
+        },
+        {
+          "ref": "main",
+          "path": "tests/test_sni_mutation_branch_copy.py",
+          "note": "test_mut3b_sni_copy_guard_check_text_1 pins copy-guard mutants that would drop an A14 collocation."
         }
       ],
-      "gap": "No product-copy test forbidding live-flow or intent labels."
+      "gap": "Product UI and rendered site remain unguarded; JSON and Python string literals remain unguarded."
     },
     {
       "id": "A15",
@@ -463,6 +618,36 @@
           "ref": "main",
           "path": "research/single_name_intelligence/event_response/P04_V2_PREREG_DRAFT.md",
           "note": "P04 v2 is an unregistered successor after information_leak; registered false."
+        },
+        {
+          "ref": "main",
+          "path": "tests/test_sni_p04_v2_draft.py",
+          "note": "test_p04_v2_draft_invariants and test_r1_03_successor_citation_anchored pin the unregistered P04 v2 draft successor table; nothing is refilled."
+        },
+        {
+          "ref": "main",
+          "path": "tests/test_sni_eval_ledger.py",
+          "note": "test_a27_chain_verifies and test_r1_15_draft_registered_false pin append-only draft lineage with REGISTERED false."
+        },
+        {
+          "ref": "main",
+          "path": "tests/test_sni_eval_ledger_property.py",
+          "note": "test_lgp_05_replay_equals_incremental and test_lgp_06_tamper_detected pin draft replay without rewriting prior rows."
+        },
+        {
+          "ref": "main",
+          "path": "research/single_name_intelligence/reviews/LEDGER_PROPERTY_2026-10-13.md",
+          "note": "Summary: seeded ledger properties pass on an R1-gated unregistered draft; A16 stays PARTIAL."
+        },
+        {
+          "ref": "main",
+          "path": "research/single_name_intelligence/reviews/MUTATION_SWEEP_DRAFT_LOADERS_2026-10-13.md",
+          "note": "Summary: MUT4D killing tests cover p04_v2_draft_loader survivors on the unregistered draft."
+        },
+        {
+          "ref": "main",
+          "path": "tests/test_sni_mutation_draft_loaders.py",
+          "note": "test_mut4d_p04_v2_draft_loader_validate_draft_1 pins p04_v2_draft_loader mutants on the unregistered draft loader."
         }
       ],
       "gap": "SNI generation/manifest not implemented; P04 v2 is an unregistered draft; V1 waits on R1."
@@ -503,6 +688,16 @@
           "ref": "main",
           "path": "research/single_name_intelligence/evidence/Alibaba/E1_EVIDENCE_PACK_2026-10-11.md",
           "note": "Pack carries no private full text."
+        },
+        {
+          "ref": "main",
+          "path": "research/single_name_intelligence/reviews/PUB_PUBLIC_EXPOSURE_2026-10-13.md",
+          "note": "Summary: no public serving, render, or upload surface references SNI material; this is not a P0 entitlement-denial test."
+        },
+        {
+          "ref": "main",
+          "path": "tests/test_sni_public_exposure.py",
+          "note": "test_real_tree_has_no_public_sni_references pins public templates and publish scripts free of SNI paths; it does not test pre-access denial."
         }
       ],
       "gap": "P0 entitlement gate unbuilt; no pre-access denial test."
@@ -518,6 +713,16 @@
           "ref": "census",
           "path": "research/single_name_intelligence/e2e_20261011/CENSUS_AND_ACCEPTANCE.md",
           "note": "Case A19 in the acceptance table."
+        },
+        {
+          "ref": "main",
+          "path": "research/single_name_intelligence/reviews/PUB_PUBLIC_EXPOSURE_2026-10-13.md",
+          "note": "Summary: public surfaces do not serve SNI material; P0/P1 cache, URL, and log isolation remain unreleased."
+        },
+        {
+          "ref": "main",
+          "path": "tests/test_sni_public_exposure.py",
+          "note": "test_real_tree_has_no_public_sni_references and test_real_tree_has_no_broad_research_publish_globs pin no public SNI path; they do not test cache, URL, or log isolation."
         }
       ],
       "gap": "R1 must release P0/P1 cache, URL, and log isolation; no isolation test exists."
@@ -543,9 +748,49 @@
           "ref": "main",
           "path": "research/single_name_intelligence/evidence/Tencent/E2_ADVERSARIAL_CASES_2026-10-11.md",
           "note": "A20: no instruction span acted on."
+        },
+        {
+          "ref": "main",
+          "path": "research/single_name_intelligence/reviews/A20_INJECTION_SAFETY_2026-10-13.md",
+          "note": "Summary: injected titles do not change S2 selection or authority; retrieved text is treated as data."
+        },
+        {
+          "ref": "main",
+          "path": "research/single_name_intelligence/reviews/A20B_INJECTION_EXTENSION_2026-10-13.md",
+          "note": "Findings A20B-F1: p04_v2_draft_loader accepts a smuggled authority value outside its two official blocks."
+        },
+        {
+          "ref": "main",
+          "path": "tests/test_sni_injection_safety.py",
+          "note": "test_a20_03_injected_titles_do_not_change_selection and test_a20_05_injected_text_never_flips_authority pin injected titles as data."
+        },
+        {
+          "ref": "main",
+          "path": "tests/test_sni_injection_safety_ext.py",
+          "note": "test_a20b_08_loader_authority_smuggle_refused_or_not_true records A20B-F1 as a strict xfail on the P04 v2 draft loader."
+        },
+        {
+          "ref": "main",
+          "path": "research/single_name_intelligence/reviews/MUTATION_SWEEP_DRAFT_LOADERS_2026-10-13.md",
+          "note": "Summary: MUT4D killing tests cover p04_v2_draft_loader, the A20B-F1 host."
+        },
+        {
+          "ref": "main",
+          "path": "tests/test_sni_mutation_draft_loaders.py",
+          "note": "test_mut4d_p04_v2_draft_loader_validate_draft_1 pins p04_v2_draft_loader mutants around the official authority_flags blocks."
+        },
+        {
+          "ref": "main",
+          "path": "research/single_name_intelligence/reviews/MUTATION_SWEEP_S2_STATE_LOADERS_2026-10-13.md",
+          "note": "Summary: MUT4A killing tests cover s2_state and s2_loaders used on the injected-title path."
+        },
+        {
+          "ref": "main",
+          "path": "tests/test_sni_mutation_s2_state_loaders.py",
+          "note": "test_mut4a_s2_state_compute_state_1 and test_mut4a_s2_loaders__git_1 pin s2_state and s2_loaders mutants on the selection/state path."
         }
       ],
-      "gap": "No automated test that injected instructions cannot change tool use."
+      "gap": "Finding A20B-F1 (the P04 v2 draft loader accepts a smuggled authority value outside its two official blocks) is open on BASE."
     },
     {
       "id": "A21",
@@ -593,6 +838,31 @@
           "ref": "main",
           "path": "research/single_name_intelligence/protocols/S0_PROTOCOL_REGISTER.md",
           "note": "Register binds A22 to IL collapse before counting."
+        },
+        {
+          "ref": "main",
+          "path": "research/single_name_intelligence/reviews/INDEPENDENT_REPRO_2026-10-13.md",
+          "note": "Summary: S2 honest_n.PRIMARY MATCHES sealed cells; overlapping outcomes do not inflate N in the reproduction."
+        },
+        {
+          "ref": "main",
+          "path": "tests/test_sni_independent_repro.py",
+          "note": "test_irp_03_s2_counts recomputes S2 honest_n, cluster_n, and abstention tokens from committed observations."
+        },
+        {
+          "ref": "main",
+          "path": "research/single_name_intelligence/reviews/X6_INT1_S2_V1_1_REDTEAM_2026-10-13.md",
+          "note": "Checked-clean attack 3: test_h1_x2_08_honest_n_lead_table still pins the 27-row honest-N table after the v1.1 repair."
+        },
+        {
+          "ref": "main",
+          "path": "research/single_name_intelligence/reviews/MUTATION_SWEEP_EVENT_STRESS_2026-10-13.md",
+          "note": "Summary: MUT2 killing tests cover s2_collapse survivors that would inflate episode N."
+        },
+        {
+          "ref": "main",
+          "path": "tests/test_sni_mutation_event_stress.py",
+          "note": "test_mut2_s2_collapse_step3_bundle_19 pins s2_collapse mutants that would count linked counters twice."
         }
       ],
       "gap": ""
@@ -633,6 +903,106 @@
           "ref": "main",
           "path": "research/single_name_intelligence/runs/s2_event_response_v1_1/REPORT.md",
           "note": "INFO-LEAK (A23): P04 TUNE RETIRED-CONTAMINATED; TRAIN never retired."
+        },
+        {
+          "ref": "main",
+          "path": "research/single_name_intelligence/reviews/INDEPENDENT_REPRO_2026-10-13.md",
+          "note": "Summary: split, purge, and quarantine rules are re-derived; P04 TUNE stays RETIRED-CONTAMINATED."
+        },
+        {
+          "ref": "main",
+          "path": "tests/test_sni_independent_repro.py",
+          "note": "test_irp_03_s2_counts pins purged, quarantine, and RETIRED-CONTAMINATED cells from committed observations."
+        },
+        {
+          "ref": "main",
+          "path": "research/single_name_intelligence/reviews/REPRO_SEAL_COVERAGE_2026-10-13.md",
+          "note": "Summary: recorded membership_sha256 and prereg digests recompute against committed bytes with 0 mismatch."
+        },
+        {
+          "ref": "main",
+          "path": "tests/test_sni_run_seal_repro.py",
+          "note": "test_uncovered_digest_matches_committed_bytes recomputes membership_sha256 and prereg digests of the sealed runs."
+        },
+        {
+          "ref": "main",
+          "path": "research/single_name_intelligence/reviews/XREP_CROSS_HOST_REEXECUTION_2026-10-13.md",
+          "note": "Summary: S1 and S2 v1.1 --check re-execute on a second Linux host; XREP-01..05 closed or named."
+        },
+        {
+          "ref": "main",
+          "path": "tests/test_sni_seal_full_check.py",
+          "note": "test_schk_05_full_regeneration_s1, test_schk_06_full_regeneration_s2, and test_schk_10_residual_tree_is_the_sealed_v1_1_runner pin sealed-run regeneration and residual-tree immutability."
+        },
+        {
+          "ref": "main",
+          "path": "research/single_name_intelligence/reviews/X6_INT1_S2_V1_1_REDTEAM_2026-10-13.md",
+          "note": "Checked-clean: v1 run dir is byte-identical aside from SUPERSEDED_BY_V1_1.md; membership_sha256 identical on all 27 seal cells."
+        },
+        {
+          "ref": "main",
+          "path": "research/single_name_intelligence/reviews/QF_QUARANTINE_FENCE_2026-10-13.md",
+          "note": "Summary: 19 quarantine fence points; dated rows on or after 2026-10-01 do not reach TRAIN/TUNE statistics."
+        },
+        {
+          "ref": "main",
+          "path": "tests/test_sni_quarantine_fence.py",
+          "note": "test_s1_time_split_drops_on_and_after_boundary_from_live_splits and test_s2_split_label_drops_on_and_after_boundary_from_live_splits pin the quarantine fence."
+        },
+        {
+          "ref": "main",
+          "path": "research/single_name_intelligence/reviews/INV_PROGRAM_INVARIANTS_2026-10-13.md",
+          "note": "Summary: split-law declarations match TRAIN before 2024-01-01, TUNE to 2026-10-01, QUARANTINE on and after."
+        },
+        {
+          "ref": "main",
+          "path": "tests/test_sni_program_invariants.py",
+          "note": "test_inv_03_split_law_boundaries pins declared TRAIN/TUNE/QUARANTINE dates on the SNI tree."
+        },
+        {
+          "ref": "main",
+          "path": "research/single_name_intelligence/reviews/S1_SEALED_RUNNER_DEFERRAL_2026-10-13.md",
+          "note": "Decision: residual/ edits that would change code_tree_sha are deferred so the sealed v1.1 runner stays immutable."
+        },
+        {
+          "ref": "main",
+          "path": "research/single_name_intelligence/reviews/MUTATION_SWEEP_BUILD_SEAL_2026-10-13.md",
+          "note": "Summary: MUT4C killing tests cover residual and event_response build_seal survivors."
+        },
+        {
+          "ref": "main",
+          "path": "tests/test_sni_mutation_build_seal.py",
+          "note": "test_mut4c_residual_build_seal_module_1 pins build_seal mutants that would rewrite sealed membership."
+        },
+        {
+          "ref": "main",
+          "path": "research/single_name_intelligence/reviews/MUTATION_SWEEP_MANIFEST_SYNTH_2026-10-13.md",
+          "note": "Summary: MUT4B killing tests cover s1_manifest split assignment survivors."
+        },
+        {
+          "ref": "main",
+          "path": "tests/test_sni_mutation_manifest_synth.py",
+          "note": "test_mut4b_s1_manifest_canonical_line_1 pins s1_manifest mutants that would move a row across split membership."
+        },
+        {
+          "ref": "main",
+          "path": "research/single_name_intelligence/reviews/MUTATION_SWEEP_PREREG_CHALLENGER_2026-10-13.md",
+          "note": "Summary: MUT3C killing tests cover s1_prereg sealed split-law survivors."
+        },
+        {
+          "ref": "main",
+          "path": "tests/test_sni_mutation_prereg_challenger.py",
+          "note": "test_mut3c_s1_challenger_module_1 pins s1_challenger mutants on sealed challenger membership."
+        },
+        {
+          "ref": "main",
+          "path": "research/single_name_intelligence/reviews/MUTATION_SWEEP_DECOMP_INFOLEAK_2026-10-13.md",
+          "note": "Summary: MUT1C killing tests cover s1_infoleak retirement survivors."
+        },
+        {
+          "ref": "main",
+          "path": "tests/test_sni_mutation_decomp_infoleak.py",
+          "note": "test_mut1c_s1_infoleak_detect_2 pins s1_infoleak mutants that would hide a TUNE contamination."
         }
       ],
       "gap": ""
@@ -663,6 +1033,26 @@
           "ref": "main",
           "path": "research/single_name_intelligence/runs/s1_residual_v1_1/REPORT.md",
           "note": "Sealed residual report is HISTORICAL-DESCRIPTIVE, non-causal."
+        },
+        {
+          "ref": "main",
+          "path": "research/single_name_intelligence/reviews/X6_INT1_S2_V1_1_REDTEAM_2026-10-13.md",
+          "note": "Checked-clean attack 6: sealed v1.1 report language stays free of causal news-impact tokens."
+        },
+        {
+          "ref": "main",
+          "path": "tests/test_sni_independent_repro.py",
+          "note": "test_irp_05_no_forecast_language scans the independent reproduction for banned forecast and news-impact phrasing."
+        },
+        {
+          "ref": "main",
+          "path": "research/single_name_intelligence/reviews/MUTATION_SWEEP_REPORT_S2SEAL_2026-10-13.md",
+          "note": "Summary: MUT4F killing tests cover s1_report language survivors."
+        },
+        {
+          "ref": "main",
+          "path": "tests/test_sni_mutation_report_s2seal.py",
+          "note": "test_mut4f_s1_report__sanitize_finding_words_1 pins s1_report mutants that would emit banned residual language."
         }
       ],
       "gap": ""
@@ -693,6 +1083,41 @@
           "ref": "main",
           "path": "research/single_name_intelligence/runs/s2_event_response_v1_1/REPORT.md",
           "note": "ABSTAIN_NO_EPISODES / ABSTAIN_INSUFFICIENT_CLUSTERS with honest-N; never 0.5 fill."
+        },
+        {
+          "ref": "main",
+          "path": "research/single_name_intelligence/reviews/INDEPENDENT_REPRO_2026-10-13.md",
+          "note": "What this does NOT prove: families that cannot be estimated abstain with a named IRP-GAP reason and are not filled with 50/50."
+        },
+        {
+          "ref": "main",
+          "path": "tests/test_sni_independent_repro.py",
+          "note": "test_irp_03_s2_counts pins ABSTAIN_NO_EPISODES and ABSTAIN_INSUFFICIENT_CLUSTERS; unestimable cells stay named gaps."
+        },
+        {
+          "ref": "main",
+          "path": "tests/test_sni_s2_nonfinite_abstain.py",
+          "note": "test_s2nf_01 abstains a non-finite or missing close instead of filling a default probability."
+        },
+        {
+          "ref": "main",
+          "path": "research/single_name_intelligence/reviews/IRP_GAP4_BOOTSTRAP_REPRO_2026-10-13.md",
+          "note": "What this does NOT prove: unestimable IRP-GAP4 families abstain with a named reason; they are not filled with 50/50."
+        },
+        {
+          "ref": "main",
+          "path": "tests/test_sni_irp_gap4_bootstrap_repro.py",
+          "note": "test_irp_gap4_08_census_complete names GAP cells; they are not given a default 50/50 interval."
+        },
+        {
+          "ref": "main",
+          "path": "research/single_name_intelligence/reviews/MUTATION_SWEEP_COMMON_2026-10-13.md",
+          "note": "Summary: MUT1A killing tests cover sni_inference abstention survivors."
+        },
+        {
+          "ref": "main",
+          "path": "tests/test_sni_mutation_common.py",
+          "note": "test_mut1a_sni_inference_InferenceResult_1 pins sni_inference mutants that would fill an unestimable family."
         }
       ],
       "gap": ""
@@ -728,6 +1153,31 @@
           "ref": "main",
           "path": "research/single_name_intelligence/evaluation/REGISTRATION_LEDGER_DRAFT.md",
           "note": "R1-gated draft; registered false; not Evaluation OS."
+        },
+        {
+          "ref": "main",
+          "path": "tests/test_sni_p04_v2_draft.py",
+          "note": "test_p04_v2_draft_invariants pins the P04 v2 document as an unregistered draft, not a count-once belief registration."
+        },
+        {
+          "ref": "main",
+          "path": "tests/test_sni_eval_ledger_property.py",
+          "note": "test_lgp_02_count_once pins duplicate REGISTER refused on the unregistered draft ledger."
+        },
+        {
+          "ref": "main",
+          "path": "research/single_name_intelligence/reviews/LEDGER_PROPERTY_2026-10-13.md",
+          "note": "Summary: count-once holds on the draft; the ledger remains an R1-gated unregistered draft."
+        },
+        {
+          "ref": "main",
+          "path": "research/single_name_intelligence/reviews/MUTATION_SWEEP_LEDGER_SEAL_2026-10-13.md",
+          "note": "Summary: MUT3A killing tests cover sni_eval_ledger count-once survivors."
+        },
+        {
+          "ref": "main",
+          "path": "tests/test_sni_mutation_ledger_seal.py",
+          "note": "test_mut3a_sni_eval_ledger_EvalLedger_assert_replay_equal_1 pins sni_eval_ledger mutants that would count a duplicate REGISTER."
         }
       ],
       "gap": "sni_belief.v1 salt and family gate not landed; ledger is an unregistered R1-gated draft; V1 waits on R1."
@@ -758,6 +1208,31 @@
           "ref": "main",
           "path": "research/single_name_intelligence/evaluation/sni_eval_ledger.py",
           "note": "Append-only hash chain; REGISTERED = False."
+        },
+        {
+          "ref": "main",
+          "path": "tests/test_sni_p04_v2_draft.py",
+          "note": "test_p04_v2_draft_invariants pins P04 v2 as an unregistered draft with no live belief publication."
+        },
+        {
+          "ref": "main",
+          "path": "tests/test_sni_eval_ledger_property.py",
+          "note": "test_lgp_03_publication_immutable pins a second PUBLISH of a different p as refused on the draft ledger."
+        },
+        {
+          "ref": "main",
+          "path": "research/single_name_intelligence/reviews/LEDGER_PROPERTY_2026-10-13.md",
+          "note": "Summary: publication immutability holds on the draft; there is no live SNI belief publication hash-chain."
+        },
+        {
+          "ref": "main",
+          "path": "research/single_name_intelligence/reviews/MUTATION_SWEEP_LEDGER_SEAL_2026-10-13.md",
+          "note": "Summary: MUT3A killing tests cover sni_eval_ledger publication-immutability survivors."
+        },
+        {
+          "ref": "main",
+          "path": "tests/test_sni_mutation_ledger_seal.py",
+          "note": "test_mut3a_sni_eval_ledger_LedgerRow_to_dict_1 pins sni_eval_ledger mutants that would rewrite a published p."
         }
       ],
       "gap": "No live SNI belief publication hash-chain; ledger is an unregistered R1-gated draft; V1/P2 wait on R1."
@@ -788,6 +1263,31 @@
           "ref": "main",
           "path": "research/single_name_intelligence/evaluation/sni_eval_ledger.py",
           "note": "PENDING / UNPRICEABLE / CENSORED / MATURED states; REGISTERED = False."
+        },
+        {
+          "ref": "main",
+          "path": "tests/test_sni_p04_v2_draft.py",
+          "note": "test_p04_v2_draft_invariants pins the P04 v2 draft as unregistered; it does not land a censoring_state extension."
+        },
+        {
+          "ref": "main",
+          "path": "tests/test_sni_eval_ledger_property.py",
+          "note": "test_lgp_04_four_states_distinct pins PENDING, UNPRICEABLE, CENSORED, and MATURED on the unregistered draft ledger."
+        },
+        {
+          "ref": "main",
+          "path": "research/single_name_intelligence/reviews/LEDGER_PROPERTY_2026-10-13.md",
+          "note": "Summary: four target states stay distinct on the draft; the SNI censoring_state extension is unlanded."
+        },
+        {
+          "ref": "main",
+          "path": "research/single_name_intelligence/reviews/MUTATION_SWEEP_LEDGER_SEAL_2026-10-13.md",
+          "note": "Summary: MUT3A killing tests cover sni_eval_ledger state-gate survivors."
+        },
+        {
+          "ref": "main",
+          "path": "tests/test_sni_mutation_ledger_seal.py",
+          "note": "test_mut3a_sni_eval_ledger_LedgerRefused_init_1 pins sni_eval_ledger mutants that would collapse target states."
         }
       ],
       "gap": "SNI censoring_state extension unlanded; ledger is an unregistered R1-gated draft; V1/V2 wait on R1."
@@ -823,6 +1323,46 @@
           "ref": "main",
           "path": "research/single_name_intelligence/runs/s2_event_response_v1_1/REPORT.md",
           "note": "Proper score NOT SUPPORTED; hit/excess are not a proper score. P07 NOT SUPPORTED."
+        },
+        {
+          "ref": "main",
+          "path": "research/single_name_intelligence/reviews/INDEPENDENT_REPRO_2026-10-13.md",
+          "note": "Summary: this reproduces sealed hit/return statistics from committed observations; it is not the A1 proper-score reproduction against frozen SNI forecast baselines."
+        },
+        {
+          "ref": "main",
+          "path": "tests/test_sni_independent_repro.py",
+          "note": "test_irp_01_s1_counts and test_irp_02_s1_pvalues recompute sealed hit/return statistics; they are not a proper-score reproduction."
+        },
+        {
+          "ref": "main",
+          "path": "research/single_name_intelligence/reviews/IRP_GAP4_BOOTSTRAP_REPRO_2026-10-13.md",
+          "note": "Summary: 108 sealed S1 ci.ci95 intervals MATCH; this is coverage-interval reproduction, not a proper score."
+        },
+        {
+          "ref": "main",
+          "path": "tests/test_sni_irp_gap4_bootstrap_repro.py",
+          "note": "test_irp_gap4_03_s1_ci_interval and test_irp_gap4_04_p03_s0_ci_lower_bound reproduce sealed bootstrap intervals, not proper scores."
+        },
+        {
+          "ref": "main",
+          "path": "research/single_name_intelligence/reviews/P03_ULP_STABILITY_2026-10-13.md",
+          "note": "Summary: ULP-scale float drift does not flip a published P03 descriptive decision; this is not a proper-score reproduction."
+        },
+        {
+          "ref": "main",
+          "path": "tests/test_sni_p03_ulp_stability.py",
+          "note": "test_p03u_01_replay_matches_committed and test_p03u_02_ulp_perturbation_never_flips_a_decision pin sealed P03 descriptive numbers, not a proper score."
+        },
+        {
+          "ref": "main",
+          "path": "research/single_name_intelligence/reviews/MUTATION_SWEEP_STATS_DIRECTION_2026-10-13.md",
+          "note": "Summary: MUT1B killing tests cover s1_stats binomial and Wilson helpers used by sealed hit/return grading."
+        },
+        {
+          "ref": "main",
+          "path": "tests/test_sni_mutation_stats_direction.py",
+          "note": "test_mut1b_s1_direction_direction_always_long_1 pins always_long direction helpers used by sealed residual grading, not a proper score."
         }
       ],
       "gap": "A1 independent proper-score reproduction against frozen SNI forecast baselines is unstarted; return/hit grading is not probabilistic forecast support; ledger is an R1-gated draft."
@@ -853,9 +1393,39 @@
           "ref": "main",
           "path": "tests/test_sni_eval_ledger.py",
           "note": "test_a30_nogo_then_publish_refused."
+        },
+        {
+          "ref": "main",
+          "path": "research/single_name_intelligence/reviews/SNI_COPY_GUARD_A14_A30_2026-10-13.md",
+          "note": "Summary: A30 markdown copy is guarded with 21 pinned sealed-report dump lines; product UI copy remains unguarded."
+        },
+        {
+          "ref": "main",
+          "path": "tests/test_sni_copy_guard.py",
+          "note": "test_cg_03_a30_no_forecast_success_on_failed_models scans SNI markdown for failed-state collocations with forecast-success labels."
+        },
+        {
+          "ref": "main",
+          "path": "tests/test_sni_eval_ledger_property.py",
+          "note": "test_lgp_09_nogo_blocks_family_only pins draft-ledger NO-GO blocking PUBLISH on that family only."
+        },
+        {
+          "ref": "main",
+          "path": "research/single_name_intelligence/reviews/LEDGER_PROPERTY_2026-10-13.md",
+          "note": "Summary: NO-GO blocking holds on the unregistered draft; A30 stays PARTIAL."
+        },
+        {
+          "ref": "main",
+          "path": "research/single_name_intelligence/reviews/MUTATION_SWEEP_BRANCH_COPY_2026-10-13.md",
+          "note": "Summary: MUT3B killing tests cover sni_copy_guard A30 survivors."
+        },
+        {
+          "ref": "main",
+          "path": "tests/test_sni_mutation_branch_copy.py",
+          "note": "test_mut3b_sni_copy_guard_check_text_1 pins copy-guard mutants that would drop an A30 collocation."
         }
       ],
-      "gap": "No UI/authority copy test; ledger NO-GO is an R1-gated draft; A1/P2 wait on R1."
+      "gap": "No UI copy test; ledger NO-GO is an R1-gated draft; A1/P2 wait on R1."
     },
     {
       "id": "A31",
@@ -873,6 +1443,16 @@
           "ref": "main",
           "path": "research/single_name_intelligence/SNI_U0_REFERENCE_JOURNEY_AND_WIRE_CONTRACT_DRAFT.md",
           "note": "Journey draft names issuer, counter, lens, as-of."
+        },
+        {
+          "ref": "main",
+          "path": "research/single_name_intelligence/reviews/PUB_PUBLIC_EXPOSURE_2026-10-13.md",
+          "note": "Summary: no public single-name surface exists on this tree; EN/ZH and viewport persistence remain untested."
+        },
+        {
+          "ref": "main",
+          "path": "tests/test_sni_public_exposure.py",
+          "note": "test_real_tree_has_no_public_sni_references pins the absence of a public SNI surface; it does not test EN/ZH or viewport persistence."
         }
       ],
       "gap": "No EN/ZH or viewport persistence test; live single-name surfaces wait on R1; P1/A0 wait on R1."
@@ -893,6 +1473,16 @@
           "ref": "main",
           "path": "research/single_name_intelligence/SNI_U0_REFERENCE_JOURNEY_AND_WIRE_CONTRACT_DRAFT.md",
           "note": "Wire-contract draft for sources and unavailable states."
+        },
+        {
+          "ref": "main",
+          "path": "research/single_name_intelligence/reviews/PUB_PUBLIC_EXPOSURE_2026-10-13.md",
+          "note": "Summary: no public single-name surface exists on this tree; keyboard, focus, and source-click behaviour remain untested."
+        },
+        {
+          "ref": "main",
+          "path": "tests/test_sni_public_exposure.py",
+          "note": "test_real_tree_has_no_public_sni_references pins the absence of a public SNI surface; it does not test keyboard, focus, or source-click."
         }
       ],
       "gap": "No keyboard, focus, or source-click test; live single-name surfaces wait on R1; P1/A0 wait on R1."
@@ -928,9 +1518,29 @@
           "ref": "main",
           "path": "research/single_name_intelligence/evidence/Tencent/E2_COVERAGE_REPORT_2026-10-11.json",
           "note": "Machine-readable Tencent coverage twin."
+        },
+        {
+          "ref": "main",
+          "path": "research/single_name_intelligence/reviews/A33_REFERENCE_EVIDENCE_CHECK_2026-10-13.md",
+          "note": "Summary: both coverage reports have real owner-backed cells; Alibaba meets the six-class floor; Tencent identity_listing is REFUSED and corporate_actions_adjustment is ABSENT; A0 product-page release is untested."
+        },
+        {
+          "ref": "main",
+          "path": "tests/test_sni_a33_reference_evidence.py",
+          "note": "test_a33_02_real_evidence_present_for_both, test_a33_03_alibaba_meets_reference_floor, test_a33_04_tencent_floor_gap_is_exactly_named, and test_a33_05_mutants_are_refused pin coverage-report floors and refuse all-absence and synthetic-owner mutants; they do not test an A0 product page."
+        },
+        {
+          "ref": "main",
+          "path": "research/single_name_intelligence/reviews/MUTATION_SWEEP_A33_MATRIX_2026-10-13.md",
+          "note": "Summary: MUT4E killing tests cover a33_reference_evidence_check survivors."
+        },
+        {
+          "ref": "main",
+          "path": "tests/test_sni_mutation_a33_matrix.py",
+          "note": "test_mut4e_a33_reference_evidence_check_real_cells_1 pins checker mutants that would count a synthetic or absent cell as real."
         }
       ],
-      "gap": "No A0 test that an all-absence or synthetic-fixture page fails release."
+      "gap": "No A0 test that an all-absence or synthetic-fixture page fails release; Tencent identity_listing is REFUSED and corporate_actions_adjustment is ABSENT."
     },
     {
       "id": "A34",
@@ -1003,6 +1613,41 @@
           "ref": "main",
           "path": "tests/test_sni_a8_us_transfer_draft.py",
           "note": "test_r1_03_cohort_hindsight_survivorship_not_transfer_evidence."
+        },
+        {
+          "ref": "main",
+          "path": "research/single_name_intelligence/reviews/A36_TICKER_BRANCH_SCAN_2026-10-13.md",
+          "note": "Summary: US/Mag-7 generalization Python has no ticker strategy branch; U1-U4 product packs remain unbuilt."
+        },
+        {
+          "ref": "main",
+          "path": "tests/test_sni_no_ticker_branches.py",
+          "note": "test_tbs_01_us_and_common_have_no_ticker_branches pins no ticker literal in a decision position on us_stress, us_transfer, common, and evaluation."
+        },
+        {
+          "ref": "main",
+          "path": "tests/test_sni_us_stress_onboarding.py",
+          "note": "test_onb_01_ast_no_ticker_literals pins the stress-set module free of ticker literals in AST."
+        },
+        {
+          "ref": "main",
+          "path": "research/single_name_intelligence/reviews/MUTATION_SWEEP_BRANCH_COPY_2026-10-13.md",
+          "note": "Summary: MUT3B killing tests cover ticker_branch_scan survivors."
+        },
+        {
+          "ref": "main",
+          "path": "tests/test_sni_mutation_branch_copy.py",
+          "note": "test_mut3b_ticker_branch_scan_module_1 pins ticker_branch_scan mutants that would miss a ticker decision branch."
+        },
+        {
+          "ref": "main",
+          "path": "research/single_name_intelligence/reviews/MUTATION_SWEEP_EVENT_STRESS_2026-10-13.md",
+          "note": "Summary: MUT2 killing tests cover us_stress/stress_set survivors on the science harness."
+        },
+        {
+          "ref": "main",
+          "path": "tests/test_sni_mutation_event_stress.py",
+          "note": "test_mut2_stress_set__earliest_close_date_30 pins stress_set mutants on the ticker-free science harness."
         }
       ],
       "gap": "U1-U4 US/Mag-7 product packs unbuilt; Alphabet class-duplicate evidence untested on a product pack; TCEHY is not admitted (KWEB proxy); they wait on L0/R1."
@@ -1033,6 +1678,11 @@
           "ref": "main",
           "path": "research/single_name_intelligence/us_stress/stress_set.py",
           "note": "Ticker universe is only profiles/; the module does not name the seven US tickers."
+        },
+        {
+          "ref": "main",
+          "path": "tests/test_sni_us_stress_onboarding.py",
+          "note": "test_onb_02_eighth_profile_onboards_without_code_change drops a synthetic eighth YAML profile with no module change; live held-out onboarding is not claimed."
         }
       ],
       "gap": "Science-harness onboarding is synthetic only; live held-out company onboarding waits on R1."
@@ -1068,6 +1718,11 @@
           "ref": "main",
           "path": "research/single_name_intelligence/e2e_20261011/SNI_PROGRAM_CONTINUATION_2026-10-11.md",
           "note": "R0 custody recovery; O-9 fabric receipts incomplete."
+        },
+        {
+          "ref": "main",
+          "path": "tests/test_sni_a39_receipts_ledger.py",
+          "note": "test_a39_01_schema_and_row_count, test_a39_03_no_overclaim, and test_a39_05_integration_gaps_named pin a 61-row receipts ledger with named incomplete rungs and two missing INT1 cherry-pick receipts."
         }
       ],
       "gap": "Admission, start, and result receipts are incomplete across delegated tasks."
