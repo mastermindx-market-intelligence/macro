@@ -386,6 +386,9 @@ MUST_RESTART = [
     # select_evidence lazy targets import nuclear_theme_research.
     "engine/market_ontology/nuclear_owner_bundle.py",
     "engine/market_ontology/nuclear_theme_research.py",
+    # uranium_miners_anchor is imported lazily by the registry's
+    # load_bundle/compose targets for the fuel_cycle anchor, the same bind.
+    "engine/market_ontology/uranium_miners_anchor.py",
     # The canonical theme-id resolver: the research composer compares an
     # assertion's `scope.canonical_theme_id` against it on every request.
     "engine/theme_graph/identity.py",
