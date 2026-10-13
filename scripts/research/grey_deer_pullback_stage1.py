@@ -44,9 +44,11 @@ Run order in :func:`main` (each step a named, separately testable function):
     ``FEATURE_UNDEFINED_AFTER_WARMUP`` (refuse, never impute).
 9.  ``build_populations`` / ``census_populations`` - P-all = warm (idx >= 63)
     and mature; P-active is recorded ``OBSERVER_NOT_ON_MAIN`` (observer on
-    draft PR #8188, not main) and never run; census typed exclusions:
-    ``PRE_ENTITLEMENT``, ``WARMUP``, ``IMMATURE`` (``TRAINING_FOLD_THIN`` is
-    counted per block in step 11 and merged into the final census).
+    draft PR #8188, not main) and never run; census keeps the lowercase
+    eligibility keys and adds ``typed_exclusions``:
+    ``PRE_ENTITLEMENT``, ``WARMUP``, ``IMMATURE``, ``TRAINING_FOLD_THIN``
+    (thin blocks summed over horizons, the ``folds.thin_blocks`` count,
+    merged from step 11).
 10. ``build_fold_calendar`` / ``purged_training_indices`` - expanding folds;
     first test origin idx 315 (= the 253rd warm origin), blocks of 126, a
     final block shorter than 63 merges into its predecessor; purge keeps
@@ -103,7 +105,9 @@ Run order in :func:`main` (each step a named, separately testable function):
     probability replay built exactly as
     ``risk_radar_displayed_probability_audit.py`` (blob pinned) does it,
     scored against its OWN CURRENT_VINTAGE native labels on the P-all
-    evaluation origins it covers; own table, never pooled, never a gate;
+    evaluation-origin union it covers (``evaluation_origins``). The
+    early-warning table stays on the comparison set
+    (``comparison_set_origins``). Own table, never pooled, never a gate;
     the artifact records the calibration.json overlay blob sha; an import,
     file or source failure -> {"blocked": "INC_SOURCE_UNAVAILABLE", ...};
     any other exception is a code defect -> {"blocked": "INC_REPLAY_ERROR"}.
@@ -132,8 +136,16 @@ Massive terms):
                                python, numpy, pandas, scipy, hydrate{performed, rc}}
     sample                     {subframe_content_sha256, rows, first_date,
                                last_date, integrity[]}
+    provenance                 the six SS3 check 5 / SS12 identities, also
+                               spelled in the results note: manifest_version,
+                               subframe_content_sha256, prereg_git_blob,
+                               commit_sha, script_blob_sha, test_blob_sha.
+                               A value not established on a blocked path is
+                               the string "UNKNOWN: <reason>", never omitted.
     trial_budget               {family, budget, basis}
-    census                     per (h, pop) typed-exclusion counts
+    census                     per (h, pop) eligibility counts plus
+                               typed_exclusions {PRE_ENTITLEMENT, WARMUP,
+                               IMMATURE, TRAINING_FOLD_THIN}
     folds                      per-h block calendar + purge/thin facts
     configs                    per-config issued/abstained counts by type
     comparison_sets            per (h, family): compared configs, N_common,
@@ -241,6 +253,15 @@ TEST_PATH = "tests/test_grey_deer_pullback_stage1.py"
 SCHEMA = "grey_deer_pullback_stage1/v1"
 RESULTS_JSON_NAME = "PULLBACK_STAGE1_RESULTS_2026-10-11.json"
 RESULTS_MD_NAME = "PULLBACK_STAGE1_RESULTS_2026-10-11.md"
+# SS3 check 5 + SS12: both artifacts carry these six, including a blocked run.
+PROVENANCE_KEYS = (
+    "manifest_version",
+    "subframe_content_sha256",
+    "prereg_git_blob",
+    "commit_sha",
+    "script_blob_sha",
+    "test_blob_sha",
+)
 IDENTITY_COLUMNS = ("date", "open", "high", "low", "close", "volume", "transactions")
 
 # Seed codes assigned by prereg SS10 "Seeds" (documented in the module docstring).
@@ -661,30 +682,73 @@ def build_populations(n_rows: int) -> dict:
     }
 
 
+def _typed_exclusions(pre: int, warmup: int, immature: int, training_fold_thin: int = 0) -> dict:
+    """SS12 typed exclusion counts. ``TRAINING_FOLD_THIN`` is merged after the fits."""
+    return {
+        "PRE_ENTITLEMENT": int(pre),
+        "WARMUP": int(warmup),
+        "IMMATURE": int(immature),
+        "TRAINING_FOLD_THIN": int(training_fold_thin),
+    }
+
+
 def census_populations(n_rows: int, pre_entitlement_rows: int) -> list[dict]:
-    """Eligibility/maturity census per (h, pop) with typed exclusions (SS12)."""
+    """Eligibility/maturity census per (h, pop) with typed exclusions (SS12).
+
+    Lowercase eligibility keys are unchanged. ``typed_exclusions`` is additive.
+    ``TRAINING_FOLD_THIN`` is 0 until ``merge_training_fold_thin`` writes the
+    thin-block count summed over horizons (the ``folds.thin_blocks`` count).
+    """
     idx = np.arange(n_rows)
     warm = idx >= WARM_IDX
+    pre = int(pre_entitlement_rows)
+    warmup = int((idx < WARM_IDX).sum())
     rows: list[dict] = []
     for h in HORIZONS:
         mature = idx <= n_rows - 1 - h
+        immature = int((warm & ~mature).sum())
+        eligible = int((warm & mature).sum())
         base = {
             "horizon": h,
-            "pre_entitlement": pre_entitlement_rows,
-            "warmup": int((idx < WARM_IDX).sum()),
-            "immature": int((warm & ~mature).sum()),
-            "eligible": int((warm & mature).sum()),
+            "pre_entitlement": pre,
+            "warmup": warmup,
+            "immature": immature,
+            "eligible": eligible,
         }
-        rows.append({"population": "P-all", **base})
+        rows.append({"population": "P-all", **base, "typed_exclusions": _typed_exclusions(pre, warmup, immature)})
         rows.append(
             {
                 "population": "P-active",
                 **base,
+                "typed_exclusions": _typed_exclusions(pre, warmup, immature),
                 "blocked": "OBSERVER_NOT_ON_MAIN",
                 "detail": "recorded, not run; TRAINING_FOLD_THIN is counted per block in folds/fits",
             }
         )
     return rows
+
+
+def merge_training_fold_thin(census: list[dict], fits: dict) -> list[dict]:
+    """Write ``TRAINING_FOLD_THIN`` from the fold thin-block count.
+
+    One integer: the number of thin blocks summed over horizons. That is the
+    number of entries across every horizon's ``folds.thin_blocks`` list (a
+    block, not a block times a configuration). The same integer is recorded
+    on every census row. The other typed exclusions are left as they are.
+    """
+    blocks = fits.get("blocks", {}) if isinstance(fits, dict) else {}
+    total = 0
+    for h in HORIZONS:
+        prefix = f"h{h}/"
+        total += sum(
+            1
+            for key, value in blocks.items()
+            if str(key).startswith(prefix) and isinstance(value, dict) and value.get("thin")
+        )
+    for row in census:
+        typed = row.setdefault("typed_exclusions", {})
+        typed["TRAINING_FOLD_THIN"] = int(total)
+    return census
 
 
 # ── step 10: folds + purge ───────────────────────────────────────────────────
@@ -1129,11 +1193,16 @@ def build_comparison_sets(fits: dict, n_rows: int, labels: dict[int, dict]) -> d
                 for cid in cfgs:
                     cell["q_eval"][cid] = {k: series[cid]["q"][k] for k in TAU_KEYS}
                     cell["q"][cid] = {k: series[cid]["q"][k][common] for k in TAU_KEYS}
+            # The sensitivity row is scored on the comparison-set origins where
+            # M3-ALL-C0.1 also issued. ``issued`` and ``p`` arrive at
+            # evaluation-origin length; ``y`` and the claim probabilities are
+            # comparison-set length. Slice onto ``common`` so every array
+            # indexed together has one length. Never impute.
             sens = series[SENSITIVITY_CONFIG]
             cell["sensitivity"] = {
                 "config": SENSITIVITY_CONFIG,
-                "mask": common & sens["issued"],
-                "p": sens["p"],
+                "mask": np.asarray(sens["issued"], dtype=bool)[common],
+                "p": np.asarray(sens["p"], dtype=float)[common],
             }
             fams[fam] = cell
         comp_by_h[h] = fams
@@ -2249,80 +2318,129 @@ def native_event_on_dates(labels: pd.DataFrame, dates: pd.DatetimeIndex) -> np.n
     return event.reindex(dates).to_numpy(dtype=float)
 
 
+def _inc_replay_inputs(deviations: list[dict] | None) -> dict:
+    """Load the pinned incumbent replay inputs (prereg SS6 INC)."""
+    audit_rel = "scripts/research/risk_radar_displayed_probability_audit.py"
+    ok, blob = _git("rev-parse", f"HEAD:{audit_rel}")
+    if not ok or blob != AUDIT_SCRIPT_BLOB:
+        _deviation(
+            deviations,
+            "INC_SOURCE_DRIFT",
+            f"{audit_rel} blob {blob!r} != frozen {AUDIT_SCRIPT_BLOB}",
+        )
+    ok_c, calib_blob = _git("hash-object", "data/risk_radar/calibration.json")
+    calib_blob_sha = calib_blob if ok_c else "absent"
+    from engine.risk_radar import _calib, leading_signals, subscore_series
+    from engine.risk_radar_backtest import _spy, state_series
+    from scripts.research.risk_radar_displayed_probability_audit import (
+        displayed_probability_series,
+        hot_tier_a_count,
+    )
+
+    calib = _calib()
+    sigs = leading_signals()
+    if sigs is None or sigs.empty:
+        raise RuntimeError("leading_signals returned no usable history")
+    subs = subscore_series(sigs, calib)
+    if subs is None or subs.empty:
+        raise RuntimeError("subscore_series returned no usable history")
+    idx = sigs.index
+    known = subs.notna().any(axis=1)
+    state = state_series(subs, calib, sigs=sigs).reindex(idx).where(known)
+    hot_count = hot_tier_a_count(subs, calib).reindex(idx)
+    spy = _spy(drop_missing=False)
+    if spy is None or spy.empty:
+        raise RuntimeError("_spy(drop_missing=False) returned no closes")
+
+    def probability_for_h(h: int) -> pd.Series:
+        return displayed_probability_series(state, hot_count, calib, int(h))
+
+    return {
+        "audit_script_blob": blob if ok else "unavailable",
+        "calibration_blob_sha": calib_blob_sha,
+        "spy": spy,
+        "probability_for_h": probability_for_h,
+    }
+
+
+def _inc_horizon_record(
+    cell: dict,
+    close: pd.Series,
+    close_arr: np.ndarray,
+    spy: pd.Series,
+    probability: pd.Series,
+    h: int,
+) -> dict:
+    """Native-label metrics on the evaluation-origin union; early warning unchanged.
+
+    Prereg SS6 scores INC on the dates of the P-all evaluation origins it
+    covers. The early-warning table stays on the comparison set (that label
+    split is not changed here). Both counts are recorded. Nothing is imputed:
+    an origin INC does not cover stays out of the metric, as NaN.
+    """
+    from scripts.research.risk_radar_state_ladder_calibration import native_forward_labels
+
+    eval_idx = np.asarray(cell["eval_origin_idx"], dtype=int)
+    comparison_idx = np.asarray(cell["origin_idx"], dtype=int)
+    eval_dates = pd.DatetimeIndex([close.index[int(o)] for o in eval_idx])
+    labels = native_forward_labels(spy, eval_dates, int(h), THRESHOLD)
+    # Absent probability rows stay NaN and are not imputed into the metric.
+    p_eval = probability.reindex(eval_dates).to_numpy(dtype=float)
+    y_native = native_event_on_dates(labels, eval_dates)
+    covered = np.isfinite(p_eval) & np.isfinite(y_native)
+    n_covered = int(covered.sum())
+    if n_covered == 0:
+        raise RuntimeError(f"h{h}: INC covers no P-all evaluation origin")
+    metrics = binary_metric_set(p_eval[covered], y_native[covered].astype(bool), alphas=alpha_grid(h))
+    # Early warning keeps today's comparison-set arguments. NaN p never alarms.
+    if len(comparison_idx):
+        comp_dates = pd.DatetimeIndex([close.index[int(o)] for o in comparison_idx])
+        p_comp = probability.reindex(comp_dates).to_numpy(dtype=float)
+        early = early_warning_table(
+            p_comp, cell["y"], comparison_idx, close_arr, cell["a"], int(h), cell["episodes"], BASE_RATES[h]
+        )
+    else:
+        early = {
+            "alarm": f"p >= b_h = {BASE_RATES[h]}",
+            "n_clusters": 0,
+            "cluster_recall": None,
+            "note": "comparison set is empty; early warning stays on the comparison set",
+        }
+    n_eval = int(len(eval_idx))
+    return {
+        "evaluation_origins": n_eval,
+        "comparison_set_origins": int(len(comparison_idx)),
+        "covered": n_covered,
+        "coverage_share": (n_covered / n_eval) if n_eval else 0.0,
+        "metrics_vs_native_label": metrics,
+        "early_warning_vs_protocol_episodes": early,
+    }
+
+
 def run_inc(comp_by_h: dict, close: pd.Series, deviations: list[dict] | None = None) -> dict:
     """The 2026-09-22 displayed-probability replay; never pooled, never a gate."""
-    audit_rel = "scripts/research/risk_radar_displayed_probability_audit.py"
     try:
-        ok, blob = _git("rev-parse", f"HEAD:{audit_rel}")
-        if not ok or blob != AUDIT_SCRIPT_BLOB:
-            _deviation(
-                deviations,
-                "INC_SOURCE_DRIFT",
-                f"{audit_rel} blob {blob!r} != frozen {AUDIT_SCRIPT_BLOB}",
-            )
-        ok_c, calib_blob = _git("hash-object", "data/risk_radar/calibration.json")
-        calib_blob_sha = calib_blob if ok_c else "absent"
-        from engine.risk_radar import _calib, leading_signals, subscore_series
-        from engine.risk_radar_backtest import _spy, state_series
-        from scripts.research.risk_radar_displayed_probability_audit import (
-            displayed_probability_series,
-            hot_tier_a_count,
-        )
-        from scripts.research.risk_radar_state_ladder_calibration import native_forward_labels
-
-        calib = _calib()
-        sigs = leading_signals()
-        if sigs is None or sigs.empty:
-            raise RuntimeError("leading_signals returned no usable history")
-        subs = subscore_series(sigs, calib)
-        if subs is None or subs.empty:
-            raise RuntimeError("subscore_series returned no usable history")
-        idx = sigs.index
-        known = subs.notna().any(axis=1)
-        state = state_series(subs, calib, sigs=sigs).reindex(idx).where(known)
-        hot_count = hot_tier_a_count(subs, calib).reindex(idx)
-        spy = _spy(drop_missing=False)
-        if spy is None or spy.empty:
-            raise RuntimeError("_spy(drop_missing=False) returned no closes")
-
+        inputs = _inc_replay_inputs(deviations)
         table = {
             "table": "INC",
             "evidence_class": "CURRENT_VINTAGE",
             "look_ahead_disclosed": True,
             "note": "own table, never pooled, never a reference model, never a gate",
-            "audit_script_blob": blob if ok else "unavailable",
-            "calibration_blob_sha": calib_blob_sha,
+            "audit_script_blob": inputs["audit_script_blob"],
+            "calibration_blob_sha": inputs["calibration_blob_sha"],
             "descriptive_verdict": VERDICT_DESCRIPTIVE,
             "horizons": {},
         }
         close_arr = close.to_numpy(dtype=float)
         for h in HORIZONS:
-            cell = comp_by_h[h]["binary"]
-            origin_idx = cell["origin_idx"]
-            dates = pd.DatetimeIndex([close.index[int(o)] for o in origin_idx])
-            labels = native_forward_labels(spy, dates, int(h), THRESHOLD)
-            probability = displayed_probability_series(state, hot_count, calib, int(h))
-            # Vectorised alignment to the comparison-set dates; absent rows stay NaN.
-            p = probability.reindex(dates).to_numpy(dtype=float)
-            y_native = native_event_on_dates(labels, dates)
-            covered = np.isfinite(p) & np.isfinite(y_native)
-            n_covered = int(covered.sum())
-            if n_covered == 0:
-                raise RuntimeError(f"h{h}: INC covers no P-all evaluation origin")
-            y_cov = y_native[covered].astype(bool)
-            p_cov = p[covered]
-            metrics = binary_metric_set(p_cov, y_cov, alphas=alpha_grid(h))
-            # NaN p (uncovered origins) never alarms inside early_warning_table.
-            early = early_warning_table(
-                p, cell["y"], origin_idx, close_arr, cell["a"], int(h), cell["episodes"], BASE_RATES[h]
+            table["horizons"][f"h{h}"] = _inc_horizon_record(
+                comp_by_h[h]["binary"],
+                close,
+                close_arr,
+                inputs["spy"],
+                inputs["probability_for_h"](h),
+                h,
             )
-            table["horizons"][f"h{h}"] = {
-                "evaluation_origins": int(len(origin_idx)),
-                "covered": n_covered,
-                "coverage_share": n_covered / len(origin_idx),
-                "metrics_vs_native_label": metrics,
-                "early_warning_vs_protocol_episodes": early,
-            }
         return table
     except (ImportError, OSError, RuntimeError) as exc:
         return {"blocked": "INC_SOURCE_UNAVAILABLE", "detail": f"{type(exc).__name__}: {exc}"}
@@ -2454,17 +2572,82 @@ def _f(value, ndigits: int = 6) -> str:
         return str(value)
 
 
+def _unknown(reason: str) -> str:
+    """A provenance value the blocked path has not established. Never omit the field."""
+    return f"UNKNOWN: {reason}"
+
+
+def attach_provenance(payload: dict) -> dict:
+    """Both artifacts carry the six SS3 check 5 / SS12 identities.
+
+    Nested ``manifest.version``, ``sample.subframe_content_sha256``,
+    ``prereg.blob_sha`` and ``run.{commit,script_blob,test_blob}_sha`` are
+    filled when missing, and ``provenance`` repeats them under stable names.
+    A value that cannot be known is ``UNKNOWN: <reason>``, never omitted.
+    Copies the nested dicts it fills so a shared identity object is not mutated.
+    """
+    manifest = dict(payload.get("manifest") or {})
+    prereg = dict(payload.get("prereg") or {})
+    run = dict(payload.get("run") or {})
+    sample = dict(payload.get("sample") or {})
+
+    def fill(container: dict, key: str, reason: str) -> None:
+        value = container.get(key)
+        if value is None or value == "":
+            container[key] = _unknown(reason)
+
+    fill(manifest, "version", "manifest identity not established")
+    fill(sample, "subframe_content_sha256", "sample not hashed")
+    fill(prereg, "blob_sha", "prereg git blob not established")
+    fill(run, "commit_sha", "commit sha not established")
+    fill(run, "script_blob_sha", "script blob not established")
+    fill(run, "test_blob_sha", "test blob not established")
+    payload["manifest"] = manifest
+    payload["prereg"] = prereg
+    payload["run"] = run
+    payload["sample"] = sample
+    payload["provenance"] = {
+        "manifest_version": manifest["version"],
+        "subframe_content_sha256": sample["subframe_content_sha256"],
+        "prereg_git_blob": prereg["blob_sha"],
+        "commit_sha": run["commit_sha"],
+        "script_blob_sha": run["script_blob_sha"],
+        "test_blob_sha": run["test_blob_sha"],
+    }
+    return payload
+
+
 def render_markdown(payload: dict) -> str:
     """The results note, GENERATED from the JSON (aggregates only)."""
+    attach_provenance(payload)
+    prov = payload["provenance"]
     lines: list[str] = []
     run = payload.get("run", {})
+    prereg = payload.get("prereg", {})
+    manifest = payload.get("manifest", {})
     lines.append("# Pullback stage-1 results (Grey Deer W3, 2026-10-11)")
     lines.append("")
     lines.append(f"- schema: `{payload.get('schema')}`; run commit `{run.get('commit_sha')}`")
-    lines.append(f"- prereg blob `{payload['prereg']['blob_sha']}`; manifest v{payload['manifest']['version']} blob `{payload['manifest']['blob_sha']}`")
+    lines.append(
+        f"- prereg blob `{prereg.get('blob_sha')}`; manifest v{manifest.get('version')} blob `{manifest.get('blob_sha')}`"
+    )
+    lines.append(f"- script blob `{prov['script_blob_sha']}`; test blob `{prov['test_blob_sha']}`")
     sample = payload.get("sample", {})
-    lines.append(f"- sample: {sample.get('rows')} rows {sample.get('first_date')}..{sample.get('last_date')}, `subframe_content_sha256` matches")
-    lines.append(f"- trial budget: family `{payload['trial_budget']['family']}`, budget {payload['trial_budget']['budget']}, basis `{payload['trial_budget']['basis']}`")
+    lines.append(
+        f"- sample: {sample.get('rows')} rows {sample.get('first_date')}..{sample.get('last_date')}, "
+        f"subframe_content_sha256 `{prov['subframe_content_sha256']}`"
+    )
+    trial_budget = payload.get("trial_budget")
+    if trial_budget:
+        lines.append(
+            f"- trial budget: family `{trial_budget.get('family')}`, budget {trial_budget.get('budget')}, "
+            f"basis `{trial_budget.get('basis')}`"
+        )
+    lines.append("")
+    lines.append("## Provenance (prereg §3 check 5 and §12)")
+    lines.append("")
+    for key in PROVENANCE_KEYS:
+        lines.append(f"- {key}: `{prov[key]}`")
     lines.append("")
     lines.append("## Gates (12 claims; prereg SS11 verdict words only)")
     lines.append("")
@@ -2517,7 +2700,8 @@ def render_markdown(payload: dict) -> str:
         for hkey, row in inc.get("horizons", {}).items():
             lines.append(
                 f"- {hkey}: covers {row['covered']}/{row['evaluation_origins']} evaluation origins "
-                f"({_f(row['coverage_share'])}); Brier vs native label {_f(row['metrics_vs_native_label']['brier'])}"
+                f"({_f(row['coverage_share'])}); comparison-set origins {row.get('comparison_set_origins', '—')}; "
+                f"Brier vs native label {_f(row['metrics_vs_native_label']['brier'])}"
             )
     deviations = payload.get("deviations", [])
     lines.append("")
@@ -2541,6 +2725,7 @@ def render_markdown(payload: dict) -> str:
 
 def write_artifacts(out_dir: Path, payload: dict) -> tuple[Path, Path]:
     out_dir.mkdir(parents=True, exist_ok=True)
+    attach_provenance(payload)
     json_path = out_dir / RESULTS_JSON_NAME
     md_path = out_dir / RESULTS_MD_NAME
     json_path.write_text(json.dumps(payload, indent=2, default=str) + "\n", encoding="utf-8")
@@ -2619,6 +2804,7 @@ def assemble_payload(
             )
     configs.extend(fits["config_rows"])
 
+    merge_training_fold_thin(census, fits)
     payload = dict(identities)
     payload["run"] = {**identities["run"], "hydrate": hydrate_info}
     payload["sample"] = {**sample_info, "integrity": integrity}
@@ -2753,8 +2939,11 @@ def print_configuration_table() -> None:
 
 
 def write_blocked_artifact(out_dir: Path, payload: dict) -> None:
+    """The blocked JSON and the results note. Both carry the six provenance fields."""
     out_dir.mkdir(parents=True, exist_ok=True)
+    attach_provenance(payload)
     (out_dir / RESULTS_JSON_NAME).write_text(json.dumps(payload, indent=2, default=str) + "\n", encoding="utf-8")
+    (out_dir / RESULTS_MD_NAME).write_text(render_markdown(payload), encoding="utf-8")
 
 
 def main(argv: list[str] | None = None) -> int:
