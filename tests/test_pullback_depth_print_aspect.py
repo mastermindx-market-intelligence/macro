@@ -11,6 +11,8 @@ from __future__ import annotations
 import re
 from pathlib import Path
 
+import pytest
+
 from lib.illus import illus
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -146,3 +148,46 @@ def test_host_print_blocks_release_the_dialog_panel():
             and "overflow:visible" in _compact(block)
         ]
         assert matched, f"{path.name} print block does not release {panel} max-height/overflow"
+
+
+def _print_declarations(path: Path, selector_tail: str) -> list[dict[str, str]]:
+    """Declarations of each print rule whose selector ends with selector_tail."""
+    found = []
+    for block in _blocks(_css(path), r"@media\s+print\b"):
+        for head, body in _rules(block):
+            if not any(_compact(sel).endswith(selector_tail) for sel in head.split(",")):
+                continue
+            decls = {}
+            for decl in body.split(";"):
+                name, sep, value = decl.partition(":")
+                if sep:
+                    decls[name.strip()] = _compact(value)
+            found.append(decls)
+    return found
+
+
+@pytest.mark.parametrize(
+    ("path", "panel", "backdrop"),
+    (
+        (DASHBOARD, ".mx5-dlg.open.mx5-dlg-panel", ".mx5-dlg.open.mx5-dlg-backdrop"),
+        (CHINA, ".cnx-dlg.open.cnx-dlg-panel", ".cnx-dlg.open.cnx-dlg-backdrop"),
+    ),
+    ids=("us", "cn"),
+)
+def test_host_print_blocks_print_the_panel_light_without_the_backdrop(path, panel, backdrop):
+    """The open dialog prints light, in system colours, with no modal wash.
+
+    Hex print colours fail the design-system scan, and a visible backdrop puts
+    the dialog on a dark wash when background graphics are printed.
+    """
+    panels = _print_declarations(path, panel)
+    assert panels, f"{path.name} has no print rule for {panel}"
+    for decls in panels:
+        assert decls.get("background") == "Canvas"
+        assert decls.get("color") == "CanvasText"
+        assert decls.get("color-scheme") == "light"
+        assert not any("#" in value for value in decls.values())
+    backdrops = _print_declarations(path, backdrop)
+    assert any(decls.get("display") == "none" for decls in backdrops), (
+        f"{path.name} print block leaves {backdrop} visible"
+    )
