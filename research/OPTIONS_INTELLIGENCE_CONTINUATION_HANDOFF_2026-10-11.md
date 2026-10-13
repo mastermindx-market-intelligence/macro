@@ -581,10 +581,18 @@ minimax, grok, cursor, glm) → optional bounded workers. No native leaf swarm; 
 
 ## Lane matrix
 
-(2026-10-13T03:05Z snapshot.) Rows superseding older rows below:
+(2026-10-13T04:45Z snapshot.) Rows superseding older rows below:
 
 | lane | state |
 |---|---|
+| D04A Tuesday window | RE-ARMED (D56) 04:38:59Z after the reboot killed the D53 runner: `leads/D04A/tuesday/run_window.sh` pid 92402 (`nohup caffeinate -i`); 8 READ-ONLY ticks 13:00–21:41Z → recreated `monday/dossier.md` (Monday dossier LOST, recorded as lost); sentinel `tuesday/WINDOW_DONE`; release = seat D-entry after 21:41Z then label swap ONLY |
+| U01 step 1C (oi-1c) | ACCEPTED (D56): #723 refreshed onto master `b30836b2ac7c` at `88cb08ad`; seat guard fix `037a67ab` on PR head `claude/terminal-options-heatmap-20260923` + mirror; CI run 38346938452 watcher `ba34250b1`; OI1D responsive triage frozen, launch only if tablet/mobile red |
+| CENSUS wave 3 (12 lanes) | DELIVERED (D56): all rc=0, `census.md` re-fetched to `leads/CENW3/<lane>/`; UNJUDGED; D55 watcher died in reboot (lanes already done) |
+| 8920-R1 | RUNNING (D56): mmx-ubuntu0 pid 1249862, READ-ONLY diagnosis on HEAD `72b916a9e904` + BASE `d89fdf72f85d` worktrees; watcher `b5gio4c66` → `leads/8920R1/WATCH_DONE` |
+| TFLAKE | RUNNING (D56): mmx-ubuntu3 pid 1661289 (`aiContext.test.ts` 1 ms clock flake, #948); watcher `btvh4l3ml` → `leads/TFLAKE/WATCH_DONE`; seat opens Terminal PR (label + `--auto`) |
+| F02-Q | RUNNING (D56): mmx-ubuntu3 pid 1661165; watcher `bv9f4svve` → `leads/F02Q/WATCH_DONE`; seat opens Macro PR (`merge-on-green` label only) |
+| D03-R1 | RUNNING (D56): mmx-ubuntu3 pid 1661022; watcher `bsb273lg9` → `leads/D03R1/WATCH_DONE`; PR held until after 2026-10-14 00:00Z |
+| D16b | RUNNING (D56): mastermind-pc pid 1496093; watcher `b3lo9f50s` → `leads/D16B/WATCH_DONE`; PR held until after 2026-10-14 00:00Z |
 | CENSUS wave 3 (12 lanes) | RUNNING (D55): launched 03:02:00–04Z, grok-4.7, 150 turns / 14400 s, READ-ONLY on pinned trees (Macro `9a47ac7f9444`, Terminal `b30836b2ac7c`, +#781 `85d9f4eae172` / #846 `eb57a6830438`); ubuntu0: cen-f03/f04/q03/r04; ubuntu3: cen-v04/m03/m04/v03; mastermind-pc: cen-n02/n03/u03/u04; return `~/lanes/returns/<lane>/census.md`; watcher `remote/watch_wave_cen.sh` (task bpks306wm) → `leads/CEN<PKG>/remote_run/WATCH_DONE` |
 | U01 step 1C (oi-1c) | RUNNING (D54): launched 02:51:36Z on mmx-ubuntu0 pid 985147 (grok-4.7, 240 turns, 25200 s), worktree `~/lanes/wt/oi-1c` branch `claude/ssd-pr-723-c89a753150e1dbd6` from `14a331f8f21e`; merge onto master `b30836b2ac7c` + ChartPanel both-lines resolution + recapture of 6 conflicted packets + gates + push; merge commit `f72b99bb` observed 02:53:56Z (unjudged); watcher `bwwblnhb7` → `leads/OI1C/remote_run/WATCH_DONE` |
 | PP1 / PP2 (#723 Paper parity) | NOT STARTED (D54): gated on the Codex root's accepted criteria (GLM contract task `fable-paper-parity-build-contract-20261013`, not ours) + 1C judged; route = fresh Fabric-skill read → normal admission; serialized on the lane branch |
@@ -970,3 +978,54 @@ INTENDED_RESUME_SURFACE: this Claude Code session; successor reads this file + #
   - Packages whose carrier is held stay held: Q05 (#8555/#7328), R05 (Sol), and #781 custody (V03 is reconciliation only).
 - NOT CHANGED: oi-1c is still RUNNING (watcher `bwwblnhb7`); PP1/PP2 are still gated on the Codex root's accepted criteria; the D04A Tuesday window is armed; #948 is with the controller; #8920 is merge-blocked (lane 8920-R1 not yet launched).
 - NEXT: freeze and launch the build lanes 8920-R1, TFLAKE, F02-Q, D03-Q and D16b. Then judge oi-1c on its WATCH_DONE.
+
+### D56 (2026-10-13T04:45Z) — Reboot recovery; oi-1c ACCEPTED; #723 guard red fixed at `037a67ab`; five build/diagnosis lanes launched; wave-3 census DELIVERED
+- REBOOT (~03:58Z): the Mac rebooted. `/private/tmp` (the session scratchpad) was wiped, and every detached Mac process died, including the D04A Tuesday runner and all seat watchers. Remote lanes on the Ubuntu hosts and mastermind-pc were unaffected.
+- SEAT STATE NOW DURABLE: seat state lives in `/Volumes/Mastermind/agent-workspaces/claude/5600d31ffa29643a/oi-e2e-seat-f77d3f70/scratchpad`, and the scratchpad paths are symlinks into it. Prompts, scripts and leads were rebuilt from the session transcript (`recover_*.py` in the seat dir).
+- WHAT WAS LOST: the Monday D04 dossier (`monday/dossier.md`) and its `raw/` captures. They are recorded as LOST, not empty. The recreated dossier opens with that statement.
+- D04A TUESDAY WINDOW RE-ARMED 04:38:59Z: the recovered `tuesday/run_window.sh` (D53 text plus the date-format patch) runs detached (`nohup caffeinate -i`, pid 92402).
+  - It makes 8 READ-ONLY ticks, 2026-10-13 13:00–21:41Z, into the recreated dossier. Sentinel: `tuesday/WINDOW_DONE`.
+  - The release rule is unchanged: a seat D-entry after 21:41Z, then a label swap ONLY.
+- oi-1c ACCEPTED (U01 step 1C): mmx-ubuntu0 rc=0. The #723 refresh onto master `b30836b2ac7c` was pushed on the lane branch at `88cb08ad`.
+  - ChartPanel was resolved with both lines kept.
+  - All six conflicted evidence packets were recaptured with their own tools.
+  - On the CI run at 88cb08ad, the desktop e2e shards were green. The lane recorded 14 local responsive failures, which are open (see OI1D below).
+- #723 UNIT+TYPECHECK RED FIXED (seat principal work under L.7: one line, no live lane on the file, seat custody):
+  - Cause: the plain-language guard rule R3 `raw_slug_interpolation` fired on `fetchStatus={snapshot.status}` in `terminal/components/options-companion/MatrixCompanion.tsx`.
+  - Fix: bind `const fetchStatus = snapshot.status;` outside JSX. Commit `037a67abe59c`, "fix(options): route the companion fetch state through a local binding".
+  - Evidence: guard blocking 1 → 0 (rc 0); tsc rc 0; vitest `plainLanguageGuard.test.ts` 30 passed; `optionsCompanion*` + `plainLanguageGuardCi.test.ts` 47 passed.
+  - Topology correction: the PR head branch is `claude/terminal-options-heatmap-20260923`, and the writer mirror is `claude/ssd-pr-723-c89a753150e1dbd6`. Both are now at `037a67ab`; the head was fast-forwarded with `--force-with-lease` from `88cb08ad`.
+  - New CI: pull_request run 38346938452 plus dynamic run 38346935479. Watcher `ba34250b1` writes `pr/723ci/RUN_38346938452_DONE`.
+  - #723 stays draft until Paper parity (PP1/PP2) lands. PP stays gated on the Codex root's accepted criteria.
+- OI1D (read-only head-vs-base responsive triage): DEFERRED until run 38346938452 shows whether the tablet and mobile shards are red. Its frozen shape:
+  - base tree `~/lanes/wt/oi-1d` @`b30836b2ac7c`, with the head in a separate detached worktree;
+  - `env -u CI --workers=1 --retries=0`, N=2.
+- FIVE LANES LAUNCHED 04:34:28–29Z (D52 carrier, grok-4.7, 190 turns, 18000 s), one `watch_lane.sh` watcher each:
+  - `d03-r1` on mmx-ubuntu3, pid 1661022, watcher `bsb273lg9`.
+  - `f02-q` on mmx-ubuntu3, pid 1661165, watcher `bv9f4svve`.
+  - `tflake` on mmx-ubuntu3, pid 1661289, watcher `btvh4l3ml`. This is the `aiContext.test.ts` clock-flake fix for #948.
+  - `d16b` on mastermind-pc, pid 1496093, watcher `b3lo9f50s`.
+  - `8920-r1` on mmx-ubuntu0, pid 1249862, watcher `b5gio4c66`. It is READ-ONLY DIAGNOSIS: HEAD worktree `72b916a9e904` plus BASE worktree `d89fdf72f85d`, both read-only; no commit, push, branch, PR, label, comment or `gh`.
+    - Log substitution: `gh api …/jobs/<id>/logs` had been refused, so it was not retried. The lane got the failing attempt's excerpt (SIGABRT `-6` after the CLI's own correct refusal text, "terminate called without an active exception") plus the full log of the PASSING rerun at the same head, `ci_pack_9.log`, which it may use for versions only.
+- WAVE-3 CENSUS DELIVERED: all 12 lanes ended rc=0 with `census.md` present (136–218 lines each).
+  - Its D55 watcher (`bpks306wm`) died in the reboot and is not re-armed, because the lanes are already done.
+  - The returns were re-fetched to `leads/CENW3/<lane>/census.md` and are UNJUDGED at this entry. Judging follows S.3 (artifact plus spot-opened path:line).
+- STRAY DIRS (found and removed): `mastermind-pcanes/`, `mmx-ubuntu0anes/`, `mmx-ubuntu3anes/` and `ubuntu2anes/` appeared in the seat worktree.
+  - Cause: zsh parses `$h:l…` as the `:l` (lowercase) history modifier, so `scp file $h:lanes/...` copied to a LOCAL path.
+  - Proof they were harmless: md5 equals the hosts' installed `~/lanes/bin/{oi_lane,mk_macro,mk_term}.sh` on all four hosts, so the remote installs are current. Removed.
+  - Rule: always brace host variables (`${h}:lanes`).
+- BASES at this entry: Macro main `a8e054ce` (no drift in the seat's owned files); Terminal master `e0ffafc1f6c5`.
+- Rungs at 04:45Z:
+  - #723: CI (fix pushed; run 38346938452 in flight) and draft.
+  - oi-1c: ACCEPTANCE (seat).
+  - Five lanes: RUNNING.
+  - Census: DELIVERED.
+  - D04A: HELD, window re-armed.
+  - #948: CI, owned by the controller.
+  - #8920: blocked (diagnosis RUNNING).
+  - PP: NOT STARTED (gated).
+  - O-2: the root's.
+- NEXT:
+  - Judge the 12 census returns.
+  - On each lane's WATCH_DONE, judge by artifact. Seat-opened PRs: Macro takes the `merge-on-green` label only, and the D03-R1 and D16b PRs are held until after 2026-10-14 00:00Z. TFLAKE is a Terminal PR (label plus `--auto`). The 8920-R1 verdict feeds the #8920 repair or release.
+  - On the #723 CI watcher: continue the release chain, or launch OI1D.
