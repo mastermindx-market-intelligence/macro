@@ -6454,6 +6454,7 @@ jobs:
       - "tests/test_fif_p2_evidence_capture.py"
       - "tests/test_fif_publication_workflow_shape.py"
       - "tests/test_filing_forensics_broad_sec_lane.py"
+      - "tests/test_filing_forensics_sec_lane.py"
       - "tests/test_forensics_api.py"
       - "tests/tools/fif_p2_evidence_capture.py"
       # Static data-path references the app/ import closure carries (contract-delta, 2026-10-12).
@@ -6502,6 +6503,7 @@ jobs:
           tests/test_fif_gsrc_capture.py
           tests/test_fif_publication_workflow_shape.py
           tests/test_filing_forensics_broad_sec_lane.py
+          tests/test_filing_forensics_sec_lane.py
           tests/test_forensics_api.py
           tests/test_fundamental_forensics_acquisition.py
           tests/test_fundamental_forensics_admitted_filing_package.py
