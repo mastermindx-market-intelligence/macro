@@ -5635,6 +5635,7 @@ jobs:
       - "tests/test_us_dialog_escape_listener.py"
       - "tests/test_pullback_age_singular.py"
       - "tests/test_tushare_index_daily.py"
+      - "tests/test_pullback_tenth_rule_mutants.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -5703,6 +5704,7 @@ jobs:
           tests/test_pullback_episode_fuzz_cn.py
           tests/test_pullback_wave9_mutants.py
           tests/test_tushare_index_daily.py
+          tests/test_pullback_tenth_rule_mutants.py
           -q
 
 
