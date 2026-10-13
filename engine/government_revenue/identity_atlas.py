@@ -34,6 +34,10 @@ from __future__ import annotations
 
 import hashlib
 import json
+import math
+import re
+from datetime import datetime
+from urllib.parse import urlsplit
 from collections import defaultdict
 from functools import lru_cache
 from pathlib import Path
@@ -469,6 +473,139 @@ def _curated_events(curated_issuer: Mapping[str, Any] | None, key: str) -> list[
     return out
 
 
+def _context_clock(value: Any) -> datetime | None:
+    try:
+        stamp = datetime.fromisoformat(str(value).replace("Z", "+00:00"))
+        return stamp if stamp.tzinfo is not None else None
+    except (TypeError, ValueError):
+        return None
+
+
+def _context_visible(row: Mapping[str, Any], cutoff: datetime) -> bool:
+    known = _context_clock(row.get("known_at"))
+    start = _context_clock(row.get("valid_from")) if row.get("valid_from") else None
+    end = _context_clock(row.get("valid_to")) if row.get("valid_to") else None
+    return bool(
+        row.get("review_state") == "reviewed" and row.get("rights_state") != "denied"
+        and known is not None and known <= cutoff
+        and (not row.get("valid_from") or (start is not None and start <= cutoff))
+        and (not row.get("valid_to") or (end is not None and cutoff < end))
+    )
+
+
+def _context_evidence(rows: Any) -> list[dict[str, Any]]:
+    """Curated-owner source references only; never grant source-body rights."""
+    if not isinstance(rows, list) or not rows:
+        return []
+    out = []
+    for row in rows:
+        if not isinstance(row, Mapping):
+            return []
+        try:
+            url = urlsplit(str(row.get("url") or ""))
+        except ValueError:
+            return []
+        digest = str(row.get("content_sha256") or "")
+        if (url.scheme != "https" or not url.hostname or url.username or url.password
+                or re.fullmatch(r"[a-f0-9]{64}", digest) is None
+                or not _text(row.get("record_id"))):
+            return []
+        out.append({key: row.get(key) for key in (
+            "record_id", "publisher", "url", "content_sha256", "retained_representation"
+        )})
+    return out
+
+
+def _archetype_context(
+    entities: list[dict[str, Any]], curated_issuer: Mapping[str, Any] | None,
+    *, analysis_as_of: str, public_security: Mapping[str, Any],
+) -> dict[str, Any]:
+    """Derived context over existing owners, with no financial capture calculation.
+
+    A reviewed graph interest is an edge interest, not consolidated revenue or
+    issuer-level cash. A source-native listing observation is not Stock Identity
+    admission. All subjects use exact owner IDs; the ticker selects no behavior.
+    """
+    cutoff = _context_clock(analysis_as_of)
+    curated = curated_issuer or {}
+    ownership, listings, gaps = [], [], []
+    if cutoff is None:
+        return {"state": "unavailable", "ownership_cases": [], "listing_cases": [],
+                "gaps": ["invalid_analysis_cutoff"]}
+    for entity in entities:
+        if entity.get("relationship") not in {"joint_venture", "majority_owned", "partial_owned"}:
+            continue
+        visible = [row for row in curated.get("ownership_qualifications", []) or []
+                   if isinstance(row, Mapping) and row.get("entity_id") == entity["entity_id"]
+                   and _context_visible(row, cutoff)]
+        row = visible[0] if len(visible) == 1 else {}
+        evidence = _context_evidence(row.get("evidence"))
+        if (not evidence or isinstance(row.get("ownership_interest"), bool)
+                or row.get("ownership_interest") != entity.get("economic_share")):
+            row = {}
+            evidence = [{"record_id": item.get("evidence_id"), **item}
+                        for item in entity.get("evidence", [])]
+            gaps.append("accounting_basis_not_established")
+        if len(visible) > 1:
+            gaps.append("conflicting_ownership_qualifications")
+        basis = row.get("accounting_basis")
+        if basis not in {"equity_method", "consolidated", "not_established"}:
+            basis = "not_established"
+        ownership.append({
+            "entity_id": entity["entity_id"], "canonical_name": entity.get("canonical_name"),
+            "relationship": entity["relationship"], "ownership_interest": entity.get("economic_share"),
+            "interest_basis": "direct_edge_interest_not_issuer_capture",
+            "documentary_counterparties": [
+                {"name_as_printed": item["name_as_printed"],
+                 "ownership_interest": item["ownership_interest"], "identity_path": "not_established"}
+                for item in row.get("documentary_counterparties", []) or []
+                if isinstance(item, Mapping) and _text(item.get("name_as_printed"))
+                and isinstance(item.get("ownership_interest"), (int, float))
+                and not isinstance(item.get("ownership_interest"), bool)
+                and math.isfinite(item["ownership_interest"]) and 0 < item["ownership_interest"] <= 1
+            ],
+            "accounting_basis": basis, "source_as_of": row.get("source_as_of"),
+            "effective_interval_state": row.get("effective_interval_state", "not_established"),
+            "known_at": row.get("known_at") or entity.get("known_at"), "rights_state": row.get("rights_state", "unknown"),
+            "recipient_attribution": "reviewed_identifier_present" if entity.get("identifiers") else "not_established",
+            "revenue_capture": "not_established", "workshare": "not_established", "cash_capture": "not_established",
+            "evidence": evidence,
+        })
+    for row in curated.get("listing_qualifications", []) or []:
+        if not isinstance(row, Mapping) or not _context_visible(row, cutoff):
+            continue
+        evidence = _context_evidence(row.get("evidence"))
+        identity = row.get("native_identity")
+        if (not evidence or not isinstance(identity, Mapping)
+                or not all(_text(identity.get(key)) for key in
+                           ("issuer_registry", "issuer_native_id", "venue", "symbol", "security_kind"))
+                or identity.get("security_kind") not in {"ordinary_share", "adr"}):
+            gaps.append("source_native_listing_identity_incomplete")
+            continue
+        ratio = row.get("ordinary_shares_per_adr")
+        if identity["security_kind"] == "adr" and (
+                isinstance(ratio, bool) or not isinstance(ratio, (int, float)) or not math.isfinite(ratio) or ratio <= 0):
+            gaps.append("adr_ratio_not_established")
+            continue
+        listings.append({
+            "state": "source_observed", "native_identity": {key: identity.get(key) for key in
+                ("issuer_registry", "issuer_native_id", "issuer_name_as_printed", "venue", "symbol", "security_kind")},
+            "ordinary_shares_per_adr": ratio if identity["security_kind"] == "adr" else None,
+            "quote_currency": row.get("quote_currency"), "source_as_of": row.get("source_as_of"),
+            "effective_interval_state": row.get("effective_interval_state", "not_established"),
+            "known_at": row["known_at"], "rights_state": row.get("rights_state", "unknown"),
+            "dataos_listing_state": public_security.get("state", "not_in_si_universe"),
+            "listing_admission": "not_established", "price_comparability": "not_established",
+            "recipient_attribution": "not_established", "economic_capture": "not_established", "evidence": evidence,
+        })
+    if ownership:
+        gaps.append("ownership_interest_is_not_revenue_workshare_or_cash")
+    if listings:
+        gaps.append("source_listing_observation_is_not_dataos_admission")
+    return {"state": "partial" if ownership or listings or gaps else "not_asserted",
+            "ownership_cases": ownership, "listing_cases": listings, "gaps": sorted(set(gaps))}
+
+
 # ---------------------------------------------------------------------------
 # Per-issuer assembly
 # ---------------------------------------------------------------------------
@@ -487,6 +624,7 @@ def _build_issuer(
     backlog_by_ticker: Mapping[str, Mapping[str, Any]],
     dossier_awards: Iterable[Mapping[str, Any]],
     curated_issuers: Mapping[str, Mapping[str, Any]],
+    analysis_as_of: str,
 ) -> dict[str, Any]:
     company = companies_by_ticker.get(ticker)
     curated_issuer = curated_issuers.get(ticker)
@@ -612,6 +750,8 @@ def _build_issuer(
         "listing_events": listing_events,
         "separation_events": separation_events,
         "gaps": gaps,
+        "archetype_context": _archetype_context(entities, curated_issuer,
+            analysis_as_of=analysis_as_of, public_security=public_security),
     }
 
 
@@ -677,6 +817,7 @@ def build_identity_atlas(
             backlog_by_ticker=backlog_by_ticker,
             dossier_awards=dossier_awards,
             curated_issuers=curated_issuers,
+            analysis_as_of=graph_as_of or generated_at,
         )
         for ticker in tickers
     ]

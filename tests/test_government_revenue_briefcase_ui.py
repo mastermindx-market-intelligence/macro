@@ -35,13 +35,13 @@ def _run_node(tmp_path: Path, body: str, initial_state: str | None = None) -> di
         global.window = window;
         eval(source);
         const clock = () => '2026-08-02T12:00:00Z';
-        const make = () => window.createGovernmentRevenueBriefcase({storage: localStorage, now: clock});
+        const make = () => window.createGovernmentRevenueBriefcase({storage: localStorage, now: clock, ownerId: 'test-user'});
         %(body)s
         """
     ) % {
         "module": json.dumps(str(MODULE)),
         "initial_state": (
-            "values['mastermind.government_revenue.briefcase.v1'] = " + json.dumps(initial_state) + ";"
+            "values['mastermind.government_revenue.briefcase.v1.user.test-user'] = " + json.dumps(initial_state) + ";"
             if initial_state is not None else ""
         ),
         "body": body,
@@ -287,11 +287,11 @@ def test_ui_mount_wires_saved_view_and_first_local_baseline(tmp_path: Path) -> N
         var filters={mode:'opportunities',truth:'defense',q:'radar',agency:'Department of Defense',ticker:'LMT'},applied=null,ready=true;
         function esc(x){return String(x==null?'':x).replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
         var app=window.mountGovernmentRevenueBriefcaseUI({get:node,tr:function(x){return x},esc:esc,text:function(x,fb){return x==null||x===''?(fb||''):String(x)},
-          getFilters:function(){return filters},applyFilters:function(value){applied=value},getWorkspace:function(){return %(workspace)s},isWorkspaceReady:function(){return ready},openDrawer:function(){}});
+          onOwnerChange:function(callback){callback('test-user')},getFilters:function(){return filters},applyFilters:function(value){applied=value},getWorkspace:function(){return %(workspace)s},isWorkspaceReady:function(){return ready},openDrawer:function(){}});
         app.bind();node('savedViewName').value='Defense radar';node('saveView').fire('click');
         filters={mode:'changes',truth:'all',q:'',agency:'',ticker:''};node('savedViewSelect').fire('change');
         node('toggleLocalAlert').fire('click');
-        var state=JSON.parse(values['mastermind.government_revenue.briefcase.v1']);
+        var state=JSON.parse(values['mastermind.government_revenue.briefcase.v1.user.test-user']);
         process.stdout.write(JSON.stringify({available:app.available,applied:applied,state:state,status:node('briefcaseStatus').textContent,toggle:node('toggleLocalAlert').textContent}));
         """
     ) % {
@@ -315,3 +315,55 @@ def test_ui_mount_wires_saved_view_and_first_local_baseline(tmp_path: Path) -> N
     assert out["state"]["inbox"] == []
     assert "baseline checked" in out["status"]
     assert out["toggle"] == "Disable local alert"
+
+
+@needs_node
+def test_no_local_private_state_reads_before_subject_and_no_legacy_adoption(tmp_path: Path) -> None:
+    out = _run_node(tmp_path, """
+        const reads=[];
+        const scopedStorage={getItem:key=>{reads.push(key);return values[key]||null},setItem:(key,value)=>{values[key]=value}};
+        const legacy='mastermind.government_revenue.briefcase.v1';
+        values[legacy]=JSON.stringify({contract:'government_procurement_local_state.v1',saved_views:[{id:'old',name:'Unassigned secret',filters:{}}],alerts:[],inbox:[]});
+        const anonymous=window.createGovernmentRevenueBriefcase({storage:scopedStorage});
+        const anon=anonymous.createView({name:'Ephemeral',filters:{}});
+        const a=window.createGovernmentRevenueBriefcase({storage:scopedStorage,ownerId:'user-a'});
+        a.createView({name:'A private',filters:{ticker:'LMT'}});
+        const b=window.createGovernmentRevenueBriefcase({storage:scopedStorage,ownerId:'user-b'});
+        const back=window.createGovernmentRevenueBriefcase({storage:scopedStorage,ownerId:'user-a'});
+        process.stdout.write(JSON.stringify({anonPersisted:anon.persisted,reads,a:back.listViews(),b:b.listViews(),legacy:values[legacy]}));
+    """)
+    assert out['anonPersisted'] is False
+    assert out['reads'] == ['mastermind.government_revenue.briefcase.v1.user.user-a', 'mastermind.government_revenue.briefcase.v1.user.user-b', 'mastermind.government_revenue.briefcase.v1.user.user-a']
+    assert out['a'][0]['name'] == 'A private'
+    assert out['b'] == []
+    assert 'Unassigned secret' in out['legacy']
+
+
+@needs_node
+def test_ui_waits_for_subject_and_purges_private_options_on_logout(tmp_path: Path) -> None:
+    script = r"""
+    const fs=require('fs'),values={},reads=[],nodes={};
+    function node(id){return nodes[id]||(nodes[id]={value:'',innerHTML:'',textContent:'',disabled:false,addEventListener(){},focus(){}})}
+    const storage={getItem:k=>(reads.push(k),values[k]||null),setItem:(k,v)=>values[k]=v};
+    global.window={localStorage:storage};
+    eval(fs.readFileSync(CORE,'utf8'));eval(fs.readFileSync(UI,'utf8'));
+    let callback,clears=0;
+    window.createGovernmentRevenueBriefcase({storage:storage,ownerId:'user-a'}).createView({name:'A private',filters:{}});
+    window.createGovernmentRevenueBriefcase({storage:storage,ownerId:'user-b'}).createView({name:'B private',filters:{}});
+    reads.length=0;
+    const api=window.mountGovernmentRevenueBriefcaseUI({get:node,tr:x=>x,esc:String,text:(x,d='')=>x==null?d:String(x),onOwnerChange:cb=>callback=cb,clearPrivatePresentation:()=>clears++,getFilters:()=>({}),isWorkspaceReady:()=>false});
+    api.bind();const initial={reads:reads.slice(),available:api.available};
+    callback('user-a');const a=node('savedViewSelect').innerHTML;
+    callback('user-b');const b=node('savedViewSelect').innerHTML;
+    callback('');const signedOut={available:api.available,html:node('savedViewSelect').innerHTML,name:node('savedViewName').value,count:node('localInboxCount').textContent};
+    process.stdout.write(JSON.stringify({initial,a,b,signedOut,clears}));
+    """.replace('CORE', json.dumps(str(MODULE))).replace('fs.readFileSync(UI,', 'fs.readFileSync(' + json.dumps(str(ROOT/'templates/government-revenue-briefcase-ui.js')) + ',')
+    path=tmp_path/'tenant_ui.js';path.write_text(script)
+    result=subprocess.run(['node',str(path)],capture_output=True,text=True,timeout=30)
+    assert result.returncode == 0, result.stderr
+    out=json.loads(result.stdout)
+    assert out['initial'] == {'reads':[],'available':False}
+    assert 'A private' in out['a'] and 'B private' not in out['a']
+    assert 'B private' in out['b'] and 'A private' not in out['b']
+    assert out['signedOut'] == {'available':False,'html':'','name':'','count':'0'}
+    assert out['clears'] == 3

@@ -1,6 +1,8 @@
 # Defense investor research — separate targets and an admission protocol
 
-Status: **PROPOSED_FOR_INDEPENDENT_REVIEW; no evaluation or promotion**.
+Status: **DESIGN_REVIEWED; SOURCE/TARGET_ADMISSION_INCOMPLETE; no evaluation or promotion**.
+The independently accepted amendment below supersedes ambiguous planning text.
+[Full adjudication](recovery_20261012/SCIENTIFIC_ADJUDICATION.md) and its input census retain the evidence and open obligations.
 Assignment: Defense Procurement V3, delivery contracts Q0–Q4/A24–A30.
 This proposal becomes a registration only when its exact Git revision, manifest
 digest and independent acceptance are recorded before the affected outcomes are
@@ -99,7 +101,7 @@ An adverse outcome is never removed because it contradicts the narrative.
 The initial budget is one frozen full-input specification plus three declared
 ablations (procurement-only, economics-only, and event/prior-price-only) for each
 admitted family. Existing `engine/trial_ledger.py` records generated configurations
-and their complete hashes before evaluation. Every generated variant consumes a
+before evaluation; its short configuration identifiers do not replace a complete SHA256 input/configuration manifest. Every generated variant consumes a
 trial, including discarded variants; reuse is permitted only for the identical
 configuration and inputs. The trial ledger is configuration accounting, not proof
 of a prospective issuance or an accepted target adapter.
@@ -140,3 +142,101 @@ historical availability, produce the sealed manifest and development-only power
 calculation, obtain independent acceptance, and then run the predeclared tests.
 Do not dispatch historical rows as new prospective candidates to manufacture a
 track record. Preserve pending natural-time obligations on their original owner.
+
+## Independent scientific adjudication and exact activation boundary
+
+This amendment records the bounded independent review of the proposal at Git
+`984ed6e16cca71bed534e39d707883fee87bd673`, protocol SHA256
+`9885d39deb0c5edf3e2a06ea8fe8d26851bf7698a99a0ad38f779dafa5ca41db`.
+It accepts separate experiment definitions and the planning choices below. It
+does not register a DPV3 family, open outcomes, issue a forecast, activate an
+evaluation caller or qualify efficacy. The input census is exploratory,
+not a sealed historical evaluation. Q0/Q1/Q3 obligations remain open.
+
+**DPV3-STAGE-1 signed-case binary is rejected for current evaluation.** The
+existing corpus has 94 source observations and 68 notification cases, all with
+later stage unobserved; no 365-day house-first-seen endpoint is mature. Silence
+cannot supply its negative class. Usable present scope is descriptive native-case
+progression with censoring. Future binary admission requires an exact native-case
+outcome owner, complete ascertainment through every endpoint, positive and negative
+label semantics, genuine probability issuance and a development-only baseline.
+Complete notification coverage is insufficient. This rejects no independent
+financial, equity or workflow experiment by association.
+
+The financial endpoint is year-over-year revenue growth for the same segment
+perimeter, accounting basis and single fiscal quarter: the second fiscal-quarter
+end strictly after actual issuance, from its first admitted subsequent report.
+The baseline is the latest released comparable same-segment year-over-year growth
+known at issuance. Guidance is supporting unless its unit/period is identical.
+The equity endpoint uses 63 **intervals**, `entry_index + 63`, on the frozen
+calendar; entry is the first session strictly after the house knowledge UTC date.
+Its two required baselines are a development-only event-type excess-return mean
+(development grand-mean fallback), and the entirely observable prior 63-session
+excess return. Adjusted prices, permanent security/corporate-action identity,
+rights and both public/house availability clocks remain owner admission gates.
+
+The independent reviewer accepts these explicit **planning design judgments**:
+
+| Family | Minimum useful paired improvement | Precision half-width |
+| --- | --- | --- |
+| Stage | 0.02 Brier-loss units | 0.01 |
+| Financial | 1.0 percentage point of absolute-error reduction | 0.5 percentage point |
+| Equity | 0.01 return units of absolute-error reduction | 0.005 return units |
+| Workflow | 5 minutes saved within the 45-minute task | 2.5 minutes |
+
+These are not empirical effect/variance estimates and do not grant source or
+target admission. A criterion change invalidates this bounded acceptance. Full
+input versus baseline is primary; three declared ablations are diagnostic and
+cannot replace it. There are **seven co-primary hypotheses**: stage one, finance
+one, equity two, workflow timing/source accuracy/omitted risk three. Control
+this complete family at alpha 0.05 with Holm. Workflow accuracy and omitted-risk
+noninferiority margins are each one percentage point, with a frozen task-level
+rubric: accuracy difference lower bound above -0.01, omitted-risk difference upper
+bound below +0.01. Participant repetitions and related tasks are clustered;
+answers are independently blinded and task/order exposure counterbalanced.
+
+Plan on paired **independent-cluster** differences using development-only variance
+and conservative alpha 0.05/7. For the utility null effect <= delta, the planning
+alternative is 2*delta: a design assumption, not observed efficacy. A calculation
+detecting delta against zero does not prove power to clear delta. Validate the
+normal planning approximation with the frozen development-only simulation.
+The inspected data has no admissible paired-loss development panel, so no measured
+SD or practical required sample has been supplied. Hoeffding worst-case precision
+sensitivities of 112,696 Brier clusters and 3,652 workflow clusters illustrate
+bounded-score uncertainty; they are **not empirical power results or accepted
+cohorts**. Unbounded financial/equity losses cannot use that shortcut, and adverse
+outcomes must not be clipped or discarded to make a sample gate convenient.
+
+For paired improvement baseline loss minus full-input loss, a multiplicity-adjusted
+lower confidence bound above delta qualifies only after every admission/coverage
+gate. An upper bound below delta establishes registered futility; an interval
+straddling delta is inconclusive. Continue under the frozen accrual plan, or use
+NO_GO with explicit `inconclusive_at_cap` at its registered expiry—without claiming
+zero predictive effect. NOT_EVALUABLE names absent/broken admission; it is not
+completed research or an unfavorable efficacy finding.
+
+The existing GRV-FA1 4.1.0 registration/admission/issuance/grader owns the prospective
+path. Its terms and incident-closed amendment boundary remain unchanged. The
+173-row display queue is not an issuance log: its 12 GRV-admitted input shapes
+have historical August clocks and must not be issued now as contemporaneous
+predictions. New DPV3 adapters require distinct declarations through this owner;
+stage/financial targets cannot be inserted into its current equity row schema.
+The existing trial ledger counts configurations; separately bind complete
+configuration/input SHA256 and refuse corrupt/unreadable accounting.
+
+Q3 research state belongs in the existing publisher's staged data/site generation
+**before final full-inventory proof**, with a read-only entitled consumer. It must
+say NOT_STARTED while real issuance is absent; empty storage is not running
+accrual. A staged generation clock or local source/test certificate is not a
+durable issuance acknowledgement. Live append requires an existing-owner proof
+binding exact forecast/source/registration bytes and actual durable issuance
+before the registered entry becomes observable. Final prepublish checks remain
+read-only, and a changed generation needs a new proof. A delayed or uncertain
+push stays on its original carrier and cannot backdate a new issuance.
+
+Incumbent GRV-FA1 natural-time terms stay h5/h21/h63/h126, placebo -252 sessions,
+545 independent draws/events, 12 issuers, 12 event and house-known months,
+120 entry sessions, its 70% coverage gates and 2029-08-06 expiry. An actual fresh
+caller/consumer and immutable calendar/price-rights inputs remain integration
+obligations. The exploratory input census, accepted design judgments and missing
+efficacy evidence do not discharge those obligations.

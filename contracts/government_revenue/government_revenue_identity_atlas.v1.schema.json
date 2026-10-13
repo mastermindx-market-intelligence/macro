@@ -42,6 +42,8 @@
     }
   },
   "$defs": {
+    "archetypeOwnership": {"type":"object","additionalProperties":false,"required":["entity_id","canonical_name","relationship","ownership_interest","interest_basis","documentary_counterparties","accounting_basis","source_as_of","effective_interval_state","known_at","rights_state","recipient_attribution","revenue_capture","workshare","cash_capture","evidence"],"properties":{"entity_id":{"type":"string"},"canonical_name":{"type":["string","null"]},"relationship":{"enum":["joint_venture","majority_owned","partial_owned"]},"ownership_interest":{"type":["number","null"],"exclusiveMinimum":0,"maximum":1},"interest_basis":{"const":"direct_edge_interest_not_issuer_capture"},"documentary_counterparties":{"type":"array","items":{"type":"object","additionalProperties":false,"required":["name_as_printed","ownership_interest","identity_path"],"properties":{"name_as_printed":{"type":"string"},"ownership_interest":{"type":"number","exclusiveMinimum":0,"maximum":1},"identity_path":{"const":"not_established"}}}},"accounting_basis":{"enum":["equity_method","consolidated","not_established"]},"source_as_of":{"type":["string","null"]},"effective_interval_state":{"type":["string","null"]},"known_at":{"type":["string","null"]},"rights_state":{"type":"string"},"recipient_attribution":{"enum":["reviewed_identifier_present","not_established"]},"revenue_capture":{"const":"not_established"},"workshare":{"const":"not_established"},"cash_capture":{"const":"not_established"},"evidence":{"type":"array","items":{"type":"object","additionalProperties":false,"required":["record_id","publisher","url","content_sha256"],"properties":{"record_id":{"type":["string","null"]},"publisher":{"type":["string","null"]},"url":{"type":"string","pattern":"^https://"},"content_sha256":{"type":"string","pattern":"^[a-f0-9]{64}$"},"retained_representation":{"type":["string","null"]},"evidence_id":{"type":["string","null"]}}}}}},
+    "archetypeListing": {"type":"object","additionalProperties":false,"required":["state","native_identity","ordinary_shares_per_adr","quote_currency","source_as_of","effective_interval_state","known_at","rights_state","dataos_listing_state","listing_admission","price_comparability","recipient_attribution","economic_capture","evidence"],"properties":{"state":{"const":"source_observed"},"native_identity":{"type":"object","additionalProperties":false,"required":["issuer_registry","issuer_native_id","issuer_name_as_printed","venue","symbol","security_kind"],"properties":{"issuer_registry":{"type":"string","minLength":1},"issuer_native_id":{"type":"string","minLength":1},"issuer_name_as_printed":{"type":["string","null"]},"venue":{"type":"string","minLength":1},"symbol":{"type":"string","minLength":1},"security_kind":{"enum":["ordinary_share","adr"]}}},"ordinary_shares_per_adr":{"type":["number","null"],"exclusiveMinimum":0},"quote_currency":{"type":["string","null"]},"source_as_of":{"type":["string","null"]},"effective_interval_state":{"type":["string","null"]},"known_at":{"type":"string"},"rights_state":{"type":"string"},"dataos_listing_state":{"enum":["verified_live","listing_terminated","not_in_si_universe"]},"listing_admission":{"const":"not_established"},"price_comparability":{"const":"not_established"},"recipient_attribution":{"const":"not_established"},"economic_capture":{"const":"not_established"},"evidence":{"type":"array","items":{"type":"object","additionalProperties":false,"required":["record_id","publisher","url","content_sha256"],"properties":{"record_id":{"type":["string","null"]},"publisher":{"type":["string","null"]},"url":{"type":"string","pattern":"^https://"},"content_sha256":{"type":"string","pattern":"^[a-f0-9]{64}$"},"retained_representation":{"type":["string","null"]},"evidence_id":{"type":["string","null"]}}}}}},
     "dateTime": {"type": "string", "format": "date-time"},
     "nullableText": {"type": ["string", "null"]},
     "evidenceRef": {
@@ -175,6 +177,16 @@
         "listing_events", "separation_events", "gaps"
       ],
       "properties": {
+        "archetype_context": {
+          "type": "object", "additionalProperties": false,
+          "required": ["state", "ownership_cases", "listing_cases", "gaps"],
+          "properties": {
+            "state": {"enum": ["partial", "not_asserted", "unavailable"]},
+            "ownership_cases": {"type": "array", "items": {"$ref": "#/$defs/archetypeOwnership"}},
+            "listing_cases": {"type": "array", "items": {"$ref": "#/$defs/archetypeListing"}},
+            "gaps": {"type": "array", "items": {"type": "string"}}
+          }
+        },
         "ticker": {"type": "string", "minLength": 1},
         "company_name": {"$ref": "#/$defs/nullableText"},
         "public_security": {"$ref": "#/$defs/publicSecurity"},

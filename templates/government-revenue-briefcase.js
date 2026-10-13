@@ -480,6 +480,10 @@
     if (!storage) {
       try { storage = root.localStorage; } catch (error) { storage = null; }
     }
+    // Authenticated local state is never adopted from the former unowned key.
+    var ownerId = text(api.ownerId, 80);
+    var storageKey = /^[a-zA-Z0-9][a-zA-Z0-9_-]{0,79}$/.test(ownerId)
+      ? STORAGE_KEY + '.user.' + ownerId : null;
     var now = typeof api.now === 'function' ? api.now : function () { return new Date().toISOString(); };
     var counter = 0;
 
@@ -502,8 +506,8 @@
     }
 
     function read() {
-      if (!storage || typeof storage.getItem !== 'function') return blankState();
-      try { return normalState(JSON.parse(storage.getItem(STORAGE_KEY) || 'null')); }
+      if (!storageKey || !storage || typeof storage.getItem !== 'function') return blankState();
+      try { return normalState(JSON.parse(storage.getItem(storageKey) || 'null')); }
       catch (error) { return blankState(); }
     }
 
@@ -511,9 +515,9 @@
 
     function commit() {
       var persisted = false;
-      if (storage && typeof storage.setItem === 'function') {
+      if (storageKey && storage && typeof storage.setItem === 'function') {
         try {
-          storage.setItem(STORAGE_KEY, JSON.stringify(state));
+          storage.setItem(storageKey, JSON.stringify(state));
           persisted = true;
         } catch (error) {}
       }

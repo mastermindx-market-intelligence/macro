@@ -93,6 +93,8 @@ from engine.government_revenue.sbir_progression import (  # noqa: E402
     is_valid_sbir_progression_payload,
 )
 from engine.government_revenue.point_in_time import analysis_clock  # noqa: E402
+from engine.government_revenue.defense_economics import validate_defense_economics_payload  # noqa: E402
+from engine.government_revenue.defense_economics_producer import build_defense_economics_payload  # noqa: E402
 from lib.pages import write_page  # noqa: E402
 
 log = logging.getLogger("build_government_revenue")
@@ -1131,6 +1133,13 @@ def _write_site_projection(
         as_of=payload.get("as_of"),
         known_at=payload.get("known_at"),
     )
+    # Page-local assets travel with the projection in site-only and full renders.
+    from lib import site_assets
+    for asset in ('government-revenue-parity.css', 'government-revenue-dossiers.js', 'government-revenue-candidate-radar.js', 'government-revenue-briefcase.js', 'government-revenue-briefcase-ui.js', 'government-revenue-sbir.js', 'government-revenue-sbir.css', 'government-revenue-investor.js', 'government-revenue-investor.css'):
+        source = root / "templates" / asset
+        if source.is_file():
+            site_assets.copy_asset(asset, source, site_dir)
+
     # Shared includes predate the repository's whitespace gate. Keep this new
     # generated artifact deterministic and diff-clean without rewriting them.
     html = "\n".join(line.rstrip() for line in html.splitlines()) + "\n"
@@ -1195,6 +1204,25 @@ def _project_committed_sbir_progression(root: Path) -> None:
     if _canonical_json(payload) != raw:
         raise ValueError("canonical SBIR progression bytes are non-canonical")
     _write_sbir_progression_twins(root, raw)
+
+
+def _write_defense_economics_twins(root: Path, raw: str) -> None:
+    payload = json.loads(raw)
+    validate_defense_economics_payload(payload)
+    if _canonical_json(payload) != raw:
+        raise ValueError("canonical defense economics bytes are non-canonical")
+    _atomic_write_text(root / "data/government_revenue/defense_economics.json", raw)
+    _atomic_write_text(root / "site/government-revenue-data/defense-economics.json", raw)
+
+
+def _project_committed_defense_economics(root: Path) -> None:
+    canonical = root / "data/government_revenue/defense_economics.json"
+    twin = root / "site/government-revenue-data/defense-economics.json"
+    if not canonical.exists():
+        if twin.exists():
+            raise ValueError("defense economics site projection has no canonical source")
+        return
+    _write_defense_economics_twins(root, canonical.read_text(encoding="utf-8"))
 
 
 def build(
@@ -1282,6 +1310,13 @@ def build(
     sbir_progression = _validate_sbir_progression(
         build_sbir_progression_payload(root=root, as_of=sbir_cutoff)
     )
+    # Derive issuer context only from the existing, verified Event Workspace
+    # mirror. Acquisition and source publication remain with that owner.
+    defense_economics = build_defense_economics_payload(
+        root, generated_at=sbir_cutoff, as_of=sbir_cutoff,
+        require_market_owner=live_materialization,
+    )
+    validate_defense_economics_payload(defense_economics)
 
     canonical_dir = root / "data" / "government_revenue"
     canonical_dir.mkdir(parents=True, exist_ok=True)
@@ -1316,6 +1351,7 @@ def build(
     _write_idv_dossier_twins(root, _canonical_json(idv_dossier))
     _write_identity_atlas_twins(root, _canonical_json(identity_atlas))
     _write_sbir_progression_twins(root, _canonical_json(sbir_progression))
+    _write_defense_economics_twins(root, _canonical_json(defense_economics))
     program_dossier_bundle = _d5_program_dossier.compose_program_dossier_bundle(
         ontology_graph=d5_ontology_graph,
         as_of=payload.get("as_of"),
@@ -1496,6 +1532,7 @@ def build_site_only(root: Path) -> tuple[Path, Path, Path]:
         _write_program_dossier_twins(root, program_dossier_raw)
 
     _project_committed_sbir_progression(root)
+    _project_committed_defense_economics(root)
 
     candidate_projection = _candidate_projection(
         root,

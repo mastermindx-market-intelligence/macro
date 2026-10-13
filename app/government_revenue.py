@@ -36,6 +36,9 @@ from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit
 
 from fastapi import APIRouter, Depends, Header, HTTPException, Query
 
+from engine.government_revenue.defense_economics import validate_defense_economics_payload
+from engine.government_revenue.research_state import load_research_state
+
 from engine.government_revenue.budget_program import (
     BUDGET_PROGRAM_GRAPH_CONTRACT,
     is_valid_budget_program_graph,
@@ -108,6 +111,10 @@ def require_site_full_user(authorization: str | None = Header(default=None)) -> 
 router = APIRouter(dependencies=[Depends(require_site_full_user)])
 
 _REPO = Path(os.environ.get("MACRO_REPO", "/opt/macro"))
+_RESEARCH_STATE_PATHS = (
+    _REPO / "data/government_revenue/candidate_research_state.json",
+    _REPO / "site/government-revenue-data/research-state.json",
+)
 _PATHS = (
     _REPO / "data" / "government_revenue" / "latest.json",
     _REPO / "site" / "government-revenue-data" / "latest.json",
@@ -132,6 +139,10 @@ _FMS_CASE_GRAPH_SCHEMA_PATH = _REPO / "contracts" / "government_revenue" / "gove
 _SBIR_PROGRESSION_PATHS = (
     _REPO / "data/government_revenue/sbir_progression.json",
     _REPO / "site/government-revenue-data/sbir-progression.json",
+)
+_DEFENSE_ECONOMICS_PATHS = (
+    _REPO / "data/government_revenue/defense_economics.json",
+    _REPO / "site/government-revenue-data/defense-economics.json",
 )
 _IDV_DOSSIER_PATHS = (
     _REPO / "data" / "government_revenue" / "idv_dossiers.json",
@@ -1184,6 +1195,42 @@ def _public_workspace_event(row: dict) -> dict:
         "display_priority", "evidence", "authority",
     }
     return _scrub_public({key: row[key] for key in allowed if key in row})
+
+
+def _workspace_read_identity(source: dict) -> str:
+    # Exclude assembly clocks only; unchanged evidence keeps its identity.
+    stable = {key: value for key, value in source.items() if key not in {"generated_at", "bundle_id"}}
+    raw = json.dumps(stable, sort_keys=True, separators=(",", ":"), ensure_ascii=False, allow_nan=False)
+    return hashlib.sha256(raw.encode("utf-8")).hexdigest()
+
+
+def _reader_binding(source: dict, query: dict) -> str:
+    identity = _workspace_read_identity(source)
+    raw = json.dumps(query, sort_keys=True, separators=(",", ":"), ensure_ascii=False, allow_nan=False)
+    return hashlib.sha256((identity + ":" + raw).encode("utf-8")).hexdigest()[:32]
+
+
+def _encode_bound_workspace_cursor(offset: int, *, binding: str) -> str:
+    raw = f"v3:{binding}:{offset}"
+    return base64.urlsafe_b64encode(raw.encode("ascii")).decode("ascii").rstrip("=")
+
+
+def _decode_bound_workspace_cursor(cursor: str | None, *, binding: str) -> int:
+    if cursor is None:
+        return 0
+    if not cursor or len(cursor) > 96 or not re.fullmatch(r"[A-Za-z0-9_-]+", cursor):
+        raise HTTPException(status_code=400, detail="invalid cursor")
+    try:
+        raw = base64.urlsafe_b64decode((cursor + "=" * (-len(cursor) % 4)).encode("ascii")).decode("ascii")
+        version, claimed, offset = raw.split(":", 2)
+        value = int(offset)
+    except (ValueError, UnicodeError, binascii.Error) as exc:
+        raise HTTPException(status_code=400, detail="invalid cursor") from exc
+    if version != "v3" or not re.fullmatch(r"[a-f0-9]{32}", claimed) or value < 0 or value > 10_000:
+        raise HTTPException(status_code=400, detail="invalid cursor")
+    if claimed != binding:
+        raise HTTPException(status_code=409, detail="workspace or query changed; restart the reader")
+    return value
 
 
 def _workspace_cursor_version(workspace: dict) -> str:
@@ -2695,8 +2742,8 @@ def workspace(
 ) -> dict:
     """Return a stable cursor page in the backend-prioritized workspace order."""
     source = _procurement_workspace(_load())
-    cursor_version = _workspace_cursor_version(source)
-    offset = _decode_cursor(cursor, expected_version=cursor_version)
+    binding = _reader_binding(source, {"route": "workspace"})
+    offset = _decode_bound_workspace_cursor(cursor, binding=binding)
     events = [
         _public_workspace_event(row)
         for row in (source.get("events") or [])[offset:offset + limit]
@@ -2707,15 +2754,17 @@ def workspace(
     metadata = {
         key: source.get(key)
         for key in (
-            "schema_version", "event_contract", "as_of", "known_at", "generated_at",
+            "bundle_id", "schema_version", "event_contract", "as_of", "known_at", "generated_at",
             "authority", "freshness", "coverage", "facets", "total", "display_sort",
             "federation_contract", "limitations",
         )
         if key in source
     }
     return _scrub_public(metadata | {
+        "input_refs": ["workspace-sha256:" + _workspace_read_identity(source)],
+        "reader_identity": binding,
         "events": events,
-        "next_cursor": _encode_cursor(next_offset, version=cursor_version) if next_offset < total else None,
+        "next_cursor": _encode_bound_workspace_cursor(next_offset, binding=binding) if next_offset < total else None,
     })
 
 
@@ -2756,7 +2805,6 @@ def events(
 ) -> dict:
     """Filter the prebuilt event ledger without recalculating intelligence."""
     source = _procurement_workspace(_load())
-    cursor_version = _workspace_cursor_version(source)
     effective_scope = scope or ("all" if mode == "awards" else "mapped")
     ticker = _validated_ticker(ticker)
     needle = q.casefold().strip() if q else None
@@ -2860,11 +2908,21 @@ def events(
         rows.sort(key=_event_primary_amount, reverse=True)
     # priority retains the audited order already serialized by the engine.
 
-    offset = _decode_cursor(cursor, expected_version=cursor_version)
+    normalized_query = {
+        "route": "events", "mode": mode, "q": needle, "ticker": ticker,
+        "agency_id": agency_needle, "notice_type": notice_needle,
+        "evidence_class": evidence_needle, "impact": impact, "deadline": deadline,
+        "scope": effective_scope, "sort": sort,
+    }
+    binding = _reader_binding(source, normalized_query)
+    offset = _decode_bound_workspace_cursor(cursor, binding=binding)
     total = len(rows)
     page = rows[offset:offset + limit]
     next_offset = offset + len(page)
     return {
+        "bundle_id": source.get("bundle_id"),
+        "input_refs": ["workspace-sha256:" + _workspace_read_identity(source)],
+        "reader_identity": binding,
         "schema_version": source.get("schema_version"),
         "event_contract": source.get("event_contract"),
         "as_of": source.get("as_of"),
@@ -2877,7 +2935,7 @@ def events(
             "impact": impact, "deadline": deadline, "scope": effective_scope, "sort": sort,
         },
         "events": [_public_workspace_event(row) for row in page],
-        "next_cursor": _encode_cursor(next_offset, version=cursor_version) if next_offset < total else None,
+        "next_cursor": _encode_bound_workspace_cursor(next_offset, binding=binding) if next_offset < total else None,
         "total": total,
     }
 
@@ -2924,6 +2982,20 @@ def sbir_progression() -> dict:
     return payload
 
 
+@router.get("/api/government-revenue/defense-economics")
+def defense_economics() -> dict:
+    """Return the committed owner-qualified view after router entitlement."""
+    try:
+        canonical, twin = (path.read_bytes() for path in _DEFENSE_ECONOMICS_PATHS)
+        if canonical != twin:
+            raise ValueError("defense economics twins differ")
+        payload = json.loads(canonical)
+        validate_defense_economics_payload(payload)
+    except (OSError, ValueError, TypeError, KeyError) as exc:
+        raise HTTPException(status_code=503, detail="Defense economics could not be verified") from exc
+    return payload
+
+
 @router.get("/api/government-revenue/fms-cases")
 def fms_cases() -> dict:
     """List the D6-B1 FMS congressional-notification read model.
@@ -2955,3 +3027,12 @@ def fms_case(case_key: str) -> dict:
     return _public_fms_case_graph_envelope(payload) | {
         "case": _public_fms_case(row),
     }
+
+
+@router.get("/api/government-revenue/research-state")
+def research_state() -> dict:
+    """Read precomputed research state after the existing site_full entitlement."""
+    try:
+        return load_research_state(_RESEARCH_STATE_PATHS)
+    except (OSError, ValueError, TypeError, KeyError) as exc:
+        raise HTTPException(status_code=503, detail="Research state could not be verified") from exc
