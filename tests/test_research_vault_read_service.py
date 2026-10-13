@@ -885,6 +885,47 @@ def test_authoritative_digest_loss_after_loading_refuses_evidence(tmp_path, oper
     assert "synthetic authoritative receipt unavailable" not in json.dumps(result)
 
 
+@pytest.mark.parametrize("published_at", [None, "", "not-a-date", "2026-99-01T00:00:00Z"])
+def test_unknown_publication_time_never_becomes_dated_evidence(tmp_path, published_at):
+    report_id = "alpha-report"
+    svc, *_ = _service(
+        tmp_path,
+        items=[_item(report_id, "Alpha Note", published_at)],
+        extracted={report_id: _extracted(report_id)},
+        digest=PDF_SHA,
+    )
+    evidence = svc.find_evidence(
+        caller_context=_ctx(), report_id=report_id, query="hyperscaler", max_passages=3,
+    )
+    assert evidence["evidence_state"] == "UNAVAILABLE"
+    assert evidence["coverage_state"] == "EXTRACTION_UNAVAILABLE"
+    assert evidence["passages"] == []
+    assert "METADATA_PARTIAL" in evidence["source"]["known_degradation"]
+    assert "1970-01-01" not in json.dumps(evidence)
+
+    fetched = svc.fetch(caller_context=_ctx(), report_id=report_id, selectors={})
+    assert fetched["report"]["published_at"] == ""
+    assert fetched["segments"]  # Literal text remains usable without inventing chronology.
+    search = svc.search(caller_context=_ctx(), query="hyperscaler", filters={}, limit=3, cursor=None)
+    assert search["candidates"][0]["published_at"] == ""
+
+
+def test_actual_1970_publication_time_is_preserved(tmp_path):
+    report_id = "alpha-report"
+    published_at = "1970-01-01T00:00:00+00:00"
+    svc, *_ = _service(
+        tmp_path,
+        items=[_item(report_id, "Alpha Note", published_at)],
+        extracted={report_id: _extracted(report_id)},
+        digest=PDF_SHA,
+    )
+    result = svc.find_evidence(
+        caller_context=_ctx(), report_id=report_id, query="hyperscaler", max_passages=3,
+    )
+    assert result["evidence_state"] == "FOUND"
+    assert {passage["published_at"] for passage in result["passages"]} == {published_at}
+
+
 def test_t13_fetch_segments_replay_and_pagination(tmp_path):
     published = (NOW - timedelta(hours=1)).isoformat()
     items = [_item("alpha-report", "Alpha Note", published)]
