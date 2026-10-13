@@ -281,12 +281,19 @@ def cell_record(cell: dict, evaluation: dict, screens=None, applied_via="", open
     return record
 
 
-def assemble_receipt(base: str, started_utc: str, browser_version: str, cells: list[dict]) -> dict:
+def assemble_receipt(
+    base: str,
+    started_utc: str,
+    browser_version: str,
+    cells: list[dict],
+    browser_source: str = "",
+) -> dict:
     return {
         "schema": SCHEMA,
         "base": base,
         "started_utc": started_utc,
         "browser_version": browser_version,
+        "browser_source": browser_source,
         "cells": cells,
         "pass": bool(cells) and all(bool(cell.get("pass")) for cell in cells),
     }
@@ -693,7 +700,7 @@ def run_matrix(
     require_active: bool = False,
 ) -> dict:
     try:
-        from playwright.sync_api import sync_playwright
+        playwright_cm = _open_playwright()
     except Exception as exc:
         raise SetupError(f"browser library is not available ({exc})") from exc
     out_dir.mkdir(parents=True, exist_ok=True)
@@ -701,16 +708,9 @@ def run_matrix(
     cells = enumerate_cells(pages)
     records = []
     version = ""
-    with sync_playwright() as manager:
-        kwargs = {"headless": True}
-        if chrome:
-            kwargs["executable_path"] = chrome
-        else:
-            kwargs["channel"] = "chrome"
-        try:
-            browser = manager.chromium.launch(**kwargs)
-        except Exception as exc:
-            raise SetupError(f"could not launch the browser ({exc})") from exc
+    browser_source = ""
+    with playwright_cm as manager:
+        browser, browser_source = _launch_browser(manager.chromium, chrome)
         try:
             version = f"{browser.browser_type.name} {browser.version}"
             for cell in cells:
@@ -729,7 +729,35 @@ def run_matrix(
                     context.close()
         finally:
             browser.close()
-    return assemble_receipt(base, started, version, records)
+    return assemble_receipt(base, started, version, records, browser_source)
+
+
+def _open_playwright():
+    from playwright.sync_api import sync_playwright
+    return sync_playwright()
+
+
+def _launch_browser(chromium, chrome: str | None):
+    """Return (browser, source). source is system-chrome, bundled-chromium, or explicit-path.
+
+    An explicit executable is used as given. Otherwise try the system Chrome
+    channel and, if that launch fails, the bundled Chromium with no channel.
+    """
+    if chrome:
+        try:
+            browser = chromium.launch(headless=True, executable_path=chrome)
+        except Exception as exc:
+            raise SetupError(f"could not launch the browser ({exc})") from exc
+        return browser, "explicit-path"
+    try:
+        browser = chromium.launch(headless=True, channel="chrome")
+    except Exception:
+        try:
+            browser = chromium.launch(headless=True)
+        except Exception as exc:
+            raise SetupError(f"could not launch the browser ({exc})") from exc
+        return browser, "bundled-chromium"
+    return browser, "system-chrome"
 
 
 def write_receipt(path: Path, receipt: dict) -> None:
@@ -742,7 +770,11 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--base", required=True, help="http(s) origin directory or a local directory")
     parser.add_argument("--pages", required=True, help="us=macro.html,cn=china.html")
     parser.add_argument("--out", required=True, type=Path)
-    parser.add_argument("--chrome", default=None, help="browser executable; otherwise the chrome channel")
+    parser.add_argument(
+        "--chrome",
+        default=None,
+        help="browser executable; otherwise system Chrome, then the bundled Chromium",
+    )
     parser.add_argument(
         "--require-active",
         action="store_true",

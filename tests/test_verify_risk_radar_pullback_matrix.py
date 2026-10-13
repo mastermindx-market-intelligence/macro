@@ -400,6 +400,112 @@ def test_local_base_is_file_url(tmp_path):
         matrix.page_target(str(tmp_path / "missing-dir"), "macro.html")
 
 
+class _BrowserType:
+    name = "chromium"
+
+
+class _Context:
+    def route(self, *_args, **_kwargs):
+        return None
+
+    def add_init_script(self, *_args, **_kwargs):
+        return None
+
+    def new_page(self):
+        return object()
+
+    def close(self):
+        return None
+
+
+class _Browser:
+    version = "120.0"
+    browser_type = _BrowserType()
+
+    def new_context(self, **_kwargs):
+        return _Context()
+
+    def close(self):
+        return None
+
+
+class _Chromium:
+    def __init__(self, fail=()):
+        self.fail = set(fail)
+        self.calls = []
+
+    def launch(self, **kwargs):
+        self.calls.append(dict(kwargs))
+        if kwargs.get("channel") == "chrome" and "channel" in self.fail:
+            raise RuntimeError("Chromium distribution 'chrome' is not found")
+        if "executable_path" in kwargs and "path" in self.fail:
+            raise RuntimeError("bad path")
+        if "channel" not in kwargs and "executable_path" not in kwargs and "bundled" in self.fail:
+            raise RuntimeError("no bundled browser")
+        return _Browser()
+
+
+class _Manager:
+    def __init__(self, chromium):
+        self.chromium = chromium
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, *_args):
+        return False
+
+
+def test_launch_uses_system_chrome_when_it_starts():
+    chromium = _Chromium()
+    _browser, source = matrix._launch_browser(chromium, None)
+    assert source == "system-chrome"
+    assert chromium.calls == [{"headless": True, "channel": "chrome"}]
+
+
+def test_launch_falls_back_to_bundled_chromium():
+    """G9: a missing system Chrome channel launches the bundled browser."""
+    chromium = _Chromium(fail={"channel"})
+    _browser, source = matrix._launch_browser(chromium, None)
+    assert source == "bundled-chromium"
+    assert chromium.calls[0] == {"headless": True, "channel": "chrome"}
+    assert chromium.calls[1] == {"headless": True}
+
+
+def test_launch_uses_an_explicit_path_without_fallback():
+    chromium = _Chromium()
+    _browser, source = matrix._launch_browser(chromium, "/tmp/chrome-bin")
+    assert source == "explicit-path"
+    assert chromium.calls == [{"headless": True, "executable_path": "/tmp/chrome-bin"}]
+    missing = _Chromium(fail={"path"})
+    with pytest.raises(matrix.SetupError):
+        matrix._launch_browser(missing, "/tmp/missing-chrome")
+    assert len(missing.calls) == 1
+
+
+def test_launch_reports_setup_error_when_nothing_starts():
+    chromium = _Chromium(fail={"channel", "bundled"})
+    with pytest.raises(matrix.SetupError, match="could not launch the browser"):
+        matrix._launch_browser(chromium, None)
+
+
+def test_run_matrix_records_bundled_chromium_when_chrome_is_missing(monkeypatch, tmp_path):
+    chromium = _Chromium(fail={"channel"})
+    monkeypatch.setattr(matrix, "_open_playwright", lambda: _Manager(chromium))
+    monkeypatch.setattr(
+        matrix,
+        "_drive_cell",
+        lambda page, base, cell, out_dir, require_active=False: {"pass": True, "page": cell["page"]},
+    )
+    receipt = matrix.run_matrix("https://example.test", [("us", "macro.html")], tmp_path)
+    assert receipt["browser_source"] == "bundled-chromium"
+    assert receipt["browser_version"] == "chromium 120.0"
+    assert receipt["pass"] is True
+    assert chromium.calls[0]["channel"] == "chrome"
+    assert "channel" not in chromium.calls[1]
+    assert "executable_path" not in chromium.calls[1]
+
+
 def test_browser_library_import_is_inside_the_driver():
     text = Path(matrix.__file__).read_text(encoding="utf-8")
     head, marker, tail = text.partition("def run_matrix")
