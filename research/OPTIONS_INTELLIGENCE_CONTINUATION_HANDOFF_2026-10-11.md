@@ -581,10 +581,11 @@ minimax, grok, cursor, glm) → optional bounded workers. No native leaf swarm; 
 
 ## Lane matrix
 
-(2026-10-13T02:54Z snapshot.) Rows superseding older rows below:
+(2026-10-13T03:05Z snapshot.) Rows superseding older rows below:
 
 | lane | state |
 |---|---|
+| CENSUS wave 3 (12 lanes) | RUNNING (D55): launched 03:02:00–04Z, grok-4.7, 150 turns / 14400 s, READ-ONLY on pinned trees (Macro `9a47ac7f9444`, Terminal `b30836b2ac7c`, +#781 `85d9f4eae172` / #846 `eb57a6830438`); ubuntu0: cen-f03/f04/q03/r04; ubuntu3: cen-v04/m03/m04/v03; mastermind-pc: cen-n02/n03/u03/u04; return `~/lanes/returns/<lane>/census.md`; watcher `remote/watch_wave_cen.sh` (task bpks306wm) → `leads/CEN<PKG>/remote_run/WATCH_DONE` |
 | U01 step 1C (oi-1c) | RUNNING (D54): launched 02:51:36Z on mmx-ubuntu0 pid 985147 (grok-4.7, 240 turns, 25200 s), worktree `~/lanes/wt/oi-1c` branch `claude/ssd-pr-723-c89a753150e1dbd6` from `14a331f8f21e`; merge onto master `b30836b2ac7c` + ChartPanel both-lines resolution + recapture of 6 conflicted packets + gates + push; merge commit `f72b99bb` observed 02:53:56Z (unjudged); watcher `bwwblnhb7` → `leads/OI1C/remote_run/WATCH_DONE` |
 | PP1 / PP2 (#723 Paper parity) | NOT STARTED (D54): gated on the Codex root's accepted criteria (GLM contract task `fable-paper-parity-build-contract-20261013`, not ours) + 1C judged; route = fresh Fabric-skill read → normal admission; serialized on the lane branch |
 | O-2 natural matrix proof | ACCEPTED by Codex root (D54); natural Tue 23:00Z run + 00:00Z follow-up are the root's — never duplicated, forced or observed-as-owner |
@@ -937,3 +938,35 @@ INTENDED_RESUME_SURFACE: this Claude Code session; successor reads this file + #
 - oi-1c LAUNCHED (lane matrix row in this act): mmx-ubuntu0 (load1 0.45), worktree `/home/ubuntu0/lanes/wt/oi-1c` on the lane branch from `14a331f8f21e`, grok-4.7 via `~/lanes/bin/oi_lane.sh`, 240 turns / 25200 s, pid 985147, start 02:51:36Z; seat pre-ran `env -u CI npm ci` (rc 0; lane installs nothing). First observation 02:53:56Z: merge commit `f72b99bb` "merge: refresh #723 onto master b30836b2ac7c (U01 step 1C)" exists (not yet judged). Watcher `bwwblnhb7` → `leads/OI1C/remote_run/WATCH_DONE` (27600 s). ubuntu2 is not used (disk; D53); the D53 note "oi-1c on ubuntu2" is superseded.
 - PAPER-PARITY LANES (PP1 = P-B/P-C/P-D/P-E; PP2 = P-A/P-F/P-G; then final integration): NOT launched. Gate = the root's accepted criteria from the GLM contract task + the oi-1c return judged. Route = fresh Fabric-skill read → current normal admission; refusal recorded, never routed around. Serialized on the lane branch (one writer: `MatrixCompanion.tsx` is shared). If Grok/GLM quality falls short, the seat returns the concrete gap (viewport, node, measured delta) to the root; the seat does not arrange Sol.
 - Rungs at 02:54Z: 1B DELIVERED (pushed 14a331f8); 1C RUNNING; PP NOT STARTED (gated on criteria); O-2 ACCEPTANCE (root's); #948 CI (controller owns); D04A HELD (Tuesday window armed); #8920 blocked.
+
+### D55 (2026-10-13T03:05Z) — Wave 3: twelve READ-ONLY census lanes launched (F03 F04 Q03 R04 V04 M03 M04 V03 N02 N03 U03 U04) on pinned read-only trees
+- WHY: the programme's untouched packages (05_ASSESSMENT §8 stages C–F) had no current-source census. Without one, a build commission would be frozen against packet testimony, not current source (§9 "current source means current source"). Census only: every lane is read-only, so none can collide with a live writer (#723/oi-1c, #7861, #846, #804, #781) or with the Codex root's natural Matrix run.
+- TREES (one set per host, built by `leads/CEN/mk_trees.sh`, then `chmod -R a-w`):
+  - Macro `origin/main` `9a47ac7f9444`, sparse (`!/site/ !/data/ !/mockups/ !/verify_shots/`), 782M;
+  - Terminal `origin/master` `b30836b2ac7c`, sparse (`!*.png !/terminal/public/data/`), 44M;
+  - Terminal #781 head `85d9f4eae172` on mmx-ubuntu3 (for V03), and #846 head `eb57a6830438` on mastermind-pc (for U03/U04).
+  - Removal later needs `chmod -R u+w` first.
+- COMMISSION: generated per package by `leads/CEN/gen_census.py` from the packet:
+  - the package section of `03_WORK_PACKAGES.md` verbatim;
+  - its `04_ACCEPTANCE_MATRIX.json` cases;
+  - its `06_SOURCE_REGISTER` entries;
+  - a seat note per package;
+  - the programme laws;
+  - the live lanes' owned files, including the 216-file #723 diff `pr723_files.txt`.
+- THE LANES ARE ASKED FOR: current-source recovery; vectors (PROVEN/OWED/CONTRADICTED/OUT-OF-REACH); red-test specs; owned files; gates; a build-commission draft (≤10 items, ≤5 files, falsifier first); ≤3 upgrades.
+- ALLOWED / FORBIDDEN:
+  - Allowed: read-only git; `gh` GET; ≤8 pytest runs.
+  - Forbidden: any write in the trees; commit/push; installs; publish/R2/history; collectors; launchd; ssh; storage guards; credentials.
+  - Return: `census.md` in `~/lanes/returns/<lane>/`.
+  - The wrapper's push line was replaced with an explicit "push/commit NOTHING" before shipping. The two path-map leftovers per prompt are the frozen side of the map table, which is benign.
+- LAUNCH: 03:02:00–03:02:04Z, D52 carrier (`oi_lane.sh`, grok-4.7, 150 turns, 14400 s), all rc=0 LAUNCHED. Host load1 before launch was 1.46 / 4.09 / 2.02.
+  - mmx-ubuntu0: cen-f03 1001455, cen-f04 1001617, cen-q03 1001778, cen-r04 1001937.
+  - mmx-ubuntu3: cen-v04 1616707, cen-m03 1616843, cen-m04 1616986, cen-v03 1617111.
+  - mastermind-pc: cen-n02 763589, cen-n03 763741, cen-u03 763899, cen-u04 764056.
+- WATCHER: one wrapper `remote/watch_wave_cen.sh` (background task `bpks306wm`) runs exactly one `watch_lane.sh` per lane (15000 s max, 240 s poll) → `leads/CEN<PKG>/remote_run/WATCH_DONE`, then `WAVE_CEN_DONE`.
+- JUDGING:
+  - Each `census.md` is judged by artifact. Cited lines are spot-opened in the local trees; a claim without a path:line is testimony, not a vector.
+  - An accepted census becomes the frozen spec for that package's build lane, and only where its gates do not collide with a live owner.
+  - Packages whose carrier is held stay held: Q05 (#8555/#7328), R05 (Sol), and #781 custody (V03 is reconciliation only).
+- NOT CHANGED: oi-1c is still RUNNING (watcher `bwwblnhb7`); PP1/PP2 are still gated on the Codex root's accepted criteria; the D04A Tuesday window is armed; #948 is with the controller; #8920 is merge-blocked (lane 8920-R1 not yet launched).
+- NEXT: freeze and launch the build lanes 8920-R1, TFLAKE, F02-Q, D03-Q and D16b. Then judge oi-1c on its WATCH_DONE.
