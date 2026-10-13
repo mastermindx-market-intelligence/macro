@@ -26,6 +26,7 @@ pure parity call. The appender is ``issue``.
 """
 from __future__ import annotations
 
+import fcntl
 import hashlib
 import json
 import math
@@ -67,8 +68,10 @@ RECIPE_FILES = (
 
 _GATE_IDS = frozenset({"M3-ALL@C=1.0", "Q3-ALL"})
 _SHA40 = re.compile(r"^[0-9a-f]{40}$")
+_SHA64 = re.compile(r"^[0-9a-f]{64}$")
 _SETTLE = time(17, 0)
 _OPEN = time(9, 30)
+_GRADING_FIELDS = ("realized_A", "Y", "graded_at", "grader_sha")
 
 
 class _DigestMissing(Exception):
@@ -84,10 +87,18 @@ def _issued_config_id(stage_id: str) -> str:
 
 
 def _date_str(value) -> str:
-    ts = pd.Timestamp(value)
-    if ts.tzinfo is not None:
-        ts = ts.tz_convert(ET).tz_localize(None)
-    return ts.strftime("%Y-%m-%d")
+    """Calendar date the stamp already displays, with no timezone conversion."""
+    return pd.Timestamp(value).strftime("%Y-%m-%d")
+
+
+def naive_session_index(index) -> pd.DatetimeIndex:
+    """Naive midnights of each stamp's own ``YYYY-MM-DD``.
+
+    Shared with the grader. A UTC-aware stamp keeps the date in its own
+    zone: both 21:00Z and 00:00Z on that UTC date stay on that date.
+    """
+    stamps = pd.DatetimeIndex(pd.to_datetime(index))
+    return pd.DatetimeIndex(pd.to_datetime(stamps.strftime("%Y-%m-%d")))
 
 
 def _as_date(value) -> date:
@@ -104,16 +115,7 @@ def _prepare_close(close: pd.Series) -> pd.Series:
     """
     if not isinstance(close, pd.Series):
         raise TypeError("close must be a pandas Series")
-    idx = close.index
-    if isinstance(idx, pd.DatetimeIndex):
-        stamps = idx
-        if stamps.tz is not None:
-            stamps = stamps.tz_convert(ET).tz_localize(None)
-    else:
-        stamps = pd.DatetimeIndex(pd.to_datetime(idx))
-        if stamps.tz is not None:
-            stamps = stamps.tz_convert(ET).tz_localize(None)
-    stamps = pd.DatetimeIndex(stamps).normalize()
+    stamps = naive_session_index(close.index)
     values = np.asarray(close.to_numpy(dtype=float), dtype=float)
     if len(stamps) == 0:
         raise ValueError("close series is empty")
@@ -443,29 +445,187 @@ def _sha256_obj(obj) -> str:
     return hashlib.sha256(encoded).hexdigest()
 
 
-def _append_line(path: Path, row: dict) -> None:
-    """Append one canonical JSON line with a single ``os.write`` on ``O_APPEND``."""
-    data = (_canonical_dumps(row) + "\n").encode("utf-8")
-    fd = os.open(path, os.O_WRONLY | os.O_APPEND | os.O_CREAT, 0o644)
+def durable_jsonl_prefix(data: bytes) -> bytes:
+    """Bytes through the last complete, JSON-parsed line.
+
+    A trailing partial — no terminating newline, or a final line that is not
+    JSON — is excluded. Earlier lines are returned byte for byte.
+    """
+    if not data:
+        return data
+    if data.endswith(b"\n"):
+        kept = data
+    else:
+        nl = data.rfind(b"\n")
+        kept = b"" if nl < 0 else data[: nl + 1]
+    if not kept:
+        return kept
+    body = kept[:-1]
+    prev = body.rfind(b"\n")
+    last = body[prev + 1 :]
+    if not last.strip():
+        return kept
     try:
-        written = os.write(fd, data)
-    finally:
-        os.close(fd)
-    if written != len(data):
-        raise OSError(f"short append on {path}: wrote {written} of {len(data)} bytes")
+        json.loads(last.decode("utf-8"))
+    except (UnicodeDecodeError, json.JSONDecodeError, ValueError):
+        return b"" if prev < 0 else kept[: prev + 1]
+    return kept
 
 
-def _existing_keys(path: Path) -> set[tuple]:
-    """Keys already issued. Reading is allowed; the file is never rewritten."""
-    if not path.exists():
-        return set()
+def _read_fd(fd: int) -> bytes:
+    os.lseek(fd, 0, os.SEEK_SET)
+    chunks: list[bytes] = []
+    while True:
+        block = os.read(fd, 1024 * 1024)
+        if not block:
+            break
+        chunks.append(block)
+    return b"".join(chunks)
+
+
+def _keys_from_durable(data: bytes) -> set[tuple]:
+    """Issue keys in a durable prefix. A line that does not parse is ignored."""
     keys: set[tuple] = set()
-    for line in path.read_text(encoding="utf-8").splitlines():
+    for line in data.splitlines():
         if not line.strip():
             continue
-        row = json.loads(line)
-        keys.add((row["asof"], row["ticker"], int(row["horizon"]), row["config_id"]))
+        try:
+            row = json.loads(line)
+        except (UnicodeDecodeError, json.JSONDecodeError):
+            continue
+        if not isinstance(row, dict):
+            continue
+        try:
+            horizon = row["horizon"]
+            if isinstance(horizon, bool):
+                continue
+            keys.add((row["asof"], row["ticker"], int(horizon), row["config_id"]))
+        except (KeyError, TypeError, ValueError):
+            continue
     return keys
+
+
+def _append_payload(path: Path, payload: bytes) -> None:
+    """One ``O_APPEND`` ``os.write`` under an exclusive lock, after a torn-tail repair."""
+    path.parent.mkdir(parents=True, exist_ok=True)
+    fd = os.open(path, os.O_RDWR | os.O_APPEND | os.O_CREAT, 0o644)
+    try:
+        fcntl.flock(fd, fcntl.LOCK_EX)
+        raw = _read_fd(fd)
+        durable = durable_jsonl_prefix(raw)
+        if len(durable) != len(raw):
+            os.ftruncate(fd, len(durable))
+        if payload:
+            written = os.write(fd, payload)
+            if written != len(payload):
+                raise OSError(f"short append on {path}: wrote {written} of {len(payload)} bytes")
+    finally:
+        fcntl.flock(fd, fcntl.LOCK_UN)
+        os.close(fd)
+
+
+def _append_line(path: Path, row: dict) -> None:
+    """Append one canonical JSON line. A torn tail on ``path`` is truncated first."""
+    _append_payload(path, (_canonical_dumps(row) + "\n").encode("utf-8"))
+
+
+def _before_issued_append(rows: list[dict]) -> None:
+    """Invoked after tonight's issue rows exist in memory and before they hit disk.
+
+    The issue file has not been truncated or extended yet. Tests replace this
+    to simulate a crash between those two moments.
+    """
+    del rows
+
+
+def _append_issue_rows(path: Path, pending: list[dict]) -> tuple[list[dict], list[dict]]:
+    """Keep-first append of one night. Key read and the single write share one lock.
+
+    Returns ``(written, duplicates)``. A raise from ``_before_issued_append``
+    leaves the file bytes unchanged.
+    """
+    path.parent.mkdir(parents=True, exist_ok=True)
+    fd = os.open(path, os.O_RDWR | os.O_APPEND | os.O_CREAT, 0o644)
+    try:
+        fcntl.flock(fd, fcntl.LOCK_EX)
+        raw = _read_fd(fd)
+        durable = durable_jsonl_prefix(raw)
+        keys = _keys_from_durable(durable)
+        fresh: list[dict] = []
+        dupes: list[dict] = []
+        for row in pending:
+            key = (row["asof"], row["ticker"], int(row["horizon"]), row["config_id"])
+            if key in keys:
+                dupes.append(row)
+                continue
+            keys.add(key)
+            fresh.append(row)
+        _before_issued_append(fresh)
+        if len(durable) != len(raw):
+            os.ftruncate(fd, len(durable))
+        if fresh:
+            payload = b"".join((_canonical_dumps(row) + "\n").encode("utf-8") for row in fresh)
+            written = os.write(fd, payload)
+            if written != len(payload):
+                raise OSError(f"short append on {path}: wrote {written} of {len(payload)} bytes")
+        return fresh, dupes
+    finally:
+        fcntl.flock(fd, fcntl.LOCK_UN)
+        os.close(fd)
+
+
+def _parse_issued_at(value: object) -> datetime | None:
+    if not isinstance(value, str) or value == "":
+        return None
+    try:
+        moment = datetime.fromisoformat(value)
+    except ValueError:
+        return None
+    if moment.tzinfo is None:
+        return None
+    return moment
+
+
+def issued_row_admitted(row: object) -> bool:
+    """Design §1.1. One failure excludes the row. No clock read and no git."""
+    if not isinstance(row, dict):
+        return False
+    if row.get("schema") != ISSUE_SCHEMA:
+        return False
+    if row.get("evidence_class") != "GENUINELY_ISSUED":
+        return False
+    if row.get("writer_lane") != WRITER_LANE:
+        return False
+    if row.get("collect_lane_env") != WRITER_LANE:
+        return False
+    if row.get("writer_identity") != WRITER_IDENTITY:
+        return False
+    for flag in ("backfill", "rerun", "intraday"):
+        if row.get(flag) is not False:
+            return False
+    code_sha = row.get("code_sha")
+    if not isinstance(code_sha, str) or _SHA40.fullmatch(code_sha) is None:
+        return False
+    prereg = row.get("prereg_blob")
+    if not isinstance(prereg, str) or _SHA40.fullmatch(prereg) is None:
+        return False
+    digest = row.get("inputs_digest")
+    if not isinstance(digest, str) or _SHA64.fullmatch(digest) is None:
+        return False
+    asof_raw = row.get("asof")
+    try:
+        asof = date.fromisoformat(asof_raw) if isinstance(asof_raw, str) else None
+    except ValueError:
+        asof = None
+    if asof is None or not is_session(asof):
+        return False
+    issued_at = _parse_issued_at(row.get("issued_at"))
+    if issued_at is None or _outside_issue_window(asof, issued_at):
+        return False
+    for name in _GRADING_FIELDS:
+        if row.get(name) is not None:
+            return False
+    return True
 
 
 def _gate_attempt(
@@ -653,6 +813,16 @@ def issue(
             store_identity=store_identity,
             writer_lane=WRITER_LANE,
         )
+    # US_LANE=nightly does not arm this ledger. Any other value refuses.
+    us_lane = os.environ.get("US_LANE")
+    if us_lane is not None and us_lane != WRITER_LANE:
+        return _unwritten_refusal(
+            reason="LANE",
+            close=close,
+            ticker=ticker,
+            store_identity=store_identity,
+            writer_lane=us_lane if us_lane else "absent",
+        )
 
     dest = Path(out_dir) if out_dir is not None else Path(REPO_ROOT) / "data" / "grey_deer_pullback"
     window = _prepare_close(close)
@@ -712,7 +882,7 @@ def issue(
 
     try:
         payloads = score_asof(window, ticker=ticker, store_identity=store_identity)
-    except _DigestMissing:
+    except (_DigestMissing, s1.Blocked):
         _write_refusal("DIGEST_MISSING")
         return _summary(0, 0, reasons, dest)
 
@@ -728,12 +898,8 @@ def issue(
         return _summary(0, 0, reasons, dest)
 
     fingerprint = recipe_fingerprint()
-    log_path = dest / FORWARD_LOG_NAME
-    keys = _existing_keys(log_path)
-    issued_n = 0
-    dup_n = 0
-    for payload in payloads:
-        row = _issue_row(
+    pending = [
+        _issue_row(
             payload,
             asof=asof_s,
             ticker=ticker,
@@ -742,21 +908,19 @@ def issue(
             issued_at=issued_at,
             collect_lane=lane,
         )
-        key = (row["asof"], row["ticker"], row["horizon"], row["config_id"])
-        if key in keys:
-            dup_n += 1
-            _write_refusal(
-                "DUPLICATE_KEY",
-                horizon=row["horizon"],
-                config_id=row["config_id"],
-                attempt=row,
-                refused_at=issued_at,
-            )
-            continue
-        dest.mkdir(parents=True, exist_ok=True)
-        _append_line(log_path, row)
-        keys.add(key)
-        issued_n += 1
+        for payload in payloads
+    ]
+    fresh, dupes = _append_issue_rows(dest / FORWARD_LOG_NAME, pending)
+    for row in dupes:
+        _write_refusal(
+            "DUPLICATE_KEY",
+            horizon=row["horizon"],
+            config_id=row["config_id"],
+            attempt=row,
+            refused_at=issued_at,
+        )
+    issued_n = len(fresh)
+    dup_n = len(dupes)
 
     blocked = [
         {"id": row["id"], "kind": row["kind"], "population": row["population"]}

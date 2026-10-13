@@ -24,6 +24,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT))
 
+from engine.grey_deer_pullback_forward import issued_row_admitted
 from lib import nyse_calendar
 from scripts.research import grey_deer_pullback_stage1 as s1
 
@@ -166,14 +167,7 @@ def _as_int(value: object) -> int | None:
 
 
 def _f2_accept(obj: dict) -> bool:
-    return (
-        obj.get("schema") == ISSUE_SCHEMA
-        and obj.get("evidence_class") == "GENUINELY_ISSUED"
-        and obj.get("writer_lane") == "nightly"
-        and obj.get("backfill") is False
-        and obj.get("rerun") is False
-        and obj.get("intraday") is False
-    )
+    return issued_row_admitted(obj)
 
 
 def _grading_fields_clean(obj: dict) -> bool:
@@ -333,20 +327,23 @@ def _cell(
     config_id: str,
 ) -> dict:
     mine = [issue for issue in issues if issue.horizon == h and issue.config_id == config_id]
-    issued_asofs = {issue.asof for issue in mine if not issue.abstained}
+    # An abstaining asof is an issued session (§1.4). It stays in the span.
+    issued_asofs = {issue.asof for issue in mine}
     abstained_asofs = {issue.asof for issue in mine if issue.abstained}
 
     graded_rows: list[tuple[str, object]] = []
     revision_flagged = 0
     revision_flag_null = 0
     for issue, grade in pairs:
-        if issue.horizon != h or issue.config_id != config_id or issue.abstained:
+        if issue.horizon != h or issue.config_id != config_id:
             continue
         if grade.revision_flag is True:
             revision_flagged += 1
-            continue
-        if grade.revision_flag is None:
+        elif grade.revision_flag is None:
             revision_flag_null += 1
+        # Only an explicit false flag counts toward the floor. None and True do not.
+        if grade.revision_flag is not False:
+            continue
         graded_rows.append((issue.asof, grade.y))
 
     events = sum(1 for _asof, outcome in graded_rows if outcome == 1)
@@ -403,7 +400,7 @@ def _join(
             orphans += 1
             continue
         match = next((issue for issue in by_sha.get(grade.issue_line_sha256, []) if issue.key == grade.key), None)
-        if match is None or match.abstained:
+        if match is None:
             continue
         pairs.append((match, grade))
     return pairs, orphans

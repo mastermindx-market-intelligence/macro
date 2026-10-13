@@ -23,6 +23,7 @@ from lib.nyse_calendar import ET, is_session
 from scripts.research import grey_deer_pullback_stage1 as s1
 
 import engine.grey_deer_pullback_forward as fwd
+import engine.grey_deer_pullback_forward_grade as grader
 
 ISSUE_FIELDS = {
     "schema",
@@ -150,6 +151,7 @@ def _series(dates: list[date], prices: np.ndarray) -> pd.Series:
 def _arm(monkeypatch, when: datetime, head: str = HEAD) -> None:
     monkeypatch.setenv("COLLECT_LANE", "nightly")
     monkeypatch.setenv("GREY_DEER_PULLBACK_WRITER_IDENTITY", "daily.yml:engine")
+    monkeypatch.delenv("US_LANE", raising=False)
     monkeypatch.setattr(fwd, "_utc_now", lambda: when)
     monkeypatch.setattr(fwd, "_git_head", lambda: head)
 
@@ -346,7 +348,8 @@ def test_t2_bad_identity_writes_nothing(tmp_path, monkeypatch):
     assert missing["writer_lane"] == "nightly"
 
     monkeypatch.setenv("GREY_DEER_PULLBACK_WRITER_IDENTITY", "someone-else")
-    # US_LANE set to a non-nightly value must not, by itself, refuse a nightly collect.
+    # Identity fails first. Once the pin matches, a non-nightly US_LANE refuses
+    # with LANE and writes nothing (test_us_lane_other_than_nightly_refuses_with_lane).
     monkeypatch.setenv("US_LANE", "render")
     wrong = fwd.issue(close, ticker="SPY", store_identity=STORE, out_dir=out)
     assert not out.exists()
@@ -707,3 +710,206 @@ def test_namespace_import_is_the_stage1_module():
         token in Path(fwd.__file__).read_text(encoding="utf-8")
         for token in ("def fit_logistic", "def fit_quantile_lp", "def fit_b0")
     )
+
+
+def _two_payloads(close, *, ticker=None, store_identity=None):
+    """Two issued configs, so a night is more than one line without fitting models."""
+    base = {
+        "kind": "binary",
+        "is_gate": False,
+        "population": "P-all",
+        "probability": 0.2,
+        "quantile": None,
+        "abstention_reason": None,
+        "fit_block_id": "b1",
+        "training_end_asof": "2024-01-02",
+        "inputs_digest": "ab" * 32,
+    }
+    return [
+        {**base, "horizon": 5, "config_id": "B0"},
+        {
+            **base,
+            "horizon": 5,
+            "config_id": "M3-ALL@C=1.0",
+            "is_gate": True,
+            "inputs_digest": "cd" * 32,
+        },
+    ]
+
+
+def test_us_lane_other_than_nightly_refuses_with_lane(tmp_path, monkeypatch):
+    """Finding 6: US_LANE set to anything other than nightly is a LANE refusal."""
+    monkeypatch.setattr(fwd, "score_asof", _two_payloads)
+    _arm(monkeypatch, _at(2024, 6, 3, 20, 0))
+    monkeypatch.setenv("US_LANE", "render")
+    out = tmp_path / "render"
+    result = fwd.issue(_session_bar(), ticker="SPY", store_identity=STORE, out_dir=out)
+    assert result["reason"] == "LANE"
+    assert result["writer_lane"] == "render"
+    assert not out.exists()
+    assert list(tmp_path.iterdir()) == []
+
+    monkeypatch.setenv("US_LANE", "nightly")
+    allowed = fwd.issue(_session_bar(), ticker="SPY", store_identity=STORE, out_dir=tmp_path / "armed")
+    assert allowed["issued"] == 2
+    assert allowed["refusals"] == ["OBSERVER_NOT_ON_MAIN"]
+
+
+def test_torn_trailing_line_is_dropped_and_next_night_issues(tmp_path, monkeypatch):
+    """Finding 3: a torn final line does not raise, and the next append removes it."""
+    monkeypatch.setattr(fwd, "score_asof", _two_payloads)
+    _arm(monkeypatch, _at(2024, 6, 3, 20, 0))
+    out = tmp_path / "out"
+    out.mkdir()
+    log = out / fwd.FORWARD_LOG_NAME
+    earlier = b'{"asof":"2020-01-02","config_id":"B0","horizon":5,"ticker":"OLD"}\n'
+    torn = b'{"asof":"2024-06-03","ticker":'
+    log.write_bytes(earlier + torn)
+
+    result = fwd.issue(_session_bar(), ticker="SPY", store_identity=STORE, out_dir=out)
+    data = log.read_bytes()
+    assert result["issued"] == 2
+    assert data.startswith(earlier)
+    assert torn not in data
+    assert data.endswith(b"\n")
+    body = data[len(earlier):]
+    lines = body.splitlines()
+    assert len(lines) == 2
+    assert all(json.loads(line)["asof"] == "2024-06-03" for line in lines)
+    # The kept prefix is the original bytes, not a rewrite of that line.
+    assert data[: len(earlier)] == earlier
+
+    # The grader's reader has the same contract on its own log.
+    monkeypatch.setenv("GREY_DEER_PULLBACK_GRADER_IDENTITY", "daily.yml:engine")
+    monkeypatch.setattr(grader, "_utc_now", lambda: "2026-10-13T12:00:00+00:00")
+    monkeypatch.setattr(grader, "_git_head", lambda: HEAD)
+    grade_dir = tmp_path / "grades"
+    grade_dir.mkdir()
+    asof = date(2021, 10, 13)
+    sessions = [asof]
+    day = asof + timedelta(days=1)
+    while len(sessions) < 12:
+        if is_session(day):
+            sessions.append(day)
+        day += timedelta(days=1)
+    close = _series(sessions, np.full(len(sessions), 100.0))
+    issued_at = f"{asof.isoformat()}T22:00:00+00:00"
+    issue_row = {
+        "schema": fwd.ISSUE_SCHEMA,
+        "evidence_class": "GENUINELY_ISSUED",
+        "asof": asof.isoformat(),
+        "ticker": "SPY",
+        "horizon": 5,
+        "config_id": "B0",
+        "population": "P-all",
+        "kind": "binary",
+        "is_gate": False,
+        "probability": 0.1,
+        "quantile": None,
+        "abstention_reason": None,
+        "inputs_digest": "ab" * 32,
+        "code_sha": "cd" * 20,
+        "recipe_fingerprint": "ef" * 32,
+        "prereg_blob": s1.PREREG_BLOB,
+        "prereg_path": s1.PREREG_PATH,
+        "issued_at": issued_at,
+        "writer_lane": "nightly",
+        "writer_identity": "daily.yml:engine",
+        "collect_lane_env": "nightly",
+        "backfill": False,
+        "rerun": False,
+        "intraday": False,
+        "fit_block_id": "b1",
+        "training_end_asof": "2021-04-01",
+        "issue_receipt": {
+            "contract": fwd.ISSUE_SCHEMA,
+            "epoch": fwd.EPOCH,
+            "issued_at": issued_at,
+            "ledger_lane": "nightly",
+            "first_writer_wins": True,
+        },
+        "realized_A": None,
+        "Y": None,
+        "graded_at": None,
+        "grader_sha": None,
+    }
+    issue_line = json.dumps(issue_row, sort_keys=True, separators=(",", ":"), ensure_ascii=False).encode() + b"\n"
+    (grade_dir / "forward_log.jsonl").write_bytes(issue_line)
+    prior_grade = b'{"asof":"2021-01-04","config_id":"Q0","horizon":5,"ticker":"SPY"}\n'
+    grade_torn = b'{"asof":"2021-10-13","ticker":'
+    grade_path = grade_dir / "forward_log_graded.jsonl"
+    grade_path.write_bytes(prior_grade + grade_torn)
+    graded = grader.grade(close, ticker="SPY", store_identity=STORE, log_dir=grade_dir)
+    grade_bytes = grade_path.read_bytes()
+    assert graded["graded"] == 1
+    assert grade_bytes.startswith(prior_grade)
+    assert grade_torn not in grade_bytes
+    assert grade_bytes[: len(prior_grade)] == prior_grade
+
+
+def test_atomic_night_crash_leaves_issue_log_unchanged(tmp_path, monkeypatch):
+    """Finding 7: lines are built, then one append. A crash before that write changes nothing."""
+    assert hasattr(fwd, "_before_issued_append")
+    monkeypatch.setattr(fwd, "score_asof", _two_payloads)
+    out = tmp_path / "crash"
+    out.mkdir()
+    log = out / fwd.FORWARD_LOG_NAME
+    prior = b'{"asof":"2020-01-02","config_id":"B0","horizon":5,"ticker":"OLD"}\n'
+    log.write_bytes(prior)
+
+    def _boom(_rows):
+        raise RuntimeError("crash before append")
+
+    monkeypatch.setattr(fwd, "_before_issued_append", _boom)
+    _arm(monkeypatch, _at(2024, 6, 3, 20, 0))
+    with pytest.raises(RuntimeError, match="crash before append"):
+        fwd.issue(_session_bar(), ticker="SPY", store_identity=STORE, out_dir=out)
+    assert log.read_bytes() == prior
+    assert not (out / fwd.REFUSAL_LOG_NAME).exists()
+
+    monkeypatch.setattr(fwd, "_before_issued_append", lambda _rows: None)
+    out2 = tmp_path / "rerun"
+    first = fwd.issue(_session_bar(), ticker="SPY", store_identity=STORE, out_dir=out2)
+    second = fwd.issue(_session_bar(), ticker="SPY", store_identity=STORE, out_dir=out2)
+    assert first["issued"] == 2
+    assert second["issued"] == 0
+    assert second["duplicates"] == 2
+    rows = _read_jsonl(out2 / fwd.FORWARD_LOG_NAME)
+    keys = [(row["asof"], row["ticker"], row["horizon"], row["config_id"]) for row in rows]
+    assert len(keys) == len(set(keys)) == 2
+    assert second["refusals"].count("DUPLICATE_KEY") == 2
+    assert second["refusals"][-1] == "OBSERVER_NOT_ON_MAIN"
+
+
+def test_utc_aware_session_dates_agree(tmp_path, monkeypatch):
+    """Finding 9: writer and grader take each stamp's own YYYY-MM-DD, not an ET or UTC shift."""
+    del tmp_path, monkeypatch
+    days = ["2024-06-03", "2024-06-04", "2024-06-05", "2024-06-06", "2024-06-07"]
+    for clock in ("21:00:00", "00:00:00"):
+        idx = pd.DatetimeIndex(pd.to_datetime([f"{day}T{clock}Z" for day in days]))
+        close = pd.Series([100.0, 101.0, 102.0, 103.0, 104.0], index=idx)
+        writer_dates = list(fwd._prepare_close(close).index.strftime("%Y-%m-%d"))
+        grader_dates = list(grader._window_close(close).index.strftime("%Y-%m-%d"))
+        assert writer_dates == days, clock
+        assert grader_dates == days, clock
+        assert fwd._prepare_close(close).index.tz is None
+        assert grader._window_close(close).index.tz is None
+
+
+def test_blocked_build_features_appends_digest_missing(tmp_path, monkeypatch):
+    """Finding 10: Blocked from build_features is a DIGEST_MISSING refusal, not a raise."""
+    _arm(monkeypatch, _at(2024, 6, 3, 20, 0))
+    n = s1.FIRST_TEST_IDX + 1
+    dates = _sessions_from(date(2021, 7, 6), n)
+    close = _series(dates, np.full(n, 100.0))
+    # The flat series makes log_rv20 non-finite at the warmup boundary.
+    with pytest.raises(s1.Blocked):
+        s1.build_features(close)
+    out = tmp_path / "out"
+    result = fwd.issue(close, ticker="SPY", store_identity=STORE, out_dir=out)
+    assert result["issued"] == 0
+    assert result["refusals"] == ["DIGEST_MISSING"]
+    assert not (out / fwd.FORWARD_LOG_NAME).exists()
+    row = _read_jsonl(out / fwd.REFUSAL_LOG_NAME)[0]
+    assert row["reason"] == "DIGEST_MISSING"
+    _assert_refusal_schema(row)

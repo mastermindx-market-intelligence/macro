@@ -35,6 +35,10 @@ ISSUE_SCHEMA = "grey_deer_pullback_forward_issue.v1"
 GRADE_SCHEMA = "grey_deer_pullback_forward_grade.v1"
 BLOCKED = "underpowered/blocked claim"
 MET = "floors_met"
+_BLOB = "ab" * 20
+_SHARED_BLOB = "12" * 20
+_DIGEST = "cd" * 32
+_CODE = "ef" * 20
 
 
 def _take_sessions(n: int, start: date = date(2023, 1, 3)) -> list[date]:
@@ -59,6 +63,8 @@ def _make_issue(asof: date, **overrides: object) -> dict:
         "schema": ISSUE_SCHEMA,
         "evidence_class": "GENUINELY_ISSUED",
         "writer_lane": "nightly",
+        "collect_lane_env": "nightly",
+        "writer_identity": "daily.yml:engine",
         "backfill": False,
         "rerun": False,
         "intraday": False,
@@ -67,8 +73,11 @@ def _make_issue(asof: date, **overrides: object) -> dict:
         "horizon": 5,
         "config_id": "M3-ALL@C=1.0",
         "abstention_reason": None,
-        "prereg_blob": "blob-1",
+        "prereg_blob": _BLOB,
         "recipe_fingerprint": "fp-1",
+        "code_sha": _CODE,
+        "inputs_digest": _DIGEST,
+        "issued_at": f"{asof.isoformat()}T22:00:00+00:00",
         "realized_A": None,
         "Y": None,
         "graded_at": None,
@@ -406,9 +415,13 @@ def test_t4_exclusions(tmp_path: Path) -> None:
     assert "B0" not in config_ids
 
     cell = _cell(payload)
-    assert cell["issued_sessions"] == 3
+    # days[0..2] are clean issues. days[3] abstains and is still an issued session,
+    # so the span runs through that asof. Only revision_flag is False counts:
+    # days[2] (Y=0) and the abstention days[3] (Y=1). The null flag does not.
+    assert cell["issued_sessions"] == 4
     assert cell["abstained_sessions"] == 1
-    assert cell["span_days"] == (days[2] - days[0]).days
+    assert cell["span_days"] == (days[3] - days[0]).days
+    assert cell["span_days"] > (days[2] - days[0]).days
     assert cell["revision_flagged"] == 1
     assert cell["revision_flag_null"] == 1
     assert cell["graded"] == 2
@@ -431,7 +444,7 @@ def test_t5_cohorts_do_not_pool(tmp_path: Path) -> None:
     grades: list[dict] = []
     for fingerprint, count in (("fp-a", 2), ("fp-b", 4)):
         group = [
-            _make_issue(days[i], recipe_fingerprint=fingerprint, prereg_blob="blob-shared")
+            _make_issue(days[i], recipe_fingerprint=fingerprint, prereg_blob=_SHARED_BLOB)
             for i in range(count)
         ]
         paired_issues, paired_grades = _paired(group, [0] * count)
@@ -442,7 +455,7 @@ def test_t5_cohorts_do_not_pool(tmp_path: Path) -> None:
 
     payload = reporter.readiness(log_dir)
     assert [row["recipe_fingerprint"] for row in payload["cohorts"]] == ["fp-a", "fp-b"]
-    assert {row["prereg_blob"] for row in payload["cohorts"]} == {"blob-shared"}
+    assert {row["prereg_blob"] for row in payload["cohorts"]} == {_SHARED_BLOB}
     short = _cell(payload, fingerprint="fp-a")
     long = _cell(payload, fingerprint="fp-b")
     assert short["issued_sessions"] == 2

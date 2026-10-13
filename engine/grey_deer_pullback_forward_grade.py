@@ -16,12 +16,14 @@ import operator
 import os
 import re
 import subprocess
-from datetime import datetime, timezone
+from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 
 import pandas as pd
 
+from engine import grey_deer_pullback_forward as fwd
 from lib import observed_moves as om
+from lib.nyse_calendar import sessions_between
 from scripts.research import grey_deer_pullback_stage1 as s1
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
@@ -89,27 +91,20 @@ def _sha256_json(payload: dict) -> str:
 
 
 def _append_jsonl(path: Path, row: dict) -> None:
-    """One ``O_APPEND`` write of one canonical JSON line."""
-    path.parent.mkdir(parents=True, exist_ok=True)
+    """One ``O_APPEND`` write of one canonical JSON line. A torn tail is dropped first."""
     payload = json.dumps(
         row, sort_keys=True, separators=(",", ":"), ensure_ascii=False
     ).encode("utf-8") + b"\n"
-    fd = os.open(path, os.O_WRONLY | os.O_APPEND | os.O_CREAT, 0o644)
-    try:
-        written = os.write(fd, payload)
-        if written != len(payload):
-            raise OSError(f"short write on {path}: {written} of {len(payload)}")
-    finally:
-        os.close(fd)
+    fwd._append_payload(path, payload)
 
 
 def _raw_lines(path: Path) -> list[bytes]:
-    """Line bytes with the trailing newline removed. Blank lines are dropped."""
-    data = path.read_bytes()
+    """Complete JSON lines. A trailing partial is ignored and not returned."""
+    data = fwd.durable_jsonl_prefix(path.read_bytes())
     if not data:
         return []
     parts = data.split(b"\n")
-    if data.endswith(b"\n"):
+    if parts[-1] == b"":
         parts = parts[:-1]
     return [part for part in parts if part != b""]
 
@@ -123,10 +118,7 @@ def _window_close(close: pd.Series) -> pd.Series:
     """
     if not isinstance(close, pd.Series):
         raise TypeError("close must be a pandas Series")
-    idx = pd.DatetimeIndex(pd.to_datetime(close.index))
-    if idx.tz is not None:
-        idx = idx.tz_convert("UTC").tz_localize(None)
-    idx = idx.normalize()
+    idx = fwd.naive_session_index(close.index)
     values = close.to_numpy(dtype=float, copy=True)
     window = pd.Series(values, index=idx).sort_index(kind="mergesort")
     start = pd.Timestamp(s1.WINDOW_START)
@@ -144,16 +136,7 @@ def _horizon_labels(close_window: pd.Series) -> dict[int, tuple[pd.Series, pd.Se
 
 
 def _is_issued(row: dict) -> bool:
-    if row.get("schema") != ISSUE_SCHEMA:
-        return False
-    if row.get("evidence_class") != EVIDENCE_ISSUED:
-        return False
-    if row.get("writer_lane") != GRADER_LANE:
-        return False
-    for flag in ("backfill", "rerun", "intraday"):
-        if row.get(flag) is not False:
-            return False
-    return True
+    return fwd.issued_row_admitted(row)
 
 
 def _issue_key(row: dict) -> tuple[str, str, int, str] | None:
@@ -170,19 +153,45 @@ def _issue_key(row: dict) -> tuple[str, str, int, str] | None:
     return (asof, ticker, horizon, config_id)
 
 
-def _grade_key(row: dict) -> tuple[str, str, int, str] | None:
-    key = row.get("key")
-    if not isinstance(key, dict):
-        return None
-    asof = key.get("asof")
-    ticker = key.get("ticker")
-    horizon = key.get("horizon")
-    config_id = key.get("config_id")
+def _mapping_key(source: dict) -> tuple[str, str, int, str] | None:
+    asof = source.get("asof")
+    ticker = source.get("ticker")
+    horizon = source.get("horizon")
+    config_id = source.get("config_id")
     if not isinstance(asof, str) or not isinstance(ticker, str) or not isinstance(config_id, str):
         return None
     if isinstance(horizon, bool) or not isinstance(horizon, int):
         return None
     return (asof, ticker, int(horizon), config_id)
+
+
+def _grade_key(row: dict) -> tuple[str, str, int, str] | None:
+    """Join key. Top-level §2.2 fields win; a legacy nested ``key`` still matches."""
+    top = _mapping_key(row)
+    if top is not None:
+        return top
+    nested = row.get("key")
+    if isinstance(nested, dict):
+        return _mapping_key(nested)
+    return None
+
+
+def _horizon_sessions_aligned(close_window: pd.Series, pos: int, asof: str, horizon: int) -> bool:
+    """True when ``index[pos + i]`` is the i-th NYSE session after ``asof``, for i = 1..h."""
+    if horizon < 1 or pos < 0 or pos + horizon >= len(close_window):
+        return False
+    try:
+        origin = date.fromisoformat(asof)
+    except ValueError:
+        return False
+    upcoming = sessions_between(origin + timedelta(days=1), origin + timedelta(days=horizon * 3 + 21))
+    if len(upcoming) < horizon:
+        return False
+    for step in range(1, horizon + 1):
+        stamp = pd.Timestamp(close_window.index[pos + step]).strftime("%Y-%m-%d")
+        if stamp != upcoming[step - 1].isoformat():
+            return False
+    return True
 
 
 def _load_grades(path: Path) -> dict[tuple[str, str, int, str], dict]:
@@ -362,6 +371,28 @@ def grade(
             continue
         if parsed.get("prereg_blob") != s1.PREREG_BLOB:
             counts["prereg_mismatch"] += 1
+            key = _issue_key(parsed)
+            if key is None:
+                asof_r = parsed.get("asof") if isinstance(parsed.get("asof"), str) else None
+                ticker_r = parsed.get("ticker") if isinstance(parsed.get("ticker"), str) else None
+                horizon_r = parsed.get("horizon")
+                if isinstance(horizon_r, bool) or not isinstance(horizon_r, int):
+                    horizon_r = None
+                config_r = parsed.get("config_id") if isinstance(parsed.get("config_id"), str) else None
+            else:
+                asof_r, ticker_r, horizon_r, config_r = key
+            mismatch = _refusal(
+                refused_at,
+                "PREREG_MISMATCH",
+                writer_lane=GRADER_LANE,
+                attempt={"prereg_blob": parsed.get("prereg_blob"), "reason": "PREREG_MISMATCH"},
+                asof=asof_r,
+                ticker=ticker_r,
+                horizon=horizon_r,
+                config_id=config_r,
+            )
+            _append_jsonl(directory / REFUSAL_LOG_NAME, mismatch)
+            refusals.append(mismatch)
             continue
         key = _issue_key(parsed)
         if key is None:
@@ -372,6 +403,9 @@ def grade(
         if pos is None:
             counts["asof_missing"] += 1
             continue
+        if not _horizon_sessions_aligned(close_window, pos, asof, horizon):
+            counts["immature"] += 1
+            continue
         series_a, series_y = labels[horizon]
         realized = series_a.iloc[pos]
         if pd.isna(realized):
@@ -381,7 +415,11 @@ def grade(
         if realized_a != realized_a or realized_a in (float("inf"), float("-inf")):
             counts["immature"] += 1
             continue
-        y_value = bool(series_y.iloc[pos])
+        y_raw = series_y.iloc[pos]
+        if pd.isna(y_raw):
+            counts["immature"] += 1
+            continue
+        y_value = 1 if bool(y_raw) else 0
         path = [repr(float(c)) for c in close_window.iloc[pos:pos + horizon + 1]]
         digest = _inputs_digest(asof, path, horizon, store_identity, ticker)
         if recompute_inputs_digest is None:
@@ -399,12 +437,10 @@ def grade(
             revision_flag = recomputed != parsed.get("inputs_digest")
         grade_row = {
             "schema": GRADE_SCHEMA,
-            "key": {
-                "asof": asof,
-                "ticker": row_ticker,
-                "horizon": horizon,
-                "config_id": config_id,
-            },
+            "asof": asof,
+            "ticker": row_ticker,
+            "horizon": horizon,
+            "config_id": config_id,
             "issue_line_sha256": hashlib.sha256(raw).hexdigest(),
             "prereg_blob": parsed.get("prereg_blob"),
             "realized_A": realized_a,

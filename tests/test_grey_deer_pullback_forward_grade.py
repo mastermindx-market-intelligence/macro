@@ -1,7 +1,7 @@
 """Synthetic tests for the Grey Deer pullback forward-log grader.
 
-No price store, no network, no writer import. Issue rows are fixtures shaped
-like design §2.1. The clock and ``HEAD`` are monkeypatched.
+No price store, no network. Issue rows are fixtures shaped like design §2.1.
+The clock and ``HEAD`` are monkeypatched. Admission is the writer's §1.1 helper.
 
 Run:
     python3 -m pytest tests/test_grey_deer_pullback_forward_grade.py -rA -q
@@ -13,7 +13,7 @@ import hashlib
 import json
 import os
 import sys
-from datetime import date, timedelta
+from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 
 import numpy as np
@@ -25,15 +25,20 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from lib import nyse_calendar  # noqa: E402
 from scripts.research import grey_deer_pullback_stage1 as s1  # noqa: E402
 from engine import grey_deer_pullback_forward_grade as grader  # noqa: E402
+import scripts.research.grey_deer_pullback_readiness as readiness_mod  # noqa: E402
 
 CLOCK = "2026-10-13T12:00:00+00:00"
 HEAD = "a" * 40
 STORE = "synthetic-store"
 TICKER = "SPY"
 
+# Design §2.2. The join key is top-level. There is no nested ``key``.
 GRADE_FIELDS = {
     "schema",
-    "key",
+    "asof",
+    "ticker",
+    "horizon",
+    "config_id",
     "issue_line_sha256",
     "prereg_blob",
     "realized_A",
@@ -134,9 +139,26 @@ def _base_issue() -> dict:
     }
 
 
+def _legal_issued_at(asof: str) -> str:
+    """22:00Z is 17:00 EST and 18:00 EDT, inside the §1.3 window for that asof."""
+    return f"{asof}T22:00:00+00:00"
+
+
+def _et_stamp(day: date, hour: int, minute: int) -> str:
+    return datetime(day.year, day.month, day.day, hour, minute, tzinfo=nyse_calendar.ET).astimezone(
+        timezone.utc
+    ).isoformat(timespec="seconds")
+
+
 def _issue(**overrides) -> dict:
     row = copy.deepcopy(_base_issue())
     row.update(overrides)
+    if "issued_at" not in overrides:
+        stamp = _legal_issued_at(str(row["asof"]))
+        row["issued_at"] = stamp
+        receipt = row.get("issue_receipt")
+        if isinstance(receipt, dict):
+            receipt["issued_at"] = stamp
     return row
 
 
@@ -252,14 +274,14 @@ def test_t1_maturity_grades_only_mature_rows(tmp_path, monkeypatch):
     assert [g["graded_at"] for g in grades] == [CLOCK] * 6
     assert [g["grader_sha"] for g in grades] == [HEAD] * 6
 
-    got = {(g["key"]["asof"], g["key"]["horizon"], g["key"]["config_id"]): g for g in grades}
+    got = {(g["asof"], g["horizon"], g["config_id"]): g for g in grades}
     for row, position, horizon in expect_grade:
         key = (row["asof"], horizon, row["config_id"])
         assert key in got
         grade_row = got[key]
-        assert type(grade_row["Y"]) is bool
+        assert type(grade_row["Y"]) is int
         assert abs(grade_row["realized_A"] - float(labels[horizon]["A"].iloc[position])) <= 1e-12
-        assert grade_row["Y"] == bool(labels[horizon]["Y"].iloc[position])
+        assert grade_row["Y"] == (1 if bool(labels[horizon]["Y"].iloc[position]) else 0)
         assert not pd.isna(labels[horizon]["A"].iloc[position])
     for row, _position, horizon in expect_immature:
         key = (row["asof"], horizon, row["config_id"])
@@ -292,11 +314,11 @@ def test_t2_event_and_non_event(tmp_path, monkeypatch):
 
     assert result["graded"] == 2
     assert result["immature"] == 0
-    by_asof = {row["key"]["asof"]: row for row in _read_jsonl(log_dir / "forward_log_graded.jsonl")}
+    by_asof = {row["asof"]: row for row in _read_jsonl(log_dir / "forward_log_graded.jsonl")}
     event = by_asof[sessions[event_at].isoformat()]
     calm = by_asof[sessions[calm_at].isoformat()]
-    assert event["Y"] is True
-    assert calm["Y"] is False
+    assert type(event["Y"]) is int and event["Y"] == 1
+    assert type(calm["Y"]) is int and calm["Y"] == 0
     assert event["realized_A"] == pytest.approx(0.10, abs=1e-12)
     assert calm["realized_A"] == pytest.approx(0.0, abs=1e-12)
     assert event["realized_A"] >= s1.THRESHOLD
@@ -517,23 +539,22 @@ def test_t5_filters(tmp_path, monkeypatch):
     assert result["asof_missing"] == 2
     assert result["immature"] == 0
     assert result["already_graded"] == 0
-    assert result["refusals"] == []
+    assert [item["reason"] for item in result["refusals"]] == ["PREREG_MISMATCH"]
 
     grades = _read_jsonl(log_dir / "forward_log_graded.jsonl")
     assert len(grades) == 1
     grade_row = grades[0]
     assert grade_row["issue_line_sha256"] == _sha256(abstained_raw[:-1])
-    assert grade_row["key"] == {
-        "asof": mature_asof,
-        "ticker": TICKER,
-        "horizon": 5,
-        "config_id": "B0",
-    }
-    assert grade_row["Y"] is False
+    assert grade_row["asof"] == mature_asof
+    assert grade_row["ticker"] == TICKER
+    assert grade_row["horizon"] == 5
+    assert grade_row["config_id"] == "B0"
+    assert "key" not in grade_row
+    assert type(grade_row["Y"]) is int and grade_row["Y"] == 0
     assert json.loads(abstained_raw)["abstention_reason"] == "FIT_NONCONVERGENCE"
-    assert all(row["key"]["ticker"] == TICKER for row in grades)
-    assert pre_asof not in {row["key"]["asof"] for row in grades}
-    assert absent_asof not in {row["key"]["asof"] for row in grades}
+    assert all(row["ticker"] == TICKER for row in grades)
+    assert pre_asof not in {row["asof"] for row in grades}
+    assert absent_asof not in {row["asof"] for row in grades}
 
 
 # ── T6 ───────────────────────────────────────────────────────────────────────
@@ -614,7 +635,7 @@ def test_t7_schema_canonical_json_and_line_hash(tmp_path, monkeypatch):
     parsed = json.loads(line)
     assert _canonical(parsed) == line + b"\n"
     assert set(parsed) == GRADE_FIELDS
-    assert set(parsed["key"]) == KEY_FIELDS
+    assert "key" not in parsed
     assert parsed["schema"] == "grey_deer_pullback_forward_grade.v1"
     assert parsed["evidence_class"] == "GRADE"
     assert parsed["grader_lane"] == "nightly"
@@ -622,19 +643,19 @@ def test_t7_schema_canonical_json_and_line_hash(tmp_path, monkeypatch):
     assert parsed["graded_at"] == CLOCK
     assert parsed["prereg_blob"] == s1.PREREG_BLOB == row["prereg_blob"]
     assert type(parsed["realized_A"]) is float
-    assert type(parsed["Y"]) is bool
+    assert type(parsed["Y"]) is int
     assert parsed["revision_flag"] is None
     assert parsed["issue_line_sha256"] == _sha256(raw[:-1])
-    assert parsed["key"]["asof"] == sessions[asof_i].isoformat()
-    assert parsed["key"]["horizon"] == 10
-    assert parsed["key"]["ticker"] == TICKER
-    assert parsed["key"]["config_id"] == "B0"
+    assert parsed["asof"] == sessions[asof_i].isoformat()
+    assert parsed["horizon"] == 10
+    assert parsed["ticker"] == TICKER
+    assert parsed["config_id"] == "B0"
 
     window = close.loc[close.index >= pd.Timestamp(s1.WINDOW_START)]
-    position = int(window.index.get_loc(pd.Timestamp(parsed["key"]["asof"])))
-    horizon = parsed["key"]["horizon"]
+    position = int(window.index.get_loc(pd.Timestamp(parsed["asof"])))
+    horizon = parsed["horizon"]
     digest_payload = {
-        "asof": parsed["key"]["asof"],
+        "asof": parsed["asof"],
         "closes": [repr(float(c)) for c in window.iloc[position:position + horizon + 1]],
         "horizon": horizon,
         "store_identity": STORE,
@@ -648,7 +669,7 @@ def test_t7_schema_canonical_json_and_line_hash(tmp_path, monkeypatch):
     assert parsed["grade_inputs_digest"] == expect
     labels = s1.build_labels(window)
     assert abs(parsed["realized_A"] - float(labels[horizon]["A"].iloc[position])) <= 1e-12
-    assert parsed["Y"] == bool(labels[horizon]["Y"].iloc[position])
+    assert parsed["Y"] == (1 if bool(labels[horizon]["Y"].iloc[position]) else 0)
 
 
 # ── guards that are part of the packet but not numbered T1-T7 ───────────────
@@ -693,3 +714,207 @@ def test_module_does_not_copy_label_math():
     assert "clip(lower" not in source
     assert "om.forward_max_loss" in source
     assert "om.loss_event" in source
+
+
+# ── probes from the forward-lane review ──────────────────────────────────────
+
+
+def test_grade_schema_is_section_2_2_and_readiness_counts_it(tmp_path, monkeypatch):
+    """Finding 1: the row the grader writes is the §2.2 object readiness can join."""
+    arm(monkeypatch)
+    log_dir = tmp_path / "log"
+    close, sessions, asof_i, _row, _raw = _one_mature(log_dir)
+    asof = sessions[asof_i].isoformat()
+    row = _issue(asof=asof, horizon=5, config_id="M3-ALL@C=1.0")
+    raw = _line(row)
+    _write_lines(log_dir / "forward_log.jsonl", [raw])
+
+    def same_digest(prefix, i, h, ticker, store_identity, training_end_asof):
+        return row["inputs_digest"]
+
+    result = grader.grade(
+        close,
+        ticker=TICKER,
+        store_identity=STORE,
+        log_dir=log_dir,
+        recompute_inputs_digest=same_digest,
+    )
+    assert result["graded"] == 1
+    grades = _read_jsonl(log_dir / "forward_log_graded.jsonl")
+    assert len(grades) == 1
+    parsed = grades[0]
+    assert set(parsed) == GRADE_FIELDS
+    assert KEY_FIELDS <= GRADE_FIELDS
+    assert "key" not in parsed
+    assert parsed["asof"] == asof
+    assert parsed["ticker"] == TICKER
+    assert parsed["horizon"] == 5
+    assert parsed["config_id"] == "M3-ALL@C=1.0"
+    assert type(parsed["Y"]) is int
+    assert parsed["Y"] == (1 if parsed["realized_A"] >= s1.THRESHOLD else 0)
+    assert parsed["revision_flag"] is False
+    assert parsed["evidence_class"] == "GRADE"
+    assert parsed["grader_lane"] == "nightly"
+
+    usable = readiness_mod._usable_grade(parsed)
+    assert usable is not None
+    assert usable.key == (asof, TICKER, 5, "M3-ALL@C=1.0")
+    payload = readiness_mod.readiness(log_dir)
+    cell = next(
+        item
+        for cohort in payload["cohorts"]
+        for item in cohort["cells"]
+        if item["horizon"] == 5 and item["config_id"] == "M3-ALL@C=1.0"
+    )
+    assert cell["graded"] == 1
+    assert cell["issued_sessions"] == 1
+
+    nested_dir = tmp_path / "nested"
+    _write_lines(nested_dir / "forward_log.jsonl", [raw])
+    nested = {
+        "schema": "grey_deer_pullback_forward_grade.v1",
+        "key": {
+            "asof": asof,
+            "ticker": TICKER,
+            "horizon": 5,
+            "config_id": "M3-ALL@C=1.0",
+        },
+        "issue_line_sha256": _sha256(raw[:-1]),
+        "prereg_blob": row["prereg_blob"],
+        "realized_A": parsed["realized_A"],
+        "Y": bool(parsed["Y"]),
+        "graded_at": CLOCK,
+        "grader_sha": HEAD,
+        "grader_lane": "nightly",
+        "grade_inputs_digest": "11" * 32,
+        "revision_flag": False,
+        "evidence_class": "GRADE",
+    }
+    nested_bytes = _canonical(nested)
+    _write_lines(nested_dir / "forward_log_graded.jsonl", [nested_bytes])
+    again = grader.grade(
+        close,
+        ticker=TICKER,
+        store_identity=STORE,
+        log_dir=nested_dir,
+        recompute_inputs_digest=same_digest,
+    )
+    assert again["graded"] == 0
+    assert again["already_graded"] == 1
+    assert (nested_dir / "forward_log_graded.jsonl").read_bytes() == nested_bytes
+
+
+def test_missing_session_inside_horizon_is_not_graded(tmp_path, monkeypatch):
+    """Finding 2: a hole inside the next h sessions is immature. The full series grades."""
+    arm(monkeypatch)
+    asof = date(2021, 10, 13)
+    assert nyse_calendar.is_session(asof)
+    horizon = 5
+    pre = _sessions_before(asof, 10)
+    post = _sessions_from(asof + timedelta(days=1), horizon + 5)
+    full_sessions = pre + [asof] + post
+    full_close = _close_from_sessions(full_sessions, np.full(len(full_sessions), 100.0))
+    dropped = post[0]
+    gap_sessions = [day for day in full_sessions if day != dropped]
+    gap_close = _close_from_sessions(gap_sessions, np.full(len(gap_sessions), 100.0))
+    # The gapped positional window is long enough to look mature by bar count.
+    assert len(gap_sessions) - gap_sessions.index(asof) - 1 >= horizon
+
+    row = _issue(asof=asof.isoformat(), horizon=horizon, config_id="B0")
+    full_dir = tmp_path / "full"
+    gap_dir = tmp_path / "gap"
+    _write_lines(full_dir / "forward_log.jsonl", [_line(row)])
+    _write_lines(gap_dir / "forward_log.jsonl", [_line(row)])
+
+    full = grader.grade(full_close, ticker=TICKER, store_identity=STORE, log_dir=full_dir)
+    gap = grader.grade(gap_close, ticker=TICKER, store_identity=STORE, log_dir=gap_dir)
+    assert full["graded"] == 1
+    assert (full_dir / "forward_log_graded.jsonl").is_file()
+    assert gap["graded"] == 0
+    assert gap["immature"] == 1
+    assert not (gap_dir / "forward_log_graded.jsonl").exists()
+
+
+def test_prereg_mismatch_appends_refusal_and_grades_nothing(tmp_path, monkeypatch):
+    """Finding 10: a foreign prereg blob is a PREREG_MISMATCH refusal, not a silent skip."""
+    arm(monkeypatch)
+    log_dir = tmp_path / "log"
+    close, sessions, asof_i, _row, _raw = _one_mature(log_dir)
+    foreign = "0" * 40
+    assert foreign != s1.PREREG_BLOB
+    row = _issue(asof=sessions[asof_i].isoformat(), horizon=5, config_id="B0", prereg_blob=foreign)
+    _write_lines(log_dir / "forward_log.jsonl", [_line(row)])
+
+    result = grader.grade(close, ticker=TICKER, store_identity=STORE, log_dir=log_dir)
+
+    assert result["graded"] == 0
+    assert result["prereg_mismatch"] == 1
+    assert [item["reason"] for item in result["refusals"]] == ["PREREG_MISMATCH"]
+    assert not (log_dir / "forward_log_graded.jsonl").exists()
+    refusals = _read_jsonl(log_dir / "forward_log_refusals.jsonl")
+    assert len(refusals) == 1
+    assert refusals[0]["reason"] == "PREREG_MISMATCH"
+    assert refusals[0]["asof"] == sessions[asof_i].isoformat()
+    assert refusals[0]["config_id"] == "B0"
+    assert set(refusals[0]) == REFUSAL_FIELDS
+
+
+@pytest.mark.parametrize(
+    "violation",
+    [
+        "collect_lane_env",
+        "writer_identity",
+        "code_sha",
+        "prereg_blob",
+        "inputs_digest",
+        "Y",
+        "issued_at_1659",
+        "issued_at_0930",
+        "saturday",
+    ],
+)
+def test_issued_admission_excludes_each_single_field_violation(tmp_path, monkeypatch, violation):
+    """Finding 5: each §1.1 miss excludes the row in the grader and in readiness."""
+    arm(monkeypatch)
+    if violation == "saturday":
+        saturday = date(2024, 6, 1)
+        assert saturday.weekday() == 5
+        assert not nyse_calendar.is_session(saturday)
+        following = _sessions_from(saturday + timedelta(days=1), 10)
+        sessions = [saturday] + following
+        close = _close_from_sessions(sessions, np.full(len(sessions), 100.0))
+        bad = _issue(asof=saturday.isoformat(), horizon=5, config_id="B0")
+    else:
+        close, sessions, asof_i, _row, _raw = _one_mature(tmp_path / "seed")
+        asof_day = sessions[asof_i]
+        overrides: dict = {"asof": asof_day.isoformat(), "horizon": 5, "config_id": "B0"}
+        if violation == "collect_lane_env":
+            overrides["collect_lane_env"] = "render"
+        elif violation == "writer_identity":
+            overrides["writer_identity"] = "manual-edit"
+        elif violation == "code_sha":
+            overrides["code_sha"] = "abc"
+        elif violation == "prereg_blob":
+            overrides["prereg_blob"] = "abcd"
+        elif violation == "inputs_digest":
+            overrides["inputs_digest"] = "a" * 63
+        elif violation == "Y":
+            overrides["Y"] = 1
+        elif violation == "issued_at_1659":
+            overrides["issued_at"] = _et_stamp(asof_day, 16, 59)
+        elif violation == "issued_at_0930":
+            nxt = nyse_calendar.sessions_between(asof_day + timedelta(days=1), asof_day + timedelta(days=14))[0]
+            overrides["issued_at"] = _et_stamp(nxt, 9, 30)
+        bad = _issue(**overrides)
+
+    log_dir = tmp_path / "log"
+    _write_lines(log_dir / "forward_log.jsonl", [_line(bad)])
+    result = grader.grade(close, ticker=TICKER, store_identity=STORE, log_dir=log_dir)
+    assert result["graded"] == 0, violation
+    assert result["skipped_non_issued"] == 1, violation
+    assert result["refusals"] == [], violation
+    assert not (log_dir / "forward_log_graded.jsonl").exists()
+
+    payload = readiness_mod.readiness(log_dir)
+    assert payload["cohorts"] == [], violation
+    assert payload["excluded"]["non_issued_rows"] == 1, violation

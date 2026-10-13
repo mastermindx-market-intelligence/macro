@@ -75,6 +75,7 @@ def _arm(monkeypatch, when: datetime) -> None:
     monkeypatch.setenv("COLLECT_LANE", "nightly")
     monkeypatch.setenv("GREY_DEER_PULLBACK_WRITER_IDENTITY", "daily.yml:engine")
     monkeypatch.setenv("GREY_DEER_PULLBACK_GRADER_IDENTITY", "daily.yml:engine")
+    monkeypatch.delenv("US_LANE", raising=False)
     monkeypatch.setattr(fwd, "_utc_now", lambda: when)
     monkeypatch.setattr(fwd, "_git_head", lambda: HEAD)
     monkeypatch.setattr(grader, "_utc_now", lambda: when.isoformat(timespec="seconds"))
@@ -111,7 +112,7 @@ def test_issue_then_grade_round_trip_is_unrevised(tmp_path, monkeypatch, capsys)
     assert report["issue"]["issued"] == 30
     assert report["grade"]["graded"] == 30
     rows = _grades(tmp_path)
-    assert {row["key"]["asof"] for row in rows} == {d1.isoformat()}
+    assert {row["asof"] for row in rows} == {d1.isoformat()}
     assert [row["revision_flag"] for row in rows] == [False] * 30
 
     # A same-night rerun is quiet: duplicates on issue, already_graded on grade.
@@ -195,10 +196,15 @@ def test_load_close_normalises_both_store_shapes(monkeypatch):
         }
     )
     indexed = columns.assign(date=pd.to_datetime(columns["date"])).set_index("date")
+    utc_midnight = indexed.tz_localize("UTC")
+    utc_21 = indexed.copy()
+    utc_21.index = pd.DatetimeIndex(
+        [pd.Timestamp(f"{stamp.strftime('%Y-%m-%d')}T21:00:00Z") for stamp in indexed.index]
+    )
     expected = pd.Series(
         [1.0, 2.0, 3.0],
         index=pd.DatetimeIndex(pd.to_datetime(["2024-07-10", "2024-07-11", "2024-07-12"])),
     )
-    for frame in (columns, indexed):
+    for frame in (columns, indexed, utc_midnight, utc_21):
         monkeypatch.setattr(massive_stock_day, "load_ticker", lambda ticker, frame=frame: frame)
         pd.testing.assert_series_equal(nightly.load_close("SPY"), expected, check_freq=False)
