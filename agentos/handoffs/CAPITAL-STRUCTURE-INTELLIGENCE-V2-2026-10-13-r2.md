@@ -130,6 +130,7 @@ danger_areas:
   - A *.tmp.jsonl beside the ledger is staging and must never be treated as a part or committed.
   - A tree with continuation parts and no part 1, or a numbering gap, is refused whole; never repair it by renaming parts.
   - source_manifest.jsonl on main is 97.6 MiB; any append path that bypasses write_source_ledger crosses GH001 again.
+prs: [9146]
 decisions:
   - DEC:CS-V2-SOURCE-LEDGER-SHARDS-BYTE-EXACTLY
 discoveries:
