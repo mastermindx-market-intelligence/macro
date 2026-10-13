@@ -16,6 +16,9 @@ import math
 import sys
 from pathlib import Path
 
+ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(ROOT))
+
 from scripts.research.grey_deer_pullback_stage1 import BASE_RATES
 from scripts.research.grey_deer_pullback_stage1b import IDENTITY_PINS, PANEL_TICKERS
 
