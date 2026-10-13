@@ -1,27 +1,26 @@
 {
   "schema": "stock_desk.v1",
   "as_of": "2026-10-08",
-  "generated_at": "2026-10-13T00:55:15.509256+00:00",
+  "generated_at": "2026-10-13T11:29:46.560325+00:00",
   "degraded": null,
   "notes": [
     {
-      "id": "2026-10-08-MSCI-20261013005515-1",
+      "id": "2026-10-08-MSCI-20261013112946-1",
       "ticker": "MSCI",
       "name": "MSCI",
       "lean": "constructive",
       "conviction": "low",
       "horizon_d": 20,
-      "thesis": "The validated selection leg and an unblocked bottoming entry support a tentative relative rebound, but the risk controls argue for restraint because earnings are eight days away, the weekly trend has not turned, and the sector basket is deteriorating. The weak historical accuracy of constructive leans keeps conviction low.",
+      "thesis": "The building-base verdict and unblocked turn setup support a tentative relative-outperformance lean. Conviction stays low because the weekly trend remains mixed and the seven-day earnings risk can overwhelm the setup.",
       "evidence": [
         "Verdict: Constructive \u2014 building a base",
-        "Selection axis: z 0.31, 55th percentile",
-        "Entry axis: unblocked, 60th percentile",
-        "Price reclaimed a rising 10-day average and remains above the 50-day average",
-        "Risk control: earnings in 8 days"
+        "Entry axis 60th percentile; cycle not blocked",
+        "Price reclaimed the rising 10-day average and MACD is positive",
+        "Earnings in 7 days and Financials basket deteriorating"
       ],
-      "dissent": "The stock remains below its 200-day average, quality is exceptionally weak at z -2.94, and the earnings event could erase the nascent turn.",
+      "dissent": "Weak factor quality, a price still below the 200-day average and contracting liquidity could turn the bounce into another failed recovery.",
       "falsifier": {
-        "text": "An earnings reaction that leaves the stock below both its 10-day and 50-day averages while the weekly trend remains unturned.",
+        "text": "A close below the October 2 swing low of 535.95 followed by continued underperformance versus the S&P 500.",
         "check": {
           "kind": "rel_return",
           "subject_ticker": "MSCI",
@@ -35,23 +34,22 @@
       "engine_verdict": "Constructive \u2014 building a base"
     },
     {
-      "id": "2026-10-08-ADSK-20261013005515-2",
+      "id": "2026-10-08-ADSK-20261013112946-2",
       "ticker": "ADSK",
       "name": "Autodesk",
       "lean": "neutral",
       "conviction": "low",
       "horizon_d": 20,
-      "thesis": "The bottoming signal and clean quality profile are offset by weak residual selection, negative revisions and momentum, and an unconfirmed weekly trend. With the deterministic verdict finding no clear edge, there is insufficient evidence for relative direction.",
+      "thesis": "The deterministic verdict finds no clear edge: the daily bottoming turn is usable context, but it has not been confirmed by the weekly trend. The risk controls therefore favor waiting rather than treating the board rank as a return forecast.",
       "evidence": [
         "Verdict: Neutral \u2014 no clear edge",
-        "Selection axis: z -0.39, 44th percentile",
-        "Quality axis: z 1.15, 67th percentile; accounting clean",
         "Weekly timeframe has not turned",
-        "Below the 200-day average despite reclaiming the 10-day average"
+        "Price remains below the 200-day average",
+        "Quality axis 67th percentile but selection axis only 44th percentile"
       ],
-      "dissent": "A sustained recovery above the 200-day average could convert the recent swing low and positive MACD into a durable trend reversal.",
+      "dissent": "Clean accounting, positive quality and profitability factors, and a rejected swing low could develop into a durable recovery.",
       "falsifier": {
-        "text": "The weekly trend turns bullish and the stock holds above its 200-day average.",
+        "text": "The weekly trend turns bullish while ADSK reclaims its 200-day average and outperforms the S&P 500 over the following 10 trading days.",
         "check": {
           "kind": "soft",
           "reason": "neutral lean \u2014 not scored"
@@ -61,23 +59,22 @@
       "engine_verdict": "Neutral \u2014 no clear edge"
     },
     {
-      "id": "2026-10-08-ABBV-20261013005515-3",
+      "id": "2026-10-08-ABBV-20261013112946-3",
       "ticker": "ABBV",
       "name": "Abbvie Inc",
       "lean": "neutral",
       "conviction": "low",
       "horizon_d": 20,
-      "thesis": "The bullish weekly alignment and fresh-buy cycle argue against shorting strength, while the extension brake at a 52-week high argues against assuming further relative upside. The neutral verdict and middling selection leave the direction unresolved.",
+      "thesis": "The bullish, with-trend fresh-buy signal argues against shorting strength, but the deterministic verdict and near-median selection axis do not establish a relative edge. Neutral respects the intact momentum without chasing a name already at its 52-week high.",
       "evidence": [
         "Verdict: Neutral \u2014 no clear edge",
-        "Ladder: FRESH BUY with bullish bigger-picture trend",
-        "Above both 50-day and 200-day averages",
-        "At its 52-week high with RSI 67",
-        "Selection axis: 51st percentile"
+        "Fresh buy with bullish weekly agreement",
+        "Above both 50- and 200-day averages",
+        "Selection axis 51st percentile; entry not blocked"
       ],
-      "dissent": "Strong trend alignment, positive MACD and high quality could sustain momentum and produce clear outperformance despite the extension.",
+      "dissent": "Strong quality, positive cash generation and aligned daily/weekly momentum could keep ABBV outperforming despite its extension.",
       "falsifier": {
-        "text": "The stock continues holding above both major moving averages and establishes new highs while outperforming the S&P 500 over the horizon.",
+        "text": "ABBV outperforms the S&P 500 over the next 20 trading days while remaining above its 50-day average.",
         "check": {
           "kind": "soft",
           "reason": "neutral lean \u2014 not scored"
@@ -87,23 +84,22 @@
       "engine_verdict": "Neutral \u2014 no clear edge"
     },
     {
-      "id": "2026-10-08-BEKE-20261013005515-4",
+      "id": "2026-10-08-BEKE-20261013112946-4",
       "ticker": "BEKE",
       "name": "KE Holdings (ADR)",
       "lean": "neutral",
       "conviction": "low",
       "horizon_d": 20,
-      "thesis": "The unblocked bottoming entry is offset by weak residual selection, a mixed weekly picture and a left-translated prior cycle. Those opposing signals support the deterministic no-clear-edge verdict rather than a directional call.",
+      "thesis": "The unblocked bottoming setup is offset by a mixed weekly picture and a prior left-translated cycle, so there is not enough evidence for a directional relative lean. Macro sensitivity and contracting liquidity reinforce the wait-for-confirmation posture.",
       "evidence": [
         "Verdict: Neutral \u2014 no clear edge",
-        "Entry axis: 62nd percentile and unblocked",
-        "Selection axis: z -0.25, 46th percentile",
-        "Prior cycle was left-translated",
-        "Weekly timeframe has not turned"
+        "Prior cycle topped early",
+        "Weekly timeframe has not turned",
+        "Selection axis 46th percentile with no quality data"
       ],
-      "dissent": "Price is above both major moving averages with positive MACD, so the swing-low recovery could develop into renewed relative leadership.",
+      "dissent": "Price is above both major moving averages, the swing low held and MACD is positive, which could mark the start of a stronger recovery.",
       "falsifier": {
-        "text": "The weekly trend turns bullish and the stock sustains its advance above both the 50-day and 200-day averages.",
+        "text": "The weekly trend turns bullish and BEKE outperforms the S&P 500 for 10 consecutive trading days.",
         "check": {
           "kind": "soft",
           "reason": "neutral lean \u2014 not scored"
@@ -113,23 +109,22 @@
       "engine_verdict": "Neutral \u2014 no clear edge"
     },
     {
-      "id": "2026-10-08-PG-20261013005515-5",
+      "id": "2026-10-08-PG-20261013112946-5",
       "ticker": "PG",
       "name": "Procter + Gamble Co/The",
       "lean": "neutral",
       "conviction": "low",
       "horizon_d": 20,
-      "thesis": "The fresh-buy signal and bullish weekly trend prevent a bearish lean, but weak residual selection, a left-translated prior cycle and the deteriorating defensives basket temper the setup. The validated risk reshape supports watching the turn without asserting relative outperformance.",
+      "thesis": "The bullish fresh-buy structure means the sector caution is not sufficient grounds for a bearish lean, while the neutral verdict and weak selection context do not support forecasting outperformance. The appropriate risk reshape is to watch the intact trend without chasing it.",
       "evidence": [
         "Verdict: Neutral \u2014 no clear edge",
-        "Ladder: FRESH BUY with bullish bigger-picture trend",
-        "Entry axis: 64th percentile and unblocked",
-        "Selection axis: z -0.48, 43rd percentile",
-        "Prior cycle was left-translated"
+        "Bullish weekly agreement and above both major averages",
+        "Prior cycle was left-translated",
+        "Defensives basket is below its long-term trend"
       ],
-      "dissent": "An early investor-cycle phase, positive MACD and alignment above both major moving averages could allow the fresh buy signal to outperform.",
+      "dissent": "Positive earnings growth, defensive low-beta characteristics and favorable October-November seasonality could sustain relative strength.",
       "falsifier": {
-        "text": "The stock sustains the fresh-buy trend above both major moving averages and outperforms the S&P 500 over the horizon.",
+        "text": "PG loses its 200-day average and underperforms the S&P 500 over the following 10 trading days.",
         "check": {
           "kind": "soft",
           "reason": "neutral lean \u2014 not scored"
@@ -139,23 +134,22 @@
       "engine_verdict": "Neutral \u2014 no clear edge"
     },
     {
-      "id": "2026-10-08-ZTS-20261013005515-6",
+      "id": "2026-10-08-ZTS-20261013112946-6",
       "ticker": "ZTS",
       "name": "Zoetis",
       "lean": "cautious",
       "conviction": "medium",
       "horizon_d": 20,
-      "thesis": "This is genuine relative weakness rather than mere extension: the lagging verdict, deeply negative momentum and revisions, and position below both major moving averages outweigh the short-term bottoming attempt. Cautious calls have been the better-calibrated historical lean, though the sample record still falls short of the stated chance benchmark overall.",
+      "thesis": "This is an actual relative-weakness case rather than mere extension: ZTS remains below both major averages, has deeply negative momentum context and carries a lagging verdict. The nascent daily turn tempers conviction but does not yet repair the longer-term damage.",
       "evidence": [
         "Verdict: Lagging \u2014 relative weakness",
-        "Selection axis: z -0.96, 35th percentile",
-        "Momentum z -2.82 and revisions z -1.10",
-        "Below the 50-day average and 24.7% below the 200-day average",
-        "49.9% below the 52-week high"
+        "24.7% below the 200-day average and below the 50-day average",
+        "Selection axis 35th percentile; revisions z-score -1.10",
+        "Momentum context z-score -2.82 and quality axis 34th percentile"
       ],
-      "dissent": "The recent swing low, positive MACD and strong cash generation could mark an early recovery before the weekly trend confirms.",
+      "dissent": "The rejected swing low, positive MACD, healthy net margin and earnings growth could make the current bottoming signal the start of a durable reversal.",
       "falsifier": {
-        "text": "The stock reclaims and holds above its 50-day average while outperforming the S&P 500 over the horizon.",
+        "text": "ZTS reclaims its 50-day average, holds above it for 10 trading days and outperforms the S&P 500 during that span.",
         "check": {
           "kind": "rel_return",
           "subject_ticker": "ZTS",
