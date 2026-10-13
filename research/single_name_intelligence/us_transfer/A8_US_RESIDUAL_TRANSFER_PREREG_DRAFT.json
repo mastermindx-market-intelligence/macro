@@ -1,0 +1,807 @@
+{
+  "module_docstring": "SNI-local DRAFT contract for the US/Mag-7 residual-transfer study (family sni.us_transfer.RESID-DIR-US). DRAFT ONLY: registered is false, outcome is none, the S0 protocol register is not edited, and nothing is sealed. This module CONSUMES owner-supplied values from Data OS identity, Company Event/Earnings, FIF, Capital Structure, Stock Identity, Options, Research Vault, and qledger/Evaluation. It does not fork or re-implement those owners. Canonical issuer and security identifiers are caller-supplied opaque strings owned by Stock Identity / Data OS; unknown identity stays UNRESOLVED / null; this draft never constructs an identifier from a ticker, name, code, CIK, FIGI or ISIN.",
+  "family_id": "sni.us_transfer.RESID-DIR-US",
+  "version": "v0-draft",
+  "status": "DRAFT",
+  "registered": false,
+  "outcome": "none",
+  "drafted_by": "grok-4.6 lane A8 under seat 508c3757",
+  "drafted_at": "2026-10-13T03:10:00Z",
+  "registration_note": "This draft registers nothing; registration is gated by S0 register §2 and the R1 Chairman gate.",
+  "data_read": false,
+  "authority_flags": {
+    "rank_authority": false,
+    "gate_authority": false,
+    "size_authority": false,
+    "signal_authority": false,
+    "escalation_authority": false,
+    "trade_authority": false
+  },
+  "s0_blobs": {
+    "REG": {
+      "path": "research/single_name_intelligence/protocols/S0_PROTOCOL_REGISTER.md",
+      "blob": "a0b5cc584a4414ac85ff4cd56616fe23254f595f"
+    },
+    "IL": {
+      "path": "research/single_name_intelligence/protocols/S0_INDEPENDENCE_LAW.md",
+      "blob": "6ec4b097ce3fd24261da12061b3418fde945efaf"
+    },
+    "SL": {
+      "path": "research/single_name_intelligence/protocols/S0_SPLIT_AND_CONTAMINATION_LAW.md",
+      "blob": "c06a91beee22626eab1912aaa8a3baa6856913a2"
+    }
+  },
+  "input_pins": {
+    "data/yahoo/AAPL.parquet": "ede863448ed9f92ab403a0e2ea157da186c64b20",
+    "data/yahoo/AMZN.parquet": "989989b5ba05ab49b72268ccb62916c3f30b59a9",
+    "data/yahoo/GOOGL.parquet": "31d5f42a503c874e2fe7252971572b7cb227d3ac",
+    "data/yahoo/META.parquet": "71d378220da19fedb4d364195803deaa45c14e50",
+    "data/yahoo/MSFT.parquet": "065060f3ff59f3aba582f4030c110d9a815c79b4",
+    "data/yahoo/NVDA.parquet": "e20a4a573295c752dcfc59d80bf8d9f75c5a27e5",
+    "data/yahoo/TSLA.parquet": "ece9542a3ae4a06cdd3c495aea8a936b9370a47e",
+    "data/yahoo/SPY.parquet": "9b306b50884279e4155030298627faa26e5c6d9a",
+    "data/yahoo/XLK.parquet": "c1c8a9f06d1bc4ec95fa1065e20d3f3a347d1de5",
+    "data/yahoo/XLY.parquet": "c0dc88479674fd4d4d69818083cdea26e8c348f1",
+    "data/yahoo/XLC.parquet": "bc217972a261a8fa6d77439cc685b4aae2513bf6"
+  },
+  "engine_citations": {
+    "engine/qledger.py": {
+      "GRADE_HORIZONS": 114,
+      "HORIZON_UNIT_TRADING": 141,
+      "grade_claim": 2698,
+      "_matured_window": 2607
+    },
+    "engine/trial_ledger.py": {
+      "TrialLedger": 66,
+      "log_declared_budget": 204
+    },
+    "engine/grading_stats.py": {
+      "wilson_ci": 56
+    },
+    "note": "Line numbers are from origin/main at draft time via grep of the named symbols. This draft cites them and does not call them. s1_prereg.py ENGINE_CITATIONS used L202 for log_declared_budget; on this origin/main the same symbol sits at L204. S0 is never edited."
+  },
+  "cohort": {
+    "selection": "HINDSIGHT — 2026 market-cap leaders",
+    "survivorship": true,
+    "n_names": 7,
+    "display_labels": [
+      "AAPL",
+      "AMZN",
+      "GOOGL",
+      "META",
+      "MSFT",
+      "NVDA",
+      "TSLA"
+    ],
+    "role": "STRESS test of the METHOD mechanics (does it run, abstain, count and disclose correctly). Any result on these names is never evidence that a residual effect transfers, and is never representative of US large caps.",
+    "bridge_required_for_transfer_claim": "a point-in-time, outcome-free cohort rule (for example top-N by then-known market cap at each split start)",
+    "bridge_status": "NOT SUPPORTED — BRIDGE REQUIRED",
+    "bridge_gap": "no PIT market-cap owner admitted"
+  },
+  "names": [
+    "AAPL",
+    "AMZN",
+    "GOOGL",
+    "META",
+    "MSFT",
+    "NVDA",
+    "TSLA"
+  ],
+  "horizons": [
+    5,
+    21,
+    63
+  ],
+  "arms": {
+    "open": [
+      "HISTORICAL-DESCRIPTIVE"
+    ],
+    "open_splits": [
+      "TRAIN",
+      "TUNE"
+    ],
+    "named_not_opened": [
+      "PROSPECTIVE"
+    ],
+    "note": "HISTORICAL-DESCRIPTIVE covers TRAIN/TUNE per SL §2 only. The PROSPECTIVE arm is named and closed in this draft; it is not opened and contributes 0 trials to the declared budget."
+  },
+  "cells": [
+    {
+      "name": "AAPL",
+      "display_label": "AAPL",
+      "horizon": 5,
+      "local_issuer_key": "apple",
+      "canonical_issuer_id": null,
+      "security_id": null,
+      "issuer_link": "UNRESOLVED",
+      "arm": "HISTORICAL-DESCRIPTIVE",
+      "primary_bench": "SPY",
+      "secondary_bench": "XLK",
+      "rank_authority": false,
+      "gate_authority": false,
+      "size_authority": false,
+      "signal_authority": false,
+      "escalation_authority": false,
+      "trade_authority": false
+    },
+    {
+      "name": "AAPL",
+      "display_label": "AAPL",
+      "horizon": 21,
+      "local_issuer_key": "apple",
+      "canonical_issuer_id": null,
+      "security_id": null,
+      "issuer_link": "UNRESOLVED",
+      "arm": "HISTORICAL-DESCRIPTIVE",
+      "primary_bench": "SPY",
+      "secondary_bench": "XLK",
+      "rank_authority": false,
+      "gate_authority": false,
+      "size_authority": false,
+      "signal_authority": false,
+      "escalation_authority": false,
+      "trade_authority": false
+    },
+    {
+      "name": "AAPL",
+      "display_label": "AAPL",
+      "horizon": 63,
+      "local_issuer_key": "apple",
+      "canonical_issuer_id": null,
+      "security_id": null,
+      "issuer_link": "UNRESOLVED",
+      "arm": "HISTORICAL-DESCRIPTIVE",
+      "primary_bench": "SPY",
+      "secondary_bench": "XLK",
+      "rank_authority": false,
+      "gate_authority": false,
+      "size_authority": false,
+      "signal_authority": false,
+      "escalation_authority": false,
+      "trade_authority": false
+    },
+    {
+      "name": "AMZN",
+      "display_label": "AMZN",
+      "horizon": 5,
+      "local_issuer_key": "amazon",
+      "canonical_issuer_id": null,
+      "security_id": null,
+      "issuer_link": "UNRESOLVED",
+      "arm": "HISTORICAL-DESCRIPTIVE",
+      "primary_bench": "SPY",
+      "secondary_bench": "XLY",
+      "rank_authority": false,
+      "gate_authority": false,
+      "size_authority": false,
+      "signal_authority": false,
+      "escalation_authority": false,
+      "trade_authority": false
+    },
+    {
+      "name": "AMZN",
+      "display_label": "AMZN",
+      "horizon": 21,
+      "local_issuer_key": "amazon",
+      "canonical_issuer_id": null,
+      "security_id": null,
+      "issuer_link": "UNRESOLVED",
+      "arm": "HISTORICAL-DESCRIPTIVE",
+      "primary_bench": "SPY",
+      "secondary_bench": "XLY",
+      "rank_authority": false,
+      "gate_authority": false,
+      "size_authority": false,
+      "signal_authority": false,
+      "escalation_authority": false,
+      "trade_authority": false
+    },
+    {
+      "name": "AMZN",
+      "display_label": "AMZN",
+      "horizon": 63,
+      "local_issuer_key": "amazon",
+      "canonical_issuer_id": null,
+      "security_id": null,
+      "issuer_link": "UNRESOLVED",
+      "arm": "HISTORICAL-DESCRIPTIVE",
+      "primary_bench": "SPY",
+      "secondary_bench": "XLY",
+      "rank_authority": false,
+      "gate_authority": false,
+      "size_authority": false,
+      "signal_authority": false,
+      "escalation_authority": false,
+      "trade_authority": false
+    },
+    {
+      "name": "GOOGL",
+      "display_label": "GOOGL",
+      "horizon": 5,
+      "local_issuer_key": "alphabet",
+      "canonical_issuer_id": null,
+      "security_id": null,
+      "issuer_link": "UNRESOLVED",
+      "arm": "HISTORICAL-DESCRIPTIVE",
+      "primary_bench": "SPY",
+      "secondary_bench": "XLC",
+      "rank_authority": false,
+      "gate_authority": false,
+      "size_authority": false,
+      "signal_authority": false,
+      "escalation_authority": false,
+      "trade_authority": false,
+      "secondary_leg_valid_from": "2018-06-19",
+      "secondary_leg_abstain_reason": "bench_not_then_known"
+    },
+    {
+      "name": "GOOGL",
+      "display_label": "GOOGL",
+      "horizon": 21,
+      "local_issuer_key": "alphabet",
+      "canonical_issuer_id": null,
+      "security_id": null,
+      "issuer_link": "UNRESOLVED",
+      "arm": "HISTORICAL-DESCRIPTIVE",
+      "primary_bench": "SPY",
+      "secondary_bench": "XLC",
+      "rank_authority": false,
+      "gate_authority": false,
+      "size_authority": false,
+      "signal_authority": false,
+      "escalation_authority": false,
+      "trade_authority": false,
+      "secondary_leg_valid_from": "2018-06-19",
+      "secondary_leg_abstain_reason": "bench_not_then_known"
+    },
+    {
+      "name": "GOOGL",
+      "display_label": "GOOGL",
+      "horizon": 63,
+      "local_issuer_key": "alphabet",
+      "canonical_issuer_id": null,
+      "security_id": null,
+      "issuer_link": "UNRESOLVED",
+      "arm": "HISTORICAL-DESCRIPTIVE",
+      "primary_bench": "SPY",
+      "secondary_bench": "XLC",
+      "rank_authority": false,
+      "gate_authority": false,
+      "size_authority": false,
+      "signal_authority": false,
+      "escalation_authority": false,
+      "trade_authority": false,
+      "secondary_leg_valid_from": "2018-06-19",
+      "secondary_leg_abstain_reason": "bench_not_then_known"
+    },
+    {
+      "name": "META",
+      "display_label": "META",
+      "horizon": 5,
+      "local_issuer_key": "meta",
+      "canonical_issuer_id": null,
+      "security_id": null,
+      "issuer_link": "UNRESOLVED",
+      "arm": "HISTORICAL-DESCRIPTIVE",
+      "primary_bench": "SPY",
+      "secondary_bench": "XLC",
+      "rank_authority": false,
+      "gate_authority": false,
+      "size_authority": false,
+      "signal_authority": false,
+      "escalation_authority": false,
+      "trade_authority": false,
+      "secondary_leg_valid_from": "2018-06-19",
+      "secondary_leg_abstain_reason": "bench_not_then_known"
+    },
+    {
+      "name": "META",
+      "display_label": "META",
+      "horizon": 21,
+      "local_issuer_key": "meta",
+      "canonical_issuer_id": null,
+      "security_id": null,
+      "issuer_link": "UNRESOLVED",
+      "arm": "HISTORICAL-DESCRIPTIVE",
+      "primary_bench": "SPY",
+      "secondary_bench": "XLC",
+      "rank_authority": false,
+      "gate_authority": false,
+      "size_authority": false,
+      "signal_authority": false,
+      "escalation_authority": false,
+      "trade_authority": false,
+      "secondary_leg_valid_from": "2018-06-19",
+      "secondary_leg_abstain_reason": "bench_not_then_known"
+    },
+    {
+      "name": "META",
+      "display_label": "META",
+      "horizon": 63,
+      "local_issuer_key": "meta",
+      "canonical_issuer_id": null,
+      "security_id": null,
+      "issuer_link": "UNRESOLVED",
+      "arm": "HISTORICAL-DESCRIPTIVE",
+      "primary_bench": "SPY",
+      "secondary_bench": "XLC",
+      "rank_authority": false,
+      "gate_authority": false,
+      "size_authority": false,
+      "signal_authority": false,
+      "escalation_authority": false,
+      "trade_authority": false,
+      "secondary_leg_valid_from": "2018-06-19",
+      "secondary_leg_abstain_reason": "bench_not_then_known"
+    },
+    {
+      "name": "MSFT",
+      "display_label": "MSFT",
+      "horizon": 5,
+      "local_issuer_key": "microsoft",
+      "canonical_issuer_id": null,
+      "security_id": null,
+      "issuer_link": "UNRESOLVED",
+      "arm": "HISTORICAL-DESCRIPTIVE",
+      "primary_bench": "SPY",
+      "secondary_bench": "XLK",
+      "rank_authority": false,
+      "gate_authority": false,
+      "size_authority": false,
+      "signal_authority": false,
+      "escalation_authority": false,
+      "trade_authority": false
+    },
+    {
+      "name": "MSFT",
+      "display_label": "MSFT",
+      "horizon": 21,
+      "local_issuer_key": "microsoft",
+      "canonical_issuer_id": null,
+      "security_id": null,
+      "issuer_link": "UNRESOLVED",
+      "arm": "HISTORICAL-DESCRIPTIVE",
+      "primary_bench": "SPY",
+      "secondary_bench": "XLK",
+      "rank_authority": false,
+      "gate_authority": false,
+      "size_authority": false,
+      "signal_authority": false,
+      "escalation_authority": false,
+      "trade_authority": false
+    },
+    {
+      "name": "MSFT",
+      "display_label": "MSFT",
+      "horizon": 63,
+      "local_issuer_key": "microsoft",
+      "canonical_issuer_id": null,
+      "security_id": null,
+      "issuer_link": "UNRESOLVED",
+      "arm": "HISTORICAL-DESCRIPTIVE",
+      "primary_bench": "SPY",
+      "secondary_bench": "XLK",
+      "rank_authority": false,
+      "gate_authority": false,
+      "size_authority": false,
+      "signal_authority": false,
+      "escalation_authority": false,
+      "trade_authority": false
+    },
+    {
+      "name": "NVDA",
+      "display_label": "NVDA",
+      "horizon": 5,
+      "local_issuer_key": "nvidia",
+      "canonical_issuer_id": null,
+      "security_id": null,
+      "issuer_link": "UNRESOLVED",
+      "arm": "HISTORICAL-DESCRIPTIVE",
+      "primary_bench": "SPY",
+      "secondary_bench": "XLK",
+      "rank_authority": false,
+      "gate_authority": false,
+      "size_authority": false,
+      "signal_authority": false,
+      "escalation_authority": false,
+      "trade_authority": false
+    },
+    {
+      "name": "NVDA",
+      "display_label": "NVDA",
+      "horizon": 21,
+      "local_issuer_key": "nvidia",
+      "canonical_issuer_id": null,
+      "security_id": null,
+      "issuer_link": "UNRESOLVED",
+      "arm": "HISTORICAL-DESCRIPTIVE",
+      "primary_bench": "SPY",
+      "secondary_bench": "XLK",
+      "rank_authority": false,
+      "gate_authority": false,
+      "size_authority": false,
+      "signal_authority": false,
+      "escalation_authority": false,
+      "trade_authority": false
+    },
+    {
+      "name": "NVDA",
+      "display_label": "NVDA",
+      "horizon": 63,
+      "local_issuer_key": "nvidia",
+      "canonical_issuer_id": null,
+      "security_id": null,
+      "issuer_link": "UNRESOLVED",
+      "arm": "HISTORICAL-DESCRIPTIVE",
+      "primary_bench": "SPY",
+      "secondary_bench": "XLK",
+      "rank_authority": false,
+      "gate_authority": false,
+      "size_authority": false,
+      "signal_authority": false,
+      "escalation_authority": false,
+      "trade_authority": false
+    },
+    {
+      "name": "TSLA",
+      "display_label": "TSLA",
+      "horizon": 5,
+      "local_issuer_key": "tesla",
+      "canonical_issuer_id": null,
+      "security_id": null,
+      "issuer_link": "UNRESOLVED",
+      "arm": "HISTORICAL-DESCRIPTIVE",
+      "primary_bench": "SPY",
+      "secondary_bench": "XLY",
+      "rank_authority": false,
+      "gate_authority": false,
+      "size_authority": false,
+      "signal_authority": false,
+      "escalation_authority": false,
+      "trade_authority": false
+    },
+    {
+      "name": "TSLA",
+      "display_label": "TSLA",
+      "horizon": 21,
+      "local_issuer_key": "tesla",
+      "canonical_issuer_id": null,
+      "security_id": null,
+      "issuer_link": "UNRESOLVED",
+      "arm": "HISTORICAL-DESCRIPTIVE",
+      "primary_bench": "SPY",
+      "secondary_bench": "XLY",
+      "rank_authority": false,
+      "gate_authority": false,
+      "size_authority": false,
+      "signal_authority": false,
+      "escalation_authority": false,
+      "trade_authority": false
+    },
+    {
+      "name": "TSLA",
+      "display_label": "TSLA",
+      "horizon": 63,
+      "local_issuer_key": "tesla",
+      "canonical_issuer_id": null,
+      "security_id": null,
+      "issuer_link": "UNRESOLVED",
+      "arm": "HISTORICAL-DESCRIPTIVE",
+      "primary_bench": "SPY",
+      "secondary_bench": "XLY",
+      "rank_authority": false,
+      "gate_authority": false,
+      "size_authority": false,
+      "signal_authority": false,
+      "escalation_authority": false,
+      "trade_authority": false
+    }
+  ],
+  "benches": {
+    "primary": {
+      "display_label": "SPY",
+      "role": "same-market broad US bench",
+      "parquet": "data/yahoo/SPY.parquet",
+      "blob": "9b306b50884279e4155030298627faa26e5c6d9a",
+      "listing_status": "present_on_origin_main",
+      "applies_to": [
+        "AAPL",
+        "AMZN",
+        "GOOGL",
+        "META",
+        "MSFT",
+        "NVDA",
+        "TSLA"
+      ],
+      "then_known_first_bar": "NOT VERIFIED — owner corporate-action feed required"
+    },
+    "secondary_by_name": {
+      "AAPL": {
+        "display_label": "XLK",
+        "parquet": "data/yahoo/XLK.parquet",
+        "blob": "c1c8a9f06d1bc4ec95fa1065e20d3f3a347d1de5",
+        "listing_status": "present_on_origin_main",
+        "then_known_valid_window": {
+          "start": null,
+          "end": null,
+          "note": "Parquet blob is pinned from git ls-tree origin/main; first-trade date is NOT VERIFIED because parquet contents were not opened. A run must take the owner's then-known first bar and ABSTAIN with reason bench_not_then_known for any session before it."
+        },
+        "abstain_outside_window_reason": "bench_not_then_known"
+      },
+      "AMZN": {
+        "display_label": "XLY",
+        "parquet": "data/yahoo/XLY.parquet",
+        "blob": "c0dc88479674fd4d4d69818083cdea26e8c348f1",
+        "listing_status": "present_on_origin_main",
+        "then_known_valid_window": {
+          "start": null,
+          "end": null,
+          "note": "Parquet blob is pinned from git ls-tree origin/main; first-trade date is NOT VERIFIED because parquet contents were not opened. A run must take the owner's then-known first bar and ABSTAIN with reason bench_not_then_known for any session before it."
+        },
+        "abstain_outside_window_reason": "bench_not_then_known"
+      },
+      "GOOGL": {
+        "display_label": "XLC",
+        "parquet": "data/yahoo/XLC.parquet",
+        "blob": "bc217972a261a8fa6d77439cc685b4aae2513bf6",
+        "listing_status": "present_on_origin_main",
+        "then_known_valid_window": {
+          "start": "2018-06-19",
+          "end": null,
+          "note": "XLC began trading 2018-06-19; the leg does not exist for GOOGL/META units with session s before that date, which is most of TRAIN (s < 2024-01-01). Units outside the window ABSTAIN with reason bench_not_then_known. Never back-fill with a later-created ETF or a constituent reconstruction."
+        },
+        "abstain_outside_window_reason": "bench_not_then_known"
+      },
+      "META": {
+        "display_label": "XLC",
+        "parquet": "data/yahoo/XLC.parquet",
+        "blob": "bc217972a261a8fa6d77439cc685b4aae2513bf6",
+        "listing_status": "present_on_origin_main",
+        "then_known_valid_window": {
+          "start": "2018-06-19",
+          "end": null,
+          "note": "XLC began trading 2018-06-19; the leg does not exist for GOOGL/META units with session s before that date, which is most of TRAIN (s < 2024-01-01). Units outside the window ABSTAIN with reason bench_not_then_known. Never back-fill with a later-created ETF or a constituent reconstruction."
+        },
+        "abstain_outside_window_reason": "bench_not_then_known"
+      },
+      "MSFT": {
+        "display_label": "XLK",
+        "parquet": "data/yahoo/XLK.parquet",
+        "blob": "c1c8a9f06d1bc4ec95fa1065e20d3f3a347d1de5",
+        "listing_status": "present_on_origin_main",
+        "then_known_valid_window": {
+          "start": null,
+          "end": null,
+          "note": "Parquet blob is pinned from git ls-tree origin/main; first-trade date is NOT VERIFIED because parquet contents were not opened. A run must take the owner's then-known first bar and ABSTAIN with reason bench_not_then_known for any session before it."
+        },
+        "abstain_outside_window_reason": "bench_not_then_known"
+      },
+      "NVDA": {
+        "display_label": "XLK",
+        "parquet": "data/yahoo/XLK.parquet",
+        "blob": "c1c8a9f06d1bc4ec95fa1065e20d3f3a347d1de5",
+        "listing_status": "present_on_origin_main",
+        "then_known_valid_window": {
+          "start": null,
+          "end": null,
+          "note": "Parquet blob is pinned from git ls-tree origin/main; first-trade date is NOT VERIFIED because parquet contents were not opened. A run must take the owner's then-known first bar and ABSTAIN with reason bench_not_then_known for any session before it."
+        },
+        "abstain_outside_window_reason": "bench_not_then_known"
+      },
+      "TSLA": {
+        "display_label": "XLY",
+        "parquet": "data/yahoo/XLY.parquet",
+        "blob": "c0dc88479674fd4d4d69818083cdea26e8c348f1",
+        "listing_status": "present_on_origin_main",
+        "then_known_valid_window": {
+          "start": null,
+          "end": null,
+          "note": "Parquet blob is pinned from git ls-tree origin/main; first-trade date is NOT VERIFIED because parquet contents were not opened. A run must take the owner's then-known first bar and ABSTAIN with reason bench_not_then_known for any session before it."
+        },
+        "abstain_outside_window_reason": "bench_not_then_known"
+      }
+    },
+    "rule": "Primary is SPY for every name. Secondary sector bench is declared only where the ETF parquet exists in the origin/main listing (AAPL/MSFT/NVDA -> XLK; AMZN/TSLA -> XLY; GOOGL/META -> XLC). XLC then-known window starts 2018-06-19; GOOGL/META units with s < 2018-06-19 ABSTAIN with reason bench_not_then_known. No secondary parquet is missing from the listing, so none is marked UNAVAILABLE as a file. First-trade dates for XLK/XLY/SPY are NOT VERIFIED (parquet not opened).",
+    "never": "Never back-fill a missing or not-then-known ETF with a later-created fund or a constituent reconstruction.",
+    "unused_listed_parquets_not_read": [
+      "data/yahoo/GOOG.parquet",
+      "data/yahoo/QQQ.parquet",
+      "data/yahoo/XLP.parquet",
+      "data/yahoo/XLF.parquet",
+      "data/yahoo/VOX.parquet"
+    ],
+    "absent_from_listing": [
+      "data/yahoo/FB.parquet"
+    ]
+  },
+  "then_known": [
+    {
+      "fact": "FB to META ticker change",
+      "effective_date_or_null": null,
+      "source": "NOT VERIFIED — owner corporate-action feed required",
+      "treatment": "Display label is META. FB.parquet is absent from origin/main git ls-tree. Do not stitch FB history onto META. Identity stays UNRESOLVED. Any ticker-as-of-s mapping is owned by Stock Identity / Data OS; without an owner mapping, units whose then-known ticker is not the display label ABSTAIN with reason symbol_not_then_known."
+    },
+    {
+      "fact": "GOOG/GOOGL share-class split (Class C created; GOOGL symbol from that date)",
+      "effective_date_or_null": null,
+      "source": "NOT VERIFIED — owner corporate-action feed required",
+      "treatment": "Subject display label is GOOGL. GOOG.parquet is present on origin/main but is not a subject pin and is not read. Do not reconstruct GOOGL before the owner's then-known GOOGL-symbol date. Units before that date ABSTAIN with reason symbol_not_then_known. Do not mint ids from GOOG vs GOOGL."
+    },
+    {
+      "fact": "TSLA IPO 2010-06-29 (no history before it)",
+      "effective_date_or_null": "2010-06-29",
+      "source": "NOT VERIFIED — owner corporate-action feed required",
+      "treatment": "Frozen-design date 2010-06-29 is recorded pending owner corporate-action confirmation. Units with session s before the owner's then-known first TSLA bar ABSTAIN with reason subject_not_then_known."
+    },
+    {
+      "fact": "Share splits (adjusted-return requirement)",
+      "effective_date_or_null": null,
+      "source": "NOT VERIFIED — owner corporate-action feed required",
+      "treatment": "Returns must come from the owner's split-adjusted series. A split-day test must exist before any run. Split dates are not guessed here. A run without the owner's split-adjusted series and split-day test ABSTAINS with reason adjustment_unverified."
+    },
+    {
+      "fact": "XLC began trading 2018-06-19",
+      "effective_date_or_null": "2018-06-19",
+      "source": "NOT VERIFIED — owner corporate-action feed required",
+      "treatment": "For GOOGL and META the XLC secondary leg is then-known only for units with s >= 2018-06-19. Units with s < 2018-06-19 (most of TRAIN) ABSTAIN with reason bench_not_then_known. Never back-fill."
+    },
+    {
+      "fact": "XLK first-trade date over TRAIN",
+      "effective_date_or_null": null,
+      "source": "NOT VERIFIED — owner corporate-action feed required",
+      "treatment": "XLK.parquet is present on origin/main. First bar is unknown because parquet contents were not opened. Units before the owner's then-known first XLK bar ABSTAIN with reason bench_not_then_known."
+    },
+    {
+      "fact": "XLY first-trade date over TRAIN",
+      "effective_date_or_null": null,
+      "source": "NOT VERIFIED — owner corporate-action feed required",
+      "treatment": "XLY.parquet is present on origin/main. First bar is unknown because parquet contents were not opened. Units before the owner's then-known first XLY bar ABSTAIN with reason bench_not_then_known."
+    },
+    {
+      "fact": "SPY first-trade date over TRAIN",
+      "effective_date_or_null": null,
+      "source": "NOT VERIFIED — owner corporate-action feed required",
+      "treatment": "SPY.parquet is present on origin/main. First bar is unknown because parquet contents were not opened. Units before the owner's then-known first SPY bar ABSTAIN with reason bench_not_then_known."
+    }
+  ],
+  "splits": {
+    "law": "SL §2 (copied from P01 v1; s1_prereg.py splits block / D-labels)",
+    "train": "s < 2024-01-01",
+    "tune": "2024-01-01 <= s < 2026-10-01",
+    "quarantine": "s >= 2026-10-01 (listed and counted, never evaluated)",
+    "test": "prospective claims only; PROSPECTIVE arm is named and not opened",
+    "purge": {
+      "train": "last session of W_h on or after 2024-01-01 -> PURGED_TRAIN",
+      "tune": "last session of W_h on or after 2026-10-01 -> PURGED_TUNE",
+      "rule": "purged units keep their label, are counted visibly, and are never moved"
+    },
+    "name_axis": "n/a (own-name cells; SL §3)",
+    "event_holdout": "none (SL §4)",
+    "seal": "SL §5 before any outcome; this draft mints no seal",
+    "immutability": "SL §6"
+  },
+  "p01_copy": {
+    "source": "research/single_name_intelligence/residual/s1_prereg.py",
+    "copied": "STRUCTURE (S0_BLOBS, INPUT_PINS, ENGINE_CITATIONS, frozen decisions) and the P01 v1 residual construction. Subject and bench are the only design substitutions.",
+    "decision_ids": [
+      "D1 labels (HISTORICAL-DESCRIPTIVE; nothing here is a forecast, a signal, or authority)",
+      "D3 clock (session s on MARKET_US; resolve_horizon_window; decision cutoff D(s))",
+      "D4 rolling anchors / IL §3 step 7 unit independence",
+      "D5 manifests sealed before any outcome (not minted here)",
+      "D9 mirror-trick block bootstrap is the only permitted mean CI",
+      "D10 info-leak predicate (vintage step on close/close_price)",
+      "D11 trial ledger (budget row before any outcome; this draft does not write it)",
+      "D12 report field order per REG §5",
+      "D14 determinism (no wall-clock in outputs except ledger ts)"
+    ],
+    "residual_construction": "excess = subject_ret - bench_ret, simple returns on the owner's split-adjusted TR close (grade_claim convention, qledger L2698); each leg reproduces _leg_ret_in_window. hit = (sign(excess) == direction); excess == 0 exactly -> non-hit, listed as a tie; direction 0 -> ABSTAIN (listed, not a hit, not a miss).",
+    "baselines": {
+      "always_long": "direction +1",
+      "trail63": "sign of trailing-63-session excess at D(s); both series need bars on D and D63 exactly else direction 0"
+    },
+    "horizons": [
+      5,
+      21,
+      63
+    ],
+    "register_row_citation": {
+      "path": "research/single_name_intelligence/protocols/S0_PROTOCOL_REGISTER.md",
+      "line": 115,
+      "pre_registered_null": "H0₁: hit rate = 0.50 per horizon. H0₂: median excess = 0.",
+      "retirement_rule": "Visible retirement"
+    },
+    "unit_independence": "IL §3 step 7 (REG §3 fixed term Unit independence)",
+    "changed": "subject (seven US display labels) and bench (SPY primary; sector secondary as declared)",
+    "unchanged": "residual construction, horizons, split boundaries, purge, unit-independence, null, kill/retirement"
+  },
+  "budget": {
+    "n_names": 7,
+    "n_horizons": 3,
+    "n_cells": 21,
+    "n_open_arms": 1,
+    "declared_trials": 21,
+    "formula": "21 cells x 1 open arm = 21 trials",
+    "write_via": "TrialLedger.log_declared_budget",
+    "citation": "engine/trial_ledger.py L204",
+    "when": "at registration time; this draft does not call it",
+    "family": "sni.us_transfer.RESID-DIR-US",
+    "floor_note": "declared budget is a FLOOR on effective_n; it never lowers the haircut"
+  },
+  "multiplicity": {
+    "rule": "Holm across the 21 cells for any TESTED label",
+    "family_alpha": 0.05,
+    "per_cell_labels": [
+      "TESTED",
+      "DESCRIPTIVE_ONLY",
+      "ABSTAIN"
+    ],
+    "min_clusters": 2,
+    "honest_n": "distinct non-overlapping units (IL §3 step 7)",
+    "tested_requires": "min_clusters >= 2 and honest-N of distinct non-overlapping units",
+    "unestimable": "ABSTAIN with a named reason; never a default 0.5 fill (A25)",
+    "historical_expectation": "HISTORICAL-DESCRIPTIVE cells follow the SNI inference label rule; own-name power is the P01 descriptive case (153 episodes unreachable from one issuer). Holm applies only to cells labelled TESTED."
+  },
+  "grading": {
+    "primitive": "qledger grade_claim (L2698) directional only",
+    "maturity": "_matured_window L2607",
+    "emits": "subject_ret, bench_ret, excess = subject_ret - bench_ret, hit",
+    "surface_language": "direction right/wrong over N matured beliefs",
+    "never": [
+      "skill-as-forecast",
+      "calibration",
+      "probability accuracy",
+      "a transfer claim"
+    ],
+    "n_is": "IL honest-N, never a literal row count",
+    "residual_is": "DESCRIPTIVE, never causal, never news impact (A24)"
+  },
+  "identity": {
+    "canonical_issuer_id": null,
+    "security_id": null,
+    "issuer_link": "UNRESOLVED",
+    "ticker_role": "display label only",
+    "owner": "Stock Identity / Data OS",
+    "rule": "Every name carries canonical_issuer_id null, security_id null, issuer_link UNRESOLVED, and the ticker only as a display label. Never construct an id from a ticker, name, CIK, FIGI or ISIN.",
+    "per_cell": "the same four identity fields are repeated on every cell"
+  },
+  "kill_retirement": {
+    "register_row": "Visible retirement (S0_PROTOCOL_REGISTER.md L115)",
+    "means": "SL §8 (REG §3 fixed term Visible retirement)",
+    "p01_detail": "Continue as a gated descriptive registration. The protocol becomes RETIRED-SUPERSEDED (a new version) if, 24 months after its first prospective registration, fewer than 20 units have matured and no cohort successor row exists. It is never re-scoped in place. (REG P01 detail block)",
+    "kill_hold": "a failed pre-declared criterion prints KILL/HOLD-AS-RESEARCH; it is never rescued by changing the target, cohort or horizon (s1_prereg.py kill_hold_rule; REG §5)"
+  },
+  "registration_gate": {
+    "met": false,
+    "requires": [
+      "seat review of this draft",
+      "S0 register §2 gate open",
+      "R1 Chairman gate",
+      "REG §6 membership seal row (not minted by this draft)",
+      "TrialLedger.log_declared_budget(21) at registration time (L204; not called here)"
+    ],
+    "edits_s0": false,
+    "computes_outcomes": false
+  },
+  "frozen_decisions": {
+    "status": "DRAFT; registered false; outcome none; version v0-draft",
+    "family": "sni.us_transfer.RESID-DIR-US",
+    "grid": "7 names x h in {5,21,63} = 21 cells; 1 open arm",
+    "copy": "P01 v1 residual design by s1_prereg.py decision-id citation; subject and bench only change",
+    "primary_bench": "SPY",
+    "secondary_map": "AAPL/MSFT/NVDA XLK; AMZN/TSLA XLY; GOOGL/META XLC with window",
+    "cohort": "HINDSIGHT — 2026 market-cap leaders; survivorship true",
+    "budget": 21,
+    "multiplicity": "Holm across 21 cells for TESTED labels",
+    "grading": "direction right/wrong over N matured beliefs",
+    "identity": "null / UNRESOLVED",
+    "authority": "all six flags false at top level and per cell",
+    "pins": "git ls-tree origin/main blob shas; files never opened"
+  },
+  "labels": [
+    "DRAFT; registered false; outcome none",
+    "HISTORICAL-DESCRIPTIVE (TRAIN/TUNE per SL §2); PROSPECTIVE named but not opened",
+    "HINDSIGHT cohort; survivorship true; STRESS test of METHOD mechanics",
+    "identity UNRESOLVED; canonical_issuer_id null; security_id null",
+    "authority flags all false; refuse if a caller sets any true"
+  ]
+}
