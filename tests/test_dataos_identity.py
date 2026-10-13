@@ -1621,3 +1621,206 @@ def test_observation_repair_valid_numeric_offsets_keep_exact_nine_digit_boundary
         decision_at=exact, snapshot_receipts=(read,))
     assert answer == _obs_query(table, read, cutoff=read_ns)
     assert answer.status == "BOUND"
+
+
+# --- I03 continuity/refusal acceptance ---------------------------------------
+# Lane I03-TEST-1 (programme DATA-OS-COMPLETION, task I03).  This section is
+# APPEND-ONLY and pins the admitted continuity/refusal matrix
+# (research/data_os_completion/2026-10-13/I03_CONTINUITY_REFUSAL_MATRIX.md)
+# against the reader EXACTLY AS ADOPTED from PR #8637 — it never edits
+# lib/dataos/identity.py.  Every expectation below is a hand-stated literal
+# (id, status, reason or exception fragment), never an output of the product.
+
+_I03_RENAME = date(2026, 1, 14)  # curated MMC->MRSH changeover day (lib/ticker_aliases.py:41)
+
+
+def test_i03_01_curated_rename_boundary_is_exact_in_both_namespaces_and_both_directions():
+    """I03.01 — the curated MMC->MRSH changeover stays ONE security either side.
+
+    vendor_aliases namespace: yahoo answers MMC on [., 2026-01-14) and MRSH on
+    [2026-01-14, .) while the security_id stays SEC:US-XNYS-MMC in BOTH
+    directions, asserted on the boundary day AND the day before.  The lagging
+    rename direction (FISV->FI) is the same namespace answering the same open
+    row at every date.  The observation-history namespace carries no curated
+    rename payload (its curated evidence lives in the vendor_aliases namespace),
+    so its half borrows the curated boundary DATE for the fixture's synthetic
+    symbol pair, and its ns-resolution edge is on the read clock only — event
+    intervals are date-scoped in both namespaces (identity.py::_ob_date).
+    """
+    table = VendorAliasTable.from_records([
+        {"vendor": "yahoo", "vendor_symbol": "MMC", "security_id": "SEC:US-XNYS-MMC",
+         "valid_from": None, "valid_to": "2026-01-14"},
+        {"vendor": "yahoo", "vendor_symbol": "MRSH", "security_id": "SEC:US-XNYS-MMC",
+         "valid_from": "2026-01-14", "valid_to": None},
+        # the lagging direction: Fiserv renamed FISV->FI in 2023 and the vendor
+        # still serves the old spelling, so the honest row is OPEN at both ends
+        {"vendor": "yahoo", "vendor_symbol": "FISV", "security_id": "SEC:US-XNAS-FISV",
+         "valid_from": None, "valid_to": None},
+    ])
+    day_before, day_of = date(2026, 1, 13), _I03_RENAME
+    assert table.resolve("yahoo", "MMC", day_before) == "SEC:US-XNYS-MMC"
+    assert table.resolve("yahoo", "MMC", day_of) is None
+    assert table.resolve("yahoo", "MRSH", day_before) is None
+    assert table.resolve("yahoo", "MRSH", day_of) == "SEC:US-XNYS-MMC"
+    assert table.vendor_symbol_for("yahoo", "SEC:US-XNYS-MMC", day_before) == "MMC"
+    assert table.vendor_symbol_for("yahoo", "SEC:US-XNYS-MMC", day_of) == "MRSH"
+    assert table.resolve("yahoo", "FISV", day_before) == "SEC:US-XNAS-FISV"
+    assert table.resolve("yahoo", "FISV", day_of) == "SEC:US-XNAS-FISV"
+
+    original, history, rows, master = _obs_base()
+    history, rows = _obs_append(original, history, rows, listing=True, boundary="2026-01-14")
+    snapshot, read = _obs_snapshot(original, history, rows, master)
+    obs = _obs_table(original, history, rows, snapshot)
+    assert _obs_query(obs, read, vendor="listing", symbol="DOMO", on=day_before).status == "BOUND"
+    assert _obs_query(obs, read, vendor="listing", symbol="HUCK",
+                      on=day_before).reason == "NO_BINDING_AT_EVENT_DATE"
+    assert _obs_query(obs, read, vendor="listing", symbol="DOMO",
+                      on=day_of).reason == "NO_BINDING_AT_EVENT_DATE"
+    assert _obs_query(obs, read, vendor="listing", symbol="HUCK",
+                      on=day_of).security_id == "SEC:US-XNAS-DOMO"
+    before = obs.symbol_binding_for("listing", "SEC:US-XNAS-DOMO", day_before,
+        decision_at=_obs_iso(_OBS_T0 + 100_000), snapshot_receipts=(read,))
+    after = obs.symbol_binding_for("listing", "SEC:US-XNAS-DOMO", day_of,
+        decision_at=_obs_iso(_OBS_T0 + 100_000), snapshot_receipts=(read,))
+    assert (before.status, before.vendor_symbol) == ("BOUND", "DOMO")
+    assert (after.status, after.vendor_symbol) == ("BOUND", "HUCK")
+    read_ns = int(read.read_completed_at_utc_ns)
+    assert _obs_query(obs, read, cutoff=read_ns - 1).reason == "NO_ENROLLED_SNAPSHOT_BY_CUTOFF"
+    assert _obs_query(obs, read, cutoff=read_ns).status == "BOUND"
+
+
+def test_i03_02_reused_ticker_yields_two_securities_and_cross_boundary_rebind_refuses():
+    """I03.02 — a reused ticker never joins two instruments.
+
+    Synthetic control: US-XNYS-ABC was delisted (its vendor_aliases row CLOSED
+    2026-03-02) and US-XNYS-ABC.2 took the SAME vendor symbol that day, with a
+    deliberately similar issuer name and a similar price level — neither reaches
+    the API, which takes only (vendor, symbol, date), so similarity cannot move
+    the answer.  No date resolves to both securities, and a late record trying
+    to bind the reused symbol back to the OLD id across the reuse boundary is
+    refused as ambiguous at construction.
+    """
+    old_id, new_id = "SEC:US-XNYS-ABC", "SEC:US-XNYS-ABC.2"
+    rows = [
+        # old listing: issuer "Alphabloc Corp", last print $10.02 — delisted
+        {"vendor": "yahoo", "vendor_symbol": "ABC", "security_id": old_id,
+         "valid_from": None, "valid_to": "2026-03-02"},
+        # new listing: issuer "Alphabloc Holdings", opened at $10.04 — the reuse
+        {"vendor": "yahoo", "vendor_symbol": "ABC", "security_id": new_id,
+         "valid_from": "2026-03-02", "valid_to": None},
+    ]
+    table = VendorAliasTable.from_records(rows)
+    reuse = date(2026, 3, 2)
+    assert table.resolve("yahoo", "ABC", date(2026, 3, 1)) == old_id
+    assert table.resolve("yahoo", "ABC", reuse) == new_id
+    assert table.resolve("yahoo", "ABC", date(1999, 12, 31)) == old_id
+    assert table.resolve("yahoo", "ABC", date(2030, 1, 1)) == new_id
+    assert parse_id(new_id) == ("security", parse_listing_key("US-XNYS-ABC.2"))
+    assert parse_listing_key("US-XNYS-ABC.2").disambiguator == 2
+    assert old_id != new_id
+    # reverse direction: no date answers ABC for BOTH securities
+    assert table.vendor_symbol_for("yahoo", old_id, date(2026, 3, 1)) == "ABC"
+    assert table.vendor_symbol_for("yahoo", new_id, date(2026, 3, 1)) is None
+    assert table.vendor_symbol_for("yahoo", old_id, reuse) is None
+    assert table.vendor_symbol_for("yahoo", new_id, reuse) == "ABC"
+    # and the closed old row stays closed after delisting (both directions dead)
+    assert table.resolve("yahoo", "ABC", date(2026, 3, 1)) != new_id
+    with pytest.raises(IdentityError, match="ambiguous alias table"):
+        VendorAliasTable.from_records(rows + [
+            # a late record rebinding the REUSED symbol to the OLD security
+            # across the reuse boundary — overlaps BOTH rows above
+            {"vendor": "yahoo", "vendor_symbol": "ABC", "security_id": old_id,
+             "valid_from": "2026-03-01", "valid_to": "2026-06-01"},
+        ])
+
+
+def test_i03_03_dual_classes_share_one_issuer_and_cik_but_never_one_security():
+    """I03.03 — one issuer, one CIK, two securities; no CIK->security lookup.
+
+    Two share classes of one issuer repeat one current CIK lawfully; the two
+    security_ids stay distinct.  Nothing in the documented reader surface maps
+    a CIK to a security: this is asserted by FEEDING the bare CIK to every
+    id-keyed lookup and expecting nothing back, not by reading the source.
+    """
+    master = IssuerMaster.from_records([
+        {"security_id": "SEC:US-XNYS-FOOA", "issuer_id": "ISS:US-XNYS-FOOA",
+         "issuer_state": "", "listing_key": "US-XNYS-FOOA", "issuer_cik": "320193"},
+        {"security_id": "SEC:US-XNYS-FOOB", "issuer_id": "ISS:US-XNYS-FOOA",
+         "issuer_state": "", "listing_key": "US-XNYS-FOOB", "issuer_cik": "320193"},
+    ])
+    assert master.securities_of_issuer("ISS:US-XNYS-FOOA") == (
+        "SEC:US-XNYS-FOOA", "SEC:US-XNYS-FOOB")
+    assert master.issuer_of_security("SEC:US-XNYS-FOOA") == "ISS:US-XNYS-FOOA"
+    assert master.issuer_of_security("SEC:US-XNYS-FOOB") == "ISS:US-XNYS-FOOA"
+    assert security_id("US-XNYS-FOOA") != security_id("US-XNYS-FOOB")
+    # one shared CIK, returned in its normalized ten-digit spelling
+    assert master.cik_of_issuer("ISS:US-XNYS-FOOA") == "0000320193"
+    # the CIK is not an issuer key and not a security key, in either spelling
+    for cik in ("320193", "0000320193"):
+        assert master.securities_of_issuer(cik) == ()
+        assert master.issuer_of_security(cik) is None
+        assert master.listing_key_of_security(cik) is None
+        assert master.cik_of_issuer(cik) is None
+        assert master.security_state_of(cik) is None
+
+
+def test_i03_04_later_refused_shadows_earlier_bound_and_older_read_is_retained():
+    """I03.04 — a later eligible REFUSED shadows the earlier BOUND, no fallback.
+
+    Listing namespace (the polygon BOUND->REFUSED->BOUND shape is already pinned
+    by test_observation_bound_refused_bound_preserves_all_attempts_and_does_not_
+    fallback): attempt-1 binds the family at the curated 2026-01-14 boundary,
+    attempt-2 refuses it.  The reader's own revision law (identity.py:1473
+    "family security changed") forbids a later family from changing an
+    established security identity, so the lawful refused family CARRIES the
+    security attempt-1 bound — and the refusal then shadows to REFUSED in BOTH
+    lookup directions, while a read whose decision cutoff precedes the refusal
+    still returns the earlier BOUND.
+    """
+    original, history, rows, master = _obs_base()
+    history, rows = _obs_append(original, history, rows, listing=True, boundary="2026-01-14")
+    snapshot1, read1 = _obs_snapshot(original, history, rows, master)
+    history, rows = _obs_append(original, history, rows, status="REFUSED", listing=True,
+                                boundary="2026-01-14")
+    refusal_attempt = history["attempts"][-1]
+    refusal_family = next(f for f in refusal_attempt["payload"]["families"]
+                          if f["family_id"] == "listing:domo")
+    refusal_family["security_id"] = "SEC:US-XNAS-DOMO"  # the reader's law: keep it
+    _obs_refresh_attempt(refusal_attempt, rows)
+    snapshot2, read2 = _obs_snapshot(original, history, rows, master)
+    table = _obs_table(original, history, rows, snapshot1, snapshot2)
+    cutoff1, cutoff2 = int(read1.read_completed_at_utc_ns), int(read2.read_completed_at_utc_ns)
+    day_before, day_of = date(2026, 1, 13), date(2026, 1, 14)
+
+    # after the refusal: forward REFUSED — family-level, at every event date
+    refused = _obs_query(table, read1, read2, cutoff=cutoff2, vendor="listing",
+                         symbol="HUCK", on=day_before)
+    assert (refused.status, refused.reason, refused.attempt_id) == (
+        "REFUSED", "source_unavailable", "attempt-2")
+    assert _obs_query(table, read1, read2, cutoff=cutoff2, vendor="listing",
+                      symbol="HUCK", on=date(2026, 1, 14)).status == "REFUSED"
+    # inverse: REFUSED too — the refusal kept the established security identity,
+    # and the reader never falls back to the earlier BOUND in either direction
+    inverse = table.symbol_binding_for("listing", "SEC:US-XNAS-DOMO", day_before,
+        decision_at=_obs_iso(cutoff2), snapshot_receipts=(read1, read2))
+    assert (inverse.status, inverse.reason, inverse.attempt_id) == (
+        "REFUSED", "source_unavailable", "attempt-2")
+    # the convenience resolver answers None in the refused view too, never the old id
+    assert table.resolve("listing", "HUCK", day_before, decision_at=_obs_iso(cutoff2),
+                         snapshot_receipts=(read1, read2)) is None
+
+    # retained older read: a cutoff before the refusal still answers attempt-1
+    # (queried on the boundary day, where attempt-1 binds HUCK to the security)
+    older = _obs_query(table, read1, read2, cutoff=cutoff1, vendor="listing",
+                       symbol="HUCK", on=day_of)
+    assert (older.status, older.security_id, older.attempt_id) == (
+        "BOUND", "SEC:US-XNAS-DOMO", "attempt-1")
+    older_inverse = table.symbol_binding_for("listing", "SEC:US-XNAS-DOMO", day_of,
+        decision_at=_obs_iso(cutoff1), snapshot_receipts=(read1, read2))
+    assert (older_inverse.status, older_inverse.vendor_symbol) == ("BOUND", "HUCK")
+
+    # ns selection edge: the refusal attempt becomes visible at one exact instant
+    assert _obs_query(table, read1, read2, cutoff=cutoff2 - 1, vendor="listing",
+                      symbol="HUCK", on=day_of).status == "BOUND"
+    assert _obs_query(table, read1, read2, cutoff=cutoff2, vendor="listing",
+                      symbol="HUCK", on=day_of).status == "REFUSED"
