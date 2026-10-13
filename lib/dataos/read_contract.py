@@ -358,9 +358,12 @@ def _key_part(value: object, field: str) -> tuple[str, object]:
 
     One instant is ONE key however it is spelled: a tz-aware datetime, an
     offset-bearing ISO string and a ``Z``-suffixed string all canonicalize to the
-    same UTC instant.  A naive spelling is not guessed into an instant — ``utc()``
-    raises and the refusal propagates.  Kinds keep ``bool``/``int`` and
-    ``datetime``/``date`` apart so one key position has one comparable type.
+    same UTC instant.  Nothing naive is guessed into an instant: a naive
+    ``datetime`` makes ``utc()`` raise and that refusal propagates, while a
+    string that is not an offset-bearing ISO instant stays an opaque ``str`` —
+    so a key position mixing it with instants refuses ``KEY_TYPE_MISMATCH``.
+    Kinds keep ``bool``/``int`` and ``datetime``/``date`` apart so one key
+    position has one comparable type.
     """
     if value is None:
         raise ReadContractError(f"every row must carry key field {field!r}")
