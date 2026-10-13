@@ -9,6 +9,7 @@ from __future__ import annotations
 import hashlib
 from collections.abc import Callable
 from dataclasses import dataclass
+from functools import partial
 from pathlib import Path
 from typing import Any, Protocol
 
@@ -24,10 +25,12 @@ from .financial_intelligence_packet import (
     load_packet_schema,
     sha256_file,
 )
+from .issuer_sic import IssuerSicResolver, resolve_issuer_sic
 from .query import (
     BitemporalMetricQueryEngine,
     QueryBounds,
     QueryBoundsError,
+    QueryEntity,
     QueryValidationError,
     UnsupportedMetricError,
 )
@@ -222,13 +225,25 @@ def _refuse_unsupported_metrics(
     binding: CanonicalEntityBinding,
     dataset: FinancialPacketDataset,
     query_request: PacketQueryRequest,
+    issuer_sic_resolver: IssuerSicResolver | None = None,
 ) -> None:
     """Reuse the frozen kernel's cutoff-visible metric gate. Do not scan a live catalog."""
+    sic_resolver = (
+        issuer_sic_resolver
+        if issuer_sic_resolver is not None
+        else partial(resolve_issuer_sic)
+    )
     try:
         engine = BitemporalMetricQueryEngine(
             ledger=dataset.ledger,
             registry=dataset.registry,
-            entities={binding.ticker: binding.source_entity_id},
+            entities=[
+                QueryEntity(
+                    ticker=binding.ticker,
+                    entity_id=binding.source_entity_id,
+                    issuer_sic=sic_resolver(binding.source_entity_id),
+                )
+            ],
             filing_metadata=dataset.filing_metadata,
             bounds=QueryBounds(
                 max_tickers=1,
@@ -260,6 +275,7 @@ def execute_financial_revisions(
     body: bytes,
     provider: FinancialPacketProvider | None = None,
     provider_factory: Callable[[], FinancialPacketProvider] | None = None,
+    issuer_sic_resolver: IssuerSicResolver | None = None,
 ) -> FinancialQueryResult:
     """Admit, construct the packet request, resolve, assemble, and project.
 
@@ -278,10 +294,16 @@ def execute_financial_revisions(
     # A12: the dataset's own admission clock gates the system view. The
     # admitted QueryPolicy object itself passes through untouched.
     enforce_dataset_admission_floor(admitted.policy, dataset)
+    sic_resolver = (
+        issuer_sic_resolver
+        if issuer_sic_resolver is not None
+        else partial(resolve_issuer_sic)
+    )
     _refuse_unsupported_metrics(
         binding=binding,
         dataset=dataset,
         query_request=query_request,
+        issuer_sic_resolver=sic_resolver,
     )
     try:
         packet = assemble_financial_intelligence_packet(
@@ -292,6 +314,7 @@ def execute_financial_revisions(
             metric_registry=dataset.registry,
             context=dataset.context,
             input_digests=dataset.input_digests,
+            issuer_sic_resolver=sic_resolver,
         )
     except FinancialQueryAdmissionError:
         raise

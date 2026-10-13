@@ -10,12 +10,14 @@ from __future__ import annotations
 import hashlib
 from collections.abc import Callable
 from dataclasses import dataclass
+from functools import partial
 from typing import Any
 
 from .financial_intelligence_packet import (
     assemble_financial_intelligence_packet,
     canonical_packet_bytes,
 )
+from .issuer_sic import IssuerSicResolver, resolve_issuer_sic
 from .query_service import (
     MAX_RESPONSE_BYTES,
     FinancialQueryAdmissionError,
@@ -46,6 +48,7 @@ def execute_financial_packet(
     body: bytes,
     provider: FinancialPacketProvider | None = None,
     provider_factory: Callable[[], FinancialPacketProvider] | None = None,
+    issuer_sic_resolver: IssuerSicResolver | None = None,
 ) -> FinancialPacketResult:
     """Admit, construct PacketQueryRequest, resolve, assemble, and serialize.
 
@@ -66,6 +69,13 @@ def execute_financial_packet(
     # output — the production delivery object rides the revisions envelope,
     # never the packet body, whose content_sha256 is a frozen contract.
     enforce_dataset_admission_floor(admitted.policy, dataset)
+    # R1-SIC: resolve the issuer SIC from the shipped coverage contract by
+    # the binding's own CIK; no record means no SIC (fail-closed).
+    sic_resolver = (
+        issuer_sic_resolver
+        if issuer_sic_resolver is not None
+        else partial(resolve_issuer_sic)
+    )
     try:
         packet = assemble_financial_intelligence_packet(
             entity=dataset.entity,
@@ -75,6 +85,7 @@ def execute_financial_packet(
             metric_registry=dataset.registry,
             context=dataset.context,
             input_digests=dataset.input_digests,
+            issuer_sic_resolver=sic_resolver,
         )
     except FinancialQueryAdmissionError:
         raise
