@@ -446,16 +446,16 @@ def test_v2_field_labels_present_in_template_source():
     """The v2 bilingual labels are present in the template source (EN and ZH)."""
     src = _rr_section_src()
     expected_en = [
-        "What is driving the number",
-        "Data quality composition",
+        "Model attribution — champion model",  # #6868: bound to its own forecast
+        "Where the attribution comes from",    # #6868: not a data-quality measure
         "Market-implied",
         "Hot print historically",
         "Cold print historically",
         "First-print revision risk",
     ]
     expected_zh = [
-        "驱动因素分解",
-        "数据质量构成",
+        "模型归因 — 冠军模型",
+        "归因来源构成",
         "市场隐含",
         "历史上热数据",
         "历史上冷数据",
@@ -468,11 +468,15 @@ def test_v2_field_labels_present_in_template_source():
 
 
 def test_v2_confidence_bar_legend_terms_bilingual():
-    """Known/proxy/residual legend appears in both EN and ZH in template source."""
+    """The attribution-provenance legend names what each share IS, in EN and ZH.
+
+    #6868: w_residual is exactly the core-persistence (lagged inflation) share of
+    the champion's attribution, so the old Known/Proxy/Residual legend mislabelled
+    it; the bar also never measured "data quality"."""
     src = _rr_section_src()
-    for term_en in ("Known", "Proxy", "Residual"):
+    for term_en in ("Direct prices", "Leading proxies", "Persistence (lagged inflation)"):
         assert term_en in src, f"EN confidence bar legend term not found: {term_en!r}"
-    for term_zh in ("已知", "代理", "残差"):
+    for term_zh in ("直接价格", "领先代理", "持续性（滞后通胀）"):
         assert term_zh in src, f"ZH confidence bar legend term not found: {term_zh!r}"
 
 
