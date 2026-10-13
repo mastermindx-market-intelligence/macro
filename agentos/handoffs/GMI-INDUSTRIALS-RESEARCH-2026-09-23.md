@@ -36,7 +36,7 @@ unresolved:
   - "compile-context --workstream GMI-THEME-GRAPH selects agentos/handoffs/GMI-THEME-GRAPH-2026-10-08.md and excludes this file and GMI-INDUSTRIALS-MASTER-FABLE-CEO-HANDOFF-2026-09-24.md as older_handoff (latest: GMI-THEME-GRAPH-2026-10-08). compile-context --workstream GMI-INDUSTRIALS-FIRST-VERTICAL selects agentos/handoffs/GMI-INDUSTRIALS-FIRST-VERTICAL-2026-09-29.md and lists agentos/handoffs/GMI-INDUSTRIALS-2026-09-24-first-vertical-implementation.md as older_handoff (latest: GMI-INDUSTRIALS-FIRST-VERTICAL-2026-09-29)."
 next_actions:
   - "Use the lawful placement path for one eligible Fable receiver. Discovery of this file is not delivery."
-  - "Resume GMI theme-graph work from agentos/handoffs/THEME-INTELLIGENCE-CONVERGENCE-2026-09-19-LANE-A.md, not from this Industrials checkpoint."
+  - "Resume GMI theme-graph work from agentos/handoffs/GMI-THEME-GRAPH-2026-10-08.md, not from this Industrials checkpoint."
   - "Reconcile current source and effects before any dependent G1-G5 action."
 do_not_redo:
   - "Do not repeat waves 1-13, the original source recovery, or a second platform."
@@ -83,13 +83,13 @@ Containing artifact/review commit: `6dab1cdee663c99a0063cc5ca9d33983150978e7`.
 
 | Artifact | Exact blob |
 |---|---|
-| `agentos/handoffs/GMI-INDUSTRIALS-MASTER-FABLE-CEO-HANDOFF-2026-09-24.md` | `f2175c4efbc687d1cb818c1cd479ea718205d9ab` |
+| `agentos/handoffs/GMI-INDUSTRIALS-MASTER-FABLE-CEO-HANDOFF-2026-09-24.md` | `3b65978ec4044c114ea5d409496b4389a60e5e0d` |
 | `docs/superpowers/plans/2026-09-24-industrials-handoff-plan-addendum.md` | `a2416836ad973a9224c4823ae0b6ae4d1272a011` |
-| `research/industrials/WAVE14_HANDOFF_MANIFEST.json` | `26c77df54f622e7ed6bedc3544aba3d8801825c8` |
+| `research/industrials/WAVE14_HANDOFF_MANIFEST.json` | `0cbc358d1d13d3bdac5cfb7dc063ece22d24aff2` |
 | `research/industrials/verify_wave14.py` | `f89cd7e65ede392a7c4d3643a7c6270aec43ff56` |
 | `research/industrials/INDUSTRIALS_WAVE14_HANDOFF_REVIEW_AND_VERIFICATION_2026-09-24.md` | `6a7247eb036b2891f8aeed561b887e3e6a840eba` |
 
-All five published blobs match actual local bytes. The master packet is 3,103 words; the mandatory addendum is 1,884 words. These are artifact sizes, not quality scores. Fourteen handoff-integrity tests passed, including three controlled corruption refusals; canonical-layout and post-readback runs overlap. The prior sixteen plan-integrity tests also passed and overlap in purpose. No application code or future plan test was executed; no independent review or investment validation is claimed.
+All five published blobs match actual local bytes. The master packet is 3,160 words; the mandatory addendum is 1,884 words. These are artifact sizes, not quality scores. Fourteen handoff-integrity tests passed, including three controlled corruption refusals; canonical-layout and post-readback runs overlap. The prior sixteen plan-integrity tests also passed and overlap in purpose. No application code or future plan test was executed; no independent review or investment validation is claimed.
 
 ## Shared decisions now known
 

@@ -45,9 +45,9 @@
       "role": "master_packet",
       "path": "agentos/handoffs/GMI-INDUSTRIALS-MASTER-FABLE-CEO-HANDOFF-2026-09-24.md",
       "portable": "GMI-INDUSTRIALS-MASTER-FABLE-CEO-HANDOFF-2026-09-24.md",
-      "bytes": 24908,
-      "git_blob": "f2175c4efbc687d1cb818c1cd479ea718205d9ab",
-      "sha256": "1163aec96d10771d9e9bfa044ace59760073597d73aa3b9189446bda8229602d"
+      "bytes": 25832,
+      "git_blob": "3b65978ec4044c114ea5d409496b4389a60e5e0d",
+      "sha256": "18a18385cc19c719e54b8b6a64e61efa6bab8437890047377e19a4068a2104c7"
     },
     {
       "role": "mandatory_addendum",
