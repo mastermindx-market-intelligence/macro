@@ -38,6 +38,8 @@ C05 | lib/pullback_depth.py:172 | drop the peak-membership refusal | KILLED (pre
 C06 | lib/pullback_depth.py:174 | ``start = dates.index(peak)`` -> ``0`` | KILLED (window starts at the retained high)
 C07 | lib/pullback_depth.py:176 | allow a stale end | SURVIVED | test_a_window_that_ends_before_asof_is_not_drawn
 C08 | lib/pullback_depth.py:201 | ``vals[:-1] + [end]`` -> ``list(vals)`` | KILLED (drawn end from the metric's own ratio)
+C09 | lib/pullback_depth.py:176 | ``!=`` -> ``<`` on the as-of end | SURVIVED | test_a_window_that_ends_after_asof_is_not_drawn
+A16 | _risk_radar_pullback_depth.html.j2:202 | drop ``|e`` on both chart-name spans | SURVIVED | test_the_chart_name_escapes_metacharacters_without_autoescape
 
 Every input is synthetic; no forecast, probability or odds is produced or
 asserted anywhere in this module.
@@ -163,3 +165,25 @@ def test_a_window_that_ends_before_asof_is_not_drawn():
     assert view["detail_withheld"] == "uncovered"
     assert "chart_label_en" not in view
     assert "chart_label_zh" not in view
+
+
+def test_a_window_that_ends_after_asof_is_not_drawn():
+    """A path whose last session is newer than asof supports no window either."""
+    view = _observation(
+        "us", "underway",
+        path={"dates": ["2026-09-14", "2026-09-21", "2026-09-24", "2026-10-02"],
+              "vals": [0.0, -7.4, -5.2, -6.8]},
+        asof="2026-09-30", close=93.2, peak_close=100.0, low_close=92.6,
+        **dict(EVIDENCE))
+    assert view["detail_chart_html"] == ""
+    assert view["detail_withheld"] == "uncovered"
+
+
+def test_the_chart_name_escapes_metacharacters_without_autoescape():
+    """The China page renders without autoescape, so the spans escape for it."""
+    view = native_view("cn")
+    view["chart_label_en"] = "A & B <drawdown>"
+    view["chart_label_zh"] = "已观测回撤"
+    html = render(view, "cn")
+    assert "A &amp; B &lt;drawdown&gt;" in html
+    assert "A & B" not in html and "<drawdown>" not in html
