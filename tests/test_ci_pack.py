@@ -4894,7 +4894,7 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # each number is the docstring of the test below. scripts/check_contract_delta.py
 # reads both names with ast.literal_eval, so keep them plain module-level literals.
 PACKING_PROBES = (
-    ("templates/index.html", 135, 5_800),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("templates/index.html", 135, 5_801),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
     ("scripts/build_free_content.py", 134, 5_604),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
     ("engine/prophet/plan_book.py", 130, 5_600),
 )
@@ -5576,6 +5576,20 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     ceilings (134 jobs, 10 packs), and do not pretend the 5,602 inherited
     baseline was healthy. Exact-current-head hosted checks and merge-queue
     integration remain separate binding release gates.
+
+    2026-10-13 (#9074 head 675850ea8c3, hosted merge d542270a39b):
+    the new hosted contract-delta/ci-pack-0 rerun on base 6efbaadcaf6c
+    measured the templates/index.html probe at 5,799 weight-seconds on
+    the exact tested base, versus 5,801 after including the admin workspace.
+    Job count remained 134, no newly selected jobs entered this probe, and
+    the same previously selected admin-js-no-undef job grew weight 14 -> 16
+    from its new workspace test. The unchanged 5,800 bound therefore went
+    red by 1 second; this was introduced by the added scope and is not
+    an inherited-base failure. Set only its weight ceiling to the exact
+    hosted measurement 5,801 (no padding), retaining 135-job and 10-pack
+    bounds, all test suites, all inference/closure checks and all guards.
+    Full-tree post-change hosted CI must independently qualify the result;
+    local sparse-worktree totals are not comparable to complete hosted totals.
     """
     rows = packing_probe_measurements(
         MANIFEST, PACKING_PROBES, max_packs=PACKING_PROBE_MAX_PACKS
