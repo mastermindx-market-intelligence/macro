@@ -942,7 +942,7 @@ datasets:
 
   - dataset_id: company_intelligence.issuer_disclosure_generations
     layer: L3
-    status: PROPOSED
+    status: PRODUCED
     owner: company-intelligence
     producer: scripts/publish_company_disclosure.py
     storage: "private:company-intelligence/state/generations/{sha256}.json"
@@ -965,7 +965,10 @@ datasets:
       fact: {dtype: object, nullable: false}
     code_consumers: [engine/company_intelligence/issuer_disclosure_owner.py]
     notes: >
-      Proposed until the source owner observes a retained-input publication.
+      PRODUCED 2026-10-12 after the source owner independently observed the real
+      retained-input STAGE publication. Evidence:
+      research/theme_graph/issuer_disclosures_20261011/real_stage_20261012/README.md. Serving still
+      requires a NEW adoption-bound generation and PROMOTE_CURRENT operation.
       Current-only manifest of separately versioned native edition/fact members;
       metadata clocks belong to the manifest, not invented native-schema fields.
       No PIT read, original-source redistribution, commercial magnitude or trade

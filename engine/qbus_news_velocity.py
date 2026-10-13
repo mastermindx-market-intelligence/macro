@@ -14,6 +14,8 @@ from datetime import datetime, timedelta, timezone
 import math
 import sqlite3
 
+from engine.qbus_news_cluster import UNKNOWN_CLUSTER_POLICY_VERSION
+
 SCHEMA = "qbus.news_velocity.v1"
 METHOD = (
     "distinct reports by source + source_item_id; active status only; "
@@ -31,8 +33,63 @@ _DAILY_WINDOW_DAYS = 28
 
 # Rolling windows are closed at both ends: a report at exactly ``now - 24h``
 # or exactly ``now`` is inside the 24h count. Day bins are UTC dates.
+#
+# The sixth column is the stored cluster policy stamp. Stores created before
+# the column existed (and hand-built fixtures) lack it; the literal NULL keeps
+# the query valid there and _distinct_stories labels those stories
+# "unknown (pre-column)". The first two texts are byte-identical except for
+# that one selected expression. The third text is for databases whose
+# news_clusters table is absent while news_cluster_members survives: it keeps
+# the members join and selects a literal NULL policy column, so member stories
+# stay grouped and read "unknown (pre-column)". The fourth text is for
+# databases with neither cluster table (a shape NewsStore never writes): it
+# drops both cluster joins, so every report is its own story and no policy
+# stamp exists.
 _STORY_SQL = """
-SELECT i.source, i.source_item_id, p.published_at, p.received_at, m.cluster_id
+SELECT i.source, i.source_item_id, p.published_at, p.received_at, m.cluster_id,
+       c.cluster_policy_version
+FROM news_security_index AS i
+JOIN news_states AS s
+  ON s.source = i.source
+ AND s.source_item_id = i.source_item_id
+JOIN news_state_projection AS p
+  ON p.source = i.source
+ AND p.source_item_id = i.source_item_id
+LEFT JOIN news_cluster_members AS m
+  ON m.source = i.source
+ AND m.source_item_id = i.source_item_id
+LEFT JOIN news_clusters AS c
+  ON c.cluster_id = m.cluster_id
+WHERE i.security_id = ?
+  AND s.status = 'active'
+  AND s.source IN ({placeholders})
+ORDER BY i.source, i.source_item_id
+"""
+
+_STORY_SQL_NO_POLICY_COLUMN = """
+SELECT i.source, i.source_item_id, p.published_at, p.received_at, m.cluster_id,
+       NULL
+FROM news_security_index AS i
+JOIN news_states AS s
+  ON s.source = i.source
+ AND s.source_item_id = i.source_item_id
+JOIN news_state_projection AS p
+  ON p.source = i.source
+ AND p.source_item_id = i.source_item_id
+LEFT JOIN news_cluster_members AS m
+  ON m.source = i.source
+ AND m.source_item_id = i.source_item_id
+LEFT JOIN news_clusters AS c
+  ON c.cluster_id = m.cluster_id
+WHERE i.security_id = ?
+  AND s.status = 'active'
+  AND s.source IN ({placeholders})
+ORDER BY i.source, i.source_item_id
+"""
+
+_STORY_SQL_MEMBERS_ONLY = """
+SELECT i.source, i.source_item_id, p.published_at, p.received_at, m.cluster_id,
+       NULL
 FROM news_security_index AS i
 JOIN news_states AS s
   ON s.source = i.source
@@ -48,6 +105,36 @@ WHERE i.security_id = ?
   AND s.source IN ({placeholders})
 ORDER BY i.source, i.source_item_id
 """
+
+_STORY_SQL_NO_CLUSTER_TABLES = """
+SELECT i.source, i.source_item_id, p.published_at, p.received_at, NULL, NULL
+FROM news_security_index AS i
+JOIN news_states AS s
+  ON s.source = i.source
+ AND s.source_item_id = i.source_item_id
+JOIN news_state_projection AS p
+  ON p.source = i.source
+ AND p.source_item_id = i.source_item_id
+WHERE i.security_id = ?
+  AND s.status = 'active'
+  AND s.source IN ({placeholders})
+ORDER BY i.source, i.source_item_id
+"""
+
+
+def _has_cluster_policy_column(conn: sqlite3.Connection) -> bool:
+    rows = conn.execute("PRAGMA table_info(news_clusters)").fetchall()
+    return any(str(row[1]) == "cluster_policy_version" for row in rows)
+
+
+def _cluster_tables_present(conn: sqlite3.Connection) -> set[str]:
+    """The subset of the two cluster tables that exists in ``conn``."""
+    rows = conn.execute(
+        "SELECT name FROM sqlite_master"
+        " WHERE type='table'"
+        " AND name IN ('news_clusters','news_cluster_members')"
+    ).fetchall()
+    return {str(row[0]) for row in rows}
 
 
 def compute_news_velocity(
@@ -84,8 +171,21 @@ def compute_news_velocity(
         # "IN ()" is invalid SQLite, and there is nothing to count anyway.
         return _assemble(security_id, as_of, {}, counted_sources)
     placeholders = ",".join("?" for _ in counted_sources)
+    present = _cluster_tables_present(conn)
+    if present == {"news_clusters", "news_cluster_members"}:
+        story_sql = (
+            _STORY_SQL
+            if _has_cluster_policy_column(conn)
+            else _STORY_SQL_NO_POLICY_COLUMN
+        )
+    elif present == {"news_cluster_members"}:
+        # Membership survives without its cluster rows: keep the members
+        # join, and every member story reads as an unknown policy stamp.
+        story_sql = _STORY_SQL_MEMBERS_ONLY
+    else:
+        story_sql = _STORY_SQL_NO_CLUSTER_TABLES
     rows = conn.execute(
-        _STORY_SQL.format(placeholders=placeholders),
+        story_sql.format(placeholders=placeholders),
         (security_id, *counted_sources),
     ).fetchall()
     stories = _distinct_stories(rows)
@@ -129,15 +229,28 @@ def compare_to_typical(
 
 def _distinct_stories(
     rows: list[tuple[object, ...]],
-) -> dict[tuple[str, str], tuple[datetime, str, str]]:
+) -> dict[tuple[str, str], tuple[datetime, str, str, str | None]]:
     """One entry per (source, source_item_id); the ordered row wins ties.
 
-    The entry carries the report's effective time, its time basis and its
-    story key: the cluster id, or ``item:`` + source + ``\\x1f`` +
-    source_item_id when the report sits in no cluster.
+    The entry carries the report's effective time, its time basis, its story
+    key (the cluster id, or ``item:`` + source + ``\\x1f`` + source_item_id
+    when the report sits in no cluster) and the policy label of the cluster
+    that minted it: the stored stamp, ``None`` for no cluster, or
+    ``UNKNOWN_CLUSTER_POLICY_VERSION`` when the cluster row is missing
+    (deleted, or the clusters table absent while membership survives) or
+    was minted before the stamp column existed.
     """
-    stories: dict[tuple[str, str], tuple[datetime, str, str]] = {}
-    for source, source_item_id, published_at, received_at, cluster_id in rows:
+    stories: dict[
+        tuple[str, str], tuple[datetime, str, str, str | None]
+    ] = {}
+    for (
+        source,
+        source_item_id,
+        published_at,
+        received_at,
+        cluster_id,
+        policy_version,
+    ) in rows:
         key = (str(source), str(source_item_id))
         if key in stories:
             continue
@@ -146,9 +259,14 @@ def _distinct_stories(
             continue
         if cluster_id is None:
             story_key = "item:" + key[0] + "\x1f" + key[1]
+            label = None
+        elif policy_version is None:
+            story_key = str(cluster_id)
+            label = UNKNOWN_CLUSTER_POLICY_VERSION
         else:
             story_key = str(cluster_id)
-        stories[key] = (when, basis, story_key)
+            label = str(policy_version)
+        stories[key] = (when, basis, story_key, label)
     return stories
 
 
@@ -179,7 +297,7 @@ def _parse_instant(value: object) -> datetime | None:
 def _assemble(
     security_id: str,
     as_of: datetime,
-    stories: dict[tuple[str, str], tuple[datetime, str, str]],
+    stories: dict[tuple[str, str], tuple[datetime, str, str, str | None]],
     counted_sources: list[str],
 ) -> dict:
     as_of_date = as_of.date()
@@ -194,9 +312,10 @@ def _assemble(
     basis_counts = {"published_at": 0, "received_at": 0}
     basis_counts_24h = {"published_at": 0, "received_at": 0}
     story_keys_24h: set[str] = set()
+    policy_versions_24h: set[str] = set()
     first: datetime | None = None
 
-    for when, basis, story_key in stories.values():
+    for when, basis, story_key, policy_label in stories.values():
         basis_counts[basis] += 1
         if first is None or when < first:
             first = when
@@ -204,6 +323,8 @@ def _assemble(
             count_24h += 1
             basis_counts_24h[basis] += 1
             story_keys_24h.add(story_key)
+            if policy_label is not None:
+                policy_versions_24h.add(policy_label)
         if start_7d <= when <= as_of:
             count_7d += 1
         offset = (when.date() - oldest).days
@@ -225,6 +346,7 @@ def _assemble(
         "count_24h": count_24h,
         "count_7d": count_7d,
         "stories_24h": len(story_keys_24h),
+        "cluster_policy_versions_24h": sorted(policy_versions_24h),
         "daily_counts_28d": daily,
         "median_daily_28d": median,
         "history_days_observed": history_days,

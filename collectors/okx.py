@@ -21,6 +21,7 @@ import numpy as np
 import pandas as pd
 
 from collectors.base import Adapter
+from collectors import _crypto_observations as observations
 from lib import config, store
 
 log = logging.getLogger(__name__)
@@ -41,6 +42,7 @@ class OkxAdapter(Adapter):
     def __init__(self) -> None:
         self.cfg = config.load()["okx"]
 
+    @observations.recording_run
     def fetch(self, full_history: bool = False) -> dict[str, pd.DataFrame]:
         out = {}
         fr = self._funding(full_history)
@@ -68,6 +70,9 @@ class OkxAdapter(Adapter):
             raise ValueError("okx returned nothing")
         return out
 
+    def fetch_result_status(self, frames: dict[str, pd.DataFrame]) -> str | None:
+        return observations.fetch_result_status(self, frames)
+
     def validate(self, name: str, df: pd.DataFrame) -> pd.DataFrame:
         """taker_volume_hourly MUST keep its intraday timestamps — skip the
         base-class .normalize() for it (which would collapse 24 rows/day to 1 and
@@ -94,7 +99,10 @@ class OkxAdapter(Adapter):
                 params["after"] = after
             r = self.http_get(self.cfg["funding_url"], retries=self.cfg["retries"],
                               params=params, timeout=30)
-            data = r.json().get("data", [])
+            received_at = observations.now_utc()
+            payload = r.json()
+            observations.record_response(self, "okx_funding", params, r, payload, received_at, endpoint=self.cfg["funding_url"])
+            data = payload.get("data", [])
             if not data:
                 break
             rows.extend(data)
@@ -185,10 +193,13 @@ class OkxAdapter(Adapter):
         instType=CONTRACTS = the leveraged perp/futures aggressive-flow read
         (on-thesis for the leverage card; SPOT is the broader spot-only series).
         DISPLAY-ONLY short-horizon order-flow imbalance context."""
+        params = {"ccy": "BTC", "instType": "CONTRACTS", "period": "1D"}
         r = self.http_get(self.cfg["taker_url"], retries=self.cfg["retries"],
-                          params={"ccy": "BTC", "instType": "CONTRACTS", "period": "1D"},
-                          timeout=30)
-        data = r.json().get("data", [])
+                          params=params, timeout=30)
+        received_at = observations.now_utc()
+        payload = r.json()
+        observations.record_response(self, "okx_taker", params, r, payload, received_at, endpoint=self.cfg["taker_url"])
+        data = payload.get("data", [])
         if not data:
             return None
         # rows: [ts_ms, sellVol, buyVol] (OKX v5 order is sell-then-buy — do NOT flip)
@@ -208,10 +219,13 @@ class OkxAdapter(Adapter):
         genuine sub-daily order-flow feed the impulse-radar screens lacked).
         DISPLAY-ONLY / accruing — never scored until it has the history to be
         validated by the falsifier gate."""
+        params = {"ccy": "BTC", "instType": "CONTRACTS", "period": "1H"}
         r = self.http_get(self.cfg["taker_url"], retries=self.cfg["retries"],
-                          params={"ccy": "BTC", "instType": "CONTRACTS", "period": "1H"},
-                          timeout=30)
-        data = r.json().get("data", [])
+                          params=params, timeout=30)
+        received_at = observations.now_utc()
+        payload = r.json()
+        observations.record_response(self, "okx_taker", params, r, payload, received_at, endpoint=self.cfg["taker_url"])
+        data = payload.get("data", [])
         if not data:
             return None
         # rows: [ts_ms, sellVol, buyVol] (OKX v5 order is sell-then-buy — do NOT flip)

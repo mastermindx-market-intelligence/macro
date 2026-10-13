@@ -1,0 +1,31 @@
+{
+  "schema": "tiingo.disposition_scalar_discriminating_checks/v1",
+  "method_sha256": "07333a6fbdebbd3b717be322e741d1fbd4f5de3b7ba562d9496811f01405c656",
+  "check_method_sha256": "e2f69dea9d000d7a19bb8e9644272eb8d00b481f9301ab1ea12958f44a8180df",
+  "checks": [
+    "valid_all_fields",
+    "negative_json_integer_volume",
+    "negative_int64_lower_boundary",
+    "both_negative_integer_fields",
+    "negative_string",
+    "negative_decimal_token",
+    "negative_fraction",
+    "below_int64",
+    "positive_overflow",
+    "boolean",
+    "structured",
+    "nonfinite",
+    "invalid_nonvolume_after_bad_volume",
+    "invalid_nonvolume_before_bad_volume",
+    "identity_mismatch",
+    "invalid_aware_date",
+    "null_volume_remains_valid",
+    "duplicate_date",
+    "duplicate_json_field"
+  ],
+  "passed": 19,
+  "actual_archive_writes": 0,
+  "provider_requests": 0,
+  "source_payloads_modified": false,
+  "fixture_is_not_actual_receipt_acceptance": true
+}

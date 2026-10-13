@@ -302,13 +302,20 @@ deliveries are included, and it does not rewrite the `-wal` or `-shm`
 siblings. Against a cleanly closed store, a run creates a 0-byte `-wal` and
 a 32 KiB `-shm` (the wal-index), and both remain after the command exits
 because a read-only connection cannot remove them; the database file's
-bytes and mtime are still unchanged.
+bytes and mtime are still unchanged. The store path is percent-encoded
+into the read-only URI for both the report and the embedded cluster audit,
+so a path holding spaces, `?`, `#`, `%`, quotes or non-ASCII characters
+opens exactly the named file and creates nothing beside it (other than the
+`-wal`/`-shm` siblings described above).
 
 数据库以 SQLite `mode=ro` 与 `query_only` 打开。写入进程仍在运行时，报告读取
 已有的 WAL，因此未 checkpoint 的送达也会计入，且不会改写 `-wal` 或 `-shm`。
 对一个已干净关闭的库，一次运行会创建 0 字节的 `-wal` 和 32 KiB 的 `-shm`
 （wal-index），且两者在命令退出后依然留存，因为只读连接无法删除它们；数据
-库文件的字节与修改时间仍然保持不变。
+库文件的字节与修改时间仍然保持不变。库存报告与内嵌聚类审计都把数据库路径
+百分号编码进只读 URI，因此包含空格、`?`、`#`、`%`、引号或非 ASCII 字符的
+路径只会打开指定的文件，不会在其旁边创建任何其他文件（除上文所述的
+`-wal`/`-shm` 伴随文件外）。
 
 Fields / 字段:
 
@@ -346,3 +353,108 @@ The report never includes titles, teasers, URLs, message bodies, or
 `delivery_json`.
 
 报告不包含标题、摘要、URL、消息正文或 `delivery_json`。
+
+`--universe <path>` and `--rights <path>` are both optional. When one is
+omitted, its section reports `state: unavailable` with a reason
+(`universe_path_unset`, `rights_path_unset`); an unusable input reports
+`universe_unreadable` or `rights_unavailable`. `--rights` accepts the
+committed approved receipt file and is read with audience `site_full`.
+
+`--universe <path>` 与 `--rights <path>` 均为可选。省略时对应小节报告
+`state: unavailable` 及原因（`universe_path_unset`、`rights_path_unset`）；
+输入不可用时报告 `universe_unreadable` 或 `rights_unavailable`。
+`--rights` 读取已提交的批准回执文件，按 `site_full` 受众校验。
+
+Each new section carries `known_at`, the report clock (`--now`) rendered
+as UTC to whole seconds; `generated_at` keeps its ISO-8601 form.
+
+每个新小节都带 `known_at`，即报告时钟（`--now`）取整到秒的 UTC 表示；
+`generated_at` 保持原有 ISO-8601 形式。
+
+`universe` mirrors the API owner's qualification of the same file:
+`state` (`qualified` or `held`), `revision`, `asof`; three counts:
+`qualified` (qualified securities), `excluded` (excluded securities) and
+`ambiguous_aliases` (aliases shared by more than one qualified security);
+and `reason_codes`, the distinct snapshot-level hold codes. The inventory
+prints them sorted, while the qualification itself keeps them in
+first-seen order. `reason_codes` is not a per-security count and carries
+no counts. Ownership metadata, aliases and security ids are never printed.
+
+`universe` 小节与 API 层对同一文件的资质判定一致：`state`（`qualified`
+或 `held`）、`revision`、`asof`；三个计数：`qualified`（合格证券数）、
+`excluded`（排除证券数）与 `ambiguous_aliases`（被多于一只合格证券共用
+的别名个数）；以及 `reason_codes`，即去重后的快照级 hold 原因代码。库存
+按排序输出，而资质判定本身按首次出现顺序保留。`reason_codes`
+不是逐证券计数，也不携带数量。不输出属主、别名或 security id。
+
+`cluster_summary` counts `stories` (rows of `news_cluster_members`),
+`clusters` (the union of `news_clusters.cluster_id` and
+`news_cluster_members.cluster_id`, so a zero-member cluster counts once
+and an orphan member id counts as a cluster), `multi_member_clusters`,
+and `size_histogram` keyed by size in ascending numeric order. These
+match `audit_store` on the same database.
+
+`cluster_summary` 统计 `stories`（`news_cluster_members` 行数）、
+`clusters`（`news_clusters.cluster_id` 与 `news_cluster_members.cluster_id`
+的并集，因此零成员聚类计一次，孤儿成员 id 也计为一个聚类）、
+`multi_member_clusters` 与按大小数值升序的 `size_histogram`。这些值与
+同一数据库上的 `audit_store` 一致。
+
+`cluster_summary.audit` embeds the read-only cluster audit as counts only
+(`near_misses_listed`, `near_miss_list_limit`, `number_mismatch_pairs`,
+`number_mismatch_clusters`); story ids, cluster ids and similarity values
+stay out of the report. The audit runs while `stories` is at most
+`AUDIT_STORY_CAP = 3000`, measured on host ubuntu1 on 2026-10-12: a full
+report with the audit included took 4.10 s at 3000 stories (0.12 s at 500,
+0.47 s at 1000, 1.77 s at 2000, 11.17 s at 5000), and the 5000-story
+report with the audit skipped took 0.06 s. Over the cap the section says
+`skipped` with `story_count_over_cap` and carries the hand-run command:
+
+    python3 scripts/qbus_news_cluster_audit.py --store <path>
+
+The command is printed with a literal `<path>` placeholder, never the
+store path, so the report does not echo where the store lives; substitute
+the store that was inventoried when running it.
+
+`cluster_summary.audit` 只内嵌聚合计数（`near_misses_listed`、
+`near_miss_list_limit`、`number_mismatch_pairs`、`number_mismatch_clusters`）；
+story id、cluster id 与相似度不会进入报告。`stories` 不超过
+`AUDIT_STORY_CAP = 3000` 时审计随报告运行，该上限于 2026-10-12 在主机
+ubuntu1 上测得：3000 条时含审计的完整报告耗时 4.10 秒（500 条 0.12 秒、
+1000 条 0.47 秒、2000 条 1.77 秒、5000 条 11.17 秒），5000 条跳过审计的
+报告耗时 0.06 秒。超过上限时小节报告 `skipped` 与 `story_count_over_cap`，
+并带手动运行命令：
+
+    python3 scripts/qbus_news_cluster_audit.py --store <path>
+
+该命令以字面 `<path>` 占位符输出，绝不输出存储路径，因此报告不会回显
+数据库所在位置；实际运行时请将其替换为本次库存所用的数据库。
+
+`flow_read_latency` measures in-process `store.news_flow` reads, not
+HTTP: the network and API layers are not measured. The sample holds the
+10 qualified securities with the largest 7-day report counts, listed
+alphabetically by ticker; 50 reads run round-robin over the sample.
+`p50_ms`, `p95_ms` and `max_ms` are nearest-rank values rounded to 0.1 ms.
+States are `measured`, `no_reports_7d`, `unavailable` (with one of
+`universe_path_unset`, `universe_unreadable`, `universe_unqualified`,
+`rights_path_unset`, `rights_unavailable`) and `failed`
+(`flow_call_failed`). Only tickers and counts are printed. The `--text`
+line carries the same label, `in-process, not HTTP / 进程内读取，非 HTTP`,
+after the sampled tickers.
+
+`flow_read_latency` 度量进程内 `store.news_flow` 读取，而非 HTTP：
+网络与 API 层不在度量范围。样本为 7 天报道数最大的 10 只合格证券，
+按代码字母序列出；50 次读取在样本上轮转。`p50_ms`、`p95_ms` 与
+`max_ms` 为就近取秩（nearest-rank）值，保留 0.1 毫秒精度。状态为
+`measured`、`no_reports_7d`、`unavailable`（原因为
+`universe_path_unset`、`universe_unreadable`、`universe_unqualified`、
+`rights_path_unset`、`rights_unavailable` 之一）与 `failed`
+（`flow_call_failed`）。只输出代码与计数。`--text` 输出行在抽样代码之后
+也带有同样的标签 `in-process, not HTTP / 进程内读取，非 HTTP`。
+
+No `--verify` mode exists: the runtime health receipt holds only process
+counters (scripts/run_qbus_news.py:183-206), so there is no store count
+in it to compare against.
+
+不存在 `--verify` 模式：运行健康回执只含进程计数器
+（scripts/run_qbus_news.py:183-206），其中没有可与库存对比的存量计数。
