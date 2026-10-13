@@ -13,6 +13,7 @@ import tempfile
 import unittest
 from unittest.mock import patch
 
+from engine.market_ontology import bea_industry_context as bea_module
 from engine.market_ontology.bea_industry_context import (
     BEAContextRefused,
     LINEAGE_SHA256,
@@ -22,6 +23,7 @@ from engine.market_ontology.bea_industry_context import (
     compose_bea_industry_accounting_change,
     read_private_bea_accounting_brief,
     compare_private_bea_using_industries,
+    qualify_private_bea_research_manifest,
 )
 
 _EXPECTED_SOURCE_RELATIVE = (
@@ -963,6 +965,251 @@ class BEAIndustryCohortResearchTests(unittest.TestCase):
                 compare_private_bea_using_industries(
                     self._workspace(root), industry_codes=("3341",),
                     commodity_code="BBBB",
+                )
+
+
+class BEAManifestResearchQualificationTests(unittest.TestCase):
+    """Only synthetic metadata enters Git; real M2 receipt bytes stay private."""
+
+    @staticmethod
+    def _fixture():
+        digest = lambda value: hashlib.sha256(str(value).encode("utf-8")).hexdigest()
+        names = ["3341", *(f"A{i:03d}" for i in range(1, 138))]
+        assert len(names) == 138
+        files = {
+            f"industry_{code}.jsonl": {
+                "bytes": (2_500_000 if idx < 137 else 11_440_588),
+                "rows": 1112,
+                "sha256": digest("synthetic-" + code),
+            }
+            for idx, code in enumerate(names)
+        }
+        assert sum(x["bytes"] for x in files.values()) == 353_940_588
+        original_code = {
+            "bea_research_views.py": "a" * 64,
+            "query_bea_full_region_research.py": "b" * 64,
+        }
+        lineage_receipts = {f"w{i}": digest(f"capture-receipt-{i}")
+                            for i in range(10)}
+        source_names = (
+            "ImMatAll", "ImMatCan", "ImMatChi", "ImMatEur",
+            "ImMatJap", "ImMatMex", "ImMatRoa", "ImMatRow", "Use",
+        )
+        source_records = {}
+        for year in range(2017, 2025):
+            source_records[str(year)] = {}
+            for n, name in enumerate(source_names):
+                source_records[str(year)][name] = {
+                    "source_sha256": digest(f"{year}:{name}"),
+                    "capture_receipt_sha256": lineage_receipts[
+                        f"w{((year - 2017) * 9 + n) % 10}"
+                    ],
+                    "research_source_capture_completed_at": (
+                        f"2026-10-09T{year - 2017:02d}:{n:02d}:00+00:00"
+                    ),
+                }
+        lineage = {
+            "schema": "mastermind.bea_industry_input_research_lineage/v1",
+            "panel_sha256": bea_module.PANEL_SHA256,
+            "qualification_receipt_sha256":
+                bea_module.QUALIFICATION_RECEIPT_SHA256,
+            "use_panel_sha256": bea_module.USE_PANEL_SHA256,
+            "code_namespace": "BEA_APP157_MAY2026_EXACT",
+            "publication_date": "2026-05-21",
+            "publication_precision": "DAY",
+            "publication_timestamp": None,
+            "publication_timestamp_null_reason": "PUBLISHER_DAY_PRECISION_ONLY",
+            "historical_availability_null_reason": "HISTORICAL_AVAILABILITY_UNVERIFIED",
+            "original_historical_available_at": None,
+            "native_known_at": None,
+            "native_source_adoption": False,
+            "public_purpose_adoption": False,
+            "source_is_retrospectively_revised_2026_snapshot": True,
+            "legacy_mapping_unresolved": {"5241X": "5241XX"},
+            "capture_receipt_sha256": lineage_receipts,
+            "sources_by_accounting_year": source_records,
+        }
+        build = {
+            "schema": "mastermind.bea_research_view_build_receipt/v1",
+            "industry_files": 138,
+            "rows_per_industry": 1112,
+            "total_rows": 153456,
+            "original_inputs_unchanged": {
+                "full_panel": bea_module.PANEL_SHA256,
+                "full_receipt": bea_module.QUALIFICATION_RECEIPT_SHA256,
+                "use_panel": bea_module.USE_PANEL_SHA256,
+            },
+            "source_lineage_sha256": None,  # populated from exact raw lineage
+            "files": files,
+            "code_sha256": original_code,
+            "dataos_native_admitted": False,
+            "historical_pit_eligible": False,
+            "may_publish": False,
+            "may_rank": False,
+            "may_train": False,
+            "may_trade": False,
+        }
+        hardening = {
+            "schema": "mastermind.bea_research_view_source_hardening/v1",
+            "generation_code_sha256": original_code.copy(),
+            "current_code_sha256": {
+                **{"bea_research_views.py": "c" * 64,
+                   "query_bea_full_region_research.py": "d" * 64},
+                "test_bea_research_views.py": "e" * 64,
+            },
+            "immutable_lineage_sha256": None,  # populated by _run
+            "immutable_view_build_receipt_sha256": None,
+            "rows_compared": 153456,
+            "all_138_file_row_bytes_unchanged_under_current_code": True,
+            "existing_view_generation_reused": True,
+            "fresh_source_checks_mandatory_for_new_build": True,
+            "focused_test_exit_code": 0,
+            "dataos_native_admitted": False,
+            "historical_pit_eligible": False,
+            "may_publish": False,
+            "may_rank": False,
+            "may_train": False,
+            "may_trade": False,
+        }
+        return build, lineage, hardening
+
+    @staticmethod
+    def _encode(doc):
+        return json.dumps(
+            doc, sort_keys=True, separators=(",", ":"), allow_nan=False,
+        ).encode("utf-8")
+
+    def _run(self, build, lineage, hardening, *, selected=("3341",)):
+        raw_lineage = self._encode(lineage)
+        hash_lineage = hashlib.sha256(raw_lineage).hexdigest()
+        build["source_lineage_sha256"] = hash_lineage
+        raw_build = self._encode(build)
+        hash_build = hashlib.sha256(raw_build).hexdigest()
+        hardening["immutable_lineage_sha256"] = hash_lineage
+        hardening["immutable_view_build_receipt_sha256"] = hash_build
+        raw_hardening = self._encode(hardening)
+        with (
+            patch.object(bea_module, "BUILD_RECEIPT_SHA256", hash_build),
+            patch.object(bea_module, "LINEAGE_SHA256", hash_lineage),
+            patch.object(
+                bea_module, "HARDENING_RECEIPT_SHA256",
+                hashlib.sha256(raw_hardening).hexdigest(),
+            ),
+        ):
+            return qualify_private_bea_research_manifest(
+                raw_build, raw_lineage, raw_hardening,
+                industry_codes=selected,
+            )
+
+    def test_three_receipts_bind_original_generation_to_hardened_code(self):
+        build, lineage, hardening = self._fixture()
+        response = self._run(
+            build, lineage, hardening, selected=("3341", "A003"),
+        )
+        self.assertTrue(response["metadata_receipts_pin_verified"])
+        self.assertTrue(response["generation_code_hardening_transition_reconciled"])
+        self.assertEqual(response["industry_files_claimed"], 138)
+        self.assertEqual(response["rows_per_industry_claimed"], 1112)
+        self.assertEqual(response["total_rows_claimed"], 153456)
+        self.assertEqual(response["source_bytes_claimed"], 353_940_588)
+        self.assertEqual(response["original_source_capture_receipt_count"], 10)
+        self.assertEqual(response["original_source_lineage_entries"], 72)
+        self.assertEqual(response["requested_using_industry_codes"],
+                         ["3341", "A003"])
+        self.assertEqual(response["selected_original_builder_digest_claims"]["3341"],
+                         build["files"]["industry_3341.jsonl"]["sha256"])
+        self.assertEqual(response["edition_precision"], "DAY")
+        self.assertEqual(response["exact_code_namespace"],
+                         "BEA_APP157_MAY2026_EXACT")
+        self.assertNotEqual(build["code_sha256"]["bea_research_views.py"],
+                            hardening["current_code_sha256"]["bea_research_views.py"])
+        for key in ("selected_original_view_bytes_hashed_by_this_projection",
+                    "original_source_bytes_authenticated_by_this_projection",
+                    "actual_writer_admitted",
+                    "native_utc_ingest_and_revision_clock_established",
+                    "historical_pit_eligible", "may_publish", "may_rank",
+                    "may_train", "may_trade"):
+            with self.subTest(field=key):
+                self.assertIs(response[key], False)
+        self.assertIsNone(response["original_historical_known_at"])
+
+    def test_missing_or_tampered_source_evidence_refused(self):
+        def missing_file(build, lineage, hardening):
+            build["files"].pop("industry_A009.jsonl")
+
+        def wrong_byte_total(build, lineage, hardening):
+            build["files"]["industry_3341.jsonl"]["bytes"] = 1
+
+        def promoted(build, lineage, hardening):
+            build["may_publish"] = True
+
+        def silent_code_alias(build, lineage, hardening):
+            lineage["legacy_mapping_unresolved"] = {}
+
+        def invented_historical_clock(build, lineage, hardening):
+            lineage["native_known_at"] = "2017-12-31T00:00:00+00:00"
+
+        def absent_geo_region(build, lineage, hardening):
+            lineage["sources_by_accounting_year"]["2020"].pop("ImMatChi")
+
+        def nonutc_capture(build, lineage, hardening):
+            lineage["sources_by_accounting_year"]["2021"]["Use"][
+                "research_source_capture_completed_at"
+            ] = "2026-10-09"
+
+        def falsified_hardened_transition(build, lineage, hardening):
+            hardening["generation_code_sha256"]["bea_research_views.py"] = "f" * 64
+
+        cases = (
+            (missing_file, "file coverage"),
+            (wrong_byte_total, "byte-count"),
+            (promoted, "source authority"),
+            (silent_code_alias, "lineage/edition"),
+            (invented_historical_clock, "lineage/edition"),
+            (absent_geo_region, "missing world/region"),
+            (nonutc_capture, "capture clock"),
+            (falsified_hardened_transition, "builder/guard-hardening"),
+        )
+        for mutate, expected in cases:
+            with self.subTest(mutation=mutate.__name__):
+                build, lineage, hardening = self._fixture()
+                mutate(build, lineage, hardening)
+                with self.assertRaisesRegex(BEAContextRefused, expected):
+                    self._run(build, lineage, hardening)
+
+    def test_missing_industry_or_unbounded_codes_refused(self):
+        build, lineage, hardening = self._fixture()
+        with self.assertRaisesRegex(BEAContextRefused, "absent from manifest"):
+            self._run(build, lineage, hardening, selected=("ZZZZ",))
+        for codes in (("3341", "3341"), ("../fake",),
+                      tuple(f"Z{i:03d}" for i in range(13)),
+                      (x for x in ("3341",)), "3341"):
+            with self.subTest(kind=type(codes).__name__):
+                with self.assertRaises(BEAContextRefused):
+                    self._run(*self._fixture(), selected=codes)
+
+    def test_original_raw_bytes_are_pinned_even_if_json_remains_valid(self):
+        build, lineage, hardening = self._fixture()
+        raw_lineage = self._encode(lineage)
+        lineage_sha = hashlib.sha256(raw_lineage).hexdigest()
+        build["source_lineage_sha256"] = lineage_sha
+        raw_build = self._encode(build)
+        build_sha = hashlib.sha256(raw_build).hexdigest()
+        hardening["immutable_lineage_sha256"] = lineage_sha
+        hardening["immutable_view_build_receipt_sha256"] = build_sha
+        raw_hardening = self._encode(hardening)
+        with (
+            patch.object(bea_module, "BUILD_RECEIPT_SHA256", build_sha),
+            patch.object(bea_module, "LINEAGE_SHA256", lineage_sha),
+            patch.object(
+                bea_module, "HARDENING_RECEIPT_SHA256",
+                hashlib.sha256(raw_hardening).hexdigest(),
+            ),
+        ):
+            with self.assertRaisesRegex(BEAContextRefused, "digest differs"):
+                qualify_private_bea_research_manifest(
+                    raw_build + b" ", raw_lineage, raw_hardening,
+                    industry_codes=("3341",),
                 )
 
 

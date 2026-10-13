@@ -21,6 +21,12 @@ from lib.dataos.temporal import TemporalError, utc
 
 PANEL_SHA256 = "f3ecdda2a8161b2f4ffa893d9d5ff43896280339ca85d76240d4979404e95448"
 LINEAGE_SHA256 = "e8856b6f546d55b8e0c41561cb0e60f28ddcd06a78fd04f70d05355890c745a7"
+BUILD_RECEIPT_SHA256 = "ff6e2b3070e10f45ed2d14508c0425cde2aa5c687f0e289f9b7010dcdcf215ed"
+HARDENING_RECEIPT_SHA256 = "dcb553712321a37f297fe7e33e6ac2095c0165a9207bb87afdf7fad5185322b4"
+USE_PANEL_SHA256 = "99059f4530f6a2de18b571a5e9378f44fffece256f5c9c2516ee8717203beaa5"
+QUALIFICATION_RECEIPT_SHA256 = "c9eeb8e3469eef23749e7edafdf88ff3e9a18d1656b6c054e2d67a77fc5a0589"
+DECLARED_TOTAL_INDUSTRY_VIEW_BYTES = 353_940_588
+EXPECTED_INDUSTRY_VIEW_COUNT = 138
 PUBLISHER_EDITION_DATE = "2026-05-21"
 EXACT_CODE_NAMESPACE = "BEA_APP157_MAY2026_EXACT"
 SOURCE_KIND = "industry_commodity_input"
@@ -630,6 +636,222 @@ def compare_private_bea_using_industries(
         "historical_pit_eligible": False,
         "source_bytes_authenticated_by_this_projection": False,
         "dataos_native_admitted": False,
+        "may_publish": False,
+        "may_rank": False,
+        "may_train": False,
+        "may_trade": False,
+    }
+
+
+def _pinned_research_receipt_document(raw: bytes, expected_sha: str) -> dict[str, Any]:
+    """Strictly parse pre-existing *metadata*, never open original source files."""
+    if type(raw) is not bytes or not 1 <= len(raw) <= 65_536:
+        raise BEAContextRefused("bounded immutable research metadata bytes required")
+    if hashlib.sha256(raw).hexdigest() != expected_sha:
+        raise BEAContextRefused("research metadata digest differs from accepted receipt")
+
+    def no_duplicate_keys(pairs: list[tuple[str, Any]]) -> dict[str, Any]:
+        doc: dict[str, Any] = {}
+        for key, value in pairs:
+            if key in doc:
+                raise BEAContextRefused("duplicate key in source metadata")
+            doc[key] = value
+        return doc
+
+    def no_nonfinite(_value: str) -> None:
+        raise BEAContextRefused("nonfinite source metadata refused")
+
+    try:
+        result = json.loads(
+            raw.decode("utf-8"), object_pairs_hook=no_duplicate_keys,
+            parse_constant=no_nonfinite,
+        )
+    except (UnicodeDecodeError, TypeError, ValueError) as exc:
+        raise BEAContextRefused("malformed source receipt metadata") from exc
+    if not isinstance(result, dict):
+        raise BEAContextRefused("research metadata must be a JSON object")
+    return result
+
+
+def qualify_private_bea_research_manifest(
+    build_receipt_bytes: bytes, lineage_bytes: bytes, hardening_bytes: bytes,
+    *, industry_codes: Sequence[str] = (),
+) -> dict[str, Any]:
+    """Validate the accepted BEA *builder receipts*, not original source bytes.
+
+    Callers provide three already-retained metadata bytes. This pure function
+    neither opens the 138 industry JSONL source files nor attests their present
+    contents. It binds the original generation code hashes to the subsequent
+    tested guard-hardening generation, without conflating either with Data OS
+    native adoption or historical point-in-time evidence.
+    """
+    if (not isinstance(industry_codes, (list, tuple))
+            or len(industry_codes) > MAX_COMPARISON_INDUSTRIES
+            or any(not isinstance(code, str) or not _CODE.fullmatch(code)
+                   for code in industry_codes)
+            or len(set(industry_codes)) != len(industry_codes)):
+        raise BEAContextRefused("at most twelve distinct exact BEA industry codes")
+    build = _pinned_research_receipt_document(
+        build_receipt_bytes, BUILD_RECEIPT_SHA256,
+    )
+    lineage = _pinned_research_receipt_document(lineage_bytes, LINEAGE_SHA256)
+    hardening = _pinned_research_receipt_document(
+        hardening_bytes, HARDENING_RECEIPT_SHA256,
+    )
+    if (build.get("schema") != "mastermind.bea_research_view_build_receipt/v1"
+            or build.get("industry_files") != EXPECTED_INDUSTRY_VIEW_COUNT
+            or build.get("rows_per_industry") != SOURCE_ROWS_PER_INDUSTRY
+            or build.get("total_rows") !=
+            EXPECTED_INDUSTRY_VIEW_COUNT * SOURCE_ROWS_PER_INDUSTRY
+            or build.get("source_lineage_sha256") != LINEAGE_SHA256
+            or build.get("original_inputs_unchanged") != {
+                "full_panel": PANEL_SHA256,
+                "full_receipt": QUALIFICATION_RECEIPT_SHA256,
+                "use_panel": USE_PANEL_SHA256,
+            }):
+        raise BEAContextRefused("BEA research builder contract mismatch")
+    for flag in ("dataos_native_admitted", "historical_pit_eligible",
+                 "may_publish", "may_rank", "may_train", "may_trade"):
+        if build.get(flag) is not False or hardening.get(flag) is not False:
+            raise BEAContextRefused("research metadata cannot promote source authority")
+    files = build.get("files")
+    if not isinstance(files, dict) or len(files) != EXPECTED_INDUSTRY_VIEW_COUNT:
+        raise BEAContextRefused("industry file coverage inconsistent with receipt")
+    if any(
+        not isinstance(filename, str)
+        or re.fullmatch(r"industry_[A-Z0-9]{2,9}\.jsonl", filename) is None
+        or not isinstance(claim, Mapping)
+        or type(claim.get("bytes")) is not int or claim["bytes"] <= 0
+        or type(claim.get("rows")) is not int
+        or claim["rows"] != SOURCE_ROWS_PER_INDUSTRY
+        or not isinstance(claim.get("sha256"), str)
+        or re.fullmatch(r"[0-9a-f]{64}", claim["sha256"]) is None
+        for filename, claim in files.items()
+    ):
+        raise BEAContextRefused("industry digest/row metadata invalid")
+    if sum(v["bytes"] for v in files.values()) != DECLARED_TOTAL_INDUSTRY_VIEW_BYTES:
+        raise BEAContextRefused("industry file byte-count total mismatch")
+    for code in industry_codes:
+        if f"industry_{code}.jsonl" not in files:
+            raise BEAContextRefused("selected source industry absent from manifest")
+
+    if (lineage.get("schema") != "mastermind.bea_industry_input_research_lineage/v1"
+            or lineage.get("panel_sha256") != PANEL_SHA256
+            or lineage.get("qualification_receipt_sha256") !=
+            QUALIFICATION_RECEIPT_SHA256
+            or lineage.get("use_panel_sha256") != USE_PANEL_SHA256
+            or lineage.get("code_namespace") != EXACT_CODE_NAMESPACE
+            or lineage.get("publication_date") != PUBLISHER_EDITION_DATE
+            or lineage.get("publication_precision") != "DAY"
+            or lineage.get("publication_timestamp") is not None
+            or lineage.get("publication_timestamp_null_reason") !=
+            "PUBLISHER_DAY_PRECISION_ONLY"
+            or lineage.get("original_historical_available_at") is not None
+            or lineage.get("historical_availability_null_reason") !=
+            "HISTORICAL_AVAILABILITY_UNVERIFIED"
+            or lineage.get("native_known_at") is not None
+            or lineage.get("native_source_adoption") is not False
+            or lineage.get("public_purpose_adoption") is not False
+            or lineage.get("source_is_retrospectively_revised_2026_snapshot") is not True
+            or lineage.get("legacy_mapping_unresolved") != {"5241X": "5241XX"}):
+        raise BEAContextRefused("source lineage/edition/PIT contract mismatch")
+
+    receipts = lineage.get("capture_receipt_sha256")
+    by_year = lineage.get("sources_by_accounting_year")
+    years = [str(year) for year in range(2017, 2025)]
+    source_keys = {
+        "Use", "ImMatAll", "ImMatCan", "ImMatChi", "ImMatEur",
+        "ImMatJap", "ImMatMex", "ImMatRoa", "ImMatRow",
+    }
+    if (not isinstance(receipts, dict) or len(receipts) != 10
+            or any(not isinstance(v, str)
+                   or re.fullmatch(r"[0-9a-f]{64}", v) is None
+                   for v in receipts.values())
+            or not isinstance(by_year, dict) or set(by_year) != set(years)):
+        raise BEAContextRefused("capture receipts or eight-year original lineage missing")
+    receipt_hashes = set(receipts.values())
+    observed_receipts: set[str] = set()
+    capture_clocks = []
+    for year in years:
+        entries = by_year[year]
+        if not isinstance(entries, dict) or set(entries) != source_keys:
+            raise BEAContextRefused("missing world/region/Use origin source receipt")
+        for source in entries.values():
+            if (not isinstance(source, Mapping)
+                    or not isinstance(source.get("source_sha256"), str)
+                    or re.fullmatch(r"[0-9a-f]{64}", source["source_sha256"]) is None
+                    or source.get("capture_receipt_sha256") not in receipt_hashes):
+                raise BEAContextRefused("source digest/receipt lineage mismatch")
+            try:
+                captured = utc(source.get("research_source_capture_completed_at"))
+            except (TemporalError, TypeError, ValueError) as exc:
+                raise BEAContextRefused("source-capture clock is not exact UTC") from exc
+            if captured.date().isoformat() < PUBLISHER_EDITION_DATE:
+                raise BEAContextRefused("retrospective source capture predates its edition")
+            observed_receipts.add(source["capture_receipt_sha256"])
+            capture_clocks.append(captured)
+    if observed_receipts != receipt_hashes:
+        raise BEAContextRefused("declared source capture receipts unreferenced")
+
+    gen_code = build.get("code_sha256")
+    current_code = hardening.get("current_code_sha256")
+    if (not isinstance(gen_code, dict) or
+            set(gen_code) != {
+                "bea_research_views.py", "query_bea_full_region_research.py",
+            }
+            or hardening.get("schema") !=
+            "mastermind.bea_research_view_source_hardening/v1"
+            or hardening.get("generation_code_sha256") != gen_code
+            or not isinstance(current_code, dict)
+            or not set(gen_code).issubset(current_code)
+            or any(not isinstance(v, str) or re.fullmatch(r"[0-9a-f]{64}", v) is None
+                   for v in current_code.values())
+            or hardening.get("immutable_lineage_sha256") != LINEAGE_SHA256
+            or hardening.get("immutable_view_build_receipt_sha256") !=
+            BUILD_RECEIPT_SHA256
+            or hardening.get("rows_compared") !=
+            EXPECTED_INDUSTRY_VIEW_COUNT * SOURCE_ROWS_PER_INDUSTRY
+            or hardening.get("all_138_file_row_bytes_unchanged_under_current_code")
+            is not True
+            or hardening.get("existing_view_generation_reused") is not True
+            or hardening.get("fresh_source_checks_mandatory_for_new_build")
+            is not True
+            or hardening.get("focused_test_exit_code") != 0):
+        raise BEAContextRefused("source builder/guard-hardening receipt mismatch")
+
+    return {
+        "schema": "market_ontology.bea_research_manifest_qualification/v1",
+        "authority": "PRIVATE_RESEARCH_ONLY",
+        "metadata_receipts_pin_verified": True,
+        "generation_code_hardening_transition_reconciled": True,
+        "research_build_receipt_sha256": BUILD_RECEIPT_SHA256,
+        "research_lineage_sha256": LINEAGE_SHA256,
+        "research_hardening_receipt_sha256": HARDENING_RECEIPT_SHA256,
+        "original_full_panel_declared_sha256": PANEL_SHA256,
+        "edition_date": PUBLISHER_EDITION_DATE,
+        "edition_precision": "DAY",
+        "exact_code_namespace": EXACT_CODE_NAMESPACE,
+        "industry_files_claimed": EXPECTED_INDUSTRY_VIEW_COUNT,
+        "rows_per_industry_claimed": SOURCE_ROWS_PER_INDUSTRY,
+        "total_rows_claimed": EXPECTED_INDUSTRY_VIEW_COUNT * SOURCE_ROWS_PER_INDUSTRY,
+        "source_bytes_claimed": DECLARED_TOTAL_INDUSTRY_VIEW_BYTES,
+        "original_source_capture_receipt_count": len(receipt_hashes),
+        "original_source_lineage_entries": len(capture_clocks),
+        "research_capture_window_utc": {
+            "earliest": min(capture_clocks).isoformat(),
+            "latest": max(capture_clocks).isoformat(),
+        },
+        "requested_using_industry_codes": list(industry_codes),
+        "selected_original_builder_digest_claims": {
+            code: files[f"industry_{code}.jsonl"]["sha256"]
+            for code in industry_codes
+        },
+        "selected_original_view_bytes_hashed_by_this_projection": False,
+        "original_source_bytes_authenticated_by_this_projection": False,
+        "actual_writer_admitted": False,
+        "native_utc_ingest_and_revision_clock_established": False,
+        "original_historical_known_at": None,
+        "historical_pit_eligible": False,
         "may_publish": False,
         "may_rank": False,
         "may_train": False,
