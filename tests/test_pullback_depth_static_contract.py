@@ -157,6 +157,23 @@ def _js_class_refs():
     return refs
 
 
+def _inert_template_classes():
+    """Classes carried only by <template> elements: inert content never renders, so
+    a script that queries it to clone the content owes the stylesheet nothing."""
+    html = _html_source()
+    inert = {c for attrs in re.findall(r'<template\b[^>]*\bclass="([^"]*)"', html)
+             for c in attrs.split()}
+    rendered = {c for attrs in re.findall(r'<(?!template\b)[a-z][a-z0-9]*\b[^>]*\bclass="([^"]*)"', html)
+                for c in attrs.split()}
+    return inert - rendered
+
+
+def _js_owned_data_attributes():
+    """data-* attributes the script itself writes; reading back its own state needs
+    no template emission."""
+    return set(re.findall(r"setAttribute\(\s*'(data-[a-z][a-z0-9-]*)'", _js_source()))
+
+
 def _js_scripted_classes():
     js = _js_source()
     return {name for m in _CLASSLIST_ARGS.finditer(js)
@@ -192,6 +209,8 @@ def test_every_class_the_script_touches_gets_a_css_answer():
         if any(cls in tokens and (tokens - {cls}) & css_classes for tokens in html_lists):
             continue
         if cls in JS_GLOBAL_HOOK_CLASSES:
+            continue
+        if cls in _inert_template_classes():
             continue
         orphaned.append(f"{cls!r} via {site}")
     assert not orphaned, (
@@ -288,7 +307,7 @@ def test_every_data_attribute_the_script_reads_the_template_emits():
     emitted = set(_DATA_ATTRS.findall(_html_source()))
     missing = [f"{attr} (read via {site})"
                for attr, site in sorted(_js_data_reads().items())
-               if attr not in emitted]
+               if attr not in emitted and attr not in _js_owned_data_attributes()]
     assert not missing, (
         "the script reads data-* attributes the template never emits: "
         + ", ".join(missing))
