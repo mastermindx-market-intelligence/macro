@@ -581,10 +581,12 @@ minimax, grok, cursor, glm) → optional bounded workers. No native leaf swarm; 
 
 ## Lane matrix
 
-(D70 snapshot.) Rows superseding older rows below:
+(D71 snapshot.) Rows superseding older rows below:
 
 | lane | state |
 |---|---|
+| PP2REV | `fable-pp2rev-r1-20261013` RUNNING on mb since 12:48:36Z (range `bd76f2c9..d3a3bc33`; LEASE_OK); watcher `bwfrzes4t`; hard end ~14:03Z (D71) |
+| PP1-D | FROZEN: ubuntu2 `/` 99% (14G free at 12:49Z, not our fill); no reroute, no deletion; watcher `bfcmghmnb` (D71) |
 | PP2-UI-b | `fable-pp2uib-r1-20261013` RUNNING on mb since 12:43:05Z from `d3a3bc33` (LEASE_OK, LAUNCH_ATTEMPT 1); watcher `be1h3mr4m`; hard end ~14:43Z (D70) |
 | PP2-UI-c repair 1 | ACCEPTED at `d3a3bc33` (T `f9e4b38b` · F `2f1fee4b` · E `f3a18e53` · E2 `d3a3bc33`; R1–R3 closed; npm test 10791); MINOR notes carried to PP2REV (D70) |
 | PP2REV | READ_ONLY review `fable-pp2rev-r1-20261013` READY (packet `5bb73bf7…`, worktree mb `~/lanes/wt/pp2rev-20261013` at `d3a3bc33`); held on host eligibility (D70) |
@@ -1519,3 +1521,25 @@ INTENDED_RESUME_SURFACE: this Claude Code session; successor reads this file + #
   - PP1-D: FROZEN on ubuntu2 disk.
   - #948/#983: CI queued after approval (`bp9vp9ip0`). #985: CI running (`bcmwl7zse`).
   - Macro #9080/#8920 (`b64amfv2n`); Macro #9097 parked (`bjywkkbf6`).
+
+### D71 (2026-10-13T12:50Z) — PP2REV review launched on mb; ubuntu2 at 99% disk; D70's citation "correction" retracted
+
+- FACT `fable-pp2rev-r1-20261013` (independent READ_ONLY review of `bd76f2c9..d3a3bc33`) launched at 12:48:36Z through the in-command gate.
+  - Gate: `pr/pp2rev_gate.txt`, mb ELIGIBLE, lane-ceiling 1<3, load 2.66.
+  - Packet: `leads/PP2REV/fabric/r1.md`, sha `e9ec8cdd…`, 384 lines, no placeholders. Two cosmetic lines were tidied after assembly.
+  - Pre-launch check: the worktree `~/lanes/wt/pp2rev-20261013` was at `d3a3bc33` with porcelain empty, and no return directory existed yet.
+  - Fence: RUN_RESERVED, LEASE_OK pool=minimax, SUPPORT_VERSION_READY `418419b9…`, LAUNCH, LAUNCH_ATTEMPT 1, POLL_PENDING.
+  - Budget: POOL_MAX_TURNS 130 and REMOTE_SUB_MAX_SECS 4500, so a hard end near 14:03Z. The launch task `bwfrzes4t` is its one watcher.
+  - Scope note: PP2-UI-b's head is NOT in this review's range and needs its own review after it is accepted.
+- FACT ubuntu2 at 12:49:11Z (read-only `df` and `du`): `/` is 893G size, 834G used, 14G free (99%). `pool hosts` read 13.9 at 12:47:58Z.
+  - Our footprint is unchanged: `oi-1b` 5.5G and `pp1d` 341M. `pp1d` is clean at `bd76f2c9`, with no process of ours.
+  - The fill is not ours. The seat deletes nothing and moves nothing. This is reported to the root and the Chairman as a host-owner emergency and the PP1-D critical-path block.
+- RETRACTION of D70's "CORRECTION to D68". That correction is wrong.
+  - The DNR block (ledger line ~698) reads "ADDED 18:0xZ (D34/D35): … routing around a host-load admission refusal (changing carrier, host or model)".
+  - So D68's "(D34/D35)" names the DNR's actual provenance and was correct. D65 applies the same rule to every host refusal.
+  - Rulings are unchanged.
+- Rungs at 12:50Z:
+  - PP2REV: RUNNING.
+  - PP2-UI-b: RUNNING (`be1h3mr4m`).
+  - PP1-D: FROZEN on ubuntu2 disk (`bfcmghmnb`).
+  - #948/#983: CI queued (`bp9vp9ip0`). #985: CI running (`bcmwl7zse`).
