@@ -644,14 +644,6 @@ def test_mnz_06_s1_frame_missing():
 # 07 — S2 event window missing close
 # ---------------------------------------------------------------------------
 
-@pytest.mark.xfail(
-    strict=True,
-    reason=(
-        "MNZ-F2: S2 OutcomeEngine.leg_return scores a NaN close as nan and "
-        "an inf fill close as -1.0 (state OK); it does not abstain "
-        "ABSTAIN_MISSING_ENDPOINT"
-    ),
-)
 def test_mnz_07_s2_window_missing():
     """Missing/bad endpoint close must abstain, never a 0 or -1 scored return.
 
