@@ -435,6 +435,22 @@ def test_anonymous_preview_prints_counts_supplied_by_the_build(tmp_path: Path):
     assert "读取 1,240 家公司，排出 3,417 项值得一看的变化" in html
 
 
+def test_anonymous_shell_leaks_no_occurrence_ids_or_company_names(tmp_path: Path):
+    """P2 §10.2: the public gate names no company and carries no occurrence
+    or cell identifiers — the workbench controls live behind the session."""
+    html = _render_into(
+        tmp_path,
+        Path(__file__).resolve().parents[1],
+        summary={"companies": 1240, "findings": 3417, "top_symbol": "SMCI"},
+    )
+    assert "rawfact_" not in html
+    assert "metric_cell_" not in html
+    assert "ffqsv2_" not in html
+    assert "data-occurrence-id" not in html
+    assert "data-root-cell-id" not in html
+    assert "SMCI" not in html
+
+
 def test_build_site_compat_hook_prints_the_same_counts_as_the_forensics_build(tmp_path: Path):
     """render_from_state() re-renders this shell moments after the nightly
     forensics build (daily.yml: forensics, then build_site) and again on every
