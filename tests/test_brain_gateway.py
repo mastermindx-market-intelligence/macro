@@ -5050,7 +5050,7 @@ def test_tool_label_whitelist_covers_every_tool():
     # entitlement. The guest-safe schema intentionally omits exact earnings evidence.
     with patch.object(gw, "_resolve_tier", return_value={
         "tier": "essential", "status": "active",
-    }):
+    }), patch("app.paywall.enforce_site_full", return_value=None):
         names = [t["name"] for t in gw._all_brain_tool_schemas(
             root,
             page="terminal",

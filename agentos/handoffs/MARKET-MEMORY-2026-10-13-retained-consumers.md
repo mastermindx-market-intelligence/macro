@@ -37,6 +37,9 @@ verified:
   - claim: Required CODE CI owns the new synthesis and consumer tests without coverage pruning.
     command: Exact research-price-panel and consolidated Synapse commands; complete closure and packing measurements.
     result: Research855 passed plus409 subtests; Synapse983 passed and2 inherited skips. WRI415 andDAG217 accepted results reused for identical commands. No closure misses; packing133/133/128jobs at5655/5460/5422weights and10packs each stays within existing ceilings. Independent CI integration reviewfa88b849 passed for67 exact dependency additions across13jobs and preserved every old test, flag, guard, gate and timeout.
+  - claim: Hosted integration failures are repaired without widening tool access or weakening required drift detection.
+    command: python3 -m pytest -q tests/test_deploy_update_self_heal.py tests/test_brain_gateway.py tests/test_brain_tool_economics.py tests/test_market_memory_retained_consumer.py
+    result: 756 passed in54.52seconds. Six actual API load-time modules now trigger restart; optional entitled schemas do not make guest Fast visibility fail open. Independent review37b3deb1 accepted the exact four-file delta.
 unverified:
   - claim: Exact consumer bytes are installed and usable by authenticated customers and the real model-tool path.
     what_would_verify: Current-head CI, normal protected merge, installed hashes, source registration binding and authenticated real-store requests with usable exact capture and method references.
@@ -57,7 +60,7 @@ do_not_redo:
 danger_areas:
   - Generic sealed retrieval and evidence claims remain non-promoting; wrapper source-use admission must stay separate and current.
   - Never infer live acceptance from fixtures or reconstruct sealed capabilities from caller JSON.
-prs: [6528, 8694, 9078, 9098, 9140]
+prs: [6528, 8694, 9078, 9098, 9140, 9170]
 ---
 
 This source checkpoint preserves the full original assignment and is not whole-program completion.
