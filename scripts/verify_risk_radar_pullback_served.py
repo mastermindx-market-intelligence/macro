@@ -64,6 +64,42 @@ FORECAST_LINES = {
     lang: frozenset(lines) | {EM_DASH} for lang, lines in FORECAST_COPY.items()
 }
 FORECAST_TEXT_ALLOW = frozenset().union(*FORECAST_LINES.values())
+# Whole-section forecast language. A pattern hit is allowed only when the
+# normalized node equals one of these sentences from
+# templates/_risk_radar_pullback_depth.html.j2. Removing an allowed sentence
+# from a longer string is not an exemption.
+FORECAST_SENTENCE_ALLOW = frozenset().union(*FORECAST_COPY.values()) | {
+    "The chart is price history, not a forecast path.",
+    "图表呈现历史价格，并非预测路径。",
+    "Not recovery odds",
+    "并非修复概率",
+    "Awaiting a newer close. This assessment is no longer current.",
+    "等待更新的收盘价。此评估已过时。",
+}
+FORBIDDEN_FORECAST_RE = re.compile(
+    "(?i)(?:"
+    "further\\s+(?:decline|downside|drop|fall)"
+    "|remaining\\s+(?:drop|decline)"
+    "|next\\s+low"
+    "|expected\\s+(?:drop|decline|low|downside)"
+    "|likely|probab|odds|chance|forecast|quantile|target"
+    "|预计|预测|可能|概率|胜率|目标"
+    "|进一步(?:下跌|跌幅)"
+    ")"
+)
+# aria-label and the other accessible-name attributes, plus data-tip*.
+_LANG_ATTRS = frozenset({
+    "aria-label", "aria-description", "aria-valuetext", "title", "alt", "placeholder",
+})
+# Disclosure markers on rrp- / pbx- / dialog rules. Pullback CSS uses '+' and
+# U+2212 MINUS SIGN. The US #dlg-risk open state uses U+2013 EN DASH.
+# none and empty are the other non-text values those rules may set.
+_DISCLOSURE_MARKERS = frozenset({"+", "-", "\u2212", "\u2013", ""})
+_SCOPED_SELECTOR_RE = re.compile(
+    r"(?:^|[^A-Za-z0-9_-])(?:rrp-|pbx-|#dlg-risk|#cnx-dlg-risk)"
+)
+_CONTENT_DECL_RE = re.compile(r"(?<![\w-])content\s*:\s*([^;}]*)", re.IGNORECASE)
+_CSS_COMMENT_RE = re.compile(r"/\*.*?\*/", re.DOTALL)
 CURRENT_METRIC_RE = re.compile("^\u2212?\\d+\\.\\d%$")
 OTHER_PERCENT_RE = re.compile("^[+\u2212-]?\\d+\\.\\d%$")
 PERCENT_ANY_RE = re.compile(r"\d+(?:\.\d+)?%")
@@ -540,6 +576,210 @@ def forecast_text_set(html: str) -> set[str]:
     return {line.strip() for line in text.splitlines() if line.strip()}
 
 
+def _norm_copy(value: str) -> str:
+    return re.sub(r"\s+", " ", value).strip()
+
+
+def _is_lang_attr(name: str) -> bool:
+    return name in _LANG_ATTRS or name.startswith("data-tip")
+
+
+def _lang_attr_values(node: Node) -> list[str]:
+    return [
+        value for name, value in node.attrs.items()
+        if _is_lang_attr(name) and value.strip()
+    ]
+
+
+def _forecast_language_problems(
+    sections: list[Node],
+    dialog: Node | None,
+    ids: dict[str, Node],
+) -> list[str]:
+    """Forbidden forecast wording outside an exact allow-listed sentence.
+
+    Text nodes cover the pullback section, including hidden, template, and
+    noscript content. Attributes cover that section, the dialog element, and
+    the dialog's aria-labelledby target.
+    """
+    texts: list[str] = []
+    for section in sections:
+        texts.extend(_text_nodes(section))
+        texts.extend(_lang_attr_values(section))
+        for node in _descendants(section):
+            texts.extend(_lang_attr_values(node))
+    if dialog is not None:
+        texts.extend(_lang_attr_values(dialog))
+        labelled = dialog.attrs.get("aria-labelledby") or ""
+        for token in labelled.split():
+            target = ids.get(token)
+            if target is None:
+                continue
+            texts.extend(_text_nodes(target))
+            texts.extend(_lang_attr_values(target))
+            for node in _descendants(target):
+                texts.extend(_lang_attr_values(node))
+    shown: list[str] = []
+    seen: set[str] = set()
+    for text in texts:
+        norm = _norm_copy(text)
+        if not norm or norm in FORECAST_SENTENCE_ALLOW or norm in seen:
+            continue
+        if FORBIDDEN_FORECAST_RE.search(norm):
+            seen.add(norm)
+            shown.append(norm)
+    if not shown:
+        return []
+    preview = " | ".join(shown[:3])
+    return [f"forecast language outside the exact-sentence allow-list ({preview})"]
+
+
+def _skip_css_noise(css: str, index: int) -> int:
+    length = len(css)
+    while index < length:
+        if css.startswith("/*", index):
+            end = css.find("*/", index + 2)
+            index = length if end < 0 else end + 2
+            continue
+        if css[index].isspace():
+            index += 1
+            continue
+        break
+    return index
+
+
+def _skip_css_string(css: str, index: int) -> int:
+    quote = css[index]
+    index += 1
+    length = len(css)
+    while index < length:
+        if css[index] == "\\":
+            index += 2
+            continue
+        if css[index] == quote:
+            return index + 1
+        index += 1
+    return length
+
+
+def _read_css_block(css: str, index: int) -> tuple[str, int]:
+    """Body of a brace block. index points just after the opening brace."""
+    length = len(css)
+    depth = 1
+    start = index
+    while index < length and depth:
+        if css.startswith("/*", index):
+            end = css.find("*/", index + 2)
+            index = length if end < 0 else end + 2
+            continue
+        char = css[index]
+        if char in "\"'":
+            index = _skip_css_string(css, index)
+            continue
+        if char == "{":
+            depth += 1
+        elif char == "}":
+            depth -= 1
+            if depth == 0:
+                return css[start:index], index + 1
+        index += 1
+    return css[start:], length
+
+
+def _iter_css_rules(css: str):
+    """Yield (prelude, body) pairs, with @media and other groups as one body."""
+    index = 0
+    length = len(css)
+    while index < length:
+        index = _skip_css_noise(css, index)
+        if index >= length or css[index] == "}":
+            return
+        start = index
+        while index < length:
+            if css.startswith("/*", index):
+                end = css.find("*/", index + 2)
+                index = length if end < 0 else end + 2
+                continue
+            char = css[index]
+            if char in "\"'":
+                index = _skip_css_string(css, index)
+                continue
+            if char == "{":
+                prelude = css[start:index]
+                body, index = _read_css_block(css, index + 1)
+                yield prelude, body
+                break
+            if char == ";":
+                index += 1
+                break
+            if char == "}":
+                return
+            index += 1
+        else:
+            return
+
+
+def _css_body_has_block(body: str) -> bool:
+    index = 0
+    length = len(body)
+    while index < length:
+        if body.startswith("/*", index):
+            end = body.find("*/", index + 2)
+            index = length if end < 0 else end + 2
+            continue
+        char = body[index]
+        if char in "\"'":
+            index = _skip_css_string(body, index)
+            continue
+        if char == "{":
+            return True
+        index += 1
+    return False
+
+
+def _iter_scoped_declaration_bodies(css: str):
+    for prelude, body in _iter_css_rules(css):
+        selector = _CSS_COMMENT_RE.sub("", prelude)
+        scoped = _SCOPED_SELECTOR_RE.search(selector) is not None
+        if scoped:
+            # Nested rules under a scoped selector are part of this body, so
+            # their content: declarations are checked too.
+            yield selector, body
+        elif _css_body_has_block(body):
+            yield from _iter_scoped_declaration_bodies(body)
+
+
+def _disclosure_content_ok(raw: str) -> bool:
+    value = re.sub(r"(?i)\s*!important\s*$", "", raw.strip()).strip()
+    if len(value) >= 2 and value[0] == value[-1] and value[0] in "\"'":
+        value = value[1:-1]
+    return value in _DISCLOSURE_MARKERS or value.lower() == "none"
+
+
+def _scoped_style_problems(root: Node) -> list[str]:
+    """content: on a pullback or dialog selector must be a disclosure marker."""
+    shown: list[str] = []
+    seen: set[str] = set()
+    for node in _descendants(root):
+        if node.tag != "style":
+            continue
+        css = "".join(child for child in node.children if isinstance(child, str))
+        for selector, body in _iter_scoped_declaration_bodies(css):
+            cleaned = _CSS_COMMENT_RE.sub("", body)
+            for match in _CONTENT_DECL_RE.finditer(cleaned):
+                raw = match.group(1).strip()
+                if _disclosure_content_ok(raw):
+                    continue
+                label = _norm_copy(selector)[:48] + " => " + _norm_copy(raw)[:48]
+                if label not in seen:
+                    seen.add(label)
+                    shown.append(label)
+    if not shown:
+        return []
+    preview = " | ".join(shown[:3])
+    return [f"scoped style content is not a disclosure marker ({preview})"]
+
+
 def _c5_problems(section: Node, html: str) -> list[str]:
     blocks = [node for node in _descendants(section) if _has_class(node, "rrp-forecast")]
     if len(blocks) != 1:
@@ -579,10 +819,18 @@ def _c5_problems(section: Node, html: str) -> list[str]:
     return problems
 
 
-def _check_c5(sections: list[Node], html: str) -> tuple[bool, str]:
+def _check_c5(
+    sections: list[Node],
+    html: str,
+    dialog: Node | None,
+    ids: dict[str, Node],
+    root: Node,
+) -> tuple[bool, str]:
     if not sections:
         return False, "no section.pbx"
     problems = [item for section in sections for item in _c5_problems(section, html)]
+    problems.extend(_forecast_language_problems(sections, dialog, ids))
+    problems.extend(_scoped_style_problems(root))
     if problems:
         return False, "; ".join(problems)
     return True, "forecast status unavailable; both values are em dashes; no percent"
@@ -662,7 +910,7 @@ def _evaluate(
         ("C2", _check_c2(sections)),
         ("C3", _check_c3(sections)),
         ("C4", _check_c4(sections)),
-        ("C5", _check_c5(sections, html)),
+        ("C5", _check_c5(sections, html, dialog, ids, root)),
         ("C6", _check_c6(dialogs[0] if dialogs else None, html)),
         ("C7", _check_c7(phase, valid_until, require_active, now)),
     ]

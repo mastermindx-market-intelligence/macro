@@ -317,3 +317,157 @@ def test_non_http_url_is_an_input_error(tmp_path):
 def test_missing_html_file_is_an_input_error(tmp_path):
     rc = main(["--html", str(tmp_path / "missing.html"), "--market", "cn"])
     assert rc == 2
+
+
+_LEAK = "Further decline of 8% is likely"
+_FORECAST_OPEN = '<div class="rrp-forecast"'
+_FORECAST_STATUS = 'data-forecast-status="unavailable">'
+_HIDDEN_STYLE = "position:absolute;left:-9999px;clip:rect(0,0,0,0)"
+
+
+def _insert(html: str, anchor: str, snippet: str, *, after: bool) -> str:
+    assert html.count(anchor) == 1, anchor
+    planted = anchor + snippet if after else snippet + anchor
+    return html.replace(anchor, planted, 1)
+
+
+def _assert_c5(rc: int, receipt: dict) -> str:
+    assert rc == 1
+    assert _failed(receipt) == ["C5"], [
+        (item["id"], item["detail"]) for item in receipt["checks"] if not item["pass"]
+    ]
+    return next(item["detail"] for item in receipt["checks"] if item["id"] == "C5")
+
+
+def _phase_page(market: str, phase: str) -> str:
+    view = native_view(market)
+    view["phase"] = phase
+    view["observation"]["phase"] = phase
+    view["observation"]["active"] = phase in {"underway", "stabilizing", "recovering"}
+    if market == "us":
+        vm = _vm()
+        vm["us_pullback_view"] = view
+        return render_us(vm=vm, mode="macro")
+    return render_cn(view)
+
+
+def test_stabilizing_us_and_cn_still_pass(tmp_path):
+    """Current, expired, and unavailable already pass above. Stabilizing does too."""
+    for market in ("us", "cn"):
+        rc, receipt, _page = _run(tmp_path, _phase_page(market, "stabilizing"), market)
+        assert rc == 0, [(c["id"], c["detail"]) for c in receipt["checks"] if not c["pass"]]
+        assert receipt["phase"] == "stabilizing"
+        assert _failed(receipt) == []
+
+
+def test_hidden_forecast_outside_block_fails_c5(tmp_path):
+    """P1: a clipped span outside .rrp-forecast is still forecast copy."""
+    snippet = f'<span style="{_HIDDEN_STYLE}">{_LEAK}</span>'
+    html = _insert(_active_cn(), _FORECAST_OPEN, snippet, after=False)
+    rc, receipt, _page = _run(tmp_path, html, "cn")
+    detail = _assert_c5(rc, receipt)
+    assert "forecast language" in detail
+
+
+def test_template_forecast_outside_block_fails_c5(tmp_path):
+    """P2: template text outside .rrp-forecast is still forecast copy."""
+    snippet = f"<template>{_LEAK}</template>"
+    html = _insert(_active_cn(), _FORECAST_OPEN, snippet, after=False)
+    rc, receipt, _page = _run(tmp_path, html, "cn")
+    detail = _assert_c5(rc, receipt)
+    assert "forecast language" in detail
+
+
+def test_noscript_forecast_outside_block_fails_c5(tmp_path):
+    """P3: noscript text outside .rrp-forecast is still forecast copy."""
+    snippet = f"<noscript>{_LEAK}</noscript>"
+    html = _insert(_active_cn(), _FORECAST_OPEN, snippet, after=False)
+    rc, receipt, _page = _run(tmp_path, html, "cn")
+    detail = _assert_c5(rc, receipt)
+    assert "forecast language" in detail
+
+
+def test_forecast_aria_label_without_percent_fails_c5(tmp_path):
+    """P4: an aria-label with no percent is still forecast copy."""
+    old = '<h3><span class="l-en">Estimate unavailable</span>'
+    new = '<h3 aria-label="expected remaining drop is severe"><span class="l-en">Estimate unavailable</span>'
+    html = _active_cn()
+    assert html.count(old) == 1
+    html = html.replace(old, new, 1)
+    rc, receipt, _page = _run(tmp_path, html, "cn")
+    detail = _assert_c5(rc, receipt)
+    assert "forecast language" in detail
+    assert "percent" not in detail
+
+
+def test_dialog_aria_label_forecast_fails_c5(tmp_path):
+    """P5: forecast wording on the dialog element itself fails C5."""
+    marker = 'id="cnx-dlg-risk"'
+    html = _active_cn()
+    assert html.count(marker) == 1
+    html = html.replace(marker, marker + ' aria-label="further decline 8%"', 1)
+    rc, receipt, _page = _run(tmp_path, html, "cn")
+    detail = _assert_c5(rc, receipt)
+    assert "forecast language" in detail
+
+
+def test_style_forecast_content_anywhere_fails_c5(tmp_path):
+    """P6: a scoped content: value outside .rrp-forecast fails C5."""
+    html = _active_cn() + '<style>.rrp-forecast h3::after{content:" further decline 8%"}</style>'
+    rc, receipt, _page = _run(tmp_path, html, "cn")
+    detail = _assert_c5(rc, receipt)
+    assert "disclosure marker" in detail
+
+
+def test_hidden_forecast_inside_block_still_fails_c5(tmp_path):
+    snippet = f'<span style="{_HIDDEN_STYLE}">{_LEAK}</span>'
+    html = _insert(_active_cn(), _FORECAST_STATUS, snippet, after=True)
+    rc, receipt, _page = _run(tmp_path, html, "cn")
+    detail = _assert_c5(rc, receipt)
+    assert "allow-list" in detail
+
+
+def test_template_forecast_inside_block_still_fails_c5(tmp_path):
+    snippet = f"<template>{_LEAK}</template>"
+    html = _insert(_active_cn(), _FORECAST_STATUS, snippet, after=True)
+    rc, receipt, _page = _run(tmp_path, html, "cn")
+    detail = _assert_c5(rc, receipt)
+    assert "allow-list" in detail
+
+
+def test_noscript_forecast_inside_block_still_fails_c5(tmp_path):
+    snippet = f"<noscript>{_LEAK}</noscript>"
+    html = _insert(_active_cn(), _FORECAST_STATUS, snippet, after=True)
+    rc, receipt, _page = _run(tmp_path, html, "cn")
+    detail = _assert_c5(rc, receipt)
+    assert "allow-list" in detail
+
+
+def test_style_forecast_inside_block_still_fails_c5(tmp_path):
+    snippet = '<style>.rrp-forecast h3::after{content:" further decline 8%"}</style>'
+    html = _insert(_active_cn(), _FORECAST_STATUS, snippet, after=True)
+    rc, receipt, _page = _run(tmp_path, html, "cn")
+    detail = _assert_c5(rc, receipt)
+    assert "allow-list" in detail or "disclosure marker" in detail
+
+
+def test_forecast_aria_percent_inside_block_still_fails_c5(tmp_path):
+    old = '<h3><span class="l-en">Estimate unavailable</span>'
+    new = '<h3 aria-label="8%"><span class="l-en">Estimate unavailable</span>'
+    html = _active_cn()
+    assert html.count(old) == 1
+    html = html.replace(old, new, 1)
+    rc, receipt, _page = _run(tmp_path, html, "cn")
+    detail = _assert_c5(rc, receipt)
+    assert "percent" in detail
+
+
+def test_altered_allow_listed_sentence_fails_c5(tmp_path):
+    """An allow-listed sentence with one word changed is not exempt."""
+    html = _active_cn()
+    old = "Not recovery odds"
+    assert html.count(old) == 1
+    html = html.replace(old, "Recovery odds 60%", 1)
+    rc, receipt, _page = _run(tmp_path, html, "cn")
+    detail = _assert_c5(rc, receipt)
+    assert "forecast language" in detail
