@@ -41,16 +41,56 @@ very Stop it was reporting on.  ``tests/test_agentos_status.py`` proves this at 
 by running ``status`` with sockets disabled.
 
 Subcommands:
-    validate          schema + referential integrity over agentos/ (Phase 0)
+    validate          schema + referential integrity over agentos/ (Phase 0).
+                      ``--paths`` judges only the named records. When those paths
+                      already include every handoff join (workstream, decisions,
+                      discoveries), records outside that list are not loaded,
+                      except workstream files reached by ``depends_on`` and
+                      decision files on a ``supersedes`` / ``superseded_by``
+                      edge with a named decision. An incoming ``supersedes``
+                      is not on the named record, so ``decisions/DEC-*.md``
+                      is listed once. A file is parsed when it cites a named
+                      decision, or a named decision cites that file's own
+                      key, including when the stem is not ``DEC-<key>``.
+                      Schema findings on that file are not recorded. On that
+                      covered set, an unreciprocated ``supersedes`` is
+                      reported on the named decision that lists it when the
+                      old record is outside ``--paths``. A ``depends_on``
+                      cycle that includes no named workstream is reported
+                      on the named workstream that reaches it, including
+                      when ``--paths`` misses a handoff join and the whole
+                      store loads. The rest of a covered set is not walked.
+                      ``uncited-discovery`` is omitted for a subset: citation
+                      counts need every record, and unscoped ``validate``
+                      still reports that rule. ``--strict``
+                      (with ``--snapshot`` and ``--paths``) also fails on schema
+                      warnings for those records and compares pins to the seat
+                      snapshot. ``--snapshot`` alone reports PR counts and adds
+                      no failure. The fleet step stays unscoped ``validate``.
+    draft-handoff     print one handoff skeleton to stdout (writes nothing)
+    draft-ws-append   print a dated workstream bullet to stdout (writes nothing)
+    draft-decision    print one decision skeleton; ``draft-dec`` is the same command
+    draft-discovery   print one discovery skeleton; ``draft-dsc`` is the same command
     status            materialize agent_os_state.v1 + docs/AGENT_OS_STATE.md (Phase 2)
     brief             CEO brief (Phase 2; spec in research/MASTERMIND_CEO_BRIEF_SPEC.md)
     compile-context   bounded, cited context_bundle.v1 for a workstream or a task
                       (Phase 3; architecture §8).  Reads and cites; writes nothing.
 
+The draft commands read seat JSON (``agentos.record_draft.v1``) and copy pins.
+They do not call out, do not rank, and do not decide whether work may run.
+Currency notes in ``state_before`` and point-in-time transcripts stay
+non-blocking under ``--strict``: they are history, not a malformed record.
+
 Usage::
 
     python3 scripts/agentos.py validate
     python3 scripts/agentos.py validate --root agentos --quiet
+    python3 scripts/agentos.py validate --paths agentos/handoffs/KEY-YYYY-MM-DD.md
+    python3 scripts/agentos.py validate --strict --snapshot seat.json --paths agentos/handoffs/KEY-YYYY-MM-DD.md
+    python3 scripts/agentos.py validate --snapshot seat.json
+    python3 scripts/agentos.py draft-handoff --from seat.json
+    python3 scripts/agentos.py draft-dec --from seat.json
+    python3 scripts/agentos.py draft-dsc --from seat.json
     python3 scripts/agentos.py status
     python3 scripts/agentos.py status --dry-run
     python3 scripts/agentos.py brief --since 24h
@@ -1357,7 +1397,1300 @@ def load_store(root: Path, programs: set[str] | None) -> Store:
 # ---------------------------------------------------------------- commands
 
 
+# ------------------------------------------------------- D3 record drafts
+#
+# Knowledge plane only. The seat builds the JSON (it already talks to the
+# forge). These commands print a skeleton and return. They do not write
+# agentos/, open a socket, or substitute a merge base for a missing pin.
+
+_RECORD_DRAFT_SCHEMA = "agentos.record_draft.v1"
+_FORBIDDEN_INPUT_KEYS = frozenset({
+    "rank", "priority", "score", "gate", "lease", "dispatch",
+    "unblock", "next_rank", "authority", "may_run",
+})
+_SHA_RE = re.compile(r"^[0-9a-f]{7,40}$")
+_AT_SHA_RE = re.compile(r"#(?P<pr>\d{3,5})\s+at\s+(?P<sha>[0-9a-f]{7,40})\b")
+# The PR number must be the nearest one: do not cross another #NNNN, or a long
+# next_actions line attributes a later PR's head to an earlier one.
+_HEAD_SHA_RE = re.compile(
+    r"#(?P<pr>\d{3,5})(?:(?!#\d{3,5}).){0,80}?\bhead\s+`?(?P<sha>[0-9a-f]{7,40})\b",
+    re.IGNORECASE,
+)
+_AUTHORED_ONCE_RE = re.compile(r"authored once by\s+#(?P<pr>\d{3,5})\b", re.IGNORECASE)
+_OPEN_AT_RE = re.compile(
+    r"#(?P<pr>\d{3,5}).{0,120}?\bopen at\s+(?P<ts>20\d{2}-\d{2}-\d{2}T\d{2}:\d{2}(?::\d{2})?Z)",
+    re.IGNORECASE,
+)
+_UNRESOLVED_SCALAR_RE = re.compile(r"(?i)(?<![A-Za-z0-9_])unresolved:\s*(\d+)\b")
+_UNRESOLVED_WORDS_RE = re.compile(r"(?i)\b(\d+)\s+unresolved\b")
+_POINT_IN_TIME_RE = re.compile(r"equal the heads|not re-run|carried from", re.IGNORECASE)
+# Prose a later session treats as the current claim. state_before is history.
+_CURRENCY_KEYS = frozenset({
+    "changed", "next_actions", "unresolved", "do_not_redo", "danger_areas",
+    "landmines", "next_action",
+})
+# These stay warnings under --strict. A previous head in state_before, or a
+# transcript that says the numbers were true at a named moment, is not a lie
+# about the record's shape. Schema warnings are a different set and DO fail
+# --strict: the author asked to be told.
+_ADVISORY_RULES = frozenset({
+    "state-before-pin",
+    "point-in-time-head",
+    "narrative-head",
+    "snapshot-absent",
+})
+_RECORD_FOLDERS = frozenset({"workstreams", "decisions", "discoveries", "handoffs"})
+
+
+def _die(message: str, code: int = 2) -> None:
+    print(f"agentos: {message}", file=sys.stderr)
+    raise SystemExit(code)
+
+
+def _reject_control_plane(payload: Any, where: str = "") -> None:
+    if isinstance(payload, dict):
+        for key, value in payload.items():
+            if str(key).lower() in _FORBIDDEN_INPUT_KEYS:
+                _die(
+                    f"refusing input key {key!r}{where}: a records draft does not "
+                    "rank, gate, lease or dispatch"
+                )
+            _reject_control_plane(value, where + f".{key}")
+    elif isinstance(payload, list):
+        for index, value in enumerate(payload):
+            _reject_control_plane(value, where + f"[{index}]")
+
+
+def _load_seat_json(path: Path) -> dict[str, Any]:
+    try:
+        payload = json.loads(Path(path).read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as exc:
+        _die(f"cannot read seat JSON {path}: {exc}")
+    if not isinstance(payload, dict):
+        _die("seat JSON must be an object")
+    schema = payload.get("schema")
+    if schema is not None and schema != _RECORD_DRAFT_SCHEMA:
+        _die(f"schema must be {_RECORD_DRAFT_SCHEMA}, got {schema!r}")
+    _reject_control_plane(payload)
+    return payload
+
+
+def _load_snapshot_rows(path: Path) -> list[dict[str, Any]]:
+    try:
+        payload = json.loads(Path(path).read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as exc:
+        _die(f"cannot read snapshot {path}: {exc}")
+    if not isinstance(payload, dict):
+        _die("snapshot must be an object")
+    schema = payload.get("schema")
+    if schema is not None and schema != _RECORD_DRAFT_SCHEMA:
+        _die(f"snapshot schema must be {_RECORD_DRAFT_SCHEMA}, got {schema!r}")
+    rows = payload.get("prs") or []
+    if not isinstance(rows, list):
+        _die("snapshot prs must be a list")
+    clean: list[dict[str, Any]] = []
+    for index, row in enumerate(rows):
+        if not isinstance(row, dict) or not isinstance(row.get("number"), int):
+            _die(f"snapshot prs[{index}] needs an integer number")
+        clean.append(row)
+    return clean
+
+
+def _require_text(payload: dict[str, Any], key: str) -> str:
+    value = payload.get(key)
+    if not isinstance(value, str) or not value.strip():
+        _die(f"{key} must be a non-empty string")
+    return value.strip()
+
+
+def _require_iso_date(value: Any, field: str) -> None:
+    if isinstance(value, str) and (ISO_DATE_RE.match(value) or ISO_TS_RE.match(value)):
+        return
+    _die(f"{field} must be YYYY-MM-DD or a Z timestamp, got {value!r}")
+
+
+def _prs(payload: dict[str, Any]) -> list[dict[str, Any]]:
+    rows = payload.get("prs") or []
+    if not isinstance(rows, list):
+        _die("prs must be a list")
+    out: list[dict[str, Any]] = []
+    for index, row in enumerate(rows):
+        if not isinstance(row, dict) or not isinstance(row.get("number"), int):
+            _die(f"prs[{index}] needs an integer number")
+        head = str(row.get("head_sha") or "")
+        if not _SHA_RE.match(head):
+            _die(f"prs[{index}] head_sha must be 7-40 lowercase hex, got {head!r}")
+        base = row.get("base_sha")
+        if base is not None and not _SHA_RE.match(str(base)):
+            _die(f"prs[{index}] base_sha must be 7-40 lowercase hex")
+        if base is not None and str(base) == head:
+            _die(
+                f"prs[{index}] base_sha equals head_sha ({head}); refusing a pin "
+                "that cannot tell the base from the head"
+            )
+        out.append(row)
+    return out
+
+
+def _by_number(rows: list[dict[str, Any]]) -> dict[int, dict[str, Any]]:
+    return {int(row["number"]): row for row in rows}
+
+
+def _sha_is(pin: str, full: str | None) -> bool:
+    if not full or not pin:
+        return False
+    return full.startswith(pin) or pin.startswith(full)
+
+
+def _read_label(row: dict[str, Any]) -> str:
+    """Seat phrase for a comment. ``read_label`` is the production name.
+
+    Older seat JSON used ``review_state`` for the same words. Neither value is
+    a forge review enum; the seat copies the words it actually read.
+    """
+    label = row.get("read_label")
+    if label in (None, ""):
+        label = row.get("review_state")
+    if label in (None, ""):
+        return ""
+    return str(label)
+
+
+def _yaml_frontmatter(data: dict[str, Any]) -> str:
+    body = yaml.safe_dump(
+        data,
+        sort_keys=False,
+        allow_unicode=True,
+        default_flow_style=False,
+        width=100,
+    )
+    return "---\n" + body + "---\n"
+
+
+def _carriers(rows: list[dict[str, Any]], as_of: str) -> list[dict[str, Any]]:
+    """Structured pins. Prose may narrate history; this list is the machine claim."""
+    pinned: list[dict[str, Any]] = []
+    for row in rows:
+        item: dict[str, Any] = {
+            "pr": int(row["number"]),
+            "role": "head",
+            "sha": str(row["head_sha"]),
+            "as_of": as_of,
+        }
+        if row.get("base_sha"):
+            item["base_sha"] = str(row["base_sha"])
+        if "draft" in row:
+            item["draft"] = bool(row["draft"])
+        label = _read_label(row)
+        if label:
+            item["read_label"] = label
+        if row.get("state"):
+            item["state"] = str(row["state"])
+        runs = row.get("ci_runs") or []
+        if isinstance(runs, list) and runs:
+            item["ci_runs"] = [
+                {"id": run.get("id"), "name": run.get("name"), "conclusion": run.get("conclusion")}
+                for run in runs if isinstance(run, dict)
+            ]
+        comments = row.get("comments") or []
+        if isinstance(comments, list) and comments:
+            item["comment_ids"] = [
+                comment.get("id") for comment in comments
+                if isinstance(comment, dict) and comment.get("id") is not None
+            ]
+        reviewers = row.get("reviewers") or []
+        if isinstance(reviewers, list) and reviewers:
+            item["reviewer_ids"] = [
+                reviewer.get("id") for reviewer in reviewers
+                if isinstance(reviewer, dict) and reviewer.get("id") is not None
+            ]
+        pinned.append(item)
+    return pinned
+
+
+def _status_phrase(row: dict[str, Any]) -> str:
+    """Wording taken from the snapshot fields, not from memory.
+
+    A draft under a REQUEST_CHANGES read is "is to be continued … not landed".
+    It is never "authored once by".
+    """
+    number = int(row["number"])
+    head = str(row["head_sha"])[:12]
+    draft = bool(row.get("draft"))
+    state = str(row.get("state") or ("open" if draft or not row.get("merged") else "merged"))
+    review = _read_label(row)
+    if row.get("merged") is True or state == "merged":
+        merged_at = row.get("merged_at") or "merged_at absent from snapshot"
+        return f"#{number} merged at head {head} ({merged_at})"
+    if review.upper() in {"REQUEST_CHANGES", "CHANGES_REQUESTED"}:
+        return (
+            f"#{number} is to be continued at head {head}, draft={str(draft).lower()}, "
+            f"under a {review} read, not landed"
+        )
+    if draft or state != "merged":
+        return f"#{number} is open at head {head}, draft={str(draft).lower()}, not landed"
+    return f"#{number} head {head} state {state}"
+
+
+def _handoff_notes(key: str, date: str, canonical: str) -> list[str]:
+    """Read-only hint when the canonical file or a suffixed sibling already exists.
+
+    The suffixed stem is invisible to compile-context. The command still only
+    prints; the seat amends the canonical file in place.
+    """
+    directory = _DEFAULT_STORE / "handoffs"
+    if not directory.is_dir():
+        return []
+    notes: list[str] = []
+    canonical_path = directory / f"{key}-{date}.md"
+    if canonical_path.exists():
+        notes.append(
+            f"AMEND {canonical} in place; do not mint a second file "
+            "(DSC:SUFFIXED-HANDOFF-IS-INVISIBLE)."
+        )
+    siblings = sorted(directory.glob(f"{key}-{date}*.md"))
+    suffixed = [path.name for path in siblings if path != canonical_path]
+    if suffixed:
+        notes.append(
+            "existing suffixed sibling(s) invisible to compile-context "
+            "(HANDOFF_DATE_RE requires the stem to end in -YYYY-MM-DD): "
+            + ", ".join(suffixed)
+        )
+    return notes
+
+
+def _require_changed(payload: dict[str, Any]) -> None:
+    changed = payload.get("changed")
+    if not isinstance(changed, list) or not changed:
+        _die("changed must be a non-empty list")
+    for index, item in enumerate(changed):
+        if (not isinstance(item, dict)
+                or not str(item.get("path") or "").strip()
+                or not str(item.get("what") or "").strip()):
+            _die(f"changed[{index}] needs both 'path' and 'what'")
+
+
+def _require_verified(payload: dict[str, Any]) -> None:
+    verified = payload.get("verified")
+    if not isinstance(verified, list) or not verified:
+        _die("verified must be a non-empty list")
+    for index, item in enumerate(verified):
+        if not isinstance(item, dict) or not str(item.get("command") or "").strip():
+            _die(f"verified[{index}] needs a 'command'")
+
+
+def _require_string_list(payload: dict[str, Any], key: str) -> None:
+    value = payload.get(key)
+    if not isinstance(value, list) or not value:
+        _die(f"{key} must be a non-empty list")
+    for index, item in enumerate(value):
+        if not isinstance(item, str) or not item.strip():
+            _die(f"{key}[{index}] must be a non-empty string")
+
+
+def draft_handoff(payload: dict[str, Any]) -> str:
+    _reject_control_plane(payload)
+    if payload.get("suffix"):
+        _die(
+            "refusing a filename suffix: DSC:SUFFIXED-HANDOFF-IS-INVISIBLE — "
+            "amend agentos/handoffs/<WS-KEY>-<YYYY-MM-DD>.md in place"
+        )
+    for key in ("workstream", "session", "model", "ended_because", "mission",
+                "state_before", "date", "as_of"):
+        _require_text(payload, key)
+    model = payload["model"]
+    if model not in HANDOFF_MODEL:
+        _die(f"model {model!r} is not in HANDOFF_MODEL {sorted(HANDOFF_MODEL)}")
+    ended = payload["ended_because"]
+    if ended not in HANDOFF_ENDED:
+        _die(f"ended_because {ended!r} is not in {sorted(HANDOFF_ENDED)}")
+    ws = str(payload["workstream"]).strip()
+    if not ws.startswith("WS:") or not KEY_RE.match(ws.split(":", 1)[1]):
+        _die(f"workstream must be WS:<UPPER-KEBAB>, got {ws!r}")
+    date = str(payload["date"]).strip()
+    if not ISO_DATE_RE.match(date):
+        _die(f"date must be YYYY-MM-DD, got {date!r}")
+    _require_changed(payload)
+    _require_verified(payload)
+    for key in ("unresolved", "next_actions", "do_not_redo", "danger_areas"):
+        _require_string_list(payload, key)
+    unverified = payload.get("unverified", [])
+    if not isinstance(unverified, list):
+        _die("unverified must be a list; an empty list is valid and its absence is not")
+    rows = _prs(payload)
+    as_of = str(payload["as_of"]).strip()
+    key_name = ws.split(":", 1)[1]
+    canonical = f"agentos/handoffs/{key_name}-{date}.md"
+    if not HANDOFF_DATE_RE.search(Path(canonical).stem):
+        _die(f"internal error: {canonical} is not a canonical handoff name")
+    rec: dict[str, Any] = {
+        "workstream": ws,
+        "session": str(payload["session"]).strip(),
+        "model": model,
+        "ended_because": ended,
+        "prs": [int(row["number"]) for row in rows],
+        "carriers": _carriers(rows, as_of),
+        "mission": str(payload["mission"]).strip(),
+        "state_before": str(payload["state_before"]).strip(),
+        "changed": payload["changed"],
+        "verified": payload["verified"],
+        "unverified": unverified,
+        "unresolved": payload["unresolved"],
+        "next_actions": payload["next_actions"],
+        "do_not_redo": payload["do_not_redo"],
+        "danger_areas": payload["danger_areas"],
+    }
+    for optional, prefix in (("decisions", "DEC"), ("discoveries", "DSC")):
+        if payload.get(optional) is None:
+            continue
+        values = payload[optional]
+        if not isinstance(values, list):
+            _die(f"{optional} must be a list of {prefix}:KEY citations")
+        rec[optional] = values
+    pins = " ".join(_status_phrase(row) for row in rows)
+    body_lines = [
+        "",
+        "# Draft skeleton",
+        "",
+        f"Canonical path: `{canonical}`. Snapshot as_of `{as_of}`. "
+        "The carriers list is the machine pin. Do not retype head SHAs, "
+        "base SHAs, CI run ids, comment ids or review ids by hand.",
+        "",
+    ]
+    if pins:
+        body_lines.append(f"Pinned from the seat snapshot: {pins}.")
+        body_lines.append("")
+    notes = _handoff_notes(key_name, date, canonical)
+    header = ""
+    if notes:
+        header = "<!-- draft-records:\n" + "\n".join(f"- {note}" for note in notes) + "\n-->\n\n"
+    text = _yaml_frontmatter(rec) + header + "\n".join(body_lines)
+    return text if text.endswith("\n") else text + "\n"
+
+
+def draft_ws_append(payload: dict[str, Any]) -> str:
+    _reject_control_plane(payload)
+    _require_text(payload, "workstream")
+    _require_text(payload, "date")
+    _require_text(payload, "as_of")
+    if not ISO_DATE_RE.match(str(payload["date"]).strip()):
+        _die(f"date must be YYYY-MM-DD, got {payload.get('date')!r}")
+    rows = _prs(payload)
+    if not rows:
+        _die("ws append needs at least one pr pin")
+    lines = [
+        f"<!-- paste under next_action or a dated bullet of {payload['workstream']}; "
+        "do not invent a second workstream file -->",
+        f"- {payload['date']} snapshot {payload['as_of']}:",
+    ]
+    for row in rows:
+        lines.append(f"  - {_status_phrase(row)}.")
+        comments = row.get("comments") or []
+        if isinstance(comments, list) and comments:
+            ids = ", ".join(str(item.get("id")) for item in comments if isinstance(item, dict))
+            lines.append(f"    comments: {ids}.")
+        runs = row.get("ci_runs") or []
+        if isinstance(runs, list) and runs:
+            rendered = ", ".join(
+                f"{run.get('id')} {run.get('name')} {run.get('conclusion')}"
+                for run in runs if isinstance(run, dict)
+            )
+            lines.append(f"    ci_runs: {rendered}.")
+    return "\n".join(lines) + "\n"
+
+
+def draft_decision(payload: dict[str, Any]) -> str:
+    _reject_control_plane(payload)
+    for key in ("key", "question", "answer", "rationale", "decided_by", "decided_at"):
+        _require_text(payload, key)
+    key = str(payload["key"]).strip()
+    if not KEY_RE.match(key):
+        _die(f"decision key must be UPPER-KEBAB, got {key!r}")
+    if payload.get("confidence") not in CONFIDENCE_DEC:
+        _die(f"confidence {payload.get('confidence')!r} is not in {sorted(CONFIDENCE_DEC)}")
+    if payload.get("reversibility") not in REVERSIBILITY:
+        _die(
+            f"reversibility {payload.get('reversibility')!r} is not in {sorted(REVERSIBILITY)}"
+        )
+    _require_iso_date(payload["decided_at"], "decided_at")
+    alternatives = payload.get("alternatives")
+    if not isinstance(alternatives, list) or not alternatives:
+        _die("alternatives must be a non-empty list")
+    for index, alt in enumerate(alternatives):
+        if (not isinstance(alt, dict)
+                or not str(alt.get("option") or "").strip()
+                or not str(alt.get("why_not") or "").strip()):
+            _die(f"alternatives[{index}] needs both 'option' and 'why_not'")
+    for key_name in ("evidence", "affects"):
+        value = payload.get(key_name)
+        if not isinstance(value, list) or not value:
+            _die(f"{key_name} must be a non-empty list")
+    rec: dict[str, Any] = {
+        "key": key,
+        "question": payload["question"],
+        "answer": payload["answer"],
+        "rationale": payload["rationale"],
+        "alternatives": alternatives,
+        "evidence": payload["evidence"],
+        "affects": payload["affects"],
+        "confidence": payload["confidence"],
+        "reversibility": payload["reversibility"],
+        "decided_by": payload["decided_by"],
+        "decided_at": payload["decided_at"],
+    }
+    for optional in ("supersedes", "superseded_by", "review_by"):
+        if payload.get(optional) is None:
+            continue
+        if optional == "review_by":
+            _require_iso_date(payload[optional], "review_by")
+        rec[optional] = payload[optional]
+    path = f"agentos/decisions/DEC-{key}.md"
+    text = (
+        _yaml_frontmatter(rec)
+        + f"\n<!-- draft-records: canonical path {path}; stdout only -->\n\n"
+        + "# Draft\n\nSeat prose.\n"
+    )
+    return text
+
+
+def draft_discovery(payload: dict[str, Any]) -> str:
+    _reject_control_plane(payload)
+    for key in ("key", "claim", "falsifier", "so_what", "verified_at", "verified_by"):
+        _require_text(payload, key)
+    key = str(payload["key"]).strip()
+    if not KEY_RE.match(key):
+        _die(f"discovery key must be UPPER-KEBAB, got {key!r}")
+    if payload.get("kind") not in DISCOVERY_KIND:
+        _die(f"kind {payload.get('kind')!r} is not in {sorted(DISCOVERY_KIND)}")
+    if payload.get("confidence") not in CONFIDENCE_DSC:
+        _die(f"confidence {payload.get('confidence')!r} is not in {sorted(CONFIDENCE_DSC)}")
+    _require_iso_date(payload["verified_at"], "verified_at")
+    scope = payload.get("scope")
+    if not isinstance(scope, list) or not scope:
+        _die("scope must be a non-empty list")
+    for field in ("falsifier", "verified_by"):
+        value = str(payload[field])
+        if not PROVENANCE_RE.search(value):
+            _die(
+                f"{field} would fail provenance shape — needs a command, a "
+                f"'file:line', or a '#PR', got {value.strip()[:60]!r}"
+            )
+    rec = {field: payload[field] for field in (
+        "key", "claim", "falsifier", "so_what", "kind", "verified_at",
+        "verified_by", "scope", "confidence",
+    )}
+    path = f"agentos/discoveries/DSC-{key}.md"
+    return (
+        _yaml_frontmatter(rec)
+        + f"\n<!-- draft-records: canonical path {path}; stdout only -->\n\n"
+        + "# Draft\n\nSeat prose.\n"
+    )
+
+
+def _list_len_unresolved(text: str) -> int | None:
+    """Count YAML list items under a top-level ``unresolved`` key.
+
+    Hand-written records indent items two spaces. ``yaml.safe_dump`` emits the
+    dash at column 0. Both are one item per dash at the list's own indent.
+    """
+    if not text.startswith("---"):
+        return None
+    parts = text.split("---", 2)
+    if len(parts) < 3:
+        return None
+    front = parts[1]
+    inline = re.search(r'(?m)^"?unresolved"?:\s*\[(.*)\]\s*$', front)
+    if inline:
+        inner = inline.group(1).strip()
+        if not inner:
+            return 0
+        return inner.count(",") + 1
+    match = re.search(
+        r'(?ms)^"?unresolved"?:\s*\n(.*?)(?=^"?[A-Za-z_][A-Za-z0-9_]*"?:|\Z)',
+        front,
+    )
+    if not match:
+        return None
+    indents = [len(item) for item in re.findall(r"(?m)^( *)- ", match.group(1))]
+    if not indents:
+        return 0
+    minimum = min(indents)
+    return sum(1 for indent in indents if indent == minimum)
+
+
+def _frontmatter_key(lines: list[str], line_no: int) -> str | None:
+    """Top-level YAML key covering this line, or None once the body has started."""
+    if line_no < 1 or line_no > len(lines) or lines[0].strip() != "---":
+        return None
+    end = None
+    for index in range(1, len(lines)):
+        if lines[index].strip() == "---":
+            end = index + 1
+            break
+    if end is None or line_no > end:
+        return None
+    current = None
+    for index in range(1, line_no):
+        match = re.match(r"^([A-Za-z_][A-Za-z0-9_]*):", lines[index])
+        if match:
+            current = match.group(1)
+    return current
+
+
+def _carrier_problems(
+    rec: dict[str, Any], rows: list[dict[str, Any]], path: Path,
+) -> list[Problem]:
+    """Hard checks on ``carriers[]``. A PR missing from the snapshot is fail-open."""
+    table = _by_number(rows)
+    carriers = rec.get("carriers")
+    if not isinstance(carriers, list):
+        return []
+    found: list[Problem] = []
+    for index, item in enumerate(carriers):
+        if not isinstance(item, dict):
+            found.append(Problem(
+                path, "bad-carrier", f"carriers[{index}] is not a mapping", hard=True,
+            ))
+            continue
+        number = item.get("pr")
+        role = item.get("role")
+        sha = str(item.get("sha") or "")
+        row = table.get(number) if isinstance(number, int) else None
+        if row is None:
+            found.append(Problem(
+                path, "snapshot-absent",
+                f"carriers[{index}] pr #{number}: absent from snapshot "
+                "(fail-open join, not a record error)",
+                hard=False,
+            ))
+            continue
+        head = str(row.get("head_sha") or "")
+        base = str(row.get("base_sha") or "")
+        if role == "head" and base and _sha_is(sha, base) and not _sha_is(sha, head):
+            found.append(Problem(
+                path, "base-sha-reference",
+                f"carriers[{index}] #{number} role=head pins {sha[:12]}, "
+                f"which is base_sha {base[:12]} not head {head[:12]}",
+                hard=True,
+            ))
+        elif role == "head" and not _sha_is(sha, head):
+            found.append(Problem(
+                path, "stale-head",
+                f"carriers[{index}] #{number} pins {sha[:12]} "
+                f"but snapshot head is {head[:12]}",
+                hard=True,
+            ))
+        elif role == "base" and base and not _sha_is(sha, base):
+            found.append(Problem(
+                path, "stale-base",
+                f"carriers[{index}] #{number} pins {sha[:12]} "
+                f"but snapshot base_sha is {base[:12]}",
+                hard=True,
+            ))
+    return found
+
+
+def _prose_findings(text: str, rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """Currency pins and wording against a seat snapshot.
+
+    Hard inside live fields, and for a base SHA written as a head, for
+    completion/status wording, and for an unresolved count that disagrees with
+    the YAML list. ``state_before`` and point-in-time transcripts stay warnings.
+    """
+    table = _by_number(rows)
+    findings: list[dict[str, Any]] = []
+    lines = text.splitlines()
+    unresolved_len = _list_len_unresolved(text)
+
+    def consider(line_no: int, line: str, pr: int, sha: str, how: str) -> None:
+        row = table.get(pr)
+        if row is None:
+            return
+        head = str(row.get("head_sha") or "")
+        base = str(row.get("base_sha") or "")
+        point_in_time = bool(_POINT_IN_TIME_RE.search(line))
+        key = _frontmatter_key(lines, line_no)
+        live = key in _CURRENCY_KEYS and not point_in_time
+        if base and _sha_is(sha, base) and not _sha_is(sha, head):
+            if re.search(r"\bbase\b", line, re.IGNORECASE) and not re.search(
+                r"\bhead\b", line, re.IGNORECASE
+            ):
+                return
+            findings.append({
+                "rule": "base-sha-reference",
+                "hard": True,
+                "line": line_no,
+                "detail": (
+                    f"#{pr} {how} {sha[:12]} equals snapshot base_sha, "
+                    f"not head {head[:12]}"
+                ),
+            })
+            return
+        if _sha_is(sha, head):
+            return
+        if point_in_time:
+            rule = "point-in-time-head"
+        elif key == "state_before":
+            rule = "state-before-pin"
+        elif not live:
+            rule = "narrative-head"
+        else:
+            rule = "stale-head"
+        findings.append({
+            "rule": rule,
+            "hard": live and rule == "stale-head",
+            "line": line_no,
+            "detail": (
+                f"#{pr} {how} {sha[:12]} != snapshot head {head[:12]}"
+                + (f" (field {key})" if key else " (body)")
+                + (" command transcript" if point_in_time else "")
+            ),
+        })
+
+    for line_no, line in enumerate(lines, 1):
+        for match in _AT_SHA_RE.finditer(line):
+            consider(line_no, line, int(match.group("pr")), match.group("sha"), "at")
+        for match in _HEAD_SHA_RE.finditer(line):
+            consider(line_no, line, int(match.group("pr")), match.group("sha"), "head")
+        for match in _AUTHORED_ONCE_RE.finditer(line):
+            pr = int(match.group("pr"))
+            row = table.get(pr)
+            if row is None:
+                continue
+            landed = row.get("merged") is True or str(row.get("state") or "") == "merged"
+            if not landed:
+                findings.append({
+                    "rule": "completion-wording",
+                    "hard": True,
+                    "line": line_no,
+                    "detail": (
+                        f"#{pr} 'authored once by' but snapshot "
+                        f"draft={row.get('draft')} state={row.get('state')!r} "
+                        f"merged={row.get('merged')!r}"
+                    ),
+                })
+        for match in _OPEN_AT_RE.finditer(line):
+            pr = int(match.group("pr"))
+            row = table.get(pr)
+            if row is None:
+                continue
+            review = _read_label(row).upper()
+            upper = line.upper()
+            if review in {"REQUEST_CHANGES", "CHANGES_REQUESTED"} and (
+                "REQUEST_CHANGES" not in upper and "CHANGES_REQUESTED" not in upper
+            ):
+                findings.append({
+                    "rule": "status-wording",
+                    "hard": True,
+                    "line": line_no,
+                    "detail": (
+                        f"#{pr} says 'open at {match.group('ts')}' while snapshot "
+                        f"read_label={_read_label(row)!r}"
+                    ),
+                })
+        if unresolved_len is not None:
+            for match in _UNRESOLVED_SCALAR_RE.finditer(line):
+                claimed = int(match.group(1))
+                if claimed != unresolved_len:
+                    findings.append({
+                        "rule": "stale-unresolved-count",
+                        "hard": True,
+                        "line": line_no,
+                        "detail": (
+                            f"prose unresolved:{claimed} but the YAML list has "
+                            f"{unresolved_len} items"
+                        ),
+                    })
+            for match in _UNRESOLVED_WORDS_RE.finditer(line):
+                claimed = int(match.group(1))
+                if claimed != unresolved_len:
+                    findings.append({
+                        "rule": "stale-unresolved-count",
+                        "hard": True,
+                        "line": line_no,
+                        "detail": (
+                            f"prose '{claimed} unresolved' but the YAML list has "
+                            f"{unresolved_len} items"
+                        ),
+                    })
+    return findings
+
+
+def _currency_problems(path: Path, rows: list[dict[str, Any]]) -> list[Problem]:
+    if not path.is_file():
+        return [Problem(path, "unreadable-path", f"not a file: {path}", hard=True)]
+    text = path.read_text(encoding="utf-8")
+    found: list[Problem] = []
+    try:
+        rec, _body = parse_record(path)
+    except ValueError:
+        rec = None
+    if isinstance(rec, dict):
+        found.extend(_carrier_problems(rec, rows, path))
+    for item in _prose_findings(text, rows):
+        found.append(Problem(path, str(item["rule"]), str(item["detail"]), hard=bool(item["hard"])))
+    return found
+
+
+def _folder_of(path: Path) -> str | None:
+    parent = path.parent.name
+    if parent in _RECORD_FOLDERS:
+        return parent
+    return None
+
+
+def _spec_for(path: Path) -> tuple[Any, ...] | None:
+    parent = path.parent.name
+    for spec in SPECS:
+        if spec[0] == parent:
+            return spec
+    name = path.name
+    if name.startswith("WS-"):
+        return SPECS[0]
+    if name.startswith("DEC-"):
+        return SPECS[1]
+    if name.startswith("DSC-"):
+        return SPECS[2]
+    return None
+
+
+def _schema_problems_outside_store(
+    path: Path, store: Store, programs: set[str] | None,
+) -> list[Problem]:
+    if not path.is_file():
+        return [Problem(path, "unreadable-path", f"not a file: {path}", hard=True)]
+    spec = _spec_for(path)
+    if spec is None:
+        return [Problem(
+            path, "bad-filename",
+            "path is not a workstream, decision, discovery, or handoff",
+            hard=True,
+        )]
+    _folder, prefix, fileprefix, checker = spec
+    if fileprefix and not path.name.startswith(fileprefix):
+        return [Problem(
+            path, "bad-filename",
+            f"files of this kind must start with '{fileprefix}'",
+            hard=True,
+        )]
+    try:
+        rec, body = parse_record(path)
+    except ValueError as exc:
+        return [Problem(path, "unparseable", str(exc), hard=True)]
+    rec["_body"] = body
+    found = list(
+        checker(rec, path, programs) if checker is check_workstream else checker(rec, path)
+    )
+    key = path.stem if prefix == "HND" else rec.get("key")
+    records = dict(store.records)
+    paths = dict(store.paths)
+    if isinstance(key, str) and key:
+        ident = f"{prefix}/{key}"
+        if ident in records:
+            found.append(Problem(
+                path, "duplicate-key",
+                f"key {key!r} already defined at {paths[ident]}",
+                hard=True,
+            ))
+        else:
+            records[ident] = rec
+            paths[ident] = path
+    found.extend(
+        problem for problem in check_references(records, paths)
+        if problem.path.resolve() == path.resolve()
+    )
+    return found
+
+
+# Handoff joins checked by ``check_references``. A named set that already
+# holds each target does not need the rest of the store for that join.
+_HANDOFF_JOIN_FIELDS = (
+    ("workstream", "WS"),
+    ("decisions", "DEC"),
+    ("discoveries", "DSC"),
+)
+_DANGLING_REF_RE = re.compile(r"\b(WS|DEC|DSC):([A-Z0-9-]+)")
+# check_references files unreciprocated-supersession on the OLD record and
+# names the decision that lists supersedes in this sentence.
+_UNRECIPROCATED_CITER_RE = re.compile(
+    r"\bDEC:([A-Z0-9-]+) supersedes this record"
+)
+
+
+def _citation_path(root: Path, prefix: str, key: str) -> Path | None:
+    for folder, spec_prefix, fileprefix, _checker in SPECS:
+        if spec_prefix == prefix:
+            return root / folder / f"{fileprefix}{key}.md"
+    return None
+
+
+def _cited_record_exists(root: Path, prefix: str, key: str) -> bool:
+    """True when the conventional file parses as that record.
+
+    An unparseable sibling is not a resolved join: the full store leaves it
+    out of ``records`` and reports ``dangling-ref``.
+    """
+    path = _citation_path(root, prefix, key)
+    if path is None or not path.is_file():
+        return False
+    try:
+        rec, _body = parse_record(path)
+    except ValueError:
+        return False
+    if prefix == "HND":
+        return path.stem == key
+    return rec.get("key") == key
+
+
+def _paths_cover_handoff_joins(root: Path, path_args: list[str]) -> bool:
+    """True when every named handoff's joins already point at a named path.
+
+    A path list with no handoff is not covered, so a lone decision or
+    workstream still takes the full store. A join target that is not named
+    is not covered: the caller loads the store, and a missing record still
+    comes back ``dangling-ref``.
+    """
+    wanted = {Path(raw).resolve() for raw in path_args}
+    saw_handoff = False
+    for raw in path_args:
+        path = Path(raw)
+        spec = _spec_for(path)
+        if spec is None or spec[1] != "HND":
+            continue
+        saw_handoff = True
+        if not path.is_file():
+            return False
+        try:
+            rec, _body = parse_record(path)
+        except ValueError:
+            continue
+        for field, prefix in _HANDOFF_JOIN_FIELDS:
+            for key in _refs(rec.get(field), prefix):
+                target = _citation_path(root, prefix, key)
+                if target is None or target.resolve() not in wanted:
+                    return False
+    return saw_handoff
+
+
+def _drop_partial_false_findings(store: Store) -> None:
+    """Drop subset findings that are artifacts of not loading the whole store.
+
+    A named handoff join is in ``store.records``, so a real dangling ref
+    still stands. A workstream citation whose file exists but was not named
+    must not become ``dangling-ref``. ``uncited-discovery`` counts every
+    citation in the store; the named subset cannot decide it, and unscoped
+    ``validate`` still does.
+    """
+    kept: list[Problem] = []
+    for problem in store.problems:
+        if problem.rule == "uncited-discovery":
+            continue
+        if problem.rule == "dangling-ref":
+            match = _DANGLING_REF_RE.search(problem.message)
+            if match and _cited_record_exists(store.root, match.group(1), match.group(2)):
+                continue
+        kept.append(problem)
+    store.problems = kept
+
+
+def _read_outside_workstream_dependencies(store: Store) -> None:
+    """Parse workstream files a named ``depends_on`` reaches, and follow them.
+
+    This read does not walk the store and does not call
+    :func:`load_store`. A cycle that leaves ``--paths`` is invisible unless
+    each cited workstream file is opened and its ``depends_on`` edges join
+    the graph. One file per key, at ``workstreams/WS-<KEY>.md`` only. The
+    extra records are not counted, and their schema findings are not
+    recorded: this invocation did not name them.
+    """
+    named = {ident[3:] for ident in store.records if ident.startswith("WS/")}
+    pending = [
+        dep
+        for ident, rec in list(store.records.items())
+        if ident.startswith("WS/")
+        for dep in _refs(rec.get("depends_on"), "WS")
+        if dep not in named
+    ]
+    seen = set(named)
+    while pending:
+        key = pending.pop()
+        if key in seen:
+            continue
+        seen.add(key)
+        if not KEY_RE.match(key):
+            continue
+        path = _citation_path(store.root, "WS", key)
+        if path is None or not path.is_file():
+            continue
+        try:
+            rec, body = parse_record(path)
+        except ValueError:
+            continue
+        if rec.get("key") != key:
+            continue
+        rec["_body"] = body
+        ident = f"WS/{key}"
+        if ident in store.records:
+            continue
+        store.records[ident] = rec
+        store.paths[ident] = path
+        pending.extend(
+            dep for dep in _refs(rec.get("depends_on"), "WS") if dep not in seen
+        )
+
+
+def _outside_decision(path: Path) -> tuple[str, dict[str, Any]] | None:
+    """A decision file worth joining, or None. Schema findings are not kept.
+
+    The graph key is the record's own ``key``, the same index
+    :func:`load_store` uses. A stem other than ``DEC-<key>`` is still
+    joined: the full store keeps that record and reports
+    ``filename-mismatch`` beside it. This read skips that schema finding
+    and keeps the edge. A name that does not start with ``DEC-`` is not
+    indexed by the full store either.
+    """
+    try:
+        rec, body = parse_record(path)
+    except ValueError:
+        return None
+    key = rec.get("key")
+    if not isinstance(key, str) or not KEY_RE.match(key):
+        return None
+    if not path.name.startswith("DEC-"):
+        return None
+    rec["_body"] = body
+    return key, rec
+
+
+def _read_outside_decision_supersession(store: Store) -> None:
+    """Parse decisions that share a supersession edge with a named decision.
+
+    Outgoing ``supersedes`` / ``superseded_by`` open ``decisions/DEC-<KEY>.md``
+    when that file's own key is KEY. The unreciprocated finding sits on the
+    named record, and the ``supersedes`` list that produces it lives on a
+    file the named record does not cite, so ``decisions/DEC-*.md`` is listed
+    once. A file is kept when that list or ``superseded_by`` names a named
+    decision, or when its own key is one a named decision cites. The key is
+    the record id, not the stem. Extra records are not counted and their
+    schema findings are not recorded. Does not call :func:`load_store`.
+    """
+    named = {ident[4:] for ident in store.records if ident.startswith("DEC/")}
+    if not named:
+        return
+    cited_by_named: set[str] = set()
+    for key in named:
+        rec = store.records.get(f"DEC/{key}")
+        if rec is None:
+            continue
+        for field in ("supersedes", "superseded_by"):
+            cited_by_named.update(_refs(rec.get(field), "DEC"))
+
+    def _keep(path: Path, rec_key: str, rec: dict[str, Any]) -> None:
+        ident = f"DEC/{rec_key}"
+        if ident in store.records:
+            return
+        store.records[ident] = rec
+        store.paths[ident] = path
+
+    for key in list(named):
+        rec = store.records.get(f"DEC/{key}")
+        if rec is None:
+            continue
+        for field in ("supersedes", "superseded_by"):
+            for other in _refs(rec.get(field), "DEC"):
+                if not KEY_RE.match(other) or f"DEC/{other}" in store.records:
+                    continue
+                path = _citation_path(store.root, "DEC", other)
+                if path is None or not path.is_file():
+                    continue
+                parsed = _outside_decision(path)
+                if parsed is None:
+                    continue
+                other_key, other_rec = parsed
+                # The conventional path is this citation only when its content
+                # key agrees. A mismatched stem is joined from the directory
+                # pass below, under the record's own key.
+                if other_key != other:
+                    continue
+                _keep(path, other_key, other_rec)
+
+    folder = store.root / "decisions"
+    if not folder.is_dir():
+        return
+    known = {path.resolve() for path in store.paths.values()}
+    for path in sorted(folder.glob("DEC-*.md")):
+        if path.resolve() in known:
+            continue
+        parsed = _outside_decision(path)
+        if parsed is None:
+            continue
+        other_key, other_rec = parsed
+        cites = set(_refs(other_rec.get("supersedes"), "DEC"))
+        cites.update(_refs(other_rec.get("superseded_by"), "DEC"))
+        if cites.isdisjoint(named) and other_key not in cited_by_named:
+            continue
+        _keep(path, other_key, other_rec)
+        known.add(path.resolve())
+
+
+def _report_reached_outside_cycles(store: Store, path_args: list[str]) -> None:
+    """Report an outside-only ``depends_on`` cycle on the named workstream that reaches it.
+
+    :func:`check_references` attributes ``workstream-cycle`` to cycle members.
+    When every member sits outside ``--paths``, the path filter would drop
+    the finding. The named workstream whose edges reached that cycle still
+    fails. A cycle that already lands on a named path is left as written.
+    :func:`_load_named_store` calls this for a covered set.
+    :func:`_named_record_problems` calls it when ``--paths`` loaded the whole
+    store. A second call sees the finding already on a named path and returns.
+    """
+    named_paths = {Path(raw).resolve() for raw in path_args}
+    cycles = [problem for problem in store.problems if problem.rule == "workstream-cycle"]
+    if not cycles or any(problem.path.resolve() in named_paths for problem in cycles):
+        return
+    member_keys = {
+        problem.path.stem[3:]
+        for problem in cycles
+        if problem.path.stem.startswith("WS-") and len(problem.path.stem) > 3
+    }
+    if not member_keys:
+        return
+    graph = {
+        ident[3:]: _refs(rec.get("depends_on"), "WS")
+        for ident, rec in store.records.items()
+        if ident.startswith("WS/")
+    }
+
+    def _reaches(start: str) -> bool:
+        seen: set[str] = set()
+        pending = list(graph.get(start, ()))
+        while pending:
+            key = pending.pop()
+            if key in seen:
+                continue
+            seen.add(key)
+            if key in member_keys:
+                return True
+            pending.extend(graph.get(key, ()))
+        return False
+
+    message = cycles[0].message
+    for ident in list(store.records):
+        if not ident.startswith("WS/"):
+            continue
+        path = store.paths.get(ident)
+        if path is None or path.resolve() not in named_paths:
+            continue
+        if not _reaches(ident[3:]):
+            continue
+        store.problems.append(Problem(path, "workstream-cycle", message, hard=True))
+
+
+def _file_outbound_unreciprocated(store: Store, path_args: list[str]) -> None:
+    """File unreciprocated-supersession on the named decision that lists supersedes.
+
+    :func:`check_references` attributes the finding to the old record. When
+    that file is outside ``--paths``, the path filter would drop it. The
+    message names the decision whose ``supersedes`` list produced the
+    finding; a named path for that decision still fails. A finding already
+    on a named path is left as written. Calling this twice does not duplicate
+    it. Unscoped ``validate`` does not call this, so a full-store run keeps
+    the finding on the old record.
+    """
+    named_paths = {Path(raw).resolve() for raw in path_args}
+    present = {
+        (problem.path.resolve(), problem.message)
+        for problem in store.problems
+        if problem.rule == "unreciprocated-supersession"
+    }
+    copies: list[tuple[Path, str]] = []
+    for problem in store.problems:
+        if problem.rule != "unreciprocated-supersession":
+            continue
+        if problem.path.resolve() in named_paths:
+            continue
+        match = _UNRECIPROCATED_CITER_RE.search(problem.message)
+        if match is None:
+            continue
+        citer = match.group(1)
+        path = store.paths.get(f"DEC/{citer}")
+        if path is None or path.resolve() not in named_paths:
+            continue
+        rec = store.records.get(f"DEC/{citer}")
+        if rec is None or not _refs(rec.get("supersedes"), "DEC"):
+            continue
+        signature = (path.resolve(), problem.message)
+        if signature in present:
+            continue
+        present.add(signature)
+        copies.append((path, problem.message))
+    for path, message in copies:
+        store.problems.append(
+            Problem(path, "unreciprocated-supersession", message, hard=True)
+        )
+
+
+def _load_named_store(
+    root: Path, path_args: list[str], programs: set[str] | None,
+) -> Store:
+    """Parse and check only ``path_args``. Never calls :func:`load_store`.
+
+    Per-file checks match ``load_store``. Workstream files reached by
+    ``depends_on``, and decision files on a supersession edge with a named
+    decision, are parsed too. A cycle or an unreciprocated / one-sided
+    supersession that leaves this set is still reported on the named
+    record. Those extra records are not counted. ``uncited-discovery`` is
+    dropped here: a subset cannot see every citation.
+    """
+    store = Store(root)
+    seen: set[Path] = set()
+    for raw in path_args:
+        path = Path(raw)
+        resolved = path.resolve()
+        if resolved in seen:
+            continue
+        seen.add(resolved)
+        if not path.is_file():
+            continue
+        spec = _spec_for(path)
+        if spec is None:
+            continue
+        folder, prefix, fileprefix, checker = spec
+        if fileprefix and not path.name.startswith(fileprefix):
+            store.problems.append(
+                Problem(path, "bad-filename",
+                        f"{folder}/ files must start with '{fileprefix}'", hard=True)
+            )
+            continue
+        try:
+            rec, body = parse_record(path)
+        except ValueError as exc:
+            store.problems.append(Problem(path, "unparseable", str(exc), hard=True))
+            continue
+        rec["_body"] = body
+        store.counts[folder] += 1
+        key = path.stem if prefix == "HND" else rec.get("key")
+        if isinstance(key, str) and key:
+            ident = f"{prefix}/{key}"
+            if ident in store.records:
+                store.problems.append(
+                    Problem(path, "duplicate-key",
+                            f"key {key!r} already defined at {store.paths[ident]}",
+                            hard=True)
+                )
+            else:
+                store.records[ident] = rec
+                store.paths[ident] = path
+        store.problems.extend(
+            checker(rec, path, programs) if checker is check_workstream
+            else checker(rec, path)
+        )
+    # Knowledge plane only: these edges name records. They do not dispatch,
+    # schedule, or decide whether a workstream may run.
+    _read_outside_workstream_dependencies(store)
+    _read_outside_decision_supersession(store)
+    store.problems.extend(check_references(store.records, store.paths))
+    _drop_partial_false_findings(store)
+    _report_reached_outside_cycles(store, path_args)
+    _file_outbound_unreciprocated(store, path_args)
+    return store
+
+
+def _named_record_problems(
+    store: Store, path_args: list[str], programs: set[str] | None,
+) -> tuple[list[Problem], dict[str, int]]:
+    """Schema findings for the named files only.
+
+    The caller passes either the whole store or, when ``--paths`` already
+    holds every handoff join, only those files. Findings on every other
+    file stay out of this invocation: a stale or malformed sibling must
+    not fail a path-scoped check. Before that filter, an outside-only
+    workstream cycle is copied onto the named workstream that reaches it.
+    An unreciprocated supersession was already copied onto the named
+    decision by :func:`_load_named_store` when the set was covered; a path
+    list that loaded the whole store keeps that finding on the old record.
+    """
+    counts = {"workstreams": 0, "decisions": 0, "discoveries": 0, "handoffs": 0}
+    wanted = [Path(raw).resolve() for raw in path_args]
+    wanted_set = set(wanted)
+    _report_reached_outside_cycles(store, path_args)
+    problems = [problem for problem in store.problems if problem.path.resolve() in wanted_set]
+    in_store = {path.resolve() for path in store.paths.values()}
+    known = set(in_store)
+    known.update(problem.path.resolve() for problem in store.problems)
+    for resolved in wanted:
+        folder = _folder_of(resolved)
+        if resolved in in_store:
+            if folder:
+                counts[folder] += 1
+            continue
+        if resolved in known:
+            continue
+        extra = _schema_problems_outside_store(resolved, store, programs)
+        problems.extend(extra)
+        if folder and not any(
+            problem.rule in {"unparseable", "bad-filename", "unreadable-path"}
+            for problem in extra
+        ):
+            counts[folder] += 1
+    return problems, counts
+
+
+def _blocking(problems: list[Problem], *, strict: bool) -> bool:
+    for problem in problems:
+        if problem.hard:
+            return True
+        if strict and problem.rule not in _ADVISORY_RULES:
+            return True
+    return False
+
+
+def _emit_draft(text: str) -> int:
+    sys.stdout.write(text)
+    return 0
+
+
+def cmd_draft_handoff(args: argparse.Namespace) -> int:
+    return _emit_draft(draft_handoff(_load_seat_json(Path(args.source))))
+
+
+def cmd_draft_ws_append(args: argparse.Namespace) -> int:
+    return _emit_draft(draft_ws_append(_load_seat_json(Path(args.source))))
+
+
+def cmd_draft_decision(args: argparse.Namespace) -> int:
+    return _emit_draft(draft_decision(_load_seat_json(Path(args.source))))
+
+
+def cmd_draft_discovery(args: argparse.Namespace) -> int:
+    return _emit_draft(draft_discovery(_load_seat_json(Path(args.source))))
+
+
 def cmd_validate(args: argparse.Namespace) -> int:
+    strict = bool(getattr(args, "strict", False))
+    snapshot_arg = getattr(args, "snapshot", None)
+    path_args = list(getattr(args, "paths", None) or [])
+    # A strict run with no snapshot must not guess and must not scan. Same for
+    # a strict run with no paths: judging the whole store would turn one moved
+    # carrier head into a fleet failure.
+    if strict and not snapshot_arg:
+        print(
+            "agentos: --strict requires --snapshot <json>; "
+            "refusing to scan without a seat snapshot",
+            file=sys.stderr,
+        )
+        return 2
+    if strict and not path_args:
+        print(
+            "agentos: --strict requires --paths; refusing to judge the whole store",
+            file=sys.stderr,
+        )
+        return 2
+
+    snapshot_rows: list[dict[str, Any]] | None = None
+    if snapshot_arg:
+        snapshot_rows = _load_snapshot_rows(Path(snapshot_arg))
+
     store_root = Path(args.root) if args.root else _DEFAULT_STORE
     if not store_root.exists():
         # Fail-OPEN: an absent store is a not-yet-adopted repo, not a broken one.
@@ -1370,9 +2703,21 @@ def cmd_validate(args: argparse.Namespace) -> int:
         print("::warning title=agentos::config/mastermind_programs.yml unreadable — "
               "program keys not validated (fail-open join)", flush=True)
 
-    store = load_store(store_root, programs)
-    problems = store.problems
-    counts = store.counts
+    # Knowledge plane only. Skipping the directory walk does not dispatch,
+    # rank, or decide whether a record's work may run.
+    if path_args and _paths_cover_handoff_joins(store_root, path_args):
+        store = _load_named_store(store_root, path_args, programs)
+    else:
+        store = load_store(store_root, programs)
+    if path_args:
+        problems, counts = _named_record_problems(store, path_args, programs)
+    else:
+        problems = store.problems
+        counts = store.counts
+
+    if strict and snapshot_rows is not None:
+        for raw in path_args:
+            problems.extend(_currency_problems(Path(raw), snapshot_rows))
 
     hard = [p for p in problems if p.hard]
     warn = [p for p in problems if not p.hard]
@@ -1383,6 +2728,16 @@ def cmd_validate(args: argparse.Namespace) -> int:
     for problem in hard:
         print(f"::error title=agentos-{problem.rule}::{problem.render(_ROOT)}", flush=True)
 
+    if snapshot_arg:
+        if strict:
+            print(f"snapshot: {len(snapshot_rows or [])} prs", flush=True)
+        else:
+            # Counts only. Pin mismatches are not applied and do not change the exit.
+            print(
+                f"snapshot: {len(snapshot_rows or [])} prs — counts only, not a failing gate",
+                flush=True,
+            )
+
     total = sum(counts.values())
     summary = (
         f"agentos: {total} records "
@@ -1391,7 +2746,7 @@ def cmd_validate(args: argparse.Namespace) -> int:
         f"{len(hard)} error(s), {len(warn)} warning(s)"
     )
     print(summary, flush=True)
-    return 1 if hard else 0
+    return 1 if _blocking(problems, strict=strict) else 0
 
 
 # ------------------------------------------------------- Phase 2: join inputs
@@ -4216,7 +5571,35 @@ def main(argv: list[str] | None = None) -> int:
     p_validate = sub.add_parser("validate", help="schema + referential integrity over agentos/")
     p_validate.add_argument("--root", help="store root (default: <repo>/agentos)")
     p_validate.add_argument("--quiet", action="store_true", help="suppress warnings")
+    p_validate.add_argument(
+        "--strict", action="store_true",
+        help="with --snapshot and --paths, fail on schema warnings and compare pins",
+    )
+    p_validate.add_argument(
+        "--snapshot",
+        help="seat JSON; with --strict the pin source, without it a count report",
+    )
+    p_validate.add_argument(
+        "--paths", nargs="+",
+        help=(
+            "records to judge; omit to validate the whole store. "
+            "A subset does not report uncited-discovery: that rule counts "
+            "citations across every record, and unscoped validate still reports it"
+        ),
+    )
     p_validate.set_defaults(func=cmd_validate)
+
+    def _add_draft(name: str, func: Callable[..., int], help_text: str) -> None:
+        draft = sub.add_parser(name, help=help_text)
+        draft.add_argument("--from", dest="source", required=True, help="seat JSON path")
+        draft.set_defaults(func=func)
+
+    _add_draft("draft-handoff", cmd_draft_handoff, "print a handoff skeleton to stdout")
+    _add_draft("draft-ws-append", cmd_draft_ws_append, "print a workstream bullet to stdout")
+    _add_draft("draft-decision", cmd_draft_decision, "print a decision skeleton to stdout")
+    _add_draft("draft-dec", cmd_draft_decision, "print a decision skeleton to stdout")
+    _add_draft("draft-discovery", cmd_draft_discovery, "print a discovery skeleton to stdout")
+    _add_draft("draft-dsc", cmd_draft_discovery, "print a discovery skeleton to stdout")
 
     p_status = sub.add_parser("status", help="materialize agent_os_state.v1 (Phase 2)")
     p_status.add_argument("--root", help="store root (default: <repo>/agentos)")
