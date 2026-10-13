@@ -7,19 +7,20 @@ or is recorded as a counterexample — against shipped behaviour, not against a
 mock. This file owns the PRESENTER and ``level_break`` only; observer
 invariants live in tests/test_pullback_observation_invariants.py.
 
-Three properties fail on real behaviour and are kept as ``xfail(strict=True)``
-counterexamples rather than weakened or dropped:
+Three properties were originally recorded as ``xfail(strict=True)``
+counterexamples; adjudication kept the product behaviour and moved the
+wording, so each is now pinned positively against shipped code:
 
-* P2's ``uncovered`` implication — the coherence gate also refuses a window
-  whose drawn path would contradict the measured episode low, so ``uncovered``
-  is not exclusively a cap-aged peak (the repo's own US adapter tests pin that
-  gate, so the packet's wording, not the presenter, is what moves).
-* P4's whole-string scan — every drawn chart carries the standard SVG
-  attribute ``preserveAspectRatio="none"`` from the shared renderer; the live
-  scan pins that attribute as the only allowed occurrence of ``none``.
-* P7's ``active`` half — the presenter never reads the observation's
-  ``active`` field and deliberately draws pre-episode (monitoring/developing)
-  windows; that is pinned behaviour, flagged here for adjudication.
+* P2 — ``uncovered`` is exactly the presenter's own coverage rule: it fires
+  iff the retained peak has aged out of the capped drawn path, or the drawn
+  window would contradict the measured episode low (``episode_window``'s
+  coherence gate, unit-pinned by tests/test_pullback_depth_mutants.py).
+* P4 — every drawn chart carries the shared renderer's standard SVG stretch
+  attribute ``preserveAspectRatio="none"`` (lib/illus.py); the scan strips
+  exactly that attribute and requires no leaked token to remain.
+* P7 — the presenter draws pre-episode (monitoring/developing) windows from
+  the reference high, and the rendered popup labels them by their own phase
+  ("Pullback monitor" / "回撤观察"), never with an active-phase verdict.
 """
 from __future__ import annotations
 
@@ -34,6 +35,7 @@ import pytest
 from lib.pullback_depth import (
     MIN_CHART_POINTS,
     OBSERVATION_SCHEMA,
+    PATH_TOLERANCE_PP,
     level_break,
     present,
 )
@@ -323,22 +325,69 @@ def test_p2_withheld_chart_names_a_reason_and_draws_nothing(sweep):
                 assert reason == "uncovered"
 
 
-@pytest.mark.xfail(strict=True, reason=(
-    "Counterexample: closes 101.0, 97.0, 99.5, 98.5, 98.2 after a flat 64-close "
-    "run observe to an 'underway' episode whose retained peak is only 5 closes "
-    "old, yet present() withholds the chart as 'uncovered'. The deeper 97.0 dip "
-    "failed confirmation, so the episode low is 98.2 (-2.77%) while the owner's "
-    "price path still draws the 97.0 close (-3.96%); episode_window refuses a "
-    "window that would contradict the measured low. 'uncovered' therefore also "
-    "fires for in-window figure contradictions, not only when the retained peak "
-    "is older than PATH_MAX_CLOSES closes — the coherence gate itself is pinned "
-    "by tests/test_us_pullback_observation_adapter.py, so the packet's "
-    "biconditional wording is what cannot hold."))
-def test_p2_uncovered_implies_a_peak_older_than_the_cap():
+def _window_contradicts_measured_low(case):
+    """Case (b) of the coverage rule, restated from the case's own facts.
+
+    ``episode_window`` slices the owner's capped path at the retained peak and
+    refuses the window when any drawn close sits below the measured episode
+    low by more than the presenter's rounding tolerance — a deeper dip that
+    failed confirmation must not be drawn under figures that exclude it.
+    Reads the observation's own rounded ``price_path`` values, the same list
+    the presenter slices, so the comparison has no re-derivation drift.
+    """
+    obs = case["obs"]
+    low, low_session = obs.get("low_close"), obs.get("low_session")
+    if not case["peak_retained"] or low is None or low_session is None:
+        return False  # no drawn window, or no measured episode low to contradict
+    dates = obs["price_path"]["dates"]
+    drawn = obs["price_path"]["vals"][dates.index(obs["peak_session"]):]
+    low_pct = 100.0 * (low / obs["peak_close"] - 1.0)
+    return min(drawn) < low_pct - PATH_TOLERANCE_PP
+
+
+def test_p2_uncovered_iff_the_peak_ages_out_or_the_window_hides_a_deeper_low(sweep):
+    """The exact coverage rule, both directions, over every qualified case.
+
+    ``uncovered`` fires iff (a) the retained peak is older than the drawn
+    path's close cap, or (b) the drawn window would contradict the measured
+    episode low. ``short`` remains the young-window verdict; a contradicted
+    window is refused outright, never drawn short.
+    """
+    aged = contradicted = uncovered = 0
+    for case in sweep:
+        if not case["qualified"]:
+            continue  # an unqualified read goes unavailable, never uncovered
+        view = case["view"]
+        by_age = case["n_since_peak"] > PATH_MAX_CLOSES  # (a): peak older than the cap
+        by_contradiction = _window_contradicts_measured_low(case)  # (b): refused gate
+        aged += by_age
+        contradicted += by_contradiction
+        assert (view["detail_withheld"] == "uncovered") is (by_age or by_contradiction)
+        if by_age or by_contradiction:
+            uncovered += 1
+            assert view["detail_chart_html"] in ("", None)
+            assert view["detail_path"] is None
+    assert aged >= 1 and contradicted >= 1 and uncovered >= 1
+
+
+def test_p2_the_recorded_counterexample_is_uncovered_by_a_contradicted_window():
+    """The original counterexample, now stated as the rule it demonstrates.
+
+    closes 101.0, 97.0, 99.5, 98.5, 98.2 after a flat 64-close run observe to
+    an 'underway' episode whose retained peak is only 5 closes old. The deeper
+    97.0 dip failed confirmation, so the measured episode low is 98.2 (-2.77%)
+    while the owner's price path still draws the 97.0 close (-3.96%): the
+    coherence gate refuses the window, so the chart is withheld as
+    'uncovered' — figure contradiction, not cap age.
+    """
     case = _observe_case(rows_for([101.0, 97.0, 99.5, 98.5, 98.2]))
-    view = case["view"]
+    obs, view = case["obs"], case["view"]
+    assert obs["phase"] == "underway" and case["peak_retained"]
+    assert case["n_since_peak"] <= PATH_MAX_CLOSES  # NOT uncovered by age
+    assert _window_contradicts_measured_low(case)
     assert view["detail_withheld"] == "uncovered"
-    assert case["n_since_peak"] > PATH_MAX_CLOSES
+    assert view["detail_chart_html"] in ("", None)
+    assert view["detail_path"] is None
 
 
 # --------------------------------------------------------------------------- #
@@ -381,18 +430,24 @@ def test_p4_rendered_html_and_path_leak_no_computed_garbage(sweep):
             assert re.search(r'class="ilx-path[^"]*" d="([^"]+)"', chart)
 
 
-@pytest.mark.xfail(strict=True, reason=(
-    "Counterexample: any drawn chart. lib/illus.py emits the standard SVG "
-    'attribute preserveAspectRatio="none" on every figure, so a case-insensitive '
-    'whole-string scan always matches "none" on structural stretch markup, not '
-    "on a leaked value. The live P4 property pins that attribute as the only "
-    "allowed occurrence instead of scanning it."))
-def test_p4_whole_rendered_html_scan_without_markup_allowance():
-    case = _observe_case(rows_for([101.0] + [96.0 - 0.01 * j for j in range(30)]))
-    chart = case["view"]["detail_chart_html"]
-    assert chart
-    for token in LEAKED_TOKENS:
-        assert token not in chart.lower()
+def test_p4_the_sanctioned_svg_stretch_attribute_is_the_only_leak_match(sweep):
+    """The whole-string scan, with the renderer's own markup allowed exactly.
+
+    lib/illus.py stamps the standard SVG stretch attribute
+    ``preserveAspectRatio="none"`` on every drawn figure, so the honest scan
+    strips exactly that attribute — case-sensitively, in full — and then
+    requires no leaked token to remain. Every chart must carry the attribute,
+    so the allowance can never silently turn the scan into a no-op.
+    """
+    checked = 0
+    for case in sweep:
+        chart = case["view"]["detail_chart_html"]
+        if not chart:
+            continue
+        checked += 1
+        assert chart.count(SANCTIONED_NONE_ATTR) >= 1  # the strip is not vacuous
+        _assert_no_leak(chart)
+    assert checked >= 10
 
 
 # --------------------------------------------------------------------------- #
@@ -447,21 +502,31 @@ def test_p7_unavailable_observations_never_produce_a_chart_or_a_path(sweep):
         assert view["detail_withheld"] is None
 
 
-@pytest.mark.xfail(strict=True, reason=(
-    "Counterexample: closes of 100.0 x62 then 99.0, 98.0, 99.5 (weekday "
-    "calendar, 65 records) observe to phase 'monitoring' with active False and "
-    "a coherent 4-close window from the reference high; present() draws the "
-    "chart (detail_path carries 4 dates) for this inactive observation. The "
-    "presenter never reads the observation's 'active' field, and drawing "
-    "pre-episode windows is pinned by "
-    "tests/test_us_pullback_observation_adapter.py::"
-    "test_pre_episode_observation_still_draws_from_the_reference_high, so this "
-    "is likely intended product behaviour rather than a presenter defect; "
-    "recorded here verbatim for adjudication."))
-def test_p7_inactive_observations_never_produce_a_chart_or_a_path():
+def test_p7_pre_episode_windows_draw_from_the_reference_high_and_stay_monitoring():
+    """Pre-episode reads are drawn and labelled by their own phase.
+
+    The presenter never reads the observation's ``active`` field: a
+    monitoring/developing window (no measured low yet) still draws from the
+    reference high — pinned by tests/test_us_pullback_observation_adapter.py::
+    test_pre_episode_observation_still_draws_from_the_reference_high. Rendering
+    the real fragment for that inactive observation must show the monitoring
+    verdict ("Pullback monitor" / "回撤观察"), never an active-phase one
+    ("Pullback underway" / "回撤进行中").
+    """
     case = _observe_case(rows_for([100.0] * 62 + [99.0, 98.0, 99.5]))
     obs, view = case["obs"], case["view"]
     assert obs["phase"] == "monitoring" and obs["active"] is False
     assert view["phase"] == "monitoring"
-    assert view["detail_chart_html"] in ("", None)
-    assert not view["detail_path"]
+    assert len(view["detail_path"]["dates"]) == 4  # peak + the three tail closes
+    assert view["detail_withheld"] is None
+
+    # Render the real fragment. The fragment qualifies on the two adapter-only
+    # fields the core observer does not mint (market label, valid_until); stamp
+    # them on a copy the way lib.us_pullback_observation.snapshot does.
+    from tests.test_risk_radar_pullback_depth_template import render
+    stamped = dict(obs, market="us", valid_until="2026-10-13T21:00:00+00:00")
+    html = render(present(stamped, market="us", aria_en=ARIA_EN, aria_zh=ARIA_ZH), "us")
+    assert 'data-pb-phase="monitoring"' in html
+    assert "Pullback monitor" in html and "回撤观察" in html
+    assert "Pullback underway" not in html and "回撤进行中" not in html
+    assert '<div class="rrp-chart"' in html  # the pre-episode window is drawn
