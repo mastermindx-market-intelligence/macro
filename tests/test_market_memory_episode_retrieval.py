@@ -196,3 +196,10 @@ def test_method_identity_binds_exact_source_and_refuses_changed_dependency(monke
     monkeypatch.setitem(retrieval._IMPORTED_DEPENDENCY_SHA256, "P1", "f" * 64)
     with pytest.raises(retrieval.EpisodeRetrievalError, match="dependency_source_mismatch"):
         METHOD.disclosure()
+
+
+
+def test_registered_P1_dependency_reference_tracks_subject_permission_repair():
+    from pathlib import Path
+    from hashlib import sha256
+    assert METHOD.disclosure()["P1_source_sha256"] == sha256(Path(features.__file__).read_bytes()).hexdigest()

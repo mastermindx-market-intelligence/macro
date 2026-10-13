@@ -254,3 +254,72 @@ def test_projection_bound_is_enforced(owner, monkeypatch):
 def test_outcome_or_arbitrary_projection_arguments_are_not_inputs(owner):
     with pytest.raises(TypeError):
         load(owner, outcomes={"win": True})
+
+
+
+def test_direct_api_actual_subject_denial_precedes_payload(owner, monkeypatch):
+    _, stored, reader, generation = owner
+    actual = stored.capture_receipt["subject"]["subject_id"]
+    class DeniedActual(Policy):
+        def check(self, action, resource):
+            if resource.get("subject_id") == actual:
+                raise PermissionError("actual capture subject denied")
+            return super().check(action, resource)
+    def forbidden(*args, **kwargs):
+        pytest.fail("actual-subject payload before permission")
+    monkeypatch.setattr(trusted, "_load_stored_with_feature", forbidden)
+    with pytest.raises(features.EpisodeFeatureAccessError):
+        load(owner, DeniedActual(), subject_id="mmsecurity_" + "f" * 64)
+
+
+def test_direct_api_metadata_requires_distinct_query_bound_permission(owner, monkeypatch):
+    def forbidden(*args, **kwargs):
+        pytest.fail("receipt metadata before permission")
+    monkeypatch.setattr(trusted.TrustedFileAsKnownAtReader, "read_pinned_capture_receipt", forbidden)
+    with pytest.raises(features.EpisodeFeatureAccessError):
+        load(owner, Policy({"read_retained_macro_capture_metadata"}))
+
+
+@pytest.mark.parametrize("cached", [False, True])
+def test_direct_api_source_receipt_rights_precede_payload_and_disclosure(owner, monkeypatch, cached):
+    source = owner[1].capture_receipt["source_receipt_ids"][0]
+    cap = load(owner) if cached else None
+    class DeniedSource(Policy):
+        def check(self, action, resource):
+            if source in resource.get("source_receipt_ids", []):
+                raise PermissionError("original source receipt denied")
+            return super().check(action, resource)
+    def forbidden(*args, **kwargs):
+        pytest.fail("source-denied packet/feature read")
+    monkeypatch.setattr(trusted, "_load_stored_with_feature", forbidden)
+    with pytest.raises(features.EpisodeFeatureAccessError):
+        if cached:
+            features.disclose_episode_features(cap, policy=DeniedSource())
+        else:
+            load(owner, DeniedSource())
+
+
+def test_direct_api_requested_subject_mismatch_refuses_before_payload(owner, monkeypatch):
+    def forbidden(*args, **kwargs):
+        pytest.fail("mismatched subject payload was read")
+    monkeypatch.setattr(trusted, "_load_stored_with_feature", forbidden)
+    with pytest.raises(features.EpisodeFeatureSourceError, match="identity_or_allowlist_mismatch"):
+        load(owner, subject_id="mmsecurity_" + "f" * 64)
+
+
+def test_current_feature_policy_resource_is_original_capture_bound(owner):
+    policy = Policy()
+    cap = load(owner, policy)
+    value = features.disclose_episode_features(cap, policy=policy, for_comparison=True)
+    receipt = owner[1].capture_receipt
+    for action, resource in policy.calls:
+        if action in ("disclose_retained_macro_feature", "compare_retained_macro_feature"):
+            assert resource["subject_id"] == receipt["subject"]["subject_id"]
+            assert resource["source_receipt_ids"] == receipt["source_receipt_ids"]
+            assert resource["capture_id"] == receipt["capture_id"]
+            assert resource["context_id"] == receipt["context_id"]
+            assert resource["packet_sha256"] == receipt["packet_sha256"]
+    metadata = next(resource for action, resource in policy.calls
+                    if action == "read_retained_macro_capture_metadata")
+    assert "subject_id" not in metadata
+    assert metadata["requested_subject_id"] == receipt["subject"]["subject_id"]

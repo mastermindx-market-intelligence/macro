@@ -126,3 +126,9 @@ loaded service/timer boundaries are verified installed. Its next natural source
 capture remains separate. UI #8694 is still on its original carrier and HOLD.
 The new lineage successor remains a separately reviewed implementation; no
 certificate publisher, store repair or source capture is activated by this change.
+
+## Direct P1 rights repair and UI production delta (2026-10-13)
+
+A new actual-owner discriminator materially invalidated the previous direct P1 read boundary: a requested subject could differ from the receipt's actual subject before payload load. The repaired P1 first authorizes receipt metadata, validates actual subject/source/capture identifiers, then checks those exact resources before payload and every cached disclosure/comparison. Initial red and repaired green retained. Repaired P1 SHA256 `c80ba0a39e42b62e3bd687301fdc974d18f935b584b7f0b462b753ccf044530a`; R2 dependency reference updated. Fixed descriptor, comparator arithmetic and authority flags are unchanged. Root reviewed the four-file diff and accepted the 91 actual combined cases (20.42s), including the payload trap. Hosted CI must bind this new commit; previous head3779 results do not satisfy it.
+
+Original UI PR #8694 merged normally as `20f8f675e6213883ee0f141fe383da1c8d6028c9`. Installed template/site and served-root JS match `68beea3ed9c7f494f74b6b8bf6429046d502f02f75245d649151bd284de18c78`; the real browser loaded the matching versioned asset. Real entitled AAPL→SPY→invalid→locale, empty→locale and NVDA recovery/locale checks passed. Actual 401/auth callback, signout and naturally ordered late-response race proof remain open; no global signout performed. This does not close A06 or full-program acceptance.

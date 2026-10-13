@@ -44,7 +44,7 @@ class RetainedContextMethodSpec:
 
     def disclosure(self) -> dict:
         descriptor = features.fixed_comparison_descriptor()
-        if (_IMPORTED_DEPENDENCY_SHA256["P1"] != "6830f0e512e6569198c903ffe8b0f9a44b49ae371a12b0275267eca4cdac369b"
+        if (_IMPORTED_DEPENDENCY_SHA256["P1"] != "c80ba0a39e42b62e3bd687301fdc974d18f935b584b7f0b462b753ccf044530a"
                 or _IMPORTED_DEPENDENCY_SHA256["comparator"] != "b8f210124ecc0a6f8a8a4f222fb3053d7a6cf88f5c73210b7b5be34285b81a95"):
             raise EpisodeRetrievalError("registered_dependency_source_mismatch")
         value = {"method": descriptor["method"], "descriptor_id": descriptor["descriptor_id"],
@@ -52,7 +52,7 @@ class RetainedContextMethodSpec:
                  "grouping": cohort.GROUPING, "representative_before_quality_filter": True,
                  "purge_calendar_days": self.purge_calendar_days,
                  "embargo_calendar_days": self.embargo_calendar_days, "mode": self.mode,
-                 "P1_source_sha256": "6830f0e512e6569198c903ffe8b0f9a44b49ae371a12b0275267eca4cdac369b",
+                 "P1_source_sha256": "c80ba0a39e42b62e3bd687301fdc974d18f935b584b7f0b462b753ccf044530a",
                  "comparator_source_sha256": "b8f210124ecc0a6f8a8a4f222fb3053d7a6cf88f5c73210b7b5be34285b81a95",
                  "cohort_source_ref": cohort.source_identity(),
                  "retrieval_source_ref": {"module": "engine/neuralweb/market_memory_episode_retrieval.py",
