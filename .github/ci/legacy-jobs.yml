@@ -22783,6 +22783,82 @@ jobs:
           python -m pytest
           tests/test_group_linked_outsiders.py -q -rs
 
+  fif-saved-research-notifications:
+    # X2-n: the FIF saved-research notification producer (enqueue-only), its
+    # ownership guards, and the watchstore designated-list helper. A small
+    # first-class owner in the falsifier-tripwires shape so path-aware
+    # selection keeps the exact changed behavior lit: an edit to the producer,
+    # the runner, the alert-category enum, the watchlist store or the nightly
+    # step's own guards never ships dark. The designated-list suite shells
+    # node over the real templates/watchstore.js (the same idiom as the
+    # wri-risk-core watchstore steps, whose setup-node is copied here).
+    if: ${{ false }}  # executed inside ci-pack — NOT a disabled gate.
+    gate: code
+    # scope: exclusive — declared paths are the whole scope (no whole-tree
+    # fallback roots), so ordinary engine/scripts PRs do not select this job.
+    # The list is the job's derived import closure
+    # (scripts.run_ci_pack.inferred_as_if_not_exclusive) plus the two YAMLs
+    # the ownership guards parse; widening is always the safe direction.
+    scope: exclusive
+    paths:
+      - ".github/workflows/daily.yml"
+      - "collectors/edgar_forensics.py"
+      - "collectors/fundamental_forensics_acquisition.py"
+      - "collectors/fundamental_forensics_companyfacts.py"
+      - "collectors/sec_document_spine.py"
+      - "collectors/sec_filing_parser.py"
+      - "collectors/sec_request_pacer.py"
+      - "config/dag.yml"
+      - "config/fundamental_forensics_disclosure_diff.v1.json"
+      - "engine/__init__.py"
+      - "engine/fif_saved_research_notifications.py"
+      - "engine/fundamental_forensics/__init__.py"
+      - "engine/fundamental_forensics/detectors.py"
+      - "engine/fundamental_forensics/disclosure_diff.py"
+      - "engine/fundamental_forensics/filing_attestation.py"
+      - "engine/fundamental_forensics/filing_package.py"
+      - "engine/fundamental_forensics/ixbrl_extraction.py"
+      - "engine/fundamental_forensics/models.py"
+      - "engine/fundamental_forensics/normalize.py"
+      - "engine/fundamental_forensics/pipeline.py"
+      - "engine/fundamental_forensics/private_state.py"
+      - "engine/fundamental_forensics/sec_companyfacts.py"
+      - "engine/fundamental_forensics/sec_document_spine.py"
+      - "engine/fundamental_forensics/source_sync.py"
+      - "engine/research_vault/r2_store.py"
+      - "lib/__init__.py"
+      - "lib/config.py"
+      - "lib/user_prefs.py"
+      - "scripts/__init__.py"
+      - "scripts/run_fif_saved_research_notifications.py"
+      - "templates/watchlist.js"
+      - "templates/watchstore.js"
+      - "tests/test_fif_saved_research_notifications.py"
+      - "tests/test_fif_watchstore_designated_list_js.py"
+      - "tests/test_fif_x2_ownership_guards.py"
+      - "tests/test_watchstore_multilist_js.py"
+    timeout-minutes: 12
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: install minimal deps
+        # pyyaml: the ownership guards parse daily.yml + config/dag.yml. The
+        # producer and its suite are stdlib-only by design (no HTTP client at
+        # import; sockets blocked in an autouse fixture).
+        run: pip install pytest pyyaml
+      - name: fif saved-research producer — enqueue-only decisions + fail-soft IO (X2-n)
+        run: python -m pytest tests/test_fif_saved_research_notifications.py -q
+      - name: fif X2-n ownership guards — one step, no second scheduler, no DDL
+        run: python -m pytest tests/test_fif_x2_ownership_guards.py -q
+      - name: watchstore.js designated list — lazy create, unsubscribe, exact name (X2-n R2)
+        run: python -m pytest tests/test_fif_watchstore_designated_list_js.py -q
+
   falsifier-tripwires:
     # The stateful cycle-ontology falsifier engine was triggerable but its focused
     # regression suite was named by no CI command (#5194).  Keep this as a small
