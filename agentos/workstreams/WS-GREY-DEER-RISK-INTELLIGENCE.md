@@ -52,12 +52,14 @@ landmines:
   - "The CI control-plane program's operator grant does NOT extend to Grey Deer: never admin-merge a Grey Deer PR over red main on that precedent."
   - "site/riskdata/ sits under market-regime-risk's implementation roots in config/mastermind_programs.yml — Grey Deer owns only risk_envelope.json inside it; raw regime/market-state artifacts stay with market-regime-risk."
   - "Session worktrees are sparse: site/ and data/ writes require scripts/worktree_sparse.py opt-in before any GD-2+ build touches them."
+  - "The pullback forward log (data/grey_deer_pullback/forward_log*.jsonl, PR 9128) is a research-tier prospective test of the frozen grey_deer_pullback prereg, of the same kind as data/risk_radar/forward_log.jsonl. It records no hazard-episode transitions or reflex firings, so it is not the risk-episode store that DEC:RISK-EPISODES-USE-CHRONICLE-AND-REFLEXES forbids. Promoting any pullback output to authority routes its graded outcomes through QLedger/Evaluation OS under that decision; widening the log into episode lifecycle state is a Sol architecture act."
 do_not_redo:
   - "No universal fused risk score in scored/authority paths (see DEC:RISK-STATE-HAZARD-POLICY-SEPARATION; legacy engine/risk_state.py is frozen compatibility, not a template)."
   - "No new event store / forward ledger for risk episodes — Chronicle + Reflex Registry + QLedger own durable history (DEC:RISK-EPISODES-USE-CHRONICLE-AND-REFLEXES)."
   - "No Prophet rank/population mutation, ever — actionability sidecar only (DEC:PROPHET-RANK-PRESERVED-MARKET-ELIGIBILITY-SIDECAR)."
   - "No arming Portfolio brain/posture_decider.py as a shortcut; no LLM probability_rolldown in any authoritative consumer."
   - "No automatic held-position exits in v1 (DEC:AUTO-EXIT-NOT-IN-GREY-DEER-V1)."
+  - "Never re-run pullback stage-1 (PR 8938) or stage-1b (PR 9122) on real data, and never edit a blob-pinned prereg, manifest or results file after its freeze; corrections ship as dated addenda."
 waves:
   - id: GD-0A
     title: Durable program landing — freeze, workstream, 8 decisions, handoff, registry, system map
@@ -367,33 +369,69 @@ waves:
     depends_on: [GD-PB-T02]
   - id: GD-PB-W2
     title: Observed-move primitives (PIT, basis-correct, off the render path)
-    status: todo
+    status: done
+    pr: 8854
+    # squash 21088b534599.
     depends_on: [GD-PB-T02, GD-PB-T22]
   - id: GD-PB-W3
     title: Consumer qualification under the frozen prereg (PR 8721 read-only)
-    status: todo
+    status: done
+    pr: 8938
+    # squash 6a6f7b05c6bb: stage-1 frozen run, SPY-only, null; INC deviation logged. Never re-run on real data.
     depends_on: [GD-PB-W2, GD-PB-T03]
+  - id: GD-PB-W4-DOCS
+    title: Prospective lane design, G3 CN rights evidence, partial-day diagnosis, stage-1 red team
+    status: done
+    pr: 9082
+    # squash 6b4bb403e4f9.
+    depends_on: [GD-PB-W3]
+  - id: GD-PB-W4-GHB
+    title: Heartbeat flags opt-in ledgers that fall behind the expected NYSE session (G-HB)
+    status: in_progress
+    pr: 9070
+    # squash 8f25c9b54852; closes at the first nightly heartbeat state write after merge.
+    depends_on: [GD-PB-T03]
+  - id: GD-PB-W4-S1B
+    title: Stage-1 repairs, stage-1b pooled-panel runner, prereg v1.1 + manifest v1.1.0 frozen
+    status: done
+    pr: [9091, 9114]
+    # 9091 squash bb8da347eca1 (runner, prereg DRAFT); 9114 squash c36e57ec65b4 (freeze + pins).
+    depends_on: [GD-PB-W3]
+  - id: GD-PB-W4-S1B-RUN
+    title: Stage-1b frozen run on the 14-ETF panel (12 claims) plus red-team addendum
+    status: awaiting_ci
+    pr: 9122
+    # results 0 of 12 claims pass; Opus-class red team CHANGES_REQUIRED (F1-F7), answered by an addendum, never by editing results.
+    depends_on: [GD-PB-W4-S1B]
+  - id: GD-PB-W5
+    title: Prospective SPY pullback lane in the nightly (writer, grader, readiness floor, heartbeat, grading-closure audit)
+    status: awaiting_ci
+    pr: 9128
+    depends_on: [GD-PB-W4-DOCS, GD-PB-W4-S1B]
 next_action: >
-  W0 (PR 8785), O1/T02 (PR 8833, manifest v1.0.0) and O7/T03 (PR 8835, squash
-  f1ae1e0365fc; heartbeat stall marker clears only on a strictly newer asof) are
-  merged. O8/T22 froze research/grey_deer/PULLBACK_PREREGISTRATION_2026-10-11.md
-  (sha256 b50ab2430b345090..., full value in the GD-PB-T22 row) before any outcome on the
-  qualified Massive SPY sample was computed; it was audited read-only before
-  merge. T03 closes when the first trading-day daily run after merge writes
-  data/ci/ledger_heartbeat_state.json under the repaired rule (read it with
-  git show origin/main:data/ci/ledger_heartbeat_state.json). QLedger GH001 has
-  blocked the US nightly collection push since 10-10 and is routed to the
-  QLedger owner (PR 8042 is throughput, not size proof); until it publishes,
-  no prospective pullback outcome can be graded on main. Next: W2 observed-move
-  primitives (PIT, basis-correct, off the render path), then W3 executes the
-  frozen protocol once. P-active stays blocked until PR 8188 lands with
+  Read the first nightly after PR 9128 merges: data/grey_deer_pullback/forward_log.jsonl
+  must exist on main with SPY rows and the run must carry no
+  grey-deer-pullback-*-error annotation; then close GD-PB-T03 and GD-PB-W4-GHB from
+  git show origin/main:data/ci/ledger_heartbeat_state.json. State: W0 through W4 are
+  merged (PRs 8785, 8833, 8835, 8852, 8854, 8938, 9070, 9082, 9091, 9114). Both frozen
+  retrospective runs are null - stage-1 (PR 8938, SPY only) and stage-1b (PR 9122, 14-ETF
+  panel under prereg v1.1): 0 of 12 claims pass (h5 P-all rejected and FRAGILE, h10/h21
+  underpowered, every P-active cell blocked OBSERVER_NOT_ON_MAIN). Neither run is ever
+  repeated on real data; a new configuration is a new prereg revision with its own trial
+  budget. W5 (PR 9128) runs the frozen SPY lane prospectively in the nightly cl_gex band:
+  the writer issues to forward_log.jsonl, the grader writes forward_log_graded.jsonl,
+  refusals go to forward_log_refusals.jsonl, and the log is enrolled in
+  check_ledger_advance and audit_grading_closure. It is research tier, appends nothing to
+  data/trial_ledger.jsonl and holds no rank, size or gate authority. Grading starts only
+  once each horizon has elapsed; scripts/research/grey_deer_pullback_readiness.py reports
+  when the power floor can be met. P-active stays blocked until PR 8188 lands with
   byte-identical rules.
   The held 2026-10-08 incident note belongs to PR 8648 and is never written here.
   Operation risk-radar-pullback-20261009 under carrier key
   grey-deer-fable-orchestration-20261003-001 (ACK Slack 1791707775.860299);
   incumbents PR 8721 (live writer) and PR 8188 (HOLD-FOR-SOL) are read-only.
   Resumption file: research/grey_deer/GREY_DEER_CONTINUATION_HANDOFF_2026-10-11.md;
-  latest receipt: agentos/handoffs/GREY-DEER-RISK-INTELLIGENCE-2026-10-11-FABLE-W0.md.
+  latest receipt: agentos/handoffs/GREY-DEER-RISK-INTELLIGENCE-2026-10-13-OPUS-W5.md.
   GD-UI-RADAR-1 is live and DO_NOT_REDO (PR 7467); GD-UI-RADAR-2 keeps its own
   carrier; GD-3 accepted; GD-5A/B/C closed; GD-6/7/8/9/10 uncommissioned.
 
