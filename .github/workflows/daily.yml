@@ -4315,6 +4315,27 @@ jobs:
         # Fail-open: missing source → gaps[] + null block, always exits 0.
         # Output covered by 'git add data/' in 'commit engine outputs' below.
         run: python -m scripts.build_liquidity_plumbing || echo "::warning::build_liquidity_plumbing failed (non-fatal — last committed artifact stands)"
+      - name: Global liquidity transmission state (W-LIQ.1 producer, display-tier, non-fatal)
+        # The frozen v1 producer (#6296) had NO production caller: no workflow ran
+        # it, it was absent from config/dag.yml, and its only .github reference was
+        # the `paths:` filter of the pack-executed CI test lane
+        # `global-liquidity-transmission` (.github/ci/legacy-jobs.yml), which tests
+        # the producer and never publishes. The served state therefore sat at
+        # evidence_available_at 2026-08-28 after the 2026-09-04 manual regeneration
+        # (research/GLOBAL_LIQUIDITY_TRANSMISSION_LIVENESS_2026-10-13.md).
+        # Pure local reads, no network: data/fred/{BUSLOANS,WALCL,ECBASSETSW,
+        # JPNASSETS,DTWEXBGS,DFII10,BAMLH0A0HYM2} + yahoo EURUSD=X/USDJPY=X from
+        # the collect job; data/china_credit/tsf.parquet from the asia lane
+        # (asia-close.yml); data/regime/latest.json from this job (already
+        # consumed by the plumbing step above). Measured 2026-10-13 on the M2:
+        # 2.54 s wall, ~136 MiB peak RSS. Writes site/liquiditydata/
+        # global_liquidity_transmission.json + data/global_liquidity_transmission/
+        # {state_history.parquet,state_history_meta.json,factor_comparison_btc_4w.json};
+        # covered by 'git add data/ site/' in 'commit engine outputs' below.
+        # Display tier, validated=False; this step changes WHEN the producer runs,
+        # never its semantics. A failure leaves the last committed artifact, whose
+        # own evidence clock then ages it stale in every reader.
+        run: python -m scripts.build_global_liquidity_transmission || echo "::warning::build_global_liquidity_transmission failed (non-fatal — last committed artifact stands)"
       - name: Price Pressure lobe (DRL W1, display-tier, non-fatal)
         # Single-name residual shocks: the Dislocation & Recovery lobe's nightly
         # increment. Pure aggregation over committed stores, NO network calls.

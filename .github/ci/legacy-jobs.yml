@@ -13805,6 +13805,11 @@ jobs:
       - "tests/fixtures/global_liquidity_transmission_wliq1_window.json"
       - "tests/test_global_liquidity.py"
       - "tests/test_global_liquidity_transmission.py"
+      - "tests/test_global_liquidity_transmission_liveness_v2.py"
+      - ".github/workflows/daily.yml"
+      - "scripts/ci/daily_engine_commit_outputs.sh"
+      - "site/liquiditydata/global_liquidity_transmission.json"
+      - "engine/market_os/macro_workspaces/liquidity_central_banks.py"
     timeout-minutes: 8
     runs-on: ubuntu-latest
     steps:
@@ -13815,7 +13820,7 @@ jobs:
       - name: install state-producer test dependencies
         run: pip install pytest pandas numpy pyarrow pyyaml
       - name: global liquidity state producers — legacy parity and W-LIQ.1 contract
-        run: python -m pytest tests/test_global_liquidity.py tests/test_global_liquidity_transmission.py -q
+        run: python -m pytest tests/test_global_liquidity.py tests/test_global_liquidity_transmission.py tests/test_global_liquidity_transmission_liveness_v2.py -q
 
   regime-outlook-mapping:
     if: ${{ false }}  # executed inside ci-pack; keep the legacy status definition runner-free
