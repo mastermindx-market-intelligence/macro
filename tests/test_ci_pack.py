@@ -4895,7 +4895,7 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # reads both names with ast.literal_eval, so keep them plain module-level literals.
 PACKING_PROBES = (
     ("templates/index.html", 135, 5_800),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 134, 5_600),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 134, 5_604),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
     ("engine/prophet/plan_book.py", 130, 5_600),
 )
 # Twelve packs per shape was the pre-curation measurement.
@@ -5560,9 +5560,22 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     full-tree closure verification remains a hosted-CI responsibility.
     Shrinking the job would silently drop dependency-sensitive coverage.
     Accept only the one measured job
-    increment (129 -> 130), with zero padding and no weight/pack ceiling
-    changes. Full-closure curation can be considered separately only after
+    increment (129 -> 130), with zero padding and no plan_book weight/pack
+    ceiling changes. Full-closure curation can be considered separately only after
     a proven safe split of the existing guard and its imported source tree.
+
+    2026-10-13 (#9074 current-main integration at 5569baad64b80): the
+    previous 5,600-second build_free_content.py weight ceiling had already
+    been exceeded on that main snapshot: 134 jobs / 5,602 seconds / 10 packs.
+    The exact conflict-free merge tree 1c0681f39e66bad190cf1fbd42be65221b047bd4
+    measured 134 jobs / 5,604 seconds / 10 packs. The same admin-js-no-undef
+    job is selected in both; its weight rises 14 -> 16 because this PR adds
+    the workspace regression suite to the existing admin guard. No other
+    new selection or lost guard justifies weakening coverage. Rebase only
+    this weight ceiling to measured 5,604, without changing the job or pack
+    ceilings (134 jobs, 10 packs), and do not pretend the 5,602 inherited
+    baseline was healthy. Exact-current-head hosted checks and merge-queue
+    integration remain separate binding release gates.
     """
     rows = packing_probe_measurements(
         MANIFEST, PACKING_PROBES, max_packs=PACKING_PROBE_MAX_PACKS
