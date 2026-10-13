@@ -5,9 +5,9 @@ The only state this module returns is ``RESEARCH_HINT_UNVALIDATED``.
 ``research/finance``, and it does not mint a theme-graph id, a price, or a
 filing measurement.
 
-BNY stays symbol ``BNY`` with record id ``fin-research-bk-2025``. ``BK`` is
-not an alias. The other ten record ids are not transcribed in the finance
-design and are ``None`` here; ``None`` is not a preflight record id.
+Record ids are plain strings transcribed from the R12 preflight witness
+triples. BNY stays symbol ``BNY`` with record id ``fin-research-bk-2025``.
+``BK`` is not an alias. This module does not read the preflight file.
 """
 
 from __future__ import annotations
@@ -18,21 +18,21 @@ from typing import Any, Mapping
 
 _HINT_STATE = "RESEARCH_HINT_UNVALIDATED"
 
-# Symbol order is the finance design's roster. Only BNY's record_id was
-# transcribed (preflight symbol BNY, record_id fin-research-bk-2025).
-_RECORD_IDS: Mapping[str, str | None] = MappingProxyType(
+# Symbol order and record ids are the R12 preflight witness roster, stored
+# as plain strings. This module does not open the preflight file.
+_RECORD_IDS: Mapping[str, str] = MappingProxyType(
     {
-        "V": None,
-        "MA": None,
-        "FI": None,
-        "FIS": None,
-        "CME": None,
-        "ICE": None,
-        "NDAQ": None,
+        "V": "fin-research-v-2025",
+        "MA": "fin-research-ma-2025",
+        "FI": "fin-research-fi-2025",
+        "FIS": "fin-research-fis-2025",
+        "CME": "fin-research-cme-2025",
+        "ICE": "fin-research-ice-2025",
+        "NDAQ": "fin-research-ndaq-2025",
         "BNY": "fin-research-bk-2025",
-        "STT": None,
-        "SPGI": None,
-        "MCO": None,
+        "STT": "fin-research-stt-2025",
+        "SPGI": "fin-research-spgi-2025",
+        "MCO": "fin-research-mco-2025",
     }
 )
 

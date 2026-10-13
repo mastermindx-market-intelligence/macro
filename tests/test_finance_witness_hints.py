@@ -27,6 +27,34 @@ def test_bny_hint_stays_unvalidated() -> None:
         hint_binding("BK")
 
 
+# Plain strings transcribed from refs/grok/pr/7786 preflight witnesses
+# (FINANCE_R12_INTEGRATION_PREFLIGHT_V0_1_2026-09-24.json lines 266-317).
+# This test does not open that file. BNY keeps fin-research-bk-2025.
+_PREFLIGHT_RECORD_IDS = {
+    "V": "fin-research-v-2025",
+    "MA": "fin-research-ma-2025",
+    "FI": "fin-research-fi-2025",
+    "FIS": "fin-research-fis-2025",
+    "CME": "fin-research-cme-2025",
+    "ICE": "fin-research-ice-2025",
+    "NDAQ": "fin-research-ndaq-2025",
+    "BNY": "fin-research-bk-2025",
+    "STT": "fin-research-stt-2025",
+    "SPGI": "fin-research-spgi-2025",
+    "MCO": "fin-research-mco-2025",
+}
+
+
+def test_roster_record_ids_match_transcribed_preflight() -> None:
+    observed = {
+        symbol: hint_binding(symbol)["record_id"] for symbol in _PREFLIGHT_RECORD_IDS
+    }
+    assert observed == _PREFLIGHT_RECORD_IDS
+    assert all(isinstance(record_id, str) for record_id in observed.values())
+    with pytest.raises(FinanceWitnessHintRefusal):
+        hint_binding("BK")
+
+
 def test_hint_refuses_validated_upgrade() -> None:
     with pytest.raises(FinanceWitnessHintRefusal):
         hint_binding("BNY", state="IDENTITY_VALIDATED")
