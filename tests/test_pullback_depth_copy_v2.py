@@ -144,3 +144,92 @@ def test_e4_close_equal_to_the_peak_is_unavailable_unless_repairing(market):
     assert 'data-pb-phase="underway"' in below_html
     assert 'class="rrp-metrics"' in below_html
     assert 'data-metric="current"' in below_html
+
+
+_DETERIORATION = "Deterioration: no repair evidence yet"
+_EARLY = "Pullback still active: early repair signs are not confirmed"
+_LABEL_EN = "Portion of the high-to-low drop regained"
+_LABEL_ZH = "高点到低点的跌幅中已收回的比例"
+_SUB_EN = (
+    "A rebound alone does not confirm recovery; that takes closes back at or "
+    "above the reference high."
+)
+_SUB_ZH = "仅有价格回升不足以确认修复；需收盘价重回参考高点或以上。"
+
+
+def _verdict_en(view, market):
+    soup = BeautifulSoup(render(view, market), "html.parser")
+    node = soup.select_one('[data-signal="verdict"] .l-en')
+    assert node is not None
+    return node.get_text(), soup
+
+
+@pytest.mark.parametrize("market", ["cn", "us"])
+def test_f1_verdict_follows_the_printed_recovered_share(market):
+    """0.3 prints 0% and is not early repair. 0.6 prints 1% and is.
+
+    Both rows have no closes holding the low, so only the printed share decides.
+    """
+    zero = native_view(market)
+    zero["observation"]["no_new_low_closes"] = 0
+    zero["observation"]["loss_recovered_pct"] = 0.3
+    verdict, soup = _verdict_en(zero, market)
+    printed = soup.select_one('[data-signal="recovered"]').find_next_sibling("dd")
+    assert printed.get_text(strip=True) == "0%"
+    assert verdict == _DETERIORATION
+
+    one = native_view(market)
+    one["observation"]["no_new_low_closes"] = 0
+    one["observation"]["loss_recovered_pct"] = 0.6
+    verdict, soup = _verdict_en(one, market)
+    printed = soup.select_one('[data-signal="recovered"]').find_next_sibling("dd")
+    assert printed.get_text(strip=True) == "1%"
+    assert verdict == _EARLY
+
+
+@pytest.mark.parametrize("market", ["cn", "us"])
+def test_f2_recovered_row_names_the_high_to_low_drop(market):
+    """The recovered row keeps its signal and uses the high-to-low wording."""
+    soup = BeautifulSoup(render(native_view(market), market), "html.parser")
+    label = soup.select_one('[data-signal="recovered"]')
+    assert label.select_one(".l-en").get_text() == _LABEL_EN
+    assert label.select_one(".l-zh").get_text() == _LABEL_ZH
+    assert "Share of the loss retraced" not in soup.get_text()
+    assert "已收复跌幅比例" not in soup.get_text()
+
+
+@pytest.mark.parametrize("market", ["cn", "us"])
+def test_f3_current_subline_requires_closes_at_the_reference_high(market):
+    """Only a current view uses the rebound sentence, and that sentence has no cutoff."""
+    soup = BeautifulSoup(render(native_view(market), market), "html.parser")
+    _span(soup, _SUB_EN, _SUB_ZH)
+    sub = soup.select_one(".rrp-sub").get_text()
+    assert not any(ch.isdigit() for ch in sub)
+    assert "Watch the retest of the low" not in soup.get_text()
+    assert "观察低点回踩" not in soup.get_text()
+
+    delayed = native_view(market)
+    delayed["observation"]["quality"] = "delayed"
+    delayed_soup = BeautifulSoup(render(delayed, market), "html.parser")
+    _span(
+        delayed_soup,
+        "A current closing-price assessment is not available.",
+        "当前收盘价评估暂不可用。",
+    )
+    assert _SUB_EN not in delayed_soup.get_text()
+    assert _SUB_ZH not in delayed_soup.get_text()
+
+
+@pytest.mark.parametrize("market", ["cn", "us"])
+def test_f5_monitoring_close_at_the_peak_still_renders_metrics(market):
+    """A monitoring close on the retained high is a new high and stays current.
+
+    An underway close on that high is contradictory. test_e4_close_equal_to_the_peak_is_unavailable_unless_repairing
+    already pins that half.
+    """
+    view = _phase_view(market, "monitoring", False)
+    view["observation"]["close"] = view["observation"]["peak_close"]
+    html = render(view, market)
+    assert 'data-pb-phase="monitoring"' in html
+    assert 'class="rrp-metrics"' in html
+    assert 'data-metric="current"' in html

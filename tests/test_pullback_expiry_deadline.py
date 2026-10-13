@@ -7,9 +7,22 @@ The producer writes ``datetime.isoformat()`` of a UTC instant with whole
 seconds (``2026-10-12T21:00:00+00:00``); seconds are required, and a fraction
 is accepted only when every digit is zero.
 """
+import re
 from datetime import datetime, timedelta, timezone
+from pathlib import Path
+
+from bs4 import BeautifulSoup
 
 from tests import test_pullback_expiry_owner_js as harness
+from tests.test_risk_radar_pullback_depth_template import native_view, render
+
+_ROOT = Path(__file__).resolve().parents[1]
+_UNTIL_RULE = ".rrp.pb-expired .rrp-until{display:none}"
+_UNTIL_INNER = (
+    "<br>\n"
+    "      {{ t('Current until','有效至') }} "
+    '<time datetime="{{ o.get(\'valid_until\')|e }}">{{ _vu_disp|e }}</time>'
+)
 
 _NOW = datetime(2026, 10, 12, tzinfo=timezone.utc)
 _DAY = timedelta(days=1)
@@ -185,4 +198,53 @@ assert.equal(at('2026-10-20T21:00:00+14:00'), at('2026-10-20T07:00:00Z'));
 assertExpired(wide, '+15:00');
 assertExpired(mins, '+14:60');
 """
+    )
+
+
+def test_expired_section_hides_the_current_until_stamp():
+    """A past deadline adds pb-expired, and that class hides the until stamp.
+
+    The span wraps only the line break and the Current-until clock. The time
+    element's datetime stays the producer's valid_until.
+    """
+    source = (_ROOT / "templates" / "_risk_radar_pullback_depth.html.j2").read_text(encoding="utf-8")
+    wrapped = re.search(
+        r"\{%- if current and _vu_disp %\}<span class=\"rrp-until\">(.*?)</span>\{% endif %\}",
+        source,
+        re.S,
+    )
+    assert wrapped, "Current until is not wrapped in span.rrp-until"
+    assert wrapped.group(1) == _UNTIL_INNER
+    assert source.count('class="rrp-until"') == 1
+    assert "o.get('asof')" not in wrapped.group(1)
+
+    css = (_ROOT / "templates" / "_risk_radar_pullback_depth.css.j2").read_text(encoding="utf-8")
+    assert css.count(_UNTIL_RULE) == 1
+    assert "#" not in _UNTIL_RULE and "color" not in _UNTIL_RULE
+
+    html = render(native_view("us"), "us")
+    soup = BeautifulSoup(html, "html.parser")
+    section = soup.select_one("section.rrp")
+    assert section.get("data-pb-phase") == "underway"
+    assert "pb-expired" not in (section.get("class") or [])
+    stamp = section.get("data-pb-valid-until")
+    until = section.select_one("span.rrp-until")
+    assert until is not None and until.parent.get("class") == ["rrp-stamp"]
+    times = until.find_all("time")
+    assert [node.get("datetime") for node in times] == [stamp]
+    assert until.select_one(".l-en").get_text() == "Current until"
+    settled = [node for node in section.select(".rrp-stamp time") if node is not times[0]]
+    assert len(settled) == 1 and until not in settled[0].parents
+    assert soup.select(".rrp.pb-expired .rrp-until") == []
+    section["class"] = list(section.get("class") or []) + ["pb-expired"]
+    assert soup.select(".rrp.pb-expired .rrp-until") == [until]
+
+    later = "2026-10-02T00:00:00Z"
+    assert harness._epoch_ms(stamp) < harness._epoch_ms(later)
+    harness._run(
+        "now = at(%r);\n"
+        "const sec = section(%r);\n"
+        "boot([sec]);\n"
+        "assertExpired(sec, 'rendered US view past its deadline');\n"
+        % (later, stamp)
     )

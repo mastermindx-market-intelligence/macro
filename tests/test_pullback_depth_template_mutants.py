@@ -241,7 +241,7 @@ from tests.test_risk_radar_pullback_depth_template import native_view, render
 # English span text -> the Chinese span that must sit beside it.
 _ZH = {
     "OBSERVED PRICE": "已观测价格",
-    "Watch the retest of the low; a rebound alone does not confirm recovery.": "观察低点回踩；仅有价格回升不足以确认修复。",
+    "A rebound alone does not confirm recovery; that takes closes back at or above the reference high.": "仅有价格回升不足以确认修复；需收盘价重回参考高点或以上。",
     "A current closing-price assessment is not available.": "当前收盘价评估暂不可用。",
     "Shanghai Composite": "上证综指",
     "Settled close": "收盘价",
@@ -456,7 +456,7 @@ def test_m_unavailable_panel_names_the_missing_price_evidence():
     _forecast(soup)
     _zh(soup, "A current closing-price assessment is not available.")
     _zh(soup, "A chart appears once current, usable price data is on record.")
-    assert "Watch the retest of the low" not in soup.get_text()
+    assert "A rebound alone does not confirm recovery; that takes closes back at or above the reference high." not in soup.get_text()
 
 
 def test_m_forecast_rows_stay_an_em_dash_with_no_figure():
@@ -474,7 +474,7 @@ def test_m_every_visible_label_keeps_its_chinese():
     """Every rendered English label keeps the Chinese written beside it, including both Unavailable sites and the benchmark."""
     required = {
         "OBSERVED PRICE",
-        "Watch the retest of the low; a rebound alone does not confirm recovery.",
+        "A rebound alone does not confirm recovery; that takes closes back at or above the reference high.",
         "A current closing-price assessment is not available.",
         "Shanghai Composite",
         "Reference high",

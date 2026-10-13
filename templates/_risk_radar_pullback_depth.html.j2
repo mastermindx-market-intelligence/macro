@@ -129,13 +129,13 @@
     <div>
       <div class="rrp-eyebrow">{{ t('OBSERVED PRICE','已观测价格') }}</div>
       <h2>{{ t(*labels[phase]) if current else t('Price update needed','价格数据待更新') }}</h2>
-      <p class="rrp-sub">{{ t('Watch the retest of the low; a rebound alone does not confirm recovery.', '观察低点回踩；仅有价格回升不足以确认修复。') if current else t('A current closing-price assessment is not available.', '当前收盘价评估暂不可用。') }}</p>
+      <p class="rrp-sub">{{ t('A rebound alone does not confirm recovery; that takes closes back at or above the reference high.', '仅有价格回升不足以确认修复；需收盘价重回参考高点或以上。') if current else t('A current closing-price assessment is not available.', '当前收盘价评估暂不可用。') }}</p>
     </div>
     <div class="rrp-stamp">{{ t(o.get('benchmark_en') or '', o.get('benchmark_zh') or '') }}<br>
       {{ t('Settled close','收盘价') }} {% if o.get('asof') %}<time datetime="{{ o.get('asof')|e }}">{{ o.get('asof')|e }}</time>{% else %}—{% endif %}
       {%- set _vu_disp = valid_until_display(o.get('valid_until'))|trim -%}
-      {%- if current and _vu_disp %}<br>
-      {{ t('Current until','有效至') }} <time datetime="{{ o.get('valid_until')|e }}">{{ _vu_disp|e }}</time>{% endif %}
+      {%- if current and _vu_disp %}<span class="rrp-until"><br>
+      {{ t('Current until','有效至') }} <time datetime="{{ o.get('valid_until')|e }}">{{ _vu_disp|e }}</time></span>{% endif %}
     </div>
   </header>
   <div class="pbx-expiry" role="status" aria-live="polite" aria-atomic="true"><template class="pbx-expiry-msg">{{ t('Awaiting a newer close. This assessment is no longer current.', '等待更新的收盘价。此评估已过时。') }}</template></div>
@@ -165,11 +165,11 @@
         {%- if onset %}<dt data-signal="onset">{{ t('Pullback confirmed','回撤确认') }}</dt><dd>{{ onset|e }}</dd>{% endif -%}
         {%- if low_s %}<dt data-signal="low">{{ t('Lowest close','最低收盘价') }}</dt><dd>{{ low_s|e }}</dd>{% endif -%}
         {%- if streak %}<dt data-signal="no-new-low">{{ t('Closes without a new low','未创新低的收盘数') }}</dt><dd>{{ streak|e }}</dd>{% endif -%}
-        {%- if recovered %}<dt data-signal="recovered">{{ t('Share of the loss retraced','已收复跌幅比例') }}</dt><dd>{{ recovered|e }}</dd>{% endif -%}
+        {%- if recovered %}<dt data-signal="recovered">{{ t('Portion of the high-to-low drop regained','高点到低点的跌幅中已收回的比例') }}</dt><dd>{{ recovered|e }}</dd>{% endif -%}
         {%- if ma == 'below' %}<dt data-signal="ma20">{{ t('Against the 20-close average','相对20日收盘均价') }}</dt><dd>{{ t('Below','低于') }}</dd>{% endif -%}
         {%- if ma == 'above' %}<dt data-signal="ma20">{{ t('Against the 20-close average','相对20日收盘均价') }}</dt><dd>{{ t('Above or at','不低于') }}</dd>{% endif -%}
       </dl>{% endif %}
-      {% set _nnl = o.get('no_new_low_closes') %}{% set _rec = o.get('loss_recovered_pct') %}{% set _early = (_nnl is integer and _nnl > 0) or ((_rec is integer or _rec is float) and _rec - _rec == 0 and _rec > 0) %}
+      {% set _nnl = o.get('no_new_low_closes') %}{% set _early = (_nnl is integer and _nnl > 0) or (recovered and recovered != '0%') %}
       {% if phase == 'underway' and _early %}<p class="rrp-verdict" data-signal="verdict">{{ t('Pullback still active: early repair signs are not confirmed','回撤仍在进行：初步修复迹象尚未确认') }}</p>
       {% elif phase == 'underway' %}<p class="rrp-verdict" data-signal="verdict">{{ t('Deterioration: no repair evidence yet','恶化：尚无修复证据') }}</p>
       {% elif phase == 'stabilizing' %}<p class="rrp-verdict" data-signal="verdict">{{ t('Early repair evidence: the low is holding','初步修复证据：低点守住') }}</p>

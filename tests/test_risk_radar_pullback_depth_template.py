@@ -471,8 +471,8 @@ def test_evidence_rows_are_bilingual_and_the_verdict_matches_the_phase(phase, en
     assert streak.select_one(".l-zh").get_text() == "未创新低的收盘数"
     assert streak.find_next_sibling("dd").get_text(strip=True) == "4"
     recovered = _signal(soup, "recovered")
-    assert recovered.select_one(".l-en").get_text() == "Share of the loss retraced"
-    assert recovered.select_one(".l-zh").get_text() == "已收复跌幅比例"
+    assert recovered.select_one(".l-en").get_text() == "Portion of the high-to-low drop regained"
+    assert recovered.select_one(".l-zh").get_text() == "高点到低点的跌幅中已收回的比例"
     assert recovered.find_next_sibling("dd").get_text(strip=True) == "8%"
     side = _signal(soup, "ma20")
     assert side.select_one(".l-en").get_text() == "Against the 20-close average"
