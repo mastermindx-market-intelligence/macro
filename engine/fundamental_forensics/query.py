@@ -3893,6 +3893,9 @@ class MetricMatrix:
                 "confidence",
                 "source_occurrence_ids",
                 "dependency_cell_ids",
+                "provenance_kind",
+                "document_id",
+                "filing_metadata_content_sha256",
             )
         )
         for cell in self.cells:
@@ -3940,6 +3943,9 @@ class MetricMatrix:
                 provenance.confidence or "",
                 canonical_json(list(provenance.source_occurrence_ids)),
                 canonical_json(list(provenance.dependency_cell_ids)),
+                provenance.kind.value,
+                provenance.document_id or "",
+                provenance.filing_metadata_content_sha256 or "",
             )
             writer.writerow(
                 tuple(value if index == 15 else _csv_safe(value) for index, value in enumerate(row))

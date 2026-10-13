@@ -247,13 +247,21 @@ def _contract_issuers(identity: dict, *, with_binding: bool = True) -> list[dict
         "mic": "XNAS",
         "effective_at": "2023-05-09T00:00:00",
     }
+    accessions = identity["accessions"]
     return [
         {
             "cik": identity["cik"],
             "ticker": identity["ticker"],
             "legal_name": "Synthetic Lane Issuer",
             "security_master_binding": binding if with_binding else None,
-            "accessions": [{"accession": a} for a in identity["accessions"]],
+            "accessions": [
+                {
+                    "accession": a,
+                    "form": str(identity["manifests"][a]["form"]),
+                    "filing_date": _filing_date_for(accessions, a),
+                }
+                for a in accessions
+            ],
         }
     ]
 
@@ -695,7 +703,15 @@ def test_accession_absent_from_submissions_is_typed(tmp_path) -> None:
     assert invented != original
     lane = _materialized_lane(tmp_path, extra_retained=invented)
     issuers = _contract_issuers(identity)
-    issuers[0]["accessions"] = [{"accession": invented}]
+    # The invented row carries identity[0]'s form + filing_date (R8 shape);
+    # it is absent from BOTH the recent window and every page.
+    issuers[0]["accessions"] = [
+        {
+            "accession": invented,
+            "form": str(identity["manifests"][original]["form"]),
+            "filing_date": _filing_date_for(identity["accessions"], original),
+        }
+    ]
     report = capture_fif_filing_packages(
         raw_root=lane["raw_root"],
         archive_root=lane["archive_root"],
@@ -993,6 +1009,9 @@ def test_retained_package_integrity_codes_are_the_errata_set() -> None:
             "package_manifest_malformed",
             "inventory_mismatch",
             "golden_input_refused",
+            # C0-c E5-e: a retained submissions page that fails its receipt
+            # verification is run-level integrity (added by ERRATA-5).
+            "submissions_page_receipt_mismatch",
         }
     )
     assert CAP.RETAINED_PACKAGE_INTEGRITY_CODES <= CAP._REFUSAL_CODES
@@ -1373,3 +1392,877 @@ def test_d13_t4_partial_acquire_retains_selected_manifests_and_syncs(
             (fresh_archive / "manifests" / cik / accession).glob("*.json")
         ), accession
     assert restored.to_dict()["restored_files"] >= 2 * len(selected) + 1
+
+
+# ---------------------------------------------------------------------------
+# C0-c ERRATA-5: the submissions-page witness (p1..p7)
+# ---------------------------------------------------------------------------
+
+from collectors.edgar_forensics import (  # noqa: E402
+    historical_submissions_url,
+    persist_response,
+)
+
+
+def _page_row_for(identity: dict, accession: str, filing_date: str) -> dict:
+    manifest = identity["manifests"][identity["accessions"][0]]
+    return {
+        "accessionNumber": accession,
+        "form": str(manifest["form"]),
+        "filingDate": filing_date,
+        "reportDate": str(manifest["period_of_report"]),
+        "acceptanceDateTime": FIRST_ACCEPTED_AT,
+        "primaryDocument": str(manifest["primary_document"]),
+        "isXBRL": True,
+        "isInlineXBRL": True,
+    }
+
+
+class _FakeSubmissionsCollector:
+    """Offline stand-in for the historical-shard fetch (publish_latest=False)."""
+
+    def __init__(self, raw_root: Path, pages: dict[str, dict], pacer) -> None:
+        self.raw_root = Path(raw_root)
+        self._pages = pages
+        self._pacer = pacer
+        self.page_fetches: list[str] = []
+
+    def fetch_historical_submissions_file(
+        self, cik, source_name, *, retrieved_at=None, max_response_bytes=None
+    ):
+        self._pacer.acquire()
+        self.page_fetches.append(str(source_name))
+        content = json.dumps(self._pages[str(source_name)]).encode("utf-8")
+        return persist_response(
+            self.raw_root,
+            cik=cik,
+            endpoint="submissions",
+            url=historical_submissions_url(cik, source_name),
+            content=content,
+            retrieved_at=retrieved_at,
+            publish_latest=False,
+        )
+
+
+class _FlakyArchiveCollector(_FakeCollector):
+    """Fails one (accession, name) document exactly once (the failed night).
+
+    Scoped to the accession directory so a shared member NAME under a sibling
+    accession (same primary stem) is never the one that fails.
+    """
+
+    def __init__(self, cache_root, served, pacer, *, fail_documents=()):
+        super().__init__(cache_root, served, pacer)
+        self._fail_once = {(acc, name): 1 for acc, name in fail_documents}
+
+    def fetch_document(
+        self, document, *, retrieved_at=None, expected_sha256=None, max_document_bytes=None
+    ):
+        url = document["archive_url"]
+        accession = url.rsplit("/", 2)[-2].replace("-", "")
+        name = url.rsplit("/", 1)[-1]
+        key = (accession, name)
+        if self._fail_once.get(key):
+            self._fail_once[key] -= 1
+            self.fetched.append(name)
+            raise RuntimeError(f"forced one-shot failure: {name}")
+        return super().fetch_document(
+            document,
+            retrieved_at=retrieved_at,
+            expected_sha256=expected_sha256,
+            max_document_bytes=max_document_bytes,
+        )
+
+
+def _write_submissions_with_files(
+    raw_root: Path, identity: dict, files: list[dict]
+) -> None:
+    """latest.json whose filings.files[] names the page inventory (E5-d)."""
+    payload = json.dumps(
+        {
+            "cik": int(identity["cik"]),
+            "name": "Synthetic Lane Issuer",
+            "filings": {
+                "recent": _synthetic_submissions(identity)["filings"]["recent"],
+                "files": files,
+            },
+        }
+    ).encode("utf-8")
+    digest = hashlib.sha256(payload).hexdigest()
+    object_path = f"{identity['cik']}/submissions/{digest[:32]}.json.gz"
+    target = raw_root / object_path
+    target.parent.mkdir(parents=True, exist_ok=True)
+    target.write_bytes(gzip.compress(payload))
+    pointer = raw_root / identity["cik"] / "submissions" / "latest.json"
+    pointer.parent.mkdir(parents=True, exist_ok=True)
+    pointer.write_text(
+        json.dumps(
+            {
+                "schema": "fundamental_forensics_retrieval.v1",
+                "cik": identity["cik"],
+                "endpoint": "submissions",
+                "url": f"https://data.sec.gov/submissions/CIK{identity['cik']}.json",
+                "retrieved_at": CAPTURE_CLOCK,
+                "sha256": digest,
+                "bytes": len(payload),
+                "object_path": object_path,
+                "http_etag": None,
+                "http_last_modified": None,
+            }
+        ),
+        encoding="utf-8",
+    )
+
+
+def _page_witness_lane(
+    tmp_path: Path,
+    *,
+    files: list[dict] | None = None,
+    fail_member_once: str | None = None,
+):
+    """A capture lane with ONE page-row accession: outside recent, primary
+    retained (the wave-2 shape), covered by a synthetic submissions page."""
+    identity = _fixture_identity()
+    outside = identity["accessions"][0][:-1] + "7"
+    filing_date = str(identity["manifests"][identity["accessions"][0]]["filing_date"])
+    page_name = f"CIK{identity['cik']}-submissions-001.json"
+    raw_root = tmp_path / "raw"
+    archive_root = tmp_path / "archive"
+    raw_root.mkdir(parents=True)
+    archive_root.mkdir(parents=True)
+    if files is None:
+        files = [{"name": page_name, "filingFrom": filing_date, "filingTo": filing_date}]
+    _write_submissions_with_files(raw_root, identity, files)
+    _retain_primaries(archive_root, identity, extra=outside)
+    served = _fixture_member_bytes()
+    served[outside.replace("-", "")] = dict(
+        served[identity["accessions"][0].replace("-", "")]
+    )
+    pacer = _no_sleep_pacer()
+    if fail_member_once is not None:
+        collector = _FlakyArchiveCollector(
+            archive_root,
+            served,
+            pacer,
+            fail_documents=[(outside.replace("-", ""), fail_member_once)],
+        )
+    else:
+        collector = _FakeCollector(archive_root, served, pacer)
+    page_row = _page_row_for(identity, outside, filing_date)
+    pages = {page_name: {key: [value] for key, value in page_row.items()}}
+    submissions_collector = _FakeSubmissionsCollector(raw_root, pages, pacer)
+    binding = {
+        "issuer_id": identity["entity_id"],
+        "issuer_cik": identity["cik"],
+        "security_id": identity["security_id"],
+        "listing_key": identity["listing_key"],
+        "mic": "XNAS",
+        "effective_at": "2023-05-09T00:00:00",
+    }
+    issuers = [
+        {
+            "cik": identity["cik"],
+            "ticker": identity["ticker"],
+            "legal_name": "Synthetic Lane Issuer",
+            "security_master_binding": binding,
+            "accessions": [
+                {
+                    "accession": a,
+                    "form": str(identity["manifests"][a]["form"]),
+                    "filing_date": _filing_date_for(identity["accessions"], a),
+                }
+                for a in identity["accessions"]
+            ]
+            + [
+                {
+                    "accession": outside,
+                    "form": page_row["form"],
+                    "filing_date": filing_date,
+                }
+            ],
+        }
+    ]
+    return {
+        "identity": identity,
+        "raw_root": raw_root,
+        "archive_root": archive_root,
+        "collector": collector,
+        "submissions_collector": submissions_collector,
+        "pacer": pacer,
+        "issuers": issuers,
+        "outside": outside,
+        "page_name": page_name,
+        "page_row": page_row,
+        "filing_date": filing_date,
+    }
+
+
+def _capture_with_pages(lane: dict, **overrides):
+    kwargs = dict(
+        raw_root=lane["raw_root"],
+        archive_root=lane["archive_root"],
+        issuers=lane["issuers"],
+        collector=lane["collector"],
+        pacer=lane["pacer"],
+        recorded_at=CAPTURE_CLOCK,
+    )
+    kwargs.update(overrides)
+    return capture_fif_filing_packages(**kwargs)
+
+
+def _outcome_by_accession(report: dict) -> dict:
+    return {
+        row["accession"]: row["outcome"]
+        for issuer in report["issuers"]
+        for row in issuer["accessions"]
+    }
+
+
+def test_c0c_p1_recent_row_binding_is_byte_unchanged(tmp_path) -> None:
+    """(p1) In recent -> binding byte-unchanged: the witness bytes equal the
+    canonical recomputation exactly (golden bytes)."""
+    lane = _materialized_lane(tmp_path)
+    capture_fif_filing_packages(
+        raw_root=lane["raw_root"],
+        archive_root=lane["archive_root"],
+        issuers=lane["issuers"],
+        collector=lane["collector"],
+        pacer=lane["pacer"],
+        recorded_at=CAPTURE_CLOCK,
+    )
+    submissions = _synthetic_submissions(lane["identity"])
+    recent = submissions["filings"]["recent"]
+    for index, accession in enumerate(lane["identity"]["accessions"]):
+        witness_path = package_dir_for(
+            lane["archive_root"], lane["identity"]["cik"], accession
+        ) / "sec_submissions_witness.json"
+        expected = {
+            "source_url": f"https://data.sec.gov/submissions/CIK{lane['identity']['cik']}.json",
+            "source_path": f"filings.recent[accessionNumber={accession}]",
+            "accessionNumber": accession,
+            "form": recent["form"][index],
+            "filingDate": recent["filingDate"][index],
+            "reportDate": recent["reportDate"][index],
+            "acceptanceDateTime": _normalized_utc(recent["acceptanceDateTime"][index]),
+            "primaryDocument": recent["primaryDocument"][index],
+        }
+        golden = (json.dumps(expected, indent=2, sort_keys=True) + "\n").encode("utf-8")
+        assert witness_path.read_bytes() == golden, accession
+
+
+def test_c0c_p2_page_row_witness_binds_from_the_page(tmp_path) -> None:
+    """(p2) Outside recent, inside ONE page -> page-bound and captured: the
+    witness source_path names the page, source_url is the page URL, and the
+    package lands with capture outcome captured."""
+    lane = _page_witness_lane(tmp_path)
+    report = _capture_with_pages(lane, submissions_collector=lane["submissions_collector"])
+    rows = _outcome_by_accession(report)
+    assert rows[lane["outside"]] == "captured", rows
+    assert lane["submissions_collector"].page_fetches == [lane["page_name"]]
+    witness = json.loads(
+        (
+            package_dir_for(lane["archive_root"], lane["identity"]["cik"], lane["outside"])
+            / "sec_submissions_witness.json"
+        ).read_text("utf-8")
+    )
+    assert witness["source_path"] == (
+        f"filings.files[{lane['page_name']}][accessionNumber={lane['outside']}]"
+    )
+    assert witness["source_url"] == (
+        f"https://data.sec.gov/submissions/{lane['page_name']}"
+    )
+    row = lane["page_row"]
+    assert witness["form"] == row["form"]
+    assert witness["filingDate"] == row["filingDate"]
+    assert witness["primaryDocument"] == row["primaryDocument"]
+    # latest.json never moved: the shard fetch is publish_latest=False.
+    pointer = json.loads(
+        (
+            lane["raw_root"] / lane["identity"]["cik"] / "submissions" / "latest.json"
+        ).read_text()
+    )
+    assert pointer["url"].endswith(f"CIK{lane['identity']['cik']}.json")
+
+
+def test_c0c_p3_no_covering_page_is_typed(tmp_path) -> None:
+    """(p3) In no page -> ``submissions_page_not_found``."""
+    identity = _fixture_identity()
+    lane = _page_witness_lane(
+        tmp_path,
+        files=[
+            {
+                "name": f"CIK{identity['cik']}-submissions-009.json",
+                "filingFrom": "2001-01-01",
+                "filingTo": "2001-12-31",
+            }
+        ],
+    )
+    report = _capture_with_pages(lane, submissions_collector=lane["submissions_collector"])
+    rows = _outcome_by_accession(report)
+    assert rows[lane["outside"]] == "member_capture_failed:submissions_page_not_found"
+    assert lane["submissions_collector"].page_fetches == []
+
+
+def test_c0c_p4_two_covering_pages_are_typed(tmp_path) -> None:
+    """(p4) Two covering pages -> ``submissions_page_ambiguous``."""
+    identity = _fixture_identity()
+    lane = _page_witness_lane(
+        tmp_path,
+        files=[
+            {
+                "name": f"CIK{identity['cik']}-submissions-001.json",
+                "filingFrom": "2001-01-01",
+                "filingTo": "2030-12-31",
+            },
+            {
+                "name": f"CIK{identity['cik']}-submissions-002.json",
+                "filingFrom": "2000-01-01",
+                "filingTo": "2029-12-31",
+            },
+        ],
+    )
+    report = _capture_with_pages(lane, submissions_collector=lane["submissions_collector"])
+    rows = _outcome_by_accession(report)
+    assert rows[lane["outside"]] == "member_capture_failed:submissions_page_ambiguous"
+
+
+def test_c0c_p5_retained_page_reuse_makes_zero_requests(tmp_path) -> None:
+    """(p5) Retained page reuse -> zero requests: after a first capture whose
+    member fetch failed (package not written, page retained), the second
+    capture re-mints the page witness with ZERO page fetches."""
+    identity = _fixture_identity()
+    stem = str(
+        identity["manifests"][identity["accessions"][0]]["primary_document"]
+    ).rsplit(".", 1)[0]
+    lane = _page_witness_lane(tmp_path, fail_member_once=f"{stem}_cal.xml")
+    first = _capture_with_pages(lane, submissions_collector=lane["submissions_collector"])
+    rows = _outcome_by_accession(first)
+    assert rows[lane["outside"]] == "member_capture_failed:member_fetch_failed"
+    assert lane["submissions_collector"].page_fetches == [lane["page_name"]]
+    second = _capture_with_pages(lane, submissions_collector=lane["submissions_collector"])
+    rows = _outcome_by_accession(second)
+    assert rows[lane["outside"]] == "captured", rows
+    # ZERO additional page requests: the retained page was reused (E5-b).
+    assert lane["submissions_collector"].page_fetches == [lane["page_name"]]
+
+
+def test_c0c_p6_receipt_mismatch_is_typed_and_never_refetched(tmp_path) -> None:
+    """(p6) A retained page whose object fails verification ->
+    ``submissions_page_receipt_mismatch`` (run-level integrity), with NO
+    refetch of the page."""
+    identity = _fixture_identity()
+    stem = str(
+        identity["manifests"][identity["accessions"][0]]["primary_document"]
+    ).rsplit(".", 1)[0]
+    lane = _page_witness_lane(tmp_path, fail_member_once=f"{stem}_cal.xml")
+    first = _capture_with_pages(lane, submissions_collector=lane["submissions_collector"])
+    rows = _outcome_by_accession(first)
+    assert rows[lane["outside"]] == "member_capture_failed:member_fetch_failed"
+    assert lane["submissions_collector"].page_fetches == [lane["page_name"]]
+    # Corrupt the retained page OBJECT (identified through ITS receipt, never
+    # the latest pointer's object) in the incumbent namespace.
+    cik = lane["identity"]["cik"]
+    page_object = None
+    for receipt_path in sorted((lane["raw_root"] / cik / "submissions").glob("*.receipt.json")):
+        receipt = json.loads(receipt_path.read_text(encoding="utf-8"))
+        if receipt.get("url") == f"https://data.sec.gov/submissions/{lane['page_name']}":
+            page_object = lane["raw_root"] / str(receipt["object_path"])
+            break
+    assert page_object is not None
+    page_object.write_bytes(gzip.compress(b"corrupted page bytes"))
+    second = _capture_with_pages(lane, submissions_collector=lane["submissions_collector"])
+    rows = _outcome_by_accession(second)
+    assert rows[lane["outside"]] == (
+        "member_capture_failed:submissions_page_receipt_mismatch"
+    )
+    # Never a silent refetch-over: the fake saw exactly the one lawful fetch.
+    assert lane["submissions_collector"].page_fetches == [lane["page_name"]]
+    assert rows[lane["identity"]["accessions"][0]] == "retained_reused"
+
+
+def test_c0c_p7_d1_admits_a_page_bound_witness(tmp_path) -> None:
+    """(p7) D1 admits the page-bound witness WITHOUT any D1 edit."""
+    from engine.fundamental_forensics.admitted_filing_package import (
+        admit_retained_filing_package,
+    )
+
+    lane = _page_witness_lane(tmp_path)
+    _capture_with_pages(lane, submissions_collector=lane["submissions_collector"])
+    retained = read_retained_fif_packages(
+        lane["archive_root"],
+        cik=lane["identity"]["cik"],
+        accessions=[lane["outside"]],
+    )
+    assert len(retained) == 1
+    package = retained[0]
+    admitted = admit_retained_filing_package(
+        index_bytes=package.index_bytes,
+        manifest=dict(package.manifest),
+        members=dict(package.members),
+        witness_bytes=package.witness_bytes,
+        capture_recorded_at=package.capture_recorded_at,
+    )
+    witness = json.loads(package.witness_bytes.decode("utf-8"))
+    assert witness["source_path"].startswith("filings.files[")
+    assert admitted.manifest["accession"] == lane["outside"]
+
+
+def _retain_stale_submissions_page(
+    lane: dict, page_row: dict, *, retrieved_at: str
+) -> dict:
+    """Seed a VERIFIED retained page for the lane's page name (incumbent
+    ``persist_response``, ``publish_latest=False``) whose bytes carry exactly
+    the given row. Returns the object/receipt paths plus their BEFORE bytes so
+    a test can prove the stale artifacts are never rewritten."""
+    cik = lane["identity"]["cik"]
+    content = json.dumps({key: [value] for key, value in page_row.items()}).encode(
+        "utf-8"
+    )
+    receipt = persist_response(
+        lane["raw_root"],
+        cik=cik,
+        endpoint="submissions",
+        url=historical_submissions_url(cik, lane["page_name"]),
+        content=content,
+        retrieved_at=retrieved_at,
+        publish_latest=False,
+    )
+    object_path = lane["raw_root"] / str(receipt.object_path)
+    receipt_path = object_path.with_suffix(".receipt.json")
+    return {
+        "object_path": object_path,
+        "receipt_path": receipt_path,
+        "object_before": object_path.read_bytes(),
+        "receipt_before": receipt_path.read_bytes(),
+        "content": content,
+    }
+
+
+def _mint_page_witness(lane: dict, collector, accession: str):
+    """Drive ``mint_acceptance_witness`` over one page-row accession."""
+    identity = lane["identity"]
+    return CAP.mint_acceptance_witness(
+        raw_root=lane["raw_root"],
+        cik=identity["cik"],
+        accession=accession,
+        primary_document=str(
+            identity["manifests"][identity["accessions"][0]]["primary_document"]
+        ),
+        filing_date=lane["filing_date"],
+        submissions_collector=collector,
+        retrieved_at=CAPTURE_CLOCK,
+        budget_remaining=CAP.DEFAULT_RUN_BUDGET_BYTES,
+    )
+
+
+def test_c0c_p9_stale_retained_page_is_refetched_and_new_bytes_used(
+    tmp_path,
+) -> None:
+    """(p9) A VERIFIED retained page for the selected page name whose bytes
+    LACK the accession and whose derived range disagrees with the current
+    files[] entry is STALE (SEC re-paged): the page is re-fetched through the
+    incumbent path exactly once, the witness binds from the NEW row, and the
+    stale receipt + object bytes are never rewritten."""
+    from datetime import date, timedelta
+
+    lane = _page_witness_lane(tmp_path)
+    identity = lane["identity"]
+    filing_date = lane["filing_date"]
+    stale_date = (date.fromisoformat(filing_date) - timedelta(days=1)).isoformat()
+    stale_row = _page_row_for(identity, identity["accessions"][0][:-1] + "3", stale_date)
+    stale = _retain_stale_submissions_page(
+        lane, stale_row, retrieved_at="2026-10-12T02:31:00Z"
+    )
+    # The fake collector serves the CURRENT page bytes: the contract row.
+    new_row = _page_row_for(identity, lane["outside"], filing_date)
+    new_page = {key: [value] for key, value in new_row.items()}
+    new_bytes = json.dumps(new_page).encode("utf-8")
+    collector = _FakeSubmissionsCollector(lane["raw_root"], {lane["page_name"]: new_page}, lane["pacer"])
+    witness_bytes, bound, page_info = _mint_page_witness(lane, collector, lane["outside"])
+    # Exactly ONE fetch, for that page name; the FRESH bytes were used.
+    assert collector.page_fetches == [lane["page_name"]]
+    assert page_info["reused"] is False
+    assert page_info["charged_bytes"] == len(new_bytes)
+    # The witness binds from the NEW row (fields equal the new row).
+    witness = json.loads(witness_bytes.decode("utf-8"))
+    assert witness["form"] == new_row["form"]
+    assert witness["filingDate"] == new_row["filingDate"]
+    assert witness["reportDate"] == new_row["reportDate"]
+    assert witness["primaryDocument"] == new_row["primaryDocument"]
+    assert bound["filingDate"] == new_row["filingDate"]
+    # The stale receipt and its object are byte-identical before/after: new
+    # bytes mean a NEW content-addressed object + receipt, never a rewrite.
+    assert stale["object_path"].read_bytes() == stale["object_before"]
+    assert stale["receipt_path"].read_bytes() == stale["receipt_before"]
+
+
+def test_c0c_p10_matching_retained_page_reused_with_zero_requests(
+    tmp_path,
+) -> None:
+    """(p10) (a) A retained page CONTAINING the accession is reused with zero
+    fetch calls, reused=True, charged 0; (b) a retained page LACKING the
+    accession but whose derived range EQUALS the current files[] entry is
+    reused (zero fetch calls) and the refusal is the genuine typed
+    ``accession_not_in_submissions``."""
+    # (a) containment-qualifying retained page -> reuse, zero requests.
+    lane = _page_witness_lane(tmp_path)
+    matching_row = _page_row_for(lane["identity"], lane["outside"], lane["filing_date"])
+    _retain_stale_submissions_page(
+        lane, matching_row, retrieved_at="2026-10-12T02:31:00Z"
+    )
+    decoy = _page_row_for(
+        lane["identity"],
+        lane["identity"]["accessions"][0][:-1] + "6",
+        lane["filing_date"],
+    )
+    collector_a = _FakeSubmissionsCollector(
+        lane["raw_root"],
+        {lane["page_name"]: {key: [value] for key, value in decoy.items()}},
+        lane["pacer"],
+    )
+    witness_bytes, _bound, page_info = _mint_page_witness(
+        lane, collector_a, lane["outside"]
+    )
+    assert collector_a.page_fetches == []
+    assert page_info["reused"] is True
+    assert page_info["charged_bytes"] == 0
+    witness = json.loads(witness_bytes.decode("utf-8"))
+    assert witness["form"] == matching_row["form"]
+    assert witness["filingDate"] == matching_row["filingDate"]
+    assert witness["primaryDocument"] == matching_row["primaryDocument"]
+
+    # (b) range-equal retained page that lacks the accession -> reuse, then
+    # the genuine typed refusal — never a refetch.
+    lane_b = _page_witness_lane(tmp_path / "b")
+    sibling_row = _page_row_for(
+        lane_b["identity"],
+        lane_b["identity"]["accessions"][0][:-1] + "4",
+        lane_b["filing_date"],
+    )
+    _retain_stale_submissions_page(
+        lane_b, sibling_row, retrieved_at="2026-10-12T02:31:00Z"
+    )
+    collector_b = _FakeSubmissionsCollector(
+        lane_b["raw_root"],
+        {
+            lane_b["page_name"]: {
+                key: [value]
+                for key, value in _page_row_for(
+                    lane_b["identity"], lane_b["outside"], lane_b["filing_date"]
+                ).items()
+            }
+        },
+        lane_b["pacer"],
+    )
+    with pytest.raises(FifMemberCaptureError) as caught:
+        _mint_page_witness(lane_b, collector_b, lane_b["outside"])
+    assert caught.value.code == "accession_not_in_submissions"
+    assert collector_b.page_fetches == []
+
+
+def test_c0c_p6b_receipt_mismatch_refuses_even_beside_a_stale_sibling(
+    tmp_path,
+) -> None:
+    """(p6b) Two receipts share the page URL: one verifies but is stale, one
+    FAILS verification. The mismatch refuses with ZERO fetches — never a
+    refetch over the corrupt receipt, and never a silent fallback to the
+    (range-qualifying) stale sibling."""
+    lane = _page_witness_lane(tmp_path)
+    identity = lane["identity"]
+    stale_row = _page_row_for(
+        identity, identity["accessions"][0][:-1] + "3", lane["filing_date"]
+    )
+    _retain_stale_submissions_page(lane, stale_row, retrieved_at="2026-10-12T02:31:00Z")
+    corrupt = _retain_stale_submissions_page(
+        lane,
+        _page_row_for(identity, identity["accessions"][0][:-1] + "5", lane["filing_date"]),
+        retrieved_at="2026-10-13T01:00:00Z",
+    )
+    corrupt["object_path"].write_bytes(gzip.compress(b"corrupted page bytes"))
+    collector = _FakeSubmissionsCollector(
+        lane["raw_root"],
+        {
+            lane["page_name"]: {
+                key: [value]
+                for key, value in _page_row_for(
+                    identity, lane["outside"], lane["filing_date"]
+                ).items()
+            }
+        },
+        lane["pacer"],
+    )
+    with pytest.raises(FifMemberCaptureError) as caught:
+        _mint_page_witness(lane, collector, lane["outside"])
+    assert caught.value.code == "submissions_page_receipt_mismatch"
+    assert collector.page_fetches == []
+
+
+# ---------------------------------------------------------------------------
+# C0-c ERRATA-4: form-keyed 8-K member set (t1..t7)
+# ---------------------------------------------------------------------------
+
+
+def _eight_k_index_bytes(base_index: bytes, drop_suffixes: tuple[str, ...]) -> bytes:
+    """A synthetic 8-K archive index: the fixture index minus dropped members."""
+    payload = json.loads(base_index.decode("utf-8"))
+    items = [
+        item
+        for item in payload["directory"]["item"]
+        if not any(str(item.get("name") or "").endswith(suffix) for suffix in drop_suffixes)
+    ]
+    payload["directory"]["item"] = items
+    return (json.dumps(payload, sort_keys=True) + "\n").encode("utf-8")
+
+
+def _eight_k_lane(tmp_path: Path, *, drop_suffixes=("_cal.xml", "_def.xml")):
+    """A capture lane with ONE 8-K contract accession whose index omits the
+    optional members (the dei-only earnings-8-K shape)."""
+    identity = _fixture_identity()
+    eight_k = identity["accessions"][0][:-1] + "5"
+    ten_q_manifest = identity["manifests"][identity["accessions"][0]]
+    raw_root = tmp_path / "raw"
+    archive_root = tmp_path / "archive"
+    raw_root.mkdir(parents=True)
+    archive_root.mkdir(parents=True)
+    submissions = _synthetic_submissions(identity)
+    recent = submissions["filings"]["recent"]
+    recent["accessionNumber"] = [eight_k, *recent["accessionNumber"]]
+    for field in ("form", "filingDate", "reportDate", "acceptanceDateTime", "primaryDocument"):
+        recent[field] = ["8-K" if field == "form" else recent[field][0], *recent[field]]
+    recent["isXBRL"] = [True, *recent["isXBRL"]]
+    recent["isInlineXBRL"] = [True, *recent["isInlineXBRL"]]
+    _write_submissions(raw_root, identity)
+    # Rewrite the pointer over the 8-K-carrying payload.
+    payload = json.dumps(submissions).encode("utf-8")
+    digest = hashlib.sha256(payload).hexdigest()
+    object_path = f"{identity['cik']}/submissions/{digest[:32]}.json.gz"
+    target = raw_root / object_path
+    target.write_bytes(gzip.compress(payload))
+    pointer = raw_root / identity["cik"] / "submissions" / "latest.json"
+    pointer.write_text(
+        json.dumps(
+            {
+                "schema": "fundamental_forensics_retrieval.v1",
+                "cik": identity["cik"],
+                "endpoint": "submissions",
+                "url": f"https://data.sec.gov/submissions/CIK{identity['cik']}.json",
+                "retrieved_at": CAPTURE_CLOCK,
+                "sha256": digest,
+                "bytes": len(payload),
+                "object_path": object_path,
+                "http_etag": None,
+                "http_last_modified": None,
+            }
+        ),
+        encoding="utf-8",
+    )
+    _retain_primaries(archive_root, identity, extra=eight_k)
+    served = _fixture_member_bytes()
+    base = dict(served[identity["accessions"][0].replace("-", "")])
+    base["index.json"] = _eight_k_index_bytes(base["index.json"], drop_suffixes)
+    served[eight_k.replace("-", "")] = base
+    pacer = _no_sleep_pacer()
+    collector = _FakeCollector(archive_root, served, pacer)
+    issuers = [
+        {
+            "cik": identity["cik"],
+            "ticker": identity["ticker"],
+            "legal_name": "Synthetic Lane Issuer",
+            "security_master_binding": {
+                "issuer_id": identity["entity_id"],
+                "issuer_cik": identity["cik"],
+                "security_id": identity["security_id"],
+                "listing_key": identity["listing_key"],
+                "mic": "XNAS",
+                "effective_at": "2023-05-09T00:00:00",
+            },
+            "accessions": [
+                {
+                    "accession": eight_k,
+                    "form": "8-K",
+                    "filing_date": _filing_date_for(identity["accessions"], identity["accessions"][0]),
+                }
+            ],
+        }
+    ]
+    return {
+        "identity": identity,
+        "raw_root": raw_root,
+        "archive_root": archive_root,
+        "collector": collector,
+        "pacer": pacer,
+        "issuers": issuers,
+        "eight_k": eight_k,
+        "served": served,
+        "primary_name": str(ten_q_manifest["primary_document"]),
+    }
+
+
+def _capture_eight_k(lane: dict, **overrides):
+    kwargs = dict(
+        raw_root=lane["raw_root"],
+        archive_root=lane["archive_root"],
+        issuers=lane["issuers"],
+        collector=lane["collector"],
+        pacer=lane["pacer"],
+        recorded_at=CAPTURE_CLOCK,
+    )
+    kwargs.update(overrides)
+    return capture_fif_filing_packages(**kwargs)
+
+
+def test_c0c_t1_eight_k_with_absent_optionals_captures(tmp_path) -> None:
+    """(t1) 8-K, _cal and _def absent from the listing -> captured, with
+    ``absent_members`` holding exactly those two entries and ZERO requests
+    issued for them (fake-collector call log)."""
+    lane = _eight_k_lane(tmp_path, drop_suffixes=("_cal.xml", "_def.xml"))
+    report = _capture_eight_k(lane)
+    row = report["issuers"][0]["accessions"][0]
+    assert row["outcome"] == "captured", row
+    fetched = lane["collector"].fetched
+    stem = lane["primary_name"].rsplit(".", 1)[0]
+    assert f"{stem}_cal.xml" not in fetched
+    assert f"{stem}_def.xml" not in fetched
+    manifest = json.loads(
+        (
+            package_dir_for(lane["archive_root"], lane["identity"]["cik"], lane["eight_k"])
+            / "package_manifest.json"
+        ).read_text("utf-8")
+    )
+    assert manifest["absent_members"] == [
+        {"role": "calculation", "name": f"{stem}_cal.xml", "reason": "absent_in_archive_index"},
+        {"role": "definition", "name": f"{stem}_def.xml", "reason": "absent_in_archive_index"},
+    ]
+    # R6: the 8-K manifest carries NO statement_roles key at all.
+    assert "statement_roles" not in manifest
+
+
+def test_c0c_t2_listed_optional_member_fetch_failure_is_typed(tmp_path) -> None:
+    """(t2) 8-K, _cal LISTED but its fetch fails -> ``member_fetch_failed``
+    and no package dir is written (a failed fetch is NEVER downgraded to
+    absence)."""
+
+    class _FailCal(_FakeCollector):
+        def fetch_document(self, document, *, retrieved_at=None, expected_sha256=None, max_document_bytes=None):
+            name = document["archive_url"].rsplit("/", 1)[-1]
+            if name.endswith("_cal.xml"):
+                self.fetched.append(name)
+                raise RuntimeError("forced _cal failure")
+            return super().fetch_document(
+                document,
+                retrieved_at=retrieved_at,
+                expected_sha256=expected_sha256,
+                max_document_bytes=max_document_bytes,
+            )
+
+    lane = _eight_k_lane(tmp_path, drop_suffixes=("_def.xml",))
+    lane["collector"] = _FailCal(lane["archive_root"], lane["served"], lane["pacer"])
+    report = _capture_eight_k(lane)
+    row = report["issuers"][0]["accessions"][0]
+    assert row["outcome"] == "member_capture_failed:member_fetch_failed", row
+    assert not package_dir_for(
+        lane["archive_root"], lane["identity"]["cik"], lane["eight_k"]
+    ).exists()
+
+
+def test_c0c_t3_required_member_not_listed_is_typed(tmp_path) -> None:
+    """(t3) 8-K, _lab not listed -> ``member_missing_from_index`` and no
+    member fetch is issued."""
+    lane = _eight_k_lane(tmp_path, drop_suffixes=("_lab.xml",))
+    report = _capture_eight_k(lane)
+    row = report["issuers"][0]["accessions"][0]
+    assert row["outcome"] == "member_capture_failed:member_missing_from_index", row
+    # Only the index itself was fetched — no member request at all.
+    assert lane["collector"].fetched == ["index.json"]
+
+
+def test_c0c_t4_ten_k_missing_member_still_typed(tmp_path) -> None:
+    """(t4) 10-K, _cal not listed -> ``member_missing_from_index`` (unchanged
+    behaviour: all five members stay required for 10-K/10-Q)."""
+    lane = _materialized_lane(tmp_path)
+    served = lane["served"]
+    identity = lane["identity"]
+    stem = str(identity["manifests"][identity["accessions"][0]]["primary_document"]).rsplit(".", 1)[0]
+    for accession in identity["accessions"]:
+        base = dict(served[accession.replace("-", "")])
+        base["index.json"] = _eight_k_index_bytes(base["index.json"], ("_cal.xml",))
+        served[accession.replace("-", "")] = base
+    report = capture_fif_filing_packages(
+        raw_root=lane["raw_root"],
+        archive_root=lane["archive_root"],
+        issuers=lane["issuers"],
+        collector=lane["collector"],
+        pacer=lane["pacer"],
+        recorded_at=CAPTURE_CLOCK,
+    )
+    rows = _outcome_by_accession(report)
+    assert rows[identity["accessions"][0]] == "member_capture_failed:member_missing_from_index"
+    assert f"{stem}_cal.xml" not in lane["collector"].fetched
+
+
+def test_c0c_t5_nightly_rerun_after_captured_eight_k_reuses(tmp_path) -> None:
+    """(t5) A nightly rerun after a captured 8-K -> ``retained_reused``, zero
+    fetches, byte-identical package files."""
+    lane = _eight_k_lane(tmp_path)
+    first = _capture_eight_k(lane)
+    assert first["issuers"][0]["accessions"][0]["outcome"] == "captured"
+    package_dir = package_dir_for(
+        lane["archive_root"], lane["identity"]["cik"], lane["eight_k"]
+    )
+    before = {
+        path.name: path.read_bytes() for path in sorted(package_dir.rglob("*")) if path.is_file()
+    }
+    fetches_before = list(lane["collector"].fetched)
+    second = _capture_eight_k(lane)
+    row = second["issuers"][0]["accessions"][0]
+    assert row["outcome"] == "retained_reused", row
+    assert row["reused"] is True
+    assert lane["collector"].fetched == fetches_before
+    after = {
+        path.name: path.read_bytes() for path in sorted(package_dir.rglob("*")) if path.is_file()
+    }
+    assert after == before
+
+
+def test_c0c_t7_contract_form_disagreeing_with_row_is_typed(tmp_path) -> None:
+    """(t7) A contract form disagreeing with the witness-bound row ->
+    ``submissions_row_mismatch`` (R8, before the index fetch)."""
+    lane = _materialized_lane(tmp_path)
+    lane["issuers"][0]["accessions"][0]["form"] = "8-K"  # the row says 10-K
+    report = capture_fif_filing_packages(
+        raw_root=lane["raw_root"],
+        archive_root=lane["archive_root"],
+        issuers=lane["issuers"],
+        collector=lane["collector"],
+        pacer=lane["pacer"],
+        recorded_at=CAPTURE_CLOCK,
+    )
+    rows = _outcome_by_accession(report)
+    assert rows[lane["identity"]["accessions"][0]] == (
+        "member_capture_failed:submissions_row_mismatch"
+    )
+    # Refused BEFORE the index fetch: exactly ONE index fetch happened in the
+    # whole run (the second, agreeing accession's) — none for the refused row.
+    assert lane["collector"].fetched.count("index.json") == 1
+
+
+def test_c0c_form_not_in_member_policy_is_typed_before_fetches(tmp_path) -> None:
+    """(R1's typed refusal — the a8/t-series sibling on the capture side) an
+    unknown contract form refuses before ANY fetch."""
+    lane = _materialized_lane(tmp_path)
+    lane["issuers"][0]["accessions"][0]["form"] = "8-K/A"
+    report = capture_fif_filing_packages(
+        raw_root=lane["raw_root"],
+        archive_root=lane["archive_root"],
+        issuers=lane["issuers"],
+        collector=lane["collector"],
+        pacer=lane["pacer"],
+        recorded_at=CAPTURE_CLOCK,
+    )
+    rows = _outcome_by_accession(report)
+    assert rows[lane["identity"]["accessions"][0]] == (
+        "member_capture_failed:form_not_in_member_policy"
+    )
+    # Refused before ANY fetch for it: exactly one index fetch in the whole
+    # run (the second, lawful accession's).
+    assert lane["collector"].fetched.count("index.json") == 1

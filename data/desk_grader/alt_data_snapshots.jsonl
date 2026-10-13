@@ -5346,3 +5346,8 @@
 {"date":"2026-10-12","ticker":"PSKY","departed":true,"left_desk":"2026-10-12","last_rank":null,"last_score":23}
 {"date":"2026-10-12","ticker":"RHHBY","departed":true,"left_desk":"2026-10-12","last_rank":30,"last_score":29}
 {"date":"2026-10-12","ticker":"SBUX","departed":true,"left_desk":"2026-10-12","last_rank":null,"last_score":17}
+{"date":"2026-10-12","ticker":"RHHBY","rank":30,"score":29,"lean":1,"broken":false}
+{"date":"2026-10-12","ticker":"KVYO","rank":null,"score":24,"lean":1,"broken":true}
+{"date":"2026-10-12","ticker":"IONQ","rank":null,"score":22,"lean":1,"broken":true}
+{"date":"2026-10-12","ticker":"RDNT","rank":null,"score":18,"lean":1,"broken":true}
+{"date":"2026-10-12","ticker":"ACM","rank":null,"score":15,"lean":1,"broken":true}
