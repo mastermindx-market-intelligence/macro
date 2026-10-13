@@ -56,10 +56,18 @@ def main(argv: list[str] | None = None) -> int:
             flush=True,
         )
 
+    # R3e: the typed high-finding suppression counts ride the SAME summary
+    # line, in SUPPRESSION_KEYS order, so a gated backlog is counted in the
+    # log rather than silently dropped. "0" when nothing was suppressed.
+    suppressed_txt = ",".join(
+        "%s=%d" % (key, result.suppressed.get(key, 0))
+        for key in producer.SUPPRESSION_KEYS
+        if result.suppressed.get(key, 0)
+    ) or "0"
     print(
         "fif-saved-research: outcome=%s read_state=%s users=%d symbols=%d "
         "events=%d enqueued=%d duplicate=%d "
-        "state=%s receipt=%s pointer=%s"
+        "state=%s receipt=%s pointer=%s suppressed=%s"
         % (
             result.outcome,
             result.read_state,
@@ -71,6 +79,7 @@ def main(argv: list[str] | None = None) -> int:
             result.state_state,
             result.receipt_state,
             result.pointer_state,
+            suppressed_txt,
         ),
         flush=True,
     )

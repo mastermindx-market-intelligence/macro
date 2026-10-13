@@ -18,7 +18,12 @@ Pins:
   6. missing generation pointer -> NO event, never an error (R5);
   7. the exact frozen fire_event_id format for all three kinds;
   8. payload: only the allowed fields, category "fif_saved_issuer", no
-     banned tokens, no digits that are metric values.
+     banned tokens, no digits that are metric values;
+  9. R3 recency gate: a high_finding row is emitted only when
+     0 <= (as_of - filing_index date).days <= FIF_NEW_FINDING_WINDOW_DAYS,
+     anchored on the state document's `as_of` — never wall clock — with every
+     suppression counted under its typed key; new_filing and generation are
+     ungated; the payload records event_date.
 """
 from __future__ import annotations
 
@@ -40,6 +45,7 @@ ROOT = Path(__file__).resolve().parents[1]
 
 ALLOWED_PAYLOAD_FIELDS = {
     "ticker", "condition_plain", "evidence_url", "subject", "fired_at", "category",
+    "event_date",
 }
 
 
@@ -132,9 +138,32 @@ def fake_pg(monkeypatch):
 # ---------------------------------------------------------------------------
 # Trigger-input fixtures (local mirrors under tmp_path).
 # ---------------------------------------------------------------------------
-def _write_state(root: Path, companies: dict, generated_at="2026-10-12T00:00:00Z"):
+def _write_state(root: Path, companies: dict, generated_at="2026-10-12T00:00:00Z",
+                 as_of="2026-10-10", default_filed="2026-10-05"):
+    """Write the private state in the REAL builder shape (R3): the document
+    carries `as_of` (max latest_filed across the universe,
+    scripts/build_fundamental_forensics.py:1209,1224) and every finding's
+    `evidence` starts with a basis="filing_index" link whose `date` is the
+    current period's filed date (:212-231,291). A finding written WITHOUT an
+    explicit `evidence` gets the default_filed link — inside the R3 window —
+    so pre-R3 fixtures keep their exact expectations under the gate. Pass
+    as_of=None to omit the anchor (the as_of_missing case); pass a finding's
+    own `evidence` to control or break its date."""
+    def _norm(findings):
+        out = []
+        for finding in findings or []:
+            clone = dict(finding)
+            if "evidence" not in clone:
+                clone["evidence"] = [{"basis": "filing_index", "date": default_filed}]
+            out.append(clone)
+        return out
+
     doc = {"schema": "fundamental_forensics_state.v1",
-           "generated_at": generated_at, "companies": companies}
+           "generated_at": generated_at,
+           "companies": {k: {**v, "findings": _norm(v.get("findings"))}
+                         for k, v in companies.items()}}
+    if as_of is not None:
+        doc["as_of"] = as_of
     target = root / "data/fundamental_forensics/private/state.json.gz"
     target.parent.mkdir(parents=True, exist_ok=True)
     target.write_bytes(gzip.compress(json.dumps(doc).encode("utf-8")))
@@ -419,3 +448,174 @@ def test_armed_flags_must_both_be_exactly_one(monkeypatch, tmp_path):
     before = _tree_snapshot(tmp_path)
     assert runner.main([]) == 0
     assert _tree_snapshot(tmp_path) == before
+
+
+# ---------------------------------------------------------------------------
+# 9 — R3: the high_finding recency gate (typed counts, as_of anchor)
+# ---------------------------------------------------------------------------
+_FIF_LISTS = [{"id": "L-FIF-U1", "user_id": "u1", "name": "Filing Forensics"}]
+_FIF_SYMBOLS = [{"watchlist_id": "L-FIF-U1", "symbol": "SMCI"}]
+
+
+def _zero_suppressed() -> dict:
+    return {key: 0 for key in producer.SUPPRESSION_KEYS}
+
+
+def _supp(**counts: int) -> dict:
+    out = _zero_suppressed()
+    out.update(counts)
+    return out
+
+
+def _kinds(fake: FakePg) -> list:
+    return sorted(r["fire_event_id"].split(":")[1] for r in fake.outbox)
+
+
+def _high_world(tmp_path: Path, filed, *, as_of="2026-10-10",
+                extra_findings=()) -> Path:
+    _write_state(tmp_path, {
+        "SMCI": {"symbol": "SMCI", "cik": 1374360, "findings": [
+            {"id": "receivables_stretch:fy25-q3", "priority": "high",
+             "title_en": "Receivables outran revenue",
+             "evidence": [{"basis": "filing_index", "date": filed}]},
+            *extra_findings,
+        ]},
+    }, as_of=as_of)
+    return tmp_path
+
+
+@pytest.mark.parametrize("filed,days", [("2026-10-10", 0), ("2026-09-26", 14)])
+def test_r3_high_finding_inside_window_emits(tmp_path, fake_pg, filed, days):
+    """Both window edges emit: 0 days old and exactly 14 days old."""
+    root = _high_world(tmp_path, filed)
+    fake = fake_pg(lists=_FIF_LISTS, symbols=_FIF_SYMBOLS)
+    result = producer.run(root=root, dry_run=False)
+    assert _kinds(fake) == ["high_finding"]
+    assert result.suppressed == _zero_suppressed()
+
+
+def test_r3_high_finding_15_days_old_is_suppressed_with_exact_counts(
+        tmp_path, fake_pg):
+    root = _high_world(tmp_path, "2026-09-25")
+    fake = fake_pg(lists=_FIF_LISTS, symbols=_FIF_SYMBOLS)
+    result = producer.run(root=root, dry_run=False)
+    assert fake.outbox == []
+    # counts exact: the full typed vocabulary at zero except the one that fired
+    assert result.suppressed == _supp(high_finding_outside_window=1)
+    assert result.planned_n == 0 and result.enqueued_n == 0
+    # the candidate was still DERIVED (it is an event the gate then refused) —
+    # events_n counts pairs, the suppression count explains the difference
+    assert result.events_n == 1
+
+
+def test_r3_high_finding_future_dated_is_suppressed(tmp_path, fake_pg):
+    root = _high_world(tmp_path, "2026-10-11")   # one day AFTER as_of
+    fake = fake_pg(lists=_FIF_LISTS, symbols=_FIF_SYMBOLS)
+    result = producer.run(root=root, dry_run=False)
+    assert fake.outbox == []
+    assert result.suppressed == _supp(high_finding_date_after_as_of=1)
+
+
+@pytest.mark.parametrize("evidence", [
+    [{"basis": "companyfacts_source", "date": "2026-10-05"}],  # no filing_index link
+    [{"basis": "filing_index", "date": "filed 2026-10-05"}],   # not a leading YYYY-MM-DD
+    [{"basis": "filing_index", "date": "2026-10-05T00:00:00Z"}],  # parses (leading form)
+    [],                                                        # no evidence at all
+])
+def test_r3_high_finding_date_shapes(tmp_path, fake_pg, evidence):
+    """Only a leading YYYY-MM-DD on a filing_index entry is a date. A full
+    ISO timestamp still parses (its leading form IS the date); the others are
+    missing -> suppressed, never sent, never an error."""
+    root = _high_world(tmp_path, None)
+    # swap the fixture's evidence for the parametrized shape
+    (root / "data/fundamental_forensics/private/state.json.gz").unlink()
+    _write_state(root, {
+        "SMCI": {"symbol": "SMCI", "cik": 1374360, "findings": [
+            {"id": "receivables_stretch:fy25-q3", "priority": "high",
+             "title_en": "Receivables outran revenue", "evidence": evidence}]},
+    })
+    fake = fake_pg(lists=_FIF_LISTS, symbols=_FIF_SYMBOLS)
+    result = producer.run(root=root, dry_run=False)
+    if evidence and evidence[0].get("date") == "2026-10-05T00:00:00Z":
+        assert _kinds(fake) == ["high_finding"]
+        assert result.suppressed == _zero_suppressed()
+    else:
+        assert fake.outbox == []
+        assert result.suppressed == _supp(high_finding_date_missing=1)
+
+
+def test_r3_missing_as_of_suppresses_all_high_findings_but_other_kinds_emit(
+        tmp_path, fake_pg):
+    root = _high_world(tmp_path, "2026-10-05", as_of=None)
+    _write_receipt(root, detail={"0001374360": ["0001374360-25-000011"]})
+    _write_pointer(root, {"0001374360": {"generation_id": "ffprods_abc123",
+                                         "admitted_at": "2026-10-11T22:00:00Z"}})
+    fake = fake_pg(lists=_FIF_LISTS, symbols=_FIF_SYMBOLS)
+    result = producer.run(root=root, dry_run=False)
+    assert _kinds(fake) == ["generation", "new_filing"]   # high_finding gone
+    assert result.suppressed == _supp(high_finding_as_of_missing=1)
+
+
+def test_r3_counts_are_per_candidate_and_payload_carries_event_date(
+        tmp_path, fake_pg):
+    """Two high findings on one watched issuer: one inside the window, one
+    40 days stale — one row, one typed suppression, and the row's payload
+    records the finding date it was judged by."""
+    root = _high_world(
+        tmp_path, "2026-10-05",
+        extra_findings=[{"id": "inventory_build:fy24-q4", "priority": "high",
+                         "title_en": "Inventory outran revenue",
+                         "evidence": [{"basis": "filing_index",
+                                       "date": "2026-08-31"}]}],
+    )
+    fake = fake_pg(lists=_FIF_LISTS, symbols=_FIF_SYMBOLS)
+    result = producer.run(root=root, dry_run=False)
+    assert _kinds(fake) == ["high_finding"]
+    assert result.suppressed == _supp(high_finding_outside_window=1)
+    assert result.events_n == 2 and result.enqueued_n == 1
+    row = fake.outbox[0]
+    assert row["fire_event_id"] == (
+        "fif:high_finding:0001374360:receivables_stretch:fy25-q3:u1")
+    assert row["payload"]["event_date"] == "2026-10-05"
+
+
+def test_r3_payload_event_date_is_none_for_kinds_without_one(two_user_world,
+                                                             fake_pg):
+    root, lists, symbols = two_user_world
+    fake = fake_pg(lists=lists, symbols=symbols)
+    producer.run(root=root, dry_run=False)
+    by_kind = {r["fire_event_id"].split(":")[1]: r for r in fake.outbox}
+    assert by_kind["high_finding"]["payload"]["event_date"] == "2026-10-05"
+    assert by_kind["new_filing"]["payload"]["event_date"] is None
+    assert by_kind["generation"]["payload"]["event_date"] is None
+
+
+def test_r3_runner_summary_line_carries_the_suppressed_counts(
+        monkeypatch, tmp_path, capsys):
+    monkeypatch.chdir(tmp_path)
+    monkeypatch.setenv("FIF_SAVED_RESEARCH_ENABLE", "1")
+    monkeypatch.setenv("ALERT_DRAIN_ENABLE", "1")
+    stub = producer.ProducerResult(
+        outcome="ok", read_state=producer.READ_OK, error_class=None,
+        users_n=1, symbols_n=1, events_n=2, enqueued_n=1, duplicate_n=0,
+        planned_n=1, state_state=producer.READ_OK,
+        receipt_state=producer.READ_UNAVAILABLE,
+        pointer_state=producer.READ_UNAVAILABLE,
+        suppressed=_supp(high_finding_outside_window=1))
+    monkeypatch.setattr(producer, "run", lambda **kw: stub)
+    from scripts import run_fif_saved_research_notifications as runner
+
+    assert runner.main([]) == 0
+    line = capsys.readouterr().out
+    assert "suppressed=high_finding_outside_window=1" in line
+    # and the all-zero render is an explicit 0, never a missing field
+    stub_zero = producer.ProducerResult(
+        outcome="ok", read_state=producer.READ_OK, error_class=None,
+        users_n=0, symbols_n=0, events_n=0, enqueued_n=0, duplicate_n=0,
+        planned_n=0, state_state=producer.READ_OK,
+        receipt_state=producer.READ_UNAVAILABLE,
+        pointer_state=producer.READ_UNAVAILABLE)
+    capsys.readouterr()
+    monkeypatch.setattr(producer, "run", lambda **kw: stub_zero)
+    assert runner.main([]) == 0
+    assert "suppressed=0" in capsys.readouterr().out

@@ -49,9 +49,10 @@ from __future__ import annotations
 
 import json
 import os
+import re
 import uuid as _uuid_mod
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
+from datetime import date, datetime, timezone
 from pathlib import Path
 from typing import Any
 
@@ -81,6 +82,29 @@ KIND_NEW_FILING = "new_filing"
 KIND_GENERATION = "generation"
 KIND_HIGH_FINDING = "high_finding"
 KINDS = (KIND_NEW_FILING, KIND_GENERATION, KIND_HIGH_FINDING)
+
+# Seat ruling R3 (X2-n r1): high findings are recency-gated so arming the
+# flag — or a user's first watch — never sends the whole backlog. The anchor
+# is the state document's `as_of` (the max latest_filed across the universe,
+# scripts/build_fundamental_forensics.py:1209,1224 — a YYYY-MM-DD string),
+# NEVER wall-clock time; the per-finding date is the filed date of the
+# finding's current period (its first `evidence` entry whose basis ==
+# "filing_index", :212-231,291), never the company's latest_filed.
+# new_filing and generation events are NOT gated by this rule.
+FIF_NEW_FINDING_WINDOW_DAYS = 14
+
+# Typed suppression counts (R3d) in a deterministic key order: fail closed,
+# never a silent drop. Counted per CANDIDATE high-finding event (user x
+# finding), matching the pair accounting of events_n everywhere else.
+SUPPRESSION_KEYS = (
+    "high_finding_as_of_missing",      # as_of absent/unparseable -> every high finding
+    "high_finding_date_missing",       # no parseable filing_index date
+    "high_finding_date_after_as_of",   # finding_date > as_of
+    "high_finding_outside_window",     # older than FIF_NEW_FINDING_WINDOW_DAYS
+)
+
+# Only a leading YYYY-MM-DD is honored; anything else counts as missing.
+_LEADING_DATE_RE = re.compile(r"^(\d{4})-(\d{2})-(\d{2})")
 
 # Glance-tier banned tokens — the thesis monitor's discipline
 # (engine/thesis_condition_monitor.py:121). The mailer applies its own wider
@@ -141,6 +165,10 @@ class FifEvent:
     condition_plain: str
     subject: str
     fired_at: str | None
+    # R3f: the date the payload records for this event — the finding's
+    # filing_index date (YYYY-MM-DD) for high_finding, None for kinds
+    # without one.
+    event_date: str | None = None
 
 
 @dataclass(frozen=True)
@@ -150,6 +178,8 @@ class ProducerPlan:
     symbols_n: int
     events_n: int
     duplicate_n: int
+    # R3e: typed suppression counts (SUPPRESSION_KEYS order, deterministic).
+    suppressed: dict[str, int] = field(default_factory=dict)
 
 
 @dataclass(frozen=True)
@@ -167,6 +197,8 @@ class ProducerResult:
     receipt_state: str
     pointer_state: str
     notes: list[str] = field(default_factory=list)
+    # R3e: carried from the final plan so the runner can print the counts.
+    suppressed: dict[str, int] = field(default_factory=dict)
 
 
 # ---------------------------------------------------------------------------
@@ -217,6 +249,54 @@ def _plain(text: Any, fallback: str) -> str:
 
 def evidence_url(ticker: str, evidence_base: str = EVIDENCE_BASE) -> str:
     return f"{evidence_base.rstrip('/')}/{FIF_PAGE}?symbol={ticker}"
+
+
+# ---------------------------------------------------------------------------
+# R3 recency gate — pure date parsing, no wall-clock anywhere
+# ---------------------------------------------------------------------------
+def _parse_leading_date(value: Any) -> date | None:
+    """A leading YYYY-MM-DD only (R3c). Anything else — including a date-like
+    string with a bad month/day — counts as missing, never an error."""
+    text = str(value or "").strip()
+    match = _LEADING_DATE_RE.match(text)
+    if not match:
+        return None
+    try:
+        return date(int(match.group(1)), int(match.group(2)), int(match.group(3)))
+    except ValueError:
+        return None
+
+
+def _finding_filed_date(finding: Any) -> date | None:
+    """The filed date of the finding's current period: the `date` of its FIRST
+    `evidence` entry whose `basis` == "filing_index"
+    (scripts/build_fundamental_forensics.py:212-231,291 — _source_links emits
+    the filing_index link first, carrying the current period's `filed`). The
+    company's own latest_filed is NEVER substituted (R3c)."""
+    evidence = finding.get("evidence") if isinstance(finding, dict) else None
+    if not isinstance(evidence, (list, tuple)):
+        return None
+    for entry in evidence:
+        if isinstance(entry, dict) and entry.get("basis") == "filing_index":
+            return _parse_leading_date(entry.get("date"))
+    return None
+
+
+def _high_finding_gate(event: FifEvent, as_of: date | None) -> str | None:
+    """None = emit. Otherwise the typed suppression key (R3d): a high finding
+    row is emitted only when 0 <= (as_of - finding_date).days <=
+    FIF_NEW_FINDING_WINDOW_DAYS, checked fail-closed in SUPPRESSION_KEYS
+    order. new_filing and generation events never reach this gate."""
+    if as_of is None:
+        return "high_finding_as_of_missing"
+    filed = _parse_leading_date(event.event_date)
+    if filed is None:
+        return "high_finding_date_missing"
+    if filed > as_of:
+        return "high_finding_date_after_as_of"
+    if (as_of - filed).days > FIF_NEW_FINDING_WINDOW_DAYS:
+        return "high_finding_outside_window"
+    return None
 
 
 def _receipt_detail(receipt: Any) -> dict[str, list[str]]:
@@ -296,6 +376,7 @@ def derive_events(
                 ref = str(finding.get("id") or "").strip()
                 if not ref:
                     continue
+                filed = _finding_filed_date(finding)
                 _emit(
                     user_id,
                     (KIND_HIGH_FINDING, cik, ref, user_id),
@@ -310,6 +391,7 @@ def derive_events(
                         ),
                         subject=f"A new review item needs attention on {ticker}",
                         fired_at=generated_at,
+                        event_date=filed.isoformat() if filed else None,
                     ),
                 )
             # new_filing — only from the receipt mirror's per-CIK detail map.
@@ -353,8 +435,14 @@ def derive_events(
 
 def compose_payload(event: FifEvent, *, evidence_base: str = EVIDENCE_BASE) -> dict:
     """The compose_alert contract fields (app/mailer.py:1379-1430) plus the
-    category the drain filters on (engine/alert_delivery_drain.py:495-507).
-    Nothing else — no values, no scores, no slugs."""
+    category the drain filters on (engine/alert_delivery_drain.py:495-507),
+    and event_date (R3f) — the date the payload records for the event (None
+    for kinds without one). Both consumers read named keys only and ignore
+    extras (drain: payload.get("category")/:514 requires_tier and the
+    isinstance dict pass-through :767-768,:820; mailer compose_alert reads
+    ticker/condition_plain/evidence_url/fired_at/subject by name and never
+    rejects unknown keys), so the extra field is harmless. Nothing else —
+    no values, no scores, no slugs."""
     return {
         "ticker": event.ticker,
         "condition_plain": event.condition_plain,
@@ -362,6 +450,7 @@ def compose_payload(event: FifEvent, *, evidence_base: str = EVIDENCE_BASE) -> d
         "subject": event.subject,
         "fired_at": event.fired_at,
         "category": CATEGORY,
+        "event_date": event.event_date,
     }
 
 
@@ -394,12 +483,23 @@ def plan_enqueue(
     evidence_base: str = EVIDENCE_BASE,
 ) -> ProducerPlan:
     """One row per (user, event); ids already present in alert_outbox (or
-    already minted this run) are counted as duplicates and skipped."""
+    already minted this run) are counted as duplicates and skipped. A high
+    finding outside the R3 recency window is suppressed BEFORE its id is
+    minted — a suppressed candidate never enters the probe either, so it
+    consumes no dedupe lookup and never becomes a row."""
     pairs = derive_events(subscriptions=subscriptions, inputs=inputs)
     rows: list[dict] = []
     duplicate_n = 0
+    suppressed: dict[str, int] = {key: 0 for key in SUPPRESSION_KEYS}
     seen: set[str] = set()
+    state_doc = inputs.state_doc if isinstance(inputs.state_doc, dict) else None
+    as_of = _parse_leading_date((state_doc or {}).get("as_of"))
     for user_id, event in pairs:
+        if event.kind == KIND_HIGH_FINDING:
+            gate = _high_finding_gate(event, as_of)
+            if gate is not None:
+                suppressed[gate] += 1
+                continue
         fid = fire_event_id(
             kind=event.kind, cik=event.cik, event_ref=event.event_ref, user_id=user_id
         )
@@ -422,6 +522,7 @@ def plan_enqueue(
         symbols_n=sum(len(s) for s in subscriptions.values()),
         events_n=len(pairs),
         duplicate_n=duplicate_n,
+        suppressed=suppressed,
     )
 
 
@@ -656,4 +757,5 @@ def run(
         receipt_state=inputs.receipt_state,
         pointer_state=inputs.pointer_state,
         notes=notes,
+        suppressed=plan.suppressed,
     )
