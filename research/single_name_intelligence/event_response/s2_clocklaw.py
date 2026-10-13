@@ -20,6 +20,7 @@ from engine.qledger import (  # noqa: F401  (re-exported for one-clock callers)
     MARKET_US,
     next_session_strictly_after,
 )
+from lib.exchange_holidays import early_close
 
 _TZ_LOCAL = {
     MARKET_US: ZoneInfo("America/New_York"),
@@ -52,13 +53,15 @@ def to_utc(naive: datetime, from_tz: str) -> datetime:
 def session_part(t_avail_utc: datetime, market: str) -> str:
     """pre_open | in_session | midday_break | after_close (metadata only)."""
     local = t_avail_utc.astimezone(_TZ_LOCAL[market])
+    ec = early_close(market, local.date())
     t = local.time()
+    session_end = ec if ec is not None else _SESSION_END_LOCAL[market]
     if t < _REGULAR_OPEN_LOCAL[market]:
         return "pre_open"
     brk = _MIDDAY_BREAK.get(market)
-    if brk and brk[0] <= t < brk[1]:
+    if brk and brk[0] <= t < brk[1] and t < session_end:
         return "midday_break"
-    if t < _SESSION_END_LOCAL[market]:
+    if t < session_end:
         return "in_session"
     return "after_close"
 
