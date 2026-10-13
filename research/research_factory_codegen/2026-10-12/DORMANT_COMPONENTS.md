@@ -1,4 +1,4 @@
-# Dormant accounting and evaluator components
+# Dormant research codegen components
 
 This source slice follows the Research Factory codegen assignment owned by root
 `01a1333c-a475-7052-95a8-72a88eb8c17b`. It starts from Macro
@@ -38,11 +38,32 @@ calls no CLI, data loader, writer, gauntlet or candidate source. It establishes
 synthetic numerical integration only. The existing Research Factory CI job owns
 both test files and explicitly installs its numerical test dependencies.
 
+`engine/research_codegen/transport.py` adds a dormant trusted transport contract.
+It separates workload completion from cleanup, requires the same verified
+container identity, retains uncertain or failed execution after reconciliation,
+and binds receipts to the immutable original plan. Contradictory create IDs
+permit no follow-up mutation. The real Docker engine refuses before subprocess
+creation; there is no qualification issuer or environment activation switch.
+The original Fabric return was rejected and remains unaccepted. The accepted
+source derives from reviewed evidence repairs, including root repairs to plan
+budget consistency and the canonical test binding.
+
+The integrated transport suite passed **138 tests**, including five tests using
+tiny trusted local Python subprocesses for exact output, shell avoidance,
+minimal environment, output limits and deadline/reaping behavior. Actual process
+reaping requires a settled return code. The environment test verifies exactly
+what is passed to Popen and permits only macOS-generated text-encoding metadata
+beyond that environment on Darwin. A red fixture demonstrated that the original
+plan admitted 601 seconds beyond the collector maximum; the repaired plan and
+collector share a 600-second maximum. These are local client-process results,
+not Docker, generated-candidate, network isolation or Linux containment proof.
+The existing CI job also owns the transport test file.
+
 This package is unregistered and unwired. No candidate generation or execution,
 historical evaluation, canonical accounting write, Vault label release, workflow
 activation, product routing or deployment is introduced. Physical containment,
 effective repository protections, qualified real source/calendar/vintage evidence,
 trusted writer and label-release integration, full input/output identity mapping,
 statistical calibration and the authenticated operator/prospective workflow remain
-separate obligations. Pending contract, transport and structural-check artifacts
-are not silently treated as accepted by this source slice.
+separate obligations. Pending contract and structural-check artifacts are not silently treated as
+accepted by this source slice. Real transport qualification remains absent.

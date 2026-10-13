@@ -8847,6 +8847,7 @@ jobs:
           tests/test_research_factory_market_memory.py
           tests/test_research_codegen_accounting_contract.py
           tests/test_research_codegen_evaluation.py
+          tests/test_research_codegen_transport.py
           -q
 
   cycle-pattern-authority:
