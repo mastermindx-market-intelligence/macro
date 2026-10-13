@@ -559,13 +559,23 @@ def _expand_details(page, summary_selector: str) -> None:
             already = False
         if already:
             continue
-        try:
-            summary.click(timeout=4000)
-        except Exception:
+        clicked = False
+        for kwargs in ({"timeout": 4000}, {"timeout": 4000, "force": True}):
             try:
-                summary.click(timeout=4000, force=True)
-            except Exception as exc:
-                raise SetupError(f"could not expand details ({exc})") from exc
+                summary.click(**kwargs)
+                clicked = True
+                break
+            except Exception:
+                continue
+        if clicked:
+            continue
+        # JavaScript-off leaves the dialog display:none, and this Playwright
+        # build still refuses locator.click(force=True) as "not visible".
+        # The summary element's own click opens the disclosure anyway.
+        try:
+            summary.evaluate("el => el.click()")
+        except Exception as exc:
+            raise SetupError(f"could not expand details ({exc})") from exc
 
 
 def _count_tab_escapes(page, dialog: str) -> int:

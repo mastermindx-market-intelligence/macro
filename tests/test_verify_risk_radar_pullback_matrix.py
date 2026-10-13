@@ -110,6 +110,11 @@ def test_details_cell_option_covers_expanded_and_collapsed():
     drive = text.split("def _drive_cell", 1)[1].split("\ndef run_matrix", 1)[0]
     assert "section.pbx details > summary" in drive
     assert 'cell.get("details") == "expanded"' in drive
+    expand = text.split("def _expand_details", 1)[1].split("\ndef _count_tab_escapes", 1)[0]
+    # A closed dialog hides the summary. Playwright's click then reports
+    # "not visible" even with force, which is the JavaScript-off cell.
+    # The summary's own click still opens the disclosure.
+    assert "el.click()" in expand
 
 
 def test_enumerates_twenty_cells():
