@@ -19,7 +19,7 @@ changed:
   - path: tests/test_market_memory_m0d_v2.py
     what: Add envelope identity, adjustment, conflicting row, stability and original-byte regression cases.
   - path: .github/ci/legacy-jobs.yml
-    what: Run the data-free page suite with its actual Node runtime inside the existing product-experience code job and normal inferred dependency closure.
+    what: Run the data-free page suite with its actual Node runtime inside the existing public-render-fastlane code job and normal inferred dependency closure.
 verified:
   - claim: The complete owning M0D v2 suite passes after the reviewed repair is applied.
     command: python3 -m pytest tests/test_market_memory_m0d_v2.py -q --disable-warnings
@@ -35,7 +35,14 @@ verified:
     command: >
       Run the owning page suite and the focused CI authority, plan, semantic-change,
       loader and security regressions recorded in the source recovery PR.
-    result: Page 8 passed; authority, plan and semantic-change 165 passed; selected loader and security 10 passed.
+    result: >
+      Final registered primary lane: 57 passed, one pre-existing deselection;
+      unchanged glossary lane: 43 passed plus its sparse-fixture parity case passed
+      after exact tracked asset hydration. Final loader/security checks: 10 passed.
+      Protected planner measured all three existing narrow-change probes within
+      their unchanged job, weight and pack ceilings, with identical selected job sets.
+      Earlier CI authority/plan/semantic checks passed 165 before final placement;
+      hosted exact-head contract-delta and code packs remain required.
 unverified:
   - claim: Source repair is merged, installed and produces an authentic natural sealed capture.
     what_would_verify: >
@@ -66,7 +73,7 @@ danger_areas:
   - A successful service exit, source test, CI job or merge is not a qualified natural capture.
   - A valid result row must not be labelled unadjusted solely because the request asked for adjusted=false.
   - The same source result bytes define the seal digest; do not insert synthetic row ticker fields.
-prs: [6528, 6943, 8694]
+prs: [6528, 6943, 8694, 9078]
 ---
 
 The assigned native root is `01a1333c-a475-7052-95a8-72c623fb12e1`.

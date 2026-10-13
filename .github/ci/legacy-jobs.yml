@@ -16560,6 +16560,9 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
       - name: install minimal deps
         run: pip install pytest pyyaml jinja2
       # --deselect: test_build_site_renders_help_page_with_the_full_view_model imports
@@ -16575,7 +16578,9 @@ jobs:
       # pure text checks on sector-intelligence.yml / whitehouse-sentinel.yml. They
       # live HERE (gate: code, minimal deps) because the engine suites next to them
       # (express-render-guards, outcome-spine) are gate: data and never run in a PR pack.
-        run: python -m pytest tests/test_public_render_fastlane.py tests/test_help_directory.py tests/test_help_directory_contract.py tests/test_workflow_publish_chains.py -q --deselect tests/test_help_directory.py::test_build_site_renders_help_page_with_the_full_view_model
+      # Also validate the data-free Market Memory shell and owned read-API wiring.
+      # This test registration does not alter production render/publish inventory.
+        run: node --version && python -m pytest tests/test_public_render_fastlane.py tests/test_help_directory.py tests/test_help_directory_contract.py tests/test_workflow_publish_chains.py tests/test_build_market_memory_page.py -q -rs --deselect tests/test_help_directory.py::test_build_site_renders_help_page_with_the_full_view_model
       # F13-1 (2026-09-06): the public glossary directory is built by the same
       # scripts/build_public_pages.py fast path and shares this job's exact
       # dependency line (pytest pyyaml jinja2) with the help-directory suites
@@ -22999,7 +23004,7 @@ jobs:
     if: ${{ false }}
     gate: code
     # HANDOFF C (Operation Institutionalize), half one: the cross-repo page
-    # registry census and data-free product-shell contracts; no browser process.
+    # registry census. Pure pytest, no browser anywhere near it.
     #
     # This job's inferred scope is HONESTLY broad: the builder censuses the real
     # site/ and templates/ trees, so a tree traversal is what it is FOR and the
@@ -23014,16 +23019,10 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - uses: actions/setup-node@v4
-        with:
-          node-version: "20"
       - name: install product-experience test deps
-        run: pip install pytest pyyaml jinja2
-      - name: page registry and Market Memory shell contracts
-        run: >-
-          node --version && TZ=UTC python -m pytest
-          tests/test_build_product_page_registry.py
-          tests/test_build_market_memory_page.py -q -rs
+        run: pip install pytest pyyaml
+      - name: page registry — committed-JSON drift guard + derivation contracts
+        run: TZ=UTC python -m pytest tests/test_build_product_page_registry.py -q
       # DS-PR-1 suites, appended rather than given their own manifest entry: a
       # 181st job reds tests/test_ci_pack.py's narrow-diff ceiling, and both
       # suites' scopes (templates/**, the registry builder, the committed JSON)
