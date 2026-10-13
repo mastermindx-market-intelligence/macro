@@ -150,16 +150,16 @@
       },
       {
         "id": "us_sector_staples",
-        "ignition_score": 0.6677,
+        "ignition_score": 0.6726,
         "state": "igniting",
         "components": {
-          "breadth_thrust": 0.5429,
+          "breadth_thrust": 0.5455,
           "breadth_n": [
-            19,
-            35
+            18,
+            33
           ],
-          "rs_slope_change": 0.6264,
-          "rs_slope_raw": 0.01292,
+          "rs_slope_change": 0.6361,
+          "rs_slope_raw": 0.01396,
           "mtf_confirm": 1.0,
           "mtf_ok": true,
           "commodity_flip": false
@@ -339,5 +339,5 @@
     "phase": null
   },
   "accruing": "accruing \u2014 display-only until >=30 broad-state grades + operator ruling. Forward-graded by engine/ignition_audit.py (US arm).",
-  "_timing_s": 2.48
+  "_timing_s": 3.43
 }
