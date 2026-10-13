@@ -26145,6 +26145,7 @@ jobs:
       - config/dataset_registry.yml
       - lib/dataos/**
       - tests/test_dataos_identity.py
+      - tests/test_dataos_action_projection.py
       - tests/test_dataos_reference_read.py
       - tests/test_dataos_nulls.py
       - tests/test_dataos_price.py
@@ -26167,6 +26168,7 @@ jobs:
         run: >-
           PYTHONDONTWRITEBYTECODE=1 python -m pytest
           tests/test_dataos_identity.py
+          tests/test_dataos_action_projection.py
           tests/test_dataos_reference_read.py
           tests/test_dataos_temporal.py
           tests/test_dataos_price.py
