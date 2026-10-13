@@ -366,14 +366,20 @@ def test_ind_sf02() -> None:
     assert ok["value"] == "10", ok
 
 
-def test_ind_sf02_unknown_accounting_token_refuses() -> None:
-    """IND-SF02 literal token: ``accounting="unknown"`` is not a basis.
+@pytest.mark.parametrize(
+    "accounting",
+    ("unknown", "Unknown", "UNKNOWN", "Unknown "),
+    ids=("unknown", "Unknown", "UNKNOWN", "Unknown_trailing_space"),
+)
+def test_ind_sf02_unknown_accounting_token_refuses(accounting: str) -> None:
+    """IND-SF02: a stripped casefold of ``unknown`` is not an accounting basis.
 
     Both operands carry the token, recast is present, and every receipt gate
-    is checked. That probe must refuse with ``required_basis_unknown`` and
-    publish no number. A truthy token must not certify growth ``10``.
+    is checked. ``unknown``, ``Unknown``, ``UNKNOWN``, and ``Unknown ``
+    (trailing space) must refuse with ``required_basis_unknown`` and publish
+    no number. A truthy token must not certify growth ``10``.
     """
-    basis = {"accounting": "unknown", "recast": "as_reported"}
+    basis = {"accounting": accounting, "recast": "as_reported"}
     cells = [
         cell(
             "110",

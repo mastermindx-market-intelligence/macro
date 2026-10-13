@@ -726,30 +726,41 @@ def test_qualify_operands_refuses_unknown_basis() -> None:
     assert any("required_basis_unknown" in lim for lim in q["limitations"])
 
 
-# basis.accounting is stored verbatim. _parse_operand copies the basis mapping
-# through; the only strip in this module is value_text. A padded token is a
-# present basis, not the accounting token "unknown".
+# strip() in _parse_operand is only the non-finite predicate. value_text is
+# stored raw. basis is the caller's mapping. A stripped casefold equal to
+# "unknown" is a missing basis.
 _ACCOUNTING_UNKNOWN_CASES = (
     ("unknown", True),
     ("Unknown", True),
     ("UNKNOWN", True),
-    (" unknown ", False),
+    (" unknown ", True),
+    ("Unknown ", True),
+    ("UNKNOWN ", True),
+    (" unknown", True),
 )
 
 
 @pytest.mark.parametrize(
     ("accounting", "refused"),
     _ACCOUNTING_UNKNOWN_CASES,
-    ids=["unknown", "Unknown", "UNKNOWN", "padded"],
+    ids=[
+        "unknown",
+        "Unknown",
+        "UNKNOWN",
+        "padded",
+        "Unknown_trailing",
+        "UNKNOWN_trailing",
+        "leading_space",
+    ],
 )
 def test_unknown_accounting_token_casing(accounting: str, refused: bool) -> None:
-    """Any casing of the accounting token ``unknown`` is a missing basis.
+    """A stripped casefold of the accounting token ``unknown`` is a missing basis.
 
     Both operands carry the token, recast is present, and every receipt gate
-    is checked. Cased forms refuse with ``required_basis_unknown`` and publish
-    no number. ``" unknown "`` stays present because this field is not
-    stripped, and certifies growth ``10``. GAAP on both sides still certifies
-    growth ``10``.
+    is checked. ``unknown``, ``Unknown``, ``UNKNOWN``, ``" unknown "``,
+    ``"Unknown "``, ``"UNKNOWN "``, and ``" unknown"`` refuse with
+    ``required_basis_unknown`` and publish no number. GAAP and IFRS on both
+    sides still certify growth ``10``.
     """
     checked_all = {
         name: True
@@ -798,25 +809,30 @@ def test_unknown_accounting_token_casing(accounting: str, refused: bool) -> None
         assert derived["value"] == "10", derived
         assert "required_basis_unknown" not in derived["limitations"], derived
 
-    present = {"accounting": "GAAP", "recast": "as_reported"}
-    ok_cells = [
-        cell(
-            "110",
-            metric="revenue_current",
-            owner_ref="synthetic:cell:sf02-current",
-            basis=present,
-        ),
-        cell(
-            "100",
-            metric="revenue_prior",
-            owner_ref="synthetic:cell:sf02-prior",
-            basis=present,
-        ),
-    ]
-    ok_receipt = build_comparison_receipt("year_over_year", ok_cells, checked=checked_all)
-    ok = derive_result_cash("growth_pct", ok_cells, comparison_receipt=ok_receipt)
-    assert ok["status"] == "ready", ok
-    assert ok["value"] == "10", ok
+    for standard in ("GAAP", "IFRS"):
+        present = {"accounting": standard, "recast": "as_reported"}
+        ok_cells = [
+            cell(
+                "110",
+                metric="revenue_current",
+                owner_ref="synthetic:cell:sf02-current",
+                basis=present,
+            ),
+            cell(
+                "100",
+                metric="revenue_prior",
+                owner_ref="synthetic:cell:sf02-prior",
+                basis=present,
+            ),
+        ]
+        ok_receipt = build_comparison_receipt(
+            "year_over_year", ok_cells, checked=checked_all
+        )
+        ok = derive_result_cash(
+            "growth_pct", ok_cells, comparison_receipt=ok_receipt
+        )
+        assert ok["status"] == "ready", (standard, ok)
+        assert ok["value"] == "10", (standard, ok)
 
 
 def test_qualify_operands_refuses_scale_mismatch_without_conversion() -> None:
