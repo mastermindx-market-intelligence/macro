@@ -51,6 +51,7 @@ _DRAFT_2020_12_URIS = frozenset(
 _CONTRACT_ID_PATTERN = re.compile(r"^[a-z][a-z0-9_-]*(?:\.[a-z0-9_-]+)*\.v[1-9][0-9]*$")
 _JSON_PATH_KEY_PATTERN = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*$")
 _PACKET_CONTRACT_ID = "sector_intelligence_packet.v1"
+_SECTOR_DOSSIER_CONTRACT_ID = "sector_dossier_read_model.v1"
 _ONTOLOGY_CONTRACT_ID = "biocatalyst_ontology.v1"
 _CTGOV_FETCH_RUN_CONTRACT_ID = "ctgov_fetch_run.v1"
 _CTGOV_WATERMARK_CONTRACT_ID = "ctgov_watermark.v1"
@@ -735,6 +736,183 @@ def _content_hash_issue(
         code,
         f"declared hash {expected} does not match canonical payload hash {actual}",
     )
+
+
+def _sector_dossier_issues(
+    document: Mapping[str, Any],
+    repo_root: Path,
+) -> list[ValidationIssue]:
+    """Enforce dossier hash, governance bindings, authority ceiling, and source refs."""
+
+    issues: list[ValidationIssue] = []
+
+    hash_issue = _content_hash_issue(
+        document,
+        hash_field="dossier_hash",
+        excluded_fields=frozenset(("dossier_hash",)),
+        code="dossier.hash",
+    )
+    if hash_issue is not None:
+        issues.append(hash_issue)
+
+    identity = document.get("identity")
+    governance = document.get("governance")
+    if not isinstance(identity, Mapping) or not isinstance(governance, Mapping):
+        return issues  # JSON Schema reports structural failures.
+
+    packet = governance.get("packet")
+    lobe_run = governance.get("lobe_run")
+    manifest = governance.get("authority_manifest")
+    if not all(isinstance(row, Mapping) for row in (packet, lobe_run, manifest)):
+        return issues
+
+    native_id = identity.get("native_id")
+    sector_bindings = (
+        ("packet", packet.get("sector")),
+        ("lobe_run", lobe_run.get("sector")),
+        ("authority_manifest", manifest.get("sector")),
+    )
+    for name, value in sector_bindings:
+        if isinstance(native_id, str) and isinstance(value, str) and value != native_id:
+            issues.append(
+                ValidationIssue(
+                    f"$.governance.{name}.sector",
+                    "governance.sector_binding",
+                    f"{name}.sector must equal identity.native_id",
+                )
+            )
+
+    packet_id = packet.get("packet_id")
+    packet_hash = packet.get("packet_hash")
+    run_id = lobe_run.get("run_id")
+    manifest_id = manifest.get("manifest_id")
+
+    bindings = (
+        ("$.governance.packet.lobe_run_ref", packet.get("lobe_run_ref"), run_id, "packet.lobe_run_ref must equal lobe_run.run_id"),
+        ("$.governance.packet.authority_manifest_ref", packet.get("authority_manifest_ref"), manifest_id, "packet.authority_manifest_ref must equal authority_manifest.manifest_id"),
+        ("$.governance.lobe_run.authority_manifest_ref", lobe_run.get("authority_manifest_ref"), manifest_id, "lobe_run.authority_manifest_ref must equal authority_manifest.manifest_id"),
+        ("$.governance.authority_manifest.artifact_ref", manifest.get("artifact_ref"), packet_id, "authority_manifest.artifact_ref must equal packet.packet_id"),
+    )
+    for path, actual, expected, message in bindings:
+        if isinstance(actual, str) and isinstance(expected, str) and actual != expected:
+            issues.append(ValidationIssue(path, "governance.binding", message))
+
+    outputs = lobe_run.get("output_artifacts")
+    if isinstance(outputs, list) and isinstance(packet_id, str) and isinstance(packet_hash, str):
+        bound = any(
+            isinstance(row, Mapping)
+            and row.get("artifact_ref") == packet_id
+            and row.get("content_sha256") == packet_hash
+            for row in outputs
+        )
+        if not bound:
+            issues.append(
+                ValidationIssue(
+                    "$.governance.lobe_run.output_artifacts",
+                    "governance.output_binding",
+                    "lobe_run.output_artifacts must bind packet.packet_id and packet.packet_hash",
+                )
+            )
+
+    nested = (
+        ("packet", _PACKET_CONTRACT_ID, packet),
+        ("lobe_run", "lobe_run.v1", lobe_run),
+        ("authority_manifest", _AUTHORITY_MANIFEST_CONTRACT_ID, manifest),
+    )
+    for name, contract_id, nested_document in nested:
+        try:
+            validate_contract(contract_id, nested_document, repo_root=repo_root)
+        except ContractValidationError as exc:
+            detail = "; ".join(str(issue) for issue in exc.issues)
+            issues.append(
+                ValidationIssue(
+                    f"$.governance.{name}",
+                    f"governance.{name}_contract",
+                    f"nested {contract_id} failed validation: {detail}",
+                )
+            )
+        except ContractError as exc:
+            issues.append(
+                ValidationIssue(
+                    f"$.governance.{name}",
+                    f"governance.{name}_contract",
+                    f"nested {contract_id} could not be validated: {exc}",
+                )
+            )
+
+    authority = document.get("authority_caps")
+    if isinstance(authority, Mapping):
+        expected = {
+            "is_context_only": True,
+            "may_rank": False,
+            "may_gate": False,
+            "may_size": False,
+            "may_escalate": False,
+            "may_trade": False,
+            "may_modify_prophet": False,
+        }
+        for key, expected_value in expected.items():
+            if authority.get(key) is not expected_value:
+                issues.append(
+                    ValidationIssue(
+                        f"$.authority_caps.{key}",
+                        "authority.context_only",
+                        f"{key} must be {expected_value!r} for the facts/explanation-only dossier",
+                    )
+                )
+
+    packet_caps = packet.get("authority_caps")
+    if isinstance(packet_caps, Mapping) and packet_caps.get("max_authority") not in _FACT_ONLY_AUTHORITIES:
+        issues.append(
+            ValidationIssue(
+                "$.governance.packet.authority_caps.max_authority",
+                "authority.packet_ceiling",
+                "nested packet authority may not exceed A1_EXPLAIN",
+            )
+        )
+
+    receipt_paths = []
+    for row in document.get("input_receipts", []):
+        if isinstance(row, Mapping) and isinstance(row.get("path"), str):
+            receipt_paths.append(row["path"])
+
+    packet_refs: set[str] = set()
+    for key in (
+        "entity_refs",
+        "security_refs",
+        "current_fact_refs",
+        "material_change_event_refs",
+        "upcoming_event_refs",
+        "feature_snapshot_refs",
+        "prediction_refs",
+        "evidence_claim_refs",
+        "source_record_refs",
+    ):
+        values = packet.get(key)
+        if isinstance(values, list):
+            packet_refs.update(value for value in values if isinstance(value, str))
+
+    for index, conflict in enumerate(document.get("conflicts", [])):
+        if not isinstance(conflict, Mapping):
+            continue
+        refs = conflict.get("source_refs")
+        if not isinstance(refs, list):
+            continue
+        for ref_index, ref in enumerate(refs):
+            if not isinstance(ref, str):
+                continue
+            admitted = ref in packet_refs or any(
+                ref == path or ref.startswith(path + "#/") for path in receipt_paths
+            )
+            if not admitted:
+                issues.append(
+                    ValidationIssue(
+                        f"$.conflicts[{index}].source_refs[{ref_index}]",
+                        "governance.source_ref",
+                        "conflict source_ref must bind an input receipt path or nested packet ref",
+                    )
+                )
+    return issues
 
 
 def _biocatalyst_launch_slo_manifest_issues(
@@ -3810,6 +3988,8 @@ def _biocatalyst_product_acceptance_manifest_issues(
 def _contract_semantic_issues(
     contract_id: str, document: Mapping[str, Any], repo_root: Path
 ) -> list[ValidationIssue]:
+    if contract_id == _SECTOR_DOSSIER_CONTRACT_ID:
+        return _sector_dossier_issues(document, repo_root)
     if contract_id == _PACKET_CONTRACT_ID:
         issue = _content_hash_issue(
             document,

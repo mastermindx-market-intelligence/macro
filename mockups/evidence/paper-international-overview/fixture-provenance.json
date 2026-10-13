@@ -1,0 +1,10 @@
+{
+  "kind": "synthetic empty supplied-frame actual builder/template fixture",
+  "live_product_proof": false,
+  "source_qualification": null,
+  "browser": "system Chrome on Mini2",
+  "html_sha256": "6ce69b3c61e1caa0ca3fd7cab2259ac7ecb3a140deb247435ebf95b60445c28b",
+  "capture_module_sha256": "8d753e2859d5261eb0d0bad3f626f8870eedf03e23a7f87b4b588bd792e88f16",
+  "driver_factory": "canonical _PlaywrightDriver with channel=chrome",
+  "capture_rc": 0
+}

@@ -99,7 +99,7 @@ def test_identity_timer_is_an_explicit_bounded_retry_contract() -> None:
 
     assert "After=local-fs.target" in service
     assert "After=network.target" not in service
-    assert "TimeoutStartSec=180" in service
+    assert "TimeoutStartSec=600" in service
     assert "OnBootSec=11min" in timer
     assert "OnCalendar=*-*-* *:29:00 UTC" in timer
     assert "AccuracySec=1min" in timer

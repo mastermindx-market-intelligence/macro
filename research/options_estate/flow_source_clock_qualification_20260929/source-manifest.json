@@ -1,0 +1,22 @@
+{
+  "base": "1df73c1ac9289a21e192aeb50088a4f9119aee82",
+  "governing_skillpack": "0b3bdf78be9b86bc3672f224ddacf80854a4c3fb",
+  "owned_files": {
+    "collectors/flow_signals.py": "833c6b02e59d4e1005060e936879bedf6d0ed9a1224f7dde3ca1eab26865dbda",
+    "scripts/build_flow_signals.py": "4842014ea7404a7603f4e7b541360db8cf04f825302417b895acd5ba30c4452f",
+    "tests/test_flow_signals.py": "195ea3912814ef8f6db736ef33a4fda25d233e38ebf1f4b4f68e50f20f1dcade"
+  },
+  "tests": "68 passed; tests/test_flow_signals.py",
+  "no_model_fit": true,
+  "no_runtime_or_production_write": true,
+  "preserved_source_owners": [
+    "Terminal #667",
+    "Macro #7265"
+  ],
+  "unchanged_guarded_paths": [
+    "engine/flow_signals_grade.py",
+    "lib/flow_score.py",
+    "config/flow_score.yml",
+    "scripts/ops_train_flow_score.py"
+  ]
+}

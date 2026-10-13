@@ -1,0 +1,59 @@
+{
+  "operation": "mmx-public-intelligence-delivery-20261011-local-ceo-001",
+  "kind": "editorial_source_qualification",
+  "observed_at": "2026-10-12T04:07:55.398685+00:00",
+  "reviewed_at": "2026-10-12T04:22:39.480907+00:00",
+  "event_date": "2026-10-10",
+  "candidate": "CEA manufacturing report release: distinguish the new report from older investment pledges",
+  "existing_feed_ingress": {
+    "url": "https://www.whitehouse.gov/news/feed/",
+    "feed_sha256": "1d0b7af8f564569c793aa9bf3dba9878999ac6e098b54f1ed0ee536bc1dd47ba",
+    "candidate": {
+      "id": "wh-2026-10-10-the-state-of-american-manufacturing",
+      "guid": "https://www.whitehouse.gov/?p=52545",
+      "title": "The State of American Manufacturing",
+      "url": "https://www.whitehouse.gov/research/2026/10/the-state-of-american-manufacturing/",
+      "published": "2026-10-10T20:46:32+00:00",
+      "section": "news",
+      "body_origin": "content_encoded",
+      "body_truncated": false
+    }
+  },
+  "retained_source": {
+    "path": "/Users/chriswong/agent-evidence/mmx-public-intelligence-20261011/whitehouse-news-20261012/source_documents/7e89075b84af8299bb3123d9e8ed5b2633257c2c9c40ed28723cb231d5c01fc5.json",
+    "sha256": "7e89075b84af8299bb3123d9e8ed5b2633257c2c9c40ed28723cb231d5c01fc5",
+    "body_sha256": "11843079da9dff9879f8e8fc366c196a5b1d7289765f6bf860d2cb7a6cbacc2b"
+  },
+  "rights_basis": {
+    "qualification": "government_authored_factual_reporting",
+    "policy_url": "https://www.whitehouse.gov/copyright/",
+    "policy_file": "research/agentic_media/public_intelligence_20261011/sources/whitehouse_copyright_20261011.txt",
+    "policy_file_sha256": "2c765b6ed9c845d1f916fea389bdb5d23a59b911d68f2771ade761d0c09de254",
+    "current_policy_read": "Official copyright-page text was read during this session and agrees with the retained government-produced-materials paragraph. This is a semantic policy check, not a claim of current raw-HTTP byte parity.",
+    "scope": "Limited original, attributed reporting that CEA released this named report and how the government describes it. Government-authored RSS release text only; no images, marks, endorsement, linked-PDF charts, vendor series, private-company quotations or other third-party materials.",
+    "publication_approval": false
+  },
+  "qualified_reference_claims": [
+    {
+      "id": "cea_report_release",
+      "text": "The White House published The State of American Manufacturing on October 10, 2026, describing a Council of Economic Advisers review.",
+      "tier": "third_party",
+      "source_url": "https://www.whitehouse.gov/research/2026/10/the-state-of-american-manufacturing/",
+      "source_body_sha256": "11843079da9dff9879f8e8fc366c196a5b1d7289765f6bf860d2cb7a6cbacc2b"
+    }
+  ],
+  "review": {
+    "result": "accepted_as_source_reference_only",
+    "method": "Assigned principal checked the retained government release, exact feed identity and official copyright policy; economic assertions are attributed to CEA and not independently validated here."
+  },
+  "limits": [
+    "The RSS body contains navigation furniture and does not contain Apple, Micron or NVIDIA; no company association is inferred.",
+    "Publication date is the report-release event date, not a new date for prior investment pledges.",
+    "Linked PDF content and issuer disclosures require separate exact-source and claim qualification.",
+    "The existing external planner is a closed candidate adapter; this record supplies no external_planning envelope, fact-pool or writer slot.",
+    "No first-party analytical receipt, D14 generated-batch credit or public-article approval follows from this record."
+  ],
+  "allow_stage": false,
+  "allow_emit": false,
+  "publication_approved": false
+}

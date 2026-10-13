@@ -271,7 +271,16 @@ class QLedgerRead:
 
 def _load_qledger(root: Path) -> QLedgerRead:
     """Desk row counts and declared horizons from the claim corpus."""
-    text, source = read_tracked(root, CLAIMS_REL)
+    from engine.qledger_store import read_tracked_claims_text
+
+    from engine.qledger_store_protocol import SnapshotIntegrityError
+
+    try:
+        text, source = read_tracked_claims_text(
+            root, CLAIMS_REL, legacy_reader=read_tracked
+        )
+    except SnapshotIntegrityError as exc:
+        return QLedgerRead(None, None, f"qledger-native-unreadable: {exc}", 0, 0)
     if text is None:
         return QLedgerRead(None, None, source, 0, 0)
     rows: Counter[str] = Counter()

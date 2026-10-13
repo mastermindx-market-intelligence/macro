@@ -1,0 +1,5 @@
+schema: mastermind.page_evidence_receipt.v1
+changed_paths:
+  - templates/crypto.html.j2
+  - templates/vector.html.j2
+manifest: mockups/evidence/crypto-r2-8901/manifest.json

@@ -1,0 +1,33 @@
+LANE C1 — Rotation / leadership-persistence state variable (PIT-safe)
+LANE id: C1   RESULTS_DIR = research/prophet_v4/astra_regime_indicator_handoff_20261004/results/C1/
+Gating question (ANSWER FIRST): is the leadership-persistence variable LP usable — AR(1) at a 21-session lag above 0.5 AND known fast-rotation windows showing lower mean LP than known persistent windows — and what are those four numbers?
+
+MISSION. Build a daily, point-in-time-safe regime conditioning table from sector ETFs, breadth and real rates, label each session by expanding-window terciles, measure agreement with the incumbent PIT regime store, and prove the variable passes two pre-declared positive controls. This table is consumed by lanes C2 and F1 as a conditioning variable; it is NOT a signal and nothing here is promoted.
+
+INPUTS (read-only). Sector ETF closes from data/yahoo/<T>.parquet for T in XLK XLE XLF XLV XLI XLY XLP XLU XLB (from 1998-12), XLRE (from 2015-10), XLC (from 2018-06); SPY and RSP from data/yahoo/; data/fred/DFII10.parquet (column us10y_real, 10y TIPS real yield, from 2003-01); data/regime/regime_v2_pit.parquet (columns include flag_rotation_persistence, transition_state, pit_class; inspect the index/date column first). The close column in yahoo files is `close` (there may also be close_price; use close). Use the SPY session index as the master calendar; reindex everything else onto it with forward-fill of at most 5 sessions and NaN beyond that.
+
+CONSTRUCTION (every value at date t uses closes with date ≤ t only; the ONE-SESSION SHIFT below is applied before export):
+1. r21_sector(t) = ln(close_t / close_{t−21}) − ln(SPY_t / SPY_{t−21}) for each sector available at t (a sector is "available" once it has 21 sessions of history). n_sectors(t) = count available.
+2. rank_t = cross-sectional rank (1 = best) of r21_sector among available sectors.
+3. LP(t) = Spearman correlation between rank_t and rank_{t−21}, computed over sectors available at both dates; require ≥ 6 common sectors else NaN. rotation_speed = 1 − LP.
+4. retention(t) = |top3(t) ∩ top3(t−21)| / 3 where top3 is the set of the three best-ranked sectors.
+5. breadth_spread(t) = ln(RSP_t/RSP_{t−21}) − ln(SPY_t/SPY_{t−21}) (NaN before RSP history allows).
+6. participation_share(t) = share of available sectors with r21_sector(t) > 0.
+7. dfii_impulse(t) = us10y_real_t − us10y_real_{t−21} (NaN before 2003).
+8. Terciles (PIT, expanding): for variable V in {LP, breadth_spread, dfii_impulse}, at date t compute the 33.3rd and 66.7th percentiles of V over dates STRICTLY BEFORE t (not including t), only once at least 756 prior sessions of non-NaN V exist; else tercile = NaN. Label rotation_tercile from LP as: LP below lower cut → "fast"; between → "mid"; above upper cut → "persistent". breadth_tercile from breadth_spread: below lower → "narrow", between → "mid", above → "broad". dfii_tercile from dfii_impulse: below lower → "falling", between → "mid", above → "rising". Use pandas expanding().quantile or an incremental sort; this is O(n²) at worst over ~7,000 sessions — fine.
+9. SHIFT: the exported table at date t carries the labels and values computed from data up to t−1 (shift every value and label by one session) so that an event lane joining on its signal date never sees same-day information. Name the exported columns exactly: date, LP, retention, rotation_speed, rotation_tercile, breadth_spread, breadth_tercile, participation_share, dfii_impulse, dfii_tercile, n_sectors. Write RESULTS_DIR/rotation_state_daily.parquet (zstd) indexed by date (the SPY session date the row is valid FOR, i.e. after the shift).
+
+AGREEMENT WITH THE INCUMBENT STORE. Join rotation_state_daily (after the shift) with regime_v2_pit on date (inner). Report: (a) contingency table rotation_tercile × flag_rotation_persistence (True/False) with counts; (b) Cohen's kappa between (rotation_tercile == "persistent") and flag_rotation_persistence == True, overall and by era (≤2009, 2010–2019, 2020–2026); (c) contingency table rotation_tercile × transition_state (whatever categories exist); (d) share of joined rows by pit_class, by era. Implement kappa by hand (po, pe). Agreement is REPORTED, never used to tune LP.
+
+POSITIVE CONTROLS (pre-declared; compute, do not tune):
+(a) AR(1) of LP at lag 21 sessions: Pearson correlation of LP(t) with LP(t−21) over all non-NaN pairs. PASS iff > 0.5.
+(b) Mean LP in known fast-rotation windows F = {2020-11-09..2020-12-31, 2021-02-01..2021-03-31} versus known persistent-leadership windows P = {2022-01-03..2022-06-30, 2023-03-01..2023-06-30}. PASS iff mean_LP(F) < mean_LP(P). Report the four window means and the overall mean LP, and the share of sessions labelled "fast" in each window.
+If either control fails, write controls.status = "BROKEN" in result.json and say so in ANSWER FIRST; still export the table.
+
+OUT OF SCOPE. No events, no returns conditioning, no regression; no changes to regime_v2_pit; no tuning of window lengths (21 is a constant).
+
+NOT DONE UNLESS: (1) rotation_state_daily.parquet exists with exactly the named columns, one row per SPY session from the first date LP is computable, with the one-session shift applied — a pytest asserts that the row for date t equals the unshifted computation at t−1 for 20 random dates; (2) a pytest asserts no value at date t uses any close dated > t−1 (construct a synthetic series, perturb the close at date t, and assert the exported row for date t is unchanged); (3) a pytest asserts tercile cuts at date t are computed from dates < t only (perturb V at t and assert the cut at t is unchanged); (4) result.json carries both controls with PASS/FAIL and numbers, the kappa table, honest counts; (5) RESULT.md has the contingency tables and the window means; (6) hashes.txt.
+
+result.json schema: {"lane":"C1","status":...,"repo_head":...,"data_class":{"vintage":"final","universe":"sector ETFs, current list"},"n_sessions":N,"first_date":...,"last_date":...,"controls":{"ar1_lag21":x,"ar1_pass":bool,"mean_LP_fast_windows":x,"mean_LP_persistent_windows":x,"mean_LP_overall":x,"window_means":{window:x},"fast_share_by_window":{window:x},"direction_pass":bool,"status":"PASS|BROKEN"},"agreement":{"kappa_overall":x,"kappa_by_era":{...},"contingency_flag":{...},"contingency_transition":{...},"pit_class_share_by_era":{...}},"tercile_counts":{"rotation":{...},"breadth":{...},"dfii":{...}},"tests":"<pytest summary>","gaps":[...],"deviations":[...]}
+
+RETURN: the C1_RETURN packet described in the law.

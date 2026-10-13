@@ -7,12 +7,15 @@
 # FRESHNESS GATE
 # ─────────────────────────────────────────────────────────────────────────────
 # Before running the matrix builder, this script verifies that the ThetaData
-# OI store contains SPY data for the expected last NYSE session.
+# OI plane has reached the conservative T-1 readiness floor for SPY.
 #
-# The gate reads the OI store (not EOD) because build_matrix() resolves its
-# published asof date from the OI parquet (engine/options_matrix.py line ~478:
-# asof = latest date in oi_all).  Gating on EOD while the builder keys off OI
-# would allow a stale-OI / fresh-EOD mismatch to slip through undetected.
+# This is deliberately a COARSE scheduling/readiness gate, not the source-session
+# selector. build_matrix() independently resolves a bounded common OI/EOD/Greeks
+# session and refuses one more than five NYSE sessions behind the latest OI
+# publication. Keeping the gate on OI is intentionally conservative: if the OI
+# plane itself is stale we do not publish merely because an older common session
+# still exists. EOD/Greeks skew after this gate is handled truthfully by the
+# builder's common-session/null and anti-regression publication rules.
 #
 # Logic:
 #   1. Ask lib/nyse_calendar.expected_last_session() for the expected date, then
@@ -65,9 +68,30 @@
 set -eu
 
 # ── paths ─────────────────────────────────────────────────────────────────────
-REPO="/Users/chriswong/flow-ops-wt"
+# Empty or unset keeps the historical lane. ${VAR:-default} treats an empty
+# string as unset, so it cannot become the current directory.
+REPO="${MACRO_OPTIONS_MATRIX_ROOT:-/Users/chriswong/flow-ops-wt}"
 PYTHON="/opt/homebrew/Caskroom/miniconda/base/bin/python"
 STORE="${THETADATA_STORE:-/Users/chriswong/theta-ops-wt/data/thetadata_eod}"
+
+# Refuse a relative or missing code root before the freshness helper or the build.
+case "$REPO" in
+    /*) ;;
+    *)
+        echo "[options_matrix] ERROR: REPO must be an absolute existing directory, not '$REPO'"
+        exit 1
+        ;;
+esac
+if [ ! -d "$REPO" ]; then
+    echo "[options_matrix] ERROR: REPO is not an existing directory: $REPO"
+    exit 1
+fi
+if [ ! -f "$REPO/scripts/build_options_matrix.py" ]; then
+    echo "[options_matrix] ERROR: REPO is not the options-matrix code checkout (missing scripts/build_options_matrix.py): $REPO"
+    exit 1
+fi
+# Imports come from this checkout. A stale PYTHONPATH must not win.
+export PYTHONPATH="$REPO"
 
 # ── freshness check helper ────────────────────────────────────────────────────
 # Prints "fresh" if the SPY OI shard has the expected last session, else "stale".
@@ -90,10 +114,9 @@ expected = expected_last_session()
 # OI the store can honestly hold at run time is the session BEFORE expected.
 required = last_session_on_or_before(expected - timedelta(days=1))
 
-# Gate on the OI shard — build_matrix() resolves its published asof from
-# the OI store, so freshness of the OI store is what actually matters.
-# Gating on EOD (as before) would silently pass when EOD is fresh but OI
-# lags a session, publishing a mismatched artifact.
+# Gate on the OI shard as a conservative readiness FLOOR. The builder does
+# not use this row as its source session; it resolves and validates a bounded
+# common OI/EOD/Greeks session after this gate passes.
 year = expected.year
 shard = Path(store) / "oi" / "SPY" / f"{year}.parquet"
 if not shard.exists():
