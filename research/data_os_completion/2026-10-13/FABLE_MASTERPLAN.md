@@ -83,7 +83,7 @@ Use: **existing source observation â†’ native identity/action/raw-data owners â†
 The registry remains the contract/lineage owner. Raw observations and corrections remain with their collectors and storage owners. Transport principals and host roots come from existing access controls. The current price ladder policy remains unchanged for legacy callers. No complete general-purpose historical database is introduced.
 
 Proposed missing adapters, only after checking for an accepted equivalent:
-- `lib/dataos/read_contract.py`: pure closed request/result and required-evidence validation.
+- `lib/dataos/read_contract.py`: pure closed request/result and mandatory-evidence validation.
 - `lib/dataos/price_views.py`: pure transformations over supplied qualified raw/action inputs.
 - `lib/dataos/reference_read.py`: exact capture/decoding around the existing identity receipt contract.
 - `lib/dataos/basket_read.py`: composition over existing membership and canonical price readers.
@@ -106,7 +106,7 @@ Choose the greatest eligible revision by stable record identity and declared mod
 
 ## 8. Corporate-action and price mathematics
 
-Start from [the existing basis vocabulary](https://github.com/mastermindx-market-intelligence/macro/blob/bb8da347eca15e480a1f423f4905e2a6f452bf62/lib/dataos/price.py). Vendor methodology is endpoint-specific: [Massive aggregate adjustment](https://massive.com/knowledge-base/article/how-can-i-get-historical-stock-data-adjusted-for-splits-and-dividends) and [Tiingo EOD fields/corrections](https://www.tiingo.com/documentation/end-of-day) are not a universal `adjusted=true` contract. Use only qualified existing licensed source data; no purchase is commissioned.
+Start from [the existing basis vocabulary](https://github.com/mastermindx-market-intelligence/macro/blob/bb8da347eca15e480a1f423f4905e2a6f452bf62/lib/dataos/price.py). Vendor methodology is endpoint-specific: [Massive aggregate adjustment](https://massive.com/knowledge-base/article/is-massives-stock-data-adjusted-for-splits-or-dividends) and [Tiingo EOD fields/corrections](https://www.tiingo.com/documentation/end-of-day) are not a universal `adjusted=true` contract. Use only qualified existing licensed source data; no purchase is commissioned.
 
 For a simple split r=new shares/old shares and target share-reference v:
 
