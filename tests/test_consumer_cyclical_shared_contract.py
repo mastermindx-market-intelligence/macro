@@ -42,8 +42,9 @@ FIXTURE_PATH = (
 )
 
 # Stamp of the synthetic payload below under the shared owner at
-# refs/grok/pr/7870 (480eb2bd). The xfail hardcodes it so a landed module
-# that hashes this payload differently stays red instead of passing quietly.
+# refs/grok/pr/7870@52b741c5082 (curation_assertion.py blob b7e42fd8, the
+# same blob as tip c46dbebb). Strict xfail: the suite goes red on an
+# unexpected pass. A hash mismatch stays an expected failure.
 PINNED_REVISION = "gmirca_63ffb5449d20456a8d2405cc16e66b37"
 
 
@@ -282,7 +283,8 @@ def test_projection_document_is_unchanged() -> None:
     strict=True,
     reason=(
         "shared theme_graph.curation_assertion.v1 is not on main; "
-        "positive round-trip pinned to refs/grok/pr/7870@480eb2bd"
+        "positive round-trip pinned to refs/grok/pr/7870@52b741c5082; "
+        "strict xfail goes red on an unexpected pass"
     ),
 )
 def test_shared_assertion_roundtrip_through_pinned_contract() -> None:

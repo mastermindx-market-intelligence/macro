@@ -9333,6 +9333,8 @@ jobs:
       - "tests/test_consumer_cyclical_projection.py"
       - "engine/sector_intelligence/consumer_cyclical_shared_contract.py"
       - "tests/test_consumer_cyclical_shared_contract.py"
+      - "engine/sector_intelligence/consumer_cyclical_display.py"
+      - "tests/test_consumer_cyclical_display.py"
       - "engine/sector_intelligence/contracts.py"
       - "contracts/sector_intelligence/**"
       - "data/sector_intelligence/fixtures/**"
@@ -9372,7 +9374,7 @@ jobs:
       - name: install minimal deps
         run: pip install pytest jsonschema referencing pyyaml
       - name: consumer cyclical economic change contract + projection tests
-        run: python -m pytest tests/test_consumer_cyclical_intelligence_read_model_contract.py tests/test_consumer_cyclical_projection.py tests/test_consumer_cyclical_shared_contract.py -q
+        run: python -m pytest tests/test_consumer_cyclical_intelligence_read_model_contract.py tests/test_consumer_cyclical_projection.py tests/test_consumer_cyclical_shared_contract.py tests/test_consumer_cyclical_display.py -q
 
   flow-signals-ledger:
     if: ${{ false }}
