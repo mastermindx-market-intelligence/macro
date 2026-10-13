@@ -1021,6 +1021,23 @@ def test_qualified_magnite_view_with_null_outputs_raises_claim_input_error():
         cr.validate_view(payload)
 
 
+def test_qualified_magnite_view_with_null_prior_output_raises_claim_input_error():
+    """Schema allows a null prior_output alone; the link check must refuse it.
+
+    current_output and the contributions stay set, so this is not the both-null
+    case. ``view['prior_output'] is None`` on the non-refusal guard is what
+    raises ClaimInputError. Removing only that disjunct still passes
+    test_qualified_magnite_view_with_null_outputs_raises_claim_input_error,
+    then subscripts None.
+    """
+    payload, _group, view = _qualified_magnite_view()
+    view['prior_output'] = None
+    assert view['current_output'] is not None
+    assert cr._view_validator().is_valid(payload)
+    with pytest.raises(ClaimInputError, match='^INVALID_CLAIM_VIEW$'):
+        cr.validate_view(payload)
+
+
 def test_qualified_magnite_view_with_empty_contributions_raises_claim_input_error():
     """Empty contributions are schema-legal and must not validate as support.
 
@@ -1070,6 +1087,56 @@ def test_accounting_refusal_missing_output_roles_stays_one_incompatible_view():
     assert refused_groups[0].outcome_refs == (bindings[0].ref, bindings[1].ref)
     assert refused_groups[0].outcome_refs != qualified[0].outcome_refs
     assert set(refused_groups[0].outcome_refs) <= {b.ref for b in bindings}
+    assert result.headline_issuer_count == baseline.headline_issuer_count
+    payload = cr.compose_communications_payload((item,))
+    assert payload['binding_state'] == 'unbound'
+    wire_views = [view for group in payload['projection']['panels'][3]['accounting']
+                  for view in group['views']]
+    assert sum(view['result']['status'] == 'INCOMPATIBLE' for view in wire_views) == 1
+
+
+def test_accounting_refusal_missing_only_output_prior_stays_one_incompatible_view():
+    """Magnite cost recipe with only output_prior removed.
+
+    output_current remains, so the output pair is not distinct. The refusal
+    stays one INCOMPATIBLE view whose outcome_refs are the first two remaining
+    unique binding refs, including that surviving output ref, and that key is
+    not the channels outcome. _refusal_outcome_refs must not require both
+    output roles to be absent before it returns this partial key; the test
+    that removes both roles still passes under that narrower rule.
+    """
+    item = accounting_magnite()
+    baseline = compose_four_company_claims((item,))
+    cost = item.accounting_rules[0]
+    bindings = tuple(b for b in cost.comparison.bindings if b.role != 'output_prior')
+    assert [b.role for b in bindings] == [
+        'output_current', 'revenue_current', 'revenue_prior',
+        'derived_tac_current', 'derived_tac_prior']
+    ordered = []
+    for binding in bindings:
+        if binding.ref not in ordered:
+            ordered.append(binding.ref)
+    surviving_output = next(b.ref for b in bindings if b.role == 'output_current')
+    assert len(ordered) >= 2 and surviving_output in (ordered[0], ordered[1])
+    broken = replace(cost, comparison=replace(cost.comparison, bindings=bindings))
+    item = replace(item, accounting_rules=(broken,) + item.accounting_rules[1:])
+    result = compose_four_company_claims((item,))
+    out = panel(result, 'magnite')
+    refused = [view for group in out.accounting for view in group.views
+               if view.result.status == 'INCOMPATIBLE']
+    qualified = [group for group in out.accounting
+                 if any(view.result.status == 'QUALIFIED' for view in group.views)]
+    refused_groups = [group for group in out.accounting if any(
+        view.result.status == 'INCOMPATIBLE' for view in group.views)]
+    assert len(refused) == 1
+    assert refused[0].result.reason == 'INPUT_BINDING_MISMATCH'
+    assert refused[0].result.rule_revision == 'fixture:magnite:cost:rule'
+    assert len(qualified) == 1 and len(refused_groups) == 1
+    assert [view.result.rule_revision for view in qualified[0].views] == [
+        'fixture:magnite:channels:rule']
+    assert refused_groups[0].outcome_refs == (ordered[0], ordered[1])
+    assert surviving_output in refused_groups[0].outcome_refs
+    assert refused_groups[0].outcome_refs != qualified[0].outcome_refs
     assert result.headline_issuer_count == baseline.headline_issuer_count
     payload = cr.compose_communications_payload((item,))
     assert payload['binding_state'] == 'unbound'
