@@ -39,7 +39,7 @@ changed:
   - path: research/consumer_cyclical/CONSUMER_CYCLICAL_IMPLEMENTATION_PLAN_R7_2026-09-23.md
     what: "Task3 names the R12-selected discriminator consumer_economic_change.v1."
   - path: research/consumer_cyclical/CONSUMER_CYCLICAL_R6_DESIGN_EVIDENCE_2026-09-23.json
-    what: "CC6-C14 records exact rational -2600/443 and the truncation tolerance for the stored decimal."
+    what: "CC6-C14 records exact rational -2600/443 and the truncation tolerance for the stored decimal. proposed_interfaces name is consumer_economic_change.v1 (enrolled false), replacing economic_change.consumer.v1."
   - path: research/consumer_cyclical/r11/verify_research_oracle.py
     what: "Prints the receipt and does not write JSON receipts unless --write-receipts or CONSUMER_R11_WRITE_RECEIPTS=1 is set."
   - path: agentos/handoffs/GMI-CONSUMER-CYCLICAL-RESEARCH-2026-09-23.md
@@ -51,12 +51,12 @@ verified:
   - claim: "R12 repair verification passes."
     command: "python3 -I research/consumer_cyclical/r12/verify_research_oracle.py"
     result: "exit 0; passed 60; failed 0."
-  - claim: "R13 manifest verification passes."
+  - claim: "R13 manifest verification fails the companion blob assert after the design-id rename."
     command: "python3 -I research/consumer_cyclical/r13/verify_r13_manifest.py"
-    result: "exit 0; passed 9; failed 0."
+    result: "exit 1; AssertionError on research/consumer_cyclical/CONSUMER_CYCLICAL_R6_DESIGN_EVIDENCE_2026-09-23.json at verify_r13_manifest.py:45. Working-tree git blob 20035360961f4087b24a4df23b047c8eadd03680. R13_REVIEW_MANIFEST.json still pins 7265ab9b91df4fb7b0e3d8166a1603c6d7a47d88."
   - claim: "The Consumer handoff satisfies the agentos required-field floor."
     command: "python3 scripts/agentos.py validate --root agentos --quiet"
-    result: "exit 0; 1212 records — 0 error(s), 92 warning(s). The 92 warnings are the pre-existing store warnings."
+    result: "exit 0; 1705 records (94 workstreams, 453 decisions, 506 discoveries, 652 handoffs) — 0 error(s), 142 warning(s)."
   - claim: "On refs/grok/pr/7870, an unmapped family is withheld and the SEC Archives prefix maps to sec_edgar."
     command: "git show refs/grok/pr/7870:app/theme_research.py; git show refs/grok/pr/7870:engine/theme_graph/rights.py"
     result: >
@@ -71,22 +71,22 @@ unverified:
   - claim: "The GitHub PR #7804 description matches this dated correction."
     what_would_verify: "The integrating seat updates the PR body. This lane does not run gh."
 unresolved:
-  - "Placement is WAITING_CAPACITY / needs_placement. No receiver, ACK, or START exists."
+  - "Receiver assigned 2026-09-24 by the deliberate live direct Chairman handoff recorded in research/consumer_cyclical/v1/V1_RETURN_TO_SOL.md (admission edge; boundary spec §0). V1-CORE merged at 6e3e8987c5c6. V1 PROVEN_LIVE is not reached."
   - "consumer_economic_change.v1 remains PENDING_SHARED_OWNER_ACCEPTANCE."
   - "#7780 comment 5811066300 build-out ruling is open."
   - "T08b and T11a remain review-rejected. T10e and T10f remain queued."
   - "LULU guidance and history stay with #7426 and #7331."
 next_actions:
-  - "Capacity or a direct live placement binds an eligible Fable receiver to research/consumer_cyclical/r15/FABLE_INTEGRATION_READY_R15.md."
-  - "That receiver re-pins Macro main, #7870, #7780, #7669, #7462, and #7426 immediately before any write."
-  - "Do not open product code on #7804. First executable target after pickup is V1 PLNT only."
+  - "V1_RETURN_TO_SOL.md records the 2026-09-24 receiver assignment and V1-CORE merged at 6e3e8987c5c6. V1 PROVEN_LIVE is not reached and is not claimable."
+  - "That return leaves #7870, #7780, #7669, and incumbent native admission of PLNT accession 0001637207-26-000042 open. Do not claim PROVEN_LIVE."
+  - "#7804 stays research and evidence only. Do not open product code on #7804."
 do_not_redo:
   - "R1-R11 research, shared-foundation archaeology, and existing consultations."
   - "The completed first review and the R14 targeted review, absent a material invalidator."
   - "R12 and R13 verification, absent a material invalidator."
   - "R8 native application-code staging. Do not retry, rephrase, re-home, or delegate a workaround."
 danger_areas:
-  - "This file cites WS:GMI-THEME-GRAPH and its name ends 2026-09-23, so agentos bundle compilation selects it as the latest handoff for that workstream, ahead of THEME-INTELLIGENCE-CONVERGENCE-2026-09-19-LANE-A. The August 2026 theme-graph completion handoffs remain on disk."
+  - "This file cites WS:GMI-THEME-GRAPH. compile-context --workstream GMI-THEME-GRAPH excludes it as older_handoff (latest: GMI-THEME-GRAPH-2026-10-08) and emits agentos/handoffs/GMI-THEME-GRAPH-2026-10-08.md as the latest handoff. Keep the workstream citation WS:GMI-THEME-GRAPH."
   - "Do not turn #7804 into the product branch or weaken a public-hostname guard."
   - "Unsupported Consumer must refuse. Do not relabel it as Semiconductor."
   - "Mapping https://www.sec.gov/Archives/ to sec_edgar is not Consumer acceptance of T09."
