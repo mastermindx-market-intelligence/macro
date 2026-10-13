@@ -243,6 +243,10 @@ data/capital_structure/source_objects/
 # stages outside data and promotes telemetry last; the collector uses these
 # same-directory parquet temps for one-file atomic replacement.
 data/capital_structure/*.tmp.parquet
+# source_ledger_io._atomic_write stages each sharded-ledger part as
+# <part>.tmp.jsonl before os.replace; an interrupted write must never be staged
+# by the capital_structure job's `git add data/capital_structure`.
+data/capital_structure/*.tmp.jsonl
 .capital-structure-compile-*/
 # raw digest capture / reverse-engineering evidence (private; digest_db.parquet is the committed artifact)
 research/_recon_raw/

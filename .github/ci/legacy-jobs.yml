@@ -6774,6 +6774,8 @@ jobs:
           python -m pytest
           tests/test_daily_collect_commit_path.py
           tests/test_daily_capital_structure_job.py
+          tests/test_capital_structure_ledger_receipt.py
+          tests/test_capital_structure_source_ledger_io.py
           tests/test_collect_staging_globs.py
           tests/test_capital_structure_compiler.py
           tests/test_capital_structure_contracts.py

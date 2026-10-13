@@ -47,6 +47,7 @@ decisions:
   - DEC:CS-V2-W2B-500-LIVE-ENVELOPE
   - DEC:CS-V2-W2C-EXACT-DEPENDENCY-INCREMENTAL-DOCUMENT-TERMS
   - DEC:CS-V2-W2D-DUAL-DISCOVERY-CLOCK
+  - DEC:CS-V2-SOURCE-LEDGER-SHARDS-BYTE-EXACTLY
 discoveries:
   - DSC:CS-MANIFEST-ID-HASHES-RETRIEVAL-CLOCKS
   - DSC:CS-SOURCE-MANIFEST-UNSPECIFIED-MERGE
@@ -58,6 +59,7 @@ discoveries:
   - DSC:CS-V2-W2B-NATURAL-CHAIN-PROVEN-LIVE
   - DSC:CS-V2-W2C-DOCUMENT-TERM-ESTATE-SCALING
   - DSC:CS-V2-W2D-DAILY-INDEX-READINESS
+  - DSC:CS-GENERATION-PUSH-LOST-TO-GH001-WHILE-JOB-SUCCEEDED
 do_not_redo:
   - "Reopen PR #5792 ingestion freeze (AccessDenied / zero-progress health) without new evidence"
   - "Solve concurrent collect with an et_gate mutex (DEC:COLLECT-MUTEX-CANNOT-LIVE-IN-ET-GATE)"
@@ -78,6 +80,7 @@ do_not_redo:
   - "Reopen the proven-live W2A/W2B capacity, spill, lane, pacing, or carrier law for the W2C runtime repair"
   - "Create a document-term cache or second compiled-root truth store"
   - "Dispatch or rerun daily.yml to manufacture W2C/W2D proof; wait for the first natural scheduled chain containing both merges"
+  - "Rewrite, compact, re-encode or Git-LFS data/capital_structure/source_manifest.jsonl, or rewrite a sealed continuation part (DEC:CS-V2-SOURCE-LEDGER-SHARDS-BYTE-EXACTLY)"
 landmines:
   - "manifest_id_for hashes retrieval clocks (DSC:CS-MANIFEST-ID-HASHES-RETRIEVAL-CLOCKS)"
   - "Partial N+1 persist drops unchanged children from _current_manifest_bundle"
@@ -87,6 +90,7 @@ landmines:
   - "Share-count v2 and Company Facts are default-off / unprovisioned — not live"
   - "Incremental reuse is legal only for an exact closed manifest/content/parser dependency; --rebuild remains the whole-ledger retained-byte audit"
   - "W2C/W2D merged does not close W2; only the required first natural chain can promote the joint repair from BUILT_NOT_PROVEN"
+  - "A green capital_structure job is not a publication receipt; a landed generation is a commit on origin/main changing data/capital_structure/health.json (DSC:CS-GENERATION-PUSH-LOST-TO-GH001-WHILE-JOB-SUCCEEDED)"
 artifacts:
   - research/CAPITAL_STRUCTURE_INTELLIGENCE_V2_MASTERPLAN_2026-08-18.md
   - research/CAPITAL_STRUCTURE_W2A_QUEUE_CENSUS_2026-08-21.md
@@ -105,15 +109,21 @@ artifacts:
   - agentos/handoffs/CAPITAL-STRUCTURE-INTELLIGENCE-V2-2026-08-24-w2b-natural-proof.md
   - agentos/handoffs/CAPITAL-STRUCTURE-INTELLIGENCE-V2-2026-08-25-w2c.md
   - agentos/handoffs/CAPITAL-STRUCTURE-INTELLIGENCE-V2-2026-08-25-w2d.md
+  - agentos/handoffs/CAPITAL-STRUCTURE-INTELLIGENCE-V2-2026-10-13-r2.md
 next_action: >
-  W2A and W2B are PROVEN_LIVE. W2C PR #6415 merged as
-  5bc31a700406c2a90771d0ce86d230d28c73c86c and W2D PR #6424 merged as
-  cadfa403033f9de338e9f490abac05eb08cbb293 after exact-head Sol release;
-  both repairs are BUILT_NOT_PROVEN. Do not dispatch a proof run. Observe only
-  the first natural scheduled collector -> Capital Structure chain whose
-  checkout contains both merges. Only that chain can close W2 if it proves
-  healthy same-day discovery/reconciliation, zero unserved LIVE work, and
-  Capital Structure runtime below the unchanged warning. W3 and W4 remain held.
+  R2 of the 2026-10-13 masterplan (research/capital_structure/e2e_20261013/
+  MASTERPLAN.md) is BUILT on claude/cs-v2-r2-ledger-sharding: byte-exact
+  source-ledger sharding (DEC:CS-V2-SOURCE-LEDGER-SHARDS-BYTE-EXACTLY) repairs
+  the GH001 publication loss that silently dropped every generation since
+  2026-09-27 (DSC:CS-GENERATION-PUSH-LOST-TO-GH001-WHILE-JOB-SUCCEEDED). Merge
+  it on concluded green, prove main under the changed authority, then observe
+  the first natural scheduled chain for a generation commit carrying
+  source_manifest.part-0002.jsonl; that same chain remains the only closer for
+  the W2C/W2D BUILT_NOT_PROVEN repairs. Do not dispatch daily.yml. The collect
+  job has been cancelled by the runner-listener outage since 2026-10-10
+  (operator-owned). Next ready tasks after the merge: C0 type freeze, E0
+  reference docs, then P0 adoption of #8673 only through the held owner path
+  with a hosted gate:data receipt. W3 and W4 remain held.
 waves:
   - id: W0
     title: Architecture freeze, estate audit, competitor/regulatory refresh

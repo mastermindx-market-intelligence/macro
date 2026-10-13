@@ -18195,6 +18195,12 @@ artifacts:
       namespace, while the compact provenance ledger is git-retained. Filing metadata
       records legacy/modern/EFFECT XML file-number provenance and each new bundle
       retains EX-1 underwriting and EX-FILING FEES children when present.
+      Sharded byte-exactly since 2026-10-13 (DEC:CS-V2-SOURCE-LEDGER-SHARDS-BYTE-EXACTLY):
+      this path is part 1 and is never rewritten once sealed; continuation parts
+      source_manifest.part-NNNN.jsonl (contiguous from 0002, each under GitHub's
+      100 MiB blob limit) hold later rows, and the logical ledger is the ordered
+      byte concatenation read by engine.capital_structure.source_ledger_io. The
+      daily.yml handoff receipt and the push fence judge that logical stream.
 
   capital-structure-companyfacts-source-manifest:
     path: data/capital_structure/companyfacts/generations/*/source_manifest.parquet

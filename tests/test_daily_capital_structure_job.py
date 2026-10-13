@@ -650,3 +650,72 @@ def test_cs_push_fence_is_after_fetch_before_rebase(steps):
     rebase_pos = run_script.index(_REBASE_FRAGMENT)
     assert fetch_pos < fence_pos, "fence must come AFTER fetch"
     assert fence_pos < rebase_pos, "fence must come BEFORE rebase"
+
+
+# --------------------------------------------------------------------------
+# THE SHARDED LEDGER: one receipt implementation on both sides of the handoff.
+# (DEC:CS-V2-SOURCE-LEDGER-SHARDS-BYTE-EXACTLY)
+# --------------------------------------------------------------------------
+RECEIPT_SCRIPT = "scripts/capital_structure_ledger_receipt.py"
+
+
+def _collect_handoff_stamp(daily):
+    return next(
+        s for s in daily["jobs"]["collect"]["steps"]
+        if "capital-structure handoff receipt" in (s.get("name") or "")
+    )
+
+
+def _shell_lines(run: str) -> str:
+    """A step's shell with its comment lines dropped (comments may NAME shasum)."""
+    return "\n".join(
+        line for line in run.splitlines() if not line.lstrip().startswith("#")
+    )
+
+
+def test_both_sides_of_the_handoff_share_one_receipt_implementation(daily, steps):
+    """The ledger is sharded across source_manifest.jsonl and part-NNNN siblings.
+
+    `wc -l` + `shasum` over ONE file would stamp a receipt that describes part 1
+    alone while the appended rows live in a continuation part: the verify step
+    would then pass on exactly the stale tree it exists to reject. Both sides must
+    call the same script, so the arithmetic (newline count and sha256 over the
+    ordered concatenation of every part) cannot drift between the two jobs.
+    """
+    stamp = _collect_handoff_stamp(daily)
+    stamp_run = _shell_lines(str(stamp.get("run") or ""))
+    assert f"python {RECEIPT_SCRIPT} stamp" in stamp_run
+    assert "shasum" not in stamp_run and "wc -l" not in stamp_run, (
+        "a second hash implementation beside the shared one is how the two sides drift"
+    )
+
+    verify = steps[_index_of(steps, HANDOFF_VERIFY_STEP)]
+    verify_run = _shell_lines(str(verify.get("run") or ""))
+    assert f"python {RECEIPT_SCRIPT} verify" in verify_run
+    assert '--expect-sha256 "$EXPECTED_SHA"' in verify_run
+    assert '--expect-rows "$EXPECTED_ROWS"' in verify_run
+    assert "shasum" not in verify_run and "wc -l" not in verify_run
+    assert (ROOT / RECEIPT_SCRIPT).is_file(), f"{RECEIPT_SCRIPT} is invoked but absent"
+
+
+def test_the_rejected_ledger_capture_includes_continuation_parts(steps):
+    """A failure diagnostic that captures part 1 alone hides the rows that failed."""
+    capture = steps[_index_of(steps, "capture the rejected capital-structure ledger")]
+    paths = str((capture.get("with") or {}).get("path") or "")
+    assert "data/capital_structure/source_manifest.jsonl" in paths
+    assert "data/capital_structure/source_manifest.part-*.jsonl" in paths
+
+
+def test_the_handoff_carries_every_part_and_no_staged_write(daily):
+    """Continuation parts ride the artifact; an interrupted part write never does."""
+    upload = next(
+        s for s in daily["jobs"]["collect"]["steps"]
+        if "upload-artifact" in str(s.get("uses") or "")
+        and "capital-structure" in str((s.get("with") or {}).get("name") or "")
+    )
+    paths = str(upload["with"]["path"])
+    assert "!data/capital_structure/*.tmp.jsonl" in paths
+    assert "source_manifest.part-" not in paths, (
+        "continuation parts must ride the handoff under data/capital_structure, "
+        "never be excluded by name"
+    )

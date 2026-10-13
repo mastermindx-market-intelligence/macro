@@ -120,7 +120,6 @@
     "tests/test_capital_structure_registration_lifecycle.py",
     "tests/test_capital_structure_share_count_head_v4_contracts.py",
     "tests/test_capital_structure_share_count_head_v4_runtime.py",
-    "tests/test_capital_structure_source_ledger_io.py",
     "tests/test_catalyst_stock.py",
     "tests/test_catalyst_tone.py",
     "tests/test_cboe_gex_flip.py",
