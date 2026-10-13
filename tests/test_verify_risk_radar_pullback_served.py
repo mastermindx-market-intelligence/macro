@@ -154,6 +154,35 @@ def test_expired_page_fails_c7_when_require_active(tmp_path):
     assert later[0] == 0 and later[1]["pass"] is True
 
 
+def test_valid_until_beyond_the_page_cap_fails_c7_when_require_active(tmp_path):
+    """The page script expires a stamp more than 400 days ahead; C7 agrees at the boundary."""
+    html = _active_cn()
+    # valid_until 2026-10-01T09:00:00+00:00 is exactly 400 days after this clock.
+    rc, receipt, _page = _run(
+        tmp_path, html, "cn", "--require-active", "--now", "2025-08-27T09:00:00+00:00",
+    )
+    assert rc == 0, [(c["id"], c["detail"]) for c in receipt["checks"] if not c["pass"]]
+    rc, receipt, _page = _run(
+        tmp_path, html, "cn", "--require-active", "--now", "2025-08-27T08:59:59+00:00",
+    )
+    assert rc == 1
+    assert _failed(receipt) == ["C7"]
+    detail = next(item["detail"] for item in receipt["checks"] if item["id"] == "C7")
+    assert detail == "valid_until is more than 400 days ahead; the page script expires it"
+
+
+def test_c7_cap_equals_the_page_script_cap():
+    from datetime import timedelta
+
+    from scripts.verify_risk_radar_pullback_served import MAX_AHEAD
+
+    js = (Path(__file__).resolve().parents[1]
+          / "templates/_risk_radar_pullback_depth.js.j2").read_text(encoding="utf-8")
+    match = re.search(r"var MAX_AHEAD_MS = (\d+) \* 24 \* 60 \* 60 \* 1000;", js)
+    assert match, "page script cap moved"
+    assert MAX_AHEAD == timedelta(days=int(match.group(1)))
+
+
 def test_missing_valid_until_fails_c7_when_require_active(tmp_path):
     html = _active_cn()
     old = 'data-pb-valid-until="2026-10-01T09:00:00+00:00"'

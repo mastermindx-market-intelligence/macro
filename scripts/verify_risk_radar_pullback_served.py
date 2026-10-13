@@ -31,6 +31,10 @@ PHASES = frozenset({
     "recovering", "repaired", "unavailable",
 })
 ACTIVE_PHASES = frozenset({"underway", "stabilizing", "recovering"})
+# The page script (templates/_risk_radar_pullback_depth.js.j2 MAX_AHEAD_MS)
+# expires a valid_until further than this ahead of the viewer's clock, so the
+# served bytes are not current there either.
+MAX_AHEAD = timedelta(days=400)
 VOID_TAGS = frozenset({
     "area", "base", "br", "col", "embed", "hr", "img", "input",
     "link", "meta", "param", "source", "track", "wbr",
@@ -874,6 +878,8 @@ def _check_c7(
         return False, "valid_until missing or unparseable"
     if parsed <= now:
         return False, "expired: valid_until <= now"
+    if parsed - now > MAX_AHEAD:
+        return False, "valid_until is more than 400 days ahead; the page script expires it"
     return True, f"phase {phase} is active"
 
 
