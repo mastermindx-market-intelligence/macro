@@ -157,7 +157,12 @@ def build_eod_inputs(
                 or collected > evaluated
                 or evaluated - collected > _MAX_COLLECT_AGE + timedelta(days=2)
                 or _weekday_elapsed(collected, evaluated) > _MAX_COLLECT_AGE
-                or source_last > evaluated.date()
+                # The collector reports exchange-local observation dates.
+                # A local next-day label (e.g. Asia +1 while UTC is today)
+                # may exist in the raw store. It is NOT a completed session
+                # witness; the independent T+2 cutoff and saved per-series
+                # tip equality below still exclude that developing bar.
+                or source_last > (evaluated + timedelta(days=1)).date()
                 or evaluated.date() - source_last > _MAX_TIP_AGE):
             return None
     except (OSError, KeyError, TypeError, ValueError, OverflowError):

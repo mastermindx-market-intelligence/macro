@@ -1,0 +1,243 @@
+{
+  "schema": "intl_2026_10_13_source_refresh_evidence.v1",
+  "state": "ISOLATED_VERIFIED_NOT_MERGED_OR_SERVED",
+  "base_sha": "048e68d1934aa03219fd4da32d00281457128936",
+  "source": "collectors.intl_prices.IntlPriceAdapter via scripts.collect --only intl_prices",
+  "collector_outcome": {
+    "core_adapter": "ok, 14/14 core and 19/19 requested total",
+    "wrapper_exit": 1,
+    "wrapper_failure": "Sparse local checkout lacked site/intel_hub/hub.json in unrelated post-tail; unrelated data mutation reverted after durable effect audit"
+  },
+  "raw_receipt": {
+    "status": "ok",
+    "source": "intl_prices",
+    "rows": 26763,
+    "last_date": "2026-10-14",
+    "checked_at": "2026-10-13T21:02:06.777508+00:00"
+  },
+  "UTC_vs_exchange_local_date": "Accept maximum one next local calendar-day label; do not promote a bar; T+2 cutoff and exact per-series witnessed tip unchanged.",
+  "delayed_cutoff": "2026-10-09",
+  "markets": [
+    {
+      "market_id": "JP",
+      "index": {
+        "ticker": "^N225",
+        "latest_raw_date": "2026-10-09",
+        "tip_by_delayed_cutoff": "2026-10-09",
+        "expected_cutoff_present": true
+      },
+      "fx": {
+        "ticker": "USDJPY=X",
+        "latest_raw_date": "2026-10-14",
+        "tip_by_delayed_cutoff": "2026-10-09",
+        "expected_cutoff_present": true
+      },
+      "pair_admitted": true
+    },
+    {
+      "market_id": "KR",
+      "index": {
+        "ticker": "^KS11",
+        "latest_raw_date": "2026-10-12",
+        "tip_by_delayed_cutoff": "2026-10-08",
+        "expected_cutoff_present": false
+      },
+      "fx": {
+        "ticker": "USDKRW=X",
+        "latest_raw_date": "2026-10-13",
+        "tip_by_delayed_cutoff": "2026-10-09",
+        "expected_cutoff_present": true
+      },
+      "pair_admitted": false
+    },
+    {
+      "market_id": "TW",
+      "index": {
+        "ticker": "^TWII",
+        "latest_raw_date": "2026-10-12",
+        "tip_by_delayed_cutoff": "2026-10-08",
+        "expected_cutoff_present": false
+      },
+      "fx": {
+        "ticker": "USDTWD=X",
+        "latest_raw_date": "2026-10-13",
+        "tip_by_delayed_cutoff": "2026-10-09",
+        "expected_cutoff_present": true
+      },
+      "pair_admitted": false
+    },
+    {
+      "market_id": "IN",
+      "index": {
+        "ticker": "^NSEI",
+        "latest_raw_date": "2026-10-12",
+        "tip_by_delayed_cutoff": "2026-10-09",
+        "expected_cutoff_present": true
+      },
+      "fx": {
+        "ticker": "USDINR=X",
+        "latest_raw_date": "2026-10-13",
+        "tip_by_delayed_cutoff": "2026-10-09",
+        "expected_cutoff_present": true
+      },
+      "pair_admitted": true
+    },
+    {
+      "market_id": "AU",
+      "index": {
+        "ticker": "^AXJO",
+        "latest_raw_date": "2026-10-13",
+        "tip_by_delayed_cutoff": "2026-10-09",
+        "expected_cutoff_present": true
+      },
+      "fx": {
+        "ticker": "AUDUSD=X",
+        "latest_raw_date": "2026-10-13",
+        "tip_by_delayed_cutoff": "2026-10-09",
+        "expected_cutoff_present": true
+      },
+      "pair_admitted": true
+    },
+    {
+      "market_id": "GB",
+      "index": {
+        "ticker": "^FTSE",
+        "latest_raw_date": "2026-10-13",
+        "tip_by_delayed_cutoff": "2026-10-09",
+        "expected_cutoff_present": true
+      },
+      "fx": {
+        "ticker": "GBPUSD=X",
+        "latest_raw_date": "2026-10-13",
+        "tip_by_delayed_cutoff": "2026-10-09",
+        "expected_cutoff_present": true
+      },
+      "pair_admitted": true
+    },
+    {
+      "market_id": "EZ",
+      "index": {
+        "ticker": "^STOXX",
+        "latest_raw_date": "2026-10-13",
+        "tip_by_delayed_cutoff": "2026-10-09",
+        "expected_cutoff_present": true
+      },
+      "fx": {
+        "ticker": "EURUSD=X",
+        "latest_raw_date": "2026-10-13",
+        "tip_by_delayed_cutoff": "2026-10-09",
+        "expected_cutoff_present": true
+      },
+      "pair_admitted": true
+    }
+  ],
+  "configured_core_series": 14,
+  "core_files": {
+    "^N225": {
+      "path": "data/intl/_N225.parquet",
+      "sha256": "301d5deee66567afc3da8f445c246bea147aeef0ffe8ded51529fc9c199e7db8",
+      "size": 250981,
+      "rows": 15183
+    },
+    "USDJPY=X": {
+      "path": "data/intl/USDJPY_X.parquet",
+      "sha256": "ed8aaa9e8f97c9e0ba3a6edcafada963930a9ae7056446ae23d78e430eac2780",
+      "size": 109299,
+      "rows": 7776
+    },
+    "^KS11": {
+      "path": "data/intl/_KS11.parquet",
+      "sha256": "64d6d1d0b00d60f862835d76d389bc8760c6b44e12cd6225e2c7da80881823e4",
+      "size": 146446,
+      "rows": 7341
+    },
+    "USDKRW=X": {
+      "path": "data/intl/USDKRW_X.parquet",
+      "sha256": "7525593ef761569d199882a6cf0753a9ca0345461e9184792683beba1827f0d2",
+      "size": 83941,
+      "rows": 5944
+    },
+    "^TWII": {
+      "path": "data/intl/_TWII.parquet",
+      "sha256": "b6c0ac4a14cd2a4b21247fa613ece2509a3b6bfde65ffd1d2addcd86bae1802b",
+      "size": 146856,
+      "rows": 7174
+    },
+    "USDTWD=X": {
+      "path": "data/intl/USDTWD_X.parquet",
+      "sha256": "51d2fbbf0726611bbcb7c81dd1934329b151db8b9b643ccec8828e752f0c3362",
+      "size": 71322,
+      "rows": 5446
+    },
+    "^NSEI": {
+      "path": "data/intl/_NSEI.parquet",
+      "sha256": "2404ac2dbb630c7ae8782d770e40aa104094bfc07b9d757d3b65db3d13a85303",
+      "size": 88664,
+      "rows": 4678
+    },
+    "USDINR=X": {
+      "path": "data/intl/USDINR_X.parquet",
+      "sha256": "58c44baccf822ef511f834f137eea1cddeea723ca0be9995431b317c09d86888",
+      "size": 85454,
+      "rows": 5947
+    },
+    "^AXJO": {
+      "path": "data/intl/_AXJO.parquet",
+      "sha256": "49226e4854e1be0094e7a8885d392cf1cc0646a9380fc3d30d1bb169d22a5113",
+      "size": 140642,
+      "rows": 8568
+    },
+    "AUDUSD=X": {
+      "path": "data/intl/AUDUSD_X.parquet",
+      "sha256": "c945c3487f94099d4b5bab1314b52881ebf542d98ab0e4bfd150964b64911b94",
+      "size": 76817,
+      "rows": 5331
+    },
+    "^FTSE": {
+      "path": "data/intl/_FTSE.parquet",
+      "sha256": "a13e2f3715da6a78d02a1d2b7a444a734695d211fde5c7791fd57af02481950c",
+      "size": 213724,
+      "rows": 10807
+    },
+    "GBPUSD=X": {
+      "path": "data/intl/GBPUSD_X.parquet",
+      "sha256": "fc12647ec20616ad039e9caec3d44f4871dfdbb895c04b83225351c1d8273d7b",
+      "size": 86450,
+      "rows": 5959
+    },
+    "^STOXX": {
+      "path": "data/intl/_STOXX.parquet",
+      "sha256": "6dada46e8b00a2f997b7538468862c81f02a798c45ca0529432945a3f88f23b9",
+      "size": 109014,
+      "rows": 5650
+    },
+    "EURUSD=X": {
+      "path": "data/intl/EURUSD_X.parquet",
+      "sha256": "ab151ead831e494225b14f0780b98f992c3c13ab889e4a607aee82892eb41f31",
+      "size": 85041,
+      "rows": 5934
+    }
+  },
+  "admitted_markets": [
+    "AU",
+    "EZ",
+    "GB",
+    "IN",
+    "JP"
+  ],
+  "withheld_markets": [
+    "KR",
+    "TW"
+  ],
+  "overlap_rebases": {
+    "^N225": "0.7513%",
+    "AUDUSD=X": "0.2503%",
+    "EURUSD=X": "0.1370%"
+  },
+  "proof_artifact": "/Volumes/Mastermind/evidence/paper-waves-20261006-01a1101f/INTL_EOD_FRESH_20261013.json",
+  "limits": [
+    "This is a committed-materialization candidate, not authenticated live site",
+    "Redistribution was confirmed by the current Chairman",
+    "No claims about intraday bars, exchange holiday exceptions, benchmark or trade sizing"
+  ]
+}

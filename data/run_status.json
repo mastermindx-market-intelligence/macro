@@ -1,5 +1,5 @@
 {
-  "last_run": "2026-10-13T15:42:13.309452+00:00",
+  "last_run": "2026-10-13T21:02:06.777452+00:00",
   "sources": {
     "cot": {
       "source": "cot",
@@ -774,13 +774,13 @@
     "intl_prices": {
       "source": "intl_prices",
       "status": "ok",
-      "rows": 49922,
-      "last_date": "2026-10-09",
+      "rows": 26763,
+      "last_date": "2026-10-14",
       "error": null,
       "notes": [],
       "probed_at": null,
-      "elapsed_sec": 1.0,
-      "checked_at": "2026-10-09T04:42:46.994186+00:00"
+      "elapsed_sec": 1.5,
+      "checked_at": "2026-10-13T21:02:06.777508+00:00"
     },
     "intl_macro": {
       "source": "intl_macro",

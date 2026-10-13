@@ -286,3 +286,44 @@ def test_weekday_elapsed_age_still_expires_without_new_receipt(tmp_path):
         frame, data_root=tmp_path, rights=GRANT,
         evaluated_at="2026-10-13T08:41:00+00:00",
     ) is None
+
+
+def test_exchange_local_next_day_label_does_not_reject_delayed_eod(tmp_path):
+    """Asia can be on the next calendar date while UTC is still today.
+
+    The collector's max source date is NOT evidence that tomorrow's live bar
+    is complete or publishable. This delayed policy uses only independent
+    source-witnessed T+2 observations.
+    """
+    frame, _ = _setup(tmp_path)
+    future = pd.Timestamp("2026-10-10")
+    frame.loc[future, frame.columns] = 9999.0
+    for symbol in frame:
+        path = tmp_path / "intl" / (
+            symbol.replace("^", "_").replace("=", "_").replace("/", "_")
+            + ".parquet"
+        )
+        stored = pd.read_parquet(path)
+        stored.loc[future, "close"] = 9999.0
+        stored.to_parquet(path)
+    status_path = tmp_path / "run_status.json"
+    status = json.loads(status_path.read_text())
+    status["sources"]["intl_prices"]["last_date"] = "2026-10-10"
+    status_path.write_text(json.dumps(status))
+    delayed, packet = build_eod_inputs(
+        frame, data_root=tmp_path, evaluated_at=EVALUATED, rights=GRANT)
+    assert delayed.index[-1] == pd.Timestamp("2026-10-07")
+    assert len(packet["source_evidence"]) == 14
+    assert _panel(_overview(delayed, packet))["eligible_count"] == 7
+    assert all(item["latest_completed_observation"] == "2026-10-07T00:00:00"
+               for item in packet["source_evidence"])
+
+
+def test_more_than_one_local_calendar_day_ahead_is_withheld(tmp_path):
+    frame, _ = _setup(tmp_path)
+    status_path = tmp_path / "run_status.json"
+    status = json.loads(status_path.read_text())
+    status["sources"]["intl_prices"]["last_date"] = "2026-10-11"
+    status_path.write_text(json.dumps(status))
+    assert build_eod_inputs(
+        frame, data_root=tmp_path, evaluated_at=EVALUATED, rights=GRANT) is None
