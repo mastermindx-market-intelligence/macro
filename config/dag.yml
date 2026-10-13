@@ -1759,6 +1759,18 @@ lanes:
           step via a shell loop ('for mod in scripts.build_canada_library ...; do python -m
           $mod; done') which the conformance parser cannot extract (variable expansion).
           They are intentionally omitted from declared steps.
+      - id: fif_saved_research_notifications
+        module: scripts.run_fif_saved_research_notifications
+        note: >
+          X2-n FIF saved-research notifications — enqueue-only producer over
+          the designated "Filing Forensics" watchlist (R2) and LOCAL trigger
+          inputs (FIF private state; the broad-sec receipt and production
+          pointer mirrors are R2-only today and read as no-event, R5).
+          Fail-soft (absent creds/tables/inputs -> typed unavailable,
+          0 rows, exit 0). Dormant unless BOTH FIF_SAVED_RESEARCH_ENABLE=1
+          and ALERT_DRAIN_ENABLE=1. Delivery is F08's drain, never this
+          step. Last step of the engine lane: after every render-critical
+          step (census C5).
 
   # ── daily.yml / factor_panel ───────────────────────────────────────────
   - workflow: .github/workflows/daily.yml
