@@ -25527,6 +25527,12 @@ jobs:
       # change that created it - a suite CI never selects is a guard that cannot
       # fail, and this job is the whole program's only exclusive gate:code job.
       - "tests/test_industrials_financial_dossier.py"
+      # W6-A: stated cell end. A matcher tolerance must not rewrite it.
+      - "engine/company_intelligence/industrials_fiscal.py"
+      - "tests/test_industrials_fiscal_period.py"
+      # W6-B: native SourceDocument editions from the synthetic fixtures.
+      - "engine/company_intelligence/industrials_source_facts.py"
+      - "tests/test_industrials_source_facts.py"
     timeout-minutes: 6
     runs-on: ubuntu-latest
     steps:
@@ -25544,7 +25550,7 @@ jobs:
         # Stated identically in clean-venv proof below.
         run: pip install pytest pyyaml requests
       - name: Industrials synthetic dependency binding (T01)
-        run: python -m pytest tests/test_industrials_dependency_binding.py tests/test_industrials_result_cash.py tests/test_industrials_financial_dossier.py -q
+        run: python -m pytest tests/test_industrials_dependency_binding.py tests/test_industrials_result_cash.py tests/test_industrials_financial_dossier.py tests/test_industrials_fiscal_period.py tests/test_industrials_source_facts.py -q
 
   house-law-registry-code:
     if: ${{ false }}
