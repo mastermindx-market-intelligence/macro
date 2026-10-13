@@ -45,11 +45,14 @@ import to translate a ticker.
 from __future__ import annotations
 
 from lib.dataos.identity import (
+    AliasResolution,
     AliasRow,
     CNBoard,
     IdentityError,
     KNOWN_MICS,
     ListingKey,
+    ReferenceReadReceipt,
+    ReferenceSnapshot,
     VendorAliasTable,
     cn_board,
     fx_id,
@@ -68,6 +71,7 @@ from lib.dataos.identity import (
     parse_listing_key,
     parse_option_contract_id,
     security_id,
+    validate_reference_snapshot,
 )
 from lib.dataos.nulls import MissingReason, NullPolicy, validate_value
 from lib.dataos.price import (
@@ -127,6 +131,8 @@ __all__ = [
     "CNBoard", "cn_board", "is_legacy_bse_code",
     "normalize_cn_symbol", "normalize_hk_symbol",
     "AliasRow", "VendorAliasTable",
+    "AliasResolution", "ReferenceReadReceipt", "ReferenceSnapshot",
+    "validate_reference_snapshot",
     # temporal (§D3)
     "TemporalError", "PointInTimeError", "Clock", "TemporalProfile",
     "KNOWN_AT_CLOCKS", "utc", "known_at", "assert_pit_readable", "as_of_filter",
