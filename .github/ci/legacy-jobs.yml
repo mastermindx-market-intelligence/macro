@@ -23627,6 +23627,8 @@ jobs:
       - tests/test_dataos_identity.py
       - tests/test_dataos_nulls.py
       - tests/test_dataos_price.py
+      - tests/test_dataos_price_views.py
+      - tests/test_dataos_price_revisions.py
       - tests/test_dataos_quality.py
       - tests/test_dataos_registry.py
       - tests/test_dataos_temporal.py
@@ -23645,6 +23647,8 @@ jobs:
           tests/test_dataos_identity.py
           tests/test_dataos_temporal.py
           tests/test_dataos_price.py
+          tests/test_dataos_price_views.py
+          tests/test_dataos_price_revisions.py
           tests/test_dataos_nulls.py
           tests/test_dataos_registry.py
           tests/test_dataos_quality.py -q -rs
