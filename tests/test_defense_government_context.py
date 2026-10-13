@@ -47,6 +47,22 @@ def test_collection_bucket_and_display_name_are_never_used_for_attribution(input
     assert set(out['axes_by_ticker'])=={'LMT','RTX','NOC','LHX'}
 
 
+def test_current_projection_date_cannot_relabel_old_source_observations(inputs,subjects):
+    changed=deepcopy(inputs);changed.pop('raw_bytes');changed.pop('file_sha256')
+    changed['dossier']['as_of']='2026-10-13'
+    from engine.government_revenue.dossiers import dossier_content_id
+    changed['dossier']['content_id']=dossier_content_id(changed['dossier'])
+    out=qualify_government_context(changed,subjects,generated_at=NOW)
+    for ticker,axes in out['axes_by_ticker'].items():
+        source_clock=out['local_proof']['selected'][ticker]['record_known_at']
+        assert source_clock.startswith('2026-09-01')
+        for axis in axes.values():
+            assert axis['state']=='stale'
+            assert source_clock in axis['summary_en'] and source_clock in axis['summary_zh']
+            assert 'Source cutoff 2026-10-13' not in axis['summary_en']
+            assert '来源截点2026-10-13' not in axis['summary_zh']
+
+
 @pytest.mark.parametrize('fault',['raw_body_mismatch','wrong_hash','future_graph','foreign_security','missing_cik_scope'])
 def test_unqualified_source_identity_or_clock_cannot_promote_context(inputs,subjects,fault):
     changed=deepcopy(inputs);financial=deepcopy(subjects)

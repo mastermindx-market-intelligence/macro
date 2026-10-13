@@ -57,6 +57,39 @@ def content_id(payload: Mapping[str, Any]) -> str:
     return "grrs1-" + sha256(canonical_bytes({k:v for k,v in payload.items() if k != "content_id"})).hexdigest()
 
 
+def _report_as_of(queue: Mapping[str, Any], generated_at: str, generated: datetime) -> str:
+    """Separate the incumbent daily analysis horizon from this report's cutoff.
+
+    The verified candidate owner represents a date with inclusive UTC end-of-day.
+    Only that exact horizon on the actual generation's UTC date may be bounded to
+    the report clock. Precise future cutoffs and future UTC dates remain invalid.
+    The original queue stays byte-exact and bound by its existing source digest.
+    """
+    horizon = _clock(queue["as_of"])
+    if horizon <= generated:
+        return queue["as_of"]
+    if horizon.date() == generated.date() and horizon.time() == datetime.max.time():
+        return generated_at
+    raise GraderError("research state candidate as_of is future")
+
+
+def _validate_source_clocks(value: Any, *, cutoff: datetime, generated: datetime) -> None:
+    """No horizon adaptation may admit evidence unavailable at the report cutoff."""
+    if isinstance(value, Mapping):
+        for key, item in value.items():
+            if key in {"known_at", "event_known_at", "graph_known_at"}:
+                if _clock(item) > cutoff:
+                    raise GraderError("research state cannot consume future candidate knowledge")
+            elif key == "generated_at":
+                if _clock(item) > generated:
+                    raise GraderError("research state cannot consume future candidate generation")
+            else:
+                _validate_source_clocks(item, cutoff=cutoff, generated=generated)
+    elif isinstance(value, list):
+        for item in value:
+            _validate_source_clocks(item, cutoff=cutoff, generated=generated)
+
+
 def build_not_started_state(*, queue: Mapping[str, Any], prereg_path: Path,
     generated_at: str, source_digests: Mapping[str, str], prior_issuance_raw: bytes = b"") -> dict[str, Any]:
     """Project verified current input shapes; never mistake them for issuances.
@@ -74,9 +107,8 @@ def build_not_started_state(*, queue: Mapping[str, Any], prereg_path: Path,
         raise GraderError("existing issuance requires its admitted owner report; refuse not_started projection")
     if not is_valid_candidate_queue(queue):
         raise GraderError("research state candidate input is invalid")
-    _clock(queue["generated_at"])
-    if _clock(queue["generated_at"]) > generated:
-        raise GraderError("research state cannot consume future candidate generation")
+    report_as_of = _report_as_of(queue, generated_at, generated)
+    _validate_source_clocks(queue, cutoff=_clock(report_as_of), generated=generated)
     if not source_digests or any(not isinstance(k,str) or not k or not isinstance(v,str)
         or len(v) != 64 or any(c not in "0123456789abcdef" for c in v) for k,v in source_digests.items()):
         raise GraderError("research state requires exact source SHA256 references")
@@ -85,7 +117,7 @@ def build_not_started_state(*, queue: Mapping[str, Any], prereg_path: Path,
         decision = admit(candidate, family=family)
         reasons["owner_admitted_input_shape" if decision.admitted else decision.reason] += 1
     payload = {"contract": CONTRACT, "schema_version": "1.0.0", "content_id": "",
-        "authority": _authority(), "generated_at": generated_at, "as_of": queue["as_of"],
+        "authority": _authority(), "generated_at": generated_at, "as_of": report_as_of,
         "state": "not_started", "is_running": False,
         "registration": {"family": family.to_payload(), "document_sha256": document_digest},
         "sources": dict(source_digests),

@@ -87,3 +87,9 @@ and original PDF extractor replay repairs for the next canonical build. The
 bounded publisher frontier found one new terminal skipped run and four older
 queued callers still pending. Terminal's contribution was delivered on PR778;
 source compatibility is proven, receiver acceptance and deployment are not.
+
+The 2026-10-13T10:12:51.825647+00:00 continuation records the successful 5d23 canonical build, unchanged
+642-line ledger, refused research-state future horizon, independently reviewed
+clock repair and truthful source-observation captions. All 72 affected checks
+pass. Final generation, visual/network proof, protected release and installed
+acceptance remain open; the original root continues execution.

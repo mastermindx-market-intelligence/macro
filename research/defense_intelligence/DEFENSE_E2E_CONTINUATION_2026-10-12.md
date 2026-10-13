@@ -532,3 +532,36 @@ after comment-text removal and both versions pass syntax checks. Two portable
 packaging checks pass and are explicitly registered in the existing Defense CI
 job. This source repair permits the next full canonical build; it is not yet a
 successful new generation or a final browser/timing result.
+
+## Canonical generation and clock repairs — 2026-10-13T10:12:51.825647+00:00
+
+Source `5d23bad6f621f3eb27f5f71de0396b04eb972733` completed the full canonical
+build at 09:56 UTC with generation `2026-10-13T09:54:55.596723+00:00`.
+Its 310112-byte HTML satisfies the unchanged 311296-byte ceiling. The 642-line
+observation ledger remained byte-identical at
+`da1ed3014a967963165c56944846059d94099927aa8500d926429aaa3c7e0fd6`.
+The external observed-output packet preserves that successful generation.
+
+The subsequent research-state step refused the queue's inclusive same-day
+end-of-day horizon as a future timestamp. The repaired projector bounds only
+that exact same-UTC-day horizon to the actual report generation. Precise future
+cutoffs, future dates and future source availability remain refused; original
+queue bytes and historical clocks are unchanged. Its regression uses a frozen
+synthetic horizon over the existing September fixture, not mutable nightly
+files. Independent semantic review SHA256
+`05d57e4ff2814e30c2f7097fb32428411f8ac59623a2da4fdf990646ec1de1e7`.
+
+Actual generated inspection also exposed a government-context caption labeling
+the projection date as source cutoff. Both languages now display the original
+award known-at as source observation. The investor research panel separately
+labels report as-of as status cutoff. These corrections change final public
+bytes, so the previous generation is not final visual or publication evidence.
+All 72 affected research-state, clock, publication-acknowledgement and government
+context checks pass. No issuance or evaluation was activated.
+
+Next: one canonical rebuild for these material corrections, then the exact-built
+browser matrix and declared cold-network measurement, followed by the sealed
+unfiltered publication proof. Scientific source-binding repair remains under
+independent review; licensed raw source packets stay outside Git. Protected
+release, original Terminal receiver custody and installed acceptance remain open.
+**MISSION_COMPLETE=false.**
