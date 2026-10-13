@@ -5594,6 +5594,7 @@ jobs:
       - "tests/test_pullback_depth_template_mutants.py"
       - "tests/test_pullback_episode_fuzz.py"
       - "tests/test_pullback_episode_fuzz_cn.py"
+      - "tests/test_pullback_wave9_mutants.py"
       - "tests/test_pullback_expiry_deadline.py"
       - "tests/test_pullback_expiry_owner_js.py"
       - "tests/test_pullback_expiry_owner_js_edge.py"
@@ -5683,6 +5684,7 @@ jobs:
           tests/test_pullback_chart_accessible_name.py
           tests/test_pullback_episode_fuzz.py
           tests/test_pullback_episode_fuzz_cn.py
+          tests/test_pullback_wave9_mutants.py
           -q
 
 
