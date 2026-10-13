@@ -1102,6 +1102,8 @@ def _plan_fixture(
     with_candidates=True, recorded_at="2026-07-02T22:06:00Z",
 ):
     """Real frozen board + real originated plans + real native B1 store."""
+    from scripts import build_stock_library as native_owner
+    monkeypatch.setattr(native_owner, "__file__", str(tmp_path / "scripts/build_stock_library.py"))
     monkeypatch.setattr(_episode_writer, "nightly_advance_enabled", lambda: True)
     reference = tmp_path / "data/reference"
     reference.mkdir(parents=True)
@@ -1820,3 +1822,87 @@ class TestPlanNativeSourceReadReviewDelta:
         assert read["read_status"] == "UNAVAILABLE"
         assert read["reason_codes"] == ["PLAN_SOURCE_PATH_CHANGED"]
         assert read["source_origin"] is None and read["native_identity"] is None
+
+
+class TestPlanNativeSourceReadOwnership:
+    def test_plan_module_cannot_acquire_or_steer_native_ledger(self):
+        import ast
+        import inspect
+        from scripts import build_stock_library as producer
+        text = Path(bp.__file__).read_text()
+        for token in ("us_candidate_episode", "us_context_vector", "us_prophet_rank",
+                      "_today_native_source_candidates", "attest_candidate_episode_store_bytes",
+                      "load_candidate_episode_store_snapshot", "read_today_candidate_source_rows"):
+            assert token not in text
+        helper = producer._read_original_selection_native_relation
+        assert tuple(inspect.signature(helper).parameters) == (
+            "raw", "selection_index", "started_at", "expected_candidate_generation_id")
+        native = inspect.getsource(helper)
+        assert "build_prophet" not in native and "LEDGER_DIR" not in native
+        tree = ast.parse(inspect.getsource(producer))
+        assert not any(isinstance(n, ast.ImportFrom) and n.module == "scripts.build_prophet"
+                       for n in ast.walk(tree))
+        assert text.count("read_plan_candidate_source(") == 1
+
+    def test_native_owner_uses_its_own_root_and_only_yields_immutable_facts(self, tmp_path, monkeypatch):
+        from scripts import build_stock_library as producer
+        from engine import us_context_vector as owner
+        plans, binding, path = _plan_fixture(tmp_path, monkeypatch, [
+            _buy_row("AAA", priority=90.0, anchor="2026-07-01")], tickers=["AAA"])
+        real = owner.read_today_candidate_source_rows
+        roots = []
+        def spy(root):
+            roots.append(root)
+            return real(root)
+        monkeypatch.setattr(owner, "read_today_candidate_source_rows", spy)
+        monkeypatch.setattr(bp, "LEDGER_DIR", tmp_path / "unrelated-plan-root")
+        with producer._read_original_selection_native_relation(
+                path.read_bytes(), selection_index=0, started_at="2026-07-04T00:00:00Z") as facts:
+            assert set(facts) == {"status", "reason_codes", "native_identity", "episode_lifecycle",
+                                  "native_clocks", "source_event_id", "source_receipt",
+                                  "has_assessment", "assessment_asof", "assessment_codes"}
+            assert facts["status"] == "AVAILABLE"
+            assert set(facts["native_identity"]) == {
+                "security_id", "episode_id", "candidate_generation_id", "market_session"}
+            with pytest.raises(TypeError):
+                facts["status"] = "invented"
+            with pytest.raises(TypeError):
+                facts["native_identity"]["security_id"] = "invented"
+            assert roots == [tmp_path]
+        assert roots == [tmp_path, tmp_path]
+
+    def test_native_recheck_stays_between_both_plan_guard_groups(self, tmp_path, monkeypatch):
+        from engine import us_context_vector as owner
+        plans, binding, _ = _plan_fixture(tmp_path, monkeypatch, [
+            _buy_row("AAA", priority=90.0, anchor="2026-07-01")], tickers=["AAA"])
+        plan_path = bp.PLANS_DIR / (plans[0]["id"] + ".json")
+        source_path = _plan_source_snapshot(tmp_path, binding)
+        original_read = Path.read_bytes
+        original_rows = owner.read_today_candidate_source_rows
+        events = []
+        def read(path):
+            if path == plan_path:
+                events.append("plan")
+            if path == source_path:
+                events.append("gzip")
+            return original_read(path)
+        def rows(root):
+            events.append("native")
+            return original_rows(root)
+        monkeypatch.setattr(Path, "read_bytes", read)
+        monkeypatch.setattr(owner, "read_today_candidate_source_rows", rows)
+        result = bp.read_plan_candidate_source(plans[0]["id"])
+        assert result["read_status"] == "AVAILABLE"
+        assert events == ["plan", "gzip", "native", "plan", "gzip", "native", "plan", "gzip"]
+
+    def test_plan_cannot_redirect_native_owner_with_a_changed_plan_root(self, tmp_path, monkeypatch):
+        from scripts import build_stock_library as producer
+        plans, binding, _ = _plan_fixture(tmp_path, monkeypatch, [
+            _buy_row("AAA", priority=90.0, anchor="2026-07-01")], tickers=["AAA"])
+        # A different installed native owner has no ledger. The Plan's fully
+        # populated data root cannot substitute for that independent owner.
+        monkeypatch.setattr(producer, "__file__", str(tmp_path / "other-native-owner/scripts/build_stock_library.py"))
+        result = bp.read_plan_candidate_source(plans[0]["id"])
+        assert result["read_status"] == "UNAVAILABLE"
+        assert result["reason_codes"] == ["CANDIDATE_SNAPSHOT_UNAVAILABLE"]
+        assert result["native_identity"] is None

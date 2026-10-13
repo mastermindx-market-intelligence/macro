@@ -1801,6 +1801,126 @@ def _today_native_source_candidates(raw, *, binding, doc, generation, snapshot,
     return candidates, native_reads
 
 
+class _OriginalSelectionNativeRefused(ValueError):
+    """The native owner could not preserve one captured source relation."""
+
+
+def _read_original_selection_native_relation(raw, *, selection_index, started_at,
+                                             expected_candidate_generation_id=None):
+    """Read original-source facts under the native owner's own byte guard.
+
+    The installation root is fixed here. Callers supply only captured immutable
+    source bytes, an original ordinal, a UTC request cut and an equality pin;
+    they cannot choose a store or supply native objects. No Plan is read here.
+    The context yields frozen facts, never a snapshot, token or assessment.
+    Normal context exit performs the final complete UCV and native HEAD check,
+    allowing the consumer's own file guards to bracket that check precisely.
+    Refused consumer reads need no subsequent native check and cannot succeed.
+    """
+    from contextlib import contextmanager
+    from types import MappingProxyType
+    from engine.us_candidate_episode import (
+        attest_candidate_episode_store_bytes,
+        load_candidate_episode_store_snapshot,
+    )
+    from engine.us_context_vector import read_today_candidate_source_rows
+
+    def refuse(code):
+        return _OriginalSelectionNativeRefused(code)
+
+    def freeze(value):
+        if isinstance(value, dict):
+            return MappingProxyType({key: freeze(item) for key, item in value.items()})
+        if isinstance(value, (list, tuple)):
+            return tuple(freeze(item) for item in value)
+        return value
+
+    @contextmanager
+    def captured_read():
+        try:
+            if not isinstance(raw, bytes):
+                raise ValueError("source must be captured immutable bytes")
+            binding = today_selection_source_binding(raw)
+            doc = json.loads(raw)
+            if (isinstance(selection_index, bool) or not isinstance(selection_index, int)
+                    or not 0 <= selection_index < len(doc["buy"])):
+                raise ValueError("original ordinal unavailable")
+            if _today_source_instant(doc["emit"]["at_utc"]) > _today_source_instant(started_at):
+                raise ValueError("source is after the request cut")
+        except (ValueError, TypeError, KeyError) as exc:
+            raise refuse("PLAN_SOURCE_RESOLUTION_UNAVAILABLE") from exc
+
+        root = Path(__file__).resolve().parent.parent
+        episode_root = root / "data/us_prophet_rank/episodes"
+        try:
+            source_rows, source_receipts = read_today_candidate_source_rows(root)
+            token = attest_candidate_episode_store_bytes(episode_root)
+            snapshot = load_candidate_episode_store_snapshot(episode_root)
+        except (OSError, ValueError, TypeError) as exc:
+            raise refuse("CANDIDATE_SNAPSHOT_UNAVAILABLE") from exc
+        if token.generation_id != snapshot.generation_id:
+            raise refuse("CANDIDATE_SNAPSHOT_CHANGED")
+        if (expected_candidate_generation_id is not None
+                and expected_candidate_generation_id != snapshot.generation_id):
+            raise refuse("CANDIDATE_GENERATION_MISMATCH")
+        try:
+            if (_today_source_instant(snapshot.generation.receipt["recorded_at"])
+                    > _today_source_instant(started_at)):
+                raise ValueError("generation is after the request cut")
+        except (ValueError, TypeError, KeyError) as exc:
+            raise refuse("CANDIDATE_CLOCK_UNAVAILABLE") from exc
+        details = []
+        try:
+            candidates, native_reads = _today_native_source_candidates(
+                raw, binding=binding, doc=doc, generation=snapshot.generation,
+                snapshot=snapshot, source_rows=source_rows, generated_at=started_at,
+                relation_details=details)
+            if not (len(candidates) == len(native_reads) == len(details) == len(doc["buy"])):
+                raise ValueError("unaligned native source rows")
+        except (OSError, ValueError, TypeError) as exc:
+            raise refuse("PLAN_SOURCE_RESOLUTION_UNAVAILABLE") from exc
+        item = candidates[selection_index]
+        facts = details[selection_index] or {}
+        candidate = item.get("candidate_input")
+        identity = ({key: candidate.get(key) for key in (
+            "security_id", "episode_id", "candidate_generation_id", "market_session")}
+            if isinstance(candidate, dict) else None)
+        native_read = native_reads[selection_index]
+        assessment = native_read[1] if native_read is not None else None
+        assessment_codes = [code for code in item.get("reason_codes", []) if code in {
+            "ASSESSMENT_NATIVE_OWNER_READ_UNAVAILABLE", "ASSESSMENT_NATIVE_BINDING_UNAVAILABLE"}]
+        if assessment_codes:
+            identity = None
+        relation = facts.get("relation") or {}
+        yield freeze({
+            "status": item.get("status"), "reason_codes": item.get("reason_codes", []),
+            "native_identity": identity, "episode_lifecycle": facts.get("episode"),
+            "native_clocks": {
+                "native_known_at": relation.get("known_at"),
+                "native_recorded_at": relation.get("recorded_at"),
+                "generation_recorded_at": snapshot.generation.receipt.get("recorded_at"),
+            },
+            "source_event_id": facts.get("source_event_id"),
+            "source_receipt": facts.get("source_receipt"),
+            "has_assessment": isinstance(assessment, dict),
+            "assessment_asof": assessment.get("asof") if isinstance(assessment, dict) else None,
+            "assessment_codes": assessment_codes,
+        })
+        # This check runs at the original interleaving point. Nothing yielded
+        # above can mutate these captured native inputs or redirect this read.
+        try:
+            _, after_receipts = read_today_candidate_source_rows(root)
+            if (after_receipts != source_receipts
+                    or attest_candidate_episode_store_bytes(episode_root) != token):
+                raise refuse("CANDIDATE_SNAPSHOT_CHANGED")
+        except _OriginalSelectionNativeRefused:
+            raise
+        except (OSError, ValueError, TypeError) as exc:
+            raise refuse("PLAN_SOURCE_RECHECK_UNAVAILABLE") from exc
+
+    return captured_read()
+
+
 def read_today_candidate_projection(repo_root, *, expected_source_sha256, expected_pair_id,
                                     expected_selection_receipt, expected_candidate_generation_id=None):
     """Read exact finalized selection plus native B1; never mutate publication."""

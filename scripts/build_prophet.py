@@ -302,13 +302,9 @@ def read_plan_candidate_source(
     import zlib
     from engine.prophet_bridge import _make_id, _normalise_iso_date
     from engine.options_structure import validate_trade_plan  # noqa: PLC0415
-    from engine.us_candidate_episode import (  # noqa: PLC0415
-        attest_candidate_episode_store_bytes,
-        load_candidate_episode_store_snapshot,
-    )
-    from engine.us_context_vector import read_today_candidate_source_rows  # noqa: PLC0415
     from scripts.build_stock_library import (  # noqa: PLC0415
-        _today_native_source_candidates,
+        _OriginalSelectionNativeRefused,
+        _read_original_selection_native_relation,
         _today_source_instant,
         today_selection_source_binding,
     )
@@ -316,9 +312,6 @@ def read_plan_candidate_source(
     _PLAN_SOURCE_READ_SCHEMA = "prophet.plan_candidate_source_read/v1"
     _PLAN_SOURCE_CURRENT_DECISION_QUALIFICATION_UNAVAILABLE = (
         "PLAN_CURRENT_DECISION_QUALIFICATION_UNAVAILABLE"
-    )
-    _PLAN_SOURCE_IDENTITY_FIELDS = (
-        "security_id", "episode_id", "candidate_generation_id", "market_session",
     )
     _PLAN_SOURCE_CLOCK_FIELDS = (
         "source_emitted_at", "source_session", "formation_date", "plan_recorded_at",
@@ -466,121 +459,78 @@ def read_plan_candidate_source(
                 or plan_entry != original_entry):
             raise refuse("PLAN_SOURCE_ROW_MISMATCH")
 
-        # ── the actual native generation and complete captured UCV inputs ──────
-        repo_root = Path(LEDGER_DIR).parents[1]
-        episode_root = repo_root / "data" / "us_prophet_rank" / "episodes"
-        try:
-            source_rows, source_receipts = read_today_candidate_source_rows(repo_root)
-            token = attest_candidate_episode_store_bytes(episode_root)
-            snapshot = load_candidate_episode_store_snapshot(episode_root)
-        except (OSError, ValueError, TypeError) as exc:
-            raise refuse("CANDIDATE_SNAPSHOT_UNAVAILABLE") from exc
-        if token.generation_id != snapshot.generation_id:
-            raise refuse("CANDIDATE_SNAPSHOT_CHANGED")
-        if (expected_candidate_generation_id is not None
-                and expected_candidate_generation_id != snapshot.generation_id):
-            raise refuse("CANDIDATE_GENERATION_MISMATCH")
-        try:
-            if (_today_source_instant(snapshot.generation.receipt["recorded_at"])
-                    > _today_source_instant(started_at)):
-                raise refuse("CANDIDATE_CLOCK_UNAVAILABLE")
-        except (ValueError, TypeError, KeyError) as exc:
-            raise refuse("CANDIDATE_CLOCK_UNAVAILABLE") from exc
-        relation_details: list[dict[str, Any]] = []
-        try:
-            candidates, native_reads = _today_native_source_candidates(
-                raw_source, binding=actual_binding, doc=source_doc,
-                generation=snapshot.generation, snapshot=snapshot,
-                source_rows=source_rows, generated_at=started_at,
-                relation_details=relation_details)
-        except (OSError, ValueError, TypeError) as exc:
-            raise refuse("PLAN_SOURCE_RESOLUTION_UNAVAILABLE") from exc
-        if (len(candidates) != len(board_rows)
-                or len(relation_details) != len(board_rows)):
-            raise refuse("PLAN_SOURCE_RESOLUTION_UNAVAILABLE")
-        item = candidates[selection_index]
-        # No detail dict means the row never reached the native stage at all —
-        # the original relation simply did not resolve that far, and the
-        # envelope reports it as an absent native relation, never an error.
-        facts = relation_details[selection_index]
-        if not isinstance(facts, dict):
-            facts = {}
-        native_read = native_reads[selection_index]
+        # The source owner acquires its own native inputs and yields facts only.
+        # Exiting this context rechecks those inputs at the same interleaving
+        # point between our two Plan/original-source guard groups below.
+        with _read_original_selection_native_relation(
+                raw_source, selection_index=selection_index, started_at=started_at,
+                expected_candidate_generation_id=expected_candidate_generation_id) as facts:
+            # Original source relation first — a separate fact from any current
+            # lifecycle, and never convertible into a current trade action.
+            relation_status = "BOUND"
+            relation_reasons: list[str] = []
+            action_reasons = [_PLAN_SOURCE_CURRENT_DECISION_QUALIFICATION_UNAVAILABLE]
+            if facts["status"] != "AVAILABLE":
+                relation_reasons = (list(facts["reason_codes"] or [])
+                                    or ["PLAN_SOURCE_RESOLUTION_UNAVAILABLE"])
+                relation_status = {
+                    "CANDIDATE_SOURCE_UNAVAILABLE": "UNAVAILABLE",
+                    "CANDIDATE_SOURCE_AMBIGUOUS": "AMBIGUOUS",
+                    "CANDIDATE_SOURCE_SUPPRESSED": "SUPPRESSED",
+                    "CANDIDATE_SOURCE_RETRACTED": "RETRACTED",
+                    "ROW_PROVENANCE_UNAVAILABLE": "UNAVAILABLE",
+                    "ROW_PROVENANCE_MISMATCH": "UNAVAILABLE",
+                    "CANDIDATE_RECONCILIATION_PENDING": "PENDING",
+                    "CANDIDATE_EPISODE_AMBIGUOUS": "AMBIGUOUS",
+                    # A genuinely later terminal/superseded episode leaves the
+                    # ORIGINAL relation exactly bound and inspectable.
+                    "CANDIDATE_EPISODE_TERMINAL": "BOUND",
+                }.get(relation_reasons[0], "UNAVAILABLE")
+                if relation_status != "PENDING":
+                    action_reasons.append(relation_reasons[0])
+                if relation_status == "BOUND":
+                    relation_reasons = []
+            lifecycle = (dict(facts["episode_lifecycle"])
+                         if facts["episode_lifecycle"] is not None else None)
+            native_identity = (dict(facts["native_identity"])
+                               if facts["native_identity"] is not None else None)
+            # Native refusal codes remain explicit; this consumer may only withhold.
+            assessment_reasons = list(facts["assessment_codes"])
+            if assessment_reasons:
+                native_identity = None
+                action_reasons[:0] = assessment_reasons
+            source_emit = source_doc.get("emit")
+            clocks = {
+                "source_emitted_at": source_emit.get("at_utc") if isinstance(source_emit, dict) else None,
+                "source_session": actual_binding.get("market_session"),
+                "formation_date": formation_date,
+                "plan_recorded_at": plan.get("recorded_at"),
+                **facts["native_clocks"],
+            }
+            origin_out = {
+                "selection_index": selection_index,
+                "row_receipt": origin.get("row_receipt"),
+                "source_event_id": facts.get("source_event_id"),
+                "source_receipt": facts.get("source_receipt"),
+            }
 
-        # Original source relation first — a separate fact from any current
-        # lifecycle, and never convertible into a current trade action.
-        relation_status = "BOUND"
-        relation_reasons: list[str] = []
-        action_reasons = [_PLAN_SOURCE_CURRENT_DECISION_QUALIFICATION_UNAVAILABLE]
-        if item.get("status") != "AVAILABLE":
-            relation_reasons = (list(item.get("reason_codes") or [])
-                                or ["PLAN_SOURCE_RESOLUTION_UNAVAILABLE"])
-            relation_status = {
-                "CANDIDATE_SOURCE_UNAVAILABLE": "UNAVAILABLE",
-                "CANDIDATE_SOURCE_AMBIGUOUS": "AMBIGUOUS",
-                "CANDIDATE_SOURCE_SUPPRESSED": "SUPPRESSED",
-                "CANDIDATE_SOURCE_RETRACTED": "RETRACTED",
-                "ROW_PROVENANCE_UNAVAILABLE": "UNAVAILABLE",
-                "ROW_PROVENANCE_MISMATCH": "UNAVAILABLE",
-                "CANDIDATE_RECONCILIATION_PENDING": "PENDING",
-                "CANDIDATE_EPISODE_AMBIGUOUS": "AMBIGUOUS",
-                # A genuinely later terminal/superseded episode leaves the
-                # ORIGINAL relation exactly bound and inspectable.
-                "CANDIDATE_EPISODE_TERMINAL": "BOUND",
-            }.get(relation_reasons[0], "UNAVAILABLE")
-            if relation_status != "PENDING":
-                action_reasons.append(relation_reasons[0])
-            if relation_status == "BOUND":
-                relation_reasons = []
-        episode_facts = facts.get("episode")
-        lifecycle = dict(episode_facts) if isinstance(episode_facts, dict) else None
-        candidate_input = item.get("candidate_input")
-        native_identity = (
-            {field: candidate_input.get(field) for field in _PLAN_SOURCE_IDENTITY_FIELDS}
-            if isinstance(candidate_input, dict) else None
-        )
-        # Preserve the genuine B1 relation while disclosing a refused B3 read.
-        # As with a late assessment below, no consumable native identity is
-        # returned when the same-read assessment could not be verified.
-        assessment_reasons = [code for code in item.get("reason_codes", []) if code in {
-            "ASSESSMENT_NATIVE_OWNER_READ_UNAVAILABLE",
-            "ASSESSMENT_NATIVE_BINDING_UNAVAILABLE",
-        }]
-        if assessment_reasons:
-            native_identity = None
-            action_reasons[:0] = assessment_reasons
-        relation = facts.get("relation")
-        source_emit = source_doc.get("emit")
-        clocks = {
-            "source_emitted_at": source_emit.get("at_utc") if isinstance(source_emit, dict) else None,
-            "source_session": actual_binding.get("market_session"),
-            "formation_date": formation_date,
-            "plan_recorded_at": plan.get("recorded_at"),
-            "native_known_at": None if not isinstance(relation, dict) else relation.get("known_at"),
-            "native_recorded_at": None if not isinstance(relation, dict) else relation.get("recorded_at"),
-            "generation_recorded_at": snapshot.generation.receipt.get("recorded_at"),
-        }
-        origin_out = {
-            "selection_index": selection_index,
-            "row_receipt": origin.get("row_receipt"),
-            "source_event_id": facts.get("source_event_id"),
-            "source_receipt": facts.get("source_receipt"),
-        }
+            # First consumer guard group, before the native owner rechecks on exit.
+            try:
+                if plan_path.read_bytes() != raw:
+                    raise refuse("PLAN_SNAPSHOT_CHANGED")
+                if plan_path_identity() != plan_path_token:
+                    raise refuse("PLAN_PATH_CHANGED")
+                if source_path_identity() != source_path_token:
+                    raise refuse("PLAN_SOURCE_PATH_CHANGED")
+                if snapshot_path.read_bytes() != compressed:
+                    raise refuse("PLAN_SOURCE_SNAPSHOT_CHANGED")
+            except _PlanCandidateSourceRefused:
+                raise
+            except (OSError, ValueError, TypeError) as exc:
+                raise refuse("PLAN_SOURCE_RECHECK_UNAVAILABLE") from exc
 
-        # ── whole-read final checks: any change discards the assembled relation ──
+        # Second consumer guard group, after the native owner's final check.
         try:
-            if plan_path.read_bytes() != raw:
-                raise refuse("PLAN_SNAPSHOT_CHANGED")
-            if plan_path_identity() != plan_path_token:
-                raise refuse("PLAN_PATH_CHANGED")
-            if source_path_identity() != source_path_token:
-                raise refuse("PLAN_SOURCE_PATH_CHANGED")
-            if snapshot_path.read_bytes() != compressed:
-                raise refuse("PLAN_SOURCE_SNAPSHOT_CHANGED")
-            _, after_receipts = read_today_candidate_source_rows(repo_root)
-            if (after_receipts != source_receipts
-                    or attest_candidate_episode_store_bytes(episode_root) != token):
-                raise refuse("CANDIDATE_SNAPSHOT_CHANGED")
             if plan_path.read_bytes() != raw:
                 raise refuse("PLAN_SNAPSHOT_CHANGED")
             if snapshot_path.read_bytes() != compressed:
@@ -598,10 +548,9 @@ def read_plan_candidate_source(
         # gathered and every final raw/part/HEAD guard has held. No clock here
         # renews, relabels or replaces any original source or native clock.
         completed_at = datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
-        assessment = native_read[1] if native_read is not None else None
-        if isinstance(assessment, dict):
+        if facts["has_assessment"]:
             try:
-                after_completion = (_today_source_instant(assessment.get("asof"))
+                after_completion = (_today_source_instant(facts["assessment_asof"])
                                     > _today_source_instant(completed_at))
             except (TypeError, ValueError):
                 after_completion = True
@@ -626,7 +575,7 @@ def read_plan_candidate_source(
             "clocks": clocks,
             "generated_at": completed_at,
         }
-    except _PlanCandidateSourceRefused as exc:
+    except (_PlanCandidateSourceRefused, _OriginalSelectionNativeRefused) as exc:
         code = exc.args[0] if exc.args else "PLAN_SOURCE_READ_UNAVAILABLE"
         return {
             "schema": _PLAN_SOURCE_READ_SCHEMA,
