@@ -127,6 +127,22 @@ def _text(value: object) -> bool:
     return type(value) is str and 0 < len(value) <= 240 and bool(value.strip())
 
 
+def _review_receipt(value: object) -> bool:
+    """Caller-supplied receipt shape ``namespace:body``. No lookup and no store.
+
+    A bare token such as ``x`` is not a review receipt. The check is syntactic:
+    it does not admit, resolve, or retain a review.
+    """
+    if not _text(value) or ':' not in value:
+        return False
+    namespace, body = value.split(':', 1)
+    alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_-'
+    def token(text: str, extra: str = '') -> bool:
+        allowed = alphabet + extra
+        return bool(text) and text[0].isalnum() and all(ch in allowed for ch in text)
+    return token(namespace) and token(body, '.:')
+
+
 def _decimal(value: object) -> bool:
     if type(value) is not Decimal or not value.is_finite():
         return False
@@ -242,7 +258,7 @@ def _rule_problem(rule: object, operation: str) -> str | None:
         return 'RULE_REQUIRED'
     if type(rule) is not ComparisonRule:
         return 'INVALID_RULE'
-    if not all(_text(x) for x in (rule.revision, rule.relation_ref, rule.review_ref)):
+    if not all(_text(x) for x in (rule.revision, rule.relation_ref)) or not _review_receipt(rule.review_ref):
         return 'RULE_NOT_REVIEWED'
     if rule.operation != operation:
         return 'RULE_OPERATION_MISMATCH'
@@ -379,6 +395,8 @@ def compare_guidance(actual: Measure, guide: Guidance, *, rule: ComparisonRule) 
     if (not _same_scope(actual, guide, same_period=True)
             or rule.bindings[0].domain != rule.bindings[1].domain):
         return _result(rule, inputs, reason='COMPARISON_SCOPE_MISMATCH')
+    if guide.published > guide.period[1]:
+        return _result(rule, inputs, reason='GUIDANCE_PUBLISHED_AFTER_PERIOD')
     if guide.vintage != 'original_company_guidance':
         return _result(rule, inputs, status='QUALIFIED', label='GUIDANCE_VINTAGE_UNQUALIFIED',
                        reason='GUIDANCE_VINTAGE_UNQUALIFIED')

@@ -4061,6 +4061,11 @@ CURATED_EXCLUSIVE = {
     # is gate-code pure (synthetic casebook + validator + typed route_unbound harness), so its
     # curated scope is exactly the Mining files it names.
     "mining-economic-dossier",
+    # 2026-10-12 Communications A1. The two suites left ontology-explorer
+    # (weight 16 -> 11) for this gate:code home. Curated for COVERAGE: paths
+    # are the measured 15-file import closure, so exclusivity drops only the
+    # transmission_chains data/site json/yaml fallback and loses no owner.
+    "communications-a1-measures",
     # 2026-09-22 UD-B2 W4B (#7712). `markets-regime-strip` is the gate:code
     # home for tests/test_markets_regime_strip.py — its thematic neighbours
     # (engine-render-guards, unrun-picks-boards) are `gate: data`, which the

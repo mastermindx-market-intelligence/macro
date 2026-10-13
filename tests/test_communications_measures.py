@@ -758,3 +758,23 @@ def test_exact_synthetic_accounting_stays_distinct_from_unknown_source_precision
     unknown = accounting_bridge(measures=observations, rule=exact_rule)
     assert (unknown.result.status, unknown.result.reason) == ('QUALIFIED', 'PUBLISHED_FIGURES_ONLY')
     assert out.evidence_relation == unknown.evidence_relation == 'INDEPENDENCE_UNASSESSED'
+
+
+def test_bare_review_token_is_not_a_caller_supplied_receipt():
+    """review_ref='x' is a token, not a caller-supplied receipt."""
+    a, b = measure(), measure('80', ref='fixture:prior', period=PRIOR)
+    out = compare_period(a, b, rule=replace(period_rule(a, b), review_ref='x'))
+    assert (out.status, out.reason, out.value) == ('INCOMPATIBLE', 'RULE_NOT_REVIEWED', None)
+    held = compare_period(a, b, rule=period_rule(a, b))
+    assert held.status == 'COMPARABLE' and held.reason is None
+
+
+def test_guidance_published_after_the_period_is_incompatible():
+    """published=2099-01-01 is after period end; the fixture date still compares."""
+    a = measure()
+    late = guidance(published='2099-01-01')
+    out = compare_guidance(a, late, rule=guide_rule(a, late))
+    assert (out.status, out.reason, out.value) == (
+        'INCOMPATIBLE', 'GUIDANCE_PUBLISHED_AFTER_PERIOD', None)
+    held = guidance(published='2026-04-29')
+    assert compare_guidance(a, held, rule=guide_rule(a, held)).status == 'COMPARABLE'

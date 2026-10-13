@@ -152,7 +152,8 @@ def test_correction_keeps_new_level_but_requires_exact_rule_rebinding():
     assert out.measures[0].current.value == D('50000')
     assert out.measures[0].comparison.reason == 'INPUT_BINDING_MISMATCH'
     assert out.measures[0].trend is None and out.headline is None
-    assert out.guidance is None
+    assert (out.guidance.status, out.guidance.reason) == ('INCOMPATIBLE', 'INPUT_BINDING_MISMATCH')
+    assert out.original_guidance is None
     assert out.measures[1].trend is not None
 
 
@@ -426,7 +427,8 @@ def test_retained_original_guidance_disappears_after_actual_rule_is_invalidated(
     item = replace(item, guide_rule=replace(item.guide_rule, review_ref=''))
     out = panel(compose_four_company_claims((item,)))
     assert out.headline is not None
-    assert out.guidance is None and out.original_guidance is None
+    assert out.original_guidance is None
+    assert (out.guidance.status, out.guidance.reason) == ('INCOMPATIBLE', 'RULE_NOT_REVIEWED')
 
 
 # Task4B domain-payload candidate: no native or shared registration is claimed.
@@ -910,3 +912,87 @@ def test_accounting_explanations_do_not_depend_on_caller_decimal_traps():
         context.clear_flags()
         assert cr.encode_communications_payload((item,)) == expected
         assert not any(context.flags.values())
+
+
+def test_incompatible_guidance_remains_a_visible_closed_refusal():
+    item = company()
+    baseline = compose_four_company_claims((item,))
+    item = replace(item, guide_rule=replace(item.guide_rule, review_ref=''))
+    result = compose_four_company_claims((item,))
+    out = panel(result)
+    assert out.guidance is not None
+    assert (out.guidance.status, out.guidance.reason, out.guidance.value) == (
+        'INCOMPATIBLE', 'RULE_NOT_REVIEWED', None)
+    assert out.original_guidance is None
+    assert out.headline is not None
+    assert result.headline_issuer_count == baseline.headline_issuer_count
+    payload = cr.compose_communications_payload((item,))
+    assert payload['binding_state'] == 'unbound'
+    assert payload['projection']['headline_issuer_count'] == baseline.headline_issuer_count
+
+
+def test_unavailable_guidance_remains_a_visible_closed_refusal():
+    item = company()
+    baseline = compose_four_company_claims((item,))
+    result = compose_four_company_claims((replace(item, guide_rule=None),))
+    out = panel(result)
+    assert (out.guidance.status, out.guidance.reason) == ('UNAVAILABLE', 'RULE_REQUIRED')
+    assert out.original_guidance is None
+    assert result.headline_issuer_count == baseline.headline_issuer_count
+    payload = cr.compose_communications_payload((replace(item, guide_rule=None),))
+    assert payload['binding_state'] == 'unbound'
+
+
+def test_guidance_published_after_period_end_stays_visible_without_raising_headline():
+    item = company()
+    baseline = compose_four_company_claims((item,))
+    late = replace(item, guide=replace(item.guide, published='2099-01-01'))
+    result = compose_four_company_claims((late,))
+    out = panel(result)
+    assert (out.guidance.status, out.guidance.reason) == (
+        'INCOMPATIBLE', 'GUIDANCE_PUBLISHED_AFTER_PERIOD')
+    assert out.original_guidance is None
+    assert result.headline_issuer_count == baseline.headline_issuer_count
+    payload = cr.compose_communications_payload((late,))
+    assert payload['binding_state'] == 'unbound'
+    assert payload['projection']['panels'][0]['guidance']['reason'] == 'GUIDANCE_PUBLISHED_AFTER_PERIOD'
+
+
+def test_incompatible_accounting_recipe_remains_visible():
+    item = accounting_magnite()
+    baseline = compose_four_company_claims((item,))
+    recipe = item.accounting_rules[0]
+    broken = replace(recipe, comparison=replace(recipe.comparison, review_ref=''))
+    item = replace(item, accounting_rules=(broken,) + item.accounting_rules[1:])
+    result = compose_four_company_claims((item,))
+    out = panel(result, 'magnite')
+    refused = [view for group in out.accounting for view in group.views
+               if view.result.status == 'INCOMPATIBLE']
+    assert len(refused) == 1
+    assert refused[0].result.reason == 'RULE_NOT_REVIEWED'
+    assert refused[0].reconstructed_current is None
+    assert result.headline_issuer_count == baseline.headline_issuer_count
+    payload = cr.compose_communications_payload((item,))
+    assert payload['binding_state'] == 'unbound'
+    assert payload['projection']['headline_issuer_count'] == baseline.headline_issuer_count
+
+
+def test_unavailable_accounting_recipe_remains_visible():
+    item = accounting_magnite()
+    baseline = compose_four_company_claims((item,))
+    revenue = next(m for m in item.measures if m.metric == 'revenue' and m.period == CURRENT)
+    missing = replace(revenue, value=None, support=None, support_basis='unknown')
+    measures = tuple(missing if m.ref == revenue.ref else m for m in item.measures)
+    item = replace(item, measures=measures)
+    result = compose_four_company_claims((item,))
+    out = panel(result, 'magnite')
+    refused = [view for group in out.accounting for view in group.views
+               if view.result.status == 'UNAVAILABLE']
+    assert refused and all(view.result.reason == 'POINT_VALUE_UNAVAILABLE' for view in refused)
+    assert result.headline_issuer_count == baseline.headline_issuer_count
+
+
+def test_result_reason_is_a_closed_enum():
+    payload = cr.compose_communications_payload((company(),))
+    payload['projection']['panels'][0]['measures'][0]['comparison']['reason'] = 'not-a-reason'
+    assert cr._view_validator().is_valid(payload) is False

@@ -375,9 +375,37 @@
         "reason": {
           "anyOf": [
             {
-              "type": "string",
-              "minLength": 1,
-              "maxLength": 240
+              "enum": [
+                "ACCOUNTING_COMPONENT_OVERLAP",
+                "ACCOUNTING_DEPENDENCY_MISMATCH",
+                "ACCOUNTING_RESIDUAL",
+                "ACCOUNTING_SCOPE_MISMATCH",
+                "CASH_RECIPE_MISMATCH",
+                "CASH_SIGN_MISMATCH",
+                "COMPARISON_SCOPE_MISMATCH",
+                "DECLARED_ACCOUNTING_DEPENDENCE",
+                "GUIDANCE_BOUNDS_UNQUALIFIED",
+                "GUIDANCE_PUBLISHED_AFTER_PERIOD",
+                "GUIDANCE_VINTAGE_UNQUALIFIED",
+                "INPUT_BINDING_MISMATCH",
+                "INVALID_ACCOUNTING_RECIPE",
+                "INVALID_GUIDANCE",
+                "INVALID_MEASURE",
+                "INVALID_RULE",
+                "NONPOSITIVE_PRIOR",
+                "PERIOD_ORDER_INCOMPATIBLE",
+                "POINT_VALUE_UNAVAILABLE",
+                "PRIOR_SUPPORT_NONPOSITIVE",
+                "PUBLISHED_FIGURES_ONLY",
+                "RATE_PERCENT_CHANGE_UNSUPPORTED",
+                "REPEATED_ECONOMIC_RECEIPT",
+                "RULE_NOT_REVIEWED",
+                "RULE_OPERATION_MISMATCH",
+                "RULE_REQUIRED",
+                "SOURCE_PRECISION_UNKNOWN",
+                "SUPPORT_SPANS_VERDICTS",
+                "UNSUPPORTED_MODE"
+              ]
             },
             {
               "type": "null"
@@ -568,27 +596,55 @@
           "$ref": "#/$defs/result"
         },
         "current_output": {
-          "$ref": "#/$defs/measure"
+          "anyOf": [
+            {
+              "$ref": "#/$defs/measure"
+            },
+            {
+              "type": "null"
+            }
+          ]
         },
         "prior_output": {
-          "$ref": "#/$defs/measure"
+          "anyOf": [
+            {
+              "$ref": "#/$defs/measure"
+            },
+            {
+              "type": "null"
+            }
+          ]
         },
         "reconstructed_current": {
-          "type": "string",
-          "pattern": "^-?(?:0|[1-9][0-9]*)(?:\\.[0-9]+)?$",
-          "maxLength": 384
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^-?(?:0|[1-9][0-9]*)(?:\\.[0-9]+)?$",
+              "maxLength": 384
+            },
+            {
+              "type": "null"
+            }
+          ]
         },
         "residual": {
-          "type": "string",
-          "pattern": "^-?(?:0|[1-9][0-9]*)(?:\\.[0-9]+)?$",
-          "maxLength": 384
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^-?(?:0|[1-9][0-9]*)(?:\\.[0-9]+)?$",
+              "maxLength": 384
+            },
+            {
+              "type": "null"
+            }
+          ]
         },
         "contributions": {
           "type": "array",
           "items": {
             "$ref": "#/$defs/contribution"
           },
-          "minItems": 1,
+          "minItems": 0,
           "maxItems": 7
         },
         "evidence_relation": {

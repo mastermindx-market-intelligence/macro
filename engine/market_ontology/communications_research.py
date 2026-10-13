@@ -325,6 +325,23 @@ def _accounting_explanation(slot, view):
     return None if copy is None else _claim(*copy, (view.result,))
 
 
+def _refusal_outcome_refs(recipe, view):
+    """Identity of a refused recipe. Does not mint an id or admit outputs."""
+    if view.outcome_refs:
+        return view.outcome_refs
+    comparison = recipe.comparison
+    if type(comparison) is not ComparisonRule or type(comparison.bindings) is not tuple:
+        return None
+    by_role = {}
+    for binding in comparison.bindings:
+        if type(binding) is InputBinding and _text(binding.ref):
+            by_role.setdefault(binding.role, binding.ref)
+    pair = (by_role.get('output_current'), by_role.get('output_prior'))
+    if all(_text(ref) for ref in pair) and pair[0] != pair[1]:
+        return pair
+    return None
+
+
 def _accounting_views(item, rows, observed):
     grouped = {}
     for recipe in item.accounting_rules:
@@ -337,6 +354,12 @@ def _accounting_views(item, rows, observed):
         if any(ref not in observed for ref in refs):
             continue
         view = accounting_bridge(measures=tuple(observed[ref] for ref in refs), rule=recipe)
+        if view.result.status in ('INCOMPATIBLE', 'UNAVAILABLE'):
+            key = _refusal_outcome_refs(recipe, view)
+            if key is None:
+                continue
+            grouped.setdefault(key, {})[view.result.rule_revision] = view
+            continue
         if view.reconstructed_current is None or view.current_output is None or view.prior_output is None:
             continue
         # A retained historical record cannot replace the selected corrected total.
@@ -390,14 +413,20 @@ def compose_four_company_claims(inputs: tuple[CompanyClaimInput, ...]) -> FourCo
                               first.zh[:-1] + '；' + second.zh,
                               tuple(row.comparison for row in rows))
         guide_result = None
+        admit_guide = False
         if (slot != 'alphabet' and rows[0].current is not None and item.guide is not None
                 and item.guide.vintage == 'original_company_guidance'):
             candidate = compare_guidance(rows[0].current, item.guide, rule=item.guide_rule)
             if candidate.status in ('COMPARABLE', 'QUALIFIED'):
                 guide_result = candidate
+                admit_guide = True
+            elif candidate.status in ('INCOMPATIBLE', 'UNAVAILABLE'):
+                # Closed refusal: the failed comparison stays visible and the
+                # outlook is not admitted as original company guidance.
+                guide_result = candidate
         panels.append(CompanyClaims(slot, name, rows, headline, guide_result,
                                     _accounting_views(item, rows, observed), next_en, next_zh,
-                                    original_guidance=item.guide if guide_result is not None else None,
+                                    original_guidance=item.guide if admit_guide else None,
                                     limitation_en=caveat_en, limitation_zh=caveat_zh))
     return FourCompanyClaims(tuple(panels), sum(panel.headline is not None for panel in panels))
 
@@ -575,9 +604,13 @@ def _view_links_valid(projection):
                     or not matches(panel['headline'], tuple(row['comparison'] for row in rows))):
                 return False
         guide, result = panel['original_guidance'], panel['guidance']
-        if (guide is None) != (result is None):
+        if result is not None and result['status'] in ('INCOMPATIBLE', 'UNAVAILABLE'):
+            if guide is not None or result['reason'] is None or result['value'] is not None:
+                return False
+            derived_count += 1
+        elif (guide is None) != (result is None):
             return False
-        if guide is not None:
+        elif guide is not None:
             derived_count += 1
             source_refs.add(guide['ref'])
             if (panel['slot'] == 'alphabet' or rows[0]['current'] is None
@@ -599,7 +632,21 @@ def _view_links_valid(projection):
                 return False
             for view, explanation in zip(group['views'], group['explanations']):
                 derived_count += 1
-                source_refs.update(view['result']['refs'])
+                result = view['result']
+                if result['status'] in ('INCOMPATIBLE', 'UNAVAILABLE'):
+                    if (result['reason'] is None or result['value'] is not None
+                            or view['current_output'] is not None
+                            or view['prior_output'] is not None
+                            or view['reconstructed_current'] is not None
+                            or view['residual'] is not None
+                            or view['contributions']
+                            or explanation is not None
+                            or view['evidence_relation'] != 'INDEPENDENCE_UNASSESSED'
+                            or result['rule_revision'] in revisions):
+                        return False
+                    revisions.add(result['rule_revision'])
+                    continue
+                source_refs.update(result['refs'])
                 if (group['outcome_refs'] != [view['current_output']['ref'], view['prior_output']['ref']]
                         or view['result']['rule_revision'] in revisions):
                     return False
