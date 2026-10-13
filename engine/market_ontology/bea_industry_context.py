@@ -24,6 +24,8 @@ LINEAGE_SHA256 = "e8856b6f546d55b8e0c41561cb0e60f28ddcd06a78fd04f70d05355890c745
 PUBLISHER_EDITION_DATE = "2026-05-21"
 EXACT_CODE_NAMESPACE = "BEA_APP157_MAY2026_EXACT"
 SOURCE_KIND = "industry_commodity_input"
+# Accepted immutable view-build receipt: 8 accounting years x 139 commodities.
+SOURCE_ROWS_PER_INDUSTRY = 8 * 139
 RESEARCH_VIEW_SUBDIR = (
     "bea_2024_public_itable_research/"
     "bea_2017_2022_may2026_remaining_six_regions/"
@@ -362,7 +364,7 @@ def adapt_workspace_bea_history(
     scanned = result.get("scanned_rows")
     if (result.get("scan_complete") is not True
             or result.get("next_offset") is not None
-            or type(scanned) is not int or scanned < 8
+            or type(scanned) is not int or scanned != SOURCE_ROWS_PER_INDUSTRY
             or not isinstance(rows, list) or len(rows) != 8
             or not isinstance(positions, list) or len(positions) != 8
             or any(type(n) is not int or n < 0 for n in positions)
@@ -540,7 +542,7 @@ def read_private_bea_accounting_brief(
                 or details.get("schema_complete") is not True
                 or details.get("scan_complete") is not True
                 or type(details.get("row_count")) is not int
-                or details["row_count"] < 8):
+                or details["row_count"] != SOURCE_ROWS_PER_INDUSTRY):
             raise BEAContextRefused("expected read-only research JSONL source")
         version = source.get("file_version")
         if not isinstance(version, str):

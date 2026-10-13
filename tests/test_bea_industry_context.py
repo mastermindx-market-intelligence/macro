@@ -372,6 +372,15 @@ class BEADataWorkspaceResearchConsumerTests(unittest.TestCase):
                 response, industry_code="3341", commodity_code="3344",
             )
 
+    def test_complete_response_refuses_short_scan_even_with_eight_valid_rows(self):
+        response = _synthetic_workspace_response()
+        response["result"]["scanned_rows"] = 8
+        response["result"]["row_positions"] = list(range(8))
+        with self.assertRaisesRegex(BEAContextRefused, "scan incomplete"):
+            adapt_workspace_bea_history(
+                response, industry_code="3341", commodity_code="3344",
+            )
+
     def test_real_incumbent_data_workspace_reads_synthetic_eight_year_file(self):
         """Real Data OS reader and query receipt; fake data in a disposable folder."""
         from lib.dataos.web_workspace import DataWorkspace, RootBinding
@@ -380,7 +389,12 @@ class BEADataWorkspaceResearchConsumerTests(unittest.TestCase):
             root = Path(folder)
             source = root / _EXPECTED_SOURCE_RELATIVE
             source.parent.mkdir(parents=True)
-            raw_rows = [synthetic_row(year) for year in range(2017, 2025)]
+            raw_rows = []
+            for year in range(2017, 2025):
+                raw_rows.append(synthetic_row(year))
+                raw_rows.extend(synthetic_row(year, commodity=f"A{k:03d}")
+                                for k in range(1, 139))
+            self.assertEqual(len(raw_rows), 1112)
             source.write_text(
                 "".join(json.dumps(row, sort_keys=True) + "\n" for row in raw_rows),
                 encoding="utf-8",
@@ -399,6 +413,7 @@ class BEADataWorkspaceResearchConsumerTests(unittest.TestCase):
                 offset=0, limit=9, expected_version=version,
             )
             self.assertEqual(len(response["result"]["rows"]), 8)
+            self.assertEqual(response["result"]["scanned_rows"], 1112)
             self.assertTrue(response["result"]["scan_complete"])
             self.assertIsNone(response["result"]["next_offset"])
             self.assertEqual(response["query"]["file_version"], version)
@@ -689,7 +704,7 @@ class BEAHostBoundQueryTests(unittest.TestCase):
         )
 
     def _fixture(self, root: Path, *, extra_year: bool = False,
-                 full_panel_shape: bool = False) -> Path:
+                 full_panel_shape: bool = True) -> Path:
         location = (root / "bea_2024_public_itable_research"
                     / "bea_2017_2022_may2026_remaining_six_regions"
                     / "data_workspace_views_20261011")
@@ -702,7 +717,11 @@ class BEAHostBoundQueryTests(unittest.TestCase):
                 rows.extend(synthetic_row(year=year, commodity=f"A{k:03d}")
                             for k in range(1, 139))
         if extra_year:
-            rows.append(synthetic_row(year=2024))
+            # Keep the 1,112-row source shape while duplicating an exact
+            # commodity in the 2024 section; a ninth match must be refused.
+            if not full_panel_shape:
+                raise ValueError("ninth match requires full panel shape")
+            rows[-1] = synthetic_row(year=2024)
         path.write_text(
             "".join(json.dumps(row, sort_keys=True) + "\n" for row in rows),
             encoding="utf-8",
@@ -728,6 +747,20 @@ class BEAHostBoundQueryTests(unittest.TestCase):
             self.assertFalse(report["named_company_relationship"])
             self.assertEqual(report["source"]["publisher"],
                              "U.S. Bureau of Economic Analysis")
+
+    def test_truncated_eight_row_file_refused_before_data_read(self):
+        with tempfile.TemporaryDirectory() as name:
+            root = Path(name)
+            self._fixture(root, full_panel_shape=False)
+            workspace = self._research_workspace(root)
+            with patch.object(workspace, "read", side_effect=AssertionError(
+                "read must not occur after a truncated source description"
+            )):
+                with self.assertRaisesRegex(BEAContextRefused,
+                                            "expected read-only research JSONL source"):
+                    read_private_bea_accounting_brief(
+                        workspace, industry_code="3341", commodity_code="3344",
+                    )
 
     def test_query_refuses_extra_ninth_matching_row(self):
         with tempfile.TemporaryDirectory() as name:
