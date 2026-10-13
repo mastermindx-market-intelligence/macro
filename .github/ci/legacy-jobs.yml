@@ -28825,3 +28825,22 @@ jobs:
         run: pip install pytest pandas numpy pyarrow pyyaml
       - name: c19-wp29-hk-southbound-two-period
         run: python -m pytest tests/test_c19_wp29_hk_southbound_two_period.py -q -p no:cacheprovider
+  c19-short-pressure-availability:
+    if: ${{ false }}
+    gate: code
+    # C19 WP24-G: the short-pressure availability leg never prints absent or censored borrow supply as an exact count.
+    timeout-minutes: 10
+    paths:
+      - "engine/short_pressure.py"
+      - ".github/ci/legacy-jobs.yml"
+      - "tests/test_c19_wp24_short_pressure_availability.py"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install minimal deps
+        run: pip install pytest pandas numpy pyarrow pyyaml
+      - name: short-pressure availability guard
+        run: python -m pytest tests/test_c19_wp24_short_pressure_availability.py -q -p no:cacheprovider
