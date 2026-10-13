@@ -192,7 +192,7 @@
     state.macro = null;
     state.symbol = null;
     state.macroAuthBlocked = true;
-    state.symbolAuthBlocked = true;
+    state.symbolAuthBlocked = !!state.ticker;
     ui.macroState.className = 'mm-state-pill is-error';
     ui.macroState.textContent = copy('Sign in required', '需要登录');
     ui.macroQuery.innerHTML = empty(
@@ -315,13 +315,15 @@
 
   function loadSymbol(raw) {
     var requestId = ++state.symbolRequest;
+    state.symbol = null;  // A new intent invalidates evidence before validation or loading.
     var ticker = normalizeTicker(raw);
+    state.ticker = ticker;  // Empty means the latest submitted intent cannot be retried.
+    state.symbolAuthBlocked = false;
     if (!ticker) {
       ui.symbolSummary.innerHTML = empty('Check the ticker', '请检查代码', 'Use a canonical market symbol such as AAPL, BRK-B or BTC-USD.', '请输入 AAPL、BRK-B 或 BTC-USD 等标准市场代码。');
       ui.gridList.innerHTML = '';
       return;
     }
-    state.ticker = ticker;
     ui.symbolInput.value = ticker;
     ui.symbolSummary.innerHTML = '<div class="mm-skeleton mm-skeleton-query"></div>';
     ui.gridList.innerHTML = '<div class="mm-skeleton"></div><div class="mm-skeleton"></div><div class="mm-skeleton"></div>';
@@ -401,3 +403,4 @@
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
   else boot();
 }());
+
