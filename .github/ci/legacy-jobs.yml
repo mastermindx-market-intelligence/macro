@@ -20730,6 +20730,7 @@ jobs:
       - tests/earnings_economic_private_fixtures.py
       - tests/test_earnings_economic_private_store.py
       - tests/test_earnings_economic_refresh.py
+      - tests/test_earnings_economic_production_join.py
       - tests/test_earnings_private_store.py
     runs-on: ubuntu-latest
     steps:
@@ -20741,7 +20742,7 @@ jobs:
         # requests and jinja2: the legacy suite's _staged_publication imports scripts.build_earnings_public_wire
         run: pip install pytest pyyaml requests jinja2
       - name: Private generation publication
-        run: python -m pytest tests/test_earnings_private_store.py tests/test_earnings_economic_private_store.py tests/test_earnings_economic_refresh.py -q
+        run: python -m pytest tests/test_earnings_private_store.py tests/test_earnings_economic_private_store.py tests/test_earnings_economic_refresh.py tests/test_earnings_economic_production_join.py -q
   earnings-economic-dossier:
     # CDV-1 Task 1: private PG issuer-profile economics at source scope. The fifteen
     # frozen suites use only original synthetic HTML. The F1-Q envelope suites read

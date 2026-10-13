@@ -6,9 +6,12 @@ against a strict local store. It does not construct a fake publication result.
 """
 from __future__ import annotations
 
+import copy
 from hashlib import sha256
 import json
 from pathlib import Path
+import re
+import shutil
 
 import pytest
 
@@ -20,6 +23,7 @@ from engine.earnings_narrative.private_economic_stage import (
     PriorClosureUnavailable,
     PrivateEconomicStageError,
     assert_public_workspace_admission,
+    augment_private_stage,
     load_verified_prior,
 )
 from engine.earnings_narrative.private_publication import (
@@ -565,3 +569,85 @@ def test_missing_collector_currentness_is_not_fresh(tmp_path: Path, monkeypatch:
     assert receipt.native_closure_verified
     stored = receipt.closure["selection"]["selection"]["currentness"]
     assert stored is None
+
+
+def _replay_forged(
+    stage: Path,
+    closure: dict,
+    *,
+    generation_id: str | None = None,
+    slug: str | None = None,
+) -> None:
+    forged = copy.deepcopy(closure)
+    if generation_id is not None:
+        forged["chain"][-1]["workspace"]["generation_id"] = generation_id
+        # A stored handle list would die in interpretation before the writer.
+        # Clearing it keeps the refusal on the path join itself.
+        forged["selection"]["selection"]["facts"] = None
+    if slug is not None:
+        forged["record"]["slug"] = slug
+    augment_private_stage(
+        stage,
+        acquisition=None,
+        prior_closure=forged,
+        observed_at=OBSERVED_AT,
+    )
+
+
+def test_generation_id_and_slug_must_stay_inside_the_stage(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """A generation id is 24 hex chars and a validate_slug, and both files stay in the stage."""
+    _permit(monkeypatch, tmp_path)
+    receipt = run_economic_wire_fixture(tmp_path, wire="w1", source="pg1", observed_at=OBSERVED_AT)
+    closure = receipt.closure
+    assert closure is not None
+    original = closure["chain"][-1]["workspace"]["generation_id"]
+    assert re.fullmatch(r"[a-f0-9]{24}", original)
+    baseline = tmp_path / "baseline-stage"
+    shutil.copytree(receipt.private_dir, baseline)
+    outside_dir = tmp_path / "escaped"
+    outside_dir.mkdir()
+    absolute_target = outside_dir / "pwn.json"
+    short = "a" * 23
+    slug_dir = tmp_path / "slug-escaped"
+    slug_dir.mkdir()
+    slug_target = slug_dir / "pwn.json"
+    cases: list[tuple[str, dict, Path]] = [
+        ("generation ../x", {"generation_id": "../x"}, Path("native") / "x.json"),
+        (
+            "generation absolute",
+            {"generation_id": str(absolute_target.with_suffix(""))},
+            absolute_target,
+        ),
+        (
+            "generation 23-char",
+            {"generation_id": short},
+            Path("native") / "workspaces" / f"{short}.json",
+        ),
+        ("slug ../x", {"slug": "../x"}, Path("x.json")),
+        ("slug absolute", {"slug": str(slug_target.with_suffix(""))}, slug_target),
+        ("slug Bad", {"slug": "Bad"}, Path("records") / "Bad.json"),
+    ]
+    failures: list[str] = []
+    for label, forged_fields, leaked_path in cases:
+        stage = tmp_path / f"stage-{label.replace(' ', '-')}"
+        shutil.copytree(baseline, stage)
+        leaked = leaked_path if leaked_path.is_absolute() else stage / leaked_path
+        before = sorted(path.name for path in (stage / "native" / "workspaces").glob("*.json"))
+        assert before, label
+        try:
+            _replay_forged(stage, closure, **forged_fields)
+        except PrivateEconomicStageError as exc:
+            after = sorted(path.name for path in (stage / "native" / "workspaces").glob("*.json"))
+            if exc.reason != "unsafe_path" or leaked.exists() or after != before:
+                failures.append(
+                    f"{label} reason={exc.reason} leaked={leaked.exists()} "
+                    f"preserved={after == before} path={leaked}"
+                )
+        else:
+            failures.append(
+                f"DID NOT RAISE PrivateEconomicStageError for {label}; "
+                f"leaked={leaked.exists()} path={leaked}"
+            )
+    assert not failures, "\n".join(failures)

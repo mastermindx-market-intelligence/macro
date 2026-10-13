@@ -1659,6 +1659,10 @@ def build(
     that floor. Historical backfill never turns the hourly lane into a corpus replay.
     """
     destination = Path(out_dir) if out_dir is not None else _REPO / "site" / OUTPUT_RELATIVE
+    if offline and economic_refresh is not None:
+        raise PublicWireBuildError(
+            "offline public wire build cannot apply an economic refresh"
+        )
     if economic_refresh is not None and private_out_dir is None:
         raise PublicWireBuildError(
             "private economic stage requires an off-repository private output directory"

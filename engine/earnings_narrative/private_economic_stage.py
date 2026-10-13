@@ -33,6 +33,7 @@ from engine.earnings_narrative.private_publication import (
     load_economic_closure,
     load_private_manifest,
     load_private_predecessor,
+    validate_slug,
 )
 
 
@@ -40,6 +41,7 @@ AUTHORITY_CEILING = "research_display_only"
 DOSSIER_SLUG = "pg-economic-dossier"
 _REPO = Path(__file__).resolve().parents[2]
 _CLOCK_RE = re.compile(r"\A[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z\Z")
+_GENERATION_ID_RE = re.compile(r"\A[a-f0-9]{24}\Z")
 _PRIVATE_METRICS = frozenset(pg_profile.PG_METRIC_KEYS)
 
 
@@ -354,6 +356,45 @@ def _stage_root(stage_dir: str | Path) -> Path:
     return root
 
 
+def _admit_generation_id(generation_id: object) -> str:
+    """24 lowercase hex, and the publisher slug grammar, before the id is a filename."""
+    if type(generation_id) is not str or _GENERATION_ID_RE.fullmatch(generation_id) is None:
+        raise PrivateEconomicStageError("unsafe_path")
+    try:
+        validate_slug(generation_id)
+    except EarningsPrivatePublicationError as exc:
+        raise PrivateEconomicStageError("unsafe_path") from exc
+    return generation_id
+
+
+def _admit_slug(slug: object) -> str:
+    if type(slug) is not str:
+        raise PrivateEconomicStageError("unsafe_path")
+    try:
+        validate_slug(slug)
+    except EarningsPrivatePublicationError as exc:
+        raise PrivateEconomicStageError("unsafe_path") from exc
+    return slug
+
+
+def _confined_file(stage_root: Path, directory: Path, name: str) -> Path:
+    """One child of directory whose resolved path stays under the stage root."""
+    if type(name) is not str or not name or name != Path(name).name:
+        raise PrivateEconomicStageError("unsafe_path")
+    path = (directory / name).resolve()
+    root = stage_root.resolve()
+    if path.parent != directory.resolve() or root not in path.parents:
+        raise PrivateEconomicStageError("unsafe_path")
+    return path
+
+
+def _admit_chain_paths(root: Path, chain: list[dict[str, Any]], slug: str) -> None:
+    _confined_file(root, root / "records", f"{_admit_slug(slug)}.json")
+    for item in chain:
+        generation_id = _admit_generation_id(item["workspace"]["generation_id"])
+        _confined_file(root, root / "native" / "workspaces", f"{generation_id}.json")
+
+
 def _write_stage(
     root: Path,
     *,
@@ -408,14 +449,15 @@ def _write_stage(
     }
     links: list[dict[str, str]] = []
     received: dict[str, dict[str, Any]] = {}
+    _admit_chain_paths(root, chain, slug)
     native = _reset_native(root)
     workspaces = native / "workspaces"
     documents = native / "documents"
     bodies = native / "source_bodies"
     for item in chain:
         workspace_body = canonical_json_bytes(item["workspace"])
-        generation_id = item["workspace"]["generation_id"]
-        (workspaces / f"{generation_id}.json").write_bytes(workspace_body)
+        generation_id = _admit_generation_id(item["workspace"]["generation_id"])
+        _confined_file(root, workspaces, f"{generation_id}.json").write_bytes(workspace_body)
         document_body = canonical_json_bytes(item["document"])
         document_digest = sha256(document_body).hexdigest()
         (documents / f"{document_digest}.json").write_bytes(document_body)
@@ -456,7 +498,9 @@ def _write_stage(
         "received": received,
     }
     (native / "latest.json").write_bytes(canonical_json_bytes(stage_manifest))
-    (root / "records" / f"{slug}.json").write_bytes(canonical_json_bytes(dossier))
+    _confined_file(root, root / "records", f"{_admit_slug(slug)}.json").write_bytes(
+        canonical_json_bytes(dossier)
+    )
     return {
         "wrote": True,
         "schema": RECORD_SCHEMA_V2,
