@@ -32,11 +32,14 @@ Pins: the two digests in ``_PREWIRE_*`` were captured at 7fd00a6b754e
 (S1-a PR #8952 head) by the prep lane over the PRODUCTION catalog with a
 1x3x1 matrix (revenue, gross_profit, gross_margin; FY2025; industrial facts
 100/40), and re-verified byte-identical at the S1-b base (S2 #9001 merged).
-The wiring must reproduce them byte-identically — including when the entity
-carries a BANK SIC, because the production catalog declares no applicability
-and the gate is default-inert. If a governed catalog change (adding
-applicability) ever lands, re-capture in that same PR per the S1-a pin
-convention (tests/test_fundamental_forensics_metric_qualification.py:33-39).
+The G0 catalog change (issuer-class applicability on 16 metrics) is the
+governed change the docstring below anticipated: ``_PREWIRE_QUERY_HASH``
+and ``_PREWIRE_TO_DICT_SHA256`` were re-captured in the G0-r1p3 re-pin
+commit over the same industrial matrix, and the bank matrix — whose
+"default-inert" premise that change retired by design — is pinned
+separately in ``_BANK_QUERY_HASH`` / ``_BANK_TO_DICT_SHA256``.  All
+captures hash ``canonical_json(matrix.to_dict())`` from
+``engine.fundamental_forensics.models``.
 """
 from __future__ import annotations
 
@@ -82,9 +85,19 @@ QUALIFICATION_ROOT = (
 )
 
 # Captured at 7fd00a6b754eb4a1955b352639e9b5ac4cff402d (pre-wiring) by the
-# S1-b prep lane; see module docstring.
+# S1-b prep lane; re-captured over the G0 catalog at the FIF G0-r1p3 re-pin
+# commit (see the module docstring and that commit's message for the capture
+# sha) with engine.fundamental_forensics.models.canonical_json over the same
+# industrial 1x3x1 matrix; see module docstring.
 _PREWIRE_QUERY_HASH = "17f6436d02a578227b561094a44dec4b23b5345b02dfa5cb3ac01a36d261e705"
-_PREWIRE_TO_DICT_SHA256 = "23b950e491474c85b099a097508a72976833b3fe3fdacd511e65ee29af234ce2"
+_PREWIRE_TO_DICT_SHA256 = "fcc9a0d45503897f23023069a49a806a327a249fe7d9397f1c93e6befb76f29a"
+# The BANK-SIC matrix under the G0 catalog (same 1x3x1 inputs, issuer SIC
+# 6020): the two class-restricted metrics in the matrix read
+# NOT_APPLICABLE(not_applicable_for_issuer_class) and the unrestricted
+# revenue keeps its BASE value byte for byte (leaf-diff vs BASE 99b9a7f61fc0
+# shows only digest-family leaves plus those two exception rows).
+_BANK_QUERY_HASH = "2cbb5ee9b862cb47b7180814a3f0426329f8d654fba643edd194302b6e96f587"
+_BANK_TO_DICT_SHA256 = "86015238cd66addf1bb96b9f98f06c9c2f609ea66b66666af54d2c780ac89937"
 
 
 def _body(seed: str) -> str:
@@ -182,22 +195,35 @@ def _production_matrix(issuer_sic: str | None):
 
 
 def test_default_inert_production_query_bytes_and_hash_unchanged() -> None:
-    """Default-inert: a BANK SIC under the production catalog changes nothing.
+    """Bank SIC under the G0 production catalog: the class gate fires.
 
-    The production catalog declares no applicability, so the gate must not
-    fire even for a bank issuer: identical response bytes and query_hash to
-    the pre-wiring capture at 7fd00a6b754e.
+    The catalog now declares issuer-class applicability (the G0 governed
+    change the module docstring anticipated), so the historical
+    "default-inert even for a bank issuer" premise is retired by design:
+    the bank-restricted metrics in this matrix (gross_profit,
+    gross_margin) read NOT_APPLICABLE(not_applicable_for_issuer_class)
+    with the class stamped on their receipts, while every metric outside
+    the class policy keeps its BASE-build value byte for byte (revenue:
+    VALUE 100 — leaf-diff vs BASE 99b9a7f61fc0 over the same matrix
+    shows only digest-family leaves on that node).
     """
     matrix = _production_matrix(issuer_sic="6020")
-    assert matrix.query_hash == _PREWIRE_QUERY_HASH
+    assert matrix.query_hash == _BANK_QUERY_HASH
     payload = canonical_json(matrix.to_dict())
-    assert hashlib.sha256(payload.encode("utf-8")).hexdigest() == _PREWIRE_TO_DICT_SHA256
-    states = {cell.metric_id: cell.state for cell in matrix.cells}
-    assert states == {
-        "revenue": CellState.VALUE,
-        "gross_profit": CellState.VALUE,
-        "gross_margin": CellState.VALUE,
-    }
+    assert hashlib.sha256(payload.encode("utf-8")).hexdigest() == _BANK_TO_DICT_SHA256
+    by_metric = {cell.metric_id: cell for cell in matrix.cells}
+    for restricted in ("gross_profit", "gross_margin"):
+        cell = by_metric[restricted]
+        assert cell.state is CellState.NOT_APPLICABLE
+        assert cell.value is None
+        assert cell.reason == "not_applicable_for_issuer_class"
+        assert cell.provenance.issuer_class == "bank"
+        assert cell.provenance.issuer_class_basis == "sic"
+    revenue = by_metric["revenue"]
+    assert revenue.state is CellState.VALUE
+    assert revenue.value == Decimal("100")
+    assert revenue.reason is None
+    assert revenue.provenance.issuer_class is None
 
 
 def test_bank_issuer_bank_inapplicable_metric_is_explicit_refusal() -> None:

@@ -199,6 +199,40 @@ def _build(
     )
 
 
+def _build_default_resolver(
+    *,
+    policy: str = "latest_known_as_of",
+    source_event_cutoff: str = "2025-12-31T23:59:59Z",
+    system_recorded_cutoff: str = "2026-08-05T12:00:02Z",
+) -> dict:
+    """The production default path: no injected SIC resolver.
+
+    ``issuer_sic_resolver`` is deliberately omitted so the builder uses
+    its shipped-contract default — FIP1 has no coverage record, so the
+    SIC resolves to None and class-restricted metrics take the
+    SIC-less verdicts.  Everything else mirrors ``_build``.
+    """
+    loaded = load_filing_package_fixture(LEDGER_PATH)
+    return assemble_financial_intelligence_packet(
+        entity=loaded.entity,
+        ledger=loaded.ledger,
+        filing_metadata=loaded.filing_metadata,
+        query_request=PacketQueryRequest(
+            policy=QueryPolicy(
+                source_snapshot_at=source_event_cutoff,
+                recorded_at=system_recorded_cutoff,
+                selection=policy,
+            ),
+            metrics=packet_module.DEFAULT_REQUESTED_METRICS,
+            periods=default_packet_periods(),
+        ),
+        metric_registry=load_core_registry(ROOT),
+        context=_context(),
+        built_at=None,
+        input_digests=_input_digests(),
+    )
+
+
 def test_committed_ledger_matches_independent_constructor() -> None:
     constructed = canonical_json(build_synthetic_filing_package_fixture().to_dict())
     committed = LEDGER_PATH.read_text(encoding="utf-8").strip()
@@ -329,6 +363,56 @@ def test_law9_formula_gross_margin_carries_dependency_receipts() -> None:
     assert by_metric["gross_profit"]["source_occurrence_ids"]
     assert "gross_profit" not in packet["query"]["requested_metrics"]
     assert all(item["metric_id"] != "gross_profit" for item in packet["cells"])
+
+
+def test_law9b_default_resolver_path_builds_sicless_but_never_raises() -> None:
+    """T-b1: the production default path (no injected resolver) builds.
+
+    FIP1 has no shipped coverage record, so the default resolver resolves
+    no SIC and gross_margin (class-restricted under the G0 catalog) reads
+    NOT_EVALUABLE(issuer_class_unknown) on every satisfiable duration
+    period — while instant-period requests still take the period
+    contract first (period-first precedence) and the unrestricted
+    revenue values are byte-identical to the BASE build: 1050 as
+    originally reported, 1060 once the 2025 revision is known.
+    """
+    packet = _build_default_resolver(
+        policy="as_reported", source_event_cutoff="2024-12-31T23:59:59Z"
+    )
+    known = _build_default_resolver(
+        policy="latest_known_as_of", source_event_cutoff="2025-12-31T23:59:59Z"
+    )
+    margin = _cell(packet, "gross_margin", "FY2023")
+    assert margin["non_value_state"] == "not_evaluable"
+    assert margin["value"] is None
+    assert margin["reason"] == "issuer_class_unknown"
+    assert _cell(packet, "revenue", "FY2023")["value"] == "1050"
+    assert _cell(known, "revenue", "FY2023")["value"] == "1060"
+    instant = _cell(known, "gross_margin", "2024-12-31")
+    assert instant["non_value_state"] == "not_applicable"
+    assert instant["reason"] == (
+        "outside_period_constraint: metric requires duration, requested instant"
+    )
+
+
+def test_law9c_injected_industrial_resolver_restores_base_values() -> None:
+    """T-b2: the injected industrial SIC path is BASE's value path.
+
+    With the file's hermetic industrial resolver, gross_margin keeps the
+    exact BASE values on FY2023 — 500/1050 as originally reported and
+    500/1060 once the revision is known — and the gross_profit
+    dependency evidence stays 500.
+    """
+    reported = _build(policy="as_reported", source_event_cutoff="2024-12-31T23:59:59Z")
+    known = _build()
+    assert _cell(reported, "gross_margin", "FY2023")["value"] == (
+        "0.4761904761904761904761904761904762"
+    )
+    assert _cell(known, "gross_margin", "FY2023")["value"] == (
+        "0.4716981132075471698113207547169811"
+    )
+    assert _find_cell(reported, "gross_profit", "FY2023")["value"] == "500"
+    assert _find_cell(known, "gross_profit", "FY2023")["value"] == "500"
 
 
 def test_law10_every_valued_cell_is_reversible() -> None:
