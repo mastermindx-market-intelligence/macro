@@ -24,7 +24,7 @@ changed:
 verified:
   - claim: "The coverage file on this HEAD is blob f42b811d49ae1b8dfa9aae7c1c6101b36a89cc29 and contains P01-P08."
     command: "python3 -I research/mining/check_aluminium_research.py"
-    result: "Before the predicate repair the checker reported total 54, passed 52, failed 2 (seven_canonical_passes, remaining_battery_gap) and printed coverage git_blob_sha1 f42b811d49ae1b8dfa9aae7c1c6101b36a89cc29."
+    result: "On this HEAD, python3 -I research/mining/check_aluminium_research.py prints total 54, passed 54, failed 0 (54 passed / 0 failed) and coverage git_blob_sha1 f42b811d49ae1b8dfa9aae7c1c6101b36a89cc29. Pre-repair history: before the predicate repair the checker reported total 54, passed 52, failed 2 (seven_canonical_passes, remaining_battery_gap) and printed coverage git_blob_sha1 f42b811d49ae1b8dfa9aae7c1c6101b36a89cc29."
   - claim: "origin/main already contains engine/market_ontology/mining_theme_research.py from #8100."
     command: "git rev-parse origin/main:engine/market_ontology/mining_theme_research.py"
     result: "blob 72c1a8f055f87f701ff84b6be7a3d7164b1a6e5a at commit ce0065d897326a31cdafe6d8d95e4dbb8d39ca67."
