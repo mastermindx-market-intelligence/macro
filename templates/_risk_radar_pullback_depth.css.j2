@@ -65,13 +65,17 @@ html[data-theme="light"] .rrp .rrp-study>div{background:var(--panel);box-shadow:
 .rrp .rrp-chart .ilx-tag,.rrp .rrp-chart .ilx-d,.rrp .rrp-chart .ilx-reflab{opacity:1;animation:none}
 .rrp .rrp-chart .ilx-dot{transform:scale(1);animation:none}
 
-/* Preserve the one original US modal and expose its forecast evidence on demand. */
-.riskdlg-legacy-details{margin-top:var(--sp-5,20px);border-top:1px solid var(--line);padding-top:var(--sp-3,12px)}
-.riskdlg-legacy-details>summary{min-height:44px;display:flex;align-items:center;justify-content:space-between;gap:var(--sp-3,12px);font:650 var(--fs-body)/1.5 var(--font-ui);cursor:pointer;color:var(--text);list-style:none}
-.riskdlg-legacy-details>summary::-webkit-details-marker{display:none}
-.riskdlg-legacy-details>summary::after{content:"+";font-size:var(--fs-h2);color:var(--muted)}
-.riskdlg-legacy-details[open]>summary::after{content:"−"}
-.riskdlg-legacy-details>summary:focus-visible{outline:2px solid var(--ink-info,var(--info));outline-offset:3px}
+/* Preserve the one original US modal and expose its forecast evidence on demand.
+   Both hosts render this disclosure as the sibling right after the fragment's
+   .rrp root (dashboard.html.j2 #dlg-risk, _risk_radar_dlg.html.j2 body), so the
+   fragment-root sibling combinator — not a bare class — keeps the rules inside
+   the pullback fragment's scope. */
+.rrp ~ .riskdlg-legacy-details{margin-top:var(--sp-5,20px);border-top:1px solid var(--line);padding-top:var(--sp-3,12px)}
+.rrp ~ .riskdlg-legacy-details>summary{min-height:44px;display:flex;align-items:center;justify-content:space-between;gap:var(--sp-3,12px);font:650 var(--fs-body)/1.5 var(--font-ui);cursor:pointer;color:var(--text);list-style:none}
+.rrp ~ .riskdlg-legacy-details>summary::-webkit-details-marker{display:none}
+.rrp ~ .riskdlg-legacy-details>summary::after{content:"+";font-size:var(--fs-h2);color:var(--muted)}
+.rrp ~ .riskdlg-legacy-details[open]>summary::after{content:"−"}
+.rrp ~ .riskdlg-legacy-details>summary:focus-visible{outline:2px solid var(--ink-info,var(--info));outline-offset:3px}
 
 /* Owner deterioration / repair evidence. Two columns of label | value; one column under 420px. */
 .rrp .rrp-signals{display:flex;flex-direction:column;gap:var(--sp-3,12px);padding:var(--sp-4,16px) var(--sp-6,24px);border-top:1px solid var(--line)}

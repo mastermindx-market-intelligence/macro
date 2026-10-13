@@ -52,11 +52,12 @@ CHART_STYLESHEET = "illus.css"
 
 # The one original US modal (dashboard.html.j2) and the shared country dialog
 # (_risk_radar_dlg.html.j2) render the legacy-details disclosure; this
-# fragment's stylesheet owns its look, deliberately outside .rrp.
+# fragment's stylesheet owns its look, scoped to the fragment root's following
+# sibling so the class stays inside the fragment's .rrp scope.
 HOST_MODAL_CLASSES = frozenset({"riskdlg-legacy-details"})
 HOST_DETAIL_EMITTERS = ("dashboard.html.j2", "_risk_radar_dlg.html.j2")
 
-SCOPED_SELECTOR_EXCEPTIONS = (".riskdlg-legacy-details",)
+SCOPED_SELECTOR_EXCEPTIONS: tuple[str, ...] = ()
 
 _JINJA_SPANS = tuple(re.compile(p, re.S) for p in (r"\{#.*?#\}", r"\{%.*?%\}", r"\{\{.*?\}\}"))
 _BLOCK_COMMENTS = re.compile(r"/\*.*?\*/", re.S)
