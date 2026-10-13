@@ -7808,8 +7808,10 @@ jobs:
       - "lib/config.py"
       - "config/theme_crosswalk.yml"
       - "config/theme_sources.yml"
-      # The #7870-owned modules the two strict xfails pin, absent on main. Named so
-      # the job re-runs the day they land and a strict xfail turns XPASS.
+      # The #7870-owned modules absent on main. Named so the job re-runs the day
+      # they land: the economic-change strict xfail (curation_assertion) turns
+      # XPASS, and the registration suite's company_profile hold pin re-checks
+      # against the real registry.
       - "engine/theme_graph/curation_assertion.py"
       - "engine/market_ontology/theme_research_registry.py"
       - "engine/market_ontology/semiconductor_theme_research.py"
@@ -7824,8 +7826,15 @@ jobs:
     # and `semiconductor-b-boundary` (#7870). By the manifest's own definition
     # these verdicts are `gate: code`: pure in-memory contract/calculator/
     # composer logic over synthetic fixtures, no `data/**`, no `site/**`, no
-    # nightly ledger. The nightly steps stay where they are; this job adds the
-    # merge-gate verdict.
+    # nightly ledger. The contract + calculator nightly steps stay in
+    # `neural-web-core`; this job adds their merge-gate verdict. The F04
+    # composer's nightly step was removed from `unrun-intl-libraries`
+    # (2026-10-13, #7891 base-sync onto 9a47ac7f): it re-ran the same pure
+    # in-memory suite this job already gates, and it was the whole +3 that put
+    # the scripts/build_free_content.py packing probe at 5,601 > 5,600
+    # (unrun-intl-libraries 101 -> 104; neural-web-core is a fixed observed
+    # weight, so its steps cost no probe weight). This job is the composer's
+    # only home now.
     #
     # Scope is curated `scope: exclusive` (2026-10-12, #7891 CI repair). Left
     # to inference, the `importlib.import_module(name)` shell loader in
@@ -7836,7 +7845,10 @@ jobs:
     # code packing probes in tests/test_ci_pack.py one job over their ceilings
     # (128 > 127, 133 > 132 at base 6e7ef32c). The paths above keep the
     # measured closure, the package-init chain and the pending #7870 modules,
-    # and drop only the fallback tier.
+    # and drop only the fallback tier. Not listed: the empty package inits
+    # engine/__init__.py and lib/__init__.py (both 0 lines) and the lazily read
+    # config.yml. Harmless while those inits stay empty; a non-empty
+    # engine/__init__.py would be an un-scoped dependency of this job.
     #
     # Deps: jsonschema for the frozen contracts; pandas/numpy/pyarrow/requests
     # because engine/company_intelligence imports them at package load.
@@ -17002,10 +17014,6 @@ jobs:
         run: TZ=UTC python -m pytest tests/test_theme_sources_registry.py -q
       - name: market ontology — GMI exposure composer (shock->theme->company, rights + as-of + typed nulls)
         run: TZ=UTC python -m pytest tests/test_market_ontology_exposure_map.py -q
-      # Technology ex-Semis (carrier #7891): F04 economic-change dossier composer over sealed
-      # fixture providers; one strict xfail pins the shared curation_assertion round-trip to #7870.
-      - name: market ontology — Technology economic-change dossier composer (Technology ex-Semis T5)
-        run: TZ=UTC python -m pytest tests/test_market_ontology_technology_economic_change.py -q
       - name: market ontology — theme-tier guard (category and micro_theme nodes never compose as themes)
         run: TZ=UTC python -m pytest tests/test_theme_graph_tier_guard.py -q
       - name: CN limit-rule registry — schema, continuity, parity vs china_microstructure
