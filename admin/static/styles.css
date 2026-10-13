@@ -6347,6 +6347,7 @@ button.obx-btn-reject:hover:not(:disabled) {
 .ios-evidence-law { margin: 5px 0 10px; }
 .ios-evidence-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1px 14px; }
 .ios-evidence-kv { min-width: 0; padding: 7px 0; border-top: 1px solid var(--grid); }
+.ios-typed-findings .ios-evidence-kv > div { min-width: 0; overflow-wrap: anywhere; }
 .ios-evidence-kv > span {
   display: block; margin-bottom: 3px; color: var(--faint); font-size: 10px;
   letter-spacing: .06em; text-transform: uppercase;
