@@ -15290,9 +15290,9 @@ jobs:
   deploy-git-history:
     if: ${{ false }}
     gate: code
-    # This real-Git suite reads only these three deploy scripts. Keeping it
-    # separate preserves the self-heal job's broad inferred closure without
-    # charging unrelated site-builder probes for the new history coverage.
+    # The suite reads three deploy scripts; static closure also includes the
+    # site/index.html name used by its synthetic repository fixtures. Declare
+    # that conservative dependency while preserving unrelated probe selection.
     # Private bootstrap coverage remains in unrun-dark-guards.
     scope: exclusive
     paths:
@@ -15300,6 +15300,7 @@ jobs:
       - "app/deploy/bootstrap_repo.sh"
       - "app/deploy/setup.sh"
       - "tests/test_deploy_git_history.py"
+      - "site/index.html"
     timeout-minutes: 12
     runs-on: ubuntu-latest
     steps:

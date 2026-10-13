@@ -69,13 +69,28 @@ verified:
       Existing supervisor tests3pass21.39s prove local bounded capture and lock
       retention through natural, residual-child and timeout settlement. These
       are local fixtures, not Linux installation or production admission.
-  - claim: "The final revised enrollment passes the complete curated import-closure and ordinary-code packing checks."
+  - claim: "Local sparse closure and ordinary-code packing checks passed before hosted tracked-inventory evidence exposed a missing declaration."
     command: "python3 -u -m pytest tests/test_ci_pack.py -vv -k 'curated_exclusive_scopes_cover_their_own_import_closure or exclusive_curation_narrows_ordinary_code_prs'"
     result: >-
       Original resumed local exec21350 completed naturally at04:38:57UTC with
       2pass/166deselected in1259.24s; all four source/runner pins stayed identical.
-      Log17a89fa46f48 retains both actual pass records. This closes the remaining
-      local packing uncertainty; new-head hosted CI and release are still required.
+      Log17a89fa46f48 retains both actual pass records within that sparse local
+      scope. Later c4 hosted tracked inventory exposed site/index.html, which
+      plain sparse existence omitted; the earlier closure PASS does not discharge
+      that introduced finding. Original local packing evidence remains scoped.
+  - claim: "The next same-carrier correction adds the single conservative tracked fixture-leaf dependency."
+    command: "Original c4 CI38348708047 contract-delta115135959478 log; retained site-native-inventory-proof.json and site-enrollment-proof.json"
+    result: >-
+      Hosted tested merge76e8b7a0 on21652b3a reports only one introduced miss:
+      deploy-git-history reaches site/index.html. The suite uses that literal in
+      synthetic temporary repositories; conservative exact-tree analysis still
+      owns the tracked leaf. Add only that exact path, preserving the previous
+      four inputs, all290 other definitions, commands, test sources, weights and
+      unchanged ceilings. Native tracked inventory of c4 reproduces the old miss
+      and checks the corrected five-file closure. Exact site/index.html matches
+      none of the three ordinary packing probes; retained c4 hosted rows are
+      5795/5598/5558 weight and10packs, not next-head CI acceptance.
+
 unverified:
   - claim: "This prevention change is released and installed."
     what_would_verify: "Exact current candidate checks, independent review, protected merge and actual next-invocation updater bytes."
@@ -83,7 +98,7 @@ unverified:
     what_would_verify: "Separately reviewed bounded additive operation with real resource/writer admission and retained readers, then fresh native, authenticated API and Terminal proof."
 unresolved:
   - "Original additive91208 and resource46040 returns are accepted within their recorded bounded scopes. Resource root9695faf8 binds delivered code/report and changed local composition; worker12PASS Linux2.43 remains reported scope. Local settlement supplemente30ca0ef is separate. Aggregate storage, exact Linux application and live writer/resource admission remain open."
-  - "The local correction is validated; original9060 was still armed and merge-blocked at52002125 at04:43UTC. Original GMI red-handback clarificationc4d8e632/root04e965fa ends its earlier waiting-phase no-toggle rule. Fresh custody/head checks and visible disarm readback must precede one same-branch publication; keep the new head unarmed until current executable arming and required proof qualify. No merge-blocked removal or release bypass."
+  - "Original9060 was visibly disarmed under comment6138485051 and same-branch c4af33b6 published04:54UTC. Current c4 remains unarmed/merge-blocked; its hosted tracked-closure red is retained. Finish only the exact site/index.html declaration correction and same-carrier publication, then current-head natural CI and executable arming/freshness. No merge-blocked removal, oldhead green reuse or release bypass."
   - "Audit20 reports no own active Macro Git maintenance reservation, not global writer absence. Existing destructive store exchange/history-expiry hold remains."
   - "Original Terminal944 awaits lawful shared CI repair through existing955/E20 owners. Preserve B/J1 and shared-host custody."
 next_actions:
