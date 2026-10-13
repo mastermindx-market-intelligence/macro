@@ -11959,6 +11959,7 @@ jobs:
     # Curated named closure: integrity fixtures scan only pytest tmp_path;
     # opaque artifact traversal must not claim unrelated template ownership.
     paths:
+      - "scripts/check_china_heatmap_freshness.py"
       - "collectors/flow_signals.py"
       - "collectors/sec_request_pacer.py"
       - "config/flow_detector.yml"
@@ -24371,6 +24372,7 @@ jobs:
     # An unlisted closure file is an uncovered path. No tests/** catch-all.
     scope: exclusive
     paths:
+      - "scripts/check_china_heatmap_freshness.py"
       - scripts/build_international_macro.py
       - scripts/build_intl.py
       - scripts/build_intl_library.py

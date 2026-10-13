@@ -1,5 +1,5 @@
 schema: house_law_checks.v1
-updated: "2026-09-28"
+updated: "2026-10-13"
 
 # Canonical registry of every house law and its enforcement status.
 # Maintained by scripts/check_house_law_registry.py (meta-guard).
@@ -2120,6 +2120,45 @@ checks:
         carries no class and is not judged.
     owner_program: government-revenue-foresight
     notes: null
+
+  - law_id: data.china_heatmap_settled_close
+    summary: >
+      The China A-share stock heatmap and its matching standalone SSR page must
+      be sourced from the latest completed mainland exchange session. The
+      bound close panel, member universe, numeric current-session coverage,
+      JSON, SSR, and monotonic publication must agree before a successful
+      Asia-close publish; a new generated_utc stamp cannot launder stale prices.
+    source_ref:
+      - scripts/check_china_heatmap_freshness.py
+      - scripts/build_market_heatmap.py
+      - lib/cn_calendar.py
+      - tests/test_china_heatmap_settled_close.py
+      - "PR #7193: mainland heatmap source and session publication repair"
+    severity: hard
+    check_script: scripts/check_china_heatmap_freshness.py
+    ci_wiring:
+      - workflow: .github/workflows/asia-close.yml
+        job: asia
+        lane: scheduled
+    selftest: false
+    selftest_exempt_reason: >
+      The calendar, source, membership, generated timestamp, JSON/SSR parity,
+      staged publication, and failure compensation are covered by the
+      synthetic-fixture suite tests/test_china_heatmap_settled_close.py.
+      This executable checker has no --selftest flag.
+    allowlist: null
+    ratchet: null
+    known_limits:
+      - The exchange calendar must be maintained for unscheduled closures.
+      - This is a settled-close publication contract, not a source of live quotes.
+      - CI fixture proof cannot substitute for a natural post-close source capture
+        or a production deployed browser observation.
+    owner_program: china-heatmap-freshness
+    notes: >
+      Uses the existing Asia-close workflow publisher, source store and
+      terminal failure marker. No new collector, scheduler, retry plane, or
+      duplicate artifact authority. The separate China/HK live overlay lives
+      under PR #8144.
 
   # ── Meta-guard ─────────────────────────────────────────────────────────────
 
