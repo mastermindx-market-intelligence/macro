@@ -277,3 +277,77 @@ def test_close_moves_focus_out_when_the_risk_dialog_has_no_opener():
 def test_close_moves_focus_out_when_the_opener_was_removed():
     """A disconnected opener cannot take focus back, so focus leaves the dialog."""
     _run("detached")
+
+
+# Dialog motion that prefers-reduced-motion:no-preference turns on. The reduce
+# block has to name transition:none for the same elements; a separate media
+# query is not a neutralization the audit can see in the style text.
+_DIALOG_MOTION = ("cnx-dlg-backdrop", "cnx-dlg-panel", "cnx-dlg-body")
+
+
+def _no_preference_blocks(text: str) -> list[str]:
+    import re
+
+    from tests.test_us_dialog_focus_lifecycle import _matching_brace
+
+    header = re.compile(r"@media[^{]*prefers-reduced-motion\s*:\s*no-preference\b", re.I)
+    blocks = []
+    i = 0
+    while True:
+        match = header.search(text, i)
+        if not match:
+            break
+        brace = text.find("{", match.end())
+        if brace < 0:
+            break
+        end = _matching_brace(text, brace)
+        blocks.append(text[brace + 1:end - 1])
+        i = end
+    return blocks
+
+
+def _motion_classes(blocks: list[str], *, require_none: bool) -> set[str]:
+    from tests.test_us_dialog_focus_lifecycle import (
+        _covers_class,
+        _css_rules,
+        _declares_transition_none,
+    )
+
+    found: set[str] = set()
+    for body in blocks:
+        for selector, declarations in _css_rules(body):
+            if "transition" not in declarations:
+                continue
+            has_none = _declares_transition_none(declarations)
+            if require_none != has_none:
+                continue
+            if not require_none and not _has_transition_decl(declarations):
+                continue
+            for name in _DIALOG_MOTION:
+                if _covers_class(selector, name):
+                    found.add(name)
+    return found
+
+
+def _has_transition_decl(declarations: str) -> bool:
+    """A transition shorthand or longhand that is not merely a comment."""
+    import re
+
+    cleaned = re.sub(r"/\*.*?\*/", "", declarations, flags=re.S)
+    return re.search(r"(?:^|[;{\s])transition(?:-[a-z]+)?\s*:", cleaned) is not None
+
+
+def test_reduced_motion_neutralizes_china_dialog_transitions():
+    """prefers-reduced-motion:reduce must set transition:none on the dialog shell.
+
+    The no-preference block fades the backdrop, raises the panel, and staggers
+    the body. The reduce block has to cancel those transitions in its own text.
+    """
+    from tests.test_us_dialog_focus_lifecycle import _reduce_motion_blocks
+
+    text = (ROOT / "templates" / "china.html.j2").read_text()
+    animated = _motion_classes(_no_preference_blocks(text), require_none=False)
+    assert animated == set(_DIALOG_MOTION), animated
+    neutralized = _motion_classes(_reduce_motion_blocks(text), require_none=True)
+    missing = sorted(animated - neutralized)
+    assert not missing, "reduced-motion transition:none missing for " + ", ".join(missing)
