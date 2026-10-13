@@ -234,6 +234,9 @@ def present(observation: dict, *, market: str, aria_en: str, aria_zh: str) -> di
             reference=0,
             # "z": a value that rounds to zero prints 0.0%, as the metric does.
             value_fmt="{:z.1f}%",
+            # U+2212: the metric and the history table print the true minus
+            # sign, so the chart's own end tag must print the same glyph.
+            minus="−",
             # The owner caps the path; draw every close it keeps, never a min/max sample.
             max_points=PATH_MAX_CLOSES,
             aria_en=aria_en,
