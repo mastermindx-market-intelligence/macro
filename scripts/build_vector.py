@@ -971,9 +971,11 @@ def env_probabilities(df: pd.DataFrame, cfg: dict) -> dict:
     p, n, cell, tilt = _cond_up_prob(df, cfg, h)
     now = df["momentum_state"].iloc[-1] if "momentum_state" in df else None
     if p is None:
-        return {"now": now, "p_bull_7d": None, "p_bear_7d": None}
+        return {"now": now, "p_bull_7d": None, "p_bear_7d": None,
+                "probability_issued": False}
     return {"now": now, "p_bull_7d": round(100 * p), "p_bear_7d": round(100 * (1 - p)),
-            "n": n, "cell": cell, "tilt": tilt, "horizon": h}  # tilt = macro + cycle prior
+            "n": n, "cell": cell, "tilt": tilt, "horizon": h,
+            "probability_issued": True}  # tilt = macro + cycle prior
 
 
 def scenarios_3d(df: pd.DataFrame, cfg: dict, high: pd.Series, low: pd.Series) -> dict:
@@ -996,6 +998,7 @@ def scenarios_3d(df: pd.DataFrame, cfg: dict, high: pd.Series, low: pd.Series) -
     a1, a2, ai = 1.5 * vscale * atr, 2.5 * vscale * atr, 1.0 * atr
     return {
         "bull_prob": bull, "bear_prob": 100 - bull, "cell": cell, "n": n, "tilt": tilt,
+        "probability_issued": p is not None,
         "vscale": round(vscale, 2),
         "bull_target": px + a1, "bull_target2": max(swing_hi, px + a2), "bull_invalid": px - ai,
         "bear_target": px - a1, "bear_target2": min(swing_lo, px - a2), "bear_invalid": px + ai,
@@ -1197,7 +1200,8 @@ def _conviction(p_bull, n, tilt, tape_sign, verdict_sign, min_cell_n, bands=(3, 
     tilt = tilt or 0
     if p_bull is None:
         return {"state": "TOSS-UP", "dir": 0, "lean": 0, "conf": "thin", "n": n,
-                "tape": "neutral", "confirmed": False, "p_bull": 50, "p_bear": 50, "tilt": tilt}
+                "tape": "neutral", "confirmed": False, "p_bull": 50, "p_bear": 50, "tilt": tilt,
+                "probability_issued": False}
     lean = abs(p_bull - 50)
     prob_dir = 1 if p_bull > 50 else (-1 if p_bull < 50 else 0)
     toss_pp, edge_pp = bands
@@ -1233,7 +1237,8 @@ def _conviction(p_bull, n, tilt, tape_sign, verdict_sign, min_cell_n, bands=(3, 
         state = "LEAN"
     return {"state": state, "dir": prob_dir, "lean": lean, "conf": conf, "n": n,
             "tape": tape, "confirmed": confirmed,
-            "p_bull": p_bull, "p_bear": 100 - p_bull, "tilt": tilt}
+            "p_bull": p_bull, "p_bear": 100 - p_bull, "tilt": tilt,
+            "probability_issued": True}
 
 
 def _conviction_why(c: dict, cell, n, horizon: int):
@@ -4364,7 +4369,8 @@ def _derivatives_flow_view(regime) -> dict:
     out = dict(state='unavailable', buy_share_pct=None, observed_at=None,
                evaluated_at=None, n_hours=None, window_24h_complete=False,
                window_72h_complete=False, historical_gap=False,
-               scope=None, causally_qualified=False)
+               scope=None, causally_qualified=False, elapsed_coverage=None,
+               venue=None, instrument=None, unit=None)
     if not isinstance(regime, Mapping):
         return out
     legs = regime.get('context_legs')
@@ -4399,7 +4405,33 @@ def _derivatives_flow_view(regime) -> dict:
                evaluated_at=evaluated.strftime('%Y-%m-%d %H:%M UTC'),
                window_24h_complete=bool(n >= 24 and raw.get('window_24h_complete') is True),
                window_72h_complete=bool(n >= 72 and raw.get('window_72h_complete') is True),
-               historical_gap=raw.get('gap_detected') is True)
+               historical_gap=raw.get('gap_detected') is True,
+               venue='OKX', instrument='BTC derivatives', unit='unavailable')
+    coverage = raw.get('elapsed_coverage')
+    if coverage is not None:
+        rows = coverage.get('rows') if isinstance(coverage, Mapping) else None
+        elapsed = coverage.get('elapsed_hours') if isinstance(coverage, Mapping) else None
+        completeness = coverage.get('completeness') if isinstance(coverage, Mapping) else None
+        first_ts = coverage.get('first_ts') if isinstance(coverage, Mapping) else None
+        last_ts = coverage.get('last_ts') if isinstance(coverage, Mapping) else None
+        rows_ok = isinstance(rows, Integral) and not isinstance(rows, (bool, np.bool_)) and int(rows) >= 0
+        elapsed_ok = elapsed is None or (
+            isinstance(elapsed, Real) and not isinstance(elapsed, (bool, np.bool_))
+            and np.isfinite(float(elapsed)) and float(elapsed) >= 0)
+        stamps_ok = all(v is None or isinstance(v, str) for v in (first_ts, last_ts))
+        state_ok = completeness in ('complete', 'incomplete', 'unavailable')
+        consistent = completeness != 'complete' or (rows == 24 and float(elapsed) == 23.0)
+        if not (rows_ok and elapsed_ok and stamps_ok and state_ok and consistent):
+            out.update(state='unavailable', buy_share_pct=None, window_24h_complete=False,
+                       elapsed_coverage=None)
+            return out
+        out['elapsed_coverage'] = {
+            'rows': int(rows), 'first_ts': first_ts, 'last_ts': last_ts,
+            'elapsed_hours': None if elapsed is None else float(elapsed),
+            'completeness': completeness,
+        }
+        if completeness != 'complete':
+            out['window_24h_complete'] = False
     if raw['stale'] or (evaluated-observed) > pd.Timedelta(hours=STALE_AFTER_H):
         out['state'] = 'stale'
         return out
