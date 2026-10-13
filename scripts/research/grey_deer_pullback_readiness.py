@@ -21,6 +21,9 @@ from dataclasses import dataclass
 from datetime import date
 from pathlib import Path
 
+ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(ROOT))
+
 from lib import nyse_calendar
 from scripts.research import grey_deer_pullback_stage1 as s1
 
