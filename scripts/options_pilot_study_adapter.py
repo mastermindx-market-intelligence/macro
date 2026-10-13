@@ -39,6 +39,7 @@ import hashlib
 import importlib.abc
 import importlib.util
 import json
+import math
 import os
 import sys
 from datetime import date, datetime, timedelta
@@ -786,15 +787,27 @@ def _refuse_missing_pilot_key(pvalues):
             raise Refusal("PILOT_KEY_MISSING", f"{pilot} p-value is not a real number")
 
 
+def _refuse_out_of_range_pvalue(pvalues):
+    for pilot in PILOT_IDS:
+        value = pvalues[pilot]
+        if not math.isfinite(value) or value < 0 or value > 1:
+            raise Refusal(
+                "PVALUE_OUT_OF_RANGE",
+                f"{pilot} p-value {value!r} is not a finite number in [0, 1]",
+            )
+
+
 def holm_six_pilot(pvalues, *, family_id=HOLM_FAMILY_ID, procedure="holm", qvalues=None) -> dict:
     """Holm step-down on the fixed six-pilot family at alpha 0.05.
 
     Alpha is ``HOLM_ALPHA`` and is not a parameter. Missing pilots must be
     passed as 1.0; a missing key is refused rather than filled. Any other
     family id, any q-value input, and any Benjamini-Hochberg route are refused.
+    A value that is not a finite number in [0, 1] is refused.
     """
     _refuse_multiplicity_family(family_id, procedure, qvalues, pvalues)
     _refuse_missing_pilot_key(pvalues)
+    _refuse_out_of_range_pvalue(pvalues)
     ordered = sorted(PILOT_IDS, key=lambda pilot: (float(pvalues[pilot]), pilot))
     steps = []
     rejected = []
