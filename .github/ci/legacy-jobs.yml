@@ -8578,6 +8578,12 @@ jobs:
       - "scripts/freshness_sentinel.py"
       - "templates/live.js"
       - "tests/test_crypto_publication_contract.py"
+      - "collectors/__init__.py"
+      - "collectors/_crypto_observations.py"
+      - "collectors/_first_seen_store.py"
+      - "site/crypto.html"
+      - "site/vector.html"
+      - "tests/test_crypto_observations_contract.py"
     # scripts/ci/push_retry.sh is the shared retry policy that EVERY lane's commit→push
     # step sources (render, engine-render, daily ×13, closing-bell, asia-close ×2,
     # weekly, earlyclose). It exists because render.yml run 30167139398 (2026-07-25)
@@ -8621,6 +8627,8 @@ jobs:
         run: python -m pytest tests/test_push_retry.py -q
       - name: QLedger explicit publication checks and publisher preservation boundaries
         run: python -m pytest tests/test_qledger_publication.py tests/test_qledger_publish_binding.py tests/test_crypto_publication_contract.py -q
+      - name: crypto observation store contract (T22) — fake payloads, temp store, live network forbidden
+        run: python -m pytest tests/test_crypto_observations_contract.py -q
       - name: append-only base fence (real-incident replay, withhold, quiet-night property)
         run: python -m pytest tests/test_append_only_base_fence.py -q
 
