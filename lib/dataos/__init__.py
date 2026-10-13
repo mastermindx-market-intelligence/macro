@@ -98,6 +98,27 @@ from lib.dataos.quality import (
     check_validity_ohlc,
     emit_annotations,
 )
+from lib.dataos.read_contract import (
+    READ_CONTRACT_VERSION,
+    CurrentEvidence,
+    Dependency,
+    GenerationRef,
+    ReadContractError,
+    ReadMode,
+    ReadRefusal,
+    ReadRequest,
+    ReadResult,
+    RefusalCode,
+    RetainedOutput,
+    ViewContract,
+    current,
+    eligible_rows,
+    reconstruct,
+    replay,
+    resolve_revisions,
+    select_generation,
+    selected_input_sha256s,
+)
 from lib.dataos.registry import (
     ConflictPolicy,
     DatasetContract,
@@ -136,6 +157,12 @@ __all__ = [
     # temporal (§D3)
     "TemporalError", "PointInTimeError", "Clock", "TemporalProfile",
     "KNOWN_AT_CLOCKS", "utc", "known_at", "assert_pit_readable", "as_of_filter",
+    # read contract (D00.D1: CURRENT / RECONSTRUCT / REPLAY above temporal)
+    "READ_CONTRACT_VERSION", "ReadMode", "RefusalCode", "ReadContractError",
+    "ReadRefusal", "ViewContract", "ReadRequest", "GenerationRef", "Dependency",
+    "CurrentEvidence", "RetainedOutput", "ReadResult", "eligible_rows",
+    "resolve_revisions", "select_generation", "reconstruct", "current", "replay",
+    "selected_input_sha256s",
     # price (§D4)
     "PriceError", "AdjustmentBasis", "PriceField", "Session", "VenueScope",
     "canonical_column", "parse_column", "AMBIGUOUS_NAMES", "is_ambiguous",
