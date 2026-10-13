@@ -22546,28 +22546,6 @@ jobs:
           tests/test_edgar_earnings_8k.py
           tests/test_marketing_edgar_earnings_wire.py -q -rs
 
-  market-memory-page-contract:
-    # Data-free shell and issuer-intent regressions; no provider/production reads.
-    # Use the standard inferred closure; no manually narrowed paths scope.
-    if: ${{ false }}  # executed inside ci-pack — NOT a disabled gate.
-    gate: code
-    timeout-minutes: 5
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-      - uses: actions/setup-node@v4
-        with:
-          node-version: "20"
-      - name: install minimal deps
-        run: pip install pytest jinja2 pyyaml
-      - name: require the actual client runtime
-        run: node --version
-      - name: Market Memory page and issuer intent contract
-        run: python -m pytest tests/test_build_market_memory_page.py -q -rs
-
   market-memory-contract:
     # Public-safe temporal-context and product-shell contract. Private captures,
     # credentials, and provider responses remain absent; the option availability
@@ -23021,7 +22999,7 @@ jobs:
     if: ${{ false }}
     gate: code
     # HANDOFF C (Operation Institutionalize), half one: the cross-repo page
-    # registry census. Pure pytest, no browser anywhere near it.
+    # registry census and data-free product-shell contracts; no browser process.
     #
     # This job's inferred scope is HONESTLY broad: the builder censuses the real
     # site/ and templates/ trees, so a tree traversal is what it is FOR and the
@@ -23036,10 +23014,16 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
       - name: install product-experience test deps
-        run: pip install pytest pyyaml
-      - name: page registry — committed-JSON drift guard + derivation contracts
-        run: TZ=UTC python -m pytest tests/test_build_product_page_registry.py -q
+        run: pip install pytest pyyaml jinja2
+      - name: page registry and Market Memory shell contracts
+        run: >-
+          node --version && TZ=UTC python -m pytest
+          tests/test_build_product_page_registry.py
+          tests/test_build_market_memory_page.py -q -rs
       # DS-PR-1 suites, appended rather than given their own manifest entry: a
       # 181st job reds tests/test_ci_pack.py's narrow-diff ceiling, and both
       # suites' scopes (templates/**, the registry builder, the committed JSON)

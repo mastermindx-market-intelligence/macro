@@ -19,7 +19,7 @@ changed:
   - path: tests/test_market_memory_m0d_v2.py
     what: Add envelope identity, adjustment, conflicting row, stability and original-byte regression cases.
   - path: .github/ci/legacy-jobs.yml
-    what: Register the data-free page and actual Node suite as a code job using the standard inferred dependency closure.
+    what: Run the data-free page suite with its actual Node runtime inside the existing product-experience code job and normal inferred dependency closure.
 verified:
   - claim: The complete owning M0D v2 suite passes after the reviewed repair is applied.
     command: python3 -m pytest tests/test_market_memory_m0d_v2.py -q --disable-warnings
