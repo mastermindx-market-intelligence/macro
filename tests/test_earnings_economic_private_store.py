@@ -1866,6 +1866,37 @@ def test_two_event_generation_validates_and_reads_each_native_slug(tmp_path: Pat
     assert view["slug"] == PRIMARY_SLUG
     assert view["record_sha256"] == manifest["records"][PRIMARY_SLUG]["sha256"]
 
+    pinned_generation = manifest["generation_id"]
+    pinned_digest = view["manifest_sha256"]
+    later = stage_economic_case(tmp_path, "two_events", name="later")
+    latest_path = later / "native" / "latest.json"
+    latest = json.loads(latest_path.read_bytes())
+    latest["native_source_cutoff"] = "2026-07-31T00:00:01Z"
+    latest_path.write_bytes(canonical_json_bytes(latest))
+    pp.publish_private_publication(store, pp.prepare_private_publication(later))
+    current_after = pp.load_private_manifest(store)
+    assert current_after["generation_id"] != pinned_generation
+    retired = pp.load_private_manifest_version(
+        store, generation_id=pinned_generation, expected_digest=pinned_digest,
+    )
+    for slug in (PRIMARY_SLUG, Q3_SLUG):
+        retired_closure = pp.load_economic_closure(store, manifest=retired, slug=slug)
+        retired_fact = next(
+            obs for obs in retired_closure["interpretation"]["observations"]
+            if obs.get("source_excerpt")
+        )
+        pinned = pp.load_economic_evidence(
+            store,
+            generation_id=pinned_generation,
+            manifest_digest=pinned_digest,
+            record_digest=retired["records"][slug]["sha256"],
+            slug=slug,
+            fact_id=retired_fact["fact_id"],
+        )
+        assert pinned["generation_id"] == pinned_generation
+        assert pinned["slug"] == slug
+        assert pinned["source_sha256"] == retired_closure["chain"][-1]["document"]["content_sha256"]
+
 
 def test_scoped_economic_read_fetches_only_its_event(tmp_path: Path) -> None:
     store, _baseline = published_v1_case(tmp_path)
@@ -1874,6 +1905,7 @@ def test_scoped_economic_read_fetches_only_its_event(tmp_path: Path) -> None:
     manifest = pp.load_private_manifest(store)
 
     keys = _two_event_object_keys(manifest, prepared.payloads)
+    view_digest = sha256(prepared.manifest_bytes).hexdigest()
     assert keys[PRIMARY_SLUG] & keys[Q3_SLUG] == set()
     assert len(keys[PRIMARY_SLUG]) == 4
     assert len(keys[Q3_SLUG]) == 4
@@ -1892,6 +1924,30 @@ def test_scoped_economic_read_fetches_only_its_event(tmp_path: Path) -> None:
             read = set(reader.read_calls)
             assert keys[slug] <= read
             assert not (read & keys[other])
+
+        closure = pp.load_economic_closure(store, manifest=manifest, slug=slug)
+        fact = next(
+            obs for obs in closure["interpretation"]["observations"]
+            if obs.get("source_excerpt")
+        )
+        evidence_reader = ReadCountingLocalStore(store.root)
+        pp.load_economic_evidence(
+            evidence_reader,
+            generation_id=manifest["generation_id"],
+            manifest_digest=view_digest,
+            record_digest=manifest["records"][slug]["sha256"],
+            slug=slug,
+            fact_id=fact["fact_id"],
+        )
+        evidence_read = set(evidence_reader.read_calls)
+        assert keys[slug] <= evidence_read
+        assert not (evidence_read & keys[other])
+
+    view_reader = ReadCountingLocalStore(store.root)
+    pp.load_current_economic_view(view_reader, "PG", manifest=manifest)
+    view_read = set(view_reader.read_calls)
+    assert keys[PRIMARY_SLUG] <= view_read
+    assert not (view_read & keys[Q3_SLUG])
 
 
 def test_full_scope_selection_refusals_survive_scoped_reader_fix(tmp_path: Path) -> None:
@@ -1969,3 +2025,93 @@ def test_full_scope_selection_refusals_survive_scoped_reader_fix(tmp_path: Path)
     m_t = reseal_manifest(m_t, pp)
     twin_result = pp.validate_native_closure(m_t, objs_t)
     assert {dup_slug, Q3_SLUG} <= set(twin_result)
+
+
+def _manifest_with_primary_duplicate(prepared):
+    """Copy the primary selection under a new slug that shares its event identity."""
+    payloads = dict(prepared.payloads)
+    base = json.loads(prepared.manifest_bytes)
+    primary_key = base["records"][PRIMARY_SLUG]["object_key"]
+    dup_slug = "pg-synthetic-economic-dossier-dup"
+    primary_record = json.loads(payloads[primary_key])
+    dup_record = dict(primary_record, slug=dup_slug)
+    dup_body = canonical_json_bytes(dup_record)
+    dup_digest = sha256(dup_body).hexdigest()
+    dup_key = object_key(dup_digest)
+    manifest = json.loads(prepared.manifest_bytes)
+    manifest["native"]["selections"][dup_slug] = json.loads(
+        json.dumps(manifest["native"]["selections"][PRIMARY_SLUG])
+    )
+    manifest["records"][dup_slug] = {
+        "object_key": dup_key, "sha256": dup_digest, "bytes": len(dup_body),
+    }
+    manifest["record_count"] = len(manifest["records"])
+    objects = {**payloads, dup_key: dup_body}
+    return reseal_manifest(manifest, pp), objects, dup_slug
+
+
+def test_scoped_read_rejects_duplicate_identity_outside_scope(tmp_path: Path) -> None:
+    """A duplicate (company_id, event_id) outside the requested slugs is still refused."""
+    prepared = pp.prepare_private_publication(stage_economic_case(tmp_path, "two_events"))
+    manifest, objects, _dup_slug = _manifest_with_primary_duplicate(prepared)
+    q3_keys = _two_event_object_keys(manifest, objects)[Q3_SLUG]
+    scoped = {key: objects[key] for key in q3_keys}
+    expect_closure(
+        "malformed_native_section",
+        pp.validate_native_closure,
+        manifest,
+        scoped,
+        slugs=(Q3_SLUG,),
+    )
+
+
+def test_scoped_read_rejects_out_of_scope_cross_issuer(tmp_path: Path) -> None:
+    """Registry membership is a manifest invariant, not a scoped-selection check."""
+    prepared = pp.prepare_private_publication(stage_economic_case(tmp_path, "two_events"))
+    manifest = json.loads(prepared.manifest_bytes)
+    payloads = dict(prepared.payloads)
+    manifest["native"]["selections"][Q3_SLUG]["company_id"] = "cik:not-admitted"
+    manifest = reseal_manifest(manifest, pp)
+    primary_keys = _two_event_object_keys(manifest, payloads)[PRIMARY_SLUG]
+    scoped = {key: payloads[key] for key in primary_keys}
+    expect_closure(
+        "cross_issuer",
+        pp.validate_native_closure,
+        manifest,
+        scoped,
+        slugs=(PRIMARY_SLUG,),
+    )
+
+
+def test_manifest_invariants_precede_scoped_object_reads(tmp_path: Path) -> None:
+    """Catalog invariants run once before a scoped reader fetches its objects."""
+    prepared = pp.prepare_private_publication(stage_economic_case(tmp_path, "two_events"))
+    manifest, objects, _dup_slug = _manifest_with_primary_duplicate(prepared)
+    q3_record_key = manifest["records"][Q3_SLUG]["object_key"]
+    q3_keys = _two_event_object_keys(manifest, objects)[Q3_SLUG]
+    scoped = {key: objects[key] for key in q3_keys if key != q3_record_key}
+    assert q3_record_key not in scoped
+    expect_closure(
+        "malformed_native_section",
+        pp.validate_native_closure,
+        manifest,
+        scoped,
+        slugs=(Q3_SLUG,),
+    )
+
+
+def test_private_fixtures_do_not_import_private_sgml() -> None:
+    import ast
+    import tests.earnings_economic_private_fixtures as fixtures
+
+    source = Path(fixtures.__file__).read_text(encoding="utf-8")
+    imported: list[str] = []
+    for node in ast.walk(ast.parse(source)):
+        if isinstance(node, ast.ImportFrom):
+            imported.extend(alias.name for alias in node.names)
+        elif isinstance(node, ast.Import):
+            imported.extend(alias.name for alias in node.names)
+    assert "_sgml" not in imported
+    assert fixtures.synthetic_exhibit_sgml("synthetic-exhibit-991.htm") == (
+        b"<DOCUMENT><TYPE>EX-99.1<FILENAME>synthetic-exhibit-991.htm<TEXT>\n</TEXT></DOCUMENT>"
+    )

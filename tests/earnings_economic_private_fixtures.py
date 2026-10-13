@@ -19,7 +19,7 @@ from engine.company_intelligence import event_workspace, pg_profile
 from engine.company_intelligence.events import FiscalPeriod
 from engine.research_vault.r2_store import LocalStore
 from scripts import refresh_event_workspaces
-from tests.earnings_economic_fixtures import fixture_http_get, pg_bound_case, _sgml
+from tests.earnings_economic_fixtures import fixture_http_get, pg_bound_case
 from tests.test_earnings_private_store import CountingLocalStore, _staged_publication
 
 CUTOFF = "2026-07-31T00:00:00Z"
@@ -35,6 +35,13 @@ _REFUSING_RIGHTS = """families:
   sec_edgar:
     rights_class: internal_only
 """
+
+def synthetic_exhibit_sgml(filename: str = "synthetic-exhibit-991.htm") -> bytes:
+    """Index-headers body for one synthetic EX-99.1 exhibit."""
+    return (
+        f"<DOCUMENT><TYPE>EX-99.1<FILENAME>{filename}<TEXT>\n</TEXT></DOCUMENT>"
+    ).encode("utf-8")
+
 
 def _acquire(case: str) -> dict:
     original = refresh_event_workspaces._PACE_S
@@ -110,7 +117,7 @@ def _q3_cache() -> dict[str, object]:
     )}}}
     responses = {
         "https://data.sec.gov/submissions/CIK0000080424.json": (200, json.dumps(subs).encode("utf-8")),
-        f"{archive}/{acc}-index-headers.html": (200, _sgml("synthetic-exhibit-991.htm")),
+        f"{archive}/{acc}-index-headers.html": (200, synthetic_exhibit_sgml("synthetic-exhibit-991.htm")),
         f"{archive}/synthetic-exhibit-991.htm": (200, body),
     }
 

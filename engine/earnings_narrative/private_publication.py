@@ -745,6 +745,31 @@ def _validate_native_section(value: Any, *, manifest: Mapping[str, Any] | None =
         raise EarningsPrivateClosureError("wrong_role")
     return value
 
+def _validate_native_manifest_invariants(value: Mapping[str, Any]) -> None:
+    """Catalog membership, duplicate identity, and registry admission, once.
+
+    These read the complete manifest catalog. A scoped reader must not skip a
+    selection it did not request, and must not wait on that selection's objects.
+    """
+    native = value["native"]
+    catalog = value["records"]
+    for selection_slug in native["selections"]:
+        if selection_slug not in catalog:
+            raise EarningsPrivateClosureError("malformed_native_section")
+    seen: dict[tuple[str, str], str] = {}
+    for slug, selection in native["selections"].items():
+        identity = (selection["company_id"], selection["event_id"])
+        if identity in seen:
+            raise EarningsPrivateClosureError("malformed_native_section")
+        seen[identity] = slug
+    registry = _seam(pg_profile.pg_private_registry, "cross_issuer")
+    for company_id in native["economic_slots"]:
+        if _seam(lambda: registry.get(company_id), "cross_issuer") is None:
+            raise EarningsPrivateClosureError("cross_issuer")
+    for selection in native["selections"].values():
+        if _seam(lambda: registry.get(selection["company_id"]), "cross_issuer") is None:
+            raise EarningsPrivateClosureError("cross_issuer")
+
 def _validate_previous_manifest(value: Any) -> dict[str, Any] | None:
     if value is None:
         return None
@@ -843,6 +868,8 @@ def validate_native_closure(
                 raise EarningsPrivateClosureError("missing_artifact")
         else:
             native = value["native"]
+
+        _validate_native_manifest_invariants(value)
 
         records: dict[str, dict[str, Any]] = {}
         chains: dict[str, list[dict[str, Any]]] = {}
@@ -966,21 +993,7 @@ def validate_native_closure(
                     "source_available_at": canonical_clocks[0],
                 })
 
-        registry = _seam(pg_profile.pg_private_registry, "cross_issuer")
-        for company_id in native["economic_slots"]:
-            if _seam(lambda: registry.get(company_id), "cross_issuer") is None:
-                raise EarningsPrivateClosureError("cross_issuer")
-        for slug, selection in native["selections"].items():
-            if slug not in records:
-                continue
-            if _seam(lambda: registry.get(selection["company_id"]), "cross_issuer") is None:
-                raise EarningsPrivateClosureError("cross_issuer")
-
         pairings: dict[str, dict[str, Any]] = {}
-        events: dict[tuple[str, str], str] = {}
-        for selection_slug in native["selections"]:
-            if selection_slug not in value["records"]:
-                raise EarningsPrivateClosureError("malformed_native_section")
         for slug, record in records.items():
             interpretation = record.get("economic_interpretation")
             has_native = type(interpretation) is dict and "interpretation_id" in interpretation
@@ -990,11 +1003,6 @@ def validate_native_closure(
             if record["schema"] == RECORD_SCHEMA and has_selection:
                 raise EarningsPrivateClosureError("malformed_native_section")
             if has_selection:
-                selection = native["selections"][slug]
-                identity = (selection["company_id"], selection["event_id"])
-                if identity in events:
-                    raise EarningsPrivateClosureError("malformed_native_section")
-                events[identity] = slug
                 pairings[slug] = {
                     key: interpretation[key] for key in economic_interpretation.TOP_LEVEL_KEYS
                 }
