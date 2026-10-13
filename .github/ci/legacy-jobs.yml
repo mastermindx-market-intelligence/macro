@@ -8841,6 +8841,7 @@ jobs:
           tests/test_research_factory_state.py
           tests/test_research_factory_schema.py
           tests/test_research_factory_market_memory.py
+          tests/test_research_codegen_factory_fence.py
           -q
 
   cycle-pattern-authority:

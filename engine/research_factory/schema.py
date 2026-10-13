@@ -807,6 +807,22 @@ def validate_candidate(row: dict) -> list[str]:
     if type(row) is not dict:
         return ["candidate: row must be an exact dict"]
 
+    from engine.research_factory.codegen_boundary import codegen_refusal
+
+    # Retain the existing exact-string diagnostics without invoking object hooks
+    # while checking reserved metadata below.
+    type_errors = [
+        f"candidate: {field} must be an exact string"
+        for field in ("source", "candidate_type", "domain")
+        if row.get(field) is not None and type(row[field]) is not str
+    ]
+    if type_errors:
+        return type_errors
+
+    refusal = codegen_refusal(row)
+    if refusal:
+        return [refusal]
+
     errs: list[str] = []
     label = f"candidate({row.get('candidate_id', '?')})"
 
