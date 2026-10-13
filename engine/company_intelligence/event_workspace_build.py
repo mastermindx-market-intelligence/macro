@@ -31,6 +31,7 @@ from .event_workspace import (
     _iso,
     _lifecycle_payload,
     _utc,
+    apple_issuer,
     validate_event_workspace,
 )
 from .events import CompanyEvent, FiscalPeriod
@@ -174,6 +175,21 @@ def build_event_workspace(
     issuer = registry.get(resolved.company_id)
     requested_clock = _utc(observed_at, field_name="observed_at")
     available = _utc(source_available_at, field_name="source_available_at")
+
+    # T05a guard: the pre-A5A ``active_profile = profile or apple_profile()``
+    # default was safe ONLY because every pre-A5A call site passed
+    # ticker=AAPL — the homebuilder wave passed an explicit profile.  A
+    # non-AAPL issuer built without ``profile=`` would otherwise run Apple's
+    # transcript-claims / release-fact extractors on the wrong filing and
+    # silently mint Apple-shaped facts under a non-Apple issuer identity.
+    # Apple's own default path (no profile passed) is preserved: identified
+    # by the resolved company_id matching the Apple issuer's company_id, NOT
+    # by a hardcoded ticker literal (E3C prior-art law forbids that).
+    if profile is None and resolved.company_id != apple_issuer().company_id:
+        raise WorkspaceError(
+            "profile_required: caller passed profile=None for a non-Apple "
+            "issuer; the Apple default cannot be applied here"
+        )
 
     accession = str(filing.get("accession") or "")
     cik = str(filing.get("cik") or issuer.cik)
@@ -384,9 +400,13 @@ def build_event_workspace(
     # segment index, literal, and 9.0/11.0 bounds below were Apple-only
     # constructions sitting in generic code.  apple_profile() reproduces this
     # exact block unchanged; a homebuilder profile returns [].
+    # T05a: ``bound`` and ``release_document_id`` are passed so a release-body
+    # guidance extractor (TSM/ON) can receipt the literal guidance span out
+    # of the SAME bound source it just receipted a revenue span out of.
     guidance: list[dict[str, Any]] = list(
         active_profile.extract_guidance(
             segments=segments, document_id=tx_doc_id, body_sha256=transcript_sha256 or "", event_id=event_id,
+            bound=bound, release_document_id=release_doc_id, fiscal_period=fiscal_period,
         )
     )
 

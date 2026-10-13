@@ -1,0 +1,199 @@
+{
+  "synthetic": true,
+  "case_key": "guidance_basis_change",
+  "task_refs": ["T06"],
+  "expected_regression": "GAAP/non-GAAP, definition, currency and fiscal mismatches stay explicit",
+  "status": "ready",
+  "inputs_variants": {
+    "basis_change": {
+      "prior": {
+        "schema": "guidance_item.v1",
+        "metric": "revenue_usd_m",
+        "low": 4150,
+        "high": 4350,
+        "unit": "USD_m",
+        "horizon": "2026Q2",
+        "status": "introduced",
+        "basis": "reported_gaap",
+        "currency": "USD",
+        "perimeter": "as_reported",
+        "definition": "revenue_net_of_returns",
+        "source_span": {"synthetic": true, "document_id": "syn-doc-1", "locator": "paragraph 3"}
+      },
+      "actual": {
+        "metric": "revenue_usd_m",
+        "value": 4280,
+        "unit": "USD_m",
+        "fiscal_period": "2026Q2",
+        "basis": "non_gaap",
+        "currency": "USD",
+        "perimeter": "as_reported",
+        "definition": "revenue_net_of_returns",
+        "source_span": {"synthetic": true, "document_id": "syn-doc-2", "locator": "table 1 row 4"}
+      },
+      "next_outlook": {
+        "schema": "guidance_item.v1",
+        "metric": "revenue_usd_m",
+        "low": 4500,
+        "high": 4700,
+        "unit": "USD_m",
+        "horizon": "2026Q3",
+        "status": "introduced",
+        "basis": "reported_gaap",
+        "currency": "USD",
+        "perimeter": "as_reported",
+        "definition": "revenue_net_of_returns",
+        "source_span": {"synthetic": true, "document_id": "syn-doc-2", "locator": "paragraph 7"}
+      },
+      "native_derivations": null
+    },
+    "definition_change": {
+      "prior": {
+        "schema": "guidance_item.v1",
+        "metric": "revenue_usd_m",
+        "low": 4150,
+        "high": 4350,
+        "unit": "USD_m",
+        "horizon": "2026Q2",
+        "status": "introduced",
+        "basis": "reported_gaap",
+        "currency": "USD",
+        "perimeter": "as_reported",
+        "definition": "revenue_gross",
+        "source_span": {"synthetic": true, "document_id": "syn-doc-1", "locator": "paragraph 3"}
+      },
+      "actual": {
+        "metric": "revenue_usd_m",
+        "value": 4280,
+        "unit": "USD_m",
+        "fiscal_period": "2026Q2",
+        "basis": "reported_gaap",
+        "currency": "USD",
+        "perimeter": "as_reported",
+        "definition": "revenue_net_of_returns",
+        "source_span": {"synthetic": true, "document_id": "syn-doc-2", "locator": "table 1 row 4"}
+      },
+      "next_outlook": {
+        "schema": "guidance_item.v1",
+        "metric": "revenue_usd_m",
+        "low": 4500,
+        "high": 4700,
+        "unit": "USD_m",
+        "horizon": "2026Q3",
+        "status": "introduced",
+        "basis": "reported_gaap",
+        "currency": "USD",
+        "perimeter": "as_reported",
+        "definition": "revenue_net_of_returns",
+        "source_span": {"synthetic": true, "document_id": "syn-doc-2", "locator": "paragraph 7"}
+      },
+      "native_derivations": null
+    },
+    "currency_mismatch": {
+      "prior": {
+        "schema": "guidance_item.v1",
+        "metric": "revenue",
+        "low": 4150,
+        "high": 4350,
+        "unit": "monetary_m",
+        "horizon": "2026Q2",
+        "status": "introduced",
+        "basis": "reported_gaap",
+        "currency": "USD",
+        "perimeter": "as_reported",
+        "definition": "revenue_net_of_returns",
+        "source_span": {"synthetic": true, "document_id": "syn-doc-1", "locator": "paragraph 3"}
+      },
+      "actual": {
+        "metric": "revenue",
+        "value": 4280,
+        "unit": "monetary_m",
+        "fiscal_period": "2026Q2",
+        "basis": "reported_gaap",
+        "currency": "TWD",
+        "perimeter": "as_reported",
+        "definition": "revenue_net_of_returns",
+        "source_span": {"synthetic": true, "document_id": "syn-doc-2", "locator": "table 1 row 4"}
+      },
+      "next_outlook": {
+        "schema": "guidance_item.v1",
+        "metric": "revenue",
+        "low": 4500,
+        "high": 4700,
+        "unit": "monetary_m",
+        "horizon": "2026Q3",
+        "status": "introduced",
+        "basis": "reported_gaap",
+        "currency": "TWD",
+        "perimeter": "as_reported",
+        "definition": "revenue_net_of_returns",
+        "source_span": {"synthetic": true, "document_id": "syn-doc-2", "locator": "paragraph 7"}
+      },
+      "native_derivations": null
+    },
+    "fiscal_period_mismatch": {
+      "prior": {
+        "schema": "guidance_item.v1",
+        "metric": "revenue_usd_m",
+        "low": 4150,
+        "high": 4350,
+        "unit": "USD_m",
+        "horizon": "2026Q1",
+        "status": "introduced",
+        "basis": "reported_gaap",
+        "currency": "USD",
+        "perimeter": "as_reported",
+        "definition": "revenue_net_of_returns",
+        "source_span": {"synthetic": true, "document_id": "syn-doc-1", "locator": "paragraph 3"}
+      },
+      "actual": {
+        "metric": "revenue_usd_m",
+        "value": 4280,
+        "unit": "USD_m",
+        "fiscal_period": "2026Q2",
+        "basis": "reported_gaap",
+        "currency": "USD",
+        "perimeter": "as_reported",
+        "definition": "revenue_net_of_returns",
+        "source_span": {"synthetic": true, "document_id": "syn-doc-2", "locator": "table 1 row 4"}
+      },
+      "next_outlook": {
+        "schema": "guidance_item.v1",
+        "metric": "revenue_usd_m",
+        "low": 4500,
+        "high": 4700,
+        "unit": "USD_m",
+        "horizon": "2026Q3",
+        "status": "introduced",
+        "basis": "reported_gaap",
+        "currency": "USD",
+        "perimeter": "as_reported",
+        "definition": "revenue_net_of_returns",
+        "source_span": {"synthetic": true, "document_id": "syn-doc-2", "locator": "paragraph 7"}
+      },
+      "native_derivations": null
+    }
+  },
+  "expected_per_variant": {
+    "basis_change": {
+      "comparisons": {
+        "prior_vs_actual": {"status": "refused", "reason": "basis_change", "position": null}
+      }
+    },
+    "definition_change": {
+      "comparisons": {
+        "prior_vs_actual": {"status": "refused", "reason": "definition_change", "position": null}
+      }
+    },
+    "currency_mismatch": {
+      "comparisons": {
+        "prior_vs_actual": {"status": "refused", "reason": "currency_mismatch", "position": null}
+      }
+    },
+    "fiscal_period_mismatch": {
+      "comparisons": {
+        "prior_vs_actual": {"status": "refused", "reason": "fiscal_period_mismatch", "position": null}
+      }
+    }
+  }
+}
