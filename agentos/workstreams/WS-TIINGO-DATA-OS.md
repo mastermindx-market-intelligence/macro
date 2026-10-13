@@ -34,35 +34,41 @@ waves:
     status: in_progress
     pr: [8698, 945, 955, 8986, 9004, 9018, 9020, 9022, 9027]
 next_action: >-
-  Preserve accepted producer integrity, previous source dispositions and the
-  four PRODUCED EOD/fundamentals research contracts. Macro #9039 passed all twelve
-  jobs and original overall CI 38321632850 before its protected merge to
-  a13962ee3915e18a8ee21fa8e3a8fa05d475d62f; all eleven reviewed tree entries are
-  verified in canonical main. Original wave14 capture 41115 and continuation
-  40732 are settled and their actual returns are consumed. Actual quality-aware
-  accounting covers all 5,000 identities exactly once: 4,998 qualified successes,
-  one whole RBGPF raw quality quarantine and one held MYRUF transport failure,
-  with zero never-admitted requests. No failed request was retried. Preserve
-  failed prefix16 and window05 artifacts. Reconciliation 37818 verified and
-  reused 758 existing projections, wrote 809 missing valid projections and
-  verified two empty responses; all 1,516 partial-file hashes stayed unchanged.
-  Original reconciliation, coverage and accounting 26646 returns were consumed.
-  The accepted census is 43,160 nonempty histories and 91,067,720 bars, with both
-  WTFNF and RBGPF retained as source-quality quarantines. Final wave15 capture
-  43992 actually started at 2026-10-13 00:55:03 UTC on 4,392 unreserved symbols,
-  excluding all 24 holds. Its source, quota, storage, original reservations and
-  collision gates passed. Qualification window01 15584 stopped during prefix01
-  under the unchanged normalization guard; its actual exit-one return was
-  consumed. Read-only diagnosis 22625 verified the exact 253-response failed
-  snapshot, 171 retained valid partial projections and one SCNG receipt with
-  negative integer volumes and no projection. Complete supplemental validation
-  and disposition remain pending. Prepare and source-review the narrow reusable
-  preflight-and-reconciliation flow, preserving every whole invalid receipt and
-  all valid partial work. No successor qualification writer has started. Consume actual capture and qualification returns, qualify each
-  valid response, diagnose any new source-quality failure and finish the exact
-  final scope accounting. Preserve per-ticker history bounds, empty responses,
-  rolling-five-second admission pacing, raw threshold and 40 GiB floor. A started
-  qualification settles before return; no successor writer precedes consumption.
+  Preserve accepted producer integrity, the four PRODUCED research contracts and
+  all prior dispositions. Macro #9045 passed all twelve expanded jobs and its
+  original overall CI 38331358673 before normal protected merge to
+  88eb65415f3564bf2c99cd8f9ee9d9774fa68ada. All 27 reviewed changed blobs are
+  identical in canonical main. Original wave15 capture 43992 settled exit one;
+  its actual return is consumed. Actual accounting 38800 covers all 4,392
+  original identities exactly once: 1,757 qualified responses, one whole SCNG
+  source-quality quarantine, three held timeouts (TACI, TACJF, TAER) and 2,631
+  never-admitted requests. Qualified bars are 3,972,327 and whole quarantined
+  raw rows are 4,454; their raw bytes sum to actual capture's 898,220,411.
+  No failed request was retried. Preserve failed prefix01 and prefix03 artifacts.
+  Reviewed preflight traverses every unchanged normalizer input before a writer;
+  only negative JSON integer volume fields within signed int64, excluding bool,
+  can receive whole-response quarantine. Other defects hold the exact stage.
+  Prefix02 reused all 171 valid partial projections and preserved all 342 hashes.
+  The later content-path collision keeps prior PXSTD receipt artifacts unchanged
+  while the existing producer writes STMGD's separate current-receipt view. No
+  security alias or dated-identity claim follows. Original window03 10051 and
+  all prefix02/04/05 qualification, coverage and accounting returns are consumed.
+  The accepted census is 44,915 nonempty histories and 95,040,047 bars, with
+  117 empty catalogue windows, 2,654 uncaptured and three quality quarantines.
+  The installed immutable research release consumed newly qualified SAPIF's
+  4,787 adjusted bars through one declared-budget Lab trial. Original 81369
+  settled exit zero; host status, request, result and one budget artifact are
+  joined. Source hashes, selected runtime and production ledger remain unchanged.
+  The independently reviewed continuation on original execution 33372 created
+  its actual scope at 2026-10-13 02:03:45 UTC for the exact 2,631 never-admitted
+  requests. It excludes all 28 held or quarantined symbols and carries only the
+  remaining original raw budget, 24,871,583,365 bytes. Final read-only preflight
+  passed with zero EOD collisions. Capture settlement and its new qualification
+  remain pending. Consume the actual original return, disposition every new
+  response and finish combined two-phase accounting. Preserve rolling-five-second
+  pacing, first-error admission stop and drain, 40 GiB floor, whole source-quality
+  quarantines and prior foreign artifact hashes. Every started writer settles
+  before a successor. Continue source review and landing while capture proceeds.
   BOATS capture 90361 and qualifier 48859 are settled with consumed original
   exit-zero returns. The 00:00:19-00:09:30 UTC capture retained 2,000,000 messages,
   2,000 segments and 448,959,986 bytes on one connection with zero observed
@@ -83,7 +89,7 @@ next_action: >-
   three years; deep/full serving, dated identity, knowledge-time qualification
   and responsive live Terminal acceptance remain open. Continue every ready
   permitted lane. Proof and reviewed methods are saved in
-  docs/tiingo-evidence/20261013-open-session-history-frontier/.
+  docs/tiingo-evidence/20261013-final-scope-disposition/.
 owns_paths:
   - collectors/tiingo_archive.py
   - lib/dataos/tiingo_*.py
@@ -91,6 +97,7 @@ owns_paths:
   - docs/TIINGO_DATA_OS_INGESTION_20261009.md
   - docs/tiingo-evidence/
 artifacts:
+  - docs/tiingo-evidence/20261013-final-scope-disposition/
   - docs/tiingo-evidence/20261013-open-session-history-frontier/
   - docs/tiingo-evidence/20261012-final-capture-preparation/
   - docs/tiingo-evidence/20261012-wave13-held-outcome/
