@@ -1,0 +1,46 @@
+<section class="technology-economic-change-page" data-fragment="company-first">
+  <nav class="technology-economic-change-nav">
+    <a href="{{ dossier.navigation.company_first }}">{{ dossier.navigation.company_first }}</a>
+    <a href="{{ dossier.navigation.theme_first }}">{{ dossier.navigation.theme_first }}</a>
+  </nav>
+  <p data-field="issuer_pure_play_claimed">{{ dossier.classification.issuer_pure_play_claimed | lower }}</p>
+  <ul class="technology-economic-change-authority">
+    {% for name, value in dossier.authority.items() %}
+    <li data-authority-flag="{{ name }}">{{ name }} {{ value | lower }}</li>
+    {% endfor %}
+  </ul>
+  <section class="technology-dossier-identity" data-section="identity">
+    {% for entity in dossier.identity.entities %}
+    <article data-entity-id="{{ entity.entity_id }}">
+      <p data-field="entity_id">{{ entity.entity_id }}</p>
+      <p data-field="binding_state">{{ entity.binding_state }}</p>
+      <p data-field="display_ticker">{% if entity.display_ticker %}{{ entity.display_ticker }}{% endif %}</p>
+    </article>
+    {% endfor %}
+    <p data-field="security_enrichment_reason_code">{{ dossier.identity.views.security_enrichment_view.reason_code }}</p>
+  </section>
+  <section class="technology-dossier-business" data-section="business">
+    {% if dossier.business.refused is defined and dossier.business.refused %}
+    <p data-field="business_reason_code">{{ dossier.business.reason_code }}</p>
+    {% elif dossier.business.rows is defined %}
+    {% for row in dossier.business.rows %}
+    <article data-row-id="{{ row.row_id }}">
+      <p data-field="predicate">{{ row.predicate }}</p>
+      <p data-field="statement">{{ row.statement }}</p>
+    </article>
+    {% endfor %}
+    {% endif %}
+  </section>
+  {% if dossier.comparison is defined %}
+  <section class="technology-dossier-comparison" data-section="comparison">
+    {% if dossier.comparison.refused is defined and dossier.comparison.refused %}
+    <p data-field="comparison_reason_code">{{ dossier.comparison.reason_code }}</p>
+    {% elif dossier.comparison.admission is defined %}
+    <p data-field="comparison_admission">{{ dossier.comparison.admission }}</p>
+    {% if dossier.comparison.primary_limitation is defined and dossier.comparison.primary_limitation.text is defined %}
+    <p data-field="comparison_primary_limitation">{{ dossier.comparison.primary_limitation.text }}</p>
+    {% endif %}
+    {% endif %}
+  </section>
+  {% endif %}
+</section>

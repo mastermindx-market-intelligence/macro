@@ -1,0 +1,80 @@
+{
+  "schema": "theme_graph.curation_assertion.v1",
+  "curation_revision": "gmirca_36e46fc0522eddc0eb823a0f171cdd7e",
+  "review": {
+    "disposition": "accepted",
+    "reviewed_at": "2026-05-16T09:00:00Z",
+    "reviewer": "synthetic-reviewer",
+    "review_due_at": null
+  },
+  "source": {
+    "publisher": "synthetic-owner-a",
+    "source_uri": "https://example.invalid/synthetic/technology-workload-role",
+    "locator": "synthetic/conformant-role#p1",
+    "published_at": "2026-05-15",
+    "published_at_grain": "date",
+    "observed_at": "2026-05-16T08:00:00Z",
+    "retained_at": "2026-05-16T08:05:00Z",
+    "retention_ref": "synthetic-doc-role-conformant",
+    "native_digest": "7c90517dd7e81c1294984dc33a9c3c7c2c6310d749847d8cbd1bd46c81373b6e"
+  },
+  "subject": {
+    "company_node_id": "co:us:synth-alpha",
+    "source_business_label": "Synthetic Alpha Inc (SYNTHETIC)",
+    "source_product_label": null,
+    "source_platform_label": null,
+    "configuration": null
+  },
+  "object": {
+    "source_product_label": "AI training accelerator (SYNTHETIC)",
+    "configuration": null
+  },
+  "predicate": "PRODUCT_CAPABILITY",
+  "statement_mode": "ATTRIBUTED_INTERPRETATION",
+  "scope": {
+    "canonical_theme_id": "theme:technology-ex-semis",
+    "application": null,
+    "technology_facet": "product_workload_role",
+    "region": null,
+    "period": null,
+    "denominator": null
+  },
+  "observation": {
+    "value": null,
+    "value_high": null,
+    "unit": null,
+    "quantity_basis": "absolute",
+    "gross_net_basis": null,
+    "stock_flow": null,
+    "estimate_status": "reported",
+    "precision": "approximate"
+  },
+  "temporal": {
+    "business_valid_from": "2026-05-15",
+    "business_valid_to": null
+  },
+  "limitations": {
+    "establishes": [
+      "Synthetic attributed statement: product workload role for compute acceleration."
+    ],
+    "does_not_establish": [
+      "rank",
+      "price",
+      "pure-play status"
+    ],
+    "coverage": "single synthetic fixture",
+    "source_dependence": "synthetic fixture, not a filing",
+    "expiry_trigger": null
+  },
+  "correction": {
+    "predecessor_revision": null,
+    "reason": null
+  },
+  "authority": {
+    "can_rank": false,
+    "can_gate": false,
+    "can_size": false,
+    "can_originate": false,
+    "can_open_entry": false
+  }
+}

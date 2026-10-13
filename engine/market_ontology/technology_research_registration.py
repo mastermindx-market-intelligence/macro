@@ -16,8 +16,9 @@ shape for Technology exists only as the PROPOSED §8 profile mapping
   ``payload["definition_version"] == registration.definition_version`` — hold
   by construction;
 * documents the §8 dependency by execution: ``registration_entry_or_refusal``
-  lazily imports the shell and, when it appears, holds a ``company_profile``
-  entry that has no theme anchor and no slices
+  lazily imports the shell pair (``theme_research_registry.VerticalRegistration``
+  and ``theme_research_binding.ResearchRefusal``) and, when both appear, holds
+  a ``company_profile`` entry that has no theme anchor and no slices
   (``vertical_registration_held:company_profile``) BEFORE constructing
   ``VerticalRegistration``. A theme-registrable entry the shell refuses is
   reported as the shell's own exception type
@@ -31,7 +32,9 @@ access on the fields §8 names, so the shell's frozen dataclasses and the
 synthetic fixtures are accepted equally. Every shape this adapter EXPECTS from
 the bundle beyond the OwnerBundle field set is a PLACEHOLDER pinned to the §8
 adjudication and named in place: the ``as_known`` mapping on an identity
-result, the ``theme_ref`` key inside an assertion's ``scope`` section, the
+result, the ``theme_ref`` key inside an assertion's ``scope`` section
+(or ``canonical_theme_id`` when ``theme_ref`` is absent; differing values
+conflict), the
 native-ref entry carrying the run context, and the ``omissions`` -> coverage
 mapping. None is ever guessed past, defaulted or repaired.
 
@@ -175,24 +178,35 @@ def _refuse(code: str) -> NoReturn:
     raise TechnologyRegistrationRefusal(code)
 
 
-# --- the shared shell, imported lazily (NOT on this carrier base) ---------------
+# --- the shared shell, imported lazily ------------------------------------------
 
 _SHELL_REGISTRY_MODULE = "engine.market_ontology.theme_research_registry"
+_SHELL_BINDING_MODULE = "engine.market_ontology.theme_research_binding"
+#: Vertical query owner for ``OwnerBundle`` / ``ResearchQuery``. Not the shell.
 _SHELL_SIBLING_MODULE = "engine.market_ontology.semiconductor_theme_research"
-#: The two module names whose OWN absence means "shell not on this carrier" —
-#: a ``ModuleNotFoundError`` naming anything else is a missing dependency of a
-#: PRESENT shell and propagates (see :func:`_import_shell_module`).
-_SHELL_MODULE_NAMES = frozenset({_SHELL_REGISTRY_MODULE, _SHELL_SIBLING_MODULE})
+#: Registration "shell present" is this pair, never the semiconductor module.
+SHARED_SHELL_MODULES: tuple[str, str] = (
+    _SHELL_REGISTRY_MODULE,
+    _SHELL_BINDING_MODULE,
+)
+#: Module names whose OWN absence is typed unavailable rather than raised.
+#: A ``ModuleNotFoundError`` naming anything else is a missing dependency of a
+#: present module and propagates (see :func:`_import_shell_module`).
+_SHELL_MODULE_NAMES = frozenset({
+    _SHELL_REGISTRY_MODULE,
+    _SHELL_BINDING_MODULE,
+    _SHELL_SIBLING_MODULE,
+})
 
 
 def _import_shell_module(name: str) -> Any:
-    """Import one shared-shell module, treating ``ModuleNotFoundError`` as
-    absence ONLY when the missing module IS ``name`` (``exc.name`` matches one
-    of the two shell module names): a ``ModuleNotFoundError`` raised from
-    INSIDE a present shell — a missing third-party dependency of the shell
-    itself — carries a different ``exc.name`` and propagates, so a broken
-    shell can never masquerade as ``shared_shell_unavailable``. A genuine
-    non-module ``ImportError`` from a present-but-broken shell propagates too."""
+    """Import one named module, treating ``ModuleNotFoundError`` as absence
+    ONLY when the missing module IS ``name`` (``exc.name`` matches one of
+    :data:`_SHELL_MODULE_NAMES`): a ``ModuleNotFoundError`` raised from INSIDE
+    a present module — a missing third-party dependency — carries a different
+    ``exc.name`` and propagates, so a broken module can never masquerade as
+    ``shared_shell_unavailable``. A genuine non-module ``ImportError`` from a
+    present-but-broken module propagates too."""
     try:
         return importlib.import_module(name)
     except ModuleNotFoundError as exc:
@@ -202,42 +216,40 @@ def _import_shell_module(name: str) -> Any:
 
 
 def _resolve_vertical_registration() -> Any:
-    """The REGISTRATION-ONLY resolver: the ``VerticalRegistration`` symbol from
-    the registry module, or ``None`` when the module or the symbol is absent.
-    The registration path (:func:`registration_entry_or_refusal`) depends on
-    VerticalRegistration alone — gating it on the sibling module's
-    ``OwnerBundle``/``ResearchQuery`` symbols would type
-    ``shared_shell_unavailable`` while the registry module is present, and
-    the hold this tree implements would never run. That hold is
-    ``vertical_registration_held:company_profile``, raised before
-    construction when the facts lack a string ``anchor_theme_id`` or have
-    empty ``slice_keys``. The pinned round-trip
-    ``test_shared_shell_registration_roundtrip_pinned_to_7870`` asserts the
-    hold against an injected registry and keeps constructor calls empty;
-    480eb2bd removed the strict xfail on that round-trip. The full
-    three-symbol resolver below is NOT kept for production
-    consumers — it has none today, only the tests call it; it is kept as the
-    pinned three-symbol shape of the §8 binding."""
-    registry = _import_shell_module(_SHELL_REGISTRY_MODULE)
-    if registry is None:
+    """Registration gate. Returns ``VerticalRegistration`` only when both
+    modules in :data:`SHARED_SHELL_MODULES` import and expose their symbols:
+    ``VerticalRegistration`` on the registry and ``ResearchRefusal`` on the
+    binding. Either module or either symbol absent returns ``None`` (the
+    caller raises ``shared_shell_unavailable``). The semiconductor module is
+    not consulted here. The company_profile hold
+    (``vertical_registration_held:company_profile``) runs only after this
+    returns a class, and it runs before construction when the facts lack a
+    string ``anchor_theme_id`` or have empty ``slice_keys``."""
+    registry = _import_shell_module(SHARED_SHELL_MODULES[0])
+    binding = _import_shell_module(SHARED_SHELL_MODULES[1])
+    if registry is None or binding is None:
         return None
-    return getattr(registry, "VerticalRegistration", None)
+    vertical_registration = getattr(registry, "VerticalRegistration", None)
+    research_refusal = getattr(binding, "ResearchRefusal", None)
+    if vertical_registration is None or research_refusal is None:
+        return None
+    return vertical_registration
 
 
 def _load_shared_shell() -> tuple[Any, Any, Any] | None:
-    """Lazily import the #7870 shared shell and return
-    ``(VerticalRegistration, OwnerBundle, ResearchQuery)``, or ``None`` when
-    either module or any of the three symbols is absent — this carrier base
-    carries neither module, and a partially-present shell is typed unavailable,
-    never a silent half-binding. No shell type is copied into this branch.
-    Absence means ONLY the two shell module names themselves
-    (:func:`_import_shell_module`); a missing dependency of a present shell
-    and any other import failure propagate. No production consumer exists —
-    only the tests call it; it stays as the pinned three-symbol shape for the
-    §8 binding, and the registration path does NOT use it (it needs only
-    VerticalRegistration and resolves it through
-    :func:`_resolve_vertical_registration` so sibling-symbol drift cannot
-    skip the company_profile hold)."""
+    """Return ``(VerticalRegistration, OwnerBundle, ResearchQuery)``, or
+    ``None`` when either module or any of the three symbols is absent.
+
+    ``OwnerBundle`` and ``ResearchQuery`` come from
+    ``engine.market_ontology.semiconductor_theme_research``, the vertical query owner,
+    not the shell. The registration shell is
+    :data:`SHARED_SHELL_MODULES`, resolved by
+    :func:`_resolve_vertical_registration`. No production consumer exists —
+    only the tests call this three-symbol shape. Absence means ONLY the
+    named module names themselves (:func:`_import_shell_module`); a missing
+    dependency of a present module and any other import failure propagate.
+    Sibling-symbol drift here does not skip the company_profile hold: the
+    registration path does not call this function."""
     registry = _import_shell_module(_SHELL_REGISTRY_MODULE)
     semiconductor = _import_shell_module(_SHELL_SIBLING_MODULE)
     if registry is None or semiconductor is None:
@@ -333,8 +345,9 @@ def _validate_query_and_resolve(query: Any, bundle: Any) -> str:
 
 def _theme_ref_from_assertions(assertions: list[Any]) -> str | None:
     """The ONE accepted theme id carried by the bundle's assertions' scope
-    sections (PLACEHOLDER key ``theme_ref``, pinned to the §8 adjudication).
-    Zero or conflicting ids are both "no accepted theme id" — never a pick."""
+    sections. ``theme_ref`` or, when that key is absent, ``canonical_theme_id``.
+    Zero ids, a within-scope disagreement, or two different ids are all
+    "no accepted theme id" — never a pick by tuple order."""
     theme_ids: set[str] = set()
     for assertion in assertions:
         if not isinstance(assertion, Mapping):
@@ -343,8 +356,14 @@ def _theme_ref_from_assertions(assertions: list[Any]) -> str | None:
         if not isinstance(scope, Mapping):
             continue
         theme_ref = scope.get("theme_ref")
-        if isinstance(theme_ref, str) and theme_ref:
-            theme_ids.add(theme_ref)
+        canonical = scope.get("canonical_theme_id")
+        theme_ok = isinstance(theme_ref, str) and bool(theme_ref)
+        canonical_ok = isinstance(canonical, str) and bool(canonical)
+        if theme_ok and canonical_ok and theme_ref != canonical:
+            return None
+        chosen = theme_ref if theme_ok else canonical if canonical_ok else None
+        if isinstance(chosen, str) and chosen:
+            theme_ids.add(chosen)
     if len(theme_ids) != 1:
         return None
     return next(iter(theme_ids))
@@ -591,6 +610,18 @@ def validate_evidence_envelope(payload: Mapping[str, Any]) -> None:
         _refuse(f"evidence_schema_violation: {path}")
 
 
+def _evidence_source_object_id(source: Mapping[str, Any]) -> Any:
+    """Match key for one assertion source.
+
+    ``object_id`` when that key is present and not null. ``retention_ref``
+    only when ``object_id`` is absent. Callers still require the string to be
+    cited by the composed dossier. ``selector`` is not read.
+    """
+    if "object_id" in source and source.get("object_id") is not None:
+        return source.get("object_id")
+    return source.get("retention_ref")
+
+
 def select_evidence(query: Any, bundle: Any, assertion_ref: Any) -> dict[str, Any]:
     """Return the closed evidence envelope for ONE authorized assertion.
 
@@ -599,6 +630,9 @@ def select_evidence(query: Any, bundle: Any, assertion_ref: Any) -> dict[str, An
     assertion in the bundle carries that source object_id — two or more
     carrying it share the same refusal as zero, so no pick by tuple order and
     the envelope can never hand out an assertion the dossier never rendered.
+    When ``source.object_id`` is absent, ``source.retention_ref`` is that
+    object id, and only when the string is in the cited set. A source that
+    already carries ``object_id`` keeps that match. ``selector`` is not a key.
     Unknown, not-selected and ambiguous refs share the ONE code
     ``not_available`` — no existence disclosure. Never fetches, never
     dereferences a locator, never widens beyond the bundle.
@@ -636,7 +670,7 @@ def select_evidence(query: Any, bundle: Any, assertion_ref: Any) -> dict[str, An
         assertion for assertion in getattr(bundle, "assertions", None) or ()
         if isinstance(assertion, Mapping)
         and isinstance(assertion.get("source"), Mapping)
-        and assertion["source"].get("object_id") == assertion_ref
+        and _evidence_source_object_id(assertion["source"]) == assertion_ref
     ]
     if len(matches) != 1 or assertion_ref not in _cited_source_object_ids(payload):
         _refuse("not_available")
@@ -715,20 +749,14 @@ _VERTICAL_REGISTRATION_FIELDS: tuple[str, ...] = (
     "title_en", "title_zh", "note_en", "note_zh",
 )
 
-#: Typed HOLD code. On this tree
-#: ``engine.sector_intelligence.finance_research_registration.registration_entry_or_refusal``
-#: does not emit a held code: once its shell class resolves it constructs
-#: ``VerticalRegistration`` and propagates ``TypeError`` (any other
-#: exception becomes ``vertical_registration_refused:<ExcType>``).
-#: Technology holds before construction. The shared shell keys every
-#: registration on a canonical ``anchor_theme_id`` plus a non-empty
-#: ``slice_keys`` tuple;
-#: Technology's §8 facts are a ``company_profile`` with no theme anchor and
-#: no slices, so Technology is NOT registered on the shell. The hold is
-#: raised BEFORE the shell constructor is reached, so it names the real
-#: cause (entry_kind semantics still pending) rather than whatever
-#: structural gap the constructor would report. Retired only by the §8
-#: company_profile migration that supplies accepted anchor/slice semantics.
+#: Typed HOLD code this adapter implements. The shell keys every registration
+#: on a canonical ``anchor_theme_id`` plus a non-empty ``slice_keys`` tuple.
+#: Technology's facts are a ``company_profile`` with neither, so
+#: :func:`registration_entry_or_refusal` raises
+#: ``vertical_registration_held:company_profile`` BEFORE constructing
+#: ``VerticalRegistration``. The hold names that entry_kind gap rather than
+#: whatever structural gap the constructor would report. Retired only by a
+#: company_profile migration that supplies accepted anchor and slice semantics.
 VERTICAL_REGISTRATION_HELD_COMPANY_PROFILE: str = (
     "vertical_registration_held:company_profile"
 )
@@ -749,9 +777,11 @@ def registration_entry_or_refusal(
     codes — neither the shell's refusal nor a bare ``ValueError`` leak
     through), in precedence order:
 
-    * ``shared_shell_unavailable`` — the shell is not on the carrier. This
-      is the state on origin/main until #7870 merges.
-    * ``vertical_registration_held:company_profile`` — the shell is present
+    * ``shared_shell_unavailable`` — ``VerticalRegistration`` and
+      ``ResearchRefusal`` are not both importable
+      (:data:`SHARED_SHELL_MODULES`). The semiconductor module is not this
+      check.
+    * ``vertical_registration_held:company_profile`` — both symbols import
       but ``facts`` carry no theme anchor / slices (the §8 ``company_profile``
       entry_kind is pending). Raised before any construction, so the hold
       is independent of the shell's field count.
@@ -766,11 +796,10 @@ def registration_entry_or_refusal(
     ``facts`` defaults to :data:`TECHNOLOGY_REGISTRATION_FACTS`; tests inject
     a theme-registrable double to exercise the construction branches.
 
-    Only ``VerticalRegistration`` is resolved here
-    (:func:`_resolve_vertical_registration`): the sibling module's
-    ``OwnerBundle``/``ResearchQuery`` symbols are the bundle/query consumers'
-    concern, and a shell that accepts a theme-registrable entry while those
-    symbols drift must not be typed ``shared_shell_unavailable``.
+    The gate is :func:`_resolve_vertical_registration`: both shell symbols
+    must import. The vertical query owner's ``OwnerBundle``/``ResearchQuery``
+    symbols are not this check, so drift there must not be typed
+    ``shared_shell_unavailable``.
     """
     vertical_registration = _resolve_vertical_registration()
     if vertical_registration is None:

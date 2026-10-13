@@ -1,0 +1,47 @@
+{# templates/_theme_research_mount.html.j2 — the basket page's theme-research entry.
+
+  Decides WHETHER a basket page mounts theme research, and emits the client
+  assets once; `_theme_research_section.html.j2` decides what the section
+  looks like. Neither file names a vertical: the builder passes
+  `theme_research_mount`, the nine-key context that
+  `engine.market_ontology.theme_research_mounts.mount_context_for_basket()`
+  returns for this basket, or nothing at all (shared hook 2).
+
+  Laws:
+    L4 — `theme_research_mount` absent, not a mapping, or missing any of its
+         nine keys → silent: no mount, no assets, no empty shell. A page that
+         cannot say which vertical it is mounting mounts nothing. The section
+         partial is included with `ignore missing` and its output is captured
+         first, so a checkout without that file emits no orphan asset tag
+         either — the incumbent page survives a missing vertical (L2).
+    L5 — Mount shape, asset URLs and API paths are pinned from the reviewed
+         f53c7c3845b3 lane (T10 part 1). Basket pages live under site/basket/,
+         hence the `../assets/...` prefix; the section stays hidden until an
+         entitled client response unhides it.
+    L6 — Every visible string flows through the section's `t('en','zh')`.
+    L7 — No analytical data, payload, figure, token or URL beyond the two
+         declared asset paths and the two API paths.
+#}
+{% set _m = theme_research_mount %}
+{% if _m is mapping %}
+  {% set _ok = namespace(value=1) %}
+  {% for _k in ['anchor_theme_id', 'slices', 'schema_id', 'evidence_schema_id',
+                'slice_labels_json', 'title_en', 'title_zh', 'note_en', 'note_zh'] %}
+    {% if not _m.get(_k) or _m.get(_k) is not string %}
+      {% set _ok.value = 0 %}
+    {% endif %}
+  {% endfor %}
+  {% for _c in _m.get('anchor_theme_id') or '' %}
+    {% if _c not in 'abcdefghijklmnopqrstuvwxyz0123456789_' %}
+      {% set _ok.value = 0 %}
+    {% endif %}
+  {% endfor %}
+  {% if _ok.value == 1 %}
+    {% set _section %}{% with tr_mount = _m %}{% include "_theme_research_section.html.j2" ignore missing %}{% endwith %}{% endset %}
+    {% if _section.strip() %}
+<link rel="stylesheet" href="../assets/css/theme-research.css">
+{{ _section }}
+<script defer src="../assets/js/theme-research.js?v=20260924b"></script>
+    {% endif %}
+  {% endif %}
+{% endif %}
