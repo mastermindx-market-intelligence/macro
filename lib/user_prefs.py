@@ -63,7 +63,13 @@ PREF_VALUES: dict[str, tuple[str, ...]] = {
 }
 
 #: The closed set of alert categories a user may opt into (B-F08-1a).
-ALERT_CATEGORIES: tuple[str, ...] = ("holdings_material_change", "thesis_window")
+#: "fif_saved_issuer" — FIF saved-research issuer-watch notifications (X2-n):
+#: enqueue-only producer rows the alert drain filters on by payload category.
+ALERT_CATEGORIES: tuple[str, ...] = (
+    "holdings_material_change",
+    "thesis_window",
+    "fif_saved_issuer",
+)
 
 #: Every stored preference and its KIND. PREF_VALUES stays the enum sub-table.
 PREF_KINDS: dict[str, str] = {
