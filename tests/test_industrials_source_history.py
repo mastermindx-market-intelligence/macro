@@ -300,12 +300,10 @@ def test_ind_sf02() -> None:
     no number. The control is the same pair with GAAP on both sides, which
     certifies growth ``10``: the refusal is the missing basis.
 
-    Measured separately, and not asserted here: the literal token
-    ``accounting="unknown"`` is treated as present by
-    ``industrials_result_cash._all_basis_present`` and ``derive_result_cash``
-    returns ``status=ready``, ``value=10``. That file is outside this lane's
-    allowed edits. ``assess_dossier_comparison`` is also absent, so this guard
-    pins the qualifier the dossier comparison would have to pass through.
+    The literal token ``accounting="unknown"`` is the same refusal, pinned by
+    ``test_ind_sf02_unknown_accounting_token_refuses``. ``assess_dossier_comparison``
+    is absent, so this guard pins the qualifier the dossier comparison would
+    have to pass through.
     """
     lack_shapes = (
         {"recast": "as_reported"},
@@ -366,6 +364,47 @@ def test_ind_sf02() -> None:
     ok = derive_result_cash("growth_pct", ok_cells, comparison_receipt=ok_receipt)
     assert ok["status"] == "ready", ok
     assert ok["value"] == "10", ok
+
+
+def test_ind_sf02_unknown_accounting_token_refuses() -> None:
+    """IND-SF02 literal token: ``accounting="unknown"`` is not a basis.
+
+    Both operands carry the token, recast is present, and every receipt gate
+    is checked. That probe must refuse with ``required_basis_unknown`` and
+    publish no number. A truthy token must not certify growth ``10``.
+    """
+    basis = {"accounting": "unknown", "recast": "as_reported"}
+    cells = [
+        cell(
+            "110",
+            metric="revenue_current",
+            owner_ref="synthetic:cell:sf02-current",
+            basis=basis,
+        ),
+        cell(
+            "100",
+            metric="revenue_prior",
+            owner_ref="synthetic:cell:sf02-prior",
+            basis=basis,
+        ),
+    ]
+    receipt = build_comparison_receipt(
+        "year_over_year", cells, checked=_CHECKED_ALL
+    )
+    qualified = qualify_operands(
+        "year_over_year",
+        cells,
+        comparison_receipt=receipt,
+        formula="growth_pct",
+    )
+    derived = derive_result_cash(
+        "growth_pct", cells, comparison_receipt=receipt
+    )
+    assert qualified["status"] == "refused", qualified
+    assert "required_basis_unknown" in qualified["limitations"], qualified
+    assert derived["status"] == "refused", derived
+    assert derived["value"] is None, derived
+    assert "required_basis_unknown" in derived["limitations"], derived
 
 
 @pytest.mark.xfail(

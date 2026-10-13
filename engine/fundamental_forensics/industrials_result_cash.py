@@ -528,7 +528,9 @@ def _operand_ref_payload(op: _Operand) -> dict[str, str]:
 def _all_basis_present(operands: Sequence[_Operand]) -> bool:
     for op in operands:
         basis = op.basis or {}
-        if not basis.get("accounting"):
+        # "unknown" is truthy, so a bare get() would treat the token as a basis.
+        accounting = basis.get("accounting")
+        if not accounting or accounting == "unknown":
             return False
         if "recast" not in basis:
             return False
