@@ -71,10 +71,12 @@ ISO_DATE_RE = re.compile(r"\d{4}-\d{2}-\d{2}")
 VALID_UNTIL_RE = re.compile(
     r"(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2})(\.\d+)?(Z|[+-]\d{2}:\d{2}|[+-]\d{4})\Z"
 )
+# A CSS or JS function call such as polygon(...) is not the banned word.
+# The word still matches in text, attributes, and comments.
 VENDOR_RE = re.compile(
     r"(?i)(?<!<)(?<![A-Za-z0-9])"
     r"(?:yfinance|yahoo|tushare|polygon|massive)"
-    r"(?![A-Za-z0-9])"
+    r"(?![A-Za-z0-9(])"
 )
 
 
@@ -560,6 +562,8 @@ def _check_c6(dialog: Node | None, html: str) -> tuple[bool, str]:
     if dialog_hits:
         names = ", ".join(sorted({hit.lower() for hit in dialog_hits}))
         return False, f"{detail}; names={names}"
+    if page_hits:
+        return False, detail
     return True, detail
 
 

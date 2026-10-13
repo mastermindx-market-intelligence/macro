@@ -109,7 +109,8 @@ def test_active_us_passes_with_and_without_require_active(tmp_path):
     assert receipt["metrics"]["worst"] == f"{MINUS}7.4%"
     assert receipt["metrics"]["rebound"] == "+0.6%"
     assert "12" in receipt["metrics"]["age"]
-    assert "whole_page_count=" in next(c["detail"] for c in receipt["checks"] if c["id"] == "C6")
+    c6 = next(c["detail"] for c in receipt["checks"] if c["id"] == "C6")
+    assert "whole_page_count=0" in c6
     rc_active, receipt_active, _page = _run(tmp_path, html, "us", "--require-active")
     assert rc_active == 0 and receipt_active["pass"] is True
 
@@ -178,6 +179,40 @@ def test_digit_in_forecast_row_fails_only_c5(tmp_path):
     rc, receipt, _page = _run(tmp_path, html, "cn")
     assert rc == 1
     assert _failed(receipt) == ["C5"]
+
+
+def test_vendor_token_outside_the_dialog_fails_c6(tmp_path):
+    """G5: a banned token anywhere on the page fails, even with dialog_hits=0."""
+    html = _active_cn() + "<!-- Massive -->"
+    rc, receipt, _page = _run(tmp_path, html, "cn")
+    assert rc == 1
+    assert _failed(receipt) == ["C6"]
+    detail = next(item["detail"] for item in receipt["checks"] if item["id"] == "C6")
+    assert detail == "dialog_hits=0; whole_page_count=1"
+
+
+def test_css_polygon_function_is_not_a_vendor_token(tmp_path):
+    """G6: clip-path:polygon(...) is a CSS function, not a banned token."""
+    html = _active_cn() + '<style>.mark{clip-path:polygon(50% 0,100% 100%,0 100%)}</style>'
+    rc, receipt, _page = _run(tmp_path, html, "cn")
+    assert rc == 0, [(c["id"], c["detail"]) for c in receipt["checks"] if not c["pass"]]
+    detail = next(item["detail"] for item in receipt["checks"] if item["id"] == "C6")
+    assert "whole_page_count=0" in detail
+
+
+def test_polygon_word_in_body_fails_c6(tmp_path):
+    """G6: the word Polygon in body text still fails C6, in any case."""
+    html = _active_cn() + "<p>Polygon</p>"
+    rc, receipt, _page = _run(tmp_path, html, "cn")
+    assert rc == 1
+    assert _failed(receipt) == ["C6"]
+    detail = next(item["detail"] for item in receipt["checks"] if item["id"] == "C6")
+    assert "dialog_hits=0" in detail
+    assert "whole_page_count=1" in detail
+    html_lower = _active_cn() + "<p>polygon</p>"
+    rc_lower, receipt_lower, _page = _run(tmp_path, html_lower, "cn")
+    assert rc_lower == 1
+    assert _failed(receipt_lower) == ["C6"]
 
 
 def test_vendor_name_in_dialog_fails_only_c6(tmp_path):
