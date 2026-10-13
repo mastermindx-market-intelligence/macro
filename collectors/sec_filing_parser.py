@@ -41,7 +41,12 @@ SEC_FILING_PARSER_VERSION = "1"
 # on previously accepted inputs holds by construction - the new predicate
 # runs only on the path that used to raise - and the 132/132 corpus byte
 # identity was checked out of band by the D1-ext lane; its receipts live on
-# the lane host, not in git.  Refusal verdicts are not fingerprint-bound;
+# the lane host, not in git.  The one exception to "strict superset": D1X-5
+# (PR #9095) narrowed that widening under this same fingerprint - a member
+# carrying ANY element whose local name casefolds to ``base`` (any namespace;
+# previously only an exact-case XHTML ``base``) now refuses where a pre-D1X-5
+# build admits it.  The 140-file corpus census found 0 such members, so no
+# accepted output changed.  Refusal verdicts are not fingerprint-bound;
 # they are bound by the committed ``_VERDICT_PIN`` in
 # tests/test_fif_gsrc_capture.py, regenerated in the same PR.  Runtime
 # library versions are observed provenance and must not invalidate retained
@@ -82,7 +87,7 @@ SUPPORTED_TRANSFORMS: Mapping[str, str] = {
 
 _HARD_LIMITS = MappingProxyType({
     "max_bytes": 32 * 1024 * 1024,
-    "max_nodes": 200_000,
+    "max_nodes": 300_000,
     "max_depth": 128,
     "max_attributes_per_element": 256,
     "max_total_attributes": 500_000,
@@ -94,16 +99,16 @@ _HARD_LIMITS = MappingProxyType({
     "max_total_namespace_bytes": 8 * 1024 * 1024,
     "max_text_bytes": 16 * 1024 * 1024,
     "max_text_events": 100_000,
-    "max_fact_text_bytes": 1 * 1024 * 1024,
+    "max_fact_text_bytes": 2 * 1024 * 1024,
     "max_contexts": 5_000,
     "max_units": 2_000,
-    "max_facts": 10_000,
+    "max_facts": 12_000,
     "max_continuations": 10_000,
-    "max_continuation_chain": 16,
+    "max_continuation_chain": 32,
     "max_dimensions_per_context": 256,
     "max_measures_per_unit": 256,
     "max_abs_scale": 308,
-    "max_output_bytes": 24 * 1024 * 1024,
+    "max_output_bytes": 64 * 1024 * 1024,
     "max_metadata_bytes": 16 * 1024,
 })
 # Public immutable admission profile.  A deployment may replace the mapping
@@ -567,9 +572,10 @@ def _is_same_document_fragment_href(
 ) -> bool:
     """Admit exactly one base-URI-free shape inside escaped nonNumeric markup.
 
-    A document carrying any ``xml:base`` attribute or any XHTML ``base``
-    element can redirect a fragment to another resource, so such a document
-    never qualifies.
+    A document carrying any ``xml:base`` attribute, or any element whose local
+    name casefolds to ``base`` in any namespace, is treated as able to redirect
+    a fragment to another resource (fail closed), so such a document never
+    qualifies.
     """
     return (
         not document_base_changed
@@ -602,7 +608,7 @@ def _escaped_nonnumeric_markup(
     ``#`` plus an ASCII name that is the ``id`` of exactly one element in this
     member - which needs no base URI, so its markup is retained unchanged,
     and only when the member carries no base-changing construct (``xml:base``
-    anywhere, or an XHTML ``base`` element).
+    anywhere, or any element whose local name casefolds to ``base``).
     """
     chunks: list[bytes] = []
 
@@ -1879,7 +1885,7 @@ def parse_sec_filing_document(content: bytes, *, document_name: str) -> dict[str
     for node in nodes:
         if "id" in node.attrs:
             document_ids[node.attrs["id"]] += 1
-        if _XML_BASE_ATTRIBUTE in node.attrs or (node.namespace == XHTML and node.local == "base"):
+        if _XML_BASE_ATTRIBUTE in node.attrs or node.local.casefold() == "base":
             document_base_changed = True
     if any(
         node.namespace in LEGACY_IX_NAMESPACES or IX10 in node.namespaces.values()

@@ -1,0 +1,19 @@
+--- templates/vector.html.j2
++++ templates/vector.html.j2
+@@ -633,7 +633,7 @@
+                 <h3>{% if flow_state == 'available' %}{{ t('Participation observed','成交参与度已观测') }}{% elif flow_state == 'stale' %}{{ t('Stale observations','观测已过期') }}{% elif flow_state == 'coverage_gap' %}{{ t('Incomplete 24-hour window','24 小时窗口不完整') }}{% elif flow_state == 'no_activity' %}{{ t('No activity observed','未观测到成交活动') }}{% else %}{{ t('Activity unavailable','成交活动暂不可用') }}{% endif %}</h3>
+                 <p>{% if flow_state == 'available' %}{{ t('Buy-side share of reported aggressive volume. Not spot flow or a trading signal.','报告的主动成交量中买方占比。并非现货资金流，也不是交易信号。') }}{% elif flow_state == 'stale' %}{{ t('The stored window is too old for a current activity reading. Its timestamps remain inspectable.','存储窗口过旧，不能作为当前成交活动读数。仍可查看其时间戳。') }}{% elif flow_state == 'coverage_gap' %}{{ t('Missing observations are not zero selling or neutral activity. The current share is withheld.','缺失观测不等于零卖盘或中性活动。当前占比暂不展示。') }}{% elif flow_state == 'no_activity' %}{{ t('A complete window reports no volume. A buy-side percentage would be undefined, not 0%.','完整窗口报告零成交量。买方占比没有定义，并非 0%。') }}{% else %}{{ t('A usable source snapshot is not available. Bitcoin research and model allocation remain separate.','暂无可用的来源快照。比特币研究与模型仓位仍独立呈现。') }}{% endif %}</p>
+               </div>
+-              <div class="flow-share" data-flow-share><div class="flow-share-value">{% if flow_state == 'available' %}{{ '%.1f'|format(flow.buy_share_pct) }}<span>%</span>{% else %}—{% endif %}</div><div>{{ t('24h buy-side share','24 小时买方占比') }}</div></div>
++              <div class="flow-share" data-flow-share><div class="flow-share-value">{% if flow_state == 'available' %}{{ '%.1f'|format(flow.buy_share_pct) }}<span>%</span>{% else %}—{% endif %}</div><div>{{ t('24h buy-side share','24 小时买方占比') }}</div><div data-flow-scope>{{ t('Venue OKX · instrument BTC derivatives · unit unavailable','场所 OKX · 品种 BTC 衍生品 · 单位暂不可用') }}</div></div>
+             </div>
+             <details class="flow-evidence" data-flow-evidence>
+               <summary>{{ t('Inspect coverage & source','查看覆盖与来源') }}</summary>
+@@ -642,6 +642,7 @@
+                 <div><dt>{{ t('Evaluated · UTC','评估时间 · UTC') }}</dt><dd>{{ flow.evaluated_at or '—' }}</dd></div>
+                 <div><dt>{{ t('24h / 72h label coverage','24 / 72 小时标签覆盖') }}</dt><dd>{% if flow.window_24h_complete %}{{ t('Complete','完整') }}{% else %}{{ t('Unavailable','不可用') }}{% endif %} / {% if flow.window_72h_complete %}{{ t('Complete','完整') }}{% else %}{{ t('Unavailable','不可用') }}{% endif %}</dd></div>
+                 <div><dt>{{ t('Contiguous observations','连续观测数') }}</dt><dd>{{ flow.n_hours if flow.n_hours is defined and flow.n_hours is not none else '—' }}</dd></div>
++                <div><dt>{{ t('Elapsed coverage','已覆盖时长') }}</dt><dd data-elapsed-coverage>{% if flow.elapsed_coverage %}{{ flow.elapsed_coverage.rows }} {{ t('rows','行') }} · {{ flow.elapsed_coverage.first_ts }} – {{ flow.elapsed_coverage.last_ts }} · {{ flow.elapsed_coverage.elapsed_hours }} {{ t('hours','小时') }} · {% if flow.elapsed_coverage.completeness == 'complete' %}{{ t('complete','完整') }}{% elif flow.elapsed_coverage.completeness == 'incomplete' %}{{ t('incomplete','不完整') }}{% else %}{{ t('unavailable','不可用') }}{% endif %}{% else %}{{ t('unavailable','不可用') }}{% endif %}</dd></div>
+               </dl>
+               <p>{{ t('Source scope: OKX BTC aggregate derivatives. Absolute units, bucket finality and provider first-publication time are not established. Complete labels are not proof of historical availability.','来源范围：OKX BTC 汇总衍生品。绝对单位、时间桶最终性与提供商首次发布时间尚未确定。标签完整不证明历史上已可获得。') }}</p>
+               {% if flow.historical_gap %}<p>{{ t('Earlier history contains missing or invalid observations; current coverage uses the latest contiguous segment only.','早期历史存在缺失或无效观测；当前覆盖仅使用最近的连续片段。') }}</p>{% endif %}
