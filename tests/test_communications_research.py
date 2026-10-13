@@ -996,3 +996,83 @@ def test_result_reason_is_a_closed_enum():
     payload = cr.compose_communications_payload((company(),))
     payload['projection']['panels'][0]['measures'][0]['comparison']['reason'] = 'not-a-reason'
     assert cr._view_validator().is_valid(payload) is False
+
+
+def _qualified_magnite_view():
+    payload = cr.compose_communications_payload((accounting_magnite(),))
+    group = payload['projection']['panels'][3]['accounting'][0]
+    view = group['views'][0]
+    assert view['result']['status'] == 'QUALIFIED'
+    return payload, group, view
+
+
+def test_qualified_magnite_view_with_null_outputs_raises_claim_input_error():
+    """Schema allows null outputs; the link check must still refuse them.
+
+    A non-refusal accounting view stores both outputs. Nulling them on a
+    qualified magnite payload is schema-valid and used to raise TypeError
+    inside validate_view instead of ClaimInputError.
+    """
+    payload, _group, view = _qualified_magnite_view()
+    view['current_output'] = None
+    view['prior_output'] = None
+    assert cr._view_validator().is_valid(payload)
+    with pytest.raises(ClaimInputError, match='^INVALID_CLAIM_VIEW$'):
+        cr.validate_view(payload)
+
+
+def test_qualified_magnite_view_with_empty_contributions_raises_claim_input_error():
+    """Empty contributions are schema-legal and must not validate as support.
+
+    accounting_bridge requires at least one term, so a composer success view
+    never emits []. A qualified magnite view reduced to the two output refs,
+    contributions [], and a null explanation used to pass validate_view.
+    """
+    payload, group, view = _qualified_magnite_view()
+    index = group['views'].index(view)
+    view['contributions'] = []
+    group['explanations'][index] = None
+    view['result']['refs'] = [view['current_output']['ref'], view['prior_output']['ref']]
+    assert cr._view_validator().is_valid(payload)
+    with pytest.raises(ClaimInputError, match='^INVALID_CLAIM_VIEW$'):
+        cr.validate_view(payload)
+
+
+def test_accounting_refusal_missing_output_roles_stays_one_incompatible_view():
+    """Magnite cost recipe with output_current and output_prior removed.
+
+    The four remaining binding refs are disjoint from the channels outcome
+    pair, so the refusal stays visible under two of those refs. No identifier
+    is synthesized, and the partial pair does not join the qualified group.
+    """
+    item = accounting_magnite()
+    baseline = compose_four_company_claims((item,))
+    cost = item.accounting_rules[0]
+    bindings = tuple(b for b in cost.comparison.bindings
+                     if b.role not in ('output_current', 'output_prior'))
+    assert [b.role for b in bindings] == [
+        'revenue_current', 'revenue_prior', 'derived_tac_current', 'derived_tac_prior']
+    broken = replace(cost, comparison=replace(cost.comparison, bindings=bindings))
+    item = replace(item, accounting_rules=(broken,) + item.accounting_rules[1:])
+    result = compose_four_company_claims((item,))
+    out = panel(result, 'magnite')
+    refused = [view for group in out.accounting for view in group.views
+               if view.result.status == 'INCOMPATIBLE']
+    qualified = [group for group in out.accounting
+                 if any(view.result.status == 'QUALIFIED' for view in group.views)]
+    refused_groups = [group for group in out.accounting if any(
+        view.result.status == 'INCOMPATIBLE' for view in group.views)]
+    assert len(refused) == 1
+    assert refused[0].result.reason == 'INPUT_BINDING_MISMATCH'
+    assert refused[0].current_output is None and refused[0].prior_output is None
+    assert refused[0].contributions == ()
+    assert len(qualified) == 1 and len(refused_groups) == 1
+    assert refused_groups[0].outcome_refs == (bindings[0].ref, bindings[1].ref)
+    assert refused_groups[0].outcome_refs != qualified[0].outcome_refs
+    assert set(refused_groups[0].outcome_refs) <= {b.ref for b in bindings}
+    assert result.headline_issuer_count == baseline.headline_issuer_count
+    payload = cr.compose_communications_payload((item,))
+    assert payload['binding_state'] == 'unbound'
+    wire_views = [view for group in payload['projection']['panels'][3]['accounting']
+                  for view in group['views']]
+    assert sum(view['result']['status'] == 'INCOMPATIBLE' for view in wire_views) == 1

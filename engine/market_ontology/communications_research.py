@@ -326,24 +326,34 @@ def _accounting_explanation(slot, view):
 
 
 def _refusal_outcome_refs(recipe, view):
-    """Identity of a refused recipe. Does not mint an id or admit outputs."""
+    """Identity of a refused recipe. Does not mint an id or admit outputs.
+
+    Returns (key, partial). partial is True when output_current and
+    output_prior are absent or not distinct and the key is two refs already
+    bound on the recipe. The caller drops that pair when it is another outcome.
+    """
     if view.outcome_refs:
-        return view.outcome_refs
+        return view.outcome_refs, False
     comparison = recipe.comparison
     if type(comparison) is not ComparisonRule or type(comparison.bindings) is not tuple:
-        return None
+        return None, False
     by_role = {}
+    ordered = []
     for binding in comparison.bindings:
         if type(binding) is InputBinding and _text(binding.ref):
             by_role.setdefault(binding.role, binding.ref)
+            if binding.ref not in ordered:
+                ordered.append(binding.ref)
     pair = (by_role.get('output_current'), by_role.get('output_prior'))
     if all(_text(ref) for ref in pair) and pair[0] != pair[1]:
-        return pair
-    return None
+        return pair, False
+    if len(ordered) >= 2:
+        return (ordered[0], ordered[1]), True
+    return None, False
 
 
 def _accounting_views(item, rows, observed):
-    grouped = {}
+    admitted = []
     for recipe in item.accounting_rules:
         comparison = recipe.comparison
         if (type(comparison) is not ComparisonRule or type(comparison.bindings) is not tuple
@@ -355,10 +365,8 @@ def _accounting_views(item, rows, observed):
             continue
         view = accounting_bridge(measures=tuple(observed[ref] for ref in refs), rule=recipe)
         if view.result.status in ('INCOMPATIBLE', 'UNAVAILABLE'):
-            key = _refusal_outcome_refs(recipe, view)
-            if key is None:
-                continue
-            grouped.setdefault(key, {})[view.result.rule_revision] = view
+            key, partial = _refusal_outcome_refs(recipe, view)
+            admitted.append((view, key, partial))
             continue
         if view.reconstructed_current is None or view.current_output is None or view.prior_output is None:
             continue
@@ -369,7 +377,14 @@ def _accounting_views(item, rows, observed):
                 or matching.current.ref != view.current_output.ref
                 or matching.prior.ref != view.prior_output.ref):
             continue
-        key = view.outcome_refs
+        admitted.append((view, view.outcome_refs, False))
+    # Outcome identities are fixed before a partial refusal key is accepted.
+    # Two existing binding refs must not join a group that already has one.
+    identified = {key for _view, key, partial in admitted if key is not None and not partial}
+    grouped = {}
+    for view, key, partial in admitted:
+        if key is None or (partial and key in identified):
+            continue
         grouped.setdefault(key, {})[view.result.rule_revision] = view
     groups = []
     for key, views in sorted(grouped.items()):
@@ -646,6 +661,13 @@ def _view_links_valid(projection):
                         return False
                     revisions.add(result['rule_revision'])
                     continue
+                # Non-refusal views name both outputs and at least one contribution.
+                # Null outputs are schema-legal; subscripting them raised TypeError.
+                # contributions.minItems stays 0, but [] plus the two output refs
+                # used to validate. accounting_bridge emits neither shape.
+                if (view['current_output'] is None or view['prior_output'] is None
+                        or not view['contributions']):
+                    return False
                 source_refs.update(result['refs'])
                 if (group['outcome_refs'] != [view['current_output']['ref'], view['prior_output']['ref']]
                         or view['result']['rule_revision'] in revisions):
