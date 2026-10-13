@@ -10279,3 +10279,11 @@
 {"id":"ob-2026-10-13-83e02a5033","from":"approved","to":"posting","at":"2026-10-13T20:08:02Z","actor":"publisher","note":"in-flight (pre-publish)","receipt":null}
 {"id":"ob-2026-10-13-83e02a5033","from":"posting","to":"posted","at":"2026-10-13T20:08:03Z","actor":"publisher","note":"published","receipt":{"backend":"buffer","external_id":"6ace8fa21044e5796a68e559","external_url":null,"at":"2026-10-13T20:07:49Z","booked_at":"2026-10-13T20:07:49Z"}}
 {"id":"ob-2026-10-13-813d3481f4","from":"approved","to":"quarantined","at":"2026-10-13T20:08:03Z","actor":"publisher","note":"orphaned context brief: alert is unresolved","receipt":null}
+{"id":"ob-2026-10-13-4cafd51760","from":"queued","to":"approved","at":"2026-10-13T20:13:23Z","actor":"publisher-autoapprove","note":"auto-approved (all gates passed)","receipt":null}
+{"id":"ob-2026-10-13-805aadf8df","from":"queued","to":"approved","at":"2026-10-13T20:13:24Z","actor":"publisher-autoapprove","note":"auto-approved (all gates passed)","receipt":null}
+{"id":"ob-2026-10-13-978ebf9600","from":"queued","to":"approved","at":"2026-10-13T20:13:24Z","actor":"publisher-autoapprove","note":"auto-approved (all gates passed)","receipt":null}
+{"id":"ob-2026-10-13-4cafd51760","from":"approved","to":"posting","at":"2026-10-13T20:13:30Z","actor":"publisher","note":"in-flight (pre-publish)","receipt":null}
+{"id":"ob-2026-10-13-4cafd51760","from":"posting","to":"posted","at":"2026-10-13T20:13:31Z","actor":"publisher","note":"published","receipt":{"backend":"buffer","external_id":"6ace90eb7421bce7059363bb","external_url":null,"at":"2026-10-13T20:13:22Z","booked_at":"2026-10-13T20:13:22Z"}}
+{"id":"ob-2026-10-13-805aadf8df","from":"approved","to":"quarantined","at":"2026-10-13T20:13:32Z","actor":"publisher","note":"fact fan-out: pct:breaking:C:-5.6 is the LEAD fact of ob-2026-10-13-83e02a5033 in the trailing 5 days","receipt":null}
+{"id":"ob-2026-10-13-978ebf9600","from":"approved","to":"posting","at":"2026-10-13T20:13:33Z","actor":"publisher","note":"in-flight (pre-publish)","receipt":null}
+{"id":"ob-2026-10-13-978ebf9600","from":"posting","to":"posted","at":"2026-10-13T20:13:34Z","actor":"publisher","note":"published","receipt":{"backend":"buffer","external_id":"6ace90ed5261af9af4906848","external_url":null,"at":"2026-10-13T20:13:22Z","booked_at":"2026-10-13T20:13:22Z"}}

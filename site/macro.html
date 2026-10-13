@@ -357,7 +357,7 @@
   <script src="logo_config.js?v=b37d33d3" defer></script>
   <script src="stock-logos.js?v=cc29be53" defer></script>
   <script src="live_config.js?v=52943e92" defer></script>
-  <script src="live.js?v=2464239d" defer></script>
+  <script src="live.js?v=1ba1e562" defer></script>
   <div class="nav-search">
     <span class="mag" aria-hidden="true"><svg viewBox="0 0 20 20" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="8.7" cy="8.7" r="5.6"></circle><path d="m12.9 12.9 4 4"></path></svg></span>
     <input type="text" autocomplete="off" aria-label="Search stocks"
@@ -6134,7 +6134,7 @@
 
 
 <section class="riskdlg-context" id="risk-envelope-band" aria-labelledby="gde-title"
-         data-bundle-id="627ae1bd04dc000b" data-settled-session="2026-10-12" data-coherence="MIXED">
+         data-bundle-id="8dfbadcd47c58395" data-settled-session="2026-10-12" data-coherence="MIXED">
   <div class="gde-head">
     <h3 id="gde-title"><span class="l-en">Market internals</span><span class="l-zh">市场内部</span></h3>
     <span class="gde-coherence">
@@ -6142,12 +6142,10 @@
     </span>
   </div>
   <div class="gde-reads">
-    <div class="gde-read" style="--gde-c: var(--ink-2)">
+    <div class="gde-read" style="--gde-c: var(--ink-3)">
       <span class="gde-q"><span class="l-en">Trend</span><span class="l-zh">趋势</span></span>
       <strong class="gde-a">
-        
-        <span class="l-en">Mixed</span><span class="l-zh">混合</span><span class="gde-arr" aria-hidden="true">▶</span>
-        
+        <span class="l-en">Unavailable</span><span class="l-zh">暂无读数</span>
       </strong>
     </div>
     <div class="gde-read" style="--gde-c: var(--ink-3)">
@@ -6167,7 +6165,7 @@
     
   
   <p class="gde-causes"><span class="l-en">Rates / inflation shock: building</span><span class="l-zh">利率/通胀冲击：积聚中</span></p>
-  
+  <p class="gde-input-caveat"><span class="l-en">Trend includes older inputs.</span><span class="l-zh">趋势读数含较早数据。</span></p>
   <script type="application/json" id="gde-context-copy">{"copy": {"ai_leaders": ["AI-hardware leaders", "AI\u786c\u4ef6\u9f99\u5934"], "checking": ["Checking stress", "\u538b\u529b\u5f85\u786e\u8ba4"], "coverage": {"FRESH": ["current session", "\u672c\u4ea4\u6613\u65e5"], "MISSING": ["not available", "\u6682\u65e0\u6570\u636e"], "STALE": ["older read", "\u8f83\u65e9\u8bfb\u6570"]}, "hazard": {"BREAKDOWN": ["Breakdown", "\u5df2\u7834\u4f4d"], "FRAGILE": ["Fragile", "\u8106\u5f31"], "NONE": ["No stress flagged", "\u672a\u89c1\u538b\u529b"], "TRANSMITTING": ["Stress spreading", "\u538b\u529b\u6269\u6563"]}, "hint": {"BREAKDOWN": ["Internal breakdown", "\u5185\u90e8\u7834\u4f4d"], "FRAGILE": ["Fragile internals", "\u5185\u90e8\u8106\u5f31"], "NONE": ["", ""], "TRANSMITTING": ["Stress spreading", "\u538b\u529b\u6269\u6563"]}, "live": ["Live stress", "\u5b9e\u65f6\u538b\u529b"], "live_missing": ["Live update unavailable; settled read shown.", "\u5b9e\u65f6\u66f4\u65b0\u4e0d\u53ef\u7528\uff0c\u663e\u793a\u6536\u76d8\u8bfb\u6570\u3002"], "live_pending": ["Live candidate", "\u5b9e\u65f6\u5f85\u786e\u8ba4"], "older_trend": ["Trend includes older inputs.", "\u8d8b\u52bf\u8bfb\u6570\u542b\u8f83\u65e9\u6570\u636e\u3002"], "partial_hint": ["Partial read", "\u8bfb\u6570\u4e0d\u5168"], "source": ["Tracked source", "\u8ffd\u8e2a\u6765\u6e90"], "source_missing": ["read unavailable", "\u6682\u65e0\u8bfb\u6570"], "source_states": {"BROKEN": ["damaged", "\u53d7\u635f"], "CRACKING": ["weakening", "\u8f6c\u5f31"], "HEALTHY": ["holding up", "\u7ef4\u6301\u7a33\u5b9a"], "WATCH": ["under watch", "\u9700\u5173\u6ce8"], "calm": ["quiet", "\u5e73\u7a33"], "caution": ["building", "\u79ef\u805a\u4e2d"], "elevated": ["elevated", "\u504f\u9ad8"], "risk-off": ["stressed", "\u627f\u538b"], "watch": ["under watch", "\u9700\u5173\u6ce8"]}, "unknown": ["Incomplete read", "\u6570\u636e\u4e0d\u5168"]}, "settled_stage": null}</script>
   <div class="gde-meta">
     <span class="gde-stamp"><span class="l-en">Settled</span><span class="l-zh">收盘</span> 2026-10-12</span>
@@ -6226,7 +6224,7 @@
                   <td class="tnum">MIXED · 50</td>
                   <td class="tnum">2026-10-12</td>
                   <td>
-                    <span class="l-en">This session</span><span class="l-zh">本交易日</span>
+                    <span class="gde-warn"><span class="l-en">Older than this session</span><span class="l-zh">早于本交易日</span></span>
                      <span class="gde-req"><span class="l-en">required</span><span class="l-zh">必需</span></span>
                   </td>
                 </tr>
@@ -6268,8 +6266,8 @@
           
 
           <p class="gde-receipt tnum">
-            grey-deer-v1-2026-08-19 · bundle 627ae1bd04dc000b ·
-            coverage DEGRADED ·
+            grey-deer-v1-2026-08-19 · bundle 8dfbadcd47c58395 ·
+            coverage STALE ·
             coherence MIXED (scope market_reads) ·
             stage null (required_coverage_unavailable) ·
             stage_since null (no_episode_lifecycle_in_v0) ·
@@ -12596,9 +12594,9 @@ The dominant driver is the chip-stock unwind. Confidence is low because market s
       
     </table>
     <p class="muted"><span class="l-en">A failed source never crashes the dashboard — affected signals just lose confidence until it heals.
-       Generated 2026-10-13 18:08 UTC · <a href="aibrief.html">AI daily brief</a> ·
+       Generated 2026-10-13 21:05 UTC · <a href="aibrief.html">AI daily brief</a> ·
        <a href="history.html">history & charts</a></span><span class="l-zh">数据源失败绝不会让仪表盘崩溃 — 受影响的信号只是降低置信度，直到其恢复。
-       生成于 2026-10-13 18:08 UTC · <a href="aibrief.html">AI每日简报</a> ·
+       生成于 2026-10-13 21:05 UTC · <a href="aibrief.html">AI每日简报</a> ·
        <a href="history.html">历史与图表</a></span></p>
   </details>
   
