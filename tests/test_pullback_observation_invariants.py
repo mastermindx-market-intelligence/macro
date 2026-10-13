@@ -896,9 +896,9 @@ def _assert_given_back_reclaim_is_listed_above_the_high(rows, obs):
 def test_recovering_close_above_the_reference_high_charts_the_positive_end():
     """A recovering close of 101 against a frozen high of 100 ends above zero.
 
-    The history row prints ``+1.0%``. The shared chart's end tag prints the
-    unsigned ``1.0%`` its ``{:z.1f}`` format emits for a positive value, and
-    the end point sits above the zero line.
+    The history row and the shared chart's end tag both print ``+1.0%``, so
+    a reclaim never reads as an unsigned drawdown, and the end point sits
+    above the zero line.
     """
     rows = to_rows([100.0] * 62 + [94.0, 97.0, 101.0])
     obs, view, soup, _html = _render_observation(rows)
@@ -914,14 +914,15 @@ def test_recovering_close_above_the_reference_high_charts_the_positive_end():
     assert soup.select_one('[data-metric="current"]').get_text(strip=True) == "+1.0%"
     water, points, texts = _chart_points(view["detail_chart_html"])
     assert points[-1][1] < water
-    assert texts == ["0", "2024-03-27", "2024-04-01", "1.0%"]
+    assert texts == ["0", "2024-03-27", "2024-04-01", "+1.0%"]
     assert "0.0%" not in soup.select_one(".ilx-tag").get_text()
 
 
-# Rendered on BASE before the unclipped path, for a decline that never
-# clears the frozen high. The history cell's negative branch is unchanged,
-# so this fragment stays byte-identical.
-_NEVER_EXCEEDS_SHA256 = "03b36543bb30c3f762a32c860a6a5fa1ef556209214aa9e25ce16392b470776f"
+# Rendered after the copy and retrace-label change, before the unclipped
+# path, for a decline that never clears the frozen high. Neither the
+# history cell's negative branch nor the chart's unsigned end tag changes
+# for this shape, so the unclipped path keeps this fragment byte-identical.
+_NEVER_EXCEEDS_SHA256 = "05672a5aa1319da1e7f37400d2638c1c8b3b4223484538337be583579b402d34"
 
 
 def test_underway_path_that_never_exceeds_the_high_matches_the_base_render():
