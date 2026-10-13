@@ -1,0 +1,160 @@
+{
+  "authority": {
+    "can_escalate": false,
+    "can_gate": false,
+    "can_originate_signal": false,
+    "can_rank": false,
+    "can_size": false
+  },
+  "basis_admission": "UNAVAILABLE_EXISTING_OWNER_FACTOR_EVIDENCE_ABSENT",
+  "checks": {
+    "a_b_a_revision_sequence": true,
+    "credentials_excluded_from_store": true,
+    "earlier_unavailable_frame_byte_invariance": true,
+    "fractional_volume_preserved": true,
+    "future_intact_payload_versions_isolated_before_enrollment_and_cutoff": true,
+    "future_invalid_semantics_refused_when_visible": true,
+    "future_semantic_mutation_isolated": true,
+    "late_first_read_conflict_preserved": true,
+    "latest_15m_remains_unavailable": true,
+    "partial_failure_not_promoted": true,
+    "partial_failure_preserves_chart_projection": true,
+    "phase1_admission_file_unchanged": true,
+    "producer_atomic_store_reader_selector": true,
+    "protected_historical_proofs_and_selector_unchanged": true,
+    "raw_acquisition_preserves_every_chart_field": true,
+    "raw_chart_compaction_baselines_independent": true,
+    "raw_first_seen_and_revision_identity_preserved": true,
+    "scalar_basis_inheritance_removed": true,
+    "source_rows_remain_basis_unproven": true,
+    "suppressed_capture_does_not_reexpand": true,
+    "untrusted_binding_claims_cannot_relabel": true,
+    "v1_v2_original_rows_and_receipts_exact": true,
+    "v3_both_roles_request_and_page_provenance": true,
+    "visible_unsupported_and_downgraded_payload_versions_refused": true
+  },
+  "clock_basis": "injected source and reader clocks; no market availability claim",
+  "complete_captures": 3,
+  "declaration_episode_control": {
+    "basis_available": false,
+    "retained_counts": [
+      30,
+      30,
+      30,
+      0
+    ],
+    "states": [
+      "FALSE",
+      "TRUE",
+      "FALSE",
+      "FALSE"
+    ]
+  },
+  "historical_conformance_sha256": "2b5b86eeba28d0a0ae7064e3cf680be7fe62bb61730fbee3aaa870db160fe27c",
+  "input_kind": "SYNTHETIC_CONFORMANCE",
+  "legacy_prefix_control": {
+    "v1": {
+      "basis_available": false,
+      "original_record_unchanged": true,
+      "original_row_receipts_replay": true,
+      "retained_counts": [
+        30,
+        30
+      ]
+    },
+    "v2": {
+      "basis_available": false,
+      "original_record_unchanged": true,
+      "original_row_receipts_replay": true,
+      "retained_counts": [
+        30,
+        0
+      ]
+    }
+  },
+  "operation": "rs-pullback-launch-unadjusted-capture-20261007-sol-007",
+  "parent": "WS:LIVE-ENTRY-RADAR",
+  "phase1_admission": "NOT_ADMITTED",
+  "phase1_admission_sha256": "a4e00a5c191917dc8c64fb74ca3348827ab9bd47d9ad8a03a1130a50fde36e9f",
+  "producer_exit_codes": [
+    0,
+    0,
+    0,
+    1,
+    1,
+    0,
+    1,
+    1,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    1,
+    0,
+    0
+  ],
+  "protected_source_sha256": {
+    "engine/entry_radar/replay/rs_pullback_launch_data.py": "c7b3ea3fada013364c40c1cd041194ef30ff3f97f098b5bbadda9dc246dd1820",
+    "research/live_entry_radar/rs_pullback_launch/CALENDAR_ADMISSION_2026-10-07.json": "70259d7b24cb93e15bb573707cec2ca4b18ba02cbb23aca3fedf2e9eb20bee97",
+    "research/live_entry_radar/rs_pullback_launch/PHASE1_ADMISSION_2026-10-07.json": "a4e00a5c191917dc8c64fb74ca3348827ab9bd47d9ad8a03a1130a50fde36e9f",
+    "research/live_entry_radar/rs_pullback_launch/PHASE1_SOURCE_CENSUS_2026-10-07.json": "30650e115bb4cfa3715e24f91c16b0cb34d3af0ac4db300b5b4999f822cd2697",
+    "research/live_entry_radar/rs_pullback_launch/SOURCE_BASIS_DECLARATION_CONFORMANCE_2026-10-07.json": "8fbb51cc41e9acf7bb70be23cd4d86d030dfa15c42b38c2d1e3d9ff7aaa4ed49",
+    "research/live_entry_radar/rs_pullback_launch/SOURCE_RETENTION_CONFORMANCE_2026-10-07.json": "2b5b86eeba28d0a0ae7064e3cf680be7fe62bb61730fbee3aaa870db160fe27c"
+  },
+  "raw_episode_last_closes": [
+    100.39,
+    100.44,
+    100.39
+  ],
+  "raw_initial_volume_sum": 517.5,
+  "result": "PASS",
+  "retained_complete_observation_episodes": 32,
+  "role_interleaving_control": {
+    "basis_available": false,
+    "earlier_rows_and_frame_exact": true,
+    "raw_acquisitions_preserve_chart": true,
+    "raw_partial_adds_no_revision": true,
+    "retained_counts": [
+      30,
+      30,
+      1,
+      0,
+      1,
+      1,
+      1,
+      0
+    ],
+    "retained_occurrences": 64,
+    "roles": [
+      "chart_adjusted",
+      "research_unadjusted"
+    ]
+  },
+  "schema": "mastermind.rs_pullback_launch.source_unadjusted_capture_conformance.v1",
+  "scientific_claims": {
+    "H1": "NOT_TESTED",
+    "H2": "NOT_TESTED",
+    "H3": "NOT_TESTED"
+  },
+  "source_sha256": {
+    "macro:engine/entry_radar/replay/rs_pullback_launch_data.py": "c7b3ea3fada013364c40c1cd041194ef30ff3f97f098b5bbadda9dc246dd1820",
+    "macro:engine/entry_radar/replay/terminal_minute_observations.py": "ecb1c8f4fb58a01467c078b28d8f5a933f15c17bb538b9f0a91ba8ea441f15db",
+    "macro:research/live_entry_radar/rs_pullback_launch/SOURCE_RETENTION_READER_CONTRACT_2026-10-07.md": "b1150a6ac34bfb23759951852cd1132007bb76a5d498488eff1e2944a856d483",
+    "macro:scripts/entry_radar_rs_pullback_source_retention_check.py": "a98262fc7ece18076797020b9f28392c345489052687bc9a24560d99d69018d3",
+    "macro:tests/test_entry_radar_rs_pullback_phase1.py": "25a01209db7ccb95036976722017b96c7d1df7629f8eaad9cfaf2ed4a56caf6c",
+    "macro:tests/test_entry_radar_terminal_minute_observations.py": "384eab8ef214d62ce2de4b1406a7544d8a71888ab13ff21c3c990252f637783e",
+    "terminal:ingest/backfill_intraday.py": "cdced23a5458b27fbb724da3f2ab50e823c726089a332c2b5a498349d0285382",
+    "terminal:ingest/intraday_capture.py": "db2f2bb1086b84c5c732a7740f62dcbaa3f39597db8114b3ebeb7f52d5df5c19"
+  },
+  "synthetic_selector_control": {
+    "availability": "available",
+    "does_not_admit_source_basis": true,
+    "input_kind": "SYNTHETIC_CONFORMANCE",
+    "source": "independent existing direct-input fixture; no Terminal rows"
+  },
+  "transport": "injected urllib; no provider request"
+}

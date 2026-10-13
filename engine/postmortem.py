@@ -124,6 +124,7 @@ veto variant is costed only over the rows its own input reached.
 """
 from __future__ import annotations
 
+import datetime
 import math
 from typing import Any, Iterable, Mapping, Sequence
 
@@ -330,6 +331,36 @@ def _dig(obj: Any, *path: str) -> Any:
             return None
         cur = cur.get(key)
     return cur
+
+
+# --------------------------------------------------------------------------- #
+# strict calendar dates — the only representation that may enter a comparison
+# --------------------------------------------------------------------------- #
+def iso_calendar_date(value: Any, *, field: str = "date") -> str:
+    """Validate ``value`` as a strict ISO calendar date (YYYY-MM-DD) and return it.
+
+    The single accepted representation: a ``str`` that ``datetime.date.fromisoformat``
+    parses AND that round-trips back to itself exactly. Non-strings, timestamp
+    spellings ("2026-07-01T00:00:00"), non-canonical spellings ("2026-7-1",
+    "20260731") and impossible calendar dates ("2026-02-30") all raise
+    ``ValueError`` — nothing is extracted, coerced, repaired or read lexically.
+    Every date this module compares has passed through here, so lexical order IS
+    chronological order by construction.
+    """
+    if not isinstance(value, str):
+        raise ValueError(
+            f"{field}: expected an ISO calendar-date string, got "
+            f"{type(value).__name__}: {value!r}")
+    try:
+        parsed = datetime.date.fromisoformat(value)
+    except ValueError as exc:
+        raise ValueError(
+            f"{field}: not a valid ISO calendar date (YYYY-MM-DD): {value!r} ({exc})"
+        ) from exc
+    if parsed.isoformat() != value:
+        raise ValueError(
+            f"{field}: not a canonical ISO calendar date (YYYY-MM-DD): {value!r}")
+    return value
 
 
 # --------------------------------------------------------------------------- #
@@ -1200,3 +1231,669 @@ def _mean_outcome(rows: Iterable[Mapping[str, Any]]) -> float | None:
     vals = [_f(r.get("outcome_pct")) for r in rows]
     vals = [v for v in vals if v is not None]
     return round(sum(vals) / len(vals), 2) if vals else None
+
+
+# --------------------------------------------------------------------------- #
+# cohort integrity — descriptive source-stamp receipt (Q02/B22)
+# --------------------------------------------------------------------------- #
+# A DESCRIPTIVE measurement of which board definition each existing episode was
+# originally admitted under, read from the two ORIGINAL membership sources. Like the
+# rest of this module it is measurement tier only: no grade moves, no verdict, no
+# promotion read, and no pooled cross-era rate is ever produced here. The legacy
+# `aggregate()` summary a caller already publishes is untouched — this block is strictly
+# additive and exists so a reader can see where "the board's record" is actually two
+# different board products.
+#
+# Division of labour (unchanged): the CALLER (scripts/prophet_postmortem.py) owns all
+# I/O and hands in pre-extracted memberships; this file owns the rules; `aggregate()`
+# itself owns every descriptive per-era calculation.
+#
+#   memberships = {
+#     "<source>": {date: {ticker: [stamp_or_None, ...]}},   # ONE entry per source record
+#   }
+# The list keeps every record a source carries — the retro ledger stores one row per
+# (as_of, ticker, horizon), so two horizons on one night are two records, and stamps
+# that differ between them are a real same-key conflict, never silently deduped.
+
+#: Version of the `cohort_integrity` block itself.
+COHORT_INTEGRITY_SCHEMA = "prophet_cohort_integrity/v1"
+
+#: The five descriptive partitions, in the FIXED precedence a block is resolved in.
+#: An episode lands in the FIRST partition that matches, so a same-date disagreement is
+#: a `conflict` even when other membership days carry mixed stamps too, and an episode
+#: with mixed stamps plus a gap is `mixed` — the record-level disagreement always
+#: outranks the quieter defects.
+INTEGRITY_CONFLICT = "conflict"
+INTEGRITY_MIXED = "mixed"
+INTEGRITY_PARTIAL = "partial"
+INTEGRITY_SINGLE = "single"
+INTEGRITY_UNASSIGNED = "unassigned"
+INTEGRITY_PARTITIONS = (
+    INTEGRITY_CONFLICT,
+    INTEGRITY_MIXED,
+    INTEGRITY_PARTIAL,
+    INTEGRITY_SINGLE,
+    INTEGRITY_UNASSIGNED,
+)
+INTEGRITY_PARTITION_PRECEDENCE = "conflict > mixed > partial > single > unassigned"
+
+#: Stamp spellings that ARE explicitly missing. Mirrors the nullish spellings the US
+#: ledger folds to its legacy era — MINUS `legacy` itself: a receipt manufactures no era
+#: name. Whatever a source literally recorded is kept exactly as recorded; only true
+#: absence (None, non-string, empty, a null-like placeholder) lands here, and it stays
+#: missing attribution. It is never date-inferred, never back-filled from the current
+#: definition.
+_INTEGRITY_NULLISH = frozenset({"", "none", "nan", "<na>", "null"})
+
+
+def integrity_stamp(value: Any) -> str | None:
+    """The ORIGINAL `rank_by` string a source recorded, or None when explicitly missing.
+
+    Non-string values, empties and null-like placeholders are missing — not an era.
+    Everything else comes back EXACTLY as recorded (including surrounding whitespace,
+    case and spelling), so `us_prophet_v1`, `alpha` and `legacy` stay
+    three different recorded stamps and none of them is invented.
+    """
+    if not isinstance(value, str):
+        return None
+    text = value.strip()
+    return None if text.lower() in _INTEGRITY_NULLISH else value
+
+
+def integrity_source_receipt(
+    memberships: Mapping[str, Mapping[str, Mapping[str, Sequence[Any]]]] | None,
+) -> dict:
+    """Where each source reaches, and where the sources' memberships differ.
+
+    A date present in only one source is that source's DOCUMENTED REACH — the retro
+    ledger reaches back before the snapshot archive and the archive runs past the last
+    retro grade — and is never counted as a disagreement. With FEWER THAN TWO sources
+    there is no overlap and no cross-source disagreement at all, and the receipt says
+    so truthfully instead of intersecting a set with itself.
+
+    Published per overlap date: the tickers only one source carried, and any ticker
+    both sources carried with differing stamps. Published across ALL dates of each
+    source, overlap or not: within-source same-date stamp disagreements (e.g. two
+    horizons on one night recorded different `rank_by`). No winner/loser selection,
+    no preferred source.
+
+    Membership date and ticker keys are validated strictly (``iso_calendar_date``,
+    non-empty strings); a malformed key raises instead of entering any comparison.
+    """
+    memberships = memberships or {}
+    per_source: dict[str, dict] = {}
+    date_sets: dict[str, set[str]] = {}
+    ticker_sets: dict[str, dict[str, set[str]]] = {}
+    stamp_sets: dict[str, dict[str, dict[str, set[str]]]] = {}
+    for src in sorted(memberships):
+        days = memberships.get(src) or {}
+        if not isinstance(days, Mapping):
+            raise ValueError(
+                f"memberships[{src!r}]: expected a mapping of date -> ticker -> stamps, "
+                f"got {type(days).__name__}")
+        dates = sorted(iso_calendar_date(d, field=f"memberships[{src!r}] date key")
+                       for d in days)
+        n_records = 0
+        by_date_tickers: dict[str, set[str]] = {}
+        by_date_stamps: dict[str, dict[str, set[str]]] = {}
+        for d in dates:
+            day = days.get(d) or {}
+            if not isinstance(day, Mapping):
+                raise ValueError(
+                    f"memberships[{src!r}][{d}]: expected a mapping of ticker -> stamps")
+            tks = by_date_tickers.setdefault(d, set())
+            stamps = by_date_stamps.setdefault(d, {})
+            for tk in sorted(day):
+                if not isinstance(tk, str) or not tk.strip():
+                    raise ValueError(
+                        f"memberships[{src!r}][{d}]: invalid ticker key {tk!r}")
+                recorded = day.get(tk) or []
+                n_records += len(recorded)
+                tks.add(tk)
+                for raw in recorded:
+                    st = integrity_stamp(raw)
+                    if st is not None:
+                        stamps.setdefault(tk, set()).add(st)
+        date_sets[src] = set(dates)
+        ticker_sets[src] = by_date_tickers
+        stamp_sets[src] = by_date_stamps
+        per_source[src] = {
+            "n_dates": len(dates),
+            "dates": dates,
+            "first_date": dates[0] if dates else None,
+            "last_date": dates[-1] if dates else None,
+            "n_membership_records": n_records,
+        }
+
+    # Within-source same-date stamp disagreements, across ALL dates of each source —
+    # disjoint dates included, so a horizon conflict on a date the other source never
+    # reached is still visible on the receipt beside the cross-source differences.
+    within: list[dict] = []
+    for src in sorted(stamp_sets):
+        for d in sorted(stamp_sets[src]):
+            for tk in sorted(stamp_sets[src][d]):
+                stamps = sorted(stamp_sets[src][d][tk])
+                if len(stamps) > 1:
+                    within.append({"source": src, "date": d, "ticker": tk,
+                                   "stamps": stamps})
+    within.sort(key=lambda r: (r["source"], r["date"], r["ticker"]))
+
+    all_dates: set[str] = set()
+    for s in date_sets.values():
+        all_dates |= s
+    # ONE SOURCE = NO OVERLAP, truthfully. Intersecting a single date set with itself
+    # used to report every date as an "overlap" and every ticker as a disagreement.
+    overlap: list[str] = []
+    per_overlap: list[dict] = []
+    n_diff = 0
+    only_dates = {src: sorted(date_sets[src]) for src in sorted(date_sets)}
+    if len(date_sets) >= 2:
+        overlap = sorted(set.intersection(*date_sets.values()))
+        only_dates = {
+            src: sorted(date_sets[src] - set().union(
+                *(s for name, s in date_sets.items() if name != src)))
+            for src in sorted(date_sets)
+        }
+        for d in overlap:
+            sets = {src: set(ticker_sets[src].get(d) or set())
+                    for src in sorted(date_sets)}
+            shared: set[str] | None = None
+            for s in sets.values():
+                shared = set(s) if shared is None else (shared & s)
+            shared = shared or set()
+            # "Only in this source" = present here, absent from EVERY other source — the
+            # union of the others, never `union - this` (that would also drop tickers the
+            # sources genuinely share).
+            only_in = {
+                src: sorted(sets[src] - set().union(
+                    *(s for name, s in sets.items() if name != src)))
+                for src in sorted(sets)
+            }
+            stamp_disagreements: list[dict] = []
+            for tk in sorted(set().union(*sets.values())):
+                carriers = [src for src in sorted(sets) if tk in sets[src]]
+                if len(carriers) < 2:
+                    continue
+                by_src = {src: sorted(stamp_sets[src].get(d, {}).get(tk) or set())
+                          for src in carriers}
+                flat = {st for v in by_src.values() for st in v}
+                if len(flat) > 1:
+                    stamp_disagreements.append({"ticker": tk, "stamps_by_source": by_src})
+            differs = any(only_in.values()) or bool(stamp_disagreements)
+            n_diff += 1 if differs else 0
+            per_overlap.append({
+                "date": d,
+                "n_shared_tickers": len(shared),
+                "only_in": only_in,
+                "stamp_disagreements": stamp_disagreements,
+                "membership_difference": differs,
+            })
+
+    latest = max(all_dates) if all_dates else None
+    return {
+        "sources": per_source,
+        "latest_board_date": latest,
+        "n_dates_all_sources": len(all_dates),
+        "overlap_dates": overlap,
+        "n_overlap_dates": len(overlap),
+        "dates_in_one_source_only": sorted(all_dates - set(overlap)),
+        "per_source_only_dates": only_dates,
+        "membership_on_overlap_dates": per_overlap,
+        "n_overlap_dates_with_membership_difference": n_diff,
+        "within_source_stamp_disagreements": within,
+        "n_within_source_stamp_disagreements": len(within),
+        "note_en": ("A board date present in only one source is that source's documented "
+                    "reach, not a disagreement; with fewer than two sources there is no "
+                    "overlap and no cross-source disagreement at all. Per-overlap-date "
+                    "ticker-set and stamp differences, and within-source same-date stamp "
+                    "disagreements across ALL dates, are published so real membership "
+                    "disagreement is visible. No source is preferred and no cohort is "
+                    "selected."),
+        "note_zh": ("仅出现在单一来源的board日期属于该来源的既有覆盖范围，并非分歧；来源少于两个时，"
+                    "不存在任何重叠或跨来源分歧。重叠日期上两来源的成分与盖章差异、以及单一来源内部"
+                    "所有日期的同日盖章分歧均逐项公布，以便暴露真正的成员分歧。"
+                    "不偏袒任何来源，也不据此挑选任何群体。"),
+    }
+
+
+def integrity_assignments(
+    memberships: Mapping[str, Mapping[str, Mapping[str, Sequence[Any]]]] | None,
+    episodes: Sequence[Mapping[str, Any]] | None,
+    *,
+    as_of: str,
+) -> list[dict]:
+    """One assignment record per existing episode, in fixed (entry_date, ticker) order.
+
+    ``as_of`` is REQUIRED and must be a strict ISO calendar date: the FROZEN ORIGINAL
+    CUT every membership observation is read through. The caller supplies it — the
+    generation path's real board as_of, or a preserved artifact's validated as_of —
+    never a clock, the current config, or the current sources' latest date. Membership
+    observations are filtered to ``d <= as_of``; an open episode runs to that cut
+    INCLUSIVE, a closed one to ``min(existing board_exit_date EXCLUSIVE, as_of
+    INCLUSIVE)``. Anything a later source vintage recorded beyond the cut is excluded
+    from attribution and disclosed on the block (``as_of_cut``); it can never assign,
+    conflict or re-era an episode.
+
+    Membership evidence must be CONTIGUOUS inside that interval, reading the union of
+    buy memberships across the original sources on each recorded board date. The first
+    recorded in-window board date where the ticker is absent from ALL sources is a
+    genuine observed gap: stamps recorded after it belong to a later admission, so they
+    are excluded from this episode's attribution, disclosed on the record
+    (``observed_gap``), and the episode is downgraded from ``single`` to ``partial`` so
+    it cannot enter the per-era summaries. A date absent from one source alone is
+    disjoint documented coverage, not a gap; a calendar date no source recorded is
+    never inferred. Legacy episode identity, board_exit and returns are read, never
+    rewritten.
+
+    Resolution (first match wins):
+      * ``conflict``   — differing recorded stamps for the SAME (date, ticker), within
+                         one source (e.g. across horizons) or between the two sources;
+      * ``mixed``      — different recorded stamps on DIFFERENT membership days (an
+                         episode crossing an era boundary);
+      * ``partial``    — agreeing recorded stamps, plus at least one missing stamp,
+                         missing original entry-day attribution, or an observed gap;
+      * ``single``     — one recorded stamp, every membership record stamped, including
+                         an explicitly stamped original entry-day record;
+      * ``unassigned`` — no recorded stamp anywhere in the window.
+
+    Episodes with no membership record at all are `unassigned` too — a membership gap
+    is missing attribution, never a manufactured era. An episode whose identity cannot
+    be validated (non-ISO or nullish entry/exit; NaN is NOT the open sentinel, None is)
+    is ``unavailable``: an explicit error record that enters no partition, no window
+    and no era, never a lexical comparison. Score fields on ``episodes`` rows are only
+    read for identity (ticker/entry/exit/maturity) and are never written.
+    """
+    cut = iso_calendar_date(as_of, field="as_of")
+    cut_d = datetime.date.fromisoformat(cut)
+    memberships = memberships or {}
+
+    normalized: dict[str, dict[str, dict[str, list[Any]]]] = {}
+    recorded: set[str] = set()
+    for src in sorted(memberships):
+        days = memberships.get(src) or {}
+        if not isinstance(days, Mapping):
+            raise ValueError(
+                f"memberships[{src!r}]: expected a mapping of date -> ticker -> stamps")
+        norm_days: dict[str, dict[str, list[Any]]] = {}
+        for raw_key in days:
+            d = iso_calendar_date(raw_key, field=f"memberships[{src!r}] date key")
+            day = days.get(d) or {}
+            if not isinstance(day, Mapping):
+                raise ValueError(
+                    f"memberships[{src!r}][{d}]: expected a mapping of ticker -> stamps")
+            norm_day: dict[str, list[Any]] = {}
+            for tk in day:
+                if not isinstance(tk, str) or not tk.strip():
+                    raise ValueError(
+                        f"memberships[{src!r}][{d}]: invalid ticker key {tk!r}")
+                norm_day[tk] = list(day.get(tk) or [])
+            norm_days[d] = norm_day
+        normalized[src] = norm_days
+        recorded |= set(norm_days)
+    recorded_iso = sorted(recorded)          # validated ISO: lexical order IS chronology
+    recorded_dates = [datetime.date.fromisoformat(d) for d in recorded_iso]
+
+    def _present(d_iso: str, ticker: str) -> bool:
+        return any((normalized[src].get(d_iso) or {}).get(ticker)
+                   for src in normalized)
+
+    # Preserve the artifact's row identity; ticker/entry is only a legacy key,
+    # never a substitute for distinct native episode identity or a deduplication rule.
+    episode_rows = list(episodes or [])
+    key_counts: dict[tuple[str, str], int] = {}
+    for row in episode_rows:
+        if isinstance(row, Mapping):
+            tk, entry = row.get("ticker"), row.get("entry_date")
+            if isinstance(tk, str) and isinstance(entry, str):
+                key_counts[(tk, entry)] = key_counts.get((tk, entry), 0) + 1
+    intervals: dict[str, list[tuple[int, str, str]]] = {}
+    for i, row in enumerate(episode_rows):
+        if not isinstance(row, Mapping):
+            continue
+        try:
+            tk = row.get("ticker")
+            entry = iso_calendar_date(row.get("entry_date"), field="entry_date")
+            exit_ = row.get("board_exit_date")
+            end = iso_calendar_date(exit_, field="board_exit_date") if exit_ is not None else "9999-12-31"
+            if isinstance(tk, str) and tk.strip() and entry <= cut and end > entry:
+                intervals.setdefault(tk, []).append((i, entry, end))
+        except ValueError:
+            continue
+    overlapping: set[int] = set()
+    for spans in intervals.values():
+        for left_pos, (i, start, end) in enumerate(spans):
+            for j, other_start, other_end in spans[left_pos + 1:]:
+                if start != other_start and start < other_end and other_start < end:
+                    overlapping.update((i, j))
+    indexed = sorted(enumerate(episode_rows), key=lambda item: (
+        str(item[1].get("entry_date")), str(item[1].get("ticker")), item[0])
+        if isinstance(item[1], Mapping) else ("", "", item[0]))
+    out: list[dict] = []
+    for row_index, ep in indexed:
+        if not isinstance(ep, Mapping):
+            out.append({
+                "ticker": None, "entry_date": None, "board_exit_date": None,
+                "maturity": None, "partition": None, "unavailable": True,
+                "identity_error": f"episode row is {type(ep).__name__}, not an object",
+                "unavailable_reason": "malformed_episode_identity",
+            })
+            continue
+        raw_tk = ep.get("ticker")
+        raw_entry = ep.get("entry_date")
+        raw_exit = ep.get("board_exit_date")
+        ticker = raw_tk if isinstance(raw_tk, str) and raw_tk.strip() else None
+        error: str | None = None
+        unavailable_reason = "malformed_episode_identity"
+        if ticker is None:
+            error = f"invalid ticker {raw_tk!r}"
+        entry_d: datetime.date | None = None
+        exit_d: datetime.date | None = None
+        if error is None:
+            try:
+                entry_d = datetime.date.fromisoformat(
+                    iso_calendar_date(raw_entry, field="entry_date"))
+            except ValueError as exc:
+                error = str(exc)
+        if error is None and raw_exit is not None:
+            if isinstance(raw_exit, float) and math.isnan(raw_exit):
+                error = ("board_exit_date is NaN — NaN is not the open sentinel "
+                         "(None is); refused instead of read as a lexical window bound")
+            else:
+                try:
+                    exit_d = datetime.date.fromisoformat(
+                        iso_calendar_date(raw_exit, field="board_exit_date"))
+                except ValueError as exc:
+                    error = str(exc)
+        if error is None and entry_d > cut_d:
+            error = "episode entry_date is after the frozen artifact as_of cut"
+            unavailable_reason = "episode_entry_after_cut"
+        if error is None and exit_d is not None and exit_d <= entry_d:
+            error = "board_exit_date must be strictly after entry_date (exclusive exit)"
+            unavailable_reason = "invalid_episode_interval"
+        if error is None and key_counts.get((ticker, raw_entry), 0) > 1:
+            error = "repeated legacy ticker/entry identity cannot distinguish native episodes"
+            unavailable_reason = "ambiguous_episode_identity"
+        if error is None and row_index in overlapping:
+            error = "overlapping same-ticker episode intervals do not identify disjoint admissions"
+            unavailable_reason = "overlapping_episode_intervals"
+        if error is not None:
+            out.append({
+                "ticker": raw_tk if isinstance(raw_tk, str) else None,
+                "entry_date": raw_entry if isinstance(raw_entry, str) else None,
+                "board_exit_date": raw_exit if isinstance(raw_exit, str) else None,
+                "maturity": ep.get("maturity"),
+                "partition": None,
+                "unavailable": True,
+                "identity_error": error,
+                "unavailable_reason": unavailable_reason,
+            })
+            continue
+        open_episode = exit_d is None
+
+        window: list[str] = []
+        for d_iso, d_date in zip(recorded_iso, recorded_dates):
+            if d_date < entry_d or d_date > cut_d:
+                continue
+            if exit_d is not None and d_date >= exit_d:
+                continue
+            window.append(d_iso)
+
+        records: list[dict] = []
+        for src in sorted(normalized):
+            days = normalized[src]
+            for d in window:
+                for raw in (days.get(d) or {}).get(ticker) or []:
+                    records.append({"source": src, "date": d,
+                                    "stamp": integrity_stamp(raw)})
+
+        # CONTIGUITY. The first recorded in-window board date with the ticker absent
+        # from ALL sources is a genuine observed gap; stamps after it belong to a
+        # later admission and are excluded from this episode's attribution.
+        gap_iso = next((d for d in window if not _present(d, ticker)), None)
+        excluded_after_gap: list[str] = []
+        n_excluded_after_gap = 0
+        if gap_iso is not None:
+            excluded_after_gap = [d for d in window if d > gap_iso]
+            records = [r for r in records if r["date"] <= gap_iso]
+            n_excluded_after_gap = sum(
+                len((normalized[src].get(d) or {}).get(ticker) or [])
+                for src in sorted(normalized) for d in excluded_after_gap)
+
+        distinct: set[str] = set()
+        n_missing = 0
+        by_date: dict[str, dict[str, set[str]]] = {}
+        for rec in records:
+            if rec["stamp"] is None:
+                n_missing += 1
+            else:
+                distinct.add(rec["stamp"])
+                by_date.setdefault(rec["date"], {}) \
+                       .setdefault(rec["source"], set()).add(rec["stamp"])
+        entry_records = [dict(rec) for rec in records if rec["date"] == str(entry_d)]
+        entry_stamps = sorted({rec["stamp"] for rec in entry_records
+                               if rec["stamp"] is not None})
+        entry_missing = sum(rec["stamp"] is None for rec in entry_records)
+        if len(entry_stamps) > 1:
+            entry_state = INTEGRITY_CONFLICT
+        elif not entry_stamps:
+            entry_state = INTEGRITY_UNASSIGNED
+        elif entry_missing:
+            entry_state = INTEGRITY_PARTIAL
+        else:
+            entry_state = INTEGRITY_SINGLE
+        conflicts: list[dict] = []
+        for d in sorted(by_date):
+            day = by_date[d]
+            day_stamps: set[str] = set()
+            for v in day.values():
+                day_stamps |= v
+            if len(day_stamps) > 1:
+                conflicts.append({
+                    "date": d,
+                    "stamps_by_source": {src: sorted(day[src]) for src in sorted(day)},
+                })
+
+        if conflicts:
+            partition = INTEGRITY_CONFLICT
+        elif len(distinct) > 1:
+            partition = INTEGRITY_MIXED
+        elif distinct and (n_missing or entry_state != INTEGRITY_SINGLE):
+            partition = INTEGRITY_PARTIAL
+        elif distinct:
+            partition = INTEGRITY_SINGLE
+        else:
+            partition = INTEGRITY_UNASSIGNED
+        # An observed gap means the episode's evidence is not contiguous: however
+        # clean the pre-gap stamps look, the attribution is partial at best and can
+        # never enter the per-era (single-only) summaries.
+        if gap_iso is not None and partition == INTEGRITY_SINGLE:
+            partition = INTEGRITY_PARTIAL
+
+        records_by_source: dict[str, int] = {}
+        for rec in records:
+            records_by_source[rec["source"]] = records_by_source.get(rec["source"], 0) + 1
+
+        observed_gap = None
+        if gap_iso is not None:
+            observed_gap = {
+                "date": gap_iso,
+                "n_records_after_gap_excluded": n_excluded_after_gap,
+                "dates_after_gap": excluded_after_gap,
+            }
+
+        out.append({
+            "ticker": ticker,
+            "entry_date": entry_d.isoformat(),
+            "board_exit_date": None if exit_d is None else exit_d.isoformat(),
+            "open_episode": open_episode,
+            "maturity": ep.get("maturity"),
+            "as_of": cut,
+            "entry_attribution": {
+                "state": entry_state,
+                "records": entry_records,
+                "stamps": entry_stamps,
+                "n_missing_stamp_records": entry_missing,
+            },
+            "partition": partition,
+            "stamp": next(iter(sorted(distinct))) if len(distinct) == 1 else None,
+            "stamps": sorted(distinct),
+            "window_dates": list(window),
+            "n_membership_records": len(records),
+            "n_stamped_records": len(records) - n_missing,
+            "n_missing_stamp_records": n_missing,
+            "records_by_source": {k: records_by_source[k] for k in sorted(records_by_source)},
+            "conflicts": conflicts,
+            "observed_gap": observed_gap,
+        })
+    for assignment, (row_index, _) in zip(out, indexed):
+        assignment["episode_row_index"] = row_index
+    return out
+
+
+def cohort_integrity_block(
+    memberships: Mapping[str, Mapping[str, Mapping[str, Sequence[Any]]]] | None,
+    episodes: Sequence[Mapping[str, Any]] | None,
+    *,
+    as_of: str,
+    include_era_rates: bool = True,
+) -> dict:
+    """Assemble the additive top-level `cohort_integrity` block.
+
+    ``as_of`` is REQUIRED — the frozen original cut (strict ISO calendar date) every
+    membership observation is read through; see `integrity_assignments`. Later source
+    vintages are disclosed on the block and never assign, conflict or re-era anything.
+
+    ``episodes`` are the artifact's own episode rows; only identity and maturity fields
+    are read and nothing on them is written — the legacy summary and every episode field
+    stay byte-equivalent. When ``include_era_rates`` is set, each era's descriptive
+    summary is computed with the EXISTING `aggregate()` over that era's `single`
+    episodes alone — and ONLY while the original sources' membership observations are
+    conflict-free (no within-source same-date stamp disagreement, no cross-source stamp
+    disagreement, no same-date ticker-set difference on an overlap date, and no read or
+    schema defect reported by the caller). Each era block is a wrapper stamped
+    ``descriptive_only`` with an explicit no-promotion authority around the unchanged
+    legacy aggregate. Two eras never share a denominator, no pooled cross-era rate is
+    produced here, and no promotion or readiness verdict either.
+    """
+    cut = iso_calendar_date(as_of, field="as_of")
+    assignments = integrity_assignments(memberships, episodes, as_of=cut)
+    # Validate and disclose the full source reach, but adjudicate membership
+    # agreement only inside the artifact's cut. A later conflicting revision
+    # cannot invalidate an earlier frozen description.
+    full_receipt = integrity_source_receipt(memberships)
+    cut_memberships = {
+        src: {d: day for d, day in (days or {}).items() if d <= cut}
+        for src, days in (memberships or {}).items()
+    }
+    receipt = integrity_source_receipt(cut_memberships)
+
+    valid_assignments = [a for a in assignments if a.get("partition") is not None]
+    n_unavailable = sum(a.get("unavailable") is True for a in assignments)
+
+    partitions: dict[str, dict] = {}
+    for name in INTEGRITY_PARTITIONS:
+        sel = [a for a in assignments if a["partition"] == name]
+        partitions[name] = {
+            "n_episodes": len(sel),
+            "n_entry_dates": len({a["entry_date"] for a in sel}),
+            "maturity": {
+                "matured": len([a for a in sel if a.get("maturity") == "matured"]),
+                "in_flight": len([a for a in sel if a.get("maturity") == "in_flight"]),
+                "unscored": len([a for a in sel
+                                 if a.get("maturity") not in ("matured", "in_flight")]),
+            },
+        }
+
+    # FUTURE VINTAGE REACH — disclosed, never allowed to assign. Everything the
+    # sources recorded beyond the frozen cut is counted here so a reader can see
+    # exactly what the cut excluded.
+    n_after_cut = 0
+    for src in sorted(memberships or {}):
+        days = memberships.get(src) or {}
+        for raw_key, day in days.items():
+            if str(raw_key) > cut:      # validated ISO keys: lexical == chronological
+                n_after_cut += sum(len(v or []) for v in (day or {}).values())
+    dates_after_cut = sorted({d for src in full_receipt["sources"].values()
+                              for d in src["dates"] if d > cut})
+
+    membership_conflict_free = (
+        not any(a.get("conflicts") for a in assignments)
+        and receipt["n_overlap_dates_with_membership_difference"] == 0
+        and not receipt["within_source_stamp_disagreements"]
+    )
+
+    block: dict = {
+        "schema": COHORT_INTEGRITY_SCHEMA,
+        "descriptive_only": True,
+        "as_of_cut": {
+            "as_of": cut,
+            "n_membership_records_after_cut": n_after_cut,
+            "dates_after_cut": dates_after_cut,
+            "full_source_reach": full_receipt,
+            "note_en": ("Frozen original cut: membership observations are read only up "
+                        "to this explicit as_of. Later source vintages are disclosed "
+                        "here and are never allowed to assign, conflict or re-era an "
+                        "episode."),
+            "note_zh": ("冻结的原始切点：成员观测仅读取到该显式 as_of 为止。更晚的来源版本仅在"
+                        "此披露，绝不参与任何episode的归属、冲突判定或时代划分。"),
+        },
+        "membership_conflict_free": membership_conflict_free,
+        "partition_precedence": INTEGRITY_PARTITION_PRECEDENCE,
+        "counting_unit": "unambiguous_original_episode_row",
+        "n_episode_rows": len(assignments),
+        "n_episodes": len(valid_assignments),
+        "n_episodes_unavailable": n_unavailable,
+        "partitions": partitions,
+        "sources": receipt,
+        "episodes": assignments,
+        "note_en": ("Descriptive receipt of each episode's ORIGINAL board-definition "
+                    "stamps, from the original membership sources only, read up to the "
+                    "explicit as_of cut. The legacy summary is retained unchanged for "
+                    "compatibility and is NOT a cross-era comparison; missing stamps "
+                    "are missing attribution, never a legacy era; disjoint source reach "
+                    "is documented coverage, not disagreement; an observed membership "
+                    "gap splits an episode from later readmission stamps."),
+        "note_zh": ("仅描述性收据：按原始成员来源记录每个episode当时的board定义盖章，"
+                    "且只读取到显式 as_of 切点为止。旧版汇总按原样保留以兼容下游，且不是任何"
+                    "跨时代比较；缺失盖章属于缺失归属，而非某个「legacy 时代」；来源间不重叠的"
+                    "覆盖范围是正常记录，并非分歧；观测到的成员缺口会把episode与后来的重新"
+                    "纳入盖章分开。"),
+    }
+
+    if include_era_rates:
+        if n_unavailable:
+            block["per_era_unavailable_reason"] = "invalid_or_ambiguous_episode_identity_or_interval"
+        elif not membership_conflict_free:
+            block["per_era_unavailable_reason"] = "conflicting_original_membership"
+        else:
+            per_era: dict[str, dict] = {}
+            era_stamps = sorted({a["stamp"] for a in assignments
+                                 if a["partition"] == INTEGRITY_SINGLE and a["stamp"]})
+            for stamp in era_stamps:
+                era_rows = [
+                    episodes[a["episode_row_index"]] for a in assignments
+                    if a.get("stamp") == stamp and a["partition"] == INTEGRITY_SINGLE
+                ]
+                per_era[stamp] = {
+                    "era_stamp": stamp,
+                    "descriptive_only": True,
+                    "promotion_authority": (
+                        "none — descriptive receipt only: this era summary confers no "
+                        "grade change, no verdict, no promotion or readiness read, and "
+                        "its episodes are never pooled with or compared against any "
+                        "other era"),
+                    "aggregate": aggregate(era_rows),
+                }
+            block["per_era"] = per_era
+            block["per_era_note_en"] = ("One fully independent descriptive summary per "
+                                        "recorded era stamp, computed with the existing "
+                                        "aggregate() on that era's single-assigned episodes "
+                                        "alone. Every block is descriptive_only with an "
+                                        "explicit no-promotion authority; eras are never "
+                                        "pooled, never share a rate denominator, and are "
+                                        "never cross-compared.")
+            block["per_era_note_zh"] = ("每个记录在案的board定义各一份独立描述性汇总，仅用该时代"
+                                        "明确单一归属的episode、按既有 aggregate() 口径计算。"
+                                        "每份均为 descriptive_only 并显式声明不携带任何晋升权力；"
+                                        "各时代绝不合并、不共用任何分母、不做跨时代比较。")
+    return block

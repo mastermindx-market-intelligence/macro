@@ -68,6 +68,8 @@ class BgeoAdapter(Adapter):
 
         for endpoint, col in metrics.items():
             if spent >= budget or not self._quota_left():
+                if endpoint == "funding-rate":
+                    observations.record_unavailable(self, "bgeo_funding", "skipped")
                 skipped.append(endpoint)
                 continue
             last = store.last_date(self.group, col)
@@ -75,17 +77,22 @@ class BgeoAdapter(Adapter):
                 startday = str(last)  # overlap one point; upsert dedupes
             else:
                 startday = self.cfg["window_start"]
+            # record_response always appends exactly one entry; an unchanged
+            # length in the except means no response receipt was reached.
+            mark = len(getattr(self, "source_capture_status", ()))
             try:
                 spent += 1
                 df = self._fetch_metric(endpoint, col, startday)
                 if df is not None and not df.empty:
                     out[col] = df
-            except QuotaExhausted:
+            except QuotaExhausted as e:
+                self._funding_unavailable(endpoint, mark, e)
                 skipped.append(endpoint)
                 log.warning("bgeo quota exhausted after %d requests; skipping rest", spent)
                 # mark quota dead so the loop drains without further requests
                 self.remaining_hour = 0
             except Exception as e:  # noqa: BLE001 — one metric must not kill the rest
+                self._funding_unavailable(endpoint, mark, e)
                 log.warning("bgeo metric %s failed: %s", endpoint, e)
 
         if skipped:
@@ -97,6 +104,14 @@ class BgeoAdapter(Adapter):
 
     def fetch_result_status(self, frames: dict[str, pd.DataFrame]) -> str | None:
         return observations.fetch_result_status(self, frames)
+
+    def _funding_unavailable(self, endpoint: str, mark: int, exc: BaseException) -> None:
+        """Record a funding failure only when record_response was not reached."""
+        if endpoint != "funding-rate":
+            return
+        if len(getattr(self, "source_capture_status", ())) != mark:
+            return
+        observations.record_unavailable(self, "bgeo_funding", type(exc).__name__)
 
     def _fetch_metric(self, endpoint: str, col: str, startday: str) -> pd.DataFrame | None:
         url = f"{self.cfg['base_url']}/v1/{endpoint}"
