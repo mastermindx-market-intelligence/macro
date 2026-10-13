@@ -4747,6 +4747,15 @@ CURATED_EXCLUSIVE = {
     # job on the PACKING_PROBES (check_contract_delta: 3 introduced findings).
     # scope: exclusive pins it to its derived import closure.
     "fif-saved-research-notifications",
+    # 2026-10-13 main packing-probe heal: Node harness subprocesses, a git
+    # subprocess and filesystem traversals rooted at templates/, scripts/,
+    # engine/, data/ and site/ widened inference for these two lanes to those
+    # whole roots, so both selected on all three PACKING_PROBES without
+    # importing or naming a probe file (CI measured
+    # scripts/build_free_content.py at 5604 > 5600 on main). scope: exclusive
+    # pins each to its measured static closure plus its fixture globs.
+    "research-price-panel",
+    "washout-turn-organ",
 }
 
 
