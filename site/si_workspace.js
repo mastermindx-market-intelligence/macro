@@ -99,7 +99,7 @@ for(var _k in LEGACY_ANCHORS_S2){LEGACY_ANCHORS[_k]=LEGACY_ANCHORS_S2[_k];}
 var LAZY={
   map:['@cycles'],
   moving:['subsector_rotation.js','rotation_events.js','desk_watch.js'],
-  money:['heatmap.js'],
+  money:['heatmap.js','sector_participation_20.js'],
   explore:['subsector_rotation.js','time_machine.js'],
   /* the confluence board: subsectors.js self-boots on injection, finds #sc-app inside the
      now-visible view and fetches its board JSON. It writes innerHTML only — no clientWidth
