@@ -91,7 +91,7 @@ function boot() {
     const node = {
       name, tag, classes: new Set(classes || []),
       parentElement: null, parentNode: null, children: [],
-      listeners: [], attrs: {}, style: {}, tabIndex: 0,
+      listeners: [], attrs: {}, style: {}, tabIndex: 0, disabled: false, onclick: null,
       getClientRects() { return [{}]; },
       focus() { doc.activeElement = this; },
       contains(o) { for (let n = o; n; n = n.parentElement) if (n === this) return true; return false; },
@@ -112,10 +112,16 @@ function boot() {
       },
       querySelectorAll(sel) {
         const parts = sel.split(','), out = [];
+        // Exact forms only: a bare tag, tag:not(:disabled), tag:disabled, a[href]
+        // and the tabindex clause. Any other selector matches nothing.
         const hit = c => parts.some(p => {
           const s = p.trim();
-          return s === c.tag || s.startsWith(c.tag + ':') || s.startsWith(c.tag + '[')
-            || (c.tag === 'a' && s === 'a[href]');
+          if (s === c.tag) return true;
+          if (s === c.tag + ':not(:disabled)') return !c.disabled;
+          if (s === c.tag + ':disabled') return c.disabled;
+          if (s === 'a[href]') return c.tag === 'a' && 'href' in c.attrs;
+          if (s === '[tabindex]:not([tabindex="-1"])') return 'tabindex' in c.attrs && c.attrs.tabindex !== '-1';
+          return false;
         });
         (function walk(n) { for (const c of n.children) { if (hit(c)) out.push(c); walk(c); } })(this);
         return out;
@@ -139,7 +145,7 @@ function boot() {
   const dlg = el('dialog', 'div');
   const panel = add(dlg, el('panel', 'div', ['mx5-dlg-panel']));
   const closeBtn = add(panel, el('close', 'button'));
-  add(panel, el('tail', 'button'));
+  const tail = add(panel, el('tail', 'button'));
   add(dlg, el('backdrop', 'div', ['mx5-dlg-backdrop']));
   const opener = el('opener', 'button');
   const win = {
@@ -149,7 +155,9 @@ function boot() {
     MMXAccessPreview: {isAnon() { return false; }},
   };
   const api = new Function('document', 'window', src + '\nreturn {open: window.mx5OpenDlg, close: window.mx5CloseDlg};')(doc, win);
-  return {doc, dlg, closeBtn, opener, state, open: api.open, close: api.close};
+  // The shipped close button is <button ... onclick="mx5CloseDlg()">.
+  closeBtn.onclick = () => api.close();
+  return {doc, dlg, closeBtn, tail, opener, state, open: api.open, close: api.close};
 }
 function press(doc, key) {
   const e = {
@@ -164,6 +172,14 @@ function press(doc, key) {
       l.fn(e);
       if (e.immediateStopped) return e;
     }
+  }
+  // Default action: Enter or Space on an enabled button runs its click handler.
+  const act = doc.activeElement;
+  e.activated = false;
+  if ((key === 'Enter' || key === ' ') && !e.defaultPrevented && act && act.tag === 'button'
+      && !act.disabled && typeof act.onclick === 'function') {
+    e.activated = true;
+    act.onclick();
   }
   return e;
 }
@@ -211,16 +227,41 @@ if (which === 'closes') {
   advance(400);
   assert.equal(h.dlg.classList.contains('open'), true, 'dlg-risk stays open');
   assert.equal(h.dlg.classList.contains('mx5-dlg-closing'), false, 'close did not start');
+} else if (which === 'enter-close') {
+  const h = opened();
+  const e = press(h.doc, 'Enter');
+  assert.equal(e.immediateStopped, false, 'the Escape listener leaves Enter alone');
+  assert.equal(e.defaultPrevented, false, 'Enter keeps its default action');
+  assert.equal(e.activated, true, 'Enter activated the focused close button');
+  advance(400);
+  assert.equal(h.dlg.classList.contains('open'), false, 'closed after the timer');
+  assert.equal(h.doc.activeElement, h.opener, 'focus returned to the opener');
 } else if (which === 'other-key') {
   const h = opened();
-  for (const key of ['Enter', 'Esc']) {
-    const e = press(h.doc, key);
-    assert.equal(e.immediateStopped, false, key);
-    advance(400);
-    assert.equal(h.dlg.classList.contains('open'), true, key + ' left the dialog open');
-    assert.equal(h.dlg.classList.contains('mx5-dlg-closing'), false, key + ' did not start close');
-    assert.equal(h.doc.activeElement, h.closeBtn, key + ' left focus');
-  }
+  h.doc.activeElement = h.tail;
+  let e = press(h.doc, 'Enter');
+  assert.equal(e.immediateStopped, false, 'Enter on tail');
+  assert.equal(e.activated, false, 'tail has no click handler');
+  advance(400);
+  assert.equal(h.dlg.classList.contains('open'), true, 'Enter on tail left the dialog open');
+  assert.equal(h.doc.activeElement, h.tail, 'Enter on tail left focus');
+  // "Esc" is a key string, not the Escape key, and not an activation key.
+  h.doc.activeElement = h.closeBtn;
+  e = press(h.doc, 'Esc');
+  assert.equal(e.immediateStopped, false, 'Esc');
+  assert.equal(e.activated, false, 'Esc');
+  advance(400);
+  assert.equal(h.dlg.classList.contains('open'), true, 'Esc left the dialog open');
+  assert.equal(h.dlg.classList.contains('mx5-dlg-closing'), false, 'Esc did not start close');
+  assert.equal(h.doc.activeElement, h.closeBtn, 'Esc left focus');
+} else if (which === 'disabled-first') {
+  const h = boot();
+  h.closeBtn.disabled = true;
+  h.doc.activeElement = h.opener;
+  h.open('dlg-risk');
+  flushRaf();
+  assert.equal(h.dlg.classList.contains('open'), true, 'opened');
+  assert.equal(h.doc.activeElement, h.tail, 'focus skipped the disabled close button');
 } else if (which === 'idle') {
   const h = boot();
   assert.equal(h.dlg.classList.contains('open'), false);
@@ -274,9 +315,19 @@ def test_escape_leaves_the_dialog_while_the_transcript_overlay_is_open():
     _run("tr-overlay")
 
 
-def test_enter_and_esc_do_not_close_the_dialog():
-    """Only the key string Escape is handled. Enter and Esc leave the dialog up."""
+def test_enter_on_the_close_button_closes_through_its_click_handler():
+    """Enter passes the listener untouched and activates the focused close button."""
+    _run("enter-close")
+
+
+def test_enter_elsewhere_and_the_esc_string_do_not_close_the_dialog():
+    """The listener handles only the key string Escape; Enter on a plain button and Esc leave it up."""
     _run("other-key")
+
+
+def test_open_focus_skips_a_disabled_first_button():
+    """_focusFirst asks for button:not(:disabled), so a disabled close button is passed over."""
+    _run("disabled-first")
 
 
 def test_escape_with_no_dialog_does_not_stop_the_event():
