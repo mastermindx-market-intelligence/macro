@@ -14,7 +14,8 @@
     "skillpack": "1.0.1",
     "bootstrap_major": 1
   },
-  "current_pins": {
+  "historical_pins_2026_09_24_note": "Relabeled from current_pins on 2026-10-13. Values are the 2026-09-24 binding-delta pins and are not a live head. shared_foundation_7870 stays 3e3a7956d014b8c50be7b197fdbea847cecfa641.",
+  "historical_pins_2026_09_24": {
     "macro_main": "7103389e8d473618c281c7801c77b7d19bfecb56",
     "shared_foundation_7870": "3e3a7956d014b8c50be7b197fdbea847cecfa641",
     "template_owner_7669": "6942b2b62bad2dfc9d3b50eb7042e0a126b708c4",
