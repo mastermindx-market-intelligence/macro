@@ -318,6 +318,7 @@ _BRAIN_TOOLS = frozenset({
     # China-analog idiom) and the full curve read (pure slice of yield_curve snapshot)
     "get_historical_analogues",
     "get_retained_market_context",
+    "get_retained_market_catalog",
     "get_curve_detail",
     # Analyst OS W3 — per-user memory: own-session recall + own trade journal
     # (signed-in only, per-user scoped; derived from canonical stores — CXI-R12)
@@ -372,6 +373,7 @@ _BRAIN_ONLY_TOOLS = frozenset({
     # Analyst OS W2
     "get_historical_analogues",
     "get_retained_market_context",
+    "get_retained_market_catalog",
     "get_curve_detail",
     # Analyst OS W3
     "recall_sessions",
@@ -3982,6 +3984,19 @@ def _dispatch_brain_tool(
                 report_id=str(tool_params.get("report_id") or ""),
                 user_ctx={"user_id": user_id} if _mode == "report" else None,
             )
+        if tool_name == "get_retained_market_catalog":
+            from app.market_memory import retained_catalog_for_user
+            from fastapi import HTTPException
+            try:
+                params = dict(tool_params)
+                limit = params.get("limit", 8)
+                if type(limit) is not int or not 1 <= limit <= 8:
+                    raise HTTPException(400, detail={"state": "INVALID_CATALOG_REQUEST"})
+                return retained_catalog_for_user(root, user_id, params)
+            except HTTPException as exc:
+                return {"error": "retained_catalog_unavailable", "http_status": exc.status_code,
+                        "state": exc.detail.get("state", "SITE_ENTITLEMENT_REQUIRED")
+                        if isinstance(exc.detail, dict) else "SITE_ENTITLEMENT_REQUIRED"}
         if tool_name == "get_retained_market_context":
             from app.market_memory import retained_macro_for_user
             from fastapi import HTTPException
@@ -4126,7 +4141,7 @@ def _all_brain_tool_schemas(
             except Exception:
                 pass
             else:
-                schemas = schemas + [_ban.RETAINED_CONTEXT_TOOL_SCHEMA]
+                schemas = schemas + [_ban.RETAINED_CONTEXT_TOOL_SCHEMA, _ban.RETAINED_CATALOG_TOOL_SCHEMA]
     except Exception:  # noqa: BLE001
         pass
     try:
@@ -7127,6 +7142,7 @@ _TOOL_LABELS: dict[str, tuple[str, str]] = {
     "get_market_events":      ("Skimming the wire for news",    "扫一眼最新消息"),
     "search_research":        ("Digging through the research shelf", "翻找机构研报"),
     "get_historical_analogues": ("Searching the desk's history books", "检索历史相似情景"),
+    "get_retained_market_catalog": ("Finding saved market captures", "查找已保存的市场记录"),
     "get_retained_market_context": ("Reading original retained evidence", "读取原始留存证据"),
     "get_curve_detail":       ("Reading the yield curve",       "解读收益率曲线"),
     "recall_sessions":        ("Recalling your past sessions",  "回顾您最近的会话"),

@@ -1045,3 +1045,69 @@ def retained_macro(
                or (request.client.host if request.client else "unknown"))[:160]
     value = retained_macro_for_user(_repo_root(), str(_user.get("id") or ""), dict(items), peer=peer)
     return _response(value, headers={"ETag": '"' + value["context_id"] + '"'})
+
+
+def retained_catalog_for_user(root: Path, user_id: str, request_spec: dict,
+                              *, peer: str | None = None) -> dict:
+    """Genuine API/Brain principal discovers exact refs through one owner."""
+    import re
+    from engine.neuralweb import market_memory_retained_catalog as catalog
+    from engine.neuralweb import market_memory_retained_use as use
+    from engine.neuralweb import market_memory_episode_retrieval as retrieval
+    from engine.neuralweb import market_memory_retained_context_cohort as cohort
+    use._enforce_current_site_user(user_id)
+    keys = {"mode", "offset", "limit", "generation_id", "generation_sha256"}
+    if type(request_spec) is not dict or set(request_spec) - keys:
+        raise HTTPException(400, detail={"state": "INVALID_CATALOG_REQUEST"})
+    spec = dict(request_spec)
+    mode = spec.get("mode", "historical_hypothetical")
+    if mode not in ("historical_hypothetical", "current_contextual_support"):
+        raise HTTPException(400, detail={"state": "INVALID_CATALOG_REQUEST"})
+    parsed = {}
+    for key, default, minimum, maximum in (("offset", 0, 0, 255), ("limit", 8, 1, 20)):
+        value = spec.get(key, default)
+        if type(value) is str and re.fullmatch(r"0|[1-9][0-9]{0,2}", value):
+            value = int(value)
+        if type(value) is not int or not minimum <= value <= maximum:
+            raise HTTPException(400, detail={"state": "INVALID_CATALOG_REQUEST"})
+        parsed[key] = value
+    pinned = {"generation_id", "generation_sha256"} & set(spec)
+    if (pinned and len(pinned) != 2) or (parsed["offset"] and len(pinned) != 2):
+        raise HTTPException(400, detail={"state": "EXACT_CATALOG_CONTINUATION_REQUIRED"})
+    for key, prefix in (("generation_id", "mmgeneration_"), ("generation_sha256", "")):
+        if key in spec and (type(spec[key]) is not str or not re.fullmatch(prefix + r"[a-f0-9]{64}", spec[key])):
+            raise HTTPException(400, detail={"state": "INVALID_CATALOG_REQUEST"})
+    with _symbol_rate_lock:
+        now = time.monotonic()
+        allowed = _book_symbol_rate(f"playback-user:{user_id}", limit=_PLAYBACK_USER_LIMIT, now=now)
+        if allowed and peer is not None:
+            allowed = _book_symbol_rate(f"playback-peer:{peer[:160]}", limit=_PLAYBACK_PEER_LIMIT, now=now)
+    if not allowed:
+        raise HTTPException(429, detail={"state": "RATE_LIMITED"}, headers={"Retry-After": "60"})
+    if not _playback_slots.acquire(blocking=False):
+        raise HTTPException(503, detail={"state": "BUSY"}, headers={"Retry-After": "2"})
+    try:
+        return catalog.read_catalog(root, user_id=user_id, mode=mode, **parsed,
+            generation_id=spec.get("generation_id"), generation_sha256=spec.get("generation_sha256"))
+    except use.RetainedUseError as exc:
+        raise HTTPException(403, detail={"state": "SOURCE_USE_NOT_ADMITTED"}) from exc
+    except market_memory_pit.MarketMemoryContextNotFound as exc:
+        raise HTTPException(404, detail={"state": "EXACT_CAPTURE_NOT_FOUND"}) from exc
+    except market_memory_pit.OwnerReadBudgetError as exc:
+        raise HTTPException(503, detail={"state": "OWNER_READ_BUDGET_EXCEEDED"}) from exc
+    except (market_memory_pit.MarketMemoryPITError, retrieval.EpisodeRetrievalError,
+            cohort.RetainedContextCohortError) as exc:
+        raise HTTPException(503, detail={"state": "EXACT_CATALOG_UNAVAILABLE"}) from exc
+    finally:
+        _playback_slots.release()
+
+
+@router.get("/macro/retained/catalog")
+def retained_catalog(request: Request, _user: dict = Depends(require_site_full_user)) -> JSONResponse:
+    items = list(request.query_params.multi_items())
+    if len({k for k, _v in items}) != len(items):
+        raise HTTPException(400, detail={"state": "INVALID_CATALOG_REQUEST"})
+    peer = str(request.headers.get(_SYMBOL_TRUSTED_PEER_HEADER)
+               or (request.client.host if request.client else "unknown"))[:160]
+    value = retained_catalog_for_user(_repo_root(), str(_user.get("id") or ""), dict(items), peer=peer)
+    return _response(value)
