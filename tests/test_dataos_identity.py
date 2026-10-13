@@ -1824,3 +1824,53 @@ def test_i03_04_later_refused_shadows_earlier_bound_and_older_read_is_retained()
                       symbol="HUCK", on=day_of).status == "BOUND"
     assert _obs_query(table, read1, read2, cutoff=cutoff2, vendor="listing",
                       symbol="HUCK", on=day_of).status == "REFUSED"
+
+
+# ── P06 — venue clock + listing currency maps (D00.A1) ──
+
+from lib.dataos.identity import VENUE_CURRENCY, VENUE_TZ, venue_currency, venue_timezone
+
+
+def test_P06_venue_maps_cover_exactly_the_known_mics() -> None:
+    """Both CLOSED maps cover exactly KNOWN_MICS — no venue is half-admitted."""
+    assert set(VENUE_TZ) == set(KNOWN_MICS) == set(VENUE_CURRENCY)
+
+
+@pytest.mark.parametrize(
+    "mic, zone, currency",
+    [
+        (BATS, "America/New_York", "USD"),
+        (XNYS, "America/New_York", "USD"),
+        (XNAS, "America/New_York", "USD"),
+        (XASE, "America/New_York", "USD"),
+        (ARCX, "America/New_York", "USD"),
+        (XTSE, "America/Toronto", "CAD"),
+        (XTSX, "America/Toronto", "CAD"),
+        (XHKG, "Asia/Hong_Kong", "HKD"),
+        (XSHG, "Asia/Shanghai", "CNY"),
+        (XSHE, "Asia/Shanghai", "CNY"),
+        (XBSE, "Asia/Shanghai", "CNY"),
+    ],
+)
+def test_P06_venue_map_values(mic: str, zone: str, currency: str) -> None:
+    assert VENUE_TZ[mic] == zone
+    assert VENUE_CURRENCY[mic] == currency
+    assert venue_timezone(mic).key == zone
+    assert venue_currency(mic) == currency
+
+
+def test_P06_venue_maps_are_read_only() -> None:
+    with pytest.raises(TypeError):
+        VENUE_TZ["XNYS"] = "Europe/London"
+    with pytest.raises(TypeError):
+        VENUE_CURRENCY["XNYS"] = "EUR"
+
+
+def test_P06_venue_accessors_normalise_and_refuse() -> None:
+    assert venue_timezone("xnys ").key == "America/New_York"
+    assert venue_currency(" xhkg") == "HKD"
+    for bad in ("XXXX", None, 5):
+        with pytest.raises(IdentityError):
+            venue_timezone(bad)
+        with pytest.raises(IdentityError):
+            venue_currency(bad)
