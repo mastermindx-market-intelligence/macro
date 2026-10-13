@@ -2840,6 +2840,7 @@ jobs:
       - "engine/btc_impulse_radar.py"
       - "engine/btc_impulse_radar_backtest.py"
       - "engine/btc_inputs.py"
+      - "engine/btc_intraday_cvd.py"
       - "engine/btc_leverage_cascade.py"
       - "engine/btc_master.py"
       - "engine/btc_mtf.py"
@@ -3554,6 +3555,7 @@ jobs:
     paths:
       # Native DailyBrief registration/producer import closure (PR #9037).
       - "engine/prophet_candidate_state.py"
+      - "engine/prophet_candidate_state_sources.py"
       - "engine/prophet_daily_brief.py"
       - "engine/prophet_entry_availability.py"
       - "engine/prophet_strategy_definition.py"
@@ -5374,11 +5376,14 @@ jobs:
       - "scripts/reconcile_us_candidate_episodes.py"
       - "tests/test_us_candidate_episode.py"
       - "tests/test_us_candidate_episode_intake.py"
+      - "tests/test_prophet_today_provenance.py"
       - "tests/test_us_candidate_episode_reconciler.py"
       - "tests/test_us_candidate_episode_wiring.py"
       - "tests/fixtures/us_candidate_episode/**"
       - "engine/prophet_object_change.py"
       - "tests/test_prophet_object_change.py"
+      - "engine/prophet_daily_brief_evidence_sources.py"
+      - "tests/test_prophet_daily_brief_evidence_sources.py"
       # Native DailyBrief is a read-only projection over the incumbent Today owner.
       - "app/prophet_daily_brief.py"
       - "app/main.py"
@@ -5427,7 +5432,8 @@ jobs:
         run: python -m pytest tests/test_prophet_object_change.py -q
       - name: Prophet native DailyBrief — source binding, B1 reconciliation and private API
         run: >-
-          python -m pytest tests/test_prophet_today_provenance.py
+          python -m pytest tests/test_prophet_daily_brief_evidence_sources.py
+          tests/test_prophet_today_provenance.py
           tests/test_prophet_daily_brief_api.py -q
       - name: install observation browser
         run: python -m playwright install --with-deps chromium
@@ -5755,6 +5761,7 @@ jobs:
       # Native DailyBrief registration/producer import closure (PR #9037).
       - "app/prophet_daily_brief.py"
       - "engine/prophet_candidate_state.py"
+      - "engine/prophet_candidate_state_sources.py"
       - "engine/prophet_daily_brief.py"
       - "engine/prophet_entry_availability.py"
       - "engine/prophet_strategy_definition.py"
@@ -12025,6 +12032,7 @@ jobs:
       # Native DailyBrief registration/producer import closure (PR #9037).
       - "engine/path_risk_signals.py"
       - "engine/prophet_candidate_state.py"
+      - "engine/prophet_candidate_state_sources.py"
       - "engine/prophet_daily_brief.py"
       - "engine/prophet_entry_availability.py"
       - "engine/prophet_strategy_definition.py"
@@ -12276,6 +12284,7 @@ jobs:
       - engine/btc_impulse_radar.py
       - engine/btc_impulse_radar_backtest.py
       - engine/btc_inputs.py
+      - engine/btc_intraday_cvd.py
       - engine/btc_leverage_cascade.py
       - engine/btc_master.py
       - engine/btc_mtf.py
@@ -14099,6 +14108,7 @@ jobs:
     paths:
       # Native DailyBrief registration/producer import closure (PR #9037).
       - "engine/prophet_candidate_state.py"
+      - "engine/prophet_candidate_state_sources.py"
       - "engine/prophet_daily_brief.py"
       - "engine/prophet_entry_availability.py"
       - "engine/prophet_strategy_definition.py"
@@ -14816,6 +14826,7 @@ jobs:
     paths:
       # Native DailyBrief registration/producer import closure (PR #9037).
       - "engine/prophet_candidate_state.py"
+      - "engine/prophet_candidate_state_sources.py"
       - "engine/prophet_daily_brief.py"
       - "engine/prophet_entry_availability.py"
       - "engine/prophet_strategy_definition.py"
@@ -16581,6 +16592,9 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
       - name: install minimal deps
         run: pip install pytest pyyaml jinja2
       # --deselect: test_build_site_renders_help_page_with_the_full_view_model imports
@@ -16596,21 +16610,19 @@ jobs:
       # pure text checks on sector-intelligence.yml / whitehouse-sentinel.yml. They
       # live HERE (gate: code, minimal deps) because the engine suites next to them
       # (express-render-guards, outcome-spine) are gate: data and never run in a PR pack.
-        run: python -m pytest tests/test_public_render_fastlane.py tests/test_help_directory.py tests/test_help_directory_contract.py tests/test_workflow_publish_chains.py -q --deselect tests/test_help_directory.py::test_build_site_renders_help_page_with_the_full_view_model
+      # Also validate the data-free Market Memory shell and owned read-API wiring.
+      # This test registration does not alter production render/publish inventory.
+        run: node --version && python -m pytest tests/test_public_render_fastlane.py tests/test_help_directory.py tests/test_help_directory_contract.py tests/test_workflow_publish_chains.py tests/test_build_market_memory_page.py tests/test_glossary.py tests/test_glossary_contract.py tests/test_glossary_letter_rail_js.py tests/test_finance_intelligence_site_wiring.py -q -rs --deselect tests/test_help_directory.py::test_build_site_renders_help_page_with_the_full_view_model
       # F13-1 (2026-09-06): the public glossary directory is built by the same
       # scripts/build_public_pages.py fast path and shares this job's exact
       # dependency line (pytest pyyaml jinja2) with the help-directory suites
       # immediately above.
-      - name: public glossary directory (view-model contract + rendered-page wiring)
-        run: python -m pytest tests/test_glossary.py tests/test_glossary_contract.py tests/test_glossary_letter_rail_js.py -q
       # Finance Intelligence site-builder hook (2026-09-25). The suite reads
       # scripts/build_site.py as TEXT, and this job already owns the site builder, so
       # hosting it here adds no owned path and no packing-probe match. #8010 ran it
       # in its own job instead. That job matched every one-file probe in
       # tests/test_ci_pack.py::test_exclusive_curation_narrows_ordinary_code_prs
       # (templates/index.html 134/133), which turned integration-baseline red on main.
-      - name: finance intelligence site-builder wiring (build_site carries the render hook)
-        run: python -m pytest tests/test_finance_intelligence_site_wiring.py -q
 
   press-lane:
     if: ${{ false }}  # executed inside ci-pack; keep the legacy status definition runner-free
@@ -16744,6 +16756,399 @@ jobs:
       # lane owns the vector estate the cockpit ships on.
       - name: crypto cockpit — contract, market-state waves, house style
         run: python -m pytest tests/test_crypto_cockpit_contract.py tests/test_crypto_wave2.py tests/test_crypto_wave3.py tests/test_crypto_house_style.py -q
+
+  crypto-vector-r2-organs:
+    # Governed Crypto Intelligence + Bitcoin Vector R2 organs (#8901): the vector
+    # wave-1 / R2 data-boundary / R2 front-door contracts, the BTC signal,
+    # impulse, alert and intraday-CVD organs, and the crypto collectors. Their
+    # candidate wired all nine into unrun-vector-dsr, whose whole-closure
+    # inference puts that job's weight on every ordinary code change: hosted
+    # contract-delta run 38207224287 / job 114673430805 measured
+    # scripts/build_free_content.py 5,583 -> 5,602 against its 5,600 ceiling
+    # (sole delta unrun-vector-dsr 35 -> 54), and on fresh main
+    # templates/index.html read 5,782 -> 5,801 against 5,800. Following #8805,
+    # the nine live here under scope: exclusive with the measured closure below,
+    # so the family still runs for every path it actually reads and the probes
+    # return to their base readings. No suite, assertion or selector removed.
+    # gate: code, not data: ci.yml plans `--gate code`, so a gate: data job is
+    # dark on every pull request (DSC:A-DATA-GATED-JOB-IS-DARK-ON-EVERY-PULL-REQUEST;
+    # T23 pre-review of #8901, BLOCKER B1 / REPAIR R1) — these behavior suites
+    # must be able to fail a PR.
+    if: ${{ false }}  # executed inside ci-pack, not a disabled gate
+    gate: code
+    scope: exclusive
+    paths:
+      - collectors/__init__.py
+      - collectors/_crypto_observations.py
+      - collectors/_drip.py
+      - collectors/_first_seen_store.py
+      - collectors/base.py
+      - collectors/bgeo.py
+      - collectors/breadth.py
+      - collectors/china_analyst.py
+      - collectors/china_credit.py
+      - collectors/china_filings.py
+      - collectors/china_news.py
+      - collectors/china_visits.py
+      - collectors/coinbase.py
+      - collectors/deribit.py
+      - collectors/edgar.py
+      - collectors/edgar_13f.py
+      - collectors/edgar_deadname_prices.py
+      - collectors/edgar_deadnames.py
+      - collectors/edgar_delisting.py
+      - collectors/edgar_eps.py
+      - collectors/edgar_flow_quality.py
+      - collectors/edgar_share_quality.py
+      - collectors/edgar_stock_quality.py
+      - collectors/fred.py
+      - collectors/holdings.py
+      - collectors/ipo_calendar.py
+      - collectors/ipo_prospectus.py
+      - collectors/okx.py
+      - collectors/openfigi.py
+      - config/ai_pricing.yml
+      - config/capability_manifest.yml
+      - config/delisted_symbols.yml
+      - config/metabolism_budget.yml
+      - contracts/theme_graph/membership_collection.v2.schema.json
+      - engine/__init__.py
+      - engine/active_alloc.py
+      - engine/active_commodity.py
+      - engine/ai_desk.py
+      - engine/ai_desk_scorer.py
+      - engine/alert_time.py
+      - engine/alert_triage.py
+      - engine/alerts.py
+      - engine/alt_cycle.py
+      - engine/altdata_ledger.py
+      - engine/altdata_models.py
+      - engine/altdata_picks.py
+      - engine/altdata_signals.py
+      - engine/anticipation.py
+      - engine/axes.py
+      - engine/bar_derive.py
+      - engine/base_effect.py
+      - engine/basket_breadth_divergence.py
+      - engine/basket_freeze.py
+      - engine/basket_history.py
+      - engine/basket_index.py
+      - engine/basket_levels_persist.py
+      - engine/basket_membership_pit.py
+      - engine/basket_mtf.py
+      - engine/basket_score.py
+      - engine/basket_tape.py
+      - engine/baskets.py
+      - engine/baskets_canada.py
+      - engine/baskets_china.py
+      - engine/baskets_hk.py
+      - engine/baskets_intl.py
+      - engine/baskets_region.py
+      - engine/board_ledger.py
+      - engine/board_shadow.py
+      - engine/btc_alerts.py
+      - engine/btc_correlation_regime.py
+      - engine/btc_cycle_thesis.py
+      - engine/btc_dat.py
+      - engine/btc_decision.py
+      - engine/btc_impulse_ledger.py
+      - engine/btc_impulse_radar.py
+      - engine/btc_impulse_radar_backtest.py
+      - engine/btc_inputs.py
+      - engine/btc_intraday_cvd.py
+      - engine/btc_leverage_cascade.py
+      - engine/btc_master.py
+      - engine/btc_mtf.py
+      - engine/btc_options.py
+      - engine/btc_override_ledger.py
+      - engine/btc_overrides.py
+      - engine/btc_recommend.py
+      - engine/btc_regime.py
+      - engine/btc_regime_flags.py
+      - engine/btc_regime_ledger.py
+      - engine/btc_signals.py
+      - engine/canada_axes.py
+      - engine/canada_conditions.py
+      - engine/canada_factor_beta.py
+      - engine/canada_fundamentals.py
+      - engine/canada_inputs.py
+      - engine/canada_insider.py
+      - engine/canada_overlay.py
+      - engine/canada_regime.py
+      - engine/canada_run.py
+      - engine/canon.py
+      - engine/catalyst_tone.py
+      - engine/china_allocation.py
+      - engine/china_altdata.py
+      - engine/china_basket_spine.py
+      - engine/china_basket_turn.py
+      - engine/china_conviction.py
+      - engine/china_crowding.py
+      - engine/china_discovery.py
+      - engine/china_event_calendar.py
+      - engine/china_extras.py
+      - engine/china_intel_bus.py
+      - engine/china_masterminds.py
+      - engine/china_news.py
+      - engine/china_news_intel.py
+      - engine/china_pboc_stance.py
+      - engine/china_radar.py
+      - engine/china_radar_ledger.py
+      - engine/china_signal_lab.py
+      - engine/china_strategies.py
+      - engine/china_validation.py
+      - engine/cn_ai_semis_confirmer.py
+      - engine/cn_newswires.py
+      - engine/codex_lane/runner.py
+      - engine/codex_provider.py
+      - engine/commodity_alerts.py
+      - engine/commodity_inputs.py
+      - engine/commodity_signals.py
+      - engine/commodity_strategies.py
+      - engine/conditions.py
+      - engine/confluence_tiers.py
+      - engine/conviction_accrual.py
+      - engine/credit_window.py
+      - engine/cross_asset.py
+      - engine/cross_asset_trend.py
+      - engine/cycle_ontology.py
+      - engine/cycles.py
+      - engine/dannytrades.py
+      - engine/dannytrades_chip.py
+      - engine/desk_ledger.py
+      - engine/desk_scorer.py
+      - engine/dislocation.py
+      - engine/dispersion.py
+      - engine/election_cycle.py
+      - engine/emergence_alerts.py
+      - engine/entity_resolver.py
+      - engine/entry_signal.py
+      - engine/equity_alloc.py
+      - engine/equity_factors.py
+      - engine/etf_board.py
+      - engine/etf_pulse.py
+      - engine/event_calendar.py
+      - engine/extension.py
+      - engine/falsifier_tripwires.py
+      - engine/forward_calendar_context.py
+      - engine/forward_dist.py
+      - engine/gdelt_client.py
+      - engine/global_liquidity.py
+      - engine/grading.py
+      - engine/group_flow.py
+      - engine/hazard_score.py
+      - engine/hold.py
+      - engine/holdings_signals.py
+      - engine/hysteresis.py
+      - engine/i18n.py
+      - engine/ignition_audit.py
+      - engine/ignition_radar.py
+      - engine/index_direction.py
+      - engine/indicators.py
+      - engine/inputs.py
+      - engine/ipo_hk.py
+      - engine/ipo_lockup.py
+      - engine/ipo_radar.py
+      - engine/leadership_receipt.py
+      - engine/ledger_lane.py
+      - engine/llm_auth.py
+      - engine/macro_surprise.py
+      - engine/manager_lag.py
+      - engine/manager_quality.py
+      - engine/manager_trades.py
+      - engine/market_state.py
+      - engine/market_state_ca.py
+      - engine/master_brain.py
+      - engine/masterminds.py
+      - engine/metabolism/__init__.py
+      - engine/metabolism/budget_gate.py
+      - engine/mtf_monitor.py
+      - engine/name_direction.py
+      - engine/name_resolver.py
+      - engine/name_score.py
+      - engine/name_score_grader.py
+      - engine/narrative_crossmarket.py
+      - engine/narrative_emergence.py
+      - engine/narrative_rotation.py
+      - engine/neuralweb/__init__.py
+      - engine/neuralweb/brief_context.py
+      - engine/neuralweb/capability_broker.py
+      - engine/neuralweb/constitution.py
+      - engine/neuralweb/envelope.py
+      - engine/neuralweb/governance.py
+      - engine/neuralweb/key_pool.py
+      - engine/neuralweb/read.py
+      - engine/neuralweb/synapse.py
+      - engine/news_common.py
+      - engine/news_translate.py
+      - engine/ohlc_reconstruct.py
+      - engine/ollama_provider.py
+      - engine/opex.py
+      - engine/oracle/__init__.py
+      - engine/oracle/washout_counterread.py
+      - engine/passport.py
+      - engine/pit.py
+      - engine/pit_lag_recorder.py
+      - engine/playbook.py
+      - engine/pooling.py
+      - engine/prophet_board_since.py
+      - engine/provider_health.py
+      - engine/pullback_zone.py
+      - engine/qbus.py
+      - engine/qkernel.py
+      - engine/qledger.py
+      - engine/qledger_store.py
+      - engine/qledger_store_native.py
+      - engine/qledger_store_protocol.py
+      - engine/qledger_store_sources.py
+      - engine/qledger_validity.py
+      - engine/rate_inflation_transmission.py
+      - engine/rebalance_calendar.py
+      - engine/regime.py
+      - engine/regime_label.py
+      - engine/regime_one.py
+      - engine/regime_vector.py
+      - engine/residual_alpha.py
+      - engine/risk_radar.py
+      - engine/risk_radar_backtest.py
+      - engine/risk_radar_intl.py
+      - engine/risk_radar_intl_audit.py
+      - engine/risk_radar_intl_tune.py
+      - engine/risk_radar_market_catalysts.py
+      - engine/risk_radar_recovery.py
+      - engine/risk_radar_scorecard.py
+      - engine/risk_sizing.py
+      - engine/risk_state.py
+      - engine/sector_cycles.py
+      - engine/sector_ignition.py
+      - engine/sector_pulse.py
+      - engine/sector_rate_inflation.py
+      - engine/session_anchor.py
+      - engine/setups.py
+      - engine/signal_archive.py
+      - engine/signal_foundry/results.py
+      - engine/signal_foundry/spec.py
+      - engine/signal_foundry/transforms.py
+      - engine/signal_frontier_docket.py
+      - engine/signal_gate.py
+      - engine/signal_lab.py
+      - engine/signal_quality.py
+      - engine/smart_money.py
+      - engine/spine.py
+      - engine/spvector_overlay.py
+      - engine/stock_score.py
+      - engine/stock_technicals.py
+      - engine/stock_view.py
+      - engine/store_guard.py
+      - engine/strategies.py
+      - engine/sue.py
+      - engine/technicals.py
+      - engine/theme_alerts.py
+      - engine/theme_context.py
+      - engine/theme_crowding.py
+      - engine/theme_discovery.py
+      - engine/theme_scoring.py
+      - engine/theme_validation.py
+      - engine/ticker_shape.py
+      - engine/total_return.py
+      - engine/track_era.py
+      - engine/track_ledger.py
+      - engine/trial_ledger.py
+      - engine/tushare_freshness.py
+      - engine/universe_history.py
+      - engine/validation.py
+      - engine/valuation.py
+      - engine/velocity.py
+      - engine/vol_forecast.py
+      - engine/vol_regime.py
+      - engine/vol_squeeze.py
+      - engine/yield_momentum.py
+      - lib/__init__.py
+      - lib/ai_costs.py
+      - lib/closes_panel.py
+      - lib/cn_calendar.py
+      - lib/config.py
+      - lib/dataos/identity.py
+      - lib/delisted_symbols.py
+      - lib/exchange_holidays.py
+      - lib/filing_value_units.py
+      - lib/forex_link.py
+      - lib/hk_calendar.py
+      - lib/illus.py
+      - lib/market_observations.py
+      - lib/market_session.py
+      - lib/nyse_calendar.py
+      - lib/pages.py
+      - lib/site_assets.py
+      - lib/store.py
+      - lib/ticker_aliases.py
+      - lib/ticker_popularity.py
+      - lib/tsx_calendar.py
+      - lib/us_cash_calendar.py
+      - research/US_BOARD_MEASUREMENT.md
+      - research/crypto_science/r10_source_qualification.py
+      - research/crypto_science/r12/reference_cvd_before_price_guard.py.txt
+      - research/crypto_science/r3_cohort_study.py
+      - research/crypto_science/r4_sequence_study.py
+      - research/crypto_science/r5_participation_study.py
+      - research/crypto_science/r6_probability_study.py
+      - research/crypto_science/r7_calibration_study.py
+      - research/crypto_science/r8_action_value_study.py
+      - research/crypto_science/r9_prebreak_study.py
+      - scripts/__init__.py
+      - scripts/_active_render.py
+      - scripts/backfill_crypto.py
+      - scripts/backtest_ladder_history.py
+      - scripts/build_baskets_canada.py
+      - scripts/build_baskets_china.py
+      - scripts/build_baskets_china_ths.py
+      - scripts/build_baskets_hk.py
+      - scripts/build_baskets_intl.py
+      - scripts/build_btc_strategy.py
+      - scripts/build_canada.py
+      - scripts/build_canada_library.py
+      - scripts/build_chart_data.py
+      - scripts/build_china_masterminds.py
+      - scripts/build_china_strategies.py
+      - scripts/build_commodity_strategies.py
+      - scripts/build_crossmarket.py
+      - scripts/build_ipo.py
+      - scripts/build_masterminds.py
+      - scripts/build_override_shadow.py
+      - scripts/build_reports.py
+      - scripts/build_spvector.py
+      - scripts/build_strategies.py
+      - scripts/build_theme_detail.py
+      - scripts/build_vector.py
+      - scripts/check_crypto_shelves.py
+      - scripts/notify.py
+      - scripts/thematic_rotation_phase0.py
+      - scripts/validate_regime_fwd.py
+      - site/btc_strategy.html
+      - site/factordata/basket_washout_state.json
+      - site/vector_chart.js
+      - templates/crypto.html.j2
+      - templates/vector.html.j2
+      - tests/test_btc_impulse_alerts.py
+      - tests/test_btc_impulse_falsifier.py
+      - tests/test_btc_impulse_radar.py
+      - tests/test_btc_intraday_cvd.py
+      - tests/test_btc_signals.py
+      - tests/test_crypto_collectors.py
+      - tests/test_vector_r2_data_boundary.py
+      - tests/test_vector_r2_frontdoor.py
+      - tests/test_vector_wave1.py
+    timeout-minutes: 8
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install minimal deps
+        run: pip install pytest pandas numpy pyarrow pyyaml jinja2 markupsafe plotly requests scipy beautifulsoup4 lxml openpyxl scikit-learn fastapi httpx jsonschema
+      - name: R2 organs — vector wave-1 / data boundary / front door, BTC signals / impulse / intraday CVD, crypto collectors
+        run: python -m pytest tests/test_vector_wave1.py tests/test_vector_r2_data_boundary.py tests/test_vector_r2_frontdoor.py tests/test_btc_signals.py tests/test_btc_impulse_falsifier.py tests/test_btc_impulse_radar.py tests/test_btc_impulse_alerts.py tests/test_btc_intraday_cvd.py tests/test_crypto_collectors.py -q
 
   unrun-oracle-desk:
     # oracle nightly + its gauntlet promotion gates.
@@ -17486,6 +17891,7 @@ jobs:
     paths:
       # Native DailyBrief registration/producer import closure (PR #9037).
       - "engine/prophet_candidate_state.py"
+      - "engine/prophet_candidate_state_sources.py"
       - "engine/prophet_daily_brief.py"
       - "engine/prophet_entry_availability.py"
       - "engine/prophet_strategy_definition.py"
@@ -18557,68 +18963,44 @@ jobs:
       - name: US candidate and plan source-date truth (PR-time gated journey)
         run: >-
           python -m pytest tests/test_p0_prophet_candidate_board.py -q -k "candidate_heading_discloses_source_date or gated_candidate_journey or historical_plan_wall_does_not"
-      - name: Shared Prophet card - record identity and explicit unavailable action
-        run: python -m pytest tests/test_prophet_card_shared.py tests/test_prophet_plan_relation.py tests/test_prophet_candidate_plan_return.py -q
       - name: Prophet Today and Company context - owner selection and typed responses
         run: python -m pytest tests/test_p0_prophet_candidate_board.py -q -k "today or company_context"
-      - name: Prophet journey reconciliation harness (PR-time gated journey)
-        run: python -m pytest tests/test_prophet_journey_reconcile.py -q
       - name: stock-brief context health (R2 context must yield a nonempty batch)
         run: >-
           python -m pytest tests/test_catalyst_stock.py -q -k "build_stock_briefs_all_no_context_is_failure or build_stock_briefs_empty_result_is_failure"
-      - name: prophet doors incl. Door W (washout-turn entries; fire legs, prereg pins, invariance)
-        run: python -m pytest tests/test_prophet_doors.py tests/test_gate_crash_failopen.py -q
-      - name: prophet arena (frozen challenger policies, closure-replay ruler, ledger lane gate, pick-chain fence)
-        run: python -m pytest tests/test_prophet_arena.py -q
-      - name: washout-turn organ (depth-gated weekly cross, PIT completed-bars pin, ledger gate)
-        run: python -m pytest tests/test_washout_turn.py tests/test_mtf_upturn.py tests/test_oracle_memory_analogues_step.py tests/test_stock_events.py tests/test_event_atlas.py -q
-      - name: leader-pullback organ (§6.9 R4 — RS-leader reset detection, self-containment + no-authority pins)
-        run: python -m pytest tests/test_us_leader_pullback.py -q
-      - name: leader-pullback coverage publisher (§6.9 R4 — the artifact the EARLY-TURN intake reads)
         # Rides the organ's own lane because it is the organ's publisher: it supplies the
         # PIT cross-section the organ refuses to reach for, and #5007's organ + #5105's
         # intake were joined by nothing until it shipped. Its end-to-end cases drive the
         # real `originate_plans` reading the real artifact off disk (~5s serial), so the
         # pair must be able to red each other on the same head.
-        run: python -m pytest tests/test_us_leader_pullback_coverage.py -q
       # #7180 completed-session source binding is a code contract, not nightly data
       # freshness. Keep the suite in this existing Prophet code gate so PR packs can
       # exercise the same source/date clipping and frozen-object law before merge.
-      - name: US completed-session source binding (closed-session panel + frozen source)
-        run: python -m pytest tests/test_us_completed_session_panel.py -q
-      - name: leader-observation projection (strict source status, no-rank authority, summary privacy)
-        run: python -m pytest tests/test_us_leader_observation_projection.py -q
       # Prophet V4 B3 candidate-state core + owner-fact adapters. Keep this in the
       # existing CODE-gated turn/organ lane: the source adapter consumes canonical
       # generation-local TURN WATCH facts, while Radar identity remains fail-closed
       # and B4/ranking/trading authority stay absent. No new job or runner is added.
-      - name: prophet B3 candidate state (orthogonal lifecycle/emergence/maturity + fail-closed owner facts)
-        run: python -m pytest tests/test_prophet_candidate_state.py tests/test_prophet_candidate_state_sources.py -q
       # Strategy-platform prerequisite for B4: one immutable, versioned, authority-false
       # owner definition. This does not compute Availability or widen B1/B3 admission.
-      - name: prophet strategy definition owner projection (B4 prerequisite only)
-        run: python -m pytest tests/test_prophet_strategy_definition.py tests/test_build_live_quotes.py tests/test_vps_live_orchestration.py -q
       # MI-S2 prospective registration binds the B4 session policy above (2026-2027
       # era, early-close table) and freezes one TrialLedger config; it rides this
       # code gate so a session-policy edit and the registration can red each other.
-      - name: MI-S2 theme-relative intraday registration (prospective; session-policy binding, one-trial ledger)
-        run: python -m pytest tests/test_mi_s2_theme_relative_intraday_registration.py -q
       # Daily Brief is a zero-I/O read model over owner receipts, not B4 policy.
       # Keep malformed-input, health-precedence and immutable-receipt regressions on CODE.
-      - name: prophet Daily Brief compositor (owner receipts + fail-closed presentation)
-        run: python -m pytest tests/test_prophet_daily_brief.py -q
-      - name: turn-watch desk + group-turn organ (§6.9 R8 — publish path, leg-(d) organ vs fallback, recall contract; §6.9 R6 basket lifecycle)
         # The TURN WATCH desk consumes the group-turn organ's artifact and R4's organ, so
         # all three ride one lane. test_us_basket_turn.py was named by NO run: step in any
         # workflow before this — the same unrun-suite hole this job's header records for
         # test_mtf_upturn.py, found while auditing the desk (2026-08-09, 36 tests, green on
         # the base that registered it). test_us_turn_watch.py is enumerated at birth.
-        run: python -m pytest tests/test_us_turn_watch.py tests/test_us_basket_turn.py -q
       # V4 B2-0 records-only evidence regression. This must be owned by
       # an existing merge-binding CODE gate, not only by the data-gated
       # anticipation lane. No new job/runner/control plane is introduced.
-      - name: b2-0 disposition matrix (B-15..B-19 lineage, PIT replay, mutation guards, red-condition discriminators)
-        run: python -m pytest tests/test_prophet_b2_disposition.py -q
+      - name: Prophet source, lifecycle and presentation contracts (one native process)
+        run: python -m pytest tests/test_prophet_card_shared.py tests/test_prophet_plan_relation.py tests/test_prophet_candidate_plan_return.py tests/test_prophet_journey_reconcile.py tests/test_us_completed_session_panel.py tests/test_us_leader_observation_projection.py tests/test_prophet_candidate_state.py tests/test_prophet_candidate_state_sources.py tests/test_prophet_strategy_definition.py tests/test_build_live_quotes.py tests/test_vps_live_orchestration.py tests/test_prophet_daily_brief.py -q
+      - name: Prophet detector, organ and disposition contracts (one native process)
+        run: python -m pytest tests/test_prophet_doors.py tests/test_gate_crash_failopen.py tests/test_prophet_arena.py tests/test_washout_turn.py tests/test_mtf_upturn.py tests/test_oracle_memory_analogues_step.py tests/test_stock_events.py tests/test_event_atlas.py tests/test_us_leader_pullback.py tests/test_us_leader_pullback_coverage.py tests/test_mi_s2_theme_relative_intraday_registration.py tests/test_us_turn_watch.py tests/test_us_basket_turn.py tests/test_prophet_b2_disposition.py -q
+      - name: Prophet B4 producer basis and disclosed freshness guards
+        run: python -m pytest tests/test_prophet_live_evaluator.py -q -k 'dark_artifact_discloses or malformed_threshold or row_exception_material or zero_or_negative or cfg_stamps or meta_discloses or stripping_only or basis_material or the_disclosure'
 
   prophet-anticipation-intake:
     # ANTICIPATION A1 (status-class admission) + §6.9 R3 (structure-anchored entry
@@ -18943,6 +19325,7 @@ jobs:
       # Native DailyBrief registration/producer import closure (PR #9037).
       - "engine/path_risk_signals.py"
       - "engine/prophet_candidate_state.py"
+      - "engine/prophet_candidate_state_sources.py"
       - "engine/prophet_daily_brief.py"
       - "engine/prophet_entry_availability.py"
       - "engine/prophet_strategy_definition.py"
@@ -19175,6 +19558,7 @@ jobs:
       - "engine/btc_impulse_radar.py"
       - "engine/btc_impulse_radar_backtest.py"
       - "engine/btc_inputs.py"
+      - "engine/btc_intraday_cvd.py"
       - "engine/btc_leverage_cascade.py"
       - "engine/btc_master.py"
       - "engine/btc_mtf.py"
@@ -21577,6 +21961,7 @@ jobs:
     paths:
       # Native DailyBrief registration/producer import closure (PR #9037).
       - "engine/prophet_candidate_state.py"
+      - "engine/prophet_candidate_state_sources.py"
       - "engine/prophet_daily_brief.py"
       - "engine/prophet_entry_availability.py"
       - "engine/prophet_strategy_definition.py"
@@ -22230,8 +22615,7 @@ jobs:
           tests/test_market_memory_trusted.py
           tests/test_market_memory_context_deploy.py
           tests/test_regime_latest_json_boundary.py
-          tests/test_release_target_truth.py
-          tests/test_build_market_memory_page.py -q
+          tests/test_release_target_truth.py -q
 
   group-pulse:
     # GR0 of the Group Reads program: engine/group_pulse.py, the basket-level
@@ -22429,6 +22813,82 @@ jobs:
         run: >-
           python -m pytest
           tests/test_group_linked_outsiders.py -q -rs
+
+  fif-saved-research-notifications:
+    # X2-n: the FIF saved-research notification producer (enqueue-only), its
+    # ownership guards, and the watchstore designated-list helper. A small
+    # first-class owner in the falsifier-tripwires shape so path-aware
+    # selection keeps the exact changed behavior lit: an edit to the producer,
+    # the runner, the alert-category enum, the watchlist store or the nightly
+    # step's own guards never ships dark. The designated-list suite shells
+    # node over the real templates/watchstore.js (the same idiom as the
+    # wri-risk-core watchstore steps, whose setup-node is copied here).
+    if: ${{ false }}  # executed inside ci-pack — NOT a disabled gate.
+    gate: code
+    # scope: exclusive — declared paths are the whole scope (no whole-tree
+    # fallback roots), so ordinary engine/scripts PRs do not select this job.
+    # The list is the job's derived import closure
+    # (scripts.run_ci_pack.inferred_as_if_not_exclusive) plus the two YAMLs
+    # the ownership guards parse; widening is always the safe direction.
+    scope: exclusive
+    paths:
+      - ".github/workflows/daily.yml"
+      - "collectors/edgar_forensics.py"
+      - "collectors/fundamental_forensics_acquisition.py"
+      - "collectors/fundamental_forensics_companyfacts.py"
+      - "collectors/sec_document_spine.py"
+      - "collectors/sec_filing_parser.py"
+      - "collectors/sec_request_pacer.py"
+      - "config/dag.yml"
+      - "config/fundamental_forensics_disclosure_diff.v1.json"
+      - "engine/__init__.py"
+      - "engine/fif_saved_research_notifications.py"
+      - "engine/fundamental_forensics/__init__.py"
+      - "engine/fundamental_forensics/detectors.py"
+      - "engine/fundamental_forensics/disclosure_diff.py"
+      - "engine/fundamental_forensics/filing_attestation.py"
+      - "engine/fundamental_forensics/filing_package.py"
+      - "engine/fundamental_forensics/ixbrl_extraction.py"
+      - "engine/fundamental_forensics/models.py"
+      - "engine/fundamental_forensics/normalize.py"
+      - "engine/fundamental_forensics/pipeline.py"
+      - "engine/fundamental_forensics/private_state.py"
+      - "engine/fundamental_forensics/sec_companyfacts.py"
+      - "engine/fundamental_forensics/sec_document_spine.py"
+      - "engine/fundamental_forensics/source_sync.py"
+      - "engine/research_vault/r2_store.py"
+      - "lib/__init__.py"
+      - "lib/config.py"
+      - "lib/user_prefs.py"
+      - "scripts/__init__.py"
+      - "scripts/run_fif_saved_research_notifications.py"
+      - "templates/watchlist.js"
+      - "templates/watchstore.js"
+      - "tests/test_fif_saved_research_notifications.py"
+      - "tests/test_fif_watchstore_designated_list_js.py"
+      - "tests/test_fif_x2_ownership_guards.py"
+      - "tests/test_watchstore_multilist_js.py"
+    timeout-minutes: 12
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: install minimal deps
+        # pyyaml: the ownership guards parse daily.yml + config/dag.yml. The
+        # producer and its suite are stdlib-only by design (no HTTP client at
+        # import; sockets blocked in an autouse fixture).
+        run: pip install pytest pyyaml
+      - name: fif saved-research producer — enqueue-only decisions + fail-soft IO (X2-n)
+        run: python -m pytest tests/test_fif_saved_research_notifications.py -q
+      - name: fif X2-n ownership guards — one step, no second scheduler, no DDL
+        run: python -m pytest tests/test_fif_x2_ownership_guards.py -q
+      - name: watchstore.js designated list — lazy create, unsubscribe, exact name (X2-n R2)
+        run: python -m pytest tests/test_fif_watchstore_designated_list_js.py -q
 
   falsifier-tripwires:
     # The stateful cycle-ontology falsifier engine was triggerable but its focused
@@ -23118,6 +23578,7 @@ jobs:
       # Native DailyBrief registration/producer import closure (PR #9037).
       - "app/prophet_daily_brief.py"
       - "engine/prophet_candidate_state.py"
+      - "engine/prophet_candidate_state_sources.py"
       - "engine/prophet_daily_brief.py"
       - "engine/prophet_entry_availability.py"
       - "engine/prophet_strategy_definition.py"
@@ -25526,6 +25987,72 @@ jobs:
         run: pip install pytest pandas numpy
       - name: observed-move labels, features and price-basis refusal
         run: python -m pytest tests/test_observed_moves.py -q
+
+  grey-deer-pullback-stage1:
+    if: ${{ false }}
+    gate: code
+    scope: exclusive
+    # Grey Deer W3 (WS:GREY-DEER-RISK-INTELLIGENCE): pullback stage-1 executing
+    # script frozen by research/grey_deer/PULLBACK_PREREGISTRATION_2026-10-11.md
+    # (blob 49a68b5e9c6543d662044b0aa391c4b6e6e6052e). Hermetic: synthetic series only.
+    timeout-minutes: 10
+    paths:
+      - "scripts/research/grey_deer_pullback_stage1.py"
+      - "tests/test_grey_deer_pullback_stage1.py"
+      - "lib/observed_moves.py"
+      - "engine/vol_forecast.py"
+      - "lib/nyse_calendar.py"
+      - "collectors/base.py"
+      - "collectors/fred.py"
+      - "collectors/massive_flatfiles.py"
+      - "collectors/massive_stock_day.py"
+      - "engine/__init__.py"
+      - "engine/axes.py"
+      - "engine/base_effect.py"
+      - "engine/canon.py"
+      - "engine/election_cycle.py"
+      - "engine/indicators.py"
+      - "engine/inputs.py"
+      - "engine/oracle/__init__.py"
+      - "engine/oracle/washout_counterread.py"
+      - "engine/pit.py"
+      - "engine/pit_lag_recorder.py"
+      - "engine/regime.py"
+      - "engine/regime_one.py"
+      - "engine/risk_radar.py"
+      - "engine/risk_radar_backtest.py"
+      - "engine/trial_ledger.py"
+      - "engine/yield_momentum.py"
+      - "lib/__init__.py"
+      - "lib/cn_calendar.py"
+      - "lib/config.py"
+      - "lib/exchange_holidays.py"
+      - "lib/hk_calendar.py"
+      - "lib/market_observations.py"
+      - "lib/market_session.py"
+      - "lib/massive_ticker.py"
+      - "lib/store.py"
+      - "lib/tsx_calendar.py"
+      - "lib/us_cash_calendar.py"
+      - "research/grey_deer/PULLBACK_PREREGISTRATION_2026-10-11.md"
+      - "research/grey_deer/PULLBACK_SOURCE_RIGHTS_QUALIFICATION_2026-10-11.md"
+      - "research/grey_deer/RISK_RADAR_DISPLAYED_PROBABILITY_AUDIT_PREREG_2026-09-22.md"
+      - "research/grey_deer/RISK_RADAR_DISPLAYED_PROBABILITY_AUDIT_RESULTS_2026-09-22.md"
+      - "research/grey_deer/RISK_RADAR_STATE_LADDER_CALIBRATION_PREREG_2026-09-21.md"
+      - "research/grey_deer/RISK_RADAR_STATE_LADDER_CALIBRATION_RESULTS_2026-09-21.md"
+      - "scripts/research/risk_radar_displayed_probability_audit.py"
+      - "scripts/research/risk_radar_state_ladder_calibration.py"
+      - "scripts/validate_regime_fwd.py"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install minimal deps
+        run: pip install pytest pandas numpy scipy pyarrow pyyaml
+      - name: pullback stage-1 synthetic tests
+        run: python -m pytest tests/test_grey_deer_pullback_stage1.py -q
 
   sni-s1-residual:
     if: ${{ false }}

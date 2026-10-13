@@ -235,6 +235,225 @@ def test_escaped_nonnumeric_continuation_and_uri_boundary() -> None:
         parse_sec_filing_document(relative_uri, document_name="escaped-relative-uri.xhtml")
 
 
+def test_escaped_nonnumeric_same_document_fragment_href_is_admitted() -> None:
+    # (P1) The fragment target sits inside the same fact.
+    fact = (
+        '<ix:nonNumeric id="f" name="ex:F" contextRef="c" escape="true">'
+        '<p><a style="color:#0000ff" href="#t1">see</a></p><span id="t1"></span></ix:nonNumeric>'
+    )
+    content = _inline(fact)
+    parsed = parse_sec_filing_document(content, document_name="fragment-in-fact.xhtml")
+    assert parsed["facts"][0]["raw_value"] == (
+        '<p><a style="color:#0000ff" href="#t1">see</a></p><span id="t1"></span>'
+    )
+    validate_sec_filing_parse_result(parsed, source_content=content)
+
+    # (P2) The fragment target sits in the body outside every ix element.
+    fact = (
+        '<ix:nonNumeric id="f" name="ex:F" contextRef="c" escape="true">'
+        '<a href="#t2">x</a></ix:nonNumeric>'
+    )
+    content = _inline(fact + '<div id="t2"></div>')
+    parsed = parse_sec_filing_document(content, document_name="fragment-in-body.xhtml")
+    assert parsed["facts"][0]["raw_value"] == '<a href="#t2">x</a>'
+    validate_sec_filing_parse_result(parsed, source_content=content)
+
+    # (P3) The fragment link sits in an escaped continuation whose target id
+    # is carried by the fact head.
+    fact = (
+        '<ix:nonNumeric id="f" name="ex:F" contextRef="c" continuedAt="a" escape="true">'
+        '<span id="t3"></span><p>A</p></ix:nonNumeric>'
+    )
+    continuation = '<ix:continuation id="a"><a href="#t3">go</a></ix:continuation>'
+    content = _inline(fact, continuations=continuation)
+    parsed = parse_sec_filing_document(content, document_name="fragment-in-continuation.xhtml")
+    assert parsed["facts"][0]["raw_value"] == '<span id="t3"></span><p>A</p><a href="#t3">go</a>'
+    validate_sec_filing_parse_result(parsed, source_content=content)
+
+    # (P4) Removing the fragment link changes only the retained markup value;
+    # no other record moves.
+    linked = parse_sec_filing_document(
+        _inline(
+            '<ix:nonNumeric id="f" name="ex:F" contextRef="c" escape="true">'
+            '<p><a style="color:#0000ff" href="#t1">see</a></p><span id="t1"></span></ix:nonNumeric>'
+        ),
+        document_name="fragment-p4.xhtml",
+    )
+    unlinked = parse_sec_filing_document(
+        _inline(
+            '<ix:nonNumeric id="f" name="ex:F" contextRef="c" escape="true">'
+            '<p>see</p><span id="t1"></span></ix:nonNumeric>'
+        ),
+        document_name="fragment-p4.xhtml",
+    )
+    anchor = '<a style="color:#0000ff" href="#t1">see</a>'
+    assert linked["facts"][0]["raw_value"].replace(anchor, "see") == unlinked["facts"][0]["raw_value"]
+    assert linked["contexts"] == unlinked["contexts"]
+    assert linked["units"] == unlinked["units"]
+    assert len(linked["facts"]) == len(unlinked["facts"]) == 1
+    span_and_value_fields = {
+        "raw_value",
+        "transformed_value",
+        "normalized_value",
+        "text_spans",
+        "excluded_text_spans",
+        "source_span",
+    }
+    assert {key: value for key, value in linked["facts"][0].items() if key not in span_and_value_fields} == {
+        key: value for key, value in unlinked["facts"][0].items() if key not in span_and_value_fields
+    }
+
+
+_BAD_FRAGMENT_HREFS = [
+    "#",
+    "# t1",
+    "#t1 ",
+    " #t1",
+    "#t1&#9;",
+    "#t1&#x85;",
+    "#t1&#x200B;",
+    "#t/1",
+    "#t\\1",
+    "#t:1",
+    "#t?1",
+    "#t#1",
+    "#t%31",
+    "#1t",
+    "t1",
+    "a.htm",
+    "./a",
+    "../a",
+    "//host/a",
+    "?q",
+    "a.htm#t1",
+    "",
+]
+
+
+@pytest.mark.parametrize(
+    ("case", "markup", "body_suffix", "match"),
+    [
+        *[
+            (f"href={value!r}", f'<a href="{value}">x</a>', '<span id="t1"></span>', "relative URI")
+            for value in _BAD_FRAGMENT_HREFS
+        ],
+        ("unknown-id", '<a href="#nope">x</a>', '<span id="t1"></span>', "relative URI"),
+        # The parser keeps one document-wide id namespace across ALL elements,
+        # so a duplicated id is refused by that pre-existing rule first.
+        (
+            "duplicate-id",
+            '<a href="#t1">x</a>',
+            '<span id="t1"></span><span id="t1"></span>',
+            "duplicate Inline XBRL id",
+        ),
+        ("non-a-element", '<span href="#t1">x</span>', '<span id="t1"></span>', "relative URI"),
+        ("src-not-href", '<img src="#t1"/>', '<span id="t1"></span>', "relative URI"),
+        (
+            "prefixed-href",
+            '<a xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#t1">x</a>',
+            '<span id="t1"></span>',
+            "relative URI",
+        ),
+        ("non-xhtml-a", '<ex:a href="#t1">x</ex:a>', '<span id="t1"></span>', "relative URI"),
+    ],
+)
+def test_escaped_nonnumeric_fragment_href_refusals(case, markup, body_suffix, match) -> None:
+    body = (
+        '<ix:nonNumeric id="f" name="ex:F" contextRef="c" escape="true">'
+        f"{markup}</ix:nonNumeric>{body_suffix}"
+    )
+    with pytest.raises(SecFilingParseError, match=match):
+        parse_sec_filing_document(_inline(body), document_name="fragment-refusal.xhtml")
+
+
+@pytest.mark.parametrize(
+    ("case", "markup", "body_suffix", "inject_base_element"),
+    [
+        (
+            "xml-base-on-anchor",
+            '<a xml:base="https://evil.example/other.htm" href="#t1">x</a>',
+            '<span id="t1"></span>',
+            False,
+        ),
+        (
+            "xml-base-on-ancestor",
+            '<div xml:base="https://evil.example/other.htm"><a href="#t1">x</a></div>',
+            '<span id="t1"></span>',
+            False,
+        ),
+        (
+            "relative-xml-base-on-ancestor",
+            '<div xml:base="other.htm"><a href="#t1">x</a></div>',
+            '<span id="t1"></span>',
+            False,
+        ),
+        (
+            "xhtml-base-element-in-head",
+            '<a href="#t1">x</a>',
+            '<span id="t1"></span>',
+            True,
+        ),
+        (
+            "xml-base-elsewhere-in-document",
+            '<a href="#t1">x</a>',
+            '<span id="t1"></span><div xml:base="other.htm"></div>',
+            False,
+        ),
+    ],
+)
+def test_escaped_nonnumeric_fragment_href_refused_under_a_changed_base(
+    case, markup, body_suffix, inject_base_element
+) -> None:
+    # A same-document fragment resolves against the document base URI, so any
+    # base-changing construct anywhere in the member - xml:base on the anchor,
+    # on an ancestor, or elsewhere, or an XHTML base element in the head -
+    # makes the fragment exception inapplicable and the refusal fires.
+    body = (
+        '<ix:nonNumeric id="f" name="ex:F" contextRef="c" escape="true">'
+        f"{markup}</ix:nonNumeric>{body_suffix}"
+    )
+    content = _inline(body)
+    if inject_base_element:
+        assert content.count(b"<head></head>") == 1
+        content = content.replace(
+            b"<head></head>",
+            b'<head><base href="https://evil.example/other.htm"/></head>',
+        )
+    with pytest.raises(SecFilingParseError, match="relative URI markup is unsupported"):
+        parse_sec_filing_document(content, document_name="fragment-base-refusal.xhtml")
+
+
+def test_escaped_nonnumeric_fragment_href_is_admitted_without_a_base_construct() -> None:
+    # Same shape as the document-level negative, minus the base construct:
+    # the fragment exception applies and the markup is retained unchanged.
+    body = (
+        '<ix:nonNumeric id="f" name="ex:F" contextRef="c" escape="true">'
+        '<a href="#t1">x</a></ix:nonNumeric><span id="t1"></span><div></div>'
+    )
+    content = _inline(body)
+    parsed = parse_sec_filing_document(content, document_name="fragment-no-base.xhtml")
+    assert parsed["facts"][0]["raw_value"] == '<a href="#t1">x</a>'
+    validate_sec_filing_parse_result(parsed, source_content=content)
+
+
+def test_same_document_fragment_predicate_requires_exactly_one_target_and_no_base() -> None:
+    anchor = parser_module._Node(
+        qname=f"{{{parser_module.XHTML}}}a",
+        lexical_name="a",
+        attrs={"href": "#t1"},
+        namespaces={},
+        start=0,
+        start_tag_end=0,
+        self_closing=False,
+        parent=None,
+    )
+    pred = parser_module._is_same_document_fragment_href
+    assert pred(anchor, "href", "#t1", {"t1": 1}, document_base_changed=False) is True
+    assert pred(anchor, "href", "#t1", {"t1": 2}, document_base_changed=False) is False
+    assert pred(anchor, "href", "#t1", {}, document_base_changed=False) is False
+    assert pred(anchor, "href", "#t1", {"t1": 1}, document_base_changed=True) is False
+
+
 def test_escape_attribute_is_limited_to_inline_nonnumeric_facts() -> None:
     plain = parse_sec_filing_document(
         _inline('<ix:nonNumeric name="ex:F" contextRef="c" escape="false"><b>plain</b></ix:nonNumeric>'),
