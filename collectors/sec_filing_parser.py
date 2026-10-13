@@ -1879,7 +1879,7 @@ def parse_sec_filing_document(content: bytes, *, document_name: str) -> dict[str
     for node in nodes:
         if "id" in node.attrs:
             document_ids[node.attrs["id"]] += 1
-        if _XML_BASE_ATTRIBUTE in node.attrs or (node.namespace == XHTML and node.local == "base"):
+        if _XML_BASE_ATTRIBUTE in node.attrs or node.local.casefold() == "base":
             document_base_changed = True
     if any(
         node.namespace in LEGACY_IX_NAMESPACES or IX10 in node.namespaces.values()

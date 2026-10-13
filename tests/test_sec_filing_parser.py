@@ -436,6 +436,35 @@ def test_escaped_nonnumeric_fragment_href_is_admitted_without_a_base_construct()
     validate_sec_filing_parse_result(parsed, source_content=content)
 
 
+@pytest.mark.parametrize(
+    ("case", "head_markup", "body_suffix"),
+    [
+        ("upper_xhtml_head", '<BASE href="https://evil.example/other.htm"/>', ""),
+        ("foreign_namespace_body", "", '<x:base xmlns:x="urn:example:other"/>'),
+        ("mixed_case_head", '<Base href="https://evil.example/other.htm"/>', ""),
+        ("no_namespace_body", "", '<base xmlns=""/>'),
+    ],
+)
+def test_escaped_nonnumeric_fragment_href_refused_under_any_casefold_base_element(
+    case, head_markup, body_suffix
+) -> None:
+    # D1X-5: a same-document fragment resolves against the document base URI,
+    # and HTML base-construct matching is case-insensitive, so ANY element
+    # whose local name casefolds to "base" - uppercase/mixed-case XHTML in the
+    # head, a foreign namespace, or no namespace at all - changes the base and
+    # voids the fragment exception exactly like a lowercase XHTML <base>.
+    body = (
+        '<ix:nonNumeric id="f" name="ex:F" contextRef="c" escape="true">'
+        f'<a href="#t1">x</a></ix:nonNumeric><span id="t1"></span><div></div>{body_suffix}'
+    )
+    content = _inline(body)
+    if head_markup:
+        assert content.count(b"<head></head>") == 1
+        content = content.replace(b"<head></head>", f"<head>{head_markup}</head>".encode())
+    with pytest.raises(SecFilingParseError, match="relative URI markup is unsupported"):
+        parse_sec_filing_document(content, document_name=f"fragment-casefold-base-{case}.xhtml")
+
+
 def test_same_document_fragment_predicate_requires_exactly_one_target_and_no_base() -> None:
     anchor = parser_module._Node(
         qname=f"{{{parser_module.XHTML}}}a",
