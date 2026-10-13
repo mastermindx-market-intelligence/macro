@@ -92,6 +92,43 @@ J081 | KILLED | test_x7_mm_pb_expire_twice_does_not_double_install | delete boot
 J082 | KILLED | test_x10_expiry_hands_focus_from_the_hidden_history_to_the_close_button | delete boot-install statement `window.mmPbExpire = expire;`
 J083 | KILLED | test_x13_expiry_fills_the_live_region_once_and_a_future_stamp_stays_empty | delete boot-install statement `if (document.readyState === 'loading') document.addEventListen...
 
+2026-10-12 addendum: the strict-stamp parser that replaced that parse line is
+surveyed below (J084-J110, kill set: both Node expiry suites, the deadline
+suite, and every fragment suite that boots the owner). Two survivors are
+equivalent, not missing pins: deleting the two-digit-year guard only moves a
+stamp between two expired outcomes (``Date.UTC`` maps years 0..99 onto
+1900..1999, strictly behind any clock the page can run under), and deleting
+the finiteness conjunct cannot change the verdict because the guarded regex
+bounds leave ``instant`` finite whenever that line is reached.
+
+J084 | KILLED | test_loose_spellings_expire | drop the `^` anchor from STAMP
+J085 | KILLED | test_loose_spellings_expire | drop the `$` anchor from STAMP
+J086 | KILLED | test_m_six_zero_fraction_digits_are_that_same_second | regex quantifier `\.0{1,6}` -> `\.0{1,5}`
+J087 | KILLED | test_loose_spellings_expire | `(\.0{1,6})?` -> `(\.[0-9]{1,6})?` (accept a non-zero fraction)
+J088 | KILLED | test_expiry_script_honours_only_zoned_deadlines_and_rechecks_on_wake | make the zone group optional `(Z|[+-](\d{2}):(\d{2}))?`
+J089 | KILLED | test_m_january_is_a_month | swap `<` -> `<=` in `if (month < 1 || month > 12`
+J090 | KILLED | test_loose_spellings_expire | swap `>` -> `>=` in `month > 12`
+J091 | KILLED | test_m_hour_23_is_a_valid_civil_hour | swap `>` -> `>=` in `hour > 23`
+J092 | KILLED | test_e3_deadlines_across_us_dst_fallback_expire_on_absolute_instants | swap `>` -> `>=` in `minute > 59`
+J093 | KILLED | test_e3_deadlines_across_us_dst_fallback_expire_on_absolute_instants | swap `>` -> `>=` in `second > 59`
+J094 | KILLED | test_impossible_civil_stamps_expire_immediately | swap `||` -> `&&` across the whole civil-bounds guard
+J095 | EQUIVALENT | - | delete `if (year < 100) return NaN;` (both outcomes expired; see addendum)
+J096 | KILLED | test_impossible_civil_stamps_expire_immediately | month-length lookup `Date.UTC(year, month, 0)` -> `Date.UTC(year, month - 1, 0)`
+J097 | KILLED | test_x3_negative_offsets_honoured_across_us_dst | swap `<` -> `<=` in `if (day < 1 || day > length)`
+J098 | KILLED | test_february_29_follows_the_gregorian_month_length | swap `>` -> `>=` in `day > length`
+J099 | KILLED | test_expiry_script_honours_only_zoned_deadlines_and_rechecks_on_wake | flip `!==` -> `===` in `if (match[8] !== 'Z')`
+J100 | KILLED | test_offset_hours_stop_at_14 | swap `>` -> `>=` in `offH > 14`
+J101 | KILLED | test_m_offset_minute_59_is_a_deadline | swap `>` -> `>=` in `offM > 59`
+J102 | KILLED | test_x1_plus08_expires_at_0900z | invert the offset sign `match[8].charAt(0) === '-' ? -1 : 1` -> `!== '-'`
+J103 | KILLED | test_deadline_beyond_400_days_expires | swap `>` -> `>=` in `instant - Date.now() > MAX_AHEAD_MS`
+J104 | KILLED | test_impossible_civil_stamps_expire_immediately | swap the max-ahead operands `instant - Date.now()` -> `Date.now() - instant`
+J105 | KILLED | test_deadline_beyond_400_days_expires | constant `400` -> `401` in MAX_AHEAD_MS
+J106 | KILLED | test_deadline_beyond_400_days_expires | constant `400` -> `399` in MAX_AHEAD_MS
+J107 | KILLED | test_expiry_script_honours_only_zoned_deadlines_and_rechecks_on_wake | negate `if (!match) return NaN;`
+J108 | KILLED | test_expiry_script_honours_only_zoned_deadlines_and_rechecks_on_wake | revert the call site `deadline(raw)` -> `Date.parse(raw)`
+J109 | KILLED | test_deadline_beyond_400_days_expires | constant `60` -> `61` minutes in MAX_AHEAD_MS
+J110 | EQUIVALENT | - | delete `!Number.isFinite(instant) ||` (instant is finite whenever the line is reached; see addendum)
+
 The parse line `var end = ZONED.test(raw) ? Date.parse(raw) : NaN;` was replaced by `deadline(raw)`.
 """
 from tests import test_pullback_expiry_owner_js as harness
@@ -324,5 +361,90 @@ ctx.document.activeElement = f.summary;
 ctx.window.mmPbExpire();
 assertExpired(f.sec, 'no dialog');
 assert.equal(f.focused(), null, 'focus was moved without a dialog');
+"""
+    )
+
+
+def test_m_six_zero_fraction_digits_are_that_same_second():
+    """Six zero fraction digits are the producer's whole second, not garbage.
+
+    The fraction quantifier is ``{1,6}``. Shortening it to five digits (J086)
+    turns ``.000000`` into an unreadable stamp, so a section whose deadline the
+    producer can still emit expires early.
+    """
+    harness._run(
+        """
+const stamp = '2026-12-01T00:00:00.000000Z';
+const sec = section(stamp);
+now = at(stamp) - 1;
+const ctx = boot([sec]);
+assertCurrent(sec, 'a .000000 stamp 1ms before');
+now = at(stamp);
+ctx.window.mmPbExpire();
+assertExpired(sec, 'a .000000 stamp on its instant');
+"""
+    )
+
+
+def test_m_january_is_a_month():
+    """A January deadline stays current until its own instant.
+
+    The month bound is one-sided on purpose: ``month < 1``. Tightening it to
+    ``<=`` (J089) expires every January stamp.
+    """
+    harness._run(
+        """
+const stamp = '2027-01-15T09:00:00Z';
+const sec = section(stamp);
+now = at(stamp) - 1;
+const ctx = boot([sec]);
+assertCurrent(sec, 'January 1ms before');
+now = at(stamp);
+ctx.window.mmPbExpire();
+assertExpired(sec, 'January on its instant');
+"""
+    )
+
+
+def test_m_hour_23_is_a_valid_civil_hour():
+    """23:30 is a real deadline; only hour 24 and beyond is impossible.
+
+    Hour 23 is the last civil hour, so the guard must stay strict (``> 23``).
+    Widening it to ``>=`` (J091) expires a late-evening deadline while it still
+    holds.
+    """
+    harness._run(
+        """
+const stamp = '2026-10-12T23:30:00Z';
+const sec = section(stamp);
+now = at(stamp) - 60 * 1000;
+const ctx = boot([sec]);
+assertCurrent(sec, '23:30 one minute before');
+now = at(stamp);
+ctx.window.mmPbExpire();
+assertExpired(sec, '23:30 on its instant');
+"""
+    )
+
+
+def test_m_offset_minute_59_is_a_deadline():
+    """An offset minute of 59 is inside the bound the guard keeps.
+
+    ``+08:59`` is one minute inside the ±14:59 limit the guard accepts, so a
+    stamp carrying it stays current until its instant. Widening the minute test
+    to ``>= 59`` (J101) expires such a stamp on sight.
+    """
+    harness._run(
+        """
+const stamp = '2026-10-15T09:59:00+08:59';
+const instant = at(stamp);
+assert.equal(instant, at('2026-10-15T01:00:00Z'), 'fixture instant');
+const sec = section(stamp);
+now = instant - 1;
+const ctx = boot([sec]);
+assertCurrent(sec, '+08:59 one millisecond before');
+now = instant;
+ctx.window.mmPbExpire();
+assertExpired(sec, '+08:59 on its instant');
 """
     )

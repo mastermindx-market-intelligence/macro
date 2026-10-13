@@ -233,6 +233,29 @@ H206 | KILLED | test_figures_that_round_to_zero_print_without_a_sign | '%.1f' ->
 H207 | KILLED | test_native_view_shows_three_distinct_observed_metrics[cn] | delete U+2212 replacement `{{ '−' if dd_s != '0.0' else '' }}`
 H208 | KILLED | test_native_view_shows_three_distinct_observed_metrics[cn] | delete U+2212 replacement `{{ '−' if worst_s != '0.0' else '' }}`
 H209 | KILLED | test_figures_that_round_to_zero_print_without_a_sign | delete U+2212 replacement `{{ '−' if value_s != '0.0' else '' }}`
+
+2026-10-12 addendum: H039's permissive comparison was fixed by the newest
+fragment hunks — ``price_ok`` now reads ``p < h or phase in
+('recovering','repaired') or (phase == 'monitoring' and p <= h)`` — and rows
+H210-H222 survey those hunks (kill set: every ``test_pullback_*`` suite listed
+in the module that renders the fragment plus both Node expiry suites). H210 is
+the revert of that fix. The pre-hunk chart sentences (H220, H222) are pinned by
+``tests/test_pullback_depth_copy_v2.py``; assertions here stay on structure and
+parsed values, never on the popup copy.
+
+H210 | KILLED | test_e4_close_equal_to_the_peak_is_unavailable_unless_repairing[cn] | revert the fix: `p < h` -> `p <= h` in `and (p < h or phase in ('recovering','repaired') or (phase == 'monitoring' and p <= h)) %}`
+H211 | KILLED | test_native_view_shows_three_distinct_observed_metrics[cn] | swap `<` -> `>` in `and (p < h or phase in`
+H212 | KILLED | test_e4_close_equal_to_the_peak_is_unavailable_unless_repairing[cn] | swap `==` -> `!=` in `phase == 'monitoring' and p <= h`
+H213 | KILLED | test_rendered_phase[no_pullback-us] | delete the monitoring-at-high guard clause `(phase == 'monitoring' and p <= h)`
+H214 | KILLED | test_e4_close_equal_to_the_peak_is_unavailable_unless_repairing[cn] | swap `and` -> `or` in `(phase == 'monitoring' and p <= h)`
+H215 | KILLED | test_rendered_phase[no_pullback-us] | swap `<=` -> `<` in `and p <= h)) %}`
+H216 | KILLED | test_m_monitoring_above_the_retained_high_stays_contradictory | swap `<=` -> `>=` in `and p <= h)) %}`
+H217 | KILLED | test_e1_current_until_renders_only_on_a_current_view[cn] | delete `current and ` from `{%- if current and _vu_disp %}<br>`
+H218 | KILLED | test_view_lacking_new_fields_omits_the_signals_block | swap `and` -> `or` in `{%- if current or _vu_disp %}<br>`
+H219 | KILLED | test_zoned_valid_until_is_readable_without_js[2026-10-01T09:00:00+00:00-…] | negate `{%- if current and _vu_disp %}` -> `{%- if not current and _vu_disp %}`
+H220 | KILLED | test_e2_e3_chart_sentences_replace_the_old_copy[cn] | swap the uncovered branch's ZH output back to the pre-hunk string
+H221 | KILLED | test_withheld_chart_without_a_reason_stays_neutral_not_that_prices_are_unusable | swap `==` -> `!=` in `v.get('detail_withheld') == 'uncovered'`
+H222 | KILLED | test_withheld_chart_without_a_reason_stays_neutral_not_that_prices_are_unusable | swap the else branch's EN output back to the pre-hunk string
 """
 from bs4 import BeautifulSoup
 
@@ -508,3 +531,21 @@ def test_m_every_visible_label_keeps_its_chinese():
             seen.add(english)
     missing = sorted(required - seen)
     assert not missing, missing
+
+
+def test_m_monitoring_above_the_retained_high_stays_contradictory():
+    """A monitoring close past the retained high is still contradictory, not a metric.
+
+    The monitoring clause admits ``p <= h`` only — a close above the high is the
+    owner's reclaim, which monitoring is not. Widening the clause's own
+    comparison to ``p >= h`` (H216) would qualify a close that already passed
+    the high, so the section would publish metrics from a contradictory read.
+    """
+    view = native_view()
+    view["phase"] = view["observation"]["phase"] = "monitoring"
+    view["observation"]["active"] = False
+    view["observation"]["low_close"] = None
+    view["observation"].update(close=101.0, peak_close=100.0)
+    soup = _soup(view)
+    assert soup.select_one("section.rrp").get("data-pb-phase") == "unavailable"
+    assert soup.select_one('[data-metric="current"]') is None
