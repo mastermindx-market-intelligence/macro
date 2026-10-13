@@ -170,3 +170,32 @@ def test_an_unexpected_row_shape_fails_closed_not_loud():
     read = observe([None], expected_session=date(2025, 1, 2), is_session=session)
     assert read["quality"] == "invalid_observation"
     assert read["available"] is False and read["phase"] == "unavailable"
+
+
+def test_recovering_arrives_at_exactly_five_closes_above_the_average():
+    # A13: the above-the-20-close-average gate is >= 5. The flat shelf holds
+    # the streak at zero (a 91.0 shelf sits a hair under its own 20-close
+    # average because the 95/90 dip outweighs two shelf closes), so the
+    # streak is exactly five on the fifth rise close.
+    rows = rows_for([95.0, 90.0] + [91.0] * 24 + [91.5, 92.0, 92.5, 93.0, 93.5])
+    read = result(rows)
+    assert read["phase"] == "recovering" and read["active"] is True
+
+
+def test_recovering_arrives_at_exactly_ten_closes_without_a_new_low():
+    # A14: the no-new-low gate is >= 10. A fresh low under the episode trough
+    # resets the clock, and the tenth rise close is the first that qualifies.
+    rows = rows_for([95.0, 90.0] + [91.0] * 24 + [89.9]
+                    + [91.5, 92.0, 92.5, 93.0, 93.5,
+                       94.0, 94.5, 95.0, 95.5, 96.0])
+    read = result(rows)
+    assert read["no_new_low_closes"] == 10
+    assert read["phase"] == "recovering" and read["active"] is True
+
+
+def test_a_close_exactly_at_the_twenty_close_average_is_not_below_it():
+    # A39: "below the 20-close average" is strict; a close sitting exactly on
+    # the average of the last twenty closes is not below it.
+    read = result(rows_for([100.0]))
+    assert read["phase"] == "monitoring" and read["active"] is False
+    assert read["below_20_close_average"] is False

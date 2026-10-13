@@ -376,3 +376,27 @@ def test_reader_returns_rows_in_store_order():
     frame = close_store().iloc[::-1].reset_index(drop=True)
     got = licensed_index_closes(EXPECTED, load=lambda: frame)
     assert [row[0] for row in got.rows] == frame["trade_date"].tolist()
+
+
+def test_the_successor_search_reaches_past_the_longest_rule_closure(monkeypatch):
+    # B05: the rule calendar never closes longer than MAX_LEGIT_CLOSURE_DAYS,
+    # but the successor search keeps seven more calendar days of slack, so a
+    # successor 15 days out still resolves instead of raising.
+    anchor = date(2026, 1, 5)
+    target = anchor + timedelta(days=15)
+    assert target - anchor > timedelta(days=cn_calendar.MAX_LEGIT_CLOSURE_DAYS)
+    monkeypatch.setattr(cn_calendar, "is_session",
+                        lambda day: day in {anchor, target})
+    assert pb._next_session(anchor) == target
+
+
+def test_a_disabled_client_never_reaches_the_vendor(store, monkeypatch):
+    # C08: GATED — a disabled client no-ops before any query is made.
+    monkeypatch.setattr(tid.tc, "enabled", lambda: False)
+    calls = []
+    monkeypatch.setattr(
+        tid.tc, "query",
+        lambda *args, **kwargs: calls.append(args) or pd.DataFrame())
+    assert tid.refresh(today=date(2026, 10, 11)) == 0
+    assert calls == []
+    assert not store.exists()
