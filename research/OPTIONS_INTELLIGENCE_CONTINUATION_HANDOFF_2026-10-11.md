@@ -1175,3 +1175,52 @@ INTENDED_RESUME_SURFACE: this Claude Code session; successor reads this file + #
   - Judge PP2L-R1 by artifact, then merge PP2-L into the #723 lane branch.
   - Freeze PP2-UI-a with D1 and the two tablet assertions; launch it and PP1-D under normal admission.
   - Then PP2-UI-b.
+
+### D62 (2026-10-13T10:35Z) — PP2-UI-a run 1 launched on mb under normal Fabric routing; Wave-B hosts refused elsewhere; merge-on-green bot-refresh deadlock diagnosed and cleared on four PRs
+- FACT PP2L-R1 ACCEPTED and PP2-L integrated (between D61 and D62): the #723 lane head is `bd76f2c9d640e3a16e16775065283e0711b4b639` (PR branch `claude/terminal-options-heatmap-20260923`). The lane branch `claude/ssd-pr-723-c89a753150e1dbd6` (remote at `d64a1dd6`) is fast-forwarded to it by run 1's item 1.
+- FACT PP2-UI-a is split into two runs on one carrier, keeping each Fabric run within its turn budget:
+  - **Run 1** covers items 0–3 and gates 7a–7d: custody, `npm ci`, the base push, RED tests (a)–(l) as commit T, then the fix as commit F. The fix includes ruling 4's tablet REORDER (key row and `options-coverage` move into the map column after `options-selected-summary`) but no `--matrix-rail-max-touch` value.
+  - **Run 2** covers items 4–7e under a NEW run id: measure and set the tablet touch rail, the browser spec with 12 geometry checks and screenshots, the D1 tablet assertions (strip fully visible; inspector beside the map), negative controls, and one `npm test`.
+- FACT run 1 RUNNING: run id `fable-pp2uia-r1-20261013`, host mb, MiniMax-M3 via `pool remote mb minimax`.
+  - Admission (10:26Z): ORCH `01a10340…`, parent `f77d3f70…`, task class execute / C2_COMPLEX_BOUNDED, 300 turns, `REMOTE_SUB_MAX_SECS=7200`. Observed RUN_RESERVED → REMOTE_PROJECT_CWD_PREFLIGHT_OK → LEASE_OK → SUPPORT_VERSION_READY (digest `418419b9…`) → LAUNCH → POLL_PENDING (poll 10 at 10:30Z).
+  - Worktree `mb:~/lanes/wt/pp2uia-20261013` at `bd76f2c9`, clean, without node_modules.
+  - Packet `$S/leads/PP2UIA/fabric/r1.md` (493 lines, sha256 `b49c890c02c5…`) = a binding mb header plus the PP2-UI-a commission body, host-rewritten by `build_r1.py`.
+  - Return: `mb:~/lanes/returns/pp2-ui-a/return-1.md`, with the exact final line `LANE_RETURN_WRITTEN` enforced by `--expect-output-token`.
+  - Recorded host deviations: Node 26.8.1 (CI runs Node 20); no `timeout` binary (perl alarm wrapper instead).
+  - Launcher task `b238t1elk`.
+- FACT host refusals at 10:2xZ (`pool hosts minimax`), none routed around:
+  - ubuntu0: load 9.05 and disk 281.9 < 300;
+  - ubuntu2: load 10.38, disk 135.9 < 150, and thermal 96.9 °C ≥ 85;
+  - ubuntu1: disk 104 < 150; ubuntu3: disk 216.5 < 300;
+  - m1, m2, pc and the minis: ineligible or unreachable.
+  - mb was the only eligible host; this launch consumed its slot.
+  - PP1-D is therefore unlaunched. The prepared worktree `ubuntu2:~/lanes/wt/pp1d` waits for ubuntu2 to recover; otherwise a fresh mb worktree is used under the mb rewrite rules.
+- FACT merge-on-green deadlock, diagnosed:
+  - When the controller refreshes a stale head, it pushes a `Merge branch 'master'` commit as `github-actions[bot]`. The `pull_request` CI run that push triggers concludes `action_required`, because a bot actor needs approval.
+  - The controller also dispatches a `workflow_dispatch` CI run. That run passes all three required jobs, but its checks do not attach to the PR's rollup.
+  - The PR therefore never shows required-green, and the watchers time out (#985 hit TIMEOUT at 7214 s).
+  - Remedies used, all through my own identity and never an admin bypass:
+    - #986 (`db08c2b6` → `ecbf1c30`), #985 (`bc8b3560` → `ae761c2e`) and #983 (`c1ab6757` → `e8d805e7`): `gh pr update-branch`. #983's CI run `38383593433` now runs with actor mastermindxryan.
+    - #948: the head was already current at `d7e77daa` (bot refresh 10:27:47Z), so the held run `38383526218` was re-run and is now in progress.
+  - #989 (`claude/merge-on-green-held-run-rerun`) is another session's fix to the controller itself. It is not touched.
+- Watchers (one per endpoint):
+  - `b0msplbai`: #986.
+  - `bff4iyhaz`: #985 (the old sentinel is kept as `t985.timeout1`).
+  - `b55haalpp`: #948 and #983.
+  - `brq8ytnaj`: Macro #9097.
+  - `b64amfv2n`: Macro #9080 and #8920.
+  - `b238t1elk`: run 1.
+- Rungs at 10:35Z:
+  - PP2-UI-a run 1: RUNNING.
+  - PP1-D: FROZEN (no eligible host).
+  - PP2-L and PP1-SM: on the #723 head `bd76f2c9` (CI owed at the final head).
+  - #986, #985, #983, #948: CI (re-triggered).
+  - Macro #9097, #9080, #8920: CI (label).
+  - F02-Q2, R04-B2, R04-B1: FROZEN (gated).
+  - #9079 and #9083: HELD to 2026-10-14 00:00Z.
+  - D04A: HELD.
+- NEXT:
+  - Judge run 1 by artifact (`return-1.md`, the T/F diff, the gates); then write and launch run 2 under a new id.
+  - On the first production-affecting Terminal merge, deploy the master tip git-gated and verify live.
+  - Release F02-Q2 once #986 and #9080 have both merged.
+  - Launch PP1-D when `pool hosts minimax` shows an eligible slot.
