@@ -26059,6 +26059,7 @@ jobs:
       - tests/test_dataos_web_lab_worker.py
       - tests/test_dataos_web_readers.py
       - tests/test_dataos_web_workspace.py
+      - tests/test_dataos_rights_matrix.py
       - tests/test_tiingo_produced_contracts.py
       - docs/tiingo-evidence/20261012-research-contracts/accepted-corpus.json
     timeout-minutes: 8
@@ -26075,6 +26076,7 @@ jobs:
           PYTHONDONTWRITEBYTECODE=1 python -m pytest
           tests/test_dataos_web_api.py tests/test_dataos_web_lab.py
           tests/test_dataos_web_lab_worker.py tests/test_dataos_web_readers.py
+          tests/test_dataos_rights_matrix.py
           tests/test_dataos_web_workspace.py tests/test_tiingo_produced_contracts.py -q -rs
 
   dataos-foundation:
