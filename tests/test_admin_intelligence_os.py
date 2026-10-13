@@ -1644,3 +1644,196 @@ def test_real_claims_reader_t1_provider_current_horizon_correction(monkeypatch,t
         assert panel==detail and panel["selected_qledger_rung"]==expected
         assert panel["declared_horizon"]["horizon_d"]==horizons
         assert json.loads((base/f"evidence_clock_start/{family}.json").read_text())==clock
+
+@pytest.mark.parametrize('ledger', ['data/decoy/stock_desk/theses.jsonl','data/stock_desk/other.jsonl','backup/stock_desk/theses.jsonl'])
+def test_actual_provider_refuses_noncanonical_native_ledger(tmp_path,ledger):
+    base=tmp_path/'data/qledger';base.mkdir(parents=True)
+    (base/'claims.jsonl').write_text('');(base/'grades.jsonl').write_text('')
+    cell=evidence_cell(ledger=ledger)
+    # Actual adapter lookup and readiness provider, no mocked family resolver.
+    assert IOS._load_evidence_providers(tmp_path,{'engines':[cell]}) == {}
+
+@pytest.mark.parametrize('family',['stock_desk','thematic_desk','demand_chain'])
+def test_actual_provider_keeps_canonical_native_ledger(tmp_path,family):
+    from engine.qledger_desk_adapter import native_ledger_for_family
+    base=tmp_path/'data/qledger';base.mkdir(parents=True)
+    (base/'claims.jsonl').write_text('');(base/'grades.jsonl').write_text('')
+    cell=evidence_cell(ledger=native_ledger_for_family(family))
+    assert IOS._load_evidence_providers(tmp_path,{'engines':[cell]})[cell['engine_id']]['family']==family
+
+@pytest.mark.parametrize('scenario',['matched','zero','empty','mixed_clock','mixed_direction'])
+def test_actual_owner_provider_detail_preserves_measurement_populations(monkeypatch,tmp_path,scenario):
+    import importlib.util
+    spec=importlib.util.spec_from_file_location('control_fixture',REPO/'tests/test_qledger_control_policy.py')
+    owner=importlib.util.module_from_spec(spec);spec.loader.exec_module(owner)
+    family='radar' if scenario=='mixed_direction' else 'stock_desk'
+    claims=[];grades=[]
+    if scenario=='matched':
+        for asof in owner._dates(40):
+            c=owner._claim(family=family,asof=asof,control=None,claim_id='pre|'+asof)
+            claims.append(c);grades.append(owner._grade_row(c,subject_ret=-.05,control_ret=None,bench_ret=0.,hit=False))
+        c,g=owner._cohort(family,30,controlled=30,start='2025-07-01');claims+=c;grades+=g
+    elif scenario=='zero':
+        claims,grades=owner._cohort(family,30,controlled=30,correct=False,start='2025-07-01')
+    elif scenario=='mixed_clock':
+        for unit,subject,bench in [('trading_days','AAPL','SPY'),('calendar_days','BTC-USD','BTC-USD')]:
+            for asof in owner._dates(30,'2025-07-01'):
+                c=owner._claim(family=family,asof=asof,unit=unit,subject=subject,bench=bench,claim_id=unit+'|'+asof)
+                claims.append(c);grades.append(owner._grade_row(c))
+    elif scenario=='mixed_direction':
+        for direction,start in [(1,'2025-07-01'),(-1,'2025-08-01')]:
+            c,g=owner._cohort(family,30,controlled=0,direction=direction,start=start);claims+=c;grades+=g
+    owner._write_store(tmp_path,claims,grades)
+    if family=='stock_desk':owner._start_clock(tmp_path,family,when='2025-06-01T00:00:00+00:00')
+    cell=evidence_cell(ledger='qledger:'+family,ledger_evidence={'desk':family},validation_state='validated')
+    registry={'engines':[cell],'excluded':[]}
+    provider=IOS._load_evidence_providers(tmp_path,registry)
+    assert provider[cell['engine_id']]['read_status']=='ok'
+    expected=owner.grader.compute_promotion_readiness(tmp_path,families=[family])[family]
+    view={'outputs':[healthy_output(engine_id=cell['engine_id'])],'summary':{}}
+    monkeypatch.setattr(IOS,'_derive',lambda *_a,**_k:(view,registry,provider,0.,'miss'))
+    detail=IOS.engine_detail(cell['engine_id'],root=tmp_path)['engine']
+    rows=detail['evidence_measurement']['by_horizon']
+    for h,row in expected.items():
+        if h.startswith('_'):continue
+        for k,v in row.items():
+            if k in rows[h] and k!='by_clock_basis':assert rows[h][k]==v
+        assert rows[h]['benchmark_baseline_denominator'] is None
+        for basis,sub in row.get('by_clock_basis',{}).items():
+            for k,v in sub.items():
+                if k in rows[h]['by_clock_basis'][basis]:assert rows[h]['by_clock_basis'][basis][k]==v
+    row=rows['21']
+    if scenario=='matched':
+        assert row['n_dates']==30 and row['hit_rate'] is None
+        assert row['benchmark_baseline_hit_rate']==pytest.approx(30/70,abs=1e-4)
+        assert row['wilson_ci_low']>0
+    elif scenario=='zero':assert row['wilson_ci_low']==0
+    elif scenario=='empty':assert row['wilson_ci_low'] is None
+    elif scenario=='mixed_clock':assert len(row['by_clock_basis'])==2 and row['wilson_ci_low'] is None
+    elif scenario=='mixed_direction':assert row['excess_mean'] is None and len(row['excess_mean_by_direction'])==2
+    assert detail['evidence_owner_scope']['qualified_task_scope'] is None
+
+
+def _source_link_repo(tmp_path):
+    import subprocess
+    def git(*args):
+        return subprocess.run(['git',*args],cwd=tmp_path,capture_output=True,text=True,check=True).stdout.strip()
+    (tmp_path/'config').mkdir();(tmp_path/'config/qual_ladder.yml').write_text('fixture.key: {}\n')
+    (tmp_path/'research').mkdir();(tmp_path/'research/FIXTURE_PREREG #1.md').write_text('Synthetic source declaration only\n')
+    git('init');git('remote','add','origin','https://github.com/mastermindx-market-intelligence/macro.git');git('add','config','research')
+    git('-c','user.name=Fixture','-c','user.email=fixture@invalid','commit','-m','synthetic source declaration')
+    return git('rev-parse','HEAD')
+
+
+def test_source_links_verify_immutable_declarations_and_reject_dirty_data(tmp_path):
+    oid=_source_link_repo(tmp_path)
+    links=IOS._source_document_links(tmp_path,['fixture.key','research/FIXTURE_PREREG #1.md','data/qledger/grades.jsonl','research/RESULTS.md'])
+    assert len(links)==2 and all(x['revision']==oid for x in links)
+    assert 'FIXTURE_PREREG%20%231.md' in links[1]['url']
+    before=IOS._mtime_ns(tmp_path/'config/qual_ladder.yml')
+    (tmp_path/'config/qual_ladder.yml').write_text('fixture.key: {changed: true}\n')
+    assert IOS._source_document_links(tmp_path,['fixture.key'])==[]
+    assert IOS._source_document_links(tmp_path,['research/FIXTURE_PREREG #1.md'],qualification_identity=before)==[]
+
+
+def test_source_links_no_lazy_fetch_and_bounded_work(monkeypatch,tmp_path):
+    import subprocess
+    _source_link_repo(tmp_path)
+    run=subprocess.run;calls=[]
+    def inspect(args,**kw):
+        calls.append((args,kw))
+        assert kw['env']['GIT_NO_LAZY_FETCH']=='1' and kw['env']['GIT_OPTIONAL_LOCKS']=='0'
+        assert 0<kw['timeout']<=3
+        if args[1]=='show':return subprocess.CompletedProcess(args,128,b'',b'missing local blob')
+        return run(args,**kw)
+    monkeypatch.setattr(IOS.subprocess,'run',inspect)
+    assert IOS._source_document_links(tmp_path,['research/FIXTURE_PREREG #1.md']*100)==[]
+    assert len(calls)<=19
+
+
+def test_source_links_reject_head_change_and_malformed_ladder(monkeypatch,tmp_path):
+    import subprocess
+    oid=_source_link_repo(tmp_path);run=subprocess.run;revisions=0
+    def changed(args,**kw):
+        nonlocal revisions
+        if args[1:]==['rev-parse','HEAD']:
+            revisions+=1
+            if revisions>1:return subprocess.CompletedProcess(args,0,'0'*40+'\n','')
+        return run(args,**kw)
+    monkeypatch.setattr(IOS.subprocess,'run',changed)
+    assert IOS._source_document_links(tmp_path,['fixture.key'])==[]
+    (tmp_path/'config/qual_ladder.yml').write_text('broken: [')
+    assert IOS._source_document_links(tmp_path,['fixture.key'])==[]
+
+
+def test_actual_t1_version_change_invalidates_cache_without_inheriting_qualification(monkeypatch,tmp_path):
+    from engine import intelligence_registry as ir
+    from scripts import build_output_health as builder
+    root=one_engine(tmp_path)
+    base=root/'data/qledger';base.mkdir(parents=True,exist_ok=True)
+    (base/'claims.jsonl').write_text('');(base/'grades.jsonl').write_text('')
+    species_path=root/'data/species/registry.json';species_path.parent.mkdir(parents=True,exist_ok=True)
+    doc={'meta':{},'artifacts':{'a':artifact('data/stock_desk/theses.jsonl',producer='engine/a.py',owner='prog-one',tier='shadow',asof_field=None,sla=None)}}
+    eid='engine/a.py::prog-one'; builds=[]
+    def actual_t1(root,**kwargs):
+        species=json.loads(species_path.read_text())
+        registry=ir.build_registry(synapse=doc,overlay={'schema_version':1,'engines':{eid:{'output_class':{'value':'predictive','rationale':'synthetic'}}}},species=species,file_exists=lambda _:True,qual_ladder_keys=set())
+        builds.append(species[0]['version'])
+        return {'outputs':[healthy_output(engine_id=eid)],'summary':{},'generated':{}},registry
+    monkeypatch.setattr(builder,'build_with_registry',actual_t1)
+    import importlib.util
+    spec=importlib.util.spec_from_file_location('version_control_fixture',REPO/'tests/test_qledger_control_policy.py')
+    owner=importlib.util.module_from_spec(spec);spec.loader.exec_module(owner)
+    claims,grades=owner._cohort('stock_desk',30,controlled=30,start='2025-07-01')
+    owner._write_store(root,claims,grades)
+    owner._start_clock(root,'stock_desk',when='2025-06-01T00:00:00+00:00')
+    from engine import qledger_evidence_clock
+    qledger_evidence_clock.record_start('stock_desk',horizon_d=21,horizon_unit='trading_days',root=root,now='2025-06-01T00:00:00+00:00')
+    before_clock={p:p.read_bytes() for p in (root/'data/qledger').rglob('*.json')}
+    scopes=[];keys=[]
+    for version,horizon in [('fixture-v1',20),('fixture-v2',126)]:
+        species_path.write_text(json.dumps([{'species_id':'fixture-species','validation_status':'validated','version':version,'horizon_class':str(horizon),'regime_scope':['synthetic-'+version],'ledger_binding':{'ledger':'data/stock_desk/theses.jsonl'}}]))
+        keys.append(IOS._dependency_key(root))
+        panel=IOS.panel(root=root);detail=IOS.engine_detail(eid,root=root)['engine']
+        row=next(x for x in panel['engines'] if x['engine_id']==eid)
+        assert row['evidence_status']==detail['evidence_status']=='Accruing'
+        assert 'owner_validation_scope_unqualified' in detail['evidence_reason_codes']
+        assert detail['evidence_owner_scope']['qualified_task_scope'] is None
+        assert detail['evidence_provider']['binding']=='adapter:stock_desk'
+        assert detail['evidence_measurement']['by_horizon']['21']['n_dates']==30
+        assert detail['evidence_measurement']['by_horizon']['21']['wilson_ci_low']>0
+        scopes.append(detail['evidence_owner_scope']['bound_species'][0]['owner_scope'])
+    assert keys[0]!=keys[1] and builds==['fixture-v1','fixture-v2']
+    assert scopes[0]['version']=='fixture-v1' and scopes[1]['version']=='fixture-v2'
+    assert scopes[0]['regime_scope']!=scopes[1]['regime_scope']
+    assert {p:p.read_bytes() for p in (root/'data/qledger').rglob('*.json')}==before_clock
+
+
+def test_source_link_overall_deadline_and_document_byte_limit(monkeypatch,tmp_path):
+    _source_link_repo(tmp_path)
+    real_clock=IOS.time.monotonic
+    # The deadline must cover all git calls collectively, not restart per ref.
+    ticks=iter([0.,0.,4.])
+    monkeypatch.setattr(IOS.time,'monotonic',lambda:next(ticks))
+    assert IOS._source_document_links(tmp_path,['fixture.key'])==[]
+    monkeypatch.setattr(IOS.time,'monotonic',real_clock)
+    (tmp_path/'config/qual_ladder.yml').write_text('x' * 262145)
+    assert IOS._source_document_links(tmp_path,['research/FIXTURE_PREREG #1.md'])==[]
+
+
+def test_source_link_rejects_large_local_head_blob_before_reading_body(monkeypatch,tmp_path):
+    import subprocess
+    _source_link_repo(tmp_path)
+    path=tmp_path/'research/FIXTURE_PREREG #1.md'
+    path.write_text('x'*262145)
+    for args in [['git','add','research'],['git','-c','user.name=Fixture','-c','user.email=fixture@invalid','commit','-m','synthetic large declaration']]:
+        subprocess.run(args,cwd=tmp_path,capture_output=True,check=True)
+    path.write_text('small dirty working source\n')
+    run=subprocess.run;calls=[]
+    def inspected(args,**kwargs):
+        calls.append(args)
+        assert args[1]!='show','large HEAD body must not be captured'
+        return run(args,**kwargs)
+    monkeypatch.setattr(IOS.subprocess,'run',inspected)
+    assert IOS._source_document_links(tmp_path,['research/FIXTURE_PREREG #1.md'])==[]
+    assert any(a[1:3]==['cat-file','-s'] for a in calls)

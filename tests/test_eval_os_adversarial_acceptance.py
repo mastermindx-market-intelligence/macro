@@ -148,3 +148,210 @@ def test_ready_matched_owner_does_not_grant_panel_validation_or_write_authority(
     record_property("advisory_readiness","PASS: actual matched-control ready owner")
     record_property("authority_effect","PASS: no owner validation/promotion/clock/financial writes")
     IOS._CACHE.clear()
+
+
+# Actual incumbent offline-owner dispatch, separate from the A1 visibility guards.
+_MEASUREMENT_IDS = [f"{cls}-{kind}" for cls in CLASS_PAYLOADS for kind in ("valid", "adversarial")] + [
+    "quantile-valid", "quantile-adversarial"]
+
+
+def _measurement_document():
+    from engine.neuralweb import response_eval
+    return response_eval.load_benchmark("benchmark_eval_os_measurement_v1.json")
+
+
+def _measurement_case(case_id):
+    return next(c for c in _measurement_document()["cases"] if c["id"] == case_id)
+
+
+@pytest.mark.parametrize("case_id", _MEASUREMENT_IDS)
+def test_incumbent_offline_owner_dispatch_consumes_payload(case_id, record_property):
+    from engine.neuralweb import response_eval
+    case = _measurement_case(case_id)
+    observed = response_eval.measurement_contract_checks(case)
+    expected = case["expected"]
+    assert observed["accepted"] is expected["accepted"]
+    assert observed["reason"] == expected["reason"]
+    assert observed["internal_qa_only"] is True
+    assert observed["outcome_access_allowed"] is False
+    assert observed["measurements"].keys() == expected["measurements"].keys()
+    for key, value in expected["measurements"].items():
+        if isinstance(value, float):
+            assert observed["measurements"][key] == pytest.approx(value, abs=1e-12)
+        else:
+            assert observed["measurements"][key] == value
+    record_property("reported_contract_acceptance", "actual payload consumed by incumbent internal QA owner")
+    record_property("case_id", case_id)
+    record_property("empirical_outcome_acceptance", "not granted")
+
+
+def test_frozen_measurement_runner_uses_no_judge_or_model(monkeypatch):
+    from engine.neuralweb import response_eval
+    def forbidden(*args, **kwargs):
+        raise AssertionError("deterministic acceptance must not call a model")
+    monkeypatch.setattr(response_eval, "judge_via_llm_auth", forbidden)
+    monkeypatch.setattr(response_eval, "answer_via_llm_auth", forbidden)
+    result = response_eval.run_measurement_acceptance_cases()
+    assert result["ok"] and len(result["cases"]) == 16
+    assert all(c["agrees_with_oracle"] for c in result["cases"])
+    assert result["outcome_access_allowed"] is False
+
+
+@pytest.mark.parametrize("field", ["expected", "contract", "population", "output_class"])
+def test_frozen_measurement_runner_cannot_launder_reference_changes(field):
+    from engine.neuralweb import response_eval
+    doc = _measurement_document()
+    if field == "expected":
+        doc["cases"][0]["expected"]["measurements"]["brier"] = 100
+    elif field == "contract":
+        doc["cases"][0]["contract"]["target_id"] = "another-target"
+    elif field == "output_class":
+        next(c for c in doc["cases"] if c["id"] == "descriptive-adversarial")["output_class"] = "generative"
+    else:
+        doc["cases"].pop()
+    assert response_eval.run_measurement_acceptance_cases(doc)["ok"] is False
+
+
+def test_ranking_missing_member_retains_intended_population():
+    from engine.neuralweb import response_eval
+    case = _measurement_case("ranking-valid")
+    case["class_payload"].update(ranking=["A", "C"], missing=["B"])
+    result = response_eval.measurement_contract_checks(case)
+    assert result["accepted"]
+    assert result["measurements"] == {"precision_at_k": 1.0, "coverage": 2 / 3, "eligible_n": 3}
+    case["class_payload"]["missing"] = []
+    assert response_eval.measurement_contract_checks(case)["reason"] == "ranking_population_mismatch"
+
+
+def test_state_truth_cannot_be_a_future_return_proxy():
+    from engine.neuralweb import response_eval
+    case = _measurement_case("classification_state-valid")
+    case["class_payload"]["truth_source"] = "future_return_proxy"
+    assert response_eval.measurement_contract_checks(case)["reason"] == "state_label_source_mismatch"
+
+
+def test_detector_expiry_misses_and_false_burden_do_not_disappear():
+    from engine.neuralweb import response_eval
+    case = _measurement_case("detection_event-valid")
+    case["class_payload"]["matches"] = []
+    result = response_eval.measurement_contract_checks(case)
+    assert result["accepted"]
+    assert result["measurements"] == {"matched": 0, "missed": 2, "false_alarms": 2,
+        "false_alarm_rate": .02, "mean_lead": None}
+    case["class_payload"]["matches"] = [["a1", "e2"]]
+    assert response_eval.measurement_contract_checks(case)["reason"] == "event_match_outside_window"
+
+
+def test_same_contract_contradiction_differs_from_cross_horizon_tension():
+    from engine.neuralweb import response_eval
+    case = _measurement_case("generative-valid")
+    assert response_eval.measurement_contract_checks(case)["measurements"]["legitimate_scope_differences"] == 1
+    case["class_payload"]["readings"][1]["window"] = 5
+    assert response_eval.measurement_contract_checks(case)["reason"] == "same_contract_contradiction"
+    case = _measurement_case("generative-valid")
+    case["class_payload"]["self_grade"] = 100
+    assert response_eval.measurement_contract_checks(case)["reason"] == "self_grading_forbidden"
+
+
+def test_probability_target_and_quantile_units_remain_exact():
+    from engine.neuralweb import response_eval
+    case = _measurement_case("predictive-valid")
+    case["class_payload"]["horizon_d"] = 63
+    assert response_eval.measurement_contract_checks(case)["reason"] == "predictive_target_mismatch"
+    case = _measurement_case("quantile-valid")
+    case["class_payload"]["unit"] = "future_minimum_price"
+    assert response_eval.measurement_contract_checks(case)["reason"] == "predictive_target_mismatch"
+
+
+def test_duplicate_overlap_and_research_looks_are_separate():
+    from copy import deepcopy
+    from engine.neuralweb import response_eval
+    frozen = _measurement_document()["protocol"]
+    candidate = deepcopy(frozen)
+    candidate["observations"].append(deepcopy(candidate["observations"][0]))
+    candidate["observations"].append({"id": "o4", "block_id": "pretended-new-block", "start": 8, "end": 12})
+    result = response_eval.validate_measurement_acceptance_protocol(candidate, frozen)
+    assert result["accepted"]
+    assert result["observation_rows"] == 5 and result["distinct_observations"] == 4
+    assert result["independent_blocks"] == 2
+    assert result["trial_count"] == 2 and result["look_count"] == 3
+    assert result["contaminated_holdouts"] == ["synthetic-H1"]
+    assert result["outcome_access_allowed"] is False
+
+
+@pytest.mark.parametrize("mutation,expected", [
+    ("inflate_blocks", "protocol_independent_count_inflated"),
+    ("too_many_trials", "protocol_research_budget_exceeded"),
+    ("too_many_looks", "protocol_research_budget_exceeded"),
+    ("erase_trials", "protocol_research_history_erased"),
+    ("erase_contamination", "protocol_contamination_erased"),
+    ("erase_inspection", "protocol_inspection_erased"),
+    ("change_primary", "protocol_frozen_term_changed:primary_target"),
+    ("claim_outcome_access", "protocol_scope_forbidden"),
+    ("fake_empirical_power", "protocol_frozen_term_changed:power_rule"),
+    ("boolean_margin", "protocol_frozen_term_changed:practical_margin"),
+    ("occurrence_collision", "protocol_occurrence_collision"),
+    ("unbounded_rows", "protocol_observation_budget_exceeded"),
+    ("erase_observations", "protocol_frozen_observation_changed"),
+    ("rewrite_observation", "protocol_frozen_observation_changed"),
+])
+def test_finite_protocol_mutants_fail_for_the_intended_reason(mutation, expected):
+    from copy import deepcopy
+    from engine.neuralweb import response_eval
+    frozen = _measurement_document()["protocol"]
+    candidate = deepcopy(frozen)
+    if mutation == "inflate_blocks": candidate["declared_independent_blocks"] = 5
+    elif mutation == "too_many_trials": candidate["trial_ids"].append("fixture-c")
+    elif mutation == "too_many_looks": candidate["look_ids"].append("look-4")
+    elif mutation == "erase_trials": candidate["trial_ids"] = ["fixture-a"]
+    elif mutation == "erase_contamination": candidate["contaminated_holdout_ids"] = []
+    elif mutation == "erase_inspection": candidate["inspected_holdout_ids"] = []
+    elif mutation == "change_primary": candidate["primary_target"] = "changed after looking"
+    elif mutation == "claim_outcome_access": candidate["outcome_access_allowed"] = True
+    elif mutation == "fake_empirical_power": candidate["power_rule"] = "100 rows imply 80% power"
+    elif mutation == "boolean_margin": candidate["practical_margin"] = False
+    elif mutation == "occurrence_collision": candidate["observations"].append(dict(candidate["observations"][0], end=11))
+    elif mutation == "erase_observations":
+        candidate["observations"] = candidate["observations"][:1]
+        candidate["declared_independent_blocks"] = 1
+    elif mutation == "rewrite_observation":
+        candidate["observations"][1].update(start=16, end=20, block_id="b3")
+        candidate["declared_independent_blocks"] = 3
+    else: candidate["observations"] *= 6
+    result = response_eval.validate_measurement_acceptance_protocol(candidate, frozen)
+    assert result["accepted"] is False
+    assert result["reason"] == expected
+    assert result["outcome_access_allowed"] is False
+
+
+@pytest.mark.parametrize("mutation", ["unmatched_event", "unmatched_alarm", "negative_alarm_window"])
+def test_all_detector_records_have_valid_times_even_when_unmatched(mutation):
+    from engine.neuralweb import response_eval
+    case = _measurement_case("detection_event-valid")
+    if mutation == "unmatched_event": case["class_payload"]["events"][1]["at"] = None
+    elif mutation == "unmatched_alarm": case["class_payload"]["alarms"][1]["at"] = None
+    else: case["class_payload"]["alarms"][1]["expires"] = 29
+    assert response_eval.measurement_contract_checks(case)["accepted"] is False
+
+
+@pytest.mark.parametrize("mutation", ["unknown_generator", "duplicate_population"])
+def test_salience_independence_and_population_are_declared(mutation):
+    from engine.neuralweb import response_eval
+    case = _measurement_case("salience-valid")
+    if mutation == "unknown_generator": case["class_payload"]["generator"] = None
+    else: case["class_payload"]["eligible"].append("A")
+    assert response_eval.measurement_contract_checks(case)["accepted"] is False
+
+
+def test_future_known_ranking_universe_cannot_supply_pit_support():
+    from engine.neuralweb import response_eval
+    case = _measurement_case("ranking-valid")
+    case["class_payload"]["eligible_known_at"] = 11
+    assert response_eval.measurement_contract_checks(case)["reason"] == "ranking_population_not_known"
+
+
+def test_a_single_reading_requires_complete_scope_without_a_pair():
+    from engine.neuralweb import response_eval
+    case = _measurement_case("generative-valid")
+    case["class_payload"]["readings"] = [{"value": 1, "target_id": "synthetic_return", "unit": "percent"}]
+    assert response_eval.measurement_contract_checks(case)["accepted"] is False

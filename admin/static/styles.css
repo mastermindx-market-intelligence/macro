@@ -6334,6 +6334,13 @@ button.obx-btn-reject:hover:not(:disabled) {
 }
 .ios-evidence-provider { margin-top: 4px; font: 10px var(--mono); }
 .ios-evidence-card { margin-bottom: 12px; }
+/* Keep complete source references readable inside the evidence card. */
+.ios-evidence-card .ios-out-line > span {
+  min-width: 0; max-width: 100%; overflow-wrap: anywhere;
+}
+.ios-evidence-card .ios-out-line .statpill {
+  max-width: 100%; white-space: normal; overflow-wrap: anywhere;
+}
 .ios-evidence-head { display: flex; align-items: center; gap: 8px; }
 .ios-evidence-head h3 { margin: 0; }
 .ios-evidence-head .spacer { margin-left: auto; }

@@ -271,6 +271,7 @@ def test_detail_plain_support_preserves_zero_partial_horizon_and_technical_scope
     assert "Observed dates" in html and ">0<" in html
     assert "<details" in html and "Technical details" in html
     assert "&lt;fixture&gt;" in html and "<fixture>" not in html
+    assert "No evidence references declared." in html
     assert "owner_validation_scope_unqualified" in html and "任务" in html
 
 
@@ -285,13 +286,13 @@ const renderer=JSON.parse(process.argv[2]);
 async function run(reject) {
  const v={innerHTML:''},b={disabled:false,textContent:''},status={textContent:'',dataset:{}};
  let cache={ok:true,marker:'old',generated:{observed_at:'fixture-old'},engines:[],census:{}};
- const calls=[],toasts=[];
+ const calls=[],toasts=[];let wrapped=false;
  const c={RENDER:{},IOS:{},Date,$:s=>s==='#view'?v:s==='#ios-refresh'?b:s==='#iosRefreshStatus'?status:null,
  api:async p=>{calls.push(p);if(p.includes('force=1')){if(reject)throw Error('SECRET_CANARY');return{ok:true,marker:'fresh',generated:{observed_at:'fixture-fresh'},engines:[],census:{}}}return cache},
  clearApiCache:()=>{cache=null},apiCacheStore:(p,e)=>{cache=e.value},apiCacheTtl:()=>300000,
  iosText:s=>s,iosCopy:s=>s,iosHero:d=>d.generated.observed_at,iosReasonCard:()=>'',iosCeoView:()=>'',
  iosRenderChips:()=>{},iosRenderTable:()=>{},fmtNum:String,nwEmpty:()=>'',toast:s=>toasts.push(s),
- iosRestoreFocus:()=>{},iosLanguageAttributes:()=>{status.textContent='Refresh failed '+status.dataset.assessed},go:()=>{}};
+ wrapViewTables:()=>{wrapped=true},iosRestoreFocus:()=>{if(!wrapped)throw Error('focus before synchronous table wrapping')},iosLanguageAttributes:()=>{status.textContent='Refresh failed '+status.dataset.assessed},go:()=>{}};
  vm.createContext(c);vm.runInContext(renderer,c);await c.RENDER.intelligence_os();await b.onclick();await Promise.resolve();await Promise.resolve();
  return{marker:c.IOS.data.marker,calls,disabled:b.disabled,status:status.textContent,toasts,html:v.innerHTML};
 }
@@ -370,3 +371,39 @@ language='en';setSidebarOpen(true);if(toggle.attrs['aria-label']!=='Close naviga
         p=Path(td)/"drawer.js";p.write_text(harness)
         result=subprocess.run([node,str(p)],capture_output=True,text=True)
     assert result.returncode==0,result.stderr
+
+
+def test_measurement_detail_separates_populations_null_zero_and_clock_bases():
+    row={'evidence_basis':'matched_control','clock_basis':'explicit_unit_v1:trading_days:US','wilson_ci_low':0,'n_dates':30,'n_controlled_dates':30,'hit_rate':None,'excess_mean':None,'benchmark_baseline_hit_rate':30/70,'benchmark_baseline_excess_mean':None,'benchmark_baseline_excess_basis':'mixed_direction_refused','benchmark_baseline_excess_mean_by_direction':{'-1':-.1,'1':.1},'reason':'owner_fixture'}
+    engine={'evidence_status':'Accruing','evidence_ruler':{'selected_qledger_rung':'21'},'evidence_measurement':{'by_horizon':{'21':row}},'evidence_refs':['data/qledger/grades.jsonl','research/FIXTURE_PREREG.md'],'evidence_source_links':[{'reference':'research/FIXTURE_PREREG.md','revision':'a'*40,'url':'https://github.com/mastermindx-market-intelligence/macro/blob/'+'a'*40+'/research/FIXTURE_PREREG.md'}]}
+    rendered=_run([{'engine':engine,'statuses':[],'bands':[]}])[0]['detail']
+    assert 'Whole-family benchmark baseline' in rendered and '全系列基准参照' in rendered
+    assert 'Matched control' in rendered and '匹配对照' in rendered
+    assert 'Wilson lower bound' in rendered and '>0</code>' in rendered
+    assert 'Baseline denominator' in rendered and 'Unknown (not projected by owner)' in rendered
+    assert 'compatible task, version and cohort qualification is not established' in rendered
+    assert 'Repository source declaration' in rendered and 'noopener noreferrer' in rendered
+    assert 'href="data/' not in rendered and 'No browser link is declared for this reference.' in rendered
+    assert 'mixed_direction_refused' in rendered and '&quot;-1&quot;:-0.1' in rendered
+    mixed=dict(engine,evidence_measurement={'by_horizon':{'21':dict(row,by_clock_basis={'basis-A':row,'basis-B':dict(row,wilson_ci_low=None)})}})
+    html=_run([{'engine':mixed,'statuses':[],'bands':[]}])[0]['detail']
+    assert 'basis-A' in html and 'basis-B' in html and 'no pooled estimate' in html
+
+
+def test_actual_evidence_filter_row_translates_status_before_count():
+    node=shutil.which('node')
+    if node is None:pytest.skip('node unavailable')
+    source=APP.read_text(encoding='utf-8')
+    chips=source[source.index('function iosChip('):source.index('function iosMatches')]
+    renderer=source[source.index('function iosRenderChips()'):source.index('function iosCeoView(')]
+    harness='''const esc=s=>String(s==null?'':s);const dataAttrs=o=>Object.entries(o).map(([k,v])=>' data-'+k+'="'+esc(v)+'"').join('');
+const el={innerHTML:''};const document={documentElement:{dataset:{lang:'zh'}},addEventListener(){}};const $=s=>s==='#iosChips'?el:null;
+'''+_contract()+chips+renderer+'''
+const IOS={data:{census:{},ceo_view:[{evidence_status:'Accruing',n_engines:3}]},rows:[],filter:{}};
+iosRenderChips();console.log(el.innerHTML);'''
+    with tempfile.TemporaryDirectory() as td:
+        p=Path(td)/'evidence-chips.js';p.write_text(harness)
+        result=subprocess.run([node,str(p)],capture_output=True,text=True)
+    assert result.returncode==0,result.stderr
+    assert 'data-val="Accruing"' in result.stdout and '证据积累中' in result.stdout and '(3)' in result.stdout
+    assert 'Accruing (3)</span>' not in result.stdout

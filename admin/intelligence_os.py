@@ -46,12 +46,15 @@ really are producer-owned; nothing in this module can set it.
 from __future__ import annotations
 
 import math
+import re
+import subprocess
 import sys
 import threading
 import time
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
+from urllib.parse import quote
 
 from admin.evidence_status import (
     EVIDENCE_STATUS_ORDER,
@@ -800,10 +803,92 @@ def panel(root: Path | None = None, force: bool = False) -> dict[str, Any]:
     }
 
 
+def _source_document_links(root: Path, references: list[str], *, qualification_identity: Any = ...) -> list[dict[str, str]]:
+    """Verified immutable repository source declarations, never ledger downloads.
+
+    The GitHub viewer owns account permissions. No URL is synthesized for a data
+    store, species result, arbitrary report or unknown source generation.
+    """
+    deadline = time.monotonic() + 3.0
+    git_env = {"GIT_NO_LAZY_FETCH": "1", "GIT_OPTIONAL_LOCKS": "0", "LC_ALL": "C"}
+    def git_read(args: list[str], *, text: bool = False):
+        remaining = deadline - time.monotonic()
+        if remaining <= 0:
+            raise TimeoutError("source declaration read budget exhausted")
+        return subprocess.run(["git", *args], cwd=root, capture_output=True,
+                              text=text, timeout=remaining, check=False, env=git_env)
+    try:
+        if not references:
+            return []
+        origin = git_read(["remote", "get-url", "origin"], text=True)
+        if origin.returncode or origin.stdout.strip() not in {
+            "https://github.com/mastermindx-market-intelligence/macro.git",
+            "git@github.com:mastermindx-market-intelligence/macro.git",
+        }:
+            return []
+        revision = git_read(["rev-parse", "HEAD"], text=True)
+        oid = revision.stdout.strip()
+        if revision.returncode or not re.fullmatch(r"[0-9a-f]{40}", oid):
+            return []
+        import yaml  # noqa: PLC0415 — source declaration lookup only
+
+        ladder_path = root / _QUAL_LADDER_REL
+        if ladder_path.is_file() and ladder_path.stat().st_size > 262144:
+            return []
+        try:
+            ladder = yaml.safe_load(ladder_path.read_text(encoding="utf-8")) if ladder_path.is_file() else {}
+        except yaml.YAMLError:
+            return []
+        if qualification_identity is not ... and _mtime_ns(ladder_path) != qualification_identity:
+            return []
+        known_keys = set(ladder) if isinstance(ladder, dict) else set()
+        linked = []
+        source_identities = []
+        for ref in references[:8]:
+            if not isinstance(ref, str) or len(ref) > 512:
+                continue
+            path = "config/qual_ladder.yml" if ref in known_keys else ref
+            relative = Path(path)
+            prereg = relative.parts[:1] == ("research",) and "PREREG" in relative.name.upper()
+            source_doc = relative.parts[:1] == ("docs",) and relative.suffix == ".md"
+            if path != "config/qual_ladder.yml" and not (source_doc or prereg):
+                continue
+            if relative.is_absolute() or ".." in relative.parts or relative.suffix not in {".md", ".yml"}:
+                continue
+            full = (root / relative).resolve()
+            if not full.is_relative_to(root.resolve()) or not full.is_file() or full.stat().st_size > 262144:
+                continue
+            identity = _mtime_ns(full)
+            actual = full.read_bytes()
+            object_name = f"{oid}:{relative.as_posix()}"
+            size = git_read(["cat-file", "-s", object_name], text=True)
+            if size.returncode or not size.stdout.strip().isdigit() or int(size.stdout.strip()) > 262144:
+                continue
+            blob = git_read(["show", object_name])
+            if blob.returncode or blob.stdout != actual or _mtime_ns(full) != identity:
+                continue
+            source_identities.append((full, identity))
+            linked.append({"reference": ref, "kind": "repository_source_declaration",
+                           "revision": oid,
+                           "url": "https://github.com/mastermindx-market-intelligence/macro/blob/"
+                           + oid + "/" + quote(relative.as_posix(), safe="/")})
+        current_revision = git_read(["rev-parse", "HEAD"], text=True)
+        if current_revision.returncode or current_revision.stdout.strip() != oid:
+            return []
+        if any(_mtime_ns(path) != identity for path, identity in source_identities):
+            return []
+        if qualification_identity is not ... and _mtime_ns(ladder_path) != qualification_identity:
+            return []
+        return linked
+    except (OSError, ValueError, UnicodeError, subprocess.SubprocessError):
+        return []
+
+
 def engine_detail(engine_id: str, root: Path | None = None) -> dict[str, Any]:
     """One engine's T1 cell plus the FULL T4 record for each of its outputs."""
     root = Path(root) if root is not None else _ROOT
     wanted = str(engine_id or "")
+    qualification_identity = _mtime_ns(root / _QUAL_LADDER_REL)
     try:
         view, registry, evidence_by_engine, _elapsed, _cache = _derive(root, force=False)
     except Exception as exc:  # noqa: BLE001 — fail open; see panel()
@@ -877,6 +962,7 @@ def engine_detail(engine_id: str, root: Path | None = None) -> dict[str, Any]:
         engine.update(derive_evidence_status(cell, outputs, evidence_by_engine.get(wanted)))
     else:
         engine.update(_noncanonical_evidence())
+    engine["evidence_source_links"] = _source_document_links(root, engine.get("evidence_refs") or [], qualification_identity=qualification_identity)
     return {
         "ok": True,
         "engine": engine,

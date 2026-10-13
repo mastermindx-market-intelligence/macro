@@ -6,7 +6,6 @@ display projection only: no score, promotion, persistence, model judgement, or f
 """
 from __future__ import annotations
 
-from pathlib import PurePosixPath
 from typing import Any, Iterable, Mapping, Sequence
 
 
@@ -43,8 +42,8 @@ def qledger_family_for_cell(
     """Resolve an existing qledger owner binding without an engine-name registry.
 
     Direct T1 qledger bindings carry their desk explicitly. The three P3 adapters own
-    their family vocabulary; an owner-native T1 ledger joins only when its immediate
-    directory name exactly matches one of those existing family names. No fuzzy producer,
+    their family vocabulary; an owner-native T1 ledger joins only when its exact
+    ledger path matches the existing adapter declaration. No fuzzy producer,
     owner-program, or path-substring matching is admitted.
     """
     ledger = str(cell.get("ledger") or "")
@@ -59,9 +58,10 @@ def qledger_family_for_cell(
 
     if not ledger or ledger == "none" or ledger.startswith("qledger:"):
         return None
-    candidate = PurePosixPath(ledger).parent.name
-    allowed = {str(family) for family in adapter_families}
-    return candidate if candidate in allowed else None
+    from engine.qledger_desk_adapter import native_ledger_for_family
+
+    return next((str(family) for family in adapter_families
+                 if native_ledger_for_family(str(family)) == ledger), None)
 
 
 def _clock_market(clock_basis: Any) -> str | None:
@@ -211,6 +211,38 @@ def _coverage_context(readiness: Mapping[str, Mapping[str, Any]]) -> dict[str, A
             if any(row.get(key) is not None for key in keys)
         }
     }
+
+
+_MEASUREMENT_KEYS = (
+    "wilson_ci_low", "hit_rate", "excess_mean", "mean_abs_excess", "excess_basis",
+    "excess_mean_by_direction", "benchmark_baseline_hit_rate",
+    "benchmark_baseline_excess_mean", "benchmark_baseline_mean_abs_excess",
+    "benchmark_baseline_excess_basis", "benchmark_baseline_excess_mean_by_direction",
+    "n_dates", "n_controlled_dates", "n_cohort_dates", "clock_basis", "evidence_basis",
+    "reason", "clock_migration", "clock_prior_n_dates", "migration_note", "unclassified",
+    "needed", "control_coverage", "n_cohort_rows", "n_controlled_rows",
+    "n_control_refused_rows", "n_control_refused_dates", "cohort_rowless", "control_clock_start",
+)
+
+
+def _measurement_context(readiness: Mapping[str, Mapping[str, Any]]) -> dict[str, Any]:
+    """Existing owner's metrics only; no new inference, pooling or authority.
+
+    Matched-cohort Wilson/support and whole-family benchmark values retain separate
+    source keys. Readiness does not project a benchmark-baseline denominator.
+    """
+    rows = {}
+    for horizon, row in sorted(readiness.items()):
+        projected = {key: row.get(key) for key in _MEASUREMENT_KEYS}
+        by_basis = row.get("by_clock_basis") or {}
+        projected["by_clock_basis"] = {
+            str(basis): {key: sub.get(key) for key in _MEASUREMENT_KEYS}
+            for basis, sub in by_basis.items() if isinstance(sub, Mapping)
+        } if isinstance(by_basis, Mapping) else {}
+        projected["benchmark_baseline_denominator"] = None
+        rows[horizon] = projected
+    return {"source": "scripts/grade_qledger.py:compute_promotion_readiness",
+            "by_horizon": rows}
 
 
 def derive_evidence_status(
@@ -388,6 +420,7 @@ def derive_evidence_status(
         "evidence_basis": basis,
         "evidence_maturity": _maturity_context(cell, readiness),
         "evidence_coverage": _coverage_context(readiness),
+        "evidence_measurement": _measurement_context(readiness),
     }
 
 

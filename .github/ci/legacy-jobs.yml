@@ -7308,6 +7308,26 @@ jobs:
   neural-web:
     if: ${{ false }}
     gate: data
+    # Literal fixture ownership closes the dynamic load_benchmark(name) read.
+    # Default additive scope preserves inferred first-party dependency coverage.
+    paths:
+      - "tests/test_synapse_registry.py"
+      - "tests/test_neuralweb_envelope.py"
+      - "tests/test_signal_bus_doc.py"
+      - "tests/test_admin_neural_web.py"
+      - "tests/test_admin_intelligence_os.py"
+      - "tests/test_admin_intelligence_os_ui.py"
+      - "tests/test_admin_theme_tokens.py"
+      - "tests/test_eval_os_adversarial_acceptance.py"
+      - "tests/test_admin_metabolism.py"
+      - "tests/test_admin_metabolism_history.py"
+      - "tests/test_entity_thesis_registry.py"
+      - "tests/test_check_entity_thesis_registry.py"
+      - "tests/test_nw_lobe_descriptions.py"
+      - "tests/test_synapse_registry_contract.py"
+      - "tests/test_constitution.py"
+      - "tests/test_mastermind_system_map.py"
+      - "engine/neuralweb/eval/benchmark_eval_os_measurement_v1.json"
     # neural-web program (W0, #1253 post-mortem): three test files were run by ZERO
     # GitHub workflows before this job was added.  Without CI wiring, an edit to
     # config/synapse.yml (not under any prior ci.yml path glob) could merge GREEN with a
