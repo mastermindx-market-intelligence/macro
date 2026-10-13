@@ -4727,6 +4727,21 @@ CURATED_EXCLUSIVE = {
     # the fallback to engine/** and the plan_book packing probe selected the
     # job (130 > 129). scope: exclusive pins it to its measured closure.
     "sni-s2-event-response",
+    # 2026-10-13 SNI INT1: the shared inference/seal library, evaluation
+    # ledger, US stress set and draft-prereg loaders import through sys.path
+    # inserts. scope: exclusive pins the job to their measured closure so the
+    # research/ fallback roots never reach the packing probes.
+    "sni-shared-and-drafts",
+    # 2026-10-13 SNI INT1: the cross-cutting guard suite (matrix, equivalence,
+    # invariants, quarantine fence, run-seal repro, SCHK, A20, US stress) loads
+    # through the same sys.path inserts; pinned to its measured closure.
+    "sni-program-guards",
+    # 2026-10-13 SNI INT1: the public-exposure scan reads publish surfaces as
+    # TEXT (closure-marked data). Unpinned, those literal script names pulled
+    # build_site.py's 757-file import closure into the job and every packing
+    # probe selected it (templates/index.html 5815 > 5800). It declares its
+    # scanned surfaces instead and pins them in its own test.
+    "sni-public-exposure-scan",
     # 2026-10-13 Grey Deer W3 (#8938): the stage-1 pullback runner suite reads
     # its own research tree, lib.nyse_calendar and the trial ledger. scope:
     # exclusive pins it to that measured closure (46 paths), so inference never

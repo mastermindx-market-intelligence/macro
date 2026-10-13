@@ -17,6 +17,7 @@ a test failure naming the file.
 from __future__ import annotations
 
 import ast
+import io
 import json
 import re
 import subprocess
@@ -154,7 +155,6 @@ def _is_authority_map_name(name: str) -> bool:
     return name.strip("_").upper() == "AUTHORITY"
 MAX_FILE_BYTES = 20 * 1024 * 1024
 OWNER_PARQUET_REL = "data/reference/security_master.parquet"
-OWNER_PARQUET_TMP = Path("/tmp/inv_sm.parquet")
 
 
 @dataclass(frozen=True)
@@ -277,10 +277,12 @@ def load_owner_ids(repo_root: Path) -> OwnerIds:
 
     Never constructs an id. If pandas/pyarrow are missing or the file is not
     on disk, try `git show HEAD:data/reference/security_master.parquet` once
-    into /tmp/inv_sm.parquet. If it still cannot be read, skip_reason is set.
+    and read the blob from memory (no shared temp file, so concurrent jobs on
+    one runner cannot race). If it still cannot be read, skip_reason is set.
     """
     parquet_path = Path(repo_root) / OWNER_PARQUET_REL
     tried_git = False
+    blob_bytes: bytes | None = None
     if not parquet_path.is_file():
         tried_git = True
         try:
@@ -291,8 +293,7 @@ def load_owner_ids(repo_root: Path) -> OwnerIds:
                 capture_output=True,
             )
             if blob.returncode == 0 and blob.stdout:
-                OWNER_PARQUET_TMP.write_bytes(blob.stdout)
-                parquet_path = OWNER_PARQUET_TMP
+                blob_bytes = blob.stdout
             else:
                 return OwnerIds(
                     {}, set(),
@@ -301,6 +302,10 @@ def load_owner_ids(repo_root: Path) -> OwnerIds:
                 )
         except OSError as exc:
             return OwnerIds({}, set(), f"git show failed: {exc}")
+
+    def _source() -> Any:
+        # A fresh stream per reader, so the pandas fallback re-reads from 0.
+        return io.BytesIO(blob_bytes) if blob_bytes is not None else str(parquet_path)
 
     try:
         import pyarrow.parquet as pq
@@ -315,7 +320,7 @@ def load_owner_ids(repo_root: Path) -> OwnerIds:
     table_cols: dict[str, list[Any]] = {}
     if pq is not None:
         try:
-            table = pq.read_table(str(parquet_path))
+            table = pq.read_table(_source())
             columns = list(table.column_names)
             for name in columns:
                 table_cols[name] = table.column(name).to_pylist()
@@ -326,7 +331,7 @@ def load_owner_ids(repo_root: Path) -> OwnerIds:
                     f"pyarrow failed to read {parquet_path}: {exc}; pandas missing",
                 )
             try:
-                frame = pd.read_parquet(str(parquet_path))
+                frame = pd.read_parquet(_source())
             except Exception as exc2:  # noqa: BLE001
                 return OwnerIds(
                     {}, set(),
@@ -338,7 +343,7 @@ def load_owner_ids(repo_root: Path) -> OwnerIds:
                 table_cols[name] = list(frame[name].tolist())
     elif pd is not None:
         try:
-            frame = pd.read_parquet(str(parquet_path))
+            frame = pd.read_parquet(_source())
         except Exception as exc:  # noqa: BLE001
             return OwnerIds(
                 {}, set(),
@@ -348,7 +353,7 @@ def load_owner_ids(repo_root: Path) -> OwnerIds:
         for name in columns:
             table_cols[name] = list(frame[name].tolist())
     else:
-        where = "git-exported tmp" if tried_git else str(parquet_path)
+        where = "git-exported blob" if tried_git else str(parquet_path)
         return OwnerIds(
             {}, set(),
             f"pandas and pyarrow missing; cannot read {where}",

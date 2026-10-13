@@ -25,6 +25,9 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 
 # Relative paths of scripts that render, copy, or upload bytes toward a
 # public origin (Caddy site.served, R2 object prefixes, committed site/).
+# ci-trigger-closure: data — scanned as TEXT for SNI path strings, never
+# imported; the sni-public-exposure-scan job declares every one of these
+# paths and test_ci_job_declares_every_scanned_surface pins that.
 PUBLISH_SCRIPTS: dict[str, str] = {
     "scripts/publish_r2.py": (
         "Uploads named site/ and data/ dirs to the R2 bucket (R2_BUCKET env)."
@@ -82,6 +85,8 @@ PUBLISH_SCRIPTS: dict[str, str] = {
     ),
 }
 
+# ci-trigger-closure: data — workflow files scanned as TEXT, never executed;
+# declared by sni-public-exposure-scan (pinned below).
 RENDER_DEPLOY_WORKFLOWS: tuple[str, ...] = (
     ".github/workflows/render.yml",
     ".github/workflows/engine-render.yml",
@@ -268,6 +273,78 @@ def test_authority_flags_refuse_true() -> None:
         except ValueError:
             continue
         raise AssertionError(f"expected refuse_authority({name}=True) to raise")
+
+
+def test_scanned_publish_surfaces_exist() -> None:
+    # _readlines() returns None for a missing file, so a renamed or deleted
+    # publish script would silently drop out of both scans. Fail closed instead.
+    missing = [
+        rel
+        for rel in list(PUBLISH_SCRIPTS) + list(RENDER_DEPLOY_WORKFLOWS)
+        if not (REPO_ROOT / rel).is_file()
+    ]
+    assert missing == [], (
+        "publish surface missing (renamed/deleted?) - update PUBLISH_SCRIPTS / "
+        "RENDER_DEPLOY_WORKFLOWS:\n" + "\n".join(missing)
+    )
+
+
+_SCAN_JOB_ID = "sni-public-exposure-scan"
+
+
+def _glob_regex(pattern: str) -> re.Pattern[str]:
+    # Same glob dialect as the CI packer: ``**/`` spans directories, ``*``
+    # stays inside one path segment.
+    out: list[str] = []
+    index = 0
+    while index < len(pattern):
+        if pattern.startswith("**/", index):
+            out.append("(?:.*/)?")
+            index += 3
+        elif pattern.startswith("**", index):
+            out.append(".*")
+            index += 2
+        elif pattern[index] == "*":
+            out.append("[^/]*")
+            index += 1
+        elif pattern[index] == "?":
+            out.append("[^/]")
+            index += 1
+        else:
+            out.append(re.escape(pattern[index]))
+            index += 1
+    return re.compile("^" + "".join(out) + "$")
+
+
+def test_ci_job_declares_every_scanned_surface() -> None:
+    # The scanned surfaces are data (see the closure markers above), so the
+    # CI packer cannot infer them; the curated-exclusive job must declare
+    # each one or an edit to that surface would skip this scan.
+    import yaml
+
+    loader = getattr(yaml, "CSafeLoader", yaml.SafeLoader)
+    manifest = yaml.load(
+        (REPO_ROOT / ".github/ci/legacy-jobs.yml").read_text(encoding="utf-8"),
+        Loader=loader,
+    )
+    job = manifest["jobs"][_SCAN_JOB_ID]
+    assert job.get("scope") == "exclusive", job.get("scope")
+    declared = [str(p) for p in job.get("paths") or ()]
+    regexes = [_glob_regex(p) for p in declared]
+    for tree in ("templates/**", "app/**"):
+        assert tree in declared, f"{_SCAN_JOB_ID} must declare {tree}"
+    required = list(PUBLISH_SCRIPTS) + list(RENDER_DEPLOY_WORKFLOWS) + [
+        "tests/test_sni_public_exposure.py",
+        ".github/ci/legacy-jobs.yml",
+    ]
+    undeclared = [rel for rel in required if not any(r.match(rel) for r in regexes)]
+    assert undeclared == [], (
+        f"{_SCAN_JOB_ID} paths miss scanned surfaces:\n" + "\n".join(undeclared)
+    )
+    commands = " ".join(
+        str(step.get("run", "")) for step in job.get("steps") or () if isinstance(step, dict)
+    )
+    assert "tests/test_sni_public_exposure.py" in commands, commands
 
 
 def test_real_tree_has_no_public_sni_references() -> None:

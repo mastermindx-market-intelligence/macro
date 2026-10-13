@@ -26,7 +26,7 @@ Status words are copied from the cited file. They are not upgraded. `REGISTERED-
 | `common/sni_inference.py` | library | SNI-local DRAFT inference contract | `research/single_name_intelligence/common/sni_inference.py` (module docstring) |
 | `common/sni_seal.py` | library | SNI-local DRAFT seal contract (`sni_seal.v1`) | `research/single_name_intelligence/common/sni_seal.py` (module docstring) |
 | `evaluation/sni_eval_ledger.py` | library | SNI-local DRAFT evaluation registration ledger | `research/single_name_intelligence/evaluation/sni_eval_ledger.py` (module docstring) |
-| `tests/test_sni_*.py` | test set | 35 files; names in §5 | `tests/test_sni_*.py` |
+| `tests/test_sni_*.py` | test set | 45 files; names in §5 | `tests/test_sni_*.py` |
 
 Qualification and decision records (admitted assessment while R1 is gated: E0, M0, V0, U0 — `e2e_20261011/SNI_PROGRAM_CONTINUATION_2026-10-11.md` L10). These are not protocol rows, sealed runs, reprints, or unregistered study drafts.
 
@@ -68,13 +68,15 @@ Register §2 (`S0_PROTOCOL_REGISTER.md` L71): no SNI claim may be registered unt
 
 Top-level `SNI_*.md` files at `research/single_name_intelligence/` are the E0/M0 qualification records, U0 reuse map, U0 composition-seam decision, U0 journey draft, and V0 matrix / extension / collision-check records (status in §2).
 
+- `acceptance/` — acceptance evidence matrix (`ACCEPTANCE_EVIDENCE_MATRIX.md` / `.json`) and its renderer `render_matrix.py`. Row status is evidence bookkeeping, not acceptance by the commissioning authority.
 - `common/` — shared SNI-local draft libraries `sni_inference.py` and `sni_seal.py`.
 - `e2e_20261011/` — seat continuation ledger `SNI_PROGRAM_CONTINUATION_2026-10-11.md`. E0/M0 cite `e2e_20261011/MASTERPLAN.md`; that path is not in this tree.
-- `evaluation/` — R1-gated draft ledger spec `REGISTRATION_LEDGER_DRAFT.md` and `sni_eval_ledger.py`.
+- `evaluation/` — R1-gated draft ledger spec `REGISTRATION_LEDGER_DRAFT.md` and `sni_eval_ledger.py`; `seal_full_check.py` regenerates every sealed S1/S2 v1.1 output from its pinned inputs and compares it with the sealed bytes (verification only, it writes nothing into `runs/`).
 - `event_response/` — S2 study modules (P04–P06) plus P04 v2 prereg draft (`P04_V2_PREREG_DRAFT.md` / `.json`).
 - `evidence/` — Alibaba E1 and Tencent E2 owner-native packs, coverage JSON, and adversarial cases.
 - `protocols/` — frozen S0 register, independence law, and split/contamination law; unapplied A01 draft (`S0_AMENDMENT_A01_DRAFT.md` / `.json`).
-- `residual/` — S1 study modules (P01–P03).
+- `residual/` — S1 study modules (P01–P03). Its git tree sha is pinned as `code_tree_sha` in the S1 v1.1 `REPORT.md`, so any byte change here breaks S1 v1.1 `--check`.
+- `reviews/` — dated review receipts (program invariants, public exposure, quarantine fence, seal coverage, S2 v1.1 red-team, cross-host re-execution, A20 injection safety).
 - `runs/` — sealed study trees: `s1_residual/` (superseded by v1.1), `s1_residual_v1_1/`, `s2_event_response/` (superseded by v1.1), `s2_event_response_v1_1/`.
 - `us_stress/` — Mag-7 science stress-set draft contract, `stress_set.py`, and seven profile drafts under `profiles/`.
 - `us_transfer/` — A8 US residual-transfer prereg draft (`A8_US_RESIDUAL_TRANSFER_PREREG_DRAFT.md` / `.json`) and `a8_draft_loader.py`.
@@ -83,7 +85,7 @@ Sibling contract schemas (outside this directory, listed because SNI files pin t
 
 ## 5. Tests
 
-Group of `tests/test_sni_*.py` (35 files).
+Group of `tests/test_sni_*.py` (45 files).
 
 **S1**
 
@@ -137,6 +139,19 @@ Group of `tests/test_sni_*.py` (35 files).
 **US stress**
 
 - `test_sni_us_stress.py`
+- `test_sni_us_stress_onboarding.py`
+- `test_sni_us_stress_then_known.py`
+
+**program guards** (cross-cutting; not tied to one study)
+
+- `test_sni_acceptance_matrix.py`
+- `test_sni_common_equivalence.py`
+- `test_sni_injection_safety.py`
+- `test_sni_program_invariants.py`
+- `test_sni_public_exposure.py`
+- `test_sni_quarantine_fence.py`
+- `test_sni_run_seal_repro.py`
+- `test_sni_seal_full_check.py`
 
 ## 6. What is NOT here / not authorised
 

@@ -25824,6 +25824,8 @@ jobs:
     paths:
       - research/single_name_intelligence/event_response/**
       - research/single_name_intelligence/runs/s2_event_response/**
+      - research/single_name_intelligence/runs/s2_event_response_v1_1/**
+      - research/single_name_intelligence/protocols/S0_PROTOCOL_REGISTER.md
       - engine/qledger.py
       - engine/grading_stats.py
       - engine/trial_ledger.py
@@ -25844,6 +25846,8 @@ jobs:
       - tests/test_sni_s2_cli.py
       - tests/test_sni_s2_seal_integrity.py
       - tests/test_sni_s2_language.py
+      - tests/test_sni_s2_property.py
+      - tests/test_sni_s2_v1_1_hardening.py
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -25853,7 +25857,7 @@ jobs:
       - name: install minimal S2 dependencies
         run: pip install pytest pandas numpy pyarrow pyyaml
       - name: S2 event response contracts (P04-P06, historical-descriptive)
-        run: python -m pytest tests/test_sni_s2_ledger_order.py tests/test_sni_s2_mirror.py tests/test_sni_s2_clock.py tests/test_sni_s2_selection.py tests/test_sni_s2_collapse.py tests/test_sni_s2_abstain.py tests/test_sni_s2_stats.py tests/test_sni_s2_info_leak.py tests/test_sni_s2_report_order.py tests/test_sni_s2_cli.py tests/test_sni_s2_seal_integrity.py tests/test_sni_s2_language.py -q -p no:cacheprovider
+        run: python -m pytest tests/test_sni_s2_ledger_order.py tests/test_sni_s2_mirror.py tests/test_sni_s2_clock.py tests/test_sni_s2_selection.py tests/test_sni_s2_collapse.py tests/test_sni_s2_abstain.py tests/test_sni_s2_stats.py tests/test_sni_s2_info_leak.py tests/test_sni_s2_report_order.py tests/test_sni_s2_cli.py tests/test_sni_s2_seal_integrity.py tests/test_sni_s2_language.py tests/test_sni_s2_property.py tests/test_sni_s2_v1_1_hardening.py -q -p no:cacheprovider
 
   single-name-coverage-profiles:
     if: ${{ false }}
@@ -25979,6 +25983,7 @@ jobs:
     paths:
       - "research/single_name_intelligence/residual/**"
       - "research/single_name_intelligence/runs/s1_residual/**"
+      - "research/single_name_intelligence/runs/s1_residual_v1_1/**"
       - "engine/qledger.py"
       - "engine/grading_stats.py"
       - "engine/trial_ledger.py"
@@ -25993,6 +25998,9 @@ jobs:
       - "tests/test_sni_s1_report_order.py"
       - "tests/test_sni_s1_seal_integrity.py"
       - "tests/test_sni_s1_stats.py"
+      - "tests/test_sni_s1_property.py"
+      - "tests/test_sni_s1_v1_1_hardening.py"
+      - "tests/test_sni_s1_v1_2_hash_invariant.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -26002,7 +26010,246 @@ jobs:
       - name: install minimal deps
         run: pip install pytest pandas numpy pyarrow pyyaml
       - name: sni s1 residual baseline tests
-        run: python -m pytest tests/test_sni_s1_challenger.py tests/test_sni_s1_cli.py tests/test_sni_s1_decomposition.py tests/test_sni_s1_info_leak.py tests/test_sni_s1_language.py tests/test_sni_s1_ledger_order.py tests/test_sni_s1_manifest.py tests/test_sni_s1_mirror.py tests/test_sni_s1_report_order.py tests/test_sni_s1_seal_integrity.py tests/test_sni_s1_stats.py -q -p no:cacheprovider
+        run: python -m pytest tests/test_sni_s1_challenger.py tests/test_sni_s1_cli.py tests/test_sni_s1_decomposition.py tests/test_sni_s1_info_leak.py tests/test_sni_s1_language.py tests/test_sni_s1_ledger_order.py tests/test_sni_s1_manifest.py tests/test_sni_s1_mirror.py tests/test_sni_s1_report_order.py tests/test_sni_s1_seal_integrity.py tests/test_sni_s1_stats.py tests/test_sni_s1_property.py tests/test_sni_s1_v1_1_hardening.py tests/test_sni_s1_v1_2_hash_invariant.py -q -p no:cacheprovider
+
+  sni-shared-and-drafts:
+    if: ${{ false }}
+    gate: code
+    scope: exclusive
+    # SNI INT1 (2026-10-13): shared exact-inference + seal library (common/),
+    # the immutable evaluation ledger (evaluation/), the US/Mag-7 descriptive
+    # stress set (us_stress/), and the DRAFT pre-registrations (P04 v2, A8 US
+    # transfer, S0 amendment A01). Hermetic: synthetic inputs and committed
+    # draft JSON only, tmp_path-scoped, never data/. Every authority flag false.
+    # Curated exclusive so the loaders' sys.path imports cannot widen inference
+    # to engine/**; the paths are the whole import closure, checked by
+    # test_curated_exclusive_scopes_cover_their_own_import_closure.
+    timeout-minutes: 10
+    paths:
+      - research/single_name_intelligence/common/**
+      - research/single_name_intelligence/evaluation/**
+      - research/single_name_intelligence/us_stress/**
+      - research/single_name_intelligence/us_transfer/**
+      - research/single_name_intelligence/protocols/**
+      - research/single_name_intelligence/event_response/P04_V2_PREREG_DRAFT.json
+      - research/single_name_intelligence/event_response/P04_V2_PREREG_DRAFT.md
+      - research/single_name_intelligence/event_response/p04_v2_draft_loader.py
+      - contracts/single_name_intelligence/**
+      - tests/test_sni_common_inference.py
+      - tests/test_sni_common_seal.py
+      - tests/test_sni_eval_ledger.py
+      - tests/test_sni_p04_v2_draft.py
+      - tests/test_sni_a8_us_transfer_draft.py
+      - tests/test_sni_s0_amendment_a01_draft.py
+      - tests/test_sni_us_stress.py
+      # Measured closure of tests/test_sni_a8_us_transfer_draft.py, which reads
+      # engine/qledger.py as text to pin GRADE_HORIZONS against the owner; the
+      # inferer conservatively owns that file's import closure. Listed, not hidden.
+      - collectors/__init__.py
+      - collectors/_drip.py
+      - collectors/base.py
+      - collectors/china_analyst.py
+      - collectors/china_filings.py
+      - collectors/china_news.py
+      - collectors/china_visits.py
+      - collectors/edgar.py
+      - collectors/edgar_13f.py
+      - collectors/edgar_flow_quality.py
+      - collectors/edgar_share_quality.py
+      - collectors/edgar_stock_quality.py
+      - collectors/fred.py
+      - collectors/openfigi.py
+      - config/ai_pricing.yml
+      - config/capability_manifest.yml
+      - config/metabolism_budget.yml
+      - engine/__init__.py
+      - engine/ai_desk.py
+      - engine/ai_desk_scorer.py
+      - engine/altdata_ledger.py
+      - engine/altdata_models.py
+      - engine/altdata_picks.py
+      - engine/altdata_signals.py
+      - engine/canon.py
+      - engine/catalyst_tone.py
+      - engine/china_altdata.py
+      - engine/china_basket_spine.py
+      - engine/china_conviction.py
+      - engine/china_crowding.py
+      - engine/china_discovery.py
+      - engine/china_event_calendar.py
+      - engine/china_extras.py
+      - engine/china_intel_bus.py
+      - engine/china_news.py
+      - engine/china_news_intel.py
+      - engine/china_radar.py
+      - engine/china_radar_ledger.py
+      - engine/china_signal_lab.py
+      - engine/china_validation.py
+      - engine/cn_newswires.py
+      - engine/codex_lane/runner.py
+      - engine/codex_provider.py
+      - engine/desk_ledger.py
+      - engine/desk_scorer.py
+      - engine/entity_resolver.py
+      - engine/event_calendar.py
+      - engine/forward_calendar_context.py
+      - engine/gdelt_client.py
+      - engine/grading_stats.py
+      - engine/ledger_lane.py
+      - engine/llm_auth.py
+      - engine/macro_surprise.py
+      - engine/manager_lag.py
+      - engine/manager_quality.py
+      - engine/manager_trades.py
+      - engine/master_brain.py
+      - engine/metabolism/__init__.py
+      - engine/metabolism/budget_gate.py
+      - engine/name_resolver.py
+      - engine/narrative_crossmarket.py
+      - engine/neuralweb/__init__.py
+      - engine/neuralweb/brief_context.py
+      - engine/neuralweb/capability_broker.py
+      - engine/neuralweb/key_pool.py
+      - engine/neuralweb/read.py
+      - engine/news_common.py
+      - engine/news_translate.py
+      - engine/ollama_provider.py
+      - engine/opex.py
+      - engine/passport.py
+      - engine/pooling.py
+      - engine/provider_health.py
+      - engine/qbus.py
+      - engine/qkernel.py
+      - engine/qledger.py
+      - engine/qledger_store.py
+      - engine/qledger_store_native.py
+      - engine/qledger_store_protocol.py
+      - engine/qledger_store_sources.py
+      - engine/qledger_validity.py
+      - engine/rebalance_calendar.py
+      - engine/regime_label.py
+      - engine/regime_vector.py
+      - engine/session_anchor.py
+      - engine/smart_money.py
+      - engine/spine.py
+      - engine/ticker_shape.py
+      - engine/trial_ledger.py
+      - engine/tushare_freshness.py
+      - engine/universe_history.py
+      - engine/validation.py
+      - lib/__init__.py
+      - lib/ai_costs.py
+      - lib/closes_panel.py
+      - lib/cn_calendar.py
+      - lib/config.py
+      - lib/dataos/identity.py
+      - lib/exchange_holidays.py
+      - lib/filing_value_units.py
+      - lib/hk_calendar.py
+      - lib/market_observations.py
+      - lib/market_session.py
+      - lib/nyse_calendar.py
+      - lib/store.py
+      - lib/ticker_aliases.py
+      - lib/tsx_calendar.py
+      - lib/us_cash_calendar.py
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install minimal deps
+        run: pip install pytest pandas numpy pyarrow pyyaml jsonschema
+      - name: sni shared library, evaluation ledger, US stress set and draft preregs
+        run: python -m pytest tests/test_sni_common_inference.py tests/test_sni_common_seal.py tests/test_sni_eval_ledger.py tests/test_sni_p04_v2_draft.py tests/test_sni_a8_us_transfer_draft.py tests/test_sni_s0_amendment_a01_draft.py tests/test_sni_us_stress.py -q -p no:cacheprovider
+
+  sni-program-guards:
+    if: ${{ false }}
+    gate: code
+    scope: exclusive
+    # SNI INT1 (2026-10-13): cross-cutting program guards that span more than one
+    # study — the acceptance evidence matrix, S1/S2 equivalence against common/,
+    # program invariants, the quarantine fence mutation tests, the sealed-run
+    # digest repro, the SCHK full-coverage seal verifier, the A20 injection-
+    # safety scan, and the US stress onboarding/then-known checks. Hermetic:
+    # committed bytes and tmp_path only; a depth-1 checkout skips (never
+    # errors, never fetches). Every authority flag false. Curated exclusive so
+    # the run-seal loaders' sys.path imports cannot widen inference; the paths
+    # are the whole import closure, checked by
+    # test_curated_exclusive_scopes_cover_their_own_import_closure.
+    timeout-minutes: 15
+    paths:
+      - "research/single_name_intelligence/**"
+      - "contracts/single_name_intelligence/**"
+      - "config/single_name_intelligence/**"
+      - "data/reference/security_master.parquet"
+      - "engine/__init__.py"
+      - "engine/qledger.py"
+      - "engine/grading_stats.py"
+      - "engine/trial_ledger.py"
+      - "tests/test_sni_acceptance_matrix.py"
+      - "tests/test_sni_common_equivalence.py"
+      - "tests/test_sni_program_invariants.py"
+      - "tests/test_sni_quarantine_fence.py"
+      - "tests/test_sni_run_seal_repro.py"
+      - "tests/test_sni_seal_full_check.py"
+      - "tests/test_sni_injection_safety.py"
+      - "tests/test_sni_us_stress_onboarding.py"
+      - "tests/test_sni_us_stress_then_known.py"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install minimal deps
+        run: pip install pytest pandas numpy pyarrow pyyaml jsonschema
+      - name: sni cross-cutting program guards
+        run: python -m pytest tests/test_sni_acceptance_matrix.py tests/test_sni_common_equivalence.py tests/test_sni_program_invariants.py tests/test_sni_quarantine_fence.py tests/test_sni_run_seal_repro.py tests/test_sni_seal_full_check.py tests/test_sni_injection_safety.py tests/test_sni_us_stress_onboarding.py tests/test_sni_us_stress_then_known.py -q -p no:cacheprovider
+
+  sni-public-exposure-scan:
+    if: ${{ false }}
+    gate: code
+    scope: exclusive
+    # SNI INT1 (2026-10-13): no public surface may serve, render, upload or link
+    # SNI material. Reads templates/, app/ (minus tests), the named publish/
+    # render/mirror scripts and the render/deploy workflows as TEXT — it never
+    # imports them, so the scanned names carry a `ci-trigger-closure: data`
+    # marker and are declared here instead of inferred. Its own
+    # test_ci_job_declares_every_scanned_surface fails if a scanned surface is
+    # missing below. Split from sni-program-guards so a template edit pays this
+    # one small file, not the whole guard suite.
+    timeout-minutes: 10
+    paths:
+      - "templates/**"
+      - "app/**"
+      - "scripts/publish_*.py"
+      - "scripts/build_site.py"
+      - "scripts/ci/public_render.sh"
+      - "scripts/render_*_fast.py"
+      - "scripts/render_stock_dashboard_fixture.py"
+      - "scripts/close_pass_publish.py"
+      - "scripts/mirror_gex_state_r2.py"
+      - "scripts/mirror_terminal_context_r2.py"
+      - ".github/workflows/render.yml"
+      - ".github/workflows/engine-render.yml"
+      - ".github/workflows/daily.yml"
+      - ".github/ci/legacy-jobs.yml"
+      - "research/single_name_intelligence/**"
+      - "contracts/single_name_intelligence/**"
+      - "tests/test_sni_public_exposure.py"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install minimal deps
+        run: pip install pytest pyyaml
+      - name: sni public-exposure scan
+        run: python -m pytest tests/test_sni_public_exposure.py -q -p no:cacheprovider
+
   c19-wp11-reader-pins:
     if: ${{ false }}
     gate: code
