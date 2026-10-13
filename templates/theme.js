@@ -487,7 +487,7 @@
     // Keep the dynamic dependency cache-safe too. theme.js itself is
     // content-hashed in every page; this explicit release key prevents a
     // year-cached account.js from pinning an older navigation loader.
-    s.src = pfx + 'account.js?v=20261010-account-continuity'; s.async = true;
+    s.src = pfx + 'account.js?v=20261011-account-identity'; s.async = true;
     document.head.appendChild(s);
   })();
 
@@ -3987,7 +3987,15 @@
      (not per blob), so an account that has only ever had `prefs`, and one that is
      half migrated, both read correctly. Nothing writes the nested blob any more;
      it survives as a read-only fallback. The Terminal half of this change is
-     terminal/lib/accountPrefs.ts (readSharedPrefs / sharedPrefsPatch). */
+     terminal/lib/accountPrefs.ts (readSharedPrefs / sharedPrefsPatch).
+
+     Single owner (site-20 S1 follow-up): account.js owns the `theme` and `lang`
+     writes whenever its panel is mounted with a loaded signed-in account — it
+     posts them to /api/account/prefs with its own queued/sent/acked/failed state.
+     _savePrefToServer asks MMAccount.claimsPref(key) and skips a claimed key, so
+     one request owns each key and a failed save is never masked by a second
+     silent writer. `theme_auto` is browser-only and stays here; a page without
+     the account panel (no MMAccount) keeps this path as the writer. */
   var _prefSyncing = false, _prefSaveTimer = null, _prefSavePending = null;
 
   /* v2 atomic if valid, else the legacy nested sibling. Per FIELD. */
@@ -4000,6 +4008,15 @@
   function _isTheme(v) { return v === 'light' || v === 'dark'; }
   function _isFlag(v) { return v === '1' || v === '0'; }
   function _isLang(v) { return v === 'en' || v === 'zh'; }
+  /* True when the mounted account panel owns the write for this key (single-owner
+     note above). Any error reads as "not claimed": this path keeps writing rather
+     than dropping the pref. */
+  function _acctOwnsPref(which) {
+    try {
+      var acc = window.MMAccount;
+      return !!(acc && typeof acc.claimsPref === 'function' && acc.claimsPref(which));
+    } catch (e) { return false; }
+  }
 
   function _applyServerPrefs(user) {
     if (!user) return;
@@ -4024,11 +4041,16 @@
   function _savePrefToServer(which) {
     if (_prefSyncing || !_curUser || !_authEnabled) return;
     var patch = _prefSavePending || {};
+    // account.js owns theme/lang while its panel holds a signed-in account; this path
+    // then carries only the browser-only theme_auto flag, which is never claimed.
+    var owned = _acctOwnsPref(which);
     if (which === 'theme') {
-      try { patch.theme = localStorage.getItem('theme') || curTheme(); } catch (e) { patch.theme = curTheme(); }
+      if (!owned) {
+        try { patch.theme = localStorage.getItem('theme') || curTheme(); } catch (e) { patch.theme = curTheme(); }
+      }
       try { patch.theme_auto = localStorage.getItem('themeAuto') || '0'; } catch (e) { patch.theme_auto = '0'; }
     } else if (which === 'lang') {
-      patch.lang = curLang();
+      if (!owned) patch.lang = curLang();
     }
     if (!Object.keys(patch).length) return;
     _prefSavePending = patch;

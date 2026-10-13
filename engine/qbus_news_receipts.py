@@ -15,6 +15,7 @@ from datetime import datetime, timezone
 import json
 import os
 from pathlib import Path
+import re
 import tempfile
 from typing import Mapping
 
@@ -207,6 +208,18 @@ def load_rights_receipt(
         return None
 
 
+def _diagnostic_code(value: object) -> str | None:
+    """Project one secret-free diagnostic error code; anything else is None.
+
+    Diagnostics never gate: a wrong type, an over-long value, or stray
+    characters collapse to None instead of invalidating the receipt or
+    moving state/reason.
+    """
+    if isinstance(value, str) and re.fullmatch(r"[a-z0-9_]{1,64}", value):
+        return value
+    return None
+
+
 def _health_base(reason: str) -> dict[str, object]:
     return {
         "schema": HEALTH_SCHEMA,
@@ -219,6 +232,8 @@ def _health_base(reason: str) -> dict[str, object]:
         "connect_attempts": 0,
         "disconnects": 0,
         "catchups_failed": 0,
+        "last_catchup_error": None,
+        "last_stream_error": None,
         "reason": reason,
     }
 
@@ -273,6 +288,8 @@ def parse_health_receipt(
     catchups_failed = _nonnegative_int(
         obj.get("catchups_failed", 0), "health_catchups_failed"
     )
+    last_catchup_error = _diagnostic_code(obj.get("last_catchup_error"))
+    last_stream_error = _diagnostic_code(obj.get("last_stream_error"))
 
     observation_age = (current - observed_at).total_seconds()
     catchup_age = (
@@ -311,6 +328,8 @@ def parse_health_receipt(
         "connect_attempts": connect_attempts,
         "disconnects": disconnects,
         "catchups_failed": catchups_failed,
+        "last_catchup_error": last_catchup_error,
+        "last_stream_error": last_stream_error,
         "reason": reason,
     }
 

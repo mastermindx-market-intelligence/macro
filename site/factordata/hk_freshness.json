@@ -1,9 +1,9 @@
 {
-  "checked_at": "2026-10-11T14:39:37+00:00",
-  "expected_session": "2026-10-09",
+  "checked_at": "2026-10-12T23:55:35+00:00",
+  "expected_session": "2026-10-12",
   "stores": {
     "cache": {
-      "asof": "2026-10-09",
+      "asof": "2026-10-12",
       "lag_days": 0,
       "lag_sessions": 0,
       "state": "fresh",
@@ -12,36 +12,36 @@
     },
     "bellwether": {
       "asof": "2026-10-09",
-      "lag_days": 0,
-      "lag_sessions": 0,
-      "state": "fresh",
-      "data_state": "current",
+      "lag_days": 3,
+      "lag_sessions": 1,
+      "state": "slow",
+      "data_state": "late",
       "calendar_verified": true
     },
     "standouts": {
       "asof": "2026-10-09",
-      "lag_days": 0,
-      "lag_sessions": 0,
-      "state": "fresh",
-      "data_state": "current",
+      "lag_days": 3,
+      "lag_sessions": 1,
+      "state": "slow",
+      "data_state": "late",
       "calendar_verified": true
     },
     "regime": {
       "asof": "2026-10-09",
-      "lag_days": 0,
-      "lag_sessions": 0,
-      "state": "fresh",
-      "data_state": "current",
+      "lag_days": 3,
+      "lag_sessions": 1,
+      "state": "slow",
+      "data_state": "late",
       "calendar_verified": true
     },
     "southbound": {
-      "asof": "2026-10-09",
+      "asof": "2026-10-12",
       "lag_days": 0,
       "lag_sessions": 0,
       "state": "fresh",
       "data_state": "current",
       "calendar_verified": true,
-      "expected_session": "2026-10-09"
+      "expected_session": "2026-10-12"
     }
   },
   "coherence": {
@@ -56,7 +56,7 @@
   "regression": {
     "ok": true,
     "prev_cache_max": "2026-10-09",
-    "curr_cache_max": "2026-10-09",
+    "curr_cache_max": "2026-10-12",
     "note": null
   },
   "verdict": "ok",

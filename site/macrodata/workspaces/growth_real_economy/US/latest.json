@@ -393,7 +393,7 @@
     "changed_fingerprints": [],
     "correction_state": "none",
     "note": "Same reference period as the predecessor print; no source component changed value (no-change republication).",
-    "predecessor_generation_id": "growth_real_economy-US-e1a53f325cc538a3"
+    "predecessor_generation_id": "growth_real_economy-US-33577009ae785337"
   },
   "drivers": {
     "balance_sheet": [
@@ -514,11 +514,11 @@
     ]
   },
   "generation": {
-    "built_at": "2026-10-11T03:40:41Z",
+    "built_at": "2026-10-12T07:54:54Z",
     "calculation_as_of": "2026-10-09",
-    "code_version": "49319de9aafa51427b9c50cbb653d73d35d5288b",
-    "content_sha256": "33577009ae7853371aaa82ac7454748b262c4b3ee49eee767b3b467d6e30fb9d",
-    "generation_id": "growth_real_economy-US-33577009ae785337",
+    "code_version": "ec95e0f6877b1210e0fda34ff2477854519e8032",
+    "content_sha256": "b84a2b76597747f01bd86cd4fdc45354657b4a98adde554b7adfd7f2bfcefdc1",
+    "generation_id": "growth_real_economy-US-b84a2b76597747f0",
     "producer": "engine.market_os.macro_workspaces.growth",
     "rendered_at": null
   },

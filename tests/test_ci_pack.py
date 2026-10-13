@@ -4284,6 +4284,12 @@ def test_workspace_runtime_contracts_can_start_the_ci_that_validates_them() -> N
 # ---------------------------------------------------------------------------
 
 CURATED_EXCLUSIVE = {
+    # PR #7861: Options matrix source/session/retention checks are hermetic.
+    # The exclusive manifest scope retains both suites, their concrete import
+    # closure, config.yml fallback and the retention-fixture wildcard. This
+    # removes only the filesystem probes' unrelated opaque fallback scopes;
+    # the code gate, closure audit and packing ceilings remain unchanged.
+    "options-matrix-code",
     "push-retry-policy",
     # Paper International: retain the measured ITR closure, dropping opaque fallback.
     "itr-turn-rotation",
@@ -4656,9 +4662,17 @@ CURATED_EXCLUSIVE = {
     # 2026-10-09 PR #8667: file and pinned-source relationship inspection.
     # Register the reviewed 68-path owner; closure audits and ceilings stay fixed.
     "company-relationship-candidates",
+    # WP02 source-diagnostic research kernel: exact inputs and shared pytest imports.
+    # Preserve closure audits, packing limits and incumbent owner declarations.
+    "gmi-source-diagnostic-kernel",
+    # Reviewed template-root curation; preserve other opaque domains and ceilings.
+    "integrated-answer-v0",
     # 2026-10-11 PR #8758: bounded Data OS readers and canonical Lab access.
     # Register the reviewed 42-path owner; closure audits and ceilings stay fixed.
     "dataos-web-workspace",
+    # 2026-10-12 PR #8873: news-impact Phase 0 contract freeze. Owner closure is
+    # company_intelligence/** plus earnings_narrative/contracts.py; ceilings stay fixed.
+    "news-impact-contracts",
     # 2026-10-11 #8805: the Information-to-Price receipt suites (SRC-A1, PIT
     # conformance, R4 V2 admission, EVAL-1 partition clock, EVAL-1 challenger
     # identity) leave unrun-factor-research, whose opaque engine/** and
@@ -4666,6 +4680,39 @@ CURATED_EXCLUSIVE = {
     # that probe to 5,802 (main) / 5,805 (this head) against its 5,800 ceiling.
     # Register the reviewed 18-path owner; closure audits and ceilings stay fixed.
     "information-to-price-eval-receipts",
+    # 2026-10-11 lineage wave (#8802): leader-radar-unit gained the lineage
+    # descriptor step (+3 weight) while still an opaque always-on selector:
+    # inference smeared the builder's jinja loader (templates/**), the
+    # integration suite's data/site roots and the lineage suite's AST import
+    # scan (engine/**, scripts/**) onto it, so two packing probes breached on
+    # the PR's merge ref (templates/index.html 5,806 > 5,800, where main was
+    # already over at 5,802; scripts/build_free_content.py 5,603 > 5,600).
+    # paths: = the measured 43-path import/read closure + the rendered
+    # template and its include chain. Measured on the merged FULL checkout:
+    # index.html 5,806 -> 5,781, build_free_content 5,603 -> 5,578, plan_book
+    # 5,563 -> 5,538; the fallback tier drops to (); ceilings unchanged. Derive
+    # the closure against a FULL checkout: the two site/ JSON literals are
+    # invisible on a sparse tree, exactly as the options-estate-guards note warns.
+    "leader-radar-unit",
+    # The private runtime boundary has a closed helper/unit/updater/test scope.
+    "company-intelligence-private-runtime",
+    # 2026-10-11 SNI E0/M0 (#8837): the Alibaba/Tencent coverage-profile suite
+    # reads only its own config/contracts trees; its 3-path owner is the whole
+    # closure (closure findings 0, gated-unrun 0), so no inference fallback.
+    "single-name-coverage-profiles",
+    # 2026-10-12 Taxonomy V2 L05-L11: gmi-classification-axes. The geography
+    # reader names scripts/build_security_master.py by path (its subprocess
+    # call and parquet traversal join the closure) and the registry imports
+    # axis modules by computed name. Both smeared the job onto the
+    # build_free_content / plan_book packing probes. scope: exclusive pins it
+    # to its measured closure, so it must be listed here.
+    "gmi-classification-axes",
+    # 2026-10-12 FIF kernel guards (seat ruling, candidate y): the class-A
+    # Financial Intelligence Fabric suites moved off the data-health lanes.
+    # Inference would union ~139 fallback roots (the app/ TestClient suites
+    # import app.main) and breach all three PACKING_PROBES; scope: exclusive
+    # pins the job to the FIF globs plus its measured static/runtime closure.
+    "fif-kernel-guards",
 }
 
 
@@ -4834,7 +4881,7 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # reads both names with ast.literal_eval, so keep them plain module-level literals.
 PACKING_PROBES = (
     ("templates/index.html", 135, 5_827),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 134, 5_602),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 134, 5_629),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
     ("engine/prophet/plan_book.py", 129, 5_600),
 )
 # Twelve packs per shape was the pre-curation measurement.
@@ -5563,6 +5610,29 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     owes the curation-or-raise decision for the three carrier jobs; the
     #8805 shape (move the added suites into an exclusive job with their
     measured closure) is the curation candidate.
+
+    2026-10-12 (#7870, third base-sync: origin/main c7543cd1cd94 merged
+    into the carrier at 839bd6a1b065). Measured on the merged tree with
+    this file's own packing_probe_measurements, and per selected job with
+    scripts/run_ci_pack.py's _job_weight over each side's manifest: the
+    selections are identical on main and merged (134 / 134 / 129 jobs; no
+    job enters or leaves any probe), and the ONLY per-job weight deltas on
+    all three probes are the carrier's same signal-contract 134 -> 136,
+    tier-gate 41 -> 49 and unrun-intl-libraries 101 -> 122 (+31) recorded in
+    both #7870 entries above. Main alone reads 5,795 / 5,598 / 5,558 (its
+    leader-radar-unit curation took templates/index.html from 135 to 134
+    jobs); merged reads 5,826 / 5,629 / 5,589. templates/index.html stays
+    under its 5,827 ceiling and plan_book.py under 5,600; only
+    scripts/build_free_content.py breaches (5,629 over 5,602) because main's
+    own growth since c50af4eb (5,571 -> 5,598) consumed the headroom. Per
+    the rule the first #7870 entry recorded, this is a third raise on
+    evidence to the exact merged measurement with no padding:
+    scripts/build_free_content.py WEIGHT 5,602 -> 5,629. No other ceiling
+    moves; the 10-pack bound stays; no suite, registration, assertion,
+    selector or declared weight is reduced to fit. The raise stays recorded
+    by the seat and owed to the CI-contract owner's acceptance, and the
+    #8805-shape curation of the three carrier jobs remains the named
+    follow-up that would retire all three raises.
     """
     rows = packing_probe_measurements(
         MANIFEST, PACKING_PROBES, max_packs=PACKING_PROBE_MAX_PACKS
