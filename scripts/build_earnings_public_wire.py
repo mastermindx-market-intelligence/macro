@@ -65,6 +65,12 @@ from engine.earnings_narrative.story_packets import (  # noqa: E402
 from lib.pages import write_page  # noqa: E402
 from lib.seo import BRAND_NAME, SITE_BASE, page_url  # noqa: E402
 from engine.neuralweb import company_intelligence_reader as _company_reader  # noqa: E402
+from engine.earnings_narrative.private_economic_stage import (  # noqa: E402
+    PrivateEconomicStageError,
+    assert_public_workspace_admission,
+    augment_private_stage,
+    load_verified_prior,
+)
 
 
 log = logging.getLogger("build_earnings_public_wire")
@@ -1531,6 +1537,31 @@ def _route_path(out_dir: Path, route: Mapping[str, Any]) -> Path:
     return out_dir / name
 
 
+def _resolve_economic_refresh(spec: Mapping[str, Any]) -> dict[str, Any]:
+    """Fill a missing prior from the verified private reader. No store writes."""
+    if not isinstance(spec, Mapping):
+        raise PublicWireBuildError("economic refresh inputs must be a mapping")
+    resolved = dict(spec)
+    if "prior_closure" not in resolved and resolved.get("store") is not None:
+        resolved["prior_closure"] = load_verified_prior(resolved["store"])
+    return resolved
+
+
+def _admit_public_workspaces(spec: Mapping[str, Any]) -> None:
+    workspaces = spec.get("public_workspaces") or ()
+    for workspace in workspaces:
+        try:
+            assert_public_workspace_admission(workspace)
+        except PrivateEconomicStageError as exc:
+            raise PublicWireBuildError(
+                "public workspace admission refused private economic evidence"
+            ) from exc
+
+
+def _economic_stage_requested(spec: Mapping[str, Any]) -> bool:
+    return any(spec.get(key) is not None for key in ("acquisition", "prior_closure", "store"))
+
+
 def publish_public_wire(
     manifest: Mapping[str, Any], *, out_dir: Path,
     private_out_dir: Path | None = None,
@@ -1538,9 +1569,19 @@ def publish_public_wire(
     deferred_packet_keys: set[str] | frozenset[str] = frozenset(),
     company_reader: Callable[[Mapping[str, Any]], Mapping[str, Any]] | None = None,
     now: datetime | None = None,
+    economic_refresh: Mapping[str, Any] | None = None,
 ) -> BuildResult:
     """Render a fully verified catalog and atomically replace only wire files."""
     verify_public_wire_manifest(manifest)
+    if economic_refresh is not None:
+        if not isinstance(economic_refresh, Mapping):
+            raise PublicWireBuildError("economic refresh inputs must be a mapping")
+        if _economic_stage_requested(economic_refresh) and private_out_dir is None:
+            raise PublicWireBuildError(
+                "private economic stage requires an off-repository private output directory"
+            )
+        _admit_public_workspaces(economic_refresh)
+        economic_refresh = _resolve_economic_refresh(economic_refresh)
     out_dir = Path(out_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
     alignment, company_generation_id = _company_alignment_snapshot(
@@ -1568,6 +1609,14 @@ def publish_public_wire(
         private_destination = _private_output_dir(private_out_dir)
         _write_premium_payloads(views, private_out_dir=private_destination)
         _write_context_manifest(manifest, private_out_dir=private_destination)
+        if economic_refresh is not None:
+            augment_private_stage(
+                private_destination,
+                acquisition=economic_refresh.get("acquisition"),
+                prior_closure=economic_refresh.get("prior_closure"),
+                observed_at=economic_refresh.get("observed_at"),
+                previous_manifest=economic_refresh.get("previous_manifest"),
+            )
     _atomic_write(out_dir / FEED_FILENAME, _feed(views))
     _atomic_write(out_dir / WIRE_SITEMAP_FILENAME, _wire_sitemap(manifest, weekly=weekly))
     verified_at = (now or datetime.now(timezone.utc)).astimezone(timezone.utc).replace(microsecond=0).isoformat().replace("+00:00", "Z")
@@ -1600,6 +1649,7 @@ def build(
     fetch: Callable[[str], bytes] | None = None,
     company_reader: Callable[[Mapping[str, Any]], Mapping[str, Any]] | None = None,
     now: datetime | None = None,
+    economic_refresh: Mapping[str, Any] | None = None,
 ) -> BuildResult:
     """Build from current immutable truth with bounded incremental hydration.
 
@@ -1609,6 +1659,10 @@ def build(
     that floor. Historical backfill never turns the hourly lane into a corpus replay.
     """
     destination = Path(out_dir) if out_dir is not None else _REPO / "site" / OUTPUT_RELATIVE
+    if economic_refresh is not None and private_out_dir is None:
+        raise PublicWireBuildError(
+            "private economic stage requires an off-repository private output directory"
+        )
     now = now or datetime.now(timezone.utc)
     state = load_public_build_state(destination, strict=True)
     deferred_packet_keys: frozenset[str] = frozenset()
@@ -1625,7 +1679,7 @@ def build(
             raise PublicWireBuildError("current story packet manifest has no packet catalog")
 
         precomputed_selection: PacketSelection | None = None
-        if not force and private_out_dir is None and state is not None and (
+        if not force and private_out_dir is None and economic_refresh is None and state is not None and (
             state["source_generation_id"] == current.generation_id
             and state["source_manifest_sha256"] == current.manifest_sha256
             and state["renderer_version"] == _renderer_version()
@@ -1735,6 +1789,7 @@ def build(
         deferred_packet_keys=deferred_packet_keys,
         company_reader=company_reader,
         now=now,
+        economic_refresh=economic_refresh,
     )
 
 
