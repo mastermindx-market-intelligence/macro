@@ -1,0 +1,24 @@
+{
+  "schema": "mmx.defensive.v13_v20.publication.v1",
+  "research_only": true,
+  "date": "2026-10-13",
+  "archive_sha256": "7461334bfc48e4569acb5a56e7378ed1cf1ea28501be8a99645d19ce6f61a3c4",
+  "archive_bytes": 8776743,
+  "git_archive_blob_sha": "1982b437ea1454be0cf498e661244089cb187aa4",
+  "report_sha256": "2289ea3d54d2a5cdbb595aa8b94b4997cb3415a2fb309765fbb508ae0e506925",
+  "readme_sha256": "fbc843db3d9a4f757be067f67964bde9b716a8952816db8d4033b743003df37a",
+  "source_tables_sha256": {
+    "V13_Portfolio_Summary.csv": "db3a5721fbc420819703106cd9f1110de7b6b0ca547063b2208e5b6ee93f4bbe",
+    "V14_Corrected_SPY_Reserve_Summary.csv": "3480cda78022171b7a4678bbbdcf3eadd71bd9b54886feaf3e4bb24b915d6413",
+    "V15_Matched_Peer_Summary.csv": "f7eb85745d83c46ef787cbf0091b2aa2812a085d6c1e0ef00cbbe3c150a12e16",
+    "V20_Beta_Adjusted_Recovery_Summary.csv": "561328e6082c4d1af922ecb575ed40862fdb7e5cbb5bf42b20abc1eefd08d089"
+  },
+  "tests": {
+    "V13_V15": 35,
+    "V16_V20": 34
+  },
+  "related_V11_PR": 9034,
+  "independent_V12_PR": 9064,
+  "raw_vendor_bars_included": false,
+  "live_trading_changes": false
+}
