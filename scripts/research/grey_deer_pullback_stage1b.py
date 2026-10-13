@@ -19,10 +19,12 @@ Decisions implemented:
 
 * D1  stage-1 target, configurations, fold constants, purge, metrics
 * D2  14 tickers, SPY excluded, window 2021-07-06..2026-10-07, no trim
-* D3  one shared session calendar, or ``CALENDAR_MISALIGNED``
+* D3  common axis = intersection per D15, pinned exclusion ``2026-08-18``;
+      any other difference is ``CALENDAR_MISALIGNED`` (never forward-filled)
 * D4  per-ticker normalized-subframe pins; pending refuses first
-* D5  ``|log return| > log(1.25)`` and declared corporate actions refuse;
-      dividends stay unadjusted and are disclosed
+* D5  pinned splits adjusted per D14 (table in
+      ``grey_deer_panel_adjust.PINNED_SPLITS``); dividends unadjusted;
+      a remaining break on adjusted closes is ``SPLIT_DISCONTINUITY``
 * D6  pooled training is the union of date-purged rows; no ticker feature
 * D7  intersection-of-issued on ``(ticker, date)``
 * D8  circular block bootstrap on the DATE index, seed root 221012
@@ -42,6 +44,8 @@ import json
 import math
 import subprocess
 import sys
+from dataclasses import dataclass
+from datetime import date
 from pathlib import Path
 
 import numpy as np
@@ -53,6 +57,11 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 from scripts.research import grey_deer_pullback_stage1 as s1
+from scripts.research.grey_deer_panel_adjust import (
+    PINNED_CALENDAR_EXCLUSIONS,
+    PINNED_SPLITS,
+    prepare_panel,
+)
 
 # ── seat constants (D2, D4, D5, D8, D11, D12) ────────────────────────────────
 
@@ -87,14 +96,25 @@ TRIAL_BUDGET = PIN_PENDING
 DEFAULT_OUT_DIR = "research/grey_deer/pullback_stage1b"
 RESULTS_JSON_NAME = "PULLBACK_STAGE1B_RESULTS.json"
 RESULTS_MD_NAME = "PULLBACK_STAGE1B_RESULTS.md"
-SPLIT_LOG_LIMIT = math.log(1.25)
 DIVIDEND_BASIS = "unadjusted"
 DIVIDEND_DISCLOSURE = (
-    "Dividends are unadjusted. RAW closes are used as stored. "
-    "A session whose absolute log close-to-close return exceeds log(1.25) "
-    "refuses as SPLIT_DISCONTINUITY. A declared corporate action refuses as "
-    "SPLIT_UNADJUSTED. This revision never adjusts silently."
+    "Pinned splits are adjusted per D14 "
+    "(table in grey_deer_panel_adjust.PINNED_SPLITS). "
+    "Dividends are unadjusted. "
+    "The common axis is the intersection per D15 "
+    "with pinned exclusion 2026-08-18."
 )
+# D15. The seat's intersection of the 14 tickers over the frozen window.
+EXPECTED_COMMON_SESSIONS = 1320
+MANIFEST_PATH = "research/grey_deer/PULLBACK_SOURCE_RIGHTS_QUALIFICATION_V1_1_2026-10-12.md"
+MANIFEST_VERSION = "1.1.0"
+MANIFEST_BLOB_SHA = PIN_PENDING
+PREREG_PATH = "research/grey_deer/PULLBACK_PREREGISTRATION_V1_1_2026-10-12.md"
+PREREG_BLOB_SHA = PIN_PENDING
+SCRIPT_REL = "scripts/research/grey_deer_pullback_stage1b.py"
+TEST_REL = "tests/test_grey_deer_pullback_stage1b.py"
+ADJUST_REL = "scripts/research/grey_deer_panel_adjust.py"
+_EXCLUDED_SESSION = "2026-08-18"
 
 
 def _pending_pin() -> dict:
@@ -132,7 +152,9 @@ def freeze_block_reason() -> str | None:
             if value == PIN_PENDING:
                 pending_pins.append(f"{ticker}.{field}")
     budget_pending = TRIAL_BUDGET == PIN_PENDING
-    if not pending_pins and not budget_pending:
+    manifest_pending = MANIFEST_BLOB_SHA == PIN_PENDING
+    prereg_pending = PREREG_BLOB_SHA == PIN_PENDING
+    if not pending_pins and not budget_pending and not manifest_pending and not prereg_pending:
         return None
     parts: list[str] = []
     if pending_pins:
@@ -144,6 +166,12 @@ def freeze_block_reason() -> str | None:
             f"TRIAL_BUDGET is {PIN_PENDING} "
             f"({TRIALS_PER_HORIZON} per horizon, {TRIALS_TOTAL} total, INC removed; not frozen)"
         )
+    if manifest_pending:
+        parts.append(
+            f"MANIFEST_BLOB_SHA is {PIN_PENDING} ({MANIFEST_PATH} version {MANIFEST_VERSION})"
+        )
+    if prereg_pending:
+        parts.append(f"PREREG_BLOB_SHA is {PIN_PENDING} ({PREREG_PATH})")
     return "; ".join(parts)
 
 
@@ -211,26 +239,6 @@ def _coverage_refusal(ticker: str, sub: pd.DataFrame) -> None:
         )
 
 
-def _window_frame(sub: pd.DataFrame) -> pd.DataFrame:
-    window = sub[(sub["date"] >= WINDOW_START) & (sub["date"] <= AS_OF)].reset_index(drop=True)
-    if len(window) == 0:
-        _refuse("PANEL_COVERAGE", "no rows inside the frozen window")
-    return window
-
-
-def calendar_symmetric_difference(date_sets: dict[str, set[str]]) -> list[str]:
-    """Dates not shared by every ticker (the n-way mismatch D3 asks to list).
-
-    For two calendars this is the ordinary symmetric difference. For the
-    full panel it is union minus intersection: every session that at least
-    one ticker does not have. Nothing is forward-filled.
-    """
-    sets = list(date_sets.values())
-    union = set.union(*sets)
-    shared = set.intersection(*sets)
-    return sorted(union - shared)
-
-
 def _close_array(frame: pd.DataFrame, ticker: str) -> np.ndarray:
     close = frame["close"].to_numpy(dtype=float)
     bad = ~np.isfinite(close) | (close <= 0)
@@ -238,40 +246,6 @@ def _close_array(frame: pd.DataFrame, ticker: str) -> np.ndarray:
         i = int(np.argmax(bad))
         _refuse("PRICE_INVALID", f"{ticker} non-positive or non-finite close at {frame['date'].iloc[i]}")
     return close
-
-
-def _refuse_declared_actions(ticker: str, dates: list[str], declared: set[str]) -> None:
-    hits = [d for d in dates if d in declared]
-    if not hits:
-        return
-    _refuse(
-        "SPLIT_UNADJUSTED",
-        f"{ticker} {hits[0]}",
-        ticker=ticker,
-        date=hits[0],
-    )
-
-
-def _refuse_split_discontinuity(ticker: str, dates: list[str], close: np.ndarray) -> None:
-    """D5: ``|log(close_t / close_{t-1})| > log(1.25)`` refuses.
-
-    The comparison is strict. A ratio of 1.25 exactly is not a refusal.
-    Stage-1's price-basis guard uses 0.75 (``log(4/3)``), which is a
-    different threshold, so this check does not call ``assert_price_basis``.
-    """
-    if len(close) < 2:
-        return
-    jump = np.abs(np.diff(np.log(close)))
-    bad = jump > SPLIT_LOG_LIMIT
-    if not bad.any():
-        return
-    i = int(np.argmax(bad)) + 1
-    _refuse(
-        "SPLIT_DISCONTINUITY",
-        f"{ticker} {dates[i]}",
-        ticker=ticker,
-        date=dates[i],
-    )
 
 
 def _verify_filled_pins(normalized: dict[str, pd.DataFrame]) -> None:
@@ -295,60 +269,162 @@ def _verify_filled_pins(normalized: dict[str, pd.DataFrame]) -> None:
             )
 
 
-def load_panel(
-    paths: dict[str, Path],
-    corporate_actions: dict[str, set[str]] | None = None,
-) -> dict[str, pd.DataFrame]:
-    """Load the 14 ticker parquets. Refusals raise ``s1.Blocked``.
+@dataclass
+class LoadedPanel:
+    """Adjusted intersection frames plus the raw identity hashes.
 
-    Order, and why: coverage, then the shared calendar, then declared
-    corporate actions, then the split-size jump. Those four read closes
-    and refuse; they do not build a feature, a label or an outcome. The
-    pending-pin / pending-budget check is next, still before any feature,
-    label or outcome. Filled pins are checked against stage-1's
-    normalized-subframe hash. Only a panel that passes all of that is
-    returned, restricted to the frozen window (pre-window rows stay in
-    the hash and are not part of the estimation sample).
-
-    ``corporate_actions`` maps a ticker to session dates (``YYYY-MM-DD``)
-    that carry a declared corporate action. v1.1 does not adjust them.
+    ``raw`` is the normalized subframe hashed before any split adjustment.
+    ``frames`` is ``prepare_panel``'s adjusted intersection.
     """
+
+    frames: dict[str, pd.DataFrame]
+    calendar: list[str]
+    raw: dict[str, pd.DataFrame]
+    subframe_sha256: dict[str, str]
+
+
+def _known_hashes(normalized: dict[str, pd.DataFrame]) -> dict[str, str]:
+    """Stage-1 subframe hash of each raw normalized frame already in hand."""
+    out: dict[str, str] = {}
+    for ticker in PANEL_TICKERS:
+        frame = normalized.get(ticker)
+        if frame is None:
+            out[ticker] = "UNKNOWN: ticker not normalized"
+        else:
+            out[ticker] = s1.subframe_sha256(frame)
+    return out
+
+
+def _prepare_block_message(result) -> str:
+    """Name the first ticker and date carried by a ``prepare_panel`` refusal."""
+    detail = result.detail or {}
+    for row in detail.get("mismatches") or []:
+        return f"{row.get('ticker')} {row.get('date')}"
+    for row in detail.get("breaks") or []:
+        return f"{row.get('ticker')} {row.get('date')}"
+    missing = detail.get("missing_by_ticker") or {}
+    if missing:
+        ticker = sorted(missing)[0]
+        dates = list(missing[ticker])
+        return f"{ticker} {dates[0] if dates else 'unknown-date'}"
+    unexpected = list(detail.get("unexpected") or [])
+    if unexpected:
+        return f"calendar {unexpected[0]}"
+    absent = list(detail.get("pinned_absent") or [])
+    if absent:
+        return f"pinned exclusion {absent[0]}"
+    return str(result.reason)
+
+
+def nyse_sessions(start, end) -> list[str]:
+    """NYSE session dates in the inclusive range, as ISO strings.
+
+    The import stays inside the function. ``lib.nyse_calendar`` may import
+    ``lib.config``, and that needs pyyaml; tests replace this function.
+    """
+    import lib.nyse_calendar as nyse_calendar
+
+    start_d = start if isinstance(start, date) else date.fromisoformat(str(start)[:10])
+    end_d = end if isinstance(end, date) else date.fromisoformat(str(end)[:10])
+    sessions = nyse_calendar.sessions_between(start_d, end_d)
+    return [session.isoformat() for session in sessions]
+
+
+def _check_common_sessions(calendar: list[str]) -> None:
+    """D15: the intersection must be the pinned length and the NYSE list."""
+    got = len(calendar)
+    if got != EXPECTED_COMMON_SESSIONS:
+        _refuse(
+            "CALENDAR_MISALIGNED",
+            f"common sessions {got} != expected {EXPECTED_COMMON_SESSIONS}",
+            expected=EXPECTED_COMMON_SESSIONS,
+            got=got,
+        )
+    observed = sorted(set(calendar) | set(PINNED_CALENDAR_EXCLUSIONS))
+    expected = nyse_sessions(date(2021, 7, 6), date(2026, 10, 7))
+    if observed != expected:
+        unexpected = sorted(set(observed) - set(expected))
+        missing = sorted(set(expected) - set(observed))
+        _refuse(
+            "CALENDAR_MISALIGNED",
+            (
+                "panel calendar plus pinned exclusions does not match the NYSE list "
+                f"({len(unexpected)} unexpected, {len(missing)} missing)"
+            ),
+            unexpected=unexpected,
+            missing=missing,
+        )
+
+
+def _load_panel_body(
+    paths: dict[str, Path],
+    normalized: dict[str, pd.DataFrame],
+    state: dict,
+    *,
+    check_freeze: bool,
+) -> LoadedPanel:
     missing = [t for t in PANEL_TICKERS if t not in paths or not Path(paths[t]).is_file()]
     if missing:
         _refuse("PANEL_COVERAGE", "missing tickers: " + ", ".join(missing), tickers=missing)
 
-    normalized: dict[str, pd.DataFrame] = {}
-    windows: dict[str, pd.DataFrame] = {}
     for ticker in PANEL_TICKERS:
         sub = _normalize_ticker(ticker, Path(paths[ticker]))
         _coverage_refusal(ticker, sub)
         normalized[ticker] = sub
-        windows[ticker] = _window_frame(sub)
 
-    date_sets = {t: set(frame["date"].tolist()) for t, frame in windows.items()}
-    sym = calendar_symmetric_difference(date_sets)
-    if sym:
-        preview = ", ".join(sym[:12])
-        more = f" (+{len(sym) - 12} more)" if len(sym) > 12 else ""
-        _refuse(
-            "CALENDAR_MISALIGNED",
-            f"{len(sym)} session dates are not shared by every ticker: {preview}{more}",
-            symmetric_difference=sym,
-        )
+    # Identity bytes are the raw normalized subframe. Adjustment is next,
+    # and it copies; ``normalized`` stays the pin input.
+    result = prepare_panel(
+        normalized,
+        WINDOW_START,
+        AS_OF,
+        splits=PINNED_SPLITS,
+        excluded=PINNED_CALENDAR_EXCLUSIONS,
+    )
+    if result.status != "OK":
+        _refuse(result.reason, _prepare_block_message(result), **result.detail)
+    if result.frames is None or result.calendar is None:
+        _refuse("CALENDAR_MISALIGNED", "prepare_panel returned OK without a calendar")
 
-    declared = corporate_actions or {}
+    state["calendar"] = list(result.calendar)
+    _check_common_sessions(state["calendar"])
     for ticker in PANEL_TICKERS:
-        frame = windows[ticker]
-        dates = frame["date"].tolist()
-        close = _close_array(frame, ticker)
-        _refuse_declared_actions(ticker, dates, set(declared.get(ticker, ())))
-        _refuse_split_discontinuity(ticker, dates, close)
+        _close_array(result.frames[ticker], ticker)
 
-    # D4 / D11 / D13. After the frame is known to be a panel, and before
-    # the caller is allowed to build features, labels or outcomes.
-    _raise_if_unfrozen()
-    _verify_filled_pins(normalized)
-    return windows
+    # D4 / D11 / D13. After the frame is a panel, before features or labels.
+    # ``--blocks-only`` skips this so a pending pin can still be recorded.
+    if check_freeze:
+        _raise_if_unfrozen()
+        _verify_filled_pins(normalized)
+
+    return LoadedPanel(
+        frames=result.frames,
+        calendar=state["calendar"],
+        raw=normalized,
+        subframe_sha256=_known_hashes(normalized),
+    )
+
+
+def load_panel(paths: dict[str, Path], *, check_freeze: bool = True) -> LoadedPanel:
+    """Load the 14 ticker parquets. Refusals raise ``s1.Blocked``.
+
+    Order: coverage, then ``prepare_panel`` (D14 pinned splits, D15
+    intersection), then the common-session count and the NYSE list, then
+    the non-positive close check on adjusted closes. Those steps read
+    prices and refuse; they do not build a feature, a label or an outcome.
+    The pending-pin check, when ``check_freeze`` is set, is still before
+    any feature, label or outcome. The hash is the raw normalized subframe.
+    """
+    normalized: dict[str, pd.DataFrame] = {}
+    state: dict = {"calendar": None}
+    try:
+        return _load_panel_body(paths, normalized, state, check_freeze=check_freeze)
+    except s1.Blocked as exc:
+        if not hasattr(exc, "subframe_sha256"):
+            exc.subframe_sha256 = _known_hashes(normalized)
+        if not hasattr(exc, "fold_block_table") and state["calendar"] is not None:
+            exc.fold_block_table = block_table(state["calendar"])
+        raise
 
 
 # ── D1 / D6: folds and pooled fits ───────────────────────────────────────────
@@ -360,8 +436,47 @@ def panel_fold_calendar(n_dates: int, h: int) -> list[tuple[int, int]]:
     ``fold_calendar_for_population`` takes one series' length. Every ticker
     shares the session index, so that length is ``n_dates`` and the same
     warm-up, first test index, block length and final-block rule apply.
+    The returned ``(start, end)`` pair is inclusive, matching stage 1.
     """
     return s1.fold_calendar_for_population(int(n_dates), int(h))
+
+
+def block_table(calendar: list[str]) -> list[dict]:
+    """One row per horizon and fold. Dates only: no feature, label or outcome.
+
+    ``end_index`` is the inclusive end from ``panel_fold_calendar``.
+    ``after_excluded_session`` is true when the fold starts after the
+    pinned exclusion ``2026-08-18``.
+    """
+    rows: list[dict] = []
+    n_dates = len(calendar)
+    for h in s1.HORIZONS:
+        folds = panel_fold_calendar(n_dates, h)
+        for fold, (start, end) in enumerate(folds, start=1):
+            start_date = calendar[int(start)]
+            end_date = calendar[int(end)]
+            rows.append(
+                {
+                    "h": int(h),
+                    "fold": int(fold),
+                    "start_index": int(start),
+                    "end_index": int(end),
+                    "start_date": start_date,
+                    "end_date": end_date,
+                    "after_excluded_session": start_date > _EXCLUDED_SESSION,
+                }
+            )
+    return rows
+
+
+def _block_line(row: dict) -> str:
+    return (
+        "BLOCK "
+        f"h={row['h']} fold={row['fold']} "
+        f"start_index={row['start_index']} end_index={row['end_index']} "
+        f"start_date={row['start_date']} end_date={row['end_date']} "
+        f"after_excluded_session={str(bool(row['after_excluded_session'])).lower()}"
+    )
 
 
 def training_date_indices(n_dates: int, s0: int, h: int) -> np.ndarray:
@@ -1060,23 +1175,34 @@ def inc_row() -> dict:
     }
 
 
-def execute_panel(panel: dict[str, pd.DataFrame]) -> dict:
+def execute_panel(
+    panel: dict[str, pd.DataFrame],
+    fold_block_table: list[dict] | None = None,
+    subframe_sha256: dict[str, str] | None = None,
+) -> dict:
     """Labels, features, pooled fits, claims. Refuses first if pins are pending.
 
     The pending check is the first statement so a monkeypatched feature
     constructor cannot run while pins or the trial budget are still the
-    literal ``PREREG_V11_PENDING``.
+    literal ``PREREG_V11_PENDING``. The fold block table is stored on the
+    payload before ``run_pooled_fits``.
     """
     _raise_if_unfrozen()
     tickers = list(PANEL_TICKERS)
     session_dates = panel[tickers[0]]["date"].astype(str).tolist()
     n_dates = len(session_dates)
     for ticker in tickers[1:]:
-        if panel[ticker]["date"].astype(str).tolist() != session_dates:
-            sym = calendar_symmetric_difference(
-                {tickers[0]: set(session_dates), ticker: set(panel[ticker]["date"].astype(str).tolist())}
+        got = panel[ticker]["date"].astype(str).tolist()
+        if got != session_dates:
+            _refuse(
+                "CALENDAR_MISALIGNED",
+                f"{ticker} calendar differs from the intersection axis",
+                unexpected=sorted(set(got) - set(session_dates)),
+                missing=sorted(set(session_dates) - set(got)),
             )
-            _refuse("CALENDAR_MISALIGNED", f"{ticker} calendar differs", symmetric_difference=sym)
+
+    table = block_table(session_dates) if fold_block_table is None else fold_block_table
+    staged = {"fold_block_table": table}
 
     labels: dict = {}
     features: dict = {}
@@ -1094,7 +1220,15 @@ def execute_panel(panel: dict[str, pd.DataFrame]) -> dict:
         fits, labels, features, n_dates, session_dates, tickers
     )
     claims = s1.build_gates(comp_by_h, abst_tables)
-    return _assemble_payload(fits, extra, claims, n_dates, session_dates)
+    return _assemble_payload(
+        fits,
+        extra,
+        claims,
+        n_dates,
+        session_dates,
+        fold_block_table=staged["fold_block_table"],
+        subframe_sha256=subframe_sha256,
+    )
 
 
 def _git_head() -> str:
@@ -1109,16 +1243,86 @@ def _git_head() -> str:
     return proc.stdout.strip()
 
 
-def _assemble_payload(fits, extra, claims, n_dates: int, session_dates: list[str]) -> dict:
+def _commit_sha() -> str:
+    sha = _git_head()
+    if len(sha) == 40 and all(c in "0123456789abcdef" for c in sha):
+        return sha
+    return "UNKNOWN: git rev-parse HEAD failed"
+
+
+def _git_blob(relpath: str) -> str:
+    """``git hash-object`` of a working-tree file. Never omits a failure."""
+    try:
+        proc = subprocess.run(
+            ["git", "hash-object", "--", relpath],
+            cwd=ROOT,
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+    except OSError as exc:
+        return f"UNKNOWN: git hash-object failed ({type(exc).__name__})"
+    if proc.returncode != 0:
+        err = (proc.stderr or proc.stdout or "nonzero status").strip().splitlines()
+        tail = err[-1] if err else "nonzero status"
+        return f"UNKNOWN: git hash-object {relpath} failed ({tail})"
+    sha = proc.stdout.strip()
+    if len(sha) != 40:
+        return f"UNKNOWN: git hash-object {relpath} returned {sha!r}"
+    return sha
+
+
+def _bootstrap_record() -> dict:
+    """D8 record. Per-cell ``n_draws`` stays on each bootstrap cell as well."""
+    return {
+        "n_draws": int(N_DRAWS),
+        "seed_root": int(SEED_ROOT),
+        "axis": "date",
+        "block_length_rule": "stage-1 block_length(h, variant)",
+    }
+
+
+def provenance_fields(subframe_sha256: dict[str, str] | None) -> dict:
+    """Manifest, prereg, commit and blob pins. Unknown values are explicit."""
+    if subframe_sha256 is None:
+        hashes = {ticker: "UNKNOWN: panel not loaded" for ticker in PANEL_TICKERS}
+    else:
+        hashes = {
+            ticker: subframe_sha256.get(ticker, "UNKNOWN: hash not computed")
+            for ticker in PANEL_TICKERS
+        }
+    return {
+        "manifest_path": MANIFEST_PATH,
+        "manifest_version": MANIFEST_VERSION,
+        "manifest_blob_sha": MANIFEST_BLOB_SHA,
+        "prereg_path": PREREG_PATH,
+        "prereg_blob_sha": PREREG_BLOB_SHA,
+        "commit_sha": _commit_sha(),
+        "script_blob_sha": _git_blob(SCRIPT_REL),
+        "test_blob_sha": _git_blob(TEST_REL),
+        "adjust_module_blob_sha": _git_blob(ADJUST_REL),
+        "subframe_sha256": hashes,
+    }
+
+
+def _assemble_payload(
+    fits,
+    extra,
+    claims,
+    n_dates: int,
+    session_dates: list[str],
+    fold_block_table: list[dict] | None = None,
+    subframe_sha256: dict[str, str] | None = None,
+) -> dict:
     comparison = {}
     episodes = {}
     negative = {}
-    bootstrap = {}
+    bootstrap_cells = {}
     for h in s1.HORIZONS:
         key = f"h{h}"
         comparison[key] = {}
         episodes[key] = {}
-        bootstrap[key] = {}
+        bootstrap_cells[key] = {}
         for fam in ("binary", "quantile"):
             info = extra[h][fam]
             comparison[key][fam] = {"N_common": info["N_common"]}
@@ -1129,9 +1333,9 @@ def _assemble_payload(fits, extra, claims, n_dates: int, session_dates: list[str
                     "note": info["sensitivity"]["note"],
                 }
             episodes[key][fam] = info["honest_n"]
-            bootstrap[key][fam] = info["bootstrap"]
+            bootstrap_cells[key][fam] = info["bootstrap"]
         negative[key] = extra[h]["negative_control"]
-    return {
+    payload = {
         "schema": SCHEMA,
         "status": "OK",
         "trial_family": TRIAL_FAMILY,
@@ -1159,43 +1363,46 @@ def _assemble_payload(fits, extra, claims, n_dates: int, session_dates: list[str
         },
         "comparison": comparison,
         "episodes": episodes,
-        "bootstrap": bootstrap,
+        "bootstrap": _bootstrap_record(),
+        "bootstrap_cells": bootstrap_cells,
+        "fold_block_table": [] if fold_block_table is None else fold_block_table,
         "negative_control": negative,
         "claims": claims,
         "inc": inc_row(),
         "blocked": [],
-        "run_commit": _git_head(),
+        "run_commit": _commit_sha(),
     }
+    payload.update(provenance_fields(subframe_sha256))
+    return payload
 
 
 # ── artifacts ────────────────────────────────────────────────────────────────
 
 
-def _json_ready(value):
-    if isinstance(value, dict):
-        return {str(k): _json_ready(v) for k, v in value.items()}
-    if isinstance(value, (list, tuple)):
-        return [_json_ready(v) for v in value]
-    if isinstance(value, np.ndarray):
-        return _json_ready(value.tolist())
-    if isinstance(value, (np.bool_, bool)):
-        return bool(value)
-    if isinstance(value, np.integer):
-        return int(value)
-    if isinstance(value, (np.floating, float)):
-        v = float(value)
-        if math.isnan(v):
+def _strict(obj):
+    """Numpy values become Python. Non-finite floats become ``None``."""
+    if isinstance(obj, dict):
+        return {str(k): _strict(v) for k, v in obj.items()}
+    if isinstance(obj, (list, tuple)):
+        return [_strict(v) for v in obj]
+    if isinstance(obj, np.ndarray):
+        return _strict(obj.tolist())
+    if isinstance(obj, (np.bool_, bool)):
+        return bool(obj)
+    if isinstance(obj, np.integer):
+        return int(obj)
+    if isinstance(obj, (np.floating, float)):
+        value = float(obj)
+        if not math.isfinite(value):
             return None
-        if math.isinf(v):
-            return "Infinity" if v > 0 else "-Infinity"
-        return v
-    if value is None or isinstance(value, (str, int)):
         return value
-    return str(value)
+    if obj is None or isinstance(obj, (str, int)):
+        return obj
+    return str(obj)
 
 
-def render_markdown(payload: dict) -> str:
-    """Results note generated from the JSON-ready payload. Aggregates only."""
+def _markdown_preamble(payload: dict) -> list[str]:
+    boot = payload.get("bootstrap") or {}
     lines = [
         "# Pullback stage-1b panel results",
         "",
@@ -1203,8 +1410,34 @@ def render_markdown(payload: dict) -> str:
         f"- status: {payload.get('status')}",
         f"- trial family `{payload.get('trial_family')}`, budget `{payload.get('trial_budget')}`",
         f"- dividend basis: {payload.get('dividend_basis')}",
+        (
+            f"- bootstrap: n_draws={boot.get('n_draws')} seed_root={boot.get('seed_root')} "
+            f"axis={boot.get('axis')} block_length_rule={boot.get('block_length_rule')}"
+        ),
         "",
+        "## Provenance",
+        "",
+        (
+            f"- manifest: `{payload.get('manifest_path')}` "
+            f"version `{payload.get('manifest_version')}` blob `{payload.get('manifest_blob_sha')}`"
+        ),
+        f"- prereg: `{payload.get('prereg_path')}` blob `{payload.get('prereg_blob_sha')}`",
+        f"- commit: `{payload.get('commit_sha')}`",
+        f"- script blob: `{payload.get('script_blob_sha')}`",
+        f"- test blob: `{payload.get('test_blob_sha')}`",
+        f"- adjust module blob: `{payload.get('adjust_module_blob_sha')}`",
+        "- subframe_sha256:",
     ]
+    hashes = payload.get("subframe_sha256") or {}
+    for ticker in PANEL_TICKERS:
+        lines.append(f"  - {ticker}: `{hashes.get(ticker, 'UNKNOWN: missing from payload')}`")
+    lines.append("")
+    return lines
+
+
+def render_markdown(payload: dict) -> str:
+    """Results note generated from the JSON-ready payload. Aggregates only."""
+    lines = _markdown_preamble(payload)
     blocked = payload.get("blocked") or []
     if blocked:
         lines.append("## Blocked")
@@ -1218,7 +1451,7 @@ def render_markdown(payload: dict) -> str:
     lines.append("| claim | statistic | point | lower bound | verdict | flags |")
     lines.append("|---|---|---|---|---|---|")
     for row in payload.get("claims", []):
-        flags = ", ".join(row.get("flags") or []) or "—"
+        flags = ", ".join(str(flag) for flag in (row.get("flags") or [])) or "—"
         lines.append(
             f"| {row.get('id')} | {row.get('statistic')} | {row.get('point')} | {row.get('lb')} | {row.get('verdict')} | {flags} |"
         )
@@ -1246,48 +1479,50 @@ def write_payload(out_dir: Path, payload: dict) -> tuple[Path, Path]:
     """Write the JSON and the markdown under ``out_dir`` only."""
     out_dir = Path(out_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
-    ready = _json_ready(payload)
+    ready = _strict(payload)
     json_path = out_dir / RESULTS_JSON_NAME
     md_path = out_dir / RESULTS_MD_NAME
-    json_path.write_text(json.dumps(ready, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    json_path.write_text(
+        json.dumps(ready, indent=2, sort_keys=True, allow_nan=False) + "\n",
+        encoding="utf-8",
+    )
     md_path.write_text(render_markdown(ready), encoding="utf-8")
     return json_path, md_path
 
 
 def _blocked_payload(exc: s1.Blocked) -> dict:
     row = {"type": exc.type, "detail": exc.detail}
-    for key in ("symmetric_difference", "ticker", "date", "tickers"):
-        if hasattr(exc, key):
-            row[key] = getattr(exc, key)
-    return {
+    skip = {"type", "detail", "subframe_sha256", "fold_block_table"}
+    for key, value in vars(exc).items():
+        if key.startswith("_") or key in skip:
+            continue
+        row[key] = value
+    hashes = getattr(exc, "subframe_sha256", None)
+    table = getattr(exc, "fold_block_table", None)
+    payload = {
         "schema": SCHEMA,
         "status": "BLOCKED",
         "trial_family": TRIAL_FAMILY,
         "trial_budget": TRIAL_BUDGET,
         "dividend_basis": DIVIDEND_BASIS,
         "dividend_disclosure": DIVIDEND_DISCLOSURE,
+        "bootstrap": _bootstrap_record(),
+        "fold_block_table": (
+            table if table is not None else "UNKNOWN: blocked before the fold block table"
+        ),
         "blocked": [row],
         "claims": [],
         "inc": inc_row(),
+        "run_commit": _commit_sha(),
     }
+    payload.update(provenance_fields(hashes))
+    return payload
 
 
 def _resolve_out(path: str | Path) -> Path:
     out = Path(path)
     if not out.is_absolute():
         out = ROOT / out
-    return out
-
-
-def _parse_corporate_actions(items: list[str] | None) -> dict[str, set[str]]:
-    out: dict[str, set[str]] = {t: set() for t in PANEL_TICKERS}
-    for item in items or []:
-        ticker, sep, date = item.partition(":")
-        ticker = ticker.strip()
-        date = date.strip()
-        if not sep or ticker not in out or len(date) != 10:
-            _refuse("SPLIT_UNADJUSTED", f"unreadable corporate action {item}")
-        out[ticker].add(date)
     return out
 
 
@@ -1303,12 +1538,16 @@ def build_parser() -> argparse.ArgumentParser:
     )
     parser.add_argument("--panel-dir", default=None, help="directory of {TICKER}.parquet files")
     parser.add_argument(
-        "--corporate-action",
-        action="append",
-        default=None,
-        help="TICKER:YYYY-MM-DD declared corporate action (refuses SPLIT_UNADJUSTED)",
+        "--blocks-only",
+        action="store_true",
+        help="print the fold block table and raw subframe pins, then exit without a fit or an artifact",
     )
     return parser
+
+
+def _print_block_table(table: list[dict]) -> None:
+    for row in table:
+        print(_block_line(row))
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -1316,18 +1555,30 @@ def main(argv: list[str] | None = None) -> int:
 
     Writes only under ``--out-dir``. The default is
     ``research/grey_deer/pullback_stage1b`` and is not used unless the
-    caller leaves the flag off.
+    caller leaves the flag off. ``--blocks-only`` prints the block table
+    and the 14 raw subframe hashes and writes nothing.
     """
     args = build_parser().parse_args(argv)
     out_dir = _resolve_out(args.out_dir)
     try:
-        actions = _parse_corporate_actions(args.corporate_action)
         if not args.panel_dir:
             _refuse("PANEL_COVERAGE", "panel directory not provided")
         panel_dir = Path(args.panel_dir)
         paths = {t: panel_dir / f"{t}.parquet" for t in PANEL_TICKERS}
-        panel = load_panel(paths, corporate_actions=actions)
-        payload = execute_panel(panel)
+        loaded = load_panel(paths, check_freeze=not args.blocks_only)
+        table = block_table(loaded.calendar)
+        if args.blocks_only:
+            _print_block_table(table)
+            for ticker in PANEL_TICKERS:
+                print(f"PIN {ticker} {loaded.subframe_sha256[ticker]}")
+            return 0
+        # Print and retain the table before any pooled fit.
+        _print_block_table(table)
+        payload = execute_panel(
+            loaded.frames,
+            fold_block_table=table,
+            subframe_sha256=loaded.subframe_sha256,
+        )
         write_payload(out_dir, payload)
     except s1.Blocked as exc:
         try:

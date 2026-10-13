@@ -22,10 +22,14 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 import scripts.research.grey_deer_pullback_stage1 as stage1  # noqa: E402
 import scripts.research.grey_deer_pullback_stage1b as s1b  # noqa: E402
+from scripts.research.grey_deer_panel_adjust import AdjustResult  # noqa: E402
 
 
 WINDOW_ENDS = ["2021-07-06", "2026-10-07"]
 _BANNED_WORD = "vali" + "dated"
+_SPLIT_TICKERS = {"XLB", "XLE", "XLK", "XLU", "XLY"}
+_HAVE_0818 = {"DIA", "XLB", "XLC", "XLK", "XLV"}
+_COMMON = ["2021-07-06", "2025-12-04", "2025-12-05", "2026-10-07"]
 
 
 def _frame(dates, closes) -> pd.DataFrame:
@@ -70,6 +74,71 @@ def _blocked(out_dir: Path) -> dict:
     return payload["blocked"][0]
 
 
+def _governed_dates(ticker: str, extra: dict[str, list[str]] | None = None) -> list[str]:
+    dates = list(_COMMON)
+    if ticker in _HAVE_0818:
+        dates.append("2026-08-18")
+    if extra:
+        dates.extend(extra.get(ticker, ()))
+    return sorted(set(dates))
+
+
+def _governed_closes(ticker: str, dates: list[str]) -> list[float]:
+    if ticker in _SPLIT_TICKERS:
+        return [200.0 if day < "2025-12-05" else 100.0 for day in dates]
+    return [100.0 for _day in dates]
+
+
+def _write_governed(
+    directory: Path,
+    *,
+    extra: dict[str, list[str]] | None = None,
+    mutate=None,
+) -> None:
+    def dates_for(ticker: str) -> list[str]:
+        return _governed_dates(ticker, extra)
+
+    def closes_for(ticker: str) -> list[float]:
+        dates = dates_for(ticker)
+        closes = _governed_closes(ticker, dates)
+        if mutate is not None:
+            mutate(ticker, dates, closes)
+        return closes
+
+    _write_panel(directory, dates_for, closes_for)
+
+
+def _pins_from_dir(panel_dir: Path) -> dict[str, dict]:
+    pins: dict[str, dict] = {}
+    for ticker in s1b.PANEL_TICKERS:
+        sub = stage1.normalize_subframe(pd.read_parquet(panel_dir / f"{ticker}.parquet"))
+        pins[ticker] = {
+            "subframe_sha256": stage1.subframe_sha256(sub),
+            "rows": int(len(sub)),
+            "first_date": str(sub["date"].iloc[0]),
+            "last_date": str(sub["date"].iloc[-1]),
+        }
+    return pins
+
+
+def _freeze_runtime(monkeypatch, pins: dict[str, dict]) -> None:
+    monkeypatch.setattr(s1b, "IDENTITY_PINS", pins)
+    monkeypatch.setattr(s1b, "TRIAL_BUDGET", s1b.TRIALS_TOTAL)
+    monkeypatch.setattr(s1b, "MANIFEST_BLOB_SHA", "f" * 64)
+    monkeypatch.setattr(s1b, "PREREG_BLOB_SHA", "e" * 64)
+
+
+def _arm_calendar(monkeypatch, intersection: list[str]) -> None:
+    """Let a short synthetic intersection pass the D15 length and NYSE checks."""
+    monkeypatch.setattr(s1b, "EXPECTED_COMMON_SESSIONS", len(intersection))
+    union = sorted(set(intersection) | set(s1b.PINNED_CALENDAR_EXCLUSIONS))
+    monkeypatch.setattr(s1b, "nyse_sessions", lambda _start, _end, union=union: list(union))
+
+
+def _paths(panel: Path) -> dict[str, Path]:
+    return {ticker: panel / f"{ticker}.parquet" for ticker in s1b.PANEL_TICKERS}
+
+
 # ── 1. load refusals ─────────────────────────────────────────────────────────
 
 
@@ -87,6 +156,19 @@ def test_missing_ticker_is_panel_coverage(tmp_path, capsys):
     assert row["type"] == "PANEL_COVERAGE"
     assert "QQQ" in row["tickers"]
     assert not (s1b.ROOT / s1b.DEFAULT_OUT_DIR).exists()
+    payload = json.loads((out / s1b.RESULTS_JSON_NAME).read_text(encoding="utf-8"))
+    assert payload["manifest_path"] == s1b.MANIFEST_PATH
+    assert payload["manifest_version"] == s1b.MANIFEST_VERSION
+    assert payload["manifest_blob_sha"] == s1b.PIN_PENDING
+    assert payload["prereg_path"] == s1b.PREREG_PATH
+    assert payload["prereg_blob_sha"] == s1b.PIN_PENDING
+    assert payload["bootstrap"]["n_draws"] == s1b.N_DRAWS
+    assert payload["subframe_sha256"]["QQQ"].startswith("UNKNOWN:")
+    assert len(payload["adjust_module_blob_sha"]) == 40
+    note = (out / s1b.RESULTS_MD_NAME).read_text(encoding="utf-8")
+    assert f"n_draws={s1b.N_DRAWS}" in note
+    assert s1b.MANIFEST_PATH in note
+    assert "seed_root=221012" in note
 
 
 def test_late_first_row_refuses_without_trimming(tmp_path, capsys):
@@ -108,61 +190,73 @@ def test_late_first_row_refuses_without_trimming(tmp_path, capsys):
     assert "not trimming" in row["detail"]
 
 
-def test_calendar_misalignment_lists_symmetric_difference(tmp_path, capsys):
+def test_calendar_misalignment_lists_the_unpinned_difference(tmp_path, capsys):
+    """A date outside the pinned exclusion is CALENDAR_MISALIGNED (D15)."""
     panel = tmp_path / "panel"
-    shared = ["2021-07-06", "2024-06-03", "2026-10-07"]
-    odd = ["2021-07-06", "2024-06-04", "2026-10-07"]
-
-    def dates_for(ticker: str):
-        return odd if ticker == "XLY" else shared
-
-    _write_panel(panel, dates_for, lambda _t: [100.0, 105.0, 110.0])
+    _write_governed(panel, extra={"XLY": ["2024-06-04"]})
     out = tmp_path / "out"
     assert _run(panel, out) == 2
     assert capsys.readouterr().out.splitlines()[0] == "BLOCKED / CALENDAR_MISALIGNED"
     row = _blocked(out)
     assert row["type"] == "CALENDAR_MISALIGNED"
-    assert row["symmetric_difference"] == ["2024-06-03", "2024-06-04"]
+    assert row["unexpected"] == ["2024-06-04"]
+    assert "2024-06-04" in row["detail"]
 
 
 def test_split_discontinuity_names_ticker_and_date(tmp_path, capsys):
+    """An unpinned jump on adjusted closes refuses and names the first break."""
     panel = tmp_path / "panel"
 
-    def closes_for(ticker: str):
+    def mutate(ticker, _dates, closes):
         if ticker == "DIA":
-            return [100.0, 50.0]
-        return [100.0, 110.0]
+            closes[-1] = 40.0
 
-    _write_panel(panel, lambda _t: WINDOW_ENDS, closes_for)
+    _write_governed(panel, mutate=mutate)
     out = tmp_path / "out"
     assert _run(panel, out) == 2
     assert capsys.readouterr().out.splitlines()[0] == "BLOCKED / SPLIT_DISCONTINUITY"
     row = _blocked(out)
     assert row["type"] == "SPLIT_DISCONTINUITY"
-    assert row["ticker"] == "DIA"
-    assert row["date"] == "2026-10-07"
+    assert "DIA" in row["detail"]
+    assert "2026-10-07" in row["detail"]
+    assert row["breaks"][0] == {"ticker": "DIA", "date": "2026-10-07"}
 
 
-def test_ratio_of_exactly_one_point_two_five_is_not_a_split(tmp_path):
-    """D5 comparison is strict. 125/100 == 1.25 does not refuse as a split."""
+def test_ratio_of_exactly_one_point_two_five_is_not_a_split(tmp_path, monkeypatch):
+    """The break check is strict. 125/100 == 1.25 is not a discontinuity."""
     panel = tmp_path / "panel"
-    _write_panel(panel, lambda _t: WINDOW_ENDS, lambda _t: [100.0, 125.0])
+
+    def mutate(ticker, _dates, closes):
+        if ticker == "DIA":
+            closes[-1] = 125.0
+
+    _write_governed(panel, mutate=mutate)
+    _arm_calendar(monkeypatch, _COMMON)
     out = tmp_path / "out"
     assert _run(panel, out) == 2
     row = _blocked(out)
     assert row["type"] == "PREREG_V11_PENDING"
 
 
-def test_declared_corporate_action_refuses_unadjusted(tmp_path, capsys):
+def test_unpinned_jump_is_not_silently_adjusted(tmp_path, capsys):
+    """No declared-action flag. An unpinned 2-for-1 refuses as a discontinuity."""
+    option_strings = [opt for action in s1b.build_parser()._actions for opt in action.option_strings]
+    assert "--corporate-action" not in option_strings
     panel = tmp_path / "panel"
-    _write_panel(panel, lambda _t: WINDOW_ENDS, _mild)
+
+    def mutate(ticker, _dates, closes):
+        if ticker == "XLF":
+            closes[-1] = 50.0
+
+    _write_governed(panel, mutate=mutate)
     out = tmp_path / "out"
-    rc = _run(panel, out, ["--corporate-action", "XLF:2026-10-07"])
-    assert rc == 2
-    assert capsys.readouterr().out.splitlines()[0] == "BLOCKED / SPLIT_UNADJUSTED"
+    assert _run(panel, out) == 2
+    assert capsys.readouterr().out.splitlines()[0] == "BLOCKED / SPLIT_DISCONTINUITY"
     row = _blocked(out)
-    assert row["ticker"] == "XLF"
-    assert row["date"] == "2026-10-07"
+    assert "XLF" in row["detail"]
+    assert "2026-10-07" in row["detail"]
+    source = Path(s1b.__file__).read_text(encoding="utf-8")
+    assert "SPLIT_UNADJUSTED" not in source
 
 
 def test_pending_pin_refuses_before_features_or_labels(tmp_path, monkeypatch):
@@ -175,7 +269,8 @@ def test_pending_pin_refuses_before_features_or_labels(tmp_path, monkeypatch):
     monkeypatch.setattr(stage1, "build_features", _boom)
     monkeypatch.setattr(stage1, "build_labels", _boom)
     panel = tmp_path / "panel"
-    _write_panel(panel, lambda _t: WINDOW_ENDS, _mild)
+    _write_governed(panel)
+    _arm_calendar(monkeypatch, _COMMON)
     out = tmp_path / "out"
     rc = _run(panel, out)
     assert rc == 2
@@ -483,6 +578,13 @@ def test_constants_match_the_seat_decisions():
     assert s1b.inc_row()["id"] == "INC"
     assert s1b.freeze_block_reason() is not None
     assert "PREREG_V11_PENDING" in s1b.freeze_block_reason()
+    assert s1b.EXPECTED_COMMON_SESSIONS == 1320
+    assert s1b.MANIFEST_VERSION == "1.1.0"
+    assert s1b.MANIFEST_BLOB_SHA == "PREREG_V11_PENDING"
+    assert s1b.PREREG_BLOB_SHA == "PREREG_V11_PENDING"
+    assert "grey_deer_panel_adjust.PINNED_SPLITS" in s1b.DIVIDEND_DISCLOSURE
+    assert "2026-08-18" in s1b.DIVIDEND_DISCLOSURE
+    assert s1b.build_parser().get_default("blocks_only") is False
 
 
 # ── 9. end-to-end synthetic panel ────────────────────────────────────────────
@@ -527,6 +629,14 @@ def test_synthetic_panel_claims_are_byte_identical(tmp_path, monkeypatch):
     monkeypatch.setattr(s1b, "N_DRAWS", 100)
     monkeypatch.setattr(s1b, "TRIAL_BUDGET", 66)
     monkeypatch.setattr(s1b, "IDENTITY_PINS", pins)
+    monkeypatch.setattr(s1b, "MANIFEST_BLOB_SHA", "f" * 64)
+    monkeypatch.setattr(s1b, "PREREG_BLOB_SHA", "e" * 64)
+    # The 340-session synthetic calendar is not the frozen NYSE intersection
+    # and contains no pinned split. Point the input gates at this fixture.
+    monkeypatch.setattr(s1b, "PINNED_SPLITS", {})
+    monkeypatch.setattr(s1b, "PINNED_CALENDAR_EXCLUSIONS", frozenset())
+    monkeypatch.setattr(s1b, "EXPECTED_COMMON_SESSIONS", n)
+    monkeypatch.setattr(s1b, "nyse_sessions", lambda _start, _end, dates=list(date_str): list(dates))
 
     out1 = tmp_path / "run1"
     out2 = tmp_path / "run2"
@@ -550,6 +660,16 @@ def test_synthetic_panel_claims_are_byte_identical(tmp_path, monkeypatch):
     assert payload["trial_family"] == "grey_deer_pullback_v11"
     assert payload["seed_root"] == 221012
     assert payload["n_draws"] == 100
+    assert payload["bootstrap"]["n_draws"] == s1b.N_DRAWS == 100
+    assert payload["bootstrap"]["seed_root"] == 221012
+    assert payload["bootstrap"]["axis"] == "date"
+    assert payload["bootstrap"]["block_length_rule"] == "stage-1 block_length(h, variant)"
+    assert payload["fold_block_table"]
+    assert payload["fold_block_table"][0]["start_date"]
+    assert payload["manifest_blob_sha"] == "f" * 64
+    assert payload["prereg_blob_sha"] == "e" * 64
+    assert payload["adjust_module_blob_sha"]
+    assert len(payload["subframe_sha256"]) == 14
     assert payload["dividend_basis"] == "unadjusted"
     assert payload["panel"]["tickers"] == list(s1b.PANEL_TICKERS)
     assert payload["panel"]["spy_excluded"] is True
@@ -569,3 +689,239 @@ def test_synthetic_panel_claims_are_byte_identical(tmp_path, monkeypatch):
         s1b.RESULTS_JSON_NAME,
         s1b.RESULTS_MD_NAME,
     }
+
+
+# ── D14 / D15 repair ─────────────────────────────────────────────────────────
+
+
+def test_prepare_panel_is_called_once_with_seat_pins(tmp_path, monkeypatch):
+    calls = []
+    real = s1b.prepare_panel
+
+    def spy(frames, window_start, as_of, splits=None, excluded=None):
+        calls.append((window_start, as_of, splits, excluded, len(frames)))
+        return real(frames, window_start, as_of, splits=splits, excluded=excluded)
+
+    monkeypatch.setattr(s1b, "prepare_panel", spy)
+    panel = tmp_path / "panel"
+    _write_panel(panel, lambda _t: WINDOW_ENDS, _mild)
+    with pytest.raises(stage1.Blocked):
+        s1b.load_panel(_paths(panel))
+    assert len(calls) == 1
+    window_start, as_of, splits, excluded, n_frames = calls[0]
+    assert window_start == s1b.WINDOW_START
+    assert as_of == s1b.AS_OF
+    assert splits is s1b.PINNED_SPLITS
+    assert excluded is s1b.PINNED_CALENDAR_EXCLUSIONS
+    assert n_frames == 14
+
+
+@pytest.mark.parametrize(
+    ("reason", "detail", "needle"),
+    [
+        (
+            "SPLIT_TABLE_MISMATCH",
+            {
+                "mismatches": [
+                    {
+                        "ticker": "XLB",
+                        "date": "2025-12-05",
+                        "ratio": 2.0,
+                        "why": "ratio_out_of_tolerance",
+                    }
+                ]
+            },
+            "XLB 2025-12-05",
+        ),
+        (
+            "SPLIT_DISCONTINUITY",
+            {"breaks": [{"ticker": "DIA", "date": "2026-10-07"}]},
+            "DIA 2026-10-07",
+        ),
+        (
+            "CALENDAR_MISALIGNED",
+            {
+                "unexpected": ["2024-06-04"],
+                "pinned_absent": [],
+                "missing_by_ticker": {"XLY": ["2024-06-03"]},
+            },
+            "XLY 2024-06-03",
+        ),
+    ],
+)
+def test_prepare_panel_blocked_reasons_surface(tmp_path, monkeypatch, reason, detail, needle):
+    def fake(*_args, **_kwargs):
+        return AdjustResult(
+            status="BLOCKED",
+            reason=reason,
+            detail=detail,
+            frames=None,
+            calendar=None,
+            confirmations=None,
+        )
+
+    monkeypatch.setattr(s1b, "prepare_panel", fake)
+    panel = tmp_path / "panel"
+    _write_panel(panel, lambda _t: WINDOW_ENDS, _mild)
+    with pytest.raises(stage1.Blocked) as caught:
+        s1b.load_panel(_paths(panel))
+    assert caught.value.type == reason
+    assert needle in caught.value.detail
+
+
+def test_pinned_split_and_exclusion_adjust_the_loaded_closes(tmp_path, monkeypatch):
+    panel = tmp_path / "panel"
+    _write_governed(panel)
+    _arm_calendar(monkeypatch, _COMMON)
+    _freeze_runtime(monkeypatch, _pins_from_dir(panel))
+    loaded = s1b.load_panel(_paths(panel))
+    assert loaded.calendar == _COMMON
+    assert "2026-08-18" not in loaded.calendar
+    raw = stage1.normalize_subframe(pd.read_parquet(panel / "XLB.parquet"))
+    assert loaded.subframe_sha256["XLB"] == stage1.subframe_sha256(raw)
+    raw_close = float(raw.loc[raw["date"] == "2021-07-06", "close"].iloc[0])
+    assert raw_close == pytest.approx(200.0)
+    adjusted = loaded.frames["XLB"]
+    assert float(adjusted.loc[adjusted["date"] == "2021-07-06", "close"].iloc[0]) == pytest.approx(100.0)
+    assert float(adjusted.loc[adjusted["date"] == "2025-12-05", "close"].iloc[0]) == pytest.approx(100.0)
+    assert float(adjusted.loc[adjusted["date"] == "2021-07-06", "volume"].iloc[0]) == pytest.approx(2_000_000.0)
+    assert float(adjusted.loc[adjusted["date"] == "2025-12-05", "volume"].iloc[0]) == pytest.approx(1_000_000.0)
+    assert float(adjusted.loc[adjusted["date"] == "2021-07-06", "transactions"].iloc[0]) == pytest.approx(1000.0)
+    qqq = loaded.frames["QQQ"]
+    assert float(qqq.loc[qqq["date"] == "2021-07-06", "close"].iloc[0]) == pytest.approx(100.0)
+    assert float(qqq.loc[qqq["date"] == "2021-07-06", "volume"].iloc[0]) == pytest.approx(1_000_000.0)
+
+
+def test_wrong_common_session_count_and_nyse_mismatch(tmp_path, monkeypatch):
+    panel = tmp_path / "panel"
+    _write_governed(panel)
+    paths = _paths(panel)
+    with pytest.raises(stage1.Blocked) as count_refusal:
+        s1b.load_panel(paths)
+    assert count_refusal.value.type == "CALENDAR_MISALIGNED"
+    assert count_refusal.value.expected == 1320
+    assert count_refusal.value.got == 4
+
+    monkeypatch.setattr(s1b, "EXPECTED_COMMON_SESSIONS", 4)
+    monkeypatch.setattr(s1b, "nyse_sessions", lambda _start, _end: ["1999-01-04"])
+    with pytest.raises(stage1.Blocked) as nyse_refusal:
+        s1b.load_panel(paths)
+    assert nyse_refusal.value.type == "CALENDAR_MISALIGNED"
+    assert nyse_refusal.value.missing == ["1999-01-04"]
+    assert "2021-07-06" in nyse_refusal.value.unexpected
+    assert "2026-08-18" in nyse_refusal.value.unexpected
+
+
+def test_strict_maps_nonfinite_to_none_and_json_rejects_constants(tmp_path):
+    payload = {
+        "nan": float("nan"),
+        "pos": float("inf"),
+        "neg": float("-inf"),
+        "npnan": np.float64("nan"),
+        "arr": np.array([1.0, np.inf, np.nan]),
+        "ok": np.float64(1.5),
+        "i": np.int64(3),
+    }
+    ready = s1b._strict(payload)
+    assert ready["nan"] is None
+    assert ready["pos"] is None
+    assert ready["neg"] is None
+    assert ready["npnan"] is None
+    assert ready["arr"] == [1.0, None, None]
+    assert ready["ok"] == 1.5
+    assert ready["i"] == 3
+    text = json.dumps(ready, allow_nan=False)
+    json.loads(text, parse_constant=lambda c: (_ for _ in ()).throw(ValueError(c)))
+    s1b.write_payload(
+        tmp_path,
+        {"schema": s1b.SCHEMA, "status": "BLOCKED", "leap": float("nan"), "claims": [], "blocked": []},
+    )
+    written = (tmp_path / s1b.RESULTS_JSON_NAME).read_text(encoding="utf-8")
+    json.loads(written, parse_constant=lambda c: (_ for _ in ()).throw(ValueError(c)))
+    assert "NaN" not in written
+    assert "Infinity" not in written
+
+
+def test_payload_bootstrap_record_and_fold_block_table():
+    record = s1b._bootstrap_record()
+    assert record == {
+        "n_draws": s1b.N_DRAWS,
+        "seed_root": s1b.SEED_ROOT,
+        "axis": "date",
+        "block_length_rule": "stage-1 block_length(h, variant)",
+    }
+    calendar = ["2022-01-03"] * 1000 + ["2026-09-01"] * 400
+    rows = s1b.block_table(calendar)
+    assert rows
+    seen_after = set()
+    for row in rows:
+        assert row["start_date"] == calendar[row["start_index"]]
+        assert row["end_date"] == calendar[row["end_index"]]
+        assert row["after_excluded_session"] is (row["start_date"] > "2026-08-18")
+        seen_after.add(row["after_excluded_session"])
+    assert seen_after == {False, True}
+    for h in stage1.HORIZONS:
+        folds = s1b.panel_fold_calendar(len(calendar), h)
+        got = [row for row in rows if row["h"] == h]
+        assert [(row["start_index"], row["end_index"]) for row in got] == list(folds)
+        assert [row["fold"] for row in got] == list(range(1, len(folds) + 1))
+    note = s1b.render_markdown(
+        {
+            "schema": s1b.SCHEMA,
+            "status": "OK",
+            "trial_family": s1b.TRIAL_FAMILY,
+            "trial_budget": s1b.TRIAL_BUDGET,
+            "dividend_basis": s1b.DIVIDEND_BASIS,
+            "bootstrap": record,
+            "claims": [],
+            "inc": s1b.inc_row(),
+            "episodes": {},
+            "dividend_disclosure": s1b.DIVIDEND_DISCLOSURE,
+        }
+    )
+    assert f"n_draws={s1b.N_DRAWS}" in note
+    assert "seed_root=221012" in note
+    assert "axis=date" in note
+    assert "block_length_rule=stage-1 block_length(h, variant)" in note
+
+
+def test_blocks_only_prints_table_and_pins_without_a_fit(tmp_path, monkeypatch, capsys):
+    n = 340
+    dates = [day.strftime("%Y-%m-%d") for day in pd.bdate_range("2021-07-06", periods=n)]
+    panel = tmp_path / "panel"
+    _write_panel(panel, lambda _t: dates, lambda _t: [100.0] * n)
+    monkeypatch.setattr(s1b, "AS_OF", dates[-1])
+    monkeypatch.setattr(s1b, "PINNED_SPLITS", {})
+    monkeypatch.setattr(s1b, "PINNED_CALENDAR_EXCLUSIONS", frozenset())
+    monkeypatch.setattr(s1b, "EXPECTED_COMMON_SESSIONS", n)
+    monkeypatch.setattr(s1b, "nyse_sessions", lambda _start, _end, dates=list(dates): list(dates))
+
+    def _boom(*_args, **_kwargs):
+        raise AssertionError("fit or label ran")
+
+    monkeypatch.setattr(s1b, "run_pooled_fits", _boom)
+    monkeypatch.setattr(stage1, "build_labels", _boom)
+    out = tmp_path / "out"
+    assert _run(panel, out, ["--blocks-only"]) == 0
+    assert not out.exists()
+    lines = capsys.readouterr().out.splitlines()
+    assert any(line.startswith("BLOCK ") for line in lines)
+    pin_lines = [line for line in lines if line.startswith("PIN ")]
+    assert len(pin_lines) == 14
+    for line in pin_lines:
+        _prefix, ticker, sha = line.split()
+        raw = stage1.normalize_subframe(pd.read_parquet(panel / f"{ticker}.parquet"))
+        assert sha == stage1.subframe_sha256(raw)
+        assert ticker in s1b.PANEL_TICKERS
+
+
+def test_pending_manifest_and_prereg_blob_pins_are_in_the_freeze_reason():
+    reason = s1b.freeze_block_reason()
+    assert reason is not None
+    assert "MANIFEST_BLOB_SHA" in reason
+    assert s1b.MANIFEST_PATH in reason
+    assert "PREREG_BLOB_SHA" in reason
+    assert s1b.PREREG_PATH in reason
+    assert s1b.PIN_PENDING in reason
+    assert s1b.MANIFEST_BLOB_SHA == s1b.PIN_PENDING
+    assert s1b.PREREG_BLOB_SHA == s1b.PIN_PENDING
