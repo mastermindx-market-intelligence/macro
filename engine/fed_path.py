@@ -10,7 +10,8 @@ LLM-context vector) from three free, keyless feeds:
     prices the funds rate at 1/3/6/12 months out,
 
 plus the curve primitives already in the frame (near-term forward spread, the
-term-premium-adjusted slope, the us2y−funds rate-expectations proxy).
+legacy TP10 curve heuristic, the us2y−funds rate-expectations proxy). The TP10
+heuristic is context only and is not a matched-maturity expectations decomposition.
 
 DISCIPLINE — display / context ONLY. The implied path LEVEL is a market PRICE, not a
 forecast edge, and repricing is REACTIVE (the curve moves *after* data and the Fed,

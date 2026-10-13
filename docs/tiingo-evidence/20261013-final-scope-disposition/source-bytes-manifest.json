@@ -1,0 +1,204 @@
+{
+  "schema": "tiingo.operational_evidence_and_actual_method_source_bytes/v1",
+  "snapshot_at_utc": "2026-10-13T02:02:54.009901+00:00",
+  "entries": [
+    {
+      "file": "01-macro-9045-original-expanded-ci-terminal-acceptance.json",
+      "sha256": "72303246f76c96333357912259dd68508d07fdce60aad164427520bc77108813",
+      "bytes": 2923,
+      "retained_source_sha256": "72303246f76c96333357912259dd68508d07fdce60aad164427520bc77108813",
+      "byte_identical_to_retained_source": true
+    },
+    {
+      "file": "02-macro-9045-actual-merge-after-terminal-ci.json",
+      "sha256": "2b2587e819367ffacd73fd0e9a4a4c7d2c3bad2d8eb614b906b56541b8f8ec98",
+      "bytes": 912,
+      "retained_source_sha256": "2b2587e819367ffacd73fd0e9a4a4c7d2c3bad2d8eb614b906b56541b8f8ec98",
+      "byte_identical_to_retained_source": true
+    },
+    {
+      "file": "03-macro-9045-actual-canonical-tree-landing.json",
+      "sha256": "5d3173b92c4281723528ef53785378ecb8d39c200f1cea5ea30b1a08241c0986",
+      "bytes": 8224,
+      "retained_source_sha256": "5d3173b92c4281723528ef53785378ecb8d39c200f1cea5ea30b1a08241c0986",
+      "byte_identical_to_retained_source": true
+    },
+    {
+      "file": "04-tiingo-wave15-original-capture-actual-terminal-parent-consumption.json",
+      "sha256": "063e448cec92e6231c6d09560fc169b7d83d4baddb92fd9063127ee90c7aed69",
+      "bytes": 915,
+      "retained_source_sha256": "063e448cec92e6231c6d09560fc169b7d83d4baddb92fd9063127ee90c7aed69",
+      "byte_identical_to_retained_source": true
+    },
+    {
+      "file": "05-tiingo-wave15-actual-prefix01-failure-and-diagnosis.json",
+      "sha256": "bd0b843372877690a15711a540d0530f31fc48a2d107ec6e417baff771ea4eb3",
+      "bytes": 1604,
+      "retained_source_sha256": "bd0b843372877690a15711a540d0530f31fc48a2d107ec6e417baff771ea4eb3",
+      "byte_identical_to_retained_source": true
+    },
+    {
+      "file": "06-tiingo-wave15-disposition-window02-actual-parent-consumption.json",
+      "sha256": "ab9f193a5069105b42b1e42906a628992afdaa03351940e7364160c01e32ddaf",
+      "bytes": 1158,
+      "retained_source_sha256": "ab9f193a5069105b42b1e42906a628992afdaa03351940e7364160c01e32ddaf",
+      "byte_identical_to_retained_source": true
+    },
+    {
+      "file": "07-tiingo-wave15-prefix03-custody-diagnosis-actual-parent-consumption.json",
+      "sha256": "573991dd773b6dc9510e8124a9bd5380712df11021ceef333e606f556fa925bb",
+      "bytes": 769,
+      "retained_source_sha256": "573991dd773b6dc9510e8124a9bd5380712df11021ceef333e606f556fa925bb",
+      "byte_identical_to_retained_source": true
+    },
+    {
+      "file": "08-tiingo-wave15-disposition-v2-repair-independent-review.json",
+      "sha256": "33cde70dc9c918e5de6d4ebf8398d650ddd5c609f5f042af3ad1b73317570aab",
+      "bytes": 1304,
+      "retained_source_sha256": "33cde70dc9c918e5de6d4ebf8398d650ddd5c609f5f042af3ad1b73317570aab",
+      "byte_identical_to_retained_source": true
+    },
+    {
+      "file": "09-tiingo-wave15-disposition-window03-actual-parent-consumption.json",
+      "sha256": "231303786536982bdbb61505c0713790e558e44e5e2869ff427a82a13b548ac6",
+      "bytes": 1534,
+      "retained_source_sha256": "231303786536982bdbb61505c0713790e558e44e5e2869ff427a82a13b548ac6",
+      "byte_identical_to_retained_source": true
+    },
+    {
+      "file": "10-tiingo-wave15-final-disposition-accounting-v2-independent-review.json",
+      "sha256": "ecbf20e7fd86ec98e9b772377c584ca799da3eaa9bafc44b7fb380bf4ac64760",
+      "bytes": 2005,
+      "retained_source_sha256": "ecbf20e7fd86ec98e9b772377c584ca799da3eaa9bafc44b7fb380bf4ac64760",
+      "byte_identical_to_retained_source": true
+    },
+    {
+      "file": "11-tiingo-wave15-original-final-disposition-accounting-actual-parent-consumption.json",
+      "sha256": "1db7d1ca0c7711add656f47f9928620fd8a0dbcc827eaaddcd58599102f3bcde",
+      "bytes": 840,
+      "retained_source_sha256": "1db7d1ca0c7711add656f47f9928620fd8a0dbcc827eaaddcd58599102f3bcde",
+      "byte_identical_to_retained_source": true
+    },
+    {
+      "file": "12-tiingo-wave15-new-history-installed-lab-canary-actual-reader-result.json",
+      "sha256": "63c8094546c4bd50b4ae70beb515f77c5d901847fc88d4d10099224d04e0fae9",
+      "bytes": 2324,
+      "retained_source_sha256": "63c8094546c4bd50b4ae70beb515f77c5d901847fc88d4d10099224d04e0fae9",
+      "byte_identical_to_retained_source": true
+    },
+    {
+      "file": "13-tiingo-wave15-new-history-installed-lab-actual-host-join.json",
+      "sha256": "4348bff0a732bab3be00f25abb3cdd2076cd1877569a099e3e6302620fb2a6be",
+      "bytes": 1535,
+      "retained_source_sha256": "4348bff0a732bab3be00f25abb3cdd2076cd1877569a099e3e6302620fb2a6be",
+      "byte_identical_to_retained_source": true
+    },
+    {
+      "file": "14-tiingo-wave15-unadmitted2631-final-readonly-preflight-actual-parent.json",
+      "sha256": "cc584074cd4c047d385e6446cd057b7c4a7051c2432376670fae499496f81b76",
+      "bytes": 726,
+      "retained_source_sha256": "cc584074cd4c047d385e6446cd057b7c4a7051c2432376670fae499496f81b76",
+      "byte_identical_to_retained_source": true
+    },
+    {
+      "file": "15-actual-original-four-way-partition-summary.json",
+      "sha256": "ec142771aa8b8586956b9711b71905e557301df165cd3f8e672c4131efe23a40",
+      "bytes": 4042,
+      "retained_source_sha256": null,
+      "byte_identical_to_retained_source": false
+    },
+    {
+      "file": "16-scng-whole-quality-disposition-summary.json",
+      "sha256": "6e52b66c70c8b698730b9fea2fc6472f9d016fa3874fcaea63ef586f1661fc68",
+      "bytes": 1077,
+      "retained_source_sha256": null,
+      "byte_identical_to_retained_source": false
+    },
+    {
+      "file": "17-foreign-content-projection-custody-summary.json",
+      "sha256": "994884620167c3c4f3504b3d46e1b321db30f3ab7db4186d4a031aab915ca675",
+      "bytes": 4135,
+      "retained_source_sha256": null,
+      "byte_identical_to_retained_source": false
+    },
+    {
+      "file": "method-tiingo-wave15-disposition-pipeline-01a12ab6.py",
+      "sha256": "6e127aa58d1a2609876567e25bb87088d23f7f84de5c26bbd011d9d902cf5786",
+      "bytes": 20497,
+      "retained_source_sha256": "6e127aa58d1a2609876567e25bb87088d23f7f84de5c26bbd011d9d902cf5786",
+      "byte_identical_to_retained_source": true
+    },
+    {
+      "file": "method-tiingo-wave15-attended-disposition-window02-01a12ab6.py",
+      "sha256": "82084990681af2b40e98001b8c87c32873b30540f5072eaa880c98770e4e5f71",
+      "bytes": 5213,
+      "retained_source_sha256": "82084990681af2b40e98001b8c87c32873b30540f5072eaa880c98770e4e5f71",
+      "byte_identical_to_retained_source": true
+    },
+    {
+      "file": "method-tiingo-wave15-disposition-pipeline-v2-01a12ab6.py",
+      "sha256": "824e31f5d7d851784240fb9b9f9aa0938b26fcaa6b1a70fec44a6753c2a1cf01",
+      "bytes": 24962,
+      "retained_source_sha256": "824e31f5d7d851784240fb9b9f9aa0938b26fcaa6b1a70fec44a6753c2a1cf01",
+      "byte_identical_to_retained_source": true
+    },
+    {
+      "file": "method-tiingo-wave15-attended-disposition-v2-window-01a12ab6.py",
+      "sha256": "0ffa5f8d5d748ae438257c532fa306964be49c9e800f26b8b120b6ad66e866ba",
+      "bytes": 5309,
+      "retained_source_sha256": "0ffa5f8d5d748ae438257c532fa306964be49c9e800f26b8b120b6ad66e866ba",
+      "byte_identical_to_retained_source": true
+    },
+    {
+      "file": "method-tiingo-wave15-original-disposition-accounting-v2-candidate-01a12ab6.py",
+      "sha256": "a698cad5496f1a298c8bf5210b0cd5a132dcbb8010b4a7237fb9cf2a7f9eb82e",
+      "bytes": 11365,
+      "retained_source_sha256": "a698cad5496f1a298c8bf5210b0cd5a132dcbb8010b4a7237fb9cf2a7f9eb82e",
+      "byte_identical_to_retained_source": true
+    },
+    {
+      "file": "method-tiingo-wave15-new-history-installed-lab-canary-01a12ab6.py",
+      "sha256": "1945f6ed074a0eff08ce5097ec2d0a6a7cef25c8c2d226a5cb18002c13d09b8e",
+      "bytes": 5147,
+      "retained_source_sha256": "1945f6ed074a0eff08ce5097ec2d0a6a7cef25c8c2d226a5cb18002c13d09b8e",
+      "byte_identical_to_retained_source": true
+    },
+    {
+      "file": "18-tiingo-wave15-reusable-two-stage-disposition-repair-review.json",
+      "sha256": "91b542ed3796a23d688322b78747b8e25bc6b48aa8ee9df6f28b34e7169e1b54",
+      "bytes": 1929,
+      "retained_source_sha256": "91b542ed3796a23d688322b78747b8e25bc6b48aa8ee9df6f28b34e7169e1b54",
+      "byte_identical_to_retained_source": true
+    },
+    {
+      "file": "19-tiingo-wave15-disposition-scalar-discriminating-checks.json",
+      "sha256": "b5ae8de03733d173c696d96dec62e60099b7af1aa160f3adb69a03d89642c0b5",
+      "bytes": 952,
+      "retained_source_sha256": "b5ae8de03733d173c696d96dec62e60099b7af1aa160f3adb69a03d89642c0b5",
+      "byte_identical_to_retained_source": true
+    },
+    {
+      "file": "20-tiingo-wave15-unadmitted2631-continuation-independent-review.json",
+      "sha256": "7f8016bd841d0ab5510d7a1e688603a07f5ccf9c06b59c95a8682ccb5d31b5f1",
+      "bytes": 3636,
+      "retained_source_sha256": "7f8016bd841d0ab5510d7a1e688603a07f5ccf9c06b59c95a8682ccb5d31b5f1",
+      "byte_identical_to_retained_source": true
+    },
+    {
+      "file": "method-tiingo-eod-wave15-original-unadmitted2631-candidate-v2-01a12ab6.py",
+      "sha256": "dccefc622669e985443ae1434a311185c4f50d87fec28df78da6e18f1c16b934",
+      "bytes": 13819,
+      "retained_source_sha256": "dccefc622669e985443ae1434a311185c4f50d87fec28df78da6e18f1c16b934",
+      "byte_identical_to_retained_source": true
+    },
+    {
+      "file": "21-tiingo-wave15-unadmitted2631-actual-launch.json",
+      "sha256": "76f85b9599154e9f24d13003943440bd025d591969d675c1c14b003ea0421508",
+      "bytes": 1203,
+      "retained_source_sha256": "76f85b9599154e9f24d13003943440bd025d591969d675c1c14b003ea0421508",
+      "byte_identical_to_retained_source": true
+    }
+  ],
+  "credentials_or_market_rows_copied": false,
+  "programme_acceptance_claimed": false
+}

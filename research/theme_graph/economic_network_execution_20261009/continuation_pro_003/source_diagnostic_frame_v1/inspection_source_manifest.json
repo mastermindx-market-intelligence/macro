@@ -1,0 +1,902 @@
+{
+  "schema": "gmi.wp02.frame_inspection_source_manifest/v1",
+  "repository": "mastermindx-market-intelligence/macro",
+  "fixed_ref": "4d736c55adb630a4a8eb11b261e31acd0f6dc48b",
+  "native_device": "m2studio",
+  "workspace": "/Volumes/Mastermind/agent-workspaces/macro/web/gmi-economic-observations-20261009-pro-003",
+  "native_complete_processes": [
+    {
+      "pid": 25398,
+      "exit_code": 0,
+      "effect_scope": "fixed-ref Git reads; bounded metadata/Parquet inspection only"
+    },
+    {
+      "pid": 28554,
+      "exit_code": 0,
+      "effect_scope": "fixed-ref Git reads; bounded metadata/Parquet inspection only"
+    },
+    {
+      "pid": 34174,
+      "exit_code": 0,
+      "effect_scope": "fixed-ref Git reads; bounded metadata/Parquet inspection only"
+    },
+    {
+      "pid": 38807,
+      "exit_code": 0,
+      "effect_scope": "fixed-ref Git reads; bounded metadata/Parquet inspection only"
+    },
+    {
+      "pid": 49845,
+      "exit_code": 0,
+      "effect_scope": "fixed-ref Git reads; bounded metadata/Parquet inspection only"
+    }
+  ],
+  "inventory": {
+    "branch": "sol/web-gmi-economic-observations-20261009-pro-003",
+    "common_git": "/Users/chriswong/Documents/Cluade/Macro Dashboard/.git",
+    "filename_filter": [
+      "universe",
+      "issuer",
+      "listing",
+      "security",
+      "symbol",
+      "ticker",
+      "reference",
+      "company_master",
+      "equity"
+    ],
+    "fixed_ref": "4d736c55adb630a4a8eb11b261e31acd0f6dc48b",
+    "head": "4d736c55adb630a4a8eb11b261e31acd0f6dc48b",
+    "hostname": "m2studio",
+    "inventory_sha256": "117634953791c1739c343517917e024c534f35b2e701fb21eefe916c72f91c6e",
+    "machine": "arm64",
+    "matched_count": 252,
+    "matched_paths": [
+      "config/biocatalyst_sponsor_ticker_map.yml",
+      "config/delisted_symbols.yml",
+      "config/issuer_group_allowlist.yml",
+      "config/market_reference.yml",
+      "config/rotation_universe.json",
+      "config/seasonality_universe.yml",
+      "config/us_turn_watch_universe.v1.json",
+      "data/altdata/by_ticker.json",
+      "data/biocatalyst/fixtures/biocatalyst_d0a_reference_fixture.v1.json",
+      "data/breadth/ticker_ai_tag.parquet",
+      "data/breadth/ticker_ai_tag.version",
+      "data/breadth/ticker_sectors.parquet",
+      "data/clinicaltrials/sponsor_ticker.json",
+      "data/corp_bonds/issuer_themes.json",
+      "data/corp_bonds/series/issuer_daily.parquet",
+      "data/crypto_universe/market_aave.parquet",
+      "data/crypto_universe/market_ada.parquet",
+      "data/crypto_universe/market_aster.parquet",
+      "data/crypto_universe/market_avax.parquet",
+      "data/crypto_universe/market_bch.parquet",
+      "data/crypto_universe/market_bnb.parquet",
+      "data/crypto_universe/market_btc.parquet",
+      "data/crypto_universe/market_btw.parquet",
+      "data/crypto_universe/market_buidl.parquet",
+      "data/crypto_universe/market_cbbtc.parquet",
+      "data/crypto_universe/market_cc.parquet",
+      "data/crypto_universe/market_cro.parquet",
+      "data/crypto_universe/market_dai.parquet",
+      "data/crypto_universe/market_dark.parquet",
+      "data/crypto_universe/market_doge.parquet",
+      "data/crypto_universe/market_dot.parquet",
+      "data/crypto_universe/market_ena.parquet",
+      "data/crypto_universe/market_eth.parquet",
+      "data/crypto_universe/market_figr_heloc.parquet",
+      "data/crypto_universe/market_gram.parquet",
+      "data/crypto_universe/market_hbar.parquet",
+      "data/crypto_universe/market_hype.parquet",
+      "data/crypto_universe/market_leo.parquet",
+      "data/crypto_universe/market_link.parquet",
+      "data/crypto_universe/market_ltc.parquet",
+      "data/crypto_universe/market_m.parquet",
+      "data/crypto_universe/market_mnt.parquet",
+      "data/crypto_universe/market_near.parquet",
+      "data/crypto_universe/market_okb.parquet",
+      "data/crypto_universe/market_ondo.parquet",
+      "data/crypto_universe/market_paxg.parquet",
+      "data/crypto_universe/market_pepe.parquet",
+      "data/crypto_universe/market_polydoge.parquet",
+      "data/crypto_universe/market_pump.parquet",
+      "data/crypto_universe/market_pyusd.parquet",
+      "data/crypto_universe/market_qnt.parquet",
+      "data/crypto_universe/market_rain.parquet",
+      "data/crypto_universe/market_rlusd.parquet",
+      "data/crypto_universe/market_shib.parquet",
+      "data/crypto_universe/market_sol.parquet",
+      "data/crypto_universe/market_steth.parquet",
+      "data/crypto_universe/market_sui.parquet",
+      "data/crypto_universe/market_susde.parquet",
+      "data/crypto_universe/market_susds.parquet",
+      "data/crypto_universe/market_tao.parquet",
+      "data/crypto_universe/market_trx.parquet",
+      "data/crypto_universe/market_uni.parquet",
+      "data/crypto_universe/market_usd1.parquet",
+      "data/crypto_universe/market_usdb.parquet",
+      "data/crypto_universe/market_usdc.parquet",
+      "data/crypto_universe/market_usde.parquet",
+      "data/crypto_universe/market_usdf.parquet",
+      "data/crypto_universe/market_usdg.parquet",
+      "data/crypto_universe/market_usds.parquet",
+      "data/crypto_universe/market_usdt.parquet",
+      "data/crypto_universe/market_usdy.parquet",
+      "data/crypto_universe/market_usyc.parquet",
+      "data/crypto_universe/market_wbt.parquet",
+      "data/crypto_universe/market_wbtc.parquet",
+      "data/crypto_universe/market_weeth.parquet",
+      "data/crypto_universe/market_weth.parquet",
+      "data/crypto_universe/market_wld.parquet",
+      "data/crypto_universe/market_wlfi.parquet",
+      "data/crypto_universe/market_wsteth.parquet",
+      "data/crypto_universe/market_xaut.parquet",
+      "data/crypto_universe/market_xlm.parquet",
+      "data/crypto_universe/market_xmr.parquet",
+      "data/crypto_universe/market_xrp.parquet",
+      "data/crypto_universe/market_zec.parquet",
+      "data/edgar/dead_name_delisting.json",
+      "data/edgar/share_quality_reference.json",
+      "data/edgar/ticker_cik_ledger.json",
+      "data/ffiec_y9c/bhc_ticker_map.csv",
+      "data/github/repo_ticker.json",
+      "data/government_revenue/fms_staged_objects/state-listing.html",
+      "data/hk_stocks_ext/_universe.json",
+      "data/huggingface/author_ticker.json",
+      "data/marketing/outbox/media/2026-08-20/ptlive-theme-cybersecurity-1606Z.svg",
+      "data/ofr_fsi/fsi_equity.parquet",
+      "data/openfda/sponsor_ticker.json",
+      "data/openfigi/cusip_ticker.parquet",
+      "data/polygon_universe/.gitignore",
+      "data/polygon_universe/reference.parquet",
+      "data/qledger/retired_symbol_disclosures.json",
+      "data/quality/reused_tickers_audit.json",
+      "data/quality/universe_audit.json",
+      "data/reference/_receipt.json",
+      "data/reference/issuer_master.parquet",
+      "data/reference/issuer_migrations.parquet",
+      "data/reference/security_master.parquet",
+      "data/reference/security_migrations.parquet",
+      "data/reference/vendor_aliases.parquet",
+      "data/sec/symbol_directory__ingest.parquet",
+      "data/sp500_heatmap/reference.parquet",
+      "data/stage_analysis/backfill/equitydesk_overview.parquet",
+      "data/stock_identity/amendments/w1a1_gold_wrong_issuer.json",
+      "data/stock_identity/partition/universe_snapshot_v1.parquet",
+      "data/subsector_rotation/universe_nominations.jsonl",
+      "data/subsector_rotation/universe_nominations_quarantine.jsonl",
+      "data/symbol_directory/cik_map/2026-07-13.parquet",
+      "data/symbol_directory/cik_map/2026-07-20.parquet",
+      "data/symbol_directory/cik_map/2026-07-27.parquet",
+      "data/symbol_directory/cik_map/2026-08-06.parquet",
+      "data/symbol_directory/cik_map/2026-08-10.parquet",
+      "data/symbol_directory/cik_map/2026-08-18.parquet",
+      "data/symbol_directory/cik_map/2026-08-25.parquet",
+      "data/symbol_directory/cik_map/2026-08-31.parquet",
+      "data/symbol_directory/cik_map/2026-09-07.parquet",
+      "data/symbol_directory/cik_map/2026-09-14.parquet",
+      "data/symbol_directory/cik_map/2026-09-21.parquet",
+      "data/symbol_directory/cik_map/2026-09-28.parquet",
+      "data/symbol_directory/cik_map/2026-10-05.parquet",
+      "data/symbol_directory/manifest.json",
+      "data/symbol_directory/receipts/cik_map/2026-08-18.json",
+      "data/symbol_directory/receipts/cik_map/2026-08-25.json",
+      "data/symbol_directory/receipts/cik_map/2026-08-31.json",
+      "data/symbol_directory/receipts/cik_map/2026-09-07.json",
+      "data/symbol_directory/receipts/cik_map/2026-09-14.json",
+      "data/symbol_directory/receipts/cik_map/2026-09-21.json",
+      "data/symbol_directory/receipts/cik_map/2026-09-28.json",
+      "data/symbol_directory/receipts/cik_map/2026-10-05.json",
+      "data/symbol_directory/receipts/snapshots/2026-08-19.json",
+      "data/symbol_directory/receipts/snapshots/2026-08-20.json",
+      "data/symbol_directory/receipts/snapshots/2026-08-21.json",
+      "data/symbol_directory/receipts/snapshots/2026-08-22.json",
+      "data/symbol_directory/receipts/snapshots/2026-08-23.json",
+      "data/symbol_directory/receipts/snapshots/2026-08-25.json",
+      "data/symbol_directory/receipts/snapshots/2026-08-27.json",
+      "data/symbol_directory/receipts/snapshots/2026-08-28.json",
+      "data/symbol_directory/receipts/snapshots/2026-08-29.json",
+      "data/symbol_directory/receipts/snapshots/2026-08-30.json",
+      "data/symbol_directory/receipts/snapshots/2026-08-31.json",
+      "data/symbol_directory/receipts/snapshots/2026-09-01.json",
+      "data/symbol_directory/receipts/snapshots/2026-09-03.json",
+      "data/symbol_directory/receipts/snapshots/2026-09-04.json",
+      "data/symbol_directory/receipts/snapshots/2026-09-05.json",
+      "data/symbol_directory/receipts/snapshots/2026-09-06.json",
+      "data/symbol_directory/receipts/snapshots/2026-09-07.json",
+      "data/symbol_directory/receipts/snapshots/2026-09-08.json",
+      "data/symbol_directory/receipts/snapshots/2026-09-09.json",
+      "data/symbol_directory/receipts/snapshots/2026-09-10.json",
+      "data/symbol_directory/receipts/snapshots/2026-09-11.json",
+      "data/symbol_directory/receipts/snapshots/2026-09-12.json",
+      "data/symbol_directory/receipts/snapshots/2026-09-13.json",
+      "data/symbol_directory/receipts/snapshots/2026-09-14.json",
+      "data/symbol_directory/receipts/snapshots/2026-09-15.json",
+      "data/symbol_directory/receipts/snapshots/2026-09-16.json",
+      "data/symbol_directory/receipts/snapshots/2026-09-17.json",
+      "data/symbol_directory/receipts/snapshots/2026-09-18.json",
+      "data/symbol_directory/receipts/snapshots/2026-09-19.json",
+      "data/symbol_directory/receipts/snapshots/2026-09-21.json",
+      "data/symbol_directory/receipts/snapshots/2026-09-22.json",
+      "data/symbol_directory/receipts/snapshots/2026-09-23.json",
+      "data/symbol_directory/receipts/snapshots/2026-09-24.json",
+      "data/symbol_directory/receipts/snapshots/2026-09-25.json",
+      "data/symbol_directory/receipts/snapshots/2026-09-26.json",
+      "data/symbol_directory/receipts/snapshots/2026-09-27.json",
+      "data/symbol_directory/receipts/snapshots/2026-09-28.json",
+      "data/symbol_directory/receipts/snapshots/2026-10-01.json",
+      "data/symbol_directory/receipts/snapshots/2026-10-02.json",
+      "data/symbol_directory/receipts/snapshots/2026-10-03.json",
+      "data/symbol_directory/receipts/snapshots/2026-10-05.json",
+      "data/symbol_directory/receipts/snapshots/2026-10-06.json",
+      "data/symbol_directory/receipts/snapshots/2026-10-07.json",
+      "data/symbol_directory/receipts/snapshots/2026-10-08.json",
+      "data/symbol_directory/receipts/snapshots/2026-10-09.json",
+      "data/symbol_directory/snapshots/2026-07-13.parquet",
+      "data/symbol_directory/snapshots/2026-07-14.parquet",
+      "data/symbol_directory/snapshots/2026-07-16.parquet",
+      "data/symbol_directory/snapshots/2026-07-18.parquet",
+      "data/symbol_directory/snapshots/2026-07-19.parquet",
+      "data/symbol_directory/snapshots/2026-07-20.parquet",
+      "data/symbol_directory/snapshots/2026-07-21.parquet",
+      "data/symbol_directory/snapshots/2026-07-22.parquet",
+      "data/symbol_directory/snapshots/2026-07-23.parquet",
+      "data/symbol_directory/snapshots/2026-07-24.parquet",
+      "data/symbol_directory/snapshots/2026-07-25.parquet",
+      "data/symbol_directory/snapshots/2026-07-26.parquet",
+      "data/symbol_directory/snapshots/2026-07-27.parquet",
+      "data/symbol_directory/snapshots/2026-07-28.parquet",
+      "data/symbol_directory/snapshots/2026-07-29.parquet",
+      "data/symbol_directory/snapshots/2026-07-30.parquet",
+      "data/symbol_directory/snapshots/2026-07-31.parquet",
+      "data/symbol_directory/snapshots/2026-08-01.parquet",
+      "data/symbol_directory/snapshots/2026-08-02.parquet",
+      "data/symbol_directory/snapshots/2026-08-06.parquet",
+      "data/symbol_directory/snapshots/2026-08-07.parquet",
+      "data/symbol_directory/snapshots/2026-08-08.parquet",
+      "data/symbol_directory/snapshots/2026-08-09.parquet",
+      "data/symbol_directory/snapshots/2026-08-10.parquet",
+      "data/symbol_directory/snapshots/2026-08-19.parquet",
+      "data/symbol_directory/snapshots/2026-08-20.parquet",
+      "data/symbol_directory/snapshots/2026-08-21.parquet",
+      "data/symbol_directory/snapshots/2026-08-22.parquet",
+      "data/symbol_directory/snapshots/2026-08-23.parquet",
+      "data/symbol_directory/snapshots/2026-08-25.parquet",
+      "data/symbol_directory/snapshots/2026-08-27.parquet",
+      "data/symbol_directory/snapshots/2026-08-28.parquet",
+      "data/symbol_directory/snapshots/2026-08-29.parquet",
+      "data/symbol_directory/snapshots/2026-08-30.parquet",
+      "data/symbol_directory/snapshots/2026-08-31.parquet",
+      "data/symbol_directory/snapshots/2026-09-01.parquet",
+      "data/symbol_directory/snapshots/2026-09-03.parquet",
+      "data/symbol_directory/snapshots/2026-09-04.parquet",
+      "data/symbol_directory/snapshots/2026-09-05.parquet",
+      "data/symbol_directory/snapshots/2026-09-06.parquet",
+      "data/symbol_directory/snapshots/2026-09-07.parquet",
+      "data/symbol_directory/snapshots/2026-09-08.parquet",
+      "data/symbol_directory/snapshots/2026-09-09.parquet",
+      "data/symbol_directory/snapshots/2026-09-10.parquet",
+      "data/symbol_directory/snapshots/2026-09-11.parquet",
+      "data/symbol_directory/snapshots/2026-09-12.parquet",
+      "data/symbol_directory/snapshots/2026-09-13.parquet",
+      "data/symbol_directory/snapshots/2026-09-14.parquet",
+      "data/symbol_directory/snapshots/2026-09-15.parquet",
+      "data/symbol_directory/snapshots/2026-09-16.parquet",
+      "data/symbol_directory/snapshots/2026-09-17.parquet",
+      "data/symbol_directory/snapshots/2026-09-18.parquet",
+      "data/symbol_directory/snapshots/2026-09-19.parquet",
+      "data/symbol_directory/snapshots/2026-09-21.parquet",
+      "data/symbol_directory/snapshots/2026-09-22.parquet",
+      "data/symbol_directory/snapshots/2026-09-23.parquet",
+      "data/symbol_directory/snapshots/2026-09-24.parquet",
+      "data/symbol_directory/snapshots/2026-09-25.parquet",
+      "data/symbol_directory/snapshots/2026-09-26.parquet",
+      "data/symbol_directory/snapshots/2026-09-27.parquet",
+      "data/symbol_directory/snapshots/2026-09-28.parquet",
+      "data/symbol_directory/snapshots/2026-10-01.parquet",
+      "data/symbol_directory/snapshots/2026-10-02.parquet",
+      "data/symbol_directory/snapshots/2026-10-03.parquet",
+      "data/symbol_directory/snapshots/2026-10-05.parquet",
+      "data/symbol_directory/snapshots/2026-10-06.parquet",
+      "data/symbol_directory/snapshots/2026-10-07.parquet",
+      "data/symbol_directory/snapshots/2026-10-08.parquet",
+      "data/symbol_directory/snapshots/2026-10-09.parquet",
+      "data/ticker_alerts/ladder_log.parquet",
+      "data/universe/membership.parquet"
+    ],
+    "release": "25.5.0",
+    "requested_workspace": "/Volumes/Mastermind/agent-workspaces/macro/web/gmi-economic-observations-20261009-pro-003",
+    "system": "Darwin",
+    "toplevel": "/Volumes/Mastermind/agent-workspaces/macro/web/gmi-economic-observations-20261009-pro-003",
+    "tracked_data_config_file_count": 72062
+  },
+  "profiled_files": [
+    {
+      "path": "data/reference/security_master.parquet",
+      "bytes": 79534,
+      "sha256": "23b92f9cdd672425bceeece8709185fdfcc8014967408be50874d5e106fce22e",
+      "rows": 2384,
+      "columns": [
+        {
+          "name": "security_id",
+          "type": "string"
+        },
+        {
+          "name": "issuer_id",
+          "type": "string"
+        },
+        {
+          "name": "issuer_state",
+          "type": "string"
+        },
+        {
+          "name": "issuer_cik",
+          "type": "string"
+        },
+        {
+          "name": "issuer_evidence_snapshot",
+          "type": "date32[day]"
+        },
+        {
+          "name": "listing_key",
+          "type": "string"
+        },
+        {
+          "name": "country",
+          "type": "string"
+        },
+        {
+          "name": "mic",
+          "type": "string"
+        },
+        {
+          "name": "inception_code",
+          "type": "string"
+        },
+        {
+          "name": "effective_at",
+          "type": "timestamp[us]"
+        },
+        {
+          "name": "ingested_at",
+          "type": "timestamp[us]"
+        },
+        {
+          "name": "security_state",
+          "type": "string"
+        },
+        {
+          "name": "superseded_by",
+          "type": "string"
+        }
+      ],
+      "worktree_is_regular_file": false,
+      "worktree_equal_fixed_ref": null
+    },
+    {
+      "path": "data/reference/issuer_master.parquet",
+      "bytes": 43844,
+      "sha256": "8d2d136a1ed8466f1a1c57ebbb14b438f27c9a0d4e1ea17214b4ef3e79877402",
+      "rows": 1215,
+      "columns": [
+        {
+          "name": "issuer_id",
+          "type": "string"
+        },
+        {
+          "name": "cik",
+          "type": "string"
+        },
+        {
+          "name": "legal_name",
+          "type": "string"
+        },
+        {
+          "name": "n_securities",
+          "type": "int64"
+        },
+        {
+          "name": "evidence_source",
+          "type": "string"
+        },
+        {
+          "name": "evidence_snapshot",
+          "type": "date32[day]"
+        },
+        {
+          "name": "status",
+          "type": "string"
+        },
+        {
+          "name": "era",
+          "type": "string"
+        }
+      ],
+      "worktree_is_regular_file": false,
+      "worktree_equal_fixed_ref": null
+    },
+    {
+      "path": "data/reference/vendor_aliases.parquet",
+      "bytes": 50724,
+      "sha256": "0bf122a6df17e54865c8d78e12aca592c8832c4de984972fae8658b6e696741f",
+      "rows": 6046,
+      "columns": [
+        {
+          "name": "vendor",
+          "type": "string"
+        },
+        {
+          "name": "vendor_symbol",
+          "type": "string"
+        },
+        {
+          "name": "security_id",
+          "type": "string"
+        },
+        {
+          "name": "valid_from",
+          "type": "date32[day]"
+        },
+        {
+          "name": "valid_to",
+          "type": "date32[day]"
+        },
+        {
+          "name": "ingested_at",
+          "type": "timestamp[us]"
+        },
+        {
+          "name": "known_at",
+          "type": "string"
+        },
+        {
+          "name": "evidence_sha256",
+          "type": "string"
+        },
+        {
+          "name": "binding_sha256",
+          "type": "string"
+        }
+      ],
+      "worktree_is_regular_file": false,
+      "worktree_equal_fixed_ref": null
+    },
+    {
+      "path": "data/universe/membership.parquet",
+      "bytes": 78385,
+      "sha256": "33da41e7a9831260c6e0f988c2ca43dd421c274ccd5cf357c47bb53ddc49c91b",
+      "rows": 3600,
+      "columns": [
+        {
+          "name": "ticker",
+          "type": "large_string"
+        },
+        {
+          "name": "group",
+          "type": "large_string"
+        },
+        {
+          "name": "name",
+          "type": "large_string"
+        },
+        {
+          "name": "sector",
+          "type": "large_string"
+        },
+        {
+          "name": "first_seen",
+          "type": "timestamp[us]"
+        },
+        {
+          "name": "last_seen",
+          "type": "timestamp[us]"
+        },
+        {
+          "name": "active",
+          "type": "bool"
+        }
+      ],
+      "worktree_is_regular_file": false,
+      "worktree_equal_fixed_ref": null
+    },
+    {
+      "path": "data/breadth/constituents.parquet",
+      "bytes": 12701,
+      "sha256": "ecdd7e77ac36198b45c4ff6b854e7a46281bd3504d82540853f29c09a1f64aaf",
+      "rows": 503,
+      "columns": [
+        {
+          "name": "name",
+          "type": "large_string"
+        },
+        {
+          "name": "sector",
+          "type": "large_string"
+        },
+        {
+          "name": "symbol",
+          "type": "large_string"
+        }
+      ],
+      "worktree_is_regular_file": false,
+      "worktree_equal_fixed_ref": null
+    },
+    {
+      "path": "data/breadth/ticker_sectors.parquet",
+      "bytes": 22077,
+      "sha256": "e63d2112e38f95bc49e7cc68c6095d1eca2b148898688a946bce40da2c77d6ad",
+      "rows": 1515,
+      "columns": [
+        {
+          "name": "ticker",
+          "type": "large_string"
+        },
+        {
+          "name": "sector",
+          "type": "large_string"
+        },
+        {
+          "name": "source",
+          "type": "large_string"
+        },
+        {
+          "name": "__index_level_0__",
+          "type": "int64"
+        }
+      ],
+      "worktree_is_regular_file": false,
+      "worktree_equal_fixed_ref": null
+    },
+    {
+      "path": "data/polygon_universe/reference.parquet",
+      "bytes": 11271,
+      "sha256": "b69738dd48d6b4cc8aa0c27cc69e08b69074596a903aafb79cc501ffb6e8edfc",
+      "rows": 509,
+      "columns": [
+        {
+          "name": "gics_sector",
+          "type": "large_string"
+        },
+        {
+          "name": "market_cap_usd",
+          "type": "double"
+        },
+        {
+          "name": "asof",
+          "type": "large_string"
+        },
+        {
+          "name": "ticker",
+          "type": "large_string"
+        }
+      ],
+      "worktree_is_regular_file": false,
+      "worktree_equal_fixed_ref": null
+    },
+    {
+      "path": "data/stock_identity/partition/universe_snapshot_v1.parquet",
+      "bytes": 117493,
+      "sha256": "9f22807e7cb6ba570f1963de945b7be77461a1788608754e25db6235f4fe3730",
+      "rows": 2781,
+      "columns": [
+        {
+          "name": "symbol",
+          "type": "large_string"
+        },
+        {
+          "name": "price_plane_id",
+          "type": "large_string"
+        },
+        {
+          "name": "first_date",
+          "type": "timestamp[ms]"
+        },
+        {
+          "name": "last_date",
+          "type": "timestamp[ms]"
+        },
+        {
+          "name": "n_rows",
+          "type": "int64"
+        },
+        {
+          "name": "has_open",
+          "type": "bool"
+        },
+        {
+          "name": "adv_252",
+          "type": "double"
+        },
+        {
+          "name": "realized_vol_252",
+          "type": "double"
+        },
+        {
+          "name": "hygiene_flags",
+          "type": "large_string"
+        },
+        {
+          "name": "first_print_sanity",
+          "type": "large_string"
+        },
+        {
+          "name": "first_print_note",
+          "type": "large_string"
+        },
+        {
+          "name": "compute_eligible",
+          "type": "bool"
+        },
+        {
+          "name": "blind_eligible",
+          "type": "bool"
+        },
+        {
+          "name": "tape_end_lag_sessions",
+          "type": "int64"
+        },
+        {
+          "name": "tape_ended",
+          "type": "bool"
+        },
+        {
+          "name": "terminated_reason",
+          "type": "large_string"
+        },
+        {
+          "name": "asof",
+          "type": "timestamp[ms]"
+        },
+        {
+          "name": "authority_can_rank",
+          "type": "bool"
+        },
+        {
+          "name": "authority_can_size",
+          "type": "bool"
+        },
+        {
+          "name": "authority_can_gate",
+          "type": "bool"
+        },
+        {
+          "name": "authority_can_originate_signal",
+          "type": "bool"
+        },
+        {
+          "name": "authority_can_escalate",
+          "type": "bool"
+        }
+      ],
+      "worktree_is_regular_file": false,
+      "worktree_equal_fixed_ref": null
+    },
+    {
+      "path": "data/symbol_directory/snapshots/2026-10-09.parquet",
+      "bytes": 364484,
+      "sha256": "a96d477d51c73b86b7fe58e131fc1022b6cf921d89e974872d6b433c54b1cc0f",
+      "rows": 13293,
+      "columns": [
+        {
+          "name": "date",
+          "type": "large_string"
+        },
+        {
+          "name": "symbol",
+          "type": "large_string"
+        },
+        {
+          "name": "security_name",
+          "type": "large_string"
+        },
+        {
+          "name": "exchange",
+          "type": "large_string"
+        },
+        {
+          "name": "etf",
+          "type": "bool"
+        },
+        {
+          "name": "test_issue",
+          "type": "bool"
+        },
+        {
+          "name": "is_preferred",
+          "type": "bool"
+        },
+        {
+          "name": "source",
+          "type": "large_string"
+        }
+      ],
+      "worktree_is_regular_file": false,
+      "worktree_equal_fixed_ref": null
+    },
+    {
+      "path": "data/symbol_directory/cik_map/2026-10-05.parquet",
+      "bytes": 278660,
+      "sha256": "5b817069fbee57a6616095e58b3b2ba759f55eb3f1cbf866fc62e0f0f55230b9",
+      "rows": 10440,
+      "columns": [
+        {
+          "name": "ticker",
+          "type": "large_string"
+        },
+        {
+          "name": "cik",
+          "type": "int64"
+        },
+        {
+          "name": "title",
+          "type": "large_string"
+        }
+      ],
+      "worktree_is_regular_file": false,
+      "worktree_equal_fixed_ref": null
+    },
+    {
+      "path": "data/hk_stocks_ext/_universe.json",
+      "bytes": 8882,
+      "sha256": "d48a0546784a190e993e72bef0c2d968f74aae59f784936fa4000036d4149f28",
+      "rows": null,
+      "columns": null,
+      "worktree_is_regular_file": false,
+      "worktree_equal_fixed_ref": null
+    },
+    {
+      "path": "data/baskets/membership.json",
+      "bytes": 305944,
+      "sha256": "b968e9812f60494bd02bbc0d5ad4b8dc67dcb90a939426728e9db6befba9678a",
+      "rows": null,
+      "columns": null,
+      "worktree_is_regular_file": false,
+      "worktree_equal_fixed_ref": null
+    },
+    {
+      "path": "config/market_reference.yml",
+      "bytes": 102638,
+      "sha256": "f5b752334b571f1f3577bef677db4c6752cd134a2b415989f8122eec739aa666",
+      "rows": null,
+      "columns": null,
+      "worktree_is_regular_file": true,
+      "worktree_equal_fixed_ref": true
+    },
+    {
+      "path": "config/rotation_universe.json",
+      "bytes": 3136,
+      "sha256": "2edd612f96b126c709ae29d9a481d9ea77944ac2aec5a513a806beae9dc5e795",
+      "rows": null,
+      "columns": null,
+      "worktree_is_regular_file": true,
+      "worktree_equal_fixed_ref": true
+    },
+    {
+      "path": "data/symbol_directory/receipts/snapshots/2026-10-09.json",
+      "bytes": 3568,
+      "sha256": "a1304d3c5406cdadc65b6d01c381a6e69471c012256b8573121d91f0ff7b52c8",
+      "rows": null,
+      "columns": null,
+      "worktree_is_regular_file": false,
+      "worktree_equal_fixed_ref": null
+    },
+    {
+      "path": "data/symbol_directory/receipts/cik_map/2026-10-05.json",
+      "bytes": 2422,
+      "sha256": "7d7e0f0482d8540045b1bd1386e23157885ea1793139208305a421ddfc7cf740",
+      "rows": null,
+      "columns": null,
+      "worktree_is_regular_file": false,
+      "worktree_equal_fixed_ref": null
+    },
+    {
+      "path": "data/canada_breadth/constituents.parquet",
+      "bytes": 3653,
+      "sha256": "21b3bf0639ab6cba37fcbd5ac3075656456d1459013f3603e351034f818d9d5a",
+      "rows": 74,
+      "columns": [
+        {
+          "name": "name",
+          "type": "large_string"
+        },
+        {
+          "name": "sector",
+          "type": "large_string"
+        },
+        {
+          "name": "symbol",
+          "type": "large_string"
+        }
+      ],
+      "worktree_is_regular_file": false,
+      "worktree_equal_fixed_ref": null
+    },
+    {
+      "path": "data/china_sectors/membership.parquet",
+      "bytes": 43861,
+      "sha256": "f749e669b8cb7c844e7f28923e8d792a6e7ddd3542984d1dce9cca0a449bcb19",
+      "rows": 5223,
+      "columns": [
+        {
+          "name": "collected_at",
+          "type": "large_string"
+        },
+        {
+          "name": "end_date",
+          "type": "string"
+        },
+        {
+          "name": "l1_code",
+          "type": "large_string"
+        },
+        {
+          "name": "l1_name",
+          "type": "large_string"
+        },
+        {
+          "name": "start_date",
+          "type": "large_string"
+        },
+        {
+          "name": "ticker",
+          "type": "large_string"
+        }
+      ],
+      "worktree_is_regular_file": false,
+      "worktree_equal_fixed_ref": null
+    },
+    {
+      "path": "data/canada_search/members.parquet",
+      "bytes": 10874,
+      "sha256": "ffa08819a6fa3bc64f62eedf9eb26f3091f3d0cf9fb0d00e4b4051fb75825878",
+      "rows": 216,
+      "columns": [
+        {
+          "name": "name",
+          "type": "large_string"
+        },
+        {
+          "name": "sector",
+          "type": "large_string"
+        },
+        {
+          "name": "ticker",
+          "type": "large_string"
+        },
+        {
+          "name": "volume",
+          "type": "double"
+        },
+        {
+          "name": "weight",
+          "type": "double"
+        }
+      ],
+      "worktree_is_regular_file": false,
+      "worktree_equal_fixed_ref": null
+    }
+  ],
+  "source_contract_manifest": "source_contract_bindings.json",
+  "accepted_research": [
+    {
+      "path": "research/theme_graph/economic_network_20261008/IMPLEMENTATION_MASTERPLAN.md",
+      "git_blob_sha1": "3a6eed6807a44c974942c3c0ec95564fb3e1de6b",
+      "sha256": "0eaf9b170eb3339900103029fae98e05536fa34c0128aad21139c29111ad5b60",
+      "bytes": 24292,
+      "scope": "WP02 lines79-93"
+    },
+    {
+      "path": "research/theme_graph/economic_network_20261008/SOURCING_AND_COMPETITIVE_DILIGENCE.md",
+      "git_blob_sha1": "da08c0b60a232a5c1b54e318f833de326894967a",
+      "sha256": "34589bbc2b657627893e9837345ebb50a2f1a8e013dcb974f103930660078e72",
+      "bytes": 50431,
+      "scope": "Section6 lines130-158"
+    }
+  ],
+  "limits": [
+    "Git object bytes are not claimed to be materialized runtime datasets.",
+    "No financial source-body capture, product import, provider job, registry edit, source/ref/index write or new replay.",
+    "Web renderings are discovery/documentation evidence only; no raw-source digest assigned."
+  ]
+}

@@ -21,11 +21,17 @@ from pathlib import Path, PurePosixPath
 from typing import Any
 
 EXPECTED_PAYLOAD_COUNT = 58
-EXPECTED_MANIFEST_SHA256 = (
+EXPECTED_IMPORT_PACKET_SHA256 = (
+    "2019c38650493e4cfa40f7ed87c175a91ea939ca57d1f404ec73c5572c340e7a"
+)
+EXPECTED_RECOVERY_MANIFEST_SHA256 = (
     "6209be070fbdfe8b8269bb62c0b6f466dac9b425ba1e9244b9b1bf7d983ba602"
 )
+EXPECTED_IMPORT_COMMIT = "31981dc426f2e7fbb2b333f0fd73789f21deb8cd"
 MANIFEST_NAME = "SHA256SUMS"
+RECOVERY_MANIFEST_NAME = "RECOVERY_SHA256SUMS"
 IMPORT_RECEIPT_NAME = "IMPORT_RECEIPT.json"
+RELEASE_RECEIPT_NAME = "RELEASE_RECEIPT.json"
 ROLLBACK_RECEIPT = "ROLLBACK_RECEIPT.json"
 APPROVED_RUNTIME_PAYLOADS = frozenset(
     {
@@ -99,6 +105,13 @@ def _parse_manifest(source_root: Path) -> dict[str, str]:
 
 
 def verify_source(source_root: Path = DEFAULT_SOURCE_ROOT) -> dict[str, Any]:
+    """Verify current release bytes while preserving immutable recovery provenance.
+
+    IMPORT_RECEIPT.json remains historical truth: at import time its packet
+    manifest was named SHA256SUMS. RECOVERY_SHA256SUMS is a later byte-identical
+    preservation copy. Current source evolution is authorized by Git review plus
+    RELEASE_RECEIPT.json and the current SHA256SUMS; the recovery anchor never moves.
+    """
     source_root = Path(source_root).resolve()
     entries = _parse_manifest(source_root)
     payload_paths = [
@@ -128,40 +141,80 @@ def verify_source(source_root: Path = DEFAULT_SOURCE_ROOT) -> dict[str, Any]:
 
     unexpected = sorted(actual_files - set(entries))
     receipt_error: str | None = None
-    receipt_manifest_sha256: str | None = None
+    release_manifest_sha256: str | None = None
+    recovery_manifest_sha256: str | None = None
     manifest_sha256 = _sha256(source_root / MANIFEST_NAME)
+
     try:
-        receipt_path = source_root / IMPORT_RECEIPT_NAME
-        if receipt_path.is_symlink() or not receipt_path.is_file():
-            raise ValueError(f"missing regular import receipt: {receipt_path}")
-        receipt = json.loads(receipt_path.read_text())
-        if receipt.get("schema") != "mastermind.marketdesk_extractor.import.v1":
-            raise ValueError(f"unsupported import receipt: {receipt.get('schema')!r}")
-        packet = receipt.get("source_packet")
+        import_path = source_root / IMPORT_RECEIPT_NAME
+        release_path = source_root / RELEASE_RECEIPT_NAME
+        recovery_path = source_root / RECOVERY_MANIFEST_NAME
+        for candidate, label in (
+            (import_path, "import receipt"),
+            (release_path, "release receipt"),
+            (recovery_path, "recovery manifest"),
+        ):
+            if candidate.is_symlink() or not candidate.is_file():
+                raise ValueError(f"missing regular {label}: {candidate}")
+
+        import_receipt = json.loads(import_path.read_text())
+        if import_receipt.get("schema") != "mastermind.marketdesk_extractor.import.v1":
+            raise ValueError(
+                f"unsupported import receipt: {import_receipt.get('schema')!r}"
+            )
+        packet = import_receipt.get("source_packet")
         if not isinstance(packet, dict):
             raise ValueError("import receipt source_packet must be an object")
+        if packet.get("filename") != "research-vault-recovery-source-20260914-v3.tar.gz":
+            raise ValueError("import receipt names a different recovery packet")
+        if packet.get("sha256") != EXPECTED_IMPORT_PACKET_SHA256:
+            raise ValueError("import receipt recovery packet hash changed")
         if packet.get("manifest") != MANIFEST_NAME:
-            raise ValueError("import receipt names a different source manifest")
+            raise ValueError(
+                "historical import receipt must retain original SHA256SUMS name"
+            )
         if packet.get("payload_count") != EXPECTED_PAYLOAD_COUNT:
-            raise ValueError("import receipt payload count does not match the frozen packet")
-        candidate_hash = packet.get("manifest_sha256")
+            raise ValueError("import receipt payload count changed")
+        if packet.get("manifest_sha256") != EXPECTED_RECOVERY_MANIFEST_SHA256:
+            raise ValueError("import receipt recovery manifest hash changed")
+
+        recovery_manifest_sha256 = _sha256(recovery_path)
+        if recovery_manifest_sha256 != EXPECTED_RECOVERY_MANIFEST_SHA256:
+            raise ValueError("immutable recovery manifest hash changed")
+
+        release_receipt = json.loads(release_path.read_text())
+        if release_receipt.get("schema") != "mastermind.marketdesk_extractor.release.v1":
+            raise ValueError(
+                f"unsupported release receipt: {release_receipt.get('schema')!r}"
+            )
+        if release_receipt.get("base_import_commit") != EXPECTED_IMPORT_COMMIT:
+            raise ValueError("release receipt does not pin accepted import commit")
+        if release_receipt.get("manifest") != MANIFEST_NAME:
+            raise ValueError("release receipt names a different current manifest")
+        if release_receipt.get("payload_count") != EXPECTED_PAYLOAD_COUNT:
+            raise ValueError("release receipt payload count is invalid")
+        if release_receipt.get("recovery_manifest") != RECOVERY_MANIFEST_NAME:
+            raise ValueError("release receipt names a different recovery manifest")
         if (
-            not isinstance(candidate_hash, str)
-            or len(candidate_hash) != 64
-            or any(character not in "0123456789abcdef" for character in candidate_hash)
+            release_receipt.get("recovery_manifest_sha256")
+            != EXPECTED_RECOVERY_MANIFEST_SHA256
         ):
-            raise ValueError("import receipt manifest hash is invalid")
-        receipt_manifest_sha256 = candidate_hash
-        if manifest_sha256 != EXPECTED_MANIFEST_SHA256:
-            raise ValueError("source manifest does not match the frozen manifest hash")
-        if receipt_manifest_sha256 != EXPECTED_MANIFEST_SHA256:
-            raise ValueError("import receipt does not match the frozen manifest hash")
-        if manifest_sha256 != receipt_manifest_sha256:
-            raise ValueError("source manifest does not match the frozen import receipt")
+            raise ValueError("release receipt recovery anchor changed")
+        if release_receipt.get("creates_new_execution_plane") is not False:
+            raise ValueError("release receipt may not create a new execution plane")
+        release_manifest_sha256 = release_receipt.get("manifest_sha256")
+        if (
+            not isinstance(release_manifest_sha256, str)
+            or len(release_manifest_sha256) != 64
+            or any(ch not in "0123456789abcdef" for ch in release_manifest_sha256)
+        ):
+            raise ValueError("release receipt current manifest hash is invalid")
+        if manifest_sha256 != release_manifest_sha256:
+            raise ValueError("current manifest does not match release receipt")
     except (OSError, ValueError, TypeError, json.JSONDecodeError) as exc:
         receipt_error = str(exc)
 
-    result = {
+    return {
         "ok": not missing
         and not mismatched
         and not unexpected
@@ -171,14 +224,14 @@ def verify_source(source_root: Path = DEFAULT_SOURCE_ROOT) -> dict[str, Any]:
         "source_root": str(source_root),
         "payload_count": len(entries),
         "manifest_sha256": manifest_sha256,
-        "receipt_manifest_sha256": receipt_manifest_sha256,
+        "receipt_manifest_sha256": release_manifest_sha256,
+        "recovery_manifest_sha256": recovery_manifest_sha256,
         "receipt_error": receipt_error,
         "missing": sorted(missing),
         "mismatched": sorted(mismatched),
         "unexpected": unexpected,
         "symlinks": symlinks,
     }
-    return result
 
 
 def _destination_mappings(

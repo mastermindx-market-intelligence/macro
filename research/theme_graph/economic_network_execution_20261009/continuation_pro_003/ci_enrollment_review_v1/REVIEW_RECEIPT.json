@@ -1,0 +1,73 @@
+{
+  "schema": "gmi.ci_enrollment_independent_review/v1",
+  "reviewer": "/root/pure_reader_builder",
+  "verdict": "PASS_BOUNDED_SOURCE_COMPOSITION_REVIEW",
+  "native_manifest_sha256": "3c23ea9dcc9094a10a3e5874b8281998f203227f522752d00f578820c5b9e581",
+  "accepted_manifest_sha256": "8754604c46e236023fab35aa6914196bc2462d9308772d406efed96c58dce7b2",
+  "owner": "company-relationship-candidates",
+  "paths_before": 69,
+  "paths_after": 71,
+  "added_paths": [
+    "engine/company_intelligence/relationship_observations.py",
+    "tests/test_company_relationship_observations.py"
+  ],
+  "removed_paths": [],
+  "new_jobs": [],
+  "new_broad_patterns": [],
+  "enrolled_suite": "tests/test_company_relationship_observations.py",
+  "other_changes": [
+    "Owner comment",
+    "Test-step display name"
+  ],
+  "full_inverse_assertion": "Passed before later reviewer-only import-resolver failure in PID 52181; failed checker is not a complete exit-zero PASS",
+  "non_owner_jobs": "Parsed equality asserted before that later failure; full inverse binds all non-owner bytes, including accepted QLedger",
+  "direct_first_party_import_paths": "All enrolled, including package initializers, TYPE_CHECKING and embedded child imports",
+  "transitive_closure": "Native incumbent gate pending; not substituted by static resolver",
+  "recommended_tests": [
+    "tests/test_ci_pack.py::test_every_declared_scope_in_the_real_manifest_is_covered",
+    "tests/test_ci_pack.py::test_the_curated_exclusive_set_is_actually_declared",
+    "tests/test_ci_pack.py::test_curated_exclusive_scopes_cover_their_own_import_closure",
+    "tests/test_ci_pack.py::test_plan_is_deterministic",
+    "tests/test_ci_pack.py::test_exclusive_curation_narrows_ordinary_code_prs"
+  ],
+  "reviewer_execution": {
+    "native_read_pid_49667_exit": 0,
+    "native_partial_inverse_pid_52181_exit": 1,
+    "corrected_process_attempt": "RDC_COMMAND_NOT_ALLOWED_NO_PID",
+    "native_ci_tests": "NOT_RUN",
+    "application_tests": "NOT_RUN",
+    "source_writes": "NOT_RUN",
+    "git": "NOT_RUN",
+    "store": "NOT_RUN",
+    "source_capture": "NOT_RUN",
+    "root_application_pid_46814": "UNTOUCHED"
+  },
+  "files": [
+    {
+      "path": "REVIEW.md",
+      "bytes": 11126,
+      "sha256": "568a300ff52267a4abb18a77a43100f8ee683caf3cdaca9a63091611ac30e399"
+    },
+    {
+      "path": "NATIVE_READ_EVIDENCE.json",
+      "bytes": 13914,
+      "sha256": "118776ac649f4f014578f0dd7b7e5acf585ba7ac23266db4ccd703b25c412fd3"
+    },
+    {
+      "path": "STATIC_IMPORT_ENROLLMENT.json",
+      "bytes": 4296,
+      "sha256": "088052c0ccf8ebc515c812503fbf43e665f2fdecd840eeda36975695018ebbdd"
+    },
+    {
+      "path": "OWNER_DELTA.diff",
+      "bytes": 1940,
+      "sha256": "8a132e9290a029d9af82d35561583484f5e65499e7f567e030e9d47d402d644e"
+    },
+    {
+      "path": "INVERSE_CHECK_ATTEMPT.txt",
+      "bytes": 4451,
+      "sha256": "1f6b325218b436b228321abdd66f29cfd6088b01f9ef33cc236fc128c22e286e"
+    }
+  ],
+  "next": "Root executes bounded native CI gate; reviewer available for separately frozen real native harness review"
+}

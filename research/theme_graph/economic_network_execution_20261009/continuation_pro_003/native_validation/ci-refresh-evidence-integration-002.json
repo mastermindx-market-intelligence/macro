@@ -1,0 +1,98 @@
+{
+  "all_90_archive_members_verified": true,
+  "archive_sha256": "9723b71acf3d44f6918ddb8c1d319e49bcc760c048106ec3277d09c94a7a7805",
+  "complete_historical_proof": {
+    "candidate": "42174563149254d2399e23e101baafd8b06f9b1e",
+    "disposition": "SUCCESSFUL_EXACT_SOURCE_HISTORICAL_PROOF",
+    "run_id": 37932039980,
+    "tested_commit": "04b70807e6b0a7d48091997eb405f9cc53ade9ad"
+  },
+  "copied_source_receipts": [
+    {
+      "cache_name": "pro003-release-readiness-001.json",
+      "repository_name": "release-readiness-001.json",
+      "sha256": "783c20a0c1ceeae82804b1b7e13722e09419b263a776135adf082ef21c19c9fc"
+    },
+    {
+      "cache_name": "pro003-final-release-gate-001.json",
+      "repository_name": "current-main-freshness-refusal-001.json",
+      "sha256": "02b5a80f5dc5a94e27a8f2838ca34e9479f0fb880a873cde538b8bb61228fed2"
+    },
+    {
+      "cache_name": "pro003-current-main-refresh-preflight-001.json",
+      "repository_name": "current-main-refresh-preflight-001.json",
+      "sha256": "7f444d65183974f4c130c8cc939036a53952319b8452243d6e780bb375473b9b"
+    },
+    {
+      "cache_name": "pro003-current-main-refresh-merge-001.json",
+      "repository_name": "current-main-refresh-merge-001.json",
+      "sha256": "82b74b0a66a0f88315fa6629981931d8a578aebbbefe1e07c4d8eb581db425e3"
+    }
+  ],
+  "finished_at": "2026-10-09T13:38:31.149822+00:00",
+  "git_commit_performed": false,
+  "git_push_performed": false,
+  "native_owner_inputs_preserved": 71,
+  "new_files": [
+    {
+      "byte_length": 6382,
+      "path": "research/theme_graph/economic_network_execution_20261009/continuation_pro_003/CI_REFRESH_ADJUDICATION_002.md",
+      "sha256": "962f8f8340a65d18a80a6e1a5d5ae024bffcdf414d9a4276265b2904acc24684"
+    },
+    {
+      "byte_length": 16627,
+      "path": "research/theme_graph/economic_network_execution_20261009/continuation_pro_003/native_validation/current-main-freshness-refusal-001.json",
+      "sha256": "02b5a80f5dc5a94e27a8f2838ca34e9479f0fb880a873cde538b8bb61228fed2"
+    },
+    {
+      "byte_length": 1141,
+      "path": "research/theme_graph/economic_network_execution_20261009/continuation_pro_003/native_validation/current-main-refresh-merge-001.json",
+      "sha256": "82b74b0a66a0f88315fa6629981931d8a578aebbbefe1e07c4d8eb581db425e3"
+    },
+    {
+      "byte_length": 39507,
+      "path": "research/theme_graph/economic_network_execution_20261009/continuation_pro_003/native_validation/current-main-refresh-preflight-001.json",
+      "sha256": "7f444d65183974f4c130c8cc939036a53952319b8452243d6e780bb375473b9b"
+    },
+    {
+      "byte_length": 33351,
+      "path": "research/theme_graph/economic_network_execution_20261009/continuation_pro_003/native_validation/release-readiness-001.json",
+      "sha256": "783c20a0c1ceeae82804b1b7e13722e09419b263a776135adf082ef21c19c9fc"
+    },
+    {
+      "byte_length": 27011,
+      "path": "research/theme_graph/economic_network_execution_20261009/continuation_pro_003/pr8711_corrected_ci_evidence_v1/ARCHIVE_MANIFEST.json",
+      "sha256": "48561925c0d7d08cd829db8407380ee83f5fb5060447970c5bedcd3a1331143b"
+    },
+    {
+      "byte_length": 4692,
+      "path": "research/theme_graph/economic_network_execution_20261009/continuation_pro_003/pr8711_corrected_ci_evidence_v1/ARCHIVE_README.md",
+      "sha256": "9fce779e5cc6245b92671ce9eced5c0f4be0ffd25ac1088cf96376c0f0e0c0c4"
+    },
+    {
+      "byte_length": 4276,
+      "path": "research/theme_graph/economic_network_execution_20261009/continuation_pro_003/pr8711_corrected_ci_evidence_v1/ARCHIVE_VERIFICATION.json",
+      "sha256": "d47db7b19161660cda56688d225549b97d3241b6e7e5565ca75988b029bdd887"
+    },
+    {
+      "byte_length": 19264,
+      "path": "research/theme_graph/economic_network_execution_20261009/continuation_pro_003/pr8711_corrected_ci_evidence_v1/OBSERVATION_REPORT.md",
+      "sha256": "8e352b65b442cd92041ed323bd243539c7148db517136887b5cad92a5efb1367"
+    },
+    {
+      "byte_length": 3809105,
+      "path": "research/theme_graph/economic_network_execution_20261009/continuation_pro_003/pr8711_corrected_ci_evidence_v1/PR8711_CORRECTED_CANDIDATE_CI_EVIDENCE.tar.gz",
+      "sha256": "9723b71acf3d44f6918ddb8c1d319e49bcc760c048106ec3277d09c94a7a7805"
+    }
+  ],
+  "no_source_or_ci_policy_edits_by_evidence_application": true,
+  "prior_research_files_preserved_except_updated_index": 106,
+  "protected_master": "8c3bc581e747c8b7c066ff0adec3b54573231baf",
+  "readme_after_sha256": "4a632d624073fb8dd02a04820278328544f78906eead32be8afd1eda4b258ce0",
+  "readme_before_sha256": "13b5ea0dac01f56d2870f00be2ad133a86665c3b869ac8abc6e329813009e1a6",
+  "schema": "economic_network.ci_refresh_evidence_integration/v1",
+  "small_transfer_sha256": "9514b4cee7c227fa2110dc943ef221b988d1fb928a7df39aee96810c38190b95",
+  "source_head": "1a1f4a2db62afd5d943a86a391e104f9dad560a1",
+  "started_at": "2026-10-09T13:38:27.634475+00:00",
+  "updated_candidate_proof": "PENDING_NEW_NORMAL_CI"
+}

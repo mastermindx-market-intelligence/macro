@@ -1,0 +1,172 @@
+{
+  "schema": "mastermind.press.release_acceptance.v1",
+  "observed_at": "2026-10-12T23:52:42.627275+00:00",
+  "pr": 8786,
+  "candidate": "eafd88c788adb69052017352f478b8f8841cdfbd",
+  "ci_run": 38317681840,
+  "protected_merge": "4aabf95fd05079bd14b07bbbe554186531d65ddf",
+  "controller_run": 38320992479,
+  "installed_head": "490432d59ff6606e5f90bcc5a87e5a124eb55c6f",
+  "installed_acceptance": true,
+  "ancestry": "Nine verified canonical raw commit objects, bound to exact stable installed HEAD; production shallow checkout preserved. Direct merge-base false retained.",
+  "source_hashes_matched": 21,
+  "site_pages_matched": 3,
+  "served_pages_matched": 3,
+  "http_pages_byte_identical": 3,
+  "runtime_staging": {
+    "total": 0,
+    "publication_approved": false,
+    "cutover": false,
+    "input_unchanged": true
+  },
+  "functional_browser_accepted": true,
+  "browser_scope": "Existing shared-navigation Glossary and Morning Edition routes on Blog, Learn and nested Position Size Calculator; 1440 and 390 widths, six EN observations without horizontal overflow. Followed Blog to Glossary and Morning Edition, and nested calculator to Glossary. Initial ZH desktop Blog menu and destination rendering observed before signed-in profile settled to EN.",
+  "calculator_example": {
+    "account": 10000,
+    "risk_pct": 1,
+    "entry": 50,
+    "stop": 48,
+    "shares": 50,
+    "dollar_risk": 100,
+    "position_value": 2500
+  },
+  "browser_observations": [
+    {
+      "h1": "Notes from the desk\u6765\u81ea\u5de5\u4f5c\u53f0\u7684\u7b14\u8bb0",
+      "lang": "en",
+      "links": [
+        {
+          "href": "https://www.mastermind-x.com/glossary.html",
+          "text": "G\nGlossary\nEvery reading on the dashboards, in plain words.",
+          "visible": true
+        },
+        {
+          "href": "https://www.mastermind-x.com/am_edition.html",
+          "text": "M\nMorning Edition\nBefore the US open \u2014 tape, clock, regime and calendar.",
+          "visible": true
+        }
+      ],
+      "overflow": false,
+      "title": "Blog \u2014 MastermindX",
+      "url": "https://www.mastermind-x.com/blog/index.html",
+      "width": 1440
+    },
+    {
+      "h1": "Notes from the desk\u6765\u81ea\u5de5\u4f5c\u53f0\u7684\u7b14\u8bb0",
+      "lang": "en",
+      "links": [
+        {
+          "href": "https://www.mastermind-x.com/glossary.html",
+          "text": "G\nGlossary\nEvery reading on the dashboards, in plain words.",
+          "visible": true
+        },
+        {
+          "href": "https://www.mastermind-x.com/am_edition.html",
+          "text": "M\nMorning Edition\nBefore the US open \u2014 tape, clock, regime and calendar.",
+          "visible": true
+        }
+      ],
+      "overflow": false,
+      "title": "Blog \u2014 MastermindX",
+      "url": "https://www.mastermind-x.com/blog/index.html",
+      "width": 390
+    },
+    {
+      "h1": "Plain-English lessons on the signals we track\u7528\u5927\u767d\u8bdd\u8bb2\u6e05\u6211\u4eec\u8ffd\u8e2a\u7684\u4fe1\u53f7",
+      "lang": "en",
+      "links": [
+        {
+          "href": "https://www.mastermind-x.com/glossary.html",
+          "text": "G\nGlossary\nEvery reading on the dashboards, in plain words.",
+          "visible": true
+        },
+        {
+          "href": "https://www.mastermind-x.com/am_edition.html",
+          "text": "M\nMorning Edition\nBefore the US open \u2014 tape, clock, regime and calendar.",
+          "visible": true
+        }
+      ],
+      "overflow": false,
+      "title": "Learning Center \u2014 MastermindX",
+      "url": "https://www.mastermind-x.com/learn/index.html",
+      "width": 390
+    },
+    {
+      "h1": "Plain-English lessons on the signals we track\u7528\u5927\u767d\u8bdd\u8bb2\u6e05\u6211\u4eec\u8ffd\u8e2a\u7684\u4fe1\u53f7",
+      "lang": "en",
+      "links": [
+        {
+          "href": "https://www.mastermind-x.com/glossary.html",
+          "text": "G\nGlossary\nEvery reading on the dashboards, in plain words.",
+          "visible": true
+        },
+        {
+          "href": "https://www.mastermind-x.com/am_edition.html",
+          "text": "M\nMorning Edition\nBefore the US open \u2014 tape, clock, regime and calendar.",
+          "visible": true
+        }
+      ],
+      "overflow": false,
+      "title": "Learning Center \u2014 MastermindX",
+      "url": "https://www.mastermind-x.com/learn/index.html",
+      "width": 1440
+    },
+    {
+      "h1": "Position Size Calculator",
+      "lang": "en",
+      "links": [
+        {
+          "href": "https://www.mastermind-x.com/glossary.html",
+          "text": "G\nGlossary\nEvery reading on the dashboards, in plain words.",
+          "visible": true
+        },
+        {
+          "href": "https://www.mastermind-x.com/am_edition.html",
+          "text": "M\nMorning Edition\nBefore the US open \u2014 tape, clock, regime and calendar.",
+          "visible": true
+        }
+      ],
+      "overflow": false,
+      "title": "Position Size Calculator \u2014 MastermindX",
+      "url": "https://www.mastermind-x.com/tools/calculators/position-size.html",
+      "width": 1440
+    },
+    {
+      "h1": "Position Size Calculator",
+      "lang": "en",
+      "links": [
+        {
+          "href": "https://www.mastermind-x.com/glossary.html",
+          "text": "G\nGlossary\nEvery reading on the dashboards, in plain words.",
+          "visible": true
+        },
+        {
+          "href": "https://www.mastermind-x.com/am_edition.html",
+          "text": "M\nMorning Edition\nBefore the US open \u2014 tape, clock, regime and calendar.",
+          "visible": true
+        }
+      ],
+      "overflow": false,
+      "title": "Position Size Calculator \u2014 MastermindX",
+      "url": "https://www.mastermind-x.com/tools/calculators/position-size.html",
+      "width": 390
+    }
+  ],
+  "browser_limitations": [
+    "Chinese selection in the signed-in settings closed the menu but retained EN; language-toggle persistence is not accepted by this receipt.",
+    "No new dark/light visual-design approval is claimed; this acceptance verifies navigation changes using the existing shared presentation.",
+    "Morning Edition destination reports stale market inputs; link acceptance does not certify current market coverage."
+  ],
+  "screenshots": {
+    "live-8786-calculator-desktop-en.jpg": "a66a96875c3c6fc713c0aab716ba4bc91508ca6b05f53a5fcac8efbbbba227aa",
+    "live-8786-blog-desktop-en.jpg": "0814ca7038cf97e3b6fb854cea2c2f74a15e26be011134581d397b9d3e9dfff6",
+    "live-8786-blog-mobile-en.jpg": "948841700e1d5788c78f53602186f34761c62e84886c7373bf2a215b8e789166",
+    "live-8786-calculator-mobile-en.jpg": "20b189ccdb7781c61a8ae3d0770bc8bdd6751a447d07701e8b9b5c232b359097",
+    "live-8786-learn-mobile-en.jpg": "381fccb03134a311e04ed1fd3d7fe4b061bd76d50db4edd345ac9c5f9a969de7"
+  },
+  "terminal_956_proof_reused": true,
+  "new_signup": false,
+  "new_follow_write": false,
+  "publication_approved": false,
+  "provider_effect_unknown_preserved": true
+}

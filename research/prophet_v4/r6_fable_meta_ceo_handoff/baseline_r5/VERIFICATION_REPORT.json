@@ -1,0 +1,1114 @@
+{
+  "check_count": 265,
+  "checks": [
+    {
+      "check": "All designated deliverables exist",
+      "result": "PASS"
+    },
+    {
+      "check": "All substantive JSON files parse without nonfinite numbers",
+      "result": "PASS"
+    },
+    {
+      "check": "Four exact inherited dossiers",
+      "result": "PASS"
+    },
+    {
+      "check": "R1 input digest",
+      "result": "PASS"
+    },
+    {
+      "check": "R1 word-count receipt",
+      "result": "PASS"
+    },
+    {
+      "check": "R2 input digest",
+      "result": "PASS"
+    },
+    {
+      "check": "R2 word-count receipt",
+      "result": "PASS"
+    },
+    {
+      "check": "R3 input digest",
+      "result": "PASS"
+    },
+    {
+      "check": "R3 word-count receipt",
+      "result": "PASS"
+    },
+    {
+      "check": "R4 input digest",
+      "result": "PASS"
+    },
+    {
+      "check": "R4 word-count receipt",
+      "result": "PASS"
+    },
+    {
+      "check": "24 unique research packets",
+      "result": "PASS"
+    },
+    {
+      "check": "29 unique build units",
+      "result": "PASS"
+    },
+    {
+      "check": "12 concrete owner decisions",
+      "result": "PASS"
+    },
+    {
+      "check": "36 traced product/research requirements",
+      "result": "PASS"
+    },
+    {
+      "check": "Source references unique",
+      "result": "PASS"
+    },
+    {
+      "check": "Q01 consumers and source refs",
+      "result": "PASS"
+    },
+    {
+      "check": "Q01 no study authority",
+      "result": "PASS"
+    },
+    {
+      "check": "Q01 decision and falsifier",
+      "result": "PASS"
+    },
+    {
+      "check": "Q02 consumers and source refs",
+      "result": "PASS"
+    },
+    {
+      "check": "Q02 no study authority",
+      "result": "PASS"
+    },
+    {
+      "check": "Q02 decision and falsifier",
+      "result": "PASS"
+    },
+    {
+      "check": "Q03 consumers and source refs",
+      "result": "PASS"
+    },
+    {
+      "check": "Q03 no study authority",
+      "result": "PASS"
+    },
+    {
+      "check": "Q03 decision and falsifier",
+      "result": "PASS"
+    },
+    {
+      "check": "Q04 consumers and source refs",
+      "result": "PASS"
+    },
+    {
+      "check": "Q04 no study authority",
+      "result": "PASS"
+    },
+    {
+      "check": "Q04 decision and falsifier",
+      "result": "PASS"
+    },
+    {
+      "check": "Q05 consumers and source refs",
+      "result": "PASS"
+    },
+    {
+      "check": "Q05 no study authority",
+      "result": "PASS"
+    },
+    {
+      "check": "Q05 decision and falsifier",
+      "result": "PASS"
+    },
+    {
+      "check": "Q06 consumers and source refs",
+      "result": "PASS"
+    },
+    {
+      "check": "Q06 no study authority",
+      "result": "PASS"
+    },
+    {
+      "check": "Q06 decision and falsifier",
+      "result": "PASS"
+    },
+    {
+      "check": "Q07 consumers and source refs",
+      "result": "PASS"
+    },
+    {
+      "check": "Q07 no study authority",
+      "result": "PASS"
+    },
+    {
+      "check": "Q07 decision and falsifier",
+      "result": "PASS"
+    },
+    {
+      "check": "Q08 consumers and source refs",
+      "result": "PASS"
+    },
+    {
+      "check": "Q08 no study authority",
+      "result": "PASS"
+    },
+    {
+      "check": "Q08 decision and falsifier",
+      "result": "PASS"
+    },
+    {
+      "check": "Q09 consumers and source refs",
+      "result": "PASS"
+    },
+    {
+      "check": "Q09 no study authority",
+      "result": "PASS"
+    },
+    {
+      "check": "Q09 decision and falsifier",
+      "result": "PASS"
+    },
+    {
+      "check": "Q10 consumers and source refs",
+      "result": "PASS"
+    },
+    {
+      "check": "Q10 no study authority",
+      "result": "PASS"
+    },
+    {
+      "check": "Q10 decision and falsifier",
+      "result": "PASS"
+    },
+    {
+      "check": "Q11 consumers and source refs",
+      "result": "PASS"
+    },
+    {
+      "check": "Q11 no study authority",
+      "result": "PASS"
+    },
+    {
+      "check": "Q11 decision and falsifier",
+      "result": "PASS"
+    },
+    {
+      "check": "Q12 consumers and source refs",
+      "result": "PASS"
+    },
+    {
+      "check": "Q12 no study authority",
+      "result": "PASS"
+    },
+    {
+      "check": "Q12 decision and falsifier",
+      "result": "PASS"
+    },
+    {
+      "check": "Q13 consumers and source refs",
+      "result": "PASS"
+    },
+    {
+      "check": "Q13 no study authority",
+      "result": "PASS"
+    },
+    {
+      "check": "Q13 decision and falsifier",
+      "result": "PASS"
+    },
+    {
+      "check": "Q14 consumers and source refs",
+      "result": "PASS"
+    },
+    {
+      "check": "Q14 no study authority",
+      "result": "PASS"
+    },
+    {
+      "check": "Q14 decision and falsifier",
+      "result": "PASS"
+    },
+    {
+      "check": "Q15 consumers and source refs",
+      "result": "PASS"
+    },
+    {
+      "check": "Q15 no study authority",
+      "result": "PASS"
+    },
+    {
+      "check": "Q15 decision and falsifier",
+      "result": "PASS"
+    },
+    {
+      "check": "Q16 consumers and source refs",
+      "result": "PASS"
+    },
+    {
+      "check": "Q16 no study authority",
+      "result": "PASS"
+    },
+    {
+      "check": "Q16 decision and falsifier",
+      "result": "PASS"
+    },
+    {
+      "check": "Q17 consumers and source refs",
+      "result": "PASS"
+    },
+    {
+      "check": "Q17 no study authority",
+      "result": "PASS"
+    },
+    {
+      "check": "Q17 decision and falsifier",
+      "result": "PASS"
+    },
+    {
+      "check": "Q18 consumers and source refs",
+      "result": "PASS"
+    },
+    {
+      "check": "Q18 no study authority",
+      "result": "PASS"
+    },
+    {
+      "check": "Q18 decision and falsifier",
+      "result": "PASS"
+    },
+    {
+      "check": "Q19 consumers and source refs",
+      "result": "PASS"
+    },
+    {
+      "check": "Q19 no study authority",
+      "result": "PASS"
+    },
+    {
+      "check": "Q19 decision and falsifier",
+      "result": "PASS"
+    },
+    {
+      "check": "Q20 consumers and source refs",
+      "result": "PASS"
+    },
+    {
+      "check": "Q20 no study authority",
+      "result": "PASS"
+    },
+    {
+      "check": "Q20 decision and falsifier",
+      "result": "PASS"
+    },
+    {
+      "check": "Q21 consumers and source refs",
+      "result": "PASS"
+    },
+    {
+      "check": "Q21 no study authority",
+      "result": "PASS"
+    },
+    {
+      "check": "Q21 decision and falsifier",
+      "result": "PASS"
+    },
+    {
+      "check": "Q22 consumers and source refs",
+      "result": "PASS"
+    },
+    {
+      "check": "Q22 no study authority",
+      "result": "PASS"
+    },
+    {
+      "check": "Q22 decision and falsifier",
+      "result": "PASS"
+    },
+    {
+      "check": "Q23 consumers and source refs",
+      "result": "PASS"
+    },
+    {
+      "check": "Q23 no study authority",
+      "result": "PASS"
+    },
+    {
+      "check": "Q23 decision and falsifier",
+      "result": "PASS"
+    },
+    {
+      "check": "Q24 consumers and source refs",
+      "result": "PASS"
+    },
+    {
+      "check": "Q24 no study authority",
+      "result": "PASS"
+    },
+    {
+      "check": "Q24 decision and falsifier",
+      "result": "PASS"
+    },
+    {
+      "check": "B00 dependencies/reference identity",
+      "result": "PASS"
+    },
+    {
+      "check": "B00 not dispatched and proof defined",
+      "result": "PASS"
+    },
+    {
+      "check": "B01 dependencies/reference identity",
+      "result": "PASS"
+    },
+    {
+      "check": "B01 not dispatched and proof defined",
+      "result": "PASS"
+    },
+    {
+      "check": "B02 dependencies/reference identity",
+      "result": "PASS"
+    },
+    {
+      "check": "B02 not dispatched and proof defined",
+      "result": "PASS"
+    },
+    {
+      "check": "B03 dependencies/reference identity",
+      "result": "PASS"
+    },
+    {
+      "check": "B03 not dispatched and proof defined",
+      "result": "PASS"
+    },
+    {
+      "check": "B04 dependencies/reference identity",
+      "result": "PASS"
+    },
+    {
+      "check": "B04 not dispatched and proof defined",
+      "result": "PASS"
+    },
+    {
+      "check": "B05 dependencies/reference identity",
+      "result": "PASS"
+    },
+    {
+      "check": "B05 not dispatched and proof defined",
+      "result": "PASS"
+    },
+    {
+      "check": "B06 dependencies/reference identity",
+      "result": "PASS"
+    },
+    {
+      "check": "B06 not dispatched and proof defined",
+      "result": "PASS"
+    },
+    {
+      "check": "B07 dependencies/reference identity",
+      "result": "PASS"
+    },
+    {
+      "check": "B07 not dispatched and proof defined",
+      "result": "PASS"
+    },
+    {
+      "check": "B08 dependencies/reference identity",
+      "result": "PASS"
+    },
+    {
+      "check": "B08 not dispatched and proof defined",
+      "result": "PASS"
+    },
+    {
+      "check": "B09 dependencies/reference identity",
+      "result": "PASS"
+    },
+    {
+      "check": "B09 not dispatched and proof defined",
+      "result": "PASS"
+    },
+    {
+      "check": "B10 dependencies/reference identity",
+      "result": "PASS"
+    },
+    {
+      "check": "B10 not dispatched and proof defined",
+      "result": "PASS"
+    },
+    {
+      "check": "B11 dependencies/reference identity",
+      "result": "PASS"
+    },
+    {
+      "check": "B11 not dispatched and proof defined",
+      "result": "PASS"
+    },
+    {
+      "check": "B12 dependencies/reference identity",
+      "result": "PASS"
+    },
+    {
+      "check": "B12 not dispatched and proof defined",
+      "result": "PASS"
+    },
+    {
+      "check": "B13 dependencies/reference identity",
+      "result": "PASS"
+    },
+    {
+      "check": "B13 not dispatched and proof defined",
+      "result": "PASS"
+    },
+    {
+      "check": "B14 dependencies/reference identity",
+      "result": "PASS"
+    },
+    {
+      "check": "B14 not dispatched and proof defined",
+      "result": "PASS"
+    },
+    {
+      "check": "B15 dependencies/reference identity",
+      "result": "PASS"
+    },
+    {
+      "check": "B15 not dispatched and proof defined",
+      "result": "PASS"
+    },
+    {
+      "check": "B16 dependencies/reference identity",
+      "result": "PASS"
+    },
+    {
+      "check": "B16 not dispatched and proof defined",
+      "result": "PASS"
+    },
+    {
+      "check": "B17 dependencies/reference identity",
+      "result": "PASS"
+    },
+    {
+      "check": "B17 not dispatched and proof defined",
+      "result": "PASS"
+    },
+    {
+      "check": "B18 dependencies/reference identity",
+      "result": "PASS"
+    },
+    {
+      "check": "B18 not dispatched and proof defined",
+      "result": "PASS"
+    },
+    {
+      "check": "B19 dependencies/reference identity",
+      "result": "PASS"
+    },
+    {
+      "check": "B19 not dispatched and proof defined",
+      "result": "PASS"
+    },
+    {
+      "check": "B20 dependencies/reference identity",
+      "result": "PASS"
+    },
+    {
+      "check": "B20 not dispatched and proof defined",
+      "result": "PASS"
+    },
+    {
+      "check": "B21 dependencies/reference identity",
+      "result": "PASS"
+    },
+    {
+      "check": "B21 not dispatched and proof defined",
+      "result": "PASS"
+    },
+    {
+      "check": "B22 dependencies/reference identity",
+      "result": "PASS"
+    },
+    {
+      "check": "B22 not dispatched and proof defined",
+      "result": "PASS"
+    },
+    {
+      "check": "B23 dependencies/reference identity",
+      "result": "PASS"
+    },
+    {
+      "check": "B23 not dispatched and proof defined",
+      "result": "PASS"
+    },
+    {
+      "check": "B24 dependencies/reference identity",
+      "result": "PASS"
+    },
+    {
+      "check": "B24 not dispatched and proof defined",
+      "result": "PASS"
+    },
+    {
+      "check": "B25 dependencies/reference identity",
+      "result": "PASS"
+    },
+    {
+      "check": "B25 not dispatched and proof defined",
+      "result": "PASS"
+    },
+    {
+      "check": "B26 dependencies/reference identity",
+      "result": "PASS"
+    },
+    {
+      "check": "B26 not dispatched and proof defined",
+      "result": "PASS"
+    },
+    {
+      "check": "B27 dependencies/reference identity",
+      "result": "PASS"
+    },
+    {
+      "check": "B27 not dispatched and proof defined",
+      "result": "PASS"
+    },
+    {
+      "check": "B28 dependencies/reference identity",
+      "result": "PASS"
+    },
+    {
+      "check": "B28 not dispatched and proof defined",
+      "result": "PASS"
+    },
+    {
+      "check": "DAG progress 0",
+      "result": "PASS"
+    },
+    {
+      "check": "DAG progress 1",
+      "result": "PASS"
+    },
+    {
+      "check": "DAG progress 5",
+      "result": "PASS"
+    },
+    {
+      "check": "DAG progress 9",
+      "result": "PASS"
+    },
+    {
+      "check": "DAG progress 16",
+      "result": "PASS"
+    },
+    {
+      "check": "DAG progress 23",
+      "result": "PASS"
+    },
+    {
+      "check": "DAG progress 26",
+      "result": "PASS"
+    },
+    {
+      "check": "DAG progress 27",
+      "result": "PASS"
+    },
+    {
+      "check": "DAG progress 28",
+      "result": "PASS"
+    },
+    {
+      "check": "All build units reachable from B00",
+      "result": "PASS"
+    },
+    {
+      "check": "No false global B4 wait for shared historical measurement",
+      "result": "PASS"
+    },
+    {
+      "check": "Live B4 activation remains gated",
+      "result": "PASS"
+    },
+    {
+      "check": "G01 branch references",
+      "result": "PASS"
+    },
+    {
+      "check": "G02 branch references",
+      "result": "PASS"
+    },
+    {
+      "check": "G03 branch references",
+      "result": "PASS"
+    },
+    {
+      "check": "G04 branch references",
+      "result": "PASS"
+    },
+    {
+      "check": "G05 branch references",
+      "result": "PASS"
+    },
+    {
+      "check": "G06 branch references",
+      "result": "PASS"
+    },
+    {
+      "check": "G07 branch references",
+      "result": "PASS"
+    },
+    {
+      "check": "D01 output and ownership defined",
+      "result": "PASS"
+    },
+    {
+      "check": "D02 output and ownership defined",
+      "result": "PASS"
+    },
+    {
+      "check": "D03 output and ownership defined",
+      "result": "PASS"
+    },
+    {
+      "check": "D04 output and ownership defined",
+      "result": "PASS"
+    },
+    {
+      "check": "D05 output and ownership defined",
+      "result": "PASS"
+    },
+    {
+      "check": "D06 output and ownership defined",
+      "result": "PASS"
+    },
+    {
+      "check": "D07 output and ownership defined",
+      "result": "PASS"
+    },
+    {
+      "check": "D08 output and ownership defined",
+      "result": "PASS"
+    },
+    {
+      "check": "D09 output and ownership defined",
+      "result": "PASS"
+    },
+    {
+      "check": "D10 output and ownership defined",
+      "result": "PASS"
+    },
+    {
+      "check": "D11 output and ownership defined",
+      "result": "PASS"
+    },
+    {
+      "check": "D12 output and ownership defined",
+      "result": "PASS"
+    },
+    {
+      "check": "R01 traced to builds, research and decisions",
+      "result": "PASS"
+    },
+    {
+      "check": "R02 traced to builds, research and decisions",
+      "result": "PASS"
+    },
+    {
+      "check": "R03 traced to builds, research and decisions",
+      "result": "PASS"
+    },
+    {
+      "check": "R04 traced to builds, research and decisions",
+      "result": "PASS"
+    },
+    {
+      "check": "R05 traced to builds, research and decisions",
+      "result": "PASS"
+    },
+    {
+      "check": "R06 traced to builds, research and decisions",
+      "result": "PASS"
+    },
+    {
+      "check": "R07 traced to builds, research and decisions",
+      "result": "PASS"
+    },
+    {
+      "check": "R08 traced to builds, research and decisions",
+      "result": "PASS"
+    },
+    {
+      "check": "R09 traced to builds, research and decisions",
+      "result": "PASS"
+    },
+    {
+      "check": "R10 traced to builds, research and decisions",
+      "result": "PASS"
+    },
+    {
+      "check": "R11 traced to builds, research and decisions",
+      "result": "PASS"
+    },
+    {
+      "check": "R12 traced to builds, research and decisions",
+      "result": "PASS"
+    },
+    {
+      "check": "R13 traced to builds, research and decisions",
+      "result": "PASS"
+    },
+    {
+      "check": "R14 traced to builds, research and decisions",
+      "result": "PASS"
+    },
+    {
+      "check": "R15 traced to builds, research and decisions",
+      "result": "PASS"
+    },
+    {
+      "check": "R16 traced to builds, research and decisions",
+      "result": "PASS"
+    },
+    {
+      "check": "R17 traced to builds, research and decisions",
+      "result": "PASS"
+    },
+    {
+      "check": "R18 traced to builds, research and decisions",
+      "result": "PASS"
+    },
+    {
+      "check": "R19 traced to builds, research and decisions",
+      "result": "PASS"
+    },
+    {
+      "check": "R20 traced to builds, research and decisions",
+      "result": "PASS"
+    },
+    {
+      "check": "R21 traced to builds, research and decisions",
+      "result": "PASS"
+    },
+    {
+      "check": "R22 traced to builds, research and decisions",
+      "result": "PASS"
+    },
+    {
+      "check": "R23 traced to builds, research and decisions",
+      "result": "PASS"
+    },
+    {
+      "check": "R24 traced to builds, research and decisions",
+      "result": "PASS"
+    },
+    {
+      "check": "R25 traced to builds, research and decisions",
+      "result": "PASS"
+    },
+    {
+      "check": "R26 traced to builds, research and decisions",
+      "result": "PASS"
+    },
+    {
+      "check": "R27 traced to builds, research and decisions",
+      "result": "PASS"
+    },
+    {
+      "check": "R28 traced to builds, research and decisions",
+      "result": "PASS"
+    },
+    {
+      "check": "R29 traced to builds, research and decisions",
+      "result": "PASS"
+    },
+    {
+      "check": "R30 traced to builds, research and decisions",
+      "result": "PASS"
+    },
+    {
+      "check": "R31 traced to builds, research and decisions",
+      "result": "PASS"
+    },
+    {
+      "check": "R32 traced to builds, research and decisions",
+      "result": "PASS"
+    },
+    {
+      "check": "R33 traced to builds, research and decisions",
+      "result": "PASS"
+    },
+    {
+      "check": "R34 traced to builds, research and decisions",
+      "result": "PASS"
+    },
+    {
+      "check": "R35 traced to builds, research and decisions",
+      "result": "PASS"
+    },
+    {
+      "check": "R36 traced to builds, research and decisions",
+      "result": "PASS"
+    },
+    {
+      "check": "No build orphan from requirement coverage",
+      "result": "PASS"
+    },
+    {
+      "check": "Every research packet has a declared build consumer",
+      "result": "PASS"
+    },
+    {
+      "check": "126 case entries, not statistical N",
+      "result": "PASS"
+    },
+    {
+      "check": "All cases not executed and not production proven",
+      "result": "PASS"
+    },
+    {
+      "check": "R3 inherited case text preserved verbatim as JSON values",
+      "result": "PASS"
+    },
+    {
+      "check": "R4 inherited case text preserved verbatim as JSON values",
+      "result": "PASS"
+    },
+    {
+      "check": "42 added integrated cases",
+      "result": "PASS"
+    },
+    {
+      "check": "Acceptance cases refer to existing builds and requirements",
+      "result": "PASS"
+    },
+    {
+      "check": "All build units have mapped required case(s)",
+      "result": "PASS"
+    },
+    {
+      "check": "Every requirement reaches at least one acceptance case",
+      "result": "PASS"
+    },
+    {
+      "check": "13 unique historical existing carriers",
+      "result": "PASS"
+    },
+    {
+      "check": "No refreshed current status fabricated",
+      "result": "PASS"
+    },
+    {
+      "check": "No action authority",
+      "result": "PASS"
+    },
+    {
+      "check": "No registration/product/execution/mission completion claim",
+      "result": "PASS"
+    },
+    {
+      "check": "26 master-plan sections",
+      "result": "PASS"
+    },
+    {
+      "check": "Required core docs named and readable",
+      "result": "PASS"
+    },
+    {
+      "check": "All R5 citations resolve",
+      "result": "PASS"
+    },
+    {
+      "check": "PROPHET_US_MASTER_PLAN_R5.md no empty placeholder tokens",
+      "result": "PASS"
+    },
+    {
+      "check": "PROPHET_US_MASTER_PLAN_R5.md balanced fenced blocks",
+      "result": "PASS"
+    },
+    {
+      "check": "RESEARCH_DOCKET.md no empty placeholder tokens",
+      "result": "PASS"
+    },
+    {
+      "check": "RESEARCH_DOCKET.md balanced fenced blocks",
+      "result": "PASS"
+    },
+    {
+      "check": "BUILD_PROGRAM.md no empty placeholder tokens",
+      "result": "PASS"
+    },
+    {
+      "check": "BUILD_PROGRAM.md balanced fenced blocks",
+      "result": "PASS"
+    },
+    {
+      "check": "START_HERE.md no empty placeholder tokens",
+      "result": "PASS"
+    },
+    {
+      "check": "START_HERE.md balanced fenced blocks",
+      "result": "PASS"
+    },
+    {
+      "check": "Manifest ACCEPTANCE_CATALOG.json",
+      "result": "PASS"
+    },
+    {
+      "check": "Manifest ACTIVATION_GATES.json",
+      "result": "PASS"
+    },
+    {
+      "check": "Manifest BUILD_PROGRAM.json",
+      "result": "PASS"
+    },
+    {
+      "check": "Manifest BUILD_PROGRAM.md",
+      "result": "PASS"
+    },
+    {
+      "check": "Manifest CARRIER_MAP.json",
+      "result": "PASS"
+    },
+    {
+      "check": "Manifest DECISION_REGISTER.json",
+      "result": "PASS"
+    },
+    {
+      "check": "Manifest INPUT_MANIFEST.json",
+      "result": "PASS"
+    },
+    {
+      "check": "Manifest PROPHET_US_MASTER_PLAN_R5.md",
+      "result": "PASS"
+    },
+    {
+      "check": "Manifest PROPOSAL_STATUS.json",
+      "result": "PASS"
+    },
+    {
+      "check": "Manifest REQUIREMENT_CROSSWALK.json",
+      "result": "PASS"
+    },
+    {
+      "check": "Manifest RESEARCH_DOCKET.json",
+      "result": "PASS"
+    },
+    {
+      "check": "Manifest RESEARCH_DOCKET.md",
+      "result": "PASS"
+    },
+    {
+      "check": "Manifest SOURCE_REGISTER.json",
+      "result": "PASS"
+    },
+    {
+      "check": "Manifest START_HERE.md",
+      "result": "PASS"
+    },
+    {
+      "check": "Manifest appendices/INDEPENDENT_REVIEW_BRIEF.md",
+      "result": "PASS"
+    },
+    {
+      "check": "Manifest build_catalogs.py",
+      "result": "PASS"
+    },
+    {
+      "check": "Manifest build_crosswalk.py",
+      "result": "PASS"
+    },
+    {
+      "check": "Manifest inputs/PROPHET_US_EARLY_LEADERSHIP_R3.md",
+      "result": "PASS"
+    },
+    {
+      "check": "Manifest inputs/PROPHET_US_EARNINGS_CYCLE_R4.md",
+      "result": "PASS"
+    },
+    {
+      "check": "Manifest inputs/PROPHET_US_MEASUREMENT_R2.md",
+      "result": "PASS"
+    },
+    {
+      "check": "Manifest inputs/PROPHET_US_RESEARCH_R1.md",
+      "result": "PASS"
+    },
+    {
+      "check": "Manifest inputs/R3_ACCEPTANCE_CASES.json",
+      "result": "PASS"
+    },
+    {
+      "check": "Manifest inputs/R3_SOURCE_MAP.json",
+      "result": "PASS"
+    },
+    {
+      "check": "Manifest inputs/R4_ACCEPTANCE_CASES.json",
+      "result": "PASS"
+    },
+    {
+      "check": "Manifest inputs/R4_SOURCE_MAP.json",
+      "result": "PASS"
+    },
+    {
+      "check": "Manifest verify_packet.py",
+      "result": "PASS"
+    },
+    {
+      "check": "Manifest contains every content file",
+      "result": "PASS"
+    }
+  ],
+  "counts": {
+    "acceptance_entries": 126,
+    "acceptance_executed": 0,
+    "build_units": 29,
+    "decisions": 12,
+    "production_acceptance_tests_run": 0,
+    "requirements": 36,
+    "research_packets": 24
+  },
+  "limits": [
+    "No native Prophet test suite executed",
+    "No market outcomes read or model fitted",
+    "No independent non-author review",
+    "No worker admission or production proof",
+    "Acyclic does not imply dependencies currently satisfied"
+  ],
+  "status": "PASS",
+  "topological_order": [
+    "B00",
+    "B01",
+    "B02",
+    "B16",
+    "B20",
+    "B03",
+    "B04",
+    "B05",
+    "B06",
+    "B07",
+    "B08",
+    "B09",
+    "B12",
+    "B17",
+    "B18",
+    "B27",
+    "B10",
+    "B13",
+    "B14",
+    "B19",
+    "B21",
+    "B22",
+    "B23",
+    "B11",
+    "B15",
+    "B24",
+    "B25",
+    "B26",
+    "B28"
+  ],
+  "verification_scope": "LOCAL_DOCUMENT_STRUCTURE_AND_HASHES_ONLY"
+}

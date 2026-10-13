@@ -19,7 +19,7 @@
 #                     paths and remove only campaign-v2 builder-owned additions.
 #                     Both publishers leave HEAD unchanged, so all same-run narrow
 #                     mutations are removed before the broad engine commit.
-#   assert-integrity  Terminal fail-closed gate over all four workflow outcomes.
+#   assert-integrity  Terminal fail-closed gate over episode, campaign, and candidate outcomes.
 
 set -euo pipefail
 
@@ -27,13 +27,18 @@ REPO_ROOT="${GITHUB_WORKSPACE:-$(git rev-parse --show-toplevel)}"
 # shellcheck source=scripts/ci/push_retry.sh
 . "$REPO_ROOT/scripts/ci/push_retry.sh"
 
-readonly -a OIP_EPISODE_PATHS=(
+readonly -a OIP_EPISODE_CORE_PATHS=(
   data/options_signal_episode/checkpoint.json
   data/options_signal_episode/episodes.jsonl
   data/options_signal_episode/outcomes_h60.jsonl
   data/options_signal_episode/outcomes_session.jsonl
   data/options_signal_episode/campaigns.jsonl
 )
+# Populated immediately before each episode publication from the frozen core plus
+# contiguous physical extensions of the one logical session-outcome ledger.
+OIP_EPISODE_PATHS=()
+readonly OIP_SESSION_PARTS_DIR="data/options_signal_episode/outcomes_session_parts"
+readonly OIP_SESSION_BASE="data/options_signal_episode/outcomes_session.jsonl"
 readonly -a OIP_CAMPAIGN_PATHS=(
   data/options_signal_campaign/campaigns.jsonl
   data/options_signal_campaign/outcomes.jsonl
@@ -43,6 +48,77 @@ readonly -a OIP_NARROW_ROOTS=(
   data/options_signal_episode
   data/options_signal_campaign
 )
+
+
+oip_collect_episode_paths() {
+  local parts_dir="$OIP_SESSION_PARTS_DIR"
+  local entry name expected next=1
+  local -a entries=()
+  OIP_EPISODE_PATHS=("${OIP_EPISODE_CORE_PATHS[@]}")
+  [ -e "$parts_dir" ] || return 0
+  if [ -L "$parts_dir" ] || [ ! -d "$parts_dir" ]; then
+    echo "::error title=options PIT checkpoint parts rejected::$parts_dir is not a regular directory" >&2
+    return 1
+  fi
+  shopt -s nullglob dotglob
+  entries=("$parts_dir"/*)
+  shopt -u nullglob dotglob
+  for entry in "${entries[@]}"; do
+    name=${entry##*/}
+    expected=$(printf 'part-%06d.jsonl' "$next")
+    if [ "$name" != "$expected" ]; then
+      echo "::error title=options PIT checkpoint parts rejected::expected $expected, found $name" >&2
+      return 1
+    fi
+    if [ -L "$entry" ] || [ ! -f "$entry" ]; then
+      echo "::error title=options PIT checkpoint parts rejected::$entry is not a regular file" >&2
+      return 1
+    fi
+    OIP_EPISODE_PATHS+=("$entry")
+    next=$((next + 1))
+  done
+}
+
+oip_require_no_unseen_episode_parts() {
+  local onto="$1"
+  shift
+  local -a exact_paths=("$@")
+  local path remote_path onto_commit tmp seen_episode=false found=false rc=0
+
+  for path in "${exact_paths[@]}"; do
+    if [ "$path" = "$OIP_SESSION_BASE" ]; then
+      seen_episode=true
+      break
+    fi
+  done
+  [ "$seen_episode" = true ] || return 0
+
+  onto_commit=$(git rev-parse "${onto}^{commit}") || return 1
+  tmp=$(mktemp "${RUNNER_TEMP:-${TMPDIR:-/tmp}}/oip-session-parts-onto.XXXXXX") \
+    || return 1
+  if ! git ls-tree -rz --name-only "$onto_commit" -- "$OIP_SESSION_PARTS_DIR" > "$tmp"; then
+    rm -f -- "$tmp"
+    echo "::error title=options PIT session topology unreadable::cannot enumerate $OIP_SESSION_PARTS_DIR on $onto" >&2
+    return 1
+  fi
+
+  while IFS= read -r -d '' remote_path; do
+    found=false
+    for path in "${exact_paths[@]}"; do
+      if [ "$path" = "$remote_path" ]; then
+        found=true
+        break
+      fi
+    done
+    if [ "$found" != true ]; then
+      echo "::error title=options PIT unseen session-outcome part::$remote_path appeared on $onto after this candidate snapshot; refusing to combine writer generations" >&2
+      rc=1
+      break
+    fi
+  done < "$tmp"
+  rm -f -- "$tmp"
+  return "$rc"
+}
 
 oip_require_main_branch() {
   local symbolic=""
@@ -227,6 +303,11 @@ oip_replay_and_push() {
       push_backoff
       continue
     fi
+    if ! oip_require_no_unseen_episode_parts origin/main "${exact_paths[@]}"; then
+      PUSH_FAIL_CLASS="rebase-conflict"
+      echo "::error title=${label} stale source generation::origin/main gained session-outcome bytes outside this exact candidate; rebuild from the accepted prefix instead of replaying mixed generations" >&2
+      return 1
+    fi
     if publish=$(push_exact_paths_replay_commit \
         "$parent" origin/main "$candidate" "$message" "$replay_index" \
         "${exact_paths[@]}"); then
@@ -261,6 +342,7 @@ publish_episode() {
   oip_require_main_branch
 
   oip_require_clean_index "options PIT checkpoint"
+  oip_collect_episode_paths
   oip_require_regular_files "options PIT checkpoint" "${OIP_EPISODE_PATHS[@]}"
   git add -- "${OIP_EPISODE_PATHS[@]}"
   if git diff --cached --quiet; then
@@ -375,6 +457,49 @@ oip_restore_locked_index() {
   return 1
 }
 
+
+# Exclusively create and identify this invocation's empty index lock. No claims lock
+# is acquired while Git's index lock is held. A later rejection may remove only
+# the same still-empty regular inode; replacement or ambiguity preserves it.
+oip_acquire_owned_empty_lock_identity() {
+  python3 - "$1" <<'QL_LOCK_IDENTITY_PY'
+import os, stat, sys
+try:
+    fd = os.open(sys.argv[1], os.O_RDWR | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW | os.O_NONBLOCK, 0o666)
+    try:
+        st = os.fstat(fd)
+        named = os.stat(sys.argv[1], follow_symlinks=False)
+        if not stat.S_ISREG(st.st_mode) or st.st_nlink != 1 or st.st_size != 0 or (st.st_dev, st.st_ino) != (named.st_dev, named.st_ino):
+            raise ValueError('not the owned empty lock')
+        print(f'{st.st_dev}:{st.st_ino}')
+    finally:
+        os.close(fd)
+except (OSError, ValueError):
+    raise SystemExit(1)
+QL_LOCK_IDENTITY_PY
+}
+
+oip_release_owned_empty_lock() {
+  python3 - "$1" "$2" <<'QL_LOCK_RELEASE_PY'
+import os, stat, sys
+try:
+    expected = tuple(int(value) for value in sys.argv[2].split(':'))
+    if len(expected) != 2:
+        raise ValueError('invalid owned lock identity')
+    fd = os.open(sys.argv[1], os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK)
+    try:
+        st = os.fstat(fd)
+        named = os.stat(sys.argv[1], follow_symlinks=False)
+        if not stat.S_ISREG(st.st_mode) or st.st_nlink != 1 or st.st_size != 0 or (st.st_dev, st.st_ino) != expected or (named.st_dev, named.st_ino) != expected:
+            raise ValueError('lock identity changed; preserve it')
+        os.unlink(sys.argv[1])
+    finally:
+        os.close(fd)
+except (OSError, ValueError):
+    raise SystemExit(1)
+QL_LOCK_RELEASE_PY
+}
+
 # Commit the exact live index snapshot while owning Git's real index lock.
 # The same primitive is used for the broad engine tree and the later render-sync
 # tree with different root allowlists.  No validation-then-commit window exists:
@@ -386,15 +511,21 @@ oip_commit_locked_roots() {
   local -a allowed_roots=("$@")
   local symbolic parent parent_tree index_path lock_path snapshot="" clean_index=""
   local diff_path="" tree="" candidate="" restore_target="" status path root matched rc=0 owned=0
+  local qledger_rejected=0 lock_identity="" qledger_baseline=""
 
   oip_require_main_branch || return 1
   parent=$(git rev-parse 'refs/heads/main^{commit}') || return 1
   parent_tree=$(git rev-parse "$parent^{tree}") || return 1
+  # A local unpublished parent is not an accepted remote baseline.
+  # Missing tracking identity remains missing; native validation must refuse it.
+  qledger_baseline=$(git rev-parse 'refs/remotes/origin/main^{commit}' 2>/dev/null || true)
   index_path=$(git rev-parse --git-path index) || return 1
   case "$index_path" in /*) ;; *) index_path="$(pwd)/$index_path" ;; esac
   lock_path="${index_path}.lock"
-  if ! ( set -o noclobber; : > "$lock_path" ) 2>/dev/null; then
-    echo "::error title=engine index busy::cannot acquire the authoritative Git index lock" >&2
+  # Capture ownership from the same descriptor that exclusively creates the
+  # lock. A separately reopened pathname could already belong to another writer.
+  if ! lock_identity=$(oip_acquire_owned_empty_lock_identity "$lock_path"); then
+    echo "::error title=engine index busy::cannot acquire and identify the authoritative Git index lock; existing lock and staged state preserved" >&2
     return 1
   fi
   owned=1
@@ -416,6 +547,13 @@ oip_commit_locked_roots() {
     tree=$(GIT_INDEX_FILE="$snapshot" git write-tree --missing-ok) || rc=$?
   fi
   oip_after_locked_tree_snapshot || rc=$?
+  if [ "$rc" -eq 0 ]; then
+    push_qledger_guard frozen-tree --tree "$tree" --parent "$parent" \
+      --target-ref refs/heads/main --accepted-baseline "$qledger_baseline" || {
+        rc=$?
+        qledger_rejected=1
+      }
+  fi
   if [ "$rc" -eq 0 ] && [ "$tree" = "$parent_tree" ]; then
     echo "::error title=engine candidate empty::the locked index snapshot contains no change" >&2
     rc=1
@@ -478,6 +616,14 @@ oip_commit_locked_roots() {
         || true
       rc=1
     fi
+  elif [ "$qledger_rejected" -eq 1 ]; then
+    # No commit/ref/index installation occurred. Do not restore the parent
+    # index: that would discard the original staged candidate we rejected.
+    if oip_release_owned_empty_lock "$lock_path" "$lock_identity"; then
+      owned=0
+    else
+      echo "::error title=engine rejected candidate lock preserved::the lock is no longer this invocation's empty inode" >&2
+    fi
   else
     restore_target=$(git rev-parse 'refs/heads/main^{commit}' 2>/dev/null || true)
     [ -n "$restore_target" ] || restore_target="$parent"
@@ -499,11 +645,12 @@ assert_integrity() {
   if [ "${OIP_EPISODE_BUILD_OUTCOME:-}" = success ] && \
      [ "${OIP_EPISODE_PUBLISH_OUTCOME:-}" = success ] && \
      [ "${OIP_CAMPAIGN_BUILD_OUTCOME:-}" = success ] && \
-     [ "${OIP_CAMPAIGN_PUBLISH_OUTCOME:-}" = success ]; then
+     [ "${OIP_CAMPAIGN_PUBLISH_OUTCOME:-}" = success ] && \
+     [ "${OIP_CANDIDATE_BUILD_OUTCOME:-}" = success ]; then
     echo "OIP PIT integrity passed"
     return 0
   fi
-  echo "::error title=OIP PIT integrity::episode/campaign build or narrow publication failed"
+  echo "::error title=OIP PIT integrity::episode/campaign/candidate build or narrow publication failed"
   return 1
 }
 

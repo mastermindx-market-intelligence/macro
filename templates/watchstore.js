@@ -9,7 +9,7 @@
    W2: this module no longer OWNS any sync UI. The Account Sync panel is deleted and
    the header save-state chip is the page's only disclosure of where the list lives,
    so the store's job here is to publish the state and nothing else:
-     • `ws-save` document event, detail.state ∈ saved | saving | local | offline
+     • `ws-save` document event, detail.state ∈ saved | saving | clean | local | offline
        (watchlist.js paints the chip; this file never touches its DOM)
      • sign-in / sign-out go through the global MDXAuth modal, wired by the page
 
@@ -104,10 +104,10 @@
   function lang() { return document.documentElement.getAttribute('data-lang') || 'en'; }
   var T = {
     en: { signin: 'Sign in to sync', signout: 'Sign out', synced: 'Synced', syncing: 'Syncing…',
-          local: 'Local only', offline: 'Offline — local only', finishing: 'Finishing sign-in…',
+          clean: 'Up to date', local: 'Local only', offline: 'Offline — local only', finishing: 'Finishing sign-in…',
           hello: 'Signed in as' },
     zh: { signin: '登录以同步', signout: '退出登录', synced: '已同步', syncing: '同步中…',
-          local: '仅本地', offline: '离线——仅本地', finishing: '正在完成登录…',
+          clean: '已是最新', local: '仅本地', offline: '离线——仅本地', finishing: '正在完成登录…',
           hello: '已登录：' }
   };
   function L(k) { return (T[lang()] || T.en)[k]; }
@@ -117,10 +117,15 @@
 
   /* The four states the header chip can show, published as an event. The internal
      vocabulary keeps its old names (setPill is called from a dozen places) and maps
-     ONCE, here, onto the four user-facing states — "finishing sign-in" is a write in
-     flight from the reader's point of view, so it is `saving`, not a fifth word. */
+     ONCE, here, onto the user-facing states — "finishing sign-in" is a write in
+     flight from the reader's point of view, so it is `saving`, not a fifth word.
+
+     `clean` is the READ distinction (D05 W1-honesty): a pull() that completes with
+     no WRITE in flight paints "up to date", never "Saved" — Saved is reserved for
+     the moment a write actually lands in the account. Pre-W1-honesty a successful
+     pull mapped to `saved` and falsely claimed a write. */
   var CHIP_STATE = { synced: 'saved', syncing: 'saving', finishing: 'saving',
-                     local: 'local', offline: 'offline' };
+                     local: 'local', offline: 'offline', clean: 'clean' };
   var lastChip = null;
   function setPill(state) {
     var next = CHIP_STATE[state] || 'local';
@@ -136,7 +141,7 @@
      markup it is the ONLY sync disclosure, so it is painted verbatim as before. */
   function lgPaintPill(state) {
     var p = el('wl_syncpill'); if (!p) return;
-    var map = { synced: L('synced'), syncing: L('syncing'), local: L('local'),
+    var map = { synced: L('synced'), syncing: L('syncing'), clean: L('clean'), local: L('local'),
                 offline: L('offline'), finishing: L('finishing') };
     p.textContent = map[state] || '';
     p.className = 'wl-pill wl-pill-' + (state === 'finishing' ? 'syncing' : state);
@@ -224,6 +229,7 @@
   function cacheWrite(listId, symbols) {
     if (!listId) return false;
     var prev = cacheRead(listId);
+    syncOutboxEnsure(prev);
     var byT = {};
     prev.items.forEach(function (it) { byT[it.t] = it; });
     var order = (symbols || []).slice();
@@ -235,7 +241,10 @@
         return { t: t, added: (e && e.added) || nowISO(), note: (e && e.note) || '' };
       }),
       order: order,
-      settings: prev.settings
+      settings: prev.settings,
+      pendingPushes: prev.pendingPushes,
+      pendingInserts: prev.pendingInserts,
+      tombstones: prev.tombstones
     };
     if (cacheSig(next) === cacheSig(prev)) return false;   // no-op: do not re-persist
     try { localStorage.setItem(cacheKey(listId), JSON.stringify(next)); return true; }
@@ -245,6 +254,224 @@
   function cacheClear(listId) {
     if (!listId) return;
     try { localStorage.removeItem(cacheKey(listId)); } catch (e) {}
+  }
+
+  // ---- per-list sync-outbox (D05 W1-honesty) --------------------------------
+  /* The `mdash.watchlist.v1` blob (signed-out) and the per-list cache blobs
+     `mdash.wl.<listId>.v1` (signed-in) carry the SAME shape — `pendingPushes`,
+     `pendingInserts`, `tombstones` live on the SIGNED-IN side, on whichever blob
+     the active list points to (today: the per-list cache). The shape is the same
+     so a binding flip is a plain re-read.
+
+     These three fields are ACCOUNT-SCOPED OUTBOX state. They survive pull(), they
+     survive a page reload, and they are cleared on sign-out (see onAuthUser(null)
+     and onAuthUser(u)). They are never the source of a delete — a tombstone is a
+     PROTECTION against the cloud row, not an authority to remove it; only the
+     server delete clears a tombstone.
+
+     Shape:
+       pendingPushes: { [listId]: { tickers: string[], at: iso } }   — pushList failed
+       pendingInserts: { [listId]: { [symbol]: iso } }              — _symbolInsert failed
+       tombstones:    { [listId]: { [symbol]: iso } }               — DELETE failed, cloud row must NOT come back */
+  /* Internal: resolve which localStorage key holds THIS list's outbox. The
+     active-list cache (`cacheKey(wlId)`) is the canonical home, but markers
+     can be recorded BEFORE wlId is bound (e.g. an early-arriving failure
+     during a `symbols.list(...)` then `symbols.push(...)` flow). In that case
+     use the explicit listId argument, falling back to the active list, then
+     the anonymous blob. */
+  function _syncKey(listId) {
+    if (listId) return cacheKey(listId);
+    if (wlId) return cacheKey(wlId);
+    return 'mdash.watchlist.v1';
+  }
+  function syncBlobRead() {
+    if (!user) return null;
+    return syncBlobReadUnguarded(null);
+  }
+  function syncBlobReadFor(listId) {
+    if (!user) return null;
+    return syncBlobReadUnguarded(listId);
+  }
+  /* Internal: read the per-list (or fallback anonymous) sync blob WITHOUT the
+     signed-in guard. Only the sign-out reset uses this — it must clear the
+     blob in the same synchronous step that flips `user` to null, so the user
+     guard above would refuse the read. */
+  function syncBlobReadUnguarded(listId) {
+    try {
+      var key = _syncKey(listId);
+      var text = localStorage.getItem(key);
+      if (!text) return null;
+      var b = JSON.parse(text);
+      if (!b || typeof b !== 'object') return null;
+      return b;
+    } catch (e) { return null; }
+  }
+  function syncBlobWrite(b, listId) {
+    if (!user || !b) return false;
+    try {
+      localStorage.setItem(_syncKey(listId), JSON.stringify(b));
+      return true;
+    } catch (e) { return false; }
+  }
+  function syncOutboxEnsure(b) {
+    if (!b.pendingPushes || typeof b.pendingPushes !== 'object') b.pendingPushes = {};
+    if (!b.pendingInserts || typeof b.pendingInserts !== 'object') b.pendingInserts = {};
+    if (!b.tombstones || typeof b.tombstones !== 'object') b.tombstones = {};
+    return b;
+  }
+  function syncOutboxPendingWrites() {
+    // Walk every signed-in list's blob — outbox state can live on ANY of them,
+    // not just the bound list. A pending write owed against a sibling list is
+    // still a write in flight; the chip cannot say `clean`.
+    var lists = Object.keys(listsCache);
+    var seen = {};
+    if (wlId) seen[cacheKey(wlId)] = true;
+    lists.forEach(function (l) { if (l && l.id) seen[cacheKey(l.id)] = true; });
+    var keys = Object.keys(seen);
+    for (var i = 0; i < keys.length; i++) {
+      try {
+        var raw = localStorage.getItem(keys[i]);
+        if (!raw) continue;
+        var b = JSON.parse(raw);
+        if (!b) continue;
+        var pp = b.pendingPushes || {}, pi = b.pendingInserts || {}, tb = b.tombstones || {};
+        if (Object.keys(pp).length || Object.keys(pi).length || Object.keys(tb).length) return true;
+      } catch (e) {}
+    }
+    // Also walk the unsigned fallback (rare — only if a write was attempted
+    // before any list was bound). Same key check.
+    try {
+      var raw = localStorage.getItem('mdash.watchlist.v1');
+      if (raw) {
+        var b = JSON.parse(raw);
+        var pp = (b && b.pendingPushes) || {}, pi = (b && b.pendingInserts) || {}, tb = (b && b.tombstones) || {};
+        if (Object.keys(pp).length || Object.keys(pi).length || Object.keys(tb).length) return true;
+      }
+    } catch (e) {}
+    return false;
+  }
+  function _syncMarkPushFailed(listId, tickers) {
+    if (!listId) return;
+    _touchList(listId);
+    var b = syncBlobReadFor(listId) || { v: 1, items: [], order: [], settings: {} };
+    syncOutboxEnsure(b);
+    var uniq = (tickers || []).filter(function (t) { return t; });
+    uniq = uniq.filter(function (t, i) { return uniq.indexOf(t) === i; });
+    var prev = b.pendingPushes[listId];
+    // Idempotent on the original `at`: a failed retry re-marks the same
+    // pending push and would otherwise bump the timestamp on every attempt.
+    b.pendingPushes[listId] = {
+      tickers: uniq,
+      at: (prev && prev.at) || nowISO()
+    };
+    syncBlobWrite(b, listId);
+  }
+  function _syncMarkInsertFailed(listId, symbol) {
+    if (!listId || !symbol) return;
+    _touchList(listId);
+    var b = syncBlobReadFor(listId) || { v: 1, items: [], order: [], settings: {} };
+    syncOutboxEnsure(b);
+    if (!b.pendingInserts[listId] || typeof b.pendingInserts[listId] !== 'object') {
+      b.pendingInserts[listId] = {};
+    }
+    // Idempotent: keep the FIRST failure timestamp for this symbol.
+    if (!b.pendingInserts[listId][symbol]) {
+      b.pendingInserts[listId][symbol] = nowISO();
+    }
+    syncBlobWrite(b, listId);
+  }
+  function _syncMarkTombstone(listId, symbols) {
+    if (!listId) return;
+    _touchList(listId);
+    var list = Array.isArray(symbols) ? symbols : [symbols];
+    if (!list.length) return;
+    var b = syncBlobReadFor(listId) || { v: 1, items: [], order: [], settings: {} };
+    syncOutboxEnsure(b);
+    if (!b.tombstones[listId] || typeof b.tombstones[listId] !== 'object') {
+      b.tombstones[listId] = {};
+    }
+    list.forEach(function (s) {
+      if (!s) return;
+      // Idempotent: a re-mark keeps the original timestamp so a failed retry
+      // doesn't look like a fresh failure to observers (and so the merge
+      // exclusion timestamp is the moment of the FIRST failed push, not the
+      // last). The tombstone is cleared only on DELETE success.
+      if (b.tombstones[listId][s]) return;
+      b.tombstones[listId][s] = nowISO();
+    });
+    syncBlobWrite(b, listId);
+  }
+  function _syncClearPushPending(listId) {
+    var b = syncBlobReadFor(listId); if (!b) return;
+    if (!b.pendingPushes) return;
+    if (listId) { delete b.pendingPushes[listId]; }
+    else { b.pendingPushes = {}; }
+    syncBlobWrite(b, listId);
+  }
+  function _syncClearInsertPending(listId, symbol) {
+    var b = syncBlobReadFor(listId); if (!b) return;
+    if (!b.pendingInserts) return;
+    if (listId && symbol) {
+      if (b.pendingInserts[listId]) delete b.pendingInserts[listId][symbol];
+      if (b.pendingInserts[listId] && Object.keys(b.pendingInserts[listId]).length === 0) {
+        delete b.pendingInserts[listId];
+      }
+    } else if (listId) {
+      delete b.pendingInserts[listId];
+    } else {
+      b.pendingInserts = {};
+    }
+    syncBlobWrite(b, listId);
+  }
+  function _syncClearTombstone(listId, symbol) {
+    var b = syncBlobReadFor(listId); if (!b) return;
+    if (!b.tombstones) return;
+    if (listId && symbol) {
+      if (b.tombstones[listId]) delete b.tombstones[listId][symbol];
+      if (b.tombstones[listId] && Object.keys(b.tombstones[listId]).length === 0) {
+        delete b.tombstones[listId];
+      }
+    } else if (listId) {
+      delete b.tombstones[listId];
+    } else {
+      b.tombstones = {};
+    }
+    syncBlobWrite(b, listId);
+  }
+  function _syncClearAllOutbox() {
+    // Walk every list's blob + the unsigned fallback — sign-out must clear
+    // account-scoped outbox state on every list, not just the bound one.
+    // listsCache may be empty here (sign-out before pull, or after the reset
+    // above), so we also walk the module-local _touchedLists set: every list
+    // that ever recorded an outbox entry, even if the listsCache never loaded.
+    var keys = [];
+    if (wlId) keys.push(cacheKey(wlId));
+    listsCache.forEach(function (l) {
+      if (l && l.id) keys.push(cacheKey(l.id));
+    });
+    Object.keys(_touchedLists).forEach(function (lid) {
+      if (lid) keys.push(cacheKey(lid));
+    });
+    keys.push('mdash.watchlist.v1');
+    var seen = {};
+    var uniqueKeys = [];
+    keys.forEach(function (k) { if (!seen[k]) { seen[k] = true; uniqueKeys.push(k); } });
+    uniqueKeys.forEach(function (key) {
+      try {
+        var raw = localStorage.getItem(key);
+        if (!raw) return;
+        var b = JSON.parse(raw);
+        if (!b || typeof b !== 'object') return;
+        b.pendingPushes = {}; b.pendingInserts = {}; b.tombstones = {};
+        localStorage.setItem(key, JSON.stringify(b));
+      } catch (e) {}
+    });
+  }
+  function _syncListTombstones(listId) {
+    if (!listId) return [];
+    var b = syncBlobReadFor(listId); if (!b || !b.tombstones) return [];
+    var t = b.tombstones[listId];
+    return (t && typeof t === 'object') ? Object.keys(t) : [];
   }
 
   // ---- registered list CRUD (owner-scoped; every query filters user_id) -------
@@ -496,12 +723,21 @@
     var c = _cloudOf(listId);
     if (!c) return { symbol: t, skipped: true };     // unread -> refuse, never blind-insert
     if (c.set[t]) return { symbol: t, skipped: true };
+    setPill('syncing');
     return sb.from('watchlist_symbols')
       .insert({ watchlist_id: listId, symbol: t, section: SECTION, position: _nextPos(listId) })
       .then(function (res) {
         if (res.error) throw res.error;
         _noteInserted(listId, [t]);
+        // WRITE landed — say so. Clear any stale insert pending marker.
+        _syncClearInsertPending(listId, t);
+        setPill('synced');
         return { symbol: t };
+      }, function (err) {
+        // D05 W1-honesty: a failed single-symbol insert is remembered for the
+        // next online/pull retry. Same retry triggers as pushList (spec (2) a/b).
+        _syncMarkInsertFailed(listId, t);
+        throw err;
       });
   }
 
@@ -521,7 +757,17 @@
         c.order = c.order.filter(function (x) { return x !== t; });
         cacheWrite(listId, c.order.slice());
       }
+      // D05 W1-honesty: a successful DELETE clears any tombstone for this
+      // symbol — the cloud row is gone, there is nothing left to protect against.
+      _syncClearTombstone(listId, t);
       return { symbol: t };
+    }, function (err) {
+      // D05 W1-honesty (3): a failed unwatch MUST NOT silently resurrect on the
+      // next pull. Record a tombstone so the cloud→local merge EXCLUDES this
+      // symbol even though the cloud row is still there. Retry with the same
+      // triggers as (2): online event + start of next pull.
+      _syncMarkTombstone(listId, [t]);
+      throw err;
     });
   }
 
@@ -532,7 +778,15 @@
     pullPending = true;
     setPill('syncing');
 
-    return listsFetch()
+    /* D05 W1-honesty (2)(3) trigger (b): retry every pending push + tombstone for
+       this list BEFORE the cloud→local merge. A pendingPushes retry is a WRITE
+       that lands, so it dispatches 'saved' (not 'clean') on success; a tombstone
+       retry is a DELETE — clearing the tombstone leaves the cloud row absent,
+       so the merge that follows cannot resurrect it. Failures here are
+       remembered (the markers stay); the catch below only sees errors that are
+       not about retry-then-succeed. */
+    return _retryOutboxBeforePull()
+      .then(function () { return listsFetch(); })
       .then(function () { return resolveBoundList(); })
       .then(function (id) {
         // No list switcher ships in this wave, so the bound list is whatever ruling R1
@@ -542,10 +796,20 @@
         return symbolsFetch(wlId);
       })
       .then(function (rows) {
-        var items = rows.map(function (r) {
+        /* D05 W1-honesty (3): exclude tombstoned symbols from the cloud→local
+           merge. The cloud row is still there (the previous DELETE failed) —
+           without this filter, the union merge would resurrect the symbol in
+           the local view AND in `cloud[listId].set`, then `pushList()` would
+           diff against a set that wrongly contains it. The tombstone is the
+           ONLY source of truth for what must NOT come back. */
+        var tombs = _syncListTombstones(wlId);
+        var tombSet = {};
+        tombs.forEach(function (s) { tombSet[s] = true; });
+        var filtered = rows.filter(function (r) { return !tombSet[r.symbol]; });
+        var items = filtered.map(function (r) {
           return { t: r.symbol, added: r.created_at, note: '' };
         });
-        var symbols = rows.map(function (r) { return r.symbol; });
+        var symbols = filtered.map(function (r) { return r.symbol; });
 
         /* Capture what the ANONYMOUS visitor accumulated locally BEFORE the cloud merge
            touches the blob (ruling R1.1). Under R1 the BOUND list and the FOLD target
@@ -589,7 +853,18 @@
       .then(function () {
         pullDoneAt = Date.now();
         pullPending = false;
-        setPill('synced');
+        /* D05 W1-honesty (1): a successful READ dispatches `clean`, NOT `saved`.
+           `saved` is reserved for the moment a WRITE actually lands in the
+           account — a retry of pendingPushes above does, so that path already
+           dispatched `saved`. Any remaining pendingInserts/tombstones mean a
+           WRITE is still owed; in that case we say `offline` (truthful copy —
+           a write is pending and the network is unreachable or the failure
+           has not yet recovered), never `saved`. */
+        if (syncOutboxPendingWrites()) {
+          setPill('offline');
+        } else {
+          setPill('clean');
+        }
         // flush any push that arrived before its list had been read
         _flushQueuedPushes();
       })
@@ -598,6 +873,108 @@
         setPill('offline');
         warnOnce('pull', 'pull failed: ' + (err && err.message || err));
       });
+  }
+
+  /* D05 W1-honesty (2)(3) trigger (b): retry pendingPushes + tombstones for
+     THIS list before the cloud→local merge. A pendingPushes retry is pushList;
+     a tombstone retry is a per-symbol DELETE. Failures are remembered (markers
+     stay); only a successful retry clears them.
+
+    Existing in-memory sources survive ordinary activity, but a reload empties
+    them. Storage key discovery closes that gap: only exact per-list cache keys
+    are considered, then each blob must parse and carry an outbox field before
+    its list id is admitted to the retry scan. */
+  var _touchedLists = {};
+  function _touchList(listId) { if (listId) _touchedLists[listId] = true; }
+  function _discoverOutboxListIds() {
+    var ids = [];
+    try {
+      for (var i = 0; i < localStorage.length; i++) {
+        var key = localStorage.key(i);
+        if (!key || key.length <= CACHE_PREFIX.length + CACHE_SUFFIX.length ||
+            key.indexOf(CACHE_PREFIX) !== 0 ||
+            key.slice(key.length - CACHE_SUFFIX.length) !== CACHE_SUFFIX) continue;
+        var id = key.slice(CACHE_PREFIX.length, key.length - CACHE_SUFFIX.length);
+        if (!id) continue;
+        var blob;
+        try { blob = JSON.parse(localStorage.getItem(key)); } catch (e) { continue; }
+        var hasOutbox = blob && typeof blob === 'object' && (
+          (blob.pendingPushes && typeof blob.pendingPushes === 'object') ||
+          (blob.pendingInserts && typeof blob.pendingInserts === 'object') ||
+          (blob.tombstones && typeof blob.tombstones === 'object'));
+        if (hasOutbox) ids.push(id);
+      }
+    } catch (e) {}
+    return ids;
+  }
+  function _retryOutboxBeforePull() {
+    var keys = [];
+    if (wlId) keys.push(cacheKey(wlId));
+    listsCache.forEach(function (l) { if (l && l.id) keys.push(cacheKey(l.id)); });
+    Object.keys(_touchedLists).forEach(function (lid) {
+      if (lid) keys.push(cacheKey(lid));
+    });
+    _discoverOutboxListIds().forEach(function (lid) {
+      keys.push(cacheKey(lid));
+    });
+    keys.push('mdash.watchlist.v1');
+    var seen = {};
+    var uniqueKeys = [];
+    keys.forEach(function (k) { if (!seen[k]) { seen[k] = true; uniqueKeys.push(k); } });
+    var tasks = [];
+    uniqueKeys.forEach(function (key) {
+      var b;
+      try { var raw = localStorage.getItem(key); if (raw) b = JSON.parse(raw); } catch (e) {}
+      if (!b || typeof b !== 'object') return;
+      var pp = b.pendingPushes || {};
+      var pi = b.pendingInserts || {};
+      var tb = b.tombstones || {};
+      Object.keys(pp).forEach(function (lid) {
+        var entry = pp[lid];
+        if (!entry || !Array.isArray(entry.tickers) || !entry.tickers.length) return;
+        tasks.push(pushList(lid, entry.tickers.slice()).then(function (res) {
+          if (res === null) { return; }   // still failing — marker stays
+          _syncClearPushPending(lid);
+        }));
+      });
+      Object.keys(pi).forEach(function (lid) {
+        var entry = pi[lid];
+        if (!entry || typeof entry !== 'object') return;
+        Object.keys(entry).forEach(function (sym) {
+          var before = _cloudOf(lid);
+          tasks.push(
+            (before ? Promise.resolve() : symbolsFetch(lid)).then(function () {
+              return _symbolInsert(lid, sym).then(function (r) {
+                if (r && r.skipped) return;
+                _syncClearInsertPending(lid, sym);
+              }, function () { /* still failing — marker stays */ });
+            })
+          );
+        });
+      });
+      Object.keys(tb).forEach(function (lid) {
+        var entry = tb[lid];
+        if (!entry || typeof entry !== 'object') return;
+        Object.keys(entry).forEach(function (sym) {
+          tasks.push(sb.from('watchlist_symbols')
+            .delete()
+            .eq('watchlist_id', lid)
+            .in('symbol', [sym])
+            .then(function (res) {
+              if (res.error) { return; }   // still failing — tombstone stays
+              var c = _cloudOf(lid);
+              if (c) {
+                delete c.set[sym];
+                c.order = c.order.filter(function (x) { return x !== sym; });
+                cacheWrite(lid, c.order.slice());
+              }
+              _syncClearTombstone(lid, sym);
+            }));
+        });
+      });
+    });
+    if (!tasks.length) return Promise.resolve();
+    return Promise.all(tasks.map(function (t) { return t.catch(function () {}); }));
   }
 
   // ---- one-time fold: local tickers not in cloud -> insert -------------------
@@ -770,7 +1147,7 @@
           .eq('watchlist_id', listId)
           .in('symbol', toDelete)
           .then(function (res) {
-            if (res.error) throw res.error;
+            if (res.error) throw { error: res.error, kind: 'delete', symbols: toDelete.slice() };
             toDelete.forEach(function (t) { delete c.set[t]; });
             c.order = c.order.filter(function (x) { return !!c.set[x]; });
             cacheWrite(listId, c.order.slice());
@@ -782,11 +1159,25 @@
 
     setPill('syncing');
     return Promise.all(ops).then(function () {
+      // WRITE just landed — say 'saved' (NOT 'clean' — a clean pull is a READ).
+      _syncClearPushPending(listId);
+      _syncClearInsertPending(listId);
+      _syncClearTombstone(listId);
       setPill('synced');
       return { inserted: toInsert.length, deleted: toDelete.length };
     }).catch(function (err) {
+      // D05 W1-honesty: a failed push is REMEMBERED + RETRIED. The tombstone +
+      // pendingPushes marks capture exactly what the next retry needs to land
+      // (the user's intent at enqueue time). The chip stays `offline` until a
+      // successful retry dispatches `saved`.
+      var toMarkForPush = (symbols || []).slice();
+      var toMarkTombstones = (err && err.symbols) || [];
+      if (toMarkForPush.length || toMarkTombstones.length) {
+        _syncMarkPushFailed(listId, toMarkForPush);
+        if (toMarkTombstones.length) _syncMarkTombstone(listId, toMarkTombstones);
+      }
       setPill('offline');
-      warnOnce('push', 'push failed: ' + (err && err.message || err));
+      warnOnce('push', 'push failed: ' + ((err && err.error && err.error.message) || (err && err.message) || err));
       return null;
     });
   }
@@ -1610,6 +2001,14 @@
       sb = null;
       wlId = null;
       foldTargetId = null;
+      // D05 W1-honesty (2)(3): outbox state is account-scoped, like the rest of
+      // the auth-transition reset above. A failed push / tombstone belongs to
+      // the account that recorded it; carrying it into the next sign-in would
+      // either (a) attempt to land a write against the wrong account, or (b)
+      // hold a tombstone against a cloud row the next account owns. Called
+      // BEFORE the listsCache/wlId reset below so the per-list walk can see
+      // every touched list (otherwise it would walk an empty list).
+      _syncClearAllOutbox();
       listsCache = [];
       // Drop every server-read membership: nothing may be diffed (or deleted) against
       // a set that belonged to the account that just signed out. The per-list
@@ -1745,6 +2144,28 @@
   }
 
   // ---- init ------------------------------------------------------------------
+  // The `online` / `offline` window listeners are registered at IIFE LOAD TIME,
+  // not inside init(). D05 W1-honesty needs them reachable from a no-host SHIM
+  // (the SHIM's `document.readyState === 'loading'` keeps init() dormant, so a
+  // listener registered inside init() never sees the test's dispatched `online`
+  // event). The listener body still gates on `user && sb`, so a page that does
+  // not opt into cloud sync stays inert.
+  (function wireConnectivity() {
+    if (wireConnectivity.__done) return;
+    wireConnectivity.__done = true;
+    window.addEventListener('offline', function () { if (user && sb) setPill('offline'); });
+    window.addEventListener('online', function () {
+      if (!user || !sb) return;
+      // D05 W1-honesty (2)(3) trigger (a): flush the per-list outbox (pending
+      // pushes + tombstones) BEFORE pulling. A pending push that lands now is
+      // a WRITE that just succeeded — the chip says `saved`. A tombstone
+      // retry clears the tombstone on DELETE success. Then `pull()` runs the
+      // merge, excludes any still-pending tombstones, and dispatches `clean`
+      // if nothing else is owed.
+      _retryOutboxBeforePull().then(function () { pull(); });
+    });
+  })();
+
   function init() {
     var CFG = window.SUPABASE_CFG;
     var enabled = CFG && CFG.url && CFG.anonKey;
@@ -1800,11 +2221,10 @@
     // sign-in (null→uid) still transitions correctly.
     lastAuthUid = null;
 
-    /* Offline is a real, reachable state and the chip must be able to say it. The
-       browser tells us directly; a signed-out visitor is unaffected because their list
-       genuinely still lives in this browser either way. */
-    window.addEventListener('offline', function () { if (user && sb) setPill('offline'); });
-    window.addEventListener('online', function () { if (user && sb) pull(); });
+    // The `online`/`offline` window listeners are wired above (right after the
+    // host-element guard) so tests that drive a fake `online` event still get
+    // them on a no-host SHIM; the listener bodies gate on `user && sb` and
+    // stay inert for unsigned pages.
 
     // If a session is already established before init (e.g. page reload while
     // signed in), show 'finishing' until onChange fires with the real user.

@@ -341,6 +341,90 @@ def _calib(root=None) -> dict:
     return base
 
 
+def _probability_evidence(root=None) -> dict | None:
+    """Load display-only probability evidence. Never participates in model math."""
+    try:
+        from pathlib import Path
+        base_dir = config.data_dir() if root is None else (Path(root) / "data")
+        path = base_dir / "risk_radar" / "probability_evidence.json"
+        if not path.exists():
+            return None
+        doc = json.loads(path.read_text(encoding="utf-8"))
+        if doc.get("schema") != "risk_radar_probability_evidence.v1":
+            return None
+        if doc.get("evidence_class") != "reconstructed_historical":
+            return None
+        return doc
+    except Exception as exc:  # noqa: BLE001 — display provenance must never break risk
+        log.warning("risk_radar: probability evidence read failed: %s", exc)
+        return None
+
+
+def _probability_key(value: float) -> str:
+    return f"{float(value):.3f}".rstrip("0").rstrip(".")
+
+
+def _calibration_evidence_for(probabilities: dict, calib: dict | None = None,
+                              root=None) -> dict | None:
+    """Match current displayed probabilities to accepted historical evidence cells.
+
+    Fail closed when the live probability surface no longer equals the surface
+    the accepted audit measured. Evidence is display provenance only; it cannot
+    modify the supplied probabilities or create a second confidence threshold.
+    """
+    doc = _probability_evidence(root)
+    if not doc:
+        return None
+    cal = (calib or {}).get("prob_cal") or _PROB_CAL
+    effective_surface = {}
+    for horizon in ("h5", "h10", "h21"):
+        row = cal.get(horizon, _PROB_CAL[horizon])
+        effective_surface[horizon] = {
+            state: float(row.get(state, _PROB_CAL[horizon].get(state, _PROB_BASE[horizon])))
+            for state in _STATE_ORDER
+        }
+    expected = doc.get("model_surface") or {}
+    if expected.get("state_probability_surface") != effective_surface:
+        return None
+    if expected.get("conjunction_bump") != {k: float(v) for k, v in _CONJ_BUMP.items()}:
+        return None
+    matched = {}
+    for horizon in ("h5", "h10", "h21"):
+        value = probabilities.get(horizon)
+        if value is None:
+            continue
+        block = (doc.get("horizons") or {}).get(horizon) or {}
+        cell = (block.get("cells") or {}).get(_probability_key(value))
+        if not isinstance(cell, dict):
+            matched[horizon] = {
+                "matched": False,
+                "displayed_probability": float(value),
+            }
+            continue
+        matched[horizon] = {
+            "matched": True,
+            "displayed_probability": float(value),
+            "n": cell.get("n"),
+            "events": cell.get("events"),
+            "observed_rate": cell.get("observed_rate"),
+            "observed_rate_ci90": cell.get("observed_rate_ci90"),
+            "thin": bool(cell.get("thin")),
+            "from": block.get("from"),
+            "through": block.get("through"),
+            "population_sha256": block.get("population_sha256"),
+        }
+    return {
+        "schema": doc.get("schema"),
+        "evidence_class": doc.get("evidence_class"),
+        "precision_grade": bool(doc.get("precision_grade")),
+        "window": doc.get("window"),
+        "target": doc.get("target"),
+        "limitations": doc.get("limitations") or [],
+        "source": doc.get("source") or {},
+        "horizons": matched,
+    }
+
+
 # --- leading signal series (causal, leak-free) -------------------------------
 def _s(group, name, col="close"):
     df = store.read(group, name)
@@ -1060,7 +1144,15 @@ def compute(sigs: pd.DataFrame | None = None, calib: dict | None = None, asof=No
                        "n_legs_resolved": sum(1 for lg, _w in _reg
                                               if lg in sigrow.index and not pd.isna(sigrow.get(lg))),
                        "weight_coverage": _cov,
-                       "partial_composition": bool(_cov is not None and _cov < 1.0)})
+                       "partial_composition": bool(_cov is not None and _cov < 1.0),
+                       # Presentation truth only. Keep the legacy arithmetic/score/band
+                       # immutable, but do not present a value as an eligible risk read
+                       # when every structurally eligible leg is absent today.
+                       "reading_state": ("UNAVAILABLE" if not _res_w else
+                                         "PARTIAL" if _cov is not None and _cov < 1.0
+                                         else "AVAILABLE"),
+                       "display_score": round(sc, 1) if _res_w else None,
+                       "display_band": band if _res_w else None})
 
     # DISPLAY-ONLY leg readings (VSB W6). These legs are excluded from every sub-score AND from
     # escalation eligibility, so a scare whose only RESOLVING leg is display_only now has no
@@ -1087,6 +1179,9 @@ def compute(sigs: pd.DataFrame | None = None, calib: dict | None = None, asof=No
         })
 
     scares.sort(key=lambda d: -d["score"])
+    unavailable_scares = {
+        s["scare"] for s in scares if s.get("reading_state") == "UNAVAILABLE"
+    }
     tierA = [s for s in scares if s["tier"] == "A"]
     # dominant/named scare from the VALIDATED (Tier-A) set, lift-weighted so leading > coincident
     dominant = max(tierA, key=lambda d: d["lead_weighted"]) if tierA else (scares[0] if scares else None)
@@ -1110,11 +1205,21 @@ def compute(sigs: pd.DataFrame | None = None, calib: dict | None = None, asof=No
     if gross_applied:
         gross = round(max(_GROSS["floor"], gross * float(mod["gross_mult"])), 3)
     mod["gross_applied"] = bool(gross_applied)
-    prob = _drawdown_prob(state, int(resolved_state["hot_a_count"]), calib)
+    prob = _drawdown_prob(
+        state, int(resolved_state["hot_a_count"]), calib, include_evidence=True
+    )
     head_en, head_zh = _headline(state, dominant, hotA, prob)
     authority = _market_state_authority(state, bool(alert), scares, prob, calib)
-    traj = trajectory(subs, calib, sigs=sigs)
-    deesc = _deescalation(dominant["scare"] if dominant else None, subs, traj, prob)
+    traj = trajectory(
+        subs, calib, sigs=sigs, unavailable_scares=unavailable_scares
+    )
+    deesc = _deescalation(
+        dominant["scare"] if dominant else None,
+        subs,
+        traj,
+        prob,
+        unavailable_scares=unavailable_scares,
+    )
 
     # cap_leadership is True from 'elevated'. THRESHOLD REVIEW (incident
     # synthesis.md §4 item 6, flagged NOT auto-decided): the opt-in knob below
@@ -1198,10 +1303,14 @@ def compute(sigs: pd.DataFrame | None = None, calib: dict | None = None, asof=No
     }
 
 
-def _drawdown_prob(state: str, nhot: int, calib: dict | None = None) -> dict:
-    """Calibrated, ESCALATING probability of a >=5% SPY pullback within 5/10/21 business days.
-    Rises with the state (intensity) AND with conjunction (# Tier-A scares hot) — both measured.
-    Returns per-horizon probabilities + the base rate + lift, with an honest one-line note."""
+def _drawdown_prob(state: str, nhot: int, calib: dict | None = None, *,
+                   include_evidence: bool = False, evidence_root=None) -> dict:
+    """Calibrated probability plus optional display-only evidence provenance.
+
+    Probability math is unchanged. Evidence lookup is opt-in so trajectory/replay
+    loops do not incur file I/O and cannot accidentally treat historical metadata
+    as a model input.
+    """
     cal = (calib or {}).get("prob_cal") or _PROB_CAL
     conj_extra = max(0, int(nhot) - 1)
     out = {}
@@ -1233,6 +1342,10 @@ def _drawdown_prob(state: str, nhot: int, calib: dict | None = None) -> dict:
         f"该等级自身实测 21 日回撤率 {sl.get('h21_pct')}%，长期基准 {sl.get('base_h21_pct')}%"
         f"（倍数 {sl.get('h21')}x"
         + ("）。" if sl.get("above_base") else "——不高于基准，属早期提示而非优势）。"))
+    if include_evidence:
+        out["calibration_evidence"] = _calibration_evidence_for(
+            out, calib=calib, root=evidence_root
+        )
     return out
 
 
@@ -1409,7 +1522,8 @@ def _trajectory_from_series(win, states, odds, caution_band: float) -> dict:
 
 
 def trajectory(subs: pd.DataFrame | None = None, calib: dict | None = None,
-               window: int = _TRAJ_WINDOW, sigs: pd.DataFrame | None = None) -> dict | None:
+               window: int = _TRAJ_WINDOW, sigs: pd.DataFrame | None = None,
+               unavailable_scares: set[str] | None = None) -> dict | None:
     """Recent PATH of the radar — has its intensity peaked and turned down, and how fast are the
     pullback odds dropping? Powers the de-escalation / "risk-off may be ending" panel
     (engine/risk_radar_recovery.py). LEAK-FREE: every input is a causal trailing-window percentile
@@ -1459,6 +1573,12 @@ def trajectory(subs: pd.DataFrame | None = None, calib: dict | None = None,
             drivers_faded = []
             drivers_warm = []
             for scare in subs.columns:
+                if (
+                    scare in (unavailable_scares or set())
+                    or pd.isna(subs[scare].iloc[-1])
+                ):
+                    # Missing/ineligible TODAY cannot reuse yesterday as a warm/faded read.
+                    continue
                 sw = subs[scare].dropna().tail(window)
                 if len(sw) < 3:
                     continue
@@ -1491,7 +1611,8 @@ _RISK_OFF_SCARES = {"growth", "credit", "rates", "vol"}
 
 
 def _deescalation(dominant: str | None, subs: pd.DataFrame | None,
-                  traj: dict | None, prob: dict | None) -> dict:
+                  traj: dict | None, prob: dict | None, *,
+                  unavailable_scares: set[str] | None = None) -> dict:
     """ONE risk voice per page (2026-07-02 incident root-cause #10). Through the
     semis breakdown the de-escalation panel showed green 'risk receding' (the
     June vol scare fading) while this radar's own dominant growth scare sat at
@@ -1516,6 +1637,12 @@ def _deescalation(dominant: str | None, subs: pd.DataFrame | None,
         if subs is not None and not subs.empty:
             best_off = None
             for s in subs.columns:
+                if (
+                    s in (unavailable_scares or set())
+                    or pd.isna(subs[s].iloc[-1])
+                ):
+                    # An older observation is not evidence that risk is receding today.
+                    continue
                 w = subs[s].dropna().tail(_TRAJ_WINDOW)
                 if len(w) < 10:
                     continue

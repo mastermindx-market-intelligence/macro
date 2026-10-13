@@ -1,0 +1,109 @@
+{
+  "schema": "gmi.wp02.frame_audit_package_manifest/v1",
+  "created_at_utc": "2026-10-09T10:45:10.655007+00:00",
+  "status": "NOT_READY_NO_120_ISSUER_SELECTION",
+  "repository_source_ref": "4d736c55adb630a4a8eb11b261e31acd0f6dc48b",
+  "files": [
+    {
+      "path": "WP02_SAMPLING_FRAME_ASSESSMENT.md",
+      "bytes": 31919,
+      "sha256": "9ab4ef6dcb81eb0a3185269a851f22d315a2ff45c0be5c67dfb154efa4cfc1e0"
+    },
+    {
+      "path": "artifact_validation.json",
+      "bytes": 578,
+      "sha256": "ec1d14e254bec6e628aba58574b334c4447160b41dc018d8f8266873abd4afcf"
+    },
+    {
+      "path": "extended_snapshot_profiles.json",
+      "bytes": 3840,
+      "sha256": "05facfe2ddfe6b411ee069c723da3de35d76dfdfc0e1fb8cce3782ef6604f3e1"
+    },
+    {
+      "path": "final_snapshot_details.json",
+      "bytes": 3046,
+      "sha256": "42068b51a19fad94132465edfcd410c7aebaa2a9823d97bd445d0765e2fc7a1b"
+    },
+    {
+      "path": "frame_deficiency_receipt.json",
+      "bytes": 19114,
+      "sha256": "78fd26201344c844cec1068d12f29038f3f9aded44e223d32d19e44f0da4b201"
+    },
+    {
+      "path": "inspection_source_manifest.json",
+      "bytes": 30883,
+      "sha256": "943fb98b83780c2ab664a4e4a26dc66a756ffca27e0a263f2dffdfc28330f83c"
+    },
+    {
+      "path": "native_process_completion_receipts.json",
+      "bytes": 2600,
+      "sha256": "1893cb663016d6b2f55916ff172cdcba529069a4ca62d3a3d206fa883c4e3768"
+    },
+    {
+      "path": "primary_source_route_register.json",
+      "bytes": 9917,
+      "sha256": "180f009c7e743f808e8658da4c9f46177825c1352b5e7008b1af4a16d703ae34"
+    },
+    {
+      "path": "reference_receipt_selected.json",
+      "bytes": 4844,
+      "sha256": "100f3c846e6c69dcbf83c8671d8b7a79966e304df00f100396d51b9b8e7b2b13"
+    },
+    {
+      "path": "required_field_mapping.json",
+      "bytes": 7263,
+      "sha256": "c75bd713d79d72d9a7ae986fd331aa645292fa392b3880af41382c9943d9700f"
+    },
+    {
+      "path": "snapshot_details.json",
+      "bytes": 17877,
+      "sha256": "156f4079d3c89330e3766e4d5168de84b2115b14047121ed7665cb5378048fb6"
+    },
+    {
+      "path": "snapshot_profiles.json",
+      "bytes": 34017,
+      "sha256": "3522ae1312a04fec3d5a5c3efe3d242eb0874894b981d1d0bedcfac44d7a69d2"
+    },
+    {
+      "path": "source_contract_bindings.json",
+      "bytes": 3362,
+      "sha256": "0b766ee5352e35c8690769c29b76094f82855efce1b4c1ae2837367fed9538d9"
+    },
+    {
+      "path": "source_contracts/build_polygon_universe.py",
+      "bytes": 16808,
+      "sha256": "a37b017558e5d331f448b3cae039df89b3524af3c5f9c36a1aa1e4ae0504ecf5"
+    },
+    {
+      "path": "source_contracts/canada_breadth.py",
+      "bytes": 3706,
+      "sha256": "d0afd1a9797eac1e6c14f83b3572f3b8812d16c785843a348118fd6af26dd90d"
+    },
+    {
+      "path": "source_contracts/canada_universe.py",
+      "bytes": 12770,
+      "sha256": "940c221ea6670e1cf5c92046a47f946fd91490298cd13159d19b26167742848f"
+    },
+    {
+      "path": "source_contracts/china_sectors.py",
+      "bytes": 19954,
+      "sha256": "b23be8f706033d84d548a1f0696f5bcfa2417c15c5a13c0cfdd91fb423265238"
+    },
+    {
+      "path": "source_contracts/dataset_registry.yml",
+      "bytes": 50632,
+      "sha256": "bb9b6975eeabebf630f73e632d307d280ea1d9e34f30953ac3989c65fc90f0a7"
+    },
+    {
+      "path": "source_contracts/hk_universe.py",
+      "bytes": 16545,
+      "sha256": "d3bda094cc3f82a3a6fe198e22cd88e26b53768cfdd21da8f7992f5e60442e67"
+    },
+    {
+      "path": "source_contracts/universe_history.py",
+      "bytes": 6637,
+      "sha256": "f1c26fbb2abfc405916a60e4adc3b09973181fa7e7b3b9d29225cd0e71f9b9d9"
+    }
+  ],
+  "scope": "Read-only source-diagnostic research artifact. Root owns any later publication, procurement, frame-policy adoption, selection and implementation."
+}

@@ -4,8 +4,9 @@ THE CONTRACT
 ============
 An excess return differences a name leg against a benchmark leg. Every benchmark this
 house grades against exists only BACK-ADJUSTED, so the name leg must be adjusted too. The
-breadth close caches are RAW, so they are the LAST rung, and a name that lands there is
-stamped rather than silently mixed in.
+breadth close cache is the LAST rung, but its legacy UNADJUSTED source tag is not
+canonical RAW-basis evidence: the native breadth producer requests adjusted Close. A
+name that lands there remains stamped without inventing a raw/tradj basis.
 
 EVERY BEHAVIOURAL TEST HERE RUNS ON A SYNTHETIC STORE AND NEVER SKIPS.
 A regression that only runs when `data/` happens to be present is a dark gate: it passes
@@ -334,3 +335,118 @@ def test_every_ladder_tag_classifies():
     read as 'pre-era' forever."""
     for src in pl.LADDER:
         assert pl.is_adjusted(src) is not None, src
+
+# --------------------------------------------------------------------------- #
+# 6. opt-in selected-price evidence — exact read, no legacy shape change
+# --------------------------------------------------------------------------- #
+def _sha256(path: Path) -> str:
+    import hashlib
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def test_evidence_mode_binds_the_exact_selected_file_column_and_basis(store):
+    r = pl.resolve_close("PAYER", data_dir=str(store), capture_evidence=True)
+    assert r.ok and r.evidence is not None
+    ev = r.evidence
+    path = store / "baskets" / "ohlcv" / "PAYER.parquet"
+    assert ev.source == "baskets_ohlcv"
+    assert ev.source_path == "baskets/ohlcv/PAYER.parquet"
+    assert ev.column == "close"
+    assert ev.basis == "tradj"
+    assert ev.receipt_state == "EXACT_ENCODED_OBJECT"
+    assert ev.content_sha256 == _sha256(path)
+    assert ev.content_bytes == path.stat().st_size
+    # Existing source files do not attest these semantics. Unknown stays unknown.
+    assert ev.adjustment_asof is None
+    assert ev.session is None
+    assert ev.venue_scope is None
+    assert ev.observed_at is None
+
+
+def test_evidence_mode_records_yahoo_close_price_as_split_adjusted(tmp_path):
+    d = tmp_path / "yahoo"
+    d.mkdir(parents=True)
+    pd.DataFrame({"close_price": _raw_series().values}, index=IDX).to_parquet(d / "SADJ.parquet")
+    r = pl.resolve_close("SADJ", data_dir=str(tmp_path), capture_evidence=True)
+    assert r.price_source == "yahoo"
+    assert r.evidence is not None
+    assert r.evidence.column == "close_price"
+    assert r.evidence.basis == "sadj"
+    assert r.evidence.content_sha256 == _sha256(d / "SADJ.parquet")
+
+
+def test_evidence_mode_hashes_the_wide_cache_object_without_inventing_basis(store):
+    r = pl.resolve_close("CACHEONLY", data_dir=str(store), capture_evidence=True)
+    assert r.evidence is not None
+    path = store / "breadth" / "_closes_cache.parquet"
+    assert r.evidence.source == "closes_cache_UNADJUSTED"
+    assert r.evidence.source_path == "breadth/_closes_cache.parquet"
+    assert r.evidence.column == "CACHEONLY"
+    assert r.evidence.basis is None
+    assert r.evidence.receipt_state == "EXACT_ENCODED_OBJECT"
+    assert r.evidence.content_sha256 == _sha256(path)
+
+
+def test_preloaded_wide_frame_never_borrows_a_configured_file_identity(tmp_path):
+    frame = pd.DataFrame({"CACHEONLY": _raw_series().values}, index=IDX)
+    books = pl.make_books(str(tmp_path), cache_frames=[frame], capture_evidence=True)
+    r = pl.resolve_close("CACHEONLY", data_dir=str(tmp_path), capture_evidence=True, _book=books)
+    assert r.ok and r.evidence is not None
+    assert r.evidence.source == "closes_cache_UNADJUSTED"
+    assert r.evidence.source_path is None
+    assert r.evidence.content_sha256 is None
+    assert r.evidence.basis is None
+    assert r.evidence.receipt_state == "SOURCE_OBJECT_UNATTESTED"
+
+
+def test_close_panel_evidence_covers_resolved_and_unresolved_requested_names(store):
+    panel, prov = pl.close_panel(
+        ["PAYER", "CACHEONLY", "NOWHERE"], data_dir=str(store), capture_evidence=True)
+    assert set(panel.columns) == {"PAYER", "CACHEONLY"}
+    assert set(prov["price_evidence"]) == {"PAYER", "CACHEONLY", "NOWHERE"}
+    assert prov["price_evidence"]["PAYER"]["basis"] == "tradj"
+    assert prov["price_evidence"]["CACHEONLY"]["basis"] is None
+    assert prov["price_evidence"]["NOWHERE"]["receipt_state"] == "UNRESOLVED"
+    assert prov["price_evidence"]["NOWHERE"]["source"] is None
+
+
+def test_default_mode_preserves_legacy_provenance_shape_and_values(store):
+    legacy = pl.resolve_close("PAYER", data_dir=str(store))
+    asserted = pl.resolve_close("PAYER", data_dir=str(store), capture_evidence=True)
+    assert legacy.evidence is None
+    assert legacy.series.equals(asserted.series)
+    assert legacy.price_source == asserted.price_source
+    _, prov = pl.close_panel(["PAYER"], data_dir=str(store))
+    assert "price_evidence" not in prov
+
+
+
+@pytest.mark.parametrize("group", pl.CACHE_GROUPS)
+@pytest.mark.parametrize("closes", [
+    [100.0, 102.0, 51.0],  # Unadjusted exchange prints around a 2-for-1 split.
+    [50.0, 51.0, 51.0],   # auto_adjust=True producer-shaped rebased Close.
+    [100.0, 51.0, 51.0],  # Mixed/rebased windows prove neither exact basis.
+])
+def test_cache_history_keeps_legacy_values_and_receipt_but_basis_unknown(tmp_path, group, closes):
+    idx = pd.bdate_range("2026-06-01", periods=3)
+    frame = pd.DataFrame({"SPLIT": closes}, index=idx)
+    path = tmp_path / group / "_closes_cache.parquet"
+    path.parent.mkdir(parents=True)
+    frame.to_parquet(path)
+    encoded = path.read_bytes()
+
+    legacy = pl.resolve_close("SPLIT", data_dir=str(tmp_path))
+    selected = pl.resolve_close("SPLIT", data_dir=str(tmp_path), capture_evidence=True)
+    assert selected.series.equals(frame["SPLIT"])
+    assert selected.series.equals(legacy.series)
+    assert selected.price_source == legacy.price_source == "closes_cache_UNADJUSTED"
+    assert selected.adjusted is legacy.adjusted is False
+    assert selected.tried == legacy.tried == list(pl.LADDER)
+    ev = selected.evidence
+    assert ev.source_path == f"{group}/_closes_cache.parquet"
+    assert ev.column == "SPLIT"
+    assert ev.basis is None
+    assert ev.receipt_state == "EXACT_ENCODED_OBJECT"
+    assert ev.content_sha256 == _sha256(path)
+    assert ev.content_bytes == len(encoded)
+    assert ev.adjustment_asof is None
