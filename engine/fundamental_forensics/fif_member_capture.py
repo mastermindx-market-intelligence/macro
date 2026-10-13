@@ -32,6 +32,7 @@ coverage contract and the retained manifests.
 """
 from __future__ import annotations
 
+import gzip
 import hashlib
 import json
 import os
@@ -44,6 +45,7 @@ from pathlib import Path
 from typing import Any, Mapping, Sequence
 from xml.etree import ElementTree as ET
 
+from collectors.edgar_forensics import historical_submissions_url
 from collectors.fundamental_forensics_acquisition import read_verified_submissions
 from collectors.sec_document_spine import read_archive_document
 from .filing_package import _MEMBER_STATES
@@ -89,8 +91,33 @@ RETAINED_PACKAGE_INTEGRITY_CODES = frozenset(
         "package_manifest_malformed",
         "inventory_mismatch",
         "golden_input_refused",
+        # C0-c E5-e (seat-accepted): retained page bytes that fail their
+        # receipt verification are the same class as package_bytes_mismatch —
+        # run-level integrity, nonzero exit, never a refetch-over.
+        "submissions_page_receipt_mismatch",
     }
 )
+
+# C0-c ERRATA-5: the per-accession submissions-page vocabulary, shared with
+# E1's contract acquisition (fif_contract_acquisition.py). ``accession_not_in_
+# submissions`` already existed. A page that cannot be located, cannot be
+# disambiguated, disagrees with the contract row, or breaks the E5-a ceiling
+# is a per-accession refusal — never a run abort.
+PAGE_REFUSAL_CODES = frozenset(
+    {
+        "submissions_page_not_found",
+        "submissions_page_ambiguous",
+        "submissions_row_mismatch",
+        "submissions_page_oversize",
+        # raisable vocabulary for the run-level integrity refusal (E5-e: the
+        # seat ruling moved it INTO RETAINED_PACKAGE_INTEGRITY_CODES; it stays
+        # here too because FifMemberCaptureError validates against this set).
+        "submissions_page_receipt_mismatch",
+        # C0-c ERRATA-4 R1: a contract form outside the member policy.
+        "form_not_in_member_policy",
+    }
+)
+
 
 # Census byte ceilings: 32 MiB per member, 20k members per archive index, and
 # a per-run budget across every fetched member document.
@@ -126,8 +153,52 @@ _REFUSAL_CODES = frozenset(
         "package_bytes_mismatch",
         "inventory_mismatch",
         "staging_device_mismatch",
+        # C0-c ERRATA-5 / E1-d: the shared submissions-page vocabulary.
+        "submissions_page_not_found",
+        "submissions_page_ambiguous",
+        "submissions_row_mismatch",
+        "submissions_page_oversize",
+        # raisable vocabulary for the run-level integrity refusal (E5-e: the
+        # seat ruling moved it INTO RETAINED_PACKAGE_INTEGRITY_CODES; it stays
+        # here too because FifMemberCaptureError validates against this set).
+        "submissions_page_receipt_mismatch",
+        # C0-c ERRATA-4 R1: a contract form outside the member policy.
+        "form_not_in_member_policy",
     }
 )
+
+# C0-c ERRATA-4 R1: the member set is keyed by the CONTRACT form — it is
+# NEVER inferred from file content. 10-K/10-Q require all five members
+# (unchanged); 8-K requires schema, presentation and label, with calculation
+# and definition OPTIONAL (R2: absent only when the accession's own archive
+# index does not name the member).
+MEMBER_POLICY_BY_FORM: dict[str, dict[str, tuple[tuple[str, str], ...]]] = {
+    "10-K": {"required": MEMBER_SUFFIX_ROLES, "optional": ()},
+    "10-Q": {"required": MEMBER_SUFFIX_ROLES, "optional": ()},
+    "8-K": {
+        "required": (
+            (".xsd", "schema"),
+            ("_pre.xml", "presentation"),
+            ("_lab.xml", "label"),
+        ),
+        "optional": (
+            ("_cal.xml", "calculation"),
+            ("_def.xml", "definition"),
+        ),
+    },
+}
+ABSENT_MEMBER_REASON = "absent_in_archive_index"
+
+
+def member_policy_for(form: str) -> dict[str, tuple[tuple[str, str], ...]]:
+    """The form-keyed member policy, or the typed R1 refusal."""
+    policy = MEMBER_POLICY_BY_FORM.get(str(form or "").strip().upper())
+    if policy is None:
+        raise FifMemberCaptureError(
+            f"contract form is not in the member policy: {form!r}",
+            code="form_not_in_member_policy",
+        )
+    return policy
 
 _STATEMENT_DEFINITION_SEPARATOR = " - Statement - "
 _TRAILING_PARENTHETICAL = re.compile(r"\s*\([^()]*\)\s*$")
@@ -284,14 +355,35 @@ def mint_acceptance_witness(
     cik: str,
     accession: str,
     primary_document: str,
-) -> tuple[bytes, dict[str, str]]:
+    filing_date: str = "",
+    submissions_collector: Any = None,
+    retrieved_at: str = "",
+    budget_remaining: int = DEFAULT_RUN_BUDGET_BYTES,
+    page_ceiling_bytes: int | None = None,
+) -> tuple[bytes, dict[str, str], dict[str, Any] | None]:
     """Bind the Submissions-row slice for one accession to exact manifest fields.
 
-    The slice is the incumbent 7-bound-field witness shape (accessionNumber,
-    form, filingDate, reportDate, acceptanceDateTime, primaryDocument) plus its
-    two source pointers (source_url, source_path). A row that disagrees with
-    the retained manifest's primary document is a typed identity refusal.
+    ERRATA-5: if the accession is in ``filings.recent`` the binding is
+    byte-unchanged (rule 1). Otherwise the witness binds from the UNIQUE
+    covering ``filings.files[]`` page of the SAME verified latest.json (rules
+    2-5, E5-c/E5-d): the page is reuse-or-fetched under the run budget
+    (``retain_submissions_page``), the accession must appear in it, and every
+    bound field carries the same checks as the recent path. Only the
+    ``source_url``/``source_path`` VALUES differ (``filings.files[<name>]
+    [accessionNumber=<acc>]`` and the page URL); the JSON keys and sort order
+    are identical (E5-c). MAJOR-1: reuse is qualification-aware — a verified
+    retained page is reused only while it still contains the accession or its
+    derived range equals the current files[] entry's; a stale page (SEC
+    re-paged the shard) is refetched through the incumbent path.
+
+    Returns ``(witness_bytes, bound_fields, page_info)`` where ``page_info``
+    is None on the recent path and ``{"name", "charged_bytes", "reused"}`` on
+    the page path (the caller charges the page bytes to the run budget).
     """
+    from collectors.fundamental_forensics_acquisition import (
+        DEFAULT_MAX_SUBMISSIONS_BYTES,
+    )
+
     try:
         submissions, receipt = read_verified_submissions(Path(raw_root), cik)
     except Exception as exc:  # noqa: BLE001 - AcquisitionError and friends are typed here
@@ -301,15 +393,76 @@ def mint_acceptance_witness(
         ) from exc
     recent = (submissions.get("filings") or {}).get("recent") or {}
     accessions = recent.get("accessionNumber")
-    if not isinstance(accessions, list) or accession not in accessions:
-        raise FifMemberCaptureError(
-            f"accession is absent from the retained Submissions rows: {accession}",
-            code="accession_not_in_submissions",
+    page_info: dict[str, Any] | None = None
+    page_source_url = ""
+    if isinstance(accessions, list) and accession in accessions:
+        row_columns: Mapping[str, Any] = recent
+        row_index: int = accessions.index(accession)
+        source_url = str(receipt.get("url") or "")
+        source_path = f"filings.recent[accessionNumber={accession}]"
+    else:
+        # ERRATA-5 rule 2: the unique covering page, selected from the SAME
+        # verified latest.json document (E5-d — no second Submissions fetch).
+        files_inventory = (submissions.get("filings") or {}).get("files") or []
+        if not str(filing_date or "").strip() or not files_inventory:
+            raise FifMemberCaptureError(
+                f"accession is absent from the retained Submissions rows: {accession}",
+                code="accession_not_in_submissions",
+            )
+        if submissions_collector is None:
+            raise FifMemberCaptureError(
+                f"accession is outside filings.recent and no submissions "
+                f"collector was provided to fetch its page: {accession}",
+                code="submissions_unavailable",
+            )
+        page_name = select_submissions_page(submissions, filing_date=filing_date)
+        # MAJOR-1 (3): the page_entry from the SAME verified latest.json (E5-d)
+        # rides with the accession so retain_submissions_page can qualify a
+        # retained page (containment or derived-range equality) instead of
+        # reusing any URL-matching bytes forever.
+        page_entry = submissions_page_entry(submissions, page_name)
+        page_bytes, charged, reused = retain_submissions_page(
+            raw_root=Path(raw_root),
+            cik=cik,
+            page_name=page_name,
+            submissions_collector=submissions_collector,
+            retrieved_at=retrieved_at,
+            budget_remaining=budget_remaining,
+            page_ceiling_bytes=(
+                DEFAULT_MAX_SUBMISSIONS_BYTES
+                if page_ceiling_bytes is None
+                else page_ceiling_bytes
+            ),
+            accession=accession,
+            page_entry=page_entry,
         )
-    row_index = accessions.index(accession)
+        try:
+            page_payload = json.loads(page_bytes.decode("utf-8"))
+        except (UnicodeDecodeError, json.JSONDecodeError) as exc:
+            raise FifMemberCaptureError(
+                f"submissions page is not UTF-8 JSON: {page_name} ({exc})",
+                code="submissions_unavailable",
+            ) from exc
+        if not isinstance(page_payload, dict):
+            raise FifMemberCaptureError(
+                f"submissions page is not a JSON object: {page_name}",
+                code="submissions_unavailable",
+            )
+        page_accessions = page_payload.get("accessionNumber")
+        if not isinstance(page_accessions, list) or accession not in page_accessions:
+            raise FifMemberCaptureError(
+                f"accession is absent from the retained Submissions rows: {accession}",
+                code="accession_not_in_submissions",
+            )
+        row_columns = page_payload
+        row_index = page_accessions.index(accession)
+        page_source_url = historical_submissions_url(cik, page_name)
+        source_url = page_source_url
+        source_path = f"filings.files[{page_name}][accessionNumber={accession}]"
+        page_info = {"name": page_name, "charged_bytes": charged, "reused": reused}
 
     def _cell(field: str) -> Any:
-        values = recent.get(field)
+        values = row_columns.get(field)
         if isinstance(values, list) and row_index < len(values):
             return values[row_index]
         return None
@@ -341,8 +494,8 @@ def mint_acceptance_witness(
             code="identity_mismatch",
         )
     witness = {
-        "source_url": str(receipt.get("url") or ""),
-        "source_path": f"filings.recent[accessionNumber={accession}]",
+        "source_url": source_url,
+        "source_path": source_path,
         "accessionNumber": accession,
         "form": bound["form"],
         "filingDate": bound["filingDate"],
@@ -355,7 +508,339 @@ def mint_acceptance_witness(
             "retained Submissions receipt carries no source_url", code="submissions_unavailable"
         )
     payload = (json.dumps(witness, indent=2, sort_keys=True) + "\n").encode("utf-8")
-    return payload, bound
+    return payload, bound, page_info
+
+
+# ---------------------------------------------------------------------------
+# Submissions pages (C0-c ERRATA-5: the retained-page witness/acquire path)
+# ---------------------------------------------------------------------------
+
+
+def select_submissions_page(
+    submissions: Mapping[str, Any], *, filing_date: str
+) -> str:
+    """ERRATA-5 rule 2: the UNIQUE ``filings.files[]`` entry covering the date.
+
+    Reads the SAME verified latest.json document the recent path reads (E5-d):
+    there is no second Submissions fetch. Selection is by the inclusive
+    [filingFrom, filingTo] range only; zero covering entries is
+    ``submissions_page_not_found``, more than one is
+    ``submissions_page_ambiguous``. Never guess.
+    """
+    files = (submissions.get("filings") or {}).get("files") or []
+    date = str(filing_date or "").strip()
+    covering: list[str] = []
+    for entry in files:
+        if not isinstance(entry, Mapping):
+            continue
+        name = entry.get("name")
+        start = str(entry.get("filingFrom") or "")
+        end = str(entry.get("filingTo") or "")
+        if not isinstance(name, str) or not name:
+            continue
+        if not start or not end or not date:
+            continue
+        if start <= date <= end:
+            covering.append(name)
+    if not covering:
+        raise FifMemberCaptureError(
+            f"no filings.files[] page covers filing_date {date!r}",
+            code="submissions_page_not_found",
+        )
+    if len(set(covering)) > 1 or len(covering) > 1:
+        raise FifMemberCaptureError(
+            f"filings.files[] pages overlap at filing_date {date!r}: {sorted(set(covering))}",
+            code="submissions_page_ambiguous",
+        )
+    return covering[0]
+
+
+def submissions_page_entry(
+    submissions: Mapping[str, Any], page_name: str
+) -> dict[str, Any]:
+    """MAJOR-1 (3): the UNIQUE ``filings.files[]`` entry with this name.
+
+    Read from the SAME verified latest.json document the recent path reads
+    (E5-d — no second Submissions fetch); it is the page_entry handed to
+    ``retain_submissions_page`` so retained-page qualification can compare a
+    candidate's derived range against the CURRENT inventory range. Typed
+    ``submissions_page_not_found`` when absent, ``submissions_page_ambiguous``
+    when the inventory names the page more than once.
+    """
+    files = (submissions.get("filings") or {}).get("files") or []
+    matches = [
+        dict(entry)
+        for entry in files
+        if isinstance(entry, Mapping) and entry.get("name") == page_name
+    ]
+    if not matches:
+        raise FifMemberCaptureError(
+            f"filings.files[] carries no page named {page_name!r} in the "
+            "verified latest.json",
+            code="submissions_page_not_found",
+        )
+    if len(matches) > 1:
+        raise FifMemberCaptureError(
+            f"filings.files[] names page {page_name!r} more than once",
+            code="submissions_page_ambiguous",
+        )
+    return matches[0]
+
+
+def _read_retrieval_object(raw_root: Path, receipt: Mapping[str, Any]) -> bytes:
+    """Decompress one raw-root retrieval object addressed by its receipt."""
+    object_path = str(receipt.get("object_path") or "")
+    digest = str(receipt.get("sha256") or "")
+    length = receipt.get("bytes")
+    if (
+        not object_path
+        or not digest
+        or isinstance(length, bool)
+        or not isinstance(length, int)
+        or length < 0
+    ):
+        raise ValueError("retrieval receipt is malformed")
+    source = Path(raw_root) / object_path
+    try:
+        with gzip.open(source, "rb") as handle:
+            content = handle.read(length + 1)
+    except (OSError, EOFError) as exc:
+        raise ValueError(f"retrieval object is unreadable: {object_path}") from exc
+    if len(content) != length or hashlib.sha256(content).hexdigest() != digest:
+        raise ValueError(f"retrieval object fails its receipt digest: {object_path}")
+    return content
+
+
+def _decoded_page_object(content: bytes) -> Mapping[str, Any] | None:
+    """The page bytes as a JSON object, or None (verified but unusable)."""
+    try:
+        payload = json.loads(content.decode("utf-8"))
+    except (UnicodeDecodeError, json.JSONDecodeError):
+        return None
+    return payload if isinstance(payload, dict) else None
+
+
+def _page_candidate_qualifies(
+    content: bytes,
+    *,
+    accession: str | None,
+    page_entry: Mapping[str, Any] | None,
+) -> bool:
+    """MAJOR-1: does one VERIFIED retained page still serve this need?
+
+    With no filters given the incumbent behaviour holds (every verified
+    candidate qualifies — back-compat only; no production caller may rely on
+    it). Otherwise a candidate qualifies iff (a) its bytes decode to a JSON
+    object whose ``accessionNumber`` list contains ``accession``, or (b)
+    ``page_entry`` carries non-empty string filingFrom/filingTo AND the
+    candidate's DERIVED range [min, max] over its own non-empty string
+    ``filingDate`` cells equals [filingFrom, filingTo] exactly. Undecodable or
+    non-object bytes verified; they are simply unusable — never an integrity
+    refusal.
+    """
+    if accession is None and page_entry is None:
+        return True
+    payload: Mapping[str, Any] | None = None
+    if accession:
+        payload = _decoded_page_object(content)
+        if payload is not None:
+            accessions = payload.get("accessionNumber")
+            if isinstance(accessions, list) and accession in accessions:
+                return True
+    if page_entry is not None:
+        start = page_entry.get("filingFrom")
+        end = page_entry.get("filingTo")
+        if (
+            isinstance(start, str)
+            and start.strip()
+            and isinstance(end, str)
+            and end.strip()
+        ):
+            if payload is None:
+                payload = _decoded_page_object(content)
+            if payload is not None:
+                dates = payload.get("filingDate")
+                cells = [
+                    value
+                    for value in (dates if isinstance(dates, list) else [])
+                    if isinstance(value, str) and value.strip()
+                ]
+                if cells and (min(cells), max(cells)) == (start.strip(), end.strip()):
+                    return True
+    return False
+
+
+def find_verified_submissions_page(
+    raw_root: Path,
+    *,
+    cik: str,
+    page_name: str,
+    accession: str | None = None,
+    page_entry: Mapping[str, Any] | None = None,
+) -> tuple[bytes, dict[str, Any]] | None:
+    """ERRATA-5 E5-b + MAJOR-1: the newest VERIFIED retained page for this
+    shard that still QUALIFIES, or None.
+
+    Scans ``<raw_root>/<cik10>/submissions/*.receipt.json`` for receipts whose
+    ``url`` equals ``historical_submissions_url(cik, page_name)``; EVERY such
+    receipt's object must verify (sha256 + bytes, decompressed) — any failing
+    one raises the run-level integrity refusal
+    ``submissions_page_receipt_mismatch`` BEFORE any qualification and before
+    any fetch, never a silent refetch-over (the incumbent ``persist_response``
+    would repair the object on refetch, which is exactly why this check must
+    run first). Among verified receipts that QUALIFY for ``accession`` and/or
+    ``page_entry`` (containment or derived-range equality — see
+    ``_page_candidate_qualifies``; SEC re-pages these shards newest-first, so a
+    URL-matching retained page may be stale and unusable without being
+    corrupt), the NEWEST by ``retrieved_at`` wins; ties break by lexically
+    smallest ``sha256``. No qualifier -> None (the caller fetches through the
+    incumbent path; the stale receipt and its object are never deleted, moved
+    or rewritten — ``persist_response`` is content-addressed). With neither
+    filter given the incumbent behaviour holds (newest verified, period) —
+    kept only for back-compat; no production caller may use it.
+    """
+    from collectors.edgar_forensics import historical_submissions_url
+
+    cik10 = canonical_cik(cik)
+    url = historical_submissions_url(cik10, page_name)
+    directory = Path(raw_root) / cik10 / "submissions"
+    try:
+        receipt_paths = sorted(directory.glob("*.receipt.json"))
+    except OSError:
+        return None
+    verified: list[tuple[str, str, bytes, dict[str, Any]]] = []
+    for receipt_path in receipt_paths:
+        try:
+            receipt = json.loads(receipt_path.read_text(encoding="utf-8"))
+        except (OSError, UnicodeDecodeError, json.JSONDecodeError):
+            continue
+        if not isinstance(receipt, Mapping) or receipt.get("url") != url:
+            continue
+        try:
+            content = _read_retrieval_object(Path(raw_root), receipt)
+        except ValueError:
+            raise FifMemberCaptureError(
+                f"a retained submissions page fails its receipt verification "
+                f"(url={url}, object={receipt.get('object_path')!r}); refusing "
+                "rather than refetching over retained bytes",
+                code="submissions_page_receipt_mismatch",
+            ) from None
+        verified.append(
+            (str(receipt.get("retrieved_at") or ""), str(receipt.get("sha256") or ""), content, dict(receipt))
+        )
+    if not verified:
+        return None
+    qualifying = [
+        item
+        for item in verified
+        if _page_candidate_qualifies(
+            item[2], accession=accession, page_entry=page_entry
+        )
+    ]
+    if not qualifying:
+        return None
+    newest_at = max(item[0] for item in qualifying)
+    _retrieved_at, _sha, content, receipt = min(
+        (item for item in qualifying if item[0] == newest_at), key=lambda item: item[1]
+    )
+    return content, receipt
+
+
+def retain_submissions_page(
+    *,
+    raw_root: Path,
+    cik: str,
+    page_name: str,
+    submissions_collector: Any,
+    retrieved_at: str,
+    budget_remaining: int,
+    page_ceiling_bytes: int,
+    accession: str,
+    page_entry: Mapping[str, Any],
+) -> tuple[bytes, int, bool]:
+    """ERRATA-5 rule 3 + E5-a + MAJOR-1: reuse-or-fetch ONE page under the run
+    budget, with qualification-aware reuse.
+
+    Returns ``(page_bytes, charged_bytes, reused)``. A verified retained page
+    that still QUALIFIES for ``accession``/``page_entry`` (containment or
+    derived-range equality — see ``find_verified_submissions_page``) is reused
+    with zero requests and zero budget; a verified but STALE page (SEC re-paged
+    the shard under the same URL) no longer pins the issuer forever — it simply
+    does not qualify. Otherwise the page is fetched ONLY through the unchanged
+    incumbent ``SecForensicsCollector.fetch_historical_submissions_file``
+    (``publish_latest=False``: the shard object + receipt land in the CIK
+    submissions namespace and ``latest.json`` never moves) and the FRESHLY
+    fetched bytes are returned and used; the stale receipt and its object are
+    never deleted, moved or rewritten (``persist_response`` is
+    content-addressed: new bytes -> new object + receipt). E5-a: pre-fetch the
+    remaining budget must cover the page ceiling, else a typed budget refusal;
+    post-fetch a verified page above the ceiling is
+    ``submissions_page_oversize`` and is never used (the incumbent object is
+    left in place — no deletion in an incumbent namespace). The ceiling applies
+    to the same quantity the incumbent applies it to: the decoded page body
+    (``DEFAULT_MAX_SUBMISSIONS_BYTES`` as ``max_response_bytes``,
+    collectors/fundamental_forensics_acquisition.py:84,655).
+    """
+    verified = find_verified_submissions_page(
+        Path(raw_root),
+        cik=cik,
+        page_name=page_name,
+        accession=accession,
+        page_entry=page_entry,
+    )
+    if verified is not None:
+        content, _receipt = verified
+        if len(content) > page_ceiling_bytes:
+            raise FifMemberCaptureError(
+                f"retained submissions page exceeds the page byte ceiling: "
+                f"{page_name} ({len(content)} > {page_ceiling_bytes})",
+                code="submissions_page_oversize",
+            )
+        return content, 0, True
+    if budget_remaining < page_ceiling_bytes:
+        raise FifMemberCaptureError(
+            "remaining run budget is below the submissions page ceiling, so a "
+            f"page fetch cannot be admitted: {page_name} "
+            f"({budget_remaining} < {page_ceiling_bytes})",
+            code="run_budget_exceeded",
+        )
+    try:
+        receipt = submissions_collector.fetch_historical_submissions_file(
+            cik,
+            page_name,
+            retrieved_at=retrieved_at,
+            max_response_bytes=page_ceiling_bytes,
+        )
+    except Exception as exc:  # noqa: BLE001 - the network leg is typed, never fatal-silent
+        raise FifMemberCaptureError(
+            f"submissions page fetch failed: {page_name} ({exc})",
+            code="submissions_page_not_found",
+        ) from exc
+    if isinstance(receipt, Mapping):
+        receipt = dict(receipt)
+    elif hasattr(receipt, "to_dict"):
+        receipt = dict(receipt.to_dict())
+    else:
+        from dataclasses import asdict, is_dataclass
+
+        if is_dataclass(receipt):
+            receipt = dict(asdict(receipt))
+    try:
+        content = _read_retrieval_object(Path(raw_root), receipt)
+    except ValueError as exc:
+        raise FifMemberCaptureError(
+            f"fetched submissions page object failed readback: {page_name} ({exc})",
+            code="submissions_page_not_found",
+        ) from exc
+    if len(content) > page_ceiling_bytes:
+        # E5-a amendment: refused and never used as a witness; the incumbent
+        # object stays exactly where the incumbent fetch put it.
+        raise FifMemberCaptureError(
+            f"submissions page exceeds the page byte ceiling: {page_name} "
+            f"({len(content)} > {page_ceiling_bytes})",
+            code="submissions_page_oversize",
+        )
+    return content, len(content), False
 
 
 # ---------------------------------------------------------------------------
@@ -769,30 +1254,43 @@ def _index_member_sizes(items: Sequence[Mapping[str, Any]]) -> dict[str, int]:
 
 
 def _prefetch_member_ceilings(
-    items: Sequence[Mapping[str, Any]], *, stem: str, budget_remaining: int
-) -> None:
-    """D12: refuse on the INDEX listing, before any member fetch.
+    items: Sequence[Mapping[str, Any]],
+    *,
+    stem: str,
+    budget_remaining: int,
+    policy: Mapping[str, tuple[tuple[str, str], ...]] | None = None,
+) -> tuple[list[tuple[str, str]], list[tuple[str, str]]]:
+    """D12 + ERRATA-4 R1/R2/R3: refuse on the INDEX listing, before any fetch.
 
     The member-count ceiling, a planned member whose index-listed size breaks
-    the per-member ceiling, a planned member absent from the index, and a
-    planned five-member sum above the remaining run budget are all knowable
-    up front — a budget already spent must not still download one member at a
-    time to discover it. Members whose index row lists no usable size keep
-    the post-fetch ceilings.
+    the per-member ceiling, a REQUIRED member absent from the index
+    (``member_missing_from_index``, R3), and a planned member sum above the
+    remaining run budget are all knowable up front — a budget already spent
+    must not still download one member at a time to discover it. An OPTIONAL
+    member the index does not name is decided ABSENT here (R2): it costs zero
+    requests and zero budget. Returns ``(present, absent)`` (suffix, role)
+    pairs in MEMBER_SUFFIX_ROLES order.
     """
     if len(items) > MAX_INDEX_MEMBERS:
         raise FifMemberCaptureError(
             "archive index exceeds the member-count ceiling", code="member_count_exceeded"
         )
+    plan = dict(policy or {"required": MEMBER_SUFFIX_ROLES, "optional": ()})
+    ordered = [pair for pair in MEMBER_SUFFIX_ROLES if pair in plan["required"] or pair in plan["optional"]]
     sizes = _index_member_sizes(items)
+    present: list[tuple[str, str]] = []
+    absent: list[tuple[str, str]] = []
     planned = 0
-    for suffix, _role in MEMBER_SUFFIX_ROLES:
+    for suffix, role in ordered:
         name = f"{stem}{suffix}"
         if name not in sizes:
-            raise FifMemberCaptureError(
-                f"planned member is absent from the archive index: {name}",
-                code="member_missing_from_index",
-            )
+            if pair_is_required(plan, suffix):
+                raise FifMemberCaptureError(
+                    f"planned member is absent from the archive index: {name}",
+                    code="member_missing_from_index",
+                )
+            absent.append((suffix, role))
+            continue
         listed = sizes[name]
         if listed > MAX_MEMBER_BYTES:
             raise FifMemberCaptureError(
@@ -800,6 +1298,7 @@ def _prefetch_member_ceilings(
                 f"ceiling: {name} ({listed} bytes)",
                 code="member_oversize",
             )
+        present.append((suffix, role))
         planned += listed
     if planned > budget_remaining:
         raise FifMemberCaptureError(
@@ -807,6 +1306,13 @@ def _prefetch_member_ceilings(
             f"({planned} > {budget_remaining})",
             code="run_budget_exceeded",
         )
+    return present, absent
+
+
+def pair_is_required(
+    plan: Mapping[str, tuple[tuple[str, str], ...]], suffix: str
+) -> bool:
+    return any(pair[0] == suffix for pair in plan["required"])
 
 
 def _write_package(
@@ -820,8 +1326,9 @@ def _write_package(
     witness_source_url: str,
     index_bytes: bytes,
     stored_members: Mapping[str, bytes],
-    statement_roles: Mapping[str, dict[str, str]],
+    statement_roles: Mapping[str, dict[str, str]] | None,
     capture_recorded_at: str,
+    absent_members: Sequence[Mapping[str, str]] = (),
 ) -> tuple[dict[str, Any], int, int]:
     """Assemble the package in staging and rename it into place atomically.
 
@@ -912,9 +1419,20 @@ def _write_package(
         "index_byte_length": len(index_bytes),
         "member_count": len(inventory),
         "retained_count": stored_count,
-        "statement_roles": dict(statement_roles),
         "members": rows,
     }
+    # R6: an 8-K carries NO statement_roles key at all — the dei-only schema
+    # names none of the three primary statements, and D1 already tolerates a
+    # missing key. 10-K/10-Q keep the required mint unchanged.
+    if statement_roles is not None:
+        manifest["statement_roles"] = dict(statement_roles)
+    # R2/R4: each absent OPTIONAL member is recorded under absent_members,
+    # sorted by name; the key is OMITTED when empty and never written as [].
+    if absent_members:
+        manifest["absent_members"] = [
+            {"role": str(entry["role"]), "name": str(entry["name"]), "reason": str(entry["reason"])}
+            for entry in sorted(absent_members, key=lambda entry: str(entry["name"]))
+        ]
     if identity is not None:
         for field in ("entity_id", "security_id", "listing_key"):
             value = identity.get(field)
@@ -972,6 +1490,7 @@ def capture_fif_filing_packages(
     pacer: Any,
     recorded_at: str,
     run_budget_bytes: int = DEFAULT_RUN_BUDGET_BYTES,
+    submissions_collector: Any = None,
 ) -> dict[str, Any]:
     """Capture contract accessions whose primaries the lane retained this run.
 
@@ -981,10 +1500,23 @@ def capture_fif_filing_packages(
     ceilings are the incumbent collector's, with the run budget enforced here.
     An already-retained accession is skipped and its ``capture_recorded_at``
     reused verbatim, so an unchanged night re-derives the same clocks.
+
+    ``submissions_collector`` (C0-c ERRATA-5) is the SecForensicsCollector on
+    the SAME shared pacer that fetches a covering ``filings.files[]`` page
+    when an accession sits outside ``filings.recent``; it too must ride the
+    shared pacer (A20). Page bytes are charged to the same run budget.
     """
     if getattr(collector, "_pacer", pacer) is not pacer:
         raise FifMemberCaptureError(
             "member capture requires the collector to ride the shared SecRequestPacer",
+            code="private_pacer",
+        )
+    if submissions_collector is not None and (
+        getattr(submissions_collector, "_pacer", pacer) is not pacer
+    ):
+        raise FifMemberCaptureError(
+            "member capture requires the submissions collector to ride the "
+            "shared SecRequestPacer",
             code="private_pacer",
         )
     normalized_clock = _utc_text(recorded_at, field="recorded_at")
@@ -1041,14 +1573,43 @@ def capture_fif_filing_packages(
                     issuer_row["accessions"].append(row)
                     continue
                 primary_name = _primary_name_of(retained_manifest)
-                witness_bytes, bound_fields = mint_acceptance_witness(
+                # R1: the member set is keyed by the CONTRACT form — never
+                # inferred from file content — and is resolved BEFORE any
+                # fetch (an unknown form is the typed refusal).
+                contract_form = str(accession_entry.get("form") or "")
+                policy = member_policy_for(contract_form)
+                witness_bytes, bound_fields, page_info = mint_acceptance_witness(
                     raw_root=Path(raw_root),
                     cik=cik,
                     accession=accession,
                     primary_document=primary_name,
+                    filing_date=str(accession_entry.get("filing_date") or ""),
+                    submissions_collector=submissions_collector,
+                    retrieved_at=normalized_clock,
+                    budget_remaining=budget,
                 )
-                # Fetch the archive index, then the five role members by stem.
-                # The primary itself is NOT re-fetched: it is already retained.
+                if page_info is not None and page_info["charged_bytes"]:
+                    # ERRATA-5 rule 3: page bytes count toward the same run
+                    # budget (a reused page costs nothing).
+                    budget -= int(page_info["charged_bytes"])
+                # R8: the contract row must agree with the witness-bound row —
+                # BEFORE the index fetch, on BOTH witness paths (the recent
+                # path's witness BYTES stay byte-identical; this is a check).
+                if (
+                    contract_form.strip().upper() != bound_fields["form"].strip().upper()
+                    or str(accession_entry.get("filing_date") or "").strip()
+                    != bound_fields["filingDate"].strip()
+                ):
+                    raise FifMemberCaptureError(
+                        f"contract row disagrees with the witness-bound row for "
+                        f"{accession}: form {contract_form!r} vs "
+                        f"{bound_fields['form']!r}, filing_date "
+                        f"{accession_entry.get('filing_date')!r} vs "
+                        f"{bound_fields['filingDate']!r}",
+                        code="submissions_row_mismatch",
+                    )
+                # Fetch the archive index, then the policy's role members by
+                # stem. The primary itself is NOT re-fetched: retained.
                 index_bytes = _fetch_member_bytes(
                     collector,
                     archive_root=Path(archive_root),
@@ -1060,16 +1621,18 @@ def capture_fif_filing_packages(
                 )
                 budget -= len(index_bytes)
                 stem = primary_name.rsplit(".", 1)[0]
-                # D12: every ceiling knowable from the index listing fires
-                # here, BEFORE any member fetch (the index is the only fetch
-                # a refused accession makes).
-                _prefetch_member_ceilings(
+                # D12 + R2/R3: every ceiling knowable from the index listing
+                # fires here, BEFORE any member fetch (the index is the only
+                # fetch a refused accession makes); an optional member the
+                # index does not name is decided ABSENT at zero cost.
+                present, absent = _prefetch_member_ceilings(
                     _parse_archive_index(index_bytes),
                     stem=stem,
                     budget_remaining=budget,
+                    policy=policy,
                 )
                 stored: dict[str, bytes] = {}
-                for suffix, _role in MEMBER_SUFFIX_ROLES:
+                for suffix, _role in present:
                     name = f"{stem}{suffix}"
                     payload = _fetch_member_bytes(
                         collector,
@@ -1085,7 +1648,22 @@ def capture_fif_filing_packages(
                 stored[primary_name] = _read_retained_primary(
                     Path(archive_root), retained_manifest
                 )
-                statement_roles = mint_statement_roles(stored[f"{stem}.xsd"])
+                # R6: 10-K/10-Q mint the three primary-statement identities
+                # from the filing's own schema (unchanged, required); an 8-K
+                # mints NONE and OMITS the manifest key.
+                statement_roles = (
+                    mint_statement_roles(stored[f"{stem}.xsd"])
+                    if contract_form.strip().upper() in ("10-K", "10-Q")
+                    else None
+                )
+                absent_entries = [
+                    {
+                        "role": role,
+                        "name": f"{stem}{suffix}",
+                        "reason": ABSENT_MEMBER_REASON,
+                    }
+                    for suffix, role in absent
+                ]
                 _manifest, files_written, bytes_written = _write_package(
                     package_dir,
                     cik=cik,
@@ -1100,6 +1678,7 @@ def capture_fif_filing_packages(
                     stored_members=stored,
                     statement_roles=statement_roles,
                     capture_recorded_at=normalized_clock,
+                    absent_members=absent_entries,
                 )
                 report["package_files_written"] += files_written
                 report["package_bytes_written"] += bytes_written
@@ -1144,6 +1723,10 @@ __all__ = [
     "mint_acceptance_witness",
     "mint_statement_roles",
     "package_dir_for",
+    "retain_submissions_page",
+    "select_submissions_page",
+    "submissions_page_entry",
     "read_retained_fif_packages",
+    "find_verified_submissions_page",
     "refuse_repository_fixture_inputs",
 ]

@@ -1399,6 +1399,86 @@ def test_a_name_whose_levels_are_on_another_basis_says_so_on_its_own_row():
         art["states"]["BBB"]["basis_receipt"]
 
 
+def test_the_basis_material_travels_beside_the_receipt_and_rehashes_exactly():
+    """The measured material a strict native reader checks, on the SAME branch.
+
+    A RESOLVED row publishes the exact hashed material under ``basis_relation`` —
+    subject, pack cut, both families, the measured gap and tolerance — plus the two
+    inputs the audit actually read (``basis_as_of_close``/``basis_prev_close``), so a
+    downstream reader can bind its own observed private quote to the measurement
+    without re-running the audit and without trusting an opaque digest.
+    """
+    art = _run(_with_complete_basis_provenance(pack({"BBB": buyable()})),
+               quotes_with_prev({"BBB": 100.0}, {"BBB": 100.0}))
+    st = art["states"]["BBB"]
+    material = st["basis_relation"]
+    assert set(material) == set(LS.BASIS_RELATION_FIELDS)
+    assert material["schema"] == "prophet_live.basis_relation/v1"
+    assert material["state"] == "RESOLVED"
+    assert material["subject"] == "BBB"
+    assert material["pack_as_of"] == LAST_SESSION
+    assert material["levels_adjustment"] == LS.DEFAULT_PACK_ADJUSTMENT
+    assert material["quote_adjustment"] == LS.LIVE_QUOTE_ADJUSTMENT
+    assert material["gap_pct"] == 0.0 and material["tol_pct"] == 0.25
+    # ONE hash, built from the material that actually travels on the row.
+    assert LS.basis_relation_receipt(material) == st["basis_receipt"]
+    # The disclosure is the pair the audit actually read, and it reproduces the gap.
+    assert st["basis_as_of_close"] == 100.0 and st["basis_prev_close"] == 100.0
+    assert round(100.0 * (st["basis_as_of_close"] / st["basis_prev_close"] - 1.0), 6) \
+        == material["gap_pct"]
+
+
+def test_the_basis_material_is_absent_wherever_the_receipt_is_absent():
+    """Disclosure is part of the positive measurement — never a row of its own.
+
+    Unchecked, audit-disabled, unknown-census and dark rows all stay exactly as they
+    were: no ``basis_relation`` and no disclosed pair, so a reader can never mistake
+    an unmeasured row for a measured one.
+    """
+    unchecked = _run(pack({"BBB": buyable()}), quotes(BBB=100.0))
+    for key in ("basis_status", "basis_receipt", "basis_relation",
+                "basis_as_of_close", "basis_prev_close"):
+        assert key not in unchecked["states"]["BBB"], key
+
+    cfg = LS.live_cfg({"prophet_live": {"debounce_passes": 2, "quote_max_age_min": 12,
+                                        "basis_tolerance_pct": 0.0}})
+    disabled = LS.evaluate(pack({"BBB": buyable()}),
+                           quotes_with_prev({"BBB": 100.0}, {"BBB": 100.0}), None,
+                           now=NOW, cfg=cfg, quote_age_of=lambda _q: 1.0)
+    for key in ("basis_relation", "basis_as_of_close", "basis_prev_close"):
+        assert key not in disabled["states"]["BBB"], key
+
+    unknown_census = pack({"BBB": buyable()})
+    unknown_census["price_adjustment"] = LS.DEFAULT_PACK_ADJUSTMENT
+    unknown_census["meta"]["price_adjustment_counts"] = {"unknown": 1}
+    unknown = _run(unknown_census, quotes_with_prev({"BBB": 100.0}, {"BBB": 100.0}))
+    for key in ("basis_relation", "basis_as_of_close", "basis_prev_close"):
+        assert key not in unknown["states"]["BBB"], key
+
+    mismatched = _run(pack({"BBB": buyable()}),
+                      quotes_with_prev({"BBB": 100.0}, {"BBB": 101.0}))
+    assert mismatched["states"]["BBB"]["state"] == "dark"
+    for key in ("basis_relation", "basis_as_of_close", "basis_prev_close"):
+        assert key not in mismatched["states"]["BBB"], key
+
+
+def test_a_row_exception_material_names_the_row_basis_and_the_implicit_row_the_packs():
+    """The material records WHICH basis each row's levels are on — per row."""
+    raw = LS.LIVE_QUOTE_ADJUSTMENT
+    rows = {"AAA": buyable(), "BBB": buyable()}
+    rows["BBB"]["price_adjustment"] = raw
+    p = pack(rows)
+    p["price_adjustment"] = LS.DEFAULT_PACK_ADJUSTMENT
+    p["meta"]["price_adjustment_counts"] = {LS.DEFAULT_PACK_ADJUSTMENT: 1, raw: 1}
+    art = _run(p, quotes_with_prev({"AAA": 100.0, "BBB": 100.0},
+                                   {"AAA": 100.0, "BBB": 100.0}))
+    assert art["states"]["AAA"]["basis_relation"]["levels_adjustment"] \
+        == LS.DEFAULT_PACK_ADJUSTMENT
+    assert art["states"]["BBB"]["basis_relation"]["levels_adjustment"] == raw
+    assert art["states"]["BBB"]["basis_relation"]["subject"] == "BBB"
+    assert art["states"]["AAA"]["basis_receipt"] != art["states"]["BBB"]["basis_receipt"]
+
+
 def test_the_freshness_stamp_and_delay_ride_on_every_payload():
     art = _run(pack({"BBB": buyable()}), quotes(BBB=100.0))
     m = art["meta"]
@@ -1407,6 +1487,205 @@ def test_the_freshness_stamp_and_delay_ride_on_every_payload():
     assert m["pass_ts"].endswith("Z") and m["session_et"] == SESSION
     assert m["pack_as_of"] == LAST_SESSION and m["expected_session"] == LAST_SESSION
     assert art["states"]["BBB"]["quote_age_min"] == 1.0    # measured, per name
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# The pass's OWN freshness-policy disclosure (meta.quote_freshness_policy)
+#
+# The staleness ceiling the state machine gates on is DISCLOSED on every payload —
+# the exact number `_resolve_state` compared every quote age against, with the
+# same explicit/derived/fallback resolution live_cfg applied — so a downstream
+# native reader can re-answer the freshness question at its OWN read time without
+# assuming today's config describes this artifact. Metadata only: stripping the
+# block must reproduce the pre-disclosure payload exactly, and no decision below
+# reads it.
+# ─────────────────────────────────────────────────────────────────────────────
+
+#: The pre-disclosure meta key set, pinned so the disclosure cannot silently grow
+#: neighbours (the differential proof below strips ONLY the new block).
+PRE_DISCLOSURE_META_KEYS = frozenset({
+    "pass_ts", "session_et", "session_phase", "quote_asof", "delay_min",
+    "pack_as_of", "pack_built_at", "expected_session", "quotes_n", "evaluated_n",
+    "states", "dark_counts", "unknown_counts", "unprobed", "unprobed_n",
+    "events_n", "price_adjustment",
+})
+
+#: The evaluate-level meta of the differential fixture below, pinned from the
+#: pre-disclosure module: every field the state machine and the basis audit
+#: produced, unchanged by the disclosure.
+PRE_DISCLOSURE_META_PINNED = {
+    "dark_counts": {},
+    "delay_min": 15,
+    "evaluated_n": 2,
+    "events_n": 2,
+    "expected_session": LAST_SESSION,
+    "pack_as_of": LAST_SESSION,
+    "pack_built_at": "2026-07-28T22:30:00Z",
+    "pass_ts": "2026-07-29T14:00:00Z",
+    "price_adjustment": {
+        "checked_n": 2,
+        "levels": LS.DEFAULT_PACK_ADJUSTMENT,
+        "mismatched": {},
+        "mismatched_n": 0,
+        "quote": LS.LIVE_QUOTE_ADJUSTMENT,
+        "relation_schema": "prophet_live.basis_relation/v1",
+        "tol_pct": 0.25,
+        "unchecked_n": 0,
+    },
+    "quote_asof": "2026-07-29T13:58:00Z",
+    "quotes_n": 2,
+    "session_et": SESSION,
+    "session_phase": "rth",
+    "states": {"forming": 1, "near": 1},
+    "unknown_counts": {},
+    "unprobed": {},
+    "unprobed_n": 0,
+}
+
+
+def test_meta_discloses_the_exact_quote_max_age_threshold_actually_used():
+    """The disclosed number IS the one the gate compared against — not a constant
+    re-derived somewhere else. This pass resolved the operator's explicit 12, and
+    the 45-minute-old quote darked against exactly that."""
+    art = _run(pack({"AAA": near(100.0)}), quotes(AAA=101.0), age=45.0)
+    assert art["meta"]["quote_freshness_policy"] == {
+        "schema": LS.FRESHNESS_POLICY_SCHEMA,
+        "quote_max_age_min": 12.0,
+        "resolution": "explicit",
+    }
+    assert art["states"]["AAA"] == {"state": "dark", "reason": "stale_quote",
+                                    "quote_age_min": 45.0}
+    assert art["meta"]["dark_counts"] == {"stale_quote": 1}
+
+
+def test_the_disclosure_resolves_derived_and_fallback_like_the_state_machine():
+    """Same explicit/derived/fallback resolution as live_cfg and _resolve_state."""
+    derived = LS.evaluate(pack({"AAA": near(100.0)}), quotes(AAA=101.0), None,
+                          now=NOW, cfg=LS.live_cfg(None), quote_asof="x",
+                          delay_min=15, quote_age_of=lambda _q: 1.0)
+    assert derived["meta"]["quote_freshness_policy"] == {
+        "schema": LS.FRESHNESS_POLICY_SCHEMA,
+        "quote_max_age_min": 25.0,
+        "resolution": "derived",
+    }
+    # A cfg that never went through live_cfg falls back exactly where the state
+    # machine's own ``.get`` default falls back.
+    adhoc = LS.evaluate(pack({"AAA": near(100.0)}), quotes(AAA=101.0), None,
+                        now=NOW, cfg={"debounce_passes": 2}, quote_asof="x",
+                        delay_min=15, quote_age_of=lambda _q: 1.0)
+    assert adhoc["meta"]["quote_freshness_policy"] == {
+        "schema": LS.FRESHNESS_POLICY_SCHEMA,
+        "quote_max_age_min": 25.0,
+        "resolution": "fallback",
+    }
+    assert adhoc["states"]["AAA"] == derived["states"]["AAA"]
+
+
+@pytest.mark.parametrize("bad", [float("nan"), float("inf"), True, "25", None])
+def test_a_malformed_threshold_is_disclosed_unusable_not_laundered(bad):
+    """A configured value no lawful bound can be read from (bool, non-numeric,
+    non-finite, explicit None) is typed ``malformed`` with no number — never
+    laundered into a clean limit a downstream reader would trust."""
+    cfg = LS.live_cfg(None)
+    cfg["quote_max_age_min"] = bad
+    art = LS.evaluate(pack({"AAA": near(100.0)}), quotes(AAA=101.0), None,
+                      now=NOW, cfg=cfg, quote_asof="x", delay_min=15,
+                      quote_age_of=lambda _q: 1.0)
+    assert art["meta"]["quote_freshness_policy"] == {
+        "schema": LS.FRESHNESS_POLICY_SCHEMA,
+        "quote_max_age_min": None,
+        "resolution": "malformed",
+    }
+
+
+@pytest.mark.parametrize("limit", [0, -12.0])
+def test_a_zero_or_negative_threshold_is_disclosed_verbatim_and_gates(limit):
+    """Zero and negative ARE numbers, and the gate genuinely ran on them:
+    disclosed verbatim (never sanitized) — and everything past 0 minutes stales."""
+    art = LS.evaluate(pack({"AAA": near(100.0)}), quotes(AAA=101.0), None,
+                      now=NOW, cfg={"debounce_passes": 2,
+                                    "quote_max_age_min": limit},
+                      quote_asof="x", delay_min=15,
+                      quote_age_of=lambda _q: 1.0)
+    assert art["meta"]["quote_freshness_policy"] == {
+        "schema": LS.FRESHNESS_POLICY_SCHEMA,
+        "quote_max_age_min": float(limit),
+        "resolution": "explicit",
+    }
+    assert art["states"]["AAA"]["state"] == "dark"
+
+
+def test_stripping_only_the_new_meta_fields_reproduces_the_old_payload():
+    """Metadata-only differential proof. The disclosure added EXACTLY one meta
+    key; strip it and the payload is the pre-disclosure artifact byte-for-byte —
+    same states, same events, same basis receipts, same gate math."""
+    art = LS.evaluate(
+        _with_complete_basis_provenance(pack({"AAA": near(100.0),
+                                              "BBB": buyable()})),
+        quotes_with_prev({"AAA": 101.0, "BBB": 100.0}, {"AAA": 95.0, "BBB": 100.0}),
+        None, now=NOW, cfg=CFG, quote_asof="2026-07-29T13:58:00Z", delay_min=15,
+        quote_age_of=lambda _q: 5.0)
+    stripped = {**art, "meta": {k: v for k, v in art["meta"].items()
+                                if k != "quote_freshness_policy"}}
+    # The meta key set is CLOSED: exactly the pre-disclosure keys plus the block.
+    assert set(art["meta"]) == PRE_DISCLOSURE_META_KEYS | {"quote_freshness_policy"}
+    assert set(stripped["meta"]) == PRE_DISCLOSURE_META_KEYS
+    # ...and stripping reproduces the pinned pre-disclosure meta EXACTLY.
+    assert stripped["meta"] == PRE_DISCLOSURE_META_PINNED
+    # The state machine's own outputs carry no trace of the disclosure.
+    assert "quote_freshness_policy" not in json.dumps(art["states"])
+    assert "quote_freshness_policy" not in json.dumps(art["events"])
+
+
+def test_the_disclosure_changes_no_state_machine_verdict_or_receipt():
+    """Two cfgs that disclose different ceilings but gate identically produce
+    byte-identical states, events and basis receipts — only meta differs."""
+    runs = []
+    for limit in (12, 25):
+        cfg = LS.live_cfg({"prophet_live": {"quote_max_age_min": limit}})
+        runs.append(LS.evaluate(
+            _with_complete_basis_provenance(pack({"AAA": near(100.0),
+                                                  "BBB": buyable()})),
+            quotes_with_prev({"AAA": 101.0, "BBB": 100.0},
+                             {"AAA": 95.0, "BBB": 100.0}),
+            None, now=NOW, cfg=cfg, quote_asof="x", delay_min=15,
+            quote_age_of=lambda _q: 5.0))
+    first, second = runs
+    assert json.dumps(first["states"], sort_keys=True) == \
+        json.dumps(second["states"], sort_keys=True)
+    assert json.dumps(first["events"], sort_keys=True) == \
+        json.dumps(second["events"], sort_keys=True)
+    assert first["states"]["BBB"]["basis_receipt"] == \
+        second["states"]["BBB"]["basis_receipt"]
+    assert first["meta"]["quote_freshness_policy"] != \
+        second["meta"]["quote_freshness_policy"]
+    assert first["meta"]["quote_freshness_policy"]["quote_max_age_min"] == 12.0
+    assert second["meta"]["quote_freshness_policy"]["quote_max_age_min"] == 25.0
+
+
+def test_a_dark_artifact_discloses_the_freshness_policy_too():
+    """Freshness policy travels even on a dark pass — a dark pass evaluated no
+    name, so the disclosure is the only record of what the lane was enforcing."""
+    art = LS.dark_artifact("no_pack", now=NOW, cfg=CFG, quote_asof=None,
+                           delay_min=None)
+    assert art["meta"]["quote_freshness_policy"] == {
+        "schema": LS.FRESHNESS_POLICY_SCHEMA,
+        "quote_max_age_min": 12.0,
+        "resolution": "explicit",
+    }
+
+
+def test_live_cfg_stamps_how_the_freshness_ceiling_was_resolved():
+    """The three provenance classes, stamped where the ceiling is born."""
+    explicit = LS.live_cfg({"prophet_live": {"quote_max_age_min": 7}})
+    assert (explicit["quote_max_age_min"], explicit["quote_max_age_resolution"]) \
+        == (7.0, "explicit")
+    derived = LS.live_cfg({})
+    assert (derived["quote_max_age_min"], derived["quote_max_age_resolution"]) \
+        == (25.0, "derived")
+    broken = LS.live_cfg({"prophet_live": {"debounce_passes": None}})
+    assert (broken["quote_max_age_min"], broken["quote_max_age_resolution"]) \
+        == (LS._FALLBACK_MAX_AGE_MIN, "fallback")
 
 
 # ─────────────────────────────────────────────────────────────────────────────

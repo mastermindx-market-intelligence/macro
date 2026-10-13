@@ -97,12 +97,17 @@ formats the JSON sidecar is the authority for value, provenance, and lineage;
 
 - The XLSX Meta sheet does not carry the receipt node graph
   (`engine/fundamental_forensics/excel_export.py`).
-- XLSX value cells do not carry XBRL decimals/scale, document ids, source
-  hashes, or lineage (`engine/fundamental_forensics/excel_export.py`).
-- The kernel CSV has 37 columns and no XBRL decimals/scale, document id, or
-  source hash columns (`engine/fundamental_forensics/query.py`
-  `to_csv_bytes`); X0 serves it unchanged rather than forking a second CSV
-  encoder. The JSON sidecar is the authority for all three.
+- XLSX value cells do not carry XBRL decimals/scale or lineage
+  (`engine/fundamental_forensics/excel_export.py`); document ids and source
+  hashes arrive as row columns inherited from the CSV projection.
+- The kernel CSV has 40 columns, including `provenance_kind`, `document_id`,
+  and `filing_metadata_content_sha256` (`engine/fundamental_forensics/query.py`
+  `to_csv_bytes`), and still no XBRL decimals/scale or lineage DAG columns;
+  X0 serves it unchanged rather than forking a second CSV encoder, and XLSX
+  inherits the same columns. The JSON sidecar remains the authority for
+  XBRL decimals/scale and lineage. `SERIALIZATION_DIFFERENCES`
+  (`engine/fundamental_forensics/query_exports.py`) is the machine-readable
+  csv/xlsx/parquet difference list.
 
 ## GAPS
 

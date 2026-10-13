@@ -241,6 +241,33 @@ jobs:
           python -m scripts.publish_fif_production_datasets contract-acquire-summary \
             --result "$RUNNER_TEMP/fif-contract-acquire-result-${GITHUB_RUN_ID}.json" \
             --report-path "$RUNNER_TEMP/fif-contract-acquire-summary-${GITHUB_RUN_ID}.json"
+
+          # C0-c E1 (option (i), amendment (A) — the ADD case): acquire-contract
+          # runs AFTER the D13 wave-2 invocation + summary inside this SAME
+          # isolated step. The D13 invocation stays byte-identical above: its
+          # stdout feeds contract-acquire-summary, which capture reads —
+          # consumers beyond member capture — so E1 is ADDED, not a replacement.
+          # It acquires every contract accession's primary + manifest keyed by
+          # ACCESSION (the latest-2 selector never sees 8-Ks or page-window
+          # rows), reusing retained manifests, verified pages, and prior
+          # primary receipts first. Retention is the incumbents' own: pages via
+          # the historical-shard fetch (publish_latest=false) into the warm RAW
+          # root, manifests via retain_filing_manifest into the warm ARCHIVE
+          # root — those bytes live in the warm local RAW/ARCHIVE roots, where
+          # tonight's capture/publish read them (and the next night reuses
+          # them with zero requests); they reach R2 only through the NEXT
+          # night's incumbent root-wide non-pruning --sync, i.e. one night
+          # later. A typed partial is a ::warning; a crash-class failure
+          # (e.g. a retained page failing receipt verification) fails this
+          # step AFTER the incumbents finished, exactly like the D13 crash
+          # path.
+          python -m scripts.publish_fif_production_datasets acquire-contract \
+            --coverage-file config/fundamental_forensics/coverage/five_issuer_v1.json \
+            --raw-root "$RAW" --archive-root "$ARCHIVE" \
+            --recorded-at "$(utc_now)" \
+            --min-interval-seconds 0.5 \
+            --contract-acquire-summary "$RUNNER_TEMP/fif-contract-acquire-summary-${GITHUB_RUN_ID}.json" \
+            --report-path "$RUNNER_TEMP/fif-contract-acquire-acquire-report-${GITHUB_RUN_ID}.json"
       - name: capture FIF filing packages (contract issuers)
         # D13 W3: capture/publish run only when the contract acquire state is
         # KNOWN (outcome success — partial included, since a typed partial is
@@ -270,6 +297,7 @@ jobs:
             --coverage-file config/fundamental_forensics/coverage/five_issuer_v1.json \
             --raw-root "$RAW" --archive-root "$ARCHIVE" \
             --recorded-at "$(utc_now)" \
+            --min-interval-seconds 0.5 \
             --contract-acquire-report "$CONTRACT_ACQUIRE_SUMMARY" \
             --report-path "$CAPTURE_REPORT"
       - name: publish FIF production datasets (hard gate)
@@ -323,6 +351,7 @@ jobs:
             ${{ runner.temp }}/fif-member-capture-report-${{ github.run_id }}.json
             ${{ runner.temp }}/fif-contract-acquire-result-${{ github.run_id }}.json
             ${{ runner.temp }}/fif-contract-acquire-summary-${{ github.run_id }}.json
+            ${{ runner.temp }}/fif-contract-acquire-acquire-report-${{ github.run_id }}.json
       - name: fail on contract-acquire crash
         # D13 W5: with continue-on-error, a contract crash or step timeout is
         # outcome=failure while the job is still green — and by construction
