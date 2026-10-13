@@ -5448,6 +5448,7 @@ jobs:
       - "tests/test_prophet_today_provenance.py"
       - "tests/test_us_candidate_episode_reconciler.py"
       - "tests/test_us_candidate_episode_wiring.py"
+      - "tests/test_us_candidate_episode_identity_retry.py"
       - "tests/fixtures/us_candidate_episode/**"
       - "engine/prophet_object_change.py"
       - "tests/test_prophet_object_change.py"
@@ -5492,7 +5493,7 @@ jobs:
       # used by this projection. Keep their existing proof in the PR code gate;
       # the context-and-grades data job only runs after merge.
       - name: US B1 canonical candidate episodes (contract + intake + reconciler + wiring)
-        run: python -m pytest tests/test_us_candidate_episode.py tests/test_us_candidate_episode_intake.py tests/test_us_candidate_episode_reconciler.py tests/test_us_candidate_episode_wiring.py -q
+        run: python -m pytest tests/test_us_candidate_episode.py tests/test_us_candidate_episode_intake.py tests/test_us_candidate_episode_reconciler.py tests/test_us_candidate_episode_wiring.py tests/test_us_candidate_episode_identity_retry.py -q
       # B03 shares the existing authenticated Prophet read projection owner.
       # Keep conservative transitive inference, with no duplicate broad job.
       - name: Prophet lossless observations — source integrity, exact identity and private delivery
