@@ -241,6 +241,7 @@ def present(observation: dict, *, market: str, aria_en: str, aria_zh: str) -> di
             max_points=PATH_MAX_CLOSES,
             aria_en=aria_en,
             aria_zh=aria_zh,
+            id_prefix=market,
         )
     # The table beside the chart is its text alternative; it reads the same window.
     return {"observation": obs, "phase": phase, "detail_chart_html": chart,

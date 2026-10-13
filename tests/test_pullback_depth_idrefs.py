@@ -12,9 +12,15 @@ string in this file can prove each one fires.
 """
 from __future__ import annotations
 
+import importlib.util
+import re
+import shutil
+import subprocess
 import sys
+import tempfile
 import types
 from functools import lru_cache
+from pathlib import Path
 
 import pytest
 from bs4 import BeautifulSoup
@@ -36,6 +42,7 @@ except ModuleNotFoundError:
     sys.modules.setdefault("plotly.graph_objects", _go)
     sys.modules.setdefault("plotly.subplots", _subplots)
 
+from lib.illus import illus
 from tests.test_cn_pullback_dialog_integration import _render as render_cn_dialog
 from tests.test_macro_risk_dialog import _render as render_us_page
 from tests.test_macro_risk_dialog import _vm
@@ -255,29 +262,6 @@ def check_i5(soup, state):
             )
 
 
-def _fragment_overlap(state):
-    us = {el["id"] for el in parse(fragment_html(state, "us")).find_all(id=True)}
-    cn = {el["id"] for el in parse(fragment_html(state, "cn")).find_all(id=True)}
-    return us & cn
-
-
-def _i3_cases():
-    cases = []
-    for state in STATES:
-        overlap = _fragment_overlap(state)
-        if not overlap:
-            cases.append(state)
-            continue
-        reason = (
-            "FINDING lib/illus.py:646 uid=_hash_id has no market prefix; "
-            "lib/illus.py:317 emits id=ilxg-{uid}; "
-            "lib/pullback_depth.py:229 draws both markets through illus(). "
-            f"Colliding ids: {', '.join(sorted(overlap))}"
-        )
-        cases.append(pytest.param(state, marks=pytest.mark.xfail(strict=True, reason=reason)))
-    return cases
-
-
 @pytest.mark.parametrize(("surface", "lang", "state"), MATRIX)
 def test_i1_ids_are_unique(surface, lang, state):
     check_i1(document(surface, state))
@@ -288,7 +272,7 @@ def test_i2_id_references_resolve(surface, lang, state):
     check_i2(document(surface, state))
 
 
-@pytest.mark.parametrize("state", _i3_cases())
+@pytest.mark.parametrize("state", STATES)
 def test_i3_us_and_cn_fragment_ids_do_not_overlap(state):
     """Concatenated US and CN fragments must not share an id."""
     combined = fragment_html(state, "us") + fragment_html(state, "cn")
@@ -348,3 +332,202 @@ def test_i5_checker_rejects_a_focusable_hidden_control():
     )
     with pytest.raises(AssertionError, match="aria-hidden"):
         check_i5(parse(html), "current")
+
+
+# BASE of this lane. Byte-identity loads that blob with git show; it does not
+# rewrite the worktree.
+_ILLUS_BASE = "48c5a9d9794eab46efe3ffa43ea8ab8c9bc99442"
+_URL_OR_HREF = re.compile(r'url\(#([^)]+)\)|href="#([^"]+)"')
+
+
+def _day(i: int) -> str:
+    """Synthetic session label. Not a market calendar."""
+    return f"2024-{1 + i // 28:02d}-{1 + i % 28:02d}"
+
+
+def _series(vals):
+    return {"dates": [_day(i) for i in range(len(vals))], "vals": list(vals)}
+
+
+def _call(fn, spec, **extra):
+    kwargs = {k: v for k, v in spec.items() if k != "series"}
+    kwargs.update(extra)
+    return fn(spec["series"], **kwargs)
+
+
+# Non-pullback illus() callers. Series are synthetic; kwargs mirror the call.
+_OTHER_CALLERS = (
+    (
+        "scripts/build_canada.py baseline",
+        {
+            "series": _series([0.2, -0.1, 0.4, -0.3, 0.1, 0.5, -0.2, 0.0, 0.3, -0.4]),
+            "kind": "baseline",
+            "accent": "var(--info)",
+            "baseline": 0,
+            "height": 150,
+            "value_fmt": "{:+.2f}",
+            "unit_en": "pp",
+            "unit_zh": "pp",
+            "aria_en": "Synthetic spread",
+        },
+    ),
+    (
+        "scripts/build_vector.py area",
+        {
+            "series": _series([10, 12, 11, 15, 14, 18, 17, 16]),
+            "kind": "area",
+            "accent": "var(--info)",
+            "height": 72,
+            "max_points": 90,
+            "value_fmt": "${:,.0f}",
+            "aria_en": "Synthetic area",
+        },
+    ),
+    (
+        "scripts/build_bonds.py area with bands",
+        {
+            "series": _series([40, 55, 70, 80, 62, 30, 28, 50, 75]),
+            "kind": "area",
+            "accent": "var(--teal)",
+            "height": 200,
+            "bands": [
+                {
+                    "hi": 100, "lo": 66,
+                    "tint": "color-mix(in srgb, var(--green) 13%, transparent)",
+                    "label_en": "High", "label_zh": "高", "pos": "top",
+                },
+                {
+                    "hi": 34, "lo": 0,
+                    "tint": "color-mix(in srgb, var(--red) 11%, transparent)",
+                    "label_en": "Low", "label_zh": "低", "pos": "bottom",
+                },
+            ],
+            "value_fmt": "{:,.0f}",
+            "aria_en": "Synthetic banded area",
+        },
+    ),
+    (
+        "scripts/build_china.py drawdown",
+        {
+            "series": _series([0, -2, -8, -15, -6, -3, -1, -5]),
+            "kind": "drawdown",
+            "accent": "var(--down)",
+            "height": 170,
+            "unit_en": "%",
+            "aria_en": "Synthetic drawdown",
+        },
+    ),
+)
+
+
+def _refs(html: str) -> list[str]:
+    return [a or b for a, b in _URL_OR_HREF.findall(html)]
+
+
+def _ilx_figures(html: str) -> list[str]:
+    return re.findall(r'<figure class="ilx\b.*?</figure>', html, flags=re.S)
+
+
+def _base_illus():
+    """Import BASE lib/illus.py by path. Skip when git cannot show it."""
+    if shutil.which("git") is None:
+        pytest.skip("git is not available")
+    repo = Path(__file__).resolve().parents[1]
+    try:
+        source = subprocess.check_output(
+            ["git", "show", f"{_ILLUS_BASE}:lib/illus.py"],
+            cwd=repo,
+            stderr=subprocess.PIPE,
+        )
+    except subprocess.CalledProcessError as exc:
+        detail = exc.stderr.decode("utf-8", "replace").strip().splitlines()
+        tail = detail[-1] if detail else str(exc.returncode)
+        pytest.skip(f"git show {_ILLUS_BASE}:lib/illus.py failed: {tail}")
+    with tempfile.TemporaryDirectory(prefix="rr8721-fx4-illus-") as tmp:
+        path = Path(tmp) / "illus_base.py"
+        path.write_bytes(source)
+        spec = importlib.util.spec_from_file_location("rr8721_fx4_illus_base", path)
+        if spec is None or spec.loader is None:
+            pytest.skip("could not load BASE lib/illus.py")
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+    return module.illus
+
+
+def test_id_prefix_none_matches_base_illus_bytes():
+    """Other illus() callers stay byte-identical when id_prefix is omitted or None.
+
+    Call sites mirrored with synthetic series: scripts/build_canada.py baseline,
+    scripts/build_vector.py area, scripts/build_bonds.py area-with-bands, and
+    scripts/build_china.py drawdown.
+    """
+    base_illus = _base_illus()
+    for name, spec in _OTHER_CALLERS:
+        base_html = _call(base_illus, spec)
+        head_default = _call(illus, spec)
+        head_none = _call(illus, spec, id_prefix=None)
+        assert base_html.encode("utf-8") == head_default.encode("utf-8"), name
+        assert base_html.encode("utf-8") == head_none.encode("utf-8"), name
+
+
+@pytest.mark.parametrize("state", ("current", "expired"))
+@pytest.mark.parametrize("market", ("us", "cn"))
+def test_prefixed_pullback_chart_refs_resolve_inside_the_chart(state, market):
+    """Every url(#x) and href="#x" in the market chart names an id in that chart."""
+    figures = _ilx_figures(fragment_html(state, market))
+    assert figures, "prefixed pullback chart is missing"
+    for fig in figures:
+        ids = set(re.findall(r'\bid="([^"]+)"', fig))
+        refs = _refs(fig)
+        assert ids, "prefixed chart generated no id"
+        assert refs, "prefixed chart generated no internal reference"
+        assert all(token.startswith(market) for token in ids), sorted(ids)
+        missing = [ref for ref in refs if ref not in ids]
+        assert not missing, missing
+
+
+@pytest.mark.parametrize(("kind", "extra"), [
+    ("area", {}),
+    ("drawdown", {"reference": 0}),
+    ("baseline", {"baseline": 0}),
+])
+def test_id_prefix_is_prepended_to_every_generated_id_and_reference(kind, extra):
+    series = _series([-3, -1, 1, 3, 1, -2, -4, 2, 5])
+    bare = illus(series, kind=kind, **extra)
+    bare_ids = set(re.findall(r'\bid="([^"]+)"', bare))
+    assert bare_ids
+    namespaced = {}
+    for prefix in ("us", "cn"):
+        html = illus(series, kind=kind, id_prefix=prefix, **extra)
+        ids = set(re.findall(r'\bid="([^"]+)"', html))
+        refs = _refs(html)
+        assert refs
+        assert ids == {f"{prefix}{old}" for old in bare_ids}
+        assert set(refs) <= ids
+        assert all(ref.startswith(prefix) for ref in refs)
+        namespaced[prefix] = ids
+    assert namespaced["us"].isdisjoint(namespaced["cn"])
+
+
+def test_id_prefix_rewrites_aria_references_to_generated_ids():
+    raw = (
+        '<figure><svg><linearGradient id="ilxg-abcd"></linearGradient>'
+        '<use href="#ilxg-abcd" fill="url(#ilxg-abcd)"/></svg>'
+        '<p aria-labelledby="ilxg-abcd title" aria-describedby="ilxg-abcd"></p>'
+        "</figure>"
+    )
+    from lib import illus as illus_mod
+    out = illus_mod._prefix_generated_ids(raw, "us")
+    assert 'id="usilxg-abcd"' in out
+    assert 'href="#usilxg-abcd"' in out
+    assert "url(#usilxg-abcd)" in out
+    assert 'aria-labelledby="usilxg-abcd title"' in out
+    assert 'aria-describedby="usilxg-abcd"' in out
+    assert "ilxg-abcd" not in out.replace("usilxg-abcd", "")
+
+
+@pytest.mark.parametrize("prefix", ["1us", "us cn", "<x>"])
+def test_invalid_id_prefix_raises(prefix):
+    series = _series([0, -1, -2, -3, -2, -1])
+    with pytest.raises(ValueError, match=r"id_prefix must match"):
+        illus(series, kind="drawdown", id_prefix=prefix)
