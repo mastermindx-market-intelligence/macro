@@ -6,8 +6,36 @@
   'use strict';
   var timer;
   /* Only a stamp with an explicit offset is a deadline; a bare local time would
-     move with the viewer's zone, so it counts as expired. */
-  var ZONED = /(?:Z|[+-]\d\d:\d\d)$/;
+     move with the viewer's zone, so it counts as expired. Impossible civil
+     fields are not rolled into a later day. The producer writes whole seconds;
+     a zero fraction is that same second, and any other fraction is not a stamp
+     it emits. */
+  /* A valid_until is at most days ahead of this clock. Further out expires
+     instead of staying current for the life of the stamp. */
+  var MAX_AHEAD_MS = 400 * 24 * 60 * 60 * 1000;
+  var STAMP = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})(\.0{1,6})?(Z|[+-](\d{2}):(\d{2}))$/;
+  function deadline(raw) {
+    var match = STAMP.exec(raw);
+    if (!match) return NaN;
+    var year = +match[1], month = +match[2], day = +match[3];
+    var hour = +match[4], minute = +match[5], second = +match[6];
+    if (month < 1 || month > 12 || hour > 23 || minute > 59 || second > 59) return NaN;
+    /* Date.UTC maps years 0..99 onto 1900..1999, so the month length would be
+       read from the wrong year. */
+    if (year < 100) return NaN;
+    var length = new Date(Date.UTC(year, month, 0)).getUTCDate();
+    if (day < 1 || day > length) return NaN;
+    var offsetMs = 0;
+    if (match[8] !== 'Z') {
+      var offH = +match[9], offM = +match[10];
+      if (offH > 14 || offM > 59) return NaN;
+      var sign = match[8].charAt(0) === '-' ? -1 : 1;
+      offsetMs = sign * (offH * 60 + offM) * 60 * 1000;
+    }
+    var instant = Date.UTC(year, month - 1, day, hour, minute, second) - offsetMs;
+    if (!Number.isFinite(instant) || instant - Date.now() > MAX_AHEAD_MS) return NaN;
+    return instant;
+  }
   /* Expiry hides the measured figures, which can hold the history summary. If
      keyboard focus sits there it would leave the open modal with nothing to
      bring it back, so hand it to that dialog's close button first. */
@@ -46,7 +74,7 @@
     var now = Date.now(), next = Infinity;
     document.querySelectorAll('.rrp.pbx[data-pb-valid-until]').forEach(function (root) {
       var raw = root.getAttribute('data-pb-valid-until') || '';
-      var end = ZONED.test(raw) ? Date.parse(raw) : NaN;
+      var end = deadline(raw);
       if (!Number.isFinite(end) || now >= end) {
         keepFocus(root);
         root.classList.add('pb-expired');

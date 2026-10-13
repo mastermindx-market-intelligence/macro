@@ -91,6 +91,8 @@ J080 | KILLED | test_x7_mm_pb_expire_twice_does_not_double_install | delete boot
 J081 | KILLED | test_x7_mm_pb_expire_twice_does_not_double_install | delete boot statement `window.addEventListener('focus', expire);`
 J082 | KILLED | test_x10_expiry_hands_focus_from_the_hidden_history_to_the_close_button | delete boot-install statement `window.mmPbExpire = expire;`
 J083 | KILLED | test_x13_expiry_fills_the_live_region_once_and_a_future_stamp_stays_empty | delete boot-install statement `if (document.readyState === 'loading') document.addEventListen...
+
+The parse line `var end = ZONED.test(raw) ? Date.parse(raw) : NaN;` was replaced by `deadline(raw)`.
 """
 from tests import test_pullback_expiry_owner_js as harness
 
