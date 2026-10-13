@@ -27,7 +27,6 @@ USES = (
     "vintage_qualified_research",
     "prospective_eligibility",
 )
-RESEARCH_USES = USES[1:]
 
 
 def _load_v2() -> dict:
@@ -87,11 +86,15 @@ def test_every_source_has_one_known_concept_and_valid_verdicts():
 
 
 def test_absent_sources_are_excluded_everywhere():
-    """repo_path == 'absent' => every research use excluded, with a reason."""
+    """repo_path == 'absent' => every use (display included) excluded, with a reason.
+
+    B4 finding 2: iterating only the research uses let a mutant that marks an
+    absent store display-eligible survive.
+    """
     d = _load_v2()
     for s in d["sources"]:
         if s["repo_path"] == "absent":
-            for use in RESEARCH_USES:
+            for use in USES:
                 assert s["verdicts"][use]["verdict"] == "excluded", f"{s['id']}/{use}"
             assert s.get("exclusion_reason"), f"{s['id']}: exclusion_reason required"
 
