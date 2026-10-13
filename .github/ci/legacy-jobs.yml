@@ -5831,6 +5831,7 @@ jobs:
     # every concrete static import-closure path (curated_exclusive_closure_findings
     # gates it) plus the measured runtime in-tree reads of every class-A suite.
     paths:
+      - config/market_memory_factory_bindings.v1.json
       - config/market_memory_retained_use.v1.json
       - engine/neuralweb/market_memory_episode_comparison.py
       - engine/neuralweb/market_memory_episode_features.py
@@ -8938,7 +8939,7 @@ jobs:
         with:
           python-version: "3.12"
       - name: install minimal deps
-        run: pip install pytest pyyaml
+        run: pip install pytest pandas numpy pyarrow pyyaml requests jsonschema fastapi httpx
       - name: authority guard (hard fail on Article-2 forbidden reads)
         run: python scripts/check_research_factory_authority.py
       - name: authority guard selftest (gate fires on planted violation)
@@ -8949,6 +8950,7 @@ jobs:
           tests/test_research_factory_state.py
           tests/test_research_factory_schema.py
           tests/test_research_factory_market_memory.py
+          tests/test_research_factory_market_memory_evidence.py
           -q
 
   cycle-pattern-authority:
@@ -16838,6 +16840,7 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - config/market_memory_factory_bindings.v1.json
       - config/market_memory_retained_use.v1.json
       - engine/neuralweb/market_memory_episode_comparison.py
       - engine/neuralweb/market_memory_episode_features.py
@@ -24207,6 +24210,7 @@ jobs:
     # contract-delta closure on 673a0a5a (a sparse worktree omits those trees).
     scope: exclusive
     paths:
+      - config/market_memory_factory_bindings.v1.json
       - config/market_memory_retained_use.v1.json
       - engine/neuralweb/market_memory_forward.py
       - engine/neuralweb/market_memory_operating_cortex.py
@@ -26279,6 +26283,7 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - config/market_memory_factory_bindings.v1.json
       - config/market_memory_retained_use.v1.json
       - engine/neuralweb/market_memory_episode_comparison.py
       - engine/neuralweb/market_memory_episode_features.py

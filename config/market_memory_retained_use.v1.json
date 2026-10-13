@@ -51,7 +51,7 @@
       "enabled": true,
       "purpose": "contextual_cited_evidence",
       "binding_registry": "config/market_memory_factory_bindings.v1.json",
-      "binding_registry_sha256": "a1d3c3f7e921b40fec48331f4f267bdcc030d203cae8e621c9c896b90ef27e5f"
+      "binding_registry_sha256": "4da3ff076d133894780f7d8badf845f92beaba38b0dc8f6cd9de299f3f594d47"
     }
   }
 }

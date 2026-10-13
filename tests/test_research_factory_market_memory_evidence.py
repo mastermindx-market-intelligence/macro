@@ -168,3 +168,26 @@ def test_valid_alternate_method_is_denied_before_owner_reads(admitted, monkeypat
     monkeypatch.setattr(evidence.trusted, "TrustedFileAsKnownAtReader", lambda *a: pytest.fail("private owner read"))
     with pytest.raises(use.RetainedUseError):
         evidence.load_registered_factory_evidence(root, binding_id=binding["binding_id"], attached_at=ATTACHED)
+
+
+def test_installed_current_proposal_and_binding_are_exact_readonly_records():
+    from pathlib import Path
+    from engine.neuralweb import market_memory_forward as forward
+    root = Path(__file__).resolve().parents[1]
+    registry = json.loads((root / use.FACTORY_BINDINGS).read_bytes())
+    assert len(registry["bindings"]) == 1
+    binding, _digest = use._factory_binding(root, registry["bindings"][0]["binding_id"])
+    body = (root / binding["trial_record"]).read_bytes()
+    trial = forward.load_trial_registration_json(body)
+    assert trial["trial_registration_id"] == binding["trial_registration_id"]
+    assert sha256(body).hexdigest() == binding["trial_registration_sha256"]
+    protocol_body = (root / "research/market_memory/protocols" / (trial["implementation"]["config_sha256"] + ".json")).read_bytes()
+    protocol = json.loads(protocol_body)
+    assert sha256(protocol_body).hexdigest() == trial["implementation"]["config_sha256"]
+    for relative, digest in protocol["code_manifest"].items():
+        assert sha256((root / relative).read_bytes()).hexdigest() == digest
+    assert cohort.utc_instant(binding["query_cutoff"]) <= cohort.utc_instant(trial["registered_at"]) <= cohort.utc_instant(binding["registered_at"])
+    candidate = old.build_market_memory_candidate(exact_trial_registration_bytes=body, created_at=binding["registered_at"])
+    assert candidate["status"] == "proposed" and candidate["trial_accounting"]["mode"] == "read_only"
+    assert trial["emission_enabled"] is False
+    assert protocol["purpose"] == "current_contextual_cited_evidence_attachment"

@@ -24,17 +24,23 @@ verified:
   - claim: Existing Factory ownership and lifecycle behavior is preserved.
     command: Existing Market Memory, adapters, state and schema Factory suites.
     result: 339 passed; two absent sparse fixtures were restored from exact HEAD without content changes. Authority guard and planted-violation selftest pass; existing non-Article-2 warnings remain visible.
+  - claim: The current source binding uses a real owner capture and an honestly current proposal.
+    command: Read-only installed trusted owner pin and exact projection; compare eight registered code hashes; canonical trial loader and installed binding conformance test.
+    result: Actual109-capture generation996920d5, query7c5d539d and capturee8107d6c, supported cutoff2026-10-13T09:17:41.967527Z. Current trial57c4ca7a binds exact protocol and code. Source bindingc76d8514 independently preserves old candidate identity;14 affected Factory tests pass and19 retained consumer tests remain green. No private store write, ForwardStore initialization or evaluation performed.
+  - claim: Current source registration and clean CI dependency declaration are independently accepted.
+    command: Exact four-suite research-factory-authority command in an isolated external SSD environment with its declared dependencies.
+    result: 295 passed in29.37seconds. Final versioned manifest439277b2 and independent N2_CURRENT_REGISTRATION_DELTA_INDEPENDENT_REVIEW accept actual trial/protocol/eight code hashes/query/binding clocks and unchanged packing limits. Sparse fixtures were restored from current HEAD without edits.
 unverified:
   - claim: Factory has an operational production binding.
     what_would_verify: A real exact trial record, current generation and query, installed method and source registration, then real nonempty installed runner consumption.
   - claim: The source is delivered through protected hosting and installation.
     what_would_verify: Current-head hosted CI, protected merge, installed byte parity and actual consumer proof.
 unresolved:
-  - The binding registry is intentionally empty until actual original trial and retained source references are registered; fixture bytes are not production evidence.
+  - A new current proposal authored2026-10-13T21:19:49.674635Z is now bound in source to an actual installed-owner capture, adopted2026-10-13T21:25:04.858409Z. This establishes no old trial provenance or installed consumer use.
   - Attachment use grants no transition, independent observation count, prediction, promotion or execution authority.
 next_actions:
   - Ship this reviewed source through the existing protected delivery chain.
-  - Resolve the actual trial/current-context binding without changing accepted August results or claiming historical preregistration.
+  - Install and consume the exact current binding through the existing Factory path without changing accepted August results or claiming historical preregistration.
   - Verify real installed Factory consumption with nonempty source evidence and no lifecycle effects.
 do_not_redo:
   - Preserve accepted August MM-G0 ABSTAINED and STOPPED results.
