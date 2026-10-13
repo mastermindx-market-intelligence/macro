@@ -67,8 +67,6 @@ _PREFIXES = (
     "dei_",
     "ecd_",
     "country_",
-    "apple_",
-    "aapl_",
     "iso4217_",
 )
 
@@ -563,7 +561,7 @@ def _compose_year_row_header(
 ) -> tuple[list[str], frozenset[int]] | None:
     """Compose year-only header columns from a month-day banner over a year row.
 
-    Fiscal-year statements (the SNOW shape) print the period as
+    Fiscal-year statements print the period as
     "Fiscal Year Ended January 31," on one header row and bare 4-digit years on
     the next. When no row yields two full dates, the banner's single month-day
     phrase plus the year row's display order compose one ISO date per year
@@ -915,7 +913,7 @@ def parse_displayed_primary_table(html: str, *, title: str | list[str]) -> dict[
     ``title`` follows ``_StatementTableParser``: a single string matched exactly
     as written, or a list of candidates tried in order. Columns come from a
     header row printing two or more full dates; when no row does, a month-day
-    banner over a bare-year row (the fiscal-year SNOW shape) composes the
+    banner over a bare-year row (fiscal-year statements) composes the
     columns and the output carries ``"columns_source": "composed_year_row"``
     (absent on the full-date path).
     """

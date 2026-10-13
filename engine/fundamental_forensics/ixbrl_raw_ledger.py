@@ -295,7 +295,7 @@ def _admit_entity_identity(parsed: Mapping[str, Any], package: GoldenFilingPacka
             entity_ids.append(str(ident))
     unique = sorted(set(entity_ids))
     if unique != [cik]:
-        raise IxbrlRawLedgerError("XBRL entity identifier is not the source-native AAPL CIK")
+        raise IxbrlRawLedgerError("XBRL entity identifier is not the package manifest CIK")
     return cik
 
 
@@ -360,7 +360,7 @@ def convert_parsed_filing(
         identifier = str(entity.get("identifier") or "")
         scheme = str(entity.get("scheme") or "")
         if identifier != cik:
-            raise IxbrlRawLedgerError("XBRL entity identifier is not the source-native AAPL CIK")
+            raise IxbrlRawLedgerError("XBRL entity identifier is not the package manifest CIK")
         explicit, typed = _dimension_maps(context)
         fact_id = fact.get("fact_id")
         try:

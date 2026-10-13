@@ -240,19 +240,102 @@ def test_s1_a30_01_bank_not_applicable() -> None:
     assert industrial.state == "applicable"
 
 
-def test_default_policy_contract_loads_from_shipped_yaml() -> None:
+def test_field_denominator_equals_class_policy_closure_for_every_issuer() -> None:
+    """G0-b: the D0 field_denominator equals the shipped class-policy closure.
+
+    Replaces the pre-G0b emptiness pin (every shipped applicability policy
+    empty). For every coverage issuer and every metric in the D0
+    field_denominator, the build path's derived class projection and the query
+    path's direct-stage qualification must agree; the bank closure must be
+    exactly the A30-ruled set; and every metric D0 still records under a
+    ticker key must be confirmed by that issuer's class closure — so a
+    ticker-keyed answer can no longer diverge from the class answer.
+    """
+    import json
+
+    from engine.fundamental_forensics.detectors import issuer_class_for_sic
+    from scripts.build_fundamental_forensics import _class_not_applicable_metric_ids
+
     registry = load_core_metric_registry(ROOT)
     for contract in registry.contracts:
         assert contract.applicability.issuer_class_basis == "sic"
-        assert contract.applicability.applicable_classes == ()
-        assert contract.applicability.excluded_classes == ()
-        assert contract.applicability.basis_note == ""
         assert contract.period_basis.calendar == "fiscal"
         if contract.formula is not None:
             assert contract.formula.denominator_constraints == ()
-        result = qualify_metric(contract, contract.formula, None, {})
-        assert result.state == "applicable"
-        assert result.reason == ""
+
+    # The A30-ruled bank closure (Tier 1 D0-ratified + Tier 2 per R2, plus the
+    # explicit inventory_to_revenue policy). capex, total_debt and
+    # long_term_debt stay applicable; insurance is out of G scope and carries
+    # no metric policy anywhere.
+    expected_bank_closure = {
+        "cost_of_revenue",
+        "gross_profit",
+        "gross_margin",
+        "inventory_net",
+        "free_cash_flow",
+        "current_assets",
+        "current_liabilities",
+        "working_capital",
+        "current_ratio",
+        "operating_income_loss",
+        "operating_expenses",
+        "debt_to_equity",
+        "net_debt",
+        "cash_to_total_debt",
+        "receivables_to_revenue",
+        "inventory_to_revenue",
+    }
+    bank_closure = {
+        contract.metric_id
+        for contract in registry.contracts
+        if qualify_metric(contract, None, "bank", {}).state != "applicable"
+    }
+    assert bank_closure == expected_bank_closure
+    for metric_id in ("capital_expenditures", "total_debt", "long_term_debt"):
+        assert qualify_metric(
+            registry.metric(metric_id), None, "bank", {}
+        ).state == "applicable", metric_id
+    for contract in registry.contracts:
+        assert "insurance" not in contract.applicability.excluded_classes
+        assert "insurance" not in contract.applicability.applicable_classes
+
+    # Build path (derived class projection, no ticker key) must equal the
+    # query path (direct-stage qualification) for every D0 issuer.
+    build_projection = _class_not_applicable_metric_ids(ROOT)
+    contract_doc = json.loads(
+        (ROOT / "config" / "fundamental_forensics" / "coverage" / "five_issuer_v1.json")
+        .read_text(encoding="utf-8")
+    )
+    denominator = contract_doc["field_denominator"]
+    metric_ids = set(denominator["metric_ids"])
+    assert len(metric_ids) == 50
+    recorded_not_applicable = denominator.get("not_applicable", {})
+    for issuer in contract_doc["issuers"]:
+        ticker = issuer["ticker"]
+        issuer_class = issuer_class_for_sic(issuer["sic"])
+        assert issuer["issuer_class"] == issuer_class, ticker
+        query_closure = {
+            metric_id
+            for metric_id in metric_ids
+            if qualify_metric(
+                registry.metric(metric_id), None, issuer_class, {}
+            ).state != "applicable"
+        }
+        build_excluded = metric_ids & build_projection.get(issuer_class, frozenset())
+        assert build_excluded == query_closure, ticker
+        # No ticker-keyed divergence: every metric D0 records for this ticker
+        # is confirmed by the class closure, and for non-bank classes the
+        # projection is empty so D0 records nothing.
+        recorded = set(recorded_not_applicable.get(ticker, {}))
+        assert recorded <= query_closure, ticker
+        if issuer_class != "bank":
+            assert recorded == set(), ticker
+        # Tier-1 basis notes carry the D0-ratified A30 reason verbatim.
+        for metric_id, reason in recorded_not_applicable.get(ticker, {}).items():
+            assert registry.metric(metric_id).applicability.basis_note == reason, (
+                ticker,
+                metric_id,
+            )
 
 
 def test_shipped_registry_digests_match_pre_change_capture() -> None:

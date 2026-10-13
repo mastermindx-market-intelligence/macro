@@ -14,6 +14,7 @@ from pathlib import Path
 import pytest
 import yaml
 
+from engine.fundamental_forensics.detectors import issuer_class_for_sic
 from engine.fundamental_forensics.ixbrl_raw_ledger import GOLDEN_AAPL_QUERY_ACCESSIONS
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -122,10 +123,24 @@ def test_five_tickers_in_order_with_exact_ciks(contract: dict) -> None:
         assert issuer["identity_binding_state"] == (
             "golden_committed" if issuer["ticker"] == "AAPL" else "generic_path_only"
         )
-        if issuer["ticker"] == "BAC":
-            assert issuer["issuer_class"] == "bank"
-        else:
-            assert issuer["issuer_class"] == "industrial"
+        # G0-a: D0 issuer_class is a checked projection of the kernel SIC map.
+        # The recorded class must equal issuer_class_for_sic(sic) for every
+        # issuer — SNOW (7372) and GOOGL (7370) are software, BAC (6021) is
+        # bank, AAPL (3571) and CAT (3531) are industrial — and the classes
+        # stay distinct: software is never collapsed into industrial.
+        assert issuer["issuer_class"] == issuer_class_for_sic(issuer["sic"]), (
+            issuer["ticker"],
+            issuer["sic"],
+            issuer["issuer_class"],
+        )
+    classes = {issuer["ticker"]: issuer["issuer_class"] for issuer in contract["issuers"]}
+    assert classes == {
+        "AAPL": "industrial",
+        "SNOW": "software",
+        "CAT": "industrial",
+        "BAC": "bank",
+        "GOOGL": "software",
+    }
 
 
 def test_accessions_match_pattern_and_are_unique(contract: dict) -> None:
