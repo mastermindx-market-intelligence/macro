@@ -59,6 +59,14 @@ artifacts:
   - research/EVAL_OS_CONTINUATION_2026-10-12.md
 ---
 
+## Current integration and normal-owner proof — 2026-10-13T23:53Z
+
+Candidate847a530c completed hosted CI38387357496 with contract-delta and11packs passing; pack0 failed its unchanged packing ceilings (5813>5800 and5618>5600), with610other tests passing. This integration adopts main398c40c4787c97da1c6f4ecd72aabc11b34844cc, including its existing packing repair. Two conflicts were resolved as exact additive unions: shared CI dependency paths and admin restart triggers. The updated declaration preserves299jobs. A local closure check then exposed six omitted path pairs in the two incoming exclusive jobs; only those exact paths were added. Independent reviews accepted both deltas. All3affected CI controls now pass in156.39s;63affected updater controls passed in the preceding65PASS/1FAIL run. Of21qualified nonmanifest files, only the updater changed, by adding main's price_views/read_contract restart triggers. Accepted application/science/browser/resource bytes are unchanged. The containing commit binds the current tree; published exact-head CI remains owed. See research/evidence/eval-os-20261012/current-main-requalification-20261013.json.
+
+T21/A39 now has independent acceptance for a genuine subsequent scheduled owner run. Asia38406512307/job115350383434 executed1dec2bf96fb0bf508643fa023c5baa075250b8f2, graded812claims with dry_run=false at15:50UTC and published98a395f149decf146dd19826a70e6cc1fd00a1e9. The877B run_status SHA0978e2e51f2ee7c36486efa7ccdc1c310e2e5b616c4959b604a5641644146278 exactly matches the read-only production observation on installed398c40c4. Coverage blocks22896 and22unresolved clocks remain explicit. Earlier daily38340204231 concluded failure and is not rehabilitated. No manual run, schedule/clock change or forced publication occurred. This closes pre-release natural progression only; candidateA1/receipt producer installation, authenticatedAPI→paint, post-release source update and actual operator comprehension remain T23.
+
+The sole carrier is PR6651, still draft with the explicit reserved release hold. Later release-decision carrier C0BSBM78V1N/1788695927.415259 is distinct from the earlier recovery closure1788048150.087999; neither prior recovery acceptance nor this proof grants release. Optional Fabric eval-experience-01a1335a-a1 remains on its same unresolved identity without retry/replacement. SCOPED_COMMISSION_COMPLETE=false; LEGACY_PROGRAMME_COMPLETE=false; PRODUCTION_PROVEN=false. Earlier entries below/elsewhere remain historical observations; this section and its immutable receipts govern the current qualification.
+
 ## Opening reconciliation — 2026-08-28
 
 H1 is terminal and `WS:EVAL-OS-OUTPUT-HEALTH` is `done`/`PROVEN_LIVE` for the bounded T4 admin
