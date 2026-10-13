@@ -53,8 +53,10 @@ RAW_PATH = {
 }
 SHORT_PATH = {"dates": ["2026-09-14", "2026-09-21", "2026-09-30"],
               "vals": [0.0, -7.4, -6.8]}
+# The owner does not clip a close above the reference high, so a reclaim at
+# close 101 against a peak of 100 ends the path at +1.0, not 0.0.
 RECLAIM_PATH = {"dates": ["2026-09-14", "2026-09-21", "2026-09-24", "2026-09-30"],
-                "vals": [0.0, -7.4, -3.1, 0.0]}
+                "vals": [0.0, -7.4, -3.1, 1.0]}
 EVIDENCE = {
     "onset_session": "2026-09-16",
     "low_session": "2026-09-21",
