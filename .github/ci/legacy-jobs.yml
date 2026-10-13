@@ -17115,6 +17115,30 @@ jobs:
       - tests/test_vector_r2_data_boundary.py
       - tests/test_vector_r2_frontdoor.py
       - tests/test_vector_wave1.py
+      # cx-int science (2026-10-13): the science stream's own suites and their measured import closure.
+      - collectors/coinmetrics.py
+      - engine/crypto_market_state.py
+      - engine/crypto_rotation.py
+      - engine/crypto_universe.py
+      - engine/eth_state.py
+      - engine/grading_stats.py
+      - engine/seasonality/calibration.py
+      - research/crypto_science/CRYPTO_T14_BREADTH_INCREMENT_PREREG_2026-10-12.md
+      - research/crypto_science/t15_transition_increment.py
+      - scripts/build_crypto.py
+      - tests/test_btc_causal_integrity.py
+      - tests/test_btc_regime_lookahead.py
+      - tests/test_crypto_breadth_prereg_invariants.py
+      - tests/test_crypto_eth_sol_transfer.py
+      - tests/test_crypto_flow_funding_semantics.py
+      - tests/test_crypto_forecast_scoring_properties.py
+      - tests/test_crypto_input_eligibility.py
+      - tests/test_crypto_observations_capture.py
+      - tests/test_crypto_onchain_families.py
+      - tests/test_crypto_rotation_basis.py
+      - tests/test_crypto_t12_contract_invariants.py
+      - tests/test_crypto_t15_transition_scaffold.py
+      - tests/test_vector_scorecard_gap_semantics.py
     timeout-minutes: 8
     runs-on: ubuntu-latest
     steps:
@@ -17126,6 +17150,8 @@ jobs:
         run: pip install pytest pandas numpy pyarrow pyyaml jinja2 markupsafe plotly requests scipy beautifulsoup4 lxml openpyxl scikit-learn fastapi httpx jsonschema
       - name: R2 organs — vector wave-1 / data boundary / front door, BTC signals / impulse / intraday CVD, crypto collectors
         run: python -m pytest tests/test_vector_wave1.py tests/test_vector_r2_data_boundary.py tests/test_vector_r2_frontdoor.py tests/test_btc_signals.py tests/test_btc_impulse_falsifier.py tests/test_btc_impulse_radar.py tests/test_btc_impulse_alerts.py tests/test_btc_intraday_cvd.py tests/test_crypto_collectors.py -q
+      - name: crypto science contracts — causal integrity, look-ahead, prereg invariants, transfer, funding, scoring, eligibility, observations capture, on-chain families, rotation basis, T12/T15 scaffolds, scorecard gaps
+        run: python -m pytest tests/test_btc_causal_integrity.py tests/test_btc_regime_lookahead.py tests/test_crypto_breadth_prereg_invariants.py tests/test_crypto_eth_sol_transfer.py tests/test_crypto_flow_funding_semantics.py tests/test_crypto_forecast_scoring_properties.py tests/test_crypto_input_eligibility.py tests/test_crypto_observations_capture.py tests/test_crypto_onchain_families.py tests/test_crypto_rotation_basis.py tests/test_crypto_t12_contract_invariants.py tests/test_crypto_t15_transition_scaffold.py tests/test_vector_scorecard_gap_semantics.py -q
 
   unrun-oracle-desk:
     # oracle nightly + its gauntlet promotion gates.
