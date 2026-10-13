@@ -61,15 +61,19 @@ from __future__ import annotations
 import re
 import hashlib
 import json
+from collections.abc import Mapping
 from dataclasses import dataclass, replace
 from datetime import date, datetime, timezone, timedelta
 from decimal import Decimal, InvalidOperation
 from enum import Enum
+from types import MappingProxyType
+from zoneinfo import ZoneInfo
 
 __all__ = [
     "IdentityError",
     "BATS", "XNYS", "XNAS", "XASE", "ARCX", "XSHG", "XSHE", "XBSE", "XHKG", "XTSE", "XTSX",
     "KNOWN_MICS",
+    "VENUE_TZ", "VENUE_CURRENCY", "venue_timezone", "venue_currency",
     "ListingKey",
     "parse_listing_key",
     "security_id",
@@ -127,6 +131,67 @@ XTSX = "XTSX"   # TSX Venture Exchange
 KNOWN_MICS: frozenset[str] = frozenset(
     {BATS, XNYS, XNAS, XASE, ARCX, XSHG, XSHE, XBSE, XHKG, XTSE, XTSX}
 )
+
+#: D00.A1.1 — CLOSED venue-clock map (same human-once-in-a-diff law as KNOWN_MICS).
+VENUE_TZ: Mapping[str, str] = MappingProxyType({
+    BATS: "America/New_York", XNYS: "America/New_York", XNAS: "America/New_York",
+    XASE: "America/New_York", ARCX: "America/New_York",
+    XTSE: "America/Toronto", XTSX: "America/Toronto",
+    XHKG: "Asia/Hong_Kong",
+    XSHG: "Asia/Shanghai", XSHE: "Asia/Shanghai", XBSE: "Asia/Shanghai",
+})
+#: D00.A1.2 — CLOSED listing-currency map; no FX is ever applied anywhere.
+VENUE_CURRENCY: Mapping[str, str] = MappingProxyType({
+    BATS: "USD", XNYS: "USD", XNAS: "USD", XASE: "USD", ARCX: "USD",
+    XTSE: "CAD", XTSX: "CAD",
+    XHKG: "HKD",
+    XSHG: "CNY", XSHE: "CNY", XBSE: "CNY",
+})
+
+
+def venue_timezone(mic: str) -> ZoneInfo:
+    """The listing venue's clock (D00.A1.1) — ``VENUE_TZ`` resolved, typed.
+
+    ``mic`` is normalised (``strip`` + ``upper``) exactly like a listing key's
+    MIC; a non-str (including ``None``) or a MIC absent from the CLOSED map
+    raises :class:`IdentityError` naming the MIC — never a silent UTC fallback.
+    A host without a tz database (``ZoneInfoNotFoundError``) propagates
+    unchanged: that is an environment fault, not an identity verdict.
+    """
+    if not isinstance(mic, str):
+        raise IdentityError(
+            f"MIC must be a str, got {type(mic).__name__} {mic!r} (D00.A1.1)"
+        )
+    norm = mic.strip().upper()
+    if norm not in VENUE_TZ:
+        raise IdentityError(
+            f"unknown MIC {mic!r} — the venue-clock map in lib/dataos/identity.py "
+            f"is closed on purpose (D00.A1.1); add it there with a comment naming "
+            f"the estate that needs it. Known: {', '.join(sorted(VENUE_TZ))}"
+        )
+    return ZoneInfo(VENUE_TZ[norm])
+
+
+def venue_currency(mic: str) -> str:
+    """The listing's declared currency (D00.A1.2) — ``VENUE_CURRENCY`` resolved.
+
+    Same normalisation and the same :class:`IdentityError` rule as
+    :func:`venue_timezone`; the returned code is the ISO 4217 currency the
+    venue's listings trade in.  No FX is ever applied anywhere.
+    """
+    if not isinstance(mic, str):
+        raise IdentityError(
+            f"MIC must be a str, got {type(mic).__name__} {mic!r} (D00.A1.2)"
+        )
+    norm = mic.strip().upper()
+    if norm not in VENUE_CURRENCY:
+        raise IdentityError(
+            f"unknown MIC {mic!r} — the listing-currency map in "
+            f"lib/dataos/identity.py is closed on purpose (D00.A1.2); add it "
+            f"there with a comment naming the estate that needs it. "
+            f"Known: {', '.join(sorted(VENUE_CURRENCY))}"
+        )
+    return VENUE_CURRENCY[norm]
 
 _COUNTRY_RE = re.compile(r"^[A-Z]{2}$")
 # A listing CODE may carry '.' and '-' (BRK.B, BRK-B): both are real US class
