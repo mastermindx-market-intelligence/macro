@@ -8168,6 +8168,7 @@ jobs:
       - "tests/fixtures/technology_economic_change/conformant_assertion.json"
       - "tests/test_market_ontology_technology_research_registration.py"
       - "tests/test_market_ontology_technology_dossier_page.py"
+      - "tests/test_market_ontology_technology_published_signal.py"
       - "contracts/company_intelligence/management_outlook_comparison.v1.schema.json"
       - "contracts/market_ontology/technology_economic_change.evidence.v1.schema.json"
       - "contracts/market_ontology/technology_economic_change.v1.schema.json"
@@ -8180,6 +8181,7 @@ jobs:
       - "engine/market_ontology/technology_economic_change.py"
       - "engine/market_ontology/technology_research_registration.py"
       - "engine/market_ontology/technology_dossier_page.py"
+      - "engine/market_ontology/technology_published_signal.py"
       # One fragment template, named literally. Do not widen this to templates/**.
       - "templates/_technology_economic_change_page.html.j2"
       - "engine/theme_graph/__init__.py"
@@ -8214,9 +8216,12 @@ jobs:
       # registration test stopped statically importing theme_research_registry.
       # curation_assertion.py path-joins its schema and function-imports
       # lib.evidence_foundation; lib/pages.py (`from lib import config`)
-      # resolves lib/__init__.py. The shell pair stays a Name-argument import,
-      # so theme_research_binding, theme_research_mounts and
-      # semiconductor_owner_bundle are not listed.
+      # resolves lib/__init__.py. The registration shell pair stays a
+      # Name-argument import, so theme_research_mounts and
+      # semiconductor_owner_bundle are not listed. theme_research_binding
+      # is listed: technology_economic_change import_module's it for
+      # canonical_text. Measured uncovered set was that file only.
+      - "engine/market_ontology/theme_research_binding.py"
       - "config/earnings_story_promotion.yml"
       - "config/fundamental_forensics_disclosure_diff.v1.json"
       - "config/theme_graph_identity_breaks.yml"
@@ -8301,7 +8306,7 @@ jobs:
       - name: install deps
         run: pip install pytest pandas numpy pyarrow pyyaml jinja2 requests jsonschema
       - name: Technology ex-Semis boundary (comparison contract + calculator + economic-change composer)
-        run: TZ=UTC python -m pytest tests/test_company_management_outlook_contract.py tests/test_company_management_outlook.py tests/test_market_ontology_technology_economic_change.py tests/test_market_ontology_technology_research_registration.py tests/test_market_ontology_technology_dossier_page.py -q
+        run: TZ=UTC python -m pytest tests/test_company_management_outlook_contract.py tests/test_company_management_outlook.py tests/test_market_ontology_technology_economic_change.py tests/test_market_ontology_technology_research_registration.py tests/test_market_ontology_technology_dossier_page.py tests/test_market_ontology_technology_published_signal.py -q
 
   cn-standout-audit:
     if: ${{ false }}

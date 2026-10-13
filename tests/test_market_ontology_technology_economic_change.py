@@ -430,11 +430,42 @@ def test_lazy_import_literal_equals_shared_contract_module():
     module_tree = ast.parse(MODULE_PATH.read_text(encoding="utf-8"))
     assigned = _assigned_string_constant(module_tree, "SHARED_CONTRACT_MODULE")
     assert assigned == tech.SHARED_CONTRACT_MODULE
-    assert _import_module_string_literals(module_tree) == [assigned]
+    module_literals = _import_module_string_literals(module_tree)
+    shell_canonical = "engine.market_ontology.theme_research_binding"
+    assert module_literals.count(assigned) == 1
+    assert module_literals.count(shell_canonical) == 1
+    assert set(module_literals) == {assigned, shell_canonical}
+    assert "theme_research_registry" not in module_literals
     assert set(_shared_contract_module_path_literals(module_tree)) == {assigned}
     test_tree = ast.parse(Path(__file__).read_text(encoding="utf-8"))
-    assert _import_module_string_literals(test_tree) == [assigned]
+    test_literals = _import_module_string_literals(test_tree)
+    assert assigned in test_literals
+    assert set(test_literals) <= {
+        assigned,
+        "engine.market_ontology.theme_research_binding",
+    }
+    assert "theme_research_registry" not in test_literals
     assert set(_shared_contract_module_path_literals(test_tree)) == {assigned}
+
+
+def test_canonical_json_is_the_shell_function():
+    binding = importlib.import_module("engine.market_ontology.theme_research_binding")
+    assert tech._canonical_json is binding.canonical_text
+
+
+def test_canonical_json_refuses_nan():
+    with pytest.raises(ValueError):
+        tech._canonical_json({"n": float("nan")})
+
+
+def test_finite_digest_unchanged():
+    payload = {"b": 1, "a": "synthetic-finite"}
+    binding = importlib.import_module("engine.market_ontology.theme_research_binding")
+    digest = tech._digest_hex(payload, 64)
+    expected = hashlib.sha256(
+        binding.canonical_text(payload).encode("utf-8")
+    ).hexdigest()[:64]
+    assert digest == expected
 
 
 def test_shared_contract_unavailable_on_carrier_base():

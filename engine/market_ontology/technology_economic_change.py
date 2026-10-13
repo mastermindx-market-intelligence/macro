@@ -249,8 +249,13 @@ class CoverageSpec:
 # --- small helpers ---------------------------------------------------------------
 
 
-def _canonical_json(value: Any) -> str:
-    return json.dumps(value, sort_keys=True, separators=(",", ":"), ensure_ascii=False)
+def _load_shell_canonical_text():
+    # String literal so the exclusive walker resolves the shell. Not the registry.
+    module = importlib.import_module("engine.market_ontology.theme_research_binding")
+    return module.canonical_text
+
+
+_canonical_json = _load_shell_canonical_text()
 
 
 def _digest_hex(value: Any, width: int) -> str:

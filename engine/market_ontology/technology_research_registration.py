@@ -32,7 +32,9 @@ access on the fields §8 names, so the shell's frozen dataclasses and the
 synthetic fixtures are accepted equally. Every shape this adapter EXPECTS from
 the bundle beyond the OwnerBundle field set is a PLACEHOLDER pinned to the §8
 adjudication and named in place: the ``as_known`` mapping on an identity
-result, the ``theme_ref`` key inside an assertion's ``scope`` section, the
+result, the ``theme_ref`` key inside an assertion's ``scope`` section
+(or ``canonical_theme_id`` when ``theme_ref`` is absent; differing values
+conflict), the
 native-ref entry carrying the run context, and the ``omissions`` -> coverage
 mapping. None is ever guessed past, defaulted or repaired.
 
@@ -343,8 +345,9 @@ def _validate_query_and_resolve(query: Any, bundle: Any) -> str:
 
 def _theme_ref_from_assertions(assertions: list[Any]) -> str | None:
     """The ONE accepted theme id carried by the bundle's assertions' scope
-    sections (PLACEHOLDER key ``theme_ref``, pinned to the §8 adjudication).
-    Zero or conflicting ids are both "no accepted theme id" — never a pick."""
+    sections. ``theme_ref`` or, when that key is absent, ``canonical_theme_id``.
+    Zero ids, a within-scope disagreement, or two different ids are all
+    "no accepted theme id" — never a pick by tuple order."""
     theme_ids: set[str] = set()
     for assertion in assertions:
         if not isinstance(assertion, Mapping):
@@ -353,8 +356,14 @@ def _theme_ref_from_assertions(assertions: list[Any]) -> str | None:
         if not isinstance(scope, Mapping):
             continue
         theme_ref = scope.get("theme_ref")
-        if isinstance(theme_ref, str) and theme_ref:
-            theme_ids.add(theme_ref)
+        canonical = scope.get("canonical_theme_id")
+        theme_ok = isinstance(theme_ref, str) and bool(theme_ref)
+        canonical_ok = isinstance(canonical, str) and bool(canonical)
+        if theme_ok and canonical_ok and theme_ref != canonical:
+            return None
+        chosen = theme_ref if theme_ok else canonical if canonical_ok else None
+        if isinstance(chosen, str) and chosen:
+            theme_ids.add(chosen)
     if len(theme_ids) != 1:
         return None
     return next(iter(theme_ids))
@@ -601,6 +610,18 @@ def validate_evidence_envelope(payload: Mapping[str, Any]) -> None:
         _refuse(f"evidence_schema_violation: {path}")
 
 
+def _evidence_source_object_id(source: Mapping[str, Any]) -> Any:
+    """Match key for one assertion source.
+
+    ``object_id`` when that key is present and not null. ``retention_ref``
+    only when ``object_id`` is absent. Callers still require the string to be
+    cited by the composed dossier. ``selector`` is not read.
+    """
+    if "object_id" in source and source.get("object_id") is not None:
+        return source.get("object_id")
+    return source.get("retention_ref")
+
+
 def select_evidence(query: Any, bundle: Any, assertion_ref: Any) -> dict[str, Any]:
     """Return the closed evidence envelope for ONE authorized assertion.
 
@@ -609,6 +630,9 @@ def select_evidence(query: Any, bundle: Any, assertion_ref: Any) -> dict[str, An
     assertion in the bundle carries that source object_id — two or more
     carrying it share the same refusal as zero, so no pick by tuple order and
     the envelope can never hand out an assertion the dossier never rendered.
+    When ``source.object_id`` is absent, ``source.retention_ref`` is that
+    object id, and only when the string is in the cited set. A source that
+    already carries ``object_id`` keeps that match. ``selector`` is not a key.
     Unknown, not-selected and ambiguous refs share the ONE code
     ``not_available`` — no existence disclosure. Never fetches, never
     dereferences a locator, never widens beyond the bundle.
@@ -646,7 +670,7 @@ def select_evidence(query: Any, bundle: Any, assertion_ref: Any) -> dict[str, An
         assertion for assertion in getattr(bundle, "assertions", None) or ()
         if isinstance(assertion, Mapping)
         and isinstance(assertion.get("source"), Mapping)
-        and assertion["source"].get("object_id") == assertion_ref
+        and _evidence_source_object_id(assertion["source"]) == assertion_ref
     ]
     if len(matches) != 1 or assertion_ref not in _cited_source_object_ids(payload):
         _refuse("not_available")

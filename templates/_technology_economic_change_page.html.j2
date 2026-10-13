@@ -31,4 +31,16 @@
     {% endfor %}
     {% endif %}
   </section>
+  {% if dossier.comparison is defined %}
+  <section class="technology-dossier-comparison" data-section="comparison">
+    {% if dossier.comparison.refused is defined and dossier.comparison.refused %}
+    <p data-field="comparison_reason_code">{{ dossier.comparison.reason_code }}</p>
+    {% elif dossier.comparison.admission is defined %}
+    <p data-field="comparison_admission">{{ dossier.comparison.admission }}</p>
+    {% if dossier.comparison.primary_limitation is defined and dossier.comparison.primary_limitation.text is defined %}
+    <p data-field="comparison_primary_limitation">{{ dossier.comparison.primary_limitation.text }}</p>
+    {% endif %}
+    {% endif %}
+  </section>
+  {% endif %}
 </section>

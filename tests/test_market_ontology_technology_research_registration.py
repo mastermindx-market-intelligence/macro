@@ -557,6 +557,42 @@ def test_select_evidence_returns_the_one_authorized_assertion(monkeypatch):
     _evidence_validator().validate(envelope)
 
 
+def test_select_evidence_returns_the_conformant_assertion() -> None:
+    """The fixture object, not the synthetic stand-in. No loader monkeypatch."""
+    payload = json.loads(base.CONFORMANT_ASSERTION_PATH.read_text(encoding="utf-8"))
+    assert "theme_ref" not in payload["scope"]
+    assert payload["scope"]["canonical_theme_id"] == base.THEME
+    assert payload["source"]["retention_ref"] == "synthetic-doc-role-conformant"
+    assert "object_id" not in payload["source"]
+    bundle = _bundle(assertions=(payload,))
+    envelope = reg.select_evidence(QUERY, bundle, "synthetic-doc-role-conformant")
+    assert envelope["schema"] == "technology_economic_change.evidence.v1"
+    assert (
+        envelope["assertion"]["curation_revision"]
+        == "gmirca_36e46fc0522eddc0eb823a0f171cdd7e"
+    )
+    assert envelope["authority"] == {
+        "rank": False,
+        "gate": False,
+        "size": False,
+        "veto": False,
+        "originate": False,
+        "open_entry": False,
+    }
+
+
+def test_theme_ref_and_canonical_theme_id_conflict_refuses() -> None:
+    assertion = _themed(base.ROLE)
+    assertion["scope"] = {
+        **assertion["scope"],
+        "canonical_theme_id": "theme:other-vertical",
+    }
+    assert assertion["scope"]["theme_ref"] != assertion["scope"]["canonical_theme_id"]
+    with pytest.raises(TechnologyRegistrationRefusal) as excinfo:
+        reg.compose(QUERY, _bundle(assertions=(assertion,)))
+    assert excinfo.value.code == "theme_ref_unavailable"
+
+
 def test_select_evidence_generation_is_the_composed_dossier_id(monkeypatch):
     _activate_synthetic_contract(monkeypatch)
     bundle = _bundle()

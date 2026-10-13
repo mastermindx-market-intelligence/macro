@@ -1,16 +1,21 @@
 """Company-first fragment for a technology_economic_change dossier dict.
 
-The dossier is built in the test. Nothing here calls the composer, a quote
-path, or a network. Identifiers are synthetic.
+The hand-built tests construct the mapping themselves. The composer-render
+pin loads the conformant fixture, composes it with the economic-change
+suite's sealed providers, and renders that dossier. No network. Identifiers
+are synthetic.
 """
 from __future__ import annotations
 
+import importlib
 import inspect
 import json
 import re
 from collections.abc import Mapping
 from pathlib import Path
 
+import engine.market_ontology.technology_economic_change as tech
+import tests.test_market_ontology_technology_economic_change as econ
 from engine.market_ontology.technology_dossier_page import (
     render_technology_dossier_page,
 )
@@ -171,6 +176,74 @@ def test_business_rows_render_when_the_dossier_has_rows() -> None:
     assert 'data-field="statement">synthetic workload role<' in html
     assert "shared_contract_unavailable" not in html
     assert _flag_text(html, "rank") == "rank false"
+
+
+def test_conformant_composer_dossier_renders_predicate_and_statement() -> None:
+    """A dossier built through the composer renders on the company-first fragment.
+
+    Same sealed providers as
+    ``test_conformant_fixture_renders_one_product_workload_role_row``. The
+    curation module is the string-literal import the economic-change suite
+    already uses.
+    """
+    module = importlib.import_module("engine.theme_graph.curation_assertion")
+    payload = json.loads(econ.CONFORMANT_ASSERTION_PATH.read_text(encoding="utf-8"))
+    validated = module.validate_assertion(payload)
+    dossier = tech.compose_technology_economic_change(
+        **econ._providers(business_assertions=[validated])
+    )
+    html = render_technology_dossier_page(dossier, TEMPLATE)
+    assert 'data-field="predicate">product_workload_role<' in html
+    assert (
+        'data-field="statement">Synthetic attributed statement: '
+        "product workload role for compute acceleration.<"
+    ) in html
+    assert dossier["business"]["rows"][0]["predicate"] == "product_workload_role"
+    assert dossier["business"]["rows"][0]["statement_mode"] == "attributed"
+
+
+def test_fragment_prints_comparison_admission_and_limitation() -> None:
+    dossier = _dossier(
+        display_ticker="ACME",
+        binding_state="bound",
+        company_first=_COMPANY_FIRST,
+        business=_refusal_business(),
+        enrichment_reason="enrichment_out_of_first_unit_scope",
+    )
+    dossier["comparison"] = {
+        "admission": "admitted",
+        "primary_limitation": {"text": "synthetic: single-product comparison"},
+        "refused": False,
+        "result": {"annual_midpoint_change": "+120.5"},
+    }
+    html = _render(dossier)
+    admission = re.search(
+        r'data-field="comparison_admission"[^>]*>([^<]*)</',
+        html,
+    )
+    assert admission is not None
+    assert admission.group(1).strip() == "admitted"
+    assert "synthetic: single-product comparison" in html
+    assert "annual_midpoint_change" not in html
+    assert "+120.5" not in html
+
+
+def test_fragment_prints_refused_comparison_reason() -> None:
+    dossier = _dossier(
+        display_ticker="ACME",
+        binding_state="bound",
+        company_first=_COMPANY_FIRST,
+        business=_refusal_business(),
+        enrichment_reason="enrichment_out_of_first_unit_scope",
+    )
+    dossier["comparison"] = {
+        "refused": True,
+        "reason_code": "comparison_limitations_absent",
+    }
+    html = _render(dossier)
+    assert "comparison_limitations_absent" in html
+    assert 'data-field="comparison_admission"' not in html
+    assert "admitted" not in html
 
 
 def test_fragment_does_not_read_files(monkeypatch) -> None:
