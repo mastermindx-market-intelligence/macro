@@ -1,8 +1,8 @@
 {
   "contract": "government_program_theme_assignment_review.v1",
   "schema_version": "1.1.0",
-  "reviewed_at": "2026-10-13T20:53:13.684818+00:00",
-  "reviewer": "01a13703 independent current-owner theme-bridge source review; root integration pending",
+  "reviewed_at": "2026-10-13T21:31:43.142680+00:00",
+  "reviewer": "01a13703 independent current-owner theme-bridge source review; root integration pending; 01a13703 reviewed existing Virginia/AUKUS future window as partial context only",
   "owners": {
     "fms": {
       "owner_kind": "fms",
@@ -467,9 +467,15 @@
         ]
       },
       "next_event": {
-        "reason_code": "owner_reference_absent",
-        "references": [],
-        "state": "source_unavailable"
+        "state": "partial",
+        "reason_code": "reviewed_future_milestone_window",
+        "references": [
+          {
+            "owner_key": "ontology",
+            "pointer": "/milestones/0",
+            "row_id": "prog-milestone:a904b5338b54"
+          }
+        ]
       }
     }
   },
@@ -514,6 +520,7 @@
     "shipbuilding/market_context/0": "951deeb8707250d581e03415d3f8b99140d1754fe0d1c008a4fe9ec246360786",
     "space/contrary_case/0": "1542d11ee8c592ac0d868f96141a6157239527dd5468d4e737f556c609b23e31",
     "space/contrary_case/1": "94353fbc4c1425faf0e07206722dd9c68e6335972ce1e84f3a275dd43cd6f16a",
-    "shipbuilding/contrary_case/0": "283d552eb0d1b8fa24be2cd9863e13cceae600fe81dcfc1bfdf5ad9c216bd321"
+    "shipbuilding/contrary_case/0": "283d552eb0d1b8fa24be2cd9863e13cceae600fe81dcfc1bfdf5ad9c216bd321",
+    "shipbuilding/next_event/0": "abb165b8c67766aeb14feacd055c6cdc8b6903d00949ffe854560cdd3aed70bc"
   }
 }

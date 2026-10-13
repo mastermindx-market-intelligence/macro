@@ -148,3 +148,35 @@ def test_new_named_financial_case_requires_exact_full_fact_namespace():
  node['fact_id']='evt_cik0000936468_2026q2_results:space_business_sale_completed_terms';ref['row_id']=node['fact_id']
  body['content_id']=defense_economics_content_id(body);owners['economic']=snapshot('defense_economics',body)
  with pytest.raises(ValueError,match='theme_contrary_fact_scope_invalid'):compose(assignment,owners)
+
+
+def milestone_case():
+ owners=legacy_owners();graph=owners['ontology'].payload();index=next(i for i,row in enumerate(graph['milestones']) if row['id']=='prog-milestone:a904b5338b54')
+ row=graph['milestones'][index];ref=dict(owner_key='ontology',pointer=f'/milestones/{index}',row_id=row['id'])
+ return owners,{'shipbuilding':{'next_event':dict(state='partial',reason_code='reviewed_future_milestone_window',references=[ref])}}
+
+
+def test_reviewed_future_window_is_partial_source_context_not_committed_delivery():
+ owners,assignment=milestone_case();p=compose(assignment,owners)
+ receipts={key:dict(state='available',sha256=sha256(owner.raw_bytes).hexdigest(),owner_alias_state='unchanged') for key,owner in owners.items()}
+ display=d.disclose_program_themes(p,owners=owners,current_owner_receipts=receipts);ship=display['themes'][5]
+ assert ship['rail_states']['next_event']=='partial' and ship['research_state']=='EVIDENCE_INSUFFICIENT'
+ assert 'FY2032' in ship['next_en'] and 'owning milestone estimate' in ship['next_en']
+ assert any(source['url']=='https://crsreports.congress.gov/product/pdf/RL/RL32418' for source in ship['sources'])
+
+
+def test_program_or_role_cannot_be_relabelled_as_next_milestone():
+ owners,assignment=milestone_case();role=owners['ontology'].payload()['role_assertions'][0]
+ ref=assignment['shipbuilding']['next_event']['references'][0];ref.update(pointer='/role_assertions/0',row_id=role['id'])
+ with pytest.raises(ValueError,match='milestone_reference_required'):compose(assignment,owners)
+
+
+def test_past_window_cannot_remain_a_next_event_after_valid_native_id_rebuild():
+ from engine.government_revenue import program_ontology as po
+ owners,assignment=milestone_case();graph=owners['ontology'].payload();row=graph['milestones'][0]
+ row['window']={'from':'2024-10-01','to':'2025-09-30'}
+ row['id']=po.milestone_id(program_id=row['program_id'],kind=row['kind'],title=row['title'],temporal_kind=row['temporal_kind'],date_value=row.get('date'),window=row['window'],revision=row['revision'])
+ old=owners['ontology'];owners['ontology']=t.OwnerSnapshot(old.owner_kind,json.dumps(graph).encode(),old.available_at,old.admission_ref,old.rights_state)
+ assert owners['ontology'].payload()
+ assignment['shipbuilding']['next_event']['references'][0]['row_id']=row['id']
+ with pytest.raises(ValueError,match='past_milestone_as_next_event'):compose(assignment,owners)
