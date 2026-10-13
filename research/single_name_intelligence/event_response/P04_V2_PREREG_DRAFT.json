@@ -21,7 +21,7 @@
     "escalation_authority": false,
     "trade_authority": false
   },
-  "authority_flags_enforcement": "REFUSE (raise) if a caller tries to set any of rank_authority, gate_authority, size_authority, signal_authority, escalation_authority, or trade_authority to true. Every flag stays false. Nothing in this draft feeds a ranker, gate, sizer, escalation, or trade path.",
+  "authority_flags_enforcement": "REFUSE (raise) if a caller tries to set any of rank_authority, gate_authority, size_authority, signal_authority, escalation_authority, or trade_authority to true. Every flag stays false. Nothing in this draft feeds a ranker, gate, sizer, signal, escalation, or trade path.",
   "successor_of": {
     "protocol": "P04",
     "version": "v1",
@@ -35,24 +35,40 @@
       "SPY": "2026-06-18"
     },
     "v1_membership_sha256_construction": "sha256 of '|'.join(per-(protocol,h,TUNE) membership_sha256 for h in (5,21,63))",
-    "v1_tune_still_printed": "v1 computed and printed TUNE outcomes after detection and labelled them NON-CONFIRMATORY. v2 does not do that: detection precedes any outcome load, and a retired split yields no outcome."
+    "v1_tune_still_printed": "v1 computed and printed TUNE outcomes after detection and labelled them NON-CONFIRMATORY. v2 does not do that: detection precedes any outcome load, and a retired split yields no outcome.",
+    "register_citation": {
+      "path": "research/single_name_intelligence/protocols/S0_PROTOCOL_REGISTER.md",
+      "section": "§7 Retirement Log",
+      "row": "P04 v1 TUNE a3b15693… information_leak 2026-10-11T21:59:47+00:00",
+      "ref": "origin/claude/sni-s2-ship-20261012 @ 050a5637515a",
+      "status": "pending merge of PR #8893",
+      "digest": "a3b15693e32d9d2f44e5e4a78f90bdfb3ac2afece84b5691be12e03685804ed6"
+    }
   },
   "vintage_rule": {
-    "summary": "Every price/return input to a split is read from a vintage pinned at or before the split's decision timestamp (as_of_utc). A vintage step (any revision of a value already used by an earlier decision) within the split window with |step| above tolerance RETIRES the split automatically before any outcome is read. The detector runs BEFORE outcomes are loaded: detection clock precedes outcome clock.",
-    "as_of_utc": "the split's decision timestamp; bound at seal; every price/return input is the vintage of that instant or earlier",
+    "summary": "Every episode reads its price/return inputs from the vintage pinned at that episode's own D(s). A vintage step is any revision of a value already used by an earlier decision. On a close/close_price pair the adjustment factor is q_t = close_t / close_price_t, and a step is the dimensionless relative move |q_t / q_{t-1} - 1|. Tolerance is STEP_TOLERANCE = 1e-6. Used-bar revisions are detected across vintages even when the step date sits outside the split window. The detector runs BEFORE outcomes are loaded.",
+    "as_of_utc": {
+      "per_episode": true,
+      "format": "ISO-8601 UTC with Z suffix",
+      "equals": "D(s) decision time",
+      "invariant": "input_vintage_utc <= as_of_utc"
+    },
     "tolerance": 1e-6,
     "tolerance_name": "STEP_TOLERANCE",
     "tolerance_unit": "dimensionless relative step of the adjustment factor q_t = close_t / close_price_t, inherited from s1_infoleak.vintage_series / detect: a step is recorded when |q_t / q_{t-1} - 1| > 1e-6",
     "step_definition": "a vintage step is any revision of a value already used by an earlier decision; on a close/close_price pair it is the relative move of q above STEP_TOLERANCE",
-    "detector": "s1_infoleak.vintage_series then s1_infoleak.detect; window is the split window under test",
-    "effect": "a step inside the split window with |step| above tolerance RETIRES the split automatically, class information_leak, before any outcome is read",
-    "clock_law": "detection clock precedes outcome clock; the detector is run, and any retirement is recorded, before outcomes are loaded",
+    "detector": "s1_infoleak.vintage_series then s1_infoleak.detect, plus vintage_rule.cross_vintage_detector on every used bar",
+    "effect": "a step inside the split window with |step| above tolerance RETIRES the split automatically, class information_leak, before any outcome is read. A used-bar revision detected by cross_vintage_detector does not silently pass: the episode is marked VINTAGE_UNVERIFIABLE and excluded (listed with reason).",
+    "clock_law": "detection clock precedes outcome clock; the detector is run, and any retirement or VINTAGE_UNVERIFIABLE exclusion is recorded, before outcomes are loaded",
     "then_known": "historical facts known only after as_of_utc are never used as if known on that date",
     "descriptive_not_causal": "a residual or stress statistic computed after a clean vintage check is DESCRIPTIVE, never causal, never news-impact",
     "hk_series": "VINTAGE_UNVERIFIABLE when no close/close_price pair exists; disclosed; not retired",
-    "train": "TRAIN is never retired (SL §8 step 6)",
+    "train": "TRAIN is never retired (SL §8 step 6); TRAIN episodes are still excluded per cross_vintage_detector when a used bar differs across vintages",
+    "per_episode_pin": "every episode reads its inputs from the vintage pinned at its own D(s)",
+    "cross_vintage_detector": "for every bar USED by any episode (any split, TRAIN included), compare its value across every available vintage up to the evaluation vintage; |relative difference| > 1e-6 marks that episode VINTAGE_UNVERIFIABLE and excludes it (listed with reason, never silently dropped)",
+    "train_read_ceiling": "a TRAIN read from a vintage dated after the last TRAIN D(s) is REFUSED",
     "empty_split": "EMPTY — retirement not applicable",
-    "root_cause_fix": "pinned adjustment vintage at as_of_utc, plus the composite split digest that includes vintage_manifest (SL §8 step 5)"
+    "root_cause_fix": "per-episode pin at D(s), cross-vintage used-bar detector, TRAIN read ceiling, plus the composite split digest that includes vintage_manifest (SL §8 step 5)"
   },
   "split_identity": {
     "composite_split_digest": "sha256 of canonical JSON of {protocol, version, split_name, member_episode_ids (sorted), as_of_utc, vintage_manifest (sorted path→sha256)}",
@@ -73,39 +89,61 @@
   },
   "label_semantics": {
     "labels": [
-      "TESTED",
-      "DESCRIPTIVE_ONLY",
       "ABSTAIN_NO_EPISODES",
-      "ABSTAIN_INSUFFICIENT_CLUSTERS"
+      "ABSTAIN_INSUFFICIENT_CLUSTERS",
+      "DESCRIPTIVE_ONLY",
+      "TESTED"
     ],
     "min_episodes": 153,
-    "min_episodes_source": "v1 PREREG_SPEC.json minimum_evidence.episodes",
-    "min_episodes_note": "carried from v1; the seat may confirm at registration",
+    "min_episodes_source": "REG common-rules power formula; n = ceil(152.5) = 153 independent episodes (S0_PROTOCOL_REGISTER.md §9)",
+    "min_episodes_note": "sample-N abstention (A25), SEPARATE from trial N / declared_budget_floor",
     "rule": {
-      "ABSTAIN_NO_EPISODES": "episodes == 0",
-      "ABSTAIN_INSUFFICIENT_CLUSTERS": "episodes > 0 AND date clusters < 2",
-      "DESCRIPTIVE_ONLY": "date clusters >= 2 AND episodes < min_episodes; this is NOT an abstain",
-      "TESTED": "date clusters >= 2 AND episodes >= min_episodes"
+      "ABSTAIN_NO_EPISODES": {
+        "when": "episodes == 0"
+      },
+      "ABSTAIN_INSUFFICIENT_CLUSTERS": {
+        "when": "episodes > 0 AND date clusters < 2",
+        "not_estimable_mapping": "baseline/challenger NOT ESTIMABLE maps to this token (cluster-N < 2); not a fifth family label"
+      },
+      "DESCRIPTIVE_ONLY": {
+        "when": "date clusters >= 2 AND episodes < min_episodes",
+        "is_abstain": false
+      },
+      "TESTED": {
+        "when": "date clusters >= 2 AND episodes >= min_episodes",
+        "min_clusters": 2
+      }
     },
     "evaluation_order": "ABSTAIN_NO_EPISODES, then ABSTAIN_INSUFFICIENT_CLUSTERS, then DESCRIPTIVE_ONLY, then TESTED; first match wins",
-    "v1_correction": "the v1 wording 'CI NOT ESTIMABLE (cluster-N < 2)' is explicitly wrong for the DESCRIPTIVE_ONLY case (date clusters >= 2 and episodes < min_episodes) and is corrected here. DESCRIPTIVE_ONLY is a descriptive label, not an abstain. An unestimable family ABSTAINS with a named reason (ABSTAIN_NO_EPISODES or ABSTAIN_INSUFFICIENT_CLUSTERS); never a default 0.5 fill (A25).",
+    "v1_correction": "the v1 wording 'CI NOT ESTIMABLE (cluster-N < 2)' is explicitly wrong for the DESCRIPTIVE_ONLY case (date clusters >= 2 and episodes < min_episodes) and is corrected here. DESCRIPTIVE_ONLY is a descriptive label, not an abstain. An unestimable family ABSTAINS with a named reason (ABSTAIN_NO_EPISODES or ABSTAIN_INSUFFICIENT_CLUSTERS); never a default 0.5 fill (A25). Baseline/challenger NOT ESTIMABLE maps to ABSTAIN_INSUFFICIENT_CLUSTERS.",
     "ci_under_descriptive_only": "cluster-N >= 2, so an interval may be printed as a descriptive statistic; it is not a confirmatory test and does not convert the family to TESTED"
   },
+  "label_order": [
+    "ABSTAIN_NO_EPISODES",
+    "ABSTAIN_INSUFFICIENT_CLUSTERS",
+    "DESCRIPTIVE_ONLY",
+    "TESTED"
+  ],
   "horizons": [5, 21, 63],
   "graded_legs": {
     "graded_issuer_group": "alibaba",
-    "graded_leg": "adr_baba (SEC:US-XNYS-BABA, MARKET_US)",
+    "graded_leg": {
+      "kind": "caller_supplied_opaque_id",
+      "role": "Alibaba ADR leg, MARKET_US",
+      "binding": "bound at seal from Stock Identity; cite REG §6 line 192"
+    },
     "census_only": [
-      "tencent issuer group",
-      "HK legs (9988, 0700)"
+      "Tencent issuer group",
+      "HK legs of both issuer groups"
     ],
-    "rule": "only the Alibaba ADR leg SEC:US-XNYS-BABA is graded; Tencent and both HK legs are counted and abstained, never graded (copied from v1 PREREG_SPEC.json scope; identifiers are owner-supplied, not minted here)"
+    "rule": "only the Alibaba ADR leg (caller-supplied opaque id, MARKET_US) is graded; the Tencent issuer group and the HK legs of both issuer groups are counted and abstained, never graded. Identifiers are owner-supplied opaque strings bound at seal from Stock Identity; this draft does not mint them."
   },
   "registration_gate": {
     "met": false,
     "requires": [
       "seat review",
       "S0 register §6 row",
+      "v2 membership seal row in REG §6 (not minted by this draft)",
       "seal via sni_seal",
       "immutable budget row before any trial"
     ]
@@ -126,10 +164,14 @@
     "protocols": ["P04"],
     "family": "results",
     "graded_issuer_group": "alibaba",
-    "graded_leg": "adr_baba (SEC:US-XNYS-BABA, MARKET_US)",
+    "graded_leg": {
+      "kind": "caller_supplied_opaque_id",
+      "role": "Alibaba ADR leg, MARKET_US",
+      "binding": "bound at seal from Stock Identity; cite REG §6 line 192"
+    },
     "census_only": [
-      "tencent issuer group",
-      "HK legs (9988, 0700)"
+      "Tencent issuer group",
+      "HK legs of both issuer groups"
     ]
   },
   "s0_sources": {
@@ -152,8 +194,8 @@
       "counting_clock": "US",
       "ledger_family": "sni.s2_event_response.P04",
       "reg_canonical_family": "sni.s0.P04",
-      "declared_budget": 13,
-      "budget_basis": "FLOOR; SL §8 step 5 carries v1 literal_n (13) as the successor floor (v1 declared_budget was 6)",
+      "declared_budget": 6,
+      "budget_basis": "FLOOR; declared_budget_floor = 6 from SEAL_AND_BUDGET.json declared_budget (P04), origin/claude/sni-s2-ship-20261012. Trial N is SEPARATE from the A25 sample abstention (min 153 episodes).",
       "itemized_grid_size": 12,
       "itemized_grid": [
         {"protocol_id": "P04", "version": "v2", "baseline": "always_long", "horizon": 5},
@@ -171,28 +213,34 @@
       ]
     }
   ],
+  "tuning": {
+    "mode": "UNTUNED",
+    "cells_reported": "all 12 (P04 × h∈{5,21,63} × baselines i..iii + challenger row) under the family-wise budget haircut",
+    "selectors": [],
+    "test_conditional_selection": "REFUSED"
+  },
   "clock_rules": {
     "s_c": "first session on clock c whose REGULAR OPEN is strictly after t_avail (pre-open -> same day; in-session, HK midday break or after close -> next session; DISCLOSURE_DATE -> first session strictly after the date)",
-    "graded_clock": "MARKET_US only (BABA leg)",
+    "graded_clock": "MARKET_US only (Alibaba ADR leg)",
     "window": "entry_anchor = calendar day before s_US; resolve_horizon_window(entry_anchor, h, HORIZON_UNIT_TRADING, MARKET_US); assert fill_date == s_US else ABSTAIN_FILL_MISMATCH; None -> ABSTAIN_RESOLVER_NONE",
     "leg_return": "close(coverage_date)/close(fill_date) - 1 on the vintage-pinned adjusted total-return close; both endpoint bars present on exactly those sessions else ABSTAIN_MISSING_ENDPOINT",
-    "excess": "BABA return - SPY return (descriptive co-movement over W_h, never causal)",
-    "decision_time": "D(s) = last NYSE session before s_US; every decision-time quantity uses the vintage pinned at or before as_of_utc and bars <= D(s); the day-s move is excluded and disclosed",
+    "excess": "Alibaba ADR return - SPY return (descriptive co-movement over W_h, never causal)",
+    "decision_time": "D(s) = last NYSE session before s_US; every episode reads its inputs from the vintage pinned at its own D(s); bars <= D(s); as_of_utc equals D(s) decision time and input_vintage_utc <= as_of_utc; the day-s move is excluded and disclosed",
     "W_h": "sessions s .. s+h inclusive (IL §1); the overlap window used by IL §3",
-    "detection_before_outcome": "vintage-step detection runs to completion, and any retirement is recorded, before any outcome series is loaded"
+    "detection_before_outcome": "vintage-step detection and the cross-vintage used-bar detector run to completion, and any retirement or VINTAGE_UNVERIFIABLE exclusion is recorded, before any outcome series is loaded"
   },
   "collapse_rules": {
     "order": "IL §3 steps 0..N run IN FULL before anything is counted (A22)",
     "duplicate_reports": "repeated reports of one occurrence -> one event, earliest admissible t_avail",
     "programme": "one programme -> one event; execution returns are evidence rows",
-    "cross_counter": "BABA and 9988 rows of one occurrence -> ONE alibaba episode; leg outcomes are columns of one episode, never extra N (IL §6)",
+    "cross_counter": "ADR and HK rows of one occurrence for the Alibaba issuer group -> ONE alibaba episode; leg outcomes are columns of one episode, never extra N (IL §6)",
     "overlap": "overlapping windows within an issuer group at the same h handled per IL §3 step 4 (absorb / confounded flags), never silently merged, never double-counted",
     "clusters": "same-day shocks across issuer groups share a cluster key (trade date of s) and are counted in cluster-N, never merged into one episode (IL §8)",
     "exclusion_order": "excluded-and-listed rows are removed before episode formation; the exclusion is listed with its ids"
   },
   "splits": {
     "TRAIN": "s < 2024-01-01",
-    "TUNE": "EMPTY in v2. SL §8 step 5: a successor of a retired TUNE does not refill TUNE; v1 TUNE members stay retired and are never reused, re-ranked, or moved. v2 is declared UNTUNED (TRAIN-only for any choice that would have used TUNE).",
+    "TUNE": "EMPTY in v2. SL §8 step 5: a successor of a retired TUNE does not refill TUNE; v1 TUNE members stay retired and are never reused, re-ranked, or moved.",
     "QUARANTINE": "s >= 2026-10-01 (listed, counted, never evaluated)",
     "TEST": "prospective claims only; registration_gate.met is false, so this draft has no TEST membership",
     "purge": "TRAIN episode with coverage_date >= 2024-01-01, or TUNE episode with coverage_date >= 2026-10-01 -> PURGED (counted visibly, never moved). v2 TUNE is empty, so TUNE purge is n/a.",
@@ -201,10 +249,10 @@
   },
   "baselines": {
     "i": "always-long (+1)",
-    "ii": "sign of the trailing-63-session excess at D(s), using the vintage pinned at or before as_of_utc; exact bars on D and D63 for both legs, else direction 0",
-    "iii": "direction of the all-events pooled prior = sign of the mean excess of all counted TRAIN episodes at that h (PRIMARY set), computed from TRAIN only; TRAIN cluster-N < 2 -> NOT ESTIMABLE (abstain with that named reason, never a 0.5 fill, never +1 by default)",
-    "challenger": "NOT ESTIMABLE while hierarchy legs above own-name stay unregistered; own-name honest-N printed beside",
-    "pooling_weight": "NOT ESTIMABLE whenever baseline (iii) is not estimable or own-name cluster-N < 2; the token is printed, never a number by default",
+    "ii": "sign of the trailing-63-session excess at D(s), using the vintage pinned at the episode's own D(s); exact bars on D and D63 for both legs, else direction 0",
+    "iii": "direction of the all-events pooled prior = sign of the mean excess of all counted TRAIN episodes at that h (PRIMARY set), computed from TRAIN only; TRAIN cluster-N < 2 -> ABSTAIN_INSUFFICIENT_CLUSTERS (NOT ESTIMABLE maps to that token, never a 0.5 fill, never +1 by default)",
+    "challenger": "ABSTAIN_INSUFFICIENT_CLUSTERS while hierarchy legs above own-name stay unregistered (NOT ESTIMABLE maps to that token); own-name honest-N printed beside",
+    "pooling_weight": "ABSTAIN_INSUFFICIENT_CLUSTERS whenever baseline (iii) is not estimable or own-name cluster-N < 2; the token is printed, never a number by default",
     "proper_score": "NOT SUPPORTED (REG P04: hit and excess are not a proper score)",
     "hit_rule": "hit = sign(excess) == direction; excess == 0 exactly -> non-hit, listed as a tie; direction 0 -> ABSTAIN"
   },
@@ -222,24 +270,22 @@
     "below_minimum": "DESCRIPTIVE_ONLY — below the 153-episode minimum; not an abstain when date clusters >= 2"
   },
   "abstention_ladder": [
-    "ABSTAIN_NO_EPISODES (episodes == 0)",
-    "ABSTAIN_INSUFFICIENT_CLUSTERS (episodes > 0 and date clusters < 2: no test; per-episode rows may be printed descriptively)",
-    "DESCRIPTIVE_ONLY (date clusters >= 2 and episodes < 153; NOT an abstain; v1 'CI NOT ESTIMABLE (cluster-N < 2)' is wrong for this case)",
-    "TESTED (date clusters >= 2 and episodes >= 153)",
-    "first match wins; never a 0.5 fill (A25)"
+    "ABSTAIN_NO_EPISODES",
+    "ABSTAIN_INSUFFICIENT_CLUSTERS"
   ],
   "kill_hold_rule": "Kill/continue per REG P01: a failed criterion prints KILL or HOLD-AS-RESEARCH and is never rescued by changing target, cohort or horizon after seeing results.",
   "info_leak_predicate": {
     "series": "q_t = close_t / close_price_t for every close/close_price pair supplied to a split (v1 offending pair: BABA and SPY)",
-    "rule": "any vintage step with |step| > 1e-6 inside the split window, after reading the vintage pinned at or before as_of_utc",
+    "rule": "any vintage step with |step| > 1e-6 inside the split window, after reading the vintage pinned at the episode's own D(s); PLUS cross_vintage_detector on every used bar (TRAIN included) even when the step date sits outside the split window",
     "class": "information_leak",
-    "effect": "the split is RETIRED automatically before any outcome is read; no outcome of that split is loaded or printed as evidence",
+    "effect": "the split is RETIRED automatically before any outcome is read when a window step fires; a used-bar cross-vintage revision marks the episode VINTAGE_UNVERIFIABLE and excludes it (listed with reason). No outcome of a retired split is loaded or printed as evidence",
     "clock": "detection clock precedes outcome clock"
   },
   "trial_ledger": {
-    "note": "no v2 trial row is written by this draft; the seat records the immutable budget row before any trial",
-    "carried_literal_n": 13,
-    "declared_budget_floor": 13,
+    "note": "no v2 trial row is written by this draft; the seat records the immutable budget row before any trial. The A25 sample abstention (min 153 episodes) is explicitly SEPARATE from trial N (declared_budget_floor); trial N is a multiple-testing floor, never a sample N.",
+    "declared_budget_floor": 6,
+    "declared_budget_floor_source": "SEAL_AND_BUDGET.json declared_budget (P04), origin/claude/sni-s2-ship-20261012",
+    "family_n": "honest-N after IL §3 collapse and after clock abstention (episodes on non-graded clocks or VINTAGE_UNVERIFIABLE are not counted)",
     "effective_n": "TrialLedger.effective_n = max(base, declared, 1); labelled effective N (trials) — never a sample N (IL §1)"
   },
   "membership_table": "unsealed; empty in this draft; the seat materialises membership at seal. v2 TUNE is EMPTY. v1 TUNE members are not copied.",
