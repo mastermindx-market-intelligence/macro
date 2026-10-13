@@ -5,7 +5,7 @@
       "schema": "fundamental_forensics.saved_research.v1",
       "request_contract": "fundamental_forensics.financial_query_request/v1",
       "id": "CDEFGHIJKLMNOPQRSTUVWX",
-      "name": "Apple pinned at June cutoff",
+      "name": "Apple pinned at September cutoff",
       "created_at": "2026-10-12T00:00:00Z",
       "updated_at": "2026-10-12T00:00:00Z",
       "issuer": {
@@ -18,8 +18,8 @@
         "entity_id": "ISS:US-XNAS-AAPL",
         "policy": {
           "selection": "latest_known_as_of",
-          "source_snapshot_at": "2025-06-30T23:59:59Z",
-          "recorded_at": "2025-06-30T23:59:59Z"
+          "source_snapshot_at": "2026-09-30T23:59:59Z",
+          "recorded_at": "2026-09-30T23:59:59Z"
         },
         "metric_ids": [
           "revenue",

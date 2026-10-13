@@ -2434,7 +2434,9 @@
   };
   var POLICY_PLAIN = {
     as_reported: ['As reported', '按披露原样'],
-    latest_known_as_of: ['Latest known as of', '截止时点最新'],
+    // The badge reads "Pinned to <date> · <phrase>", so the phrase must
+    // stand on its own after the date (X2-s r1: no dangling "as of").
+    latest_known_as_of: ['Latest known on that date', '该日已知最新'],
     latest_restated: ['Latest restated', '最新重述']
   };
 
@@ -2762,7 +2764,10 @@
     // The permalink is P2's own writer — never a second URL builder.
     writeUrl(true);
     updateViewStatus();
-    renderSavedUI();
+    // X2-s r1: the as-of controls and the desk stamp follow the restored
+    // cutoff (a pinned view shows its date, never "Latest" plus an empty
+    // field); renderRunMeta re-syncs both and then renders the saved UI.
+    renderRunMeta();
     return { ok: true, view: view };
   }
 

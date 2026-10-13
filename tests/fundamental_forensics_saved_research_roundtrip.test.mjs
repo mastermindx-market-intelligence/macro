@@ -50,6 +50,11 @@ function element() {
       add: (name) => classes.add(name),
       remove: (name) => classes.delete(name),
       contains: (name) => classes.has(name),
+      toggle: (name, force) => {
+        const on = force === undefined ? !classes.has(name) : !!force;
+        if (on) classes.add(name); else classes.delete(name);
+        return on;
+      },
     },
     hidden: true,
     disabled: false,
@@ -279,10 +284,10 @@ function sameJson(actual, expected) {
 test('save -> reload (fresh module instance over the same storage) -> identical object', () => {
   const { api, storage } = harness();
   api.initSavedBriefcase();
-  api.state.asOfDate = '2025-06-30';
+  api.state.asOfDate = '2026-09-30';
   api.state.policy = 'latest_known_as_of';
   api.state.symbol = 'AAPL';
-  const saved = api.performSavedSave('Apple pinned at June cutoff');
+  const saved = api.performSavedSave('Apple pinned at September cutoff');
   assert.equal(saved.ok, true, saved.reason || 'save refused');
   const stored = JSON.parse(storage.rows.get(STORE_KEY));
   assert.equal(stored.contract, 'fundamental_forensics.saved_research.v1');
@@ -346,9 +351,9 @@ test('fixture identity: the module output for fixed inputs equals the committed 
 test('the page-built request for the pinned desk equals the committed fixture request', () => {
   const { api } = harness();
   api.initSavedBriefcase();
-  api.state.asOfDate = '2025-06-30';
+  api.state.asOfDate = '2026-09-30';
   api.state.policy = 'latest_known_as_of';
-  const input = api.buildSavedViewInput('Apple pinned at June cutoff');
+  const input = api.buildSavedViewInput('Apple pinned at September cutoff');
   const pinned = fixtureContainer('saved_pinned.json').saved_views[0];
   sameJson(input.request, pinned.request);
   assert.equal(input.pinned, true);
@@ -363,7 +368,7 @@ test('pinned restore re-POSTs the stored request bytes verbatim; digest header m
   const result = api.restoreSavedView(container.saved_views[0].id);
   assert.equal(result.ok, true, result.reason || 'restore refused');
   assert.equal(api.state.symbol, 'AAPL');
-  assert.equal(api.state.asOfDate, '2025-06-30');
+  assert.equal(api.state.asOfDate, '2026-09-30');
   assert.equal(api.state.tab, 'compare');
   // The financial POST rides a withAuth promise chain: settle it first.
   await untilFinancialSettled(api);
@@ -443,12 +448,12 @@ test('direct link restores subject, policy, cutoff and cohort through P2\'s URL 
   pinned.api.initSavedBriefcase();
   pinned.api.restoreSavedView(fixtureContainer('saved_pinned.json').saved_views[0].id);
   const pinnedLink = pinned.pushes.at(-1);
-  assert.match(pinnedLink, /as_of=2025-06-30/);
+  assert.match(pinnedLink, /as_of=2026-09-30/);
   const third = harness();
   third.location.search = pinnedLink.replace(/^[^?]*/, '');
   third.api.applyUrlState(true);
   assert.equal(third.api.state.symbol, 'AAPL');
-  assert.equal(third.api.state.asOfDate, '2025-06-30');
+  assert.equal(third.api.state.asOfDate, '2026-09-30');
   assert.equal(third.api.state.policy, 'latest_known_as_of');
   assert.equal(third.api.state.tab, 'compare');
 });
@@ -798,7 +803,7 @@ test('an unreadable store pauses saving and shows the store notice', () => {
 test('a failed persistence surfaces the store notice through the save path', () => {
   const drive = harness({ storage: failingStorage() });
   drive.api.initSavedBriefcase();
-  const result = drive.api.performSavedSave('Apple pinned at June cutoff');
+  const result = drive.api.performSavedSave('Apple pinned at September cutoff');
   assert.equal(result.ok, false);
   assert.equal(result.reason, 'storage');
   assert.equal(drive.api.state.savedRefusal, 'store');

@@ -23,6 +23,11 @@ function element() {
       add: (name) => classes.add(name),
       remove: (name) => classes.delete(name),
       contains: (name) => classes.has(name),
+      toggle: (name, force) => {
+        const on = force === undefined ? !classes.has(name) : !!force;
+        if (on) classes.add(name); else classes.delete(name);
+        return on;
+      },
     },
     hidden: true,
     disabled: false,
@@ -49,7 +54,8 @@ function harness() {
     'ff-source-snapshot', 'ff-source-label', 'ff-desk-stamp', 'ff-main', 'ff-gate',
     'ff-gate-state', 'ff-view-status', 'ff-saved-controls', 'ff-saved-select',
     'ff-saved-name', 'ff-saved-save', 'ff-saved-rename', 'ff-saved-delete',
-    'ff-saved-badge', 'ff-saved-notice', 'ff-peer-save-row', 'ff-peer-save'
+    'ff-saved-badge', 'ff-saved-notice', 'ff-peer-save-row', 'ff-peer-save',
+    'ff-asof-latest', 'ff-asof-input'
   ]) nodes[id] = element();
   const windowListeners = {};
   const pushes = [];
@@ -170,11 +176,28 @@ test('a pinned restore carries the cutoff day on as_of', () => {
   const container = seed(drive, 'saved_pinned.json');
   drive.api.restoreSavedView(container.saved_views[0].id);
   const permalink = drive.pushes.at(-1);
-  assert.match(permalink, /[?&]as_of=2025-06-30/);
+  assert.match(permalink, /[?&]as_of=2026-09-30/);
   assert.match(permalink, /[?&]tab=compare/);
   drive.location.search = permalink.replace(/^[^?]*/, '');
   const frame = drive.api.readUrlParams();
-  assert.equal(frame.asOfDate, '2025-06-30');
+  assert.equal(frame.asOfDate, '2026-09-30');
+});
+
+test('a pinned restore shows its cutoff on the as-of controls and the desk stamp', () => {
+  const drive = harness();
+  const container = seed(drive, 'saved_pinned.json');
+  drive.api.restoreSavedView(container.saved_views[0].id);
+  assert.equal(drive.nodes['ff-asof-input'].value, '2026-09-30', 'the date field carries the pinned cutoff');
+  assert.equal(drive.nodes['ff-asof-latest'].classList.contains('is-active'), false, 'Latest is not pressed');
+  assert.equal(drive.nodes['ff-asof-latest'].getAttribute('aria-pressed'), 'false');
+  assert.match(drive.nodes['ff-desk-stamp'].innerHTML, /As of 2026-09-30 /);
+
+  const latestDrive = harness();
+  const latest = seed(latestDrive, 'saved_latest.json');
+  latestDrive.api.restoreSavedView(latest.saved_views[0].id);
+  assert.equal(latestDrive.nodes['ff-asof-input'].value, '', 'a latest view leaves the date field empty');
+  assert.equal(latestDrive.nodes['ff-asof-latest'].classList.contains('is-active'), true, 'Latest is pressed');
+  assert.equal(latestDrive.nodes['ff-asof-latest'].getAttribute('aria-pressed'), 'true');
 });
 
 test('popstate restores the previous frame and drops the restored-view context', () => {
@@ -219,7 +242,7 @@ test('the badge prints plain words for pinned and latest, never a policy slug', 
   drive.api.renderSavedUI();
   const badge = drive.nodes['ff-saved-badge'];
   assert.equal(badge.hidden, false);
-  assert.match(badge.innerHTML, /Pinned to 2025-06-30 · Latest known as of/);
+  assert.match(badge.innerHTML, /Pinned to 2026-09-30 · Latest known on that date/);
   assert.doesNotMatch(badge.innerHTML, /latest_known_as_of/);
 
   const latestDrive = harness();
