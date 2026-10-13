@@ -240,3 +240,15 @@ def test_mixed_adjustment_basis_withholds_dependent_chart_without_rejecting_comp
     result = _mount((ws, closes, packet))
     assert "chart_geometry" not in result["compares"][0]["compare_catalogue"]
     assert len(result["compares"][0]["compare_catalogue"]["rows"]) == 2
+
+def test_full_source_digest_is_available_in_a_disclosure_not_always_on_header(admitted_pair):
+    from lib.intl_library_mount import render_international_pages
+    ws, frame, packet = admitted_pair
+    html,_ = render_international_pages(
+        _ActualCompareTemplate(), {"intl_workspace": ws},
+        chart_sources=(frame, packet))
+    assert '<details class="intl-compare__source" data-im-compare-source>' in html
+    assert '<summary>' in html and 'Source evidence' in html
+    assert '<code' in html and "intl-supplied-close:sha256:" in html
+    assert '<wbr>' in html
+    assert 'style=' not in html

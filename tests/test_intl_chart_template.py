@@ -108,3 +108,12 @@ def test_discontinuous_isolated_observation_is_drawn_as_a_point(inputs):
     japan = next(p for p in geom["cohorts"][0]["paths"] if p["market_id"] == "JP")
     assert any(part["count"] == 1 for part in japan["segments"])
     assert '<circle data-im-chart-series="JP"' in _render(geom)
+
+def test_chart_responsive_intrinsic_aspect_has_no_mobile_letterbox(inputs):
+    """The same viewBox must retain geometry without a forced 220px phone box."""
+    html = _render(_model(inputs))
+    assert 'viewBox="0 0 640 220"' in html
+    assert '<svg role="img"' in html
+    assert 'height="220"' not in html
+    assert 'style=' not in html
+    assert 'preserveAspectRatio="xMidYMid meet"' in html
