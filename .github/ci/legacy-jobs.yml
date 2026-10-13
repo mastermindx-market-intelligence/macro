@@ -14086,7 +14086,7 @@ jobs:
       # The same installed environment owns ingestion, private intelligence,
       # retrieval, and page contracts. One pytest process collects every suite.
       - name: research vault ingestion, intelligence, retrieval and page tests
-        run: python -m pytest tests/test_research_vault_blank_text.py tests/test_research_intelligence_comparison.py tests/test_research_vault.py tests/test_research_vault_strict_store.py tests/test_research_vault_page.py tests/test_research_pages.py tests/test_research_vault_subjects.py tests/test_research_vault_backfill.py tests/test_research_intelligence_vault_head.py tests/test_research_intelligence_prompt_contract.py tests/test_research_intelligence_support_loss.py tests/test_research_vault_retrieval_eval.py tests/test_research_vault_read_port.py tests/test_research_vault_read_service.py tests/test_research_vault_read_adapters.py -q
+        run: python -m pytest tests/test_research_vault_blank_text.py tests/test_research_intelligence_comparison.py tests/test_research_vault.py tests/test_research_vault_strict_store.py tests/test_research_vault_page.py tests/test_research_pages.py tests/test_research_vault_subjects.py tests/test_research_vault_backfill.py tests/test_research_intelligence_vault_head.py tests/test_research_intelligence_prompt_contract.py tests/test_research_intelligence_support_loss.py tests/test_research_vault_retrieval_eval.py tests/test_research_vault_evaluation_runner.py tests/test_research_vault_read_port.py tests/test_research_vault_read_service.py tests/test_research_vault_read_adapters.py -q
 
 
   research-vault-source-lineage:
