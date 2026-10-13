@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 from copy import deepcopy
+from hashlib import sha256
 from pathlib import Path
 import builtins
 import re
@@ -990,3 +991,216 @@ def test_validator_replays_accuracy_nil_and_identity_invariants_without_source_b
     for forged in (bad_decimals, bad_precision, bad_nil, bad_root):
         with pytest.raises(SecFilingParseError):
             validate_sec_filing_parse_result(forged)
+
+
+# ---------------------------------------------------------------------------
+# Inline XBRL 1.1 ix:relationship / ix:footnote admission (D1-ext).  Neither
+# element is a fact: relationships are empty resources-only links, footnotes
+# are transparent body content, and previously admitted documents must stay
+# byte-identical (pinned against the base parser's semantic bytes below).
+
+_FOOTNOTE_ARCROLE = "http://www.xbrl.org/2003/arcrole/fact-footnote"
+_FOOTNOTE_ROLE = "http://www.xbrl.org/2003/role/footnote"
+_LINK_ROLE = "http://www.xbrl.org/2003/role/link"
+_BASE_RESOURCES = f'''
+      <xbrli:context id="c"><xbrli:entity><xbrli:identifier scheme="s">1</xbrli:identifier></xbrli:entity><xbrli:period><xbrli:instant>2025-12-31</xbrli:instant></xbrli:period></xbrli:context>
+      <xbrli:unit id="u"><xbrli:measure>ex:USD</xbrli:measure></xbrli:unit>
+    '''
+
+
+def test_relationship_and_footnote_parse_with_transparent_fact_ownership():
+    relationship = (
+        f'<ix:relationship arcrole="{_FOOTNOTE_ARCROLE}" fromRefs="f1" '
+        f'linkRole="{_LINK_ROLE}" toRefs="fn1" order="1"/>'
+    )
+    footnote_open = f'<ix:footnote id="fn1" footnoteRole="{_FOOTNOTE_ROLE}">'
+    footnote_close = "</ix:footnote>"
+    fact = '<ix:nonNumeric id="f1" name="ex:F" contextRef="c">revenue</ix:nonNumeric>'
+    inner_fact = (
+        '<ix:nonFraction id="f2" name="ex:N" contextRef="c" unitRef="u" '
+        'decimals="0">7</ix:nonFraction>'
+    )
+    content = _inline(
+        fact + footnote_open + "note " + inner_fact + footnote_close,
+        resources=_BASE_RESOURCES + relationship,
+    )
+    result = parse_sec_filing_document(content, document_name="footnote.xhtml")
+    assert result["coverage"]["ix_relationship_count"] == 1
+    assert result["coverage"]["ix_footnote_count"] == 1
+    assert result["coverage"]["ix_footnote_continuation_count"] == 0
+    facts = {item["fact_id"]: item for item in result["facts"]}
+    assert facts["f1"]["raw_value"] == "revenue"
+    # A footnote is transparent: facts inside it are ordinary facts.
+    assert facts["f2"]["raw_value"] == "7"
+    assert facts["f2"]["normalized_value"] == "7"
+    assert facts["f2"]["hidden"] is False
+    validate_sec_filing_parse_result(result, source_content=content)
+
+    # Neutralize the new material at identical byte offsets; the fact records
+    # and the 17-key coverage must be exactly what the base parser produced.
+    stripped = (
+        content.replace(relationship.encode(), b" " * len(relationship), 1)
+        .replace(footnote_open.encode(), b"<span" + b" " * (len(footnote_open) - 6) + b">", 1)
+        .replace(footnote_close.encode(), b"</span" + b" " * (len(footnote_close) - 7) + b">", 1)
+    )
+    baseline = parse_sec_filing_document(stripped, document_name="footnote-stripped.xhtml")
+    assert len(baseline["coverage"]) == 17
+    baseline_facts = {item["fact_id"]: item for item in baseline["facts"]}
+    assert facts["f1"] == baseline_facts["f1"]
+    assert facts["f2"] == baseline_facts["f2"]
+
+
+@pytest.mark.parametrize(
+    ("resources_suffix", "body_suffix", "match"),
+    [
+        # fromRefs must resolve to inline fact elements.
+        (
+            '<ix:relationship fromRefs="missing" toRefs="fn1"/>',
+            '<ix:footnote id="fn1">n</ix:footnote>',
+            r"ix:relationship fromRefs does not resolve to an inline fact",
+        ),
+        # toRefs must resolve to an ix:footnote, never to a fact.
+        (
+            '<ix:relationship fromRefs="f1" toRefs="nofn"/>',
+            '<ix:footnote id="fn1">n</ix:footnote>',
+            r"ix:relationship toRefs does not resolve to an ix:footnote",
+        ),
+        (
+            '<ix:relationship fromRefs="f1" toRefs="f1"/>',
+            '<ix:footnote id="fn1">n</ix:footnote>',
+            r"ix:relationship toRefs does not resolve to an ix:footnote",
+        ),
+        # Only the standard fact-footnote arcrole is admitted.
+        (
+            f'<ix:relationship arcrole="http://example.com/other" fromRefs="f1" toRefs="fn1"/>',
+            '<ix:footnote id="fn1">n</ix:footnote>',
+            r"ix:relationship has unsupported arcrole",
+        ),
+        # A relationship carries no content at all.
+        (
+            '<ix:relationship fromRefs="f1" toRefs="fn1"><span>x</span></ix:relationship>',
+            '<ix:footnote id="fn1">n</ix:footnote>',
+            r"ix:relationship must be empty",
+        ),
+        # Footnote attributes are exactly id/footnoteRole/continuedAt.
+        (
+            '<ix:relationship fromRefs="f1" toRefs="fn1"/>',
+            '<ix:footnote id="fn1" bogus="x">n</ix:footnote>',
+            r"ix:footnote has unsupported attributes",
+        ),
+    ],
+)
+def test_relationship_and_footnote_grammar_fails_closed(resources_suffix, body_suffix, match):
+    fact = '<ix:nonNumeric id="f1" name="ex:F" contextRef="c">revenue</ix:nonNumeric>'
+    content = _inline(fact + body_suffix, resources=_BASE_RESOURCES + resources_suffix)
+    with pytest.raises(SecFilingParseError, match=match):
+        parse_sec_filing_document(content, document_name="bad-footnote.xhtml")
+
+
+def test_relationship_outside_ix_resources_and_unreferenced_footnote_fail_closed():
+    fact = '<ix:nonNumeric id="f1" name="ex:F" contextRef="c">revenue</ix:nonNumeric>'
+    footnote = '<ix:footnote id="fn1">n</ix:footnote>'
+    outside = _inline(
+        fact + '<ix:relationship fromRefs="f1" toRefs="fn1"/>' + footnote,
+        resources=_BASE_RESOURCES,
+    )
+    with pytest.raises(SecFilingParseError, match=r"ix:relationship must be a direct child of ix:resources"):
+        parse_sec_filing_document(outside, document_name="relationship-in-body.xhtml")
+
+    unreferenced = _inline(fact + footnote, resources=_BASE_RESOURCES)
+    with pytest.raises(SecFilingParseError, match=r"ix:footnote is not referenced by any ix:relationship"):
+        parse_sec_filing_document(unreferenced, document_name="unreferenced-footnote.xhtml")
+
+
+def test_footnote_must_not_appear_in_ix_header():
+    content = _inline(
+        '<ix:nonNumeric id="f1" name="ex:F" contextRef="c">revenue</ix:nonNumeric>',
+        resources=_BASE_RESOURCES + '<ix:relationship fromRefs="f1" toRefs="fn1"/>',
+    ).replace(
+        b"</ix:resources></ix:header>",
+        b'</ix:resources><ix:footnote id="fn1">n</ix:footnote></ix:header>',
+        1,
+    )
+    with pytest.raises(SecFilingParseError, match=r"ix:footnote must not appear in ix:header"):
+        parse_sec_filing_document(content, document_name="footnote-in-header.xhtml")
+
+
+def test_footnote_continuation_chains_are_excluded_from_fact_continuations():
+    relationship = '<ix:relationship fromRefs="f1" toRefs="fn1"/>'
+    footnote = '<ix:footnote id="fn1" continuedAt="fn1c">part one </ix:footnote>'
+    continuation = '<ix:continuation id="fn1c">part two</ix:continuation>'
+    fact = '<ix:nonNumeric id="f1" name="ex:F" contextRef="c">head</ix:nonNumeric>'
+    content = _inline(
+        fact + footnote,
+        continuations=continuation,
+        resources=_BASE_RESOURCES + relationship,
+    )
+    result = parse_sec_filing_document(content, document_name="footnote-chain.xhtml")
+    assert result["continuations"] == []
+    assert result["coverage"]["continuation_count"] == 0
+    assert result["coverage"]["ix_footnote_continuation_count"] == 1
+    validate_sec_filing_parse_result(result, source_content=content)
+
+    # A continuation may not be shared between a fact chain and a footnote chain.
+    shared_fact = (
+        '<ix:nonNumeric id="f1" name="ex:F" contextRef="c" '
+        'continuedAt="c1">head</ix:nonNumeric>'
+    )
+    shared_footnote = '<ix:footnote id="fn1" continuedAt="c1">part one</ix:footnote>'
+    shared_continuation = '<ix:continuation id="c1">tail</ix:continuation>'
+    shared = _inline(
+        shared_fact + shared_footnote,
+        continuations=shared_continuation,
+        resources=_BASE_RESOURCES + relationship,
+    )
+    with pytest.raises(SecFilingParseError, match="shared"):
+        parse_sec_filing_document(shared, document_name="shared-chain.xhtml")
+
+    # A footnote continuedAt must name an existing ix:continuation.
+    dangling = _inline(
+        fact + '<ix:footnote id="fn1" continuedAt="gone">part one</ix:footnote>',
+        resources=_BASE_RESOURCES + relationship,
+    )
+    with pytest.raises(SecFilingParseError, match="footnote references a missing continuation"):
+        parse_sec_filing_document(dangling, document_name="dangling-footnote-chain.xhtml")
+
+
+def test_node_budget_is_raised_to_200k_nodes():
+    # 1 root + 100,049 children = 100,050 nodes: refused at the old 100,000
+    # budget, admitted at 200,000.  No text between tags, so no text events.
+    within = b"<root>" + b"<span/>" * 100_049 + b"</root>"
+    result = parse_sec_filing_document(within, document_name="nodes-within.xml")
+    assert result["document"]["kind"] == "other_xml"
+    assert len(result["coverage"]) == 17
+
+    beyond = b"<root>" + b"<span/>" * 200_000 + b"</root>"
+    with pytest.raises(SecFilingParseError, match="node limit"):
+        parse_sec_filing_document(beyond, document_name="nodes-beyond.xml")
+
+
+# Semantic byte pins computed by the BASE parser (version 1, fingerprint
+# 95f7e4b7...) for every pinned corpus member it accepts.  The D1-ext change
+# must keep each accepted member byte-identical.
+_BYTE_IDENTITY_PINS = {
+    "fundamental_forensics/aapl_10k_2025/members/aapl-20250927.htm": "7a32e79244ab7138af42b8b679ee9e1043b0a297534884a14d66a5df1be89ed1",
+    "fundamental_forensics/aapl_10k_2025/members/aapl-20250927.xsd": "0ee751300128648bb3bfcb47568877153e01a253e3cf9aec3c45577680007fb8",
+    "fundamental_forensics/aapl_10k_2025/members/aapl-20250927_cal.xml": "90531b850f7a9f097d86ed426b151c1e8f59dbc4e43238f8d76ed18a8fb519fe",
+    "fundamental_forensics/aapl_10k_2025/members/aapl-20250927_def.xml": "039be93ededb56777b0e7620c5b265c558b940685fd6ad548892027274d2beef",
+    "fundamental_forensics/aapl_10k_2025/members/aapl-20250927_lab.xml": "253ff7e65e3b86501f59fb0e4a8501cf7284c2feba7f28a863641689590cef7c",
+    "fundamental_forensics/aapl_10k_2025/members/aapl-20250927_pre.xml": "7c54fac85534a5d2a63dff5d905985693fe9204215a67dd84e01028f42e77c9d",
+    "fundamental_forensics/aapl_10q_2026q3/members/aapl-20260627.htm": "d65c849a700c780533188175ef5bc1d29e0d32f61a0b58e72ea2111e6835f0ff",
+    "fundamental_forensics/aapl_10q_2026q3/members/aapl-20260627.xsd": "5f894b33ffadaebd9ad828e14ddcb7b1c77f84128eed7da222ba3f301cde63c0",
+    "fundamental_forensics/aapl_10q_2026q3/members/aapl-20260627_cal.xml": "cf0141cb72cfc124c4a50292d5599dfcb63d71da22c199e0f8b1cccad9f9fbe6",
+    "fundamental_forensics/aapl_10q_2026q3/members/aapl-20260627_def.xml": "b8e8bade6a2563e10682625938227fdc198d863a2c99069e0428f2da6e4ebe39",
+    "fundamental_forensics/aapl_10q_2026q3/members/aapl-20260627_lab.xml": "cdb991293ff0b3a4028add1a070fe36c198824a153c579f4e6bbea898010ce68",
+    "fundamental_forensics/aapl_10q_2026q3/members/aapl-20260627_pre.xml": "648e30661e98ff74d6cb402c0b7419c8aa89344fd1b189ffa39e5d33546ebed6",
+    "sec_filings/minimal_inline.xhtml": "ce0b664e6be463202ff164f30b06aedad8bdef890c1c16fc8f7f9b212949f958",
+    "sec_filings/minimal_instance.xml": "607d16eadfffc53c86415c14340830b24277dbd0e46587ec8a45f648e11557b8",
+}
+
+
+@pytest.mark.parametrize(("member", "expected_sha"), sorted(_BYTE_IDENTITY_PINS.items()))
+def test_accepted_corpus_members_stay_byte_identical(member, expected_sha):
+    content = (Path(__file__).parent / "fixtures" / member).read_bytes()
+    result = parse_sec_filing_document(content, document_name=Path(member).name)
+    assert sha256(parser_module._semantic_result_bytes(result)).hexdigest() == expected_sha

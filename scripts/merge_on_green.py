@@ -1288,26 +1288,70 @@ def _semantic_evidence_for_run(
         )
     source = _semantic_json_from_archive(_download_semantic_artifact(download_url, token))
     expected_tree = head_sha if role == "main" else None
+    # PR-head evidence seals the tested merge commit's FIRST PARENT as
+    # ``base_sha``; the advertised ``pull_requests[].base`` is GitHub's lazily
+    # refreshed PR-object snapshot and lags it whenever main moves between PR
+    # creation and the run (PR #8844, 2026-10-11).  The exact identity is the
+    # head; the base is resolved below by ancestry, never by byte equality.
     loaded = semantic_proof.load_semantic_evidence(
         source,
         advertised=True,
         expected_run_id=run_id,
         expected_subject_head_sha=head_sha,
         expected_tested_tree_sha=expected_tree,
-        expected_base_sha=bound_base_sha or None,
+        expected_base_sha=None if role == "pr_head" else (bound_base_sha or None),
         expected_event=expected_event,
         expected_role=role,
         expected_workflow="ci",
     )
     if role == "pr_head":
+        proof_base_sha = semantic_proof.resolve_pr_proof_base(
+            loaded,
+            advertised_base_sha=bound_base_sha,
+            subject_head_sha=head_sha,
+            is_ancestor=lambda ancestor, descendant: _github_is_ancestor(
+                repo, token, ancestor, descendant
+            ),
+        )
         return _bind_pr_tested_tree(
             repo,
             token,
             loaded,
-            bound_base_sha=bound_base_sha,
+            bound_base_sha=proof_base_sha,
             subject_head_sha=head_sha,
         )
     return loaded
+
+
+def _github_is_ancestor(repo: str, token: str, ancestor: str, descendant: str) -> bool:
+    """True when ``ancestor`` is reachable from ``descendant`` on GitHub.
+
+    One compare call (``per_page=1`` — only ``status`` is read).  ``identical``
+    and ``ahead`` mean the descendant contains the ancestor; ``behind`` and
+    ``diverged`` mean it does not.  A quota refusal surfaces as ``RateLimited``
+    and any other failure or unknown relation as ``RuntimeError`` so the caller's
+    existing handlers keep an unanswerable probe from reading as a clean base.
+    """
+    ancestor = str(ancestor or "").lower()
+    descendant = str(descendant or "").lower()
+    if ancestor == descendant:
+        return True
+    status, payload = _request(
+        "GET",
+        f"{GITHUB_API}/repos/{repo}/compare/{ancestor}...{descendant}?per_page=1",
+        token,
+    )
+    if status >= 400 or not isinstance(payload, dict):
+        raise _read_failed(status, payload, "semantic proof-base ancestry compare failed")
+    relation = str(payload.get("status") or "")
+    if relation in {"identical", "ahead"}:
+        return True
+    if relation in {"behind", "diverged"}:
+        return False
+    raise RuntimeError(
+        "semantic proof-base ancestry compare returned an unknown relation "
+        f"({relation or 'missing'})"
+    )
 
 
 def _semantic_pr_base_sha(
@@ -6049,6 +6093,21 @@ def update_branch_conflict(detail: str) -> bool:
     return "merge conflict" in normalized or "merge conflicts" in normalized
 
 
+def affirmatively_conflicted(pull: dict[str, Any]) -> bool:
+    """Affirmative conflict fields on a LIVE pull, never unknown or stale state.
+
+    GitHub answers ``mergeable: null`` while it is still computing and may omit
+    both fields on error shapes, so only the strict pair — ``mergeable`` is
+    exactly ``False`` AND ``mergeable_state`` is ``dirty`` — classifies a real
+    conflict. Anything else (unknown, missing, clean, blocked, unstable) keeps
+    the pull on the existing write-then-classify admission path, where
+    `update_branch` judges the 422 it actually receives.
+    """
+    if pull.get("mergeable") is not False:
+        return False
+    return str(pull.get("mergeable_state") or "").lower() == "dirty"
+
+
 def update_branch(repo: str, pull: dict[str, Any], token: str) -> str:
     """Merge `main` into a judged head and classify any live-state race.
 
@@ -6195,6 +6254,25 @@ def attempt_update_branch(
             "sweep budget; no branch write attempted.",
         )
         return "refresh-deferred"
+    if affirmatively_conflicted(live):
+        # The same fresh authorized read that just proved head/open/main/armed/
+        # draft also carried GitHub's own computed merge verdict: this head can
+        # take no update-branch write at all. Declining here keeps a known
+        # conflicting pull request from consuming a workload slot, a bounded
+        # attempt, or — at saturation — the ONE durable lease claim a clean head
+        # behind it needs (observed live: one conflicting owner drained the only
+        # high-load slot, released the lease on the decline, and the sweep's
+        # claim latch still denied every later pull at 0/1 used). Only the
+        # affirmative pair classifies; unknown/missing mergeability falls
+        # through to the write-then-classify path below unchanged.
+        _annotate(
+            "notice",
+            "merge-on-green",
+            f"PR #{pull.get('number')}: GitHub reports the live head unmergeable "
+            "against main (mergeable=false, mergeable_state=dirty); declining the "
+            "refresh — no update-branch write attempted, no refresh budget spent.",
+        )
+        return "declined"
     if not budget.take_refresh(live):
         return refresh_deferred(pull.get("number"), why, budget)
     if budget.requires_refresh_lease:
@@ -6339,9 +6417,9 @@ def reprove(
             f"but the proof is no longer trustworthy: {reason}.\n\n"
             "A check proves the head against the base it was handed, not against the "
             "base that exists at merge time — that is how PR #4583's honest 15-hour-old "
-            "green turned main red. The sweeper tried to merge `main` into this branch "
-            "so fresh checks could re-prove it, and GitHub declined, which means a REAL "
-            "content conflict. Resolve it by hand and the next sweep will pick it up "
+            "green turned main red. GitHub reports a REAL content conflict that prevents "
+            "refreshing this branch with `main` for fresh checks. Resolve the conflict "
+            "and the next sweep will pick it up "
             "(the label stays armed)."
         ),
         merge_token,
@@ -7181,9 +7259,8 @@ def sweep_pull(
             (
                 "`merge-on-green` sweeper: **not merging.** Every check was clean, but "
                 f"GitHub refused the squash merge: _{detail}_\n\n"
-                "The sweeper then tried to merge `main` into this branch itself and "
-                "GitHub declined that too, which means a REAL content conflict rather "
-                "than a stale base. Resolve it by hand and the next sweep will pick it "
+                "GitHub also reports a REAL content conflict that prevents refreshing this "
+                "branch with `main`. Resolve the conflict and the next sweep will pick it "
                 "up (the label stays armed)."
             ),
             merge_token,
