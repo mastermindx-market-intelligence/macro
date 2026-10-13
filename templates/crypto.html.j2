@@ -13,7 +13,7 @@
 <script>try{var th=localStorage.getItem('theme');document.documentElement.setAttribute('data-theme',th||'dark');var la=localStorage.getItem('lang')||(function(){try{var L=navigator.languages||[navigator.language||''],i;for(i=0;i<L.length;i++)if((L[i]||'').toLowerCase().slice(0,2)==='zh')return'zh';if(/Shanghai|Hong_Kong|Macau|Urumqi|Chongqing|Harbin|Kashgar/.test(Intl.DateTimeFormat().resolvedOptions().timeZone||''))return'zh'}catch(e){}return''})();if(la)document.documentElement.setAttribute('data-lang',la)}catch(e){}</script>
 <title>Crypto Intelligence Cockpit — {{ as_of }}</title>
 {% set seo_title = "Crypto Intelligence Cockpit — MastermindX" %}
-{% set seo_desc = "A daily crypto market-state cockpit: top assets, money flows, leverage, volatility, allocation, Bitcoin, Ethereum and listed crypto equities." %}
+{% set seo_desc = "A daily crypto market-state cockpit: top assets, measured subscriptions, stablecoin supply, spot participation, leverage, volatility, allocation, Bitcoin, Ethereum and listed crypto equities." %}
 {% set seo_path = "crypto.html" %}
 {% include "_seo_head.html.j2" %}
 <link rel="stylesheet" href="theme.css">
@@ -181,6 +181,7 @@ html[data-lang="zh"] #crypto-overview .desk-context-rule>span.l-zh{display:block
 .sensor:last-child{border-right:0}.sensor .eyebrow{color:var(--muted);font-size:9px;letter-spacing:.1em;text-transform:uppercase;font-weight:760}
 .sensor .reading{margin-top:16px;font:780 28px/1 var(--font-mono);letter-spacing:-.04em}
 .sensor .read-label{margin-top:9px}.sensor .receipt{margin-top:17px;color:var(--muted);font-size:10.5px}
+.receipt-nowrap{white-space:nowrap}
 .heat-layout{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(240px,.7fr);border:1px solid var(--line)}
 .heat-cards{display:grid;grid-template-columns:repeat(3,1fr)}
 .heat-meter{padding:24px;border-left:1px solid var(--line);background:var(--panel2)}
@@ -290,7 +291,7 @@ html[data-lang="zh"] #crypto-overview .desk-context-rule>span.l-zh{display:block
     </header>
     <p class="desk-brain-status" hidden role="status">{{ t("The assistant is not ready. Market research remains available.","助手暂未就绪；您仍可查看市场研究。") }}</p>
     <nav class="desk-nav" data-crypto-desk-nav aria-label="Crypto research sections / 加密研究分区">
-      <a href="#crypto-overview">{{ t('Overview','概览') }}</a><a href="#market-board">{{ t('Assets','资产') }}</a><a href="#money-flows">{{ t('Capital','资金') }}</a><a href="#leverage-heat">{{ t('Leverage','杠杆') }}</a><a href="#allocation">{{ t('Model budget','模型预算') }}</a>
+      <a href="#crypto-overview">{{ t('Overview','概览') }}</a><a href="#market-board">{{ t('Assets','资产') }}</a><a href="#money-flows">{{ t('Subscriptions and supply','申购与供应') }}</a><a href="#leverage-heat">{{ t('Leverage','杠杆') }}</a><a href="#allocation">{{ t('Model budget','模型预算') }}</a>
     </nav>
     <div class="desk-lead">
       <div class="desk-lead-copy">
@@ -303,20 +304,27 @@ html[data-lang="zh"] #crypto-overview .desk-context-rule>span.l-zh{display:block
     </div>
     <div class="desk-grid">
       <div class="desk-market-panel">
-        <div class="desk-instrument-head"><div><h2>{{ t('The market behind the headline','标题背后的市场') }}</h2><p>{{ t('Derived total market capitalization · descriptive regime history','衍生总市值 · 描述性阶段历史') }}</p></div><span class="desk-observation-tag">{{ t('Dated observations','有日期的观测') }}</span></div>
+        <div class="desk-instrument-head"><div><h2>{{ t('The market behind the headline','标题背后的市场') }}</h2><p>{{ t('Total market capitalization. Derived from bitcoin cap divided by bitcoin share, spliced with a direct total when one is on file. Regime bands skip a splice gap.','总市值。由比特币市值除以比特币占比得到，有直接总量时再拼接。阶段带不计口径跳变。') }}{% if market.cap_basis is defined and market.cap_basis.splices %}{% set sp = market.cap_basis.splices[-1] %}</p><p class="desk-splice">{{ t('Basis splice','口径切换') }} {{ sp.date }} · {{ t(sp.from_label_en|default('other basis', true), sp.from_label_zh|default('其他口径', true)) }} → {{ t(sp.to_label_en|default('other basis', true), sp.to_label_zh|default('其他口径', true)) }} · <span class="receipt-nowrap">{{ t('days on file','在册天数') }} {{ sp.support_before }}/{{ sp.support_after }}</span>{% endif %}</p></div><span class="desk-observation-tag">{{ t('Dated observations','有日期的观测') }}</span></div>
         <div class="desk-market-stats">
           <div class="{{ tone(market.total_tone) }}"><span>{{ t('Total market cap','加密总市值') }}</span><b>{{ market_total }}</b><small>{{ t('30-day change','30日变化') }} <em>{{ market_30d }}</em></small></div>
           <div class="{{ tone(market.dominance_tone) }}"><span>{{ t('Bitcoin market share','比特币市值占比') }}</span><b>{{ dominance }}</b><small>{{ t(market.dominance_state,dominance_state_zh) }} · {{ dominance_30d }}</small></div>
           <div class="{{ tone(market.fear_tone) }}"><span>{{ t('Fear & Greed index','恐惧与贪婪指数') }}</span><b>{{ fear }}</b><small>{{ t(market.fear_state,fear_state_zh) }} · {{ t('Sentiment, not probability','情绪，并非概率') }}</small></div>
         </div>
-        {% if market.history.dates|length >= 2 and tape %}
+        {% if market.history.dates|length >= 4 and tape %}
         <div class="hero-tape desk-tape" data-market-history-state="available">{{ tape|safe }}</div>
         {% else %}
         <div class="desk-chart-empty" data-market-history-state="unavailable" role="status"><strong>{{ t('Market history unavailable','市场历史暂不可用') }}</strong><p>{{ t('No market path is inferred. Other available observations and the model budget remain separate.','不推断市场路径。其他可用观测与模型预算仍分别展示。') }}</p></div>
         {% endif %}
         <div class="desk-chart-foot"><span>{{ t('Recorded history, not a forward forecast.','已记录历史，并非未来预测。') }}</span><a href="#universe-snapshot">{{ t('Inspect snapshot coverage','查看快照覆盖') }} <span aria-hidden="true">→</span></a></div>
       </div>
-      <aside class="desk-budget" data-desk-budget-state="{{ 'available' if allocation.available else ('breakdown-unavailable' if allocation.budget_available else 'unavailable') }}" aria-labelledby="desk-budget-title">
+      {% set decision_reason = allocation.authority_error or '' %}
+      {% set decision_as_of = allocation.decision_as_of or '' %}
+      {% set decision_date_mismatch = decision_reason in ['CANONICAL_DECISION_AS_OF_MISMATCH', 'CANONICAL_SNAPSHOT_UNAVAILABLE'] %}
+      {% set decision_state = 'available' if allocation.available else ('breakdown-unavailable' if allocation.budget_available else ('date-mismatch' if decision_date_mismatch else 'unavailable')) %}
+      {% set decision_errors = (allocation.decision_errors or [])|join(' ') %}
+      {% set decision_status = allocation.decision_status or 'unavailable' %}
+      {% set decision_freshness = 'fresh' if decision_state in ['available', 'breakdown-unavailable'] else decision_state %}
+      <aside class="desk-budget" data-desk-budget-state="{{ 'available' if allocation.available else ('breakdown-unavailable' if allocation.budget_available else 'unavailable') }}" data-decision-state="{{ decision_state }}" data-decision-freshness="{{ decision_freshness }}" data-decision-status="{{ decision_status }}" data-decision-reason="{{ decision_reason }}" data-decision-errors="{{ decision_errors }}" data-decision-as-of="{{ decision_as_of }}" aria-labelledby="desk-budget-title">
         <div class="desk-budget-head"><h2 id="desk-budget-title">{{ t('Recorded model budget','已记录的模型预算') }}</h2><span>{{ t('Bitcoin Vector','比特币向量') }}</span></div>
         {% if allocation.available or allocation.budget_available %}
         <div class="desk-target"><strong data-desk-budget-value>{{ allocation.exposure }}%</strong><span>{{ t('crypto exposure','加密资产仓位') }}</span></div>
@@ -340,11 +348,14 @@ html[data-lang="zh"] #crypto-overview .desk-context-rule>span.l-zh{display:block
       <div class="snapshot-summary">
         <div>{% if universe_snapshot.as_of %}{{ t('Market Board snapshot','市场看板快照') }} <strong>{{ universe_snapshot.as_of }}</strong>{% else %}<strong>{{ t('No ranked snapshot available','暂无可用的排名快照') }}</strong>{% endif %}</div>
         <div>{{ universe_count }} / {{ universe_snapshot.requested }} {{ t('assets listed','项资产已列出') }}</div>
+        {% if universe_snapshot.coverage and universe_snapshot.coverage.missing_pages %}
+        <p data-coverage-denominator="{{ universe_snapshot.coverage.label }}">{{ t('Coverage','覆盖') }} {{ universe_snapshot.coverage.label }}. {{ t('Missing page','缺失分页') }}: {{ universe_snapshot.coverage.missing_pages | join(', ') }}. {{ t('Missing pages are not backfilled.','缺失分页不会回补。') }}</p>
+        {% endif %}
       </div>
       <p>{{ t('Ranks and research use this date. Quote cells may refresh separately. Older observations never fill missing ranks.','排名与研究采用此快照日期，报价可能单独刷新。不会用旧观测补足当前排名。') }}</p>
       <details class="universe-coverage">
         <summary>{{ t('Review excluded observations','查看未纳入的观测') }} · {{ universe_snapshot.excluded|length }}</summary>
-        <div class="breadth-receipt">{% if breadth.available %}<strong>{{ t('Positive 30-day returns','30日回报为正') }}: {{ breadth.positive }} / {{ breadth.eligible }}</strong>{% else %}<strong>{{ t('Insufficient comparable returns','可比回报数据不足') }}</strong> · {{ breadth.eligible }} / {{ breadth.required }} {{ t('minimum','最低所需') }}{% endif %}<p>{{ t('Only assets with sufficient recorded history and a numeric 30-day return enter that count. Missing returns are not losses. Not a Bitcoin-relative or altseason measure.','仅历史记录充分且有数值型30日回报的资产纳入统计。缺失回报不等于下跌；此指标并非相对比特币强弱或山寨季指标。') }}</p><p>{{ breadth.excluded }} {{ t('listed assets excluded from the return count','项已列资产未纳入回报统计') }}</p></div>
+        <div class="breadth-receipt">{% if breadth.available %}<strong>{{ t('Positive 30-day returns','30日回报为正') }}: {{ breadth.positive }} / {{ breadth.denominator if breadth.denominator is defined else breadth.eligible }}</strong>{% else %}<strong>{{ t('Insufficient comparable returns','可比回报数据不足') }}</strong> · {{ breadth.eligible }} / {{ breadth.required }} {{ t('minimum','最低所需') }}{% endif %}<p>{{ t('Only assets with sufficient recorded history and a numeric 30-day return enter that count. Missing returns are not losses. Not a Bitcoin-relative or altseason measure.','仅历史记录充分且有数值型30日回报的资产纳入统计。缺失回报不等于下跌；此指标并非相对比特币强弱或山寨季指标。') }}</p><p>{{ breadth.excluded }} {{ t('listed assets excluded from the return count','项已列资产未纳入回报统计') }}</p></div>
         {% set reasons = {
           'OLDER_SNAPSHOT': ['Older snapshot', '较早的快照'],
           'FUTURE_OBSERVATION': ['Future-dated observation', '观测日期尚未到来'],
@@ -353,7 +364,12 @@ html[data-lang="zh"] #crypto-overview .desk-context-rule>span.l-zh{display:block
           'INVALID_LATEST_PRICE': ['Latest price unavailable or invalid', '最新价格缺失或无效'],
           'MISSING_ASSET_IDENTITY': ['Asset identity missing', '缺少资产身份'],
           'EMPTY_HISTORY': ['No observations', '暂无观测'],
-          'UNREADABLE_HISTORY': ['Source history could not be read', '无法读取来源历史']
+          'UNREADABLE_HISTORY': ['Source history could not be read', '无法读取来源历史'],
+          'STALE_OBSERVATION': ['Older observation', '较早的观测'],
+          'DUPLICATE_ID': ['Duplicate id', '重复身份'],
+          'PAGE_ABSENT': ['Page not in this snapshot', '该分页不在本次快照'],
+          'RANK_NOT_IN_DECLARED_PAGE': ['Rank outside declared pages', '排名不在已声明分页'],
+          'SOURCE_MISMATCH': ['Source does not match the snapshot', '来源与快照不一致']
         } %}
         {% for item in universe_snapshot.excluded %}
         <div class="excluded-observation"><div><strong>{{ item.symbol or item.file }}</strong><small>{{ item.source or '—' }}</small></div><div>{{ item.as_of or '—' }}</div><div>{{ t(*reasons.get(item.reason, ['Not comparable', '不可比较'])) }}</div></div>
@@ -384,10 +400,10 @@ html[data-lang="zh"] #crypto-overview .desk-context-rule>span.l-zh{display:block
   </section>
 
   <section class="crypto-shelf" data-shelf="H3" id="money-flows">
-    <div class="shelf-pad"><div class="shelf-head"><span class="shelf-index">H3</span><h2 class="shelf-title">{{ t('Money Flows','资金流') }}</h2><span class="shelf-sub">{{ t('three class-level receipts','三项资产类别收据') }}</span></div>
+    <div class="shelf-pad"><div class="shelf-head"><span class="shelf-index">H3</span><h2 class="shelf-title">{{ t('Subscriptions, supply, participation','申购、供应与参与') }}</h2><span class="shelf-sub">{{ t('three separate measurements','三项分开的测量') }}</span></div>
       <div class="triptych">
-        <div class="sensor {{ tone(market.flows.etf.tone) }}"><div class="eyebrow">{{ t('US spot-BTC ETFs · 5D','美国现货比特币 ETF · 5日') }}</div><div class="reading">{% if market.flows.etf.value is not none %}{{ "${:+,.0f}M".format(market.flows.etf.value) }}{% else %}—{% endif %}</div><div class="read-label"><span class="state">{{ t(market.flows.etf.state,market.flows.etf.state_zh) }}</span></div><div class="receipt">{{ t('Farside fund-level net flows; class liquidity context, not a trade signal.','Farside 基金级净流量；仅作全市场流动性情况。') }}</div></div>
-        <div class="sensor {{ tone(market.flows.stablecoins.tone) }}"><div class="eyebrow">{{ t('Stablecoin tide · 30D','稳定币潮汐 · 30日') }}</div><div class="reading">{{ fmt_money(market.flows.stablecoins.change_30d_usd, compact=True) }}</div><div class="read-label"><span class="state">{{ t(market.flows.stablecoins.state,market.flows.stablecoins.state_zh) }} · {{ fmt_pct(market.flows.stablecoins.change_30d_pct) }}</span></div><div class="receipt">{{ t('Aggregate circulating supply from DefiLlama.','DefiLlama 汇总流通供应量。') }}</div></div>
+        <div class="sensor {{ tone(market.flows.etf.tone) }}"><div class="eyebrow">{{ t('US spot-BTC ETFs · 5D','美国现货比特币 ETF · 5日') }}</div><div class="reading">{% if market.flows.etf.value is not none and market.flows.etf.state != 'Unavailable' %}{{ fmt_signed_musd(market.flows.etf.value) }}{% else %}—{% endif %}</div><div class="read-label"><span class="state">{{ t(market.flows.etf.state,market.flows.etf.state_zh) }}</span></div><div class="receipt">{{ t('Farside fund-level net creations and redemptions, in millions of dollars. A bitcoin-ETF subscription measurement, not class capitalization.','Farside 基金级净申购与赎回，单位为百万美元。这是比特币 ETF 申购测量，不是全市场市值。') }}{% if market.flows.etf.observation_label_en is defined %}</div><div class="receipt">{{ t(market.flows.etf.observation_label_en, market.flows.etf.observation_label_zh) }}{% if market.flows.etf.state == 'Unavailable' and market.flows.etf.value is not none %} · <span class="receipt-nowrap">{{ t('Last on file','最近在册') }} {{ fmt_signed_musd(market.flows.etf.value) }}{% if market.flows.etf.as_of %} · {{ market.flows.etf.as_of }}{% endif %}</span>{% endif %}{% endif %}</div></div>
+        <div class="sensor {{ tone(market.flows.stablecoins.tone) }}"><div class="eyebrow">{{ t('Stablecoin supply · 30D','稳定币供应量 · 30日') }}</div><div class="reading">{% if market.flows.stablecoins.state != 'Unavailable' %}{{ fmt_money(market.flows.stablecoins.change_30d_usd, compact=True, signed=True) }}{% else %}—{% endif %}</div><div class="read-label"><span class="state">{{ t(market.flows.stablecoins.state,market.flows.stablecoins.state_zh) }}{% if market.flows.stablecoins.state != 'Unavailable' %} · {{ fmt_pct(market.flows.stablecoins.change_30d_pct) }}{% endif %}</span></div><div class="receipt">{{ t('DefiLlama aggregate circulating supply. A supply change, not a measured ETF subscription.','DefiLlama 汇总流通供应量。这是供应量变化，不是已测量的 ETF 申购。') }}{% if market.flows.stablecoins.observation_label_en is defined %}</div><div class="receipt">{{ t(market.flows.stablecoins.observation_label_en, market.flows.stablecoins.observation_label_zh) }}{% if market.flows.stablecoins.state == 'Unavailable' and market.flows.stablecoins.change_30d_usd is not none %} · <span class="receipt-nowrap">{{ t('Last on file','最近在册') }} {{ fmt_money(market.flows.stablecoins.change_30d_usd, compact=True, signed=True) }}{% if market.flows.stablecoins.change_30d_pct is not none %} ({{ fmt_pct(market.flows.stablecoins.change_30d_pct) }}){% endif %}{% if market.flows.stablecoins.as_of %} · {{ market.flows.stablecoins.as_of }}{% endif %}</span>{% endif %}{% endif %}</div></div>
         <div class="sensor {{ tone(market.flows.volume.tone) }}"><div class="eyebrow">{{ t('Spot participation proxy','现货参与度代理') }}</div><div class="reading">{% if market.flows.volume.percentile is not none %}P{{ market.flows.volume.percentile }}{% else %}—{% endif %}</div><div class="read-label"><span class="state">{{ t(market.flows.volume.state,market.flows.volume.state_zh) }}</span></div><div class="receipt">{{ t('BTC spot-volume percentile is an honest proxy until full class volume accrues.','在全市场成交量积累完成前，以 BTC 现货成交量百分位作为明确标注的代理。') }}</div></div>
       </div>
     </div>
@@ -401,7 +417,7 @@ html[data-lang="zh"] #crypto-overview .desk-context-rule>span.l-zh{display:block
           <div class="sensor {{ tone(market.heat.open_interest.tone) }}"><div class="eyebrow">{{ t('Open interest / BTC cap','未平仓量 / BTC 市值') }}</div><div class="reading">{% if market.heat.open_interest.value is not none %}{{ "%.2f%%"|format(market.heat.open_interest.value*100) }}{% else %}—{% endif %}</div><div class="read-label"><span class="state">{{ t(market.heat.open_interest.state,market.heat.open_interest.state_zh) }}</span></div><div class="receipt">{% if market.heat.open_interest.percentile is not none %}{{ market.heat.open_interest.percentile|round|int }}{{ t('th percentile','百分位') }}{% else %}{{ t('Coverage unavailable','暂无覆盖') }}{% endif %}</div></div>
           <div class="sensor {{ tone(market.heat.volatility.tone) }}"><div class="eyebrow">{{ t('Bitcoin implied volatility','比特币隐含波动率') }}</div><div class="reading">{{ market.heat.volatility.value if market.heat.volatility.value is not none else '—' }}</div><div class="read-label"><span class="state">{{ t(market.heat.volatility.state,market.heat.volatility.state_zh) }}</span></div><div class="receipt">DVOL{% if market.heat.volatility.percentile is not none %} · P{{ market.heat.volatility.percentile|round|int }}{% endif %}</div></div>
         </div>
-        <div class="heat-meter {{ tone(market.heat.altseason.tone) }}"><div class="shelf-kicker">{{ t('Altseason meter','山寨季仪表') }}</div><div class="meter-score"><b>{{ market.heat.altseason.value if market.heat.altseason.value is not none else '—' }}</b><span>/ 100</span></div><div class="meter-rail" style="--v:{{ market.heat.altseason.value if market.heat.altseason.value is not none else 0 }}%"><i></i></div><div class="meter-scale"><span>BTC</span><span>{{ t('Mixed','混合') }}</span><span>ALTS</span></div><div class="read-label" style="margin-top:18px"><span class="state">{{ t(market.heat.altseason.state,market.heat.altseason.state_zh) }}</span></div><div class="receipt" style="margin-top:15px;color:var(--muted);font-size:10px">{{ t('ETH/BTC relative trend plus BTC dominance; display context only.','ETH/BTC 相对趋势结合 BTC 占比；仅作展示背景。') }}</div></div>
+        <div class="heat-meter {{ tone(market.heat.altseason.tone) }}"><div class="shelf-kicker">{{ t('Altseason meter','山寨季仪表') }}</div><div class="meter-score"><b>{{ market.heat.altseason.value if market.heat.altseason.value is not none else '—' }}</b><span>/ 100</span></div><div class="meter-rail"><i{% if market.heat.altseason.value is not none %} style="width:{{ market.heat.altseason.value }}%"{% endif %}></i></div><div class="meter-scale"><span>BTC</span><span>{{ t('Mixed','混合') }}</span><span>ALTS</span></div><div class="read-label" style="margin-top:18px"><span class="state">{{ t(market.heat.altseason.state,market.heat.altseason.state_zh) }}</span></div><div class="receipt" style="margin-top:15px;color:var(--muted);font-size:10px">{{ t('ETH/BTC relative trend plus BTC dominance; display context only.','ETH/BTC 相对趋势结合 BTC 占比；仅作展示背景。') }}</div></div>
       </div>
       <details class="deriv-fold" id="btc-derivatives">
         <summary><span>{{ t('Bitcoin derivatives desk','比特币衍生品台') }}</span><span>{{ btc_options.as_of or t('Awaiting data','等待数据') }}</span></summary>
@@ -418,7 +434,7 @@ html[data-lang="zh"] #crypto-overview .desk-context-rule>span.l-zh{display:block
     </div>
   </section>
 
-  <section class="crypto-shelf" data-shelf="H5" id="allocation" data-allocation-state="{{ 'available' if allocation.available else ('breakdown-unavailable' if allocation.budget_available else 'unavailable') }}">
+  <section class="crypto-shelf" data-shelf="H5" id="allocation" data-allocation-state="{{ 'available' if allocation.available else ('breakdown-unavailable' if allocation.budget_available else 'unavailable') }}" data-decision-state="{{ decision_state }}" data-decision-freshness="{{ decision_freshness }}" data-decision-status="{{ decision_status }}" data-decision-reason="{{ decision_reason }}" data-decision-errors="{{ decision_errors }}" data-decision-as-of="{{ decision_as_of }}">
     <div class="shelf-pad"><div class="shelf-head"><span class="shelf-index">H5</span><h2 class="shelf-title">{{ t('Allocation','配置') }}</h2><span class="shelf-sub">{{ t('model budget · asset breakdown','模型预算 · 类别明细') }}</span></div>
       <div class="alloc-grid">
         {% if allocation.available %}
@@ -476,6 +492,39 @@ html[data-lang="zh"] #crypto-overview .desk-context-rule>span.l-zh{display:block
   if(!entry)return;
   var timer=null,observer=null,openedHere=false;
   var note=document.querySelector('.desk-brain-status');
+  var pageArmed=false;
+  // Attach after theme.js initChatLauncher; do not replace MM_BRAIN_CFG.
+  function armCryptoPage(){
+    if(pageArmed)return;
+    var cfg=window.MM_BRAIN_CFG;
+    if(!cfg)return;
+    pageArmed=true;
+    var prior=cfg.getAiContext;
+    cfg.getAiContext=function(){
+      var block=null;
+      if(typeof prior==='function'){try{block=prior()}catch(e){block=null}}
+      if(!block||typeof block!=='object'){
+        var symbol='';
+        try{symbol=(typeof cfg.symbol==='function'?cfg.symbol():'')||''}catch(e){}
+        symbol=String(symbol||'').toUpperCase().slice(0,24);
+        return {
+          schema:'ai_context_client.v1',
+          origin_id:'crypto-page',
+          context_revision:0,
+          captured_at:new Date().toISOString(),
+          pinned:[],
+          active:symbol?{type:'security',id:symbol}:null,
+          ambient:{page:'crypto',panel:'crypto-overview'}
+        };
+      }
+      var ambient=block.ambient&&typeof block.ambient==='object'?block.ambient:{};
+      ambient.page='crypto';
+      if(!ambient.panel)ambient.panel='crypto-overview';
+      block.ambient=ambient;
+      return block;
+    };
+  }
+  document.addEventListener('DOMContentLoaded',armCryptoPage);
   function ready(){entry.disabled=false;entry.removeAttribute('aria-busy');if(timer){clearInterval(timer);timer=null}}
   function bindPanel(){
     var panel=document.getElementById('mmb-panel');if(!panel||observer)return;
@@ -493,18 +542,22 @@ html[data-lang="zh"] #crypto-overview .desk-context-rule>span.l-zh{display:block
   }
   function openExisting(){
     if(!window.MMBrain||typeof window.MMBrain.open!=='function')return false;
+    armCryptoPage();
     var panel=document.getElementById('mmb-panel');openedHere=true;
     if(!panel||!panel.classList.contains('open'))window.MMBrain.open();
     bindPanel();ready();return true;
   }
   entry.addEventListener('click',function(){
-    if(timer)return;note.hidden=true;entry.disabled=true;entry.setAttribute('aria-busy','true');
+    if(timer)return;
+    if(!window.MM_BRAIN_CFG){document.addEventListener('DOMContentLoaded',function(){entry.click()},{once:true});return}
+    armCryptoPage();
+    note.hidden=true;entry.disabled=true;entry.setAttribute('aria-busy','true');
     if(openExisting())return;
     var boot=document.getElementById('mmb-boot');if(boot)boot.click();
     var tries=0;
     timer=setInterval(function(){
       if(openExisting())return;
-      if(++tries>=60){ready();note.hidden=false;}
+      if(++tries>=60){ready();note.hidden=false;entry.focus()}
     },50);
   });
   document.body.classList.add('crypto-desk-ready');
