@@ -2,7 +2,7 @@
 workstream: "WS:GMI-THEME-GRAPH"
 session: sol/consumer-defensive-research-20260923
 model: sol
-ended_because: checkpoint
+ended_because: context_budget
 mission: >
   Preserve the implementation-ready Consumer Defensive research and CDV-1 delivery
   package for lawful Fable principal integration, without claiming delivery or START.
@@ -19,11 +19,77 @@ verified:
 unverified:
   - claim: "Fable assignment, pickup, execution, product readiness or delivery."
     what_would_verify: "Current lawful receiver/transport binding, separate ACK/START and real source-to-user acceptance."
+unresolved:
+  - >
+    EXACT_RECEIVER is NOT_BOUND. FABLE_ACK and FABLE_START are NOT_OBSERVED.
+    PACKET_STATE stays PREPARED / NOT_DELIVERED and PLACEMENT_STATE stays
+    WAITING_CAPACITY.
+  - >
+    CDV1-01 through CDV1-36 are NOT_EXECUTED. The plan's 32 structural checks
+    and 12 parsed snippets are not product tests, source admission, or browser proof.
+  - >
+    Whether unmerged #8245 completes Task 4 is open. refs/grok/pr/8245 d9b1c6b803
+    is not an ancestor of origin/main 9a47ac7f94. It modifies
+    engine/earnings_narrative/private_publication.py and adds
+    tests/earnings_economic_private_fixtures.py and
+    tests/test_earnings_economic_private_store.py. It does not modify
+    tests/test_earnings_private_store.py, which the plan's Task 4 file list names.
+  - >
+    Shared-mount readiness is open. At preparation, STSI #7777 was open at
+    4122e3b7e1524482216fb156f201f8229c14011b, a five-file contract slice.
+  - >
+    Whether the four source-register files that moved after inspection pin
+    dd4d965de7d52f4c68f6dbc984c7a05a70e0d62b still satisfy the plan is open.
+    Observed 2026-10-12 on origin/main 9a47ac7f94, their blobs are
+    scripts/refresh_event_workspaces.py 4a00eb9e69ab25a9fa8679592066f186462a2edc,
+    engine/company_intelligence/event_workspace.py 4ab75d478fdec9aafcd7af8c6601aab697d3a705,
+    engine/company_intelligence/documents.py eda8651bdac1a4bc01c24565cb35f5a13848d179,
+    and engine/earnings_release/binding.py 54290bc7373aa1db8a127b8a9e000633efc72d7b.
 next_actions:
   - "Resolve one eligible Fable receiver through the existing placement owner, then deliberately deliver this exact packet under current source/custody law."
+  - >
+    After delivery, continue CDV-1 at Task 4 on unmerged #8245
+    (refs/grok/pr/8245 d9b1c6b803). Begin Task 5
+    (engine/earnings_narrative/private_economic_stage.py and
+    tests/test_earnings_economic_refresh.py) only after #8245 merges.
+    Tasks 1-3 are already on origin/main 9a47ac7f94, observed 2026-10-12:
+    engine/company_intelligence/pg_profile.py:88 pg_issuer,
+    engine/company_intelligence/economic_observations.py:605 validate_selected_facts,
+    engine/earnings_narrative/economic_interpretation.py:24
+    earnings.economic_interpretation/v1, and
+    scripts/refresh_event_workspaces.py:651 newer_source_pending.
+    Reload scripts/refresh_event_workspaces.py,
+    engine/company_intelligence/event_workspace.py,
+    engine/company_intelligence/documents.py, and
+    engine/earnings_release/binding.py from current main before editing them.
 do_not_redo:
   - "Do not repeat R1-R5 company research or create another template, financial, identity or publication system."
   - "Do not treat packet discovery as assignment, create broad OPEN_PICKUP or ask the Chairman to allocate accounts."
+  - "Tasks 1-3 already exist on origin/main. Do not recreate pg_profile.py, economic_observations.py, or economic_interpretation.py as greenfield files."
+danger_areas:
+  - >
+    Discovering this packet does not assign a worker, record ACK, or record START.
+    Product code stays off Draft/HOLD #7792. A second writer against an
+    uncertain effect is a collision, not progress.
+  - >
+    origin/main scripts/refresh_event_workspaces.py:651 sets currentness to
+    newer_source_pending when a newer candidate is pending. Treating the older
+    selected filing as up_to_date hides that pending failure.
+  - >
+    #8245 declares earnings.tier_payload/v2 and earnings.private_manifest/v2 at
+    engine/earnings_narrative/private_publication.py:34-35. Task 4 owns that file.
+    An independent edit, or a later wire run that drops the v2 slots, silently
+    downgrades the private closure. On origin/main the same file is still blob
+    0ee93909693893f419f0109f9eba1994d94e2b46, the inspection pin, with no Task 4 readers.
+  - >
+    scripts/refresh_event_workspaces.py, engine/company_intelligence/event_workspace.py,
+    engine/company_intelligence/documents.py, and engine/earnings_release/binding.py
+    match inspection pin dd4d965de7d52f4c68f6dbc984c7a05a70e0d62b and differ on
+    origin/main. Building those four from the pin misses the main text.
+  - >
+    The July 2026 P&G release in this packet is a research example. Copying its
+    figures, accessions, or digests as a fresh admission receipt is a false source.
+    The public publisher must reject protected economic content.
 ---
 
 # Consumer Defensive — prepared Fable integration packet
@@ -81,7 +147,7 @@ P&G is an engineering/proof scope choice, not a stock recommendation or theme me
 
 ## 4. Bounded execution sequence
 
-The plan provides exact proposed paths, interfaces, test code, RED/GREEN commands, mutation cases and commit boundaries:
+The plan provides exact proposed paths, interfaces, test code, RED/GREEN commands, mutation cases and commit boundaries. Observed 2026-10-12, steps 1-3 below are already on `origin/main` `9a47ac7f94` (`engine/company_intelligence/pg_profile.py:88`, `engine/company_intelligence/economic_observations.py:605`, `engine/earnings_narrative/economic_interpretation.py:24`, `scripts/refresh_event_workspaces.py:651` with `newer_source_pending`). Step 4 is unmerged #8245 (`refs/grok/pr/8245` `d9b1c6b803`). Step 5 starts after that merge.
 
 1. Add the private PG issuer profile and strict selected-fact validation in the existing Earnings owner.
 2. Extend the existing acquisition helper with truthful candidate/currentness evidence and prepare a native private workspace without public publication.
@@ -138,4 +204,4 @@ Sol remains responsible for the prepared packet and placement/return adjudicatio
 
 Verified effects are authored research, design, implementation plan, review and this preparation packet on the same research branch. No product branch or implementation, live fact, schema enrollment, source retention, deployment, Fable delivery/ACK/START, Executive Attempt or watcher is created here.
 
-**FABLE_HANDOFF: PREPARED_NOT_DELIVERED.** Keep #7792 Draft/HOLD. Next material action is concrete approved placement and delivery of this exact packet, followed by the action-scoped native/source/shared-custody preflight and the first test-first implementation unit. Do not request another generic research approval or redo the company census.
+**FABLE_HANDOFF: PREPARED_NOT_DELIVERED.** Keep #7792 Draft/HOLD. Next material action is concrete approved placement and delivery of this exact packet, followed by the action-scoped native/source/shared-custody preflight and CDV-1 Task 4 on unmerged #8245. Task 5 starts only after #8245 merges. Tasks 1-3 are already on origin/main (`pg_profile.py:88`, `economic_observations.py:605`, `economic_interpretation.py:24`, `refresh_event_workspaces.py:651`). Do not request another generic research approval or redo the company census.

@@ -612,6 +612,8 @@ All native paths above were located through the GitHub connector. Load their exa
 | `scripts/build_earnings_public_wire.py` | `00490a81355544e5d55733852e38c2881e4e827c` |
 | `tests/test_earnings_api.py` | `eb1959601df287381b5e384c4bf26bace1ce701b` |
 
+**Staleness note (2026-10-12).** Observed against `origin/main` `9a47ac7f94`. The inspection-pin blobs above for `scripts/refresh_event_workspaces.py`, `engine/company_intelligence/event_workspace.py`, `engine/company_intelligence/documents.py`, and `engine/earnings_release/binding.py` match pin `dd4d965de7d52f4c68f6dbc984c7a05a70e0d62b` and differ on origin/main (`4a00eb9e69ab25a9fa8679592066f186462a2edc`, `4ab75d478fdec9aafcd7af8c6601aab697d3a705`, `eda8651bdac1a4bc01c24565cb35f5a13848d179`, `54290bc7373aa1db8a127b8a9e000633efc72d7b`). Load those four files from current main before implementing. `engine/earnings_narrative/private_publication.py`, `scripts/build_earnings_public_wire.py`, and `tests/test_earnings_api.py` still match the blobs recorded in this table on that main. The recorded blobs remain the planning-time pins.
+
 External references, reviewed for semantic suitability rather than native admission:
 
 - P&G's July 29, 2026 issuer release: https://www.pginvestor.com/news/news-details/2026/PG-Announces-Fourth-Quarter-and-Fiscal-Year-2026-Results/default.aspx . It distinguishes quarter/annual reporting, issuer-defined organic growth and reported/core earnings. Do not convert the public webpage into a SEC accession or retention receipt.

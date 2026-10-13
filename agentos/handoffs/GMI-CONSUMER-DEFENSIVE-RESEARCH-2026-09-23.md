@@ -2,7 +2,7 @@
 workstream: "WS:GMI-THEME-GRAPH"
 session: sol/consumer-defensive-research-20260923
 model: sol
-ended_because: checkpoint
+ended_because: context_budget
 mission: >
   Deliver Consumer Defensive economic research and implementation planning, then
   Fable-led integration and real source-to-user product proof through existing owners.
@@ -31,15 +31,81 @@ verified:
 unverified:
   - claim: "Concrete Fable placement/delivery, execution or product acceptance."
     what_would_verify: "Current approved receiver/transport binding, separate ACK/START, implementation and real production proof."
+unresolved:
+  - >
+    No concrete Fable receiver is bound. FABLE_ACK and FABLE_START are NOT_OBSERVED.
+    The prepared packet stays PREPARED_NOT_DELIVERED on Draft/HOLD #7792.
+  - >
+    CDV1-01 through CDV1-36 remain NOT_EXECUTED. The 32 plan checks are document
+    and syntax checks, not product tests, source admission, or browser proof.
+  - >
+    Whether unmerged #8245 is the accepted Task 4 closure is open. refs/grok/pr/8245
+    d9b1c6b803 is not an ancestor of origin/main 9a47ac7f94. It modifies
+    engine/earnings_narrative/private_publication.py and adds
+    tests/earnings_economic_private_fixtures.py and
+    tests/test_earnings_economic_private_store.py. It does not modify
+    tests/test_earnings_private_store.py. Task 5 paths
+    engine/earnings_narrative/private_economic_stage.py and
+    tests/test_earnings_economic_refresh.py are absent on origin/main and on #8245.
+  - >
+    Whether the four source-register files that moved after inspection pin
+    dd4d965de7d52f4c68f6dbc984c7a05a70e0d62b still match this plan's assumptions
+    is open. Observed 2026-10-12 on origin/main 9a47ac7f94:
+    scripts/refresh_event_workspaces.py 4a00eb9e69ab25a9fa8679592066f186462a2edc,
+    engine/company_intelligence/event_workspace.py 4ab75d478fdec9aafcd7af8c6601aab697d3a705,
+    engine/company_intelligence/documents.py eda8651bdac1a4bc01c24565cb35f5a13848d179,
+    engine/earnings_release/binding.py 54290bc7373aa1db8a127b8a9e000633efc72d7b.
 next_actions:
   - "Bind one eligible Fable receiver through the existing placement/direct-delivery owner and deliberately deliver the prepared packet; do not broadcast or allocate accounts through Chairman."
-  - "Then reconcile exact implementation custody and action-local gates and begin CDV-1 Task1 through existing eligible engineering capacity."
+  - >
+    The implementation frontier is CDV-1 Task 4 on unmerged #8245, then Task 5
+    only after #8245 merges. Tasks 1-3 are already on origin/main 9a47ac7f94,
+    observed 2026-10-12: engine/company_intelligence/pg_profile.py:88 defines
+    pg_issuer; engine/company_intelligence/economic_observations.py:605 defines
+    validate_selected_facts; engine/earnings_narrative/economic_interpretation.py:24
+    sets SCHEMA to earnings.economic_interpretation/v1;
+    scripts/refresh_event_workspaces.py:651 sets currentness to
+    newer_source_pending when a newer candidate is pending. On refs/grok/pr/8245
+    d9b1c6b803, engine/earnings_narrative/private_publication.py defines
+    load_private_manifest_version at line 2048, load_economic_closure at 2113,
+    load_current_economic_view at 2198, and load_economic_evidence at 2243.
+    Begin Task 5 at engine/earnings_narrative/private_economic_stage.py and
+    tests/test_earnings_economic_refresh.py only after #8245 merges. Before
+    editing the moved owners, reload scripts/refresh_event_workspaces.py,
+    engine/company_intelligence/event_workspace.py,
+    engine/company_intelligence/documents.py, and
+    engine/earnings_release/binding.py from current main.
 do_not_redo:
   - "R1-R5 research and R6 implementation plan; no further broad sector census or template/Robotics reconstruction."
   - "No rival financial, identity, source, state, retry, watcher, model-router or publication owner."
   - "No private economic workspaces in the public company-intelligence publisher."
   - "No fake latest-source claim from fallback acquisition or render timestamps."
   - "No packet discovery interpreted as assignment, no blind re-home or retry of unknown effects."
+  - "Tasks 1-3 are already on origin/main. Do not reopen pg_profile.py, economic_observations.py, or economic_interpretation.py as if they were still planned-only."
+danger_areas:
+  - >
+    A newer failed source stays newer_source_pending. origin/main
+    scripts/refresh_event_workspaces.py:651 already chooses newer_source_pending
+    when a newer candidate is pending. Presenting that state as up_to_date
+    makes an older filing look current.
+  - >
+    Private publication on #8245 declares earnings.tier_payload/v2 and
+    earnings.private_manifest/v2 at engine/earnings_narrative/private_publication.py:34-35.
+    A later unrelated wire run that drops those slots silently downgrades v2 to v1.
+  - >
+    Finding the prepared packet is not assignment, ACK, START, or custody transfer.
+    Product implementation belongs on a lawful current-main carrier after #8245,
+    not on Draft/HOLD #7792, and not as a second writer against an uncertain effect.
+  - >
+    The planning-pin blobs for scripts/refresh_event_workspaces.py,
+    engine/company_intelligence/event_workspace.py,
+    engine/company_intelligence/documents.py, and engine/earnings_release/binding.py
+    match dd4d965de7d52f4c68f6dbc984c7a05a70e0d62b and differ on origin/main.
+    Implementing those four from the pin misses the main text.
+  - >
+    Research-example accessions, digests, and the July 2026 P&G webpage are not
+    a live admission receipt. The public publisher must reject protected economic
+    content. All six decision-authority booleans stay false.
 ---
 
 # Consumer Defensive — R6 plan-to-integration continuation
@@ -125,4 +191,4 @@ Keep #7792 Draft/HOLD. Product implementation requires its own lawful current-ma
 
 R6 reaches the actual planning-to-integration boundary: source-dependent implementation details are specified, self-reviewed, structurally verified and persisted, and the exact Fable packet is prepared. The turn accumulated substantial code, source-law and long-artifact context. Resume on a fresh bounded placement/integration surface from this checkpoint and the packet, not the earlier source/tool history. This is context/phase continuity, not completion, cancellation, writer release or a claim of hard failure.
 
-Exact next action: identify one eligible concrete Fable receiver through the existing approved placement/direct-delivery owner, reconcile no conflicting START/effect, deliver the prepared packet and establish separate pickup/START and return evidence. Then execute plan Task1 on a fresh lawful implementation carrier through the existing least-scarce capable worker route, with G1-G4 applied only to dependent actions. Do not ask for the research mandate again or repeat the R1-R5 census. The overall Consumer Defensive mission remains incomplete until required real user capability and later milestone obligations are actually delivered and accepted.
+Exact next action: identify one eligible concrete Fable receiver through the existing approved placement/direct-delivery owner, reconcile no conflicting START/effect, deliver the prepared packet and establish separate pickup/START and return evidence. The implementation frontier is CDV-1 Task 4 on unmerged #8245 (`refs/grok/pr/8245` `d9b1c6b803`, not an ancestor of `origin/main`). Begin Task 5 (`engine/earnings_narrative/private_economic_stage.py` and `tests/test_earnings_economic_refresh.py`) only after #8245 merges. Tasks 1-3 are already on `origin/main` `9a47ac7f94`, observed 2026-10-12: `engine/company_intelligence/pg_profile.py:88` (`pg_issuer`), `engine/company_intelligence/economic_observations.py:605` (`validate_selected_facts`), `engine/earnings_narrative/economic_interpretation.py:24` (`earnings.economic_interpretation/v1`), and `scripts/refresh_event_workspaces.py:651` (`newer_source_pending`). Apply G1-G4 only to dependent actions. Before editing them, reload the four source-register files that moved on main: `scripts/refresh_event_workspaces.py`, `engine/company_intelligence/event_workspace.py`, `engine/company_intelligence/documents.py`, and `engine/earnings_release/binding.py`. Do not ask for the research mandate again or repeat the R1-R5 census. The overall Consumer Defensive mission remains incomplete until required real user capability and later milestone obligations are actually delivered and accepted.
