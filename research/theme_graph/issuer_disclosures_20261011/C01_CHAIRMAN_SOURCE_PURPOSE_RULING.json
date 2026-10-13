@@ -1,0 +1,54 @@
+{
+  "schema": "company_intelligence.source_purpose_ruling/v1",
+  "ruling_id": "GMI-C01-CHAIRMAN-SOURCE-PURPOSE-20261011",
+  "case_id": "C01-micron-planned-product-integration",
+  "decision": "covered",
+  "decision_owner": "Chairman Chris",
+  "evidence_kind": "direct_chairman_source_rights_confirmation",
+  "recorded_at": "2026-10-11T16:49:51.619449+00:00",
+  "parent_thread": "01a12842-2725-7361-be2c-77cf323d62c4",
+  "question": "For the Micron C01 fact’s eventual paid-product display, is there an existing license, agreement, or source-owner/legal ruling covering that fact-only use and retention that I should reference? The concrete output is limited to Micron’s planned 24GB 8H HBM3E integration with NVIDIA H200, with no quotation or commercial magnitude. I have not established that basis from the published terms. This is missing source-rights evidence, not a request to reauthorize engineering; kernel release and the other production tracks continue.",
+  "answer": "yes its fully covered. chairman override, mark as complete and proceed",
+  "source": {
+    "url": "https://investors.micron.com/news/press-release/2024/Micron-Commences-Volume-Production-of-Industry-Leading-HBM3E-Solution-to-Accelerate-the-Growth-of-AI-02-26-2024/default.aspx",
+    "source_key": "manual:micron-ir:hbm3e-h200:2024-02-26",
+    "sha256": "a7efabf9cec581ba684688368118e3e13df6a3043aff56667927e24df97e8b2e",
+    "byte_length": 504119,
+    "published_date": "2024-02-26",
+    "published_at": null,
+    "publication_precision": "date"
+  },
+  "permitted_use": {
+    "purpose": "private_company_intelligence_context",
+    "audience": "company_intelligence_entitled",
+    "paid_product_display": true,
+    "fact_retention": true,
+    "kind": "product_integration",
+    "lifecycle": "planned",
+    "subject": "Micron",
+    "object": "NVIDIA",
+    "product": "24GB 8H HBM3E",
+    "platform": "NVIDIA H200",
+    "amount": null,
+    "economic_share": null,
+    "source_quotation": false,
+    "reviewer_text": false
+  },
+  "rights_evidence_task_complete": true,
+  "license_document_independently_inspected": false,
+  "license_identifier": null,
+  "remaining_adoption": {
+    "dataset": false,
+    "private_artifact_publication": false,
+    "current_generation": false,
+    "disclosure_runtime_installation": false,
+    "production_acceptance": false
+  },
+  "scope_limits": [
+    "The Chairman confirmation answers this exact source-purpose question; it does not assert that a license document was independently inspected.",
+    "The existing retained source remains private; this ruling authorizes the described fact-only use and retention, not source-body redistribution.",
+    "Planned at the date-only announcement; no current shipment, revenue, amount, share, historical knowledge or trade authority is implied.",
+    "Other editions, claims, vendors, audiences and public distribution are outside this record.",
+    "Ordinary source authenticity, semantic, identity, correction, release and production acceptance remain required."
+  ]
+}

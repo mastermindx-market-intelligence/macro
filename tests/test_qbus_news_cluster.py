@@ -123,3 +123,16 @@ def test_new_cluster_id_is_stable_for_story_identity_not_headline_text():
     a = item("123", "First headline")
     b = item("123", "Corrected headline")
     assert new_cluster_id(a) == new_cluster_id(b)
+
+
+def test_policy_version_is_v2_and_story_digest_is_unchanged():
+    """A title-mixing or random new_cluster_id fails the pinned digest."""
+    from engine.qbus_news_cluster import CLUSTER_POLICY_VERSION
+
+    assert CLUSTER_POLICY_VERSION == "qbus_news_cluster.v2"
+    pinned = item("123", "Hello")
+    assert pinned.story_id == "benzinga:123"
+    assert new_cluster_id(pinned) == "ev2_0816bfa7518889e2"
+    decision = cluster_candidates(pinned, [], policy=ClusterPolicy())
+    assert decision.cluster_id == "ev2_0816bfa7518889e2"
+    assert decision.action == "new"
