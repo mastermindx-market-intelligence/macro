@@ -34,7 +34,11 @@ Counts by run: `s1_residual` 316, `s1_residual_v1_1` 318,
 Key paths with `[*]` or `admitted[*]` collapse one row per array cell.
 The test file enumerates every cell. Rule "git blob SHA-1 @ input_ref"
 means `git ls-tree -r <seal.input_ref>` of the pinned path, never
-`hashlib.sha256(working-tree bytes)` and never `common.sni_seal`.
+`hashlib.sha256(working-tree bytes)` and never `common.sni_seal`. When
+`input_ref` is absent (depth-1 CI), the same test falls back to the git
+blob SHA-1 of working-tree bytes of that path (`git hash-object
+--no-filters`); a match is a reproduction of those exact bytes. Tests
+never fetch.
 
 | run | recording file | key | hashes what | rule | covered by |
 |---|---|---|---|---|---|
@@ -114,6 +118,61 @@ pins. That is expected: the pins are the blob at `input_ref`
 `5ef7a7f39f99232bf9b574c7603da1011ee3af66`, which still matches. Not a
 sealed-run BLOCKER.
 
+## CI depth-1 bound
+
+A reproduction count is a count of recorded digests this test recomputes.
+It is not a validation of a family and is not a signal. Nothing here feeds
+a ranker, gate, sizer, signal, escalation, or trade path. Every authority
+flag stays false.
+
+Measured 2026-10-13 on this repair branch. Total `git_blob` cases: **432**
+(`s1_residual` 180, `s1_residual_v1_1` 180, `s2_event_response` 36,
+`s2_event_response_v1_1` 36).
+
+**Full checkout** (`input_ref` `5ef7a7f39f99232bf9b574c7603da1011ee3af66`
+present; `git ls-tree -r` succeeds):
+
+- exact-tree verified: **432**
+- working-tree fallback: 0 (the fallback does not run when `input_ref` is present)
+- skipped: 0
+
+**Depth-1 clone** (`git clone --depth 1 --sparse --branch <repair-branch>
+file://<worktree> /tmp/rpr-d1`; `--sparse` keeps `data/` off disk — a full
+tree at HEAD is about 10 GB). Confirmed
+`git cat-file -e 5ef7a7f39f99232bf9b574c7603da1011ee3af66^{commit}` fails.
+The test file never fetches.
+
+- exact-tree verified: 0 (`input_ref` is absent, so `git ls-tree` returns None)
+- working-tree-fallback verified: **60** (pinned path exists in the
+  checkout and `hashlib.sha1(b"blob %d\0" % len(data) + data)` equals the
+  recorded pin — coverage profiles, S0 independence/split law, and the six
+  E1/E2 evidence files)
+- still skipped: **372**
+
+Of the 372 skips: 362 are a pinned path absent from this checkout; 10 are
+`research/single_name_intelligence/protocols/S0_PROTOCOL_REGISTER.md`,
+whose working-tree bytes differ from the pin (same drift named under
+Mismatches). The three most common skip reasons, by case count:
+
+1. `data/reference/security_master.parquet changed since input_ref; exact check needs input_ref (never fetched in tests)` — 10 cases, file absent.
+2. `research/single_name_intelligence/protocols/S0_PROTOCOL_REGISTER.md changed since input_ref; exact check needs input_ref (never fetched in tests)` — 10 cases, working-tree bytes differ from the pin.
+3. `data/hk_stocks/0700.HK.parquet changed since input_ref; exact check needs input_ref (never fetched in tests)` — 8 cases, file absent.
+
+Grouped, the 362 absences are 320 `data/yahoo/*` (challenger universe plus
+BABA/SPY/KWEB pins) and 42 other `data/*` paths. Skip remains the bound for
+what cannot be checked without `input_ref`. Tests never fetch: a timed-out
+fetch is SIGKILLed and leaves `.git/shallow.lock`, and even a clean depth-1
+fetch rewrites `.git/shallow` for every later job in the same CI pack
+(PR #8893).
+
+Cross-file pin agreement (same path, same digest kind, same value inside
+one run): 13 multi-pinned paths in each S1 run, 18 in each S2 run, 0
+disagreements. Cross-version pairs compared (v1 vs v1.1, shared
+`input_ref` 5ef7a7f3): 163 S1 pairs, 18 S2 pairs, 0 disagreements.
+`VERSION_RECORD.json` names report/lead/membership-column repairs; none
+of those repairs change a repository-path pin, so the named-exception
+list is empty.
+
 ## Gaps
 
 - Manifest `episode_key` values are sha256 of an identity string in the same
@@ -122,8 +181,12 @@ sealed-run BLOCKER.
   red via `membership_sha256`.
 - Commit ids (`input_ref`, `base`, `base_commit`, `seal_commit_sha`) are
   excluded; they name a git commit, not a content digest of a sealed file.
-- Git blob tests skip (never ERROR) if `input_ref` is absent from the
-  checkout, matching `test_sni_s2_seal_integrity.py`'s depth-1 CI rule.
+- Git blob tests skip (never ERROR, never fetch) if `input_ref` is absent
+  and the pinned path is missing from the checkout or its working-tree
+  bytes differ from the recorded pin. Depth-1 CI therefore still skips the
+  372 cases bound above. Matching working-tree bytes (60 cases in this
+  clone) are a reproduction of those bytes, not an exact-tree check at
+  `input_ref`.
 - `observations/` and `results/` have no recorded digest fields in the
   top-level recording files; they are listed by name only (S1: 18
   observation JSON + 3 result JSON; S2: `episodes.jsonl` + P04/P05/P06

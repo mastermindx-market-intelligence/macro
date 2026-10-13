@@ -15,7 +15,10 @@ Recompute rules (never common.sni_seal):
   S1 canonical JSON  -> residual.s1_prereg.canonical_json
   S2 canonical JSON  -> event_response.s2_seal.canonical_json
   membership/graded  -> sha256 of that split's committed manifest lines
-  git blob pins      -> git blob SHA-1 at the run's input_ref
+  git blob pins      -> git blob SHA-1 at the run's input_ref; when
+                       input_ref is absent (depth-1 CI), working-tree
+                       git blob SHA-1 of the pinned path if those bytes
+                       equal the pin. Tests never fetch.
   config_hash        -> engine.trial_ledger._hash of the committed row
 """
 from __future__ import annotations
@@ -24,6 +27,7 @@ import hashlib
 import json
 import subprocess
 import sys
+from collections import defaultdict
 from functools import lru_cache
 from pathlib import Path
 
@@ -130,6 +134,29 @@ PINNED_TOP_LEVEL = {
     "s2_event_response_v1_1": S2_V11_TOP,
 }
 
+# v1 and v1.1 share input_ref 5ef7a7f3. VERSION_RECORD.json of each v1.1
+# run names report/lead/membership-column repairs; none of those repairs
+# change a repository-path pin. Named exceptions stay empty (do not
+# exclude whole files).
+CROSS_VERSION_PIN_EXCEPTIONS: dict[tuple[str, str], frozenset[str]] = {
+    ("s1_residual", "s1_residual_v1_1"): frozenset(),
+    ("s2_event_response", "s2_event_response_v1_1"): frozenset(),
+}
+STUDY_VERSION_PAIRS = (
+    ("s1_residual", "s1_residual_v1_1"),
+    ("s2_event_response", "s2_event_response_v1_1"),
+)
+PIN_BEARING_JSON = (
+    "INPUT_MANIFEST.json",
+    "SEAL_AND_BUDGET.json",
+    "PREREG_SPEC.json",
+    "CHALLENGER_UNIVERSE.json",
+)
+SKIP_NEEDS_INPUT_REF = (
+    "changed since input_ref; exact check needs input_ref "
+    "(never fetched in tests)"
+)
+
 
 def refuse_nonfalse_authority(flags=None) -> None:
     """Refuse any authority flag that is not literal False."""
@@ -162,6 +189,19 @@ def refuse_nonfalse_authority(flags=None) -> None:
 
 
 refuse_nonfalse_authority(AUTHORITY_FLAGS)
+
+
+def git_blob_sha1(data: bytes) -> str:
+    """Git blob SHA-1 of raw bytes (`git hash-object --no-filters`)."""
+    return hashlib.sha1(b"blob %d\0" % len(data) + data).hexdigest()
+
+
+def _working_tree_git_blob(path: str) -> str | None:
+    """Git blob SHA-1 of working-tree bytes, or None if the file is absent."""
+    fp = REPO / path
+    if not fp.is_file():
+        return None
+    return git_blob_sha1(fp.read_bytes())
 
 
 def _s2_v1_membership_covered() -> dict[tuple[str, str, str], str]:
@@ -453,6 +493,84 @@ def _iter_recorded_digests() -> list[tuple[str, str, str, str, object]]:
     return out
 
 
+def iter_path_pins(run_dir: Path) -> list[tuple[str, str, str, str]]:
+    """(repository path, pinned value, digest kind, recording file).
+
+    Reads only committed run JSON. No git, no data/.
+    """
+    out: list[tuple[str, str, str, str]] = []
+    im_path = run_dir / "INPUT_MANIFEST.json"
+    if im_path.is_file():
+        im = _load_json(im_path)
+        if any(k in im for k in ("pins", "s0_docs", "identity_source")):
+            for path, blob in (im.get("pins") or {}).items():
+                out.append((path, blob, "git_blob", "INPUT_MANIFEST.json"))
+            ident = im.get("identity_source") or {}
+            if ident.get("blob"):
+                out.append((ident.get("path"), ident["blob"], "git_blob",
+                            "INPUT_MANIFEST.json"))
+            for rec in (im.get("s0_docs") or {}).values():
+                out.append((rec.get("path"), rec.get("blob"), "git_blob",
+                            "INPUT_MANIFEST.json"))
+        else:
+            for path, rec in im.items():
+                if isinstance(rec, dict) and "blob" in rec:
+                    out.append((path, rec["blob"], "git_blob",
+                                "INPUT_MANIFEST.json"))
+    seal_path = run_dir / "SEAL_AND_BUDGET.json"
+    if seal_path.is_file():
+        seal = _load_json(seal_path)
+        for rec in (seal.get("s0_blob_ids") or {}).values():
+            out.append((rec.get("path"), rec.get("blob"), "git_blob",
+                        "SEAL_AND_BUDGET.json"))
+        seal_im = seal.get("input_manifest")
+        if isinstance(seal_im, dict):
+            for path, blob in seal_im.items():
+                if isinstance(blob, str) and len(blob) == 40:
+                    out.append((path, blob, "git_blob", "SEAL_AND_BUDGET.json"))
+    spec_path = run_dir / "PREREG_SPEC.json"
+    if spec_path.is_file():
+        spec = _load_json(spec_path)
+        for rec in (spec.get("s0_blob_ids") or {}).values():
+            out.append((rec.get("path"), rec.get("blob"), "git_blob",
+                        "PREREG_SPEC.json"))
+        for rec in (spec.get("s0_sources") or {}).values():
+            out.append((rec.get("path"), rec.get("blob"), "git_blob",
+                        "PREREG_SPEC.json"))
+        for path, blob in (spec.get("input_pins") or {}).items():
+            out.append((path, blob, "git_blob", "PREREG_SPEC.json"))
+    ch_path = run_dir / "CHALLENGER_UNIVERSE.json"
+    if ch_path.is_file():
+        challenger = _load_json(ch_path)
+        for row in challenger.get("admitted") or []:
+            out.append((row.get("path"), row.get("blob_sha256"), "git_blob",
+                        "CHALLENGER_UNIVERSE.json"))
+    return out
+
+
+def pin_disagreements(run_dir: Path) -> list[str]:
+    """Paths pinned more than once with the same kind but different values."""
+    groups: dict[tuple[str, str], set[str]] = defaultdict(set)
+    counts: dict[tuple[str, str], int] = defaultdict(int)
+    for path, value, kind, _rec in iter_path_pins(run_dir):
+        key = (path, kind)
+        groups[key].add(value)
+        counts[key] += 1
+    disagreed = [
+        path for (path, _kind), values in groups.items()
+        if counts[(path, _kind)] > 1 and len(values) > 1
+    ]
+    return sorted(set(disagreed))
+
+
+def multi_pinned_path_count(run_dir: Path) -> int:
+    """How many repository paths are pinned more than once (same kind)."""
+    counts: dict[tuple[str, str], int] = defaultdict(int)
+    for path, _value, kind, _rec in iter_path_pins(run_dir):
+        counts[(path, kind)] += 1
+    return sum(1 for n in counts.values() if n > 1)
+
+
 def _uncovered_params():
     params = []
     for run, rec_file, key_path, kind, extra in _iter_recorded_digests():
@@ -539,14 +657,29 @@ def _recompute(run: str, rec_file: str, key_path: str, kind: str, extra) -> str:
         return _s2_retirement_sha(state, protocol_id)
     if kind == "git_blob":
         tree = _git_tree_blobs(state["input_ref"])
-        if tree is None:
-            pytest.skip(f"input_ref {state['input_ref']} not present for git blob recompute")
         path = extra
-        if path not in tree:
-            raise AssertionError(
-                f"git path {path!r} missing at input_ref {state['input_ref']}"
+        if tree is not None:
+            # Exact tree check. Fallback must never run when input_ref is present.
+            if path not in tree:
+                raise AssertionError(
+                    f"git path {path!r} missing at input_ref {state['input_ref']}"
+                )
+            return tree[path]
+        # Depth-1 CI: input_ref is absent. Never fetch (a timed-out fetch is
+        # SIGKILLed and leaves .git/shallow.lock; even a clean depth-1 fetch
+        # rewrites .git/shallow for later jobs — PR #8893). Recompute from
+        # working-tree bytes when the pin names those exact bytes.
+        got = _working_tree_git_blob(path)
+        if got is None:
+            pytest.skip(
+                f"{path} {SKIP_NEEDS_INPUT_REF}"
             )
-        return tree[path]
+        recorded = _recorded_value(run, rec_file, key_path, extra)
+        if got != recorded:
+            pytest.skip(
+                f"{path} {SKIP_NEEDS_INPUT_REF}"
+            )
+        return got
     if kind == "config_hash":
         row = extra
         family = row["family"]
@@ -638,3 +771,97 @@ def test_refuse_nonfalse_authority():
     tainted["trade_authority"] = True
     with pytest.raises(ValueError, match="trade_authority"):
         refuse_nonfalse_authority(tainted)
+
+
+def test_rpr_01_blob_sha_matches_git(tmp_path):
+    path = tmp_path / "tiny.txt"
+    path.write_bytes(b"hello sni blob\n")
+    got = git_blob_sha1(path.read_bytes())
+    proc = subprocess.run(
+        ["git", "hash-object", "--no-filters", str(path)],
+        capture_output=True,
+        text=True,
+        check=True,
+    )
+    assert got == proc.stdout.strip()
+
+
+def test_rpr_02_fallback_never_masks_a_wrong_pin(monkeypatch):
+    monkeypatch.setattr(sys.modules[__name__], "_git_tree_blobs", lambda _ref: None)
+    path = "config/single_name_intelligence/coverage_profiles/alibaba.yml"
+    assert (REPO / path).is_file()
+    # Drive the same fallback `_recompute` uses when input_ref is absent.
+    # A present tracked file must yield a working-tree blob, not skip.
+    got = _recompute(
+        "s1_residual",
+        "INPUT_MANIFEST.json",
+        f"pins[{path}]",
+        "git_blob",
+        path,
+    )
+    wrong = "0" * 40
+    with pytest.raises(AssertionError):
+        assert got == wrong, (
+            f"{path}: fallback blob {got} != wrong pin {wrong}"
+        )
+
+
+def test_rpr_03_cross_file_pin_agreement():
+    for run in RUN_IDS:
+        disagreed = pin_disagreements(RUN_DIRS[run])
+        assert disagreed == [], f"{run} pin disagreements: {disagreed}"
+
+
+def test_rpr_04_cross_version_pin_agreement():
+    for v1, v11 in STUDY_VERSION_PAIRS:
+        seal_v1 = _load_json(RUN_DIRS[v1] / "SEAL_AND_BUDGET.json")
+        seal_v11 = _load_json(RUN_DIRS[v11] / "SEAL_AND_BUDGET.json")
+        ref_v1 = seal_v1.get("input_ref") or seal_v1.get("base")
+        ref_v11 = seal_v11.get("input_ref") or seal_v11.get("base")
+        assert str(ref_v1).startswith("5ef7a7f3")
+        assert str(ref_v11).startswith("5ef7a7f3")
+        pins_v1: dict[tuple[str, str], set[str]] = defaultdict(set)
+        pins_v11: dict[tuple[str, str], set[str]] = defaultdict(set)
+        for path, value, kind, _rec in iter_path_pins(RUN_DIRS[v1]):
+            pins_v1[(path, kind)].add(value)
+        for path, value, kind, _rec in iter_path_pins(RUN_DIRS[v11]):
+            pins_v11[(path, kind)].add(value)
+        common = set(pins_v1) & set(pins_v11)
+        assert common, f"{v1}/{v11}: compared 0 cross-version pairs"
+        exceptions = CROSS_VERSION_PIN_EXCEPTIONS[(v1, v11)]
+        mismatches = []
+        for path, kind in sorted(common, key=lambda x: (x[0] or "", x[1])):
+            if path in exceptions:
+                continue
+            if pins_v1[(path, kind)] != pins_v11[(path, kind)]:
+                mismatches.append((path, kind, pins_v1[(path, kind)],
+                                   pins_v11[(path, kind)]))
+        assert mismatches == [], f"{v1}/{v11} pin mismatches: {mismatches}"
+
+
+def test_rpr_05_cross_file_detector_positive_control(tmp_path):
+    src = RUN_DIRS["s2_event_response"]
+    dst = tmp_path / "s2_event_response"
+    dst.mkdir()
+    for name in PIN_BEARING_JSON:
+        src_file = src / name
+        if src_file.is_file():
+            (dst / name).write_text(src_file.read_text(encoding="utf-8"),
+                                    encoding="utf-8")
+    counts: dict[tuple[str, str], int] = defaultdict(int)
+    for path, _value, kind, _rec in iter_path_pins(dst):
+        counts[(path, kind)] += 1
+    dup_path = None
+    for (path, kind), n in counts.items():
+        if n > 1 and kind == "git_blob":
+            dup_path = path
+            break
+    assert dup_path is not None
+    target = dst / "INPUT_MANIFEST.json"
+    obj = _load_json(target)
+    blob = obj[dup_path]["blob"]
+    flipped = ("0" if blob[0] != "0" else "1") + blob[1:]
+    obj[dup_path]["blob"] = flipped
+    target.write_text(json.dumps(obj, indent=2) + "\n", encoding="utf-8")
+    found = pin_disagreements(dst)
+    assert found == [dup_path]
