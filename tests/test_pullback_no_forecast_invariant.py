@@ -30,7 +30,7 @@ from functools import lru_cache
 from types import SimpleNamespace
 
 import pytest
-from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup, Comment
 
 from lib import cn_pullback_observation as cn_adapter
 from lib import us_pullback_observation as us_adapter
@@ -63,29 +63,32 @@ FORECAST_SELECTOR = ".rrp-forecast"
 FORECAST_STATUS = "unavailable"
 EM_DASH = "\u2014"
 
-# Exact template sentences that say no forecast is provided. Removed only
-# before the forecast/预测 search, and only by full-string match.
-DISCLAIMERS = {
+# Exact normalized text nodes (whitespace-collapsed) copied from
+# templates/_risk_radar_pullback_depth.html.j2. A visible text node is exempt
+# only when its whole normalized text equals one of these strings.
+# Line 155 denies recovery odds. Line 202 denies a forecast path. Line 211
+# denies a remaining-drop forecast. No substring match and no regex exemption.
+_METHOD_DISCLAIMER = {
     "en": (
-        "The chart is price history, not a forecast path.",
         "Publishing a range takes historical tests for this market, benchmark, "
         "price measurement and time window. Risk level and existing pullback "
-        "probabilities are not a forecast of the remaining drop.",
+        "probabilities are not a forecast of the remaining drop."
     ),
     "zh": (
-        "图表呈现历史价格，并非预测路径。",
         "发布区间需要针对本市场、基准、价格衡量方式和时间范围的历史检验。"
-        "风险水平与现有回撤概率并非对剩余跌幅的预测。",
+        "风险水平与现有回撤概率并非对剩余跌幅的预测。"
     ),
 }
+DISCLAIMER_ALLOW = frozenset({
+    "Not recovery odds",
+    "并非修复概率",
+    "The chart is price history, not a forecast path.",
+    "图表呈现历史价格，并非预测路径。",
+    *_METHOD_DISCLAIMER.values(),
+})
 
 # Template labels for N2 (line 206). They match the template verbatim.
 ESTIMATE_LABEL = {"en": "Estimate unavailable", "zh": "估计暂不可用"}
-
-# Rebound-note copy at line 155. It is a current-template violation of N3
-# (odds / 概率) and is not one of the forecast-disclaimer sentences.
-KNOWN_NOTE = {"en": "Not recovery odds", "zh": "并非修复概率"}
-PINNED_PATTERNS = {"en": frozenset({r"\bodds\b"}), "zh": frozenset({r"概率"})}
 
 # Forbidden forecast language. One pattern per entry.
 FORBIDDEN = (
@@ -105,7 +108,7 @@ FORBIDDEN = (
     ("en", r"\btarget\b"),
     # EN: "forecast(ed) downside of"
     ("en", r"forecast(?:ed)?\s+downside\s+of"),
-    # EN: the word forecast or forecasted, outside the disclaimer sentences
+    # EN: the word forecast or forecasted, outside an allow-listed text node
     ("en", r"\bforecast(?:ed)?\b"),
     # EN: "will" followed by a directional verb
     ("en", r"will\s+(?:fall|drop|rebound|bounce|recover)"),
@@ -135,11 +138,9 @@ FORBIDDEN = (
     ("zh", r"抄底"),
     # ZH: 见底
     ("zh", r"见底"),
-    # ZH: 预测, outside the disclaimer sentences
+    # ZH: 预测, outside an allow-listed text node
     ("zh", r"预测"),
 )
-
-_FORECAST_PATTERNS = frozenset({r"\bforecast(?:ed)?\b", r"预测"})
 
 # Template eyebrow is "FURTHER DOWNSIDE" / "进一步跌幅" (line 205).
 # "进一步下跌" is the packet phrase; the template does not use that word.
@@ -168,20 +169,6 @@ PHASE_OF = {
     "unknown_adjustment": "unavailable",
 }
 
-# Qualified current fragments render the line-155 rebound note.
-QUALIFIED = frozenset({
-    "no_pullback",
-    "developing",
-    "worsening",
-    "early_repair",
-    "deep_pullback",
-    "stabilizing",
-    "recovering_at_high",
-    "recovering_above",
-    "repaired",
-    "missing_sessions",
-})
-
 _SHARED = (
     "no_pullback", "developing", "worsening", "early_repair", "deep_pullback",
     "stabilizing", "recovering_at_high", "recovering_above", "repaired",
@@ -204,50 +191,10 @@ DIALOG_STATES = tuple(
 _HTML = {}
 
 
-def _needs_pin(state, lang):
-    """Cases whose current copy already violates N3. Source stays untouched."""
-    if lang == "zh":
-        # Every fragment prints the line-211 disclaimer, which contains 概率.
-        return True
-    return state in QUALIFIED
-
-
-def _pin_reason(state, market, lang):
-    if lang == "en":
-        return (
-            f"FINDING {state}/{market}/en: visible text contains 'odds' in "
-            "'Not recovery odds' "
-            "(templates/_risk_radar_pullback_depth.html.j2:155)"
-        )
-    note = ""
-    if state in QUALIFIED:
-        note = (
-            " Also '并非修复概率' "
-            "(templates/_risk_radar_pullback_depth.html.j2:155)."
-        )
-    return (
-        f"FINDING {state}/{market}/zh: visible text contains '概率' in "
-        "'现有回撤概率并非对剩余跌幅的预测' "
-        "(templates/_risk_radar_pullback_depth.html.j2:211)."
-        + note
-    )
-
-
 SWEEP = [
     pytest.param(state, market, lang, id=f"{state}-{market}-{lang}")
     for state, market in CASES
     for lang in ("en", "zh")
-]
-
-PINNED = [
-    pytest.param(
-        state, market, lang,
-        marks=pytest.mark.xfail(strict=True, reason=_pin_reason(state, market, lang)),
-        id=f"{state}-{market}-{lang}",
-    )
-    for state, market in CASES
-    for lang in ("en", "zh")
-    if _needs_pin(state, lang)
 ]
 
 
@@ -485,52 +432,54 @@ def attribute_values(html, lang):
     return "\n".join(parts)
 
 
-def _without_disclaimers(text, lang):
-    """Drop the template's exact no-forecast sentences, when they are visible.
+def _normalized_text_nodes(html, lang):
+    """Visible text nodes, whitespace-collapsed, for one language.
 
-    The long sentence sits in ``.rrp-forecast`` and is required. The chart
-    sentence sits in ``.rrp-evidence.pbx-current``, which expiry CSS hides, so
-    a missing chart sentence is left for the forecast pattern to catch.
+    A node is later exempt only when this whole string is in ``DISCLAIMER_ALLOW``.
+    Comments are not text. ``template`` / ``script`` / ``style`` are already gone.
     """
-    _chart, forecast_sentence = DISCLAIMERS[lang]
-    if forecast_sentence not in text:
-        raise AssertionError(
-            f"forecast disclaimer missing from {lang} text: {forecast_sentence!r}"
-        )
-    scrubbed = text
-    for sentence in DISCLAIMERS[lang]:
-        scrubbed = scrubbed.replace(sentence, " ")
-    return scrubbed
+    nodes = []
+    for text in _prepared(html, lang).find_all(string=True):
+        if isinstance(text, Comment):
+            continue
+        normalized = " ".join(str(text).split())
+        if normalized:
+            nodes.append(normalized)
+    return nodes
 
 
-def forbidden_hits(html, lang, *, ignore_pinned_sentences=False):
-    """Return (pattern, sample) hits in visible text and attribute values.
+def forbidden_hits(html, lang):
+    """Return (pattern, sample) hits in visible text nodes and attribute values.
 
-    ``forecast`` / ``预测`` are matched only after the template's exact
-    disclaimer sentences are removed. Other patterns see the full text.
-    ``ignore_pinned_sentences`` also removes those sentences and the line-155
-    rebound note, so a new phrase still fails while the recorded finding is
-    asserted by the strict xfail.
+    A text node is skipped only when its whole normalized text equals an
+    allow-listed sentence. Attribute values are not text nodes and are never
+    exempt. The line-211 method sentence has to be present as its own node;
+    the chart sentence is hidden once expiry removes ``.pbx-current``.
     """
-    text = language_text(html, lang)
+    nodes = _normalized_text_nodes(html, lang)
     attrs = attribute_values(html, lang)
-    forecast_hay = _without_disclaimers(text, lang)
-    body = text
-    if ignore_pinned_sentences:
-        body = _without_disclaimers(text, lang).replace(KNOWN_NOTE[lang], " ")
-        forecast_hay = body
     found = []
     for pattern_lang, pattern in FORBIDDEN:
         if pattern_lang != lang:
             continue
-        haystacks = [(forecast_hay if pattern in _FORECAST_PATTERNS else body, "text")]
-        haystacks.append((attrs, "attribute"))
-        for hay, where in haystacks:
-            match = re.search(pattern, hay, re.I)
+        for node in nodes:
+            if node in DISCLAIMER_ALLOW:
+                continue
+            match = re.search(pattern, node, re.I)
             if not match:
                 continue
-            sample = hay[max(0, match.start() - 28):match.end() + 28].replace("\n", " ")
-            found.append((pattern, f"{where}: {sample}"))
+            sample = node[max(0, match.start() - 28):match.end() + 28]
+            found.append((pattern, f"text: {sample}"))
+        match = re.search(pattern, attrs, re.I)
+        if not match:
+            continue
+        sample = attrs[max(0, match.start() - 28):match.end() + 28].replace("\n", " ")
+        found.append((pattern, f"attribute: {sample}"))
+    if _METHOD_DISCLAIMER[lang] not in nodes:
+        found.append((
+            "disclaimer",
+            f"forecast disclaimer missing from {lang} text: {_METHOD_DISCLAIMER[lang]!r}",
+        ))
     return found
 
 
@@ -582,8 +531,8 @@ def assert_no_downside_percent(html):
             )
 
 
-def assert_no_forbidden(html, lang, *, ignore_pinned_sentences=False):
-    hits = forbidden_hits(html, lang, ignore_pinned_sentences=ignore_pinned_sentences)
+def assert_no_forbidden(html, lang):
+    hits = forbidden_hits(html, lang)
     if hits:
         raise AssertionError("; ".join(f"{pattern}: {sample}" for pattern, sample in hits))
 
@@ -598,11 +547,13 @@ def test_whitelist_sentences_are_the_template_strings():
     from pathlib import Path
 
     source = (Path(__file__).resolve().parents[1] / "templates" / "_risk_radar_pullback_depth.html.j2").read_text()
-    for sentences in DISCLAIMERS.values():
-        for sentence in sentences:
-            assert sentence in source
+    assert DISCLAIMER_ALLOW
+    for sentence in DISCLAIMER_ALLOW:
+        assert sentence == " ".join(sentence.split())
+        assert sentence in source
+    assert _METHOD_DISCLAIMER["en"] in DISCLAIMER_ALLOW
+    assert _METHOD_DISCLAIMER["zh"] in DISCLAIMER_ALLOW
     assert ESTIMATE_LABEL["en"] in source and ESTIMATE_LABEL["zh"] in source
-    assert KNOWN_NOTE["en"] in source and KNOWN_NOTE["zh"] in source
 
 
 @pytest.mark.parametrize("state,market", CASES, ids=[f"{s}-{m}" for s, m in CASES])
@@ -636,19 +587,7 @@ def test_no_percent_figure_on_further_downside(state, market, lang):
 
 @pytest.mark.parametrize("state,market,lang", SWEEP)
 def test_no_forbidden_forecast_language(state, market, lang):
-    # Recorded findings (line 155, and 概率 inside the line-211 disclaimer)
-    # are pinned by test_pinned_forecast_language_is_a_recorded_finding.
-    # Removing those exact sentences here keeps any other forbidden phrase failing.
-    assert_no_forbidden(
-        fragment_html(state, market), lang, ignore_pinned_sentences=True,
-    )
-
-
-@pytest.mark.parametrize("state,market,lang", PINNED)
-def test_pinned_forecast_language_is_a_recorded_finding(state, market, lang):
-    hits = forbidden_hits(fragment_html(state, market), lang)
-    pinned = [item for item in hits if item[0] in PINNED_PATTERNS[lang]]
-    assert pinned == [], pinned
+    assert_no_forbidden(fragment_html(state, market), lang)
 
 
 @pytest.mark.parametrize("state", DIALOG_STATES)
@@ -659,7 +598,7 @@ def test_dialog_section_keeps_the_invariant(state, market, lang):
     assert_forecast_blank(html)
     assert_estimate_label(html, lang)
     assert_no_downside_percent(html)
-    assert_no_forbidden(html, lang, ignore_pinned_sentences=True)
+    assert_no_forbidden(html, lang)
 
 
 def test_detector_catches_a_digit_in_the_forecast_cell():
@@ -696,3 +635,36 @@ def test_detector_catches_a_percent_on_further_downside():
     poisoned = html.replace("FURTHER DOWNSIDE", "FURTHER DOWNSIDE 12%", 1)
     with pytest.raises(AssertionError, match="%"):
         assert_no_downside_percent(poisoned)
+
+
+def test_detector_catches_rewritten_recovery_odds():
+    """'Not recovery odds' is exempt. A forecast phrasing of that node is not."""
+    html = fragment_html("worsening", "us")
+    assert_no_forbidden(html, "en")
+    poisoned = html.replace("Not recovery odds", "Recovery odds 60%", 1)
+    assert "Recovery odds 60%" in poisoned and "Not recovery odds" not in poisoned
+    with pytest.raises(AssertionError, match="Recovery odds 60%"):
+        assert_no_forbidden(poisoned, "en")
+
+
+def test_detector_catches_rewritten_recovery_probability():
+    """'并非修复概率' is exempt. '修复概率较高' is not."""
+    html = fragment_html("worsening", "us")
+    assert_no_forbidden(html, "zh")
+    poisoned = html.replace("并非修复概率", "修复概率较高", 1)
+    assert "修复概率较高" in poisoned and "并非修复概率" not in poisoned
+    with pytest.raises(AssertionError, match="修复概率较高"):
+        assert_no_forbidden(poisoned, "zh")
+
+
+def test_detector_catches_method_sentence_without_negation():
+    """The method sentence is exempt only as the exact denial, with 并非."""
+    html = fragment_html("stale", "us")
+    assert_no_forbidden(html, "zh")
+    original = _METHOD_DISCLAIMER["zh"]
+    mutated = original.replace("并非", "", 1)
+    assert mutated not in DISCLAIMER_ALLOW and "并非" not in mutated
+    poisoned = html.replace(original, mutated, 1)
+    assert mutated in poisoned and original not in poisoned
+    with pytest.raises(AssertionError, match="回撤概率对剩余"):
+        assert_no_forbidden(poisoned, "zh")
