@@ -26003,11 +26003,14 @@ jobs:
       - "scripts/research/grey_deer_panel_adjust.py"
       - "scripts/research/grey_deer_pullback_stage1_schema.py"
       - "scripts/research/grey_deer_pullback_stage1b.py"
+      - "scripts/research/grey_deer_pullback_stage1b_addendum.py"
+      - "research/grey_deer/pullback_stage1b/**"
       - "tests/test_grey_deer_pullback_stage1.py"
       - "tests/test_grey_deer_panel_adjust.py"
       - "tests/test_grey_deer_pullback_stage1_determinism.py"
       - "tests/test_grey_deer_pullback_stage1_schema.py"
       - "tests/test_grey_deer_pullback_stage1b.py"
+      - "tests/test_grey_deer_pullback_stage1b_addendum.py"
       - "lib/observed_moves.py"
       - "engine/vol_forecast.py"
       - "lib/nyse_calendar.py"
@@ -26072,6 +26075,7 @@ jobs:
           tests/test_grey_deer_pullback_stage1_determinism.py
           tests/test_grey_deer_panel_adjust.py
           tests/test_grey_deer_pullback_stage1b.py
+          tests/test_grey_deer_pullback_stage1b_addendum.py
 
   sni-s1-residual:
     if: ${{ false }}
