@@ -23629,6 +23629,24 @@ jobs:
       - scripts/data_workspace.py
       - site/factordata/factors.json
       - site/factordata/insider_signals.json
+      # Round 2 (same check): scripts/data_workspace.py above names engine/lab.py
+      # in a literal path list and engine/lab.py's lazy imports reach the engine
+      # indicator stack; the suite also cites the Data OS architecture doc. Cover
+      # them explicitly (plain rows, no globs — the curation probes are untouched).
+      - engine/__init__.py
+      - engine/canon.py
+      - engine/conditions.py
+      - engine/indicators.py
+      - engine/lab.py
+      - engine/predictive_signals.py
+      - engine/stock_technicals.py
+      - engine/strategy_signals.py
+      - engine/tech_catalog.py
+      - engine/tech_stars.py
+      - engine/technicals.py
+      - engine/trial_ledger.py
+      - engine/validation.py
+      - research/MASTERMIND_DATA_OS_ARCHITECTURE.md
       - .github/ci/legacy-jobs.yml
       - .github/workflows/ci.yml
       - config/dataset_registry.yml
