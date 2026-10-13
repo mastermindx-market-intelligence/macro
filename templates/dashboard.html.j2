@@ -5140,10 +5140,11 @@ body.mx5-dlg-open{ overflow:hidden; }
   html.mx5-dlg-lock,html.mx5-dlg-lock body,body.mx5-dlg-open{overflow:visible;position:static;height:auto;max-height:none}
   .mx5-dlg.open{position:static;inset:auto}
   .mx5-dlg.open .mx5-dlg-panel,
-  #dlg-risk.mx5-dlg.open .mx5-dlg-panel{max-height:none;overflow:visible;box-shadow:none;backdrop-filter:none;-webkit-backdrop-filter:none;background:#fff;color:#000}
+  #dlg-risk.mx5-dlg.open .mx5-dlg-panel{max-height:none;overflow:visible;box-shadow:none;backdrop-filter:none;-webkit-backdrop-filter:none;color-scheme:light;background:Canvas;color:CanvasText}
   .mx5-dlg.open .mx5-dlg-body,
   #dlg-risk.mx5-dlg.open .mx5-dlg-body{overflow:visible;max-height:none}
   .mx5-dlg.open .mx5-dlg-close{display:none}
+  .mx5-dlg.open .mx5-dlg-backdrop{display:none}
 }
 /* No blur support → near-opaque fill so body copy stays ≥4.5:1 over any bg */
 @supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){
