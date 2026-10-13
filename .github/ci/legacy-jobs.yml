@@ -25411,10 +25411,16 @@ jobs:
   sni-s2-event-response:
     if: ${{ false }}
     gate: code
+    scope: exclusive
     # SNI S2 conditional event response P04-P06: historical-descriptive study
     # with hermetic synthetic tests (tmp_path only, never data/). Seal
     # integrity is verified through git cat-file at the pinned BASE blobs.
-    # Non-exclusive job: no scope line, so the pack splitter is untouched.
+    # Curated exclusive (2026-10-12, #8893): the runner's `git` subprocess
+    # calls and the language test's rglob are opaque to inference, which
+    # widened the fallback to engine/** and made every engine edit (the
+    # engine/prophet/plan_book.py packing probe) select this job. The paths
+    # below are the job's whole import closure, checked by
+    # test_curated_exclusive_scopes_cover_their_own_import_closure.
     timeout-minutes: 10
     paths:
       - research/single_name_intelligence/event_response/**
@@ -25422,6 +25428,11 @@ jobs:
       - engine/qledger.py
       - engine/grading_stats.py
       - engine/trial_ledger.py
+      - lib/__init__.py
+      - lib/config.py
+      - lib/exchange_holidays.py
+      - lib/hk_calendar.py
+      - lib/nyse_calendar.py
       - tests/test_sni_s2_ledger_order.py
       - tests/test_sni_s2_mirror.py
       - tests/test_sni_s2_clock.py
