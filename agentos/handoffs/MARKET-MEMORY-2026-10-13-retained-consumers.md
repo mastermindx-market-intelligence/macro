@@ -31,6 +31,12 @@ verified:
   - claim: Existing owner regressions and new consumer cases pass together.
     command: python3 -m pytest -q tests/test_market_memory_retained_consumer.py tests/test_market_memory_operating_cortex_service.py tests/test_market_memory.py tests/test_market_memory_playback_api.py tests/test_brain_analogues.py
     result: 186 passed in14.43seconds; one existing Starlette deprecation warning.
+  - claim: Current main integration preserves all nine reviewed source hashes.
+    command: Exact source manifest comparison after normal main union91b529e12b60.
+    result: All nine SHA256 values unchanged.
+  - claim: Required CODE CI owns the new synthesis and consumer tests without coverage pruning.
+    command: Exact research-price-panel and consolidated Synapse commands; complete closure and packing measurements.
+    result: Research855 passed plus409 subtests; Synapse983 passed and2 inherited skips. WRI415 andDAG217 accepted results reused for identical commands. No closure misses; packing133/133/128jobs at5655/5460/5422weights and10packs each stays within existing ceilings. Independent CI integration reviewfa88b849 passed for67 exact dependency additions across13jobs and preserved every old test, flag, guard, gate and timeout.
 unverified:
   - claim: Exact consumer bytes are installed and usable by authenticated customers and the real model-tool path.
     what_would_verify: Current-head CI, normal protected merge, installed hashes, source registration binding and authenticated real-store requests with usable exact capture and method references.
