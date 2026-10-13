@@ -89,6 +89,7 @@ def test_V01_forward_2_price_50_qty_6_wealth_300() -> None:
         [{"date": date(2026, 6, 9), "close_raw": 100, "volume_raw": 3}],
         revisions,
         AS_AT,
+        mic="XNYS",
     )
     (row,) = view.rows
     assert set(row) == {"date", "close_sadj", "volume_sadj"}
@@ -107,6 +108,7 @@ def test_V02_reverse_1_5_price_50_qty_1_wealth_50() -> None:
         [{"date": date(2026, 6, 9), "close_raw": 10, "volume_raw": 5}],
         revisions,
         AS_AT,
+        mic="XNYS",
     )
     (row,) = view.rows
     assert row["close_sadj"] == Fraction(50)
@@ -127,6 +129,7 @@ def test_V03_chained_2_and_3_2_is_one_event_of_ratio_3() -> None:
         [{"date": date(2026, 6, 9), "close_raw": 90, "volume_raw": 1200}],
         chained,
         AS_AT,
+        mic="XNYS",
     )
     (row,) = view.rows
     assert row["close_sadj"] == Fraction(30)
@@ -135,9 +138,10 @@ def test_V03_chained_2_and_3_2_is_one_event_of_ratio_3() -> None:
 
     # composition property: the chain equals ONE event of ratio 3
     single = ActionRevisionSet("v03-single", (split("s3", Fraction(3)),))
-    assert split_factor(date(2026, 6, 9), chained, AS_AT) == Fraction(3)
-    assert split_factor(date(2026, 6, 9), chained, AS_AT) == split_factor(
-        date(2026, 6, 9), single, AS_AT
+    assert split_factor(date(2026, 6, 9), chained, AS_AT, mic="XNYS") == Fraction(3)
+    assert split_factor(date(2026, 6, 9), chained, AS_AT, mic="XNYS") == split_factor(
+        date(2026, 6, 9), single, AS_AT,
+        mic="XNYS",
     )
 
 
@@ -149,7 +153,7 @@ def test_V03_inverse_forward_2_then_reverse_1_2_is_factor_1() -> None:
             split("s2", Fraction(1, 2), ex_date=date(2026, 6, 12), family=ActionFamily.REVERSE_SPLIT),
         ),
     )
-    assert split_factor(date(2026, 6, 9), inverse, AS_AT) == Fraction(1)
+    assert split_factor(date(2026, 6, 9), inverse, AS_AT, mic="XNYS") == Fraction(1)
 
 
 def test_V03_wealth_preserved_on_every_row_of_a_multi_event_window() -> None:
@@ -167,7 +171,7 @@ def test_V03_wealth_preserved_on_every_row_of_a_multi_event_window() -> None:
         {"date": date(2026, 6, 11), "close_raw": 90, "volume_raw": 1200},  # S = 3/2
         {"date": date(2026, 6, 12), "close_raw": 90, "volume_raw": 1200},  # S = 1
     ]
-    view = sadj_view(rows, revisions, AS_AT)
+    view = sadj_view(rows, revisions, AS_AT, mic="XNYS")
     by_day = {row["date"]: row for row in view.rows}
     assert by_day[date(2026, 6, 9)]["close_sadj"] == Fraction(30)
     assert by_day[date(2026, 6, 10)]["close_sadj"] == Fraction(60)
@@ -220,9 +224,9 @@ def test_adjust_quantity_multiplies_and_refuses_other_conventions() -> None:
 def test_half_open_ex_date_boundary_row_before_ex_date_divided_row_on_ex_date_untouched() -> None:
     revisions = ActionRevisionSet("boundary", (split("s1", Fraction(2)),))
     # a row dated ex_date - 1 day gets factor r ...
-    assert split_factor(EX_DAY - timedelta(days=1), revisions, AS_AT) == Fraction(2)
+    assert split_factor(EX_DAY - timedelta(days=1), revisions, AS_AT, mic="XNYS") == Fraction(2)
     # ... a row dated ex_date itself gets 1
-    assert split_factor(EX_DAY, revisions, AS_AT) == Fraction(1)
+    assert split_factor(EX_DAY, revisions, AS_AT, mic="XNYS") == Fraction(1)
     view = sadj_view(
         [
             {"date": date(2026, 6, 9), "close_raw": 100},
@@ -230,6 +234,7 @@ def test_half_open_ex_date_boundary_row_before_ex_date_divided_row_on_ex_date_un
         ],
         revisions,
         AS_AT,
+        mic="XNYS",
     )
     by_day = {row["date"]: row["close_sadj"] for row in view.rows}
     assert by_day[date(2026, 6, 9)] == Fraction(50)
@@ -240,11 +245,12 @@ def test_half_open_ex_date_boundary_event_after_as_at_is_not_yet_effective() -> 
     """ex_date > as_at: the share basis at as_at is the pre-split one (D00.D3)."""
     revisions = ActionRevisionSet("future", (split("s1", Fraction(2)),))
     before = datetime(2026, 6, 5, tzinfo=UTC)
-    assert split_factor(date(2026, 6, 1), revisions, before) == Fraction(1)
+    assert split_factor(date(2026, 6, 1), revisions, before, mic="XNYS") == Fraction(1)
     view = sadj_view(
         [{"date": date(2026, 6, 1), "close_raw": 100, "volume_raw": 7}],
         revisions,
         before,
+        mic="XNYS",
     )
     (row,) = view.rows
     assert row["close_sadj"] == Fraction(100)
@@ -255,21 +261,21 @@ def test_half_open_ex_date_boundary_event_after_as_at_is_not_yet_effective() -> 
 
 def test_P03_02_close_sadj_input_refuses_DOUBLE_ADJUST_RISK() -> None:
     with pytest.raises(ViewRefusal) as raised:
-        sadj_view([{"date": date(2026, 6, 9), "close_sadj": Fraction(100)}], EMPTY, AS_AT)
+        sadj_view([{"date": date(2026, 6, 9), "close_sadj": Fraction(100)}], EMPTY, AS_AT, mic="XNYS")
     assert raised.value.reason is RefusalReason.DOUBLE_ADJUST_RISK
     assert raised.value.column == "close_sadj"
 
 
 def test_P03_02_close_tradj_input_refuses_NON_RAW_INPUT() -> None:
     with pytest.raises(ViewRefusal) as raised:
-        sadj_view([{"date": date(2026, 6, 9), "close_tradj": Fraction(100)}], EMPTY, AS_AT)
+        sadj_view([{"date": date(2026, 6, 9), "close_tradj": Fraction(100)}], EMPTY, AS_AT, mic="XNYS")
     assert raised.value.reason is RefusalReason.NON_RAW_INPUT
     assert raised.value.column == "close_tradj"
 
 
 def test_P03_02_bare_close_refuses_AMBIGUOUS_BASIS() -> None:
     with pytest.raises(ViewRefusal) as raised:
-        sadj_view([{"date": date(2026, 6, 9), "close": 100}], EMPTY, AS_AT)
+        sadj_view([{"date": date(2026, 6, 9), "close": 100}], EMPTY, AS_AT, mic="XNYS")
     assert raised.value.reason is RefusalReason.AMBIGUOUS_BASIS
     assert raised.value.column == "close"
 
@@ -278,9 +284,10 @@ def test_P03_02_bare_close_refuses_AMBIGUOUS_BASIS() -> None:
 
 def test_P03_03_confirmed_cash_dividend_in_window_changes_nothing() -> None:
     rows = [{"date": date(2026, 6, 9), "close_raw": 100, "volume_raw": 1000}]
-    without = sadj_view(rows, EMPTY, AS_AT)
+    without = sadj_view(rows, EMPTY, AS_AT, mic="XNYS")
     with_cash = sadj_view(
-        rows, ActionRevisionSet("cash", (cash("d1", Fraction(1, 4)),)), AS_AT
+        rows, ActionRevisionSet("cash", (cash("d1", Fraction(1, 4)),)), AS_AT,
+        mic="XNYS",
     )
     assert with_cash.rows == without.rows  # prices AND volume_sadj identical
     (row,) = with_cash.rows
@@ -292,7 +299,7 @@ def test_P03_03_confirmed_cash_dividend_in_window_changes_nothing() -> None:
 
 def _window_factor(event: ActionEvent):
     revisions = ActionRevisionSet("p0304", (event,))
-    return split_factor(date(2026, 6, 9), revisions, AS_AT)
+    return split_factor(date(2026, 6, 9), revisions, AS_AT, mic="XNYS")
 
 
 def test_P03_04_zero_ratio_refuses_INVALID_RATIO() -> None:
@@ -356,6 +363,7 @@ def test_P03_04_open_raw_plus_close_sadj_in_one_row_refuses_MIXED_OHLC_BASIS() -
             [{"date": date(2026, 6, 9), "open_raw": 100, "close_sadj": Fraction(100)}],
             EMPTY,
             AS_AT,
+            mic="XNYS",
         )
     assert raised.value.reason is RefusalReason.MIXED_OHLC_BASIS
 
@@ -369,6 +377,7 @@ def test_P03_04_mixed_bases_across_rows_also_refuse_MIXED_OHLC_BASIS() -> None:
             ],
             EMPTY,
             AS_AT,
+            mic="XNYS",
         )
     assert raised.value.reason is RefusalReason.MIXED_OHLC_BASIS
 
@@ -380,22 +389,23 @@ def test_P03_04_lots_convention_refuses_UNSUPPORTED_QUANTITY_CONVENTION() -> Non
             EMPTY,
             AS_AT,
             quantity_convention="lots",
+            mic="XNYS",
         )
     assert raised.value.reason is RefusalReason.UNSUPPORTED_QUANTITY_CONVENTION
 
 
 def test_P03_04_float_price_refuses_NON_EXACT_INPUT() -> None:
     with pytest.raises(ViewRefusal) as raised:
-        sadj_view([{"date": date(2026, 6, 9), "close_raw": 100.0}], EMPTY, AS_AT)
+        sadj_view([{"date": date(2026, 6, 9), "close_raw": 100.0}], EMPTY, AS_AT, mic="XNYS")
     assert raised.value.reason is RefusalReason.NON_EXACT_INPUT
 
 
 def test_P03_04_bool_and_bogus_string_prices_refuse_NON_EXACT_INPUT() -> None:
     with pytest.raises(ViewRefusal) as raised:
-        sadj_view([{"date": date(2026, 6, 9), "close_raw": True}], EMPTY, AS_AT)
+        sadj_view([{"date": date(2026, 6, 9), "close_raw": True}], EMPTY, AS_AT, mic="XNYS")
     assert raised.value.reason is RefusalReason.NON_EXACT_INPUT
     with pytest.raises(ViewRefusal) as raised:
-        sadj_view([{"date": date(2026, 6, 9), "close_raw": "cheap"}], EMPTY, AS_AT)
+        sadj_view([{"date": date(2026, 6, 9), "close_raw": "cheap"}], EMPTY, AS_AT, mic="XNYS")
     assert raised.value.reason is RefusalReason.NON_EXACT_INPUT
 
 
@@ -409,6 +419,7 @@ def test_exact_inputs_int_decimal_and_rational_string_are_accepted_exactly() -> 
         ],
         revisions,
         AS_AT,
+        mic="XNYS",
     )
     by_day = {row["date"]: row for row in view.rows}
     assert by_day[date(2026, 6, 9)]["close_sadj"] == Fraction(134)   # 201 / (3/2)
@@ -433,7 +444,7 @@ def test_raw_view_is_executable_sadj_view_never_is() -> None:
     assert raw.basis == "RAW"
     assert raw.executable is True
     assert raw.reference == AdjustmentReference("RAW", None, None)
-    adjusted = sadj_view(rows, ActionRevisionSet("v", (split("s1", Fraction(2)),)), AS_AT)
+    adjusted = sadj_view(rows, ActionRevisionSet("v", (split("s1", Fraction(2)),)), AS_AT, mic="XNYS")
     assert adjusted.basis == "SADJ"
     assert adjusted.executable is False
     assert adjusted.reference.action_revision_set_id == "v"
@@ -463,13 +474,14 @@ def test_every_numeric_output_is_a_Fraction() -> None:
         ],
         revisions,
         AS_AT,
+        mic="XNYS",
     )
     for row in view.rows:
         assert set(row) == {"date", "open_sadj", "high_sadj", "low_sadj", "close_sadj", "volume_sadj"}
         for key, value in row.items():
             if key != "date":
                 assert isinstance(value, Fraction), (key, value)
-    assert split_factor(date(2026, 6, 9), revisions, AS_AT) == Fraction(2)  # cash adds nothing
+    assert split_factor(date(2026, 6, 9), revisions, AS_AT, mic="XNYS") == Fraction(2)  # cash adds nothing
     (day1, day2) = view.rows
     assert day1["open_sadj"] == Fraction(99, 2)
     assert day1["high_sadj"] == Fraction(101, 2)
@@ -484,10 +496,10 @@ def test_naive_timestamps_refuse_NAIVE_TIMESTAMP() -> None:
     assert raised.value.reason is RefusalReason.NAIVE_TIMESTAMP
     revisions = ActionRevisionSet("naive", (split("s1", Fraction(2)),))
     with pytest.raises(ViewRefusal) as raised:
-        split_factor(date(2026, 6, 9), revisions, datetime(2026, 6, 20))
+        split_factor(date(2026, 6, 9), revisions, datetime(2026, 6, 20), mic="XNYS")
     assert raised.value.reason is RefusalReason.NAIVE_TIMESTAMP
     with pytest.raises(ViewRefusal) as raised:
-        sadj_view([{"date": date(2026, 6, 9), "close_raw": 100}], revisions, datetime(2026, 6, 20))
+        sadj_view([{"date": date(2026, 6, 9), "close_raw": 100}], revisions, datetime(2026, 6, 20), mic="XNYS")
     assert raised.value.reason is RefusalReason.NAIVE_TIMESTAMP
 
 
@@ -504,7 +516,7 @@ def test_inputs_are_never_mutated() -> None:
     )
     rows_before = copy.deepcopy(rows)
     events_before = copy.deepcopy(revisions.events)
-    sadj_view(rows, revisions, AS_AT)
+    sadj_view(rows, revisions, AS_AT, mic="XNYS")
     raw_view(rows)
     assert rows == rows_before
     assert revisions.events == events_before
@@ -597,7 +609,7 @@ def _vector(view, oracle_tuple) -> None:
 def test_V06_no_split_cash_2_holding_return_zero_raw_minus_1_50() -> None:
     """p0 100, p1 98, q0 1, cps 2 held as cash: wealth 100 both ends, hr 0."""
     revisions = ActionRevisionSet("v06", (p04_cash("d1", Fraction(2)),))
-    view = total_return_view(V_ROWS, revisions, AS_AT, POLICY)
+    view = total_return_view(V_ROWS, revisions, AS_AT, POLICY, mic="XNYS")
     assert view.q1 == Fraction(1)
     assert view.cash == Fraction(2)
     assert view.wealth0 == Fraction(100)
@@ -621,7 +633,13 @@ def test_V07_split_2_then_cash_1_per_new_share_on_the_same_ex_date() -> None:
         "v07",
         (split("s1", Fraction(2), sequence=1), p04_cash("d1", Fraction(1), sequence=2)),
     )
-    view = total_return_view(V_ROWS[:1] + [{"date": date(2026, 6, 11), "close_raw": 49}], revisions, AS_AT, POLICY)
+    view = total_return_view(
+        V_ROWS[:1] + [{"date": date(2026, 6, 11), "close_raw": 49}],
+        revisions,
+        AS_AT,
+        POLICY,
+        mic="XNYS",
+    )
     assert view.q1 == Fraction(2)
     assert view.cash == Fraction(2)  # 2 new shares x 1 per new share
     assert view.wealth0 == Fraction(100)
@@ -643,7 +661,13 @@ def test_V07_contrast_cash_on_the_OLD_count_differs_and_the_view_says_so() -> No
         "v07-old",
         (p04_cash("d1", Fraction(1), sequence=1), split("s1", Fraction(2), sequence=2)),
     )
-    view = total_return_view(V_ROWS[:1] + [{"date": date(2026, 6, 11), "close_raw": 49}], revisions, AS_AT, POLICY)
+    view = total_return_view(
+        V_ROWS[:1] + [{"date": date(2026, 6, 11), "close_raw": 49}],
+        revisions,
+        AS_AT,
+        POLICY,
+        mic="XNYS",
+    )
     assert view.q1 == Fraction(2)
     assert view.cash == Fraction(1)  # 1 old share x 1 per old share
     assert view.wealth1 == Fraction(99)  # 2*49 + 1
@@ -668,7 +692,7 @@ def test_EX_DATE_CLOSE_control_reinvests_at_the_printed_ex_date_close() -> None:
     ]
     revisions = ActionRevisionSet("exclose", (p04_cash("d1", Fraction(2)),))
     policy = TotalReturnPolicy(ReinvestPolicy.EX_DATE_CLOSE, Fraction(0), "USD")
-    view = total_return_view(rows, revisions, AS_AT, policy)
+    view = total_return_view(rows, revisions, AS_AT, policy, mic="XNYS")
     assert view.q1 == Fraction(50, 49)  # 1 + 2/98
     assert view.cash == Fraction(0)
     assert view.wealth0 == Fraction(100)
@@ -684,7 +708,7 @@ def test_withholding_control_three_tenths_leaves_seven_tenths_of_the_cash() -> N
     The oracle sees the net-of-withholding cash per share 2*(1-3/10)=7/5."""
     revisions = ActionRevisionSet("v06w", (p04_cash("d1", Fraction(2)),))
     policy = TotalReturnPolicy(ReinvestPolicy.NONE, Fraction(3, 10), "USD")
-    view = total_return_view(V_ROWS, revisions, AS_AT, policy)
+    view = total_return_view(V_ROWS, revisions, AS_AT, policy, mic="XNYS")
     assert view.q1 == Fraction(1)
     assert view.cash == Fraction(7, 5)  # 1 * 2 * (1 - 3/10)
     assert view.wealth0 == Fraction(100)
@@ -704,7 +728,7 @@ def test_P04_01_missing_reinvest_refuses_UNKNOWN_REINVESTMENT() -> None:
         TotalReturnPolicy("monthly", Fraction(0), "USD")  # no such policy
     assert raised.value.reason is RefusalReason.UNKNOWN_REINVESTMENT
     with pytest.raises(TypeError):
-        total_return_view(V_ROWS, EMPTY, AS_AT, None)  # not a policy at all
+        total_return_view(V_ROWS, EMPTY, AS_AT, None, mic="XNYS")  # not a policy at all
 
 
 def test_P04_01_missing_withholding_refuses_UNKNOWN_WITHHOLDING() -> None:
@@ -745,15 +769,15 @@ def test_P04_01_float_withholding_refuses_NON_EXACT_INPUT() -> None:
 def test_P04_02_cash_in_another_currency_refuses_UNKNOWN_FX() -> None:
     revisions = ActionRevisionSet("fx", (p04_cash("d1", Fraction(2), currency="EUR"),))
     with pytest.raises(ViewRefusal) as raised:
-        total_return_view(V_ROWS, revisions, AS_AT, POLICY)
-    assert raised.value.reason is RefusalReason.UNKNOWN_FX
+        total_return_view(V_ROWS, revisions, AS_AT, POLICY, mic="XNYS")
+    assert raised.value.reason is RefusalReason.CURRENCY_MISMATCH
     assert raised.value.event_id == "d1"
 
 
 def test_P04_02_cash_without_a_currency_refuses_UNKNOWN_FX() -> None:
     revisions = ActionRevisionSet("fxnone", (p04_cash("d1", Fraction(2), currency=None),))
     with pytest.raises(ViewRefusal) as raised:
-        total_return_view(V_ROWS, revisions, AS_AT, POLICY)
+        total_return_view(V_ROWS, revisions, AS_AT, POLICY, mic="XNYS")
     assert raised.value.reason is RefusalReason.UNKNOWN_FX
 
 
@@ -762,7 +786,7 @@ def test_P04_02_current_share_adjusted_cash_refuses_CASH_BASIS_MISMATCH() -> Non
         "csa", (p04_cash("d1", Fraction(2), cash_basis="current_share_adjusted"),)
     )
     with pytest.raises(ViewRefusal) as raised:
-        total_return_view(V_ROWS, revisions, AS_AT, POLICY)
+        total_return_view(V_ROWS, revisions, AS_AT, POLICY, mic="XNYS")
     assert raised.value.reason is RefusalReason.CASH_BASIS_MISMATCH
     assert raised.value.event_id == "d1"
 
@@ -770,7 +794,7 @@ def test_P04_02_current_share_adjusted_cash_refuses_CASH_BASIS_MISMATCH() -> Non
 def test_P04_02_cash_without_an_amount_refuses_UNKNOWN_RATIO() -> None:
     revisions = ActionRevisionSet("noamount", (p04_cash("d1", None),))
     with pytest.raises(ViewRefusal) as raised:
-        total_return_view(V_ROWS, revisions, AS_AT, POLICY)
+        total_return_view(V_ROWS, revisions, AS_AT, POLICY, mic="XNYS")
     assert raised.value.reason is RefusalReason.UNKNOWN_RATIO
 
 
@@ -778,8 +802,8 @@ def test_P04_02_cash_price_factor_distinction_no_cash_ever_enters_the_price() ->
     """The same window through SADJ shows the price unchanged by cash; the
     total-return view carries the cash separately.  Neither mimics the other."""
     revisions = ActionRevisionSet("twoviews", (p04_cash("d1", Fraction(2)),))
-    price = sadj_view(V_ROWS, revisions, AS_AT)
-    holding = total_return_view(V_ROWS, revisions, AS_AT, POLICY)
+    price = sadj_view(V_ROWS, revisions, AS_AT, mic="XNYS")
+    holding = total_return_view(V_ROWS, revisions, AS_AT, POLICY, mic="XNYS")
     assert [row["close_sadj"] for row in price.rows] == [Fraction(100), Fraction(98)]
     assert holding.cash == Fraction(2)  # carried, not folded into any price
 
@@ -791,7 +815,7 @@ def test_P04_03_same_day_split_and_cash_without_sequences_refuses_UNKNOWN_ORDERI
         "noorder", (split("s1", Fraction(2)), p04_cash("d1", Fraction(1)))
     )
     with pytest.raises(ViewRefusal) as raised:
-        total_return_view(V_ROWS, revisions, AS_AT, POLICY)
+        total_return_view(V_ROWS, revisions, AS_AT, POLICY, mic="XNYS")
     assert raised.value.reason is RefusalReason.UNKNOWN_ORDERING
     # equal sequences are equally unordered — never a guess
     equal = ActionRevisionSet(
@@ -799,7 +823,7 @@ def test_P04_03_same_day_split_and_cash_without_sequences_refuses_UNKNOWN_ORDERI
         (split("s1", Fraction(2), sequence=1), p04_cash("d1", Fraction(1), sequence=1)),
     )
     with pytest.raises(ViewRefusal) as raised:
-        total_return_view(V_ROWS, equal, AS_AT, POLICY)
+        total_return_view(V_ROWS, equal, AS_AT, POLICY, mic="XNYS")
     assert raised.value.reason is RefusalReason.UNKNOWN_ORDERING
 
 
@@ -815,7 +839,7 @@ def test_P04_03_unsupported_family_in_window_refuses_UNSUPPORTED_ACTION() -> Non
     )
     revisions = ActionRevisionSet("unsup", (spin_off,))
     with pytest.raises(ViewRefusal) as raised:
-        total_return_view(V_ROWS, revisions, AS_AT, POLICY)
+        total_return_view(V_ROWS, revisions, AS_AT, POLICY, mic="XNYS")
     assert raised.value.reason is RefusalReason.UNSUPPORTED_ACTION
     assert raised.value.event_id == "u1"
 
@@ -824,11 +848,11 @@ def test_P04_03_EX_DATE_CLOSE_without_a_row_on_ex_date_refuses_MISSING_PRICE() -
     revisions = ActionRevisionSet("missing", (p04_cash("d1", Fraction(2)),))
     policy = TotalReturnPolicy(ReinvestPolicy.EX_DATE_CLOSE, Fraction(0), "USD")
     with pytest.raises(ViewRefusal) as raised:
-        total_return_view(V_ROWS, revisions, AS_AT, policy)  # no 2026-06-10 row
+        total_return_view(V_ROWS, revisions, AS_AT, policy, mic="XNYS")  # no 2026-06-10 row
     assert raised.value.reason is RefusalReason.MISSING_PRICE
     assert raised.value.event_id == "d1"
     # holding cash needs no price: the SAME data answers under NONE
-    view = total_return_view(V_ROWS, revisions, AS_AT, POLICY)
+    view = total_return_view(V_ROWS, revisions, AS_AT, POLICY, mic="XNYS")
     assert view.cash == Fraction(2)
 
 
@@ -837,7 +861,7 @@ def test_P04_03_unconfirmed_cash_in_window_refuses_NOT_CONFIRMED() -> None:
         "suspect", (p04_cash("d1", Fraction(2), qualification="SUSPECTED"),)
     )
     with pytest.raises(ViewRefusal) as raised:
-        total_return_view(V_ROWS, revisions, AS_AT, POLICY)
+        total_return_view(V_ROWS, revisions, AS_AT, POLICY, mic="XNYS")
     assert raised.value.reason is RefusalReason.NOT_CONFIRMED
 
 
@@ -877,7 +901,7 @@ def test_P04_column_law_tradj_input_refuses_NON_RAW_INPUT() -> None:
         {"date": date(2026, 6, 11), "close_tradj": Fraction(98)},
     ]
     with pytest.raises(ViewRefusal) as raised:
-        total_return_view(rows, EMPTY, AS_AT, POLICY)
+        total_return_view(rows, EMPTY, AS_AT, POLICY, mic="XNYS")
     assert raised.value.reason is RefusalReason.NON_RAW_INPUT
     assert raised.value.column == "close_tradj"
 
@@ -888,7 +912,7 @@ def test_P04_column_law_sadj_input_refuses_DOUBLE_ADJUST_RISK() -> None:
         {"date": date(2026, 6, 11), "close_sadj": Fraction(98)},
     ]
     with pytest.raises(ViewRefusal) as raised:
-        total_return_view(rows, EMPTY, AS_AT, POLICY)
+        total_return_view(rows, EMPTY, AS_AT, POLICY, mic="XNYS")
     assert raised.value.reason is RefusalReason.DOUBLE_ADJUST_RISK
 
 
@@ -898,7 +922,7 @@ def test_P04_float_close_refuses_NON_EXACT_INPUT() -> None:
         {"date": date(2026, 6, 11), "close_raw": 98},
     ]
     with pytest.raises(ViewRefusal) as raised:
-        total_return_view(rows, EMPTY, AS_AT, POLICY)
+        total_return_view(rows, EMPTY, AS_AT, POLICY, mic="XNYS")
     assert raised.value.reason is RefusalReason.NON_EXACT_INPUT
 
 
@@ -907,7 +931,7 @@ def test_P04_float_close_refuses_NON_EXACT_INPUT() -> None:
 def test_q0_scales_the_holding_and_float_q0_refuses() -> None:
     """V06 with q0 = 10: every wealth x10, every return unchanged."""
     revisions = ActionRevisionSet("q0", (p04_cash("d1", Fraction(2)),))
-    view = total_return_view(V_ROWS, revisions, AS_AT, POLICY, q0=10)
+    view = total_return_view(V_ROWS, revisions, AS_AT, POLICY, q0=10, mic="XNYS")
     _vector(
         view,
         holding_oracle(Fraction(100), Fraction(98), Fraction(10), Fraction(1), Fraction(2)),
@@ -915,7 +939,7 @@ def test_q0_scales_the_holding_and_float_q0_refuses() -> None:
     assert view.cash == Fraction(20)
     assert view.holding_return == Fraction(0)
     with pytest.raises(ViewRefusal) as raised:
-        total_return_view(V_ROWS, revisions, AS_AT, POLICY, q0=1.5)
+        total_return_view(V_ROWS, revisions, AS_AT, POLICY, q0=1.5, mic="XNYS")
     assert raised.value.reason is RefusalReason.NON_EXACT_INPUT
 
 
@@ -928,7 +952,7 @@ def test_events_outside_the_window_never_touch_the_holding() -> None:
             split("s2", Fraction(2), ex_date=date(2026, 6, 12)),     # > t1: outside
         ),
     )
-    view = total_return_view(V_ROWS, revisions, AS_AT, POLICY)
+    view = total_return_view(V_ROWS, revisions, AS_AT, POLICY, mic="XNYS")
     assert view.events_applied == ()
     assert view.q1 == Fraction(1)
     assert view.cash == Fraction(0)
@@ -944,14 +968,14 @@ def test_events_outside_the_window_never_touch_the_holding() -> None:
         ratio=None,
     )
     beyond = ActionRevisionSet("beyond", revisions.events + (spin_off,))
-    assert total_return_view(V_ROWS, beyond, AS_AT, POLICY).cash == Fraction(0)
+    assert total_return_view(V_ROWS, beyond, AS_AT, POLICY, mic="XNYS").cash == Fraction(0)
 
 
 # ── R02 heal (M1 m1 m2 m4) — refusals the first review found missing ──────
 def test_R02_M1_duplicate_event_id_refuses_in_sadj_view() -> None:
     revisions = ActionRevisionSet("dup", (split("s1", Fraction(2)), split("s1", Fraction(2))))
     with pytest.raises(ViewRefusal) as raised:
-        sadj_view([{"date": date(2026, 6, 9), "close_raw": 100}], revisions, AS_AT)
+        sadj_view([{"date": date(2026, 6, 9), "close_raw": 100}], revisions, AS_AT, mic="XNYS")
     assert raised.value.reason is RefusalReason.DUPLICATE_EVENT_ID
     assert raised.value.event_id == "s1"
 
@@ -1005,16 +1029,16 @@ def test_R02_m1_non_price_columns_pass_through_unchanged() -> None:
     out = raw_view([row]).rows[0]
     for key in ("close_time", "last_updated", "open_interest"):
         assert out[key] == row[key]
-    sadj_view([row], ActionRevisionSet("guard", (split("s1", Fraction(2)),)), AS_AT)
+    sadj_view([row], ActionRevisionSet("guard", (split("s1", Fraction(2)),)), AS_AT, mic="XNYS")
 
 
 def test_R02_m2_sadj_view_refuses_a_row_after_as_at() -> None:
     revisions = ActionRevisionSet("late", (split("s1", Fraction(2)),))
     with pytest.raises(ViewRefusal) as raised:
-        sadj_view([{"date": date(2026, 6, 21), "close_raw": 100}], revisions, AS_AT)
+        sadj_view([{"date": date(2026, 6, 21), "close_raw": 100}], revisions, AS_AT, mic="XNYS")
     assert raised.value.reason is RefusalReason.ROW_AFTER_AS_AT
     assert raised.value.column == "date"
-    view = sadj_view([{"date": date(2026, 6, 20), "close_raw": 100}], revisions, AS_AT)
+    view = sadj_view([{"date": date(2026, 6, 19), "close_raw": 100}], revisions, AS_AT, mic="XNYS")
     assert view.rows[0]["close_sadj"] == Fraction(100)
 
 
@@ -1047,7 +1071,7 @@ def test_R02_P04_M2_cash_before_a_same_day_split_buys_post_split_shares() -> Non
         "r02m2", (p04_cash("d1", Fraction(2), sequence=1), split("s1", Fraction(2), sequence=2))
     )
     policy = TotalReturnPolicy(ReinvestPolicy.EX_DATE_CLOSE, Fraction(0), "USD")
-    view = total_return_view(rows, revisions, AS_AT, policy)
+    view = total_return_view(rows, revisions, AS_AT, policy, mic="XNYS")
     assert view.q1 == Fraction(100, 49)  # 1 -> split -> 2, + 2/49 bought at the close
     assert view.cash == Fraction(0)
     assert view.wealth0 == Fraction(100)
@@ -1073,7 +1097,7 @@ def test_R02_P04_M2_shares_bought_at_the_close_carry_no_later_same_day_cash() ->
         ),
     )
     policy = TotalReturnPolicy(ReinvestPolicy.EX_DATE_CLOSE, Fraction(0), "USD")
-    view = total_return_view(rows, revisions, AS_AT, policy)
+    view = total_return_view(rows, revisions, AS_AT, policy, mic="XNYS")
     assert view.q1 == Fraction(25, 12)  # 2 + 4/48
     assert view.cash == Fraction(0)
     assert view.wealth1 == Fraction(100)
@@ -1093,7 +1117,7 @@ def test_R02_P04_M2_guard_split_first_then_cash_is_unchanged() -> None:
         "r02m2g", (split("s1", Fraction(2), sequence=1), p04_cash("d1", Fraction(1), sequence=2))
     )
     policy = TotalReturnPolicy(ReinvestPolicy.EX_DATE_CLOSE, Fraction(0), "USD")
-    view = total_return_view(rows, revisions, AS_AT, policy)
+    view = total_return_view(rows, revisions, AS_AT, policy, mic="XNYS")
     assert view.q1 == Fraction(100, 49)
     assert view.wealth1 == Fraction(100)
     assert view.holding_return == Fraction(0)
@@ -1110,7 +1134,7 @@ def test_R02_P04_m5_two_rows_on_one_date_refuse() -> None:
         {"date": date(2026, 6, 11), "close_raw": 97},
     ]
     with pytest.raises(ViewRefusal) as raised:
-        total_return_view(rows, EMPTY, AS_AT, POLICY)
+        total_return_view(rows, EMPTY, AS_AT, POLICY, mic="XNYS")
     assert raised.value.reason is RefusalReason.DUPLICATE_ROW_DATE
     assert raised.value.column == "date"
 
@@ -1118,26 +1142,204 @@ def test_R02_P04_m5_two_rows_on_one_date_refuse() -> None:
 def test_R02_P04_m2_a_row_after_as_at_refuses() -> None:
     rows = [{"date": date(2026, 6, 9), "close_raw": 100}, {"date": date(2026, 6, 21), "close_raw": 98}]
     with pytest.raises(ViewRefusal) as raised:
-        total_return_view(rows, EMPTY, AS_AT, POLICY)
+        total_return_view(rows, EMPTY, AS_AT, POLICY, mic="XNYS")
     assert raised.value.reason is RefusalReason.ROW_AFTER_AS_AT
     assert raised.value.column == "date"
 
 
 def test_R02_P04_m2_guard_a_row_on_the_as_at_date_is_lawful() -> None:
-    rows = [{"date": date(2026, 6, 9), "close_raw": 100}, {"date": date(2026, 6, 20), "close_raw": 98}]
-    view = total_return_view(rows, EMPTY, AS_AT, POLICY)
+    rows = [{"date": date(2026, 6, 9), "close_raw": 100}, {"date": date(2026, 6, 19), "close_raw": 98}]
+    view = total_return_view(rows, EMPTY, AS_AT, POLICY, mic="XNYS")
     assert view.holding_return == Fraction(-1, 50)
 
 
 def test_R02_P04_m4_non_positive_q0_or_p0_refuse_typed() -> None:
     for q0 in (0, -1):
         with pytest.raises(ViewRefusal) as raised:
-            total_return_view(V_ROWS, EMPTY, AS_AT, POLICY, q0=q0)
+            total_return_view(V_ROWS, EMPTY, AS_AT, POLICY, q0=q0, mic="XNYS")
         assert raised.value.reason is RefusalReason.NON_POSITIVE_VALUE, q0
         assert raised.value.column is None
     for p0 in (0, -5):
         rows = [{"date": date(2026, 6, 9), "close_raw": p0}, {"date": date(2026, 6, 11), "close_raw": 98}]
         with pytest.raises(ViewRefusal) as raised:
-            total_return_view(rows, EMPTY, AS_AT, POLICY)
+            total_return_view(rows, EMPTY, AS_AT, POLICY, mic="XNYS")
         assert raised.value.reason is RefusalReason.NON_POSITIVE_VALUE, p0
         assert raised.value.column == "close_raw"
+
+
+# ── P06 — venue-local as_at day + declared currency (D00.A1) ──
+
+from lib.dataos.identity import IdentityError
+from lib.dataos.price_views import ViewVintage, view_label
+
+#: A lawful 40-char lowercase-hex code version for the P06 vintage witness.
+P06_CODE = "c0dec0de" * 5
+
+
+def test_P06_falsifier_us_split_not_effective_before_the_ny_session() -> None:
+    """D00.A1.1 falsifier: a 2:1 split ex 2026-06-10 with as_at 2026-06-10T02:00Z
+    (22:00 ET on 06-09) — the NY venue day is 06-09, so S(06-09) = 1: the tape
+    has not split yet.  The UTC-date rule would answer 2."""
+    revisions = ActionRevisionSet(
+        "p06-falsifier", (split("f1", Fraction(2), known_at=known(2026, 6, 1)),)
+    )
+    as_at = datetime(2026, 6, 10, 2, 0, tzinfo=UTC)
+    assert split_factor(date(2026, 6, 9), revisions, as_at, mic="XNYS") == Fraction(1)
+
+
+def test_P06_falsifier_total_return_row_on_the_utc_day_is_after_the_venue_day() -> None:
+    """At that same as_at a row dated 06-10 (the UTC day) is AFTER the NY venue
+    day 06-09 — an as-of view cannot carry a price printed later."""
+    revisions = ActionRevisionSet(
+        "p06-falsifier-tr", (split("f1", Fraction(2), known_at=known(2026, 6, 1)),)
+    )
+    as_at = datetime(2026, 6, 10, 2, 0, tzinfo=UTC)
+    rows = [
+        {"date": date(2026, 6, 9), "close_raw": 100},
+        {"date": date(2026, 6, 10), "close_raw": 98},
+    ]
+    with pytest.raises(ViewRefusal) as raised:
+        total_return_view(rows, revisions, as_at, POLICY, mic="XNYS")
+    assert raised.value.reason is RefusalReason.ROW_AFTER_AS_AT
+    assert raised.value.column == "date"
+
+
+def test_P06_mic_is_required_keyword_only() -> None:
+    revisions = ActionRevisionSet("p06-kw", (split("s1", Fraction(2)),))
+    with pytest.raises(TypeError):
+        split_factor(date(2026, 6, 9), revisions, AS_AT)
+    with pytest.raises(TypeError):
+        sadj_view([{"date": date(2026, 6, 9), "close_raw": 100}], revisions, AS_AT)
+    with pytest.raises(TypeError):
+        total_return_view(V_ROWS, EMPTY, AS_AT, POLICY)
+
+
+def test_P06_unknown_or_none_mic_refuses_VENUE_CLOCK_UNKNOWN() -> None:
+    revisions = ActionRevisionSet("p06-mic", (split("s1", Fraction(2)),))
+    rows = [{"date": date(2026, 6, 9), "close_raw": 100}]
+    for bad in (None, "XXXX"):
+        checks = (
+            lambda: split_factor(date(2026, 6, 9), revisions, AS_AT, mic=bad),
+            lambda: sadj_view(rows, revisions, AS_AT, mic=bad),
+            lambda: total_return_view(V_ROWS, EMPTY, AS_AT, POLICY, mic=bad),
+        )
+        for check in checks:
+            with pytest.raises(ViewRefusal) as raised:
+                check()
+            assert raised.value.reason is RefusalReason.VENUE_CLOCK_UNKNOWN
+            assert not isinstance(raised.value, IdentityError)
+    with pytest.raises(ViewRefusal) as raised:
+        raw_view(rows, mic="XXXX")
+    assert raised.value.reason is RefusalReason.VENUE_CLOCK_UNKNOWN
+    assert not isinstance(raised.value, IdentityError)
+
+
+@pytest.mark.parametrize(
+    "mic, ex_date, t, as_at, expected, known_at",
+    [
+        # summer rows (known_at a week before ex 2026-06-10)
+        ("XHKG", date(2026, 6, 10), date(2026, 6, 9), datetime(2026, 6, 9, 16, 30, tzinfo=UTC), Fraction(2), known(2026, 6, 3)),
+        ("XHKG", date(2026, 6, 10), date(2026, 6, 9), datetime(2026, 6, 9, 15, 30, tzinfo=UTC), Fraction(1), known(2026, 6, 3)),
+        ("XTSE", date(2026, 6, 10), date(2026, 6, 9), datetime(2026, 6, 10, 3, 59, tzinfo=UTC), Fraction(1), known(2026, 6, 3)),
+        ("XTSE", date(2026, 6, 10), date(2026, 6, 9), datetime(2026, 6, 10, 4, 0, tzinfo=UTC), Fraction(2), known(2026, 6, 3)),
+        ("XSHG", date(2026, 6, 10), date(2026, 6, 9), datetime(2026, 6, 9, 16, 0, tzinfo=UTC), Fraction(2), known(2026, 6, 3)),
+        ("XSHG", date(2026, 6, 10), date(2026, 6, 9), datetime(2026, 6, 9, 15, 59, 59, tzinfo=UTC), Fraction(1), known(2026, 6, 3)),
+        # winter rows (EST, known_at 2025-12-01)
+        ("XNYS", date(2026, 1, 15), date(2026, 1, 14), datetime(2026, 1, 15, 4, 59, tzinfo=UTC), Fraction(1), known(2025, 12, 1)),
+        ("XNYS", date(2026, 1, 15), date(2026, 1, 14), datetime(2026, 1, 15, 5, 0, tzinfo=UTC), Fraction(2), known(2025, 12, 1)),
+    ],
+)
+def test_P06_venue_day_boundary_table(mic, ex_date, t, as_at, expected, known_at) -> None:
+    """S(t) flips exactly at the venue-local midnight of the ex_date, never at
+    the UTC date (D00.A1.1): each pair straddles the venue's midnight."""
+    revisions = ActionRevisionSet(
+        "p06-table", (split("s1", Fraction(2), ex_date=ex_date, known_at=known_at),)
+    )
+    assert split_factor(t, revisions, as_at, mic=mic) == expected
+
+
+def test_P06_row_on_the_utc_as_at_date_is_after_the_ny_venue_day() -> None:
+    """AS_AT 2026-06-20T00:00Z is 20:00 ET on 06-19: the NY venue day is 06-19,
+    so a row dated 06-20 (the UTC day) refuses ROW_AFTER_AS_AT in BOTH views —
+    the twins of the two re-expressed R02 guards (§8.7)."""
+    revisions = ActionRevisionSet("p06-twins", (split("s1", Fraction(2)),))
+    with pytest.raises(ViewRefusal) as raised:
+        sadj_view([{"date": date(2026, 6, 20), "close_raw": 100}], revisions, AS_AT, mic="XNYS")
+    assert raised.value.reason is RefusalReason.ROW_AFTER_AS_AT
+    rows = [{"date": date(2026, 6, 9), "close_raw": 100}, {"date": date(2026, 6, 20), "close_raw": 98}]
+    with pytest.raises(ViewRefusal) as raised:
+        total_return_view(rows, EMPTY, AS_AT, POLICY, mic="XNYS")
+    assert raised.value.reason is RefusalReason.ROW_AFTER_AS_AT
+
+
+def test_P06_policy_currency_mismatch() -> None:
+    cad = TotalReturnPolicy(ReinvestPolicy.NONE, Fraction(0), "CAD")
+    revisions = ActionRevisionSet("p06-pcy", (split("s1", Fraction(2)),))
+    with pytest.raises(ViewRefusal) as raised:
+        total_return_view(V_ROWS, revisions, AS_AT, cad, mic="XNYS")
+    assert raised.value.reason is RefusalReason.CURRENCY_MISMATCH
+
+
+def test_P06_row_currency_column() -> None:
+    revisions = ActionRevisionSet("p06-rowcur", (split("s1", Fraction(2)),))
+    base = {"date": date(2026, 6, 9), "close_raw": 100}
+    # a row currency equal (case-insensitively) to the declared one is accepted
+    view = sadj_view([dict(base, currency="usd")], revisions, AS_AT, mic="XNYS")
+    assert view.rows[0]["close_sadj"] == Fraction(50)
+    for bad, reason in (
+        ("EUR", RefusalReason.CURRENCY_MISMATCH),
+        (None, RefusalReason.UNKNOWN_FX),
+    ):
+        with pytest.raises(ViewRefusal) as raised:
+            sadj_view([dict(base, currency=bad)], revisions, AS_AT, mic="XNYS")
+        assert raised.value.reason is reason
+        assert raised.value.column == "currency"
+    tr_rows = [
+        {"date": date(2026, 6, 9), "close_raw": 100, "currency": "usd"},
+        {"date": date(2026, 6, 11), "close_raw": 98, "currency": "usd"},
+    ]
+    assert total_return_view(tr_rows, EMPTY, AS_AT, POLICY, mic="XNYS").cash == Fraction(0)
+    for bad, reason in (
+        ("EUR", RefusalReason.CURRENCY_MISMATCH),
+        (None, RefusalReason.UNKNOWN_FX),
+    ):
+        rows = [dict(tr_rows[0], currency=bad), tr_rows[1]]
+        with pytest.raises(ViewRefusal) as raised:
+            total_return_view(rows, EMPTY, AS_AT, POLICY, mic="XNYS")
+        assert raised.value.reason is reason
+
+
+def test_P06_cash_none_currency_stays_UNKNOWN_FX() -> None:
+    """Positive pin of the seat ruling: a cash event whose currency is None (or
+    blank) stays UNKNOWN_FX — only a known-and-different one is a mismatch."""
+    revisions = ActionRevisionSet("p06-cashnone", (p04_cash("d1", Fraction(2), currency=None),))
+    with pytest.raises(ViewRefusal) as raised:
+        total_return_view(V_ROWS, revisions, AS_AT, POLICY, mic="XNYS")
+    assert raised.value.reason is RefusalReason.UNKNOWN_FX
+    assert raised.value.event_id == "d1"
+
+
+def test_P06_view_currency() -> None:
+    rows = [{"date": date(2026, 6, 9), "close_raw": 100}]
+    revisions = ActionRevisionSet("p06-cur", (split("s1", Fraction(2)),))
+    assert raw_view(rows).currency is None
+    assert raw_view(rows, mic="XNYS").currency == "USD"
+    assert sadj_view(rows, revisions, AS_AT, mic="XHKG").currency == "HKD"
+    with pytest.raises(TypeError):
+        PriceView(
+            basis="RAW",
+            rows=(),
+            reference=AdjustmentReference("RAW", None, None),
+            executable=True,
+            currency=5,
+        )
+
+
+def test_P06_label_carries_currency() -> None:
+    revisions = ActionRevisionSet("p06-label", (split("s1", Fraction(2)),))
+    sadj = sadj_view([{"date": date(2026, 6, 9), "close_raw": 100}], revisions, AS_AT, mic="XNYS")
+    vintage = ViewVintage("G1", "p06-label", "IDGEN-1", P06_CODE)
+    assert "|currency=USD|" in view_label(sadj, vintage)
+    raw = raw_view([{"date": date(2026, 6, 9), "close_raw": 100}])
+    raw_vintage = ViewVintage("G1", None, "IDGEN-1", P06_CODE)
+    assert "|currency=-|" in view_label(raw, raw_vintage)
