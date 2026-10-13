@@ -7,8 +7,9 @@ snapshot() as ``observer``, and without one every snapshot is unavailable and
 no source is read.
 
 Prices come only from the licensed whole-market daily store plus the same
-vendor's same-session regular-hours close (both raw prints, one basis). The
-Yahoo store is internal-only under the source-rights register and is never read.
+provider's same-session regular-hours close (both raw prints, one basis). The
+free public price store is internal-only under the source-rights register and
+is never read.
 """
 from __future__ import annotations
 
@@ -223,5 +224,5 @@ def present(observation: dict, radar: dict | None = None) -> dict:
     return core.present(
         observation, market="us",
         aria_en="Observed SPY price closing drawdown from the reference high",
-        aria_zh="SPY实际收盘价相对本轮参考高点的回撤",
+        aria_zh="SPY已观测收盘价相对本轮参考高点的回撤",
     )

@@ -5,9 +5,9 @@ owner is lib.pullback_observation.observe(); this module never imports it. The
 builder admits it by passing it to snapshot() as ``observer``; without one,
 every snapshot is unavailable and no source is read.
 
-Prices come only from the licensed benchmark index store written by
-collectors.tushare_index_daily. The free Yahoo China store is internal-only
-under the source-rights register and is never read.
+Prices come only from the licensed benchmark index store written by the
+gated index-close collector. The free public China price store is
+internal-only under the source-rights register and is never read.
 """
 from __future__ import annotations
 
@@ -110,5 +110,5 @@ def present(observation: dict, radar: dict | None = None) -> dict:
     return core.present(
         observation, market="cn",
         aria_en="Observed Shanghai Composite closing drawdown from the reference high",
-        aria_zh="上证综指实际收盘价相对本轮参考高点的回撤",
+        aria_zh="上证综指已观测收盘价相对本轮参考高点的回撤",
     )
