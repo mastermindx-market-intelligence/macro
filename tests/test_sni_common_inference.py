@@ -4,6 +4,7 @@ from __future__ import annotations
 import math
 import random
 import sys
+from fractions import Fraction
 from pathlib import Path
 
 import pytest
@@ -20,6 +21,7 @@ from sni_inference import (  # noqa: E402
     DESCRIPTIVE_ONLY,
     MIN_CLUSTERS,
     TESTED,
+    InferenceResult,
     binom_p_one_sided_greater,
     binom_p_two_sided,
     cluster_mean_ci,
@@ -28,6 +30,13 @@ from sni_inference import (  # noqa: E402
     sign_test_two_sided,
     wilson_ci,
 )
+
+_FOUR_TOKENS = {
+    TESTED,
+    DESCRIPTIVE_ONLY,
+    ABSTAIN_NO_EPISODES,
+    ABSTAIN_INSUFFICIENT_CLUSTERS,
+}
 
 
 def test_wilson_known_values():
@@ -87,7 +96,7 @@ def test_binomial_exactness():
 
 
 def test_sign_test_symmetry():
-    pairs = ((9, 0), (0, 9), (7, 3), (3, 7), (5, 5), (1, 8), (0, 0), (12, 4))
+    pairs = ((9, 0), (0, 9), (7, 3), (3, 7), (5, 5), (1, 8), (12, 4))
     for a, b in pairs:
         assert sign_test_two_sided(a, b) == sign_test_two_sided(b, a)
 
@@ -340,3 +349,250 @@ def test_r1_06_regression_pins(call, should_raise):
         result = call()
         assert result.n_obs == 2
         assert result.n_clusters == 2
+
+
+def _constructed(
+    *,
+    n_obs: int,
+    n_clusters: int,
+    abstained: bool,
+    reason: str | None = None,
+    ci_lo: float | None = 0.1,
+    ci_hi: float | None = 0.9,
+    estimate: float | None = 0.5,
+) -> InferenceResult:
+    return InferenceResult(
+        estimate=estimate,
+        ci_lo=ci_lo,
+        ci_hi=ci_hi,
+        n_obs=n_obs,
+        n_clusters=n_clusters,
+        effective_n=float(n_clusters),
+        method="wilson",
+        abstained=abstained,
+        reason=reason,
+        alpha=0.05,
+        seed=None,
+        draws=None,
+    )
+
+
+def test_r2_01_label_for_wilson_single_observation():
+    assert label_for(wilson_ci(0, 1), min_episodes=1) == ABSTAIN_INSUFFICIENT_CLUSTERS
+    assert wilson_ci(1, 1).abstained is True
+
+
+def test_r2_02_sign_test_zero_non_tied_raises():
+    with pytest.raises(
+        ValueError,
+        match="sign test on zero non-tied observations is not estimable",
+    ):
+        sign_test_two_sided(0, 0)
+
+
+def test_r2_03_binom_large_n_stays_finite():
+    p_mid = binom_p_two_sided(1000, 2000, 0.5)
+    assert math.isfinite(p_mid)
+    assert 0.9 < p_mid <= 1.0
+    assert binom_p_two_sided(1200, 2000, 0.5) < 1e-15
+    p_half = binom_p_one_sided_greater(5000, 10000, 0.5)
+    assert math.isfinite(p_half)
+    assert 0.49 < p_half < 0.51
+
+
+def test_r2_03_binom_logspace_fraction_parity():
+    grid = []
+    for n in (5, 10, 20, 40, 80):
+        for k in (0, 1, n // 2, max(n - 1, 0), n):
+            for p0 in (0.25, 0.5, 0.75):
+                grid.append((k, n, p0))
+    for k, n, p0 in grid:
+        p = Fraction(p0).limit_denominator()
+        q = 1 - p
+        exact_ge = float(
+            sum(
+                Fraction(math.comb(n, i)) * (p ** i) * (q ** (n - i))
+                for i in range(k, n + 1)
+            )
+        )
+        got = binom_p_one_sided_greater(k, n, p0)
+        assert abs(got - exact_ge) < 1e-12
+        qq = 1.0 - p0
+        if k <= 0:
+            old = 1.0
+        elif k > n:
+            old = 0.0
+        elif p0 == 0.0:
+            old = 0.0
+        elif p0 == 1.0:
+            old = 1.0
+        else:
+            old = sum(
+                math.comb(n, i) * (p0 ** i) * (qq ** (n - i))
+                for i in range(k, n + 1)
+            )
+        assert abs(got - old) < 1e-12
+
+
+def test_r2_05_non_abstained_none_ci_raises():
+    result = _constructed(
+        n_obs=10,
+        n_clusters=10,
+        abstained=False,
+        ci_lo=None,
+        ci_hi=0.8,
+    )
+    with pytest.raises(ValueError, match="non-abstained result has no finite CI"):
+        label_for(result, min_episodes=1)
+
+
+def test_r2_05_non_abstained_nan_ci_raises():
+    result = _constructed(
+        n_obs=10,
+        n_clusters=10,
+        abstained=False,
+        ci_lo=float("nan"),
+        ci_hi=0.8,
+    )
+    with pytest.raises(ValueError, match="non-abstained result has no finite CI"):
+        label_for(result, min_episodes=1)
+
+
+def test_r2_05_abstained_unknown_reason_raises():
+    result = _constructed(
+        n_obs=10,
+        n_clusters=10,
+        abstained=True,
+        reason="LOOKS_FINE",
+        ci_lo=None,
+        ci_hi=None,
+    )
+    with pytest.raises(ValueError):
+        label_for(result, min_episodes=1)
+
+
+def test_r2_05_label_for_returns_only_four_tokens():
+    rng = random.Random(20261013)
+    for _ in range(200):
+        min_ep = rng.randint(0, 30)
+        roll = rng.randrange(4)
+        if roll == 0:
+            result = _constructed(
+                n_obs=0,
+                n_clusters=0,
+                abstained=bool(rng.randrange(2)),
+                reason=ABSTAIN_NO_EPISODES,
+                ci_lo=None,
+                ci_hi=None,
+                estimate=None,
+            )
+        elif roll == 1:
+            result = _constructed(
+                n_obs=rng.randint(1, 20),
+                n_clusters=1,
+                abstained=bool(rng.randrange(2)),
+                reason=ABSTAIN_INSUFFICIENT_CLUSTERS,
+                ci_lo=None,
+                ci_hi=None,
+            )
+        elif roll == 2:
+            reason = rng.choice(
+                [ABSTAIN_NO_EPISODES, ABSTAIN_INSUFFICIENT_CLUSTERS]
+            )
+            result = _constructed(
+                n_obs=rng.randint(1, 40),
+                n_clusters=rng.randint(2, 10),
+                abstained=True,
+                reason=reason,
+                ci_lo=None,
+                ci_hi=None,
+            )
+        else:
+            result = _constructed(
+                n_obs=rng.randint(1, 40),
+                n_clusters=rng.randint(2, 10),
+                abstained=False,
+                reason=None,
+                ci_lo=0.1,
+                ci_hi=0.9,
+            )
+        label = label_for(result, min_episodes=min_ep)
+        assert label in _FOUR_TOKENS
+
+
+def test_r2_06_equal_hash_cluster_keys_stay_distinct():
+    result = cluster_mean_ci(
+        [1.0, 2.0, 3.0],
+        cluster_keys=[1, True, 1.0],
+        draws=200,
+        seed=0,
+        min_clusters=1,
+    )
+    assert result.n_clusters == 3
+
+
+def test_r2_08_wilson_ci_one_obs_abstains():
+    r = wilson_ci(0, 1)
+    assert r.abstained is True
+    assert r.reason == ABSTAIN_INSUFFICIENT_CLUSTERS
+    assert r.ci_lo is None
+    assert r.ci_hi is None
+    assert r.n_clusters == 1
+    assert r.n_clusters < MIN_CLUSTERS
+
+
+def test_r2_08_constructed_zero_obs_labels_no_episodes():
+    result = _constructed(
+        n_obs=0,
+        n_clusters=0,
+        abstained=False,
+        reason=None,
+        ci_lo=None,
+        ci_hi=None,
+        estimate=None,
+    )
+    assert label_for(result, min_episodes=1) == ABSTAIN_NO_EPISODES
+
+
+def test_r2_08_constructed_one_cluster_labels_insufficient():
+    result = _constructed(
+        n_obs=5,
+        n_clusters=1,
+        abstained=False,
+        reason=None,
+        ci_lo=0.0,
+        ci_hi=1.0,
+    )
+    assert label_for(result, min_episodes=1) == ABSTAIN_INSUFFICIENT_CLUSTERS
+
+
+def test_r2_11_numpy_float64_coerced_to_builtin_float():
+    np = pytest.importorskip("numpy")
+    values = [np.float64(1.0), np.float64(2.0), np.float64(3.0), np.float64(4.0)]
+    keys = ["a", "a", "b", "b"]
+    result = cluster_mean_ci(values, keys, draws=200, seed=0)
+    assert type(result.estimate) is float
+    assert type(result.ci_lo) is float
+    assert type(result.ci_hi) is float
+    assert type(result.alpha) is float
+    w = wilson_ci(5, 10, alpha=np.float64(0.05))
+    assert type(w.alpha) is float
+    assert type(w.estimate) is float
+    assert type(w.ci_lo) is float
+    assert type(w.ci_hi) is float
+
+
+def test_r2_12_wilson_owner_parity_and_docstring():
+    from engine.grading_stats import wilson_ci as owner_wilson_ci
+
+    doc = wilson_ci.__doc__ or ""
+    assert "engine/grading_stats.py" in doc
+    for n in range(2, 61):
+        for k in range(0, n + 1):
+            ours = wilson_ci(k, n, alpha=0.05)
+            assert ours.ci_lo is not None and ours.ci_hi is not None
+            owner = owner_wilson_ci(k, n)
+            assert owner is not None
+            elo, ehi = float(owner[0]), float(owner[1])
+            assert abs(round(ours.ci_lo, 3) - elo) < 0.0011
+            assert abs(round(ours.ci_hi, 3) - ehi) < 0.0011

@@ -60,6 +60,13 @@ ABSTAIN_INSUFFICIENT_CLUSTERS = "ABSTAIN_INSUFFICIENT_CLUSTERS"
 
 MIN_CLUSTERS = 2
 
+_ABSTAIN_REASONS = frozenset(
+    {ABSTAIN_NO_EPISODES, ABSTAIN_INSUFFICIENT_CLUSTERS}
+)
+_LABEL_TOKENS = frozenset(
+    {TESTED, DESCRIPTIVE_ONLY, ABSTAIN_NO_EPISODES, ABSTAIN_INSUFFICIENT_CLUSTERS}
+)
+
 _Z_ALPHA_0_05 = 1.959964
 _Z_ALPHA_0_10 = 1.644854
 _Z_ALPHA_0_01 = 2.575829
@@ -69,6 +76,9 @@ _PLAIN_ABSTAIN_INSUFFICIENT_CLUSTERS = (
     "This family abstains: fewer than 2 independent date clusters, "
     "so no interval is estimable."
 )
+
+# math.comb(n, k) * p**k * q**(n-k) overflows float at n >= 1030.
+_BINOM_COMB_FLOAT_LIMIT = 1029
 
 
 # ---------------------------------------------------------------------------
@@ -154,7 +164,7 @@ def _require_n_k(k: object, n: object) -> tuple[int, int]:
 def _require_alpha(alpha: object) -> float:
     if isinstance(alpha, bool) or not isinstance(alpha, (int, float)):
         raise ValueError("alpha must be in (0, 1)")
-    a = alpha + 0.0
+    a = float(alpha)
     if not math.isfinite(a) or not (0.0 < a < 1.0):
         raise ValueError("alpha must be in (0, 1)")
     return a
@@ -163,19 +173,24 @@ def _require_alpha(alpha: object) -> float:
 def _require_p0(p0: object) -> float:
     if isinstance(p0, bool) or not isinstance(p0, (int, float)):
         raise ValueError("p0 must be in [0, 1]")
-    p = p0 + 0.0
+    p = float(p0)
     if not math.isfinite(p) or not (0.0 <= p <= 1.0):
         raise ValueError("p0 must be in [0, 1]")
     return p
 
 
 def _require_finite_real(value: object) -> float:
-    """Accept non-bool int/float only; reject bool, str, NaN, inf, others."""
+    """Accept non-bool int/float only; reject bool, str, NaN, inf, others.
+
+    Every accepted real is coerced with ``float(value)`` so stored values
+    are builtin floats even when the caller passed a numpy scalar.
+    """
     if isinstance(value, bool) or not isinstance(value, (int, float)):
         raise ValueError("values must be finite real numbers")
-    if not math.isfinite(value):
+    f = float(value)
+    if not math.isfinite(f):
         raise ValueError("values must be finite real numbers")
-    return value + 0.0
+    return f
 
 
 def _require_min_episodes(min_episodes: object) -> int:
@@ -202,17 +217,58 @@ def _percentile_linear(samples: Sequence[float], q: float) -> float:
     if n == 0:
         raise ValueError("percentile of empty sample")
     if n == 1:
-        return xs[0] + 0.0
+        return float(xs[0])
     pos = q * (n - 1)
     lo = int(math.floor(pos))
     hi = min(lo + 1, n - 1)
     w = pos - lo
-    return xs[lo] * (1.0 - w) + xs[hi] * w
+    return float(xs[lo] * (1.0 - w) + xs[hi] * w)
 
 
 def _cluster_sort_key(key: object) -> tuple[str, str]:
     """Deterministic order for mixed hashable cluster-key types."""
     return (type(key).__name__, repr(key))
+
+
+def _binom_log_term(i: int, n: int, log_p0: float, log_q: float) -> float:
+    return (
+        math.lgamma(n + 1)
+        - math.lgamma(i + 1)
+        - math.lgamma(n - i + 1)
+        + i * log_p0
+        + (n - i) * log_q
+    )
+
+
+def _logsumexp_exp(logs: Sequence[float]) -> float:
+    """Sum of exp(logs) via max-shifted exp (log-sum-exp)."""
+    if not logs:
+        return 0.0
+    peak = max(logs)
+    acc = 0.0
+    for x in logs:
+        acc += math.exp(x - peak)
+    if acc == 0.0:
+        return 0.0
+    return math.exp(peak + math.log(acc))
+
+
+def _sum_binom_pmf(start: int, stop: int, n: int, p0: float) -> float:
+    """Sum Bin(n, p0) pmf on inclusive [start, stop]."""
+    if start > stop:
+        return 0.0
+    q = 1.0 - p0
+    # Exact comb terms stay bit-identical for n < 1030 (existing == tests).
+    # math.comb overflows float at n >= 1030; those n use log-sum-exp.
+    if n <= _BINOM_COMB_FLOAT_LIMIT:
+        total = 0.0
+        for i in range(start, stop + 1):
+            total += math.comb(n, i) * (p0 ** i) * (q ** (n - i))
+        return total + 0.0
+    log_p0 = math.log(p0)
+    log_q = math.log(q)
+    logs = [_binom_log_term(i, n, log_p0, log_q) for i in range(start, stop + 1)]
+    return _logsumexp_exp(logs)
 
 
 def _binom_tail_ge(k: int, n: int, p0: float) -> float:
@@ -225,11 +281,7 @@ def _binom_tail_ge(k: int, n: int, p0: float) -> float:
         return 0.0
     if p0 == 1.0:
         return 1.0
-    q = 1.0 - p0
-    total = 0.0
-    for i in range(k, n + 1):
-        total += math.comb(n, i) * (p0 ** i) * (q ** (n - i))
-    return total + 0.0
+    return _sum_binom_pmf(k, n, n, p0)
 
 
 def _binom_tail_le(k: int, n: int, p0: float) -> float:
@@ -242,11 +294,7 @@ def _binom_tail_le(k: int, n: int, p0: float) -> float:
         return 1.0
     if p0 == 1.0:
         return 0.0
-    q = 1.0 - p0
-    total = 0.0
-    for i in range(0, k + 1):
-        total += math.comb(n, i) * (p0 ** i) * (q ** (n - i))
-    return total + 0.0
+    return _sum_binom_pmf(0, k, n, p0)
 
 
 # ---------------------------------------------------------------------------
@@ -265,21 +313,24 @@ def cluster_mean_ci(
 ) -> InferenceResult:
     """Date-cluster (block) bootstrap of the mean.
 
-    Observations are grouped by cluster key. Cluster order is deterministic
-    for mixed hashable key types by sorting on ``(type(k).__name__, repr(k))``,
-    so the result is invariant to input permutation. Clusters are then
-    resampled with replacement ``draws`` times via ``random.Random(seed)``.
-    The statistic is the mean of every observation in the sampled clusters.
-    The CI is the percentile interval at (alpha/2, 1 - alpha/2).
+    Observations are grouped by ``_cluster_sort_key(key)`` (type name, repr)
+    so keys that compare equal across types (1, True, 1.0) stay distinct.
+    Cluster order is deterministic for mixed hashable key types by sorting
+    on that same key, so the result is invariant to input permutation.
+    Clusters are then resampled with replacement ``draws`` times via
+    ``random.Random(seed)``. The statistic is the mean of every observation
+    in the sampled clusters. The CI is the percentile interval at
+    (alpha/2, 1 - alpha/2).
 
     Empty input (no observations) abstains: ``abstained=True`` with
     ``reason=ABSTAIN_NO_EPISODES``. ``values`` and ``cluster_keys`` of
     different lengths raise ``ValueError`` naming both lengths.
 
     Each value is checked with ``isinstance(v, bool)`` first, then accepted
-    only as a non-bool ``int`` or ``float``, then checked with
-    ``math.isfinite`` before any arithmetic. Bool, str/bytes, and non-finite
-    values raise ``ValueError("values must be finite real numbers")``.
+    only as a non-bool ``int`` or ``float``, then coerced with ``float`` and
+    checked with ``math.isfinite`` before any arithmetic. Bool, str/bytes,
+    and non-finite values raise
+    ``ValueError("values must be finite real numbers")``.
     ``cluster_keys`` containing ``None`` raise
     ``ValueError("cluster_keys must not contain None")``.
     """
@@ -325,14 +376,14 @@ def cluster_mean_ci(
     if any(key is None for key in keys):
         raise ValueError("cluster_keys must not contain None")
 
-    grouped: dict[object, list[float]] = {}
+    grouped: dict[tuple[str, str], list[float]] = {}
     for value, key in zip(obs, keys):
-        grouped.setdefault(key, []).append(value)
-    ordered_keys = sorted(grouped, key=_cluster_sort_key)
+        grouped.setdefault(_cluster_sort_key(key), []).append(value)
+    ordered_keys = sorted(grouped)
     blocks = [grouped[key] for key in ordered_keys]
     n_clusters = len(blocks)
-    estimate = statistics.fmean(obs)
-    effective_n = n_clusters + 0.0
+    estimate = float(statistics.fmean(obs))
+    effective_n = float(n_clusters)
 
     if n_clusters < min_c:
         return InferenceResult(
@@ -384,6 +435,13 @@ def wilson_ci(k: int, n: int, *, alpha: float = 0.05, **kwargs: object) -> Infer
 
     z is a built-in inverse-normal approximation, hardcoded for alpha in
     {0.1, 0.05, 0.01} (accurate to 1e-6). Other alpha values raise ValueError.
+
+    Owner interval: engine/grading_stats.py wilson_ci. SNI keeps a local copy
+    only because it needs abstention semantics and full precision; the two
+    agree to 1e-3 at alpha = 0.05.
+
+    When 0 < n < MIN_CLUSTERS the interval is unestimable: the result
+    abstains with ABSTAIN_INSUFFICIENT_CLUSTERS and ci_lo/ci_hi are None.
     """
     _reject_authority(kwargs)
     k_i, n_i = _require_n_k(k, n)
@@ -407,7 +465,24 @@ def wilson_ci(k: int, n: int, *, alpha: float = 0.05, **kwargs: object) -> Infer
             draws=None,
         )
 
-    p = k_i / n_i
+    p = float(k_i) / float(n_i)
+
+    if n_i < MIN_CLUSTERS:
+        return InferenceResult(
+            estimate=p,
+            ci_lo=None,
+            ci_hi=None,
+            n_obs=n_i,
+            n_clusters=n_i,
+            effective_n=float(n_i),
+            method=method,
+            abstained=True,
+            reason=ABSTAIN_INSUFFICIENT_CLUSTERS,
+            alpha=alpha_f,
+            seed=None,
+            draws=None,
+        )
+
     z2 = z * z
     denom = 1.0 + z2 / n_i
     centre = (p + z2 / (2.0 * n_i)) / denom
@@ -419,12 +494,12 @@ def wilson_ci(k: int, n: int, *, alpha: float = 0.05, **kwargs: object) -> Infer
     if k_i == n_i:
         hi = 1.0
     return InferenceResult(
-        estimate=p + 0.0,
-        ci_lo=lo + 0.0,
-        ci_hi=hi + 0.0,
+        estimate=p,
+        ci_lo=float(lo),
+        ci_hi=float(hi),
         n_obs=n_i,
         n_clusters=n_i,
-        effective_n=n_i + 0.0,
+        effective_n=float(n_i),
         method=method,
         abstained=False,
         reason=None,
@@ -437,7 +512,11 @@ def wilson_ci(k: int, n: int, *, alpha: float = 0.05, **kwargs: object) -> Infer
 def binom_p_one_sided_greater(
     k: int, n: int, p0: float = 0.5, **kwargs: object
 ) -> float:
-    """Exact P[X >= k] for X ~ Bin(n, p0), via math.comb."""
+    """P[X >= k] for X ~ Bin(n, p0).
+
+    Terms are summed in log space (lgamma + max-shifted exp) so n >= 1030
+    stays finite; p0 in {0, 1} and k-bound cases short-circuit.
+    """
     _reject_authority(kwargs)
     k_i, n_i = _require_n_k(k, n)
     p = _require_p0(p0)
@@ -455,7 +534,10 @@ def binom_p_two_sided(k: int, n: int, p0: float = 0.5, **kwargs: object) -> floa
 
 
 def sign_test_two_sided(pos: int, neg: int, **kwargs: object) -> float:
-    """Exact two-sided sign test on (pos, neg) counts; ties excluded by caller."""
+    """Exact two-sided sign test on (pos, neg) counts; ties excluded by caller.
+
+    ``pos + neg == 0`` is unestimable and raises ValueError.
+    """
     _reject_authority(kwargs)
     pos_i = _require_strict_int("pos", pos)
     neg_i = _require_strict_int("neg", neg)
@@ -463,22 +545,42 @@ def sign_test_two_sided(pos: int, neg: int, **kwargs: object) -> float:
         raise ValueError("pos and neg must be >= 0")
     n = pos_i + neg_i
     if n == 0:
-        return 1.0
+        raise ValueError(
+            "sign test on zero non-tied observations is not estimable"
+        )
     return binom_p_two_sided(pos_i, n, p0=0.5)
 
 
 def label_for(result: InferenceResult, *, min_episodes: int, **kwargs: object) -> str:
     """Assign TESTED / DESCRIPTIVE_ONLY / abstain-reason from a result.
 
+    Fields are read first: n_obs == 0 -> ABSTAIN_NO_EPISODES;
+    n_clusters < MIN_CLUSTERS -> ABSTAIN_INSUFFICIENT_CLUSTERS. Only then
+    the abstained/reason path and the min_episodes split. The return is
+    always one of the four label tokens.
+
     min_episodes is caller-supplied: the prereg owns the registered floor,
     this library does not.
     """
     _reject_authority(kwargs)
     m = _require_min_episodes(min_episodes)
+    if result.n_obs == 0:
+        return ABSTAIN_NO_EPISODES
+    if result.n_clusters < MIN_CLUSTERS:
+        return ABSTAIN_INSUFFICIENT_CLUSTERS
     if result.abstained:
-        if result.reason is None:
-            raise ValueError("abstained result must carry a reason token")
+        if result.reason not in _ABSTAIN_REASONS:
+            raise ValueError(
+                "abstained result reason must be ABSTAIN_NO_EPISODES or "
+                "ABSTAIN_INSUFFICIENT_CLUSTERS"
+            )
         return result.reason
+    lo = result.ci_lo
+    hi = result.ci_hi
+    if lo is None or hi is None:
+        raise ValueError("non-abstained result has no finite CI")
+    if not math.isfinite(lo) or not math.isfinite(hi):
+        raise ValueError("non-abstained result has no finite CI")
     if result.n_obs >= m:
         return TESTED
     return DESCRIPTIVE_ONLY
