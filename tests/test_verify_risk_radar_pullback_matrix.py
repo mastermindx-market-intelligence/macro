@@ -191,6 +191,80 @@ def test_expanded_forecast_copy_passes_and_collapsed_copy_passes():
     assert expanded["checks"]["forecast_block_text_ok"] is True
 
 
+def test_innertext_joined_allow_phrases_pass_and_a_new_sentence_fails():
+    """innerText joins inline spans onto one line. That line is still the allow-list.
+
+    JavaScript-off Chromium also keeps display:none text in innerText, so an
+    English phrase and its Chinese twin land on the same line, and the em dash
+    sticks to the label ('Further decline from the latest close —').
+    """
+    en = (
+        "FURTHER DOWNSIDE",
+        "Estimate unavailable",
+        "We can measure the decline that has already happened. A reliable range for the next low is not yet available.",
+        "Further decline from the latest close",
+        "Total pullback depth",
+        "Why no estimate?",
+        EN_DETAIL,
+    )
+    zh = (
+        "进一步跌幅",
+        "估计暂不可用",
+        "可以测量已发生的跌幅，但下一低点的可靠区间尚不可用。",
+        "自最新收盘价起的进一步跌幅",
+        "回撤总深度",
+        "为什么暂无估计？",
+        "发布区间需要针对本市场、基准、价格衡量方式和时间范围的历史检验。风险水平与现有回撤概率并非对剩余跌幅的预测。",
+    )
+    joined = "\n".join((
+        en[0] + zh[0],
+        en[1] + zh[1],
+        en[2] + zh[2],
+        en[3] + zh[3] + EM,
+        en[4] + zh[4] + EM,
+        en[5] + zh[5],
+        en[6] + zh[6],
+    ))
+    cell = _js_cell(javascript=False)
+    ok = matrix.evaluate_cell(
+        cell,
+        _measured(
+            dialog_visible=False,
+            pbx_present=True,
+            time_datetime="2026-01-02T00:00:00Z",
+            forecast_values=[EM, EM],
+            forecast_block_text=joined,
+        ),
+    )
+    assert ok["passed"] is True, ok["failures"]
+    spaced = matrix.evaluate_cell(
+        _js_cell(),
+        _measured(forecast_block_text="\n".join((
+            en[0], en[1], en[2], en[3] + " " + EM, en[4] + " " + EM, en[5],
+        ))),
+    )
+    assert spaced["passed"] is True, spaced["failures"]
+    assert spaced["checks"]["forecast_block_text_ok"] is True
+    planted = matrix.evaluate_cell(
+        cell,
+        _measured(
+            dialog_visible=False,
+            pbx_present=True,
+            time_datetime="2026-01-02T00:00:00Z",
+            forecast_values=[EM, EM],
+            forecast_block_text=joined + "\nA deep further drop is likely",
+        ),
+    )
+    assert planted["passed"] is False
+    assert "forecast_block_text_ok" in planted["failures"]
+    percent = matrix.evaluate_cell(
+        _js_cell(),
+        _measured(forecast_block_text=en[3] + " 4.2%"),
+    )
+    assert percent["passed"] is False
+    assert "forecast_block_text_ok" in percent["failures"]
+
+
 def test_missing_lang_and_theme_fail():
     """G2: a measurement that omits data_lang / data_theme fails closed."""
     measured = _measured()

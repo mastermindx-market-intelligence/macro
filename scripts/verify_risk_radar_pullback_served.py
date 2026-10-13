@@ -475,13 +475,43 @@ def _text_nodes(node: Node) -> list[str]:
     return found
 
 
+def _line_is_allow_copy(line: str, phrases: tuple[str, ...]) -> bool:
+    """True when line is a sequence of allow-list phrases.
+
+    innerText puts inline spans on one line. A flex row can come back as
+    'Further decline from the latest close —', and a JavaScript-disabled
+    document keeps the hidden language on that same line with no separator.
+    Whitespace may sit between phrases. Any other character fails closed.
+    """
+    rest = line.strip()
+    if not rest:
+        return True
+    while rest:
+        rest = rest.lstrip()
+        if not rest:
+            return True
+        matched = False
+        for phrase in phrases:
+            if rest.startswith(phrase):
+                rest = rest[len(phrase):]
+                matched = True
+                break
+        if not matched:
+            return False
+    return True
+
+
 def forecast_lines_ok(text: object, allow: frozenset[str]) -> bool:
-    """True when every non-empty line is in allow. An empty string has no
-    disallowed line. Callers fail closed on a missing key before calling this.
+    """True when every non-empty line is covered by allow.
+
+    A line may be one allow-list phrase or several phrases joined the way
+    innerText joins inline spans. An empty string has no disallowed line.
+    Callers fail closed on a missing key before calling this.
     """
     if not isinstance(text, str):
         return False
-    return all(line.strip() in allow for line in text.splitlines() if line.strip())
+    phrases = tuple(sorted((phrase for phrase in allow if phrase), key=len, reverse=True))
+    return all(_line_is_allow_copy(line, phrases) for line in text.splitlines() if line.strip())
 
 
 def forecast_block_parts(html: str) -> tuple[list[str], str]:
