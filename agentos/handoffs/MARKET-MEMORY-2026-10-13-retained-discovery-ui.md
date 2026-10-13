@@ -21,6 +21,9 @@ verified:
   - claim: Actual trusted-owner discovery, API, Brain and retained consumers preserve exact identities and current rights.
     command: Catalog, retained-consumer, Brain-analogue and playback-API tests, followed by the affected catalog suite after final ordering hardening.
     result: 78 owner regressions passed; all 20 affected catalog cases passed after the final repair. Real writer fixtures cover exact paging, maximum source clocks, revocation of unreturned captures, byte budgets, shared slots, actual source and store identity, private headers and genuine dispatcher consumption.
+  - claim: Catalog entitlement visibility and API restart reachability inherit the reviewed consumer repair.
+    command: Tool economics, exact label whitelist, actual API import closure and catalog owner tests.
+    result: 84 passed in10.37seconds. Both retained schemas remain site-full conditional; absent guest schemas preserve Fast narrowing. Catalog module joins the API restart list.
 unverified:
   - claim: The existing UI consumes the new three-mode catalog and source inspector.
     what_would_verify: Returned frontend artifact integration, current source tests, all required visual cells and real entitled journey.

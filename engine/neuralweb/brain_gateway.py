@@ -4210,7 +4210,7 @@ def _fast_visible_tool_schemas(
     # These schemas are deliberately withheld upstream when site-full access is
     # absent. Their omission is not family drift and must not expose every other
     # authorized tool to an otherwise qualified Fast question.
-    entitlement_optional_names = {"get_retained_market_context"}
+    entitlement_optional_names = {"get_retained_market_context", "get_retained_market_catalog"}
     missing = [
         name for name in visible_names
         if name not in authorized_names and name not in entitlement_optional_names
