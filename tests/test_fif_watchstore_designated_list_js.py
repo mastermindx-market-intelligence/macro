@@ -83,8 +83,11 @@ def test_ensure_is_lazy_and_idempotent():
         """
         , {"USER": USER},
     )
-    assert out["names"] == [FIF_NAME]
-    assert out["count"] == 1
+    # Seat ruling X2-n r1 R1b: a zero-list ensure mints the primary
+    # 'Watchlist' first (position 0) so the designated list can never be
+    # the page's bound list; the designated list follows it.
+    assert out["names"] == ["Watchlist", FIF_NAME]
+    assert out["count"] == 2
     assert out["a"] == FIF_NAME and out["b"] == FIF_NAME
     assert out["sameId"] is True
 
@@ -115,7 +118,8 @@ def test_watch_ensures_then_adds_and_is_read_first():
     assert out["listName"] == FIF_NAME
     assert out["symbols"] == ["SMCI"]
     assert out["skipped"] is True and out["upper"] == "SMCI"
-    assert out["listCount"] == 1
+    # Seat ruling X2-n r1 R1b: the primary 'Watchlist' plus the designated list.
+    assert out["listCount"] == 2
 
 
 # ===========================================================================

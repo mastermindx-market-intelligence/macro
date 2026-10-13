@@ -200,7 +200,14 @@ def test_daily_step_shape_is_non_fatal_and_bounded():
     assert step.get("timeout-minutes") == 3
     assert step.get("continue-on-error") is True
     run = step["run"]
-    assert run.startswith(f"python -m scripts.{MODULE_TOKEN}")
+    # Seat ruling X2-n r1 R2: a cancelled nightly skips before the module
+    # runs, so the run line is the cancel-skip prefix, then the module.
+    skip = (
+        '[ "${{ job.status }}" = "cancelled" ] && '
+        '{ echo "fif saved research notifications: job cancelled, skipping"; exit 0; }; '
+    )
+    assert run.startswith(skip)
+    assert run[len(skip):].startswith(f"python -m scripts.{MODULE_TOKEN}")
     assert '|| echo "::warning::' in run and "non-fatal" in run
 
 
