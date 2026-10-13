@@ -393,6 +393,35 @@ def test_t1_idempotent_create_only(tmp_path):
     assert second_pass["materialized"] == 0
 
 
+def test_t1_conflict_requires_exact_existing_bytes(tmp_path):
+    for variant in ("different-text", "different-serialization"):
+        inner = LocalStore(tmp_path / variant)
+        store = RecordingStore(inner)
+        digest = _arm(store, "note-a")
+        first = fulltext_writer.materialize(
+            store, "note-a", expected_pdf_sha256=digest, extractor=_extractor(_text("alpha")),
+        )
+        original = inner.get_bytes_strict_bounded(first["key"], fulltext_store.FULLTEXT_MAX_BYTES)
+        if variant == "different-serialization":
+            alternate = json.dumps(json.loads(original), indent=2).encode("utf-8")
+            assert alternate != original
+            assert fulltext_store.decode_record(alternate, "note-a", digest) is not None
+            inner.put_bytes(first["key"], alternate, "application/json")
+            retained = alternate
+            text = _text("alpha")
+        else:
+            retained = original
+            text = _text("beta")
+
+        result = fulltext_writer.materialize(
+            store, "note-a", expected_pdf_sha256=digest, extractor=_extractor(text),
+        )
+
+        assert result["state"] == "existing_invalid", variant
+        assert inner.get_bytes_strict_bounded(first["key"], fulltext_store.FULLTEXT_MAX_BYTES) == retained
+        assert sum(1 for _key, ok in store.conditional_puts if ok) == 1
+
+
 def test_t1_partial_listing_reaches_materializer_as_already_current(tmp_path, monkeypatch):
     store = LocalStore(tmp_path / "store")
     digest = _arm(store, "note-a")
