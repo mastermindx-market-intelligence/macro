@@ -56,13 +56,14 @@ changed:
 verified:
   - claim: >
       Both Healthcare handoffs now carry the thirteen fields
-      scripts/agentos.py check_handoff requires, workstream lines 960-972.
-    command: python3 scripts/agentos.py validate
+      scripts/agentos.py check_handoff requires, scripts/agentos.py:1047-1059.
+    command: python3 scripts/agentos.py validate --quiet
     result: >
       Pre-repair exited 1: 1212 records, 26 error(s), 92 warning(s), every
-      error a required-field miss on these two handoffs. Post-repair exited 0:
-      1212 records, 0 error(s), 92 warning(s), and no finding on either
-      Healthcare handoff. The 92 warnings are pre-existing and elsewhere.
+      error a required-field miss on these two handoffs. On this head the
+      command prints: agentos: 1706 records (94 workstreams, 453 decisions,
+      506 discoveries, 653 handoffs) — 0 error(s), 142 warning(s). The full
+      validate log names neither Healthcare handoff.
   - claim: >
       The operative plan keeps 60 application rows and 12 family IDs, all
       still NOT_EXECUTED, and names the FDA generation suite already on main.

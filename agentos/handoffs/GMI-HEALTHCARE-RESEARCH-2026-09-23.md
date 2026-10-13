@@ -51,11 +51,13 @@ verified:
   - claim: >
       This checkpoint and the master handoff each carry the thirteen required
       handoff fields, including a present unverified list.
-    command: python3 scripts/agentos.py validate
+    command: python3 scripts/agentos.py validate --quiet
     result: >
       Pre-repair exited 1 with 26 required-field errors on these two files and
-      92 warnings. Post-repair exited 0: 1212 records, 0 error(s), 92
-      warning(s), none of them on these two handoffs.
+      92 warnings. On this head, python3 scripts/agentos.py validate --quiet
+      prints: agentos: 1706 records (94 workstreams, 453 decisions, 506
+      discoveries, 653 handoffs) — 0 error(s), 142 warning(s). The full
+      validate log names neither of these two handoffs.
   - claim: >
       Appendix A still has 60 NOT_EXECUTED rows and Appendix B still has 12
       families, and the plan names commit 1c85f27b for the existing FDA suite.
