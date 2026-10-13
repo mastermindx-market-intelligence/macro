@@ -4,7 +4,10 @@ Pins the D1 catch-all (decoded-slash, trailing-slash and other unmatched
 ticker-news paths stay private) and the D2 route class (query-validation 422s
 on this router carry the private headers) without touching any other router's
 default 422 behavior. W12 adds the bare root and non-GET unknown paths to the
-private 404 family. Store, receipts and universe are tmp_path fixtures.
+private 404 family. W13 authenticates before the real-route 405 re-raise,
+pulls HEAD/OPTIONS into the private family, pins a prefixed include, and
+answers an empty leading path segment with the private 404. Store, receipts
+and universe are tmp_path fixtures.
 """
 from __future__ import annotations
 
@@ -40,6 +43,7 @@ _REAL_PATHS = frozenset(
 )
 _EXPECTED_PATHS = _REAL_PATHS | _CATCH_ALL_PATHS
 _NON_GET_METHODS = ["POST", "PUT", "PATCH", "DELETE"]
+_EXTRA_METHODS = ["HEAD", "OPTIONS"]
 
 
 def _iso(dt: datetime) -> str:
@@ -239,7 +243,8 @@ def test_route_order_catch_all_is_last_and_shadows_nothing():
         if getattr(route, "path", "") == _CATCH_ALL_PATH
     ]
     assert {"GET"} in catch_all_method_sets
-    assert set(_NON_GET_METHODS) in catch_all_method_sets
+    # W13 A2: HEAD and OPTIONS join the non-GET catch-all method set.
+    assert set(_NON_GET_METHODS) | set(_EXTRA_METHODS) in catch_all_method_sets
 
 
 def test_trailing_slash_is_private_404(monkeypatch, tmp_path):
@@ -273,9 +278,10 @@ def test_multi_segment_unknown_path_is_private_404(monkeypatch, tmp_path):
     _assert_private(unauthenticated)
 
 
-# Records, without changing, the non-private 405 a non-GET gets on a real GET
-# route: the router answers before authentication and without private headers.
-def test_non_get_on_real_routes_is_recorded_unchanged(monkeypatch, tmp_path):
+# W13 A1: authentication runs before the real-route 405 re-raise, so an
+# unauthenticated caller gets the private 401 on every method and every path
+# instead of a 405 that leaks which paths are real routes.
+def test_non_get_on_real_routes_authenticates_before_405(monkeypatch, tmp_path):
     surface = _arm(monkeypatch, tmp_path)
     story_id = _story_id(surface["db"])
     real_paths = [
@@ -284,33 +290,68 @@ def test_non_get_on_real_routes_is_recorded_unchanged(monkeypatch, tmp_path):
         "/api/ticker-news/NVDA",
         "/api/ticker-news/NVDA/stream",
     ]
-    clients = [
-        (
-            "authenticated",
-            surface["client"],
-        ),
-        (
-            "unauthenticated",
-            _client(
-                surface["ticker_news"],
-                user_id="user-private-errors",
-                authenticated=False,
-            ),
-        ),
-    ]
+    unauthenticated = _client(
+        surface["ticker_news"],
+        user_id="user-private-errors",
+        authenticated=False,
+    )
     for method in _NON_GET_METHODS:
         for path in real_paths:
-            for label, client in clients:
-                response = client.request(method, path, follow_redirects=False)
-                assert response.status_code == 405, (label, method, path, response.text)
-                assert response.json() == {"detail": "Method Not Allowed"}
-                assert response.headers.get("allow") == "GET"
-                assert sorted(response.headers.keys()) == [
-                    "allow",
-                    "content-length",
-                    "content-type",
-                ]
-                assert "cache-control" not in response.headers
+            response = surface["client"].request(method, path, follow_redirects=False)
+            assert response.status_code == 405, (method, path, response.text)
+            assert response.json() == {"detail": "Method Not Allowed"}
+            assert response.headers.get("allow") == "GET"
+            assert sorted(response.headers.keys()) == [
+                "allow",
+                "content-length",
+                "content-type",
+            ]
+            assert "cache-control" not in response.headers
+
+            unauth = unauthenticated.request(method, path, follow_redirects=False)
+            assert unauth.status_code == 401, (method, path, unauth.text)
+            assert "location" not in unauth.headers
+            _assert_private(unauth)
+
+
+def test_method_not_allowed_consumes_no_rate_budget(monkeypatch, tmp_path):
+    # W13 A1: the real-route 405 re-raise runs before the rate limiter, so a
+    # 405 never spends (or is blocked by) the caller's rate budget.
+    surface = _arm(monkeypatch, tmp_path)
+    ticker_news = surface["ticker_news"]
+    calls = []
+    real_allow = ticker_news._allow_request
+
+    def counting_allow(user, **kwargs):
+        calls.append(1)
+        return real_allow(user, **kwargs)
+
+    monkeypatch.setattr(ticker_news, "_allow_request", counting_allow)
+    monkeypatch.setattr(ticker_news, "_RATE_LIMIT_REQUESTS", 1)
+
+    denied = surface["client"].post("/api/ticker-news/NVDA", follow_redirects=False)
+    assert denied.status_code == 405, denied.text
+    assert denied.headers.get("allow") == "GET"
+    assert calls == []
+
+    spent = surface["client"].post(
+        "/api/ticker-news/a/b/c", follow_redirects=False
+    )
+    assert spent.status_code == 404, spent.text
+    assert len(calls) == 1
+
+    exhausted = surface["client"].post(
+        "/api/ticker-news/a/b/c", follow_redirects=False
+    )
+    assert exhausted.status_code == 429, exhausted.text
+
+    still_denied = surface["client"].post(
+        "/api/ticker-news/NVDA", follow_redirects=False
+    )
+    assert still_denied.status_code == 405, still_denied.text
+    assert still_denied.headers.get("allow") == "GET"
+    # One allowed read + one denied check; neither 405 reached the limiter.
+    assert len(calls) == 2
 
 
 def test_bare_root_is_private_404_without_redirect(monkeypatch, tmp_path):
@@ -350,12 +391,87 @@ def test_empty_rest_is_private_404(monkeypatch, tmp_path):
     _assert_private(unauthenticated)
 
 
-def test_double_slash_rest_still_private_422(monkeypatch, tmp_path):
+def test_double_slash_rest_is_private_404(monkeypatch, tmp_path):
+    # W13 A4: an empty leading path segment is an unknown-path shape, not a
+    # ticker; both catch-alls answer the private 404 instead of a 422.
     surface = _arm(monkeypatch, tmp_path)
     response = surface["client"].get("/api/ticker-news//x", follow_redirects=False)
-    assert response.status_code == 422
-    assert response.json()["detail"] == "invalid ticker"
+    assert response.status_code == 404, response.text
+    assert response.json() == {"detail": "not found"}
+    assert "location" not in response.headers
     _assert_private(response)
+
+    posted = surface["client"].post("/api/ticker-news//x", follow_redirects=False)
+    assert posted.status_code == 404, posted.text
+    assert posted.json() == {"detail": "not found"}
+    _assert_private(posted)
+
+    unauth = _client(
+        surface["ticker_news"],
+        user_id="user-private-errors",
+        authenticated=False,
+    ).get("/api/ticker-news//x", follow_redirects=False)
+    assert unauth.status_code == 401, unauth.text
+    _assert_private(unauth)
+
+
+# W13 A2: HEAD and OPTIONS leave the framework 405 family and follow the
+# private answers — 401 before authentication everywhere, and after
+# authentication the router 405 + Allow on real routes only.
+def test_head_and_options_on_real_paths_authenticate_before_405(
+    monkeypatch, tmp_path
+):
+    surface = _arm(monkeypatch, tmp_path)
+    story_id = _story_id(surface["db"])
+    real_paths = [
+        f"/api/ticker-news/stories/{story_id}",
+        "/api/ticker-news/NVDA/changes",
+        "/api/ticker-news/NVDA",
+        "/api/ticker-news/NVDA/stream",
+    ]
+    unauthenticated = _client(
+        surface["ticker_news"],
+        user_id="user-private-errors",
+        authenticated=False,
+    )
+    for method in _EXTRA_METHODS:
+        for path in real_paths:
+            response = surface["client"].request(method, path, follow_redirects=False)
+            assert response.status_code == 405, (method, path, response.text)
+            assert response.headers.get("allow") == "GET"
+            assert "cache-control" not in response.headers
+
+            unauth = unauthenticated.request(method, path, follow_redirects=False)
+            assert unauth.status_code == 401, (method, path, unauth.text)
+            _assert_private(unauth)
+
+
+def test_head_and_options_unknown_paths_are_private(monkeypatch, tmp_path):
+    surface = _arm(monkeypatch, tmp_path)
+    unauthenticated = _client(
+        surface["ticker_news"],
+        user_id="user-private-errors",
+        authenticated=False,
+    )
+    unknown_paths = [
+        "/api/ticker-news",
+        "/api/ticker-news/",
+        "/api/ticker-news/a/b/c",
+    ]
+    for method in _EXTRA_METHODS:
+        for path in unknown_paths:
+            response = surface["client"].request(method, path, follow_redirects=False)
+            assert response.status_code == 404, (method, path, response.text)
+            # A HEAD answer carries no body; only OPTIONS is decodable.
+            if method == "OPTIONS":
+                assert response.json() == {"detail": "not found"}
+            assert "location" not in response.headers
+            _assert_private(response)
+
+            unauth = unauthenticated.request(method, path, follow_redirects=False)
+            assert unauth.status_code == 401, (method, path, unauth.text)
+            assert "location" not in unauth.headers
+            _assert_private(unauth)
 
 
 def test_non_get_unknown_paths_are_private_404(monkeypatch, tmp_path):
@@ -449,6 +565,50 @@ def test_include_router_keeps_route_class_on_real_app():
     ]
     assert outside
     assert any(not isinstance(route, _PrivateValidationRoute) for route in outside)
+
+
+def test_router_prefix_keeps_405_and_private_404(monkeypatch, tmp_path):
+    # W13 A3: the real-route 405 re-raise matches module-router route paths,
+    # not request paths, so a prefixed include keeps both private answers.
+    # Measured green on base (finding: the old "assumes no prefix" docstring
+    # claim was false); this test pins it.
+    surface = _arm(monkeypatch, tmp_path)
+    ticker_news = surface["ticker_news"]
+    story_id = _story_id(surface["db"])
+    app = FastAPI()
+    app.include_router(ticker_news.router, prefix="/pfx")
+    app.dependency_overrides[ticker_news.require_site_full_user] = lambda: {
+        "id": "pfx-user",
+        "email": "user@example.test",
+    }
+    client = TestClient(app)
+    real_paths = [
+        f"/pfx/api/ticker-news/stories/{story_id}",
+        "/pfx/api/ticker-news/NVDA/changes",
+        "/pfx/api/ticker-news/NVDA",
+        "/pfx/api/ticker-news/NVDA/stream",
+    ]
+    for method in _NON_GET_METHODS:
+        for path in real_paths:
+            response = client.request(method, path, follow_redirects=False)
+            assert response.status_code == 405, (method, path, response.text)
+            assert response.json() == {"detail": "Method Not Allowed"}
+            assert response.headers.get("allow") == "GET"
+
+    for method in ("GET", "POST"):
+        unknown = client.request(
+            method, "/pfx/api/ticker-news/a/b/c", follow_redirects=False
+        )
+        assert unknown.status_code == 404, (method, unknown.text)
+        assert unknown.json() == {"detail": "not found"}
+        _assert_private(unknown)
+
+    bad_ticker = client.request(
+        "POST", "/pfx/api/ticker-news/bad%20ticker/x", follow_redirects=False
+    )
+    assert bad_ticker.status_code == 422, bad_ticker.text
+    assert bad_ticker.json()["detail"] == "invalid ticker"
+    _assert_private(bad_ticker)
 
 
 def test_validation_422_scope_outside_router_unchanged(monkeypatch, tmp_path):
