@@ -52,11 +52,14 @@ Subcommands:
                       is listed once. A file is parsed when it cites a named
                       decision, or a named decision cites that file's own
                       key, including when the stem is not ``DEC-<key>``.
-                      Schema findings on that file are not recorded. A
-                      ``depends_on`` cycle among those workstreams is
-                      reported on the named workstream that reaches it when
-                      no cycle member was named. The rest of the store is
-                      not walked.
+                      Schema findings on that file are not recorded. On that
+                      covered set, an unreciprocated ``supersedes`` is
+                      reported on the named decision that lists it when the
+                      old record is outside ``--paths``. A ``depends_on``
+                      cycle that includes no named workstream is reported
+                      on the named workstream that reaches it, including
+                      when ``--paths`` misses a handoff join and the whole
+                      store loads. The rest of a covered set is not walked.
                       ``uncited-discovery`` is omitted for a subset: citation
                       counts need every record, and unscoped ``validate``
                       still reports that rule. ``--strict``
@@ -2207,6 +2210,11 @@ _HANDOFF_JOIN_FIELDS = (
     ("discoveries", "DSC"),
 )
 _DANGLING_REF_RE = re.compile(r"\b(WS|DEC|DSC):([A-Z0-9-]+)")
+# check_references files unreciprocated-supersession on the OLD record and
+# names the decision that lists supersedes in this sentence.
+_UNRECIPROCATED_CITER_RE = re.compile(
+    r"\bDEC:([A-Z0-9-]+) supersedes this record"
+)
 
 
 def _citation_path(root: Path, prefix: str, key: str) -> Path | None:
@@ -2432,6 +2440,9 @@ def _report_reached_outside_cycles(store: Store, path_args: list[str]) -> None:
     When every member sits outside ``--paths``, the path filter would drop
     the finding. The named workstream whose edges reached that cycle still
     fails. A cycle that already lands on a named path is left as written.
+    :func:`_load_named_store` calls this for a covered set.
+    :func:`_named_record_problems` calls it when ``--paths`` loaded the whole
+    store. A second call sees the finding already on a named path and returns.
     """
     named_paths = {Path(raw).resolve() for raw in path_args}
     cycles = [problem for problem in store.problems if problem.rule == "workstream-cycle"]
@@ -2473,6 +2484,50 @@ def _report_reached_outside_cycles(store: Store, path_args: list[str]) -> None:
         if not _reaches(ident[3:]):
             continue
         store.problems.append(Problem(path, "workstream-cycle", message, hard=True))
+
+
+def _file_outbound_unreciprocated(store: Store, path_args: list[str]) -> None:
+    """File unreciprocated-supersession on the named decision that lists supersedes.
+
+    :func:`check_references` attributes the finding to the old record. When
+    that file is outside ``--paths``, the path filter would drop it. The
+    message names the decision whose ``supersedes`` list produced the
+    finding; a named path for that decision still fails. A finding already
+    on a named path is left as written. Calling this twice does not duplicate
+    it. Unscoped ``validate`` does not call this, so a full-store run keeps
+    the finding on the old record.
+    """
+    named_paths = {Path(raw).resolve() for raw in path_args}
+    present = {
+        (problem.path.resolve(), problem.message)
+        for problem in store.problems
+        if problem.rule == "unreciprocated-supersession"
+    }
+    copies: list[tuple[Path, str]] = []
+    for problem in store.problems:
+        if problem.rule != "unreciprocated-supersession":
+            continue
+        if problem.path.resolve() in named_paths:
+            continue
+        match = _UNRECIPROCATED_CITER_RE.search(problem.message)
+        if match is None:
+            continue
+        citer = match.group(1)
+        path = store.paths.get(f"DEC/{citer}")
+        if path is None or path.resolve() not in named_paths:
+            continue
+        rec = store.records.get(f"DEC/{citer}")
+        if rec is None or not _refs(rec.get("supersedes"), "DEC"):
+            continue
+        signature = (path.resolve(), problem.message)
+        if signature in present:
+            continue
+        present.add(signature)
+        copies.append((path, problem.message))
+    for path, message in copies:
+        store.problems.append(
+            Problem(path, "unreciprocated-supersession", message, hard=True)
+        )
 
 
 def _load_named_store(
@@ -2537,6 +2592,7 @@ def _load_named_store(
     store.problems.extend(check_references(store.records, store.paths))
     _drop_partial_false_findings(store)
     _report_reached_outside_cycles(store, path_args)
+    _file_outbound_unreciprocated(store, path_args)
     return store
 
 
@@ -2548,11 +2604,16 @@ def _named_record_problems(
     The caller passes either the whole store or, when ``--paths`` already
     holds every handoff join, only those files. Findings on every other
     file stay out of this invocation: a stale or malformed sibling must
-    not fail a path-scoped check.
+    not fail a path-scoped check. Before that filter, an outside-only
+    workstream cycle is copied onto the named workstream that reaches it.
+    An unreciprocated supersession was already copied onto the named
+    decision by :func:`_load_named_store` when the set was covered; a path
+    list that loaded the whole store keeps that finding on the old record.
     """
     counts = {"workstreams": 0, "decisions": 0, "discoveries": 0, "handoffs": 0}
     wanted = [Path(raw).resolve() for raw in path_args]
     wanted_set = set(wanted)
+    _report_reached_outside_cycles(store, path_args)
     problems = [problem for problem in store.problems if problem.path.resolve() in wanted_set]
     in_store = {path.resolve() for path in store.paths.values()}
     known = set(in_store)

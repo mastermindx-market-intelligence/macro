@@ -2476,6 +2476,49 @@ def test_d3_partial_paths_report_unreciprocated_supersession(
     assert "3 records (1 workstreams, 1 decisions, 0 discoveries, 1 handoffs)" in captured.out
 
 
+def test_d3_partial_paths_report_outbound_unreciprocated_supersession(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str],
+) -> None:
+    """A named decision that lists supersedes still fails when the old record is outside.
+
+    DEC-NEW-DEC is named and lists supersedes DEC:OLD-DEC. DEC-OLD-DEC is on
+    disk, not named, and has no superseded_by. check_references files
+    unreciprocated-supersession on the old file. Self-contained --paths must
+    report that finding on the named decision. The real cover predicate is
+    true; load_store must not run. The outside file is not counted.
+    """
+    module = _load_agentos_module()
+    _boom_on_full_store(module, monkeypatch)
+    root = _write_tree(tmp_path, {
+        "workstreams/WS-DRAFT-ROUNDTRIP.md": _D3_WS,
+        "decisions/DEC-OLD-DEC.md": _decision_doc("OLD-DEC"),
+        "decisions/DEC-NEW-DEC.md": _decision_doc(
+            "NEW-DEC", "supersedes:\n  - DEC:OLD-DEC\n",
+        ),
+        "handoffs/DRAFT-ROUNDTRIP-2026-10-12.md": _plain_handoff(),
+        "handoffs/GARBAGE-2026-10-12.md": "---\nthis: no\n---\n\nSee above.\n",
+    })
+    paths = [
+        root / "handoffs" / "DRAFT-ROUNDTRIP-2026-10-12.md",
+        root / "workstreams" / "WS-DRAFT-ROUNDTRIP.md",
+        root / "decisions" / "DEC-NEW-DEC.md",
+    ]
+    snap = _dump_json(tmp_path, "snap.json", {"prs": []})
+    args = _strict_paths_args(root, paths, snap)
+    assert module._paths_cover_handoff_joins(root, args.paths) is True
+    result = module.cmd_validate(args)
+    captured = capsys.readouterr()
+    assert result == 1, captured.out + captured.err
+    assert "DEC-NEW-DEC.md: [unreciprocated-supersession]" in captured.out
+    assert "DEC:NEW-DEC supersedes this record" in captured.out
+    assert "DEC-OLD-DEC.md:" not in captured.out
+    assert "one-sided-supersession" not in captured.out
+    assert "dangling-ref" not in captured.out
+    assert "filename-mismatch" not in captured.out
+    assert "unparseable" not in captured.out
+    assert "3 records (1 workstreams, 1 decisions, 0 discoveries, 1 handoffs)" in captured.out
+
+
 def test_d3_partial_paths_report_one_sided_supersession(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str],
 ) -> None:
@@ -2704,6 +2747,52 @@ def test_d3_partial_paths_report_reached_outside_cycle(
     assert "dangling-ref" not in captured.out
     assert "unparseable" not in captured.out
     assert "2 records (1 workstreams, 0 decisions, 0 discoveries, 1 handoffs)" in captured.out
+
+
+def test_d3_paths_report_outside_only_cycle_on_lone_workstream(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str],
+) -> None:
+    """--paths of only the workstream that reaches an outside cycle still fails.
+
+    WS-REACH depends on WS-OUT-B, and WS-OUT-B cycles with WS-OUT-C. No
+    handoff is named, so the cover predicate is false and the whole store
+    loads. workstream-cycle is filed on the outside members. The named
+    workstream that reaches that cycle must still fail. The outside records
+    and the unparseable sibling stay uncounted.
+    """
+    module = _load_agentos_module()
+    handoff = _plain_handoff().replace(
+        "workstream: WS:DRAFT-ROUNDTRIP\n",
+        "workstream: WS:REACH\n",
+    )
+    root = _write_tree(tmp_path, {
+        "workstreams/WS-REACH.md": _cycle_ws("REACH", "WS:OUT-B"),
+        "workstreams/WS-OUT-B.md": _cycle_ws("OUT-B", "WS:OUT-C"),
+        "workstreams/WS-OUT-C.md": _cycle_ws("OUT-C", "WS:OUT-B"),
+        "handoffs/REACH-2026-10-12.md": handoff,
+        "handoffs/GARBAGE-2026-10-12.md": "---\nthis: no\n---\n\nSee above.\n",
+    })
+    named = root / "workstreams" / "WS-REACH.md"
+    args = argparse.Namespace(
+        root=str(root),
+        quiet=False,
+        strict=False,
+        snapshot=None,
+        paths=[str(named)],
+    )
+    assert module._paths_cover_handoff_joins(root, args.paths) is False
+    result = module.cmd_validate(args)
+    captured = capsys.readouterr()
+    assert result == 1, captured.out + captured.err
+    assert "WS-REACH.md: [workstream-cycle]" in captured.out
+    assert "WS:OUT-B" in captured.out
+    assert "WS:OUT-C" in captured.out
+    assert "WS-OUT-B.md:" not in captured.out
+    assert "WS-OUT-C.md:" not in captured.out
+    assert "dangling-ref" not in captured.out
+    assert "unparseable" not in captured.out
+    assert "required-field" not in captured.out
+    assert "1 records (1 workstreams, 0 decisions, 0 discoveries, 0 handoffs)" in captured.out
 
 
 def test_d3_no_network_or_gh_in_agentos() -> None:
