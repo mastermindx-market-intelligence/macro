@@ -1052,3 +1052,37 @@ INTENDED_RESUME_SURFACE: this Claude Code session; successor reads this file + #
 - PR watcher `b0fa6a9td` over Terminal #984/#983 (exits on merged/closed/blocked).
 - Rungs at 06:30Z: #723 RUNNING (oi-1e) and draft; PP1/PP2 NOT STARTED (contract accepted, gated on oi-1e); #984/#983 CI; #9093/#9094/#9080 CI (label); #9079/#9083 HELD; Q03G-R1/OATRUTH-R1 RUNNING; D04A HELD (Tuesday window armed).
 - NEXT: judge Q03G-R1 → Macro PR (label only); judge OATRUTH-R1 → Terminal PR (label + auto); on #984 merge, see #948/#981/#983 refresh, then git-gated deploy of merged master + live verify; on oi-1e return, fast-forward the #723 head and commission PP1.
+
+### D58 (2026-10-13T07:35Z) — Q03G-R1, oi-1e and OATRUTH-R1 accepted; #984 superseded by #982; #981 merged; PP1/PP2 frozen and fanned out as two disjoint Grok lanes
+- ACCEPTED (judged by artifact):
+  - Q03G-R1 → Macro #9097 (head `0d5aab5fb2ab`), label `merge-on-green` only. Watcher `bs0oowvm6`.
+  - oi-1e: #723 head → `3a9dd064b23a`; both custody branches are equal. Every required check and every e2e shard on #723 is green. #723 stays draft and UNARMED until PP1, PP2 and wave B land.
+  - OATRUTH-R1 (`33f737002a6b`) → Terminal #985, with `merge-on-green` and native auto armed. The controller has refreshed it onto master (`f546ad68a0da`). Watcher `bo0lvr44m`.
+- #984 CLOSED 06:42Z. It was superseded by #982 (chart-engine wave-3, another session's PR, which carries the `ci.yml` shard split). #982 is LIVE as `3b0cd9e16` (deployed by its own session; `terminal.service` active since 06:47:19Z). Do not reopen #984.
+- #981 (TFLAKE) MERGED 07:26:09Z → `4005275cc`. Between live `3b0cd9e16` and `4005275cc` the only change is two `lib/__tests__` files, so the served bundle is functionally unchanged. No restart was spent on it. The next git-gated release of a production-affecting merge from this lane (#985, #983 or #948) carries it. #948 and #983 are refreshed, mostly green and armed; watcher `bwg28bwsw`.
+- PP1/PP2 ARCHITECTURE (frozen against contract `bb5a6ceb…`):
+  - Scale: `scaleOver: "selected-scope"`. The global, per-column and sigma scales are computed over every window strike × the selected expiries BEFORE the 101-row display cap. The rail exposes `data-scale-hi`/`data-scale-lo`.
+  - Precision correction to the contract label: the code's signed lenses saturate at P95 of |value| from 0, not at P5–P95. The truthful label is "0–P95 of |value| · full selected scope · square-root". Unsigned lenses get P5–P95. Never asinh. Paper's illustrative values are not copied.
+  - Receipts: only from the producer's `_build_meta.source_dates` (`eod`, `greeks`, `oi_publication`, `previous_oi_publication`, `latest_oi_publication`) plus the top-level build `asof`. `mixed` mirrors the observer's `_require_clocks_aligned`.
+  - There is NO spot clock: no field carries one, so it renders "unavailable". There is no `t2_date` fallback. The e2e fixture lacks `source_dates`, so its clocks render unavailable truthfully.
+  - Newer snapshot: an opt-in hold in `useOptionsSnapshot`. While inspecting, a different `${root}|${session}|${asof}` key is kept as `pending`. Ending the inspection applies it during render, never via setState-in-effect. Existing one-argument callers are unchanged.
+  - Bounds: `parseScopeBounds` returns issue codes and the selected strikes and expiries. Strikes are finite with From ≤ To; DTE is whole and non-negative with min ≤ max. Expired expiries are never selected, and 0DTE is exactly the source session, never the nearest expiry.
+- CARRIER DECISION: #723 Paper work stays on the D52 Grok carrier. Fabric slots (~1200 s) cannot host multi-hour Playwright worktree lanes; the root's own GLM attempt timed out at exactly that slot. Fabric is used for short disjoint leaves, such as the exact-head review.
+- LAUNCHED:
+  - PP1-SM (companion map leads: full-scope scale, missing ≠ zero key and hatch, `options-map-layout` two-column ≥640 px container, one selected-node strip with PinButton plus `options-inspect-node`). The #723 writer lane runs on mmx-ubuntu0 `~/lanes/wt/oi-1c`, branch `claude/ssd-pr-723-c89a753150e1dbd6`, pid 1873643, since 07:20:42Z. Its e2e geometry JSON and 12 captures cover 3 viewports × EN/ZH × dark/light. Watcher `bgoo8kaev`.
+  - PP2-L (library only: `readMatrixReceipts`, `matrixSnapshotKey`, the snapshot hold, `lib/optionsScopeBounds.ts`). It runs on mastermind-pc `~/lanes/wt/pp2l`, new branch `claude/pp2l-options-lib-20261013` from `3a9dd064`, pid 2694180, since 07:27:00Z, and owns no PP1-SM file. Watcher `be5vzto4z`.
+- WAVE B (after PP1-SM and PP2-L are integrated onto the #723 branch):
+  - PP1-D: the desk host leads with `MatrixCompanion layout="page"`; the gex-desk evidence crops are recaptured.
+  - PP2-UI: `options-receipts`, `options-newer-snapshot`, From/To + DTE inputs with a strike-range grid option, `options-chart-return` with scroll restoration, held labels.
+  - Then: the Fabric review leaf, final-head recapture, `npm run test:e2e:responsive`, #723 CI → merge → git-gated deploy, and authenticated production captures at 3 viewports.
+- Rungs at 07:35Z:
+  - #723: RUNNING (PP1-SM) and draft.
+  - PP2-L: RUNNING.
+  - #985: CI. #948/#983: CI, armed.
+  - #981: MERGED; its effect rides the next deploy.
+  - Macro #9097: CI (label). #9079/#9083: HELD until the 2026-10-14 00:00Z follow-up. D04A: HELD.
+- NEXT:
+  - Judge the PP1-SM and PP2-L returns.
+  - Fast-forward or merge PP2-L into the #723 branch through the writer lane.
+  - Commission wave B.
+  - On the first production-affecting Terminal merge from this lane, run a git-gated deploy of the master tip and verify it live.
