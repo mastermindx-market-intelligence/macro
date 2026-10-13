@@ -2,6 +2,8 @@
 
 Research design: [PR #8574](https://github.com/mastermindx-market-intelligence/macro/pull/8574), immutable commit `df2091915159dab94f316718caa9b2662098eae4`. Implementation carrier: [PR #8576](https://github.com/mastermindx-market-intelligence/macro/pull/8576). The cumulative checkpoint and verification receipt in this directory distinguish executed local verification from CI and release status.
 
+**To run the example on M2 Studio, start with [the operator quickstart](PB_D_OPERATOR_QUICKSTART.md).** It names the computer and macOS Terminal app, supplies one complete command, and explains the output. No repository selection, `cd`, Python activation, or installation is required in the prepared M2 environment.
+
 ## What this implements
 
 PB-D can now be replayed as an offline research pipeline: reviewed source evidence becomes a quality receipt; published-board inputs become immutable first-T2 observations and exact matched pairs; separately supplied outcomes become the preregistered primary analysis and fixed secondary family. The source and research adapters perform no enrollment, scheduling, trading or signal changes. The integrated `run` command always returns `FROZEN_DESIGN_NOT_ENROLLED`; the other commands return their own unenrolled receipt schemas.
@@ -13,24 +15,23 @@ PB-D can now be replayed as an offline research pipeline: reviewed source eviden
 | Corrections and omissions | `append_correction`, `rematch_omission` in the cohort module | Preserve the original manifest; append correction receipts; derive full eligible-pool rematches |
 | Evaluation | `engine.pb_d_evaluation.evaluate_pb_d` | Equal-date H5 increments, the fixed calendar-block bootstrap, inferential gates, secondary family and descriptive sensitivity reports |
 | OHLC paths | `engine.pb_d_evaluation.compute_ohlc_path` | Calendar-positioned ATR20/B20, post-entry excursions, drawdown, clean liftoff and failed breakout labels |
-| Executable consumer | `python -m scripts.query_pb_d_event_quality` | Validate JSON, run quality → cohort → outcomes in that order, and write an immutable report |
+| Executable consumer | `.venv/bin/python -m scripts.query_pb_d_event_quality` | Validate JSON, run quality → cohort → outcomes in that order, and write an immutable report |
 
 The existing Company Intelligence document/event identities and Evidence Foundation contracts remain the owners. The adapter does not create a competing event store, independence ontology or registration ledger. Its hash receipts establish byte integrity and replay identity; they do not authenticate the producer, prove a reviewer was human, or prove that an asserted clock was independently captured.
 
 ## Run the supplied example
 
-From the repository root, with Python 3.12 and the dependency versions used by the CI job:
+This code belongs to `mastermindx-market-intelligence/macro`. “Macro checkout” means a local folder containing this repository's `engine/`, `scripts/`, and `tests/` directories. The GitHub website stores the code; macOS Terminal on M2 Studio runs it. See the operator quickstart above for the prepared machine's complete absolute command.
+
+For developers already inside a Macro checkout with its `.venv` Python 3.12 environment:
 
 ```bash
-python -m pip install pytest numpy==2.3.5 pyyaml jsonschema==4.26.0
-python -m scripts.query_pb_d_event_quality run \
-  --input tests/fixtures/pb_d/research_packet.json \
-  --output /tmp/pb-d-synthetic-report.json
+bash scripts/run_pb_d_example.sh
 ```
 
-Choose a new output pathname on every run. The consumer refuses to overwrite an existing file or replace its input; omitting `--output` prints JSON to stdout. Invalid JSON, unsupported fields, contradictory supplied outcome clocks and attempted activation return exit code 2 with a `REFUSED` reason.
+The launcher derives its own checkout, checks the exact Python interpreter, creates a fresh output directory, invokes the existing consumer, and prints a short summary derived from the saved report. An absolute launcher path works from any working directory. Use `--python` only to select an explicit absolute Python 3.12 executable; it never falls back to a bare `python` or installs dependencies. `--output-dir` selects an existing parent folder; each run still gets a new child folder. Setup and troubleshooting are in the operator quickstart.
 
-Direct file execution is also supported: invoke `python /absolute/path/to/macro/scripts/query_pb_d_event_quality.py run` from another working directory, using absolute `--input` and `--output` paths. The entry script locates its own checkout before importing repository code.
+For direct machine-consumer calls, choose a new output pathname on every run. The consumer refuses to overwrite an existing file or replace its input; omitting `--output` prints JSON to stdout. Invalid JSON, unsupported fields, contradictory supplied outcome clocks and attempted activation return exit code 2 with a `REFUSED` reason. Direct-file calls are also supported when both the Python 3.12 executable and script use absolute paths. The entry script locates its own checkout before importing repository code.
 
 The example is wholly fictional. It contains one Q1 issuer, two Q0 issuers, one unknown-exposure issuer, one original matched pair and an unused control. Its weekday schedule is explicitly labeled **not a real exchange calendar**. Its board, source bytes, reviewer receipts, prices, future outcomes and validation references are synthetic. The numeric primary increment is +4 percentage points; this is a known-number integration check, not a market observation or evidence for the investment hypothesis. Coverage is 3/4, and the study is not enrolled.
 
@@ -39,10 +40,10 @@ When the matched control is omitted, the other original eligible control can ent
 The four stages are also available independently:
 
 ```bash
-python -m scripts.query_pb_d_event_quality quality --input reviewed-evidence.json
-python -m scripts.query_pb_d_event_quality freeze --input cohort-input.json
-python -m scripts.query_pb_d_event_quality evaluate --input frozen-cohort-and-outcomes.json
-python -m scripts.query_pb_d_event_quality run --input complete-research-packet.json
+.venv/bin/python -m scripts.query_pb_d_event_quality quality --input reviewed-evidence.json
+.venv/bin/python -m scripts.query_pb_d_event_quality freeze --input cohort-input.json
+.venv/bin/python -m scripts.query_pb_d_event_quality evaluate --input frozen-cohort-and-outcomes.json
+.venv/bin/python -m scripts.query_pb_d_event_quality run --input complete-research-packet.json
 ```
 
 `quality` accepts the keyword arguments to `build_quality_receipt`. `freeze` accepts the cohort module's documented payload. `evaluate` accepts `cohort` (the hash envelope), `outcomes` (an array) and optional `dataset_kind`. `run` accepts exactly `schema: pb_d_research_input.v1`, `dataset_kind`, `cohort`, `quality_requests` keyed by observation ID, and `outcomes`. The consumer accepts only `SYNTHETIC_DRY_RUN` and `OFFLINE_OBSERVATION`.

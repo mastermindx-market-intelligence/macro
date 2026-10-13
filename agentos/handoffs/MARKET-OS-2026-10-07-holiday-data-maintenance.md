@@ -1,6 +1,6 @@
 ---
 workstream: "WS:MARKET-OS"
-session: sol/web-market-holiday-awareness-20261007-sol-001
+session: sol/web-market-holiday-calendar-compatibility-20261007-sol-001
 model: sol
 ended_because: ci_handoff
 mission: >
@@ -120,16 +120,50 @@ verified:
       76 cases passed, zero client errors, zero strip overflow and zero added page overflow.
       Reports under /Volumes/Mastermind/test-tmp/market-holiday-awareness-20261007-sol-001/ui-visual/.
       Controlled fixtures remove unrelated scripts in memory; this is not full-site or production proof.
+  - claim: The original holiday release completed hosted CI, merge and actual public-page/source proof.
+    command: Original PR8606 CI37632749164, public-render37640444226, verify_holiday_full_runtime_source.py and verify_live_holiday_release.py.
+    result: >
+      Required CI and publication succeeded. PR8606 merged as cc202310f55944aa5a89a2e31857b3eb2ed1804e.
+      At 15:59:44Z all 52 deployed runtime files matched. Actual public-page proof passed 15:56:05–17Z:
+      four regional pages, five fresh session receipts, 73 held China price nodes and six distinct
+      visible prices equal to their real September 30 retained parquet values; no October 1–7 rows
+      in those six sampled histories. The original dated whole-universe census is separate evidence.
+  - claim: The actual China local-date transition was observed without clock substitution.
+    command: Public snapshot observation at 2026-10-07T16:00:54.597186Z.
+    result: >
+      The 16:00:21.605397Z snapshot reports CN and Connect October 8 preopen, expected September 30,
+      and next open October 8 at 09:30 Asia/Shanghai. This proves the midnight transition, not future trading reopening.
+  - claim: The real research-owner regression reproduces the incident and passes after the exact restore, while current US holiday behavior remains isolated.
+    command: calendar-owner-red.json and calendar-compatibility-green.json in the compatibility operation evidence.
+    result: >
+      RED was 2 failed and 1 passed: actual v1 owner rejection and actual v2 owner-hash mismatch.
+      After restoring the exact legacy file and adding the current US adapter, 130 tests passed,
+      including the real v1/v2 loading paths, tampered-copy refusal, half-session boundaries,
+      announced-slate helper isolation, shared market status and live-quote settlement.
+  - claim: Collector, storage, overlay and publication integration remains valid with the separate US adapter.
+    command: calendar-compatibility-integration.json in the compatibility operation evidence.
+    result: >
+      171 passed and 4 skipped in 4.81 seconds, PID33743 exit0. The four incumbent site-inventory
+      checks skip because the canonical source carrier omits site artifacts; their hosted-CI
+      obligation is unchanged. No production data, fixture expectations or test guards were changed.
+  - claim: Independent review and the existing deployment and CI owners accept the bounded compatibility repair.
+    command: calendar-compatibility-independent-ci-review-final.json and ci-manifest-field-review-final.json.
+    result: >
+      The actual seven-suite calendar code job passed 169 tests. The new API restart leaf first
+      failed the existing POSIX grep regression, then the entire deployment suite passed 254 tests.
+      Final CI ownership, curated import closure and packing checks passed all 3 tests in 134.92 seconds;
+      177 jobs validated. Exactly 14 job declarations add the required paths with every other parsed
+      field unchanged. All prior failed attempts retain distinct receipts. Independent source review
+      confirmed the exact legacy owner and unchanged registrations, loaders and RS source.
 unverified:
-  - claim: The committed candidate has completed required hosted checks and deployed production proof.
-    what_would_verify: Exact PR head, current-base integration and concluded required checks; governed merge; live served bytes and fresh session receipts; actual regional-page consumer check.
+  - claim: The bounded legacy-calendar compatibility repair has completed hosted CI, merge and normal production updater verification.
+    what_would_verify: Exact follow-up PR head and current-base checks; governed merge; 53-file source proof including the separate US adapter; unchanged research owner/registrations accepted by the normal updater and terminal guard; fresh live cash-session receipts.
 unresolved:
   - Annual CN2027 and complete CA2027 notices are not yet incorporated; coverage remains unverified.
 next_actions:
-  - Freeze the final source, validate Agent OS and CI ownership, commit and publish the exact candidate.
-  - Complete required hosted checks and independent release review on that immutable head and current protected base.
-  - Merge through GitHub without bypass, follow the incumbent deployment/publication owners, and verify actual live receipts and regional pages.
-  - Record merge, deployment and consumer-proof receipts before declaring the requested outcome complete.
+  - Finish the exact legacy-calendar restore and separate current US cash adapter, with real W2C loader and half-session isolation regressions in the existing code gate.
+  - Validate source/CI ownership, obtain independent review and required exact-candidate hosted checks, then merge through the normal governed path.
+  - Verify deployed source, unchanged research bindings, normal updater completion and fresh live market status; close the compatibility follow-up in both PR release receipts.
 do_not_redo:
   - Do not create another calendar service, scheduler, collector, risk-sizing rule, state store or publication lane.
   - Do not turn Chinese government make-up weekends into stock-market sessions.
@@ -148,7 +182,7 @@ danger_areas:
 
 # Holiday maintenance implementation checkpoint
 
-Capability state at this checkpoint: **BUILT_NOT_PROVEN**. The parent session remains
+Capability state at the original implementation checkpoint: **BUILT_NOT_PROVEN**. The parent session remains
 responsible for the complete delivery chain. The schema's `ci_handoff` marks the transition
 to hosted verification and does not end the Chairman's mission or transfer source custody.
 
@@ -498,3 +532,27 @@ The contract's mislabeled secondary TMX Christmas Eve notice was removed. The ex
 Only the shared manifest, this handoff and that documentary source correction differ among the 92 owned files. All holiday runtime, deployment, live/theme asset, browser receipt and historical baseline bytes remain unchanged. Their accepted semantic evidence remains applicable. Root will bind the five prepared helpers to the new immutable candidate without changing any proof assertions or the 52-file runtime map, then require the actual published CI plan to identify the tested integration and base.
 
 This remains **BUILT_NOT_PROVEN** until concluded current integration checks, fresh canonical admission, governed exact-head squash merge, all 52 deployed source bindings, the actual served live/theme assets, five fresh public session receipts, four live regional pages and actual retained China price witnesses have passed. The final PR release receipt will explicitly supersede all historical pending release and local closure clauses, distinguish the pre-release full census from post-release price witnesses, and retain the verified-calendar coverage limits.
+
+
+## 2026-10-07 production proof and bounded calendar compatibility repair
+
+The production proof above supersedes the historical pending-release claims for the original holiday behavior. [PR8606](https://github.com/mastermindx-market-intelligence/macro/pull/8606) merged candidate `c3eca97d51b5876f97a46e2d6ed4c785c8e8c219` as `cc202310f55944aa5a89a2e31857b3eb2ed1804e`; CI `37632749164` and public-render `37640444226` concluded success. The 52-file runtime proof at HEAD `90404cf9c1381fe8d8d6e1d91f5b20d3f661e5ac` has SHA-256 `fdd4ace11528831c6ab2d2c339d7d777cd8f750ce0f95f8353366b644f0a196e`. The four-page live proof has SHA-256 `77ae60bc0740564189f521eb8fa2242a37c4011281d806d34a907dc8ab52a91b`.
+
+China's actual October 7 holiday state held the six sampled daily values through September 30: 603501.SS 82.21, 300014.SZ 49.81, 002043.SZ 12.02, 000858.SZ 70.06, 002294.SZ 30.66 and 601800.SS 5.94. History health remained separate from the stale quote clock. At Shanghai midnight, the existing snapshot publisher naturally changed CN/Connect to October 8 preopen while retaining September 30 as the expected completed session. Actual October 8 trading reopening has not been observed by these receipts.
+
+The updater separately exposed an immutable research-calendar dependency: W2C's registered owner is the exact pre-feature `lib/nyse_calendar.py` SHA-256 `7c9167fd416babb64c3067ae7e6237615011ad79e26d826e57005486496410ce`; RS Pullback pins the same owner. The calendar-byte refusal precedes terminal-ledger authentication. No registration, hash, activation, credential, ledger, feature flag or guard is changed. The compatibility repair restores that owner byte-for-byte and routes current US cash behavior through `lib/us_cash_calendar.py`.
+
+This is the new bounded operation `market-holiday-calendar-compatibility-20261007-sol-001` within the continuing Chairman holiday mandate. Protected procedures remain pinned to Mastermind `c7e47c859eb2925c5626931fd511800773ba09ac`. The original source workspace was canonically released at 16:19:38Z after all source users stopped, the exact merged head was confirmed published, and 120 generated test-cache files were preserved and removed. Its history and external evidence remain. The installed workspace owner acquired the sole new carrier at 16:19:59Z from freshly verified main `e3800ef5addcbf60204bce0df816761086b1b17b`; acquisition receipt SHA-256 `3f1f5b18dc850dfc3ed8a5443b319c02d8b59ef1113e5995d3f82623dc388753`.
+
+Production capacity recovery preserved and verified all bytes and metadata of 72 closed system-log files externally before removing only those exact closed originals, freeing 979,132,416 allocated bytes. Current logging was independently verified. Earlier failed capacity attempts retain their original failure receipts and reconciled partial effects; they are not relabeled successful. This recovery enabled publication and proof, but is not a permanent capacity remedy. At 16:19:20Z the updater had naturally reached `e3800ef5addcbf60204bce0df816761086b1b17b`, logging services were active, and 571,228,160 bytes remained available; the W2C owner mismatch still prevented normal updater completion.
+
+The original holiday capability is **PROVEN_LIVE**. The compatibility follow-up remains open until its own immutable candidate, hosted checks, merge and normal updater/registration proof complete. Historical holiday proof remains dated evidence and does not substitute for the repair's production verification.
+
+
+### Final compatibility candidate preparation
+
+The final local gates above are concluded, and all eleven intended source/document paths are reviewed. Root fast-forwarded the same carrier from its acquired base to freshly verified main `3fdca06bebdf537f7778a004530514dbc843477b` at 16:47:04Z. Its only new paths are an unrelated White House health record, Treasury watch data and the generated White House page. All eleven reviewed working-file hashes remained identical through the fast-forward; no source or CI behavior changed. Protected Mastermind remained `c7e47c859eb2925c5626931fd511800773ba09ac`.
+
+A fresh read-only production census at 16:43:29Z corrects the prepared verifier's earlier terminal-state assumption: the existing W2C installation and manifest are present, `TERMINAL.json` is absent, and the timer is enabled but inactive. No terminal authentication can be claimed from an absent file. After the registered owner is restored, the real installation verifier must return zero, and the terminal-state verifier must return its defined absent status 3 while the file remains absent. The unchanged updater owns any normal replay/accrual and timer restoration. If a legitimate terminal receipt subsequently exists, its actual authentication must instead return zero and the owner's terminal timer state must apply. No registration, activation rule, timer policy or runtime guard is changed to satisfy proof. The prepared terminal-only verifier was never executed and is retained as a superseded draft.
+
+The repair's hosted integration, governed merge, deployed source/registration and current live proof remain pending. The final PR release receipt must distinguish authenticated installation, correctly observed absent or authenticated terminal state, actual updater completion and public holiday behavior.

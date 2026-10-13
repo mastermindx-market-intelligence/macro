@@ -121,10 +121,35 @@ __all__ = [
     "COHERENCE_VOCABULARY",
     "POSTURE_VOCABULARY",
     "canonical_json",
+    "live_market_freshness",
+    "LIVE_MARKET_FUTURE_TOLERANCE_S",
 ]
 
 SCHEMA = "mastermind.risk_envelope/v1"
 DEFINITION_ID = "grey-deer-v1-2026-08-19"
+
+LIVE_MARKET_FUTURE_TOLERANCE_S = 120.0
+
+
+def live_market_freshness(
+    *, live_active: bool, built_dt: Any | None,
+    stale_after_min: float, now: Any,
+) -> dict[str, Any]:
+    """The live owner's carrying-clock arithmetic; inputs are already parsed.
+
+    Both the producer and a qualified turn reader use this one rule. The producer
+    retains its parser/API; consumer type validation does not change that API.
+    All instants are supplied, so this helper performs no clock or I/O reads.
+    """
+    fresh_enough = bool(built_dt) and (now - built_dt).total_seconds() <= stale_after_min * 60.0
+    future_artifact = bool(built_dt) and (built_dt - now).total_seconds() > LIVE_MARKET_FUTURE_TOLERANCE_S
+    usable = live_active and fresh_enough and not future_artifact
+    return {
+        "live_active": live_active, "built_dt": built_dt,
+        "fresh_enough": fresh_enough, "future_artifact": future_artifact,
+        "usable": usable,
+    }
+
 
 # ── frozen vocabularies ────────────────────────────────────────────────────────
 # V0 descriptive stages only.  ARMED / TRIGGERING are anticipatory and are NOT here
@@ -593,6 +618,162 @@ def _authority() -> dict[str, bool]:
     }
 
 
+ROTATION_SOURCE_ID = "site-marketdata-rotation-events"
+ROTATION_EARLY_STATES = frozenset((
+    "DEFENSIVE_RELATIVE_STRENGTH", "BROADENING", "MIXED_ROTATION", "NO_EARLY_SHIFT",
+))
+
+
+def _rotation_context(sources: Sequence[SourceRead]) -> dict[str, Any]:
+    """Carry the optional rotation organ as context, never as a hazard vote."""
+    src = next((s for s in sources if s.source_id == ROTATION_SOURCE_ID), None)
+    native = (src.detail.get("early_context") if src else None)
+    native = native if isinstance(native, Mapping) else None
+    usable = bool(src and src.role == ROLE_CONTEXT and src.usable and native
+                  and native.get("state") in ROTATION_EARLY_STATES)
+    confirmed = src.detail.get("confirmed_events") if src else None
+    out = {
+        "source_artifact": ROTATION_SOURCE_ID,
+        "state": native.get("state") if usable else None,
+        "as_of": src.as_of if src else None,
+        "usable": usable,
+        "coverage": src.coverage_state() if src else "MISSING",
+        "early_context": dict(native) if usable else None,
+        "confirmed_events": dict(confirmed) if isinstance(confirmed, Mapping) else None,
+        "excluded_reason": (src.detail.get("excluded_reason") if src else "source_missing"),
+        "display_only": True,
+    }
+    receipt = src.detail.get("source_clock_receipt") if src else None
+    if isinstance(receipt, Mapping) and receipt:
+        out["source_clock_receipt"] = dict(receipt)
+    return out
+
+
+def _lineage_strings(value: Any) -> tuple[list[str], bool]:
+    if not isinstance(value, (list, tuple)):
+        return [], False
+    if any(not isinstance(v, str) or not v.strip() for v in value):
+        return [], False
+    return sorted(set(value)), True
+
+
+def _source_lineage(source: SourceRead) -> dict[str, Any]:
+    """Normalize declarations; an absent/invalid declaration earns no new evidence."""
+    raw = source.detail.get("lineage")
+    raw = raw if isinstance(raw, Mapping) else {}
+    roots, roots_valid = _lineage_strings(raw.get("roots"))
+    groups, groups_valid = _lineage_strings(raw.get("dependency_groups", []))
+    parents, parents_valid = _lineage_strings(raw.get("derived_from", []))
+    status = raw.get("status")
+    if status not in ("COMPLETE", "PARTIAL", "UNKNOWN"):
+        status = "UNKNOWN"
+    if not (roots_valid and groups_valid and parents_valid):
+        status = "UNKNOWN"
+    if status == "COMPLETE" and (not roots or not raw.get("definition_id")):
+        status = "UNKNOWN"
+    return {
+        "source_id": source.source_id, "status": status,
+        "definition_id": raw.get("definition_id"),
+        "roots": roots, "dependency_groups": groups, "derived_from": parents,
+    }
+
+
+def _confluence(sources: Sequence[SourceRead], measured: Mapping[str, Any],
+                rotation: Mapping[str, Any]) -> dict[str, Any]:
+    """Audit shared source roots. Counts never change a stage, score, or policy.
+
+    Disjoint recorded roots are a provenance fact, not statistical independence.
+    Shared connected components are deliberately conservative and transitive.
+    """
+    ordered = _sorted(sources)
+    lineages = {s.source_id: _source_lineage(s) for s in ordered}
+    ancestry: dict[str, set[str]] = {}
+    visiting: set[str] = set()
+
+    def ancestors(sid: str) -> set[str]:
+        if sid in ancestry:
+            return ancestry[sid]
+        if sid in visiting:
+            raise EnvelopeContractError("cyclic source lineage")
+        visiting.add(sid)
+        result: set[str] = set()
+        for parent in lineages[sid]["derived_from"]:
+            if parent == sid:
+                raise EnvelopeContractError("self-referential source lineage")
+            if "risk-envelope" in parent.lower() or "risk_envelope" in parent.lower():
+                raise EnvelopeContractError("envelope output cannot be a source ancestor")
+            result.add(parent)
+            if parent in lineages:
+                result.update(ancestors(parent))
+        visiting.remove(sid)
+        ancestry[sid] = result
+        return result
+
+    for sid in sorted(lineages):
+        ancestors(sid)
+
+    usable = [s for s in ordered if s.usable]
+    ids = [s.source_id for s in usable]
+    parent = {sid: sid for sid in ids}
+
+    def find(sid: str) -> str:
+        while parent[sid] != sid:
+            sid = parent[sid]
+        return sid
+
+    relations = []
+    for i, left in enumerate(ids):
+        for right in ids[i + 1:]:
+            a, b = lineages[left], lineages[right]
+            shared_roots = sorted(set(a["roots"]) & set(b["roots"]))
+            shared_groups = sorted(set(a["dependency_groups"]) & set(b["dependency_groups"]))
+            shared_ancestors = sorted((ancestry[left] | {left}) & (ancestry[right] | {right}))
+            if shared_roots or shared_groups or shared_ancestors:
+                relation = "SHARED"
+                parent[find(right)] = find(left)
+            elif a["status"] == b["status"] == "COMPLETE":
+                relation = "DISTINCT_RECORDED_ROOTS"
+            else:
+                relation = "UNKNOWN"
+            relations.append({
+                "sources": [left, right], "relationship": relation,
+                "shared_roots": shared_roots, "shared_dependency_groups": shared_groups,
+                "shared_ancestors": shared_ancestors,
+            })
+    clusters: dict[str, list[str]] = {}
+    for sid in ids:
+        clusters.setdefault(find(sid), []).append(sid)
+    components = sorted((sorted(v) for v in clusters.values()), key=lambda v: tuple(v))
+    unknown = sorted(sid for sid in ids if lineages[sid]["status"] != "COMPLETE")
+    known_total = bool(ids) and not unknown and not any(
+        r["relationship"] == "UNKNOWN" for r in relations)
+    verdict = measured.get("verdict") if measured.get("usable") else None
+    rotation_state = rotation.get("state") if rotation.get("usable") else None
+    state = (f"{rotation_state}__{verdict}" if rotation_state and verdict else
+             "ROTATION_WITH_UNAVAILABLE_BACKDROP" if rotation_state else
+             "ROTATION_UNAVAILABLE")
+    return {
+        "definition_id": "rotation-risk-confluence-v1",
+        "state": state,
+        "measured_backdrop": verdict,
+        "rotation_state": rotation_state,
+        "source_relationships": relations,
+        "nonredundant_components": components,
+        "nonredundant_component_count": len(components) if known_total else None,
+        "unknown_lineage_sources": unknown,
+        "excluded_sources": [
+            {"source_id": s.source_id, "coverage": s.coverage_state(),
+             "reason": s.detail.get("excluded_reason") or s.coverage_state().lower()}
+            for s in ordered if not s.usable
+        ],
+        "lineage_status": "COMPLETE" if known_total else "PARTIAL" if ids else "UNKNOWN",
+        "statistical_independence_established": False,
+        "changes_hazard_stage": False,
+        "changes_policy": False,
+        "display_only": True,
+    }
+
+
 def compose_envelope(
     *,
     sources: Sequence[SourceRead],
@@ -667,6 +848,19 @@ def compose_envelope(
         "provenance": _provenance(ordered),
         "authority": _authority(),
     }
+
+    # Additive opt-in: older callers without the optional rotation source keep their
+    # semantic bundle unchanged. Both current builders supply it, including an honest
+    # MISSING read when the source has not published. It remains ROLE_CONTEXT only.
+    if any(s.source_id == ROTATION_SOURCE_ID for s in ordered):
+        if any(s.source_id == ROTATION_SOURCE_ID and s.role != ROLE_CONTEXT for s in ordered):
+            raise EnvelopeContractError("rotation early context cannot cast a hazard vote")
+        rotation = _rotation_context(ordered)
+        measured_source = next((s for s in ordered if s.role == ROLE_MEASURED), None)
+        transition = measured_source.detail.get("market_transition") if measured_source else None
+        semantic["rotation_context"] = rotation
+        semantic["confluence"] = _confluence(ordered, measured, rotation)
+        semantic["market_transition"] = dict(transition) if isinstance(transition, Mapping) else None
 
     bundle_id = hashlib.sha256(canonical_json(semantic).encode("utf-8")).hexdigest()[:16]
 

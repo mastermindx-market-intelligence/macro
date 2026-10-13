@@ -3489,3 +3489,403 @@ def test_action_authority_is_refreshed_independently_of_rights_at_graph_use(tmp_
     with pytest.raises(probation.RelationEventRefusal, match="OWNER_ACTION_AUTHORITY_REVOKED"):
         probation.require_daily_relation_event(
             event, belief_time="2026-08-14", emitted_at="2026-08-14T01:00:00Z")
+
+# Coverage observations are diagnostic evidence, never a second proposal identity.
+def _m1_coverage_fixture(n=3, *, shared=False):
+    from datetime import datetime, timezone
+    now = datetime(2026, 10, 8, 12, tzinfo=timezone.utc)
+    stamp = "2026-10-07T00:00:00Z"
+    companies = [f"co:us:C{i}" for i in range(n)]
+    themes = ["ltheme:finviz:shared"] if shared else [f"ltheme:finviz:t{i}" for i in range(n)]
+    nodes = pd.DataFrame([dict(node_id=nid, kind="company" if nid.startswith("co:") else "local_theme",
+                              status="candidate", birth_date="2026-01-01", computed_at=stamp)
+                          for nid in companies + themes])
+    edges = [dict(edge_id=f"edge:{i}", type="MEMBER_OF", src=company,
+                  dst=themes[0] if shared else themes[i], valid_from="2026-01-01", valid_to=None,
+                  belief_time="2026-10-07", computed_at=stamp, evidence_time="2026-01-01",
+                  evidence_refs=json.dumps([f"evidence:fixture:{i}"]),
+                  source_effective_at="2026-01-01", source_published_at="2026-01-02T01:00:00Z",
+                  house_admitted_at="2026-01-03T02:00:00Z") for i, company in enumerate(companies)]
+    return companies, nodes, edges, now
+
+
+def test_m1_coverage_full_pair_count_truncation_and_isolation():
+    from scripts import theme_coverage_gaps as gaps
+    ids, nodes, edges, now = _m1_coverage_fixture(22, shared=True)
+    report = gaps.analyse(ids, nodes, edges, now=now)
+    case = report["case_a_cooccurrence"]
+    assert case["total_pairs_sharing_a_concept"] == 231
+    assert case["displayed_pairs"] == 200 and len(case["pairs_sharing_a_concept"]) == 200
+    assert case["truncated"] is True and case["isolated_ids"] == []
+    profile = report["observation_profile"]
+    assert profile["completeness"] == dict(analysis="COMPLETE", display="TRUNCATED", identity="NOT_EVALUATED",
+        reason="analysis covers this current graph snapshot only; display may be bounded; security identity is unexamined")
+    assert profile["pair_display"] == dict(total=231, displayed=200, limit=200, truncated=True)
+
+
+def test_m1_coverage_rejects_wrong_retired_ambiguous_and_duplicate_identity():
+    from scripts import theme_coverage_gaps as gaps
+    ids, nodes, edges, now = _m1_coverage_fixture()
+    more = pd.DataFrame([dict(node_id=nid, kind=kind, status=status,
+                 birth_date="2026-01-01", computed_at="2026-10-07T00:00:00Z") for nid, kind, status in (
+        ("basket:test:bad", "basket", "candidate"), ("co:us:RETIRED", "company", "retired"),
+        ("co:hk:C0", "company", "candidate"), ("co:us:BRK.B", "company", "candidate"),
+        ("co:us:C0#2", "company", "candidate"))])
+    nodes = pd.concat([nodes, more], ignore_index=True)
+    report = gaps.analyse(["basket:test:bad", "co:us:RETIRED", "C0", "UNKNOWN", "co:us:C0", "co:us:C0#2", "BRK.B", "co:us:BRK.B"], nodes, edges, now=now)
+    assert set(report["unresolved"]) == {"basket:test:bad", "co:us:RETIRED", "C0", "UNKNOWN", "co:us:BRK.B"}
+    assert report["resolved_graph_nodes"] == {"co:us:C0": "co:us:C0", "co:us:C0#2": "co:us:C0#2", "BRK.B": "co:us:BRK.B"}
+    assert report["observation_profile"]["completeness"]["analysis"] == "PARTIAL"
+    assert report["observation_profile"]["identity"]["security_qualification"] == "NOT_EVALUATED"
+    assert report["case_a_cooccurrence"]["zero_membership_ids"] == ["BRK.B", "co:us:C0#2"]
+
+
+@pytest.mark.parametrize("field,value", [("valid_from", "2026-10-09"), ("belief_time", "2026-10-09"),
+    ("computed_at", "2026-10-08T13:00:00Z"), ("valid_from", None), ("belief_time", "bad"),
+    ("computed_at", "2026-10-07T00:00:00"), ("valid_to", "2025-01-01"), ("evidence_time", "bad")])
+def test_m1_coverage_temporal_refusal_is_typed_and_never_false_zero(field, value):
+    from scripts import theme_coverage_gaps as gaps
+    ids, nodes, edges, now = _m1_coverage_fixture()
+    edges[0][field] = value
+    report = gaps.analyse(ids, nodes, edges, now=now)
+    assert report["availability"]["state"] == "INDETERMINATE"
+    assert report["resolved"] is None and report["membership_detail"] is None
+    case = report["case_a_cooccurrence"]
+    for key in ("total_pairs_sharing_a_concept", "displayed_pairs", "truncated", "isolated_ids", "zero_membership_ids"):
+        assert case[key] is None
+    assert report["observation_profile"]["completeness"]["analysis"] == "INDETERMINATE"
+    assert gaps.proposals_from(report) == []
+
+
+@pytest.mark.parametrize("damage", ["empty_ids", "empty_nodes", "empty_edges", "future_node", "future_lifecycle", "missing_endpoint", "missing_columns"])
+def test_m1_coverage_missing_and_inconsistent_snapshot_is_not_absence(damage):
+    from scripts import theme_coverage_gaps as gaps
+    ids, nodes, edges, now = _m1_coverage_fixture()
+    lifecycle = []
+    if damage == "empty_ids": ids = []
+    elif damage == "empty_nodes": nodes = pd.DataFrame()
+    elif damage == "empty_edges": edges = []
+    elif damage == "future_node": nodes.loc[0, "birth_date"] = "2027-01-01"
+    elif damage == "future_lifecycle": lifecycle = [dict(node_id=ids[0], computed_at="2027-01-01T00:00:00Z")]
+    elif damage == "missing_endpoint": edges[0]["src"] = "co:us:MISSING"
+    else: nodes = nodes.drop(columns=["kind"])
+    report = gaps.analyse(ids, nodes, edges, now=now, lifecycle=lifecycle)
+    assert report["availability"]["state"] == "INDETERMINATE"
+    assert all(v is None for v in report["case_d_breadth"]["breadth_distribution"].values())
+    assert report["case_a_cooccurrence"]["pairs_sharing_a_concept"] is None
+
+
+def test_m1_coverage_clocks_provenance_dimensions_rights_and_actual_digest():
+    import hashlib
+    from scripts import theme_coverage_gaps as gaps
+    ids, nodes, edges, now = _m1_coverage_fixture()
+    ids += [ids[0]]
+    report = gaps.analyse(ids, nodes, edges, now=now, source_artifact="caller:population#ids", source_asof="2026-01-01")
+    profile = report["observation_profile"]
+    assert profile["input_list"] == ids
+    assert profile["input_list_sha256"] == hashlib.sha256(json.dumps(ids, separators=(",", ":")).encode()).hexdigest()
+    assert profile["source_artifact"]["verification"] == "CALLER_DECLARED"
+    assert profile["source_artifact"]["sha256"] is None and profile["source_artifact"]["revision"] is None
+    clock = profile["clocks"]["edge_observations"][0]["values"]
+    for field in ("valid_from", "belief_time", "computed_at", "source_effective_at", "source_published_at", "house_admitted_at"):
+        assert clock[field] == edges[0][field]
+    assert profile["clocks"]["historical_claim"] is False
+    assert "NO_HISTORICAL_RECONSTRUCTION" in profile["clocks"]["selection_basis"]
+    assert set(profile["evaluated_dimensions"].values()) == {"COMPLETE", "NOT_EVALUATED"}
+    assert profile["counterevidence"] == dict(state="NOT_EVALUATED", refs=[])
+    assert profile["rights"] == dict(authority_ceiling="research_internal_only", use_verdict="NOT_EVALUATED", new_grant=False, public_display_allowed=False)
+    del edges[0]["source_published_at"]
+    missing = gaps.analyse(ids, nodes, edges, now=now)["observation_profile"]["clocks"]["edge_observations"][0]
+    assert missing["values"]["source_published_at"] is None and missing["missing_clock_reason"]
+
+
+@pytest.mark.parametrize("damage", ["digest", "grant", "extra", "unknown_version", "false_count", "false_complete", "counterevidence", "future_clock", "missing_required", "security"])
+def test_m1_optional_profile_is_strict_and_legacy_evidence_remains_accepted(damage):
+    import copy
+    from scripts import theme_coverage_gaps as gaps
+    ids, nodes, edges, now = _m1_coverage_fixture()
+    profile = copy.deepcopy(gaps.analyse(ids, nodes, edges, now=now)["observation_profile"])
+    legacy = probation.make_proposal(kind="new_theme", subject={"instrument_ids": ids}, evidence={"legacy": "freeform"}, proposed_by="coverage_gap")
+    probation.require_valid_rows([legacy])
+    if damage == "digest": profile["input_list_sha256"] = "0" * 64
+    elif damage == "grant": profile["rights"]["new_grant"] = True
+    elif damage == "extra": profile["invented"] = "unsupported"
+    elif damage == "unknown_version": profile["schema"] = "gmi.coverage_observation/v2"
+    elif damage == "false_count": profile["pair_display"]["total"] = 231
+    elif damage == "false_complete": profile["population"]["excluded"]["UNKNOWN"] = "missing"
+    elif damage == "counterevidence": profile["counterevidence"]["refs"] = ["not-examined"]
+    elif damage == "future_clock": profile["clocks"]["edge_observations"][0]["values"]["belief_time"] = "2027-01-01"
+    elif damage == "missing_required": del profile["source_artifact"]
+    else: profile["identity"]["security_qualification"] = "COMPLETE"
+    legacy["evidence"]["observation_profile"] = profile
+    assert probation.validate(legacy)
+    with pytest.raises(ValueError): probation.require_valid_rows([legacy])
+
+
+def test_m1_new_observation_never_reproposes_rejection_and_owner_roundtrip(tmp_path):
+    from datetime import timedelta
+    from types import SimpleNamespace
+    from scripts import theme_coverage_gaps as gaps
+    from engine.theme_graph.proposal_worklist import compose_worklist
+    from engine.theme_graph.ontology import compose_proposal_review
+    ids, nodes, edges, now = _m1_coverage_fixture()
+    report = gaps.analyse(ids, nodes, edges, now=now)
+    row = gaps.proposals_from(report)[0]
+    later = gaps.proposals_from(gaps.analyse(ids, nodes, edges, now=now + timedelta(days=1)))[0]
+    assert row["kind"] == "new_theme" and row["subject"] == dict(instrument_ids=ids)
+    assert row["proposal_id"] == later["proposal_id"]
+    assert row["evidence"]["observation_profile"]["clocks"]["observed_at"] != later["evidence"]["observation_profile"]["clocks"]["observed_at"]
+    row.update(status="rejected", adjudicated_at=row["created"])
+    path = tmp_path / "proposals.jsonl"
+    assert probation.append_proposals([row], path) == (1, 0)
+    before = path.read_bytes()
+    assert probation.append_proposals([row], path) == (0, 1)
+    assert probation.append_proposals([later], path) == (0, 1)
+    assert path.read_bytes() == before
+    rows = probation.read_proposals(path, strict=True)
+    worklist = compose_worklist(rows, asof="2099-01-01", status="all")
+    item = worklist["items"][0]
+    view = SimpleNamespace(read_proposals=lambda: rows)
+    review = compose_proposal_review(view, **item["review_query"])
+    assert review["proposal"]["evidence"] == item["proposal"]["evidence"] == row["evidence"]
+    assert review["proposal"]["evidence_refs"] == row["evidence_refs"] == report["observation_profile"]["evidence_refs"]
+    assert review["proposal"]["evidence"]["observation_profile"]["counterevidence"]["state"] == "NOT_EVALUATED"
+    assert review["proposal"]["status"] == "rejected" and review["relation"]["state"] == "UNSUPPORTED_SUBJECT"
+
+
+@pytest.mark.parametrize("failure", ["missing_ids", "missing_store", "unreadable_store", "empty_store"])
+def test_m1_cli_always_emits_typed_artifact_for_unavailable_inputs(monkeypatch, tmp_path, failure):
+    from scripts import theme_coverage_gaps as gaps
+    ids_file = tmp_path / "ids.txt"
+    if failure != "missing_ids": ids_file.write_text("co:us:C0\n")
+    def read_nodes(**kwargs):
+        assert kwargs == dict(current=True, strict=True)
+        if failure == "missing_store": raise FileNotFoundError("fixture missing")
+        if failure == "unreadable_store": raise ValueError("fixture unreadable")
+        return pd.DataFrame()
+    monkeypatch.setattr(store, "read_nodes", read_nodes)
+    monkeypatch.setattr(store, "read_node_lifecycle", lambda **kwargs: pd.DataFrame())
+    monkeypatch.setattr(store, "read_edges", lambda **kwargs: pd.DataFrame())
+    monkeypatch.setattr(probation, "append_proposals", lambda *args: pytest.fail("indeterminate input must not write proposals"))
+    out = tmp_path / "report.json"
+    assert gaps.main(["--ids-file", str(ids_file), "--out", str(out), "--propose"]) == 2
+    report = json.loads(out.read_text())
+    assert report["availability"]["state"] == "INDETERMINATE"
+    assert report["case_a_cooccurrence"]["zero_membership_ids"] is None
+    if failure == "missing_ids":
+        assert report["supplied"] is None
+        assert report["observation_profile"]["input_list_sha256"] is None
+        assert report["observation_profile"]["input_state"] == "UNAVAILABLE"
+
+
+def test_m1_retired_concept_does_not_contribute_current_source_local_coverage():
+    from scripts import theme_coverage_gaps as gaps
+    ids, nodes, edges, now = _m1_coverage_fixture(3, shared=True)
+    nodes.loc[nodes["kind"] == "local_theme", "status"] = "retired"
+    report = gaps.analyse(ids, nodes, edges, now=now)
+    assert report["case_a_cooccurrence"]["total_pairs_sharing_a_concept"] == 0
+    assert report["case_a_cooccurrence"]["zero_membership_ids"] == ids
+    assert report["case_d_breadth"]["breadth_distribution"]["max_members"] == 0
+
+
+def test_m1_isolation_uses_pairs_beyond_display_limit():
+    from scripts import theme_coverage_gaps as gaps
+    ids, nodes, edges, now = _m1_coverage_fixture(24, shared=True)
+    extra = pd.DataFrame([dict(node_id=nid, kind="local_theme", status="candidate",
+                              birth_date="2026-01-01", computed_at="2026-10-07T00:00:00Z")
+                          for nid in ("ltheme:finviz:shared2", "ltheme:finviz:rare")])
+    nodes = pd.concat([nodes, extra], ignore_index=True)
+    for i in (22, 23): edges[i]["dst"] = "ltheme:finviz:rare"
+    edges += [dict(edge, edge_id=f"second:{i}", dst="ltheme:finviz:shared2") for i, edge in enumerate(edges[:22])]
+    report = gaps.analyse(ids, nodes, edges, now=now)
+    case = report["case_a_cooccurrence"]
+    assert case["total_pairs_sharing_a_concept"] == 232
+    assert not any(pair["a"] in ids[22:] or pair["b"] in ids[22:] for pair in case["pairs_sharing_a_concept"])
+    assert case["isolated_ids"] == [] and gaps.proposals_from(report) == []
+
+
+@pytest.mark.parametrize("attack", ["removed_positive_witnesses", "future_evidence_time", "canonical_membership"])
+def test_m1_r2_rejects_independent_review_profile_attacks(attack):
+    import copy
+    from scripts import theme_coverage_gaps as gaps
+    ids, nodes, edges, now = _m1_coverage_fixture(3, shared=True)
+    profile = copy.deepcopy(gaps.analyse(ids, nodes, edges, now=now)["observation_profile"])
+    if attack == "removed_positive_witnesses":
+        profile["clocks"]["edge_observations"] = []
+    elif attack == "future_evidence_time":
+        profile["clocks"]["edge_observations"][0]["values"]["evidence_time"] = "2027-01-01"
+    else:
+        profile["source_local_memberships"] = {supplied: ["theme:canonical_only"] for supplied in ids}
+        profile["pair_display"].update(total=3, displayed=3, truncated=False)
+    with pytest.raises(ValueError): probation.require_valid_observation_profile(profile)
+
+
+@pytest.mark.parametrize("attack", ["unrelated_company", "wrong_theme", "retired_company", "retired_concept", "wrong_endpoint_kind", "expired_edge", "company_grammar"])
+def test_m1_r2_positive_membership_requires_exact_eligible_live_path(attack):
+    import copy
+    from scripts import theme_coverage_gaps as gaps
+    ids, nodes, edges, now = _m1_coverage_fixture()
+    profile = copy.deepcopy(gaps.analyse(ids, nodes, edges, now=now)["observation_profile"])
+    observation = profile["clocks"]["edge_observations"][0]
+    if attack == "unrelated_company": observation["src"] = "co:us:UNRELATED"
+    elif attack == "wrong_theme": observation["dst"] = "ltheme:finviz:unrelated"
+    elif attack == "retired_company": observation["endpoint_eligibility"]["src_status"] = "retired"
+    elif attack == "retired_concept": observation["endpoint_eligibility"]["dst_status"] = "retired"
+    elif attack == "wrong_endpoint_kind": observation["endpoint_eligibility"]["dst_kind"] = "basket"
+    elif attack == "expired_edge": observation["values"]["valid_to"] = "2026-10-07"
+    else:
+        profile["population"]["resolved_graph_nodes"][ids[0]] = "co:US:C0"
+        observation["src"] = "co:US:C0"
+    with pytest.raises(ValueError): probation.require_valid_observation_profile(profile)
+
+
+def _m1_r2_two_hop_fixture():
+    ids, nodes, direct, now = _m1_coverage_fixture(2, shared=True)
+    basket = "basket:fixture:shared"
+    nodes = pd.concat([nodes, pd.DataFrame([dict(node_id=basket, kind="basket", status="candidate",
+        birth_date="2026-01-01", computed_at="2026-10-07T00:00:00Z")])], ignore_index=True)
+    edges = [dict(row, dst=basket) for row in direct]
+    edges.append(dict(direct[0], edge_id="edge:expression", type="EXPRESSES", src=basket))
+    return ids, nodes, edges, now
+
+
+@pytest.mark.parametrize("attack", ["reverse_expression", "reverse_membership", "different_basket", "missing_expression", "retired_basket"])
+def test_m1_r2_two_hop_membership_requires_both_edges_and_direction(attack):
+    import copy
+    from scripts import theme_coverage_gaps as gaps
+    ids, nodes, edges, now = _m1_r2_two_hop_fixture()
+    profile = copy.deepcopy(gaps.analyse(ids, nodes, edges, now=now)["observation_profile"])
+    expression = next(row for row in profile["clocks"]["edge_observations"] if row["type"] == "EXPRESSES")
+    member = next(row for row in profile["clocks"]["edge_observations"] if row["type"] == "MEMBER_OF")
+    if attack == "reverse_expression": expression["src"], expression["dst"] = expression["dst"], expression["src"]
+    elif attack == "reverse_membership": member["src"], member["dst"] = member["dst"], member["src"]
+    elif attack == "different_basket": expression["src"] = "basket:fixture:unrelated"
+    elif attack == "missing_expression": profile["clocks"]["edge_observations"].remove(expression)
+    else: expression["endpoint_eligibility"]["src_status"] = "retired"
+    with pytest.raises(ValueError): probation.require_valid_observation_profile(profile)
+
+
+@pytest.mark.parametrize("path", ["direct", "two_hop"])
+def test_m1_r2_valid_positive_memberships_have_exact_path_witnesses(path):
+    from scripts import theme_coverage_gaps as gaps
+    ids, nodes, edges, now = _m1_r2_two_hop_fixture() if path == "two_hop" else _m1_coverage_fixture(2, shared=True)
+    report = gaps.analyse(ids, nodes, edges, now=now)
+    assert report["availability"]["state"] == "OK"
+    assert report["case_a_cooccurrence"]["total_pairs_sharing_a_concept"] == 1
+    profile = report["observation_profile"]
+    probation.require_valid_observation_profile(profile)
+    observed = profile["clocks"]["edge_observations"]
+    assert all(row["endpoint_eligibility"]["dst_status"] == "candidate" for row in observed)
+    assert {row["type"] for row in observed} == ({"MEMBER_OF", "EXPRESSES"} if path == "two_hop" else {"MEMBER_OF"})
+
+
+@pytest.mark.parametrize("retired_endpoint", ["company", "basket", "concept"])
+def test_m1_r2_retained_retired_endpoint_edges_never_witness_positive_memberships(retired_endpoint):
+    from scripts import theme_coverage_gaps as gaps
+    ids, nodes, edges, now = _m1_r2_two_hop_fixture()
+    kind = {"company": "company", "basket": "basket", "concept": "local_theme"}[retired_endpoint]
+    nodes.loc[nodes["kind"] == kind, "status"] = "retired"
+    report = gaps.analyse(ids, nodes, edges, now=now)
+    assert report["availability"]["state"] == "OK"
+    assert all(not themes for themes in report["observation_profile"]["source_local_memberships"].values())
+    observed = report["observation_profile"]["clocks"]["edge_observations"]
+    if retired_endpoint in {"company", "basket"}:
+        assert not observed
+    else:
+        assert all(row["type"] == "MEMBER_OF" and row["endpoint_eligibility"]["dst_kind"] == "basket" for row in observed)
+    probation.require_valid_observation_profile(report["observation_profile"])
+
+
+@pytest.mark.parametrize("duplicate", ["conflicting", "identical"])
+def test_m1_r2_duplicate_edge_identity_has_explicit_conflict_handling(duplicate):
+    import copy
+    from scripts import theme_coverage_gaps as gaps
+    ids, nodes, edges, now = _m1_coverage_fixture(2, shared=True)
+    profile = copy.deepcopy(gaps.analyse(ids, nodes, edges, now=now)["observation_profile"])
+    another = copy.deepcopy(profile["clocks"]["edge_observations"][0])
+    edge = dict(edges[0])
+    if duplicate == "conflicting":
+        another["dst"] = "ltheme:finviz:conflict"
+        edge["dst"] = edges[0]["src"]
+    profile["clocks"]["edge_observations"].append(another)
+    edges.append(edge)
+    report = gaps.analyse(ids, nodes, edges, now=now)
+    if duplicate == "conflicting":
+        with pytest.raises(ValueError): probation.require_valid_observation_profile(profile)
+        assert report["availability"]["state"] == "INDETERMINATE"
+        assert any("CONFLICTING_DUPLICATE_EDGE_ID" in issue for issue in report["availability"]["issues"])
+    else:
+        probation.require_valid_observation_profile(profile)
+        assert report["availability"]["state"] == "OK"
+        assert report["case_a_cooccurrence"]["total_pairs_sharing_a_concept"] == 1
+
+
+def test_m1_r2_all_zero_complete_profile_needs_no_positive_path_and_optional_clocks_stay_nullable():
+    from scripts import theme_coverage_gaps as gaps
+    ids, nodes, edges, now = _m1_coverage_fixture()
+    nodes.loc[nodes["kind"] == "local_theme", "status"] = "retired"
+    zero = gaps.analyse(ids, nodes, edges, now=now)["observation_profile"]
+    assert zero["completeness"]["analysis"] == "COMPLETE"
+    assert zero["clocks"]["edge_observations"] == []
+    assert zero["pair_display"]["total"] == 0
+    probation.require_valid_observation_profile(zero)
+    ids, nodes, edges, now = _m1_coverage_fixture()
+    for row in edges:
+        for field in ("evidence_time", "source_effective_at", "source_published_at", "house_admitted_at"):
+            row[field] = None
+    positive = gaps.analyse(ids, nodes, edges, now=now)["observation_profile"]
+    probation.require_valid_observation_profile(positive)
+    assert positive["clocks"]["edge_observations"][0]["values"]["evidence_time"] is None
+
+
+def test_m1_r2_producer_future_evidence_time_refuses_current_analysis():
+    from scripts import theme_coverage_gaps as gaps
+    ids, nodes, edges, now = _m1_coverage_fixture()
+    edges[0]["evidence_time"] = "2027-01-01"
+    report = gaps.analyse(ids, nodes, edges, now=now)
+    assert report["availability"]["state"] == "INDETERMINATE"
+    assert report["case_a_cooccurrence"]["total_pairs_sharing_a_concept"] is None
+    assert gaps.proposals_from(report) == []
+
+
+@pytest.mark.parametrize("field,minimum", [("edge_rows", 3), ("node_rows", 6)])
+def test_m1_r3_snapshot_counts_contain_their_own_witnesses(field, minimum):
+    import copy
+    from scripts import theme_coverage_gaps as gaps
+    ids, nodes, edges, now = _m1_coverage_fixture()
+    profile = gaps.analyse(ids, nodes, edges, now=now)["observation_profile"]
+    assert profile["graph_snapshot"][field] == minimum
+    for count in (1, minimum - 1):
+        damaged = copy.deepcopy(profile)
+        damaged["graph_snapshot"][field] = count
+        with pytest.raises(ValueError, match="graph snapshot .* count cannot contain"):
+            probation.require_valid_observation_profile(damaged)
+    for count in (minimum, minimum + 1):
+        valid = copy.deepcopy(profile)
+        valid["graph_snapshot"][field] = count
+        probation.require_valid_observation_profile(valid)
+
+
+def test_m1_r3_snapshot_minimum_counts_deduplicate_identical_observations():
+    import copy
+    from scripts import theme_coverage_gaps as gaps
+    ids, nodes, edges, now = _m1_coverage_fixture()
+    profile = gaps.analyse(ids, nodes, edges, now=now)["observation_profile"]
+    profile["clocks"]["edge_observations"] += copy.deepcopy(profile["clocks"]["edge_observations"])
+    assert len(profile["clocks"]["edge_observations"]) == 6
+    assert profile["graph_snapshot"]["edge_rows"] == 3
+    assert profile["graph_snapshot"]["node_rows"] == 6
+    probation.require_valid_observation_profile(profile)
+
+
+def test_m1_r3_zero_memberships_still_require_room_for_resolved_companies():
+    from scripts import theme_coverage_gaps as gaps
+    ids, nodes, edges, now = _m1_coverage_fixture()
+    nodes.loc[nodes["kind"] == "local_theme", "status"] = "retired"
+    profile = gaps.analyse(ids, nodes, edges, now=now)["observation_profile"]
+    assert profile["clocks"]["edge_observations"] == []
+    profile["graph_snapshot"]["node_rows"] = 3
+    probation.require_valid_observation_profile(profile)
+    profile["graph_snapshot"]["node_rows"] = 2
+    with pytest.raises(ValueError, match="graph snapshot node count cannot contain"):
+        probation.require_valid_observation_profile(profile)

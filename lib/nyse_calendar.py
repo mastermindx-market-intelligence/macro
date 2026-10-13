@@ -7,10 +7,10 @@ scripts/refresh_regime_if_stale.py mode 3) sees agreement and stays silent. Only
 exchange calendar knows a completed session is missing from the store. This module is
 that independent reference: pure rule arithmetic, zero data dependencies, stdlib only.
 
-Scope: full-day closures and published early closes for US cash equities. Complete
-NYSE annual notices override the historical rules; Nasdaq corroborates the 2026
-notice. A published 13:00 ET early close remains a session and expects its daily
-bar at 14:00 ET, preserving the one-hour settle buffer. Regular days retain 17:00 ET.
+Scope: full-day closures for US cash equities (NYSE/Nasdaq share the schedule). Early
+closes (13:00 ET) are NOT modeled — a session with an early close still produces a daily
+bar, and `expected_last_session` only asks "should a bar for day D exist by now?", for
+which the regular 16:00 ET close plus a settle buffer is a conservative answer.
 
 Unscheduled one-off closures (presidential mourning, disasters) cannot be computed:
 they live in `ONE_OFF_CLOSURES` and MUST be appended when announced. The cost of a
@@ -22,8 +22,6 @@ from __future__ import annotations
 import logging
 from datetime import date, datetime, time, timedelta, timezone
 from zoneinfo import ZoneInfo
-
-from lib.exchange_holidays import announced_holidays, early_close
 
 # Plain messages only — never a '::' prefix through a logger (a level prefix
 # pushes the workflow command off column 0 and GitHub drops it silently;
@@ -85,10 +83,7 @@ def _observed(d: date) -> date:
 
 
 def holidays(year: int) -> frozenset[date]:
-    """Full-day NYSE closures: official notice or cached historical fallback."""
-    announced = announced_holidays("US", year)
-    if announced is not None:
-        return frozenset(announced)
+    """Scheduled full-day NYSE holidays for `year` (rule-computed, cached)."""
     return _holidays_cached(year)
 
 
@@ -188,17 +183,16 @@ def missing_sessions(have, start: date, end: date) -> list[date]:
 def expected_last_session(now: datetime | None = None) -> date:
     """The most recent COMPLETED session whose daily bar the price store should hold.
 
-    Daily bars are expected after a one-hour settle buffer: 17:00 ET on regular
-    days, 14:00 ET on published 13:00 early closes. Before that expectation, only
-    the prior session is complete. Naive datetimes are UTC."""
+    'Completed' = the regular 16:00 ET close plus a settle buffer has passed (17:00 ET),
+    so a same-day afternoon run conservatively expects only the PRIOR session. Naive
+    datetimes are taken as UTC (the pipeline's convention)."""
     if now is None:
         now = datetime.now(timezone.utc)
     elif now.tzinfo is None:
         now = now.replace(tzinfo=timezone.utc)
     now_et = now.astimezone(ET)
     today = now_et.date()
-    settled = time(14, 0) if early_close("US", today) is not None else _CLOSE_PLUS_SETTLE
-    if is_session(today) and now_et.time() >= settled:
+    if is_session(today) and now_et.time() >= _CLOSE_PLUS_SETTLE:
         return today
     return last_session_on_or_before(today - timedelta(days=1))
 

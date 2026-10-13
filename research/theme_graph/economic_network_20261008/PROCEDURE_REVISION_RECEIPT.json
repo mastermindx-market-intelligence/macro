@@ -1,0 +1,29 @@
+{
+  "observed_at": "2026-10-08T23:26:29Z",
+  "protected_pin": "f74e912d3efa3b67cae40ba04f9e558d579096e9",
+  "protected": true,
+  "compatible_schema": "mastermind.sol_skillpack.v1",
+  "skillpack_version": "1.0.1",
+  "minimum_bootstrap_major": 1,
+  "loaded_paths": [
+    "docs/sol_skills/INDEX.md",
+    "docs/sol_skills/COLD_START.md",
+    "docs/sol_skills/ACTIVE_EXECUTION.md",
+    "docs/sol_skills/SESSION_RELIABILITY.md",
+    "docs/sol_skills/WEB_CEO_DELEGATION.md",
+    "docs/EXECUTIVE_WORKER_ROUTING_CHAIRMAN_ADDENDUM.md",
+    "docs/sol_skills/REVIEW_RETURN.md",
+    "docs/sol_skills/CLOSEOUT.md"
+  ],
+  "change_from_initial_pin": {
+    "initial": "c7e47c859eb2925c5626931fd511800773ba09ac",
+    "head": "f74e912d3efa3b67cae40ba04f9e558d579096e9",
+    "compare_url": "https://github.com/mastermindx-market-intelligence/Mastermind/compare/c7e47c859eb2925c5626931fd511800773ba09ac...f74e912d3efa3b67cae40ba04f9e558d579096e9",
+    "commits": 1,
+    "loaded_procedures_changed": false,
+    "affected_scope": "relay enrollment/runbook/tests; no relay actions were performed by this commission"
+  },
+  "action_scope": "research-only documentation branch and artifact delivery; no organizational state or runtime changes",
+  "external_messages_sent": false,
+  "watcher_enabled": false
+}

@@ -206,6 +206,123 @@ def test_dashboard_has_delegated_plan_link_handler_without_pool_state_writes():
     assert "ucp-" not in handler
 
 
+def _run_plan_navigation(assertions: str) -> None:
+    """Execute both existing owners; DOM doubles expose their observable effects.
+
+    A real Chromium check additionally covers the production CSS visibility and
+    native focus behavior. This dependency-light regression runs in the source job.
+    """
+    import shutil
+    import subprocess
+
+    source = (ROOT / "templates/dashboard.html.j2").read_text()
+
+    def script_after(marker):
+        start = source.index("<script>", source.index(marker)) + len("<script>")
+        return source[start:source.index("</script>", start)]
+
+    lifecycle = script_after("P-MP1-SHELL §7 — the lifecycle ladder's filter + URL law")
+    # This marker is inside its script, unlike the lifecycle marker above.
+    start = source.rfind("<script>", 0, source.index("P0 #6185 — Candidates | Plans source toggle"))
+    navigation = source[start + len("<script>"):source.index("</script>", start)]
+    harness = r'''
+const assert = require('node:assert/strict');
+const historyCalls = [], effects = [];
+let focused = null;
+function element(attrs, classes=[]) {
+  const tokens = new Set(classes);
+  return {
+    attrs, listeners:{}, dataset:{}, hidden:false,
+    classList:{contains:x=>tokens.has(x), remove:x=>tokens.delete(x)},
+    getAttribute(name){return this.attrs[name] ?? null;},
+    setAttribute(name,value){this.attrs[name]=String(value);},
+    removeAttribute(name){delete this.attrs[name];},
+    addEventListener(name,fn){this.listeners[name]=fn;},
+    querySelectorAll(){return [];},
+    closest(){return null;},
+  };
+}
+const panel=element({'data-lifef':'resolved','data-prophet-src':'candidates'});
+const grid=element({id:'us-life-grid'});
+const card=element({id:'pv-LFUS-BULL-20260810','data-life':'entered','data-record-only':'1'},
+                   ['pvcard','pv-record','sm-hidden','sm-reveal']);
+const sibling=element({id:'pv-LFUS-BULL-20260801','data-life':'resolved','data-record-only':'1'},
+                      ['pvcard','pv-record']);
+card.dataset.recordOnly=sibling.dataset.recordOnly='1';
+let withheld=false;
+card.closest=selector=>selector==='#us-life-grid'?grid:(withheld?card:null);
+function visible(row) {
+  // Boundary double for the already-tested lifecycle CSS; checked in Chromium too.
+  return panel.getAttribute('data-prophet-src')==='plans' && !withheld &&
+    panel.getAttribute('data-lifef')===row.getAttribute('data-life');
+}
+card.getClientRects=()=>visible(card)?[{}]:[];
+card.scrollIntoView=()=>effects.push(['scroll',card.getAttribute('id')]);
+card.focus=()=>{if(visible(card))focused=card; effects.push(['focus',card.getAttribute('id')]);};
+const toggle=element({});
+const clear=element({});
+const zero=element({});
+grid.querySelectorAll=()=>[card];
+const button=element({'data-pvs-plan-target':'pv-LFUS-BULL-20260810'});
+button.closest=()=>button;
+const close={click(){dialog.open=false; effects.push(['close']);}};
+const dialog={open:true,querySelector:()=>close};
+const elements={'us-standouts':panel,'us-src-toggle':toggle,'us-life-grid':grid,
+  'us-life-clear':clear,'us-life-filter-zero':zero,'pv-setup-dialog':dialog,
+  'pv-LFUS-BULL-20260810':card,'pv-LFUS-BULL-20260801':sibling};
+global.document={body:{dataset:{}},listeners:{},getElementById:id=>elements[id]||null,
+  addEventListener(name,fn){this.listeners[name]=fn;}};
+global.window={getComputedStyle:row=>({display:visible(row)?'flex':'none'})};
+global.location={pathname:'/us_stocks.html',search:'?foo=keep&life=resolved',hash:''};
+global.history={replaceState(_a,_b,url){historyCalls.push(url);location.search=url.slice(url.indexOf('?'));}};
+''' + lifecycle + navigation + r'''
+historyCalls.length=0;
+function activate(){document.listeners.click({target:button});}
+''' + assertions
+    node = shutil.which("node")
+    assert node, "existing Node runtime is required for Plan navigation behavior"
+    proc = subprocess.run([node, "-e", harness], capture_output=True, text=True, timeout=15)
+    assert proc.returncode == 0, proc.stderr or proc.stdout
+
+
+def test_view_in_plans_selects_exact_target_lifecycle_before_visibility_and_focus():
+    _run_plan_navigation(r'''
+activate();
+assert.equal(document.body.dataset.pvsPlanLinkResult,'ok');
+assert.equal(visible(card),true,'exact entered Plan stayed hidden behind resolved filter');
+assert.equal(focused,card,'focus must land on the exact Plan, not its same-ticker sibling');
+assert.equal(panel.getAttribute('data-lifef'),'entered');
+assert.deepEqual(historyCalls,['/us_stocks.html?foo=keep&life=entered']);
+assert.equal(clear.hidden,false);
+assert.equal(zero.hidden,true);
+assert.equal(card.classList.contains('sm-hidden'),false);
+assert.equal(card.classList.contains('sm-reveal'),false);
+assert.equal(sibling.getAttribute('data-life'),'resolved');
+assert.deepEqual(effects,[['close'],['scroll','pv-LFUS-BULL-20260810'],['focus','pv-LFUS-BULL-20260810']]);
+''')
+
+
+@pytest.mark.parametrize("condition", ["missing", "malformed", "outside", "withheld", "invalid-life"])
+def test_view_in_plans_rejects_unavailable_or_malformed_targets_without_filter_or_focus(condition):
+    setup = {
+        "missing": "delete elements['pv-LFUS-BULL-20260810'];",
+        "malformed": "button.attrs['data-pvs-plan-target']='us-standouts';",
+        "outside": "card.closest=()=>null;",
+        "withheld": "withheld=true;",
+        "invalid-life": "card.attrs['data-life']='unpublished';",
+    }[condition]
+    _run_plan_navigation(setup + r'''
+activate();
+assert.equal(document.body.dataset.pvsPlanLinkResult,'missing');
+assert.equal(panel.getAttribute('data-prophet-src'),'plans'); // existing missing-target behavior
+assert.equal(panel.getAttribute('data-lifef'),'resolved');
+assert.deepEqual(historyCalls,[]);
+assert.equal(focused,null);
+assert.deepEqual(effects,[['close']]);
+assert.equal(card.classList.contains('sm-hidden'),true);
+''')
+
+
 @pytest.mark.needs_full_checkout("mockups")
 def test_evidence_manifest_is_bound_to_the_captured_ui_head_and_fixture_bytes():
     import json

@@ -21,6 +21,7 @@ owns_paths:
 decisions:
   - DEC:GMI-THEME-GRAPH-END-TO-END-COMPLETION-OWNERSHIP-SEQUENCING
   - DEC:GMI-F04-BOUNDED-CHILD-ROUTING-2026-08-28
+  - DEC:GMI-THEME-FABRIC-C0-CONVERGENCE
 artifacts:
   - research/theme_graph/THEME_GRAPH_END_TO_END_COMPLETION_FREEZE_2026-08-27.md
   - research/theme_graph/CEO_W3_CONTINUATION_DIRECTIVE_2026-08-14.md
@@ -82,71 +83,48 @@ waves:
     pr: 8540
     depends_on: [D2C, D2D]
     next_action: >
-      D2C and D2D are MERGED (0b1fe8873054, 79b566f5c0cc). Acceptance runs as three phases on
-      the gate-matrix carrier #8540 (DRAFT, held until the natural receipt). P1, acceptance
-      against current main, is ACCEPTED. P2 reconciles the D2B3 natural-proof clause against
-      the first real nightly that carries #8544 and #8539: 2026-10-07, a run usually created
-      about 01:00-02:30Z rather than at the 30 22 / 30 23 UTC crons. P2 includes the VMRK
-      suppression and lifecycle row from #8544 (ebe35dc916de: the VMRK rename re-mint merges
-      into the incumbent co:us:EQR node through config/theme_graph_duplicate_mints.yml, D2A
-      re-pinned; DEC:THEME-GRAPH-RENAME-REMINT-MERGES-INTO-INCUMBENT-NODE). P3 is an
-      independent read-only review. The merged census #8488 (192a46de8be8) and green PRs are
-      inputs, not acceptance. Gate #2 (rights class) is closed by #8509 (wave G2); gate #5
-      (ontology-action authority) by #8507 (wave G5).
+      D2E #8540 remains the sole acceptance carrier at published rule head 03462ef689a5bbb4c4254c48db34713efd731876.
+      The prospective window and adoption.status are ADOPTED_PROSPECTIVE_RULE_ONLY, awaiting
+      production evidence; composition.d2e is HOLD_AWAITING_SELECTED_GENERATION_PROOF. Formal comment 6071188794
+      (GitHub created_at 2026-10-08T23:38:32Z). Use exactly workflow_run.run_started_at >
+      designated_formal_adoption_comment.created_at; engine/witness start is no substitute.
+      Historical P1 remains accepted; GEN3 N4/N5 remain UNPROVEN. Q4 established only five known
+      GEN3 tuples and did not recover the original unnamed a–e. All new N/Q replacement statuses
+      remain NOT_RUN with null observations; P2 is NOT_ASSESSED and P3 null (both unassessed). No replacement generation
+      is selected. Observe ordered original
+      schedule attempts with immutable workflow/upload and effective-checkout proof. Apply the
+      no-producer exception only with complete successful-gate/literal run=false/terminal skipped/
+      no-engine-execution proof. Unknown evidence cannot justify skipping; upload success is not
+      eligibility. A selected missing/failed archive is HOLD, with no rollover. Collect same-run
+      evidence and independent P3 acceptance before D2E completion or W3B release. Continue from
+      agentos/handoffs/GMI-THEME-GRAPH-2026-10-08.md; preserve historical receipts.
   - id: W3B
     title: "Sole local + canonical ThemeState — gmi-theme-state-w3b-20260827-sol-001"
     status: in_progress
     depends_on: [D2E]
     next_action: >
-      Substrate landed without a third producer: #8455 (731a23fb64b9) recovered the sealed
-      state owner and the accepted-generation reader. #8539 (gate #8 G1, seat ruling G1-RC1)
-      MERGED 2026-10-06T23:32:45Z as squash f8d4da2aceadf15df41329c71a15b8071b3ca7ae at exact head 47c1e7dcd3d9. Its narrow
-      `--mode GRAPH_SHADOW_STATE` of scripts/build_thematic_state.py composes state only from
-      the owner bundle (theme_state_adapter.compose_state_only_from_owner_bundle), validates
-      it, and writes data/theme_graph/shadow_theme_state.v1.json through
-      generation.write_atomic inside generation.family_lock. It runs as one non-fatal step of
-      the off-render oracle_offrender job in daily.yml (timeout 12 minutes, continue-on-error,
-      a tolerant git add in that job's commit step; dag node build_graph_shadow_theme_state)
-      and took 237 s on ubuntu1. The engine step stays LEGACY byte for byte
-      (DSC:GMI-LEGACY-THEMATIC-STATE-NEVER-CALLS-PUBLISH-GENERATION), so legacy
-      neuralweb.theme_state.v1 and CTE consumers stay compatible during migration (gate #8
-      ruling). Known limits: lag 1 (build_site reads night N-1's shadow); it composes from
-      main's latest committed owner state with a truthful PIT known_at; and it adds about
-      10 MB per night to the repo until an R2 follow-up. W3B is accepted only after D2E
-      acceptance and a nightly receipt showing the shadow written and committed.
+      Existing #8455 and #8539 source remains accepted; the sole graph shadow path remains
+      GRAPH_SHADOW_STATE through the incumbent owner bundle, atomic generation write and lock.
+      W3B is DRAFT_NOT_RELEASED. Merged witness retention and adopted #8540 window rules do not
+      release it: require accepted same-run natural shadow/publication evidence and independent
+      D2E P3. Historical GEN3 N4/N5 remain UNPROVEN. Preserve LEGACY engine default, lag-one/PIT
+      qualifications and the October 6 handoff; no third producer or state store.
   - id: W3C
     title: "Selection Cohort Intelligence — gmi-theme-cohort-w3c-20260827-sol-001"
     status: in_progress
     depends_on: [W3B]
     next_action: >
-      Seams landed: #8417 (ef1f7db98cff, CTE state successor and W3C finalized-cohort
-      readers), #8486 (072475fe21c2, selection-clock qualified_reads), #8524 (f255148cf9c7,
-      gate #8 lane A read-only US/CN selection-cohort product projection), #8538
-      (accd1db56f8d, gate #8 phase 2, qualified_reads wired into the US W3C read through a
-      3-key adapter), #8542 (ce094fa56e91, the Wave G pass-1 M1/M2 repair: a typed
-      OWNER_UNAVAILABLE row instead of a raise, and instant-precision PIT visibility so a
-      fact computed after known_at stays invisible), #8539 (the G1 shadow write, see W3B),
-      and Terminal lane B on ubuntu1 (gate #6): mastermind-terminal #837 (38a5a7da096a, a
-      read-only "Shared themes / latest U.S. picks" card, counts only) and #838
-      (ad36a332cd4b, /api/nw relays the caller's own Supabase session and drops the shared
-      cache). Both are live on the production Terminal VPS: deployment ad36a332cd4b, service
-      restarted 2026-10-06 22:28:41Z, an anonymous /api/nw?f=market_plane answers 401
-      sign_in_required with Cache-Control private, no-store and Vary: Cookie, and all 30 chunk
-      refs in the live HTML resolve. Lane B is U.S. only. Both selection-cohort projections
-      read unavailable on main by design: every production capture is refused by the rights
-      gate (DSC:W3C-COHORT-CAPTURE-IS-REFUSED-BY-THE-RIGHTS-GATE-BY-DESIGN), so an available
-      projection needs a Chairman capture-rights ruling, not a wiring fix. #8554 (gate #8
-      reason preservation, MERGED 2026-10-07T01:22:43Z as squash 5622c1cb9256 at exact head 9b2c53424b85, ci-gate SUCCESS, all four files blob-identical on main; served proof waits for the next render) carries the builders' typed refusal into the projection,
-      so us.json and cn.json read SOURCE_UNAVAILABLE:CAPTURE_RIGHTS_UNAVAILABLE instead of
-      WRAPPER_MISSING while the internal bindings stay None. The China card stays deferred
-      until cn.json reads available. The Wave G pass-2 read-only integrator audit passed
-      over the integrated tree (0 blockers, 0 majors, 1 minor, a stale config/dag.yml note
-      since corrected; invariants I1-I12 each pass). W3C closes on production proof from the
-      first nightly after the last landing; until a capture-rights ruling, that proof is the
-      typed fail-closed projection. Invariant: source order and reasons preserved
-      and the six authority flags in engine/theme_graph/selection_cohort.py stay False
-      (authority_ceiling research_internal_only); no candidate insertion, ranking,
-      readiness, sizing or board mutation.
+      Use the incumbent Option A typed fail-closed projection as the lawful acceptance outcome
+      until a separate capture-rights ruling. Source US/CN at 36dc212939fc9926af5f529e12f8fd3eae04a05a
+      both have blob 533ad2e21f2154d49efda7196504dc64e88511b8:
+      SOURCE_UNAVAILABLE:CAPTURE_RIGHTS_UNAVAILABLE, null generation and six false authority flags.
+      At 2026-10-08T21:47:06Z anonymous Macro US/CN URLs returned 401 authentication_required,
+      no-store/Vary: Cookie; Terminal /api/nw?f=market_plane returned 401 sign_in_required,
+      private,no-store/Vary: Cookie. This proves only the auth boundary, not served JSON parity
+      or signed-in human proof. Preserve auth; obtain authorized same-generation source,
+      publication, gateway and human/machine evidence with refusal reasons intact.
+      No zero-measurement claim, available CN card, capture enrollment or board mutation is inferred.
+      D2E/W3B remain held; use agentos/handoffs/GMI-THEME-GRAPH-2026-10-08.md.
   - id: W-A
     title: "ThemeState owner adapter + CTE-v3 lineage on the state carrier (#8455)"
     status: done
@@ -265,6 +243,22 @@ waves:
       served/browser/privacy proof and real admission then follow on an Energy carrier. Working
       checkpoint (section 9):
       agentos/handoffs/GMI-ENERGY-2026-09-24-nuclear-first-vertical-implementation.md.
+  - id: TF-CONVERGENCE
+    title: "Theme Fabric research, source convergence and C0 records"
+    status: in_progress
+    pr: [8646, 8650, 8631, 8651, 8629, 8653, 8635]
+    next_action: >
+      Research #8646, breadth #8650, C8 #8631, M1 #8651 and C4 #8629 are merged with accepted
+      source receipts. Witness #8653 accepted head ebd4382fdafdfecf55029305baddfa95b60f863a merged as
+      c44aae5f131a59571ad0afcd7197e3d8696bc2b9 after binding CI and post-merge source conservation proof.
+      The #8540 rule window at 03462ef689a5bbb4c4254c48db34713efd731876 is
+      ADOPTED_PROSPECTIVE_RULE_ONLY, awaiting production evidence; composition.d2e is
+      HOLD_AWAITING_SELECTED_GENERATION_PROOF. N/Q NOT_RUN/null; P2 NOT_ASSESSED; P3 null (both unassessed).
+      This records set uses #8635's ordinary review/validation/CI/merge/source gate. Apply
+      DEC:GMI-THEME-FABRIC-C0-CONVERGENCE; preserve
+      census originals, optional #8643 scope, R-J.10/R9, E1/A1, R-H.W2w gaps and all existing
+      natural/qualification/owner gates. No K phase-2 release or mission-completion claim.
+
 landmines:
   - >-
     The old next_action waiting for the 2026-08-15 scrape is superseded permanently.
@@ -312,16 +306,17 @@ landmines:
     plus the job-level if: always() && needs.et_gate.outputs.run != 'false' idiom
     (DSC:DAILY-ENGINE-RESULT-IS-FAILURE-AFTER-ITS-COMMIT).
 next_action: >
-  Seat 6f14c2da (Meta-CEO, Chairman handoff on #8324 comment 5991777960) carries the program;
-  resume from agentos/handoffs/GMI-THEME-GRAPH-2026-10-06.md. Landed 2026-10-06: #8509, #8417,
-  #8486, #8455, #8524, #8432, #8435, #8538, #8507, #8542, #8544 and #8539, plus
-  mastermind-terminal #837 and #838; on 2026-10-07 #8559 (the main-red clock-pin heal), #8554
-  and #8552; the Wave G pass-2 integrator audit passed. Next: read the
-  first real nightly (2026-10-07) by artifact for D2E P2 (the committed G1 shadow, the VMRK
-  suppression and lifecycle row, and the U.S. projection), then run D2E P3 and land #8540. W3B
-  and W3C close only on that production evidence; the China projection stays deferred until
-  cn.json reads available. Operator acts (mini4 credential install, mini2 disk, VPS disk) are
-  never seat work, and the nightly OIP integrity failure belongs to the OIP lane.
+  Continue operation theme-fabric-e2e-20261008-sol-001 from
+  agentos/handoffs/GMI-THEME-GRAPH-2026-10-08.md under incumbent coo-fable/seat 6f14c2da.
+  C4 and witness sources are merged and verified; #8540 prospective rules are
+  ADOPTED_PROSPECTIVE_RULE_ONLY, awaiting production evidence, at 03462ef689a5bbb4c4254c48db34713efd731876.
+  composition.d2e remains HOLD_AWAITING_SELECTED_GENERATION_PROOF.
+  Next critical path: observe the first eligible original natural daily run using the exact
+  designated formal-adoption created_at boundary, freeze and assess same-run evidence, then
+  independent P3 and any lawful W3B release. N/Q remain NOT_RUN/null; P2 NOT_ASSESSED; P3 null (both unassessed).
+  Continue W3C authorized payload/human proof and retained F04, qualified-micro, owner and E1
+  gates. This records set follows #8635's ordinary PR gate; close #8633 as folded only after
+  actual records merge/source proof. CHECKPOINTED_CONTINUATION; mission completion is false.
 ---
 
 ## Current production substrate

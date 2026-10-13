@@ -4,7 +4,7 @@ from datetime import date, datetime, time, timedelta, timezone
 import pytest
 
 from lib import cn_calendar as cn, hk_calendar as hk
-from lib import nyse_calendar as us, tsx_calendar as ca
+from lib import us_cash_calendar as us, tsx_calendar as ca
 
 CALENDARS = {"CN": cn, "HK": hk, "US": us, "CA": ca}
 SLATES = {

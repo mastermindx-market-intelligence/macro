@@ -926,6 +926,66 @@ def _apply_delisting(rec: dict, disclosure: dict) -> None:
 # module. This monolith consumes that seam through its private module namespace
 # and intentionally re-exports none of its helpers.
 
+def _bind_price_clock(tech: dict, close: pd.Series) -> dict:
+    """Bind only tech.price to its actual source bar; never borrow analysis asof.
+
+    The rich snapshot coerces numeric closes and drops NaNs before choosing its
+    last price. Require the same rounded value and an unambiguous calendar index.
+    Invalid metadata is omitted, preserving the existing price and rounding.
+    This establishes no native currency or cross-field snapshot authority.
+    """
+    import math
+    from numbers import Real
+
+    result = dict(tech)
+    result.pop("price_asof", None)
+    try:
+        price = result.get("price")
+        if isinstance(price, bool) or not isinstance(price, Real):
+            return result
+        if not math.isfinite(price) or price <= 0:
+            return result
+        observed = pd.to_numeric(close, errors="coerce").astype(float).dropna()
+        if (observed.empty or not isinstance(observed.index, pd.DatetimeIndex)
+                or not observed.index.is_monotonic_increasing or not observed.index.is_unique):
+            return result
+        last = float(observed.iloc[-1])
+        day = observed.index[-1]
+        if not math.isfinite(last) or pd.isna(day) or round(last, 2) != price:
+            return result
+        result["price_asof"] = day.date().isoformat()
+    except (TypeError, ValueError, OverflowError):
+        pass  # A missing price clock is honest; no default/current/build date.
+    return result
+
+
+def _enrich_stock_technicals(rec: dict, close: pd.Series,
+                            ohlcv: pd.DataFrame | None, bench: pd.Series | None) -> None:
+    """Commit the richer price and its clock together after both reads succeed.
+
+    A snapshot/squeeze failure leaves the prior thin pair untouched. The record's
+    analysis/valuation date is independent and remains on its original universe.
+    """
+    if ohlcv is not None and {"high", "low", "volume"} <= set(ohlcv.columns):
+        source_close = ohlcv["close"]
+        rich = stock_technicals.snapshot(source_close, ohlcv["high"],
+                                        ohlcv["low"], ohlcv["volume"], bench=bench)
+        sq = vol_squeeze.assess(source_close, ohlcv["high"], ohlcv["low"], ohlcv["volume"])
+    else:
+        source_close = close
+        rich = stock_technicals.snapshot(close, bench=bench)
+        sq = vol_squeeze.assess(close)
+    prior = dict(rec.get("tech") or {})
+    # If the new price has no valid date it cannot inherit the previous price's date.
+    prior.pop("price_asof", None)
+    # The thin price's native unit cannot qualify a price from another observation.
+    # Only a unit actually returned by the richer source could survive this merge.
+    prior.pop("currency", None)
+    rec["tech"] = _bind_price_clock({**prior, **rich}, source_close)
+    if sq:
+        rec["vol_squeeze"] = sq
+
+
 def _one(ticker: str, close: pd.Series, high: pd.Series | None,
          name: str, sector: str, liquidity: str | None = None,
          macro_drag: float | None = None, macro_beta: float = 0.0,
@@ -966,7 +1026,7 @@ def _one(ticker: str, close: pd.Series, high: pd.Series | None,
         "ticker": ticker, "name": name, "sector": sector,
         "asof": asof,
         "history_days": int(len(c)),
-        "tech": snapshot(c),
+        "tech": _bind_price_clock(snapshot(c), c),
         "season_this": season_line(seas, month),
         "season_next": season_line(seas, month % 12 + 1),
         "season_this_zh": season_line(seas, month, zh=True),
@@ -1484,6 +1544,189 @@ def _json_safe(o):
     if isinstance(o, (list, tuple)):
         return [_json_safe(v) for v in o]
     return o
+
+
+def _today_source_instant(value):
+    if not isinstance(value, str):
+        raise ValueError("Today source clock is unavailable")
+    instant = datetime.fromisoformat(value.replace("Z", "+00:00"))
+    if instant.tzinfo is None or instant.utcoffset().total_seconds() != 0:
+        raise ValueError("Today source clock must be UTC")
+    return instant
+
+
+def today_selection_source_binding(source_bytes):
+    """Bind exact displayed source bytes; this is not W3C capture acceptance."""
+    from hashlib import sha256
+    import re
+    from datetime import date
+    from engine.us_candidate_episode import canonical_json
+
+    doc = json.loads(source_bytes)
+    if not isinstance(doc, dict) or not isinstance(doc.get("buy"), list):
+        raise ValueError("Today source buy roster is unavailable")
+    emit = doc.get("emit")
+    if not isinstance(emit, dict) or not re.fullmatch(r"[0-9a-f]{32}", str(emit.get("pair_id") or "")):
+        raise ValueError("Today source pair is unavailable")
+    _today_source_instant(emit.get("at_utc"))
+    if not isinstance(doc.get("board_definition"), str) or not doc["board_definition"]:
+        raise ValueError("Today source definition is unavailable")
+    session = doc.get("as_of")
+    if not isinstance(session, str) or date.fromisoformat(session).isoformat() != session:
+        raise ValueError("Today source session is unavailable")
+    rows = []
+    for index, row in enumerate(doc["buy"]):
+        if not isinstance(row, dict):
+            raise ValueError("Today source row is unavailable")
+        rows.append({"selection_index": index, "row_receipt": "sha256:" + sha256(canonical_json(row).encode()).hexdigest()})
+    source_sha256 = "sha256:" + sha256(source_bytes).hexdigest()
+    material = {"source_sha256": source_sha256, "pair_id": emit["pair_id"], "market_session": session, "ordered_rows": rows}
+    return {**material, "selection_receipt": "sha256:" + sha256(canonical_json(material).encode()).hexdigest(),
+            "schema": "prophet.today_selection_source_binding/v1", "receipt_kind": "EXACT_DISPLAYED_SOURCE"}
+
+
+def today_selection_row_receipts(source_bytes):
+    """Optional original-producer handoff; ambiguous same-ticker rows emit nothing."""
+    doc = json.loads(source_bytes)
+    binding = today_selection_source_binding(source_bytes)
+    grouped = {}
+    for row, receipt in zip(doc["buy"], binding["ordered_rows"], strict=True):
+        ticker = row.get("ticker")
+        if isinstance(ticker, str) and ticker:
+            grouped.setdefault(ticker, set()).add(receipt["row_receipt"])
+    return {ticker: next(iter(values)) for ticker, values in grouped.items() if len(values) == 1}
+
+
+def read_today_candidate_projection(repo_root, *, expected_source_sha256, expected_pair_id,
+                                    expected_selection_receipt, expected_candidate_generation_id=None):
+    """Read exact finalized selection plus native B1; never mutate publication."""
+    from hashlib import sha256
+    from engine.us_candidate_episode import (
+        attest_candidate_episode_store_bytes, canonical_json,
+        load_candidate_episode_store_snapshot,
+    )
+    from engine.us_context_vector import read_today_candidate_source_rows
+    from engine.prophet_daily_brief import compose_daily_brief
+
+    root = Path(repo_root)
+    source_path = root / "site/factordata/us_standouts.json"
+    generated_at = datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
+    result = {"schema": "prophet.daily_brief_read/v1", "status": "UNAVAILABLE",
+              "source_binding": None, "candidate_generation_id": None,
+              "generated_at": generated_at, "candidates": [], "reason_codes": []}
+
+    def unavailable(reason):
+        return {**result, "status": "UNAVAILABLE", "candidates": [], "reason_codes": [reason]}
+
+    try:
+        raw = source_path.read_bytes()
+        binding = today_selection_source_binding(raw)
+        doc = json.loads(raw)
+        if _today_source_instant(doc["emit"]["at_utc"]) > _today_source_instant(generated_at):
+            raise ValueError("Today source clock is future")
+    except (OSError, ValueError, TypeError):
+        return unavailable("SELECTION_SOURCE_UNAVAILABLE")
+    result["source_binding"] = {key: binding[key] for key in ("source_sha256", "pair_id", "selection_receipt", "market_session", "schema", "receipt_kind")}
+    if (expected_source_sha256 != binding["source_sha256"] or expected_pair_id != binding["pair_id"]):
+        return unavailable("SOURCE_BINDING_MISMATCH")
+    if expected_selection_receipt != binding["selection_receipt"]:
+        return unavailable("SELECTION_BINDING_MISMATCH")
+    try:
+        # Emission and native reconciliation remain their existing owners' work.
+        source_rows, source_receipts = read_today_candidate_source_rows(root)
+        episode_root = root / "data/us_prophet_rank/episodes"
+        token = attest_candidate_episode_store_bytes(episode_root)
+        snapshot = load_candidate_episode_store_snapshot(episode_root)
+        if token.generation_id != snapshot.generation_id:
+            return unavailable("CANDIDATE_SNAPSHOT_CHANGED")
+    except (OSError, ValueError, TypeError):
+        return unavailable("CANDIDATE_SNAPSHOT_UNAVAILABLE")
+    result["candidate_generation_id"] = snapshot.generation_id
+    if expected_candidate_generation_id is not None and expected_candidate_generation_id != snapshot.generation_id:
+        return unavailable("CANDIDATE_GENERATION_MISMATCH")
+
+    generation = snapshot.generation
+    try:
+        if _today_source_instant(generation.receipt["recorded_at"]) > _today_source_instant(generated_at):
+            return unavailable("CANDIDATE_CLOCK_UNAVAILABLE")
+    except (ValueError, TypeError, KeyError):
+        return unavailable("CANDIDATE_CLOCK_UNAVAILABLE")
+    withdrawn = {event.get("correction_of") for event in generation.events if event.get("event_type") == "RETRACTED"}
+    candidates = []
+    for row, selected in zip(doc["buy"], binding["ordered_rows"], strict=True):
+        item = {"selection_index": selected["selection_index"], "row_receipt": selected["row_receipt"],
+                "status": "UNAVAILABLE", "candidate_input": None, "daily_brief": None, "reason_codes": []}
+        matching = [record for record in source_rows
+                    if record.get("stamp_date") == binding["market_session"]
+                    and record.get("ticker") == row.get("ticker")
+                    and record.get("board_definition") == doc.get("board_definition")]
+        reason = None
+        if len(matching) != 1:
+            reason = "CANDIDATE_SOURCE_UNAVAILABLE" if not matching else "CANDIDATE_SOURCE_AMBIGUOUS"
+        elif matching[0].get("today_selection_row_receipt") != selected["row_receipt"]:
+            reason = "ROW_PROVENANCE_UNAVAILABLE" if not matching[0].get("today_selection_row_receipt") else "ROW_PROVENANCE_MISMATCH"
+        if reason is None:
+            native_row = matching[0]
+            source_key = "candidate:{stamp_date}:{ticker}:{board_definition}".format(**native_row)
+            source_receipt = "sha256:" + sha256(canonical_json(native_row).encode()).hexdigest()
+            related = [event for event in generation.events
+                       if event.get("source_system") == "candidate"
+                       and event.get("source_schema") == "us_prophet_rank.candidates/v1"
+                       and event.get("source_event_id") == source_key
+                       and event.get("source_receipt") == source_receipt
+                       and event.get("event_type") in {"OPENED", "OBSERVED"}]
+            active_relations = [event for event in related if event.get("event_id") not in withdrawn]
+            suppressed = [record for record in generation.suppressions
+                          if record.get("source_system") == "candidate"
+                          and record.get("source_event_id") == source_key
+                          and record.get("source_receipt") == source_receipt]
+            episode_ids = {event.get("episode_id") for event in active_relations}
+            episodes = [episode for episode in generation.episodes if episode.get("episode_id") in episode_ids]
+            if suppressed:
+                reason = "CANDIDATE_SOURCE_SUPPRESSED"
+            elif related and not active_relations:
+                reason = "CANDIDATE_SOURCE_RETRACTED"
+            elif not active_relations:
+                reason = "CANDIDATE_RECONCILIATION_PENDING"
+            elif len(episode_ids) != 1 or len(episodes) != 1:
+                reason = "CANDIDATE_EPISODE_AMBIGUOUS"
+            elif episodes[0].get("episode_state") != "ACTIVE" or episodes[0].get("superseded_by") is not None:
+                reason = "CANDIDATE_EPISODE_TERMINAL"
+            else:
+                episode = episodes[0]
+                candidate = {"schema": "prophet.daily_brief_candidate_input/v1", "security_id": episode["security_id"],
+                             "episode_id": episode["episode_id"], "candidate_generation_id": snapshot.generation_id,
+                             "market_session": binding["market_session"], "state": "SELECTED",
+                             "owner_ref": "scripts/build_stock_library.py::main", "asof": generated_at,
+                             "source_receipt": source_receipt, "selection_receipt": binding["selection_receipt"],
+                             "display": {"ticker": row.get("ticker"), "selection_index": selected["selection_index"]}}
+                provenance = {"source_event_id": source_key, "source_receipt": source_receipt,
+                              "selection_source_emit": doc["emit"], "generation_recorded_at": generation.receipt["recorded_at"],
+                              "relations": [{key: event.get(key) for key in ("event_id", "occurred_at", "known_at", "recorded_at")}
+                                            for event in active_relations]}
+                brief = compose_daily_brief(candidate=candidate, entry_availability=None, plan=None, assessment=None,
+                                            evidence=None, assembly=None, recovery=None, previous=None,
+                                            now=generated_at, quote=None)
+                item.update(status="AVAILABLE", candidate_input=candidate, daily_brief=brief, native_provenance=provenance,
+                            reason_codes=["ASSESSMENT_NATIVE_OWNER_READ_UNAVAILABLE", "PLAN_NATIVE_OWNER_READ_UNAVAILABLE",
+                                          "EVIDENCE_NATIVE_OWNER_READ_UNAVAILABLE", "QUOTE_NATIVE_OWNER_READ_UNAVAILABLE",
+                                          "B4_NATIVE_OWNER_READ_UNAVAILABLE"])
+        if reason is not None:
+            item["reason_codes"] = [reason]
+        candidates.append(item)
+    try:
+        if source_path.read_bytes() != raw:
+            return unavailable("SOURCE_SNAPSHOT_CHANGED")
+        _, after_receipts = read_today_candidate_source_rows(root)
+        if after_receipts != source_receipts or attest_candidate_episode_store_bytes(episode_root) != token:
+            return unavailable("CANDIDATE_SNAPSHOT_CHANGED")
+        if source_path.read_bytes() != raw:
+            return unavailable("SOURCE_SNAPSHOT_CHANGED")
+    except (OSError, ValueError, TypeError):
+        return unavailable("CANDIDATE_SNAPSHOT_UNAVAILABLE")
+    # Native candidate availability is narrower than a fully available brief.
+    return {**result, "status": "PARTIAL", "candidates": candidates,
+            "reason_codes": ["DAILY_BRIEF_OWNER_INPUTS_UNAVAILABLE"]}
 
 
 # Urgency values that read as actionable on the board. A blocked signal must never
@@ -3829,17 +4072,7 @@ def main(now: datetime | None = None) -> int:
                 if ticker in _continuous_tickers
                 else _clip_daily_to_completed_session(_raw_ohlcv, _completed_session)
             )
-            if _ohlcv is not None and {"high", "low", "volume"} <= set(_ohlcv.columns):
-                rich = stock_technicals.snapshot(_ohlcv["close"], _ohlcv["high"],
-                                                 _ohlcv["low"], _ohlcv["volume"], bench=bench)
-                sq = vol_squeeze.assess(_ohlcv["close"], _ohlcv["high"],
-                                        _ohlcv["low"], _ohlcv["volume"])
-            else:
-                rich = stock_technicals.snapshot(close, bench=bench)
-                sq = vol_squeeze.assess(close)
-            rec["tech"] = {**(rec.get("tech") or {}), **rich}
-            if sq:
-                rec["vol_squeeze"] = sq
+            _enrich_stock_technicals(rec, close, _ohlcv, bench)
         except Exception as e:  # noqa: BLE001 — additive; the thin snapshot is already on rec
             log.warning("tech/squeeze enrich for %s failed (%s)", ticker, e)
         # valuation_scenario_controls.v1 -- FROZEN SPEC B-F07-2. Reads back the

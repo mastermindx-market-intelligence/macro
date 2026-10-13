@@ -75,6 +75,8 @@ SATS_ID = "SEC:US-XNAS-SATS"
 
 MMC_RENAME = date(2026, 1, 14)
 SATS_RENAME = date(2026, 6, 24)
+PSKY_ID = "SEC:US-XNAS-PSKY"
+SKYD_RENAME = date(2026, 10, 6)
 
 
 # ── committed artifacts ───────────────────────────────────────────────────────
@@ -181,6 +183,66 @@ def test_the_membership_key_DID_move_for_echostar_and_the_table_says_so(
     # called EchoStar SATS, and a table that answers "ECHO" has re-labelled the past.
     assert table.vendor_symbol_for("membership", SATS_ID, date(2026, 1, 1)) == "SATS"
     assert table.vendor_symbol_for("membership", SATS_ID, SATS_RENAME) == "ECHO"
+
+
+# ── THE PSKY BOUNDARY (Skydance, Nasdaq->NYSE listing transfer 2026-10-06) ────
+def test_psky_and_skyd_are_one_security_across_the_venue_transfer(
+    table: VendorAliasTable,
+) -> None:
+    """The production blocker this rename exists for, expressed as an assertion.
+
+    The 2026-10-09 S&P roster re-fetch (data/breadth/constituents.parquet) lists SKYD
+    while the stored/PIT side still keys PSKY, so the membership space needs BOTH legs
+    of the dated pair or the roster resolve fail-closes as ``membership_alias_unresolved``
+    (scripts/build_qbus_news_universe.py, exit 2).  ONE stable id before and after
+    2026-10-06: the Nasdaq->NYSE listing transfer (SEC EDGAR CIK 0002041610, 8-K
+    accession 0001104659-26-113913, Items 2.01/5.03) is joined onto the EXISTING
+    ``SEC:US-XNAS-PSKY`` row by the exact-listing-key SECURITY_SUPERSESSIONS entry —
+    never a second mint.
+    """
+    assert table.resolve("membership", "PSKY", date(2026, 10, 5)) == PSKY_ID
+    assert table.resolve("membership", "SKYD", SKYD_RENAME) == PSKY_ID
+    assert table.resolve("membership", "SKYD", date(2026, 10, 11)) == PSKY_ID
+
+    # DIFFERENTLY either side — same half-open convention as MMC/SATS: valid_from
+    # INCLUSIVE, valid_to EXCLUSIVE, so the boundary day itself answers SKYD.
+    assert table.resolve("membership", "PSKY", SKYD_RENAME) is None
+    assert table.resolve("membership", "PSKY", date(2026, 10, 11)) is None
+    assert table.resolve("membership", "SKYD", date(2026, 10, 5)) is None
+
+    # `yahoo` is dated because Yahoo follows the exchange spelling.
+    assert table.resolve("yahoo", "PSKY", date(2026, 10, 5)) == PSKY_ID
+    assert table.resolve("yahoo", "SKYD", date(2026, 10, 11)) == PSKY_ID
+    assert table.resolve("yahoo", "PSKY", date(2026, 10, 11)) is None
+
+
+def test_psky_store_and_fetch_keys_did_not_move(table: VendorAliasTable) -> None:
+    """The #4622-protocol store-key migration is a separate act: ``data/stocks/`` and
+    the fetch seam still key PSKY, so the current-catalog spaces keep their committed
+    open PSKY rows for every date and the builder mints no SKYD rows there (the
+    chain-member ratification gate in ``build_alias_rows``)."""
+    for on in (date(2026, 10, 5), SKYD_RENAME, date(2026, 10, 11)):
+        assert table.vendor_symbol_for("store", PSKY_ID, on) == "PSKY"
+        assert table.resolve("store", "PSKY", on) == PSKY_ID
+    assert table.resolve("store", "SKYD", date(2026, 10, 11)) is None
+    assert table.resolve("yahoo_fetch", "SKYD", date(2026, 10, 11)) is None
+
+
+def test_psky_master_keeps_one_row_and_the_registry_joins_the_transfer(
+    master: pd.DataFrame,
+) -> None:
+    rows = master[master["inception_code"].isin(["PSKY", "SKYD"])]
+    assert len(rows) == 1, "never a second stable id for the renamed listing"
+    assert rows.iloc[0]["security_id"] == PSKY_ID
+    entries = {e.listing_key: e for e in BUILD.SECURITY_SUPERSESSIONS}
+    assert entries["US-XNYS-PSKY"].canonical_id == PSKY_ID
+    assert entries["US-XNYS-PSKY"].on == SKYD_RENAME
+    assert "0001104659-26-113913" in entries["US-XNYS-PSKY"].evidence
+
+
+def test_unmodelled_renames_stay_empty_after_the_psky_event() -> None:
+    fixups, migrations = BUILD.load_config_maps()
+    assert BUILD.unmodelled_renames(fixups, migrations) == []
 
 
 # ── THE TWO CLOCKS ────────────────────────────────────────────────────────────
@@ -1069,7 +1131,11 @@ def test_h9_705_rows_tombstone_byte_frozen_except_two_columns(master: pd.DataFra
     ceiling catches its mirror, a duplicate-mint regression phantom-minting rows
     en masse (fine-grained admission accounting is the receipt tests' job)."""
     n_us = len(master[master["country"] == "US"])
-    assert 705 + 508 + 1 <= n_us <= 705 + 508 + 1 + 120
+    # Ceiling widened 2026-10-07 (DEC:ITP-ISSUER-UNIVERSE-ADMITS-R1-CONSTITUENTS-2026-10-07):
+    # load_universe() now admits the S&P 400/600 breadth constituents forward-only;
+    # the A8 dry run puts US rows at 1939 (+721 admissions, +1 CBOE input drift).
+    # The floor is unchanged; the +120 duplicate-mint headroom now sits above 1939.
+    assert 705 + 508 + 1 <= n_us <= 1939 + 120
     tomb = master[master["security_id"] == "SEC:US-XNYS-VMRK"].iloc[0]
     assert tomb["issuer_state"] == "NO_ISSUER_EVIDENCE"
     assert pd.isna(tomb["issuer_id"])
@@ -1150,11 +1216,15 @@ def test_receipt_carries_the_security_axis_block(receipt: dict, master: pd.DataF
                 else:
                     assert row["security_state"] == "SUPERSEDED_DUPLICATE_MINT"
     assert receipt["resurrection_refusals"] == []
-    # AMENDMENT ruling 4 (M3) / ruling 6 (M5) — the two new disclosure blocks are
-    # present and empty in the healthy post-repair state (no unregistered rename
-    # duplicate exists, and no alias row needed pruning this run).
+    # AMENDMENT ruling 4 (M3) / ruling 6 (M5) — the two new disclosure blocks: no
+    # unregistered rename duplicate exists, and the only lawful prune class is the
+    # AMENDMENT §2 same-id refinement (the PSKY->SKYD first regen prunes exactly the
+    # two committed open PSKY rows this way, receipted; idempotent, so the set is
+    # empty again on every later run — the pin below holds either way).
     assert receipt["unregistered_rename_duplicates"] == []
-    assert receipt["vendor_alias_prunes"] == []
+    prunes = receipt["vendor_alias_prunes"]
+    assert all(p["prune_class"] == "same_id_refinement" for p in prunes)
+    assert all(p["security_id"] == PSKY_ID for p in prunes)
 
 
 # H1 — race replay WITHOUT the RenameEvent: the fence refuses the VMRK mint.
@@ -1326,9 +1396,10 @@ def test_h8_a_resolution_hitting_a_tombstone_is_a_typed_refusal_not_a_resurrecti
 # registry; a RenameEvent-implied bare-code match on a DIFFERENT venue must NEVER
 # auto-tombstone (the reviewer's cross-MIC scenario) — it is disclosed instead.
 def test_m3_the_registry_matches_the_committed_vmrk_entry_exactly() -> None:
-    assert len(BUILD.SECURITY_SUPERSESSIONS) == 1
-    entry = BUILD.SECURITY_SUPERSESSIONS[0]
-    assert entry.listing_key == "US-XNYS-VMRK"
+    assert len(BUILD.SECURITY_SUPERSESSIONS) == 2  # + US-XNYS-PSKY (2026-10-11)
+    entry = next(
+        e for e in BUILD.SECURITY_SUPERSESSIONS if e.listing_key == "US-XNYS-VMRK"
+    )
     assert entry.canonical_id == EQR_ID
     assert "0001140361-26-033377" in entry.evidence
 
@@ -3413,9 +3484,19 @@ def test_us_coverage_scope_holds_through_lawful_admissions(receipt: dict) -> Non
     scopes), and the same PR unwedged the nightly artifact refresh, so exact
     counts rot with the next lawful admission — floors keep the downward bite
     (coverage silently SHRINKING is the defect this pins against)."""
-    assert 713 <= receipt["coverage"]["total"] <= 713 + 120
+    # Ceilings widened 2026-10-07 (DEC:ITP-ISSUER-UNIVERSE-ADMITS-R1-CONSTITUENTS-2026-10-07):
+    # the curated universe gains the S&P 400/600 constituents (A8 dry run: 1620/1633
+    # resolved, 13 unresolved; the newly unresolved are CWEN-A and HLX, admitted with no
+    # security row, and QRVO, under the pre-existing KHC pending-transition fence that
+    # the unpatched rebuild also shows).  Unresolved widened 13 -> 16 (2026-10-11,
+    # PSKY->SKYD regen): TCBI joined the unresolved set through 2026-10-09
+    # symbol-directory drift (the snapshot lists it on exchange code 'F', which is
+    # not in lib/dataos/identity.KNOWN_MICS) and BLFS because it is ABSENT from the
+    # 2026-10-08 and 2026-10-09 snapshots entirely (listed on Nasdaq through
+    # 2026-10-07), on top of the A8-expected CWEN-A/HLX/QRVO.
+    assert 713 <= receipt["coverage"]["total"] <= 1633 + 120
     assert receipt["coverage"]["resolved"] >= 703
-    assert receipt["coverage"]["unresolved"] <= 10
+    assert receipt["coverage"]["unresolved"] <= 16
     assert receipt["coverage"]["total"] == (
         receipt["coverage"]["resolved"] + receipt["coverage"]["unresolved"])
     assert receipt["issuer"]["state_counts"]["RESOLVED"] >= 699
@@ -3879,9 +3960,19 @@ def test_gmi_us_regression_bands_cn_hk_and_legacy_us(
     n_hk = len(master[master["country"] == "HK"])
     assert 1005 <= n_cn <= 1005 + 180
     assert 147 <= n_hk <= 147 + 60
-    assert 713 <= receipt["coverage"]["total"] <= 713 + 120
+    # Ceilings widened 2026-10-07 (DEC:ITP-ISSUER-UNIVERSE-ADMITS-R1-CONSTITUENTS-2026-10-07):
+    # the curated universe gains the S&P 400/600 constituents (A8 dry run: 1620/1633
+    # resolved, 13 unresolved; the newly unresolved are CWEN-A and HLX, admitted with no
+    # security row, and QRVO, under the pre-existing KHC pending-transition fence that
+    # the unpatched rebuild also shows).  Unresolved widened 13 -> 16 (2026-10-11,
+    # PSKY->SKYD regen): TCBI joined the unresolved set through 2026-10-09
+    # symbol-directory drift (the snapshot lists it on exchange code 'F', which is
+    # not in lib/dataos/identity.KNOWN_MICS) and BLFS because it is ABSENT from the
+    # 2026-10-08 and 2026-10-09 snapshots entirely (listed on Nasdaq through
+    # 2026-10-07), on top of the A8-expected CWEN-A/HLX/QRVO.
+    assert 713 <= receipt["coverage"]["total"] <= 1633 + 120
     assert receipt["coverage"]["resolved"] >= 703
-    assert receipt["coverage"]["unresolved"] <= 10
+    assert receipt["coverage"]["unresolved"] <= 16
 
 
 # 16: ordinary reruns preserve artifacts and every evidenced refusal. A stable
@@ -4162,3 +4253,40 @@ def test_dated_store_pair_emits_only_for_the_renamed_security() -> None:
     stranger = [r for r in store if r.security_id == "SEC:US-XNAS-EQR2"]
     assert [(r.vendor_symbol, r.valid_from, r.valid_to) for r in stranger] == [
         ("EQR", None, None)]
+
+
+def test_a_notation_variant_key_no_rename_mentions_keeps_its_open_current_catalog_rows() -> None:
+    """F1 (skyd-review-20261011-r1, BLOCKER): the current-catalog chain-member gate
+    must not eat a NOTATION VARIANT.  ``_inception_code`` returns the directory's DOT
+    spelling for any key no rename mentions, so ``MOG-A`` (directory symbol ``MOG.A``)
+    measured ``res.key != res.inception_code`` — a "chain member" by that test alone —
+    and the #8828 gate suppressed its fresh open ``store``/``yahoo_fetch`` rows with
+    nothing in the log reporting it.  MOG-A had no committed rows to carry it (admitted
+    by #8626), so both TRUE rows were dropped from the artifact.  The gate now
+    suppresses only a non-root key a DATED RenameEvent names that no record ratifies
+    (SKYD); a notation variant no rename mentions keeps origin/main's behaviour."""
+    from lib import ticker_aliases
+    from lib.dataos.identity import ListingKey
+
+    resolutions = [
+        # modelled on the real MOG-A row (snapshot 2026-10-09: Moog Inc. Class A,
+        # NYSE, symbol MOG.A): the universe's dash key, the directory's dot code.
+        BUILD.Resolution("MOG-A", ListingKey("US", "XNYS", "MOG.A"), "MOG.A", "MOG.A",
+                         "fixture", date(2026, 10, 9)),
+    ]
+    ids = {"MOG-A": "SEC:US-XNYS-MOG.A"}
+    rows = BUILD.build_alias_rows(resolutions, ids)
+    current = {
+        (r.vendor, r.vendor_symbol): (r.security_id, r.valid_from, r.valid_to)
+        for r in rows
+        if r.vendor in (BUILD.VENDOR_STORE, BUILD.VENDOR_YAHOO_FETCH)
+    }
+    # MOG-A is this security's ONLY resolution — no prior current-catalog row exists —
+    # so both rows must be emitted fresh and OPEN, exactly as origin/main's
+    # `prior is None or is_root` gate emitted them.
+    assert current == {
+        ("store", "MOG-A"): ("SEC:US-XNYS-MOG.A", None, None),
+        ("yahoo_fetch", ticker_aliases.fetch_symbol("MOG-A")): (
+            "SEC:US-XNYS-MOG.A", None, None),
+    }
+    VendorAliasTable(rows)  # and the fixture table is unambiguous

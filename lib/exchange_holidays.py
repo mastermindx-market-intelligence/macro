@@ -9,6 +9,7 @@ Early closes remain sessions. Times are local and include HKEX's latest CAS end
 CN: SSE/SZSE 2026 notices. HK: SEHK 2026/2027 circulars. US: NYSE 2026/2027
 with Nasdaq independently corroborating 2026 only. CA: TSX/TSXV 2026; only
 2027 New Year's Day is independently verified, so 2027 is NOT a verified year.
+JP: JPX 2026/2027 cash-equity notices, verified 2026-10-08.
 No network, filesystem, dependencies, government-workday inference or runtime
 holiday calculation. Extend only from a complete official annual exchange notice.
 """
@@ -25,6 +26,7 @@ _HK_2026 = "https://www.hkex.com.hk/-/media/HKEX-Market/Services/Circulars-and-N
 _HK_2027 = "https://www.hkex.com.hk/-/media/HKEX-Market/Services/Circulars-and-Notices/Participant-and-Members-Circulars/SEHK/2026/ce_SEHK_CT_077_2026.pdf"
 _NYSE = "https://www.nyse.com/trade/hours-calendars"
 _NASDAQ = "https://www.nasdaq.com/market-activity/stock-market-holiday-schedule"
+_JPX = "https://www.jpx.co.jp/english/corporate/about-jpx/calendar/"
 _TSX = "https://www.tsx.com/en/trading/calendars-and-trading-hours/calendar"
 
 
@@ -37,6 +39,45 @@ def _slate(year: int, groups: tuple[tuple[str, str], ...]) -> Mapping[date, str]
 
 
 _ANNOUNCED = MappingProxyType({
+    ("JP", 2026): _slate(2026, (
+        ("New Year's Day", "01-01"),
+        ("Market Holiday", "01-02 12-31"),
+        ("Coming of Age Day", "01-12"),
+        ("National Foundation Day", "02-11"),
+        ("Emperor's Birthday", "02-23"),
+        ("Vernal Equinox", "03-20"),
+        ("Showa Day", "04-29"),
+        ("Greenery Day", "05-04"),
+        ("Children's Day", "05-05"),
+        ("Constitution Memorial Day observed", "05-06"),
+        ("Marine Day", "07-20"),
+        ("Mountain Day", "08-11"),
+        ("Respect for the Aged Day", "09-21"),
+        ("Holiday", "09-22"),
+        ("Autumnal Equinox", "09-23"),
+        ("Sports Day", "10-12"),
+        ("Culture Day", "11-03"),
+        ("Labor Thanksgiving Day", "11-23"),
+    )),
+    ("JP", 2027): _slate(2027, (
+        ("New Year's Day", "01-01"),
+        ("Market Holiday", "12-31"),
+        ("Coming of Age Day", "01-11"),
+        ("National Foundation Day", "02-11"),
+        ("Emperor's Birthday", "02-23"),
+        ("Vernal Equinox observed", "03-22"),
+        ("Showa Day", "04-29"),
+        ("Constitution Memorial Day", "05-03"),
+        ("Greenery Day", "05-04"),
+        ("Children's Day", "05-05"),
+        ("Marine Day", "07-19"),
+        ("Mountain Day", "08-11"),
+        ("Respect for the Aged Day", "09-20"),
+        ("Autumnal Equinox", "09-23"),
+        ("Sports Day", "10-11"),
+        ("Culture Day", "11-03"),
+        ("Labor Thanksgiving Day", "11-23"),
+    )),
     ("CN", 2026): _slate(2026, (
         ("New Year's Day", "01-01 01-02"),
         ("Spring Festival", "02-16 02-17 02-18 02-19 02-20 02-23"),
@@ -144,6 +185,7 @@ _HALF_TIMES = MappingProxyType({
 })
 
 _YEAR_SOURCES = MappingProxyType({
+    "JP": MappingProxyType({2026: (_JPX,), 2027: (_JPX,)}),
     "CN": MappingProxyType({2026: (_SSE, _SZSE)}),
     "HK": MappingProxyType({2026: (_HK_2026,), 2027: (_HK_2027,)}),
     "US": MappingProxyType({2026: (_NYSE, _NASDAQ), 2027: (_NYSE,)}),
@@ -156,12 +198,31 @@ _COVERAGE = MappingProxyType({
         "year_source_urls": year_sources,
         "partial_years": frozenset(year for m, year in _PARTIAL if m == market),
         "partial_source_urls": MappingProxyType({2027: (_TSX,)} if market == "CA" else {}),
-        "verified_on": _VERIFIED_ON,
+        "verified_on": date(2026, 10, 8) if market == "JP" else _VERIFIED_ON,
     })
     for market, year_sources in _YEAR_SOURCES.items()
 })
 
 _NAMES_ZH = MappingProxyType({
+    "Market Holiday": "市场休市日",
+    "Coming of Age Day": "成人节",
+    "National Foundation Day": "建国纪念日",
+    "Emperor's Birthday": "天皇诞生日",
+    "Vernal Equinox": "春分日",
+    "Vernal Equinox observed": "春分日补休日",
+    "Showa Day": "昭和之日",
+    "Greenery Day": "绿之日",
+    "Children's Day": "儿童节",
+    "Constitution Memorial Day": "宪法纪念日",
+    "Constitution Memorial Day observed": "宪法纪念日补休日",
+    "Marine Day": "海之日",
+    "Mountain Day": "山之日",
+    "Respect for the Aged Day": "敬老日",
+    "Holiday": "国民休假日",
+    "Autumnal Equinox": "秋分日",
+    "Sports Day": "体育节",
+    "Culture Day": "文化节",
+    "Labor Thanksgiving Day": "勤劳感谢日",
     "New Year's Day": "元旦",
     "Spring Festival": "春节",
     "Qingming Festival": "清明节",
@@ -202,7 +263,7 @@ _NAMES_ZH = MappingProxyType({
 def announced_holidays(market: str, year: int) -> Mapping[date, str] | None:
     """A complete official annual weekday-closure slate, or None for fallback.
 
-    Canonical markets are CN, HK, US, CA. Unknown keys are rejected; an absent
+    Canonical markets are CN, HK, US, CA, JP. Unknown keys are rejected; an absent
     year (including a partial annual notice) never claims complete verification.
     """
     calendar_coverage(market)

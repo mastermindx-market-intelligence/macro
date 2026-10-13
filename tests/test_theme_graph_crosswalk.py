@@ -162,13 +162,36 @@ def test_the_unmapped_concepts_are_not_enumerated_in_this_file():
 # ---------------------------------------------------------------------------
 
 
-def test_production_crosswalk_hierarchy_is_an_empty_frozen_block():
+def test_production_crosswalk_hierarchy_is_the_frozen_r_c3_table():
     from engine.theme_graph.materialize import HIERARCHY_EPOCH, validate_theme_hierarchy
 
     assert DOC["version"] == 3
     assert DOC["date"] == "2026-07-09"
-    assert DOC["hierarchy"] == {
-        "categories": [], "micro_themes": [], "parents": []}
-    validated = validate_theme_hierarchy(DOC)
-    assert validated == DOC["hierarchy"]
     assert HIERARCHY_EPOCH == "2026-10-07"
+    validated = validate_theme_hierarchy(DOC)
+    assert {k: len(v) for k, v in validated.items()} == {
+        "categories": 10, "sub_themes": 12, "micro_themes": 68, "parents": 132}
+    hierarchy = DOC["hierarchy"]
+    # The R-C3 world: categories + micro_themes share one date R >= the epoch,
+    # and exactly 93 parents (21 category->theme + 72 theme->micro) carry it.
+    asserted_dates = set()
+    for section in ("categories", "micro_themes"):
+        for row in hierarchy[section]:
+            asserted_dates.add(row["asserted_on"])
+    assert len(asserted_dates) == 1
+    r_c3 = asserted_dates.pop()
+    assert r_c3 >= HIERARCHY_EPOCH
+    dated_r_c3 = [row for row in hierarchy["parents"] if row["asserted_on"] == r_c3]
+    assert len(dated_r_c3) == 93
+    category_ids = {row["id"] for row in hierarchy["categories"]}
+    cat_to_theme = sum(1 for row in dated_r_c3 if row["parent"] in category_ids)
+    assert cat_to_theme == 21
+    assert len(dated_r_c3) - cat_to_theme == 72
+    # The L17 sub_theme world: sub rows and the parents NOT dated R share one
+    # later date — the sub_theme tier populates strictly after R-C3 (PIT law).
+    sub_dates = {row["asserted_on"] for row in hierarchy["sub_themes"]}
+    later_parents = [row for row in hierarchy["parents"] if row["asserted_on"] != r_c3]
+    later_dates = sub_dates | {row["asserted_on"] for row in later_parents}
+    assert len(later_dates) == 1
+    assert later_dates.pop() > r_c3
+    assert len(later_parents) == 39

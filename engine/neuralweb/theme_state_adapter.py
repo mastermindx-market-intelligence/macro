@@ -326,17 +326,23 @@ def _bound_rights_read(root: Path, source: dict, family: str | None) -> dict:
     return result
 
 
-def capture_owner_bundle(root: Path, *, owner_readers=None, effective_at: str, known_at: str) -> OwnerBundle:
+def capture_owner_bundle(root: Path, *, owner_readers=None, effective_at: str, known_at: str | None) -> OwnerBundle:
     """Read actual APIs and bytes; optional reader supplies separately owned receipts.
 
     ``owner_readers.read_state_qualification`` is a trusted owner capability, not
     an authentication implementation. It cannot replace any native API result.
     None is the ordinary, honestly unqualified path. A plain success dictionary
     is not a reader. Production custody/authentication of that capability is owed.
+
+    ``known_at=None`` opts into a fresh observation: native date-only reads use
+    the capture-start day, and the query is fixed at completed native capture
+    before optional qualification. Explicit historical cutoffs never advance.
     """
     root = Path(root).resolve()
     _clock(effective_at)
-    _clock(known_at, precise=True)
+    live_capture = known_at is None
+    capture_started = dt.datetime.now(dt.timezone.utc).isoformat().replace("+00:00", "Z") if live_capture else known_at
+    _clock(capture_started, precise=True)
     if config.data_dir().resolve() != (root / "data").resolve():
         raise ValueError("configured owner data root differs from captured root")
     if owner_readers is not None and not callable(getattr(owner_readers, "read_state_qualification", None)):
@@ -378,27 +384,42 @@ def capture_owner_bundle(root: Path, *, owner_readers=None, effective_at: str, k
     query = {"effective_at": effective_at, "known_at": known_at}
     capture_view = _CaptureStoreView(view)
     for node_id, subject in subjects.items():
-        reads = {"ontology": _attempt(ontology.compose_neighborhood, capture_view, node_id=node_id, asof=effective_at[:10], knowledge_cutoff=known_at[:10]), "identity": identity_reads}
+        reads = {"ontology": _attempt(ontology.compose_neighborhood, capture_view, node_id=node_id, asof=effective_at[:10], knowledge_cutoff=capture_started[:10]), "identity": identity_reads}
         basket = subject["basket"]
         reads["membership"] = _native_members(basket["basket_id"], basket["suite"], effective_at) if basket else {"availability": "UNAVAILABLE", "null_reason": "EXACT_LOCAL_BASKET_BINDING_UNAVAILABLE", "value": None}
         family = rights.family_for_node_id(node_id)
         reads["rights"] = _bound_rights_read(root, sources["rights_registry"], family)
         subject["native_reads"] = reads
-        qualified = owner_readers.read_state_qualification(node_id=node_id, query=copy.deepcopy(query), graph_capture_id=graph_capture_id, native_reads=copy.deepcopy(reads), source_sha256={k: v["sha256"] for k, v in sources.items()}) if owner_readers is not None else None
+        qualified = owner_readers.read_state_qualification(node_id=node_id, query=copy.deepcopy(query), graph_capture_id=graph_capture_id, native_reads=copy.deepcopy(reads), source_sha256={k: v["sha256"] for k, v in sources.items()}) if owner_readers is not None and not live_capture else None
         subject["qualification"] = _native_json(qualified)
-    # Verification rereads only hashes, refusing races rather than claiming an
-    # atomic native-owner transaction or silently composing mixed generations.
-    for key, path in paths.items():
-        after = _source(root, path)
-        if after != sources[key]:
-            raise ValueError("source changed during capture: " + path)
     specialist_rights = {name: _bound_rights_read(root, sources["rights_registry"], rights.family_for_source_ref(sources[name]["path"]))
                          for name in SOURCE_PATHS if name != "theme_crosswalk"}
-    if _production_code_refs() != producer_refs:
-        raise ValueError("production implementation changed during capture")
-    if _source(root, paths["rights_registry"]) != sources["rights_registry"]:
-        raise ValueError("rights source changed during specialist owner reads")
+    # Verification rereads only hashes, refusing races rather than claiming an
+    # atomic native-owner transaction or silently composing mixed generations.
+    def verify_capture_sources():
+        for key, path in paths.items():
+            if _source(root, path) != sources[key]:
+                raise ValueError("source changed during capture: " + path)
+        if _production_code_refs() != producer_refs:
+            raise ValueError("production implementation changed during capture")
+
+    verify_capture_sources()
     observed_at = dt.datetime.now(dt.timezone.utc).isoformat().replace("+00:00", "Z")
+    if live_capture:
+        if observed_at[:10] != capture_started[:10]:
+            raise ValueError("UTC day changed during live capture")
+        if _clock(observed_at, precise=True) < _clock(capture_started, precise=True):
+            raise ValueError("clock moved backwards during live capture")
+        query["known_at"] = observed_at
+        if owner_readers is not None:
+            for node_id, subject in subjects.items():
+                qualified = owner_readers.read_state_qualification(
+                    node_id=node_id, query=copy.deepcopy(query), graph_capture_id=graph_capture_id,
+                    native_reads=copy.deepcopy(subject["native_reads"]),
+                    source_sha256={k: v["sha256"] for k, v in sources.items()},
+                )
+                subject["qualification"] = _native_json(qualified)
+            verify_capture_sources()
     payload = {"schema": BUNDLE_SCHEMA, "query": query, "observed_at": observed_at,
                "producer_refs": producer_refs, "specialist_rights": _native_json(specialist_rights),
                "sources": sources, "crosswalk": crosswalk, "graph_capture_id": graph_capture_id,

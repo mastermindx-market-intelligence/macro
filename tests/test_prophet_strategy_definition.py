@@ -441,13 +441,14 @@ def test_b4_validator_rejects_rehashed_strategy_identity_mutation(field, value):
 # ---------------------------------------------------------------------------
 # B4 runtime owner-fact adapter: canonical identity -> incumbent source facts.
 
-from datetime import date
+from datetime import date, timezone
 
 from engine.prophet_entry_availability_sources import (
     RuntimeOwnerFactError,
     compose_runtime_owner_facts,
     evaluate_runtime_entry_availability,
 )
+from engine.prophet_live import live_states as LS
 
 
 class _B4Aliases:
@@ -468,6 +469,56 @@ class _B4Aliases:
         return self.reverse
 
 
+def _b4_owner_live_artifact(
+    symbol="UNIT",
+    *,
+    pass_at="2026-09-18T19:30:08Z",
+    quote_ts="2026-09-18T19:30:00Z",
+    quote_price=42.70,
+    as_of_close=42.10,
+    row_price_adjustment=None,
+    cfg=None,
+):
+    """A REAL producer fixture: the live artifact is built by the owner's own evaluate.
+
+    The runtime adapter consumes what ``scripts/prophet_live_evaluator.py`` actually
+    publishes — a RESOLVED row carrying its measured ``basis_relation`` material,
+    disclosure pair, quote_age_min and the artifact-level price_adjustment block — so
+    these tests exercise the adapter against owner output, never against a hand-drawn
+    stand-in.
+    """
+    decision = datetime.fromisoformat(pass_at.replace("Z", "+00:00"))
+    quote_clock = datetime.fromisoformat(quote_ts.replace("Z", "+00:00"))
+    pack_as_of = LS.last_completed_session(decision)
+    entry = {"state": "buyable", "center_buyable": True, "as_of_close": as_of_close,
+             "bar_date": pack_as_of, "probed": True, "buyable_in_band": True,
+             "fade_px": as_of_close - 1.15, "fade_hi_px": as_of_close + 1.15,
+             "band_lo_px": as_of_close - 4.0, "band_hi_px": as_of_close + 5.0}
+    if row_price_adjustment is not None:
+        entry["price_adjustment"] = row_price_adjustment
+    counts = ({ADJUSTED: 1} if row_price_adjustment is None
+              else {ADJUSTED: 0, row_price_adjustment: 1})
+    pack = {"schema": "prophet_live.armed/v1", "as_of": pack_as_of,
+            "built_at": f"{pack_as_of}T22:30:00Z", "names": {symbol: entry},
+            "price_adjustment": ADJUSTED,
+            "meta": {"universe_n": 1, "probed_n": 1, "armed_n": 1, "skipped": {},
+                     "price_adjustment_counts": counts}}
+    quotes = {symbol: {"price": quote_price, "prev_close": as_of_close, "change_pct": 1.43,
+                       "ts_ms": None, "source": "polygon", "quote_ts": quote_ts,
+                       "quote_ts_synthetic": False, "price_basis": "trade",
+                       "delay_min": 0.1}}
+    artifact = LS.evaluate(
+        pack, quotes, None, now=decision, cfg=cfg or LS.live_cfg(None),
+        quote_asof=quote_ts, delay_min=15,
+        quote_age_of=lambda _q: (decision - quote_clock).total_seconds() / 60.0,
+    )
+    assert artifact["status"] == "live", artifact
+    state = artifact["states"][symbol]
+    assert state["basis_status"] == "RESOLVED", state
+    assert "basis_relation" in state and "basis_receipt" in state
+    return artifact
+
+
 def _b4_runtime_sources(symbol="UNIT"):
     quote = {
         "price": 42.70,
@@ -478,22 +529,7 @@ def _b4_runtime_sources(symbol="UNIT"):
         "delay_min": 0.1,
         "prev_close": 42.10,
     }
-    live = {
-        "schema": "prophet_live.states/v1",
-        "meta": {
-            "session_et": "2026-09-18",
-            "pass_ts": "2026-09-18T19:30:08Z",
-        },
-        "states": {
-            symbol: {
-                "state": "forming",
-                "price": 42.70,
-                "quote_age_min": 0.1,
-                "basis_status": "RESOLVED",
-                "basis_receipt": "sha256:" + "9" * 64,
-            }
-        },
-    }
+    live = _b4_owner_live_artifact(symbol)
     entry = {
         symbol: {
             "entry_signal": {
@@ -524,6 +560,41 @@ def _b4_runtime_kwargs(symbol="UNIT", **extra):
     return out
 
 
+def test_private_quote_projection_preserves_b4_clock_provenance_only_when_opted_in():
+    from scripts import build_live_quotes as live_snapshot
+
+    quotes, live, entry, metrics = _b4_runtime_sources()
+    private_quotes = live_snapshot.to_worker_quotes(
+        quotes,
+        include_private_provenance=True,
+    )
+    facts = compose_runtime_owner_facts(
+        _b4_projection(),
+        episode_id=_b4_cid(),
+        **_b4_runtime_kwargs(
+            quotes_by_symbol=private_quotes,
+            live_state_artifact=live,
+            entry_rows_by_symbol=entry,
+            metric_inputs=metrics,
+        ),
+    )
+    assert facts["quote"]["asof"] == "2026-09-18T19:30:00Z"
+
+    public_quotes = live_snapshot.to_worker_quotes(quotes)
+    assert "quote_ts_synthetic" not in public_quotes["UNIT"]
+    with pytest.raises(RuntimeOwnerFactError, match="real source-market timestamp"):
+        compose_runtime_owner_facts(
+            _b4_projection(),
+            episode_id=_b4_cid(),
+            **_b4_runtime_kwargs(
+                quotes_by_symbol=public_quotes,
+                live_state_artifact=live,
+                entry_rows_by_symbol=entry,
+                metric_inputs=metrics,
+            ),
+        )
+
+
 def test_b4_runtime_adapter_binds_identity_quote_basis_and_geometry_without_minting_gates():
     facts = compose_runtime_owner_facts(
         _b4_projection(), episode_id=_b4_cid(), **_b4_runtime_kwargs()
@@ -531,10 +602,10 @@ def test_b4_runtime_adapter_binds_identity_quote_basis_and_geometry_without_mint
     assert facts["quote"]["price"] == 42.70
     assert facts["quote"]["asof"] == "2026-09-18T19:30:00Z"
     assert facts["quote"]["basis_version"] == UNADJUSTED
-    assert facts["geometry"]["basis_version"] == ADJUSTED
+    assert facts["geometry"]["basis_version"] == "UNKNOWN"
     assert facts["geometry"]["owner_status"] == "buy_now"
     assert facts["deterministic_gates"]["source_health"] == "PASS"
-    assert facts["deterministic_gates"]["corporate_action_basis"] == "RESOLVED"
+    assert facts["deterministic_gates"]["corporate_action_basis"] == "UNKNOWN"
     assert facts["deterministic_gates"]["liquidity_fillability"] == "UNKNOWN"
     assert facts["deterministic_gates"]["risk_ceiling"] == "UNKNOWN"
 
@@ -655,6 +726,141 @@ def test_b4_runtime_adapter_refuses_unbound_external_gate_or_receipt_injection()
             _b4_projection(), episode_id=_b4_cid(),
             **_b4_runtime_kwargs(owner_source_receipts=["sha256:" + "3" * 64]),
         )
+
+
+def _b4_compose_with_live_mutations(mutate):
+    """Compose against a copy of the real owner live artifact with one mutation."""
+    kwargs = _b4_runtime_kwargs()
+    polluted = copy.deepcopy(kwargs["live_state_artifact"])
+    mutate(polluted["states"]["UNIT"])
+    kwargs["live_state_artifact"] = polluted
+    return compose_runtime_owner_facts, kwargs
+
+
+def test_b4_runtime_adapter_treats_missing_basis_material_as_unavailable():
+    """A legacy RESOLVED receipt WITHOUT measured material is unavailable, not a
+    historical fallback: the digest alone commits to nothing a consumer can check."""
+    kwargs = _b4_runtime_kwargs()
+    kwargs["live_state_artifact"]["states"]["UNIT"].pop("basis_relation")
+    with pytest.raises(RuntimeOwnerFactError, match="basis relation material"):
+        compose_runtime_owner_facts(_b4_projection(), episode_id=_b4_cid(), **kwargs)
+
+
+def test_b4_runtime_adapter_rejects_tampered_or_foreign_basis_material():
+    def attempt(mutate, match):
+        compose, kwargs = _b4_compose_with_live_mutations(mutate)
+        with pytest.raises(RuntimeOwnerFactError, match=match):
+            compose(_b4_projection(), episode_id=_b4_cid(), **kwargs)
+
+    attempt(lambda st: st["basis_relation"].__setitem__("subject", "OTHER"),
+            "binds a different subject")
+    attempt(lambda st: st["basis_relation"].__setitem__("pack_as_of", "2026-09-10"),
+            "does not bind the live pack cut")
+    attempt(lambda st: st["basis_relation"].__setitem__("state", "UNRESOLVED"),
+            "does not record a RESOLVED state")
+
+    def tampered_gap(state):
+        state["basis_relation"]["gap_pct"] = 9.9
+        state["basis_receipt"] = LS.basis_relation_receipt(dict(state["basis_relation"]))
+    attempt(tampered_gap, "not a positive measurement")
+
+    def zero_tolerance(state):
+        state["basis_relation"]["tol_pct"] = 0.0
+        state["basis_receipt"] = LS.basis_relation_receipt(dict(state["basis_relation"]))
+    attempt(zero_tolerance, "not a positive measurement")
+
+    attempt(lambda st: st.__setitem__("basis_as_of_close", 41.0),
+            "does not reproduce the measured basis gap")
+    attempt(lambda st: st.__setitem__("basis_prev_close", 40.0),
+            "does not reproduce the measured basis gap")
+
+
+def test_b4_runtime_adapter_rejects_material_contradicting_row_or_meta_basis_law():
+    def attempt(mutate, match):
+        compose, kwargs = _b4_compose_with_live_mutations(mutate)
+        with pytest.raises(RuntimeOwnerFactError, match=match):
+            compose(_b4_projection(), episode_id=_b4_cid(), **kwargs)
+
+    # A row-override the material does not record: the declaration and material disagree.
+    attempt(lambda st: st.__setitem__("levels_adjustment", UNADJUSTED),
+            "row/meta basis declaration")
+
+    # A material whose quote family contradicts the artifact's stated quote basis.
+    def foreign_quote_family(state):
+        state["basis_relation"]["quote_adjustment"] = "other_basis"
+        state["basis_receipt"] = LS.basis_relation_receipt(dict(state["basis_relation"]))
+    attempt(foreign_quote_family, "stated quote basis")
+
+    # A material whose levels family contradicts the artifact's stated levels basis.
+    def foreign_levels_family(state):
+        state["basis_relation"]["levels_adjustment"] = "other_basis"
+        state["basis_receipt"] = LS.basis_relation_receipt(dict(state["basis_relation"]))
+    attempt(foreign_levels_family, "row/meta basis declaration")
+
+
+def test_b4_runtime_adapter_binds_private_quote_close_and_rung_to_measured_owner_inputs():
+    kwargs = _b4_runtime_kwargs()
+    kwargs["quotes_by_symbol"]["UNIT"].pop("prev_close")
+    with pytest.raises(RuntimeOwnerFactError, match="previous close"):
+        compose_runtime_owner_facts(_b4_projection(), episode_id=_b4_cid(), **kwargs)
+
+    kwargs = _b4_runtime_kwargs()
+    kwargs["quotes_by_symbol"]["UNIT"]["prev_close"] = 40.0
+    with pytest.raises(RuntimeOwnerFactError, match="previous close"):
+        compose_runtime_owner_facts(_b4_projection(), episode_id=_b4_cid(), **kwargs)
+
+    kwargs = _b4_runtime_kwargs()
+    kwargs["quotes_by_symbol"]["UNIT"].pop("price_basis")
+    with pytest.raises(RuntimeOwnerFactError, match="vendor rung"):
+        compose_runtime_owner_facts(_b4_projection(), episode_id=_b4_cid(), **kwargs)
+
+    kwargs = _b4_runtime_kwargs()
+    kwargs["quotes_by_symbol"]["UNIT"]["price_basis"] = "some_adjusted_basis"
+    with pytest.raises(RuntimeOwnerFactError, match="vendor rung"):
+        compose_runtime_owner_facts(_b4_projection(), episode_id=_b4_cid(), **kwargs)
+
+
+def test_b4_runtime_adapter_pack_basis_cannot_attest_independent_entry_geometry():
+    kwargs = _b4_runtime_kwargs()
+    # The entry signal is a separate object with no native OHLC/geometry basis
+    # receipt. Equal prices or a declared family cannot extend the pack receipt.
+    signal = kwargs["entry_rows_by_symbol"]["UNIT"]["entry_signal"]
+    signal["price_adjustment"] = ADJUSTED
+    facts = compose_runtime_owner_facts(
+        _b4_projection(), episode_id=_b4_cid(), **kwargs
+    )
+    assert facts["quote"]["basis_version"] == UNADJUSTED
+    assert facts["geometry"]["basis_version"] == "UNKNOWN"
+    assert facts["deterministic_gates"]["corporate_action_basis"] == "UNKNOWN"
+    availability = evaluate_runtime_entry_availability(
+        _b4_projection(), episode_id=_b4_cid(),
+        strategy_definition=build_early_leadership_sector_rotation_definition(),
+        **kwargs,
+    )
+    assert availability["state"] == "UNAVAILABLE_DATA"
+    assert "CORPORATE_ACTION_BASIS_UNKNOWN" in availability["blockers"]
+
+
+def test_b4_runtime_adapter_propagates_measured_families_from_the_owner_material():
+    facts = compose_runtime_owner_facts(
+        _b4_projection(), episode_id=_b4_cid(), **_b4_runtime_kwargs()
+    )
+    # The quote family is measured; independent entry geometry remains unattested.
+    assert facts["quote"]["basis_version"] == LS.LIVE_QUOTE_ADJUSTMENT == UNADJUSTED
+    assert facts["geometry"]["basis_version"] == "UNKNOWN"
+
+    # Even an explicit raw-price armed pack cannot attest independent geometry.
+    live = _b4_owner_live_artifact(row_price_adjustment=UNADJUSTED)
+    state = live["states"]["UNIT"]
+    assert state["levels_adjustment"] == UNADJUSTED
+    assert state["basis_relation"]["levels_adjustment"] == UNADJUSTED
+    kwargs = _b4_runtime_kwargs()
+    kwargs["live_state_artifact"] = live
+    exception_facts = compose_runtime_owner_facts(
+        _b4_projection(), episode_id=_b4_cid(), **kwargs
+    )
+    assert exception_facts["geometry"]["basis_version"] == "UNKNOWN"
+    assert exception_facts["quote"]["basis_version"] == UNADJUSTED
 
 
 
@@ -1525,3 +1731,1000 @@ def test_strategy_catalog_rejects_semantic_authority_and_identity_mutation():
     payload["catalog_id"] = "psc:" + "0" * 64
     with pytest.raises(StrategyDefinitionContractError, match="catalog_id mismatch"):
         validate_strategy_catalog(payload)
+
+
+# ---------------------------------------------------------------------------
+# B4 native reader: canonical episode store + the two fixed private owner files.
+# The fixture store is built THROUGH the incumbent owner functions (reconcile /
+# apply_commands / build_all_candidates / the generation + HEAD content addresses)
+# and revalidated by the store's own loader before any reader call.
+# ---------------------------------------------------------------------------
+
+from datetime import datetime, timedelta, timezone
+
+import engine.prophet_entry_availability_sources as _sources
+from engine.prophet_entry_availability_sources import read_native_b4_owner_inputs
+from engine.stock_identity import fingerprint
+from engine.us_candidate_episode import (
+    DEFAULT_DEFINITION_ERA,
+    GENERATION_MANIFEST_SCHEMA,
+    HEAD_SCHEMA,
+    PARQUET_JSON_FIELDS,
+    RECONCILE_RECEIPT_SCHEMA,
+    apply_commands,
+    build_all_candidates,
+    canonical_json as _core_canonical,
+    load_candidate_episode_store_snapshot,
+    reconcile_observations,
+    validate_candidate_episode_generation,
+)
+
+import pyarrow as pa
+import pyarrow.parquet as pq
+
+_READER_SOURCE_RECEIPT = "sha256:" + "c" * 64
+
+#: WHERE the fixture world's own read completes.  The reader re-ages the quote at
+#: its OWN completion clock (the repair under test), so a world built around the
+#: Sept-17 19:30Z quote must be READ at a truthful in-session moment — pinned here,
+#: 15 minutes after the quote, inside the derived 25-minute ceiling the fixture
+#: artifact discloses.  Individual tests re-pin their own completion moment; the
+#: future-owner-clock rejection reads the same seam and is never weakened.
+_READER_READ_AT = datetime(2026, 9, 17, 19, 45, 0, tzinfo=timezone.utc)
+
+#: The QUALIFIED worlds' truthful synthetic source clocks: the observation is
+#: known and the store recorded BEFORE the live pass and the read, so a fresh
+#: same-session read is genuinely representable.  The default world keeps the
+#: nightly 21:00Z recording of the shared fixture — and no fresh read of a
+#: 19:30Z quote can follow that recording, which is exactly why the default
+#: world's honest reads are the stale and cross-session ones.
+_QUALIFIED_SOURCE_KNOWN_AT = "2026-09-17T19:00:00Z"
+_QUALIFIED_RECORDED_AT = "2026-09-17T19:35:00Z"
+
+
+@pytest.fixture(autouse=True)
+def _b4_reader_own_read_clock(monkeypatch):
+    """Pin the native reader's OWN completion clock for every test in this module."""
+    monkeypatch.setattr(_sources, "_now_utc", lambda: _READER_READ_AT, raising=False)
+
+
+def _b4_reader_observation(
+    *,
+    day="2026-09-17",
+    ticker="UNIT",
+    board="gap_continuation",
+    security_id="SEC:US-XNAS-AAPL",
+    company_id="ISS:US-XNAS-AAPL",
+    known_at=None,
+    anchor_time=None,
+    anchor_kind="turn_watch_reset_low",
+    source_event_id=None,
+    source_receipt=_READER_SOURCE_RECEIPT,
+):
+    known_at = known_at or f"{day}T20:00:00Z"
+    anchor = None
+    if anchor_kind is not None:
+        anchor = {"kind": anchor_kind, "time": anchor_time or f"{day}T19:55:00Z",
+                  "price": 41.0, "basis": "adjusted_close",
+                  "source_receipt": "sha256:" + "a" * 64}
+    return {
+        "security_id": security_id,
+        "company_id": company_id,
+        "ticker_at_observation": ticker,
+        "identity_epoch": "epoch_0",
+        "identity_epoch_state": "provisional",
+        "identity_spec_schema": "stock_identity.fingerprint_spec.v1",
+        "identity_spec_hash": fingerprint.spec_hash(),
+        "anchor": anchor,
+        "intake_class": "technical_emergence",
+        "occurred_at": known_at,
+        "known_at": known_at,
+        "source_system": "candidate",
+        "source_schema": "us_prophet_rank.candidates/v1",
+        "source_event_id": source_event_id or f"candidate:{day}:{ticker}:{board}",
+        "source_receipt": source_receipt,
+    }
+
+
+def _b4_reader_store(
+    root,
+    *,
+    events,
+    suppressions=(),
+    candidate_inputs=1,
+    suppressed_inputs=0,
+    recorded_at="2026-09-17T21:00:00Z",
+):
+    """Persist one canonical generation through the incumbent content addresses."""
+    import shutil
+
+    root.mkdir(parents=True, exist_ok=True)
+    staging = root / "generations" / "staging"
+    if staging.exists():
+        shutil.rmtree(staging)
+    (staging / "events").mkdir(parents=True)
+    (staging / "suppressions").mkdir(parents=True)
+    files: dict[str, dict] = {}
+
+    def write(relative: str, payload: bytes) -> None:
+        (staging / relative).write_bytes(payload)
+        files[relative] = {
+            "sha256": "sha256:" + hashlib.sha256(payload).hexdigest(),
+            "bytes": len(payload),
+        }
+
+    def canonical_bytes(value) -> bytes:
+        return _core_canonical(value).encode("utf-8") + b"\n"
+
+    projection = build_all_candidates(events, suppression_count=len(suppressions))
+    write("all_candidates.json", canonical_bytes(projection))
+
+    parquet_rows = [
+        {key: (_core_canonical(value) if key in PARQUET_JSON_FIELDS else value)
+         for key, value in row.items()}
+        for row in projection["episodes"]
+    ]
+    schema = pa.schema([
+        (key, pa.int64() if key == "observation_count" else pa.string())
+        for key in parquet_rows[0]
+    ] if parquet_rows else [])
+    sink = pa.BufferOutputStream()
+    pq.write_table(pa.Table.from_pylist(parquet_rows, schema=schema), sink)
+    write("current.parquet", sink.getvalue().to_pybytes())
+
+    ledger_sha256 = "sha256:" + hashlib.sha256(
+        _core_canonical(tuple(events)).encode("utf-8")
+    ).hexdigest()
+    suppressed_from_inputs = max(len(suppressions), suppressed_inputs)
+    receipt = {
+        "schema": RECONCILE_RECEIPT_SCHEMA,
+        "mode": "nightly",
+        "gate": {"nightly_requested": True, "nightly_advance_enabled": True},
+        "durable_write": True,
+        "recorded_at": recorded_at,
+        "definition_era": DEFAULT_DEFINITION_ERA,
+        "source_hashes": {},
+        "source_counts": {
+            "turn_watch": {"input": 0, "mapped": 0, "suppressed": 0},
+            "candidate": {"input": candidate_inputs,
+                          "mapped": candidate_inputs - suppressed_from_inputs,
+                          "suppressed": suppressed_from_inputs},
+            "doors": {"input": 0, "mapped": 0, "suppressed": 0},
+            "entry_radar": {"input": 0, "mapped": 0, "suppressed": 0},
+        },
+        "counts": {
+            "input": candidate_inputs,
+            "mapped": candidate_inputs - suppressed_from_inputs,
+            "suppressed": suppressed_from_inputs,
+            "ledger_suppressions": len(suppressions),
+            "old_events": 0,
+            "new_events": len(events),
+            "appended_events": len(events),
+        },
+        "ledger_sha256": ledger_sha256,
+        "projection_hashes": {
+            "all_candidates.json": files["all_candidates.json"]["sha256"],
+            "current.parquet": files["current.parquet"]["sha256"],
+        },
+        "source_receipts": [
+            {"source": "turn_watch", "status": "ok", "rows": 0, "files": []},
+            {"source": "candidate", "status": "ok",
+             "rows": candidate_inputs - suppressed_from_inputs, "files": []},
+            {"source": "doors", "status": "ok", "rows": 0, "files": []},
+            {"source": "entry_radar", "status": "ok", "rows": 0, "files": []},
+        ],
+    }
+    write("latest_receipt.json", canonical_bytes(receipt))
+
+    if events:
+        ordered = sorted(events, key=lambda row: (row["known_at"], row["source_system"],
+                                                  row["source_event_id"]))
+        write(f"events/{recorded_at[:7]}.jsonl",
+              ("\n".join(_core_canonical(row) for row in ordered) + "\n").encode("utf-8"))
+    if suppressions:
+        ordered_suppressions = sorted(
+            (_b4_reader_durable_suppression(row, recorded_at) for row in suppressions),
+            key=lambda row: row["suppression_id"],
+        )
+        write(f"suppressions/{recorded_at[:7]}.jsonl",
+              ("\n".join(_core_canonical(row) for row in ordered_suppressions) + "\n").encode("utf-8"))
+
+    material = {"schema": GENERATION_MANIFEST_SCHEMA, "files": files}
+    generation_id = "peg:" + hashlib.sha256(
+        _core_canonical(material).encode("utf-8")
+    ).hexdigest()
+    manifest = {"schema": GENERATION_MANIFEST_SCHEMA, "generation_id": generation_id,
+                "files": files}
+    manifest["content_sha256"] = hashlib.sha256(_core_canonical({
+        key: value for key, value in manifest.items() if key != "content_sha256"
+    }).encode("utf-8")).hexdigest()
+    final_dir = root / "generations" / generation_id
+    if final_dir.exists():  # same bytes -> same content address: rebuild in place
+        shutil.rmtree(final_dir)
+    staging.rename(final_dir)
+    (final_dir / "manifest.json").write_bytes(canonical_bytes(manifest))
+
+    head = {"schema": HEAD_SCHEMA, "generation_id": generation_id,
+            "manifest_sha256": "sha256:" + hashlib.sha256(
+                (final_dir / "manifest.json").read_bytes()).hexdigest()}
+    head["content_sha256"] = hashlib.sha256(_core_canonical({
+        key: value for key, value in head.items() if key != "content_sha256"
+    }).encode("utf-8")).hexdigest()
+    (root / "HEAD.json").write_bytes(canonical_bytes(head))
+    return generation_id
+
+
+def _b4_reader_durable_suppression(row, recorded_at):
+    """Complete the durable suppression envelope the nightly writer commits.
+
+    ``reconcile_observations`` returns the content-addressed suppression without the
+    two fields only the durable write adds (``recorded_at`` and ``content_sha256``);
+    the ``suppression_id`` address deliberately excludes both, so sealing is additive.
+    """
+    sealed = {**row, "recorded_at": recorded_at}
+    sealed["content_sha256"] = hashlib.sha256(_core_canonical({
+        key: value for key, value in sealed.items() if key != "content_sha256"
+    }).encode("utf-8")).hexdigest()
+    return sealed
+
+
+def _b4_reader_quote_row(*, symbol="UNIT", quote_price=42.70, prev_close=42.10,
+                         quote_ts="2026-09-17T19:30:00Z", source="polygon",
+                         private=True):
+    from scripts.build_live_quotes import to_worker_quotes
+
+    raw = {symbol: {"price": quote_price, "prev_close": prev_close, "change_pct": 0.58,
+                    "ts_ms": None, "source": source, "quote_ts": quote_ts,
+                    "quote_ts_synthetic": False, "price_basis": "trade",
+                    "delay_min": 0.1}}
+    rows = to_worker_quotes(raw, include_private_provenance=private)
+    return rows[symbol]
+
+
+def _b4_reader_world(
+    tmp_path,
+    *,
+    observations=None,
+    events=None,
+    suppressions=(),
+    candidate_inputs=1,
+    session="2026-09-17",
+    pass_at=None,
+    quote_ts=None,
+    quote_price=42.70,
+    prev_close=42.10,
+    live_artifact=None,
+    quote_row_overrides=None,
+    drop_private_provenance=False,
+    envelope_overrides=None,
+    write_quotes_file=True,
+    write_live_file=True,
+    source_known_at=None,
+    store_recorded_at=None,
+):
+    source_event_id = f"candidate:{session}:UNIT:gap_continuation"
+    recorded_at = store_recorded_at or f"{session}T21:00:00Z"
+    pass_at = pass_at or f"{session}T19:30:08Z"
+    quote_ts = quote_ts or f"{session}T19:30:00Z"
+    if events is None:
+        observations = observations if observations is not None else [
+            _b4_reader_observation(day=session, source_event_id=source_event_id,
+                                   known_at=source_known_at)
+        ]
+        observed = reconcile_observations(
+            [], observations, recorded_at=recorded_at, definition_era=DEFAULT_DEFINITION_ERA
+        )
+        events, suppressions = observed.events, list(observed.suppressions)
+    store_root = tmp_path / "data" / "us_prophet_rank" / "episodes"
+    generation_id = _b4_reader_store(
+        store_root, events=events, suppressions=list(suppressions),
+        candidate_inputs=candidate_inputs,
+        suppressed_inputs=len(list(suppressions)) if events is not None else 0,
+        recorded_at=recorded_at,
+    )
+    snapshot = load_candidate_episode_store_snapshot(store_root)
+    assert snapshot.generation_id == generation_id
+    # Revalidation: the fixture store survives the incumbent full-generation reader.
+    revalidated = validate_candidate_episode_generation(
+        store_root / "generations" / generation_id
+    )
+    assert len(revalidated.episodes) == len(snapshot.generation.episodes)
+
+    live_root = tmp_path / "native-live"
+    if live_artifact is None:
+        live_artifact = _b4_owner_live_artifact(
+            "UNIT", pass_at=pass_at, quote_ts=quote_ts, quote_price=quote_price,
+            as_of_close=prev_close,
+        )
+    row = _b4_reader_quote_row(symbol="UNIT", quote_price=quote_price,
+                               prev_close=prev_close, quote_ts=quote_ts)
+    if drop_private_provenance:
+        row.pop("quote_ts")
+        row.pop("quote_ts_synthetic")
+    for key, value in (quote_row_overrides or {}).items():
+        row[key] = value
+    envelope = {
+        "sessions": {"us": {"phase": "rth"}},
+        "ts": int(datetime.fromisoformat(
+            f"{session}T19:31:00Z".replace("Z", "+00:00")).timestamp() * 1000),
+        "asof": f"{session}T19:31:00Z",
+        "source": "snapshot",
+        "quotes": {"UNIT": row},
+        "meta": {"requested": 1, "resolved": 1, "offline": False},
+    }
+    for key, value in (envelope_overrides or {}).items():
+        envelope[key] = value
+
+    state_dir = live_root / "state"
+    public_dir = live_root / "public" / "live"
+    quotes_path = state_dir / "quotes_full.json"
+    live_path = public_dir / "prophet_live.json"
+    quotes_bytes = json.dumps(envelope, separators=(",", ":")).encode("utf-8") + b"\n"
+    # The served owner file carries the publish step of the producing script (the
+    # evaluator stamps meta.producer immediately before writing the served copy) —
+    # reproduce that step exactly as the VPS file is actually written.
+    published = copy.deepcopy(live_artifact)
+    published.setdefault("meta", {})["producer"] = _sources._LIVE_OWNER_PRODUCER
+    live_bytes = json.dumps(published, separators=(",", ":")).encode("utf-8") + b"\n"
+    if write_quotes_file:
+        state_dir.mkdir(parents=True, exist_ok=True)
+        quotes_path.write_bytes(quotes_bytes)
+    if write_live_file:
+        public_dir.mkdir(parents=True, exist_ok=True)
+        live_path.write_bytes(live_bytes)
+
+    return {
+        "tmp_path": tmp_path,
+        "store_root": store_root,
+        "generation_id": generation_id,
+        "snapshot": snapshot,
+        "source_event_id": source_event_id,
+        "source_receipt": _READER_SOURCE_RECEIPT,
+        "live_root": live_root,
+        "quotes_path": quotes_path,
+        "live_path": live_path,
+        "quotes_bytes": quotes_bytes,
+        "live_bytes": live_bytes,
+        "quotes_digest": "sha256:" + hashlib.sha256(quotes_bytes).hexdigest(),
+        "live_digest": "sha256:" + hashlib.sha256(live_bytes).hexdigest(),
+        "live_artifact": live_artifact,
+    }
+
+
+def _b4_reader_run(world, **overrides):
+    call = {
+        "repo_root": world["tmp_path"],
+        "snapshot": world["snapshot"],
+        "candidate_source_event_id": world["source_event_id"],
+        "candidate_source_receipt": world["source_receipt"],
+        "native_live_root": world["live_root"],
+        "alias_table": _B4Aliases("UNIT"),
+    }
+    call.update(overrides)
+    return read_native_b4_owner_inputs(**call)
+
+
+def _b4_reader_world_with_policy(tmp_path, policy=None, *, drop=False):
+    """A world whose live owner discloses the given freshness policy (or none).
+
+    The served owner file is rewritten exactly as the producing script writes it;
+    everything else in the world is untouched.
+    """
+    world = _b4_reader_world(tmp_path)
+    payload = json.loads(world["live_bytes"])
+    if drop:
+        payload["meta"].pop("quote_freshness_policy", None)
+    else:
+        payload["meta"]["quote_freshness_policy"] = policy
+    world["live_path"].write_bytes(
+        json.dumps(payload, separators=(",", ":")).encode("utf-8") + b"\n")
+    return world
+
+
+def test_b4_native_reader_reads_the_qualified_private_owner_fact(tmp_path):
+    world = _b4_reader_world(tmp_path, source_known_at=_QUALIFIED_SOURCE_KNOWN_AT,
+                             store_recorded_at=_QUALIFIED_RECORDED_AT)
+    out = _b4_reader_run(world)
+
+    assert out["unavailable_reasons"] == []
+    assert out["availability"] is None
+    assert out["quote_freshness"] == "FRESH"
+    quote_input = out["quote_input"]
+    expected_quote_input = {
+        "schema": "prophet.daily_brief_quote_input/v1",
+        "owner_ref": "state/quotes_full.json",
+        "live_owner_ref": "public/live/prophet_live.json",
+        "asof": "2026-09-17T19:45:00Z",
+        "quotes_source_receipt": world["quotes_digest"],
+        "live_source_receipt": world["live_digest"],
+        "live_policy": {
+            "schema": "prophet_live.quote_freshness_policy/v1",
+            "quote_max_age_min": 25.0,
+            "resolution": "derived",
+        },
+        "state": "CURRENT",
+        "security_id": "SEC:US-XNAS-AAPL",
+        "episode_id": quote_input["episode_id"],
+        "candidate_generation_id": world["generation_id"],
+        "market_session": "2026-09-17",
+        "observed_at": "2026-09-17T19:30:00Z",
+        "read_completed_at": "2026-09-17T19:45:00Z",
+        "price": 42.7,
+        "basis": UNADJUSTED,
+        "quote_age_at_own_read_min": 15.0,
+    }
+    # The input's receipt is the COMPOSITE binding — both owner files as read, the
+    # disclosed policy the read was re-aged against, the native binding and both
+    # clocks — not the quote file alone.
+    expected_quote_input["source_receipt"] = _sources.quote_input_receipt(
+        expected_quote_input)
+    assert quote_input == expected_quote_input
+    assert quote_input["source_receipt"] != world["quotes_digest"]
+    # The read's own completion clock and session are disclosed facts.
+    assert out["clocks"]["read_completed_at"] == "2026-09-17T19:45:00Z"
+    assert out["clocks"]["read_session_et"] == "2026-09-17"
+    assert out["observed"]["quote_age_at_own_read_min"] == 15.0
+    assert out["owner_reads"]["prophet_live"]["quote_freshness_policy"] == {
+        "schema": "prophet_live.quote_freshness_policy/v1",
+        "quote_max_age_min": 25.0,
+        "resolution": "derived",
+    }
+    assert quote_input["episode_id"].startswith("pe:SEC:US-XNAS-AAPL:epoch_0:sa:")
+    # The existing Daily Brief consumer accepts the emitted receipt shape as its
+    # quote owner input — the reader speaks the incumbent contract, not a new one.
+    from engine.prophet_daily_brief import _QUOTE_SCHEMA, _bound_record
+
+    assert _bound_record(quote_input, _QUOTE_SCHEMA, "quote") is quote_input
+
+    assert out["binding"]["store_symbol"] == "UNIT"
+    assert out["binding"]["market_session"] == "2026-09-17"
+    assert out["native"]["source_system"] == "candidate"
+    assert out["native"]["source_schema"] == "us_prophet_rank.candidates/v1"
+    assert out["native"]["source_event_type"] == "OPENED"
+    assert out["native"]["source_receipt"] == _READER_SOURCE_RECEIPT
+    assert out["native"]["anchor"]["kind"] == "turn_watch_reset_low"
+    assert out["native"]["store_byte_token"]["generation_id"] == world["generation_id"]
+    assert out["basis"]["quote_family"] == UNADJUSTED
+    assert out["basis"]["levels_family"] == ADJUSTED
+    assert out["basis"]["prev_close"] == 42.10
+    assert out["observed"]["quote_rung"] == "trade"
+    assert out["clocks"]["quote_observed_at"] == "2026-09-17T19:30:00Z"
+    assert "candidate_state_projection_id" not in json.dumps(out)
+    # Every input byte is untouched by the read.
+    assert world["quotes_path"].read_bytes() == world["quotes_bytes"]
+    assert world["live_path"].read_bytes() == world["live_bytes"]
+
+
+def test_b4_native_reader_reages_the_quote_at_its_own_read_completion(
+        tmp_path, monkeypatch):
+    """The repair: a Sept-17 19:30Z quote is NOT magically CURRENT at 21:01.
+
+    The pass that produced the artifact gated the quote fresh at ITS pass; the read
+    that consumes it re-answers the same question at the reader's OWN completion
+    clock, against the artifact's OWN disclosed ceiling — never against today's
+    config, and never by restamping the quote. The aged-out read publishes nothing.
+    """
+    world = _b4_reader_world(tmp_path)
+    monkeypatch.setattr(_sources, "_now_utc",
+                        lambda: datetime(2026, 9, 17, 21, 1, 0, tzinfo=timezone.utc))
+    out = _b4_reader_run(world)
+    assert out["unavailable_reasons"] == ["QUOTE_STALE_AT_OWN_READ"]
+    assert out["quote_input"] is None and out["availability"] is None
+    assert out["quote_freshness"] is None
+    assert "91.0 min vs disclosed limit 25.0 min" in out["notes"][0]
+    # No restamp: both owner files and the native store are untouched by the read.
+    assert world["quotes_path"].read_bytes() == world["quotes_bytes"]
+    assert world["live_path"].read_bytes() == world["live_bytes"]
+
+
+def test_b4_native_reader_refuses_an_own_read_in_a_later_session(
+        tmp_path, monkeypatch):
+    """The read's own completion ET session must still be the candidate's session.
+
+    The actual observed failure: the Sept-17 fixture read back on Oct 13 came back
+    CURRENT with no reasons at all. Both honest checks now fire together — and a
+    next-ET-session read at a fresh clock time fires the session check alone.
+    """
+    world = _b4_reader_world(tmp_path)
+    monkeypatch.setattr(_sources, "_now_utc",
+                        lambda: datetime(2026, 10, 13, 0, 10, 30, tzinfo=timezone.utc))
+    out = _b4_reader_run(world)
+    assert out["unavailable_reasons"] == ["READ_SESSION_CROSS_SESSION",
+                                          "QUOTE_STALE_AT_OWN_READ"]
+    assert out["quote_input"] is None and out["availability"] is None
+    assert out["clocks"] is None, "a refused read publishes no clocks at all"
+
+    monkeypatch.setattr(_sources, "_now_utc",
+                        lambda: datetime(2026, 9, 18, 19, 35, 0, tzinfo=timezone.utc))
+    next_day = _b4_reader_run(world)
+    # A day later the quote is ALSO a day stale — both honest checks fire.
+    assert next_day["unavailable_reasons"] == ["READ_SESSION_CROSS_SESSION",
+                                               "QUOTE_STALE_AT_OWN_READ"]
+    assert next_day["quote_input"] is None
+    assert "1445.0 min vs disclosed limit 25.0 min" in next_day["notes"][0]
+
+
+def test_b4_native_reader_own_read_freshness_boundary_is_exact(
+        tmp_path, monkeypatch):
+    """The own-read gate is the SAME ``age <= limit`` comparison the lane runs.
+
+    Exactly at the derived 25-minute ceiling the read is still CURRENT; half a
+    minute past it the raw age exceeds the limit and the read publishes nothing,
+    with the disclosed age at the native 1-dp rounding.
+    """
+    world = _b4_reader_world(tmp_path, source_known_at=_QUALIFIED_SOURCE_KNOWN_AT,
+                             store_recorded_at=_QUALIFIED_RECORDED_AT)
+    monkeypatch.setattr(_sources, "_now_utc",
+                        lambda: datetime(2026, 9, 17, 19, 55, 0, tzinfo=timezone.utc))
+    fresh = _b4_reader_run(world)
+    assert fresh["unavailable_reasons"] == []
+    assert fresh["quote_input"]["state"] == "CURRENT"
+    assert fresh["quote_input"]["quote_age_at_own_read_min"] == 25.0
+    assert fresh["observed"]["quote_age_at_own_read_min"] == 25.0
+
+    monkeypatch.setattr(_sources, "_now_utc",
+                        lambda: datetime(2026, 9, 17, 19, 55, 30, tzinfo=timezone.utc))
+    stale = _b4_reader_run(world)
+    assert stale["unavailable_reasons"] == ["QUOTE_STALE_AT_OWN_READ"]
+    assert stale["quote_input"] is None
+    assert "25.5 min vs disclosed limit 25.0 min" in stale["notes"][0]
+
+
+def test_b4_native_reader_reages_against_the_artifacts_own_disclosed_policy(
+        tmp_path, monkeypatch):
+    """The verdict follows the ARTIFACT's disclosed ceiling, not the reader's.
+
+    An explicit operator ceiling armed into the producing pass binds the read:
+    15 minutes after the quote is fresh under the derived 25 but stale under an
+    explicit 12 — and exactly at 12.0 it is fresh again. No in-code fallback.
+    """
+    strict_live = _b4_owner_live_artifact(
+        "UNIT", pass_at="2026-09-17T19:30:08Z", quote_ts="2026-09-17T19:30:00Z",
+        cfg=LS.live_cfg({"prophet_live": {"quote_max_age_min": 12}}),
+    )
+    assert strict_live["meta"]["quote_freshness_policy"] == {
+        "schema": "prophet_live.quote_freshness_policy/v1",
+        "quote_max_age_min": 12.0,
+        "resolution": "explicit",
+    }
+    world = _b4_reader_world(tmp_path, live_artifact=strict_live,
+                             source_known_at=_QUALIFIED_SOURCE_KNOWN_AT,
+                             store_recorded_at=_QUALIFIED_RECORDED_AT)
+    monkeypatch.setattr(_sources, "_now_utc",
+                        lambda: datetime(2026, 9, 17, 19, 45, 0, tzinfo=timezone.utc))
+    out = _b4_reader_run(world)
+    assert out["unavailable_reasons"] == ["QUOTE_STALE_AT_OWN_READ"]
+    assert "15.0 min vs disclosed limit 12.0 min" in out["notes"][0]
+
+    monkeypatch.setattr(_sources, "_now_utc",
+                        lambda: datetime(2026, 9, 17, 19, 42, 0, tzinfo=timezone.utc))
+    ok = _b4_reader_run(world)
+    assert ok["unavailable_reasons"] == []
+    assert ok["quote_input"]["live_policy"] == {
+        "schema": "prophet_live.quote_freshness_policy/v1",
+        "quote_max_age_min": 12.0,
+        "resolution": "explicit",
+    }
+    assert ok["quote_input"]["source_receipt"] == _sources.quote_input_receipt(
+        ok["quote_input"])
+
+
+def test_b4_native_reader_binds_the_disclosed_threshold_into_the_input_receipt(
+        tmp_path, monkeypatch):
+    """No today's-config assumption in either direction.
+
+    Whatever ceiling the owner plane actually discloses decides the read AND is
+    bound into the composite receipt — the same qualifying read under a different
+    disclosed policy yields a different receipt, and the live file bytes it was
+    read from are committed beside the quote file bytes.
+    """
+    world = _b4_reader_world(tmp_path, source_known_at=_QUALIFIED_SOURCE_KNOWN_AT,
+                             store_recorded_at=_QUALIFIED_RECORDED_AT)
+    monkeypatch.setattr(_sources, "_now_utc",
+                        lambda: datetime(2026, 9, 17, 19, 40, 0, tzinfo=timezone.utc))
+    derived = _b4_reader_run(world)["quote_input"]
+    assert derived["live_policy"]["quote_max_age_min"] == 25.0
+
+    loosened = json.loads(world["live_bytes"])
+    loosened["meta"]["quote_freshness_policy"]["quote_max_age_min"] = 1e9
+    world["live_path"].write_bytes(
+        json.dumps(loosened, separators=(",", ":")).encode("utf-8") + b"\n")
+    loosened_input = _b4_reader_run(world)["quote_input"]
+    assert loosened_input["live_policy"]["quote_max_age_min"] == 1e9
+    assert loosened_input["source_receipt"] != derived["source_receipt"]
+    assert loosened_input["live_source_receipt"] == "sha256:" + hashlib.sha256(
+        world["live_path"].read_bytes()).hexdigest()
+    assert _sources.quote_input_receipt(loosened_input) == \
+        loosened_input["source_receipt"]
+
+
+@pytest.mark.parametrize("bad_policy", [
+    {"schema": "prophet_live.quote_freshness_policy/v1",
+     "quote_max_age_min": float("nan"), "resolution": "derived"},
+    {"schema": "prophet_live.quote_freshness_policy/v1",
+     "quote_max_age_min": float("inf"), "resolution": "derived"},
+    {"schema": "prophet_live.quote_freshness_policy/v1",
+     "quote_max_age_min": 0, "resolution": "derived"},
+    {"schema": "prophet_live.quote_freshness_policy/v1",
+     "quote_max_age_min": -25.0, "resolution": "derived"},
+    {"schema": "prophet_live.quote_freshness_policy/v1",
+     "quote_max_age_min": True, "resolution": "derived"},
+    {"schema": "prophet_live.quote_freshness_policy/v1",
+     "quote_max_age_min": "25", "resolution": "derived"},
+    {"schema": "prophet_live.quote_freshness_policy/v1",
+     "quote_max_age_min": 25.0, "resolution": "today_guess"},
+    {"schema": "prophet_live.quote_freshness_policy/v1",
+     "quote_max_age_min": 25.0},
+])
+def test_b4_native_reader_refuses_malformed_disclosed_thresholds(tmp_path,
+                                                                 bad_policy):
+    """The disclosed bound must be a finite positive NON-BOOL number under a known
+    resolution class; anything else types the whole read unavailable."""
+    world = _b4_reader_world_with_policy(tmp_path, bad_policy)
+    out = _b4_reader_run(world)
+    assert out["unavailable_reasons"] == ["LIVE_FRESHNESS_POLICY_MALFORMED"]
+    assert out["quote_input"] is None and out["availability"] is None
+    assert out["quote_freshness"] is None
+
+
+def test_b4_native_reader_missing_historical_policy_cannot_fall_back(tmp_path):
+    """An artifact from before the disclosure has NO lawful ceiling here.
+
+    Today's config is never stamped onto it — the read types unavailable instead
+    of re-aging against ``live_cfg``'s current derivation.
+    """
+    world = _b4_reader_world_with_policy(tmp_path, drop=True)
+    out = _b4_reader_run(world)
+    assert out["unavailable_reasons"] == ["LIVE_FRESHNESS_POLICY_MISSING"]
+    assert out["quote_input"] is None and out["availability"] is None
+    assert out["quote_freshness"] is None
+
+
+def test_b4_native_reader_refuses_a_dark_live_row(tmp_path):
+    """A quote the owner itself published dark is not a latest quote."""
+    world = _b4_reader_world(tmp_path)
+    dark_row = json.loads(world["live_bytes"])
+    dark_row["states"]["UNIT"] = {"state": "dark", "reason": "stale_quote"}
+    world["live_path"].write_bytes(
+        json.dumps(dark_row, separators=(",", ":")).encode("utf-8") + b"\n")
+    out = _b4_reader_run(world)
+    assert out["unavailable_reasons"] == ["LIVE_ROW_DARK"]
+    assert out["notes"][0] == "stale_quote"
+
+
+def test_b4_native_reader_fixture_store_persists_and_revalidates(tmp_path):
+    world = _b4_reader_world(tmp_path)
+    token = attest = None
+    from engine.us_candidate_episode import attest_candidate_episode_store_bytes
+
+    token = attest_candidate_episode_store_bytes(world["store_root"])
+    assert token.generation_id == world["generation_id"]
+    reloaded = load_candidate_episode_store_snapshot(world["store_root"])
+    assert _core_canonical(tuple(reloaded.generation.events)) == _core_canonical(
+        tuple(world["snapshot"].generation.events)
+    )
+
+
+def test_b4_native_reader_refuses_a_source_digest_that_resolves_no_event(tmp_path):
+    world = _b4_reader_world(tmp_path)
+    out = _b4_reader_run(world, candidate_source_receipt="sha256:" + "f" * 64)
+    assert out["unavailable_reasons"] == ["CANDIDATE_SOURCE_EVENT_NOT_FOUND"]
+    assert out["quote_input"] is None and out["availability"] is None
+
+
+def test_b4_native_reader_refuses_malformed_source_keys(tmp_path):
+    world = _b4_reader_world(tmp_path)
+    for bad_key in (
+        "candidate:2026-9-17:UNIT:gap",
+        "candidate:2026-02-30:UNIT:gap",
+        "candidate:2026-09-17:UNIT",
+        "watch:2026-09-17:UNIT:gap",
+        "candidate",
+    ):
+        out = _b4_reader_run(world, candidate_source_event_id=bad_key)
+        assert out["unavailable_reasons"] == ["CANDIDATE_SOURCE_KEY_INVALID"], bad_key
+
+
+def test_b4_native_reader_refuses_a_suppressed_source_key(tmp_path):
+    world = _b4_reader_world(
+        tmp_path, observations=[_b4_reader_observation(anchor_kind=None)],
+        candidate_inputs=1,
+    )
+    out = _b4_reader_run(world)
+    assert out["unavailable_reasons"] == ["CANDIDATE_SOURCE_KEY_SUPPRESSED"]
+    assert out["quote_input"] is None and out["availability"] is None
+
+
+def test_b4_native_reader_refuses_a_retracted_source_observation(tmp_path):
+    opened = reconcile_observations(
+        [], [_b4_reader_observation()], recorded_at="2026-09-17T21:00:00Z",
+        definition_era=DEFAULT_DEFINITION_ERA,
+    )
+    episode_id_text = opened.episodes[0]["episode_id"]
+    retraction = {
+        "event_type": "RETRACTED", "episode_id": episode_id_text,
+        "source_system": "operator", "source_schema": "candidate-command/v1",
+        "source_event_id": "retract:1", "source_receipt": "sha256:" + "b" * 64,
+        "occurred_at": "2026-09-17T20:30:00Z", "known_at": "2026-09-17T20:30:00Z",
+        "correction_of": opened.events[0]["event_id"],
+        "payload": {"reason": "source withdrew the observation"},
+    }
+    result = apply_commands(
+        opened.events, [retraction], recorded_at="2026-09-17T21:00:00Z",
+        definition_era=DEFAULT_DEFINITION_ERA,
+    )
+    world = _b4_reader_world(tmp_path, events=result.events, candidate_inputs=1)
+    out = _b4_reader_run(world)
+    assert out["unavailable_reasons"] == ["CANDIDATE_SOURCE_EVENT_RETRACTED"]
+    assert out["quote_input"] is None and out["availability"] is None
+
+
+def test_b4_native_reader_refuses_identity_that_does_not_round_trip(tmp_path):
+    world = _b4_reader_world(tmp_path)
+    out = _b4_reader_run(world, alias_table=_B4Aliases("UNIT", reverse="SEC:OTHER"))
+    assert out["unavailable_reasons"] == ["IDENTITY_ALIAS_UNRESOLVED"]
+
+
+def test_b4_native_reader_refuses_synthetic_or_public_quote_rows(tmp_path):
+    world = _b4_reader_world(
+        tmp_path, quote_row_overrides={"quote_ts_synthetic": True}
+    )
+    assert _b4_reader_run(world)["unavailable_reasons"] == ["QUOTE_TS_SYNTHETIC"]
+
+    world = _b4_reader_world(tmp_path, drop_private_provenance=True)
+    assert _b4_reader_run(world)["unavailable_reasons"] == [
+        "QUOTE_PRIVATE_PROVENANCE_MISSING"
+    ]
+
+    world = _b4_reader_world(tmp_path, quote_row_overrides={"source": "test"})
+    assert _b4_reader_run(world)["unavailable_reasons"] == ["QUOTE_SOURCE_UNTRUSTED"]
+
+    world = _b4_reader_world(
+        tmp_path, quote_row_overrides={"basis": "adjusted_close"}
+    )
+    assert _b4_reader_run(world)["unavailable_reasons"] == ["QUOTE_RUNG_UNTRUSTED"]
+
+
+def test_b4_native_reader_refuses_price_close_or_clock_drift(tmp_path):
+    # Only the QUOTE row drifts; the live owner still measures 42.70.
+    world = _b4_reader_world(tmp_path, quote_row_overrides={"price": 42.71})
+    assert _b4_reader_run(world)["unavailable_reasons"] == ["QUOTE_PRICE_MISMATCH"]
+
+    # Only the QUOTE row's previous close drifts from the owner's measured close.
+    world = _b4_reader_world(tmp_path, quote_row_overrides={"prevClose": 40.0})
+    assert _b4_reader_run(world)["unavailable_reasons"] == ["QUOTE_PREV_CLOSE_MISMATCH"]
+
+    # A quote stamped after the live pass never becomes the pass's own observation.
+    after_pass = datetime.fromisoformat("2026-09-17T19:31:30+00:00")
+    world = _b4_reader_world(tmp_path, quote_row_overrides={
+        "quote_ts": "2026-09-17T19:31:30Z",
+        "ts": int(after_pass.timestamp() * 1000),
+    })
+    assert _b4_reader_run(world)["unavailable_reasons"] == ["QUOTE_AFTER_PASS"]
+
+    # A quote_ts the live owner's measured quote_age_min does not agree with.
+    drifted_clock = datetime.fromisoformat("2026-09-17T19:29:00+00:00")
+    world = _b4_reader_world(tmp_path, quote_row_overrides={
+        "quote_ts": "2026-09-17T19:29:00Z",
+        "ts": int(drifted_clock.timestamp() * 1000),
+    })
+    assert _b4_reader_run(world)["unavailable_reasons"] == ["QUOTE_AGE_MISMATCH"]
+
+
+def test_b4_native_reader_refuses_missing_or_offline_owner_planes(tmp_path):
+    world = _b4_reader_world(tmp_path, write_quotes_file=False)
+    assert _b4_reader_run(world)["unavailable_reasons"] == ["OWNER_FILE_MISSING"]
+
+    world = _b4_reader_world(
+        tmp_path, envelope_overrides={"meta": {"requested": 1, "resolved": 1,
+                                               "offline": True}}
+    )
+    assert _b4_reader_run(world)["unavailable_reasons"] == ["QUOTE_ENVELOPE_OFFLINE"]
+
+    world = _b4_reader_world(
+        tmp_path, envelope_overrides={"source": "worker"}
+    )
+    assert _b4_reader_run(world)["unavailable_reasons"] == ["QUOTE_ENVELOPE_UNTRUSTED"]
+
+
+def test_b4_native_reader_refuses_a_live_owner_that_is_not_the_native_producer(tmp_path):
+    def world_with_live_payload(payload):
+        world = _b4_reader_world(tmp_path)
+        world["live_path"].write_bytes(
+            json.dumps(payload, separators=(",", ":")).encode("utf-8") + b"\n"
+        )
+        return world
+
+    foreign = json.loads(_b4_reader_world(tmp_path)["live_bytes"])
+    foreign["meta"]["producer"] = "other/writer.py"
+    out = _b4_reader_run(world_with_live_payload(foreign))
+    assert out["unavailable_reasons"] == ["LIVE_OWNER_PRODUCER_MISMATCH"]
+
+    dark_status = json.loads(_b4_reader_world(tmp_path)["live_bytes"])
+    dark_status["status"] = "dark"
+    out = _b4_reader_run(world_with_live_payload(dark_status))
+    assert out["unavailable_reasons"] == ["LIVE_OWNER_NOT_LIVE"]
+
+
+def test_b4_native_reader_refuses_a_live_session_off_the_candidate_source_day(tmp_path):
+    world = _b4_reader_world(
+        tmp_path, pass_at="2026-09-18T19:30:08Z", quote_ts="2026-09-18T19:30:00Z"
+    )
+    out = _b4_reader_run(world)
+    assert out["unavailable_reasons"] == ["SESSION_RELATION_UNREPRESENTABLE"]
+    assert out["quote_input"] is None and out["availability"] is None
+
+
+def test_b4_native_reader_refuses_a_tampered_basis_material_in_the_live_owner(tmp_path):
+    tampered = copy.deepcopy(_b4_reader_world(tmp_path)["live_artifact"])
+    state = tampered["states"]["UNIT"]
+    state["basis_relation"]["subject"] = "OTHER"
+    world = _b4_reader_world(tmp_path, live_artifact=tampered)
+    out = _b4_reader_run(world)
+    assert out["unavailable_reasons"] == ["LIVE_BASIS_NOT_RESOLVED"]
+    assert "binds a different subject" in out["notes"][0]
+
+
+def test_b4_native_reader_refuses_a_snapshot_that_diverged_from_head(tmp_path):
+    world = _b4_reader_world(tmp_path)
+    # A later generation lands (a second candidate) and HEAD advances past the
+    # snapshot the caller supplied — the caller's cut is no longer the store.
+    _b4_reader_store(
+        world["store_root"],
+        events=reconcile_observations(
+            world["snapshot"].generation.events,
+            [_b4_reader_observation(
+                source_event_id="candidate:2026-09-17:OTHER:gap_continuation",
+                security_id="SEC:US-XNAS-OTHER", company_id="ISS:US-XNAS-OTHER",
+                ticker="OTHER")],
+            recorded_at="2026-09-17T21:00:00Z",
+            definition_era=DEFAULT_DEFINITION_ERA,
+        ).events,
+        candidate_inputs=2,
+        recorded_at="2026-09-17T21:00:00Z",
+    )
+    out = _b4_reader_run(world)
+    assert out["unavailable_reasons"] == ["SNAPSHOT_DIVERGED_FROM_HEAD"]
+
+
+def test_b4_native_reader_refuses_bytes_that_change_between_reads(tmp_path, monkeypatch):
+    world = _b4_reader_world(tmp_path)
+    real_read = _sources._read_owner_bytes
+    calls = {"n": 0}
+
+    def flaky_read(path):
+        calls["n"] += 1
+        payload = real_read(path)
+        if calls["n"] == 3 and path.name == "quotes_full.json":
+            return payload + b" "
+        return payload
+
+    monkeypatch.setattr(_sources, "_read_owner_bytes", flaky_read)
+    out = _b4_reader_run(world)
+    assert out["unavailable_reasons"] == ["OWNER_BYTES_CHANGED"]
+    assert out["quote_input"] is None and out["availability"] is None
+
+
+def test_b4_native_reader_rejects_future_owner_clocks(tmp_path):
+    world = _b4_reader_world(tmp_path, session="2027-01-04")
+    out = _b4_reader_run(world)
+    assert out["unavailable_reasons"] == ["FUTURE_OWNER_CLOCK"]
+    assert out["quote_input"] is None and out["availability"] is None
+
+
+def test_b4_native_reader_touches_no_network_scoring_or_write_plane(
+    tmp_path, monkeypatch
+):
+    def boom(*args, **kwargs):
+        raise AssertionError("reader touched a forbidden plane")
+
+    import socket
+
+    from engine.prophet_live import r2io
+    from scripts import build_live_quotes
+
+    monkeypatch.setattr(socket, "socket", boom)
+    monkeypatch.setattr(_sources, "evaluate_entry_availability", boom)
+    monkeypatch.setattr(r2io, "put_json", boom)
+    monkeypatch.setattr(build_live_quotes, "build", boom)
+
+    world = _b4_reader_world(tmp_path, source_known_at=_QUALIFIED_SOURCE_KNOWN_AT,
+                             store_recorded_at=_QUALIFIED_RECORDED_AT)
+    out = _b4_reader_run(world)
+    assert out["unavailable_reasons"] == []
+    assert out["availability"] is None and out["quote_input"] is not None
+
+
+def test_b4_native_reader_rejects_caller_json_in_place_of_the_store_snapshot(tmp_path):
+    world = _b4_reader_world(tmp_path)
+    with pytest.raises(TypeError, match="CandidateEpisodeStoreSnapshot"):
+        _b4_reader_run(world, snapshot={
+            "generation_id": world["generation_id"], "json": True,
+        })
+
+
+def _b4_world_with_native_state_command(tmp_path, *, state=None, supersede=False):
+    from engine.us_candidate_episode import episode_id as native_episode_id
+    opened = reconcile_observations(
+        [], [_b4_reader_observation(known_at=_QUALIFIED_SOURCE_KNOWN_AT)],
+        recorded_at=_QUALIFIED_RECORDED_AT, definition_era=DEFAULT_DEFINITION_ERA)
+    row = opened.episodes[0]
+    command = {
+        "event_type": "IDENTITY_SUPERSEDED" if supersede else "STATE_TRANSITIONED",
+        "episode_id": row["episode_id"], "source_system": "stock_identity" if supersede else "operator",
+        "source_schema": "stock_identity.epoch/v1" if supersede else "candidate-command/v1",
+        "source_event_id": "identity:successor" if supersede else "state:" + state,
+        "source_receipt": "sha256:" + "d" * 64,
+        "occurred_at": "2026-09-17T19:05:00Z", "known_at": "2026-09-17T19:05:00Z",
+        "payload": ({"successor_episode_id": native_episode_id(row["security_id"], "epoch_1", row["structural_anchor"], 1),
+                     "reason": "native identity epoch superseded"} if supersede else
+                    {"episode_state": state, "terminal_reason": "native terminal transition"}),
+    }
+    changed = apply_commands(opened.events, [command], recorded_at=_QUALIFIED_RECORDED_AT,
+                             definition_era=DEFAULT_DEFINITION_ERA)
+    world = _b4_reader_world(tmp_path, events=changed.events, candidate_inputs=1,
+                             store_recorded_at=_QUALIFIED_RECORDED_AT)
+    actual = world["snapshot"].generation.episodes[0]
+    assert "episode_lifecycle" not in actual
+    assert actual["episode_state"] == ("ACTIVE" if supersede else state)
+    assert bool(actual["superseded_by"]) is supersede
+    return world
+
+
+@pytest.mark.parametrize("state", ["INVALIDATED", "RESOLVED", "EXPIRED", "RETRACTED"])
+def test_b4_native_reader_refuses_native_terminal_episode_state(tmp_path, state):
+    world = _b4_world_with_native_state_command(tmp_path, state=state)
+    before = {p: p.read_bytes() for p in world["store_root"].rglob("*") if p.is_file()}
+    out = _b4_reader_run(world)
+    assert out["unavailable_reasons"] == ["CANDIDATE_EPISODE_TERMINAL"]
+    assert out["quote_input"] is None and out["availability"] is None
+    assert {p: p.read_bytes() for p in before} == before
+
+
+def test_b4_native_reader_refuses_native_superseded_active_episode(tmp_path):
+    world = _b4_world_with_native_state_command(tmp_path, supersede=True)
+    out = _b4_reader_run(world)
+    assert out["unavailable_reasons"] == ["CANDIDATE_EPISODE_SUPERSEDED"]
+    assert out["quote_input"] is None and out["availability"] is None
+
+
+@pytest.mark.parametrize("field,value,missing", [
+    ("episode_state", None, True), ("episode_state", None, False),
+    ("episode_state", "SUPERSEDED", False), ("episode_state", [], False),
+    ("terminal_reason", None, True), ("superseded_by", None, True),
+])
+def test_b4_native_reader_refuses_caller_malformed_native_owner_state(tmp_path, field, value, missing):
+    world = _b4_reader_world(tmp_path, source_known_at=_QUALIFIED_SOURCE_KNOWN_AT,
+                             store_recorded_at=_QUALIFIED_RECORDED_AT)
+    row = world["snapshot"].generation.episodes[0]
+    if missing:
+        row.pop(field)
+    else:
+        row[field] = value
+    out = _b4_reader_run(world)
+    # The actual fixed store remains valid; a caller's counterfeit native row
+    # cannot override it, including by copying B3 display vocabulary onto B1.
+    assert out["unavailable_reasons"] == ["SNAPSHOT_DIVERGED_FROM_HEAD"]
+    assert out["quote_input"] is None and out["availability"] is None
+
+
+@pytest.mark.parametrize("field,value,missing", [
+    ("episode_state", None, True), ("episode_state", None, False),
+    ("episode_state", "SUPERSEDED", False), ("episode_state", [], False),
+    ("terminal_reason", None, True), ("superseded_by", None, True),
+])
+def test_b4_native_reader_typed_failure_on_native_decoder_contract_regression(tmp_path, monkeypatch, field, value, missing):
+    world = _b4_reader_world(tmp_path, source_known_at=_QUALIFIED_SOURCE_KNOWN_AT,
+                             store_recorded_at=_QUALIFIED_RECORDED_AT)
+    row = world["snapshot"].generation.episodes[0]
+    if missing:
+        row.pop(field)
+    else:
+        row[field] = value
+    # Deliberate upstream decoder contract violation: both decoded cuts are the
+    # same malformed result, while real store bytes remain untouched. This does
+    # not claim malformed native bytes were accepted by the real B1 validator.
+    monkeypatch.setattr(_sources, "load_candidate_episode_store_snapshot", lambda root: world["snapshot"])
+    out = _b4_reader_run(world)
+    assert out["unavailable_reasons"] == ["CANDIDATE_EPISODE_STATE_MALFORMED"]
+    assert out["quote_input"] is None and out["availability"] is None
