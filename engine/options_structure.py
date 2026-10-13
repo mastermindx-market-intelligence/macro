@@ -963,6 +963,150 @@ class ProphetTradePlan:
     })
 
 
+def _plan_source_receipt(value: Any) -> str | None:
+    """Return ``value`` when it is exactly a ``sha256:<64 lowercase hex>`` receipt."""
+    if not isinstance(value, str) or not value.startswith("sha256:"):
+        return None
+    digest = value[7:]
+    if len(digest) != 64 or any(c not in "0123456789abcdef" for c in digest):
+        return None
+    return value
+
+
+def _validate_source_binding_material(binding: Any) -> list[str]:
+    """Re-hash a binding's material with the frozen producer's canonicalization.
+
+    Uses the neutral evidence codec without its single document newline,
+    preserving the original producer's compact JSON bytes.  This checks
+    the internal integrity of the SUPPLIED material only: a whole self-hashed
+    ``source_binding`` is source origin metadata, never native authentication and
+    never a source authorization decision.
+    """
+    if not isinstance(binding, dict):
+        return ["source_origin.source_binding must be an object"]
+    import hashlib  # noqa: PLC0415
+
+    errors: list[str] = []
+    if _plan_source_receipt(binding.get("source_sha256")) is None:
+        errors.append(
+            "source_origin.source_binding.source_sha256 must be 'sha256:<64 lowercase hex>'"
+        )
+    pair_id = binding.get("pair_id")
+    if (not isinstance(pair_id, str) or len(pair_id) != 32
+            or any(c not in "0123456789abcdef" for c in pair_id)):
+        errors.append(
+            "source_origin.source_binding.pair_id must be 32 lowercase hex characters")
+    market_session = binding.get("market_session")
+    try:
+        from datetime import date  # noqa: PLC0415
+        session_ok = (
+            isinstance(market_session, str)
+            and date.fromisoformat(market_session).isoformat() == market_session
+        )
+    except ValueError:
+        session_ok = False
+    if not session_ok:
+        errors.append(
+            "source_origin.source_binding.market_session must be an ISO-8601 date")
+    ordered_rows = binding.get("ordered_rows")
+    if not isinstance(ordered_rows, list) or not ordered_rows:
+        return errors + [
+            "source_origin.source_binding.ordered_rows must be a non-empty list"]
+    material_rows: list[Any] = []
+    for position, row in enumerate(ordered_rows):
+        if not isinstance(row, dict):
+            errors.append(
+                f"source_origin.source_binding.ordered_rows[{position}] must be an object"
+            )
+            material_rows.append(row)
+            continue
+        selection_index = row.get("selection_index")
+        if isinstance(selection_index, bool) or selection_index != position:
+            errors.append(
+                "source_origin.source_binding.ordered_rows must be contiguous from 0; "
+                f"entry {position} carries selection_index {selection_index!r}")
+        if _plan_source_receipt(row.get("row_receipt")) is None:
+            errors.append(
+                f"source_origin.source_binding.ordered_rows[{position}].row_receipt "
+                "must be 'sha256:<64 lowercase hex>'")
+        material_rows.append({
+            "selection_index": selection_index,
+            "row_receipt": row.get("row_receipt"),
+        })
+    from lib.evidence_foundation import canonical_json_bytes  # noqa: PLC0415
+    material = {
+        "source_sha256": binding.get("source_sha256"),
+        "pair_id": pair_id,
+        "market_session": market_session,
+        "ordered_rows": material_rows,
+    }
+    try:
+        canonical_material = canonical_json_bytes(material).removesuffix(b"\n")
+    except (TypeError, ValueError) as exc:
+        raise ValueError(f"value is not canonical JSON: {exc}") from exc
+    expected = "sha256:" + hashlib.sha256(canonical_material).hexdigest()
+    if binding.get("selection_receipt") != expected:
+        errors.append(
+            "source_origin.source_binding.selection_receipt does not match the "
+            "binding material it pins")
+    return errors
+
+
+def _validate_plan_source_origin(origin: Any) -> list[str]:
+    """Validate the optional prospective ``source_origin`` block on a plan.
+
+    A present block must name the frozen original-producer receipt (schema, kind,
+    owner), carry a binding that is internally consistent under the producer's own
+    hashing, and reference one ordered row by an in-bounds non-Boolean index whose
+    published receipt it repeats exactly.  Absence keeps the legacy contract
+    untouched; presence checks shape and integrity of already-frozen material only.
+    There is no ticker-origin identity join here and no authentication claim.
+    """
+    if not isinstance(origin, dict):
+        return ["source_origin must be an object"]
+    errors: list[str] = []
+    if origin.get("schema") != "prophet.plan_source_origin/v1":
+        errors.append(
+            "source_origin.schema must be 'prophet.plan_source_origin/v1'")
+    if origin.get("receipt_kind") != "EXACT_DISPLAYED_SOURCE":
+        errors.append(
+            "source_origin.receipt_kind must be 'EXACT_DISPLAYED_SOURCE'")
+    if origin.get("owner_ref") != "scripts/build_stock_library.py::main":
+        errors.append(
+            "source_origin.owner_ref must be 'scripts/build_stock_library.py::main'")
+    binding = origin.get("source_binding")
+    if not isinstance(binding, dict):
+        return errors + ["source_origin.source_binding must be an object"]
+    if binding.get("schema") != "prophet.today_selection_source_binding/v1":
+        errors.append(
+            "source_origin.source_binding.schema must be "
+            "'prophet.today_selection_source_binding/v1'")
+    if binding.get("receipt_kind") != "EXACT_DISPLAYED_SOURCE":
+        errors.append(
+            "source_origin.source_binding.receipt_kind must be 'EXACT_DISPLAYED_SOURCE'")
+    errors.extend(_validate_source_binding_material(binding))
+
+    selection_index = origin.get("selection_index")
+    if isinstance(selection_index, bool) or not isinstance(selection_index, int):
+        return errors + ["source_origin.selection_index must be an integer"]
+    ordered_rows = binding.get("ordered_rows")
+    if not isinstance(ordered_rows, list) or not 0 <= selection_index < len(ordered_rows):
+        return errors + [
+            "source_origin.selection_index "
+            f"{selection_index!r} is out of bounds for source_binding.ordered_rows"]
+    referenced = ordered_rows[selection_index]
+    if not isinstance(referenced, dict):
+        return errors
+    if origin.get("row_receipt") != referenced.get("row_receipt"):
+        errors.append(
+            "source_origin.row_receipt does not match the referenced ordered_rows "
+            f"entry at selection_index {selection_index}")
+    if _plan_source_receipt(origin.get("row_receipt")) is None:
+        errors.append(
+            "source_origin.row_receipt must be 'sha256:<64 lowercase hex>'")
+    return errors
+
+
 def validate_trade_plan(d: dict) -> list[str]:
     """Return error strings; empty = clean."""
     errors: list[str] = []
@@ -986,6 +1130,10 @@ def validate_trade_plan(d: dict) -> list[str]:
     sources = d.get("source_engines", [])
     if not sources:
         errors.append("source_engines must list at least one originating engine")
+    # Prospective source_origin (pre-B1 prerequisite): checked only when a plan
+    # actually carries it; an absent block keeps the legacy contract byte-for-byte.
+    if "source_origin" in d:
+        errors.extend(_validate_plan_source_origin(d["source_origin"]))
     return errors
 
 
