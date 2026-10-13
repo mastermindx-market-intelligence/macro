@@ -62,6 +62,8 @@ Expected new files after current-owner reconciliation:
 - tests/js/finance_intelligence.test.mjs — client rendering and degraded states.
 - tests/test_finance_owner_preservation.py — no duplicate owners / no public full-fidelity payload / canonical theme count unchanged.
 
+Pickup classification (2026-10-12): every path in this Create list is classified in `research/finance/FINANCE_R12_INTEGRATION_PREFLIGHT_V0_1_2026-09-24.json` field `current_main_absences.plan_create_paths`, each with the quoted `git ls-tree origin/main` line at `9a47ac7f944442c6d6830df9ef25b3529a39888b`. CONSUME a path when that command prints a blob line (finance projection, overlap, the finance read-model schema, its fixture, the sector dossier schema, and the tests and shell template already on main). WAIT only on `contracts/theme_graph/curation_assertion.v1.schema.json` and `app/theme_research.py`, which print no line on origin/main and no line at pin `545ece0c7177a56627204e77302cd9c2d4d03f3e`. A Create path with no ls-tree line that is not in that WAIT pair is still absent and belongs on a fresh implementation carrier. Do not recreate a CONSUME path.
+
 Shared paths may be modified only after exact current custody is reconciled:
 - templates/state_of_themes.html.j2
 - app/main.py

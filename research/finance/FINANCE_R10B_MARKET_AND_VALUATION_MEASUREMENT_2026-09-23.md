@@ -53,7 +53,7 @@ Percent change in the cached adjusted-close proxy from the prior observed close:
 | HKEX, 0388.HK | 2022-07-04 | 2022-06-30 | -3.11 | -5.08 | -6.11 | -26.46 | -14.16 | -24.22 |
 | One97/Paytm, PAYTM.NS | 2024-01-31 | 2024-01-30 | 0.01 | -34.80 | -46.63 | -51.10 | -34.71 | 5.51 |
 
-The +252 endpoints are respectively 2023-07-14, 2025-04-01, 2023-07-11 and 2025-02-05. The complete 28 dated endpoints and both return conventions are in the research receipt and CSV.
+The +252 endpoints are respectively 2023-07-14, 2025-04-01, 2023-07-11 and 2025-02-05. The 28 adjusted-close percent changes are the four witnesses at offsets 0, +5, +20, +60, +120 and +252 in the section 4 table. This carrier does not contain a 28-endpoint CSV or a separate analytical JSON receipt. `git ls-tree HEAD -- research/finance` has no such file. The projection hash later in this note is prose only and is not a path.
 
 Paytm's January 31 close barely changed; February 1 fell about 19.99% from January 31. Exact first-public-release time remains unverified here. Preserve the frozen January 31 anchor and distinguish the first subsequent observation; do not silently rewrite the event clock.
 
@@ -170,15 +170,15 @@ SHA-256 `31a704830a00701aeda9a0006006d77503c78da26ae1f7dfbbedbeed5da70103`.
 
 The numerical source tables were visually inspected. Where web PDF screenshots failed, remote PDF renderings were inspected without OCR. This is source-table inspection, not application browser proof.
 
-The analytical JSON receipt carries each standard vendor chart URL, response hash, date/currency/timezone and corporate-action limitations. Raw vendor responses were hashed in memory; immutable owner admission/retention is not claimed.
+No analytical JSON receipt is among the carrier files. Vendor chart URL, response hash, date, currency, timezone and corporate-action limitations were inspected in the measurement session and were not written to a file under research/finance. Raw vendor responses were hashed in memory; immutable owner admission/retention is not claimed.
 
 ## 10. Verification and product consequences
 
 Twenty-five remote research checks passed: source hashes unchanged, positive/unique observations, cache dates in fresh vendor history, no returned window splits, valuation identities, normalized cache comparison, observed holiday gaps and revision-coverage limits. Twenty-five separate local recalculation/preservation checks passed. These are not fifty independent validations of a thesis, nor production CI or independent review.
 
-The source-derived and locally transcribed numerical projections have identical SHA-256:
+A numerical-projection SHA-256 was recorded in this note as
 `8909d31c0ab41f9744c9e7d572b12fc2321a5d2a63381ce69b59b4e8d0ae206c`.
-The projection covers the four ticker/anchor/base records and all 28 dated endpoint adjusted closes. It does not attest byte equality of every source document.
+That digest is not a path in this carrier, so it does not reproduce 28 dated endpoint adjusted closes. What this file contains is the section 4 percent table, the four +252 dates, and the section 5 quote-price table. It does not attest byte equality of every source document.
 
 Named product requirements unlocked by these cases:
 

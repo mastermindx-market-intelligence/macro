@@ -77,6 +77,10 @@ The contract is not on current main at this pin.
 
 Finance disposition: if #7777 or accepted successor lands, use it as the outer Financials sector dossier. Do not create a parallel finance_sector_dossier truth object.
 
+### Pickup ls-tree refresh (2026-10-12)
+
+The absence sentences in this section record pin `9573cd4d134804fb4cd8c3801ad62a697c3de6d2`. They are not the current absence list. `git ls-tree origin/main` at `9a47ac7f944442c6d6830df9ef25b3529a39888b` prints the sector dossier schema, the finance read-model schemas, finance projection, overlap, and registration. It prints no line for `contracts/theme_graph/curation_assertion.v1.schema.json` or `app/theme_research.py`, and neither path is present at pin `545ece0c7177a56627204e77302cd9c2d4d03f3e`. CONSUME the printed paths. WAIT on those two. The quoted lines are `current_main_absences` in `research/finance/FINANCE_R12_INTEGRATION_PREFLIGHT_V0_1_2026-09-24.json`. This refresh does not start implementation.
+
 A deeper Finance-specific object is permissible only as a read-only child projection under the accepted Sector Intelligence owner. It must own no source, identity, price, expectation, valuation, basket, lifecycle or publication truth.
 
 ### Financial Intelligence is useful but is not a global identity master

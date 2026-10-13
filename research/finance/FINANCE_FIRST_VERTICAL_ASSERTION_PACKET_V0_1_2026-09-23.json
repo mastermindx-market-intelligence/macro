@@ -386,6 +386,7 @@
       "record_id": "fin-research-bk-2025",
       "issuer_label": "The Bank of New York Mellon Corporation",
       "ticker_hint": "BK",
+      "ticker_aliases": ["BNY"],
       "identity_binding_state": "RESEARCH_HINT_UNVALIDATED",
       "business_scope": "custody/asset servicing, issuer/market services, asset management and bank",
       "source": {

@@ -10,6 +10,195 @@ placement_state: WAITING_CAPACITY
 needs_placement: true
 mission_complete: false
 finalization_classification: CHECKPOINTED_CONTINUATION
+workstream: "WS:GMI-THEME-GRAPH"
+session: sol/finance-sector-research-20260923
+model: sol
+ended_because: blocked
+mission: >
+  Checkpoint the Finance research carrier for a future Fable receiver.
+  The implementation mission has not ended: placement is WAITING_CAPACITY,
+  mission_complete is false, and this file does not record PICKUP_ACK or START.
+  ended_because is blocked because no eligible Fable session is assigned.
+  No agentos workstream key exists for the Finance sector program. workstream
+  cites WS:GMI-THEME-GRAPH, the shared theme-graph owner this operation must
+  consume and must not fork. That citation is not a claim that the theme-graph
+  mission ended and it is not a Fable session record.
+state_before: >
+  Research carrier PR #7786 at 615f1050e2f7e060d54a3ddfffa80a7127b38d47 was
+  Draft/HOLD. The product was not built. This handoff's frontmatter lacked the
+  fields scripts/agentos.py check_handoff requires, and validate reported 13
+  errors, all on this file. The R10 synthesis case ids and archetype strings
+  disagreed with the preserved fixture. R12 current_main_absences still listed
+  the sector dossier schema. Witness symbol BNY did not match ticker_hint BK.
+  The global/regional assertion packet used basename contract refs. R10B
+  claimed a 28-endpoint CSV that is not in the carrier.
+changed:
+  - path: agentos/handoffs/GMI-FINANCE-MASTER-FABLE-CEO-HANDOFF-2026-09-24.md
+    what: >
+      Added the required handoff fields. unverified names the R10 id drift
+      and the stale R12 absence list. model is sol, session is the research
+      branch, and ended_because is blocked. The implementation mission is
+      not marked complete.
+  - path: research/finance/FINANCE_R10_CASE_SYNTHESIS_MATRIX_V0_1_2026-09-23.json
+    what: >
+      Added canonical_case_id for all 12 fixture ids, moved the three renamed
+      ids into aliases, copied each fixture anchor_date, and closed archetypes
+      to the fixture's 12 strings. Every formal_causal_outcome stays UNMEASURED.
+  - path: research/finance/FINANCE_R12_INTEGRATION_PREFLIGHT_V0_1_2026-09-24.json
+    what: >
+      Replaced current_main_absences with a git ls-tree receipt. CONSUME paths
+      already on origin/main 9a47ac7f944442c6d6830df9ef25b3529a39888b. WAIT on
+      the curation-assertion schema and app/theme_research.py, absent there and
+      absent at pin 545ece0c7177a56627204e77302cd9c2d4d03f3e. Witness symbols
+      now point at first-vertical record_id values, with identity_binding_state
+      RESEARCH_HINT_UNVALIDATED.
+  - path: research/finance/FINANCE_FIRST_VERTICAL_ASSERTION_PACKET_V0_1_2026-09-23.json
+    what: >
+      Added ticker_aliases ["BNY"] on fin-research-bk-2025. ticker_hint stays
+      BK and identity_binding_state stays RESEARCH_HINT_UNVALIDATED.
+  - path: research/finance/FINANCE_GLOBAL_REGIONAL_RESEARCH_ASSERTION_PACKET_V0_1_2026-09-23.json
+    what: >
+      research_contract_refs now use research/finance/ paths, matching the
+      other assertion packets.
+  - path: research/finance/FINANCE_R10B_MARKET_AND_VALUATION_MEASUREMENT_2026-09-23.md
+    what: >
+      Corrected the 28-endpoint claim. The carrier has the section 4 percent
+      table and four +252 dates. It has no 28-endpoint CSV and no analytical
+      JSON receipt file.
+  - path: research/finance/FINANCE_R12_CURRENT_MAIN_ARCHITECTURE_COLLISION_AND_CUSTODY_REVIEW_2026-09-24.md
+    what: >
+      Added a 2026-10-12 pickup note that the 2026-09-24 absence sentences are
+      historical and the JSON receipt is the current classification.
+  - path: docs/superpowers/plans/2026-09-24-finance-sector-intelligence-implementation.md
+    what: >
+      Pointed the Create list at the receipt that classifies every Create path
+      with a quoted ls-tree line.
+verified:
+  - claim: >
+      All 12 fixture case ids resolve to one synthesis row. The three renamed
+      ids are aliases and share that fixture case's anchor date and witness.
+      Every formal_causal_outcome is UNMEASURED. The archetype list is the
+      fixture's 12 strings.
+    command: |
+      python3 - << 'PY'
+      import json
+      fx=json.load(open("research/finance/FINANCE_R10_GLOBAL_REGIONAL_CASEBOOK_FIXTURE_V0_1_2026-09-23.json"))
+      sy=json.load(open("research/finance/FINANCE_R10_CASE_SYNTHESIS_MATRIX_V0_1_2026-09-23.json"))
+      rows=sy["cases"]
+      alias={"R10-JP-BOJ-NIRP-EXIT-20240319":"R10-JP-BOJ-NIRP-END-20240319","R10-IN-RBI-CONSUMER-NBFC-RISK-WEIGHTS-20231116":"R10-IN-RBI-CONSUMER-CREDIT-RISKWEIGHTS-20231116","R10-IN-PAYTM-PAYMENTS-BANK-RESTRICTIONS-20240131":"R10-IN-PAYMENTS-BANK-RESTRICTION-20240131"}
+      def hits(cid):
+          return [r for r in rows if cid==r["canonical_case_id"] or cid in r["aliases"]]
+      assert len(rows)==12 and len(sy["archetypes"])==12 and set(sy["archetypes"])=={c["archetype"] for c in fx["cases"]}
+      for c in fx["cases"]:
+          got=hits(c["id"])
+          assert len(got)==1 and got[0]["anchor_date"]==c["anchor_date"] and got[0]["archetype"]==c["archetype"] and got[0]["formal_causal_outcome"]=="UNMEASURED" and got[0]["witness"]
+      wit={"R10-JP-BOJ-NIRP-END-20240319":"MUFG","R10-IN-RBI-CONSUMER-CREDIT-RISKWEIGHTS-20231116":"Bajaj / SBI Cards + cohorts","R10-IN-PAYMENTS-BANK-RESTRICTION-20240131":"One97/Paytm"}
+      for old,canon in alias.items():
+          got=hits(old)
+          assert len(got)==1 and got[0]["canonical_case_id"]==canon and got[0]["witness"]==wit[canon] and got[0]["anchor_date"]==next(c["anchor_date"] for c in fx["cases"] if c["id"]==canon)
+      print("12/12 fixture ids resolve; 3 aliases share anchor and witness; formal_causal_outcome UNMEASURED")
+      PY
+    result: >
+      12/12 fixture ids resolve; 3 aliases share anchor and witness;
+      formal_causal_outcome UNMEASURED
+  - claim: >
+      origin/main 9a47ac7f944442c6d6830df9ef25b3529a39888b contains the finance
+      projection, overlap, registration, finance read-model schemas, and the
+      sector dossier schema. The curation-assertion schema and
+      app/theme_research.py are absent on that main and absent at pin
+      545ece0c7177a56627204e77302cd9c2d4d03f3e.
+    command: |
+      git rev-parse origin/main
+      git ls-tree origin/main -- engine/sector_intelligence/finance_projection.py engine/sector_intelligence/finance_overlap.py engine/sector_intelligence/finance_research_registration.py contracts/sector_intelligence/finance_intelligence_read_model.v1.schema.json contracts/sector_intelligence/finance_intelligence_research.v1.schema.json contracts/sector_intelligence/finance_intelligence_research.evidence.v1.schema.json contracts/sector_intelligence/sector_dossier_read_model.v1.schema.json contracts/theme_graph/curation_assertion.v1.schema.json app/theme_research.py
+      git ls-tree 545ece0c7177a56627204e77302cd9c2d4d03f3e -- contracts/theme_graph/curation_assertion.v1.schema.json app/theme_research.py
+    result: >
+      origin/main is 9a47ac7f944442c6d6830df9ef25b3529a39888b. The seven CONSUME
+      paths each print one 100644 blob line. The two WAIT paths print no line
+      on origin/main and no line at the pin.
+  - claim: >
+      All 11 first-vertical witness symbols resolve to one packet record.
+      BNY resolves through ticker_aliases on fin-research-bk-2025.
+      identity_binding_state stays RESEARCH_HINT_UNVALIDATED.
+    command: |
+      python3 - << 'PY'
+      import json
+      pkt=json.load(open("research/finance/FINANCE_FIRST_VERTICAL_ASSERTION_PACKET_V0_1_2026-09-23.json"))
+      r12=json.load(open("research/finance/FINANCE_R12_INTEGRATION_PREFLIGHT_V0_1_2026-09-24.json"))
+      by_id={r["record_id"]: r for r in pkt["records"]}
+      n=0
+      for w in r12["first_vertical"]["witnesses"]:
+          rec=by_id[w["record_id"]]
+          assert w["identity_binding_state"]=="RESEARCH_HINT_UNVALIDATED"
+          assert rec["identity_binding_state"]=="RESEARCH_HINT_UNVALIDATED"
+          assert w["symbol"] in {rec["ticker_hint"], *rec.get("ticker_aliases", [])}
+          n+=1
+      assert n==11 and by_id["fin-research-bk-2025"]["ticker_aliases"]==["BNY"]
+      print("11/11 witnesses resolve; BNY alias stays RESEARCH_HINT_UNVALIDATED")
+      PY
+    result: >
+      11/11 witnesses resolve; BNY alias stays RESEARCH_HINT_UNVALIDATED
+  - claim: The 13 research/finance JSON files parse.
+    command: |
+      python3 -c 'import json,sys;[json.load(open(p)) for p in sys.argv[1:]]' research/finance/*.json
+    result: 13 files parsed.
+  - claim: >
+      scripts/agentos.py validate reports 0 errors after the required handoff
+      fields were added. This file is not marked mission-complete.
+    command: python3 scripts/agentos.py validate
+    result: >
+      agentos: 1211 records (69 workstreams, 342 decisions, 303 discoveries,
+      497 handoffs) — 0 error(s), 92 warning(s). Exit 0. No error line names
+      this handoff.
+unverified:
+  - claim: >
+      R10 id drift remains a records crosswalk, not a measured causal result.
+      Three synthesis ids were renamed relative to the fixture
+      (R10-JP-BOJ-NIRP-EXIT-20240319, R10-IN-RBI-CONSUMER-NBFC-RISK-WEIGHTS-20231116,
+      R10-IN-PAYTM-PAYMENTS-BANK-RESTRICTIONS-20240131). They are aliases now.
+      Downstream measurement files can still cite the renamed strings, including
+      research/finance/FINANCE_R10D_CREDIT_UNDERWRITING_MEASUREMENTS_V0_1_2026-09-23.json.
+      Every formal_causal_outcome stays UNMEASURED.
+    what_would_verify: >
+      Read each measurement file case_id through the alias table and a fresh
+      market receipt. This handoff does not do that re-measurement.
+  - claim: >
+      The R12 absence list written on 2026-09-24 is stale. It listed
+      contracts/sector_intelligence/sector_dossier_read_model.v1.schema.json,
+      which git ls-tree origin/main now prints. The replacement receipt is one
+      observation of origin/main 9a47ac7f944442c6d6830df9ef25b3529a39888b on
+      2026-10-12. It is not a promise that main stays there, and it is not
+      PICKUP_ACK or START.
+    what_would_verify: >
+      git ls-tree of then-current main at implementation pickup, reclassifying
+      every plan Create path before any product write.
+unresolved:
+  - Placement is WAITING_CAPACITY. No concrete Fable session is assigned.
+  - Finance product is NOT_BUILT. PICKUP_ACK and START are both false.
+  - Formal R10 causal outcomes remain UNMEASURED.
+  - The curation-assertion schema and the theme-research route are still absent on origin/main and at pin 545ece0c7177a56627204e77302cd9c2d4d03f3e.
+  - Global PIT identity is incomplete. The BNY alias is a research hint only.
+next_actions:
+  - Place gmi-finance-fable-ceo-e2e-20260924-chairman-001 with one eligible Fable session and emit PICKUP_ACK with that session's real identity.
+  - Re-pin protected Mastermind procedure and read this handoff, the implementation plan, and the R11/R12 files.
+  - Fetch then-current Macro main and the dependency PR states. Do not reuse the 2026-10-12 ls-tree receipt as if it were still current.
+  - Create a fresh implementation carrier from that main. Do not branch from PR #7786.
+  - CONSUME finance projection, overlap, registration, the finance read-model schemas, and the sector dossier schema when they are still on that main.
+  - WAIT on the curation-assertion schema and app/theme_research.py while they remain absent. Do not fork them.
+  - Emit START only after those gates are clear, then execute Wave 1 with Fable keeping architecture, private publication, and identity adjudication.
+do_not_redo:
+  - Do not redo R1-R12 research or rediscover the 73 company records.
+  - Do not mint a Finance canonical theme, a second evidence ledger, or 52 price baskets.
+  - Do not backfill current membership as PIT history or promote ticker_aliases into a security binding.
+  - Do not use adjusted closes as valuation quote prices or infer consensus from management guidance.
+  - Do not merge PR #7786 to expose the research, and do not use it as the implementation base.
+  - Do not convert retrospective R10 into a production factor, rank, or trade.
+danger_areas:
+  - Branching implementation from PR #7786 instead of then-current main.
+  - Treating the BNY alias or a witness record_id as a validated PIT identity.
+  - Recreating engine/sector_intelligence/finance_projection.py or the sector dossier schema that origin/main already contains.
+  - Forking theme-graph curation while contracts/theme_graph/curation_assertion.v1.schema.json is still absent.
+  - Reading the 2026-09-24 absence list as the current main inventory.
+prs: [7786]
 ---
 
 # GMI Finance — Master Fable CEO End-to-End Implementation Handoff
@@ -155,6 +344,8 @@ not on current main at R12; sibling implementation in progress/planned.
 Sector dossier contract:
 open candidate, not on current main at R12.
 
+Those two sentences are the 2026-09-24 observation at pin 9573cd4d134804fb4cd8c3801ad62a697c3de6d2. They are not the current absence list. The 2026-10-12 git ls-tree receipt in research/finance/FINANCE_R12_INTEGRATION_PREFLIGHT_V0_1_2026-09-24.json says CONSUME the finance projection, overlap, registration, finance read-model schemas, and sector dossier schema already on origin/main 9a47ac7f944442c6d6830df9ef25b3529a39888b, and WAIT on contracts/theme_graph/curation_assertion.v1.schema.json and app/theme_research.py, which are absent on that main and absent at pin 545ece0c7177a56627204e77302cd9c2d4d03f3e. Refresh main again at pickup. This note is not PICKUP_ACK, START, or mission completion.
+
 Global PIT identity/security:
 PARTIAL / incomplete; do not fabricate.
 
@@ -218,7 +409,7 @@ Securities Infrastructure:
 Research witnesses:
 V, MA, FI, FIS, CME, ICE, NDAQ, BNY, STT, SPGI, MCO.
 
-These are evidence witnesses, not portfolio membership.
+These are evidence witnesses, not portfolio membership. BNY is a research alias of ticker hint BK on record fin-research-bk-2025. The R12 witness list points each symbol at that packet's record_id. identity_binding_state stays RESEARCH_HINT_UNVALIDATED.
 
 ## 10. Ordered execution waves
 

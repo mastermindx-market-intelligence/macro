@@ -15,7 +15,10 @@
   "cases": [
     {
       "case_id": "R10-EU-ECB-NEGATIVE-RATE-EXIT-20220721",
-      "archetype": "RATE_FUNDING_NORMALIZATION",
+      "canonical_case_id": "R10-EU-ECB-NEGATIVE-RATE-EXIT-20220721",
+      "aliases": [],
+      "anchor_date": "2022-07-21",
+      "archetype": "RATE_NORMALIZATION",
       "witness": "ING",
       "descriptive_evidence_state": "MARKET_MEASURED_VALUATION_PARTIAL",
       "formal_causal_outcome": "UNMEASURED",
@@ -23,7 +26,10 @@
     },
     {
       "case_id": "R10-EU-CRR3-APPLICATION-20250101",
-      "archetype": "REGULATORY_CAPITAL_TRANSITION",
+      "canonical_case_id": "R10-EU-CRR3-APPLICATION-20250101",
+      "aliases": [],
+      "anchor_date": "2025-01-01",
+      "archetype": "REGULATORY_CAPITAL_REPRICING",
       "witness": "European banks",
       "descriptive_evidence_state": "MARKET_AND_CAPITAL_MEASURED",
       "formal_causal_outcome": "UNMEASURED",
@@ -31,7 +37,10 @@
     },
     {
       "case_id": "R10-CH-UBS-CS-CLOSE-20230612",
-      "archetype": "FORCED_INTEGRATION_RESTRUCTURING",
+      "canonical_case_id": "R10-CH-UBS-CS-CLOSE-20230612",
+      "aliases": [],
+      "anchor_date": "2023-06-12",
+      "archetype": "FORCED_CONSOLIDATION_AND_INTEGRATION",
       "witness": "UBS",
       "descriptive_evidence_state": "MARKET_AND_EXECUTION_MEASURED",
       "formal_causal_outcome": "UNMEASURED",
@@ -39,15 +48,23 @@
     },
     {
       "case_id": "R10-JP-TSE-COST-OF-CAPITAL-REQUEST-20230331",
-      "archetype": "GOVERNANCE_CAPITAL_EFFICIENCY",
+      "canonical_case_id": "R10-JP-TSE-COST-OF-CAPITAL-REQUEST-20230331",
+      "aliases": [],
+      "anchor_date": "2023-03-31",
+      "archetype": "GOVERNANCE_AND_CAPITAL_RETURN",
       "witness": "Japan financials / SMFG witness",
       "descriptive_evidence_state": "MARKET_AND_EXECUTION_MEASURED",
       "formal_causal_outcome": "UNMEASURED",
       "primary_limit": "BOJ_yen_macro_and_endogenous_disclosure"
     },
     {
-      "case_id": "R10-JP-BOJ-NIRP-EXIT-20240319",
-      "archetype": "RATE_FUNDING_NORMALIZATION",
+      "case_id": "R10-JP-BOJ-NIRP-END-20240319",
+      "canonical_case_id": "R10-JP-BOJ-NIRP-END-20240319",
+      "aliases": [
+        "R10-JP-BOJ-NIRP-EXIT-20240319"
+      ],
+      "anchor_date": "2024-03-19",
+      "archetype": "MONETARY_REGIME_CHANGE",
       "witness": "MUFG",
       "descriptive_evidence_state": "MARKET_AND_VALUATION_MEASURED",
       "formal_causal_outcome": "UNMEASURED",
@@ -55,7 +72,10 @@
     },
     {
       "case_id": "R10-CN-HOUSING-POLICY-20240517",
-      "archetype": "POLICY_EASING_BALANCE_SHEET_OFFSET",
+      "canonical_case_id": "R10-CN-HOUSING-POLICY-20240517",
+      "aliases": [],
+      "anchor_date": "2024-05-17",
+      "archetype": "POLICY_EASING_WITH_BALANCE_SHEET_OFFSET",
       "witness": "China H-share banks/developers",
       "descriptive_evidence_state": "MARKET_AND_OPERATING_PARTIAL",
       "formal_causal_outcome": "UNMEASURED",
@@ -63,7 +83,10 @@
     },
     {
       "case_id": "R10-HK-RBC-IMPLEMENTATION-20240701",
-      "archetype": "INSURER_CAPITAL_REGIME_BREAK",
+      "canonical_case_id": "R10-HK-RBC-IMPLEMENTATION-20240701",
+      "aliases": [],
+      "anchor_date": "2024-07-01",
+      "archetype": "INSURER_CAPITAL_REGIME_CHANGE",
       "witness": "AIA / Prudential early adopter",
       "descriptive_evidence_state": "MARKET_AND_CAPITAL_BASIS_MEASURED",
       "formal_causal_outcome": "UNMEASURED",
@@ -71,23 +94,36 @@
     },
     {
       "case_id": "R10-HK-STOCK-CONNECT-ETF-20220704",
-      "archetype": "MARKET_ACCESS_INFRASTRUCTURE",
+      "canonical_case_id": "R10-HK-STOCK-CONNECT-ETF-20220704",
+      "aliases": [],
+      "anchor_date": "2022-07-04",
+      "archetype": "MARKET_ACCESS_AND_INFRASTRUCTURE_EXPANSION",
       "witness": "HKEX",
       "descriptive_evidence_state": "MARKET_MEASURED_MATERIALITY_INCOMPLETE",
       "formal_causal_outcome": "UNMEASURED",
       "primary_limit": "product_revenue_materiality"
     },
     {
-      "case_id": "R10-IN-RBI-CONSUMER-NBFC-RISK-WEIGHTS-20231116",
-      "archetype": "CAPITAL_FUNDING_TIGHTENING",
+      "case_id": "R10-IN-RBI-CONSUMER-CREDIT-RISKWEIGHTS-20231116",
+      "canonical_case_id": "R10-IN-RBI-CONSUMER-CREDIT-RISKWEIGHTS-20231116",
+      "aliases": [
+        "R10-IN-RBI-CONSUMER-NBFC-RISK-WEIGHTS-20231116"
+      ],
+      "anchor_date": "2023-11-16",
+      "archetype": "MACROPRUDENTIAL_CAPITAL_TIGHTENING",
       "witness": "Bajaj / SBI Cards + cohorts",
       "descriptive_evidence_state": "MARKET_AND_DIRECT_CAPITAL_MEASURED",
       "formal_causal_outcome": "UNMEASURED",
       "primary_limit": "heterogeneous_exposures_and_other_actions"
     },
     {
-      "case_id": "R10-IN-PAYTM-PAYMENTS-BANK-RESTRICTIONS-20240131",
-      "archetype": "OPERATING_PERMISSION_TRUST_SHOCK",
+      "case_id": "R10-IN-PAYMENTS-BANK-RESTRICTION-20240131",
+      "canonical_case_id": "R10-IN-PAYMENTS-BANK-RESTRICTION-20240131",
+      "aliases": [
+        "R10-IN-PAYTM-PAYMENTS-BANK-RESTRICTIONS-20240131"
+      ],
+      "anchor_date": "2024-01-31",
+      "archetype": "REGULATORY_PERMISSION_AND_OPERATIONAL_TRUST",
       "witness": "One97/Paytm",
       "descriptive_evidence_state": "MARKET_AND_OPERATING_MEASURED",
       "formal_causal_outcome": "UNMEASURED",
@@ -95,7 +131,10 @@
     },
     {
       "case_id": "R10-AU-APRA-SERVICEABILITY-BUFFER-20211006",
-      "archetype": "UNDERWRITING_CAPACITY_TIGHTENING",
+      "canonical_case_id": "R10-AU-APRA-SERVICEABILITY-BUFFER-20211006",
+      "aliases": [],
+      "anchor_date": "2021-10-06",
+      "archetype": "BORROWER_BASED_MACROPRUDENTIAL_TIGHTENING",
       "witness": "Australian majors",
       "descriptive_evidence_state": "MARKET_AND_RISK_MIX_MEASURED",
       "formal_causal_outcome": "UNMEASURED",
@@ -103,7 +142,10 @@
     },
     {
       "case_id": "R10-KR-CORPORATE-VALUE-UP-20240226",
-      "archetype": "GOVERNANCE_CAPITAL_RETURN",
+      "canonical_case_id": "R10-KR-CORPORATE-VALUE-UP-20240226",
+      "aliases": [],
+      "anchor_date": "2024-02-26",
+      "archetype": "GOVERNANCE_CAPITAL_RETURN_AND_DISCOUNT",
       "witness": "Korean financial groups",
       "descriptive_evidence_state": "MARKET_VALUATION_EXECUTION_MEASURED",
       "formal_causal_outcome": "UNMEASURED",
@@ -111,14 +153,18 @@
     }
   ],
   "archetypes": [
-    "RATE_FUNDING_NORMALIZATION",
-    "REGULATORY_CAPITAL_INTENSITY",
-    "GOVERNANCE_CAPITAL_EFFICIENCY",
-    "FORCED_INTEGRATION_RESTRUCTURING",
-    "MARKET_ACCESS_INFRASTRUCTURE",
-    "OPERATING_PERMISSION_TRUST_SHOCK",
-    "UNDERWRITING_CAPACITY_TIGHTENING",
-    "POLICY_EASING_BALANCE_SHEET_OFFSET"
+    "RATE_NORMALIZATION",
+    "REGULATORY_CAPITAL_REPRICING",
+    "FORCED_CONSOLIDATION_AND_INTEGRATION",
+    "GOVERNANCE_AND_CAPITAL_RETURN",
+    "MONETARY_REGIME_CHANGE",
+    "POLICY_EASING_WITH_BALANCE_SHEET_OFFSET",
+    "INSURER_CAPITAL_REGIME_CHANGE",
+    "MARKET_ACCESS_AND_INFRASTRUCTURE_EXPANSION",
+    "MACROPRUDENTIAL_CAPITAL_TIGHTENING",
+    "REGULATORY_PERMISSION_AND_OPERATIONAL_TRUST",
+    "BORROWER_BASED_MACROPRUDENTIAL_TIGHTENING",
+    "GOVERNANCE_CAPITAL_RETURN_AND_DISCOUNT"
   ],
   "product_laws": [
     "NO_EVENT_TO_STOCK_SHORTCUT",
