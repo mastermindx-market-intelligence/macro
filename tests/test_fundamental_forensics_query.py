@@ -57,6 +57,10 @@ from engine.fundamental_forensics.raw_ledger import (
 ROOT = Path(__file__).resolve().parents[1]
 ENTITY_A = "0000000001"
 ENTITY_B = "0000000002"
+# Synthetic entities are industrial-classified (an industrial SIC per the
+# shipped coverage contract's classification basis) unless a test is about
+# banks or the SIC-less path.
+_INDUSTRIAL_SIC = "3571"
 PERIOD = PeriodRequest.duration("2025-01-01", "2025-12-31", label="FY2025")
 
 
@@ -130,7 +134,16 @@ def test_period_request_preserves_same_day_xbrl_duration_semantics() -> None:
 
 
 def _engine(*facts, bounds: QueryBounds | None = None, registry=None, **kwargs):
-    entities = kwargs.pop("entities", {"AAA": ENTITY_A, "BBB": ENTITY_B})
+    # R1-SIC/R2: synthetic tickers carry an industrial SIC so tests whose
+    # intent is a VALUE on a class-restricted metric see the applicable
+    # branch; the SIC-less fail-closed path has its own dedicated tests.
+    entities = kwargs.pop(
+        "entities",
+        (
+            QueryEntity("AAA", ENTITY_A, issuer_sic=_INDUSTRIAL_SIC),
+            QueryEntity("BBB", ENTITY_B, issuer_sic=_INDUSTRIAL_SIC),
+        ),
+    )
     if "filing_metadata" not in kwargs:
         kwargs["filing_metadata"] = {
             fact.occurrence_id: {
@@ -1087,7 +1100,8 @@ def test_receipts_and_cells_reject_forged_identity_future_clocks_and_matrix_mism
         )
     with pytest.raises(QueryValidationError, match="membership"):
         other_good = _engine(
-            _fact(entity_id=ENTITY_B), entities={"AAA": ENTITY_B}
+            _fact(entity_id=ENTITY_B),
+            entities=(QueryEntity("AAA", ENTITY_B, issuer_sic=_INDUSTRIAL_SIC),),
         ).query_cell("AAA", "revenue", PERIOD, policy)
         MetricMatrix(
             governance_bundle=good.governance_bundle,
@@ -1261,7 +1275,8 @@ def test_matrix_receipt_projects_future_registry_content_and_csv_escapes_text_on
     policy = _policy()
     escaped_fact = _fact(entity_id="=2+2", accession="@evil", value="-42")
     escaped_matrix = _engine(
-        escaped_fact, entities={"AAA": "=2+2"}
+        escaped_fact,
+        entities=(QueryEntity("AAA", "=2+2", issuer_sic=_INDUSTRIAL_SIC),),
     ).query_matrix(
         tickers=("AAA",),
         metrics=("revenue",),
@@ -1844,7 +1859,7 @@ def test_formula_flat_receipts_reject_forged_ids_entities_cutoffs_and_dependency
     # would only prove the direct raw-fact binding, not formula join safety.
     wrong_entity = _engine(
         _fact(entity_id=ENTITY_B, concept="GrossProfit", value="40"),
-        entities={"AAA": ENTITY_B},
+        entities=(QueryEntity("AAA", ENTITY_B, issuer_sic=_INDUSTRIAL_SIC),),
     ).query_cell("AAA", "gross_profit", PERIOD, _policy()).root_node
     wrong_entity_provenance = replace(
         formula.provenance,

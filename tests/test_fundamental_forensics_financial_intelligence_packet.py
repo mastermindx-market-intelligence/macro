@@ -6,6 +6,7 @@ import json
 import os
 from datetime import datetime
 from pathlib import Path
+import shutil
 import socket
 import subprocess
 import sys
@@ -106,6 +107,58 @@ def _input_digests() -> PacketEvidenceDigests:
     )
 
 
+# FIP1 is a synthetic industrial issuer with no shipped coverage record, so
+# hermetic tests inject its SIC directly (R1-SIC/R2): the fixture's ledger
+# entity id is its CIK.
+_FIP1_CIK = "0000999999"
+_INDUSTRIAL_SIC = "3571"
+
+
+def _fip1_issuer_sic_resolver(cik: str) -> str | None:
+    return _INDUSTRIAL_SIC if cik == _FIP1_CIK else None
+
+
+def _cli_repo_root(tmp_path: Path) -> Path:
+    """Stage the repo root a CLI-subprocess test runs against (R1-SIC/R2).
+
+    The CLI has no SIC argument, so its shipped-coverage default resolver must
+    find the synthetic FIP1 issuer's industrial SIC in the root's own coverage
+    directory.  Every other staged file is a byte copy of the real one, so the
+    builder digest, schema, and registry stay identical to the in-process
+    build and the cross-process comparison remains a byte comparison.
+    """
+    root = tmp_path / "cli-repo-root"
+    for staged in (
+        root / "contracts",
+        root / packet_module.PACKET_BUILDER_RELATIVE_PATH.parent,
+        root / "config" / "fundamental_forensics" / "metrics" / "v1" / "mappings",
+        root / "config" / "fundamental_forensics" / "metrics" / "v1" / "formulas",
+        root / "config" / "fundamental_forensics" / "coverage",
+    ):
+        staged.mkdir(parents=True, exist_ok=True)
+    shutil.copyfile(
+        SCHEMA_PATH, root / "contracts" / "financial_intelligence_packet.schema.json"
+    )
+    shutil.copyfile(
+        ROOT / packet_module.PACKET_BUILDER_RELATIVE_PATH,
+        root / packet_module.PACKET_BUILDER_RELATIVE_PATH,
+    )
+    metric_root = ROOT / "config" / "fundamental_forensics" / "metrics" / "v1"
+    staged_metrics = root / "config" / "fundamental_forensics" / "metrics" / "v1"
+    for name in ("metric_catalog.yaml", "mappings/core.yaml", "formulas/core.yaml"):
+        shutil.copyfile(metric_root / name, staged_metrics / name)
+    (root / "config" / "fundamental_forensics" / "coverage" / "fip1_synthetic_v1.json").write_text(
+        json.dumps(
+            {
+                "schema": "fundamental_forensics.coverage_contract/v1",
+                "issuers": [{"ticker": "FIP1", "cik": _FIP1_CIK, "sic": _INDUSTRIAL_SIC}],
+            }
+        ),
+        encoding="utf-8",
+    )
+    return root
+
+
 def _context() -> PacketBuildContext:
     return PacketBuildContext(
         packet_builder_digest=digest_builder_source(BUILDER_PATH.read_bytes()),
@@ -142,6 +195,7 @@ def _build(
         context=_context(),
         built_at=built_at,
         input_digests=input_digests if input_digests is not None else _input_digests(),
+        issuer_sic_resolver=_fip1_issuer_sic_resolver,
     )
 
 
@@ -328,7 +382,7 @@ def test_law11_same_input_same_bytes_in_process_and_across_processes(tmp_path: P
         "--system-recorded-cutoff",
         "2026-08-05T12:00:02Z",
         "--repo-root",
-        str(ROOT),
+        str(_cli_repo_root(tmp_path)),
     ]
     first_run = subprocess.run(
         [*cmd, "--output", str(out_a)],
@@ -543,6 +597,8 @@ def test_pure_kernel_does_not_touch_filesystem_env_network_or_object_store(
     monkeypatch.setattr(urllib.request, "urlopen", explode)
     fake_boto = types.SimpleNamespace(client=explode, resource=explode)
     monkeypatch.setitem(sys.modules, "boto3", fake_boto)
+    # The injected SIC resolver is part of the caller's evidence, not kernel
+    # I/O: the pure-kernel property is exactly why the resolver is injectable.
     packet = assemble_financial_intelligence_packet(
         entity=fixture.entity,
         ledger=fixture.ledger,
@@ -551,6 +607,7 @@ def test_pure_kernel_does_not_touch_filesystem_env_network_or_object_store(
         metric_registry=registry,
         context=context,
         input_digests=digests,
+        issuer_sic_resolver=_fip1_issuer_sic_resolver,
     )
     assert packet["schema"] == PACKET_SCHEMA
     assert packet["content_sha256"] == packet_digest(packet)
@@ -585,7 +642,7 @@ def test_packet_bytes_are_independent_of_absolute_paths_and_environment(
         "--system-recorded-cutoff",
         "2026-08-05T12:00:02Z",
         "--repo-root",
-        str(ROOT.resolve()),
+        str(_cli_repo_root(tmp_path).resolve()),
     ]
     subprocess.run([*cmd, "--output", str(out_a)], check=True, cwd=tmp_path, capture_output=True, text=True)
     other_cwd = tmp_path / "elsewhere"
@@ -707,6 +764,7 @@ def test_repo_adapter_matches_pure_kernel() -> None:
         metric_registry=load_core_registry(ROOT),
         context=_context(),
         input_digests=_input_digests(),
+        issuer_sic_resolver=_fip1_issuer_sic_resolver,
     )
     adapted = build_financial_intelligence_packet_from_repo(
         entity=fixture.entity,
@@ -716,6 +774,7 @@ def test_repo_adapter_matches_pure_kernel() -> None:
         repo_root=ROOT,
         metric_registry=load_core_registry(ROOT),
         input_digests=_input_digests(),
+        issuer_sic_resolver=_fip1_issuer_sic_resolver,
     )
     assert canonical_packet_bytes(assembled) == canonical_packet_bytes(adapted)
     assert assembled["coverage"]["formula_evidence_closed"] is True

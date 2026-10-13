@@ -1503,7 +1503,7 @@ def reconstruct_primary_statements(
             entity_ids.append(str(ident))
     unique_entities = sorted(set(entity_ids))
     if unique_entities != [package.manifest["cik"]]:
-        raise StatementGraphError("XBRL entity identifier is not the source-native AAPL CIK")
+        raise StatementGraphError("XBRL entity identifier is not the package manifest CIK")
     statements = [
         reconstruct_statement(
             statement_type=kind,

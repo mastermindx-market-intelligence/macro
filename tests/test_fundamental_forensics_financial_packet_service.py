@@ -49,6 +49,15 @@ _REVISION_SCHEMA = "fundamental_forensics.financial_revision_request/v1"
 _QUERY_SCHEMA = "fundamental_forensics.financial_query_request/v1"
 _GOLDEN_PACKET_ID = "fip_18e2f725f6ba20678d0612bb"
 
+# FIP1 is a synthetic industrial issuer with no shipped coverage record; the
+# hermetic production-path tests inject its SIC (R1-SIC/R2).
+_FIP1_CIK = "0000999999"
+_INDUSTRIAL_SIC = "3571"
+
+
+def _fip1_issuer_sic_resolver(cik: str) -> str | None:
+    return _INDUSTRIAL_SIC if cik == _FIP1_CIK else None
+
 T1_SOURCE = "2024-12-31T23:59:59Z"
 T2_SOURCE = "2025-12-31T23:59:59Z"
 T2_RECORDED = "2026-08-03T12:00:00Z"
@@ -208,7 +217,9 @@ def test_committed_golden_packet_id_remains_a_regression_witness() -> None:
 
 def test_rich_packet_is_the_complete_research_artifact() -> None:
     body = _t3_latest(metric_ids=RICH_METRICS, periods=RICH_PERIODS)
-    result = execute_financial_packet(body=body, provider=_fip1_provider())
+    result = execute_financial_packet(
+        body=body, provider=_fip1_provider(), issuer_sic_resolver=_fip1_issuer_sic_resolver
+    )
     packet = result.packet
     schema = load_packet_schema(ROOT / "contracts" / "financial_intelligence_packet.schema.json")
     validate_packet(packet, schema)
@@ -280,13 +291,21 @@ def test_query_and_revisions_still_refuse_unsupported_metrics() -> None:
 def test_packet_revisions_equal_fif2b_envelope() -> None:
     metrics = ["revenue", "accounts_receivable_net", "gross_margin"]
     packet_body = _t3_latest(metric_ids=metrics, periods=RICH_PERIODS)
-    packet_result = execute_financial_packet(body=packet_body, provider=_fip1_provider())
+    packet_result = execute_financial_packet(
+        body=packet_body,
+        provider=_fip1_provider(),
+        issuer_sic_resolver=_fip1_issuer_sic_resolver,
+    )
     revision_body = _make_request(
         schema=_REVISION_SCHEMA,
         metric_ids=metrics,
         periods=RICH_PERIODS,
     )
-    revision_result = execute_financial_revisions(body=revision_body, provider=_fip1_provider())
+    revision_result = execute_financial_revisions(
+        body=revision_body,
+        provider=_fip1_provider(),
+        issuer_sic_resolver=_fip1_issuer_sic_resolver,
+    )
     assert packet_result.packet["revisions"] == revision_result.envelope["revisions"]
 
 
@@ -295,6 +314,7 @@ def test_valued_packet_cells_agree_with_governed_query() -> None:
     packet_result = execute_financial_packet(
         body=_t3_latest(metric_ids=metrics, periods=RICH_PERIODS),
         provider=_fip1_provider(),
+        issuer_sic_resolver=_fip1_issuer_sic_resolver,
     )
 
     class _QueryProvider:
@@ -304,6 +324,7 @@ def test_valued_packet_cells_agree_with_governed_query() -> None:
     query_result = execute_financial_query(
         body=_make_request(schema=_QUERY_SCHEMA, metric_ids=metrics, periods=RICH_PERIODS),
         provider=_QueryProvider(),
+        issuer_sic_resolver=_fip1_issuer_sic_resolver,
     )
     receipt = query_result.envelope["receipt"]
     nodes = {node["cell_id"]: node for node in receipt["nodes"]}
@@ -613,9 +634,13 @@ def test_two_calls_with_changed_wall_clock_produce_identical_bytes(
     provider = _fip1_provider()
     body = _t3_latest(metric_ids=RICH_METRICS, periods=RICH_PERIODS)
     monkeypatch.setattr(time, "time", lambda: 1_700_000_000.0)
-    r1 = execute_financial_packet(body=body, provider=provider)
+    r1 = execute_financial_packet(
+        body=body, provider=provider, issuer_sic_resolver=_fip1_issuer_sic_resolver
+    )
     monkeypatch.setattr(time, "time", lambda: 1_800_000_000.0)
-    r2 = execute_financial_packet(body=body, provider=provider)
+    r2 = execute_financial_packet(
+        body=body, provider=provider, issuer_sic_resolver=_fip1_issuer_sic_resolver
+    )
     assert r1.body == r2.body
     assert r1.response_sha256 == r2.response_sha256
     assert r1.packet["packet_id"] == r2.packet["packet_id"]
@@ -692,7 +717,9 @@ def _query_hash(*, selection: str, source: str, recorded: str, metric_ids: list,
         },
         separators=(",", ":"),
     ).encode("utf-8")
-    result = execute_financial_query(body=body, provider=_P())
+    result = execute_financial_query(
+        body=body, provider=_P(), issuer_sic_resolver=_fip1_issuer_sic_resolver
+    )
     return result.envelope["receipt"]["query_hash"]
 
 

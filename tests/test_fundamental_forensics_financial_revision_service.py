@@ -42,6 +42,15 @@ ROOT = Path(__file__).resolve().parents[1]
 _REVISION_SCHEMA = "fundamental_forensics.financial_revision_request/v1"
 _QUERY_SCHEMA = "fundamental_forensics.financial_query_request/v1"
 
+# FIP1 is a synthetic industrial issuer with no shipped coverage record; the
+# hermetic production-path tests inject its SIC (R1-SIC/R2).
+_FIP1_CIK = "0000999999"
+_INDUSTRIAL_SIC = "3571"
+
+
+def _fip1_issuer_sic_resolver(cik: str) -> str | None:
+    return _INDUSTRIAL_SIC if cik == _FIP1_CIK else None
+
 T0_SOURCE = "2024-01-01T00:00:00Z"
 T1_SOURCE = "2024-12-31T23:59:59Z"
 T2_SOURCE = "2025-12-31T23:59:59Z"
@@ -758,7 +767,9 @@ def _query_hash(*, selection: str, source: str, recorded: str, metric_ids: list,
         },
         separators=(",", ":"),
     ).encode("utf-8")
-    result = execute_financial_query(body=body, provider=_P())
+    result = execute_financial_query(
+        body=body, provider=_P(), issuer_sic_resolver=_fip1_issuer_sic_resolver
+    )
     return result.envelope["receipt"]["query_hash"]
 
 
@@ -825,7 +836,11 @@ _FROZEN_FIP1_REVISIONS_SHA = "4f2096d356ef54449add0da27e5897a03666d7e8df2a6ca625
 def test_revision_envelope_delivery_absent_for_golden_present_for_production() -> None:
     # Golden/FIP1: no delivery key, byte-identical to the pre-D3 response
     # (frozen baseline captured on the untouched tree at 5267c66846e).
-    golden = execute_financial_revisions(body=_make_request(), provider=_fip1_provider())
+    golden = execute_financial_revisions(
+        body=_make_request(),
+        provider=_fip1_provider(),
+        issuer_sic_resolver=_fip1_issuer_sic_resolver,
+    )
     assert "delivery" not in golden.envelope
     assert golden.sha256 == _FROZEN_FIP1_REVISIONS_SHA
 
@@ -859,7 +874,11 @@ def test_revision_envelope_delivery_absent_for_golden_present_for_production() -
     store = PDS.InMemoryStrictConditionalStore()
     PDS.publish_production_dataset(store, material)
     provider = ProductionFinancialPacketProvider(store, repo_root=ROOT)
-    production = execute_financial_revisions(body=_make_request(), provider=provider)
+    production = execute_financial_revisions(
+        body=_make_request(),
+        provider=provider,
+        issuer_sic_resolver=_fip1_issuer_sic_resolver,
+    )
     delivery = production.envelope["delivery"]
     assert delivery["kind"] == "production_issuer_dataset"
     assert delivery["attested"] is False
