@@ -23625,10 +23625,12 @@ jobs:
       - config/dataset_registry.yml
       - lib/dataos/**
       - tests/test_dataos_identity.py
+      - tests/test_dataos_action_projection.py
       - tests/test_dataos_nulls.py
       - tests/test_dataos_price.py
       - tests/test_dataos_quality.py
       - tests/test_dataos_registry.py
+      - tests/test_dataos_registry_consumers.py
       - tests/test_dataos_temporal.py
     timeout-minutes: 8
     runs-on: ubuntu-latest
@@ -23643,10 +23645,12 @@ jobs:
         run: >-
           PYTHONDONTWRITEBYTECODE=1 python -m pytest
           tests/test_dataos_identity.py
+          tests/test_dataos_action_projection.py
           tests/test_dataos_temporal.py
           tests/test_dataos_price.py
           tests/test_dataos_nulls.py
           tests/test_dataos_registry.py
+          tests/test_dataos_registry_consumers.py
           tests/test_dataos_quality.py -q -rs
 
   dataos-identity-seams:
