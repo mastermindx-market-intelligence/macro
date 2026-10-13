@@ -13,8 +13,25 @@ order. The same new key is kept once; differing text for that key conflicts
 instead of writing two YAML keys. A one-sided edit is taken. An identical
 edit is taken once. Differing edits conflict. A job deleted on one side and
 unchanged on the other is deleted; delete-versus-edit conflicts. Preamble
-and trailer follow the same rules. A conflict wraps only that fragment in
-standard markers and records its key, in output order.
+and trailer follow the same rules. A per-fragment conflict wraps only that
+fragment in standard markers and records its key, in output order.
+
+The relative order of base keys that still exist on a side is part of the
+merge. When that order differs from the base on ours or theirs, the result is
+one conflict recorded as ``__order__``: the two original texts sit inside one
+marker pair. The exception is an order-only change on exactly one side while
+the other side's fragment texts equal the base. The result is then that
+side's original bytes, with no conflict. Order-only means the same job keys,
+the same preamble and trailer bytes, and the same bytes from each job's key
+line through the end of its fragment. A leading separator may sit with the
+other job after a positional swap. A side that reorders and also edits, adds,
+or deletes is not order-only, so the merge conflicts instead of applying the
+permutation.
+
+A job key repeated inside one manifest is a conflict. ``_index`` keeps every
+body of that key, and the marker contains each side's bodies, so a later body
+is not dropped. The checked-in manifest's keys are unique, so merging it with
+itself stays byte-identical.
 
 A job fragment's owner is the single vertical directory named by its ``paths:``
 entries, or ``shared`` when the paths are not confined to one. Suite modules
@@ -50,6 +67,7 @@ DEFAULT_MANIFEST = REPO_ROOT / ".github" / "ci" / "legacy-jobs.yml"
 
 PREAMBLE_KEY = "__preamble__"
 TRAILER_KEY = "__trailer__"
+ORDER_KEY = "__order__"
 
 # Top-level buckets. The vertical is the directory under one of these, not
 # the bucket itself. A file that sits directly in a bucket names no vertical.
@@ -282,18 +300,35 @@ class MergeResult:
     """Merged manifest text and the fragment keys that conflicted.
 
     ``conflicts`` is in output order: preamble, then jobs, then trailer.
+    An incumbent-order conflict is the single key ``__order__``.
     """
 
     text: str
     conflicts: tuple[str, ...]
 
 
-def _index(fragments: list[Fragment]) -> dict[str, Fragment]:
+def _index(
+    fragments: list[Fragment],
+) -> tuple[dict[str, Fragment], dict[str, tuple[str, ...]]]:
+    """First fragment per key, plus every body of a repeated job key.
+
+    A repeated job key is a conflict. The tuple is file order, the first body
+    included, so the later body is still available to the marker.
+    """
     indexed: dict[str, Fragment] = {}
+    extras: dict[str, list[str]] = {}
     for fragment in fragments:
+        if fragment.kind != "job":
+            indexed.setdefault(fragment.key, fragment)
+            continue
         if fragment.key not in indexed:
             indexed[fragment.key] = fragment
-    return indexed
+            continue
+        extras.setdefault(fragment.key, []).append(fragment.text)
+    duplicates = {
+        key: (indexed[key].text, *bodies) for key, bodies in extras.items()
+    }
+    return indexed, duplicates
 
 
 def _job_order(fragments: list[Fragment]) -> list[str]:
@@ -429,6 +464,96 @@ def _merged_job_order(
     return order
 
 
+def _body_from_key(fragment: Fragment) -> str:
+    """Bytes from the job key line through the end of the fragment.
+
+    ``_leading_start`` glues the preceding separator onto whichever job follows
+    it. That glue is not part of the body, so a positional swap can still be
+    order-only.
+    """
+    marker = f"  {fragment.key}:"
+    lines = fragment.text.split("\n")
+    for index, line in enumerate(lines):
+        if line.rstrip("\r") == marker:
+            return "\n".join(lines[index:])
+    return fragment.text
+
+
+def _unique_map(fragments: list[Fragment]) -> dict[str, Fragment] | None:
+    """Map key to fragment, or ``None`` when a key occurs twice."""
+    mapped: dict[str, Fragment] = {}
+    for fragment in fragments:
+        if fragment.key in mapped:
+            return None
+        mapped[fragment.key] = fragment
+    return mapped
+
+
+def _order_differs(base_keys: list[str], side_keys: list[str]) -> bool:
+    """True when surviving base keys are not in base order on this side."""
+    surviving = set(base_keys) & set(side_keys)
+    base_relative = [key for key in base_keys if key in surviving]
+    side_relative = [key for key in side_keys if key in surviving]
+    return side_relative != base_relative
+
+
+def _is_order_only(
+    base_frags: list[Fragment],
+    side_frags: list[Fragment],
+    base_keys: list[str],
+    side_keys: list[str],
+) -> bool:
+    """True when the side's only change is a permutation of the base jobs."""
+    if side_keys == base_keys or set(side_keys) != set(base_keys):
+        return False
+    if len(side_keys) != len(set(side_keys)) or len(base_keys) != len(set(base_keys)):
+        return False
+    base_map = _unique_map(base_frags)
+    side_map = _unique_map(side_frags)
+    if base_map is None or side_map is None or set(base_map) != set(side_map):
+        return False
+    for key, base_fragment in base_map.items():
+        side_fragment = side_map[key]
+        if base_fragment.kind != "job":
+            if side_fragment.text != base_fragment.text:
+                return False
+            continue
+        if _body_from_key(side_fragment) != _body_from_key(base_fragment):
+            return False
+    return True
+
+
+def _fragment_texts_equal(side: list[Fragment], base: list[Fragment]) -> bool:
+    """True when each key's fragment text matches the base and keys are unique."""
+    side_map = _unique_map(side)
+    base_map = _unique_map(base)
+    if side_map is None or base_map is None or set(side_map) != set(base_map):
+        return False
+    return all(side_map[key].text == base_map[key].text for key in base_map)
+
+
+def _repeated_block(
+    key: str,
+    ours_dups: dict[str, tuple[str, ...]],
+    theirs_dups: dict[str, tuple[str, ...]],
+    ours_by: dict[str, Fragment],
+    theirs_by: dict[str, Fragment],
+) -> str:
+    """One marker pair holding every body of a repeated job key."""
+
+    def side(
+        duplicates: dict[str, tuple[str, ...]], by_key: dict[str, Fragment]
+    ) -> str:
+        if key in duplicates:
+            return "".join(duplicates[key])
+        fragment = by_key.get(key)
+        if fragment is None:
+            return ""
+        return fragment.text
+
+    return _conflict_block(side(ours_dups, ours_by), side(theirs_dups, theirs_by))
+
+
 def _fragment_texts(
     base_by: dict[str, Fragment],
     ours_by: dict[str, Fragment],
@@ -453,13 +578,37 @@ def merge3(base: str, ours: str, theirs: str) -> MergeResult:
     base_frags = split(base)
     ours_frags = split(ours)
     theirs_frags = split(theirs)
-    base_by = _index(base_frags)
-    ours_by = _index(ours_frags)
-    theirs_by = _index(theirs_frags)
+    base_by, base_dups = _index(base_frags)
+    ours_by, ours_dups = _index(ours_frags)
+    theirs_by, theirs_dups = _index(theirs_frags)
     base_keys = _job_order(base_frags)
+    ours_keys = _job_order(ours_frags)
+    theirs_keys = _job_order(theirs_frags)
+    repeated = set(base_dups) | set(ours_dups) | set(theirs_dups)
+
+    if _order_differs(base_keys, ours_keys) or _order_differs(base_keys, theirs_keys):
+        ours_only = _is_order_only(base_frags, ours_frags, base_keys, ours_keys)
+        theirs_only = _is_order_only(
+            base_frags, theirs_frags, base_keys, theirs_keys
+        )
+        if (
+            ours_only
+            and not theirs_only
+            and _fragment_texts_equal(theirs_frags, base_frags)
+        ):
+            return MergeResult(ours, ())
+        if (
+            theirs_only
+            and not ours_only
+            and _fragment_texts_equal(ours_frags, base_frags)
+        ):
+            return MergeResult(theirs, ())
+        return MergeResult(_conflict_block(ours, theirs), (ORDER_KEY,))
 
     dropped: set[str] = set()
     for key in base_keys:
+        if key in repeated:
+            continue
         text, _conflicted = _resolve_text(
             *_fragment_texts(base_by, ours_by, theirs_by, key)
         )
@@ -470,6 +619,12 @@ def merge3(base: str, ours: str, theirs: str) -> MergeResult:
     pieces: list[str] = []
 
     def emit(key: str) -> None:
+        if key in repeated:
+            conflicts.append(key)
+            pieces.append(
+                _repeated_block(key, ours_dups, theirs_dups, ours_by, theirs_by)
+            )
+            return
         text, conflicted = _resolve_text(
             *_fragment_texts(base_by, ours_by, theirs_by, key)
         )
@@ -479,12 +634,7 @@ def merge3(base: str, ours: str, theirs: str) -> MergeResult:
             pieces.append(text)
 
     emit(PREAMBLE_KEY)
-    for key in _merged_job_order(
-        base_keys,
-        _job_order(ours_frags),
-        _job_order(theirs_frags),
-        dropped,
-    ):
+    for key in _merged_job_order(base_keys, ours_keys, theirs_keys, dropped):
         emit(key)
     emit(TRAILER_KEY)
     return MergeResult("".join(pieces), tuple(conflicts))

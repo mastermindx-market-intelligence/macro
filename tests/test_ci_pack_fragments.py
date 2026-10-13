@@ -599,3 +599,243 @@ def test_merge3_replay_of_appended_jobs_is_clean_where_merge_file_conflicts(
         path.write_text(result.text, encoding="utf-8")
         loaded = load_legacy_jobs(path)
     assert [job.job_id for job in loaded] == keys
+
+
+def _lead_and_body(fragment: Fragment) -> tuple[str, str]:
+    """Split a fragment into the leading separator and the bytes at its key."""
+    lines = fragment.text.split("\n")
+    marker = f"  {fragment.key}:"
+    for index, line in enumerate(lines):
+        if line.rstrip("\r") == marker:
+            if index == 0:
+                return "", "\n".join(lines)
+            return "\n".join(lines[:index]) + "\n", "\n".join(lines[index:])
+    raise AssertionError(fragment.key)
+
+
+def _positional_swap(text: str, key_a: str, key_b: str) -> str:
+    """Swap two jobs' bodies and leave each position's leading separator."""
+    parts = split(text)
+    by_key = {fragment.key: fragment for fragment in parts}
+    lead_a, body_a = _lead_and_body(by_key[key_a])
+    lead_b, body_b = _lead_and_body(by_key[key_b])
+    assert lead_a + body_a == by_key[key_a].text
+    assert lead_b + body_b == by_key[key_b].text
+    replaced = {key_a: lead_a + body_b, key_b: lead_b + body_a}
+    return "".join(replaced.get(fragment.key, fragment.text) for fragment in parts)
+
+
+def _swap_fragments(text: str, key_a: str, key_b: str) -> str:
+    """Exchange two whole fragments, separator included."""
+    parts = split(text)
+    index = {fragment.key: position for position, fragment in enumerate(parts)}
+    left, right = index[key_a], index[key_b]
+    parts[left], parts[right] = parts[right], parts[left]
+    return join(parts)
+
+
+def test_merge3_real_manifest_with_itself_is_byte_identical() -> None:
+    text = _text()
+    result = merge3(text, text, text)
+    assert result.conflicts == ()
+    assert result.text == text
+    assert join(split(result.text)) == text
+
+
+def test_merge3_one_sided_order_only_change_returns_that_sides_bytes() -> None:
+    """A pure incumbent reorder is kept by returning that side's original bytes.
+
+    The other side's fragment texts equal the base. Both directions are
+    order-only. A whole-fragment swap is the same kind of change: the per-key
+    bodies match and only the key order differs.
+    """
+    base = _doc(
+        [
+            ("alpha", "echo alpha"),
+            ("beta", "echo beta"),
+            ("gamma", "echo gamma"),
+        ]
+    )
+    reordered = _doc(
+        [
+            ("beta", "echo beta"),
+            ("alpha", "echo alpha"),
+            ("gamma", "echo gamma"),
+        ]
+    )
+    assert reordered != base
+    assert _job_keys(reordered) == ["beta", "alpha", "gamma"]
+
+    from_ours = merge3(base, reordered, base)
+    from_theirs = merge3(base, base, reordered)
+    assert from_ours.conflicts == ()
+    assert from_theirs.conflicts == ()
+    assert from_ours.text == reordered
+    assert from_theirs.text == reordered
+    assert from_ours.text != base
+
+    swapped = _swap_fragments(base, "alpha", "beta")
+    assert _job_keys(swapped)[:2] == ["beta", "alpha"]
+    assert merge3(base, swapped, base).text == swapped
+    assert merge3(base, swapped, base).conflicts == ()
+    _assert_loadable(merge3(base, reordered, base))
+
+
+def test_merge3_positional_swap_of_leading_real_jobs_returns_that_side() -> None:
+    """Positional swap of the first two real jobs must not invent a third text.
+
+    ``company-intelligence-private-runtime`` and
+    ``microstructure-pressure-response-r0`` trade places. The separator newline
+    stays in the gap, so the fragment texts differ from base by that glue
+    alone. One side is order-only and the other side is the base, so the merge
+    is that side's original bytes.
+    """
+    base = _text()
+    keys = _job_keys(base)
+    assert keys[0] == "company-intelligence-private-runtime"
+    assert keys[1] == "microstructure-pressure-response-r0"
+    swapped = _positional_swap(base, keys[0], keys[1])
+    assert join(split(swapped)) == swapped
+    assert swapped != base
+    assert _job_keys(swapped)[:2] == [keys[1], keys[0]]
+
+    from_ours = merge3(base, swapped, base)
+    from_theirs = merge3(base, base, swapped)
+    assert from_ours.conflicts == ()
+    assert from_theirs.conflicts == ()
+    assert from_ours.text == swapped
+    assert from_theirs.text == swapped
+    assert from_ours.text != base
+
+    whole = _swap_fragments(base, keys[0], keys[1])
+    assert whole != base
+    assert merge3(base, whole, base).conflicts == ()
+    assert merge3(base, whole, base).text == whole
+
+
+def test_merge3_incumbent_order_change_is_one_conflict(
+    tmp_path: Path, capsys
+) -> None:
+    """Any incumbent reorder that is not exactly one order-only side conflicts.
+
+    The record is a single ``__order__`` marker pair around the original
+    texts. A matching reorder on both sides, a reorder beside an edit, a
+    reorder beside an append, and a reorder beside a deletion all take that
+    path.
+    """
+    base = _doc(
+        [
+            ("alpha", "echo alpha"),
+            ("beta", "echo beta"),
+            ("gamma", "echo gamma"),
+        ]
+    )
+    ours = _doc(
+        [
+            ("beta", "echo beta"),
+            ("alpha", "echo alpha"),
+            ("gamma", "echo gamma"),
+        ]
+    )
+    theirs = _doc(
+        [
+            ("gamma", "echo gamma"),
+            ("beta", "echo beta"),
+            ("alpha", "echo alpha"),
+        ]
+    )
+
+    both = merge3(base, ours, theirs)
+    assert both.conflicts == ("__order__",)
+    assert both.text == _conflict_block(ours, theirs)
+    assert both.text.count("<" * 7 + " ours") == 1
+
+    same = merge3(base, ours, ours)
+    assert same.conflicts == ("__order__",)
+    assert same.text == _conflict_block(ours, ours)
+
+    edited = base.replace("run: echo alpha\n", "run: echo alpha-v2\n", 1)
+    mixed = merge3(base, ours, edited)
+    assert mixed.conflicts == ("__order__",)
+    assert mixed.text == _conflict_block(ours, edited)
+
+    appended = _append(ours, "delta", "echo delta")
+    added = merge3(base, appended, base)
+    assert added.conflicts == ("__order__",)
+    assert added.text == _conflict_block(appended, base)
+    assert "echo delta\n" in added.text
+
+    deleted = _drop(
+        _doc(
+            [
+                ("gamma", "echo gamma"),
+                ("alpha", "echo alpha"),
+                ("beta", "echo beta"),
+            ]
+        ),
+        "beta",
+    )
+    assert _job_keys(deleted) == ["gamma", "alpha"]
+    removed = merge3(base, deleted, base)
+    assert removed.conflicts == ("__order__",)
+    assert removed.text == _conflict_block(deleted, base)
+
+    base_path = tmp_path / "base.yml"
+    ours_path = tmp_path / "ours.yml"
+    theirs_path = tmp_path / "theirs.yml"
+    base_path.write_text(base, encoding="utf-8")
+    ours_path.write_text(ours, encoding="utf-8")
+    theirs_path.write_text(theirs, encoding="utf-8")
+    assert main(["merge3", str(base_path), str(ours_path), str(theirs_path)]) == 1
+    captured = capsys.readouterr()
+    assert "conflict: __order__" in captured.err
+    assert ours_path.read_text(encoding="utf-8") == both.text
+    assert base_path.read_text(encoding="utf-8") == base
+    assert theirs_path.read_text(encoding="utf-8") == theirs
+
+
+def test_merge3_repeated_job_key_is_a_conflict(tmp_path: Path, capsys) -> None:
+    """A second body for the same job key is a conflict, not a dropped slice.
+
+    ``join(split)`` still round-trips both bodies. ``merge3`` of three copies
+    exits through the CLI with status 1 and keeps ``echo SECOND_BODY`` inside
+    the marker pair.
+    """
+    doc = (
+        "# synthetic legacy manifest\n"
+        "jobs:\n"
+        + _job("alpha", "echo FIRST_BODY")
+        + "\n"
+        + _job("alpha", "echo SECOND_BODY")
+    )
+    assert join(split(doc)) == doc
+    alphas = [fragment.text for fragment in split(doc) if fragment.key == "alpha"]
+    assert len(alphas) == 2
+    assert "echo FIRST_BODY\n" in alphas[0]
+    assert "echo SECOND_BODY\n" in alphas[1]
+
+    result = merge3(doc, doc, doc)
+    assert result.conflicts == ("alpha",)
+    inside_start = result.text.index("<" * 7)
+    inside_end = result.text.index(">" * 7)
+    inside = result.text[inside_start:inside_end]
+    assert "echo FIRST_BODY" in inside
+    assert "echo SECOND_BODY" in inside
+    assert result.text.count("<" * 7 + " ours") == 1
+    assert result.text == (
+        _fragment(doc, PREAMBLE_KEY)
+        + _conflict_block(alphas[0] + alphas[1], alphas[0] + alphas[1])
+        + _fragment(doc, TRAILER_KEY)
+    )
+
+    base_path = tmp_path / "base.yml"
+    ours_path = tmp_path / "ours.yml"
+    theirs_path = tmp_path / "theirs.yml"
+    for path in (base_path, ours_path, theirs_path):
+        path.write_text(doc, encoding="utf-8")
+    assert main(["merge3", str(base_path), str(ours_path), str(theirs_path)]) == 1
+    captured = capsys.readouterr()
+    assert "conflict: alpha" in captured.err
+    written = ours_path.read_text(encoding="utf-8")
+    assert written == result.text
+    assert "echo SECOND_BODY" in written
