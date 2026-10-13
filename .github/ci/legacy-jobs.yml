@@ -5728,6 +5728,8 @@ jobs:
     # every concrete static import-closure path (curated_exclusive_closure_findings
     # gates it) plus the measured runtime in-tree reads of every class-A suite.
     paths:
+      - "app/china_heatmap_status.py"
+      - "engine/prophet_live/cn_clock.py"
       - "engine/fundamental_forensics/**"
       - "app/forensics.py"
       - "config/fundamental_forensics/**"
@@ -7003,6 +7005,20 @@ jobs:
     # The canonical curated-closure guard catches dependency additions.
     scope: exclusive
     paths:
+      - "app/tape_symbols.py"
+      - "collectors/china_filings.py"
+      - "collectors/china_visits.py"
+      - "engine/qledger_store.py"
+      - "engine/qledger_store_native.py"
+      - "engine/qledger_store_protocol.py"
+      - "engine/qledger_store_sources.py"
+      - "lib/dataos/identity.py"
+      - "lib/dataos/price.py"
+      - "lib/exchange_holidays.py"
+      - "lib/market_observations.py"
+      - "lib/market_session.py"
+      - "lib/tsx_calendar.py"
+      - "lib/us_cash_calendar.py"
       - ".github/ci/legacy-jobs.yml"
       - ".github/workflows/deploy-china-heatmap-live.yml"
       - ".github/workflows/vps-live-heartbeat.yml"
@@ -23358,6 +23374,8 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "app/china_heatmap_status.py"
+      - "engine/prophet_live/cn_clock.py"
       # Immutable Press dossier binding reaches the existing page inventory.
       - "lib/pages.py"
       - "collectors/flow_signals.py"
