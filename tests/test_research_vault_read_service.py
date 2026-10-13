@@ -443,7 +443,7 @@ def test_t7_rio_cannot_convert_unavailable_text_into_success(tmp_path):
     )
     assert result["evidence_state"] == "UNAVAILABLE"
     assert result["passages"] == []
-    assert result["rio_state"] == "CURRENT"
+    assert result["rio_state"] == "STALE"
     assert RIO_QUOTE not in json.dumps(result)
 
 

@@ -1523,24 +1523,9 @@ def _stub_document(monkeypatch, body: str, *, calls: list | None = None, **over)
                         "end_byte": len(raw),
                     }]
                 layer = row.get("text_layer")
-                return {
-                    "schema": "brain.research_port.v1",
-                    "tool": tool,
-                    "result": {
-                        "ok": True,
-                        "report": {
-                            "title": row.get("title") or "",
-                            "institution": row.get("institution") or "",
-                            "side": row.get("side") or "",
-                            "published_at": row.get("published_at") or "",
-                        },
-                        "source": {"state": "SOURCE_FRESH", "known_degradation": []},
-                        "coverage_state": "FULL_TEXT",
-                        "text_layer_state": layer if isinstance(layer, str) else "",
-                        "segment_count_total": len(segments),
-                        "segments": segments,
-                    },
-                }
+                from tests._f11_port_fixture import fetch_result
+                return {"schema": "brain.research_port.v1", "tool": tool,
+                        "result": fetch_result(row, doc_id, arguments.get("selectors", {}))}
             if tool == "research_find_evidence":
                 text = row.get("body") if isinstance(row.get("body"), str) else ""
                 return {

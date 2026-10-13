@@ -5,6 +5,7 @@ Fake port only. No network, no store, no PDF extractor.
 from __future__ import annotations
 
 import ast
+import hashlib
 import json
 from datetime import datetime, timezone
 from pathlib import Path
@@ -195,6 +196,18 @@ class RecordingAdapter:
                 "text_layer_state": self.text_layer,
                 "segment_count_total": len(self.segments),
                 "segments": window,
+                "text_revision": ({
+                    "schema": "research_vault.text_revision.v1",
+                    "source_pdf_sha256": PDF_SHA,
+                    "extracted_text_sha256": hashlib.sha256("".join(
+                        row["text"] for row in self.segments).encode("utf-8")).hexdigest(),
+                    "extractor_name": "pdftotext", "extractor_version": "synthetic-v1",
+                    "segmenter_version": "page-byte-v1",
+                    "segment_max_bytes": max([len(row["text"].encode("utf-8"))
+                                              for row in self.segments] + [1]),
+                    "char_count": sum(len(row["text"]) for row in self.segments),
+                    "byte_count": sum(len(row["text"].encode("utf-8")) for row in self.segments),
+                } if self.coverage == "FULL_TEXT" else None),
             },
         }
 
@@ -218,7 +231,9 @@ def _segments_from_pages(pages: list[str]) -> list[dict]:
     out = []
     cursor = 0
     for text in pages:
-        out.append(_segment(text, cursor))
+        row = _segment(text, cursor)
+        row["segment_index"] = len(out)
+        out.append(row)
         cursor += len(text.encode("utf-8"))
     return out
 
@@ -573,15 +588,16 @@ def test_paging_stops_when_a_page_returns_zero_segments(tmp_path, monkeypatch):
     assert len(adapter.calls) == 1
 
 
-def test_paging_stops_on_a_noncontiguous_segment(tmp_path, monkeypatch):
+def test_paging_discards_body_on_a_noncontiguous_segment(tmp_path, monkeypatch):
     _seed(tmp_path)
     first = _segment("kept prefix ", 0)
     gap = _segment("dropped", first["end_byte"] + 25)
+    gap["segment_index"] = 1
     _install(monkeypatch, RecordingAdapter(segments=[first, gap]))
     _stub_quota(monkeypatch)
 
     result = _report(tmp_path, "")
-    assert result["report"]["body_text"] == "kept prefix "
+    assert result["report"]["body_text"] == ""
     assert "dropped" not in result["report"]["body_text"]
 
 

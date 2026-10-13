@@ -49,9 +49,11 @@ def build_read_service(**overrides: Any) -> ResearchReadService:
         "extracted_text_loader": functools.partial(
             fulltext_store.load_extracted_text, store
         ),
-        "full_text_inventory": functools.partial(
-            fulltext_store.fulltext_inventory, store
-        ),
+        # Filename inventory includes stale, corrupt and no-text derivatives.
+        # Until E04 supplies a current qualified generation reader, use the
+        # frozen unavailable-inventory basis: 0.0 with FULL_TEXT_PARTIAL. That
+        # zero is degraded/unknown measurement, not an observed zero census.
+        "full_text_inventory": None,
         "source_digest_reader": functools.partial(
             fulltext_store.source_digest, store
         ),

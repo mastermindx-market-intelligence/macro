@@ -535,6 +535,7 @@ class ResearchReadService:
         rio_artifact_sha256: str | None,
         segment_count_total: int,
         segments: list[dict[str, Any]],
+        text_revision: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
         return {
             "schema": read_port.FETCH_SCHEMA,
@@ -549,6 +550,7 @@ class ResearchReadService:
             "rio_artifact_sha256": rio_artifact_sha256,
             "segment_count_total": segment_count_total,
             "segments": segments,
+            "text_revision": text_revision,
         }
 
     def _report_meta(self, item: Mapping[str, Any]) -> dict[str, Any]:
@@ -887,7 +889,7 @@ class ResearchReadService:
         if item is None:
             return read_port.failure("REPORT_NOT_FOUND")
         coverage, extracted, segments, extra = self._resolve_text(checked, item)
-        rio_state, stored, rio_extra = self._rio_state(checked, extracted)
+        rio_state, stored, rio_extra = self._rio_state(checked, extracted if coverage == "FULL_TEXT" else None)
         extra.extend(rio_extra)
         source = self._with_degradation(catalog, now, extra)
         sha = getattr(stored, "artifact_sha256", None) if stored is not None else None
@@ -896,8 +898,22 @@ class ResearchReadService:
         layer = extracted.get("text_layer_state") if extracted is not None else None
         if not isinstance(layer, str):
             layer = None
-        if coverage == "FULL_TEXT":
+        text_revision = None
+        if coverage == "FULL_TEXT" and extracted is not None:
             total, projected = self._project_segments(segments, segment_start, max_segments)
+            # Identity comes from the same validated canonical record as these
+            # segments. A second load could silently bind them to a correction.
+            text_revision = {
+                "schema": "research_vault.text_revision.v1",
+                "source_pdf_sha256": extracted["source_pdf_sha256"],
+                "extracted_text_sha256": extracted["extracted_text_sha256"],
+                "extractor_name": extracted["extractor_name"],
+                "extractor_version": extracted["extractor_version"],
+                "segmenter_version": fulltext.SEGMENTER_VERSION,
+                "segment_max_bytes": SEGMENT_MAX_BYTES,
+                "char_count": extracted["char_count"],
+                "byte_count": extracted["byte_count"],
+            }
         else:
             total, projected = 0, []
         return self._fetch_envelope(
@@ -911,6 +927,7 @@ class ResearchReadService:
             rio_artifact_sha256=sha,
             segment_count_total=total,
             segments=projected,
+            text_revision=text_revision,
         )
 
     def find_evidence(
@@ -962,7 +979,7 @@ class ResearchReadService:
                 rio_state="NOT_REQUESTED",
             )
         coverage, extracted, segments, extra = self._resolve_text(checked, item)
-        rio_state, _stored, rio_extra = self._rio_state(checked, extracted)
+        rio_state, _stored, rio_extra = self._rio_state(checked, extracted if coverage == "FULL_TEXT" else None)
         extra.extend(rio_extra)
         if coverage != "FULL_TEXT" or extracted is None:
             source = self._with_degradation(catalog, now, extra)

@@ -69,6 +69,8 @@ reading is hashed or persisted here — these functions write nothing.
 """
 from __future__ import annotations
 
+import hashlib
+
 import json
 import os
 import re
@@ -1514,87 +1516,148 @@ def _unavailable_selection(query: str, *, coverage: str = "", source=None) -> di
     }
 
 
-def _load_corpus_document(doc_id: str, *, principal_id: str):
-    """Layer-3 report body via paged research_fetch. Never raises.
+def _validated_text_revision(value) -> tuple | None:
+    """Freeze the internal fetch identity before assembling any body bytes."""
+    if not isinstance(value, dict):
+        return None
+    fields = (
+        "schema", "source_pdf_sha256", "extracted_text_sha256", "extractor_name",
+        "extractor_version", "segmenter_version", "segment_max_bytes",
+        "char_count", "byte_count",
+    )
+    if set(value) != set(fields) or value.get("schema") != "research_vault.text_revision.v1":
+        return None
+    for key in ("source_pdf_sha256", "extracted_text_sha256"):
+        sha = value.get(key)
+        if not isinstance(sha, str) or len(sha) != 64 or any(c not in "0123456789abcdef" for c in sha):
+            return None
+    for key in ("extractor_name", "extractor_version", "segmenter_version"):
+        text = value.get(key)
+        if not isinstance(text, str) or not text.strip():
+            return None
+    for key in ("segment_max_bytes", "char_count", "byte_count"):
+        count = value.get(key)
+        if type(count) is not int or count < 1:
+            return None
+    if value["byte_count"] < value["char_count"]:
+        return None
+    return tuple(value[key] for key in fields)
 
-    Returns the legacy document shape ``_research_report`` already reads.
-    A failure, a non-dict, or any exception is None (excerpt-only, disclosed).
-    ``body`` is empty unless the port's coverage_state is FULL_TEXT. Identity
-    is not fabricated here.
+
+def _load_corpus_document(doc_id: str, *, principal_id: str):
+    """Layer-3 body from one revision across every bounded fetch page.
+
+    Any failed page or inconsistent revision discards the assembled body. A
+    bounded prefix is accepted only from coherent pages; a complete body also
+    has to replay the canonical UTF-8 hash and counts.
     """
     try:
         adapter = _brain_research_adapter()
         ctx = _server_read_context(principal_id)
         collected: list[str] = []
+        collected_chars = 0
         cursor = 0
         total = None
         coverage = ""
         layer = ""
         report: dict = {}
         source = None
-        previous_end = None
+        previous_end = 0
+        revision = None
+        revision_counts = None
+        bounded_prefix = False
         for _call in range(_HARD_FETCH_CALLS):
             if total is not None and cursor >= total:
                 break
             envelope = adapter.call(
                 "research_fetch",
-                {
-                    "report_id": doc_id,
-                    "selectors": {
-                        "segment_start": cursor,
-                        "max_segments": _FETCH_MAX_SEGMENTS,
-                    },
-                },
+                {"report_id": doc_id, "selectors": {
+                    "segment_start": cursor, "max_segments": _FETCH_MAX_SEGMENTS,
+                }},
                 server_context=ctx,
             )
             result = _port_result(envelope)
-            if result is None or result.get("ok") is not True:
+            if (result is None or result.get("ok") is not True
+                    or result.get("available") is not True or result.get("report_id") != doc_id):
                 return None
-            if not coverage:
-                raw_coverage = result.get("coverage_state")
-                coverage = raw_coverage if isinstance(raw_coverage, str) else ""
-                layer = _map_text_layer(result.get("text_layer_state"))
-                report = result.get("report") if isinstance(result.get("report"), dict) else {}
-                source = result.get("source") if isinstance(result.get("source"), dict) else None
+            raw_coverage = result.get("coverage_state")
+            current_layer = _map_text_layer(result.get("text_layer_state"))
             raw_total = result.get("segment_count_total")
-            total = raw_total if type(raw_total) is int and raw_total >= 0 else 0
+            if type(raw_total) is not int or raw_total < 0:
+                return None
+            current_revision = _validated_text_revision(result.get("text_revision"))
+            if total is None:
+                coverage = raw_coverage if isinstance(raw_coverage, str) else ""
+                layer = current_layer
+                total = raw_total
+                report = dict(result["report"]) if isinstance(result.get("report"), dict) else {}
+                source = dict(result["source"]) if isinstance(result.get("source"), dict) else None
+                if coverage == "FULL_TEXT":
+                    if current_revision is None or layer not in {"full", "thin"} or total < 1:
+                        return None
+                    revision = current_revision
+                    revision_counts = (revision[-2], revision[-1])
+                else:
+                    if result.get("text_revision") is not None or result.get("segments") != [] or total != 0:
+                        return None
+                    break
+            elif (raw_coverage != coverage or current_layer != layer
+                    or raw_total != total or current_revision != revision):
+                return None
             segments = result.get("segments")
-            if not isinstance(segments, list) or not segments:
-                break
-            stop = False
+            if not isinstance(segments, list) or not segments or len(segments) > _FETCH_MAX_SEGMENTS:
+                return None
+            if cursor + len(segments) > total:
+                return None
+            # Validate the whole returned page, including segments beyond the
+            # body cap. A malformed later segment cannot bless an earlier prefix.
+            checked_cursor = cursor
+            checked_end = previous_end
+            checked_chars = collected_chars
             for segment in segments:
                 if not isinstance(segment, dict):
-                    stop = True
-                    break
+                    return None
+                index = segment.get("segment_index")
                 text = segment.get("text")
                 start = segment.get("start_byte")
                 end = segment.get("end_byte")
-                if not isinstance(text, str) or type(start) is not int or type(end) is not int:
-                    stop = True
-                    break
-                if previous_end is not None and start != previous_end:
-                    stop = True
-                    break
+                if (type(index) is not int or index != checked_cursor or not isinstance(text, str)
+                        or type(start) is not int or type(end) is not int):
+                    return None
+                raw = text.encode("utf-8")
+                if (start != checked_end or end - start != len(raw) or not raw
+                        or len(raw) > revision[-3] or end > revision_counts[1]):
+                    return None
+                checked_chars += len(text)
+                if checked_chars > revision_counts[0]:
+                    return None
+                checked_end = end
+                checked_cursor += 1
+            for segment in segments:
+                text = segment["text"]
                 collected.append(text)
-                previous_end = end
+                collected_chars += len(text)
+                previous_end = segment["end_byte"]
                 cursor += 1
-                if len("".join(collected)) > REPORT_BODY_MAX_CHARS:
-                    stop = True
+                if collected_chars > REPORT_BODY_MAX_CHARS and cursor < total:
+                    bounded_prefix = True
                     break
-            if stop or cursor >= total:
+            if bounded_prefix or cursor >= total:
                 break
         body = "".join(collected) if coverage == "FULL_TEXT" else ""
+        if coverage == "FULL_TEXT" and cursor >= total:
+            raw_body = body.encode("utf-8")
+            if (len(body) != revision_counts[0] or len(raw_body) != revision_counts[1]
+                    or hashlib.sha256(raw_body).hexdigest() != revision[2]):
+                return None
 
         def _text(key: str) -> str:
             value = report.get(key)
             return value if isinstance(value, str) else ""
 
         document = {
-            "body": body,
-            "text_layer": layer,
-            "title": _text("title"),
-            "institution": _text("institution"),
-            "side": _text("side"),
+            "body": body, "text_layer": layer, "title": _text("title"),
+            "institution": _text("institution"), "side": _text("side"),
             "published_at": _text("published_at"),
         }
         if source is not None:

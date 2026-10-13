@@ -14179,10 +14179,10 @@ jobs:
         # Fundamental Forensics package import in this isolated environment.
         # requests closes app.main's eager app.market_memory import.
         run: pip install pytest fastapi httpx pypdf reportlab pyyaml requests
+      # API security, source-bound evidence and F11 use this same environment.
+      # Combine the incumbent calls rather than adding packing step overhead.
       - name: research vault serving-API security tests
-        run: python -m pytest tests/test_research_api.py -q
-      - name: source-bound report evidence — corpus selector
-        run: python -m pytest tests/test_research_evidence_passages.py -q
+        run: python -m pytest tests/test_research_api.py tests/test_research_evidence_passages.py tests/test_research_vault_read_runtime.py tests/test_brain_research_read_port.py tests/test_research_vault_fetch_revision.py tests/test_research_vault_rio_source_qualification.py tests/test_research_vault_f11_factory.py -q
 
   biocatalyst-serving:
     if: ${{ false }}
