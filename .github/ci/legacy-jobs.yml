@@ -20744,7 +20744,7 @@ jobs:
       - name: Prophet detector, organ and disposition contracts (one native process)
         run: python -m pytest tests/test_prophet_doors.py tests/test_gate_crash_failopen.py tests/test_prophet_arena.py tests/test_washout_turn.py tests/test_mtf_upturn.py tests/test_oracle_memory_analogues_step.py tests/test_stock_events.py tests/test_event_atlas.py tests/test_us_leader_pullback.py tests/test_us_leader_pullback_coverage.py tests/test_mi_s2_theme_relative_intraday_registration.py tests/test_us_turn_watch.py tests/test_us_basket_turn.py tests/test_prophet_b2_disposition.py -q
       - name: Prophet native Plan source-origin binding and malformed-input guards
-        run: python -m pytest tests/test_prophet_plan_clock.py tests/test_prophet_bridge.py -q -k 'PlanSourceOrigin or source_origin_extension or (test_validate_trade_plan and not (engines_required or schema_mismatch or invalid_direction or every_referenced))'
+        run: python -m pytest tests/test_prophet_plan_clock.py tests/test_prophet_bridge.py -q -k 'PlanNativeSourceRead or PlanSourceOrigin or source_origin_extension or (test_validate_trade_plan and not (engines_required or schema_mismatch or invalid_direction or every_referenced))'
       - name: Prophet B4 producer basis and disclosed freshness guards
         run: python -m pytest tests/test_prophet_live_evaluator.py -q -k 'dark_artifact_discloses or malformed_threshold or row_exception_material or zero_or_negative or cfg_stamps or meta_discloses or stripping_only or basis_material or the_disclosure'
 
