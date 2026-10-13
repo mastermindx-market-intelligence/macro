@@ -4634,6 +4634,12 @@ jobs:
     # of those probes. No separate weight file: a job absent from
     # OBSERVED_COMMAND_SECONDS uses the command heuristic.
     #
+    # tests/test_tushare_index_daily.py (the China index-close collector the
+    # dialog reads) runs here, not in china-native-collectors. That job is
+    # selected on the templates/index.html and scripts/build_free_content.py
+    # probes, and one more suite path on its run line raised both probes 2
+    # weight-seconds above main.
+    #
     # The fetch step before pytest adds only commit
     # a8e054ce5d7d44e48ff552841dc93d3c0ec87149, without blobs. A pack checkout
     # is fetch-depth 1, so that commit is absent and
@@ -4652,6 +4658,7 @@ jobs:
       - "collectors/china_filings.py"
       - "collectors/china_news.py"
       - "collectors/china_ths_concepts.py"
+      - "collectors/china_tushare.py"
       - "collectors/china_visits.py"
       - "collectors/edgar.py"
       - "collectors/edgar_13f.py"
@@ -5506,6 +5513,7 @@ jobs:
       - "scripts/check_board_contradictions.py"
       - "scripts/check_signal_gate_coherence.py"
       - "scripts/check_stretch_oracle_contract.py"
+      - "scripts/check_tushare_freshness.py"
       - "scripts/close_pass_publish.py"
       - "scripts/close_pass_reconcile.py"
       - "scripts/notify.py"
@@ -5626,6 +5634,7 @@ jobs:
       - "tests/test_dialog_trap_step_mutants.py"
       - "tests/test_us_dialog_escape_listener.py"
       - "tests/test_pullback_age_singular.py"
+      - "tests/test_tushare_index_daily.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -5693,6 +5702,7 @@ jobs:
           tests/test_pullback_episode_fuzz.py
           tests/test_pullback_episode_fuzz_cn.py
           tests/test_pullback_wave9_mutants.py
+          tests/test_tushare_index_daily.py
           -q
 
 
@@ -8159,7 +8169,7 @@ jobs:
       # at RUN time it loads only pandas/numpy/pyarrow/pyyaml, all covered by this job's
       # install line (numpy arrives with pandas).
       - name: china tushare takeover suites — addons gate + minutes plane + chips (A/B/C)
-        run: python -m pytest tests/test_tushare_addons.py tests/test_tushare_minutes_plane.py tests/test_tushare_chips_distribution.py tests/test_tushare_freshness_tripwire.py tests/test_tushare_index_daily.py -q
+        run: python -m pytest tests/test_tushare_addons.py tests/test_tushare_minutes_plane.py tests/test_tushare_chips_distribution.py tests/test_tushare_freshness_tripwire.py -q
 
   china-board-breadth:
     if: ${{ false }}
