@@ -35,10 +35,32 @@ AUTHORITY_FLAG_KEYS = (
     "trade_authority",
 )
 
+REQUIRED_TOP_LEVEL_KEYS = (
+    "schema_version",
+    "lane",
+    "protocol_ids",
+    "cells",
+    "budgets",
+    "input_manifest",
+    "prereg_digest",
+    "identity_facts",
+    "sealed_at_utc",
+    "repo_ref",
+    "not_supported",
+    "authority_flags",
+    "outcome_free",
+    "extra",
+    "content_digest",
+)
+
 _HEX64 = "0123456789abcdef"
 _CELL_KEYS = frozenset({"protocol", "version", "split", "h"})
 _FORBIDDEN_EXTRA = frozenset(AUTHORITY_FLAG_KEYS) | {"authority_flags"}
+_FORBIDDEN_AUTHORITY_FOLD = frozenset(
+    key.casefold() for key in AUTHORITY_FLAG_KEYS
+) | {"authority_flags"}
 _HARD_FALSE_AUTHORITY = MappingProxyType({key: False for key in AUTHORITY_FLAG_KEYS})
+_REQUIRED_TOP_LEVEL_SET = frozenset(REQUIRED_TOP_LEVEL_KEYS)
 
 
 @dataclass(frozen=True, order=True)
@@ -113,7 +135,9 @@ def _authority_key_path(path: str, key) -> str:
 
 
 def _is_forbidden_authority_key(key) -> bool:
-    return isinstance(key, str) and (key in AUTHORITY_FLAG_KEYS or key == "authority_flags")
+    if not isinstance(key, str):
+        return False
+    return key.strip().casefold() in _FORBIDDEN_AUTHORITY_FOLD
 
 
 def _refuse_nested_authority(obj, path: str) -> None:
@@ -243,6 +267,13 @@ def _authority_flags_hard_false(extra: dict) -> dict:
     return {key: False for key in AUTHORITY_FLAG_KEYS}
 
 
+def _record_validator_violation(violations: list[str], fn, *args) -> None:
+    try:
+        fn(*args)
+    except ValueError as exc:
+        violations.append(str(exc))
+
+
 def build_seal(
     *,
     lane: str,
@@ -303,8 +334,47 @@ def verify_seal(seal: dict, *, file_bytes: dict[str, bytes] | None = None) -> li
     if not isinstance(seal, dict):
         return ["seal is not an object"]
 
+    present = set(seal.keys())
+    for key in REQUIRED_TOP_LEVEL_KEYS:
+        if key not in present:
+            violations.append(f"missing required key {key}")
+    for key in seal:
+        if key not in _REQUIRED_TOP_LEVEL_SET:
+            violations.append(f"unknown top-level key {key}")
+
     if seal.get("schema_version") != SCHEMA_VERSION:
         violations.append("schema_version mismatch")
+
+    if "lane" in seal:
+        lane = seal["lane"]
+        if not isinstance(lane, str) or not lane:
+            violations.append("lane must be a non-empty string")
+    if "repo_ref" in seal:
+        repo_ref = seal["repo_ref"]
+        if not isinstance(repo_ref, str) or not repo_ref:
+            violations.append("repo_ref must be a non-empty string")
+    if "prereg_digest" in seal:
+        _record_validator_violation(
+            violations, _require_hex64, "prereg_digest", seal["prereg_digest"]
+        )
+    if "sealed_at_utc" in seal:
+        _record_validator_violation(
+            violations, _validate_sealed_at_utc, seal["sealed_at_utc"]
+        )
+    if "protocol_ids" in seal:
+        _record_validator_violation(
+            violations, _normalize_string_list, "protocol_ids", seal["protocol_ids"]
+        )
+    if "not_supported" in seal:
+        _record_validator_violation(
+            violations, _normalize_string_list, "not_supported", seal["not_supported"]
+        )
+    if "extra" in seal and not isinstance(seal["extra"], dict):
+        violations.append("extra is not a dict")
+    if "identity_facts" in seal and not isinstance(seal["identity_facts"], dict):
+        violations.append("identity_facts is not a dict")
+    if "input_manifest" in seal and not isinstance(seal["input_manifest"], list):
+        violations.append("input_manifest is not a list")
 
     flags = seal.get("authority_flags")
     if not isinstance(flags, dict):
@@ -322,16 +392,23 @@ def verify_seal(seal: dict, *, file_bytes: dict[str, bytes] | None = None) -> li
 
     cells = seal.get("cells")
     if not isinstance(cells, list):
-        violations.append("cells not sorted")
+        violations.append("cells is not a list")
     else:
         keys = []
         well_formed = True
-        for cell in cells:
+        for index, cell in enumerate(cells):
+            if isinstance(cell, dict):
+                extra_cell_keys = set(cell.keys()) - _CELL_KEYS
+                if extra_cell_keys:
+                    well_formed = False
+                    for extra_key in sorted(extra_cell_keys, key=lambda item: str(item)):
+                        violations.append(
+                            f"cells[{index}] has unknown key {extra_key}"
+                        )
             try:
                 keys.append(_parse_cell(cell))
             except ValueError:
                 well_formed = False
-                break
         if well_formed:
             if len(keys) != len(set(keys)):
                 violations.append("duplicate cells")
@@ -465,13 +542,36 @@ def render_seal_md(seal) -> str:
 
 
 def write_seal(seal, out_dir: Path) -> tuple[Path, Path]:
-    """Write SEAL.json (canonical JSON) and SEAL.md under out_dir."""
+    """Write SEAL.json (canonical JSON) and SEAL.md under out_dir.
+
+    Verifies the seal first. Refuses if SEAL.json or SEAL.md already exists.
+    Exclusive-create so a race also refuses. If the second write fails after
+    this call created the first file, that file is removed before re-raising.
+    """
     if not isinstance(seal, dict):
         raise ValueError("seal must be a dict")
+    violations = verify_seal(seal)
+    if violations:
+        raise ValueError("seal is invalid: " + "; ".join(violations))
     destination = Path(out_dir)
     destination.mkdir(parents=True, exist_ok=True)
     json_path = destination / "SEAL.json"
     md_path = destination / "SEAL.md"
-    json_path.write_text(canonical_json(seal), encoding="utf-8")
-    md_path.write_text(render_seal_md(seal), encoding="utf-8")
+    if json_path.exists() or md_path.exists():
+        raise FileExistsError(f"seal already exists in {destination}")
+    created: list[Path] = []
+    try:
+        with open(json_path, "x", encoding="utf-8") as handle:
+            created.append(json_path)
+            handle.write(canonical_json(seal))
+        with open(md_path, "x", encoding="utf-8") as handle:
+            created.append(md_path)
+            handle.write(render_seal_md(seal))
+    except Exception:
+        for path in created:
+            try:
+                path.unlink()
+            except OSError:
+                pass
+        raise
     return json_path, md_path

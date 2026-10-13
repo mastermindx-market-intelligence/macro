@@ -8,8 +8,10 @@ import pytest
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "research/single_name_intelligence/common"))
 
+import sni_seal  # noqa: E402
 from sni_seal import (  # noqa: E402
     AUTHORITY_FLAG_KEYS,
+    REQUIRED_TOP_LEVEL_KEYS,
     _check_identity_id_values,
     build_seal,
     canonical_json,
@@ -26,6 +28,24 @@ GOLDEN_CONTENT_DIGEST = "a3dc7e2c11cb7f46857c2f4daafa53320d5ae2867c9c8d54ee2ee6c
 SCHEMA_PATH = (
     Path(__file__).resolve().parents[1]
     / "contracts/single_name_intelligence/sni_seal.v1.schema.json"
+)
+
+_R2_REQUIRED_KEYS = (
+    "schema_version",
+    "lane",
+    "protocol_ids",
+    "cells",
+    "budgets",
+    "input_manifest",
+    "prereg_digest",
+    "identity_facts",
+    "sealed_at_utc",
+    "repo_ref",
+    "not_supported",
+    "authority_flags",
+    "outcome_free",
+    "extra",
+    "content_digest",
 )
 
 
@@ -308,3 +328,166 @@ def test_r1_06_regression_pins(case):
             _check_identity_id_values({"issuer_id": {"ticker": "BABA"}})
         return
     raise AssertionError(f"unhandled case {case}")
+
+
+def test_r2_04_write_seal_refuses_overwrite(tmp_path):
+    seal = build_seal(**_golden_kwargs())
+    json_path, _md_path = write_seal(seal, tmp_path)
+    before = sha256_bytes(json_path.read_bytes())
+    with pytest.raises(FileExistsError):
+        write_seal(seal, tmp_path)
+    after = sha256_bytes(json_path.read_bytes())
+    assert before == after
+
+
+def test_r2_04_write_seal_refuses_invalid_creates_no_file(tmp_path):
+    seal = build_seal(**_golden_kwargs())
+    tampered = copy.deepcopy(seal)
+    tampered["cells"][0]["h"] = 999
+    out = tmp_path / "new_dir"
+    out.mkdir()
+    with pytest.raises(ValueError):
+        write_seal(tampered, out)
+    assert list(out.iterdir()) == []
+
+
+def test_r2_04_write_seal_refuses_if_md_exists(tmp_path):
+    seal = build_seal(**_golden_kwargs())
+    (tmp_path / "SEAL.md").write_text("preexisting", encoding="utf-8")
+    with pytest.raises(FileExistsError):
+        write_seal(seal, tmp_path)
+    assert not (tmp_path / "SEAL.json").exists()
+    assert (tmp_path / "SEAL.md").read_text(encoding="utf-8") == "preexisting"
+
+
+def test_r2_04_write_seal_rollback_on_second_file_failure(tmp_path, monkeypatch):
+    seal = build_seal(**_golden_kwargs())
+    real_open = open
+
+    def flaky_open(path, mode="r", *args, **kwargs):
+        if Path(path).name == "SEAL.md" and "x" in str(mode):
+            raise OSError("simulated md write failure")
+        return real_open(path, mode, *args, **kwargs)
+
+    monkeypatch.setattr(sni_seal, "open", flaky_open, raising=False)
+    with pytest.raises(OSError, match="simulated md write failure"):
+        write_seal(seal, tmp_path)
+    assert not (tmp_path / "SEAL.json").exists()
+    assert not (tmp_path / "SEAL.md").exists()
+
+
+def test_r2_07_required_key_set_matches_build_seal():
+    seal = build_seal(**_golden_kwargs())
+    assert tuple(REQUIRED_TOP_LEVEL_KEYS) == _R2_REQUIRED_KEYS
+    assert set(seal.keys()) == set(_R2_REQUIRED_KEYS)
+
+
+@pytest.mark.parametrize("key", _R2_REQUIRED_KEYS)
+def test_r2_07_missing_required_key(key):
+    seal = copy.deepcopy(build_seal(**_golden_kwargs()))
+    del seal[key]
+    if key != "content_digest":
+        _recompute_digest(seal)
+    violations = verify_seal(seal)
+    assert violations
+    assert any(key in item for item in violations)
+
+
+def test_r2_07_unknown_top_level_key():
+    seal = copy.deepcopy(build_seal(**_golden_kwargs()))
+    seal["bonus"] = 1
+    _recompute_digest(seal)
+    violations = verify_seal(seal)
+    assert violations
+    assert any("bonus" in item for item in violations)
+
+
+def test_r2_07_unknown_cell_key():
+    seal = copy.deepcopy(build_seal(**_golden_kwargs()))
+    seal["cells"][0]["bonus_field"] = 1
+    _recompute_digest(seal)
+    violations = verify_seal(seal)
+    assert violations
+    assert any("cells[0] has unknown key bonus_field" in item for item in violations)
+
+
+def test_r2_07_type_checks():
+    seal = build_seal(**_golden_kwargs())
+    cases = [
+        ("lane", "", "lane"),
+        ("repo_ref", "", "repo_ref"),
+        ("prereg_digest", "zz", "prereg_digest"),
+        ("sealed_at_utc", "not-a-date", "sealed_at_utc"),
+        ("protocol_ids", "P04", "protocol_ids"),
+        ("not_supported", "news", "not_supported"),
+        ("extra", ["nope"], "extra"),
+        ("identity_facts", ["nope"], "identity_facts"),
+        ("input_manifest", {"path": "a"}, "input_manifest"),
+    ]
+    for key, bad, named in cases:
+        tampered = copy.deepcopy(seal)
+        tampered[key] = bad
+        _recompute_digest(tampered)
+        violations = verify_seal(tampered)
+        assert violations, key
+        assert any(named in item for item in violations), (key, violations)
+
+
+def test_r2_09_cells_not_sorted():
+    seal = copy.deepcopy(build_seal(**_golden_kwargs()))
+    assert len(seal["cells"]) >= 2
+    seal["cells"] = list(reversed(seal["cells"]))
+    _recompute_digest(seal)
+    violations = verify_seal(seal)
+    assert "cells not sorted" in violations
+
+
+def test_r2_09_extra_cell_key():
+    seal = copy.deepcopy(build_seal(**_golden_kwargs()))
+    seal["cells"][0]["extra_field"] = "synthetic"
+    _recompute_digest(seal)
+    violations = verify_seal(seal)
+    assert "cells[0] has unknown key extra_field" in violations
+
+
+def test_r2_09_cells_is_not_a_list():
+    seal = copy.deepcopy(build_seal(**_golden_kwargs()))
+    seal["cells"] = {"protocol": "sni.p1"}
+    _recompute_digest(seal)
+    violations = verify_seal(seal)
+    assert "cells is not a list" in violations
+    assert "cells not sorted" not in violations
+
+
+def test_r2_10_build_refuses_case_variant_in_extra():
+    with pytest.raises(ValueError):
+        build_seal(**_probe_kwargs(extra={"Trade_Authority": False}))
+    with pytest.raises(ValueError):
+        build_seal(**_probe_kwargs(extra={"TRADE_AUTHORITY": False}))
+
+
+def test_r2_10_build_refuses_case_variant_in_identity_facts():
+    with pytest.raises(ValueError):
+        build_seal(**_probe_kwargs(identity_facts={"x": {"RANK_AUTHORITY": False}}))
+
+
+def test_r2_10_verify_refuses_padded_case_variant_in_extra():
+    seal = copy.deepcopy(build_seal(**_probe_kwargs()))
+    seal["extra"] = {" trade_authority ": False}
+    _recompute_digest(seal)
+    violations = verify_seal(seal)
+    assert violations
+    assert any("trade_authority" in item.casefold() for item in violations)
+
+
+def test_r2_10_verify_refuses_case_variant_at_top_level():
+    seal = build_seal(**_probe_kwargs())
+    for key in ("Trade_Authority", "TRADE_AUTHORITY", "Authority_Flags"):
+        tampered = copy.deepcopy(seal)
+        tampered[key] = False
+        _recompute_digest(tampered)
+        violations = verify_seal(tampered)
+        assert violations, key
+        assert any(
+            key in item or "authority" in item.casefold() for item in violations
+        ), (key, violations)
