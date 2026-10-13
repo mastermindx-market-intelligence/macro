@@ -18538,7 +18538,7 @@ jobs:
       - name: b2-0 disposition matrix (B-15..B-19 lineage, PIT replay, mutation guards, red-condition discriminators)
         run: python -m pytest tests/test_prophet_b2_disposition.py -q
       - name: Prophet B4 producer basis and disclosed freshness guards
-        run: python -m pytest tests/test_prophet_live_evaluator.py -q -k 'test_a_dark_artifact_discloses_the_freshness_policy_too or test_a_malformed_threshold_is_disclosed_unusable_not_laundered or test_a_row_exception_material_names_the_row_basis_and_the_implicit_row_the_packs or test_a_zero_or_negative_threshold_is_disclosed_verbatim_and_gates or test_live_cfg_stamps_how_the_freshness_ceiling_was_resolved or test_meta_discloses_the_exact_quote_max_age_threshold_actually_used or test_stripping_only_the_new_meta_fields_reproduces_the_old_payload or test_the_basis_material_is_absent_wherever_the_receipt_is_absent or test_the_basis_material_travels_beside_the_receipt_and_rehashes_exactly or test_the_disclosure_changes_no_state_machine_verdict_or_receipt or test_the_disclosure_resolves_derived_and_fallback_like_the_state_machine'
+        run: python -m pytest tests/test_prophet_live_evaluator.py -q -k 'dark_artifact_discloses or malformed_threshold or row_exception_material or zero_or_negative or cfg_stamps or meta_discloses or stripping_only or basis_material or the_disclosure'
 
   prophet-anticipation-intake:
     # ANTICIPATION A1 (status-class admission) + §6.9 R3 (structure-anchored entry
