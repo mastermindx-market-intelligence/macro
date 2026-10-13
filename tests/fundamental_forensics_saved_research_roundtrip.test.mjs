@@ -108,6 +108,20 @@ function onceFailingStorage() {
   };
 }
 
+// X2-s r2 (R2-2): the same once-failing contract over a PRE-POPULATED map,
+// so the rollback tests seed their rows before the failing write. The
+// existing stubs stay unchanged.
+function onceFailingStorageWith(initialRows) {
+  const rows = new Map(initialRows || []);
+  let broken = true;
+  return {
+    getItem: (key) => (rows.has(key) ? rows.get(key) : null),
+    setItem: (key, value) => { if (broken) throw new Error('quota exceeded'); rows.set(key, String(value)); },
+    removeItem: (key) => { rows.delete(key); },
+    repair: () => { broken = false; },
+  };
+}
+
 const PAGE_PAYLOAD = {
   companies: {
     AAPL: {
@@ -613,6 +627,19 @@ function containerBytes(row) {
   return JSON.stringify({ contract: 'fundamental_forensics.saved_research.v1', saved_views: [row] });
 }
 
+// X2-s r2 (R2-1b/R2-2): a seeded multi-row container — distinct ids so one
+// tab's removal and the other's update address different rows.
+function seedBytes(rows) {
+  return JSON.stringify({ contract: 'fundamental_forensics.saved_research.v1', saved_views: rows });
+}
+
+function clonedRow(row, id, name) {
+  const clone = JSON.parse(JSON.stringify(row));
+  clone.id = id;
+  if (name) clone.name = name;
+  return clone;
+}
+
 test('NEGATIVE 1: a malformed inner request refuses request_canonical exactly', () => {
   const base = fixtureContainer('saved_single_issuer.json').saved_views[0];
   delete base.request.periods[0].label;
@@ -733,6 +760,158 @@ test('NEGATIVE 6: a drifted container refuses a save attempt with unavailable an
   assert.equal(saved.ok, false);
   assert.equal(saved.reason, 'unavailable');
   assert.equal(storage.getItem(STORE_KEY), bytes, 'the drifted bytes are preserved byte-identically');
+});
+
+// ── X2-s r2 R2-1: cross-tab lost update (ONE shared storage, TWO tabs that
+// were both created BEFORE either writes — the store must re-read the stored
+// bytes at the start of every operation) ────────────────────────────────────
+
+test('T-R2-1a: two tabs: A saves then B saves and both rows survive', () => {
+  const shared = memoryStorage();
+  const A = freshBriefcase(shared, 0).create({ now: () => '2026-10-12T00:00:00Z' });
+  const B = freshBriefcase(shared, 7).create({ now: () => '2026-10-12T00:00:00Z' });
+  const base = fixtureContainer('saved_single_issuer.json').saved_views[0];
+  const input = (name) => ({
+    name: name, issuer: base.issuer, request: base.request, peers: base.peers,
+    view: base.view, pinned: base.pinned, saved_against: base.saved_against,
+    evidence_refs: base.evidence_refs, watch: base.watch
+  });
+  const first = A.save(input('Saved in tab A'));
+  assert.equal(first.ok, true, first.reason || 'A save refused');
+  const second = B.save(input('Saved in tab B'));
+  assert.equal(second.ok, true, second.reason || 'B save refused');
+  const both = [first.view.id, second.view.id].sort();
+  assert.notEqual(first.view.id, second.view.id, 'distinct seeds give distinct ids');
+  const stored = JSON.parse(shared.rows.get(STORE_KEY));
+  assert.equal(stored.saved_views.length, 2, 'both rows survive in the stored bytes');
+  sameJson(stored.saved_views.map((row) => row.id).sort(), both);
+  sameJson(A.list().map((entry) => entry.id).sort(), both, 'tab A lists both rows');
+  sameJson(B.list().map((entry) => entry.id).sort(), both, 'tab B lists both rows');
+});
+
+test('T-R2-1b: two tabs: a row A removed stays removed when B later updates another row', () => {
+  const row1 = fixtureContainer('saved_single_issuer.json').saved_views[0];
+  const row2 = clonedRow(row1, 'SECONDROWFROMSEED000000', 'Second row');
+  const shared = memoryStorage([[STORE_KEY, seedBytes([row1, row2])]]);
+  const A = freshBriefcase(shared, 0).create({ now: () => '2026-10-12T00:00:00Z' });
+  const B = freshBriefcase(shared, 7).create({ now: () => '2026-10-12T00:00:00Z' });
+  const removed = A.remove(row1.id);
+  sameJson(removed, { ok: true, deleted: true });
+  const updated = B.update(row2.id, { name: 'renamed in B' });
+  assert.equal(updated.ok, true, updated.reason || 'B update refused');
+  const stored = JSON.parse(shared.rows.get(STORE_KEY));
+  assert.equal(stored.saved_views.length, 1, 'exactly one row survives in the stored bytes');
+  assert.equal(stored.saved_views[0].id, row2.id);
+  assert.equal(stored.saved_views[0].name, 'renamed in B');
+  assert.equal(B.load(row1.id).reason, 'missing', 'the removed row does not resurrect for B');
+});
+
+test('T-R2-1c: two tabs: drift written after B was created is seen by B', () => {
+  const base = fixtureContainer('saved_single_issuer.json').saved_views[0];
+  const input = {
+    name: base.name, issuer: base.issuer, request: base.request, peers: base.peers,
+    view: base.view, pinned: base.pinned, saved_against: base.saved_against,
+    evidence_refs: base.evidence_refs, watch: base.watch
+  };
+  const shared = memoryStorage();
+  const B = freshBriefcase(shared, 7).create({ now: () => '2026-10-12T00:00:00Z' });
+  // (i) a schema-drifted row lands in the shared bytes AFTER B was created.
+  const drifted = clonedRow(base, 'DRIFTEDROWSEENBYTAB0000');
+  drifted.schema = 'fundamental_forensics.saved_research.v0';
+  shared.setItem(STORE_KEY, seedBytes([drifted]));
+  const listed = B.list();
+  assert.equal(listed.length, 1);
+  assert.equal(listed[0].id, drifted.id);
+  assert.equal(listed[0].available, false);
+  assert.equal(listed[0].reason, 'schema');
+  const saved = B.save(input);
+  assert.equal(saved.ok, true, saved.reason || 'B save refused');
+  const afterSave = JSON.parse(shared.rows.get(STORE_KEY));
+  assert.equal(afterSave.saved_views.length, 2);
+  const kept = afterSave.saved_views.find((row) => row.id === drifted.id);
+  assert.ok(kept, 'the drifted row is still in the stored bytes');
+  sameJson(kept, drifted);
+  // (ii) a drifted container contract turns B read-only mid-session.
+  const driftedContainer = JSON.stringify({
+    contract: 'fundamental_forensics.saved_research.v0',
+    saved_views: [{ schema: 'fundamental_forensics.saved_research.v1', id: 'x' }]
+  });
+  shared.setItem(STORE_KEY, driftedContainer);
+  assert.equal(B.readOnly(), true);
+  sameJson(B.list(), []);
+  const refused = B.save(input);
+  assert.equal(refused.ok, false);
+  assert.equal(refused.reason, 'unavailable');
+  assert.equal(shared.rows.get(STORE_KEY), driftedContainer,
+    'the drifted container bytes are byte-identical to what was written');
+});
+
+test('T-R2-1d: a throwing getItem makes the store read-only and never writes', () => {
+  const writes = { count: 0 };
+  const storage = {
+    getItem: () => { throw new Error('storage refused'); },
+    setItem: () => { writes.count += 1; },
+    removeItem: () => {},
+  };
+  const store = freshBriefcase(storage, 0).create({ now: () => '2026-10-12T00:00:00Z' });
+  assert.equal(store.readOnly(), true);
+  sameJson(store.list(), []);
+  const base = fixtureContainer('saved_single_issuer.json').saved_views[0];
+  const saved = store.save({
+    name: base.name, issuer: base.issuer, request: base.request, peers: base.peers,
+    view: base.view, pinned: base.pinned, saved_against: base.saved_against,
+    evidence_refs: base.evidence_refs, watch: base.watch
+  });
+  assert.equal(saved.ok, false);
+  assert.equal(saved.reason, 'unavailable');
+  assert.equal(writes.count, 0, 'no setItem call ever happens');
+});
+
+// ── X2-s r2 R2-2: rollback of update/remove over real seed rows. Once R2-1
+// lands every operation re-reads storage, so the in-memory rollback is no
+// longer independently observable through the public API; these pin the
+// observable contract and MUST fail against a store with the per-operation
+// read reverted AND the rollback lines deleted (see the lane's falsifiers). ──
+
+test('NEGATIVE 7: a failed update returns storage, changes nothing, and a later good write keeps the old name', () => {
+  const row1 = fixtureContainer('saved_single_issuer.json').saved_views[0];
+  const row2 = clonedRow(row1, 'SECONDROWFROMSEED000000', 'Second row');
+  const seed = seedBytes([row1, row2]);
+  const storage = onceFailingStorageWith([[STORE_KEY, seed]]);
+  const store = freshBriefcase(storage, 0).create({ now: () => '2026-10-12T00:00:00Z' });
+  const failed = store.update(row1.id, { name: 'should not stick' });
+  assert.equal(failed.ok, false);
+  assert.equal(failed.reason, 'storage');
+  assert.equal(store.load(row1.id).view.name, row1.name, 'the OLD name survives the failed update');
+  assert.equal(storage.getItem(STORE_KEY), seed, 'the stored bytes are byte-identical to the seed');
+  storage.repair();
+  const good = store.update(row2.id, { name: 'other' });
+  assert.equal(good.ok, true, good.reason || 'the later good write works');
+  const stored = JSON.parse(storage.getItem(STORE_KEY));
+  assert.equal(stored.saved_views.find((row) => row.id === row1.id).name, row1.name,
+    'id1 keeps its OLD name in the stored bytes');
+  assert.equal(stored.saved_views.find((row) => row.id === row2.id).name, 'other');
+});
+
+test('NEGATIVE 8: a failed remove returns storage, removes nothing, and a later good write keeps the row', () => {
+  const row1 = fixtureContainer('saved_single_issuer.json').saved_views[0];
+  const row2 = clonedRow(row1, 'SECONDROWFROMSEED000000', 'Second row');
+  const seed = seedBytes([row1, row2]);
+  const storage = onceFailingStorageWith([[STORE_KEY, seed]]);
+  const store = freshBriefcase(storage, 0).create({ now: () => '2026-10-12T00:00:00Z' });
+  const failed = store.remove(row1.id);
+  assert.equal(failed.ok, false);
+  assert.equal(failed.reason, 'storage');
+  assert.equal(store.load(row1.id).ok, true, 'the row is still loadable');
+  sameJson(store.list().map((entry) => entry.id).sort(), [row1.id, row2.id].sort(),
+    'both rows stay listed');
+  assert.equal(storage.getItem(STORE_KEY), seed, 'the stored bytes are byte-identical to the seed');
+  storage.repair();
+  const good = store.update(row2.id, { name: 'other' });
+  assert.equal(good.ok, true, good.reason || 'the later good write works');
+  const stored = JSON.parse(storage.getItem(STORE_KEY));
+  assert.ok(stored.saved_views.some((row) => row.id === row1.id),
+    'the row B failed to remove is still in the stored bytes after a later good write');
 });
 
 // ── X2-s r1 page-side repairs ─────────────────────────────────────────────

@@ -298,7 +298,9 @@
   }
 
   // A lawful read keeps EVERY row verbatim — no dropping, no truncation, no
-  // normalisation; rows are judged lazily by listing()/load(). Only the
+  // normalisation; rows are judged lazily by listing()/load(). The read
+  // happens at the start of every operation, so each one sees the bytes
+  // another tab may have written since the last call. Only the
   // container's own shape decides readability: an absent key (or no storage
   // at all) is a blank writable container; ANYTHING else unreadable — a
   // throwing getItem, unparseable bytes, a non-object root, wrong root keys,
@@ -368,12 +370,16 @@
       return id;
     }
 
-    var stored = readStored(storage);
-    var container = stored.container;
-    // READ-ONLY: the stored bytes could not be read as a lawful container.
-    // commit() is never called in this state, so the user's bytes are never
-    // overwritten; every operation answers 'unavailable' instead.
-    var readOnly = !stored.ok;
+    var container = blankContainer();
+    var readOnly = false;
+    // Every operation starts from the CURRENT stored bytes (another tab may have written since the last call), so a
+    // write always computes from a fresh read and can never drop, resurrect or overwrite another tab's change.
+    function refresh() {
+      var fresh = readStored(storage);
+      container = fresh.ok ? fresh.container : blankContainer();
+      readOnly = !fresh.ok;
+    }
+    refresh();
 
     function commit() {
       var persisted = false;
@@ -426,6 +432,7 @@
     }
 
     function listing() {
+      refresh();
       if (readOnly) return [];
       return rowAddresses().map(function (address) {
         var safe = object(address.row) ? address.row : {};
@@ -442,6 +449,7 @@
     }
 
     function load(id) {
+      refresh();
       if (readOnly) return { ok: false, reason: 'unavailable' };
       if (pseudoRowAddress(id)) return { ok: false, reason: 'id' };
       var row = rowById(id);
@@ -452,6 +460,7 @@
     }
 
     function save(input) {
+      refresh();
       if (readOnly) return { ok: false, reason: 'unavailable' };
       input = object(input) ? input : {};
       if (container.saved_views.length >= MAX_VIEWS) return { ok: false, reason: 'limit' };
@@ -491,6 +500,7 @@
     }
 
     function update(id, input) {
+      refresh();
       if (readOnly) return { ok: false, reason: 'unavailable' };
       input = object(input) ? input : {};
       if (pseudoRowAddress(id)) return { ok: false, reason: 'id' };
@@ -538,6 +548,7 @@
     }
 
     function remove(id) {
+      refresh();
       if (readOnly) return { ok: false, reason: 'unavailable' };
       var wanted = text(id, 64);
       var address = pseudoRowAddress(wanted);
@@ -567,7 +578,7 @@
       save: save,
       update: update,
       remove: remove,
-      readOnly: function () { return readOnly; }
+      readOnly: function () { refresh(); return readOnly; }
     };
   }
 
