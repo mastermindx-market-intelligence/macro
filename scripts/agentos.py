@@ -45,10 +45,15 @@ Subcommands:
                       ``--paths`` judges only the named records. When those paths
                       already include every handoff join (workstream, decisions,
                       discoveries), records outside that list are not loaded,
-                      except workstream files reached by ``depends_on`` from a
-                      named workstream. Those files are read so a cycle that
-                      leaves the path list is still ``workstream-cycle``. The
-                      store directory is not walked. ``--strict``
+                      except workstream files reached by ``depends_on`` and
+                      decision files on a ``supersedes`` / ``superseded_by``
+                      edge with a named decision. An incoming ``supersedes``
+                      is not on the named record, so ``decisions/`` is listed
+                      once and only a file that cites a named decision is
+                      parsed. The rest of the store is not walked.
+                      ``uncited-discovery`` is omitted for a subset: citation
+                      counts need every record, and unscoped ``validate``
+                      still reports that rule. ``--strict``
                       (with ``--snapshot`` and ``--paths``) also fails on schema
                       warnings for those records and compares pins to the seat
                       snapshot. ``--snapshot`` alone reports PR counts and adds
@@ -2277,7 +2282,7 @@ def _drop_partial_false_findings(store: Store) -> None:
 def _read_outside_workstream_dependencies(store: Store) -> None:
     """Parse workstream files a named ``depends_on`` reaches, and follow them.
 
-    The partial path does not walk the store and does not call
+    This read does not walk the store and does not call
     :func:`load_store`. A cycle that leaves ``--paths`` is invisible unless
     each cited workstream file is opened and its ``depends_on`` edges join
     the graph. One file per key, at ``workstreams/WS-<KEY>.md`` only. The
@@ -2320,14 +2325,89 @@ def _read_outside_workstream_dependencies(store: Store) -> None:
         )
 
 
+def _outside_decision(path: Path) -> tuple[str, dict[str, Any]] | None:
+    """A decision file worth joining, or None. Schema findings are not kept."""
+    try:
+        rec, body = parse_record(path)
+    except ValueError:
+        return None
+    key = rec.get("key")
+    if not isinstance(key, str) or not KEY_RE.match(key) or path.stem != f"DEC-{key}":
+        return None
+    rec["_body"] = body
+    return key, rec
+
+
+def _read_outside_decision_supersession(store: Store) -> None:
+    """Parse decisions that share a supersession edge with a named decision.
+
+    Outgoing ``supersedes`` / ``superseded_by`` name ``decisions/DEC-<KEY>.md``,
+    one file per key, the same way ``depends_on`` names a workstream. The
+    unreciprocated finding sits on the named record, and the ``supersedes``
+    list that produces it lives on a file that record does not cite, so
+    ``decisions/DEC-*.md`` is listed once and a file is kept only when that
+    list or ``superseded_by`` names a named decision. Extra records are not
+    counted and their schema findings are not recorded. Does not call
+    :func:`load_store`.
+    """
+    named = {ident[4:] for ident in store.records if ident.startswith("DEC/")}
+    if not named:
+        return
+
+    def _keep(path: Path, rec_key: str, rec: dict[str, Any]) -> None:
+        ident = f"DEC/{rec_key}"
+        if ident in store.records:
+            return
+        store.records[ident] = rec
+        store.paths[ident] = path
+
+    for key in list(named):
+        rec = store.records.get(f"DEC/{key}")
+        if rec is None:
+            continue
+        for field in ("supersedes", "superseded_by"):
+            for other in _refs(rec.get(field), "DEC"):
+                if not KEY_RE.match(other) or f"DEC/{other}" in store.records:
+                    continue
+                path = _citation_path(store.root, "DEC", other)
+                if path is None or not path.is_file():
+                    continue
+                parsed = _outside_decision(path)
+                if parsed is None:
+                    continue
+                other_key, other_rec = parsed
+                _keep(path, other_key, other_rec)
+
+    folder = store.root / "decisions"
+    if not folder.is_dir():
+        return
+    known = {path.resolve() for path in store.paths.values()}
+    for path in sorted(folder.glob("DEC-*.md")):
+        if path.resolve() in known:
+            continue
+        parsed = _outside_decision(path)
+        if parsed is None:
+            continue
+        other_key, other_rec = parsed
+        cites = set(_refs(other_rec.get("supersedes"), "DEC"))
+        cites.update(_refs(other_rec.get("superseded_by"), "DEC"))
+        if cites.isdisjoint(named):
+            continue
+        _keep(path, other_key, other_rec)
+        known.add(path.resolve())
+
+
 def _load_named_store(
     root: Path, path_args: list[str], programs: set[str] | None,
 ) -> Store:
     """Parse and check only ``path_args``. Never calls :func:`load_store`.
 
     Per-file checks match ``load_store``. Workstream files reached by
-    ``depends_on`` are parsed too, so a cycle that leaves this set is
-    still ``workstream-cycle``. The store directory is not walked.
+    ``depends_on``, and decision files on a supersession edge with a named
+    decision, are parsed too. A cycle or an unreciprocated / one-sided
+    supersession that leaves this set is still reported on the named
+    record. Those extra records are not counted. ``uncited-discovery`` is
+    dropped here: a subset cannot see every citation.
     """
     store = Store(root)
     seen: set[Path] = set()
@@ -2375,6 +2455,7 @@ def _load_named_store(
     # Knowledge plane only: these edges name records. They do not dispatch,
     # schedule, or decide whether a workstream may run.
     _read_outside_workstream_dependencies(store)
+    _read_outside_decision_supersession(store)
     store.problems.extend(check_references(store.records, store.paths))
     _drop_partial_false_findings(store)
     return store
@@ -5360,7 +5441,11 @@ def main(argv: list[str] | None = None) -> int:
     )
     p_validate.add_argument(
         "--paths", nargs="+",
-        help="records to judge; omit to validate the whole store",
+        help=(
+            "records to judge; omit to validate the whole store. "
+            "A subset does not report uncited-discovery: that rule counts "
+            "citations across every record, and unscoped validate still reports it"
+        ),
     )
     p_validate.set_defaults(func=cmd_validate)
 

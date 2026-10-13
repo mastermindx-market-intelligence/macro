@@ -2332,6 +2332,34 @@ def _cycle_ws(key: str, depends_on: str) -> str:
     )
 
 
+def _decision_doc(key: str, extra: str = "") -> str:
+    """Schema-valid decision. ``extra`` is frontmatter inserted before the fence."""
+    tail = extra if not extra or extra.endswith("\n") else extra + "\n"
+    return _OUTSIDE_DECISION.replace("key: OUTSIDE-PATH\n", f"key: {key}\n").replace(
+        'decided_at: "2026-10-12"\n---\n',
+        'decided_at: "2026-10-12"\n' + tail + "---\n",
+    )
+
+
+def _plain_handoff() -> str:
+    return _handoff_doc(
+        state_before="previous",
+        changed_what="No live pin.",
+        unresolved=["one"],
+        body="Narrative only.\n",
+    )
+
+
+def _strict_paths_args(root: Path, paths: list[Path], snap: Path) -> argparse.Namespace:
+    return argparse.Namespace(
+        root=str(root),
+        quiet=False,
+        strict=True,
+        snapshot=str(snap),
+        paths=[str(path) for path in paths],
+    )
+
+
 def test_d3_partial_paths_report_outside_workstream_cycle(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str],
 ) -> None:
@@ -2373,6 +2401,164 @@ def test_d3_partial_paths_report_outside_workstream_cycle(
     assert "dangling-ref" not in captured.out
     assert "unparseable" not in captured.out
     assert "2 records (1 workstreams, 0 decisions, 0 discoveries, 1 handoffs)" in captured.out
+
+
+def test_d3_partial_paths_report_outside_depends_on_cycle(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str],
+) -> None:
+    """A depends_on cycle through a workstream outside --paths still fails.
+
+    The handoff join is the named workstream, so the real cover predicate is
+    true. Nothing patches that predicate. The other workstream is on disk
+    and is not named. cmd_validate must exit 1 with workstream-cycle and
+    must not call load_store.
+    """
+    module = _load_agentos_module()
+    _boom_on_full_store(module, monkeypatch)
+    root = _write_tree(tmp_path, {
+        "workstreams/WS-DRAFT-ROUNDTRIP.md": _cycle_ws("DRAFT-ROUNDTRIP", "WS:CYCLE-OTHER"),
+        "workstreams/WS-CYCLE-OTHER.md": _cycle_ws("CYCLE-OTHER", "WS:DRAFT-ROUNDTRIP"),
+        "handoffs/DRAFT-ROUNDTRIP-2026-10-12.md": _plain_handoff(),
+        "handoffs/GARBAGE-2026-10-12.md": "---\nthis: no\n---\n\nSee above.\n",
+    })
+    handoff = root / "handoffs" / "DRAFT-ROUNDTRIP-2026-10-12.md"
+    named = root / "workstreams" / "WS-DRAFT-ROUNDTRIP.md"
+    snap = _dump_json(tmp_path, "snap.json", {"prs": []})
+    args = _strict_paths_args(root, [handoff, named], snap)
+    assert module._paths_cover_handoff_joins(root, args.paths) is True
+    result = module.cmd_validate(args)
+    captured = capsys.readouterr()
+    assert result == 1, captured.out + captured.err
+    assert "workstream-cycle" in captured.out
+    assert "WS:DRAFT-ROUNDTRIP" in captured.out
+    assert "WS:CYCLE-OTHER" in captured.out
+    assert "dangling-ref" not in captured.out
+    assert "unparseable" not in captured.out
+    assert "2 records (1 workstreams, 0 decisions, 0 discoveries, 1 handoffs)" in captured.out
+
+
+def test_d3_partial_paths_report_unreciprocated_supersession(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str],
+) -> None:
+    """An outside decision that supersedes a named one is still unreciprocated.
+
+    DEC-OLD-DEC is named and has no superseded_by. DEC-NEW-DEC is on disk,
+    not named, and lists supersedes DEC:OLD-DEC. The finding sits on the
+    named record. The real cover predicate is true; load_store must not run.
+    """
+    module = _load_agentos_module()
+    _boom_on_full_store(module, monkeypatch)
+    root = _write_tree(tmp_path, {
+        "workstreams/WS-DRAFT-ROUNDTRIP.md": _D3_WS,
+        "decisions/DEC-OLD-DEC.md": _decision_doc("OLD-DEC"),
+        "decisions/DEC-NEW-DEC.md": _decision_doc(
+            "NEW-DEC", "supersedes:\n  - DEC:OLD-DEC\n",
+        ),
+        "handoffs/DRAFT-ROUNDTRIP-2026-10-12.md": _plain_handoff(),
+        "handoffs/GARBAGE-2026-10-12.md": "---\nthis: no\n---\n\nSee above.\n",
+    })
+    paths = [
+        root / "handoffs" / "DRAFT-ROUNDTRIP-2026-10-12.md",
+        root / "workstreams" / "WS-DRAFT-ROUNDTRIP.md",
+        root / "decisions" / "DEC-OLD-DEC.md",
+    ]
+    snap = _dump_json(tmp_path, "snap.json", {"prs": []})
+    args = _strict_paths_args(root, paths, snap)
+    assert module._paths_cover_handoff_joins(root, args.paths) is True
+    result = module.cmd_validate(args)
+    captured = capsys.readouterr()
+    assert result == 1, captured.out + captured.err
+    assert "unreciprocated-supersession" in captured.out
+    assert "DEC:NEW-DEC" in captured.out
+    assert "one-sided-supersession" not in captured.out
+    assert "dangling-ref" not in captured.out
+    assert "unparseable" not in captured.out
+    assert "3 records (1 workstreams, 1 decisions, 0 discoveries, 1 handoffs)" in captured.out
+
+
+def test_d3_partial_paths_report_one_sided_supersession(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str],
+) -> None:
+    """superseded_by an outside decision that does not list supersedes still warns.
+
+    --strict blocks that warning. The outside file exists, so a partial load
+    must not drop the hole as a false dangling-ref. Cover is the real
+    predicate, and load_store must not run.
+    """
+    module = _load_agentos_module()
+    _boom_on_full_store(module, monkeypatch)
+    root = _write_tree(tmp_path, {
+        "workstreams/WS-DRAFT-ROUNDTRIP.md": _D3_WS,
+        "decisions/DEC-OLD-DEC.md": _decision_doc("OLD-DEC", "superseded_by: DEC:NEW-DEC\n"),
+        "decisions/DEC-NEW-DEC.md": _decision_doc("NEW-DEC"),
+        "handoffs/DRAFT-ROUNDTRIP-2026-10-12.md": _plain_handoff(),
+        "handoffs/GARBAGE-2026-10-12.md": "---\nthis: no\n---\n\nSee above.\n",
+    })
+    paths = [
+        root / "handoffs" / "DRAFT-ROUNDTRIP-2026-10-12.md",
+        root / "workstreams" / "WS-DRAFT-ROUNDTRIP.md",
+        root / "decisions" / "DEC-OLD-DEC.md",
+    ]
+    snap = _dump_json(tmp_path, "snap.json", {"prs": []})
+    args = _strict_paths_args(root, paths, snap)
+    assert module._paths_cover_handoff_joins(root, args.paths) is True
+    result = module.cmd_validate(args)
+    captured = capsys.readouterr()
+    assert result == 1, captured.out + captured.err
+    assert "one-sided-supersession" in captured.out
+    assert "DEC:NEW-DEC" in captured.out
+    assert "unreciprocated-supersession" not in captured.out
+    assert "dangling-ref" not in captured.out
+    assert "unparseable" not in captured.out
+    assert "0 error(s), 1 warning(s)" in captured.out
+    assert "3 records (1 workstreams, 1 decisions, 0 discoveries, 1 handoffs)" in captured.out
+
+
+def test_d3_paths_help_documents_uncited_discovery_drop(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str],
+) -> None:
+    """A --paths subset drops uncited-discovery, and validate --help says so.
+
+    The named discovery is old and cited by nothing in the tree. The partial
+    run must stay silent: an outside record this subset did not load could
+    still cite it, so keeping the finding would fail --strict where the full
+    store would not. Unscoped validate still reports the rule.
+    """
+    module = _load_agentos_module()
+    root = _write_tree(tmp_path, {
+        "workstreams/WS-DRAFT-ROUNDTRIP.md": _D3_WS,
+        "discoveries/DSC-ORPHAN-PROBE.md": ORPHAN_DISCOVERY,
+        "handoffs/DRAFT-ROUNDTRIP-2026-10-12.md": _plain_handoff(),
+    })
+    discovery = root / "discoveries" / "DSC-ORPHAN-PROBE.md"
+    paths = [
+        root / "handoffs" / "DRAFT-ROUNDTRIP-2026-10-12.md",
+        root / "workstreams" / "WS-DRAFT-ROUNDTRIP.md",
+        discovery,
+    ]
+    snap = _dump_json(tmp_path, "snap.json", {"prs": []})
+    args = _strict_paths_args(root, paths, snap)
+    args.strict = False
+    args.snapshot = None
+    assert module._paths_cover_handoff_joins(root, args.paths) is True
+    partial = module.cmd_validate(args)
+    partial_out = capsys.readouterr()
+    assert partial == 0, partial_out.out + partial_out.err
+    assert "uncited-discovery" not in partial_out.out
+    assert "3 records (1 workstreams, 0 decisions, 1 discoveries, 1 handoffs)" in partial_out.out
+
+    full_args = argparse.Namespace(
+        root=str(root), quiet=False, strict=False, snapshot=None, paths=[],
+    )
+    full = module.cmd_validate(full_args)
+    full_out = capsys.readouterr()
+    assert full == 0, full_out.out + full_out.err
+    assert "uncited-discovery" in full_out.out
+    assert "DSC-ORPHAN-PROBE" in full_out.out
+
+    help_run = _agentos("validate", "--help")
+    assert help_run.returncode == 0, help_run.stderr
+    assert "uncited-discovery" in help_run.stdout
 
 
 def test_d3_no_network_or_gh_in_agentos() -> None:
