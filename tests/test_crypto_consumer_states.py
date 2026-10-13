@@ -659,3 +659,89 @@ def test_live_negative_flow_puts_sign_before_symbol(tmp_path, monkeypatch):
     assert _div_text(etf, "reading") == "-$505M"
     assert "Last on file" not in etf
     assert "$-" not in crypto
+
+
+# cx-p2-polish: a receipt phrase is one unbreakable unit, never split mid-date or mid-fraction.
+_NOWRAP_OPEN = '<span class="receipt-nowrap">'
+
+
+def _nowrap_units(fragment: str) -> list:
+    """Inner HTML of every receipt-nowrap span, balanced over the nested language spans."""
+    units, pos = [], fragment.find(_NOWRAP_OPEN)
+    while pos != -1:
+        i, depth = pos + len(_NOWRAP_OPEN), 1
+        while depth:
+            nxt_open, nxt_close = fragment.find("<span", i), fragment.find("</span>", i)
+            assert nxt_close != -1, "unbalanced receipt-nowrap span"
+            if nxt_open != -1 and nxt_open < nxt_close:
+                depth, i = depth + 1, nxt_open + len("<span")
+            else:
+                depth, i = depth - 1, nxt_close + len("</span>")
+        units.append(fragment[pos + len(_NOWRAP_OPEN): i - len("</span>")])
+        pos = fragment.find(_NOWRAP_OPEN, i)
+    return units
+
+
+def test_cxp2_polish_stale_etf_value_and_date_are_one_nowrap_unit(tmp_path, monkeypatch):
+    case = _crypto_case("valid_zero")
+    case["market"]["flows"]["etf"] = {
+        "kind": "subscription", "value": -505.0, "latest": -120.0,
+        "state": "Unavailable", "tone": "neutral", "as_of": "2026-10-08",
+        "observation": "stale", "observation_label_en": _STALE_EN,
+        "observation_label_zh": _STALE_ZH, "percentile": None,
+    }
+    etf = _etf_block(_render_crypto(tmp_path, monkeypatch, case))
+    units = _nowrap_units(etf[etf.index('class="receipt"'):])
+    assert len(units) == 1
+    en, zh = _reading("en", units[0]), _reading("zh", units[0])
+    assert "Last on file" in en and "最近在册" in zh
+    for text in (en, zh):
+        assert "-$505M" in text and "2026-10-08" in text
+        assert text.index("-$505M") < text.index("·") < text.index("2026-10-08")
+        assert not text.lstrip().startswith("·")
+    assert _STALE_EN not in units[0] and _STALE_ZH not in units[0]
+
+
+def test_cxp2_polish_stale_stablecoin_value_and_date_are_one_nowrap_unit(tmp_path, monkeypatch):
+    case = _crypto_case("valid_zero")
+    case["market"]["flows"]["stablecoins"] = {
+        "kind": "supply", "value": 1.6e11, "change_30d_usd": -2.5e9,
+        "change_30d_pct": -1.6, "state": "Unavailable", "tone": "neutral",
+        "as_of": "2026-10-09", "observation": "stale",
+        "observation_label_en": _STALE_EN, "observation_label_zh": _STALE_ZH,
+        "percentile": None,
+    }
+    block = _stable_block(_render_crypto(tmp_path, monkeypatch, case))
+    units = _nowrap_units(block[block.index('class="receipt"'):])
+    assert len(units) == 1
+    for lang in ("en", "zh"):
+        text = _reading(lang, units[0])
+        assert "-$2.5B" in text and "2026-10-09" in text
+        assert text.index("-$2.5B") < text.index("·") < text.index("2026-10-09")
+        assert not text.lstrip().startswith("·")
+
+
+def test_cxp2_polish_splice_fraction_sits_inside_nowrap_unit(tmp_path, monkeypatch):
+    case = _crypto_case("valid_zero")
+    case["market"]["cap_basis"] = {"splices": [{
+        "date": "2026-08-01", "from_basis": "derived", "to_basis": "direct",
+        "from_label_en": "derived total", "from_label_zh": "推算总量",
+        "to_label_en": "direct total", "to_label_zh": "直接总量",
+        "support_before": 1, "support_after": 5,
+    }]}
+    line = _slice(_render_crypto(tmp_path, monkeypatch, case), '<p class="desk-splice">', "</p>")
+    units = _nowrap_units(line)
+    assert len(units) == 1
+    en, zh = _reading("en", units[0]), _reading("zh", units[0])
+    assert "days on file" in en and "1/5" in en
+    assert "在册天数" in zh and "1/5" in zh
+    assert "·" not in en and "·" not in zh  # the leading separator stays outside the unit
+
+
+def test_cxp2_polish_nowrap_rule_lives_in_the_receipt_style_owner():
+    from pathlib import Path
+    src = (Path(__file__).resolve().parents[1] / "templates" / "crypto.html.j2").read_text(encoding="utf-8")
+    style = src[src.index("<style>"):src.index("</style>")]
+    assert ".sensor .receipt{" in style
+    assert style.count(".receipt-nowrap{white-space:nowrap}") == 1
+    assert src.count("<style>") == 1
