@@ -124,9 +124,15 @@ class EstateUnavailable(RuntimeError):
     """
 
 
-def _mtime_ns(path: Path) -> int | None:
+def _mtime_ns(path: Path) -> tuple[int, int, int, int, int] | None:
+    """Local file generation, never market freshness or content attestation.
+
+    ctime detects ordinary same-size corrections even when mtime is restored. The
+    tuple cannot prove identity on filesystems that conceal metadata changes.
+    """
     try:
-        return path.stat().st_mtime_ns
+        info = path.stat()
+        return (info.st_dev, info.st_ino, info.st_size, info.st_mtime_ns, info.st_ctime_ns)
     except OSError:
         return None
 
@@ -141,7 +147,7 @@ def _trust_mtime() -> bool:
     return False
 
 
-def _receipt_tree_mtime_key(path: Path) -> tuple[tuple[str, int, int], ...] | None:
+def _receipt_tree_mtime_key(path: Path) -> tuple[tuple[Any, ...], ...] | None:
     """Names, mtimes and sizes for existing owner receipt files under *path*.
 
     A directory mtime changes when a receipt is added or removed, but not when an
@@ -149,21 +155,31 @@ def _receipt_tree_mtime_key(path: Path) -> tuple[tuple[str, int, int], ...] | No
     """
     if not path.exists():
         return None
-    rows: list[tuple[str, int, int]] = []
+    rows: list[tuple[Any, ...]] = []
     for child in sorted(path.rglob("*")):
         if child.is_file():
-            stat = child.stat()
-            rows.append((child.relative_to(path).as_posix(), stat.st_mtime_ns, stat.st_size))
+            rows.append((child.relative_to(path).as_posix(), _mtime_ns(child)))
     return tuple(rows)
+
+
+def _claims_source_key(root: Path) -> tuple[Any, ...]:
+    from engine.qledger_store import ClaimsReadScope, uses_native_claims
+
+    with ClaimsReadScope(root) as scope:
+        if uses_native_claims(root / _QLEDGER_CLAIMS_REL):
+            receipt = scope.snapshot.receipt
+            return ("native", receipt.source_id, receipt.root_digest, receipt.logical_digest)
+        return ("legacy", _mtime_ns(root / _QLEDGER_CLAIMS_REL))
 
 
 def _evidence_mtime_key(root: Path) -> tuple[Any, ...]:
     """Owner-store facts that invalidate the in-process A1 projection."""
     return (
-        _mtime_ns(root / _QLEDGER_CLAIMS_REL),
+        _claims_source_key(root),
         _mtime_ns(root / _QLEDGER_GRADES_REL),
         _receipt_tree_mtime_key(root / _QLEDGER_CLOCK_DIR_REL),
         _receipt_tree_mtime_key(root / _QLEDGER_CONTROL_CLOCK_DIR_REL),
+        _receipt_tree_mtime_key(root / "data/qledger/evidence_clocks"),
     )
 
 
@@ -225,8 +241,20 @@ def _jsonl_candidate_count(path: Path) -> tuple[int | None, str | None]:
         return None, None
     try:
         lines = path.read_text(encoding="utf-8").splitlines()
-    except (OSError, UnicodeError) as exc:
-        return None, f"{path.name} is unreadable: {type(exc).__name__}: {exc}"
+    except (OSError, UnicodeError):
+        return None, f"{path.name} is unreadable"
+    return sum(1 for line in lines if line.strip() and not line.lstrip().startswith("#")), None
+
+
+def _claims_candidate_count(path: Path) -> tuple[int | None, str | None]:
+    from engine.qledger_store import read_raw_lines, uses_native_claims
+
+    if not uses_native_claims(path):
+        return _jsonl_candidate_count(path)
+    try:
+        lines = read_raw_lines(path, missing_ok=False)
+    except Exception:  # noqa: BLE001 — selected owner failed; no physical fallback
+        return None, "claims owner source is unreadable"
     return sum(1 for line in lines if line.strip() and not line.lstrip().startswith("#")), None
 
 
@@ -351,6 +379,13 @@ def _valid_clock_receipt(clock: Any, family: str) -> bool:
 
 
 def _load_evidence_providers(root: Path, registry: dict) -> dict[str, dict]:
+    from engine.qledger_store import ClaimsReadScope
+
+    with ClaimsReadScope(root):
+        return _load_evidence_providers_scoped(root, registry)
+
+
+def _load_evidence_providers_scoped(root: Path, registry: dict) -> dict[str, dict]:
     """Read existing qledger owners for concretely bound T1 cells; never write.
 
     Every other engine remains on T1's owner-native lifecycle/semantic evidence. An
@@ -378,7 +413,9 @@ def _load_evidence_providers(root: Path, registry: dict) -> dict[str, dict]:
         return {}
 
     claims_path = root / _QLEDGER_CLAIMS_REL
-    if not claims_path.exists():
+    from engine.qledger_store import uses_native_claims
+
+    if not uses_native_claims(claims_path) and not claims_path.exists():
         return {
             engine_id: {
                 "kind": "qledger",
@@ -394,16 +431,16 @@ def _load_evidence_providers(root: Path, registry: dict) -> dict[str, dict]:
 
     read_status = "ok"
     read_errors: list[str] = []
-    claims_candidates, claims_error = _jsonl_candidate_count(claims_path)
+    claims_candidates, claims_error = _claims_candidate_count(claims_path)
     if claims_error:
         read_status = "unreadable"
         read_errors.append(claims_error)
     else:
         try:
             claims_rows = qledger.load_claims(root)
-        except Exception as exc:  # noqa: BLE001 — owner read failed; carry blindness
+        except Exception:  # noqa: BLE001 — owner read failed; carry blindness
             read_status = "unreadable"
-            read_errors.append(f"claims owner read failed: {type(exc).__name__}: {exc}")
+            read_errors.append("claims owner read failed")
         else:
             if claims_candidates != len(claims_rows):
                 read_status = "partial"
@@ -429,9 +466,9 @@ def _load_evidence_providers(root: Path, registry: dict) -> dict[str, dict]:
     elif grades_candidates is not None:
         try:
             grades_rows = qledger.load_grades(root)
-        except Exception as exc:  # noqa: BLE001 — owner read failed; carry blindness
+        except Exception:  # noqa: BLE001 — owner read failed; carry blindness
             read_status = _read_status_worse(read_status, "unreadable")
-            read_errors.append(f"grades owner read failed: {type(exc).__name__}: {exc}")
+            read_errors.append("grades owner read failed")
         else:
             if grades_candidates != len(grades_rows):
                 read_status = _read_status_worse(read_status, "partial")
@@ -497,7 +534,7 @@ def _load_evidence_providers(root: Path, registry: dict) -> dict[str, dict]:
                 provider["error"] = "; ".join(family_errors)
             providers[engine_id] = provider
         return providers
-    except Exception as exc:  # noqa: BLE001 — admin reads fail open, but name the blind owner
+    except Exception:  # noqa: BLE001 — admin reads fail open, but name the blind owner
         return {
             engine_id: {
                 "kind": "qledger",
@@ -506,26 +543,36 @@ def _load_evidence_providers(root: Path, registry: dict) -> dict[str, dict]:
                 "read_status": "error",
                 "clock_start": None,
                 "readiness": {},
-                "error": f"{type(exc).__name__}: {exc}",
+                "error": "evidence provider read failed",
             }
             for engine_id, (family, binding) in bindings.items()
         }
 
 
+def _dependency_key(root: Path) -> tuple[Any, ...]:
+    return (str(root), _mtime_ns(root / _SYNAPSE_REL), _mtime_ns(root / _OVERLAY_REL),
+            *_t1_evidence_mtime_key(root), *_evidence_mtime_key(root))
+
+
+class EvidenceChangedDuringRead(EstateUnavailable):
+    """A legacy dependency changed while composing one read; no mixed view is served."""
+
+
 def _derive(root: Path, force: bool) -> tuple[dict, dict, dict, float, str]:
+    from engine.qledger_store import ClaimsReadScope
+
+    with _LOCK, ClaimsReadScope(root):
+        return _derive_scoped(root, force)
+
+
+def _derive_scoped(root: Path, force: bool) -> tuple[dict, dict, dict, float, str]:
     """``(view, registry, evidence, seconds, 'hit'|'miss')`` — cache protocol.
 
     Keyed on T1 identity/semantic inputs and owner evidence receipts as well as the root,
     so their movement is picked up immediately rather than after the TTL. A missing input
     keys as ``None``; absence remains a fact for the owner resolver to interpret.
     """
-    key = (
-        str(root),
-        _mtime_ns(root / _SYNAPSE_REL),
-        _mtime_ns(root / _OVERLAY_REL),
-        *_t1_evidence_mtime_key(root),
-        *_evidence_mtime_key(root),
-    )
+    key = _dependency_key(root)
     with _LOCK:
         if not force:
             cached = _CACHE.get(key)
@@ -572,6 +619,12 @@ def _derive(root: Path, force: bool) -> tuple[dict, dict, dict, float, str]:
             # The T4 builder's plain exit for an unreadable/unparseable config/synapse.yml.
             raise EstateUnavailable(f"SystemExit: {exc}") from exc
         evidence = _load_evidence_providers(root, registry)
+        if _dependency_key(root) != key:
+            raise EvidenceChangedDuringRead("evidence inputs changed during read")
+        view.setdefault("generated", {})["source_generation"] = {
+            "claims_source": _claims_source_key(root),
+            "read_status": "coherent",
+        }
         elapsed = time.monotonic() - started
         _CACHE[key] = (time.monotonic(), view, registry, evidence)
         # One live root, and the key changes on every registry edit — without this the
@@ -701,7 +754,9 @@ def panel(root: Path | None = None, force: bool = False) -> dict[str, Any]:
         # EstateUnavailable inside _derive, which is the only place that can tell them
         # apart. So this handler is an ordinary one: fail open like every sibling admin
         # panel, and never take the process down to report that a file was missing.
-        return {"ok": False, "error": f"{type(exc).__name__}: {exc}"}
+        return {"ok": False, "error": "Could not derive the evidence estate",
+                "error_code": "changed_during_read" if isinstance(exc, EvidenceChangedDuringRead)
+                else "evidence_estate_unavailable"}
 
     records = list(view.get("outputs") or [])
     summary = view.get("summary") or {}
@@ -740,6 +795,7 @@ def panel(root: Path | None = None, force: bool = False) -> dict[str, Any]:
             "compute_seconds": round(elapsed, 2),
             "cache": cache,
             "trust_mtime": _trust_mtime(),
+            "source_generation": (view.get("generated") or {}).get("source_generation"),
         },
     }
 
@@ -751,7 +807,9 @@ def engine_detail(engine_id: str, root: Path | None = None) -> dict[str, Any]:
     try:
         view, registry, evidence_by_engine, _elapsed, _cache = _derive(root, force=False)
     except Exception as exc:  # noqa: BLE001 — fail open; see panel()
-        return {"ok": False, "error": f"{type(exc).__name__}: {exc}"}
+        return {"ok": False, "error": "Could not derive the evidence estate",
+                "error_code": "changed_during_read" if isinstance(exc, EvidenceChangedDuringRead)
+                else "evidence_estate_unavailable"}
 
     registry_rows = (registry.get("engines") or []) + (registry.get("excluded") or [])
     cell = next(
@@ -822,5 +880,6 @@ def engine_detail(engine_id: str, root: Path | None = None) -> dict[str, Any]:
     return {
         "ok": True,
         "engine": engine,
+        "generated": view.get("generated") or {},
         "outputs": sorted(outputs, key=lambda r: str(r.get("artifact_id"))),
     }

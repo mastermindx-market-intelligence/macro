@@ -28,7 +28,8 @@ def _contract() -> str:
         "the existing Intelligence OS page must expose its pure evidence rendering "
         "contract for executable client tests"
     )
-    return source.split(START, 1)[1].split(END, 1)[0]
+    copy = source.split("/* Display only: canonical status/filter/owner data remain unchanged. */", 1)[1].split("const IOS_STATE_CLS", 1)[0]
+    return copy + source.split(START, 1)[1].split(END, 1)[0]
 
 
 def _run(cases: list[dict]) -> list[dict]:
@@ -39,6 +40,8 @@ def _run(cases: list[dict]) -> list[dict]:
         pytest.skip("node not available to execute the client contract")
     harness = f"""
 const esc = (s) => String(s == null ? "" : s).replace(/[&<>\"']/g, c => ({{ "&": "&amp;", "<": "&lt;", ">": "&gt;", '\"': "&quot;", "'": "&#39;" }}[c]));
+const document = {{ documentElement: {{ dataset: {{ lang: "en" }} }}, addEventListener() {{}} }};
+const $ = () => null;
 const fmtNum = (n) => n == null ? "—" : Number(n).toLocaleString("en-US");
 {_contract()}
 const cases = JSON.parse(process.argv[2]);
@@ -168,3 +171,202 @@ def test_noncanonical_detail_renders_registry_gap_not_an_evidence_disposition():
     assert "Accruing" not in html
     assert "Registry gap" in rendered["cell"]
     assert "Accruing" not in rendered["cell"]
+
+
+# Append to existing tests/test_admin_intelligence_os_ui.py under its owner's custody.
+def _preferences_run(case: dict) -> dict:
+    node = shutil.which("node")
+    if node is None:
+        if os.environ.get("CI"):
+            raise AssertionError("Node is required for the admin preference contract")
+        pytest.skip("node not available")
+    source = (REPO / "admin/static/preferences.js").read_text(encoding="utf-8")
+    harness = r"""
+const vm = require('node:vm');
+const c = JSON.parse(process.argv[2]);
+const attrs = {}, events = [], stored = Object.assign({}, c.stored || {});
+const root = { style: {}, setAttribute(k,v) { attrs[k]=v; } };
+function element(attrs = {}) {
+  return { attrs, value: '', textContent: '', listeners: {},
+    getAttribute(k){return this.attrs[k];}, setAttribute(k,v){this.attrs[k]=v;},
+    addEventListener(k,fn){this.listeners[k]=fn;},
+    get innerHTML(){throw Error('innerHTML read forbidden');},
+    set innerHTML(v){throw Error('innerHTML rewrite forbidden');} };
+}
+const theme=element(), lang=element();
+const label=element({'data-admin-en':'Theme','data-admin-zh':'主题'});
+const placeholder=element({'data-admin-placeholder-en':'Password','data-admin-placeholder-zh':'密码'});
+const aria=element({'data-admin-aria-en':'Open navigation','data-admin-aria-zh':'打开导航'});
+const docListeners={};
+const document={documentElement:root,readyState:'loading',
+ getElementById(id){return c.absent ? null : ({adminTheme:theme,adminLanguage:lang}[id] || null);},
+ querySelectorAll(selector){return selector.includes('placeholder')?[placeholder]:selector.includes('aria')?[aria]:[label];},
+ addEventListener(k,fn){docListeners[k]=fn;}, dispatchEvent(e){events.push({type:e.type,detail:e.detail});}
+};
+const storage={getItem(k){if(c.deny)throw Error('denied');return stored[k] || null;},
+ setItem(k,v){if(c.deny)throw Error('denied');stored[k]=v;}, removeItem(k){if(c.deny)throw Error('denied');delete stored[k];}};
+const ctx={document,window:{matchMedia(){return {matches:c.deviceDark !== false};}},localStorage:storage,
+ CustomEvent:function(type,opts){this.type=type;this.detail=opts.detail;}};
+vm.runInNewContext(SOURCE,ctx);
+const beforeDOMContentLoaded={...attrs,lang:root.lang};
+docListeners.DOMContentLoaded();
+if(c.change){const control=c.change.control==='theme'?theme:lang;control.value=c.change.value;control.listeners.change({target:control});}
+console.log(JSON.stringify({attrs,lang:root.lang,colorScheme:root.style.colorScheme,stored,events,
+ beforeDOMContentLoaded,label:label.textContent,placeholder:placeholder.placeholder,aria:aria.attrs['aria-label'],themeValue:theme.value,languageValue:lang.value}));
+""".replace("SOURCE", json.dumps(source))
+    with tempfile.TemporaryDirectory() as td:
+        path = Path(td) / "admin_preferences.cjs"
+        path.write_text(harness, encoding="utf-8")
+        run = subprocess.run([node, str(path), json.dumps(case)], capture_output=True, text=True, check=False)
+    assert run.returncode == 0, run.stdout + run.stderr
+    return json.loads(run.stdout)
+
+
+def test_preferences_validate_and_apply_before_dom_ready():
+    valid = _preferences_run({"stored": {"theme": "light", "lang": "zh"}})
+    assert valid["beforeDOMContentLoaded"] == {"data-theme": "light", "data-lang": "zh", "lang": "zh-CN"}
+    assert valid["colorScheme"] == "light"
+    assert valid["label"] == "主题"
+    assert valid["placeholder"] == "密码"
+    assert valid["aria"] == "打开导航"
+    invalid = _preferences_run({"stored": {"theme": "arbitrary", "lang": "zh-CN"}})
+    assert invalid["attrs"] == {"data-theme": "dark", "data-lang": "en"}
+    assert invalid["lang"] == "en"
+
+
+def test_preferences_survive_storage_denial_and_emit_shared_contract():
+    changed = _preferences_run({"deny": True, "deviceDark": False, "change": {"control": "language", "value": "zh"}})
+    assert changed["attrs"] == {"data-theme": "light", "data-lang": "zh"}
+    assert changed["lang"] == "zh-CN"
+    assert changed["events"] == [{"type": "langchange", "detail": "zh"}]
+    theme = _preferences_run({"stored": {"themeAuto": "1"}, "change": {"control": "theme", "value": "light"}})
+    assert theme["stored"]["theme"] == "light"
+    assert "themeAuto" not in theme["stored"]
+    assert theme["events"] == [{"type": "themechange", "detail": "light"}]
+
+
+def test_preferences_reject_unknown_control_values_and_tolerate_absent_controls():
+    rejected = _preferences_run({"change": {"control": "language", "value": "<img onerror=1>"}})
+    assert rejected["attrs"]["data-lang"] == "en"
+    assert rejected["events"] == []
+    assert rejected["languageValue"] == "en"
+    absent = _preferences_run({"absent": True, "stored": {"theme": "light", "lang": "zh"}})
+    assert absent["attrs"] == {"data-theme": "light", "data-lang": "zh"}
+
+
+def test_detail_plain_support_preserves_zero_partial_horizon_and_technical_scope():
+    rendered=_run([{"statuses":[],"bands":[],"engine":{
+        "evidence_status":"Accruing","validation_state":"validated",
+        "evidence_reason_codes":["owner_validation_scope_unqualified"],
+        "evidence_ruler":{"declared_horizon":{"horizon_d":[126]},"selected_qledger_rung":"63",
+          "qledger_clock":{"horizon_unit":"trading_days","clock_market":"US"}},
+        "evidence_maturity":{"rungs":{"63":{"n_dates":0,"needed":25}}},
+        "evidence_coverage":{"by_horizon":{"63":{"control_coverage":0,"n_cohort_rows":10,
+          "n_controlled_rows":0,"n_control_refused_rows":10}}},
+        "evidence_owner_scope":{"bound_species":[{"species_id":"<fixture>","owner_scope":{"version":"1"}}]}
+    }}])[0]
+    html=rendered["detail"]
+    assert "Declared horizon" in html and "Graded horizon" in html and "Market calendar" in html
+    assert "Partial horizon evidence" in html and "仅完成部分窗口" in html
+    assert "Observed dates" in html and ">0<" in html
+    assert "<details" in html and "Technical details" in html
+    assert "&lt;fixture&gt;" in html and "<fixture>" not in html
+    assert "owner_validation_scope_unqualified" in html and "任务" in html
+
+
+def test_refresh_uses_accepted_generation_and_restores_rejected_read_without_raw_error():
+    node=shutil.which("node")
+    if node is None:pytest.skip("node unavailable")
+    source=APP.read_text(encoding="utf-8")
+    renderer=source[source.index("RENDER.intelligence_os = async"):source.index("/* ---- Intelligence OS · engine detail")]
+    harness=r'''
+const vm=require('node:vm');
+const renderer=JSON.parse(process.argv[2]);
+async function run(reject) {
+ const v={innerHTML:''},b={disabled:false,textContent:''},status={textContent:'',dataset:{}};
+ let cache={ok:true,marker:'old',generated:{observed_at:'fixture-old'},engines:[],census:{}};
+ const calls=[],toasts=[];
+ const c={RENDER:{},IOS:{},Date,$:s=>s==='#view'?v:s==='#ios-refresh'?b:s==='#iosRefreshStatus'?status:null,
+ api:async p=>{calls.push(p);if(p.includes('force=1')){if(reject)throw Error('SECRET_CANARY');return{ok:true,marker:'fresh',generated:{observed_at:'fixture-fresh'},engines:[],census:{}}}return cache},
+ clearApiCache:()=>{cache=null},apiCacheStore:(p,e)=>{cache=e.value},apiCacheTtl:()=>300000,
+ iosText:s=>s,iosCopy:s=>s,iosHero:d=>d.generated.observed_at,iosReasonCard:()=>'',iosCeoView:()=>'',
+ iosRenderChips:()=>{},iosRenderTable:()=>{},fmtNum:String,nwEmpty:()=>'',toast:s=>toasts.push(s),
+ iosRestoreFocus:()=>{},iosLanguageAttributes:()=>{status.textContent='Refresh failed '+status.dataset.assessed},go:()=>{}};
+ vm.createContext(c);vm.runInContext(renderer,c);await c.RENDER.intelligence_os();await b.onclick();await Promise.resolve();await Promise.resolve();
+ return{marker:c.IOS.data.marker,calls,disabled:b.disabled,status:status.textContent,toasts,html:v.innerHTML};
+}
+(async()=>console.log(JSON.stringify({fresh:await run(false),failed:await run(true)})))();
+'''
+    with tempfile.TemporaryDirectory() as td:
+        path=Path(td)/"refresh.cjs";path.write_text(harness)
+        result=subprocess.run([node,str(path),json.dumps(renderer)],capture_output=True,text=True)
+    assert result.returncode==0,result.stderr
+    data=json.loads(result.stdout)
+    assert data["fresh"]["marker"]=="fresh" and len(data["fresh"]["calls"])==2
+    assert "fixture-fresh" in data["fresh"]["html"]
+    assert data["failed"]["marker"]=="old" and data["failed"]["disabled"] is False
+    assert "fixture-old" in data["failed"]["status"] and "Refresh failed" in data["failed"]["status"]
+    assert "SECRET_CANARY" not in json.dumps(data)
+
+
+def test_translated_filter_copy_retains_canonical_values_and_counts():
+    node=shutil.which("node")
+    if node is None:pytest.skip("node unavailable")
+    source=APP.read_text(encoding="utf-8")
+    copy=source.split("/* Display only: canonical status/filter/owner data remain unchanged. */",1)[1].split("const IOS_STATE_CLS",1)[0]
+    chip=source[source.index("function iosChip("):source.index("function iosMatches")]
+    harness="""
+const esc=s=>String(s==null?'':s).replace(/[&<>\"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;',"'":'&#39;'}[c]));
+const dataAttrs=o=>Object.entries(o).map(([k,v])=>' data-'+k+'="'+esc(v)+'"').join('');
+const document={documentElement:{dataset:{lang:'zh'}},addEventListener(){}};
+const $=()=>null;
+"""+copy+chip+"\nconsole.log(JSON.stringify({e:iosCountsToChips({Accruing:2},'evidence_status',null),c:iosCountsToChips({classification_state:1},'output_class',null)}));"
+    with tempfile.TemporaryDirectory() as td:
+        p=Path(td)/"chips.js";p.write_text(harness)
+        result=subprocess.run([node,str(p)],capture_output=True,text=True)
+    assert result.returncode==0,result.stderr
+    rendered=json.loads(result.stdout)
+    assert 'data-val="Accruing"' in rendered["e"] and "证据积累中" in rendered["e"] and "(2)" in rendered["e"]
+    assert 'data-val="classification_state"' in rendered["c"] and "状态分类" in rendered["c"]
+
+
+def test_detail_return_restores_same_engine_focus_or_search_without_fetch():
+    node=shutil.which("node")
+    if node is None:pytest.skip("node unavailable")
+    source=APP.read_text(encoding="utf-8")
+    function=source[source.index("function iosRestoreFocus("):source.index("function iosLanguageAttributes")]
+    harness='''let focused=''; const IOS={restoreFocus:true,returnFocusId:'fixture-engine'};
+const link={dataset:{iosEngine:'fixture-engine'},focus(){focused='engine'}};
+const search={focus(){focused='search'}};
+'''+function+'''
+const root={querySelectorAll:()=>[link],querySelector:()=>search};
+iosRestoreFocus(root); if(focused!=='engine'||IOS.restoreFocus)throw Error('same engine not restored');
+IOS.restoreFocus=true;root.querySelectorAll=()=>[];iosRestoreFocus(root);
+if(focused!=='search')throw Error('missing link fallback');
+console.log('PASS');'''
+    with tempfile.TemporaryDirectory() as td:
+        p=Path(td)/"focus.js";p.write_text(harness)
+        result=subprocess.run([node,str(p)],capture_output=True,text=True)
+    assert result.returncode==0,result.stderr
+    assert result.stdout.strip()=="PASS"
+
+
+def test_mobile_drawer_aria_keeps_current_state_in_both_languages():
+    node=shutil.which("node")
+    if node is None:pytest.skip("node unavailable")
+    source=APP.read_text(encoding="utf-8")
+    function=source[source.index("function setSidebarOpen("):source.index("function wireSidebarDrawer")]
+    harness='''function classes(){return{values:new Set(),contains(v){return this.values.has(v)},toggle(v,on){if(on)this.values.add(v);else this.values.delete(v)}}}
+const sidebar={classList:classes(),setAttribute(){},removeAttribute(){},contains(){return false}};
+const scrim={classList:classes()}, toggle={attrs:{},setAttribute(k,v){this.attrs[k]=v},focus(){}};
+const document={body:{classList:classes()},activeElement:null};
+const window={matchMedia:()=>({matches:true})};const $=s=>({'#sidebar':sidebar,'#sidebarScrim':scrim,'#sidebarToggle':toggle}[s]||null);
+let language='zh'; const iosText=s=>language==='zh'?({'Close navigation':'关闭导航','Open navigation':'打开导航'}[s]||s):s;
+'''+function+'''
+setSidebarOpen(true); if(toggle.attrs['aria-label']!=='关闭导航'||toggle.attrs['data-admin-aria-en']!=='Close navigation')throw Error('open label');
+setSidebarOpen(false); if(toggle.attrs['aria-label']!=='打开导航'||toggle.attrs['data-admin-aria-zh']!=='打开导航')throw Error('closed label');
+language='en';setSidebarOpen(true);if(toggle.attrs['aria-label']!=='Close navigation')throw Error('English label');console.log('PASS');'''
+    with tempfile.TemporaryDirectory() as td:
+        p=Path(td)/"drawer.js";p.write_text(harness)
+        result=subprocess.run([node,str(p)],capture_output=True,text=True)
+    assert result.returncode==0,result.stderr

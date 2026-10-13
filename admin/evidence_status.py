@@ -18,7 +18,7 @@ EVIDENCE_STATUS_ORDER: tuple[str, ...] = (
     "Disproven",
 )
 
-_TERMINAL_STATES = frozenset({"falsified", "retired"})
+_TERMINAL_STATES = frozenset({"falsified"})
 _UNTRUSTWORTHY_HEALTH = frozenset({"degraded", "stale", "unavailable"})
 _PROVIDER_BLIND = frozenset({"could_not_look", "unreadable", "partial", "error"})
 _LEGACY_CLOCK = "legacy_calendar_unstamped"
@@ -86,15 +86,6 @@ def _provider_readiness(provider: Mapping[str, Any] | None) -> dict[str, dict]:
 
 
 def _declared_horizon(cell: Mapping[str, Any], provider: Mapping[str, Any] | None) -> int | None:
-    clock = provider.get("clock_start") if isinstance(provider, Mapping) else None
-    if isinstance(clock, Mapping):
-        try:
-            value = int(clock.get("declared_horizon_d"))
-            if value > 0:
-                return value
-        except (TypeError, ValueError):
-            pass
-
     declared = cell.get("declared_horizon") or {}
     raw = declared.get("horizon_d") if isinstance(declared, Mapping) else None
     values = raw if isinstance(raw, (list, tuple, set)) else [raw]
@@ -106,7 +97,19 @@ def _declared_horizon(cell: Mapping[str, Any], provider: Mapping[str, Any] | Non
             continue
         if value_i > 0:
             parsed.append(value_i)
-    return max(parsed) if parsed else None
+    if parsed:
+        return max(parsed)
+
+    clock = provider.get("clock_start") if isinstance(provider, Mapping) else None
+    if isinstance(clock, Mapping):
+        try:
+            value = int(clock.get("declared_horizon_d"))
+            if value > 0:
+                return value
+        except (TypeError, ValueError):
+            pass
+
+    return None
 
 
 def _ruler_row(
@@ -261,12 +264,21 @@ def derive_evidence_status(
         if state in _UNTRUSTWORTHY_HEALTH:
             health_blocked = True
             reasons.append(f"health_{state}")
-        elif state not in (None, "healthy"):
+        elif state is None:
+            health_blocked = True
+            reasons.append("health_unassessed")
+        elif state != "healthy":
             health_blocked = True
             reasons.append("health_unknown_state")
         if assessment == "could_not_look":
             health_blocked = True
             reasons.append("health_blind")
+        elif assessment == "partial":
+            health_blocked = True
+            reasons.append("health_partial")
+        elif assessment != "complete":
+            health_blocked = True
+            reasons.append("health_assessment_unqualified")
 
     provider_read = (
         str(provider.get("read_status") or "ok") if isinstance(provider, Mapping) else None
@@ -309,13 +321,21 @@ def derive_evidence_status(
     if validation in _TERMINAL_STATES:
         status = "Disproven"
         reasons.insert(0, f"owner_terminal_{validation}")
+    elif validation == "retired":
+        # Withdrawal can follow a supported version. The owner lifecycle is retained
+        # below; retirement alone does not claim contrary empirical evidence.
+        status = "Degraded"
+        reasons.insert(0, "owner_terminal_retired")
     elif health_blocked or provider_blocked:
         status = "Degraded"
     elif mixed_basis or immature:
         status = "Accruing"
     elif output_class is not None and validation == "validated":
-        status = "Validated"
-        reasons.append("owner_validated")
+        # T1 preserves the owner's lifecycle, but its current projection has no
+        # compatible task/version/cohort qualification. Readiness alone cannot
+        # establish that qualification either. Do not infer an empirical pass.
+        status = "Accruing"
+        reasons.append("owner_validation_scope_unqualified")
     elif semantic_ungraded:
         status = "Ungraded by design"
         reasons.append("t1_semantic_ungraded")
@@ -351,6 +371,15 @@ def derive_evidence_status(
         "evidence_reason_codes": _dedupe(reasons),
         "evidence_refs": _dedupe(refs),
         "evidence_provider": provider_summary,
+        "evidence_owner_scope": {
+            "source": "data/species/registry.json",
+            "owner_lifecycle": cell.get("validation_state"),
+            "bound_species": validation_evidence.get("bound_species")
+                if isinstance(validation_evidence, Mapping) else None,
+            "qualified_task_scope": None,
+            "reason": "owner_validation_scope_unqualified"
+                if validation == "validated" else None,
+        },
         "evidence_ruler": {
             "declared_horizon": cell.get("declared_horizon"),
             "selected_qledger_rung": ruler_key,

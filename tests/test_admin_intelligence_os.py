@@ -525,8 +525,10 @@ def test_validated_requires_the_existing_owner_lifecycle_not_qledger_readiness()
     )
 
     assert still_phase0["evidence_status"] == "Accruing"
-    assert owner_validated["evidence_status"] == "Validated"
-    assert "owner_validated" in owner_validated["evidence_reason_codes"]
+    assert owner_validated["evidence_status"] == "Accruing"
+    assert "owner_validation_scope_unqualified" in owner_validated["evidence_reason_codes"]
+    assert owner_validated["evidence_owner_scope"]["owner_lifecycle"] == "validated"
+    assert owner_validated["evidence_owner_scope"]["qualified_task_scope"] is None
     assert "evidence_score" not in owner_validated
 
 
@@ -1469,3 +1471,176 @@ def test_an_absent_sentinel_file_is_passed_as_none_never_a_dangling_path(
     seen = _capture_builder_kwargs(monkeypatch)
     assert IOS.panel(root=root, force=True)["ok"] is True
     assert seen.get("staleness_json") is None
+
+# Evaluation OS consumer boundary regressions: synthetic owners, no market outcomes.
+@pytest.mark.parametrize("output_class", ["predictive", "ranking", "classification_state",
+    "detection_event", "descriptive", "salience", "generative"])
+def test_lifecycle_only_validation_preserves_owner_scope_without_empirical_pass(output_class):
+    cell = evidence_cell(validation_state="validated", output_class=output_class,
+        validation_state_evidence={"bound_species": [{"species_id": "fixture-v1",
+          "validation_status": "validated", "owner_scope": {"version": "1.0", "market_scope": ["US"]}}]})
+    result = IOS.derive_evidence_status(cell, [healthy_output()])
+    assert result["evidence_status"] == "Accruing"
+    assert "owner_validation_scope_unqualified" in result["evidence_reason_codes"]
+    assert result["evidence_owner_scope"]["owner_lifecycle"] == "validated"
+    assert result["evidence_owner_scope"]["bound_species"][0]["owner_scope"]["version"] == "1.0"
+    assert result["evidence_owner_scope"]["qualified_task_scope"] is None
+    assert "species:fixture-v1" in result["evidence_refs"]
+
+
+@pytest.mark.parametrize("output", [{}, {"state": None, "assessment_status": "partial"},
+    {"state": "healthy", "assessment_status": "partial"}, {"state": "healthy"}])
+def test_unqualified_health_cannot_support_owner_validation(output):
+    result = IOS.derive_evidence_status(evidence_cell(validation_state="validated"), [output])
+    assert result["evidence_status"] == "Degraded"
+
+
+def test_retirement_is_preserved_without_claiming_empirical_falsification():
+    retired = IOS.derive_evidence_status(evidence_cell(validation_state="retired"), [healthy_output()])
+    falsified = IOS.derive_evidence_status(evidence_cell(validation_state="falsified"), [healthy_output()])
+    assert retired["evidence_status"] == "Degraded"
+    assert "owner_terminal_retired" in retired["evidence_reason_codes"]
+    assert retired["evidence_maturity"]["validation_state"] == "retired"
+    assert falsified["evidence_status"] == "Disproven"
+
+
+def test_current_declared_horizon_union_outranks_immutable_first_clock():
+    provider = qledger_provider()
+    provider["clock_start"]["declared_horizon_d"] = 20
+    provider["readiness"] = {str(n): {"n_dates": 0, "ready": False} for n in (5,21,63)}
+    result = IOS.derive_evidence_status(evidence_cell(declared_horizon={"horizon_d": [20,126]}), [healthy_output()], provider)
+    assert result["evidence_ruler"]["selected_qledger_rung"] == "63"
+    assert result["evidence_ruler"]["qledger_clock"]["horizon_d"] == 20
+    assert result["evidence_ruler"]["declared_horizon"]["horizon_d"] == [20,126]
+    assert provider["clock_start"]["declared_horizon_d"] == 20
+
+
+def test_same_size_preserved_mtime_corrections_invalidate_generation(tmp_path):
+    path = tmp_path / "claims.jsonl"
+    path.write_text("A\n")
+    stamp = path.stat().st_mtime_ns
+    a = IOS._mtime_ns(path)
+    path.write_text("B\n")
+    os.utime(path, ns=(stamp,stamp))
+    b = IOS._mtime_ns(path)
+    path.write_text("A\n")
+    os.utime(path, ns=(stamp,stamp))
+    a2 = IOS._mtime_ns(path)
+    assert path.stat().st_mtime_ns == stamp
+    assert a != b and b != a2
+
+
+def test_changed_legacy_source_during_build_refuses_mixed_generation(monkeypatch, tmp_path):
+    root = one_engine(tmp_path)
+    claims = root / "data/qledger/claims.jsonl"
+    claims.parent.mkdir(parents=True,exist_ok=True)
+    claims.write_text("A\n")
+    from scripts import build_output_health as builder
+    original = builder.build_with_registry
+    def moving(*args, **kwargs):
+        result = original(*args, **kwargs)
+        stamp = claims.stat().st_mtime_ns
+        claims.write_text("B\n")
+        os.utime(claims,ns=(stamp,stamp))
+        return result
+    monkeypatch.setattr(builder,"build_with_registry",moving)
+    result = IOS.panel(root=root,force=True)
+    assert result["ok"] is False and result["error_code"] == "changed_during_read"
+    assert not IOS._CACHE
+
+
+def _native_fixture(raw):
+    from hashlib import sha256
+    from engine import qledger_store_protocol as p
+    limits = p.ProtocolLimits()
+    digest = sha256(raw).hexdigest()
+    ref = p.MemberRef(p.BASE_PATH,digest,len(raw))
+    record = p.RootRecord(ref,None,0,len(raw),digest,limits.fingerprint)
+    return p.verify_snapshot(p.InMemorySource({p.BASE_PATH:raw},snapshot_id="fixture:"+digest),record,limits=limits)
+
+
+class _RetainedClaimsFixture:
+    def __init__(self,path,*snapshots):
+        self.claims_path=path;self.snapshots=snapshots;self.reads=0
+    def read_snapshot(self):
+        value=self.snapshots[min(self.reads,len(self.snapshots)-1)];self.reads+=1;return value
+
+
+def test_selected_native_counts_and_values_use_one_snapshot_without_legacy_file(tmp_path):
+    from engine import qledger_store as store,qledger
+    path=tmp_path/"data/qledger/claims.jsonl"
+    raw=b'{"claim_id":"first"}\n{"claim_id":"first"}\nnull\nbad\n#comment\n'
+    binding=_RetainedClaimsFixture(path,_native_fixture(raw),_native_fixture(b'{}\n'))
+    with store._synthetic_claims_binding(path,binding),store.ClaimsReadScope(tmp_path):
+        before=IOS._claims_source_key(tmp_path)
+        assert IOS._claims_candidate_count(path)==(4,None)
+        assert qledger.load_claims(tmp_path)==[{"claim_id":"first"},{"claim_id":"first"},None]
+        assert IOS._claims_source_key(tmp_path)==before
+        assert binding.reads==1
+    assert not path.exists() and not store.uses_native_claims(path)
+
+
+def test_native_cache_identity_tracks_selected_owner_a_b_a_not_physical_file(tmp_path):
+    from engine import qledger_store as store
+    path=tmp_path/"data/qledger/claims.jsonl"
+    binding=_RetainedClaimsFixture(path,_native_fixture(b'A\n'),_native_fixture(b'B\n'),_native_fixture(b'A\n'))
+    with store._synthetic_claims_binding(path,binding):
+        keys=[IOS._claims_source_key(tmp_path) for _ in range(3)]
+    assert keys[0]!=keys[1] and keys[0]==keys[2]
+    assert keys[0][0]=="native" and binding.reads==3
+
+
+def test_private_derivation_error_has_fixed_unknown_failure(monkeypatch,tmp_path):
+    def fail(*a,**k):raise RuntimeError("/private/synthetic SECRET_CANARY")
+    monkeypatch.setattr(IOS,"_derive",fail)
+    for result in (IOS.panel(root=tmp_path),IOS.engine_detail("fixture",root=tmp_path)):
+        assert result["ok"] is False and result["error_code"]=="evidence_estate_unavailable"
+        assert "SECRET_CANARY" not in json.dumps(result) and "/private" not in json.dumps(result)
+
+
+@pytest.mark.parametrize("output_class", ["predictive","ranking","classification_state","detection_event","descriptive","salience","generative"])
+def test_real_t1_t4_panel_detail_keep_unqualified_owner_support_separate(monkeypatch,tmp_path,output_class):
+    from engine import intelligence_registry as ir, output_health as oh
+    eid="engine/a.py::fixture"
+    doc={"meta":{},"artifacts":{"a":artifact("data/fixture/theses.jsonl",producer="engine/a.py",owner="fixture",tier="shadow",asof_field=None,sla=None)}}
+    registry=ir.build_registry(synapse=doc,overlay={"schema_version":1,"engines":{eid:{"output_class":{"value":output_class,"rationale":"synthetic"}}}},species=[{"species_id":"fixture-v1","validation_status":"validated","version":"1.0","ledger_binding":{"ledger":"data/fixture/theses.jsonl"}}],file_exists=lambda _:True,qual_ladder_keys=set())
+    observation={"exists":True,"presence_source":"filesystem","content_asof_raw":None,"asof_field_present":None,"watermark_field_used":None,"mtime_utc":None,"mtime_trusted":False,"parse_error":None,"sparse_unmaterialized":False}
+    for partial,expected in [(False,"Accruing"),(True,"Degraded")]:
+        extra={"reader_observations":{"a":{"source":"fixture","verdict":"indeterminate","clock_kind":"transport"}},"self_health":{"a":{"source":"fixture","status":"unknown"}}} if partial else {}
+        view=oh.resolve_output_health(synapse=doc,registry=registry,observations={"a":observation},now=datetime.now(timezone.utc),**extra)
+        if partial:assert view["outputs"][0]["state"] is None and view["outputs"][0]["assessment_status"]=="partial"
+        provider=IOS._load_evidence_providers(tmp_path,registry)
+        assert provider=={}
+        monkeypatch.setattr(IOS,"_derive",lambda *_a,**_k:(view,registry,provider,0.,"miss"))
+        row=IOS.panel(root=tmp_path)["engines"][0]
+        detail=IOS.engine_detail(eid,root=tmp_path)["engine"]
+        assert row["evidence_status"]==detail["evidence_status"]==expected
+        assert detail["validation_state"]=="validated"
+        assert detail["evidence_owner_scope"]["bound_species"][0]["owner_scope"]["version"]=="1.0"
+
+
+def test_real_claims_reader_t1_provider_current_horizon_correction(monkeypatch,tmp_path):
+    from engine import intelligence_registry as ir,qledger as q
+    from scripts import build_intelligence_registry as builder
+    root=tmp_path;family="fixture-ruler";eid="engine/fixture.py::ruler-fixture"
+    clock={"claim_family":family,"first_prospective_registration_utc":"2026-08-19T08:00:00+00:00","declared_horizon_d":20,"horizon_unit":"trading_days","git_sha":"fixture-only"}
+    base=root/"data/qledger";(base/"evidence_clock_start").mkdir(parents=True)
+    (base/f"evidence_clock_start/{family}.json").write_text(json.dumps(clock));(base/"grades.jsonl").write_text("")
+    (root/"config").mkdir();(root/"config/qual_ladder.yml").write_text("families: {}\n")
+    entry=artifact("data/fixture/view.json",producer="engine/fixture.py",owner="ruler-fixture",tier="shadow",asof_field=None,sla=None)
+    for horizons,expected in [([20],"5"),([20,126],"63")]:
+        claims=[{"claim_id":f"fixture-{h}","desk":family,"claim_family":family,"asof":"2026-08-19","scope":{"type":"entity","key":"AAPL"},"direction":1,"horizon_d":h,"horizon_unit":"trading_days","timestamp_quality":next(iter(q.TIMESTAMP_QUALITY)),"bench":"SPY"} for h in horizons]
+        assert all(IOS._valid_claim_row(c,q) for c in claims)
+        (base/"claims.jsonl").write_text("".join(json.dumps(c)+"\n" for c in claims))
+        builder._READ_CACHE.clear()
+        loaded=builder._load_qledger(root)
+        registry=ir.build_registry(synapse={"meta":{},"artifacts":{"fixture":entry}},overlay={"schema_version":1,"engines":{eid:{"output_class":{"value":"predictive","rationale":"synthetic"}}}},desk_scans={"engine/fixture.py":ir.DeskScan(True,(family,),False)},qledger_desk_rows=loaded.rows,qledger_desk_horizons=loaded.horizons,species=[],file_exists=lambda _:True,qual_ladder_keys=set())
+        provider=IOS._load_evidence_providers(root,registry)
+        assert provider[eid]["read_status"]=="ok"
+        view={"outputs":[healthy_output(engine_id=eid)],"summary":{}}
+        monkeypatch.setattr(IOS,"_derive",lambda *_a,**_k:(view,registry,provider,0.,"miss"))
+        panel=IOS.panel(root=root)["engines"][0]["evidence_ruler"]
+        detail=IOS.engine_detail(eid,root=root)["engine"]["evidence_ruler"]
+        assert panel==detail and panel["selected_qledger_rung"]==expected
+        assert panel["declared_horizon"]["horizon_d"]==horizons
+        assert json.loads((base/f"evidence_clock_start/{family}.json").read_text())==clock

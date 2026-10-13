@@ -6323,7 +6323,7 @@ button.obx-btn-reject:hover:not(:disabled) {
   background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-sm);
   cursor: pointer; transition: border-color var(--dur) var(--ease), transform var(--dur) var(--ease);
 }
-.ios-evidence-band:hover { border-color: var(--accent); transform: translateY(-1px); }
+.ios-evidence-band:hover { border-color: var(--accent); }
 .ios-evidence-band.on { border-color: var(--accent-cyan); box-shadow: 0 0 0 2px rgba(56,224,212,.1); }
 .ios-band-order { position: absolute; top: 8px; right: 9px; color: var(--faint); font: 10px var(--mono); }
 .ios-band-name { display: inline-block; padding: 2px 7px; border-radius: 5px; font-size: 11px; font-weight: 650; }
@@ -6453,4 +6453,96 @@ button.admin-notice { cursor:pointer; }
   .cs-review-controls label { flex-basis:100%; }
   .cs-review-controls .btn { flex:1 1 auto; }
   .cs-review-pager { justify-content:space-between; gap:8px; }
+}
+
+/* Intelligence OS experience: governed canonical tokens, two material treatments.
+   Token values come only from templates/theme.css via /assets/theme-tokens.css. */
+html[data-theme="light"] {
+  --bg: var(--admin-canonical-bg);
+  --surface: var(--admin-canonical-panel);
+  --surface2: var(--admin-canonical-panel2);
+  --grid: var(--admin-canonical-line);
+  --border: var(--admin-canonical-line);
+  --text: var(--admin-canonical-text);
+  --muted: var(--admin-canonical-muted);
+  --faint: var(--admin-canonical-muted);
+  --accent: var(--admin-canonical-ink-link);
+  --accent2: var(--admin-canonical-ink-link);
+  --accent-cyan: var(--admin-canonical-ink-info);
+  --ok: var(--admin-canonical-ink-ok);
+  --warn: var(--admin-canonical-ink-warn);
+  --bad: var(--admin-canonical-ink-act);
+  --info: var(--admin-canonical-ink-info);
+  --ok-bg: color-mix(in srgb, var(--ok) 9%, var(--surface));
+  --warn-bg: color-mix(in srgb, var(--warn) 9%, var(--surface));
+  --bad-bg: color-mix(in srgb, var(--bad) 9%, var(--surface));
+  --info-bg: color-mix(in srgb, var(--info) 9%, var(--surface));
+  --sans: var(--admin-canonical-font-ui);
+  --mono: var(--admin-canonical-font-mono);
+  --shadow-card: var(--admin-canonical-card-shadow);
+  --shadow-lift: var(--admin-canonical-popover-shadow);
+}
+html[data-theme="light"] .topbar,
+html[data-theme="light"] .sidebar { background: var(--surface); }
+html[data-theme="light"] .topbar::after { display: none; }
+html[data-theme="light"] .nw-hero,
+html[data-theme="light"] .ios-evidence-card,
+html[data-theme="light"] .ios-evidence-band {
+  background: var(--surface);
+  border-color: var(--border);
+  box-shadow: var(--shadow-card);
+}
+html[data-theme="light"] .ios-evidence-band.on {
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 5%, var(--surface));
+  box-shadow: var(--shadow-card);
+}
+html[data-theme="light"] .nw-hero-status-word {
+  background: none;
+  -webkit-text-fill-color: var(--text);
+  color: var(--text);
+}
+html[data-theme="light"] .ent-chip.on {
+  color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 8%, var(--surface));
+  border-color: var(--accent);
+}
+.admin-preferences { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }
+.admin-preferences label { display: flex; align-items: center; gap: 5px; font-size: 12px; color: var(--muted); }
+.admin-preferences select {
+  background: var(--surface); color: var(--text); border: 1px solid var(--border);
+  border-radius: var(--r-sm); padding: 6px 8px; font: inherit; min-height: 34px;
+}
+.admin-preferences select:focus-visible,
+.ios-evidence-band:focus-visible,
+.ios-evidence-card summary:focus-visible {
+  outline: 2px solid var(--accent); outline-offset: 3px;
+}
+.ios-evidence-reason { margin-top: 6px; max-width: 36em; overflow-wrap: anywhere; }
+#iosTbl a { color: var(--accent); }
+#iosTbl a:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+.ios-evidence-card details { margin-top: 12px; border-top: 1px solid var(--grid); padding-top: 10px; }
+.ios-evidence-card summary { cursor: pointer; color: var(--muted); }
+.ios-evidence-card pre { white-space: pre-wrap; overflow-wrap: anywhere; background: var(--surface2); padding: 10px; border-radius: var(--r-sm); }
+.ios-evidence-head { flex-wrap: wrap; }
+.ios-band-sample { overflow: visible; }
+.ios-band-sample, .ios-band-order, .ios-filter-label,
+.ios-out-key, .ios-evidence-kv > span { color: var(--muted); }
+html:not([data-lang="zh"]) #view .l-zh,
+html[data-lang="zh"] #view .l-en { display: none; }
+.ios-cell-label { display: none; }
+@media (max-width: 720px) {
+  .sidebar:not(.open) { box-shadow: none; }
+  html[data-theme="light"] .sidebar.open { box-shadow: var(--shadow-lift); }
+  .admin-preferences { grid-column: 1 / -1; }
+  #iosTbl .ent-table { display: block; width: 100%; table-layout: auto; }
+  #iosTbl .ent-table thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+  #iosTbl .ent-table tbody, #iosTbl .ent-table tr { display: block; width: 100%; }
+  #iosTbl .ent-table tr { padding: 12px 0; border-bottom: 1px solid var(--border); }
+  #iosTbl .ent-table td { display: block; width: 100%; border: 0; padding: 5px 10px; white-space: normal; overflow-wrap: anywhere; }
+  #iosTbl .ent-table .ios-cell-label { display: block; color: var(--muted); font-size: 11px; margin-bottom: 3px; }
+  .ios-ceo-title { flex-wrap: wrap; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ios-evidence-band { transition: none; }
 }
