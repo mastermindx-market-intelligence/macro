@@ -23,7 +23,7 @@ changed:
 verified:
   - claim: "Both Industrials handoffs parse, and they are no longer hard validation errors."
     command: "python3 scripts/agentos.py validate --quiet"
-    result: "agentos: 1213 records (69 workstreams, 342 decisions, 304 discoveries, 498 handoffs) — 0 error(s), 92 warning(s)"
+    result: "agentos: 1706 records (94 workstreams, 453 decisions, 506 discoveries, 653 handoffs) — 0 error(s), 142 warning(s)"
   - claim: "Wave 4 sibling calculator imports under isolated Python."
     command: "python3 -I research/industrials/verify_wave4_research.py"
     result: "77 PASS, 0 FAIL"
@@ -40,9 +40,9 @@ unverified:
     what_would_verify: "PR 8250 merged to origin/main with tests that discriminate those three ids, in the same change that moves them off PENDING_8250."
 unresolved:
   - "G1-G5 remain unproven. #7905 and #7870 are still external seams. IND-D03, IND-D22 and IND-R213 have no merged owner."
-  - "This filename is the latest dated handoff that cites WS:GMI-THEME-GRAPH, so compile-context prefers it over THEME-INTELLIGENCE-CONVERGENCE-2026-09-19-LANE-A. That convergence file remains the theme-graph session record on disk."
+  - "python3 scripts/agentos.py compile-context --workstream GMI-THEME-GRAPH selects agentos/handoffs/GMI-THEME-GRAPH-2026-10-08.md as the latest handoff for WS:GMI-THEME-GRAPH and excludes this file as older_handoff (latest: GMI-THEME-GRAPH-2026-10-08). python3 scripts/agentos.py compile-context --workstream GMI-INDUSTRIALS-FIRST-VERTICAL selects agentos/handoffs/GMI-INDUSTRIALS-FIRST-VERTICAL-2026-09-29.md as the latest handoff for WS:GMI-INDUSTRIALS-FIRST-VERTICAL and lists agentos/handoffs/GMI-INDUSTRIALS-2026-09-24-first-vertical-implementation.md as older_handoff (latest: GMI-INDUSTRIALS-FIRST-VERTICAL-2026-09-29). The default 8000-token budget omits the selected handoff from the packed handoff section (507 tokens, rank 20)."
 next_actions:
-  - "Do not execute this packet as the next GMI theme-graph action. Resume theme-graph work from agentos/handoffs/THEME-INTELLIGENCE-CONVERGENCE-2026-09-19-LANE-A.md."
+  - "Do not execute this packet as the next GMI theme-graph action. Resume theme-graph work from the handoff compile-context --workstream GMI-THEME-GRAPH selects: agentos/handoffs/GMI-THEME-GRAPH-2026-10-08.md. Resume Industrials first-vertical work from the handoff compile-context --workstream GMI-INDUSTRIALS-FIRST-VERTICAL selects: agentos/handoffs/GMI-INDUSTRIALS-FIRST-VERTICAL-2026-09-29.md."
   - "Keep PR 7789 as the research carrier. A requirement leaves NOT_EXECUTED or PENDING_8250 only in the task change that implements it."
   - "When PR 8250 merges, move IND-D04, IND-D05 and IND-R210 off PENDING_8250 in that same change."
 do_not_redo:
@@ -50,7 +50,7 @@ do_not_redo:
   - "Do not mark a requirement PASS from this research packet. TESTS_ON_ORIGIN_MAIN means the anchor exists on origin/main; it is not a local execution receipt."
   - "Do not put product code on PR 7789."
 danger_areas:
-  - "Citing WS:GMI-THEME-GRAPH makes this file the compiled latest handoff for that workstream because the filename ends in 2026-09-24. The prior compiled latest is THEME-INTELLIGENCE-CONVERGENCE-2026-09-19-LANE-A.md."
+  - "compile-context --workstream GMI-THEME-GRAPH selects agentos/handoffs/GMI-THEME-GRAPH-2026-10-08.md as the latest handoff for WS:GMI-THEME-GRAPH and excludes this file as older_handoff (latest: GMI-THEME-GRAPH-2026-10-08). compile-context --workstream GMI-INDUSTRIALS-FIRST-VERTICAL selects agentos/handoffs/GMI-INDUSTRIALS-FIRST-VERTICAL-2026-09-29.md as the latest handoff for that workstream."
   - "A missing required cash operand must refuse only the dependent section. Emitting a zero is a false success."
   - "Optional graph or consensus absence stays a limitation. It is a different state from a mandatory-source refusal."
 prs: [7789]

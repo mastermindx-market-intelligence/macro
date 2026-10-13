@@ -22,7 +22,7 @@ changed:
 verified:
   - claim: "This continuation record parses under the handoff schema."
     command: "python3 scripts/agentos.py validate --quiet"
-    result: "agentos: 1213 records (69 workstreams, 342 decisions, 304 discoveries, 498 handoffs) — 0 error(s), 92 warning(s)"
+    result: "agentos: 1706 records (94 workstreams, 453 decisions, 506 discoveries, 653 handoffs) — 0 error(s), 142 warning(s)"
   - claim: "Wave 14 integrity checks still bind the packet files to the manifest."
     command: "python3 -I research/industrials/verify_wave14.py"
     result: "Ran 14 tests, OK"
@@ -33,7 +33,7 @@ unverified:
     what_would_verify: "Both carriers have an accepted head on origin/main and the Industrials task that consumes them names that head."
 unresolved:
   - "MISSION_COMPLETE remains false. Placement is WAITING_CAPACITY. G1-G5 are still PROOF_REQUIRED."
-  - "compile-context for WS:GMI-THEME-GRAPH will select the later master packet GMI-INDUSTRIALS-MASTER-FABLE-CEO-HANDOFF-2026-09-24.md over this older continuation."
+  - "compile-context --workstream GMI-THEME-GRAPH selects agentos/handoffs/GMI-THEME-GRAPH-2026-10-08.md and excludes this file and GMI-INDUSTRIALS-MASTER-FABLE-CEO-HANDOFF-2026-09-24.md as older_handoff (latest: GMI-THEME-GRAPH-2026-10-08). compile-context --workstream GMI-INDUSTRIALS-FIRST-VERTICAL selects agentos/handoffs/GMI-INDUSTRIALS-FIRST-VERTICAL-2026-09-29.md and lists agentos/handoffs/GMI-INDUSTRIALS-2026-09-24-first-vertical-implementation.md as older_handoff (latest: GMI-INDUSTRIALS-FIRST-VERTICAL-2026-09-29)."
 next_actions:
   - "Use the lawful placement path for one eligible Fable receiver. Discovery of this file is not delivery."
   - "Resume GMI theme-graph work from agentos/handoffs/THEME-INTELLIGENCE-CONVERGENCE-2026-09-19-LANE-A.md, not from this Industrials checkpoint."
@@ -43,7 +43,7 @@ do_not_redo:
   - "Do not treat the prepared packet as dispatched, STARTed, or product acceptance."
   - "Do not arm a watcher by writing this file."
 danger_areas:
-  - "Both Industrials handoffs cite WS:GMI-THEME-GRAPH. The 2026-09-24 master packet outranks this file and becomes the compiled latest handoff."
+  - "Both Industrials handoffs cite WS:GMI-THEME-GRAPH. compile-context --workstream GMI-THEME-GRAPH selects agentos/handoffs/GMI-THEME-GRAPH-2026-10-08.md and excludes both as older_handoff (latest: GMI-THEME-GRAPH-2026-10-08). compile-context --workstream GMI-INDUSTRIALS-FIRST-VERTICAL selects agentos/handoffs/GMI-INDUSTRIALS-FIRST-VERTICAL-2026-09-29.md."
   - "Historical earnings rows in the wave 9 snapshot are not fresh consensus."
   - "Candidate sec_edgar configuration is not blanket clearance for issuer text."
 prs: [7789]
