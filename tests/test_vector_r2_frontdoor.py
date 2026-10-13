@@ -83,7 +83,8 @@ def test_vector_uses_in_page_brain_entry_and_suppresses_floating_launcher() -> N
     source = TEMPLATE.read_text(encoding="utf-8")
 
     assert 'data-vector-brain' in source
-    assert "{{ t('Ask Mastermind','询问操盘大脑') }}" in source
+    assert '{% from "_crypto_brain_labels.html.j2" import BRAIN_ASK_EN, BRAIN_ASK_ZH' in source
+    assert "{{ t(BRAIN_ASK_EN, BRAIN_ASK_ZH) }}" in source
     assert "body.page-vector #mmb-boot" in source
     assert "body.page-vector #mmb-launch" in source
     assert "document.getElementById('mmb-boot')" in source
