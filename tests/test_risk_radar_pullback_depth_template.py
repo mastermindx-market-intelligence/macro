@@ -192,7 +192,12 @@ def test_prior_peak_reclaim_does_not_delete_worst_damage():
     v["observation"]["close"] = 101
     v["observation"]["drawdown_pct"] = 0
     soup = BeautifulSoup(render(v), "html.parser")
-    assert soup.select_one('[data-metric="current"]').get_text(strip=True) == "0.0%"
+    # Close 101 is above the reference high of 100, so the tile names that
+    # instead of clamping the drop to 0.0%.
+    assert soup.select_one('[data-metric="current"]').get_text(strip=True) == "+1.0%"
+    label = soup.select_one(".rrp-metrics .rrp-label")
+    assert label.select_one(".l-en").get_text() == "Above the reference high"
+    assert label.select_one(".l-zh").get_text() == "高于参考高点"
     assert soup.select_one('[data-metric="worst"]').get_text(strip=True) == "−7.4%"
 
 
@@ -443,7 +448,9 @@ def _signal(soup, name):
 
 
 @pytest.mark.parametrize("phase,en,zh", [
-    ("underway", "Deterioration: no repair evidence yet", "恶化：尚无修复证据"),
+    # FULL_EVIDENCE has a positive no-new-low count and a recovered share, so
+    # underway must not claim there is no repair evidence.
+    ("underway", "Pullback still active: early repair signs are not confirmed", "回撤仍在进行：初步修复迹象尚未确认"),
     ("stabilizing", "Early repair evidence: the low is holding", "初步修复证据：低点守住"),
     ("recovering", "Repair evidence building; not a confirmed recovery", "修复证据增加中，尚未确认修复"),
 ])
@@ -478,6 +485,7 @@ def test_evidence_rows_are_bilingual_and_the_verdict_matches_the_phase(phase, en
     assert verdict.select_one(".l-zh").get_text() == zh
     for other in (
         "Deterioration: no repair evidence yet",
+        "Pullback still active: early repair signs are not confirmed",
         "Early repair evidence: the low is holding",
         "Repair evidence building; not a confirmed recovery",
     ):
@@ -603,6 +611,7 @@ def test_phases_outside_the_repair_watch_do_not_invent_a_verdict(phase):
     assert _signal(soup, "verdict") is None
     for claim in (
         "Deterioration: no repair evidence yet",
+        "Pullback still active: early repair signs are not confirmed",
         "Early repair evidence: the low is holding",
         "Repair evidence building; not a confirmed recovery",
     ):
