@@ -2943,6 +2943,7 @@ jobs:
       - "lib/dataos/nulls.py"
       - "lib/dataos/price.py"
       - "lib/dataos/quality.py"
+      - "lib/dataos/read_contract.py"
       - "lib/dataos/registry.py"
       - "lib/dataos/temporal.py"
       - "engine/composite_score.py"
@@ -6468,6 +6469,7 @@ jobs:
       - "lib/dataos/nulls.py"
       - "lib/dataos/price.py"
       - "lib/dataos/quality.py"
+      - "lib/dataos/read_contract.py"
       - "lib/dataos/registry.py"
       - "lib/dataos/temporal.py"
       - "lib/delisted_symbols.py"
@@ -8809,6 +8811,7 @@ jobs:
       - "lib/dataos/nulls.py"
       - "lib/dataos/price.py"
       - "lib/dataos/quality.py"
+      - "lib/dataos/read_contract.py"
       - "lib/dataos/registry.py"
       - "lib/dataos/temporal.py"
       - "lib/nyse_calendar.py"
@@ -13077,6 +13080,7 @@ jobs:
       - lib/dataos/nulls.py
       - lib/dataos/price.py
       - lib/dataos/quality.py
+      - lib/dataos/read_contract.py
       - lib/dataos/registry.py
       - lib/dataos/temporal.py
       - tests/test_theme_graph_structural_owner_binding.py
@@ -17475,6 +17479,7 @@ jobs:
       - lib/dataos/nulls.py
       - lib/dataos/price.py
       - lib/dataos/quality.py
+      - lib/dataos/read_contract.py
       - lib/dataos/registry.py
       - lib/dataos/temporal.py
       - lib/delisted_symbols.py
@@ -24885,6 +24890,7 @@ jobs:
       - "lib/dataos/nulls.py"
       - "lib/dataos/price.py"
       - "lib/dataos/quality.py"
+      - "lib/dataos/read_contract.py"
       - "lib/dataos/registry.py"
       - "lib/dataos/temporal.py"
       - "lib/delisted_symbols.py"
@@ -26018,6 +26024,7 @@ jobs:
       - lib/dataos/nulls.py
       - lib/dataos/price.py
       - lib/dataos/quality.py
+      - lib/dataos/read_contract.py
       - lib/dataos/registry.py
       - lib/dataos/temporal.py
       - lib/dataos/web_api.py
@@ -26140,6 +26147,8 @@ jobs:
       - tests/test_dataos_nulls.py
       - tests/test_dataos_price.py
       - tests/test_dataos_quality.py
+      - tests/test_dataos_read_coherence.py
+      - tests/test_dataos_read_contract.py
       - tests/test_dataos_registry.py
       - tests/test_dataos_registry_consumers.py
       - tests/test_dataos_temporal.py
@@ -26160,6 +26169,8 @@ jobs:
           tests/test_dataos_temporal.py
           tests/test_dataos_price.py
           tests/test_dataos_nulls.py
+          tests/test_dataos_read_contract.py
+          tests/test_dataos_read_coherence.py
           tests/test_dataos_registry.py
           tests/test_dataos_registry_consumers.py
           tests/test_dataos_quality.py -q -rs
@@ -26896,6 +26907,7 @@ jobs:
       - "lib/dataos/nulls.py"
       - "lib/dataos/price.py"
       - "lib/dataos/quality.py"
+      - "lib/dataos/read_contract.py"
       - "lib/dataos/registry.py"
       - "lib/dataos/temporal.py"
       - "lib/delisted_symbols.py"
@@ -28468,6 +28480,7 @@ jobs:
       - lib/dataos/nulls.py
       - lib/dataos/price.py
       - lib/dataos/quality.py
+      - lib/dataos/read_contract.py
       - lib/dataos/registry.py
       - lib/dataos/temporal.py
       - research/theme_graph/economic_network_execution_20261009/MICRON_SOURCE_CASE.json
