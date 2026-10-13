@@ -298,7 +298,7 @@ def test_get_prefs_readback(auth, store):
     assert out["ok"] is True
     assert out["prefs"]["tz"] == "Asia/Hong_Kong"
     assert "alert_email_optin" in out["unset"]
-    assert out["categories_available"] == ["holdings_material_change", "thesis_window"]
+    assert out["categories_available"] == ["holdings_material_change", "thesis_window", "fif_saved_issuer"]
 
 
 def test_get_prefs_route_is_registered():
