@@ -376,7 +376,8 @@ IDGEN = "IDGEN-1"
 
 
 def _p05_contract() -> ViewContract:
-    return ViewContract(purpose="P05 retained-view witness", identity={"security_id": "SEC-P05", "listing_id": "LST-P05"},
+    return ViewContract(purpose="P05 retained-view witness",
+                        identity={"security_id": "SEC-P05", "listing_id": "LST-P05", "mic": "XNYS"},
                         field_units={"close_sadj": "USD/share"}, adjustment_reference={"basis": "sadj"},
                         coverage="synthetic rows local to this suite")
 
