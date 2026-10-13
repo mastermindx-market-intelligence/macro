@@ -19407,68 +19407,44 @@ jobs:
       - name: US candidate and plan source-date truth (PR-time gated journey)
         run: >-
           python -m pytest tests/test_p0_prophet_candidate_board.py -q -k "candidate_heading_discloses_source_date or gated_candidate_journey or historical_plan_wall_does_not"
-      - name: Shared Prophet card - record identity and explicit unavailable action
-        run: python -m pytest tests/test_prophet_card_shared.py tests/test_prophet_plan_relation.py tests/test_prophet_candidate_plan_return.py -q
       - name: Prophet Today and Company context - owner selection and typed responses
         run: python -m pytest tests/test_p0_prophet_candidate_board.py -q -k "today or company_context"
-      - name: Prophet journey reconciliation harness (PR-time gated journey)
-        run: python -m pytest tests/test_prophet_journey_reconcile.py -q
       - name: stock-brief context health (R2 context must yield a nonempty batch)
         run: >-
           python -m pytest tests/test_catalyst_stock.py -q -k "build_stock_briefs_all_no_context_is_failure or build_stock_briefs_empty_result_is_failure"
-      - name: prophet doors incl. Door W (washout-turn entries; fire legs, prereg pins, invariance)
-        run: python -m pytest tests/test_prophet_doors.py tests/test_gate_crash_failopen.py -q
-      - name: prophet arena (frozen challenger policies, closure-replay ruler, ledger lane gate, pick-chain fence)
-        run: python -m pytest tests/test_prophet_arena.py -q
-      - name: washout-turn organ (depth-gated weekly cross, PIT completed-bars pin, ledger gate)
-        run: python -m pytest tests/test_washout_turn.py tests/test_mtf_upturn.py tests/test_oracle_memory_analogues_step.py tests/test_stock_events.py tests/test_event_atlas.py -q
-      - name: leader-pullback organ (§6.9 R4 — RS-leader reset detection, self-containment + no-authority pins)
-        run: python -m pytest tests/test_us_leader_pullback.py -q
-      - name: leader-pullback coverage publisher (§6.9 R4 — the artifact the EARLY-TURN intake reads)
         # Rides the organ's own lane because it is the organ's publisher: it supplies the
         # PIT cross-section the organ refuses to reach for, and #5007's organ + #5105's
         # intake were joined by nothing until it shipped. Its end-to-end cases drive the
         # real `originate_plans` reading the real artifact off disk (~5s serial), so the
         # pair must be able to red each other on the same head.
-        run: python -m pytest tests/test_us_leader_pullback_coverage.py -q
       # #7180 completed-session source binding is a code contract, not nightly data
       # freshness. Keep the suite in this existing Prophet code gate so PR packs can
       # exercise the same source/date clipping and frozen-object law before merge.
-      - name: US completed-session source binding (closed-session panel + frozen source)
-        run: python -m pytest tests/test_us_completed_session_panel.py -q
-      - name: leader-observation projection (strict source status, no-rank authority, summary privacy)
-        run: python -m pytest tests/test_us_leader_observation_projection.py -q
       # Prophet V4 B3 candidate-state core + owner-fact adapters. Keep this in the
       # existing CODE-gated turn/organ lane: the source adapter consumes canonical
       # generation-local TURN WATCH facts, while Radar identity remains fail-closed
       # and B4/ranking/trading authority stay absent. No new job or runner is added.
-      - name: prophet B3 candidate state (orthogonal lifecycle/emergence/maturity + fail-closed owner facts)
-        run: python -m pytest tests/test_prophet_candidate_state.py tests/test_prophet_candidate_state_sources.py -q
       # Strategy-platform prerequisite for B4: one immutable, versioned, authority-false
       # owner definition. This does not compute Availability or widen B1/B3 admission.
-      - name: prophet strategy definition owner projection (B4 prerequisite only)
-        run: python -m pytest tests/test_prophet_strategy_definition.py tests/test_build_live_quotes.py tests/test_vps_live_orchestration.py -q
       # MI-S2 prospective registration binds the B4 session policy above (2026-2027
       # era, early-close table) and freezes one TrialLedger config; it rides this
       # code gate so a session-policy edit and the registration can red each other.
-      - name: MI-S2 theme-relative intraday registration (prospective; session-policy binding, one-trial ledger)
-        run: python -m pytest tests/test_mi_s2_theme_relative_intraday_registration.py -q
       # Daily Brief is a zero-I/O read model over owner receipts, not B4 policy.
       # Keep malformed-input, health-precedence and immutable-receipt regressions on CODE.
-      - name: prophet Daily Brief compositor (owner receipts + fail-closed presentation)
-        run: python -m pytest tests/test_prophet_daily_brief.py -q
-      - name: turn-watch desk + group-turn organ (§6.9 R8 — publish path, leg-(d) organ vs fallback, recall contract; §6.9 R6 basket lifecycle)
         # The TURN WATCH desk consumes the group-turn organ's artifact and R4's organ, so
         # all three ride one lane. test_us_basket_turn.py was named by NO run: step in any
         # workflow before this — the same unrun-suite hole this job's header records for
         # test_mtf_upturn.py, found while auditing the desk (2026-08-09, 36 tests, green on
         # the base that registered it). test_us_turn_watch.py is enumerated at birth.
-        run: python -m pytest tests/test_us_turn_watch.py tests/test_us_basket_turn.py -q
       # V4 B2-0 records-only evidence regression. This must be owned by
       # an existing merge-binding CODE gate, not only by the data-gated
       # anticipation lane. No new job/runner/control plane is introduced.
-      - name: b2-0 disposition matrix (B-15..B-19 lineage, PIT replay, mutation guards, red-condition discriminators)
-        run: python -m pytest tests/test_prophet_b2_disposition.py -q
+      - name: Prophet source, lifecycle and presentation contracts (one native process)
+        run: python -m pytest tests/test_prophet_card_shared.py tests/test_prophet_plan_relation.py tests/test_prophet_candidate_plan_return.py tests/test_prophet_journey_reconcile.py tests/test_us_completed_session_panel.py tests/test_us_leader_observation_projection.py tests/test_prophet_candidate_state.py tests/test_prophet_candidate_state_sources.py tests/test_prophet_strategy_definition.py tests/test_build_live_quotes.py tests/test_vps_live_orchestration.py tests/test_prophet_daily_brief.py -q
+      - name: Prophet detector, organ and disposition contracts (one native process)
+        run: python -m pytest tests/test_prophet_doors.py tests/test_gate_crash_failopen.py tests/test_prophet_arena.py tests/test_washout_turn.py tests/test_mtf_upturn.py tests/test_oracle_memory_analogues_step.py tests/test_stock_events.py tests/test_event_atlas.py tests/test_us_leader_pullback.py tests/test_us_leader_pullback_coverage.py tests/test_mi_s2_theme_relative_intraday_registration.py tests/test_us_turn_watch.py tests/test_us_basket_turn.py tests/test_prophet_b2_disposition.py -q
+      - name: Prophet B4 producer basis and disclosed freshness guards
+        run: python -m pytest tests/test_prophet_live_evaluator.py -q -k 'dark_artifact_discloses or malformed_threshold or row_exception_material or zero_or_negative or cfg_stamps or meta_discloses or stripping_only or basis_material or the_disclosure'
 
   prophet-anticipation-intake:
     # ANTICIPATION A1 (status-class admission) + §6.9 R3 (structure-anchored entry
@@ -23333,6 +23309,82 @@ jobs:
         run: >-
           python -m pytest
           tests/test_group_linked_outsiders.py -q -rs
+
+  fif-saved-research-notifications:
+    # X2-n: the FIF saved-research notification producer (enqueue-only), its
+    # ownership guards, and the watchstore designated-list helper. A small
+    # first-class owner in the falsifier-tripwires shape so path-aware
+    # selection keeps the exact changed behavior lit: an edit to the producer,
+    # the runner, the alert-category enum, the watchlist store or the nightly
+    # step's own guards never ships dark. The designated-list suite shells
+    # node over the real templates/watchstore.js (the same idiom as the
+    # wri-risk-core watchstore steps, whose setup-node is copied here).
+    if: ${{ false }}  # executed inside ci-pack — NOT a disabled gate.
+    gate: code
+    # scope: exclusive — declared paths are the whole scope (no whole-tree
+    # fallback roots), so ordinary engine/scripts PRs do not select this job.
+    # The list is the job's derived import closure
+    # (scripts.run_ci_pack.inferred_as_if_not_exclusive) plus the two YAMLs
+    # the ownership guards parse; widening is always the safe direction.
+    scope: exclusive
+    paths:
+      - ".github/workflows/daily.yml"
+      - "collectors/edgar_forensics.py"
+      - "collectors/fundamental_forensics_acquisition.py"
+      - "collectors/fundamental_forensics_companyfacts.py"
+      - "collectors/sec_document_spine.py"
+      - "collectors/sec_filing_parser.py"
+      - "collectors/sec_request_pacer.py"
+      - "config/dag.yml"
+      - "config/fundamental_forensics_disclosure_diff.v1.json"
+      - "engine/__init__.py"
+      - "engine/fif_saved_research_notifications.py"
+      - "engine/fundamental_forensics/__init__.py"
+      - "engine/fundamental_forensics/detectors.py"
+      - "engine/fundamental_forensics/disclosure_diff.py"
+      - "engine/fundamental_forensics/filing_attestation.py"
+      - "engine/fundamental_forensics/filing_package.py"
+      - "engine/fundamental_forensics/ixbrl_extraction.py"
+      - "engine/fundamental_forensics/models.py"
+      - "engine/fundamental_forensics/normalize.py"
+      - "engine/fundamental_forensics/pipeline.py"
+      - "engine/fundamental_forensics/private_state.py"
+      - "engine/fundamental_forensics/sec_companyfacts.py"
+      - "engine/fundamental_forensics/sec_document_spine.py"
+      - "engine/fundamental_forensics/source_sync.py"
+      - "engine/research_vault/r2_store.py"
+      - "lib/__init__.py"
+      - "lib/config.py"
+      - "lib/user_prefs.py"
+      - "scripts/__init__.py"
+      - "scripts/run_fif_saved_research_notifications.py"
+      - "templates/watchlist.js"
+      - "templates/watchstore.js"
+      - "tests/test_fif_saved_research_notifications.py"
+      - "tests/test_fif_watchstore_designated_list_js.py"
+      - "tests/test_fif_x2_ownership_guards.py"
+      - "tests/test_watchstore_multilist_js.py"
+    timeout-minutes: 12
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: install minimal deps
+        # pyyaml: the ownership guards parse daily.yml + config/dag.yml. The
+        # producer and its suite are stdlib-only by design (no HTTP client at
+        # import; sockets blocked in an autouse fixture).
+        run: pip install pytest pyyaml
+      - name: fif saved-research producer — enqueue-only decisions + fail-soft IO (X2-n)
+        run: python -m pytest tests/test_fif_saved_research_notifications.py -q
+      - name: fif X2-n ownership guards — one step, no second scheduler, no DDL
+        run: python -m pytest tests/test_fif_x2_ownership_guards.py -q
+      - name: watchstore.js designated list — lazy create, unsubscribe, exact name (X2-n R2)
+        run: python -m pytest tests/test_fif_watchstore_designated_list_js.py -q
 
   falsifier-tripwires:
     # The stateful cycle-ontology falsifier engine was triggerable but its focused
