@@ -4733,8 +4733,9 @@ CURATED_EXCLUSIVE = {
     "sni-s2-event-response",
     # 2026-10-13 Grey Deer W3 (#8938): the stage-1 pullback runner suite reads
     # its own research tree, lib.nyse_calendar and the trial ledger. scope:
-    # exclusive pins it to that measured closure (46 paths), so inference never
-    # unions the research/ fallback roots onto the packing probes.
+    # exclusive pins it to that measured closure (57 paths once W4 added the
+    # stage-1b suites), so inference never unions the research/ fallback roots
+    # onto the packing probes.
     "grey-deer-pullback-stage1",
     # 2026-10-13 FIF X2-n saved-research notifications (seat R3): the three
     # hermetic suites reach engine.fundamental_forensics and the research-vault
