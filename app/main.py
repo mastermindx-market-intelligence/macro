@@ -207,8 +207,39 @@ def health() -> dict:
     working tree at request time. They differ whenever the pull loop has
     advanced /opt/macro past the last macro-api restart — visible drift, so an
     operator confirming an API deploy reads the truthful field.
+
+    ``fif_financial_dataset_mode`` is the names-only FIF D3 readout (golden /
+    production / invalid), resolved by the SAME helper the forensics routes
+    use so health can never disagree with them. Names-only by construction:
+    an unsupported configured value still answers 200 with ``invalid`` and the
+    value itself is never echoed; no generation id, admitted_at, store path or
+    other production identity is exposed here.
     """
-    return {"status": "ok", "commit": _PROCESS_COMMIT, "checkout": _commit()}
+    try:
+        dataset_mode = _financial_dataset_mode()
+    except Exception as exc:  # noqa: BLE001 — narrowed to ONE typed error below
+        # Only the resolver's own ProductionDatasetModeError becomes
+        # "invalid". The resolver imports that error's home module lazily AT
+        # raise time, so when the typed error reaches here sys.modules
+        # already holds it — resolving through sys.modules performs no import
+        # (≈1 µs measured) and the health path never pays production_datasets'
+        # cold import (~67 ms measured in a loaded app.main process). Any
+        # other exception re-raises untouched: health must not mask a resolver
+        # bug as "invalid".
+        _production_datasets = sys.modules.get(
+            "engine.fundamental_forensics.production_datasets"
+        )
+        if _production_datasets is None or not isinstance(
+            exc, _production_datasets.ProductionDatasetModeError
+        ):
+            raise
+        dataset_mode = "invalid"
+    return {
+        "status": "ok",
+        "commit": _PROCESS_COMMIT,
+        "checkout": _commit(),
+        "fif_financial_dataset_mode": dataset_mode,
+    }
 
 
 # ── First-party analytics collector — POST /api/collect ─────────────────────────
@@ -1092,6 +1123,9 @@ def account(user: dict = Depends(require_user),
     tier = ent["tier"]
     return {
         "authenticated": True,
+        # Stable Supabase auth user id. account.js keys its pending-preference fence on
+        # it (site-20 S1), falling back to the email only when the id is absent.
+        "id": user.get("id"),
         "name": _user_display_name(user),
         "email": user.get("email"),
         "email_confirmed": bool(user.get("email_confirmed_at") or user.get("confirmed_at")),
@@ -2289,6 +2323,26 @@ app.include_router(earnings_router)
 from app.company_intelligence import router as company_intelligence_router  # noqa: E402
 app.include_router(company_intelligence_router)
 
+# Authenticated private facts retain their independent entitlement and source-owner gate.
+from app.company_disclosures import router as company_disclosures_router  # noqa: E402
+app.include_router(company_disclosures_router)
+# Current identity consumes the incumbent committed Data OS generation. This
+# independent capability creates no disclosure authority or private Store.
+from engine.company_intelligence.current_context_runtime import CommittedCompanyContextOwner  # noqa: E402
+app.state.company_context_owner = CommittedCompanyContextOwner(REPO)
+from app.company_disclosures import PrivateDisclosureReader  # noqa: E402
+from engine.company_intelligence.issuer_disclosure_owner import (  # noqa: E402
+    CommittedDisclosureSource, CurrentDisclosureOwner, ReadOnlyLocalObjects,
+)
+_company_private_root = Path('/var/lib/macro-company-intelligence')
+_company_disclosure_owner = CurrentDisclosureOwner(
+    CommittedDisclosureSource(REPO, app.state.company_context_owner),
+    ReadOnlyLocalObjects(_company_private_root / 'state'))
+app.state.company_disclosure_reader = PrivateDisclosureReader(
+    _company_disclosure_owner,
+    lambda: ReadOnlyLocalObjects(_company_private_root / 'artifacts'),
+    _company_disclosure_owner)
+
 # Private low-latency ticker-news reads. The router authenticates + enforces
 # site_full, then independently fails closed on feed-specific display rights
 # before opening the qbus store read-only.
@@ -2334,7 +2388,7 @@ app.include_router(ontology_explorer_router)
 # paid endpoint: no startup
 # error, no log line, nothing anybody would attribute to a renamed dependency
 # or a missing optional package on the VPS.
-from app.forensics import router as forensics_router  # noqa: E402
+from app.forensics import _financial_dataset_mode, router as forensics_router  # noqa: E402
 app.include_router(forensics_router)
 
 # BioCatalyst Intelligence serves only the worker's pointer-bound normalized
@@ -2355,6 +2409,14 @@ app.include_router(biocatalyst_router)
 # BioCatalyst above.
 from app.prophet_lab import router as prophet_lab_router  # noqa: E402
 app.include_router(prophet_lab_router)
+
+# B03 reads the existing uncapped observation input only after site_full auth.
+from app.prophet_observations import router as prophet_observations_router  # noqa: E402
+app.include_router(prophet_observations_router)
+
+# Read-only DailyBrief uses the original producer after site_full authentication.
+from app.prophet_daily_brief import router as prophet_daily_brief_router  # noqa: E402
+app.include_router(prophet_daily_brief_router)
 
 # Capital Structure observed filing-state desk.  This is an authenticated
 # artifact-serving boundary: it reads the verified projection only and does not

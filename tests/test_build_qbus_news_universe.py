@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 from datetime import datetime, timedelta, timezone
+import inspect
 import json
 from pathlib import Path
 import subprocess
@@ -154,6 +155,57 @@ def test_wrapper_refuses_missing_or_unreadable_owner_artifact(tmp_path):
     assert exc.value.code == "owner_artifact_unreadable"
 
 
+def test_read_parquet_reads_via_native_filesystem_with_arrow_pools_idle(monkeypatch, tmp_path):
+    """Owner parquets are read through the native LocalFileSystem with pyarrow's
+    threaded read knobs off. pandas otherwise opens plain local paths as Python file objects
+    and hands those to pyarrow; a delayed pyarrow IO-pool completion destroying
+    such a Python-backed buffer (arrow::py::PyBuffer::~PyBuffer ->
+    PyGILState_Ensure) after interpreter finalization has begun forces
+    pthread_exit, whose forced unwind ends in std::terminate (SIGABRT, "terminate
+    called without an active exception") after the receipt is already printed."""
+    paths = _fixtures(tmp_path / "data")
+    forwarded = {}
+    real_read_parquet = pd.read_parquet
+    real_has_to_pandas_kwargs = (
+        "to_pandas_kwargs" in inspect.signature(real_read_parquet).parameters
+    )
+
+    def spy(path, **kwargs):
+        forwarded[Path(path).name] = dict(kwargs)
+        return real_read_parquet(path, **kwargs)
+
+    monkeypatch.setattr(cli.pd, "read_parquet", spy)
+
+    rows = cli._read_parquet(paths["current"], include_index=True)
+
+    kwargs = forwarded["constituents.parquet"]
+    assert kwargs["use_threads"] is False
+    assert kwargs["pre_buffer"] is False
+    assert type(kwargs["filesystem"]).__name__ == "LocalFileSystem"
+    if real_has_to_pandas_kwargs:
+        assert kwargs["to_pandas_kwargs"] == {"use_threads": False}
+    else:
+        assert "to_pandas_kwargs" not in kwargs
+    assert [row["symbol"] for row in rows] == ["NVDA", "MMC"]
+
+
+def test_read_parquet_accepts_cli_reachable_file_uri_owner_artifact(tmp_path):
+    """A --current file://... value survives inside the Path argparse builds
+    (type=Path keeps the scheme, collapsing file:///a to file:/a), and base
+    pandas read such artifacts. The read must keep succeeding instead of
+    failing as owner_artifact_unreadable, which is what pyarrow's
+    LocalFileSystem answers to a URI ("Expected a local filesystem path, got a
+    URI")."""
+    paths = _fixtures(tmp_path / "data")
+    uri = paths["current"].as_uri()
+
+    args = cli.build_parser().parse_args(["--current", uri])
+    assert args.current == Path(uri)
+
+    rows = cli._read_parquet(Path(uri), include_index=True)
+    assert [row["symbol"] for row in rows] == ["NVDA", "MMC"]
+
+
 def test_cli_defaults_to_check_only_and_emits_metadata_not_roster(monkeypatch, tmp_path, capsys):
     paths = _fixtures(tmp_path / "data")
     out = tmp_path / "qbus" / "news_universe.json"
@@ -231,3 +283,116 @@ def test_direct_script_invocation_bootstraps_repo_imports(tmp_path):
     assert payload["mode"] == "check_only"
     assert payload["qualified"] is True
     assert not out.exists()
+
+
+def _diagnose_argv(paths, out, *extra):
+    return [
+        "--diagnose",
+        "--current", str(paths["current"]),
+        "--pit", str(paths["pit"]),
+        "--aliases", str(paths["aliases"]),
+        "--security-master", str(paths["security"]),
+        "--output", str(out),
+        "--min-count", "1",
+        "--observed-at", NOW.isoformat(),
+        *extra,
+    ]
+
+
+def test_cli_diagnose_prints_resolution_and_writes_nothing(tmp_path, capsys):
+    paths = _fixtures(tmp_path / "data")
+    out = tmp_path / "qbus" / "news_universe.json"
+    before = {key: path.read_bytes() for key, path in paths.items()}
+
+    rc = cli.main(_diagnose_argv(paths, out))
+    printed = capsys.readouterr().out
+    payload = json.loads(printed)
+
+    assert rc == 0
+    assert printed.strip() == json.dumps(payload, sort_keys=True)
+    assert payload["schema"] == "qbus.news_universe_diagnosis.v1"
+    assert payload["current_count"] == 2
+    assert payload["resolved_count"] == 2
+    assert payload["unresolved"] == []
+    assert payload["table_errors"] == []
+    assert "securities" not in payload
+    assert not out.exists()
+    assert {key: path.read_bytes() for key, path in paths.items()} == before
+
+
+def test_cli_diagnose_lists_unresolved_tickers_and_still_exits_0(tmp_path, capsys):
+    paths = _fixtures(tmp_path / "data")
+    frame = pd.read_parquet(paths["aliases"])
+    frame = frame[
+        ~((frame["vendor"] == "membership") & (frame["vendor_symbol"] == "MMC"))
+    ]
+    frame.to_parquet(paths["aliases"], index=False)
+    out = tmp_path / "qbus" / "news_universe.json"
+
+    rc = cli.main(_diagnose_argv(paths, out))
+    payload = json.loads(capsys.readouterr().out)
+
+    assert rc == 0
+    assert payload["unresolved"] == [
+        {"reason": "membership_alias_unresolved", "ticker": "MMC"}
+    ]
+    assert payload["resolved_count"] == 1
+    assert payload["reason_counts"] == {"membership_alias_unresolved": 1}
+    assert not out.exists()
+
+
+def test_cli_diagnose_read_failure_exits_2_without_writing(tmp_path, capsys):
+    paths = _fixtures(tmp_path / "data")
+    paths["aliases"].unlink()
+    out = tmp_path / "qbus" / "news_universe.json"
+
+    rc = cli.main(_diagnose_argv(paths, out))
+    payload = json.loads(capsys.readouterr().out)
+
+    assert rc == 2
+    assert payload == {
+        "error": "owner_artifact_unreadable",
+        "ok": False,
+        "schema": "qbus.news_universe_build.v1",
+    }
+    assert not out.exists()
+
+
+def test_cli_diagnose_invalid_observed_at_exits_2(tmp_path, capsys):
+    paths = _fixtures(tmp_path / "data")
+    out = tmp_path / "out.json"
+    argv = _diagnose_argv(paths, out)
+    argv[argv.index("--observed-at") + 1] = "not-a-date"
+
+    rc = cli.main(argv)
+    payload = json.loads(capsys.readouterr().out)
+
+    assert rc == 2
+    assert payload["error"] == "observed_at_invalid"
+    assert not out.exists()
+
+
+def test_cli_diagnose_and_write_are_mutually_exclusive():
+    with pytest.raises(SystemExit) as exc:
+        cli.main(["--diagnose", "--write"])
+    assert exc.value.code == 2
+
+
+def test_cli_diagnose_does_not_apply_the_fresh_hours_guard(tmp_path, capsys):
+    paths = _fixtures(tmp_path / "data")
+    out = tmp_path / "out.json"
+
+    rc = cli.main(_diagnose_argv(paths, out, "--fresh-hours", "0"))
+
+    assert rc == 0
+    payload = json.loads(capsys.readouterr().out)
+    assert payload["resolved_count"] == 2
+    assert not out.exists()
+
+
+def test_cli_fresh_hours_guard_still_rejects_non_positive_without_diagnose(capsys):
+    rc = cli.main(["--fresh-hours", "0", "--observed-at", NOW.isoformat()])
+    payload = json.loads(capsys.readouterr().out)
+
+    assert rc == 2
+    assert payload["error"] == "fresh_hours_invalid"

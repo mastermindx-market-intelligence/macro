@@ -70,6 +70,27 @@ an unpublished `worktree-<name>` in `.claude/worktrees/<name>` to `claude/<name>
 at SessionStart or the first effectful tool call — which also heals trees minted
 by a host checkout whose copy of this hook predates the switch.
 
+SSD PLACEMENT (2026-10-10)
+--------------------------
+When the host carries the Mastermind external-storage policy
+(`~/.config/mastermind/worktree-storage.json`; override
+`MASTERMIND_WORKTREE_STORAGE_POLICY`), the mint is delegated to the host helper
+`~/.local/lib/mastermind/worktree-storage/worktree_storage.py create` (override
+`MASTERMIND_WORKTREE_STORAGE_HELPER`). It plants the tree on the SSD at
+`<root>/claude/<repo-key>/<name>-<key>` on branch `claude/ssd-<name>-<key>`,
+sparse, locked and receipted — a shape `ship_loop_guard.py` admits by
+construction, and it handles `pr-<N>` itself. The user-level WorktreeCreate
+hook DEFERS to any project hook, so before this delegation every Claude tree
+launched from a macro checkout planted on internal disk despite the SSD policy,
+and a tree minted by a host checkout whose hook copy predates `claude/<name>`
+started quarantined — a blocker a Meta-CEO seat handed back to the Chairman on
+2026-10-10, the ruling that produced this section
+(`DEC:ADMIN-BLOCKERS-ARE-SELF-REMEDIED-NEVER-HANDED-TO-THE-OPERATOR`). A helper
+refusal is FINAL: the storage law forbids an internal-disk fallback, so the
+refusal and its cause are relayed to stderr and the spawn aborts. Without a
+policy file the internal mint below is unchanged. The hermetic tests point the
+policy override at a nonexistent path.
+
 IDEMPOTENT ON PURPOSE
 ---------------------
 The zsh prototype was wired through `.claude/settings.local.json`, which is
@@ -661,6 +682,73 @@ def _warn_if_reused_worktree_looks_full(dest: Path, repo_root: Path) -> None:
         pass
 
 
+STORAGE_POLICY_ENV = "MASTERMIND_WORKTREE_STORAGE_POLICY"
+STORAGE_HELPER_ENV = "MASTERMIND_WORKTREE_STORAGE_HELPER"
+DEFAULT_STORAGE_POLICY = Path.home() / ".config" / "mastermind" / "worktree-storage.json"
+DEFAULT_STORAGE_HELPER = (
+    Path.home() / ".local" / "lib" / "mastermind" / "worktree-storage" / "worktree_storage.py"
+)
+
+
+def storage_policy_path() -> Path:
+    return Path(os.environ.get(STORAGE_POLICY_ENV) or DEFAULT_STORAGE_POLICY).expanduser()
+
+
+def storage_helper_path() -> Path:
+    return Path(os.environ.get(STORAGE_HELPER_ENV) or DEFAULT_STORAGE_HELPER).expanduser()
+
+
+def delegate_to_storage_helper(payload: dict, name: str, cwd: str) -> int | None:
+    """Plant on the external SSD through the host storage helper when a policy exists.
+
+    Returns ``None`` when no host policy is installed (the internal mint below
+    continues) and an exit status otherwise. A helper refusal is FINAL: the
+    global storage law forbids falling back to internal disk when the SSD is
+    unavailable, so the refusal is relayed with its cause and the spawn aborts.
+    The helper prints the created path on its last stdout line, exactly the
+    contract this hook owes the harness.
+    """
+    policy = storage_policy_path()
+    helper = storage_helper_path()
+    if not policy.is_file():
+        return None
+    if not helper.is_file():
+        return fail(
+            f"host storage policy {policy} is installed but its helper {helper} is "
+            "missing; the SSD placement law forbids an internal-disk fallback -- "
+            "restore ~/.local/lib/mastermind/worktree-storage/ and rerun"
+        )
+    request = {"cwd": cwd, "name": name}
+    session_id = payload.get("session_id")
+    if isinstance(session_id, str) and session_id:
+        request["session_id"] = session_id
+    log(f"delegating placement to the host storage helper (policy {policy})")
+    try:
+        proc = subprocess.run(
+            [sys.executable, str(helper), "--config", str(policy), "create"],
+            input=json.dumps(request),
+            capture_output=True,
+            text=True,
+            timeout=600,
+            check=False,
+        )
+    except (OSError, subprocess.TimeoutExpired) as exc:
+        return fail(f"host storage helper did not run: {exc}")
+    for line in proc.stderr.splitlines():
+        if line.strip():
+            print(line, file=sys.stderr)
+    lines = [ln.strip() for ln in proc.stdout.splitlines() if ln.strip()]
+    dest = lines[-1] if lines else ""
+    if proc.returncode != 0 or not dest:
+        return fail(
+            f"host storage helper refused the mint (exit {proc.returncode}); there is "
+            "no internal-disk fallback by design -- read the cause above (mount, "
+            "free space, policy, receipt), fix it, and rerun the mint yourself"
+        )
+    print(dest)
+    return 0
+
+
 def main() -> int:
     if shutil.which("git") is None:
         return fail("git is unavailable")
@@ -683,6 +771,9 @@ def main() -> int:
         toplevel = Path(git(Path(cwd), "rev-parse", "--path-format=absolute", "--show-toplevel"))
     except RuntimeError:
         return fail("cwd is not inside a git worktree")
+    delegated = delegate_to_storage_helper(payload, name, cwd)
+    if delegated is not None:
+        return delegated
     # `repo_root` is the checkout every git command below runs in AND the folder
     # the worktree is planted under. Both are satisfied by the session's own
     # host: `fetch`, `worktree add` and `worktree remove` are repo-global, so any

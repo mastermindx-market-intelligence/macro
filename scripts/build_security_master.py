@@ -125,6 +125,11 @@ ISSUER_MIGRATIONS_NAME = "issuer_migrations.parquet"
 SECURITY_MIGRATIONS_NAME = "security_migrations.parquet"
 
 CONSTITUENTS = ROOT / "data" / "breadth" / "constituents.parquet"
+#: ITP A8 (DEC-ITP-ISSUER-UNIVERSE-ADMITS-R1-CONSTITUENTS-2026-10-07): the mid- and
+#: small-cap breadth constituents join the identity universe, read exactly like
+#: CONSTITUENTS (forward-only: no valid_from backdating, ingested_at = build time).
+MIDCAP_CONSTITUENTS = ROOT / "data" / "midcap_breadth" / "constituents.parquet"
+SMALLCAP_CONSTITUENTS = ROOT / "data" / "smallcap_breadth" / "constituents.parquet"
 MEMBERSHIP = ROOT / "data" / "baskets" / "membership.json"
 DELISTED_LEDGER = ROOT / "config" / "delisted_symbols.yml"
 CONFIG_YML = ROOT / "config.yml"
@@ -451,6 +456,49 @@ RENAME_EVENTS: tuple[RenameEvent, ...] = (
             "config.yml quality.ticker_key_migrations SATS: ECHO"
         ),
     ),
+    RenameEvent(
+        old="PSKY",
+        new="SKYD",
+        on=date(2026, 10, 6),
+        # Skydance Corporation (formerly Paramount Skydance, CIK 0002041610) transferred
+        # its Class B listing Nasdaq->NYSE and renamed PSKY->SKYD the SAME day, so unlike
+        # EQR->VMRK (NYSE->NYSE) this rename MOVES THE VENUE: the renamed key re-derives
+        # today's MIC plus the chain's inception code (US-XNYS-PSKY) while the committed
+        # master row carries the inception venue (US-XNAS-PSKY). The exact-listing-key
+        # SECURITY_SUPERSESSIONS entry below is the operator ratification that joins the
+        # two — one stable id before and after 2026-10-06, never a second mint (and the
+        # pending-transition fence is never consulted for a join, only for a mint).
+        #
+        # `membership` is DATED for the same reason EQR->VMRK's is: two simultaneous
+        # membership observations exist (the PIT/stored side still keyed PSKY;
+        # data/breadth/constituents.parquet re-fetched as SKYD), so the space needs the
+        # date boundary to stay unambiguous — the roster resolve that fail-closed as
+        # membership_alias_unresolved is exactly this consumer.
+        #
+        # `store` is NOT dated and no (store, SKYD) row is minted: data/stocks/ and the
+        # per-ticker stores still key PSKY (the #4622-protocol key migration is a
+        # separate act, out of scope here), so the committed open (store, PSKY, ...) row
+        # stays the one true answer and the builder's current-catalog gate leaves it
+        # alone. `yahoo_fetch` likewise stays at the committed PSKY row for the same
+        # reason — the repo's fetch/store seam has not moved.
+        #
+        # `yahoo` is dated because Yahoo follows the exchange spelling (same as
+        # MMC/SATS): finance.yahoo.com serves the renamed symbol today.
+        vendors=(VENDOR_YAHOO, VENDOR_MEMBERSHIP),
+        evidence=(
+            "SEC EDGAR CIK 0002041610 Form 8-K filed 2026-10-06, accession "
+            "0001104659-26-113913, Items 2.01/5.03: on 2026-10-06 the Company "
+            "transferred the listing of its Class B Common Stock from The Nasdaq "
+            "Stock Market LLC to the New York Stock Exchange and changed the ticker "
+            "symbol from PSKY to SKYD. Corroborated by "
+            "data.sec.gov/submissions/CIK0002041610.json (name Skydance Corp, "
+            "ticker SKYD, exchange NYSE, unbroken formerNames chain Paramount "
+            "Skydance Corp 2025-08-07 -> 2026-10-06 under one CIK), Form 8-K filed "
+            "2026-09-25 accession 0001104659-26-111034 Item 3.01 (listing-transfer "
+            "notice), Form 8-A12B filed 2026-10-05 accession 0001104659-26-113569, "
+            "and finance.yahoo.com/quote/SKYD (Yahoo serves the new symbol)."
+        ),
+    ),
 )
 
 
@@ -495,6 +543,35 @@ SECURITY_SUPERSESSIONS: tuple[SecuritySupersession, ...] = (
             "data.sec.gov/submissions/CIK0000906107.json (name VIVMARK RESIDENTIAL, "
             "ticker VMRK, unbroken formerNames chain) and "
             "www.sec.gov/files/company_tickers.json (CIK 906107 -> VMRK)."
+        ),
+    ),
+    SecuritySupersession(
+        listing_key="US-XNYS-PSKY",
+        canonical_id="SEC:US-XNAS-PSKY",
+        on=date(2026, 10, 6),
+        # Same evidence as the PSKY->SKYD RenameEvent above (verbatim, E1-style). This
+        # entry is the CROSS-VENUE half of that rename: EQR->VMRK never needed one
+        # because NYSE->NYSE re-derives the committed listing key exactly, while the
+        # PSKY->SKYD Nasdaq->NYSE transfer re-derives US-XNYS-PSKY (today's venue plus
+        # the chain's inception code) against a committed US-XNAS-PSKY (the inception
+        # venue). The entry ratifies BOTH directions of the same fact by EXACT listing
+        # key, never a bare inception-code match: mint_master_rows joins a resolution
+        # that renders this key onto the canonical ACTIVE row (no second stable id, no
+        # fence consult — the join resolves to an existing row), and
+        # apply_security_supersession would tombstone a US-XNYS-PSKY row minted as an
+        # independent duplicate exactly as the VMRK one was.
+        evidence=(
+            "SEC EDGAR CIK 0002041610 Form 8-K filed 2026-10-06, accession "
+            "0001104659-26-113913, Items 2.01/5.03: on 2026-10-06 the Company "
+            "transferred the listing of its Class B Common Stock from The Nasdaq "
+            "Stock Market LLC to the New York Stock Exchange and changed the ticker "
+            "symbol from PSKY to SKYD. Corroborated by "
+            "data.sec.gov/submissions/CIK0002041610.json (name Skydance Corp, "
+            "ticker SKYD, exchange NYSE, unbroken formerNames chain Paramount "
+            "Skydance Corp 2025-08-07 -> 2026-10-06 under one CIK), Form 8-K filed "
+            "2026-09-25 accession 0001104659-26-111034 Item 3.01 (listing-transfer "
+            "notice), Form 8-A12B filed 2026-10-05 accession 0001104659-26-113569, "
+            "and finance.yahoo.com/quote/SKYD (Yahoo serves the new symbol)."
         ),
     ),
 )
@@ -681,6 +758,16 @@ def load_universe() -> dict[str, dict]:
         frame = pd.read_parquet(CONSTITUENTS)
         for ticker in frame.index.astype(str):
             note(ticker.strip().upper(), "breadth.constituents", None)
+
+    if MIDCAP_CONSTITUENTS.exists():
+        frame = pd.read_parquet(MIDCAP_CONSTITUENTS)
+        for ticker in frame.index.astype(str):
+            note(ticker.strip().upper(), "midcap_breadth.constituents", None)
+
+    if SMALLCAP_CONSTITUENTS.exists():
+        frame = pd.read_parquet(SMALLCAP_CONSTITUENTS)
+        for ticker in frame.index.astype(str):
+            note(ticker.strip().upper(), "smallcap_breadth.constituents", None)
 
     if MEMBERSHIP.exists():
         payload = json.loads(MEMBERSHIP.read_text())
@@ -1151,6 +1238,10 @@ def build_alias_rows(resolutions: list[Resolution], ids: dict[str, str]) -> list
             dated[(vendor, event.old)] = event
             dated[(vendor, event.new)] = event
 
+    # The store-key ratification map for the chain-member gate below (config's own
+    # record of "the repo's stored key moved on a ratified day").
+    _, store_key_migrations = load_config_maps()
+
     rows: list[AliasRow] = []
     current_by_sec: dict[tuple[str, str], tuple[str, bool]] = {}
     for res in resolutions:
@@ -1193,6 +1284,24 @@ def build_alias_rows(resolutions: list[Resolution], ids: dict[str, str]) -> list
             VENDOR_STORE: res.key,
         }
         is_root = res.key == res.inception_code
+        # A CHAIN MEMBER (res.key != its inception_code) may speak for the
+        # current-catalog spaces ONLY when the repo's own records ratify its key as
+        # the one stored/fetched today: `quality.ticker_key_migrations` (SATS->ECHO —
+        # data/stocks/ECHO.parquet is the file that exists) or a RenameEvent that
+        # dates the store space (EQR->VMRK, post-#4622 migration). PSKY->SKYD carries
+        # NEITHER (the store-key migration is a separate #4622-protocol act), so the
+        # stores still key PSKY and a fresh open (store, SKYD, ...) row would assert
+        # a falsehood AND overlap the committed open (store, PSKY, ...) row — the
+        # exact undated-replacement shape `_prune_stale_aliases` fails closed on.
+        chain_member_ratified = (
+            any(
+                res.key in (event.old, event.new) and VENDOR_STORE in event.vendors
+                for event in RENAME_EVENTS
+            )
+            or store_key_migrations.get(res.inception_code) == res.key
+        )
+        dated_rename_member = any(res.key in (event.old, event.new) for event in RENAME_EVENTS)
+        unratified_rename_member = dated_rename_member and not is_root and not chain_member_ratified
 
         for vendor, symbol in historical.items():
             event = dated.get((vendor, symbol))
@@ -1207,7 +1316,19 @@ def build_alias_rows(resolutions: list[Resolution], ids: dict[str, str]) -> list
         for vendor, symbol in current.items():
             key = (vendor, sec)
             prior = current_by_sec.get(key)
-            if prior is None or is_root:
+            # The gate covers exactly ONE shape: a NON-ROOT key that a DATED
+            # RenameEvent names, whose store key no RenameEvent-with-store and no
+            # `ticker_key_migration` ratifies (today: SKYD — the comment above). A
+            # notation variant that no rename mentions (MOG-A/MOG.A, BRK-B, BF-B —
+            # `_inception_code` falls back to the directory's DOT spelling for any
+            # key no rename mentions, so `res.key != res.inception_code` alone
+            # cannot tell a chain member from a dot/dash notation variant) and an
+            # UNDATED_RENAMES key (FI) keep origin/main's
+            # `prior is None or is_root` behaviour: their fresh open store/
+            # yahoo_fetch rows are TRUE rows, and suppressing them (#8828 review F1)
+            # drops live current-catalog rows nothing reports and leaves committed
+            # carry-over as the only survivor.
+            if is_root or (prior is None and not unratified_rename_member):
                 current_by_sec[key] = (symbol, is_root)
 
     for (vendor, sec), (symbol, _is_root) in current_by_sec.items():
@@ -1595,7 +1716,9 @@ def _current_symbol_of_row(row: dict) -> str:
 
 
 def _compute_lost(existing: list[dict], resolutions: list[Resolution],
-                  delisted: dict[str, dict]) -> tuple[list[dict], list[dict]]:
+                  delisted: dict[str, dict], *,
+                  registry_joined_ids: frozenset[str] = frozenset(),
+                  ) -> tuple[list[dict], list[dict]]:
     """The pending-transition fence predicate (V4-D2B1-R1 §5.1, AMENDMENT ruling 3 /
     M1): ``(fence_lost, exception_lost)`` — committed master rows that are ACTIVE
     (``security_state`` null), whose CURRENT symbol is NOT exit-ledgered, and whose
@@ -1639,6 +1762,13 @@ def _compute_lost(existing: list[dict], resolutions: list[Resolution],
         if _current_symbol_of_row(row) in delisted:
             continue
         if str(row["listing_key"]) in rederived:
+            continue
+        if str(row["security_id"]) in registry_joined_ids:
+            # A SECURITY_SUPERSESSIONS-ratified cross-venue join re-derived this
+            # row's SECURITY under the renamed key this run (its own listing key —
+            # minted at the inception venue — is structurally unreachable once the
+            # venue moves): the row is accounted for, not lost, exactly like a
+            # same-venue rename's re-derivation heals its row.
             continue
         code = str(row.get("inception_code") or "").upper()
         if code in exceptions:
@@ -1959,7 +2089,57 @@ def mint_master_rows(
     gmi_eligibility_refusals: list[dict] = []
     directory_flags = directory_flags or {}
 
-    lost_rows, exception_lost_rows = _compute_lost(existing, resolutions, delisted or {})
+    # Cross-venue rename join (2026-10-11, the PSKY->SKYD Nasdaq->NYSE transfer): a
+    # would-be NEW mint whose EXACT rendered listing key a
+    # :data:`SECURITY_SUPERSESSIONS` entry names, with that entry's canonical row
+    # ACTIVE in this build, is a CURATED-RATIFIED join onto that existing canonical
+    # row, not a mint. A rename that moves the venue re-derives today's MIC plus the
+    # chain's inception code (US-XNYS-PSKY) while the committed row carries the
+    # inception venue (US-XNAS-PSKY), so the stored listing-key join a same-venue
+    # rename gets for free (VMRK -> US-XNYS-EQR) is a MISS here — without this
+    # bridge the candidate falls to the pending-transition fence below, which
+    # refuses it exactly as designed (same registrant, never independent evidence),
+    # and the renamed key never reaches ``ids`` at all. The registry entry is the
+    # operator ratification (exact listing key + evidence law, the same standard
+    # :func:`apply_security_supersession` holds itself to); the join MINTS NOTHING —
+    # ``ids`` gains the canonical id, the fence is consulted only for genuine mints,
+    # and a second stable id for the same company can never appear.
+    active_by_security_id = {
+        str(row["security_id"]): row for row in existing if not row.get("security_state")
+    }
+    supersession_joins: dict[str, str] = {}
+    _rename_covered_keys = {
+        sym for event in RENAME_EVENTS for sym in (event.old, event.new)
+    }
+    for entry in SECURITY_SUPERSESSIONS:
+        if entry.listing_key in by_listing_key:
+            continue  # a committed row already owns this key: the stored join below
+            # (or the H8 resurrection refusal, when that row is a tombstone) governs
+        canonical = active_by_security_id.get(entry.canonical_id)
+        if canonical is None:
+            continue
+        # The join serves a RENAME-COVERED key only: the dated alias family the join
+        # exists to feed is derived from the RenameEvent (date + evidence law), so a
+        # key no event covers never joins — it keeps falling to the fence below
+        # exactly as before this bridge existed (the H1/H7 race replays pin that).
+        covered = any(
+            res.listing_key is not None
+            and res.listing_key.render() == entry.listing_key
+            and res.key in _rename_covered_keys
+            for res in resolutions
+        )
+        if covered:
+            supersession_joins[entry.listing_key] = entry.canonical_id
+    _rederived_rendered = {
+        res.listing_key.render() for res in resolutions if res.listing_key is not None
+    }
+    registry_joined_ids = frozenset(
+        cid for lk, cid in supersession_joins.items() if lk in _rederived_rendered
+    )
+
+    lost_rows, exception_lost_rows = _compute_lost(
+        existing, resolutions, delisted or {}, registry_joined_ids=registry_joined_ids
+    )
     # AMENDMENT ruling 2 (M2, null-CIK fail-open): a CIK-less lost row makes
     # independence UNPROVABLE, not vacuously true. The prior code dropped null CIKs
     # from `lost_ciks` entirely (`if r.get("issuer_cik")`), which meant a lost row
@@ -2003,6 +2183,13 @@ def mint_master_rows(
                 continue
             ids[res.key] = str(stored["security_id"])
         else:
+            ratified_join = supersession_joins.get(rendered)
+            if ratified_join is not None:
+                # The cross-venue bridge above: this resolution already "resolved to
+                # an existing row" — the canonical one — so no mint, no fence
+                # consult, and no second stable id.
+                ids[res.key] = ratified_join
+                continue
             if lost_rows:
                 evidence_key = _evidence_join_key(res.inception_code or res.key)
                 candidate_evidence = cik_map.get(evidence_key)
@@ -3621,8 +3808,8 @@ def build(out_dir: Path, dry_run: bool = False, allow_missing_evidence: bool = F
         "inputs": {
             **{
                 str(path.relative_to(ROOT)): _sha256(path)
-                for path in (CONSTITUENTS, MEMBERSHIP, DELISTED_LEDGER, CONFIG_YML,
-                            TICKER_ALIASES_PY)
+                for path in (CONSTITUENTS, MIDCAP_CONSTITUENTS, SMALLCAP_CONSTITUENTS,
+                            MEMBERSHIP, DELISTED_LEDGER, CONFIG_YML, TICKER_ALIASES_PY)
             },
             _relpath(SYMBOL_DIR_SNAPSHOTS): (
                 _sha256(snapshot_path) if snapshot_path is not None else None
@@ -4050,7 +4237,8 @@ def run_nightly_refresh(out_dir: Path) -> int:
     ``notes`` and a success ``::notice`` — the false-freshness escape this law exists
     to close, on either rail.
     """
-    required = (CONSTITUENTS, MEMBERSHIP, DELISTED_LEDGER, CONFIG_YML, TICKER_ALIASES_PY)
+    required = (CONSTITUENTS, MIDCAP_CONSTITUENTS, SMALLCAP_CONSTITUENTS, MEMBERSHIP,
+                DELISTED_LEDGER, CONFIG_YML, TICKER_ALIASES_PY)
     missing = [
         str(p.relative_to(ROOT)) if p.is_relative_to(ROOT) else str(p)
         for p in required if not p.exists()
