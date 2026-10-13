@@ -472,7 +472,6 @@ def test_market_state_partial_latest_cell_stays_unavailable(root: Path) -> None:
     assert state["fear_state"] == "Unavailable"
 
 
-@pytest.mark.xfail(strict=True, reason="CONSTRAINED volume: absent volume is worded Normal")
 def test_market_state_absent_volume_state_is_not_normal(root: Path) -> None:
     state = cms.build_market_state()
     assert state["flows"]["volume"]["value"] is None
