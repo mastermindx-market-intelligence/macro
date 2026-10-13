@@ -28,6 +28,8 @@ HARDENING_RECEIPT_SHA256 = "dcb553712321a37f297fe7e33e6ac2095c0165a9207bb87afdf7
 USE_PANEL_SHA256 = "99059f4530f6a2de18b571a5e9378f44fffece256f5c9c2516ee8717203beaa5"
 QUALIFICATION_RECEIPT_SHA256 = "c9eeb8e3469eef23749e7edafdf88ff3e9a18d1656b6c054e2d67a77fc5a0589"
 DECLARED_TOTAL_INDUSTRY_VIEW_BYTES = 353_940_588
+# All 138 accepted views are below 2.7 MiB. Bound owner-supplied bytes.
+MAX_SUPPLIED_INDUSTRY_VIEW_BYTES = 4 * 1024 * 1024
 EXPECTED_INDUSTRY_VIEW_COUNT = 138
 PUBLISHER_EDITION_DATE = "2026-05-21"
 EXACT_CODE_NAMESPACE = "BEA_APP157_MAY2026_EXACT"
@@ -109,7 +111,10 @@ def _date_only_capture(row: Mapping[str, Any]) -> str:
     return parsed.isoformat()
 
 
-def _source_guard(row: Mapping[str, Any], *, industry: str, commodity: str) -> str:
+def _source_guard(
+    row: Mapping[str, Any], *, industry: str, commodity: str,
+    expected_lineage_sha256: str = LINEAGE_SHA256,
+) -> str:
     if not isinstance(row, Mapping):
         raise BEAContextRefused("unrecognized research row")
     if not all(isinstance(x, str) and _CODE.fullmatch(x) for x in (industry, commodity)):
@@ -119,7 +124,7 @@ def _source_guard(row: Mapping[str, Any], *, industry: str, commodity: str) -> s
             or row.get("code_namespace") != EXACT_CODE_NAMESPACE
             or row.get("source_kind") != SOURCE_KIND):
         raise BEAContextRefused("BEA code/namespace or industry-input source mismatch")
-    if (row.get("source_lineage_sha256") != LINEAGE_SHA256
+    if (row.get("source_lineage_sha256") != expected_lineage_sha256
             or row.get("source_lineage_file") != "source_lineage.json"):
         raise BEAContextRefused("unrecognized immutable source lineage")
     if (row.get("source_units") != "million USD"
@@ -862,12 +867,149 @@ def qualify_private_bea_research_manifest(
             code: files[f"industry_{code}.jsonl"]["sha256"]
             for code in industry_codes
         },
+        "selected_original_view_byte_counts_claimed": {
+            code: files[f"industry_{code}.jsonl"]["bytes"]
+            for code in industry_codes
+        },
         "selected_original_view_bytes_hashed_by_this_projection": False,
         "original_source_bytes_authenticated_by_this_projection": False,
         "actual_writer_admitted": False,
         "native_utc_ingest_and_revision_clock_established": False,
         "original_historical_known_at": None,
         "historical_pit_eligible": False,
+        "may_publish": False,
+        "may_rank": False,
+        "may_train": False,
+        "may_trade": False,
+    }
+
+
+def verify_supplied_bea_research_view_bytes(
+    source_bytes: bytes, *, industry_code: str,
+    build_receipt_bytes: bytes, lineage_bytes: bytes, hardening_bytes: bytes,
+) -> dict[str, Any]:
+    """Authenticate *caller-supplied* research-view bytes against pinned receipts.
+
+    This adds no file opener or source admission. A trusted future Data OS
+    producer must separately authenticate original BEA L0 responses, custody,
+    rights and actual native ingest/revisions. Research JSONL bytes are not
+    upstream BEA original response bytes, regardless of a matching view digest.
+    """
+    if not isinstance(industry_code, str) or not _CODE.fullmatch(industry_code):
+        raise BEAContextRefused("one exact BEA industry code required")
+    if (type(source_bytes) is not bytes
+            or not 1 <= len(source_bytes) <= MAX_SUPPLIED_INDUSTRY_VIEW_BYTES):
+        raise BEAContextRefused("bounded caller-supplied research-view bytes required")
+    evidence = qualify_private_bea_research_manifest(
+        build_receipt_bytes, lineage_bytes, hardening_bytes,
+        industry_codes=(industry_code,),
+    )
+    claimed = evidence["selected_original_builder_digest_claims"][industry_code]
+    claimed_size = evidence["selected_original_view_byte_counts_claimed"][industry_code]
+    if len(source_bytes) != claimed_size:
+        raise BEAContextRefused("supplied view length differs from pinned research receipt")
+    calculated = hashlib.sha256(source_bytes).hexdigest()
+    if calculated != claimed:
+        raise BEAContextRefused("supplied view SHA256 differs from pinned research receipt")
+    if not source_bytes.endswith(b"\n") or b"\r" in source_bytes:
+        raise BEAContextRefused("research view must have exact LF-ended JSONL framing")
+    rows = source_bytes.split(b"\n")
+    if len(rows) != SOURCE_ROWS_PER_INDUSTRY + 1 or rows[-1] != b"":
+        raise BEAContextRefused("research industry view does not contain 1112 rows")
+
+    def no_duplicate_fields(pairs: list[tuple[str, Any]]) -> dict[str, Any]:
+        parsed: dict[str, Any] = {}
+        for key, value in pairs:
+            if key in parsed:
+                raise BEAContextRefused("duplicate key in a supplied BEA source row")
+            parsed[key] = value
+        return parsed
+
+    def no_nonfinite(_value: str) -> None:
+        raise BEAContextRefused("nonfinite BEA source value")
+
+    first_year_order: list[str] = []
+    visited: set[tuple[int, str]] = set()
+    negative_world_rows = 0
+    negative_region_rows = 0
+    capture_clocks = []
+    for position, raw in enumerate(rows[:-1]):
+        if not 1 <= len(raw) <= 16_384:
+            raise BEAContextRefused("invalid source-row byte bound")
+        try:
+            row = json.loads(
+                raw.decode("utf-8"),
+                object_pairs_hook=no_duplicate_fields,
+                parse_constant=no_nonfinite,
+            )
+        except (UnicodeDecodeError, TypeError, ValueError) as exc:
+            raise BEAContextRefused("malformed UTF8 research source row") from exc
+        if not isinstance(row, dict):
+            raise BEAContextRefused("source row is not a JSON object")
+        year = 2017 + position // 139
+        code = row.get("commodity_code_exact")
+        if (row.get("accounting_year") != year
+                or not isinstance(code, str) or not _CODE.fullmatch(code)):
+            raise BEAContextRefused("source accounting-year or commodity order mismatches")
+        offset = position % 139
+        if year == 2017:
+            first_year_order.append(code)
+        elif code != first_year_order[offset]:
+            raise BEAContextRefused("139 source commodities differ across accounting years")
+        grain = (year, code)
+        if grain in visited:
+            raise BEAContextRefused("duplicate annual BEA source commodity grain")
+        visited.add(grain)
+        capture = _source_guard(
+            row, industry=industry_code, commodity=code,
+            expected_lineage_sha256=evidence["research_lineage_sha256"],
+        )
+        amounts = {field: _integer(row, field) for field in _AMOUNT_FIELDS}
+        world = amounts["world_import_million_USD"]
+        regions = {
+            region: amounts[f"{region}_import_million_USD"]
+            for region, _ in REGIONS
+        }
+        rounding = world - sum(regions.values())
+        if (type(row.get("source_rounding_difference_million_USD")) is not int
+                or row["source_rounding_difference_million_USD"] != rounding
+                or abs(rounding) > 3):
+            raise BEAContextRefused("signed source reconciliation mismatch")
+        _shares(row, world, regions, rounding)
+        negative_world_rows += world < 0
+        negative_region_rows += any(v < 0 for v in regions.values())
+        capture_clocks.append(utc(capture))
+    if len(set(first_year_order)) != 139 or len(visited) != SOURCE_ROWS_PER_INDUSTRY:
+        raise BEAContextRefused("139 exact source commodities required in each year")
+
+    return {
+        "schema": "market_ontology.bea_supplied_research_view_byte_check/v1",
+        "authority": "PRIVATE_RESEARCH_ONLY",
+        "industry_code_exact": industry_code,
+        "exact_code_namespace": EXACT_CODE_NAMESPACE,
+        "publisher_edition_date": PUBLISHER_EDITION_DATE,
+        "publisher_edition_precision": "DAY",
+        "measurement_class": "BEA_IMPUTED_INDUSTRY_IMPORT_ALLOCATION",
+        "supplied_view_sha256": calculated,
+        "pinned_builder_view_sha256": claimed,
+        "supplied_view_bytes": len(source_bytes),
+        "industry_view_rows_checked": SOURCE_ROWS_PER_INDUSTRY,
+        "accounting_years_checked": list(range(2017, 2025)),
+        "commodity_codes_per_year_checked": 139,
+        "signed_negative_world_import_rows_checked": negative_world_rows,
+        "signed_negative_region_adjustment_rows_checked": negative_region_rows,
+        "research_capture_window_utc": {
+            "earliest": min(capture_clocks).isoformat(),
+            "latest": max(capture_clocks).isoformat(),
+        },
+        "pinned_receipt_metadata_authenticated": True,
+        "supplied_research_view_bytes_authenticated": True,
+        "original_BEA_L0_response_bytes_authenticated": False,
+        "native_dataset_producer_admitted": False,
+        "source_rights_accepted_for_public_product": False,
+        "historical_pit_eligible": False,
+        "original_historical_known_at": None,
+        "named_company_supplier_buyer_evidence": False,
         "may_publish": False,
         "may_rank": False,
         "may_train": False,

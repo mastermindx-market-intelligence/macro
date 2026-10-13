@@ -24,6 +24,7 @@ from engine.market_ontology.bea_industry_context import (
     read_private_bea_accounting_brief,
     compare_private_bea_using_industries,
     qualify_private_bea_research_manifest,
+    verify_supplied_bea_research_view_bytes,
 )
 
 _EXPECTED_SOURCE_RELATIVE = (
@@ -1276,6 +1277,141 @@ class BEAManifestResearchQualificationTests(unittest.TestCase):
                     workspace, industry_codes=("3341",),
                     commodity_code="3344", research_receipts=(b"partial",),
                 )
+
+
+    def _synthetic_supplied_industry_view(self, *, mutate=None):
+        """Fabricate one complete source view and its three synthetic receipts."""
+        build, lineage, hardening = self._fixture()
+        lineage_sha = hashlib.sha256(self._encode(lineage)).hexdigest()
+        commodity_codes = ["3344", *(f"A{i:03d}" for i in range(1, 139))]
+        rows = []
+        for year in range(2017, 2025):
+            for commodity in commodity_codes:
+                row = synthetic_row(
+                    year=year, industry="3341", commodity=commodity,
+                )
+                row["source_lineage_sha256"] = lineage_sha
+                rows.append(row)
+        self.assertEqual(len(rows), 1112)
+        if mutate is not None:
+            mutate(rows)
+        source = b"".join(self._encode(row) + b"\n" for row in rows)
+        self.assertLess(len(source), bea_module.MAX_SUPPLIED_INDUSTRY_VIEW_BYTES)
+        item = build["files"]["industry_3341.jsonl"]
+        old_size = item["bytes"]
+        item["bytes"] = len(source)
+        item["sha256"] = hashlib.sha256(source).hexdigest()
+        build["files"]["industry_A137.jsonl"]["bytes"] += old_size - len(source)
+        self.assertGreater(build["files"]["industry_A137.jsonl"]["bytes"], 0)
+        return source, self._raw_triplet(build, lineage, hardening)
+
+    def _verify_synthetic_supplied_view(self, source: bytes,
+                                        receipts: tuple[bytes, bytes, bytes]):
+        with (
+            patch.object(
+                bea_module, "BUILD_RECEIPT_SHA256",
+                hashlib.sha256(receipts[0]).hexdigest(),
+            ),
+            patch.object(
+                bea_module, "METADATA_LINEAGE_SHA256",
+                hashlib.sha256(receipts[1]).hexdigest(),
+            ),
+            patch.object(
+                bea_module, "HARDENING_RECEIPT_SHA256",
+                hashlib.sha256(receipts[2]).hexdigest(),
+            ),
+        ):
+            return verify_supplied_bea_research_view_bytes(
+                source, industry_code="3341",
+                build_receipt_bytes=receipts[0],
+                lineage_bytes=receipts[1],
+                hardening_bytes=receipts[2],
+            )
+
+    def test_owner_supplied_view_bytes_match_original_builder_digest_and_grain(self):
+        source, receipts = self._synthetic_supplied_industry_view()
+        result = self._verify_synthetic_supplied_view(source, receipts)
+        self.assertEqual(result["industry_view_rows_checked"], 1112)
+        self.assertEqual(result["commodity_codes_per_year_checked"], 139)
+        self.assertEqual(result["accounting_years_checked"], list(range(2017, 2025)))
+        self.assertEqual(result["supplied_view_sha256"], hashlib.sha256(source).hexdigest())
+        self.assertEqual(result["pinned_builder_view_sha256"], result["supplied_view_sha256"])
+        self.assertEqual(result["supplied_view_bytes"], len(source))
+        self.assertEqual(result["signed_negative_world_import_rows_checked"], 0)
+        self.assertEqual(result["signed_negative_region_adjustment_rows_checked"], 0)
+        self.assertTrue(result["pinned_receipt_metadata_authenticated"])
+        self.assertTrue(result["supplied_research_view_bytes_authenticated"])
+        for denial in (
+            "original_BEA_L0_response_bytes_authenticated",
+            "native_dataset_producer_admitted",
+            "source_rights_accepted_for_public_product",
+            "historical_pit_eligible", "named_company_supplier_buyer_evidence",
+            "may_publish", "may_rank", "may_train", "may_trade",
+        ):
+            with self.subTest(field=denial):
+                self.assertIs(result[denial], False)
+
+    def test_byte_verification_preserves_genuine_negative_accounting_adjustments(self):
+        def negative_one_source_cell(rows):
+            pos = 3 * 139
+            baseline = rows[pos]
+            negative = dict(zip(_KEYS, (-8, 0, -60, 0, 0, -1, -1)))
+            adjusted = synthetic_row(
+                year=2020, industry="3341", commodity="3344",
+                use=-2, world=-69, regions=negative,
+            )
+            adjusted["source_lineage_sha256"] = baseline["source_lineage_sha256"]
+            rows[pos] = adjusted
+
+        source, receipts = self._synthetic_supplied_industry_view(
+            mutate=negative_one_source_cell,
+        )
+        proof = self._verify_synthetic_supplied_view(source, receipts)
+        self.assertEqual(proof["signed_negative_world_import_rows_checked"], 1)
+        self.assertEqual(proof["signed_negative_region_adjustment_rows_checked"], 1)
+        self.assertEqual(proof["industry_view_rows_checked"], 1112)
+        self.assertTrue(proof["supplied_research_view_bytes_authenticated"])
+        self.assertFalse(proof["original_BEA_L0_response_bytes_authenticated"])
+        self.assertFalse(proof["historical_pit_eligible"])
+        self.assertFalse(proof["may_trade"])
+
+    def test_original_pinned_digest_rejects_tampered_source_bytes(self):
+        source, receipts = self._synthetic_supplied_industry_view()
+        forged = source.replace(b"Synthetic electronic parts",
+                                b"Synthetic component parts", 1)
+        self.assertNotEqual(source, forged)
+        with self.assertRaisesRegex(BEAContextRefused, "length differs|SHA256 differs"):
+            self._verify_synthetic_supplied_view(forged, receipts)
+
+    def test_even_consistently_rehashed_view_rejects_swapped_accounting_period(self):
+        def swap(rows):
+            rows[139 - 1], rows[139] = rows[139], rows[139 - 1]
+
+        source, receipts = self._synthetic_supplied_industry_view(mutate=swap)
+        # The synthetic manifest was rehashed to match the deliberately
+        # corrupted bytes; structural accounting-year order must still reject.
+        with self.assertRaisesRegex(BEAContextRefused, "accounting-year|commodity order"):
+            self._verify_synthetic_supplied_view(source, receipts)
+
+    def test_even_consistently_rehashed_view_rejects_hidden_ninth_commodity_duplicate(self):
+        def duplicate(rows):
+            rows[138]["commodity_code_exact"] = "3344"
+
+        source, receipts = self._synthetic_supplied_industry_view(mutate=duplicate)
+        with self.assertRaisesRegex(BEAContextRefused, "duplicate annual"):
+            self._verify_synthetic_supplied_view(source, receipts)
+
+    def test_invalid_supplied_view_content_or_industry_refused(self):
+        source, receipts = self._synthetic_supplied_industry_view()
+        with self.assertRaisesRegex(BEAContextRefused, "bounded caller-supplied"):
+            self._verify_synthetic_supplied_view(b"", receipts)
+        with self.assertRaisesRegex(BEAContextRefused, "one exact BEA industry"):
+            verify_supplied_bea_research_view_bytes(
+                source, industry_code="../3341",
+                build_receipt_bytes=receipts[0],
+                lineage_bytes=receipts[1],
+                hardening_bytes=receipts[2],
+            )
 
     def test_original_raw_bytes_are_pinned_even_if_json_remains_valid(self):
         build, lineage, hardening = self._fixture()
