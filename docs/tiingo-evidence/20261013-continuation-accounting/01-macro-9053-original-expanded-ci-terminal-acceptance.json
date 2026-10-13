@@ -1,0 +1,19 @@
+{
+  "schema": "tiingo.original_expanded_ci_actual_terminal_acceptance/v1",
+  "root": "01a12ab6-92cb-7c42-a711-42673ebb6b50",
+  "recorded_at_utc": "2026-10-13T02:39:55.942275+00:00",
+  "pr": 9053,
+  "head": "fdfed5e5436a875936113af5e90a3fbfef25fdba",
+  "run": 38336052933,
+  "all_12_packs_and_ci_gate_terminal_success": true,
+  "original_attended_watch_tool": 10339,
+  "original_attended_watch_exit_code": 0,
+  "actual_original_terminal_return_consumed": true,
+  "current_run_read_chunk": "26c56a",
+  "current_run_read_exit_code": 0,
+  "current_protected_source_read_exit_code": 0,
+  "current_run_read_sha256": "0e3fd1441ac976e1e672ca682346f9b7291470894f17cb9a63aae5a56470c2e1",
+  "current_protected_source_read_sha256": "e7a446cfcf1e794f69174850d89acfc00da1dbc2c731c8a86f7170abeaae7d21",
+  "protected_merge_not_yet_executed": true,
+  "deployment_claimed": false
+}
