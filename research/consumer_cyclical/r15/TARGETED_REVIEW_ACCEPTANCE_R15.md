@@ -20,13 +20,13 @@ The reviewer independently adjudicated H1–H3, M1–M9 and the R14 current-owne
 - **M7:** SEC rights treatment is representation-specific and explicitly excludes whole expressive documents, third-party attachments without their own family, branding and dataset redistribution.
 - **M8:** pins are evidence/review pins only; every native write requires a fresh current-owner/source-custody re-pin.
 - **M9:** incumbent positive-only entitlement-store-outage grace matches the current code/test contract, while deployed/live behavior remains unproven.
-- **R14:** current #7870 truth is carried correctly: T09 exists but is not Consumer-accepted because unmatched source families pass through and current `https://www.sec.gov` witness refs resolve to no family; T08b and T11a are review-rejected/fix-queued; T10e/T10f are queued; #7780's build-out ruling remains open.
+- **R14:** the targeted review accepted this reading of freeze pin `3e3a7956`: T09 existed and was not Consumer-accepted, with unmatched families described as passing through and `https://www.sec.gov` witness refs described as resolving to no family; T08b and T11a are review-rejected/fix-queued; T10e/T10f are queued; #7780's build-out ruling remains open. The 2026-10-12 correction of that pass-through / no-family clause is line 29 of this file.
 
 ## Nonblocking review nits carried into the integration handoff
 
 These do **not** reopen the accepted research package, but the integrator must not lose them:
 
-1. R13's old sentence that T09's fix lane is queued is superseded by R14/current #7870: T09 is integrated **but NOT Consumer-accepted** because the unmatched-family rights seam fails open.
+1. R13's old sentence that T09's fix lane is queued is superseded. T09 is integrated **but NOT Consumer-accepted**. Dated correction 2026-10-12 on `refs/grok/pr/7870` `839bd6a1b065959b90e48d3171edbbe85f4f74f3`: unmapped families fail closed at `app/theme_research.py:454`, and `https://www.sec.gov/Archives/` maps to `sec_edgar` at `engine/theme_graph/rights.py:104`. The freeze-pin pass-through / no-family sentence is not current #7870 behavior, and this correction does not Consumer-accept T09.
 2. The two R13-pinned shared tests are unchanged at current #7870 head `3e3a7956d014b8c50be7b197fdbea847cecfa641`: `tests/test_theme_research_rights_refresh.py` blob `bfc04f38066029e46d23c2e61ac4dd1e5aa9acb0`, `tests/test_theme_research_private_binding.py` blob `a9c09169d3618abb2bb7df1c842fab0c7c0d1054`.
 3. “60 checks” is a research regression count, not 60 independent financial guarantees; roughly 49 are substantive behavioral checks and others include literal/meta guards. Never use the count as evidence strength.
 4. H2 fail-closed behavior is a design requirement, not executed owner-route proof. Require it in the accepted shared contract.

@@ -18,7 +18,7 @@ R13 adds the exact machine-readable evidence the next reviewer needs for M6–M9
 
 The original independent review omitted three existing companion maps. The targeted re-review must consume them directly:
 
-- R6 design evidence: CONSUMER_CYCLICAL_R6_DESIGN_EVIDENCE_2026-09-23.json, blob cdab90b867e16b36ff08fd6a678d4547308cec95, 32 mapped requirements.
+- R6 design evidence: CONSUMER_CYCLICAL_R6_DESIGN_EVIDENCE_2026-09-23.json, blob 7265ab9b91df4fb7b0e3d8166a1603c6d7a47d88, 32 mapped requirements. The 2026-10-12 CC6-C14 tolerance note moved this blob from the review identity cdab90b867e16b36ff08fd6a678d4547308cec95.
 - R7 delivery map: CONSUMER_CYCLICAL_R7_REVIEW_AND_DELIVERY_MAP_2026-09-23.json, blob 58c26b787da834f92efb82363daecc631e034367, 10 mapped requirements.
 - R10 foundation map: CONSUMER_CYCLICAL_FOUNDATION_INTEGRATION_MAP_R10_2026-09-24.json, blob 6b69882a3bf9cc43b686ddfdd41475606258334c, 16 mapped requirements.
 
@@ -82,7 +82,7 @@ The old R10 statuses are superseded as follows:
 - Missing definitions: shared guidance_history.py now emits definition_unqualified:<field> for two absent definitions instead of silently certifying them.
 - SEC rights: Consumer R11 objection accepted and landed.
 - Shared page seam: #7669 ruling 5808986207 accepted; #7870 returned an independently reviewed common include at 5810675425. Consumer does not author another shared include.
-- T09 transport: not accepted yet; its first review rejected and the fix lane is still queued at the current #7870 checkpoint.
+- T09 transport: not Consumer-accepted. The superseded queue wording is withdrawn; see research/consumer_cyclical/r15/TARGETED_REVIEW_ACCEPTANCE_R15.md:29.
 - T11 private binding: not accepted yet; its lane is still queued.
 - Cross-vertical profile + reported-economic-context build-out: still an open ruling request on #7780 comment 5811066300. Consumer must not fabricate guidance just to enter the Semiconductor economics path.
 - LULU history: remains with #7331/#7426; no new Consumer consultation is opened.

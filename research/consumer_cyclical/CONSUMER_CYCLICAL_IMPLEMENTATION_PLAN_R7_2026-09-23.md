@@ -149,7 +149,7 @@ def test_rejects_context_disagreement(case, field, value):
 
 ## 6. Task3 — deterministic economic explanation
 
-**Files:** Proposed `economic_change.py`, new `tests/test_consumer_economic_change.py`. **Consumes:** accepted facts plus explicit read cutoffs; can be developed against synthetic adverse inputs without claiming real-source acceptance. **Produces:** `DossierResult` containing the proposed `economic_change.consumer.v1` view after owner enrollment.
+**Files:** Proposed `economic_change.py`, new `tests/test_consumer_economic_change.py`. **Consumes:** accepted facts plus explicit read cutoffs; can be developed against synthetic adverse inputs without claiming real-source acceptance. **Produces:** `DossierResult` containing the proposed `consumer_economic_change.v1` view after owner enrollment. The R12 amendment selects this name.
 
 - [ ] Use a fixed internal operation set: matched difference, signed sum, difference of changes, positive-denominator change ratio, matched range comparison and reconciliation difference. No user expression, `eval`, network access or LLM call. Use Decimal with explicit precision; preserve source scale and display rounding separately.
 - [ ] Match issuer, role, definition/basis and economic scope. A current/prior difference deliberately permits different source intervals only under the declared comparable-period relation. A cash sum requires the same interval. A guidance comparison requires the same target interval, not the same reporting quarter.

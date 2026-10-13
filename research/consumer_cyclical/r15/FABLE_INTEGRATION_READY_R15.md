@@ -120,7 +120,7 @@ Malformed case shape may refuse the whole case; malformed/missing values suppres
 
 ## M6–M9
 
-- Requirement universe: **174** product obligations; all remain unexecuted unless later native proof discharges them. Exact companions: R6 blob `cdab90b867e16b36ff08fd6a678d4547308cec95`; R7 blob `58c26b787da834f92efb82363daecc631e034367`; R10 blob `6b69882a3bf9cc43b686ddfdd41475606258334c`.
+- Requirement universe: **174** product obligations; all remain unexecuted unless later native proof discharges them. Exact companions: R6 blob `7265ab9b91df4fb7b0e3d8166a1603c6d7a47d88` (pre-correction review blob `cdab90b867e16b36ff08fd6a678d4547308cec95`; the 2026-10-12 CC6-C14 tolerance note is the only byte change); R7 blob `58c26b787da834f92efb82363daecc631e034367`; R10 blob `6b69882a3bf9cc43b686ddfdd41475606258334c`.
 - SEC/source rights: factual inputs, receipted short excerpts and original interpretation may be qualified under the accepted family; no blanket right to whole expressive filings, third-party attachments, logos/branding or dataset redistribution. Paid entitlement never supplies source rights.
 - Re-pin every affected native group immediately before write. Historical pins are evidence, not custody.
 - M9 grace: positive-only entitlement-store outage grace bounded by the smaller configured value and 86,400-second ceiling from the last successful positive observation; failed refresh does not renew; missing/invalid auth, fresh negative entitlement and invalidation cannot use grace; source-rights veto remains independent. Rerun the exact current tests in the implementation wave; deployed/live behavior is still owed.
@@ -129,7 +129,7 @@ Malformed case shape may refuse the whole case; malformed/missing values suppres
 
 ### T09 rights/transport — #7870
 
-T09 transport is **BUILT_NOT_PROVEN / NOT CONSUMER ACCEPTED**. Current `_filter_bundle_for_rights` passes through an assertion when `family_for_source_ref` returns `None`; #7870 owner evidence says current `https://www.sec.gov` witness refs match no registry prefix, so the rights veto governs almost none of that corpus. Consume the owner-side EDGAR-family/fail-closed correction before using the route for real Consumer assertions.
+T09 transport is **BUILT_NOT_PROVEN / NOT CONSUMER ACCEPTED**. Dated correction 2026-10-12, observed on `refs/grok/pr/7870` at `839bd6a1b065959b90e48d3171edbbe85f4f74f3`: an unmapped family is withheld (fail closed) at `app/theme_research.py:454`, and `https://www.sec.gov/Archives/` maps to `sec_edgar` at `engine/theme_graph/rights.py:104`. This supersedes the freeze-pin `3e3a7956` sentence that unmatched families pass through and that `https://www.sec.gov` witness refs resolve to no family. The correction does not accept the route for Consumer assertions.
 
 ### T08b / T10e / T10f / T11a — #7870
 

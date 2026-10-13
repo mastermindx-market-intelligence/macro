@@ -66,7 +66,16 @@
     "first_vertical_completed": false
   },
   "external_gates": {
-    "T09": "BUILT_NOT_PROVEN__NOT_CONSUMER_ACCEPTED__UNMATCHED_SOURCE_FAMILY_FAIL_OPEN",
+    "T09": "BUILT_NOT_PROVEN__NOT_CONSUMER_ACCEPTED",
+    "T09_dated_correction_2026_10_12": {
+      "supersedes_token": "BUILT_NOT_PROVEN__NOT_CONSUMER_ACCEPTED__UNMATCHED_SOURCE_FAMILY_FAIL_OPEN",
+      "observed_ref": "refs/grok/pr/7870",
+      "observed_sha": "839bd6a1b065959b90e48d3171edbbe85f4f74f3",
+      "unmapped_families": "fail-closed at app/theme_research.py:454",
+      "sec_archives_prefix": "https://www.sec.gov/Archives/ maps to sec_edgar at engine/theme_graph/rights.py:104",
+      "freeze_pin_superseded": "3e3a7956d014b8c50be7b197fdbea847cecfa641",
+      "consumer_accepted": false
+    },
     "T08b": "REVIEW_REJECTED__FIX_QUEUED",
     "T10e": "QUEUED",
     "T10f": "QUEUED",

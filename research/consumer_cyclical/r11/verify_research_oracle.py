@@ -4,6 +4,8 @@ import copy
 import hashlib
 import importlib.util
 import json
+import os
+import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent
@@ -125,7 +127,6 @@ bad=copy.deepcopy(A);bad["recipe"]="general_formula_eval"
 refused("no_unbounded_formula_language",bad,"unsupported_recipe")
 check("check_names_unique",lambda:len({c["name"] for c in checks})==len(checks))
 results=[oracle.run_case(c) for c in packet["cases"]]
-(ROOT/"research_results.json").write_text(json.dumps(results,indent=2,sort_keys=True)+"\n")
 receipt={
  "kind":"original_research_oracle_verification", "checks":checks, "passed":len(checks),
  "failed":0, "native_application_tests":0, "native_schema_tests":0, "source_admissions":0,
@@ -133,5 +134,8 @@ receipt={
  "source_hashes":{p.name:hashlib.sha256(p.read_bytes()).hexdigest()
   for p in (ROOT/"research_oracle.py",ROOT/"CONSUMER_R11_SYNTHETIC_WORKED_CASES.json",Path(__file__))}
 }
-(ROOT/"verification.json").write_text(json.dumps(receipt,indent=2,sort_keys=True)+"\n")
+# Receipts are opt-in. A default run must not drop untracked JSON into the worktree.
+if "--write-receipts" in sys.argv[1:] or os.environ.get("CONSUMER_R11_WRITE_RECEIPTS") == "1":
+    (ROOT/"research_results.json").write_text(json.dumps(results,indent=2,sort_keys=True)+"\n")
+    (ROOT/"verification.json").write_text(json.dumps(receipt,indent=2,sort_keys=True)+"\n")
 print(json.dumps({k:v for k,v in receipt.items() if k not in {"checks","source_hashes"}}))

@@ -5,6 +5,91 @@ operation_key: gmi-consumer-cyclical-research-20260923-sol-001
 program: gmi-theme-graph
 repository: mastermindx-market-intelligence/macro
 mission_complete: false
+workstream: "WS:GMI-THEME-GRAPH"
+session: "sol/consumer-cyclical-research-20260923"
+model: sol
+ended_because: blocked
+mission: >
+  Keep Consumer Cyclical research and design on carrier #7804 until a lawful
+  Capacity placement binds an eligible Fable receiver to the R15 V1 PLNT
+  integration packet. The carrier stays research and evidence only. The selected
+  design identity is consumer_cyclical / version 1 / consumer_economic_change.v1
+  / company subject, still PENDING_SHARED_OWNER_ACCEPTANCE.
+state_before: >
+  The #7804 package already held R1-R14. R12 repaired H1-H3 and M1-M5. R13
+  reconciled M6-M9. R14 refreshed shared-owner pins at Consumer head
+  1183127d24cb9d3654516323f4e4ba530aa15cd1. This handoff frontmatter did not
+  yet carry the agentos required fields. Its R15 paragraph still described T09
+  from freeze pin 3e3a7956d014b8c50be7b197fdbea847cecfa641 as passing unmatched
+  families through and as resolving https://www.sec.gov witness refs to no family.
+changed:
+  - path: research/consumer_cyclical/r15/FABLE_INTEGRATION_READY_R15.md
+    what: >
+      Records ACCEPT_FOR_FABLE_HANDOFF and the V1 PLNT sequence, plus the
+      2026-10-12 correction that refs/grok/pr/7870 at
+      839bd6a1b065959b90e48d3171edbbe85f4f74f3 withholds an unmapped family at
+      app/theme_research.py:454 and maps https://www.sec.gov/Archives/ to
+      sec_edgar at engine/theme_graph/rights.py:104.
+  - path: research/consumer_cyclical/r15/FABLE_INTEGRATION_READY_R15.json
+    what: "Same dated T09 correction. T09 stays BUILT_NOT_PROVEN and not Consumer-accepted."
+  - path: research/consumer_cyclical/r15/TARGETED_REVIEW_ACCEPTANCE_R15.md
+    what: "Line 29 carries the queued-wording supersession and the 2026-10-12 #7870 correction."
+  - path: research/consumer_cyclical/r13/INTEGRATION_READINESS_R13.md
+    what: "Drops the superseded T09 queue sentence and points at r15/TARGETED_REVIEW_ACCEPTANCE_R15.md:29."
+  - path: research/consumer_cyclical/CONSUMER_CYCLICAL_IMPLEMENTATION_PLAN_R7_2026-09-23.md
+    what: "Task3 names the R12-selected discriminator consumer_economic_change.v1."
+  - path: research/consumer_cyclical/CONSUMER_CYCLICAL_R6_DESIGN_EVIDENCE_2026-09-23.json
+    what: "CC6-C14 records exact rational -2600/443 and the truncation tolerance for the stored decimal."
+  - path: research/consumer_cyclical/r11/verify_research_oracle.py
+    what: "Prints the receipt and does not write JSON receipts unless --write-receipts or CONSUMER_R11_WRITE_RECEIPTS=1 is set."
+  - path: agentos/handoffs/GMI-CONSUMER-CYCLICAL-RESEARCH-2026-09-23.md
+    what: "Adds the thirteen agentos handoff fields and the same 2026-10-12 T09 correction in the body."
+verified:
+  - claim: "R11 research oracle verification passes with no native claims."
+    command: "python3 -I research/consumer_cyclical/r11/verify_research_oracle.py"
+    result: "exit 0; passed 58; failed 0; native_application_tests 0."
+  - claim: "R12 repair verification passes."
+    command: "python3 -I research/consumer_cyclical/r12/verify_research_oracle.py"
+    result: "exit 0; passed 60; failed 0."
+  - claim: "R13 manifest verification passes."
+    command: "python3 -I research/consumer_cyclical/r13/verify_r13_manifest.py"
+    result: "exit 0; passed 9; failed 0."
+  - claim: "The Consumer handoff satisfies the agentos required-field floor."
+    command: "python3 scripts/agentos.py validate --root agentos --quiet"
+    result: "exit 0; 1212 records — 0 error(s), 92 warning(s). The 92 warnings are the pre-existing store warnings."
+  - claim: "On refs/grok/pr/7870, an unmapped family is withheld and the SEC Archives prefix maps to sec_edgar."
+    command: "git show refs/grok/pr/7870:app/theme_research.py; git show refs/grok/pr/7870:engine/theme_graph/rights.py"
+    result: >
+      Ref 839bd6a1b065959b90e48d3171edbbe85f4f74f3. app/theme_research.py:454
+      withholds the assertion when the attributable family is None.
+      engine/theme_graph/rights.py:104 maps https://www.sec.gov/Archives/ to sec_edgar.
+unverified:
+  - claim: "T09, T08b, T10e, T10f, T11a, and the #7780 build-out ruling are Consumer-accepted."
+    what_would_verify: "Owner acceptance on the current #7870 and #7780 heads after a fresh re-pin, plus the V1 proof ruler in the R15 packet."
+  - claim: "A Fable receiver has picked up the V1 packet."
+    what_would_verify: "A lawful placement receipt with PICKUP_ACK and START for gmi-consumer-cyclical-v1-integration-20260924-fable-001."
+  - claim: "The GitHub PR #7804 description matches this dated correction."
+    what_would_verify: "The integrating seat updates the PR body. This lane does not run gh."
+unresolved:
+  - "Placement is WAITING_CAPACITY / needs_placement. No receiver, ACK, or START exists."
+  - "consumer_economic_change.v1 remains PENDING_SHARED_OWNER_ACCEPTANCE."
+  - "#7780 comment 5811066300 build-out ruling is open."
+  - "T08b and T11a remain review-rejected. T10e and T10f remain queued."
+  - "LULU guidance and history stay with #7426 and #7331."
+next_actions:
+  - "Capacity or a direct live placement binds an eligible Fable receiver to research/consumer_cyclical/r15/FABLE_INTEGRATION_READY_R15.md."
+  - "That receiver re-pins Macro main, #7870, #7780, #7669, #7462, and #7426 immediately before any write."
+  - "Do not open product code on #7804. First executable target after pickup is V1 PLNT only."
+do_not_redo:
+  - "R1-R11 research, shared-foundation archaeology, and existing consultations."
+  - "The completed first review and the R14 targeted review, absent a material invalidator."
+  - "R12 and R13 verification, absent a material invalidator."
+  - "R8 native application-code staging. Do not retry, rephrase, re-home, or delegate a workaround."
+danger_areas:
+  - "This file cites WS:GMI-THEME-GRAPH and its name ends 2026-09-23, so agentos bundle compilation selects it as the latest handoff for that workstream, ahead of THEME-INTELLIGENCE-CONVERGENCE-2026-09-19-LANE-A. The August 2026 theme-graph completion handoffs remain on disk."
+  - "Do not turn #7804 into the product branch or weaken a public-hostname guard."
+  - "Unsupported Consumer must refuse. Do not relabel it as Semiconductor."
+  - "Mapping https://www.sec.gov/Archives/ to sec_edgar is not Consumer acceptance of T09."
 ---
 
 # Consumer Cyclical R12 — independent review started; result pending
@@ -113,7 +198,7 @@ WHAT_MUST_NOT_BE_REDONE: R1-R11 research; shared-foundation archaeology; complet
 
 Protected procedure re-pinned unchanged at Mastermind `1a7d400294b0d37c460b963b8865b40a23173b58`. The immutable R14 review packet at Consumer head `1183127d24cb9d3654516323f4e4ba530aa15cd1` received independent restricted Opus verdict **ACCEPT_FOR_FABLE_HANDOFF**, zero blocking findings. Provider result was successful/terminal; no permission denial. Sol independently replayed R12 60/60 and R13 9/9 as research-only checks. Review acceptance does not imply native/browser/deployment/product acceptance.
 
-Current mutable boundary before the handoff packet: Macro main `c99fdde7302dcc8ce66566802ea319ff3fdb9c11`; #7870 `3e3a7956d014b8c50be7b197fdbea847cecfa641`; #7780 `b68069b2e1296bfc772e4f4e3a0c1cc3845f89eb`; #7669 `6942b2b62bad2dfc9d3b50eb7042e0a126b708c4`; #7462 `31706d7322af55696dc7b2e746ec511b08bd51d7`; #7426 `7bc04876747d773861b47519061279ae033a148d`. Main moved after R14 only through unrelated CI/Kalshi/NeuralWeb/data paths; M9 paywall/test blobs remain unchanged. #7870/#7780 did not move. Current T09 remains BUILT_NOT_PROVEN / NOT CONSUMER ACCEPTED because unmatched source families pass through and the owner says current sec.gov witness refs resolve to no family.
+Current mutable boundary before the handoff packet: Macro main `c99fdde7302dcc8ce66566802ea319ff3fdb9c11`; #7870 `3e3a7956d014b8c50be7b197fdbea847cecfa641`; #7780 `b68069b2e1296bfc772e4f4e3a0c1cc3845f89eb`; #7669 `6942b2b62bad2dfc9d3b50eb7042e0a126b708c4`; #7462 `31706d7322af55696dc7b2e746ec511b08bd51d7`; #7426 `7bc04876747d773861b47519061279ae033a148d`. Main moved after R14 only through unrelated CI/Kalshi/NeuralWeb/data paths; M9 paywall/test blobs remain unchanged. #7870/#7780 did not move. Current T09 remains BUILT_NOT_PROVEN / NOT CONSUMER ACCEPTED. Dated correction 2026-10-12, observed on refs/grok/pr/7870 at 839bd6a1b065959b90e48d3171edbbe85f4f74f3: an unmapped family is withheld at app/theme_research.py:454, and https://www.sec.gov/Archives/ maps to sec_edgar at engine/theme_graph/rights.py:104. This supersedes the freeze-pin 3e3a7956 sentence that unmatched families pass through and that sec.gov witness refs resolve to no family.
 
 Durable next packet: `research/consumer_cyclical/r15/FABLE_INTEGRATION_READY_R15.md` plus machine companion. Preferred avenue is Fable because the next phase is principal cross-owner integration; first executable mission is V1 PLNT, with routine bounded implementation/review delegated after boundaries freeze. Automatic Fable placement is not currently production-armed under protected routing/capacity source and no numbered account/session was explicitly assigned, so this boundary is truthfully `WAITING_CAPACITY / needs_placement`, not DELIVERY/ACK/START. No receiver watcher is armed.
 
