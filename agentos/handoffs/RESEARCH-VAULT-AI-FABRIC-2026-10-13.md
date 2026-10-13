@@ -55,11 +55,11 @@ unverified:
     what_would_verify: "Installed qualified runtime, actual Research Auth0 grants and private transport, separate C4 client journeys, correction/revocation and rollback proof."
 unresolved:
   - "Macro #8622 materializer head 641adeb89ac501579e42632112c338d130bd7203: eleven packs passed; contract-delta and pack zero failed packing limits. Exact-source two-job process consolidation passed actual-carrier packing locally and is being published through the same PR; no ceiling waiver or producer dispatch."
-  - "Macro #9062 digest/date/H00 source is reviewed, binding CI clean and merge-on-green armed; its existing controller owns capacity-constrained refresh."
+  - "Macro #9062 digest/date/H00 source merged at 75f38c3176f6e6ad4c0a9f19beeb77c2a8011690 (head 00161de57c93957575148a620648d90ae6984ff4), observed 2026-10-13 after the controller refresh."
   - "Four interrupted original Fabric operations retain unknown outcomes. The incumbent owner's collector diagnosis ended ORIGINAL_RECOVERY_UNAVAILABLE; no supported original artifact acquisition or settlement exists. No replacement, replay or inferred lease settlement."
   - "F11 implementation and accepted revision/RIO patches are being reconciled, but F11 merge retains the real production 95 percent gate."
-  - "Mastermind #1393 merged at 47aeed6514df522a411005f45297309b12fb1737; #1397 merged at def93fd69bf45560c4394336c56dbaa1250a9159. Neither is installed. Citation/runtime union #1403 head a59d1605a37207f7da3d27fe69baecad4f748b60 contains the accepted one-file package-test isolation repair; 122 affected tests passed and required CI run 38391638573 started. Runtime and locks are unchanged; not installed."
-  - "C4 sign-in is at the existing-account password step; macOS Passwords requires the user's OS unlock. The official Linux tunnel-client download returned 403 and remains uninstalled."
+  - "Mastermind #1393 merged at 47aeed6514df522a411005f45297309b12fb1737; #1397 merged at def93fd69bf45560c4394336c56dbaa1250a9159. Neither is installed. Citation/runtime union #1403 merged at aa8c325481f2555100b239a60b1ed5103027c55d from exact head a59d1605a37207f7da3d27fe69baecad4f748b60. Required test, frontend, native-macOS and CodeQL checks passed; not installed."
+  - "C4 Pro is authenticated: live browser profile confirmed chatgpt4@mastermind-x.com and Personal account on 2026-10-13. The earlier sign-in gate is cleared. The official Linux tunnel-client download returned 403 and remains uninstalled; no Research Vault connection or live client acceptance yet."
 next_actions:
   - "Land the exact reviewed source through ordinary CI/merge controls; root alone dispatches the first post-merge producer run after an active-run check."
   - "Resume E04/E05/citation/U01 result consumption only if new supported original-run evidence becomes available, through the original assigning parent and exact retained bytes."
