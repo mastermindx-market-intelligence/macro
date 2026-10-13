@@ -1,10 +1,12 @@
 """Draft a WS-* append and a handoff skeleton from seat PR JSON.
 
 Knowledge plane only. The drafter reads a local JSON file (PR number, title,
-head sha, files, merged_at, plus the workstream the seat names). It writes
-stdout or ``--out``. It does not write ``agentos/``, call GitHub, or decide
-whether work may run. ``scripts/agentos.py validate`` on a temp copy of the
-store is the gate for the drafted handoff.
+head sha, files, merged_at, plus the workstream the seat names). Optional
+``kinds`` of ``draft-decision`` and ``draft-discovery`` add those skeletons to
+the same stdout or ``--out`` JSON. It does not write ``agentos/``, call GitHub,
+or decide whether work may run. ``scripts/agentos.py`` checkers on a temp copy
+of the store are the gate for the drafted records. An unfilled discovery keeps
+``falsifier`` and ``so_what`` placeholders that fail ``check_discovery``.
 """
 from __future__ import annotations
 
@@ -88,10 +90,57 @@ def _run(tmp_path: Path, payload: dict, *extra: str, env: dict | None = None):
     return result, path
 
 
-def _draft(tmp_path: Path, payload: dict | None = None):
-    result, path = _run(tmp_path, payload or _payload())
+def _draft(tmp_path: Path, payload: dict | None = None, *extra: str):
+    result, path = _run(tmp_path, payload or _payload(), *extra)
     assert result.returncode == 0, result.stderr
     return json.loads(result.stdout), path, result
+
+
+def _init_observation_repo(repo: Path, env: dict[str, str]) -> None:
+    """Throwaway git repo. HEAD is a no-ff merge whose plain diff-tree is empty."""
+    subprocess.run(["git", "init", "-b", "main", str(repo)], check=True, capture_output=True, env=env)
+    for key, value in (
+        ("user.email", "lane@example.invalid"),
+        ("user.name", "Records Draft Lane"),
+        ("commit.gpgsign", "false"),
+    ):
+        subprocess.run(
+            ["git", "-C", str(repo), "config", key, value],
+            check=True,
+            capture_output=True,
+            env=env,
+        )
+
+    def commit(name: str, body: str, message: str) -> None:
+        (repo / name).write_text(body, encoding="utf-8")
+        subprocess.run(["git", "-C", str(repo), "add", name], check=True, capture_output=True, env=env)
+        subprocess.run(
+            ["git", "-C", str(repo), "commit", "-m", message],
+            check=True,
+            capture_output=True,
+            env=env,
+        )
+
+    commit("observed.py", "one\n", "add observed.py")
+    subprocess.run(["git", "-C", str(repo), "checkout", "-b", "side"], check=True, capture_output=True, env=env)
+    commit("side.py", "two\n", "add side.py")
+    subprocess.run(["git", "-C", str(repo), "checkout", "main"], check=True, capture_output=True, env=env)
+    commit("main.py", "three\n", "add main.py")
+    subprocess.run(
+        ["git", "-C", str(repo), "merge", "--no-ff", "-m", "merge side", "side"],
+        check=True,
+        capture_output=True,
+        env=env,
+    )
+
+
+def _validate_store(work: Path) -> subprocess.CompletedProcess[str]:
+    return subprocess.run(
+        [sys.executable, str(AGENTOS), "validate", "--root", str(work), "--quiet"],
+        capture_output=True,
+        text=True,
+        cwd=REPO,
+    )
 
 
 def test_stdout_drafts_append_and_handoff_without_touching_agentos(tmp_path: Path) -> None:
@@ -203,22 +252,45 @@ def test_non_hex_sha_is_copied_and_not_passed_to_git(tmp_path: Path) -> None:
 def test_local_commit_names_are_observed_and_github_identity_stays_unverified(
     tmp_path: Path,
 ) -> None:
+    """Names come from a throwaway repo, not from this checkout's HEAD.
+
+    A PR merge ref has an empty ``git diff-tree -r``. This repo's HEAD is that
+    kind of merge. The drafter reads it only because ``--repo`` points there,
+    and the sha under test is the newest non-merge commit.
+    """
     env = _git_env()
-    sha = subprocess.check_output(
-        ["git", "rev-parse", "HEAD"], cwd=REPO, text=True, env=env
+    repo = tmp_path / "repo"
+    repo.mkdir()
+    _init_observation_repo(repo, env)
+    merge = subprocess.check_output(
+        ["git", "-C", str(repo), "rev-parse", "HEAD"], text=True, env=env
     ).strip()
-    names = subprocess.check_output(
-        ["git", "diff-tree", "--no-commit-id", "--name-only", "-r", sha],
-        cwd=REPO,
+    merge_names = subprocess.check_output(
+        ["git", "-C", str(repo), "diff-tree", "--no-commit-id", "--name-only", "-r", merge],
         text=True,
         env=env,
     ).splitlines()
-    assert names, "HEAD has an empty diff-tree; the observation test would have no power"
+    assert merge_names == []
+    sha = subprocess.check_output(
+        ["git", "-C", str(repo), "rev-list", "--no-merges", "--max-count=1", "HEAD"],
+        text=True,
+        env=env,
+    ).strip()
+    assert sha
+    assert sha != merge
+    names = subprocess.check_output(
+        ["git", "-C", str(repo), "diff-tree", "--no-commit-id", "--name-only", "-r", sha],
+        text=True,
+        env=env,
+    ).splitlines()
+    assert names, "non-merge commit has an empty diff-tree; the observation test would have no power"
     real = names[0]
     fake = "no/such-records-draft-path.py"
     draft, _path, _result = _draft(
         tmp_path,
         _payload(pr={"head_sha": sha, "files": [real, fake]}),
+        "--repo",
+        str(repo),
     )
     by_path = {item["path"]: item for item in draft["files"]}
     assert by_path[real]["status"] == "observed"
@@ -367,3 +439,126 @@ def test_source_has_no_network_or_control_plane_import() -> None:
             assert "gh" not in parts
             assert "curl" not in parts
             assert parts[0] == "git"
+
+
+def test_omitted_kinds_omit_decision_and_discovery(tmp_path: Path) -> None:
+    draft, _path, _result = _draft(tmp_path)
+    assert "decision" not in draft
+    assert "discovery" not in draft
+    assert "kinds" not in draft
+
+
+def test_unknown_kind_exits_2(tmp_path: Path) -> None:
+    result, _path = _run(tmp_path, _payload(kinds=["draft-handoff"]))
+    assert result.returncode == 2
+    assert "draft-handoff" in result.stderr
+    assert result.stdout == ""
+
+
+def test_duplicate_kind_exits_2(tmp_path: Path) -> None:
+    result, _path = _run(tmp_path, _payload(kinds=["draft-decision", "draft-decision"]))
+    assert result.returncode == 2
+    assert "duplicate" in result.stderr
+    assert result.stdout == ""
+
+
+def test_draft_decision_passes_check_decision_in_a_temp_store(tmp_path: Path) -> None:
+    before = sorted(path.name for path in (STORE / "decisions").glob("*.md"))
+    draft, _path, result = _draft(tmp_path, _payload(kinds=["draft-decision"]))
+    assert result.stderr == ""
+    decision = draft["decision"]
+    assert decision["path"] == "agentos/decisions/DEC-AGENT-OS-PR-9001.md"
+    assert decision["target_exists"] is False
+    assert sorted(path.name for path in (STORE / "decisions").glob("*.md")) == before
+    assert "does not gate execution" in decision["markdown"].lower()
+
+    agentos = _load_agentos()
+    preview = tmp_path / "DEC-AGENT-OS-PR-9001.md"
+    preview.write_text(decision["markdown"], encoding="utf-8")
+    rec, body = agentos.parse_record(preview)
+    rec["_body"] = body
+    hard = [item for item in agentos.check_decision(rec, Path(decision["path"])) if item.hard]
+    assert hard == [], [item.message for item in hard]
+
+    work = tmp_path / "agentos"
+    shutil.copytree(STORE, work)
+    target = work / "decisions" / "DEC-AGENT-OS-PR-9001.md"
+    assert not target.exists()
+    target.write_text(decision["markdown"], encoding="utf-8")
+    validated = _validate_store(work)
+    assert validated.returncode == 0, validated.stdout + validated.stderr
+    assert "0 error(s)" in validated.stdout
+
+
+def test_unfilled_discovery_fails_until_a_human_fills_falsifier_and_so_what(
+    tmp_path: Path,
+) -> None:
+    before = sorted(path.name for path in (STORE / "discoveries").glob("*.md"))
+    draft, _path, result = _draft(tmp_path, _payload(kinds=["draft-discovery"]))
+    assert result.stderr == ""
+    discovery = draft["discovery"]
+    assert discovery["path"] == "agentos/discoveries/DSC-AGENT-OS-PR-9001.md"
+    assert discovery["target_exists"] is False
+    assert sorted(path.name for path in (STORE / "discoveries").glob("*.md")) == before
+    text = discovery["markdown"]
+    assert 'falsifier: "UNFILLED"' in text
+    assert 'so_what: ""' in text
+    assert "does not gate execution" in text.lower()
+
+    agentos = _load_agentos()
+    preview = tmp_path / "DSC-AGENT-OS-PR-9001.md"
+    preview.write_text(text, encoding="utf-8")
+    rec, body = agentos.parse_record(preview)
+    rec["_body"] = body
+    hard = [item for item in agentos.check_discovery(rec, Path(discovery["path"])) if item.hard]
+    messages = [item.message for item in hard]
+    assert any("falsifier" in message for message in messages)
+    assert any("so_what" in message for message in messages)
+    assert {item.rule for item in hard} <= {"unfalsifiable-claim", "required-field"}
+
+    work = tmp_path / "agentos"
+    shutil.copytree(STORE, work)
+    target = work / "discoveries" / "DSC-AGENT-OS-PR-9001.md"
+    target.write_text(text, encoding="utf-8")
+    failed = _validate_store(work)
+    assert failed.returncode != 0
+    combined = failed.stdout + failed.stderr
+    assert "falsifier" in combined
+    assert "so_what" in combined
+
+    filled = text.replace(
+        'falsifier: "UNFILLED"',
+        'falsifier: "python3 -c \'print(1)\' would disprove a contradictory reading"',
+    ).replace(
+        'so_what: ""',
+        'so_what: "A future session does not treat this skeleton as a finding."',
+    )
+    target.write_text(filled, encoding="utf-8")
+    rec2, body2 = agentos.parse_record(target)
+    rec2["_body"] = body2
+    hard2 = [item for item in agentos.check_discovery(rec2, target) if item.hard]
+    assert hard2 == [], [item.message for item in hard2]
+    passed = _validate_store(work)
+    assert passed.returncode == 0, passed.stdout + passed.stderr
+    assert "0 error(s)" in passed.stdout
+
+
+def test_both_kinds_stay_inside_stdout(tmp_path: Path) -> None:
+    decisions = sorted(path.name for path in (STORE / "decisions").glob("*.md"))
+    discoveries = sorted(path.name for path in (STORE / "discoveries").glob("*.md"))
+    dest = tmp_path / "draft.json"
+    result, _path = _run(
+        tmp_path,
+        _payload(kinds=["draft-discovery", "draft-decision"]),
+        "--out",
+        str(dest),
+    )
+    assert result.returncode == 0, result.stderr
+    assert result.stdout == ""
+    draft = json.loads(dest.read_text(encoding="utf-8"))
+    assert draft["decision"]["path"].startswith("agentos/decisions/DEC-")
+    assert draft["discovery"]["path"].startswith("agentos/discoveries/DSC-")
+    assert "UNFILLED" in draft["discovery"]["markdown"]
+    assert sorted(path.name for path in (STORE / "decisions").glob("*.md")) == decisions
+    assert sorted(path.name for path in (STORE / "discoveries").glob("*.md")) == discoveries
+    assert list(tmp_path.glob("*.md")) == []

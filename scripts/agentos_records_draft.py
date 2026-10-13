@@ -8,15 +8,20 @@ draft to stdout or --out. It never writes agentos/. scripts/agentos.py validate
 remains the gate, and only for malformed records.
 
 The seat supplies the pull-request number, title, head sha, files, and
-merged_at, and names the workstream. Facts this process cannot check from the
-local git object store are copied and marked UNVERIFIED. Nothing here calls
-GitHub or EDGAR. Rank, gate, suffix, and priority keys are refused: a handoff
-stem is <KEY>-<YYYY-MM-DD> and this draft does not rank work.
+merged_at, and names the workstream. Optional kinds draft-decision and
+draft-discovery add those skeletons to the same JSON. A discovery skeleton
+keeps falsifier and so_what unfilled, so check_discovery rejects it until a
+human replaces both. Facts this process cannot check from the local git object
+store are copied and marked UNVERIFIED. Nothing here calls GitHub or EDGAR.
+Rank, gate, suffix, and priority keys are refused: a handoff stem is
+<KEY>-<YYYY-MM-DD> and this draft does not rank work. --repo selects the git
+repository used for cat-file and diff-tree; it does not move the store.
 
 Usage::
 
     python3 scripts/agentos_records_draft.py --pr-json pr.json
     python3 scripts/agentos_records_draft.py --pr-json pr.json --out /tmp/draft.json
+    python3 scripts/agentos_records_draft.py --pr-json pr.json --repo /path/to/repo
 """
 from __future__ import annotations
 
@@ -37,6 +42,8 @@ from scripts.agentos import (  # noqa: E402  — pin above is the import contrac
     FRONTMATTER_RE,
     HANDOFF_ENDED,
     HANDOFF_MODEL,
+    check_decision,
+    check_discovery,
     check_handoff,
 )
 import yaml  # noqa: E402
@@ -44,7 +51,15 @@ import yaml  # noqa: E402
 INPUT_SCHEMA = "agentos.record_draft.v1"
 OUTPUT_SCHEMA = "agentos.record_draft_output.v1"
 REFUSED_KEYS = frozenset({"rank", "gate", "suffix", "priority"})
-_TOP_KEYS = frozenset({"schema", "workstream", "pr", "session", "model", "ended_because"})
+_TOP_KEYS = frozenset({
+    "schema", "workstream", "pr", "session", "model", "ended_because", "kinds",
+})
+_KINDS = frozenset({"draft-decision", "draft-discovery"})
+# check_discovery rejects this token: it has no command, file:line, or #PR.
+DISCOVERY_FALSIFIER_PLACEHOLDER = "UNFILLED"
+# An empty so_what is the unfilled placeholder. A non-empty stub would pass
+# check_discovery, so the skeleton stays empty until a human writes it.
+DISCOVERY_SO_WHAT_PLACEHOLDER = ""
 _PR_KEYS = frozenset({"number", "title", "head_sha", "files", "merged_at"})
 _WS_RE = re.compile(r"^WS:([A-Z0-9]+(?:-[A-Z0-9]+)*)$")
 _MERGED_RE = re.compile(r"^(\d{4}-\d{2}-\d{2})(?:T\d{2}:\d{2}:\d{2}Z)?$")
@@ -81,12 +96,15 @@ def _walk_refused(value: object) -> None:
             _walk_refused(item)
 
 
-def _git(subcommand: str, *git_args: str) -> subprocess.CompletedProcess[str] | None:
+def _git(
+    subcommand: str, *git_args: str, repo: Path | None = None
+) -> subprocess.CompletedProcess[str] | None:
     if subcommand not in {"cat-file", "diff-tree"}:
         raise RuntimeError(f"refusing git subcommand {subcommand}")
+    root = _ROOT if repo is None else repo
     try:
         return subprocess.run(
-            ["git", "-C", str(_ROOT), subcommand, *git_args],
+            ["git", "-C", str(root), subcommand, *git_args],
             capture_output=True,
             text=True,
             check=False,
@@ -95,6 +113,13 @@ def _git(subcommand: str, *git_args: str) -> subprocess.CompletedProcess[str] | 
         )
     except (OSError, subprocess.TimeoutExpired):
         return None
+
+
+def _git_tool(repo: Path | None) -> str:
+    """Command prefix recorded in the draft. Omitted --repo stays plain ``git``."""
+    if repo is None:
+        return "git"
+    return "git -C " + shlex.quote(str(repo))
 
 
 def _load_document(path: Path) -> dict:
@@ -195,7 +220,26 @@ def _session(document: dict) -> tuple[str, bool]:
     return value, False
 
 
-def _observe(head_sha: str) -> tuple[str | None, list[str] | None]:
+def _kinds(document: dict) -> list[str]:
+    if "kinds" not in document:
+        return []
+    value = document["kinds"]
+    if not isinstance(value, list):
+        raise DraftError("kinds must be a list")
+    found: list[str] = []
+    for item in value:
+        if not isinstance(item, str) or item not in _KINDS:
+            raise DraftError(
+                "kinds entry must be draft-decision or draft-discovery, "
+                f"got {item!r}"
+            )
+        if item in found:
+            raise DraftError(f"duplicate kinds entry {item!r}")
+        found.append(item)
+    return found
+
+
+def _observe(head_sha: str, repo: Path | None = None) -> tuple[str | None, list[str] | None]:
     """Local object type, and the commit name list when diff-tree returns one.
 
     A missing object, a non-hex seat sha, or an empty name list stays None.
@@ -204,13 +248,13 @@ def _observe(head_sha: str) -> tuple[str | None, list[str] | None]:
     """
     if not _SHA_RE.fullmatch(head_sha):
         return None, None
-    typed = _git("cat-file", "-t", head_sha)
+    typed = _git("cat-file", "-t", head_sha, repo=repo)
     if typed is None or typed.returncode != 0:
         return None, None
     object_type = typed.stdout.strip() or None
     if object_type != "commit":
         return object_type, None
-    listed = _git("diff-tree", "--no-commit-id", "--name-only", "-r", head_sha)
+    listed = _git("diff-tree", "--no-commit-id", "--name-only", "-r", head_sha, repo=repo)
     if listed is None or listed.returncode != 0:
         return object_type, None
     names = [line for line in listed.stdout.splitlines() if line]
@@ -232,16 +276,17 @@ def _file_rows(files: list[str], names: list[str] | None) -> list[dict]:
     return rows
 
 
-def _what(row: dict, number: int, head_sha: str) -> str:
+def _what(row: dict, number: int, head_sha: str, repo: Path | None = None) -> str:
     path_clause = f"Seat JSON lists this path for PR #{number}."
+    tool = _git_tool(repo)
     if row["in_local_commit"] is True:
         return (
-            f"{path_clause} GIT_NO_LAZY_FETCH=1 git diff-tree --no-commit-id "
+            f"{path_clause} GIT_NO_LAZY_FETCH=1 {tool} diff-tree --no-commit-id "
             f"--name-only -r {head_sha} names this path. What the diff changes is UNVERIFIED."
         )
     if row["in_local_commit"] is False:
         return (
-            f"{path_clause} GIT_NO_LAZY_FETCH=1 git diff-tree --no-commit-id "
+            f"{path_clause} GIT_NO_LAZY_FETCH=1 {tool} diff-tree --no-commit-id "
             f"--name-only -r {head_sha} does not name this path. Whether the pull "
             "request touches it is UNVERIFIED."
         )
@@ -319,6 +364,7 @@ def _render_handoff(
     file_rows: list[dict],
     verified: list[dict[str, str]],
     object_type: str | None,
+    repo: Path | None = None,
 ) -> str:
     number = pr["number"]
     title = pr["title"]
@@ -344,7 +390,7 @@ def _render_handoff(
     ]
     for row in file_rows:
         lines.append(f"  - path: {_q(row['path'])}")
-        lines.append(f"    what: {_q(_what(row, number, head_sha))}")
+        lines.append(f"    what: {_q(_what(row, number, head_sha, repo))}")
     lines.append("prs:")
     lines.append(f"  - {number}")
     lines.append("verified:")
@@ -466,8 +512,10 @@ def _verified_items(
     files: list[str],
     object_type: str | None,
     names: list[str] | None,
+    repo: Path | None = None,
 ) -> list[dict[str, str]]:
     command = "python3 scripts/agentos_records_draft.py --pr-json " + shlex.quote(str(pr_json))
+    tool = _git_tool(repo)
     items = [{
         "claim": "The seat JSON parsed and contained the required pull-request fields.",
         "command": command,
@@ -476,7 +524,7 @@ def _verified_items(
     if object_type is not None:
         items.append({
             "claim": f"Local git object type of the seat head sha {head_sha}.",
-            "command": f"GIT_NO_LAZY_FETCH=1 git cat-file -t {head_sha}",
+            "command": f"GIT_NO_LAZY_FETCH=1 {tool} cat-file -t {head_sha}",
             "result": object_type,
         })
     if names is not None:
@@ -485,7 +533,7 @@ def _verified_items(
         absent = [path for path in files if path not in name_set]
         items.append({
             "claim": f"Which seat paths are names in the local commit {head_sha}.",
-            "command": f"GIT_NO_LAZY_FETCH=1 git diff-tree --no-commit-id --name-only -r {head_sha}",
+            "command": f"GIT_NO_LAZY_FETCH=1 {tool} diff-tree --no-commit-id --name-only -r {head_sha}",
             "result": (
                 f"name list has {len(names)} paths; "
                 f"seat paths named: {', '.join(present) or '(none)'}; "
@@ -493,6 +541,102 @@ def _verified_items(
             ),
         })
     return items
+
+
+def _draft_record_key(ws_key: str, number: int) -> str:
+    key = f"{ws_key}-PR-{number}"
+    if _WS_RE.fullmatch("WS:" + key) is None:
+        raise DraftSchemaError(f"draft record key {key!r} is not UPPER-KEBAB")
+    return key
+
+
+def _seat_command(pr_json: Path) -> str:
+    return "python3 scripts/agentos_records_draft.py --pr-json " + shlex.quote(str(pr_json))
+
+
+def _render_decision(*, ws_key: str, pr: dict, pr_json: Path) -> tuple[str, str]:
+    number = pr["number"]
+    record_key = _draft_record_key(ws_key, number)
+    relative = f"agentos/decisions/DEC-{record_key}.md"
+    question = f"What should the knowledge plane record about seat-supplied PR #{number}?"
+    answer = (
+        f"UNVERIFIED skeleton for PR #{number} ({pr['title']}). "
+        "This draft copies seat metadata. It does not decide execution."
+    )
+    rationale = (
+        "The drafter copies seat-supplied pull-request metadata and local git "
+        "observations. It does not call GitHub or EDGAR, and it does not gate execution. "
+        "A human accepts or replaces this skeleton before it is a decision the "
+        "organization relies on."
+    )
+    why_not = (
+        "The seat JSON did not name alternatives. This skeleton records that "
+        "absence; a human replaces it before relying on the decision."
+    )
+    lines = [
+        "---",
+        f"key: {_q(record_key)}",
+        f"question: {_q(question)}",
+        f"answer: {_q(answer)}",
+        f"rationale: {_q(rationale)}",
+        "alternatives:",
+        "  - option: " + _q("(none considered)"),
+        "    why_not: " + _q(why_not),
+        "evidence:",
+        "  - " + _q(_seat_command(pr_json)),
+        "affects:",
+        "  - " + _q("WS:" + ws_key),
+        "confidence: low",
+        "reversibility: easy",
+        "decided_by: " + _q("UNVERIFIED"),
+        f"decided_at: {_q(pr['day'])}",
+        "---",
+        "",
+        "## What this draft is",
+        "",
+        "This is a knowledge-plane decision skeleton. It does not gate execution "
+        "and this command does not write agentos/.",
+        "",
+    ]
+    return relative, "\n".join(lines)
+
+
+def _render_discovery(*, ws_key: str, pr: dict, pr_json: Path) -> tuple[str, str]:
+    number = pr["number"]
+    record_key = _draft_record_key(ws_key, number)
+    relative = f"agentos/discoveries/DSC-{record_key}.md"
+    claim = (
+        f"UNFILLED discovery skeleton for seat-supplied PR #{number} ({pr['title']}). "
+        "This is not a finding."
+    )
+    lines = [
+        "---",
+        f"key: {_q(record_key)}",
+        f"claim: {_q(claim)}",
+        f"falsifier: {_q(DISCOVERY_FALSIFIER_PLACEHOLDER)}",
+        f"so_what: {_q(DISCOVERY_SO_WHAT_PLACEHOLDER)}",
+        "kind: constraint",
+        f"verified_at: {_q(pr['day'])}",
+        f"verified_by: {_q(_seat_command(pr_json))}",
+        "scope:",
+        "  - " + _q("WS:" + ws_key),
+        "confidence: suspected",
+        "---",
+        "",
+        "## Unfilled admission gates",
+        "",
+        "falsifier is the token UNFILLED. It names no command, file:line, or #PR, "
+        "so check_discovery rejects it (unfalsifiable-claim) until a human replaces it.",
+        "",
+        "so_what is the empty string. check_discovery rejects a missing or empty "
+        "so_what (required-field). A non-empty stub would pass that checker, so this "
+        "unfilled draft keeps so_what empty until a human writes what a future session "
+        "does differently.",
+        "",
+        "This draft does not gate execution and this command does not write agentos/.",
+        "",
+    ]
+    return relative, "\n".join(lines)
 
 
 def _assert_handoff_parses(markdown: str, relative: str) -> None:
@@ -512,16 +656,59 @@ def _assert_handoff_parses(markdown: str, relative: str) -> None:
         raise DraftSchemaError(detail)
 
 
-def build_draft(pr_json: Path) -> dict:
+def _load_generated(markdown: str, label: str) -> dict:
+    match = FRONTMATTER_RE.match(markdown)
+    if not match:
+        raise DraftSchemaError(f"generated {label} has no frontmatter")
+    try:
+        data = yaml.safe_load(match.group(1))
+    except yaml.YAMLError as exc:
+        raise DraftSchemaError(f"generated {label} YAML did not parse: {exc}") from exc
+    if not isinstance(data, dict):
+        raise DraftSchemaError(f"generated {label} frontmatter is not a mapping")
+    data["_body"] = match.group(2)
+    return data
+
+
+def _assert_decision_parses(markdown: str, relative: str) -> None:
+    data = _load_generated(markdown, "decision")
+    hard = [item for item in check_decision(data, Path(relative)) if item.hard]
+    if hard:
+        raise DraftSchemaError("; ".join(item.message for item in hard))
+
+
+def _assert_discovery_stays_unfilled(markdown: str, relative: str) -> None:
+    """Emit the skeleton only when falsifier and so_what are the hard failures.
+
+    Any other hard error is a renderer bug. A valid discovery would mean the
+    unfilled placeholders no longer block a commit, which is also a bug.
+    """
+    data = _load_generated(markdown, "discovery")
+    hard = [item for item in check_discovery(data, Path(relative)) if item.hard]
+    falsifier = [item for item in hard if "falsifier" in item.message]
+    so_what = [item for item in hard if "so_what" in item.message]
+    others = [item for item in hard if item not in falsifier and item not in so_what]
+    if not falsifier or not so_what or others:
+        detail = "; ".join(item.message for item in hard) or "discovery draft was valid"
+        raise DraftSchemaError(
+            "discovery draft must fail validation only on unfilled falsifier and so_what: "
+            + detail
+        )
+
+
+def build_draft(pr_json: Path, repo: Path | None = None) -> dict:
+    if repo is not None and not repo.is_dir():
+        raise DraftError(f"--repo is not a directory: {repo}")
     document = _load_document(pr_json)
+    kinds = _kinds(document)
     key = _workstream_key(document)
     pr = _pr_fields(document)
     model, model_defaulted = _optional_enum(document, "model", HANDOFF_MODEL, "local")
     ended, ended_defaulted = _optional_enum(document, "ended_because", HANDOFF_ENDED, "ci_handoff")
     session, session_defaulted = _session(document)
-    object_type, names = _observe(pr["head_sha"])
+    object_type, names = _observe(pr["head_sha"], repo)
     file_rows = _file_rows(pr["files"], names)
-    verified = _verified_items(pr_json, pr["head_sha"], pr["files"], object_type, names)
+    verified = _verified_items(pr_json, pr["head_sha"], pr["files"], object_type, names, repo)
     handoff_name = f"{key}-{pr['day']}.md"
     handoff_rel = f"agentos/handoffs/{handoff_name}"
     markdown = _render_handoff(
@@ -533,17 +720,19 @@ def build_draft(pr_json: Path) -> dict:
         file_rows=file_rows,
         verified=verified,
         object_type=object_type,
+        repo=repo,
     )
     _assert_handoff_parses(markdown, handoff_rel)
+    tool = _git_tool(repo)
     observations = []
     if object_type is not None:
         observations.append({
             "field": "pr.head_sha",
             "object_type": object_type,
-            "command": f"GIT_NO_LAZY_FETCH=1 git cat-file -t {pr['head_sha']}",
+            "command": f"GIT_NO_LAZY_FETCH=1 {tool} cat-file -t {pr['head_sha']}",
             "result": object_type,
         })
-    return {
+    drafted = {
         "schema": OUTPUT_SCHEMA,
         "input_schema": INPUT_SCHEMA,
         "ws_append": {
@@ -565,6 +754,23 @@ def build_draft(pr_json: Path) -> dict:
         "observations": observations,
         "handoff_verified_commands": verified,
     }
+    if "draft-decision" in kinds:
+        relative, body = _render_decision(ws_key=key, pr=pr, pr_json=pr_json)
+        _assert_decision_parses(body, relative)
+        drafted["decision"] = {
+            "path": relative,
+            "markdown": body,
+            "target_exists": (_ROOT / relative).is_file(),
+        }
+    if "draft-discovery" in kinds:
+        relative, body = _render_discovery(ws_key=key, pr=pr, pr_json=pr_json)
+        _assert_discovery_stays_unfilled(body, relative)
+        drafted["discovery"] = {
+            "path": relative,
+            "markdown": body,
+            "target_exists": (_ROOT / relative).is_file(),
+        }
+    return drafted
 
 
 def _is_inside_store(path: Path) -> bool:
@@ -602,10 +808,15 @@ def main(argv: list[str] | None = None) -> int:
     )
     parser.add_argument("--pr-json", required=True, type=Path)
     parser.add_argument("--out", type=Path)
+    parser.add_argument(
+        "--repo",
+        type=Path,
+        help="Git repository for cat-file and diff-tree. Default: this checkout.",
+    )
     args = parser.parse_args(argv)
     try:
         text = json.dumps(
-            build_draft(args.pr_json),
+            build_draft(args.pr_json, repo=args.repo),
             indent=2,
             ensure_ascii=False,
             sort_keys=True,
