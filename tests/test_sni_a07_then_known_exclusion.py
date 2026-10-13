@@ -424,13 +424,6 @@ def test_a07_04_s2_scan_boundary():
     assert n_cases >= 200
 
 
-@pytest.mark.xfail(
-    strict=True,
-    reason=(
-        "F-A07-01: S2 info_leak_scan filters q to index>=anchor before "
-        "differencing, so a vintage step dated exactly on first_tune_anchor is dropped"
-    ),
-)
 def test_a07_04_s2_scan_on_anchor_inclusive():
     """S1-equivalent: a step ON the earliest TUNE anchor must be reported.
 
