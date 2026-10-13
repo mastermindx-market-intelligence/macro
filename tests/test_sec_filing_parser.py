@@ -366,6 +366,94 @@ def test_escaped_nonnumeric_fragment_href_refusals(case, markup, body_suffix, ma
         parse_sec_filing_document(_inline(body), document_name="fragment-refusal.xhtml")
 
 
+@pytest.mark.parametrize(
+    ("case", "markup", "body_suffix", "inject_base_element"),
+    [
+        (
+            "xml-base-on-anchor",
+            '<a xml:base="https://evil.example/other.htm" href="#t1">x</a>',
+            '<span id="t1"></span>',
+            False,
+        ),
+        (
+            "xml-base-on-ancestor",
+            '<div xml:base="https://evil.example/other.htm"><a href="#t1">x</a></div>',
+            '<span id="t1"></span>',
+            False,
+        ),
+        (
+            "relative-xml-base-on-ancestor",
+            '<div xml:base="other.htm"><a href="#t1">x</a></div>',
+            '<span id="t1"></span>',
+            False,
+        ),
+        (
+            "xhtml-base-element-in-head",
+            '<a href="#t1">x</a>',
+            '<span id="t1"></span>',
+            True,
+        ),
+        (
+            "xml-base-elsewhere-in-document",
+            '<a href="#t1">x</a>',
+            '<span id="t1"></span><div xml:base="other.htm"></div>',
+            False,
+        ),
+    ],
+)
+def test_escaped_nonnumeric_fragment_href_refused_under_a_changed_base(
+    case, markup, body_suffix, inject_base_element
+) -> None:
+    # A same-document fragment resolves against the document base URI, so any
+    # base-changing construct anywhere in the member - xml:base on the anchor,
+    # on an ancestor, or elsewhere, or an XHTML base element in the head -
+    # makes the fragment exception inapplicable and the refusal fires.
+    body = (
+        '<ix:nonNumeric id="f" name="ex:F" contextRef="c" escape="true">'
+        f"{markup}</ix:nonNumeric>{body_suffix}"
+    )
+    content = _inline(body)
+    if inject_base_element:
+        assert content.count(b"<head></head>") == 1
+        content = content.replace(
+            b"<head></head>",
+            b'<head><base href="https://evil.example/other.htm"/></head>',
+        )
+    with pytest.raises(SecFilingParseError, match="relative URI markup is unsupported"):
+        parse_sec_filing_document(content, document_name="fragment-base-refusal.xhtml")
+
+
+def test_escaped_nonnumeric_fragment_href_is_admitted_without_a_base_construct() -> None:
+    # Same shape as the document-level negative, minus the base construct:
+    # the fragment exception applies and the markup is retained unchanged.
+    body = (
+        '<ix:nonNumeric id="f" name="ex:F" contextRef="c" escape="true">'
+        '<a href="#t1">x</a></ix:nonNumeric><span id="t1"></span><div></div>'
+    )
+    content = _inline(body)
+    parsed = parse_sec_filing_document(content, document_name="fragment-no-base.xhtml")
+    assert parsed["facts"][0]["raw_value"] == '<a href="#t1">x</a>'
+    validate_sec_filing_parse_result(parsed, source_content=content)
+
+
+def test_same_document_fragment_predicate_requires_exactly_one_target_and_no_base() -> None:
+    anchor = parser_module._Node(
+        qname=f"{{{parser_module.XHTML}}}a",
+        lexical_name="a",
+        attrs={"href": "#t1"},
+        namespaces={},
+        start=0,
+        start_tag_end=0,
+        self_closing=False,
+        parent=None,
+    )
+    pred = parser_module._is_same_document_fragment_href
+    assert pred(anchor, "href", "#t1", {"t1": 1}, document_base_changed=False) is True
+    assert pred(anchor, "href", "#t1", {"t1": 2}, document_base_changed=False) is False
+    assert pred(anchor, "href", "#t1", {}, document_base_changed=False) is False
+    assert pred(anchor, "href", "#t1", {"t1": 1}, document_base_changed=True) is False
+
+
 def test_escape_attribute_is_limited_to_inline_nonnumeric_facts() -> None:
     plain = parse_sec_filing_document(
         _inline('<ix:nonNumeric name="ex:F" contextRef="c" escape="false"><b>plain</b></ix:nonNumeric>'),

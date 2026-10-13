@@ -28,14 +28,24 @@ SEC_FILING_PARSER_PROFILE = "strict_offline_ixbrl/v1"
 SEC_FILING_PARSER_VERSION = "1"
 # Stable semantic compatibility authority for ACCEPTED OUTPUT.  A change that
 # strictly widens the acceptance set while every previously accepted input
-# produces byte-identical output (proved over the full corpus + AAPL golden) is
-# compatible and does NOT bump this value; any change that alters the output
-# bytes of any previously accepted input DOES bump it (and needs a separate
-# seat ruling because it moves pins).  Refusal verdicts are not
-# fingerprint-bound; they are bound by the committed ``_VERDICT_PIN`` in
-# tests/test_fif_gsrc_capture.py, regenerated in the same PR.  Runtime library
-# versions are observed provenance and must not invalidate retained evidence
-# on replay.
+# produces byte-identical output is compatible and does NOT bump this value;
+# any change that alters the output bytes of any previously accepted input
+# DOES bump it (and needs a separate seat ruling because it moves pins).
+# Compatibility is one-directional.  A newer build accepts a strict superset
+# of inputs, but an older build reports this same fingerprint and still
+# refuses the inputs only the newer build admits: a pre-widening build
+# refuses the CAT primaries admitted by the same-document fragment-href
+# widening with "escaped ix:nonNumeric relative URI markup is unsupported in
+# the offline profile" on source replay.  A rollback must therefore not
+# replay results minted after a widening.  For that widening, byte identity
+# on previously accepted inputs holds by construction - the new predicate
+# runs only on the path that used to raise - and the 132/132 corpus byte
+# identity was checked out of band by the D1-ext lane; its receipts live on
+# the lane host, not in git.  Refusal verdicts are not fingerprint-bound;
+# they are bound by the committed ``_VERDICT_PIN`` in
+# tests/test_fif_gsrc_capture.py, regenerated in the same PR.  Runtime
+# library versions are observed provenance and must not invalidate retained
+# evidence on replay.
 SEC_FILING_PARSER_ALGORITHM_FINGERPRINT = "95f7e4b7ff20c7bdae2070b0d910d2f539f21366e75415bedcbf07e7af538d92"
 
 XBRLI = "http://www.xbrl.org/2003/instance"
@@ -544,13 +554,26 @@ _URI_BEARING_MARKUP_ATTRIBUTES = frozenset(
 # and format characters, non-ASCII, and the URI delimiters ``% / \ : ?``.
 _SAME_DOCUMENT_FRAGMENT_HREF = re.compile(r"#[A-Za-z_][A-Za-z0-9._-]*")
 
+_XML_BASE_ATTRIBUTE = f"{{{XML}}}base"
+
 
 def _is_same_document_fragment_href(
-    child: _Node, name: str, value: str, document_ids: Mapping[str, int]
+    child: _Node,
+    name: str,
+    value: str,
+    document_ids: Mapping[str, int],
+    *,
+    document_base_changed: bool,
 ) -> bool:
-    """Admit exactly one base-URI-free shape inside escaped nonNumeric markup."""
+    """Admit exactly one base-URI-free shape inside escaped nonNumeric markup.
+
+    A document carrying any ``xml:base`` attribute or any XHTML ``base``
+    element can redirect a fragment to another resource, so such a document
+    never qualifies.
+    """
     return (
-        child.namespace == XHTML
+        not document_base_changed
+        and child.namespace == XHTML
         and child.local == "a"
         and name == "href"
         and _SAME_DOCUMENT_FRAGMENT_HREF.fullmatch(value) is not None
@@ -559,7 +582,12 @@ def _is_same_document_fragment_href(
 
 
 def _escaped_nonnumeric_markup(
-    node: _Node, content: bytes, limits: Mapping[str, int], *, document_ids: Mapping[str, int]
+    node: _Node,
+    content: bytes,
+    limits: Mapping[str, int],
+    *,
+    document_ids: Mapping[str, int],
+    document_base_changed: bool,
 ) -> str:
     """Retain relevant markup for ``ix:nonNumeric escape=\"true\"``.
 
@@ -572,7 +600,9 @@ def _escaped_nonnumeric_markup(
     with the wrong target value.  The single exception is a same-document
     fragment reference - an XHTML ``a`` element whose unprefixed ``href`` is
     ``#`` plus an ASCII name that is the ``id`` of exactly one element in this
-    member - which needs no base URI, so its markup is retained unchanged.
+    member - which needs no base URI, so its markup is retained unchanged,
+    and only when the member carries no base-changing construct (``xml:base``
+    anywhere, or an XHTML ``base`` element).
     """
     chunks: list[bytes] = []
 
@@ -593,7 +623,9 @@ def _escaped_nonnumeric_markup(
                 for name, value in child.attrs.items():
                     _namespace, local = _split_qname(name)
                     if local in _URI_BEARING_MARKUP_ATTRIBUTES and not urlsplit(value).scheme:
-                        if _is_same_document_fragment_href(child, name, value, document_ids):
+                        if _is_same_document_fragment_href(
+                            child, name, value, document_ids, document_base_changed=document_base_changed
+                        ):
                             continue
                         raise SecFilingParseError(
                             "escaped ix:nonNumeric relative URI markup is unsupported in the offline profile"
@@ -1260,6 +1292,7 @@ def _fact_record(
     *,
     inline: bool,
     document_ids: Mapping[str, int],
+    document_base_changed: bool,
 ) -> tuple[dict[str, Any], dict[str, Any] | None]:
     fact_id = _attr(node, "id")
     if fact_id is not None:
@@ -1315,7 +1348,13 @@ def _fact_record(
     excluded_events = _events_for(lexical_node, events, excluded=True)
     all_events = list(local_events)
     raw_parts = [
-        _escaped_nonnumeric_markup(node, content, limits, document_ids=document_ids)
+        _escaped_nonnumeric_markup(
+            node,
+            content,
+            limits,
+            document_ids=document_ids,
+            document_base_changed=document_base_changed,
+        )
         if inline and kind == "nonnumeric" and escape
         else "".join(event.value for event in local_events)
     ]
@@ -1323,7 +1362,13 @@ def _fact_record(
         continuation = continuation_records[continuation_id]
         continuation_node = continuation_nodes[continuation_id]
         raw_parts.append(
-            _escaped_nonnumeric_markup(continuation_node, content, limits, document_ids=document_ids)
+            _escaped_nonnumeric_markup(
+                continuation_node,
+                content,
+                limits,
+                document_ids=document_ids,
+                document_base_changed=document_base_changed,
+            )
             if escape
             else str(continuation["raw_value"])
         )
@@ -1829,7 +1874,13 @@ def parse_sec_filing_document(content: bytes, *, document_name: str) -> dict[str
                 raise SecFilingParseError("XML declaration ASCII contradicts non-ASCII content")
 
     root, nodes, events = _TreeBuilder(content, limits).build()
-    document_ids = Counter(node.attrs["id"] for node in nodes if "id" in node.attrs)
+    document_ids: Counter[str] = Counter()
+    document_base_changed = False
+    for node in nodes:
+        if "id" in node.attrs:
+            document_ids[node.attrs["id"]] += 1
+        if _XML_BASE_ATTRIBUTE in node.attrs or (node.namespace == XHTML and node.local == "base"):
+            document_base_changed = True
     if any(
         node.namespace in LEGACY_IX_NAMESPACES or IX10 in node.namespaces.values()
         for node in nodes
@@ -1892,6 +1943,7 @@ def parse_sec_filing_document(content: bytes, *, document_name: str) -> dict[str
             content,
             inline=document_kind == "inline_xbrl",
             document_ids=document_ids,
+            document_base_changed=document_base_changed,
         )
         facts.append(fact)
         if diagnostic is not None:
