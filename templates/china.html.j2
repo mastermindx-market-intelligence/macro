@@ -1139,6 +1139,7 @@
   body.page-china .cnx-dlg.open{display:flex}
   body.page-china .cnx-dlg-backdrop{position:fixed;inset:0;background:rgba(5,8,12,.6);backdrop-filter:blur(6px)}
   body.page-china .cnx-dlg-panel{position:relative;width:min(900px,94vw);background:rgba(13,17,24,.94);border:1px solid rgba(255,255,255,.14);border-radius:20px;box-shadow:0 30px 90px rgba(0,0,0,.6);backdrop-filter:blur(28px) saturate(1.4);margin-bottom:6vh}
+  @media print{body.page-china{overflow:visible !important}body.page-china .cnx-dlg.open{position:static;inset:auto;overflow:visible}body.page-china .cnx-dlg.open .cnx-dlg-panel{max-height:none;overflow:visible;box-shadow:none;backdrop-filter:none;-webkit-backdrop-filter:none;background:#fff;color:#000}body.page-china .cnx-dlg.open .cnx-dlg-close{display:none}}
   body.page-china .cnx-dlg-head{display:flex;align-items:center;justify-content:space-between;padding:16px 22px;border-bottom:1px solid rgba(255,255,255,.09)}
   body.page-china .cnx-dlg-title{font-size:13px;font-weight:700;letter-spacing:.7px;text-transform:uppercase}
   body.page-china .cnx-dlg-close{background:none;border:1px solid rgba(255,255,255,.16);color:var(--text);width:28px;height:28px;border-radius:50%;font-size:15px;cursor:pointer;line-height:1}

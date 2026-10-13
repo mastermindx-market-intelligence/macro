@@ -5136,6 +5136,15 @@ body.mx5-dlg-open{ overflow:hidden; }
              0 1px 0 rgba(255,255,255,.9) inset,
              0 0 0 1px rgba(0,0,0,.04);
 }
+@media print{
+  html.mx5-dlg-lock,html.mx5-dlg-lock body,body.mx5-dlg-open{overflow:visible;position:static;height:auto;max-height:none}
+  .mx5-dlg.open{position:static;inset:auto}
+  .mx5-dlg.open .mx5-dlg-panel,
+  #dlg-risk.mx5-dlg.open .mx5-dlg-panel{max-height:none;overflow:visible;box-shadow:none;backdrop-filter:none;-webkit-backdrop-filter:none;background:#fff;color:#000}
+  .mx5-dlg.open .mx5-dlg-body,
+  #dlg-risk.mx5-dlg.open .mx5-dlg-body{overflow:visible;max-height:none}
+  .mx5-dlg.open .mx5-dlg-close{display:none}
+}
 /* No blur support → near-opaque fill so body copy stays ≥4.5:1 over any bg */
 @supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){
   .mx5-dlg-panel{background:var(--mx5-pop-bg,rgba(13,18,26,.98));}

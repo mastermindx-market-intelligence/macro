@@ -97,3 +97,8 @@ html[data-theme="light"] .rrp .rrp-study>div{background:var(--panel);box-shadow:
  .rrp .rrp-method summary:focus-visible{outline:2px solid Highlight;outline-offset:2px}
  .rrp .pbx-expiry{color:CanvasText;border-inline-start:4px solid Highlight}
 }
+@media print{
+ .rrp,.rrp *{box-shadow:none !important;backdrop-filter:none !important;-webkit-backdrop-filter:none !important;background:transparent !important;color:inherit !important}
+ .rrp details.rrp-history::details-content{content-visibility:visible;display:block}
+ .rrp .rrp-metrics,.rrp .rrp-phase-trail,.rrp .rrp-signals,.rrp .rrp-history tr{break-inside:avoid}
+}
