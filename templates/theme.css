@@ -417,6 +417,46 @@ html[data-theme="light"][data-lang="zh"] {
   --fill-link:   color-mix(in srgb, var(--link)   var(--fill-mix), #000);
   --fill-info:   color-mix(in srgb, var(--info)   var(--fill-mix), #000);
 }
+/* ── Fundamental Forensics tints (templates/fundamental_forensics.css) ─────
+   color-mix on an added surface line is enforce-added-illegal; the mixes
+   live here so the surface only names tokens (the Macro Command idiom).
+   Each formula is carried over byte-for-byte from the FIF P2 desk, so both
+   themes paint exactly what the surface used to compute inline: --panel,
+   --panel2, --line, --bg and the state hues re-theme on html, and
+   --ff-border is that page's own :root hairline. Name = hue-percent-base;
+   no base means over transparent. Consumers: that page only. */
+:root {
+  --ff-tint-act-8: color-mix(in srgb, var(--act) 8%, transparent);
+  --ff-tint-act-43-border: color-mix(in srgb, var(--act) 43%, var(--ff-border));
+  --ff-tint-act-30-line: color-mix(in srgb, var(--act) 30%, var(--line));
+  --ff-tint-act-10-panel2: color-mix(in srgb, var(--act) 10%, var(--panel2));
+  --ff-tint-act-12-panel: color-mix(in srgb, var(--act) 12%, var(--panel));
+  --ff-tint-bg-96-act: color-mix(in srgb, var(--bg) 96%, var(--act));
+  --ff-tint-bg-94-info: color-mix(in srgb, var(--bg) 94%, var(--info));
+  --ff-tint-info-7: color-mix(in srgb, var(--info) 7%, transparent);
+  --ff-tint-info-8: color-mix(in srgb, var(--info) 8%, transparent);
+  --ff-tint-info-11: color-mix(in srgb, var(--info) 11%, transparent);
+  --ff-tint-info-35: color-mix(in srgb, var(--info) 35%, transparent);
+  --ff-tint-info-45: color-mix(in srgb, var(--info) 45%, transparent);
+  --ff-tint-info-32-border: color-mix(in srgb, var(--info) 32%, var(--ff-border));
+  --ff-tint-info-38-border: color-mix(in srgb, var(--info) 38%, var(--ff-border));
+  --ff-tint-info-40-border: color-mix(in srgb, var(--info) 40%, var(--ff-border));
+  --ff-tint-info-70-border: color-mix(in srgb, var(--info) 70%, var(--ff-border));
+  --ff-tint-info-40-line: color-mix(in srgb, var(--info) 40%, var(--line));
+  --ff-tint-info-45-line: color-mix(in srgb, var(--info) 45%, var(--line));
+  --ff-tint-info-4-panel: color-mix(in srgb, var(--info) 4%, var(--panel));
+  --ff-tint-info-5-panel: color-mix(in srgb, var(--info) 5%, var(--panel));
+  --ff-tint-info-10-panel: color-mix(in srgb, var(--info) 10%, var(--panel));
+  --ff-tint-info-11-panel2: color-mix(in srgb, var(--info) 11%, var(--panel2));
+  --ff-tint-info-12-panel: color-mix(in srgb, var(--info) 12%, var(--panel));
+  --ff-tint-info-12-panel2: color-mix(in srgb, var(--info) 12%, var(--panel2));
+  --ff-tint-info-16-panel: color-mix(in srgb, var(--info) 16%, var(--panel));
+  --ff-tint-info-18-panel: color-mix(in srgb, var(--info) 18%, var(--panel));
+  --ff-tint-muted-8: color-mix(in srgb, var(--muted) 8%, transparent);
+  --ff-tint-muted-40-line: color-mix(in srgb, var(--muted) 40%, var(--line));
+  --ff-tint-warn-6: color-mix(in srgb, var(--warn) 6%, transparent);
+  --ff-tint-warn-40-line: color-mix(in srgb, var(--warn) 40%, var(--line));
+}
 /* prophet-card verb inks. English keeps the original hue calibration; the light+zh
    twin below re-keys the percentages after bullish becomes red and bearish green.
 
