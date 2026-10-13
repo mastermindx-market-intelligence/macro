@@ -3566,3 +3566,40 @@ def test_v04_training_fence_refuses_non_complete_even_if_authority_flips(monkeyp
     assert admitted[0]["net_return_pct"] == complete["net_return_pct"]
     assert admitted[0]["net_return_pct"] is not None
     assert admitted[0]["expression_id"] == complete["expression_id"]
+
+
+_V04B_R1_AUTHORITY_BASE = dict(oa3.ALL_FALSE_AUTHORITY)
+_V04B_R1_AUTHORITY_MISSING_KEY = {
+    key: value
+    for key, value in _V04B_R1_AUTHORITY_BASE.items()
+    if key != "may_train_prophet"
+}
+
+
+@pytest.mark.parametrize(
+    "case",
+    [
+        pytest.param(
+            {**_V04B_R1_AUTHORITY_BASE, "may_train_prophet": None},
+            id="none",
+        ),
+        pytest.param(
+            {**_V04B_R1_AUTHORITY_BASE, "may_train_prophet": 1},
+            id="one",
+        ),
+        pytest.param(
+            {**_V04B_R1_AUTHORITY_BASE, "may_train_prophet": "true"},
+            id="string_true",
+        ),
+        pytest.param(_V04B_R1_AUTHORITY_MISSING_KEY, id="missing_key"),
+    ],
+)
+def test_v04_training_fence_fails_closed_on_non_boolean_authority(
+    monkeypatch, case
+) -> None:
+    """The fence admits nothing unless may_train_prophet is exactly True."""
+
+    from types import MappingProxyType
+
+    monkeypatch.setattr(oa3, "ALL_FALSE_AUTHORITY", MappingProxyType(case))
+    assert oa3.admitted_training_labels([_v04_complete_record()]) == []
