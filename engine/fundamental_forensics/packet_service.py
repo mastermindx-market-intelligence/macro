@@ -21,9 +21,11 @@ from .query_service import (
     FinancialQueryAdmissionError,
     FinancialQueryUnavailableError,
     admit_financial_request,
+    enforce_dataset_admission_floor,
 )
 from .revision_service import (
     FinancialPacketProvider,
+    occurrence_keyed_filing_metadata,
     packet_query_request,
     validate_packet_dataset,
 )
@@ -60,11 +62,20 @@ def execute_financial_packet(
         provider = provider_factory()
     dataset = provider.resolve(admitted.entity_id)
     binding = validate_packet_dataset(admitted.entity_id, dataset)
+    # A0 (D-2): the production store keys filing metadata by accession while
+    # the frozen assembler resolves it by occurrence id; normalize at this
+    # boundary. Identity for the occurrence-keyed golden/FIP1 fixtures.
+    filing_metadata = occurrence_keyed_filing_metadata(dataset.ledger, dataset.filing_metadata)
+    # FIF D3 (A12): the dataset's own admission clock gates the system view.
+    # The canonical packet bytes themselves stay exactly the frozen assembler's
+    # output — the production delivery object rides the revisions envelope,
+    # never the packet body, whose content_sha256 is a frozen contract.
+    enforce_dataset_admission_floor(admitted.policy, dataset)
     try:
         packet = assemble_financial_intelligence_packet(
             entity=dataset.entity,
             ledger=dataset.ledger,
-            filing_metadata=dataset.filing_metadata,
+            filing_metadata=filing_metadata,
             query_request=query_request,
             metric_registry=dataset.registry,
             context=dataset.context,

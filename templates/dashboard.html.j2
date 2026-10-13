@@ -16881,7 +16881,23 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
       {%- set _today_visible = _today.rows[:3] -%}
       {%- set _today_total = (_today_declared if (_today_declared is number and _today_declared is not boolean and _today_declared >= (_today.rows|length)) else (_today.rows|length)) -%}
       {%- set _today_more = [_today_total - (_today_visible|length), 0] | max -%}
-      <section class="mx-sec" id="us-today" data-today-total="{{ _today_total }}" data-today-visible="{{ _today_visible|length }}">
+      {#- Native binding pins: the three owner-issued source pins, the COMPLETE
+          owner roster SIZE (never the hidden rows themselves) and the served
+          rows' own owner indices/receipts. A bound row carries its metadata
+          positionally from build_site; an unbound build renders empty pins and
+          blank served entries here, which the hydration gate refuses without
+          disclosure. Quote-free encoding (`index~receipt;...`): the values are
+          integers and sha256 receipts only, and tojson quotes are not escaped
+          inside attributes. -#}
+      {%- set _today_served = [] -%}
+      {%- for _n in _today_visible -%}
+        {%- if _n.get('_today_selection_index') is not none and _n.get('_today_row_receipt') -%}
+          {%- set _ = _today_served.append(_n.get('_today_selection_index') ~ '~' ~ _n.get('_today_row_receipt')) -%}
+        {%- else -%}
+          {%- set _ = _today_served.append('~') -%}
+        {%- endif -%}
+      {%- endfor -%}
+      <section class="mx-sec" id="us-today" data-today-total="{{ _today_total }}" data-today-visible="{{ _today_visible|length }}" data-today-source-sha256="{{ (us_today_source_binding or {}).get('source_sha256', '') }}" data-today-pair-id="{{ (us_today_source_binding or {}).get('pair_id', '') }}" data-today-selection-receipt="{{ (us_today_source_binding or {}).get('selection_receipt', '') }}" data-today-roster-size="{{ (us_today_source_binding or {}).get('ordered_rows', []) | length }}" data-today-served="{{ _today_served | join(';') }}">
         <div class="mx-sec-hd">
           <h2 class="mx-sec-h2">{{ t('Today', '今日') }}</h2>
           <span class="mx-sec-total"><span class="l-en"><b>{{ _today_visible|length }}</b> of <b>{{ _today_total }}</b> Featured</span><span class="l-zh">精选 <b>{{ _today_visible|length }}</b> / <b>{{ _today_total }}</b></span></span>
@@ -18256,17 +18272,22 @@ window.__CHART_SWAP__ = {
 </script>
 <script src="theme.js"></script>
 <script src="tier_preview.js"></script>
+{# The macro shell has no Plotly graphs or Time Machine panel. Avoid three
+   do-nothing JS downloads on its mobile critical path; retain the existing
+   assets for the stock dashboard while its independent use is assessed. #}
+{% if mode == 'stocks' %}
 <script src="chart_i18n.js"></script>
 <script src="timemachine.js"></script>
+{% endif %}
 <script src="tablesort.js"></script>
-<script src="charts.js"></script>
+{% if mode == 'stocks' %}<script src="charts.js"></script>{% endif %}
 {# live_config.js + live.js already load via _navlinks.html.j2 on every page;
    live.js is __mmLiveInit-guarded so this second include was a no-op — dropped. #}
 <script src="risk_state_live.js"></script>
 {# GD-3: live-provisional Risk Envelope overlay — same mode gate as the band
    include inside the existing #dlg-risk dialog (_risk_envelope_band.html.j2). #}
-{% if mode != 'stocks' %}<script src="risk_envelope_live.js"></script>{% endif %}
-<script src="release_publications_live.js"></script>
+{% if mode != 'stocks' %}<script async src="risk_envelope_live.js"></script>{% endif %}
+<script async src="release_publications_live.js"></script>
 <script>
 /* Keep .help tooltips on-screen: flip below the icon when it's near the top of
    the viewport, and clamp horizontally near the left/right edges. Hover-only,
@@ -20485,7 +20506,7 @@ if (document.readyState === 'loading') {
   });
 })();
 </script>
-{% if gate or pgate or life_gate %}
+{% if gate or pgate or life_gate or (us_today_native_emit | default(none)) %}
 {#- ── tier gate — attempt-hydrate (docs/TIER_PREVIEW_PATTERN.md) ──────────────
    On the gated build this document holds only the preview slice; the rest of
    the board lives at GATE.payload, which config/site_access.yml enforces as
@@ -20497,16 +20518,22 @@ if (document.readyState === 'loading') {
 <script>
 (function(){
   'use strict';
-  var GATE = {{ gate | tojson }};
+  var GATE = {{ (gate | default(none)) | tojson }};
   /* The board and the four adjacent panels are separate switches over ONE
      payload — either can be gated alone, so the fetch is driven by whichever
      is present and each hydrate step is independently guarded below. */
-  var PGATE = {{ pgate | tojson }};
+  var PGATE = {{ (pgate | default(none)) | tojson }};
   /* P-MP1-SHELL §8b: the Setups grid's OWN gate, over the plan book rather
      than the candidate board GATE splits — same payload, same URL, a third
      independent switch. */
-  var LIFE_GATE = {{ life_gate | tojson }};
+  var LIFE_GATE = {{ (life_gate | default(none)) | tojson }};
   var SRC = (GATE && GATE.payload) || (PGATE && PGATE.payload) || (LIFE_GATE && LIFE_GATE.payload);
+  /* A genuine bound nonempty ungated Today rides the SAME trampoline and the
+     SAME protected payload URL — no extra auth, login, loader, queue or retry
+     path exists for it. Null unless build_site threaded a genuine three-field
+     binding over a nonempty Featured shelf. */
+  var TODAY_SRC = {{ us_today_native_emit | default(none) | tojson }};
+  SRC = SRC || TODAY_SRC;
   if (!SRC) return;
 
   function setLoadUnavailable(unavailable){
@@ -20521,10 +20548,19 @@ if (document.readyState === 'loading') {
      long-idle member can be signed in with a token the server will reject.
      getSession() refreshes and rewrites the cookie before we ask (same fix as
      the onboarding wall, PR #3454). No-op when signed out. */
+  var todayAccessToken = null;
   function freshSession(){
+    todayAccessToken = null;
     try{
       if (window.MDXAuth && window.MDXAuth.client && window.MDXAuth.hasSession && window.MDXAuth.hasSession()){
-        return window.MDXAuth.client().then(function(sb){ return sb.auth.getSession(); }).catch(function(){});
+        return window.MDXAuth.client().then(function(sb){ return sb.auth.getSession(); })
+          .then(function(result){
+            var session = result && !result.error && result.data && result.data.session;
+            if (session && typeof session.access_token === 'string' && session.access_token.trim()){
+              todayAccessToken = session.access_token;
+            }
+            return result;
+          }).catch(function(){});
       }
     }catch(e){}
     return Promise.resolve();
@@ -20606,19 +20642,138 @@ if (document.readyState === 'loading') {
     root.dispatchEvent(new Event('candidate-pool-hydrated'));
   }
 
-  function hydrateToday(html, preview, total){
-    if (!html) return;
+  /* Genuine three-field native source admission (the owner-issued
+     prophet.today_selection_source_binding/v1): all three pins must be
+     well-formed AND exactly equal to this shell's server-baked pins, and the
+     payload must carry the owner's COMPLETE ordered roster metadata — one
+     original index + row receipt per buy[] position, size included. The
+     shell's own served rows must equally be owner positions with their own
+     receipts. Any missing/malformed/mismatched/incomplete piece admits
+     nothing: the honest Today shell is left untouched and no native query
+     may fire. */
+  function todaySourceAdmission(sourceBinding, root){
+    if (!root || !sourceBinding || typeof sourceBinding !== 'object' ||
+        Array.isArray(sourceBinding) ||
+        sourceBinding.schema !== 'prophet.today_selection_source_binding/v1' ||
+        sourceBinding.receipt_kind !== 'EXACT_DISPLAYED_SOURCE' ||
+        typeof sourceBinding.market_session !== 'string' ||
+        !/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/.test(sourceBinding.market_session) ||
+        typeof sourceBinding.source_sha256 !== 'string' ||
+        !/^sha256:[0-9a-f]{64}$/.test(sourceBinding.source_sha256) ||
+        typeof sourceBinding.pair_id !== 'string' ||
+        !/^[0-9a-f]{32}$/.test(sourceBinding.pair_id) ||
+        typeof sourceBinding.selection_receipt !== 'string' ||
+        !/^sha256:[0-9a-f]{64}$/.test(sourceBinding.selection_receipt) ||
+        sourceBinding.source_sha256 !== root.getAttribute('data-today-source-sha256') ||
+        sourceBinding.pair_id !== root.getAttribute('data-today-pair-id') ||
+        sourceBinding.selection_receipt !== root.getAttribute('data-today-selection-receipt')) return null;
+    var roster = sourceBinding.ordered_rows, size, served, seen = {};
+    if (!Array.isArray(roster)) return null;
+    size = Number(root.getAttribute('data-today-roster-size'));
+    if (!isFinite(size) || size < 0 || roster.length !== size ||
+        (size | 0) !== size) return null;
+    for (var _ri = 0; _ri < roster.length; _ri++){
+      var _rr = roster[_ri];
+      if (!_rr || typeof _rr !== 'object' || Array.isArray(_rr) ||
+          _rr.selection_index !== _ri ||
+          typeof _rr.row_receipt !== 'string' ||
+          !/^sha256:[0-9a-f]{64}$/.test(_rr.row_receipt)) return null;
+    }
+    /* The shell's own served Today rows, encoded `index~receipt;...` — the
+       owner indices/receipts this very document shows. An absent attribute
+       refuses; an empty value is honest (no Featured row in this preview);
+       any malformed, out-of-range, non-owner or repeated entry refuses. */
+    var servedRaw = root.getAttribute('data-today-served'), served = [];
+    if (servedRaw === null || servedRaw === undefined) return null;
+    if (servedRaw !== ''){
+      var _parts = servedRaw.split(';');
+      for (var _si = 0; _si < _parts.length; _si++){
+        var _pair = _parts[_si].split('~');
+        if (_pair.length !== 2 || !/^[0-9]{1,9}$/.test(_pair[0]) ||
+            !/^sha256:[0-9a-f]{64}$/.test(_pair[1])) return null;
+        var _idx = Number(_pair[0]);
+        if (_idx >= size || _pair[1] !== roster[_idx].row_receipt ||
+            seen[_idx]) return null;
+        seen[_idx] = true;
+        served.push({ selection_index: _idx, row_receipt: _pair[1] });
+      }
+    }
+    return { pins: { source_sha256: sourceBinding.source_sha256,
+                     pair_id: sourceBinding.pair_id,
+                     selection_receipt: sourceBinding.selection_receipt },
+             market_session: sourceBinding.market_session,
+             roster: roster, served: served };
+  }
+
+  function hydrateToday(html, preview, total, sourceBinding, todayMeta){
     var root = document.getElementById('us-today');
+    var admission = todaySourceAdmission(sourceBinding, root);
+    if (!admission) return null;
     preview = Number(preview) || 0;
     total = Number(total) || 0;
-    if (!root || preview < 1 || total < preview) return;
+    /* Nothing promised is nothing refused: the ungated/empty-remainder shape
+       ships an honest empty shelf with real protected metadata, and the
+       server shell stays exactly as rendered. The displayed population is
+       then the shell's own served rows. */
+    if (html === '' && preview === 0 && total === 0){
+      /* A genuinely empty served shelf admits nothing: the one shared loader
+         (Plans/life gate included) must make no native query, attach no note
+         and leave the honest empty shell untouched. A nonempty served shelf
+         stays admitted exactly as shipped. */
+      if (admission.served.length === 0) return null;
+      return { pins: admission.pins, market_session: admission.market_session, roster: admission.roster,
+               display: admission.served };
+    }
+    if (typeof html !== 'string' || !html) return null;
+    if (preview < 1 || total < preview) return null;
 
     /* Parse and validate before touching the shell. The payload owns this bounded
        shelf; an incomplete/malformed response leaves the honest shell untouched. */
     var box = document.createElement('template');
     box.innerHTML = html;
     var cards = box.content.querySelectorAll('.pvcard[data-ticker]');
-    if (cards.length !== preview) return;
+    var allCards = box.content.querySelectorAll('.pvcard');
+    /* A second malformed card cannot hide outside the selected-card query: the
+       TOTAL pvcard count, the selected count and every ticker attribute must
+       all check out before anything visible changes. Repeated nonblank tickers
+       are valid rows and are never collapsed. */
+    if (allCards.length !== preview || cards.length !== preview) return null;
+    for (var _ci = 0; _ci < cards.length; _ci++){
+      var _tk = cards[_ci].getAttribute('data-ticker');
+      if (!_tk || !_tk.trim()) return null;
+    }
+
+    /* Owner-issued display metadata, positional with the cards above: each
+       entry must name a DISTINCT original roster position and carry that
+       position's own row receipt; the shell's already-served rows must
+       reappear among them with the same receipt. Noncontiguous original
+       indices are expected and preserved; duplicate indices refuse — a
+       repeated ticker is a valid row, but two rows never share one index. */
+    if (!Array.isArray(todayMeta) || todayMeta.length !== preview) return null;
+    var display = [], seenIdx = {};
+    for (var _mi = 0; _mi < todayMeta.length; _mi++){
+      var _me = todayMeta[_mi];
+      if (!_me || typeof _me !== 'object' || Array.isArray(_me) ||
+          typeof _me.selection_index !== 'number' ||
+          (_me.selection_index | 0) !== _me.selection_index ||
+          _me.selection_index < 0 || _me.selection_index >= admission.roster.length ||
+          typeof _me.row_receipt !== 'string' ||
+          !/^sha256:[0-9a-f]{64}$/.test(_me.row_receipt) ||
+          _me.row_receipt !== admission.roster[_me.selection_index].row_receipt ||
+          seenIdx[_me.selection_index]) return null;
+      seenIdx[_me.selection_index] = true;
+      display.push({ selection_index: _me.selection_index,
+                     row_receipt: _me.row_receipt });
+    }
+    for (var _ss = 0; _ss < admission.served.length; _ss++){
+      var _hit = null;
+      for (var _sd = 0; _sd < display.length; _sd++){
+        if (display[_sd].selection_index === admission.served[_ss].selection_index){
+          _hit = display[_sd]; break;
+        }
+      }
+      if (!_hit || _hit.row_receipt !== admission.served[_ss].row_receipt) return null;
+    }
 
     var grid = root.querySelector('#us-today-grid');
     if (!grid){
@@ -20657,10 +20812,197 @@ if (document.readyState === 'loading') {
     } else if (note){
       note.remove();
     }
+    return { pins: admission.pins, market_session: admission.market_session, roster: admission.roster, display: display };
+  }
+
+  /* Strict prophet.daily_brief_read/v1 ENVELOPE admission: exact schema,
+     receipt_kind and all three source pins. This much is required before any
+     reason codes are believed. */
+  function admitBriefEnvelope(payload, admission){
+    if (!payload || typeof payload !== 'object' || Array.isArray(payload)) return null;
+    if (payload.schema !== 'prophet.daily_brief_read/v1') return null;
+    var sb = payload.source_binding;
+    if (!sb || typeof sb !== 'object' || Array.isArray(sb) ||
+        sb.schema !== 'prophet.today_selection_source_binding/v1' ||
+        sb.receipt_kind !== 'EXACT_DISPLAYED_SOURCE' ||
+        sb.source_sha256 !== admission.pins.source_sha256 ||
+        sb.pair_id !== admission.pins.pair_id ||
+        sb.selection_receipt !== admission.pins.selection_receipt ||
+        sb.market_session !== admission.market_session) return null;
+    return payload;
+  }
+
+  /* ...then the FULL ordered candidate roster: slot i must be the owner's
+     original position i carrying that position's own row receipt. Equal pins
+     and cardinality alone prove nothing — a same-count replaced, reordered or
+     re-receipted roster refuses here, as does any extra, missing or
+     duplicated slot. */
+  function admitDailyBrief(payload, admission){
+    if (!admitBriefEnvelope(payload, admission)) return null;
+    var cands = payload.candidates, roster = admission.roster;
+    if (!Array.isArray(cands) || cands.length !== roster.length) return null;
+    for (var i = 0; i < cands.length; i++){
+      var c = cands[i];
+      if (!c || typeof c !== 'object' || Array.isArray(c) ||
+          c.selection_index !== i ||
+          typeof c.row_receipt !== 'string' ||
+          c.row_receipt !== roster[i].row_receipt ||
+          !Array.isArray(c.reason_codes) ||
+          (c.status !== 'AVAILABLE' && c.status !== 'UNAVAILABLE')) return null;
+      if (c.status === 'UNAVAILABLE'){
+        if (c.candidate_input !== null) return null;
+        continue;
+      }
+      var input = c.candidate_input;
+      if (!input || typeof input !== 'object' || Array.isArray(input) ||
+          input.schema !== 'prophet.daily_brief_candidate_input/v1' ||
+          input.state !== 'SELECTED' ||
+          typeof input.owner_ref !== 'string' || !input.owner_ref.trim() ||
+          typeof input.asof !== 'string' || !input.asof.trim() ||
+          typeof input.security_id !== 'string' || !input.security_id.trim() ||
+          typeof input.episode_id !== 'string' || !input.episode_id.trim() ||
+          typeof payload.candidate_generation_id !== 'string' ||
+          !/^peg:[0-9a-f]{64}$/.test(payload.candidate_generation_id) ||
+          input.candidate_generation_id !== payload.candidate_generation_id ||
+          input.market_session !== admission.market_session ||
+          input.selection_receipt !== admission.pins.selection_receipt ||
+          typeof input.source_receipt !== 'string' ||
+          !/^sha256:[0-9a-f]{64}$/.test(input.source_receipt) ||
+          !input.display || typeof input.display !== 'object' || Array.isArray(input.display) ||
+          input.display.selection_index !== i) return null;
+    }
+    return cands;
+  }
+
+  /* Classify one checked-or-refused envelope into an honest typed outcome.
+     AVAILABLE here is candidate binding only, never DailyBrief availability:
+     the overall PARTIAL state and the owner-input reason codes stay visible. */
+  function todayNativeOutcome(payload, admission){
+    if (!admitBriefEnvelope(payload, admission)){
+      return { state: 'unavailable', reasons: ['DAILY_BRIEF_RESPONSE_INVALID'] };
+    }
+    var reasons = (Array.isArray(payload.reason_codes) ? payload.reason_codes : [])
+      .filter(function(code){ return typeof code === 'string'; });
+    /* Typed overall outage carries its owner reason codes even with an empty
+       candidate roster; AVAILABLE is candidate binding only, never brief
+       availability, and PARTIAL stays honest about the missing owners. */
+    if (payload.status !== 'AVAILABLE' && payload.status !== 'PARTIAL'){
+      return { state: 'unavailable',
+               reasons: reasons.length ? reasons : ['DAILY_BRIEF_UNAVAILABLE'] };
+    }
+    var cands = admitDailyBrief(payload, admission);
+    if (!cands) return { state: 'unavailable', reasons: ['DAILY_BRIEF_RESPONSE_INVALID'] };
+    var shown = 0;
+    for (var d = 0; d < admission.display.length; d++){
+      var at = admission.display[d].selection_index;
+      if (!cands[at] || cands[at].row_receipt !== admission.display[d].row_receipt){
+        return { state: 'unavailable', reasons: ['DAILY_BRIEF_RESPONSE_INVALID'] };
+      }
+      if (cands[at].status === 'AVAILABLE') shown++;
+    }
+    return { state: payload.status === 'AVAILABLE' ? 'available' : 'partial',
+             reasons: reasons, shown: shown, total: admission.display.length };
+  }
+
+  /* Neutral bilingual disclosure on the EXISTING Today note/section: state and
+     typed reason attributes plus one existing-class note line. No new styling,
+     material or layout; assessments, entries, actions and plans are never
+     promoted, and candidate_input internals are never exposed. */
+  function applyTodayNative(admission, outcome){
+    var root = document.getElementById('us-today');
+    if (!root || !admission || !outcome) return;
+    var state = outcome.state, reasons = outcome.reasons || [];
+    if (state !== 'available' && state !== 'partial' && state !== 'unavailable') return;
+    root.setAttribute('data-today-native-state', state);
+    root.setAttribute('data-today-native-reasons', reasons.join(' '));
+    var note = root.querySelector('#us-today-native-note');
+    if (!note){
+      note = document.createElement('p');
+      note.className = 'mx-sec-note';
+      note.id = 'us-today-native-note';
+      var intro = root.querySelector('.mx-sec-note');
+      if (intro) intro.insertAdjacentElement('afterend', note);
+      else root.appendChild(note);
+    }
+    note.setAttribute('data-today-native-state', state);
+    if (state === 'available'){
+      note.innerHTML =
+        '<span class="l-en">Native candidate context is attached for this exact source.</span>' +
+        '<span class="l-zh">已附加此精确来源的原生候选上下文。</span>';
+    } else if (state === 'partial'){
+      note.innerHTML =
+        '<span class="l-en">Native candidate binding is available for ' + outcome.shown +
+        ' of ' + outcome.total + ' shown names; the full brief’s own inputs are still pending.</span>' +
+        '<span class="l-zh">所显示 ' + outcome.total + ' 个名字中已有 ' + outcome.shown +
+        ' 个建立原生候选绑定；完整简报的各所有者输入仍未就绪。</span>';
+    } else {
+      note.innerHTML =
+        '<span class="l-en">Native candidate context is unavailable for this exact source.</span>' +
+        '<span class="l-zh">此精确来源的原生候选上下文不可用。</span>';
+    }
+  }
+
+  /* ONE authenticated same-origin/no-store native query on admitted metadata
+     only, using the SAME refreshed session's token only for this fixed origin
+     route. Missing session makes no query. Auth failures keep the existing wall
+     and withhold stale native context; 409/503 or malformed, stale, refused data
+     disclose typed unavailable WITHOUT retry; the incumbent shell and its
+     hydrated cards are never dropped either way. */
+  function queryDailyBrief(admission){
+    if (!todayAccessToken){
+      applyTodayNative(admission, { state: 'unavailable', reasons: ['NATIVE_SESSION_UNAVAILABLE'] });
+      return Promise.resolve();
+    }
+    /* Withhold any prior native context while this exact full roster is checked.
+       Ordinary cards and their selection/order remain untouched. */
+    applyTodayNative(admission, { state: 'unavailable', reasons: ['NATIVE_CONTEXT_PENDING'] });
+    var pins = admission.pins;
+    var url = '/api/prophet/daily-brief/v1' +
+      '?source_sha256=' + encodeURIComponent(pins.source_sha256) +
+      '&pair_id=' + encodeURIComponent(pins.pair_id) +
+      '&selection_receipt=' + encodeURIComponent(pins.selection_receipt);
+    return fetch(url, { credentials: 'same-origin', cache: 'no-store',
+                        headers: { Authorization: 'Bearer ' + todayAccessToken } })
+      .then(function(r){
+        if (r && (r.status === 401 || r.status === 403)){
+          applyTodayNative(admission, { state: 'unavailable', reasons: ['NATIVE_AUTH_UNAVAILABLE'] });
+          return null;
+        }
+        if (!r) throw new Error('daily brief unavailable');
+        return r.json().then(function(data){ return { http: r.status, data: data }; });
+      })
+      .then(function(result){
+        if (!result) return;
+        var outcome;
+        if (result.http === 200){
+          outcome = todayNativeOutcome(result.data, admission);
+        } else if (result.http === 409 || result.http === 503){
+          /* A whole-request conflict/outage carries the producer envelope with
+             its typed reason codes (candidates legitimately empty). Believe
+             the codes only behind the same strict envelope gate. */
+          var reasons = [];
+          if (admitBriefEnvelope(result.data, admission) &&
+              Array.isArray(result.data.reason_codes)){
+            reasons = result.data.reason_codes.filter(function(code){
+              return typeof code === 'string'; });
+          }
+          outcome = { state: 'unavailable',
+                      reasons: reasons.length ? reasons : ['DAILY_BRIEF_UNAVAILABLE'] };
+        } else {
+          outcome = { state: 'unavailable', reasons: ['DAILY_BRIEF_RESPONSE_INVALID'] };
+        }
+        applyTodayNative(admission, outcome);
+      })
+      .catch(function(){
+        applyTodayNative(admission,
+                         { state: 'unavailable', reasons: ['DAILY_BRIEF_UNAVAILABLE'] });
+      });
   }
 
   function hydratePanels(payload){
-    hydrateToday(payload.today_cards_html, payload.today_preview, payload.today_total);
+    var admitted = hydrateToday(payload.today_cards_html, payload.today_preview,
+                                payload.today_total, payload.today_source_binding,
+                                payload.today_rows_meta);
     hydrateCandidatePool(payload.candidate_pool_html, payload.candidate_pool_source);
     hydrateLeaderObservations(payload.leader_observations_html);
     appendTo('#us-standouts .topsetups:not(.leaders-strip) .ts-tbl tbody', payload.setups_html);
@@ -20713,6 +21055,7 @@ if (document.readyState === 'loading') {
       }catch(e){}
     }
     dropNotes();
+    return admitted;
   }
 
   /* Rebuild the "Show more (N)" control a gated lane shipped without. Same
@@ -20819,7 +21162,7 @@ if (document.readyState === 'loading') {
     if (!payload || payload.schema !== 'tier_payload.v1' || payload.page !== 'us_stocks'){
       throw new Error('invalid payload');
     }
-    hydratePanels(payload);
+    var admitted = hydratePanels(payload);
     /* P-MP1-SHELL §8b — the migrated Setups grid's own locked remainder.
        #us-life-grid holds the plan-book cards in PUBLISHED priority order
        (never re-sorted here), so the locked rows are exactly the tail of
@@ -20894,7 +21237,7 @@ if (document.readyState === 'loading') {
       var lifeWall = document.getElementById('us-life-wall');
       if (lifeWall) lifeWall.remove();
     }
-    if (!GATE) return;
+    if (!GATE) return admitted;
     /* Repair round, finding N3: this used to read the pre-migration id
        'us-tier-wall' — the wall's actual id is 'us-life-wall' (removed under
        LIFE_GATE above already; this second read stays as a harmless no-op
@@ -20910,6 +21253,7 @@ if (document.readyState === 'loading') {
     if (note) note.remove();
     var bar = document.getElementById('us-stage-filter');
     if (bar){ bar.classList.remove('gated'); recountStageChips(bar); }
+    return admitted;
   }
 
   /* The chips were baked from the preview slice, which is honest while the bar
@@ -20959,7 +21303,15 @@ if (document.readyState === 'loading') {
       return r.json();
     })
     .then(hydrate)
-    .then(function(){ setLoadUnavailable(false); })
+    .then(function(admitted){
+      setLoadUnavailable(false);
+      /* Exactly ONE native query, and only on admitted metadata: today's
+         three pins, roster structure and displayed positions checked. The
+         API must validate the complete owner roster before native context is
+         disclosed; hidden positions cannot acquire authority from count alone. Its outcome never unsets the
+         board's own load state and never rejects into the board's catch. */
+      if (admitted) queryDailyBrief(admitted);
+    })
     .catch(function(error){
       /* Access denial retains the existing wall. Transport, server and invalid
          payload failures keep the dated preview and disclose missing full data. */

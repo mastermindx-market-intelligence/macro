@@ -32,15 +32,38 @@ waves:
   - id: consumer-delivery
     title: Integrate incumbent Data OS and Quote Hub, release and prove live
     status: in_progress
-    pr: [8698, 945, 955]
+    pr: [8698, 945, 955, 8986, 9004, 9018, 9020, 9022, 9027]
 next_action: >-
-  Finish current protected Terminal 955 source checks and the incumbent VPS release,
-  using the accepted feature-copy repair with 554 files / 9,141 tests and six EN/ZH browser passes; Terminal 945 is
-  already merged, installed and healthy. Settle/materialize/audit the attended
-  interrupted fourth 1000-request EOD wave: 838 raw responses / 835 new views verified and full archive qualified at 4,386 histories / 8,919,835 bars; settle the active 161-request continuation within the original combined cap.
-  Before real BOATS publication, qualify exact producer source/CI, original runtime
-  controls, sole writer and object/cache replacement. Reconcile the existing
-  account's served fundamentals HTTP 400 discrepancy; the intended Chrome Chris profile is already signed in with BOATS ACTIVE and current quota remaining.
+  Preserve accepted producer integrity, quality/foreign-custody dispositions and
+  exactly four PRODUCED research contracts; twenty remain PROPOSED. Macro #9075
+  passed all12 original CI packs and ci-gate38346775069 at ca8852f, normally
+  merged21652b3a0ff316de74e66eb930251f33402c773a and all39 reviewed blobs match
+  canonical source. All physical03 capture85004, qualifier45885 and accounting
+  returns are consumed. The four-phase partition covers all4,392 identities:
+  2,566 qualified, one wholeSCNG quarantine, nine held timeouts and1,816 never
+  admitted. Accepted coverage is45,724 histories and96,788,107 bars;117 empty,
+  1,845 uncaptured and three quality quarantines remain. No failed retry or
+  full-history, dated-identity orPIT claim follows. Restart recovery preserves
+  lost76884 terminal status, unchanged source77134, retained orphan lock and
+  exact historical script hashes. A reviewed one-shot attended gate consumes
+  actual validation READY with terminal exitnull, fresh visible quota and full
+  snapshot/source/module/evidence/storage checks before exclusive scope/key.
+  Original20348 rc0 remains historical; rejected recovery01 is retained.
+  Original81573 admitted the exact1,816-request phase04 at05:00:56.237806UTC,
+  excluding34 holds with24,478,712,262 remaining raw bytes. Capture is ongoing
+  in this snapshot; one reviewed finite qualifier29227 is also pending. Consume
+  their actual returns, qualify every response, extend final accounting and
+  continue useful ready work. Preserve one raw and oneQA writer, unchanged
+  collector/credential/TLS, four-inflight rolling-five-second admission,
+  first-error stop/drain and40GiB floor. Accepted BOATS2,000,000-frame and
+  SAPIF installedLab/host proofs stay valid. Terminal955 retains its actual
+  approval refusal at8811e38c64eb14fadc40a00ccfbfb31c37f863e8; required PR CI
+  remains absent at the last protected read, independently dispatched jobs
+  do not substitute. Preserve incumbent QuoteHub/News/peerintraday writers,
+  SHW/PFE/evaluation/split/provider holds, deepfundamentals/identity/knowledge
+  time/rights/runtime publication and responsive production acceptance gates.
+  Actual reviewed methods and proof are saved in
+  docs/tiingo-evidence/20261013-attended-recovery/.
 owns_paths:
   - collectors/tiingo_archive.py
   - lib/dataos/tiingo_*.py
@@ -48,6 +71,13 @@ owns_paths:
   - docs/TIINGO_DATA_OS_INGESTION_20261009.md
   - docs/tiingo-evidence/
 artifacts:
+  - docs/tiingo-evidence/20261013-attended-recovery/
+  - docs/tiingo-evidence/20261013-continuation-accounting/
+  - docs/tiingo-evidence/20261013-final-scope-disposition/
+  - docs/tiingo-evidence/20261013-open-session-history-frontier/
+  - docs/tiingo-evidence/20261012-final-capture-preparation/
+  - docs/tiingo-evidence/20261012-wave13-held-outcome/
+  - docs/tiingo-evidence/20261012-wave12-quality-partition/
   - docs/TIINGO_DATA_OS_INGESTION_20261009.md
   - docs/tiingo-evidence/20261011-producer-integrity/
   - docs/tiingo-evidence/20261011-live-qualification/
@@ -55,13 +85,20 @@ artifacts:
   - docs/tiingo-evidence/20261011-history-wave2/
   - docs/tiingo-evidence/20261011-history-wave3/
   - docs/tiingo-evidence/20261011-boats-source/
+  - docs/tiingo-evidence/20261012-real-open-case-repair/
+  - docs/tiingo-evidence/20261012-delivery-frontier/
+  - docs/tiingo-evidence/20261012-research-contracts/
+  - docs/tiingo-evidence/20261012-installed-research/
+  - docs/tiingo-evidence/20261012-eod-finite-scopes/
+  - docs/tiingo-evidence/20261012-canonical-capture-admission/
+  - docs/tiingo-evidence/20261012-wave11-rolling-continuation/
 landmines:
-  - Keep one existing collector, archive writer, provider/runtime owner and source carrier; News PR 8697 is separate.
-  - The source archive retains a directory-swap TOCTOU limit; trust one writer and do not rename archive directories concurrently.
+  - Keep one owner per conflicting partition/effect, existing collector and admitted runtime/relay writer; preserve peer intraday captures and News PR 8697. Any actual wider archive lease remains binding.
+  - Disjoint immutable append requires trusted stable archive ancestors; directory-swap TOCTOU remains and no ancestor renames or incumbent writer displacement are authorized.
   - Full fundamentals activation is Chairman-attested but AMD current-key responses still expose evaluation restrictions; do not infer absent purchase or purchase again.
   - Authentic BOATS controls and historical bars do not prove actual Q/T/B or session coverage.
   - Reviewed source admits a complete BOATS-only public projection; installation and old object/cache replacement still need proof. Never inject BOATS under a legacy provider label.
-  - Registry PROPOSED and research PIT/identity/availability refusals remain until their incumbent owners admit real production capability.
+  - Exactly four EOD/fundamentals contracts and their selected immutable research release are verified; all other twenty stay PROPOSED. Dated identity, PIT, availability and live publication remain separate gates.
 do_not_redo:
   - Do not publish the previously blocked untracked CEO handoff by another route.
   - Do not reacquire the accepted ticker ZIP or re-download already verified histories merely to obtain another checkpoint.
@@ -245,3 +282,122 @@ Dated wave-four qualification, 2026-10-11 22:49 UTC: all 4,403 receipts were che
 Wave-four continuation settled: 161/161 succeeded, 343,787 row hints / 80,194,781 raw bytes in 368.882 seconds. Combined original batch: 999 verified bodies (996 nonempty / three empty), one absent BAFE timeout; all 4,564 archive receipts inspected. Materializer settled rc=0, final archive qualification running. Protected main 3a92cf50 integrated without source conflict; five LIVE receipt changes and three unchanged unique anchor relocations passed independent review d7ae07de, then 21 classification tests passed. CI additions retain all prior tests and add actual BOATS display coverage. No raw writer is active.
 
 Final wave-four qualification: 2026-10-11T22:56:35.691310+00:00, 4,547 nonempty EOD histories / 9,263,622 bars / 4,564 receipts; raw/checksum/exact-context/row-lineage/date/economic-overlap proof passed. Physical archive 604,537,634 bytes, free 255.4 GiB, reserve 35 GiB. Safe exact proof and timeout are retained under docs/tiingo-evidence/20261011-history-wave4/. Original Macro #8698 accepted source is pushed at 82feebf630999c0b5a4a3ec6c922ec92f720105f; current hosted gates remain separate.
+
+## CI continuation at 2026-10-11 23:29 UTC
+
+The original Macro carrier landed prematurely at `fba80a12`; hosted contract-delta
+run `38182746681` then found the missing calendar dependency. The fresh-main
+continuation widens the existing job by one path and preserves producer/archive
+bytes. `python3 scripts/check_contract_delta.py --base
+8ad47787d83be8625fb387e279220b5a40efc7b2` passed with zero introduced/inherited
+findings in 440.3 seconds. Actual red/green/parity/landing evidence is retained at
+`docs/tiingo-evidence/20261011-ci-continuation/`. This does not establish hosted
+acceptance, publication or full-programme completion.
+
+
+Current qualification checkpoint, 2026-10-12 00:25 UTC: Macro #8870's exact
+1cea273c source passed all twelve CI packs and active authority and landed as
+de0c202a. The original red CI and main 308cc evidence remain retained. Natural
+main baseline 38187866979 is running; no duplicate dispatch or baseline-success
+claim follows. The reviewed casing repair now has a fresh branch from this main.
+
+Actual bounded BOATS capture settled at its 20,000-message cap after about four
+seconds: 19,651 Q / 347 T / zero B / two authenticated controls, twenty immutable
+segments, all original raw hashes and exact research projections verified. Every
+market symbol was lowercase. Original public display replay admitted zero; the
+narrow ASCII-validated uppercase display key repair leaves raw/research identity
+exact, reproduces seven red regressions and passes seventy affected checks. At
+the original capture clock authentic repaired replay admits only AAPL among the
+nine chosen display keys and verifies raw event/price lineage. This is historical
+replay, not current production or continuous break/session coverage. The unchanged
+public allowlist and source boundaries were independently accepted; one qualified
+LIVE source-pin refresh passes all twenty-one classification checks.
+
+The settled fifth history wave qualifies 5,046 nonempty EOD histories and
+10,306,265 distinct bars at the original dated observation, with 5,068 receipts,
+all checksums, exact contexts, lineage, unique dates and overlaps verified. That
+snapshot predates three new AAPL fundamentals captures and twenty BOATS segments.
+Fundamentals requested from 1990 still serve only roughly three years; original
+reported/restated dimensions retain 962 matched metrics and 45 differences. Full
+vendor coverage, dated issuer identity and PIT known-at remain unproved.
+
+Wave six is an actual attended 1,000-request EOD invocation of the original
+collector, excluding already captured symbols and preserving the 35-GiB reserve.
+Its scope/result/log live in the current task's tiingo-phase1 directory. It is
+still running at this checkpoint; no later settlement or projection is assumed.
+The Chairman identifies four separate intraday captures as a likely Web MAG 7
+test. Disjoint immutable BOATS/EOD appends preserve those artifacts and any actual
+wider lease; this record is advisory and grants no relay-key or runtime authority.
+
+Terminal #955 at 88bdb412 integrates the whole peer #957 ledger correction without
+SQL execution or peer rewrites. Real strict pull-request ingest checks now pass,
+as do Hub and unit/typecheck; hosted desktop/tablet/mobile shards and protected
+merge remain pending. #945's d0973ef6 VPS release remains the installed provenance
+prerequisite only. The original persistent publisher/schedule refusal remains
+held. No new R2 write, schedule, service or consumer deployment occurred.
+
+Verification methods, red/green logs, original dated safe proofs and independent
+hash-bound judgments are retained in docs/tiingo-evidence/20261012-real-open-case-repair/.
+Fabric's original prelaunch failures remain on their IDs; diagnosis shows a log
+override alone would orphan installed status/result/stdin paths outside the grant.
+No retry, replacement operation or alternate ledger was created.
+
+## Installed research consumer and held production frontier
+
+The safe, source-bound receipt in
+`docs/tiingo-evidence/20261012-delivery-frontier/safe-frontier.json` supersedes the
+earlier wave-six and pending-producer observations. Macro #8875 landed the
+hosted-accepted casing source; the existing immutable Data & Lab release selector
+now discovers 24 Tiingo contracts and reads a real EOD slice. A canonical-store Lab
+compatibility canary passed. These are installed research capabilities; source
+statuses remain PROPOSED and no canonical identity or PIT admission follows.
+
+All own raw operations settled. Qualification verifies 9,722 nonempty histories
+and 20,230,153 distinct bars. The reused catalogue census has 18 empty candidate
+responses and 37,949 uncaptured windows. Absence of an accepted capture does not
+prove absence of an attempted request: the latest original continuation retained
+one success and a DVVDF HTTP 403, which was not retried. No peer partition or old
+view was rewritten. Full vendor history and served fundamentals scope remain open.
+
+Terminal #955's same-head dispatched CI passed all 12 jobs at `0bc4850632c1496e3e216cac7a25260baa76ed82`.
+The original pull-request CI run `38202937001` instead requires maintainer
+approval, and GitHub shows its three protected contexts as Expected. The exact
+approval attempt was rejected before execution by automatic approval review. No
+alternate-account approval, replacement CI admission or protection change occurs.
+The last observed VPS source and marker were `e0c405a09b6897df3b5e4a2f22344f3560b800a4`;
+there is no #955 release, finite BOATS publication or full live acceptance claim.
+The current principal requested the precise human approval and retains this
+frontier; this knowledge record schedules no future work.
+
+The controller subsequently refreshed the branch to `aadf407e101b99f2fbe23b43d277c792a32571d2` from
+protected settings base `9493fd80`. The 66 changed paths preserve Tiingo, BOATS,
+startup and workflow files, but the earlier green run does not accept this new
+head. Current dispatched run `38209476208` is queued; current original PR run
+`38209480199` also awaits maintainer approval. The earlier approval question
+link is superseded by this current original run. No new approval attempt occurred.
+
+Active continuation, 2026-10-12 08:46 UTC: the previous DVVDF/DVXB/DVYA/EA
+failures do not establish ticker-specific entitlement. Offline proof found the
+credential argument being overwritten by a counter iterator in the temporary
+continuation helper. Original collector bytes and provisioned key were unchanged.
+The corrected finite helper passed independent Fabric review on its stable run;
+parent adjudication accepted the code. The Fabric ledger acceptance write was
+denied at its lock and remains unrecorded on that carrier. No denied write or
+failed provider request was retried. The new operation excludes all twelve prior
+failed exact windows and has produced multiple consecutive HTTP 200 captures.
+
+A new completed-response snapshot qualified 191 histories / 517183 bars, bringing
+the accepted archive to 9916 histories / 20761012 distinct bars. The reused catalogue
+census now has 37755 uncaptured windows and 18 empty responses; capture completion,
+vendor availability and bar completeness remain separate. Installed release 2c90e1c0
+read 128 rows from each new EBAY/DWCH view, preserving raw/adjusted distinctions and
+source receipt lineage. Thirty new original/revised/daily fundamentals requests for
+ten companies produced 58501 projected rows, 9940 unambiguous compared fiscal keys
+and 518 changed values. The installed selector read all three new JPM modes.
+
+The first standalone corporate-action request `/tiingo/corporate-actions/aapl/splits`
+returned HTTP 403 with the correct stable credential argument. Its finite cohort
+stopped after that one request, with no successful response or projection. EOD
+embedded split/dividend evidence remains a distinct accepted source and does not
+clear the standalone endpoint refusal. No purchase, support email or account change
+was made. Safe current receipts are in the existing delivery-frontier directory.

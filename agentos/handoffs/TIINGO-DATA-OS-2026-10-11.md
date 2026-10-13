@@ -1,6 +1,6 @@
 ---
 workstream: WS:TIINGO-DATA-OS
-session: sol/tiingo-data-archive-20261009
+session: claude/ssd-tiingo-ci-continuation-20261011-476f2cbd5f9b6dec
 model: codex
 ended_because: ci_handoff
 mission: Complete the existing licensed Tiingo history and BOATS programme through incumbent Data OS and
@@ -101,6 +101,18 @@ verified:
   result: 'Dated 22:56:35.691310Z: 4,547 nonempty EOD histories / 9,263,622 distinct bars / 4,564 receipts;
     all raw and nonempty projection checks passed. 604,537,634 physical bytes, 255.4 GiB free, reserve35.
     BAFE absent / remaining43,000-plus catalogue candidates; full history/PIT/live consumer not admitted.'
+- claim: Fresh-main Tiingo CI scope repair satisfies the existing differential contract checker.
+  command: PYTHONDONTWRITEBYTECODE=1 python3 scripts/check_contract_delta.py --base 8ad47787d83be8625fb387e279220b5a40efc7b2
+  result: One omitted lib/nyse_calendar.py path added; checker rc=0, zero introduced/inherited, 440.3 seconds. Producer/archive/reader/materializer source hashes match the original carrier. Hosted continuation gates remain pending.
+- claim: The exact main-baseline failing import-closure test passes on the continuation.
+  command: PYTHONDONTWRITEBYTECODE=1 python3 -m pytest tests/test_ci_pack.py::test_curated_exclusive_scopes_cover_their_own_import_closure -q -p no:cacheprovider
+  result: One passed in 185.84 seconds; original assertions and test command retained.
+- claim: Fifth 500-request EOD batch settled and its exact raw audit passed.
+  command: Existing attended Task/collect/Archive; python3 /private/tmp/tiingo-wave5-final-audit-01a12ab6.py
+  result: 500 HTTP-200 bodies, zero failures, 1,042,643 row hints, 242,210,588 raw bytes, 1279.392 seconds. Audit verifies all 500 hashes and reports 499 nonempty / one empty. EOD-only materialization settled rc=0; 499 new, 4,548 existing, eight empty receipts, zero refusals/errors. Full archive qualification is running; no final projection qualification claim follows yet.
+- claim: Terminal 955 current exact-head hosted CI concluded success.
+  command: gh run view 38180848095 --repo mastermindx-market-intelligence/mastermind-terminal --json headSha,status,conclusion,jobs
+  result: 3e8fe8adad84a043a3454c1214bc886c42e872b1, all ten CI jobs including the required aggregate and tablet completed success. Actual protected merge and new Hub/Terminal install still require separate verification.
 unverified:
 - claim: Full served fundamentals scope.
   what_would_verify: Resolve actual-key AMD ticker/permanent-ID HTTP 400 evaluation/Dow 30/limit discrepancy
@@ -124,8 +136,7 @@ unresolved:
 - Earlier combined persistent publisher/launchd request was auto-review rejected. Ops/schedule remain
   unchanged; source-only approval does not admit the denied effect. Prepare a concrete bounded same-carrier
   attended action after source, CI, writer and resource qualification.
-- 'Current Terminal #955 source 3e8fe8ad required hosted gates are pending; previous copyguard and historical-lock
-  failures are repaired without waivers or screenshot restamps.'
+- 'Current Terminal #955 source 3e8fe8ad hosted CI is green; protected merge and actual consumer release remain separate pending evidence.'
 - Wave-four writer ended on technical TimeoutError with 838 retained responses. Full archive proof passed.
   The 161-request continuation settled and materialization passed; final full lineage qualification passed,
   with no raw writer. BAFE remains absent within the original combined cap.
@@ -134,16 +145,11 @@ unresolved:
 - Normal BOATS window starts 2026-10-12T00:00:00Z / Sunday 17:00 PDT / 20:00 ET. Closed-window controls
   do not prove market traffic.
 next_actions:
-- 'Complete protected exact-head CI/landing on original Macro #8698 and Terminal #955; existing #955 auto-merge
-  is armed and no bypass is authorized.'
-- Wave four is qualified; continue a finite next catalogue scope after fresh resource/writer checks, preserving
-  the BAFE timeout and real BOATS window.
-- 'Use existing VPS builder for actual protected Terminal #955 merge and verify installed Hub/source/PID/public
-  identity. Original #945 is already delivered.'
-- Prepare concrete bounded original BOATS publisher writer/resource/object/cache proof for same-carrier
-  review, preserving denied persistent/scheduling effects; qualify genuine live chain in a real session.
-- Continue accepted catalogue history and existing Data OS identity/revision requirements, without a new
-  queue, registry or quote service.
+- Publish the fresh-main one-path CI continuation, conclude its exact-head gates and the canonical main-red-repair source chain; do not dispatch a duplicate main baseline while 38184033478 is running.
+- Qualify the settled fifth EOD wave through its attended EOD-only materializer and existing full lineage reader; reconcile four separate equity-intraday receipts before another raw capture.
+- Verify protected Terminal 955 merge after its actual hosted green aggregate, then use the existing VPS builder and prove the installed Hub/source/PID/public identity.
+- Complete concrete original BOATS publisher writer/resource/target/object/cache/clock proof and exact same-carrier approval before effects; perform real trade-to-consumer and final empty/expiry observations during/after the authorized invocation.
+- Continue full accepted-catalogue history and incumbent Data OS dated identity/revision requirements while keeping retrospective/PIT boundaries explicit.
 do_not_redo:
 - Do not publish or repackage the original previously blocked untracked CEO handoff.
 - Do not reacquire the accepted supported-tickers ZIP or re-download verified exact histories to manufacture
@@ -173,3 +179,19 @@ prs:
 This is an additive source and CI checkpoint for the original programme. The active root continues useful work; this record does not claim completion or promise unattended work. It is not publication or repackaging of the original blocked untracked CEO document.
 
 Original Macro carrier: /Volumes/Mastermind/agent-workspaces/sol/tiingo-ingestion-20261009, sol/tiingo-data-archive-20261009. Current Terminal #955 carrier: /Volumes/Mastermind/agent-workspaces/claude/5600d31ffa29643a/tiingo-boats-quotehub-b2b25c10fd296613, claude/ssd-tiingo-boats-quotehub-b2b25c10fd296613. The merged #945 carrier is preserved. Archive: /Volumes/Mastermind/market-data/tiingo. Shared primary checkouts and separate News #8697 ownership remain intact. Evidence is under canonical docs/tiingo-evidence/, without licensed raw rows, credentials or subscription-ID values.
+
+## Active continuation checkpoint — 2026-10-11 23:32 UTC
+
+The assigned principal continues in the same task. Macro #8698 merged before CI
+settled because main lacked an enforced GitHub check barrier. Contract-delta then
+proved the omitted NYSE-calendar path. The original merged branch is preserved;
+the fresh-main continuation owns that one-line repair. Actual red/green/source
+parity and landing correction are under `docs/tiingo-evidence/20261011-ci-continuation/`.
+An independent sibling observed the same defect in main integration-baseline and
+is preserving this incumbent repair. Its already-running natural baseline is
+`38184033478`; a duplicate dispatch is not authorized by this checkpoint.
+
+The fifth EOD batch's exact raw audit is complete. Its EOD-only materialization
+settled with 499 new histories, zero errors/refusals; full lineage qualification is running. Four separate AAPL/MSFT/NVDA/SPY
+equity-intraday receipts appeared at 23:09–23:10 outside the planned EOD scope;
+they and their existing manifests are preserved. The Chairman identifies a likely independent Web MAG 7 performance session as their origin. Its exact session and live settlement remain unproven; preserve its outputs and reconcile before another raw writer. This is no unattended-worker or programme-complete claim.

@@ -166,7 +166,7 @@ class TestCollisionDetection:
 # ---------------------------------------------------------------------------
 # 3. Ledger idempotency + lane gate
 # ---------------------------------------------------------------------------
-class TestLedgerIdempotency:
+class TestLedgerIdempotencyEventWindow:
 
     def test_stamp_ex_ante_requires_lane(self, tmp_path):
         """stamp_ex_ante() must no-op when COLLECT_LANE != nightly."""

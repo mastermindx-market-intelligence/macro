@@ -24,6 +24,13 @@ What this module pins, and why each pin can actually fail:
     that file still carries exactly the twelve (ticker, CIK) pairs that used to be
     inline in daily.yml.  A drift between producer and consumer is what the bundle's
     ticker-set equality check turns into a red nightly.
+5.  **The contract lane is pinned, not exempt.**  The D13 contract acquire (step id
+    `contract_acquire`) is a deliberate THIRD wave-2 invocation over
+    `$CONTRACT_TARGETS`, so pins 3-4 scope to the incumbent steps BY ID; the contract
+    step's own shape — universe derived from the same pinned target file, no inline
+    list, no strict-acquisition/projection/restore flags, continue-on-error — is
+    pinned here and, end to end, by
+    tests/test_fif_publication_workflow_shape.py.
 """
 from __future__ import annotations
 
@@ -42,6 +49,11 @@ TARGETS_PATH = "config/fundamental_forensics/wave2_targets.v1.json"
 ENGINE_STEP = "restore Filing Forensics disclosure projections (hard gate)"
 BUNDLE_MODULE = "scripts.fundamental_forensics_disclosure_bundle"
 WAVE2_MODULE = "scripts.run_fundamental_forensics_wave2"
+#: The D13 contract-acquire step, a deliberate third wave-2 invocation over
+#: $CONTRACT_TARGETS. Pins 3-4 were written for the incumbent producer chain, so they
+#: exclude this step BY ID (see _incumbent_steps) and its own shape is pinned by
+#: test_contract_lane_derives_its_universe_from_the_pinned_target_file.
+CONTRACT_STEP_ID = "contract_acquire"
 R2_RESEARCH_KEYS = {
     "R2_RESEARCH_ENDPOINT",
     "R2_RESEARCH_ACCESS_KEY_ID",
@@ -88,6 +100,21 @@ def _step(workflow: dict, job: str, name: str) -> dict:
     raise AssertionError(f"step {name!r} not found in {job}")
 
 
+def _incumbent_steps(workflow: dict, job: str) -> list[dict]:
+    """The job's steps minus the D13 contract lane (pin 5's BY-ID exclusion).
+
+    The contract step is pinned separately, so the at-most-one guard here keeps the
+    exclusion from ever widening: a SECOND step carrying the id would silently dodge
+    pins 3-4, which is exactly the drift this file exists to catch.
+    """
+    steps = _steps(workflow, job)
+    contract = [step for step in steps if step.get("id") == CONTRACT_STEP_ID]
+    assert len(contract) <= 1, (
+        f"at most one step may carry id {CONTRACT_STEP_ID!r}, found {len(contract)}"
+    )
+    return [step for step in steps if step.get("id") != CONTRACT_STEP_ID]
+
+
 def test_engine_restores_the_bundle_and_no_longer_acquires_or_syncs(daily: dict) -> None:
     step = _step(daily, "engine", ENGINE_STEP)
     run = step["run"]
@@ -124,7 +151,7 @@ def test_sec_lane_is_scheduled_off_the_render_path_and_never_cancelled(lane: dic
 
 
 def test_sec_lane_keeps_the_fixed_restore_acquire_project_sync_order(lane: dict) -> None:
-    body = "\n".join(str(step.get("run", "")) for step in _steps(lane, "acquire_project_sync"))
+    body = "\n".join(str(step.get("run", "")) for step in _incumbent_steps(lane, "acquire_project_sync"))
 
     strict_acquire = body.index("--require-complete-acquisition")
     projections = body.index("--build-projections")
@@ -177,13 +204,38 @@ def test_sec_lane_publishes_the_bundle_and_proves_it_restores(lane: dict) -> Non
 
 
 def test_every_lane_invocation_uses_the_pinned_target_file(lane: dict) -> None:
-    for step in _steps(lane, "acquire_project_sync"):
+    for step in _incumbent_steps(lane, "acquire_project_sync"):
         run = str(step.get("run", ""))
         if WAVE2_MODULE not in run and BUNDLE_MODULE not in run:
             continue
         assert "--target " not in run, "the inline 12-ticker list is the drift this file prevents"
         assert run.count("--targets-file") == run.count("python -m scripts.")
         assert TARGETS_PATH in run
+
+
+def test_contract_lane_derives_its_universe_from_the_pinned_target_file(lane: dict) -> None:
+    """Pin 4 for the contract step: its universe comes FROM the one pinned file.
+
+    The derive subcommand reads the pinned target file to compute the non-incumbent
+    extras, and the acquire then runs on that derived list — so a drift between the
+    file and the contract universe has the same failure class as pin 4's incumbents.
+    """
+    contract = [
+        step for step in _steps(lane, "acquire_project_sync")
+        if step.get("id") == CONTRACT_STEP_ID
+    ]
+    assert len(contract) == 1, "exactly one contract_acquire step"
+    step = contract[0]
+    run = str(step["run"])
+
+    assert TARGETS_PATH in run
+    assert run.count("--targets-file") == 1
+    assert "--target " not in run, "the inline list is derived, never hand-written"
+    assert run.count(f"python -m {WAVE2_MODULE}") == 1
+    assert "--require-complete-acquisition" not in run
+    assert "--build-projections" not in run
+    assert "--restore" not in run
+    assert step["continue-on-error"] is True
 
 
 def test_both_workflows_name_the_identical_target_file() -> None:

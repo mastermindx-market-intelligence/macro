@@ -193,40 +193,160 @@ def _dx(index):
 # Lightweight-Charts v5 data emitter for the Risk-Index-vs-Strategy chart
 # (replaces the Plotly fig with the bespoke interactive chart system; site/vector_chart.js)
 # --------------------------------------------------------------------------- #
-def emit_risk_strategy_json(site: Path, sig: pd.DataFrame) -> None:
-    """Emit site/vector_risk_strategy.json — the compact columnar feed for the interactive
-    Lightweight-Charts v5 backtest chart. Per day: price, risk_index, and per-variant
-    allocation + strategy equity; plus de-noised buy/sell markers per variant. All four
-    variants ship so the variant tabs can switch the shaded regime + equity curve client-
-    side. Daily full-res (LWC is canvas — no SVG-per-point cost). No look-ahead."""
-    close = sig["close"]
-    dates = [d.strftime("%Y-%m-%d") for d in sig.index]
-    variants = [v for v in ("optimal", "conservative", "moderate", "aggressive")
-                if f"alloc_{v}" in sig.columns]
-    alloc, equity, markers = {}, {}, {}
+def _risk_strategy_payload(sig: pd.DataFrame) -> dict:
+    """Build the chart contract without collapsing unavailable model state to zero.
+
+    A real 0% allocation is a valid decision. A missing allocation is UNKNOWN and
+    must remain null all the way to the browser; otherwise the UI turns a source
+    or model failure into an apparently deliberate cash position.
+    """
+    close = pd.to_numeric(sig["close"], errors="coerce")
+    dates = [pd.Timestamp(d).strftime("%Y-%m-%d") for d in sig.index]
+    variants = [
+        v for v in ("optimal", "conservative", "moderate", "aggressive")
+        if f"alloc_{v}" in sig.columns
+    ]
+    alloc: dict[str, list[float | None]] = {}
+    equity: dict[str, list[float | None]] = {}
+    markers: dict[str, list[dict]] = {}
     hodl = (1 + close.pct_change().fillna(0)).cumprod()
+
+    def finite_or_none(value, digits: int):
+        if pd.isna(value) or not np.isfinite(float(value)):
+            return None
+        rounded = round(float(value), digits)
+        return int(rounded) if digits == 0 else rounded
+
     for v in variants:
-        a = sig[f"alloc_{v}"].fillna(0.0)
-        alloc[v] = [round(float(x), 3) for x in a]
-        equity[v] = [round(float(x), 4) for x in alloc_equity(close, a)]
-        # markers only where the allocation MATERIALLY changes (de-noise the continuous grid)
-        d = a.diff().fillna(0.0)
+        raw = pd.to_numeric(sig[f"alloc_{v}"], errors="coerce")
+        alloc[v] = [finite_or_none(x, 3) for x in raw]
+
+        # Strategy equity is only comparable while allocation history is
+        # continuous. Once a decision is missing, cumulative P&L from that point
+        # is unknowable; never forward-fill through the gap.
+        eq = alloc_equity(close, raw)
+        gap_seen = False
+        eq_values: list[float | None] = []
+        for i in range(len(raw)):
+            # Allocation selected on date t governs the next return interval.
+            # The missing date itself is therefore still valued using t-1; the
+            # cumulative path becomes unknowable starting on t+1.
+            if i > 0 and pd.isna(raw.iloc[i - 1]):
+                gap_seen = True
+            eq_values.append(None if gap_seen else finite_or_none(eq.iloc[i], 4))
+        equity[v] = eq_values
+
+        # A marker requires two observed decisions. Crossing an unavailable
+        # observation is not a buy/sell event and must not be presented as one.
         mk = []
-        for i in range(len(a)):
-            if abs(float(d.iloc[i])) >= 0.10:
-                mk.append({"t": dates[i], "dir": "buy" if d.iloc[i] > 0 else "sell",
-                           "to": round(float(a.iloc[i]), 2)})
+        for i in range(1, len(raw)):
+            prev, cur = raw.iloc[i - 1], raw.iloc[i]
+            if pd.isna(prev) or pd.isna(cur):
+                continue
+            delta = float(cur) - float(prev)
+            if abs(delta) >= 0.10:
+                mk.append({
+                    "t": dates[i],
+                    "dir": "buy" if delta > 0 else "sell",
+                    "to": round(float(cur), 2),
+                })
         markers[v] = mk
-    payload = {
+
+    observed_at = dates[-1] if dates else None
+    missing_price_dates = [
+        dates[i] for i, value in enumerate(close)
+        if pd.isna(value) or not np.isfinite(float(value))
+    ]
+    missing_allocation_dates = {
+        v: [dates[i] for i, value in enumerate(values) if value is None]
+        for v, values in alloc.items()
+    }
+    has_allocation_gaps = any(missing_allocation_dates.values())
+    issues = []
+    if not variants:
+        issues.append({
+            "code": "NO_ALLOCATION_VARIANTS",
+            "message_en": "No allocation variants are available for replay.",
+            "message_zh": "没有可用于回放的配置变体。",
+        })
+    if missing_price_dates:
+        issues.append({
+            "code": "PRICE_UNAVAILABLE",
+            "message_en": "Price history is incomplete; interactive replay is unavailable.",
+            "message_zh": "价格历史不完整；交互式回放暂不可用。",
+        })
+    if has_allocation_gaps:
+        issues.append({
+            "code": "ALLOCATION_GAPS",
+            "message_en": "Allocation history contains gaps; missing decisions are shown as unknown, not 0% Bitcoin.",
+            "message_zh": "配置历史存在缺口；缺失决策显示为未知，而不是 0% 比特币仓位。",
+        })
+    valid = bool(variants) and not missing_price_dates
+    # A gap only invalidates performance once it would govern a realized
+    # return interval. If the latest decision alone is missing, performance
+    # through the latest close remains measurable.
+    performance_valid = valid and all(
+        values and values[-1] is not None for values in equity.values()
+    )
+    return {
+        "schema": "mastermind.vector_risk_strategy.v2",
+        "valid": valid,
+        "performance_valid": performance_valid,
+        "issues": issues,
+        "missing": {
+            "price_dates": missing_price_dates,
+            "allocation_dates": missing_allocation_dates,
+        },
+        "meta": {
+            "observed_at": observed_at,
+            "availability_clock": "NOT_ASSERTED",
+            "fields": {
+                "price": {
+                    "source_id": "signals.close",
+                    "unit": "USD",
+                    "available_at": None,
+                },
+                "risk": {
+                    "source_id": "signals.risk_index",
+                    "unit": "index_0_100",
+                    "available_at": None,
+                },
+                "allocation": {
+                    "source_id": "signals.alloc_optimal",
+                    "variant_source_pattern": "signals.alloc_<variant>",
+                    "unit": "fraction_0_1",
+                    "available_at": None,
+                },
+            },
+        },
         "dates": dates,
-        "price": [round(float(x)) for x in close],
-        "risk": [round(float(x)) if pd.notna(x) else None for x in sig.get("risk_index", pd.Series(index=sig.index))],
-        "alloc": alloc, "equity": equity, "markers": markers,
-        "hodl": [round(float(x), 4) for x in hodl],
+        "price": [finite_or_none(x, 0) for x in close],
+        "risk": [
+            finite_or_none(x, 0)
+            for x in sig.get("risk_index", pd.Series(index=sig.index, dtype=float))
+        ],
+        "alloc": alloc,
+        "equity": equity,
+        "markers": markers,
+        "hodl": [finite_or_none(x, 4) for x in hodl],
         "variants": variants,
     }
-    (site / "vector_risk_strategy.json").write_text(json.dumps(payload, separators=(",", ":")))
-    log.info("wrote %s/vector_risk_strategy.json (%d days x %d variants)", site, len(dates), len(variants))
+
+
+def emit_risk_strategy_json(site: Path, sig: pd.DataFrame) -> None:
+    """Emit the qualified Lightweight-Charts feed used by vector_chart.js."""
+    payload = _risk_strategy_payload(sig)
+    dates = payload["dates"]
+    variants = payload["variants"]
+    (site / "vector_risk_strategy.json").write_text(
+        json.dumps(payload, separators=(",", ":"))
+    )
+    log.info(
+        "wrote %s/vector_risk_strategy.json (%d days x %d variants)",
+        site,
+        len(dates),
+        len(variants),
+    )
 
 
 def _cockpit_axis_rows(master: dict, regime: dict) -> list[dict]:
@@ -665,6 +785,7 @@ def emit_crypto_cockpit_json(
     regime: dict,
     gate: dict,
     *,
+    decision: dict,
     price: float,
     change_24h_pct: float,
 ) -> None:
@@ -673,8 +794,9 @@ def emit_crypto_cockpit_json(
     This contract never re-scores BTC. It publishes the same final gated
     allocation, Master Signal, and named axis states used by vector.html.
     """
-    last = sig.iloc[-1]
-    allocation = last.get("alloc_optimal")
+    from engine import btc_decision
+
+    budget = btc_decision.project_budget(decision)
     payload = {
         "schema": "crypto.cockpit/v1",
         "contract_phase": "w0",
@@ -690,21 +812,19 @@ def emit_crypto_cockpit_json(
             "summary_en": master.get("headline_en", ""),
             "summary_zh": master.get("headline_zh", ""),
             "master_score": master.get("score"),
-            "exposure_pct": (
-                round(100 * float(allocation))
-                if allocation is not None and pd.notna(allocation)
-                else None
-            ),
+            "exposure_pct": budget["final_exposure_pct"],
             "gate_active": bool(gate.get("active")),
         },
+        "decision": budget,
         "axes": _cockpit_axis_rows(master, regime),
         "authority": {
-            "sizing_source": "signals.alloc_optimal",
+            "sizing_source": "btc.decision/v1.final.exposure_pct",
             "stance_source": "btc_master.synthesize",
             "axis_contract": "COCKPIT_AXIS_PRESENTATION",
             "no_new_arithmetic": True,
         },
         "future_consumers": [
+            "crypto.html:H5",
             "crypto.html:H6",
             "index.html:crypto-product-card",
             "neural-web:crypto-lens",
@@ -719,13 +839,60 @@ def emit_crypto_cockpit_json(
 # --------------------------------------------------------------------------- #
 # view-model computations
 # --------------------------------------------------------------------------- #
-def alloc_equity(close: pd.Series, alloc: pd.Series) -> pd.Series:
+def _index_pos(index: pd.Index, label) -> int:
+    loc = index.get_loc(label)
+    if isinstance(loc, slice):
+        return int(loc.start or 0)
+    if isinstance(loc, (int, np.integer)):
+        return int(loc)
+    return int(np.flatnonzero(np.asarray(loc, dtype=bool))[0])
+
+
+def _observed_alloc_window(close: pd.Series, alloc: pd.Series):
+    """Drop the leading in-index run where the allocation is missing.
+
+    Returns (kept_close, kept_alloc, withheld_days). The kept window starts at
+    the first non-null allocation on ``close.index`` and is scored with the
+    original shift(1) / ffill / fillna(0) one-liner, so the mechanical lag on
+    that first *observed* day stays a flat 0. An all-present series therefore
+    returns the original objects and withheld_days 0. Later holes stay inside
+    the window: ffill carry is unchanged. All-null → empty kept frames.
+    """
+    aligned = alloc.reindex(close.index)
+    first = aligned.first_valid_index()
+    if first is None:
+        return close.iloc[0:0], aligned.iloc[0:0], int(len(close))
+    loc = _index_pos(close.index, first)
+    if loc == 0:
+        return close, alloc, 0
+    return close.iloc[loc:], aligned.iloc[loc:], int(loc)
+
+
+def _equity_one_liner(close: pd.Series, alloc: pd.Series) -> pd.Series:
     ret = close.pct_change().fillna(0)
     pos = alloc.shift(1).reindex(ret.index).ffill().fillna(0)
     return (1 + pos * ret).cumprod()
 
 
-def scorecard(close: pd.Series, alloc: pd.Series) -> dict:
+def alloc_equity(close: pd.Series, alloc: pd.Series) -> pd.Series:
+    """Strategy equity. A missing leading allocation is a gap, not a flat 0 position."""
+    kept_close, kept_alloc, n_withheld = _observed_alloc_window(close, alloc)
+    if kept_close.empty:
+        return pd.Series(np.nan, index=close.index, dtype="float64")
+    eq = _equity_one_liner(kept_close, kept_alloc)
+    if n_withheld == 0:
+        return eq
+    gap = pd.Series(np.nan, index=close.index[:n_withheld], dtype="float64")
+    return pd.concat([gap, eq])
+
+
+_SCORECARD_KEYS = (
+    "cagr", "sharpe", "sortino", "maxdd", "in_market",
+    "hodl_cagr", "hodl_sharpe", "hodl_maxdd", "x_hodl",
+)
+
+
+def _scorecard_one_liner(close: pd.Series, alloc: pd.Series) -> dict:
     ret = close.pct_change().fillna(0)
     pos = alloc.shift(1).reindex(ret.index).ffill().fillna(0)
     strat = pos * ret
@@ -754,6 +921,42 @@ def scorecard(close: pd.Series, alloc: pd.Series) -> dict:
     }
 
 
+def _unavailable_scorecard(n_withheld: int) -> dict:
+    card = {k: float("nan") for k in _SCORECARD_KEYS}
+    card["withheld_days"] = int(n_withheld)
+    return card
+
+
+def scorecard(close: pd.Series, alloc: pd.Series) -> dict:
+    """Same metrics as the historical one-liner, on rows with an observed allocation.
+
+    ``withheld_days`` counts leading rows excluded because the allocation was
+    missing. It is 0 when nothing was withheld. An all-null allocation yields
+    unavailable metrics, never zeros.
+    """
+    kept_close, kept_alloc, n_withheld = _observed_alloc_window(close, alloc)
+    if kept_close.empty:
+        return _unavailable_scorecard(n_withheld)
+    card = _scorecard_one_liner(kept_close, kept_alloc)
+    card["withheld_days"] = int(n_withheld)
+    return card
+
+
+def _scorecard_for_json(cards: dict) -> dict:
+    """null for non-finite metrics so cards|tojson survives JSON.parse.
+
+    A finite card is unchanged, including the extra withheld_days key. The
+    inline script reads only data-m attributes and ignores that key.
+    """
+    safe = {}
+    for name, card in cards.items():
+        row = {}
+        for key, value in card.items():
+            row[key] = None if isinstance(value, float) and pd.isna(value) else value
+        safe[name] = row
+    return safe
+
+
 def alloc_sizing(last: pd.Series, eq: pd.Series, acfg: dict) -> dict:
     """Decompose the live optimal allocation into the Point-4 factors that now SIZE it,
     so the % on the page is explained, not a bare number: the conviction multiplier
@@ -762,10 +965,18 @@ def alloc_sizing(last: pd.Series, eq: pd.Series, acfg: dict) -> dict:
     This is what closes the old 'conviction is just a label' gap on the dashboard."""
     from engine import btc_signals
     cp = float(last["cycle_position"]) if pd.notna(last.get("cycle_position")) else 0.5
-    dd = float(eq.iloc[-1] / eq.cummax().iloc[-1] - 1.0)
+    # A leading withheld gap is NaN. cummax would poison the whole curve and
+    # round() would raise, which would change the live brake read. Finite
+    # equity (no gap) is unchanged: dropna is a no-op and the formula matches.
+    eq_obs = eq.dropna()
+    dd = (float(eq_obs.iloc[-1] / eq_obs.cummax().iloc[-1] - 1.0)
+          if len(eq_obs) else float("nan"))
     thr, decay = float(acfg.get("dd_threshold", 0.25)), float(acfg.get("dd_decay", 1.0))
     floor = float(acfg.get("dd_floor", 0.40))
-    cap = min(1.0, max(floor, 1.0 - decay * max(0.0, (-dd) - thr)))
+    if pd.isna(dd):
+        cap = float("nan")
+    else:
+        cap = min(1.0, max(floor, 1.0 - decay * max(0.0, (-dd) - thr)))
     # bottom-detector overlay (adds size at washout lows the brake would otherwise sit out)
     b_thr = float(acfg.get("bottom_thr", 0.30))
     b_boost = float(acfg.get("bottom_boost", 0.40))
@@ -775,9 +986,9 @@ def alloc_sizing(last: pd.Series, eq: pd.Series, acfg: dict) -> dict:
     return {
         "tier": btc_signals.conviction_tier(cp, acfg),
         "mult": round(float(btc_signals.conviction_multiplier(cp, acfg)), 2),
-        "brake_active": bool(cap < 0.999),
-        "brake_cap": round(100 * cap),
-        "dd": round(100 * dd),
+        "brake_active": bool(pd.notna(cap) and cap < 0.999),
+        "brake_cap": round(100 * cap) if pd.notna(cap) else None,
+        "dd": round(100 * dd) if pd.notna(dd) else None,
         "bottom_pressure": round(100 * bp),
         "bottom_active": bool(b_add > 0.005),
         "bottom_add": round(100 * b_add),
@@ -851,9 +1062,11 @@ def env_probabilities(df: pd.DataFrame, cfg: dict) -> dict:
     p, n, cell, tilt = _cond_up_prob(df, cfg, h)
     now = df["momentum_state"].iloc[-1] if "momentum_state" in df else None
     if p is None:
-        return {"now": now, "p_bull_7d": None, "p_bear_7d": None}
+        return {"now": now, "p_bull_7d": None, "p_bear_7d": None,
+                "probability_issued": False}
     return {"now": now, "p_bull_7d": round(100 * p), "p_bear_7d": round(100 * (1 - p)),
-            "n": n, "cell": cell, "tilt": tilt, "horizon": h}  # tilt = macro + cycle prior
+            "n": n, "cell": cell, "tilt": tilt, "horizon": h,
+            "probability_issued": True}  # tilt = macro + cycle prior
 
 
 def scenarios_3d(df: pd.DataFrame, cfg: dict, high: pd.Series, low: pd.Series) -> dict:
@@ -876,6 +1089,7 @@ def scenarios_3d(df: pd.DataFrame, cfg: dict, high: pd.Series, low: pd.Series) -
     a1, a2, ai = 1.5 * vscale * atr, 2.5 * vscale * atr, 1.0 * atr
     return {
         "bull_prob": bull, "bear_prob": 100 - bull, "cell": cell, "n": n, "tilt": tilt,
+        "probability_issued": p is not None,
         "vscale": round(vscale, 2),
         "bull_target": px + a1, "bull_target2": max(swing_hi, px + a2), "bull_invalid": px - ai,
         "bear_target": px - a1, "bear_target2": min(swing_lo, px - a2), "bear_invalid": px + ai,
@@ -1077,7 +1291,8 @@ def _conviction(p_bull, n, tilt, tape_sign, verdict_sign, min_cell_n, bands=(3, 
     tilt = tilt or 0
     if p_bull is None:
         return {"state": "TOSS-UP", "dir": 0, "lean": 0, "conf": "thin", "n": n,
-                "tape": "neutral", "confirmed": False, "p_bull": 50, "p_bear": 50, "tilt": tilt}
+                "tape": "neutral", "confirmed": False, "p_bull": 50, "p_bear": 50, "tilt": tilt,
+                "probability_issued": False}
     lean = abs(p_bull - 50)
     prob_dir = 1 if p_bull > 50 else (-1 if p_bull < 50 else 0)
     toss_pp, edge_pp = bands
@@ -1113,7 +1328,8 @@ def _conviction(p_bull, n, tilt, tape_sign, verdict_sign, min_cell_n, bands=(3, 
         state = "LEAN"
     return {"state": state, "dir": prob_dir, "lean": lean, "conf": conf, "n": n,
             "tape": tape, "confirmed": confirmed,
-            "p_bull": p_bull, "p_bear": 100 - p_bull, "tilt": tilt}
+            "p_bull": p_bull, "p_bear": 100 - p_bull, "tilt": tilt,
+            "probability_issued": True}
 
 
 def _conviction_why(c: dict, cell, n, horizon: int):
@@ -4098,7 +4314,12 @@ def build_override_shadow(sig: pd.DataFrame, gate: dict, ct: dict, acfg: dict,
         eq_r = alloc_equity(close, raw["alloc_optimal"])
         t0 = pd.Timestamp(year=int(asof.year), month=1, day=1)
         if bool(gate.get("active")) and close.index.min() <= t0:
-            seg_g, seg_r = eq_g.loc[eq_g.index >= t0], eq_r.loc[eq_r.index >= t0]
+            # dropna: a withheld leading gap must not make iloc[0] NaN and then
+            # `regret or 0` publish a fake 0pp. A fully finite window is unchanged.
+            seg_g = eq_g.loc[eq_g.index >= t0].dropna()
+            seg_r = eq_r.loc[eq_r.index >= t0].dropna()
+            if seg_g.empty or seg_r.empty:
+                raise ValueError("allocation withheld over the gate window")
             g_ret = 100 * (seg_g.iloc[-1] / seg_g.iloc[0] - 1)
             r_ret = 100 * (seg_r.iloc[-1] / seg_r.iloc[0] - 1)
             rebased = pd.DataFrame({"gated": seg_g / seg_g.iloc[0],
@@ -4111,8 +4332,8 @@ def build_override_shadow(sig: pd.DataFrame, gate: dict, ct: dict, acfg: dict,
                     continue
                 rel_y = btc_signals._us_election_date(y) - pd.Timedelta(
                     days=int(mg_cfg.get("buy_lead_days", 0)))
-                w = eq_r.loc[(eq_r.index >= j1) & (eq_r.index <= j1 + pd.Timedelta(days=elapsed))]
-                fw = eq_r.loc[(eq_r.index >= j1) & (eq_r.index <= rel_y)]
+                w = eq_r.loc[(eq_r.index >= j1) & (eq_r.index <= j1 + pd.Timedelta(days=elapsed))].dropna()
+                fw = eq_r.loc[(eq_r.index >= j1) & (eq_r.index <= rel_y)].dropna()
                 if len(w) < 30 or len(fw) < 30:
                     continue
                 prior.append({
@@ -4229,6 +4450,104 @@ def build_timeline(site: Path, sig: pd.DataFrame) -> None:
     blob = json.dumps(tape, separators=(",", ":"))
     (site / "vector_timeline.json").write_text(blob)
     log.info("wrote %s/vector_timeline.json (%d days, %d KB)", site, len(tape["dates"]), len(blob) // 1024)
+
+
+def _derivatives_flow_view(regime) -> dict:
+    """Pure display projection of the existing descriptive CVD contract.
+
+    No source reads, re-scoring, dollar conversion or allocation authority.
+    UTC-naive clocks are accepted only from this known internal CVD schema.
+    """
+    from collections.abc import Mapping
+    from numbers import Integral, Real
+    from engine.btc_intraday_cvd import STALE_AFTER_H
+
+    out = dict(state='unavailable', buy_share_pct=None, observed_at=None,
+               evaluated_at=None, n_hours=None, window_24h_complete=False,
+               window_72h_complete=False, historical_gap=False,
+               scope=None, causally_qualified=False, elapsed_coverage=None,
+               venue=None, instrument=None, unit=None)
+    if not isinstance(regime, Mapping):
+        return out
+    legs = regime.get('context_legs')
+    raw = legs.get('intraday_cvd') if isinstance(legs, Mapping) else None
+    if not isinstance(raw, Mapping):
+        return out
+    if (raw.get('scope') != 'OKX/BTC/CONTRACTS' or raw.get('display_only') is not True
+            or raw.get('causally_qualified') is not False or raw.get('stale') not in (True, False)
+            or not isinstance(raw.get('stale'), bool)):
+        return out
+    n = raw.get('n_hours')
+    if isinstance(n, (bool, np.bool_)) or not isinstance(n, Integral) or n < 0:
+        return out
+    clocks = []
+    for key in ('asof', 'evaluated_at'):
+        value = raw.get(key)
+        if not isinstance(value, (str, pd.Timestamp)):
+            return out
+        try:
+            t = pd.Timestamp(value)
+            if pd.isna(t):
+                return out
+            t = t.tz_localize('UTC') if t.tz is None else t.tz_convert('UTC')
+        except (ValueError, TypeError, OverflowError):
+            return out
+        clocks.append(t)
+    observed, evaluated = clocks
+    if observed > evaluated:
+        return out
+    out.update(scope='OKX/BTC/CONTRACTS', n_hours=int(n),
+               observed_at=observed.strftime('%Y-%m-%d %H:%M UTC'),
+               evaluated_at=evaluated.strftime('%Y-%m-%d %H:%M UTC'),
+               window_24h_complete=bool(n >= 24 and raw.get('window_24h_complete') is True),
+               window_72h_complete=bool(n >= 72 and raw.get('window_72h_complete') is True),
+               historical_gap=raw.get('gap_detected') is True,
+               venue='OKX', instrument='BTC derivatives', unit='unavailable')
+    coverage = raw.get('elapsed_coverage')
+    if coverage is not None:
+        rows = coverage.get('rows') if isinstance(coverage, Mapping) else None
+        elapsed = coverage.get('elapsed_hours') if isinstance(coverage, Mapping) else None
+        completeness = coverage.get('completeness') if isinstance(coverage, Mapping) else None
+        first_ts = coverage.get('first_ts') if isinstance(coverage, Mapping) else None
+        last_ts = coverage.get('last_ts') if isinstance(coverage, Mapping) else None
+        rows_ok = isinstance(rows, Integral) and not isinstance(rows, (bool, np.bool_)) and int(rows) >= 0
+        elapsed_ok = elapsed is None or (
+            isinstance(elapsed, Real) and not isinstance(elapsed, (bool, np.bool_))
+            and np.isfinite(float(elapsed)) and float(elapsed) >= 0)
+        stamps_ok = all(v is None or isinstance(v, str) for v in (first_ts, last_ts))
+        state_ok = completeness in ('complete', 'incomplete', 'unavailable')
+        consistent = completeness != 'complete' or (rows == 24 and float(elapsed) == 23.0)
+        if not (rows_ok and elapsed_ok and stamps_ok and state_ok and consistent):
+            out.update(state='unavailable', buy_share_pct=None, window_24h_complete=False,
+                       elapsed_coverage=None)
+            return out
+        out['elapsed_coverage'] = {
+            'rows': int(rows), 'first_ts': first_ts, 'last_ts': last_ts,
+            'elapsed_hours': None if elapsed is None else float(elapsed),
+            'completeness': completeness,
+        }
+        if completeness != 'complete':
+            out['window_24h_complete'] = False
+    if raw['stale'] or (evaluated-observed) > pd.Timedelta(hours=STALE_AFTER_H):
+        out['state'] = 'stale'
+        return out
+    if not out['window_24h_complete']:
+        out['state'] = 'coverage_gap'
+        return out
+    if raw.get('ok') is not True:
+        return out
+    share = raw.get('buy_share_24h')
+    if raw.get('flow_state') == 'no_activity':
+        net = raw.get('net_flow_24h_native')
+        if (share is None and isinstance(net, Real) and not isinstance(net, (bool, np.bool_))
+                and np.isfinite(net) and net == 0):
+            out['state'] = 'no_activity'
+        return out
+    if (isinstance(share, (bool, np.bool_)) or not isinstance(share, Real)
+            or not np.isfinite(share) or not 0 <= share <= 1):
+        return out
+    out.update(state='available', buy_share_pct=round(float(share)*100, 1))
+    return out
 
 
 def main() -> int:
@@ -4471,18 +4790,19 @@ def main() -> int:
             except Exception as _le:  # noqa: BLE001 — context legs are optional
                 legs[_key] = {"ok": False, "reason": f"{type(_le).__name__}"}
         regime["context_legs"] = legs
-        _cvd = legs.get("intraday_cvd") or {}      # LOUD alarm if the hourly aggressor-CVD
-        if _cvd.get("ok") and _cvd.get("stale"):   # feed silently freezes (audit HIGH) — shows
-            # in the daily run summary.  Bare print, NOT a logger call: GitHub only parses a
-            # workflow command when "::" STARTS the line, and this module's logging format
-            # prefixes every record ("WARNING ::warning ..."), silently dropping the alarm.
-            print(f"::warning:: intraday aggressor-CVD STALE — okx hourly lags "
-                  f"{_cvd.get('hours_behind_ref')} h behind the live reference; the feed has "
-                  f"STOPPED accruing — check OKX rubik 1H",
+        _cvd = legs.get("intraday_cvd") or {}
+        if _cvd.get("stale"):
+            # Distinguish old stored observations from a proven collector outage.
+            # Bare print preserves the existing GitHub workflow warning owner.
+            print(f"::warning:: intraday aggressor-flow observations STALE — "
+                  f"{_cvd.get('hours_behind_clock')} h behind the evaluation clock; "
+                  f"{_cvd.get('hours_behind_ref')} h behind the stored price reference. "
+                  "Inspect existing collector status; this alone does not prove an outage.",
                   flush=True)
-        if _cvd.get("ok") and _cvd.get("gap_detected"):
-            print("::warning:: intraday aggressor-CVD: unbackfillable >30d gap in the hourly "
-                  "history — cumsum restarted after the gap",
+        if _cvd.get("gap_detected"):
+            print("::warning:: intraday aggressor-flow: missing or invalid hourly observations; "
+                  "cumulative context uses only the latest contiguous valid segment. "
+                  "Incomplete elapsed windows remain unavailable.",
                   flush=True)
         try:                       # P3 forward-outcome ledger: stamp today + grade matured rows
             from engine import btc_impulse_ledger
@@ -4594,6 +4914,7 @@ def main() -> int:
     btc_options_contract = build_btc_options()
     reserve_risk_asof = store.last_date("checkonchain", "reserve_risk")
     vdd_asof = store.last_date("checkonchain", "vdd_multiple")
+    chart_contract = _risk_strategy_payload(sig)
 
     vm = {
         "as_of": sig.index.max().strftime("%b %d, %Y"),
@@ -4687,6 +5008,7 @@ def main() -> int:
             "em_lower": _r(last.get("em_lower"), 0),
         },
         "btc_options": btc_options_contract,
+        "derivatives_flow": _derivatives_flow_view(regime),
         "cycle_vintage": {
             "reserve_risk_asof": str(reserve_risk_asof) if reserve_risk_asof else None,
             "vdd_asof": str(vdd_asof) if vdd_asof else None,
@@ -4836,7 +5158,8 @@ def main() -> int:
         "scn": scnd,
         "sizing": sizing,
         "catalyst": catalyst,
-        "cards": cards,
+        "cards": _scorecard_for_json(cards),
+        "chart_contract": chart_contract,
         "cross": cross_asset(close),
         "calib": calib,
         "timeline": timeline,
@@ -4873,8 +5196,8 @@ def main() -> int:
         log.error("risk/strategy chart json failed (%s)", e)
     try:  # E0 shared display contract — same process and as-of as vector.html
         emit_crypto_cockpit_json(
-            site, sig, master, regime, gate, price=close.iloc[-1],
-            change_24h_pct=chg24,
+            site, sig, master, regime, gate, decision=decision,
+            price=close.iloc[-1], change_24h_pct=chg24,
         )
     except Exception as e:  # noqa: BLE001
         log.error("crypto cockpit contract failed (%s)", e)

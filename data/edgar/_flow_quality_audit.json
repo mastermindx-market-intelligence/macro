@@ -1,20 +1,20 @@
 {
-"applied": "2026-10-04T06:35:28.739911+00:00",
-"rows_flagged": 218,
+"applied": "2026-10-12T08:02:06.023594+00:00",
+"rows_flagged": 221,
 "tickers_flagged": 65,
 "by_flag": {
-"ni:xsrc_scale": 174,
+"ni:xsrc_scale": 182,
 "cfo:xsrc_scale": 1,
 "ni:xsrc_cohort": 5,
 "ni:flank_scale": 24,
 "cfo:flank_scale": 4,
 "dividends:flank_scale": 1,
 "op_income:flank_scale": 2,
-"revenue:flank_scale": 7
+"revenue:flank_scale": 2
 },
-"repaired": 218,
+"repaired": 221,
 "nulled": 0,
-"mirrors": 156,
+"mirrors": 162,
 "rows": [
 {
 "ticker": "AIT",
@@ -1493,6 +1493,33 @@
 "note": "x1e3 vs statements"
 },
 {
+"ticker": "SEZL",
+"fy": 2023,
+"col": "ni",
+"flag": "xsrc_scale",
+"raw": 7098.0,
+"repair": 7098000.0,
+"note": "x1e3 vs statements"
+},
+{
+"ticker": "SEZL",
+"fy": 2024,
+"col": "ni",
+"flag": "xsrc_scale",
+"raw": 78522.0,
+"repair": 78522000.0,
+"note": "x1e3 vs statements"
+},
+{
+"ticker": "SEZL",
+"fy": 2025,
+"col": "ni",
+"flag": "xsrc_scale",
+"raw": 133130.0,
+"repair": 133130000.0,
+"note": "x1e3 vs statements"
+},
+{
 "ticker": "SOUN",
 "fy": 2022,
 "col": "ni",
@@ -1544,6 +1571,51 @@
 "flag": "xsrc_scale",
 "raw": -380789.0,
 "repair": -380789000.0,
+"note": "x1e3 vs statements"
+},
+{
+"ticker": "UUUU",
+"fy": 2021,
+"col": "ni",
+"flag": "xsrc_scale",
+"raw": 1448.0,
+"repair": 1448000.0,
+"note": "x1e3 vs statements"
+},
+{
+"ticker": "UUUU",
+"fy": 2022,
+"col": "ni",
+"flag": "xsrc_scale",
+"raw": -59944.0,
+"repair": -59944000.0,
+"note": "x1e3 vs statements"
+},
+{
+"ticker": "UUUU",
+"fy": 2023,
+"col": "ni",
+"flag": "xsrc_scale",
+"raw": 99756.0,
+"repair": 99756000.0,
+"note": "x1e3 vs statements"
+},
+{
+"ticker": "UUUU",
+"fy": 2024,
+"col": "ni",
+"flag": "xsrc_scale",
+"raw": -47841.0,
+"repair": -47841000.0,
+"note": "x1e3 vs statements"
+},
+{
+"ticker": "UUUU",
+"fy": 2025,
+"col": "ni",
+"flag": "xsrc_scale",
+"raw": -86111.0,
+"repair": -86111000.0,
 "note": "x1e3 vs statements"
 },
 {
@@ -1778,51 +1850,6 @@
 "flag": "flank_scale",
 "raw": 158469.0,
 "repair": 158469000.0,
-"note": "x1e3 flank"
-},
-{
-"ticker": "TIPT",
-"fy": 2023,
-"col": "revenue",
-"flag": "flank_scale",
-"raw": 2118000.0,
-"repair": 2118000000.0,
-"note": "x1e3 flank"
-},
-{
-"ticker": "TIPT",
-"fy": 2024,
-"col": "revenue",
-"flag": "flank_scale",
-"raw": 1520000.0,
-"repair": 1520000000.0,
-"note": "x1e3 flank"
-},
-{
-"ticker": "TIPT",
-"fy": 2025,
-"col": "revenue",
-"flag": "flank_scale",
-"raw": 488000.0,
-"repair": 488000000.0,
-"note": "x1e3 flank"
-},
-{
-"ticker": "URG",
-"fy": 2021,
-"col": "revenue",
-"flag": "flank_scale",
-"raw": 16000.0,
-"repair": 16000000.0,
-"note": "x1e3 flank"
-},
-{
-"ticker": "URG",
-"fy": 2022,
-"col": "revenue",
-"flag": "flank_scale",
-"raw": 19000.0,
-"repair": 19000000.0,
 "note": "x1e3 flank"
 },
 {
@@ -2257,7 +2284,7 @@
 "ticker": "AVT",
 "fy": 2024,
 "col": "ni",
-"panel": 240217000.0,
+"panel": 240200000.0,
 "statements": 498699000.0
 },
 {
@@ -4333,6 +4360,13 @@
 "statements": -74151000.0
 },
 {
+"ticker": "TITN",
+"fy": 2021,
+"col": "ni",
+"panel": 66047000.0,
+"statements": 19356000.0
+},
+{
 "ticker": "TKO",
 "fy": 2025,
 "col": "ni",
@@ -4361,6 +4395,20 @@
 "statements": 1195500000.0
 },
 {
+"ticker": "TRNS",
+"fy": 2025,
+"col": "ni",
+"panel": 5376000.0,
+"statements": 14515000.0
+},
+{
+"ticker": "TTI",
+"fy": 2020,
+"col": "ni",
+"panel": -51143000.0,
+"statements": -147413000.0
+},
+{
 "ticker": "TTWO",
 "fy": 2023,
 "col": "ni",
@@ -4375,6 +4423,34 @@
 "statements": -4478900000.0
 },
 {
+"ticker": "TVGN",
+"fy": 2023,
+"col": "ni",
+"panel": -60477680.0,
+"statements": -67325.0
+},
+{
+"ticker": "TVRD",
+"fy": 2023,
+"col": "ni",
+"panel": -11850000.0,
+"statements": -118513000.0
+},
+{
+"ticker": "TVRD",
+"fy": 2024,
+"col": "ni",
+"panel": -29400000.0,
+"statements": -70867000.0
+},
+{
+"ticker": "TYGO",
+"fy": 2022,
+"col": "ni",
+"panel": -7037000.0,
+"statements": -178218.0
+},
+{
 "ticker": "UAA",
 "fy": 2025,
 "col": "ni",
@@ -4382,11 +4458,53 @@
 "statements": -201267000.0
 },
 {
+"ticker": "UMH",
+"fy": 2021,
+"col": "ni",
+"panel": 21249000.0,
+"statements": 51088000.0
+},
+{
+"ticker": "UMH",
+"fy": 2022,
+"col": "ni",
+"panel": -36265000.0,
+"statements": -4972000.0
+},
+{
+"ticker": "UMH",
+"fy": 2024,
+"col": "ni",
+"panel": 2472000.0,
+"statements": 21441000.0
+},
+{
+"ticker": "UMH",
+"fy": 2025,
+"col": "ni",
+"panel": 5966000.0,
+"statements": 26275000.0
+},
+{
+"ticker": "UP",
+"fy": 2021,
+"col": "ni",
+"panel": -190020000.0,
+"statements": -78641000.0
+},
+{
 "ticker": "URBN",
 "fy": 2021,
 "col": "ni",
 "panel": 310616000.0,
 "statements": 1236000.0
+},
+{
+"ticker": "USAU",
+"fy": 2024,
+"col": "ni",
+"panel": -20559122.0,
+"statements": -6897483.0
 },
 {
 "ticker": "UVV",
@@ -4539,7 +4657,7 @@
 "ticker": "WDC",
 "fy": 2023,
 "col": "ni",
-"panel": -798000000.0,
+"panel": -765000000.0,
 "statements": -1706000000.0
 },
 {
@@ -4557,11 +4675,11 @@
 "statements": 84161000.0
 },
 {
-"ticker": "WOR",
-"fy": 2020,
+"ticker": "WOLF",
+"fy": 2021,
 "col": "ni",
-"panel": 723795000.0,
-"statements": 78796000.0
+"panel": -200900000.0,
+"statements": -523900000.0
 },
 {
 "ticker": "WOR",
@@ -4618,6 +4736,27 @@
 "col": "ni",
 "panel": 31567000.0,
 "statements": 13977625.0
+},
+{
+"ticker": "XPOF",
+"fy": 2023,
+"col": "ni",
+"panel": -4001000.0,
+"statements": -903000.0
+},
+{
+"ticker": "YEXT",
+"fy": 2023,
+"col": "ni",
+"panel": -3000000.0,
+"statements": -65938000.0
+},
+{
+"ticker": "YEXT",
+"fy": 2024,
+"col": "ni",
+"panel": -28000000.0,
+"statements": -2630000.0
 },
 {
 "ticker": "YOU",
@@ -6118,6 +6257,27 @@
 "statements": 3308525.0
 },
 {
+"ticker": "TITN",
+"fy": 2022,
+"col": "cfo",
+"panel": 10816000.0,
+"statements": 158916000.0
+},
+{
+"ticker": "TLSI",
+"fy": 2022,
+"col": "cfo",
+"panel": -32313000.0,
+"statements": -2736994.0
+},
+{
+"ticker": "TTAN",
+"fy": 2025,
+"col": "cfo",
+"panel": 110131000.0,
+"statements": 37053000.0
+},
+{
 "ticker": "TTWO",
 "fy": 2021,
 "col": "cfo",
@@ -6139,6 +6299,27 @@
 "statements": -16100000.0
 },
 {
+"ticker": "TVGN",
+"fy": 2023,
+"col": "cfo",
+"panel": -8171118.0,
+"statements": -1376351.0
+},
+{
+"ticker": "TVRD",
+"fy": 2024,
+"col": "cfo",
+"panel": -18305000.0,
+"statements": -60917000.0
+},
+{
+"ticker": "TYGO",
+"fy": 2022,
+"col": "cfo",
+"panel": -16472000.0,
+"statements": -865669.0
+},
+{
 "ticker": "UCTT",
 "fy": 2020,
 "col": "cfo",
@@ -6158,6 +6339,13 @@
 "col": "cfo",
 "panel": 509411000.0,
 "statements": 142729000.0
+},
+{
+"ticker": "USAR",
+"fy": 2024,
+"col": "cfo",
+"panel": -12991000.0,
+"statements": -1398564.0
 },
 {
 "ticker": "UVV",
@@ -6200,6 +6388,20 @@
 "col": "cfo",
 "panel": 22000000.0,
 "statements": 72000000.0
+},
+{
+"ticker": "WEYS",
+"fy": 2020,
+"col": "cfo",
+"panel": 39981000.0,
+"statements": 6392000.0
+},
+{
+"ticker": "WHWK",
+"fy": 2020,
+"col": "cfo",
+"panel": -12701000.0,
+"statements": -5384952.0
 },
 {
 "ticker": "WMS",
@@ -6263,6 +6465,27 @@
 "col": "cfo",
 "panel": 173110000.0,
 "statements": 381603000.0
+},
+{
+"ticker": "YEXT",
+"fy": 2021,
+"col": "cfo",
+"panel": 21849000.0,
+"statements": 1204000.0
+},
+{
+"ticker": "YEXT",
+"fy": 2023,
+"col": "cfo",
+"panel": 46157000.0,
+"statements": 17853000.0
+},
+{
+"ticker": "ZSQR",
+"fy": 2021,
+"col": "cfo",
+"panel": -4489440.0,
+"statements": -502839.0
 },
 {
 "ticker": "AEHR",
@@ -6550,6 +6773,41 @@
 "col": "gross_profit",
 "panel": 9626696.0,
 "statements": 3174691.0
+},
+{
+"ticker": "VATE",
+"fy": 2020,
+"col": "gross_profit",
+"panel": 128400000.0,
+"statements": 417300000.0
+},
+{
+"ticker": "VELO",
+"fy": 2022,
+"col": "gross_profit",
+"panel": 843000.0,
+"statements": 2894000.0
+},
+{
+"ticker": "VISN",
+"fy": 2023,
+"col": "gross_profit",
+"panel": 900300000.0,
+"statements": 2148300000.0
+},
+{
+"ticker": "VISN",
+"fy": 2024,
+"col": "gross_profit",
+"panel": 605100000.0,
+"statements": 1576900000.0
+},
+{
+"ticker": "VUZI",
+"fy": 2020,
+"col": "gross_profit",
+"panel": 597958.0,
+"statements": 1927609.0
 },
 {
 "ticker": "VVV",
@@ -7238,6 +7496,34 @@
 "statements": 4964000000.0
 },
 {
+"ticker": "TIPT",
+"fy": 2023,
+"col": "revenue",
+"panel": 2118000.0,
+"statements": 1649031000.0
+},
+{
+"ticker": "TIPT",
+"fy": 2024,
+"col": "revenue",
+"panel": 1520000.0,
+"statements": 2042854000.0
+},
+{
+"ticker": "VISN",
+"fy": 2023,
+"col": "revenue",
+"panel": 1863800000.0,
+"statements": 5789200000.0
+},
+{
+"ticker": "VISN",
+"fy": 2024,
+"col": "revenue",
+"panel": 1382600000.0,
+"statements": 4205800000.0
+},
+{
 "ticker": "VRRM",
 "fy": 2020,
 "col": "revenue",
@@ -7287,6 +7573,13 @@
 "statements": 233404000.0
 },
 {
+"ticker": "WHWK",
+"fy": 2021,
+"col": "revenue",
+"panel": 14000000.0,
+"statements": 1120000.0
+},
+{
 "ticker": "WOR",
 "fy": 2021,
 "col": "revenue",
@@ -7313,6 +7606,20 @@
 "col": "revenue",
 "panel": 6168000000.0,
 "statements": 16252000000.0
+},
+{
+"ticker": "XPOF",
+"fy": 2021,
+"col": "revenue",
+"panel": 2741000.0,
+"statements": 155079000.0
+},
+{
+"ticker": "XRX",
+"fy": 2020,
+"col": "revenue",
+"panel": 7022000000.0,
+"statements": 117000000.0
 },
 {
 "ticker": "ZWS",
@@ -9044,11 +9351,46 @@
 "statements": -142985000.0
 },
 {
+"ticker": "TITN",
+"fy": 2021,
+"col": "op_income",
+"panel": 90182000.0,
+"statements": 37408000.0
+},
+{
+"ticker": "TITN",
+"fy": 2024,
+"col": "op_income",
+"panel": 4008000.0,
+"statements": 168845000.0
+},
+{
+"ticker": "TK",
+"fy": 2020,
+"col": "op_income",
+"panel": 70197000.0,
+"statements": 314579000.0
+},
+{
 "ticker": "TKO",
 "fy": 2024,
 "col": "op_income",
 "panel": 30946000.0,
 "statements": 282902000.0
+},
+{
+"ticker": "TLSI",
+"fy": 2022,
+"col": "op_income",
+"panel": -36439000.0,
+"statements": -2746125.0
+},
+{
+"ticker": "TOI",
+"fy": 2020,
+"col": "op_income",
+"panel": -8197000.0,
+"statements": -683869.0
 },
 {
 "ticker": "TPR",
@@ -9063,6 +9405,13 @@
 "col": "op_income",
 "panel": 1914400000.0,
 "statements": 415000000.0
+},
+{
+"ticker": "TRS",
+"fy": 2024,
+"col": "op_income",
+"panel": 15170000.0,
+"statements": 47190000.0
 },
 {
 "ticker": "TTMI",
@@ -9086,11 +9435,39 @@
 "statements": -4391100000.0
 },
 {
+"ticker": "TVRD",
+"fy": 2024,
+"col": "op_income",
+"panel": -28107000.0,
+"statements": -58383000.0
+},
+{
+"ticker": "UP",
+"fy": 2021,
+"col": "op_income",
+"panel": -203278000.0,
+"statements": -62966000.0
+},
+{
 "ticker": "URBN",
 "fy": 2021,
 "col": "op_income",
 "panel": 408566000.0,
 "statements": 3972000.0
+},
+{
+"ticker": "USAR",
+"fy": 2024,
+"col": "op_income",
+"panel": -15585000.0,
+"statements": -4077377.0
+},
+{
+"ticker": "VATE",
+"fy": 2020,
+"col": "op_income",
+"panel": -28300000.0,
+"statements": -4100000.0
 },
 {
 "ticker": "VFC",
@@ -9105,6 +9482,20 @@
 "col": "op_income",
 "panel": 57500000.0,
 "statements": 20800000.0
+},
+{
+"ticker": "VISN",
+"fy": 2021,
+"col": "op_income",
+"panel": 196600000.0,
+"statements": 48600000.0
+},
+{
+"ticker": "VISN",
+"fy": 2023,
+"col": "op_income",
+"panel": -659600000.0,
+"statements": -112900000.0
 },
 {
 "ticker": "VSAT",
@@ -9142,6 +9533,13 @@
 "statements": 474000000.0
 },
 {
+"ticker": "WALD",
+"fy": 2021,
+"col": "op_income",
+"panel": -1625000.0,
+"statements": -9133011.0
+},
+{
 "ticker": "WDAY",
 "fy": 2021,
 "col": "op_income",
@@ -9163,6 +9561,13 @@
 "statements": -1285000000.0
 },
 {
+"ticker": "WHWK",
+"fy": 2020,
+"col": "op_income",
+"panel": -2549000.0,
+"statements": -6357045.0
+},
+{
 "ticker": "WLY",
 "fy": 2022,
 "col": "op_income",
@@ -9177,11 +9582,11 @@
 "statements": 52261000.0
 },
 {
-"ticker": "WOR",
-"fy": 2020,
+"ticker": "WOLF",
+"fy": 2024,
 "col": "op_income",
-"panel": 167473000.0,
-"statements": 22489000.0
+"panel": -1329200000.0,
+"statements": -445300000.0
 },
 {
 "ticker": "WOR",
@@ -9205,6 +9610,13 @@
 "statements": -73459000.0
 },
 {
+"ticker": "WTI",
+"fy": 2020,
+"col": "op_income",
+"panel": 801000.0,
+"statements": 24609000.0
+},
+{
 "ticker": "WTRG",
 "fy": 2023,
 "col": "op_income",
@@ -9226,6 +9638,13 @@
 "statements": 920951000.0
 },
 {
+"ticker": "XMAX",
+"fy": 2021,
+"col": "op_income",
+"panel": -3860548.0,
+"statements": -19795624.0
+},
+{
 "ticker": "XPO",
 "fy": 2020,
 "col": "op_income",
@@ -9240,11 +9659,32 @@
 "statements": -12000000.0
 },
 {
+"ticker": "YEXT",
+"fy": 2023,
+"col": "op_income",
+"panel": -6201000.0,
+"statements": -64828000.0
+},
+{
+"ticker": "YEXT",
+"fy": 2024,
+"col": "op_income",
+"panel": -32448000.0,
+"statements": -6201000.0
+},
+{
 "ticker": "ZD",
 "fy": 2020,
 "col": "op_income",
 "panel": 138340000.0,
 "statements": 334611000.0
+},
+{
+"ticker": "ZSQR",
+"fy": 2021,
+"col": "op_income",
+"panel": -14045932.0,
+"statements": -681319.0
 },
 {
 "ticker": "ZWS",
