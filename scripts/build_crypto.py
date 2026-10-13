@@ -679,9 +679,10 @@ def build(site_dir: Path | None = None) -> Path:
     try:
         from engine import i18n
 
-        env.globals.update(td=i18n.td, tr=i18n.tr)
+        env.globals.update(td=i18n.td, tr=i18n.tr, t_pctile=i18n.t_pctile)
     except Exception:
-        env.globals.update(td=lambda value: value, tr=lambda value: value)
+        env.globals.update(td=lambda value: value, tr=lambda value: value,
+                           t_pctile=lambda n: f"{int(round(float(n)))} percentile")
     html = env.get_template("crypto.html.j2").render(**vm)
     html = re.sub(r">\s+<", "> <", html)
     output = site / "crypto.html"
