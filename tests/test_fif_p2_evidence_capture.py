@@ -4,7 +4,7 @@ No browser, no network. The route handler is exercised directly with fake
 route/request objects; the router behind it is the REAL ``app.forensics.router``
 in-process. The only monkeypatch anywhere in this file is the state-blob source
 for the GET /api/forensics/state forwarding test (the kernel state itself is
-built for real from the tree's five parquet inputs in the temp-root tests).
+built for real from the tree's six parquet inputs in the temp-root tests).
 """
 from __future__ import annotations
 
@@ -529,11 +529,11 @@ def test_evidence_yml_exactly_three_keys(tmp_path: Path) -> None:
 
 
 # ---------------------------------------------------------------------------
-# kernel temp-root build: the five inputs, nothing writes through
+# kernel temp-root build: the six inputs, nothing writes through
 # ---------------------------------------------------------------------------
 
 
-def test_prepare_kernel_temp_root_symlinks_exactly_five_inputs(tmp_path: Path) -> None:
+def test_prepare_kernel_temp_root_symlinks_exactly_six_inputs(tmp_path: Path) -> None:
     created = tool.prepare_kernel_temp_root(ROOT, tmp_path)
     assert tuple(created) == tool.KERNEL_INPUTS
     for relative in tool.KERNEL_INPUTS:
@@ -1383,11 +1383,58 @@ def test_interaction_force_spec_parses_to_the_intercepted_payload_shape() -> Non
         tool.INTERACTION_DRAWER_OPEN,
         tool.INTERACTION_TAB_KEYS,
         tool.INTERACTION_DRAWER_TRAP,
+        tool.INTERACTION_SAVED_RESTORE_PINNED,
+        tool.INTERACTION_SAVED_OPEN_UNAVAILABLE,
+        tool.INTERACTION_SAVED_WRITE_FAILURE,
     }
+    # X2-s r1 (H4): both saved-views interactions carry input text and are
+    # registered on the dispatch table under their own handler.
+    for name in (tool.INTERACTION_SAVED_RESTORE_PINNED, tool.INTERACTION_SAVED_OPEN_UNAVAILABLE):
+        assert tool.INTERACTION_INPUTS[name], name + " has input text"
+        assert name in tool._INTERACTIONS, name + " is registered"
+    assert tool._INTERACTIONS[tool.INTERACTION_SAVED_RESTORE_PINNED] is tool._interact_saved_restore_pinned
+    assert tool._INTERACTIONS[tool.INTERACTION_SAVED_OPEN_UNAVAILABLE] is tool._interact_saved_open_unavailable
+    # X2-s r2 (C3): the write-failure interaction names the browser refusal
+    # (QuotaExceededError) in its input text and is registered too.
+    assert tool.INTERACTION_INPUTS[tool.INTERACTION_SAVED_WRITE_FAILURE]
+    assert "QuotaExceededError" in tool.INTERACTION_INPUTS[tool.INTERACTION_SAVED_WRITE_FAILURE]
+    # X2-s r2 (C4): the capture page never enables Save, so the write is driven
+    # through Rename on the restored row; the input text says so.
+    assert "click Rename" in tool.INTERACTION_INPUTS[tool.INTERACTION_SAVED_WRITE_FAILURE]
+    assert "Save this view" not in tool.INTERACTION_INPUTS[tool.INTERACTION_SAVED_WRITE_FAILURE]
+    assert tool.SAVED_RENAME_SELECTOR == "#ff-saved-rename"
+    assert (
+        tool._INTERACTIONS[tool.INTERACTION_SAVED_WRITE_FAILURE]
+        is tool._interact_saved_write_failure
+    )
     assert not tool.is_interaction_payload(
         {"name": "empty", "kind": "attribute", "value": "", "attribute": "data-empty"}
     )
     assert not tool.is_interaction_payload(None)
+
+
+def test_saved_write_failure_setitem_patch_is_key_scoped() -> None:
+    """X2-s r2 (C3): the write-failure patch refuses ONLY the passed key.
+
+    Hermetic (no browser): the patch is a fixed script string whose refusal
+    branch is guarded by ``k === key`` — the argument handed in by the
+    interaction — and whose every other write is delegated verbatim to the
+    original ``setItem``, so the refusal can never leak to another key.
+    """
+    patch = tool._SAVED_WRITE_FAILURE_SETITEM_PATCH
+    assert patch.startswith("(key) =>")
+    assert "Storage.prototype.setItem" in patch
+    refuse_at = patch.index("if (k === key)")
+    throw_at = patch.index("throw new DOMException")
+    delegate_at = patch.index("return original.call(this, k, v)")
+    assert refuse_at < throw_at < delegate_at, "the throw sits inside the key guard"
+    assert "QuotaExceededError" in patch
+    # No other throw site and no concrete key literal: the one refusal names
+    # only the key passed in (the stored-bytes reader is key-parameterised
+    # too).
+    assert patch.count("throw ") == 1
+    assert "localStorage" not in patch
+    assert tool._SAVED_STORED_BYTES_SCRIPT == "(key) => localStorage.getItem(key)"
 
 
 def test_page_proxy_reports_applied_only_for_a_verified_interaction() -> None:
@@ -1872,3 +1919,121 @@ def test_degraded_needs_a_stale_kernel_clock_before_any_capture(monkeypatch, tmp
     assert rc == tool.EXIT_USAGE
     assert calls == []
     assert not out_dir.exists()
+
+
+# ---------------------------------------------------------------------------
+# briefcase seed (X2-s r1, H1/H4) — hermetic, no browser
+# ---------------------------------------------------------------------------
+
+_EVIDENCE_SEED = (
+    ROOT / "tests" / "fixtures" / "fundamental_forensics" / "fif_saved_research"
+    / "evidence_briefcase_seed.json"
+)
+
+
+def test_briefcase_seed_init_script_writes_only_that_one_key() -> None:
+    raw = _EVIDENCE_SEED.read_text(encoding="utf-8")
+    info = tool.resolve_briefcase_seed(str(_EVIDENCE_SEED), ROOT)
+    expected = (
+        '(()=>{try{window.localStorage.setItem("' + tool.BRIEFCASE_STORAGE_KEY + '", '
+        + json.dumps(raw) + ')}catch(e){}})();'
+    )
+    assert info["init_script"] == expected
+    assert info["init_script"].count("setItem") == 1, "exactly one write"
+    assert "removeItem" not in info["init_script"]
+    assert ".clear(" not in info["init_script"]
+    # The embedded literal decodes back to the exact fixture bytes, and the
+    # script ends exactly as frozen.
+    decoder = json.JSONDecoder()
+    payload_start = info["init_script"].index(", ") + 2
+    literal, consumed = decoder.raw_decode(info["init_script"][payload_start:])
+    assert literal == raw
+    assert info["init_script"][payload_start + consumed :] == ")}catch(e){}})();"
+
+
+def test_briefcase_seed_refuses_paths_outside_fixtures_and_non_objects(tmp_path: Path) -> None:
+    outside = tmp_path / "seed.json"
+    outside.write_text("{}", encoding="utf-8")
+    with pytest.raises(ValueError, match="tests/fixtures"):
+        tool.resolve_briefcase_seed(str(outside), ROOT)
+
+    fixtures_tmp = tmp_path / "tests" / "fixtures"
+    fixtures_tmp.mkdir(parents=True)
+    not_object = fixtures_tmp / "seed.json"
+    not_object.write_text("[1, 2]", encoding="utf-8")
+    with pytest.raises(ValueError, match="JSON object"):
+        tool.resolve_briefcase_seed(str(not_object), tmp_path)
+    unparseable = fixtures_tmp / "broken.json"
+    unparseable.write_text("{not json", encoding="utf-8")
+    with pytest.raises(ValueError, match="parseable JSON"):
+        tool.resolve_briefcase_seed(str(unparseable), tmp_path)
+
+
+def test_main_refuses_a_bad_briefcase_seed_with_exit_usage_before_any_capture(
+    monkeypatch, tmp_path: Path
+) -> None:
+    calls = _forbid_any_capture(monkeypatch)
+    outside = tmp_path / "seed.json"
+    outside.write_text("{}", encoding="utf-8")
+    out_dir = tmp_path / "out"
+    assert (
+        tool.main(
+            [
+                "--mode", tool.MODE_ANONYMOUS,
+                "--out-dir", str(out_dir),
+                "--briefcase-seed", str(outside),
+            ]
+        )
+        == tool.EXIT_USAGE
+    )
+    fixtures_tmp = tmp_path / "tests" / "fixtures"
+    fixtures_tmp.mkdir(parents=True)
+    not_object = fixtures_tmp / "seed.json"
+    not_object.write_text('"just a string"', encoding="utf-8")
+    assert (
+        tool.main(
+            [
+                "--mode", tool.MODE_ANONYMOUS,
+                "--out-dir", str(out_dir),
+                "--briefcase-seed", str(not_object),
+            ]
+        )
+        == tool.EXIT_USAGE
+    )
+    assert calls == [], "no browser/kernel work ran for a refused seed"
+    assert not out_dir.exists()
+
+
+def test_briefcase_seed_sidecar_shape_and_manifest_reference() -> None:
+    info = tool.resolve_briefcase_seed(str(_EVIDENCE_SEED), ROOT)
+    assert set(info) == {"path", "sha256", "storage_key", "init_script"}
+    assert info["path"] == (
+        "tests/fixtures/fundamental_forensics/fif_saved_research/evidence_briefcase_seed.json"
+    )
+    assert info["sha256"] == hashlib.sha256(_EVIDENCE_SEED.read_bytes()).hexdigest()
+    assert info["storage_key"] == tool.BRIEFCASE_STORAGE_KEY
+
+    manifest: dict[str, Any] = {"pages": []}
+    tool.postprocess_manifest(
+        manifest,
+        mode=tool.MODE_ANONYMOUS,
+        generator_command="cmd",
+        wrapper_module_sha256="0" * 64,
+        scrubbed_env_names=(),
+        aborted_hosts=(),
+        state_receipt=None,
+        briefcase_seed="briefcase_seed.json",
+    )
+    assert manifest["evidence_source"]["briefcase_seed"] == "briefcase_seed.json"
+
+    without: dict[str, Any] = {"pages": []}
+    tool.postprocess_manifest(
+        without,
+        mode=tool.MODE_ANONYMOUS,
+        generator_command="cmd",
+        wrapper_module_sha256="0" * 64,
+        scrubbed_env_names=(),
+        aborted_hosts=(),
+        state_receipt=None,
+    )
+    assert "briefcase_seed" not in without["evidence_source"], "no flag, no reference"

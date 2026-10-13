@@ -910,6 +910,7 @@ jobs:
       - "tests/fixtures/fundamental_forensics/aapl_10q_2026q3/**"
       - "tests/test_company_theme_exposure.py"
       - "tests/test_integrated_answer_clock.py"
+      - "tests/test_integrated_answer_consumer_receipt.py"
       - "tests/test_integrated_answer_v0.py"
       - "tools/**"
       - "worker/**"
@@ -923,7 +924,7 @@ jobs:
       - name: install minimal deps
         run: pip install pytest fastapi httpx pyyaml requests pandas numpy pyarrow jsonschema
       - name: integrated answer v0 composer
-        run: python -m pytest tests/test_integrated_answer_v0.py tests/test_integrated_answer_clock.py -q
+        run: python -m pytest tests/test_integrated_answer_v0.py tests/test_integrated_answer_clock.py tests/test_integrated_answer_consumer_receipt.py -q
 
   c19-wp19-integrated-answer-pins:
     if: ${{ false }}
@@ -5777,6 +5778,7 @@ jobs:
       - "tests/fixtures/fundamental_forensics_held_out/**"
       - "research/financial_intelligence_fabric/**"
       - "templates/fundamental_forensics.*"
+      - "templates/fif_saved_briefcase.js"
       - "scripts/build_financial_intelligence_packet.py"
       - "collectors/sec_request_pacer.py"
       - "tests/fundamental_forensics_*.test.mjs"
@@ -6576,6 +6578,7 @@ jobs:
           tests/test_fundamental_forensics_peer_cohort.py
           tests/test_fundamental_forensics_periods.py
           tests/test_fundamental_forensics_private_state.py
+          tests/test_fundamental_forensics_production_api_chain.py
           tests/test_fundamental_forensics_production_dataset_store.py
           tests/test_fundamental_forensics_production_lineage.py
           tests/test_fundamental_forensics_production_provider.py
@@ -6587,6 +6590,7 @@ jobs:
           tests/test_fundamental_forensics_query_metric_qualification.py
           tests/test_fundamental_forensics_query_snapshots.py
           tests/test_fundamental_forensics_raw_ledger.py
+          tests/test_fundamental_forensics_saved_store_schema.py
           tests/test_fundamental_forensics_sec_request_pacer.py
           tests/test_fundamental_forensics_source_sync.py
           tests/test_fundamental_forensics_specialist_pack_contract.py
@@ -7678,6 +7682,8 @@ jobs:
       # EXP1 deterministic expectation query and hermetic consumer tests.
       - "scripts/query_k3e_expectation_surface.py"
       - "tests/test_k3e_expectation_surface.py"
+      # C19 WP09 non-consensus record-class pins.
+      - "tests/test_k3e_wp09_pins.py"
       # E1 K3E provider-family + semantic-seam qualification suites (strict-xfail GAP-E-*).
       - "tests/test_k3e_provider_family_qualification.py"
       - "tests/test_k3e_semantic_seam_qualification.py"
@@ -7735,7 +7741,7 @@ jobs:
       - name: "EXP1 deterministic K3E expectation query consumer"
         run: |
           python scripts/query_k3e_expectation_surface.py --help
-          python -m pytest --noconftest tests/test_k3e_expectation_surface.py -q
+          python -m pytest --noconftest tests/test_k3e_expectation_surface.py tests/test_k3e_wp09_pins.py -q
 
       - name: "E1 K3E provider-family + semantic-seam qualification (strict xfail gaps)"
         run: python -m pytest --noconftest tests/test_k3e_provider_family_qualification.py tests/test_k3e_semantic_seam_qualification.py -q
@@ -8547,6 +8553,43 @@ jobs:
       - "tests/test_push_retry.py"
       - "tests/test_qledger_publication.py"
       - "tests/test_qledger_publish_binding.py"
+      # Read closure of tests/test_crypto_publication_contract.py.
+      # .github/workflows/** and scripts/ci/*.sh are already declared above.
+      - "app/__init__.py"
+      - "app/deploy/Caddyfile"
+      - "app/deploy/setup.sh"
+      - "app/mailer.py"
+      - "collectors/base.py"
+      - "collectors/coinbase.py"
+      - "collectors/coinmetrics.py"
+      - "collectors/crypto_misc.py"
+      - "collectors/farside.py"
+      - "engine/crypto_market_state.py"
+      - "engine/prophet_live/__init__.py"
+      - "engine/prophet_live/interval.py"
+      - "engine/prophet_live/live_states.py"
+      - "engine/prophet_live/r2io.py"
+      - "lib/__init__.py"
+      - "lib/cn_calendar.py"
+      - "lib/config.py"
+      - "lib/exchange_holidays.py"
+      - "lib/hk_calendar.py"
+      - "lib/market_observations.py"
+      - "lib/market_session.py"
+      - "lib/nyse_calendar.py"
+      - "lib/pages.py"
+      - "lib/store.py"
+      - "lib/tsx_calendar.py"
+      - "lib/us_cash_calendar.py"
+      - "scripts/freshness_sentinel.py"
+      - "templates/live.js"
+      - "tests/test_crypto_publication_contract.py"
+      - "collectors/__init__.py"
+      - "collectors/_crypto_observations.py"
+      - "collectors/_first_seen_store.py"
+      - "site/crypto.html"
+      - "site/vector.html"
+      - "tests/test_crypto_observations_contract.py"
     # scripts/ci/push_retry.sh is the shared retry policy that EVERY lane's commit→push
     # step sources (render, engine-render, daily ×13, closing-bell, asia-close ×2,
     # weekly, earlyclose). It exists because render.yml run 30167139398 (2026-07-25)
@@ -8585,11 +8628,13 @@ jobs:
         with:
           python-version: "3.12"
       - name: install minimal deps
-        run: pip install pytest pyyaml pandas pyarrow
+        run: pip install pytest pyyaml pandas pyarrow requests
       - name: push-retry policy tests (classification, budgets, jitter, real git races)
         run: python -m pytest tests/test_push_retry.py -q
       - name: QLedger explicit publication checks and publisher preservation boundaries
-        run: python -m pytest tests/test_qledger_publication.py tests/test_qledger_publish_binding.py -q
+        run: python -m pytest tests/test_qledger_publication.py tests/test_qledger_publish_binding.py tests/test_crypto_publication_contract.py -q
+      - name: crypto observation store contract (T22) — fake payloads, temp store, live network forbidden
+        run: python -m pytest tests/test_crypto_observations_contract.py -q
       - name: append-only base fence (real-incident replay, withhold, quiet-night property)
         run: python -m pytest tests/test_append_only_base_fence.py -q
 
@@ -17115,6 +17160,30 @@ jobs:
       - tests/test_vector_r2_data_boundary.py
       - tests/test_vector_r2_frontdoor.py
       - tests/test_vector_wave1.py
+      # cx-int science (2026-10-13): the science stream's own suites and their measured import closure.
+      - collectors/coinmetrics.py
+      - engine/crypto_market_state.py
+      - engine/crypto_rotation.py
+      - engine/crypto_universe.py
+      - engine/eth_state.py
+      - engine/grading_stats.py
+      - engine/seasonality/calibration.py
+      - research/crypto_science/CRYPTO_T14_BREADTH_INCREMENT_PREREG_2026-10-12.md
+      - research/crypto_science/t15_transition_increment.py
+      - scripts/build_crypto.py
+      - tests/test_btc_causal_integrity.py
+      - tests/test_btc_regime_lookahead.py
+      - tests/test_crypto_breadth_prereg_invariants.py
+      - tests/test_crypto_eth_sol_transfer.py
+      - tests/test_crypto_flow_funding_semantics.py
+      - tests/test_crypto_forecast_scoring_properties.py
+      - tests/test_crypto_input_eligibility.py
+      - tests/test_crypto_observations_capture.py
+      - tests/test_crypto_onchain_families.py
+      - tests/test_crypto_rotation_basis.py
+      - tests/test_crypto_t12_contract_invariants.py
+      - tests/test_crypto_t15_transition_scaffold.py
+      - tests/test_vector_scorecard_gap_semantics.py
     timeout-minutes: 8
     runs-on: ubuntu-latest
     steps:
@@ -17126,6 +17195,8 @@ jobs:
         run: pip install pytest pandas numpy pyarrow pyyaml jinja2 markupsafe plotly requests scipy beautifulsoup4 lxml openpyxl scikit-learn fastapi httpx jsonschema
       - name: R2 organs — vector wave-1 / data boundary / front door, BTC signals / impulse / intraday CVD, crypto collectors
         run: python -m pytest tests/test_vector_wave1.py tests/test_vector_r2_data_boundary.py tests/test_vector_r2_frontdoor.py tests/test_btc_signals.py tests/test_btc_impulse_falsifier.py tests/test_btc_impulse_radar.py tests/test_btc_impulse_alerts.py tests/test_btc_intraday_cvd.py tests/test_crypto_collectors.py -q
+      - name: crypto science contracts — causal integrity, look-ahead, prereg invariants, transfer, funding, scoring, eligibility, observations capture, on-chain families, rotation basis, T12/T15 scaffolds, scorecard gaps
+        run: python -m pytest tests/test_btc_causal_integrity.py tests/test_btc_regime_lookahead.py tests/test_crypto_breadth_prereg_invariants.py tests/test_crypto_eth_sol_transfer.py tests/test_crypto_flow_funding_semantics.py tests/test_crypto_forecast_scoring_properties.py tests/test_crypto_input_eligibility.py tests/test_crypto_observations_capture.py tests/test_crypto_onchain_families.py tests/test_crypto_rotation_basis.py tests/test_crypto_t12_contract_invariants.py tests/test_crypto_t15_transition_scaffold.py tests/test_vector_scorecard_gap_semantics.py -q
 
   unrun-oracle-desk:
     # oracle nightly + its gauntlet promotion gates.
@@ -17194,27 +17265,48 @@ jobs:
       # ledgers and would otherwise fail for a borrowed reason.
       # No dependency widened: probed at RUN time, both load only
       # pandas/numpy/pyarrow/pyyaml, all already on the install line above.
-      - name: Prophet source clocks and immutable correction provenance
-        run: python -m pytest tests/test_prophet_plan_chronology_audit.py tests/test_prophet_integrity.py -q
-      - name: grade_us_board outcome ledgers + tenure stamp + the strip it renders
-        run: python -m pytest tests/test_board_tenure_stamp.py tests/test_us_board_outcomes.py tests/test_us_board_outcomes_strip.py tests/test_entry_status_stamping.py tests/test_us_board_price_basis_era.py -q
-      - name: grade_us_board zero-accrual + truncated-history alarms
+      # Source binding reaches the full builder import graph. Keep this new
+      # hermetic check in the existing unscoped board owner; shipped-artifact
+      # assertions retain their existing nightly data owners unchanged.
+      - name: Today source binding and private hydration (hermetic)
+        run: >-
+          python -m pytest tests/test_us_today_source_binding.py
+          tests/test_us_board_gate.py tests/test_us_board_hydration_merge.py
+          -q -k "not test_shipped"
         # The nightly recorded nothing for nine days (2026-07-31..08-06) while the step
         # concluded `success`; these pin that the alarms fire, name the cause, and stay
         # quiet on a healthy night. An unrun guard is not a guard — this suite is named
         # here because ci.yml has no broad `pytest tests/`.
-        run: python -m pytest tests/test_us_board_zero_accrual_alarm.py -q
-      - name: claim accountability + track-record dialog + onboarding compare matrix
-        run: python -m pytest tests/test_claim_accountability.py tests/test_track_record_dlg.py tests/test_onboard_compare_matrix.py -q
       # Board continuity — both suites shipped 2026-08-05 (#4554, #4557) named by
       # NO workflow, so the VALE class they were written for was never guarded in
       # CI. Separate step from the outcome ledgers above so a red names the law
       # that broke: row-persistence/outage continuity (grade_us_board::emit_ledger)
       # vs the same-as_of Jaccard guard (build_stock_library::_board_continuity_warning).
-      - name: board ledger row-persistence + same-as_of continuity guard
         # Price-specific snapshot clocks import the same actual producer and use
         # committed synthetic series only; keep this guard on the existing code gate.
-        run: python -m pytest tests/test_us_board_ledger_continuity.py tests/test_us_board_continuity_guard.py tests/test_build_stock_library_price_clock.py -q
+      # 2026-10-13: consolidate the historical groups above into one actual pytest
+      # process. Keep every full-suite file and order; pytest still names each
+      # failed node. All 311 nodes equal the six original command collections.
+      - name: Board source clocks, outcome ledgers, accountability, continuity and Canada binding
+        run: >-
+          python -m pytest
+          tests/test_prophet_plan_chronology_audit.py
+          tests/test_prophet_integrity.py
+          tests/test_board_tenure_stamp.py
+          tests/test_us_board_outcomes.py
+          tests/test_us_board_outcomes_strip.py
+          tests/test_entry_status_stamping.py
+          tests/test_us_board_price_basis_era.py
+          tests/test_us_board_zero_accrual_alarm.py
+          tests/test_claim_accountability.py
+          tests/test_track_record_dlg.py
+          tests/test_onboard_compare_matrix.py
+          tests/test_us_board_ledger_continuity.py
+          tests/test_us_board_continuity_guard.py
+          tests/test_build_stock_library_price_clock.py
+          tests/test_canada_canonical_board.py
+          -q
+
 
   unrun-intl-libraries:
     # China / HK / Canada library writers behind the international surfaces.
@@ -18940,6 +19032,8 @@ jobs:
       - name: US candidate and plan source-date truth (PR-time gated journey)
         run: >-
           python -m pytest tests/test_p0_prophet_candidate_board.py -q -k "candidate_heading_discloses_source_date or gated_candidate_journey or historical_plan_wall_does_not"
+      - name: Prophet Plan read error and loading guards (hermetic)
+        run: python -m pytest tests/test_p_mp1_shell_ladder_error_state.py -q
       - name: Prophet Today and Company context - owner selection and typed responses
         run: python -m pytest tests/test_p0_prophet_candidate_board.py -q -k "today or company_context"
       - name: stock-brief context health (R2 context must yield a nonempty batch)
@@ -18964,6 +19058,13 @@ jobs:
       # code gate so a session-policy edit and the registration can red each other.
       # Daily Brief is a zero-I/O read model over owner receipts, not B4 policy.
       # Keep malformed-input, health-precedence and immutable-receipt regressions on CODE.
+      # Original-entry attribution and raw rank-era integrity are source contracts.
+      # The committed-ledger fixture classes stay in unrun-prophet-learning-loop
+      # (gate:data); this PR-time step runs the hermetic contract and legacy rules.
+      - name: Prophet learning original-entry and cohort-integrity contracts
+        run: >-
+          python -m pytest tests/test_prophet_postmortem.py -q
+          -k "not TestLoserCohortFixture and not TestLadderOnTheCommittedLedgers"
         # The TURN WATCH desk consumes the group-turn organ's artifact and R4's organ, so
         # all three ride one lane. test_us_basket_turn.py was named by NO run: step in any
         # workflow before this — the same unrun-suite hole this job's header records for
@@ -20450,6 +20551,19 @@ jobs:
       - "tests/test_fda_supply_probes_final.py"
       - "tests/test_fda_supply_probes_mixed.py"
       - "tests/test_fda_sweep_duplicate_key_completeness.py"
+      - "tests/test_healthcare_dispersion_w0b.py"
+      - "collectors/base.py"
+      - "collectors/sector_holdings.py"
+      - "config/delisted_symbols.yml"
+      - "lib/cn_calendar.py"
+      - "lib/delisted_symbols.py"
+      - "lib/exchange_holidays.py"
+      - "lib/hk_calendar.py"
+      - "lib/market_observations.py"
+      - "lib/market_session.py"
+      - "lib/nyse_calendar.py"
+      - "lib/tsx_calendar.py"
+      - "lib/us_cash_calendar.py"
       - "collectors/fda_shortages.py"
       - "engine/fda_scarcity.py"
       - "engine/foresight_cascade.py"
@@ -20491,6 +20605,8 @@ jobs:
         run: python -m pytest tests/test_fda_supply_probes.py tests/test_fda_supply_probes_t02r.py tests/test_fda_supply_probes_t02r2.py tests/test_fda_supply_probes_t01r.py tests/test_fda_supply_probes_t02r3.py tests/test_fda_supply_probes_final.py tests/test_fda_supply_probes_mixed.py -q
       - name: FDA sweep completeness regression probes (duplicate dedupe keys)
         run: python -m pytest tests/test_fda_sweep_duplicate_key_completeness.py -q
+      - name: Healthcare dispersion history archiver
+        run: python -m pytest tests/test_healthcare_dispersion_w0b.py -q
 
   earnings-economic-source-selection:
     # CDV-1 Task 2: preserve private PG acquisition currentness and revision clocks.
@@ -25423,6 +25539,44 @@ jobs:
       - "engine/theme_graph/__init__.py"
       - "engine/theme_graph/curation_assertion.py"
       - "tests/__init__.py"
+      # T02 witness profiles (FCX / MP). Appended from the witness suite's
+      # suite_dependency_closure on this HEAD. Constant imports only.
+      - "config/earnings_story_promotion.yml"
+      - "config/fundamental_forensics_disclosure_diff.v1.json"
+      - "engine/company_intelligence/__init__.py"
+      - "engine/company_intelligence/contracts.py"
+      - "engine/company_intelligence/documents.py"
+      - "engine/company_intelligence/event_id_adapter.py"
+      - "engine/company_intelligence/event_workspace.py"
+      - "engine/company_intelligence/event_workspace_build.py"
+      - "engine/company_intelligence/events.py"
+      - "engine/company_intelligence/health.py"
+      - "engine/company_intelligence/identity.py"
+      - "engine/company_intelligence/issuer_profiles.py"
+      - "engine/company_intelligence/mining_issuer_profiles.py"
+      - "engine/company_intelligence/pg_envelope.py"
+      - "engine/company_intelligence/pg_profile.py"
+      - "engine/company_intelligence/qa_exchange.py"
+      - "engine/company_intelligence/qa_reconstruction.py"
+      - "engine/company_intelligence/views.py"
+      - "engine/earnings_narrative/contracts.py"
+      - "engine/earnings_narrative/digest.py"
+      - "engine/earnings_narrative/promotion.py"
+      - "engine/earnings_narrative/public_wire.py"
+      - "engine/earnings_narrative/story.py"
+      - "engine/earnings_narrative/story_packets.py"
+      - "engine/earnings_release/binding.py"
+      - "engine/earnings_release/figures.py"
+      - "engine/earnings_release/filing_key.py"
+      - "engine/earnings_release/receipts.py"
+      - "engine/fundamental_forensics/disclosure_diff.py"
+      - "engine/fundamental_forensics/models.py"
+      - "engine/press/earnings_adapter.py"
+      - "lib/pages.py"
+      - "tests/test_mining_witness_profiles.py"
+      # T03 economic fact rows. The suite reads the synthetic cell fixture.
+      - "tests/fixtures/mining_economic_inputs/parenthesized_cell.json"
+      - "tests/test_mining_economic_inputs.py"
     timeout-minutes: 8
     runs-on: ubuntu-latest
     steps:
@@ -25435,7 +25589,7 @@ jobs:
       - name: mining economic dossier — shared-contract harness
         run: TZ=UTC python -m pytest tests/test_mining_shared_contract.py tests/test_mining_shared_contract_probes.py -q
       - name: mining economic dossier — per-sector composition suite (T04a)
-        run: TZ=UTC python -m pytest tests/test_mining_composition.py tests/test_mining_composition_probes.py tests/test_mining_composition_probes_r2.py tests/test_mining_composition_probes_r3.py tests/test_mining_composition_truth_table.py -q
+        run: TZ=UTC python -m pytest tests/test_mining_composition.py tests/test_mining_composition_probes.py tests/test_mining_composition_probes_r2.py tests/test_mining_composition_probes_r3.py tests/test_mining_composition_truth_table.py tests/test_mining_witness_profiles.py tests/test_mining_economic_inputs.py -q
 
   industrials-result-cash:
     # GMI INDUSTRIALS first vertical, T01 (R-IND-02, PR #7924): synthetic result-to-cash
@@ -25972,10 +26126,20 @@ jobs:
     # Grey Deer W3 (WS:GREY-DEER-RISK-INTELLIGENCE): pullback stage-1 executing
     # script frozen by research/grey_deer/PULLBACK_PREREGISTRATION_2026-10-11.md
     # (blob 49a68b5e9c6543d662044b0aa391c4b6e6e6052e). Hermetic: synthetic series only.
+    # W4 adds the stage-1 RT repairs, the result-payload schema checker, the
+    # determinism checks, the panel split/calendar adjustment and the stage-1b
+    # pooled-panel runner (prereg v1.1, DRAFT - NOT FROZEN). Still hermetic.
     timeout-minutes: 10
     paths:
       - "scripts/research/grey_deer_pullback_stage1.py"
+      - "scripts/research/grey_deer_panel_adjust.py"
+      - "scripts/research/grey_deer_pullback_stage1_schema.py"
+      - "scripts/research/grey_deer_pullback_stage1b.py"
       - "tests/test_grey_deer_pullback_stage1.py"
+      - "tests/test_grey_deer_panel_adjust.py"
+      - "tests/test_grey_deer_pullback_stage1_determinism.py"
+      - "tests/test_grey_deer_pullback_stage1_schema.py"
+      - "tests/test_grey_deer_pullback_stage1b.py"
       - "lib/observed_moves.py"
       - "engine/vol_forecast.py"
       - "lib/nyse_calendar.py"
@@ -26019,6 +26183,10 @@ jobs:
       - "research/grey_deer/RISK_RADAR_STATE_LADDER_CALIBRATION_RESULTS_2026-09-21.md"
       - "scripts/research/risk_radar_displayed_probability_audit.py"
       - "scripts/research/risk_radar_state_ladder_calibration.py"
+      - "research/grey_deer/PULLBACK_PREREGISTRATION_V1_1_2026-10-12.md"
+      - "research/grey_deer/PULLBACK_SOURCE_RIGHTS_QUALIFICATION_V1_1_2026-10-12.md"
+      - "research/grey_deer/PULLBACK_STAGE1_RESULTS_2026-10-11.json"
+      - "research/grey_deer/pullback_stage1_r1/PULLBACK_STAGE1_RESULTS_2026-10-11.json"
       - "scripts/validate_regime_fwd.py"
     runs-on: ubuntu-latest
     steps:
@@ -26028,8 +26196,14 @@ jobs:
           python-version: "3.12"
       - name: install minimal deps
         run: pip install pytest pandas numpy scipy pyarrow pyyaml
-      - name: pullback stage-1 synthetic tests
-        run: python -m pytest tests/test_grey_deer_pullback_stage1.py -q
+      - name: pullback stage-1 / stage-1b synthetic tests
+        run: >-
+          python -m pytest -q
+          tests/test_grey_deer_pullback_stage1.py
+          tests/test_grey_deer_pullback_stage1_schema.py
+          tests/test_grey_deer_pullback_stage1_determinism.py
+          tests/test_grey_deer_panel_adjust.py
+          tests/test_grey_deer_pullback_stage1b.py
 
   sni-s1-residual:
     if: ${{ false }}
@@ -26085,6 +26259,25 @@ jobs:
         run: pip install pytest pandas numpy pyarrow pyyaml
       - name: c19-wp11-reader-pins
         run: python -m pytest tests/test_c19_wp11_reader_pins.py -q -p no:cacheprovider
+  c19-wp29-hk-southbound-two-period:
+    if: ${{ false }}
+    gate: code
+    # C19 WP29: HK southbound two-period share flow + missing-not-zero pins (offline).
+    timeout-minutes: 10
+    paths:
+      - "tests/test_c19_wp29_hk_southbound_two_period.py"
+      - "engine/hk_southbound_stocks.py"
+      - "collectors/hk_southbound_holdings.py"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install minimal deps
+        run: pip install pytest pandas numpy pyarrow pyyaml
+      - name: c19-wp29-hk-southbound-two-period
+        run: python -m pytest tests/test_c19_wp29_hk_southbound_two_period.py -q -p no:cacheprovider
   c19-short-pressure-availability:
     if: ${{ false }}
     gate: code

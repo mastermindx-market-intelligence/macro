@@ -33,7 +33,7 @@ HOW IT WORKS
   synthesized. Anonymous mode runs the REAL ``require_site_full_user`` with no
   Authorization header and records the real 401.
 * Populated mode first builds the private state into a TEMP root (outside the
-  repo) that symlinks ONLY the five read-only kernel inputs, calls
+  repo) that symlinks ONLY the six read-only kernel inputs, calls
   ``scripts.build_fundamental_forensics.compose_state``, and copies the
   produced gzip object to the tree's gitignored
   ``data/fundamental_forensics/private/state.json.gz``.
@@ -146,13 +146,17 @@ CATEGORY_FORENSICS_FORWARD_FAILED = "forensics_forward_failed"
 SCRUB_ENV_PREFIXES = ("R2_", "FF_ATTESTED_", "AWS_")
 SCRUB_ENV_NAMES = ("RESEARCH_LOCAL_STORE", "FIF_FINANCIAL_DATASET_MODE")
 
-# Exactly the five read-only kernel inputs symlinked into the temp build root.
+# Exactly the six read-only kernel inputs symlinked into the temp build root.
+# The committed issuer master is the builder's entity-id join
+# (ISSUER_MASTER_RELATIVE); without it every company carries entity_id=None
+# and no saved view can ever pass the page's issuer-identity check.
 KERNEL_INPUTS: tuple[str, ...] = (
     "data/edgar/statements_quarterly.parquet",
     "data/edgar/statements.parquet",
     "data/edgar/fundamentals.parquet",
     "data/universe/membership.parquet",
     "data/breadth/ticker_sectors.parquet",
+    "data/reference/issuer_master.parquet",
 )
 # A REAL directory in the temp root (never a symlink): the builder writes the
 # public summary + private state under here, and none of that may reach through
@@ -243,6 +247,9 @@ INTERACTION_ATTRIBUTE = "data-ff-evidence-interaction"
 INTERACTION_DRAWER_OPEN = "drawer_open"
 INTERACTION_TAB_KEYS = "tab_keys"
 INTERACTION_DRAWER_TRAP = "drawer_trap"
+INTERACTION_SAVED_RESTORE_PINNED = "saved_restore_pinned"
+INTERACTION_SAVED_OPEN_UNAVAILABLE = "saved_open_unavailable"
+INTERACTION_SAVED_WRITE_FAILURE = "saved_write_failure"
 INTERACTION_INPUTS = {
     INTERACTION_DRAWER_OPEN: "pointer: real click on [data-open-primary-finding]",
     INTERACTION_TAB_KEYS: "keyboard: real Tab presses to the selected tab, then ArrowRight",
@@ -250,7 +257,54 @@ INTERACTION_INPUTS = {
         "keyboard: real Tab presses to [data-open-primary-finding], Enter, then Tab "
         "through the open drawer"
     ),
+    INTERACTION_SAVED_RESTORE_PINNED: (
+        "select: real #ff-saved-select change to the pinned seed row "
+        "(CDEFGHIJKLMNOPQRSTUVWX)"
+    ),
+    INTERACTION_SAVED_OPEN_UNAVAILABLE: (
+        "select: real #ff-saved-select change to the drift seed row "
+        "(EFGHIJKLMNOPQRSTUVWXYZ)"
+    ),
+    INTERACTION_SAVED_WRITE_FAILURE: (
+        "Restore the pinned saved view, make this capture page's browser refuse the "
+        "next write to the saved-views key (localStorage.setItem raises "
+        "QuotaExceededError for that one key only), type the name 'Apple write check' "
+        "and click Rename on the restored view. Shows the write-failure notice; the "
+        "stored saved views and the row's name are unchanged."
+    ),
 }
+
+# X2-s r1 (H2): the saved-views desk selectors and the seed rows the two
+# interactions drive (evidence_briefcase_seed.json rows 1 and 3).
+SAVED_SELECT_SELECTOR = "#ff-saved-select"
+SAVED_BADGE_SELECTOR = "#ff-saved-badge"
+SAVED_NOTICE_SELECTOR = "#ff-saved-notice"
+SAVED_NAME_SELECTOR = "#ff-saved-name"
+# X2-s r2 (C4): the write-failure capture drives Rename on the restored row.
+# The fixture-served capture page never reaches Save's 'ready' phase (no
+# queryable financial payload), so Save stays disabled in every capture flow;
+# Rename writes through the same briefcase store and the same write-failure
+# notice path, and is enabled whenever a saved view is active.
+SAVED_RENAME_SELECTOR = "#ff-saved-rename"
+SAVED_PINNED_ROW_ID = "CDEFGHIJKLMNOPQRSTUVWX"
+SAVED_DRIFT_ROW_ID = "EFGHIJKLMNOPQRSTUVWXYZ"
+
+# X2-s r2 (C1): the setItem patch is KEY-SCOPED — it throws QuotaExceededError
+# only for the one storage key it is handed and delegates every other key to
+# the original untouched, so the refusal can never leak to another feature.
+_SAVED_WRITE_FAILURE_SETITEM_PATCH = (
+    "(key) => { const original = Storage.prototype.setItem; Storage.prototype.setItem"
+    " = function (k, v) { if (k === key) { throw new DOMException('storage refused in"
+    " capture', 'QuotaExceededError'); } return original.call(this, k, v); }; }"
+)
+_SAVED_STORED_BYTES_SCRIPT = "(key) => localStorage.getItem(key)"
+_SAVED_SELECTED_LABEL_SCRIPT = (
+    "(sel) => { const s = document.querySelector(sel); const o = s && s.selectedOptions"
+    " && s.selectedOptions[0]; return o ? String(o.textContent || '') : null; }"
+)
+
+# X2-s r1 (H1): the device-local briefcase key the seed init script plants.
+BRIEFCASE_STORAGE_KEY = "mastermind.filing_forensics.saved_research.v1"
 PRIMARY_FINDING_SELECTOR = "[data-open-primary-finding]"
 SELECTED_TAB_SELECTOR = '.ff-tab[aria-selected="true"]'
 EVIDENCE_SELECTOR = "#ff-evidence"
@@ -849,6 +903,59 @@ def is_interaction_payload(arg: Any) -> bool:
     )
 
 
+# ---------------------------------------------------------------------------
+# briefcase seed (X2-s r1, H1)
+# ---------------------------------------------------------------------------
+
+
+def build_briefcase_seed_init_script(raw_file_text: str) -> str:
+    """The ONE init script that plants the seed container verbatim.
+
+    Exact shape (frozen by the unit test): the raw file TEXT rides as a JSON
+    string literal, so the stored bytes equal the fixture bytes exactly, and
+    the try/catch keeps a hostile storage implementation from breaking the
+    page load. Only this one key is ever written.
+    """
+    return (
+        "(()=>{try{window.localStorage.setItem(\"" + BRIEFCASE_STORAGE_KEY + "\", "
+        + json.dumps(raw_file_text) + ")}catch(e){}})();"
+    )
+
+
+def resolve_briefcase_seed(raw: str, tree_root: Path) -> dict[str, str]:
+    """Resolve ``--briefcase-seed``: a JSON object under ``<tree>/tests/fixtures``.
+
+    Returns the sidecar fields (repo-relative ``path``, ``sha256`` of the file
+    bytes, ``storage_key``) plus the built ``init_script``. Raises
+    :class:`ValueError` with a plain message otherwise; ``main`` turns that
+    into ``EXIT_USAGE`` before any browser, scrub or kernel work.
+    """
+    candidate = Path(raw).expanduser()
+    if not candidate.is_absolute():
+        candidate = Path.cwd() / candidate
+    resolved = candidate.resolve()
+    fixtures_root = (tree_root / "tests" / "fixtures").resolve()
+    if fixtures_root != resolved and fixtures_root not in resolved.parents:
+        raise ValueError(
+            f"--briefcase-seed must resolve under {fixtures_root}; got {resolved}"
+        )
+    if not resolved.is_file():
+        raise ValueError(f"--briefcase-seed is not a file: {resolved}")
+    raw_text = resolved.read_text(encoding="utf-8")
+    try:
+        parsed = json.loads(raw_text)
+    except json.JSONDecodeError as exc:
+        raise ValueError(f"--briefcase-seed is not parseable JSON: {exc}") from exc
+    if not isinstance(parsed, dict):
+        raise ValueError(f"--briefcase-seed must be a JSON object, not {type(parsed).__name__}")
+    return {
+        "path": resolved.relative_to(tree_root).as_posix(),
+        "sha256": hashlib.sha256(resolved.read_bytes()).hexdigest(),
+        "storage_key": BRIEFCASE_STORAGE_KEY,
+        "init_script": build_briefcase_seed_init_script(raw_text),
+    }
+
+
 def _settle(page: Any) -> None:
     try:
         page.wait_for_timeout(INTERACTION_SETTLE_MS)
@@ -951,10 +1058,138 @@ def _interact_drawer_trap(page: Any) -> tuple[bool, dict[str, Any]]:
     return verified, facts
 
 
+_SAVED_PROBE_SCRIPT = """
+() => {
+  const select = document.querySelector('#ff-saved-select');
+  const badge = document.querySelector('#ff-saved-badge');
+  const notice = document.querySelector('#ff-saved-notice');
+  const visible = (node) => !!(node && node.offsetParent !== null);
+  // X2-s r2 (C2): a read-only measurement of the selected option's text width
+  // against the select's inner width — canvas 2d, the select's computed font
+  // (fallback font string when the shorthand computes empty) plus the
+  // computed left+right padding. Nothing is styled and no style is injected;
+  // the fact is recorded for every saved interaction and gates nothing.
+  let selected_text_fits = null;
+  let selected_text_px = null;
+  let select_inner_px = null;
+  if (select) {
+    const styles = window.getComputedStyle(select);
+    const font = styles.font || (styles.fontWeight + ' ' + styles.fontSize + ' ' + styles.fontFamily);
+    select_inner_px = select.clientWidth;
+    const option = select.selectedOptions && select.selectedOptions[0];
+    const context = document.createElement('canvas').getContext('2d');
+    if (option && context) {
+      context.font = font;
+      selected_text_px = context.measureText(String(option.textContent || '')).width +
+        parseFloat(styles.paddingLeft || '0') + parseFloat(styles.paddingRight || '0');
+      selected_text_fits = selected_text_px <= select_inner_px + 0.5;
+    }
+  }
+  return {
+    value: select ? select.value : null,
+    options: select ? Array.prototype.map.call(select.options, (o) => o.textContent) : [],
+    badge_visible: visible(badge) && !!badge.textContent.trim(),
+    notice_visible: visible(notice),
+    notice_has_strong: !!(notice && notice.querySelector('strong')),
+    notice_newer_generation: !!(notice && notice.querySelector('[data-saved-reresolve]')),
+    notice_text: notice ? String(notice.textContent || '') : '',
+    selected_text_fits: selected_text_fits,
+    selected_text_px: selected_text_px,
+    select_inner_px: select_inner_px,
+  };
+}
+"""
+
+
+def _saved_select(page: Any, row_id: str) -> None:
+    """A REAL select change on the saved-views list, then pointer parked."""
+    page.select_option(SAVED_SELECT_SELECTOR, row_id, timeout=INTERACTION_TIMEOUT_MS)
+    _settle(page)
+    mouse = getattr(page, "mouse", None)
+    if mouse is not None:
+        mouse.move(*POINTER_PARK)
+
+
+def _interact_saved_restore_pinned(page: Any) -> tuple[bool, dict[str, Any]]:
+    _saved_select(page, SAVED_PINNED_ROW_ID)
+    probe = dict(page.evaluate(_SAVED_PROBE_SCRIPT.strip()) or {})
+    notice_state = (
+        "hidden"
+        if not probe.get("notice_visible")
+        else "newer_generation"
+        if probe.get("notice_newer_generation")
+        else "other"
+    )
+    facts: dict[str, Any] = {**probe, "notice_state": notice_state}
+    verified = bool(probe.get("value") == SAVED_PINNED_ROW_ID and probe.get("badge_visible"))
+    return verified, facts
+
+
+def _interact_saved_open_unavailable(page: Any) -> tuple[bool, dict[str, Any]]:
+    _saved_select(page, SAVED_DRIFT_ROW_ID)
+    probe = dict(page.evaluate(_SAVED_PROBE_SCRIPT.strip()) or {})
+    verified = bool(
+        probe.get("notice_visible")
+        and probe.get("notice_has_strong")
+        and not probe.get("badge_visible")
+    )
+    return verified, dict(probe)
+
+
+def _interact_saved_write_failure(page: Any) -> tuple[bool, dict[str, Any]]:
+    _saved_select(page, SAVED_PINNED_ROW_ID)
+    # Refuse the NEXT write to the saved-views key only, then drive a real
+    # write through the briefcase store: Rename on the restored row (C4 — the
+    # capture page never enables Save). The stored bytes and the row label are
+    # read right before the click; the post-click probe plus a second read
+    # prove the refusal left the bytes byte-identical and the name unchanged.
+    page.evaluate(_SAVED_WRITE_FAILURE_SETITEM_PATCH, BRIEFCASE_STORAGE_KEY)
+    page.fill(SAVED_NAME_SELECTOR, "Apple write check", timeout=INTERACTION_TIMEOUT_MS)
+    before = page.evaluate(_SAVED_STORED_BYTES_SCRIPT, BRIEFCASE_STORAGE_KEY)
+    label_before = page.evaluate(_SAVED_SELECTED_LABEL_SCRIPT, SAVED_SELECT_SELECTOR)
+    page.click(SAVED_RENAME_SELECTOR, timeout=INTERACTION_TIMEOUT_MS)
+    _settle(page)
+    mouse = getattr(page, "mouse", None)
+    if mouse is not None:
+        mouse.move(*POINTER_PARK)
+    after = page.evaluate(_SAVED_STORED_BYTES_SCRIPT, BRIEFCASE_STORAGE_KEY)
+    label_after = page.evaluate(_SAVED_SELECTED_LABEL_SCRIPT, SAVED_SELECT_SELECTOR)
+    probe = dict(page.evaluate(_SAVED_PROBE_SCRIPT.strip()) or {})
+    before_sha = hashlib.sha256(str(before or "").encode("utf-8")).hexdigest()
+    after_sha = hashlib.sha256(str(after or "").encode("utf-8")).hexdigest()
+    notice_text = str(probe.get("notice_text") or "")
+    verified = bool(
+        probe.get("notice_visible")
+        and not probe.get("notice_has_strong")
+        and ("did not save this change" in notice_text or "浏览器未保存此更改" in notice_text)
+        and probe.get("value") == SAVED_PINNED_ROW_ID
+        and probe.get("badge_visible")
+        and before is not None
+        and after == before
+        and before_sha == after_sha
+        and label_before is not None
+        and label_after == label_before
+        and "Apple write check" not in str(label_after or "")
+    )
+    facts: dict[str, Any] = {
+        **probe,
+        "write_control": SAVED_RENAME_SELECTOR,
+        "selected_label_before_click": label_before,
+        "selected_label_after": label_after,
+        "stored_sha256_before_click": before_sha,
+        "stored_sha256_after": after_sha,
+        "stored_unchanged": after == before,
+    }
+    return verified, facts
+
+
 _INTERACTIONS: dict[str, Callable[[Any], tuple[bool, dict[str, Any]]]] = {
     INTERACTION_DRAWER_OPEN: _interact_drawer_open,
     INTERACTION_TAB_KEYS: _interact_tab_keys,
     INTERACTION_DRAWER_TRAP: _interact_drawer_trap,
+    INTERACTION_SAVED_RESTORE_PINNED: _interact_saved_restore_pinned,
+    INTERACTION_SAVED_OPEN_UNAVAILABLE: _interact_saved_open_unavailable,
+    INTERACTION_SAVED_WRITE_FAILURE: _interact_saved_write_failure,
 }
 
 
@@ -1010,11 +1245,13 @@ class DriverProxy:
         route_handler_factory: Callable[[], Callable[[Any, Any], None]],
         fold_recorder: Callable[[Any, Any], None],
         interaction_runner: Callable[[Any, Mapping[str, Any], Any], Any] | None = None,
+        init_scripts: Sequence[str] = (),
     ) -> None:
         self._real = real_driver
         self._route_handler_factory = route_handler_factory
         self._fold_recorder = fold_recorder
         self._interaction_runner = interaction_runner
+        self._init_scripts = tuple(init_scripts)
         self._current_cell: Any = None
         self._wrapped = False
 
@@ -1031,6 +1268,7 @@ class DriverProxy:
                 fold_recorder=self._fold_recorder,
                 get_cell=lambda: self._current_cell,
                 interaction_runner=self._interaction_runner,
+                init_scripts=self._init_scripts,
             )
             self._wrapped = True
         return self._real.capture(url=rewrite_evidence_host(url), cell=cell, timeout_s=timeout_s)
@@ -1050,16 +1288,23 @@ class BrowserProxy:
         fold_recorder: Callable[[Any, Any], None],
         get_cell: Callable[[], Any],
         interaction_runner: Callable[[Any, Mapping[str, Any], Any], Any] | None = None,
+        init_scripts: Sequence[str] = (),
     ) -> None:
         self._real = real_browser
         self._handler = handler
         self._fold_recorder = fold_recorder
         self._get_cell = get_cell
         self._interaction_runner = interaction_runner
+        self._init_scripts = tuple(init_scripts)
 
     def new_context(self, **kwargs: Any) -> Any:
         real_context = self._real.new_context(**kwargs)
         real_context.route("**/*", self._handler)
+        # X2-s r1 (H1): init scripts run in every page of the context BEFORE
+        # any page script — installed after routing so a routed request can
+        # never race the seed.
+        for script in self._init_scripts:
+            real_context.add_init_script(script=script)
         return ContextProxy(
             real_context,
             fold_recorder=self._fold_recorder,
@@ -1199,7 +1444,7 @@ class KernelStateReceipt:
 
 
 def prepare_kernel_temp_root(tree_root: Path, temp_root: Path) -> list[str]:
-    """Symlink ONLY the five read-only inputs; make the output dir a real dir."""
+    """Symlink ONLY the six read-only inputs; make the output dir a real dir."""
     created: list[str] = []
     for relative in KERNEL_INPUTS:
         source = tree_root / relative
@@ -1489,6 +1734,7 @@ def postprocess_manifest(
     state_receipt: KernelStateReceipt | None,
     interactions: str | None = None,
     mode_verification: Mapping[str, Any] | None = None,
+    briefcase_seed: str | None = None,
 ) -> None:
     """Keep everything the capture tool wrote; add the fixture-backed provenance.
 
@@ -1541,6 +1787,10 @@ def postprocess_manifest(
     evidence_source["fold_measurement"] = "fold_measurement.json"
     if interactions:
         evidence_source["interactions"] = interactions
+    if briefcase_seed:
+        # X2-s r1 (H1): names the sidecar (path/sha256/storage_key) planted
+        # by this run's seed init script; absent without --briefcase-seed.
+        evidence_source["briefcase_seed"] = briefcase_seed
     if mode_verification is not None:
         evidence_source["mode_verification"] = dict(mode_verification)
     manifest["evidence_source"] = evidence_source
@@ -1660,6 +1910,15 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--viewports", default="desktop,mobile")
     parser.add_argument("--locales", default="en,zh")
     parser.add_argument("--themes", default="dark,light")
+    parser.add_argument(
+        "--briefcase-seed",
+        default=None,
+        metavar="PATH",
+        dest="briefcase_seed",
+        help="optional JSON-object fixture under <repo>/tests/fixtures planted as "
+        "the device-local saved-views briefcase (one localStorage key) before any "
+        "page script; a briefcase_seed.json sidecar records path/sha256/storage_key",
+    )
     return parser
 
 
@@ -1671,6 +1930,7 @@ def _wrapped_driver_factory(
     fold_selectors: Sequence[tuple[str, str]],
     mode: str,
     interaction_rows: list[dict[str, Any]] | None = None,
+    init_scripts: Sequence[str] = (),
 ) -> Callable[..., DriverProxy]:
     from scripts.capture_page_evidence import playwright_page_driver  # noqa: PLC0415
 
@@ -1697,6 +1957,7 @@ def _wrapped_driver_factory(
                 page, cell, selectors=fold_selectors, mode=mode, sink=fold_rows
             ),
             interaction_runner=interaction_runner,
+            init_scripts=init_scripts,
         )
         slot[0] = proxy
         return proxy
@@ -1731,6 +1992,17 @@ def main(argv: Sequence[str] | None = None) -> int:
         problem = degraded_clock_problem(args.generated_at, now=datetime.now(timezone.utc))
         if problem is not None:
             print(f"error: {problem}", file=sys.stderr)
+            return EXIT_USAGE
+
+    # X2-s r1 (H1): resolve --briefcase-seed BEFORE the render guard, the env
+    # scrub, the kernel build and any browser launch — a bad seed is a usage
+    # error, not a capture failure.
+    seed_info: dict[str, str] | None = None
+    if args.briefcase_seed:
+        try:
+            seed_info = resolve_briefcase_seed(args.briefcase_seed, tree_root)
+        except ValueError as exc:
+            print(f"error: {exc}", file=sys.stderr)
             return EXIT_USAGE
 
     try:
@@ -1812,6 +2084,7 @@ def main(argv: Sequence[str] | None = None) -> int:
                     fold_rows=fold_rows,
                     fold_selectors=fold_selectors,
                     interaction_rows=interaction_rows,
+                    init_scripts=(seed_info["init_script"],) if seed_info else (),
                 )
         finally:
             try:
@@ -1855,12 +2128,25 @@ def main(argv: Sequence[str] | None = None) -> int:
         state_receipt=state_receipt,
         interactions="interactions.json" if interaction_rows else None,
         mode_verification=mode_verification,
+        briefcase_seed="briefcase_seed.json" if seed_info else None,
     )
     manifest_path.write_bytes(canonical_json_bytes(manifest))
     (out_dir / "network_log.json").write_bytes(canonical_json_bytes(network_log.as_payload()))
     (out_dir / "fold_measurement.json").write_bytes(canonical_json_bytes(fold_rows))
     if interaction_rows:
         (out_dir / "interactions.json").write_bytes(canonical_json_bytes(interaction_rows))
+    if seed_info:
+        # X2-s r1 (H1): the sidecar proves exactly which fixture bytes this
+        # run's contexts were seeded with, and under which storage key.
+        (out_dir / "briefcase_seed.json").write_bytes(
+            canonical_json_bytes(
+                {
+                    "path": seed_info["path"],
+                    "sha256": seed_info["sha256"],
+                    "storage_key": seed_info["storage_key"],
+                }
+            )
+        )
 
     if args.changed_path:
         manifest_relative = (
@@ -1915,6 +2201,7 @@ def _run_wrapped_capture(
     fold_rows: list[dict[str, Any]],
     fold_selectors: Sequence[tuple[str, str]],
     interaction_rows: list[dict[str, Any]] | None = None,
+    init_scripts: Sequence[str] = (),
 ) -> int:
     from scripts.capture_page_evidence import main as capture_main  # noqa: PLC0415
 
@@ -1951,6 +2238,7 @@ def _run_wrapped_capture(
         fold_selectors=fold_selectors,
         mode=args.mode,
         interaction_rows=interaction_rows,
+        init_scripts=init_scripts,
     )
     return capture_main(capture_argv, driver_factory=factory)
 
