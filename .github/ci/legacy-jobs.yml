@@ -17062,6 +17062,9 @@ jobs:
       - "tests/test_dod_budget_live.py"
       - "tests/test_fms_notifications.py"
       - "tests/test_fms_ui.py"
+      - "tests/test_government_revenue_sbir_consumer.py"
+      - "tests/test_sbir_awards.py"
+      - "scripts/build_government_revenue.py"
       - "tests/fixtures/fms/**"
       - "tests/fixtures/dod_budget/**"
       - "data/government_revenue/fms_staged_objects/**"
@@ -17201,6 +17204,8 @@ jobs:
       # publication half (ninth mode tab, entitled routes, JS inspector).
       - name: FMS congressional-notification rail law suite (D6-B1)
         run: python -m pytest tests/test_fms_notifications.py tests/test_fms_ui.py -q
+      - name: SBIR committed consumer, entitlement and evidence integrity
+        run: python -m pytest tests/test_government_revenue_sbir_consumer.py -q
 
   unrun-government-revenue:
     # Government Revenue Foresight — builder envelope, publication fence,

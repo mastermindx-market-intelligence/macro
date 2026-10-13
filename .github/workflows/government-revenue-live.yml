@@ -554,6 +554,10 @@ jobs:
       # If a spurious red ever blocks a nightly here: set this back to "0" in a
       # same-day PR, record why, and fix the assertion — do not leave it disarmed
       # silently, and do not invent a new precondition without writing it down.
+      - name: provision the candidate HTTP proof dependencies
+        if: ${{ steps.gate.outputs.publish == 'yes' }}
+        run: python -m pip install 'fastapi>=0.115,<1.0' httpx
+
       - name: prove the candidate projection before publishing it
         if: ${{ steps.gate.outputs.publish == 'yes' }}
         env:
@@ -942,6 +946,9 @@ jobs:
             data/government_revenue/dossiers.json
             data/government_revenue/subaward_dossiers.json
             data/government_revenue/idv_dossiers.json
+            data/government_revenue/sbir_progression.json
+            data/government_revenue/identity_atlas.json
+            data/government_revenue/program_dossier.json
             data/government_revenue/budget_program_graph.json
             data/government_revenue/fms_case_graph.json
             data/government_revenue/recipient_resolution_coverage.json
@@ -954,6 +961,9 @@ jobs:
             site/government-revenue-data/dossiers.json
             site/government-revenue-data/subaward-dossiers.json
             site/government-revenue-data/idv-dossiers.json
+            site/government-revenue-data/sbir-progression.json
+            site/government-revenue-data/identity-atlas.json
+            site/government-revenue-data/program-dossier.json
             site/government-revenue-data/budget-program.json
             site/government-revenue-data/fms-cases.json
             site/government-revenue-data/candidates.json
@@ -987,6 +997,9 @@ jobs:
             data/government_revenue/dossiers.json \
             data/government_revenue/subaward_dossiers.json \
             data/government_revenue/idv_dossiers.json \
+            data/government_revenue/sbir_progression.json \
+            data/government_revenue/identity_atlas.json \
+            data/government_revenue/program_dossier.json \
             data/government_revenue/budget_program_graph.json \
             data/government_revenue/fms_case_graph.json \
             data/government_revenue/recipient_resolution_coverage.json \
@@ -999,6 +1012,9 @@ jobs:
             site/government-revenue-data/dossiers.json \
             site/government-revenue-data/subaward-dossiers.json \
             site/government-revenue-data/idv-dossiers.json \
+            site/government-revenue-data/sbir-progression.json \
+            site/government-revenue-data/identity-atlas.json \
+            site/government-revenue-data/program-dossier.json \
             site/government-revenue-data/budget-program.json \
             site/government-revenue-data/fms-cases.json \
             site/government-revenue-data/candidates.json \
@@ -1047,6 +1063,9 @@ jobs:
                 data/government_revenue/dossiers.json \
                 data/government_revenue/subaward_dossiers.json \
                 data/government_revenue/idv_dossiers.json \
+                data/government_revenue/sbir_progression.json \
+                data/government_revenue/identity_atlas.json \
+                data/government_revenue/program_dossier.json \
                 data/government_revenue/recipient_resolution_coverage.json \
                 data/government_revenue/candidate_ledger.jsonl \
                 data/government_revenue/candidate_queue.json \
@@ -1057,6 +1076,9 @@ jobs:
                 site/government-revenue-data/dossiers.json \
                 site/government-revenue-data/subaward-dossiers.json \
                 site/government-revenue-data/idv-dossiers.json \
+                site/government-revenue-data/sbir-progression.json \
+                site/government-revenue-data/identity-atlas.json \
+                site/government-revenue-data/program-dossier.json \
                 site/government-revenue-data/candidates.json \
                 site/government_revenue.html
               if [ -f data/government_revenue/budget_program_graph.json ]; then
@@ -1074,6 +1096,9 @@ jobs:
                 data/government_revenue/dossiers.json \
                 data/government_revenue/subaward_dossiers.json \
                 data/government_revenue/idv_dossiers.json \
+                data/government_revenue/sbir_progression.json \
+                data/government_revenue/identity_atlas.json \
+                data/government_revenue/program_dossier.json \
                 data/government_revenue/budget_program_graph.json \
                 data/government_revenue/fms_case_graph.json \
                 data/government_revenue/recipient_resolution_coverage.json \
@@ -1086,6 +1111,9 @@ jobs:
                 site/government-revenue-data/dossiers.json \
                 site/government-revenue-data/subaward-dossiers.json \
                 site/government-revenue-data/idv-dossiers.json \
+                site/government-revenue-data/sbir-progression.json \
+                site/government-revenue-data/identity-atlas.json \
+                site/government-revenue-data/program-dossier.json \
                 site/government-revenue-data/budget-program.json \
                 site/government-revenue-data/fms-cases.json \
                 site/government-revenue-data/candidates.json \

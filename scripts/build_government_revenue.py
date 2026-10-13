@@ -88,6 +88,11 @@ from engine.government_revenue.metrics import (  # noqa: E402
 from engine.government_revenue.workspace import is_valid_procurement_workspace  # noqa: E402
 from engine.government_revenue import program_ontology as _d5_program_ontology  # noqa: E402
 from engine.government_revenue import program_dossier as _d5_program_dossier  # noqa: E402
+from engine.government_revenue.sbir_progression import (  # noqa: E402
+    build_sbir_progression_payload,
+    is_valid_sbir_progression_payload,
+)
+from engine.government_revenue.point_in_time import analysis_clock  # noqa: E402
 from lib.pages import write_page  # noqa: E402
 
 log = logging.getLogger("build_government_revenue")
@@ -1167,6 +1172,31 @@ def _candidate_projection(
     )
 
 
+def _write_sbir_progression_twins(root: Path, raw: str) -> None:
+    _atomic_write_text(root / "data/government_revenue/sbir_progression.json", raw)
+    _atomic_write_text(root / "site/government-revenue-data/sbir-progression.json", raw)
+
+
+def _validate_sbir_progression(payload: object) -> dict:
+    if not is_valid_sbir_progression_payload(payload):
+        raise ValueError("government revenue SBIR progression is invalid")
+    return payload
+
+
+def _project_committed_sbir_progression(root: Path) -> None:
+    canonical = root / "data/government_revenue/sbir_progression.json"
+    twin = root / "site/government-revenue-data/sbir-progression.json"
+    if not canonical.exists():
+        if twin.exists():
+            raise ValueError("SBIR site projection exists without canonical bytes")
+        return  # Pre-integration checkouts have no SBIR read model.
+    raw = canonical.read_text(encoding="utf-8")
+    payload = _validate_sbir_progression(json.loads(raw))
+    if _canonical_json(payload) != raw:
+        raise ValueError("canonical SBIR progression bytes are non-canonical")
+    _write_sbir_progression_twins(root, raw)
+
+
 def build(
     root: Path,
     *,
@@ -1244,6 +1274,15 @@ def build(
     if not is_valid_identity_atlas_payload(identity_atlas):
         raise ValueError("government revenue identity atlas returned an invalid schema")
 
+    # Existing source owner only: no collection or inferred phase lineage.
+    # Validate before replacing any generation; a torn bundle must not publish.
+    sbir_cutoff = analysis_clock(
+        as_of or payload.get("generated_at") or payload.get("known_at") or payload.get("as_of")
+    )[1].isoformat()
+    sbir_progression = _validate_sbir_progression(
+        build_sbir_progression_payload(root=root, as_of=sbir_cutoff)
+    )
+
     canonical_dir = root / "data" / "government_revenue"
     canonical_dir.mkdir(parents=True, exist_ok=True)
     canonical_path = canonical_dir / "latest.json"
@@ -1276,6 +1315,7 @@ def build(
     _write_subaward_dossier_twins(root, _canonical_json(subaward_dossier))
     _write_idv_dossier_twins(root, _canonical_json(idv_dossier))
     _write_identity_atlas_twins(root, _canonical_json(identity_atlas))
+    _write_sbir_progression_twins(root, _canonical_json(sbir_progression))
     program_dossier_bundle = _d5_program_dossier.compose_program_dossier_bundle(
         ontology_graph=d5_ontology_graph,
         as_of=payload.get("as_of"),
@@ -1454,6 +1494,8 @@ def build_site_only(root: Path) -> tuple[Path, Path, Path]:
         if _canonical_json(program_dossier_bundle) != program_dossier_raw:
             raise ValueError("canonical D5 program dossier bytes are non-canonical")
         _write_program_dossier_twins(root, program_dossier_raw)
+
+    _project_committed_sbir_progression(root)
 
     candidate_projection = _candidate_projection(
         root,

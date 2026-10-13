@@ -86,6 +86,7 @@ from engine.government_revenue.subaward_dossiers import (
     subaward_dossier_content_id,
 )
 from engine.government_revenue.workspace import is_valid_procurement_workspace
+from engine.government_revenue.sbir_progression import is_valid_sbir_progression_payload
 
 def require_site_full_user(authorization: str | None = Header(default=None)) -> dict:
     """Authenticate first and enforce the paid payload even while staging.
@@ -128,6 +129,10 @@ _FMS_CASE_GRAPH_PATHS = (
     _REPO / "site" / "government-revenue-data" / "fms-cases.json",
 )
 _FMS_CASE_GRAPH_SCHEMA_PATH = _REPO / "contracts" / "government_revenue" / "government_fms_case.v1.schema.json"
+_SBIR_PROGRESSION_PATHS = (
+    _REPO / "data/government_revenue/sbir_progression.json",
+    _REPO / "site/government-revenue-data/sbir-progression.json",
+)
 _IDV_DOSSIER_PATHS = (
     _REPO / "data" / "government_revenue" / "idv_dossiers.json",
     _REPO / "site" / "government-revenue-data" / "idv-dossiers.json",
@@ -2898,6 +2903,25 @@ def event(event_id: str) -> dict:
         "authority": source.get("authority"),
         "event": _public_workspace_event(row),
     }
+
+
+@router.get("/api/government-revenue/sbir-progression")
+def sbir_progression() -> dict:
+    """Serve the bounded, precomputed source evidence after router entitlement.
+
+    Both projections must bind the same bytes. Never collect, resolve entities,
+    or turn missing source input into a ready-empty result at request time.
+    """
+    try:
+        canonical, twin = (path.read_bytes() for path in _SBIR_PROGRESSION_PATHS)
+        payload = json.loads(canonical)
+    except (OSError, ValueError, TypeError) as exc:
+        raise HTTPException(status_code=503, detail="SBIR progression unavailable") from exc
+    if canonical != twin:
+        raise HTTPException(status_code=503, detail="SBIR progression twin mismatch")
+    if not is_valid_sbir_progression_payload(payload):
+        raise HTTPException(status_code=503, detail="SBIR progression schema mismatch")
+    return payload
 
 
 @router.get("/api/government-revenue/fms-cases")
