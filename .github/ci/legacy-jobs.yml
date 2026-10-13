@@ -5073,6 +5073,7 @@ jobs:
       - "lib/intl_eod_publication.py"
       - "tests/test_intl_eod_publication.py"
       - "tests/test_intl_eod_publisher_integration.py"
+      - "tests/test_intl_chart_publisher.py"
       - "engine/__init__.py"
       - "engine/i18n.py"
       - "engine/canon.py"
@@ -5338,7 +5339,7 @@ jobs:
           npm install --no-save --package-lock=false playwright@1.63.0
           npx playwright install --with-deps chromium
       - name: Actual International builder and template contracts
-        run: python -m pytest tests/test_intl_eod_publisher_integration.py tests/test_intl_workspace_overview_render.py tests/test_intl_workspace_library_render.py tests/test_intl_workspace_integration.py tests/test_intl_workspace_inspector_render.py tests/test_intl_inspector_mount.py tests/test_intl_workspace_compare_render.py tests/test_intl_compare_integration.py tests/test_intl_workspace_generation_mount.py tests/test_intl_workspace_macro_render.py tests/test_intl_macro_publication_build.py tests/test_intl_risk_publication_build.py tests/test_intl_workspace_risk_render.py tests/test_intl_workspace_risk_ui_independent.py tests/test_intl_history_publication_build.py tests/test_intl_history_publication_independent.py tests/test_intl_workspace_history_render.py tests/test_intl_workspace_history_ui_independent.py -q
+        run: python -m pytest tests/test_intl_eod_publisher_integration.py tests/test_intl_chart_publisher.py tests/test_intl_workspace_overview_render.py tests/test_intl_workspace_library_render.py tests/test_intl_workspace_integration.py tests/test_intl_workspace_inspector_render.py tests/test_intl_inspector_mount.py tests/test_intl_workspace_compare_render.py tests/test_intl_compare_integration.py tests/test_intl_workspace_generation_mount.py tests/test_intl_workspace_macro_render.py tests/test_intl_macro_publication_build.py tests/test_intl_risk_publication_build.py tests/test_intl_workspace_risk_render.py tests/test_intl_workspace_risk_ui_independent.py tests/test_intl_history_publication_build.py tests/test_intl_history_publication_independent.py tests/test_intl_workspace_history_render.py tests/test_intl_workspace_history_ui_independent.py -q
       - name: Actual DOM controller and page entry in Chromium
         run: node --test tests/intl_workspace_generation_controller.test.cjs tests/intl_workspace_generation_integration.test.cjs tests/intl_workspace_compare_controller.test.cjs tests/intl_workspace_controller.test.cjs tests/intl_workspace_page.test.cjs tests/intl_workspace_legacy_navigation.test.cjs tests/intl_workspace_library_controller.test.cjs tests/intl_workspace_inspector_integration.test.cjs tests/intl_workspace_risk_controller.test.cjs tests/intl_workspace_history_controller.test.cjs tests/intl_workspace_history_independent.test.cjs
       - name: Generic table sort/filter in Chromium (templates/tablesort.js)
@@ -19891,6 +19892,11 @@ jobs:
     # contract-delta closure on 673a0a5a (a sparse worktree omits those trees).
     scope: exclusive
     paths:
+      - "engine/intl_performance_charts.py"
+      - "lib/intl_chart_geometry.py"
+      - "lib/intl_chart_mount.py"
+      - "lib/intl_chart_publication.py"
+      - "lib/intl_eod_publication.py"
       - "tests/fixtures/prophet_live/**"
       - "tests/fixtures/us_candidate_episode/**"
       - "config/fundamental_forensics/coverage/**"
