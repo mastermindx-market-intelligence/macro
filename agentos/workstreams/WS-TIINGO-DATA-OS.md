@@ -34,38 +34,45 @@ waves:
     status: in_progress
     pr: [8698, 945, 955, 8986, 9004, 9018, 9020, 9022, 9027]
 next_action: >-
-  Wave13 now accounts for all original 5000 selections exactly once across five
-  settled phases: 4994 qualified successes, six held transport failures and zero
-  never-admitted remainder. Qualified responses add 10976717 bars and 2468556453
-  raw bytes. All 28 proof hashes, actual admission mappings and phase receipt
-  clocks match. Preserve the original and three intermediate false completion
-  flags; no attempted failure was retried. LDHOF, LDHUF, LDKYQ, LDSSF, LFYC and
-  LIBHB remain held. The reused census is 38165 nonempty histories, 80781264 bars,
-  112 empty responses, 9411 uncaptured catalogue windows and one WTFNF whole-receipt
-  source-quality quarantine; uncaptured is not never-attempted or a retry queue.
-  Independent review accepted truthful outcome accounting and corrected the next
-  scope gate so a new final authentication/access refusal cannot admit further
-  capture merely through a symbol hold. Actual serial3 succeeded and qualified.
-  Continue original wave14, actually started 2026-10-12 22:45:37 UTC after fresh
-  source, collision, quota and storage checks. Its 5000 selections exclude every
-  earlier whole reservation and all 22 held symbols. Qualify only owned completed
-  responses; keep the unchanged collector/key/module, four in flight, rolling
-  local admissions no faster than four per five seconds, 24 GiB raw threshold,
-  40 GiB admission floor and first-error stop. Save actual settlement and quality
-  partition, then advance the remaining disjoint eligible catalogue work.
-  Macro source/evidence 9018, 9020, 9022 and 9027 are merged. New safe proof lives
-  in docs/tiingo-evidence/20261012-wave13-held-outcome/. The installed research
+  Preserve the accepted wave13 five-phase outcome: all original 5000 selections
+  accounted exactly once, 4994 qualified successes, six held transport failures,
+  zero never-admitted remainder and no failed retry. Continue original wave14
+  capture 41115, actually started 2026-10-12 22:45:37 UTC on its unchanged carrier.
+  Its first finite qualification window 7455 settled and the actual terminal rc=0
+  was consumed. Prefixes01–05 verify 1048 responses and 2218523 disjoint bars;
+  that snapshot totals 39213 nonempty histories and 82999787 bars. Window02 is
+  actually running on 26956 with one qualification writer and prefixes06–13;
+  no original capture settlement or all 5000 success is claimed. Keep all whole
+  reservations, 22 held symbols, four-in-flight rolling five-second pacing,
+  first-error stop, 24 GiB raw threshold and40 GiB floor. Reconcile actual settlement
+  and qualify every successful response before admitting a subsequent scope.
+  The final 4392 unreserved catalogue plan is prepared, not launched. Its future
+  gate must verify actual original wave14 terminal consumption, full success,
+  exact plan/admission/request identity and verified empty/nonempty responses;
+  a new failure requires specific disposition review rather than automatic retry.
+  Macro #9038 merged as 99c3ae524e19ffe3ca765e24ad3deaf0bd84fc8d before expanded CI
+  settled. Preserve that acknowledged timing error. Original 38318955038 later
+  completed SUCCESS on exact 2bbec46c985a2064ab3ae071c544e4a809c6cd39 with all twelve
+  expanded jobs. Require actual terminal project CI before every future merge.
+  New byte-identical preparation proof is in
+  docs/tiingo-evidence/20261012-final-capture-preparation/. The installed research
   release remains 0b204cde017b88a9fec03ddb583f6b5e02ea4886; accepted real Lab/reader
   proof remains valid. Four contracts are PRODUCED, twenty PROPOSED.
-  Terminal 955 was observed OPEN/BLOCKED at 628dc9e1a0bc87ecb0b94347a63624a4bfcb9681;
-  dispatched CI 38308545171 has all twelve actual jobs successful. Current PR run
-  38308552647 remains action_required and its required aggregate absent. Preserve
-  the original approval refusal and require protected landing before the existing
-  VPS builder path. No release or browser acceptance is claimed. The next BOATS
-  opening is 2026-10-13 00:00 UTC. Standalone split, SHW/PFE and provider access
-  holds remain; 75 accepted fundamental captures across 25 companies serve about
-  three years. Deep/all-symbol serving, dated identity, PIT and responsive live
-  BOATS acceptance remain open. Continue ready work.
+  At the actual 2026-10-13 00:00 UTC BOATS opening, freshly verify quota, source,
+  prior partition custody and storage, then launch only the reviewed finite raw
+  method 5354cc084fb6a8e65653894b0306c9bf89dd940dcfa19cfa779523f5a648933d.
+  First gap or handshake refusal stops without reconnect. Qualify its actual
+  settled raw receipts with the reviewed control-only correction; all raw bytes
+  remain accounted, and only market-bearing segments enter reader/tape checks.
+  Terminal #955 remains OPEN/BLOCKED at 628dc9e1a0bc87ecb0b94347a63624a4bfcb9681;
+  existing dispatched 38308545171 passed all twelve jobs, while PR 38308552647 is
+  action_required with required aggregate absent. Preserve the actual approval
+  refusal and require protected landing before the existing VPS builder path.
+  No release, publication or responsive live acceptance is claimed. Standalone
+  split, SHW/PFE and provider access holds remain. The 75 accepted fundamentals
+  captures across 25 companies serve about three years; deep/all-symbol serving,
+  dated identity, PIT and genuine live BOATS consumer acceptance remain open.
+  Continue ready work.
 owns_paths:
   - collectors/tiingo_archive.py
   - lib/dataos/tiingo_*.py
@@ -73,6 +80,7 @@ owns_paths:
   - docs/TIINGO_DATA_OS_INGESTION_20261009.md
   - docs/tiingo-evidence/
 artifacts:
+  - docs/tiingo-evidence/20261012-final-capture-preparation/
   - docs/tiingo-evidence/20261012-wave13-held-outcome/
   - docs/tiingo-evidence/20261012-wave12-quality-partition/
   - docs/TIINGO_DATA_OS_INGESTION_20261009.md
