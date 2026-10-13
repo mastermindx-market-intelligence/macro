@@ -1119,13 +1119,12 @@ def compute(
     }
 
     # ------------------------------------------------------------------
-    # 10. Top-level asof: prefer frame_asof, fall back to lq_asof or today
+    # 10. Top-level asof: observation time only — never fabricate freshness
     # ------------------------------------------------------------------
-    asof_str: str = (
-        frame_asof
-        or lq_asof
-        or str(date.today())
-    )
+    # `asof` is consumed as a data-freshness timestamp downstream. Falling
+    # back to the wall clock makes an all-missing/degraded artifact look fresh,
+    # so leave it unknown when neither core source supplies an observation date.
+    asof_str: str | None = frame_asof or lq_asof
 
     # ------------------------------------------------------------------
     # 11. Degraded flag
@@ -1194,7 +1193,9 @@ def degraded_payload(gaps: list[str], summary: str = "Build error — see gaps."
     """Minimal valid all-null payload for absolute fail-open paths."""
     return {
         "schema": _SCHEMA,
-        "asof": str(date.today()),
+        # No source observation survived this absolute fail-open path.
+        # Keep freshness unknown instead of stamping the build date.
+        "asof": None,
         "phase_status": _PHASE_STATUS,
         "authority": _AUTHORITY,
         "headline": {"state": "data_degraded", "summary": summary},
