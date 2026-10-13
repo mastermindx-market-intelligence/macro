@@ -6577,6 +6577,7 @@ jobs:
           tests/test_fundamental_forensics_peer_cohort.py
           tests/test_fundamental_forensics_periods.py
           tests/test_fundamental_forensics_private_state.py
+          tests/test_fundamental_forensics_production_api_chain.py
           tests/test_fundamental_forensics_production_dataset_store.py
           tests/test_fundamental_forensics_production_lineage.py
           tests/test_fundamental_forensics_production_provider.py
