@@ -1838,11 +1838,13 @@ jobs:
       # closure, and the suite resolves every declared owner reader on the checked-out
       # base in addition to schema/fixture semantics. The FIF owner contracts that
       # once preceded it here moved to fif-kernel-guards (gate: code) on 2026-10-12.
+      # 2026-10-12 packing curation (#8805 shape): tests/test_semiconductor_native_identity.py
+      # moved to semiconductor-b-boundary (scope: exclusive, gate: code). Leaving it on this
+      # broad job added 2 declared weight-seconds to every ordinary code PR.
       - name: K1 Evidence Foundation ref, block, recipe, and hostile-fixture contracts
         run: >
           python -m pytest
           tests/test_evidence_foundation_contract.py
-          tests/test_semiconductor_native_identity.py
           tests/test_evidence_foundation_product_contract.py -q
       # K2-B is a pure contract/fixture compiler which deliberately does not import
       # an institutional owner or materialize a store. Keeping its hostile contract
@@ -3353,12 +3355,10 @@ jobs:
       # with exactly `pytest pyyaml jinja2 fastapi httpx`: 10 passed.
       - name: member Earnings Wire API transport (auth gate + private headers)
         run: python -m pytest tests/test_earnings_api.py -q
-      # Semiconductor B T09: the paid theme-research transport sits behind the SAME
-      # site-full boundary and header contract as the Earnings Wire API; its three
-      # suites need this job's fastapi/httpx line (rights refresh + private binding
-      # included so the fail-closed paths run where the app imports).
-      - name: paid theme research transport (auth gate, rights owner veto, private binding; Semiconductor B T09)
-        run: python -m pytest tests/test_theme_research_api.py tests/test_theme_research_rights_refresh.py tests/test_theme_research_private_binding.py -q
+      # 2026-10-12 packing curation (#8805 shape): the Semiconductor B T09 paid
+      # theme-research transport step moved to semiconductor-b-boundary (scope:
+      # exclusive, gate: code). The three suites still run there; this broad job
+      # no longer carries their +8 declared weight onto ordinary code PRs.
 
   regwall-boundary:
     if: ${{ false }}
@@ -17346,17 +17346,10 @@ jobs:
         run: TZ=UTC python -m pytest tests/test_theme_graph_probation_hierarchy.py -q
       - name: theme graph — source-rights registry shape + F20 grandfather pin
         run: TZ=UTC python -m pytest tests/test_theme_sources_registry.py -q
-      # Semiconductor Theme Intelligence B (carrier #7870, WS:GMI-THEME-GRAPH). Split so a
-      # red names the contract: the fresh rights snapshot + private-root admission
-      # classifier (T03) and the synthetic research-input corpus + loader (T01).
-      - name: theme research — fresh rights snapshot + private-root admission classifier (Semiconductor B T03)
-        run: TZ=UTC python -m pytest tests/test_theme_research_rights_refresh.py tests/test_theme_research_private_binding.py -q
-      - name: semiconductor theme research — synthetic fixture corpus, loader and input contract (Semiconductor B T01)
-        run: TZ=UTC python -m pytest tests/test_semiconductor_research_inputs.py -q
-      - name: theme graph — shared curation_assertion v1 contract + semiconductor industrial-context semantics (Semiconductor B T02)
-        run: TZ=UTC python -m pytest tests/test_theme_graph_curation_assertion.py tests/test_semiconductor_assertion_semantics.py -q
-      - name: market ontology — semiconductor theme research composition (industrial views, response contract, temporal modes; Semiconductor B T07/T08)
-        run: COLLECT_LANE=nightly TZ=UTC python -m pytest tests/test_semiconductor_industrial_views.py tests/test_semiconductor_research_composition.py tests/test_semiconductor_research_temporal.py -q
+      # 2026-10-12 packing curation (#8805 shape): Semiconductor B T01, T02, T03 and
+      # T07/T08 moved to semiconductor-b-boundary (scope: exclusive, gate: code).
+      # The suites still run there. Leaving the four steps on this broad job added
+      # 21 declared weight-seconds to every ordinary code PR.
       - name: market ontology — GMI exposure composer (shock->theme->company, rights + as-of + typed nulls)
         run: TZ=UTC python -m pytest tests/test_market_ontology_exposure_map.py -q
       - name: market ontology — theme-tier guard (category and micro_theme nodes never compose as themes)

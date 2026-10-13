@@ -4881,7 +4881,7 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # reads both names with ast.literal_eval, so keep them plain module-level literals.
 PACKING_PROBES = (
     ("templates/index.html", 135, 5_827),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 134, 5_629),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 134, 5_600),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
     ("engine/prophet/plan_book.py", 129, 5_600),
 )
 # Twelve packs per shape was the pre-curation measurement.
@@ -5611,28 +5611,25 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     #8805 shape (move the added suites into an exclusive job with their
     measured closure) is the curation candidate.
 
-    2026-10-12 (#7870, third base-sync: origin/main c7543cd1cd94 merged
-    into the carrier at 839bd6a1b065). Measured on the merged tree with
-    this file's own packing_probe_measurements, and per selected job with
-    scripts/run_ci_pack.py's _job_weight over each side's manifest: the
-    selections are identical on main and merged (134 / 134 / 129 jobs; no
-    job enters or leaves any probe), and the ONLY per-job weight deltas on
-    all three probes are the carrier's same signal-contract 134 -> 136,
-    tier-gate 41 -> 49 and unrun-intl-libraries 101 -> 122 (+31) recorded in
-    both #7870 entries above. Main alone reads 5,795 / 5,598 / 5,558 (its
-    leader-radar-unit curation took templates/index.html from 135 to 134
-    jobs); merged reads 5,826 / 5,629 / 5,589. templates/index.html stays
-    under its 5,827 ceiling and plan_book.py under 5,600; only
-    scripts/build_free_content.py breaches (5,629 over 5,602) because main's
-    own growth since c50af4eb (5,571 -> 5,598) consumed the headroom. Per
-    the rule the first #7870 entry recorded, this is a third raise on
-    evidence to the exact merged measurement with no padding:
-    scripts/build_free_content.py WEIGHT 5,602 -> 5,629. No other ceiling
-    moves; the 10-pack bound stays; no suite, registration, assertion,
-    selector or declared weight is reduced to fit. The raise stays recorded
-    by the seat and owed to the CI-contract owner's acceptance, and the
-    #8805-shape curation of the three carrier jobs remains the named
-    follow-up that would retire all three raises.
+    2026-10-12 (#7870 packing curation, #8805 shape): the third base-sync
+    (origin/main c7543cd1cd94 merged into the carrier at 839bd6a1b065) had
+    measured 5,826 / 5,629 / 5,589, with the ONLY per-job weight deltas the
+    carrier's signal-contract 134 -> 136, tier-gate 41 -> 49 and
+    unrun-intl-libraries 101 -> 122. That measurement is retired by moving
+    the added suites, not by another ceiling raise. ``signal-contract`` drops
+    ``tests/test_semiconductor_native_identity.py`` from its K1 step (136 ->
+    134). ``tier-gate`` drops the T09 paid-transport step (49 -> 41).
+    ``unrun-intl-libraries`` drops the T01, T02, T03 and T07/T08 steps (122
+    -> 101). Each suite already runs in ``semiconductor-b-boundary``, which
+    is ``scope: exclusive`` and whose declared paths already name the suite
+    and the closure the closure audit measures, so no path is added and no
+    new job is created. That job is not selected by any probe. Declared
+    weights return to main's 134 / 41 / 101, and the probes that read
+    5,826 / 5,629 / 5,589 return to main's 5,795 / 5,598 / 5,558. The
+    scripts/build_free_content.py WEIGHT ceiling returns to 5,600 (the
+    5,602 and 5,629 raises are both retired). No other ceiling moves. No
+    suite, registration, assertion or selector is deleted: the exclusive
+    gate:code job remains the sole ``run:`` owner.
     """
     rows = packing_probe_measurements(
         MANIFEST, PACKING_PROBES, max_packs=PACKING_PROBE_MAX_PACKS
