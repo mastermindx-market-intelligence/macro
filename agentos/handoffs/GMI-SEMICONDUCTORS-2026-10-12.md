@@ -53,14 +53,14 @@ changed:
       an Executive lease; it ends with that session), on the SSD worktree
       pr-7891-tech-ex-semis-ci-red-3ad2ee7fc625af4e (lane branch lane/pr-7891-ci-red created at
       861d4049 at 00:17:24Z; at 00:24Z the worktree HEAD was detached at the throwaway merge
-      c871e194 of origin/main 6e7ef32c into 861d4049, parents 861d4049 and 6e7ef32c, which no
+      c871e194 of the 2026-10-01 main commit 6e7ef32c (run 36806663101's base) into 861d4049, parents 861d4049 and 6e7ef32c, which no
       branch points at and which is never to be pushed; the worktree HEAD and branch reflogs,
       re-read 01:29Z with git reflog --date=iso-strict, show the branch moved to the lane's merge
       commit 64bbbfa8 at 00:34:55Z, unpushed, remote tip still 861d4049 at 01:29:41Z), bound by
       Sol's CONTINUE ruling 5825752169; the original
       worktree's two uncommitted prior-seat test files are recorded as files of unknown
       liveness, preserved untouched.
-  - path: agentos/handoffs/GMI-SEMICONDUCTORS-2026-10-11-base-sync-delta-review.md
+  - path: agentos/handoffs/GMI-SEMICONDUCTORS-base-sync-delta-review-2026-10-11.md
     what: >
       Carry-over (a): the validator claim now says the run was on the working tree after the
       R-ENE-07 edits and before the second commit, i.e. the exact content committed as
@@ -69,12 +69,12 @@ changed:
       (line 117) kept its pre-existing note that `ps -o lstart=` prints host-local time (PDT,
       UTC-7); main's line 117 carried `read 19:13:06Z`; this PR's first commit (693b6a97) reworded that
       clause, the second repair (94866e31) left line 117 alone, and the third repair removed the
-      clause because the record stores no read time for the `ps -o lstart=` read and the seat
+      clause because the record stores no read time for the successful `ps -o lstart=` read (line 118 times only the post-exit empty read, 19:22:39Z) and the seat
       attributes 19:13:06Z to the 36e2064d check-run read on line 124; the acc72f3f/36e2064d result
       (line 124) now qualifies both check-run read times, 19:13:04Z and 19:13:06Z, as the seat's
       own log timestamps, not reproducible from the carrier (the 19:13:04Z qualification and the
       matching WS-GMI-SEMICONDUCTORS lines 94 and 97 were added by the third repair).
-  - path: agentos/handoffs/GMI-SEMICONDUCTORS-2026-10-12-frontier-delegation.md
+  - path: agentos/handoffs/GMI-SEMICONDUCTORS-2026-10-12.md
     what: >
       New (this file). Carry-over (d): re-read #4 (#8847 comment 6113181732, item (d)) found
       that "the handoff's verified summary omits the 839bd6a1 hosted-CI entry (handoff lines
@@ -95,7 +95,7 @@ verified:
     result: "written to the seat scratchpad as CENSUS_2026-10-11.md (121 lines, census time 2026-10-12T00:00:14Z-00:07:11Z, no writes): rank 1 #8245 P2 repair, 2 #7870 Source Continuity substitute (deferred to the post-#8250 head), 3 #7891 red + Sol CONTINUE, 4 #8002 P8 packets, 5 #7284 P2 then #7769; 636 open PRs against _MAX_COLLISION_PRS=490; fence C-2 (Theme-Graph D2E/W3B/W3C under a live Astra principal) untouched"
   - claim: "Three Opus suborchestrators were launched for #8245, #7891 and #7284, each confined to its own SSD worktree, and none had pushed or moved a PR head when checked."
     command: "Agent(subagent_type: general-purpose, model: opus, ROUTE: ORCHESTRATION, WHY OPUS for #8245 'bounded suborchestration of a private-store reader-contract repair (review 5927055846) that must be decomposed into fabric executor contracts, adjudicated from returned evidence, integrated and locally verified; the seat keeps pickup-note, push, watcher, audit-consumption and merge gates', for #7891 'bounded suborchestration of a CI-red diagnosis and repair on a Draft/HOLD carrier with a strict-xfail law and an owner-contract seam ruled by Sol; each failure classified introduced-vs-inherited with evidence and the fix kept minimal', for #7284 'bounded suborchestration of a reviewer-specified owner repair whose discriminator spans the nightly workflow arguments, the all-universe quality gate in scripts/collect.py and a reconciler that also mutates regional memberships'; POOL_ORCHESTRATOR_ID orch-8245-20261011 / orch-7891-20261012 / orch-7284-20261012; run_in_background) x3; for w in pr-8245-cdv1-t4-scoped-reader-54c65dbcd080bd2b pr-7891-tech-ex-semis-ci-red-3ad2ee7fc625af4e pr-7284-sector-roster-p2-637f4aeeae8537fc; do git -C <base>/$w branch --show-current; git log --oneline -3; git status --short | wc -l; done"
-    result: "at 2026-10-12T00:24Z: #8245 worktree on claude/cdv1-t4-private-publication-v2 at b019f975, dirty 0; #7891 worktree HEAD detached at the THROWAWAY red-proof merge commit c871e194 (merge of origin/main 6e7ef32c into 861d4049, on no branch; git branch --show-current printed nothing), lane branch lane/pr-7891-ci-red at 861d4049 (the branch position is from the lane worktree's branch reflog, which shows 861d4049 from 00:17:24Z to 00:34:55Z; this command does not print it), dirty 0; #7284 worktree on claude/us-sector-membership-reconcile-20260917-sol at 6ea0763e, dirty 0; remote tips of the three PR branches not read by this command at launch; the 01:06:54Z entry below read them (b019f975, 861d4049, 6ea0763e); each child is a session-native background child of the seat session, not an Executive lease, and ends with that session"
+    result: "at 2026-10-12T00:24Z: #8245 worktree on claude/cdv1-t4-private-publication-v2 at b019f975; #7891 worktree HEAD detached at the THROWAWAY red-proof merge commit c871e194 (merge of the 2026-10-01 main commit 6e7ef32c (run 36806663101's base) into 861d4049, on no branch; git branch --show-current printed nothing), lane branch lane/pr-7891-ci-red at 861d4049 (the branch position is from the lane worktree's branch reflog, which shows 861d4049 from 00:17:24Z to 00:34:55Z; the loop as transcribed carries `-C` only on `branch --show-current`, so this command does not print that lane-branch position and does not print the per-worktree SHAs or dirty counts); #7284 worktree on claude/us-sector-membership-reconcile-20260917-sol at 6ea0763e; the 00:24Z dirty-count read is not recoverable; remote tips of the three PR branches not read by this command at launch; the 01:06:54Z entry below read them (b019f975, 861d4049, 6ea0763e); each child is a session-native background child of the seat session, not an Executive lease, and ends with that session"
   - claim: "The fabric is responsive at the pool/lease-broker layer; minimax showed two active leases under one orchestrator, which the seat attributes to lane A from its launch logs (inferred, not read from the broker)."
     command: "pool status"
     result: "2026-10-12T00:24:51Z host=m2studio orchs=1: bailian cap 21 active 0; minimax cap 7 active 2 (one orchestrator); grok 17/0; cursor 11/0; glm 24/0; lane A's scratch directory holds E1/E2/E3 executor packets and launch logs; the Executive OS connector remains OAuth-gated in this session"
@@ -111,7 +111,7 @@ unverified:
 unresolved:
   - "#7870 gates (4) and (5) are non-seat rulings already requested (6106057199, 6106134520, 6107602010, 6111839715, 6112182784); #8250 lands first; the post-#8250 merge of main into #7870, its non-author delta read and the five-leg Source Continuity census at that head are owed before any release decision."
   - "#8002 rows NUC-V1-01 / NUC-V1-02 are PREPARED_NOT_MINTED (row state) and stay UNADMITTED (rights state) until the #7870 rights lane returns nrc_official / doe_official; that lane is QUEUED_NOT_STARTED, blocked on the Robotics R1 corpus (WS-GMI-SEMICONDUCTORS line 40) and sequenced after #8250 and the #7870 release; #8002 merge stays stacked behind #7870."
-  - "#7769 first-frame test repair (tests/test_stock_dashboard_first_frame.py, red ci-pack-9) is queued behind #7284; the hold-release 5790591847 covered 11c89b3c only, so any new head needs a fresh non-seat release; 8377ea535e is never pushed."
+  - "#7769 first-frame test repair (tests/test_stock_dashboard_first_frame.py) is queued behind #7284; the hold-release 5790591847 covered 11c89b3c only, so base-sync head 9d98f732 still needs a fresh non-seat release (non-author ACCEPT; ci-pack-9 success, the previous red pack; 115 passed; MERGE NOT_YET). A1: fixture, receipt and manifest digests re-minted together to 747b63f0 at 692bf4f8; loaded-asset pins last re-minted at ccd7dfe2, which re-pinned only the receipts' loaded-asset entries for site/account.js and site/theme.js plus the manifest's sha256 of each receipt file; a15aeeb3 (#7962) had already cured this drift class on main hours after the base. A2: 8377ea535e (a #7669 composition, author ubuntu2, chore: compose #7669 with current main, parents 2e6bea89 + a7e00a9) is not on any origin ref or PR head; GitHub nonetheless holds the object."
   - "Robotics (#7908 reverted by #8013) re-lands only after #7870; no re-land PR exists."
   - "Executive OS and Linear MCP connectors are unauthenticated in this session; fabric labor runs through the agent-pools CLI on the lease broker, not through the Executive connector."
 next_actions:
