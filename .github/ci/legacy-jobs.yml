@@ -3555,6 +3555,7 @@ jobs:
     paths:
       # Native DailyBrief registration/producer import closure (PR #9037).
       - "engine/prophet_candidate_state.py"
+      - "engine/prophet_candidate_state_sources.py"
       - "engine/prophet_daily_brief.py"
       - "engine/prophet_entry_availability.py"
       - "engine/prophet_strategy_definition.py"
@@ -5760,6 +5761,7 @@ jobs:
       # Native DailyBrief registration/producer import closure (PR #9037).
       - "app/prophet_daily_brief.py"
       - "engine/prophet_candidate_state.py"
+      - "engine/prophet_candidate_state_sources.py"
       - "engine/prophet_daily_brief.py"
       - "engine/prophet_entry_availability.py"
       - "engine/prophet_strategy_definition.py"
@@ -12007,6 +12009,7 @@ jobs:
       # Native DailyBrief registration/producer import closure (PR #9037).
       - "engine/path_risk_signals.py"
       - "engine/prophet_candidate_state.py"
+      - "engine/prophet_candidate_state_sources.py"
       - "engine/prophet_daily_brief.py"
       - "engine/prophet_entry_availability.py"
       - "engine/prophet_strategy_definition.py"
@@ -14082,6 +14085,7 @@ jobs:
     paths:
       # Native DailyBrief registration/producer import closure (PR #9037).
       - "engine/prophet_candidate_state.py"
+      - "engine/prophet_candidate_state_sources.py"
       - "engine/prophet_daily_brief.py"
       - "engine/prophet_entry_availability.py"
       - "engine/prophet_strategy_definition.py"
@@ -14799,6 +14803,7 @@ jobs:
     paths:
       # Native DailyBrief registration/producer import closure (PR #9037).
       - "engine/prophet_candidate_state.py"
+      - "engine/prophet_candidate_state_sources.py"
       - "engine/prophet_daily_brief.py"
       - "engine/prophet_entry_availability.py"
       - "engine/prophet_strategy_definition.py"
@@ -17863,6 +17868,7 @@ jobs:
     paths:
       # Native DailyBrief registration/producer import closure (PR #9037).
       - "engine/prophet_candidate_state.py"
+      - "engine/prophet_candidate_state_sources.py"
       - "engine/prophet_daily_brief.py"
       - "engine/prophet_entry_availability.py"
       - "engine/prophet_strategy_definition.py"
@@ -19296,6 +19302,7 @@ jobs:
       # Native DailyBrief registration/producer import closure (PR #9037).
       - "engine/path_risk_signals.py"
       - "engine/prophet_candidate_state.py"
+      - "engine/prophet_candidate_state_sources.py"
       - "engine/prophet_daily_brief.py"
       - "engine/prophet_entry_availability.py"
       - "engine/prophet_strategy_definition.py"
@@ -21931,6 +21938,7 @@ jobs:
     paths:
       # Native DailyBrief registration/producer import closure (PR #9037).
       - "engine/prophet_candidate_state.py"
+      - "engine/prophet_candidate_state_sources.py"
       - "engine/prophet_daily_brief.py"
       - "engine/prophet_entry_availability.py"
       - "engine/prophet_strategy_definition.py"
@@ -23547,6 +23555,7 @@ jobs:
       # Native DailyBrief registration/producer import closure (PR #9037).
       - "app/prophet_daily_brief.py"
       - "engine/prophet_candidate_state.py"
+      - "engine/prophet_candidate_state_sources.py"
       - "engine/prophet_daily_brief.py"
       - "engine/prophet_entry_availability.py"
       - "engine/prophet_strategy_definition.py"
