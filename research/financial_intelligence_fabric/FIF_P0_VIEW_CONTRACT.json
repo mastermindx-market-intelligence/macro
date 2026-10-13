@@ -22,14 +22,15 @@
         "scripts/build_fundamental_forensics.py:731",
         "tests/test_fundamental_forensics_page.py:85"
       ],
-      "gap": "Largest is review-priority then recency, not magnitude; only the built detector set is supported.",
-      "p2_question": "Should J1 rank by magnitude, or keep today's review-priority then recency order?"
+      "gap": "Magnitude is a value on the card, not the sort key; only the built detector set is supported.",
+      "p2_question": "Should J1 rank by magnitude, or keep today's review-priority then recency order?",
+      "p2_ruling": "Keep review-priority-then-recency (orderedFindings); show magnitude on the card (R2)."
     },
     {
       "journey_id": "J2",
       "name_en": "Open a displayed metric to its exact source occurrence or permitted document span and basis",
       "name_zh": "从展示的指标打开到精确来源出现位置或允许的文档区间及其依据",
-      "status": "partial",
+      "status": "exists",
       "evidence": [
         "engine/fundamental_forensics/disclosure_projection.py:369",
         "templates/fundamental_forensics.js:1474",
@@ -37,14 +38,15 @@
         "templates/fundamental_forensics.js:2690",
         "scripts/build_fundamental_forensics.py:183"
       ],
-      "gap": "Disclosure receipts carry document spans; numeric findings and statements/compare cells link only to company-level EDGAR URLs or plain td values.",
-      "p2_question": "Should statements and compare cells open an occurrence-level source span, or stay company-level EDGAR links?"
+      "gap": "Query cells, statement cells, disclosure changes and redlines are occurrence-level controls; a value with no recorded span renders the explicit unavailable state.",
+      "p2_question": "Should statements and compare cells open an occurrence-level source span, or stay company-level EDGAR links?",
+      "p2_ruling": "Every number is a source control into #ff-evidence on occurrence/span; disabled copy when no span (R3)."
     },
     {
       "journey_id": "J3",
       "name_en": "Rewind the query cutoff to a historical answer or absence",
       "name_zh": "将查询截止日回拨到历史答案或缺失",
-      "status": "partial",
+      "status": "exists",
       "evidence": [
         "app/forensics.py:627",
         "app/forensics.py:841",
@@ -53,26 +55,28 @@
         "templates/fundamental_forensics.js:916",
         "templates/fundamental_forensics.js:2171"
       ],
-      "gap": "Cutoff-aware financial query and addressable attested-history snapshots exist on the API; the page has no cutoff control and reads only /latest.",
-      "p2_question": "Where does the cutoff or as-of control live, and how does the page show a historical absence?"
+      "gap": "Desk as-of drives the three-policy query and the revisions table; issuer identity and period starts still depend on the P1-b data contract.",
+      "p2_question": "Where does the cutoff or as-of control live, and how does the page show a historical absence?",
+      "p2_ruling": "Desk as-of re-queries query+revisions; three-column original/latest/restated; default latest (R4)."
     },
     {
       "journey_id": "J4",
       "name_en": "Compare a valid peer cohort, see excluded peers, and recover the saved comparison",
       "name_zh": "对比有效同业组、查看被排除同业并恢复已保存的对比",
-      "status": "missing",
+      "status": "partial",
       "evidence": [
         "templates/fundamental_forensics.js:862",
         "templates/fundamental_forensics.js:3275"
       ],
-      "gap": "No peer or cohort UI, no exclusion reasons, no saved-comparison store; the only shareable page state is ?symbol= for one company.",
-      "p2_question": "Who owns peer-cohort membership, exclusion reasons, and saved-comparison persistence?"
+      "gap": "URL permalink exists; saved comparison is X2.",
+      "p2_question": "Who owns peer-cohort membership, exclusion reasons, and saved-comparison persistence?",
+      "p2_ruling": "Read-only C1 panel; URL params only; no localStorage; X2 owns saved comparisons (R5)."
     },
     {
       "journey_id": "J5",
       "name_en": "Export and refresh the same values, policies, and source references through API and Excel",
       "name_zh": "通过 API 和 Excel 导出并刷新相同的数值、策略和来源引用",
-      "status": "partial",
+      "status": "exists",
       "evidence": [
         "app/forensics.py:128",
         "app/forensics.py:147",
@@ -81,8 +85,9 @@
         "templates/fundamental_forensics.js:643",
         "templates/fundamental_forensics.js:765"
       ],
-      "gap": "State, health, attested-history, and financial POST APIs exist; the page has no export control, no Excel, and refresh is reload plus cache no-store.",
-      "p2_question": "Where is the export entry point on this page, and does it cover API, Excel, or both?"
+      "gap": "Export POSTs the current query body to query.xlsx and stays disabled where the route or entitlement is missing.",
+      "p2_question": "Where is the export entry point on this page, and does it cover API, Excel, or both?",
+      "p2_ruling": "One Export in the desk header POSTs X1 query.xlsx with the current query body; reload is refresh (R6)."
     }
   ],
   "panels": [
@@ -169,6 +174,24 @@
       "dom_id": "ff-receipt-inspector",
       "data_source": "attested-history root waterfall for the selected root_cell_id",
       "journeys": ["J2", "J3"]
+    },
+    {
+      "panel_id": "desk_header",
+      "dom_id": "ff-desk-header",
+      "data_source": "company picker + health clocks + as-of + export",
+      "journeys": ["J1", "J3", "J5"]
+    },
+    {
+      "panel_id": "revisions",
+      "dom_id": "ff-revisions",
+      "data_source": "POST financial/query x3 policies + POST financial/revisions",
+      "journeys": ["J3"]
+    },
+    {
+      "panel_id": "peers",
+      "dom_id": "ff-panel-peers",
+      "data_source": "payload.peer_cohort CohortTable.to_dict plus URL policy params",
+      "journeys": ["J4"]
     }
   ],
   "page_endpoints": [
@@ -176,13 +199,14 @@
     {"method": "GET", "path": "/api/forensics/health"},
     {"method": "GET", "path": "/api/forensics/v1/attested-history/latest"},
     {"method": "GET", "path": "/api/forensics/v1/attested-history/snapshots/{snapshot_id}/roots"},
-    {"method": "GET", "path": "/api/forensics/v1/attested-history/snapshots/{snapshot_id}/roots/{root_cell_id}"}
-  ],
-  "api_not_called_by_page": [
+    {"method": "GET", "path": "/api/forensics/v1/attested-history/snapshots/{snapshot_id}/roots/{root_cell_id}"},
     {"method": "POST", "path": "/api/forensics/v1/financial/query"},
     {"method": "POST", "path": "/api/forensics/v1/financial/revisions"},
-    {"method": "POST", "path": "/api/forensics/v1/financial/packet"},
-    {"method": "POST", "path": "/api/forensics/v1/financial/statements"}
+    {"method": "POST", "path": "/api/forensics/v1/financial/statements"},
+    {"method": "POST", "path": "/api/forensics/v1/financial/query.xlsx"}
+  ],
+  "api_not_called_by_page": [
+    {"method": "POST", "path": "/api/forensics/v1/financial/packet"}
   ],
   "payload_contract": {
     "state_keys": [
@@ -213,7 +237,8 @@
       "prior_document",
       "current_document",
       "redline_ops",
-      "redlines"
+      "redlines",
+      "entity_id"
     ],
     "period_keys": [
       "fiscal_year",
@@ -244,7 +269,8 @@
       "period_prior",
       "current_accession",
       "detector",
-      "authority"
+      "authority",
+      "occurrence_id"
     ],
     "disclosure_finding_keys": [
       "finding_id",
@@ -289,12 +315,90 @@
       "coverage_summary",
       "companyfacts_conversion_receipt",
       "authority"
+    ],
+    "query_cell_keys": [
+      "root_cell_id",
+      "occurrence_id",
+      "source_span",
+      "selected_raw_fact"
     ]
   },
   "first_viewport": {
-    "desktop_1440": "At 1440 the first viewport is narrative: site nav, hero promise, run-meta strip, company picker, then overview quick-signal and glance counts; ranked findings start at or just below the fold.",
-    "mobile_390": "At 390 the first viewport is nav plus hero headline, deck, and promise chips; picker and quick-signal sit two to three screens down.",
-    "measured": false
+    "desktop_1440": "At 1440 the first viewport is site nav, desk header (picker + as-of + freshness + export), lead brief What changed / Why it matters, then at most two supporting modules (attention/coverage stats and next-step buttons).",
+    "mobile_390": "At 390 the first swipe is nav + desk header + lead brief #ff-quick-signal.",
+    "measured": {
+      "receipt": "mockups/evidence/fundamental_forensics_p2/populated/fold_measurement.json",
+      "evidence": "fixture-backed golden, local; dark and light measured identical; rest cells only",
+      "probes": {
+        "tabs": "AM7 navigation chrome at >=1100px; below the first swipe at 390",
+        "fab": "shared copilot launcher stub #mmb-boot, the geometry mirror of #mmb-launch pinned by tests/test_chat_launcher_stub.py; measured for clearance only",
+        "covstat": "whole coverage stat incl. its label; measured for launcher clearance only",
+        "latest": "as-of Latest button; measured for the 390 one-line check only"
+      },
+      "desktop_1440": {
+        "viewport_height": 900,
+        "within_first_viewport": [
+          "coverage",
+          "desk",
+          "lead",
+          "nav",
+          "next",
+          "stats"
+        ],
+        "amended_by": "AM7",
+        "navigation_chrome_in_first_viewport": [
+          "tabs"
+        ],
+        "tabs_px": {
+          "en": [
+            633,
+            694
+          ],
+          "zh": [
+            605,
+            666
+          ]
+        },
+        "note": "AM7: every glance module (nav, desk, lead, stats, coverage, next) ends inside the 900px fold above the tab rail; the rail plus the top of the active panel are navigation chrome, not modules.",
+        "lead_px": {
+          "en": [
+            370,
+            502
+          ],
+          "zh": [
+            370,
+            502
+          ]
+        },
+        "meets_contract": true
+      },
+      "mobile_390": {
+        "viewport_height": 844,
+        "within_first_viewport": [
+          "coverage",
+          "desk",
+          "lead",
+          "nav",
+          "stats"
+        ],
+        "lead_px": {
+          "en": [
+            500,
+            693
+          ],
+          "zh": [
+            500,
+            675
+          ]
+        },
+        "launcher_clearance_px": {
+          "en": 28,
+          "zh": 28
+        },
+        "meets_contract": true,
+        "note": "The lead brief #ff-quick-signal ends at 693px (EN) / 675px (ZH), inside the 844px fold, with the attention/coverage stats; the desk header fills 130-343px in both locales at 390 (the ZH Latest button stays one line). The copilot launcher box (x 318-374, y 772-828) clears the coverage stat box (right edge 290) by 28px. Next steps and the tab rail start below the fold."
+      }
+    }
   },
   "i18n": {
     "mechanism": "Template macro t(en, zh) emits .l-en/.l-zh spans; JS pair(en, zh) and fieldPair(obj, stem) read stem_en/stem_zh.",

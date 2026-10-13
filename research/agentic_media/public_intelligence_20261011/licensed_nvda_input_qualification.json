@@ -1,0 +1,88 @@
+{
+  "kind": "bounded_existing_public_store_capture/v1",
+  "symbol": "NVDA",
+  "manifest_sha256": "c7ee8f26cf5c339cfe9cb63939b025353cc8e4c6cdc8293c7af3d73fc86aebcd",
+  "object_sha256": "ce23d0af431bbc150ba307b13cf7959bd3ec7f89e780ea717bb5d5eebf8e0859",
+  "object_bytes": 65033,
+  "requests": [
+    {
+      "method": "HEAD",
+      "url": "https://pub-f7ffb4441c5f4ad983ca56ec7c651c61.r2.dev/massive_stock_day/NVDA.parquet",
+      "status": 200,
+      "observed_at": "2026-10-11T23:26:33.569403+00:00",
+      "headers": {
+        "content-type": "application/octet-stream",
+        "content-length": "65033",
+        "etag": "\"7869a35dcb2f3da649e52606ef79e738\"",
+        "last-modified": "Sat, 10 Oct 2026 09:19:57 GMT"
+      }
+    },
+    {
+      "method": "GET",
+      "url": "https://pub-f7ffb4441c5f4ad983ca56ec7c651c61.r2.dev/massive_stock_day/NVDA.parquet",
+      "status": 200,
+      "observed_at": "2026-10-11T23:26:33.883677+00:00",
+      "headers": {
+        "content-type": "application/octet-stream",
+        "content-length": "65033",
+        "etag": "\"7869a35dcb2f3da649e52606ef79e738\"",
+        "last-modified": "Sat, 10 Oct 2026 09:19:57 GMT"
+      }
+    },
+    {
+      "method": "HEAD",
+      "url": "https://pub-f7ffb4441c5f4ad983ca56ec7c651c61.r2.dev/massive_stock_day/NVDA.parquet",
+      "status": 200,
+      "observed_at": "2026-10-11T23:26:34.037116+00:00",
+      "headers": {
+        "content-type": "application/octet-stream",
+        "content-length": "65033",
+        "etag": "\"7869a35dcb2f3da649e52606ef79e738\"",
+        "last-modified": "Sat, 10 Oct 2026 09:19:57 GMT"
+      }
+    },
+    {
+      "method": "GET",
+      "url": "https://pub-f7ffb4441c5f4ad983ca56ec7c651c61.r2.dev/massive_stock_day/_manifest.json",
+      "status": 200,
+      "observed_at": "2026-10-11T23:26:34.268909+00:00",
+      "headers": {
+        "content-type": "application/json",
+        "content-length": "357975",
+        "etag": "\"eced301cb8e1c7c8c3985daf3f826a26\"",
+        "last-modified": "Sun, 11 Oct 2026 03:13:47 GMT"
+      }
+    }
+  ],
+  "stable_object_and_manifest": true,
+  "rows": 1323,
+  "columns": [
+    "open",
+    "high",
+    "low",
+    "close",
+    "volume",
+    "transactions"
+  ],
+  "first_index": "2021-07-06 00:00:00",
+  "last_index": "2026-10-09 00:00:00",
+  "qualification_revision": "8ad47787d83be8625fb387e279220b5a40efc7b2",
+  "qualification_source_sha256": {
+    "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md": "82ad971b46d4159739117d3defe19a25a2a24ede45e5e8d28494c5849e757891",
+    "config/market_memory_technical_price_basis.v1.json": "ce0244d9c18e3fdcb621c7ced6e3700cb8cb43ff0952b355b82d0542ed6b1be9",
+    "collectors/massive_stock_day.py": "cd11b883321ee665eea3e1dadb4dcd234eeff470f7ade52c2c5db353e9267863"
+  },
+  "rights": "daily-bars and derived-publication scope recorded as operator-confirmed; not a grant from public availability",
+  "manifest_store_last_date": "2026-10-07",
+  "candidate_date": "2026-10-08",
+  "input_status": "REJECTED_FOR_PRESS_ANALYTICAL_FACTS",
+  "reasons": [
+    "object ends2026-10-09 while manifest coverage and anchor end2026-10-07",
+    "raw unadjusted full-market-day basis has no corporate-action qualification for proposed technical history"
+  ],
+  "local_and_vps_configured_adjusted_reader_credentials_present": false,
+  "allow_stage": false,
+  "allow_emit": false,
+  "publication_approved": false,
+  "private_capture_relative_path": "massive-nvda-qualification/NVDA.parquet"
+}

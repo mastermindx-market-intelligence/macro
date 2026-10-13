@@ -24,6 +24,14 @@ Design principles (house laws):
    ledger keeps both the marker and the last good asof snapshot.
  - Trading-day aware: weekends and US market holidays are skipped entirely (no
    stall detection, no state mutation on non-trading days).
+ - Session lag is opt-in. A manifest entry may set max_sessions_behind (int).
+   The expected session is the last NYSE session on or before yesterday, and
+   sessions_behind counts NYSE sessions in (ledger asof, that session].
+   Above the ceiling the stall reason is session_lag. lag_stalled_since is
+   the first day the ceiling was exceeded; it clears only on a strictly newer
+   asof that is back within the ceiling. Entries without the key are not
+   measured this way. no_advance and session_lag on the same ledger are one
+   alert carrying both reasons.
  - Fail-open: any read/parse error degrades gracefully; exit 0 always.
  - Render-happened flag: the workflow passes --render-happened when the site
    commit step ran for that date.  Without it, stall detection is suppressed
@@ -54,7 +62,7 @@ import logging
 import os
 import sys
 import tempfile
-from datetime import date, datetime, timezone
+from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any
 
@@ -67,7 +75,10 @@ log = logging.getLogger(__name__)
 # Registry extension: add an entry here when a new forward ledger is created.
 # Each path is relative to the repo root.  The script silently skips missing
 # files, so entries can be pre-registered before the building pipeline ships.
-_LEDGER_MANIFEST: list[dict[str, str]] = [
+# Optional max_sessions_behind (int): omit it to keep the no-advance check
+# only. When set, a newest asof more than that many NYSE sessions behind the
+# last session on or before yesterday is also a session_lag stall.
+_LEDGER_MANIFEST: list[dict[str, Any]] = [
     {
         # RIC-W3: monthly OPEX window read — advances only near each monthly
         # expiry (T-5 stamp), so most nights legitimately show no advance;
@@ -79,6 +90,8 @@ _LEDGER_MANIFEST: list[dict[str, str]] = [
     {
         "path": "data/risk_radar/forward_log.jsonl",
         "label": "risk_radar",
+        # Stall when strictly more than 2 NYSE sessions behind yesterday.
+        "max_sessions_behind": 2,
         # NOTE: extend the list below as new forward ledgers are created;
         # add a short label for use in escalation messages.
     },
@@ -93,6 +106,8 @@ _LEDGER_MANIFEST: list[dict[str, str]] = [
     {
         "path": "data/leadership_crack/forward_log.jsonl",
         "label": "leadership_crack",
+        # Stall when strictly more than 2 NYSE sessions behind yesterday.
+        "max_sessions_behind": 2,
         # NOTE: may not exist until CSP-W1 ships; silently skipped until then.
     },
     {
@@ -161,6 +176,61 @@ def _is_trading_day(d: date) -> bool:
         # This is safe to degrade to because false positives (running on a
         # holiday) produce at most a benign "no stall" log line.
         return d.weekday() < 5
+
+
+def _max_sessions_behind(entry: dict[str, Any]) -> int | None:
+    """Opt-in session-lag ceiling, or None when this ledger is not measured."""
+    if "max_sessions_behind" not in entry:
+        return None
+    raw = entry["max_sessions_behind"]
+    # bool is a subclass of int; reject it so True is not a ceiling of 1.
+    if type(raw) is not int or raw < 0:
+        log.warning(
+            "check_ledger_advance: %s max_sessions_behind=%r is not a "
+            "non-negative int — session lag not measured",
+            entry.get("label"), raw,
+        )
+        return None
+    return raw
+
+
+def _parse_iso_day(value: str) -> date | None:
+    """Calendar date from an asof string, or None when it is not one."""
+    try:
+        return date.fromisoformat(value[:10])
+    except (TypeError, ValueError):
+        return None
+
+
+def _expected_session(today: date) -> date:
+    """Last NYSE session on or before the calendar day before `today`.
+
+    Deliberately not the close-aware `expected_last_session`: a same-day
+    check, including after the cash close, still expects yesterday's session.
+    """
+    from lib.nyse_calendar import last_session_on_or_before  # noqa: PLC0415
+    return last_session_on_or_before(today - timedelta(days=1))
+
+
+def _sessions_behind(ledger_asof: date, today: date) -> int:
+    """NYSE sessions in (ledger_asof, expected_session].
+
+    0 when the ledger asof is already on or after that expected session.
+    """
+    from lib.nyse_calendar import sessions_between  # noqa: PLC0415
+    expected = _expected_session(today)
+    return len(sessions_between(ledger_asof + timedelta(days=1), expected))
+
+
+def _stall_reason_text(stall: dict[str, Any]) -> str:
+    """Comma-joined stall reasons, for the one alert a ledger emits today."""
+    reasons = stall.get("stall_reasons")
+    if isinstance(reasons, list) and reasons:
+        return ",".join(str(r) for r in reasons)
+    reason = stall.get("stall_reason")
+    if isinstance(reason, str) and reason:
+        return reason
+    return "no_advance"
 
 
 def _latest_asof(jsonl_path: Path) -> str | None:
@@ -255,10 +325,22 @@ def _dispatch_stall_alert(stalled: list[dict[str, Any]], root: Path) -> None:
     header = "Forward-ledger stall(s) — site republished with frozen ledger content"
     bullets = []
     for s in stalled:
-        bullets.append(
-            f"• {s['label']} ({s['path']}): asof unchanged at {s['prev_asof']!r} "
-            f"(stalled since {s['stalled_since']})"
-        )
+        reasons = _stall_reason_text(s)
+        reason_list = s.get("stall_reasons") or []
+        parts = [f"• {s['label']} ({s['path']}): stall_reason={reasons}"]
+        if "no_advance" in reason_list:
+            parts.append(
+                f"asof unchanged at {s['prev_asof']!r} "
+                f"(stalled since {s['stalled_since']})"
+            )
+        if "session_lag" in reason_list:
+            parts.append(
+                f"sessions_behind={s.get('sessions_behind')} "
+                f"max_sessions_behind={s.get('max_sessions_behind')} "
+                f"expected_session={s.get('expected_session')} "
+                f"(lag_stalled_since {s.get('lag_stalled_since')})"
+            )
+        bullets.append("; ".join(parts))
     message = header + "\n" + "\n".join(bullets)
 
     try:
@@ -281,15 +363,22 @@ def _dispatch_stall_alert(stalled: list[dict[str, Any]], root: Path) -> None:
 def _emit_warning_annotation(stalled: list[dict[str, Any]]) -> None:
     """Write ::warning:: GitHub Actions annotations for stalled ledgers."""
     for s in stalled:
+        reasons = _stall_reason_text(s)
         title = (
-            f"LEDGER STALL: {s['label']} asof frozen at {s['prev_asof']!r} "
-            f"while site republished"
+            f"LEDGER STALL: {s['label']} stall_reason={reasons} "
+            f"asof {s['curr_asof']!r} while site republished"
         )
         body = (
-            f"Forward ledger {s['path']} did not advance on {s['today']}; "
-            f"site committed fresh pages against stale ledger content. "
-            f"Stalled since {s['stalled_since']}."
+            f"Forward ledger {s['path']} stall_reason={reasons} on {s['today']}; "
+            f"prev asof {s['prev_asof']!r}, curr asof {s['curr_asof']!r}, "
+            f"stalled since {s['stalled_since']}."
         )
+        if "session_lag" in (s.get("stall_reasons") or []):
+            body += (
+                f" sessions_behind={s.get('sessions_behind')}"
+                f" expected_session={s.get('expected_session')}"
+                f" lag_stalled_since={s.get('lag_stalled_since')}."
+            )
         print(f"::warning title={title}::{body}")
 
 
@@ -302,7 +391,8 @@ def _append_step_summary(stalled: list[dict[str, Any]]) -> None:
         lines = ["", "### ⚠ Forward-ledger stalls (CSP-W6 heartbeat)", ""]
         for s in stalled:
             lines.append(
-                f"- **{s['label']}**: asof frozen at `{s['prev_asof']}`, "
+                f"- **{s['label']}**: stall_reason={_stall_reason_text(s)}, "
+                f"asof `{s['curr_asof']}`, "
                 f"stalled since {s['stalled_since']} — {s['path']}"
             )
         lines.append("")
@@ -331,9 +421,12 @@ def run_check(
 
     Returns
     -------
-    List of stall dicts for each ledger whose asof did not advance on a
-    render-happened trading day:
-      {label, path, prev_asof, curr_asof, today, stalled_since}
+    One stall dict per ledger on a render-happened trading day, never two
+    for the same ledger. Keys: label, path, prev_asof, curr_asof, today,
+    stalled_since, stall_reasons, stall_reason. A session_lag row also
+    carries sessions_behind, expected_session, lag_stalled_since and
+    max_sessions_behind. `today` is the calendar date of `_now` (UTC); pass
+    `_now` so a caller does not depend on the wall clock.
     """
     now = _now if _now is not None else datetime.now(timezone.utc)
     today_str = now.date().isoformat()
@@ -361,15 +454,17 @@ def run_check(
         prev_asof = prev_entry.get("asof") if isinstance(prev_entry, dict) else None
         last_check_date = prev_entry.get("last_check_date") if isinstance(prev_entry, dict) else None
         stalled_since = prev_entry.get("stalled_since") if isinstance(prev_entry, dict) else None
+        prev_lag = prev_entry.get("lag_stalled_since") if isinstance(prev_entry, dict) else None
 
         log.info(
             "check_ledger_advance: %s: prev_asof=%r curr_asof=%r render_happened=%s",
             label, prev_asof, curr_asof, render_happened,
         )
 
-        # Detect stall: ledger exists, we have a previous snapshot, asof has
-        # not advanced, and the site republished today.
-        is_stall = (
+        # no_advance: ledger exists, we have a previous snapshot, asof has
+        # not advanced, and the site republished today. Same predicate as
+        # before the session-lag measurement existed.
+        is_no_advance = (
             render_happened
             and curr_asof is not None
             and prev_asof is not None
@@ -377,42 +472,121 @@ def run_check(
             and last_check_date != today_str  # idempotent: same-day re-run = skip
         )
 
-        if is_stall:
-            stalled_since_val = stalled_since or prev_entry.get("last_check_date") or today_str
-            stalled.append({
-                "label": label,
-                "path": rel_path,
-                "prev_asof": prev_asof,
-                "curr_asof": curr_asof,
-                "today": today_str,
-                "stalled_since": stalled_since_val,
-            })
-            log.warning(
-                "check_ledger_advance: STALL detected — %s asof=%r unchanged "
-                "(prev=%r, render_happened=True)",
-                label, curr_asof, prev_asof,
-            )
-
         # Only a strictly newer asof is an advance. A same-day rerun, a night
         # without a republish, or an unreadable ledger is NOT one, so it must
         # neither clear an open stall nor overwrite the snapshot with None
         # (2026-10-08: a same-day rerun erased risk_radar's open stall).
         advanced = curr_asof is not None and (prev_asof is None or curr_asof > prev_asof)
 
-        # Update state for this ledger.
+        max_behind = _max_sessions_behind(entry)
+        measured_behind: int | None = None
+        expected_s: date | None = None
+        if max_behind is not None and curr_asof is not None:
+            ledger_day = _parse_iso_day(curr_asof)
+            if ledger_day is None:
+                log.warning(
+                    "check_ledger_advance: %s asof %r is not a date — "
+                    "session lag not measured",
+                    label, curr_asof,
+                )
+            else:
+                try:
+                    expected_s = _expected_session(now.date())
+                    measured_behind = _sessions_behind(ledger_day, now.date())
+                except Exception as exc:  # noqa: BLE001 — calendar failure is not a stall
+                    log.warning(
+                        "check_ledger_advance: session-lag measurement failed "
+                        "for %s (%s)",
+                        label, exc,
+                    )
+
+        is_session_lag = (
+            max_behind is not None
+            and measured_behind is not None
+            and measured_behind > max_behind
+        )
+        # One alert per ledger per day. session_lag shares the no_advance
+        # dedup key, so a same-day rerun does not page a second time.
+        alert_session_lag = (
+            is_session_lag
+            and render_happened
+            and curr_asof is not None
+            and last_check_date != today_str
+        )
+
+        if is_no_advance:
+            # Preserve stalled_since across consecutive stall days.
+            stalled_since_val = stalled_since or prev_entry.get("last_check_date") or today_str
+        elif advanced:
+            # Cleared on a strictly newer asof only.
+            stalled_since_val = None
+        else:
+            # Not a no_advance today and not an advance: carry any open marker.
+            stalled_since_val = stalled_since
+
+        # lag_stalled_since follows the same shape: hold it while the ceiling
+        # is still exceeded (a newer asof that is still behind keeps the
+        # original start), clear it only on a strictly newer asof that is
+        # back within the ceiling, and otherwise carry it. A no-render night
+        # does not open a new marker.
+        if max_behind is None:
+            lag_val = None
+        elif is_session_lag:
+            if prev_lag:
+                lag_val = prev_lag
+            elif render_happened:
+                lag_val = today_str
+            else:
+                lag_val = None
+        elif measured_behind is not None and advanced:
+            lag_val = None
+        else:
+            lag_val = prev_lag
+
+        reasons: list[str] = []
+        if is_no_advance:
+            reasons.append("no_advance")
+        if alert_session_lag:
+            reasons.append("session_lag")
+
+        if reasons:
+            stall_row: dict[str, Any] = {
+                "label": label,
+                "path": rel_path,
+                "prev_asof": prev_asof,
+                "curr_asof": curr_asof,
+                "today": today_str,
+                "stalled_since": stalled_since_val,
+                "stall_reasons": reasons,
+                "stall_reason": reasons[0] if len(reasons) == 1 else ",".join(reasons),
+            }
+            if "session_lag" in reasons:
+                stall_row["sessions_behind"] = measured_behind
+                stall_row["expected_session"] = (
+                    expected_s.isoformat() if expected_s is not None else None
+                )
+                stall_row["lag_stalled_since"] = lag_val
+                stall_row["max_sessions_behind"] = max_behind
+            stalled.append(stall_row)
+            log.warning(
+                "check_ledger_advance: STALL detected — %s reasons=%s "
+                "asof=%r prev=%r render_happened=True",
+                label, ",".join(reasons), curr_asof, prev_asof,
+            )
+
+        # Update state for this ledger. Ledgers without the opt-in keep the
+        # historical keys only.
         new_entry: dict[str, Any] = {
             "asof": curr_asof if curr_asof is not None else prev_asof,
             "last_check_date": today_str,
+            "stalled_since": stalled_since_val,
         }
-        if is_stall:
-            # Preserve stalled_since across consecutive stall days.
-            new_entry["stalled_since"] = stalled_since or prev_entry.get("last_check_date") or today_str
-        elif advanced:
-            # Cleared on advance only.
-            new_entry["stalled_since"] = None
-        else:
-            # Not a stall today and not an advance: carry any open stall forward.
-            new_entry["stalled_since"] = stalled_since
+        if max_behind is not None:
+            new_entry["lag_stalled_since"] = lag_val
+            new_entry["sessions_behind"] = measured_behind
+            new_entry["expected_session"] = (
+                expected_s.isoformat() if expected_s is not None else None
+            )
 
         ledger_state[rel_path] = new_entry
 

@@ -32,42 +32,40 @@ waves:
   - id: consumer-delivery
     title: Integrate incumbent Data OS and Quote Hub, release and prove live
     status: in_progress
-    pr: [8698, 945, 955, 8986, 9004, 9018, 9020, 9022]
+    pr: [8698, 945, 955, 8986, 9004, 9018, 9020, 9022, 9027]
 next_action: >-
-  Original wave12 settled 2026-10-12 20:14:21 UTC: 5000 successful captures, zero
-  capture failures, 8103921 served row hints and 1772986058 uncompressed bytes.
-  Its final quality partition accounts for all original selections exactly once:
-  4999 qualified responses (4987 nonempty, 12 empty, 8099778 bars) and one retained
-  WTFNF source-quality quarantine. One negative raw/adjusted volume row correctly
-  failed unchanged validation; the entire receipt remains unprojected, with no
-  value repair or provider retry. Original failed prefix18 was reconciled: 194
-  valid receipts, 145 existing views reused and 49 new. Independent review passed
-  the quarantine and disjoint continuation. Actual local admission trace passed:
-  four-admission minimum separation 5.000027 seconds, maximum 2879 per half-open
-  hour. The census is 33171 nonempty histories, 69804547 bars, 112 empty responses,
-  14405 uncaptured windows and one captured quality quarantine. Deduplicate the
-  quarantine by receipt identity; missing qualified windows are not a retry queue.
-  Continue original wave13, actually started at 20:17:46 UTC after successful
-  prior raw settlement and fresh source/collision/quota/storage checks. Its 5000
-  selections exclude every wave12 reservation, including WTFNF. Qualify only new
-  owned completed responses; preserve source/key custody, four in flight, rolling
-  local admissions no faster than four per five seconds, 24 GiB raw byte stop
-  threshold and 40 GiB admission floor. Save truthful partition and actual timing
-  evidence after settlement, then start the next disjoint ready capture.
-  Macro source/evidence 9018, 9020 and 9022 are merged. New safe proof lives in
-  docs/tiingo-evidence/20261012-wave12-quality-partition/. The immutable installed
-  research release remains 0b204cde017b88a9fec03ddb583f6b5e02ea4886; accepted real
-  Lab/reader proof remains valid. Four contracts are PRODUCED, twenty PROPOSED.
-  Fresh Terminal 955 remains OPEN/BLOCKED at 1a74e3cf93368a5c5381f0110b80601dff0ae3e3;
-  its original PR run 38272372019 remains action_required, required aggregate
-  absent, incumbent auto-merge retained. Original dispatched all-twelve success
-  38272365047 is accepted for that exact head. Preserve the actual approval
-  refusal and require protected landing before the existing VPS builder path.
-  Next published BOATS opening is 2026-10-13 00:00 UTC; no subscriber or scheduler
-  is launched. All sixteen prior provider failure exclusions, standalone split
-  and SHW/PFE holds remain. The 75 accepted fundamental captures across 25
-  companies serve roughly three years. Deep/all-symbol serving, dated identity,
-  PIT and responsive live BOATS acceptance remain open. Continue ready work.
+  Preserve accepted producer integrity, all original quality/foreign-custody
+  dispositions and exactly four PRODUCED research contracts; twenty remain
+  PROPOSED. Macro #9053 passed all twelve expanded CI packs and original ci-gate
+  38336052933 at fdfed5e5, normally merged to 9c8e5a8286374ab0273b3b116736dcb2f90a2312
+  at 02:40:04 UTC and all 31 reviewed blobs match fresh canonical main. Physical01
+  capture33372/qualifier91793 and physical02 capture57125/qualifier97444 have settled;
+  every actual return and their final accounting are consumed. Combined three-phase
+  accounting covers all original 4,392 identities exactly once: 2,493 qualified,
+  one whole SCNG quality quarantine, five held timeouts and 1,893 never admitted.
+  Qualified bars total 5,566,978; all captured raw bytes total 1,256,537,475.
+  Accepted global coverage is 45,651 nonempty histories and 96,634,698 bars, with
+  117 empty windows, 1,918 uncaptured and three quality quarantines. No failed
+  request was retried; no full vendor-history, dated-identity or PIT claim follows.
+  The exact 1,893 never-admitted continuation03 passed independent source review
+  and original read-only collision preflight88284. Quota-only refresh preserves
+  unchanged selection, controls and original proof attribution. Original85004
+  created its actual scope at 03:00:18.899678 UTC, excluding30 known holds and
+  carrying 24,513,266,301 remaining raw bytes. Capture remains ongoing in this
+  snapshot. Consume its original return, qualify every actual response, reconcile
+  the next combined partition and continue every safe ready lane. Preserve one
+  raw capture writer, the unchanged collector, stable credential, four-inflight
+  rolling-five-second pacing, first-error stop/drain and40 GiB resource floor.
+  Accepted BOATS2,000,000-frame capture/reader proof and SAPIF installed Lab/host
+  join remain valid without repetition. Terminal #955 retains its actual approval
+  refusal at head8811e38c64eb14fadc40a00ccfbfb31c37f863e8; latest protected read is
+  OPEN/BEHIND with required CI absent. Existing all12 dispatched jobs do not
+  replace required PR CI. Preserve its release gate and incumbent Quote Hub,
+  peer intraday writers and News carrier. SHW/PFE/evaluation/split and other
+  provider holds remain. Deep fundamentals, dated identity, knowledge time,
+  production/runtime publication and responsive live acceptance stay open.
+  Proof and actual reviewed methods are saved in
+  docs/tiingo-evidence/20261013-continuation-accounting/.
 owns_paths:
   - collectors/tiingo_archive.py
   - lib/dataos/tiingo_*.py
@@ -75,6 +73,11 @@ owns_paths:
   - docs/TIINGO_DATA_OS_INGESTION_20261009.md
   - docs/tiingo-evidence/
 artifacts:
+  - docs/tiingo-evidence/20261013-continuation-accounting/
+  - docs/tiingo-evidence/20261013-final-scope-disposition/
+  - docs/tiingo-evidence/20261013-open-session-history-frontier/
+  - docs/tiingo-evidence/20261012-final-capture-preparation/
+  - docs/tiingo-evidence/20261012-wave13-held-outcome/
   - docs/tiingo-evidence/20261012-wave12-quality-partition/
   - docs/TIINGO_DATA_OS_INGESTION_20261009.md
   - docs/tiingo-evidence/20261011-producer-integrity/

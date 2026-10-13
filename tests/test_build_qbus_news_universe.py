@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 from datetime import datetime, timedelta, timezone
+import inspect
 import json
 from pathlib import Path
 import subprocess
@@ -152,6 +153,57 @@ def test_wrapper_refuses_missing_or_unreadable_owner_artifact(tmp_path):
             write=False,
         )
     assert exc.value.code == "owner_artifact_unreadable"
+
+
+def test_read_parquet_reads_via_native_filesystem_with_arrow_pools_idle(monkeypatch, tmp_path):
+    """Owner parquets are read through the native LocalFileSystem with pyarrow's
+    threaded read knobs off. pandas otherwise opens plain local paths as Python file objects
+    and hands those to pyarrow; a delayed pyarrow IO-pool completion destroying
+    such a Python-backed buffer (arrow::py::PyBuffer::~PyBuffer ->
+    PyGILState_Ensure) after interpreter finalization has begun forces
+    pthread_exit, whose forced unwind ends in std::terminate (SIGABRT, "terminate
+    called without an active exception") after the receipt is already printed."""
+    paths = _fixtures(tmp_path / "data")
+    forwarded = {}
+    real_read_parquet = pd.read_parquet
+    real_has_to_pandas_kwargs = (
+        "to_pandas_kwargs" in inspect.signature(real_read_parquet).parameters
+    )
+
+    def spy(path, **kwargs):
+        forwarded[Path(path).name] = dict(kwargs)
+        return real_read_parquet(path, **kwargs)
+
+    monkeypatch.setattr(cli.pd, "read_parquet", spy)
+
+    rows = cli._read_parquet(paths["current"], include_index=True)
+
+    kwargs = forwarded["constituents.parquet"]
+    assert kwargs["use_threads"] is False
+    assert kwargs["pre_buffer"] is False
+    assert type(kwargs["filesystem"]).__name__ == "LocalFileSystem"
+    if real_has_to_pandas_kwargs:
+        assert kwargs["to_pandas_kwargs"] == {"use_threads": False}
+    else:
+        assert "to_pandas_kwargs" not in kwargs
+    assert [row["symbol"] for row in rows] == ["NVDA", "MMC"]
+
+
+def test_read_parquet_accepts_cli_reachable_file_uri_owner_artifact(tmp_path):
+    """A --current file://... value survives inside the Path argparse builds
+    (type=Path keeps the scheme, collapsing file:///a to file:/a), and base
+    pandas read such artifacts. The read must keep succeeding instead of
+    failing as owner_artifact_unreadable, which is what pyarrow's
+    LocalFileSystem answers to a URI ("Expected a local filesystem path, got a
+    URI")."""
+    paths = _fixtures(tmp_path / "data")
+    uri = paths["current"].as_uri()
+
+    args = cli.build_parser().parse_args(["--current", uri])
+    assert args.current == Path(uri)
+
+    rows = cli._read_parquet(Path(uri), include_index=True)
+    assert [row["symbol"] for row in rows] == ["NVDA", "MMC"]
 
 
 def test_cli_defaults_to_check_only_and_emits_metadata_not_roster(monkeypatch, tmp_path, capsys):

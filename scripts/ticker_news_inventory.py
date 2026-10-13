@@ -43,6 +43,10 @@ _UNSET_HEALTH = {"state": "unavailable", "reason": "health_path_unset"}
 # margin for the loaded 2-vCPU production host).
 AUDIT_STORY_CAP = 3000
 
+# The over-cap hand-run line. It carries a literal <path> placeholder so the
+# report never echoes where the store lives.
+AUDIT_HAND_RUN = "python3 scripts/qbus_news_cluster_audit.py --store <path>"
+
 _TRANSPORTS_SQL = """
 SELECT transport,
        COUNT(*) AS deliveries,
@@ -126,7 +130,11 @@ def _zulu(value: datetime) -> str:
 def _audit_section(
     database: Path | str, stories: int, audit_cap: int
 ) -> dict[str, object]:
-    """Project the cluster audit as counts only, or hand it off over the cap."""
+    """Project the cluster audit as counts only, or hand it off over the cap.
+
+    The hand-run command carries a ``<path>`` placeholder so the report
+    never echoes the store path.
+    """
 
     if stories > audit_cap:
         return {
@@ -134,9 +142,7 @@ def _audit_section(
             "reason": "story_count_over_cap",
             "stories": stories,
             "cap": audit_cap,
-            "hand_run": (
-                f"python3 scripts/qbus_news_cluster_audit.py --store {database}"
-            ),
+            "hand_run": AUDIT_HAND_RUN,
         }
     try:
         audited = audit_store(Path(database))
@@ -501,6 +507,7 @@ def format_text(report: dict[str, object]) -> str:
             f"p95 {flow['p95_ms']} ms max {flow['max_ms']} ms "
             f"over/共 {flow['reads']} reads/次; "
             f"tickers / 抽样代码: {', '.join(flow['tickers'])}"
+            "; in-process, not HTTP / 进程内读取，非 HTTP"
         )
     elif flow.get("reason") is None:
         lines.append(f"flow reads / 流量读取: {flow['state']}")

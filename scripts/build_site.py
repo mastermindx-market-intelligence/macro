@@ -5083,6 +5083,105 @@ def _us_today_source_binding(
     return {"source_sha256": "sha256:" + raw_sha, "pair_id": pair_id}
 
 
+def _us_today_native_binding(source_bytes: "bytes | None") -> "dict | None":
+    """Genuine three-field Today binding via the ORIGINAL owner callable.
+
+    Consumes the EXACT finalized raw us_standouts.json bytes through
+    scripts.build_stock_library.today_selection_source_binding, which validates
+    the full buy[] roster and returns schema
+    prophet.today_selection_source_binding/v1 carrying source_sha256, pair_id,
+    selection_receipt and ordered_rows (the original zero-based buy[] index and
+    that row's canonical receipt each). Invoked here BEFORE any display
+    attachment or tier splitting, on both the first and the post-library fresh
+    read. Any failure — owner runtime absent, malformed roster, unusable
+    emit/session — is a typed unavailable (logged, never raised): the board
+    renders exactly as before and no binding, receipt or index is invented.
+    """
+    if not isinstance(source_bytes, (bytes, bytearray)) or not source_bytes:
+        return None
+    try:
+        from scripts.build_stock_library import today_selection_source_binding
+    except Exception as exc:  # noqa: BLE001 — an absent owner runtime is unavailable
+        log.warning("Today native source binding unavailable (%s)", type(exc).__name__)
+        return None
+    try:
+        return today_selection_source_binding(bytes(source_bytes))
+    except Exception as exc:  # noqa: BLE001 — invalid source keeps ordinary rendering
+        log.warning("Today native source binding unavailable (%s)", type(exc).__name__)
+        return None
+
+
+def _us_today_bind_rows(
+    us_standouts: "dict | None", binding: "dict | None"
+) -> "dict | None":
+    """Carry owner-issued selection metadata into COPIED buy presentation rows.
+
+    Positional only, straight from the binding's own ordered_rows: each copied
+    row gains `_today_selection_index`/`_today_row_receipt` from the SAME
+    original buy[] position. The source dict and its row dicts are never
+    mutated, tickers are never searched or joined, and no index is inferred
+    from sort order. Anything short of a full 1:1 positional match returns the
+    board unchanged, so a partially bound shelf can never half-hydrate.
+    """
+    if not binding or not isinstance(us_standouts, dict):
+        return us_standouts
+    rows = us_standouts.get("buy")
+    ordered = binding.get("ordered_rows")
+    if not isinstance(rows, list) or not isinstance(ordered, list):
+        return us_standouts
+    if len(ordered) != len(rows):
+        return us_standouts
+    bound_rows = []
+    for position, row in enumerate(rows):
+        meta = ordered[position]
+        receipt = meta.get("row_receipt") if isinstance(meta, dict) else None
+        if (not isinstance(row, dict) or not isinstance(receipt, str)
+                or meta.get("selection_index") != position):
+            return us_standouts
+        bound_rows.append({**row, "_today_selection_index": position,
+                           "_today_row_receipt": receipt})
+    bound = dict(us_standouts)
+    bound["buy"] = bound_rows
+    return bound
+
+
+def _us_today_rows_meta(rows: "list[dict] | None") -> "list[dict]":
+    """Entitled Today indices/receipts for the protected payload, render order.
+
+    Positional carry from the bound COPIED rows only (never re-derived from a
+    ticker, a value or a sort); one missing/malformed field empties the whole
+    list, so an incompletely bound shelf ships no hydratable metadata.
+    """
+    meta = []
+    for row in rows or []:
+        index = row.get("_today_selection_index") if isinstance(row, dict) else None
+        receipt = row.get("_today_row_receipt") if isinstance(row, dict) else None
+        if (not isinstance(index, int) or isinstance(index, bool) or index < 0
+                or not isinstance(receipt, str)):
+            return []
+        meta.append({"selection_index": index, "row_receipt": receipt})
+    return meta
+
+
+def _us_today_native_emit_for(binding: "dict | None", today_nonempty: bool) -> "str | None":
+    """Protected payload URL when the ungated Today shelf is genuinely bound.
+
+    Genuine means the owner-issued three-field binding (selection_receipt
+    present alongside both legacy pins); the loader may then ride the SAME
+    trampoline and payload URL even with no tier gate on the page. Anything
+    less — legacy two-field pair, explicit None, empty shelf — emits no native
+    loader fallback.
+    """
+    if not today_nonempty or not isinstance(binding, dict):
+        return None
+    receipt = binding.get("selection_receipt")
+    if (not isinstance(receipt, str)
+            or not isinstance(binding.get("source_sha256"), str)
+            or not isinstance(binding.get("pair_id"), str)):
+        return None
+    return US_PAYLOAD_URL
+
+
 def _split_us_board(us_standouts: "dict | None", preview_rows: int, *, gated: bool = True):
     """Tier-preview split for the US Prophet board.
 
@@ -5513,6 +5612,9 @@ def _write_us_payload(env: Environment, site: Path, gate: "dict | None", *,
     (§8b: "a re-plumb, never a re-draw" — same mechanism, different array).
     `today_source_binding` carries the exact raw-source pair to every payload
     shape, or explicit None when unavailable, for the shell hydration gate.
+    `today_rows_meta` carries the owner-issued entitled Today indices/receipts
+    (positional with `today_cards_html`) for that same gate; empty whenever the
+    board is ungated (nothing withheld) or the rows carry no full binding.
     """
     # Add only the presentation for this same entitled row. Failure keeps its
     # native flat facts, with no detail action, rather than dropping the payload.
@@ -5538,7 +5640,11 @@ def _write_us_payload(env: Environment, site: Path, gate: "dict | None", *,
         # necessarily empty here — `gated` reports the BOARD, `panels` the rest.
         payload = {"schema": "tier_payload.v1", "page": "us_stocks", "gated": False,
                    "built": built, "cards_html": "", "rows": [],
-                   "today_cards_html": "", "today_preview": 0, "today_total": 0}
+                   "today_cards_html": "", "today_preview": 0, "today_total": 0,
+                   # Honest empty remainder — the protected native binding above
+                   # is what still permits Today native context for the unchanged
+                   # server-rendered shelf.
+                   "today_rows_meta": []}
         payload["today_source_binding"] = today_source_binding
     else:
         full_buy = (us_standouts or {}).get("buy") or []
@@ -5611,6 +5717,7 @@ def _write_us_payload(env: Environment, site: Path, gate: "dict | None", *,
             "today_cards_html": today_cards_html,
             "today_preview": len(today_rows),
             "today_total": _today_total,
+            "today_rows_meta": _us_today_rows_meta(today_rows),
             "today_source_binding": today_source_binding,
         }
     if pgate:
@@ -6172,6 +6279,7 @@ def main() -> int:
     _us_w3c_refusal = None
     _us_w3c_binding = None
     _us_today_binding = None
+    _us_source_bytes = None
     _us = site / "factordata" / "us_standouts.json"
     if _us.exists():
         try:
@@ -6207,6 +6315,15 @@ def main() -> int:
             log.warning("us_standouts.json unreadable (%s)", e)
         # Bind the existing frozen raw SHA to the original decoded source.
         _us_today_binding = _us_today_source_binding(_us_w3c_binding, us_standouts)
+    # Native three-field binding: the ORIGINAL owner callable consumes the exact
+    # frozen raw bytes BEFORE any attachment or tier splitting, and its ordered
+    # metadata rides COPIED presentation rows by original position only. Typed
+    # unavailable on any failure — ordinary source rendering is preserved.
+    _us_today_native = _us_today_native_binding(_us_source_bytes)
+    if _us_today_native is not None:
+        us_standouts = _us_today_bind_rows(us_standouts, _us_today_native)
+        _us_today_binding = {**_us_today_binding, **_us_today_native} if _us_today_binding \
+            else _us_today_native
     # DISPLAY-ONLY board attaches (personality chips + RLT-R6 sector-stance) — factored
     # into _attach_board_display_chips so the post-build_library re-render (one-build-lag
     # fix, below) reuses the EXACT same enrichment and can never silently diverge.
@@ -7114,6 +7231,7 @@ def main() -> int:
         # Internal machine binding only; no template/public-rights/tier expansion.
         us_selection_cohort_internal=_us_w3c,
         us_today_source_binding=_us_today_binding,
+        us_today_native_binding=_us_today_native,
         us_candidate_visibility=us_candidate_visibility,
         us_prophet_book=us_prophet_book,
         us_leader_observations=us_leader_observations,
@@ -7430,6 +7548,11 @@ def main() -> int:
     _us_gate_cfg = _us_board_gate_cfg()
     _us_today_featured = _us_today_featured_preview(
         vm.get("us_standouts"), _us_gate_cfg["today_preview_rows"])
+    # The loader emits for a GENUINE bound nonempty ungated Today too (same
+    # trampoline, same protected payload URL, no extra auth path): three real
+    # owner pins plus at least one Featured row, else None.
+    _us_today_emit = _us_today_native_emit_for(
+        vm.get("us_today_source_binding"), bool(_us_today_featured))
     _us_shell_su, _us_gate, _us_locked = _split_us_board(
         vm.get("us_standouts"), _us_gate_cfg["preview_rows"], gated=_us_gate_cfg["gated"])
     # P-MP1-SHELL central act, §8b: the SAME re-plumb as the candidate split
@@ -7477,6 +7600,7 @@ def main() -> int:
     write_page(out_st, env.get_template("dashboard.html.j2").render(
         **{**vm, **_us_pov, "us_standouts": _us_shell_su,
            "gate": _us_gate, "pgate": _us_pgate,
+           "us_today_native_emit": _us_today_emit,
            "us_prophet_book": _us_life_shell, "life_gate": _us_life_gate,
            "us_prophet_episodes": _us_life_episodes,
            "us_prophet_book_error": us_prophet_book_error,
@@ -7831,11 +7955,21 @@ def main() -> int:
             _fresh_owner_doc = (json.loads(_fresh_source_bytes)
                                 if _fresh_source_bytes is not None else None)
             _fresh_su = None
+            _fresh_today_native = None
             if _fresh_owner_doc is not None:
                 # Same first/fresh rule: bind the frozen raw SHA to the ORIGINAL
                 # decoded doc BEFORE display attachment touches it.
                 _fresh_today_binding = _us_today_source_binding(
                     _fresh_w3c_binding, _fresh_owner_doc)
+                # Same owner callable, same exact fresh bytes, still before any
+                # attachment or split.
+                _fresh_today_native = _us_today_native_binding(_fresh_source_bytes)
+                if _fresh_today_native is not None:
+                    _fresh_owner_doc = _us_today_bind_rows(
+                        _fresh_owner_doc, _fresh_today_native)
+                    _fresh_today_binding = (
+                        {**_fresh_today_binding, **_fresh_today_native}
+                        if _fresh_today_binding else _fresh_today_native)
                 _fresh_su = _attach_board_display_chips(site, _fresh_owner_doc)
             _prior_as_of = (us_standouts or {}).get("as_of")
             _prior_stale = (us_standouts or {}).get("staleness") or {}
@@ -7851,11 +7985,15 @@ def main() -> int:
                     # Same-session source/reason/explanation corrections cannot pair
                     # the fresh board with an older first-pass internal context.
                     or _fresh_w3c_binding != _us_w3c_binding
-                    or _fresh_w3c != vm.get("us_selection_cohort_internal")):
+                    or _fresh_w3c != vm.get("us_selection_cohort_internal")
+                    # A same-session native binding change (availability or value)
+                    # must not pair a fresh source with older Today metadata.
+                    or _fresh_today_native != vm.get("us_today_native_binding")):
                 vm["us_selection_cohort_internal"] = _fresh_w3c
                 _us_w3c_binding = _fresh_w3c_binding
                 _us_w3c_refusal = _fresh_w3c_refusal
                 vm["us_today_source_binding"] = _fresh_today_binding
+                vm["us_today_native_binding"] = _fresh_today_native
                 vm["us_standouts"] = _fresh_su
                 vm["us_candidate_visibility"] = _fresh_candidate_visibility
                 # §6.9 R5: the "passed on tonight" shelf is DERIVED from this board, so
@@ -7907,6 +8045,10 @@ def main() -> int:
                 # silently reopen the leak on every one-build-lag refresh.
                 _us_today_featured2 = _us_today_featured_preview(
                     vm.get("us_standouts"), _us_gate_cfg["today_preview_rows"])
+                # Same genuine-bound emit rule as the first pass, from THIS
+                # generation's binding and Featured shelf.
+                _us_today_emit2 = _us_today_native_emit_for(
+                    vm.get("us_today_source_binding"), bool(_us_today_featured2))
                 _us_shell_su2, _us_gate2, _us_locked2 = _split_us_board(
                     vm.get("us_standouts"), _us_gate_cfg["preview_rows"], gated=_us_gate_cfg["gated"])
                 # The plan book is not touched by this one-build-lag re-render
@@ -7952,6 +8094,7 @@ def main() -> int:
                 write_page(site / "us_stocks.html", _dash.render(
                     **{**vm, **_us_pov2, "us_standouts": _us_shell_su2,
                        "gate": _us_gate2, "pgate": _us_pgate2,
+                       "us_today_native_emit": _us_today_emit2,
                        "us_prophet_book": _us_life_shell2, "life_gate": _us_life_gate2,
                        "us_prophet_episodes": _us_life_episodes2,
                        "us_prophet_book_error": us_prophet_book_error,
