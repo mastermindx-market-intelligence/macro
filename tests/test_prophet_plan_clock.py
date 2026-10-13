@@ -22,6 +22,7 @@ above the graded window.  A fixture that cannot express the defect cannot pin it
 """
 from __future__ import annotations
 
+import hashlib
 import json
 import sys
 from pathlib import Path
@@ -623,6 +624,327 @@ class TestOriginationStampsTheClock:
 
 
 # ===========================================================================
+# Prospective Plan source_origin — original producer binding propagation
+# ===========================================================================
+
+_BOARD_EMIT = {
+    "emit": {
+        "pair_id": "0f1e2d3c4b5a69788796a5b4c3d2e1f0",
+        "at_utc": "2026-07-02T21:00:00Z",
+    },
+    "board_definition": "us_prophet_v3",
+}
+
+
+def _producer_binding(raw: bytes) -> dict:
+    """The frozen producer contract, mirrored over the SAME raw bytes.
+
+    Mirrors ``scripts.build_stock_library.today_selection_source_binding`` so
+    these tests pin the binding's own shape without importing the builder
+    module; the production derivation path imports the real callable.
+    """
+    from engine.us_candidate_episode import canonical_json  # noqa: PLC0415
+
+    doc = json.loads(raw)
+    rows = [
+        {"selection_index": index,
+         "row_receipt": "sha256:" + hashlib.sha256(
+             canonical_json(row).encode("utf-8")).hexdigest()}
+        for index, row in enumerate(doc["buy"])
+    ]
+    material = {
+        "source_sha256": "sha256:" + hashlib.sha256(raw).hexdigest(),
+        "pair_id": doc["emit"]["pair_id"],
+        "market_session": doc["as_of"],
+        "ordered_rows": rows,
+    }
+    return {
+        **material,
+        "selection_receipt": "sha256:" + hashlib.sha256(
+            canonical_json(material).encode("utf-8")).hexdigest(),
+        "schema": "prophet.today_selection_source_binding/v1",
+        "receipt_kind": "EXACT_DISPLAYED_SOURCE",
+    }
+
+
+class TestPlanSourceOriginOrigination:
+    """source_origin propagation: original positions, refusals, both index paths."""
+
+    @staticmethod
+    def _binding_for(tmp_path, buys):
+        path = TestPlanSourceOriginOrigination._write_emit_standouts(tmp_path, buys)
+        return _producer_binding(path.read_bytes())
+
+    @staticmethod
+    def _write_emit_standouts(tmp_path, buys):
+        path = _write_standouts(tmp_path, buys)
+        doc = json.loads(path.read_text(encoding="utf-8"))
+        doc.update(_BOARD_EMIT)
+        path.write_text(json.dumps(doc), encoding="utf-8")
+        return path
+
+    def test_original_positions_survive_selection_and_duplicate_tickers(
+            self, tmp_path):
+        """Duplicate tickers and lower-ranked rows keep their ORIGINAL buy[] index.
+
+        Positions come from object identity captured before selection reorders
+        the board — never from a ticker join, which would collide on the two DUP
+        rows.
+        """
+        binding = self._binding_for(tmp_path, [
+            _buy_row("DUP", priority=99.0, spot=101.0),
+            _buy_row("OTHER", priority=90.0),
+            _buy_row("DUP", priority=80.0, spot=102.0, anchor="2026-07-01"),
+        ])
+        stats: dict = {}
+        plans = originate_plans(
+            tmp_path / "us_standouts.json", "2026-07-02", set(), None,
+            source_binding=binding, intake_stats=stats)
+        assert stats["lossless"] is True and len(plans) == 3
+        origins = {p["source_origin"]["selection_index"]: p for p in plans}
+        assert sorted(origins) == [0, 1, 2]
+        for index, plan in origins.items():
+            origin = plan["source_origin"]
+            assert origin["schema"] == "prophet.plan_source_origin/v1"
+            assert origin["owner_ref"] == "scripts/build_stock_library.py::main"
+            assert origin["receipt_kind"] == "EXACT_DISPLAYED_SOURCE"
+            assert origin["source_binding"] == binding
+            assert origin["row_receipt"] == \
+                binding["ordered_rows"][index]["row_receipt"]
+        # the two same-ticker rows are distinguished by POSITION, not by ticker
+        assert origins[0]["entry"] == 101.0 and origins[2]["entry"] == 102.0
+        assert origins[1]["asset"] == "OTHER"
+        from engine.options_structure import validate_trade_plan  # noqa: PLC0415
+        assert all(validate_trade_plan(p) == [] for p in plans)
+
+    def test_missing_binding_keeps_plans_unstamped_and_admission_identical(
+            self, tmp_path):
+        buys = [_buy_row("AAA", priority=90.0), _buy_row("BBB", priority=80.0)]
+        path = _write_standouts(tmp_path, buys)
+        stats: dict = {}
+        plans = originate_plans(path, "2026-07-02", set(), None, intake_stats=stats)
+        assert len(plans) == 2 and stats["lossless"] is True
+        assert all("source_origin" not in plan for plan in plans)
+
+    def test_wrong_typed_binding_is_refused_at_the_boundary(self, tmp_path):
+        path = _write_standouts(tmp_path, [_buy_row("AAA", priority=90.0)])
+        assert len(originate_plans(path, "2026-07-02", set(), None)) == 1
+        for bad in (["not", "a", "mapping"], "sha256:stuff", 7, {"ordered_rows": 3}):
+            with pytest.raises(TypeError):
+                originate_plans(path, "2026-07-02", set(), None, source_binding=bad)
+
+    def test_binding_for_a_differently_shaped_board_is_refused(self, tmp_path):
+        """Cover is checked at the boundary: one receipt per ORIGINAL buy row.
+
+        Byte identity itself is pinned upstream, where the derivation refuses a
+        retained snapshot that does not hash and parse to the frozen board.
+        """
+        binding = self._binding_for(tmp_path, [_buy_row("AAA", priority=90.0)])
+        (tmp_path / "other").mkdir()
+        other = _write_standouts(tmp_path / "other", [
+            _buy_row("BBB", priority=90.0), _buy_row("CCC", priority=89.0)])
+        with pytest.raises(ValueError):
+            originate_plans(other, "2026-07-02", set(), None, source_binding=binding)
+
+    def test_refuse_binding_for_changed_same_count_board(self, tmp_path):
+        """A same-count board that is NOT the bound source refuses.
+
+        A replaced row and a reordered board both carry the right NUMBER of buy
+        rows, so count-cover alone would stamp them with positions the original
+        producer never published.  Per-row receipt identity refuses both.
+        """
+        from scripts.build_stock_library import (  # noqa: PLC0415
+            today_selection_source_binding,
+        )
+
+        path = self._write_emit_standouts(tmp_path, [
+            _buy_row("AAA", priority=90.0), _buy_row("BBB", priority=89.0)])
+        binding = today_selection_source_binding(path.read_bytes())
+        doc = json.loads(path.read_bytes())
+        doc["buy"][0]["ticker"] = "CCC"
+        with pytest.raises(ValueError):
+            originate_plans(path, "2026-07-02", set(), None,
+                            standouts_doc=doc, source_binding=binding)
+        doc = json.loads(path.read_bytes())
+        doc["buy"].reverse()
+        with pytest.raises(ValueError):
+            originate_plans(path, "2026-07-02", set(), None,
+                            standouts_doc=doc, source_binding=binding)
+
+    def test_actual_producer_binding_stamps_exact_original_origins(self, tmp_path):
+        """The REAL frozen producer callable, over the original raw bytes, clears
+        the boundary and stamps each plan with its exact original origin.
+
+        The mirrored ``_producer_binding`` helper is not the oracle here: this is
+        the production callable over the exact displayed bytes.
+        """
+        from scripts.build_stock_library import (  # noqa: PLC0415
+            today_selection_source_binding,
+        )
+
+        path = self._write_emit_standouts(tmp_path, [
+            _buy_row("DUP", priority=99.0, spot=101.0),
+            _buy_row("OTHER", priority=90.0),
+            _buy_row("DUP", priority=80.0, spot=102.0, anchor="2026-07-01"),
+        ])
+        binding = today_selection_source_binding(path.read_bytes())
+        stats: dict = {}
+        plans = originate_plans(path, "2026-07-02", set(), None,
+                                source_binding=binding, intake_stats=stats)
+        assert stats["lossless"] is True and len(plans) == 3
+        origins = {p["source_origin"]["selection_index"]: p for p in plans}
+        assert sorted(origins) == [0, 1, 2]
+        for index, plan in origins.items():
+            assert plan["source_origin"]["source_binding"] == binding
+            assert plan["source_origin"]["row_receipt"] == \
+                binding["ordered_rows"][index]["row_receipt"]
+        # duplicate tickers keep their ORIGINAL ordinals — position, not a join
+        assert origins[0]["entry"] == 101.0 and origins[2]["entry"] == 102.0
+        assert origins[1]["asset"] == "OTHER"
+
+    def test_refuse_wrong_scalar_pins_and_malformed_bound_metadata(self, tmp_path):
+        """Pair/session pins must match the supplied board where representable,
+        and malformed bound metadata refuses rather than stamps."""
+        from scripts.build_stock_library import (  # noqa: PLC0415
+            today_selection_source_binding,
+        )
+
+        path = self._write_emit_standouts(
+            tmp_path, [_buy_row("AAA", priority=90.0), _buy_row("BBB", priority=89.0)])
+        raw = path.read_bytes()
+        doc = json.loads(raw)
+
+        wrong_session = today_selection_source_binding(raw)
+        wrong_session["market_session"] = "2026-07-01"
+        with pytest.raises(ValueError):
+            originate_plans(path, "2026-07-02", set(), None,
+                            standouts_doc=doc, source_binding=wrong_session)
+
+        wrong_pair = today_selection_source_binding(raw)
+        wrong_pair["pair_id"] = "ffffffffffffffffffffffffffffffff"
+        with pytest.raises(ValueError):
+            originate_plans(path, "2026-07-02", set(), None,
+                            standouts_doc=doc, source_binding=wrong_pair)
+
+        malformed_sha = today_selection_source_binding(raw)
+        malformed_sha["source_sha256"] = "sha256:" + "z" * 64
+        with pytest.raises(ValueError):
+            originate_plans(path, "2026-07-02", set(), None,
+                            standouts_doc=doc, source_binding=malformed_sha)
+
+        duplicate_ordinal = today_selection_source_binding(raw)
+        duplicate_ordinal["ordered_rows"][1]["selection_index"] = 0
+        with pytest.raises(ValueError):
+            originate_plans(path, "2026-07-02", set(), None,
+                            standouts_doc=doc, source_binding=duplicate_ordinal)
+
+        tampered_envelope = today_selection_source_binding(raw)
+        tampered_envelope["selection_receipt"] = "sha256:" + "0" * 64
+        with pytest.raises(ValueError):
+            originate_plans(path, "2026-07-02", set(), None,
+                            standouts_doc=doc, source_binding=tampered_envelope)
+
+    def test_builder_derives_the_binding_from_the_retained_snapshot_only(
+            self, tmp_path, monkeypatch):
+        """The moving source file is GONE; the binding still derives, unchanged.
+
+        Proves the derivation decompresses only the content-addressed snapshot
+        written by the freeze, never re-reads the live board path.
+        """
+        import scripts.build_prophet as bp  # noqa: PLC0415
+
+        path = self._write_emit_standouts(tmp_path, [_buy_row("AAA", priority=90.0)])
+        raw = path.read_bytes()
+        monkeypatch.setattr(bp, "STANDOUTS_PATH", path)
+        monkeypatch.setattr(bp, "LEDGER_DIR", tmp_path / "data" / "prophet")
+        monkeypatch.setattr(bp, "LEDGER_PATH",
+                            tmp_path / "data" / "prophet" / "ledger.jsonl")
+        _, board_sha, _rel = bp._freeze_origination_source_board(path)
+        path.unlink()
+        binding = bp._load_origination_source_binding(
+            source_board_sha256=board_sha, source_board_doc=json.loads(raw))
+        assert binding["source_sha256"] == "sha256:" + board_sha
+        assert binding["market_session"] == "2026-07-02"
+        assert binding["receipt_kind"] == "EXACT_DISPLAYED_SOURCE"
+        assert len(binding["ordered_rows"]) == 1
+        assert binding == _producer_binding(raw)
+
+    def test_builder_stamps_new_plans_on_both_index_paths_and_spares_history(
+            self, tmp_path, monkeypatch):
+        """Ordinary AND degraded index rows carry the exact new-plan origin; a
+        historical plan stays key-absent everywhere and its file is untouched."""
+        import scripts.build_prophet as bp  # noqa: PLC0415
+
+        path = self._write_emit_standouts(
+            tmp_path, [_buy_row("AAA", priority=90.0), _buy_row("BBB", priority=89.0)])
+        binding = _producer_binding(path.read_bytes())
+        historical = {
+            "schema": "prophet.trade_plan/v1",
+            "id": "OLD-BULL-20200101",
+            "asof": "2020-01-01",
+            "asset": "OLD",
+            "direction": "BULL",
+            "source_engines": ["us_standouts_buy_lane"],
+        }
+        plans_dir = tmp_path / "site" / "prophet" / "plans"
+        plans_dir.mkdir(parents=True)
+        (plans_dir / "OLD-BULL-20200101.json").write_text(
+            json.dumps(historical), encoding="utf-8")
+        monkeypatch.setattr(bp, "STANDOUTS_PATH", path)
+        monkeypatch.setattr(bp, "SITE_PROPHET", tmp_path / "site" / "prophet")
+        monkeypatch.setattr(bp, "PLANS_DIR", plans_dir)
+        monkeypatch.setattr(bp, "STATES_DIR", tmp_path / "site" / "prophet" / "states")
+        monkeypatch.setattr(bp, "INDEX_PATH",
+                            tmp_path / "site" / "prophet" / "index.json")
+        monkeypatch.setattr(bp, "LEDGER_DIR", tmp_path / "data" / "prophet")
+        monkeypatch.setattr(bp, "LEDGER_PATH",
+                            tmp_path / "data" / "prophet" / "ledger.jsonl")
+        monkeypatch.setattr(bp, "write_showcase", lambda: None)
+        frame = _closes([100.0] * 5, start="2026-06-25")
+        monkeypatch.setattr(
+            bp, "_load_price_history_for_management",
+            lambda ticker: None if ticker == "BBB" else frame)
+        with patch("scripts.build_prophet.compute_management_state") as mock_mgmt:
+            mock_mgmt.return_value = {
+                "schema": "prophet.management_state/v1",
+                "id": "x",
+                "asof": "2026-07-02",
+                "phase": "pre_trigger",
+                "management_confidence": 55.0,
+                "raw_confidence": 55.0,
+                "recommended_action": "wait",
+                "components": {},
+                "geometry": {},
+                "change_reason": "",
+            }
+            with patch("engine.prophet_arena.run_arena", return_value={
+                "policies": [], "harness_validity": {"harness_ok": True},
+            }):
+                with patch.object(sys, "argv",
+                                  ["build_prophet", "--date", "2026-07-02"]):
+                    bp.main()
+
+        index = json.loads(bp.INDEX_PATH.read_text(encoding="utf-8"))
+        rows = {row["id"]: row for row in index["plans"]}
+        new_plan = json.loads((plans_dir / "AAA-BULL-20260702.json").read_text())
+        assert new_plan["source_origin"]["source_binding"] == binding
+        assert new_plan["source_origin"]["selection_index"] == 0
+        assert index["source_board_sha256"] == binding["source_sha256"][len("sha256:"):]
+        # ordinary row: the plan's origin, unchanged
+        assert rows["AAA-BULL-20260702"]["source_origin"] == new_plan["source_origin"]
+        # degraded row: the same exact origin
+        degraded_plan = json.loads(
+            (plans_dir / "BBB-BULL-20260702.json").read_text())
+        assert rows["BBB-BULL-20260702"]["management_status"] == "unavailable"
+        assert (rows["BBB-BULL-20260702"]["source_origin"]
+                == degraded_plan["source_origin"])
+        # historical plan: key ABSENT on the row and on the untouched file
+        assert "source_origin" not in rows["OLD-BULL-20200101"]
+        assert json.loads(
+            (plans_dir / "OLD-BULL-20200101.json").read_text()) == historical
+
+
+# ===========================================================================
 # P5 / P6 — closed-state copy and shipped order
 # ===========================================================================
 
@@ -699,3 +1021,14 @@ class TestIndexOrderMatchesTheDeclaredKey:
             {"id": "AAA", "_priority_score": 5.0},
         ]
         assert self._sorted(entries) == ["AAA", "ZZZ"]
+
+
+def test_source_origin_extension_preserves_existing_positional_frozen_board(tmp_path):
+    path = TestPlanSourceOriginOrigination._write_emit_standouts(
+        tmp_path, [_buy_row("AAA", priority=90.0)])
+    frozen = json.loads(path.read_bytes())
+    path.unlink()
+    # The existing seventh argument is the immutable document, never a receipt.
+    plans = originate_plans(path, "2026-07-02", set(), None, None, {}, frozen)
+    assert len(plans) == 1 and plans[0]["id"] == "AAA-BULL-20260702"
+    assert "source_origin" not in plans[0]
