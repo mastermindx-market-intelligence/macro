@@ -40,10 +40,10 @@ counterpart edge, then resumes in one cycle. It is updated at wave boundaries; i
 | Wave | Content | Exit gate (observable) | State |
 |---|---|---|---|
 | W0 Reconcile + admit | carrier edges, incumbents, capability matrix, records | ACK + START posted once; records PR MERGED; `python3 scripts/agentos.py validate` 0 errors | DONE (PR #8785 merged `2dd5f5078cba`) |
-| W1 Foundations | O1/T02 source-clock-basis-rights qualification; O7/T03 publication-health note; O8/T22 preregistration | three docs MERGED; every pullback feed has a rights disposition (`recorded` / `source_unavailable`); prereg frozen with sha256 before any outcome inspection; GH001 + heartbeat repairs routed to owners on their carriers | DONE (T02 `565d883c2657`; T03 `f1ae1e0365fc`, production read pending; T22 #8852 `8145c6e2e584`) |
+| W1 Foundations | O1/T02 source-clock-basis-rights qualification; O7/T03 publication-health note; O8/T22 preregistration | three docs MERGED; every pullback feed has a rights disposition (`recorded` / `source_unavailable`); prereg frozen with sha256 before any outcome inspection; GH001 + heartbeat repairs routed to owners on their carriers | DONE (T02 `565d883c2657`; T03 `f1ae1e0365fc`, PRODUCTION_PROOF 2026-10-13 `ed391bf44d44`; T22 #8852 `8145c6e2e584`) |
 | W2 Observed-move primitives | PIT, basis-correct 5/10/21-session local-move primitives + tests, off the render path | MERGED, CI green, no `data/`/`site/` writes from the render budget, nulls printed | DONE (#8854 `21088b534599`) |
 | W3 Consumer qualification | evaluate under the frozen prereg; #8721 consumed read-only through CI | results doc with honest episode N, blocked OOS + purge, abstention rate, negative results preserved; Opus READ_ONLY red-team before presenting | DONE (#8938 `6a6f7b05c6bb`: stage-1 SPY null, INC deviation logged) |
-| W4 Repair + widen + design | stage-1 red team and repairs; stage-1b pooled 14-ETF panel under prereg v1.1 (frozen with blob pins before the run); prospective-lane design; G3 CN evidence; heartbeat expected-session check (G-HB) | each doc/runner MERGED; prereg v1.1 + manifest v1.1.0 frozen before any panel outcome; one execution; red team answered by a dated addendum, never by editing results | DONE except the run: #9082 `6b4bb403e4f9`, #9070 `8f25c9b54852` (G-HB, production read pending), #9091 `bb8da347eca1`, #9114 `c36e57ec65b4`; stage-1b results + addendum #9122 (0/12) in CI |
+| W4 Repair + widen + design | stage-1 red team and repairs; stage-1b pooled 14-ETF panel under prereg v1.1 (frozen with blob pins before the run); prospective-lane design; G3 CN evidence; heartbeat expected-session check (G-HB) | each doc/runner MERGED; prereg v1.1 + manifest v1.1.0 frozen before any panel outcome; one execution; red team answered by a dated addendum, never by editing results | DONE except the run: #9082 `6b4bb403e4f9`, #9070 `8f25c9b54852` (G-HB, PRODUCTION_PROOF 2026-10-13 `ed391bf44d44`), #9091 `bb8da347eca1`, #9114 `c36e57ec65b4`; stage-1b results + addendum #9122 (0/12) in CI |
 | W5 Prospective lane | the frozen SPY lane runs in the nightly: writer, grader, refusals log, readiness reporter, heartbeat + grading-closure enrollment | MERGED; first nightly after merge writes `data/grey_deer_pullback/forward_log.jsonl` with SPY rows and no `grey-deer-pullback-*-error` annotation; nothing appended to `data/trial_ledger.jsonl` | #9128 in CI (CI wiring repaired 2026-10-13) |
 | W6 Integration + acceptance | warning-delivery dependency (#8132 lineage) only after publication continuity is proven; HOLDs intact | production proof on the live surface (authenticated HTTP 200, four authority booleans false); Sol/Chairman checkpoints per the wave matrix §6 | after the prospective lane reaches its power floor |
 
@@ -61,7 +61,7 @@ seat posts for this key → search the key before every once-per-operation act.
 |---|---|---|---|---|
 | W0 records | this seat (principal) | `agentos/handoffs/…-2026-10-11-FABLE-W0.md`, WS `next_action`, this file, `research/grey_deer/README.md` | records PR + one `gh` watcher ≥60 s / sweeper | MERGED (PR #8785, `2dd5f5078cba`) |
 | O1/T02 qualification | this seat (principal; data-source owner for rights determinations) | `research/grey_deer/PULLBACK_SOURCE_RIGHTS_QUALIFICATION_2026-10-11.md` | PR | MERGED (PR #8833, squash `565d883c2657`; Slack edge `1791738462.005429`) |
-| O7/T03 publication health | this seat (note + heartbeat repair in its owning script); QLedger owner (GH001 size partition) | `research/grey_deer/incidents/2026-10-11_PUBLICATION_HEALTH_HEARTBEAT_STALL_REPAIR.md`; `scripts/check_ledger_advance.py` + 5 tests; routing comments on #8128 / #8042 | PR + one watcher; production read on the first trading-day `daily` after merge | MERGED (PR #8835, squash `f1ae1e0365fc`; Slack edge `1791741691.143669`); production read pending |
+| O7/T03 publication health | this seat (note + heartbeat repair in its owning script); QLedger owner (GH001 size partition) | `research/grey_deer/incidents/2026-10-11_PUBLICATION_HEALTH_HEARTBEAT_STALL_REPAIR.md`; `scripts/check_ledger_advance.py` + 5 tests; routing comments on #8128 / #8042 | PR + one watcher; production read on the first trading-day `daily` after merge | MERGED (PR #8835, squash `f1ae1e0365fc`; Slack edge `1791741691.143669`); PRODUCTION_PROOF 2026-10-13 (`ed391bf44d44`) |
 | O8/T22 preregistration | this seat (design); Opus READ_ONLY audit before freeze | `research/grey_deer/PULLBACK_PREREGISTRATION_2026-10-11.md` + sha256 in the WS record | PR | MERGED (PR #8852, squash `8145c6e2e584`; sha256 `b50ab2430b345090…`) |
 | W2 primitives | this seat | `lib/observed_moves.py` + tests | PR | MERGED (PR #8854, `21088b534599`) |
 | W3 stage-1 run | this seat | `PULLBACK_STAGE1_RESULTS_2026-10-11.*`, deviation log | PR | MERGED (PR #8938, `6a6f7b05c6bb`): null |
@@ -123,8 +123,16 @@ seat posts for this key → search the key before every once-per-operation act.
 - O-e Executive ingress enrollment — user-only OAuth step; lane blocker, not a mission stop.
 - O-f Grok CLI login on mb, mini1, mini2 and mini4, plus an install and login on m1 (ubuntu1 not
   probed). This is a human OAuth act. Until it is done, lanes run on mmx-ubuntu0/2/3 only.
-- O-g G-HB (#9070) and T03 (#8835) production proof: the first trading-day `daily` state write in
-  `data/ci/ledger_heartbeat_state.json` after merge.
+- ~~O-g G-HB (#9070) and T03 (#8835) production proof.~~ CLOSED 2026-10-13 at PRODUCTION_PROOF,
+  from two same-day writes of `data/ci/ledger_heartbeat_state.json` on main. `3a6071006ade` (00:48Z,
+  before #9070 merged at 04:24Z) has no session fields. `ed391bf44d44` (11:36Z, after the merge)
+  carries `expected_session=2026-10-12` and `sessions_behind` on both `max_sessions_behind: 2`
+  ledgers: risk_radar 0, and leadership_crack 2, which sits at the ceiling, so `lag_stalled_since`
+  is correctly null. Across that same-day re-run with unchanged asof, every open
+  `stalled_since: 2026-10-09` (leadership_crack, opex_windows, mag7_regime, basket_turn,
+  us_basket_turn) survived. That is T03's preservation fix holding in production, which also
+  closes O-c's preservation half. The above-ceiling `session_lag` alert path has not yet fired in
+  production; tests cover it.
 
 **NEXT (in order)**
 1. ~~Post START on the carrier (once), then open the W0 records PR and own it to MERGED.~~ DONE: START `1791709498.229729`; PR #8785 merged `2dd5f5078cba`; MERGED edge `1791710983.487829`.
@@ -137,7 +145,7 @@ seat posts for this key → search the key before every once-per-operation act.
    `origin/main`. Neither is armed for merge-on-green.
 7. After #9128 merges, read the first nightly: `data/grey_deer_pullback/forward_log.jsonl` has SPY
    rows, `forward_log_refusals.jsonl` explains any refusal, and there is no
-   `grey-deer-pullback-*-error` annotation. In the same read, close O-g from the heartbeat state file.
+   `grey-deer-pullback-*-error` annotation. (O-g closed 2026-10-13; see OPEN.)
 8. Grading accrues as each horizon elapses. `scripts/research/grey_deer_pullback_readiness.py` reports
    when the prereg power floor can be met. Nothing is promoted before that and the gauntlet.
 9. Never re-run stage-1 or stage-1b on real data. A new configuration is a new prereg revision with

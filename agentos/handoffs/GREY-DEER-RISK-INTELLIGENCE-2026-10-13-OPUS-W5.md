@@ -53,6 +53,9 @@ verified:
   - claim: Main's ci-pack-0 / ci-gate red (packing-probe ceilings) is inherited, not caused by PR 9122 or PR 9128. Sibling heal PR 9141 (another session) owns it.
     command: "gh pr view 9141 --json headRefName,body,files; read its .github/ci/legacy-jobs.yml + tests/test_ci_pack.py diff"
     result: "PR 9141 curates research-price-panel and washout-turn-organ as scope exclusive and registers both in CURATED_EXCLUSIVE. Its washout paths include the files that job's tests read as text (scripts/build_site.py, templates/_us_board_cards.html.j2, templates/dashboard.html.j2, templates/theme.js). This seat opened no competing heal, because a pack is one check."
+  - claim: G-HB (PR 9070) and T03 (PR 8835) hold in production (PRODUCTION_PROOF).
+    command: "git show 3a6071006ade:data/ci/ledger_heartbeat_state.json and git show ed391bf44d44:data/ci/ledger_heartbeat_state.json (two same-day main writes, before and after the 04:24Z merge of PR 9070)"
+    result: "3a6071006ade (00:48Z) has no session fields. ed391bf44d44 (11:36Z) carries expected_session=2026-10-12 and sessions_behind on both max_sessions_behind:2 ledgers: risk_radar 0, leadership_crack 2, which is at the ceiling, so lag_stalled_since is correctly null. Every open stalled_since 2026-10-09 (leadership_crack, opex_windows, mag7_regime, basket_turn, us_basket_turn) survived the same-day unchanged-asof re-run. The above-ceiling session_lag alert path has not yet fired in production; tests cover it."
 unverified:
   - claim: The first nightly after PR 9128 merges writes SPY rows to data/grey_deer_pullback/forward_log.jsonl and raises no grey-deer-pullback-*-error annotation.
     what_would_verify: >-
@@ -60,11 +63,6 @@ unverified:
       git show origin/main:data/grey_deer_pullback/forward_log.jsonl | tail -3
       and the run's annotations. Rows that need US prices after 2026-10-09 wait
       until US collection publishes again (GH001, QLedger owner).
-  - claim: G-HB (PR 9070) and T03 (PR 8835) hold in production.
-    what_would_verify: >-
-      The first trading-day daily state write to data/ci/ledger_heartbeat_state.json
-      after both merges: the expected-session check fires and an open
-      stalled_since survives a same-day unchanged-data run.
 unresolved:
   - "QLedger GH001 size partition (data/qledger/claims.jsonl): owner QLedger (#8042 -> #8669 lineage). The newest US collection on main is 2026-10-09 (cdab77c46a9e); prospective grading that reads US prices waits for it."
   - "Executive ingress enrollment: only the user can start the OAuth step. Labor runs as direct Grok CLI lanes on mmx-ubuntu0/2/3 instead."
@@ -72,7 +70,7 @@ unresolved:
   - "#8188 join custody and the CN rights determination (G3): canonical placement owner and data-source owner. The CN evidence is filed in PULLBACK_G3_CN_RIGHTS_EVIDENCE_2026-10-12.md; the determination itself is not this seat's."
 next_actions:
   - "Once sibling heal PR 9141 merges, update-branch PR 9122 and PR 9128 (gh api -X PUT .../pulls/<n>/update-branch). Hand-merge each on concluded green with gh pr merge <n> --squash --match-head-commit <full head>, then check landing: bare git fetch origin main, a per-path blob compare, and a git grep needle (grey_deer_pullback_nightly for 9128). Neither PR is armed."
-  - "Read the first nightly after PR 9128 merges: forward_log.jsonl SPY rows, forward_log_refusals.jsonl reasons, no grey-deer-pullback-*-error annotation. In the same read, close G-HB and T03 from data/ci/ledger_heartbeat_state.json."
+  - "Read the first nightly after PR 9128 merges: forward_log.jsonl SPY rows, forward_log_refusals.jsonl reasons, no grey-deer-pullback-*-error annotation."
   - "Let grading accrue as each horizon elapses. Run python3 scripts/research/grey_deer_pullback_readiness.py to see when the prereg power floor can be met. Promote nothing before that floor and the gauntlet."
   - "W6 (warning delivery, #8132 lineage) opens only after publication continuity is proven; HOLDs #8188 / #7029 / #8132 / #7875 / #7592 stay with Sol."
 do_not_redo:

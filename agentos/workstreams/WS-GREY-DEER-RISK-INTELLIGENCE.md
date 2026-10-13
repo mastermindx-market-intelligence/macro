@@ -358,8 +358,8 @@ waves:
     depends_on: [GD-PB-W0]
   - id: GD-PB-T03
     title: Publication-health note and GH001/heartbeat owner routing (O7/T01+T03)
-    status: in_progress
-    # merged f1ae1e0365fc (PR 8835); closes at the first trading-day daily state write.
+    status: done
+    # merged f1ae1e0365fc (PR 8835); PRODUCTION_PROOF 2026-10-13: open stalled_since survived the same-day re-run ed391bf44d44.
     depends_on: [GD-PB-W0]
   - id: GD-PB-T22
     title: Observed-move preregistration, frozen before outcome inspection (O8/T22)
@@ -387,9 +387,9 @@ waves:
     depends_on: [GD-PB-W3]
   - id: GD-PB-W4-GHB
     title: Heartbeat flags opt-in ledgers that fall behind the expected NYSE session (G-HB)
-    status: in_progress
+    status: done
     pr: 9070
-    # squash 8f25c9b54852; closes at the first nightly heartbeat state write after merge.
+    # squash 8f25c9b54852; PRODUCTION_PROOF 2026-10-13: ed391bf44d44 (after merge) carries expected_session + sessions_behind; 3a6071006ade (before) does not.
     depends_on: [GD-PB-T03]
   - id: GD-PB-W4-S1B
     title: Stage-1 repairs, stage-1b pooled-panel runner, prereg v1.1 + manifest v1.1.0 frozen
@@ -411,8 +411,8 @@ waves:
 next_action: >
   Read the first nightly after PR 9128 merges: data/grey_deer_pullback/forward_log.jsonl
   must exist on main with SPY rows and the run must carry no
-  grey-deer-pullback-*-error annotation; then close GD-PB-T03 and GD-PB-W4-GHB from
-  git show origin/main:data/ci/ledger_heartbeat_state.json. State: W0 through W4 are
+  grey-deer-pullback-*-error annotation (GD-PB-T03 and GD-PB-W4-GHB closed 2026-10-13 from
+  ledger_heartbeat_state.json ed391bf44d44). State: W0 through W4 are
   merged (PRs 8785, 8833, 8835, 8852, 8854, 8938, 9070, 9082, 9091, 9114). Both frozen
   retrospective runs are null - stage-1 (PR 8938, SPY only) and stage-1b (PR 9122, 14-ETF
   panel under prereg v1.1): 0 of 12 claims pass (h5 P-all rejected and FRAGILE, h10/h21
