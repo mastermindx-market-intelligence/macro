@@ -5373,6 +5373,8 @@ jobs:
       - "tests/fixtures/us_candidate_episode/**"
       - "engine/prophet_object_change.py"
       - "tests/test_prophet_object_change.py"
+      - "engine/prophet_daily_brief_evidence_sources.py"
+      - "tests/test_prophet_daily_brief_evidence_sources.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -5412,6 +5414,8 @@ jobs:
         run: python -m pytest tests/test_prophet_early_observations.py tests/test_prophet_observations_api.py -q
       - name: Prophet per-object change — native identity, separate clocks and unavailable comparisons
         run: python -m pytest tests/test_prophet_object_change.py -q
+      - name: Prophet DailyBrief factual evidence — native source binding and immutable owner clocks
+        run: python -m pytest tests/test_prophet_daily_brief_evidence_sources.py -q
       - name: install observation browser
         run: python -m playwright install --with-deps chromium
       - name: Prophet observation discovery — full-population search, access failure and theme geometry
