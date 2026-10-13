@@ -6,6 +6,7 @@ import json
 from pathlib import Path
 
 import jsonschema
+import pytest
 from jsonschema import FormatChecker
 
 from engine.market_ontology import nuclear_theme_research as nuclear
@@ -25,6 +26,90 @@ ROBOTICS_PATH = ROOT / "contracts/market_ontology/robotics_theme_research.v1.sch
 
 def validate(payload):
     jsonschema.Draft202012Validator(CONTRACT, format_checker=FormatChecker()).validate(payload)
+
+
+# One list for the schema validator and for nuclear._parse_day. The four
+# impossible values are the ones $defs/when must refuse; the naive instant is
+# a form _parse_day accepts and the schema must accept too.
+WHEN_VALUES = (
+    "2026-09-01",
+    "2026-4-1",
+    "2026-09-1",
+    "2026-9-01",
+    "2026-09- 1",
+    "2024-02-29",
+    "2000-02-29",
+    "1900-02-28",
+    "0001-01-01",
+    "9999-12-31",
+    "0004-02-29",
+    "2024-2-29",
+    "2026-02-31",
+    "2026-02-29",
+    "2026-13-45",
+    "2026-00-01",
+    "2026-01-00",
+    "2026-04-31",
+    "0000-01-01",
+    "1900-02-29",
+    "2026-01-32",
+    "2026-09-01T00:00:00",
+    "2026-09-01T00:00:00Z",
+    "2026-09-01T00:00:00+00:00",
+    "2026-09-01T00:00:00-05:30",
+    "2026-09-01T00:00:00.1Z",
+    "2026-09-01T00:00:00,5Z",
+    "2026-09-01T00:00Z",
+    "2026-09-01T00Z",
+    "2026-09-01T23:59:59+23:59",
+    "2024-02-29T00:00:00Z",
+    "2024-02-29T00:00:00",
+    "20260901T000000Z",
+    "2026-09-01T000000Z",
+    "0001-01-01T00:00:00Z",
+    "9999-12-31T23:59:59Z",
+    "2026-09-01T24:00:00Z",
+    "2026-09-01T00:00:00+99:99",
+    "2026-02-31T00:00:00Z",
+    "2026-02-29T00:00:00",
+    "2026-09-01T00:60:00Z",
+    "2026-09-01T00:00:60Z",
+    "2026-09-01T00:00:00+24:00",
+    "2026-09-01T00:00:00-24:00",
+    "2026-09-01T00:00:00z",
+    "2026-4-1T00:00:00",
+    "2026-13-01T00:00:00Z",
+    "1900-02-29T00:00:00Z",
+    "0000-01-01T00:00:00Z",
+)
+WHEN_REFUSED = (
+    "2026-02-31",
+    "2026-13-45",
+    "2026-09-01T24:00:00Z",
+    "2026-09-01T00:00:00+99:99",
+)
+_WHEN_VALIDATOR = jsonschema.Draft202012Validator(
+    CONTRACT["$defs"]["when"], format_checker=FormatChecker())
+
+
+def _parse_day_accepts(value):
+    try:
+        nuclear._parse_day(value)
+    except ValueError:
+        return False
+    return True
+
+
+@pytest.mark.parametrize("value", WHEN_VALUES)
+def test_when_schema_matches_parse_day(value):
+    """$defs/when agrees with nuclear_theme_research._parse_day on one list."""
+    assert set(WHEN_REFUSED) <= set(WHEN_VALUES)
+    accepted = _parse_day_accepts(value)
+    errors = list(_WHEN_VALIDATOR.iter_errors(value))
+    if value in WHEN_REFUSED:
+        assert accepted is False
+        assert errors
+    assert (not errors) is accepted
 
 
 def test_every_composed_payload_validates():

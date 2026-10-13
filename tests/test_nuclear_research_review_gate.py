@@ -16,7 +16,7 @@ import dataclasses
 import pytest
 
 from engine.market_ontology import nuclear_theme_research as nuclear
-from tests.nuclear_research_helpers import N04, X05, nuclear_bundle, nuclear_query, variant
+from tests.nuclear_research_helpers import N04, X01, X05, nuclear_bundle, nuclear_query, variant
 
 
 def review(disposition, due=None):
@@ -191,3 +191,30 @@ def test_stale_prefix_follows_the_producing_interpretation():
     assert offset["[stale interpretation] STALE offset."]["stale"] is True
     assert all("_interpretation_id" not in item for item in summary["why_it_matters"])
     assert all("_interpretation_id" not in item for item in summary["offset"])
+
+
+def test_swapped_interpretations_keep_their_own_why_it_matters():
+    """Two interpretations that share a revision keep their own why text.
+
+    The attributed statement cites that same revision. Swapping block order
+    must not paint its text with the other interpretation's stale prefix.
+    """
+    revision = X01["curation_revision"]
+    # "a-stale" sorts before "z-fresh", so a first-match on input_revisions
+    # takes the stale block.
+    fresh = _paired_block("z-fresh", "current", "FRESH mechanism.", revision)
+    stale = _paired_block("a-stale", "stale", "STALE mechanism.", revision)
+    coverage = X01["limitations"]["coverage"]
+
+    def why_text(blocks):
+        payload = compose(X01, blocks=blocks)
+        return sorted(item["text"] for item in payload["summary"]["why_it_matters"])
+
+    forward = why_text([fresh, stale])
+    backward = why_text([stale, fresh])
+    assert forward == backward
+    assert coverage in forward
+    assert "[stale interpretation] " + coverage not in forward
+    assert "FRESH mechanism." in forward
+    assert "[stale interpretation] STALE mechanism." in forward
+    assert "[stale interpretation] FRESH mechanism." not in forward

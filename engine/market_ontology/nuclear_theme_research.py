@@ -644,13 +644,16 @@ def _summary(selection: _Selection, response_limitations: set[str]) -> dict[str,
             producer = item.pop("_interpretation_id")
             stale = producer in stale_ids
         else:
-            source_block = next((
+            # Relocate by the item's input_refs. That content names one
+            # interpretation only when a single block carries it; the first
+            # block in list order is not a producing interpretation.
+            matches = [
                 block for block in blocks
                 if item["input_refs"] == list(block.get("input_revisions") or [])
-            ), None)
+            ]
             stale = (
-                source_block is not None
-                and source_block.get("interpretation_id") in stale_ids
+                len(matches) == 1
+                and matches[0].get("interpretation_id") in stale_ids
             )
         if stale:
             item["stale"] = True
