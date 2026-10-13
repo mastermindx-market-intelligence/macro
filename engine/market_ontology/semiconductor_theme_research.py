@@ -44,19 +44,25 @@ from __future__ import annotations
 
 import copy
 import json
-from dataclasses import dataclass
-from typing import Any, Literal, Mapping
+from typing import Any, Mapping
 
 from engine.market_ontology.theme_research_binding import (
+    OwnerBundle,
+    ResearchQuery,
     ResearchRefusal,
     canonical_text,
+    collapse_syndicated,
+    correction_lineage,
+    filter_interpretation_blocks,
     generation_fingerprint,
     in_anchor_scope,
     is_instant,
     le,
     parse_clock,
     parse_day,
+    passes_time_mode,
     readable,
+    review_excluded,
     validate_cutoff_format,
     validate_pagination,
     validate_replay_cutoffs,
@@ -105,37 +111,13 @@ _MIN_LIMIT, _MAX_LIMIT = 1, 100
 _STALE_PREFIX = "[stale interpretation] "
 
 
-@dataclass(frozen=True)
-class ResearchQuery:
-    anchor_theme_id: str
-    slice_key: Literal['hbm_packaging', 'sic_gan_specialty']
-    view: Literal['composition', 'manufacturing', 'commercial', 'capacity', 'economics']
-    time_mode: Literal['latest', 'source_history', 'system_replay']
-    source_cutoff: str | None
-    recorded_cutoff: str | None
-    offset: int = 0
-    limit: int = 50
-    expected_generation: str | None = None
-
-
-@dataclass(frozen=True)
-class OwnerBundle:
-    revision_tuple: tuple[tuple[str, str], ...]
-    rights_revision: str
-    assertions: tuple[Mapping[str, Any], ...]
-    identity_results: tuple[Mapping[str, Any], ...]
-    event_workspaces: tuple[Mapping[str, Any], ...]
-    financial_packets: tuple[Mapping[str, Any], ...]
-    interpretation_blocks: tuple[Mapping[str, Any], ...]
-    native_refs: tuple[Mapping[str, Any], ...]
-    omissions: tuple[str, ...]
-
-
-# ``ResearchRefusal`` now lives in the shared foundation and is re-exported
-# here unchanged: the shell catches it at the transport boundary, so the
-# ``except`` clause must resolve without loading this composer. Every
-# existing importer of ``semiconductor_theme_research.ResearchRefusal``
-# keeps working and receives the SAME class object.
+# ``ResearchQuery``, ``OwnerBundle`` and ``ResearchRefusal`` live in the
+# shared shell and are re-exported here: every existing importer receives
+# the SAME objects. ``passes_time_mode`` is that shell function; the private
+# name stays an alias so the call sites below are unchanged.
+# ``review_excluded``, ``correction_lineage`` and ``collapse_syndicated``
+# are re-exported and not called. This composer never applied them, and
+# calling them would change response bytes.
 
 
 # ---------------------------------------------------------------------------
@@ -154,6 +136,12 @@ _parse_day = parse_day
 _le = le
 _within = within
 _readable = readable
+_passes_time_mode = passes_time_mode
+# Bound so the re-export is a use, not an unused import. Not called below.
+_review_excluded = review_excluded
+_filter_interpretation_blocks = filter_interpretation_blocks
+_correction_lineage = correction_lineage
+_collapse_syndicated = collapse_syndicated
 
 
 # ---------------------------------------------------------------------------
@@ -364,18 +352,12 @@ class _Selection:
         return chosen
 
     def interpretation_blocks(self) -> list[dict[str, Any]]:
-        chosen = []
-        for block in self.bundle.interpretation_blocks:
-            if self.query.time_mode == "system_replay":
-                reviewed = block.get("reviewed_at")
-                if not _readable(reviewed):
-                    self.limitations.add("undatable_excluded")
-                    continue
-                if not _within(reviewed, self.query.recorded_cutoff):
-                    continue
-            chosen.append(dict(block))
-        chosen.sort(key=lambda b: b.get("interpretation_id", ""))
-        return chosen
+        return _filter_interpretation_blocks(
+            self.bundle.interpretation_blocks,
+            time_mode=self.query.time_mode,
+            recorded_cutoff=self.query.recorded_cutoff,
+            limitations=self.limitations,
+        )
 
     # -- identity ------------------------------------------------------------
 
