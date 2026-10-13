@@ -16,6 +16,7 @@ from urllib.parse import urlsplit
 
 try:
     from scripts.verify_risk_radar_pullback_served import (
+        ACTIVE_PHASES,
         EM_DASH,
         FORECAST_LINES,
         FORECAST_TEXT_ALLOW,
@@ -24,6 +25,7 @@ try:
     )
 except ImportError:  # invoked as a file, so scripts/ is on sys.path
     from verify_risk_radar_pullback_served import (
+        ACTIVE_PHASES,
         EM_DASH,
         FORECAST_LINES,
         FORECAST_TEXT_ALLOW,
@@ -158,7 +160,17 @@ def _forecast_gate(measured: dict, lang: str, javascript: bool) -> dict[str, boo
     return {"forecast_values_ok": values_ok, "forecast_block_text_ok": block_ok}
 
 
-def evaluate_cell(cell: dict, measured: dict) -> dict:
+def _with_active_phase(phase: str, checks: dict, failures: list, require_active: bool) -> tuple[dict, list]:
+    if not require_active:
+        return checks, failures
+    checks = dict(checks)
+    checks["phase_active"] = phase in ACTIVE_PHASES
+    if phase not in ACTIVE_PHASES:
+        failures = list(failures) + ["phase_active"]
+    return checks, failures
+
+
+def evaluate_cell(cell: dict, measured: dict, require_active: bool = False) -> dict:
     """Turn one raw measurement dict into checks, failures, and pass/fail.
 
     JavaScript-off cells pass when section.pbx is in the DOM with a non-empty
@@ -193,6 +205,7 @@ def evaluate_cell(cell: dict, measured: dict) -> dict:
             failures.append("forecast_values_ok")
         if not forecast["forecast_block_text_ok"]:
             failures.append("forecast_block_text_ok")
+        checks, failures = _with_active_phase(phase, checks, failures, require_active)
         return {
             "phase": phase,
             "checks": checks,
@@ -233,6 +246,7 @@ def evaluate_cell(cell: dict, measured: dict) -> dict:
     failures = [name for name in required if checks.get(name) is not True]
     if tab_escapes != 0:
         failures.append("tab_escapes")
+    checks, failures = _with_active_phase(phase, checks, failures, require_active)
     return {
         "phase": phase,
         "checks": checks,
@@ -513,7 +527,7 @@ def _count_tab_escapes(page, dialog: str) -> int:
     return escapes
 
 
-def _drive_cell(page, base: str, cell: dict, out_dir: Path) -> dict:
+def _drive_cell(page, base: str, cell: dict, out_dir: Path, require_active: bool = False) -> dict:
     contract = PAGE_CONTRACT[cell["page"]]
     url = page_target(base, cell["file"])
     response = page.goto(url, wait_until="load", timeout=60000)
@@ -644,7 +658,7 @@ def _drive_cell(page, base: str, cell: dict, out_dir: Path) -> dict:
         screens_ok = False
     if cell["javascript"] and measured.get("dialog_visible") and not screens.get("dialog"):
         screens_ok = False
-    evaluation = evaluate_cell(cell, measured)
+    evaluation = evaluate_cell(cell, measured, require_active=require_active)
     if not screens_ok:
         evaluation["checks"]["screenshots_saved"] = False
         evaluation["failures"] = list(evaluation["failures"]) + ["screenshots_saved"]
@@ -671,7 +685,13 @@ def _drive_cell(page, base: str, cell: dict, out_dir: Path) -> dict:
     return cell_record(cell, evaluation, screens, applied, opener, open_note)
 
 
-def run_matrix(base: str, pages: list[tuple[str, str]], out_dir: Path, chrome: str | None = None) -> dict:
+def run_matrix(
+    base: str,
+    pages: list[tuple[str, str]],
+    out_dir: Path,
+    chrome: str | None = None,
+    require_active: bool = False,
+) -> dict:
     try:
         from playwright.sync_api import sync_playwright
     except Exception as exc:
@@ -704,7 +724,7 @@ def run_matrix(base: str, pages: list[tuple[str, str]], out_dir: Path, chrome: s
                     context.add_init_script(_boot_source(cell["theme"], cell["lang"]))
                 page = context.new_page()
                 try:
-                    records.append(_drive_cell(page, base, cell, out_dir))
+                    records.append(_drive_cell(page, base, cell, out_dir, require_active=require_active))
                 finally:
                     context.close()
         finally:
@@ -723,10 +743,17 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--pages", required=True, help="us=macro.html,cn=china.html")
     parser.add_argument("--out", required=True, type=Path)
     parser.add_argument("--chrome", default=None, help="browser executable; otherwise the chrome channel")
+    parser.add_argument(
+        "--require-active",
+        action="store_true",
+        help="Fail a cell whose phase is outside underway, stabilizing, or recovering",
+    )
     args = parser.parse_args(argv)
     try:
         pages = parse_pages(args.pages)
-        receipt = run_matrix(args.base, pages, args.out, args.chrome)
+        receipt = run_matrix(
+            args.base, pages, args.out, args.chrome, require_active=args.require_active,
+        )
     except (SetupError, ValueError) as exc:
         print(f"setup: {exc}", file=sys.stderr)
         return 2

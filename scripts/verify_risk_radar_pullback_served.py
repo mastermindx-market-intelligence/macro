@@ -188,7 +188,12 @@ def _parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--require-active",
         action="store_true",
-        help="Fail unless the phase is underway, stabilizing, or recovering",
+        help="Fail unless the phase is underway, stabilizing, or recovering and still inside valid_until",
+    )
+    parser.add_argument(
+        "--now",
+        default=None,
+        help="ISO-8601 timestamp used as now for the --require-active expiry check (default: current UTC)",
     )
     parser.add_argument("--out", help="Write the JSON receipt to this path")
     return parser
@@ -567,12 +572,31 @@ def _check_c6(dialog: Node | None, html: str) -> tuple[bool, str]:
     return True, detail
 
 
-def _check_c7(phase: str | None, require_active: bool) -> tuple[bool, str]:
+def _parse_now(value: str | None) -> datetime:
+    if not value:
+        return datetime.now(timezone.utc)
+    parsed = _parse_valid_until(value.strip())
+    if parsed is None:
+        raise InputError(f"--now is not an ISO-8601 timestamp with a UTC offset ({value})")
+    return parsed
+
+
+def _check_c7(
+    phase: str | None,
+    valid_until: str | None,
+    require_active: bool,
+    now: datetime,
+) -> tuple[bool, str]:
     if not require_active:
         return True, "require-active not set"
-    if phase in ACTIVE_PHASES:
-        return True, f"phase {phase} is active"
-    return False, f"phase {phase or '<missing>'} is not underway|stabilizing|recovering"
+    if phase not in ACTIVE_PHASES:
+        return False, f"phase {phase or '<missing>'} is not underway|stabilizing|recovering"
+    parsed = _parse_valid_until((valid_until or "").strip())
+    if parsed is None:
+        return False, "valid_until missing or unparseable"
+    if parsed <= now:
+        return False, "expired: valid_until <= now"
+    return True, f"phase {phase} is active"
 
 
 def _first_metric(section: Node | None, name: str) -> str | None:
@@ -584,11 +608,19 @@ def _first_metric(section: Node | None, name: str) -> str | None:
     return _norm(nodes[0])
 
 
-def _evaluate(html: str, market: str, require_active: bool, ids: dict[str, Node], root: Node) -> list[dict]:
+def _evaluate(
+    html: str,
+    market: str,
+    require_active: bool,
+    ids: dict[str, Node],
+    root: Node,
+    now: datetime,
+) -> list[dict]:
     dialogs = [node for node in _descendants(root) if node.attrs.get("id") == DIALOG_ID[market]]
     dialog = dialogs[0] if len(dialogs) == 1 else None
     sections = _sections(dialogs[0]) if dialogs else []
     phase = sections[0].attrs.get("data-pb-phase", "").strip() if sections else None
+    valid_until = sections[0].attrs.get("data-pb-valid-until", "").strip() if sections else None
     if len(dialogs) == 1:
         c1 = _check_c1(dialog, sections, ids, market)
     elif len(dialogs) == 0:
@@ -602,12 +634,20 @@ def _evaluate(html: str, market: str, require_active: bool, ids: dict[str, Node]
         ("C4", _check_c4(sections)),
         ("C5", _check_c5(sections, html)),
         ("C6", _check_c6(dialogs[0] if dialogs else None, html)),
-        ("C7", _check_c7(phase, require_active)),
+        ("C7", _check_c7(phase, valid_until, require_active, now)),
     ]
     return [{"id": check_id, "pass": ok, "detail": detail} for check_id, (ok, detail) in pairs]
 
 
-def verify_html(raw: bytes, source: dict[str, str], market: str, require_active: bool) -> dict:
+def verify_html(
+    raw: bytes,
+    source: dict[str, str],
+    market: str,
+    require_active: bool,
+    now: datetime | None = None,
+) -> dict:
+    if now is None:
+        now = datetime.now(timezone.utc)
     fetched_at = datetime.now(timezone.utc).isoformat(timespec="seconds")
     try:
         html = raw.decode("utf-8")
@@ -618,7 +658,7 @@ def verify_html(raw: bytes, source: dict[str, str], market: str, require_active:
     parser.close()
     dialogs = [node for node in _descendants(parser.root) if node.attrs.get("id") == DIALOG_ID[market]]
     primary = _sections(dialogs[0])[0] if dialogs and _sections(dialogs[0]) else None
-    checks = _evaluate(html, market, require_active, parser.ids, parser.root)
+    checks = _evaluate(html, market, require_active, parser.ids, parser.root, now)
     return {
         "schema": SCHEMA,
         "source": source,
@@ -645,7 +685,7 @@ def main(argv: list[str] | None = None) -> int:
     args = _parser().parse_args(argv)
     try:
         raw, source = _load(args)
-        receipt = verify_html(raw, source, args.market, args.require_active)
+        receipt = verify_html(raw, source, args.market, args.require_active, _parse_now(args.now))
     except InputError as exc:
         print(f"error: {exc}", file=sys.stderr)
         return 2

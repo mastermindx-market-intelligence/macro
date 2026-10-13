@@ -48,6 +48,8 @@ from tests.test_risk_radar_pullback_depth_template import render as render_pullb
 EM = "\u2014"
 MINUS = "\u2212"
 CHECK_IDS = ["C1", "C2", "C3", "C4", "C5", "C6", "C7"]
+# The synthetic observation's valid_until is 2026-10-01T09:00:00+00:00.
+STILL_CURRENT = "2026-10-01T08:00:00+00:00"
 
 
 def _active_us() -> str:
@@ -111,13 +113,15 @@ def test_active_us_passes_with_and_without_require_active(tmp_path):
     assert "12" in receipt["metrics"]["age"]
     c6 = next(c["detail"] for c in receipt["checks"] if c["id"] == "C6")
     assert "whole_page_count=0" in c6
-    rc_active, receipt_active, _page = _run(tmp_path, html, "us", "--require-active")
+    rc_active, receipt_active, _page = _run(
+        tmp_path, html, "us", "--require-active", "--now", STILL_CURRENT,
+    )
     assert rc_active == 0 and receipt_active["pass"] is True
 
 
 def test_active_cn_passes_with_and_without_require_active(tmp_path):
     html = _active_cn()
-    rc, receipt, page = _run(tmp_path, html, "cn", "--require-active")
+    rc, receipt, page = _run(tmp_path, html, "cn", "--require-active", "--now", STILL_CURRENT)
     assert rc == 0, [(c["id"], c["detail"]) for c in receipt["checks"] if not c["pass"]]
     assert receipt["pass"] is True
     _assert_shape(receipt, page, "cn")
@@ -134,6 +138,40 @@ def test_unavailable_passes_without_require_active(tmp_path):
     assert receipt["pass"] is True
     assert receipt["phase"] == "unavailable"
     assert _failed(receipt) == []
+
+
+def test_expired_page_fails_c7_when_require_active(tmp_path):
+    """G7: a still-underway page whose valid_until is already past fails closed."""
+    html = _active_cn()
+    rc, receipt, _page = _run(
+        tmp_path, html, "cn", "--require-active", "--now", "2026-10-01T09:00:00+00:00",
+    )
+    assert rc == 1
+    assert _failed(receipt) == ["C7"]
+    detail = next(item["detail"] for item in receipt["checks"] if item["id"] == "C7")
+    assert detail == "expired: valid_until <= now"
+    later = _run(tmp_path, html, "cn", "--now", "2026-12-01T00:00:00Z")
+    assert later[0] == 0 and later[1]["pass"] is True
+
+
+def test_missing_valid_until_fails_c7_when_require_active(tmp_path):
+    html = _active_cn()
+    old = 'data-pb-valid-until="2026-10-01T09:00:00+00:00"'
+    assert html.count(old) == 1
+    html = html.replace(old, 'data-pb-valid-until="not-a-time"', 1)
+    rc, receipt, _page = _run(tmp_path, html, "cn", "--require-active", "--now", STILL_CURRENT)
+    assert rc == 1
+    assert "C7" in _failed(receipt)
+    detail = next(item["detail"] for item in receipt["checks"] if item["id"] == "C7")
+    assert detail == "valid_until missing or unparseable"
+
+
+def test_bad_now_is_an_input_error(tmp_path):
+    page = tmp_path / "page.html"
+    page.write_text("<html></html>", encoding="utf-8")
+    rc = main(["--html", str(page), "--market", "cn", "--now", "yesterday"])
+    assert rc == 2
+    assert not (tmp_path / "receipt.json").exists()
 
 
 def test_unavailable_fails_when_require_active(tmp_path):

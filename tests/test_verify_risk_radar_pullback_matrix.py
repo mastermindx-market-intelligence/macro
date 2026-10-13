@@ -329,6 +329,60 @@ def test_all_good_passes():
     assert [cell["pass"] for cell in receipt["cells"]] == [True, True, True]
 
 
+def test_require_active_rejects_a_phase_outside_the_active_set():
+    """G8: the flag is off by default, and on it demands an active phase."""
+    quiet = matrix.evaluate_cell(_js_cell(), _measured(phase="repaired"))
+    assert quiet["passed"] is True
+    assert "phase_active" not in quiet["checks"]
+    blocked = matrix.evaluate_cell(_js_cell(), _measured(phase="repaired"), require_active=True)
+    assert blocked["passed"] is False
+    assert "phase_active" in blocked["failures"]
+    for phase in ("underway", "stabilizing", "recovering"):
+        ok = matrix.evaluate_cell(_js_cell(), _measured(phase=phase), require_active=True)
+        assert ok["passed"] is True, phase
+        assert ok["checks"]["phase_active"] is True
+
+
+def test_js_off_require_active_uses_the_server_phase():
+    cell = _js_cell(javascript=False, page="cn", file="china.html")
+    base = dict(
+        dialog_visible=False,
+        pbx_present=True,
+        time_datetime="2026-01-02T00:00:00Z",
+        forecast_values=[EM, EM],
+        forecast_block_text=EN_BLOCK + "\n" + ZH_BLOCK,
+    )
+    assert matrix.evaluate_cell(cell, _measured(**base, phase="monitoring"))["passed"] is True
+    denied = matrix.evaluate_cell(cell, _measured(**base, phase="monitoring"), require_active=True)
+    assert denied["passed"] is False
+    assert "phase_active" in denied["failures"]
+    html = (
+        '<div class="cnx-dlg" id="cnx-dlg-risk"><section class="rrp pbx" data-pb-phase="unavailable">'
+        '<time datetime="2026-01-02T00:00:00Z">2026-01-02</time>'
+        + FORECAST_SNIPPET
+        + "</section></div>"
+    )
+    from_dom = matrix.evaluate_cell(cell, matrix._static_measurement(html, "cn"), require_active=True)
+    assert from_dom["phase"] == "unavailable"
+    assert from_dom["passed"] is False
+    assert "phase_active" in from_dom["failures"]
+
+
+def test_cli_require_active_reaches_the_driver(monkeypatch, tmp_path):
+    seen = {}
+
+    def fake_run(base, pages, out_dir, chrome=None, require_active=False):
+        seen["require_active"] = require_active
+        return matrix.assemble_receipt(base, "2026-01-01T00:00:00Z", "chromium 0", [{"pass": True}])
+
+    monkeypatch.setattr(matrix, "run_matrix", fake_run)
+    argv = ["--base", "https://example.test", "--pages", "us=macro.html", "--out", str(tmp_path)]
+    assert matrix.main(argv) == 0
+    assert seen["require_active"] is False
+    assert matrix.main(argv + ["--require-active"]) == 0
+    assert seen["require_active"] is True
+
+
 def test_page_target_joins_base():
     assert matrix.page_target("https://example.test/site/", "macro.html") == "https://example.test/site/macro.html"
     assert matrix.page_target("http://127.0.0.1:8765", "china.html") == "http://127.0.0.1:8765/china.html"
