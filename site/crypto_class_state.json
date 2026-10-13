@@ -189,8 +189,8 @@
   },
   "heat": {
     "funding": "Unavailable",
-    "open_interest": "Leverage light",
-    "volatility": "Volatility compressed",
+    "open_interest": "Unavailable",
+    "volatility": "Unavailable",
     "altseason": "Mixed participation"
   },
   "assets": {
