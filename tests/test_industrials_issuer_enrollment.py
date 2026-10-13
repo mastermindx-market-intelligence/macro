@@ -78,3 +78,57 @@ def test_ind_r210() -> None:
         assert resolved is not None
         assert resolved.company_id == issuer.company_id
         assert resolved.security_id == security_id
+
+
+def test_ind_t02_factory_keys_and_identity_attributes() -> None:
+    """A third factory key, or a drifted name/year-end/class, fails enrollment."""
+    from engine.company_intelligence.issuer_profiles import (
+        _INDUSTRIALS_ISSUER_FACTORIES,
+        _INDUSTRIALS_PROFILE_FACTORIES,
+    )
+
+    assert set(_INDUSTRIALS_ISSUER_FACTORIES) == set(_INDUSTRIALS_PROFILE_FACTORIES) == {
+        "EXPO",
+        "PNR",
+    }
+    expo, pnr = _required_issuers()
+    assert expo.display_name == "Exponent, Inc."
+    assert expo.fiscal_year_end_month == 1
+    assert expo.listings[0].share_class == "common"
+    assert pnr.display_name == "Pentair plc"
+    assert pnr.fiscal_year_end_month == 12
+    assert pnr.listings[0].share_class == "ordinary"
+
+
+def test_issuer_for_ticker_doc_names_expo_and_pnr() -> None:
+    """The lookup docstring must name the Industrials issuers it now resolves."""
+    doc = issuer_for_ticker.__doc__ or ""
+    assert "EXPO" in doc
+    assert "PNR" in doc
+    assert "four homebuilders" not in doc
+
+
+def test_ind_listing_floors_cite_sec_accessions() -> None:
+    """Each CIK and listing floor names the 10-K accession whose filed date it uses."""
+    import inspect
+
+    from engine.company_intelligence import industrials_profiles as profiles
+
+    text = inspect.getsource(profiles)
+
+    def window(needle: str) -> str:
+        index = text.index(needle)
+        return text[max(0, index - 180) : index + 160]
+
+    expo_cik = window("EXPO_CIK")
+    pnr_cik = window("PNR_CIK")
+    expo_from = window("EXPO_LISTING_VALID_FROM")
+    pnr_from = window("PNR_LISTING_VALID_FROM")
+    assert "0001193125-26-082508" in expo_cik
+    assert "2026-02-27" in expo_cik
+    assert "0000077360-26-000007" in pnr_cik
+    assert "2026-02-24" in pnr_cik
+    assert "0001193125-26-082508" in expo_from
+    assert "2026-02-27" in expo_from or "2026, 2, 27" in expo_from
+    assert "0000077360-26-000007" in pnr_from
+    assert "2026-02-24" in pnr_from or "2026, 2, 24" in pnr_from

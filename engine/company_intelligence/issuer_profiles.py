@@ -1312,10 +1312,11 @@ _INDUSTRIALS_PROFILE_FACTORIES: dict[str, Callable[[], IssuerProfile]] = {
 
 
 def issuer_for_ticker(ticker: str) -> IssuerIdentity | None:
-    """The registered :class:`IssuerIdentity` for one of the four homebuilders.
+    """The registered :class:`IssuerIdentity` for a homebuilder or an Industrials issuer.
 
-    ``None`` for AAPL (use :func:`event_workspace.apple_issuer` directly) and
-    for any unknown ticker.  Acquisition needs the CIK and
+    Homebuilders are DHI, PHM, KBH, and TOL. Industrials T02 issuers are EXPO
+    and PNR. ``None`` for AAPL (use :func:`event_workspace.apple_issuer`
+    directly) and for any unknown ticker.  Acquisition needs the CIK and
     ``fiscal_year_end_month`` before an event's fiscal period can be derived
     from a discovered filing's ``report_date``, which is why this is exposed
     separately from :func:`profile_for_ticker`.

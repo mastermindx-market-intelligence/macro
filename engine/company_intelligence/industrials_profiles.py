@@ -7,8 +7,13 @@ population.
 
 Listing validity starts are evidence bounds, not incorporation/history claims:
 the selected SEC filings establish EXPO/Nasdaq no later than their 2026-02-27
-filing and PNR/NYSE no later than its 2026-02-24 filing. Earlier symbol history
-remains unbound rather than falling back to the identity owner's ALIAS_EPOCH default.
+filing and PNR/NYSE no later than its 2026-02-24 filing. Those floors cite
+10-K accession 0001193125-26-082508 (EXPO, filed 2026-02-27) and 10-K accession
+0000077360-26-000007 (PNR, filed 2026-02-24) from companyfacts rows in
+data/debt_maturity/cache/CIK0000851520.json and CIK0000077360.json. CIKs are
+data/edgar/ticker_cik_ledger.json ("EXPO": 851520, "PNR": 77360). Earlier
+symbol history remains unbound rather than falling back to the identity
+owner's ALIAS_EPOCH default.
 """
 from __future__ import annotations
 
@@ -19,10 +24,14 @@ from .identity import IssuerIdentity, ListingAlias, company_id_for_cik
 from .issuer_profiles import IssuerProfile, _no_guidance
 
 
+# 10-K accession 0001193125-26-082508 filed 2026-02-27 (CIK0000851520.json).
 EXPO_CIK = "0000851520"
+# 10-K accession 0000077360-26-000007 filed 2026-02-24 (CIK0000077360.json).
 PNR_CIK = "0000077360"
 
+# 10-K accession 0001193125-26-082508 filed 2026-02-27.
 EXPO_LISTING_VALID_FROM = date(2026, 2, 27)
+# 10-K accession 0000077360-26-000007 filed 2026-02-24.
 PNR_LISTING_VALID_FROM = date(2026, 2, 24)
 
 
