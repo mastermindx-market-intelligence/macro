@@ -581,10 +581,17 @@ minimax, grok, cursor, glm) → optional bounded workers. No native leaf swarm; 
 
 ## Lane matrix
 
-(2026-10-13T04:45Z snapshot.) Rows superseding older rows below:
+(2026-10-13T06:30Z snapshot.) Rows superseding older rows below:
 
 | lane | state |
 |---|---|
+| Paper parity PP1/PP2 | CONTRACT ACCEPTED by the Codex root (D57, SHA256 `bb5a6ceb…`); serialized on the #723 writer path after oi-1e; NOT STARTED |
+| oi-1e (#723) | RUNNING (D57): head `3a9dd064b23a`; item 8 tablet timing on ubuntu0; watcher `bhj9p7mmg` |
+| #723 CI | BLOCKED by the systemic 60-min tablet cap (D57) → carrier Terminal #984 (split), armed |
+| Q03G | REQUEST_REPAIR R1 (D57): Holm accepts out-of-range p-values; Q03G-R1 RUNNING ubuntu3, watcher `bst0vxpsx` |
+| OATRUTH | REQUEST_REPAIR R1 (D57): masked shadow read, raw horizon reasons, frozen status language; OATRUTH-R1 RUNNING pc, watcher `b3rmbzgbf` |
+| M03T / SKEWFLAKE / V04B+R1 / TFLAKE / F02-Q | ACCEPTED → Terminal #983, Macro #9093, Macro #9094, Terminal #981, Macro #9080 (D57) |
+| D03-R1 / D16b | ACCEPTED → Macro #9079 / #9083, HELD until the 2026-10-14 00:00Z follow-up is verified (D57) |
 | D04A Tuesday window | RE-ARMED (D56) 04:38:59Z after the reboot killed the D53 runner: `leads/D04A/tuesday/run_window.sh` pid 92402 (`nohup caffeinate -i`); 8 READ-ONLY ticks 13:00–21:41Z → recreated `monday/dossier.md` (Monday dossier LOST, recorded as lost); sentinel `tuesday/WINDOW_DONE`; release = seat D-entry after 21:41Z then label swap ONLY |
 | U01 step 1C (oi-1c) | ACCEPTED (D56): #723 refreshed onto master `b30836b2ac7c` at `88cb08ad`; seat guard fix `037a67ab` on PR head `claude/terminal-options-heatmap-20260923` + mirror; CI run 38346938452 watcher `ba34250b1`; OI1D responsive triage frozen, launch only if tablet/mobile red |
 | CENSUS wave 3 (12 lanes) | DELIVERED (D56): all rc=0, `census.md` re-fetched to `leads/CENW3/<lane>/`; UNJUDGED; D55 watcher died in reboot (lanes already done) |
@@ -1029,3 +1036,19 @@ INTENDED_RESUME_SURFACE: this Claude Code session; successor reads this file + #
   - Judge the 12 census returns.
   - On each lane's WATCH_DONE, judge by artifact. Seat-opened PRs: Macro takes the `merge-on-green` label only, and the D03-R1 and D16b PRs are held until after 2026-10-14 00:00Z. TFLAKE is a Terminal PR (label plus `--auto`). The 8920-R1 verdict feeds the #8920 repair or release.
   - On the #723 CI watcher: continue the release chain, or launch OI1D.
+
+### D57 (2026-10-13T06:30Z) — Wave-4 dispositions; #723 CI root cause = 60-minute tablet cap (systemic) → #984 split; oi-1e RUNNING; Paper contract ACCEPTED by the Codex root; Q03G and OATRUTH sent to repair round 1
+- PAPER PARITY CONTRACT ACCEPTED (Codex root return, consumed; no ACK): https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/723#issuecomment-6139229971 ; local edition `FABLE_PAPER_PARITY_ACCEPTED_CONTRACT_20261013.md`, SHA256 `bb5a6ceb6dee2e617cea12061f1d3b289069f6d1799f8f8c5dd5b226bc237c12`, Mastermind pin `72f44f0b1e2b`. PP1 then PP2 run on the existing serialized #723 writer path after oi-1e settles. The root's GLM run `fable-paper-parity-build-contract-20261013` ended rc75 SLOT_TIMEOUT (1200 s, zero model output): the root consumed it; DO_NOT_REDO replay. Matrix natural run (Tue 23:00Z + 00:00Z follow-up) stays the root's.
+- #723 CI DIAGNOSIS: the tablet e2e shard is cancelled at its 60-minute job cap on #723, #948 and #981 alike — a systemic CI blocker, not a #723 defect. Carrier: Terminal #984 (`ci(e2e): split the tablet and mobile e2e shards in two`, carries #955's split with that owner's work untouched), merge-on-green + native auto armed. #948/#981 carry `merge-blocked` until #984 lands; the controller refreshes stale heads.
+- oi-1e (U01 step 1E, #723 writer lane, mmx-ubuntu0 `~/lanes/wt/oi-1c`, branch `claude/ssd-pr-723-c89a753150e1dbd6`): items 0–7 done, head `3a9dd064b23a` pushed; item 8 (`--project=tablet` timing run, port 3723, `timeout 85m`) RUNNING since 06:08:45Z. Watcher `bhj9p7mmg`.
+- ACCEPTED → PR (judged by artifact):
+  - M03T → Terminal #983 (scenario grid: unknown stays unknown, unmeasured IV rows dropped, coverage shown), merge-on-green + auto.
+  - SKEWFLAKE (from the 8920-R1 diagnosis: pyarrow readahead-worker teardown SIGABRT after the exit code is decided) → Macro #9093, label only.
+  - V04B + V04B-R1 → Macro #9094 @`6eebb97ecb6e` (OA-3 excluded records keep contract identity; training-label fence admits nothing while authority is false), label only.
+  - TFLAKE → Terminal #981; F02-Q → Macro #9080 (label); D03-R1 → Macro #9079 and D16b → Macro #9083 (both `hold` until the 2026-10-14 00:00Z follow-up is verified).
+- REQUEST_REPAIR round 1:
+  - Q03G (`39759336ea50`): `holm_six_pilot` accepted NaN/±inf/negative/>1 p-values (−0.5 was "rejected"; NaN silently stopped the step-down). Q03G-R1 adds refusal `PVALUE_OUT_OF_RANGE`; LAUNCHED mmx-ubuntu3 pid 1963375 06:19:40Z, watcher `bst0vxpsx`.
+  - OATRUTH (`d73e71c1edf8`): (1) `readShadowIndex` masked a rejected `flowGetResult` with a `flowGet` fallback kept for a test double; (2) `HorizonRow` showed raw `outcome.reason` codes; (3) panel status sentences froze in the fetch-time language (`messagesRef`, also the pre-existing `react-hooks/refs` lint error). OATRUTH-R1 LAUNCHED mastermind-pc pid 2113235 06:25:56Z (placed off ubuntu0 so the oi-1e tablet timing is undisturbed), watcher `b3rmbzgbf`.
+- PR watcher `b0fa6a9td` over Terminal #984/#983 (exits on merged/closed/blocked).
+- Rungs at 06:30Z: #723 RUNNING (oi-1e) and draft; PP1/PP2 NOT STARTED (contract accepted, gated on oi-1e); #984/#983 CI; #9093/#9094/#9080 CI (label); #9079/#9083 HELD; Q03G-R1/OATRUTH-R1 RUNNING; D04A HELD (Tuesday window armed).
+- NEXT: judge Q03G-R1 → Macro PR (label only); judge OATRUTH-R1 → Terminal PR (label + auto); on #984 merge, see #948/#981/#983 refresh, then git-gated deploy of merged master + live verify; on oi-1e return, fast-forward the #723 head and commission PP1.
