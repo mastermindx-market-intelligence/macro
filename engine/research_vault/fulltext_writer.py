@@ -115,7 +115,9 @@ def _write_record(store, report_id: str, source_pdf_sha256: str, record: dict, s
     decoded = None if existing is None else fulltext_store.decode_record(
         existing, report_id, source_pdf_sha256,
     )
-    if decoded is None:
+    # A create conflict is idempotent only for the exact deterministic bytes
+    # attempted by this producer, not merely another well-formed derivative.
+    if decoded is None or existing != blob:
         return _meta(
             "existing_invalid",
             report_id,
