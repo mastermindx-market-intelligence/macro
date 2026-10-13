@@ -196,6 +196,11 @@ def _values(kind, rng):
         shock = _off(rng.uniform(0.055, 0.08))
         low = _cents(shock * (1.0 - rng.uniform(0.03, 0.08)))
         above = _cents(100.0 + rng.uniform(0.5, 2.0))
+        if rng.random() < 0.7:
+            # 0.04% over the high: above it, but the tenth rounds to 0.0, so
+            # the metric, end tag and history must all print it unsigned.
+            # The fuzz test requires at least one seed to land here.
+            above = 100.04
         return _baseline(rng) + [shock, low, above]
     if kind == "repaired":
         shock = _off(rng.uniform(0.055, 0.08))
@@ -367,7 +372,7 @@ def assert_i2(soup, obs, view, k, kind, rows):
 
 def assert_i3(soup, html, view, k, kind, rows):
     """I3: each history percent uses the same sign rule; no signed zero."""
-    if "-0.0%" in html or f"{_MINUS}0.0%" in html:
+    if "-0.0%" in html or f"{_MINUS}0.0%" in html or "+0.0%" in html:
         _fail(k, kind, rows, "I3: signed zero percent in the fragment")
     path = view.get("detail_path")
     cells = soup.select(".rrp-history tbody tr")
@@ -654,6 +659,7 @@ def test_seeded_episode_fuzz_across_owner_presenter_and_fragment():
     saw_gap = False
     saw_tie = False
     saw_above = False
+    saw_zero_above = False
     shortest = PATH_MAX_CLOSES
     longest = 0
     pending = []
@@ -684,6 +690,10 @@ def test_seeded_episode_fuzz_across_owner_presenter_and_fragment():
             isinstance(close, float) and isinstance(peak, float) and close > peak
             and obs.get("phase") != "underway"
         )
+        saw_zero_above = saw_zero_above or (
+            isinstance(close, float) and isinstance(peak, float) and close > peak
+            and round(100.0 * (close / peak - 1.0), 1) == 0
+        )
         shortest = min(shortest, len(rows))
         longest = max(longest, len(rows))
         heading = soup.select_one(".pbx-heading h2")
@@ -705,9 +715,10 @@ def test_seeded_episode_fuzz_across_owner_presenter_and_fragment():
         raise AssertionError(f"generator missed owner phases {sorted(missing)}; saw {sorted(phases)}")
     if withheld != {"short", "uncovered"} or drew < 1:
         raise AssertionError(f"generator chart states withheld={withheld} drew={drew}")
-    if not saw_gap or not saw_tie or not saw_above:
+    if not saw_gap or not saw_tie or not saw_above or not saw_zero_above:
         raise AssertionError(
-            f"generator missed a situation gap={saw_gap} tie={saw_tie} above={saw_above}"
+            f"generator missed a situation gap={saw_gap} tie={saw_tie} above={saw_above} "
+            f"zero_above={saw_zero_above}"
         )
     if shortest >= RULES.reference_closes or longest <= PATH_MAX_CLOSES:
         raise AssertionError(f"generator length range {shortest}..{longest}")
