@@ -25381,6 +25381,8 @@ jobs:
       - "engine/earnings_narrative/contracts.py"
       - "engine/news_impact/**"
       - "engine/qbus_news_cluster.py"
+      - "engine/qkernel.py"
+      - "engine/__init__.py"
       - "tests/test_news_impact_*.py"
       - "tests/fixtures/news_impact/**"
     runs-on: ubuntu-latest
