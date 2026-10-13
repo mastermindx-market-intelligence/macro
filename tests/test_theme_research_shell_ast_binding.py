@@ -33,6 +33,23 @@ MOVED = (
     "OwnerBundle",
 )
 
+# Private names bound to shell callables in the semiconductor composer
+# (the alias block). A later function with one of these names rebinds it.
+SHELL_ALIAS_NAMES = (
+    "_canonical_text",
+    "_is_instant",
+    "_parse_clock",
+    "_parse_day",
+    "_le",
+    "_within",
+    "_readable",
+    "_passes_time_mode",
+    "_review_excluded",
+    "_filter_interpretation_blocks",
+    "_correction_lineage",
+    "_collapse_syndicated",
+)
+
 
 def _tree(path: Path) -> ast.AST:
     return ast.parse(path.read_text(encoding="utf-8"), filename=str(path))
@@ -58,6 +75,20 @@ def _defined_names(tree: ast.AST) -> set[str]:
     for node in ast.walk(tree):
         if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
             found.add(node.name)
+    return found
+
+
+def _simple_alias_lines(tree: ast.AST) -> dict[str, int]:
+    """Module-level ``name = other`` bindings, first assignment line of each."""
+    found: dict[str, int] = {}
+    if not isinstance(tree, ast.Module):
+        return found
+    for node in tree.body:
+        if not isinstance(node, ast.Assign) or len(node.targets) != 1:
+            continue
+        target = node.targets[0]
+        if isinstance(target, ast.Name) and isinstance(node.value, ast.Name):
+            found.setdefault(target.id, node.lineno)
     return found
 
 
@@ -91,3 +122,20 @@ def test_semiconductor_reexports_the_moved_names_from_the_shell():
         imported.update(alias.name for alias in node.names)
     missing = [name for name in MOVED if name not in imported]
     assert missing == []
+
+
+def test_semiconductor_does_not_redefine_a_shell_alias():
+    """A later FunctionDef that reuses a shell alias name shadows the binding."""
+    tree = _tree(SEMICONDUCTOR)
+    assert isinstance(tree, ast.Module)
+    aliases = _simple_alias_lines(tree)
+    missing = [name for name in SHELL_ALIAS_NAMES if name not in aliases]
+    assert missing == []
+    shadowed = [
+        node.name
+        for node in tree.body
+        if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef))
+        and node.name in SHELL_ALIAS_NAMES
+        and node.lineno > aliases[node.name]
+    ]
+    assert shadowed == []

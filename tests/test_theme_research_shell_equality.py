@@ -116,6 +116,17 @@ def test_semiconductor_names_are_the_shell_objects():
     assert semi.OwnerBundle is shell.OwnerBundle
     assert semi.passes_time_mode is shell.passes_time_mode
     assert semi._passes_time_mode is shell.passes_time_mode
+    assert semi._canonical_text is shell.canonical_text
+    assert semi._is_instant is shell.is_instant
+    assert semi._parse_clock is shell.parse_clock
+    assert semi._parse_day is shell.parse_day
+    assert semi._le is shell.le
+    assert semi._within is shell.within
+    assert semi._readable is shell.readable
+    assert semi._review_excluded is shell.review_excluded
+    assert semi._filter_interpretation_blocks is shell.filter_interpretation_blocks
+    assert semi._correction_lineage is shell.correction_lineage
+    assert semi._collapse_syndicated is shell.collapse_syndicated
     assert semi.review_excluded is shell.review_excluded
     assert semi.filter_interpretation_blocks is shell.filter_interpretation_blocks
     assert semi.correction_lineage is shell.correction_lineage
