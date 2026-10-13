@@ -15234,6 +15234,10 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
 
     function _trapTab(dlg, e){
       if(e.key !== 'Tab') return;
+      /* Close nulls _dlgActive and the next open installs a new document trap
+         before the old close timer has fired. Until this dialog is shown again,
+         that trap must not pull Tab into it. */
+      if(!dlg.classList.contains('open') || dlg.classList.contains('mx5-dlg-closing')) return;
       /* Release cards, the transcript sheet, the body-level heatmap and an open
          lens popover stack above this dialog and own Tab. Escape already leaves
          the dialog up under the first two. */
@@ -15289,6 +15293,15 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
       if(_dlgActive){ _dlgTeardown(_dlgActive, false); _dlgActive = null; }
       var dlg = document.getElementById(id);
       if(!dlg) return;
+      /* Reopening inside the 340ms exit skipped teardown (_dlgActive is already
+         null). Drop this dialog's pending close so it cannot strip .open or
+         move focus back to the opener from the close that just started. */
+      if(dlg._closeTimer){ clearTimeout(dlg._closeTimer); delete dlg._closeTimer; }
+      if(dlg._endH){
+        var pnlPending = dlg.querySelector('.mx5-dlg-panel');
+        if(pnlPending) pnlPending.removeEventListener('transitionend', dlg._endH);
+        delete dlg._endH;
+      }
       /* Heatmap adoption: on first open of dlg-markets, move #heatmap-scorecard into the
          dialog placeholder so it renders at 920px dialog scale (idempotent). */
       if(id === 'dlg-markets'){

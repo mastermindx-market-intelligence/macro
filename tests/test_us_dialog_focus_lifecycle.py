@@ -64,7 +64,7 @@ function el(name, tag, classes) {
   return node;
 }
 function add(parent, child) { child.parentElement = parent; parent.children.push(child); return child; }
-const dlg = el('dialog', 'div');
+const dlg = el('dialog', 'div', ['open']);
 const first = add(dlg, el('close', 'button'));
 const last = add(dlg, el('tail', 'button'));
 const outside = el('outside', 'button');
@@ -125,3 +125,273 @@ def test_stacked_overlays_keep_tab_and_stray_focus_still_returns():
     """Four overlays above an open US dialog own Tab; a bare stray focus does not."""
     src = _between("templates/dashboard.html.j2", "function _tabStop(el){", "function _prefReduced(")
     _node_raw(_OVERLAY_JS, src)
+
+
+# The open/close pair closes over _dlgActive. A manual timer queue stands in for
+# setTimeout / requestAnimationFrame so a reopen at +50ms can be observed at +400ms.
+_LIFECYCLE_JS = r"""
+const assert = require('node:assert/strict');
+const src = require('node:fs').readFileSync(0, 'utf8');
+let nextId = 1;
+const timers = [];
+const rafs = [];
+global.setTimeout = (fn, ms) => {
+  const id = nextId++;
+  timers.push({id, ms: Number(ms) || 0, fn, dead: false});
+  return id;
+};
+global.clearTimeout = (id) => {
+  const t = timers.find(x => x.id === id);
+  if (t) t.dead = true;
+};
+global.requestAnimationFrame = (fn) => { rafs.push(fn); return rafs.length; };
+function flushRaf() {
+  let guard = 0;
+  while (rafs.length && guard++ < 10) {
+    const batch = rafs.splice(0, rafs.length);
+    for (const fn of batch) fn();
+  }
+}
+function advance(ms) {
+  let left = ms;
+  while (left > 0) {
+    const live = timers.filter(t => !t.dead);
+    if (!live.length) return;
+    let step = left;
+    for (const t of live) if (t.ms < step) step = t.ms;
+    left -= step;
+    for (const t of timers) if (!t.dead) t.ms -= step;
+    for (const t of timers.filter(x => !x.dead && x.ms <= 0)) { t.dead = true; t.fn(); }
+  }
+}
+function makeClassList(initial) {
+  const set = new Set(initial || []);
+  return {
+    contains(c) { return set.has(c); },
+    add() { for (let i = 0; i < arguments.length; i++) set.add(arguments[i]); },
+    remove() { for (let i = 0; i < arguments.length; i++) set.delete(arguments[i]); },
+  };
+}
+function boot() {
+  const doc = {
+    activeElement: null,
+    listeners: [],
+    documentElement: {classList: makeClassList(), style: {}},
+    body: {classList: makeClassList(['page-macro']), style: {}},
+    addEventListener(type, fn) { this.listeners.push({type, fn}); },
+    removeEventListener(type, fn) {
+      this.listeners = this.listeners.filter(l => l.type !== type || l.fn !== fn);
+    },
+    getElementById(id) { return id === 'dlg-risk' ? dlg : null; },
+    querySelector(sel) {
+      if (sel === '.mx5-hm-stage' || sel === '.rr-tr-overlay.is-open' || sel === '.hm-ov') return null;
+      throw new Error('document.querySelector ' + sel);
+    },
+  };
+  function el(name, tag, classes) {
+    const node = {
+      name, tag, classes: new Set(classes || []),
+      parentElement: null, parentNode: null, children: [],
+      listeners: [], attrs: {}, style: {}, tabIndex: 0,
+      getClientRects() { return [{}]; },
+      focus() { doc.activeElement = this; },
+      contains(o) { for (let n = o; n; n = n.parentElement) if (n === this) return true; return false; },
+      closest(sel) {
+        if (sel === '[inert]' || sel === 'details:not([open])' || sel === '.lens-pop.open') return null;
+        throw new Error('closest ' + sel);
+      },
+      querySelector(sel) {
+        let found = null;
+        (function walk(n) {
+          for (const c of n.children) {
+            if (found) return;
+            if (sel.charAt(0) === '.' && c.classes.has(sel.slice(1))) { found = c; return; }
+            walk(c);
+          }
+        })(this);
+        return found;
+      },
+      querySelectorAll(sel) {
+        const parts = sel.split(','), out = [];
+        const hit = c => parts.some(p => {
+          const s = p.trim();
+          return s === c.tag || s.startsWith(c.tag + ':') || s.startsWith(c.tag + '[')
+            || (c.tag === 'a' && s === 'a[href]');
+        });
+        (function walk(n) { for (const c of n.children) { if (hit(c)) out.push(c); walk(c); } })(this);
+        return out;
+      },
+      setAttribute(k, v) { this.attrs[k] = String(v); },
+      removeAttribute(k) { delete this.attrs[k]; },
+      addEventListener(type, fn) { this.listeners.push({type, fn}); },
+      removeEventListener(type, fn) {
+        this.listeners = this.listeners.filter(l => l.type !== type || l.fn !== fn);
+      },
+      dispatchEvent(ev) {
+        for (const l of this.listeners.slice()) if (l.type === ev.type) l.fn(ev);
+      },
+    };
+    node.classList = makeClassList(classes || []);
+    return node;
+  }
+  function add(parent, child) {
+    child.parentElement = parent; child.parentNode = parent; parent.children.push(child); return child;
+  }
+  const dlg = el('dialog', 'div');
+  const panel = add(dlg, el('panel', 'div', ['mx5-dlg-panel']));
+  const closeBtn = add(panel, el('close', 'button'));
+  add(panel, el('tail', 'button'));
+  add(dlg, el('backdrop', 'div', ['mx5-dlg-backdrop']));
+  const opener = el('opener', 'button');
+  const stray = el('stray', 'button');
+  const win = {
+    pageYOffset: 0, scrollTo() {}, dispatchEvent() {},
+    matchMedia() { return {matches: false}; },
+    mx5CloseAllPopovers() {}, mmPbExpire() {},
+    MMXAccessPreview: {isAnon() { return false; }},
+  };
+  const api = new Function('document', 'window', src + '\nreturn {open: window.mx5OpenDlg, close: window.mx5CloseDlg};')(doc, win);
+  return {doc, dlg, panel, closeBtn, opener, stray, open: api.open, close: api.close};
+}
+function key(doc, from) {
+  doc.activeElement = from;
+  const e = {key: 'Tab', shiftKey: false, defaultPrevented: false,
+             preventDefault() { this.defaultPrevented = true; }};
+  for (const l of doc.listeners.slice()) if (l.type === 'keydown') l.fn(e);
+  return e;
+}
+const which = process.env.U2_CASE;
+if (which === 'reopen') {
+  const h = boot();
+  h.doc.activeElement = h.opener;
+  h.open('dlg-risk');
+  flushRaf();
+  assert.equal(h.dlg.classList.contains('open'), true, 'opened');
+  h.close();
+  advance(50);
+  h.open('dlg-risk');
+  flushRaf();
+  h.panel.dispatchEvent({type: 'transitionend', target: h.panel, propertyName: 'transform'});
+  assert.equal(h.dlg.classList.contains('open'), true, 'old close transitionend');
+  assert.notEqual(h.doc.activeElement, h.opener, 'old close refocus');
+  advance(400);
+  assert.equal(h.dlg.classList.contains('open'), true, 'stale close timer');
+  assert.notEqual(h.doc.activeElement, h.opener, 'stale close refocus');
+  const e = key(h.doc, h.stray);
+  assert.equal(e.defaultPrevented, true, 'stray Tab after reopen');
+  assert.equal(h.doc.activeElement, h.closeBtn, 'stray Tab focus');
+} else if (which === 'closed') {
+  const h = boot();
+  h.doc.activeElement = h.opener;
+  h.open('dlg-risk');
+  flushRaf();
+  h.close();
+  advance(400);
+  assert.equal(h.dlg.classList.contains('open'), false, 'close finished');
+  assert.equal(h.doc.activeElement, h.opener, 'refocus opener');
+  const e = key(h.doc, h.stray);
+  assert.equal(e.defaultPrevented, false, 'Tab after close');
+  assert.equal(h.doc.activeElement, h.stray, 'focus stays after close');
+} else {
+  throw new Error('U2_CASE');
+}
+"""
+
+
+def _lifecycle(case: str) -> None:
+    import os
+    src = _between(
+        "templates/dashboard.html.j2",
+        "var _dlgActive = null;",
+        "/* Escape handler: dialog > scorecard popover > release radar modal guards */",
+    )
+    # _node_raw does not forward env. Run the same node contract with U2_CASE set.
+    import shutil
+    import subprocess
+    node = shutil.which("node")
+    if not node:
+        import pytest
+        pytest.skip("Node is required to execute the shipped dialog scripts")
+    env = dict(os.environ)
+    env["U2_CASE"] = case
+    result = subprocess.run([node, "-e", _LIFECYCLE_JS], input=src, text=True,
+                            capture_output=True, timeout=20, env=env)
+    assert result.returncode == 0, result.stdout + result.stderr
+
+
+def test_reopen_during_close_keeps_the_dialog_and_its_trap():
+    """Close, reopen at +50ms, then the old 340ms close must not fire."""
+    _lifecycle("reopen")
+
+
+def test_completed_close_does_not_trap_tab():
+    """Once the exit finishes, a Tab on the page is a normal page Tab."""
+    _lifecycle("closed")
+
+
+_HIDDEN_TRAP_JS = r"""
+const assert = require('node:assert/strict');
+function makeClassList(initial) {
+  const set = new Set(initial || []);
+  return {
+    contains(c) { return set.has(c); },
+    add() { for (let i = 0; i < arguments.length; i++) set.add(arguments[i]); },
+    remove() { for (let i = 0; i < arguments.length; i++) set.delete(arguments[i]); },
+  };
+}
+const doc = {
+  activeElement: null,
+  getElementById() { return null; },
+  querySelector() { return null; },
+};
+function el(name, tag) {
+  return {
+    name, tag, parentElement: null, children: [], tabIndex: 0,
+    getClientRects() { return [{}]; },
+    focus() { doc.activeElement = this; },
+    contains(o) { for (let n = o; n; n = n.parentElement) if (n === this) return true; return false; },
+    closest(sel) {
+      if (sel === '[inert]' || sel === 'details:not([open])' || sel === '.lens-pop.open') return null;
+      throw new Error('closest ' + sel);
+    },
+    querySelector() { return null; },
+    querySelectorAll(sel) {
+      const parts = sel.split(','), out = [];
+      const hit = c => parts.some(p => p.trim() === c.tag || p.trim().startsWith(c.tag + ':'));
+      (function walk(n) { for (const c of n.children) { if (hit(c)) out.push(c); walk(c); } })(this);
+      return out;
+    },
+  };
+}
+function add(parent, child) { child.parentElement = parent; parent.children.push(child); return child; }
+const dlg = el('dialog', 'div');
+dlg.classList = makeClassList(['open']);
+const first = add(dlg, el('close', 'button'));
+const outside = el('outside', 'button');
+const src = require('node:fs').readFileSync(0, 'utf8');
+const trap = new Function('document', src + '; return _trapTab;')(doc);
+function tab(from) {
+  doc.activeElement = from;
+  const e = {key: 'Tab', shiftKey: false, defaultPrevented: false,
+             preventDefault() { this.defaultPrevented = true; }};
+  trap(dlg, e);
+  return e;
+}
+let e = tab(outside);
+assert.equal(e.defaultPrevented, true, 'open dialog pulls stray Tab');
+assert.equal(doc.activeElement, first);
+dlg.classList.remove('open');
+e = tab(outside);
+assert.equal(e.defaultPrevented, false, 'hidden dialog');
+assert.equal(doc.activeElement, outside, 'hidden dialog focus');
+dlg.classList.add('open', 'mx5-dlg-closing');
+e = tab(outside);
+assert.equal(e.defaultPrevented, false, 'closing dialog');
+assert.equal(doc.activeElement, outside, 'closing dialog focus');
+"""
+
+
+def test_trap_is_inert_while_the_dialog_is_hidden_or_closing():
+    """A handler left on the document must not steal Tab into a dialog that is not shown."""
+    src = _between("templates/dashboard.html.j2", "function _tabStop(el){", "function _prefReduced(")
+    _node_raw(_HIDDEN_TRAP_JS, src)

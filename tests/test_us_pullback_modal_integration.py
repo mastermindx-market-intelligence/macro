@@ -179,6 +179,7 @@ function el(tag, opts = {}) {
 }
 function add(parent, child) { child.parentElement = parent; parent.children.push(child); return child; }
 const dlg = el('div');
+dlg.classList = {contains(name){ return name === 'open'; }};
 const close = add(dlg, el('button', {name: 'close'}));
 add(dlg, el('button', {name: 'decorative', tabIndex: -1}));
 add(dlg, el('button', {name: 'unrendered', shown: false}));
