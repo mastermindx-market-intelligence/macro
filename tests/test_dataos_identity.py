@@ -740,3 +740,884 @@ def test_issuer_master_listing_key_of_security_is_none_for_a_tombstone_only_secu
     ])
 
     assert im.listing_key_of_security("SEC:US-XNAS-OLD") is None
+
+
+# ── Observation reader: pure synthetic records, no writer or file adapter ──────
+import copy
+import hashlib
+import json
+from datetime import datetime, timezone
+
+from lib.dataos.identity import (
+    AliasResolution, ReferenceReadReceipt, alias_binding_sha256,
+    validate_reference_snapshot,
+)
+
+_OBS_NAMES = (
+    "security_master.parquet", "vendor_aliases.parquet", "issuer_master.parquet",
+    "issuer_migrations.parquet", "security_migrations.parquet",
+)
+_OBS_T0 = 1791370000000000000  # synthetic fixture, not an actual read receipt
+_OBS_PROBES = {"MU": ("XNAS", "CS"), "SPY": ("ARCX", "ETF"),
+               "QQQ": ("XNAS", "ETF"), "SMH": ("XNAS", "ETF")}
+
+
+def _obs_json(value):
+    return json.dumps(value, sort_keys=True, separators=(",", ":"),
+                      ensure_ascii=True, allow_nan=False).encode()
+
+
+def _obs_hash(value):
+    return hashlib.sha256(_obs_json(value)).hexdigest()
+
+
+def _obs_rows_hash(rows):
+    return _obs_hash(sorted(rows, key=_obs_json))
+
+
+def _obs_iso(ns):
+    return datetime.fromtimestamp(ns // 10**9, timezone.utc).strftime(
+        "%Y-%m-%dT%H:%M:%S") + f".{ns % 10**9:09d}Z"
+
+
+def _obs_seal(record, field):
+    record[field] = _obs_hash({k: v for k, v in record.items() if k != field})
+    return record
+
+
+def _obs_base():
+    rows = [{"vendor": "store", "vendor_symbol": "DOMO", "security_id": "SEC:US-XNAS-DOMO",
+             "valid_from": None, "valid_to": None, "ingested_at": "2026-10-01T00:00:00",
+             "known_at": None, "evidence_sha256": None, "binding_sha256": None}]
+    probes = {}
+    master = []
+    for symbol, (mic, kind) in _OBS_PROBES.items():
+        sec = f"SEC:US-{mic}-{symbol}"
+        master.append({"security_id": sec, "listing_key": f"US-{mic}-{symbol}",
+                       "country": "US", "mic": mic, "inception_code": symbol,
+                       "security_state": None, "issuer_id": None})
+        probe = {"symbol": symbol, "status": "BOUND" if symbol == "MU" else "REFUSED",
+                 "code": None if symbol == "MU" else "canonical_identity_refused",
+                 "known_at": _obs_iso(_OBS_T0), "evidence_sha256": _obs_hash({"probe": symbol}),
+                 "native_identity": {"ticker": symbol, "primary_exchange": mic, "type": kind}}
+        if symbol == "MU":
+            seal = alias_binding_sha256("polygon", symbol, sec, date(2026, 10, 7), None,
+                                        probe["known_at"], probe["evidence_sha256"])
+            probe.update(security_id=sec, binding_sha256=seal)
+            rows.append({"vendor": "polygon", "vendor_symbol": symbol, "security_id": sec,
+                         "valid_from": "2026-10-07", "valid_to": None,
+                         "ingested_at": "2026-10-07T00:00:00",
+                         "known_at": probe["known_at"], "evidence_sha256": probe["evidence_sha256"],
+                         "binding_sha256": seal})
+        probes[symbol] = probe
+    for symbol in ("DOMO", "YYGH"):
+        master.append({"security_id": f"SEC:US-XNAS-{symbol}", "listing_key": f"US-XNAS-{symbol}",
+                       "country": "US", "mic": "XNAS", "inception_code": symbol,
+                       "security_state": None, "issuer_id": None})
+    original = {"schema": "mastermind.prospective_reference.v1",
+                "source_read_completed_at_utc_ns": _OBS_T0, "probes": probes}
+    digest = _obs_hash(original)
+    anchor = _obs_seal({"schema": "mastermind.identity_anchor.v1",
+                       "anchor_id": "anchor:" + digest, "original_reference_sha256": digest,
+                       "original_native_rows_sha256": _obs_rows_hash([r for r in rows if r["vendor"] == "polygon"]),
+                       "owner_read_completed_at_utc_ns": str(_OBS_T0)}, "anchor_sha256")
+    history = {"schema": "mastermind.identity_observations.v1", "anchor": anchor, "attempts": []}
+    return original, history, rows, master
+
+
+def _obs_append(original, history, rows, *, status="BOUND", listing=False, boundary="2026-09-24"):
+    history, rows = copy.deepcopy(history), copy.deepcopy(rows)
+    sequence = len(history["attempts"]) + 1
+    aid = f"attempt-{sequence}"
+    ns = _OBS_T0 + sequence * 1000
+    specs = ({"listing:domo": ("DOMO", "HUCK", "COMMON_CLASS_B"),
+              "listing:yygh": ("YYGH", "YFOR", "ORDINARY_CLASS_A")} if listing else
+             {f"polygon:{symbol}": (symbol, mic, kind)
+              for symbol, (mic, kind) in _OBS_PROBES.items()})
+    acquisition, families = {}, []
+    evidence = {name: _obs_hash(name) for name in
+                ("listing_snapshot", "listing_receipt", "cik_mapping", "mic_evidence", "identity_seams")}
+    deps = {"source_commit": "1" * 40,
+            "source_blobs": {name: "4" * 40 for name in ("scripts/build_security_master.py",  # ci-trigger-closure: data — synthetic receipt keys, never opened
+                "lib/dataos/identity.py", "config/identity_seams.yml")},  # ci-trigger-closure: data — synthetic receipt keys, never opened
+            "prior_receipt_sha256": "2" * 64,
+            "artifact_sha256": {name: _obs_hash(name) for name in _OBS_NAMES},
+            "evidence_sha256": evidence}
+    for fid, spec in specs.items():
+        symbol = spec[0]
+        vendor = "listing" if listing else "polygon"
+        mic, klass = ("XNAS", spec[2]) if listing else (spec[1], spec[2])
+        symbols = list(spec[:2]) if listing else [symbol]
+        sec = f"SEC:US-{mic}-{symbol}"
+        disposition = status if symbol in ("MU", "DOMO") else ("BOUND" if listing else "REFUSED")
+        prior = history["anchor"]["anchor_id"] + "/" + fid if not listing else None
+        for previous in history["attempts"]:
+            for family in previous["payload"]["families"]:
+                if family["family_id"] == fid:
+                    prior = family["alias_revision_id"]
+        revision = aid + "/" + fid
+        esha = _obs_hash({"family": fid, "sequence": sequence})
+        acquisition[fid] = {
+            "started_at_utc_ns": str(ns - 200), "completed_at_utc_ns": str(ns - 100),
+            "outcome": "SUCCESS", "representation": "decoded_json",
+            "response_sha256": _obs_hash({"response": sequence, "family": fid}),
+            "source_published_at": None, "published_date": None,
+        }
+        members = []
+        if disposition == "BOUND":
+            bounds = [(symbol, "2026-10-07", None)] if not listing else [
+                (symbol, None, boundary), (spec[1], boundary, None)]
+            for token, lo, hi in bounds:
+                row = {"vendor": vendor, "vendor_symbol": token, "security_id": sec,
+                       "valid_from": lo, "valid_to": hi, "ingested_at": "2026-10-07T00:00:00",
+                       "known_at": _obs_iso(ns), "evidence_sha256": esha,
+                       "attempt_id": aid, "alias_family_id": fid, "alias_revision_id": revision}
+                row["binding_sha256"] = _obs_hash(
+                    {"schema": "mastermind.identity_alias_revision.v1", **row})
+                rows.append(row)
+                members.append(_obs_hash(row))
+        family = {"family_id": fid, "alias_revision_id": revision,
+                  "predecessor_revision_id": prior, "vendor": vendor, "symbols": symbols,
+                  "security_id": sec if (disposition == "BOUND" or symbol == "MU") else None,
+                  "country": "US", "mic": mic, "security_class": klass,
+                  "status": disposition, "reason": None if disposition == "BOUND" else "source_unavailable",
+                  "evidence_sha256": esha, "row_sha256": members}
+        families.append(_obs_seal(family, "family_sha256"))
+    for fid in specs:
+        role = "continuity_evidence" if listing else "native_response"
+        evidence[fid + "/" + role] = acquisition[fid]["response_sha256"]
+        evidence[fid + "/owner_fences"] = _obs_hash({"fences": fid})
+        if listing:
+            evidence[fid + "/listing_binding_spec"] = _obs_hash({"spec": fid})
+    previous = history["attempts"][-1] if history["attempts"] else history["anchor"]
+    attempt = {"schema": "mastermind.identity_attempt_envelope.v1",
+               "attempt_id": aid, "sequence": sequence,
+               "predecessor_attempt_id": previous.get("attempt_id", previous.get("anchor_id")),
+               "predecessor_sha256": previous.get("attempt_sha256", previous.get("anchor_sha256")),
+               "kind": "SAME_VENUE_RENAME" if listing else "NATIVE_REFERENCE",
+               "scope": list(specs), "input_file_sha256": _obs_hash({"input": sequence}),
+               "input_sha256": _obs_hash({"decoded": sequence}),
+               "dependencies_sha256": _obs_hash(deps), "acquisition_sha256": _obs_hash(acquisition),
+               "owner_read_completed_at_utc_ns": str(ns),
+               "row_membership": {f["family_id"]: list(f["row_sha256"]) for f in families},
+               "payload": {"schema": "mastermind.identity_attempt_payload.v1",
+                           "dependencies": deps, "acquisition": acquisition, "families": families}}
+    _obs_refresh_attempt(attempt, rows)
+    history["attempts"].append(attempt)
+    return history, rows
+
+
+
+def _obs_refresh_attempt(attempt, rows):
+    """Independently reseal synthetic evidence; never calls implementation helpers."""
+    payload = attempt["payload"]
+    attempt["dependencies_sha256"] = _obs_hash(payload["dependencies"])
+    attempt["acquisition_sha256"] = _obs_hash(payload["acquisition"])
+    for family in payload["families"]:
+        fid = family["family_id"]
+        evidence = _obs_hash({"schema": "mastermind.identity_family_evidence.v1",
+            "family_id": fid, "input_file_sha256": attempt["input_file_sha256"],
+            "input_sha256": attempt["input_sha256"],
+            "dependencies_sha256": attempt["dependencies_sha256"],
+            "acquisition": payload["acquisition"][fid]})
+        family["evidence_sha256"] = evidence
+        own = [r for r in rows if r.get("attempt_id") == attempt["attempt_id"]
+               and r.get("alias_family_id") == fid]
+        own.sort(key=lambda r: family["symbols"].index(r["vendor_symbol"])
+                 if r["vendor_symbol"] in family["symbols"] else -1)
+        members = []
+        for row in own:
+            row["evidence_sha256"] = evidence
+            row["binding_sha256"] = _obs_hash({"schema": "mastermind.identity_alias_revision.v1",
+                **{k: v for k, v in row.items() if k != "binding_sha256"}})
+            members.append(_obs_hash(row))
+        family["row_sha256"] = members
+        _obs_seal(family, "family_sha256")
+    attempt["row_membership"] = {f["family_id"]: list(f["row_sha256"]) for f in payload["families"]}
+    _obs_seal(attempt, "attempt_sha256")
+
+
+def _obs_snapshot(original, history, rows, master, *, read_ns=None, receipt_overrides=None):
+    artifacts = {name: b"synthetic serialization:" + name.encode() for name in _OBS_NAMES}
+    semantic = {"vendor_aliases.parquet": _obs_rows_hash(rows),
+                "security_master.parquet": _obs_rows_hash(master)}
+    manifest = {name: {"sha256": hashlib.sha256(raw).hexdigest(), "bytes": len(raw),
+                      "semantic_sha256": semantic.get(name)} for name, raw in artifacts.items()}
+    publication = _obs_seal({"schema": "mastermind.identity_publication.v1",
+                            "predecessor_receipt_sha256": None, "code_version": "3" * 40,
+                            "artifacts": manifest, "history_sha256": _obs_hash(history)}, "generation_id")
+    receipt = {"prospective_reference": original, "identity_observations": history,
+               "publication": publication}
+    if receipt_overrides:
+        receipt.update(receipt_overrides)
+    raw = _obs_json(receipt)
+    snapshot = validate_reference_snapshot(raw, artifacts, raw, alias_records=rows, master_records=master)
+    end = read_ns if read_ns is not None else _OBS_T0 + 10_000 + len(history["attempts"]) * 1000
+    rr = ReferenceReadReceipt.from_record({
+        "schema": "mastermind.identity_read_receipt.v1", "receipt_sha256": hashlib.sha256(raw).hexdigest(),
+        "generation_id": publication["generation_id"],
+        "artifact_sha256": {name: manifest[name]["sha256"] for name in _OBS_NAMES},
+        "history_prefix_sha256": _obs_hash(history),
+        "read_started_at_utc_ns": str(end - 1), "read_completed_at_utc_ns": str(end)})
+    return snapshot, rr
+
+
+def _obs_table(original, history, rows, *snapshots):
+    return VendorAliasTable.from_records(rows, observation_history=history,
+                                         original_reference=original, snapshot_contexts=snapshots)
+
+
+def _obs_query(table, *reads, cutoff=None, vendor="polygon", symbol="MU", on=date(2026, 10, 7)):
+    return table.resolve_binding(vendor, symbol, on, decision_at=_obs_iso(
+        _OBS_T0 + 100_000 if cutoff is None else cutoff), snapshot_receipts=reads)
+
+
+def test_observation_original_v1_is_unchanged_and_not_consumer_custody():
+    original, history, rows, master = _obs_base()
+    before = copy.deepcopy((original, history, rows, master))
+    v1 = VendorAliasTable.from_records(rows)
+    assert v1.resolve("polygon", "MU", date(2026, 10, 7), decision_at=_obs_iso(_OBS_T0)) == "SEC:US-XNAS-MU"
+    assert _obs_query(v1).status == "UNAVAILABLE"
+    snap, read = _obs_snapshot(original, history, rows, master)
+    table = _obs_table(original, history, rows, snap)
+    result = _obs_query(table, read)
+    assert result.status == "BOUND" and result.security_id == "SEC:US-XNAS-MU"
+    assert result.known_at_utc_ns == str(_OBS_T0)
+    assert table.resolve("store", "DOMO", date(2000, 1, 1)) == "SEC:US-XNAS-DOMO"
+    assert (original, history, rows, master) == before
+    with pytest.raises(IdentityError, match="eligible view"):
+        _ = table.rows
+
+
+@pytest.mark.parametrize("decision", [None, "2026-10-07", datetime(2026, 10, 7), "2026-10-07X00:00:00Z"])
+@pytest.mark.parametrize("vendor", ["polygon", "listing"])
+def test_observation_empty_unknown_queries_still_require_explicit_clock(decision, vendor):
+    with pytest.raises(IdentityError):
+        VendorAliasTable().resolve_binding(vendor, "UNKNOWN", date(2026, 10, 7), decision_at=decision)
+    with pytest.raises(IdentityError):
+        VendorAliasTable().resolve(vendor, "UNKNOWN", date(2026, 10, 7), decision_at=decision)
+
+
+def test_observation_read_clock_is_separate_and_ns_boundary_is_exact():
+    original, history, rows, master = _obs_base()
+    read_ns = _OBS_T0 + 999
+    snap, read = _obs_snapshot(original, history, rows, master, read_ns=read_ns)
+    table = _obs_table(original, history, rows, snap)
+    assert _obs_query(table, read, cutoff=read_ns - 1).reason == "NO_ENROLLED_SNAPSHOT_BY_CUTOFF"
+    assert _obs_query(table, read, cutoff=read_ns).status == "BOUND"
+    assert _obs_query(table).status == "UNAVAILABLE"
+    assert table.symbol_binding_for("polygon", "SEC:US-XNAS-MU", date(2026, 10, 7),
+                                   decision_at=_obs_iso(read_ns), snapshot_receipts=(read,)).vendor_symbol == "MU"
+
+
+def test_observation_bound_refused_bound_preserves_all_attempts_and_does_not_fallback():
+    original, history, rows, master = _obs_base()
+    snapshots, reads, views = [], [], []
+    for status in ("BOUND", "REFUSED", "BOUND"):
+        history, rows = _obs_append(original, history, rows, status=status)
+        snap, read = _obs_snapshot(original, history, rows, master)
+        snapshots.append(snap); reads.append(read); views.append(copy.deepcopy((history, rows)))
+    table = _obs_table(original, history, rows, *snapshots)
+    for i, expected in enumerate(("BOUND", "REFUSED", "BOUND")):
+        result = _obs_query(table, *reads, cutoff=int(reads[i].read_completed_at_utc_ns))
+        assert result.status == expected
+        assert result.attempt_id == f"attempt-{i + 1}"
+        reverse = table.symbol_binding_for("polygon", "SEC:US-XNAS-MU", date(2026, 10, 7),
+                                           decision_at=_obs_iso(int(reads[i].read_completed_at_utc_ns)),
+                                           snapshot_receipts=tuple(reads))
+        assert reverse.status == expected
+    assert len(history["attempts"]) == 3
+    assert views[0][0]["attempts"] == history["attempts"][:1]
+    assert views[1][1] == views[0][1]  # REFUSED adds no alias row
+    assert all(row in rows for row in views[0][1])
+
+
+def test_observation_listing_half_open_a_b_a_correction_preserves_old_view():
+    original, history, rows, master = _obs_base()
+    snapshots, reads = [], []
+    for boundary in ("2026-09-24", "2026-09-25", "2026-09-24"):
+        history, rows = _obs_append(original, history, rows, listing=True, boundary=boundary)
+        snap, read = _obs_snapshot(original, history, rows, master)
+        snapshots.append(snap); reads.append(read)
+    table = _obs_table(original, history, rows, *snapshots)
+    for i, symbol in enumerate(("HUCK", "DOMO", "HUCK")):
+        result = table.symbol_binding_for("listing", "SEC:US-XNAS-DOMO", date(2026, 9, 24),
+            decision_at=_obs_iso(int(reads[i].read_completed_at_utc_ns)), snapshot_receipts=tuple(reads))
+        assert result.vendor_symbol == symbol
+        assert table.resolve("listing", symbol, date(2026, 9, 24),
+            decision_at=_obs_iso(int(reads[i].read_completed_at_utc_ns)), snapshot_receipts=tuple(reads)) == result.security_id
+    assert _obs_query(table, reads[0], vendor="listing", symbol="HUCK", on=date(2026, 9, 23)).status == "UNAVAILABLE"
+    assert _obs_query(table, reads[0], vendor="listing", symbol="DOMO", on=date(2026, 9, 23)).status == "BOUND"
+
+
+@pytest.mark.parametrize("future_schema", ["future.v999", None, [], {}])
+def test_observation_sealed_future_payload_cannot_poison_genuine_old_prefix(future_schema):
+    original, history, rows, master = _obs_base()
+    old_snap, old_read = _obs_snapshot(original, history, rows, master, read_ns=_OBS_T0 + 500)
+    old_table = _obs_table(original, history, rows, old_snap)
+    expected = _obs_query(old_table, old_read, cutoff=_OBS_T0 + 500)
+    future, future_rows = _obs_append(original, history, rows, status="REFUSED")
+    future["attempts"][0]["payload"]["schema"] = future_schema
+    _obs_seal(future["attempts"][0], "attempt_sha256")
+    new_snap, new_read = _obs_snapshot(original, future, future_rows, master)
+    table = _obs_table(original, future, future_rows, old_snap, new_snap)
+    assert _obs_query(table, old_read, new_read, cutoff=_OBS_T0 + 500) == expected
+    assert _obs_query(table, old_read) == expected  # late cutoff does not enroll future data
+    with pytest.raises(IdentityError, match="schema unsupported"):
+        _obs_query(table, new_read)
+
+
+def test_observation_old_receipt_does_not_authorize_new_master_bytes():
+    original, history, rows, master = _obs_base()
+    old_snap, old_read = _obs_snapshot(original, history, rows, master, read_ns=_OBS_T0 + 500)
+    changed_master = copy.deepcopy(master)
+    changed_master[0].update(mic="XNYS", listing_key="US-XNYS-MU")
+    new_snap, new_read = _obs_snapshot(original, history, rows, changed_master)
+    table = _obs_table(original, history, rows, old_snap, new_snap)
+    assert _obs_query(table, old_read).status == "BOUND"
+    with pytest.raises(IdentityError, match="master"):
+        _obs_query(table, new_read)
+    with pytest.raises(IdentityError, match="ambiguous same-prefix"):
+        _obs_query(table, old_read, new_read)
+
+
+def test_observation_same_prefix_equivalent_generation_uses_earliest_actual_receipt():
+    original, history, rows, master = _obs_base()
+    snap_a, read_a = _obs_snapshot(original, history, rows, master, read_ns=_OBS_T0 + 500)
+    snap_b, read_b = _obs_snapshot(original, history, rows, master, read_ns=_OBS_T0 + 600,
+                                  receipt_overrides={"diagnostic": "later generation"})
+    table = _obs_table(original, history, rows, snap_a, snap_b)
+    assert _obs_query(table, read_b, read_a).receipt_sha256 == read_a.receipt_sha256
+
+
+@pytest.mark.parametrize("field,value", [("sequence", True), ("attempt_id", 7),
+    ("owner_read_completed_at_utc_ns", True), ("owner_read_completed_at_utc_ns", "01791370000000000001"),
+    ("owner_read_completed_at_utc_ns", "1e18"), ("owner_read_completed_at_utc_ns", str(_OBS_T0)),
+    ("predecessor_sha256", "0" * 64)])
+def test_observation_outer_failures_refuse_even_before_future_visibility(field, value):
+    original, history, rows, master = _obs_base()
+    history, rows = _obs_append(original, history, rows)
+    history["attempts"][0][field] = value
+    _obs_seal(history["attempts"][0], "attempt_sha256")
+    with pytest.raises(IdentityError):
+        _obs_snapshot(original, history, rows, master)
+
+
+def test_observation_row_integrity_is_immediate_and_orphans_cannot_hide():
+    original, history, rows, master = _obs_base()
+    history, rows = _obs_append(original, history, rows)
+    bad = copy.deepcopy(rows)
+    bad[-1]["vendor_symbol"] = "OTHER"
+    with pytest.raises(IdentityError, match="row binding seal"):
+        _obs_snapshot(original, history, bad, master)
+    with pytest.raises(IdentityError, match="missing/duplicate row membership"):
+        _obs_snapshot(original, history, rows[:-1], master)
+    truncated = copy.deepcopy(history); truncated["attempts"] = []
+    with pytest.raises(IdentityError, match="orphan"):
+        _obs_snapshot(original, truncated, rows, master)
+
+
+def test_observation_changed_old_prefix_and_duplicate_attempt_are_rejected():
+    original, history, rows, master = _obs_base()
+    history, rows = _obs_append(original, history, rows)
+    snap, _read = _obs_snapshot(original, history, rows, master)
+    changed = copy.deepcopy(history)
+    changed["attempts"][0]["input_sha256"] = "f" * 64
+    _obs_seal(changed["attempts"][0], "attempt_sha256")
+    new_snap, _ = _obs_snapshot(original, changed, rows, master)
+    with pytest.raises(IdentityError, match="prefix"):
+        _obs_table(original, changed, rows, snap, new_snap)
+    duplicate = copy.deepcopy(history)
+    duplicate["attempts"].append(copy.deepcopy(duplicate["attempts"][0]))
+    with pytest.raises(IdentityError, match="duplicate attempt"):
+        _obs_snapshot(original, duplicate, rows, master)
+
+
+def test_observation_projection_never_relabels_clocked_namespaces():
+    original, history, rows, master = _obs_base()
+    history, rows = _obs_append(original, history, rows, listing=True)
+    projected = VendorAliasTable.legacy_only_records(rows)
+    assert projected == [rows[0]]
+    assert VendorAliasTable.from_records(projected).resolve("store", "DOMO", date(1990, 1, 1)) == "SEC:US-XNAS-DOMO"
+    with pytest.raises(IdentityError, match="requires observation"):
+        VendorAliasTable.from_records(rows)
+    with pytest.raises(IdentityError, match="requires observation"):
+        AliasRow("listing", "HUCK", "SEC:US-XNAS-DOMO")
+    corrupted = dict(rows[0], attempt_id="attempt-1")
+    with pytest.raises(IdentityError, match="revision metadata"):
+        VendorAliasTable.legacy_only_records([corrupted])
+
+
+@pytest.mark.parametrize("field,value", [("vendor_symbol", True), ("security_id", 3), ("vendor", 7)])
+def test_observation_numeric_identity_cannot_be_coerced_to_a_binding(field, value):
+    original, history, rows, master = _obs_base()
+    history, rows = _obs_append(original, history, rows)
+    row = rows[-1]
+    row[field] = value
+    row["binding_sha256"] = _obs_hash({"schema": "mastermind.identity_alias_revision.v1",
+                                     **{k: v for k, v in row.items() if k != "binding_sha256"}})
+    family = history["attempts"][0]["payload"]["families"][0]
+    family["row_sha256"] = [_obs_hash(row)]
+    _obs_seal(family, "family_sha256")
+    _obs_seal(history["attempts"][0], "attempt_sha256")
+    with pytest.raises(IdentityError, match="string"):
+        _obs_snapshot(original, history, rows, master)
+
+
+def test_observation_bound_cannot_claim_failed_acquisition_or_missing_dependency():
+    original, history, rows, master = _obs_base()
+    history, rows = _obs_append(original, history, rows)
+    for failure in ("failed", "missing"):
+        bad = copy.deepcopy(history); changed_rows = copy.deepcopy(rows)
+        attempt = bad["attempts"][0]
+        if failure == "failed":
+            attempt["payload"]["acquisition"]["polygon:MU"]["outcome"] = "FAILED"
+            attempt["acquisition_sha256"] = _obs_hash(attempt["payload"]["acquisition"])
+        else:
+            attempt["payload"]["dependencies"]["evidence_sha256"]["listing_snapshot"] = None
+            attempt["dependencies_sha256"] = _obs_hash(attempt["payload"]["dependencies"])
+        _obs_refresh_attempt(attempt, changed_rows)
+        snap, read = _obs_snapshot(original, bad, changed_rows, master)
+        table = _obs_table(original, bad, changed_rows, snap)
+        with pytest.raises(IdentityError, match="bound dependencies"):
+            _obs_query(table, read)
+
+
+def test_observation_snapshot_requires_exact_bytes_records_and_consumer_seals():
+    original, history, rows, master = _obs_base()
+    snap, read = _obs_snapshot(original, history, rows, master)
+    with pytest.raises(IdentityError, match="semantic record seal"):
+        validate_reference_snapshot(snap.receipt_bytes, dict(snap.artifact_bytes), snap.receipt_bytes,
+                                    alias_records=rows[:-1], master_records=master)
+    with pytest.raises(IdentityError, match="receipt changed"):
+        validate_reference_snapshot(snap.receipt_bytes, dict(snap.artifact_bytes), snap.receipt_bytes+b" ",
+                                    alias_records=rows, master_records=master)
+    artifacts = dict(snap.artifact_bytes); artifacts["security_master.parquet"] += b"x"
+    with pytest.raises(IdentityError, match="byte count"):
+        validate_reference_snapshot(snap.receipt_bytes, artifacts, snap.receipt_bytes,
+                                    alias_records=rows, master_records=master)
+    bad_read = read.as_record(); bad_read["artifact_sha256"]["security_master.parquet"] = "f" * 64
+    table = _obs_table(original, history, rows, snap)
+    with pytest.raises(IdentityError, match="snapshot mismatch"):
+        _obs_query(table, ReferenceReadReceipt.from_record(bad_read))
+
+
+def test_observation_capacity_64_attempts_is_inclusive_65_refuses_without_truncation():
+    original, history, rows, master = _obs_base()
+    for _ in range(64):
+        history, rows = _obs_append(original, history, rows, status="REFUSED")
+    snap, read = _obs_snapshot(original, history, rows, master)
+    table = _obs_table(original, history, rows, snap)
+    assert _obs_query(table, read).status == "REFUSED"
+    more, more_rows = _obs_append(original, history, rows, status="REFUSED")
+    with pytest.raises(IdentityError, match="attempt count"):
+        _obs_snapshot(original, more, more_rows, master)
+    assert len(history["attempts"]) == 64
+
+
+def test_observation_deep_or_non_json_objects_refuse_boundedly():
+    original, history, rows, master = _obs_base()
+    nested = "leaf"
+    for _ in range(18):
+        nested = [nested]
+    bad = copy.deepcopy(history); bad["extra"] = nested
+    with pytest.raises(IdentityError):
+        _obs_table(original, bad, rows)
+    with pytest.raises(IdentityError, match="JSON primitive"):
+        _obs_table(original, history, [*rows, {"vendor": object()}])
+
+
+def test_observation_legacy_changes_do_not_rewrite_native_anchor_or_old_clocked_view():
+    original, history, rows, master = _obs_base()
+    old_snapshot, old_read = _obs_snapshot(original, history, rows, master)
+    expected = _obs_query(_obs_table(original, history, rows, old_snapshot), old_read)
+    changed = copy.deepcopy(rows)
+    changed[0]["valid_to"] = "2026-10-01"
+    changed.append(dict(changed[0], vendor_symbol="HUCK", valid_from="2026-10-01", valid_to=None))
+    # Null new columns are the only allowed native anchor projection normalization.
+    for row in changed:
+        row.update(attempt_id=None, alias_family_id=None, alias_revision_id=None)
+    current_snapshot, _ = _obs_snapshot(original, history, changed, master)
+    table = _obs_table(original, history, changed, old_snapshot, current_snapshot)
+    assert _obs_query(table, old_read) == expected
+    assert table.resolve("store", "DOMO", date(2026, 9, 30)) == "SEC:US-XNAS-DOMO"
+    assert table.resolve("store", "HUCK", date(2026, 10, 7)) == "SEC:US-XNAS-DOMO"
+    assert table.resolve("store", "DOMO", date(2026, 10, 7)) is None
+    bad = copy.deepcopy(changed)
+    bad[1]["ingested_at"] = "changed"
+    with pytest.raises(IdentityError, match="native prefix changed"):
+        _obs_snapshot(original, history, bad, master)
+
+
+def test_observation_latest_refusal_survives_removed_master_without_poisoning_old_bound():
+    original, history, rows, master = _obs_base()
+    history, rows = _obs_append(original, history, rows)
+    old_snapshot, old_read = _obs_snapshot(original, history, rows, master)
+    history, rows = _obs_append(original, history, rows, status="REFUSED")
+    missing_master = [r for r in master if r["security_id"] != "SEC:US-XNAS-MU"]
+    new_snapshot, new_read = _obs_snapshot(original, history, rows, missing_master)
+    table = _obs_table(original, history, rows, old_snapshot, new_snapshot)
+    assert _obs_query(table, old_read).status == "BOUND"
+    refusal = _obs_query(table, new_read)
+    assert refusal.status == "REFUSED" and refusal.attempt_id == "attempt-2"
+    assert table.resolve("polygon", "MU", date(2026, 10, 7),
+        decision_at=_obs_iso(_OBS_T0 + 100_000), snapshot_receipts=(new_read,)) is None
+
+
+@pytest.mark.parametrize("future_payload", [None, [], {"alien": {"members": "unsupported"}}])
+def test_observation_future_whole_layout_with_physical_rows_is_semantically_isolated(future_payload):
+    original, history, rows, master = _obs_base()
+    old_snapshot, old_read = _obs_snapshot(original, history, rows, master, read_ns=_OBS_T0+500)
+    expected = _obs_query(_obs_table(original, history, rows, old_snapshot), old_read)
+    future, future_rows = _obs_append(original, history, rows)
+    future["attempts"][0]["payload"] = future_payload
+    _obs_seal(future["attempts"][0], "attempt_sha256")
+    new_snapshot, new_read = _obs_snapshot(original, future, future_rows, master)
+    table = _obs_table(original, future, future_rows, old_snapshot, new_snapshot)
+    assert _obs_query(table, old_read) == expected
+    assert _obs_query(table, old_read, new_read, cutoff=_OBS_T0+500) == expected
+    with pytest.raises(IdentityError, match="visible payload"):
+        _obs_query(table, new_read)
+    bad_rows = copy.deepcopy(future_rows)
+    bad_rows[-1]["known_at"] = _obs_iso(_OBS_T0 + 999)
+    row = bad_rows[-1]
+    row["binding_sha256"] = _obs_hash({"schema": "mastermind.identity_alias_revision.v1",
+        **{k: v for k, v in row.items() if k != "binding_sha256"}})
+    future["attempts"][0]["row_membership"]["polygon:MU"] = [_obs_hash(row)]
+    _obs_seal(future["attempts"][0], "attempt_sha256")
+    with pytest.raises(IdentityError, match="row evidence clock"):
+        _obs_snapshot(original, future, bad_rows, master)
+
+
+def _obs_three_name_chain():
+    original, history, rows, master = _obs_base()
+    history, rows = _obs_append(original, history, rows, listing=True)
+    old_snapshot, old_read = _obs_snapshot(original, history, rows, master)
+    history, rows = _obs_append(original, history, rows, listing=True)
+    attempt = history["attempts"][-1]
+    family = attempt["payload"]["families"][0]
+    family["symbols"].append("NEXT")
+    own = [r for r in rows if r.get("attempt_id") == attempt["attempt_id"]
+           and r.get("alias_family_id") == "listing:domo"]
+    own[0]["valid_from"] = "2026-01-01"
+    own[1]["valid_to"] = "2026-10-01"
+    rows.append(dict(own[1], vendor_symbol="NEXT", valid_from="2026-10-01", valid_to=None))
+    _obs_refresh_attempt(attempt, rows)
+    return original, history, rows, master, old_snapshot, old_read
+
+
+def test_observation_complete_three_name_chain_uses_same_security_and_preserves_earlier_view():
+    original, history, rows, master, old_snapshot, old_read = _obs_three_name_chain()
+    new_snapshot, new_read = _obs_snapshot(original, history, rows, master)
+    table = _obs_table(original, history, rows, old_snapshot, new_snapshot)
+    for on, expected in ((date(2026, 9, 23), "DOMO"), (date(2026, 9, 24), "HUCK"),
+                         (date(2026, 10, 1), "NEXT")):
+        answer = table.symbol_binding_for("listing", "SEC:US-XNAS-DOMO", on,
+            decision_at=_obs_iso(_OBS_T0+100_000), snapshot_receipts=(new_read,))
+        assert answer.status == "BOUND" and answer.vendor_symbol == expected
+        assert _obs_query(table, new_read, vendor="listing", symbol=expected, on=on).security_id == "SEC:US-XNAS-DOMO"
+    assert _obs_query(table, old_read, vendor="listing", symbol="HUCK").status == "BOUND"
+    assert _obs_query(table, new_read, vendor="listing", symbol="NEXT", on=date(2025, 12, 31)).status == "UNAVAILABLE"
+
+
+@pytest.mark.parametrize("defect", ["cycle", "branch", "gap", "overlap", "zero_width", "order"])
+def test_observation_chain_cycles_branches_and_interval_conflicts_refuse(defect):
+    original, history, rows, master, old_snapshot, _ = _obs_three_name_chain()
+    attempt = history["attempts"][-1]
+    family = attempt["payload"]["families"][0]
+    own = [r for r in rows if r.get("attempt_id") == attempt["attempt_id"]
+           and r.get("alias_family_id") == "listing:domo"]
+    if defect == "cycle":
+        family["symbols"][-1] = "DOMO"; own[-1]["vendor_symbol"] = "DOMO"
+    elif defect == "branch":
+        family["symbols"][1] = "BRANCH"; own[1]["vendor_symbol"] = "BRANCH"
+    elif defect == "gap":
+        own[1]["valid_from"] = "2026-09-25"
+    elif defect == "overlap":
+        own[1]["valid_from"] = "2026-09-23"
+    elif defect == "zero_width":
+        own[1]["valid_to"] = own[1]["valid_from"]
+    _obs_refresh_attempt(attempt, rows)
+    if defect == "order":
+        family["row_sha256"].reverse()
+        attempt["row_membership"][family["family_id"]] = list(family["row_sha256"])
+        _obs_seal(family, "family_sha256"); _obs_seal(attempt, "attempt_sha256")
+    if defect == "zero_width":
+        with pytest.raises(IdentityError, match="event interval width"):
+            _obs_snapshot(original, history, rows, master)
+        return
+    snapshot, read = _obs_snapshot(original, history, rows, master)
+    table = _obs_table(original, history, rows, old_snapshot, snapshot)
+    with pytest.raises(IdentityError):
+        _obs_query(table, read, vendor="listing", symbol="NEXT")
+
+
+@pytest.mark.parametrize("collision", ["vendor_symbol", "security_id"])
+def test_observation_both_directions_reject_selected_cross_family_collisions(collision):
+    original, history, rows, master = _obs_base()
+    history, rows = _obs_append(original, history, rows, listing=True)
+    attempt = history["attempts"][0]; family = attempt["payload"]["families"][1]
+    own = [r for r in rows if r.get("alias_family_id") == "listing:yygh"]
+    if collision == "vendor_symbol":
+        family["symbols"][1] = "HUCK"; own[1]["vendor_symbol"] = "HUCK"
+    else:
+        family["security_id"] = "SEC:US-XNAS-DOMO"
+        for row in own:
+            row["security_id"] = family["security_id"]
+    _obs_refresh_attempt(attempt, rows)
+    snapshot, read = _obs_snapshot(original, history, rows, master)
+    table = _obs_table(original, history, rows, snapshot)
+    with pytest.raises(IdentityError, match="ambiguous selected alias"):
+        _obs_query(table, read, vendor="listing", symbol="HUCK")
+    with pytest.raises(IdentityError, match="ambiguous selected alias"):
+        table.symbol_binding_for("listing", "SEC:US-XNAS-DOMO", date(2026, 10, 7),
+            decision_at=_obs_iso(_OBS_T0+100_000), snapshot_receipts=(read,))
+
+
+@pytest.mark.parametrize("defect", ["missing", "extra", "source_path", "source_blob", "response", "evidence"])
+def test_observation_closed_dependency_and_family_evidence_binding(defect):
+    original, history, rows, master = _obs_base()
+    history, rows = _obs_append(original, history, rows)
+    attempt = history["attempts"][0]; deps = attempt["payload"]["dependencies"]
+    if defect == "missing":
+        del deps["evidence_sha256"]["mic_evidence"]
+    elif defect == "extra":
+        deps["evidence_sha256"]["unrecognized"] = "f"*64
+    elif defect == "source_path":
+        del deps["source_blobs"]["lib/dataos/identity.py"]
+    elif defect == "source_blob":
+        deps["source_blobs"]["lib/dataos/identity.py"] = True
+    elif defect == "response":
+        deps["evidence_sha256"]["polygon:MU/native_response"] = "f"*64
+    _obs_refresh_attempt(attempt, rows)
+    if defect == "evidence":
+        attempt["payload"]["families"][0]["evidence_sha256"] = "f"*64
+        _obs_seal(attempt["payload"]["families"][0], "family_sha256")
+        _obs_seal(attempt, "attempt_sha256")
+    snapshot, read = _obs_snapshot(original, history, rows, master)
+    table = _obs_table(original, history, rows, snapshot)
+    with pytest.raises(IdentityError):
+        _obs_query(table, read)
+
+
+def test_observation_other_family_missing_source_keeps_independent_bound_and_real_refusal():
+    original, history, rows, master = _obs_base()
+    history, rows = _obs_append(original, history, rows)
+    attempt = history["attempts"][0]; payload = attempt["payload"]
+    payload["acquisition"]["polygon:SPY"].update(
+        outcome="FAILED", representation=None, response_sha256=None)
+    payload["dependencies"]["evidence_sha256"]["polygon:SPY/native_response"] = None
+    payload["dependencies"]["evidence_sha256"]["polygon:SPY/owner_fences"] = None
+    _obs_refresh_attempt(attempt, rows)
+    snapshot, read = _obs_snapshot(original, history, rows, master)
+    table = _obs_table(original, history, rows, snapshot)
+    assert _obs_query(table, read).status == "BOUND"
+    refused = _obs_query(table, read, symbol="SPY")
+    assert refused.status == "REFUSED" and refused.reason == "source_unavailable"
+    assert refused.security_id is None
+
+
+@pytest.mark.parametrize("field,value", [
+    ("read_started_at_utc_ns", True), ("read_completed_at_utc_ns", "01791370000000000000"),
+    ("read_completed_at_utc_ns", "1791370000000000000.0"),
+    ("read_completed_at_utc_ns", "-1"), ("read_completed_at_utc_ns", "9223372036854775808"),
+])
+def test_observation_actual_read_clock_grammar_refuses_coercion(field, value):
+    original, history, rows, master = _obs_base()
+    _, read = _obs_snapshot(original, history, rows, master)
+    record = read.as_record(); record[field] = value
+    with pytest.raises(IdentityError):
+        ReferenceReadReceipt.from_record(record)
+
+
+def test_observation_receipts_and_contexts_have_inclusive_bounds():
+    original, history, rows, master = _obs_base()
+    snapshot, read = _obs_snapshot(original, history, rows, master)
+    table = _obs_table(original, history, rows, *([snapshot]*65))
+    assert _obs_query(table, *([read]*256)).status == "BOUND"
+    with pytest.raises(IdentityError, match="context count"):
+        _obs_table(original, history, rows, *([snapshot]*66))
+    with pytest.raises(IdentityError, match="receipt sequence bound"):
+        _obs_query(table, *([read]*257))
+
+
+def test_observation_record_set_budget_is_checked_before_whole_list_encoding(monkeypatch):
+    # Shrink only this byte unit to exercise the real cumulative guard cheaply.
+    # Both per-record objects fit; their complete canonical list does not.
+    from lib.dataos import identity as owner
+    monkeypatch.setattr(owner, "_MIB", 1)
+    assert owner._ob_records([{"x": "a"*25}, {"x": "b"*20}]) == _obs_json(
+        [{"x": "a"*25}, {"x": "b"*20}])
+    with pytest.raises(IdentityError, match="record-set byte bound"):
+        owner._ob_records([{"x": "a"*25}, {"x": "b"*25}])
+    # Large aggregate record sets must not inherit a 100,000-node whole-list cap.
+    monkeypatch.setattr(owner, "_MIB", 1024*1024)
+    records = [{"i": i} for i in range(100_000)]
+    assert len(json.loads(owner._ob_records(records))) == 100_000
+    with pytest.raises(IdentityError, match="record sequence"):
+        owner._ob_records(records + [{"i": 100_000}])
+
+
+@pytest.mark.parametrize("defect", ["clock", "missing", "duplicate", "scope"])
+def test_observation_outer_membership_immediate_controls_survive_unknown_payload(defect):
+    original, history, rows, master = _obs_base()
+    history, rows = _obs_append(original, history, rows)
+    attempt = history["attempts"][0]
+    attempt["payload"] = {"schema": "future.v999"}
+    if defect == "clock":
+        rows[-1]["known_at"] = _obs_iso(_OBS_T0 + 999)
+        rows[-1]["binding_sha256"] = _obs_hash({"schema": "mastermind.identity_alias_revision.v1",
+            **{k: v for k, v in rows[-1].items() if k != "binding_sha256"}})
+        attempt["row_membership"]["polygon:MU"] = [_obs_hash(rows[-1])]
+    elif defect == "missing":
+        attempt["row_membership"]["polygon:MU"] = []
+    elif defect == "duplicate":
+        attempt["row_membership"]["polygon:MU"] *= 2
+    else:
+        attempt["row_membership"]["extra"] = []
+    _obs_seal(attempt, "attempt_sha256")
+    with pytest.raises(IdentityError):
+        _obs_snapshot(original, history, rows, master)
+
+
+def test_observation_chain_row_bound_is_inclusive_and_not_truncated():
+    from datetime import timedelta
+    original, history, rows, master = _obs_base()
+    history, rows = _obs_append(original, history, rows, listing=True)
+    attempt = history["attempts"][0]
+    family = attempt["payload"]["families"][0]
+    symbols = ["DOMO", "HUCK"] + [f"NAME{i}" for i in range(63)]
+    template = next(r for r in rows if r.get("alias_family_id") == "listing:domo")
+    rows = [r for r in rows if r.get("alias_family_id") != "listing:domo"]
+    family["symbols"] = symbols
+    for index, symbol in enumerate(symbols):
+        lo = (date(2026, 1, 1) + timedelta(days=index)).isoformat()
+        hi = None if index == 64 else (date(2026, 1, 2) + timedelta(days=index)).isoformat()
+        rows.append(dict(template, vendor_symbol=symbol, valid_from=lo, valid_to=hi))
+    _obs_refresh_attempt(attempt, rows)
+    snapshot, read = _obs_snapshot(original, history, rows, master)
+    table = _obs_table(original, history, rows, snapshot)
+    assert _obs_query(table, read, vendor="listing", symbol=symbols[-1]).status == "BOUND"
+    assert len(attempt["row_membership"]["listing:domo"]) == 65
+    family["symbols"].append("OVERFLOW")
+    rows[-1]["valid_to"] = "2026-10-01"
+    rows.append(dict(template, vendor_symbol="OVERFLOW", valid_from="2026-10-01", valid_to=None))
+    _obs_refresh_attempt(attempt, rows)
+    with pytest.raises(IdentityError, match="row membership bound"):
+        _obs_snapshot(original, history, rows, master)
+
+
+@pytest.mark.parametrize("defect", ["mic", "class", "security"])
+def test_observation_revisions_cannot_change_established_family_identity(defect):
+    original, history, rows, master, old_snapshot, _ = _obs_three_name_chain()
+    attempt = history["attempts"][-1]; family = attempt["payload"]["families"][0]
+    if defect == "mic":
+        family["mic"] = "XNYS"
+    elif defect == "class":
+        family["security_class"] = "ORDINARY_CLASS_A"
+    else:
+        family["security_id"] = "SEC:US-XNAS-YYGH"
+        for row in rows:
+            if row.get("attempt_id") == attempt["attempt_id"] and row.get("alias_family_id") == family["family_id"]:
+                row["security_id"] = family["security_id"]
+    _obs_refresh_attempt(attempt, rows)
+    snapshot, read = _obs_snapshot(original, history, rows, master)
+    table = _obs_table(original, history, rows, old_snapshot, snapshot)
+    with pytest.raises(IdentityError):
+        _obs_query(table, read, vendor="listing", symbol="NEXT")
+
+
+def test_observation_public_context_values_cannot_hide_duplicate_vectors():
+    from dataclasses import replace
+    original, history, rows, master = _obs_base()
+    snapshot, read = _obs_snapshot(original, history, rows, master)
+    table = _obs_table(original, history, rows, snapshot)
+    duplicate_read = replace(read, artifact_sha256=(read.artifact_sha256[0],)*5)
+    with pytest.raises(IdentityError, match="duplicate read artifact"):
+        _obs_query(table, duplicate_read)
+    duplicate_snapshot = replace(snapshot, artifact_bytes=(snapshot.artifact_bytes[0],)*5)
+    with pytest.raises(IdentityError, match="duplicate snapshot artifact"):
+        _obs_table(original, history, rows, duplicate_snapshot)
+    with pytest.raises(IdentityError, match="read clock order"):
+        record = read.as_record()
+        record["read_started_at_utc_ns"] = str(int(record["read_completed_at_utc_ns"])+1)
+        ReferenceReadReceipt.from_record(record)
+    before_owner = replace(read, read_started_at_utc_ns=str(_OBS_T0-2),
+                           read_completed_at_utc_ns=str(_OBS_T0-1))
+    with pytest.raises(IdentityError, match="consumer read precedes"):
+        _obs_query(table, before_owner)
+
+
+def test_observation_json_wire_refuses_duplicate_keys_and_nonfinite_values():
+    original, history, rows, master = _obs_base()
+    snapshot, _ = _obs_snapshot(original, history, rows, master)
+    for wire in (b'{"publication":{},"publication":{}}', b'{"invalid":NaN}', b'\xff'):
+        with pytest.raises(IdentityError):
+            validate_reference_snapshot(wire, dict(snapshot.artifact_bytes), wire,
+                                        alias_records=rows, master_records=master)
+
+
+def test_observation_acquisition_clock_order_is_visible_semantics_not_future_leakage():
+    original, history, rows, master = _obs_base()
+    old_snapshot, old_read = _obs_snapshot(original, history, rows, master, read_ns=_OBS_T0+500)
+    expected = _obs_query(_obs_table(original, history, rows, old_snapshot), old_read)
+    history, rows = _obs_append(original, history, rows)
+    attempt = history["attempts"][0]
+    attempt["payload"]["acquisition"]["polygon:MU"]["completed_at_utc_ns"] = str(_OBS_T0+1001)
+    _obs_refresh_attempt(attempt, rows)
+    new_snapshot, new_read = _obs_snapshot(original, history, rows, master)
+    table = _obs_table(original, history, rows, old_snapshot, new_snapshot)
+    assert _obs_query(table, old_read) == expected
+    with pytest.raises(IdentityError, match="acquisition clock order"):
+        _obs_query(table, new_read)
+
+
+@pytest.mark.parametrize("upper", ["2026-10-07", "2026-10-06"])
+def test_observation_repair_future_physical_interval_width_is_immediate(upper):
+    original, history, rows, master = _obs_base()
+    old_snapshot, old_read = _obs_snapshot(original, history, rows, master, read_ns=_OBS_T0+500)
+    expected = _obs_query(_obs_table(original, history, rows, old_snapshot), old_read)
+    future, future_rows = _obs_append(original, history, rows)
+    # An intact unknown future layout is allowed for an older enrolled view,
+    # including its valid physical rows and complete outer membership.
+    valid_future = copy.deepcopy(future)
+    valid_future["attempts"][0]["payload"] = {"schema": "future.v999"}
+    _obs_seal(valid_future["attempts"][0], "attempt_sha256")
+    valid_snapshot, valid_read = _obs_snapshot(original, valid_future, future_rows, master)
+    valid_table = _obs_table(original, valid_future, future_rows, old_snapshot, valid_snapshot)
+    assert _obs_query(valid_table, old_read, valid_read, cutoff=_OBS_T0+500) == expected
+
+    # Recompute every affected seal before replacing the future payload.
+    # Invalid width is intrinsic to the fixed physical row, not its payload.
+    future_rows[-1]["valid_to"] = upper
+    _obs_refresh_attempt(future["attempts"][0], future_rows)
+    future["attempts"][0]["payload"] = {"schema": "future.v999"}
+    _obs_seal(future["attempts"][0], "attempt_sha256")
+    with pytest.raises(IdentityError, match="event interval width"):
+        _obs_snapshot(original, future, future_rows, master)
+
+
+@pytest.mark.parametrize("offset", ["+00:99", "-00:99", "+00:60", "-00:60", "+24:00", "-24:00"])
+def test_observation_repair_empty_lookup_refuses_invalid_numeric_timezone_components(offset):
+    with pytest.raises(IdentityError):
+        VendorAliasTable().resolve_binding("polygon", "UNKNOWN", date(2026, 10, 7),
+            decision_at="2026-10-07T08:00:00.123456789" + offset)
+
+
+@pytest.mark.parametrize("direction", [-1, 1])
+def test_observation_repair_valid_numeric_offsets_keep_exact_nine_digit_boundary(direction):
+    from datetime import timedelta
+    original, history, rows, master = _obs_base()
+    read_ns = _OBS_T0 + 999
+    snapshot, read = _obs_snapshot(original, history, rows, master, read_ns=read_ns)
+    table = _obs_table(original, history, rows, snapshot)
+    local = datetime.fromtimestamp(read_ns // 10**9, timezone.utc) + timedelta(minutes=direction*99)
+    offset = "+01:39" if direction == 1 else "-01:39"
+    before = local.strftime("%Y-%m-%dT%H:%M:%S") + ".000000998" + offset
+    exact = local.strftime("%Y-%m-%dT%H:%M:%S") + ".000000999" + offset
+    assert table.resolve_binding("polygon", "MU", date(2026, 10, 7),
+        decision_at=before, snapshot_receipts=(read,)).reason == "NO_ENROLLED_SNAPSHOT_BY_CUTOFF"
+    answer = table.resolve_binding("polygon", "MU", date(2026, 10, 7),
+        decision_at=exact, snapshot_receipts=(read,))
+    assert answer == _obs_query(table, read, cutoff=read_ns)
+    assert answer.status == "BOUND"
