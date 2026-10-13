@@ -13,7 +13,11 @@ Assertion 1 — write-set disjointness. ``reland_write_set.json`` is
 ``git diff --name-only`` of the re-land commit against its parent. No path
 may sit under ``site/``, ``data/``, or ``templates/``, and no path may be a
 builder or publisher the prophet board, membership, or theme tracker read.
-Every robotics engine module is AST-scanned for file writes.
+Every robotics engine module is AST-scanned for file writes. DataFrame
+``to_parquet``, ``to_csv`` and ``to_json`` count as writes; ``json.dumps``
+does not. The diff of this head against ``refs/grok/pr/7870`` is pinned as
+``PR_7870_DIFF_PATHS`` and checked with the same pure surface rule. That
+test does not call git.
 
 Assertion 2 — import isolation. The AST import closure of those builders
 contains no robotics engine module, so their outputs do not depend on the
@@ -229,6 +233,21 @@ def _write_set_violation(path: str) -> str | None:
     if path in _surface_builder_paths():
         return "surface builder/publisher"
     return None
+
+
+def decision_surface_collisions(paths: list[str]) -> dict[str, str]:
+    """Paths from ``paths`` that land on a decision surface.
+
+    A decision surface is ``site/``, ``data/``, ``templates/``, or one of
+    ``SURFACE_BUILDERS``. The result is a pure function of ``paths`` and those
+    constants: it does not read git, the filesystem, or a fixture.
+    """
+    collisions: dict[str, str] = {}
+    for path in paths:
+        reason = _write_set_violation(path)
+        if reason is not None:
+            collisions[path] = reason
+    return collisions
 
 
 def _git_name_only(base: str, head: str) -> list[str] | None:
@@ -517,10 +536,15 @@ def _open_mode_writes(call: ast.Call) -> bool:
     return any(mark in literal for mark in ("w", "a", "x", "+"))
 
 
+# Method calls that write a file. ``json.dumps`` is intentionally absent.
+_DATAFRAME_WRITE_ATTRS = frozenset({"to_csv", "to_json", "to_parquet"})
+
+
 def _write_findings(tree: ast.AST) -> list[str]:
     """File-write sites: open(..., w/a), Path.write_*, json.dump, shutil, os.replace.
 
-    ``json.dumps`` and ``datetime.replace`` are not writes. A non-literal open
+    DataFrame ``to_parquet``, ``to_csv`` and ``to_json`` calls are writes.
+    ``json.dumps`` and ``datetime.replace`` are not. A non-literal open
     mode counts, because the scan cannot prove it is read-only.
     """
     os_names = {"os"}
@@ -574,7 +598,9 @@ def _write_findings(tree: ast.AST) -> list[str]:
                 elif func.id in shutil_names_called:
                     add(node, "shutil call")
             elif isinstance(func, ast.Attribute):
-                if func.attr.startswith("write_"):
+                if func.attr in _DATAFRAME_WRITE_ATTRS:
+                    add(node, f"DataFrame.{func.attr}")
+                elif func.attr.startswith("write_"):
                     add(node, f"Path.{func.attr}")
                 elif func.attr == "open" and _open_mode_writes(node):
                     add(node, "open write mode")
@@ -687,6 +713,70 @@ def test_reland_write_set_is_disjoint_from_decision_surfaces() -> None:
         assert recorded == paths
 
 
+# git diff --name-only e4f204d4eebbac7be73ce667ad7d3c5ef744b9b4
+# 94b86c4ddb04ab285995ca23fa7d205a1b8df717 (refs/grok/pr/7870 .. this head).
+# 38 paths. The test below feeds this constant and does not call git.
+# ci-trigger-closure: data — recorded diff paths; imports not followed
+PR_7870_DIFF_PATHS: tuple[str, ...] = (
+    ".github/ci/legacy-jobs.yml",
+    "agentos/handoffs/GMI-THEME-GRAPH-2026-09-24-robotics-implementation.md",
+    "contracts/market_ontology/robotics_theme_research.v1.schema.json",
+    "engine/market_ontology/robotics_owner_bundle.py",
+    "engine/market_ontology/robotics_theme_research.py",
+    "research/theme_graph/thematic_research_20260924/ROBOTICS_SOURCE_RIGHTS_QUALIFICATION_2026-09-24.md",
+    "tests/fixtures/robotics_non_regression/README.md",
+    "tests/fixtures/robotics_non_regression/reland_write_set.json",
+    "tests/fixtures/robotics_non_regression/robotics_baseline.json",
+    "tests/fixtures/robotics_theme_research/corrected_same_url.json",
+    "tests/fixtures/robotics_theme_research/hds_backlog_not_lead_time.json",
+    "tests/fixtures/robotics_theme_research/hds_operating_snapshot.json",
+    "tests/fixtures/robotics_theme_research/integrated_assembly_double_count.json",
+    "tests/fixtures/robotics_theme_research/invalid_quantities.json",
+    "tests/fixtures/robotics_theme_research/later_retained_backdate.json",
+    "tests/fixtures/robotics_theme_research/newer_generation_no_inheritance.json",
+    "tests/fixtures/robotics_theme_research/per_hand_multiplicity_missing.json",
+    "tests/fixtures/robotics_theme_research/ptc_tpg_ownership.json",
+    "tests/fixtures/robotics_theme_research/review_expired_or_withdrawn.json",
+    "tests/fixtures/robotics_theme_research/rights_partial.json",
+    "tests/fixtures/robotics_theme_research/same_url_two_statements.json",
+    "tests/fixtures/robotics_theme_research/sanhua_actuator_scaleup.json",
+    "tests/fixtures/robotics_theme_research/schaeffler_hexagon_reciprocal.json",
+    "tests/fixtures/robotics_theme_research/source_authority_injection.json",
+    "tests/fixtures/robotics_theme_research/stabilus_synapticon_joint_product.json",
+    "tests/fixtures/robotics_theme_research/syndicated_copy.json",
+    "tests/fixtures/robotics_theme_research/unresolved_identity_source_only.json",
+    "tests/fixtures/robotics_theme_research/witness_motion_parker_kseries.json",
+    "tests/fixtures/robotics_theme_research/witness_perception_orbbec_twinny.json",
+    "tests/fixtures/robotics_theme_research/zebra_skild_ownership.json",
+    "tests/robotics_research_helpers.py",
+    "tests/test_ci_pack.py",
+    "tests/test_market_ontology_robotics_theme_research.py",
+    "tests/test_robotics_owner_bundle.py",
+    "tests/test_robotics_research_composition.py",
+    "tests/test_robotics_research_inputs.py",
+    "tests/test_robotics_research_temporal.py",
+    "tests/test_robotics_theme_non_regression.py",
+)
+
+
+# ci-trigger-closure: data — synthetic decision-surface paths; imports not followed
+def test_pr7870_diff_is_disjoint_from_decision_surfaces() -> None:
+    recorded = list(PR_7870_DIFF_PATHS)
+    assert recorded == sorted(recorded)
+    assert len(recorded) == 38
+    assert decision_surface_collisions(recorded) == {}
+    assert decision_surface_collisions([*recorded, "site/foo.json"]) == {
+        "site/foo.json": "site/"
+    }
+    assert decision_surface_collisions(["data/foo.json"]) == {"data/foo.json": "data/"}
+    assert decision_surface_collisions(["templates/foo.html.j2"]) == {
+        "templates/foo.html.j2": "templates/"
+    }
+    assert decision_surface_collisions(["scripts/build_prophet.py"]) == {
+        "scripts/build_prophet.py": "surface builder/publisher"
+    }
+
+
 def test_robotics_engine_modules_perform_no_writes() -> None:
     modules = _robotics_engine_modules()
     assert set(REQUIRED_ROBOTICS_MODULES) <= set(modules)
@@ -697,6 +787,23 @@ def test_robotics_engine_modules_perform_no_writes() -> None:
         if sites:
             found[rel] = sites
     assert not found, found
+
+
+def test_write_scanner_flags_dataframe_file_writes() -> None:
+    """A synthetic module calling DataFrame.to_parquet, to_csv, or to_json writes.
+
+    ``json.dumps`` stays allowed: it builds a string and does not open a file.
+    """
+    samples = {
+        "to_parquet": "df.to_parquet('data/theme_graph/evidence.parquet')",
+        "to_csv": "df.to_csv('data/theme_graph/rows.csv')",
+        "to_json": "df.to_json('data/theme_graph/rows.json')",
+    }
+    for name, source in samples.items():
+        findings = _write_findings(ast.parse(source))
+        assert findings, name
+        assert any(name in item for item in findings), (name, findings)
+    assert not _write_findings(ast.parse("import json\njson.dumps({})"))
 
 
 def test_write_scanner_flags_banned_forms_and_ignores_reads() -> None:

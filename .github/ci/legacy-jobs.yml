@@ -26634,6 +26634,16 @@ jobs:
     # theme_research_binding, rights.load_registry_snapshot) and the modules
     # those imports reach. A dependency edit schedules this job, and
     # contract-delta does not see the suites as unwired.
+    # Full tracked inventory on 94b86c4 (git ls-files == git ls-tree -r HEAD,
+    # 120893 paths): suite_dependency_closure of the six suites is 64 files
+    # and curated_exclusive_closure_findings is UNCOVERED 0. Unmarked literals
+    # PUBLIC_PAGE_PATHS and EXTRA_PUBLIC_JSON
+    # (site/state_of_themes.html, site/basket/robotics_automation.html,
+    # site/basketdata/foresight_cascade.json) are reads and stay. Not reads,
+    # so not declared: data/baskets/membership.json,
+    # data/neuralweb/theme_state.json, data/theme_graph/evidence.parquet,
+    # site/marketdata/basket_confluence.json, site/prophet/index.json,
+    # scripts/build_state_of_themes.py (its literal is ci-trigger-closure: data).
     if: ${{ false }}
     gate: code
     scope: exclusive
@@ -26697,15 +26707,9 @@ jobs:
       - "lib/dataos/identity.py"
       - "lib/evidence_foundation.py"
       - "lib/pages.py"
-      - "scripts/build_state_of_themes.py"
       - "scripts/worktree_sparse.py"
-      - "data/baskets/membership.json"
-      - "data/neuralweb/theme_state.json"
-      - "data/theme_graph/evidence.parquet"
       - "site/basket/robotics_automation.html"
       - "site/basketdata/foresight_cascade.json"
-      - "site/marketdata/basket_confluence.json"
-      - "site/prophet/index.json"
       - "site/state_of_themes.html"
       - "tests/fixtures/robotics_non_regression/**"
       - "tests/fixtures/robotics_theme_research/**"
