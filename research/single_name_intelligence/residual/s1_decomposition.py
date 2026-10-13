@@ -17,6 +17,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import math
 from datetime import date
 
 import numpy as np
@@ -71,18 +72,23 @@ def factors_for(model: str, market: str) -> list[str]:
     return list(MARKET_FACTORS[market][model])
 
 
+def _usable_close(c) -> bool:
+    """Finite and strictly positive: None, NaN, +/-inf, and <=0 are unusable."""
+    return c is not None and math.isfinite(float(c)) and float(c) > 0
+
+
 def daily_log_returns(closes: dict[date, float], dates: list[date]) -> dict[date, float]:
     """log(c_t / c_prev) on each series' OWN consecutive bars."""
     out: dict[date, float] = {}
     prev_d = None
     for d in dates:
         c = closes.get(d)
-        if c is None or c <= 0:
+        if not _usable_close(c):
             prev_d = None
             continue
         if prev_d is not None:
             p = closes.get(prev_d)
-            if p is not None and p > 0:
+            if _usable_close(p):
                 out[d] = float(np.log(c / p))
         prev_d = d
     return out
@@ -92,7 +98,7 @@ def window_log_ret(closes: dict[date, float], fill: date, coverage: date) -> flo
     """The `_leg_ret_in_window` (L2540) endpoint rule on log returns: bars must
     exist on EXACTLY the fill and coverage sessions, else None."""
     a, b = closes.get(fill), closes.get(coverage)
-    if a is None or b is None or a <= 0 or b <= 0:
+    if not _usable_close(a) or not _usable_close(b):
         return None
     return float(np.log(b / a))
 
