@@ -6,7 +6,7 @@
 {{- 'tone-up' if tone == 'bull' else ('tone-down' if tone == 'bear' else 'tone-flat') -}}
 {%- endmacro %}
 {% macro chg_sign(v) -%}
-{{- 'up' if (v is number and v >= 0.05) else ('down' if (v is number and v <= -0.05) else '') -}}
+{{- 'up' if (v is number and v >= FLAT_CHG_PCT) else ('down' if (v is number and v <= -FLAT_CHG_PCT) else '') -}}
 {%- endmacro %}
 <!DOCTYPE html>
 {# Shared brain label lives after DOCTYPE: fragment tests compile the macro prelude without a loader. #}
@@ -393,7 +393,7 @@ html[data-lang="zh"] #crypto-overview .desk-context-rule>span.l-zh{display:block
       <div class="market-row {{ tone(a.tone) }}">
         <div class="asset"><span class="rank">{{ "%02d"|format(a.rank) }}</span><b>{{ a.symbol }}</b><small>{{ a.name }}</small>{% if a.symbol|length > 5 or a.name|length > 12 %}<span class="receipt asset-receipt">{{ a.symbol }} · {{ a.name }}</span>{% endif %}</div>
         <div class="market-value nb-px" data-sym="{{ a.live_symbol }}">{{ a.price_label }}</div>
-        <div class="market-change nb-chg {{ chg_sign(a.change_24h) }}" data-sym="{{ a.live_symbol }}">{{ a.change_label }}</div>
+        <div class="market-change nb-chg {{ chg_sign(a.change_24h) }}" data-sym="{{ a.live_symbol }}" data-flat="{{ FLAT_CHG_PCT }}">{{ a.change_label }}</div>
         <div class="spark-cell">{% if a.spark %}{{ a.spark|safe }}{% else %}<span class="history-null">{{ t('Building history','积累历史中') }}</span>{% endif %}<span class="history-chip">{% if a.history_chip == 'Building' %}{{ t('Building','积累中') }}{% else %}{{ a.history_chip }}{% endif %}</span></div>
         <div><span class="state">{{ t(a.state,a.state_zh) }}</span></div>
       </div>

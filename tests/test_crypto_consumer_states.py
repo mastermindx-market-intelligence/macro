@@ -934,3 +934,66 @@ def test_cxp2_w2_k_change_colour_follows_sign_not_tone(chg, tone, expect, tmp_pa
     src = (ROOT / "templates" / "crypto.html.j2").read_text(encoding="utf-8")
     assert 'style="color:var(--tone)">{{ a.change_label }}' not in src
     assert "compact-chg {{ chg_sign(a.change_24h) }}" in src
+
+
+# cx-p3-polish-w3 (seat commission R30 W3-A): H' null context carries no tone colour; N1 a 24H move
+# inside the flat cut-off reads as an unsigned 0.0% with no tone class (its live-repaint twin N2 is
+# pinned in tests/test_live_holiday_js.py, whose CI owner covers templates/live.js and has Node).
+def _w3_complex_class(html: str) -> list[str]:
+    shelf = _slice(html, 'data-shelf="S5"', 'data-shelf="S6"')
+    return re.findall(r'class="complex-context ?([a-z]*)"', shelf)
+
+
+def _w3_complex_row(tone: str, context_en: str, context_zh: str) -> dict:
+    return {"symbol": "ETH", "name_en": "Ether", "name_zh": "以太坊", "value": "$2,400", "chart": "",
+            "tone": tone, "context_en": context_en, "context_zh": context_zh}
+
+
+@pytest.mark.parametrize("tone", ["up", "down"])
+def test_cxp3_w3_h_null_context_carries_no_tone_colour(tone, monkeypatch):
+    html = _w2_vector(monkeypatch, _vector_case("valid_zero"),
+                      presentation={"axes": [], "watch": [], "complex": [_w3_complex_row(tone, "", "")]})
+    assert _w3_complex_class(html) == [""]
+    shelf = _slice(html, 'data-shelf="S5"', 'data-shelf="S6"')
+    assert "No context on file today" in _reading("en", shelf)
+    assert "今日暂无背景" in _reading("zh", shelf)
+
+
+@pytest.mark.parametrize("tone,expect", [("up", "pos"), ("down", "neg"), ("flat", "")])
+def test_cxp3_w3_h_context_keeps_its_tone_colour(tone, expect, monkeypatch):
+    html = _w2_vector(monkeypatch, _vector_case("valid_zero"),
+                      presentation={"axes": [], "watch": [], "complex": [_w3_complex_row(tone, "Basis firm.", "基差坚挺。")]})
+    assert _w3_complex_class(html) == [expect]
+    shelf = _slice(html, 'data-shelf="S5"', 'data-shelf="S6"')
+    assert "Basis firm." in _reading("en", shelf)
+    assert "基差坚挺。" in _reading("zh", shelf)
+
+
+def _w3_board_chip(html: str) -> tuple[str, str, str]:
+    board = _slice(html, 'id="market-board"', 'id="money-flows"')
+    got = re.findall(r'<div class="market-change nb-chg ?([a-z]*)" data-sym="[^"]*" data-flat="([^"]*)">([^<]*)</div>', board)
+    assert len(got) == 1, got
+    return got[0]
+
+
+@pytest.mark.parametrize("chg,label,cls", [(-0.03, "0.0%", ""), (0.03, "0.0%", ""), (-0.06, "-0.1%", "down"), (0.06, "+0.1%", "up")])
+def test_cxp3_w3_n1_flat_24h_chip_reads_unsigned_zero(chg, label, cls, tmp_path, monkeypatch):
+    case = _crypto_case("valid_zero")
+    case["row"]["change_24h"] = chg
+    got_cls, flat, got_label = _w3_board_chip(_render_crypto(tmp_path, monkeypatch, case))
+    assert (got_cls, got_label) == (cls, label)
+    assert flat == "0.05"
+
+
+def test_cxp3_w3_n1_one_flat_cut_off_shared_by_label_and_class():
+    assert build_crypto.FLAT_CHG_PCT == 0.05
+    assert build_crypto._chg_label(-0.03) == "0.0%"
+    assert build_crypto._chg_label(0.0499) == "0.0%"
+    assert build_crypto._chg_label(-0.06) == "-0.1%"
+    assert build_crypto._chg_label(1.25) == "+1.2%" or build_crypto._chg_label(1.25) == "+1.3%"
+    assert build_crypto._chg_label(None) == "—"
+    src = (ROOT / "templates" / "crypto.html.j2").read_text(encoding="utf-8")
+    macro = src[src.index("{% macro chg_sign(v)"):]
+    macro = macro[:macro.index("{%- endmacro %}")]
+    assert "FLAT_CHG_PCT" in macro and "0.05" not in macro
+    assert 'data-flat="{{ FLAT_CHG_PCT }}"' in src
