@@ -345,13 +345,22 @@ SYNTHETIC_CURATION_CONTRACT = types.SimpleNamespace(
 )
 # KNOWN LIMITATION (recorded here, T5-owned, deliberately NOT fixed in T8A-X1):
 # beyond authority, the fixture assertion built by _assertion() is still far
-# from conformant with the real contract — an independent check found 55 errors
-# across all 14 sections (source, observation, scope, subject, review,
-# predicate/statement_mode enums). Consequence, stated plainly: until that gap
-# is closed, the strict xfail test_shared_assertion_roundtrip_through_pinned_contract
-# keeps xfailing GREEN instead of XPASSing the day the real module lands,
-# because the real validator refuses the fixture — so it is not yet a working
-# early warning for the shared contract's arrival.
+# from conformant with the real contract. Draft202012Validator.iter_errors on
+# _assertion(predicate="product_workload_role", seed="pinned-roundtrip")
+# returns 49 errors (jsonschema 4.10.3; schema blob ff3928f0, identical at
+# refs/grok/pr/7870 and the xfail pin 45eb37bb) in 11 sections: source,
+# observation, scope, subject, review, correction, object, temporal,
+# limitations, predicate, statement_mode. schema, curation_revision and
+# authority contribute none. Consequence, stated
+# plainly: the strict xfail
+# test_shared_assertion_roundtrip_through_pinned_contract keeps xfailing
+# GREEN instead of XPASSing the day the real module lands. It stays green
+# until both the validator refusal and decode_assertion's string requirement
+# are closed: validate_assertion raises schema_violation (first error
+# additionalProperties 'superseded_by'), and the test passes that dict to
+# decode_assertion, which requires a string and raises not_a_string for a
+# dict. It is not yet a working early warning for the shared contract's
+# arrival.
 
 
 def test_synthetic_stand_in_speaks_the_real_five_flag_can_star_vocabulary():
