@@ -20,7 +20,8 @@ Run: python3 -m pytest tests/test_dataos_read_contract.py tests/test_dataos_temp
 from __future__ import annotations
 
 import hashlib
-from datetime import datetime
+import itertools
+from datetime import datetime, timezone
 from pathlib import Path
 
 import pytest
@@ -43,6 +44,7 @@ from lib.dataos.read_contract import (
     replay,
     resolve_revisions,
     select_generation,
+    selected_input_sha256s,
 )
 from lib.dataos.temporal import (
     PointInTimeError,
@@ -570,3 +572,307 @@ def test_result_evidence_and_values_reject_item_assignment() -> None:
         result.evidence["cutoff"] = "2026-01-05T23:00:00+00:00"
     with pytest.raises(TypeError):
         result.values["revisions"] = ()
+
+
+# ── R01 heal: order independence, canonical keys, generation-bound rows ──────
+# The heal_fix tests each pin one R01 finding and MUST fail against the
+# pre-heal contract; the heal_guard/heal_cutoff tests hold on both sides.
+HEAL_CUTOFF = "2026-01-08T13:00:00+00:00"
+
+
+def test_heal_fix_m1_max_revision_wins_in_every_supply_order() -> None:
+    """M1: [A(k=K,seq1,v1), B(k=K,seq1,v2), C(k=K,seq2,v3)] answers [C] in
+    EVERY supply order — the best sequence is found over ALL rows first."""
+    a = {"k": "K", "revision_seq": 1, "v": "v1"}
+    b = {"k": "K", "revision_seq": 1, "v": "v2"}
+    c = {"k": "K", "revision_seq": 2, "v": "v3"}
+    for order in itertools.permutations((a, b, c)):
+        assert resolve_revisions(list(order), key_fields=("k",)) == [c]
+
+
+def test_heal_guard_m1_distinct_rows_at_the_winning_seq_refuse_in_every_order() -> None:
+    """Two DIFFERENT rows claiming one revision of a key stay ambiguous from
+    either side (pre-existing law), and an identical duplicate of the winner
+    collapses instead of widening the answer."""
+    a = {"k": "K", "revision_seq": 1, "v": "v1"}
+    b = {"k": "K", "revision_seq": 1, "v": "v2"}
+    for order in itertools.permutations((a, b)):
+        with pytest.raises(ReadRefusal) as exc:
+            resolve_revisions(list(order), key_fields=("k",))
+        assert exc.value.code is RefusalCode.AMBIGUOUS_REVISION
+    c = {"k": "K", "revision_seq": 2, "v": "v3"}
+    assert resolve_revisions([c, dict(c), a], key_fields=("k",)) == [c]
+
+
+def test_heal_fix_m2_one_instant_spelled_two_ways_is_one_key() -> None:
+    """M2: one instant spelled two ways is ONE key, so rev2 replaces rev1
+    instead of joining it — through strings, and through datetime objects."""
+    rev1 = {"security_id": "SEC", "period_end": "2026-01-05T00:00:00Z",
+            "value": 100.0, "revision_seq": 1,
+            "published_at": "2026-01-04T09:00:00+00:00",
+            "ingested_at": "2026-01-04T09:30:00+00:00"}
+    rev2 = {**rev1, "period_end": "2026-01-05T00:00:00+00:00",
+            "value": 100.4, "revision_seq": 2}
+    out = resolve_revisions([rev1, rev2], key_fields=("security_id", "period_end"))
+    assert out == [rev2]
+    dt_rev1 = {**rev1, "period_end": datetime(2026, 1, 5, 0, 0, tzinfo=timezone.utc)}
+    dt_rev2 = {**rev1, "period_end": "2026-01-05T08:00:00+08:00",
+               "value": 100.4, "revision_seq": 2}
+    out = resolve_revisions([dt_rev1, dt_rev2],
+                            key_fields=("security_id", "period_end"))
+    assert out == [dt_rev2]
+
+
+def test_heal_fix_m2_mixed_key_types_refuse_typed_not_typeerror() -> None:
+    """M2: a key position that mixes kinds across rows refuses KEY_TYPE_MISMATCH
+    in both supply orders — never a bare TypeError out of sorted() — through the
+    revision path AND the unique-key path of a read."""
+    for first, second in ((1, "x"), ("x", 1)):
+        rows = [{"k": first, "revision_seq": 1}, {"k": second, "revision_seq": 2}]
+        with pytest.raises(ReadRefusal) as exc:
+            resolve_revisions(rows, key_fields=("k",))
+        assert exc.value.code is RefusalCode.KEY_TYPE_MISMATCH
+    identity_rows = (
+        {"action_id": datetime(2026, 1, 5, tzinfo=timezone.utc), "symbol": "new",
+         "published_at": "2026-01-03T00:00:00+00:00",
+         "ingested_at": "2026-01-03T01:00:00+00:00"},
+        {"action_id": "AAPL", "symbol": "old",
+         "published_at": "2026-01-03T00:00:00+00:00",
+         "ingested_at": "2026-01-03T01:00:00+00:00"},
+    )
+    with pytest.raises(ReadRefusal) as exc:
+        reconstruct(
+            _reconstruct_request("published_at"),
+            {"identity": Dependency(name="identity",
+                                    profile=TemporalProfile.SNAPSHOT_SERIES,
+                                    rows=identity_rows, key_fields=("action_id",))},
+            required=("identity",),
+            code_version=CODE_VERSION,
+        )
+    assert exc.value.code is RefusalCode.KEY_TYPE_MISMATCH
+
+
+def test_heal_fix_m3_snapshot_series_corrections_resolve_like_revisable_ones() -> None:
+    """M3: SNAPSHOT_SERIES rows that carry a revision_seq are corrections — the
+    massive_split_evidence shape resolves like REVISABLE_RELEASE instead of
+    serving both revisions of the split."""
+    a1_rev1 = {"action_id": "A1", "ratio": 2.0,
+               "effective_at": "2026-01-09T00:00:00+00:00", "revision_seq": 1,
+               "published_at": "2026-01-07T12:00:00+00:00",
+               "ingested_at": "2026-01-07T12:10:00+00:00"}
+    a1_rev2 = {**a1_rev1, "ratio": 0.5, "revision_seq": 2,
+               "published_at": "2026-01-08T12:00:00+00:00",
+               "ingested_at": "2026-01-08T12:10:00+00:00"}
+    result = reconstruct(
+        _reconstruct_request("published_at", HEAL_CUTOFF),
+        {"massive_split_evidence": Dependency(
+            name="massive_split_evidence", profile=TemporalProfile.SNAPSHOT_SERIES,
+            rows=(a1_rev1, a1_rev2), key_fields=("action_id",))},
+        required=("massive_split_evidence",),
+        code_version=CODE_VERSION,
+    )
+    assert [row["ratio"] for row in result.values["massive_split_evidence"]] == [0.5]
+    assert result.evidence["revision_resolution"][
+        "massive_split_evidence"] == "max_revision_seq_per_key"
+
+
+def test_heal_fix_m3_key_fields_without_revision_ordering_refuse_duplicates() -> None:
+    """M3: with NO revision ordering declared, two different rows of one key are
+    a contradiction (DUPLICATE_KEY), never a silent pick — while a bit-exact
+    duplicate collapses and the unique-key path is labelled in the evidence."""
+    row_a = {"action_id": "A1", "ratio": 2.0,
+             "effective_at": "2026-01-09T00:00:00+00:00",
+             "published_at": "2026-01-07T12:00:00+00:00",
+             "ingested_at": "2026-01-07T12:10:00+00:00"}
+    row_b = {**row_a, "ratio": 0.5}
+    with pytest.raises(ReadRefusal) as exc:
+        reconstruct(
+            _reconstruct_request("published_at", HEAL_CUTOFF),
+            {"massive_split_evidence": Dependency(
+                name="massive_split_evidence", profile=TemporalProfile.SNAPSHOT_SERIES,
+                rows=(row_a, row_b), key_fields=("action_id",))},
+            required=("massive_split_evidence",),
+            code_version=CODE_VERSION,
+        )
+    assert exc.value.code is RefusalCode.DUPLICATE_KEY
+    collapsed = reconstruct(
+        _reconstruct_request("published_at", HEAL_CUTOFF),
+        {"massive_split_evidence": Dependency(
+            name="massive_split_evidence", profile=TemporalProfile.SNAPSHOT_SERIES,
+            rows=(row_a, dict(row_a)), key_fields=("action_id",))},
+        required=("massive_split_evidence",),
+        code_version=CODE_VERSION,
+    )
+    assert len(collapsed.values["massive_split_evidence"]) == 1
+    assert collapsed.evidence["revision_resolution"][
+        "massive_split_evidence"] == "unique_key"
+
+
+def test_heal_guard_m3_identical_duplicates_collapse_and_unique_keys_serve() -> None:
+    """Whatever the resolution law, the DISTINCT rows are exactly what is served:
+    one A1 and one A2 — a bit-exact duplicate never widens the answer."""
+    row_a = {"action_id": "A1", "ratio": 2.0,
+             "effective_at": "2026-01-09T00:00:00+00:00",
+             "published_at": "2026-01-07T12:00:00+00:00",
+             "ingested_at": "2026-01-07T12:10:00+00:00"}
+    row_c = {**row_a, "action_id": "A2", "ratio": 1.5}
+    result = reconstruct(
+        _reconstruct_request("published_at", HEAL_CUTOFF),
+        {"massive_split_evidence": Dependency(
+            name="massive_split_evidence", profile=TemporalProfile.SNAPSHOT_SERIES,
+            rows=(row_a, dict(row_a), row_c), key_fields=("action_id",))},
+        required=("massive_split_evidence",),
+        code_version=CODE_VERSION,
+    )
+    served = {(row["action_id"], row["ratio"])
+              for row in result.values["massive_split_evidence"]}
+    assert sorted(served) == [("A1", 2.0), ("A2", 1.5)]
+    resolution = result.evidence["revision_resolution"]["massive_split_evidence"]
+    assert resolution in ("unique_key", "none")
+
+
+def test_heal_fix_m4_rows_of_an_unselected_generation_are_not_served() -> None:
+    """M4 (D00.D5.1, EXCLUDE): a read that binds g1 serves ONLY g1's rows — the
+    g2-tagged row is another generation's content, not this read's input."""
+    g1 = GenerationRef("g1", published_at="2026-01-02T00:00:00+00:00")
+    g2 = GenerationRef("g2", published_at="2026-01-09T00:00:00+00:00")
+    row_g1 = {"action_id": "A1", "ratio": 4.0, "generation_id": "g1",
+              "effective_at": "2026-01-03T00:00:00+00:00",
+              "published_at": "2026-01-03T00:00:00+00:00",
+              "ingested_at": "2026-01-03T01:00:00+00:00"}
+    row_g2 = {"action_id": "A1", "ratio": 0.5, "generation_id": "g2",
+              "effective_at": "2026-01-05T00:00:00+00:00",
+              "published_at": "2026-01-05T00:00:00+00:00",
+              "ingested_at": "2026-01-05T01:00:00+00:00"}
+    result = reconstruct(
+        _reconstruct_request("published_at", HEAL_CUTOFF),
+        {"splits": Dependency(name="splits", profile=TemporalProfile.SNAPSHOT_SERIES,
+                              rows=(row_g1, row_g2), key_fields=("action_id",),
+                              generations=(g1, g2))},
+        required=("splits",), code_version=CODE_VERSION)
+    assert result.evidence["dependency_generation_ids"]["splits"] == "g1"
+    assert [row["ratio"] for row in result.values["splits"]] == [4.0]
+
+
+def test_heal_fix_m4_an_untagged_row_under_a_generation_ledger_refuses() -> None:
+    """M4: under a generation ledger, a row bound to no generation is never
+    served under one — it refuses, it is not silently swept in."""
+    g1 = GenerationRef("g1", published_at="2026-01-02T00:00:00+00:00")
+    naked = {"action_id": "A1", "ratio": 2.0,
+             "effective_at": "2026-01-09T00:00:00+00:00",
+             "published_at": "2026-01-03T00:00:00+00:00",
+             "ingested_at": "2026-01-03T01:00:00+00:00"}
+    with pytest.raises(ReadRefusal) as exc:
+        reconstruct(
+            _reconstruct_request("published_at"),
+            {"splits": Dependency(name="splits", profile=TemporalProfile.SNAPSHOT_SERIES,
+                                  rows=(naked,), key_fields=("action_id",),
+                                  generations=(g1,))},
+            required=("splits",), code_version=CODE_VERSION)
+    assert exc.value.code is RefusalCode.UNBOUND_DEPENDENCY
+
+
+def test_heal_fix_m5_current_serves_only_the_max_revision() -> None:
+    """M5: CURRENT resolves revisions like every other read — the corrected
+    ratio is the answer, not both revisions side by side."""
+    rev1 = {"action_id": "A1", "ratio": 2.0, "revision_seq": 1,
+            "effective_at": "2026-01-09T00:00:00+00:00",
+            "published_at": "2026-01-07T12:00:00+00:00",
+            "ingested_at": "2026-01-07T12:10:00+00:00"}
+    rev2 = {**rev1, "ratio": 0.5, "revision_seq": 2,
+            "published_at": "2026-01-08T12:00:00+00:00",
+            "ingested_at": "2026-01-08T12:10:00+00:00"}
+    result = current(
+        ReadRequest(ReadMode.CURRENT, _contract()),
+        {"splits": Dependency(name="splits", profile=TemporalProfile.SNAPSHOT_SERIES,
+                              rows=(rev1, rev2), key_fields=("action_id",))},
+        evidence=_evidence())
+    assert [row["ratio"] for row in result.values["splits"]] == [0.5]
+    assert result.evidence["revision_resolution"]["splits"] == "max_revision_seq_per_key"
+
+
+def test_heal_fix_m5_current_binds_the_newest_non_superseded_generation() -> None:
+    """M5 (D00.D5.2): CURRENT binds the ledger's newest non-superseded
+    generation and serves only that generation's rows, like a read binds."""
+    g1 = GenerationRef("g1", published_at="2026-01-02T00:00:00+00:00")
+    g3 = GenerationRef("g3", published_at="2026-01-09T00:00:00+00:00", supersedes="g1")
+    row_g1 = {"action_id": "A1", "ratio": 2.0, "generation_id": "g1",
+              "effective_at": "2026-01-03T00:00:00+00:00",
+              "published_at": "2026-01-03T00:00:00+00:00",
+              "ingested_at": "2026-01-03T01:00:00+00:00"}
+    row_g3 = {"action_id": "A1", "ratio": 0.5, "generation_id": "g3",
+              "effective_at": "2026-01-05T00:00:00+00:00",
+              "published_at": "2026-01-05T00:00:00+00:00",
+              "ingested_at": "2026-01-05T01:00:00+00:00"}
+    result = current(
+        ReadRequest(ReadMode.CURRENT, _contract()),
+        {"splits": Dependency(name="splits", profile=TemporalProfile.SNAPSHOT_SERIES,
+                              rows=(row_g1, row_g3), key_fields=("action_id",),
+                              generations=(g1, g3))},
+        evidence=_evidence(identity_generation_id="g3"))
+    assert result.evidence["dependency_generation_ids"]["splits"] == "g3"
+    assert [row["generation_id"] for row in result.values["splits"]] == ["g3"]
+
+
+def test_heal_fix_m5_current_refuses_evidence_naming_a_superseded_generation() -> None:
+    """M5 (D00.D5.2): CURRENT evidence naming a superseded generation is STALE —
+    a superseded generation is readable by id only for RECONSTRUCT/REPLAY."""
+    g1 = GenerationRef("g1", published_at="2026-01-02T00:00:00+00:00")
+    g3 = GenerationRef("g3", published_at="2026-01-09T00:00:00+00:00", supersedes="g1")
+    with pytest.raises(ReadRefusal) as exc:
+        current(
+            ReadRequest(ReadMode.CURRENT, _contract()),
+            {"splits": Dependency(name="splits", profile=TemporalProfile.SNAPSHOT_SERIES,
+                                  rows=(), generations=(g1, g3))},
+            evidence=_evidence(identity_generation_id="g1"))
+    assert exc.value.code is RefusalCode.STALE_GENERATION
+
+
+def test_heal_fix_m6_fingerprint_binds_the_selected_generation() -> None:
+    """M6: two reads selecting the same (empty) rows under DIFFERENT selected
+    generations can never present themselves as the same input state."""
+    gen1 = GenerationRef("gen-1", published_at="2026-01-02T00:00:00+00:00")
+    gen2 = GenerationRef("gen-2", published_at="2026-01-09T00:00:00+00:00")
+    dependencies = {"identity": Dependency(name="identity",
+                                           profile=TemporalProfile.SNAPSHOT_SERIES,
+                                           rows=(), generations=(gen1, gen2))}
+    early = selected_input_sha256s(reconstruct(
+        _reconstruct_request("published_at", "2026-01-05T00:00:00+00:00"),
+        dependencies, required=("identity",), code_version=CODE_VERSION))
+    late = selected_input_sha256s(reconstruct(
+        _reconstruct_request("published_at", "2026-01-10T00:00:00+00:00"),
+        dependencies, required=("identity",), code_version=CODE_VERSION))
+    assert early["identity"] != late["identity"]
+
+
+def test_heal_cutoff_a_row_stamped_exactly_at_the_cutoff_is_known() -> None:
+    """m1: the cutoff is INCLUSIVE for rows — known_at == cutoff is known."""
+    exact = {"action_id": "A1", "ratio": 2.0,
+             "effective_at": "2026-01-09T00:00:00+00:00",
+             "published_at": CUTOFF, "ingested_at": CUTOFF}
+    eligible = eligible_rows([exact], TemporalProfile.SNAPSHOT_SERIES,
+                             cutoff=CUTOFF, clock="published_at")
+    assert [row["action_id"] for row in eligible] == ["A1"]
+
+
+def test_heal_cutoff_a_generation_published_exactly_at_the_cutoff_is_selectable() -> None:
+    """m1: the cutoff is INCLUSIVE for generations — published exactly at the
+    cutoff, the generation is the one the read binds."""
+    gen = GenerationRef("gen-x", published_at=CUTOFF)
+    chosen = select_generation((gen,), cutoff=CUTOFF, clock="published_at")
+    assert chosen.generation_id == "gen-x"
+
+
+def test_heal_fix_ro_served_rows_are_read_only() -> None:
+    """m7: served rows are read-only mappings — mutating one would rewrite the
+    very inputs the evidence just bound."""
+    result = _reconstruct([REV1], clock="published_at")
+    with pytest.raises(TypeError):
+        result.values["revisions"][0]["value"] = 999.0
+    holdings = current(
+        ReadRequest(ReadMode.CURRENT, _contract()),
+        {"holdings": Dependency(name="holdings", profile=TemporalProfile.BARS,
+                                rows=({"qty": 1},))},
+        evidence=_evidence())
+    with pytest.raises(TypeError):
+        holdings.values["holdings"][0]["qty"] = 2

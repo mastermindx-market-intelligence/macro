@@ -249,7 +249,8 @@ def test_t02_01_c_different_cutoffs_bind_different_input_states() -> None:
     assert early["actions"] != late["actions"]  # ... and the action state differs
     assert early["membership"] == late["membership"]  # both selected nothing
     assert early["membership"] == EMPTY_SELECTION_SHA256
-    assert early["identity"] == late["identity"] == EMPTY_SELECTION_SHA256
+    assert early["identity"] != late["identity"]  # g1 vs g2 selected: the generation binds the input state (R01 M6)
+    assert EMPTY_SELECTION_SHA256 not in (early["identity"], late["identity"])
     for digest in (*early.values(), *late.values()):
         assert len(digest) == 64 and digest == digest.lower()
 
@@ -405,3 +406,41 @@ def test_t02_04_a_missing_required_dependency_refuses_before_any_rows() -> None:
     with pytest.raises(ReadRefusal) as exc:
         _read(world, CUTOFF_EARLY)
     assert exc.value.code is RefusalCode.UNBOUND_DEPENDENCY
+
+
+# ── R01 heal: the served rows belong to the bound generation; cutoff inclusive
+def test_heal_fix_m4_t02_served_identity_rows_belong_to_the_bound_generation() -> None:
+    """The R01 reproduction across a real read: identity rows tagged per
+    generation under one ledger — a read that binds g2 serves ONLY g2's rows,
+    never the g1 row sitting in the same supply."""
+    g1_row = {"security_id": SECURITY_ID, "vendor_symbol": "ABC",
+              "generation_id": "g1",
+              "published_at": "2026-01-02T00:00:00+00:00",
+              "ingested_at": "2026-01-02T01:00:00+00:00"}
+    g2_row = {"security_id": SECURITY_ID, "vendor_symbol": "ABCD",
+              "generation_id": "g2",
+              "published_at": "2026-01-08T06:00:00+00:00",
+              "ingested_at": "2026-01-08T07:00:00+00:00"}
+    world = _world()
+    world["identity"] = Dependency(name="identity",
+                                   profile=TemporalProfile.SNAPSHOT_SERIES,
+                                   rows=(g1_row, g2_row), generations=(G1, G2))
+    result = _read(world, CUTOFF_LATE)
+    assert result.evidence["dependency_generation_ids"]["identity"] == "g2"
+    assert [row["vendor_symbol"] for row in result.values["identity"]] == ["ABCD"]
+
+
+def test_heal_cutoff_t02_exact_cutoff_includes_the_row_and_the_generation() -> None:
+    """The cutoff is INCLUSIVE on both sides of one read: a bar stamped exactly
+    at the cutoff is known, and a generation published exactly at the cutoff is
+    the one the read binds."""
+    exact = "2026-01-05T21:30:00+00:00"  # exactly BAR_0105.published_at
+    gen = GenerationRef("gen-exact", published_at=exact, ingested_at=exact)
+    world = _world()
+    world["identity"] = Dependency(name="identity",
+                                   profile=TemporalProfile.SNAPSHOT_SERIES,
+                                   rows=(), generations=(gen,))
+    result = _read(world, exact)
+    assert [row["period_end"] for row in result.values["prices"]] == [
+        "2026-01-05T21:00:00+00:00"]  # the bar stamped AT the cutoff is known
+    assert result.evidence["dependency_generation_ids"]["identity"] == "gen-exact"

@@ -32,7 +32,7 @@ import json
 import re
 from collections.abc import Collection, Iterable, Mapping
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import date, datetime
 from enum import StrEnum
 from types import MappingProxyType
 
@@ -88,6 +88,8 @@ class RefusalCode(StrEnum):
     MISSING_CURRENT_EVIDENCE = "MISSING_CURRENT_EVIDENCE"
     NO_RETAINED_OUTPUT = "NO_RETAINED_OUTPUT"
     RETAINED_DIGEST_MISMATCH = "RETAINED_DIGEST_MISMATCH"
+    KEY_TYPE_MISMATCH = "KEY_TYPE_MISMATCH"
+    DUPLICATE_KEY = "DUPLICATE_KEY"
 
 
 class ReadContractError(TemporalError):
@@ -289,9 +291,12 @@ class ReadResult:
 
     def __post_init__(self) -> None:
         object.__setattr__(self, "evidence", MappingProxyType(dict(self.evidence)))
+        # Served rows are read-only too (R01 m7): a caller mutating one served row
+        # would rewrite the very inputs the evidence just bound.
         object.__setattr__(
             self, "values",
-            MappingProxyType({n: tuple(rows) for n, rows in self.values.items()}))
+            MappingProxyType({n: tuple(MappingProxyType(dict(row)) for row in rows)
+                              for n, rows in self.values.items()}))
 
 
 def _result(mode: ReadMode, label: str, contract: ViewContract, evidence: dict,
@@ -304,6 +309,25 @@ def _result(mode: ReadMode, label: str, contract: ViewContract, evidence: dict,
         values=values)
 
 
+def _declared_knowledge_clock(profile: TemporalProfile,
+                              clock: Clock | str) -> Clock:
+    """The ONE explicit knowledge clock, checked against the profile BEFORE rows.
+
+    The clock must be one the profile declares (so period_end/event_at/
+    effective_at/computed_at can never bound knowledge); checked before any row
+    is touched, because a read that must refuse must refuse before it iterates.
+    """
+    knowledge_clock = _coerce_clock(clock)
+    declared = KNOWN_AT_CLOCKS[profile]
+    if knowledge_clock not in declared:
+        names = ", ".join(clock_.value for clock_ in declared) or "none"
+        raise ReadRefusal(
+            RefusalCode.CLOCK_NOT_DECLARED,
+            f"{getattr(profile, 'name', profile)} declares knowledge clocks [{names}] — "
+            f"{knowledge_clock.value} can never bound what was known")
+    return knowledge_clock
+
+
 def eligible_rows(rows: Iterable[Mapping[str, object]], profile: TemporalProfile, *,
                   cutoff: datetime | str, clock: Clock | str) -> list[dict]:
     """Rows KNOWN by cutoff under ONE explicit clock — the V08 filter.
@@ -314,14 +338,7 @@ def eligible_rows(rows: Iterable[Mapping[str, object]], profile: TemporalProfile
     a refusal, never a fallback that would silently switch the knowledge claim.
     """
     assert_pit_readable(profile)
-    knowledge_clock = _coerce_clock(clock)
-    declared = KNOWN_AT_CLOCKS[profile]
-    if knowledge_clock not in declared:
-        names = ", ".join(clock_.value for clock_ in declared) or "none"
-        raise ReadRefusal(
-            RefusalCode.CLOCK_NOT_DECLARED,
-            f"{getattr(profile, 'name', profile)} declares knowledge clocks [{names}] — "
-            f"{knowledge_clock.value} can never bound what was known")
+    knowledge_clock = _declared_knowledge_clock(profile, clock)
     cutoff_at = utc(cutoff)
     eligible: list[dict] = []
     for row in rows:
@@ -336,6 +353,66 @@ def eligible_rows(rows: Iterable[Mapping[str, object]], profile: TemporalProfile
     return eligible
 
 
+def _key_part(value: object, field: str) -> tuple[str, object]:
+    """One key field's canonical ``(kind, value)`` — R01 M2.
+
+    One instant is ONE key however it is spelled: a tz-aware datetime, an
+    offset-bearing ISO string and a ``Z``-suffixed string all canonicalize to the
+    same UTC instant.  A naive spelling is not guessed into an instant — ``utc()``
+    raises and the refusal propagates.  Kinds keep ``bool``/``int`` and
+    ``datetime``/``date`` apart so one key position has one comparable type.
+    """
+    if value is None:
+        raise ReadContractError(f"every row must carry key field {field!r}")
+    if isinstance(value, bool):
+        return ("bool", value)
+    if isinstance(value, datetime):
+        return ("instant", utc(value))
+    if isinstance(value, date):
+        return ("date", value)
+    if isinstance(value, int):
+        return ("int", value)
+    if isinstance(value, float):
+        return ("float", value)
+    if isinstance(value, str):
+        try:
+            return ("instant", utc(value))
+        except TemporalError:
+            return ("str", value)
+    raise ReadRefusal(
+        RefusalCode.KEY_TYPE_MISMATCH,
+        f"key field {field!r} carries unsupported type {type(value).__name__}")
+
+
+def _keyed_rows(rows: Iterable[Mapping[str, object]],
+                keys: tuple[str, ...]) -> list[tuple[tuple, dict]]:
+    """Canonical-key every row once, and refuse a key position of mixed kinds.
+
+    Canonical keys first (M2), so the resolution that follows never depends on
+    how an instant was spelled.  The kind seen at each key position is tracked
+    over ALL rows; one position carrying two kinds could never sort (M1's
+    ``TypeError`` path), so it is refused typed before any ordering is attempted.
+    """
+    keyed: list[tuple[tuple, dict]] = []
+    kinds: list[set[str]] = [set() for _ in keys]
+    for row in rows:
+        if not isinstance(row, Mapping):
+            raise ReadContractError(f"rows must be mappings, got {type(row).__name__}")
+        key = []
+        for position, field in enumerate(keys):
+            kind, canonical = _key_part(row.get(field), field)
+            kinds[position].add(kind)
+            key.append(canonical)
+        keyed.append((tuple(key), dict(row)))
+    for position, field in enumerate(keys):
+        if len(kinds[position]) > 1:
+            raise ReadRefusal(
+                RefusalCode.KEY_TYPE_MISMATCH,
+                f"key field {field!r} mixes {sorted(kinds[position])} across rows - "
+                "one key position has one type")
+    return keyed
+
+
 def resolve_revisions(rows: Iterable[Mapping[str, object]], *,
                       key_fields: tuple[str, ...]) -> list[dict]:
     """Per key, the single max-``revision_seq`` row — the V09/V10 resolution.
@@ -343,38 +420,106 @@ def resolve_revisions(rows: Iterable[Mapping[str, object]], *,
     The winner is returned WHATEVER its status: a max-revision row marked REFUSED
     is the answer, and a later eligible revision fully replaces the earlier one.
     Two different rows claiming one revision of a key is an ambiguity, not a tie
-    to break silently; identical duplicates collapse.
+    to break silently; identical duplicates collapse.  The answer depends on the
+    SET of rows, never on the order they were supplied in (R01 M1): the best
+    sequence is found over ALL of a key's rows first, and only then are the rows
+    at that sequence collected — so every permutation of the same supply picks
+    the same winner or refuses the same way.
     """
     keys = tuple(key_fields)
     if not keys:
         raise ReadContractError("key_fields must name at least one key column")
-    latest: dict[tuple, dict] = {}
-    latest_seq: dict[tuple, int] = {}
-    for row in rows:
-        if not isinstance(row, Mapping):
-            raise ReadContractError(f"rows must be mappings, got {type(row).__name__}")
-        key = []
-        for field in keys:
-            value = row.get(field)
-            if value is None:
-                raise ReadContractError(f"every row must carry key field {field!r}")
-            key.append(value)
-        key = tuple(key)
+    keyed = _keyed_rows(rows, keys)
+    for key, row in keyed:
         seq = row.get("revision_seq")
         if isinstance(seq, bool) or not isinstance(seq, int):
             raise ReadRefusal(
                 RefusalCode.MISSING_REVISION_SEQ,
                 f"row {key!r} carries no int revision_seq (a bool is not a revision "
                 "number); revision eligibility is this contract, not the row filter")
-        held = latest.get(key)
-        if held is None or seq > latest_seq[key]:
-            latest[key] = dict(row)
-            latest_seq[key] = seq
-        elif seq == latest_seq[key] and dict(row) != held:
+    best: dict[tuple, int] = {}
+    for key, row in keyed:
+        seq = row["revision_seq"]
+        if key not in best or seq > best[key]:
+            best[key] = seq
+    winners: dict[tuple, list[dict]] = {}
+    for key, row in keyed:
+        if row["revision_seq"] == best[key] and row not in winners.setdefault(key, []):
+            winners[key].append(row)
+    for key in sorted(winners):
+        if len(winners[key]) > 1:
             raise ReadRefusal(
                 RefusalCode.AMBIGUOUS_REVISION,
-                f"two different rows of key {key!r} both claim revision_seq={seq}")
-    return [latest[key] for key in sorted(latest)]
+                f"two different rows of key {key!r} both claim "
+                f"revision_seq={best[key]}")
+    return [winners[key][0] for key in sorted(winners)]
+
+
+def _resolve_unique_keys(rows: Iterable[Mapping[str, object]], *,
+                         key_fields: tuple[str, ...]) -> list[dict]:
+    """Serve unique keys as supplied; two DIFFERENT rows of one key refuse (R01 M3).
+
+    A dataset whose profile declares no revision ordering has nothing that ranks
+    one row over another, so a second, different row of a key is a contradiction
+    to refuse (``DUPLICATE_KEY``), never a silent pick.  Identical duplicates
+    collapse; the kept rows come back in SUPPLY order — selection, not sorting.
+    """
+    keys = tuple(key_fields)
+    if not keys:
+        raise ReadContractError("key_fields must name at least one key column")
+    keyed = _keyed_rows(rows, keys)
+    first: dict[tuple, dict] = {}
+    distinct: dict[tuple, list[dict]] = {}
+    for key, row in keyed:
+        if key not in first:
+            first[key] = row
+        bucket = distinct.setdefault(key, [])
+        if row not in bucket:
+            bucket.append(row)
+    for key in sorted(distinct):
+        if len(distinct[key]) > 1:
+            raise ReadRefusal(
+                RefusalCode.DUPLICATE_KEY,
+                f"different rows share key {key!r} and the dataset declares no "
+                "revision ordering - refusing to pick one")
+    return list(first.values())
+
+
+def _bind_rows(name: str, dependency: Dependency, supplied: tuple,
+               eligible: list[dict],
+               generation_id: str | None) -> tuple[tuple[dict, ...], str]:
+    """The shared per-dependency binding: generation filter, then resolution.
+
+    M4 (D00.D5.1, EXCLUDE): when the dependency declares generations, a
+    generation is complete and immutable, so ONLY the rows of the selected
+    generation are candidates — rows tagged with any other generation are
+    excluded, not refused, and a row carrying no ``generation_id`` is never
+    served under one.  Whether the rows are revision-ordered is decided on ALL
+    supplied rows, so the label cannot flip with the cutoff (R01 M3).
+    """
+    filtered = eligible
+    if dependency.generations:
+        for row in eligible:
+            if row.get("generation_id") is None:
+                raise ReadRefusal(
+                    RefusalCode.UNBOUND_DEPENDENCY,
+                    f"dependency {name!r} declares generations but a row carries no "
+                    "generation_id - a row bound to no generation is never served "
+                    "under one (D00.D5.1)")
+        filtered = [row for row in eligible
+                    if row.get("generation_id") == generation_id]
+    ordered = "revision_seq" in dependency.profile.required_fields or any(
+        isinstance(row, Mapping) and "revision_seq" in row for row in supplied)
+    if ordered:
+        rows = resolve_revisions(filtered, key_fields=dependency.key_fields)
+        resolution = "max_revision_seq_per_key"
+    elif dependency.key_fields:
+        rows = _resolve_unique_keys(filtered, key_fields=dependency.key_fields)
+        resolution = "unique_key"
+    else:
+        rows = filtered
+        resolution = "none"
+    return tuple(rows), resolution
 
 
 def select_generation(generations: Iterable[GenerationRef], *, cutoff: datetime | str,
@@ -473,14 +618,13 @@ def reconstruct(request: ReadRequest, dependencies: Mapping[str, Dependency], *,
     for name, dependency in dependencies.items():
         if not isinstance(dependency, Dependency):
             raise ReadContractError(f"dependency {name!r} is not a Dependency")
-        # Fail closed on the profile BEFORE any of this dependency's rows.
+        # Fail closed on the profile AND its clock BEFORE any of this
+        # dependency's rows — then materialize once (rows may be one-shot).
         assert_pit_readable(dependency.profile)
+        _declared_knowledge_clock(dependency.profile, knowledge_clock)
+        supplied = tuple(dependency.rows)
         eligible = eligible_rows(
-            dependency.rows, dependency.profile, cutoff=cutoff_at, clock=knowledge_clock)
-        resolution = "none"
-        if "revision_seq" in dependency.profile.required_fields:
-            eligible = resolve_revisions(eligible, key_fields=dependency.key_fields)
-            resolution = "max_revision_seq_per_key"
+            supplied, dependency.profile, cutoff=cutoff_at, clock=knowledge_clock)
         generation_id: str | None = None
         if dependency.generations:
             generation_id = select_generation(
@@ -491,9 +635,9 @@ def reconstruct(request: ReadRequest, dependencies: Mapping[str, Dependency], *,
                 RefusalCode.UNBOUND_DEPENDENCY,
                 f"dependency {name!r} pins generation "
                 f"{dependency.pinned_generation_id!r} but declares no generations")
-        values[name] = tuple(eligible)
+        values[name], revision_resolutions[name] = _bind_rows(
+            name, dependency, supplied, eligible, generation_id)
         generation_ids[name] = generation_id
-        revision_resolutions[name] = resolution
     if not isinstance(code_version, str) or not _SHA1.match(code_version):
         raise ReadContractError(
             f"code_version must be a 40-char lowercase-hex code version, "
@@ -511,20 +655,100 @@ def reconstruct(request: ReadRequest, dependencies: Mapping[str, Dependency], *,
         values)
 
 
+def _current_generation(name: str, dependency: Dependency) -> GenerationRef:
+    """The dependency's CURRENT generation — its newest non-superseded one.
+
+    Per D00.D5.2 the ledger's ``supersedes`` edges decide what "now" is: a
+    generation another generation supersedes is history, readable by id only for
+    RECONSTRUCT/REPLAY.  Live generations order on ``coalesce(published_at,
+    ingested_at)``; a live generation stating neither instant cannot be ordered
+    and is refused, not fallback-bound.
+    """
+    ledger = tuple(dependency.generations)
+    superseded = {g.supersedes for g in ledger if g.supersedes}
+    live = [g for g in ledger if g.generation_id not in superseded]
+    if not live:
+        raise ReadRefusal(
+            RefusalCode.UNBOUND_DEPENDENCY,
+            f"every generation of {name!r} is superseded - no current generation")
+    stamped: list[tuple[datetime, GenerationRef]] = []
+    for generation in live:
+        instant = (generation.published_at if generation.published_at is not None
+                   else generation.ingested_at)
+        if instant is None:
+            raise ReadRefusal(
+                RefusalCode.MISSING_CLOCK_VALUE,
+                f"generation {generation.generation_id!r} states neither published_at "
+                "nor ingested_at - CURRENT cannot order it")
+        stamped.append((utc(instant), generation))
+    newest = max(instant for instant, _ in stamped)
+    chosen = [generation for instant, generation in stamped if instant == newest]
+    if len({generation.generation_id for generation in chosen}) > 1:
+        ids = ", ".join(sorted(generation.generation_id for generation in chosen))
+        raise ReadRefusal(
+            RefusalCode.AMBIGUOUS_REVISION,
+            f"distinct generations of {name!r} tie as the current newest: {ids}")
+    winner = chosen[0]
+    pinned = dependency.pinned_generation_id
+    if pinned is not None and pinned != winner.generation_id:
+        raise ReadRefusal(
+            RefusalCode.STALE_GENERATION,
+            f"dependency {name!r} pins generation {pinned!r} but its newest "
+            f"non-superseded generation is {winner.generation_id!r}")
+    return winner
+
+
 def current(request: ReadRequest, dependencies: Mapping[str, Dependency], *,
             evidence: CurrentEvidence) -> ReadResult:
     """What the house holds now — labelled "current", never a historical claim.
 
     Evidence is validated BEFORE any row is iterated, and ``cutoff``/``clock``
-    deliberately never appear in its evidence.
+    deliberately never appear in its evidence.  The generation ledger is read
+    before any row either: each dependency binds its newest non-superseded
+    generation (D00.D5.2), and evidence naming a ledger id that has since been
+    superseded is STALE, because CURRENT never serves a superseded generation.
+    Rows resolve exactly as a RECONSTRUCT binds them (max revision per key, or
+    the unique-key law), so CURRENT and the historical reads answer with the
+    same row for the same state (R01 M5).
     """
     _mode_request(request, ReadMode.CURRENT, "current")
     _validate_current_evidence(evidence)
     _dependency_map(dependencies)
-    values = {
-        name: tuple(dict(row) for row in dependency.rows)
-        for name, dependency in dependencies.items()
-    }
+    # FIRST LOOP — generations only; no row is touched yet.
+    generation_ids: dict[str, str | None] = {}
+    for name, dependency in dependencies.items():
+        if dependency.generations:
+            generation_ids[name] = _current_generation(name, dependency).generation_id
+        elif dependency.pinned_generation_id is not None:
+            raise ReadRefusal(
+                RefusalCode.UNBOUND_DEPENDENCY,
+                f"dependency {name!r} pins generation "
+                f"{dependency.pinned_generation_id!r} but declares no generations")
+        else:
+            generation_ids[name] = None
+    # Identity coherence: an id the ledger actually contains must be its CURRENT
+    # one; an id found in no ledger is another dependency's vocabulary, unchecked.
+    for name, dependency in dependencies.items():
+        if not dependency.generations:
+            continue
+        ledger_ids = {g.generation_id for g in dependency.generations}
+        if (evidence.identity_generation_id in ledger_ids
+                and generation_ids[name] != evidence.identity_generation_id):
+            raise ReadRefusal(
+                RefusalCode.STALE_GENERATION,
+                f"CURRENT evidence names generation "
+                f"{evidence.identity_generation_id!r} of {name!r} but "
+                f"{generation_ids[name]!r} is its newest non-superseded generation - "
+                "a superseded generation is readable by id only for "
+                "RECONSTRUCT/REPLAY (D00.D5.2)")
+    # SECOND LOOP — the rows, bound through the same shared binder as a read.
+    values: dict[str, tuple[dict, ...]] = {}
+    resolutions: dict[str, str] = {}
+    for name, dependency in dependencies.items():
+        supplied = tuple(dependency.rows)
+        values[name], resolutions[name] = _bind_rows(
+            name, dependency, supplied, [dict(row) for row in supplied],
+            generation_ids[name])
     return _result(
         request.mode, "current", request.contract,
         {
@@ -532,6 +756,8 @@ def current(request: ReadRequest, dependencies: Mapping[str, Dependency], *,
             "identity_generation_id": evidence.identity_generation_id,
             "action_revision_set_id": evidence.action_revision_set_id,
             "code_version": evidence.code_version,
+            "dependency_generation_ids": MappingProxyType(generation_ids),
+            "revision_resolution": MappingProxyType(resolutions),
         },
         values)
 
@@ -612,16 +838,27 @@ def selected_input_sha256s(result: ReadResult) -> Mapping[str, str]:
     Each row becomes one canonical JSON text (sort_keys, tight separators,
     datetimes through ``utc().isoformat()``), the texts are SORTED, and the
     sorted texts are hashed together — so selection, not supply order, decides.
-    A REPLAY result selected no inputs: it binds the retained ``sha256``
-    instead, so asking it for input digests is a contract error, not a digest.
+    The SELECTED GENERATION is bound too (R01 M6): a dependency whose ledger
+    named a generation hashes ``{"generation_id": ..., "rows": [...]}``, so two
+    reads selecting the same (empty) rows under different generations can never
+    present themselves as the same input state.  A dependency with no ledger
+    hashes exactly as before, byte for byte.  A REPLAY result selected no
+    inputs: it binds the retained ``sha256`` instead, so asking it for input
+    digests is a contract error, not a digest.
     """
     if result.mode is ReadMode.REPLAY:
         raise ReadContractError(
             "a REPLAY result binds the retained output sha256, not selected inputs")
+    gids = result.evidence.get("dependency_generation_ids") or {}
     digests: dict[str, str] = {}
     for name, rows in result.values.items():
         texts = sorted(_canonical_row_text(row) for row in rows)
-        blob = json.dumps(texts, sort_keys=True, separators=(",", ":"),
-                          ensure_ascii=False)
+        gid = gids.get(name)
+        if gid is None:
+            blob = json.dumps(texts, sort_keys=True, separators=(",", ":"),
+                              ensure_ascii=False)
+        else:
+            blob = json.dumps({"generation_id": gid, "rows": texts}, sort_keys=True,
+                              separators=(",", ":"), ensure_ascii=False)
         digests[name] = hashlib.sha256(blob.encode("utf-8")).hexdigest()
     return MappingProxyType(digests)
