@@ -1,0 +1,19 @@
+{
+  "schema": "tiingo.actual_source_bound_scope_admission_observation/v1",
+  "observed_at_utc": "2026-10-13T05:02:08.367013+00:00",
+  "root": "01a12ab6-92cb-7c42-a711-42673ebb6b50",
+  "original_tool_session": 81573,
+  "run_id": "eod-wave15-original-unadmitted-continuation04-20261013-01a12ab6",
+  "actual_scope_file": "eod-wave15-original-unadmitted-continuation04-20261013-01a12ab6-scope.json",
+  "actual_scope_sha256": "1ec636d0f27fe20e81dfc72a0853980e91c8af6522507d19269d67eea36eeb28",
+  "actual_started_at_utc": "2026-10-13T05:00:56.237806+00:00",
+  "actual_method_sha256": "a48d23bb49f16205a57ad46ce22c04a07068dc67eed52fc56e5ebdbe0330296f",
+  "actual_plan_sha256": "eb75c83b6f5de511ea41377844f622a20a1ac5ff5656f81607d1daacb6b92aa5",
+  "actual_READY_and_root_parent_consumed": true,
+  "scope_revised_validation_stage_gate_used": true,
+  "fresh_visible_quota_sha256": "b068c306397eae2fe377e152964d67d61a80ec9ebc8d0b568bd9efcb4554a033",
+  "original_terminal_return_not_yet_consumed": true,
+  "request_selection_not_complete_claimed": true,
+  "qualified_reader_acceptance_not_claimed": true,
+  "original_restart_capture76884_not_relabelled": true
+}

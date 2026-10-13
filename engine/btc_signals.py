@@ -402,15 +402,39 @@ def drawdown_brake(alloc: pd.Series, ret: pd.Series, cfg: dict) -> pd.Series:
     return pd.Series(out, index=alloc.index)
 
 
+def _completed_three_day_closes(close: pd.Series) -> pd.Series:
+    """Preserve legacy 3D bins, exposing each only on its final daily close.
+
+    Inputs use the engine's daily observation-date convention (a row is usable
+    after that day's close, not at its midnight label). Moving only the label
+    by two days preserves bin membership; switching to right-closed bins would
+    change the signal definition. Missing/invalid bins remain unknown and the
+    unfinished terminal bin is omitted. Publication-time qualification remains
+    the input owner's responsibility.
+    """
+    if close.empty:
+        return close.copy()
+    if (not isinstance(close.index, pd.DatetimeIndex)
+            or not close.index.is_monotonic_increasing or close.index.has_duplicates
+            or not close.index.equals(close.index.normalize())):
+        raise ValueError("Completed 3D closes require unique increasing daily dates")
+    usable = close.where(np.isfinite(close) & (close > 0))
+    bins = usable.resample("3D", closed="left", label="left")
+    completed = bins.last().where(bins.count() == 3)
+    completed.index = completed.index + pd.Timedelta(days=2)
+    return completed.loc[completed.index <= close.index[-1]]
+
+
 def bottom_pressure(price: pd.DataFrame) -> pd.Series:
-    """Causal 0..1 BOTTOM-detector gauge from price only (close + OHLC) — a weighted
-    confluence of the markers that empirically mark BTC washout lows (research:
-    signal_engine/REVERSE_ENGINEERING.md): multi-timeframe StochRSI OVERSOLD breadth
-    (daily / 3-day / weekly all <20 -> the strongest tell, ~4x bottom odds), deep
-    drawdown from recent highs, low RSI, low position in range, capitulation (elevated
-    realized vol + a sharp down-thrust), and a long lower wick. No look-ahead: every
-    term uses only data up to t (higher-TF terms = the last COMPLETED bar via resample
-    + forward-fill). Returns a Series on the daily index in [0, 1]."""
+    """Heuristic 0..1 washout-pressure gauge from completed daily OHLC.
+
+    Combines multi-timeframe StochRSI oversold breadth, recent drawdown, low RSI,
+    range position, downside/volatility stress and lower-wick rejection. This is
+    not a calibrated probability of a bottom or a verified entry signal.
+    Higher-timeframe values become visible only on completed observation dates;
+    source publication and revision availability are separate input contracts.
+    Returns a Series on the daily index in [0, 1].
+    """
     c = price["close"].astype(float)
     h = price["high"].astype(float) if "high" in price else c
     l = price["low"].astype(float) if "low" in price else c
@@ -424,8 +448,8 @@ def bottom_pressure(price: pd.DataFrame) -> pd.Series:
         return raw.rolling(sm).mean()
 
     kD = _srsi_k(c)
-    k3 = _srsi_k(c.resample("3D").last()).reindex(idx, method="ffill")
-    kW = _srsi_k(c.resample("W").last()).reindex(idx, method="ffill")
+    k3 = _srsi_k(_completed_three_day_closes(c)).reindex(idx, method="ffill")
+    kW = _srsi_k(c.resample("W", closed="right", label="right").last()).reindex(idx, method="ffill")
     n_os = (kD < 20).astype(int) + (k3 < 20).astype(int) + (kW < 20).astype(int)
 
     dd20 = c / c.rolling(20, min_periods=5).max() - 1.0
