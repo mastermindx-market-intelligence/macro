@@ -1203,3 +1203,60 @@ def test_t04b_time_valid_period_mints_attribution() -> None:
     assert blocks[0]["value"] == 111.0
     assert result["economics"]["status"] == "ready"
     _validate(result)
+
+
+def test_t04b_two_identity_bundle_withholds_only_the_early_subject() -> None:
+    """Each packet is withheld only against the identity row it names.
+
+    The window issuer is first, so a first-row validity check keeps the early
+    packet. The early packet's subject is that issuer's CIK, not its
+    stable_subject_id; the window packet matches by stable_subject_id.
+    """
+    case = synthetic_case("copper_complete")
+    window_subject = "subject:window-issuer"
+    early_cik = "0000002222"
+    window = {
+        "name": "Window Issuer Synthetic",
+        "cik": "0000001111",
+        "stable_subject_id": window_subject,
+        "valid_from": "2020-01-01",
+        "fictional": True,
+    }
+    early = {
+        "name": "Early Issuer Synthetic",
+        "cik": early_cik,
+        "stable_subject_id": "subject:early-issuer",
+        "valid_from": "2026-07-01",
+        "fictional": True,
+    }
+    early_packet = {
+        "stable_subject_id": early_cik,
+        "measure": "reported operating income",
+        "value": 11,
+        "basis": "fictional reported dollars",
+        "source_label": "synthetic-early",
+        "period": "Quarter ended 2026-06-30",
+    }
+    window_packet = {
+        "stable_subject_id": window_subject,
+        "measure": "reported operating income",
+        "value": 22,
+        "basis": "fictional reported dollars",
+        "source_label": "synthetic-window",
+        "period": "Quarter ended 2026-09-30",
+    }
+    bundle = _replace(
+        case.bundle,
+        identity_results=(window, early),
+        financial_packets=(early_packet, window_packet),
+    )
+    result = composition.compose_mining_research(case.query, bundle)
+    assert result["limitations"] == [
+        "omitted:expectations",
+        _PERIOD_BEFORE_ISSUER_VALIDITY,
+    ]
+    blocks = result["economics"]["native_blocks"]
+    assert [block["stable_subject_id"] for block in blocks] == [window_subject]
+    assert blocks[0]["period"] == "Quarter ended 2026-09-30"
+    assert blocks[0]["value"] == 22
+    _validate(result)

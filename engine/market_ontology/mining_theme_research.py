@@ -203,14 +203,27 @@ def _native_period(packet: Mapping[str, Any]) -> str:
 
 def _period_precedes_issuer_validity(
     period: str,
-    ident: Mapping[str, Any] | None,
+    packet_subject: str,
+    identity_results: Iterable[Mapping[str, Any]],
 ) -> bool:
-    """True when ``period`` is before the issuer mapping's ``valid_from``.
+    """True when ``period`` is before the packet subject's issuer ``valid_from``.
 
-    An accepted ``time_valid_bridge`` is the reversed arm: the same literals
-    may be attributed. No validity window means this packet makes no
-    historical-ownership claim to refuse.
+    The identity row is the one whose ``stable_subject_id`` or ``cik`` equals
+    the packet subject. Only that packet is withheld. An accepted
+    ``time_valid_bridge`` on the matched row is the reversed arm. No matching
+    row, or no validity window, means this packet makes no historical-ownership
+    claim to refuse.
     """
+    ident: Mapping[str, Any] | None = None
+    if packet_subject and packet_subject != "subject:unknown":
+        for row in identity_results:
+            if not isinstance(row, Mapping):
+                continue
+            sid = str(row.get("stable_subject_id") or "")
+            cik = str(row.get("cik") or "")
+            if packet_subject == sid or (cik != "" and packet_subject == cik):
+                ident = row
+                break
     if not isinstance(ident, Mapping):
         return False
     if ident.get("time_valid_bridge") is True:
@@ -593,12 +606,10 @@ def compose_mining_research(
     # MAJOR-9's degenerate ordering. A packet carrying its own non-empty
     # stable_subject_id keeps it; otherwise we use the identity sid.
     identity_sid = "subject:unknown"
-    identity_row: Mapping[str, Any] | None = None
     for ident in bundle.identity_results:
         cand = str(ident.get("stable_subject_id") or ident.get("cik") or "")
         if cand:
             identity_sid = cand
-            identity_row = ident
             break
     raw_blocks: list[dict[str, Any]] = []
     if not _suppress_native_blocks:
@@ -626,10 +637,13 @@ def compose_mining_research(
             if not packet_sid or packet_sid == "subject:unknown":
                 packet_sid = identity_sid
             period = _native_period(packet)
-            # MGD-10: a period before the issuer mapping's validity is not
-            # attributed to the current issuer. The reversed arm is
-            # ``time_valid_bridge is True`` on that identity row.
-            if _period_precedes_issuer_validity(period, identity_row):
+            # MGD-10: withhold this packet only when the identity row whose
+            # stable_subject_id or cik equals the packet subject says the
+            # period precedes valid_from. time_valid_bridge on that row is
+            # the reversed arm.
+            if _period_precedes_issuer_validity(
+                period, packet_sid, bundle.identity_results
+            ):
                 if _PERIOD_BEFORE_ISSUER_VALIDITY not in limitations:
                     limitations.append(_PERIOD_BEFORE_ISSUER_VALIDITY)
                 continue
