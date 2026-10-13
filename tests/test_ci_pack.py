@@ -4714,6 +4714,13 @@ CURATED_EXCLUSIVE = {
     # the fallback to engine/** and the plan_book packing probe selected the
     # job (130 > 129). scope: exclusive pins it to its measured closure.
     "sni-s2-event-response",
+    # 2026-10-12 Risk Radar pullback (#8721): the hermetic pullback suites
+    # moved off engine-render-guards, which is `gate: data` and never ran on a
+    # PR. Their builder and template-render suites import scripts/build_site.py
+    # and the Jinja loader, so inference would add the job to the
+    # build_free_content / plan_book packing probes, both at their ceilings.
+    # scope: exclusive pins it to the suites' measured import closure.
+    "risk-radar-pullback-guards",
 }
 
 
