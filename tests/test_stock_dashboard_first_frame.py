@@ -2187,6 +2187,25 @@ def test_mobile_layout_receipt_has_valid_javascript() -> None:
     assert run.returncode == 0, run.stderr
 
 
+def test_owner_empty_capture_disables_skia_runtime_opts() -> None:
+    """Owner-empty PNGs are exact bytes. Skia runtime opts move a few
+    antialiased chrome-icon pixels between otherwise identical runs, so the
+    verifier has to launch Chromium with the stable-raster switches.
+    """
+    source = _read(BROWSER_RECEIPT)
+    for flag in (
+        "--disable-skia-runtime-opts",
+        "--disable-partial-raster",
+        "--disable-gpu",
+        "--force-color-profile=srgb",
+        "--disable-font-subpixel-positioning",
+        "--font-render-hinting=none",
+        "--disable-lcd-text",
+    ):
+        assert flag in source, flag
+    assert "backdrop-filter:none!important" in source
+
+
 @pytest.mark.parametrize("market", MARKETS)
 def test_zero_cards_do_not_abort_static_shell_enhancement(market: str) -> None:
     text = _read(MARKETS[market]["composer"])

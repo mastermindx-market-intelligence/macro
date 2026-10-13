@@ -1004,9 +1004,9 @@ def _selftest() -> int:
             failures.append(f"{want} must be REPORTED as a non-suite, not dropped")
 
     # 2. Classification agrees with pytest on the real tree's known instruments.
-    for rel in ("research/cn_prophet_audit/sector_intel_exante_test.py",
-                "research/signal_engine/test_breadth_consume.py",
-                "research/signal_engine/test_buyfilter.py"):
+    for rel in ("research/cn_prophet_audit/sector_intel_exante_test.py",  # ci-trigger-closure: data — parse-only suite subject, declared in ci-control-plane-contracts paths; imports not followed
+                "research/signal_engine/test_breadth_consume.py",  # ci-trigger-closure: data — parse-only suite subject, declared in ci-control-plane-contracts paths; imports not followed
+                "research/signal_engine/test_buyfilter.py"):  # ci-trigger-closure: data — parse-only suite subject, declared in ci-control-plane-contracts paths; imports not followed
         target = original / rel
         if target.is_file() and defines_tests(target):
             failures.append(f"{rel} collects no tests but classified as a suite")

@@ -45,6 +45,42 @@ composite, and do not re-home the whole hero into `intl.html`.
 The disposition table below remains a design inventory for the retained candidate, not current
 primary-route deployment authority. **No module may be silently dropped.**
 
+### Markets-route recomposition — 2026-09-22
+
+Shipped as macro #7712 (merge `9ecdadc8`, live-verified on `www.mastermind-x.com` the same hour). Per the
+route ruling above, the global-cycle successor on `markets.html` is a compact **risk-regime strip**
+(`templates/_market_regime_strip.html.j2`, included between `section.cyc-stage` and `section.mkt-grid`):
+three rows — US stocks, Hong Kong, China — each carrying ONE state word (Risk-on / Risk-off / the
+designed-null "Read being updated") bound to `market_state` / `hk_market_state` / `cn_market_state` through
+the same persisted reader `scripts/build_site.py` uses, plus the hero's stance sentence verbatim
+(parity-pinned by `tests/test_markets_regime_strip.py`). The HK/CN lighter-evidence caveat is a tier-2
+popover, never glance text. The header names the instrument ("Risk regime today — same-day read, not the
+cycle position above").
+
+Rulings embedded in that build (binding for any follow-on):
+
+- **No second integer, no rail, no marker.** `markets.html` already prints one integer and one state word
+  per market (cycle position); a rail or score would re-create the two-verdicts disease named above. The
+  strip's text nodes contain zero digits (CI-asserted).
+- **No composite / "Global" verdict.** A cross-market composite is signal origination and stays forbidden
+  without a ratified contract.
+- **No bonds / commodities rows on the equities route.** The retained hero candidate keeps its designed-null
+  rows untouched; the strip does not carry them (a stated deviation, not a silent drop).
+- **Placement C, not the census's A or B.** A strip under the h1 (a new per-market integer where none
+  existed) and a strip inside `#mkt-snap` (a duplicate integer) were both rejected. `#regime-prior-banner`
+  (W4.5 contradiction / staleness notices) prints no per-market state word, so the strip is additive and the
+  banner is untouched.
+- **CI home.** `markets-regime-strip` is a `gate: code`, `scope: exclusive` job registered in
+  `CURATED_EXCLUSIVE`; its thematic neighbours (`engine-render-guards`, `unrun-picks-boards`) are `gate: data`
+  and never run in PR packs. Any change to the `theme.css` pair is a pinned p0b construction input and owes
+  the receipt re-mint in the same PR (done in #7712).
+
+Recorded follow-ups, not part of #7712: the #7503 re-stack pins and the W2 HK/CN binding tests sit on
+`gate: data` jobs and do not gate PRs; at 390px the cyc-stage detail aside overlaps the chip row and the
+curated global-equity regime narrative renders English under zh. Both are filed for separate heals.
+
+The primary-route override above is unchanged: `DNR:HOLD-UD-B1-PRIMARY-MACRO-MIGRATION` stands.
+
 ---
 
 ## Seat rulings (binding — embed as-is)

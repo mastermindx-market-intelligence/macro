@@ -1,0 +1,411 @@
+{
+  "schema": "fundamental_forensics.p0_view_contract/v1",
+  "frozen_at_commit": "5267c66846e7733bc1eb30edc1524daff51598ca",
+  "amendment_rule": "P2 may change the surface only by editing this file and its test in the same PR, bumping /v1 when a key is removed or renamed",
+  "surface": {
+    "template": "templates/fundamental_forensics.html.j2",
+    "script": "templates/fundamental_forensics.js",
+    "styles": "templates/fundamental_forensics.css",
+    "api": "app/forensics.py"
+  },
+  "journeys": [
+    {
+      "journey_id": "J1",
+      "name_en": "Open a new filing and inspect its largest supported changes",
+      "name_zh": "打开一份新财报并查看其中最大的受支持变化",
+      "status": "exists",
+      "evidence": [
+        "templates/fundamental_forensics.js:833",
+        "templates/fundamental_forensics.js:979",
+        "templates/fundamental_forensics.js:1100",
+        "templates/fundamental_forensics.js:1334",
+        "scripts/build_fundamental_forensics.py:731",
+        "tests/test_fundamental_forensics_page.py:85"
+      ],
+      "gap": "Magnitude is a value on the card, not the sort key; only the built detector set is supported.",
+      "p2_question": "Should J1 rank by magnitude, or keep today's review-priority then recency order?",
+      "p2_ruling": "Keep review-priority-then-recency (orderedFindings); show magnitude on the card (R2)."
+    },
+    {
+      "journey_id": "J2",
+      "name_en": "Open a displayed metric to its exact source occurrence or permitted document span and basis",
+      "name_zh": "从展示的指标打开到精确来源出现位置或允许的文档区间及其依据",
+      "status": "exists",
+      "evidence": [
+        "engine/fundamental_forensics/disclosure_projection.py:369",
+        "templates/fundamental_forensics.js:1474",
+        "templates/fundamental_forensics.js:2522",
+        "templates/fundamental_forensics.js:2690",
+        "scripts/build_fundamental_forensics.py:183"
+      ],
+      "gap": "Query cells, statement cells, disclosure changes and redlines are occurrence-level controls; a value with no recorded span renders the explicit unavailable state.",
+      "p2_question": "Should statements and compare cells open an occurrence-level source span, or stay company-level EDGAR links?",
+      "p2_ruling": "Every number is a source control into #ff-evidence on occurrence/span; disabled copy when no span (R3)."
+    },
+    {
+      "journey_id": "J3",
+      "name_en": "Rewind the query cutoff to a historical answer or absence",
+      "name_zh": "将查询截止日回拨到历史答案或缺失",
+      "status": "exists",
+      "evidence": [
+        "app/forensics.py:627",
+        "app/forensics.py:841",
+        "engine/fundamental_forensics/query_service.py:322",
+        "engine/fundamental_forensics/query_service.py:519",
+        "templates/fundamental_forensics.js:916",
+        "templates/fundamental_forensics.js:2171"
+      ],
+      "gap": "Desk as-of drives the three-policy query and the revisions table; issuer identity and period starts still depend on the P1-b data contract.",
+      "p2_question": "Where does the cutoff or as-of control live, and how does the page show a historical absence?",
+      "p2_ruling": "Desk as-of re-queries query+revisions; three-column original/latest/restated; default latest (R4)."
+    },
+    {
+      "journey_id": "J4",
+      "name_en": "Compare a valid peer cohort, see excluded peers, and recover the saved comparison",
+      "name_zh": "对比有效同业组、查看被排除同业并恢复已保存的对比",
+      "status": "partial",
+      "evidence": [
+        "templates/fundamental_forensics.js:862",
+        "templates/fundamental_forensics.js:3275"
+      ],
+      "gap": "URL permalink exists; saved comparison is X2.",
+      "p2_question": "Who owns peer-cohort membership, exclusion reasons, and saved-comparison persistence?",
+      "p2_ruling": "Read-only C1 panel; URL params only; no localStorage; X2 owns saved comparisons (R5)."
+    },
+    {
+      "journey_id": "J5",
+      "name_en": "Export and refresh the same values, policies, and source references through API and Excel",
+      "name_zh": "通过 API 和 Excel 导出并刷新相同的数值、策略和来源引用",
+      "status": "exists",
+      "evidence": [
+        "app/forensics.py:128",
+        "app/forensics.py:147",
+        "app/forensics.py:627",
+        "app/forensics.py:841",
+        "templates/fundamental_forensics.js:643",
+        "templates/fundamental_forensics.js:765"
+      ],
+      "gap": "Export POSTs the current query body to query.xlsx and stays disabled where the route or entitlement is missing.",
+      "p2_question": "Where is the export entry point on this page, and does it cover API, Excel, or both?",
+      "p2_ruling": "One Export in the desk header POSTs X1 query.xlsx with the current query body; reload is refresh (R6)."
+    }
+  ],
+  "panels": [
+    {
+      "panel_id": "run_meta",
+      "dom_id": "ff-run-meta",
+      "data_source": "GET /api/forensics/health clocks plus state as_of/generated_at/source",
+      "journeys": ["J1", "J3"]
+    },
+    {
+      "panel_id": "company_context",
+      "dom_id": "ff-company-search",
+      "data_source": "payload.companies search over symbol/name/sector",
+      "journeys": ["J1"]
+    },
+    {
+      "panel_id": "data_notice",
+      "dom_id": "ff-data-notice",
+      "data_source": "renderNotice from load/access failures",
+      "journeys": ["J5"]
+    },
+    {
+      "panel_id": "access_gate",
+      "dom_id": "ff-gate",
+      "data_source": "JS gate states plus template state_summary preview counts",
+      "journeys": []
+    },
+    {
+      "panel_id": "overview",
+      "dom_id": "ff-overview",
+      "data_source": "first high/watch finding, coverage.metrics_pct, evidence counts",
+      "journeys": ["J1"]
+    },
+    {
+      "panel_id": "radar",
+      "dom_id": "ff-panel-radar",
+      "data_source": "company().findings ordered by payload.ranked_findings",
+      "journeys": ["J1"]
+    },
+    {
+      "panel_id": "statements",
+      "dom_id": "ff-panel-statements",
+      "data_source": "company().periods x METRICS keys as plain table cells",
+      "journeys": ["J2"]
+    },
+    {
+      "panel_id": "disclosures",
+      "dom_id": "ff-panel-disclosures",
+      "data_source": "disclosure bundle tracks/comparison findings and evidence_receipts",
+      "journeys": ["J1", "J2"]
+    },
+    {
+      "panel_id": "redlines",
+      "dom_id": "ff-panel-redlines",
+      "data_source": "comparison.redline_ops or redlines joined by accession and block_id",
+      "journeys": ["J2"]
+    },
+    {
+      "panel_id": "timeline",
+      "dom_id": "ff-panel-timeline",
+      "data_source": "disclosure documents with accession and source_url",
+      "journeys": ["J2"]
+    },
+    {
+      "panel_id": "compare",
+      "dom_id": "ff-panel-compare",
+      "data_source": "any two company().periods x METRICS cards",
+      "journeys": ["J2"]
+    },
+    {
+      "panel_id": "trace",
+      "dom_id": "ff-panel-trace",
+      "data_source": "state source/detectors map plus GET attested-history latest/roots/detail",
+      "journeys": ["J2", "J3", "J5"]
+    },
+    {
+      "panel_id": "evidence",
+      "dom_id": "ff-evidence",
+      "data_source": "selected finding evidence/formula/threshold or disclosure receipts",
+      "journeys": ["J2"]
+    },
+    {
+      "panel_id": "receipt_inspector",
+      "dom_id": "ff-receipt-inspector",
+      "data_source": "attested-history root waterfall for the selected root_cell_id",
+      "journeys": ["J2", "J3"]
+    },
+    {
+      "panel_id": "desk_header",
+      "dom_id": "ff-desk-header",
+      "data_source": "company picker + health clocks + as-of + export",
+      "journeys": ["J1", "J3", "J5"]
+    },
+    {
+      "panel_id": "revisions",
+      "dom_id": "ff-revisions",
+      "data_source": "POST financial/query x3 policies + POST financial/revisions",
+      "journeys": ["J3"]
+    },
+    {
+      "panel_id": "peers",
+      "dom_id": "ff-panel-peers",
+      "data_source": "payload.peer_cohort CohortTable.to_dict plus URL policy params",
+      "journeys": ["J4"]
+    }
+  ],
+  "page_endpoints": [
+    {"method": "GET", "path": "/api/forensics/state"},
+    {"method": "GET", "path": "/api/forensics/health"},
+    {"method": "GET", "path": "/api/forensics/v1/attested-history/latest"},
+    {"method": "GET", "path": "/api/forensics/v1/attested-history/snapshots/{snapshot_id}/roots"},
+    {"method": "GET", "path": "/api/forensics/v1/attested-history/snapshots/{snapshot_id}/roots/{root_cell_id}"},
+    {"method": "POST", "path": "/api/forensics/v1/financial/query"},
+    {"method": "POST", "path": "/api/forensics/v1/financial/revisions"},
+    {"method": "POST", "path": "/api/forensics/v1/financial/statements"},
+    {"method": "POST", "path": "/api/forensics/v1/financial/query.xlsx"}
+  ],
+  "api_not_called_by_page": [
+    {"method": "POST", "path": "/api/forensics/v1/financial/packet"}
+  ],
+  "payload_contract": {
+    "state_keys": [
+      "companies",
+      "ranked_findings",
+      "default_symbol",
+      "as_of",
+      "generated_at",
+      "source",
+      "detectors"
+    ],
+    "company_keys": [
+      "symbol",
+      "name",
+      "sector",
+      "cik",
+      "latest_filed",
+      "action",
+      "coverage",
+      "periods",
+      "findings",
+      "disclosure_bundle",
+      "tracks",
+      "documents",
+      "comparison",
+      "latest_comparison",
+      "disclosure_comparison",
+      "prior_document",
+      "current_document",
+      "redline_ops",
+      "redlines",
+      "entity_id"
+    ],
+    "period_keys": [
+      "fiscal_year",
+      "fiscal_quarter",
+      "period_end",
+      "filed",
+      "revenue",
+      "gross_profit",
+      "receivables",
+      "inventory",
+      "cfo",
+      "capex",
+      "op_income",
+      "ni",
+      "contract_liabilities"
+    ],
+    "finding_keys": [
+      "id",
+      "priority",
+      "topic",
+      "title_en",
+      "title_zh",
+      "values",
+      "evidence",
+      "limitations_en",
+      "limitations_zh",
+      "period_current",
+      "period_prior",
+      "current_accession",
+      "detector",
+      "authority",
+      "occurrence_id"
+    ],
+    "disclosure_finding_keys": [
+      "finding_id",
+      "detector_id",
+      "labels",
+      "state",
+      "priority",
+      "review_level",
+      "prior_accession",
+      "current_accession",
+      "prior_section_ids",
+      "current_section_ids",
+      "evidence_receipts",
+      "why_flagged",
+      "benign_explanation",
+      "limitations"
+    ],
+    "evidence_receipt_keys": [
+      "accession",
+      "form",
+      "source_url",
+      "source_excerpt",
+      "display_excerpt",
+      "block_id",
+      "section_id",
+      "filing_role"
+    ],
+    "health_keys": [
+      "status",
+      "clocks",
+      "latest_source_filing_date",
+      "broad_source_at",
+      "composed_state_at"
+    ],
+    "attested_history_latest_keys": [
+      "snapshot_id",
+      "base_snapshot_id",
+      "query_hash",
+      "published_at",
+      "policy",
+      "clocks",
+      "coverage_summary",
+      "companyfacts_conversion_receipt",
+      "authority"
+    ],
+    "query_cell_keys": [
+      "root_cell_id",
+      "occurrence_id",
+      "source_span",
+      "selected_raw_fact"
+    ]
+  },
+  "first_viewport": {
+    "desktop_1440": "At 1440 the first viewport is site nav, desk header (picker + as-of + freshness + export), lead brief What changed / Why it matters, then at most two supporting modules (attention/coverage stats and next-step buttons).",
+    "mobile_390": "At 390 the first swipe is nav + desk header + lead brief #ff-quick-signal.",
+    "measured": {
+      "receipt": "mockups/evidence/fundamental_forensics_p2/populated/fold_measurement.json",
+      "evidence": "fixture-backed golden, local; dark and light measured identical; rest cells only",
+      "probes": {
+        "tabs": "AM7 navigation chrome at >=1100px; below the first swipe at 390",
+        "fab": "shared copilot launcher stub #mmb-boot, the geometry mirror of #mmb-launch pinned by tests/test_chat_launcher_stub.py; measured for clearance only",
+        "covstat": "whole coverage stat incl. its label; measured for launcher clearance only",
+        "latest": "as-of Latest button; measured for the 390 one-line check only"
+      },
+      "desktop_1440": {
+        "viewport_height": 900,
+        "within_first_viewport": [
+          "coverage",
+          "desk",
+          "lead",
+          "nav",
+          "next",
+          "stats"
+        ],
+        "amended_by": "AM7",
+        "navigation_chrome_in_first_viewport": [
+          "tabs"
+        ],
+        "tabs_px": {
+          "en": [
+            633,
+            694
+          ],
+          "zh": [
+            605,
+            666
+          ]
+        },
+        "note": "AM7: every glance module (nav, desk, lead, stats, coverage, next) ends inside the 900px fold above the tab rail; the rail plus the top of the active panel are navigation chrome, not modules.",
+        "lead_px": {
+          "en": [
+            370,
+            502
+          ],
+          "zh": [
+            370,
+            502
+          ]
+        },
+        "meets_contract": true
+      },
+      "mobile_390": {
+        "viewport_height": 844,
+        "within_first_viewport": [
+          "coverage",
+          "desk",
+          "lead",
+          "nav",
+          "stats"
+        ],
+        "lead_px": {
+          "en": [
+            500,
+            693
+          ],
+          "zh": [
+            500,
+            675
+          ]
+        },
+        "launcher_clearance_px": {
+          "en": 28,
+          "zh": 28
+        },
+        "meets_contract": true,
+        "note": "The lead brief #ff-quick-signal ends at 693px (EN) / 675px (ZH), inside the 844px fold, with the attention/coverage stats; the desk header fills 130-343px in both locales at 390 (the ZH Latest button stays one line). The copilot launcher box (x 318-374, y 772-828) clears the coverage stat box (right edge 290) by 28px. Next steps and the tab rail start below the fold."
+      }
+    }
+  },
+  "i18n": {
+    "mechanism": "Template macro t(en, zh) emits .l-en/.l-zh spans; JS pair(en, zh) and fieldPair(obj, stem) read stem_en/stem_zh.",
+    "template_title_attributes": 0
+  },
+  "authority": {
+    "display_only": true,
+    "finding_authority": "review_priority_only"
+  }
+}

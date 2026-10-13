@@ -1,0 +1,195 @@
+{
+  "schema": "gmi.economic_network.research_source_manifest.v1",
+  "research_date": "2026-10-08",
+  "status": "RESEARCH_CANDIDATE_FOR_SOL_ADJUDICATION",
+  "core_reports": [
+    "RESEARCH_FINDINGS.md",
+    "ESTATE_RECONCILIATION.md",
+    "ECONOMIC_EVIDENCE_AND_VALIDATION.md",
+    "SOURCING_AND_COMPETITIVE_DILIGENCE.md",
+    "CASEBOOK_AND_COMPOSITION.md",
+    "ARCHITECTURE.md",
+    "PRODUCT_INTEGRATION.md",
+    "IMPLEMENTATION_MASTERPLAN.md",
+    "TECHNICAL_SOURCE_REGISTER.md"
+  ],
+  "core_report_count": 9,
+  "word_count_method": "Whitespace-delimited tokens in the nine complete Markdown reports, including headings, tables and URLs.",
+  "core_report_word_count": 33917,
+  "files": [
+    {
+      "path": "ARCHITECTURE.md",
+      "bytes": 41118,
+      "sha256": "d30796b3a807b2fe78c303b5a6baee5d21d4d3f7453711083babeeccb17e284e",
+      "git_blob_sha1": "1862ea2f0918d4bb02bf8ca13edc3152bee1393d"
+    },
+    {
+      "path": "CASEBOOK_AND_COMPOSITION.md",
+      "bytes": 23248,
+      "sha256": "71f0e70851b861fd4d0b7094ae2217dc5d933a2c2db9f06220ff49028fc7d058",
+      "git_blob_sha1": "a57fd897d5f717b7b9bfc91d5783795de929427a"
+    },
+    {
+      "path": "ECONOMIC_EVIDENCE_AND_VALIDATION.md",
+      "bytes": 56435,
+      "sha256": "46a1774b55e99642fa97b47cd0860a80f14666568b01d664c72bcd92a724a35d",
+      "git_blob_sha1": "0f8929ffcedc39ad8b61ba7ab0c00a377ce68ba0"
+    },
+    {
+      "path": "ECONOMIC_EVIDENCE_SOURCE_MAP.json",
+      "bytes": 30065,
+      "sha256": "95d8e1b4ff4c5343fc22b14aedf3ca1ba0ecc0ff5f0fe5fd84f8c46cb4dbe781",
+      "git_blob_sha1": "bf34b10b5fd48785db05bed365f2b485b0b728bd"
+    },
+    {
+      "path": "ESTATE_RECONCILIATION.md",
+      "bytes": 39927,
+      "sha256": "86061efefb8e080c12a7a3549d5b92014ebd4c665e49061342994cf5ab9322ec",
+      "git_blob_sha1": "4a1482d3a88065da6c62db10fbcbcfeef775dc2f"
+    },
+    {
+      "path": "ESTATE_SOURCE_MANIFEST.json",
+      "bytes": 23806,
+      "sha256": "e61a0de75a30b43155cd17930517fe8af899b6efe67eadf5f9015d09681179c6",
+      "git_blob_sha1": "32ee0348c19c6c916f7671b03a28bcac93905a3f"
+    },
+    {
+      "path": "FINAL_REVISION_RECONCILIATION.json",
+      "bytes": 13526,
+      "sha256": "02367480650e0c9c88c534834fa07142d2d35a94c01776dd2d2db331d79325ab",
+      "git_blob_sha1": "a6f83ab8c2dbdcb05a5a2aa691feef788967408d"
+    },
+    {
+      "path": "IMPLEMENTATION_MASTERPLAN.md",
+      "bytes": 24292,
+      "sha256": "0eaf9b170eb3339900103029fae98e05536fa34c0128aad21139c29111ad5b60",
+      "git_blob_sha1": "3a6eed6807a44c974942c3c0ec95564fb3e1de6b"
+    },
+    {
+      "path": "INDEPENDENT_REVIEW.md",
+      "bytes": 35132,
+      "sha256": "2883cdb08a562f9902ae9e48e2a745be7a1d50767da1e8441ee2751993f792c9",
+      "git_blob_sha1": "b7aed609b0dba26064c9673ab796553b152610e3"
+    },
+    {
+      "path": "PROCEDURE_REVISION_RECEIPT.json",
+      "bytes": 1283,
+      "sha256": "32023dcac02fbf76f40b44cdbd8a692712ff764a3255e6be38fdfeb88b4584b7",
+      "git_blob_sha1": "1e9ddba58fac490f3887c8621c26cdeeaefa1e78"
+    },
+    {
+      "path": "PRODUCT_INTEGRATION.md",
+      "bytes": 16922,
+      "sha256": "f277508ff456e6ed0d99b383919c4abe07d934cbf324ecca62edd006487ae443",
+      "git_blob_sha1": "57a1c6883b3d0b4b1ab2fdb8148dc3545d14be1e"
+    },
+    {
+      "path": "README.md",
+      "bytes": 4103,
+      "sha256": "11f0b082d6b76e50986c1950d9f44ce291b42f752da09c41cab0bdbc56572bb6",
+      "git_blob_sha1": "6753525f3e60342cfa0f8582e9c060934e7ab6b2"
+    },
+    {
+      "path": "RESEARCH_CHECKPOINT.md",
+      "bytes": 5727,
+      "sha256": "2622fc4bd3c743b8a47f7254190ddb0e78260f8830eb297175879be51939c88e",
+      "git_blob_sha1": "a746c4d38c913762da5f77ac761e57740d2725a3"
+    },
+    {
+      "path": "RESEARCH_FINDINGS.md",
+      "bytes": 17782,
+      "sha256": "f1958752b620df361f63c27ea1d7260a476b6261ea1d1d484d1b0824cd447c37",
+      "git_blob_sha1": "7187b2802ce1565870a31c649207a904a9d84d4d"
+    },
+    {
+      "path": "RESEARCH_HANDOFF.md",
+      "bytes": 6380,
+      "sha256": "364caa164ce7e60ea1b3b8dc0893b76db9a4d33af77424c0cd6580910e1431e1",
+      "git_blob_sha1": "229ce50d3f398106cfb1d740abe2198b4c23268e"
+    },
+    {
+      "path": "SOURCING_AND_COMPETITIVE_DILIGENCE.md",
+      "bytes": 50431,
+      "sha256": "34589bbc2b657627893e9837345ebb50a2f1a8e013dcb974f103930660078e72",
+      "git_blob_sha1": "da08c0b60a232a5c1b54e318f833de326894967a"
+    },
+    {
+      "path": "TECHNICAL_SOURCE_REGISTER.md",
+      "bytes": 6626,
+      "sha256": "4528fb8eb1e58781b87440f87a46ad2d0dcb293a2399bfd6ed4010042018a432",
+      "git_blob_sha1": "458c028ce663faf189fa6a2e03d6b8126459b43e"
+    },
+    {
+      "path": "implementation_work_packages.json",
+      "bytes": 26699,
+      "sha256": "308c785262d5d0fe103e20ef451903514c7e63688ae93e764ac29ed5c9c1295f",
+      "git_blob_sha1": "c5696fd3e0d45bd7254312502b38f10b97e9645d"
+    },
+    {
+      "path": "source_rights_register.json",
+      "bytes": 99910,
+      "sha256": "e3dd701acfffd76842dae29c0b9603fc2567a497d305dfaf80ccc213763539da",
+      "git_blob_sha1": "899c0d02aeae350675d015ae28d6ec0c8cb14e8d"
+    },
+    {
+      "path": "witnesses/case_assertions.json",
+      "bytes": 4955,
+      "sha256": "4becd48c309c440cc1d2328b0b1332b48bf117141dbc855cdbb5132a8a049077",
+      "git_blob_sha1": "0600e57ee60c163222819ddf13d496e33718f817"
+    },
+    {
+      "path": "witnesses/composition_invariants.py",
+      "bytes": 7464,
+      "sha256": "d9e7a9ca02826567f4987aabe937aa38212540b3e566a5f13183e5da060dfb66",
+      "git_blob_sha1": "976c3e88d0c3a966a8b41e69f5c66624d2183c29"
+    },
+    {
+      "path": "witnesses/composition_invariants_results.json",
+      "bytes": 5833,
+      "sha256": "2c45e8157a247377faf8cf48e5f4ec6a5ab05a1059a8f245a0063df90534b18c",
+      "git_blob_sha1": "9b3bd1108491ae2083e8769834ed3952a9ab9070"
+    },
+    {
+      "path": "witnesses/source_manifest.json",
+      "bytes": 1704,
+      "sha256": "1c204a26179eba1a893bf7dba76fa58cc2f00487863b3786d28438ac55f45d22",
+      "git_blob_sha1": "ea74f62663bff48d5f4227d0e0275c2d105d03d9"
+    },
+    {
+      "path": "witnesses/source_snapshots/contracts__economic_propagation__propagation_hypothesis.v1.schema.json",
+      "bytes": 22585,
+      "sha256": "2fb402368b71693d457a173efe03d5b3e7144bae7bba1573eb90730e01a375d6",
+      "git_blob_sha1": "847c47e557aa9b5b3e2a0bab11a0b3c9fc2a9907"
+    },
+    {
+      "path": "witnesses/source_snapshots/engine__theme_graph__theme_state.py",
+      "bytes": 31552,
+      "sha256": "2cb329073277cb9e037b2fc8602226d7e375d144a06d0c9d847d77ff3ab4dbc6",
+      "git_blob_sha1": "38274c5002bcd5d5773c28dee27016fb2eef830e"
+    },
+    {
+      "path": "witnesses/source_snapshots/lib__dataos__temporal.py",
+      "bytes": 12847,
+      "sha256": "4415404186f0b0d2870f42d9e4a0b95be87937863adf30cf015ed34e8bf92b67",
+      "git_blob_sha1": "094b149a8b9158f19cb99c4005568c12db96ed41"
+    },
+    {
+      "path": "witnesses/temporal_compatibility.py",
+      "bytes": 12286,
+      "sha256": "9d35296c29406ca01724e53f1ec882b38035ff3ccb49a96c8b81c2d24281f9f8",
+      "git_blob_sha1": "f8edad91f96af77c698ce11eaa454ba13d0f4f44"
+    },
+    {
+      "path": "witnesses/temporal_compatibility_results.json",
+      "bytes": 18049,
+      "sha256": "bea5611c581bd2560662cec2d96506c170fcb3de098caff0c91d8699e4a9158b",
+      "git_blob_sha1": "640b2a4554d8bcce52a3f93801581c5cdc41e1c3"
+    }
+  ],
+  "manifest_excludes_itself": true,
+  "publication_receipt_and_PDF_receipt_are_export_only": true,
+  "limitations": [
+    "Named original handoff attachment unavailable; exact attachment conformance unverified.",
+    "No native contract adoption, live release, model fit, return backtest or predictive promotion."
+  ]
+}

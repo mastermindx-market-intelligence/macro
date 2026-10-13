@@ -606,6 +606,21 @@ lanes:
           Polygon sweep self-gated on the embedded asof stamp) so every lane
           sizes heatmap tiles by real market cap. Non-fatal,
           continue-on-error; the payload itself is built inside build_site.
+      - id: build_leader_pullback_coverage
+        module: scripts.build_leader_pullback_coverage
+        note: >
+          LEADER-PULLBACK coverage publisher (ANTICIPATION §6.9 R4) — runs the
+          engine.us_leader_pullback organ over the graded US universe on a run-wide PIT
+          cross-sectional RS percentile and writes site/anticipationdata/us_leader_pullback.json.
+          MUST PRECEDE build_site AND build_prophet: build_site projects the observation shelf
+          from this file and engine.us_early_turn resolves the EARLY-TURN starter licence from it.
+          #5007 shipped the organ and
+          #5105 the intake, but nothing published the artifact, so the leader half resolved {}
+          on every production run while the washout half (us_basket_turn) admitted normally.
+          Reads data/yahoo/*.parquet only. Advances NO ledger and writes no data/ path.
+          DISPLAY TIER, ZERO AUTHORITY. A run-wide data failure publishes nothing and keeps the
+          previous artifact rather than overwriting real coverage with a board of nulls.
+          Measured 2026-08-09: ~39s over 680 graded names (budget 600s).
       - id: engine_run
         module: engine.run
       - id: build_shock_deescalation
@@ -779,20 +794,6 @@ lanes:
       - id: build_flip_confirmation
         module: scripts.build_flip_confirmation
         note: "Policy-Shock W1-C — T+1 sector-flip confirmation lens; detects violent defensive/offense spread flips, appends keep-first ledger, registers qledger claims, emits site/flip_confirmation_data.json (display-only, non-fatal)"
-      - id: build_leader_pullback_coverage
-        module: scripts.build_leader_pullback_coverage
-        note: >
-          LEADER-PULLBACK coverage publisher (ANTICIPATION §6.9 R4) — runs the
-          engine.us_leader_pullback organ over the graded US universe on a run-wide PIT
-          cross-sectional RS percentile and writes site/anticipationdata/us_leader_pullback.json.
-          MUST PRECEDE build_prophet: engine.us_early_turn resolves the EARLY-TURN starter
-          tier's LEADER licence from that file at origination time. #5007 shipped the organ and
-          #5105 the intake, but nothing published the artifact, so the leader half resolved {}
-          on every production run while the washout half (us_basket_turn) admitted normally.
-          Reads data/yahoo/*.parquet only. Advances NO ledger and writes no data/ path.
-          DISPLAY TIER, ZERO AUTHORITY. A run-wide data failure publishes nothing and keeps the
-          previous artifact rather than overwriting real coverage with a board of nulls.
-          Measured 2026-08-09: ~39s over 680 graded names (budget 600s).
       - id: build_prophet
         module: scripts.build_prophet
         note: >
@@ -1120,6 +1121,27 @@ lanes:
           trading, publication, training, Neural Web, and Prophet authority remains
           false. The normal nightly lane is the sole advancer; non-nightly invocation
           fails closed.
+      - id: build_options_catalyst_links
+        module: scripts.build_options_catalyst_links
+        note: >
+          A-F03-W3-1a (2026-09-23, #7774): first production caller of
+          engine/options_catalyst_link.bind_events. Reads only the date-keyed
+          live_flow/events/{DATE}.jsonl stage the episode step already consumes,
+          binds each event to earnings (earnings_blackout) and FOMC (event_calendar)
+          catalysts, and writes site/options_catalyst_links/ (envelope + JSONL) with
+          the binding-state histogram. Context-only: every authority field false,
+          no rank/size/gate, no data/ writes. Non-fatal (continue-on-error).
+      - id: build_options_alpha_candidate_feed
+        module: scripts.build_options_alpha_candidate_feed
+        note: >
+          Serial after the canonical episode and campaign builders and their
+          exact-path publications. Inactive, with no R2 access and no publication
+          journal, when a valid activation receipt is absent. When activated, this
+          step reuses the existing scripts.publish_options_alpha_candidate_r2, the
+          sole publisher of options_alpha/candidate_feed.json and receipt.json.
+          It writes no Git output, adds no second writer, no new ledger, and no
+          new lane. The daily workflow four-success gate is the actual runtime
+          order. This row is only the ordered module inventory.
       - id: build_us_sector_rotation
         module: scripts.build_us_sector_rotation
         note: >
@@ -2133,6 +2155,21 @@ lanes:
         note: >
           Publish oracle panels to R2 (refreshes render-path sponsorship inputs).
           Non-fatal (::warning:: on failure).
+      - id: build_graph_shadow_theme_state
+        module: scripts.build_thematic_state
+        note: >
+          Gate #8 (seat ruling G1-RC1) — `--mode GRAPH_SHADOW_STATE`: capture the
+          owner bundle, state-only compose, validate, atomic write of
+          data/theme_graph/shadow_theme_state.v1.json ONLY (the file
+          engine/theme_graph/selection_cohort_reads.py reads). Never in the engine
+          job; oracle_offrender runs after engine whatever its result (RC1-R1: the
+          engine job ends red on the post-commit OIP PIT fail-closed marker after
+          its data commit, so an engine.result gate never opened). Shadow +
+          research-internal; six-false authority unchanged. Fail-open: one
+          ::warning title=gmi-shadow-graph-state:: and the prior shadow stands;
+          step timeout 12 min, continue-on-error; committed by the oracle Time
+          Machine commit step.
+          outputs: [data/theme_graph/shadow_theme_state.v1.json]
 
   # ── daily.yml / cortex ───────────────────────────────────────────────────
   - workflow: .github/workflows/daily.yml
@@ -2346,6 +2383,15 @@ lanes:
       # in-process build_china_library ProcessPool also gets the box to itself here.
       - id: build_china
         module: scripts.build_china
+      - id: publish_china_heatmap
+        module: scripts.build_market_heatmap
+        args: [--market, china, --render-page]
+        note: >
+          Publish the China heatmap payload and its matching crawler-visible SSR
+          shell from the settled Asia close through the same JSON-to-page owner
+          used by build_site. This advances no analytical ledger and creates no
+          second publication plane; asia-close.yml keeps the step resilient so a
+          failed heatmap publish cannot erase other settled CN/HK outputs.
       - id: build_cn_live_pack
         module: scripts.build_cn_live_pack
         note: >
@@ -2592,6 +2638,10 @@ lanes:
             # manifest, which that builder rewrites (daily.yml cl_gex order mirrored).
             - scripts.build_flow_desk
             - scripts.build_options_skew
+            # A-F03-W2-5b (2026-09-23, #7763): emit the store-host payoff lab (W2-5a producer,
+            # hydrated from R2 before the band) into site/options_payoff_lab/latest.json for
+            # the options.html fold. Pure function of the restored artifact, zero network.
+            - scripts.build_options_payoff_lab
             - scripts.build_options_ivspread
             - scripts.build_options_dislocation
             # OIP E8 (2026-07-29): options_screener.html had NO express coverage in
@@ -2800,6 +2850,13 @@ lanes:
         note: Policy-Shock W2-F — ARMED/QUIET lever card; non-fatal; site artifact only (PS-R7)
       - id: build_site
         module: scripts.build_site
+      - id: build_ontology_explorer
+        module: scripts.build_ontology_explorer
+        note: >
+          F04-X1 WTI Live Path public shell (site/ontology.html + the paired
+          ontology.css/js copies). A nav-only static shell with zero current
+          values; it sits in the render lane so a shared-nav change re-bakes it
+          with every other committed page. Not in daily.yml: no data input.
       - id: build_research_screener
         module: scripts.build_research_screener
         note: >
@@ -3451,6 +3508,57 @@ lanes:
           scratch root through the exact code path tonight's engine gate runs and
           byte-compares every ticker against this lane's own projection output. A green
           publish with an unreadable bundle would otherwise surface only as a red render.
+      - id: fif_contract_targets_derive
+        module: scripts.publish_fif_production_datasets
+        args: [targets, --coverage-file, config/fundamental_forensics/coverage/five_issuer_v1.json, --targets-file, config/fundamental_forensics/wave2_targets.v1.json, --max-tickers, 15]
+        note: >
+          Derives the contract lane's universe from the SAME pinned target file: the
+          targets subcommand prints one --target TICKER=CIK per five-issuer coverage
+          entry that is not already an incumbent ticker, refusing any union wider
+          than --max-tickers 15. Lives inside the continue-on-error contract step,
+          so a derivation refusal is crash-class, never an incumbent gate.
+      - id: fif_contract_acquire
+        module: scripts.run_fundamental_forensics_wave2
+        args: [--acquire, --reuse-local-archive, --sync, --incremental-sync, --max-tickers, 12]
+        note: >
+          Third wave-2 invocation: the isolated contract acquire over the derived
+          $CONTRACT_TARGETS list into the same warm roots (no --restore, no
+          --require-complete-acquisition, no --build-projections). The step is
+          continue-on-error and non-gating; a crash or step timeout fails the job
+          only after every incumbent step has completed.
+      - id: fif_contract_acquire_summary
+        module: scripts.publish_fif_production_datasets
+        args: [contract-acquire-summary, --result, --report-path]
+        note: >
+          Reads the contract acquire's redirected outcome JSON and writes the run's
+          summary report: a typed partial becomes a line-start ::warning plus the
+          recorded shortfall that the capture and publish reports carry onward; a
+          missing or malformed result is a typed refusal, i.e. crash class.
+      - id: fif_capture_members
+        module: scripts.publish_fif_production_datasets
+        args: [capture-members, --coverage-file, config/fundamental_forensics/coverage/five_issuer_v1.json, --raw-root, --archive-root, --recorded-at, --contract-acquire-report, --report-path]
+        note: >
+          Member capture for the contract issuers, run only when the contract acquire
+          outcome is success (typed partial included). For each contract accession
+          whose primary document the lane retained, fetches the archive index and the
+          five XBRL role members, then writes the package subtree under the
+          fif-packages/ prefix in the warm archive root. No object-store credentials.
+      - id: fif_production_publish
+        module: scripts.publish_fif_production_datasets
+        args: [publish, --coverage-file, config/fundamental_forensics/coverage/five_issuer_v1.json, --raw-root, --archive-root, --recorded-at, --capture-report, --report-path]
+        note: >
+          Publishes one immutable generation per published contract issuer with the
+          CLOCK RULE admitted_at and lineage evidence through the S2-p seam; every
+          other contract issuer gets exactly one typed exclusion row. This is the
+          hard gate: a red publish stops the lane with rc != 0 and a line-start
+          ::error. Runs only when the contract acquire outcome is success.
+      - id: fif_production_verify
+        module: scripts.publish_fif_production_datasets
+        args: [verify, --coverage-file, config/fundamental_forensics/coverage/five_issuer_v1.json, --report-path]
+        note: >
+          Reads back the publish report and proves latest.json NAMES every generation
+          the publish minted; a missing generation fails the lane right after the
+          hard-gated publish.
   # ── filing-forensics-broad-sec.yml / poll_broad_sec ─────────────────────
   - workflow: .github/workflows/filing-forensics-broad-sec.yml
     job: poll_broad_sec

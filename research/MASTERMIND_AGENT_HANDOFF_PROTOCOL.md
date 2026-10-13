@@ -246,3 +246,27 @@ do-not-redo, no per-path reason.
 
 Every claim carries its command; the unverified item is named; the landmine is stated; the
 scope boundary is explicit.
+
+
+## W4 advisory assistance
+
+`python3 scripts/agentos.py ship-report` checks only the existing exact branch claim and
+canonical handoff records. A handoff for another branch, an untracked file, dirty content,
+invalid frontmatter, or a handoff commit older than the current claim does not satisfy the reminder. A separate native Stop adapter emits
+only an optional `systemMessage` and exits zero; malformed/oversized native input returns
+`{}`. An absent or malformed Agent OS store is an unavailable observation, never permission
+to block work. A source launcher may delegate this read-only report once to a verified
+worktree in the same Git store; foreign, missing or repeated delegation is a silent no-op.
+
+PostToolUse capture occurs before the next ordinary commit, not after Stop has approved a
+clean tree. It creates no handoff on the session's behalf: the author still records what
+changed, proof, limitations and a usable next action. `ship-capture`, `claim` and `release`
+are helpers for the existing schema, not lifecycle machinery. Their output distinguishes
+an uncommitted edit from durable organizational knowledge. Publication and cold recovery
+must be verified separately.
+
+Native hook input/output is based on the official Claude Code hooks reference,
+https://code.claude.com/docs/en/hooks (verified 2026-10-04): successful Bash PostToolUse
+provides `tool_input.command` and `tool_response.stdout`/`interrupted`; a Stop advisory
+uses `systemMessage`. Tests exercise that contract and preserve the existing Stop guard.
+A protocol fixture is not evidence that every native fleet client has installed the source.

@@ -1,0 +1,29 @@
+{
+  "schema": "research_document_status.v1",
+  "document": "Prophet US R5 integrated master plan",
+  "status": "PROPOSED_FOR_REVIEW_AND_STAGED_ADOPTION",
+  "registered_trial": false,
+  "source_committed": false,
+  "source_changes": false,
+  "workers_dispatched": false,
+  "production_proven": false,
+  "mission_complete": false,
+  "authority": {
+    "can_rank": false,
+    "can_admit": false,
+    "can_set_entry_open": false,
+    "can_originate_plan": false,
+    "can_size": false,
+    "can_execute": false,
+    "can_trade": false,
+    "can_promote_model": false,
+    "can_promote_policy": false
+  },
+  "parent": "macro#6805",
+  "working_checkpoint_comment": 5791272310,
+  "procedure_pin": "89582a372aa2a57ec500868ce6d79cd156219445",
+  "macro_planning_snapshot": "c9978765aa0085eba0213430284cb4b41065d4e2",
+  "next_action": "Source-publication/adversarial review of this packet under current custody; bind first ready existing-carrier unit, not another global audit.",
+  "intended_resume": "Fresh Extra High interaction for review/publication/admission; hard research packets may use separately admitted Pro.",
+  "note": "Mode is a task-fit recommendation. Comment writes are observed; source edit/merge/deployment/fabric action classes are not proven by that observation."
+}

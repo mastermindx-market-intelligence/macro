@@ -247,9 +247,27 @@ def test_intelligence_hub_promotion_accepts_real_symbol_punctuation_only(name, s
     assert "/^[A-Z0-9][A-Z0-9.-]{0,15}$/" in region
 
 
+_DOT_SYMBOL_TK_RE = re.compile(r'<span class="tk">[A-Z0-9]+\.[A-Z0-9]+</span>')
+
+
 def test_current_hub_fixture_contains_a_dot_symbol_regression_case():
+    """A dot symbol (BRK.B, BF.B) must reach the Terminal route as ONE token.
+
+    The mechanical pin is the template: the hub renders `d.ticker` verbatim
+    inside the `tk` span, and the route regex asserted above accepts the dot.
+    The committed bake is nightly DATA — which names sit on the hub changes
+    every night (the 2026-09-23 bake carried no dot symbol at all, which is
+    how this guard went red on main with no code change) — so the live page
+    is asserted only when it actually lists a dot symbol.
+    """
+    template = (ROOT / "templates" / "intelligence_hub.html.j2").read_text(encoding="utf-8")
+    assert '<span class="tk">{{ d.ticker }}</span>' in template
     hub = HUB_HTML.read_text(encoding="utf-8")
-    assert '<span class="tk">BRK.B</span>' in hub
+    dotted = _DOT_SYMBOL_TK_RE.findall(hub)
+    if not dotted:
+        pytest.skip("today's committed hub bake lists no dot-symbol ticker; "
+                    "the template pin above is the mechanical guard")
+    assert all(re.fullmatch(r'<span class="tk">[A-Z0-9][A-Z0-9.-]{0,15}</span>', d) for d in dotted)
 
 
 @pytest.mark.parametrize("name,src", SOURCES, ids=SOURCE_IDS)

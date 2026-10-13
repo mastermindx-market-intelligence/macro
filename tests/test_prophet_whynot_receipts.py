@@ -475,7 +475,7 @@ def test_dashboard_imports_and_emits_the_partial_once():
 
 def test_shelf_sits_below_the_cards_and_above_the_panel_footnote():
     """BELOW the plans, never between them (spec §6)."""
-    grid_close = DASH.index("end .nbgrid")
+    grid_close = DASH.index("end #us-life-grid")
     shelf = DASH.index("pvr.pvr_shelf(us_prophet_refusals)")
     footnote = DASH.index('<p class="pb-fn">')
     assert grid_close < shelf < footnote

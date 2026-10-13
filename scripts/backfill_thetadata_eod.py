@@ -94,7 +94,10 @@ import pandas as pd
 # Ensure repo root on path when run as a script
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-from engine.thetadata_store import resolve_thetadata_store  # noqa: E402
+from engine.thetadata_store import (_unmounted_volume,  # noqa: E402
+                                    drained_store_candidates,
+                                    resolve_thetadata_store,
+                                    unmounted_store_candidates)
 
 log = logging.getLogger("backfill_thetadata_eod")
 
@@ -574,7 +577,40 @@ def main() -> int:
                  "refusing to proceed while canonical resolution is uncertain "
                  "(no mutation)", type(e).__name__, e)
         return 1
+    if resolved is None:
+        # Unmounted volume is not a fresh install. Check before _store_dir(),
+        # which mkdirs — minting that directory would be the second store.
+        unmounted = unmounted_store_candidates()
+        if unmounted:
+            vols: list[str] = []
+            for candidate in unmounted:
+                try:
+                    vol = _unmounted_volume(candidate)
+                except OSError:
+                    vol = None
+                vols.append(str(vol if vol is not None else candidate))
+            log.error(
+                "backfill: the store's volume is unmounted and no second "
+                "store may be minted (unmounted volume path(s): %s).",
+                ", ".join(vols))
+            return 1
     own_store = _store_dir()
+    if resolved is None:
+        # AD-1T2b: `None` stopped meaning "no store anywhere". A DRAINED canonical
+        # store (tier dirs present, zero roots) no longer resolves, so the
+        # fresh-install exception below would let this process mint a SECOND store
+        # beside it — the exact hazard this block exists to prevent, now reachable
+        # through the path that used to be safe. A drained store is a store.
+        elsewhere = [d for d in drained_store_candidates()
+                     if Path(d).resolve() != Path(own_store).resolve()]
+        if elsewhere:
+            log.error("backfill: nothing RESOLVES, but a DRAINED store exists at "
+                      "%s, which disagrees with this process's own store %s — "
+                      "refusing to mint a second T1 store. That store is drained, "
+                      "not absent: point THETADATA_STORE / lib.config.data_dir() "
+                      "at it and re-run to refill it in place.",
+                      ", ".join(str(d) for d in elsewhere), own_store)
+            return 1
     if resolved is not None and Path(resolved).resolve() != Path(own_store).resolve():
         log.error("backfill: resolve_thetadata_store() resolved %s, which "
                  "DISAGREES with this process's own store %s — refusing to "

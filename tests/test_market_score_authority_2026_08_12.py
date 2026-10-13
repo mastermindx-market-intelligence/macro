@@ -219,6 +219,32 @@ def test_history_chart_does_not_regress_to_older_current_snapshot(tmp_path, monk
     assert out[-1] == {"asof": "2026-09-14", "score": 56}
 
 
+def test_sector_heat_view_uses_producer_heating_list_not_hot_rank(monkeypatch):
+    from engine import sector_pulse
+
+    pulse = {
+        "as_of": "2026-09-17",
+        "heating": ["cybersecurity", "mag7", "ai_semiconductors"],
+        "themes": [
+            {"id": "crypto", "name": "Crypto", "heat": "hot", "rank": 1},
+            {"id": "ai_software", "name": "AI Software", "heat": "hot", "rank": 2},
+            {"id": "cybersecurity", "name": "Cybersecurity", "heat": "heating", "rank": 3},
+            {"id": "mag7", "name": "Magnificent Seven", "heat": "heating", "rank": 4},
+            {"id": "ai_semiconductors", "name": "AI Semiconductors", "heat": "heating", "rank": 5},
+        ],
+    }
+    monkeypatch.setattr(sector_pulse, "build_pulse", lambda _region: pulse)
+
+    view = build_site._sector_heat_view()
+
+    assert [row["id"] for row in view["heating"]] == [
+        "cybersecurity", "mag7", "ai_semiconductors",
+    ]
+    assert all(row["heat"] == "heating" for row in view["heating"])
+    assert "crypto" not in {row["id"] for row in view["heating"]}
+    assert "ai_software" not in {row["id"] for row in view["heating"]}
+
+
 def test_rotation_view_separates_current_pulse_from_legacy_damage_cohort(monkeypatch):
     from engine import sector_pulse
 

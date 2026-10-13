@@ -620,6 +620,56 @@ _FAST_VISIBLE_PROFILE_COMPOSITIONS: dict[str, tuple[str, ...]] = {
 }
 
 
+# A family is covered only by a discriminating read from that family. Shared context
+# reads such as get_market_events/read_contradictions deliberately do not witness two
+# families at once: doing so would recreate the mixed-domain false-positive #7406 fixed.
+# This is not a second classifier; it consumes the same _QuestionProfile compositions
+# used by progressive visibility.
+_FAST_EVIDENCE_FAMILY_WITNESSES: dict[str, tuple[str, ...]] = {
+    "single_name_current": (
+        "get_symbol_context", "get_quote", "get_symbol_intel",
+        "read_company_intelligence", "get_fundamentals", "get_earnings",
+        "get_house_view", "query_spine",
+    ),
+    "macro_rates": (
+        "read_world_state", "get_curve_detail", "read_mechanism_pathways",
+        "read_inflation_intelligence", "read_liquidity_plumbing",
+    ),
+    "options_single_name": (
+        "read_options_entry_state", "explain_options_context", "query_options_confluence",
+    ),
+    "portfolio_current": ("get_portfolio_brief", "get_watchlist"),
+    "theme_current": (
+        "read_theme_state", "read_theme_thesis", "read_theme_pathways",
+        "read_theme_asymmetry", "read_theme_options_witness", "read_theme_clinical",
+        "read_theme_trade_flows",
+    ),
+}
+
+
+def _fast_required_evidence_families(
+    profile: _QuestionProfile,
+) -> dict[str, tuple[str, ...]] | None:
+    """Return qualified Fast evidence families, or None for a fail-open profile.
+
+    The values are witness-tool names, not authorization. Brain still builds its complete
+    authorized schema first and may enforce this contract only when every family has an
+    authorized witness. Self-contained scenarios intentionally require no external family.
+    """
+    if profile.name == "self_contained_financial":
+        return {}
+    families = _FAST_VISIBLE_PROFILE_COMPOSITIONS.get(profile.name)
+    if not families:
+        return None
+    required: dict[str, tuple[str, ...]] = {}
+    for name in families:
+        witnesses = _FAST_EVIDENCE_FAMILY_WITNESSES.get(name)
+        if witnesses is None:
+            return None
+        required[name] = witnesses
+    return required
+
+
 def _fast_visible_tool_names(profile: _QuestionProfile) -> tuple[str, ...] | None:
     """Return qualified Fast model-visible names, or None to retain full authorization.
 
@@ -633,7 +683,13 @@ def _fast_visible_tool_names(profile: _QuestionProfile) -> tuple[str, ...] | Non
     families = _FAST_VISIBLE_PROFILE_COMPOSITIONS.get(profile.name)
     if not families:
         return None
-    return _merge_seed_tools(*(_FAST_VISIBLE_TOOL_FAMILIES[name] for name in families))
+    tool_families: list[tuple[str, ...]] = []
+    for name in families:
+        tools = _FAST_VISIBLE_TOOL_FAMILIES.get(name)
+        if tools is None:
+            return None
+        tool_families.append(tools)
+    return _merge_seed_tools(*tool_families)
 
 
 def _legacy_classify_question(question: str, context_ticker: str | None) -> tuple[int, list[str]]:
@@ -1514,6 +1570,11 @@ def _tool_read_theme_state(root: Path, params: dict) -> dict:
         "note": "data/neuralweb/theme_state.json absent — run scripts/build_thematic_state.py",
     }
 
+    from .theme_state_generation_reader import legacy_consumer_barrier
+    barrier = legacy_consumer_barrier(root)
+    if barrier is not None:
+        return barrier
+
     if not state_path.exists():
         return dict(_null)
 
@@ -1529,7 +1590,7 @@ def _tool_read_theme_state(root: Path, params: dict) -> dict:
         if theme_id_filter:
             matched = [t for t in themes if isinstance(t, dict) and t.get("theme_id") == theme_id_filter]
             if not matched:
-                return {
+                return legacy_consumer_barrier(root) or {
                     "available": True,
                     "theme_id": theme_id_filter,
                     "found": False,
@@ -1539,7 +1600,7 @@ def _tool_read_theme_state(root: Path, params: dict) -> dict:
                 }
             th = matched[0]
             foresight = th.get("foresight") or {}
-            return {
+            return legacy_consumer_barrier(root) or {
                 "available": True,
                 "theme_id": theme_id_filter,
                 "found": True,
@@ -1579,7 +1640,7 @@ def _tool_read_theme_state(root: Path, params: dict) -> dict:
             except Exception:  # noqa: BLE001
                 pass
 
-        return {
+        return legacy_consumer_barrier(root) or {
             "available": True,
             "as_of": raw_state.get("as_of"),
             "n_themes": raw_state.get("n_themes") or len(themes),
@@ -1618,6 +1679,11 @@ def _tool_read_theme_thesis(root: Path, params: dict) -> dict:
         "note": "site/neuralwebdata/theme_thesis.json absent",
     }
 
+    from .theme_state_generation_reader import legacy_consumer_barrier
+    barrier = legacy_consumer_barrier(root)
+    if barrier is not None:
+        return barrier
+
     if not thesis_path.exists():
         return dict(_null)
 
@@ -1646,14 +1712,14 @@ def _tool_read_theme_thesis(root: Path, params: dict) -> dict:
         if theme_id_filter:
             matched = [t for t in theses if isinstance(t, dict) and t.get("theme_id") == theme_id_filter]
             if not matched:
-                return {
+                return legacy_consumer_barrier(root) or {
                     "available": True,
                     "theme_id": theme_id_filter,
                     "found": False,
                     "is_context_only": True,
                     "display_only": True,
                 }
-            return {
+            return legacy_consumer_barrier(root) or {
                 "available": True,
                 "theme_id": theme_id_filter,
                 "found": True,
@@ -1663,7 +1729,7 @@ def _tool_read_theme_thesis(root: Path, params: dict) -> dict:
                 "note": "not advice — context only",
             }
 
-        return {
+        return legacy_consumer_barrier(root) or {
             "available": True,
             "as_of": raw.get("as_of"),
             "n_theses": raw.get("n_theses") or len(theses),
@@ -2517,7 +2583,8 @@ def _memo_quote_response(
 # Core tool dispatcher (read-only, mirrors cortex.dispatch_tool)
 # ---------------------------------------------------------------------------
 
-def _dispatch_read_tool(tool_name: str, tool_params: dict, root: Path) -> dict:
+def _dispatch_read_tool(tool_name: str, tool_params: dict, root: Path, *,
+                        include_risk_context: bool = False) -> dict:
     """Dispatch a read-only tool call.  Refuses write tools by name.
 
     Every result passes through the chat plain-word projection
@@ -2529,7 +2596,24 @@ def _dispatch_read_tool(tool_name: str, tool_params: dict, root: Path) -> dict:
     cortex/metabolism loop (cortex.dispatch_tool) keep the raw enums.
     """
     from engine.neuralweb.chat_plain_words import project_plain_words  # noqa: PLC0415
-    return project_plain_words(_dispatch_read_tool_raw(tool_name, tool_params, root))
+    from engine.neuralweb.rotation_risk_context import redact_new_context  # noqa: PLC0415
+    # This flag is trusted server context, never a model-supplied tool parameter.
+    # Block direct envelope reads before I/O, including normalized path aliases.
+    if not include_risk_context and tool_name == "read_artifact":
+        try:
+            target = (root / str(tool_params.get("path") or "")).resolve()
+            protected = (root / "data" / "risk_envelope", root / "data" / "risk_envelope_live")
+            direct = (root / "site" / "riskdata" / "risk_envelope.json",
+                      root / "site" / "riskdata" / "risk_envelope_live.json",
+                      root / "site" / "live" / "risk_envelope.json")
+            if any(target == p.resolve() or p.resolve() in target.parents for p in protected) or any(target == p.resolve() for p in direct):
+                return {"error": "Detailed risk context requires the existing site membership."}
+        except (OSError, ValueError, RuntimeError):
+            return {"error": "Artifact path could not be qualified."}
+    result = _dispatch_read_tool_raw(tool_name, tool_params, root)
+    if not include_risk_context:
+        result = redact_new_context(result)
+    return project_plain_words(result)
 
 
 def _dispatch_read_tool_raw(tool_name: str, tool_params: dict, root: Path) -> dict:

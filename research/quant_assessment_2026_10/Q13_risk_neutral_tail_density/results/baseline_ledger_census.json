@@ -1,0 +1,906 @@
+{
+ "stage": "baseline_census",
+ "amendment": "A2 (diagnostic only; PREREG section 15 rule and RUN 2 result unchanged)",
+ "ledger": "options_skew/snapshots.parquet",
+ "spy_rows_by_source": {
+  "polygon_gex": {
+   "n_rows": 8,
+   "first_date": "2026-06-21",
+   "last_date": "2026-07-26",
+   "weekday_counts": {
+    "Sunday": 6,
+    "Saturday": 2
+   },
+   "n_chain_dates_covered": 0
+  },
+  "thetadata": {
+   "n_rows": 69,
+   "first_date": "2026-06-22",
+   "last_date": "2026-09-30",
+   "weekday_counts": {
+    "Tuesday": 15,
+    "Wednesday": 15,
+    "Thursday": 14,
+    "Monday": 13,
+    "Friday": 12
+   },
+   "n_chain_dates_covered": 25
+  }
+ },
+ "chain_dates": 28,
+ "chain_dates_with_polygon_gex_row": 0,
+ "chain_dates_with_thetadata_row": 25,
+ "polygon_gex_rows_with_retained_chain_file": 0,
+ "cross_source_diagnostic": {
+  "label": "CROSS-SOURCE DIAGNOSTIC - thetadata rows come from a different vendor chain; not a reproduction",
+  "median_absdiff": {
+   "otm_put_iv": 0.0033999999999999864,
+   "atm_call_iv": 0.006099999999999994,
+   "skew": 0.0086
+  },
+  "per_date": [
+   {
+    "date": "2026-06-15",
+    "chain_asof_values": [
+     "2026-06-15"
+    ],
+    "thetadata_row": false
+   },
+   {
+    "date": "2026-06-17",
+    "chain_asof_values": [
+     "2026-06-17"
+    ],
+    "thetadata_row": false
+   },
+   {
+    "date": "2026-06-18",
+    "chain_asof_values": [
+     "2026-06-18"
+    ],
+    "thetadata_row": false
+   },
+   {
+    "date": "2026-06-24",
+    "chain_asof_values": [
+     "2026-06-24"
+    ],
+    "thetadata_row": true,
+    "absdiff_otm_put_iv": 0.0068000000000000005,
+    "absdiff_atm_call_iv": 0.02209999999999998,
+    "absdiff_skew": 0.029,
+    "computed_n_strikes": 316,
+    "thetadata_n_strikes": 402
+   },
+   {
+    "date": "2026-06-26",
+    "chain_asof_values": [
+     "2026-06-26"
+    ],
+    "thetadata_row": true,
+    "absdiff_otm_put_iv": 0.00030000000000002247,
+    "absdiff_atm_call_iv": 0.009099999999999997,
+    "absdiff_skew": 0.008799999999999999,
+    "computed_n_strikes": 314,
+    "thetadata_n_strikes": 402
+   },
+   {
+    "date": "2026-06-30",
+    "chain_asof_values": [
+     "2026-06-30"
+    ],
+    "thetadata_row": true,
+    "absdiff_otm_put_iv": 0.0039000000000000146,
+    "absdiff_atm_call_iv": 0.006099999999999994,
+    "absdiff_skew": 0.010000000000000002,
+    "computed_n_strikes": 397,
+    "thetadata_n_strikes": 500
+   },
+   {
+    "date": "2026-07-01",
+    "chain_asof_values": [
+     "2026-07-01"
+    ],
+    "thetadata_row": true,
+    "absdiff_otm_put_iv": 0.0020999999999999908,
+    "absdiff_atm_call_iv": 0.005999999999999978,
+    "absdiff_skew": 0.008100000000000003,
+    "computed_n_strikes": 397,
+    "thetadata_n_strikes": 500
+   },
+   {
+    "date": "2026-07-02",
+    "chain_asof_values": [
+     "2026-07-02"
+    ],
+    "thetadata_row": true,
+    "absdiff_otm_put_iv": 0.004300000000000026,
+    "absdiff_atm_call_iv": 0.013600000000000001,
+    "absdiff_skew": 0.009300000000000003,
+    "computed_n_strikes": 234,
+    "thetadata_n_strikes": 500
+   },
+   {
+    "date": "2026-07-07",
+    "chain_asof_values": [
+     "2026-07-07"
+    ],
+    "thetadata_row": true,
+    "absdiff_otm_put_iv": 0.0024000000000000132,
+    "absdiff_atm_call_iv": 0.006099999999999994,
+    "absdiff_skew": 0.0085,
+    "computed_n_strikes": 247,
+    "thetadata_n_strikes": 322
+   },
+   {
+    "date": "2026-07-08",
+    "chain_asof_values": [
+     "2026-07-08"
+    ],
+    "thetadata_row": true,
+    "absdiff_otm_put_iv": 0.0020999999999999908,
+    "absdiff_atm_call_iv": 0.006500000000000006,
+    "absdiff_skew": 0.0086,
+    "computed_n_strikes": 252,
+    "thetadata_n_strikes": 322
+   },
+   {
+    "date": "2026-07-09",
+    "chain_asof_values": [
+     "2026-07-09"
+    ],
+    "thetadata_row": true,
+    "absdiff_otm_put_iv": 0.001799999999999996,
+    "absdiff_atm_call_iv": 0.00470000000000001,
+    "absdiff_skew": 0.006500000000000002,
+    "computed_n_strikes": 253,
+    "thetadata_n_strikes": 322
+   },
+   {
+    "date": "2026-07-10",
+    "chain_asof_values": [
+     "2026-07-10"
+    ],
+    "thetadata_row": true,
+    "absdiff_otm_put_iv": 0.004400000000000015,
+    "absdiff_atm_call_iv": 0.01200000000000001,
+    "absdiff_skew": 0.007599999999999999,
+    "computed_n_strikes": 219,
+    "thetadata_n_strikes": 322
+   },
+   {
+    "date": "2026-07-13",
+    "chain_asof_values": [
+     "2026-07-13"
+    ],
+    "thetadata_row": true,
+    "absdiff_otm_put_iv": 0.003799999999999998,
+    "absdiff_atm_call_iv": 0.0068000000000000005,
+    "absdiff_skew": 0.010600000000000002,
+    "computed_n_strikes": 232,
+    "thetadata_n_strikes": 314
+   },
+   {
+    "date": "2026-07-15",
+    "chain_asof_values": [
+     "2026-07-15"
+    ],
+    "thetadata_row": true,
+    "absdiff_otm_put_iv": 0.003699999999999981,
+    "absdiff_atm_call_iv": 0.005899999999999989,
+    "absdiff_skew": 0.009600000000000001,
+    "computed_n_strikes": 239,
+    "thetadata_n_strikes": 314
+   },
+   {
+    "date": "2026-07-17",
+    "chain_asof_values": [
+     "2026-07-17"
+    ],
+    "thetadata_row": true,
+    "absdiff_otm_put_iv": 0.0040999999999999925,
+    "absdiff_atm_call_iv": 0.005900000000000016,
+    "absdiff_skew": 0.010000000000000002,
+    "computed_n_strikes": 246,
+    "thetadata_n_strikes": 314
+   },
+   {
+    "date": "2026-07-20",
+    "chain_asof_values": [
+     "2026-07-20"
+    ],
+    "thetadata_row": true,
+    "absdiff_otm_put_iv": 0.004399999999999987,
+    "absdiff_atm_call_iv": 0.006200000000000011,
+    "absdiff_skew": 0.010700000000000001,
+    "computed_n_strikes": 368,
+    "thetadata_n_strikes": 490
+   },
+   {
+    "date": "2026-07-21",
+    "chain_asof_values": [
+     "2026-07-21"
+    ],
+    "thetadata_row": true,
+    "absdiff_otm_put_iv": 0.002799999999999997,
+    "absdiff_atm_call_iv": 0.0063,
+    "absdiff_skew": 0.0091,
+    "computed_n_strikes": 368,
+    "thetadata_n_strikes": 490
+   },
+   {
+    "date": "2026-07-22",
+    "chain_asof_values": [
+     "2026-07-22"
+    ],
+    "thetadata_row": true,
+    "absdiff_otm_put_iv": 0.0040000000000000036,
+    "absdiff_atm_call_iv": 0.003899999999999987,
+    "absdiff_skew": 0.0079,
+    "computed_n_strikes": 369,
+    "thetadata_n_strikes": 490
+   },
+   {
+    "date": "2026-07-23",
+    "chain_asof_values": [
+     "2026-07-23"
+    ],
+    "thetadata_row": true,
+    "absdiff_otm_put_iv": 0.002600000000000019,
+    "absdiff_atm_call_iv": 0.006500000000000006,
+    "absdiff_skew": 0.009199999999999998,
+    "computed_n_strikes": 367,
+    "thetadata_n_strikes": 490
+   },
+   {
+    "date": "2026-07-24",
+    "chain_asof_values": [
+     "2026-07-24"
+    ],
+    "thetadata_row": true,
+    "absdiff_otm_put_iv": 0.002700000000000008,
+    "absdiff_atm_call_iv": 0.0058,
+    "absdiff_skew": 0.008400000000000001,
+    "computed_n_strikes": 365,
+    "thetadata_n_strikes": 490
+   },
+   {
+    "date": "2026-07-27",
+    "chain_asof_values": [
+     "2026-07-27"
+    ],
+    "thetadata_row": true,
+    "absdiff_otm_put_iv": 0.004399999999999987,
+    "absdiff_atm_call_iv": 0.006299999999999972,
+    "absdiff_skew": 0.010700000000000001,
+    "computed_n_strikes": 244,
+    "thetadata_n_strikes": 314
+   },
+   {
+    "date": "2026-07-28",
+    "chain_asof_values": [
+     "2026-07-28"
+    ],
+    "thetadata_row": true,
+    "absdiff_otm_put_iv": 0.004400000000000015,
+    "absdiff_atm_call_iv": 0.006099999999999994,
+    "absdiff_skew": 0.010599999999999998,
+    "computed_n_strikes": 246,
+    "thetadata_n_strikes": 314
+   },
+   {
+    "date": "2026-07-29",
+    "chain_asof_values": [
+     "2026-07-29"
+    ],
+    "thetadata_row": true,
+    "absdiff_otm_put_iv": 0.0031999999999999806,
+    "absdiff_atm_call_iv": 0.004399999999999987,
+    "absdiff_skew": 0.007600000000000003,
+    "computed_n_strikes": 247,
+    "thetadata_n_strikes": 314
+   },
+   {
+    "date": "2026-07-30",
+    "chain_asof_values": [
+     "2026-07-30"
+    ],
+    "thetadata_row": true,
+    "absdiff_otm_put_iv": 0.006100000000000022,
+    "absdiff_atm_call_iv": 0.0025000000000000022,
+    "absdiff_skew": 0.0086,
+    "computed_n_strikes": 391,
+    "thetadata_n_strikes": 314
+   },
+   {
+    "date": "2026-08-06",
+    "chain_asof_values": [
+     "2026-08-06"
+    ],
+    "thetadata_row": true,
+    "absdiff_otm_put_iv": 0.0033999999999999864,
+    "absdiff_atm_call_iv": 0.003700000000000009,
+    "absdiff_skew": 0.006999999999999999,
+    "computed_n_strikes": 363,
+    "thetadata_n_strikes": 490
+   },
+   {
+    "date": "2026-08-10",
+    "chain_asof_values": [
+     "2026-08-10"
+    ],
+    "thetadata_row": true,
+    "absdiff_otm_put_iv": 0.0025000000000000022,
+    "absdiff_atm_call_iv": 0.004699999999999982,
+    "absdiff_skew": 0.0072,
+    "computed_n_strikes": 290,
+    "thetadata_n_strikes": 390
+   },
+   {
+    "date": "2026-08-12",
+    "chain_asof_values": [
+     "2026-08-12"
+    ],
+    "thetadata_row": true,
+    "absdiff_otm_put_iv": 0.0033999999999999864,
+    "absdiff_atm_call_iv": 0.0031999999999999945,
+    "absdiff_skew": 0.0066,
+    "computed_n_strikes": 296,
+    "thetadata_n_strikes": 390
+   },
+   {
+    "date": "2026-08-13",
+    "chain_asof_values": [
+     "2026-08-13"
+    ],
+    "thetadata_row": true,
+    "absdiff_otm_put_iv": 0.0022000000000000075,
+    "absdiff_atm_call_iv": 0.004299999999999998,
+    "absdiff_skew": 0.006499999999999999,
+    "computed_n_strikes": 295,
+    "thetadata_n_strikes": 390
+   }
+  ]
+ },
+ "ledger_spy_rows": [
+  {
+   "source": "polygon_gex",
+   "date": "2026-06-21",
+   "asof": "2026-06-21",
+   "weekday": "Sunday",
+   "chain_file_retained": false
+  },
+  {
+   "source": "thetadata",
+   "date": "2026-06-22",
+   "asof": "2026-06-22",
+   "weekday": "Monday",
+   "chain_file_retained": false
+  },
+  {
+   "source": "thetadata",
+   "date": "2026-06-23",
+   "asof": "2026-06-23",
+   "weekday": "Tuesday",
+   "chain_file_retained": false
+  },
+  {
+   "source": "thetadata",
+   "date": "2026-06-24",
+   "asof": "2026-06-24",
+   "weekday": "Wednesday",
+   "chain_file_retained": true
+  },
+  {
+   "source": "thetadata",
+   "date": "2026-06-25",
+   "asof": "2026-06-25",
+   "weekday": "Thursday",
+   "chain_file_retained": false
+  },
+  {
+   "source": "thetadata",
+   "date": "2026-06-26",
+   "asof": "2026-06-26",
+   "weekday": "Friday",
+   "chain_file_retained": true
+  },
+  {
+   "source": "polygon_gex",
+   "date": "2026-06-27",
+   "asof": "2026-06-27",
+   "weekday": "Saturday",
+   "chain_file_retained": false
+  },
+  {
+   "source": "polygon_gex",
+   "date": "2026-06-28",
+   "asof": "2026-06-28",
+   "weekday": "Sunday",
+   "chain_file_retained": false
+  },
+  {
+   "source": "thetadata",
+   "date": "2026-06-29",
+   "asof": "2026-06-29",
+   "weekday": "Monday",
+   "chain_file_retained": false
+  },
+  {
+   "source": "thetadata",
+   "date": "2026-06-30",
+   "asof": "2026-06-30",
+   "weekday": "Tuesday",
+   "chain_file_retained": true
+  },
+  {
+   "source": "thetadata",
+   "date": "2026-07-01",
+   "asof": "2026-07-01",
+   "weekday": "Wednesday",
+   "chain_file_retained": true
+  },
+  {
+   "source": "thetadata",
+   "date": "2026-07-02",
+   "asof": "2026-07-02",
+   "weekday": "Thursday",
+   "chain_file_retained": true
+  },
+  {
+   "source": "polygon_gex",
+   "date": "2026-07-05",
+   "asof": "2026-07-05",
+   "weekday": "Sunday",
+   "chain_file_retained": false
+  },
+  {
+   "source": "thetadata",
+   "date": "2026-07-06",
+   "asof": "2026-07-06",
+   "weekday": "Monday",
+   "chain_file_retained": false
+  },
+  {
+   "source": "thetadata",
+   "date": "2026-07-07",
+   "asof": "2026-07-07",
+   "weekday": "Tuesday",
+   "chain_file_retained": true
+  },
+  {
+   "source": "thetadata",
+   "date": "2026-07-08",
+   "asof": "2026-07-08",
+   "weekday": "Wednesday",
+   "chain_file_retained": true
+  },
+  {
+   "source": "thetadata",
+   "date": "2026-07-09",
+   "asof": "2026-07-09",
+   "weekday": "Thursday",
+   "chain_file_retained": true
+  },
+  {
+   "source": "thetadata",
+   "date": "2026-07-10",
+   "asof": "2026-07-10",
+   "weekday": "Friday",
+   "chain_file_retained": true
+  },
+  {
+   "source": "polygon_gex",
+   "date": "2026-07-12",
+   "asof": "2026-07-12",
+   "weekday": "Sunday",
+   "chain_file_retained": false
+  },
+  {
+   "source": "thetadata",
+   "date": "2026-07-13",
+   "asof": "2026-07-13",
+   "weekday": "Monday",
+   "chain_file_retained": true
+  },
+  {
+   "source": "thetadata",
+   "date": "2026-07-14",
+   "asof": "2026-07-14",
+   "weekday": "Tuesday",
+   "chain_file_retained": false
+  },
+  {
+   "source": "thetadata",
+   "date": "2026-07-15",
+   "asof": "2026-07-15",
+   "weekday": "Wednesday",
+   "chain_file_retained": true
+  },
+  {
+   "source": "thetadata",
+   "date": "2026-07-16",
+   "asof": "2026-07-16",
+   "weekday": "Thursday",
+   "chain_file_retained": false
+  },
+  {
+   "source": "thetadata",
+   "date": "2026-07-17",
+   "asof": "2026-07-17",
+   "weekday": "Friday",
+   "chain_file_retained": true
+  },
+  {
+   "source": "polygon_gex",
+   "date": "2026-07-18",
+   "asof": "2026-07-18",
+   "weekday": "Saturday",
+   "chain_file_retained": false
+  },
+  {
+   "source": "polygon_gex",
+   "date": "2026-07-19",
+   "asof": "2026-07-19",
+   "weekday": "Sunday",
+   "chain_file_retained": false
+  },
+  {
+   "source": "thetadata",
+   "date": "2026-07-20",
+   "asof": "2026-07-20",
+   "weekday": "Monday",
+   "chain_file_retained": true
+  },
+  {
+   "source": "thetadata",
+   "date": "2026-07-21",
+   "asof": "2026-07-21",
+   "weekday": "Tuesday",
+   "chain_file_retained": true
+  },
+  {
+   "source": "thetadata",
+   "date": "2026-07-22",
+   "asof": "2026-07-22",
+   "weekday": "Wednesday",
+   "chain_file_retained": true
+  },
+  {
+   "source": "thetadata",
+   "date": "2026-07-23",
+   "asof": "2026-07-23",
+   "weekday": "Thursday",
+   "chain_file_retained": true
+  },
+  {
+   "source": "thetadata",
+   "date": "2026-07-24",
+   "asof": "2026-07-24",
+   "weekday": "Friday",
+   "chain_file_retained": true
+  },
+  {
+   "source": "polygon_gex",
+   "date": "2026-07-26",
+   "asof": "2026-07-26",
+   "weekday": "Sunday",
+   "chain_file_retained": false
+  },
+  {
+   "source": "thetadata",
+   "date": "2026-07-27",
+   "asof": "2026-07-27",
+   "weekday": "Monday",
+   "chain_file_retained": true
+  },
+  {
+   "source": "thetadata",
+   "date": "2026-07-28",
+   "asof": "2026-07-28",
+   "weekday": "Tuesday",
+   "chain_file_retained": true
+  },
+  {
+   "source": "thetadata",
+   "date": "2026-07-29",
+   "asof": "2026-07-29",
+   "weekday": "Wednesday",
+   "chain_file_retained": true
+  },
+  {
+   "source": "thetadata",
+   "date": "2026-07-30",
+   "asof": "2026-07-30",
+   "weekday": "Thursday",
+   "chain_file_retained": true
+  },
+  {
+   "source": "thetadata",
+   "date": "2026-07-31",
+   "asof": "2026-07-31",
+   "weekday": "Friday",
+   "chain_file_retained": false
+  },
+  {
+   "source": "thetadata",
+   "date": "2026-08-03",
+   "asof": "2026-08-03",
+   "weekday": "Monday",
+   "chain_file_retained": false
+  },
+  {
+   "source": "thetadata",
+   "date": "2026-08-04",
+   "asof": "2026-08-04",
+   "weekday": "Tuesday",
+   "chain_file_retained": false
+  },
+  {
+   "source": "thetadata",
+   "date": "2026-08-05",
+   "asof": "2026-08-05",
+   "weekday": "Wednesday",
+   "chain_file_retained": false
+  },
+  {
+   "source": "thetadata",
+   "date": "2026-08-06",
+   "asof": "2026-08-06",
+   "weekday": "Thursday",
+   "chain_file_retained": true
+  },
+  {
+   "source": "thetadata",
+   "date": "2026-08-07",
+   "asof": "2026-08-07",
+   "weekday": "Friday",
+   "chain_file_retained": false
+  },
+  {
+   "source": "thetadata",
+   "date": "2026-08-10",
+   "asof": "2026-08-10",
+   "weekday": "Monday",
+   "chain_file_retained": true
+  },
+  {
+   "source": "thetadata",
+   "date": "2026-08-11",
+   "asof": "2026-08-11",
+   "weekday": "Tuesday",
+   "chain_file_retained": false
+  },
+  {
+   "source": "thetadata",
+   "date": "2026-08-12",
+   "asof": "2026-08-12",
+   "weekday": "Wednesday",
+   "chain_file_retained": true
+  },
+  {
+   "source": "thetadata",
+   "date": "2026-08-13",
+   "asof": "2026-08-13",
+   "weekday": "Thursday",
+   "chain_file_retained": true
+  },
+  {
+   "source": "thetadata",
+   "date": "2026-08-14",
+   "asof": "2026-08-14",
+   "weekday": "Friday",
+   "chain_file_retained": false
+  },
+  {
+   "source": "thetadata",
+   "date": "2026-08-17",
+   "asof": "2026-08-17",
+   "weekday": "Monday",
+   "chain_file_retained": false
+  },
+  {
+   "source": "thetadata",
+   "date": "2026-08-18",
+   "asof": "2026-08-18",
+   "weekday": "Tuesday",
+   "chain_file_retained": false
+  },
+  {
+   "source": "thetadata",
+   "date": "2026-08-19",
+   "asof": "2026-08-19",
+   "weekday": "Wednesday",
+   "chain_file_retained": false
+  },
+  {
+   "source": "thetadata",
+   "date": "2026-08-20",
+   "asof": "2026-08-20",
+   "weekday": "Thursday",
+   "chain_file_retained": false
+  },
+  {
+   "source": "thetadata",
+   "date": "2026-08-21",
+   "asof": "2026-08-21",
+   "weekday": "Friday",
+   "chain_file_retained": false
+  },
+  {
+   "source": "thetadata",
+   "date": "2026-08-24",
+   "asof": "2026-08-24",
+   "weekday": "Monday",
+   "chain_file_retained": false
+  },
+  {
+   "source": "thetadata",
+   "date": "2026-08-25",
+   "asof": "2026-08-25",
+   "weekday": "Tuesday",
+   "chain_file_retained": false
+  },
+  {
+   "source": "thetadata",
+   "date": "2026-08-26",
+   "asof": "2026-08-26",
+   "weekday": "Wednesday",
+   "chain_file_retained": false
+  },
+  {
+   "source": "thetadata",
+   "date": "2026-08-27",
+   "asof": "2026-08-27",
+   "weekday": "Thursday",
+   "chain_file_retained": false
+  },
+  {
+   "source": "thetadata",
+   "date": "2026-08-28",
+   "asof": "2026-08-28",
+   "weekday": "Friday",
+   "chain_file_retained": false
+  },
+  {
+   "source": "thetadata",
+   "date": "2026-08-31",
+   "asof": "2026-08-31",
+   "weekday": "Monday",
+   "chain_file_retained": false
+  },
+  {
+   "source": "thetadata",
+   "date": "2026-09-01",
+   "asof": "2026-09-01",
+   "weekday": "Tuesday",
+   "chain_file_retained": false
+  },
+  {
+   "source": "thetadata",
+   "date": "2026-09-02",
+   "asof": "2026-09-02",
+   "weekday": "Wednesday",
+   "chain_file_retained": false
+  },
+  {
+   "source": "thetadata",
+   "date": "2026-09-03",
+   "asof": "2026-09-03",
+   "weekday": "Thursday",
+   "chain_file_retained": false
+  },
+  {
+   "source": "thetadata",
+   "date": "2026-09-04",
+   "asof": "2026-09-04",
+   "weekday": "Friday",
+   "chain_file_retained": false
+  },
+  {
+   "source": "thetadata",
+   "date": "2026-09-08",
+   "asof": "2026-09-08",
+   "weekday": "Tuesday",
+   "chain_file_retained": false
+  },
+  {
+   "source": "thetadata",
+   "date": "2026-09-09",
+   "asof": "2026-09-09",
+   "weekday": "Wednesday",
+   "chain_file_retained": false
+  },
+  {
+   "source": "thetadata",
+   "date": "2026-09-10",
+   "asof": "2026-09-10",
+   "weekday": "Thursday",
+   "chain_file_retained": false
+  },
+  {
+   "source": "thetadata",
+   "date": "2026-09-11",
+   "asof": "2026-09-11",
+   "weekday": "Friday",
+   "chain_file_retained": false
+  },
+  {
+   "source": "thetadata",
+   "date": "2026-09-14",
+   "asof": "2026-09-14",
+   "weekday": "Monday",
+   "chain_file_retained": false
+  },
+  {
+   "source": "thetadata",
+   "date": "2026-09-15",
+   "asof": "2026-09-15",
+   "weekday": "Tuesday",
+   "chain_file_retained": false
+  },
+  {
+   "source": "thetadata",
+   "date": "2026-09-16",
+   "asof": "2026-09-16",
+   "weekday": "Wednesday",
+   "chain_file_retained": false
+  },
+  {
+   "source": "thetadata",
+   "date": "2026-09-17",
+   "asof": "2026-09-17",
+   "weekday": "Thursday",
+   "chain_file_retained": false
+  },
+  {
+   "source": "thetadata",
+   "date": "2026-09-18",
+   "asof": "2026-09-18",
+   "weekday": "Friday",
+   "chain_file_retained": false
+  },
+  {
+   "source": "thetadata",
+   "date": "2026-09-21",
+   "asof": "2026-09-21",
+   "weekday": "Monday",
+   "chain_file_retained": false
+  },
+  {
+   "source": "thetadata",
+   "date": "2026-09-22",
+   "asof": "2026-09-22",
+   "weekday": "Tuesday",
+   "chain_file_retained": false
+  },
+  {
+   "source": "thetadata",
+   "date": "2026-09-23",
+   "asof": "2026-09-23",
+   "weekday": "Wednesday",
+   "chain_file_retained": false
+  },
+  {
+   "source": "thetadata",
+   "date": "2026-09-24",
+   "asof": "2026-09-24",
+   "weekday": "Thursday",
+   "chain_file_retained": false
+  },
+  {
+   "source": "thetadata",
+   "date": "2026-09-29",
+   "asof": "2026-09-29",
+   "weekday": "Tuesday",
+   "chain_file_retained": false
+  },
+  {
+   "source": "thetadata",
+   "date": "2026-09-30",
+   "asof": "2026-09-30",
+   "weekday": "Wednesday",
+   "chain_file_retained": false
+  }
+ ]
+}

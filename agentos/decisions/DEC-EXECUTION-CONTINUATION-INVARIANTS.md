@@ -31,11 +31,13 @@ answer: >
   EFFECT_UNKNOWN reconciles on the same carrier, never by blind retry or failover.
   (3) ACK, QUEUED, START, RUNNING, DELIVERED, CI, MERGED, PRODUCTION_PROOF and
   ACCEPTANCE are nine distinct facts and none implies the next; a substantial session
-  ends by classifying itself into the closed set PROVEN_OUTCOME, EXACT_HUMAN_GATE,
-  EFFECT_UNKNOWN, ALL_SCOPED_LANES_BLOCKED, DURABLE_EXECUTION_RUNNING, MORE_WORK_EXISTS,
-  and MORE_WORK_EXISTS is never a valid stopping state.
-  The hook enforces exactly the part it can observe without inference: it refuses a
-  self-declared MORE_WORK_EXISTS end state, and it composes each block's continuation
+  classifies itself into the closed vocabulary PROVEN_OUTCOME, EXACT_HUMAN_GATE,
+  EFFECT_UNKNOWN, PLATFORM_FAILURE, ALL_SCOPED_LANES_BLOCKED,
+  DURABLE_EXECUTION_RUNNING, MORE_WORK_EXISTS. The last two diagnostic failure states
+  ALL_SCOPED_LANES_BLOCKED and MORE_WORK_EXISTS are nonterminal; internal blockers must
+  be converted into owned actions.
+  The hook enforces exactly the part it can observe without inference: it refuses either
+  self-declared nonterminal end state, and it composes each block's continuation
   directive from its own ledger instead of repeating one unchanging sentence. Everything
   that would require inferring lanes, custody, delegation scope or carrier state stays
   law and is pinned by cross-surface parity tests.
@@ -103,6 +105,37 @@ decided_by: chairman
 decided_at: 2026-09-17
 ---
 
+## 2026-09-28 blocker-demolition amendment
+
+The Chairman directly superseded one narrow part of the 2026-09-17 ruling after repeated
+fleet evidence: `ALL_SCOPED_LANES_BLOCKED` remains a useful lane-census diagnostic but is
+**not a terminal principal/seat state**. The old terminal interpretation optimized local
+sessions for proving why every named lane was somebody else's problem. Repeated Claude
+sessions then enumerated dependencies, assigned each to another owner, and stopped without
+converting any dependency into execution.
+
+Binding replacement:
+
+- An **internal project blocker is work, not an exit**. If direct mutation is disallowed by
+  custody/ownership, the seat resolves or routes the dependency through the canonical owner,
+  or proves an already-running durable owner and return path. "Not my lane" is not a mission
+  result.
+- A bounded **worker** may return `STATUS: BLOCKED` to its parent. That worker return does
+  not terminally classify the parent mission.
+- A principal/seat may stop on a blocker only when it has collapsed to an exact genuinely
+  external terminal boundary: `EXACT_HUMAN_GATE`, `PLATFORM_FAILURE`, or `EFFECT_UNKNOWN`,
+  or when real durable execution is already running with a return path
+  (`DURABLE_EXECUTION_RUNNING`).
+- `ALL_SCOPED_LANES_BLOCKED` and `MORE_WORK_EXISTS` are both nonterminal self-
+  declarations. The existing Stop hook enforces this only because the model declared the
+  token itself; it still does not infer lanes, ownership, or authority and creates no new
+  control plane.
+
+This amendment supersedes only sentences below that describe
+`ALL_SCOPED_LANES_BLOCKED` as a lawful terminal outcome. The remaining 2026-09-17
+invariants, provenance, authority model, ship chain, effect reconciliation, and no-delta
+rules remain controlling.
+
 ## Provenance
 
 The Chairman's 2026-09-17 direct handoff named the eight recurring failures, stated the
@@ -141,15 +174,17 @@ stated scope**.
 The clauses that carry each invariant's second half — the half that usually goes missing
 when a rule is paraphrased:
 
-- `ALL_SCOPED_LANES_BLOCKED` is honest only when every scoped lane is blocked, and that
-  classification **must name the lanes it checked**.
+- `ALL_SCOPED_LANES_BLOCKED` is an honest **diagnostic** only when every scoped lane
+  is blocked, but it is nonterminal: each internal blocker must become an owned next
+  action through resolution, canonical-owner routing, or proven durable execution.
 - A delegation surface being unavailable **is not evidence that execution is
   impossible**: direct bounded execution continues when **no worker actually started**,
   the principal still holds **lawful tools and custody**, **no other owner is working
   the same artifact**, and no act sits in an `EFFECT_UNKNOWN` state.
-- When any of those four is false the outcome is `ALL_SCOPED_LANES_BLOCKED` or
-  `EXACT_HUMAN_GATE` **naming the exact missing thing** — **never a silent stop**, and
-  never a **second worker on a contested artifact**.
+- When any of those four is false, never add a **second worker on a contested artifact**.
+  Route/reconcile the blocker through the canonical owner. A bounded worker may return
+  BLOCKED to its parent; a principal stops only at `EXACT_HUMAN_GATE`,
+  `PLATFORM_FAILURE`, `EFFECT_UNKNOWN`, or proven `DURABLE_EXECUTION_RUNNING`.
 - A Stop-hook block during a wait is **satisfied by a one-line hold note, never by a
   fresh poll**.
 - The **material invalidator** is new contradicting evidence, a changed contract, or an
@@ -173,7 +208,8 @@ work remains**.
 
 Enforced by `.claude/hooks/ship_loop_guard.py`, from facts the guard already holds:
 
-- a self-declared `SESSION END: MORE_WORK_EXISTS` is refused (`more_work_exists`);
+- self-declared `SESSION END: MORE_WORK_EXISTS` and
+  `SESSION END: ALL_SCOPED_LANES_BLOCKED` are refused as nonterminal diagnostics;
 - every block's continuation directive is composed from the consecutive-block count:
   the lane rule always, the wait rule for blocks owned by outside machinery, the
   no-delta-cycle rule from the second identical block, and a delivery-conflation line

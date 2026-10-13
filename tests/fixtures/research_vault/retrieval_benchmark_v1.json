@@ -1,0 +1,526 @@
+{
+  "schema": "research_vault.retrieval_benchmark.v1",
+  "version": 1,
+  "source_snapshot": {
+    "catalog_blob": "74338a21384b041e3078e78691f7bd6ba1a22a7c",
+    "excerpts_blob": "f9a578775714199c2cfb834d3c0818917cc96a28"
+  },
+  "cases": [
+    {
+      "id": "R1-1",
+      "class": "R1",
+      "query": "First, Middle Eastern and Russian refineries are both operating at only 60% of capacity because of unplanned outages from drone and missile attacks.",
+      "filters": {},
+      "expected_doc_ids": [
+        "marketdesk-0cihcglmypc-071da5"
+      ],
+      "abstain_expected": false,
+      "fill_state": "PENDING_HOST_FILL",
+      "evidence": {
+        "anchor": "First, Middle Eastern and Russian refineries are both operating at only 60% of capacity because of unplanned outages from drone and missile attacks."
+      },
+      "notes": "Head-text exact query copied from excerpts.json, which is opening-page text. PENDING_HOST_FILL because a page locator and the source sha256 need store custody; this fixture does not have them. evidence.anchor is the same excerpt sentence."
+    },
+    {
+      "id": "R1-2",
+      "class": "R1",
+      "query": "In this note, we examine whether heavier bond supply could put upward pressure on bond yields and swap rates in China.",
+      "filters": {},
+      "expected_doc_ids": [
+        "marketdesk-0f8vk7showv-643f44"
+      ],
+      "abstain_expected": false,
+      "fill_state": "PENDING_HOST_FILL",
+      "evidence": {
+        "anchor": "In this note, we examine whether heavier bond supply could put upward pressure on bond yields and swap rates in China."
+      },
+      "notes": "Head-text exact query copied from excerpts.json, which is opening-page text. PENDING_HOST_FILL because a page locator and the source sha256 need store custody; this fixture does not have them. evidence.anchor is the same excerpt sentence."
+    },
+    {
+      "id": "R2-1",
+      "class": "R2",
+      "query": "tail-only passage after character offset 60000 in the 279-page UBS emerging markets bond list published 2026-08-24",
+      "filters": {},
+      "expected_doc_ids": [
+        "marketdesk-lg9aokt0kp5-b59f84"
+      ],
+      "abstain_expected": false,
+      "fill_state": "PENDING_HOST_FILL",
+      "evidence": {},
+      "notes": "Selection: catalog.pages=279 (>=100) and published_at starts 2026-08-24, id marketdesk-lg9aokt0kp5-b59f84, institution UBS. A 60k-character prefix covers roughly the first 15-25 pages, so this note extends past that prefix, but the public snapshot has no character offsets and excerpts are opening text only. Host must confirm the only supporting passage begins after character offset 60000 of the canonical extraction and must supply that anchor. No tail text is quoted here."
+    },
+    {
+      "id": "R2-2",
+      "class": "R2",
+      "query": "tail-only passage after character offset 60000 in the 278-page UBS emerging markets bond list published 2026-07-28",
+      "filters": {},
+      "expected_doc_ids": [
+        "marketdesk-edb6udq3mjl-ba1c71"
+      ],
+      "abstain_expected": false,
+      "fill_state": "PENDING_HOST_FILL",
+      "evidence": {},
+      "notes": "Selection: catalog.pages=278 (>=100) and published_at starts 2026-07-28, id marketdesk-edb6udq3mjl-ba1c71, institution UBS. A 60k-character prefix covers roughly the first 15-25 pages, so this note extends past that prefix, but the public snapshot has no character offsets and excerpts are opening text only. Host must confirm the only supporting passage begins after character offset 60000 of the canonical extraction and must supply that anchor. No tail text is quoted here."
+    },
+    {
+      "id": "R3-1",
+      "class": "R3",
+      "query": "IGWT Special Gold Oktoberfest Beer Ratio",
+      "filters": {},
+      "expected_doc_ids": [
+        "marketdesk-q8omsbdwdzb-f33993"
+      ],
+      "abstain_expected": false,
+      "fill_state": "READY",
+      "evidence": {},
+      "notes": "Query is a literal title substring. It occurs in this id's title and in no other catalog title (case-sensitive and casefold)."
+    },
+    {
+      "id": "R3-2",
+      "class": "R3",
+      "query": "Alibaba Cloud APSARA Key Takeaways",
+      "filters": {},
+      "expected_doc_ids": [
+        "marketdesk-gl6r64rsfiu-5014e0"
+      ],
+      "abstain_expected": false,
+      "fill_state": "READY",
+      "evidence": {},
+      "notes": "Query is a literal title substring. It occurs in this id's title and in no other catalog title (case-sensitive and casefold)."
+    },
+    {
+      "id": "R3-3",
+      "class": "R3",
+      "query": "Lending Pulse Loans Aren't the Problem",
+      "filters": {},
+      "expected_doc_ids": [
+        "marketdesk-askhyzfj41i-8d3284"
+      ],
+      "abstain_expected": false,
+      "fill_state": "READY",
+      "evidence": {},
+      "notes": "Query is a literal title substring. It occurs in this id's title and in no other catalog title (case-sensitive and casefold)."
+    },
+    {
+      "id": "R4-1",
+      "class": "R4",
+      "query": "A mid-year public-insurance bridge for weight-loss injections lifted volume by about four fifths, and management took the full-year sales outlook up to eighty-eight and a half billion dollars.",
+      "filters": {},
+      "expected_doc_ids": [
+        "marketdesk-vd4taryxext-8187e9"
+      ],
+      "abstain_expected": false,
+      "fill_state": "READY",
+      "evidence": {},
+      "notes": "Paraphrases summary_points[0] of marketdesk-vd4taryxext-8187e9. Verified no case-insensitive 4-word run is shared with that bullet. The bullet itself is not copied."
+    },
+    {
+      "id": "R4-2",
+      "class": "R4",
+      "query": "Worldwide chip revenue more than doubled during June and the crest is penciled in for October, while valuation ratios usually turn three to six months before that peak.",
+      "filters": {},
+      "expected_doc_ids": [
+        "marketdesk-xnytiufrt2t-4fcb8b"
+      ],
+      "abstain_expected": false,
+      "fill_state": "READY",
+      "evidence": {},
+      "notes": "Paraphrases summary_points[1] of marketdesk-xnytiufrt2t-4fcb8b. Verified no case-insensitive 4-word run is shared with that bullet. The bullet itself is not copied."
+    },
+    {
+      "id": "R5-1",
+      "class": "R5",
+      "query": "LLY",
+      "filters": {},
+      "expected_doc_ids": [
+        "marketdesk-vd4taryxext-8187e9",
+        "marketdesk-zavxcmxechy-5e5812",
+        "marketdesk-skzg5akbbve-3120df",
+        "marketdesk-h79cqjqm1el-ba4455",
+        "marketdesk-tvidqpbwj4r-8cd1e8",
+        "marketdesk-l6rp4rrqiyh-79b9c1",
+        "marketdesk-3p712316ktt-a74312"
+      ],
+      "abstain_expected": false,
+      "fill_state": "READY",
+      "evidence": {},
+      "notes": "Query is the explicit ticker token LLY. It occurs in the title of marketdesk-vd4taryxext-8187e9 and in the title or summary_points of the other 6 ids, as a bounded token. catalog tickers is an empty list on all 2778 items, including these, so the token is taken from title or summary_points rather than from the tickers field. Freshest title match is ranked first."
+    },
+    {
+      "id": "R5-2",
+      "class": "R5",
+      "query": "AZN",
+      "filters": {},
+      "expected_doc_ids": [
+        "marketdesk-veuvxzenlaw-7fc4e8",
+        "marketdesk-skzg5akbbve-3120df",
+        "marketdesk-fauuekbwwl0-f56715",
+        "marketdesk-t4gxmrvoaq4-f83b28"
+      ],
+      "abstain_expected": false,
+      "fill_state": "READY",
+      "evidence": {},
+      "notes": "Query is the explicit ticker token AZN. It occurs in the title of marketdesk-veuvxzenlaw-7fc4e8 and in the title or summary_points of the other 3 ids, as a bounded token. catalog tickers is an empty list on all 2778 items, including these, so the token is taken from title or summary_points rather than from the tickers field. Freshest title match is ranked first."
+    },
+    {
+      "id": "R5-3",
+      "class": "R5",
+      "query": "QCOM",
+      "filters": {},
+      "expected_doc_ids": [
+        "marketdesk-8ftvcieac8b-d1fd93",
+        "marketdesk-dmynqpbgndk-94949f",
+        "marketdesk-jwuuvxrgzw5-676bac"
+      ],
+      "abstain_expected": false,
+      "fill_state": "READY",
+      "evidence": {},
+      "notes": "Query is the explicit ticker token QCOM. It occurs in the title of marketdesk-8ftvcieac8b-d1fd93 and in the title or summary_points of the other 2 ids, as a bounded token. catalog tickers is an empty list on all 2778 items, including these, so the token is taken from title or summary_points rather than from the tickers field. Freshest title match is ranked first."
+    },
+    {
+      "id": "R6-1",
+      "class": "R6",
+      "query": "Eli Lilly",
+      "filters": {},
+      "expected_doc_ids": [
+        "marketdesk-vd4taryxext-8187e9",
+        "marketdesk-zavxcmxechy-5e5812"
+      ],
+      "abstain_expected": false,
+      "fill_state": "READY",
+      "evidence": {},
+      "notes": "Query names Eli Lilly and does not contain ticker LLY. Every expected id's title contains the company name (2 title matches, freshest first). Summary-only mentions are not required."
+    },
+    {
+      "id": "R6-2",
+      "class": "R6",
+      "query": "Boeing",
+      "filters": {},
+      "expected_doc_ids": [
+        "marketdesk-s56rjmyhuue-65871d",
+        "marketdesk-xoiaddphycp-b1d47a"
+      ],
+      "abstain_expected": false,
+      "fill_state": "READY",
+      "evidence": {},
+      "notes": "Query names Boeing and does not contain ticker BA. Every expected id's title contains the company name (2 title matches, freshest first). Summary-only mentions are not required."
+    },
+    {
+      "id": "R6-3",
+      "class": "R6",
+      "query": "AstraZeneca",
+      "filters": {},
+      "expected_doc_ids": [
+        "marketdesk-veuvxzenlaw-7fc4e8"
+      ],
+      "abstain_expected": false,
+      "fill_state": "READY",
+      "evidence": {},
+      "notes": "Query names AstraZeneca and does not contain ticker AZN. Every expected id's title contains the company name (1 title matches, freshest first). Summary-only mentions are not required."
+    },
+    {
+      "id": "R7-1",
+      "class": "R7",
+      "query": "European integrated oil sector",
+      "filters": {},
+      "expected_doc_ids": [
+        "marketdesk-wufuc4eelmz-b4e4e1"
+      ],
+      "abstain_expected": false,
+      "fill_state": "READY",
+      "evidence": {},
+      "notes": "One sector report, not a single-company note. Explicit ticker tokens in title or summary_points: SHEL, BP, EQNR.OL, TEF.PA, OMV.VI. catalog tickers is [] on this item and on every catalog item, so the symbols are read from summary_points parentheticals, not from the tickers field. Do not assign the report exclusively to one of these companies."
+    },
+    {
+      "id": "R7-2",
+      "class": "R7",
+      "query": "enterprise software sector",
+      "filters": {},
+      "expected_doc_ids": [
+        "marketdesk-lq978mw3rr0-709ff1"
+      ],
+      "abstain_expected": false,
+      "fill_state": "READY",
+      "evidence": {},
+      "notes": "One sector report, not a single-company note. Explicit ticker tokens in title or summary_points: MSFT, PANW, CRWD, SHOP, SNOW. catalog tickers is [] on this item and on every catalog item, so the symbols are read from summary_points parentheticals, not from the tickers field. Do not assign the report exclusively to one of these companies."
+    },
+    {
+      "id": "R8-1",
+      "class": "R8",
+      "query": "semiconductor",
+      "filters": {
+        "institution": "Jefferies"
+      },
+      "expected_doc_ids": [
+        "marketdesk-xnytiufrt2t-4fcb8b"
+      ],
+      "abstain_expected": false,
+      "fill_state": "READY",
+      "evidence": {},
+      "notes": "Query-term match is a case-insensitive substring of title or summary_points. With the filter (institution=Jefferies): 1 catalog items. Without it: 234 catalog items. Every expected id is a with-filter match; title matches are ranked first, then freshest."
+    },
+    {
+      "id": "R8-2",
+      "class": "R8",
+      "query": "FOMC",
+      "filters": {
+        "published_from": "2026-07-20",
+        "published_to": "2026-07-25"
+      },
+      "expected_doc_ids": [
+        "marketdesk-bpof0armawt-47b4aa",
+        "marketdesk-1tmr0fjwz6r-40b905",
+        "marketdesk-livduosy43b-c2d376",
+        "marketdesk-pwyi1eh0hje-c0e9e7",
+        "marketdesk-pbrqy0j6xai-3993d6"
+      ],
+      "abstain_expected": false,
+      "fill_state": "READY",
+      "evidence": {},
+      "notes": "Query-term match is a case-insensitive substring of title or summary_points. With the filter (published_from=2026-07-20, published_to=2026-07-25): 5 catalog items. Without it: 166 catalog items. Every expected id is a with-filter match; title matches are ranked first, then freshest."
+    },
+    {
+      "id": "R8-3",
+      "class": "R8",
+      "query": "humanoid",
+      "filters": {
+        "institution": "UBS",
+        "published_from": "2026-08-17",
+        "published_to": "2026-08-17"
+      },
+      "expected_doc_ids": [
+        "marketdesk-w0mgplq6a75-33c5a1"
+      ],
+      "abstain_expected": false,
+      "fill_state": "READY",
+      "evidence": {},
+      "notes": "Query-term match is a case-insensitive substring of title or summary_points. With the filter (institution=UBS, published_from=2026-08-17, published_to=2026-08-17): 1 catalog items. Without it: 16 catalog items. Every expected id is a with-filter match; title matches are ranked first, then freshest."
+    },
+    {
+      "id": "R9-1",
+      "class": "R9",
+      "query": "zyphloxene",
+      "filters": {},
+      "expected_doc_ids": [],
+      "abstain_expected": true,
+      "fill_state": "READY",
+      "evidence": {},
+      "notes": "zero-hit: catalog=0 excerpts=0. Term zyphloxene has case-insensitive count 0 over the full JSON text of catalog.json and of excerpts.json. No fabricated evidence."
+    },
+    {
+      "id": "R9-2",
+      "class": "R9",
+      "query": "qorvintide",
+      "filters": {},
+      "expected_doc_ids": [],
+      "abstain_expected": true,
+      "fill_state": "READY",
+      "evidence": {},
+      "notes": "zero-hit: catalog=0 excerpts=0. Term qorvintide has case-insensitive count 0 over the full JSON text of catalog.json and of excerpts.json. No fabricated evidence."
+    },
+    {
+      "id": "R9-3",
+      "class": "R9",
+      "query": "blorncaster",
+      "filters": {},
+      "expected_doc_ids": [],
+      "abstain_expected": true,
+      "fill_state": "READY",
+      "evidence": {},
+      "notes": "zero-hit: catalog=0 excerpts=0. Term blorncaster has case-insensitive count 0 over the full JSON text of catalog.json and of excerpts.json. No fabricated evidence."
+    },
+    {
+      "id": "R10-1",
+      "class": "R10",
+      "query": "scanned research note whose pages have no text layer",
+      "filters": {},
+      "expected_doc_ids": [],
+      "abstain_expected": false,
+      "fill_state": "PENDING_HOST_FILL",
+      "evidence": {},
+      "notes": "No catalog field proves scan/no-text. Item fields are only: id, title, institution, side, desk, published_at, summary_points, tags, tickers, top_pick, pages, needs_metadata, language. needs_metadata is true for 0 items; pages is null for 105 items (missing page count, not a text-layer state); language is null for 105 items (not a visual-evidence state). Host must select reports whose text_layer_state is none and must type the evidence state unavailable instead of inventing a passage."
+    },
+    {
+      "id": "R10-2",
+      "class": "R10",
+      "query": "visual-only exhibit whose text extraction is unavailable",
+      "filters": {},
+      "expected_doc_ids": [],
+      "abstain_expected": false,
+      "fill_state": "PENDING_HOST_FILL",
+      "evidence": {},
+      "notes": "No catalog field proves an unavailable extraction. Same field list as R10-1; none is text_layer_state, scan, or visual. Host must select reports whose text_layer_state is unavailable and must return that typed state with no invented text."
+    },
+    {
+      "id": "R11-1",
+      "class": "R11",
+      "query": "current revision of a corrected research note",
+      "filters": {},
+      "expected_doc_ids": [],
+      "abstain_expected": false,
+      "fill_state": "PENDING_HOST_FILL",
+      "evidence": {},
+      "notes": "No catalog field proves a corrected report. No item key records a revision, a superseding id, or a stale copy. 185 titles occur more than once and are not labeled as corrections, so the catalog cannot say which copy is current. Host must supply the stale id and the current id."
+    },
+    {
+      "id": "R11-2",
+      "class": "R11",
+      "query": "superseded draft that the newer revision replaces",
+      "filters": {},
+      "expected_doc_ids": [],
+      "abstain_expected": false,
+      "fill_state": "PENDING_HOST_FILL",
+      "evidence": {},
+      "notes": "No catalog field distinguishes an old revision from the current one. Repeated titles are not a correction marker. Host must name the stale report and the report that replaces it; this snapshot cannot."
+    },
+    {
+      "id": "R12-1",
+      "class": "R12",
+      "query": "China's Next Industrial Revolution",
+      "filters": {},
+      "expected_doc_ids": [
+        "marketdesk-m5k4dgocvoe-a6d4ab"
+      ],
+      "abstain_expected": false,
+      "fill_state": "READY",
+      "evidence": {},
+      "notes": "pages=198; catalog.pages is 198, which is >= 100. Query is a title phrase unique to this id."
+    },
+    {
+      "id": "R12-2",
+      "class": "R12",
+      "query": "Digital Assets From Disruption to Convergence",
+      "filters": {},
+      "expected_doc_ids": [
+        "marketdesk-5beyanvpckt-ec7b7b"
+      ],
+      "abstain_expected": false,
+      "fill_state": "READY",
+      "evidence": {},
+      "notes": "pages=101; catalog.pages is 101, which is >= 100. Query is a title phrase unique to this id."
+    },
+    {
+      "id": "R13-1",
+      "class": "R13",
+      "query": "CPI",
+      "filters": {},
+      "expected_doc_ids": [
+        "marketdesk-xfmc9dygxq6-6ea2c6",
+        "marketdesk-lhzodclhruz-178e9f",
+        "marketdesk-utgguevcvna-858734",
+        "marketdesk-strlhaj2q4l-7cbd40"
+      ],
+      "abstain_expected": true,
+      "fill_state": "READY",
+      "evidence": {},
+      "notes": "Collision: item marketdesk-strlhaj2q4l-7cbd40 field summary_points contains a parenthetical ticker-shaped CPI token, the same shape used for company tickers elsewhere in titles. tickers and tags do not contain CPI (both empty on that item; tickers is empty catalog-wide). CPI is the macro inflation acronym. Company-identity reading must abstain. expected_doc_ids are macro reports whose title or summary_points mention CPI."
+    },
+    {
+      "id": "R13-2",
+      "class": "R13",
+      "query": "VIX",
+      "filters": {},
+      "expected_doc_ids": [
+        "marketdesk-rjgtoontwqm-18ffb9",
+        "marketdesk-88nxf46pj9x-023b1c",
+        "marketdesk-iszza3qasda-b5c59b"
+      ],
+      "abstain_expected": true,
+      "fill_state": "READY",
+      "evidence": {},
+      "notes": "Collision: item marketdesk-rjgtoontwqm-18ffb9 field summary_points contains a parenthetical ticker-shaped VIX token beside the same shape for MOVE and OVX. tickers is [] on that item. VIX is a macro volatility acronym, not a company. Company-identity reading must abstain. expected_doc_ids are macro reports whose title or summary_points mention VIX."
+    },
+    {
+      "id": "R14-1",
+      "class": "R14",
+      "query": "September 2026 FOMC hike reaction",
+      "filters": {},
+      "expected_doc_ids": [
+        "marketdesk-nz9kwyey2oj-497e61",
+        "marketdesk-qvgq0dgfshs-d5ecff",
+        "marketdesk-li60n2fwtcz-17790a",
+        "marketdesk-t1t3iaqzdf9-7508b7"
+      ],
+      "abstain_expected": false,
+      "fill_state": "READY",
+      "evidence": {},
+      "notes": "Same theme across institutions: Goldman Sachs marketdesk-nz9kwyey2oj-497e61; Morgan Stanley marketdesk-qvgq0dgfshs-d5ecff; Societe Generale marketdesk-li60n2fwtcz-17790a; Deutsche Bank marketdesk-t1t3iaqzdf9-7508b7. Ranked best-first."
+    },
+    {
+      "id": "R14-2",
+      "class": "R14",
+      "query": "US CPI print and the path for Fed hikes",
+      "filters": {},
+      "expected_doc_ids": [
+        "marketdesk-xfmc9dygxq6-6ea2c6",
+        "marketdesk-lhzodclhruz-178e9f",
+        "marketdesk-thuzyukg1qy-36f4a4",
+        "marketdesk-eooqgs2imui-ac525a"
+      ],
+      "abstain_expected": false,
+      "fill_state": "READY",
+      "evidence": {},
+      "notes": "Same theme across institutions: J.P. Morgan marketdesk-xfmc9dygxq6-6ea2c6; Societe Generale marketdesk-lhzodclhruz-178e9f; Bank of America marketdesk-thuzyukg1qy-36f4a4; SEB marketdesk-eooqgs2imui-ac525a. Ranked best-first."
+    },
+    {
+      "id": "R14-3",
+      "class": "R14",
+      "query": "crude oil price reversal and risk premium",
+      "filters": {},
+      "expected_doc_ids": [
+        "marketdesk-wizvxnyoqdr-4034d5",
+        "marketdesk-q59he9u3owr-2536af",
+        "marketdesk-de82gqyq2zl-b9c21f",
+        "marketdesk-ngamcw0xo3y-80c10c"
+      ],
+      "abstain_expected": false,
+      "fill_state": "READY",
+      "evidence": {},
+      "notes": "Same theme across institutions: Morgan Stanley marketdesk-wizvxnyoqdr-4034d5; S&T marketdesk-q59he9u3owr-2536af; ING marketdesk-de82gqyq2zl-b9c21f; Bernstein marketdesk-ngamcw0xo3y-80c10c. Ranked best-first."
+    },
+    {
+      "id": "R15-1",
+      "class": "R15",
+      "query": "report whose metadata is public but whose body the policy withholds",
+      "filters": {},
+      "expected_doc_ids": [],
+      "abstain_expected": false,
+      "fill_state": "PENDING_HOST_FILL",
+      "evidence": {},
+      "notes": "No rights, policy, or entitlement field exists on catalog items. Metadata in this snapshot is present for every item, and body bytes are absent from both snapshots, but that absence is the public-safe cut of the whole file, not a per-item denial. Host must select ids where policy denies body access while catalog metadata stays visible."
+    },
+    {
+      "id": "R15-2",
+      "class": "R15",
+      "query": "discoverable note that must not return body text",
+      "filters": {},
+      "expected_doc_ids": [],
+      "abstain_expected": false,
+      "fill_state": "PENDING_HOST_FILL",
+      "evidence": {},
+      "notes": "Catalog can show that an id is discoverable, not that body access is denied. Host must mark the rights boundary per id. Do not treat every catalog id as rights-denied."
+    },
+    {
+      "id": "R16-1",
+      "class": "R16",
+      "query": "publication that is current while its source feed is stale",
+      "filters": {},
+      "expected_doc_ids": [],
+      "abstain_expected": false,
+      "fill_state": "PENDING_HOST_FILL",
+      "evidence": {},
+      "notes": "No catalog field proves a stale source producer. No item key is a producer status, tool status, feed clock, or stale flag. published_at is only the publication timestamp (span 2026-07-20 to 2026-09-24 in this snapshot), not a tool-status field. Host must supply a case where tool status says the source is stale while the publication itself is current."
+    },
+    {
+      "id": "R16-2",
+      "class": "R16",
+      "query": "fresh note sitting behind a stale producer status",
+      "filters": {},
+      "expected_doc_ids": [],
+      "abstain_expected": false,
+      "fill_state": "PENDING_HOST_FILL",
+      "evidence": {},
+      "notes": "Same gap as R16-1: the catalog has a publication time and no producer-freshness field. Host must pair a current published_at with an observed stale tool status."
+    }
+  ]
+}

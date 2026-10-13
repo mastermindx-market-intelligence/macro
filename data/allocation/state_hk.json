@@ -1,18 +1,20 @@
 {
-  "cash": 0.25,
+  "cash": 0.0,
   "crash": false,
   "eligible": [
     "hk_banks",
     "hk_conglo",
     "hk_dividend",
+    "hk_energy",
     "hk_tech_hardware"
   ],
   "held": [
     "hk_banks",
-    "hk_tech_hardware",
-    "hk_dividend"
+    "hk_energy",
+    "hk_dividend",
+    "hk_tech_hardware"
   ],
-  "leader": "hk_miners",
+  "leader": "hk_banks",
   "names": {
     "hk_banks": "Banks (H + HK)",
     "hk_biotech": "Biotech, Pharma & CXO",

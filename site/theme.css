@@ -116,6 +116,9 @@
   --pv-near: color-mix(in srgb, var(--pv-buy) 70%, var(--muted));
   --pv-wait: #e0a030;
   --pv-hold: #8b93a1; --pv-avoid: #e06464;
+  /* Prophet setup-detail modal tokens: literal color decisions live in the palette, not component CSS. */
+  --pv-dialog-shadow: 0 18px 60px rgba(0,0,0,.2666667);
+  --pv-dialog-backdrop: rgba(0,0,0,.5333333);
   --chart-bg: transparent;
   --card-shadow: 0 1px 0 rgba(255,255,255,.02);
   --popover-shadow: 0 6px 18px rgba(0,0,0,.5);
@@ -375,6 +378,12 @@ html[data-theme="light"][data-lang="zh"] {
   --ink-orange: color-mix(in srgb, var(--orange) var(--ink-mix-orange), var(--text));
   --ink-link:   color-mix(in srgb, var(--link)   var(--ink-mix-link),   var(--text));
   --ink-info:   color-mix(in srgb, var(--info)   var(--ink-mix-info),   var(--text));
+  /* Translucent state planes for liveness indicators (F01 O27 R3): a wash for
+     live-pill fills and live-tag backgrounds, a ring for live-dot halos and the
+     pill hairline. Composed from --ok so the ZH .rrx/.igx remaps flow through;
+     extend per hue only when a consumer needs it — no speculative family. */
+  --wash-ok:    color-mix(in srgb, var(--ok) 16%, transparent);
+  --ring-ok:    color-mix(in srgb, var(--ok) 26%, transparent);
 }
 /* ---- SOLID fills that carry WHITE text --------------------------------------
    The third grade, and the one the estate was missing. --up/--down/… are FILL
@@ -407,6 +416,46 @@ html[data-theme="light"][data-lang="zh"] {
   --fill-orange: color-mix(in srgb, var(--orange) var(--fill-mix), #000);
   --fill-link:   color-mix(in srgb, var(--link)   var(--fill-mix), #000);
   --fill-info:   color-mix(in srgb, var(--info)   var(--fill-mix), #000);
+}
+/* ── Fundamental Forensics tints (templates/fundamental_forensics.css) ─────
+   color-mix on an added surface line is enforce-added-illegal; the mixes
+   live here so the surface only names tokens (the Macro Command idiom).
+   Each formula is carried over byte-for-byte from the FIF P2 desk, so both
+   themes paint exactly what the surface used to compute inline: --panel,
+   --panel2, --line, --bg and the state hues re-theme on html, and
+   --ff-border is that page's own :root hairline. Name = hue-percent-base;
+   no base means over transparent. Consumers: that page only. */
+:root {
+  --ff-tint-act-8: color-mix(in srgb, var(--act) 8%, transparent);
+  --ff-tint-act-43-border: color-mix(in srgb, var(--act) 43%, var(--ff-border));
+  --ff-tint-act-30-line: color-mix(in srgb, var(--act) 30%, var(--line));
+  --ff-tint-act-10-panel2: color-mix(in srgb, var(--act) 10%, var(--panel2));
+  --ff-tint-act-12-panel: color-mix(in srgb, var(--act) 12%, var(--panel));
+  --ff-tint-bg-96-act: color-mix(in srgb, var(--bg) 96%, var(--act));
+  --ff-tint-bg-94-info: color-mix(in srgb, var(--bg) 94%, var(--info));
+  --ff-tint-info-7: color-mix(in srgb, var(--info) 7%, transparent);
+  --ff-tint-info-8: color-mix(in srgb, var(--info) 8%, transparent);
+  --ff-tint-info-11: color-mix(in srgb, var(--info) 11%, transparent);
+  --ff-tint-info-35: color-mix(in srgb, var(--info) 35%, transparent);
+  --ff-tint-info-45: color-mix(in srgb, var(--info) 45%, transparent);
+  --ff-tint-info-32-border: color-mix(in srgb, var(--info) 32%, var(--ff-border));
+  --ff-tint-info-38-border: color-mix(in srgb, var(--info) 38%, var(--ff-border));
+  --ff-tint-info-40-border: color-mix(in srgb, var(--info) 40%, var(--ff-border));
+  --ff-tint-info-70-border: color-mix(in srgb, var(--info) 70%, var(--ff-border));
+  --ff-tint-info-40-line: color-mix(in srgb, var(--info) 40%, var(--line));
+  --ff-tint-info-45-line: color-mix(in srgb, var(--info) 45%, var(--line));
+  --ff-tint-info-4-panel: color-mix(in srgb, var(--info) 4%, var(--panel));
+  --ff-tint-info-5-panel: color-mix(in srgb, var(--info) 5%, var(--panel));
+  --ff-tint-info-10-panel: color-mix(in srgb, var(--info) 10%, var(--panel));
+  --ff-tint-info-11-panel2: color-mix(in srgb, var(--info) 11%, var(--panel2));
+  --ff-tint-info-12-panel: color-mix(in srgb, var(--info) 12%, var(--panel));
+  --ff-tint-info-12-panel2: color-mix(in srgb, var(--info) 12%, var(--panel2));
+  --ff-tint-info-16-panel: color-mix(in srgb, var(--info) 16%, var(--panel));
+  --ff-tint-info-18-panel: color-mix(in srgb, var(--info) 18%, var(--panel));
+  --ff-tint-muted-8: color-mix(in srgb, var(--muted) 8%, transparent);
+  --ff-tint-muted-40-line: color-mix(in srgb, var(--muted) 40%, var(--line));
+  --ff-tint-warn-6: color-mix(in srgb, var(--warn) 6%, transparent);
+  --ff-tint-warn-40-line: color-mix(in srgb, var(--warn) 40%, var(--line));
 }
 /* prophet-card verb inks. English keeps the original hue calibration; the light+zh
    twin below re-keys the percentages after bullish becomes red and bearish green.
@@ -1936,11 +1985,11 @@ span.help.help-upgraded { font-size: 9.5px; font-weight: 700;
   width:6px; height:6px; border-radius:50%; flex:none;
   background:currentColor;
 }
-.dtp-chip--live { color:var(--ink-up); }
+.dtp-chip--live { color:var(--ink-ok); }
 .dtp-chip--pre { color:var(--ink-link, var(--link)); }
 .dtp-chip--warn { color:var(--ink-warn); }
 .dtp-chip--stale, .dtp-chip--behind { color:var(--muted); }
-.dtp-token.live { color:var(--ink-up); }
+.dtp-token.live { color:var(--ink-ok); }
 .dtp-token.pre { color:var(--ink-link, var(--link)); }
 .dtp-token.warn { color:var(--ink-warn); }
 .dtp-token.stale, .dtp-token.behind { color:var(--muted); }
@@ -3261,4 +3310,132 @@ html[data-theme="light"] body.page-macro .mx5-sc-vw .sx-vw-tier .l-zh{color:colo
   border-radius:var(--r-pill,999px);transform:translateX(-50%);
   background:var(--muted);border:2px solid var(--panel);
   box-shadow:0 1px 3px rgba(0,0,0,.35);
+}
+
+/* ── markets.html risk-regime strip (.mrs) ──────────────────────────────────
+   Compact three-row read between the cycle overlay and today's positions.
+   Reuses .mx-stance--{ok,warn,down,muted}. No new token family.
+   Dark: a lifted panel and a 1px inset edge (luminance, no outer glow).
+   Light: the white card, a hairline, and the card shadow (shadow, not glow). */
+.mrs{
+  margin:var(--sp-4,16px) 0;
+  padding:var(--sp-4,16px);
+  border:1px solid var(--line);
+  border-radius:var(--r-card,12px);
+  background:var(--panel);
+  color:var(--text);
+}
+html[data-theme="dark"] .mrs{
+  background:color-mix(in srgb, var(--panel) 86%, var(--text));
+  box-shadow:inset 0 1px 0 color-mix(in srgb, var(--text) 8%, transparent);
+}
+html[data-theme="light"] .mrs{
+  background:var(--panel);
+  border-color:var(--line);
+  box-shadow:var(--card-shadow);
+}
+/* zh swaps --down to green (red = up). Risk-off is a danger stance, not a
+   price candle, so this pill stays on --ink-act, which does not swap.
+   Otherwise 风险规避 paints the same green family as 风险偏好. */
+html[data-lang="zh"] .mrs .mx-stance--down{ --c: var(--ink-act); }
+.mrs-hd{ margin:0 0 var(--sp-3,12px); }
+.mrs-title{
+  margin:0;
+  font-size:var(--fs-body,14px);
+  font-weight:700;
+  letter-spacing:0;
+  color:var(--text);
+}
+.mrs-sub{
+  margin:var(--sp-1,4px) 0 0;
+  font-size:var(--fs-sm,12.5px);
+  line-height:1.45;
+  color:var(--muted);
+}
+.mrs-rows{ display:flex; flex-direction:column; }
+.mrs-row{
+  display:grid;
+  grid-template-columns:minmax(8rem,12rem) auto minmax(0,1fr) auto;
+  gap:var(--sp-3,12px);
+  align-items:center;
+  padding:var(--sp-3,12px) 0;
+  border-top:1px solid var(--line);
+}
+.mrs-row:first-child{ border-top:0; padding-top:0; }
+.mrs-name{
+  font-size:var(--fs-body,14px);
+  font-weight:700;
+  color:var(--text);
+}
+.mrs-state,.mrs-do{ margin:0; }
+.mrs-caveat{ position:relative; justify-self:end; }
+.mrs-caveat-btn{
+  font:inherit;
+  font-size:var(--fs-sm,12.5px);
+  line-height:1.3;
+  color:var(--muted);
+  background:transparent;
+  border:1px solid var(--line);
+  border-radius:var(--r-pill,999px);
+  padding:4px 10px;
+  cursor:pointer;
+}
+html[data-theme="dark"] .mrs-caveat-btn{
+  background:color-mix(in srgb, var(--panel2) 70%, transparent);
+  color:var(--ink-2,var(--muted));
+}
+html[data-theme="light"] .mrs-caveat-btn{
+  background:var(--panel);
+  color:var(--muted);
+  box-shadow:none;
+}
+/* Tier-2 caveat: clipped out of the glance until hover or keyboard focus.
+   Kept in the tree so aria-describedby can point at it. Not a title= tooltip. */
+.mrs-pop{
+  position:absolute;
+  z-index:3;
+  right:0;
+  top:calc(100% + 6px);
+  box-sizing:border-box;
+  padding:var(--sp-3,12px);
+  background:var(--panel);
+  border:1px solid var(--line);
+  border-radius:var(--r-card,12px);
+  color:var(--text);
+  font-size:var(--fs-sm,12.5px);
+  font-weight:400;
+  line-height:1.45;
+  text-align:left;
+  white-space:normal;
+  clip:rect(0 0 0 0);
+  clip-path:inset(50%);
+  height:1px;
+  width:1px;
+  overflow:hidden;
+}
+html[data-theme="dark"] .mrs-pop{
+  background:var(--panel);
+  box-shadow:none;
+}
+html[data-theme="light"] .mrs-pop{
+  background:var(--panel);
+  box-shadow:var(--popover-shadow);
+}
+.mrs-caveat:hover .mrs-pop,
+.mrs-caveat:focus-within .mrs-pop{
+  clip:auto;
+  clip-path:none;
+  height:auto;
+  width:min(36rem,80vw);
+  overflow:visible;
+}
+@media (max-width:640px){
+  .mrs{ padding:var(--sp-3,12px); }
+  .mrs-row{
+    grid-template-columns:1fr;
+    gap:var(--sp-2,8px);
+    align-items:start;
+  }
+  .mrs-caveat{ justify-self:start; }
+  .mrs-pop{ left:0; right:auto; }
 }

@@ -199,6 +199,170 @@ def _campaign_lean(ask_share: float | None) -> str:
     return "contested"
 
 
+_CATEGORY_PROXY_SCHEMA = "options_flow.category_proxy/v1"
+_CATEGORY_PROXY_BASIS = "side_category"
+_MEASURED_LOCATION_METHOD = "trade_vs_nbbo_execution_location"
+_MEASURED_LOCATION_SHARES = (
+    "at_ask_share",
+    "at_bid_share",
+    "inside_share",
+    "outside_share",
+    "aggression_share",
+    "aggression_balance",
+)
+
+
+def _bounded_category_share(value: object) -> float | None:
+    """Return a finite, bounded [0, 1] category-proxy share, else ``None``.
+
+    ``None`` means the category is *unknown* (or the supplied value is not a
+    usable fraction) — never a measured neutral.  Booleans are rejected so
+    ``True`` cannot masquerade as ``1.0``.
+    """
+    if value is None or isinstance(value, bool):
+        return None
+    if not isinstance(value, (int, float)):
+        return None
+    # float() conversion can raise on numeric types that are individually
+    # representable but not float-convertible (e.g. an int too large to fit a
+    # C double raises OverflowError).  Any such failure means "not a usable
+    # fraction" → unknown (None), never a coerced zero or a crash.
+    try:
+        share = float(value)
+    except (OverflowError, ValueError, TypeError):
+        return None
+    if not math.isfinite(share) or share < 0.0 or share > 1.0:
+        return None
+    return share
+
+
+def _finite_nonneg_amount(value: object) -> float | None:
+    """Return a finite, nonnegative float amount, else ``None``.
+
+    Booleans are rejected (``bool`` is an ``int`` subclass) so ``True`` cannot
+    masquerade as ``1.0`` USD of premium mass.  A missing key, ``None``, a
+    string, any other non-numeric type, a nonfinite value, or a negative value
+    is INVALID and returns ``None`` — it is never coerced to a valid zero.
+    """
+    if value is None or isinstance(value, bool):
+        return None
+    if not isinstance(value, (int, float)):
+        return None
+    # float() conversion can raise on numeric types that are individually
+    # representable but not float-convertible (e.g. an int too large to fit a
+    # C double raises OverflowError).  Any such failure means INVALID → None;
+    # it is never coerced to a valid zero and never propagates a crash.
+    try:
+        amount = float(value)
+    except (OverflowError, ValueError, TypeError):
+        return None
+    if not math.isfinite(amount) or amount < 0.0:
+        return None
+    return amount
+
+
+#: Money accumulators that must stay finite for a group to be publishable.  A
+#: nonfinite value means the group's sums overflowed (e.g. 1e308 + 1e308); the
+#: whole campaign is refused rather than clipped or replaced with a bounded or
+#: zero total.
+_CHAIN_HEAT_FINITE_ACCUMULATORS = (
+    "total_premium",
+    "ask_prem_sum",
+    "total_prem_for_ask",
+    "cat_proxy_num",
+    "cat_proxy_known_prem",
+    "cat_proxy_unknown_prem",
+    "cat_proxy_source_prem",
+)
+
+
+def _finite_signed_number(value: object) -> float | None:
+    """Finite float, including negatives. Booleans and non-numbers are None."""
+    if value is None or isinstance(value, bool):
+        return None
+    if not isinstance(value, (int, float)):
+        return None
+    try:
+        number = float(value)
+    except (OverflowError, ValueError, TypeError):
+        return None
+    if not math.isfinite(number):
+        return None
+    return number
+
+
+def _legacy_accumulators_finite(g: dict) -> bool:
+    """True when every legacy money accumulator in a group is finite."""
+    return all(math.isfinite(g[key]) for key in _CHAIN_HEAT_FINITE_ACCUMULATORS)
+
+
+def _measured_accumulators_finite(g: dict) -> bool:
+    """True when every measured-location accumulator in a group is finite."""
+    if not all(
+        math.isfinite(g[key])
+        for key in ("meas_source_prem", "meas_covered_prem", "unmeasured_member_prem")
+    ):
+        return False
+    return all(math.isfinite(value) for value in g["meas_share_num"].values())
+
+
+def _unmeasured_disclosure(g: dict) -> dict:
+    """Unmeasured-member disclosure. A non-finite premium is null, not inf."""
+    prem = g["unmeasured_member_prem"]
+    return {
+        "unmeasured_member_count": g["unmeasured_member_count"],
+        "unmeasured_member_premium_usd": (
+            round(prem, 2) if math.isfinite(prem) else None
+        ),
+    }
+
+
+def _measured_location_without_measurements(g: dict) -> dict:
+    """Null sums and ratios, the shape used when no trusted block is usable."""
+    return {
+        "method": _MEASURED_LOCATION_METHOD,
+        "source_premium_usd": None,
+        "nbbo_covered_premium_usd": None,
+        "nbbo_premium_coverage": None,
+        **{name: None for name in _MEASURED_LOCATION_SHARES},
+        **_unmeasured_disclosure(g),
+    }
+
+
+def _measured_location_object(g: dict) -> dict:
+    """Campaign location from trusted blocks only. Ratios are null when uncovered."""
+    if g["meas_block_count"] == 0:
+        return _measured_location_without_measurements(g)
+    covered = g["meas_covered_prem"]
+    source = g["meas_source_prem"]
+    source_out = round(source, 2)
+    covered_out = round(covered, 2)
+    if covered <= 0.0 or source <= 0.0:
+        # Zero covered premium is an observed ratio when source premium was
+        # present.  Source of 0 (or none) leaves the ratio undefined.
+        if source > 0.0 and covered == 0.0:
+            coverage: float | None = 0.0
+        else:
+            coverage = None
+        shares = {name: None for name in _MEASURED_LOCATION_SHARES}
+    else:
+        coverage = round(covered / source, 6)
+        shares = {}
+        for name in _MEASURED_LOCATION_SHARES:
+            if g["meas_share_missing"][name]:
+                shares[name] = None
+            else:
+                shares[name] = round(g["meas_share_num"][name] / covered, 6)
+    return {
+        "method": _MEASURED_LOCATION_METHOD,
+        "source_premium_usd": source_out,
+        "nbbo_covered_premium_usd": covered_out,
+        "nbbo_premium_coverage": coverage,
+        **shares,
+        **_unmeasured_disclosure(g),
+    }
+
+
 def aggregate_chain_heat(
     events: list[dict],
     min_premium_mn: float = _CHAIN_HEAT_PREMIUM_MN_DEFAULT,
@@ -218,7 +382,8 @@ def aggregate_chain_heat(
         engine/live_flow.py:process_batch).  Required keys per event:
             root, strike, exp (YYYY-MM-DD), right ("C"|"P" or "CALL"/"PUT"),
             premium (float, in dollars), ts (ISO-8601 str).
-        Optional keys: ask_share (float 0-1).
+        Optional keys: ask_share (float 0-1, legacy lean input),
+        category_proxy_share (float 0-1 or None, side-category proxy input).
     min_premium_mn:
         Minimum total_premium_mn ($ millions) for a campaign to be emitted.
         Default 3.0 (matches MomoEdge $3M gate; operator-adjustable).
@@ -238,6 +403,33 @@ def aggregate_chain_heat(
     List of campaign dicts sorted by total_premium_mn descending.  Each dict
     matches the ChainHeatCampaign field layout (serialisable as-is).
 
+    Legacy fields (total_premium_mn, alert_count, span_minutes, first_seen,
+    ask_share, lean, direction_reliability, authority_tier) are byte-for-byte
+    unchanged.  A distinct, additive ``category_proxy`` object is emitted on
+    every campaign; its ``share`` is the side-category mapping over the
+    KNOWN-premium denominator, while ``source_premium_usd`` carries the full
+    selected recorded premium (known + unknown).  Callers that never supply
+    ``category_proxy_share`` get an unknown proxy (``share=None``).  This is
+    selected raw recorded premium, NOT complete economic turnover, and it is
+    never a measured NBBO.
+
+    A second additive object, ``measured_location``, is also emitted on every
+    campaign.  It is built only from member microstructure blocks that
+    ``measured_block_rejection_reason`` accepts.  ``source_premium_usd`` and
+    ``nbbo_covered_premium_usd`` are sums of those blocks.  Each share is
+    Σ(share × covered) / Σ covered, and ``nbbo_premium_coverage`` is covered /
+    source.  When no trusted block was admitted, source and covered are null.
+    When covered premium is 0 and source premium is positive, coverage is 0.0
+    and every share and aggression field is null; when source is 0 those
+    ratios are null too.  Dollar sums stay at the observed values whenever a
+    trusted block was admitted.  Members with no trusted block are disclosed
+    as ``unmeasured_member_count`` and ``unmeasured_member_premium_usd`` and
+    do not enter the shares.  An event whose premium is not a finite
+    nonnegative amount is not a member.  A non-finite measured accumulator
+    nulls the sums and ratios and keeps the legacy campaign fields.  The
+    object never reads ``side``, ``ask_share``, ``category_proxy_share``, or
+    ``category_proxy``.
+
     Reliability contract
     --------------------
     • lean derives from ask_share, which is tick-rule signed (net recovery ~0.41).
@@ -246,6 +438,8 @@ def aggregate_chain_heat(
     • total_premium_mn and alert_count are signing-free RELIABLE fields.
     • authority_tier='display' always (Package A contract doc §2).
     """
+    from collectors.flow_signals import measured_block_rejection_reason
+
     # Group by (root, strike, expiry, right).
     groups: dict[tuple, dict] = {}
 
@@ -259,7 +453,6 @@ def aggregate_chain_heat(
             continue
 
         key = (root, strike, exp, right)
-        prem = float(ev.get("premium", 0))
 
         if key not in groups:
             groups[key] = {
@@ -271,28 +464,112 @@ def aggregate_chain_heat(
                 "alert_count": 0,
                 "ask_prem_sum": 0.0,
                 "total_prem_for_ask": 0.0,
+                # category_proxy accumulators (SEPARATE from legacy ask_share).
+                # Known = valid bounded share; unknown = no/!usable share.
+                # source = all valid (nonnegative finite) recorded premium.
+                "cat_proxy_num": 0.0,
+                "cat_proxy_known_prem": 0.0,
+                "cat_proxy_unknown_prem": 0.0,
+                "cat_proxy_source_prem": 0.0,
+                "cat_proxy_invalid_count": 0,
                 "ts_list": [],
+                "meas_source_prem": 0.0,
+                "meas_covered_prem": 0.0,
+                "meas_block_count": 0,
+                "meas_share_num": {name: 0.0 for name in _MEASURED_LOCATION_SHARES},
+                "meas_share_missing": {name: False for name in _MEASURED_LOCATION_SHARES},
+                "unmeasured_member_count": 0,
+                "unmeasured_member_prem": 0.0,
             }
 
         g = groups[key]
-        g["total_premium"] += prem
         g["alert_count"]   += 1
 
         ts = str(ev.get("ts", ""))
         if ts:
             g["ts_list"].append(ts)
 
-        # ask_share contribution
-        ask_share_ev = ev.get("ask_share")
+        # Premium gate — only a non-bool, finite, nonnegative numeric amount is
+        # valid mass.  Missing / None / bool / string / other types / nonfinite /
+        # negative are INVALID: they contribute NO mass to the legacy total, the
+        # ask sums, or the proxy sums (never defaulted to zero-as-valid), are
+        # counted, and force the campaign proxy share to None below.
+        prem = _finite_nonneg_amount(ev.get("premium"))
+        if prem is None:
+            g["cat_proxy_invalid_count"] += 1
+            continue
+
+        g["total_premium"] += prem
+
+        # ask_share contribution — legacy path.  Only a bounded, finite [0, 1]
+        # fraction on valid premium mass contributes; bool / nonfinite /
+        # out-of-bounds / non-numeric ask_share is ignored (the existing None
+        # fallback is retained), which keeps the legacy ask_share JSON-safe.
+        ask_share_ev = _bounded_category_share(ev.get("ask_share"))
         if ask_share_ev is not None and prem > 0:
-            try:
-                g["ask_prem_sum"]        += float(ask_share_ev) * prem
-                g["total_prem_for_ask"]  += prem
-            except (TypeError, ValueError):
-                pass
+            g["ask_prem_sum"]        += ask_share_ev * prem
+            g["total_prem_for_ask"]  += prem
+
+        # category_proxy contribution — explicitly named and INDEPENDENT of the
+        # legacy ask_share path above.  Never uses ask_share as the new proxy and
+        # never infers a measured NBBO from categories.  Only nonnegative finite
+        # premium is admitted; anything else is counted, not silently accepted.
+        cat_share_ev = _bounded_category_share(ev.get("category_proxy_share"))
+        g["cat_proxy_source_prem"] += prem
+        if cat_share_ev is not None:
+            g["cat_proxy_num"]         += cat_share_ev * prem
+            g["cat_proxy_known_prem"]  += prem
+        else:
+            g["cat_proxy_unknown_prem"] += prem
+
+        # measured_location reads only a trusted microstructure block.  The
+        # event's side / ask_share / category_proxy fields are not inputs.
+        # An event whose premium fails _finite_nonneg_amount is not a campaign
+        # member and is excluded from this object, disclosed only through
+        # category_proxy.invalid_premium_count.
+        block = ev.get("microstructure")
+        if measured_block_rejection_reason(block) is None and isinstance(block, dict):
+            block_source = _finite_nonneg_amount(block.get("source_premium_usd"))
+            block_covered = _finite_nonneg_amount(block.get("nbbo_covered_premium_usd"))
+        else:
+            block_source = None
+            block_covered = None
+        if block_source is None or block_covered is None:
+            g["unmeasured_member_count"] += 1
+            g["unmeasured_member_prem"] += prem
+        else:
+            g["meas_block_count"] += 1
+            g["meas_source_prem"] += block_source
+            g["meas_covered_prem"] += block_covered
+            if block_covered > 0.0:
+                for name in _MEASURED_LOCATION_SHARES:
+                    share = _finite_signed_number(block.get(name))
+                    if share is None:
+                        g["meas_share_missing"][name] = True
+                    else:
+                        g["meas_share_num"][name] += share * block_covered
 
     campaigns: list[dict] = []
     for key, g in groups.items():
+        # Finite-overflow guard: if any accumulator overflowed to a nonfinite
+        # value, REFUSE the whole campaign and omit it rather than clip, bound,
+        # or invent a total.  Each addend can be finite while the sum is not
+        # (e.g. two 1e308 premiums), so this must be checked after accumulation.
+        if not _legacy_accumulators_finite(g):
+            log.warning(
+                "chain_heat: refusing campaign %s — non-finite premium "
+                "accumulator (overflow); omitting rather than fabricating mass",
+                key,
+            )
+            continue
+        measured_overflow = not _measured_accumulators_finite(g)
+        if measured_overflow:
+            log.warning(
+                "chain_heat: campaign %s measured accumulator overflowed; "
+                "legacy fields kept, measured_location sums and ratios left null",
+                key,
+            )
+
         total_prem_mn = g["total_premium"] / 1_000_000.0
         if total_prem_mn < min_premium_mn:
             continue
@@ -331,6 +608,28 @@ def aggregate_chain_heat(
 
         lean = _campaign_lean(ask_share)
 
+        # category_proxy aggregate: numerator / KNOWN premium denominator, with
+        # the full selected source premium (known + unknown) carried alongside
+        # so coverage is visible.  Any invalid amount forces share=None so we
+        # never present an incomplete mass as complete.  Legacy (converted)
+        # neutral is NOT re-labelled as a measurement.
+        cat_known   = g["cat_proxy_known_prem"]
+        cat_invalid = g["cat_proxy_invalid_count"]
+        if cat_invalid > 0 or cat_known <= 0.0:
+            cat_share_out: float | None = None
+        else:
+            cat_share_out = round(g["cat_proxy_num"] / cat_known, 4)
+        category_proxy = {
+            "schema":                  _CATEGORY_PROXY_SCHEMA,
+            "basis":                   _CATEGORY_PROXY_BASIS,
+            "share":                   cat_share_out,
+            "known_premium_usd":       round(cat_known, 2),
+            "unknown_premium_usd":     round(g["cat_proxy_unknown_prem"], 2),
+            "source_premium_usd":      round(g["cat_proxy_source_prem"], 2),
+            "invalid_premium_count":   cat_invalid,
+            "source_certified_accepted": False,
+        }
+
         # DTE from expiry string relative to session_date (PIT-safe; pure).
         # When session_date is None, dte is left as None — the writer stamps
         # it using the correct session date before persisting.
@@ -366,6 +665,12 @@ def aggregate_chain_heat(
             "lean":                lean,
             "direction_reliability": "soft",
             "authority_tier":      AUTHORITY_DISPLAY,
+            "category_proxy":      category_proxy,
+            "measured_location":   (
+                _measured_location_without_measurements(g)
+                if measured_overflow
+                else _measured_location_object(g)
+            ),
         })
 
     campaigns.sort(key=lambda c: c["total_premium_mn"], reverse=True)

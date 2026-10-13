@@ -1150,6 +1150,10 @@ def test_builder_invalid_intel_json_still_renders_current(tmp_path, monkeypatch)
     (tmp_path / "site").mkdir(parents=True, exist_ok=True)
     # Disable history writers that touch real/sibling ledgers.
     monkeypatch.setattr(bpw, "decorate_lifecycle_view", lambda x: x)
+    # main() composes the current view at the wall clock. Pin it to the fixture
+    # clock, where 09-16 is the next decision; unpinned, "09-16" leaves the page
+    # once the 2026-10-28 decision is released at 18:00Z.
+    monkeypatch.setattr(bpw, "build_current", lambda root, **_kw: build_current(root, now=_CUTOFF))
     rc = bpw.main()
     assert rc == 0
     html = (tmp_path / "site" / "policy_watch.html").read_text(encoding="utf-8")

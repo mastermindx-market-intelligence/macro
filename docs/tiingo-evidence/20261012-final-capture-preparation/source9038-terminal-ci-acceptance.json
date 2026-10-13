@@ -1,0 +1,98 @@
+{
+  "schema": "tiingo.actual_original_source_ci_terminal_acceptance/v1",
+  "observed_at_utc": "2026-10-12T23:14:54.230296+00:00",
+  "actual_read": "gh run view 38318955038 --repo mastermindx-market-intelligence/macro --json databaseId,headSha,status,conclusion,jobs",
+  "run_id": 38318955038,
+  "head_sha": "2bbec46c985a2064ab3ae071c544e4a809c6cd39",
+  "status": "completed",
+  "conclusion": "success",
+  "actual_jobs": [
+    {
+      "name": "ci-pack-0",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "name": "ci-pack-1",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "name": "ci-pack-2",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "name": "ci-pack-3",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "name": "ci-pack-4",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "name": "ci-pack-5",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "name": "ci-pack-6",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "name": "ci-pack-7",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "name": "ci-pack-8",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "name": "ci-pack-9",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "name": "ci-pack-10",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "name": "ci-pack-11",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "name": "contract-delta",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "name": "ci-plan",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "name": "ci-gate",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "name": "trusted-ci",
+      "status": "completed",
+      "conclusion": "skipped"
+    }
+  ],
+  "all_twelve_expanded_jobs_successful": true,
+  "pr": 9038,
+  "merged_squash": "99c3ae524e19ffe3ca765e24ad3deaf0bd84fc8d",
+  "merge_preceded_expanded_ci_settlement": true,
+  "prior_error_receipt_sha256": "0c3d68a7d0946e06963203d61f37d9e89eae1fe8d31f5d303fdf71a1d6be2b73",
+  "future_merge_requires_terminal_ci_before_request": true,
+  "runtime_release_changed": false
+}

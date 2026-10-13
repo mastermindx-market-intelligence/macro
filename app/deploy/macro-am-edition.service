@@ -1,0 +1,47 @@
+# Morning Orientation premarket edition overlay (A-MOR-2b lane B;
+# DEC:MARKET-ONTOLOGY-MOR2B-PREMARKET-OWNER-AND-PLACEMENT-2026-09-24,
+# research/market_intelligence_productization/MARKET_ONTOLOGY_F01_MOR2B_BUILD_PACKET_2026-09-24.md
+# §3 B1–B2). The same producer that nightly `daily.yml` / `render.yml` already
+# runs for `site/am_edition.{json,html}`; this unit runs a SECOND, lighter
+# producer against the VPS live store during the ET premarket window so
+# visitors see a fresh read between the prior close and 09:30 ET. Two writers,
+# one overlay, freshest-wins (see scripts/am_edition_live.py:run decision (a)).
+#
+# Run window: 08..14 UTC covers 05:00–09:30 ET under EDT and EST (the timer
+# pinpoints the two UTC instants every 30 minutes). The .service itself has
+# no DST awareness — the producer's phase check (`build_am_edition._session_phase`)
+# decides build/expire/skip per NYSE session day and the eastern clock, so
+# weekends and holidays are skips regardless of the UTC wall clock.
+#
+# Lane shape (modelled on macro-live-entry-radar.service, with the same
+# lowest-tier resource ceiling — the producer is a Python oneshot consuming
+# the same live-store artifacts, with no network, no vendor and no LLM):
+#   * Type=oneshot — never collides with itself, never restarted (the lane's
+#     own receipts distinguish "ran" from "did not run");
+#   * WorkingDirectory=/opt/macro — `root = cwd` per B1;
+#   * EnvironmentFile=-/etc/macro-live.env — the same env the rest of the live
+#     plane reads (R2 / Supabase / quote credentials are unused here, but the
+#     prefix is uniform across lanes);
+#   * ExecStart=/opt/macro/.venv/bin/python -m scripts.am_edition_live — the
+#     importable module path; never a script with a relative path;
+#   * Nice=10 — low-priority; the lane reads only what other lanes publish.
+# TimeoutStartSec 120 bounds a stuck render well inside the 30-minute tick;
+# the producer is read-only off disk except for two os.replace writes, so
+# this is a generous ceiling.
+[Unit]
+Description=Build the Morning Orientation edition overlay in the ET premarket; expire it when the nightly bake is newer
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+WorkingDirectory=/opt/macro
+EnvironmentFile=-/etc/macro-live.env
+ExecStart=/opt/macro/.venv/bin/python -m scripts.am_edition_live
+TimeoutStartSec=120
+Nice=10
+NoNewPrivileges=true
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target

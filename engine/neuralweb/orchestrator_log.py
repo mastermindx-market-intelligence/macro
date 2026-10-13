@@ -90,10 +90,11 @@ def _append_jsonl(p: Path, row: dict) -> None:
 def _settings(root: Path) -> dict:
     """config.yml ``orchestrator:`` block, degrade-safe to defaults."""
     out = {"review_every_n_runs": _DEFAULT_REVIEW_EVERY_N, "site_rows": _DEFAULT_SITE_ROWS,
-           "ingest_bot_feedback": True}
+           "ingest_bot_feedback": True, "brief_attention_nudges": True}
     try:
         import yaml  # noqa: PLC0415
-        cfg = yaml.safe_load((root / "config.yml").read_text(encoding="utf-8")) or {}
+        loader = getattr(yaml, "CSafeLoader", yaml.SafeLoader)
+        cfg = yaml.load((root / "config.yml").read_text(encoding="utf-8"), Loader=loader) or {}
         block = cfg.get("orchestrator") or {}
         n = block.get("review_every_n_runs")
         if isinstance(n, int) and 2 <= n <= 50:
@@ -101,8 +102,9 @@ def _settings(root: Path) -> dict:
         rows = block.get("site_rows")
         if isinstance(rows, int) and 10 <= rows <= 365:
             out["site_rows"] = rows
-        if isinstance(block.get("ingest_bot_feedback"), bool):
-            out["ingest_bot_feedback"] = block["ingest_bot_feedback"]
+        for key in ("ingest_bot_feedback", "brief_attention_nudges"):
+            if isinstance(block.get(key), bool):
+                out[key] = block[key]
     except Exception:  # noqa: BLE001
         pass
     return out

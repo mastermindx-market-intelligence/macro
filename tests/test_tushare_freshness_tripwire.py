@@ -2,9 +2,11 @@
 
 The failure this guards is not "a collector broke" — it is that NOTHING SAID SO.
 tushare_client returns None for every failure it has, callers omit the leg rather
-than write a zero, and asia-close's collect step never fails on one source. Each
+than write a zero, and asia-close's collector normally degrades per source. Each
 of those is individually correct; together they let flow_hist and moneyflow freeze
-at 2026-07-24 and still render on flow_velocity.html on 2026-08-06.
+at 2026-07-24 and still render on flow_velocity.html on 2026-08-06. Store age is
+not root-cause evidence, so the advisory must route operators to the adapter's
+transport-vs-auth receipt instead of guessing that the token or tier is wrong.
 """
 from __future__ import annotations
 
@@ -101,6 +103,11 @@ def test_annotation_starts_the_line_and_is_flushed(capsys: pytest.CaptureFixture
     line = [ln for ln in capsys.readouterr().out.splitlines() if "::warning" in ln]
     assert line, "no annotation emitted for a stale plane"
     assert line[0].startswith("::warning"), f"annotation must start the line, got: {line[0][:40]!r}"
+    assert "data/run_status.json" in line[0]
+    assert "tushare-transport-outage" in line[0]
+    assert "tushare-auth-rejected" in line[0]
+    assert "Do not rotate TUSHARE_TOKEN from store age alone" in line[0]
+    assert "Check TUSHARE_TOKEN is set and the membership/积分 tier" not in line[0]
 
 
 def test_china_search_core_gate_catches_the_2026_09_09_freeze(monkeypatch, capsys):
