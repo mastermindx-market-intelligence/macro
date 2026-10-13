@@ -53,7 +53,7 @@ _LEDGER_SHA = "ba149bd55d929d843f353e91bbf68147791fb8b4a20c258426ea2eb7527019d8"
 _A1_STATEMENT_SHA = "25e5562e81cb80bd42d0feb544c212c4471e11736601aaee418a60981a457184"
 _A2_STATEMENT_SHA = "b98602a299996ff7ea58b842364031547df795d1458b51134eef0e37159b7918"
 # The five FIP1 query hashes were re-captured at the FIF G0-r1p3 re-pin
-# commit with the same hermetic industrial resolver the FIP1 packet-service
+# commit e94ba62aa89 with the same hermetic industrial resolver the FIP1 packet-service
 # tests inject: the values are byte-equal to that already-pinned family
 # (tests/test_fundamental_forensics_financial_packet_service.py:78,
 # tests/test_fundamental_forensics_financial_revision_service.py:70) over the
@@ -66,7 +66,7 @@ _HASH_MIXED_T3 = "26a7ed7d95f861d3352c3a7e5fb6a0f52833ccf69947b10ca9da1f9662c441
 # The rich packet keeps the production default (no injected resolver): FIP1
 # has no shipped coverage record, so gross_margin (class-restricted under the
 # G0 catalog) reads NOT_EVALUABLE(issuer_class_unknown) and the packet's
-# digest layer moved with the catalog; re-captured at the same commit.
+# digest layer moved with the catalog; re-captured at the same commit e94ba62aa89.
 _RICH_PACKET_ID = "fip_5d77c1349de4f829db2c422a"
 _RICH_CONTENT_SHA = "5d77c1349de4f829db2c422a3000049cb12b6f0c16dbcd57686a0c0cd41c0af0"
 _RICH_RESPONSE_SHA = "a9c5a8657e7c5cb7e6789cd6d2ea4f78a1c14100c33a00d959856d7375045ca8"

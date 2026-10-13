@@ -35,7 +35,7 @@ Pins: the two digests in ``_PREWIRE_*`` were captured at 7fd00a6b754e
 The G0 catalog change (issuer-class applicability on 16 metrics) is the
 governed change the docstring below anticipated: ``_PREWIRE_QUERY_HASH``
 and ``_PREWIRE_TO_DICT_SHA256`` were re-captured in the G0-r1p3 re-pin
-commit over the same industrial matrix, and the bank matrix — whose
+commit e94ba62aa89 over the same industrial matrix, and the bank matrix — whose
 "default-inert" premise that change retired by design — is pinned
 separately in ``_BANK_QUERY_HASH`` / ``_BANK_TO_DICT_SHA256``.  All
 captures hash ``canonical_json(matrix.to_dict())`` from

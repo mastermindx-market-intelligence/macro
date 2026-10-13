@@ -46,7 +46,7 @@ _A2 = "0000320193-26-000020"
 
 # Accepted FIF-3A3 identities. A4 must not move any of them.
 _LEDGER_SHA = "ba149bd55d929d843f353e91bbf68147791fb8b4a20c258426ea2eb7527019d8"
-# Re-captured at the FIF G0-r1p3 re-pin commit: AAPL resolves industrial
+# Re-captured at the FIF G0-r1p3 re-pin commit e94ba62aa89: AAPL resolves industrial
 # (3571) through the shipped coverage contract, so the response digest layer
 # moved with the G0 catalog and the SIC-bearing entity wire; the value layer
 # is byte-identical to BASE (leaf-diff: digest-family leaves only).
@@ -728,7 +728,7 @@ def test_forged_uri_is_also_refused_at_admission():
 # valid policy cases (response sha256, then receipt query_hash).  The
 # pre-lineage historical cutoff pin equals the accepted FIF-3A3 constants
 # pinned above, which cross-checks the capture procedure itself.
-# Re-captured at the FIF G0-r1p3 re-pin commit (G0 catalog + SIC-bearing
+# Re-captured at the FIF G0-r1p3 re-pin commit e94ba62aa89 (G0 catalog + SIC-bearing
 # entity wire; value layer byte-identical to BASE under every case —
 # leaf-diff shows digest-family leaves only, 19 nodes matched per case).
 _T1_VALID_CASE_PINS = {

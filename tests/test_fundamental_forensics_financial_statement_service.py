@@ -76,7 +76,7 @@ _RICH_PACKET_ID = "fip_5d77c1349de4f829db2c422a"
 _RICH_CONTENT_SHA = "5d77c1349de4f829db2c422a3000049cb12b6f0c16dbcd57686a0c0cd41c0af0"
 _RICH_RESPONSE_SHA = "a9c5a8657e7c5cb7e6789cd6d2ea4f78a1c14100c33a00d959856d7375045ca8"
 _RICH_BODY_BYTES = 15065
-# Golden FIP1 fixture identity re-captured at the FIF G0-r1p3 re-pin commit
+# Golden FIP1 fixture identity re-captured at the FIF G0-r1p3 re-pin commit e94ba62aa89
 # (P2-E G-c: bytes written via canonical_packet_bytes only).
 _GOLDEN_FIP1_PACKET_ID = "fip_efe52d02d4a72a5a19f85a60"
 
