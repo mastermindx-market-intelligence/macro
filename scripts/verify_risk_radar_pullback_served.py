@@ -36,6 +36,34 @@ VOID_TAGS = frozenset({
     "link", "meta", "param", "source", "track", "wbr",
 })
 EM_DASH = "\u2014"
+# The only strings .rrp-forecast may contain. templates/_risk_radar_pullback_depth.html.j2
+# renders both languages into the DOM; a collapsed <details> omits the last line of
+# each language, an expanded one includes it. The matrix verifier imports this same
+# constant and judges innerText lines against it.
+FORECAST_COPY = {
+    "en": (
+        "FURTHER DOWNSIDE",
+        "Estimate unavailable",
+        "We can measure the decline that has already happened. A reliable range for the next low is not yet available.",
+        "Further decline from the latest close",
+        "Total pullback depth",
+        "Why no estimate?",
+        "Publishing a range takes historical tests for this market, benchmark, price measurement and time window. Risk level and existing pullback probabilities are not a forecast of the remaining drop.",
+    ),
+    "zh": (
+        "进一步跌幅",
+        "估计暂不可用",
+        "可以测量已发生的跌幅，但下一低点的可靠区间尚不可用。",
+        "自最新收盘价起的进一步跌幅",
+        "回撤总深度",
+        "为什么暂无估计？",
+        "发布区间需要针对本市场、基准、价格衡量方式和时间范围的历史检验。风险水平与现有回撤概率并非对剩余跌幅的预测。",
+    ),
+}
+FORECAST_LINES = {
+    lang: frozenset(lines) | {EM_DASH} for lang, lines in FORECAST_COPY.items()
+}
+FORECAST_TEXT_ALLOW = frozenset().union(*FORECAST_LINES.values())
 CURRENT_METRIC_RE = re.compile("^\u2212?\\d+\\.\\d%$")
 OTHER_PERCENT_RE = re.compile("^[+\u2212-]?\\d+\\.\\d%$")
 PERCENT_ANY_RE = re.compile(r"\d+(?:\.\d+)?%")
@@ -421,6 +449,60 @@ def _check_c4(sections: list[Node]) -> tuple[bool, str]:
     return True, "current, worst, rebound, and Reference high satisfy the active contract"
 
 
+def _text_nodes(node: Node) -> list[str]:
+    """Non-whitespace text nodes, in order. Comments are stored as strings too;
+    the forecast block has none, and a comment that is not allowed copy fails closed.
+    """
+    found: list[str] = []
+
+    def walk(current: Node) -> None:
+        for child in current.children:
+            if isinstance(child, str):
+                stripped = child.strip()
+                if stripped:
+                    found.append(stripped)
+            else:
+                walk(child)
+
+    walk(node)
+    return found
+
+
+def forecast_lines_ok(text: object, allow: frozenset[str]) -> bool:
+    """True when every non-empty line is in allow. An empty string has no
+    disallowed line. Callers fail closed on a missing key before calling this.
+    """
+    if not isinstance(text, str):
+        return False
+    return all(line.strip() in allow for line in text.splitlines() if line.strip())
+
+
+def forecast_block_parts(html: str) -> tuple[list[str], str]:
+    """Strong values and text-node lines of the first .rrp-forecast.
+
+    JavaScript-off markup still contains both language spans, so the returned
+    block text includes every non-whitespace text node on its own line. A
+    missing block returns empty values and an empty string.
+    """
+    parser = _PageParser(html)
+    parser.feed(html)
+    parser.close()
+    blocks = [node for node in _descendants(parser.root) if _has_class(node, "rrp-forecast")]
+    if not blocks:
+        return [], ""
+    block = blocks[0]
+    rows = [node for node in _descendants(block) if _has_class(node, "rrp-forecast-row")]
+    strongs = [node for row in rows for node in _descendants(row) if node.tag == "strong"]
+    values = [_norm(node) for node in strongs]
+    return values, "\n".join(_text_nodes(block))
+
+
+def forecast_text_set(html: str) -> set[str]:
+    """The set of non-whitespace text nodes inside the first .rrp-forecast."""
+    _values, text = forecast_block_parts(html)
+    return {line.strip() for line in text.splitlines() if line.strip()}
+
+
 def _c5_problems(section: Node, html: str) -> list[str]:
     blocks = [node for node in _descendants(section) if _has_class(node, "rrp-forecast")]
     if len(blocks) != 1:
@@ -453,6 +535,10 @@ def _c5_problems(section: Node, html: str) -> list[str]:
         parts.append(html[block.start:block.end])
     if PERCENT_ANY_RE.search("\n".join(parts)):
         problems.append("forecast block contains a percent")
+    disallowed = [node for node in _text_nodes(block) if node not in FORECAST_TEXT_ALLOW]
+    if disallowed:
+        shown = " | ".join(disallowed[:3])
+        problems.append(f"forecast copy is outside the allow-list ({shown})")
     return problems
 
 

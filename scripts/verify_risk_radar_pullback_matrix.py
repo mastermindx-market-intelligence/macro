@@ -14,6 +14,23 @@ from datetime import datetime, timezone
 from pathlib import Path
 from urllib.parse import urlsplit
 
+try:
+    from scripts.verify_risk_radar_pullback_served import (
+        EM_DASH,
+        FORECAST_LINES,
+        FORECAST_TEXT_ALLOW,
+        forecast_block_parts,
+        forecast_lines_ok,
+    )
+except ImportError:  # invoked as a file, so scripts/ is on sys.path
+    from verify_risk_radar_pullback_served import (
+        EM_DASH,
+        FORECAST_LINES,
+        FORECAST_TEXT_ALLOW,
+        forecast_block_parts,
+        forecast_lines_ok,
+    )
+
 SCHEMA = "risk_radar_pullback_matrix.v1"
 EXPECTED_HEADING = {"en": "Estimate unavailable", "zh": "估计暂不可用"}
 VIEWPORTS = (("desktop", 1440, 900), ("mobile", 375, 812))
@@ -116,18 +133,46 @@ def _rows_have_no_digit(text: str, count) -> bool:
     return not any(ch in "0123456789" for ch in (text or ""))
 
 
+def _forecast_allow(lang: str, javascript: bool) -> frozenset[str]:
+    """JS cells see one language. JS-off markup can show both spans at once."""
+    if not javascript:
+        return FORECAST_TEXT_ALLOW
+    return FORECAST_LINES.get(lang) or frozenset({EM_DASH})
+
+
+def _forecast_gate(measured: dict, lang: str, javascript: bool) -> dict[str, bool]:
+    """Fail closed when forecast_values or forecast_block_text was not measured."""
+    allow = _forecast_allow(lang, javascript)
+    values = measured.get("forecast_values") if "forecast_values" in measured else None
+    if "forecast_values" not in measured or not isinstance(values, (list, tuple)):
+        values_ok = False
+    else:
+        values_ok = (
+            len(values) == 2
+            and all(isinstance(item, str) and item.strip() == EM_DASH for item in values)
+        )
+    if "forecast_block_text" not in measured:
+        block_ok = False
+    else:
+        block_ok = forecast_lines_ok(measured.get("forecast_block_text"), allow)
+    return {"forecast_values_ok": values_ok, "forecast_block_text_ok": block_ok}
+
+
 def evaluate_cell(cell: dict, measured: dict) -> dict:
     """Turn one raw measurement dict into checks, failures, and pass/fail.
 
-    JavaScript-off cells pass only when section.pbx is in the DOM with a
-    non-empty time[datetime] receipt. Whether the dialog opened is recorded
-    and does not decide the cell.
+    JavaScript-off cells pass when section.pbx is in the DOM with a non-empty
+    time[datetime] receipt and the forecast values are two em dashes whose
+    surrounding copy is on the EN+ZH allow-list. Whether the dialog opened is
+    recorded and does not decide the cell. A missing forecast key fails closed.
+    JavaScript cells also require data_lang and data_theme; omitting either fails.
     """
     measured = measured or {}
     javascript = bool(cell.get("javascript", True))
     lang = cell.get("lang") or "en"
     phase = measured.get("phase") or ""
     tab_escapes = measured.get("tab_escapes")
+    forecast = _forecast_gate(measured, lang, javascript)
     if not javascript:
         present = bool(measured.get("pbx_present"))
         receipt = str(measured.get("time_datetime") or "").strip()
@@ -137,12 +182,17 @@ def evaluate_cell(cell: dict, measured: dict) -> dict:
             "time_receipt_present": bool(receipt),
             "time_datetime": receipt,
             "dialog_without_js": "cannot open" if not dialog_visible else "opened",
+            **forecast,
         }
         failures = []
         if not present:
             failures.append("pbx_present")
         if not receipt:
             failures.append("time_receipt_present")
+        if not forecast["forecast_values_ok"]:
+            failures.append("forecast_values_ok")
+        if not forecast["forecast_block_text_ok"]:
+            failures.append("forecast_block_text_ok")
         return {
             "phase": phase,
             "checks": checks,
@@ -167,17 +217,20 @@ def evaluate_cell(cell: dict, measured: dict) -> dict:
         "no_dialog_overflow": _within(measured.get("dialog_scroll_width"), measured.get("dialog_client_width")),
         "escape_closes": bool(measured.get("escape_closes")),
         "focus_returns_to_opener": bool(measured.get("focus_returns_to_opener")),
+        **forecast,
+        "lang_applied": "data_lang" in measured and (measured.get("data_lang") or "en") == lang,
+        "theme_applied": (
+            "data_theme" in measured
+            and (measured.get("data_theme") or "dark") == (cell.get("theme") or "dark")
+        ),
     }
-    if "data_lang" in measured:
-        checks["lang_applied"] = (measured.get("data_lang") or "en") == lang
-    if "data_theme" in measured:
-        checks["theme_applied"] = (measured.get("data_theme") or "dark") == (cell.get("theme") or "dark")
     required = (
         "dialog_visible", "pbx_present", "forecast_heading_ok", "forecast_rows_have_no_digit",
+        "forecast_values_ok", "forecast_block_text_ok",
         "no_page_overflow", "no_dialog_overflow", "escape_closes", "focus_returns_to_opener",
         "lang_applied", "theme_applied",
     )
-    failures = [name for name in required if name in checks and checks[name] is not True]
+    failures = [name for name in required if checks.get(name) is not True]
     if tab_escapes != 0:
         failures.append("tab_escapes")
     return {
@@ -282,6 +335,7 @@ def _dialog_is_open(html: str, dialog_id: str) -> bool:
 def _static_measurement(html: str, page_name: str) -> dict:
     present, receipt, phase = _pbx_from_html(html)
     dialog_id = PAGE_CONTRACT[page_name]["dialog"].lstrip("#")
+    values, block_text = forecast_block_parts(html)
     return {
         "dialog_visible": _dialog_is_open(html, dialog_id),
         "pbx_present": present,
@@ -289,6 +343,8 @@ def _static_measurement(html: str, page_name: str) -> dict:
         "forecast_heading_text": "",
         "forecast_row_text": "",
         "forecast_row_count": 0,
+        "forecast_values": values,
+        "forecast_block_text": block_text,
         "page_scroll_width": 0,
         "page_inner_width": 0,
         "dialog_scroll_width": 0,
@@ -354,7 +410,9 @@ _MEASURE_JS = """(args) => {
     ? (dlg ? dlg.querySelector('section.pbx') : null)
     : document.querySelector('section.pbx');
   const heading = pbx ? pbx.querySelector('.rrp-forecast h3') : null;
+  const forecast = pbx ? pbx.querySelector('.rrp-forecast') : null;
   const rows = pbx ? Array.from(pbx.querySelectorAll('.rrp-forecast-row')) : [];
+  const valueNodes = rows.map((el) => el.querySelector('strong')).filter(Boolean);
   const time = pbx ? pbx.querySelector('time[datetime]') : null;
   const anonGate = !!(document.body && document.body.classList.contains('page-macro') &&
     (!window.MMXAccessPreview || (window.MMXAccessPreview.isAnon && window.MMXAccessPreview.isAnon())));
@@ -365,6 +423,8 @@ _MEASURE_JS = """(args) => {
     forecast_heading_text: heading ? (heading.innerText || '') : '',
     forecast_row_text: rows.map((el) => el.innerText || '').join('\\n'),
     forecast_row_count: rows.length,
+    forecast_values: valueNodes.map((el) => (el.innerText || '').trim()),
+    forecast_block_text: forecast ? (forecast.innerText || '') : '',
     page_scroll_width: document.documentElement.scrollWidth,
     page_inner_width: window.innerWidth,
     dialog_scroll_width: dlg ? dlg.scrollWidth : null,

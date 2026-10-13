@@ -142,6 +142,34 @@ def test_unavailable_fails_when_require_active(tmp_path):
     assert _failed(receipt) == ["C7"]
 
 
+def test_worded_forecast_paragraph_fails_only_c5(tmp_path):
+    """G4: a forecast sentence with no digit and no percent still fails C5."""
+    html = _active_cn()
+    needle = 'data-forecast-status="unavailable">'
+    assert needle in html
+    html = html.replace(needle, needle + "<p>A deep further drop is likely.</p>", 1)
+    rc, receipt, _page = _run(tmp_path, html, "cn")
+    assert rc == 1
+    assert _failed(receipt) == ["C5"]
+    detail = next(item["detail"] for item in receipt["checks"] if item["id"] == "C5")
+    assert "allow-list" in detail
+
+
+def test_forecast_allow_list_equals_rendered_text_nodes():
+    """A copy change in the partial without a verifier change fails here."""
+    from scripts.verify_risk_radar_pullback_served import FORECAST_TEXT_ALLOW, forecast_text_set
+
+    current = forecast_text_set(render_pullback(native_view("us"), "us"))
+    current_cn = forecast_text_set(render_pullback(native_view("cn"), "cn"))
+    unavailable = forecast_text_set(render_pullback(None, "cn"))
+    assert current == FORECAST_TEXT_ALLOW
+    assert current_cn == FORECAST_TEXT_ALLOW
+    assert unavailable == FORECAST_TEXT_ALLOW
+    assert EM in FORECAST_TEXT_ALLOW
+    assert "Estimate unavailable" in FORECAST_TEXT_ALLOW
+    assert "估计暂不可用" in FORECAST_TEXT_ALLOW
+
+
 def test_digit_in_forecast_row_fails_only_c5(tmp_path):
     html = _active_cn()
     needle = f"<strong>{EM}</strong>"

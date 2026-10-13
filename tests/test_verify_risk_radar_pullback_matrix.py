@@ -12,6 +12,48 @@ if str(ROOT) not in sys.path:
 
 import scripts.verify_risk_radar_pullback_matrix as matrix
 
+EM = "\u2014"
+EN_BLOCK = "\n".join((
+    "FURTHER DOWNSIDE",
+    "Estimate unavailable",
+    "We can measure the decline that has already happened. A reliable range for the next low is not yet available.",
+    "Further decline from the latest close",
+    EM,
+    "Total pullback depth",
+    EM,
+    "Why no estimate?",
+))
+ZH_BLOCK = "\n".join((
+    "进一步跌幅",
+    "估计暂不可用",
+    "可以测量已发生的跌幅，但下一低点的可靠区间尚不可用。",
+    "自最新收盘价起的进一步跌幅",
+    EM,
+    "回撤总深度",
+    EM,
+    "为什么暂无估计？",
+))
+EN_DETAIL = (
+    "Publishing a range takes historical tests for this market, benchmark, price measurement "
+    "and time window. Risk level and existing pullback probabilities are not a forecast of "
+    "the remaining drop."
+)
+FORECAST_SNIPPET = (
+    '<div class="rrp-forecast" data-forecast-status="unavailable">'
+    '<h3><span class="l-en">Estimate unavailable</span>'
+    '<span class="l-zh">估计暂不可用</span></h3>'
+    '<p><span class="l-en">We can measure the decline that has already happened. '
+    'A reliable range for the next low is not yet available.</span>'
+    '<span class="l-zh">可以测量已发生的跌幅，但下一低点的可靠区间尚不可用。</span></p>'
+    '<div class="rrp-forecast-row"><span class="l-en">Further decline from the latest close</span>'
+    '<span class="l-zh">自最新收盘价起的进一步跌幅</span>'
+    f'<strong>{EM}</strong></div>'
+    '<div class="rrp-forecast-row"><span class="l-en">Total pullback depth</span>'
+    '<span class="l-zh">回撤总深度</span>'
+    f'<strong>{EM}</strong></div>'
+    '</div>'
+)
+
 
 def _cells():
     return matrix.enumerate_cells(matrix.parse_pages("us=macro.html,cn=china.html"))
@@ -29,8 +71,12 @@ def _measured(**overrides):
         "pbx_present": True,
         "phase": "underway",
         "forecast_heading_text": "Estimate unavailable",
-        "forecast_row_text": "Further downside from today —\nEstimated total episode depth —",
+        "forecast_row_text": f"Further decline from the latest close {EM}\nTotal pullback depth {EM}",
         "forecast_row_count": 2,
+        "forecast_values": [EM, EM],
+        "forecast_block_text": EN_BLOCK,
+        "data_lang": "en",
+        "data_theme": "dark",
         "page_scroll_width": 1441,
         "page_inner_width": 1440,
         "dialog_scroll_width": 376,
@@ -104,6 +150,96 @@ def test_zh_english_heading_fails():
     assert "forecast_heading_ok" in result["failures"]
 
 
+def test_worded_forecast_line_fails():
+    """G1: a digit-free sentence in the forecast block is still an estimate."""
+    result = matrix.evaluate_cell(
+        _js_cell(),
+        _measured(
+            forecast_row_count=2,
+            forecast_row_text="a deep further drop is likely",
+            forecast_values=[EM, EM],
+            forecast_block_text="Estimate unavailable\na deep further drop is likely\nsevere",
+        ),
+    )
+    assert result["passed"] is False
+    assert "forecast_block_text_ok" in result["failures"]
+
+
+def test_empty_forecast_values_fail():
+    """G1: two rows and an empty row string used to pass the digit check."""
+    measured = _measured(forecast_row_count=2, forecast_row_text="")
+    measured.pop("forecast_values")
+    missing = matrix.evaluate_cell(_js_cell(), measured)
+    assert missing["passed"] is False
+    assert "forecast_values_ok" in missing["failures"]
+    blank = matrix.evaluate_cell(
+        _js_cell(),
+        _measured(forecast_row_count=2, forecast_row_text="", forecast_values=["", ""]),
+    )
+    assert blank["passed"] is False
+    assert "forecast_values_ok" in blank["failures"]
+
+
+def test_expanded_forecast_copy_passes_and_collapsed_copy_passes():
+    collapsed = matrix.evaluate_cell(_js_cell(), _measured())
+    assert collapsed["passed"] is True
+    expanded = matrix.evaluate_cell(
+        _js_cell(),
+        _measured(forecast_block_text=EN_BLOCK + "\n" + EN_DETAIL),
+    )
+    assert expanded["passed"] is True
+    assert expanded["checks"]["forecast_block_text_ok"] is True
+
+
+def test_missing_lang_and_theme_fail():
+    """G2: a measurement that omits data_lang / data_theme fails closed."""
+    measured = _measured()
+    measured.pop("data_lang")
+    measured.pop("data_theme")
+    result = matrix.evaluate_cell(_js_cell(), measured)
+    assert result["passed"] is False
+    assert "lang_applied" in result["failures"]
+    assert "theme_applied" in result["failures"]
+
+
+def test_js_off_numeric_forecast_fails():
+    """G3: JS-off used to ignore forecast row text such as a percent estimate."""
+    cell = _js_cell(javascript=False)
+    result = matrix.evaluate_cell(
+        cell,
+        _measured(
+            dialog_visible=False,
+            pbx_present=True,
+            time_datetime="2026-01-02T00:00:00Z",
+            forecast_row_text="12% further downside",
+            forecast_block_text="12% further downside",
+            forecast_values=["12%", EM],
+        ),
+    )
+    assert result["passed"] is False
+    assert "forecast_values_ok" in result["failures"]
+    assert "forecast_block_text_ok" in result["failures"]
+    both_languages = matrix.evaluate_cell(
+        cell,
+        _measured(
+            dialog_visible=False,
+            pbx_present=True,
+            time_datetime="2026-01-02T00:00:00Z",
+            forecast_block_text=EN_BLOCK + "\n" + ZH_BLOCK,
+            forecast_values=[EM, EM],
+        ),
+    )
+    assert both_languages["passed"] is True
+
+
+def test_measurer_returns_forecast_values_and_block_text():
+    source = matrix._MEASURE_JS
+    assert "forecast_values" in source
+    assert "forecast_block_text" in source
+    assert ".rrp-forecast" in source
+    assert "querySelector('strong')" in source
+
+
 def test_digit_in_forecast_rows_fails():
     result = matrix.evaluate_cell(
         _js_cell(),
@@ -146,7 +282,11 @@ def test_all_good_passes():
     assert wide["checks"]["no_page_overflow"] is False
     zh = matrix.evaluate_cell(
         _js_cell(lang="zh", page="cn", file="china.html"),
-        _measured(forecast_heading_text="估计暂不可用"),
+        _measured(
+            forecast_heading_text="估计暂不可用",
+            forecast_block_text=ZH_BLOCK,
+            data_lang="zh",
+        ),
     )
     assert zh["passed"] is True
     assert zh["checks"]["forecast_heading_ok"] is True
@@ -165,7 +305,9 @@ def test_all_good_passes():
     assert opened["checks"]["dialog_without_js"] == "opened"
     html = (
         '<div class="cnx-dlg" id="cnx-dlg-risk"><section class="rrp pbx" data-pb-phase="underway">'
-        '<time datetime="2026-01-02T00:00:00Z">2026-01-02</time></section></div>'
+        '<time datetime="2026-01-02T00:00:00Z">2026-01-02</time>'
+        + FORECAST_SNIPPET
+        + '</section></div>'
     )
     from_html = matrix.evaluate_cell(_js_cell(page="cn", javascript=False), matrix._static_measurement(html, "cn"))
     assert from_html["passed"] is True
