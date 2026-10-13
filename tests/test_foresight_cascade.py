@@ -1929,3 +1929,105 @@ def test_incomplete_capture_on_the_production_seam_stays_unavailable(monkeypatch
     assert cascade["stage"] == "WATCH"
     assert cascade["theme_feed_summary"]["source_status"] == "UNAVAILABLE"
     assert cascade.get("entry") is None
+
+
+def test_qualified_flag_cannot_relabel_an_incomplete_sweep():
+    """complete=False stays incomplete even when the caller passed qualified=True.
+
+    Published n_active is 0. The present-row current tally stays on counts.
+    """
+    from engine.fda_scarcity import format_theme_feed_chip, summarize_supply
+
+    now = datetime(2026, 9, 23, 12, tzinfo=UTC)
+    out = summarize_supply(
+        [_d1_row()],
+        capture={
+            "qualified": True,
+            "complete": False,
+            "source_generation": "2026-09-23",
+            "finished_at": now.isoformat(),
+        },
+        now=now,
+        max_capture_age=None,
+    )
+    assert out["source_status"] == "UNAVAILABLE"
+    assert out["freshness"]["capture_incomplete"] is True
+    assert out["counts"]["current"] == 1
+    chip = format_theme_feed_chip(_computed_row_for_summary(out), "glp1_obesity")
+    assert chip["n_active"] == 0
+    assert chip["source_status"] == "UNAVAILABLE"
+    assert "shortage: current" not in out["label"]
+    assert "capture incomplete" in out["label"]
+
+
+def test_incomplete_sweep_publishes_zero_resolved_and_discontinued(monkeypatch):
+    """capture_incomplete publishes n_resolved and n_discontinued as 0.
+
+    summary counts keep the present-row tally. The chip stays UNAVAILABLE.
+    """
+    import engine.fda_scarcity as fda_module
+    from engine.fda_scarcity import compute_fda_scarcity, format_theme_feed_chip
+
+    monkeypatch.setattr(fda_module, "MOLECULE_THEME_MAP", {"synthetic theme a": ["glp1_obesity"]})
+    now = datetime(2026, 9, 23, 12, tzinfo=UTC)
+
+    def observed(status):
+        frame = pd.DataFrame([_d1_row(status)])
+        frame.attrs["fda_observation"] = {
+            "capture": {
+                "qualified": False,
+                "complete": False,
+                "failure_code": "PAGE_FAILED",
+                "source_generation": "2026-09-23",
+                "finished_at": now.isoformat(),
+            },
+            "last_refresh": {
+                "qualified": False,
+                "failure_code": "PAGE_FAILED",
+                "attempted_at": now.isoformat(),
+            },
+            "legacy": False,
+            "inconsistent": False,
+            "failed_refresh": False,
+        }
+        return compute_fda_scarcity(frame)["glp1_obesity"]
+
+    resolved = observed("Resolved")
+    chip = format_theme_feed_chip(resolved, "glp1_obesity")
+    assert resolved["n_resolved"] == 0
+    assert resolved["n_discontinued"] == 0
+    assert resolved["summary"]["counts"]["resolved"] == 1
+    assert chip["n_resolved"] == 0
+    assert chip["source_status"] == "UNAVAILABLE"
+
+    discontinued = observed("To Be Discontinued")
+    assert discontinued["n_discontinued"] == 0
+    assert discontinued["summary"]["counts"]["discontinued"] == 1
+    assert discontinued["summary"]["counts"]["resolved"] == 0
+
+
+def test_coverage_matched_rows_counts_present_rows_only():
+    """coverage.matched_rows counts rows still in this generation.
+
+    An all-absent generation reports matched_rows 0 and counts.absent 1.
+    """
+    from engine.fda_scarcity import summarize_supply
+
+    now = datetime(2026, 9, 23, 12, tzinfo=UTC)
+    absent_only = summarize_supply(
+        [_d1_row(absent_since_generation="2026-09-23")],
+        capture=_capture(now), now=now, max_capture_age=None,
+    )
+    assert absent_only["counts"]["absent"] == 1
+    assert absent_only["coverage"]["matched_rows"] == 0
+
+    present_and_absent = summarize_supply(
+        [
+            _d1_row(ndc="TEST-LIVE"),
+            _d1_row(ndc="TEST-GONE", absent_since_generation="2026-09-23"),
+        ],
+        capture=_capture(now), now=now, max_capture_age=None,
+    )
+    assert present_and_absent["counts"]["matched"] == 1
+    assert present_and_absent["counts"]["absent"] == 1
+    assert present_and_absent["coverage"]["matched_rows"] == 1

@@ -347,6 +347,10 @@ def summarize_supply(rows, *, capture, now, max_capture_age: timedelta | None) -
             failed_refresh = refresh_note
     elif qualified is False and _capture_is_incomplete(observation):
         capture_incomplete = True
+    elif qualified is True and observation.get("complete") is False:
+        # complete=False is an unfinished sweep even if the caller passed qualified=True.
+        capture_incomplete = True
+        qualified = False
     counts = {
         "current": sum(row["regulator_status"] == "current" for row in present),
         "resolved": sum(row["regulator_status"] == "resolved" for row in present),
@@ -412,7 +416,7 @@ def summarize_supply(rows, *, capture, now, max_capture_age: timedelta | None) -
         "coverage": {
             "molecules_checked": [],
             "molecules_with_rows": [],
-            "matched_rows": len(closed),
+            "matched_rows": counts["matched"],
             "unclassified_rows": unclassified_rows,
         },
         "freshness": {
@@ -430,17 +434,16 @@ def summarize_supply(rows, *, capture, now, max_capture_age: timedelta | None) -
     }
 
 
-def _published_n_active(summary) -> int:
-    """Current-shortage count on the scarcity row and the chip.
+def _published_n_active(summary, count_key: str = "current") -> int:
+    """Status count on the scarcity row and the chip.
 
-    An incomplete capture is not a current shortage, so this is 0 even when
-    present rows still have regulator status current. counts['current'] keeps
-    that present-row tally.
+    An incomplete capture publishes 0 for current, resolved and discontinued.
+    counts[count_key] keeps the present-row tally.
     """
     freshness = summary.get("freshness") or {}
     if freshness.get("capture_incomplete"):
         return 0
-    return summary["counts"]["current"]
+    return summary["counts"][count_key]
 
 
 def _all_themes():
@@ -588,8 +591,8 @@ def compute_fda_scarcity(df: pd.DataFrame | None = None) -> dict[str, dict | Non
             "source_status": status,
             "summary": summary,
             "n_active": _published_n_active(summary),
-            "n_resolved": summary["counts"]["resolved"],
-            "n_discontinued": summary["counts"]["discontinued"],
+            "n_resolved": _published_n_active(summary, "resolved"),
+            "n_discontinued": _published_n_active(summary, "discontinued"),
             "details": details,
             "molecules_checked": molecules,
             "rationale": rationale,
@@ -729,7 +732,7 @@ def format_theme_feed_chip(scarcity_row: dict | None, theme_key: str) -> dict | 
         "tone": tone,
         "rationale": rationale,
         "n_active": _published_n_active(summary),
-        "n_resolved": summary["counts"]["resolved"],
+        "n_resolved": _published_n_active(summary, "resolved"),
         "source_status": status,
         "freshness": summary["freshness"],
     }
