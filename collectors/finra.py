@@ -24,6 +24,12 @@ from lib import config
 
 log = logging.getLogger(__name__)
 
+# FINRA publishes days-to-cover 999.99 when average daily volume is ~0: a
+# censored lower bound, not a measurement (same sentinel as
+# scripts/backfill_finra_short_interest.py and engine/short_volume.py
+# DTC_SENTINEL, which engine consumers read so they never import this collector).
+DTC_SENTINEL = 999.0
+
 
 def _cfg() -> dict:
     return config.load()["finra"]
@@ -190,6 +196,8 @@ def fetch_short_interest(force: bool = False, max_age_days: int = 4) -> pd.DataF
         snap = snap[snap.index.isin(universe)]
     # embedded fetch-date stamp — the freshness gate reads THIS, never mtime (#2690 class)
     snap["asof"] = date.today().isoformat()
+    # C19 WP24 DQ3: flag the censored 999.99 sentinel so consumers never read it as a value.
+    snap["dtc_capped"] = snap["days_to_cover"].ge(DTC_SENTINEL)
     snap.to_parquet(cache)
     log.info("finra short interest: %d universe names, settlement %s", len(snap), settlement)
 
@@ -219,7 +227,9 @@ def fetch_short_interest(force: bool = False, max_age_days: int = 4) -> pd.DataF
     # whether FINRA restates a posted daily short-volume file is UNKNOWN, and a replaced
     # row there is witnessed by data/finra_short_volume/superseded.parquet.
     hist_p = cache.parent / "short_interest_history.parquet"
-    hist_snap = snap.drop(columns=["asof"]).copy()   # history keeps its own capture_date; no asof stamp
+    # history keeps its own capture_date and its pre-DQ3 schema: no asof stamp, no
+    # derived dtc_capped (a new column would read as a restatement of every old row).
+    hist_snap = snap.drop(columns=["asof", "dtc_capped"]).copy()
     capture_date = pd.Timestamp.now("UTC").normalize().tz_localize(None)
     hist_snap["capture_date"] = capture_date
     hist_snap = hist_snap.reset_index()   # ticker becomes a column
