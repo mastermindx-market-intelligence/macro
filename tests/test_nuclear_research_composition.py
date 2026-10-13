@@ -245,6 +245,17 @@ def test_generation_is_a_content_fingerprint():
     assert first["generation"] != changed["generation"]
 
 
+def test_paged_company_input_refs_are_the_revisions_on_the_page():
+    payload = nuclear.compose_nuclear_research(
+        nuclear_query("reactor_technology", "composition", limit=1),
+        nuclear_bundle(N01, N02, N03))
+    rows = payload["companies"]["rows"]
+    assert [row["source_business_label"] for row in rows] == ["NuScale"]
+    assert payload["companies"]["input_refs"] == sorted(
+        item["curation_revision"] for item in (N01, N02))
+    assert N03["curation_revision"] not in payload["companies"]["input_refs"]
+
+
 def test_misfaceted_supplemental_assertion_is_dropped_and_counted():
     query = nuclear_query("reactor_technology", "capacity")
     bundle = nuclear_bundle(X04)

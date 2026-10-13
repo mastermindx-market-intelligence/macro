@@ -9,6 +9,7 @@ import jsonschema
 from jsonschema import FormatChecker
 
 from engine.market_ontology import nuclear_theme_research as nuclear
+from engine.theme_graph.curation_assertion import source_ref_for
 from engine.market_ontology.theme_research_mounts import MountFacts
 from engine.market_ontology.theme_research_registry import VerticalRegistration
 from tests.nuclear_research_helpers import (
@@ -18,6 +19,7 @@ from tests.nuclear_research_helpers import (
 
 ROOT = Path(__file__).resolve().parents[1]
 CONTRACT = json.loads((ROOT / "contracts/market_ontology/nuclear_theme_research.v1.schema.json").read_text())
+EVIDENCE_CONTRACT_PATH = ROOT / "contracts/market_ontology/nuclear_theme_research.evidence.v1.schema.json"
 ROBOTICS_PATH = ROOT / "contracts/market_ontology/robotics_theme_research.v1.schema.json"
 
 
@@ -44,6 +46,26 @@ def test_every_composed_payload_validates():
     ]
     for payload in payloads:
         validate(payload)
+    evidence_contract = json.loads(EVIDENCE_CONTRACT_PATH.read_text())
+    evidence = nuclear.select_authorized_evidence(
+        nuclear_query("nuclear_components", "economics"),
+        nuclear_bundle(N04),
+        source_ref_for(N04),
+    )
+    jsonschema.Draft202012Validator(
+        evidence_contract, format_checker=FormatChecker()).validate(evidence)
+
+
+def test_review_current_says_withheld_rows_are_absent_from_evidence_refs():
+    description = (
+        CONTRACT["$defs"]["industrial_row"]["properties"]["review"]["properties"]
+        ["current"]["description"]
+    )
+    assert description == (
+        "False exactly when a successor correction inside this selection "
+        "supersedes the row; held, rejected, and expired rows are excluded "
+        "from views and are absent from evidence_refs."
+    )
 
 
 def test_required_envelope_matches_shared_contracts():

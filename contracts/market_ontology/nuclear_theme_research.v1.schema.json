@@ -1284,7 +1284,7 @@
             },
             "current": {
               "type": "boolean",
-              "description": "False exactly when a successor correction inside this selection supersedes the row; held/expired rows are excluded from views entirely and survive in evidence_refs."
+              "description": "False exactly when a successor correction inside this selection supersedes the row; held, rejected, and expired rows are excluded from views and are absent from evidence_refs."
             }
           }
         },

@@ -3,11 +3,10 @@
 A held, rejected or review-expired record never counts as coverage, never
 changes a view's reason and never supports an interpretation block. A replay
 judges review expiry at its recorded cutoff, never at its source cutoff or
-the newest review time. Outside a replay the gate also reads a supplied
-recorded cutoff, because `_now_of_query` checks no mode; which clock applies
-there is out of scope (R-ENE-18), so only the failure is pinned: a malformed
-recorded cutoff supplied beside a record with a review due time raises
-instead of serving or withholding that record (R-ENE-40).
+the newest review time. Outside a replay the expiry clock is the newest
+reviewed_at of the time-filtered selection, so a recorded cutoff does not
+move it: an early cutoff still expires a review due 2026-09-19. A malformed
+recorded cutoff still fails the query instead of being swallowed (R-ENE-40).
 """
 
 from __future__ import annotations
@@ -143,3 +142,52 @@ def test_the_expiry_gate_never_swallows_a_malformed_recorded_cutoff(time_mode, r
     malformed = dataclasses.replace(query, recorded_cutoff=recorded_cutoff)
     with pytest.raises(ValueError):
         nuclear.compose_nuclear_research(malformed, bundle)
+
+
+def test_latest_with_an_early_recorded_cutoff_still_expires_the_review():
+    """Outside a replay, recorded_cutoff is not the expiry clock.
+
+    reviewed_at is 2026-09-20 and review_due_at is 2026-09-19, so the review
+    is already due. An early recorded cutoff must not serve it.
+    """
+    dated = variant("N04", "R12DUE", review=review("accepted", "2026-09-19T00:00:00Z"))
+    query = nuclear_query(
+        "nuclear_components", "economics", time_mode="latest",
+        recorded_cutoff="2026-09-01")
+    payload = nuclear.compose_nuclear_research(query, nuclear_bundle(dated))
+    assert "review_expired_present" in payload["limitations"]
+    assert payload["authorized_coverage"]["selected"] == 0
+
+
+def _paired_block(interpretation_id, freshness, mechanism, revision):
+    return {
+        "interpretation_id": interpretation_id,
+        "input_revisions": [revision],
+        "freshness": freshness,
+        "reviewed_at": "2026-09-20",
+        "mechanism": mechanism,
+        "offset": mechanism.replace("mechanism.", "offset."),
+        "falsifier": None,
+        "missing_measurement": None,
+    }
+
+
+def test_stale_prefix_follows_the_producing_interpretation():
+    """Two blocks that share input_revisions: only the stale block is prefixed."""
+    revision = N04["curation_revision"]
+    payload = compose(N04, blocks=[
+        _paired_block("block-fresh", "current", "FRESH mechanism.", revision),
+        _paired_block("block-stale", "stale", "STALE mechanism.", revision),
+    ])
+    summary = payload["summary"]
+    assert summary["status"] == "degraded"
+    assert summary["reason"] == "interpretation_stale"
+    why = {item["text"]: item for item in summary["why_it_matters"]}
+    assert "stale" not in why["FRESH mechanism."]
+    assert "_interpretation_id" not in why["FRESH mechanism."]
+    assert why["[stale interpretation] STALE mechanism."]["stale"] is True
+    offset = {item["text"]: item for item in summary["offset"]}
+    assert "stale" not in offset["FRESH offset."]
+    assert offset["[stale interpretation] STALE offset."]["stale"] is True
+    assert all("_interpretation_id" not in item for item in summary["why_it_matters"])
+    assert all("_interpretation_id" not in item for item in summary["offset"])

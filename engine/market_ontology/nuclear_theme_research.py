@@ -270,8 +270,13 @@ class _Selection:
         self.current = survivors
 
     def _now_of_query(self) -> str | None:
-        if self.query.recorded_cutoff is not None:
+        # Expiry reads recorded_cutoff only in a replay. Outside a replay the
+        # clock stays the newest reviewed_at; a supplied cutoff is still parsed
+        # so a malformed value fails the query instead of moving that clock.
+        if self.query.time_mode == "system_replay":
             return self.query.recorded_cutoff
+        if self.query.recorded_cutoff is not None:
+            _parse_day(self.query.recorded_cutoff)
         stamps = [
             (assertion.get("review") or {}).get("reviewed_at")
             for assertion in self.assertions
@@ -612,7 +617,8 @@ def _summary(selection: _Selection, response_limitations: set[str]) -> dict[str,
     why_it_matters = []
     for block in blocks:
         item = {"text": block.get("mechanism") or "", "label": "interpretation",
-                "input_refs": list(block.get("input_revisions") or [])}
+                "input_refs": list(block.get("input_revisions") or []),
+                "_interpretation_id": block.get("interpretation_id")}
         if item["text"]:
             why_it_matters.append(item)
     interpretations = sorted(({
@@ -627,17 +633,26 @@ def _summary(selection: _Selection, response_limitations: set[str]) -> dict[str,
 
     offsets = sorted((
         {"text": block.get("offset") or "", "label": "interpretation",
-         "input_refs": list(block.get("input_revisions") or [])}
+         "input_refs": list(block.get("input_revisions") or []),
+         "_interpretation_id": block.get("interpretation_id")}
         for block in blocks if block.get("offset")),
         key=lambda item: (item["text"], item["input_refs"]))
 
-    stale_ids = {id(block) for block in stale_blocks}
+    stale_ids = {block.get("interpretation_id") for block in stale_blocks}
     for item in why_it_matters + offsets:
-        source_block = next((
-            block for block in blocks
-            if item["input_refs"] == list(block.get("input_revisions") or [])
-        ), None)
-        if source_block is not None and id(source_block) in stale_ids:
+        if "_interpretation_id" in item:
+            producer = item.pop("_interpretation_id")
+            stale = producer in stale_ids
+        else:
+            source_block = next((
+                block for block in blocks
+                if item["input_refs"] == list(block.get("input_revisions") or [])
+            ), None)
+            stale = (
+                source_block is not None
+                and source_block.get("interpretation_id") in stale_ids
+            )
+        if stale:
             item["stale"] = True
             item["text"] = "[stale interpretation] " + item["text"]
     if stale_blocks:
@@ -728,6 +743,15 @@ def _compose(query: ResearchQuery, bundle: OwnerBundle) -> dict[str, Any]:
     companies = _companies(selection)
     summary = _summary(selection, response_limitations)
     companies["rows"] = companies["rows"][query.offset:query.offset + query.limit]
+    page_labels = {
+        row["source_business_label"] for row in companies["rows"]
+        if isinstance(row.get("source_business_label"), str)
+    }
+    companies["input_refs"] = sorted({
+        assertion["curation_revision"]
+        for assertion in selection.live
+        if (assertion.get("subject") or {}).get("source_business_label") in page_labels
+    })
     coverage_status = "unavailable" if not selection.current else (
         "degraded" if bundle.omissions else "ready")
     return {
