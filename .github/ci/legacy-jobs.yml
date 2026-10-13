@@ -19093,6 +19093,8 @@ jobs:
     # computed path. A suite that imports or reads a new tree must widen this
     # list; test_curated_exclusive_scopes_cover_their_own_import_closure fails
     # until it does.
+    # The site/ and ops/launchd literals were added from CI's full-checkout
+    # contract-delta closure on 673a0a5a (a sparse worktree omits those trees).
     scope: exclusive
     paths:
       - "tests/fixtures/prophet_live/**"
@@ -19854,6 +19856,31 @@ jobs:
       - "scripts/vps_live_orchestrator.py"
       - "scripts/watch_release_publications.py"
       - "scripts/worktree_sparse.py"
+      - "site/anticipationdata/us_leader_pullback.json"
+      - "site/basketdata/baskets.json"
+      - "site/basketdata/fear_greed.json"
+      - "site/basketdata/foresight_cascade.json"
+      - "site/basketdata/narrative_emergence.json"
+      - "site/basketdata/radar.json"
+      - "site/basketdata/radar_enriched.json"
+      - "site/chinabasketdata/narrative_emergence.json"
+      - "site/factordata/basket_washout_state.json"
+      - "site/factordata/dna_class.json"
+      - "site/factordata/reflexivity_overlay.json"
+      - "site/factordata/signal_gate.json"
+      - "site/factordata/stock_personality.json"
+      - "site/factordata/us_standouts.json"
+      - "site/factordata/us_standouts_v2.json"
+      - "site/flowleaders/leaders.json"
+      - "site/flowtracker/base.json"
+      - "site/leaderradar/radar.json"
+      - "site/macro.html"
+      - "site/marketdata/subsector_rotation.json"
+      - "site/master_brief.json"
+      - "site/neuralwebdata/theme_state.json"
+      - "site/qledger/track_record.json"
+      - "site/theme.js"
+      - "site/turn_watch/turn_watch.json"
       - "templates/_navlinks.html.j2"
       - "templates/_prophet_card.html.j2"
       - "templates/_prophet_setup_detail.html.j2"
@@ -23412,6 +23439,8 @@ jobs:
     # computed path. A suite that imports or reads a new tree must widen this
     # list; test_curated_exclusive_scopes_cover_their_own_import_closure fails
     # until it does.
+    # The site/ and ops/launchd literals were added from CI's full-checkout
+    # contract-delta closure on 673a0a5a (a sparse worktree omits those trees).
     scope: exclusive
     paths:
       - "config/intelligence_workspace/**"
@@ -24129,6 +24158,8 @@ jobs:
       - "lib/tsx_calendar.py"
       - "lib/us_cash_calendar.py"
       - "lib/user_prefs.py"
+      - "ops/launchd/com.mastermind.optionssparseselector.plist"
+      - "ops/launchd/run_options_sparse_selector_verified.py"
       - "research/DO_NOT_REBUILD.md"
       - "research/SIGNAL_EPISODE_ATLAS_MASTERPLAN_BY_FABLE.md"
       - "research/STOCK_PERSONALITY_MASTERPLAN_BY_FABLE.md"
@@ -24193,6 +24224,37 @@ jobs:
       - "scripts/thematic_rotation_phase0.py"
       - "scripts/workflow_run_source.py"
       - "scripts/worktree_sparse.py"
+      - "site/basketdata/baskets.json"
+      - "site/basketdata/fear_greed.json"
+      - "site/basketdata/foresight_cascade.json"
+      - "site/basketdata/narrative_emergence.json"
+      - "site/basketdata/radar.json"
+      - "site/basketdata/radar_enriched.json"
+      - "site/canadabasketdata/baskets.json"
+      - "site/chinabasketdata/baskets.json"
+      - "site/chinabasketdata/narrative_emergence.json"
+      - "site/coming-soon.html"
+      - "site/data/portfolio_ctx.json"
+      - "site/factordata/alerts_triage.json"
+      - "site/factordata/basket_washout_state.json"
+      - "site/factordata/china_standouts.json"
+      - "site/factordata/dna_class.json"
+      - "site/factordata/factors.json"
+      - "site/factordata/impulse.json"
+      - "site/factordata/reflexivity_overlay.json"
+      - "site/factordata/signal_gate.json"
+      - "site/factordata/stock_personality.json"
+      - "site/factordata/us_standouts.json"
+      - "site/factordata/us_standouts_v2.json"
+      - "site/flowleaders/leaders.json"
+      - "site/hkbasketdata/baskets.json"
+      - "site/leaderradar/radar.json"
+      - "site/marketdata/subsector_rotation.json"
+      - "site/master_brief.json"
+      - "site/neuralwebdata/theme_state.json"
+      - "site/prophet/index.json"
+      - "site/turn_watch/turn_watch.json"
+      - "site/vol/regime.json"
       - "templates/_navlinks.html.j2"
       - "templates/_public_footer.html.j2"
       - "templates/_public_nav.html.j2"
