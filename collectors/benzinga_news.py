@@ -405,6 +405,17 @@ def catch_up_once(
         observed_at=observed_at,
     )
     if batch.gap_unresolved:
+        if current_text is None:
+            # First catch-up: hold the client's lookback base so the next
+            # catch-up still requests the original window (including pages
+            # this budget never reached). Cursor-only compare-and-set: no
+            # revision rows are committed, and a cursor that appeared since
+            # the read surfaces as CursorConflict.
+            store.commit(
+                (),
+                expected_cursor=None,
+                next_cursor=str(batch.next_cursor_epoch),
+            )
         return CatchUpResult(
             committed=False,
             gap_unresolved=True,

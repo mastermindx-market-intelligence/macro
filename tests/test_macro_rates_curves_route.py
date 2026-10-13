@@ -15,6 +15,7 @@ never imports scripts.build_bonds.
 from __future__ import annotations
 
 import ast
+import hashlib
 import json
 import math
 import re
@@ -34,6 +35,17 @@ from scripts import build_macro_suite_pages as builder
 ROOT = Path(__file__).resolve().parents[1]
 TEMPLATES = ROOT / "templates"
 BUILT_AT = "2026-09-09T12:00:00Z"
+T11_DATA = ROOT / "tests" / "fixtures" / "macro_suite_t11"
+# The page goldens PAIRED with T11_DATA: the exact committed site/ bytes that the
+# frozen inputs produced (source-binding.json ``expected_pages`` plus the rates
+# page). Live site/macro_*.html is render-owned and rebaked nightly from newer
+# macrodata, so comparing frozen inputs against it tests input drift, not the
+# renderer. See tests/fixtures/macro_suite_t11/README.md.
+T11_PAGES = T11_DATA / "pages"
+# sha256 of the paired rates_curves golden (git blob 72ddcbfbded7, the page
+# committed beside the frozen inputs at #8986's head 9255dba36c9b).
+T11_RATES_CURVES_GOLDEN_SHA256 = (
+    "c54e63f63aa20289ac30d300585b8d9ad55b57a8b8e098b0c88f34f659003102")
 
 NOMINAL_TENORS = ("3m", "6m", "1y", "2y", "3y", "5y", "7y", "10y", "20y", "30y")
 TENOR_TO_SERIES = {
@@ -727,16 +739,19 @@ def test_11_thirteen_other_suite_pages_byte_identical(tmp_path) -> None:
     Each target is rendered with that committed page's own page-built stamp
     so a stamp sitting inside the region cannot itself become a mismatch, and
     so a sibling rebake that moves one stamp cannot disable this test.
+
+    The immutable paired publication inputs are the original Git bytes behind
+    these committed page regions. Nightly site/macrodata republishes independently
+    of the HTML goldens; comparing two different generations tests input drift,
+    not preservation by the current renderer. No provenance is substituted.
     """
-    assert (ROOT / "site" / "macrodata").is_dir(), (
-        "site/ is not materialised — python3 scripts/worktree_sparse.py add site"
-    )
+    assert T11_DATA.is_dir(), "the paired T11 publication fixture is missing"
     _copy_site_assets(tmp_path)
     env = builder._environment(ROOT)
-    data = ROOT / "site" / "macrodata"
+    data = T11_DATA
     entries: list[Any] = []
     for page in builder.SUITE_PAGES:
-        committed_path = ROOT / "site" / page.output
+        committed_path = T11_PAGES / page.output
         assert committed_path.exists(), page.output
         stamp = _page_built_stamp(committed_path.read_text(encoding="utf-8")) or BUILT_AT
         _path, _ok, entry = builder.build_page(
@@ -744,7 +759,7 @@ def test_11_thirteen_other_suite_pages_byte_identical(tmp_path) -> None:
             page_built_at=stamp,
         )
         entries.append(entry)
-    hub_committed = ROOT / "site" / "macro_monetary.html"
+    hub_committed = T11_PAGES / "macro_monetary.html"
     assert hub_committed.exists()
     hub_stamp = _page_built_stamp(hub_committed.read_text(encoding="utf-8")) or BUILT_AT
     builder.build_hub(entries, out_dir=tmp_path, env=env, page_built_at=hub_stamp)
@@ -757,7 +772,7 @@ def test_11_thirteen_other_suite_pages_byte_identical(tmp_path) -> None:
     identical: list[str] = []
     drifted: list[str] = []
     for name in targets:
-        committed_path = ROOT / "site" / name
+        committed_path = T11_PAGES / name
         rendered_path = tmp_path / name
         assert rendered_path.exists(), name
         if committed_path.read_bytes() == rendered_path.read_bytes():
@@ -800,7 +815,7 @@ def test_11_stamp_mismatch_does_not_disable_the_region_assertion(tmp_path) -> No
     skip T11, and the region assertion still runs.
     """
     name = "macro_trade_flows.html"
-    committed_path = ROOT / "site" / name
+    committed_path = T11_PAGES / name
     assert committed_path.exists(), name
     original = committed_path.read_text(encoding="utf-8")
     stamp = _page_built_stamp(original)
@@ -815,7 +830,7 @@ def test_11_stamp_mismatch_does_not_disable_the_region_assertion(tmp_path) -> No
     # that uses the altered stamp. A skip is impossible here — there is no
     # shared-stamp gate.
     env = builder._environment(ROOT)
-    data = ROOT / "site" / "macrodata"
+    data = T11_DATA
     page = next(p for p in builder.SUITE_PAGES if p.output == name)
     out = tmp_path / "rendered"
     out.mkdir()
@@ -830,6 +845,75 @@ def test_11_stamp_mismatch_does_not_disable_the_region_assertion(tmp_path) -> No
     assert before == after
     assert altered_stamp in before
     assert stamp not in before
+
+
+def test_11_paired_publication_bytes_and_generations_are_preserved() -> None:
+    binding = json.loads((T11_DATA / "source-binding.json").read_text())
+    assert binding["source_commit"] == "a58cf3cb6de26b702069515292beeba8309e32ab"
+    expected_paths = {"workspaces/manifest.json"} | {
+        f"workspaces/{page.workspace_id}/{page.region}/latest.json"
+        for page in builder.SUITE_PAGES
+    }
+    assert {item["path"] for item in binding["files"]} == expected_paths
+    assert len(binding["files"]) == len(expected_paths) == 15
+    for item in binding["files"]:
+        original_bytes = (T11_DATA / item["path"]).read_bytes()
+        assert len(original_bytes) == item["bytes"]
+        assert hashlib.sha256(original_bytes).hexdigest() == item["sha256"]
+    for page in builder.SUITE_PAGES:
+        # The production reader still validates contract, content hash and the
+        # original manifest's byte count before any rendering happens.
+        snapshot, _artifact = builder.read_workspace(T11_DATA, page)
+        committed = (T11_PAGES / page.output).read_text()
+        assert snapshot["generation"]["content_sha256"] in committed
+        assert snapshot["generation"]["generation_id"] in committed
+
+
+def _git_blob_sha1(data: bytes) -> str:
+    return hashlib.sha1(b"blob %d\0" % len(data) + data).hexdigest()
+
+
+def test_11_page_goldens_are_the_paired_committed_bytes() -> None:
+    """The page goldens are the exact site/ bytes bound beside the inputs.
+
+    Each sibling and the hub must match source-binding.json ``expected_pages``
+    by sha256 AND git blob id, and the rates page by its pinned sha256, so a
+    golden cannot be regenerated from the candidate renderer or swapped for a
+    later render-lane bake.
+    """
+    binding = json.loads((T11_DATA / "source-binding.json").read_text())
+    expected = {item["path"]: item for item in binding["expected_pages"]}
+    assert sorted(expected) == sorted(T11_SITE_PAGES)
+    on_disk = sorted(p.name for p in T11_PAGES.glob("*.html"))
+    assert on_disk == sorted(
+        [Path(rel).name for rel in T11_SITE_PAGES] + ["macro_rates_curves.html"])
+    for rel, item in expected.items():
+        data = (T11_PAGES / Path(rel).name).read_bytes()
+        assert hashlib.sha256(data).hexdigest() == item["sha256"], rel
+        assert _git_blob_sha1(data) == item["git_blob"], rel
+    rates = (T11_PAGES / "macro_rates_curves.html").read_bytes()
+    assert hashlib.sha256(rates).hexdigest() == T11_RATES_CURVES_GOLDEN_SHA256
+
+
+def test_11_wrong_rendered_provenance_still_fails(tmp_path, monkeypatch) -> None:
+    page = next(p for p in builder.SUITE_PAGES if p.workspace_id == "trade_flows")
+    committed = (T11_PAGES / page.output).read_text()
+    evidence = macro_suite_view._evidence
+
+    def wrong_producer_revision(*args, **kwargs):
+        result = evidence(*args, **kwargs)
+        result["generation"]["code_version"] = "0" * 40
+        return result
+
+    monkeypatch.setattr(macro_suite_view, "_evidence", wrong_producer_revision)
+    builder.build_page(
+        ROOT, page, data_root=T11_DATA, out_dir=tmp_path,
+        env=builder._environment(ROOT), page_built_at=_page_built_stamp(committed),
+    )
+    with pytest.raises(AssertionError, match="NOT byte-identical"):
+        _assert_same_macro_suite_region(
+            committed, (tmp_path / page.output).read_text(), page.output,
+        )
 
 
 # ---------------------------------------------------------------------------

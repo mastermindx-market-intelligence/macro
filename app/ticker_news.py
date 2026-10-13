@@ -12,21 +12,40 @@ from __future__ import annotations
 
 import asyncio
 from collections import deque
-from dataclasses import asdict
+import copy
+from contextvars import ContextVar
+from dataclasses import asdict, dataclass
 from datetime import datetime, timezone
 import json
+import logging
+import math
 import os
 from pathlib import Path
+import re
 from threading import Lock
 import time
 from typing import Any, AsyncIterator, Mapping
 
 from fastapi import APIRouter, Depends, Header, HTTPException, Query
 from fastapi.encoders import jsonable_encoder
+from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse, StreamingResponse
+from fastapi.routing import APIRoute
+from starlette.exceptions import HTTPException as StarletteHTTPException
+from starlette.requests import Request
+from starlette.responses import Response
 
 from engine.company_intelligence.contracts import ContractError, safe_ticker
-from engine.qbus_news_receipts import load_health_receipt, load_rights_receipt
+from engine.qbus_news_annotate import (
+    ANNOTATOR_VERSION,
+    annotate_row,
+    derivative_permitted,
+)
+from engine.qbus_news_receipts import (
+    QualifiedNewsRights,
+    load_health_receipt,
+    load_rights_receipt,
+)
 from engine.qbus_news_store import (
     ChangePage,
     NewsReadRights,
@@ -35,10 +54,10 @@ from engine.qbus_news_store import (
     StoreSchemaError,
     StoreUnavailable,
 )
-from engine.qbus_news_universe import qualify_universe
+from engine.qbus_news_universe import QualifiedSecurity, qualify_universe
 from lib import config
 
-router = APIRouter()
+logger = logging.getLogger(__name__)
 
 _PRIVATE_HEADERS = {
     "Cache-Control": "private, no-store",
@@ -50,6 +69,89 @@ _STREAM_HEADERS = {
     **_PRIVATE_HEADERS,
     "X-Accel-Buffering": "no",
 }
+
+
+class _PrivateValidationRoute(APIRoute):
+    """Give this router's query-validation 422s the private error headers.
+
+    Out-of-range Query constraints are rejected by FastAPI's default
+    RequestValidationError handling before the route body runs; re-issue that
+    same 422 body with the private headers instead of the bare default.
+    """
+
+    def get_route_handler(self):
+        original = super().get_route_handler()
+
+        async def handler(request: Request) -> Response:
+            try:
+                return await original(request)
+            except RequestValidationError as exc:
+                return JSONResponse(
+                    status_code=422,
+                    content={"detail": jsonable_encoder(exc.errors())},
+                    headers=dict(_PRIVATE_HEADERS),
+                )
+
+        return handler
+
+
+router = APIRouter(route_class=_PrivateValidationRoute)
+
+
+# W11-07 additive snapshot provenance.  The snapshot route installs a fresh
+# holder per request; the REAL gating reads populate it as a side effect, so
+# provenance adds no file read.  Deliberately mutable: mutation is visible
+# regardless of thread or context copying.
+@dataclass
+class _SnapshotProvenance:
+    rights: QualifiedNewsRights | None = None
+    security: QualifiedSecurity | None = None
+
+
+_SNAPSHOT_PROVENANCE: ContextVar[_SnapshotProvenance | None] = ContextVar(
+    "ticker_news_snapshot_provenance", default=None
+)
+
+# Wave B news-flow rail (ticker_news.flow.v1).  The store method is owned by
+# lane B1; this layer only computes, validates, and applies feed-health
+# coverage.  It never derives counts itself.
+FLOW_SCHEMA = "ticker_news.flow.v1"
+FLOW_PARTIAL_STATES = frozenset({"catching_up", "degraded"})
+
+_FLOW_KEYS = frozenset(
+    {
+        "schema",
+        "state",
+        "reason",
+        "coverage",
+        "as_of",
+        "reports_24h",
+        "reports_7d",
+        "stories_24h",
+        "median_daily_28d",
+        "daily_counts_28d",
+        "history_days_observed",
+        "comparison",
+        "provenance",
+    }
+)
+_FLOW_PROVENANCE_KEYS = frozenset(
+    {
+        "velocity_schema",
+        "sources_counted",
+        "status_counted",
+        "distinct_by",
+        "story_grouping",
+        "cluster_policy_version",
+        "windows",
+        "calculation",
+        "time_basis_counts_24h",
+    }
+)
+_FLOW_DAILY_WINDOW_KEYS = frozenset(
+    {"start_date", "end_date", "unit", "excludes", "order"}
+)
+_FLOW_AS_OF_PATTERN = re.compile(r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$")
 
 _RATE_LIMIT_REQUESTS = 120
 _RATE_LIMIT_WINDOW_SECONDS = 60.0
@@ -193,7 +295,16 @@ def _security_for_ticker(ticker: str, now: datetime) -> str | None:
     }
     if len(hits) > 1:
         raise UniverseUnavailable("ticker-news alias ambiguous")
-    return next(iter(hits)) if hits else None
+    if not hits:
+        return None
+    security_id = next(iter(hits))
+    holder = _SNAPSHOT_PROVENANCE.get()
+    if holder is not None:
+        for security in qualified.securities:
+            if security.security_id == security_id:
+                holder.security = security
+                break
+    return security_id
 
 
 def _rights_receipt_path() -> Path | None:
@@ -222,7 +333,12 @@ def _rights_for_user(user: Mapping[str, Any]) -> NewsReadRights | None:
         now=datetime.now(timezone.utc),
         audience="site_full",
     )
-    return None if qualified is None else qualified.rights
+    if qualified is None:
+        return None
+    holder = _SNAPSHOT_PROVENANCE.get()
+    if holder is not None:
+        holder.rights = qualified
+    return qualified.rights
 
 
 def _source_health() -> dict[str, Any]:
@@ -259,6 +375,196 @@ def _state_from_health(health: Mapping[str, Any], *, row_count: int) -> str:
     return "degraded"
 
 
+def _flow_now() -> datetime:
+    return datetime.now(timezone.utc)
+
+
+def _flow_unavailable(reason: str) -> dict:
+    """The exact ticker_news.flow.v1 unavailable shape, keys in serving order."""
+    return {
+        "schema": FLOW_SCHEMA,
+        "state": "unavailable",
+        "reason": reason,
+        "coverage": "complete",
+        "as_of": None,
+        "reports_24h": None,
+        "reports_7d": None,
+        "stories_24h": None,
+        "median_daily_28d": None,
+        "daily_counts_28d": None,
+        "history_days_observed": None,
+        "comparison": None,
+        "provenance": None,
+    }
+
+
+def _flow_payload_valid(flow: object) -> bool:
+    """Wave B contract section 4; total — any failure is simply False."""
+
+    def count(value: object) -> bool:
+        return (
+            isinstance(value, int) and not isinstance(value, bool) and value >= 0
+        )
+
+    def no_empty_strings(value: object) -> bool:
+        if value is None:
+            return False
+        if isinstance(value, str):
+            return value != ""
+        if isinstance(value, dict):
+            return all(value) and all(
+                no_empty_strings(item) for item in value.values()
+            )
+        if isinstance(value, (list, tuple)):
+            return all(no_empty_strings(item) for item in value)
+        return True
+
+    try:
+        if not isinstance(flow, dict) or set(flow) != _FLOW_KEYS:
+            return False
+        if flow["schema"] != FLOW_SCHEMA:
+            return False
+        if flow["state"] not in ("ok", "thin_history", "unavailable"):
+            return False
+        if flow["reason"] not in (None, "no_accessible_sources", "calculation_failed"):
+            return False
+        if flow["coverage"] not in ("complete", "partial"):
+            return False
+        if flow["state"] == "unavailable":
+            if flow["reason"] is None or flow["coverage"] != "complete":
+                return False
+            return all(
+                flow[key] is None
+                for key in _FLOW_KEYS
+                if key not in ("schema", "state", "reason", "coverage")
+            )
+        if flow["reason"] is not None:
+            return False
+        if not isinstance(flow["as_of"], str):
+            return False
+        if _FLOW_AS_OF_PATTERN.match(flow["as_of"]) is None:
+            return False
+        if not all(
+            count(flow[key])
+            for key in ("reports_24h", "reports_7d", "stories_24h")
+        ):
+            return False
+        daily = flow["daily_counts_28d"]
+        if (
+            not isinstance(daily, list)
+            or len(daily) != 28
+            or not all(count(value) for value in daily)
+        ):
+            return False
+        history = flow["history_days_observed"]
+        if not count(history) or not 0 <= history <= 28:
+            return False
+        if (
+            flow["stories_24h"] > flow["reports_24h"]
+            or flow["reports_24h"] > flow["reports_7d"]
+        ):
+            return False
+        provenance = flow["provenance"]
+        if not isinstance(provenance, dict):
+            return False
+        if not _FLOW_PROVENANCE_KEYS <= set(provenance):
+            return False
+        if not no_empty_strings(provenance):
+            return False
+        sources = provenance["sources_counted"]
+        if (
+            not isinstance(sources, list)
+            or not sources
+            or not all(isinstance(item, str) and item for item in sources)
+        ):
+            return False
+        windows = provenance["windows"]
+        if not isinstance(windows, dict):
+            return False
+        if not {"reports_24h", "reports_7d", "daily_28d"} <= set(windows):
+            return False
+        daily_window = windows["daily_28d"]
+        if not isinstance(daily_window, dict):
+            return False
+        if not _FLOW_DAILY_WINDOW_KEYS <= set(daily_window):
+            return False
+        calculation = provenance["calculation"]
+        if not isinstance(calculation, dict):
+            return False
+        if not {"method", "comparison_rule"} <= set(calculation):
+            return False
+        basis = provenance["time_basis_counts_24h"]
+        if not isinstance(basis, dict):
+            return False
+        if (
+            not count(basis.get("published_at"))
+            or not count(basis.get("received_at"))
+        ):
+            return False
+        if basis["published_at"] + basis["received_at"] != flow["reports_24h"]:
+            return False
+        median = flow["median_daily_28d"]
+        comparison = flow["comparison"]
+        if flow["state"] == "ok":
+            if history < 20:
+                return False
+            if isinstance(median, bool) or not isinstance(median, (int, float)):
+                return False
+            if not math.isfinite(median) or median < 0:
+                return False
+            if flow["coverage"] == "complete":
+                return comparison in ("busier", "typical", "quieter")
+            return comparison is None
+        if history > 19 or median is not None:
+            return False
+        if flow["coverage"] == "complete":
+            return comparison == "insufficient_history"
+        return comparison is None
+    except Exception:
+        return False
+
+
+def _compute_flow(store, security_id: str, *, rights: NewsReadRights) -> dict:
+    """Ask the store for the flow; never raise and never leak a partial dict.
+
+    A flow failure must not take the rows down (G3): any exception or any
+    payload that fails the contract validator degrades to the unavailable
+    flow.  Empty rights answer without touching the store method at all.
+    """
+    if not rights.allowed_sources:
+        return _flow_unavailable("no_accessible_sources")
+    try:
+        result = store.news_flow(security_id, now=_flow_now(), rights=rights)
+    except Exception:
+        logger.exception("ticker_news flow calculation failed")
+        return _flow_unavailable("calculation_failed")
+    if not _flow_payload_valid(result):
+        logger.error("ticker_news flow payload failed validation")
+        return _flow_unavailable("calculation_failed")
+    try:
+        return copy.deepcopy(result)
+    except Exception:
+        logger.exception("ticker_news flow calculation failed")
+        return _flow_unavailable("calculation_failed")
+
+
+def _apply_flow_coverage(flow: dict, *, snapshot_state: str) -> dict:
+    """Rule row 1 of flow_compare.v1, applied by the only layer that knows health.
+
+    An unavailable flow is returned unchanged; any other flow under a partial
+    snapshot state keeps its counts but carries coverage "partial" and no
+    comparison.
+    """
+    if flow.get("state") == "unavailable":
+        return flow
+    if snapshot_state in FLOW_PARTIAL_STATES:
+        partial = copy.deepcopy(flow)
+        partial["coverage"] = "partial"
+        partial["comparison"] = None
+        return partial
+    return flow
+
+
 def _rights_or_503(user: Mapping[str, Any]) -> NewsReadRights:
     rights = _rights_for_user(user)
     if rights is None or not rights.allowed_sources:
@@ -277,8 +583,54 @@ def _security_or_404(ticker: str, *, now: datetime) -> tuple[str, str]:
     return normalized, security_id
 
 
-def _story_row(row) -> dict[str, Any]:
-    return jsonable_encoder(asdict(row))
+def _derivative_permitted_after_rights() -> bool:
+    """Derivative flag for this request. Caller already holds qualified rights."""
+    path = _rights_receipt_path()
+    if path is None:
+        return False
+    return derivative_permitted(path)
+
+
+def _annotations_payload(permitted: bool) -> dict[str, str]:
+    return {
+        "state": "on" if permitted else "not_permitted",
+        "annotator_version": ANNOTATOR_VERSION,
+    }
+
+
+def _attach_annotation(
+    payload: dict[str, Any],
+    *,
+    title: str | None,
+    teaser: str | None,
+    permitted: bool,
+) -> dict[str, Any]:
+    payload["annotation"] = annotate_row(title, teaser) if permitted else None
+    return payload
+
+
+def _story_row(row, *, permitted: bool) -> dict[str, Any]:
+    payload = jsonable_encoder(asdict(row))
+    return _attach_annotation(
+        payload,
+        title=row.title,
+        teaser=row.teaser,
+        permitted=permitted,
+    )
+
+
+def _rights_basis(provenance: _SnapshotProvenance | None) -> dict[str, Any] | None:
+    """The shareable receipt identity; owner_ref/product_id/audience stay out."""
+    receipt = None if provenance is None else provenance.rights
+    if receipt is None:
+        return None
+    return {
+        "receipt_id": receipt.receipt_id,
+        "source": receipt.source,
+        "provider": receipt.provider,
+        "effective_at": receipt.effective_at.strftime("%Y-%m-%dT%H:%M:%SZ"),
+        "expires_at": receipt.expires_at.strftime("%Y-%m-%dT%H:%M:%SZ"),
+    }
 
 
 def _snapshot_payload(
@@ -287,17 +639,31 @@ def _snapshot_payload(
     security_id: str,
     snapshot: NewsSnapshot,
     health: Mapping[str, Any],
+    permitted: bool,
+    flow: dict | None = None,
+    provenance: _SnapshotProvenance | None = None,
 ) -> dict[str, Any]:
-    return {
+    state = _state_from_health(health, row_count=len(snapshot.rows))
+    payload: dict[str, Any] = {
         "schema": "ticker_news.snapshot.v1",
         "ticker": ticker,
         "security_id": security_id,
-        "state": _state_from_health(health, row_count=len(snapshot.rows)),
-        "rows": [_story_row(row) for row in snapshot.rows],
+        "state": state,
+        "rows": [_story_row(row, permitted=permitted) for row in snapshot.rows],
         "next_cursor": snapshot.next_cursor,
         "has_more": snapshot.has_more,
         "source_health": dict(health),
+        "annotations": _annotations_payload(permitted),
+        "universe_known_at": (
+            None
+            if provenance is None or provenance.security is None
+            else provenance.security.known_at.strftime("%Y-%m-%dT%H:%M:%SZ")
+        ),
+        "rights_basis": _rights_basis(provenance),
     }
+    if flow is not None:
+        payload["flow"] = _apply_flow_coverage(flow, snapshot_state=state)
+    return payload
 
 
 def _changes_payload(
@@ -305,14 +671,25 @@ def _changes_payload(
     ticker: str,
     security_id: str,
     page: ChangePage,
+    permitted: bool,
 ) -> dict[str, Any]:
+    rows = [
+        _attach_annotation(
+            jsonable_encoder(asdict(row)),
+            title=row.title,
+            teaser=row.teaser,
+            permitted=permitted,
+        )
+        for row in page.rows
+    ]
     return {
         "schema": "ticker_news.changes.v1",
         "ticker": ticker,
         "security_id": security_id,
-        "rows": [jsonable_encoder(asdict(row)) for row in page.rows],
+        "rows": rows,
         "next_sequence": page.next_sequence,
         "has_more": page.has_more,
+        "annotations": _annotations_payload(permitted),
     }
 
 
@@ -332,8 +709,17 @@ def ticker_news_story(
         raise _private_error(503, "ticker news temporarily unavailable") from None
     if detail is None:
         raise _private_error(404, "ticker news story not found")
+    permitted = _derivative_permitted_after_rights()
     payload = jsonable_encoder(asdict(detail))
     payload["schema"] = "ticker_news.story.v1"
+    for encoded, member in zip(payload["members"], detail.members, strict=True):
+        _attach_annotation(
+            encoded,
+            title=member.title,
+            teaser=member.teaser,
+            permitted=permitted,
+        )
+    payload["annotations"] = _annotations_payload(permitted)
     return JSONResponse(
         payload,
         headers=dict(_PRIVATE_HEADERS),
@@ -370,6 +756,7 @@ def ticker_news_changes(
             ticker=normalized,
             security_id=security_id,
             page=page,
+            permitted=_derivative_permitted_after_rights(),
         ),
         headers=dict(_PRIVATE_HEADERS),
     )
@@ -382,33 +769,42 @@ def ticker_news_snapshot(
     cursor: int | None = Query(default=None, ge=1),
     user: dict = Depends(require_site_full_user),
 ) -> JSONResponse:
-    _rate_or_429(user)
-    rights = _rights_or_503(user)
-    normalized, security_id = _security_or_404(
-        ticker,
-        now=datetime.now(timezone.utc),
-    )
+    provenance = _SnapshotProvenance()
+    token = _SNAPSHOT_PROVENANCE.set(provenance)
     try:
-        with _open_store() as store:
-            snapshot = store.snapshot(
-                security_id,
-                limit=limit,
-                cursor=cursor,
-                rights=rights,
-            )
-    except HTTPException:
-        raise
-    except Exception:
-        raise _private_error(503, "ticker news temporarily unavailable") from None
-    return JSONResponse(
-        _snapshot_payload(
-            ticker=normalized,
-            security_id=security_id,
-            snapshot=snapshot,
-            health=_source_health(),
-        ),
-        headers=dict(_PRIVATE_HEADERS),
-    )
+        _rate_or_429(user)
+        rights = _rights_or_503(user)
+        normalized, security_id = _security_or_404(
+            ticker,
+            now=datetime.now(timezone.utc),
+        )
+        try:
+            with _open_store() as store:
+                snapshot = store.snapshot(
+                    security_id,
+                    limit=limit,
+                    cursor=cursor,
+                    rights=rights,
+                )
+                flow = _compute_flow(store, security_id, rights=rights) if cursor is None else None
+        except HTTPException:
+            raise
+        except Exception:
+            raise _private_error(503, "ticker news temporarily unavailable") from None
+        return JSONResponse(
+            _snapshot_payload(
+                ticker=normalized,
+                security_id=security_id,
+                snapshot=snapshot,
+                health=_source_health(),
+                permitted=_derivative_permitted_after_rights(),
+                flow=flow,
+                provenance=provenance,
+            ),
+            headers=dict(_PRIVATE_HEADERS),
+        )
+    finally:
+        _SNAPSHOT_PROVENANCE.reset(token)
 
 
 def _sse_encode(event: str, payload: Mapping[str, Any]) -> str:
@@ -434,6 +830,8 @@ async def _sse_events(
     )
     sequence = int(after_sequence)
     cycles = 0
+    permitted = False
+    derivative_checked = False
     while max_cycles is None or cycles < max_cycles:
         cycles += 1
         rights = _rights_for_user(user)
@@ -465,10 +863,19 @@ async def _sse_events(
                 },
             )
             return
+        if not derivative_checked:
+            permitted = _derivative_permitted_after_rights()
+            derivative_checked = True
 
         for row in page.rows:
             sequence = max(sequence, row.sequence)
-            yield _sse_encode(row.kind, jsonable_encoder(asdict(row)))
+            payload = _attach_annotation(
+                jsonable_encoder(asdict(row)),
+                title=row.title,
+                teaser=row.teaser,
+                permitted=permitted,
+            )
+            yield _sse_encode(row.kind, payload)
         if not page.rows:
             yield ": heartbeat\n\n"
         if poll_seconds > 0:
@@ -495,3 +902,104 @@ def ticker_news_stream(
         media_type="text/event-stream",
         headers=dict(_STREAM_HEADERS),
     )
+
+
+_UNKNOWN_PATH_METHODS = ["POST", "PUT", "PATCH", "DELETE", "HEAD", "OPTIONS"]
+_CATCH_ALL_PATHS = frozenset(
+    {"/api/ticker-news", "/api/ticker-news/{rest:path}"}
+)
+
+
+@router.get("/api/ticker-news", include_in_schema=False)
+def ticker_news_root(
+    user: dict = Depends(require_site_full_user),
+) -> None:
+    """Private terminal answer for the bare ticker-news root.
+
+    Without an exact route here redirect_slashes answers the rootless path
+    with a 307 towards /api/ticker-news/, leaking the route family.
+    """
+    _rate_or_429(user)
+    raise _private_error(404, "not found")
+
+
+@router.get("/api/ticker-news/{rest:path}", include_in_schema=False)
+def ticker_news_unmatched(
+    rest: str,
+    user: dict = Depends(require_site_full_user),
+) -> None:
+    """Private terminal answer for decoded-slash and other unmatched paths.
+
+    Starlette decodes %2F, so paths like /api/ticker-news/..%2Fx or any
+    trailing/multi-segment shape never match a single-segment route; without
+    this catch-all the framework default 404 leaks without private headers.
+    W12: an empty rest (the bare /api/ticker-news/ root) skips ticker
+    validation and answers the private 404 directly instead of a 422.
+    W13: an empty leading segment (the /api/ticker-news//x shape) is an
+    unknown-path shape too, so only a non-empty head is ticker-validated.
+    """
+    _rate_or_429(user)
+    head = rest.split("/", 1)[0]
+    if head != "":
+        _safe_ticker_or_422(head)
+    raise _private_error(404, "not found")
+
+
+def _real_route_method_not_allowed(rest: str) -> None:
+    """Preserve the router 405 for a non-GET method on a real GET path.
+
+    A non-GET catch-all at the same path would otherwise FULL-match and
+    shadow the router's 405+Allow on the real routes; this re-raises the
+    same Starlette 405 the router would have raised.  It matches the
+    module router's own (prefix-free) route paths, so it also holds when
+    the router is included under a prefix.
+    """
+    for route in router.routes:
+        if not isinstance(route, APIRoute):
+            continue
+        if route.path in _CATCH_ALL_PATHS:
+            continue
+        if route.path_regex.match("/api/ticker-news/" + rest):
+            raise StarletteHTTPException(
+                status_code=405,
+                headers={"Allow": ", ".join(route.methods)},
+            )
+    return None
+
+
+@router.api_route(
+    "/api/ticker-news",
+    methods=_UNKNOWN_PATH_METHODS,
+    include_in_schema=False,
+)
+def ticker_news_root_other_methods(
+    user: dict = Depends(require_site_full_user),
+) -> None:
+    """Private terminal answer for non-GET methods on the bare root."""
+    _rate_or_429(user)
+    raise _private_error(404, "not found")
+
+
+@router.api_route(
+    "/api/ticker-news/{rest:path}",
+    methods=_UNKNOWN_PATH_METHODS,
+    include_in_schema=False,
+)
+def ticker_news_unmatched_other_methods(
+    rest: str,
+    user: dict = Depends(require_site_full_user),
+) -> None:
+    """Private terminal answer for non-GET methods on unmatched paths.
+
+    W13: the parameter dependency authenticates before the real-route 405
+    re-raise (see _real_route_method_not_allowed), so unauthenticated
+    callers get the private 401 on every path instead of a 405 that leaks
+    which paths are real routes; the 405 re-raise runs before the rate
+    limiter, then the chain follows the GET catch-all.
+    """
+    _real_route_method_not_allowed(rest)
+    _rate_or_429(user)
+    head = rest.split("/", 1)[0]
+    if head != "":
+        _safe_ticker_or_422(head)
+    raise _private_error(404, "not found")
