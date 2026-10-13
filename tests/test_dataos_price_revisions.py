@@ -21,9 +21,12 @@ from lib.dataos.price_views import (
     ActionFamily,
     ActionRevisionSet,
     RefusalReason,
+    ReinvestPolicy,
+    TotalReturnPolicy,
     ViewRefusal,
     sadj_view,
     split_factor,
+    total_return_view,
 )
 
 UTC = timezone.utc
@@ -237,3 +240,85 @@ def test_P02_04_supersedes_naming_an_absent_id_is_NO_ELIGIBLE_REVISION() -> None
         revisions.resolve(POST_CORRECTION)
     assert raised.value.reason is RefusalReason.NO_ELIGIBLE_REVISION
     assert raised.value.event_id == "B"
+
+
+# ═════════════════════════════════════════════════════════════════════════════
+# Lane O2-P04 — the house TOTAL_RETURN view honours the same as-of law: a cash
+# correction or cancellation known after `as_at` leaves the earlier view's cash
+# untouched; known before, it moves it; the original observation stays recorded
+# in history() either way (P02.01/P02.02 applied to cash).  Literals by hand:
+# t0 2026-03-09 close 100, cash ex 2026-03-10, t1 2026-03-11 close 98.
+# ═════════════════════════════════════════════════════════════════════════════
+
+TR_ROWS = [
+    {"date": date(2026, 3, 9), "close_raw": 100},   # ROW_DAY == t0
+    {"date": date(2026, 3, 11), "close_raw": 98},   # t1
+]
+TR_POLICY = TotalReturnPolicy(ReinvestPolicy.NONE, Fraction(0), "USD")
+
+
+def cash_event(
+    event_id: str,
+    per_share,
+    *,
+    known_at: datetime,
+    ex_date: date = EX_DAY,
+    supersedes: str | None = None,
+    cancelled: bool = False,
+) -> ActionEvent:
+    """A CONFIRMED as-declared USD cash dividend (the local `event()` helper
+    fixes family=split, so the cash tests build their own records)."""
+    return ActionEvent(
+        event_id=event_id,
+        family=ActionFamily.CASH_DIVIDEND,
+        ex_date=ex_date,
+        known_at=known_at,
+        source_receipt=f"rcpt:{event_id}",
+        qualification="CONFIRMED",
+        ratio=None,
+        cash_per_share=per_share,
+        cash_basis="as_declared",
+        currency="USD",
+        supersedes=supersedes,
+        cancelled=cancelled,
+    )
+
+
+def test_O2_P04_cash_correction_known_after_as_at_leaves_cash_at_2() -> None:
+    original = cash_event("D", Fraction(2), known_at=ANNOUNCED)
+    correction = cash_event("D2", Fraction(3), known_at=known(2026, 4, 1), supersedes="D")
+    revisions = ActionRevisionSet("trcorr", (original, correction))
+    # at PRE_CORRECTION (2026-03-15) the correction is invisible: cash stays 2
+    before = total_return_view(TR_ROWS, revisions, PRE_CORRECTION, TR_POLICY)
+    assert before.cash == Fraction(2)
+    assert before.wealth1 == Fraction(100)  # 1*98 + 2
+    assert before.holding_return == Fraction(0)
+    assert before.events_applied == (("D", ActionFamily.CASH_DIVIDEND, Fraction(1)),)
+    # once known (POST_CORRECTION, 2026-05-01) the corrected amount 3 applies
+    after = total_return_view(TR_ROWS, revisions, POST_CORRECTION, TR_POLICY)
+    assert after.cash == Fraction(3)
+    assert after.wealth1 == Fraction(101)  # 1*98 + 3
+    assert after.holding_return == Fraction(1, 100)
+    assert after.events_applied == (("D2", ActionFamily.CASH_DIVIDEND, Fraction(1)),)
+
+
+def test_O2_P04_cash_cancellation_known_before_as_at_removes_the_cash() -> None:
+    original = cash_event("D", Fraction(2), known_at=ANNOUNCED)
+    cancellation = cash_event(
+        "D3", Fraction(2), known_at=known(2026, 4, 1), supersedes="D", cancelled=True
+    )
+    revisions = ActionRevisionSet("trcancel", (original, cancellation))
+    # before the cancellation is known, the cash is still there
+    before = total_return_view(TR_ROWS, revisions, PRE_CORRECTION, TR_POLICY)
+    assert before.cash == Fraction(2)
+    assert before.holding_return == Fraction(0)
+    # known before POST_CORRECTION: the event is gone, the view is pure price
+    after = total_return_view(TR_ROWS, revisions, POST_CORRECTION, TR_POLICY)
+    assert after.cash == Fraction(0)
+    assert after.q1 == Fraction(1)
+    assert after.wealth1 == Fraction(98)
+    assert after.holding_return == Fraction(-1, 50)  # == raw_price_return
+    assert after.events_applied == ()
+    # the original observation remains recorded, untouched, in history()
+    assert {record.event_id for record in revisions.history("D")} == {"D", "D3"}
+    assert revisions.history("D")[0] is original

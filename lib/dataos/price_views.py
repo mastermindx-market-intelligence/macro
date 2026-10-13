@@ -75,6 +75,11 @@ __all__ = [
     "qualified_return",
     "raw_view",
     "sadj_view",
+    # ── house TOTAL_RETURN (lane O2-P04, D00.D3) ──
+    "ReinvestPolicy",
+    "TotalReturnPolicy",
+    "TotalReturnView",
+    "total_return_view",
 ]
 
 #: The only P01 qualification string that may enter a split factor (D00.D3).
@@ -158,6 +163,11 @@ class RefusalReason(StrEnum):
     CASH_BASIS_MISMATCH = "cash_basis_mismatch"
     UNKNOWN_ORDERING = "unknown_ordering"
     NOT_EXECUTABLE_BASIS = "not_executable_basis"
+    # ── added by lane O2-P04's total-return view (D00.D3 house TOTAL_RETURN row) ──
+    UNKNOWN_WITHHOLDING = "unknown_withholding"
+    UNKNOWN_FX = "unknown_fx"
+    UNKNOWN_REINVESTMENT = "unknown_reinvestment"
+    MISSING_PRICE = "missing_price"
 
 
 class ViewRefusal(PriceError):
@@ -764,5 +774,360 @@ def sadj_view(rows, revisions: ActionRevisionSet, as_at: datetime, *, quantity_c
         basis="SADJ",
         rows=tuple(out_rows),
         reference=AdjustmentReference("SADJ", revisions.revision_set_id, as_at),
+        executable=False,
+    )
+
+
+# ── house TOTAL_RETURN: holding plus cash under a declared policy (O2-P04) ────
+#
+# D00.D3, the house TOTAL_RETURN row, verbatim in substance: "a separately
+# computed holding-plus-cash oracle under a *declared* policy: reinvest=NONE
+# (cash held) or reinvest=EX_DATE_CLOSE; withholding = none unless declared".
+# It refuses when "any event in the window is unsupported, or withholding/FX/
+# reinvestment/ordering the request needs is unknown (P04.03)".  Three facts
+# are DISTINCT and never substitute for one another (P04.02): original cash,
+# current-share-adjusted cash, and a price factor.  Cash is carried AS CASH
+# (or reinvested at the ex-date's own printed close per the declared policy) —
+# never folded into the price.  A vendor TRADJ series is a proxy for this
+# number, never the number (P04.04), which is why the view is never
+# executable: nobody ever traded at a total-return index level.
+
+
+class ReinvestPolicy(StrEnum):
+    """What the declared policy does with cash the holding receives (D00.D3).
+
+    ``NONE``: cash accumulates as cash (``view.cash``), never a price factor.
+    ``EX_DATE_CLOSE``: cash buys fractional shares at ``close_raw`` printed on
+    the ex-date — a declared accounting convenience, not an execution claim.
+    """
+
+    NONE = "none"
+    EX_DATE_CLOSE = "ex_date_close"
+
+
+def _norm_currency(code: str) -> str:
+    """One comparison form for currency codes (ISO 4217 is case-insensitive)."""
+    return code.strip().upper()
+
+
+@dataclass(frozen=True)
+class TotalReturnPolicy:
+    """The declared policy a total-return question must carry (D00.D3, P04.03).
+
+    Nothing is assumed.  A missing reinvestment, withholding or currency is a
+    typed refusal — UNKNOWN_REINVESTMENT / UNKNOWN_WITHHOLDING / UNKNOWN_FX —
+    never a silent default: "withholding = none unless declared" means *no*
+    withholding is ``Fraction(0)``, declared.  A rate outside ``[0, 1)`` is as
+    unknown as ``None``.  A non-exact rate (float/bool) refuses NON_EXACT_INPUT
+    like every other number in this module.
+    """
+
+    reinvest: ReinvestPolicy | None
+    withholding_rate: Fraction | None
+    currency: str | None
+
+    def __post_init__(self) -> None:
+        if self.reinvest is None:
+            raise ViewRefusal(
+                "reinvest is None — a total-return view never assumes a "
+                "reinvestment convention; declare ReinvestPolicy.NONE or "
+                "ReinvestPolicy.EX_DATE_CLOSE",
+                reason=RefusalReason.UNKNOWN_REINVESTMENT,
+            )
+        if isinstance(self.reinvest, ReinvestPolicy):
+            pass
+        elif isinstance(self.reinvest, str):
+            try:
+                object.__setattr__(
+                    self, "reinvest", ReinvestPolicy(self.reinvest.strip().lower())
+                )
+            except ValueError as exc:
+                raise ViewRefusal(
+                    f"reinvest {self.reinvest!r} names no known policy "
+                    f"({', '.join(p.value for p in ReinvestPolicy)}) — what the "
+                    f"request wants is unknown",
+                    reason=RefusalReason.UNKNOWN_REINVESTMENT,
+                ) from exc
+        else:
+            raise TypeError(
+                f"reinvest must be a ReinvestPolicy or None, "
+                f"got {type(self.reinvest).__name__}"
+            )
+        if self.withholding_rate is None:
+            raise ViewRefusal(
+                "withholding_rate is None — withholding is none only when "
+                "DECLARED as Fraction(0), never assumed",
+                reason=RefusalReason.UNKNOWN_WITHHOLDING,
+            )
+        rate = _exact_fraction(self.withholding_rate, what="withholding_rate")
+        object.__setattr__(self, "withholding_rate", rate)
+        if not (Fraction(0) <= rate < Fraction(1)):
+            raise ViewRefusal(
+                f"withholding_rate {rate} is outside [0, 1) — the request's "
+                f"withholding is unknown, not 'none'",
+                reason=RefusalReason.UNKNOWN_WITHHOLDING,
+            )
+        if self.currency is None:
+            raise ViewRefusal(
+                "currency is None — the view never assumes a currency",
+                reason=RefusalReason.UNKNOWN_FX,
+            )
+        if not isinstance(self.currency, str):
+            raise TypeError(
+                f"currency must be a str or None, got {type(self.currency).__name__}"
+            )
+        if not _norm_currency(self.currency):
+            raise ViewRefusal(
+                "currency is empty — the view never assumes a currency",
+                reason=RefusalReason.UNKNOWN_FX,
+            )
+        object.__setattr__(self, "currency", _norm_currency(self.currency))
+
+
+@dataclass(frozen=True)
+class TotalReturnView:
+    """One house TOTAL_RETURN answer: a holding plus its cash (D00.D3).
+
+    ``wealth0 = q0 * p0`` at ``t0``; ``wealth1 = q1 * p1 + cash`` at ``t1``.
+    ``events_applied`` records, in application order, each event's id, family
+    and the share basis it acted on — so a same-day split-then-cash states the
+    cash used the NEW share count (V07) instead of leaving it implicit.
+    ``executable`` is always False and its constructor refuses True: this is an
+    accounting oracle, and a vendor TRADJ series mistaken for it (P04.04) is
+    exactly the confusion the refusal prevents.
+    """
+
+    wealth0: Fraction
+    q1: Fraction
+    cash: Fraction
+    wealth1: Fraction
+    holding_return: Fraction
+    raw_price_return: Fraction
+    policy: TotalReturnPolicy
+    reference: AdjustmentReference
+    events_applied: tuple[tuple[str, ActionFamily, Fraction], ...] = ()
+    executable: bool = False
+
+    def __post_init__(self) -> None:
+        if not isinstance(self.policy, TotalReturnPolicy):
+            raise TypeError(
+                f"policy must be a TotalReturnPolicy, got {type(self.policy).__name__}"
+            )
+        if not isinstance(self.reference, AdjustmentReference):
+            raise TypeError(
+                f"reference must be an AdjustmentReference, "
+                f"got {type(self.reference).__name__}"
+            )
+        if not isinstance(self.events_applied, tuple):
+            object.__setattr__(self, "events_applied", tuple(self.events_applied))
+        for record in self.events_applied:
+            if not isinstance(record, tuple) or len(record) != 3:
+                raise TypeError(
+                    f"events_applied entries must be (event_id, family, "
+                    f"share_basis) tuples, got {record!r}"
+                )
+            event_id, family, basis = record
+            if not isinstance(event_id, str) or not event_id:
+                raise TypeError(f"event_id must be a non-empty string, got {event_id!r}")
+            if not isinstance(family, ActionFamily):
+                raise TypeError(f"family must be an ActionFamily, got {family!r}")
+            if not isinstance(basis, Fraction):
+                raise TypeError(
+                    f"share_basis must be a Fraction, got {type(basis).__name__}"
+                )
+        if self.executable:
+            raise ViewRefusal(
+                "a TOTAL_RETURN view is never executable — it is a "
+                "holding-plus-cash accounting number, not a price anyone traded",
+                reason=RefusalReason.NOT_EXECUTABLE_BASIS,
+            )
+
+
+def total_return_view(
+    rows,
+    revisions: ActionRevisionSet,
+    as_at: datetime,
+    policy: TotalReturnPolicy,
+    *,
+    q0=1,
+) -> TotalReturnView:
+    """The house TOTAL_RETURN oracle over a raw close series (D00.D3, O2-P04).
+
+    ``rows`` are date-ordered mappings each carrying ``date`` and an exact
+    ``close_raw``; ``t0``/``t1`` are the first/last row dates and ``p0``/``p1``
+    their closes.  The column law above applies verbatim: any non-raw price
+    column refuses (``*_tradj`` -> NON_RAW_INPUT, ``*_sadj`` ->
+    DOUBLE_ADJUST_RISK) — a vendor TRADJ series is never an input to this view.
+
+    Events are ``revisions.resolve(as_at)`` (P02) kept while ``t0 < ex_date <=
+    t1`` and applied in ``(ex_date, sequence)`` order; two same-ex-date events
+    whose sequence is None or equal refuse UNKNOWN_ORDERING — never a guess.
+    Each event then faces P02's value law unchanged (unsupported family /
+    not CONFIRMED / unknown or invalid ratio / cash-basis mismatch), plus the
+    cash law this view adds:
+
+    - a split multiplies the holding: ``q = q * r``;
+    - a cash dividend must be declared ``as_declared`` (else
+      CASH_BASIS_MISMATCH — original cash and current-share-adjusted cash are
+      distinct facts, P04.02) in the policy's currency (else, or None,
+      UNKNOWN_FX); ``amount = q * cash_per_share * (1 - withholding_rate)``
+      with ``q`` the share count in force at the ex_date AFTER any same-day
+      earlier-sequence split; the policy then holds it as cash (NONE) or buys
+      fractional shares at ``close_raw(ex_date)`` (EX_DATE_CLOSE; a missing or
+      non-positive close on the ex-date refuses MISSING_PRICE — no proxy price
+      is ever substituted).
+
+    ``q0`` (default 1) is the starting share count and must be exact and
+    positive.  Every output is an exact ``Fraction``.
+    """
+    if not isinstance(policy, TotalReturnPolicy):
+        raise TypeError(
+            f"policy must be a TotalReturnPolicy, got {type(policy).__name__}"
+        )
+    _require_aware(as_at, what="as_at")
+    if not isinstance(revisions, ActionRevisionSet):
+        raise TypeError(
+            f"revisions must be an ActionRevisionSet, got {type(revisions).__name__}"
+        )
+    q_start = _exact_fraction(q0, what="q0")
+    if q_start <= 0:
+        raise ValueError(f"q0 must be a positive share count, got {q_start}")
+    materialized = tuple(rows)
+    for row in materialized:
+        if not isinstance(row, Mapping):
+            raise TypeError(f"rows must be mappings, got {type(row).__name__}")
+    _validate_price_columns(materialized)
+    if not materialized:
+        raise ValueError(
+            "total_return_view needs at least one row (t0/t1 are the first "
+            "and last row dates)"
+        )
+    close_by_day: dict[date, Fraction] = {}
+    previous_day: date | None = None
+    for row in materialized:
+        if "date" not in row:
+            raise TypeError(f"row is missing its 'date' member: {dict(row)!r}")
+        day = _require_date(row["date"], what="row date")
+        if previous_day is not None and day < previous_day:
+            raise ValueError(
+                f"rows must be date-ordered: {day:%Y-%m-%d} follows "
+                f"{previous_day:%Y-%m-%d}"
+            )
+        previous_day = day
+        if "close_raw" not in row:
+            raise ViewRefusal(
+                f"row {day:%Y-%m-%d} carries no close_raw — the view has no "
+                f"price for that session",
+                reason=RefusalReason.MISSING_PRICE,
+                column="close_raw",
+            )
+        close_by_day[day] = _exact_fraction(
+            row["close_raw"], what="close_raw", column="close_raw"
+        )
+    t0: date = materialized[0]["date"]
+    t1: date = materialized[-1]["date"]
+    p0 = close_by_day[t0]
+    p1 = close_by_day[t1]
+    if p0 <= 0:
+        raise ValueError(f"close_raw at t0 must be positive, got {p0}")
+
+    in_window = [
+        event for event in revisions.resolve(as_at) if t0 < event.ex_date <= t1
+    ]
+    # Never guess a same-day order (D00.D3/P04.03): sequences present and
+    # pairwise distinct, or the view refuses.
+    by_day: dict[date, list[ActionEvent]] = {}
+    for event in in_window:
+        by_day.setdefault(event.ex_date, []).append(event)
+    for day, group in sorted(by_day.items()):
+        if len(group) > 1:
+            sequences = [event.sequence for event in group]
+            if any(s is None for s in sequences) or len(set(sequences)) < len(sequences):
+                names = ", ".join(repr(event.event_id) for event in group)
+                raise ViewRefusal(
+                    f"same-ex-date events ({names}) on {day:%Y-%m-%d} have a "
+                    f"None or equal sequence — which applied first is unknown "
+                    f"and is never guessed",
+                    reason=RefusalReason.UNKNOWN_ORDERING,
+                    event_id=group[-1].event_id,
+                )
+
+    q = q_start
+    cash = Fraction(0)
+    applied: list[tuple[str, ActionFamily, Fraction]] = []
+    for event in in_window:  # resolve() already (ex_date, sequence)-ordered
+        contribution = _check_window_event(event)  # P02's value law, verbatim
+        if contribution is not None:  # a split: the unit changes, wealth does not
+            applied.append((event.event_id, event.family, q))
+            q = q * contribution
+            continue
+        # A cash dividend — carried by P02 for exactly this view.
+        if event.cash_basis != "as_declared":
+            raise ViewRefusal(
+                f"cash dividend {event.event_id!r} is declared "
+                f"{event.cash_basis!r}, not 'as_declared' — original cash and "
+                f"current-share-adjusted cash are distinct facts (P04.02)",
+                reason=RefusalReason.CASH_BASIS_MISMATCH,
+                event_id=event.event_id,
+            )
+        if event.currency is None or _norm_currency(event.currency) != policy.currency:
+            raise ViewRefusal(
+                f"cash dividend {event.event_id!r} is in "
+                f"{event.currency!r}, not the policy's {policy.currency!r} — no "
+                f"FX is applied in any view (D00.D3)",
+                reason=RefusalReason.UNKNOWN_FX,
+                event_id=event.event_id,
+            )
+        if event.cash_per_share is None:
+            raise ViewRefusal(
+                f"cash dividend {event.event_id!r} has no cash_per_share — an "
+                f"unknown amount is never guessed",
+                reason=RefusalReason.UNKNOWN_RATIO,
+                event_id=event.event_id,
+            )
+        if event.cash_per_share < 0:
+            raise ViewRefusal(
+                f"cash dividend {event.event_id!r} cash_per_share "
+                f"{event.cash_per_share} must not be negative",
+                reason=RefusalReason.INVALID_RATIO,
+                event_id=event.event_id,
+            )
+        applied.append((event.event_id, event.family, q))
+        amount = q * event.cash_per_share * (1 - policy.withholding_rate)
+        if policy.reinvest is ReinvestPolicy.NONE:
+            cash += amount
+        else:  # ReinvestPolicy.EX_DATE_CLOSE
+            if event.ex_date not in close_by_day:
+                raise ViewRefusal(
+                    f"ex_date {event.ex_date:%Y-%m-%d} has no row — "
+                    f"EX_DATE_CLOSE reinvestment needs that session's printed "
+                    f"close and never substitutes a proxy",
+                    reason=RefusalReason.MISSING_PRICE,
+                    event_id=event.event_id,
+                )
+            ex_close = close_by_day[event.ex_date]
+            if ex_close <= 0:
+                raise ViewRefusal(
+                    f"close_raw on ex_date {event.ex_date:%Y-%m-%d} is "
+                    f"{ex_close} — not a usable reinvestment price",
+                    reason=RefusalReason.MISSING_PRICE,
+                    event_id=event.event_id,
+                )
+            q += amount / ex_close
+
+    wealth0 = q_start * p0
+    wealth1 = q * p1 + cash
+    return TotalReturnView(
+        wealth0=wealth0,
+        q1=q,
+        cash=cash,
+        wealth1=wealth1,
+        holding_return=wealth1 / wealth0 - 1,
+        raw_price_return=p1 / p0 - 1,
+        policy=policy,
+        reference=AdjustmentReference(
+            "total_return", revisions.revision_set_id, as_at
+        ),
+        events_applied=tuple(applied),
         executable=False,
     )
