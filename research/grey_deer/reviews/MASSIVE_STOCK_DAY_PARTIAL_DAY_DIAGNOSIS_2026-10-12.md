@@ -213,7 +213,7 @@ That assumption is false once (a), (b), or (c) has fired. QQQ and IWM are anchor
 
 ## Executed repros
 
-Command, from the repo root, no network, store under a temp directory via `config.data_dir`. The script is `/tmp/g_gap_repro.py` (not part of the tree). Prices are constants.
+Command, from the repo root, no network, store under a temp directory via `config.data_dir`. The runner was a temp script at `/tmp/g_gap_repro.py` and is not part of the tree. The output below is the record of that run. Prices are constants.
 
 ```
 PYTHONPATH=/home/ubuntu0/lanes/wt/gd-w4-g-gap ~/lanes/venv/bin/python /tmp/g_gap_repro.py
