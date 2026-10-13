@@ -257,6 +257,42 @@ def test_no_clustered_story_in_window_names_the_policy_in_force(tmp_path):
     assert _versions_24h(db) == []
 
 
+def test_no_clustered_story_in_window_names_custom_policy_in_force(tmp_path):
+    db = tmp_path / "custom-policy-unclustered.sqlite3"
+    label = (
+        "qbus_news_cluster.v2 (title_threshold=0.9, "
+        "window_seconds=21600, max_candidates=128)"
+    )
+    with NewsStore(
+        db,
+        source_key="benzinga-rest",
+        cluster_policy=ClusterPolicy(title_threshold=0.9),
+    ) as store:
+        store.commit(
+            [_routed(1, TITLE_A, minute=0)],
+            expected_cursor=None,
+            next_cursor="c1",
+        )
+    conn = sqlite3.connect(db)
+    try:
+        conn.execute("PRAGMA foreign_keys=OFF")
+        conn.execute("DELETE FROM news_cluster_members")
+        conn.execute("DELETE FROM news_clusters")
+        conn.commit()
+    finally:
+        conn.close()
+    _checkpoint(db)
+    with NewsStore.open_readonly(
+        db,
+        source_key="benzinga-rest",
+        cluster_policy=ClusterPolicy(title_threshold=0.9),
+    ) as store:
+        flow = store.news_flow(SEC, now=NOW, rights=_rights())
+    assert flow["stories_24h"] == 1
+    assert flow["provenance"]["cluster_policy_version"] == label
+    assert _versions_24h(db) == []
+
+
 def test_velocity_versions_key_is_sorted_list(tmp_path):
     db = _legacy_db(tmp_path)
     with NewsStore(db, source_key="benzinga-rest") as store:
@@ -356,6 +392,26 @@ def test_orphan_member_reads_unknown(tmp_path):
     _checkpoint(db)
     flow = _flow(db)
     assert flow["stories_24h"] > 0
+    assert (
+        flow["provenance"]["cluster_policy_version"]
+        == UNKNOWN_CLUSTER_POLICY_VERSION
+    )
+    assert _versions_24h(db) == [UNKNOWN_CLUSTER_POLICY_VERSION]
+
+
+def test_members_without_clusters_table_read_unknown(tmp_path):
+    db = tmp_path / "members-only-flow.sqlite3"
+    _clustered_store(db)
+    conn = sqlite3.connect(db)
+    try:
+        conn.execute("PRAGMA foreign_keys=OFF")
+        conn.execute("DROP TABLE news_clusters")
+        conn.commit()
+    finally:
+        conn.close()
+    _checkpoint(db)
+    flow = _flow(db)
+    assert flow["stories_24h"] == 1
     assert (
         flow["provenance"]["cluster_policy_version"]
         == UNKNOWN_CLUSTER_POLICY_VERSION
@@ -516,8 +572,8 @@ def test_default_policy_stamps_exactly_v2(tmp_path):
     )
 
 
-def test_velocity_without_cluster_table_returns_empty_versions(tmp_path):
-    db = tmp_path / "no-clusters-table.sqlite3"
+def test_velocity_with_members_only_reads_unknown_policy(tmp_path):
+    db = tmp_path / "members-only.sqlite3"
     _clustered_store(db)
     pristine = tmp_path / "pristine.sqlite3"
     shutil.copyfile(db, pristine)
@@ -532,8 +588,10 @@ def test_velocity_without_cluster_table_returns_empty_versions(tmp_path):
     _checkpoint(db)
     got = _velocity(db)
     assert set(got) == set(expected)
-    assert got["cluster_policy_versions_24h"] == []
-    assert got["stories_24h"] == got["count_24h"]
+    assert got["stories_24h"] == 1
+    assert got["cluster_policy_versions_24h"] == [
+        UNKNOWN_CLUSTER_POLICY_VERSION
+    ]
 
 
 def test_velocity_without_any_cluster_tables_returns_empty_versions(tmp_path):
