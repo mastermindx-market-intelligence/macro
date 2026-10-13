@@ -227,10 +227,11 @@ def _audit_us_sector_membership(
     """Compare PIT-active us_sector_* rows with this run's S&P-500 sector snapshot.
 
     Evidence-only: this function NEVER edits membership. The reference is
-    admissible only when the breadth adapter completed in this same full collect
-    run with status ok or stale; both mean fetch() returned and wrote the
-    constituent reference. A failed/dead/missing current run may leave an old
-    parquet on disk, so it is unauditable instead of false-clean.
+    admissible only when the breadth adapter completed in this same collect
+    run (the full run or the partial nightly lane) with status ok or stale;
+    both mean fetch() returned and wrote the constituent reference. A
+    failed/dead/missing current run may leave an old parquet on disk, so it
+    is unauditable instead of false-clean.
 
     Membership activity follows the house [added, removed) law at asof.
     Malformed membership/reference input makes the audit unavailable; it never

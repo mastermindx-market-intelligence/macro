@@ -613,9 +613,12 @@ def _end_of_collect_quality(args: argparse.Namespace, registry: dict,
                  "sources this shard did not refresh.", args.only or "-",
                  args.group or "-", args.exclude_group or "-")
     else:
-        # Membership↔cache reconciler runs FIRST: it may prune basket members that drifted
-        # off a rebuilt *_search close cache (dated changelog entry), so the read-only
-        # audits grade the healed state. Its guard refusals abort like the gate; its own
+        # Regional membership↔cache reconciler runs before run_quality_audits(),
+        # not first overall: the observational U.S. structural audit above already
+        # ran. It may prune intl/china/canada/hk members that drifted off a rebuilt
+        # *_search close cache (dated changelog entry), so those read-only audits
+        # grade the healed state. SUITES is regional only, so the reconciler never
+        # touches data/baskets. Its guard refusals abort like the gate; its own
         # crash is non-fatal like any audit's.
         from scripts import reconcile_membership
         try:

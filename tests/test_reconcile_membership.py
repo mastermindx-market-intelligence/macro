@@ -10,6 +10,7 @@ import ast
 import inspect
 import json
 import shlex
+import sys
 from datetime import date
 from pathlib import Path
 
@@ -512,3 +513,115 @@ def test_collect_main_routes_through_the_tested_end_of_collect_helper():
     names = {n.id for n in ast.walk(main) if isinstance(n, ast.Name)}
     assert "reconcile_membership" not in names
     assert "run_quality_audits" not in called
+
+
+class _HaltMainAfterRegistryHandoff(Exception):
+    """Raised by the quality-handoff spy so main()'s post-call tail never runs."""
+
+
+def _registry_after_collect_filters(collect, raw: dict, argv: list[str]) -> dict:
+    """Independent copy of the only/group/exclude filter in collect.main.
+
+    Mirrors scripts/collect.py's filter block (the four rebinds that produce the
+    dict later passed to _end_of_collect_quality). Kept here, not imported, so a
+    hand-built or unfiltered argument cannot satisfy the test by construction.
+    """
+    args = collect._build_arg_parser().parse_args(list(argv))
+    registry = dict(raw)
+    if args.only:
+        keep = {s.strip() for s in args.only.split(",")}
+        registry = {k: v for k, v in registry.items() if k in keep}
+    if args.group:
+        keep = collect.group_members(args.group, registry)
+        registry = {k: v for k, v in registry.items() if k in keep}
+    if args.exclude_group:
+        drop = collect.group_members(args.exclude_group, registry)
+        registry = {k: v for k, v in registry.items() if k not in drop}
+    if args.exclude:
+        drop = {name.strip() for name in args.exclude.split(",") if name.strip()}
+        registry = {k: v for k, v in registry.items() if k not in drop}
+    return registry
+
+
+def _drive_main_until_quality_handoff(monkeypatch, raw: dict, argv: list[str]) -> dict:
+    """Run the real collect.main() and return the registry the quality call receives.
+
+    --group or --only must be set and COLLECT_LANE must not be nightly: otherwise
+    us_scope is true and main() runs the US post-collect tail before the handoff.
+    Adapter execution, status writes, and the breaker update are stubbed; the
+    filter block and the call that passes `registry` are not.
+    """
+    from scripts import collect
+
+    monkeypatch.delenv("COLLECT_LANE", raising=False)
+    args = collect._build_arg_parser().parse_args(list(argv))
+    if not (args.group or args.only):
+        raise AssertionError(
+            "refusing to drive main() without --group or --only; "
+            "us_scope would run the US post-collect tail"
+        )
+    monkeypatch.setattr(sys, "argv", ["collect", *argv])
+    # A new dict each call, sharing the builder's adapter objects. A second
+    # all_adapters() inside main() would still carry every raw key.
+    monkeypatch.setattr(collect, "all_adapters", lambda: dict(raw))
+    monkeypatch.setattr(collect, "_run_one", lambda key, cls, full_history: None)
+    monkeypatch.setattr(collect.store, "read_status", lambda: {})
+    monkeypatch.setattr(collect.store, "write_status", lambda status: None)
+    monkeypatch.setattr(collect, "update_breaker", lambda results, probe: ({}, {}))
+
+    captured: dict = {}
+
+    def _spy(args, registry, results):
+        captured["registry"] = registry
+        raise _HaltMainAfterRegistryHandoff
+
+    monkeypatch.setattr(collect, "_end_of_collect_quality", _spy)
+    with pytest.raises(_HaltMainAfterRegistryHandoff):
+        collect.main()
+    return captured["registry"]
+
+
+# Each argv exercises a different subset of main()'s four filter rebinds.
+# --only / --group are what keep us_scope false with COLLECT_LANE unset; the
+# nightly lane's own --exclude-group asia is case 1's drop of china_/hk_ keys.
+_REGISTRY_PASSTHROUGH_CASES = (
+    (
+        ["--only", "breadth,treasury,china_macro,hk_prices,fred",
+         "--exclude-group", "asia", "--exclude", "fred",
+         "--skip-quality", "--skip-shadow-importance"],
+        ["breadth", "treasury"],
+    ),
+    (
+        ["--group", "us", "--exclude", "yahoo,fred",
+         "--skip-quality", "--skip-shadow-importance"],
+        ["breadth", "treasury", "smallcap_breadth"],
+    ),
+)
+
+
+def test_filtered_registry_built_in_main_reaches_end_of_collect_quality(monkeypatch):
+    """The dict main() filters is the dict _end_of_collect_quality receives.
+
+    _drive_end_of_collect builds {"breadth", "yahoo"} by hand, and
+    test_collect_main_routes_through_the_tested_end_of_collect_helper only
+    checks that main() calls the helper by name. Neither pins the pass-through
+    from the filter block to that call. Adapter identity (not just the key
+    set) is the pin: a hand-built stand-in with the right keys still fails.
+    """
+    from scripts import collect
+
+    raw = {
+        "breadth": object(),
+        "treasury": object(),
+        "smallcap_breadth": object(),
+        "china_macro": object(),
+        "hk_prices": object(),
+        "fred": object(),
+        "yahoo": object(),
+    }
+    for argv, expect_keys in _REGISTRY_PASSTHROUGH_CASES:
+        got = _drive_main_until_quality_handoff(monkeypatch, raw, argv)
+        expected = _registry_after_collect_filters(collect, raw, argv)
+        assert list(got) == expect_keys, (argv, list(got))
+        assert list(got) == list(expected), (argv, list(got), list(expected))
+        assert [got[k] is raw[k] for k in got] == [True] * len(got)
