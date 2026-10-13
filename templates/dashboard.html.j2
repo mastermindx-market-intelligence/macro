@@ -15234,6 +15234,15 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
 
     function _trapTab(dlg, e){
       if(e.key !== 'Tab') return;
+      /* Release cards, the transcript sheet, the body-level heatmap and an open
+         lens popover stack above this dialog and own Tab. Escape already leaves
+         the dialog up under the first two. */
+      var act = document.activeElement;
+      var rrOv = document.getElementById('rr-modal-overlay');
+      if(rrOv && rrOv.classList.contains('open')) return;
+      if(document.querySelector('.rr-tr-overlay.is-open')) return;
+      if(document.querySelector('.hm-ov')) return;
+      if(act && act.closest && act.closest('.lens-pop.open')) return;
       /* Counting the hidden forward-risk controls made `last` unreachable, so Tab
          walked out of the dialog. */
       var focusable = Array.prototype.filter.call(
@@ -15244,7 +15253,6 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
       /* The trap listens on the document while the dialog is open, so it also sees
          Tabs whose focus has strayed outside the dialog (backdrop click target, a
          stray programmatic focus) and pulls it back to the near end. */
-      var act = document.activeElement;
       if(e.shiftKey){ if(act===first || !dlg.contains(act)){ e.preventDefault(); last.focus(); } }
       else { if(act===last || !dlg.contains(act)){ e.preventDefault(); first.focus(); } }
     }

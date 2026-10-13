@@ -149,7 +149,9 @@ def test_illustration_stylesheet_is_published_beside_the_macro_page():
 # many elements where the engine offers it.
 FAKE_DIALOG_JS = r"""
 const assert = require('node:assert/strict');
-const doc = {activeElement: null};
+const doc = {activeElement: null,
+  getElementById() { return null; },
+  querySelector() { return null; }};
 function el(tag, opts = {}) {
   return {tag, open: !!opts.open, shown: opts.shown !== false, tabIndex: opts.tabIndex ?? 0,
           name: opts.name || tag, children: [], parentElement: null,
