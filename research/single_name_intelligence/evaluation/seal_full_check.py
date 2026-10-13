@@ -5,6 +5,20 @@ Independent of residual/ and event_response/ `--check` subsets (XREP-01/02/05).
 Regenerates each sealed v1.1 study from a pinned input ref into a /tmp
 directory and byte-compares EVERY committed file in the run directory.
 
+Float tolerance (named, bounded, reported -- never silent). The committed
+seal was cut on Linux x86_64, and a Linux re-execution reproduces every byte
+(XREP receipt). A macOS arm64 re-execution differs only in the last digits of
+float tokens in a handful of text files (measured 2026-10-13: 10 S1 P03
+files, worst relative difference 4.62e-12, worst absolute 5.50e-14; the
+text skeleton and every integer token are identical). By default a differing
+TEXT file whose skeleton and integer tokens match exactly and whose float
+tokens all agree within ULP_REL_TOL / ULP_ABS_TOL is reported as
+``ulp-equivalent`` -- counted separately, never as identical and never as a
+failure. Binary files, exception-handled files, any structural or integer
+difference, and any float difference beyond tolerance stay failures.
+``--strict-bytes`` turns the tolerance off. Byte identity of the seal rests
+on the Linux receipt, not on a tolerant run.
+
 This module is an SNI-local DRAFT contract that CONSUMES owner-supplied
 values. It does not re-implement Data OS identity, Company Event/Earnings,
 FIF, Capital Structure, Stock Identity, Options, Research Vault, or
@@ -31,7 +45,10 @@ from __future__ import annotations
 
 import argparse
 import json
+import math
 import os
+import platform
+import re
 import subprocess
 import sys
 import tempfile
@@ -85,6 +102,14 @@ S2_V1_1_TRIAL_LEDGER_PATH = (
 KIND_MISSING = "missing-in-produced"
 KIND_EXTRA = "extra-in-produced"
 KIND_DIFFER = "bytes-differ"
+KIND_ULP = "ulp-equivalent"
+
+# Float tolerance for a cross-platform re-execution. Two orders of magnitude
+# above the worst measured macOS-vs-Linux drift (rel 4.62e-12, abs 5.50e-14).
+ULP_REL_TOL = 1e-10
+ULP_ABS_TOL = 1e-13
+ULP_TEXT_SUFFIXES = (".json", ".jsonl", ".md", ".csv", ".tsv", ".txt")
+_NUM = re.compile(r"(?<![\w.])-?\d+(?:\.\d+)?(?:[eE][-+]?\d+)?(?![\w.])")
 
 ExceptionFn = Callable[[Path, Path], list["Diff"]]
 
@@ -103,6 +128,8 @@ class StudyResult:
     identical: int = 0
     named_exception_passes: int = 0
     failures: int = 0
+    ulp_equivalent: int = 0
+    host_platform: str = ""
     diffs: list[Diff] = field(default_factory=list)
 
 
@@ -154,10 +181,54 @@ def rel_files(root: Path) -> set[str]:
     return out
 
 
+def _is_float_token(tok: str) -> bool:
+    return any(c in tok for c in ".eE")
+
+
+def ulp_equivalent(a: bytes, b: bytes) -> tuple[bool, int, float]:
+    """Float-tolerant text equality. Pure: no I/O.
+
+    Returns (equivalent, differing float tokens, worst relative difference).
+    Equivalent only when both sides decode as UTF-8, the text with every
+    numeric token masked is identical, every integer token is identical,
+    no token changes between integer and float spelling, and every float
+    token pair satisfies math.isclose(rel_tol=ULP_REL_TOL,
+    abs_tol=ULP_ABS_TOL).
+    """
+    try:
+        ta = a.decode("utf-8")
+        tb = b.decode("utf-8")
+    except UnicodeDecodeError:
+        return False, 0, 0.0
+    if _NUM.sub("#", ta) != _NUM.sub("#", tb):
+        return False, 0, 0.0
+    na = _NUM.findall(ta)
+    nb = _NUM.findall(tb)
+    if len(na) != len(nb):
+        return False, 0, 0.0
+    n_diff = 0
+    worst = 0.0
+    for x, y in zip(na, nb):
+        if x == y:
+            continue
+        if not (_is_float_token(x) and _is_float_token(y)):
+            return False, n_diff, worst
+        fx, fy = float(x), float(y)
+        if not math.isclose(fx, fy, rel_tol=ULP_REL_TOL, abs_tol=ULP_ABS_TOL):
+            return False, n_diff, worst
+        n_diff += 1
+        scale = max(abs(fx), abs(fy))
+        if scale:
+            worst = max(worst, abs(fx - fy) / scale)
+    return True, n_diff, worst
+
+
 def walk_compare(
     committed_dir: Path,
     produced_dir: Path,
     exceptions: dict[str, ExceptionFn] | None = None,
+    *,
+    ulp_tolerant: bool = False,
 ) -> list[Diff]:
     """Pure recursive comparator. No git, no subprocess, no network.
 
@@ -165,7 +236,9 @@ def walk_compare(
     Returns missing-in-produced, extra-in-produced, and bytes-differ. A
     relative path that is a key of ``exceptions`` is compared by that
     callable instead of raw bytes; the callable returns a (possibly empty)
-    list of Diff.
+    list of Diff. With ``ulp_tolerant`` a differing non-exception text file
+    that passes ``ulp_equivalent`` is reported as ulp-equivalent instead of
+    bytes-differ; the default is strict bytes.
     """
     refuse_nonfalse_authority(AUTHORITY_FLAGS)
     exceptions = exceptions or {}
@@ -184,8 +257,20 @@ def walk_compare(
         fn = exceptions.get(rel)
         if fn is not None:
             diffs.extend(fn(c_path, p_path))
-        elif c_path.read_bytes() != p_path.read_bytes():
-            diffs.append(Diff(KIND_DIFFER, rel))
+            continue
+        c_bytes = c_path.read_bytes()
+        p_bytes = p_path.read_bytes()
+        if c_bytes == p_bytes:
+            continue
+        if ulp_tolerant and rel.endswith(ULP_TEXT_SUFFIXES):
+            ok, n_tok, worst = ulp_equivalent(c_bytes, p_bytes)
+            if ok:
+                diffs.append(Diff(
+                    KIND_ULP, rel,
+                    f"{n_tok} float tokens within tolerance, worst rel {worst:.2e}",
+                ))
+                continue
+        diffs.append(Diff(KIND_DIFFER, rel))
     return diffs
 
 
@@ -472,8 +557,14 @@ def check_study(
     repo_root: Path,
     input_ref: str,
     out_dir: Path,
+    *,
+    strict_bytes: bool = False,
 ) -> StudyResult:
-    """Regenerate one study into out_dir and full-compare against the committed run."""
+    """Regenerate one study into out_dir and full-compare against the committed run.
+
+    Unless ``strict_bytes``, float-only last-digit differences in text files
+    are counted as ulp_equivalent (see module docstring), never as identical.
+    """
     refuse_nonfalse_authority(AUTHORITY_FLAGS)
     repo_root = Path(repo_root).resolve()
     if name == "s1":
@@ -487,7 +578,7 @@ def check_study(
     else:
         raise ValueError(f"unknown study {name!r}")
 
-    diffs = walk_compare(committed, out_dir, exceptions)
+    diffs = walk_compare(committed, out_dir, exceptions, ulp_tolerant=not strict_bytes)
     c_files = rel_files(committed)
     p_files = rel_files(out_dir)
     compared = c_files | p_files
@@ -510,12 +601,15 @@ def check_study(
         else:
             named_ok += 1  # XREP-04 pin held on committed bytes
 
+    ulp = sum(1 for d in diffs if d.kind == KIND_ULP)
     return StudyResult(
         name=name,
         compared=len(compared),
         identical=identical,
         named_exception_passes=named_ok,
-        failures=len(diffs),
+        failures=len(diffs) - ulp,
+        ulp_equivalent=ulp,
+        host_platform=f"{platform.system()} {platform.machine()}",
         diffs=diffs,
     )
 
@@ -523,7 +617,9 @@ def check_study(
 def _print_result(res: StudyResult) -> None:
     print(
         f"{res.name}: files compared={res.compared} identical={res.identical} "
-        f"named-exception passes={res.named_exception_passes} failures={res.failures}"
+        f"named-exception passes={res.named_exception_passes} "
+        f"ulp-equivalent={res.ulp_equivalent} failures={res.failures} "
+        f"[{res.host_platform}]"
     )
     for d in res.diffs:
         extra = f" ({d.detail})" if d.detail else ""
@@ -536,6 +632,10 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--study", choices=("s1", "s2", "all"), required=True)
     ap.add_argument("--input-ref", default=INPUT_REF_DEFAULT)
     ap.add_argument("--repo-root", default=None)
+    ap.add_argument(
+        "--strict-bytes", action="store_true",
+        help="disable the float tolerance; every differing byte is a failure",
+    )
     args = ap.parse_args(argv)
 
     if args.repo_root:
@@ -561,7 +661,10 @@ def main(argv: list[str] | None = None) -> int:
     try:
         for name in names:
             tmp = Path(tempfile.mkdtemp(prefix=f"schk_{name}_", dir="/tmp"))
-            res = check_study(name, repo_root, args.input_ref, tmp)
+            res = check_study(
+                name, repo_root, args.input_ref, tmp,
+                strict_bytes=args.strict_bytes,
+            )
             _print_result(res)
             results.append(res)
             if res.failures:
@@ -577,6 +680,15 @@ def main(argv: list[str] | None = None) -> int:
     if failed:
         print("SEAL FULL CHECK: DIFFERS")
         return 1
+    ulp_total = sum(r.ulp_equivalent for r in results)
+    if ulp_total:
+        host = results[0].host_platform if results else ""
+        print(
+            f"SEAL FULL CHECK: OK ({ulp_total} files float-equivalent on {host} "
+            f"within rel {ULP_REL_TOL:g} / abs {ULP_ABS_TOL:g}, not byte-identical; "
+            "byte identity rests on the XREP Linux receipt)"
+        )
+        return 0
     print("SEAL FULL CHECK: OK")
     return 0
 

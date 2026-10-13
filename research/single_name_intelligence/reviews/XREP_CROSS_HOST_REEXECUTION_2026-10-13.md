@@ -238,3 +238,45 @@ Lane SCHK. Independent full-coverage verifier `research/single_name_intelligence
 - **XREP-05** CLOSED-BY-VERIFIER — `walk_compare` directory walk (`test_schk_04_comparator_covers_every_committed_file`). S2 files visited = 23, including every file under `results/` and `observations/` plus the seven top-level names `run_check`'s fixed tuple omits.
 
 No additional SCHK-nn host/out-dir path exceptions were observed. Ledger `ts` fields reuse S1 `_ledger_equal` (imported) and S2's ts-dropping compare (run_s2.py L1072-1078). Full `--study all` counts on this host match the regeneration tests above.
+
+## Addendum — macOS arm64 re-execution (INT1 SCHK float tolerance)
+
+This closes the "no macOS run" gap above with one observation, and it is
+not a byte-identity result. Host: macOS 26.5 arm64, CPython 3.12.13, numpy
+2.5.1, pandas 3.0.5. Command: `python3.12 -m pytest
+tests/test_sni_seal_full_check.py -k "schk_05 or schk_06" -s`.
+
+- **S2 v1.1**: files compared=23, identical=22, named-exception passes=2,
+  ulp-equivalent=0, failures=0. Byte-identical to the Linux seal, the same
+  counts as the SCHK closure above.
+- **S1 v1.1**: files compared=48, identical=35, named-exception passes=3,
+  ulp-equivalent=10, failures=0. The 10 files are the P03 outputs:
+  `observations/P03_{adr_baba,hkd_0700,hkd_9988}_{5,21,63}.json` and
+  `results/P03.json`.
+
+The 10 P03 files differ from the committed bytes only in the last digits
+of float tokens. A sample pair is `1.5031136678667067e-06` (seal) against
+`1.5031136678597679e-06` (macOS). The worst relative difference is
+4.62e-12 (`P03_hkd_0700_5.json`), and the worst absolute difference across
+all P03 tokens is 5.50e-14. The text with every number masked is
+identical, the token counts match, and every integer token is equal. The
+seal itself (`SEAL_AND_BUDGET.*`, the manifests, the prereg spec) and
+every other S1 protocol are byte-identical, and the
+`SEAL_AND_BUDGET` ledger-path field still passes only through the XREP-03
+named exception.
+
+`seal_full_check.py` reports these files as `ulp-equivalent`, a separate
+count that is never folded into `identical` and never treated as a pass by
+omission. The comparison applies only to text outputs (`.json`, `.jsonl`,
+`.md`, `.csv`, `.tsv`, `.txt`), and every differing token must be a float,
+within rel 1e-10 / abs 1e-13. An integer change, a `1` vs `1.0` change, a
+structural change, or a parquet difference remains a failure
+(`test_schk_07`, `test_schk_08`). `--strict-bytes` switches the tolerance
+off. On Linux x86_64, the seal platform, the tests pin `ulp_equivalent ==
+0`, so a regression to float drift on the seal platform still fails.
+
+Byte identity of S1 P03 therefore still rests on the Linux receipt
+(ubuntu2, above). macOS reproduces the same numbers within float
+tolerance but does not reproduce the same bytes. Whether any P03 verdict,
+budget row, or sign could flip on a difference this small is not tested
+here; this addendum records only the measured bound.

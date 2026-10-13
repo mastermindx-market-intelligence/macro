@@ -71,7 +71,7 @@ Top-level `SNI_*.md` files at `research/single_name_intelligence/` are the E0/M0
 - `acceptance/` — acceptance evidence matrix (`ACCEPTANCE_EVIDENCE_MATRIX.md` / `.json`) and its renderer `render_matrix.py`. Row status is evidence bookkeeping, not acceptance by the commissioning authority.
 - `common/` — shared SNI-local draft libraries `sni_inference.py` and `sni_seal.py`.
 - `e2e_20261011/` — seat continuation ledger `SNI_PROGRAM_CONTINUATION_2026-10-11.md`. E0/M0 cite `e2e_20261011/MASTERPLAN.md`; that path is not in this tree.
-- `evaluation/` — R1-gated draft ledger spec `REGISTRATION_LEDGER_DRAFT.md` and `sni_eval_ledger.py`; `seal_full_check.py` regenerates every sealed S1/S2 v1.1 output from its pinned inputs and compares it with the sealed bytes (verification only, it writes nothing into `runs/`).
+- `evaluation/` — R1-gated draft ledger spec `REGISTRATION_LEDGER_DRAFT.md` and `sni_eval_ledger.py`; `seal_full_check.py` regenerates every sealed S1/S2 v1.1 output from its pinned inputs and compares it with the sealed bytes (verification only, it writes nothing into `runs/`). Off the Linux seal platform, text files that differ only in the last digits of float tokens are reported separately as `ulp-equivalent`, never as identical; `--strict-bytes` turns that tolerance off.
 - `event_response/` — S2 study modules (P04–P06) plus P04 v2 prereg draft (`P04_V2_PREREG_DRAFT.md` / `.json`).
 - `evidence/` — Alibaba E1 and Tencent E2 owner-native packs, coverage JSON, and adversarial cases.
 - `protocols/` — frozen S0 register, independence law, and split/contamination law; unapplied A01 draft (`S0_AMENDMENT_A01_DRAFT.md` / `.json`).

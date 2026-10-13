@@ -63,11 +63,11 @@ call them.
 | `residual/run_s1.py:142` | `subprocess.run` | `["git", "-C", str(repo_root), *args]` |
 | `event_response/run_s2.py:84` | `subprocess.run` | `["git", "-C", str(repo_root), "show", "-s", "--format=%cI", input_ref]` |
 | `event_response/run_s2.py:1101` | `subprocess.run` | `["git", "rev-parse", "--show-toplevel"]` |
-| `evaluation/seal_full_check.py:354` | `subprocess.run` | `["git", "cat-file", "-e", f"{input_ref}^{{commit}}"]` |
-| `evaluation/seal_full_check.py:362` | `subprocess.run` | `["git", "status", "--porcelain"]` |
-| `evaluation/seal_full_check.py:444` | `subprocess.run` | `[sys.executable, str(runner), "--input-ref", input_ref, "--out-dir", …, "--seal-dir", …, "--repo-root", …]` (named exception) |
-| `evaluation/seal_full_check.py:457` | `subprocess.run` | `[sys.executable, str(builder), "--input-ref", input_ref, "--out-dir", …, "--repo-root", …]` (named exception) |
-| `evaluation/seal_full_check.py:544` | `subprocess.run` | `["git", "rev-parse", "--show-toplevel"]` |
+| `evaluation/seal_full_check.py:439` | `subprocess.run` | `["git", "cat-file", "-e", f"{input_ref}^{{commit}}"]` |
+| `evaluation/seal_full_check.py:447` | `subprocess.run` | `["git", "status", "--porcelain"]` |
+| `evaluation/seal_full_check.py:529` | `subprocess.run` | `[sys.executable, str(runner), "--input-ref", input_ref, "--out-dir", …, "--seal-dir", …, "--repo-root", …]` (named exception) |
+| `evaluation/seal_full_check.py:542` | `subprocess.run` | `[sys.executable, str(builder), "--input-ref", input_ref, "--out-dir", …, "--repo-root", …]` (named exception) |
+| `evaluation/seal_full_check.py:644` | `subprocess.run` | `["git", "rev-parse", "--show-toplevel"]` |
 
 YAML draft loaders in this tree use `yaml.safe_load` only
 (`s2_loaders.py`, `us_stress/stress_set.py`). `p04_v2_draft_loader.py` and
@@ -95,7 +95,8 @@ YAML draft loaders in this tree use `yaml.safe_load` only
 
 The A20 lane was written against a tree without `evaluation/seal_full_check.py`.
 INT1 folded A20 together with the SCHK seal verifier, and the static scan then
-flagged SCHK's two `subprocess.run` calls at L444 and L457, because their
+flagged SCHK's two `subprocess.run` calls (L444 and L457 at INT1; L529 and
+L542 after the SCHK float-tolerance change re-keyed them), because their
 first argv element is `sys.executable` rather than the literal `"git"`. Both
 are recorded in `A20_KNOWN_EXCEPTIONS` (keyed `relpath:lineno`) and not
 rewritten:

@@ -22,6 +22,8 @@ from seal_full_check import (  # noqa: E402
     KIND_DIFFER,
     KIND_EXTRA,
     KIND_MISSING,
+    KIND_ULP,
+    ULP_TEXT_SUFFIXES,
     S1_V1_1_REL,
     S1_V1_1_TRIAL_LEDGER_PATH,
     S1_V1_TRIAL_LEDGER_PATH,
@@ -34,10 +36,26 @@ from seal_full_check import (  # noqa: E402
     rel_files,
     s1_exceptions,
     s2_exceptions,
+    ulp_equivalent,
     walk_compare,
 )
 
 INPUT_REF = INPUT_REF_DEFAULT
+
+
+def _assert_regen_accounting(res, committed_rel: str) -> None:
+    """ULP-equivalent files are text, never counted identical, and never on
+    the Linux x86_64 platform the seal was cut on (byte identity is pinned
+    there by the XREP receipt)."""
+    import platform as _pf
+
+    ulp_rels = [d.relpath for d in res.diffs if d.kind == KIND_ULP]
+    assert len(ulp_rels) == res.ulp_equivalent
+    assert all(r.endswith(ULP_TEXT_SUFFIXES) for r in ulp_rels)
+    assert res.failures == len(res.diffs) - res.ulp_equivalent
+    assert res.identical + res.ulp_equivalent <= len(rel_files(ROOT / committed_rel))
+    if _pf.system() == "Linux" and _pf.machine() == "x86_64":
+        assert res.ulp_equivalent == 0, "seal platform must reproduce byte-identically"
 
 
 def _ensure_input_ref() -> None:
@@ -148,13 +166,16 @@ def test_schk_05_full_regeneration_s1(tmp_path: Path) -> None:
     res = check_study("s1", ROOT, INPUT_REF, out)
     print(
         f"s1: files compared={res.compared} identical={res.identical} "
-        f"named-exception passes={res.named_exception_passes} failures={res.failures}"
+        f"named-exception passes={res.named_exception_passes} "
+        f"ulp-equivalent={res.ulp_equivalent} failures={res.failures} "
+        f"[{res.host_platform}]"
     )
     for d in res.diffs:
         print(f"  {d.kind}: {d.relpath} {d.detail}")
     assert res.failures == 0
     assert res.compared == len(rel_files(ROOT / S1_V1_1_REL))
     assert res.named_exception_passes >= 3  # SEAL json, SEAL md, ledger ts
+    _assert_regen_accounting(res, S1_V1_1_REL)
 
 
 def test_schk_06_full_regeneration_s2(tmp_path: Path) -> None:
@@ -163,13 +184,69 @@ def test_schk_06_full_regeneration_s2(tmp_path: Path) -> None:
     res = check_study("s2", ROOT, INPUT_REF, out)
     print(
         f"s2: files compared={res.compared} identical={res.identical} "
-        f"named-exception passes={res.named_exception_passes} failures={res.failures}"
+        f"named-exception passes={res.named_exception_passes} "
+        f"ulp-equivalent={res.ulp_equivalent} failures={res.failures} "
+        f"[{res.host_platform}]"
     )
     for d in res.diffs:
         print(f"  {d.kind}: {d.relpath} {d.detail}")
     assert res.failures == 0
     assert res.compared == len(rel_files(ROOT / S2_V1_1_REL))
     assert res.named_exception_passes >= 2  # ledger ts + XREP-04 pin
+    _assert_regen_accounting(res, S2_V1_1_REL)
     # walk_compare used the S2 exception map; XREP-04 is committed-bytes only.
     assert "SEAL_AND_BUDGET.json" not in s2_exceptions()
     assert "trial_ledger.jsonl" in s1_exceptions()
+
+
+# Measured macOS arm64 vs seal (Linux) drift, P03 observations, 2026-10-13.
+_SEAL_TOK = "1.5031136678667067e-06"
+_MAC_TOK = "1.5031136678597679e-06"
+
+
+def test_schk_07_ulp_classifier_is_narrow() -> None:
+    def j(v, n=5) -> bytes:
+        return f'{{"horizon": {n}, "mean": {v}, "id": "P03_hkd_0700"}}\n'.encode()
+
+    ok, n_tok, worst = ulp_equivalent(j(_SEAL_TOK), j(_MAC_TOK))
+    assert ok and n_tok == 1 and 0 < worst < 1e-10
+    assert ulp_equivalent(j("0.25"), j("0.25")) == (True, 0, 0.0)
+    # integer token change is never tolerated
+    assert not ulp_equivalent(j(_SEAL_TOK, 5), j(_SEAL_TOK, 6))[0]
+    # int <-> float spelling change is never tolerated
+    assert not ulp_equivalent(j("1"), j("1.0"))[0]
+    # structural (non-numeric) change is never tolerated
+    assert not ulp_equivalent(j(_SEAL_TOK), j(_SEAL_TOK).replace(b"P03", b"P04"))[0]
+    # a float difference beyond tolerance is a real difference
+    assert not ulp_equivalent(j("0.123456"), j("0.123457"))[0]
+    assert not ulp_equivalent(j("1.0e-05"), j("1.1e-05"))[0]
+    # token-count change is never tolerated
+    assert not ulp_equivalent(b"[1.0, 2.0]", b"[1.0, 2.0, 3.0]")[0]
+    # undecodable bytes are never tolerated
+    assert not ulp_equivalent(b"\xff\xfe1.0", b"\xff\xfe1.0000000000001")[0]
+
+
+def test_schk_08_walk_compare_tolerance_is_opt_in_and_text_only(tmp_path: Path) -> None:
+    committed = tmp_path / "committed"
+    produced = tmp_path / "produced"
+    committed.mkdir()
+    produced.mkdir()
+    for name in ("obs.json", "obs.parquet"):
+        (committed / name).write_text(f'{{"m": {_SEAL_TOK}}}\n', encoding="utf-8")
+        (produced / name).write_text(f'{{"m": {_MAC_TOK}}}\n', encoding="utf-8")
+
+    strict = walk_compare(committed, produced, {})
+    assert {(d.kind, d.relpath) for d in strict} == {
+        (KIND_DIFFER, "obs.json"), (KIND_DIFFER, "obs.parquet")}
+
+    tolerant = walk_compare(committed, produced, {}, ulp_tolerant=True)
+    assert {(d.kind, d.relpath) for d in tolerant} == {
+        (KIND_ULP, "obs.json"), (KIND_DIFFER, "obs.parquet")}
+
+    # exception-handled files keep their own comparator even when tolerant
+    def _refuse(c: Path, p: Path):
+        return [] if c.read_bytes() == p.read_bytes() else [
+            type(strict[0])(KIND_DIFFER, "obs.json", "exception")]
+
+    via_exc = walk_compare(committed, produced, {"obs.json": _refuse}, ulp_tolerant=True)
+    assert (KIND_DIFFER, "obs.json") in {(d.kind, d.relpath) for d in via_exc}
