@@ -129,6 +129,12 @@ COCKPIT_AXIS_PRESENTATION = (
 )
 
 
+def _zh_date(ts) -> str:
+    """Chinese reading of a calendar date (2026年10月13日) for the l-zh leg of a dated chip."""
+    ts = pd.Timestamp(ts)
+    return f"{ts.year}年{ts.month}月{ts.day}日"
+
+
 def _html(fig: go.Figure) -> str:
     return fig.to_html(full_html=False, include_plotlyjs=False,
                        config={"displayModeBar": False, "responsive": True})
@@ -796,7 +802,8 @@ def emit_crypto_cockpit_json(
     """
     from engine import btc_decision
 
-    budget = btc_decision.project_budget(decision)
+    page_as_of = pd.Timestamp(sig.index[-1]).strftime("%Y-%m-%d")
+    budget = btc_decision.project_budget(decision, page_as_of=page_as_of)
     payload = {
         "schema": "crypto.cockpit/v1",
         "contract_phase": "w0",
@@ -4918,6 +4925,8 @@ def main() -> int:
 
     vm = {
         "as_of": sig.index.max().strftime("%b %d, %Y"),
+        "as_of_zh": _zh_date(sig.index.max()),
+        "decision_page_as_of": pd.Timestamp(sig.index.max()).strftime("%Y-%m-%d"),
         "built": datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC"),
         "price": close.iloc[-1], "chg24": chg24,
         "risk_on": risk_on,

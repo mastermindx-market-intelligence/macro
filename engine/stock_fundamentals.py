@@ -199,15 +199,19 @@ def _load_factors() -> dict:
             "n": fj.get("n", len(table)), "insider": fj.get("insider") or {}}
 
 
-def _load_short() -> pd.DataFrame | None:
+def _load_short_state() -> tuple[pd.DataFrame | None, str]:
+    """(short-interest snapshot, C19 WP24 DQ3 state). An unreadable file is a
+    parse_error, never silently the same None as a file that was not published."""
+    from engine.short_volume import NO_OBSERVATION, OBSERVED, PARSE_ERROR, UNAVAILABLE
     p = config.data_dir() / "finra" / "short_interest.parquet"
     if not p.exists():
-        return None
+        return None, UNAVAILABLE
     try:
         df = pd.read_parquet(p)
-    except Exception:  # noqa: BLE001
-        return None
-    return df if not df.empty else None
+    except Exception as e:  # noqa: BLE001
+        log.warning("stock_fundamentals: short_interest.parquet unreadable (%s)", e)
+        return None, PARSE_ERROR
+    return (df, OBSERVED) if not df.empty else (None, NO_OBSERVATION)
 
 
 def _load_short_volume() -> dict[str, dict]:
@@ -1766,18 +1770,39 @@ def _factors(t, fac, facts, M) -> dict | None:
     }
 
 
-def _positioning(t, f, short, insider, short_flow=None) -> dict | None:
+def _dtc_capped(sr) -> bool:
+    """FINRA's 999.99 days-to-cover (average daily volume ~0) is a censored lower
+    bound, not a measurement: trust the collector's flag, else the sentinel."""
+    from engine.short_volume import DTC_SENTINEL
+    flag = sr.get("dtc_capped")
+    if flag is not None and not pd.isna(flag) and bool(flag):
+        return True
+    v = _num(sr.get("days_to_cover"))
+    return v is not None and v >= DTC_SENTINEL
+
+
+def _positioning(t, f, short, insider, short_flow=None, short_state=None) -> dict | None:
     block: dict = {}
     sh = _num(f.get("shares"))
     if short is not None and t in short.index:
         sr = short.loc[t]
         ss = _num(sr.get("short_shares"))
+        capped = _dtc_capped(sr)
         block["short"] = {
             "pct_float": _r(ss / sh * 100, 2) if (ss is not None and sh) else None,
-            "days_to_cover": _r(sr.get("days_to_cover"), 2),
+            "days_to_cover": None if capped else _r(sr.get("days_to_cover"), 2),
             "si_change_pct": _r(sr.get("si_change_pct"), 1),
             "settlement": str(sr.get("settlement_date")) if sr.get("settlement_date") is not None else None,
         }
+        if capped:
+            # C19 WP24 DQ3: the page shows n/a, and this says why.
+            from engine.short_volume import CENSORED_LOWER_BOUND
+            block["short"]["dtc_state"] = CENSORED_LOWER_BOUND
+    elif short_state is not None:
+        from engine.short_volume import PARSE_ERROR
+        if short_state == PARSE_ERROR:
+            # C19 WP24 DQ3: an unreadable snapshot is not the same as no short interest.
+            block["short_state"] = PARSE_ERROR
     # Fresher than the bi-monthly settlement: daily off-exchange short flow.
     # A CONTEXT confirmer (trend_pp = recent vs trailing short-ratio, in pts),
     # never a scored factor — see engine/short_volume.py.
@@ -1789,6 +1814,11 @@ def _positioning(t, f, short, insider, short_flow=None) -> dict | None:
             "n_days": short_flow.get("n_days"),
             "asof": short_flow.get("asof"),
         }
+        from engine.short_volume import OBSERVED, ticker_state
+        flow_state = ticker_state(short_flow)
+        if flow_state != OBSERVED:
+            # C19 WP24 DQ3: a short history or a zero recent window is qualified, not hidden.
+            block["short_flow"]["state"] = flow_state
     if insider:
         block["insider"] = insider
     return block or None
@@ -2054,7 +2084,7 @@ def panels() -> dict[str, dict]:
         return {}
     facts = _load_factors()
     table = facts["table"]
-    short = _load_short()
+    short, short_state = _load_short_state()
     short_flow = _load_short_volume()
     analyst_rev = _load_analyst_revisions()
     insider = _load_insider(facts)
@@ -2171,7 +2201,8 @@ def panels() -> dict[str, dict]:
             "valuation": _valuation(t, f, fac, M, deep.get(t)),
             "financials": fin,
             "factors": _factors(t, fac, facts, M),
-            "positioning": _positioning(t, f, short, insider.get(t), short_flow.get(str(t))),
+            "positioning": _positioning(t, f, short, insider.get(t), short_flow.get(str(t)),
+                                        short_state=short_state),
             "analyst": _analyst(t, deep.get(t), analyst_rev.get(str(t))),
             # SUE earnings-momentum z lives in the factors table (the canonical home
             # of every factor leg, written by equity_factors just before this runs);
