@@ -106,7 +106,8 @@ def test_staleness_badge_present_table_does_not_raise(monkeypatch, tmp_path):
 
     This is the exact call build_china_library makes; it raised TypeError before the fix."""
     monkeypatch.setattr(tf.config, "data_dir", lambda: tmp_path)
-    _write_table(tmp_path, "moneyflow", pd.Timestamp.now("UTC").strftime("%Y%m%d"))
+    from lib.market_session import expected_session
+    _write_table(tmp_path, "moneyflow", expected_session("CN").strftime("%Y%m%d"))
     badge = tf.staleness_badge("moneyflow", expected_cadence_days=1)   # ref=None on purpose
     assert badge["asof"] is not None, "a present, dated table must report an asof"
     assert badge["lag_days"] is not None

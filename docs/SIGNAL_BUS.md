@@ -30,7 +30,7 @@ The **signal bus** is the set of cross-engine data artifacts that flow between p
 | cycle-intelligence | 14 |
 | dannytrades | 1 |
 | earnings-evidence-spine | 1 |
-| engine-fix | 18 |
+| engine-fix | 19 |
 | entry-stack-expansion | 2 |
 | factor-intelligence | 7 |
 | fast-turn | 4 |
@@ -64,6 +64,7 @@ The **signal bus** is the set of cross-engine data artifacts that flow between p
 | metabolism-phase-v2d | 4 |
 | metabolism-phase0 | 2 |
 | mlc | 1 |
+| mo-b-f09-10-usgs-mcs | 1 |
 | momoedge | 10 |
 | narrative-ignition | 5 |
 | nasdaq-internals | 1 |
@@ -116,7 +117,7 @@ The **signal bus** is the set of cross-engine data artifacts that flow between p
 
 | tier | count |
 |---|---|
-| display | 377 |
+| display | 379 |
 | infrastructure | 162 |
 | scored | 5 |
 | shadow | 101 |
@@ -125,7 +126,7 @@ The **signal bus** is the set of cross-engine data artifacts that flow between p
 
 | storage | count |
 |---|---|
-| git | 605 |
+| git | 607 |
 | git+r2 | 3 |
 | gitignored-local | 19 |
 | r2 | 18 |
@@ -375,6 +376,7 @@ The **signal bus** is the set of cross-engine data artifacts that flow between p
 | site-regime-prior-js | `site/regimedata/regime_prior.js` | js | daily-engine | display | 2 | 0 |
 | site-riskdata-scorecard | `site/riskdata/scorecard.json` | json | daily-engine | display | 1 | 1 |
 | site-macro-signals | `site/macrodata/macro_signals.json` | json | daily-engine | display | 0 | 1 |
+| sp1500-pit-sectors | `data/breadth/sp1500_pit_sectors.parquet` | parquet | on-demand | display | 0 | 0 |
 
 ### entry-stack-expansion
 
@@ -607,8 +609,8 @@ The **signal bus** is the set of cross-engine data artifacts that flow between p
 | id | path | format | cadence | tier | consumers | external consumers |
 |---|---|---|---|---|---|---|
 | forex-latest | `data/forex/latest.json` | json | daily-engine | display | 9 | 0 |
+| transmission-latest | `data/transmission/latest.json` | json | daily-engine | display | 5 | 0 |
 | commodity-latest | `data/commodity/latest.json` | json | daily-engine | display | 4 | 0 |
-| transmission-latest | `data/transmission/latest.json` | json | daily-engine | display | 4 | 0 |
 | crossasset-latest | `data/crossasset/latest.json` | json | daily-engine | display | 2 | 1 |
 | macro-snapshots-ledger | `data/macro_snapshots/ledger.parquet` | parquet | daily-engine | infrastructure | 3 | 0 |
 | bond-health | `data/bonds/bond_health.json` | json | daily-engine | display | 2 | 0 |
@@ -742,6 +744,12 @@ The **signal bus** is the set of cross-engine data artifacts that flow between p
 | id | path | format | cadence | tier | consumers | external consumers |
 |---|---|---|---|---|---|---|
 | site-stance-matrix | `site/mlcdata/stance_matrix.json` | json | daily-engine | display | 4 | 0 |
+
+### mo-b-f09-10-usgs-mcs
+
+| id | path | format | cadence | tier | consumers | external consumers |
+|---|---|---|---|---|---|---|
+| neuralweb-critical-minerals-supply | `data/neuralweb/critical_minerals_supply.json` | json | collect | display | 1 | 0 |
 
 ### momoedge
 
@@ -2075,6 +2083,20 @@ Artifacts below have `known_extra_writers` — additional code paths that write 
 - **declared producer:** `engine/subsector_track_record.py`
 - **extra writers:**
   - scripts/build_subsector_rotation.py — CLI runner; calls compute() then appends snapshot
+
+### theme-graph-edges
+
+- **path:** `data/theme_graph/edges.parquet`
+- **declared producer:** `scripts/build_theme_graph.py`
+- **extra writers:**
+  - scripts/correct_gmi_identity_lineage.py
+
+### theme-graph-evidence
+
+- **path:** `data/theme_graph/evidence.parquet`
+- **declared producer:** `scripts/build_theme_graph.py`
+- **extra writers:**
+  - scripts/correct_gmi_identity_lineage.py
 
 ### trial-ledger
 

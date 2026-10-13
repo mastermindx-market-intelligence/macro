@@ -104,7 +104,8 @@ def main() -> None:
 
     note = ("entry-quality RISK signal (display-only, NOT alpha); "
             "see research/signal_engine/CHARTER.md. "
-            "Exits are the simple validated baseline (sell=SELL*, cut=fast-reversal). "
+            "Exits are the simple baseline (sell=SELL*, cut=fast-reversal); the regime router "
+            "built to beat it was killed (CHARTER §5). "
             "trail_breach/trail_stop = close-below-EMA8(3D) tail-risk flag (display-only, NOT a sell). "
             "early_now / res.early_markers = 2D-MACD pre-cross ADVANCE-WARNING (display-only context, "
             "NOT a buy and NOT scored; acting early is empirically worse entry quality — see CONFLUENCE_TUNING.md).")

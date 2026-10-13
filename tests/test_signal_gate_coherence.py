@@ -114,6 +114,19 @@ class TestCoherentPair:
         s = _standouts(buy=[_row("AAPL", _blob(some_new_display_field="x"))])
         assert incoherent_tickers(s, _gate({"AAPL": _gate_entry()})) == {}
 
+    def test_asof_is_compared_when_the_board_carries_it(self):
+        gate = _gate({"AAPL": _gate_entry(asof="2026-08-12")})
+        assert incoherent_tickers(
+            _standouts(buy=[_row("AAPL", _blob(asof="2026-08-11"))]), gate
+        ) == {"AAPL": ["asof"]}
+
+    def test_asof_is_excluded_when_the_board_is_additive_key_legacy(self):
+        """A pre-validity board blob does not skew merely because the gate adds tape provenance."""
+        gate = _gate({"AAPL": _gate_entry(asof="2026-08-12")})
+        assert incoherent_tickers(
+            _standouts(buy=[_row("AAPL", _blob())]) , gate
+        ) == {}
+
 
 # ---------------------------------------------------------------------------
 # 2. the #5490 shape

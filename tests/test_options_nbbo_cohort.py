@@ -2140,3 +2140,116 @@ def test_private_store_lock_prevents_cross_writer_staging_unlink(
         path = root / "source_responses" / f"{receipt['sha256']}.json"
         assert path.is_file()
         assert stat.S_IMODE(path.stat().st_mode) == 0o600
+
+# ── OA-3 exact-option outcome preregistration ────────────────────────────────
+
+def _oa3_policy_contract() -> tuple[dict[str, Any], dict[str, Any]]:
+    root = Path(__file__).resolve().parents[1]
+    schema = json.loads(
+        (root / "contracts/options/options.alpha_exact_option_outcome_policy.v1.schema.json")
+        .read_text(encoding="utf-8")
+    )
+    policy = json.loads(
+        (root / "research/options_estate/options_alpha_exact_option_outcome_policy_v1.json")
+        .read_text(encoding="utf-8")
+    )
+    return schema, policy
+
+
+def test_oa3_exact_option_policy_is_preregistered_and_zero_authority() -> None:
+    schema, policy = _oa3_policy_contract()
+    Draft202012Validator.check_schema(schema)
+    Draft202012Validator(schema).validate(policy)
+
+    assert policy["schema"] == "options.alpha_exact_option_outcome_policy/v1"
+    assert policy["policy_id"] == "oa3.long_single_leg_h60_nbbo/v1"
+    assert policy["state"] == "preregistered_inactive"
+    assert policy["population"] == {
+        "exact_expression_receipt_required": True,
+        "selection_before_outcomes": True,
+        "position": "long",
+        "quantity_contracts": 1,
+        "standard_multiplier": 100,
+        "standard_deliverable_only": True,
+        "same_day_expiration_allowed": False,
+        "package_supported": False,
+        "short_option_supported": False,
+    }
+    assert set(policy["authority"].values()) == {False}
+
+
+def test_oa3_exact_option_policy_freezes_causal_quote_windows() -> None:
+    _schema, policy = _oa3_policy_contract()
+
+    assert policy["entry"] == {
+        "boundary": "expression.available_at",
+        "selected_side": "ask",
+        "quote_event_window_seconds": 60,
+        "minimum_displayed_contracts": 1,
+    }
+    assert policy["exit"] == {
+        "target": "entry_quote.event_at+PT60M",
+        "selected_side": "bid",
+        "quote_event_window_seconds": 60,
+        "minimum_displayed_contracts": 1,
+    }
+    assert policy["clock"]["same_nyse_rth_session_required"] is True
+    assert policy["clock"]["entry_never_precedes_expression_availability"] is True
+    assert policy["clock"]["retrieval_after_maturity_allowed"] is True
+    assert policy["clock"]["benchmark_live_capture_lag_rule_inherited"] is False
+
+
+def test_oa3_exact_option_policy_reuses_only_generic_nbbo_mechanics() -> None:
+    _schema, policy = _oa3_policy_contract()
+
+    assert policy["quote_source"]["endpoint"] == cohort.SOURCE_ENDPOINT
+    assert policy["quote_source"]["interval"] == cohort.SOURCE_INTERVAL
+    assert policy["quote_source"]["quote_rule_reference"] == cohort.QUOTE_RULE_ID
+    assert policy["quote_source"]["executable_fill_claim"] is False
+    assert policy["cost"]["fee_per_side_usd"] == format(cohort.FEE_PER_SIDE_USD, "f")
+    assert str(cohort.net_return_pct("1.00", "1.20")) == "18.579235"
+
+
+def test_oa3_exact_option_policy_forbids_substitution_and_hidden_promotion() -> None:
+    schema, policy = _oa3_policy_contract()
+    validator = Draft202012Validator(schema)
+
+    assert policy["forbidden_substitutes"] == [
+        "mid",
+        "last",
+        "eod_mark",
+        "intrinsic",
+        "black_scholes",
+        "neighbor_contract",
+        "underlying_return",
+        "later_best_print",
+    ]
+
+    promoted = json.loads(json.dumps(policy))
+    promoted["authority"]["may_trade"] = True
+    assert list(validator.iter_errors(promoted))
+
+    widened = json.loads(json.dumps(policy))
+    widened["population"]["package_supported"] = True
+    assert list(validator.iter_errors(widened))
+
+    backdated = json.loads(json.dumps(policy))
+    backdated["entry"]["boundary"] = "candidate.decision_at"
+    assert list(validator.iter_errors(backdated))
+
+
+def test_oa3_human_preregistration_separates_benchmark_policy_from_quote_mechanics() -> None:
+    root = Path(__file__).resolve().parents[1]
+    text = (
+        root / "research/options_estate/OPTIONS_ALPHA_EXACT_OPTION_OUTCOME_PREREG_2026-09-19.md"
+    ).read_text(encoding="utf-8")
+
+    assert "expression.available_at" in text
+    assert "first valid firm OPRA **ask**" in text
+    assert "first valid firm OPRA **bid**" in text
+    assert "build_observation()" in text
+    assert "source_query()" in text
+    assert "not** OA-3 contracts" in text
+    assert "No substitutes" in text
+    assert "second outcome ledger" in text
+

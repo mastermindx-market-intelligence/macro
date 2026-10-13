@@ -1,0 +1,88 @@
+{
+  "scope": "IM00-T3a pure research context, navigation and shareable URL state",
+  "implementation": {
+    "templates/intl_workspace_state.js": "54575d3715bd4a85466789cf461ce17c27b13258e54304a50800c7d16488e35d",
+    "tests/intl_workspace_state.test.cjs": "25bcbae7b91eb4b7612b071a49f1acdb828308895fb8f4e5072a343dbf85993d"
+  },
+  "review": {
+    "verdict": "APPROVE_SCOPED",
+    "reviewer_session": "01a11057-3134-76d2-bcd1-784d69cc17d3",
+    "review_artifact_sha256": "fc2718d462a5bf6b8b377fa01072daf0a4faf4c8f0d13300f180c020aa29b0f5",
+    "additional_assertions": 21
+  },
+  "tests": {
+    "committed_node_cases": 20,
+    "frozen_parent_assertions": [
+      33,
+      34
+    ],
+    "runtime": "v26.5.0",
+    "node20_runtime_verified": false
+  },
+  "behavior": [
+    "Six research views; independent selected market and ordered four-pin limit",
+    "Defensive immutable transitions, source-bound baseline and eight-frame return context",
+    "Source replacement clears old baseline/stack; focus intent without DOM effects",
+    "Closed research-only URL, canonical encoding, initial defaults and explicit malformed/oversize refusal",
+    "Valid Unicode scalar IDs; no accessors, inherited fields or array holes admitted"
+  ],
+  "routing": {
+    "original_root": "01a1101f-2a37-7320-9a9b-5df3ce1b890d",
+    "native_ceo": "01a11057-3134-76d2-bcd1-784d69cc17d3",
+    "max_fabric_leaves": 1,
+    "native_grandchildren": 0,
+    "workers": [
+      "rs_20261006T120128Z_19246",
+      "rs_20261006T121443Z_48029"
+    ],
+    "worker_returncodes": [
+      124,
+      124
+    ],
+    "cleanup_residuals": [
+      0,
+      0
+    ],
+    "worker_first_pass_accepted": false,
+    "repair_author": "Astra under lower-total-overhead and critical-path exception after consumed failures",
+    "final_derivative_acceptance": "independent Sol exact-source review; originals remain rejected",
+    "next_build_selector": "NONE reason=no_pool_available; Overview projection not dispatched"
+  },
+  "limits": [
+    "Node20 runtime unproven; exact registered future CI Node20 proof required before green-gated release.",
+    "Plain JSON-shaped values only; no Proxy trap sandbox claim, foreign-realm objects intentionally refused.",
+    "No actual DOM/history/focus/account/search integration or mounted UI/production acceptance."
+  ],
+  "source_reference": "c2f9fe4492fc9d94e3de3831d045b883bc525be0",
+  "evidence_root": "/Volumes/Mastermind/evidence/paper-waves-20261006-01a1101f",
+  "integration_head": "33c038a150643f97f78290c84558503bb51f6acc",
+  "integration_base": "b3c6a4e76ddcb59389599f825462b8cbc29f1036",
+  "ci": {
+    "status": "PASS_SCOPED",
+    "job": "international-workspace-pure-js",
+    "gate": "code",
+    "exclusive": true,
+    "declared_paths": [
+      "templates/intl_library_search.js",
+      "templates/intl_workspace_scenario.js",
+      "templates/intl_workspace_state.js",
+      "tests/fixtures/intl_library_search_catalogue.json",
+      "tests/intl_library_search.test.cjs",
+      "tests/intl_workspace_scenario_math.test.cjs",
+      "tests/intl_workspace_state.test.cjs"
+    ],
+    "positive_controls": 7,
+    "negative_controls": [
+      "templates/intl.html.j2",
+      "engine/intl_performance_records.py",
+      "templates/theme.js",
+      "README.md"
+    ],
+    "bounded_manifest_delta": [
+      "international-workspace-pure-js"
+    ],
+    "registered_jobs": 246,
+    "tests": "175 Node cases plus5 focused CI pack cases; manifest valid;1563 AgentOS records0errors/132inherited warnings",
+    "node20_runtime_verified": false
+  }
+}

@@ -1,0 +1,97 @@
+{
+  "repository": "mastermindx-market-intelligence/Mastermind",
+  "previous": "8c3bc581e747c8b7c066ff0adec3b54573231baf",
+  "current": "8d838c8df453a78fac3459b7458576e1ba2cbcb8",
+  "schema": "mastermind.sol_skillpack.v1",
+  "version": "1.0.1",
+  "minimum_bootstrap_major": 1,
+  "companion_identity": [
+    {
+      "path": "docs/sol_skills/COLD_START.md",
+      "git_blob": "b11e58f083040144933cf2ddab76bf6c60a7e542",
+      "exact_content_equal_to_loaded_previous": true
+    },
+    {
+      "path": "docs/sol_skills/ACTIVE_EXECUTION.md",
+      "git_blob": "413b1ce8b5cf6feaea33ab53434acfad1e8956c8",
+      "exact_content_equal_to_loaded_previous": true
+    },
+    {
+      "path": "docs/sol_skills/SESSION_RELIABILITY.md",
+      "git_blob": "8adc1ace42db9ab97854f96689485be223d34c51",
+      "exact_content_equal_to_loaded_previous": true
+    },
+    {
+      "path": "docs/sol_skills/WEB_CEO_DELEGATION.md",
+      "git_blob": "2073a33f05506268b15f0b5ce292ce57d5b60ed3",
+      "exact_content_equal_to_loaded_previous": true
+    },
+    {
+      "path": "docs/sol_skills/REVIEW_RETURN.md",
+      "git_blob": "f4e7fa1dd183cfb3d28d26dccfbf527dd5dd8e00",
+      "exact_content_equal_to_loaded_previous": true
+    },
+    {
+      "path": "docs/sol_skills/RECONCILE_STATE.md",
+      "git_blob": "1373b72a13fb4a084b0331eb2bcf2d4a680d9738",
+      "exact_content_equal_to_loaded_previous": true
+    },
+    {
+      "path": "docs/sol_skills/CLOSEOUT.md",
+      "git_blob": "4a9ec3782da001322604e977dbe91b9cf371f0b9",
+      "exact_content_equal_to_loaded_previous": true
+    },
+    {
+      "path": "docs/AGENT_DIALOGUE_SESSION_CLOSE_LAW.md",
+      "git_blob": "d01f7efc2648a061628a6c72e05eccd5559cda8e",
+      "exact_content_equal_to_loaded_previous": true
+    },
+    {
+      "path": "docs/EXECUTIVE_WORKER_ROUTING_CHAIRMAN_ADDENDUM.md",
+      "git_blob": "5bfb9bbc91177e2400da596b45ec809d294a3242",
+      "exact_content_equal_to_loaded_previous": true
+    },
+    {
+      "path": "docs/DELIVERY_WORKFLOW.md",
+      "git_blob": "1aa822c511d1af89f3ec580b2178f62ad75502a3",
+      "exact_content_equal_to_loaded_previous": true
+    }
+  ],
+  "index_blob": "38a18571229e487f525b1c9780f7993220a5da93",
+  "changed_paths": [
+    {
+      "filename": "ops/executive_os/provider_identity_probe.py",
+      "status": "modified",
+      "additions": 72,
+      "deletions": 1,
+      "changes": 73,
+      "previous_filename": null
+    },
+    {
+      "filename": "ops/executive_os/provision-worker-auth.sh",
+      "status": "modified",
+      "additions": 3,
+      "deletions": 1,
+      "changes": 4,
+      "previous_filename": null
+    },
+    {
+      "filename": "tests/test_executive_worker_auth_provisioner.py",
+      "status": "modified",
+      "additions": 4,
+      "deletions": 1,
+      "changes": 5,
+      "previous_filename": null
+    },
+    {
+      "filename": "tests/test_provider_identity_diagnostics.py",
+      "status": "added",
+      "additions": 159,
+      "deletions": 0,
+      "changes": 159,
+      "previous_filename": null
+    }
+  ],
+  "consequence": "Ten companions and INDEX fetched from the new exact revision and content-identical. Gate002 correctly stopped on stale protected-revision pin before live PR/check review. No application/CI rerun or policy change is required by this source change.",
+  "gate002_receipt_sha256": "39253246ceabbc329bae9fb6d34880da90be4bf48875da8a863bbd85fa30f321"
+}

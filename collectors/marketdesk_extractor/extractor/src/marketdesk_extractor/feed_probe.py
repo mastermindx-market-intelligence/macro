@@ -13,6 +13,7 @@ from typing import Sequence
 from urllib.parse import quote
 
 from .config import Config
+from . import db as db_mod
 
 
 class FeedProbeError(RuntimeError):
@@ -28,6 +29,10 @@ class VaultState:
     database: Path
     newest: str
     count: int
+    producer_auth_state: str
+    producer_auth_observed_at: str
+    producer_auth_required_at: str
+    producer_auth_reason: str
 
 
 def _run_command(
@@ -101,13 +106,51 @@ def read_vault_state(
                     WHERE vaulted_at IS NOT NULL""",
                 (watermark,),
             ).fetchone()
+            try:
+                meta_rows = conn.execute(
+                    "SELECT key, value FROM meta WHERE key IN (?,?,?,?)",
+                    (
+                        db_mod.PRODUCER_AUTH_STATE_KEY,
+                        db_mod.PRODUCER_AUTH_OBSERVED_AT_KEY,
+                        db_mod.PRODUCER_AUTH_REQUIRED_AT_KEY,
+                        db_mod.PRODUCER_AUTH_REASON_KEY,
+                    ),
+                ).fetchall()
+            except sqlite3.OperationalError:
+                meta_rows = []
         finally:
             conn.close()
-    return VaultState(database=database, newest=str(row[0]), count=int(row[1]))
+    meta = {str(item[0]): str(item[1] or "") for item in meta_rows}
+    auth_state = meta.get(db_mod.PRODUCER_AUTH_STATE_KEY, db_mod.AUTH_UNKNOWN)
+    if auth_state not in db_mod.PRODUCER_AUTH_STATES:
+        auth_state = db_mod.AUTH_UNKNOWN
+    return VaultState(
+        database=database,
+        newest=str(row[0]),
+        count=int(row[1]),
+        producer_auth_state=auth_state,
+        producer_auth_observed_at=meta.get(db_mod.PRODUCER_AUTH_OBSERVED_AT_KEY, ""),
+        producer_auth_required_at=meta.get(db_mod.PRODUCER_AUTH_REQUIRED_AT_KEY, ""),
+        producer_auth_reason=meta.get(db_mod.PRODUCER_AUTH_REASON_KEY, ""),
+    )
+
+
+def _field(value: str) -> str:
+    return str(value or "").replace("|", "/").replace("\n", " ").replace("\r", " ")
 
 
 def _render(state: VaultState) -> str:
-    return f"{state.database}|{state.newest}|{state.count}"
+    return "|".join(
+        (
+            _field(str(state.database)),
+            _field(state.newest),
+            str(state.count),
+            _field(state.producer_auth_state),
+            _field(state.producer_auth_observed_at),
+            _field(state.producer_auth_required_at),
+            _field(state.producer_auth_reason),
+        )
+    )
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -150,8 +193,10 @@ def main(argv: list[str] | None = None) -> int:
             raise FeedProbeError(detail)
         output = result.stdout.strip()
         fields = output.split("|")
-        if len(fields) != 3 or not fields[2].isdigit():
+        if len(fields) != 7 or not fields[2].isdigit():
             raise FeedProbeError("worker returned malformed state")
+        if fields[3] not in db_mod.PRODUCER_AUTH_STATES:
+            raise FeedProbeError("worker returned unsupported producer auth state")
         print(output)
         return 0
     except (FeedProbeError, sqlite3.Error, OSError, ValueError) as exc:

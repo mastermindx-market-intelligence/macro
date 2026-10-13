@@ -1,0 +1,101 @@
+FFF                                                                      [100%]
+=================================== FAILURES ===================================
+___ test_selected_metric_zero_contours_are_emitted_for_gamma_vanna_and_charm ___
+
+    def test_selected_metric_zero_contours_are_emitted_for_gamma_vanna_and_charm():
+        out = _build(price_grid=[85, 90, 95, 100, 105, 110, 115], horizons_minutes=[0, 60])
+>       assert set(out["zero_crossings"]) == {"gex", "vex", "cex"}
+                   ^^^^^^^^^^^^^^^^^^^^^
+E       KeyError: 'zero_crossings'
+
+tests/test_options_scenario_surface.py:162: KeyError
+__ test_mid_snapshot_mode_reuses_incumbent_iv_solver_and_matches_horizon_zero __
+
+    def test_mid_snapshot_mode_reuses_incumbent_iv_solver_and_matches_horizon_zero():
+        contracts = []
+        for strike in (95.0, 100.0, 105.0):
+            for right in ("C", "P"):
+                T = 7.0 / 365.0
+                iv = 0.25
+                mid = float(
+                    bs_price(
+                        SPOT,
+                        np.asarray([strike], float),
+                        np.asarray([T], float),
+                        np.asarray([iv], float),
+                        np.asarray([right == "C"], bool),
+                    )[0]
+                )
+                contracts.append({
+                    "strike": strike,
+                    "exp_years": T,
+                    "mid": mid,
+                    "oi": 1500.0 + strike,
+                    "right": right,
+                    "expiry": "2026-09-25",
+                })
+
+>       out = _build(
+            contracts,
+            price_grid=[99, 100, 101],
+            horizons_minutes=[0],
+            iv_source="solve_from_mid",
+            iv_observed_at="2026-09-18T13:59:59Z",
+        )
+
+tests/test_options_scenario_surface.py:196:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+contracts = [{'strike': 95.0, 'exp_years': 0.019178082191780823, 'mid': 5.175948469358673, 'oi': 1595.0, ...}, {'strike': 95.0, 'e... 'oi': 1605.0, ...}, {'strike': 105.0, 'exp_years': 0.019178082191780823, 'mid': 5.047691018120133, 'oi': 1605.0, ...}]
+kwargs = {'price_grid': [99, 100, 101], 'horizons_minutes': [0], 'iv_source': 'solve_from_mid', 'iv_observed_at': '2026-09-18T13:59:59Z'}
+
+    def _build(contracts=None, **kwargs):
+        params = {
+            "root": "SPY",
+            "observed_at": OBS,
+            "spot": SPOT,
+            "price_grid": [90, 95, 100, 105, 110],
+            "horizons_minutes": [0, 60, 24 * 60],
+        }
+        params.update(kwargs)
+>       return build_scenario_surface(contracts if contracts is not None else _contracts(), **params)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: build_scenario_surface() got an unexpected keyword argument 'iv_source'
+
+tests/test_options_scenario_surface.py:57: TypeError
+___________ test_invalid_or_unsupported_scenario_inputs_fail_closed ____________
+
+    def test_invalid_or_unsupported_scenario_inputs_fail_closed():
+        with pytest.raises(ValueError, match="timezone"):
+            _build(observed_at="2026-09-18T14:00:00")
+        with pytest.raises(ValueError, match="sticky_strike"):
+            _build(vol_map="sticky_delta")
+        with pytest.raises(ValueError, match="iv_source"):
+>           _build(iv_source="magic")
+
+tests/test_options_scenario_surface.py:222:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+contracts = None, kwargs = {'iv_source': 'magic'}
+
+    def _build(contracts=None, **kwargs):
+        params = {
+            "root": "SPY",
+            "observed_at": OBS,
+            "spot": SPOT,
+            "price_grid": [90, 95, 100, 105, 110],
+            "horizons_minutes": [0, 60, 24 * 60],
+        }
+        params.update(kwargs)
+>       return build_scenario_surface(contracts if contracts is not None else _contracts(), **params)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: build_scenario_surface() got an unexpected keyword argument 'iv_source'
+
+tests/test_options_scenario_surface.py:57: TypeError
+
+NOTE: sparse worktree — .agents, .warp, data, mockups, verify_shots not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+=========================== short test summary info ============================
+FAILED tests/test_options_scenario_surface.py::test_selected_metric_zero_contours_are_emitted_for_gamma_vanna_and_charm
+FAILED tests/test_options_scenario_surface.py::test_mid_snapshot_mode_reuses_incumbent_iv_solver_and_matches_horizon_zero
+FAILED tests/test_options_scenario_surface.py::test_invalid_or_unsupported_scenario_inputs_fail_closed
+3 failed in 5.52s

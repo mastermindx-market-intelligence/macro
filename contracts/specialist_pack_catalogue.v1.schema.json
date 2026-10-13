@@ -1,0 +1,153 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mastermind-x.com/contracts/specialist_pack_catalogue.v1.schema.json",
+  "title": "Specialist pack catalogue v1",
+  "description": "Meta-schema for the twelve contracts/specialist_packs/pack.pk*.v1.schema.json catalogue files.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "$schema",
+    "$id",
+    "title",
+    "description",
+    "pack_schema_id",
+    "pack_id",
+    "name",
+    "boundary",
+    "requires",
+    "catalogue_state",
+    "fields",
+    "checks",
+    "type",
+    "additionalProperties"
+  ],
+  "properties": {
+    "$schema": {"type": "string"},
+    "$id": {"type": "string"},
+    "title": {"type": "string", "minLength": 1},
+    "description": {"type": "string", "minLength": 1},
+    "pack_schema_id": {"type": "string", "pattern": "^pack\\.[a-z0-9_]+/v[0-9]+$"},
+    "pack_id": {
+      "enum": [
+        "PK01",
+        "PK02",
+        "PK03",
+        "PK04",
+        "PK05",
+        "PK06",
+        "PK07",
+        "PK08",
+        "PK09",
+        "PK10",
+        "PK11",
+        "PK12"
+      ]
+    },
+    "name": {"type": "string", "minLength": 1},
+    "boundary": {"type": "string", "minLength": 1},
+    "requires": {
+      "type": "array",
+      "items": {"type": "string"}
+    },
+    "catalogue_state": {"enum": ["unspecified", "specified"]},
+    "fields": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/catalogueField"}
+    },
+    "checks": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/catalogueCheck"}
+    },
+    "type": {"const": "object"},
+    "additionalProperties": {"const": false}
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {"catalogue_state": {"const": "unspecified"}},
+        "required": ["catalogue_state"]
+      },
+      "then": {
+        "properties": {
+          "fields": {"maxItems": 0},
+          "checks": {"maxItems": 0}
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {"catalogue_state": {"const": "specified"}},
+        "required": ["catalogue_state"]
+      },
+      "then": {
+        "properties": {
+          "fields": {"minItems": 1}
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "catalogueField": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "field_id",
+        "name",
+        "type",
+        "unit",
+        "period_kind",
+        "allowed_evidence_kinds",
+        "required"
+      ],
+      "properties": {
+        "field_id": {"type": "string", "pattern": "^[a-z][a-z0-9_]*$"},
+        "name": {"type": "string", "minLength": 1, "maxLength": 256},
+        "type": {
+          "enum": [
+            "decimal",
+            "integer",
+            "ratio",
+            "shares",
+            "text",
+            "enum",
+            "boolean",
+            "duration_iso8601",
+            "axis_member"
+          ]
+        },
+        "unit": {"type": ["string", "null"], "maxLength": 64},
+        "period_kind": {"enum": ["instant", "duration", null]},
+        "allowed_evidence_kinds": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "enum": ["xbrl_fact", "text_span", "table_cell", "formula"]
+          }
+        },
+        "required": {"type": "boolean"}
+      }
+    },
+    "catalogueCheck": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["check_id", "kind", "operands"],
+      "properties": {
+        "check_id": {"type": "string", "pattern": "^[a-z][a-z0-9_]*$"},
+        "kind": {
+          "enum": [
+            "sum_identity",
+            "rollforward",
+            "reconcile_to_consolidated",
+            "cross_statement",
+            "qualitative_presence"
+          ]
+        },
+        "operands": {
+          "type": "array",
+          "items": {"type": "string"}
+        }
+      }
+    }
+  }
+}

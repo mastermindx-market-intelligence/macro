@@ -1,0 +1,380 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mastermind-x.com/contracts/theme_graph/probation_relation_event.v2.schema.json",
+  "title": "Explicit probation-owned relation lifecycle event v2",
+  "description": "Separate version-selected accepted event input; never mixed with or inferred from legacy v1 proposals. Owner validates exact source revision and immutable event/prior relation digest. Daily graph representability is an additional refusal gate.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "event_id",
+    "event_sha256",
+    "action",
+    "status",
+    "ratified_by",
+    "created_at",
+    "adjudicated_at",
+    "known_at",
+    "effective_at",
+    "prior_relation",
+    "new_destination",
+    "source_receipt",
+    "evidence_refs",
+    "reason",
+    "authority_caps"
+  ],
+  "properties": {
+    "schema": {
+      "const": "gmi.probation_relation_event/v2"
+    },
+    "event_id": {
+      "type": "string",
+      "pattern": "^relation-event:[a-f0-9]{64}$"
+    },
+    "event_sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "action": {
+      "enum": [
+        "RELATION_WITHDRAW",
+        "DESTINATION_CHANGE"
+      ]
+    },
+    "status": {
+      "const": "ratified"
+    },
+    "ratified_by": {
+      "type": "string",
+      "minLength": 1
+    },
+    "created_at": {
+      "type": "string",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?(Z|[+-]\\d{2}:\\d{2})$"
+    },
+    "adjudicated_at": {
+      "type": "string",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?(Z|[+-]\\d{2}:\\d{2})$"
+    },
+    "known_at": {
+      "type": "string",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?(Z|[+-]\\d{2}:\\d{2})$"
+    },
+    "effective_at": {
+      "type": "string",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?(Z|[+-]\\d{2}:\\d{2})$"
+    },
+    "prior_relation": {
+      "anyOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "edge_id",
+            "type",
+            "src",
+            "dst",
+            "valid_from"
+          ],
+          "properties": {
+            "edge_id": {
+              "type": "string",
+              "minLength": 1
+            },
+            "type": {
+              "const": "EXPRESSES"
+            },
+            "src": {
+              "type": "string",
+              "pattern": "^(basket:baskets_china_ths:|ltheme:ths:).+$"
+            },
+            "dst": {
+              "type": "string",
+              "pattern": "^theme:.+$"
+            },
+            "valid_from": {
+              "type": "string",
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "edge_id",
+            "type",
+            "src",
+            "dst",
+            "valid_from"
+          ],
+          "properties": {
+            "edge_id": {
+              "type": "string",
+              "pattern": "^parent_of:theme:.+->theme:.+@\\d{4}-\\d{2}-\\d{2}$"
+            },
+            "type": {
+              "const": "PARENT_OF"
+            },
+            "src": {
+              "type": "string",
+              "pattern": "^theme:.+$"
+            },
+            "dst": {
+              "type": "string",
+              "pattern": "^theme:.+$"
+            },
+            "valid_from": {
+              "type": "string",
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+            }
+          }
+        }
+      ]
+    },
+    "new_destination": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "source_receipt": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "source_ref",
+        "version",
+        "sha256",
+        "revision"
+      ],
+      "properties": {
+        "source_ref": {
+          "const": "config/theme_crosswalk.yml"
+        },
+        "version": {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "revision": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "evidence_refs": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "reason": {
+      "enum": [
+        "curation",
+        "retirement",
+        "merge"
+      ]
+    },
+    "authority_caps": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "may_rank",
+        "may_size",
+        "may_gate",
+        "may_escalate"
+      ],
+      "properties": {
+        "may_rank": {
+          "type": "boolean",
+          "const": false
+        },
+        "may_size": {
+          "type": "boolean",
+          "const": false
+        },
+        "may_gate": {
+          "type": "boolean",
+          "const": false
+        },
+        "may_escalate": {
+          "type": "boolean",
+          "const": false
+        }
+      }
+    }
+  },
+  "$defs": {
+  "owner_action_read": {
+    "oneOf": [
+      {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "schema",
+          "owner",
+          "status",
+          "receipt_ref",
+          "reason",
+          "event_sha256",
+          "action",
+          "prior_relation",
+          "new_destination",
+          "source_receipt",
+          "ratified_by",
+          "evidence_refs",
+          "accepted_at",
+          "known_at",
+          "valid_from",
+          "valid_to"
+        ],
+        "properties": {
+          "schema": {
+            "const": "gmi.probation_owner_action_read/v1"
+          },
+          "owner": {
+            "const": "theme_graph.probation"
+          },
+          "status": {
+            "const": "ACCEPTED"
+          },
+          "receipt_ref": {
+            "type": "string",
+            "minLength": 1
+          },
+          "reason": {
+            "type": "null"
+          },
+          "event_sha256": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "action": {
+            "enum": [
+              "RELATION_WITHDRAW",
+              "DESTINATION_CHANGE"
+            ]
+          },
+          "prior_relation": {
+            "type": "object"
+          },
+          "new_destination": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "source_receipt": {
+            "type": "object"
+          },
+          "ratified_by": {
+            "type": "string",
+            "minLength": 1
+          },
+          "evidence_refs": {
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "accepted_at": {
+            "type": "string",
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?(Z|[+-]\\d{2}:\\d{2})$"
+          },
+          "known_at": {
+            "type": "string",
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?(Z|[+-]\\d{2}:\\d{2})$"
+          },
+          "valid_from": {
+            "type": "string",
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?(Z|[+-]\\d{2}:\\d{2})$"
+          },
+          "valid_to": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?(Z|[+-]\\d{2}:\\d{2})$"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        }
+      },
+      {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "schema",
+          "owner",
+          "status",
+          "receipt_ref",
+          "reason"
+        ],
+        "properties": {
+          "schema": {
+            "const": "gmi.probation_owner_action_read/v1"
+          },
+          "owner": {
+            "const": "theme_graph.probation"
+          },
+          "status": {
+            "enum": [
+              "UNAVAILABLE",
+              "REJECTED",
+              "REVOKED",
+              "STALE"
+            ]
+          },
+          "receipt_ref": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "reason": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    ]
+  }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "action": {
+            "const": "RELATION_WITHDRAW"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "new_destination": {
+            "type": "null"
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "new_destination": {
+            "type": "string",
+            "pattern": "^theme:.+$"
+          }
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "acceptance_requires_original_raw_and_receipt_audit": true,
+  "bytes": 4440109,
+  "connections": 1,
+  "coverage_proven": false,
+  "full_session_coverage": false,
+  "production_consumer_acceptance": false,
+  "r2_publication": false,
+  "raw_messages": 20000,
+  "run_id": "tiingo-boats-raw-20261012-01a12ab6",
+  "schema": "tiingo_attended_raw_boats_result.v1",
+  "segments": 20,
+  "settled_at_utc": "2026-10-12T00:00:13.559454+00:00",
+  "transport_breaks": 0
+}

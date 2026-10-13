@@ -1,0 +1,234 @@
+{
+  "as_of": "2026-10-07",
+  "coverage": {
+    "end": "2026-10-06",
+    "note": "daily rollup covers 10 session-date(s) from 2026-09-23 to 2026-10-06; chronicle event store begins 2013-04-02; trimmed lowest-salience events to fit the display budget",
+    "start": "2026-09-23"
+  },
+  "schema": "chronicle.rollup.daily/v1",
+  "sessions": [
+    {
+      "date": "2026-10-06",
+      "events": []
+    },
+    {
+      "date": "2026-10-05",
+      "events": []
+    },
+    {
+      "date": "2026-10-02",
+      "events": []
+    },
+    {
+      "date": "2026-10-01",
+      "events": []
+    },
+    {
+      "date": "2026-09-30",
+      "events": []
+    },
+    {
+      "date": "2026-09-29",
+      "events": []
+    },
+    {
+      "date": "2026-09-28",
+      "events": [
+        {
+          "date": "2026-09-28",
+          "id": "cev-regime_flip-94eb72732cfd",
+          "kind": "state_flip",
+          "source": "regime_flip",
+          "source_ref": "state_log#2026-09-28#regime_china",
+          "tickers": [],
+          "title": "CHINA regime: Q4 Growth-scare → Q3 Stagflation",
+          "weight_hint": 3
+        }
+      ]
+    },
+    {
+      "date": "2026-09-25",
+      "events": [
+        {
+          "date": "2026-09-25",
+          "id": "cev-regime_flip-13cfc7dee5af",
+          "kind": "state_flip",
+          "source": "regime_flip",
+          "source_ref": "state_log#2026-09-25#regime_us",
+          "tickers": [],
+          "title": "US regime: Q3 Stagflation → Q2 Reflation",
+          "weight_hint": 3
+        }
+      ]
+    },
+    {
+      "date": "2026-09-24",
+      "events": []
+    },
+    {
+      "date": "2026-09-23",
+      "events": [
+        {
+          "date": "2026-09-23",
+          "id": "cev-research_vault-4097e88c98cf",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-nmuie7j0as1-4f0c24",
+          "tickers": [],
+          "title": "J.P. Morgan: JPM Asia Pacific Equity Derivs",
+          "weight_hint": 3
+        },
+        {
+          "date": "2026-09-23",
+          "id": "cev-research_vault-c52ab131258b",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-mzcvz5cniwp-a7188f",
+          "tickers": [],
+          "title": "Goldman Sachs: Euro Area Data Update Firm Euro Area PMIs and Spanish Trade, Slightly Softer Consumer Confidence",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-09-23",
+          "id": "cev-research_vault-c5499222f0f8",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-anroyw6atlj-9880af",
+          "tickers": [],
+          "title": "J.P. Morgan: JPM Europe Equity Research | Today’s Morning Meeting",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-09-23",
+          "id": "cev-research_vault-c6aa53db4bdc",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-m04zrgkxyce-22a813",
+          "tickers": [],
+          "title": "Goldman Sachs: Cintas Corp. (CTAS) F1Q First Take Beat and raise quarter lifted by accelerating organic revenue growth and record margins",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-09-23",
+          "id": "cev-research_vault-c7c4a2ef57a0",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-bnuzdilqlwf-75f370",
+          "tickers": [],
+          "title": "Goldman Sachs: Global Energy Oil Refining Deep dive into the LatAm Refining Markets + Equities Implications",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-09-23",
+          "id": "cev-research_vault-cfceca6ef1a6",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-cyxqyhf0iin-b93d17",
+          "tickers": [],
+          "title": "S&T: GS Novak GS U.S. Industrials & Materials moving pieces 22 Sep 2026",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-09-23",
+          "id": "cev-research_vault-d0432e36b801",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-20edp9yrxa7-dd23cd",
+          "tickers": [],
+          "title": "Goldman Sachs: Global Markets Daily Brazilian Real (BRL) — Navigating the Election",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-09-23",
+          "id": "cev-research_vault-d2df63beba57",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-ltrmqcujxgh-364ceb",
+          "tickers": [],
+          "title": "Goldman Sachs: Taiwan Pullback in AI related Production in August",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-09-23",
+          "id": "cev-research_vault-d8d0316e0c7b",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-ks7yulaakge-837989",
+          "tickers": [],
+          "title": "S&T: GS Armbrust What Matters Today Anthropic Releases a New Frontier Model The Second Order Effects of Muse China Oil Imports are Expected to Remain Low 23 Sep 2026",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-09-23",
+          "id": "cev-research_vault-df50a9c88ab4",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-msbfw0xctcu-5fbd1c",
+          "tickers": [],
+          "title": "Goldman Sachs: Japan Games Tokyo Game Show 2026 (30th anniversary) Major domestic titles unveiled, many IP holders exhibit for first time",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-09-23",
+          "id": "cev-research_vault-e2c1b30c975a",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-vwksxvtcnwj-c8f26d",
+          "tickers": [],
+          "title": "S&T: GS Garrett gs chart of the day negative beta 23 Sep 2026",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-09-23",
+          "id": "cev-research_vault-e4db56d1ca45",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-qrdfmjn6wzi-46fee1",
+          "tickers": [],
+          "title": "J.P. Morgan: JPM Meta Platforms Inc The Models and Agents Are Here, With Muse Consumers and Businesses Coming Next",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-09-23",
+          "id": "cev-research_vault-eaedc5398b54",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-ltqyspogmo0-b993b8",
+          "tickers": [],
+          "title": "Goldman Sachs: China Education Aug Q Preview Defensive growth at a reasonable price; Buy EDUTAL",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-09-23",
+          "id": "cev-research_vault-ed32d44cb090",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-nwnr2g0qu3c-a92c42",
+          "tickers": [],
+          "title": "Trump Xi Preview: JPM Trump Xi summit Low bar, high stakes",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-09-23",
+          "id": "cev-research_vault-ee9f806ec9ef",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-q59he9u3owr-2536af",
+          "tickers": [],
+          "title": "S&T: GS Quinn Energy Futures WTI Oil Washout 23 Sep 2026",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-09-23",
+          "id": "cev-research_vault-faf5150bfcec",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-qlafqnwxore-324dcc",
+          "tickers": [],
+          "title": "Citi: The Point for Europe Wednesday, 23 September 2026",
+          "weight_hint": 2
+        }
+      ]
+    }
+  ]
+}
