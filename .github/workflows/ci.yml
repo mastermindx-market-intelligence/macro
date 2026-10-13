@@ -3750,6 +3750,8 @@ on:
       - "tests/test_us_prophet_grades.py"
       - "tests/test_us_context_vector.py"
       - "tests/test_us_context_vector_payload_containment.py"
+      # Hermetic receipt compatibility also runs in the prophet-lab code gate.
+      - "tests/test_prophet_today_provenance.py"
       - "tests/test_prophet_miss_audit.py"
       - "scripts/grade_us_prophet_candidates.py"
       # Archetype coverage pipeline (2026-08): the candidates-stamp heal script and

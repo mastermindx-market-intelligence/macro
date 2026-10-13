@@ -1,0 +1,13 @@
+{
+  "schema": "tiingo.canonical_owned_source_join_actual_parent_consumption/v1",
+  "recorded_at_utc": "2026-10-13T04:58:26.624780+00:00",
+  "original_tool_session": 17844,
+  "original_terminal_chunk": "45b509",
+  "original_exit_code": 0,
+  "actual_original_terminal_return_consumed": true,
+  "pr_number": 9075,
+  "merged_commit": "21652b3a0ff316de74e66eb930251f33402c773a",
+  "actual_canonical_source_join_sha256": "b663fa46a925278be230788492d8df894ecc730a0601da186148eea332e162d2",
+  "all39reviewedblobs_identical_on_canonical": true,
+  "runtime_or_user_acceptance_not_claimed": true
+}
