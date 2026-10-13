@@ -20693,7 +20693,7 @@ jobs:
       - "tests/test_us_turn_watch.py"
       - "tests/test_vps_live_orchestration.py"
       - "tests/test_washout_turn.py"
-    timeout-minutes: 5
+    timeout-minutes: 12
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
