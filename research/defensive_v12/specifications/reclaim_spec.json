@@ -1,0 +1,12 @@
+{
+  "status": "Supplemental, specified after seeing first V12 exit/account results; not blind validation",
+  "question": "Does a single close-confirmed reclaim after a failed attempt recover the economic cost of exiting?",
+  "rules": "Following STOP or STRUCTURE exit, at most one reentry; first NEW lower-frame bullish crossover at least one full daily decision later and within20daily sessions; close above ORIGINAL setup floor; completed weeklyK<80; next-open entry; original arm+126 endpoint",
+  "risk": "Same6ATR model with ATR known at retry signal; original structural level preserved; compound BOTH trade results and charge both round trips",
+  "policies": [
+    "STRUCTURE_MOMENTUM_ATR6",
+    "STAGED_ATR6"
+  ],
+  "scope": "Paired isolated-watch events; not an account or allocation policy because other-watch order priority during the waiting interval is not modeled",
+  "frozen_utc": "2026-10-13T02:31:27.647436+00:00"
+}
