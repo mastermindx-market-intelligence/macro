@@ -1,3 +1,54 @@
+---
+workstream: WS:GMI-THEME-GRAPH
+session: sol/industrials-sector-research-20260923
+model: sol
+ended_because: blocked
+mission: >
+  Keep the Industrials research continuation on Macro PR 7789
+  (gmi-industrials-sector-research-20260923-sol-001) checkpointed and
+  undispatched. The first build is two Exponent/Pentair journeys, and this
+  file does not start that build.
+state_before: >
+  Waves 1-13 and the original nine-task plan were already on the carrier.
+  Entry head 281e7c25747ad7769ee8e76fddb21f7373f42124. No receiver, START, or
+  product source had been observed for the prepared implementation operation.
+changed:
+  - path: agentos/handoffs/GMI-INDUSTRIALS-RESEARCH-2026-09-23.md
+    what: "Cumulative research continuation. Mission remains incomplete and implementation on this carrier remains unstarted."
+  - path: research/industrials/WAVE14_HANDOFF_MANIFEST.json
+    what: "Identity manifest for the prepared handoff packet."
+  - path: docs/superpowers/plans/2026-09-24-industrials-handoff-plan-addendum.md
+    what: "Mandatory addendum. Blob a2416836ad973a9224c4823ae0b6ae4d1272a011."
+verified:
+  - claim: "This continuation record parses under the handoff schema."
+    command: "python3 scripts/agentos.py validate --quiet"
+    result: "agentos: 1213 records (69 workstreams, 342 decisions, 304 discoveries, 498 handoffs) — 0 error(s), 92 warning(s)"
+  - claim: "Wave 14 integrity checks still bind the packet files to the manifest."
+    command: "python3 -I research/industrials/verify_wave14.py"
+    result: "Ran 14 tests, OK"
+unverified:
+  - claim: "A concrete Fable receiver has ACK and START for gmi-industrials-fable-ceo-e2e-20260924-chairman-001."
+    what_would_verify: "The carrier shows PICKUP_ACK and a separate START from the assigned receiver after a deliberate delivery."
+  - claim: "Shared foundation release from PR 7870 and the private-envelope seam from PR 7905 are consumable."
+    what_would_verify: "Both carriers have an accepted head on origin/main and the Industrials task that consumes them names that head."
+unresolved:
+  - "MISSION_COMPLETE remains false. Placement is WAITING_CAPACITY. G1-G5 are still PROOF_REQUIRED."
+  - "compile-context for WS:GMI-THEME-GRAPH will select the later master packet GMI-INDUSTRIALS-MASTER-FABLE-CEO-HANDOFF-2026-09-24.md over this older continuation."
+next_actions:
+  - "Use the lawful placement path for one eligible Fable receiver. Discovery of this file is not delivery."
+  - "Resume GMI theme-graph work from agentos/handoffs/THEME-INTELLIGENCE-CONVERGENCE-2026-09-19-LANE-A.md, not from this Industrials checkpoint."
+  - "Reconcile current source and effects before any dependent G1-G5 action."
+do_not_redo:
+  - "Do not repeat waves 1-13, the original source recovery, or a second platform."
+  - "Do not treat the prepared packet as dispatched, STARTed, or product acceptance."
+  - "Do not arm a watcher by writing this file."
+danger_areas:
+  - "Both Industrials handoffs cite WS:GMI-THEME-GRAPH. The 2026-09-24 master packet outranks this file and becomes the compiled latest handoff."
+  - "Historical earnings rows in the wave 9 snapshot are not fresh consensus."
+  - "Candidate sec_edgar configuration is not blanket clearance for issuer text."
+prs: [7789]
+---
+
 # GMI Industrials research — cumulative continuation
 
 Research operation: `gmi-industrials-sector-research-20260923-sol-001`.
@@ -20,7 +71,7 @@ Entry head `281e7c25747ad7769ee8e76fddb21f7373f42124`; original research branch 
 
 ## Completed preparation — DO_NOT_REDO
 
-Waves 1–13, the original nine-task plan, all financial-source qualifications and all 56 requirements remain preserved. Do not repeat broad research, original source recovery or common infrastructure. Original plan blob `a5462dc7f36aea08c57ce43a8a230ef00ebae802`; traceability `c727e109ff84e1318c6a3bb50214ad74a56e6b21`; r1/r2/W12 `40fd1e3783102c28fe748fe35b927484d4f3dddb`, `9c98e106b954d0a48610afad418de2a9eeb1e58b`, `b343cbd7bc1f52cfc6fbb5e18ab8d9e9f9392f6c`.
+Waves 1–13, the original nine-task plan, all financial-source qualifications and all 56 requirements remain preserved. Do not repeat broad research, original source recovery or common infrastructure. Original plan blob `a5462dc7f36aea08c57ce43a8a230ef00ebae802`. The wave-14 traceability blob was `c727e109ff84e1318c6a3bb50214ad74a56e6b21`; the current file is blob `7f54d4ee07f03292779e8195a333e200e35a7439` and records which requirement anchors exist on origin/main. r1/r2/W12 remain `40fd1e3783102c28fe748fe35b927484d4f3dddb`, `9c98e106b954d0a48610afad418de2a9eeb1e58b`, `b343cbd7bc1f52cfc6fbb5e18ab8d9e9f9392f6c`.
 
 The original files are unchanged. The mandatory addendum supersedes only conflicting route/mount, private-mechanism-choice and comparison-qualification assumptions. It is author review, not independent approval or proof that product tests passed.
 
@@ -32,13 +83,13 @@ Containing artifact/review commit: `6dab1cdee663c99a0063cc5ca9d33983150978e7`.
 
 | Artifact | Exact blob |
 |---|---|
-| `agentos/handoffs/GMI-INDUSTRIALS-MASTER-FABLE-CEO-HANDOFF-2026-09-24.md` | `c3bab371833dd2df8cdc71ccfdcd7474ff2f38c5` |
+| `agentos/handoffs/GMI-INDUSTRIALS-MASTER-FABLE-CEO-HANDOFF-2026-09-24.md` | `f2175c4efbc687d1cb818c1cd479ea718205d9ab` |
 | `docs/superpowers/plans/2026-09-24-industrials-handoff-plan-addendum.md` | `a2416836ad973a9224c4823ae0b6ae4d1272a011` |
-| `research/industrials/WAVE14_HANDOFF_MANIFEST.json` | `3930e38644d3d0cd98f158afd326690f99de2e89` |
-| `research/industrials/verify_wave14.py` | `0980f75e1804f70c8279f4d2463ba838e4f07578` |
+| `research/industrials/WAVE14_HANDOFF_MANIFEST.json` | `26c77df54f622e7ed6bedc3544aba3d8801825c8` |
+| `research/industrials/verify_wave14.py` | `f89cd7e65ede392a7c4d3643a7c6270aec43ff56` |
 | `research/industrials/INDUSTRIALS_WAVE14_HANDOFF_REVIEW_AND_VERIFICATION_2026-09-24.md` | `6a7247eb036b2891f8aeed561b887e3e6a840eba` |
 
-All five published blobs match actual local bytes. The master packet is 2,531 words; the mandatory addendum is 1,884 words. These are artifact sizes, not quality scores. Fourteen handoff-integrity tests passed, including three controlled corruption refusals; canonical-layout and post-readback runs overlap. The prior sixteen plan-integrity tests also passed and overlap in purpose. No application code or future plan test was executed; no independent review or investment validation is claimed.
+All five published blobs match actual local bytes. The master packet is 3,103 words; the mandatory addendum is 1,884 words. These are artifact sizes, not quality scores. Fourteen handoff-integrity tests passed, including three controlled corruption refusals; canonical-layout and post-readback runs overlap. The prior sixteen plan-integrity tests also passed and overlap in purpose. No application code or future plan test was executed; no independent review or investment validation is claimed.
 
 ## Shared decisions now known
 

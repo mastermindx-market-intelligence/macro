@@ -8,4 +8,9 @@ class DecodeTests(unittest.TestCase):
  def test_plain_double(self): self.assertEqual(m.plain(struct.pack('<d',-1.5),5,1),[-1.5])
  def test_bad_truncation(self):
   with self.assertRaises(ValueError):m.hybrid(bytes([10]),2,5)
+ @unittest.skipIf(m.TType is None, 'thrift is not installed; parquet footer decode is skipped')
+ def test_thrift_footer_decode(self):
+  value,n=m.thrift_at(b'\x00',0)
+  self.assertEqual(value,{})
+  self.assertEqual(n,1)
 if __name__=='__main__':unittest.main()

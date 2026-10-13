@@ -15,6 +15,15 @@ ROOT = Path(__file__).resolve().parent
 MANIFEST = 'WAVE14_HANDOFF_MANIFEST.json'
 EXPECTED = {f'IND-D{x:02}' for x in range(1, 31)} | {f'IND-R2{x:02}' for x in range(1, 19)} | {f'IND-SF{x:02}' for x in range(1, 9)}
 FLAGS = {'can_rank', 'can_gate', 'can_size', 'can_originate', 'can_open_entry'}
+# Same origin/main anchor map as verify_wave13. PASS remains a refused claim.
+ON_MAIN = {
+    'IND-SF07', 'IND-D02', 'IND-D06', 'IND-SF01', 'IND-D07', 'IND-D08', 'IND-D09', 'IND-D10',
+    'IND-D11', 'IND-D12', 'IND-D13', 'IND-D14', 'IND-D15', 'IND-D16', 'IND-R208', 'IND-D23',
+    'IND-R201', 'IND-R214', 'IND-R215', 'IND-R218', 'IND-SF04',
+}
+PENDING_8250 = {'IND-D04', 'IND-D05', 'IND-R210'}
+REQUIREMENT_STATUS = {'NOT_EXECUTED', 'TESTS_ON_ORIGIN_MAIN', 'PENDING_8250'}
+TASK_STATUS = REQUIREMENT_STATUS | {'MIXED'}
 
 
 def git_blob(body: bytes) -> str:
@@ -40,8 +49,23 @@ def verify_inventory(trace: dict) -> None:
     ids = [identifier for task in trace['tasks'] for identifier in task['requirements']]
     if len(ids) != 56 or len(set(ids)) != 56 or set(ids) != EXPECTED:
         raise ValueError('requirement_inventory_mismatch')
-    if any(task['test_status'] != 'NOT_EXECUTED' for task in trace['tasks']):
-        raise ValueError('unsupported_product_test_claim')
+    for task in trace['tasks']:
+        status = task.get('test_status')
+        per = task.get('requirement_status')
+        if status not in TASK_STATUS or not isinstance(per, dict):
+            raise ValueError('unsupported_product_test_claim')
+        if set(per) != set(task['requirements']) or any(value not in REQUIREMENT_STATUS for value in per.values()):
+            raise ValueError('unsupported_product_test_claim')
+        values = set(per.values())
+        if (status == 'MIXED' and len(values) < 2) or (status != 'MIXED' and values != {status}):
+            raise ValueError('unsupported_product_test_claim')
+        for rid, value in per.items():
+            if rid in PENDING_8250 and value != 'PENDING_8250':
+                raise ValueError('unsupported_product_test_claim')
+            if rid in ON_MAIN and value != 'TESTS_ON_ORIGIN_MAIN':
+                raise ValueError('unsupported_product_test_claim')
+            if rid not in PENDING_8250 and rid not in ON_MAIN and value != 'NOT_EXECUTED':
+                raise ValueError('unsupported_product_test_claim')
 
 
 class HandoffIntegrity(unittest.TestCase):

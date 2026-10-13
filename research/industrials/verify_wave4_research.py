@@ -3,12 +3,32 @@ from __future__ import annotations
 from dataclasses import replace
 from decimal import Decimal
 from pathlib import Path
+import importlib.util
 import json
 import math
 import re
 import sys
-from calculate_wave4 import (Maintenance, maintenance, shop_wip, cohort_npv,
-                            cost_to_cost_revenue, comparable, available_as_of, calculate)
+
+def _load_sibling(name: str):
+    # python3 -I does not put the script directory on sys.path.
+    path = Path(__file__).resolve().parent / f"{name}.py"
+    spec = importlib.util.spec_from_file_location(name, path)
+    if spec is None or spec.loader is None:
+        raise ImportError(f"sibling module {name} is not at {path}")
+    module = importlib.util.module_from_spec(spec)
+    sys.modules[name] = module
+    spec.loader.exec_module(module)
+    return module
+
+_calc = _load_sibling("calculate_wave4")
+Maintenance = _calc.Maintenance
+maintenance = _calc.maintenance
+shop_wip = _calc.shop_wip
+cohort_npv = _calc.cohort_npv
+cost_to_cost_revenue = _calc.cost_to_cost_revenue
+comparable = _calc.comparable
+available_as_of = _calc.available_as_of
+calculate = _calc.calculate
 
 ROOT=Path(__file__).parent
 results=[]

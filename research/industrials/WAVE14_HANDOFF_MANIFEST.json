@@ -45,9 +45,9 @@
       "role": "master_packet",
       "path": "agentos/handoffs/GMI-INDUSTRIALS-MASTER-FABLE-CEO-HANDOFF-2026-09-24.md",
       "portable": "GMI-INDUSTRIALS-MASTER-FABLE-CEO-HANDOFF-2026-09-24.md",
-      "bytes": 20152,
-      "git_blob": "c3bab371833dd2df8cdc71ccfdcd7474ff2f38c5",
-      "sha256": "523069d6bda7a7547e3a20d150e5ff02c01652d3817e0371e0e7b3e8ba21cfcd"
+      "bytes": 24908,
+      "git_blob": "f2175c4efbc687d1cb818c1cd479ea718205d9ab",
+      "sha256": "1163aec96d10771d9e9bfa044ace59760073597d73aa3b9189446bda8229602d"
     },
     {
       "role": "mandatory_addendum",
@@ -69,9 +69,9 @@
       "role": "traceability",
       "path": "research/industrials/WAVE13_IMPLEMENTATION_TRACEABILITY.json",
       "portable": "WAVE13_IMPLEMENTATION_TRACEABILITY.json",
-      "bytes": 5235,
-      "git_blob": "c727e109ff84e1318c6a3bb50214ad74a56e6b21",
-      "sha256": "ca05f410cd2881e899ce9702954f2e99ff19d5bd3e6ca3718fa67dc2ed620b5a"
+      "bytes": 8648,
+      "git_blob": "7f54d4ee07f03292779e8195a333e200e35a7439",
+      "sha256": "f2fc173fad959b70813412c54d3374ecac8fd06c0826dc67ad51006fc4df4f35"
     },
     {
       "role": "spec_r1",
@@ -101,9 +101,9 @@
       "role": "verifier",
       "path": "research/industrials/verify_wave14.py",
       "portable": "verify_wave14.py",
-      "bytes": 6813,
-      "git_blob": "0980f75e1804f70c8279f4d2463ba838e4f07578",
-      "sha256": "0f940562b663c2d1392e705d724cffe0126db32c475d6333d0a77ce1f96f561d"
+      "bytes": 8277,
+      "git_blob": "f89cd7e65ede392a7c4d3643a7c6270aec43ff56",
+      "sha256": "0b5fd9b20083117f4fad6f8213fe7f4be1505faa0ca6aeb50e8bc4bac1d141b8"
     }
   ]
 }

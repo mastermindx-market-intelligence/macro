@@ -5,9 +5,16 @@ Specification: Apache Parquet parquet.thrift and data-page encodings.
 from __future__ import annotations
 import ctypes, hashlib, struct
 from pathlib import Path
-from thrift.protocol.TCompactProtocol import TCompactProtocol
-from thrift.transport.TTransport import TMemoryBuffer
-from thrift.Thrift import TType
+try:
+ from thrift.protocol.TCompactProtocol import TCompactProtocol
+ from thrift.transport.TTransport import TMemoryBuffer
+ from thrift.Thrift import TType
+except ImportError:
+ TCompactProtocol=TMemoryBuffer=TType=None
+
+def _require_thrift():
+ if TType is None:
+  raise ImportError('thrift is not installed; parquet footer decode is skipped')
 
 EXPECTED='01a732f8e4d5db94011957797b9df9ba1c865aa3'
 
@@ -47,6 +54,7 @@ def plain(data:bytes,typ:int,n:int)->list:
  return out
 
 def readvalue(p,t):
+ _require_thrift()
  scalar={TType.BOOL:p.readBool,TType.BYTE:p.readByte,TType.I16:p.readI16,TType.I32:p.readI32,TType.I64:p.readI64,TType.DOUBLE:p.readDouble,TType.STRING:p.readBinary}
  if t in scalar:return scalar[t]()
  if t==TType.STRUCT:
@@ -63,6 +71,7 @@ def readvalue(p,t):
  raise ValueError('unsupported thrift field')
 
 def thrift_at(b:bytes,offset:int):
+ _require_thrift()
  t=TMemoryBuffer(b[offset:]);p=TCompactProtocol(t)
  value=readvalue(p,TType.STRUCT)
  return value,t.cstringio_buf.tell()

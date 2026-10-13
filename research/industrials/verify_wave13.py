@@ -10,6 +10,14 @@ import unittest
 ROOT = Path(__file__).resolve().parent
 EXPECTED = {f'IND-D{x:02}' for x in range(1,31)} | {f'IND-R2{x:02}' for x in range(1,19)} | {f'IND-SF{x:02}' for x in range(1,9)}
 FLAGS = {'can_rank','can_gate','can_size','can_originate','can_open_entry'}
+# Anchor rows on origin/main: tests/industrials_result_cash_helpers.py PLAN_REQUIREMENT_ANCHORS.
+ON_MAIN = {
+    'IND-SF07','IND-D02','IND-D06','IND-SF01','IND-D07','IND-D08','IND-D09','IND-D10',
+    'IND-D11','IND-D12','IND-D13','IND-D14','IND-D15','IND-D16','IND-R208','IND-D23',
+    'IND-R201','IND-R214','IND-R215','IND-R218','IND-SF04',
+}
+PENDING_8250 = {'IND-D04','IND-D05','IND-R210'}
+REQUIREMENT_STATUS = {'NOT_EXECUTED','TESTS_ON_ORIGIN_MAIN','PENDING_8250'}
 
 
 def git_blob(body: bytes) -> str:
@@ -47,7 +55,7 @@ class PlanIntegrity(unittest.TestCase):
     def setUpClass(cls):
         cls.data=json.loads((ROOT/'WAVE13_IMPLEMENTATION_TRACEABILITY.json').read_text())
         cls.plan=find_plan(cls.data).read_text()
-        cls.rows=[{'requirement_id':rid, 'task':t['id'], 'test_file':t['test_file'], 'test_name':'test_'+rid.lower().replace('-','_'), 'status':t['test_status']} for t in cls.data['tasks'] for rid in t['requirements']]
+        cls.rows=[{'requirement_id':rid, 'task':t['id'], 'test_file':t['test_file'], 'test_name':'test_'+rid.lower().replace('-','_'), 'status':t['requirement_status'][rid]} for t in cls.data['tasks'] for rid in t['requirements']]
 
     def test_01_research_boundary(self):
         for field in ('research_only','not_a_native_schema','not_a_queue'):
@@ -91,9 +99,16 @@ class PlanIntegrity(unittest.TestCase):
     def test_07_crosswalk_parity(self):
         actual={m[1]:(m[2],m[3]) for m in re.finditer(r'^\| (IND-(?:D\d{2}|R2\d{2}|SF\d{2})) \| (T\d{2}) \| `([^`]+)` \|$',self.plan,re.M)}
         self.assertEqual(set(actual),EXPECTED)
+        for t in self.data['tasks']:
+            values={t['requirement_status'][rid] for rid in t['requirements']}
+            self.assertTrue(values <= REQUIREMENT_STATUS)
+            self.assertEqual(t['test_status'], next(iter(values)) if len(values)==1 else 'MIXED')
         for r in self.rows:
             self.assertEqual(actual[r['requirement_id']],(r['task'],r['test_file']+'::'+r['test_name']))
-            self.assertEqual(r['status'],'NOT_EXECUTED')
+            rid=r['requirement_id']
+            if rid in PENDING_8250: self.assertEqual(r['status'],'PENDING_8250')
+            elif rid in ON_MAIN: self.assertEqual(r['status'],'TESTS_ON_ORIGIN_MAIN')
+            else: self.assertEqual(r['status'],'NOT_EXECUTED')
 
     def test_08_gates_unproven(self):
         self.assertIsNone(self.data['accepted_foundation_release'])

@@ -1,3 +1,61 @@
+---
+workstream: WS:GMI-THEME-GRAPH
+session: sol/industrials-sector-research-20260923
+model: sol
+ended_because: blocked
+mission: >
+  Prepare the Industrials first-vertical Fable CEO packet on Macro PR 7789
+  (gmi-industrials-fable-ceo-e2e-20260924-chairman-001) without dispatching a
+  receiver or placing product code on this research carrier. The outcome remains
+  two real Exponent/Pentair dossiers.
+state_before: >
+  Waves 1-14, the nine-task plan blob a5462dc7f36aea08c57ce43a8a230ef00ebae802,
+  and the 56-requirement traceability were on this carrier with every test_status
+  NOT_EXECUTED. origin/main now has PLAN_REQUIREMENT_ANCHORS for 21 ids.
+  IND-D04, IND-D05 and IND-R210 are still the unmerged #8250 rows.
+changed:
+  - path: agentos/handoffs/GMI-INDUSTRIALS-MASTER-FABLE-CEO-HANDOFF-2026-09-24.md
+    what: "Master Fable CEO packet for the Industrials first vertical. Prepared for placement, not dispatched."
+  - path: research/industrials/WAVE13_IMPLEMENTATION_TRACEABILITY.json
+    what: "Requirement rows record TESTS_ON_ORIGIN_MAIN, PENDING_8250, or NOT_EXECUTED from the origin/main anchor map. This packet does not claim PASS."
+  - path: docs/superpowers/plans/2026-09-24-industrials-handoff-plan-addendum.md
+    what: "Mandatory route, mount, and qualification addendum. Blob a2416836ad973a9224c4823ae0b6ae4d1272a011."
+verified:
+  - claim: "Both Industrials handoffs parse, and they are no longer hard validation errors."
+    command: "python3 scripts/agentos.py validate --quiet"
+    result: "agentos: 1213 records (69 workstreams, 342 decisions, 304 discoveries, 498 handoffs) — 0 error(s), 92 warning(s)"
+  - claim: "Wave 4 sibling calculator imports under isolated Python."
+    command: "python3 -I research/industrials/verify_wave4_research.py"
+    result: "77 PASS, 0 FAIL"
+  - claim: "Wave 9 helper tests collect without the thrift package."
+    command: "MM_DATA_GUARD=off PYTHONDONTWRITEBYTECODE=1 python3 -m pytest research/industrials/test_wave9_snapshot_helpers.py -q -p no:cacheprovider -o addopts="
+    result: "6 passed, 1 skipped"
+  - claim: "Wave 13 traceability integrity accepts the origin/main and PENDING_8250 statuses."
+    command: "python3 -I research/industrials/verify_wave13.py"
+    result: "Ran 16 tests, OK"
+unverified:
+  - claim: "Both signed-in Exponent and Pentair journeys, ordinary refresh, correction, and revocation are proven."
+    what_would_verify: "Browser proof of Themes to dossier to company-return for both issuers, plus a source correction and a rights withdrawal on a known object. A 404 is not the privacy proof."
+  - claim: "IND-D04, IND-D05 and IND-R210 are implemented."
+    what_would_verify: "PR 8250 merged to origin/main with tests that discriminate those three ids, in the same change that moves them off PENDING_8250."
+unresolved:
+  - "G1-G5 remain unproven. #7905 and #7870 are still external seams. IND-D03, IND-D22 and IND-R213 have no merged owner."
+  - "This filename is the latest dated handoff that cites WS:GMI-THEME-GRAPH, so compile-context prefers it over THEME-INTELLIGENCE-CONVERGENCE-2026-09-19-LANE-A. That convergence file remains the theme-graph session record on disk."
+next_actions:
+  - "Do not execute this packet as the next GMI theme-graph action. Resume theme-graph work from agentos/handoffs/THEME-INTELLIGENCE-CONVERGENCE-2026-09-19-LANE-A.md."
+  - "Keep PR 7789 as the research carrier. A requirement leaves NOT_EXECUTED or PENDING_8250 only in the task change that implements it."
+  - "When PR 8250 merges, move IND-D04, IND-D05 and IND-R210 off PENDING_8250 in that same change."
+do_not_redo:
+  - "Do not recreate the shared GMI foundation, a second route, a second graph, or a rights plane."
+  - "Do not mark a requirement PASS from this research packet. TESTS_ON_ORIGIN_MAIN means the anchor exists on origin/main; it is not a local execution receipt."
+  - "Do not put product code on PR 7789."
+danger_areas:
+  - "Citing WS:GMI-THEME-GRAPH makes this file the compiled latest handoff for that workstream because the filename ends in 2026-09-24. The prior compiled latest is THEME-INTELLIGENCE-CONVERGENCE-2026-09-19-LANE-A.md."
+  - "A missing required cash operand must refuse only the dependent section. Emitting a zero is a false success."
+  - "Optional graph or consensus absence stays a limitation. It is a different state from a mandatory-source refusal."
+prs: [7789]
+---
+
 # GMI Industrials — master Fable CEO handoff
 
 24 September 2026. **PREPARED_FOR_PLACEMENT — NOT DISPATCHED.** This document does not assign a receiver, create an Executive operation, approve a native interface, or grant source custody. The first build remains NOT_BUILT by this research operation. The parent Industrials mission is incomplete.
@@ -42,7 +100,7 @@ Then read these Macro artifacts as one reviewed planning set:
 |---|---|
 | `docs/superpowers/plans/2026-09-24-industrials-handoff-plan-addendum.md` | Current mandatory amendment: route, mount, guidance separation, permission scope, dependency order. Verify its blob through the accompanying manifest. |
 | `docs/superpowers/plans/2026-09-24-industrials-shared-foundation-increment-implementation.md` | Original nine-task plan, blob `a5462dc7f36aea08c57ce43a8a230ef00ebae802`. All code examples are future tests, not proof of existing functions. |
-| `research/industrials/WAVE13_IMPLEMENTATION_TRACEABILITY.json` | All 56 inherited requirements and task/test mapping; blob `c727e109ff84e1318c6a3bb50214ad74a56e6b21`. |
+| `research/industrials/WAVE13_IMPLEMENTATION_TRACEABILITY.json` | All 56 inherited requirements and task/test mapping; blob `7f54d4ee07f03292779e8195a333e200e35a7439`. |
 | `docs/superpowers/specs/2026-09-23-industrials-result-cash-dossier-design.md` | Original dossier requirements, blob `40fd1e3783102c28fe748fe35b927484d4f3dddb`. |
 | `docs/superpowers/specs/2026-09-23-industrials-result-cash-dossier-design-r2.md` | Revision-2 amendment, blob `9c98e106b954d0a48610afad418de2a9eeb1e58b`. |
 | `research/industrials/INDUSTRIALS_WAVE12_SEMICONDUCTOR_FOUNDATION_ALIGNMENT_2026-09-24.md` | Shared consumption and eight cross-sector requirements, blob `b343cbd7bc1f52cfc6fbb5e18ab8d9e9f9392f6c`. |
@@ -93,7 +151,7 @@ Every child receives the exact relevant source, owned paths, inputs, determinist
 
 For both, the opening explains what changed, why it matters economically, the strongest supported alternative and the next observation that discriminates between explanations. Every material sentence has actual financial/source dependencies. A source correction or rights change affects the dependent explanation as well as the numeric table.
 
-All 56 inherited requirements remain NOT_EXECUTED until real tests/proofs are returned. Passing Semiconductor witnesses, a schema validator, an arithmetic script or green CI is not proof of this user task.
+Ancestor squashes d7679296848443896e303e989ec35fa2541122cf (#8200), 28a3ab1e7cb2579c507488002b70d1dc6f4ada05 (#8213) and 5a64abf6c34711d681d042a9af2a1590374a08ff (#8215) are on origin/main. Twenty-one inherited ids now have test anchors on origin/main and are marked TESTS_ON_ORIGIN_MAIN in the traceability file. IND-D04, IND-D05 and IND-R210 are PENDING_8250. Every remaining inherited requirement stays NOT_EXECUTED until real tests/proofs are returned. Passing Semiconductor witnesses, a schema validator, an arithmetic script or green CI is not proof of this user task.
 
 ## 7. Entry gates and actions that may continue
 
