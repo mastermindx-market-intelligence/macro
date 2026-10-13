@@ -20,6 +20,8 @@ COVERED_CLASSES = {
     "ilx-ref": "reference (0%) hairline stroke is var(--muted)",
     "ilx-water": "peak/0% waterline stroke is var(--muted)",
     "ilx-water-top": "peak hairline stroke is var(--down)",
+    # A system-colour fill under the line would sit the CanvasText stroke on a Mark
+    # block, so the gradient veil is dropped rather than recoloured.
     "ilx-area": "under-curve fill is a var(--down) gradient",
     "ilx-tag": "end-value chip background/border come from color-mix of CSS variables",
     # Metrics: figure colour is the only down/up cue besides the digits.
@@ -117,3 +119,8 @@ def test_forced_colors_block_covers_measured_section_classes():
     compact = re.sub(r"\s+", "", block)
     assert re.search(r"outline:2px\s*solid\s*Highlight", block)
     assert "forced-color-adjust:none" in compact
+
+
+def test_forced_colors_drops_the_under_curve_fill():
+    block = re.sub(r"\s+", "", _forced_block(_css()))
+    assert ".ilx-area{fill:none;" in block

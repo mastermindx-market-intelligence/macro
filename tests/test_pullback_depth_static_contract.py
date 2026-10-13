@@ -45,6 +45,8 @@ JS_GLOBAL_HOOK_CLASSES = frozenset({"l-en", "l-zh"})
 # choreography so critical ink never waits for JS — those rules are live.
 CHART_PAYLOAD_CLASSES = frozenset({
     "ilx", "ilx-path", "ilx-water", "ilx-ref", "ilx-tag", "ilx-d", "ilx-reflab", "ilx-dot",
+    # kind="drawdown" also emits these; the forced-colours block restyles them.
+    "ilx-area", "ilx-down", "ilx-dot-down", "ilx-water-top",
 })
 CHART_STYLESHEET = "illus.css"
 

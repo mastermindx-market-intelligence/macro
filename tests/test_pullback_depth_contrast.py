@@ -367,23 +367,19 @@ PAIRS = (
          2.0, 0, "non-text", "pb-css:35 · bg pb-css:21"),
     Pair("ilx-water-top", ".rrp .rrp-chart .ilx-water-top (0% waterline)", "--down",
          1.0, 0, "non-text",
-         "illus.css .ilx-water-top (stroke --down) · opacity .55 pinned by pb-css:62",
-         alpha=0.55),
+         "illus.css .ilx-water-top (stroke --down) · opacity .75 pinned by pb-css:62",
+         alpha=0.75),
     Pair("ilx-ref", ".rrp .rrp-chart .ilx-ref (reference=0 rule)", "--muted",
          1.0, 0, "non-text",
-         "illus.css .ilx-ref (opacity .40 = pb-css:63) · emitted for reference=0",
-         alpha=0.40),
+         "illus.css .ilx-ref (opacity .75 = pb-css:63) · emitted for reference=0",
+         alpha=0.75),
 )
 
 # Pairs that FAIL the audit at HEAD. strict xfail keeps them visible as
 # PRODUCT findings and re-opens the audit the moment a fix lands (an XPASS
 # fails this test) — and any NEW regression below threshold fails loudly.
-KNOWN_FAILURES = {
-    ("ilx-water-top", "dark"),
-    ("ilx-water-top", "light"),
-    ("ilx-ref", "dark"),
-    ("ilx-ref", "light"),
-}
+# Empty since the .75 hairline pins: both measured 1.8-2.4:1 at the .55/.40 pins.
+KNOWN_FAILURES: set[tuple[str, str]] = set()
 
 
 def head_surface(pair: Pair, theme: str):
@@ -457,8 +453,8 @@ def test_pullback_stylesheet_still_declares_the_audited_pairs():
         ".rrp .rrp-forecast .rrp-eyebrow{color:var(--ink-warn)}",
         "color:var(--ink-warn)}",  # .pbx-expiry
         ".rrp .rrp-method summary:focus-visible{outline:2px solid var(--ink-info)",
-        ".rrp .rrp-chart .ilx-water{opacity:.55;animation:none}",
-        ".rrp .rrp-chart .ilx-ref{opacity:.4;animation:none}",
+        ".rrp .rrp-chart .ilx-water{opacity:.75;animation:none}",
+        ".rrp .rrp-chart .ilx-ref{opacity:.75;animation:none}",
         ".rrp .rrp-chart .ilx-tag,.rrp .rrp-chart .ilx-d,.rrp .rrp-chart .ilx-reflab{opacity:1;animation:none}",
         ".rrp .rrp-study>div{padding:var(--sp-5,20px);border:1px solid var(--line);border-radius:var(--r-card,12px);background:var(--panel)}",
     ):
