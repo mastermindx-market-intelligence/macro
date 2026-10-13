@@ -65,7 +65,10 @@ function of the response mapping.
   is recorded only when a Decimal cannot round-trip through float.
 - Text cells: `t="inlineStr"` with `<is><t xml:space="preserve">…</t></is>`,
   after `_csv_safe` (leading `=`, `+`, `-`, `@`, tab, CR get a leading `'`)
-  and XML escaping (`&`, `<`, `>`, `"`, `'`).
+  and XML escaping (`&`, `<`, `>`, `"`, `'`).  Exception: a finite value
+  that does not round-trip through IEEE-754 is written as its exact decimal
+  text with no `_csv_safe` (no leading `'`, negative included), and its A1
+  reference is listed in the Meta sheet `exact_text_cells`.
 - Finite `int` / `Decimal` that round-trip through IEEE-754: numeric `<v>`
   with `format(Decimal(v), "f")` (never a Python float repr).  CSV value
   column uses that column's exact decimal text.
