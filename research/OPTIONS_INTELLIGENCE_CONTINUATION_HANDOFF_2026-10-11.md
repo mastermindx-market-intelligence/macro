@@ -581,10 +581,15 @@ minimax, grok, cursor, glm) → optional bounded workers. No native leaf swarm; 
 
 ## Lane matrix
 
-(D69 snapshot.) Rows superseding older rows below:
+(D70 snapshot.) Rows superseding older rows below:
 
 | lane | state |
 |---|---|
+| PP2-UI-b | `fable-pp2uib-r1-20261013` RUNNING on mb since 12:43:05Z from `d3a3bc33` (LEASE_OK, LAUNCH_ATTEMPT 1); watcher `be1h3mr4m`; hard end ~14:43Z (D70) |
+| PP2-UI-c repair 1 | ACCEPTED at `d3a3bc33` (T `f9e4b38b` · F `2f1fee4b` · E `f3a18e53` · E2 `d3a3bc33`; R1–R3 closed; npm test 10791); MINOR notes carried to PP2REV (D70) |
+| PP2REV | READ_ONLY review `fable-pp2rev-r1-20261013` READY (packet `5bb73bf7…`, worktree mb `~/lanes/wt/pp2rev-20261013` at `d3a3bc33`); held on host eligibility (D70) |
+| PP1-D | FROZEN: ubuntu2 disk 76.9<150 (needs ~73 G freed by the host's owners; no reroute, no deletion); watcher `bfcmghmnb` (D70) |
+| #948 / #983 | controller-refreshed heads' `pull_request` runs were `action_required`; approved 12:52Z (CI queued); watcher `bp9vp9ip0` (D70) |
 | PP2-UI-c repair 1 | `fable-pp2uic-rep1-20261013` RUNNING on mb since 12:26:30Z from `d8544ec5` (LEASE_OK, LAUNCH_ATTEMPT 1); watcher `bu9phj367`; hard end 13:56Z (D69) |
 | PP2-UI-c | DELIVERED `d8544ec5` (T·F·E; 70/70 browser, npm test 10785); REQUEST_REPAIR R1 norm hidden in exact mode, R2 empty live region, R3 open-row 4b never RED (D68) |
 | PP2-UI-c repair 1 | `fable-pp2uic-rep1-20261013` packet `3a65c9a6…` FROZEN; gate-held on mb (lane-ceiling 3/3, other sessions); watcher `bvgbvu6i7` (D68) |
@@ -1453,3 +1458,64 @@ INTENDED_RESUME_SURFACE: this Claude Code session; successor reads this file + #
   - PP2-UI-b: FROZEN until the repair is accepted.
   - PP1-D: FROZEN (ubuntu2 disk; watcher `bfcmghmnb`).
   - Unchanged: #948 (`bt4a20yu0`), #985 (`bff4iyhaz`), Macro #9080/#8920 (`b64amfv2n`), Macro #9097 parked (`bjywkkbf6`).
+
+### D70 (2026-10-13T12:55Z) — PP2-UI-c repair 1 ACCEPTED at `d3a3bc33`; PP2-UI-b launched on mb; PP2REV worktree ready; held CI runs on #948/#983 approved; ubuntu2 disk blocks PP1-D
+
+- FACT `fable-pp2uic-rep1-20261013` DELIVERED: controller `OUTPUT_CONTRACT_MATCHED`, `DONE rc=0` at 12:41Z.
+  - Return: `/Users/chriswong/lanes/returns/pp2-ui-c-rep1/return.md` (181 lines).
+  - Commits: T `f9e4b38b`, F `2f1fee4b`, E `f3a18e53`, E2 `d3a3bc33`. Pushed head `d3a3bc3386283fab2c6b8424f34ab09afa168e24`; mb local = remote; clean.
+- DECIDED ACCEPT, judged by artifact. The seat read the diff against `d8544ec5`. It touches exactly three files: `MatrixCompanion.tsx`, `e2e/options-companion.spec.ts`, `lib/__tests__/optionsScopeExact.test.tsx`.
+  - R1 closed:
+    - The one `options-scope-norm` select now sits after the exact grid inside `.controls`, so it renders in both modes.
+    - Exact Apply calls `onPrefs({...prefs, norm})` only on a norm change. The four exact strings never reach prefs.
+    - `draftChanged` gains the exact-mode norm term.
+  - R2 closed: `options-scope-issues` renders only when `parseDraft && !parseDraft.ok`.
+  - R3 closed: the OPEN-row check is now a hard `detailsRight >= rowRight - 1`. Negative f2 (`.receipts[open]{flex:none}`) is RED.
+  - Lane-reported gates:
+    - whole spec 70 passed / 2 skipped;
+    - the eight scope files under vitest: 129;
+    - `npm test` 636 files, 10791 passed;
+    - tsc, eslint and the plain-language check exit 0;
+    - negatives a, b, c, d and f2 RED;
+    - the three ruling-4 library files byte-identical.
+  - MINOR (non-blocking; carried to PP2REV and the final review):
+    1. return.md says "finished 12:55:00Z", which is not an observation; the controller finished at 12:41Z.
+    2. The localStorage check matches only the JSON pairs (`"from":"770"` and the like), not the raw strings.
+- FACT `fable-pp2uib-r1-20261013` (PP2-UI-b: show on chart, then return to the same held map) launched at 12:43:05Z through the in-command gate.
+  - Gate: `pr/pp2uib_gate.txt`, mb ELIGIBLE score 0.7721.
+  - Packet: `leads/PP2UIB/fabric/r1.md`, sha `a2caf7554107…`, 437 lines, no placeholders, assembled by `leads/PP2UIB/assemble.py` from the accepted head `d3a3bc33`.
+  - Fence: RUN_RESERVED, LEASE_OK pool=minimax, SUPPORT_VERSION_READY `418419b9…`, LAUNCH, LAUNCH_ATTEMPT 1, POLL_PENDING.
+  - Budget: POOL_MAX_TURNS 270, a 105-min soft stop, and a hard end near 14:43Z. The launch task `be1h3mr4m` is its one watcher.
+  - The packet carries the root's build-identity edge: a held snapshot A versus a newer same-root/same-session build B must survive the MobileSheet unmount, and Return never silently restores A onto B.
+- FACT the PP2REV review worktree was prepared on mb at 12:47Z:
+  - `~/lanes/wt/pp2rev-20261013`, detached at `d3a3bc33`, porcelain empty;
+  - `terminal/node_modules` is an APFS clone of the pp2uia tree, and `vitest`/`tsc` are present;
+  - mb `/System/Volumes/Data` has 94 GiB free.
+  - The review packet is `leads/PP2REV/commission.md` `5bb73bf7…` plus header `88921d7a…`, run ID `fable-pp2rev-r1-20261013`.
+  - It is held on host eligibility: mb's lane ceiling is taken while PP2-UI-b runs, and every other host is disk-refused.
+- FACT the #948 watcher `bt4a20yu0` timed out (rc 2, 5410 s). #948 and #983 were BLOCKED because the merge-on-green controller had refreshed both heads as `github-actions[bot]`:
+  - #948 head `54e3b3d5`, refreshed at 12:11Z; #983 head `e7e6b27f`, refreshed at 12:20Z.
+  - That left each head's `pull_request` CI run `action_required`: runs `38395434519` and `38396635527`.
+  - The seat approved both runs at about 12:52Z (`POST /actions/runs/{id}/approve`, 201, now `queued`). This is the ordinary release; CI still has to pass. Nothing was bypassed. #989 was not touched.
+  - One watcher, `bp9vp9ip0` (sentinel `pr/t948_983c.sentinel`, 3 h), now covers both PRs. #985's own `pull_request` CI is running (e2e shards pending) under `bcmwl7zse`.
+- FACT host gate 12:33–12:40Z (`pool hosts minimax`): every host was INELIGIBLE.
+  - mb: lane-ceiling 3<3, load 16.4<8.
+  - ubuntu0: disk 242.4<300 (263.9 at 12:30Z).
+  - ubuntu1: disk 140.2<150.
+  - ubuntu3: disk 167.3<300 (191.6 at 12:30Z).
+  - ubuntu2: disk 76.9<150, falling 139 → 118 → 87 → 77 G over 11:10–12:35Z, then flat near 77 G.
+  - Our ubuntu2 footprint is `oi-1b` 5.5 G plus `pp1d` 341 M, with no process of ours running.
+- FRONTIER PP1-D cannot launch until ubuntu2 frees about 73 G.
+  - PP1-D is pinned to ubuntu2 by the D65 hold and "DNR: no routing around a host refusal" (ledger DNR line ~698; D65).
+  - The seat deletes nothing and moves nothing. Disk relief belongs to the host's owners, and this constraint is reported to the root as critical-path.
+  - Watcher: `bfcmghmnb`.
+- CORRECTION to D68: its no-reroute citation "(D34/D35)" is wrong.
+  - D34 records an mb heredoc wedge, and D35 records lead rulings.
+  - The binding rule is the DNR entry (line ~698) plus D65 ("DNR: no routing around a host refusal"). The ruling itself is unchanged.
+- Rungs at 12:55Z:
+  - PP2-UI-c repair 1: ACCEPTED.
+  - PP2-UI-b: RUNNING.
+  - PP2REV: READY, held on host eligibility.
+  - PP1-D: FROZEN on ubuntu2 disk.
+  - #948/#983: CI queued after approval (`bp9vp9ip0`). #985: CI running (`bcmwl7zse`).
+  - Macro #9080/#8920 (`b64amfv2n`); Macro #9097 parked (`bjywkkbf6`).
