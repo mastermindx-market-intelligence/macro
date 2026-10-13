@@ -1256,3 +1256,36 @@ INTENDED_RESUME_SURFACE: this Claude Code session; successor reads this file + #
   - When mb is eligible, launch run 2: `fable-pp2uia-r2-20261013`, packet sha `39532ed4…`, `REMOTE_SUB_MAX_SECS=10800`.
   - When ubuntu2 is eligible, launch PP1-D there.
   - Act on PR watcher events (deploy on the first production-affecting Terminal merge; F02-Q2 once #986 and #9080 have both merged).
+
+### D64 (2026-10-13T11:00Z) — root's scope-completeness check consumed and verified; PP2-UI-c (exact strike and days-to-expiry scope) frozen on this carrier, serialized after run 2
+- FACT root message consumed: at R `d088a79371555851352b698e468115b7f692dbed`, `parseScopeBounds` has no caller under `terminal/components`. Only the library definition exists (`terminal/lib/optionsScopeBounds.ts`).
+  - Neither PP2-UI-a run 2 nor the PP1-D desk commission wires exact From/To strike or days-to-expiry controls.
+  - So contract falsifiers 2/7/8 (#723 comment 6139229971) are NOT closed by the parser-only tests.
+- DECIDED the integration stays on this carrier, as a new serialized lane PP2-UI-c, frozen at `$S/leads/PP2UIC/commission.md`.
+  - Ordering: it starts only after run 2 is accepted, and its base is run 2's accepted head. Run 2's packet is unchanged, and no file run 2 owns is touched concurrently.
+  - Routing: normal Fabric (MiniMax on mb), the same worktree and branch as PP2-UI-a.
+- DECIDED rulings (binding in the commission):
+  1. A preset/exact range radio. Exact mode has four labelled text inputs, From, To, Min days and Max days, at 44px under touch.
+  2. Prefill from the applied displayed scope.
+  3. On every draft change, `parseScopeBounds` runs against the all-expiry declared or derived axis domain.
+     - Invalid input disables Apply. It gives one EN/ZH sentence per issue code (all 12) with `aria-invalid`, and never a zero or empty fiction.
+     - Valid input shows a preview of strike count, expiry count and day range.
+  4. The applied exact scope lives in component state only: not in prefs, localStorage or any request.
+     - It is re-qualified on every snapshot against that snapshot's source session, never `Date.now()`.
+     - It feeds grid, scope grid, totals, structure and node context through a new pure `matrixForExactScope`, which preserves the axis basis.
+     - A newer snapshot with nothing in range renders an explicit empty-scope state with the reason.
+  5. Cancel/Escape/Apply transaction and focus semantics are unchanged.
+  6. Selection is retained, with outside/back-in-scope behaviour. The pin is unchanged.
+  7. Days 0–0 is the source-session expiry only. `no_expiries` blocks Apply rather than substituting the next expiry.
+  8. `lib/optionsScopeBounds.ts` and `lib/optionsCompanion.ts` are byte-locked: the parent's PP2L-R1 PASS is bound to their exact bytes.
+- FACT the commission carries:
+  - RED tests (u1)–(u10) against a declared-grid fixture with an absent position, a measured zero and a pre-session expiry, under a mocked far-away wall clock;
+  - five negative controls (Apply enabled while invalid; days from `Date.now`; bounds in prefs; always writing declared axes; no Escape restore);
+  - one browser test per language on three projects;
+  - gates 6a–e, and a FALSIFIER-MAP section that ties falsifiers 2, 7 and 8 to named assertions and the negatives that failed them.
+- Watchers unchanged from D63: `bv3owe0yj` host, `b0msplbai` #986, `bff4iyhaz` #985, `b55haalpp` #948/#983, `brq8ytnaj` Macro #9097, `b64amfv2n` Macro #9080/#8920.
+- Rungs at 11:00Z: PP2-UI-c is FROZEN (spec written, not launched; serialized behind run 2). Everything else is unchanged from D63.
+- NEXT:
+  - run 2 on mb eligibility → judge → PP2-UI-c launch (fill `<<BASE_SHA>>`);
+  - PP1-D on ubuntu2 eligibility;
+  - then PP2-UI-b (chart return with build identity across the sheet unmount), #723 integration, coordinated #599 release and authenticated production proof.
