@@ -14,22 +14,25 @@ from scripts import build_government_revenue
 
 ROOT = Path(__file__).resolve().parents[1]
 TEMPLATE = (ROOT / "templates" / "government_revenue.html.j2").read_text(encoding="utf-8")
+CONTROLLER = (ROOT / "templates" / "government-revenue-page.js.j2").read_text(encoding="utf-8")
+STARTER = (ROOT / "templates" / "government-revenue-investor-start.js").read_text(encoding="utf-8")
+TEMPLATE += "\n" + CONTROLLER + "\n" + STARTER
 BRIEFCASE = (ROOT / "templates" / "government-revenue-briefcase.js").read_text(encoding="utf-8")
 BRIEFCASE_UI = (ROOT / "templates" / "government-revenue-briefcase-ui.js").read_text(encoding="utf-8")
 CANDIDATE_RADAR = (ROOT / "templates" / "government-revenue-candidate-radar.js").read_text(encoding="utf-8")
 CANDIDATE_RADAR_SITE = (ROOT / "site" / "government-revenue-candidate-radar.js").read_text(encoding="utf-8")
 SITE_PATH = ROOT / "site" / "government_revenue.html"
 SITE = SITE_PATH.read_text(encoding="utf-8")
+SITE_RUNTIME = (ROOT / "site" / "government-revenue-page.js").read_text(encoding="utf-8")
 WORKSPACE_PATH = ROOT / "site" / "government-revenue-data" / "workspace.json"
 HAS_NODE = shutil.which("node") is not None
 needs_node = pytest.mark.skipif(not HAS_NODE, reason="node not on PATH")
 
 
 def _page_runtime_js() -> str:
-    blocks = re.findall(r"<script(?![^>]*\bsrc=)[^>]*>(.*?)</script>", TEMPLATE, re.S)
-    runtime = next((block for block in blocks if "__hydrateGovernmentWorkspace" in block), None)
-    assert runtime is not None, "Government Revenue page runtime is missing"
-    return runtime
+    assert '__hydrateGovernmentWorkspace' in CONTROLLER
+    from jinja2 import Environment, FileSystemLoader
+    return Environment(loader=FileSystemLoader(str(ROOT / "templates"))).get_template("government-revenue-page.js.j2").render()
 
 
 def _run_runtime(
@@ -103,7 +106,8 @@ def _run_runtime(
         var location = {href:'https://example.test/government_revenue.html'+LOCATION_SEARCH, pathname:'/government_revenue.html', search:LOCATION_SEARCH, hash:''};
         var history = {replaceState:function(){}};
         var navigator = {clipboard:null};
-        var window = {location:location, history:history, navigator:navigator, innerWidth:1440};
+        var window = {location:location, history:history, navigator:navigator, innerWidth:1440,
+          MDXAuth:{enabled:function(){return true},onChange:function(cb){cb(null,"INITIAL_SESSION")}}};
         // R6: when requested, load the REAL shipped government-revenue-dossiers.js
         // (not a stub) so window.createGovernmentRevenueCompanyBridge/IdentityAtlas/
         // Dossier/Budget are the actual production factories, proving the page's
@@ -277,7 +281,9 @@ def test_candidate_radar_requires_exact_receipt_bound_candidates_and_keeps_compa
     assert "fetchPages" in CANDIDATE_RADAR
     assert "candidate_mapping_generation_drift" in CANDIDATE_RADAR
     assert CANDIDATE_RADAR_SITE == CANDIDATE_RADAR
-    assert 'src="government-revenue-candidate-radar.js"' in TEMPLATE
+    assert "'government-revenue-candidate-radar.js'" in STARTER
+    assert "script.src=name" in STARTER
+    assert "script.setAttribute('data-sync','')" in STARTER
 
 
 @needs_node
@@ -617,8 +623,8 @@ def test_keyboard_url_mobile_and_zero_data_paths_are_first_class() -> None:
 def test_research_briefcase_is_local_auditable_and_workspace_gated() -> None:
     implementation = TEMPLATE + BRIEFCASE + BRIEFCASE_UI
     for marker in (
-        'data-sync src="government-revenue-briefcase.js"',
-        'data-sync src="government-revenue-briefcase-ui.js"',
+        'government-revenue-briefcase.js',
+        'government-revenue-briefcase-ui.js',
         'id="researchBriefcase"',
         'id="savedViewSelect"',
         'id="toggleLocalAlert"',
@@ -820,7 +826,7 @@ def test_runtime_distinguishes_unavailable_change_detection_from_a_quiet_tape(tm
         "受影响的 8 条记录仍保留在不可变审计账本中，但已从候选、Prophet、排名、仓位、门控与信号界面排除。"
         in TEMPLATE
     )
-    assert "Historical issuance quarantined" in SITE
+    assert "Historical issuance quarantined" in SITE_RUNTIME
 
 
 @needs_node
@@ -1743,7 +1749,7 @@ def test_identity_atlas_ships_on_the_company_inspector() -> None:
     correct PR and pass on a stale one.
     """
     for marker in (
-        'data-sync src="government-revenue-dossiers.js"',
+        'government-revenue-dossiers.js',
         "createGovernmentRevenueIdentityAtlas",
         'id="identityAtlas"',
         "Identity Atlas",
@@ -1957,7 +1963,7 @@ def test_runtime_renders_the_real_bridge_government_fact_block_for_an_irdm_selec
 ])
 def test_mobile_panel_keyboard_regressions(tmp_path: Path, case: str) -> None:
     runtime = _page_runtime_js()
-    start = runtime.index("  // One active mobile panel;")
+    start = runtime.index("  var mobileSheet=null,overlayOverflow=null;")
     end = runtime.index("  function rowKeys(", start)
     functions = runtime[start:end]
     for name in ("openEvidenceDrawer", "closeDrawer"):
@@ -2086,7 +2092,7 @@ guardOverlayFocus({target:elements.workspaceUnlock});assert.equal(document.activ
 
 
 def test_mobile_panel_handlers_are_on_the_real_user_path() -> None:
-    for source in (TEMPLATE, SITE):
+    for source in (TEMPLATE, SITE + "\n" + SITE_RUNTIME):
         assert "$('filterOpen').addEventListener('click',openMobileFilters)" in source
         assert "document.addEventListener('keydown',pageKeys)" in source
         assert "document.addEventListener('focusin',guardOverlayFocus)" in source
@@ -2096,7 +2102,7 @@ def test_mobile_panel_handlers_are_on_the_real_user_path() -> None:
 
 
 def test_native_select_labels_never_use_dual_language_spans() -> None:
-    for source in (TEMPLATE, SITE):
+    for source in (TEMPLATE, SITE + "\n" + SITE_RUNTIME):
         for option in re.findall(r"<option\b[^>]*>(.*?)</option>", source, re.S):
             assert '<span class="l-' not in option
             assert "{{ t(" not in option
@@ -2114,3 +2120,13 @@ def test_source_drawer_stacking_is_above_mobile_parent() -> None:
     css_files = [ROOT / "site/assets/css" / f"{digest}.css" for digest in refs]
     css = next(path for path in css_files if ".drawer-backdrop.above-mobile-sheet" in path.read_text())
     assert hashlib.sha256(css.read_bytes()).hexdigest()[:8] == css.stem
+
+
+def test_deferred_tool_sources_remain_ordered_sync_assets_after_typed_finance():
+    for name in ("government-revenue-briefcase.js", "government-revenue-briefcase-ui.js", "government-revenue-dossiers.js"):
+        assert "'" + name + "'" in STARTER
+    assert "script.async=false" in STARTER
+    assert "script.setAttribute('data-sync','')" in STARTER
+    assert "Promise.resolve(initial.promise).then(" in STARTER
+    assert "page.type='module'" in STARTER
+    assert "page.src='government-revenue-page.js'" in STARTER

@@ -63,6 +63,14 @@ def reference_fingerprint(ref,rail,owner,as_of):
  elif kind=='company_intelligence':
   dependencies={k:p[k] for k in ('issuer','event_id','fiscal_period','lifecycle')}
   dependencies['sources']=[x for x in p['sources'] if x.get('document_id')==(node.get('source_span') or {}).get('document_id')]
+ if kind=='defense_economics' and rail=='market_context' and ref['pointer'].endswith('/axes/participation'):
+  # Same exact owner bytes may be replayed at a fresh local read instant.
+  # Bind all native hashes, subject, membership/date/denominator and states.
+  node={k:v for k,v in node.items() if k!='observed_at'}
+  row=dependencies['profile']
+  dependencies['axis'].pop('observed_at',None)
+  dependencies.pop('source_binding',None)  # full group_sources below binds this exact pulse too
+  dependencies['group_sources']={key:{k:v for k,v in p['source_bindings'][key].items() if k!='observed_at'} for key in node['evidence_refs']}
  # Case, budget document and identity leaf include all native stage/clocks/receipts.
  def normalize_transport(value):
   if isinstance(value,dict):return {k:normalize_transport(v) for k,v in value.items()}

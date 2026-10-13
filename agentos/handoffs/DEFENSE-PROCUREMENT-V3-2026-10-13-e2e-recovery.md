@@ -121,3 +121,36 @@ was stale. The performance coordinator is repairing the measured late stylesheet
 discovery, while the acceptance coordinator qualifies useful six-theme existing-owner
 context. Neither old source-only green nor the recovered local test-principal
 browser constitutes final installed/entitled acceptance. Root remains sole writer.
+
+
+### October13 21:33 UTC integrated source and canonical issuer-gap checkpoint
+
+The complete local private financial owner is now generation
+`260310c59f4c5ba6b7afc231`, manifest
+`5f9e5ca3fb624935ca65ec3c4c9677517769a713b765148ae82f9ee291e0faf8`.
+Parent replay verifies all ten prior records, source/lifecycle clocks, aliases
+and facts remain intact; 66 supported facts and ten typed absences are added.
+This local promotion is not upstream financial-owner publication.
+
+The distinct two-issuer August18 price repair completed the incumbent canonical
+publisher and readback at2026-10-13T21:32:33.721290+00:00. Publication receipt
+`800ba7ccc61ee9833762bf3d49debf30c1f9dc08de63990c808ba6f1ec44dae4`
+binds fresh complete owner versions, writer census, exact two-object delta and
+independent21,712-object review. RTX/NOC each preserve1,322 old rows and add one;
+ITA, all21,710 other objects and manifest bytes remain unchanged. A new wider
+research packet requires actual new canonical reads; the37-session packet and
+its wider-horizon refusal remain retained. No research issuance occurred.
+
+The page-local SDK loading correction and14 regression cases against the actual
+shared theme loader are integrated. Canonical publisher stamping gives the SDK
+hint and script one cache key. Source tests pass; the3,000ms final cold-network
+target still requires the new combined generation and ten measurements. The
+shared emitted theme asset is now included on all four publication paths and
+in the generation/committed-output seal. The proof gate's81 cases pass, including
+non-Python fixture/test and shared-output mutation. The combined targeted run
+passed180 cases but exposed25 failures from a test helper anchored to a shortened
+workflow comment; switching that extraction boundary to the actual verification
+command preserved every assertion and all28 publisher-consumer cases then passed.
+The full sealed default candidate suites and committed-generation witness remain
+due. No protected release, installed entitlement, product acceptance or mission
+completion is claimed. Root continues the next ready phase.

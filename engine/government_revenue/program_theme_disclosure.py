@@ -29,7 +29,7 @@ def _source(owner_key,ref,node,title,url,*,program_id=None,issuer_id=None,securi
  return dict(owner_key=owner_key,row_id=ref['row_id'],pointer=ref['pointer'],url=url,title=title,program_id=program_id,issuer_id=issuer_id,security_id=security_id,source_publication_date=None,source_available_at=None,house_known_at=None,documentary_class=None,native_reason_code=None)
 
 
-def _resolve(ref,rail,owners):
+def _resolve(ref,rail,owners,reason_code=None):
  owner=owners[ref['owner_key']];p=owner.payload();node,ancestors=t._pointer(p,ref['pointer']);sources=[]
  if owner.owner_kind=='fms':
   case=next(a for a in reversed(ancestors) if isinstance(a,dict) and a.get('case_key')==ref['row_id'])
@@ -67,13 +67,21 @@ def _resolve(ref,rail,owners):
   return node['canonical_name']+': reviewed ownership path; this is not program workshare.',node['canonical_name']+'：已审查的所有权路径；这不代表项目份额。',sources
  if owner.owner_kind=='defense_economics':
   profile=next(a for a in ancestors if isinstance(a,dict) and 'ticker_display' in a)
-  if rail=='economics':
-   span=node['source_span'];url=_primary(span.get('source_url'),{'www.sec.gov'})
+  if rail=='economics' or rail=='contrary_case' and reason_code=='reported_space_ownership_change':
+   span=node['source_span'];hosts={'www.sec.gov'}
+   if rail=='contrary_case' and profile['issuer_id']=='cik:0000202058':hosts.add('investors.l3harris.com')
+   url=_primary(span.get('source_url'),hosts)
    title=profile['name']+' — '+node['period']+' '+node['fact_class'].replace('_',' ')
    sources=[_source(ref['owner_key'],ref,node,title,url,issuer_id=profile['issuer_id'],security_id=profile['security_id'])]
    binding=p['source_bindings'][node['owner_ref']]
    for item in sources:item.update(source_available_at=binding.get('source_available_at'),house_known_at=binding.get('observed_at'))
-   return profile['name']+': reported segment evidence is available for '+node['period']+'. It is not program workshare or shareholder capture.',profile['name']+'：已有'+node['period']+'报告分部证据。它不代表项目份额或股东获益。',sources
+   if rail=='contrary_case':
+    if node['fact_id'].endswith(':space_business_sale_completed_terms'):
+     return 'L3Harris reports the completed majority sale of its commercial space propulsion, power and electronics businesses; broad space demand cannot be attributed wholly to LHX after the sale. This is ownership context, not a measured revenue loss.','L3Harris披露已完成商业航天推进、电力及电子业务的多数股权出售；出售后不能将广泛航天需求全部归于LHX。这属于所有权背景，未量化收入损失。',sources
+    return 'L3Harris reports approximately 40% retained ownership in Rocketdyne and excludes RS-25 operations from the sale. Ownership share is not program workshare or revenue share.','L3Harris披露保留Rocketdyne约40%的股权，RS-25业务不在出售范围内。股权比例不等于项目份额或收入份额。',sources
+   return profile['name']+': reported segment evidence is available for '+node['period']+'. It is not program workshare or shareholder capture.' ,profile['name']+'：已有'+node['period']+'报告分部证据。它不代表项目份额或股东获益。',sources
+  if rail=='market_context' and ref['pointer'].endswith('/axes/participation'):
+   return 'Shared broad defense-basket context, not a theme-specific portfolio: '+node['summary_en'],'共享广泛国防篮子背景，并非主题专属组合：'+node['summary_zh'],sources
   if rail=='contrary_case':return profile.get('contrary_case') or 'Contrary case not asserted.','相反情形以原发行人财务档案为准；未推断项目份额。',sources
   if rail=='next_event':return profile.get('next_condition') or 'Next issuer condition not asserted.','下一发行人条件以原财务档案为准。',sources
  if owner.owner_kind=='company_intelligence':
@@ -82,6 +90,8 @@ def _resolve(ref,rail,owners):
   security_id=primary[0]['security_id'] if len(primary)==1 else None
   sources=[_source(ref['owner_key'],ref,node,issuer['display_name']+' — '+node['period']+' '+node['metric'].replace('_',' '),_primary(source['url'],{'www.sec.gov'}),issuer_id=issuer['company_id'],security_id=security_id)]
   for item in sources:item.update(source_available_at=p['lifecycle'].get('source_available_at'),house_known_at=p['lifecycle'].get('observed_at'))
+  if rail=='contrary_case':
+   return f"General Dynamics reports Marine Systems unfunded backlog of {node['value']:,.0f} USD million for {node['period']}. This reported category does not establish funded orders, cancellation or forecast revenue.",f"General Dynamics披露{node['period']}Marine Systems未获资金积压订单为{node['value']:,.0f}百万美元。此报告类别不能证明已获资金订单、取消订单或预测收入。",sources
   return issuer['display_name']+': reported segment context for '+node['period']+'; no program allocation is asserted.',issuer['display_name']+'：'+node['period']+'报告分部背景；未断言任何项目分配。',sources
  if owner.owner_kind=='budget':
   doc=next(a for a in ancestors if isinstance(a,dict) and a.get('context_id')==ref['row_id'])
@@ -204,7 +214,7 @@ historical view stays cited, labeled stale, without auto-reminting authority.
    if effective not in ('supported','partial'):missing.append(rail)
    if not fresh:continue
    for ref in item['references']:
-    try:en,zh,refs=_resolve(ref,rail,owners)
+    try:en,zh,refs=_resolve(ref,rail,owners,item['reason_code'])
     except (ValueError,KeyError,StopIteration):
      rail_states[rail]='source_unavailable';missing.append(rail);continue
     sources+=refs
@@ -223,6 +233,9 @@ historical view stays cited, labeled stale, without auto-reminting authority.
   story=_theme_economic_story(theme['theme_id'],resolved)
   missing_en='Unresolved: '+', '.join(RAIL_EN[k] for k in unavailable)+'.' if unavailable else 'All required rails have qualified context.'
   missing_zh='尚未解决：'+ '、'.join(RAIL_ZH[k] for k in unavailable)+'。' if unavailable else '所有必需栏目均有合格背景。'
+  if theme['rails']['market_context']['reason_code']=='shared_defense_basket_not_theme_portfolio':
+   missing_en+=' Theme-specific market membership and returns remain unqualified; the shared basket is broad context only.'
+   missing_zh+=' 主题专属市场成员及回报尚未核实；共享篮子仅为广泛背景。'
   if story:
    missing_en+=' '+story[0];missing_zh+=' '+story[1]
    next_en.append(story[2]);next_zh.append(story[3])

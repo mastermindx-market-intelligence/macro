@@ -16,6 +16,7 @@ from engine.company_intelligence.event_workspace import (
 )
 from engine.company_intelligence.defense_profiles import DEFENSE_TICKERS, SEGMENTS, METRICS, defense_issuer
 from engine.earnings_release.figures import parse_numeric
+from engine.company_intelligence.defense_cash_profiles import financial_fact_rules
 from engine.government_revenue.defense_economics import compose_defense_economics
 from engine.government_revenue.defense_interpretation import build_defense_interpretation
 from engine.government_revenue.defense_government_context import load_government_context_inputs,qualify_government_context
@@ -75,7 +76,11 @@ def _project_fact(fact, workspace, source, *, owner_ref):
     metric=fact.get('metric')
     if fact.get('typed_absence'):return None
     supplement=source.get('kind')=='issuer_supplement'
-    if metric not in _FACT_CLASSES and metric not in _F2_NUMERIC and not supplement:return None
+    ticker=next(t for t in DEFENSE_TICKERS if defense_issuer(t).company_id==workspace['issuer']['company_id'])
+    financial_rules=financial_fact_rules(ticker,workspace['fiscal_period']['year'],workspace['fiscal_period']['quarter'])
+    if isinstance(metric,str) and metric.startswith('issuer_') and metric not in financial_rules:
+        raise ValueError('financial_profile_subject_period_unqualified')
+    if metric not in _FACT_CLASSES and metric not in _F2_NUMERIC and metric not in financial_rules and not supplement:return None
     if fact.get('schema')!='event_fact.v1' or fact.get('event_id')!=workspace['event_id'] or fact.get('fact_id')!=workspace['event_id']+':'+metric:raise ValueError('fact_event_mismatch')
     ticker=next(t for t in DEFENSE_TICKERS if defense_issuer(t).company_id==workspace['issuer']['company_id'])
     period=f"{workspace['fiscal_period']['year']}Q{workspace['fiscal_period']['quarter']}"
@@ -87,6 +92,8 @@ def _project_fact(fact, workspace, source, *, owner_ref):
         fact_class,expected_unit,basis,period_relation=_F2_NUMERIC[metric]
         year=workspace['fiscal_period']['year']-(1 if period_relation=='prior' else 0)
         period=f"{year}Q{workspace['fiscal_period']['quarter']}"
+    if metric in financial_rules:
+        fact_class,expected_unit,basis,period=financial_rules[metric]
     if supplement:
         from engine.company_intelligence.issuer_supplements import _rules,validate_supplement_source
         validate_supplement_source(source,event_id=workspace['event_id'])
@@ -182,7 +189,7 @@ def build_defense_economics_payload(root, *, generated_at=None, as_of=None, owne
         for fact in workspace['facts']:
             fact_source=source_by_document.get((fact.get('source_span') or {}).get('document_id'))
             if fact_source is None:
-                if fact.get('metric') in _FACT_CLASSES or fact.get('metric') in _F2_NUMERIC or fact.get('metric') in _SUPPLEMENT_METRICS:
+                if fact.get('metric') in _FACT_CLASSES or fact.get('metric') in _F2_NUMERIC or fact.get('metric') in _SUPPLEMENT_METRICS or str(fact.get('metric','')).startswith('issuer_'):
                     if not fact.get('typed_absence'):raise ValueError('financial_fact_source_document_unbound')
                 continue
             fact_ref=ref
@@ -214,8 +221,11 @@ def build_defense_economics_payload(root, *, generated_at=None, as_of=None, owne
             'next_condition':'Confirm contract scope and margin evidence; watch the next company report; review observed market response separately.',
             'invalidation':'Source revision, issuer/security mismatch, or a failed byte receipt invalidates the quoted fact.'}
     if 'NOC' in inputs and any(f['fact_id'].endswith(':siaw_unfavorable_eac') for f in inputs['NOC']['axes']['economics']['facts']):
-        inputs['NOC']['contrary_case']='The issuer reports a $68 million unfavorable SiAW EAC adjustment in Q2 2026; the $76 million favorable Sentinel comparison belongs to Q2 2025.'
-        inputs['NOC']['contrary_case_zh']='发行人报告2026年第二季SiAW有6,800万美元不利EAC调整；7,600万美元有利Sentinel调整属于2025年第二季对比期。'
+        index={f['fact_id'].rsplit(':',1)[-1]:f for f in inputs['NOC']['axes']['economics']['facts']}
+        adverse=index.get('siaw_unfavorable_eac');prior=index.get('sentinel_prior_favorable_eac')
+        if adverse is not None and prior is not None:
+            inputs['NOC']['contrary_case']=f"The issuer reports a ${format(adverse['value'],',g')} million unfavorable SiAW EAC adjustment in {adverse['period'][4:]} {adverse['period'][:4]}; the ${format(prior['value'],',g')} million favorable Sentinel comparison belongs to {prior['period'][4:]} {prior['period'][:4]}."
+            inputs['NOC']['contrary_case_zh']=f"发行人报告{adverse['period']}SiAW有{format(adverse['value'],',g')}百万美元不利EAC调整；{format(prior['value'],',g')}百万美元有利Sentinel调整属于{prior['period']}对比期。"
     if 'LHX' in inputs and any(f['fact_id'].endswith(':space_business_sale_completed_terms') for f in inputs['LHX']['axes']['economics']['facts']):
         inputs['LHX']['contrary_case']='Preferred payout and conditional conversion terms affect common-shareholder transmission. The completed space-business sale has a different scope and value basis from the prior pending transaction.'
         inputs['LHX']['contrary_case_zh']='优先股支付及有条件转换条款影响普通股股东获益路径。已完成航天业务出售的范围及价值口径，与此前待完成交易分别记录。'

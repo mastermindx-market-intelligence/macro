@@ -22,7 +22,7 @@ RAILS = ('funding_stage','exposure','economics','market_context','contrary_case'
 STATES = ('supported','partial','stale','unreviewed','not_asserted','projection_missing','source_unavailable','blocked')
 AUTHORITY = dict(tier='display',context_only=True,can_rank=False,can_size=False,can_gate=False,can_originate_signal=False,can_add_candidates=False,can_escalate=False)
 CONTRACTS = {'program_ontology':{'government_program_ontology.v1'},'program_dossier':{'government_program_dossier.v1'},'identity_atlas':{'government_revenue_identity_atlas.v1'},'fms':{'government_fms_case.v1'},'budget':{'government_budget_program_graph.v1'},'defense_economics':{'defense_economics.v1'},'company_intelligence':{'event_workspace.v1'}}
-ALLOWED = {'funding_stage':{'fms','budget','program_ontology'},'exposure':{'program_ontology','identity_atlas','fms'},'economics':{'defense_economics','company_intelligence'},'market_context':{'defense_economics'},'contrary_case':{'fms','defense_economics','program_dossier'},'next_event':{'program_ontology','fms','defense_economics'}}
+ALLOWED = {'funding_stage':{'fms','budget','program_ontology'},'exposure':{'program_ontology','identity_atlas','fms'},'economics':{'defense_economics','company_intelligence'},'market_context':{'defense_economics'},'contrary_case':{'fms','defense_economics','program_dossier','company_intelligence'},'next_event':{'program_ontology','fms','defense_economics'}}
 CLOCKS = {'known_at','graph_known_at','observed_at','retrieved_at','first_observed_at','generated_at','source_available_at'}
 IDS = {'id','case_key','fact_id','entity_id','issuer_id','coverage_id','evidence_id','observation_id','link_id','event_id','context_id'}
 
@@ -137,7 +137,16 @@ def _ref(ref,rail,owners,cutoff):
  if rail=='economics' and owner.owner_kind=='defense_economics':
   axis,_=_pointer(p,ref['pointer'].split('/facts/')[0])
   if axis.get('state') not in ('supported','partial','stale'): raise ValueError('economic_axis_unqualified')
- if rail=='market_context' and not any(x in ref['pointer'] for x in ('/axes/recognition/price_response','/axes/recognition/valuation_scenario')): raise ValueError('market_owner_leg_required')
+ if rail=='contrary_case' and owner.owner_kind=='company_intelligence':
+  # New financial fact references use the existing provenance checks.
+  # Legacy FMS/program-dossier and profile-context references keep their contract.
+  _ref(ref,'economics',owners,cutoff)
+ if rail=='market_context':
+  basket=ref['pointer'].endswith('/axes/participation')
+  if basket:
+   required={'basket_context_not_issuer_alpha','current_membership_not_historical_first_seen','activity_not_capital_flow','capital_concentration_not_measured','no_scientific_or_rights_reclassification'}
+   if not isinstance(node,dict) or node.get('reason_code')!='current_basket_market_participation' or not required<=set(node.get('limitations',[])) or not str(node.get('owner_ref','')).startswith('group_pulse:defense:pulse:') or len(node.get('evidence_refs',[]))!=3 or {str(x).split(':')[2] for x in node['evidence_refs'] if str(x).startswith('group_pulse:defense:')}!={'membership','pulse','baskets'} or not all(str(x).rsplit(':',1)[-1]==row.get('ticker_display') and p['source_bindings'].get(x,{}).get('owner_family')=='group_reads' for x in node['evidence_refs']):raise ValueError('shared_basket_owner_required')
+  elif not any(x in ref['pointer'] for x in ('/axes/recognition/price_response','/axes/recognition/valuation_scenario')):raise ValueError('market_owner_leg_required')
  if rail=='exposure' and owner.owner_kind=='fms' and ref['pointer'].endswith('/contractors'): raise ValueError('exposure_requires_individual_review')
  return row,node
 
@@ -178,7 +187,15 @@ def compose_program_theme_context(assignments,*,owners,generated_at,as_of):
     if rail=='economics' and owners[ref['owner_key']].owner_kind=='defense_economics':
      axis,_=_pointer(owners[ref['owner_key']].payload(),ref['pointer'].split('/facts/')[0])
      if axis['state']=='stale' and item['state'] in ('supported','partial'): raise ValueError('stale_finance_promotion')
-    if rail=='market_context' and item['state']=='supported' and (not isinstance(node,dict) or node.get('state')!='supported'): raise ValueError('market_state_promotion')
+    if rail=='contrary_case' and (owners[ref['owner_key']].owner_kind=='company_intelligence' or owners[ref['owner_key']].owner_kind=='defense_economics' and item['reason_code'] in ('reported_space_ownership_change','reported_unfunded_backlog_category')):
+     _ref(ref,'economics',owners,cutoff)
+     allowed={'space':('reported_space_ownership_change',{'evt_cik0000202058_2026q2_results:space_business_sale_completed_terms','evt_cik0000202058_2026q2_results:space_business_sale_retained_scope'}),'shipbuilding':('reported_unfunded_backlog_category',{'evt_cik0000040533_2026q2_results:marine_unfunded_backlog'})}
+     if theme not in allowed or item['state'] not in ('partial','stale') or item['reason_code']!=allowed[theme][0] or ref['row_id'] not in allowed[theme][1]:raise ValueError('theme_contrary_fact_scope_invalid')
+    if rail=='market_context' and ref['pointer'].endswith('/axes/participation'):
+     if item['reason_code']!='shared_defense_basket_not_theme_portfolio' or item['state'] not in ('partial','stale'):raise ValueError('shared_basket_theme_promotion')
+     if node.get('state')=='stale' and item['state']!='stale':raise ValueError('stale_basket_promotion')
+     if node.get('state') not in ('partial','stale'):raise ValueError('shared_basket_state_invalid')
+    if rail=='market_context' and item['state']=='supported'  and (not isinstance(node,dict) or node.get('state')!='supported'): raise ValueError('market_state_promotion')
     if rail=='exposure' and item['state']=='supported':
      if owners[ref['owner_key']].owner_kind=='program_ontology':
       from engine.government_revenue import program_ontology as po

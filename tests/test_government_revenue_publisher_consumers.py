@@ -17,6 +17,8 @@ DERIVED_PATHS = (
     'site/government-revenue-data/defense-economics.json',
     'site/government-revenue-data/research-state.json',
     'site/government-revenue-investor.js', 'site/government-revenue-investor.css',
+    'site/government-revenue-investor-start.js', 'site/government-revenue-page.js',
+    'site/government-revenue-critical-theme.css', 'site/theme.js',
     'site/government-revenue-sbir.js', 'site/government-revenue-sbir.css',
     'site/government-revenue-briefcase.js', 'site/government-revenue-briefcase-ui.js',
     'site/government-revenue-parity.css', 'site/government-revenue-dossiers.js',
@@ -51,7 +53,7 @@ def _calls(script, command):
 
 def _staging_blocks():
     run = _commit_run()
-    initial = run[run.index('stage_candidates=('):run.index('# Seal the entire')]
+    initial = run[run.index('stage_candidates=('):run.index('python scripts/ci/govrev_candidate_proof.py verify')]
     retry = run[run.index('while push_attempt; do'):]
     clean = _calls(run, 'push_staged_clean')
     assert len(clean) == 2
@@ -108,6 +110,9 @@ def test_consumer_only_change_cannot_false_skip_publication(tmp_path, changed):
     'data/government_revenue/candidate_research_state.json',
     'site/government-revenue-data/defense-economics.json',
     'site/government-revenue-investor.js',
+    'site/government-revenue-investor-start.js',
+    'site/government-revenue-page.js',
+    'site/government-revenue-critical-theme.css', 'site/theme.js',
 ))
 def test_retry_stage_carries_derived_and_copied_assets(tmp_path, changed):
     root = _repo(tmp_path)
@@ -168,5 +173,16 @@ def test_consumer_source_changes_trigger_the_existing_lane_without_output_loop()
     assert 'engine/earnings_release/**' in triggers
     for path in DERIVED_PATHS:
         if path.endswith(('.js', '.css')):
-            assert path.replace('site/', 'templates/', 1) in triggers
+            source = path.replace('site/', 'templates/', 1)
+            if path == 'site/government-revenue-page.js':
+                source += '.j2'
+            if path == 'site/government-revenue-critical-theme.css':
+                assert path not in triggers
+                assert {'templates/theme.css', 'templates/product-nav-icons.css',
+                        'templates/government-revenue-sbir.css',
+                        'templates/government-revenue-investor.css',
+                        'templates/government-revenue-theme-context.css',
+                        'templates/government-revenue-parity.css'} <= set(triggers)
+                continue
+            assert source in triggers
         assert path not in triggers

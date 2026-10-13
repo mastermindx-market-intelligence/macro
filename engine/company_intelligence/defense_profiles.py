@@ -149,7 +149,7 @@ def _lhx_reported_operating_income(bound,fiscal_period):
     # consolidated Segment Results table reports it. Qualify that table's
     # own current quarter/year/units, never derive income from margin.
     tables=[b for b in bound.document.blocks if b.table and all(t in b.text for t in
-        ('Second Quarter','Missile Solutions','Segment operating income','Operating income'))]
+        ('Missile Solutions','Segment operating income','Operating income'))]
     if len(tables)!=1:raise ValueError('LHX_reported_income_table_missing_or_ambiguous')
     table=tables[0];period,bounds,positions=_current_column(table,'LHX')
     if period!=fiscal_period:raise ValueError('LHX_reported_income_period_mismatch')
@@ -199,10 +199,15 @@ def extract_segment_facts(*, ticker, bound, document_id, event_id, fiscal_period
     return output
 
 
+def _extract_defense_facts(*, ticker, **kwargs):
+    from engine.company_intelligence.defense_cash_profiles import extract_financial_facts
+    return extract_segment_facts(ticker=ticker, **kwargs)+extract_financial_facts(ticker=ticker, **kwargs)
+
+
 def defense_profile(ticker):
     if ticker not in SEGMENTS:raise ValueError('issuer_not_in_defense_cohort')
     return IssuerProfile(ticker=ticker,
-        extract_release_facts=lambda **kwargs:extract_segment_facts(ticker=ticker,**kwargs),
+        extract_release_facts=lambda **kwargs:_extract_defense_facts(ticker=ticker,**kwargs),
         extract_transcript_claims=lambda **kwargs:[],extract_guidance=lambda **kwargs:[])
 
 # Frozen identity facts verified against each issuer's SEC submissions JSON

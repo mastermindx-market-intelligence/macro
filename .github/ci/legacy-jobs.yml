@@ -18668,6 +18668,8 @@ jobs:
       - "templates/government-revenue-briefcase-ui.js"
       - "tests/test_government_revenue_defense_owner_adapter.py"
       - "tests/test_defense_refresh_cohort.py"
+      - "tests/test_defense_reported_financial_profiles.py"
+      - "engine/company_intelligence/defense_cash_profiles.py"
       - "tests/fixtures/company_intelligence/defense/**"
       - "tests/test_government_revenue_publisher_consumers.py"
       - "tests/test_defense_recognition_market_clocks.py"
@@ -18684,6 +18686,7 @@ jobs:
       - "tests/test_government_revenue_research_state.py"
       - "tests/test_government_revenue_research_report_clock.py"
       - "tests/test_government_revenue_price_source_binding.py"
+      - "tests/test_government_revenue_issuer_price_pin.py"
       - "engine/government_revenue/price_panel_adapter.py"
       - "tests/test_government_revenue_publication_ack.py"
       - "tests/fixtures/government_revenue_candidate_queue_20260901.json.gz"
@@ -18730,6 +18733,13 @@ jobs:
       - "tests/test_government_revenue_identity_subject_journey.py"
       - "tests/test_government_revenue_identity_context_clock.py"
       - "tests/test_government_revenue_html_packaging.py"
+      - "templates/government-revenue-page.js.j2"
+      - "templates/government-revenue-investor-start.js"
+      - "tests/test_government_revenue_priority.py"
+      - "tests/test_government_revenue_priority.cjs"
+      - "tests/test_shared_theme_progressive_loader.py"
+      - "tests/test_shared_theme_progressive_loader.cjs"
+      - "templates/theme.js"
       - "tests/fixtures/government_revenue/archetypes/**"
     timeout-minutes: 8
     runs-on: ubuntu-latest
@@ -18774,13 +18784,13 @@ jobs:
       - name: Tenant isolation and immutable reader selection
         run: python -m pytest tests/test_government_revenue_briefcase_ui.py tests/test_government_revenue_reader_identity.py tests/test_government_revenue_api.py tests/test_government_revenue_api_auth.py -q
       - name: Qualified issuer segment facts and owner refresh
-        run: python -m pytest tests/test_government_revenue_defense_owner_adapter.py tests/test_defense_refresh_cohort.py -q
+        run: python -m pytest tests/test_government_revenue_defense_owner_adapter.py tests/test_defense_refresh_cohort.py tests/test_defense_reported_financial_profiles.py -q
       - name: Adverse evidence, ownership terms and complete source retention
         run: python -m pytest tests/test_noc_adverse.py tests/test_gd_profile.py tests/test_issuer_supplements.py tests/test_industrial_refresh.py tests/test_complete_owner_refresh.py tests/test_f2_composition.py tests/test_lhx_reported_income.py -q
       - name: Defense economics source binding and entitled read boundary
         run: python -m pytest tests/test_government_revenue_defense_economics.py tests/test_defense_recognition_owner_guards.py tests/test_defense_recognition_market_clocks.py tests/test_government_revenue_asset_publication.py tests/test_defense_interpretation.py tests/test_defense_government_context.py tests/test_defense_participation_context.py -q
       - name: Registered research state and durable acknowledgement boundaries
-        run: python -m pytest tests/test_government_revenue_research_state.py tests/test_government_revenue_research_report_clock.py tests/test_government_revenue_publication_ack.py tests/test_government_revenue_price_source_binding.py -q
+        run: python -m pytest tests/test_government_revenue_research_state.py tests/test_government_revenue_research_report_clock.py tests/test_government_revenue_publication_ack.py tests/test_government_revenue_price_source_binding.py tests/test_government_revenue_issuer_price_pin.py -q
       - name: Program filter and URL state regression
         run: python -m pytest tests/test_government_revenue_program_filters.py tests/test_government_revenue_filter_url.py -q
       - name: SBIR browser consumer hostile cases
@@ -18789,11 +18799,11 @@ jobs:
       - name: Canonical market owner and point-in-time joint producer
         run: python -m pytest tests/test_defense_market_context.py tests/test_defense_market_producer_integration.py -q
       - name: Six-theme official source and reviewed disclosure contracts
-        run: python -m pytest tests/defense_o2_source_contracts/test_budget_allocation_context.py tests/defense_o2_source_contracts/test_nato_policy_extension.py tests/defense_o2_source_contracts/test_program_theme_context.py tests/defense_o2_source_contracts/test_program_theme_disclosure.py tests/defense_o2_source_contracts/test_program_theme_reviewed_builder.py tests/defense_o2_source_contracts/test_t0_reviewed_loader.py tests/defense_o2_source_contracts/test_program_theme_runtime_wiring.py tests/test_theme_economic_interpretation.py tests/defense_o2_source_contracts/test_theme_same_generation.py -q
+        run: python -m pytest tests/defense_o2_source_contracts/test_budget_allocation_context.py tests/defense_o2_source_contracts/test_nato_policy_extension.py tests/defense_o2_source_contracts/test_program_theme_context.py tests/defense_o2_source_contracts/test_program_theme_disclosure.py tests/defense_o2_source_contracts/test_program_theme_reviewed_builder.py tests/defense_o2_source_contracts/test_program_theme_owner_bridge.py tests/defense_o2_source_contracts/test_t0_reviewed_loader.py tests/defense_o2_source_contracts/test_program_theme_runtime_wiring.py tests/test_theme_economic_interpretation.py tests/defense_o2_source_contracts/test_theme_same_generation.py -q
       - name: Ownership and foreign listing source-context journeys
         run: python -m pytest tests/test_government_revenue_archetype_context.py tests/test_government_revenue_archetype_ui.py tests/test_government_revenue_identity_subject_journey.py tests/test_government_revenue_identity_context_clock.py -q
       - name: Government Revenue HTML packaging preserves content and runtime
-        run: python -m pytest tests/test_government_revenue_html_packaging.py -q
+        run: python -m pytest tests/test_government_revenue_html_packaging.py tests/test_government_revenue_priority.py tests/test_shared_theme_progressive_loader.py -q
 
   unrun-government-revenue:
     # Government Revenue Foresight — builder envelope, publication fence,

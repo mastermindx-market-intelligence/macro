@@ -81,6 +81,7 @@ DEFAULT_CANDIDATE_PATHS = (
 )
 #: The byte-identical public twin of the queue; the proof covers it too.
 DEFAULT_PUBLIC_TWIN = "site/government-revenue-data/candidates.json"
+SHARED_OUTPUT_PATHS = ("site/theme.js",)
 #: The suites the armed gate (DEC:GOVREV-CANDIDATE-PROOF-GATE-ARMED) named.
 #: Altering this list is altering the proof, not an implementation detail.
 DEFAULT_SUITES = (
@@ -102,6 +103,7 @@ SOURCE_DEPENDENCY_GLOBS = (
     "config/**/*", "contracts/**/*", "engine/government_revenue/**/*.py", "engine/company_intelligence/**/*.py", "engine/earnings_release/**/*.py",
     "scripts/**/*.py", "scripts/**/*.sh", "lib/**/*.py", "collectors/**/*.py",
     "app/**/*.py", "app/requirements*.txt", "templates/**/*", "tests/**/*.py",
+    "tests/**/*.js", "tests/**/*.cjs", "tests/fixtures/government_revenue/**/*",
     "data/usaspending/**/*", "requirements*.txt", "pytest.ini", "pyproject.toml",
     "setup.cfg", "conftest.py", ".github/workflows/government-revenue-live.yml",
     "research/GOVERNMENT_REVENUE_CANDIDATE_GRADER_PREREG.md",
@@ -128,6 +130,7 @@ MATERIAL_PREFIXES = (
     "site/government-revenue-data/",
     "site/government_revenue",
     "site/government-revenue-",
+    "site/theme.js",
     ".github/workflows/government-revenue-live.yml",
     "research/GOVERNMENT_REVENUE_CANDIDATE_GRADER_PREREG.md",
     ".github/workflows/daily.yml", ".github/workflows/fms-acquire.yml",
@@ -498,6 +501,8 @@ def _tree_identity(
                 outputs[path.relative_to(root).as_posix()] = _sha256_bytes(path.read_bytes())
     page = "site/government_revenue.html"
     outputs[page] = _file_digest(root, page) or "absent"
+    for path in SHARED_OUTPUT_PATHS:
+        outputs[path] = _file_digest(root, path) or "absent"
     dependencies = _hash_files(root, _source_dependency_paths(root))
     # Include root discovery/config files even when absent, and the full prover.
     dependencies.update(_hash_files(root, ("pytest.ini", "pyproject.toml", "setup.cfg", "conftest.py")))
@@ -733,7 +738,7 @@ def _committed_generation(root: Path, receipt: dict, commit: str) -> dict:
         if not row:
             continue
         metadata_row, relative = row.split("\t", 1)
-        static = (relative.startswith("site/government-revenue-") or relative.startswith("site/government_revenue")) and Path(relative).suffix in (".js", ".css", ".html")
+        static = relative in SHARED_OUTPUT_PATHS or (relative.startswith("site/government-revenue-") or relative.startswith("site/government_revenue")) and Path(relative).suffix in (".js", ".css", ".html")
         if not (relative.startswith("data/government_revenue/") or relative.startswith("site/government-revenue-data/") or static):
             continue
         mode, kind, oid = metadata_row.split()

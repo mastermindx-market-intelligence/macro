@@ -449,7 +449,8 @@ def test_patched_workflow_gates_publication_through_the_proof_helper() -> None:
 
 @pytest.mark.parametrize("path", ["data/government_revenue/sbir_progression.json",
     "data/government_revenue/defense_economics.json", "site/government-revenue-data/sbir-progression.json",
-    "site/government-revenue-data/defense-economics.json", "site/government_revenue.html"])
+    "site/government-revenue-data/defense-economics.json", "site/government_revenue.html",
+    "site/theme.js"])
 def test_complete_generation_covers_new_derived_bytes(tmp_path, path):
     root = _proof_tree(tmp_path)
     (root / path).parent.mkdir(parents=True, exist_ok=True)
@@ -462,7 +463,13 @@ def test_complete_generation_covers_new_derived_bytes(tmp_path, path):
     assert result.returncode == EXIT_WITNESS_MISMATCH
 
 
-@pytest.mark.parametrize("target", ["site/government-revenue-data/candidates.json", "app/govrev.py", "templates/govrev.html", "tests/test_proof_gate_suite.py"])
+@pytest.mark.parametrize("target", [
+    "site/government-revenue-data/candidates.json", "app/govrev.py",
+    "templates/govrev.html", "tests/test_proof_gate_suite.py",
+    "site/theme.js",
+    "tests/fixtures/government_revenue/issuance_incident_5fc18d5/candidate_queue.json",
+    "tests/test_government_revenue_priority.cjs",
+])
 def test_source_and_public_mutations_during_prove_refuse(tmp_path, target):
     body = "from pathlib import Path\ndef test_hostile():\n    p=Path(" + repr(target) + ")\n    p.parent.mkdir(parents=True, exist_ok=True)\n    p.write_text('hostile')\n"
     root = _proof_tree(tmp_path, suite_body=body)

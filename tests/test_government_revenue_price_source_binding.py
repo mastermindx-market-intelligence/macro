@@ -2,7 +2,7 @@
 
 Every price, dividend, source response, receipt and split below is fabricated
 for protocol testing. Only the private digest seam is patched within pytest;
-production retains its one reviewed-packet pin and has no digest override API.
+production retains fixed reviewed-packet pins and has no digest override API.
 """
 from pathlib import Path
 from datetime import date,datetime,timezone
@@ -19,7 +19,7 @@ spec=importlib.util.spec_from_file_location('grv_price_bound_loader',ROOT/'engin
 a=importlib.util.module_from_spec(spec);spec.loader.exec_module(a)
 
 
-def synthetic_packet(root):
+def synthetic_packet(root, fixture_symbols=None):
     """Generate entirely synthetic data at runtime; no external artifact reads."""
     root.mkdir()
     objects={}
@@ -32,7 +32,7 @@ def synthetic_packet(root):
     dates=nyse_calendar.sessions_between(date(2026,6,1),date(2026,10,9))
     clock='2026-10-13T08:00:00+00:00';ns=int(datetime.fromisoformat(clock).timestamp()*1e9)
     symbols=[];requests=[]
-    for j,symbol in enumerate(['SYN_A','SYN_B']):
+    for j,symbol in enumerate(fixture_symbols or ['SYN_A','SYN_B']):
         prices={d:100.+j*20+i/10 for i,d in enumerate(dates)}
         ex_dates=([date(2026,6,15),date(2026,7,15),date(2026,8,17),date(2026,9,15)] if j==0
                   else [date(2026,6,16),date(2026,8,17),date(2026,9,16)])

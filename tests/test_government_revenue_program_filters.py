@@ -21,6 +21,8 @@ import pytest
 
 ROOT = Path(__file__).resolve().parents[1]
 TEMPLATE = (ROOT / "templates" / "government_revenue.html.j2").read_text(encoding="utf-8")
+CONTROLLER = (ROOT / "templates" / "government-revenue-page.js.j2").read_text(encoding="utf-8")
+TEMPLATE += "\n<script>" + CONTROLLER + "</script>"
 HAS_NODE = shutil.which("node") is not None
 needs_node = pytest.mark.skipif(not HAS_NODE, reason="node not on PATH")
 
@@ -38,10 +40,8 @@ DEEP_LINK = "?mode=programs&item=program%3APHAASE-77&ticker=LMT"
 
 
 def _page_runtime_js() -> str:
-    blocks = re.findall(r"<script(?![^>]*\bsrc=)[^>]*>(.*?)</script>", TEMPLATE, re.S)
-    runtime = next((block for block in blocks if "__hydrateGovernmentWorkspace" in block), None)
-    assert runtime is not None, "Government Revenue page runtime is missing"
-    return runtime
+    assert '__hydrateGovernmentWorkspace' in CONTROLLER
+    return CONTROLLER
 
 
 def _program_row() -> dict:
@@ -63,6 +63,7 @@ def _program_row() -> dict:
 
 _HARNESS = textwrap.dedent(
     """
+    (async function(){
     var OPTS = %(opts)s;
     var RUNTIME = %(runtime)s;
     var listeners = {};
@@ -100,7 +101,7 @@ _HARNESS = textwrap.dedent(
       pathname:'/government_revenue.html', search:OPTS.search, hash:''};
     var history = {replaceState:function(_s,_t,url){urlRecords.push(String(url))}};
     var navigator = {clipboard:null};
-    var window = {location:location, history:history, navigator:navigator, innerWidth:1440,
+    var window = {MDXAuth:{enabled:function(){return false},onChange:function(){}},location:location, history:history, navigator:navigator, innerWidth:1440,
       addEventListener:function(){}, dispatchEvent:function(){return true}};
     function mountProgramFactory(){
       window.createGovernmentRevenueProgramDossier = function(api){
@@ -131,7 +132,7 @@ _HARNESS = textwrap.dedent(
         try{t.fn()}catch(e){console.error('timer threw',e&&e.stack||e)}
       }
     }
-    function wait(ms){var end=Date.now()+ms;while(Date.now()<end){runDue()}}
+    async function wait(ms){await new Promise(function(resolve){require('timers').setTimeout(resolve,ms)});runDue();}
     function lastUrlParams(){
       var search = urlRecords.length ? String(urlRecords[urlRecords.length-1]).split('?')[1] || '' : '';
       var out = {};
@@ -155,13 +156,14 @@ _HARNESS = textwrap.dedent(
     }
     mountProgramFactory();
     eval(RUNTIME);
-    wait(40);
+    await wait(40);
     var first = snapshot();
     if (OPTS.clickClear) fire('clearProgramFilters', 'click');
-    wait(40);
+    await wait(40);
     var second = snapshot();
-    if (OPTS.reEmit) { global.__emitProgram(); wait(40); }
+    if (OPTS.reEmit) { global.__emitProgram(); await wait(40); }
     process.stdout.write(JSON.stringify({first: first, second: second, third: snapshot()}));
+    })().catch(function(error){console.error(error);process.exitCode=1});
     """
 )
 

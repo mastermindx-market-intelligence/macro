@@ -873,7 +873,7 @@
       });
     }
     function bindAuthReload(){
-      function onAuth(){markAuthSettled();load();}
+      function onAuth(){markAuthSettled();if(api.authReloadOwner){loadEpoch++;listing=null;contentId=null;loadState='loading';if(typeof api.onRows==='function')api.onRows([],{status:'loading',content_id:null,total:0});return;}load();}
       if(global.MDXAuth&&typeof global.MDXAuth.onChange==='function')global.MDXAuth.onChange(onAuth);
       else if(typeof global.addEventListener==='function')global.addEventListener('mdx-auth',onAuth);
     }
@@ -1245,7 +1245,7 @@
       });
     }
     function bindAuthReload(){
-      function onAuth(){markAuthSettled();load();}
+      function onAuth(){markAuthSettled();if(api.authReloadOwner){loadEpoch++;listing=null;contentId=null;loadState='loading';if(typeof api.onRows==='function')api.onRows([],{status:'loading',content_id:null,total:0});return;}load();}
       if(global.MDXAuth&&typeof global.MDXAuth.onChange==='function')global.MDXAuth.onChange(onAuth);
       else if(typeof global.addEventListener==='function')global.addEventListener('mdx-auth',onAuth);
     }

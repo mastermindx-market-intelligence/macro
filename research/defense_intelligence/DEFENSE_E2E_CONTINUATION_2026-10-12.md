@@ -632,3 +632,89 @@ was stale. The performance coordinator is repairing the measured late stylesheet
 discovery, while the acceptance coordinator qualifies useful six-theme existing-owner
 context. Neither old source-only green nor the recovered local test-principal
 browser constitutes final installed/entitled acceptance. Root remains sole writer.
+
+### October13 integrated source and newly demonstrated gaps
+
+Root integrated the reviewed financial-depth contribution (patch
+`c8934affd7bd2b57e226646728c44549dcff2671eeece364ed4dcc4c8539e183`) and the
+compatible six-theme owner bridge (patch
+`fdb114de673e9720ba359bac40de59cbae5dc110dcb2baef13670fc532a1d863`).
+The combined existing and new financial/theme source checks pass 173 cases.
+The 66 additional retained-source facts preserve quarter/H1 duration, signed
+cash, reported backlog stock, forecast guidance and each issuer's accounting
+basis. Parent review found and repaired a selected-cell guidance unit gap;
+LHX's explicit B suffix is required before admitting a billion-dollar fact.
+Existing FMS and program-dossier contrary-reference contracts remain valid.
+Shared defense-basket context never becomes a theme portfolio. All six theme
+sufficiency verdicts remain subject to their actual missing evidence.
+
+The separate four-issuer fixed price packet
+`7102c64fbf97f88ae567a6a1facf0835d7dc29f440819f00d70eedce66b46283`
+passes the sole public loader for 37 sessions and sixteen factor witnesses;
+25 synthetic source/scope checks pass. Root qualification is
+`e259c2aaa4fc0308e512b4367d61263dd313aacdd846ec9c273f2880cb38d2fc`.
+Its 258-session request correctly refuses missing August18 RTX/NOC rows.
+Both rows were subsequently reproduced from the original retained grouped
+source body without another acquisition. A new isolated complete-owner mirror
+preserves all 1,322 prior rows for each issuer, ITA and all other objects, the
+global state and manifest; the standard publisher dry run changes only two
+objects. Canonical publication and a distinct future packet remain separate.
+
+An additional mutation test demonstrated that non-Python test fixtures and
+JavaScript test sources were omitted from the proof dependency inventory.
+The original probe preserved two false-green results. Adding these inputs
+closes that gap; all 79 proof-guard checks pass. The subsequent performance
+integration emits the canonical shared theme.js as well as page assets, so
+its publication/committed-output seal is being extended to those exact bytes.
+That later change still requires its affected checks and the final unfiltered
+generation proof. Historical publisher reconciliation rows are unchanged.
+
+Actual retained hierarchy/cost observation
+`5f08c50b9bf79db661f85a38983eaf47b11b8115d9b7e5cdf1dacd7d243306ea`
+verifies 17 native root/child sessions and their served models, plus 16 unique
+original-root Fabric rows at the observation cutoff. Seven Fabric runs have
+recorded acceptance; fifteen lack token metering. Latest-row deduplication
+prevents counting execution and acceptance rows twice. Actual total USD and
+cost per accepted outcome remain unavailable, not zero. These are cumulative
+token observations including cached input, not a billing estimate or final
+mission cost; work and unsettled original effects continue.
+
+Source extraction and canonical CSS packaging are integrated, but the actual
+declared cold-network timing remains RED. The coordinator has identified
+duplicate vendor-script loading after publisher URL stamping and is preparing
+a bounded page-local correction. No protected release, new financial-owner
+promotion, final generation proof, installed acceptance, forecast issuance or
+research efficacy is claimed. **MISSION_COMPLETE=false.**
+
+
+### October13 21:33 UTC integrated source and canonical issuer-gap checkpoint
+
+The complete local private financial owner is now generation
+`260310c59f4c5ba6b7afc231`, manifest
+`5f9e5ca3fb624935ca65ec3c4c9677517769a713b765148ae82f9ee291e0faf8`.
+Parent replay verifies all ten prior records, source/lifecycle clocks, aliases
+and facts remain intact; 66 supported facts and ten typed absences are added.
+This local promotion is not upstream financial-owner publication.
+
+The distinct two-issuer August18 price repair completed the incumbent canonical
+publisher and readback at2026-10-13T21:32:33.721290+00:00. Publication receipt
+`800ba7ccc61ee9833762bf3d49debf30c1f9dc08de63990c808ba6f1ec44dae4`
+binds fresh complete owner versions, writer census, exact two-object delta and
+independent21,712-object review. RTX/NOC each preserve1,322 old rows and add one;
+ITA, all21,710 other objects and manifest bytes remain unchanged. A new wider
+research packet requires actual new canonical reads; the37-session packet and
+its wider-horizon refusal remain retained. No research issuance occurred.
+
+The page-local SDK loading correction and14 regression cases against the actual
+shared theme loader are integrated. Canonical publisher stamping gives the SDK
+hint and script one cache key. Source tests pass; the3,000ms final cold-network
+target still requires the new combined generation and ten measurements. The
+shared emitted theme asset is now included on all four publication paths and
+in the generation/committed-output seal. The proof gate's81 cases pass, including
+non-Python fixture/test and shared-output mutation. The combined targeted run
+passed180 cases but exposed25 failures from a test helper anchored to a shortened
+workflow comment; switching that extraction boundary to the actual verification
+command preserved every assertion and all28 publisher-consumer cases then passed.
+The full sealed default candidate suites and committed-generation witness remain
+due. No protected release, installed entitlement, product acceptance or mission
+completion is claimed. Root continues the next ready phase.

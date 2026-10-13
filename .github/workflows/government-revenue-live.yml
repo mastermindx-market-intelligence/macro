@@ -140,6 +140,12 @@ on:
       - "templates/data_base.js"
       - "templates/government-revenue-candidate-radar.js"
       - "templates/government-revenue-investor.js"
+      - "templates/government-revenue-investor-start.js"
+      - "templates/government-revenue-page.js.j2"
+      - "templates/theme.js"
+      - "templates/theme.css"
+      - "templates/product-nav-icons.css"
+      - "templates/navigation-refresh.css"
       - "templates/government-revenue-investor.css"
       - "templates/government-revenue-sbir.js"
       - "templates/government-revenue-sbir.css"
@@ -852,7 +858,7 @@ jobs:
           set -euo pipefail
           . "${GITHUB_WORKSPACE:-.}/scripts/ci/push_retry.sh"
           . "$RUNNER_TEMP/govrev-reviewed-source-guards.sh"
-          # The sourced guards prove collectors and projection builders cannot write or stage reviewed inputs.
+          # Guard reviewed inputs before staging.
           PUSH_LABEL="government-revenue evidence"
           if ! push_on_main_ok; then exit 0; fi
           git config user.name "dashboard-bot"
@@ -1029,6 +1035,10 @@ jobs:
             site/government-revenue-data/defense-economics.json
             site/government-revenue-data/research-state.json
             site/government-revenue-investor.js
+            site/government-revenue-investor-start.js
+            site/government-revenue-page.js
+            site/government-revenue-critical-theme.css
+            site/theme.js
             site/government-revenue-investor.css
             site/government-revenue-theme-context.js
             site/government-revenue-theme-context.css
@@ -1055,7 +1065,7 @@ jobs:
             echo "no material Government Revenue artifacts to publish"
             exit 0
           fi
-          # Seal the entire canonical/public generation before any publication.
+          # Seal every output before publication.
           python scripts/ci/govrev_candidate_proof.py verify \
             --root . --receipt "$RUNNER_TEMP/govrev-candidate-proof.receipt.json"
           push_staged_clean \
@@ -1102,6 +1112,10 @@ jobs:
             site/government-revenue-data/defense-economics.json \
             site/government-revenue-data/research-state.json \
             site/government-revenue-investor.js \
+            site/government-revenue-investor-start.js \
+            site/government-revenue-page.js \
+            site/government-revenue-critical-theme.css \
+            site/theme.js \
             site/government-revenue-investor.css \
             site/government-revenue-theme-context.js \
             site/government-revenue-theme-context.css \
@@ -1115,8 +1129,6 @@ jobs:
             site/government_revenue.html
           git commit -m "govrev: SAM opportunity evidence $(date -u +%FT%H:%MZ)"
 
-          # At most one changed generation may consume an additional full proof.
-          # Unchanged bytes/source/runtime reuse the exact sealed receipt.
           GOVREV_REPROOFS=0
           PUSH_MAX_ATTEMPTS=2
           PUSH_BUDGET_SECS=2700
@@ -1127,11 +1139,11 @@ jobs:
             comm -12 <(git ls-files --others --exclude-standard | LC_ALL=C sort) \
                      <(git ls-tree -r --name-only origin/main | LC_ALL=C sort) \
               | while IFS= read -r f; do rm -f -- "$f" || true; done
-            # Append-only base freshness (why: scripts/ci/push_retry.sh). --amend:
-            # this loop amends. Non-zero ONLY when a proven withhold failed.
+            # Recheck append-only freshness before amending.
+            # Fail only on a proven withhold failure.
             if ! push_append_only_fence origin/main --amend; then push_backoff; continue; fi
             if git pull --rebase --autostash -X theirs origin main && push_autostash_ok; then
-              # Rebuild AFTER every successful rebase; retry loops do the same.
+              # Rebuild after every rebase.
               assert_award_event_bundle
               assert_award_event_source_clean
               assert_subaward_bundle
@@ -1189,6 +1201,10 @@ jobs:
                 site/government-revenue-data/defense-economics.json \
                 site/government-revenue-data/research-state.json \
                 site/government-revenue-investor.js \
+                site/government-revenue-investor-start.js \
+                site/government-revenue-page.js \
+                site/government-revenue-critical-theme.css \
+                site/theme.js \
                 site/government-revenue-investor.css \
                 site/government-revenue-theme-context.js \
                 site/government-revenue-theme-context.css \
@@ -1257,6 +1273,10 @@ jobs:
                 site/government-revenue-data/defense-economics.json \
                 site/government-revenue-data/research-state.json \
                 site/government-revenue-investor.js \
+                site/government-revenue-investor-start.js \
+                site/government-revenue-page.js \
+                site/government-revenue-critical-theme.css \
+                site/theme.js \
                 site/government-revenue-investor.css \
                 site/government-revenue-theme-context.js \
                 site/government-revenue-theme-context.css \

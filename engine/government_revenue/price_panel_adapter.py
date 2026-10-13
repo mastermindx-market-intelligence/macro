@@ -20,6 +20,8 @@ from engine.close_pass.massive_split_evidence import SplitEvidenceError, _valida
 
 _REVIEWED_PACKET_SHA256 = "6b62d7e6ef2c95c766f6089cde9c51994c0b869746546e86732dc4cdddf5285e"
 
+_REVIEWED_ISSUER_PACKET_SHA256 = "7102c64fbf97f88ae567a6a1facf0835d7dc29f440819f00d70eedce66b46283"
+
 CONVENTION = "backward_adjusted_close_ratio_native_cash_previous_raw_close_v1"
 
 
@@ -197,7 +199,7 @@ def load_reviewed_current_vintage_panel(
 ) -> tuple[PricePanel, dict[str, Any]]:
     """The sole qualification boundary: load the exact reviewed retained bytes.
 
-    This intentionally binds one reviewed current-vintage research packet,
+    This intentionally binds fixed source-reviewed current-vintage packets,
     not generic owner admission. Licensed retained source bytes stay external.
     No caller-supplied prices, actions, calendar, completeness flag, digest or
     expected-packet override is accepted. A different packet requires source
@@ -212,8 +214,14 @@ def load_reviewed_current_vintage_panel(
     packet_path = root / "packet.json"
     _require(not packet_path.is_symlink(), "source_path_escape")
     packet_bytes = packet_path.read_bytes()
-    _require(sha256(packet_bytes).hexdigest() == _reviewed_packet_digest(), "unreviewed_packet_digest")
+    packet_digest = sha256(packet_bytes).hexdigest()
+    issuer_packet = packet_digest == _REVIEWED_ISSUER_PACKET_SHA256
+    _require(packet_digest in {_reviewed_packet_digest(), _REVIEWED_ISSUER_PACKET_SHA256}, "unreviewed_packet_digest")
     packet = _json_bytes(packet_bytes)
+    if issuer_packet:
+        _require(packet.get("technical_scope") == "four_issuer_current_input_only"
+                 and sorted(ref.get("symbol", "") for ref in packet.get("symbols", []))
+                 == ["LHX", "LMT", "NOC", "RTX"], "issuer_packet_scope_mismatch")
     _require(packet.get("contract") == "grv_reviewed_retained_price_packet/v1", "invalid_retained_packet")
     _require(sha256(Path(nyse_calendar.__file__).read_bytes()).hexdigest()
              == packet["calendar_owner_sha256"], "calendar_owner_revision_mismatch")
@@ -292,6 +300,8 @@ def load_reviewed_current_vintage_panel(
     receipt["reviewed_packet_sha256"] = sha256(packet_bytes).hexdigest()
     receipt["retained_object_sha256"] = {name: ref["sha256"] for name, ref in packet["objects"].items()}
     receipt["qualification_boundary"] = "exact_retained_bytes_verified_owner_receipts_canonical_calendar"
+    if issuer_packet:
+        receipt["technical_scope"] = "four_issuer_current_input_only"
     receipt["not_wired_to_issuance_or_grading"] = True
     # Seal the public closure after every source binding is attached. The sole
     # excluded field is the seal itself; PriceBasis carries this same identity.

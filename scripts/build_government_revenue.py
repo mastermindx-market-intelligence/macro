@@ -24,6 +24,7 @@ import hashlib
 import json
 import logging
 import os
+import re
 import sys
 import tempfile
 from datetime import datetime, timezone
@@ -1108,6 +1109,38 @@ def _load_optional_canonical_idv_dossier(root: Path, dossier: dict) -> tuple[str
     return raw, payload
 
 
+def _government_revenue_critical_css(env) -> str:
+    """Concatenate canonical head styles in order; keep all relative URLs.
+
+    Resolving the one existing import at the same location preserves its rules
+    before theme tokens. No new material source or alternate palette is authored.
+    """
+    names = ("theme.css", "government-revenue-sbir.css", "government-revenue-investor.css",
+             "government-revenue-theme-context.css", "government-revenue-parity.css")
+    parts = []
+    for name in names:
+        css, filename, _ = env.loader.get_source(env, name)
+        if name == "theme.css":
+            imported, _, _ = env.loader.get_source(env, "product-nav-icons.css")
+            marker = '@import url("product-nav-icons.css?v=093ad1ea");'
+            if css.count(marker) != 1:
+                raise ValueError("canonical theme icon import changed; review dependency order")
+            css = css.replace(marker, imported, 1)
+        if "@import" in css:
+            raise ValueError("unresolved stylesheet import in " + name)
+        # Current canonical non-data URLs are same-root self-hosted fonts.
+        # Resolve them against their source; publication keeps bundle at site root.
+        for raw in re.findall(r'url\(([^)]*)\)', css):
+            url = raw.strip().strip('"\'')
+            if url.startswith(("data:", "https://", "http://", "//")):
+                continue
+            path = url.split("?", 1)[0].split("#", 1)[0]
+            if not path or not (Path(filename).parent / path).is_file():
+                raise ValueError("unresolved canonical CSS dependency: " + url)
+        parts.append(css)
+    return "\n".join(parts)
+
+
 def _write_site_projection(
     root: Path,
     payload: dict,
@@ -1127,17 +1160,31 @@ def _write_site_projection(
         loader=FileSystemLoader(str(root / "templates")),
         autoescape=True,
     )
+    _atomic_write_text(site_dir / "government-revenue-critical-theme.css", _government_revenue_critical_css(env))
     display_payload = _display_payload(payload)
+    def asset_url(name):
+        # Hint and loading tag must have the same immutable cache key after the
+        # incumbent publisher stamps script URLs. Hash the canonical file bytes.
+        _, filename, _ = env.loader.get_source(env, name)
+        from lib import site_assets
+        raw = site_assets.emit_theme_js(Path(filename)).encode("utf-8") if name == "theme.js" else Path(filename).read_bytes()
+        return name + "?v=" + hashlib.sha256(raw).hexdigest()[:8]
     html = env.get_template("government_revenue.html.j2").render(
+        asset_url=asset_url,
         payload_json=json.dumps(
             display_payload, ensure_ascii=False, separators=(",", ":"), default=str
         ),
         as_of=payload.get("as_of"),
         known_at=payload.get("known_at"),
     )
+    # The single page controller is a rendered asset, fetched after first finance.
+    controller = env.get_template('government-revenue-page.js.j2').render()
+    controller = '\n'.join(line.rstrip() for line in controller.splitlines()) + '\n'
+    _atomic_write_text(site_dir / 'government-revenue-page.js', controller)
+
     # Page-local assets travel with the projection in site-only and full renders.
     from lib import site_assets
-    for asset in ('government-revenue-parity.css', 'government-revenue-dossiers.js', 'government-revenue-candidate-radar.js', 'government-revenue-briefcase.js', 'government-revenue-briefcase-ui.js', 'government-revenue-sbir.js', 'government-revenue-sbir.css', 'government-revenue-investor.js', 'government-revenue-investor.css', 'government-revenue-theme-context.js', 'government-revenue-theme-context.css'):
+    for asset in ('theme.js', 'government-revenue-parity.css', 'government-revenue-dossiers.js', 'government-revenue-candidate-radar.js', 'government-revenue-briefcase.js', 'government-revenue-briefcase-ui.js', 'government-revenue-sbir.js', 'government-revenue-sbir.css', 'government-revenue-investor.js', 'government-revenue-investor-start.js', 'government-revenue-investor.css', 'government-revenue-theme-context.js', 'government-revenue-theme-context.css'):
         source = root / "templates" / asset
         if source.is_file():
             site_assets.copy_asset(asset, source, site_dir)
