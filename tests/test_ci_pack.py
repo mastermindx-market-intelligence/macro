@@ -4284,6 +4284,7 @@ def test_workspace_runtime_contracts_can_start_the_ci_that_validates_them() -> N
 # ---------------------------------------------------------------------------
 
 CURATED_EXCLUSIVE = {
+    "k3d-economic-propagation-contracts",  # Pure compiler contracts must execute in the PR code gate.
     # PR #7861: Options matrix source/session/retention checks are hermetic.
     # The exclusive manifest scope retains both suites, their concrete import
     # closure, config.yml fallback and the retention-fixture wildcard. This
@@ -6478,3 +6479,41 @@ def test_price_ladder_deterministic_contract_is_owned_by_existing_code_gate(tmp_
         assert "unowned path" not in reason, reason
     selected, reason = PACK.select_jobs(jobs, ["tests/test_dataos_price.py"])  # ci-trigger-closure: data — synthetic diff
     assert not selected, reason
+
+
+@pytest.mark.parametrize("changed_path", [
+    "tests/test_economic_propagation_hypothesis_contract.py",
+    "tests/test_economic_propagation_source_grain.py",
+    "tests/test_economic_propagation_v2.py",
+    "tests/test_economic_propagation_v2_semantics.py",
+    "lib/economic_propagation.py",
+    "lib/economic_propagation_v2.py",
+    "contracts/economic_propagation/propagation_hypothesis.v2.schema.json",
+    "tests/fixtures/economic_propagation/golden_supported_hypothesis.json",
+    "research/economic_propagation/k3d_real_proof_records/real_abstention_tsn_adm_no_graph1.json",
+])
+def test_k3d_all_native_suites_execute_in_pr_code_gate(changed_path, real_manifest_scopes):
+    """A suite in the data gate is not a PR check; keep one actual execution home."""
+    manifest = _yaml(MANIFEST)
+    owner_id = "k3d-economic-propagation-contracts"
+    owner = manifest["jobs"][owner_id]
+    suites = (
+        "tests/test_economic_propagation_hypothesis_contract.py",
+        "tests/test_economic_propagation_source_grain.py",
+        "tests/test_economic_propagation_v2.py",
+        "tests/test_economic_propagation_v2_semantics.py",
+    )
+    assert owner["gate"] == "code" and owner["scope"] == "exclusive"
+    assert {"pytest", "jsonschema"} <= _job_pip_packages(owner)
+    for suite in suites:
+        actual_owners = [
+            job_id for job_id, job in manifest["jobs"].items()
+            if any(suite in str(step.get("run") or "").split() for step in job["steps"])
+        ]
+        assert actual_owners == [owner_id], (suite, actual_owners)
+        assert suite in owner["paths"]
+    assert manifest["jobs"]["signal-contract"]["gate"] == "data"
+    jobs, _ = real_manifest_scopes
+    selected, reason = PACK.select_jobs([job for job in jobs if job.gate == "code"], [changed_path])
+    assert owner_id in {job.job_id for job in selected}, (changed_path, reason)
+    assert "unowned path" not in reason, (changed_path, reason)

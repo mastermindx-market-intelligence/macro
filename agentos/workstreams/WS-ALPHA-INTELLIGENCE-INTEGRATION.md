@@ -340,7 +340,8 @@ reconstructs narrative plus scenario identity. Legacy V1, all frozen fixtures
 and both archived real abstentions remain unchanged.
 
 This current-main integration retains every existing CI job and step, adding
-the four K3-D suites once under the incumbent signal-contract job. Integration
+one code-gated K3-D job for all four suites. The historical signal-contract
+job is data-gated and remains unchanged; it cannot prove PR code coverage. Integration
 checks, hosted CI and the normal Sol release decision remain pending; the PR
 stays DRAFT/HOLD. Historical wave notes above are not new current-liveness
 claims. No native source acquisition, identity/rights admission, Graph1 writer,

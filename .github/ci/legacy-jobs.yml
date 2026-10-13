@@ -1876,9 +1876,6 @@ jobs:
       # contract compilers adjacent.
       - name: K3-E Opportunity Evidence Vector contract and hostile-fixture kills
         run: python -m pytest tests/test_opportunity_evidence_vector_contract.py -q
-      # K3-D retains one native owner; run legacy, identity and V2 contracts together.
-      - name: K3-D Economic Propagation hypothesis contract and laundering kills
-        run: python -m pytest tests/test_economic_propagation_hypothesis_contract.py tests/test_economic_propagation_source_grain.py tests/test_economic_propagation_v2.py tests/test_economic_propagation_v2_semantics.py -q
       # K3E A9 descriptive coupling (engine/k3e_coupling.py, PR #8461) is a pure
       # stdlib composer over the EXP-1 declared-capture inspection and the MKT-1
       # market-response export: no store, no score, financial_influence false,
@@ -8005,6 +8002,10 @@ jobs:
     # planner, the shape of #7971 and #8010, reds here, on its own head.
     runs-on: ubuntu-latest
     paths:
+      - "contracts/economic_propagation/propagation_hypothesis.v2.schema.json"
+      - "lib/economic_propagation.py"
+      - "lib/economic_propagation_v2.py"
+      - "research/economic_propagation/k3d_real_proof_records/real_abstention_tsn_adm_no_graph1.json"
       - "lib/exchange_holidays.py"
       - ".github/ci/legacy-jobs.yml"
       - ".github/workflows/**"
@@ -28940,3 +28941,32 @@ jobs:
         run: pip install pytest pandas numpy pyarrow pyyaml
       - name: short-pressure availability guard
         run: python -m pytest tests/test_c19_wp24_short_pressure_availability.py -q -p no:cacheprovider
+  k3d-economic-propagation-contracts:
+    if: ${{ false }}
+    gate: code
+    # Sole K3-D execution home. The historical signal-contract job is data-gated
+    # and is not executed by the PR workflow's --gate code selection.
+    scope: exclusive
+    paths:
+      - "lib/__init__.py"
+      - "lib/economic_propagation.py"
+      - "lib/economic_propagation_v2.py"
+      - "contracts/economic_propagation/**"
+      - "tests/__init__.py"
+      - "tests/conftest.py"
+      - "tests/test_economic_propagation_hypothesis_contract.py"
+      - "tests/test_economic_propagation_source_grain.py"
+      - "tests/test_economic_propagation_v2.py"
+      - "tests/test_economic_propagation_v2_semantics.py"
+      - "tests/fixtures/economic_propagation/**"
+      - "research/economic_propagation/k3d_real_proof_records/**"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install native contract dependencies
+        run: pip install pytest jsonschema
+      - name: K3-D Economic Propagation hypothesis contract and laundering kills
+        run: python -m pytest tests/test_economic_propagation_hypothesis_contract.py tests/test_economic_propagation_source_grain.py tests/test_economic_propagation_v2.py tests/test_economic_propagation_v2_semantics.py -q
