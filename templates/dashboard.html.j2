@@ -20874,7 +20874,7 @@ if (document.readyState === 'loading') {
     return cands;
   }
 
-  /* Classify one validated-or-refused envelope into an honest typed outcome.
+  /* Classify one checked-or-refused envelope into an honest typed outcome.
      AVAILABLE here is candidate binding only, never DailyBrief availability:
      the overall PARTIAL state and the owner-input reason codes stay visible. */
   function todayNativeOutcome(payload, admission){
@@ -21306,7 +21306,7 @@ if (document.readyState === 'loading') {
     .then(function(admitted){
       setLoadUnavailable(false);
       /* Exactly ONE native query, and only on admitted metadata: today's
-         three pins, roster structure and displayed positions validated. The
+         three pins, roster structure and displayed positions checked. The
          API must validate the complete owner roster before native context is
          disclosed; hidden positions cannot acquire authority from count alone. Its outcome never unsets the
          board's own load state and never rejects into the board's catch. */
