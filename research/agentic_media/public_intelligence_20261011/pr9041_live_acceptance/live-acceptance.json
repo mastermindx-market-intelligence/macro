@@ -61,8 +61,10 @@
     "mmx-9041-runtime-inspection.json": "292fa44f8b258d3aad7d1c2a3e9d77dbe9df9c6afe98a2d74c70d15b407c3fd3",
     "mmx_ancestry.py": "c40c196cefeffe7140f76c29ad1decdba774802076a73136c0be967b40241e50",
     "prepare-ancestry.py": "1fba8c947eccc602462f1a22d28aab4811e1fea90e6243fd44896a34d7740c27",
-    "protected-landing-controller.log": "297472a2d7c761685a58c6dd56993797d3b8f8def8cafbba0bad5c2233f1d64b",
     "protected-merge-readback.json": "c17951120c54e998bf79a98e3f1e363b462b8ba46ad668cf1c292d3df8189d71",
-    "source-drift-check.json": "59d72c621315d6f79c87c017e06f58f9eeb340c3fd746364138b3fe43969eeb4"
-  }
+    "source-drift-check.json": "59d72c621315d6f79c87c017e06f58f9eeb340c3fd746364138b3fe43969eeb4",
+    "protected-landing-controller.log.gz": "893cf78434a035ddd289291749fc452823a1540ba584f9a08292ea43c3f83e35"
+  },
+  "raw_controller_log_sha256": "297472a2d7c761685a58c6dd56993797d3b8f8def8cafbba0bad5c2233f1d64b",
+  "controller_log_storage": "Lossless gzip; verify decompressed bytes against raw_controller_log_sha256. All live observations unchanged."
 }

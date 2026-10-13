@@ -6,7 +6,7 @@ Primary source: [NVIDIA's October 13 software-readiness announcement](https://bl
 
 This is a fresh non-earnings lead and supplies an explicit NVDA association. The existing public dossier is `https://www.mastermind-x.com/stocks/NVDA.html`; prior browser and existing-membership acceptance is retained. No new follow write is necessary for candidate preparation.
 
-NVIDIA's linked [terms](https://www.nvidia.com/en-us/about-nvidia/terms-of-service/) do not supply a blanket commercial republication license for its page materials. No body, image or branding is copied into this repository. A future article would need its own factual-reporting rights/admission determination and a permitted documented ingress; this page is not silently treated as a White House government source or passed through that allowlist. Reading a search result is not such an admission. The source register's no-HTML-scraping law is preserved.
+NVIDIA's linked [terms](https://www.nvidia.com/en-us/about-nvidia/terms-of-service/) do not supply a blanket commercial republication license for its page materials. No body, image or branding is copied into this repository. The official [RSS page](https://www.nvidia.com/en-us/about-nvidia/rss/) explicitly limits its feeds to non-commercial use, so no feed ingestion or collector was added. A future article would need its own factual-reporting rights/admission determination and a permitted documented ingress; this page is not silently treated as a White House government source or passed through that allowlist. Reading a search result is not such an admission. The source register's no-HTML-scraping law is preserved.
 
 ## Editorial proposition for the next qualified source phase
 
