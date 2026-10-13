@@ -75,6 +75,10 @@ jobs:
         run: pip install pytest pandas numpy pyarrow pyyaml requests yfinance
       - name: daily scope through canonical archive writer and consumer
         run: python -m pytest tests/test_yahoo_universe_backfill.py -q
+      - name: default-off Yahoo availability capture and publication refusals
+        run: python -m pytest tests/test_yahoo_availability_capture.py -q
+      - name: existing dual-basis store regressions
+        run: python -m pytest tests/test_dual_basis_store.py -q
 
   live-flow-recovery-guards:
     if: ${{ false }}
