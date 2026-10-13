@@ -447,10 +447,16 @@ def _absent(
 
 
 def _filing_joins(bound: BoundRelease) -> bool:
+    """Join on the filing pair (CIK, accession), never on a date."""
     entity = str(getattr(bound.document, "entity_cik", "") or "").strip()
-    if not entity.isdigit():
+    document_accession = str(getattr(bound.document, "accession", "") or "").strip()
+    if not entity.isdigit() or not document_accession:
         return False
-    return f"{int(entity):010d}" == f"{bound.revision.filing_key.cik:010d}"
+    key = bound.revision.filing_key
+    return (
+        f"{int(entity):010d}" == f"{key.cik:010d}"
+        and document_accession == str(key.accession)
+    )
 
 
 def _bytes_held(bound: BoundRelease) -> bool:
@@ -641,7 +647,7 @@ def extract_witness_facts(
                 event_id=event_id,
                 metric=item.metric,
                 reason="unjoinable_filing_identity",
-                detail="the document CIK does not join the filing key",
+                detail="the document CIK and accession do not join the filing key",
                 document_id=document_id,
             )
             for item in definitions

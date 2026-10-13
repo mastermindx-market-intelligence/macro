@@ -524,7 +524,9 @@ def test_body_not_held_absents_every_row() -> None:
 
 
 def test_unjoinable_accession_absents_every_row() -> None:
+    """Filing identity is the pair (CIK, accession). Either half missing absents."""
     profile, bound, _expected = _load("mp")
+    assert bound.document.accession == bound.revision.filing_key.accession
     mismatched = replace(
         bound,
         revision=replace(
@@ -536,6 +538,21 @@ def test_unjoinable_accession_absents_every_row() -> None:
     assert _reasons(rows) == ["unjoinable_filing_identity"]
     assert _present(rows) == {}
     assert all("value" not in row for row in rows)
+    swapped_accession = replace(
+        bound,
+        revision=replace(
+            bound.revision,
+            filing_key=FilingKey(
+                cik=bound.revision.filing_key.cik,
+                accession="0000999992-26-000099",
+            ),
+        ),
+    )
+    assert swapped_accession.revision.filing_key.accession != bound.document.accession
+    accession_rows = _rows(profile, swapped_accession, "evt-mp")
+    assert _reasons(accession_rows) == ["unjoinable_filing_identity"]
+    assert _present(accession_rows) == {}
+    assert all("value" not in row for row in accession_rows)
 
 
 def test_two_events_do_not_share_a_fact_id() -> None:
