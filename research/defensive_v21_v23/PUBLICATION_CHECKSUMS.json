@@ -1,0 +1,25 @@
+{
+  "schema": "mmx.defensive.v21_v23.publication.v1",
+  "date": "2026-10-13",
+  "status": "RESEARCH_ONLY_HISTORICAL_ASOF_2026-10-08",
+  "archive_sha256": "fb5fa684b2e497733de6f79a715c8da9da63da5976b3834c5be5e6cc32643176",
+  "archive_bytes": 210731,
+  "archive_git_blob": "c40258779d46a9288352f4dfa5df99959c48f8f3",
+  "report_sha256": "ed81a45b759dae5875fb65eb896b7d77c09d72e5dacba7cfd1559bab2bf23aaa",
+  "readme_sha256": "8c4c05d250110d37126484b5782df0e08f93ca074ae37fd1d6c7096c3862965b",
+  "table_sha256": {
+    "CORE_ASOF_2026-10-08.csv": "ee470a1a672cebf61908dcc6f2ae76018c36df98dfc08cf6d4d3e5c49c10d23c",
+    "V22_CONTEXT_COMPARISON.csv": "21d043cbf3c85b9758e7189cdaad6c32fc4ad418495ca40118dc8ebd883951ac",
+    "V23_INCREMENTAL_WASHOUT.csv": "991fe4601a26cbddfb29c9d2735ae692d89eb26395aae6c6a92053fa7b6b4f37"
+  },
+  "test_counts": {
+    "V21": 7,
+    "V22_V23": 14
+  },
+  "do_not_treat_past_reconstruction_as_live_signal": true,
+  "v11_merged_pr": 9034,
+  "independent_v12_pr": 9064,
+  "v13_v20_pr": 9129,
+  "broker_action": false,
+  "raw_vendor_inputs": false
+}
