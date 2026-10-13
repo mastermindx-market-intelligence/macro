@@ -16,12 +16,15 @@ shape for Technology exists only as the PROPOSED §8 profile mapping
   ``payload["definition_version"] == registration.definition_version`` — hold
   by construction;
 * documents the §8 dependency by execution: ``registration_entry_or_refusal``
-  lazily imports the shell and, when it appears, attempts the construction
-  FIRST and unconditionally; a shell refusal is reported as the shell's own
-  exception type (``vertical_registration_refused:<ExcType>``) and a
-  constructor ``TypeError`` — §8 signature drift — propagates uncaught, so the
-  pinned round-trip test errors loudly instead of xfailing stale. Nothing here
-  pretends the discriminator is delivered.
+  lazily imports the shell and, when it appears, holds a ``company_profile``
+  entry that has no theme anchor and no slices
+  (``vertical_registration_held:company_profile``) BEFORE constructing
+  ``VerticalRegistration``. A theme-registrable entry the shell refuses is
+  reported as the shell's own exception type
+  (``vertical_registration_refused:<ExcType>``). A constructor ``TypeError``
+  on theme-registrable facts — signature drift — propagates uncaught. The
+  real Technology facts are not theme-registrable, so they never reach
+  construction. Nothing here pretends the discriminator is delivered.
 
 Duck typing: the query and bundle are read only through ``getattr``/mapping
 access on the fields §8 names, so the shell's frozen dataclasses and the
@@ -93,6 +96,7 @@ __all__ = [
     "VIEWS",
     "TechnologyRegistrationRefusal",
     "TECHNOLOGY_REGISTRATION_FACTS",
+    "VERTICAL_REGISTRATION_HELD_COMPANY_PROFILE",
     "compose",
     "select_evidence",
     "validate_evidence_envelope",
@@ -650,9 +654,10 @@ def select_evidence(query: Any, bundle: Any, assertion_ref: Any) -> dict[str, An
 class TechnologyRegistrationFacts:
     """The PROPOSED §8 field set for the Technology company-first profile —
     exactly the fields §8 names, plus the two shell callables. ``anchor_theme_id``
-    is ``None`` and ``slice_keys`` is empty BY PROPOSAL: under hook 1 as
-    integrated these are exactly what a ``VerticalRegistration`` refuses, which
-    is why nothing is registered on this branch. ``views`` is the closed view
+    is ``None`` and ``slice_keys`` is empty BY PROPOSAL: the theme-keyed shell
+    requires a string anchor and a non-empty slice tuple, so
+    :func:`registration_entry_or_refusal` holds ``company_profile`` before
+    construction and nothing is registered on this branch. ``views`` is the closed view
     tuple the request gate validates against; ``view`` is VALIDATION-ONLY on
     this carrier — both callables compose a view-invariant payload, and
     projection is the shared shell's responsibility pending the §8
@@ -704,41 +709,74 @@ _VERTICAL_REGISTRATION_FIELDS: tuple[str, ...] = (
     "title_en", "title_zh", "note_en", "note_zh",
 )
 
+#: Typed HOLD code, the Technology mirror of Finance's
+#: ``vertical_registration_held:sector_profile`` (H1 ruling, option B,
+#: #7870 2026-10-11). The shared shell keys every registration on a
+#: canonical ``anchor_theme_id`` plus a non-empty ``slice_keys`` tuple;
+#: Technology's §8 facts are a ``company_profile`` with no theme anchor and
+#: no slices, so Technology is NOT registered on the shell. The hold is
+#: raised BEFORE the shell constructor is reached, so it names the real
+#: cause (entry_kind semantics still pending) rather than whatever
+#: structural gap the constructor would report. Retired only by the §8
+#: company_profile migration that supplies accepted anchor/slice semantics.
+VERTICAL_REGISTRATION_HELD_COMPANY_PROFILE: str = (
+    "vertical_registration_held:company_profile"
+)
 
-def registration_entry_or_refusal() -> Any:
-    """Attempt the shared-shell registration this lane deliberately does NOT
-    perform, documenting the §8 dependency by execution.
 
-    Shell absent (this carrier base) -> ``shared_shell_unavailable``. Shell
-    present -> the ``VerticalRegistration`` is constructed from the facts
-    FIRST and unconditionally, with no precondition against the facts: when
-    hook 1 as integrated refuses the company-profile entry (anchor ``None``,
-    empty slice set), the typed reason carries the shell's OWN exception type
-    — ``vertical_registration_refused:<ExcType>`` — because the concrete
-    reason belongs to the shell and this adapter never guesses it. A
-    ``TypeError`` from the constructor is §8 signature drift and propagates
-    UNCAUGHT, so the pinned strict-xfail round-trip turns into a hard error
-    rather than a quietly stale xfail. If the shell ever ACCEPTS the entry
-    (the §8 mount change, adjudicated), the entry is returned — and that same
-    test XPASSes loudly, which is the designed signal that re-pinning is due.
+def _facts_are_theme_registrable(facts: TechnologyRegistrationFacts) -> bool:
+    """True only when the facts carry what the theme-keyed shell requires:
+    a string ``anchor_theme_id`` and a non-empty ``slice_keys`` tuple. The
+    shell's own grammar guards still run on construction; this only decides
+    whether construction is attempted at all."""
+    return isinstance(facts.anchor_theme_id, str) and bool(facts.slice_keys)
+
+
+def registration_entry_or_refusal(
+    facts: TechnologyRegistrationFacts = TECHNOLOGY_REGISTRATION_FACTS,
+) -> Any:
+    """Return the entry the shared shell expects. Refusals (all adapter
+    codes — neither the shell's refusal nor a bare ``ValueError`` leak
+    through), in precedence order:
+
+    * ``shared_shell_unavailable`` — the shell is not on the carrier. This
+      is the state on origin/main until #7870 merges.
+    * ``vertical_registration_held:company_profile`` — the shell is present
+      but ``facts`` carry no theme anchor / slices (the §8 ``company_profile``
+      entry_kind is pending). Raised before any construction, so the hold
+      is independent of the shell's field count.
+    * ``vertical_registration_refused:<ExcType>`` — the shell is present,
+      the facts are theme-registrable, and construction raised a
+      non-``TypeError`` exception.
+    * ``TypeError`` — propagated uncaught when theme-registrable facts reach
+      a shell whose signature the adapter does not satisfy, so the carrier
+      sees the structural gap. The real Technology facts never reach this
+      branch (they are held first). The adapter never silently coerces.
+
+    ``facts`` defaults to :data:`TECHNOLOGY_REGISTRATION_FACTS`; tests inject
+    a theme-registrable double to exercise the construction branches.
 
     Only ``VerticalRegistration`` is resolved here
     (:func:`_resolve_vertical_registration`): the sibling module's
     ``OwnerBundle``/``ResearchQuery`` symbols are the bundle/query consumers'
-    concern, and a shell that accepts the entry while those symbols drift
-    must not be typed ``shared_shell_unavailable``."""
+    concern, and a shell that accepts a theme-registrable entry while those
+    symbols drift must not be typed ``shared_shell_unavailable``.
+    """
     vertical_registration = _resolve_vertical_registration()
     if vertical_registration is None:
         _refuse("shared_shell_unavailable")
+    if not _facts_are_theme_registrable(facts):
+        _refuse(VERTICAL_REGISTRATION_HELD_COMPANY_PROFILE)
     kwargs = {
-        name: getattr(TECHNOLOGY_REGISTRATION_FACTS, name)
+        name: getattr(facts, name)
         for name in _VERTICAL_REGISTRATION_FIELDS
     }
     try:
         return vertical_registration(**kwargs)
     except TypeError:
-        # Signature drift between the §8 facts and the shell's constructor:
-        # never relabelled, never swallowed — the pin must hear it.
+        # Signature drift on theme-registrable facts: never relabelled,
+        # never swallowed — the pin must hear it. The real company_profile
+        # facts are held above and never reach this branch.
         raise
     except Exception as exc:
         _refuse("vertical_registration_refused:" + type(exc).__name__)

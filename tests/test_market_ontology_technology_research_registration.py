@@ -9,15 +9,13 @@ evidence selector has something real to select from.
 
 The adapter is pinned to the PROPOSED §8 company-first shape
 (CURATION_ASSERTION_V1_1_PROPOSAL_2026-09-24.md @ 382c0b399d5c on macro#7870,
-under Sol adjudication) and to hook 1 as inspected at #7870 @ e2f4d4909156 —
-a reading of that head, not a live pin: the foundation head moves faster than any
-citation, and this branch carries no shell at all, so the refusal is
-shared_shell_unavailable regardless of where #7870 now is.
-Nothing here registers anything: the shared shell is absent on this carrier
-base, and test_shared_shell_registration_roundtrip_pinned_to_7870 (strict xfail)
-documents by execution that a company-profile entry (anchor None, empty slice
-set) is refused until §8 lands — XPASSing loudly the moment the shell appears
-AND accepts the entry.
+under Sol adjudication). Nothing here registers anything. On this carrier
+base the shared shell is absent (``shared_shell_unavailable``). When the
+#7870 registry is present, ``company_profile`` facts (anchor None, empty
+slice set) are held before ``VerticalRegistration`` construction
+(``vertical_registration_held:company_profile``). Theme-registrable facts
+still reach construction, so a shell refusal keeps the shell's exception
+type and a constructor ``TypeError`` still propagates.
 """
 from __future__ import annotations
 
@@ -967,6 +965,17 @@ class _SimulatedShellRefusal(ValueError):
     """The shell's own refusal type, mirroring hook 1's ``ResearchRefusal``."""
 
 
+def _theme_registrable_facts() -> reg.TechnologyRegistrationFacts:
+    """Facts the shell will attempt to construct. The real company_profile
+    facts have no anchor and no slices, so they are held before construction;
+    these exercise the construction branches only."""
+    return dataclasses.replace(
+        reg.TECHNOLOGY_REGISTRATION_FACTS,
+        anchor_theme_id="technology",
+        slice_keys=("software",),
+    )
+
+
 def _install_shell(monkeypatch: pytest.MonkeyPatch, vertical_registration) -> None:
     monkeypatch.setitem(
         sys.modules,
@@ -1001,17 +1010,18 @@ def _install_shell_with_renamed_sibling_symbols(
 
 def test_accepting_shell_with_renamed_sibling_symbols_still_returns_the_entry(monkeypatch):
     # X2, first limb: the registration path depends ONLY on
-    # VerticalRegistration. A shell whose registry ACCEPTS the §8 entry while
-    # the sibling module's bundle/query symbols have drifted must still return
-    # the entry — the strict-xfail round-trip exists to hear exactly this
-    # acceptance, and a full-shell gate would drown it in
-    # shared_shell_unavailable. The FULL resolver keeps its three-symbol gate:
-    # the bundle/query consumers are not weakened here.
+    # VerticalRegistration. A shell whose registry ACCEPTS a theme-registrable
+    # entry while the sibling module's bundle/query symbols have drifted must
+    # still return the entry — a full-shell gate would drown it in
+    # shared_shell_unavailable. The real company_profile facts are held
+    # before construction; this double is what reaches the constructor.
+    # The FULL resolver keeps its three-symbol gate: the bundle/query
+    # consumers are not weakened here.
     def _accepting_shell(**kwargs):
         return SimpleNamespace(**kwargs)
 
     _install_shell_with_renamed_sibling_symbols(monkeypatch, _accepting_shell)
-    entry = reg.registration_entry_or_refusal()
+    entry = reg.registration_entry_or_refusal(_theme_registrable_facts())
     assert entry.schema_id == reg.PROFILE_ID
     assert entry.compose is reg.compose
     assert entry.select_evidence is reg.select_evidence
@@ -1027,18 +1037,19 @@ def test_shell_refusal_carries_the_shells_own_exception_type(monkeypatch):
 
     _install_shell(monkeypatch, _refusing_shell)
     with pytest.raises(TechnologyRegistrationRefusal) as excinfo:
-        reg.registration_entry_or_refusal()
+        reg.registration_entry_or_refusal(_theme_registrable_facts())
     assert excinfo.value.code == "vertical_registration_refused:_SimulatedShellRefusal"
 
 
 def test_shell_accepting_the_entry_returns_it(monkeypatch):
-    # B2(b): the XPASS path — a shell that accepts the §8 company-profile
-    # entry hands the entry back verbatim, callables and all.
+    # B2(b): a shell that accepts a theme-registrable entry hands it back
+    # verbatim, callables and all. The real company_profile facts never
+    # reach this branch; they are held before construction.
     def _accepting_shell(**kwargs):
         return SimpleNamespace(**kwargs)
 
     _install_shell(monkeypatch, _accepting_shell)
-    entry = reg.registration_entry_or_refusal()
+    entry = reg.registration_entry_or_refusal(_theme_registrable_facts())
     assert entry.schema_id == reg.PROFILE_ID
     assert entry.evidence_schema_id == reg.EVIDENCE_SCHEMA_ID
     assert entry.definition_version == reg.DEFINITION_VERSION
@@ -1047,10 +1058,10 @@ def test_shell_accepting_the_entry_returns_it(monkeypatch):
 
 
 def test_shell_signature_drift_added_parameter_propagates_typeerror(monkeypatch):
-    # B2(c): a constructor that gained a required parameter is §8 signature
-    # drift — the TypeError PROPAGATES and is never converted into a typed
-    # refusal, so the pinned xfail becomes a hard error instead of xfailing
-    # stale.
+    # B2(c): a constructor that gained a required parameter is signature
+    # drift on theme-registrable facts — the TypeError PROPAGATES and is
+    # never converted into a typed refusal. The company_profile hold does
+    # not apply to this double.
     def _drifted_shell_added(*, anchor_theme_id, slice_keys, schema_id,
                              evidence_schema_id, definition_version, compose,
                              select_evidence, title_en, title_zh, note_en,
@@ -1059,7 +1070,7 @@ def test_shell_signature_drift_added_parameter_propagates_typeerror(monkeypatch)
 
     _install_shell(monkeypatch, _drifted_shell_added)
     with pytest.raises(TypeError, match="owner_lane_required"):
-        reg.registration_entry_or_refusal()
+        reg.registration_entry_or_refusal(_theme_registrable_facts())
 
 
 def test_shell_signature_drift_renamed_parameter_propagates_typeerror(monkeypatch):
@@ -1072,29 +1083,97 @@ def test_shell_signature_drift_renamed_parameter_propagates_typeerror(monkeypatc
 
     _install_shell(monkeypatch, _drifted_shell_renamed)
     with pytest.raises(TypeError, match="anchor_theme_id"):
+        reg.registration_entry_or_refusal(_theme_registrable_facts())
+
+
+@dataclasses.dataclass
+class _Post7870VerticalRegistration:
+    """Required-field signature of ``VerticalRegistration`` at #7870.
+
+    ``view_keys``, ``load_bundle`` and ``build_query`` have no defaults, so
+    the adapter's 11-field kwargs raise ``TypeError``.
+    """
+
+    anchor_theme_id: str
+    slice_keys: tuple[str, ...]
+    view_keys: tuple[str, ...]
+    schema_id: str
+    evidence_schema_id: str
+    definition_version: str
+    compose: Any
+    select_evidence: Any
+    load_bundle: Any
+    build_query: Any
+    title_en: str
+    title_zh: str
+    note_en: str
+    note_zh: str
+
+
+def _install_post_7870_registry(monkeypatch: pytest.MonkeyPatch) -> type:
+    """Publish the #7870 ``VerticalRegistration`` signature as the shell registry.
+
+    The registry module is absent on this carrier base; the signature double
+    above stands in for it (removed with the monkeypatch), so the hold stays
+    pinned without importing #7870 source.
+    """
+    monkeypatch.setitem(
+        sys.modules,
+        "engine.market_ontology.theme_research_registry",
+        types.SimpleNamespace(VerticalRegistration=_Post7870VerticalRegistration),
+    )
+    return _Post7870VerticalRegistration
+
+
+def test_shared_shell_registration_roundtrip_pinned_to_7870(monkeypatch):
+    """Both arms of the #7870 registration pin.
+
+    Absent shell (this carrier, and origin/main until the registry lands):
+    ``shared_shell_unavailable``, unchanged. Injected #7870 registry: the
+    company_profile facts are held before construction, so the call raises
+    ``vertical_registration_held:company_profile`` rather than the
+    constructor ``TypeError`` the 11-field kwargs still provoke on that class.
+    """
+    with pytest.raises(TechnologyRegistrationRefusal) as absent:
         reg.registration_entry_or_refusal()
+    assert absent.value.code == "shared_shell_unavailable"
+    assert str(absent.value) == "shared_shell_unavailable"
 
+    vertical_registration = _install_post_7870_registry(monkeypatch)
+    calls: list[dict] = []
 
-@pytest.mark.xfail(
-    strict=True,
-    raises=TechnologyRegistrationRefusal,
-    reason=(
-        "hook 1 as inspected at #7870 @ e2f4d4909156 (a reading of that head, not a "
-        "live pin) refuses the proposed §8 "
-        "company-profile entry (anchor_theme_id=None, slice_keys=()), and this "
-        "carrier base does not carry the shell at all (typed "
-        "shared_shell_unavailable; with the shell present, a shell refusal is "
-        "typed vertical_registration_refused:<ExcType>). Signature drift "
-        "surfaces as an uncaught TypeError, never a quiet xfail. XPASS means "
-        "the shell landed AND accepts a company-profile entry — §8 "
-        "adjudicated — and this pin must be re-examined, not silenced."
-    ),
-)
-def test_shared_shell_registration_roundtrip_pinned_to_7870():
-    entry = reg.registration_entry_or_refusal()
-    # Reached only when the shell accepts the §8 company-profile entry.
-    assert entry.schema_id == reg.PROFILE_ID
-    assert entry.evidence_schema_id == reg.EVIDENCE_SCHEMA_ID
-    assert entry.definition_version == reg.DEFINITION_VERSION
-    assert callable(entry.compose)
-    assert callable(entry.select_evidence)
+    class _CountingRegistration(vertical_registration):
+        def __init__(self, *args: Any, **kwargs: Any) -> None:
+            calls.append(kwargs)
+            super().__init__(*args, **kwargs)
+
+    sys.modules[
+        "engine.market_ontology.theme_research_registry"
+    ].VerticalRegistration = _CountingRegistration
+    try:
+        vertical_registration(
+            anchor_theme_id="technology",
+            slice_keys=("software",),
+            schema_id=reg.PROFILE_ID,
+            evidence_schema_id=reg.EVIDENCE_SCHEMA_ID,
+            definition_version=reg.DEFINITION_VERSION,
+            compose=reg.compose,
+            select_evidence=reg.select_evidence,
+            title_en="t",
+            title_zh="t",
+            note_en="t",
+            note_zh="t",
+        )
+    except TypeError as exc:
+        assert "view_keys" in str(exc)
+        assert "load_bundle" in str(exc)
+        assert "build_query" in str(exc)
+    else:
+        raise AssertionError("11-field construction must TypeError")
+
+    with pytest.raises(TechnologyRegistrationRefusal) as held:
+        reg.registration_entry_or_refusal()
+    assert calls == []
+    assert held.value.code == reg.VERTICAL_REGISTRATION_HELD_COMPANY_PROFILE
+    assert held.value.code == "vertical_registration_held:company_profile"
+    assert str(held.value) == "vertical_registration_held:company_profile"
