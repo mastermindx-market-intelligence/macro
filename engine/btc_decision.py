@@ -391,3 +391,45 @@ def build_decision(
     base["final"] = final_block
     base["integrity"] = {"ok": True, "checks": checks, "errors": []}
     return base
+
+
+def project_budget(decision: Mapping[str, Any] | None) -> dict[str, Any]:
+    """Project the canonical decision into the minimal total-budget contract.
+
+    The projection is intentionally fail-closed: an integrity-invalid decision
+    may retain diagnostic final fields in btc.decision/v1, but no downstream
+    class allocator may treat those diagnostics as an actionable budget.
+    """
+    source = decision if isinstance(decision, Mapping) else {}
+    integrity = source.get("integrity")
+    integrity = integrity if isinstance(integrity, Mapping) else {}
+    final = source.get("final")
+    final = final if isinstance(final, Mapping) else {}
+    errors = integrity.get("errors")
+    errors = list(errors) if isinstance(errors, (list, tuple)) else []
+
+    schema = _text(source.get("schema"))
+    status = _text(source.get("status")) or "unavailable"
+    integrity_ok = bool(integrity.get("ok"))
+    exposure_pct = _finite(final.get("exposure_pct"))
+    exposure_in_range = bool(
+        exposure_pct is not None and 0.0 <= exposure_pct <= 100.0
+    )
+    available = bool(
+        schema == SCHEMA
+        and status == "ok"
+        and integrity_ok
+        and exposure_in_range
+    )
+
+    return {
+        "schema": SCHEMA,
+        "status": "ok" if available else "unavailable",
+        "as_of": _text(source.get("as_of")),
+        "integrity_ok": integrity_ok,
+        "final_exposure_pct": (
+            _display_pct(exposure_pct) if available and exposure_pct is not None else None
+        ),
+        "errors": errors,
+        "authority_source": "btc.decision/v1.final.exposure_pct",
+    }
