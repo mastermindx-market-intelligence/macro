@@ -156,8 +156,8 @@ def test_wrapper_refuses_missing_or_unreadable_owner_artifact(tmp_path):
 
 
 def test_read_parquet_reads_via_native_filesystem_with_arrow_pools_idle(monkeypatch, tmp_path):
-    """Owner parquets are read through the native LocalFileSystem with Arrow pool
-    work disabled. pandas otherwise opens plain local paths as Python file objects
+    """Owner parquets are read through the native LocalFileSystem with pyarrow's
+    threaded read knobs off. pandas otherwise opens plain local paths as Python file objects
     and hands those to pyarrow; a delayed pyarrow IO-pool completion destroying
     such a Python-backed buffer (arrow::py::PyBuffer::~PyBuffer ->
     PyGILState_Ensure) after interpreter finalization has begun forces

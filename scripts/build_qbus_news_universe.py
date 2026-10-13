@@ -88,11 +88,16 @@ def _read_parquet(path: Path, *, include_index: bool = False) -> list[dict]:
         # the start of interpreter finalization, its destructor's PyGILState_Ensure
         # makes CPython force pthread_exit for the worker, and the forced unwind
         # ends in std::terminate (SIGABRT, "terminate called without an active
-        # exception") after the receipt is already printed (~10% of runs at 4 CPUs).
-        # Reading through the native LocalFileSystem keeps every pool task free of
-        # Python objects; use_threads/pre_buffer False (and a serial to_pandas
-        # conversion where pandas accepts it) keep the reads from scheduling Arrow
-        # pool work at all (measured: 5 -> 6 process threads instead of 5 -> 10).
+        # exception") after the receipt is already printed: 63/1002 runs (6.29%)
+        # at OMP_NUM_THREADS=4 on 4 pinned CPUs, and 18/300 on pandas 2.2. Reading
+        # through the native LocalFileSystem keeps the parquet reads' pool tasks
+        # free of Python-backed buffers, so the captured abort precondition cannot
+        # arise (0/1002 and 0/300 after the change). use_threads/pre_buffer False
+        # and the serial to_pandas conversion shrink the pool-thread census rather
+        # than emptying it: 5 -> 6 process threads after the four reads instead of
+        # 5 -> 10, and 5 -> 12 instead of 5 -> 13 on pandas 2.2, where
+        # read_parquet has no to_pandas_kwargs and the to_pandas conversion still
+        # runs on the CPU pool.
         kwargs: dict[str, object] = {
             "filesystem": pyarrow.fs.LocalFileSystem(),
             "use_threads": False,
