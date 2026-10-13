@@ -1,0 +1,28 @@
+{
+  "schema": "mastermind.press.continuation_registration.v1",
+  "operation": "mmx-public-intelligence-delivery-20261011-local-ceo-001",
+  "observed_at": "2026-10-12T08:05:24.225027+00:00",
+  "automation_id": "complete-press-delivery",
+  "kind": "heartbeat",
+  "status": "ACTIVE",
+  "target_thread_id": "01a12a2a-d7e1-77b1-9262-ab593179dd13",
+  "interval_minutes": 20,
+  "prompt_sha256": "7cfd90c3a660d388ff4cdf7b7fd4504ab96859c9721c8a1d305448433c7db9ee",
+  "scope": "Complete original PR8786 release and browser verification, then ship tested aggregate-feed follow-on",
+  "first_scheduled_execution_observed": true,
+  "foreground_observer": {
+    "pid": 13739,
+    "exec_session": 83265,
+    "stop_signal": "SIGINT",
+    "exit_code": 130
+  },
+  "release_authority": "Existing GitHub protected controller only; no gate changed",
+  "publication_approved": false,
+  "current_prompt_sha256": "5d6af8cf1a5b297cc1c160d30781cac0bf65981b1d19978f022e87aaa6b3da05",
+  "current_prompt_readback_at": "2026-10-12T22:04:35.723167+00:00",
+  "current_original_pr_head": "ff37582d18cb6b4ac27ae760da76963f1962e287",
+  "current_follow_on_head": "0b5bacd5b36d40a9796388aaf2c6e8ab2d16622f",
+  "current_ci_run": 38313710071,
+  "first_scheduled_execution_at": "2026-10-12T08:31:49.007Z",
+  "execution_evidence": "Native same-thread user heartbeat carrying automation_id complete-press-delivery"
+}

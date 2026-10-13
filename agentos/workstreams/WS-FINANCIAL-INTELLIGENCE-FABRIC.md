@@ -138,17 +138,22 @@ decisions:
   - DEC:FIF-S0-RAGGED-LAYOUT-FAIL-CLOSED
   - DEC:FIF-D3-DATASET-MODE-SELECTOR
   - DEC:FIF-PER-PR-CI-WIRING-STAGGERED-ANCHORS
+  - DEC:FIF-C0-ADMISSION-CLOCK-PLAN-BEFORE-WRITE
+  - DEC:FIF-PARSER-FINGERPRINT-BINDS-ACCEPTED-OUTPUT
+  - DEC:FIF-X2-SAVED-VIEW-BINDS-EXPORT-CONTRACT
 next_action: >
-  T1/T1b #8929 MERGED 2026-10-12T09:43:49Z (squash 60e8e959d0a0, landed-checked
-  per path). Merge the rest of wave 1 (T2 #8936, S0 #8928, S1-a #8952, E0 #8930,
-  C1 #8950, D3 #8951, X1 #8949, P0 #8962) plus K #8964 and Q0 #8965 once the
-  main-inherited ci-pack-0 closure red (heal #8960) clears → S2/E1/D0/D1/D2/C0
-  (ORCH-A) and X0, then K1–K4 after A1 (ORCH-B) → S1-b query wiring as a
-  separate seat lane after S2 merges → P1 → P2 (design lane) → A0/A1
-  acceptance. Verify each merge against a freshly fetched origin/main (bare
-  git fetch origin, then per-PR path checks). Sol's masterplan PR #8881
-  (sol/fif-e2e-masterplan-20261011) is DRAFT and must never be armed by this
-  program.
+  Wave 2 merged (handoff FINANCIAL-INTELLIGENCE-FABRIC-2026-10-13-fif-e2e-wave2):
+  D0–D3, C0/C0-b (#9021, ERRATA-3 clock), G-SRC #9030, D1-ext #9042 (admitted
+  6/16 → 10/16), S2/S1-b/S2-p, E1/E-FIX, P1/P1-b/P2 #9011, X0 #8996, X1 #8949,
+  A0-a #9024, T11 #9028. Live /api/health = golden by design. Next: C0-c
+  (opus review → hand merge on concluded green) → A0 gate (VPS
+  FIF_FINANCIAL_DATASET_MODE=production flip + macro-api restart held for the
+  Chairman or a Sol-delegated root; A45 entitled-browser receipts;
+  schedule-born production proof) → G1–G4 → A1 → C2/E2/K1–K4/Q1/Q2/V0/V1 →
+  coverage tiers (250-deep, then 1,000-core) → independent acceptance.
+  Parallel: D1-ext C (fragment-only hrefs, 3 CAT 10-Qs) then B'2 (BAC cap
+  co-raise, after step-0 measurement and ruling); X2-n then X2-s, then X2-b.
+  Merge by hand with --match-head-commit on concluded green; never arm.
 landmines:
   - >
     Core catalog is consolidated_only. Company Facts conversion sets
@@ -285,6 +290,13 @@ do_not_redo:
     Do not redo the G1–G4 issuer census: the GOOGL/SNOW/CAT/BAC
     accession/concept census notes are un-merged seat-scratchpad research
     inputs for D0, not completed packs.
+  - >
+    Wave 2 (2026-10-13): do not re-derive the C0-b admission clock
+    (DEC:FIF-C0-ADMISSION-CLOCK-PLAN-BEFORE-WRITE); do not bump the parser
+    VERSION or fingerprint for a widening proved byte-identical over accepted
+    output (DEC:FIF-PARSER-FINGERPRINT-BINDS-ACCEPTED-OUTPUT); do not rebuild
+    X0 #8996 or X1 #8949 (TASK_GRAPH status is stale); do not re-spec X2
+    (rulings R0–R5, DEC:FIF-X2-SAVED-VIEW-BINDS-EXPORT-CONTRACT).
 waves:
   - id: FIF-0
     title: Program reset — land masterplan, naming, and collision map

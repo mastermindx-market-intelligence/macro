@@ -3552,6 +3552,12 @@ jobs:
     # 846 tracked / 127 concrete. Subject packages stay globbed.
     scope: exclusive
     paths:
+      # Native DailyBrief registration/producer import closure (PR #9037).
+      - "engine/prophet_candidate_state.py"
+      - "engine/prophet_daily_brief.py"
+      - "engine/prophet_entry_availability.py"
+      - "engine/prophet_strategy_definition.py"
+      - "research/prophet_v4/PROPHET_STRATEGY_PLATFORM_AND_CYCLE_CAPTURE_ARCHITECTURE_FREEZE_2026-08-30.md"
       - "research/prophet_v4/d2/D2B2_CN_HK_FROZEN_CONTRACT_2026-08-20.md"
       - "research/prophet_v4/d2/D2B2_US_FROZEN_CONTRACT_2026-08-21.md"
       - "scripts/build_security_master.py"
@@ -4569,6 +4575,13 @@ jobs:
       # as the step above.
       - name: options + render assertions that read committed data (the data_gate half)
         run: python -m pytest tests/test_options_session_guards.py tests/test_options_unit_seams.py tests/test_render_dead_asset_gate.py -m data_gate -q
+      # The data_gate half of tests/test_fif_p2_evidence_capture.py (FIF P2 #9011,
+      # 2026-10-12): the three tests that build or query the FIF kernel over committed
+      # data/edgar, data/universe, data/breadth and data/reference parquet, so a nightly
+      # commit alone can move their verdict. The other half runs in fif-kernel-guards on
+      # the code gate. Last, after the options/render data_gate half, for the same reason.
+      - name: FIF P2 evidence-capture assertions that read committed data (the data_gate half)
+        run: python -m pytest tests/test_fif_p2_evidence_capture.py -m data_gate -q
 
   c19-wp13-debt-maturity-as-of:
     if: ${{ false }}
@@ -5366,6 +5379,13 @@ jobs:
       - "tests/fixtures/us_candidate_episode/**"
       - "engine/prophet_object_change.py"
       - "tests/test_prophet_object_change.py"
+      # Native DailyBrief is a read-only projection over the incumbent Today owner.
+      - "app/prophet_daily_brief.py"
+      - "app/main.py"
+      - "engine/us_context_vector.py"
+      - "scripts/build_stock_library.py"
+      - "tests/test_prophet_today_provenance.py"
+      - "tests/test_prophet_daily_brief_api.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -5405,6 +5425,10 @@ jobs:
         run: python -m pytest tests/test_prophet_early_observations.py tests/test_prophet_observations_api.py -q
       - name: Prophet per-object change — native identity, separate clocks and unavailable comparisons
         run: python -m pytest tests/test_prophet_object_change.py -q
+      - name: Prophet native DailyBrief — source binding, B1 reconciliation and private API
+        run: >-
+          python -m pytest tests/test_prophet_today_provenance.py
+          tests/test_prophet_daily_brief_api.py -q
       - name: install observation browser
         run: python -m playwright install --with-deps chromium
       - name: Prophet observation discovery — full-population search, access failure and theme geometry
@@ -5728,6 +5752,13 @@ jobs:
     # every concrete static import-closure path (curated_exclusive_closure_findings
     # gates it) plus the measured runtime in-tree reads of every class-A suite.
     paths:
+      # Native DailyBrief registration/producer import closure (PR #9037).
+      - "app/prophet_daily_brief.py"
+      - "engine/prophet_candidate_state.py"
+      - "engine/prophet_daily_brief.py"
+      - "engine/prophet_entry_availability.py"
+      - "engine/prophet_strategy_definition.py"
+      - "research/prophet_v4/PROPHET_STRATEGY_PLATFORM_AND_CYCLE_CAPTURE_ARCHITECTURE_FREEZE_2026-08-30.md"
       - "engine/fundamental_forensics/**"
       - "app/forensics.py"
       - "config/fundamental_forensics/**"
@@ -6412,11 +6443,14 @@ jobs:
       - "scripts/build_security_master.py"
       - "scripts/build_stock_library.py"
       - "scripts/build_thematic_state.py"
+      - "scripts/capture_fif_issuer_packages.py"
+      - "scripts/capture_page_evidence.py"
       - "scripts/check_board_contradictions.py"
       - "scripts/check_signal_gate_coherence.py"
       - "scripts/check_stretch_oracle_contract.py"
       - "scripts/fundamental_forensics_disclosure_bundle.py"
       - "scripts/publish_company_disclosure.py"
+      - "scripts/publish_fif_production_datasets.py"
       - "scripts/publish_r2.py"
       - "scripts/query_k3e_expectation_surface.py"
       - "scripts/run_fundamental_forensics_attested_history.py"
@@ -6440,8 +6474,13 @@ jobs:
       - "templates/support.html.j2"
       - "tests/__init__.py"
       - "tests/conftest.py"
+      - "tests/test_fif_gsrc_capture.py"
+      - "tests/test_fif_p2_evidence_capture.py"
+      - "tests/test_fif_publication_workflow_shape.py"
       - "tests/test_filing_forensics_broad_sec_lane.py"
+      - "tests/test_filing_forensics_sec_lane.py"
       - "tests/test_forensics_api.py"
+      - "tests/tools/fif_p2_evidence_capture.py"
       # Static data-path references the app/ import closure carries (contract-delta, 2026-10-12).
       - "site/basketdata/baskets.json"
       - "site/basketdata/fear_greed.json"
@@ -6485,7 +6524,10 @@ jobs:
       - name: FIF kernel suites (class A, hermetic)
         run: >
           python -m pytest
+          tests/test_fif_gsrc_capture.py
+          tests/test_fif_publication_workflow_shape.py
           tests/test_filing_forensics_broad_sec_lane.py
+          tests/test_filing_forensics_sec_lane.py
           tests/test_forensics_api.py
           tests/test_fundamental_forensics_acquisition.py
           tests/test_fundamental_forensics_admitted_filing_package.py
@@ -6518,6 +6560,7 @@ jobs:
           tests/test_fundamental_forensics_health.py
           tests/test_fundamental_forensics_held_out_isolation.py
           tests/test_fundamental_forensics_ingest.py
+          tests/test_fundamental_forensics_member_capture.py
           tests/test_fundamental_forensics_metric_qualification.py
           tests/test_fundamental_forensics_metric_registry.py
           tests/test_fundamental_forensics_normalize.py
@@ -6529,6 +6572,7 @@ jobs:
           tests/test_fundamental_forensics_production_dataset_store.py
           tests/test_fundamental_forensics_production_lineage.py
           tests/test_fundamental_forensics_production_provider.py
+          tests/test_fundamental_forensics_production_publisher.py
           tests/test_fundamental_forensics_public_summary_freshness.py
           tests/test_fundamental_forensics_q0_quality_protocol.py
           tests/test_fundamental_forensics_query.py
@@ -6544,6 +6588,17 @@ jobs:
           tests/test_fundamental_forensics_ui.py
           tests/test_fundamental_forensics_wave2_operator.py
           -q
+      # tests/test_fif_p2_evidence_capture.py (FIF P2 #9011, 2026-10-12): its tree-only and
+      # fixture-built tests run here on the code gate. The three that build or query the
+      # kernel over nightly-advanced data/edgar, data/universe, data/breadth and
+      # data/reference parquet carry @pytest.mark.data_gate (tests/conftest.py); they are
+      # deselected here and run last in engine-render-guards on the data gate.
+      # test_fence2_app_and_engine_never_import_the_tool scans all of app/** and engine/**
+      # source. Those trees are deliberately not in paths above (they would select this job
+      # on nearly every code PR and breach the PACKING_PROBES), so an app- or engine-only
+      # PR that imports tests.tools is caught by the main ci.yml baseline, not here.
+      - name: FIF P2 evidence-capture suite (code half)
+        run: python -m pytest tests/test_fif_p2_evidence_capture.py -q -m "not data_gate"
   collector-registry:
     if: ${{ false }}
     gate: code
@@ -7380,6 +7435,8 @@ jobs:
     # narrow those.
     scope: exclusive
     paths:
+      # Native DailyBrief registration/producer import closure (PR #9037).
+      - "research/prophet_v4/PROPHET_STRATEGY_PLATFORM_AND_CYCLE_CAPTURE_ARCHITECTURE_FREEZE_2026-08-30.md"
       - "collectors/flow_signals.py"
       - "collectors/sec_request_pacer.py"
       - "lib/live_flow_event_stage.py"
@@ -9258,6 +9315,10 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      # Immutable Press dossier binding reaches the existing page inventory.
+      - "lib/__init__.py"
+      - "lib/config.py"
+      - "lib/pages.py"
       - "contracts/sector_intelligence/consumer_cyclical_intelligence_read_model.v1.schema.json"
       - "data/sector_intelligence/fixtures/consumer_cyclical_intelligence_read_model.v1.valid.json"
       - "tests/test_consumer_cyclical_intelligence_read_model_contract.py"
@@ -11938,6 +11999,19 @@ jobs:
     # Curated named closure: integrity fixtures scan only pytest tmp_path;
     # opaque artifact traversal must not claim unrelated template ownership.
     paths:
+      # Native DailyBrief registration/producer import closure (PR #9037).
+      - "engine/path_risk_signals.py"
+      - "engine/prophet_candidate_state.py"
+      - "engine/prophet_daily_brief.py"
+      - "engine/prophet_entry_availability.py"
+      - "engine/prophet_strategy_definition.py"
+      - "engine/stock_identity/__init__.py"
+      - "engine/stock_identity/authority.py"
+      - "engine/stock_identity/fingerprint.py"
+      - "engine/stock_identity/plane.py"
+      - "engine/us_candidate_episode.py"
+      - "engine/us_candidate_episode_intake.py"
+      - "research/prophet_v4/PROPHET_STRATEGY_PLATFORM_AND_CYCLE_CAPTURE_ARCHITECTURE_FREEZE_2026-08-30.md"
       - "collectors/flow_signals.py"
       - "collectors/sec_request_pacer.py"
       - "config/flow_detector.yml"
@@ -14000,6 +14074,12 @@ jobs:
     # genuine import edges.
     scope: exclusive
     paths:
+      # Native DailyBrief registration/producer import closure (PR #9037).
+      - "engine/prophet_candidate_state.py"
+      - "engine/prophet_daily_brief.py"
+      - "engine/prophet_entry_availability.py"
+      - "engine/prophet_strategy_definition.py"
+      - "research/prophet_v4/PROPHET_STRATEGY_PLATFORM_AND_CYCLE_CAPTURE_ARCHITECTURE_FREEZE_2026-08-30.md"
       - "engine/options_signal_episode.py"
       - "engine/options_signal_episode_contract.py"
       - "research/prophet_v4/d2/D2B2_CN_HK_FROZEN_CONTRACT_2026-08-20.md"
@@ -14657,6 +14737,10 @@ jobs:
     # was doing all the rest of the selecting.
     scope: exclusive
     paths:
+      # Immutable Press dossier binding reaches the existing page inventory.
+      - "lib/__init__.py"
+      - "lib/config.py"
+      - "lib/pages.py"
       - "collectors/biocatalyst/**"
       - "config/**"
       - "contracts/**"
@@ -14707,6 +14791,12 @@ jobs:
     # 846 tracked / 74 concrete.
     scope: exclusive
     paths:
+      # Native DailyBrief registration/producer import closure (PR #9037).
+      - "engine/prophet_candidate_state.py"
+      - "engine/prophet_daily_brief.py"
+      - "engine/prophet_entry_availability.py"
+      - "engine/prophet_strategy_definition.py"
+      - "research/prophet_v4/PROPHET_STRATEGY_PLATFORM_AND_CYCLE_CAPTURE_ARCHITECTURE_FREEZE_2026-08-30.md"
       - "engine/options_signal_episode.py"
       - "engine/options_signal_episode_contract.py"
       - "research/prophet_v4/d2/D2B2_CN_HK_FROZEN_CONTRACT_2026-08-20.md"
@@ -15939,6 +16029,7 @@ jobs:
           tests/test_publish_company_theme_exposure_r2.py
           tests/test_earnings_story_promotion.py
           tests/test_earnings_story_packets.py
+          tests/test_earnings_dossier_link_contract.py
           tests/test_earnings_story_press_workflow.py
           tests/test_earnings_story_press_admission.py
           tests/test_earnings_story_press_ingress.py
@@ -16501,18 +16592,10 @@ jobs:
   press-lane:
     if: ${{ false }}  # executed inside ci-pack; keep the legacy status definition runner-free
     gate: data
-    # D14 W1 Media Network press engine (2026-07-26). The press lane emits INTO
-    # the free acquisition estate, so its own suite has to run wherever that
-    # estate's drift law runs — a press change that breaks the frontmatter
-    # contract would otherwise surface as a red free-content-estate job on
-    # somebody else's PR. The dependency line follows free-content-estate's
-    # minimal-deps convention verbatim (`pytest pyyaml jinja2`) — the same three
-    # packages cover the same closure, so there is no reason to spell it
-    # differently. (run_ci_pack.py does share a venv between adjacent jobs with
-    # byte-identical install lines, but these two land in different packs, so
-    # matching buys convention here, not a shared environment.)
-    # Network-free: the validator suite is 100% deterministic and the writer
-    # (the one module that would make an LLM call) is never invoked by tests.
+    # D14 Press emits into the free acquisition estate, so keep its validation
+    # in the same data gate. The fixed offline baseline adds the incumbent
+    # pandas/numpy analytical engine and requests transport tests to the estate
+    # pytest/pyyaml/jinja2 closure. Tests never invoke a real provider or writer.
     timeout-minutes: 10
     runs-on: ubuntu-latest
     steps:
@@ -16521,11 +16604,11 @@ jobs:
         with:
           python-version: "3.12"
       - name: install minimal deps
-        run: pip install pytest pyyaml jinja2
+        run: pip install pytest pyyaml jinja2 numpy pandas requests
       - name: press validator suite (paraphrase, fact-anchor, our-value, lexicons)
         run: python -m pytest tests/test_press_validators.py -q
       - name: press planner + writer + orchestrator suites
-        run: python -m pytest tests/test_press_planner.py tests/test_press_writer.py tests/test_press_run.py tests/test_earnings_canonical_story.py -q
+        run: python -m pytest tests/test_press_planner.py tests/test_press_external_candidate.py tests/test_press_adjusted_baseline.py tests/test_press_writer.py tests/test_press_run.py tests/test_press_staging_inspection.py tests/test_earnings_canonical_story.py -q
       - name: press admin panel + workflow shape
         run: python -m pytest tests/test_press_admin.py tests/test_press_workflow.py -q
       # W1.5 property trees + the cutover sync guard. Same lane on purpose: the
@@ -16965,6 +17048,8 @@ jobs:
     # the five scripts are closure imports, not tree scans.
     scope: exclusive
     paths:
+      # Native DailyBrief registration/producer import closure (PR #9037).
+      - "research/prophet_v4/PROPHET_STRATEGY_PLATFORM_AND_CYCLE_CAPTURE_ARCHITECTURE_FREEZE_2026-08-30.md"
       - "research/prophet_v4/d2/D2B2_CN_HK_FROZEN_CONTRACT_2026-08-20.md"
       - "research/prophet_v4/d2/D2B2_US_FROZEN_CONTRACT_2026-08-21.md"
       - "scripts/build_security_master.py"
@@ -17376,6 +17461,12 @@ jobs:
     # no named closure file was removed.
     scope: exclusive
     paths:
+      # Native DailyBrief registration/producer import closure (PR #9037).
+      - "engine/prophet_candidate_state.py"
+      - "engine/prophet_daily_brief.py"
+      - "engine/prophet_entry_availability.py"
+      - "engine/prophet_strategy_definition.py"
+      - "research/prophet_v4/PROPHET_STRATEGY_PLATFORM_AND_CYCLE_CAPTURE_ARCHITECTURE_FREEZE_2026-08-30.md"
       - "engine/options_signal_episode.py"
       - "engine/options_signal_episode_contract.py"
       - "research/prophet_v4/d2/D2B2_CN_HK_FROZEN_CONTRACT_2026-08-20.md"
@@ -18445,68 +18536,42 @@ jobs:
           python -m pytest tests/test_p0_prophet_candidate_board.py -q -k "candidate_heading_discloses_source_date or gated_candidate_journey or historical_plan_wall_does_not"
       - name: Prophet Plan read error and loading guards (hermetic)
         run: python -m pytest tests/test_p_mp1_shell_ladder_error_state.py -q
-      - name: Shared Prophet card - record identity and explicit unavailable action
-        run: python -m pytest tests/test_prophet_card_shared.py tests/test_prophet_plan_relation.py tests/test_prophet_candidate_plan_return.py -q
       - name: Prophet Today and Company context - owner selection and typed responses
         run: python -m pytest tests/test_p0_prophet_candidate_board.py -q -k "today or company_context"
-      - name: Prophet journey reconciliation harness (PR-time gated journey)
-        run: python -m pytest tests/test_prophet_journey_reconcile.py -q
       - name: stock-brief context health (R2 context must yield a nonempty batch)
         run: >-
           python -m pytest tests/test_catalyst_stock.py -q -k "build_stock_briefs_all_no_context_is_failure or build_stock_briefs_empty_result_is_failure"
-      - name: prophet doors incl. Door W (washout-turn entries; fire legs, prereg pins, invariance)
-        run: python -m pytest tests/test_prophet_doors.py tests/test_gate_crash_failopen.py -q
-      - name: prophet arena (frozen challenger policies, closure-replay ruler, ledger lane gate, pick-chain fence)
-        run: python -m pytest tests/test_prophet_arena.py -q
-      - name: washout-turn organ (depth-gated weekly cross, PIT completed-bars pin, ledger gate)
-        run: python -m pytest tests/test_washout_turn.py tests/test_mtf_upturn.py tests/test_oracle_memory_analogues_step.py tests/test_stock_events.py tests/test_event_atlas.py -q
-      - name: leader-pullback organ (§6.9 R4 — RS-leader reset detection, self-containment + no-authority pins)
-        run: python -m pytest tests/test_us_leader_pullback.py -q
-      - name: leader-pullback coverage publisher (§6.9 R4 — the artifact the EARLY-TURN intake reads)
         # Rides the organ's own lane because it is the organ's publisher: it supplies the
         # PIT cross-section the organ refuses to reach for, and #5007's organ + #5105's
         # intake were joined by nothing until it shipped. Its end-to-end cases drive the
         # real `originate_plans` reading the real artifact off disk (~5s serial), so the
         # pair must be able to red each other on the same head.
-        run: python -m pytest tests/test_us_leader_pullback_coverage.py -q
       # #7180 completed-session source binding is a code contract, not nightly data
       # freshness. Keep the suite in this existing Prophet code gate so PR packs can
       # exercise the same source/date clipping and frozen-object law before merge.
-      - name: US completed-session source binding (closed-session panel + frozen source)
-        run: python -m pytest tests/test_us_completed_session_panel.py -q
-      - name: leader-observation projection (strict source status, no-rank authority, summary privacy)
-        run: python -m pytest tests/test_us_leader_observation_projection.py -q
       # Prophet V4 B3 candidate-state core + owner-fact adapters. Keep this in the
       # existing CODE-gated turn/organ lane: the source adapter consumes canonical
       # generation-local TURN WATCH facts, while Radar identity remains fail-closed
       # and B4/ranking/trading authority stay absent. No new job or runner is added.
-      - name: prophet B3 candidate state (orthogonal lifecycle/emergence/maturity + fail-closed owner facts)
-        run: python -m pytest tests/test_prophet_candidate_state.py tests/test_prophet_candidate_state_sources.py -q
       # Strategy-platform prerequisite for B4: one immutable, versioned, authority-false
       # owner definition. This does not compute Availability or widen B1/B3 admission.
-      - name: prophet strategy definition owner projection (B4 prerequisite only)
-        run: python -m pytest tests/test_prophet_strategy_definition.py tests/test_build_live_quotes.py tests/test_vps_live_orchestration.py -q
       # MI-S2 prospective registration binds the B4 session policy above (2026-2027
       # era, early-close table) and freezes one TrialLedger config; it rides this
       # code gate so a session-policy edit and the registration can red each other.
-      - name: MI-S2 theme-relative intraday registration (prospective; session-policy binding, one-trial ledger)
-        run: python -m pytest tests/test_mi_s2_theme_relative_intraday_registration.py -q
       # Daily Brief is a zero-I/O read model over owner receipts, not B4 policy.
       # Keep malformed-input, health-precedence and immutable-receipt regressions on CODE.
-      - name: prophet Daily Brief compositor (owner receipts + fail-closed presentation)
-        run: python -m pytest tests/test_prophet_daily_brief.py -q
-      - name: turn-watch desk + group-turn organ (§6.9 R8 — publish path, leg-(d) organ vs fallback, recall contract; §6.9 R6 basket lifecycle)
         # The TURN WATCH desk consumes the group-turn organ's artifact and R4's organ, so
         # all three ride one lane. test_us_basket_turn.py was named by NO run: step in any
         # workflow before this — the same unrun-suite hole this job's header records for
         # test_mtf_upturn.py, found while auditing the desk (2026-08-09, 36 tests, green on
         # the base that registered it). test_us_turn_watch.py is enumerated at birth.
-        run: python -m pytest tests/test_us_turn_watch.py tests/test_us_basket_turn.py -q
       # V4 B2-0 records-only evidence regression. This must be owned by
       # an existing merge-binding CODE gate, not only by the data-gated
       # anticipation lane. No new job/runner/control plane is introduced.
-      - name: b2-0 disposition matrix (B-15..B-19 lineage, PIT replay, mutation guards, red-condition discriminators)
-        run: python -m pytest tests/test_prophet_b2_disposition.py -q
+      - name: Prophet source, lifecycle and presentation contracts (one native process)
+        run: python -m pytest tests/test_prophet_card_shared.py tests/test_prophet_plan_relation.py tests/test_prophet_candidate_plan_return.py tests/test_prophet_journey_reconcile.py tests/test_us_completed_session_panel.py tests/test_us_leader_observation_projection.py tests/test_prophet_candidate_state.py tests/test_prophet_candidate_state_sources.py tests/test_prophet_strategy_definition.py tests/test_build_live_quotes.py tests/test_vps_live_orchestration.py tests/test_prophet_daily_brief.py -q
+      - name: Prophet detector, organ and disposition contracts (one native process)
+        run: python -m pytest tests/test_prophet_doors.py tests/test_gate_crash_failopen.py tests/test_prophet_arena.py tests/test_washout_turn.py tests/test_mtf_upturn.py tests/test_oracle_memory_analogues_step.py tests/test_stock_events.py tests/test_event_atlas.py tests/test_us_leader_pullback.py tests/test_us_leader_pullback_coverage.py tests/test_mi_s2_theme_relative_intraday_registration.py tests/test_us_turn_watch.py tests/test_us_basket_turn.py tests/test_prophet_b2_disposition.py -q
 
   prophet-anticipation-intake:
     # ANTICIPATION A1 (status-class admission) + §6.9 R3 (structure-anchored entry
@@ -18828,6 +18893,19 @@ jobs:
     # the declared-scope coverage audit re-checks them on every load.
     scope: exclusive
     paths:
+      # Native DailyBrief registration/producer import closure (PR #9037).
+      - "engine/path_risk_signals.py"
+      - "engine/prophet_candidate_state.py"
+      - "engine/prophet_daily_brief.py"
+      - "engine/prophet_entry_availability.py"
+      - "engine/prophet_strategy_definition.py"
+      - "engine/stock_identity/__init__.py"
+      - "engine/stock_identity/authority.py"
+      - "engine/stock_identity/fingerprint.py"
+      - "engine/stock_identity/plane.py"
+      - "engine/us_candidate_episode.py"
+      - "engine/us_candidate_episode_intake.py"
+      - "research/prophet_v4/PROPHET_STRATEGY_PLATFORM_AND_CYCLE_CAPTURE_ARCHITECTURE_FREEZE_2026-08-30.md"
       - "engine/options_signal_episode.py"
       - "engine/options_signal_episode_contract.py"
       - "engine/session_digest.py"
@@ -20013,6 +20091,10 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      # Immutable Press dossier binding reaches the existing page inventory.
+      - "lib/__init__.py"
+      - "lib/config.py"
+      - "lib/pages.py"
       - "tests/test_pg_economic_source_selection.py"
       - "scripts/refresh_event_workspaces.py"
       - "engine/company_intelligence/pg_profile.py"
@@ -20075,6 +20157,10 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      # Immutable Press dossier binding reaches the existing page inventory.
+      - "lib/__init__.py"
+      - "lib/config.py"
+      - "lib/pages.py"
       - "engine/company_intelligence/pg_profile.py"
       - "engine/company_intelligence/pg_envelope.py"
       - "engine/company_intelligence/economic_observations.py"
@@ -21442,6 +21528,12 @@ jobs:
     # 846 tracked / 74 concrete. Subject packages stay globbed.
     scope: exclusive
     paths:
+      # Native DailyBrief registration/producer import closure (PR #9037).
+      - "engine/prophet_candidate_state.py"
+      - "engine/prophet_daily_brief.py"
+      - "engine/prophet_entry_availability.py"
+      - "engine/prophet_strategy_definition.py"
+      - "research/prophet_v4/PROPHET_STRATEGY_PLATFORM_AND_CYCLE_CAPTURE_ARCHITECTURE_FREEZE_2026-08-30.md"
       - "engine/options_signal_episode.py"
       - "engine/options_signal_episode_contract.py"
       - "research/prophet_v4/d2/D2B2_CN_HK_FROZEN_CONTRACT_2026-08-20.md"
@@ -22976,6 +23068,15 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      # Native DailyBrief registration/producer import closure (PR #9037).
+      - "app/prophet_daily_brief.py"
+      - "engine/prophet_candidate_state.py"
+      - "engine/prophet_daily_brief.py"
+      - "engine/prophet_entry_availability.py"
+      - "engine/prophet_strategy_definition.py"
+      - "research/prophet_v4/PROPHET_STRATEGY_PLATFORM_AND_CYCLE_CAPTURE_ARCHITECTURE_FREEZE_2026-08-30.md"
+      # Immutable Press dossier binding reaches the existing page inventory.
+      - "lib/pages.py"
       - "collectors/flow_signals.py"
       - "collectors/sec_request_pacer.py"
       - "config/flow_detector.yml"
@@ -23297,6 +23398,7 @@ jobs:
       - "engine/fundamental_forensics/detectors.py"
       - "engine/fundamental_forensics/disclosure_diff.py"
       - "engine/fundamental_forensics/excel_export.py"
+      - "engine/fundamental_forensics/fif_member_capture.py"
       - "engine/fundamental_forensics/filing_attestation.py"
       - "engine/fundamental_forensics/filing_package.py"
       - "engine/fundamental_forensics/financial_intelligence_packet.py"
@@ -23652,6 +23754,7 @@ jobs:
       - "scripts/check_signal_gate_coherence.py"
       - "scripts/check_stretch_oracle_contract.py"
       - "scripts/migrate_qbus_news.py"
+      - "scripts/publish_fif_production_datasets.py"
       - "scripts/qbus_news_cluster_audit.py"
       - "scripts/query_k3e_expectation_surface.py"
       - "scripts/run_qbus_news.py"
@@ -24337,6 +24440,12 @@ jobs:
     # An unlisted closure file is an uncovered path. No tests/** catch-all.
     scope: exclusive
     paths:
+      # Native DailyBrief registration/producer import closure (PR #9037).
+      - "engine/stock_identity/__init__.py"
+      - "engine/stock_identity/authority.py"
+      - "engine/stock_identity/fingerprint.py"
+      - "engine/stock_identity/plane.py"
+      - "research/prophet_v4/PROPHET_STRATEGY_PLATFORM_AND_CYCLE_CAPTURE_ARCHITECTURE_FREEZE_2026-08-30.md"
       - scripts/build_international_macro.py
       - scripts/build_intl.py
       - scripts/build_intl_library.py
@@ -24677,6 +24786,8 @@ jobs:
     # read or run; an unlisted closure file is an uncovered path. No
     # tests/** catch-all.
     paths:
+      # Immutable Press dossier binding reaches the existing page inventory.
+      - "lib/pages.py"
       - "lib/exchange_holidays.py"
       - "ops/launchd/run_skew_accrual.sh"
       - "ops/launchd/run_with_env.sh"
@@ -24858,6 +24969,10 @@ jobs:
     # is listed under `paths:` below).
     scope: exclusive
     paths:
+      # Immutable Press dossier binding reaches the existing page inventory.
+      - "lib/__init__.py"
+      - "lib/config.py"
+      - "lib/pages.py"
       - "tests/test_industrials_dependency_binding.py"
       - "tests/industrials_result_cash_helpers.py"
       - "tests/fixtures/industrials_result_cash/**"
@@ -25008,6 +25123,9 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      # Immutable Press dossier binding reaches the existing page inventory.
+      - "lib/config.py"
+      - "lib/pages.py"
       - "engine/__init__.py"
       - "engine/pb_d_cohort.py"
       - "engine/pb_d_evaluation.py"
