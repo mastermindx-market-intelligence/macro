@@ -25985,10 +25985,20 @@ jobs:
     # Grey Deer W3 (WS:GREY-DEER-RISK-INTELLIGENCE): pullback stage-1 executing
     # script frozen by research/grey_deer/PULLBACK_PREREGISTRATION_2026-10-11.md
     # (blob 49a68b5e9c6543d662044b0aa391c4b6e6e6052e). Hermetic: synthetic series only.
+    # W4 adds the stage-1 RT repairs, the result-payload schema checker, the
+    # determinism checks, the panel split/calendar adjustment and the stage-1b
+    # pooled-panel runner (prereg v1.1, DRAFT - NOT FROZEN). Still hermetic.
     timeout-minutes: 10
     paths:
       - "scripts/research/grey_deer_pullback_stage1.py"
+      - "scripts/research/grey_deer_panel_adjust.py"
+      - "scripts/research/grey_deer_pullback_stage1_schema.py"
+      - "scripts/research/grey_deer_pullback_stage1b.py"
       - "tests/test_grey_deer_pullback_stage1.py"
+      - "tests/test_grey_deer_panel_adjust.py"
+      - "tests/test_grey_deer_pullback_stage1_determinism.py"
+      - "tests/test_grey_deer_pullback_stage1_schema.py"
+      - "tests/test_grey_deer_pullback_stage1b.py"
       - "lib/observed_moves.py"
       - "engine/vol_forecast.py"
       - "lib/nyse_calendar.py"
@@ -26032,6 +26042,10 @@ jobs:
       - "research/grey_deer/RISK_RADAR_STATE_LADDER_CALIBRATION_RESULTS_2026-09-21.md"
       - "scripts/research/risk_radar_displayed_probability_audit.py"
       - "scripts/research/risk_radar_state_ladder_calibration.py"
+      - "research/grey_deer/PULLBACK_PREREGISTRATION_V1_1_2026-10-12.md"
+      - "research/grey_deer/PULLBACK_SOURCE_RIGHTS_QUALIFICATION_V1_1_2026-10-12.md"
+      - "research/grey_deer/PULLBACK_STAGE1_RESULTS_2026-10-11.json"
+      - "research/grey_deer/pullback_stage1_r1/PULLBACK_STAGE1_RESULTS_2026-10-11.json"
       - "scripts/validate_regime_fwd.py"
     runs-on: ubuntu-latest
     steps:
@@ -26041,8 +26055,14 @@ jobs:
           python-version: "3.12"
       - name: install minimal deps
         run: pip install pytest pandas numpy scipy pyarrow pyyaml
-      - name: pullback stage-1 synthetic tests
-        run: python -m pytest tests/test_grey_deer_pullback_stage1.py -q
+      - name: pullback stage-1 / stage-1b synthetic tests
+        run: >-
+          python -m pytest -q
+          tests/test_grey_deer_pullback_stage1.py
+          tests/test_grey_deer_pullback_stage1_schema.py
+          tests/test_grey_deer_pullback_stage1_determinism.py
+          tests/test_grey_deer_panel_adjust.py
+          tests/test_grey_deer_pullback_stage1b.py
 
   sni-s1-residual:
     if: ${{ false }}
