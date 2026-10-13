@@ -17,7 +17,7 @@
   },
   "fixture_receipt": {
     "path": "mockups/evidence/prophet-p0b-zero-fouc/rendered-fixture.json",
-    "sha256": "3dd3bd4a636208facdc8fdb63868540f431a6406e788ed25d472ed3679a844b2"
+    "sha256": "c07034fa9d2f102af84b4ec145cedfb39fad982da854ed716bcaf543861835c8"
   },
   "fixture_assets_root": "mockups/evidence/prophet-p0b-zero-fouc/inputs/browser-data",
   "fixture_market": "ca",
@@ -279,7 +279,7 @@
     "templates/_risk_radar_card.html.j2": "61c410f540c0bcd2db90c6244725a0cd20576fa5b3ca8afc2991efed19882c7d",
     "templates/_risk_radar_dlg.css.j2": "186239255efa4f7a938c3b0abb9c33c59c99e0711993269b5909980da2adf1ac",
     "templates/_risk_radar_dlg.html.j2": "190d49989050758ff781c601b54ed6d8531fd722f9cf8d1f32a6531fc50a6fa4",
-    "templates/_risk_radar_pullback_depth.html.j2": "5965885035d5622faf4444878d5044a4f1b0b68b8eb7305da1a8a727938731ba",
+    "templates/_risk_radar_pullback_depth.html.j2": "10462c995ed7d133cf31fa55f4cf019ed16d715111dafbd33b66909b932a7847",
     "templates/_seo_head.html.j2": "eda59eeb5f7cf0fb83a1a6430ff523939ee43cd214fe2b4aebba7ca4561bbbee",
     "templates/_site_nav.html.j2": "164f3119fd04b8886d2d29703dc9c017e13bceeae1ecc49a36f9842353d9e482",
     "templates/canada.html.j2": "878237e4c3d0bef90c2fce108b64cf859d8f67783dede4f77881392c2d1eb7e5"
