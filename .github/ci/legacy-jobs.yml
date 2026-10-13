@@ -4604,8 +4604,9 @@ jobs:
     # has no pull_request trigger, so the suites this branch added never
     # executed on the merge gate. The measured-hermetic standard is the one
     # china-native-collectors states: a suite that passes with data/ and site/
-    # absent cannot have a verdict a nightly commit moves. Re-measured in this
-    # worktree with both trees absent and CI=1: 1694 passed, 1 xfailed, 137.13s.
+    # absent cannot have a verdict a nightly commit moves. Re-measured after the
+    # 2026-10-13 main merge with both trees absent and CI=1: 1734 passed,
+    # 1 xfailed, 371.79s on a shared, loaded host.
     # The xfail is strict and already marked in the suite.
     #
     # Node: the expiry-owner and dialog suites execute shipped template JS and
@@ -4783,6 +4784,7 @@ jobs:
       - "engine/btc_impulse_radar.py"
       - "engine/btc_impulse_radar_backtest.py"
       - "engine/btc_inputs.py"
+      - "engine/btc_intraday_cvd.py"
       - "engine/btc_leverage_cascade.py"
       - "engine/btc_master.py"
       - "engine/btc_mtf.py"
@@ -5202,6 +5204,7 @@ jobs:
       - "engine/prophet_board_since.py"
       - "engine/prophet_bridge.py"
       - "engine/prophet_candidate_state.py"
+      - "engine/prophet_candidate_state_sources.py"
       - "engine/prophet_daily_brief.py"
       - "engine/prophet_doors.py"
       - "engine/prophet_entry_availability.py"
@@ -5575,6 +5578,7 @@ jobs:
       - "tests/test_macro_risk_dialog.py"
       - "tests/test_pullback_builder_end_to_end.py"
       - "tests/test_pullback_causal_features.py"
+      - "tests/test_pullback_chart_accessible_name.py"
       - "tests/test_pullback_depth_a11y.py"
       - "tests/test_pullback_depth_contrast.py"
       - "tests/test_pullback_depth_copy_states.py"
@@ -5588,6 +5592,7 @@ jobs:
       - "tests/test_pullback_depth_projection.py"
       - "tests/test_pullback_depth_static_contract.py"
       - "tests/test_pullback_depth_template_mutants.py"
+      - "tests/test_pullback_episode_fuzz.py"
       - "tests/test_pullback_expiry_deadline.py"
       - "tests/test_pullback_expiry_owner_js.py"
       - "tests/test_pullback_expiry_owner_js_edge.py"
@@ -5674,6 +5679,8 @@ jobs:
           tests/test_pullback_no_forecast_invariant.py
           tests/test_pullback_depth_copy_v2.py
           tests/test_pullback_expiry_deadline.py
+          tests/test_pullback_chart_accessible_name.py
+          tests/test_pullback_episode_fuzz.py
           -q
 
 
