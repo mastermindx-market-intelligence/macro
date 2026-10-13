@@ -922,14 +922,43 @@ def test_recovering_close_above_the_reference_high_charts_the_positive_end():
 # path, for a decline that never clears the frozen high. Neither the
 # history cell's negative branch nor the chart's unsigned end tag changes
 # for this shape, so the unclipped path keeps this fragment byte-identical.
+# The chart's bilingual accessible name came later and only wraps the chart
+# line, so the pin is checked on the render with that wrapper taken off.
 _NEVER_EXCEEDS_SHA256 = "05672a5aa1319da1e7f37400d2638c1c8b3b4223484538337be583579b402d34"
+
+
+def _without_chart_name(html):
+    """Undo the accessible-name wrapper: four lines back to the one chart line."""
+    lines = html.split("\n")
+    starts = [n for n, line in enumerate(lines)
+              if line.startswith('      <div role="img" aria-labelledby="us-rrp-chart-name"')]
+    assert len(starts) == 1, starts
+    n = starts[0]
+    assert lines[n + 1].startswith('        <span id="us-rrp-chart-name" ')
+    assert lines[n + 2].startswith('        <div class="rrp-chart" aria-hidden="true">')
+    assert lines[n + 3] == "      </div>"
+    return "\n".join(lines[:n] + [lines[n + 2][2:]] + lines[n + 4:])
 
 
 def test_underway_path_that_never_exceeds_the_high_matches_the_base_render():
     import hashlib
+    from pathlib import Path
+
+    from jinja2 import Environment, FileSystemLoader
 
     rows = to_rows([100.0] * 62 + [94.0, 96.0, 95.0])
-    obs, _view, _soup, html = _render_observation(rows)
+    obs, view, _soup, html = _render_observation(rows)
     assert obs["phase"] == "underway" and obs["close"] < obs["peak_close"]
     assert all(value <= 0 for value in obs["price_path"]["vals"])
-    assert hashlib.sha256(html.encode()).hexdigest() == _NEVER_EXCEEDS_SHA256
+    unwrapped = _without_chart_name(html)
+    assert unwrapped != html
+    assert hashlib.sha256(unwrapped.encode()).hexdigest() == _NEVER_EXCEEDS_SHA256
+    # A view with no chart name renders the base bytes as they are.
+    unnamed = {key: value for key, value in view.items()
+               if key not in ("chart_label_en", "chart_label_zh")}
+    env = Environment(loader=FileSystemLoader(Path(__file__).resolve().parents[1] / "templates"),
+                      autoescape=False)
+    bare = env.from_string(
+        '{% import "_risk_radar_pullback_depth.html.j2" as p %}{{ p.detail(market, v) }}'
+    ).render(market="us", v=unnamed)
+    assert hashlib.sha256(bare.encode()).hexdigest() == _NEVER_EXCEEDS_SHA256
