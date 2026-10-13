@@ -2943,6 +2943,7 @@ jobs:
       - "lib/dataos/nulls.py"
       - "lib/dataos/price.py"
       - "lib/dataos/quality.py"
+      - "lib/dataos/read_contract.py"
       - "lib/dataos/registry.py"
       - "lib/dataos/temporal.py"
       - "engine/composite_score.py"
@@ -6468,6 +6469,7 @@ jobs:
       - "lib/dataos/nulls.py"
       - "lib/dataos/price.py"
       - "lib/dataos/quality.py"
+      - "lib/dataos/read_contract.py"
       - "lib/dataos/registry.py"
       - "lib/dataos/temporal.py"
       - "lib/delisted_symbols.py"
@@ -8809,6 +8811,7 @@ jobs:
       - "lib/dataos/nulls.py"
       - "lib/dataos/price.py"
       - "lib/dataos/quality.py"
+      - "lib/dataos/read_contract.py"
       - "lib/dataos/registry.py"
       - "lib/dataos/temporal.py"
       - "lib/nyse_calendar.py"
@@ -13076,6 +13079,7 @@ jobs:
       - lib/dataos/nulls.py
       - lib/dataos/price.py
       - lib/dataos/quality.py
+      - lib/dataos/read_contract.py
       - lib/dataos/registry.py
       - lib/dataos/temporal.py
       - tests/test_theme_graph_structural_owner_binding.py
@@ -17474,6 +17478,7 @@ jobs:
       - lib/dataos/nulls.py
       - lib/dataos/price.py
       - lib/dataos/quality.py
+      - lib/dataos/read_contract.py
       - lib/dataos/registry.py
       - lib/dataos/temporal.py
       - lib/delisted_symbols.py
@@ -24884,6 +24889,7 @@ jobs:
       - "lib/dataos/nulls.py"
       - "lib/dataos/price.py"
       - "lib/dataos/quality.py"
+      - "lib/dataos/read_contract.py"
       - "lib/dataos/registry.py"
       - "lib/dataos/temporal.py"
       - "lib/delisted_symbols.py"
@@ -26017,6 +26023,7 @@ jobs:
       - lib/dataos/nulls.py
       - lib/dataos/price.py
       - lib/dataos/quality.py
+      - lib/dataos/read_contract.py
       - lib/dataos/registry.py
       - lib/dataos/temporal.py
       - lib/dataos/web_api.py
@@ -26103,6 +26110,33 @@ jobs:
       # V4-D2B2-US: same shape — the us_gmi_admission receipt block names its
       # binding contract path as a string.
       - research/prophet_v4/d2/D2B2_US_FROZEN_CONTRACT_2026-08-21.md
+      # Data OS completion R00 (#9150): tests/test_dataos_registry_consumers.py
+      # names D00 and the DataWorkspace consumer (lib/dataos/web_workspace.py) as
+      # string literals, so the inferred closure reaches these four tracked paths;
+      # contract-delta requires the declared scope to cover them (widening is the
+      # safe direction — this job is still pytest + pyyaml only).
+      - research/data_os_completion/2026-10-13/D00_SEMANTIC_DECISIONS.md
+      - scripts/data_workspace.py
+      - site/factordata/factors.json
+      - site/factordata/insider_signals.json
+      # Round 2 (same check): scripts/data_workspace.py above names engine/lab.py
+      # in a literal path list and engine/lab.py's lazy imports reach the engine
+      # indicator stack; the suite also cites the Data OS architecture doc. Cover
+      # them explicitly (plain rows, no globs — the curation probes are untouched).
+      - engine/__init__.py
+      - engine/canon.py
+      - engine/conditions.py
+      - engine/indicators.py
+      - engine/lab.py
+      - engine/predictive_signals.py
+      - engine/stock_technicals.py
+      - engine/strategy_signals.py
+      - engine/tech_catalog.py
+      - engine/tech_stars.py
+      - engine/technicals.py
+      - engine/trial_ledger.py
+      - engine/validation.py
+      - research/MASTERMIND_DATA_OS_ARCHITECTURE.md
       - .github/ci/legacy-jobs.yml
       - .github/workflows/ci.yml
       - config/dataset_registry.yml
@@ -26112,7 +26146,10 @@ jobs:
       - tests/test_dataos_nulls.py
       - tests/test_dataos_price.py
       - tests/test_dataos_quality.py
+      - tests/test_dataos_read_coherence.py
+      - tests/test_dataos_read_contract.py
       - tests/test_dataos_registry.py
+      - tests/test_dataos_registry_consumers.py
       - tests/test_dataos_temporal.py
     timeout-minutes: 8
     runs-on: ubuntu-latest
@@ -26131,7 +26168,10 @@ jobs:
           tests/test_dataos_temporal.py
           tests/test_dataos_price.py
           tests/test_dataos_nulls.py
+          tests/test_dataos_read_contract.py
+          tests/test_dataos_read_coherence.py
           tests/test_dataos_registry.py
+          tests/test_dataos_registry_consumers.py
           tests/test_dataos_quality.py -q -rs
 
   dataos-identity-seams:
@@ -26866,6 +26906,7 @@ jobs:
       - "lib/dataos/nulls.py"
       - "lib/dataos/price.py"
       - "lib/dataos/quality.py"
+      - "lib/dataos/read_contract.py"
       - "lib/dataos/registry.py"
       - "lib/dataos/temporal.py"
       - "lib/delisted_symbols.py"
@@ -28438,6 +28479,7 @@ jobs:
       - lib/dataos/nulls.py
       - lib/dataos/price.py
       - lib/dataos/quality.py
+      - lib/dataos/read_contract.py
       - lib/dataos/registry.py
       - lib/dataos/temporal.py
       - research/theme_graph/economic_network_execution_20261009/MICRON_SOURCE_CASE.json
@@ -28831,6 +28873,26 @@ jobs:
         run: pip install pytest pandas numpy pyarrow pyyaml requests
       - name: c19-wp24-superseded-generations
         run: python -m pytest tests/test_c19_wp24_superseded_generations.py -q -p no:cacheprovider
+  c19-wp24-consumer-states:
+    if: ${{ false }}
+    gate: code
+    # C19 WP24 DQ3 (MAS-263): named short-data consumer states (unavailable / parse_error / no_observation / partial / observed_zero) and the censored 999.99 days-to-cover flag. Hermetic: tmp_path only, no data/ reads, no network.
+    timeout-minutes: 10
+    paths:
+      - "collectors/finra.py"
+      - "engine/short_volume.py"
+      - "engine/stock_fundamentals.py"
+      - "tests/test_c19_wp24_consumer_states.py"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install minimal deps
+        run: pip install pytest pandas numpy pyarrow pyyaml requests
+      - name: c19-wp24-consumer-states
+        run: python -m pytest tests/test_c19_wp24_consumer_states.py -q -p no:cacheprovider
   c19-wp29-hk-southbound-two-period:
     if: ${{ false }}
     gate: code
