@@ -40,7 +40,7 @@ later benchmark boundary.
 from __future__ import annotations
 
 import copy as _copy
-from collections.abc import Mapping, Sequence
+from collections.abc import Iterable, Mapping, Sequence
 from dataclasses import dataclass
 from datetime import datetime as _datetime_cls, timedelta, timezone
 from decimal import Decimal
@@ -1184,6 +1184,7 @@ def _build_invalid_fixture(
     decision_at = None
     available_at = None
     contract = None
+    standard_deliverable = None
     position = None
     quantity_contracts = None
     multiplier = None
@@ -1199,6 +1200,7 @@ def _build_invalid_fixture(
         decision_at = canonical["decision_at"]
         available_at = canonical["available_at"]
         contract = canonical["contract"]
+        standard_deliverable = canonical["standard_deliverable"]
         position = canonical["position"]
         quantity_contracts = canonical["quantity_contracts"]
         multiplier = canonical["multiplier"]
@@ -1228,9 +1230,33 @@ def _build_invalid_fixture(
             else ""
         )
         contract = None
+        raw_deliverable = raw_expression.get("standard_deliverable")
+        if isinstance(raw_deliverable, bool):
+            standard_deliverable = raw_deliverable
         position = raw_expression.get("position")
         quantity_contracts = raw_expression.get("quantity_contracts")
         multiplier = raw_expression.get("multiplier")
+        # Population exclusions are raised before a canonical contract
+        # exists. Rebuild identity from the raw receipt and swallow a bad
+        # contract or digest; this reject path does not raise.
+        if status == STATUS_EXCLUDED:
+            try:
+                contract = cohort.validate_contract(
+                    {
+                        "root": raw_expression["root"],
+                        "expiration": raw_expression["expiration"],
+                        "right": raw_expression["right"],
+                        "strike": raw_expression["strike"],
+                        "strike_millis": raw_expression["strike_millis"],
+                        "occ_symbol": raw_expression["occ_symbol"],
+                    }
+                )
+            except (cohort.NbboCohortError, KeyError):
+                contract = None
+            try:
+                expression_digest_sha = _expression_digest(raw_expression)
+            except (KeyError, TypeError, cohort.NbboCohortError):
+                expression_digest_sha = ""
 
     record: dict[str, Any] = {
         "schema": SCHEMA,
@@ -1252,6 +1278,7 @@ def _build_invalid_fixture(
         ),
         "selection_fence_at": selection_fence_at,
         "contract": contract,
+        "standard_deliverable": standard_deliverable,
         "expression_decision_at": decision_at,
         "expression_available_at": available_at,
         "session_date": session_date.isoformat() if session_date is not None else None,
@@ -1323,6 +1350,7 @@ def _build_complete_fixture(
         "selection_frozen_before_outcomes": True,
         "selection_fence_at": canonical["selection_fence_at"],
         "contract": canonical["contract"],
+        "standard_deliverable": canonical["standard_deliverable"],
         "expression_decision_at": canonical["decision_at"],
         "expression_available_at": canonical["available_at"],
         "session_date": canonical["session_date"].isoformat(),
@@ -1956,6 +1984,31 @@ def evaluate_or_raise(
     return record
 
 
+def admitted_training_labels(records: Iterable[Mapping[str, Any]]) -> list[dict]:
+    """Return OA-3 fixture records admitted as training labels.
+
+    This function is the only admission point; it admits nothing until the
+    policy's authority changes through its own owner.
+
+    ``ALL_FALSE_AUTHORITY`` is read at call time. The fence admits nothing
+    unless ``may_train_prophet`` is exactly ``True`` (a missing or non-boolean
+    value keeps it closed).
+    Independently of that flag, a record is refused when its status is not
+    ``complete`` or its ``net_return_pct`` is ``None``.
+    """
+
+    if ALL_FALSE_AUTHORITY.get("may_train_prophet") is not True:
+        return []
+    admitted: list[dict] = []
+    for record in records:
+        if record.get("status") != STATUS_COMPLETE:
+            continue
+        if record.get("net_return_pct") is None:
+            continue
+        admitted.append(dict(record))
+    return admitted
+
+
 __all__ = [
     "ALL_FALSE_AUTHORITY",
     "ENTRY_WINDOW_SECONDS",
@@ -1984,6 +2037,7 @@ __all__ = [
     "STATUS_PENDING",
     "STATUS_UNAVAILABLE",
     "UNAVAILABLE_REASONS",
+    "admitted_training_labels",
     "evaluate",
     "evaluate_or_raise",
     "expression_receipt_from_bytes",
