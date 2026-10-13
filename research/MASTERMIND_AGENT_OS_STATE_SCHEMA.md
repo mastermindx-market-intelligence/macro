@@ -77,6 +77,65 @@ action. Target cardinality **20–40 live**. This is the join key that makes eve
 | `next_action` | ✅ | string | The single next concrete action. Not a goal — a command, a file, or a decision. |
 | `created` / `updated` | ✖ | — | **DERIVED, never authored.** The generator computes them from `git log` over the record file. Writing them by hand made every session touching a record rewrite the same line — the one verified concurrent-edit conflict site in this schema — and made staleness circular, since the field asserting freshness was typed by the session claiming it. |
 
+### §1.0A Optional mission-scoped acceptance declarations
+
+`acceptance_contracts` is a bounded list (at most 16) in the existing workstream.
+Each closed declaration has an explicit unique `commission_id`; it never becomes
+one global ruler for a shared workstream. Required fields are `commission_ref`,
+`continuity_ref`, `original_intent_ref`, `proof_contract_ref`,
+`original_proof_contract_ref`, `current_intent_revision`, `correction_state`,
+`correction_chain`, `criteria_objective`, `criteria_sources`,
+`original_source_status` and `proof_obligations`. Source references have exactly
+`repository`, `commit`, `path`, `content_sha256`; they preserve source identity
+and publication/missingness, never permission. No referenced path or network
+endpoint is opened by this addition. The immutable programme implementation
+input remains separate from continuity evidence and real Runtime commissioning.
+
+Optional `execution_commission_refs` defaults to an empty list and admits at
+most 16 unique exact Mastermind source references. It records a knowledge
+association after an actual fixed-path commission is published. Empty means
+`EXECUTION_COMMISSION_NOT_ASSOCIATED`. Runtime independently compares its own
+actual root commissioning reference with this explicit list. Prompt strings,
+matching text, static programme references and public hashes cannot create the
+association, select a Runtime root, admit work or issue an accepted result.
+
+`NO_CORRECTION_DECLARED_AT_THIS_REVISION` requires an explicit empty chain and
+only describes this declared revision. `CORRECTIONS_DECLARED_AT_THIS_REVISION`
+requires a nonempty chain. `MISSING` and `UNRESOLVED` remain unavailable; no newest
+handoff or absence of evidence is substituted. The native READ/SEND experiment
+is not a programme amendment. Authored revision labels are not clocks or grants.
+
+The compiler returns additive `acceptance_basis.by_commission`, with
+`authoritative=false`; the caller must select its exact commission under its
+existing trusted grant. The current intent and source-record references bind
+actual selected WS bytes and checked-out Git commit. `CURRENT` means those
+bytes match that commit, not protected publication or runtime eligibility.
+`UNPUBLISHED`, `UNKNOWN`, `MISSING`, `DENIED` and `STALE` remain explicit. The
+existing `source_records_digest` binds the actual records opened by the compiler;
+external references are declared and not retrieved/authenticated here. Issuance
+revalidates source, workstream, root provenance, currentness and actual caller.
+
+`criteria_objective` is literal text of at most 4,000 UTF-8 bytes for the sole
+existing Mastermind criterion parser; this compiler neither parses its suffix
+nor derives criterion digests. One to six `criteria_sources` records have exact
+`criterion_index`, `source_ref`, `locators` fields and contiguous zero-based
+positions. One to 64 `proof_obligations` preserve exact `source_ref`, `section`,
+`label`, `required_outcome` rows; labels are original source names, not invented
+criterion IDs. Every original must-have remains independently unproven until
+its actual required evidence exists. Clause summaries and hash presence are
+not proof of fulfillment. Adjacent normative prose remains required: the R2
+declaration includes both section15 credible boundary enforcement and rollback
+with preserved in-flight IDs/effects/results/pending consumption, administrative
+pause and exact reconciliation without relying on a responsive Dot. Tables
+alone are not the complete proof contract. Emitted `proof_obligation_digests` is a parallel list
+in original row order, each SHA-256 over its exact four-key row JSON using sorted
+keys, compact separators, UTF-8, ensure_ascii=false and allow_nan=false. This is
+byte identity, not another requirements parser. Consumers recompute every row
+and require all individual dispositions. `acceptance_basis_digest` is SHA-256 of the canonical
+entry JSON excluding only that digest field, with source/text/revision/states
+included. JSON and text preserve declarations and honest budget overhead;
+mandatory acceptance clauses are never silently clipped to fit a budget.
+
 ### §1.1 Wave (inline)
 
 | Field | Req | Type | Notes |

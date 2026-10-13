@@ -135,6 +135,7 @@ def _tails(bundle: dict[str, Any]) -> int:
         "degraded": [row for row in bundle["degraded"]
                      if not row.startswith("token_estimate ")],
         "candidates": bundle["target"]["candidates"],
+        "acceptance_basis": bundle["acceptance_basis"],
     }, ensure_ascii=False)) // 4)
 
 
