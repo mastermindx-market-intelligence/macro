@@ -7271,18 +7271,16 @@ jobs:
         run: python -m pytest tests/test_synapse_read_gate.py tests/test_horizon_firewall.py tests/test_delivery_waterfall.py tests/test_pricing_power_monitor.py tests/test_risk_envelope.py tests/test_live_risk_envelope.py tests/test_rotation_risk_envelope.py tests/test_rotation_risk_consumers.py -q
       - name: factor deescalation shadow + boundary guard tests
         run: python -m pytest tests/test_factor_deescalation_shadow.py -q
-      - name: edgar 8-K item-code expansion unit tests (LHB-R7)
-        run: python -m pytest tests/test_edgar_8k_items.py -q
+      # Share one pytest session across the three existing offline EDGAR suites.
+      # Test inventory, dependencies and ordinary scope inference are unchanged.
+      - name: edgar 8-K item-code expansion unit tests (LHB-R7) and all existing owning contracts in one pytest session
+        run: python -m pytest tests/test_edgar_8k_items.py tests/test_edgar_8k_counterparty.py tests/test_edgar_quarterly_tags.py -q
       # GR3b: 8-K counterparty extraction unlock. GR3 (#5008) measured the column
       # as null in all 50,667 committed rows -- the name leg was gated behind the
       # dollar leg, the "primary document" selector was reading the EDGAR submission
       # HEADER page (index.json's `type` field is the listing ICON name, never a form
       # type), and the fetched HTML was never stripped to prose. All three, plus the
       # bounded exhibit reads and the enrich_rev backfill bookkeeping, are pinned here.
-      - name: edgar 8-K counterparty extraction + exhibit reads (GR3b, no network)
-        run: python -m pytest tests/test_edgar_8k_counterparty.py -q
-      - name: LHB-R6 quarterly-store enrichment tag tests (no network)
-        run: python -m pytest tests/test_edgar_quarterly_tags.py -q
       - name: edgar fundamentals universe widening (W2-A — R2000 via committed constituents)
         run: python -m pytest tests/test_edgar_universe_widening.py -q
       - name: edgar FTS first-request abort guard fires on _CONFIRMED_ABSENT too (no network)
@@ -16564,6 +16562,9 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
       - name: install minimal deps
         run: pip install pytest pyyaml jinja2
       # --deselect: test_build_site_renders_help_page_with_the_full_view_model imports
@@ -16579,21 +16580,19 @@ jobs:
       # pure text checks on sector-intelligence.yml / whitehouse-sentinel.yml. They
       # live HERE (gate: code, minimal deps) because the engine suites next to them
       # (express-render-guards, outcome-spine) are gate: data and never run in a PR pack.
-        run: python -m pytest tests/test_public_render_fastlane.py tests/test_help_directory.py tests/test_help_directory_contract.py tests/test_workflow_publish_chains.py -q --deselect tests/test_help_directory.py::test_build_site_renders_help_page_with_the_full_view_model
+      # Also validate the data-free Market Memory shell and owned read-API wiring.
+      # This test registration does not alter production render/publish inventory.
+        run: node --version && python -m pytest tests/test_public_render_fastlane.py tests/test_help_directory.py tests/test_help_directory_contract.py tests/test_workflow_publish_chains.py tests/test_build_market_memory_page.py tests/test_glossary.py tests/test_glossary_contract.py tests/test_glossary_letter_rail_js.py tests/test_finance_intelligence_site_wiring.py -q -rs --deselect tests/test_help_directory.py::test_build_site_renders_help_page_with_the_full_view_model
       # F13-1 (2026-09-06): the public glossary directory is built by the same
       # scripts/build_public_pages.py fast path and shares this job's exact
       # dependency line (pytest pyyaml jinja2) with the help-directory suites
       # immediately above.
-      - name: public glossary directory (view-model contract + rendered-page wiring)
-        run: python -m pytest tests/test_glossary.py tests/test_glossary_contract.py tests/test_glossary_letter_rail_js.py -q
       # Finance Intelligence site-builder hook (2026-09-25). The suite reads
       # scripts/build_site.py as TEXT, and this job already owns the site builder, so
       # hosting it here adds no owned path and no packing-probe match. #8010 ran it
       # in its own job instead. That job matched every one-file probe in
       # tests/test_ci_pack.py::test_exclusive_curation_narrows_ordinary_code_prs
       # (templates/index.html 134/133), which turned integration-baseline red on main.
-      - name: finance intelligence site-builder wiring (build_site carries the render hook)
-        run: python -m pytest tests/test_finance_intelligence_site_wiring.py -q
 
   press-lane:
     if: ${{ false }}  # executed inside ci-pack; keep the legacy status definition runner-free
@@ -22389,13 +22388,13 @@ jobs:
         with:
           python-version: "3.12"
       - name: install minimal deps
-        run: pip install pytest pandas numpy pyarrow pyyaml requests
+        run: pip install pytest pandas numpy pyarrow pyyaml requests jsonschema fastapi httpx
       # RS Pullback Phase 1 adds synthetic first-seen/PIT input admission here:
       # gate: code makes it a PR check; signal-contract is data-plane only.
       # PTSE source-only research contracts are fixture-only: no live source/store
       # or provider reads and no publication authority. Register every suite here,
       # alongside the existing frozen/PIT research contracts, in this CODE gate.
-      - name: frozen price panel + RS pullback admission, retained observations and temporal conformance
+      - name: frozen price panel + RS pullback admission, retained observations and temporal conformance and all existing owning contracts in one pytest session
         run: >-
           python -m pytest
           tests/test_research_price_panel.py
@@ -22416,11 +22415,17 @@ jobs:
           tests/test_ptse_shadow_enrollment.py
           tests/test_ptse_shadow_integrity.py
           tests/test_ptse_shadow_outcome.py
-          tests/test_ptse_w3_publication.py -q
-      # M0D v2 uses offline tmp stores and committed source/deployment contracts.
-      # Keep its entire suite on the PR code gate as well as data-health.
-      - name: Market Memory M0D v2 source binding and static contracts
-        run: python -m pytest tests/test_market_memory_m0d_v2.py -q
+          tests/test_ptse_w3_publication.py
+          tests/test_market_memory_m0d_v2.py
+          tests/test_market_memory_population.py
+          tests/test_market_memory_episode_features.py
+          tests/test_market_memory_episode_comparison.py
+          tests/test_market_memory_experience_accrual.py
+          tests/test_market_memory_retained_context_cohort.py
+          tests/test_market_memory_episode_retrieval.py -q
+      # The command includes all original source/temporal owner tests plus
+      # retained population, label-free projection, comparison and retrieval.
+      # Original DATA registration remains; current rights use real tmp owners.
 
   entry-radar-rs-pullback-calendar:
     if: ${{ false }}
@@ -22583,8 +22588,7 @@ jobs:
           tests/test_market_memory_trusted.py
           tests/test_market_memory_context_deploy.py
           tests/test_regime_latest_json_boundary.py
-          tests/test_release_target_truth.py
-          tests/test_build_market_memory_page.py -q
+          tests/test_release_target_truth.py -q
 
   group-pulse:
     # GR0 of the Group Reads program: engine/group_pulse.py, the basket-level
