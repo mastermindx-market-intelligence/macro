@@ -56,23 +56,23 @@ then_known:
     value: TSLA
     valid_from: null
     valid_to: null
-    source: "ticker valid_from not seat-supplied; valid_from is null"
+    source: "unverifiable from repo: security_master is current-identity only (no ticker-history/valid_from columns)"
     verified: false
   - field: listing
     value: NASDAQ
     valid_from: "2010-06-29"
     valid_to: null
-    source: "seat-supplied 2026-10-13, not verified against a repo source"
+    source: "unverifiable from repo: dataset_registry.yml states no in-repo US listing-date source; Yahoo first-date is not proof"
     verified: false
   - field: share_class
     value: common
     valid_from: null
     valid_to: null
-    source: "share_class valid_from not seat-supplied; valid_from is null"
+    source: "unverifiable from repo: security_master is current-identity only (no ticker-history/valid_from columns)"
     verified: false
   - field: sector_etf
     value: XLY
     valid_from: "1998-12-22"
     valid_to: null
-    source: "seat-supplied 2026-10-13, not verified against a repo source"
+    source: "unverifiable from repo: sector ETF not in security_master; no inception record in census"
     verified: false
