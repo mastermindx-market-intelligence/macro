@@ -3,7 +3,7 @@
   "contract_phase": "w0",
   "display_only": true,
   "as_of": "2026-10-10",
-  "generated_at": "2026-10-13T03:22:22+00:00",
+  "generated_at": "2026-10-13T04:54:00+00:00",
   "hero": {
     "asset": "BTC-USD",
     "price": 82482.12,
@@ -15,6 +15,15 @@
     "master_score": 36,
     "exposure_pct": 100,
     "gate_active": false
+  },
+  "decision": {
+    "schema": "btc.decision/v1",
+    "status": "ok",
+    "as_of": "2026-10-10",
+    "integrity_ok": true,
+    "final_exposure_pct": 100,
+    "errors": [],
+    "authority_source": "btc.decision/v1.final.exposure_pct"
   },
   "axes": [
     {
@@ -257,12 +266,13 @@
     }
   ],
   "authority": {
-    "sizing_source": "signals.alloc_optimal",
+    "sizing_source": "btc.decision/v1.final.exposure_pct",
     "stance_source": "btc_master.synthesize",
     "axis_contract": "COCKPIT_AXIS_PRESENTATION",
     "no_new_arithmetic": true
   },
   "future_consumers": [
+    "crypto.html:H5",
     "crypto.html:H6",
     "index.html:crypto-product-card",
     "neural-web:crypto-lens"
