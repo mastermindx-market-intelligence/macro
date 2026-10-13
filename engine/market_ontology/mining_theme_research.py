@@ -173,6 +173,61 @@ def _order_rows_by_stable_source_identity(rows: Iterable[Mapping[str, Any]]) -> 
     return sorted(rows, key=lambda row: str(row.get("stable_subject_id", "")))
 
 
+def _iso_date_in(text: str) -> str | None:
+    """First YYYY-MM-DD in ``text``, or None. ISO dates compare as strings."""
+    for index in range(0, max(0, len(text) - 9)):
+        chunk = text[index:index + 10]
+        if (
+            chunk[4:5] == "-"
+            and chunk[7:8] == "-"
+            and chunk[0:4].isdigit()
+            and chunk[5:7].isdigit()
+            and chunk[8:10].isdigit()
+        ):
+            return chunk
+    return None
+
+
+def _native_period(packet: Mapping[str, Any]) -> str:
+    """Carry a packet period onto the native block.
+
+    Casebook economics packets that predate this field have no period. They
+    publish ``not_reported`` rather than a fabricated quarter. A period the
+    packet did supply is copied unchanged.
+    """
+    raw = packet.get("period")
+    if isinstance(raw, str) and raw.strip():
+        return raw
+    return "not_reported"
+
+
+def _period_precedes_issuer_validity(
+    period: str,
+    ident: Mapping[str, Any] | None,
+) -> bool:
+    """True when ``period`` is before the issuer mapping's ``valid_from``.
+
+    An accepted ``time_valid_bridge`` is the reversed arm: the same literals
+    may be attributed. No validity window means this packet makes no
+    historical-ownership claim to refuse.
+    """
+    if not isinstance(ident, Mapping):
+        return False
+    if ident.get("time_valid_bridge") is True:
+        return False
+    valid_from = ident.get("valid_from")
+    if not isinstance(valid_from, str) or len(valid_from) < 10:
+        return False
+    found = _iso_date_in(period)
+    if found is None:
+        return False
+    return found < valid_from[:10]
+
+
+#: MGD-10. Exact limitation code. Matches the schema's ``omitted:`` pattern.
+_PERIOD_BEFORE_ISSUER_VALIDITY = "omitted:period_before_issuer_validity"
+
+
 def _signed_value(block: Mapping[str, Any]) -> Any:
     """Return the value of a signed native block, preserving its sign.
 
@@ -538,10 +593,12 @@ def compose_mining_research(
     # MAJOR-9's degenerate ordering. A packet carrying its own non-empty
     # stable_subject_id keeps it; otherwise we use the identity sid.
     identity_sid = "subject:unknown"
+    identity_row: Mapping[str, Any] | None = None
     for ident in bundle.identity_results:
         cand = str(ident.get("stable_subject_id") or ident.get("cik") or "")
         if cand:
             identity_sid = cand
+            identity_row = ident
             break
     raw_blocks: list[dict[str, Any]] = []
     if not _suppress_native_blocks:
@@ -568,6 +625,14 @@ def compose_mining_research(
             packet_sid = str(packet.get("stable_subject_id") or "")
             if not packet_sid or packet_sid == "subject:unknown":
                 packet_sid = identity_sid
+            period = _native_period(packet)
+            # MGD-10: a period before the issuer mapping's validity is not
+            # attributed to the current issuer. The reversed arm is
+            # ``time_valid_bridge is True`` on that identity row.
+            if _period_precedes_issuer_validity(period, identity_row):
+                if _PERIOD_BEFORE_ISSUER_VALIDITY not in limitations:
+                    limitations.append(_PERIOD_BEFORE_ISSUER_VALIDITY)
+                continue
             raw_blocks.append(
                 {
                     "stable_subject_id": packet_sid,
@@ -575,6 +640,7 @@ def compose_mining_research(
                     "value": value,
                     "sign": "+" if value >= 0 else "-",
                     "basis": str(packet.get("basis", "") or "fictional reported dollars"),
+                    "period": period,
                     # MINOR-H: an existing-but-empty source_label or selection_label
                     # degrades to a typed limitation rather than raising a raw
                     # ``jsonschema.ValidationError`` (R-MIN-31). The ``or`` chain

@@ -6,7 +6,7 @@ import copy
 import json
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any
+from typing import Any, Mapping
 
 from engine.market_ontology.mining_dependency_binding import (
     MiningOwnerBundle,
@@ -78,6 +78,48 @@ def _bundle(fixture: dict[str, Any]) -> MiningOwnerBundle:
         native_refs=(dict(fixture["source"]),),
         omissions=tuple(fixture["omissions"]),
     )
+
+
+def financial_packets_from_event_facts(
+    rows: Any,
+    *,
+    stable_subject_id: str,
+) -> tuple[dict[str, Any], ...]:
+    """Map ``event_fact.v1`` rows into financial packets. ``period`` is carried.
+
+    Absent rows are not packets. The composer does not import the witness module;
+    the composition test calls the profile and passes the rows here.
+    """
+    if not isinstance(stable_subject_id, str) or not stable_subject_id.strip():
+        raise ValueError("stable_subject_id is required")
+    packets: list[dict[str, Any]] = []
+    for row in rows:
+        if not isinstance(row, Mapping):
+            raise ValueError("event fact row must be a mapping")
+        if row.get("schema") != "event_fact.v1":
+            raise ValueError("row schema is not event_fact.v1")
+        if "typed_absence" in row or "value" not in row:
+            continue
+        period = row.get("period")
+        if not isinstance(period, str) or not period.strip():
+            raise ValueError("event_fact.v1 period must be carried")
+        basis = row.get("basis")
+        if not isinstance(basis, str) or not basis.strip():
+            raise ValueError("event_fact.v1 basis must be carried")
+        metric = str(row.get("metric") or "")
+        if not metric:
+            raise ValueError("event_fact.v1 metric must be carried")
+        packets.append(
+            {
+                "stable_subject_id": stable_subject_id,
+                "measure": metric,
+                "value": row["value"],
+                "basis": basis,
+                "source_label": metric,
+                "period": period,
+            }
+        )
+    return tuple(packets)
 
 
 def synthetic_case(name: str, **overrides) -> MiningCase:
