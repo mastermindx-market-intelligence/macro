@@ -1224,3 +1224,35 @@ INTENDED_RESUME_SURFACE: this Claude Code session; successor reads this file + #
   - On the first production-affecting Terminal merge, deploy the master tip git-gated and verify live.
   - Release F02-Q2 once #986 and #9080 have both merged.
   - Launch PP1-D when `pool hosts minimax` shows an eligible slot.
+
+### D63 (2026-10-13T10:55Z) — PP2-UI-a run 1 judged REQUEST_REPAIR (R1–R5); no eligible host, so the seat made repair R itself; run 2 rebuilt on R; root's PP2L-R1 PASS consumed
+- FACT run 1 DELIVERED: `fable-pp2uia-r1-20261013` returned COMPLETE in `mb:~/lanes/returns/pp2-ui-a/return-1.md` (325 lines, read in full).
+  - Commits: T `cfe4e60ab6ba7cf592fb98ceeb268add0ecd5ba5` (RED tests (a)–(l)) and F `66daaffd6643e96f9eab00274a38c66caabef009` (rulings 1–3 plus ruling 4's REORDER).
+  - Pushed: remote lane head = F. The seat re-ran Receipts + Ui + Host at F: 39 of 39 green. The diff touches only the five owned files.
+- DECIDED run 1 = REQUEST_REPAIR, judged by artifact (the F diff against rulings 1–2), not by its own green gates. Five numbered defects:
+  - **R1** the visually hidden mismatch text sat in the receipts `<summary>` unconditionally, a false warning for screen readers.
+  - **R2** an unreadable build clock rendered as an empty `<time dateTime="">`.
+  - **R3** the closed `.receipts{flex:1 0 100%}` sat inside a no-wrap flex stamp row, so it overflowed or grew the row.
+  - **R4** the receipts summary was 30px under touch; ruling 1 requires 44px.
+  - **R5** the newer-snapshot banner was hidden whenever the queued build failed the reader, so an unreadable newer build was held silently.
+- FACT host refusals at 10:46Z (`pool hosts minimax`), none routed around:
+  - mb: lane-ceiling 3 < 3 (other sessions' lanes; it was 4 < 3 at 10:40Z);
+  - ubuntu0: disk 295.5 < 300. ubuntu1: disk 117.5 < 150. ubuntu2: disk 124.9 < 150. ubuntu3: disk 202 < 300;
+  - m2: seat-load 204.66; m1: roles; the minis, pc and bm1/bmb: candidate or unreachable.
+- DECIDED the seat performs REPAIR-1 directly, under L.7 and the global "perform permitted work directly" rule: no worker held the item, the seat owns the carrier, and nothing was EFFECT_UNKNOWN. The repair is a light edit plus a 2-second vitest; browser-heavy work stays in run 2.
+- FACT commit R `d088a79371555851352b698e468115b7f692dbed` (author Claude Fable) is pushed: the remote lane head = R, the tree is clean, and the log from `bd76f2c9` is exactly T, F, R.
+  - RED before the fix: 3 tests, `repair1-red.log` on mb — (c2) contained "Source dates differ"; (d) expected `<time datetime>` to be null; (m) the banner was null.
+  - GREEN after the fix: Receipts + Ui + Host, 40 of 40 (`repair1-green.log`). `tsc --noEmit` rc 0; `eslint` on both edited source files rc 0.
+  - (m) is new: a queued build passing `matrixSnapshotKey` that `readCompanionMatrix` rejects (duplicate strike|expiry). It now raises the banner reading "unavailable" while the grid keeps A.
+  - R3 and R4 are CSS-only and are NOT yet browser-proven. Run 2 carries their assertions (one-line closed stamp row; 44px touch summary; no rail overflow when open) and negative f.
+- FACT run-2 packet rebuilt: `$S/leads/PP2UIA/fabric/r2.md`, 512 lines, sha256 `39532ed40b85…`. Custody HEAD/remote = R; REPAIR-1 is marked done-by-seat; the scope is tablet sizing (S), browser spec (E), negatives a–f, gates and `npm test`. `build_r2.py` now takes T, F and R.
+- FACT root message consumed: PP2L-R1 is independently qualified PASS (#723 comment 6143809726; `pp2lr1-parent-source-qualification-20261013.json`). Repaired `cbf7ea75…` blobs are byte-identical in `bd76f2c9`. The MiniMax broad approval stays unaccepted, and no replacement review is needed. The carrier continues with this seat through tablet proof, desk, held-build chart return and delivery. Codex's Matrix natural2 (16:00 PT, follow-up 17:00 PT) is not ours and is not touched.
+- Watchers: `bv3owe0yj` NEW (host eligibility, mb or ubuntu2, polling 240 s up to 3 h); `b0msplbai` #986; `bff4iyhaz` #985; `b55haalpp` #948/#983; `brq8ytnaj` Macro #9097; `b64amfv2n` Macro #9080/#8920. The run-1 launcher `b238t1elk` has exited.
+- Rungs at 10:55Z:
+  - PP2-UI-a: T + F + R on the lane branch. R is the seat's own work at unit level; the browser proof is owed.
+  - Run 2 and PP1-D: FROZEN (no eligible host).
+  - All other rungs are unchanged from D62.
+- NEXT:
+  - When mb is eligible, launch run 2: `fable-pp2uia-r2-20261013`, packet sha `39532ed4…`, `REMOTE_SUB_MAX_SECS=10800`.
+  - When ubuntu2 is eligible, launch PP1-D there.
+  - Act on PR watcher events (deploy on the first production-affecting Terminal merge; F02-Q2 once #986 and #9080 have both merged).
