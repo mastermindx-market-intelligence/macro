@@ -18525,6 +18525,13 @@ jobs:
       # Keep malformed-input, health-precedence and immutable-receipt regressions on CODE.
       - name: prophet Daily Brief compositor (owner receipts + fail-closed presentation)
         run: python -m pytest tests/test_prophet_daily_brief.py -q
+      # Original-entry attribution and raw rank-era integrity are source contracts.
+      # The committed-ledger fixture classes stay in unrun-prophet-learning-loop
+      # (gate:data); this PR-time step runs the hermetic contract and legacy rules.
+      - name: Prophet learning original-entry and cohort-integrity contracts
+        run: >-
+          python -m pytest tests/test_prophet_postmortem.py -q
+          -k "not TestLoserCohortFixture and not TestLadderOnTheCommittedLedgers"
       - name: turn-watch desk + group-turn organ (§6.9 R8 — publish path, leg-(d) organ vs fallback, recall contract; §6.9 R6 basket lifecycle)
         # The TURN WATCH desk consumes the group-turn organ's artifact and R4's organ, so
         # all three ride one lane. test_us_basket_turn.py was named by NO run: step in any
