@@ -36,7 +36,7 @@
 # conflict_policy  ∈ PRIMARY_ONLY | FALLBACK | DOMAIN_AUTHORITY | CROSS_VALIDATE | COMPOSITE
 # ─────────────────────────────────────────────────────────────────────────────
 schema: dataset_registry.v1
-updated: "2026-09-20"
+updated: "2026-10-12"
 
 datasets:
 
@@ -942,7 +942,7 @@ datasets:
 
   - dataset_id: company_intelligence.issuer_disclosure_generations
     layer: L3
-    status: PROPOSED
+    status: PRODUCED
     owner: company-intelligence
     producer: scripts/publish_company_disclosure.py
     storage: "private:company-intelligence/state/generations/{sha256}.json"
@@ -965,7 +965,10 @@ datasets:
       fact: {dtype: object, nullable: false}
     code_consumers: [engine/company_intelligence/issuer_disclosure_owner.py]
     notes: >
-      Proposed until the source owner observes a retained-input publication.
+      PRODUCED 2026-10-12 after the source owner independently observed the real
+      retained-input STAGE publication. Evidence:
+      research/theme_graph/issuer_disclosures_20261011/real_stage_20261012/README.md. Serving still
+      requires a NEW adoption-bound generation and PROMOTE_CURRENT operation.
       Current-only manifest of separately versioned native edition/fact members;
       metadata clocks belong to the manifest, not invented native-schema fields.
       No PIT read, original-source redistribution, commercial magnitude or trade
@@ -973,16 +976,17 @@ datasets:
       remain operative; a private pointer cannot grant itself authority.
 
 
-  # Tiingo source paths are deliberately PROPOSED until a vendor-authenticated
-  # production receipt exists. This is capability discovery, not L2 enrollment.
+  # EOD/fundamentals have authenticated, completed research-corpus receipts.
+  # PRODUCED records their existence, not full history or L2/PIT admission.
+  # BOATS keeps its separate live-integration gate below.
   - dataset_id: vendor.tiingo.raw.equity_eod
     layer: L0
-    status: PROPOSED
+    status: PRODUCED
     owner: macro-dashboard
     producer: collectors/tiingo_archive.py::collect_one
-    storage: /Volumes/Mastermind/market-data/tiingo/raw/eod-bars/{date}/{ticker}/{hash}.raw.gz
+    storage: /Volumes/Mastermind/market-data/tiingo/raw/eod-bars/{date}/{symbol_path}/{request_hash}-{content_hash_24}.raw.gz
     format: gzip_json
-    grain: [vendor_ticker, request_range, capture_vintage, source_digest]
+    grain: [symbol, request_path, observed_at_utc, raw_sha256]
     temporal_profile: BARS
     timezone: UTC
     frequency: batch
@@ -991,21 +995,27 @@ datasets:
     endpoint: /tiingo/daily/{ticker}/prices
     conflict_policy: CROSS_VALIDATE
     quality_checks: [checksum, uniqueness, completeness, asof]
-    version: "0.1.0"
+    version: "0.2.0"
     licensing: operator_reports_redistribution_rights_product_scope_unverified
+    code_consumers: [scripts/tiingo_corpus_audit.py, scripts/tiingo_materialize.py::materialize_many]
     notes: >
-      No production Tiingo EOD bytes at enrollment. Preserve actual OHLC and vendor
-      adjusted fields distinctly, historical adjustment vintage never assumed.
-      Research candidates cannot displace canonical Yahoo/Massive price authority.
+      PRODUCED 2026-10-12 for the authenticated, completed research corpus in
+      docs/tiingo-evidence/20261012-research-contracts/accepted-corpus.json.
+      Raw grain names immutable receipt fields; content_hash_24 is the first
+      24 hex characters of raw_sha256. Campaign and full history remain incomplete.
+      Preserve actual OHLC and vendor-adjusted fields distinctly; capture vintage
+      does not establish historical upstream availability or adjustment vintage.
+      Dated identity, PIT, canonical prices and publication remain unadmitted.
+      These captures cannot displace canonical Yahoo/Massive price authority.
 
   - dataset_id: vendor.tiingo.raw.fundamentals
     layer: L0
-    status: PROPOSED
+    status: PRODUCED
     owner: macro-dashboard
     producer: collectors/tiingo_archive.py::collect_one
-    storage: /Volumes/Mastermind/market-data/tiingo/raw/fund-*/{date}/{ticker_or_permaticker}/{hash}.raw.gz
+    storage: /Volumes/Mastermind/market-data/tiingo/raw/fund-*/{date}/{symbol_path}/{request_hash}-{content_hash_24}.raw.gz
     format: gzip_json
-    grain: [vendor_permaticker_or_ticker, fiscal_period_or_date, capture_vintage, source_digest]
+    grain: [source, symbol, request_path, observed_at_utc, raw_sha256]
     temporal_profile: REVISABLE_RELEASE
     timezone: UTC
     frequency: event_and_daily
@@ -1013,12 +1023,19 @@ datasets:
     endpoint: /tiingo/fundamentals
     conflict_policy: CROSS_VALIDATE
     quality_checks: [checksum, completeness, temporal_integrity, asof]
-    version: "0.1.0"
+    version: "0.2.0"
     licensing: separate_fundamentals_addon_not_verified
+    code_consumers: [scripts/tiingo_corpus_audit.py, scripts/tiingo_materialize.py::materialize_many]
     notes: >
-      As-reported/restated statement selections and all daily metrics remain source
-      research only. Source permaTicker requires Data OS dated identity mapping.
-      Vendor release date alone is not proof of the upstream availability clock.
+      PRODUCED 2026-10-12 for completed original/revised statements and daily
+      research captures in docs/tiingo-evidence/20261012-research-contracts/accepted-corpus.json.
+      Raw grain names receipt fields; request_path preserves asReported and date
+      selections, and content_hash_24 is the first 24 raw_sha256 hex characters.
+      The accepted cohort serves 2023-10-12 through 2026-10-09 despite 1990 request
+      starts. All-symbol/deep coverage and campaign completion remain unproven.
+      Source permaTicker still requires Data OS dated identity mapping; capture
+      vintage and vendor release date do not prove historical upstream availability.
+      PIT, canonical identity and publication remain unadmitted.
 
   - dataset_id: vendor.tiingo.raw.boats
     layer: L0
@@ -1049,12 +1066,12 @@ datasets:
 
   - dataset_id: vendor.tiingo.research.eod
     layer: L1
-    status: PROPOSED
+    status: PRODUCED
     owner: macro-dashboard
     producer: scripts/tiingo_materialize.py::materialize_many
-    storage: /Volumes/Mastermind/market-data/tiingo/normalized/eod-bars/{date}/{sha256}.parquet
+    storage: /Volumes/Mastermind/market-data/tiingo/normalized/eod-bars/{date}/{receipt_id_or_raw_sha256}.parquet
     format: parquet
-    grain: [vendor_ticker, market_date, source_digest]
+    grain: [ticker_vendor, market_date, source_receipt_id]
     temporal_profile: BARS
     timezone: UTC
     frequency: batch
@@ -1062,33 +1079,51 @@ datasets:
     vendor: tiingo
     conflict_policy: CROSS_VALIDATE
     quality_checks: [checksum, uniqueness, temporal_integrity]
-    version: "0.1.0"
+    version: "0.2.0"
     inputs: [vendor.tiingo.raw.equity_eod]
     licensing: research_only_not_canonical
+    code_consumers: [lib/dataos/tiingo_reader.py::read_research_view, scripts/tiingo_research_query.py]
     notes: >
-      Research projector exists but no production Tiingo receipts yet. Source known-at
-      vintage and dated alias admission required before PIT experimental use.
+      PRODUCED 2026-10-12 for the verified retrospective research corpus in
+      docs/tiingo-evidence/20261012-research-contracts/accepted-corpus.json.
+      Artifacts retain unambiguous legacy raw-digest names or receipt-context IDs;
+      source_sha256 joins the original raw payload and source_receipt_id its receipt.
+      Raw and vendor-adjusted prices remain distinct. Full history and campaign
+      completion remain unproven; dated identity and historical upstream availability
+      are still required before PIT use. No continuous service, canonical price
+      authority or publication admission is established by PRODUCED.
 
   - dataset_id: vendor.tiingo.research.fundamentals
     layer: L1
-    status: PROPOSED
+    status: PRODUCED
     owner: macro-dashboard
     producer: scripts/tiingo_materialize.py::materialize_many
-    storage: /Volumes/Mastermind/market-data/tiingo/normalized/fund-*/{date}/{sha256}.parquet
+    storage: /Volumes/Mastermind/market-data/tiingo/normalized/fund-*/{date}/{receipt_id_or_raw_sha256}.parquet
     format: parquet
-    grain: [vendor_ticker_or_permaticker, release_or_metric_date, data_code, source_digest]
+    grain: [dataset_source, ticker_or_permaticker_vendor, source_receipt_id, statement_public_release_date_vendor, market_date, fiscal_year, fiscal_quarter, statement_type, metric_code, requested_as_reported]
     temporal_profile: REVISABLE_RELEASE
     timezone: UTC
     frequency: batch
     vendor: tiingo
     conflict_policy: CROSS_VALIDATE
     quality_checks: [checksum, temporal_integrity, completeness]
-    version: "0.1.0"
+    version: "0.2.0"
     inputs: [vendor.tiingo.raw.fundamentals]
     licensing: research_only_not_canonical
+    code_consumers: [lib/dataos/tiingo_reader.py::read_research_view, scripts/tiingo_research_query.py]
     notes: >
-      Research-only materializer; no canonical issuer identity, actual historical
-      source-availability proof, production artifact or PIT backtest admission.
+      PRODUCED 2026-10-12 for completed original/revised/daily research views in
+      docs/tiingo-evidence/20261012-research-contracts/accepted-corpus.json.
+      Grain is partition-dependent: statements use statement_public_release_date_vendor,
+      fiscal_year, fiscal_quarter, statement_type, metric_code and requested_as_reported;
+      daily uses market_date and metric_code. Both include dataset_source,
+      ticker_or_permaticker_vendor and source_receipt_id; absent partition columns
+      are not fabricated. Statements are REVISABLE_RELEASE; daily is SNAPSHOT_SERIES.
+      Filenames retain raw-digest or receipt-context IDs with verified source joins.
+      Actual cohort depth is 2023-10-12 through 2026-10-09 despite 1990 request starts.
+      All-symbol/deep history, campaign completion, dated identity, historical upstream
+      availability, PIT, canonical prices, continuous service and publication remain
+      unproven or unadmitted. PRODUCED records research existence only.
 
   - dataset_id: vendor.tiingo.research.boats
     layer: L1
