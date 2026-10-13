@@ -799,7 +799,7 @@ a{color:var(--ink-link, var(--link))}
   var names={conservative:['Conservative','保守'],moderate:['Moderate','稳健'],aggressive:['Aggressive','进取'],optimal:['Optimal','最优']};
   function sync(v){
     var c=cards[v];
-    if(sc&&c){sc.querySelectorAll('[data-m]').forEach(function(n){var m=n.getAttribute('data-m'),x=c[m];n.textContent=(m==='cagr'||m==='maxdd'||m==='in_market')?(x+'%'):x})}
+    if(sc&&c){sc.querySelectorAll('[data-m]').forEach(function(n){var m=n.getAttribute('data-m'),x=c[m];if(x==null||!isFinite(x)){n.textContent='—';return}n.textContent=(m==='cagr'||m==='maxdd'||m==='in_market')?(x+'%'):x})}
     if(lab){var nm=names[v]||[v,v];lab.textContent='· '+nm[zh()?1:0]+(zh()?' 变体':' variant')}
   }
   window.VectorChart.mount(el,'vector_risk_strategy.json',{onVariant:sync});

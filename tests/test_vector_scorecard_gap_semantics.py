@@ -82,7 +82,6 @@ def _gapped_alloc(close: pd.Series) -> pd.Series:
     return alloc.reindex(close.index)
 
 
-@pytest.mark.xfail(strict=True, reason="cx-r15fix patch not applied yet — remove this marker in the commit that applies research/crypto_science/patches/cx-r15fix-20261012__build_vector.py.patch")
 def test_leading_gap_is_excluded_not_counted_as_zero_return_days():
     close = _close()
     alloc = _gapped_alloc(close)
@@ -122,7 +121,6 @@ def test_all_present_series_matches_unpatched_formula():
         assert card["withheld_days"] == 0
 
 
-@pytest.mark.xfail(strict=True, reason="cx-r15fix patch not applied yet — remove this marker in the commit that applies research/crypto_science/patches/cx-r15fix-20261012__build_vector.py.patch")
 def test_withheld_days_equals_leading_missing_rows_not_ffill_holes():
     close = _close()
     alloc = _gapped_alloc(close)
@@ -132,7 +130,6 @@ def test_withheld_days_equals_leading_missing_rows_not_ffill_holes():
     assert card["withheld_days"] == int(alloc_equity(close, alloc).isna().sum())
 
 
-@pytest.mark.xfail(strict=True, reason="cx-r15fix patch not applied yet — remove this marker in the commit that applies research/crypto_science/patches/cx-r15fix-20261012__build_vector.py.patch")
 def test_all_null_allocation_does_not_fabricate_zero_metrics():
     close = _close()
     alloc = pd.Series(np.nan, index=close.index, dtype="float64")
@@ -144,3 +141,15 @@ def test_all_null_allocation_does_not_fabricate_zero_metrics():
     eq = alloc_equity(close, alloc)
     assert len(eq) == len(close)
     assert eq.isna().all()
+
+
+def test_scorecard_template_prints_a_dash_for_a_withheld_metric():
+    """A withheld scorecard metric is JSON null; the page prints a dash, never 'null%' or 'NaN'."""
+    from pathlib import Path
+
+    source = (Path(__file__).resolve().parents[1] / "templates" / "vector.html.j2").read_text(encoding="utf-8")
+    start = source.index("sc.querySelectorAll('[data-m]')")
+    loop = source[start : start + 400]
+    guard = "if(x==null||!isFinite(x)){n.textContent='—';return}"
+    assert guard in loop
+    assert loop.index(guard) < loop.index("n.textContent=(m===")
