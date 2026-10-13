@@ -4711,7 +4711,7 @@ window.__CHART_SWAP__ = {
       if(el._cnxCancelClose)el._cnxCancelClose();
       var fired=false,timer;
       var stop=function(){fired=true;clearTimeout(timer);if(panel)panel.removeEventListener('transitionend',onEnd);if(el._cnxCancelClose===stop)delete el._cnxCancelClose;};
-      var done=function(){if(fired)return;stop();el.classList.remove('open','cnx-closing');if(el.id==='cnx-dlg-risk'&&_riskReturnFocus&&_riskReturnFocus.isConnected){_riskReturnFocus.focus({preventScroll:true});_riskReturnFocus=null;}};
+      var done=function(){if(fired)return;stop();el.classList.remove('open','cnx-closing');if(el.id!=='cnx-dlg-risk')return;var back=_riskReturnFocus;if(back&&back.isConnected&&typeof back.focus==='function'){_riskReturnFocus.focus({preventScroll:true});_riskReturnFocus=null;return;}var act=document.activeElement;if((!act||el.contains(act))&&document.body&&typeof document.body.focus==='function')document.body.focus({preventScroll:true});};
       var onEnd=function(e){if(e.target===panel)done();};
       if(panel)panel.addEventListener('transitionend',onEnd);
       timer=setTimeout(done,360); /* fallback for reduced-motion / no transitionend */
