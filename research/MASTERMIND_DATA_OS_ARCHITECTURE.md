@@ -1113,3 +1113,14 @@ file and line a census lane opened), **4 INFERRED**, and **4 NEEDS-CORROBORATION
 mtime/git-log claims bounded by the broken-checkout caveat in the header). A sentence
 carrying no tag and no citation is a defect in this deliverable; §15 lists what is known to
 be unresolved rather than leaving it implicit.
+
+## 16. Completion-programme semantic decisions (2026-10-13)
+
+The Data OS completion programme (Chairman masterplan 2026-10-13, plan text PR #9121)
+freezes its six principal semantic decisions - query meaning (three modes), identity
+continuity (five names), economic units (RAW/SADJ/TRADJ plus a declared-policy house total
+return), compatibility and absence, publication and correction, scope and acceptance - in
+`research/data_os_completion/2026-10-13/D00_SEMANTIC_DECISIONS.md`, cited as `D00.D1` to
+`D00.D6`. They extend sections 2, 3, 4, 5 and 7 above; where this document says
+"recomputable", D00.D1 names it `RECONSTRUCT` and keeps `REPLAY` for retained output only.
+The D-numbering of this document (D1-D11) is unchanged and distinct from the D00 keys.
