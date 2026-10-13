@@ -8842,6 +8842,8 @@ jobs:
         run: python scripts/check_research_factory_authority.py
       - name: authority guard selftest (gate fires on planted violation)
         run: python scripts/check_research_factory_authority.py --selftest
+      - name: dormant codegen structural screen (AST-only fixtures)
+        run: python -m pytest tests/test_research_codegen_static_checks.py -q
       - name: research-factory state + schema + Market Memory conformance tests
         run: >-
           python -m pytest
