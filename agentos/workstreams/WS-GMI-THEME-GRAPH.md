@@ -18,10 +18,15 @@ owns_paths:
   - engine/theme_graph/
   - data/theme_graph/
   - config/theme_sources.yml
+  - engine/classification_axes/
+  - contracts/classification_axes/
 decisions:
   - DEC:GMI-THEME-GRAPH-END-TO-END-COMPLETION-OWNERSHIP-SEQUENCING
   - DEC:GMI-F04-BOUNDED-CHILD-ROUTING-2026-08-28
   - DEC:GMI-THEME-FABRIC-C0-CONVERGENCE
+  - DEC:GMI-THEME-HIERARCHY-ON-CROSSWALK
+  - DEC:GMI-TAXONOMY-UPGRADE-V2
+  - DEC:GMI-SUB-THEME-POPULATION-KEEP-ADD
 artifacts:
   - research/theme_graph/THEME_GRAPH_END_TO_END_COMPLETION_FREEZE_2026-08-27.md
   - research/theme_graph/CEO_W3_CONTINUATION_DIRECTIVE_2026-08-14.md
@@ -39,6 +44,11 @@ discoveries:
   - DSC:GMI-LEGACY-THEMATIC-STATE-NEVER-CALLS-PUBLISH-GENERATION
   - DSC:LEGACY-THEMATIC-COMPOSE-AGES-FIXTURES-ON-THE-WALL-CLOCK
   - DSC:W3C-COHORT-CAPTURE-IS-REFUSED-BY-THE-RIGHTS-GATE-BY-DESIGN
+  - DSC:GMI-THEME-GRAPH-SUPPLY-EDGE-TYPES-HAVE-ZERO-ROWS
+  - DSC:GMI-MACRO-SENSITIVITY-AXIS-READS-GITIGNORED-STOCKDATA
+  - DSC:GMI-THEME-GRAPH-STORE-NON-STRICT-READ-MASKS-CORRUPTION
+  - DSC:GMI-CROSSWALK-ROW-DELETION-NEVER-CLOSES-PARENT-OF
+  - DSC:GMI-THEME-GRAPH-SUITES-RUN-ONLY-IN-THE-DATA-HEALTH-LANE
 waves:
   - id: W0
     title: Graph scaffolding
@@ -258,6 +268,19 @@ waves:
       DEC:GMI-THEME-FABRIC-C0-CONVERGENCE; preserve
       census originals, optional #8643 scope, R-J.10/R9, E1/A1, R-H.W2w gaps and all existing
       natural/qualification/owner gates. No K phase-2 release or mission-completion claim.
+  - id: TAXONOMY-V2
+    title: "Taxonomy V2: sub_theme tier and display-tier classification axes"
+    status: in_progress
+    pr: [8940, 8941, 8942, 8945, 8948, 8961, 8974, 8975, 8999, 8969, 9000, 8968, 8973, 8976, 8987]
+    next_action: >
+      Seat 6f14c2da (DEC:GMI-TAXONOMY-UPGRADE-V2, DEC:GMI-SUB-THEME-POPULATION-KEEP-ADD). All
+      fifteen PRs are merged. Production proof is owed by the first nightly whose UTC run date
+      is 2026-10-13 or later: it must materialize 12 sub_theme nodes and 132 PARENT_OF
+      hierarchy rows (93 + 39), because every sub-tier row is asserted_on 2026-10-13. Then the
+      L12 hierarchy-breadth and L13 micro RS-proxy display readers (no rank-like keys), F04
+      consumption coordinated with the MarketOntology owner (no wiring without a new DEC), a
+      hierarchy browse page through the design lane, and a human ratifier for the 27
+      RELATION_WITHDRAW events that would retire the direct theme->micro_theme rows.
 
 landmines:
   - >-
