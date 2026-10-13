@@ -333,7 +333,7 @@
       <div class="rrd-ldr-rows">
         {% for row in _ld.rows[:6] %}
         <div class="rrd-ldr-row{{ '' if _ld_bars else ' is-plain' }} tone-{{ row.tone if row.tone else 'muted' }}">
-          <span class="rrd-ldr-tkr">{{ row.ticker if row.ticker else '' }}</span>
+          <span class="rrd-ldr-tkr">{{ row.ticker|e if row.ticker else '' }}</span>
           <span class="rrd-ldr-name">{{ t(row.name_en if row.name_en else '', row.name_zh if row.name_zh else (row.name_en if row.name_en else '')) }}</span>
           {% if _ld_bars %}<span class="rrd-ldr-track">{% if row.pct is defined and row.pct is not none %}<span class="rrd-ldr-fill" style="width:{{ [[row.pct,2]|max,100]|min }}%"></span>{% endif %}</span>{% endif %}
           <span class="rrd-ldr-val">{{ row.value if row.value else '' }}</span>
@@ -410,7 +410,7 @@
                           and c.fx.built_date != c.asof) else none) -%}
       <div class="rrd-sep"></div>
       <div class="rrd-foot">
-        {%- if c.asof %}<span class="l-en">As of {{ c.asof }}{% if _fx_lag %}, currency readings from {{ _fx_lag }}{% endif %}. </span><span class="l-zh">数据截至 {{ c.asof }}{% if _fx_lag %}，汇率读数为 {{ _fx_lag }}{% endif %}。</span>{% endif -%}
+        {%- if c.asof %}<span class="l-en">As of {{ c.asof|e }}{% if _fx_lag %}, currency readings from {{ _fx_lag|e }}{% endif %}. </span><span class="l-zh">数据截至 {{ c.asof|e }}{% if _fx_lag %}，汇率读数为 {{ _fx_lag|e }}{% endif %}。</span>{% endif -%}
         {%- if c.caveat_en %}<span class="l-en">{{ c.caveat_en }} </span><span class="l-zh">{{ c.caveat_zh if c.caveat_zh else c.caveat_en }}</span>{% endif -%}
         <span class="l-en">These are windows, not certainties — re-drawn nightly. The response is sizing, not stock picking; forward records are still accruing.</span>
         <span class="l-zh">这些是概率窗口而非定论——每晚重算。应对是仓位控制而非选股；前瞻记录仍在积累中。</span>
