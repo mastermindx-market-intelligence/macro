@@ -1,0 +1,6 @@
+schema: mastermind.page_evidence_receipt.v1
+changed_paths:
+  - templates/crypto.html.j2
+  - templates/vector.html.j2
+  - templates/_crypto_brain_labels.html.j2
+manifest: mockups/evidence/crypto-p2-polish-w2-20261013/manifest.json

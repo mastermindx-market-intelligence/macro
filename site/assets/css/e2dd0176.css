@@ -161,6 +161,7 @@ html[data-lang="zh"] #crypto-overview .desk-context-rule>span.l-zh{display:block
 .sensor:last-child{border-right:0}.sensor .eyebrow{color:var(--muted);font-size:9px;letter-spacing:.1em;text-transform:uppercase;font-weight:760}
 .sensor .reading{margin-top:16px;font:780 28px/1 var(--font-mono);letter-spacing:-.04em}
 .sensor .read-label{margin-top:9px}.sensor .receipt{margin-top:17px;color:var(--muted);font-size:10.5px}
+.receipt-nowrap{white-space:nowrap}
 .heat-layout{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(240px,.7fr);border:1px solid var(--line)}
 .heat-cards{display:grid;grid-template-columns:repeat(3,1fr)}
 .heat-meter{padding:24px;border-left:1px solid var(--line);background:var(--panel2)}
