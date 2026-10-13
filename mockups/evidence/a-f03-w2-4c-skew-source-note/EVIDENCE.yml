@@ -1,0 +1,5 @@
+schema: mastermind.page_evidence_receipt.v1
+changed_paths:
+  - templates/options.html.j2
+  - scripts/build_options_command.py
+manifest: mockups/evidence/a-f03-w2-4c-skew-source-note/manifest.json

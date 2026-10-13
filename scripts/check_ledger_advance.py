@@ -19,6 +19,9 @@ Design principles (house laws):
    repo root).
  - Idempotent per asof: same-calendar-day re-runs do NOT double-append to the
    fail-streak ledger or double-alert (dedup keyed on today_str per ledger).
+ - An open stall (stalled_since) clears ONLY when the ledger's newest asof
+   strictly advances. A same-day re-run, a no-render night, or an unreadable
+   ledger keeps both the marker and the last good asof snapshot.
  - Trading-day aware: weekends and US market holidays are skipped entirely (no
    stall detection, no state mutation on non-trading days).
  - Fail-open: any read/parse error degrades gracefully; exit 0 always.
@@ -390,17 +393,26 @@ def run_check(
                 label, curr_asof, prev_asof,
             )
 
+        # Only a strictly newer asof is an advance. A same-day rerun, a night
+        # without a republish, or an unreadable ledger is NOT one, so it must
+        # neither clear an open stall nor overwrite the snapshot with None
+        # (2026-10-08: a same-day rerun erased risk_radar's open stall).
+        advanced = curr_asof is not None and (prev_asof is None or curr_asof > prev_asof)
+
         # Update state for this ledger.
         new_entry: dict[str, Any] = {
-            "asof": curr_asof,
+            "asof": curr_asof if curr_asof is not None else prev_asof,
             "last_check_date": today_str,
         }
         if is_stall:
             # Preserve stalled_since across consecutive stall days.
             new_entry["stalled_since"] = stalled_since or prev_entry.get("last_check_date") or today_str
-        else:
-            # Cleared on advance.
+        elif advanced:
+            # Cleared on advance only.
             new_entry["stalled_since"] = None
+        else:
+            # Not a stall today and not an advance: carry any open stall forward.
+            new_entry["stalled_since"] = stalled_since
 
         ledger_state[rel_path] = new_entry
 

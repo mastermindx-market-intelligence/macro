@@ -1,0 +1,46 @@
+{
+  "operation": "mmx-public-intelligence-delivery-20261011-local-ceo-001",
+  "failed_head": "1be6efa3a504960ec26b0049e5a2b7e37e401459",
+  "failed_ci_run": 38250975435,
+  "corrective_integration": "11bd476b178e2cc90b2c46071e7d2ad29e17dde8",
+  "protected_main": "e901b0fabe37b5834fefe6a865e114cd6d239186",
+  "conflicts": false,
+  "existing_repair_consumed": "PR9028 / b958b35d2c6e0c349a6428d9d4f877375f9cee75",
+  "local_results": {
+    "macro_route_tests": "55 passed in7.37s",
+    "packing_ceiling_regression": "1 passed in97.85s",
+    "generated_pages": "69 byte-identical,0orphans,3hand-authored exemptions",
+    "contract_delta": "0 introduced,0 inherited vs e901b0fa in272.5s",
+    "full_ci_manifest": "166 passed,2 existing mockups-dependent skips in328.96s"
+  },
+  "main_ci_jobs_preserved": 290,
+  "all_existing_main_job_paths_preserved": true,
+  "press_source_hashes_unchanged": 21,
+  "three_acceptance_pages_byte_unchanged": true,
+  "ci_ceiling_waiver": false,
+  "capacity_census": {
+    "active_pr_ci_runs": 2,
+    "global_cap": 8,
+    "open_refresh_leases": []
+  },
+  "full_manifest_and_contract_validation": "passed",
+  "installed": false,
+  "publication_approved": false,
+  "packing_weights": {
+    "templates/index.html": 5790,
+    "scripts/build_free_content.py": 5593,
+    "engine/prophet/plan_book.py": 5553
+  },
+  "pre_push_integration_check": {
+    "current_main": "3ca6eb200da3ef85376ff44cbabfa747a8ee1d19",
+    "candidate": "11bd476b178e2cc90b2c46071e7d2ad29e17dde8",
+    "command": "git merge-tree --write-tree <candidate> <current_main>",
+    "exit_code": 0,
+    "result": "conflict-free"
+  },
+  "agentos_validation": {
+    "records": 1698,
+    "errors": 0,
+    "advisories": 145
+  }
+}

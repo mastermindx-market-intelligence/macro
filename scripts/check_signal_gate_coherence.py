@@ -94,7 +94,13 @@ def incoherent_tickers(standouts: Mapping, gate: Mapping) -> dict[str, list[str]
             if not isinstance(entry, Mapping):
                 out[ticker] = [ABSENT]
                 continue
-            keys = [k for k in entry if blob.get(k) != entry[k]]
+            # The producer attaches per-name tape provenance to the gate. Compare it only
+            # when the board copied it; otherwise an older board blob is not a skew merely
+            # because it does not know the new additive key.
+            comparable_entry = dict(entry)
+            if "asof" not in blob:
+                comparable_entry.pop("asof", None)
+            keys = [k for k in comparable_entry if blob.get(k) != comparable_entry[k]]
             if keys:
                 # A ticker can sit in two buckets; union so the second copy cannot mask
                 # the first one's disagreement.

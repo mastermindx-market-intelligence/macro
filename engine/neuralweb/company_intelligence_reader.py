@@ -532,11 +532,6 @@ def _load_event_workspace(base_url: str, event_id: str) -> tuple[dict[str, Any],
     generation_id = str(manifest["generation_id"])
     key = (base_url, generation_id, canonical_id)
     now = time.monotonic()
-    with _cache_lock:
-        cached = _workspace_cache.get(key)
-        if cached is not None and cached[0] > now:
-            return copy.deepcopy(cached[1]), {**copy.deepcopy(receipt), "workspace_url": cached[2]}
-
     relative = f"workspaces/{canonical_id}.json"
     expected = (manifest.get("files") or {}).get(relative)
     if not isinstance(expected, Mapping):
@@ -547,6 +542,16 @@ def _load_event_workspace(base_url: str, event_id: str) -> tuple[dict[str, Any],
         raise CompanyIntelligenceReadError("event workspace manifest has an invalid receipt")
     if expected_bytes > _MAX_WORKSPACE_BYTES:
         raise CompanyIntelligenceReadError("event workspace exceeds safe size bound")
+
+    with _cache_lock:
+        cached = _workspace_cache.get(key)
+        if cached is not None and cached[0] > now:
+            # Preserve the same immutable owner receipt on cold and warm reads.
+            # The manifest and cache key name the same generation and event.
+            return copy.deepcopy(cached[1]), {
+                **copy.deepcopy(receipt), "workspace_url": cached[2],
+                "workspace_sha256": expected_hash,
+            }
 
     workspace_url = _object_url(
         base_url, f"{_EVENT_WORKSPACE_NEST}/generations/{generation_id}/{relative}"

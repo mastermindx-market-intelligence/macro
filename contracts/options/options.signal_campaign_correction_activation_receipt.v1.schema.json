@@ -1,0 +1,60 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "options.signal_campaign_correction_activation_receipt/v1",
+  "title": "Eligible campaign correction activation receipt",
+  "description": "A read-only receipt that proves every reviewed activation precondition was met. This schema grants no execution authority and does not create a runtime writer.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "receipt_id",
+    "activated_at",
+    "receipt_sha256",
+    "policy",
+    "activation_preconditions"
+  ],
+  "properties": {
+    "schema": {"const": "options.signal_campaign_correction_activation/v1"},
+    "receipt_id": {"type": "string", "minLength": 1, "maxLength": 200},
+    "activated_at": {
+      "type": "string",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(\\.[0-9]{1,6})?Z$"
+    },
+    "receipt_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["policy_id", "policy_version", "path", "file_sha256"],
+      "properties": {
+        "policy_id": {"const": "sep03_mixed_generation_outcome_quarantine/v1"},
+        "policy_version": {"const": 1},
+        "path": {
+          "const": "research/options_estate/options_signal_campaign_outcome_correction_prereg_v1.json"
+        },
+        "file_sha256": {
+          "const": "7e6710c8b1ce65f1307f450e50829280548fcd62bd3521c2acf7a5b4ec6ef2ad"
+        }
+      }
+    },
+    "activation_preconditions": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "macro_7265_durability_and_campaign_runtime_protected",
+        "macro_7263_shared_publisher_recovery_protected_and_real_publication_loop_proven",
+        "macro_7193_broad_writer_exclusion_protected_and_natural_non_sweep_proven",
+        "campaign_correction_reader_implementation_reviewed_on_existing_owner",
+        "incident_and_lawful_prefix_identities_match_with_append_only_extension_allowed",
+        "current_explicit_source_owner_activation_authorization_and_applicable_effect_gates"
+      ],
+      "properties": {
+        "macro_7265_durability_and_campaign_runtime_protected": {"const": true},
+        "macro_7263_shared_publisher_recovery_protected_and_real_publication_loop_proven": {"const": true},
+        "macro_7193_broad_writer_exclusion_protected_and_natural_non_sweep_proven": {"const": true},
+        "campaign_correction_reader_implementation_reviewed_on_existing_owner": {"const": true},
+        "incident_and_lawful_prefix_identities_match_with_append_only_extension_allowed": {"const": true},
+        "current_explicit_source_owner_activation_authorization_and_applicable_effect_gates": {"const": true}
+      }
+    }
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "files": [
+    {
+      "byte_length": 3881,
+      "path": "PREPARATION_RECEIPT.json",
+      "sha256": "0c5f8cd6c3c87903f920481528e5deab3f1e3e9448642e4bafa8fc4fc63dd894"
+    },
+    {
+      "byte_length": 20788,
+      "path": "README.md",
+      "sha256": "9a3bf0fa4ec00d03dfc162f0fa0a789620231f82c5496b82eb8a38aaafc3a89f"
+    },
+    {
+      "byte_length": 49572,
+      "path": "incumbent_store_read.json",
+      "sha256": "23caa72f306a2c11b309b6ea99efb3c5657df61fe83dc28fa883abae3044ad76"
+    },
+    {
+      "byte_length": 62960,
+      "path": "prove_retained_c01_observation.py",
+      "sha256": "871b539f94fb3b55de9c12e11fadd78c99920ea034503e755eb6bb7f1ea57b74"
+    },
+    {
+      "byte_length": 1168,
+      "path": "source_manifest.example.json",
+      "sha256": "3b708683e3505726f2fc18aa8c5f03a9428a8e9e2b77a7540686fa538ed6f82e"
+    }
+  ],
+  "frozen_at_utc": "2026-10-09T11:30:27.853089+00:00",
+  "regular_file_count": 5,
+  "schema": "economic_network.retained_c01_observation_harness_artifacts/v1",
+  "scope": "Only this preparation directory; originals unchanged; no source/application/native/Git mutation.",
+  "self_excluded": "ARTIFACT_MANIFEST.json",
+  "status": "FROZEN_PREPARED_NOT_EXECUTED",
+  "total_bytes_excluding_manifest": 138369
+}

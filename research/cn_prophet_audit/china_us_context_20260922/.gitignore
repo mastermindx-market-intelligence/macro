@@ -1,0 +1,22 @@
+# Local development logs may include unrelated pytest temporary-cleanup warnings.
+# The compact evidence report and the final qualified green log are committed.
+red-tests.txt
+helper-tests.txt
+integration-tests.txt
+integration-tests-qualified.txt
+regression-tests.txt
+test-runtime-preflight.txt
+
+briefing-red.txt
+briefing-tests.txt
+narrator-regression.txt
+live-inputs/
+content-red.txt
+content-qualified-tests.txt
+
+# Native telemetry stays local; supported review conclusions/closure are published.
+native-review*.json
+native-review*.stderr
+review-red.txt
+configured-root-red.txt
+review-tests.txt
