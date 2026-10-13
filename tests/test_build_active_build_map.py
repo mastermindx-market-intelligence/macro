@@ -34,6 +34,8 @@ import pytest
 # Ensure repo root is on path
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
+import scripts.build_active_build_map as active_build_map
+
 from scripts.build_active_build_map import (
     compute_collisions,
     is_protected_path,
@@ -319,3 +321,45 @@ def test_render_no_unknown_annotation():
     payload = _fixture_payload(open_prs=[pr])
     md = render_markdown(payload)
     assert "mergeability not yet computed by GitHub" not in md
+
+
+
+def test_open_pr_fetch_paginates_current_scale_without_truncation(monkeypatch):
+    """The active-build join must not silently stop at the former 100-PR ceiling."""
+    rows = [
+        {
+            "number": number,
+            "title": f"PR {number}",
+            "head": {"ref": f"branch-{number}"},
+            "updated_at": "2026-09-16T00:00:00Z",
+            "draft": False,
+        }
+        for number in range(1, 279)
+    ]
+    pages = [rows[:100], rows[100:200], rows[200:]]
+    observed = {}
+
+    def fake_run_gh(args, timeout=30):
+        observed["args"] = list(args)
+        observed["timeout"] = timeout
+        return pages
+
+    monkeypatch.setattr(active_build_map, "_run_gh", fake_run_gh)
+    prs, truncated = active_build_map._collect_open_prs()
+
+    assert prs is not None
+    assert len(prs) == 278
+    assert prs[-1]["head_ref"] == "branch-278"
+    assert truncated is False
+    assert "--paginate" in observed["args"]
+    assert "--slurp" in observed["args"]
+    assert "repos/{owner}/{repo}/pulls" in observed["args"]
+    assert f"per_page={active_build_map._OPEN_PR_PAGE_SIZE}" in observed["args"]
+    assert observed["timeout"] >= 60
+
+
+def test_open_pr_fetch_refuses_malformed_pagination(monkeypatch):
+    monkeypatch.setattr(active_build_map, "_run_gh", lambda *args, **kwargs: [{"not": "a page"}])
+    prs, truncated = active_build_map._collect_open_prs()
+    assert prs is None
+    assert truncated is False
