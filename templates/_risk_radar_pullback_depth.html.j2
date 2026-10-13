@@ -81,11 +81,12 @@
 {% set labels = ('monitoring','developing','underway','stabilizing','recovering','repaired') %}
 {% set phase = v.get('phase') %}
 {% set p = o.get('close') %}{% set h = o.get('peak_close') %}{% set low = o.get('low_close') %}
-{# A close at or above the retained high is the owner's reclaim, which it only
-   reports as recovering (or repaired); in any other phase it is contradictory. #}
+{# Monitoring may sit at the retained high (a new high). Otherwise a close at or
+   above it is the owner's reclaim, which it only reports as recovering (or
+   repaired); in any other phase it is contradictory. #}
 {% set price_ok = (p is float or p is integer) and (h is float or h is integer)
    and p-p == 0 and h-h == 0 and p > 0 and h > 0
-   and (p < h or phase in ('recovering','repaired')) %}
+   and (p < h or phase in ('recovering','repaired') or (phase == 'monitoring' and p <= h)) %}
 {% set low_ok = (low is float or low is integer) and low-low == 0
    and low > 0 and price_ok and low <= p and low <= h %}
 {% set ns.low_ok = low_ok %}
