@@ -521,6 +521,8 @@ def test_vector_page_renders_each_decision_state() -> None:
     assert EM in hero(stale_html)
     assert "40%" not in hero(stale_html)
     assert "0%" not in hero(stale_html)
-    assert "2026-08-20" in hero(stale_html)
+    hero_open = re.search(r'<div class="hero-position-value"[^>]*>', stale_html)
+    assert hero_open and 'data-decision-as-of="2026-08-20"' in hero_open.group(0)
+    assert "2026-08-20" not in hero(stale_html)  # seat ruling R1: no visible raw date
     assert "data-decision-exposure=" not in stale_html
     assert "Decision unavailable" in stale_html

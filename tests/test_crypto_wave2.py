@@ -749,7 +749,7 @@ def _r15_overview(allocation, *, history=True):
         market={'stance':'Mixed participation','stance_zh':'参与度分化','summary':'Daily context only.',
                 'summary_zh':'仅为每日背景。','total_tone':'flat','dominance_tone':'flat','fear_tone':'flat',
                 'total_state':'Mixed','dominance_state':'Stable','fear_state':'Neutral',
-                'history':{'dates':['2026-01-01','2026-01-02'] if history else [],'vals':[1,2] if history else []}},
+                'history':{'dates':['2025-12-30','2025-12-31','2026-01-01','2026-01-02'] if history else [],'vals':[1,2,3,4] if history else []}},
         allocation=allocation,as_of='2026-01-02',market_total='$3.2T',market_30d='+2.0%',
         dominance='58.0%',dominance_30d='-1.0%',fear='50',total_state_zh='分化',
         dominance_state_zh='稳定',fear_state_zh='中性',tape='<svg data-preserved-market-tape="true"></svg>',

@@ -352,15 +352,6 @@ def test_vector_builder_couples_the_live_decision_to_one_signal_index() -> None:
     assert '"decision": decision' in source
 
 
-@pytest.mark.xfail(
-    reason=(
-        "PIN: emit_crypto_cockpit_json stamps the signal date and still publishes "
-        "project_budget without page_as_of. Apply "
-        "research/crypto_science/patches/cx-t06-20261012__build_vector.py.patch "
-        "and drop this xfail."
-    ),
-    strict=True,
-)
 def test_vector_cockpit_read_suppresses_stale_budget(tmp_path) -> None:
     old = _frame([{"alloc_optimal": 0.6, "alloc_optimal_raw": 0.6}], start=STALE)
     current = _frame([{"close": 100.0}, {"close": 110.0}])
@@ -386,15 +377,6 @@ def test_vector_cockpit_read_suppresses_stale_budget(tmp_path) -> None:
     assert payload["hero"]["exposure_pct"] is None
 
 
-@pytest.mark.xfail(
-    reason=(
-        "PIN: vector.html.j2 shows decision.final whenever integrity is ok and does "
-        "not compare decision.as_of to the page date. Apply "
-        "research/crypto_science/patches/cx-t06-20261012__vector.html.j2.patch "
-        "and drop this xfail."
-    ),
-    strict=True,
-)
 def test_vector_template_hides_stale_decision_target() -> None:
     old = _frame([{"alloc_optimal": 0.6, "alloc_optimal_raw": 0.6}], start=STALE)
     decision = build_decision(old, _master())

@@ -397,7 +397,6 @@ a{color:var(--ink-link, var(--link))}
           </div>
           <div class="hero-position-value" data-decision-state="{{ overview_decision_state }}" data-decision-freshness="{{ overview_decision_freshness }}" data-decision-reason="{{ overview_decision_reason }}" data-decision-errors="{{ overview_decision_errors }}" data-decision-as-of="{{ overview_as_of }}">
             {% if overview_decision %}{{ overview_decision.final.exposure_pct }}% <span>BTC</span>{% else %}—{% endif %}
-            <span>{{ overview_as_of or '—' }}</span>
           </div>
           <div class="hero-position-rail">{% if overview_decision %}<i style="width:{{ overview_decision.final.exposure_pct }}%"></i>{% endif %}</div>
           <div class="hero-position-note">
@@ -439,7 +438,7 @@ a{color:var(--ink-link, var(--link))}
           </div>
           <div class="overview-evidence">
             <div class="k">{{ t('Model allocation','模型仓位') }}</div>
-            <div class="v" data-decision-state="{{ overview_decision_state }}" data-decision-freshness="{{ overview_decision_freshness }}" data-decision-reason="{{ overview_decision_reason }}" data-decision-errors="{{ overview_decision_errors }}" data-decision-as-of="{{ overview_as_of }}">{% if overview_decision %}{{ overview_decision.final.exposure_pct }}% <span style="font:500 11px/1 var(--font-ui);color:var(--muted)">BTC</span>{% else %}—{% endif %} {{ overview_as_of or '—' }}</div>
+            <div class="v" data-decision-state="{{ overview_decision_state }}" data-decision-freshness="{{ overview_decision_freshness }}" data-decision-reason="{{ overview_decision_reason }}" data-decision-errors="{{ overview_decision_errors }}" data-decision-as-of="{{ overview_as_of }}">{% if overview_decision %}{{ overview_decision.final.exposure_pct }}% <span style="font:500 11px/1 var(--font-ui);color:var(--muted)">BTC</span>{% else %}—{% endif %}</div>
             <div class="sub">{% if overview_decision %}{{ t(overview_decision.final.action_en, overview_decision.final.action_zh) }}{% else %}{{ t('Decision unavailable until integrity checks pass.','完整性检查通过前，决策暂不可用。') }}{% endif %}</div>
           </div>
           <details class="overview-source">
@@ -503,7 +502,7 @@ a{color:var(--ink-link, var(--link))}
       </div>
       <div class="decision-detail">
         <div class="exposure-top">
-          <div><div class="decision-eyebrow">{{ t('Final BTC exposure','最终 BTC 仓位') }}</div><div class="exposure-band">{% if decision_ok %}{{ target_pct }}%{% else %}—{% endif %}</div><div class="decision-eyebrow">{{ decision_as_of or '—' }}</div></div>
+          <div><div class="decision-eyebrow">{{ t('Final BTC exposure','最终 BTC 仓位') }}</div><div class="exposure-band">{% if decision_ok %}{{ target_pct }}%{% else %}—{% endif %}</div></div>
           <div class="risk-context">{{ t('Risk level','风险程度') }}<b>{% if risk_index is not none %}{{ risk_index }}/100{% else %}—{% endif %}</b>{% if risk_index is not none %}{{ t(risk_label, '低风险' if risk_on else '高风险') }}{% else %}{{ t('Unavailable','暂无') }}{% endif %}</div>
         </div>
         <div class="exposure-rail">

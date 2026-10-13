@@ -258,9 +258,10 @@ def _render_crypto(tmp_path: Path, monkeypatch, case: dict) -> str:
         },
         "axes": [],
     }), encoding="utf-8")
+    data_existed = (ROOT / "data").exists()
     output = build_crypto.build(site)
     assert (site / "crypto_class_state.json").is_file()
-    assert not (ROOT / "data").exists()
+    assert (ROOT / "data").exists() == data_existed
     return output.read_text(encoding="utf-8")
 
 
@@ -514,13 +515,14 @@ def test_short_history_does_not_paint_the_null_hairline(tmp_path, monkeypatch):
 def test_altseason_none_does_not_paint_a_zero_rail(tmp_path, monkeypatch):
     _require_t19p(
         "crypto.html.j2",
-        'meter-rail"{% if market.heat.altseason.value is not none %} style="--v:{{ market.heat.altseason.value }}%"',
+        'meter-rail"><i{% if market.heat.altseason.value is not none %} style="width:{{ market.heat.altseason.value }}%"',
     )
     crypto = _render_crypto(tmp_path, monkeypatch, _crypto_case("valid_zero"))
     heat = _slice(crypto, 'id="leverage-heat"', 'id="allocation"')
     rail = _slice(heat, 'class="meter-rail"', ">")
     assert "--v:0%" not in heat
     assert "style=" not in rail
+    assert "style=" not in _slice(heat, 'class="meter-rail"', "</div>")
     assert ">—<" in heat
 
 

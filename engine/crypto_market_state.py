@@ -419,9 +419,11 @@ def _cap_attribution(
             "Token supply could not be separated from price. This is not a measured subscription.",
             "无法把代币供应量与价格分开。这不是已测量的申购。",
         ),
-        # Existing direction headlines cover the class total. No sentence on file
-        # states that the bitcoin leg does not explain it.
-        "unattributed": ("", ""),
+        "unattributed": (
+            "Bitcoin's own price and token supply moved against the class total. "
+            "The total-cap change is not narrated as a bitcoin leg and is not a measured subscription.",
+            "比特币自身的价格与代币供应量与总市值方向相反。此处总市值变化不归因于比特币，也不是已测量的申购。",
+        ),
     }
     note_en, note_zh = notes[kind]
     return {

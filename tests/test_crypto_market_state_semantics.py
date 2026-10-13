@@ -275,19 +275,29 @@ _LEG_NARRATION = (
 )
 
 
+# Seat ruling R2 (2026-10-13): the unattributed note names bitcoin's own token supply as
+# the leg that moved against the class total. That is the opposite of narrating the total
+# as a bitcoin leg, so these two phrases are admitted in that one note and nowhere else.
+_R2_UNATTRIBUTED_NOTE_ADMITS = ("token supply", "代币供应")
+
+
 def _assert_no_leg_narration(state: dict) -> None:
-    text = "\n".join(
+    headline = "\n".join(
         [
             state["stance"],
             state["summary"],
             state["stance_zh"],
             state["summary_zh"],
-            state["cap_attribution"]["note_en"],
-            state["cap_attribution"]["note_zh"],
         ]
     )
     for phrase in _LEG_NARRATION:
-        assert phrase not in text, phrase
+        assert phrase not in headline, phrase
+    attribution = state["cap_attribution"]
+    note = "\n".join([attribution["note_en"], attribution["note_zh"]])
+    admitted = _R2_UNATTRIBUTED_NOTE_ADMITS if attribution.get("kind") == "unattributed" else ()
+    for phrase in _LEG_NARRATION:
+        if phrase not in admitted:
+            assert phrase not in note, phrase
 
 
 def _attributed(price_pct: float, supply_pct: float, dom0: float, dom1: float) -> dict:
@@ -371,6 +381,18 @@ def test_opposed_bitcoin_leg_does_not_narrate_the_class_total() -> None:
     assert same_price["total_30d_pct"] > 3
     assert same_price["cap_attribution"]["kind"] == "valuation"
     assert "price change" in same_price["summary"]
+
+
+def test_unattributed_note_is_filled_in_both_languages() -> None:
+    """Seat ruling R2: an opposed bitcoin leg still carries a plain EN/ZH note."""
+    for state in (_attributed(0.0, 0.02, 50.0, 70.0), _attributed(0.10, 0.0, 50.0, 75.0)):
+        attribution = state["cap_attribution"]
+        assert attribution["kind"] == "unattributed"
+        assert attribution["note_en"].strip()
+        assert attribution["note_zh"].strip()
+        assert "not a measured subscription" in attribution["note_en"]
+        assert "不是已测量的申购" in attribution["note_zh"]
+        _assert_no_leg_narration(state)
 
 
 def test_cap_attribution_publishes_threshold_numbers() -> None:
