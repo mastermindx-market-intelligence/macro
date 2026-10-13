@@ -7,7 +7,7 @@
     "can_size": false,
     "context_only": true
   },
-  "content_id": "dfe1-2c3f655d0eae7e7fd598b125",
+  "content_id": "dfe1-b2e0322770b717deb1c3471e",
   "contract": "defense_economics.v1",
   "generated_at": "2026-10-13T07:13:52.291383+00:00",
   "profiles": [
@@ -890,7 +890,7 @@
                 "owner_ref": "event_workspace:883fb5c69607c3d248b45f7e:evt_cik0001133421_2026q2_results"
               }
             ],
-            "implication_en": "That could reduce the cost-risk concern; it does not establish margin reversion to the prior quarter comparison or normalized common-shareholder cash.",
+            "implication_en": "That could reduce the cost-risk concern; it does not establish margin reversion to the prior-year comparison or normalized common-shareholder cash.",
             "implication_zh": "这可能减轻成本风险疑虑，但不能证明利润率回归此前对比期水平，或普通股股东现金达到正常化水平。",
             "invalidation_en": "Further unfavorable EACs or weaker reported margin invalidate the stabilization premise.",
             "invalidation_zh": "后续不利EAC调整或已披露利润率转弱，将否定成本稳定这一前提。",

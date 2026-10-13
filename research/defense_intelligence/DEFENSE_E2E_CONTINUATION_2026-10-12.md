@@ -363,3 +363,81 @@ then conclude exact-head CI, protected release, owner publication, installation
 and actual entitled independent product acceptance. The remaining original
 unsettled Fabric effects are not duplicated. No new scheduler or excluded-system
 implementation is introduced. **MISSION_COMPLETE=false.**
+
+
+## 2026-10-13 08:36 UTC — final product source integration
+
+Root remains the sole writer on the original recovery branch and PR9066. Local
+source checkpoint 6f271acefdabd657da22306d2126e1d7a3a1cc70 integrates the theme
+runtime, publication preflight, reported issuer interpretation and reviewed
+Terminal contribution. Clean current-main integration produced
+008acddd8a7492455f2cb7e3b042f1568c5fac2b from origin/main
+20f8f675e6213883ee0f141fe383da1c8d6028c9. PR7175 was freshly confirmed open at
+d2281b340e1ebe9e83f9b76a86a1e1cd98259afa and is preserved.
+
+The final source delta qualifies BAE's current research identity with matching
+native JPM sponsored ADR, SEC filer and existing DataOS CIK evidence. Its
+ordinary/ADR ratio and identifiers do not grant global listing, historical
+price, tradability or procurement attribution. This is a reachable research
+identity context within the existing atlas, not a replacement security master.
+P1's 66 affected checks passed; actual installed journey acceptance remains owed.
+
+The government-context bridge binds exact native award/recipient identity and
+SEC CIK through the reviewed graph. The September 1 award observations remain
+stale under the separate October 13 attribution review. Root applied manifest
+ee807446eb521b01082d29c97135148dcafc9032880cf1a87a34f48974256942 and verified 51
+affected checks. The NOC charge comparison correctly says prior-year comparison.
+
+Six differentiated conditional demand-to-capture-to-margin/cash interpretations
+are now bound to current joint owner c15c3f422981f9bde1f830f79e4db874782a6e9e2ab328ba68b463ef4d651bac.
+Final theme patch 8348c27c96adbe7acb0402271cdb81b92e20c8b8f7b4d6cb40a70e818a80bfa6
+passed 15 focused cases. Independent acceptance receipt
+6b16a47b03d2fd9fefb57d206c98aacf702a9219b5124dc860ea625b174d7607 verifies NATO
+policy plus F100 and exact reviewed Electric Boat prime-role guards. Issuer
+segment baselines and GD Marine categories remain separate from program revenue,
+workshare and common cash. All six evidential sufficiency states remain honest.
+
+The real 390x844 no-notice geometry check proved the first financial value was
+below the initial screen. Accepted repair 24f6621207104b98a986b414be8974379aee087259430baedd21102306847bc1
+moves the selected issuer and reported baseline ahead of analysis without changing
+authentication, source values or global navigation. Root verified ten affected
+Node checks. Final built-data matrix and cold-network timing remain required.
+
+The completed separate AI DEV pilot retains nine actual answers from twelve
+scheduled cells, three capacity-failed cells, and its original pre-input trial
+registration. It is not a human efficacy or predictive-value claim. Independent
+scoring found 40/41 answered fact items, seven omitted risk qualifications and
+zero unsupported added facts; failed cells are missing, not counted as incorrect
+answers or omitted from a favorable average. The published DEV registration and
+results retain the actual timing, token and blinding limits.
+
+Current benchmark input qualification made six logical incumbent-provider reads,
+with no canonical writes or scientific issuance. The retained source readiness
+record identifies the ITA future-split normalization issue explicitly. The next
+bounded price-owner qualification continues separately without replaying the
+original Q3 operation, changing the registration or inventing predictive results.
+
+The original Q3 and P2 Fabric operations were re-read once on their same carrier:
+ACTIVE_OR_WAITING, unknown worker, stale without terminal evidence, no result and
+retry_authorized=false. They are not replaced. The actual paid-worker admission
+refusals remain respected. Terminal778's reviewed persistence contribution is
+retained for current-carrier adoption; no database, category activation or live
+notification effect is claimed. The first corrected current-PR read hit the
+project redundant-poll guard after a wrong-repository read; no alternate carrier
+was used to bypass that guard.
+
+The complete ten-event local financial owner generation and four existing market
+mirrors are verified. Raw financial and licensed market inputs are not staged or
+published to Git. Existing R2 owner publication, current remote CAS, source CI,
+protected release, GovRev publication, installed bytes/process revision and real
+entitled browser acceptance remain separate next gates. The available browser
+profiles resolve to the same entitled admin account; the root has asked once for
+an existing second entitled account identifier while continuing all independent
+work. No account or entitlement provisioning is inferred.
+
+Next: commit and publish this coherent source revision on PR9066, run the existing
+serialized canonical build/research-state producer once, seal the three unfiltered
+publication suites against that exact generation, and run the final visual and
+network evidence. Continue protected release and installed independent acceptance
+while the scientific and Terminal owner contributions advance through their own
+actual gates. **MISSION_COMPLETE=false.**

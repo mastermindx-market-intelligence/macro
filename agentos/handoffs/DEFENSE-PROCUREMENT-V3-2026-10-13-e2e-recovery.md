@@ -36,7 +36,7 @@ danger_areas:
   - Preserve original PR7175 and Terminal PR778 custody and unresolved original Fabric effects.
   - Source checks and local fixtures do not prove installed entitlement or scientific efficacy.
 next_actions:
-  - Integrate accepted six-theme disclosure, supplemental issuer evidence and tenant-safe research interface.
+  - Publish the integrated current-source revision on PR9066 and build the frozen canonical investor generation.
   - Bind all published twins and assets before the final serialized proof; save and push the coherent source revision.
   - Complete protected release and actual entitled investor acceptance, then continue remaining included contracts.
 do_not_redo:
@@ -71,3 +71,10 @@ ownership/foreign-source journeys, guarded owner restoration, private retained
 push evidence, current cross-run release hold, repaired P2 contribution and the
 single pre-outcome DEV trial. Actual installed and scientific acceptance remain
 open. This checkpoint saves progress while the original root keeps executing.
+
+The 08:36 UTC continuation supersedes the prior next-action frontier: current-main
+merge, qualified current BAE research identity, exact government-context bridge,
+six conditional theme interpretations, and the measured mobile first-view repair
+are integrated. DEV pilot results and benchmark-owner input readiness are retained
+with their limits. Final generation proof, protected release, installed browser
+acceptance and original Terminal/science owner obligations remain open.

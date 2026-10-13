@@ -516,6 +516,64 @@ def _context_evidence(rows: Any) -> list[dict[str, Any]]:
     return out
 
 
+def _listing_research_identity(row: Mapping[str, Any], cutoff: datetime) -> dict[str, Any] | None:
+    """A named research consumer join; never mint or admit a global listing.
+
+    All three reviewed source roles must agree. SEC CIK is a filer axis;
+    depositary/underlying ISINs remain distinct and imply no award capture.
+    """
+    q = row.get("research_identity_qualification")
+    if (not isinstance(q, Mapping) or not _context_visible(q, cutoff)
+            or q.get("scope") != "government_revenue_identity_context"):
+        return None
+    native = row.get("native_identity") or {}
+    filer, mapping, program = (q.get(key) for key in
+                              ("filer", "ticker_cik_observation", "depositary_program"))
+    roles = q.get("source_record_ids")
+    evidence = _context_evidence(row.get("evidence"))
+    if not all(isinstance(item, Mapping) for item in (filer, mapping, program, roles)):
+        return None
+    ids = [roles.get(key) for key in ("filer", "ticker_cik_observation", "depositary_program")]
+    if (any(not isinstance(item, str) or not item.strip() for item in ids)
+            or len(set(ids)) != 3
+            or any(sum(e.get("record_id") == item for e in evidence) != 1 for item in ids)):
+        return None
+    cik = filer.get("cik")
+    if (re.fullmatch(r"[0-9]{10}", str(cik or "")) is None
+            or cik == "0000000000" or mapping.get("cik") != cik
+            or not _text(filer.get("legal_name")) or mapping.get("legal_name") != filer.get("legal_name")
+            or mapping.get("symbol") != native.get("symbol")
+            or program.get("symbol") != native.get("symbol")
+            or program.get("venue") != native.get("venue")
+            or program.get("security_kind") != native.get("security_kind")
+            or native.get("security_kind") != "adr"
+            or program.get("ordinary_shares_per_adr") != row.get("ordinary_shares_per_adr")
+            or isinstance(program.get("ordinary_shares_per_adr"), bool)):
+        return None
+    for key in ("security_isin", "underlying_isin"):
+        if re.fullmatch(r"[A-Z]{2}[A-Z0-9]{9}[0-9]", str(program.get(key) or "")) is None:
+            return None
+    if (program["security_isin"] == program["underlying_isin"]
+            or not all(_text(program.get(key)) for key in
+                       ("depositary_as_printed", "underlying_symbol_as_printed", "underlying_venue_as_printed"))
+            or re.fullmatch(r"data/symbol_directory/cik_map/[0-9]{4}-[0-9]{2}-[0-9]{2}\.parquet", str(mapping.get("owner_path") or "")) is None
+            or re.fullmatch(r"[a-f0-9]{64}", str(mapping.get("owner_sha256") or "")) is None
+            or _context_clock(str(mapping.get("snapshot") or "") + "T00:00:00+00:00") is None
+            or mapping["owner_path"].split("/")[-1] != mapping["snapshot"] + ".parquet"
+            or _context_clock(mapping["snapshot"] + "T00:00:00+00:00") > cutoff):
+        return None
+    return {"state": "source_supported_current_research", "scope": q["scope"],
+            "issuer_cik": cik, "filer_name_as_printed": filer["legal_name"],
+            "security_isin": program["security_isin"], "underlying_isin": program["underlying_isin"],
+            "underlying_symbol_as_printed": program["underlying_symbol_as_printed"],
+            "underlying_venue_as_printed": program["underlying_venue_as_printed"],
+            "depositary_as_printed": program["depositary_as_printed"],
+            "sponsorship_as_printed": program.get("sponsorship_as_printed"),
+            "mapping_owner_path": mapping["owner_path"], "mapping_owner_sha256": mapping["owner_sha256"],
+            "mapping_snapshot": mapping["snapshot"], "source_record_ids": ids,
+            "known_at": q["known_at"], "effective_interval_state": "current_observation_only"}
+
+
 def _archetype_context(
     entities: list[dict[str, Any]], curated_issuer: Mapping[str, Any] | None,
     *, analysis_as_of: str, public_security: Mapping[str, Any],
@@ -587,7 +645,8 @@ def _archetype_context(
                 isinstance(ratio, bool) or not isinstance(ratio, (int, float)) or not math.isfinite(ratio) or ratio <= 0):
             gaps.append("adr_ratio_not_established")
             continue
-        listings.append({
+        research_identity = _listing_research_identity(row, cutoff)
+        listing_case = {
             "state": "source_observed", "native_identity": {key: identity.get(key) for key in
                 ("issuer_registry", "issuer_native_id", "issuer_name_as_printed", "venue", "symbol", "security_kind")},
             "ordinary_shares_per_adr": ratio if identity["security_kind"] == "adr" else None,
@@ -597,7 +656,10 @@ def _archetype_context(
             "dataos_listing_state": public_security.get("state", "not_in_si_universe"),
             "listing_admission": "not_established", "price_comparability": "not_established",
             "recipient_attribution": "not_established", "economic_capture": "not_established", "evidence": evidence,
-        })
+        }
+        if research_identity is not None:
+            listing_case["research_identity"] = research_identity
+        listings.append(listing_case)
     if ownership:
         gaps.append("ownership_interest_is_not_revenue_workshare_or_cash")
     if listings:

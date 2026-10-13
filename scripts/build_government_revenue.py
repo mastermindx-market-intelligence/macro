@@ -1390,9 +1390,17 @@ def build(
     )
     # Derive issuer context only from the existing, verified Event Workspace
     # mirror. Acquisition and source publication remain with that owner.
+    government_graph_path = root / "data/government_revenue/recipient_entity_graph.json"
+    government_graph_raw = government_graph_path.read_bytes() if government_graph_path.is_file() else None
     defense_economics = build_defense_economics_payload(
         root, generated_at=sbir_cutoff, as_of=sbir_cutoff,
         require_market_owner=live_materialization,
+        government_inputs=({
+            "dossier": dossier,
+            "recipient_graph": json.loads(government_graph_raw),
+            "raw_bytes": {"dossier": _canonical_json(dossier).encode("utf-8"),
+                          "recipient_graph": government_graph_raw},
+        } if government_graph_raw is not None else None),
     )
     validate_defense_economics_payload(defense_economics)
     budget_graph = _extend_budget_allocation_context(

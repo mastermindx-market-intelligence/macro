@@ -234,6 +234,10 @@ def _axis(name, supplied, bindings, generated, subject):
         return _missing('observation_clock_invalid', state='unreviewed')
     if state in {'supported','partial'} and observed is None:
         return _missing('observation_clock_missing', state='unreviewed')
+    if name in ('participation','demand') and state in ('supported','partial','stale'):
+        refs=[supplied.get('owner_ref'),*supplied.get('evidence_refs',[])]
+        if any(not _bound(ref,bindings) or any(bindings[ref].get(k)!=subject.get(k) for k in ('issuer_id','security_id')) for ref in refs):
+            return _missing('government_context_subject_unqualified',state='unreviewed')
     if supplied.get('summary_lineage') == 'score_overlay':
         return _missing('score_overlay_not_financial_evidence', state='unreviewed')
     if supplied.get('claim_citations_pending') and name == 'economics':
@@ -381,6 +385,10 @@ def validate_defense_economics_payload(payload):
                 raise ValueError('evidence_ref_invalid')
             if axis['state'] in ('supported','partial','stale') and axis.get('observed_at') is None:
                 raise ValueError('supported_axis_observation_missing')
+            if name in ('participation','demand') and axis['state'] in ('supported','partial','stale'):
+                refs=[axis.get('owner_ref'),*axis['evidence_refs']]
+                if not qualified_identity or any(not _bound(ref,bindings) or any(bindings[ref].get(k)!=subject.get(k) for k in ('issuer_id','security_id')) for ref in refs):
+                    raise ValueError('government_context_subject_invalid')
             if name=='economics' and axis['state'] in ('supported','partial','stale') and (not qualified_identity or not axis.get('facts')):
                 raise ValueError('supported_finance_missing_identity_or_facts')
             for fact in axis.get('facts',[]):

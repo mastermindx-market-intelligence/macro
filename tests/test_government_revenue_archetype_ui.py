@@ -15,8 +15,8 @@ FIXTURE = ROOT / 'tests/fixtures/government_revenue/archetypes/ui_atlas.json'
 pytestmark = pytest.mark.skipif(shutil.which('node') is None, reason='node is required')
 
 
-def render(tmp_path, *, language='en', ticker='LMT', mutate=None, status=200, switch=None):
-    atlas = json.loads(FIXTURE.read_text())
+def render(tmp_path, *, language='en', ticker='LMT', mutate=None, status=200, switch=None, source_supported=False):
+    atlas = json.loads((FIXTURE.with_name("source_supported_ui_atlas.json") if source_supported else FIXTURE).read_text())
     if mutate:
         mutate(atlas)
     script = r'''
@@ -146,3 +146,42 @@ def test_renderer_reuses_canonical_material_and_contains_no_ticker_strategy():
         assert banned not in extension
     for required in ('atlas-entity', 'atlas-receipt', 'evidenceLinks', 'evidenceCode', 'tr('):
         assert required in extension
+
+
+@pytest.mark.parametrize('language', ['en','zh'])
+def test_source_supported_research_identity_reaches_real_identity_rail_with_limits(tmp_path, language):
+    out = render(tmp_path, ticker='BAESY', language=language, source_supported=True)
+    html = out['html']
+    assert '0000895564' in html and 'US05523R1077' in html and 'GB0002634946' in html
+    assert 'data/symbol_directory/cik_map/2026-10-05.parquet' in html
+    assert 'https://www.adr.com/drprofile/05523R107' in html
+    assert 'https://www.sec.gov/Archives/edgar/data/895564/0000895564-26-000004-index.htm' in html
+    if language == 'en':
+        assert 'Source-supported research identity' in html
+        assert 'Current research identity only; historical eligibility, price coverage and award attribution remain unestablished.' in html
+        assert 'Retained representation: reviewed browser extract' in html
+        assert 'Data OS listing admission: unestablished.' in html
+        assert 'Source reuse rights: unknown' in html
+    else:
+        assert '来源支持的研究身份' in html and '已复核浏览器摘录' in html
+        assert '仅支持当前研究身份；历史准入、价格覆盖与授标归属尚未确立。' in html
+        assert 'Source-supported research identity' not in html
+    assert out['fetches'] == 1 and out['historyTouched'] == 0
+
+
+def test_wrong_consumer_scope_cannot_render_supported_badge(tmp_path):
+    def mutate(atlas):
+        context(atlas, 'BAESY')['listing_cases'][1]['research_identity']['scope'] = 'global_security_master'
+    html = render(tmp_path, ticker='BAESY', source_supported=True, mutate=mutate)['html']
+    assert 'Source-supported research identity' not in html
+    assert 'Source observation' in html
+
+
+def test_support_source_fields_are_escaped(tmp_path):
+    def mutate(atlas):
+        q = context(atlas, 'BAESY')['listing_cases'][1]['research_identity']
+        q['depositary_as_printed'] = '<img src=x onerror=bad()>'
+        q['mapping_owner_path'] = '<script>bad()</script>'
+    html = render(tmp_path, ticker='BAESY', source_supported=True, mutate=mutate)['html']
+    assert '<img' not in html and '<script>' not in html
+    assert '&lt;img' in html and '&lt;script&gt;' in html

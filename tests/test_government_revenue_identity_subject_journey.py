@@ -20,8 +20,8 @@ base = importlib.util.module_from_spec(spec); spec.loader.exec_module(base)
 pytestmark = pytest.mark.skipif(shutil.which('node') is None, reason='node required')
 
 
-def run(tmp_path, *, search='?mode=companies&item=identity%3ABAESY&ticker=BAESY', lang='en', status=200, mutate=None):
-    atlas = json.loads((ROOT / 'tests/fixtures/government_revenue/archetypes/ui_atlas.json').read_text())
+def run(tmp_path, *, search='?mode=companies&item=identity%3ABAESY&ticker=BAESY', lang='en', status=200, mutate=None, source_supported=False):
+    atlas = json.loads((ROOT / 'tests/fixtures/government_revenue/archetypes' / ('source_supported_ui_atlas.json' if source_supported else 'ui_atlas.json')).read_text())
     if mutate:
         mutate(atlas)
     template = (ROOT / 'templates/government_revenue.html.j2').read_text()
@@ -105,3 +105,16 @@ def test_no_fake_latest_companies_or_new_subject_truth_store():
     for banned in ('COMPANIES.push', 'DATA.companies=', 'metrics:', 'BAESY', 'BA.LN', 'localStorage', '<style'):
         assert banned not in body
     assert "kind:'identity_context'" in body and 'source_generation_id' in body
+
+
+@pytest.mark.parametrize('lang', ['en', 'zh'])
+def test_supported_foreign_research_identity_deep_link_preserves_award_boundary(tmp_path, lang):
+    out = run(tmp_path, lang=lang, source_supported=True)
+    assert out['selection']['selected'] == 'identity:BAESY'
+    html = out['identityAtlasHtml']
+    assert '0000895564' in html and 'US05523R1077' in html and 'GB0002634946' in html
+    assert 'https://www.adr.com/drprofile/05523R107' in html
+    assert ('Source-supported research identity' if lang == 'en' else '来源支持的研究身份') in html
+    assert 'TTM obligations' not in out['inspectorHtml'] and 'TTM 义务额' not in out['inspectorHtml']
+    assert 'data-row="company:BAESY"' not in out['queueHtml']
+    assert not any(call == {'op': 'load', 'ticker': 'BAESY'} for call in out['bridgeCalls'])

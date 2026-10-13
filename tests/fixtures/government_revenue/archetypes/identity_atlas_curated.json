@@ -1,7 +1,7 @@
 {
   "contract": "government_revenue_identity_atlas_curated.v1",
   "schema_version": "1.1.0",
-  "generated_at": "2026-10-13T05:36:47.904824+00:00",
+  "generated_at": "2026-10-13T07:54:08.066798+00:00",
   "issuers": {
     "LMT": {
       "ownership_qualifications": [
@@ -99,8 +99,66 @@
               "url": "https://www.baesystems.com/investors/adr-information",
               "content_sha256": "1ca08337c0d41822e7bf0e57e9105229174a038141d8acb5bacaf931cae3b076",
               "retained_representation": "reviewed_web_extract"
+            },
+            {
+              "publisher": "J.P. Morgan",
+              "record_id": "jpm:drprofile:05523R107",
+              "url": "https://www.adr.com/drprofile/05523R107",
+              "content_sha256": "4a55f871a39d1c04d45d3fa969ba5b987aa22413d0b51066fe68c8d54ba115ed",
+              "retained_representation": "reviewed_browser_extract"
+            },
+            {
+              "publisher": "SEC",
+              "record_id": "0000895564-26-000004:index",
+              "url": "https://www.sec.gov/Archives/edgar/data/895564/0000895564-26-000004-index.htm",
+              "content_sha256": "4ea876211b586f0f84d2acd63d68fcaea1fd90e4cd0c83209d84c4888c4afb04",
+              "retained_representation": "reviewed_web_extract"
+            },
+            {
+              "publisher": "SEC / existing Data OS observation",
+              "record_id": "dataos:cik-map:2026-10-05:BAESY",
+              "url": "https://www.sec.gov/files/company_tickers.json",
+              "content_sha256": "4e3c77cd11156abbf82c62159a09efc24d3028e44434696e6f7fb43a1931552b",
+              "retained_representation": "existing_owner_observation_extract"
             }
-          ]
+          ],
+          "research_identity_qualification": {
+            "scope": "government_revenue_identity_context",
+            "review_state": "reviewed",
+            "rights_state": "unknown",
+            "known_at": "2026-10-13T07:54:08.066798+00:00",
+            "valid_from": null,
+            "valid_to": null,
+            "filer": {
+              "cik": "0000895564",
+              "legal_name": "BAE SYSTEMS PLC /FI/"
+            },
+            "ticker_cik_observation": {
+              "symbol": "BAESY",
+              "cik": "0000895564",
+              "legal_name": "BAE SYSTEMS PLC /FI/",
+              "snapshot": "2026-10-05",
+              "owner_path": "data/symbol_directory/cik_map/2026-10-05.parquet",
+              "owner_sha256": "5b817069fbee57a6616095e58b3b2ba759f55eb3f1cbf866fc62e0f0f55230b9"
+            },
+            "depositary_program": {
+              "symbol": "BAESY",
+              "venue": "OTC",
+              "security_kind": "adr",
+              "security_isin": "US05523R1077",
+              "underlying_isin": "GB0002634946",
+              "underlying_symbol_as_printed": "BA/",
+              "underlying_venue_as_printed": "London",
+              "ordinary_shares_per_adr": 4,
+              "depositary_as_printed": "JPM",
+              "sponsorship_as_printed": "S"
+            },
+            "source_record_ids": {
+              "filer": "0000895564-26-000004:index",
+              "ticker_cik_observation": "dataos:cik-map:2026-10-05:BAESY",
+              "depositary_program": "jpm:drprofile:05523R107"
+            }
+          }
         }
       ]
     },

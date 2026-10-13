@@ -143,3 +143,81 @@ def test_no_bespoke_ticker_branch_or_award_money_calculation():
     body = source[start:end]
     assert not any(ticker in body for ticker in ('LMT', 'BAESY', 'IRDM', 'HII'))
     assert 'attributable_amount' not in body and 'government_amount' not in body
+
+
+def test_named_research_identity_consumes_existing_cik_observation_and_depositary(inputs):
+    row = issuer(build(inputs), 'BAESY')
+    case = row['archetype_context']['listing_cases'][1]
+    q = case['research_identity']
+    assert q['state'] == 'source_supported_current_research'
+    assert q['scope'] == 'government_revenue_identity_context'
+    assert q['issuer_cik'] == '0000895564'
+    assert q['security_isin'] == 'US05523R1077'
+    assert q['underlying_isin'] == 'GB0002634946'
+    assert q['mapping_owner_path'] == 'data/symbol_directory/cik_map/2026-10-05.parquet'
+    assert q['mapping_owner_sha256'] == '5b817069fbee57a6616095e58b3b2ba759f55eb3f1cbf866fc62e0f0f55230b9'
+    assert len(q['source_record_ids']) == 3
+    assert q['effective_interval_state'] == 'current_observation_only'
+    assert case['listing_admission'] == case['price_comparability'] == case['economic_capture'] == 'not_established'
+    assert row['public_security']['state'] == 'not_in_si_universe'
+    assert row['issuer_attribution'] == 'not_asserted'
+    assert 'research_identity' not in row['archetype_context']['listing_cases'][0]
+
+
+@pytest.mark.parametrize('section,key,value', [
+    ('filer', 'cik', '0000000000'),
+    ('ticker_cik_observation', 'cik', '0000000001'),
+    ('ticker_cik_observation', 'symbol', 'BAESF'),
+    ('ticker_cik_observation', 'legal_name', 'different filer'),
+    ('ticker_cik_observation', 'snapshot', '2099-01-01'),
+    ('ticker_cik_observation', 'owner_sha256', 'unbound'),
+    ('depositary_program', 'symbol', 'BAESF'),
+    ('depositary_program', 'venue', 'NYSE'),
+    ('depositary_program', 'security_kind', 'ordinary_share'),
+    ('depositary_program', 'ordinary_shares_per_adr', True),
+    ('depositary_program', 'ordinary_shares_per_adr', 1),
+    ('depositary_program', 'security_isin', 'GB0002634946'),
+    ('depositary_program', 'underlying_isin', 'bad'),
+    ('source_record_ids', 'filer', 'nonexistent-record'),
+])
+def test_research_identity_cannot_survive_a_mismatched_owner_or_security(inputs, section, key, value):
+    inputs = copy.deepcopy(inputs)
+    inputs[1]['issuers']['BAESY']['listing_qualifications'][1]['research_identity_qualification'][section][key] = value
+    case = issuer(build(inputs), 'BAESY')['archetype_context']['listing_cases'][1]
+    assert 'research_identity' not in case
+    assert case['state'] == 'source_observed' and case['listing_admission'] == 'not_established'
+
+
+@pytest.mark.parametrize('field,value', [('known_at','2099-01-01T00:00:00Z'),
+    ('known_at','invalid'), ('review_state','unreviewed'), ('rights_state','denied'),
+    ('scope','global_security_master'), ('valid_to','2026-10-12T00:00:00Z')])
+def test_research_support_is_optional_visible_reviewed_and_scope_bound(inputs, field, value):
+    inputs = copy.deepcopy(inputs)
+    inputs[1]['issuers']['BAESY']['listing_qualifications'][1]['research_identity_qualification'][field] = value
+    case = issuer(build(inputs), 'BAESY')['archetype_context']['listing_cases'][1]
+    assert 'research_identity' not in case
+
+
+def test_two_clock_cutoff_preserves_prior_source_only_case(inputs):
+    q = inputs[1]['issuers']['BAESY']['listing_qualifications'][1]['research_identity_qualification']
+    out = build(inputs, graph_as_of='2026-10-13T06:00:00Z')
+    case = issuer(out, 'BAESY')['archetype_context']['listing_cases'][1]
+    assert q['known_at'] > '2026-10-13T06:00:00'
+    assert 'research_identity' not in case
+
+
+def test_missing_exact_evidence_role_drops_support_without_erasing_original_observation(inputs):
+    inputs = copy.deepcopy(inputs)
+    adr = inputs[1]['issuers']['BAESY']['listing_qualifications'][1]
+    adr['evidence'] = [e for e in adr['evidence'] if e['publisher'] != 'J.P. Morgan']
+    case = issuer(build(inputs), 'BAESY')['archetype_context']['listing_cases'][1]
+    assert 'research_identity' not in case
+    assert len(case['evidence']) >= 2
+
+
+def test_malformed_source_role_is_fail_closed_not_an_exception(inputs):
+    inputs = copy.deepcopy(inputs)
+    adr = inputs[1]['issuers']['BAESY']['listing_qualifications'][1]
+    adr['research_identity_qualification']['source_record_ids']['filer'] = ['bad']
+    case = issuer(build(inputs), 'BAESY')['archetype_context']['listing_cases'][1]
+    assert 'research_identity' not in case

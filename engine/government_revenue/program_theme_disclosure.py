@@ -91,6 +91,97 @@ def _resolve(ref,rail,owners):
  raise ValueError('public_disclosure_reference_unsupported')
 
 
+
+# Conditional interpretation of current cited rows, not a new exposure owner.
+# Each entry is gated below on the actual resolved source class/scope. Neither
+# this language nor an issuer baseline promotes a rail or allocates theme money.
+_THEME_CASES={
+ 'golden_dome':(
+  'The cited allocation section covers integrated air and missile defense; a Golden Dome program allocation is not established. Conditional: if the allocation plan advances to funded, scope-specific contracts, verified contractor participation could become orders and later revenue. Margin and cash would still depend on contract terms, execution costs and payment timing. Issuer allocation, workshare and common-shareholder cash are unknown.',
+  '所引分配章节涵盖综合防空及导弹防御；尚未确认Golden Dome项目分配。条件情景：若分配计划推进至已获资金、范围明确的合同，已核实承包商的参与才可能转为订单及后续收入。利润率与现金仍取决于合同条款、执行成本及付款时间。发行人分配、项目份额及普通股股东现金均未知。',
+  'Invalidation: funding does not advance, the awarded scope names a different supplier, or disclosed execution costs offset the demand benefit. Confirm the program, contractor and contract stage before assigning economics.',
+  '失效条件：资金未推进、获授范围由其他供应商承担，或披露的执行成本抵销需求收益。先确认项目、承包商及合同阶段，再判断财务传导。'),
+ 'munitions_replenishment':(
+  'Conditional: funded replenishment orders could raise deliveries only within verified contractor scope. If production scales without matching cost escalation, segment profit could improve; inventory, supplier payments and ramp investment could absorb cash first. The reported segments are baselines, not munitions revenue or a known program share.',
+  '条件情景：已获资金的补充订单，只有在已核实承包范围内才可能增加交付。若产量扩大而成本未同步攀升，分部利润可能改善；库存、供应商付款及扩产投资可能先占用现金。报告分部仅为基准，并非弹药收入或已知项目份额。',
+  'Invalidation: no qualifying production award or delivery conversion appears, or disclosed costs/charges exceed the ramp benefit. Check contract scope and the next reported sales, margin and cash evidence separately.',
+  '失效条件：未出现合格生产合同或交付转化，或披露的成本及费用超过扩产收益。分别核实合同范围，以及下一份报告中的销售、利润率与现金证据。'),
+ 'space':(
+  'Conditional: a verified space-program award could affect the issuer only after scope and business ownership are established. Development costs and schedule changes could offset revenue; production or sustainment terms could have a different margin/cash profile. The cited defense segments are issuer context, not space-program revenue. Program capture and conversion timing remain unknown.',
+  '条件情景：航天项目合同只有在范围及业务所有权核实后，才可能影响发行人。开发成本及进度变化可能抵销收入；生产或维护条款的利润与现金特征可能不同。所引国防分部仅属发行人背景，并非航天项目收入。项目获益及转化时间仍未知。',
+  'Invalidation: the program or retained business scope is not established, or disclosed cost/schedule changes undermine conversion. Confirm the exact program and current owner before interpreting the next financial report.',
+  '失效条件：项目或保留业务范围未获确认，或披露的成本及进度变化削弱转化。解读下一份财报前，先核实具体项目及当前业务所有者。'),
+ 'nato_fms_demand':(
+  'Conditional: policy commitments and the Spain F-100 notification could become demand only through national funding and an offered/accepted/implemented agreement, then verified contracts. Margin and cash would depend on the contracted mix and payment terms. The notification ceiling is not issuer revenue; contractor attribution and capture remain unreviewed.',
+  '条件情景：政策承诺及西班牙F-100通知，须经各国资金决定、提出／接受／实施协议，再落实已核实合同，才可能转为需求。利润与现金取决于合同组合及付款条款。通知上限并非发行人收入；承包商归属及获益仍未审查。',
+  'Invalidation: funding or agreement advancement does not occur, the notified scope changes, or the eventual contractor differs. Follow official agreement evidence before any issuer or financial attribution; no advancement date is asserted.',
+  '失效条件：资金或协议未推进、通知范围改变，或最终承包商不同。先追踪官方协议证据，再作发行人或财务归属判断；未断言推进日期。'),
+ 'fleet_sustainment_upgrades':(
+  'Conditional: the Spain F-100 upgrade notification could support service or equipment demand only after agreement advancement and a reviewed contract/contractor path. Recurring support and one-time upgrades could have different margins; timing, inventory and customer payments could separate revenue from cash. No contractor mix or issuer capture is established.',
+  '条件情景：西班牙F-100升级通知，只有在协议推进、合同及承包商路径审查后，才可能支持服务或设备需求。持续维护与一次性升级的利润率可能不同；时间、库存及客户付款可能使收入与现金分离。承包组合及发行人获益尚未确认。',
+  'Invalidation: no implementation evidence appears, the upgrade/support scope changes, or the named contractor is not qualified. Confirm agreement stage, contractor identity and contract mix before comparing financial outcomes.',
+  '失效条件：未出现实施证据、升级／维护范围改变，或具名承包商未获核验。比较财务结果前，先确认协议阶段、承包商身份及合同组合。'),
+ 'shipbuilding':(
+  'Conditional: funded work within the reviewed Virginia/Electric Boat path could convert into deliveries, but GD Marine Systems is a broader segment. Reported funded, unfunded and potential backlog categories are distinct; they are not separate amounts to add to government allocations. Cost/schedule performance and milestone payments could drive margin and cash differently. Virginia workshare and shareholder cash remain unknown.',
+  '条件情景：已审查的Virginia／Electric Boat路径内，已获资金工作可能转为交付，但GD Marine Systems涵盖更广业务。报告的已获资金、未获资金及潜在积压类别各有口径，不能作为独立金额再加到政府分配。成本／进度表现及里程碑付款可能使利润与现金走向不同。Virginia份额及股东现金仍未知。',
+  'Invalidation: reviewed participation changes, funded backlog fails to convert, or disclosed costs/schedule changes weaken profit or cash. Verify the next Marine backlog categories and execution evidence without assigning all segment totals to Virginia.',
+  '失效条件：已审查参与关系改变、已获资金积压未转化，或披露的成本／进度变化削弱利润或现金。核实下一期Marine积压分类及执行证据，不把全部分部金额归于Virginia。')}
+
+_FACT_LABELS={
+ 'defense_segment_sales':('sales','销售额'),'marine_segment_sales':('sales','销售额'),
+ 'defense_segment_operating_profit':('operating profit','营业利润'),'marine_segment_operating_profit':('operating profit','营业利润'),
+ 'defense_segment_margin':('margin','利润率'),'marine_segment_margin':('margin','利润率'),
+ 'marine_funded_backlog':('funded backlog','已获资金积压'),
+ 'marine_unfunded_backlog':('unfunded backlog','未获资金积压'),
+ 'marine_total_backlog':('total backlog','积压总额'),
+ 'marine_estimated_potential_contract_value':('estimated potential contracts','估计潜在合同'),
+ 'marine_total_estimated_contract_value':('total estimated contracts','估计合同总额')}
+
+def _theme_economic_story(theme_id,resolved):
+ """Only successful CURRENT resolved references ground these conditional texts."""
+ anchors=[(rail,kind,node) for rail,kind,node,_ in resolved]
+ section={'golden_dome':'SEC. 20003','munitions_replenishment':'SEC. 20004','shipbuilding':'SEC. 20002'}.get(theme_id)
+ budget=section is not None and any(rail=='funding_stage' and kind=='budget' and isinstance(node,dict) and node.get('section')==section for rail,kind,node in anchors)
+ finance=any(rail=='economics' and kind in ('defense_economics','company_intelligence') for rail,kind,node in anchors)
+ fms=any(rail=='funding_stage' and kind=='fms' and isinstance(node,dict) and node.get('case_key')=='fms:transmittal:25-104' and node.get('stage')=='congressional_notification' for rail,kind,node in anchors)
+ policy=any(rail=='funding_stage' and kind=='program_ontology' and isinstance(node,dict) and node.get('evidence_class')=='official_alliance_policy' and node.get('claim_scopes')==['policy_context'] for rail,kind,node in anchors)
+ electric_boat=any(rail=='exposure' and kind=='program_ontology' and isinstance(node,dict) and node.get('program_id')=='acq-program:virginia-class-ssn' and node.get('entity_id')=='legal:gd:electric-boat-corp' and node.get('role')=='prime_contractor' and node.get('verification_state')=='reviewed' for rail,kind,node in anchors)
+ if theme_id=='golden_dome':permitted=budget
+ elif theme_id=='space':permitted=finance
+ elif theme_id=='nato_fms_demand':permitted=fms and policy
+ elif theme_id=='fleet_sustainment_upgrades':permitted=fms
+ elif theme_id=='munitions_replenishment':permitted=budget and finance
+ else:permitted=budget and finance and electric_boat
+ return _THEME_CASES[theme_id] if permitted else None
+
+def _reported_baselines(resolved):
+ """Exact admitted figures in original issuer/segment/period/unit scope.
+
+Do not sum categories, estimate theme shares or interpret a charge as cash.
+"""
+ groups={};seen=set()
+ for rail,kind,node,owner in resolved:
+  if rail!='economics' or kind not in ('defense_economics','company_intelligence'):continue
+  metric=node.get('fact_id','').rsplit(':',1)[-1]
+  if metric not in _FACT_LABELS or node.get('fact_id') in seen:continue
+  seen.add(node['fact_id']);p=owner.payload()
+  if kind=='defense_economics':
+   profile=next(x for x in p['profiles'] if any(f.get('fact_id')==node['fact_id'] for f in x['axes']['economics']['facts']));name=profile['ticker_display']
+  else:name=p['issuer']['display_name']
+  basis=node.get('accounting_basis',node.get('basis',''))
+  parts=basis.split(':');segment=parts[1] if len(parts)>=3 else basis
+  key=(name,node['period'],segment)
+  unit={'USD_million':('USD million','百万美元'),'percent':('%','%')}.get(node['unit'])
+  if unit is None:continue
+  label=_FACT_LABELS[metric];literal=str(node['value'])
+  groups.setdefault(key,[]).append((label[0]+' '+literal+' '+unit[0],label[1]+' '+literal+' '+unit[1]))
+ en=[];zh=[]
+ for (name,period,segment),facts in groups.items():
+  en.append(name+' '+segment+' '+period+' reported baseline: '+', '.join(x[0] for x in facts)+'.')
+  zh.append(name+' '+segment+' '+period+'报告基准：'+'、'.join(x[1] for x in facts)+'。')
+ return ' '.join(en),' '.join(zh)
+
+
 def disclose_program_themes(payload,*,owners,current_owner_receipts):
  """No old pinned revision becomes current when an owner pointer advances.
 
@@ -102,7 +193,7 @@ historical view stays cited, labeled stale, without auto-reminting authority.
  if not isinstance(current_owner_receipts,Mapping):raise ValueError('current_owner_receipts_required')
  out=[]
  for theme in payload['themes']:
-  known_en=[];known_zh=[];next_en=[];next_zh=[];sources=[];missing=[];rail_states={}
+  known_en=[];known_zh=[];next_en=[];next_zh=[];sources=[];missing=[];rail_states={};resolved=[]
   for rail,item in theme['rails'].items():
    effective=item['state'];fresh=True
    for ref in item['references']:
@@ -117,6 +208,8 @@ historical view stays cited, labeled stale, without auto-reminting authority.
     except (ValueError,KeyError,StopIteration):
      rail_states[rail]='source_unavailable';missing.append(rail);continue
     sources+=refs
+    node,_=t._pointer(owners[ref['owner_key']].payload(),ref['pointer'])
+    resolved.append((rail,owners[ref['owner_key']].owner_kind,node,owners[ref['owner_key']]))
     if rail=='next_event':next_en.append(en);next_zh.append(zh)
     else:known_en.append(en);known_zh.append(zh)
   # Deduplicate only identical public source identities, preserving different claims.
@@ -125,7 +218,15 @@ historical view stays cited, labeled stale, without auto-reminting authority.
    marker=(source['owner_key'],source['row_id'],source['url'],source['title'])
    if marker not in seen:seen.add(marker);dedup.append(source)
   unavailable=list(dict.fromkeys(missing))
-  out.append(dict(theme_id=theme['theme_id'],rail_states=rail_states,known_en=' '.join(dict.fromkeys(known_en)) or 'No qualified current source evidence is available for this theme.',known_zh=' '.join(dict.fromkeys(known_zh)) or '此主题暂无合格的当前来源证据。',missing_en='Unresolved: '+', '.join(RAIL_EN[k] for k in unavailable)+'.' if unavailable else 'All required rails have qualified context.',missing_zh='尚未解决：'+ '、'.join(RAIL_ZH[k] for k in unavailable)+'。' if unavailable else '所有必需栏目均有合格背景。',next_en=' '.join(dict.fromkeys(next_en)) or NEXT[theme['theme_id']][0],next_zh=' '.join(dict.fromkeys(next_zh)) or NEXT[theme['theme_id']][1],sources=dedup,research_state='SOURCE_CONTEXT_COMPLETE' if all(s=='supported' for s in rail_states.values()) else 'EVIDENCE_INSUFFICIENT'))
+  baseline_en,baseline_zh=_reported_baselines(resolved)
+  if baseline_en:known_en.append(baseline_en);known_zh.append(baseline_zh)
+  story=_theme_economic_story(theme['theme_id'],resolved)
+  missing_en='Unresolved: '+', '.join(RAIL_EN[k] for k in unavailable)+'.' if unavailable else 'All required rails have qualified context.'
+  missing_zh='尚未解决：'+ '、'.join(RAIL_ZH[k] for k in unavailable)+'。' if unavailable else '所有必需栏目均有合格背景。'
+  if story:
+   missing_en+=' '+story[0];missing_zh+=' '+story[1]
+   next_en.append(story[2]);next_zh.append(story[3])
+  out.append(dict(theme_id=theme['theme_id'],rail_states=rail_states,known_en=' '.join(dict.fromkeys(known_en)) or 'No qualified current source evidence is available for this theme.',known_zh=' '.join(dict.fromkeys(known_zh)) or '此主题暂无合格的当前来源证据。',missing_en=missing_en,missing_zh=missing_zh,next_en=' '.join(dict.fromkeys(next_en)) or NEXT[theme['theme_id']][0],next_zh=' '.join(dict.fromkeys(next_zh)) or NEXT[theme['theme_id']][1],sources=dedup,research_state='SOURCE_CONTEXT_COMPLETE' if all(s=='supported' for s in rail_states.values()) else 'EVIDENCE_INSUFFICIENT'))
  result=dict(contract=CONTRACT,schema_version='1.0.0',content_id='',theme_content_id=payload['content_id'],as_of=payload['as_of'],authority=dict(t.AUTHORITY),themes=out)
  result['content_id']=disclosure_content_id(result);validate_public_theme_disclosure(result);return result
 
