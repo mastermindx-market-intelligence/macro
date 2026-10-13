@@ -85,7 +85,8 @@ def test_excluded_cte_empty_config_is_valid_and_matches_nothing(monkeypatch):
     monkeypatch.setattr(a, "_load_exclusions",
                         lambda: {"emails": [], "locations": [], "ips": [], "visitor_ids": [], "bots": {}, "geo_overrides": []})
     cte = a._excluded_cte()
-    assert "auth.users where false" in cte
+    # The exact operator account is excluded even when the optional private config is absent.
+    assert "lower(email) in (\'admin@mastermind-x.com\')" in cte
     assert "ip_geo where false" in cte
     assert "as ip where false" in cte      # empty excl_ips
 
