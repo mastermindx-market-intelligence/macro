@@ -147,6 +147,7 @@ class RefusalReason(StrEnum):
     ``UNKNOWN_REINVESTMENT`` are added by lane O2-P04's total-return view.
     ``DUPLICATE_EVENT_ID`` / ``ROW_AFTER_AS_AT`` / ``NON_POSITIVE_VALUE`` were
     added by the R02 heal.
+    ``DUPLICATE_ROW_DATE`` was added by the R02 heal of the total-return view.
     """
 
     UNSUPPORTED_ACTION = "unsupported_action"
@@ -174,6 +175,8 @@ class RefusalReason(StrEnum):
     UNKNOWN_FX = "unknown_fx"
     UNKNOWN_REINVESTMENT = "unknown_reinvestment"
     MISSING_PRICE = "missing_price"
+    # ── added by the R02 heal of the total-return view (m5) ──
+    DUPLICATE_ROW_DATE = "duplicate_row_date"
 
 
 class ViewRefusal(PriceError):
@@ -1068,8 +1071,16 @@ def total_return_view(
       non-positive close on the ex-date refuses MISSING_PRICE — no proxy price
       is ever substituted).
 
+    - EX_DATE_CLOSE purchases settle at the ex-date's close, i.e. after EVERY
+      event of that ex-date has been applied: cash paid before a same-day split
+      buys post-split shares at the post-split close, and shares bought at the
+      close carry no later same-day dividend (R02 M2).
+
     ``q0`` (default 1) is the starting share count and must be exact and
     positive.  Every output is an exact ``Fraction``.
+    A non-positive ``q0`` or ``close_raw(t0)`` refuses NON_POSITIVE_VALUE; two
+    rows on one date refuse DUPLICATE_ROW_DATE and a row dated after the UTC
+    date of ``as_at`` refuses ROW_AFTER_AS_AT (column ``date`` for both).
     """
     if not isinstance(policy, TotalReturnPolicy):
         raise TypeError(
@@ -1082,7 +1093,10 @@ def total_return_view(
         )
     q_start = _exact_fraction(q0, what="q0")
     if q_start <= 0:
-        raise ValueError(f"q0 must be a positive share count, got {q_start}")
+        raise ViewRefusal(
+            f"q0 must be a positive share count, got {q_start}",
+            reason=RefusalReason.NON_POSITIVE_VALUE,
+        )
     materialized = tuple(rows)
     for row in materialized:
         if not isinstance(row, Mapping):
@@ -1093,12 +1107,28 @@ def total_return_view(
             "total_return_view needs at least one row (t0/t1 are the first "
             "and last row dates)"
         )
+    as_at_day = as_at.astimezone(timezone.utc).date()
     close_by_day: dict[date, Fraction] = {}
     previous_day: date | None = None
     for row in materialized:
         if "date" not in row:
             raise TypeError(f"row is missing its 'date' member: {dict(row)!r}")
         day = _require_date(row["date"], what="row date")
+        if day > as_at_day:
+            raise ViewRefusal(
+                f"row date {day.isoformat()} is after the view's as_at "
+                f"{as_at.isoformat()} — an as-of view cannot carry a price printed "
+                f"later (point-in-time law)",
+                reason=RefusalReason.ROW_AFTER_AS_AT,
+                column="date",
+            )
+        if previous_day is not None and day == previous_day:
+            raise ViewRefusal(
+                f"two rows carry the date {day.isoformat()} — one session has "
+                f"exactly one close and which print is real is never guessed",
+                reason=RefusalReason.DUPLICATE_ROW_DATE,
+                column="date",
+            )
         if previous_day is not None and day < previous_day:
             raise ValueError(
                 f"rows must be date-ordered: {day:%Y-%m-%d} follows "
@@ -1120,7 +1150,12 @@ def total_return_view(
     p0 = close_by_day[t0]
     p1 = close_by_day[t1]
     if p0 <= 0:
-        raise ValueError(f"close_raw at t0 must be positive, got {p0}")
+        raise ViewRefusal(
+            f"close_raw at t0 must be positive, got {p0} — a return from a zero "
+            f"or negative starting price is undefined",
+            reason=RefusalReason.NON_POSITIVE_VALUE,
+            column="close_raw",
+        )
 
     in_window = [
         event for event in revisions.resolve(as_at) if t0 < event.ex_date <= t1
@@ -1146,7 +1181,18 @@ def total_return_view(
     q = q_start
     cash = Fraction(0)
     applied: list[tuple[str, ActionFamily, Fraction]] = []
+    # EX_DATE_CLOSE buys at the ex-date's CLOSE, which prints after EVERY event
+    # of that ex-date took effect at the open: a day's purchases settle once
+    # the whole day has been applied, in post-event shares at the printed close
+    # (R02 M2 — cash paid before a same-day split is never reinvested at the
+    # post-split close on the pre-split share count, and shares bought at the
+    # close carry no later same-day dividend).
+    to_buy = Fraction(0)
+    buy_day: date | None = None
     for event in in_window:  # resolve() already (ex_date, sequence)-ordered
+        if buy_day is not None and event.ex_date != buy_day:
+            q += to_buy / close_by_day[buy_day]
+            to_buy, buy_day = Fraction(0), None
         contribution = _check_window_event(event)  # P02's value law, verbatim
         if contribution is not None:  # a split: the unit changes, wealth does not
             applied.append((event.event_id, event.family, q))
@@ -1204,8 +1250,11 @@ def total_return_view(
                     reason=RefusalReason.MISSING_PRICE,
                     event_id=event.event_id,
                 )
-            q += amount / ex_close
+            to_buy += amount
+            buy_day = event.ex_date
 
+    if buy_day is not None:
+        q += to_buy / close_by_day[buy_day]
     wealth0 = q_start * p0
     wealth1 = q * p1 + cash
     return TotalReturnView(

@@ -1035,3 +1035,109 @@ def test_R02_m4_non_positive_inputs_refuse_typed() -> None:
 def test_R02_m4_a_zero_end_price_is_a_total_loss_not_a_refusal() -> None:
     assert qualified_return(100, 0, 1, 1) == Fraction(-1)
     assert return_vector(100, 0, 1, 1)["original"] == Fraction(-1)
+
+
+# ── R02 heal of the total-return view (M2 m2 m4 m5) ──────────────────────────
+
+def test_R02_P04_M2_cash_before_a_same_day_split_buys_post_split_shares() -> None:
+    """p0 100; cash 2 per OLD share (seq 1), then split 2 (seq 2); ex-date close
+    49.  The close prints after the split: 2/49 post-split shares, wealth 100."""
+    rows = [{"date": date(2026, 6, 9), "close_raw": 100}, {"date": EX_DAY, "close_raw": 49}]
+    revisions = ActionRevisionSet(
+        "r02m2", (p04_cash("d1", Fraction(2), sequence=1), split("s1", Fraction(2), sequence=2))
+    )
+    policy = TotalReturnPolicy(ReinvestPolicy.EX_DATE_CLOSE, Fraction(0), "USD")
+    view = total_return_view(rows, revisions, AS_AT, policy)
+    assert view.q1 == Fraction(100, 49)  # 1 -> split -> 2, + 2/49 bought at the close
+    assert view.cash == Fraction(0)
+    assert view.wealth0 == Fraction(100)
+    assert view.wealth1 == Fraction(100)
+    assert view.holding_return == Fraction(0)
+    assert view.raw_price_return == Fraction(-51, 100)
+    assert view.events_applied == (
+        ("d1", ActionFamily.CASH_DIVIDEND, Fraction(1)),
+        ("s1", ActionFamily.FORWARD_SPLIT, Fraction(1)),
+    )
+
+
+def test_R02_P04_M2_shares_bought_at_the_close_carry_no_later_same_day_cash() -> None:
+    """cash 2 per old share (seq 1), split 2 (seq 2), cash 1 per new share
+    (seq 3); ex-date close 48: (2 + 2*1)/48 bought at the close, wealth 100."""
+    rows = [{"date": date(2026, 6, 9), "close_raw": 100}, {"date": EX_DAY, "close_raw": 48}]
+    revisions = ActionRevisionSet(
+        "r02m2b",
+        (
+            p04_cash("d1", Fraction(2), sequence=1),
+            split("s1", Fraction(2), sequence=2),
+            p04_cash("d3", Fraction(1), sequence=3),
+        ),
+    )
+    policy = TotalReturnPolicy(ReinvestPolicy.EX_DATE_CLOSE, Fraction(0), "USD")
+    view = total_return_view(rows, revisions, AS_AT, policy)
+    assert view.q1 == Fraction(25, 12)  # 2 + 4/48
+    assert view.cash == Fraction(0)
+    assert view.wealth1 == Fraction(100)
+    assert view.holding_return == Fraction(0)
+    assert view.raw_price_return == Fraction(-13, 25)
+    assert view.events_applied == (
+        ("d1", ActionFamily.CASH_DIVIDEND, Fraction(1)),
+        ("s1", ActionFamily.FORWARD_SPLIT, Fraction(1)),
+        ("d3", ActionFamily.CASH_DIVIDEND, Fraction(2)),
+    )
+
+
+def test_R02_P04_M2_guard_split_first_then_cash_is_unchanged() -> None:
+    """split 2 (seq 1), then cash 1 per NEW share (seq 2), ex-date close 49."""
+    rows = [{"date": date(2026, 6, 9), "close_raw": 100}, {"date": EX_DAY, "close_raw": 49}]
+    revisions = ActionRevisionSet(
+        "r02m2g", (split("s1", Fraction(2), sequence=1), p04_cash("d1", Fraction(1), sequence=2))
+    )
+    policy = TotalReturnPolicy(ReinvestPolicy.EX_DATE_CLOSE, Fraction(0), "USD")
+    view = total_return_view(rows, revisions, AS_AT, policy)
+    assert view.q1 == Fraction(100, 49)
+    assert view.wealth1 == Fraction(100)
+    assert view.holding_return == Fraction(0)
+    assert view.events_applied == (
+        ("s1", ActionFamily.FORWARD_SPLIT, Fraction(1)),
+        ("d1", ActionFamily.CASH_DIVIDEND, Fraction(2)),
+    )
+
+
+def test_R02_P04_m5_two_rows_on_one_date_refuse() -> None:
+    rows = [
+        {"date": date(2026, 6, 9), "close_raw": 100},
+        {"date": date(2026, 6, 11), "close_raw": 98},
+        {"date": date(2026, 6, 11), "close_raw": 97},
+    ]
+    with pytest.raises(ViewRefusal) as raised:
+        total_return_view(rows, EMPTY, AS_AT, POLICY)
+    assert raised.value.reason is RefusalReason.DUPLICATE_ROW_DATE
+    assert raised.value.column == "date"
+
+
+def test_R02_P04_m2_a_row_after_as_at_refuses() -> None:
+    rows = [{"date": date(2026, 6, 9), "close_raw": 100}, {"date": date(2026, 6, 21), "close_raw": 98}]
+    with pytest.raises(ViewRefusal) as raised:
+        total_return_view(rows, EMPTY, AS_AT, POLICY)
+    assert raised.value.reason is RefusalReason.ROW_AFTER_AS_AT
+    assert raised.value.column == "date"
+
+
+def test_R02_P04_m2_guard_a_row_on_the_as_at_date_is_lawful() -> None:
+    rows = [{"date": date(2026, 6, 9), "close_raw": 100}, {"date": date(2026, 6, 20), "close_raw": 98}]
+    view = total_return_view(rows, EMPTY, AS_AT, POLICY)
+    assert view.holding_return == Fraction(-1, 50)
+
+
+def test_R02_P04_m4_non_positive_q0_or_p0_refuse_typed() -> None:
+    for q0 in (0, -1):
+        with pytest.raises(ViewRefusal) as raised:
+            total_return_view(V_ROWS, EMPTY, AS_AT, POLICY, q0=q0)
+        assert raised.value.reason is RefusalReason.NON_POSITIVE_VALUE, q0
+        assert raised.value.column is None
+    for p0 in (0, -5):
+        rows = [{"date": date(2026, 6, 9), "close_raw": p0}, {"date": date(2026, 6, 11), "close_raw": 98}]
+        with pytest.raises(ViewRefusal) as raised:
+            total_return_view(rows, EMPTY, AS_AT, POLICY)
+        assert raised.value.reason is RefusalReason.NON_POSITIVE_VALUE, p0
+        assert raised.value.column == "close_raw"
