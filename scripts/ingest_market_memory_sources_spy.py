@@ -353,6 +353,14 @@ def _fetch_spy_daily_bar(
     if status not in ("ok", "success"):
         return "malformed", []
 
+    # This single-ticker endpoint binds identity at envelope level.  Do not add
+    # a synthetic ticker to results[]: those exact bytes define the seal digest.
+    if payload.get("ticker") != "SPY":
+        return "malformed", []
+    # A request parameter is not proof of the returned price basis.
+    if payload.get("adjusted") is not False:
+        return "malformed", []
+
     if results is None or results == []:
         return "no_bar", []
     if not isinstance(results, list):
@@ -503,7 +511,9 @@ def _collect_seal_observations(
                         reason="malformed_result_count",
                     )
                 else:
-                    valid, reason = _validate_single_bar(results[0], session_date=session)
+                    valid, reason = _validate_single_bar(
+                        results[0], session_date=session, response_ticker="SPY"
+                    )
                     if not valid:
                         log.debug("bar validation failed: malformed_bar")
                         obs = SealObservation(

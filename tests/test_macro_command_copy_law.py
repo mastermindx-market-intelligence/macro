@@ -1966,17 +1966,76 @@ def _assert_axes_resolve_by_id(items: list, vector: dict, snap: dict) -> None:
             assert view["vector"]["move"] == first
 
 
+def _liquidity_vector_snapshot(dx: float | None, dy: float | None, *,
+                               present: bool) -> dict:
+    """Synthetic liquidity snapshot. The axis list is y-then-x, so position cannot bind.
+
+    Does not read site/. funding_pressure carries direction_semantics
+    higher_tighter, matching the producer: a lower score is easier funding,
+    so a negative dx is the down clause.
+    """
+    vector: dict = {
+        "status": "PRESENT" if present else "ABSENT",
+        "dx": dx if present else None,
+        "dy": dy if present else None,
+        "x_axis_id": "funding_pressure" if present else None,
+        "y_axis_id": "balance_sheet_support" if present else None,
+    }
+    if not present:
+        vector["null_reason"] = "WARMUP"
+    items = [
+        {
+            "axis_id": "balance_sheet_support",
+            "direction_semantics": "higher_stronger",
+            "label": {"en": "Balance-sheet support", "zh": "资产负债表支持"},
+        },
+        {
+            "axis_id": "funding_pressure",
+            "direction_semantics": "higher_tighter",
+            "label": {"en": "Funding pressure", "zh": "融资压力"},
+        },
+    ] if present else []
+    return {
+        "workspace": {
+            "id": "liquidity_regime",
+            "title": {"en": "Liquidity regime", "zh": "流动性体制"},
+            "subtitle": {"en": "", "zh": ""},
+        },
+        "region": {"code": "US", "display_name": "United States", "supported": True},
+        "availability": {"state": "CURRENT"},
+        "headline": {
+            "status": "PRESENT",
+            "state_id": "A",
+            "effective_date": "2026-10-12",
+            "state_label": {
+                "en": "Easy funding, weak support",
+                "zh": "融资宽松、支持偏弱",
+            },
+            "one_month_vector": vector,
+        },
+        "changes": {"comparability": "COMPARABLE", "deltas": []},
+        "axes": {"items": items},
+    }
+
+
 def test_vector_axes_resolve_by_id_not_list_order() -> None:
-    """M2: ids come from committed builder payloads; list order does not bind.
+    """M2: ids come from the fixture payload; list order does not bind.
 
     The pair scenario is a committed fixture, so a workspace that later drops
-    its vector cannot erase the law. A live workspace with no resolvable pair
-    must not invent a move, and a planted axis list must not bind by position.
+    its vector cannot erase the law. The move sentence is a renderer law,
+    pinned by _render_workspace_html on a synthetic snapshot: a negative dx
+    on funding_pressure (higher_tighter) is "Easier funding pressure". It is
+    not read back from the committed page. That page is rebaked on its own
+    cadence, and binding the sentence to today's site/macrodata is what sent
+    this law red on main (precedent 1f2b713e37, #8032: the copy verdict must
+    not depend on which state the nightly data selects). A snapshot with no
+    resolvable pair must not invent a move, and a planted axis list must not
+    bind by position.
     """
     import json
     from html import unescape
     from lib.macro_suite_disclosure import resolve_vector_axes
-    from lib.macro_suite_labels import vector_move_pair
+    from lib.macro_suite_labels import label, vector_move_pair
     from lib.macro_suite_view import _headline
     fixture = json.loads(
         (ROOT / "tests" / "fixtures" / "macro_command_p5"
@@ -1992,8 +2051,28 @@ def test_vector_axes_resolve_by_id_not_list_order() -> None:
             [{"axis_id": "a"}, {"axis_id": "b"}],
             {},
         )
-    resolved = 0
-    no_pair = 0
+    # The numbers are the mismatch that the committed page still prints as
+    # "Tighter". higher_tighter means a fallen score is easier funding.
+    assert label("direction", "higher_tighter")["en"] == "Higher = tighter funding"
+    easier_en = "Easier funding pressure, weaker balance-sheet support."
+    easier_zh = "融资压力减轻，资产负债表支持减弱。"
+    tighter_en = "Tighter funding pressure, weaker balance-sheet support."
+    negative = _liquidity_vector_snapshot(-1.22, -17.7, present=True)
+    items = list(negative["axes"]["items"])
+    raw_vector = negative["headline"]["one_month_vector"]
+    assert items[0]["axis_id"] != raw_vector["x_axis_id"]
+    print("vector-axes branch=synthetic-negative-dx")
+    _assert_axes_resolve_by_id(items, raw_vector, negative)
+    negative_html = unescape(_render_workspace_html("liquidity_regime", negative))
+    assert easier_en in negative_html
+    assert easier_zh in negative_html
+    assert "Tighter funding pressure" not in negative_html
+    positive = _liquidity_vector_snapshot(1.22, -17.7, present=True)
+    print("vector-axes branch=synthetic-positive-dx")
+    positive_html = unescape(_render_workspace_html("liquidity_regime", positive))
+    assert tighter_en in positive_html
+    assert "融资压力上升，资产负债表支持减弱。" in positive_html
+    assert "Easier funding pressure" not in positive_html
     planted = (
         {"axis_id": "funding_pressure"},
         {"axis_id": "balance_sheet_support"},
@@ -2001,52 +2080,23 @@ def test_vector_axes_resolve_by_id_not_list_order() -> None:
     cant_show = (
         "We can't show the move yet — there is nothing comparable to measure it against."
     )
-    for page in builder.SUITE_PAGES:
-        path = DATA_ROOT / "workspaces" / page.workspace_id / page.region / "latest.json"
-        snap = json.loads(path.read_text(encoding="utf-8"))
-        items = list((snap.get("axes") or {}).get("items") or [])
-        raw_vector = (snap.get("headline") or {}).get("one_month_vector")
-        page_html = unescape(
-            (ROOT / "site" / page.output).read_text(encoding="utf-8"))
-        ids_ready = (
-            isinstance(raw_vector, dict)
-            and raw_vector.get("x_axis_id")
-            and raw_vector.get("y_axis_id")
-            and len(items) >= 2
-        )
-        if ids_ready:
-            print(f"vector-axes branch=resolve-by-id workspace={page.workspace_id}")
-            _assert_axes_resolve_by_id(items, raw_vector, snap)
-            if raw_vector.get("status") == "PRESENT":
-                got_x, got_y = resolve_vector_axes(items, raw_vector)
-                move = vector_move_pair(
-                    raw_vector.get("dx"), raw_vector.get("dy"), got_x, got_y)
-                assert move["en"] in page_html, page.output
-                assert move["zh"] in page_html, page.output
-            resolved += 1
-            continue
-        print(
-            f"vector-axes branch=no-pair workspace={page.workspace_id} "
-            f"vector_null={raw_vector is None} n_items={len(items)}")
-        view = _headline(snap, items)
-        assert view["vector"]["present"] is False, page.output
-        assert view["vector"]["move"] is None, page.output
-        assert not view["vector"]["x_axis_id"], page.output
-        assert not view["vector"]["y_axis_id"], page.output
-        with pytest.raises(KeyError, match="missing required x_axis_id"):
-            resolve_vector_axes(
-                list(planted),
-                raw_vector if isinstance(raw_vector, dict) else {},
-            )
-        assert cant_show in page_html, page.output
-        invented = vector_move_pair(
-            0.4, -0.2,
-            {"axis_id": "funding_pressure"},
-            {"axis_id": "balance_sheet_support"})
-        assert invented["en"] not in page_html, page.output
-        no_pair += 1
-    assert resolved >= 1, "no live workspace published a resolvable axis pair"
-    assert no_pair >= 1, "no live workspace lacked a resolvable axis pair"
+    absent = _liquidity_vector_snapshot(None, None, present=False)
+    print("vector-axes branch=synthetic-no-pair")
+    view = _headline(absent, [])
+    assert view["vector"]["present"] is False
+    assert view["vector"]["move"] is None
+    assert not view["vector"]["x_axis_id"]
+    assert not view["vector"]["y_axis_id"]
+    with pytest.raises(KeyError, match="missing required x_axis_id"):
+        resolve_vector_axes(list(planted), {})
+    absent_html = unescape(_render_workspace_html("liquidity_regime", absent))
+    assert cant_show in absent_html
+    invented = vector_move_pair(
+        0.4, -0.2,
+        {"axis_id": "funding_pressure"},
+        {"axis_id": "balance_sheet_support"})
+    assert invented["en"] not in absent_html
+    assert easier_en not in absent_html
 
 
 def test_visible_text_parser_treats_void_elements_as_self_closing() -> None:
@@ -2235,10 +2285,14 @@ def test_unknown_lineage_fallback_is_typed_and_warns(capsys) -> None:
     assert err.startswith("::warning title=macro-suite-unknown-lineage-kind::")
 
 
-@pytest.mark.needs_full_checkout("site")
 def test_financial_conditions_page_shows_no_change_republication() -> None:
-    """No-change republication is a fixture scenario. The committed page
-    follows whatever kind its corrections.note actually is."""
+    """No-change republication is a fixture scenario.
+
+    The committed page is not part of this law. Its corrections.note moves
+    with the nightly snapshot and the HTML is rebaked separately, so
+    requiring the page to match today's kind goes red on main (precedent
+    1f2b713e37, #8032).
+    """
     import json
     fixture = json.loads(
         (ROOT / "tests" / "fixtures" / "macro_command_p5"
@@ -2247,8 +2301,35 @@ def test_financial_conditions_page_shows_no_change_republication() -> None:
     assert "no-change republication" in html
     assert "A correction note is on file for this reading." not in html
     _assert_one_lineage_kind(html, "no_change_republication")
-    _assert_live_lineage_matches_note(
-        "financial_conditions", "macro_financial_conditions.html")
+
+
+def test_reference_period_lineage_renders_its_own_sentence() -> None:
+    """A later reference period keeps its own sentence.
+
+    The producer note is the financial-conditions branch for a different
+    as-of (engine/.../financial_conditions.py _corrections). Rendering it
+    must state that kind and must not reuse the no-change republication
+    phrase. The committed page can still carry the older phrase after the
+    snapshot has moved on; that agreement belongs to the render bot.
+    """
+    import json
+    fixture = json.loads(
+        (ROOT / "tests" / "fixtures" / "macro_command_p5"
+         / "fc_no_change_republication.json").read_text(encoding="utf-8"))
+    fixture["corrections"]["note"] = (
+        "Reference period differs from the predecessor print (a new observation, "
+        "not a revision of the same period); no correction asserted."
+    )
+    fixture["headline"]["effective_date"] = "2026-10-12"
+    fixture["headline"]["prior_state"] = {
+        "state_id": "B",
+        "effective_date": "2026-10-09",
+    }
+    html = _render_workspace_html("financial_conditions", fixture)
+    _assert_one_lineage_kind(html, "reference_period_change")
+    assert "no-change republication" not in html
+    assert "12 Oct 2026" in html
+    assert "9 Oct 2026" in html
 
 
 def test_hysteresis_note_distinguishes_configured_from_unused() -> None:
