@@ -1100,3 +1100,41 @@ INTENDED_RESUME_SURFACE: this Claude Code session; successor reads this file + #
   - Macro #9097 and #8920: required jobs green or running. The `ci-authority/codex/merge-queue-pilot` status is FAILURE ("CI authority context rejected") on both. It is another owner's pilot context, not one this programme touches; whether the sweeper treats it as blocking is observed through watchers `bs0oowvm6` and `b5xpyqyp7`, not forced.
 - Rungs at 08:05Z: PP1-SM RUNNING · PP2-L RUNNING · F02-Q2T RUNNING · #985/#948/#983 CI (armed) · Macro #9097/#9080/#8920 CI (label) · F02-Q2/R04-B2/R04-B1 FROZEN (gated) · #9079/#9083 HELD to 2026-10-14 00:00Z · D04A HELD.
 - NEXT: judge F02-Q2T, PP1-SM, PP2-L by artifact; on the first production-affecting Terminal merge, deploy the master tip git-gated (it carries #981) and verify live; ship F02-Q2T through the full chain before releasing F02-Q2.
+
+### D60 (2026-10-13T08:20Z) — PP2-L and F02-Q2T accepted by artifact; #986 armed; scale addendum consumed; ubuntu0 thermally refused; chart-return design frozen
+- FACT PP2-L ACCEPTED: `claude/pp2l-options-lib-20261013` head `caeee0618f91` (T `5592b901` → F1 receipts + key `d19ca0f9` → F2 hold `6cc2a86d` → F3 bounds `caeee061`). Files: `useOptionsSnapshot.ts` (+76/−13), `lib/optionsCompanion.ts` (+60, additions only), new `lib/optionsScopeBounds.ts`, three new test files. Gates: tsc 0, eslint 0, plain-language 0, `npm test` 626 files / 10618 passed. All six negative controls produced real failing assertions. The Codex root will run an independent Fabric source review of PP2-L and return only actionable findings; final adjudication reuses that review for unchanged library bytes.
+- FACT F02-Q2T ACCEPTED → PR #986 (head `392e9739864b`, base `4005275cc816`). RED at base: T1 22.5≠3 and 76≠56; T2 4.5≠3 ×2; T4 68 not > 76. T3 (finite dte −5..400 × 5 buckets) was green at base and after. `npm test` 618 / 10530 passed. `merge-on-green` + native auto armed. Watcher `b2vn3aqpt`.
+- FACT scale addendum consumed: #723 comment 6141057055; local `FABLE_PAPER_PARITY_SCALE_ADDENDUM_20261013.md` sha256 `481cd1437bdb…`. Signed lenses: 0–P95 of |value|, square-root. Unsigned: P5–P95, square-root. Scale is computed over the full selected scope, before the row cap. The PP1-SM commission already encodes exactly this law (items 1–5; never asinh). No change to the running lane. Paper tablet JSX `paper-reference-F21-0-styles-20261013.txt` (sha256 `cc84966f0cdf…`): 768×1024 board with 44px controls and rows; the product test viewport stays 820×1180. Interim mobile-detent GAPs are not a waiver of the final phone criterion.
+- FACT routing correction (from the Codex root): the GLM rc75 SLOT_TIMEOUT was a wait for local flock admission (slot.py 1247–1252), not a 1200 s execution ceiling. New unstarted leaves use current normal admission.
+- FACT placement at 08:05Z (`pool hosts grok`, `pool placement --mode grok`):
+  - ubuntu0 INELIGIBLE: thermal, `cpu_tctl` 90.1 °C ≥ 90 °C. PP1-SM (pid 1873643, already started) is preserved on its carrier.
+  - ubuntu2 is the only ELIGIBLE grok host (score 0.87).
+  - ubuntu1 and ubuntu3 fail the disk gate.
+  - New Wave-B leaves follow the placement view; none goes to ubuntu0 while it is refused.
+- FROZEN chart-return design (PP2-UI-b): `MobileSheet` renders children only while `open` (portal), so closing the ≤860px sheet (this includes the 820 tablet) unmounts `OptionsCompanion`. `MatrixCompanion.tsx:76` clears the pin on mount AND unmount. Today, "pin then look at the chart" on tablet/phone therefore loses the pin, the selection and the scroll. Design:
+  - `OptionsRail` holds a return ticket {root, session, strike, expiry, perspective, viewScrollTop}.
+  - "Show on chart" pins and hides the sheet without `close()`'s `onPin(null)`.
+  - A fixed `options-chart-return` chip above the bottom nav reopens the sheet with `restore`.
+  - The selection is restored only when root and session match. `.view` scrollTop is restored after layout.
+  - The pin is cleared only when its root or session differs from the current data, not on mount/unmount.
+  - Desktop records `.view` scrollTop and the chart canvas node before and after the pin; both must be equal.
+- FROZEN wave-B split (≤5 owned files per lane):
+  - PP2-UI-a: receipts row, newer-snapshot banner and hold wiring, From/To + DTE bounds. Owns `MatrixCompanion`, `OptionsCompanion` prefs, strings, css, UI tests.
+  - Then PP2-UI-b: chart-return. Owns `OptionsRail`, the `MatrixCompanion` pin effect, strings, `e2e/options-companion.spec.ts`.
+  - a then b are serialized (shared `MatrixCompanion` and strings).
+  - PP1-D (desk host + gex-desk crops) runs in parallel with PP2-UI-a.
+  - Every base is frozen only after PP1-SM is accepted and PP2-L is merged into the #723 lane branch.
+- Rungs at 08:20Z:
+  - PP1-SM: RUNNING (negative controls written).
+  - PP2-L: ACCEPTED (not integrated).
+  - F02-Q2T / #986: CI (armed).
+  - #985/#948/#983: CI (armed).
+  - Macro #9097/#9080/#8920: CI (label).
+  - F02-Q2/R04-B2/R04-B1: FROZEN.
+  - #9079/#9083: HELD to 2026-10-14 00:00Z.
+  - D04A: HELD.
+- NEXT:
+  - Judge PP1-SM.
+  - Integrate PP1-SM and PP2-L on the #723 lane branch.
+  - Launch PP2-UI-a and PP1-D per placement.
+  - On #986 merge, deploy the master tip git-gated (it carries #981) and verify live, then release F02-Q2 once #9080 merges.
