@@ -46,6 +46,9 @@ verified:
   - claim: Hosted import-closure and CLI-pin failures are repaired without waivers or omitted tests.
     command: test_check_script_import_pinning.py plus test_market_memory_lineage.py; test_ci_pack.py::test_curated_exclusive_scopes_cover_their_own_import_closure.
     result: 75 CLI-pin/lineage cases passed; corrected full exclusive closure test passed. Independent review848a3c5a confirms exactly five added dependency paths across three existing jobs and standard unconditional root pin. All other job fields and old paths are unchanged.
+  - claim: The fresh-main union satisfies newly enforced exact import scopes without changing reviewed lineage source.
+    command: Complete exclusive import closure, three canonical job packing probes and independent C1_FRESH_MAIN_CI_REVIEW.json.
+    result: Zero closure findings and packing breaches; 133/133/128 jobs, weights5659/5464/5426 and ten packs under unchanged ceilings. Exactly four paths added across three existing jobs; all seven accepted source hashes preserved. Independent receipt075a3d15634c01cadc915089c72add6208640d2867f085cff0ae3649c17842d0.
   - claim: Existing owner regression failures remain distinct from the new source acceptance.
     command: Exact owner tests against the original committed data fixtures.
     result: 100 passed; two inherited options-ledger row and byte cap refusals retained. No cap increase or data pruning.

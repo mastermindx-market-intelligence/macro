@@ -16822,6 +16822,7 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - engine/neuralweb/market_memory_lineage.py
       - app/__init__.py
       - app/account_actions.py
       - app/account_prefs.py
@@ -19823,6 +19824,7 @@ jobs:
     # contract-delta closure on 673a0a5a (a sparse worktree omits those trees).
     scope: exclusive
     paths:
+      - lib/intl_eod_publication.py
       - "tests/fixtures/prophet_live/**"
       - "tests/fixtures/us_candidate_episode/**"
       - "config/fundamental_forensics/coverage/**"
@@ -24169,6 +24171,8 @@ jobs:
     # contract-delta closure on 673a0a5a (a sparse worktree omits those trees).
     scope: exclusive
     paths:
+      - engine/neuralweb/market_memory_lineage.py
+      - tests/test_market_memory_lineage.py
       - "config/intelligence_workspace/**"
       - "engine/prophet_lab/**"
       - "research/research_panels/**"
