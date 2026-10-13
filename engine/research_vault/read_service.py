@@ -490,6 +490,12 @@ class ResearchReadService:
         extracted_sha = extracted.get("extracted_text_sha256") if extracted is not None else None
         stored_sha = getattr(stored, "source_content_sha256", None)
         if extracted is not None and stored_sha == extracted_sha:
+            # The store validates this closed receipt. Current source identity
+            # and exhaustive model context are separate properties.
+            receipt = getattr(stored, "receipt", None)
+            context = receipt.get("source_context") if isinstance(receipt, Mapping) else None
+            if isinstance(context, Mapping) and context.get("coverage") == "PARTIAL_SOURCE_CONTEXT":
+                extra.append("RIO_PARTIAL")
             return "CURRENT", stored, extra
         return "STALE", stored, extra
 
