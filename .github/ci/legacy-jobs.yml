@@ -2943,6 +2943,7 @@ jobs:
       - "lib/dataos/nulls.py"
       - "lib/dataos/price.py"
       - "lib/dataos/quality.py"
+      - "lib/dataos/read_contract.py"
       - "lib/dataos/registry.py"
       - "lib/dataos/temporal.py"
       - "engine/composite_score.py"
@@ -4741,6 +4742,7 @@ jobs:
       - "engine/intl_performance_records.py"
       - "engine/intl_performance_charts.py"
       - "engine/intl_workspace_overview.py"
+      - "lib/intl_eod_publication.py"
       - "engine/international_macro_dashboard.py"
       - "engine/intl_regime.py"
       - "engine/intl_run.py"
@@ -4763,6 +4765,8 @@ jobs:
       - "tests/test_intl_performance_records.py"
       - "tests/test_intl_source_snapshot.py"
       - "tests/test_intl_source_qualification.py"
+      - "tests/test_intl_eod_publication.py"
+      - "tests/test_intl_eod_publication_review.py"
       - "tests/test_intl_performance_charts.py"
       - "tests/test_intl_workspace_overview.py"
       - "lib/intl_library_view.py"
@@ -4989,7 +4993,7 @@ jobs:
       - name: install numerical test dependencies
         run: pip install pytest pandas numpy pyyaml pyarrow
       - name: International return identity, windows and observation provenance
-        run: python -m pytest tests/test_intl_performance_records.py tests/test_intl_source_snapshot.py tests/test_intl_source_qualification.py tests/test_intl_performance_charts.py tests/test_intl_workspace_overview.py tests/test_intl_library_view.py tests/test_intl_library_public_copy.py tests/test_intl_library_mount.py tests/test_intl_inspector_view.py tests/test_intl_compare_view.py tests/test_intl_compare_mount.py tests/test_intl_history_read_receipt.py tests/test_intl_history_read_projection.py tests/test_intl_history_projection_regression.py tests/test_intl_history_projection_independent.py tests/test_intl_cycle_component_evidence.py tests/test_intl_regime.py tests/test_intl_compare.py tests/test_intl_workspace_macro.py tests/test_intl_ecb_deposit_admission.py tests/test_intl_macro_mount.py tests/test_intl_macro_publication.py tests/test_intl_workspace_risk.py tests/test_intl_workspace_risk_regression.py tests/test_intl_workspace_risk_currency.py tests/test_intl_workspace_risk_currency_independent.py tests/test_intl_workspace_risk_currency_numerical.py tests/test_intl_workspace_risk_pressure.py tests/test_intl_workspace_risk_pressure_independent.py tests/test_intl_workspace_risk_section.py tests/test_intl_risk_mount.py tests/test_intl_workspace_risk_section_independent.py tests/test_intl_policy_comparison.py tests/test_intl_policy_comparison_independent.py tests/test_intl_workspace_history.py tests/test_intl_workspace_history_independent.py tests/test_intl_history_mount.py -q
+        run: python -m pytest tests/test_intl_performance_records.py tests/test_intl_source_snapshot.py tests/test_intl_source_qualification.py tests/test_intl_eod_publication.py tests/test_intl_eod_publication_review.py tests/test_intl_performance_charts.py tests/test_intl_workspace_overview.py tests/test_intl_library_view.py tests/test_intl_library_public_copy.py tests/test_intl_library_mount.py tests/test_intl_inspector_view.py tests/test_intl_compare_view.py tests/test_intl_compare_mount.py tests/test_intl_history_read_receipt.py tests/test_intl_history_read_projection.py tests/test_intl_history_projection_regression.py tests/test_intl_history_projection_independent.py tests/test_intl_cycle_component_evidence.py tests/test_intl_regime.py tests/test_intl_compare.py tests/test_intl_workspace_macro.py tests/test_intl_ecb_deposit_admission.py tests/test_intl_macro_mount.py tests/test_intl_macro_publication.py tests/test_intl_workspace_risk.py tests/test_intl_workspace_risk_regression.py tests/test_intl_workspace_risk_currency.py tests/test_intl_workspace_risk_currency_independent.py tests/test_intl_workspace_risk_currency_numerical.py tests/test_intl_workspace_risk_pressure.py tests/test_intl_workspace_risk_pressure_independent.py tests/test_intl_workspace_risk_section.py tests/test_intl_risk_mount.py tests/test_intl_workspace_risk_section_independent.py tests/test_intl_policy_comparison.py tests/test_intl_policy_comparison_independent.py tests/test_intl_workspace_history.py tests/test_intl_workspace_history_independent.py tests/test_intl_history_mount.py -q
 
   international-workspace-browser:
     if: ${{ false }}
@@ -5050,6 +5054,9 @@ jobs:
       - "templates/account.js"
       - "templates/terminal_overlay.js"
       - "scripts/build_intl.py"
+      - "lib/intl_eod_publication.py"
+      - "tests/test_intl_eod_publication.py"
+      - "tests/test_intl_eod_publisher_integration.py"
       - "engine/__init__.py"
       - "engine/i18n.py"
       - "engine/canon.py"
@@ -5315,7 +5322,7 @@ jobs:
           npm install --no-save --package-lock=false playwright@1.63.0
           npx playwright install --with-deps chromium
       - name: Actual International builder and template contracts
-        run: python -m pytest tests/test_intl_workspace_overview_render.py tests/test_intl_workspace_library_render.py tests/test_intl_workspace_integration.py tests/test_intl_workspace_inspector_render.py tests/test_intl_inspector_mount.py tests/test_intl_workspace_compare_render.py tests/test_intl_compare_integration.py tests/test_intl_workspace_generation_mount.py tests/test_intl_workspace_macro_render.py tests/test_intl_macro_publication_build.py tests/test_intl_risk_publication_build.py tests/test_intl_workspace_risk_render.py tests/test_intl_workspace_risk_ui_independent.py tests/test_intl_history_publication_build.py tests/test_intl_history_publication_independent.py tests/test_intl_workspace_history_render.py tests/test_intl_workspace_history_ui_independent.py -q
+        run: python -m pytest tests/test_intl_eod_publisher_integration.py tests/test_intl_workspace_overview_render.py tests/test_intl_workspace_library_render.py tests/test_intl_workspace_integration.py tests/test_intl_workspace_inspector_render.py tests/test_intl_inspector_mount.py tests/test_intl_workspace_compare_render.py tests/test_intl_compare_integration.py tests/test_intl_workspace_generation_mount.py tests/test_intl_workspace_macro_render.py tests/test_intl_macro_publication_build.py tests/test_intl_risk_publication_build.py tests/test_intl_workspace_risk_render.py tests/test_intl_workspace_risk_ui_independent.py tests/test_intl_history_publication_build.py tests/test_intl_history_publication_independent.py tests/test_intl_workspace_history_render.py tests/test_intl_workspace_history_ui_independent.py -q
       - name: Actual DOM controller and page entry in Chromium
         run: node --test tests/intl_workspace_generation_controller.test.cjs tests/intl_workspace_generation_integration.test.cjs tests/intl_workspace_compare_controller.test.cjs tests/intl_workspace_controller.test.cjs tests/intl_workspace_page.test.cjs tests/intl_workspace_legacy_navigation.test.cjs tests/intl_workspace_library_controller.test.cjs tests/intl_workspace_inspector_integration.test.cjs tests/intl_workspace_risk_controller.test.cjs tests/intl_workspace_history_controller.test.cjs tests/intl_workspace_history_independent.test.cjs
       - name: Generic table sort/filter in Chromium (templates/tablesort.js)
@@ -6468,6 +6475,7 @@ jobs:
       - "lib/dataos/nulls.py"
       - "lib/dataos/price.py"
       - "lib/dataos/quality.py"
+      - "lib/dataos/read_contract.py"
       - "lib/dataos/registry.py"
       - "lib/dataos/temporal.py"
       - "lib/delisted_symbols.py"
@@ -7502,6 +7510,7 @@ jobs:
     # narrow those.
     scope: exclusive
     paths:
+      - lib/intl_eod_publication.py
       # Native DailyBrief registration/producer import closure (PR #9037).
       - "research/prophet_v4/PROPHET_STRATEGY_PLATFORM_AND_CYCLE_CAPTURE_ARCHITECTURE_FREEZE_2026-08-30.md"
       - "collectors/flow_signals.py"
@@ -8809,6 +8818,7 @@ jobs:
       - "lib/dataos/nulls.py"
       - "lib/dataos/price.py"
       - "lib/dataos/quality.py"
+      - "lib/dataos/read_contract.py"
       - "lib/dataos/registry.py"
       - "lib/dataos/temporal.py"
       - "lib/nyse_calendar.py"
@@ -11801,6 +11811,7 @@ jobs:
     # Explicit measured closure: avoid unrelated opaque fallback selection.
     scope: exclusive
     paths:
+      - lib/intl_eod_publication.py
       - "lib/intl_history_mount.py"
       - "lib/intl_workspace_history.py"
       - "lib/intl_risk_mount.py"
@@ -12107,6 +12118,7 @@ jobs:
     # Curated named closure: integrity fixtures scan only pytest tmp_path;
     # opaque artifact traversal must not claim unrelated template ownership.
     paths:
+      - lib/intl_eod_publication.py
       # Native DailyBrief registration/producer import closure (PR #9037).
       - "engine/path_risk_signals.py"
       - "engine/prophet_candidate_state.py"
@@ -13076,6 +13088,7 @@ jobs:
       - lib/dataos/nulls.py
       - lib/dataos/price.py
       - lib/dataos/quality.py
+      - lib/dataos/read_contract.py
       - lib/dataos/registry.py
       - lib/dataos/temporal.py
       - tests/test_theme_graph_structural_owner_binding.py
@@ -14086,7 +14099,7 @@ jobs:
       # The same installed environment owns ingestion, private intelligence,
       # retrieval, and page contracts. One pytest process collects every suite.
       - name: research vault ingestion, intelligence, retrieval and page tests
-        run: python -m pytest tests/test_research_vault_blank_text.py tests/test_research_intelligence_comparison.py tests/test_research_vault.py tests/test_research_vault_strict_store.py tests/test_research_vault_page.py tests/test_research_pages.py tests/test_research_vault_subjects.py tests/test_research_vault_backfill.py tests/test_research_intelligence_vault_head.py tests/test_research_intelligence_prompt_contract.py tests/test_research_intelligence_support_loss.py tests/test_research_vault_retrieval_eval.py tests/test_research_vault_evaluation_runner.py tests/test_research_vault_read_port.py tests/test_research_vault_read_service.py tests/test_research_vault_read_adapters.py -q
+        run: python -m pytest tests/test_research_vault_blank_text.py tests/test_research_vault_fulltext_store.py tests/test_research_intelligence_comparison.py tests/test_research_vault.py tests/test_research_vault_strict_store.py tests/test_research_vault_page.py tests/test_research_pages.py tests/test_research_vault_subjects.py tests/test_research_vault_backfill.py tests/test_research_intelligence_vault_head.py tests/test_research_intelligence_prompt_contract.py tests/test_research_intelligence_support_loss.py tests/test_research_vault_retrieval_eval.py tests/test_research_vault_evaluation_runner.py tests/test_research_vault_read_port.py tests/test_research_vault_read_service.py tests/test_research_vault_read_adapters.py -q
 
 
   research-vault-source-lineage:
@@ -17465,6 +17478,7 @@ jobs:
       - lib/dataos/nulls.py
       - lib/dataos/price.py
       - lib/dataos/quality.py
+      - lib/dataos/read_contract.py
       - lib/dataos/registry.py
       - lib/dataos/temporal.py
       - lib/delisted_symbols.py
@@ -20478,6 +20492,7 @@ jobs:
       - "lib/global_regime_fragment.py"
       - "lib/help_directory.py"
       - "lib/hk_calendar.py"
+      - "lib/intl_eod_publication.py"
       - "lib/intl_compare_mount.py"
       - "lib/intl_compare_view.py"
       - "lib/intl_history_mount.py"
@@ -20677,7 +20692,7 @@ jobs:
       - "tests/test_us_turn_watch.py"
       - "tests/test_vps_live_orchestration.py"
       - "tests/test_washout_turn.py"
-    timeout-minutes: 5
+    timeout-minutes: 12
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -24875,6 +24890,7 @@ jobs:
       - "lib/dataos/nulls.py"
       - "lib/dataos/price.py"
       - "lib/dataos/quality.py"
+      - "lib/dataos/read_contract.py"
       - "lib/dataos/registry.py"
       - "lib/dataos/temporal.py"
       - "lib/delisted_symbols.py"
@@ -26008,6 +26024,7 @@ jobs:
       - lib/dataos/nulls.py
       - lib/dataos/price.py
       - lib/dataos/quality.py
+      - lib/dataos/read_contract.py
       - lib/dataos/registry.py
       - lib/dataos/temporal.py
       - lib/dataos/web_api.py
@@ -26126,10 +26143,15 @@ jobs:
       - config/dataset_registry.yml
       - lib/dataos/**
       - tests/test_dataos_identity.py
+      - tests/test_dataos_action_projection.py
       - tests/test_dataos_reference_read.py
       - tests/test_dataos_nulls.py
       - tests/test_dataos_price.py
+      - tests/test_dataos_price_views.py
+      - tests/test_dataos_price_revisions.py
       - tests/test_dataos_quality.py
+      - tests/test_dataos_read_coherence.py
+      - tests/test_dataos_read_contract.py
       - tests/test_dataos_registry.py
       - tests/test_dataos_registry_consumers.py
       - tests/test_dataos_temporal.py
@@ -26146,10 +26168,15 @@ jobs:
         run: >-
           PYTHONDONTWRITEBYTECODE=1 python -m pytest
           tests/test_dataos_identity.py
+          tests/test_dataos_action_projection.py
           tests/test_dataos_reference_read.py
           tests/test_dataos_temporal.py
           tests/test_dataos_price.py
+          tests/test_dataos_price_views.py
+          tests/test_dataos_price_revisions.py
           tests/test_dataos_nulls.py
+          tests/test_dataos_read_contract.py
+          tests/test_dataos_read_coherence.py
           tests/test_dataos_registry.py
           tests/test_dataos_registry_consumers.py
           tests/test_dataos_quality.py -q -rs
@@ -26886,6 +26913,7 @@ jobs:
       - "lib/dataos/nulls.py"
       - "lib/dataos/price.py"
       - "lib/dataos/quality.py"
+      - "lib/dataos/read_contract.py"
       - "lib/dataos/registry.py"
       - "lib/dataos/temporal.py"
       - "lib/delisted_symbols.py"
@@ -28458,6 +28486,7 @@ jobs:
       - lib/dataos/nulls.py
       - lib/dataos/price.py
       - lib/dataos/quality.py
+      - lib/dataos/read_contract.py
       - lib/dataos/registry.py
       - lib/dataos/temporal.py
       - research/theme_graph/economic_network_execution_20261009/MICRON_SOURCE_CASE.json

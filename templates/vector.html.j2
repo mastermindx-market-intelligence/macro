@@ -11,6 +11,8 @@
 {{- 'tone-up' if tone == 'bull' else ('tone-down' if tone == 'bear' else 'tone-flat') -}}
 {%- endmacro %}
 <!DOCTYPE html>
+{# Shared brain label lives after DOCTYPE: fragment tests compile the macro prelude without a loader. #}
+{% from "_crypto_brain_labels.html.j2" import BRAIN_ASK_EN, BRAIN_ASK_ZH, BRAIN_DOWN_EN, BRAIN_DOWN_ZH %}
 <html lang="en">
 <head>
 <meta charset="utf-8">
@@ -43,7 +45,7 @@ body.page-vector::before{opacity:.46}
 .site-nav .nav-links>.nav-dd:nth-last-child(3) .nav-sub::after{left:auto;right:100%}
 .vector-wrap{width:min(1320px,calc(100% - 48px));margin:0 auto;padding:4px 0 76px}
 .vector-sectionbar{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:stretch;border-bottom:1px solid var(--line)}
-.vector-tabs{display:flex;align-items:center;gap:26px;min-width:0;min-height:48px;overflow-x:auto;scrollbar-width:none}
+.vector-tabs{display:flex;align-items:center;gap:26px;min-width:0;min-height:48px;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain;scroll-padding-inline:12px}
 .vector-tabs::-webkit-scrollbar{display:none}
 .vector-tabs a{position:relative;display:flex;align-items:center;min-height:48px;color:var(--muted);
   font-size:12.5px;font-weight:560;text-decoration:none;white-space:nowrap}
@@ -190,7 +192,7 @@ a{color:var(--ink-link, var(--link))}
 .complex-name{margin-top:5px;font-weight:680;font-size:12px}
 .complex-value{font:740 13px/1 var(--num);font-variant-numeric:tabular-nums;white-space:nowrap}
 .complex-chart{margin:7px 0 3px}
-.complex-context{min-height:28px;color:var(--muted);font-size:9.5px;line-height:1.4}
+.complex-context{min-height:28px;color:var(--muted);font-size:9.5px;line-height:1.4}.complex-null{grid-column:1/-1;margin:0;padding:16px;color:var(--muted);font-size:12.5px;line-height:1.5}
 
 /* S6 — study shelf */
 .study-list{border-top:1px solid var(--line)}
@@ -293,7 +295,7 @@ a{color:var(--ink-link, var(--link))}
 }
 @media(max-width:780px){
   .vector-wrap{width:min(100% - 24px,1320px)}.shelf-inner{padding:18px 0}
-  .vector-tabs{gap:20px}
+  .vector-tabs{gap:20px;padding-inline-end:28px;-webkit-mask-image:linear-gradient(90deg,black calc(100% - 28px),transparent);mask-image:linear-gradient(90deg,black calc(100% - 28px),transparent)}
   .hero{padding:22px 0}.hero-read{grid-template-columns:1fr;gap:20px}
   .hero-position{border-left:none;border-top:1px solid var(--line);padding:18px 0 0}
   .overview-instrument{grid-template-columns:1fr}.overview-side{display:grid;grid-template-columns:repeat(2,1fr);align-items:start}
@@ -353,8 +355,8 @@ a{color:var(--ink-link, var(--link))}
     </nav>
     <button class="vector-brain-entry" type="button" data-vector-brain aria-haspopup="dialog" aria-controls="mmb-panel">
       <span aria-hidden="true">✦</span>
-      <span class="vector-brain-ready">{{ t('Ask Mastermind','询问操盘大脑') }}</span>
-      <span class="vector-brain-error" role="status">{{ t('Mastermind unavailable','操盘大脑暂不可用') }}</span>
+      <span class="vector-brain-ready">{{ t(BRAIN_ASK_EN, BRAIN_ASK_ZH) }}</span>
+      <span class="vector-brain-error" role="status">{{ t(BRAIN_DOWN_EN, BRAIN_DOWN_ZH) }}</span>
     </button>
   </div>
 
@@ -366,7 +368,7 @@ a{color:var(--ink-link, var(--link))}
           <span class="live-price" data-sym="BTC-USD">{% if price is not none %}${{ "{:,.0f}".format(price) }}{% else %}—{% endif %}</span>
           <span class="live-change{% if chg24 is not none %} {{ 'pos' if chg24 >= 0 else 'neg' }}{% endif %}" data-sym-chg="BTC-USD">{% if chg24 is not none %}{{ "%+.1f"|format(chg24) }}%{% else %}—{% endif %}</span>
         </div>
-        <span class="asof-chip"><i></i>{{ t('Daily close','日线收盘') }} · {{ as_of }}</span>
+        <span class="asof-chip"><i></i>{{ t('Daily close','日线收盘') }} · {{ t(as_of, as_of_zh) }}</span>
       </div>
       {% set hero_tone = master.tone if master and master.ok else 'neutral' %}
       <div class="hero-read">
@@ -568,8 +570,10 @@ a{color:var(--ink-link, var(--link))}
           <div class="complex-value">{{ c.value }}</div>
         </div>
         <div class="complex-chart">{{ c.chart|safe }}</div>
-        <div class="complex-context {{ 'pos' if c.tone=='up' else ('neg' if c.tone=='down' else '') }}">{{ t(c.context_en,c.context_zh) }}</div>
+        <div class="complex-context {{ ('pos' if c.tone=='up' else ('neg' if c.tone=='down' else '')) if c.context_en else '' }}">{% if c.context_en %}{{ t(c.context_en,c.context_zh) }}{% else %}{{ t('No context on file today','今日暂无背景') }}{% endif %}</div>
       </div>
+      {% else %}
+      <p class="complex-null">{{ t('No context on file today','今日暂无背景') }}</p>
       {% endfor %}
     </div>
   </section>
@@ -580,7 +584,7 @@ a{color:var(--ink-link, var(--link))}
     </div>
     <div class="study-list">
       <details class="study-fold" id="cycle-lab">
-        <summary><span class="fold-title">{{ t('Cycle Lab','周期实验室') }}</span><span class="fold-hint">{{ t('Rewind every point-in-time read','回看每个历史时点的完整判断') }}</span><span class="fold-stat">{{ cycle_stage }} · {{ cycle_pos }}%</span></summary>
+        <summary><span class="fold-title">{{ t('Cycle Lab','周期实验室') }}</span><span class="fold-hint">{{ t('Rewind every point-in-time read','回看每个历史时点的完整判断') }}</span><span class="fold-stat">{{ td(cycle_stage) }} · {{ cycle_pos }}%</span></summary>
         <div class="study-body">
           <div id="vtm" class="vtm-wrap">
             <canvas id="vtm-canvas" class="vtm-canvas"></canvas>
@@ -688,7 +692,7 @@ a{color:var(--ink-link, var(--link))}
       </details>
 
       <details class="study-fold" id="strategy-track-record">
-        <summary><span class="fold-title">{{ t('Strategy & Track Record','策略与历史表现') }}</span><span class="fold-hint">{{ t('Two rule sets, dual timing metrics and honest leverage outcomes','两套规则、双口径计时指标与真实杠杆结果') }}</span><span class="fold-stat">{{ strategy.as_of if strategy.as_of else as_of }}</span></summary>
+        <summary><span class="fold-title">{{ t('Strategy & Track Record','策略与历史表现') }}</span><span class="fold-hint">{{ t('Two rule sets, dual timing metrics and honest leverage outcomes','两套规则、双口径计时指标与真实杠杆结果') }}</span><span class="fold-stat">{% if strategy.as_of %}{{ t(strategy.as_of, strategy.as_of_zh) }}{% else %}{{ t(as_of, as_of_zh) }}{% endif %}</span></summary>
         <div class="study-body">
           <div class="strategy-tabs" role="tablist">
             {% for s in strategy.strategies %}
@@ -752,7 +756,7 @@ a{color:var(--ink-link, var(--link))}
       </details>
 
       <details class="study-fold" id="signal-health">
-        <summary><span class="fold-title">{{ t('Signal Health','信号健康度') }}</span><span class="fold-hint">{{ t('Historical measurement and coverage receipts','历史测量与覆盖明细') }}</span><span class="fold-stat">{{ calib.meta.span if calib and calib.meta else as_of }}</span></summary>
+        <summary><span class="fold-title">{{ t('Signal Health','信号健康度') }}</span><span class="fold-hint">{{ t('Historical measurement and coverage receipts','历史测量与覆盖明细') }}</span><span class="fold-stat">{% if calib and calib.meta %}{{ calib.meta.span }}{% else %}{{ t(as_of, as_of_zh) }}{% endif %}</span></summary>
         <div class="study-body">
           <table class="data-table">
             <thead><tr><th>{{ t('Signal','信号') }}</th><th>{{ t('Measurement band','测量级别') }}</th><th>{{ t('What is checked','检查内容') }}</th></tr></thead>
@@ -769,7 +773,7 @@ a{color:var(--ink-link, var(--link))}
     </div>
   </section>
 
-  <div class="page-foot">Bitcoin Vector · {{ t('built','生成于') }} {{ built }} · {{ t('data through','数据截至') }} {{ as_of }}<br>© 2026 MastermindX Inc</div>
+  <div class="page-foot">Bitcoin Vector · {{ t('built','生成于') }} {{ built }} · {{ t('data through','数据截至') }} {{ t(as_of, as_of_zh) }}<br>© 2026 MastermindX Inc</div>
 </main>
 
 <script defer src="illus.js"></script>

@@ -1,10 +1,35 @@
 {
   "schema": "wh_health.v1",
-  "as_of": "2026-10-13T15:58:58.680768+00:00",
-  "posts_seen": 5,
-  "seen_total": 282,
-  "evaluated": 0,
-  "activated": 0,
+  "as_of": "2026-10-13T21:15:05.613898+00:00",
+  "posts_seen": 7,
+  "seen_total": 286,
+  "evaluated": 4,
+  "activated": 1,
   "provider": "Claude claude-opus-4-8 (subscription)",
-  "gate_scores": []
+  "gate_scores": [
+    {
+      "id": "wh-2026-10-13-president-trump-visits-alaska-delivering-results-for-the-last-frontier",
+      "importance": 68,
+      "activated": true,
+      "degraded_reason": "served_by:deepseek"
+    },
+    {
+      "id": "wh-2026-10-13-katie-zacharia-delivers-powerful-inaugural-briefing-as-37th-white-house-press-se",
+      "importance": 10,
+      "activated": false,
+      "degraded_reason": "served_by:deepseek"
+    },
+    {
+      "id": "wh-2026-10-13-first-lady-melania-trump-launches-2027-presidential-si-challenge-and-establishes",
+      "importance": 5,
+      "activated": false,
+      "degraded_reason": "served_by:deepseek"
+    },
+    {
+      "id": "wh-2026-10-11-presidential-message-on-general-pulaski-memorial-day",
+      "importance": 5,
+      "activated": false,
+      "degraded_reason": "served_by:deepseek"
+    }
+  ]
 }

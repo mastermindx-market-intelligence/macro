@@ -7,6 +7,8 @@ import json
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
+import pytest
+
 from engine.research_intelligence.store import (
     ResearchIntelligenceInvalid,
     ResearchIntelligenceStoreError,
@@ -825,6 +827,103 @@ def test_t12_digest_mismatch_is_revision_changed(tmp_path):
     assert evidence["coverage_state"] == "SOURCE_REVISION_CHANGED"
     assert evidence["evidence_state"] == "UNAVAILABLE"
     assert fetched["coverage_state"] == "SOURCE_REVISION_CHANGED"
+
+
+@pytest.mark.parametrize("operation", ["fetch", "find_evidence"])
+@pytest.mark.parametrize("digest_case", ["missing_reader", "missing", "malformed", "wrong_type", "error"])
+def test_authoritative_digest_loss_after_loading_refuses_evidence(tmp_path, operation, digest_case):
+    """A previously qualified derivative cannot certify its own current source."""
+    report_id = "alpha-report"
+    record = _extracted(report_id)
+    current = {"digest": PDF_SHA}
+    observed = []
+
+    def read_digest(_report_id):
+        observed.append(current["digest"])
+        if current["digest"] == "unavailable":
+            raise OSError("synthetic authoritative receipt unavailable")
+        return current["digest"]
+
+    svc, *_ = _service(
+        tmp_path,
+        items=[_item(report_id, "Alpha Note", (NOW - timedelta(hours=1)).isoformat())],
+        extracted={report_id: record},
+        digest=read_digest,
+        rio=_rio(report_id, record["extracted_text_sha256"]),
+    )
+
+    def load_qualified_then_lose_source(_report_id, _item):
+        # Model the producer loader's successful first receipt read, followed
+        # by loss/corruption of the authoritative receipt before service replay.
+        assert read_digest(_report_id) == PDF_SHA
+        current["digest"] = {
+            "missing_reader": PDF_SHA,
+            "missing": None,
+            "malformed": "g" * 64,
+            "wrong_type": 123,
+            "error": "unavailable",
+        }[digest_case]
+        return record
+
+    svc._extracted_text_loader = load_qualified_then_lose_source
+    if digest_case == "missing_reader":
+        svc._source_digest_reader = None
+    if operation == "fetch":
+        result = svc.fetch(caller_context=_ctx(), report_id=report_id, selectors={})
+        assert result["segments"] == []
+        assert result["segment_count_total"] == 0
+    else:
+        result = svc.find_evidence(
+            caller_context=_ctx(), report_id=report_id, query="hyperscaler", max_passages=3,
+        )
+        assert result["passages"] == []
+        assert result["evidence_state"] == "UNAVAILABLE"
+    assert result["coverage_state"] == "EXTRACTION_UNAVAILABLE"
+    assert result["rio_state"] == "STALE"
+    assert observed[0] == PDF_SHA
+    assert len(observed) == (1 if digest_case == "missing_reader" else 2)
+    assert "synthetic authoritative receipt unavailable" not in json.dumps(result)
+
+
+@pytest.mark.parametrize("published_at", [None, "", "not-a-date", "2026-99-01T00:00:00Z"])
+def test_unknown_publication_time_never_becomes_dated_evidence(tmp_path, published_at):
+    report_id = "alpha-report"
+    svc, *_ = _service(
+        tmp_path,
+        items=[_item(report_id, "Alpha Note", published_at)],
+        extracted={report_id: _extracted(report_id)},
+        digest=PDF_SHA,
+    )
+    evidence = svc.find_evidence(
+        caller_context=_ctx(), report_id=report_id, query="hyperscaler", max_passages=3,
+    )
+    assert evidence["evidence_state"] == "UNAVAILABLE"
+    assert evidence["coverage_state"] == "EXTRACTION_UNAVAILABLE"
+    assert evidence["passages"] == []
+    assert "METADATA_PARTIAL" in evidence["source"]["known_degradation"]
+    assert "1970-01-01" not in json.dumps(evidence)
+
+    fetched = svc.fetch(caller_context=_ctx(), report_id=report_id, selectors={})
+    assert fetched["report"]["published_at"] == ""
+    assert fetched["segments"]  # Literal text remains usable without inventing chronology.
+    search = svc.search(caller_context=_ctx(), query="hyperscaler", filters={}, limit=3, cursor=None)
+    assert search["candidates"][0]["published_at"] == ""
+
+
+def test_actual_1970_publication_time_is_preserved(tmp_path):
+    report_id = "alpha-report"
+    published_at = "1970-01-01T00:00:00+00:00"
+    svc, *_ = _service(
+        tmp_path,
+        items=[_item(report_id, "Alpha Note", published_at)],
+        extracted={report_id: _extracted(report_id)},
+        digest=PDF_SHA,
+    )
+    result = svc.find_evidence(
+        caller_context=_ctx(), report_id=report_id, query="hyperscaler", max_passages=3,
+    )
+    assert result["evidence_state"] == "FOUND"
+    assert {passage["published_at"] for passage in result["passages"]} == {published_at}
 
 
 def test_t13_fetch_segments_replay_and_pagination(tmp_path):

@@ -745,3 +745,255 @@ def test_cxp2_polish_nowrap_rule_lives_in_the_receipt_style_owner():
     assert ".sensor .receipt{" in style
     assert style.count(".receipt-nowrap{white-space:nowrap}") == 1
     assert src.count("<style>") == 1
+
+
+# ---- cx-p2-polish-w2 (seat ruling R24): glance-tier plain words, ZH parity, sign colour ----
+
+_W2_BANNED = ("falsif", "refut", "证伪", "thesis", "判断失效")
+
+
+def _w2_vector(monkeypatch, case: dict, **over) -> str:
+    """Render vector.html.j2 through _render_vector with selected view-model keys replaced."""
+    from jinja2.environment import Template
+
+    orig = Template.render
+
+    def render(self, *args, **kwargs):
+        kwargs.update(over)
+        return orig(self, *args, **kwargs)
+
+    monkeypatch.setattr(Template, "render", render)
+    try:
+        return _render_vector(case)
+    finally:
+        monkeypatch.setattr(Template, "render", orig)
+
+
+def _w2_sig(bias: str, n: int = 1200, seed: int = 11) -> pd.DataFrame:
+    """Deterministic signals frame with the columns recommend + forward_cones read.
+
+    Local on purpose: importing another test module's fixture widens this file's CI-pack
+    import closure (test_ci_pack curated-exclusive scope)."""
+    import numpy as np
+
+    rng = np.random.default_rng(seed)
+    idx = pd.date_range("2019-01-01", periods=n, freq="D")
+    close = pd.Series(100 * np.exp(np.cumsum(rng.normal(0.0006, 0.03, n))), index=idx)
+    df = pd.DataFrame({"close": close}, index=idx)
+    k = np.arange(n) % 3
+    df["composite_state"] = np.where(k == 0, "RISK-ON", np.where(k == 1, "DISTRIBUTE", "NEUTRAL"))
+    df["risk_index"] = pd.Series(np.clip(40 + 30 * np.sin(np.arange(n) / 50), 0, 100), index=idx)
+    df["sth_cost_basis"] = close * 1.05
+    df["alloc_optimal"] = 0.3
+    if bias == "bull":
+        df.loc[df.index[-1], ["composite_state"]] = "ACCUMULATE"
+        df["valuation_state"] = "undervalued"; df["market_extreme"] = "capitulation"
+        df["mvrv_z"] = -0.5; df["mayer"] = 0.7; df["reserve_risk"] = 0.001
+        df["risk_regime"] = "low_risk"; df["momentum_state"] = "bull"
+    else:  # "top"
+        df["valuation_state"] = "overvalued"; df["market_extreme"] = "euphoria"
+        df["mvrv_z"] = 4.0; df["mayer"] = 2.6; df["reserve_risk"] = 0.03
+        df["risk_regime"] = "high_risk"; df["momentum_state"] = "bull"
+    return df
+
+
+def _w2_levels(bias: str) -> dict:
+    from engine import btc_recommend as RC
+
+    sig = _w2_sig(bias)
+    if bias == "top":
+        r = RC.recommend(sig, {"score": -10, "drivers_pos": [], "drivers_neg": []},
+                         RC.forward_cones(sig), {"avg": -8.0, "tail": -30.0}, {"size_pct": 40})
+    else:
+        r = RC.recommend(sig, {"score": 40, "drivers_pos": [], "drivers_neg": []},
+                         RC.forward_cones(sig), {"avg": -3.0, "tail": -12.0}, {"size_pct": 30})
+    return r["levels"]
+
+
+@pytest.mark.parametrize("bias", ["bull", "top"])
+def test_cxp2_w2_a_level_labels_carry_no_refutation_vocabulary(bias, monkeypatch):
+    levels = _w2_levels(bias)
+    labels = f'{levels["invalid_label_en"]} {levels["invalid_label_zh"]}'.lower()
+    assert levels["invalid_label_en"] and levels["invalid_label_zh"]
+    for word in _W2_BANNED:
+        assert word not in labels, (bias, word, labels)
+    case = _vector_case("valid_zero")
+    case["decision"]["advisory"] = {"levels": levels}
+    html = _w2_vector(monkeypatch, case)
+    visible = re.sub(r"<(style|script)\b.*?</\1>", "", html, flags=re.S)
+    for lang in ("en", "zh"):
+        text = _reading(lang, visible).lower()
+        for word in ("falsif", "refut", "证伪", "判断失效"):
+            assert word not in text, (bias, lang, word)
+    assert levels["invalid_label_en"] in _reading("en", html)
+    assert levels["invalid_label_zh"] in _reading("zh", html)
+
+
+def _w2_alloc(html: str) -> str:
+    return _slice(html, 'id="allocation"', "</section>")
+
+
+@pytest.mark.parametrize("name", ["valid_zero", "stale_budget"])
+def test_cxp2_w2_b_budget_source_reads_in_plain_words_and_slug_is_a_receipt(name, tmp_path, monkeypatch):
+    alloc = _w2_alloc(_render_crypto(tmp_path, monkeypatch, _crypto_case(name)))
+    dd = _slice(alloc, "Budget source", "</dd>")
+    glance = re.sub(r'<span class="receipt">.*?</span>', "", dd, flags=re.S)
+    assert "btc.decision/v1" not in glance
+    assert '<span class="receipt">btc.decision/v1</span>' in dd
+    assert "Bitcoin decision" in _reading("en", glance)
+    assert "比特币决策" in _reading("zh", glance)
+    assert 'title="btc.decision/v1"' not in alloc
+
+
+def test_cxp2_w2_c_vector_zh_reads_regime_word_and_chinese_date(monkeypatch):
+    html = _w2_vector(
+        monkeypatch, _vector_case("valid_zero"),
+        cycle_stage="Recovery", cycle_pos=74,
+        as_of="Oct 13, 2026", as_of_zh="2026年10月13日",
+        strategy={"as_of": "Oct 13, 2026", "as_of_zh": "2026年10月13日", "strategies": []},
+    )
+    stage = _slice(html, '<span class="fold-stat">', "%</span>")
+    assert "复苏 · 74" in _reading("zh", stage) and "Recovery" not in _reading("zh", stage)
+    assert "Recovery · 74" in _reading("en", stage)
+    chip = _slice(html, '<span class="asof-chip">', "</span></span>")
+    foot = _slice(html, '<div class="page-foot">', "<br>")
+    for block in (chip, foot):
+        zh = _reading("zh", block)
+        assert "2026年10月13日" in zh and "Oct" not in zh, block[:200]
+        assert "Oct 13, 2026" in _reading("en", block)
+    stats = re.findall(r'<span class="fold-stat">(.*?)</span></summary>', html, flags=re.S)
+    assert len(stats) >= 4, stats
+    assert any("2026年10月13日" in _reading("zh", s) for s in stats)
+    for stat in stats:
+        zh = _reading("zh", stat)
+        assert "Oct" not in zh and "Recovery" not in zh, zh
+
+
+def test_cxp2_w2_d_history_chip_building_reads_the_row_state_word_in_zh(tmp_path, monkeypatch):
+    board = _slice(_render_crypto(tmp_path, monkeypatch, _crypto_case("valid_zero")), 'id="market-board"', 'id="money-flows"')
+    chip = _slice(board, '<span class="history-chip">', "</span></span>")
+    # Same ZH word the row's state column already uses (scripts/build_crypto.py _state_zh).
+    assert _reading("zh", chip).strip() == build_crypto._state_zh("Building") == "积累中"
+    assert "Building" in _reading("en", chip)
+
+
+def _w2_volume(html: str) -> tuple[str, str]:
+    block = html[html.index("Spot participation proxy"):]
+    reading = _slice(block, '<div class="reading">', "</div>")
+    receipt = _slice(block, '<div class="receipt">', "</div>")
+    return reading, receipt
+
+
+@pytest.mark.parametrize("pct", [0, 82])
+def test_cxp2_w2_g_volume_percentile_reads_in_words_and_code_moves_to_receipt(pct, tmp_path, monkeypatch):
+    case = _crypto_case("valid_zero")
+    case["market"]["flows"]["volume"] = _sensor(proxy="fixture", percentile=pct, state="Normal")
+    reading, receipt = _w2_volume(_render_crypto(tmp_path, monkeypatch, case))
+    assert f"P{pct}" not in _reading("en", reading) and f"P{pct}" not in _reading("zh", reading)
+    suffix = "th" if pct == 0 else "nd"
+    assert f"{pct}{suffix} percentile" in _reading("en", reading)
+    assert f"第{pct}百分位" in _reading("zh", reading)
+    assert f"P{pct} ·" in _reading("en", receipt)
+
+
+@pytest.mark.parametrize("complex_rows", [[], [{"symbol": "ETH", "name_en": "Ether", "name_zh": "以太坊",
+                                                "value": "$2,400", "chart": "", "tone": "flat",
+                                                "context_en": "", "context_zh": ""}]])
+def test_cxp2_w2_h_empty_market_context_prints_a_muted_null(complex_rows, monkeypatch):
+    html = _w2_vector(monkeypatch, _vector_case("valid_zero"),
+                      presentation={"axes": [], "watch": [], "complex": complex_rows})
+    shelf = _slice(html, 'data-shelf="S5"', 'data-shelf="S6"')
+    assert "No context on file today" in _reading("en", shelf)
+    assert "今日暂无背景" in _reading("zh", shelf)
+    if not complex_rows:
+        assert '<p class="complex-null">' in shelf
+
+
+def test_cxp2_w2_i_one_brain_entry_label_on_both_pages(tmp_path, monkeypatch):
+    crypto = _render_crypto(tmp_path, monkeypatch, _crypto_case("valid_zero"))
+    vector = _render_vector(_vector_case("valid_zero"))
+    c_btn = _slice(crypto, "data-crypto-brain", "</button>")
+    assert "{{ t(BRAIN_ASK_EN, BRAIN_ASK_ZH) }}" in (ROOT / "templates" / "crypto.html.j2").read_text(encoding="utf-8")
+    assert "{{ t(BRAIN_ASK_EN, BRAIN_ASK_ZH) }}" in (ROOT / "templates" / "vector.html.j2").read_text(encoding="utf-8")
+    v_lbl = _slice(vector, '<span class="vector-brain-ready">', "</span></span>") + "</span>"
+    for lang in ("en", "zh"):
+        c = _reading(lang, c_btn[c_btn.index(">") + 1:]).strip()
+        v = _reading(lang, v_lbl).strip()
+        assert c == v, (lang, c, v)
+    assert _reading("zh", v_lbl).strip() == "询问 Mastermind"
+
+
+@pytest.mark.parametrize("chg,tone,expect", [(-4.2, "bull", "down"), (3.1, "bear", "up"), (0.0, "bull", "")])
+def test_cxp2_w2_k_change_colour_follows_sign_not_tone(chg, tone, expect, tmp_path, monkeypatch):
+    case = _crypto_case("valid_zero")
+    case["row"]["change_24h"] = chg
+    case["row"]["tone"] = tone
+    board = _slice(_render_crypto(tmp_path, monkeypatch, case), 'id="market-board"', 'id="money-flows"')
+    got = re.findall(r'class="market-change nb-chg ?([a-z]*)"', board)
+    assert got == [expect], got
+    src = (ROOT / "templates" / "crypto.html.j2").read_text(encoding="utf-8")
+    assert 'style="color:var(--tone)">{{ a.change_label }}' not in src
+    assert "compact-chg {{ chg_sign(a.change_24h) }}" in src
+
+
+# cx-p3-polish-w3 (seat commission R30 W3-A): H' null context carries no tone colour; N1 a 24H move
+# inside the flat cut-off reads as an unsigned 0.0% with no tone class (its live-repaint twin N2 is
+# pinned in tests/test_live_holiday_js.py, whose CI owner covers templates/live.js and has Node).
+def _w3_complex_class(html: str) -> list[str]:
+    shelf = _slice(html, 'data-shelf="S5"', 'data-shelf="S6"')
+    return re.findall(r'class="complex-context ?([a-z]*)"', shelf)
+
+
+def _w3_complex_row(tone: str, context_en: str, context_zh: str) -> dict:
+    return {"symbol": "ETH", "name_en": "Ether", "name_zh": "以太坊", "value": "$2,400", "chart": "",
+            "tone": tone, "context_en": context_en, "context_zh": context_zh}
+
+
+@pytest.mark.parametrize("tone", ["up", "down"])
+def test_cxp3_w3_h_null_context_carries_no_tone_colour(tone, monkeypatch):
+    html = _w2_vector(monkeypatch, _vector_case("valid_zero"),
+                      presentation={"axes": [], "watch": [], "complex": [_w3_complex_row(tone, "", "")]})
+    assert _w3_complex_class(html) == [""]
+    shelf = _slice(html, 'data-shelf="S5"', 'data-shelf="S6"')
+    assert "No context on file today" in _reading("en", shelf)
+    assert "今日暂无背景" in _reading("zh", shelf)
+
+
+@pytest.mark.parametrize("tone,expect", [("up", "pos"), ("down", "neg"), ("flat", "")])
+def test_cxp3_w3_h_context_keeps_its_tone_colour(tone, expect, monkeypatch):
+    html = _w2_vector(monkeypatch, _vector_case("valid_zero"),
+                      presentation={"axes": [], "watch": [], "complex": [_w3_complex_row(tone, "Basis firm.", "基差坚挺。")]})
+    assert _w3_complex_class(html) == [expect]
+    shelf = _slice(html, 'data-shelf="S5"', 'data-shelf="S6"')
+    assert "Basis firm." in _reading("en", shelf)
+    assert "基差坚挺。" in _reading("zh", shelf)
+
+
+def _w3_board_chip(html: str) -> tuple[str, str, str]:
+    board = _slice(html, 'id="market-board"', 'id="money-flows"')
+    got = re.findall(r'<div class="market-change nb-chg ?([a-z]*)" data-sym="[^"]*" data-flat="([^"]*)">([^<]*)</div>', board)
+    assert len(got) == 1, got
+    return got[0]
+
+
+@pytest.mark.parametrize("chg,label,cls", [(-0.03, "0.0%", ""), (0.03, "0.0%", ""), (-0.06, "-0.1%", "down"), (0.06, "+0.1%", "up")])
+def test_cxp3_w3_n1_flat_24h_chip_reads_unsigned_zero(chg, label, cls, tmp_path, monkeypatch):
+    case = _crypto_case("valid_zero")
+    case["row"]["change_24h"] = chg
+    got_cls, flat, got_label = _w3_board_chip(_render_crypto(tmp_path, monkeypatch, case))
+    assert (got_cls, got_label) == (cls, label)
+    assert flat == "0.05"
+
+
+def test_cxp3_w3_n1_one_flat_cut_off_shared_by_label_and_class():
+    assert build_crypto.FLAT_CHG_PCT == 0.05
+    assert build_crypto._chg_label(-0.03) == "0.0%"
+    assert build_crypto._chg_label(0.0499) == "0.0%"
+    assert build_crypto._chg_label(-0.06) == "-0.1%"
+    assert build_crypto._chg_label(1.25) == "+1.2%" or build_crypto._chg_label(1.25) == "+1.3%"
+    assert build_crypto._chg_label(None) == "—"
+    src = (ROOT / "templates" / "crypto.html.j2").read_text(encoding="utf-8")
+    macro = src[src.index("{% macro chg_sign(v)"):]
+    macro = macro[:macro.index("{%- endmacro %}")]
+    assert "FLAT_CHG_PCT" in macro and "0.05" not in macro
+    assert 'data-flat="{{ FLAT_CHG_PCT }}"' in src
