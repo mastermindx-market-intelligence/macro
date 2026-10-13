@@ -1597,65 +1597,114 @@ def today_selection_row_receipts(source_bytes):
     return {ticker: next(iter(values)) for ticker, values in grouped.items() if len(values) == 1}
 
 
-def read_today_candidate_projection(repo_root, *, expected_source_sha256, expected_pair_id,
-                                    expected_selection_receipt, expected_candidate_generation_id=None):
-    """Read exact finalized selection plus native B1; never mutate publication."""
+class _NativeAssessmentBindingRefused(ValueError):
+    """A genuine owner read result did not bind the producer's own candidate."""
+
+
+# Owner reads this assembly still owes before a brief could ever be fully
+# available. The native factual assessment is no longer on this list once one
+# genuine owner read is bound; plan/evidence/quote/B4 stay unread here.
+_TODAY_BRIEF_OWNER_UNAVAILABLE_CODES = (
+    "PLAN_NATIVE_OWNER_READ_UNAVAILABLE",
+    "EVIDENCE_NATIVE_OWNER_READ_UNAVAILABLE",
+    "QUOTE_NATIVE_OWNER_READ_UNAVAILABLE",
+    "B4_NATIVE_OWNER_READ_UNAVAILABLE",
+)
+
+
+def _verify_native_assessment_pair(assessment, projection, *, candidate, source_key, source_receipt):
+    """Bind one genuine owner read result to this producer's candidate resolution.
+
+    ``assessment``/``projection`` are the detached ``verified_pair()`` of the ONE
+    ``build_native_factual_assessment_result`` read for this exact candidate.
+    The consumer re-checks, from its own side, that the displayed envelope
+    restates this candidate's four identity fields, asserts this exact source
+    key/receipt pair, and receipts this same read's native projection id and
+    bytes. The projection stays an internal owner capability for later B4 work:
+    it is verified here and never surfaced on the response.
+    """
     from hashlib import sha256
-    from engine.us_candidate_episode import (
-        attest_candidate_episode_store_bytes, canonical_json,
-        load_candidate_episode_store_snapshot,
+    from engine.prophet_candidate_state import ASSESSMENT_OWNER_REF
+    from engine.us_candidate_episode import canonical_json
+
+    def refuse(detail):
+        raise _NativeAssessmentBindingRefused(f"native assessment binding refused: {detail}")
+
+    if assessment.get("schema") != "prophet.daily_brief_assessment_input/v1":
+        refuse("envelope is not the Daily Brief assessment input schema")
+    if assessment.get("owner_ref") != ASSESSMENT_OWNER_REF:
+        refuse("envelope is not issued by the fixed native assessment owner")
+    summary = assessment.get("summary")
+    if (assessment.get("state") != "REVIEW_REQUIRED"
+            or not isinstance(summary, dict)
+            or summary.get("assessment_state") != "REVIEW_REQUIRED"):
+        refuse("assessment state is not the literal REVIEW_REQUIRED observation")
+    for field in ("security_id", "episode_id", "candidate_generation_id", "market_session"):
+        if assessment.get(field) != candidate.get(field):
+            refuse(f"{field} disagrees with the producer candidate binding")
+    provenance = assessment.get("provenance")
+    if not isinstance(provenance, dict):
+        refuse("assessment provenance is missing")
+    if provenance.get("input_binding") != {
+        "candidate_source_event_id": source_key, "candidate_source_receipt": source_receipt,
+    }:
+        refuse("assessed input binding is not this candidate source key/receipt")
+    matched = provenance.get("matched_relation")
+    if (not isinstance(matched, dict)
+            or matched.get("relation_source_event_id") != source_key
+            or matched.get("relation_source_receipt") != source_receipt):
+        refuse("matched native relation is not this candidate source key/receipt")
+    if provenance.get("b3_projection_id") != projection.get("projection_id"):
+        refuse("receipted projection id is not this read's native projection")
+    if provenance.get("b3_projection_sha256") != (
+        "sha256:" + sha256(canonical_json(projection).encode()).hexdigest()
+    ):
+        refuse("receipted projection digest is not this read's native projection bytes")
+    for field in ("candidate_generation_id", "market_session"):
+        if projection.get(field) != candidate.get(field):
+            refuse(f"native projection {field} disagrees with the producer candidate binding")
+    if projection.get("generated_at") != assessment.get("asof"):
+        refuse("native projection generated_at is not this read's assembly asof")
+    rows = [row for row in projection.get("rows") or []
+            if isinstance(row, dict) and row.get("episode_id") == candidate.get("episode_id")]
+    if len(rows) != 1 or rows[0].get("security_id") != candidate.get("security_id"):
+        refuse("native projection does not carry exactly this candidate's episode row")
+
+
+def _today_native_source_candidates(raw, *, binding, doc, generation, snapshot,
+                                    source_rows, generated_at, relation_details=None):
+    """Private byte-captured original-producer native source resolver.
+
+    The one shared resolution core behind the Today projection read and the
+    fixed Plan source read. It receives the CAPTURED raw board bytes — never a
+    live re-read or a reconstructed board — plus the complete captured UCV byte
+    inventory and the actual validated B1 snapshot, and resolves every displayed
+    buy row by its full-buy original ordinal and row receipt against the
+    original source key and canonical row digest, the native candidate
+    relation, suppressions and episode lifecycle, and the one genuine B3 owner
+    read per available candidate. It is a resolver only: no normalization, no
+    receipt minting, no caller attestation and no new selector ever enter
+    here, and ``relation_details`` (used only by callers that need the original
+    relation facts beside the Today-shaped result) never alters the returned
+    resolution.
+    """
+    from hashlib import sha256
+    from engine.prophet_candidate_state import (
+        CandidateStateContractError, build_native_factual_assessment_result,
     )
-    from engine.us_context_vector import read_today_candidate_source_rows
-    from engine.prophet_daily_brief import compose_daily_brief
+    from engine.us_candidate_episode import canonical_json
 
-    root = Path(repo_root)
-    source_path = root / "site/factordata/us_standouts.json"
-    generated_at = datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
-    result = {"schema": "prophet.daily_brief_read/v1", "status": "UNAVAILABLE",
-              "source_binding": None, "candidate_generation_id": None,
-              "generated_at": generated_at, "candidates": [], "reason_codes": []}
-
-    def unavailable(reason):
-        return {**result, "status": "UNAVAILABLE", "candidates": [], "reason_codes": [reason]}
-
-    try:
-        raw = source_path.read_bytes()
-        binding = today_selection_source_binding(raw)
-        doc = json.loads(raw)
-        if _today_source_instant(doc["emit"]["at_utc"]) > _today_source_instant(generated_at):
-            raise ValueError("Today source clock is future")
-    except (OSError, ValueError, TypeError):
-        return unavailable("SELECTION_SOURCE_UNAVAILABLE")
-    result["source_binding"] = {key: binding[key] for key in ("source_sha256", "pair_id", "selection_receipt", "market_session", "schema", "receipt_kind")}
-    if (expected_source_sha256 != binding["source_sha256"] or expected_pair_id != binding["pair_id"]):
-        return unavailable("SOURCE_BINDING_MISMATCH")
-    if expected_selection_receipt != binding["selection_receipt"]:
-        return unavailable("SELECTION_BINDING_MISMATCH")
-    try:
-        # Emission and native reconciliation remain their existing owners' work.
-        source_rows, source_receipts = read_today_candidate_source_rows(root)
-        episode_root = root / "data/us_prophet_rank/episodes"
-        token = attest_candidate_episode_store_bytes(episode_root)
-        snapshot = load_candidate_episode_store_snapshot(episode_root)
-        if token.generation_id != snapshot.generation_id:
-            return unavailable("CANDIDATE_SNAPSHOT_CHANGED")
-    except (OSError, ValueError, TypeError):
-        return unavailable("CANDIDATE_SNAPSHOT_UNAVAILABLE")
-    result["candidate_generation_id"] = snapshot.generation_id
-    if expected_candidate_generation_id is not None and expected_candidate_generation_id != snapshot.generation_id:
-        return unavailable("CANDIDATE_GENERATION_MISMATCH")
-
-    generation = snapshot.generation
-    try:
-        if _today_source_instant(generation.receipt["recorded_at"]) > _today_source_instant(generated_at):
-            return unavailable("CANDIDATE_CLOCK_UNAVAILABLE")
-    except (ValueError, TypeError, KeyError):
-        return unavailable("CANDIDATE_CLOCK_UNAVAILABLE")
+    if "sha256:" + sha256(raw).hexdigest() != binding["source_sha256"]:
+        raise ValueError("resolver inputs are not the captured source bytes")
     withdrawn = {event.get("correction_of") for event in generation.events if event.get("event_type") == "RETRACTED"}
     candidates = []
+    # Aligned with `candidates`: the candidate input plus the assessment of the
+    # ONE genuine owner read bound to it, composed only after the final guards.
+    native_reads = []
     for row, selected in zip(doc["buy"], binding["ordered_rows"], strict=True):
         item = {"selection_index": selected["selection_index"], "row_receipt": selected["row_receipt"],
                 "status": "UNAVAILABLE", "candidate_input": None, "daily_brief": None, "reason_codes": []}
+        native_facts = None
         matching = [record for record in source_rows
                     if record.get("stamp_date") == binding["market_session"]
                     and record.get("ticker") == row.get("ticker")
@@ -1700,20 +1749,235 @@ def read_today_candidate_projection(repo_root, *, expected_source_sha256, expect
                              "owner_ref": "scripts/build_stock_library.py::main", "asof": generated_at,
                              "source_receipt": source_receipt, "selection_receipt": binding["selection_receipt"],
                              "display": {"ticker": row.get("ticker"), "selection_index": selected["selection_index"]}}
+                # One genuine native owner read for this exact binding. The owner
+                # revalidates the snapshot against native disk and derives the
+                # original identity/session itself; the consumer only ever takes
+                # its verified_pair(), never a reprojection or caller-supplied
+                # JSON. Owner refusal leaves the candidate binding available and
+                # the assessment typed unavailable — no receipt is fabricated.
+                assessment = None
+                assessment_codes = ("ASSESSMENT_NATIVE_OWNER_READ_UNAVAILABLE",)
+                try:
+                    owner_result = build_native_factual_assessment_result(
+                        snapshot, candidate_source_event_id=source_key,
+                        candidate_source_receipt=source_receipt)
+                    assessment, projection = owner_result.verified_pair()
+                    _verify_native_assessment_pair(assessment, projection, candidate=candidate,
+                                                   source_key=source_key, source_receipt=source_receipt)
+                    assessment_codes = ()
+                except _NativeAssessmentBindingRefused:
+                    assessment = None
+                    assessment_codes = ("ASSESSMENT_NATIVE_BINDING_UNAVAILABLE",)
+                except (CandidateStateContractError, OSError, ValueError, TypeError):
+                    assessment = None
+                    assessment_codes = ("ASSESSMENT_NATIVE_OWNER_READ_UNAVAILABLE",)
                 provenance = {"source_event_id": source_key, "source_receipt": source_receipt,
                               "selection_source_emit": doc["emit"], "generation_recorded_at": generation.receipt["recorded_at"],
                               "relations": [{key: event.get(key) for key in ("event_id", "occurred_at", "known_at", "recorded_at")}
                                             for event in active_relations]}
-                brief = compose_daily_brief(candidate=candidate, entry_availability=None, plan=None, assessment=None,
-                                            evidence=None, assembly=None, recovery=None, previous=None,
-                                            now=generated_at, quote=None)
-                item.update(status="AVAILABLE", candidate_input=candidate, daily_brief=brief, native_provenance=provenance,
-                            reason_codes=["ASSESSMENT_NATIVE_OWNER_READ_UNAVAILABLE", "PLAN_NATIVE_OWNER_READ_UNAVAILABLE",
-                                          "EVIDENCE_NATIVE_OWNER_READ_UNAVAILABLE", "QUOTE_NATIVE_OWNER_READ_UNAVAILABLE",
-                                          "B4_NATIVE_OWNER_READ_UNAVAILABLE"])
+                item.update(status="AVAILABLE", candidate_input=candidate, daily_brief=None, native_provenance=provenance,
+                            reason_codes=[*assessment_codes, *_TODAY_BRIEF_OWNER_UNAVAILABLE_CODES])
+                native_reads.append((candidate, assessment))
+            if relation_details is not None:
+                episode_row = episodes[0] if len(episodes) == 1 else None
+                native_facts = {
+                    "source_event_id": source_key,
+                    "source_receipt": source_receipt,
+                    "relation": dict(related[0]) if related else None,
+                    "relations": [{key: event.get(key) for key in ("event_id", "occurred_at", "known_at", "recorded_at")}
+                                  for event in active_relations],
+                    "suppressed": bool(suppressed),
+                    "episode": None if episode_row is None else {
+                        key: episode_row.get(key)
+                        for key in ("episode_id", "security_id", "episode_state", "terminal_reason",
+                                    "superseded_by", "opened_at", "opened_session")},
+                }
         if reason is not None:
             item["reason_codes"] = [reason]
+            native_reads.append(None)
         candidates.append(item)
+        if relation_details is not None:
+            relation_details.append(native_facts)
+    return candidates, native_reads
+
+
+class _OriginalSelectionNativeRefused(ValueError):
+    """The native owner could not preserve one captured source relation."""
+
+
+def _read_original_selection_native_relation(raw, *, selection_index, started_at,
+                                             expected_candidate_generation_id=None):
+    """Read original-source facts under the native owner's own byte guard.
+
+    The installation root is fixed here. Callers supply only captured immutable
+    source bytes, an original ordinal, a UTC request cut and an equality pin;
+    they cannot choose a store or supply native objects. No Plan is read here.
+    The context yields frozen facts, never a snapshot, token or assessment.
+    Normal context exit performs the final complete UCV and native HEAD check,
+    allowing the consumer's own file guards to bracket that check precisely.
+    Refused consumer reads need no subsequent native check and cannot succeed.
+    """
+    from contextlib import contextmanager
+    from types import MappingProxyType
+    from engine.us_candidate_episode import (
+        attest_candidate_episode_store_bytes,
+        load_candidate_episode_store_snapshot,
+    )
+    from engine.us_context_vector import read_today_candidate_source_rows
+
+    def refuse(code):
+        return _OriginalSelectionNativeRefused(code)
+
+    def freeze(value):
+        if isinstance(value, dict):
+            return MappingProxyType({key: freeze(item) for key, item in value.items()})
+        if isinstance(value, (list, tuple)):
+            return tuple(freeze(item) for item in value)
+        return value
+
+    @contextmanager
+    def captured_read():
+        try:
+            if not isinstance(raw, bytes):
+                raise ValueError("source must be captured immutable bytes")
+            binding = today_selection_source_binding(raw)
+            doc = json.loads(raw)
+            if (isinstance(selection_index, bool) or not isinstance(selection_index, int)
+                    or not 0 <= selection_index < len(doc["buy"])):
+                raise ValueError("original ordinal unavailable")
+            if _today_source_instant(doc["emit"]["at_utc"]) > _today_source_instant(started_at):
+                raise ValueError("source is after the request cut")
+        except (ValueError, TypeError, KeyError) as exc:
+            raise refuse("PLAN_SOURCE_RESOLUTION_UNAVAILABLE") from exc
+
+        root = Path(__file__).resolve().parent.parent
+        episode_root = root / "data/us_prophet_rank/episodes"
+        try:
+            source_rows, source_receipts = read_today_candidate_source_rows(root)
+            token = attest_candidate_episode_store_bytes(episode_root)
+            snapshot = load_candidate_episode_store_snapshot(episode_root)
+        except (OSError, ValueError, TypeError) as exc:
+            raise refuse("CANDIDATE_SNAPSHOT_UNAVAILABLE") from exc
+        if token.generation_id != snapshot.generation_id:
+            raise refuse("CANDIDATE_SNAPSHOT_CHANGED")
+        if (expected_candidate_generation_id is not None
+                and expected_candidate_generation_id != snapshot.generation_id):
+            raise refuse("CANDIDATE_GENERATION_MISMATCH")
+        try:
+            if (_today_source_instant(snapshot.generation.receipt["recorded_at"])
+                    > _today_source_instant(started_at)):
+                raise ValueError("generation is after the request cut")
+        except (ValueError, TypeError, KeyError) as exc:
+            raise refuse("CANDIDATE_CLOCK_UNAVAILABLE") from exc
+        details = []
+        try:
+            candidates, native_reads = _today_native_source_candidates(
+                raw, binding=binding, doc=doc, generation=snapshot.generation,
+                snapshot=snapshot, source_rows=source_rows, generated_at=started_at,
+                relation_details=details)
+            if not (len(candidates) == len(native_reads) == len(details) == len(doc["buy"])):
+                raise ValueError("unaligned native source rows")
+        except (OSError, ValueError, TypeError) as exc:
+            raise refuse("PLAN_SOURCE_RESOLUTION_UNAVAILABLE") from exc
+        item = candidates[selection_index]
+        facts = details[selection_index] or {}
+        candidate = item.get("candidate_input")
+        identity = ({key: candidate.get(key) for key in (
+            "security_id", "episode_id", "candidate_generation_id", "market_session")}
+            if isinstance(candidate, dict) else None)
+        native_read = native_reads[selection_index]
+        assessment = native_read[1] if native_read is not None else None
+        assessment_codes = [code for code in item.get("reason_codes", []) if code in {
+            "ASSESSMENT_NATIVE_OWNER_READ_UNAVAILABLE", "ASSESSMENT_NATIVE_BINDING_UNAVAILABLE"}]
+        if assessment_codes:
+            identity = None
+        relation = facts.get("relation") or {}
+        yield freeze({
+            "status": item.get("status"), "reason_codes": item.get("reason_codes", []),
+            "native_identity": identity, "episode_lifecycle": facts.get("episode"),
+            "native_clocks": {
+                "native_known_at": relation.get("known_at"),
+                "native_recorded_at": relation.get("recorded_at"),
+                "generation_recorded_at": snapshot.generation.receipt.get("recorded_at"),
+            },
+            "source_event_id": facts.get("source_event_id"),
+            "source_receipt": facts.get("source_receipt"),
+            "has_assessment": isinstance(assessment, dict),
+            "assessment_asof": assessment.get("asof") if isinstance(assessment, dict) else None,
+            "assessment_codes": assessment_codes,
+        })
+        # This check runs at the original interleaving point. Nothing yielded
+        # above can mutate these captured native inputs or redirect this read.
+        try:
+            _, after_receipts = read_today_candidate_source_rows(root)
+            if (after_receipts != source_receipts
+                    or attest_candidate_episode_store_bytes(episode_root) != token):
+                raise refuse("CANDIDATE_SNAPSHOT_CHANGED")
+        except _OriginalSelectionNativeRefused:
+            raise
+        except (OSError, ValueError, TypeError) as exc:
+            raise refuse("PLAN_SOURCE_RECHECK_UNAVAILABLE") from exc
+
+    return captured_read()
+
+
+def read_today_candidate_projection(repo_root, *, expected_source_sha256, expected_pair_id,
+                                    expected_selection_receipt, expected_candidate_generation_id=None):
+    """Read exact finalized selection plus native B1; never mutate publication."""
+    from engine.us_candidate_episode import (
+        attest_candidate_episode_store_bytes,
+        load_candidate_episode_store_snapshot,
+    )
+    from engine.us_context_vector import read_today_candidate_source_rows
+    from engine.prophet_daily_brief import compose_daily_brief
+
+    root = Path(repo_root)
+    source_path = root / "site/factordata/us_standouts.json"
+    generated_at = datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
+    result = {"schema": "prophet.daily_brief_read/v1", "status": "UNAVAILABLE",
+              "source_binding": None, "candidate_generation_id": None,
+              "generated_at": generated_at, "candidates": [], "reason_codes": []}
+
+    def unavailable(reason):
+        return {**result, "status": "UNAVAILABLE", "candidates": [], "reason_codes": [reason],
+                "generated_at": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")}
+
+    try:
+        raw = source_path.read_bytes()
+        binding = today_selection_source_binding(raw)
+        doc = json.loads(raw)
+        if _today_source_instant(doc["emit"]["at_utc"]) > _today_source_instant(generated_at):
+            raise ValueError("Today source clock is future")
+    except (OSError, ValueError, TypeError):
+        return unavailable("SELECTION_SOURCE_UNAVAILABLE")
+    result["source_binding"] = {key: binding[key] for key in ("source_sha256", "pair_id", "selection_receipt", "market_session", "schema", "receipt_kind")}
+    if (expected_source_sha256 != binding["source_sha256"] or expected_pair_id != binding["pair_id"]):
+        return unavailable("SOURCE_BINDING_MISMATCH")
+    if expected_selection_receipt != binding["selection_receipt"]:
+        return unavailable("SELECTION_BINDING_MISMATCH")
+    try:
+        # Emission and native reconciliation remain their existing owners' work.
+        source_rows, source_receipts = read_today_candidate_source_rows(root)
+        episode_root = root / "data/us_prophet_rank/episodes"
+        token = attest_candidate_episode_store_bytes(episode_root)
+        snapshot = load_candidate_episode_store_snapshot(episode_root)
+        if token.generation_id != snapshot.generation_id:
+            return unavailable("CANDIDATE_SNAPSHOT_CHANGED")
+    except (OSError, ValueError, TypeError):
+        return unavailable("CANDIDATE_SNAPSHOT_UNAVAILABLE")
+    result["candidate_generation_id"] = snapshot.generation_id
+    if expected_candidate_generation_id is not None and expected_candidate_generation_id != snapshot.generation_id:
+        return unavailable("CANDIDATE_GENERATION_MISMATCH")
+
+    generation = snapshot.generation
+    try:
+        if _today_source_instant(generation.receipt["recorded_at"]) > _today_source_instant(generated_at):
+            return unavailable("CANDIDATE_CLOCK_UNAVAILABLE")
+    except (ValueError, TypeError, KeyError):
+        return unavailable("CANDIDATE_CLOCK_UNAVAILABLE")
+    candidates, native_reads = _today_native_source_candidates(
+        raw, binding=binding, doc=doc, generation=generation, snapshot=snapshot,
+        source_rows=source_rows, generated_at=generated_at)
     try:
         if source_path.read_bytes() != raw:
             return unavailable("SOURCE_SNAPSHOT_CHANGED")
@@ -1724,6 +1988,34 @@ def read_today_candidate_projection(repo_root, *, expected_source_sha256, expect
             return unavailable("SOURCE_SNAPSHOT_CHANGED")
     except (OSError, ValueError, TypeError):
         return unavailable("CANDIDATE_SNAPSHOT_UNAVAILABLE")
+    # Read completion is observed once, after every owner input above is gathered
+    # and every final raw/part/HEAD guard has held. Daily Brief views compose
+    # against this instant, so a genuine native read assembled after this request
+    # started is no longer a future clock — while the original request-start cut
+    # checks above stay exactly as they are, and a native read assembled after
+    # completion itself is still refused rather than consumed.
+    read_completed_at = datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
+    result["generated_at"] = read_completed_at
+    for item, native_read in zip(candidates, native_reads, strict=True):
+        if native_read is None:
+            continue
+        candidate, assessment = native_read
+        completion_codes = ()
+        if assessment is not None:
+            try:
+                after_completion = (_today_source_instant(assessment["asof"])
+                                    > _today_source_instant(read_completed_at))
+            except (KeyError, TypeError, ValueError):
+                after_completion = True
+            if after_completion:
+                assessment = None
+                completion_codes = ("ASSESSMENT_AFTER_READ_COMPLETION_UNAVAILABLE",)
+        item["daily_brief"] = compose_daily_brief(
+            candidate=candidate, entry_availability=None, plan=None, assessment=assessment,
+            evidence=None, assembly=None, recovery=None, previous=None,
+            now=read_completed_at, quote=None)
+        if completion_codes:
+            item["reason_codes"] = [*completion_codes, *_TODAY_BRIEF_OWNER_UNAVAILABLE_CODES]
     # Native candidate availability is narrower than a fully available brief.
     return {**result, "status": "PARTIAL", "candidates": candidates,
             "reason_codes": ["DAILY_BRIEF_OWNER_INPUTS_UNAVAILABLE"]}

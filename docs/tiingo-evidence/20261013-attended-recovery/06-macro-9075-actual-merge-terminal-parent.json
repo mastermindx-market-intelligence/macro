@@ -1,0 +1,15 @@
+{
+  "schema": "tiingo.actual_normal_protected_merge_terminal_parent_consumption/v1",
+  "recorded_at_utc": "2026-10-13T04:55:39.114438+00:00",
+  "pr_number": 9075,
+  "exact_matched_head": "ca8852fee5089c747fa24c694e1ce50274420546",
+  "original_tool_session": 63536,
+  "original_terminal_chunk": "239319",
+  "actual_original_exit_code": 0,
+  "actual_original_terminal_return_consumed": true,
+  "merge_method": "normal squash with match-head-commit",
+  "admin_force_or_gate_override_used": false,
+  "source_CI_actual_parent_sha256": "7e81a1725073432a9b9cf79d5985220c39f93b6485b7c3ac0dfd1296182086ee",
+  "canonical_merge_commit_and_source_blob_join_still_required": true,
+  "runtime_or_production_change": false
+}

@@ -1,5 +1,5 @@
 {
-  "generated_utc": "2026-10-13T00:55:37.138089+00:00",
+  "generated_utc": "2026-10-13T15:09:24.656609+00:00",
   "as_of": "2026-10-13",
   "schema": "altdata.feed.v1",
   "source": "Quiver Quantitative (Trader plan)",
@@ -28277,10 +28277,10 @@
         },
         {
           "ticker": "NMM",
-          "buy_usd": 847995046.0,
+          "buy_usd": 847743490.0,
           "sell_usd": 0.0,
-          "net_usd": 847995046.0,
-          "buyers": 24,
+          "net_usd": 847743490.0,
+          "buyers": 21,
           "sellers": 0
         },
         {
