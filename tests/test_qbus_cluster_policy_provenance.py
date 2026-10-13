@@ -12,6 +12,7 @@ import pytest
 
 from engine.qbus_news_cluster import CLUSTER_POLICY_VERSION
 from engine.qbus_news_cluster import ClusterPolicy
+from engine.qbus_news_cluster import cluster_policy_version
 from engine.qbus_news_contract import normalize_news
 from engine.qbus_news_store import NewsReadRights, NewsStore, RoutedRevision
 from engine.qbus_news_velocity import compute_news_velocity
@@ -20,6 +21,11 @@ try:
     from engine.qbus_news_cluster import UNKNOWN_CLUSTER_POLICY_VERSION
 except ImportError:  # pre-change base: the constant does not exist yet
     UNKNOWN_CLUSTER_POLICY_VERSION = "unknown (pre-column)"
+
+try:
+    from engine.qbus_news_store import _META_CLUSTER_POLICY_KEY
+except ImportError:  # pre-change base: the meta key constant does not exist yet
+    _META_CLUSTER_POLICY_KEY = "cluster_policy_version"
 
 
 UTC = timezone.utc
@@ -633,3 +639,109 @@ def test_velocity_without_members_table_returns_empty_versions(tmp_path):
     assert set(got) == set(expected)
     assert got["cluster_policy_versions_24h"] == []
     assert got["stories_24h"] == got["count_24h"]
+
+
+def _delete_meta_policy_key(db: Path) -> None:
+    """Drop the recorded policy key: a store written before it existed."""
+    conn = sqlite3.connect(db)
+    try:
+        conn.execute("PRAGMA foreign_keys=OFF")
+        conn.execute(
+            "DELETE FROM qbus_meta WHERE key=?", (_META_CLUSTER_POLICY_KEY,)
+        )
+        conn.commit()
+    finally:
+        conn.close()
+    _checkpoint(db)
+
+
+def test_empty_window_readonly_reads_recorded_writer_policy(tmp_path):
+    """No policy passed: the flow names the version the writer recorded."""
+    db = tmp_path / "recorded-custom.sqlite3"
+    custom = ClusterPolicy(title_threshold=0.9)
+    with NewsStore(
+        db, source_key="benzinga-rest", cluster_policy=custom
+    ) as store:
+        store.commit([], expected_cursor=None, next_cursor="c0")
+    _checkpoint(db)
+    flow = _flow(db)
+    assert flow["stories_24h"] == 0
+    assert _versions_24h(db) == []
+    assert (
+        flow["provenance"]["cluster_policy_version"]
+        == cluster_policy_version(custom)
+    )
+
+
+def test_empty_window_without_recorded_policy_reads_unknown(tmp_path):
+    """A pre-change store (no recorded key) reports unknown, never v2."""
+    db = tmp_path / "pre-key.sqlite3"
+    with NewsStore(db, source_key="benzinga-rest") as store:
+        store.commit([], expected_cursor=None, next_cursor="c0")
+    _delete_meta_policy_key(db)
+    flow = _flow(db)
+    assert flow["stories_24h"] == 0
+    assert _versions_24h(db) == []
+    assert (
+        flow["provenance"]["cluster_policy_version"]
+        == UNKNOWN_CLUSTER_POLICY_VERSION
+    )
+
+
+def test_empty_window_default_writer_reads_v2(tmp_path):
+    """Every production writer uses the default policy, so v2 is recorded."""
+    db = tmp_path / "recorded-default.sqlite3"
+    with NewsStore(db, source_key="benzinga-rest") as store:
+        store.commit([], expected_cursor=None, next_cursor="c0")
+    _checkpoint(db)
+    flow = _flow(db)
+    assert flow["stories_24h"] == 0
+    assert _versions_24h(db) == []
+    assert flow["provenance"]["cluster_policy_version"] == CLUSTER_POLICY_VERSION
+
+
+def test_long_lived_readonly_handle_sees_key_recorded_later(tmp_path):
+    """The key is read at call time, not cached at open."""
+    db = tmp_path / "late-key.sqlite3"
+    with NewsStore(db, source_key="benzinga-rest") as store:
+        store.commit([], expected_cursor=None, next_cursor="c0")
+    _delete_meta_policy_key(db)
+    ro = NewsStore.open_readonly(db, source_key="benzinga-rest")
+    try:
+        with NewsStore(
+            db,
+            source_key="benzinga-rest",
+            cluster_policy=ClusterPolicy(title_threshold=0.9),
+        ) as store:
+            store.commit([], expected_cursor="c0", next_cursor="c1")
+        flow = ro.news_flow(SEC, now=NOW, rights=_rights())
+    finally:
+        ro.close()
+    assert flow["stories_24h"] == 0
+    assert (
+        flow["provenance"]["cluster_policy_version"]
+        == cluster_policy_version(ClusterPolicy(title_threshold=0.9))
+    )
+
+
+def test_writer_records_policy_idempotently(tmp_path):
+    """Two default writer opens leave one row and rewrite nothing."""
+    db = tmp_path / "meta-idempotent.sqlite3"
+    first = NewsStore(db, source_key="benzinga-rest")
+    first.close()
+    _checkpoint(db)
+    second = NewsStore(db, source_key="benzinga-rest")
+    try:
+        unchanged_value_changes = second._conn.total_changes
+    finally:
+        second.close()
+    assert unchanged_value_changes == 0
+    conn = sqlite3.connect(f"file:{db}?mode=ro", uri=True)
+    try:
+        rows = conn.execute(
+            "SELECT value FROM qbus_meta WHERE key=?", (_META_CLUSTER_POLICY_KEY,)
+        ).fetchall()
+    finally:
+        conn.close()
+    assert len(rows) == 1
+    assert str(rows[0][0]) == CLUSTER_POLICY_VERSION
