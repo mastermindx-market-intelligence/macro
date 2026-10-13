@@ -90,3 +90,9 @@ another tab — is simply not there anymore; the rest of the desk is unchanged.
 When this device's saved views cannot be read, they are left untouched and
 saving is paused here; nothing is overwritten to make the list readable again.
 / 无法读取本设备的已存视图时，将保持原样不作改动并暂停保存；绝不为了恢复显示而覆盖任何内容。
+
+## Change not saved
+
+When this browser refuses to store a change (for example, its storage is full), that change is not saved and
+nothing else is changed; your saved views stay exactly as they were.
+/ 浏览器拒绝保存更改时（例如存储空间已满），该更改不会被保存，其他内容也不变；已存视图保持原样。

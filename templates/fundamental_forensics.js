@@ -74,6 +74,7 @@
     // the desk still matches the view's subject, policy and cutoff.
     savedActiveId: '',
     savedRefusal: '',
+    savedStoreError: false,
     pinnedRequest: null
   };
 
@@ -1173,6 +1174,7 @@
       // and the pinned-bytes override must not describe another issuer.
       state.savedActiveId = '';
       state.savedRefusal = '';
+      state.savedStoreError = false;
       state.pinnedRequest = null;
       writeUrl(true);
       state.unknownRequestedSymbol = '';
@@ -2422,6 +2424,10 @@
       'Saved views on this device could not be read, so they are left untouched. Saving is paused here.',
       '无法读取本设备上的已存视图，因此保持原样不作改动。此处暂停保存。'
     ],
+    writeFailedCopy: [
+      'Your browser did not save this change. Nothing else was changed.',
+      '浏览器未保存此更改，其他内容未变。'
+    ],
     pinnedTo: ['Pinned to', '固定于'],
     latest: ['latest', '最新'],
     asOf: ['As of', '截止'],
@@ -2527,9 +2533,10 @@
     if (result.ok) {
       state.savedActiveId = result.view.id;
       state.savedRefusal = '';
+      state.savedStoreError = false;
       state.pinnedRequest = result.view.pinned ? result.view.request : null;
     } else if (result.reason === 'storage') {
-      state.savedRefusal = 'store';
+      state.savedStoreError = true;
     }
     renderSavedUI();
     return result;
@@ -2560,10 +2567,11 @@
   function savedActiveView() {
     // A refused restore (issuer or any load refusal) is never the active view:
     // no pinned badge, no newer-generation chip, no saved_against backfill from
-    // a desk it does not describe. 'store' is a mutation failure, not a refusal
-    // of the restored view. Delete stays reachable through savedActiveId.
+    // a desk it does not describe. Any refusal keeps the view inactive; a
+    // write failure is tracked separately in state.savedStoreError. Delete
+    // stays reachable through savedActiveId.
     if (!savedBriefcase || !state.savedActiveId) return null;
-    if (state.savedRefusal && state.savedRefusal !== 'store') return null;
+    if (state.savedRefusal) return null;
     var result = savedBriefcase.load(state.savedActiveId);
     return result.ok ? result.view : null;
   }
@@ -2658,16 +2666,23 @@
     }
 
     if (notice) {
+      // X2-s r2 (R2-4) precedence, exactly: an unreadable store (read
+      // failure) -> a failed write (state.savedStoreError) -> a stale
+      // newer-generation chip -> a refused view -> hidden.
       var action = '';
       var stale = savedGenerationStale();
-      if (stale) {
+      if (storeReadOnly) {
+        notice.innerHTML = savedNoticeHtml('store');
+        notice.hidden = false;
+      } else if (state.savedStoreError) {
+        notice.innerHTML = '<span class="ff-notice-icon" aria-hidden="true">i</span><div>' +
+          pair(SAVED_COPY.writeFailedCopy[0], SAVED_COPY.writeFailedCopy[1]) + '</div>';
+        notice.hidden = false;
+      } else if (stale) {
         action = ' <button type="button" class="ff-retry" data-saved-reresolve="1">' +
           pair(SAVED_COPY.reResolve[0], SAVED_COPY.reResolve[1]) + '</button>';
         notice.innerHTML = '<span class="ff-notice-icon" aria-hidden="true">i</span><div>' +
           pair(SAVED_COPY.newerGeneration[0], SAVED_COPY.newerGeneration[1]) + action + '</div>';
-        notice.hidden = false;
-      } else if (storeReadOnly) {
-        notice.innerHTML = savedNoticeHtml('store');
         notice.hidden = false;
       } else if (state.savedRefusal) {
         notice.innerHTML = savedNoticeHtml(state.savedRefusal);
@@ -2710,11 +2725,16 @@
       }
     });
     if (result.ok) restoreSavedView(stale.view.id);
+    else if (result.reason === 'storage') {
+      state.savedStoreError = true;
+      renderSavedUI();
+    }
     return result;
   }
 
   function restoreSavedView(id) {
     if (!savedBriefcase) return { ok: false, reason: 'module' };
+    state.savedStoreError = false;
     var result = savedBriefcase.load(id);
     state.savedActiveId = String(id || '');
     if (!result.ok) {
@@ -2774,7 +2794,8 @@
   function savedRenameActive(name) {
     if (!savedBriefcase || !state.savedActiveId) return { ok: false, reason: 'missing' };
     var result = savedBriefcase.update(state.savedActiveId, { name: name });
-    if (!result.ok && result.reason === 'storage') state.savedRefusal = 'store';
+    if (result.ok) state.savedStoreError = false;
+    else if (result.reason === 'storage') state.savedStoreError = true;
     renderSavedUI();
     return result;
   }
@@ -2785,9 +2806,10 @@
     if (result.ok) {
       state.savedActiveId = '';
       state.savedRefusal = '';
+      state.savedStoreError = false;
       state.pinnedRequest = null;
     } else if (result.reason === 'storage') {
-      state.savedRefusal = 'store';
+      state.savedStoreError = true;
     }
     renderSavedUI();
     return result;
@@ -5085,6 +5107,7 @@
         state.asOfDate = '';
         state.savedActiveId = '';
         state.savedRefusal = '';
+        state.savedStoreError = false;
         state.pinnedRequest = null;
         setAsofControlsFromState();
         writeUrl(true);
@@ -5099,6 +5122,7 @@
         state.asOfDate = value;
         state.savedActiveId = '';
         state.savedRefusal = '';
+        state.savedStoreError = false;
         state.pinnedRequest = null;
         setAsofControlsFromState();
         writeUrl(true);
@@ -5118,6 +5142,7 @@
         if (!savedSelect.value) {
           state.savedActiveId = '';
           state.savedRefusal = '';
+          state.savedStoreError = false;
           state.pinnedRequest = null;
           renderSavedUI();
           return;
@@ -5260,6 +5285,7 @@
       // saved view (and its pinned bytes) no longer describes this frame.
       state.savedActiveId = '';
       state.savedRefusal = '';
+      state.savedStoreError = false;
       state.pinnedRequest = null;
       if (url.symbol) {
         var next = resolveSymbol(url.symbol);
@@ -5349,6 +5375,7 @@
       savedDeleteActive: savedDeleteActive,
       reResolveSavedView: reResolveSavedView,
       buildSavedViewInput: buildSavedViewInput,
+      backfillSavedAgainst: backfillSavedAgainst,
       activePinnedRequest: activePinnedRequest,
       savedSavePhase: savedSavePhase,
       savedGenerationStale: savedGenerationStale,

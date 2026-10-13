@@ -979,15 +979,34 @@ test('an unreadable store pauses saving and shows the store notice', () => {
   assert.equal(drive.storage.getItem(STORE_KEY), '{"contract":', 'the unreadable bytes are untouched');
 });
 
-test('a failed persistence surfaces the store notice through the save path', () => {
+test('a failed persistence shows the write-failure notice through the save path', () => {
   const drive = harness({ storage: failingStorage() });
   drive.api.initSavedBriefcase();
   const result = drive.api.performSavedSave('Apple pinned at September cutoff');
   assert.equal(result.ok, false);
   assert.equal(result.reason, 'storage');
-  assert.equal(drive.api.state.savedRefusal, 'store');
+  assert.equal(drive.api.state.savedStoreError, true);
+  assert.equal(drive.api.state.savedRefusal, '');
   assert.equal(drive.nodes['ff-saved-notice'].hidden, false);
-  assert.match(drive.nodes['ff-saved-notice'].innerHTML, /Saving is paused here/);
+  assert.match(drive.nodes['ff-saved-notice'].innerHTML, /did not save this change/);
+  assert.ok(drive.nodes['ff-saved-notice'].innerHTML.indexOf('浏览器未保存此更改，其他内容未变。') >= 0,
+    'the bilingual pair carries the Chinese copy');
+  assert.doesNotMatch(drive.nodes['ff-saved-notice'].innerHTML, /Saving is paused here/);
+});
+
+test('T-R2-4b: a later successful save hides the write-failure notice and clears savedStoreError', () => {
+  const storage = onceFailingStorage();
+  const drive = harness({ storage });
+  drive.api.initSavedBriefcase();
+  const first = drive.api.performSavedSave('Apple pinned at September cutoff');
+  assert.equal(first.ok, false);
+  assert.equal(first.reason, 'storage');
+  assert.equal(drive.api.state.savedStoreError, true);
+  storage.repair();
+  const second = drive.api.performSavedSave('Apple pinned at September cutoff');
+  assert.equal(second.ok, true, second.reason || 'the repaired save works');
+  assert.equal(drive.api.state.savedStoreError, false);
+  assert.equal(drive.nodes['ff-saved-notice'].hidden, true, 'the write-failure notice is hidden again');
 });
 
 test('the saved list offers a choice when populated and says empty only when empty', () => {
@@ -1017,6 +1036,76 @@ test('the unavailable notice carries a title element (MINOR-5 shape)', () => {
   assert.match(html, /^<span class="ff-notice-icon" aria-hidden="true">i<\/span><div><strong>/);
   assert.match(html, /<\/strong><div>/);
   assert.match(html, /older contract/);
+});
+
+// ── X2-s r2 R2-3: a refused view can never become active (a write failure
+// is tracked in state.savedStoreError and never overwrites a refusal) ──────
+
+test('T-R2-3a: a write failure never turns an issuer-refused view active', () => {
+  const base = fixtureContainer('saved_pinned.json').saved_views[0];
+  base.request.entity_id = 'ISS:US-XNAS-MSFT';
+  const seed = containerBytes(base);
+  const drive = harness({ storage: failingStorage([[STORE_KEY, seed]]) });
+  drive.api.initSavedBriefcase();
+  drive.api.state.symbol = 'MSFT';
+  const restored = drive.api.restoreSavedView(base.id);
+  assert.equal(restored.ok, false);
+  assert.equal(restored.reason, 'issuer');
+  assert.equal(drive.api.state.savedRefusal, 'issuer');
+  const failed = drive.api.performSavedSave('x');
+  assert.equal(failed.ok, false);
+  assert.equal(failed.reason, 'storage');
+  assert.equal(drive.api.state.savedRefusal, 'issuer', 'the issuer refusal survives the failed save');
+  assert.equal(drive.api.state.savedStoreError, true);
+  assert.equal(drive.nodes['ff-saved-badge'].hidden, true, 'the refused view shows no badge');
+  assert.equal(drive.nodes['ff-saved-rename'].hidden, true, 'the refused view offers no Rename');
+  // An explicit render/backfill pass must not write: the backfill only acts
+  // on an ACTIVE view, and a refused view is never active.
+  drive.api.backfillSavedAgainst();
+  drive.api.renderSavedUI();
+  assert.equal(drive.storage.getItem(STORE_KEY), seed, 'the stored bytes are byte-identical to the seed');
+  const renamed = drive.api.savedRenameActive('y');
+  assert.equal(renamed.ok, false);
+  assert.equal(renamed.reason, 'storage');
+  assert.equal(drive.api.state.savedRefusal, 'issuer', 'the refusal survives a failed rename');
+  const deleted = drive.api.savedDeleteActive();
+  assert.equal(deleted.ok, false);
+  assert.equal(deleted.reason, 'storage');
+  assert.equal(drive.api.state.savedRefusal, 'issuer', 'the refusal survives a failed delete');
+  assert.equal(drive.storage.getItem(STORE_KEY), seed, 'the stored bytes never changed');
+});
+
+test('T-R2-3b: the refusal reason survives a failed save for a contract-refused row', () => {
+  const base = fixtureContainer('saved_single_issuer.json').saved_views[0];
+  base.request_contract = 'fundamental_forensics.financial_query_request/v0';
+  const drive = harness({ storage: failingStorage([[STORE_KEY, containerBytes(base)]]) });
+  drive.api.initSavedBriefcase();
+  const restored = drive.api.restoreSavedView(base.id);
+  assert.equal(restored.ok, false);
+  assert.equal(restored.reason, 'request_contract');
+  const failed = drive.api.performSavedSave('x');
+  assert.equal(failed.ok, false);
+  assert.equal(failed.reason, 'storage');
+  assert.equal(drive.api.state.savedRefusal, 'request_contract');
+  assert.equal(drive.api.state.savedStoreError, true);
+  assert.equal(drive.nodes['ff-saved-badge'].hidden, true, 'the refused view shows no badge');
+});
+
+test('T-R2-3c: a refused restore clears a previously pinned request', () => {
+  const pinned = fixtureContainer('saved_pinned.json').saved_views[0];
+  const mismatched = JSON.parse(JSON.stringify(pinned));
+  mismatched.id = 'ISSUERMISMATCHROW00000';
+  mismatched.request.entity_id = 'ISS:US-XNAS-MSFT';
+  const drive = harness();
+  drive.storage.setItem(STORE_KEY, seedBytes([pinned, mismatched]));
+  drive.api.initSavedBriefcase();
+  const restored = drive.api.restoreSavedView(pinned.id);
+  assert.equal(restored.ok, true, restored.reason || 'the pinned fixture view restores');
+  assert.ok(drive.api.state.pinnedRequest, 'a pinned restore keeps a pinned request');
+  const refused = drive.api.restoreSavedView(mismatched.id);
+  assert.equal(refused.ok, false);
+  assert.equal(refused.reason, 'issuer');
+  assert.equal(drive.api.state.pinnedRequest, null, 'the refused restore cleared the pinned request');
 });
 
 test('id-problem rows stay listed under row:<index>, refuse load, and are removable by that key', () => {
