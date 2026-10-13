@@ -22546,6 +22546,28 @@ jobs:
           tests/test_edgar_earnings_8k.py
           tests/test_marketing_edgar_earnings_wire.py -q -rs
 
+  market-memory-page-contract:
+    # Data-free shell and issuer-intent regressions; no provider/production reads.
+    # Use the standard inferred closure; no manually narrowed paths scope.
+    if: ${{ false }}  # executed inside ci-pack — NOT a disabled gate.
+    gate: code
+    timeout-minutes: 5
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: install minimal deps
+        run: pip install pytest jinja2 pyyaml
+      - name: require the actual client runtime
+        run: node --version
+      - name: Market Memory page and issuer intent contract
+        run: python -m pytest tests/test_build_market_memory_page.py -q -rs
+
   market-memory-contract:
     # Public-safe temporal-context and product-shell contract. Private captures,
     # credentials, and provider responses remain absent; the option availability
@@ -22603,8 +22625,7 @@ jobs:
           tests/test_market_memory_trusted.py
           tests/test_market_memory_context_deploy.py
           tests/test_regime_latest_json_boundary.py
-          tests/test_release_target_truth.py
-          tests/test_build_market_memory_page.py -q
+          tests/test_release_target_truth.py -q
 
   group-pulse:
     # GR0 of the Group Reads program: engine/group_pulse.py, the basket-level
