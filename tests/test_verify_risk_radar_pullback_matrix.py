@@ -90,6 +90,28 @@ def _measured(**overrides):
     return measured
 
 
+def test_details_cell_option_covers_expanded_and_collapsed():
+    """The driver must be able to measure <details> open, not only the default closed state.
+
+    A forecast sentence inside the closed disclosure is absent from JavaScript
+    innerText, so a collapsed-only matrix would pass that page.
+    """
+    pages = matrix.parse_pages("us=macro.html,cn=china.html")
+    collapsed = matrix.enumerate_cells(pages)
+    assert len(collapsed) == 20
+    assert all(cell.get("details", "collapsed") == "collapsed" for cell in collapsed)
+    expanded = matrix.enumerate_cells(pages, details="expanded")
+    assert len(expanded) == 20
+    assert {cell["details"] for cell in expanded} == {"expanded"}
+    both = matrix.enumerate_cells(pages, details="both")
+    assert len(both) == 40
+    assert {cell["details"] for cell in both} == {"collapsed", "expanded"}
+    text = Path(matrix.__file__).read_text(encoding="utf-8")
+    drive = text.split("def _drive_cell", 1)[1].split("\ndef run_matrix", 1)[0]
+    assert "section.pbx details > summary" in drive
+    assert 'cell.get("details") == "expanded"' in drive
+
+
 def test_enumerates_twenty_cells():
     cells = _cells()
     assert len(cells) == 20
@@ -445,8 +467,9 @@ def test_js_off_require_active_uses_the_server_phase():
 def test_cli_require_active_reaches_the_driver(monkeypatch, tmp_path):
     seen = {}
 
-    def fake_run(base, pages, out_dir, chrome=None, require_active=False):
+    def fake_run(base, pages, out_dir, chrome=None, require_active=False, details="collapsed"):
         seen["require_active"] = require_active
+        seen["details"] = details
         return matrix.assemble_receipt(base, "2026-01-01T00:00:00Z", "chromium 0", [{"pass": True}])
 
     monkeypatch.setattr(matrix, "run_matrix", fake_run)

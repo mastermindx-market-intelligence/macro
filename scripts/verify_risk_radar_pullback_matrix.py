@@ -98,23 +98,37 @@ def _cell(name, filename, lang, theme, viewport, width, height, motion, javascri
     }
 
 
-def enumerate_cells(pages: list[tuple[str, str]]) -> list[dict]:
-    """page × lang × theme × viewport, then reduced-motion and JS-off per page."""
+def enumerate_cells(pages: list[tuple[str, str]], details: str = "collapsed") -> list[dict]:
+    """page × lang × theme × viewport, then reduced-motion and JS-off per page.
+
+    details is collapsed (the default closed disclosure), expanded, or both.
+    both repeats every cell with the disclosure clicked open. A collapsed-only
+    pass would miss copy that innerText shows only while <details> is open.
+    """
+    if details not in ("collapsed", "expanded", "both"):
+        raise ValueError(f"details {details!r} is not collapsed, expanded, or both")
+    modes = ("collapsed", "expanded") if details == "both" else (details,)
     cells = []
     for name, filename in pages:
         if name not in PAGE_CONTRACT:
             raise ValueError(f"unknown page {name!r}")
+        drafted = []
         for lang in ("en", "zh"):
             for theme in ("dark", "light"):
                 for viewport, width, height in VIEWPORTS:
-                    cells.append(_cell(
+                    drafted.append(_cell(
                         name, filename, lang, theme, viewport, width, height,
                         "no-preference", True,
                     ))
-        cells.append(_cell(name, filename, "en", "dark", "desktop", 1440, 900, "reduce", True))
-        cells.append(_cell(
+        drafted.append(_cell(name, filename, "en", "dark", "desktop", 1440, 900, "reduce", True))
+        drafted.append(_cell(
             name, filename, "en", "dark", "desktop", 1440, 900, "no-preference", False,
         ))
+        for mode in modes:
+            for cell in drafted:
+                stamped = dict(cell)
+                stamped["details"] = mode
+                cells.append(stamped)
     return cells
 
 
@@ -276,6 +290,8 @@ def cell_record(cell: dict, evaluation: dict, screens=None, applied_via="", open
         "failures": list(evaluation.get("failures") or []),
         "pass": bool(evaluation["passed"]),
     }
+    if cell.get("details"):
+        record["details"] = cell["details"]
     if open_note:
         record["open_note"] = open_note
     return record
@@ -313,7 +329,10 @@ def page_target(base: str, filename: str) -> str:
 
 def cell_slug(cell: dict) -> str:
     js = "js" if cell["javascript"] else "nojs"
-    return f"{cell['page']}-{cell['lang']}-{cell['theme']}-{cell['viewport']}-{cell['motion']}-{js}"
+    slug = f"{cell['page']}-{cell['lang']}-{cell['theme']}-{cell['viewport']}-{cell['motion']}-{js}"
+    if cell.get("details") == "expanded":
+        return slug + "-expanded"
+    return slug
 
 
 def _sha256(path: Path) -> dict:
@@ -525,6 +544,30 @@ def _shoot(page, path: Path, selector: str = "") -> dict | None:
     return _sha256(path)
 
 
+def _expand_details(page, summary_selector: str) -> None:
+    """Open each pullback disclosure by clicking its summary, before measurement."""
+    summaries = page.locator(summary_selector)
+    try:
+        count = summaries.count()
+    except Exception as exc:
+        raise SetupError(f"could not expand details ({exc})") from exc
+    for index in range(count):
+        summary = summaries.nth(index)
+        try:
+            already = bool(summary.evaluate("el => !!(el.parentElement && el.parentElement.open)"))
+        except Exception:
+            already = False
+        if already:
+            continue
+        try:
+            summary.click(timeout=4000)
+        except Exception:
+            try:
+                summary.click(timeout=4000, force=True)
+            except Exception as exc:
+                raise SetupError(f"could not expand details ({exc})") from exc
+
+
 def _count_tab_escapes(page, dialog: str) -> int:
     escapes = 0
     for combo in ("Tab",) * 40 + ("Shift+Tab",) * 40:
@@ -598,6 +641,8 @@ def _drive_cell(page, base: str, cell: dict, out_dir: Path, require_active: bool
                 page.locator(opener).first.click(timeout=4000, force=True)
             except Exception as exc:
                 click_error = str(exc).splitlines()[0][:240]
+    if cell.get("details") == "expanded":
+        _expand_details(page, "section.pbx details > summary")
     if cell["javascript"]:
         measured = page.evaluate(
             _MEASURE_JS,
@@ -698,6 +743,7 @@ def run_matrix(
     out_dir: Path,
     chrome: str | None = None,
     require_active: bool = False,
+    details: str = "collapsed",
 ) -> dict:
     try:
         playwright_cm = _open_playwright()
@@ -705,7 +751,7 @@ def run_matrix(
         raise SetupError(f"browser library is not available ({exc})") from exc
     out_dir.mkdir(parents=True, exist_ok=True)
     started = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
-    cells = enumerate_cells(pages)
+    cells = enumerate_cells(pages, details=details)
     records = []
     version = ""
     browser_source = ""
@@ -780,11 +826,18 @@ def main(argv: list[str] | None = None) -> int:
         action="store_true",
         help="Fail a cell whose phase is outside underway, stabilizing, or recovering",
     )
+    parser.add_argument(
+        "--details",
+        choices=("collapsed", "expanded", "both"),
+        default="collapsed",
+        help="Measure pullback disclosures collapsed, expanded by clicking each summary, or both",
+    )
     args = parser.parse_args(argv)
     try:
         pages = parse_pages(args.pages)
         receipt = run_matrix(
-            args.base, pages, args.out, args.chrome, require_active=args.require_active,
+            args.base, pages, args.out, args.chrome,
+            require_active=args.require_active, details=args.details,
         )
     except (SetupError, ValueError) as exc:
         print(f"setup: {exc}", file=sys.stderr)
