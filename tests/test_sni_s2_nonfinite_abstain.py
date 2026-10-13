@@ -16,34 +16,8 @@ from pathlib import Path
 import pytest
 
 ROOT = Path(__file__).resolve().parents[1]
-_RESIDUAL = str(ROOT / "research/single_name_intelligence/residual")
-
-
-class _ResidualFirstPath(list):
-    """Keep residual/ ahead of event_response/ so `import build_seal` is S1.
-
-    Both trees ship build_seal.py; S1 regenerate_s1 imports by module name.
-    S2 invokes its builder by file path in a subprocess.
-    """
-
-    def insert(self, index, value):
-        list.insert(self, index, value)
-        self._promote()
-
-    def append(self, value):
-        list.append(self, value)
-        self._promote()
-
-    def _promote(self):
-        if _RESIDUAL in self:
-            list.remove(self, _RESIDUAL)
-            list.insert(self, 0, _RESIDUAL)
-
-
-sys.path = _ResidualFirstPath(sys.path)
 sys.path.insert(0, str(ROOT / "research/single_name_intelligence/event_response"))
 sys.path.insert(0, str(ROOT))
-sys.path.insert(0, _RESIDUAL)
 
 pd = pytest.importorskip("pandas")
 
