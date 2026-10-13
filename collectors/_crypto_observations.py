@@ -245,5 +245,13 @@ def record_response(adapter, source_id, params, response, payload, received_at, 
     return result
 
 
+def record_unavailable(adapter, source_id, error_type):
+    """Receipt for a failure observed before any response existed; pure, no I/O."""
+    if not getattr(adapter,'_crypto_capture_active',False):return {'status':'inactive'}
+    result=dict(status='unavailable',error_type=str(error_type))
+    adapter.source_capture_status.append(dict(result,source_id=source_id))
+    return result
+
+
 def fetch_result_status(adapter,frames):
     return 'stale' if any(x['status']=='unavailable' for x in getattr(adapter,'source_capture_status',[])) else None
