@@ -1177,13 +1177,15 @@ def validate_reference_snapshot(receipt_before, artifact_bytes, receipt_after, *
                 "security_master.parquet": hashlib.sha256(master).hexdigest()}
     for name in _ARTIFACT_NAMES:
         entry, raw = pub["artifacts"][name], artifact_bytes[name]
-        _ob_fields(entry, "sha256 bytes semantic_sha256", "artifact")
-        _ob_require(type(raw) is bytes and len(raw) <= 64 * _MIB, "artifact byte bound")
+        _ob_fields(entry, "sha256 bytes semantic_sha256", f"artifact {name}")
+        _ob_require(type(raw) is bytes and len(raw) <= 64 * _MIB, f"artifact byte bound ({name})")
         _ob_require(type(entry["bytes"]) is int and entry["bytes"] > 0
-                    and entry["bytes"] == len(raw), "artifact byte count")
-        _ob_hash(entry["sha256"], "artifact")
-        _ob_require(entry["sha256"] == hashlib.sha256(raw).hexdigest(), "artifact byte seal")
-        _ob_require(entry["semantic_sha256"] == semantic.get(name), "semantic record seal")
+                    and entry["bytes"] == len(raw), f"artifact byte count ({name})")
+        _ob_hash(entry["sha256"], f"artifact {name}")
+        _ob_require(entry["sha256"] == hashlib.sha256(raw).hexdigest(),
+                    f"artifact byte seal ({name})")
+        _ob_require(entry["semantic_sha256"] == semantic.get(name),
+                    f"semantic record seal ({name})")
     _ob_require(pub["history_sha256"] == _ob_digest(receipt["identity_observations"]),
                 "history manifest seal")
     _ob_validate_history(receipt["identity_observations"], receipt["prospective_reference"],
