@@ -407,7 +407,10 @@ function pillFor(snapshot) {
     snapshot,{auth_enabled:false},lookup,create,value=>String(value),()=>{});
   return pill;
 }
-const baseline = {health:{healthy:true,age_hours:1},services:{available:true,healthy:true}};
+const baseline = {
+  health:{healthy:true,age_hours:1},services:{available:true,healthy:true},
+  system:{available:true,memory:{used_pct:12},disk:{used_pct:25}}
+};
 assert.match(pillFor(baseline), /led ok/);
 assert.match(pillFor(baseline), />Healthy<\\/span>/);
 for (const [type,pct] of [['memory',94],['disk',90]]) {
@@ -416,10 +419,16 @@ for (const [type,pct] of [['memory',94],['disk',90]]) {
   assert.match(result, />Attention<\\/span>/);
   assert.doesNotMatch(result, />Healthy<\\/span>/);
 }
-for (const invalid of [null,Infinity,101,'95']) {
-  assert.match(pillFor({...baseline,system:{available:true,memory:{used_pct:invalid}}}), /led ok/);
+for (const invalid of [null,Infinity,101,'95',-1]) {
+  const incomplete = pillFor({...baseline,system:{available:true,memory:{used_pct:invalid},disk:{used_pct:25}}});
+  assert.match(incomplete, /led warn/);
+  assert.match(incomplete, />Incomplete<\\/span>/);
 }
-assert.match(pillFor({...baseline,system:{available:false,memory:{used_pct:98}}}), /led ok/);
+for (const unknown of [undefined, {}, {available:false}, {available:true,memory:{used_pct:20}}]) {
+  const incomplete = pillFor({...baseline,system:unknown});
+  assert.match(incomplete, /led warn/);
+  assert.match(incomplete, />Incomplete<\\/span>/);
+}
 """)
 
 

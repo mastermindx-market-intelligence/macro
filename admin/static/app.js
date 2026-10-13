@@ -862,11 +862,12 @@ function renderHeader() {
   const m = SUMMARY.meta || {};
   const hh = SUMMARY.health || {};
   const sv = SUMMARY.services || {};
-  const { healthKnown, serviceKnown, notices } = adminOverviewModel(SUMMARY);
+  const { healthKnown, serviceKnown, resourceKnown, notices } = adminOverviewModel(SUMMARY);
   // One triage model owns both the global summary and the overview's red notices.
   // Otherwise memory/disk pressure could render a red warning below a green "Healthy" pill.
   const criticalNotice = notices.some(notice => notice.tone === "bad");
-  const allOk = healthKnown && hh.healthy && serviceKnown && sv.healthy && !criticalNotice;
+  // Missing or invalid resource readings cannot certify the entire system healthy.
+  const allOk = healthKnown && hh.healthy && serviceKnown && sv.healthy && resourceKnown && !criticalNotice;
   const hasIssue = (healthKnown && !hh.healthy) || (serviceKnown && !sv.healthy) || criticalNotice;
   const hhDown = hh.down_count != null ? hh.down_count : ((hh.sources && hh.sources.down) || 0);
   const led = allOk ? "ok" : ((hh.broad_outage || hhDown > 0 || (sv.available && !sv.healthy) || criticalNotice) ? "bad" : "warn");
@@ -1236,6 +1237,11 @@ function adminOverviewModel(s) {
   const hh = s.health || {}, sv = s.services || {}, sys = s.system || {}, cost = s.cost || {};
   const healthKnown = typeof hh.healthy === "boolean" && Number.isFinite(hh.age_hours) && hh.age_hours >= 0;
   const serviceKnown = sv.available === true && typeof sv.healthy === "boolean";
+  const knownResourcePct = key => {
+    const pct = (sys[key] || {}).used_pct;
+    return Number.isFinite(pct) && pct >= 0 && pct <= 100;
+  };
+  const resourceKnown = sys.available === true && knownResourcePct("memory") && knownResourcePct("disk");
   const notices = [];
   if (!healthKnown) notices.push({ page: "health", title: "Pipeline status unavailable", detail: "Open data health to inspect the latest report.", tone: "warn" });
   else if (!hh.healthy) notices.push({ page: "health", title: "Data pipeline needs attention", detail: "Review the latest pipeline report before rebuilding.", tone: "warn" });
@@ -1251,7 +1257,7 @@ function adminOverviewModel(s) {
       });
     }
   }
-  return { hh, sv, sys, cost, healthKnown, serviceKnown, notices };
+  return { hh, sv, sys, cost, healthKnown, serviceKnown, resourceKnown, notices };
 }
 function adminOverviewMetric(page, label, value, detail, tone = "") {
   return `<button type="button" class="card admin-metric" data-admin-go="${page}"><span class="eyebrow">${esc(label)}</span><strong class="admin-metric-value ${tone ? "admin-tone-" + tone : ""}">${esc(value)}</strong><span class="sub">${esc(detail)}</span><span class="admin-metric-link">Open ${esc(TAB_LABELS[page])} →</span></button>`;
