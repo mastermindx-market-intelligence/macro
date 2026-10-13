@@ -402,6 +402,19 @@ def drawdown_brake(alloc: pd.Series, ret: pd.Series, cfg: dict) -> pd.Series:
     return pd.Series(out, index=alloc.index)
 
 
+def _as_price(s: pd.Series) -> pd.Series:
+    """Float observations. Booleans and non-finite values are missing.
+
+    ``True`` must not become a price of 1 via ``astype(float)`` or ``to_numeric``.
+    """
+    if pd.api.types.is_bool_dtype(s):
+        return pd.Series(np.nan, index=s.index, dtype="float64")
+    if s.dtype == object:
+        s = s.mask(s.map(lambda v: isinstance(v, (bool, np.bool_))))
+    num = pd.to_numeric(s, errors="coerce")
+    return num.where(np.isfinite(num))
+
+
 def _completed_three_day_closes(close: pd.Series) -> pd.Series:
     """Preserve legacy 3D bins, exposing each only on its final daily close.
 
@@ -409,7 +422,8 @@ def _completed_three_day_closes(close: pd.Series) -> pd.Series:
     after that day's close, not at its midnight label). Moving only the label
     by two days preserves bin membership; switching to right-closed bins would
     change the signal definition. Missing/invalid bins remain unknown and the
-    unfinished terminal bin is omitted. Publication-time qualification remains
+    unfinished terminal bin is omitted. Booleans and non-finite values are
+    invalid prices, not zeroes or ones. Publication-time qualification remains
     the input owner's responsibility.
     """
     if close.empty:
@@ -418,7 +432,8 @@ def _completed_three_day_closes(close: pd.Series) -> pd.Series:
             or not close.index.is_monotonic_increasing or close.index.has_duplicates
             or not close.index.equals(close.index.normalize())):
         raise ValueError("Completed 3D closes require unique increasing daily dates")
-    usable = close.where(np.isfinite(close) & (close > 0))
+    usable = _as_price(close)
+    usable = usable.where(usable > 0)
     bins = usable.resample("3D", closed="left", label="left")
     completed = bins.last().where(bins.count() == 3)
     completed.index = completed.index + pd.Timedelta(days=2)
@@ -435,10 +450,10 @@ def bottom_pressure(price: pd.DataFrame) -> pd.Series:
     source publication and revision availability are separate input contracts.
     Returns a Series on the daily index in [0, 1].
     """
-    c = price["close"].astype(float)
-    h = price["high"].astype(float) if "high" in price else c
-    l = price["low"].astype(float) if "low" in price else c
-    o = price["open"].astype(float) if "open" in price else c
+    c = _as_price(price["close"])
+    h = _as_price(price["high"]) if "high" in price else c
+    l = _as_price(price["low"]) if "low" in price else c
+    o = _as_price(price["open"]) if "open" in price else c
     idx = c.index
 
     def _srsi_k(s: pd.Series, n: int = 14, sm: int = 3) -> pd.Series:
