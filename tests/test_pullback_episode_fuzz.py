@@ -10,11 +10,11 @@ loader the way ``tests/test_risk_radar_pullback_depth_template.py`` does.
 Series are synthetic. ``random.Random(k)`` only — no Hypothesis. Prices are
 not quotes. The session clock is the NYSE rule calendar the US snapshot uses.
 
-I1's language clause fails on static copy for every series, including the
-one-close minimum. That clause is pinned unweakened by
-``test_i1_forecast_copy_forbids_probability_language`` (``xfail(strict=True)``).
-The value clause (em dash only, no digit-percent token) is still asserted
-for every seed.
+I1: the forecast block prints no figure (em dashes only, no digit-percent
+token), and it may name probabilities or odds only in a sentence that says
+they are not a forecast. The "Why no estimate?" disclaimer does exactly that
+for the Risk Radar's existing pullback probabilities, so the rule is checked
+per sentence, never as a bare word ban.
 """
 from __future__ import annotations
 
@@ -103,17 +103,14 @@ _SCENARIOS = (
 _REPEATS = 3
 N = len(_SCENARIOS) * _REPEATS
 
-_I1_REASON = (
-    "FINDING I1: the .rrp-forecast block's static Chinese disclaimer contains "
-    "概率 on every render, including a one-close series. "
-    "Minimal series: [('2026-06-12', 100.0)]. "
-    "Observed: forecast text includes 概率 inside "
-    "'风险水平与现有回撤概率并非对剩余跌幅的预测'; the two value cells are "
-    "'—'; there is no digit-% token; the English sentence says 'probabilities' "
-    "(that word does not contain the token 'probability') and does not say 'odds'. "
-    "Expected: inside .rrp-forecast, only '—' values and none of "
-    "'probability', 'odds', or '概率'."
-)
+# Probability language, and the two ways a sentence may disclaim it.
+_PROB = re.compile(r"probabilit|odds|概率", re.IGNORECASE)
+_SENTENCE = re.compile(r"(?<=[.。])\s*")
+
+
+def _disclaims(sentence):
+    return bool(re.search(r"\bnot a forecast\b", sentence, re.IGNORECASE)) or (
+        "并非" in sentence and "预测" in sentence)
 
 
 def _fail(k, kind, rows, detail):
@@ -296,12 +293,21 @@ def assert_i1_values(soup, k, kind, rows):
 
 
 def assert_i1(soup, k, kind, rows):
-    """Full I1, including the language tokens. Not weakened."""
+    """Full I1: the value clause, then every sentence that names a probability
+    or odds must disclaim it as a forecast and carry no digit. Returns the
+    number of disclaiming sentences seen."""
     assert_i1_values(soup, k, kind, rows)
-    blob = _forecast(soup).get_text(" ", strip=True)
-    for token in ("probability", "odds", "概率"):
-        if token in blob:
-            _fail(k, kind, rows, f"I1: {token!r} inside .rrp-forecast; text={blob!r}")
+    seen = 0
+    for node in _forecast(soup).select(".l-en, .l-zh"):
+        for sentence in _SENTENCE.split(node.get_text()):
+            if not _PROB.search(sentence):
+                continue
+            if re.search(r"\d", sentence):
+                _fail(k, kind, rows, f"I1: a number next to probability language: {sentence!r}")
+            if not _disclaims(sentence):
+                _fail(k, kind, rows, f"I1: probability language not disclaimed: {sentence!r}")
+            seen += 1
+    return seen
 
 
 def _split_pct(text):
@@ -613,12 +619,29 @@ def _walk_checks(kind, obs, view, rows, k):
         _fail(k, kind, rows, f"generator: young window landed on {phase} withheld={withheld}")
 
 
-@pytest.mark.xfail(strict=True, reason=_I1_REASON)
-def test_i1_forecast_copy_forbids_probability_language():
-    """Hand-shrunk series: one close still renders the forecast disclaimer."""
+def test_i1_probability_language_appears_only_as_a_disclaimer():
+    """One close still renders the forecast block. Its only probability
+    language is the English and Chinese disclaimer sentence."""
     rows = [("2026-06-12", 100.0)]
     _obs, _window, _view, _qualified, html = _feed(rows)
-    assert_i1(BeautifulSoup(html, "html.parser"), k=0, kind="minimal", rows=rows)
+    assert assert_i1(BeautifulSoup(html, "html.parser"), k=0, kind="minimal", rows=rows) == 2
+
+
+@pytest.mark.parametrize("en, zh", [
+    ("Probability of a further decline: —", "进一步下跌概率：—"),
+    ("Existing pullback probabilities (35) are not a forecast.", "现有回撤概率（35）并非预测。"),
+    ("Odds of a new low are elevated.", "创新低的可能性较高。"),
+])
+def test_i1_rejects_probability_language_that_is_not_a_disclaimer(en, zh):
+    """The sentence rule bites: a bare probability label, a disclaimer that
+    carries a number, and an odds claim each fail I1."""
+    html = (
+        '<div class="rrp-forecast" data-forecast-status="unavailable">'
+        f'<p><span class="l-en">{en}</span><span class="l-zh">{zh}</span></p>'
+        f"<strong>{_EM}</strong></div>"
+    )
+    with pytest.raises(AssertionError, match="I1"):
+        assert_i1(BeautifulSoup(html, "html.parser"), k=0, kind="planted", rows=[("2026-06-12", 100.0)])
 
 
 def test_seeded_episode_fuzz_across_owner_presenter_and_fragment():
@@ -639,7 +662,7 @@ def test_seeded_episode_fuzz_across_owner_presenter_and_fragment():
         obs, window, view, qualified, html = _feed(rows)
         soup = BeautifulSoup(html, "html.parser")
         _walk_checks(kind, obs, view, rows, k)
-        assert_i1_values(soup, k, kind, rows)
+        assert_i1(soup, k, kind, rows)
         assert_i2(soup, obs, view, k, kind, rows)
         assert_i3(soup, html, view, k, kind, rows)
         assert_i4(soup, obs, window, view, k, kind, rows)
