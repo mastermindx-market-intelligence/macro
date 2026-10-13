@@ -183,7 +183,37 @@ _SEMICONDUCTOR = MountFacts(
     note_zh="会员研究内容。此处内容不构成排序、准入、仓位或时机判断。",
 )
 
-_ENTRIES: tuple[MountFacts, ...] = (_SEMICONDUCTOR,)
+_NUCLEAR = MountFacts(
+    anchor_theme_id="nuclear_power",
+    slice_keys=("reactor_technology", "nuclear_components", "fuel_cycle"),
+    # The five admitted views, pinned verbatim from the composer's VIEWS.
+    view_keys=(
+        "composition",
+        "manufacturing",
+        "commercial",
+        "capacity",
+        "economics",
+    ),
+    schema_id="nuclear_theme_research.v1",
+    evidence_schema_id="nuclear_theme_research.evidence.v1",
+    definition_version="2026-09-25.1",
+    slice_labels=MappingProxyType({
+        "reactor_technology": ("Reactor technology", "反应堆技术"),
+        "nuclear_components": ("Nuclear components", "核电部件"),
+        "fuel_cycle": ("Fuel cycle", "核燃料循环"),
+    }),
+    title_en="Nuclear power industry research",
+    title_zh="核电产业研究",
+    # The shell's reviewed disclaimer, verbatim. A second wording of the same
+    # promise would be a second review.
+    note_en=(
+        "Paid research context for members. Nothing here ranks, gates, sizes "
+        "or times anything."
+    ),
+    note_zh="会员研究内容。此处内容不构成排序、准入、仓位或时机判断。",
+)
+
+_ENTRIES: tuple[MountFacts, ...] = (_SEMICONDUCTOR, _NUCLEAR)
 
 
 def _assert_unique_anchors(entries: tuple[MountFacts, ...]) -> None:

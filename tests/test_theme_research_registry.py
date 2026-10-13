@@ -5,8 +5,8 @@ and evidence selector ... Unknown/mismatched schema/anchor/slice fails."
 
 Pinned here:
 
-* the registry is a read-only mapping with EXACTLY one entry today
-  (``ai_semiconductors``); adding a vertical is one additive entry;
+* the registry is a read-only mapping with EXACTLY the admitted anchors
+  (``ai_semiconductors``, ``nuclear_power``); adding a vertical is one additive entry;
 * the semiconductor entry binds the composer's own exact constants and
   callables — no restatement can drift;
 * lookup is exact-string: no case/whitespace normalisation, no prefix, no
@@ -92,17 +92,17 @@ def _valid_kwargs(**overrides):
 
 
 # ---------------------------------------------------------------------------
-# 1. The registry is closed: read-only, exactly one entry today
+# 1. The registry is closed: read-only, exactly the admitted anchors
 # ---------------------------------------------------------------------------
 
 def test_registry_is_a_read_only_mapping_with_exactly_one_entry():
     assert isinstance(REGISTRY, MappingProxyType)
-    assert list(REGISTRY) == ["ai_semiconductors"]
+    assert list(REGISTRY) == ["ai_semiconductors", "nuclear_power"]
     with pytest.raises(TypeError):
         REGISTRY["robotics_automation"] = REGISTRY["ai_semiconductors"]  # type: ignore[index]
     with pytest.raises(TypeError):
         del REGISTRY["ai_semiconductors"]  # type: ignore[attr-defined]
-    assert list(REGISTRY) == ["ai_semiconductors"]
+    assert list(REGISTRY) == ["ai_semiconductors", "nuclear_power"]
 
 
 def _vertical_module(anchor, bound, field):
@@ -315,6 +315,79 @@ def test_the_vertical_import_probe_actually_fires():
     ) == "['engine.market_ontology.semiconductor_theme_research']"
 
 
+def _fresh_registry(code: str) -> subprocess.CompletedProcess[str]:
+    import subprocess
+    import sys
+
+    return subprocess.run(
+        [sys.executable, "-B", "-c", code],
+        capture_output=True, text=True, cwd=str(ROOT), timeout=120,
+    )
+
+
+def test_nuclear_power_stays_unloaded_until_its_lazy_target_or_loader():
+    """Importing the shared registry loads no nuclear module.
+
+    ``nuclear_theme_research`` enters ``sys.modules`` only when this
+    registration's ``build_query.lazy_target`` runs, and
+    ``nuclear_owner_bundle`` only when ``load_bundle`` runs.
+    ``semiconductor_theme_research`` stays unloaded for both.
+    """
+    lazy = _fresh_registry(
+        "import sys\n"
+        "import engine.market_ontology.theme_research_registry as registry\n"
+        "nuc = 'engine.market_ontology.nuclear_theme_research'\n"
+        "own = 'engine.market_ontology.nuclear_owner_bundle'\n"
+        "semi = 'engine.market_ontology.semiconductor_theme_research'\n"
+        "loaded_at_import = [m for m in (nuc, own, semi) if m in sys.modules]\n"
+        "assert not loaded_at_import, 'a vertical loaded at registry import: ' + repr(loaded_at_import)\n"
+        "entry = registry.registration_for('nuclear_power')\n"
+        "assert entry is not None, 'nuclear_power is unregistered'\n"
+        "assert registry.registration_for('uranium_miners') is None\n"
+        "entry.build_query.lazy_target()\n"
+        "entry.compose.lazy_target()\n"
+        "entry.select_evidence.lazy_target()\n"
+        "assert nuc in sys.modules, 'lazy_target did not load nuclear_theme_research'\n"
+        "assert own not in sys.modules, 'lazy_target loaded nuclear_owner_bundle'\n"
+        "assert semi not in sys.modules, 'semiconductor_theme_research loaded by the nuclear lazy target'\n"
+        "import engine.market_ontology.nuclear_theme_research as nuclear\n"
+        "assert entry.build_query.lazy_target() is nuclear.ResearchQuery\n"
+        "assert entry.compose.lazy_target() is nuclear.compose_nuclear_research\n"
+        "assert entry.select_evidence.lazy_target() is nuclear.select_authorized_evidence\n"
+        "assert entry.anchor_theme_id == nuclear.ANCHOR_THEME_ID == 'nuclear_power'\n"
+        "assert entry.slice_keys == nuclear.SLICES\n"
+        "assert entry.view_keys == nuclear.VIEWS\n"
+        "assert entry.schema_id == nuclear.SCHEMA_ID\n"
+        "assert entry.evidence_schema_id == nuclear.EVIDENCE_SCHEMA_ID\n"
+        "assert entry.definition_version == nuclear.DEFINITION_VERSION\n"
+        "assert semi not in sys.modules, 'semiconductor_theme_research loaded by the nuclear lazy target'\n"
+        "print('LAZY_TARGET_OK')\n"
+    )
+    assert lazy.returncode == 0, lazy.stderr
+    assert "LAZY_TARGET_OK" in lazy.stdout
+
+    loaded = _fresh_registry(
+        "import sys\n"
+        "import engine.market_ontology.theme_research_registry as registry\n"
+        "own = 'engine.market_ontology.nuclear_owner_bundle'\n"
+        "nuc = 'engine.market_ontology.nuclear_theme_research'\n"
+        "semi = 'engine.market_ontology.semiconductor_theme_research'\n"
+        "assert nuc not in sys.modules and own not in sys.modules and semi not in sys.modules\n"
+        "entry = registry.registration_for('nuclear_power')\n"
+        "assert entry is not None, 'nuclear_power is unregistered'\n"
+        "try:\n"
+        "    entry.load_bundle(None)\n"
+        "except Exception:\n"
+        "    pass\n"
+        "assert own in sys.modules, 'load_bundle did not load nuclear_owner_bundle'\n"
+        "assert nuc in sys.modules, 'load_bundle did not load nuclear_theme_research'\n"
+        "assert semi not in sys.modules, 'semiconductor_theme_research loaded by the nuclear loader'\n"
+        "print('LOAD_BUNDLE_OK')\n"
+    )
+    assert loaded.returncode == 0, loaded.stderr
+    assert "LOAD_BUNDLE_OK" in loaded.stdout
+
+
 @pytest.mark.parametrize("bad", [None, "load", 7, object()])
 def test_non_callable_loader_is_refused(bad):
     with pytest.raises(TypeError):
@@ -373,7 +446,7 @@ def test_registration_is_frozen():
 def test_synthetic_registration_constructs_without_touching_the_registry():
     entry = VerticalRegistration(**_valid_kwargs())
     assert entry.anchor_theme_id == "synthetic_vertical"
-    assert list(REGISTRY) == ["ai_semiconductors"]
+    assert list(REGISTRY) == ["ai_semiconductors", "nuclear_power"]
     assert registration_for("synthetic_vertical") is None
 
 

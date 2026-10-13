@@ -3505,6 +3505,8 @@ jobs:
       # transport suites drag in — the same glob closure `defense-rail-laws`
       # (gate: code, also imports app.main) declares, minus that job's own
       # suites and fixtures. Verified against the closure audit.
+      - "engine/market_ontology/nuclear_owner_bundle.py"
+      - "engine/market_ontology/nuclear_theme_research.py"
       - "engine/market_ontology/semiconductor_theme_research.py"
       # Shared hook 1 (Sol #7780 issuecomment-5813801605): the closed vertical
       # registration the transport dispatches through, and its suite.
@@ -3917,6 +3919,8 @@ jobs:
       - "research/prophet_v4/r6_program/wave3/q06_sec_comparable_revenue_source_contract.v0_2.json"
       # Semiconductor B T09 (#7870) closure widening 2026-09-24: app.main now mounts
       # app.theme_research, whose composer joins the shared app/* import closure.
+      - "engine/market_ontology/nuclear_owner_bundle.py"
+      - "engine/market_ontology/nuclear_theme_research.py"
       - "engine/market_ontology/semiconductor_theme_research.py"
       - "engine/market_ontology/theme_research_registry.py"  # app.main -> app.theme_research -> closed vertical registration (shared hook 1, #7870)
       # Shared hook 2 (#7780): the leaf module that owns what a theme-research
@@ -6885,6 +6889,8 @@ jobs:
       - "engine/company_intelligence/guidance_history.py"
       - "engine/market_ontology/__init__.py"
       - "engine/market_ontology/exposure_map.py"
+      - "engine/market_ontology/nuclear_owner_bundle.py"
+      - "engine/market_ontology/nuclear_theme_research.py"
       - "engine/market_ontology/semiconductor_owner_bundle.py"
       - "engine/market_ontology/semiconductor_theme_research.py"
       - "engine/market_ontology/semiconductor_witness_scope.py"
@@ -14526,6 +14532,8 @@ jobs:
       - "research/prophet_v4/r6_program/wave3/q06_sec_comparable_revenue_source_contract.v0_2.json"
       # Semiconductor B T09 (#7870) closure widening 2026-09-24: app.main now mounts
       # app.theme_research, whose composer joins the shared app/* import closure.
+      - "engine/market_ontology/nuclear_owner_bundle.py"
+      - "engine/market_ontology/nuclear_theme_research.py"
       - "engine/market_ontology/semiconductor_theme_research.py"
       - "engine/market_ontology/theme_research_registry.py"  # app.main -> app.theme_research -> closed vertical registration (shared hook 1, #7870)
       # Shared hook 2 (#7780): the leaf module that owns what a theme-research
@@ -15235,6 +15243,8 @@ jobs:
       - "research/prophet_v4/r6_program/wave3/q06_sec_comparable_revenue_source_contract.v0_2.json"
       # Semiconductor B T09 (#7870) closure widening 2026-09-24: app.main now mounts
       # app.theme_research, whose composer joins the shared app/* import closure.
+      - "engine/market_ontology/nuclear_owner_bundle.py"
+      - "engine/market_ontology/nuclear_theme_research.py"
       - "engine/market_ontology/semiconductor_theme_research.py"
       - "engine/market_ontology/theme_research_registry.py"  # app.main -> app.theme_research -> closed vertical registration (shared hook 1, #7870)
       # Shared hook 2 (#7780): the leaf module that owns what a theme-research
@@ -17902,6 +17912,8 @@ jobs:
       - "research/prophet_v4/r6_program/wave3/q06_sec_comparable_revenue_source_contract.v0_2.json"
       # Semiconductor B T09 (#7870) closure widening 2026-09-24: app.main now mounts
       # app.theme_research, whose composer joins the shared app/* import closure.
+      - "engine/market_ontology/nuclear_owner_bundle.py"
+      - "engine/market_ontology/nuclear_theme_research.py"
       - "engine/market_ontology/semiconductor_theme_research.py"
       - "engine/market_ontology/theme_research_registry.py"  # app.main -> app.theme_research -> closed vertical registration (shared hook 1, #7870)
       # Shared hook 2 (#7780): the leaf module that owns what a theme-research
@@ -18344,6 +18356,8 @@ jobs:
       - "research/prophet_v4/r6_program/wave3/q06_sec_comparable_revenue_source_contract.v0_2.json"
       # Semiconductor B T09 (#7870) closure widening 2026-09-24: app.main now mounts
       # app.theme_research, whose composer joins the shared app/* import closure.
+      - "engine/market_ontology/nuclear_owner_bundle.py"
+      - "engine/market_ontology/nuclear_theme_research.py"
       - "engine/market_ontology/semiconductor_theme_research.py"
       - "engine/market_ontology/theme_research_registry.py"  # app.main -> app.theme_research -> closed vertical registration (shared hook 1, #7870)
       # Shared hook 2 (#7780): the leaf module that owns what a theme-research
@@ -22465,6 +22479,8 @@ jobs:
       - "research/prophet_v4/r6_program/wave3/q06_sec_comparable_revenue_source_contract.v0_2.json"
       # Semiconductor B T09 (#7870) closure widening 2026-09-24: app.main now mounts
       # app.theme_research, whose composer joins the shared app/* import closure.
+      - "engine/market_ontology/nuclear_owner_bundle.py"
+      - "engine/market_ontology/nuclear_theme_research.py"
       - "engine/market_ontology/semiconductor_theme_research.py"
       - "engine/market_ontology/theme_research_registry.py"  # app.main -> app.theme_research -> closed vertical registration (shared hook 1, #7870)
       # Shared hook 2 (#7780): the leaf module that owns what a theme-research
@@ -24081,6 +24097,8 @@ jobs:
       - "engine/company_intelligence/guidance_history.py"
       - "engine/market_ontology/__init__.py"
       - "engine/market_ontology/exposure_map.py"
+      - "engine/market_ontology/nuclear_owner_bundle.py"
+      - "engine/market_ontology/nuclear_theme_research.py"
       - "engine/market_ontology/semiconductor_owner_bundle.py"
       - "engine/market_ontology/semiconductor_theme_research.py"
       - "engine/market_ontology/semiconductor_witness_scope.py"

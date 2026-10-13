@@ -34,6 +34,8 @@ EVIDENCE_SCHEMA_ID = "nuclear_theme_research.evidence.v1"
 DEFINITION_VERSION = "2026-09-25.1"
 SLICES = ("reactor_technology", "nuclear_components", "fuel_cycle")
 VIEWS = ("composition", "manufacturing", "commercial", "capacity", "economics")
+# The shared registry reconciles every composer on ``VIEW_KEYS``.
+VIEW_KEYS = VIEWS
 WITNESS_COHORT = {
     "reactor_technology": ("co:us:SMR", "co:us:OKLO"),
     "nuclear_components": ("co:us:BWXT",),

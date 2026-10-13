@@ -172,7 +172,7 @@ class VerticalRegistration:
 
 
 # ---------------------------------------------------------------------------
-# The closed registry — one entry today
+# The closed registry — semiconductor, then nuclear
 # ---------------------------------------------------------------------------
 
 def _semiconductor_composer() -> Any:
@@ -240,6 +240,55 @@ def _load_semiconductor_owner_bundle(query: Any, *, rights_snapshot: Any = None)
     return load_semiconductor_owner_bundle(query, rights_snapshot=rights_snapshot)
 
 
+def _nuclear_composer() -> Any:
+    """The nuclear composer module, imported on FIRST USE only.
+
+    Same law as :func:`_semiconductor_composer`: importing the shared
+    registry loads no vertical. ``sys.modules`` caches the module, so the
+    cost is paid once per process and only by a request that resolved this
+    registration.
+    """
+    from engine.market_ontology import (  # noqa: PLC0415 — lazy by design
+        nuclear_theme_research,
+    )
+    return nuclear_theme_research
+
+
+def _compose_nuclear(*args: Any, **kwargs: Any) -> Mapping[str, Any]:
+    """Forward to this vertical's composer, resolved lazily."""
+    return _nuclear_composer().compose_nuclear_research(*args, **kwargs)
+
+
+def _select_nuclear_evidence(*args: Any, **kwargs: Any) -> Mapping[str, Any]:
+    """Forward to this vertical's evidence selector, resolved lazily."""
+    return _nuclear_composer().select_authorized_evidence(*args, **kwargs)
+
+
+def _build_nuclear_query(**fields: Any) -> Any:
+    """Construct this vertical's own query type from the shell's parsed body."""
+    return _nuclear_composer().ResearchQuery(**fields)
+
+
+_compose_nuclear.lazy_target = (
+    lambda: _nuclear_composer().compose_nuclear_research
+)
+_select_nuclear_evidence.lazy_target = (
+    lambda: _nuclear_composer().select_authorized_evidence
+)
+_build_nuclear_query.lazy_target = (
+    lambda: _nuclear_composer().ResearchQuery
+)
+
+
+def _load_nuclear_owner_bundle(query: Any, *, rights_snapshot: Any = None) -> Any:
+    """The nuclear entry's loader, bound LAZILY for the same module law as
+    the semiconductor one. Resolved on the first served request, never at import."""
+    from engine.market_ontology.nuclear_owner_bundle import (  # noqa: PLC0415 — lazy by design
+        load_nuclear_owner_bundle,
+    )
+    return load_nuclear_owner_bundle(query, rights_snapshot=rights_snapshot)
+
+
 # Shared hook 2: every DECLARATIVE fact — the anchor, the slice set, the view
 # set, the schema ids, the definition version and the bilingual copy — is the
 # mount's own definition, read from the leaf ``theme_research_mounts`` module
@@ -273,7 +322,26 @@ _SEMICONDUCTOR = VerticalRegistration(
     note_zh=_SEMICONDUCTOR_MOUNT.note_zh,
 )
 
-_ENTRIES: tuple[VerticalRegistration, ...] = (_SEMICONDUCTOR,)
+_NUCLEAR_MOUNT = _MOUNTS["nuclear_power"]
+
+_NUCLEAR = VerticalRegistration(
+    anchor_theme_id=_NUCLEAR_MOUNT.anchor_theme_id,
+    slice_keys=_NUCLEAR_MOUNT.slice_keys,
+    view_keys=_NUCLEAR_MOUNT.view_keys,
+    schema_id=_NUCLEAR_MOUNT.schema_id,
+    evidence_schema_id=_NUCLEAR_MOUNT.evidence_schema_id,
+    definition_version=_NUCLEAR_MOUNT.definition_version,
+    compose=_compose_nuclear,
+    select_evidence=_select_nuclear_evidence,
+    load_bundle=_load_nuclear_owner_bundle,
+    build_query=_build_nuclear_query,
+    title_en=_NUCLEAR_MOUNT.title_en,
+    title_zh=_NUCLEAR_MOUNT.title_zh,
+    note_en=_NUCLEAR_MOUNT.note_en,
+    note_zh=_NUCLEAR_MOUNT.note_zh,
+)
+
+_ENTRIES: tuple[VerticalRegistration, ...] = (_SEMICONDUCTOR, _NUCLEAR)
 
 
 def _assert_unique_anchors(entries: tuple[VerticalRegistration, ...]) -> None:
