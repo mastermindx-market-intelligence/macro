@@ -334,9 +334,10 @@ def test_i5_checker_rejects_a_focusable_hidden_control():
         check_i5(parse(html), "current")
 
 
-# BASE of this lane. Byte-identity loads that blob with git show; it does not
-# rewrite the worktree.
-_ILLUS_BASE = "48c5a9d9794eab46efe3ffa43ea8ab8c9bc99442"
+# The main commit this PR last merged, before lib/illus.py gained minus= or
+# id_prefix=, so the other callers are proved byte-identical to main.
+# Byte-identity loads that blob with git show; it does not rewrite the worktree.
+_ILLUS_BASE = "a8e054ce5d7d44e48ff552841dc93d3c0ec87149"
 _URL_OR_HREF = re.compile(r'url\(#([^)]+)\)|href="#([^"]+)"')
 
 
