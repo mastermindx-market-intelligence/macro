@@ -189,6 +189,23 @@ def test_read_parquet_reads_via_native_filesystem_with_arrow_pools_idle(monkeypa
     assert [row["symbol"] for row in rows] == ["NVDA", "MMC"]
 
 
+def test_read_parquet_accepts_cli_reachable_file_uri_owner_artifact(tmp_path):
+    """A --current file://... value survives inside the Path argparse builds
+    (type=Path keeps the scheme, collapsing file:///a to file:/a), and base
+    pandas read such artifacts. The read must keep succeeding instead of
+    failing as owner_artifact_unreadable, which is what pyarrow's
+    LocalFileSystem answers to a URI ("Expected a local filesystem path, got a
+    URI")."""
+    paths = _fixtures(tmp_path / "data")
+    uri = paths["current"].as_uri()
+
+    args = cli.build_parser().parse_args(["--current", uri])
+    assert args.current == Path(uri)
+
+    rows = cli._read_parquet(Path(uri), include_index=True)
+    assert [row["symbol"] for row in rows] == ["NVDA", "MMC"]
+
+
 def test_cli_defaults_to_check_only_and_emits_metadata_not_roster(monkeypatch, tmp_path, capsys):
     paths = _fixtures(tmp_path / "data")
     out = tmp_path / "qbus" / "news_universe.json"

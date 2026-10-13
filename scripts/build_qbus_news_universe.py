@@ -98,6 +98,19 @@ def _read_parquet(path: Path, *, include_index: bool = False) -> list[dict]:
         # 5 -> 10, and 5 -> 12 instead of 5 -> 13 on pandas 2.2, where
         # read_parquet has no to_pandas_kwargs and the to_pandas conversion still
         # runs on the CPU pool.
+        from urllib.parse import unquote, urlparse
+
+        source: Path | str = path
+        parsed = urlparse(str(path))
+        if parsed.scheme.lower() == "file":
+            # A --current/--pit/... file: URI reaches the read as a URI inside
+            # the Path argparse builds (type=Path keeps the scheme, collapsing
+            # file:///a to file:/a), and base pandas read every such form by
+            # URI parsing (file:/a, file://host/a, file:name, FILE:a), while
+            # LocalFileSystem answers any URI with ArrowInvalid. Normalize to
+            # the decoded URI path so the native read keeps serving them;
+            # non-file schemes and bare colon filenames keep failing as before.
+            source = unquote(parsed.path)
         kwargs: dict[str, object] = {
             "filesystem": pyarrow.fs.LocalFileSystem(),
             "use_threads": False,
@@ -105,7 +118,7 @@ def _read_parquet(path: Path, *, include_index: bool = False) -> list[dict]:
         }
         if _READ_PARQUET_HAS_TO_PANDAS_KWARGS:
             kwargs["to_pandas_kwargs"] = {"use_threads": False}
-        frame = pd.read_parquet(path, **kwargs)
+        frame = pd.read_parquet(source, **kwargs)
     except Exception as exc:
         raise NewsUniverseBuildError("owner_artifact_unreadable") from exc
     try:
