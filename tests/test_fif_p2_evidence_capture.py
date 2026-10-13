@@ -1398,6 +1398,11 @@ def test_interaction_force_spec_parses_to_the_intercepted_payload_shape() -> Non
     # (QuotaExceededError) in its input text and is registered too.
     assert tool.INTERACTION_INPUTS[tool.INTERACTION_SAVED_WRITE_FAILURE]
     assert "QuotaExceededError" in tool.INTERACTION_INPUTS[tool.INTERACTION_SAVED_WRITE_FAILURE]
+    # X2-s r2 (C4): the capture page never enables Save, so the write is driven
+    # through Rename on the restored row; the input text says so.
+    assert "click Rename" in tool.INTERACTION_INPUTS[tool.INTERACTION_SAVED_WRITE_FAILURE]
+    assert "Save this view" not in tool.INTERACTION_INPUTS[tool.INTERACTION_SAVED_WRITE_FAILURE]
+    assert tool.SAVED_RENAME_SELECTOR == "#ff-saved-rename"
     assert (
         tool._INTERACTIONS[tool.INTERACTION_SAVED_WRITE_FAILURE]
         is tool._interact_saved_write_failure

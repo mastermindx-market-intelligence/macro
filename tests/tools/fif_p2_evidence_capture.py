@@ -269,8 +269,8 @@ INTERACTION_INPUTS = {
         "Restore the pinned saved view, make this capture page's browser refuse the "
         "next write to the saved-views key (localStorage.setItem raises "
         "QuotaExceededError for that one key only), type the name 'Apple write check' "
-        "and click Save this view. Shows the write-failure notice; the stored saved "
-        "views are unchanged."
+        "and click Rename on the restored view. Shows the write-failure notice; the "
+        "stored saved views and the row's name are unchanged."
     ),
 }
 
@@ -280,7 +280,12 @@ SAVED_SELECT_SELECTOR = "#ff-saved-select"
 SAVED_BADGE_SELECTOR = "#ff-saved-badge"
 SAVED_NOTICE_SELECTOR = "#ff-saved-notice"
 SAVED_NAME_SELECTOR = "#ff-saved-name"
-SAVED_SAVE_SELECTOR = "#ff-saved-save"
+# X2-s r2 (C4): the write-failure capture drives Rename on the restored row.
+# The fixture-served capture page never reaches Save's 'ready' phase (no
+# queryable financial payload), so Save stays disabled in every capture flow;
+# Rename writes through the same briefcase store and the same write-failure
+# notice path, and is enabled whenever a saved view is active.
+SAVED_RENAME_SELECTOR = "#ff-saved-rename"
 SAVED_PINNED_ROW_ID = "CDEFGHIJKLMNOPQRSTUVWX"
 SAVED_DRIFT_ROW_ID = "EFGHIJKLMNOPQRSTUVWXYZ"
 
@@ -293,6 +298,10 @@ _SAVED_WRITE_FAILURE_SETITEM_PATCH = (
     " capture', 'QuotaExceededError'); } return original.call(this, k, v); }; }"
 )
 _SAVED_STORED_BYTES_SCRIPT = "(key) => localStorage.getItem(key)"
+_SAVED_SELECTED_LABEL_SCRIPT = (
+    "(sel) => { const s = document.querySelector(sel); const o = s && s.selectedOptions"
+    " && s.selectedOptions[0]; return o ? String(o.textContent || '') : null; }"
+)
 
 # X2-s r1 (H1): the device-local briefcase key the seed init script plants.
 BRIEFCASE_STORAGE_KEY = "mastermind.filing_forensics.saved_research.v1"
@@ -1129,19 +1138,22 @@ def _interact_saved_open_unavailable(page: Any) -> tuple[bool, dict[str, Any]]:
 
 def _interact_saved_write_failure(page: Any) -> tuple[bool, dict[str, Any]]:
     _saved_select(page, SAVED_PINNED_ROW_ID)
-    # Refuse the NEXT write to the saved-views key only, then drive the real
-    # save path: fill re-renders on 'input' (which enables Save), the stored
-    # bytes are read right before the click, and the post-click probe plus a
-    # second read prove the refusal left them byte-identical.
+    # Refuse the NEXT write to the saved-views key only, then drive a real
+    # write through the briefcase store: Rename on the restored row (C4 — the
+    # capture page never enables Save). The stored bytes and the row label are
+    # read right before the click; the post-click probe plus a second read
+    # prove the refusal left the bytes byte-identical and the name unchanged.
     page.evaluate(_SAVED_WRITE_FAILURE_SETITEM_PATCH, BRIEFCASE_STORAGE_KEY)
     page.fill(SAVED_NAME_SELECTOR, "Apple write check", timeout=INTERACTION_TIMEOUT_MS)
     before = page.evaluate(_SAVED_STORED_BYTES_SCRIPT, BRIEFCASE_STORAGE_KEY)
-    page.click(SAVED_SAVE_SELECTOR, timeout=INTERACTION_TIMEOUT_MS)
+    label_before = page.evaluate(_SAVED_SELECTED_LABEL_SCRIPT, SAVED_SELECT_SELECTOR)
+    page.click(SAVED_RENAME_SELECTOR, timeout=INTERACTION_TIMEOUT_MS)
     _settle(page)
     mouse = getattr(page, "mouse", None)
     if mouse is not None:
         mouse.move(*POINTER_PARK)
     after = page.evaluate(_SAVED_STORED_BYTES_SCRIPT, BRIEFCASE_STORAGE_KEY)
+    label_after = page.evaluate(_SAVED_SELECTED_LABEL_SCRIPT, SAVED_SELECT_SELECTOR)
     probe = dict(page.evaluate(_SAVED_PROBE_SCRIPT.strip()) or {})
     before_sha = hashlib.sha256(str(before or "").encode("utf-8")).hexdigest()
     after_sha = hashlib.sha256(str(after or "").encode("utf-8")).hexdigest()
@@ -1155,9 +1167,15 @@ def _interact_saved_write_failure(page: Any) -> tuple[bool, dict[str, Any]]:
         and before is not None
         and after == before
         and before_sha == after_sha
+        and label_before is not None
+        and label_after == label_before
+        and "Apple write check" not in str(label_after or "")
     )
     facts: dict[str, Any] = {
         **probe,
+        "write_control": SAVED_RENAME_SELECTOR,
+        "selected_label_before_click": label_before,
+        "selected_label_after": label_after,
         "stored_sha256_before_click": before_sha,
         "stored_sha256_after": after_sha,
         "stored_unchanged": after == before,
