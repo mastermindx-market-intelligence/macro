@@ -96,8 +96,8 @@ retired TUNE split.
 
 ## Label semantics
 
-Four labels, first match wins. `min_episodes` is 153 (REG common-rules
-power formula). That sample-N abstention is SEPARATE from trial N
+Four labels, first match wins. `min_episodes` is 153 (one-sided significance
+level 0.05, power 0.80, hit rate 0.60 vs 0.50; REG common-rules power formula). That sample-N abstention is SEPARATE from trial N
 (`declared_budget_floor` 6). Family N is honest-N after IL §3 collapse and
 after clock abstention (episodes on non-graded clocks or
 `VINTAGE_UNVERIFIABLE` are not counted).

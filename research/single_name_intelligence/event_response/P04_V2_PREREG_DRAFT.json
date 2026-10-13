@@ -259,14 +259,14 @@
   "statistics": {
     "h0": "post-event hit rate = 0.50 per horizon (null of the binomial, never a fill for an unestimable family)",
     "test": "exact one-sided binomial (greater) via math.comb; run only under label TESTED",
-    "alpha": 0.05,
+    "significance_level": 0.05,
     "hit_rate_ci": "wilson_ci (3 dp); under DESCRIPTIVE_ONLY this is a descriptive interval, not a confirmatory test",
     "mean_excess_ci": "mirror-trick block_bootstrap_ci: dates=concat(k,k), vals=concat(x,-x), mask=concat([True]*n,[False]*n), stat='mean', default draws/seed; block = one episode window W_h; cluster variable = cluster key (trade date of s)",
     "forbidden": "block_bootstrap_scalar_ci is not permitted"
   },
   "minimum_evidence": {
     "episodes": 153,
-    "derivation": "one-sided alpha 0.05, power 0.80, hit rate 0.60 vs 0.50",
+    "derivation": "one-sided significance level 0.05, power 0.80, hit rate 0.60 vs 0.50",
     "below_minimum": "DESCRIPTIVE_ONLY — below the 153-episode minimum; not an abstain when date clusters >= 2"
   },
   "abstention_ladder": [

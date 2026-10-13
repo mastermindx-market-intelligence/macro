@@ -795,7 +795,7 @@
     "grading": "direction right/wrong over N matured beliefs",
     "identity": "null / UNRESOLVED",
     "authority": "all six flags false at top level and per cell",
-    "pins": "git ls-tree origin/main blob shas; files never opened"
+    "pins": "REG pin is the register blob of the tree that carries this draft (INT1 integration branch); parquet pins are git ls-tree origin/main blob shas; files never opened"
   },
   "labels": [
     "DRAFT; registered false; outcome none",

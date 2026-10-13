@@ -12,7 +12,9 @@ unknown identity stays UNRESOLVED / null.
 
 **amends:** `research/single_name_intelligence/protocols/S0_PROTOCOL_REGISTER.md`
 
-**amends_blob:** `5cea5c88335133e7684200b694f0d170ca4ae5b2` (origin/main `git rev-parse` blob)
+**amends_blob:** `5cea5c88335133e7684200b694f0d170ca4ae5b2` (register blob of the tree that carries this draft — the INT1 integration branch)
+
+This pin becomes the origin/main register blob when INT1 merges.
 
 **drafted_by:** grok-4.6 lane S0D under seat 508c3757
 
