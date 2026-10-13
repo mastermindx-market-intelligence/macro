@@ -581,10 +581,15 @@ minimax, grok, cursor, glm) → optional bounded workers. No native leaf swarm; 
 
 ## Lane matrix
 
-(2026-10-13T11:35Z snapshot.) Rows superseding older rows below:
+(2026-10-13T12:15Z snapshot.) Rows superseding older rows below:
 
 | lane | state |
 |---|---|
+| PP2-UI-a run 2 | ACCEPTED at `65821c9b` (T·F·R·S·E; npm test 635/635); negative f GREEN carried into PP2-UI-c item 4b (D67) |
+| PP2-UI-c | `fable-pp2uic-r1-20261013` RUNNING on mb since 11:45:57Z (LEASE_OK; watcher `bxgvwph44`) (D67) |
+| PP2-UI-b | packet FROZEN `c799052c…` + header `2a89d0d6…`; ID `fable-pp2uib-r1-20261013` reserved; BASE = PP2-UI-c accepted head (D67) |
+| PP1-D run 1 | packet `07d0d622…` FROZEN; gate-held, ubuntu2 free disk 118.1<150 and falling (D67), ID unused; watcher `bfcmghmnb` |
+| Macro #9097 | OPEN `65bd6e28`, `merge-on-green`; parked by the sweeper circuit breaker (main baseline red, DNR) (D67); watcher `bjywkkbf6` |
 | PP2-UI-a run 2 | r2c `fable-pp2uia-r2c-20261013` RUNNING on mb since 11:22:35Z (LEASE_OK; watcher `bi9gsq0qz`) (D66) |
 | PP1-D run 1 | packet `07d0d622…` FROZEN; gate-held on ubuntu2 disk 139.3<150 (D66), ID unused; watcher `bfcmghmnb` |
 | #986 | PRODUCTION_PROOF at identity level: live = `06a49a61` on all three identities (D66) |
@@ -1376,3 +1381,27 @@ INTENDED_RESUME_SURFACE: this Claude Code session; successor reads this file + #
   - PP2-UI-b: SPEC (amended here).
   - #948: CI on the refreshed head.
   - #983: green but BEHIND.
+
+### D67 (2026-10-13T12:15Z) — r2c ACCEPTED at `65821c9b`; PP2-UI-c RUNNING on mb; PP2-UI-b packet frozen (park, don't unmount); ubuntu2 disk falling, PP1-D still held; #9097 parked by the Macro circuit breaker
+- FACT PP2-UI-a run 2 (`fable-pp2uia-r2c-20261013`) ACCEPTED by artifact. Pushed head `65821c9b1568f99784f2ba95fe7ef6f51476ac0c` = T `cfe4e60a` · F `66daaffd` · R `d088a793` · S `6798cb69` · E `65821c9b`.
+  - S sets the measured tablet rail height; E adds the R3/R4 browser assertions; `npm test` 635/635.
+  - ONE open defect carried forward: run 2's negative control f (closed `.receipts` back to `flex:1 0 100%`, no `flex-wrap`) stayed GREEN, so the one-line stamp-row proof could not fail. It is PP2-UI-c item 4b, which must make both the closed-row and the open-row checks RED under f.
+- FACT PP2-UI-c (`fable-pp2uic-r1-20261013`, exact From/To strike and days-to-expiry scope, root falsifiers 2/7/8) is RUNNING on mb.
+  - In-command gate passed: `mb ELIGIBLE score=0.5704 … lane-ceiling=PASS(2<3)` (`pr/pp2uic_r1_gate.txt`). Launched 11:45:57Z.
+  - Fence: `RUN_RESERVED explicit=1`, `REMOTE_PROJECT_CWD_PREFLIGHT_OK`, `LEASE_OK pool=minimax`, `SUPPORT_VERSION_READY`, `LAUNCH_ATTEMPT attempt=1`. Packet `r1.md` sha256 `f0b5060e7f28…`.
+  - Its launch task `bxgvwph44` is the one watcher (POLL 47, elapsed 1400 s at 12:09Z). Return: `/Users/chriswong/lanes/returns/pp2-ui-c/return.md`. Judged by artifact on exit (custody, T/F/E log, a `parseScopeBounds` caller in `MatrixCompanion`, `lib/optionsScopeBounds.ts` and `lib/optionsCompanion.ts` byte-identical, negative f RED on both 4b checks, gates 6a–e).
+- DECIDED the PP2-UI-b packet is frozen (`leads/PP2UIB/commission.md` sha256 `c799052c41ea…`, header `r1-header.md` `2a89d0d6cf93…`). Run ID reserved: `fable-pp2uib-r1-20261013`, mb, same worktree and branch, BASE = PP2-UI-c's accepted head (placeholder until then). Launch only after PP2-UI-c is ACCEPTED, behind the in-command mb gate.
+  - `MobileSheet` opt-in `keepMounted` (K1 default unchanged; K2 parked = `inert`, `aria-hidden`, `data-parked`, no `aria-modal`, `visibility:hidden`, `pointer-events:none`, no scrim, no scroll lock, no key listeners, detent and scroll kept; K3 parking never refocuses the opener; K4 re-present restores the last inner focus; K5 final close as today).
+  - `PinProps.onShowChart` (flows through `{...pin}`, no `OptionsCompanion.tsx` edit); `options-show-on-chart` pins if needed, then parks; `OptionsRail` renders the `options-chart-return` chip (≥44 px, above the roller strip, z 219) and closes the park on a symbol change, `access !== "allowed"`, `!enabled` or replay.
+  - Browser test per language cites contract falsifiers 4/5/9/10 and Codex's build-identity edge verbatim: held A + queued same-session B survive park → return (same companion instance, same chart canvas, scroll offsets ±1 with a vacuity guard, detent kept, banner names B, summary still A, pin kept); Apply → B clears selection and pin; session C held the same way, Apply binds C.
+  - Two new jsdom files (real `MobileSheet`; real `OptionsRail` with a `next/dynamic` stub); eight negative controls a–h; eight owned files (O.4 deviation recorded: one coupled behaviour).
+- FACT ubuntu2 free disk is FALLING, not recovering: 139.3 (11:25Z) → 128.4 (12:03Z) → 118.1 (12:06Z) against the ≥150 gate. PP1-D stays held on ubuntu2 (watcher `bfcmghmnb`); not rerouted (D34/D35); nothing deleted on ubuntu2.
+- FACT Macro #9097 is OPEN at `65bd6e286ff2` with `merge-on-green`, not merged after 40 min: the Macro sweeper's circuit breaker parks armed PRs while `main`'s own baseline (`test_ci_pack`) is red. Not this seat's to fix (DNR); watcher `bjywkkbf6` stays armed.
+- FINDING `terminal/docs/pr-crops/options-companion-20260923/EVIDENCE.json` is not gated by any test and has already drifted from the current crops. The final #723 recapture refreshes it; no lane edits it before then.
+- Rungs at 12:15Z:
+  - PP2-UI-a run 2: ACCEPTED (lane level; not yet merged).
+  - PP2-UI-c: RUNNING.
+  - PP2-UI-b: FROZEN (behind PP2-UI-c).
+  - PP1-D: FROZEN (gate-held, ubuntu2 disk).
+  - #948: CI (watcher `bt4a20yu0`); #983 green but BEHIND.
+  - #985: watcher `bff4iyhaz`. Macro #9080/#8920: watcher `b64amfv2n`. Macro #9097: parked (circuit breaker).
