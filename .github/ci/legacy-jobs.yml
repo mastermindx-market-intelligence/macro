@@ -11105,27 +11105,83 @@ jobs:
             --trailers-file "$TRAILERS_FILE"
       - name: self-mod-fence test suite
         run: python -m pytest tests/test_self_mod_fence.py tests/test_ci_authority.py -q
-      - name: agent-os record contract (schema fail-closed, join fail-open)
-        # ORDERED LAST IN THIS JOB, deliberately. `run_ci_pack.py:_run_job` returns on
-        # the FIRST nonzero step, so any step placed before `self-mod-fence live check`
-        # can make that fence never run — the F2 fence would go dark for the PR while
-        # the job reports a failure that has nothing to do with self-modification.
-        # A knowledge-plane record check must never be able to blind a security fence,
-        # so it sits behind every fence step in this job.
-        #
-        # Folded in as a STEP, not a new job, also deliberately: the manifest sits at
-        # the narrow-diff ceiling (test_representative_narrow_diffs_skip_at_least_one
-        # _quarter_of_jobs asserts selected <= len(jobs)*4//5), so adding a job can red
-        # an unrelated pack, and a `paths:` scope cannot fix it — infer_job_scopes()
-        # UNIONS declared paths with inferred ones, so a declaration only ever WIDENS.
-        # Keeping the job COUNT fixed keeps that arithmetic still.
+      - name: agent-os record and broad integration checks
+        # Remains after every security-fence step. The scoped knowledge suites
+        # below cannot prevent the live self-modification check from running.
         run: |
-          # Direct invocation FIRST and deliberately: the pytest suite skips itself
-          # when agentos/ is outside a sparse cone, so a store that failed to check
-          # out would otherwise pass as a skip. This line cannot skip.
           python3 scripts/agentos.py validate
-          python -m pytest tests/test_agentos_schema.py tests/test_agentos_status.py tests/test_agentos_ship_capture.py \
-            tests/test_agentos_compile.py tests/test_agentos_acceptance_basis.py tests/test_f01_fx_commodity_source_rights.py tests/test_f02_owner_map_receipts.py \
+          python -m pytest tests/test_agentos_ship_capture.py tests/test_f01_fx_commodity_source_rights.py -q
+
+  agentos-knowledge-contracts:
+    if: ${{ false }}
+    gate: code
+    # These ten whole-file suites exercise the knowledge compiler and its
+    # committed records. Audit: 43 concrete transitive files plus the complete
+    # Agent OS store and runtime-read source documents. The Git/subprocess and
+    # glob edges use temporary fixture repositories or those same declared
+    # sources. Ship-capture and F01 retain their broad closure in self-mod-fence.
+    # No suite or security step is removed; no packing ceiling is raised.
+    scope: exclusive
+    paths:
+      - agentos/**
+      - research/MASTERMIND_AGENT_OS_STATE_SCHEMA.md
+      - config/compiled_kill_registry.yml
+      - config/context_index.yml
+      - config/mastermind_programs.yml
+      - config/pr_linkage_rules.v1.json
+      - config/ruling_graph.yml
+      - config/synapse.yml
+      - engine/context_index/fusion.py
+      - engine/context_index/gitinfo.py
+      - engine/context_index/lexical.py
+      - engine/context_index/packet.py
+      - engine/context_index/structured.py
+      - lib/__init__.py
+      - lib/pr_linkage_validator.py
+      - research/DO_NOT_REBUILD.md
+      - research/linear_portfolio_p0/linear_snapshot_2026-08-25.json
+      - research/market_intelligence_productization/F00C_TERMINAL_WAVE_RECONCILIATION_MANIFEST_2026-09-09.json
+      - research/market_intelligence_productization/MARKET_ONTOLOGY_F00C_GRANULAR_CLOSURE_LEDGER_2026-09-02.csv
+      - research/market_intelligence_productization/MARKET_ONTOLOGY_F00C_TERMINAL_WAVE_RECONCILIATION_2026-09-09.md
+      - research/market_intelligence_productization/MARKET_ONTOLOGY_F02_OWNER_SOURCE_RIGHTS_MAP_2026-09-05.md
+      - research/market_intelligence_productization/MARKET_ONTOLOGY_HALF_A_K_CHAIN_GATE_DOCKET_2026-09-06.md
+      - research/market_intelligence_productization/W9_W9B_REC_NS_2026-09-13.md
+      - research/market_intelligence_productization/receipts/supabase_receipt_0012_thesis_objects_2026-09-06.json
+      - scripts/__init__.py
+      - scripts/agentos.py
+      - scripts/agentos_ship_capture.py
+      - scripts/audit_stranded_work.py
+      - scripts/linear_portfolio_plan.py
+      - templates/_navlinks.html.j2
+      - templates/intelligence_hub.html.j2
+      - tests/__init__.py
+      - tests/agent_eval_continuity_cases.py
+      - tests/linear_portfolio_plan_cases.py
+      - tests/linear_portfolio_plan_live_cases.py
+      - tests/test_agentos_acceptance_basis.py
+      - tests/test_agentos_compile.py
+      - tests/test_agentos_schema.py
+      - tests/test_agentos_status.py
+      - tests/test_b_rec2_wave_boundary_records.py
+      - tests/test_b_rec3_wave_boundary_records.py
+      - tests/test_f00c_terminal_reconciliation.py
+      - tests/test_f02_owner_map_receipts.py
+      - tests/test_mo_b_ledger_reconciliation_2026_09_18.py
+      - tests/test_w9b_rec_ns.py
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install minimal deps
+        run: pip install pytest pyyaml
+      - name: validate actual store and run complete knowledge suites
+        run: |
+          # This direct invocation fails when a sparse store would skip pytest.
+          python3 scripts/agentos.py validate
+          python -m pytest tests/test_agentos_schema.py tests/test_agentos_status.py \
+            tests/test_agentos_compile.py tests/test_agentos_acceptance_basis.py tests/test_f02_owner_map_receipts.py \
             tests/test_b_rec2_wave_boundary_records.py tests/test_b_rec3_wave_boundary_records.py \
             tests/test_f00c_terminal_reconciliation.py tests/test_mo_b_ledger_reconciliation_2026_09_18.py tests/test_w9b_rec_ns.py -q
 
