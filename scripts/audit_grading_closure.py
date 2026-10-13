@@ -315,6 +315,20 @@ INVENTORY: list[dict[str, Any]] = [
         "tune_step": True,
         "storage_note": None,
     },
+    {
+        # Grey Deer pullback prospective lane (O7/W5): issue rows are immutable;
+        # grades append to the forward_log_graded.jsonl sidecar (see the sidecar
+        # lookup in audit_entry). Seeded by the first nightly after the runner lands.
+        "key": "grey_deer_pullback_forward_log",
+        "path": "data/grey_deer_pullback/forward_log.jsonl",
+        "format": "jsonl",
+        "graders": ["engine/grey_deer_pullback_forward_grade.py",
+                    "scripts/grey_deer_pullback_nightly.py"],
+        "grade_field": None,     # grades live in forward_log_graded.jsonl
+        "grade_ts_field": None,
+        "tune_step": False,
+        "storage_note": "absent-by-design: seeded by the first nightly grey_deer_pullback_nightly run",
+    },
     # ── Market state ─────────────────────────────────────────────────────────
     {
         "key": "market_state_forward_log",
@@ -690,6 +704,16 @@ def audit_entry(spec: dict, root: Path) -> dict:
     # qledger_claims: look up grade count from grades.jsonl
     if key == "qledger_claims":
         grades_p = root / "data" / "qledger" / "grades.jsonl"
+        if grades_p.exists():
+            grade_rows = _read_jsonl(grades_p)
+            n_graded = len(grade_rows)
+            ts_vals = [r.get("graded_at") for r in grade_rows if r.get("graded_at")]
+            last_graded_at = max(ts_vals) if ts_vals else None
+
+    # grey_deer_pullback_forward_log: grades append to a sidecar jsonl, one row
+    # per graded (asof, ticker, horizon, config_id) key.
+    if key == "grey_deer_pullback_forward_log":
+        grades_p = root / "data" / "grey_deer_pullback" / "forward_log_graded.jsonl"
         if grades_p.exists():
             grade_rows = _read_jsonl(grades_p)
             n_graded = len(grade_rows)

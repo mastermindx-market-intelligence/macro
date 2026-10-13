@@ -882,6 +882,10 @@ lanes:
           cl_gex:
             - scripts.build_gex_board
             - scripts.build_vol_regime
+            # Grey Deer pullback prospective lane: SPY issue + grade over the restored
+            # Massive store. NIGHTLY ONLY (forward-ledger advancer; not in the render
+            # lanes' cl_gex). Writer/grader refuse off COLLECT_LANE=nightly.
+            - scripts.grey_deer_pullback_nightly
             # MSP W1 (scripts.build_market_structure) MOVED OUT of this band to the serial
             # spine before build_site — OEU M-FIX. It used to sit here, i.e. AFTER build_site
             # had already rendered market_structure.html, so the page always described the
@@ -4669,6 +4673,30 @@ modules:
       Step cost: reads options_surface parquets (small, ~single-digit MB committed);
       opex_risk.snapshot() is a cheap read-only join on committed data — no network,
       no heavy compute. Measured added cost on main: <2s (deterministic composer).
+
+  - module: scripts.grey_deer_pullback_nightly
+    reads:
+      - data/massive_stock_day/*.parquet
+      - data/grey_deer_pullback/forward_log.jsonl
+      - data/grey_deer_pullback/forward_log_graded.jsonl
+    writes:
+      - data/grey_deer_pullback/forward_log.jsonl
+      - data/grey_deer_pullback/forward_log_graded.jsonl
+      - data/grey_deer_pullback/forward_log_refusals.jsonl
+    impure: false
+    needs_secrets: false
+    event_driven: false
+    note: >
+      Grey Deer pullback prospective lane (WS:GREY-DEER-RISK-INTELLIGENCE O7/W5).
+      Issues tonight's SPY rows with the frozen writer
+      (engine/grey_deer_pullback_forward.py), then grades matured rows with the
+      frozen grader (engine/grey_deer_pullback_forward_grade.py). Both are
+      append-only and refuse unless COLLECT_LANE=nightly and their
+      GREY_DEER_PULLBACK_{WRITER,GRADER}_IDENTITY pins equal daily.yml:engine, so
+      the nightly is the sole advancer. Never fatal (every problem is a
+      line-start ::warning, rc 0). Display/research tier only; no trial_ledger
+      append, no rank/size/gate authority. Cost: one ticker read from the
+      already-restored store plus the frozen writer and grader.
 
   - module: scripts.build_gex_board
     reads:

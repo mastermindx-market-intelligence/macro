@@ -149,6 +149,14 @@ _LEDGER_MANIFEST: list[dict[str, Any]] = [
         # #4924) — plain heartbeat semantics; asof resolves via 'date'.
         # Silently skipped until the first nightly stamp lands.
     },
+    {
+        "path": "data/grey_deer_pullback/forward_log.jsonl",
+        "label": "grey_deer_pullback",
+        # NOTE: Grey Deer pullback prospective lane (O7/W5) — SPY rows at
+        # h5/h10/h21 per US session (scripts/grey_deer_pullback_nightly.py);
+        # plain heartbeat semantics, asof resolves via 'asof'. Silently
+        # skipped until the first nightly stamp lands.
+    },
 ]
 
 # State file location (mirrors data/ci/ convention from #2738).
