@@ -8165,6 +8165,7 @@ jobs:
       - "tests/test_company_management_outlook_contract.py"
       - "tests/test_company_management_outlook.py"
       - "tests/test_market_ontology_technology_economic_change.py"
+      - "tests/fixtures/technology_economic_change/conformant_assertion.json"
       - "tests/test_market_ontology_technology_research_registration.py"
       - "contracts/company_intelligence/management_outlook_comparison.v1.schema.json"
       - "contracts/market_ontology/technology_economic_change.evidence.v1.schema.json"
@@ -8193,18 +8194,62 @@ jobs:
       # engine/theme_graph/curation_assertion.py,
       # engine/market_ontology/theme_research_registry.py, or
       # engine/market_ontology/semiconductor_theme_research.py). Named so the
-      # job re-runs the day they land. Landing curation_assertion does not
-      # turn test_shared_assertion_roundtrip_through_pinned_contract into an
-      # XPASS: the economic-change suite records that the fixture is
-      # non-conformant (55 errors), so the real validator refuses it and the
-      # strict xfail stays green until that gap closes. The registration hold
-      # pin test_shared_shell_registration_roundtrip_pinned_to_7870
-      # monkeypatches a local _Post7870VerticalRegistration and does not
-      # import theme_research_registry; once that module is importable, the
-      # absent-shell assertion (shared_shell_unavailable) fails first.
+      # job re-runs the day they land. The conformant fixture
+      # tests/fixtures/technology_economic_change/conformant_assertion.json
+      # is what test_shared_assertion_roundtrip_through_pinned_contract
+      # passes to validate_assertion (no xfail). Registration treats the
+      # shell as theme_research_registry plus theme_research_binding;
+      # shared_shell_unavailable is that pair not both importable, and the
+      # company_profile hold runs against the real VerticalRegistration.
       - "engine/theme_graph/curation_assertion.py"
       - "engine/market_ontology/theme_research_registry.py"
       - "engine/market_ontology/semiconductor_theme_research.py"
+      # Owned closure of import_module("engine.theme_graph.curation_assertion")
+      # once that file exists. Measured with infer_job_scopes (exclusive off)
+      # on this job: 37 uncovered paths, matching unmodified HEAD, after the
+      # registration test stopped statically importing theme_research_registry.
+      # curation_assertion.py path-joins its schema and function-imports
+      # lib.evidence_foundation; lib/pages.py (`from lib import config`)
+      # resolves lib/__init__.py. The shell pair stays a Name-argument import,
+      # so theme_research_binding, theme_research_mounts and
+      # semiconductor_owner_bundle are not listed.
+      - "config/earnings_story_promotion.yml"
+      - "config/fundamental_forensics_disclosure_diff.v1.json"
+      - "config/theme_graph_identity_breaks.yml"
+      - "contracts/evidence_foundation/block.v1.schema.json"
+      - "contracts/evidence_foundation/recipe.v1.schema.json"
+      - "contracts/evidence_foundation/reference.v1.schema.json"
+      - "contracts/evidence_foundation/vocabulary.v1.json"
+      - "contracts/theme_graph/curation_assertion.v1.schema.json"
+      - "engine/company_intelligence/documents.py"
+      - "engine/company_intelligence/event_id_adapter.py"
+      - "engine/company_intelligence/event_workspace.py"
+      - "engine/company_intelligence/event_workspace_build.py"
+      - "engine/company_intelligence/events.py"
+      - "engine/company_intelligence/identity.py"
+      - "engine/company_intelligence/issuer_profiles.py"
+      - "engine/company_intelligence/pg_envelope.py"
+      - "engine/company_intelligence/pg_profile.py"
+      - "engine/company_intelligence/qa_exchange.py"
+      - "engine/company_intelligence/qa_reconstruction.py"
+      - "engine/earnings_narrative/contracts.py"
+      - "engine/earnings_narrative/digest.py"
+      - "engine/earnings_narrative/promotion.py"
+      - "engine/earnings_narrative/public_wire.py"
+      - "engine/earnings_narrative/story.py"
+      - "engine/earnings_narrative/story_packets.py"
+      - "engine/earnings_release/binding.py"
+      - "engine/earnings_release/figures.py"
+      - "engine/earnings_release/filing_key.py"
+      - "engine/earnings_release/receipts.py"
+      - "engine/fundamental_forensics/disclosure_diff.py"
+      - "engine/fundamental_forensics/models.py"
+      - "engine/press/earnings_adapter.py"
+      - "engine/theme_graph/identity.py"
+      - "lib/__init__.py"
+      - "lib/dataos/identity.py"
+      - "lib/evidence_foundation.py"
+      - "lib/pages.py"
     # TECHNOLOGY EX-SEMIS FIRST VERTICAL, ON THE MERGE GATE (2026-09-24, #7891).
     #
     # The three Technology ex-Semis suites were named only in `gate: data` jobs
@@ -8235,10 +8280,11 @@ jobs:
     # code packing probes in tests/test_ci_pack.py one job over their ceilings
     # (128 > 127, 133 > 132 at base 6e7ef32c). The paths above keep the
     # measured closure, the package-init chain and the pending #7870 modules,
-    # and drop only the fallback tier. Not listed: the empty package inits
-    # engine/__init__.py and lib/__init__.py (both 0 lines) and the lazily read
-    # config.yml. Harmless while those inits stay empty; a non-empty
-    # engine/__init__.py would be an un-scoped dependency of this job.
+    # and drop only the fallback tier. Not listed: engine/__init__.py (0 lines;
+    # this job's closure does not reach it) and the lazily read config.yml.
+    # lib/__init__.py is listed above: the curation-assertion closure reaches
+    # it, and the file is still 0 lines. A non-empty engine/__init__.py would
+    # be an un-scoped dependency of this job.
     #
     # Deps: jsonschema for the frozen contracts; pandas/numpy/pyarrow/requests
     # because engine/company_intelligence imports them at package load.

@@ -128,6 +128,19 @@ SUPPORTED_ASSERTION_FORMS: frozenset[tuple[str, str]] = frozenset({
     ("workload_usage_direction", "contrary_observation"),
 })
 SUPPORTED_VERTICAL = "technology_ex_semis"
+#: Shared-contract vocabulary is disjoint from the allowlist (the schema
+#: predicate enum has no ``product_workload_role``). One pair, under the
+#: technology theme and facet, projects onto the allowlist form.
+_SHARED_CONTRACT_TECHNOLOGY_THEME_IDS = frozenset({
+    SUPPORTED_VERTICAL,
+    "theme:technology-ex-semis",
+})
+_SHARED_CONTRACT_ALLOWLIST: dict[tuple[str, str], tuple[str, str]] = {
+    ("PRODUCT_CAPABILITY", "ATTRIBUTED_INTERPRETATION"): (
+        "product_workload_role",
+        "attributed",
+    ),
+}
 
 #: Where a datable field may live in an assertion's ``temporal`` section. The
 #: shared contract owns the exact shape; the first key present wins, and an
@@ -361,12 +374,11 @@ def _load_shared_curation_contract() -> Any | None:
     # are unchanged: ``import_module`` raises ImportError both for the absent
     # module and for one that resolves and then fails to import, and both still
     # return None here (typed shared_contract_unavailable by the caller).
-    # The technology-ex-semis-boundary scope comment records the empty package
-    # inits engine/__init__.py and lib/__init__.py (both 0 bytes at this head)
-    # and config.yml as not listed in the job paths ("Not listed: the empty
-    # package inits", .github/ci/legacy-jobs.yml). Harmless while those inits
-    # stay empty; a non-empty engine/__init__.py would be an un-scoped
-    # dependency of that job.
+    # The technology-ex-semis-boundary scope comment lists lib/__init__.py
+    # (0 lines; reached via lib/pages.py) and leaves engine/__init__.py
+    # (0 lines, not reached) and the lazily read config.yml unlisted
+    # (.github/ci/legacy-jobs.yml). A non-empty engine/__init__.py would be
+    # an un-scoped dependency of that job.
     try:
         shared = importlib.import_module("engine.theme_graph.curation_assertion")
     except ImportError:
@@ -702,12 +714,22 @@ class _AssertionOutcome:
     )
 
 
-def _assertion_source_ref(source: Any) -> dict[str, Any] | None:
+def _assertion_source_ref(source: Any, *, schema_id: str | None = None) -> dict[str, Any] | None:
     """The closed six-field reference, or None when the source is unavailable.
 
     An assertion renders ONLY after its own source is available — a payload
-    whose source section does not yield the closed reference shape is counted
-    (``source_unavailable``), never rendered."""
+    whose source section does not yield a reference is counted
+    (``source_unavailable``), never rendered. The Technology six-field shape
+    wins. A shared-contract source (publisher, retention_ref, locator,
+    native_digest, retained_at) projects onto that shape when the six fields
+    are absent."""
+    closed = _closed_technology_source_ref(source)
+    if closed is not None:
+        return closed
+    return _shared_contract_source_ref(source, schema_id)
+
+
+def _closed_technology_source_ref(source: Any) -> dict[str, Any] | None:
     if not isinstance(source, Mapping):
         return None
     ref: dict[str, Any] = {}
@@ -723,6 +745,40 @@ def _assertion_source_ref(source: Any) -> dict[str, Any] | None:
     return ref
 
 
+def _shared_contract_source_ref(source: Any, schema_id: str | None) -> dict[str, Any] | None:
+    if not isinstance(source, Mapping) or schema_id != SHARED_ASSERTION_SCHEMA_ID:
+        return None
+    publisher = source.get("publisher")
+    locator = source.get("locator")
+    digest = source.get("native_digest")
+    retention = source.get("retention_ref")
+    retained = source.get("retained_at")
+    if not all(isinstance(value, str) and value for value in (
+        publisher, locator, digest, retention, retained,
+    )):
+        return None
+    if (
+        not _OWNER_RE.match(publisher)
+        or len(publisher) > 128
+        or len(retention) > 128
+        or len(locator) > 256
+        or len(schema_id) > 128
+        or not _SHA256_RE.match(digest)
+    ):
+        return None
+    generation = retained[:10]
+    if not _DATE_RE.match(generation) or not _GENERATION_RE.match(generation):
+        return None
+    return {
+        "owner": publisher,
+        "object_id": retention,
+        "schema": schema_id,
+        "generation": generation,
+        "sha256": digest,
+        "selector": locator,
+    }
+
+
 def _assertion_observed_date(validated: Mapping[str, Any]) -> datetime.date | None:
     temporal = validated.get("temporal")
     if not isinstance(temporal, Mapping):
@@ -734,6 +790,13 @@ def _assertion_observed_date(validated: Mapping[str, Any]) -> datetime.date | No
                 return datetime.date.fromisoformat(value)
             except ValueError:
                 continue
+    # Shared-contract window. Technology keys above win when present.
+    opened = temporal.get("business_valid_from")
+    if isinstance(opened, str) and _DATE_RE.match(opened):
+        try:
+            return datetime.date.fromisoformat(opened)
+        except ValueError:
+            return None
     return None
 
 
@@ -741,6 +804,13 @@ def _observation_text(validated: Mapping[str, Any]) -> str:
     observation = validated.get("observation")
     if isinstance(observation, Mapping) and isinstance(observation.get("text"), str):
         return observation["text"]
+    limitations = validated.get("limitations")
+    if isinstance(limitations, Mapping):
+        establishes = limitations.get("establishes")
+        if isinstance(establishes, list):
+            parts = [item.strip() for item in establishes if isinstance(item, str) and item.strip()]
+            if parts:
+                return "; ".join(parts)
     return ""
 
 
@@ -749,10 +819,17 @@ def _entity_side(value: Any) -> tuple[str | None, str | None, str | None]:
     if not isinstance(value, Mapping):
         return None, None, None
     entity_id = value.get("entity_id")
-    entity_id = entity_id if isinstance(entity_id, str) and entity_id else None
+    if not isinstance(entity_id, str) or not entity_id:
+        node_id = value.get("company_node_id")
+        entity_id = node_id if isinstance(node_id, str) and node_id else None
     paid_unit = value.get("paid_unit")
     paid_unit = paid_unit if isinstance(paid_unit, str) and paid_unit else None
-    return entity_id, _optional_name(value.get("display_name")), paid_unit
+    display_name = _optional_name(value.get("display_name"))
+    if display_name is None:
+        display_name = _optional_name(value.get("source_business_label"))
+    if display_name is None:
+        display_name = _optional_name(value.get("source_product_label"))
+    return entity_id, display_name, paid_unit
 
 
 def _record_entity_meta(out: _AssertionOutcome, entity_id: str | None,
@@ -766,6 +843,23 @@ def _record_entity_meta(out: _AssertionOutcome, entity_id: str | None,
     out.entity_meta.setdefault(entity_id, []).append(
         (validated.get("curation_revision") or "", display_name, family)
     )
+
+
+def _technology_allowlist_form(
+    scope_section: Any, predicate: Any, statement_mode: Any,
+) -> tuple[str, str] | None:
+    """Allowlist pair for a Technology-shaped assertion, or the one shared-contract
+    projection. ``None`` means counted unsupported, not rendered."""
+    if not isinstance(scope_section, Mapping):
+        return None
+    pair = (predicate, statement_mode)
+    if scope_section.get("vertical") == SUPPORTED_VERTICAL:
+        return pair if pair in SUPPORTED_ASSERTION_FORMS else None
+    if scope_section.get("canonical_theme_id") not in _SHARED_CONTRACT_TECHNOLOGY_THEME_IDS:
+        return None
+    if scope_section.get("technology_facet") != "product_workload_role":
+        return None
+    return _SHARED_CONTRACT_ALLOWLIST.get(pair)
 
 
 def _process_assertions(payloads: Iterable[Any], shared: Any,
@@ -792,21 +886,23 @@ def _process_assertions(payloads: Iterable[Any], shared: Any,
         if not isinstance(revision, str) or not _CURATION_REVISION_RE.match(revision):
             out.invalid += 1
             continue
-        predicate = validated.get("predicate")
-        statement_mode = validated.get("statement_mode")
-        scope_section = validated.get("scope")
-        if not isinstance(scope_section, Mapping) or scope_section.get("vertical") != SUPPORTED_VERTICAL:
+        form = _technology_allowlist_form(
+            validated.get("scope"),
+            validated.get("predicate"),
+            validated.get("statement_mode"),
+        )
+        if form is None:
             out.unsupported += 1
             continue
-        if (predicate, statement_mode) not in SUPPORTED_ASSERTION_FORMS:
-            out.unsupported += 1
-            continue
+        predicate, statement_mode = form
         observed = _assertion_observed_date(validated)
         if observed is not None and observed > cutoff:
             # A later supplementary filing cannot appear in an earlier cutoff.
             out.after_cutoff += 1
             continue
-        source_ref = _assertion_source_ref(validated.get("source"))
+        source_ref = _assertion_source_ref(
+            validated.get("source"), schema_id=validated.get("schema"),
+        )
         if source_ref is None:
             out.source_unavailable += 1
             continue
