@@ -201,6 +201,21 @@ def episode_window(obs: dict) -> dict | None:
     return {"dates": dates, "vals": vals[:-1] + [end]}
 
 
+def chart_accessible_names(aria_en: str, aria_zh: str) -> tuple[str, str] | None:
+    """The chart name in both languages, from the labels already chosen.
+
+    The shared renderer keeps only the English line. The Chinese line is the
+    one the caller paired with it for this same observation: no new figure,
+    and neither string is a forecast. Empty or non-text input is refused so
+    the fragment does not invent a name.
+    """
+    if not isinstance(aria_en, str) or not isinstance(aria_zh, str):
+        return None
+    if not aria_en or not aria_zh:
+        return None
+    return aria_en, aria_zh
+
+
 def present(observation: dict, *, market: str, aria_en: str, aria_zh: str) -> dict:
     """Minimal shared-modal read model; risk odds are intentionally not ingested.
 
@@ -247,5 +262,11 @@ def present(observation: dict, *, market: str, aria_en: str, aria_zh: str) -> di
             id_prefix=market,
         )
     # The table beside the chart is its text alternative; it reads the same window.
-    return {"observation": obs, "phase": phase, "detail_chart_html": chart,
+    # chart_label_* is only the pair illus was already given. The fragment uses
+    # it when the figure's English aria-label cannot follow the visible language.
+    view = {"observation": obs, "phase": phase, "detail_chart_html": chart,
             "detail_path": shown, "detail_withheld": withheld}
+    names = chart_accessible_names(aria_en, aria_zh) if chart else None
+    if names is not None:
+        view["chart_label_en"], view["chart_label_zh"] = names
+    return view

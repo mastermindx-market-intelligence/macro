@@ -183,7 +183,25 @@
     <div class="rrp-evidence pbx-current">
       <h3>{{ t('The observed path','已观测走势') }}</h3>
       {% if current and v.get('detail_chart_html') %}
+      {# illus emits one English aria-label and never an aria_zh. One clipped
+         name owns both languages. html[data-lang] sets display:none on the
+         other .l-en/.l-zh span. A display:none node is dropped from the name
+         unless aria-labelledby points at it directly, so the labelledby target
+         is the parent and the hidden language is only a child. The figure
+         stays inside aria-hidden .rrp-chart so its English label is not read
+         again. The parent is clipped, not display:none, so the visible
+         language stays in the name. #}
+      {% set _chart_en = v.get('chart_label_en') %}
+      {% set _chart_zh = v.get('chart_label_zh') %}
+      {% if _chart_en is string and _chart_zh is string and _chart_en and _chart_zh %}
+      {% set _vh = 'position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);clip-path:inset(50%);white-space:nowrap;border:0' %}
+      <div role="img" aria-labelledby="{{ mkt|e }}-rrp-chart-name" style="position:relative">
+        <span id="{{ mkt|e }}-rrp-chart-name" style="{{ _vh }}"><span class="l-en">{{ _chart_en|e }}</span><span class="l-zh">{{ _chart_zh|e }}</span></span>
+        <div class="rrp-chart" aria-hidden="true">{{ v.detail_chart_html|safe }}</div>
+      </div>
+      {% else %}
       <div class="rrp-chart" aria-hidden="true">{{ v.detail_chart_html|safe }}</div>
+      {% endif %}
       <p class="rrp-chart-caption">{{ t('Observed closing drawdown from the reference high.', '相对参考高点的已观测收盘回撤。') }}</p>
       {# Only the presenter's checked window; the raw path can predate the peak. #}
       {% set path = v.get('detail_path') if v.get('detail_path') is mapping else {} %}
