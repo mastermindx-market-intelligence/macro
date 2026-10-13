@@ -2945,6 +2945,7 @@ jobs:
       - "lib/dataos/__init__.py"
       - "lib/dataos/nulls.py"
       - "lib/dataos/price.py"
+      - "lib/dataos/price_views.py"
       - "lib/dataos/quality.py"
       - "lib/dataos/read_contract.py"
       - "lib/dataos/registry.py"
@@ -6478,6 +6479,7 @@ jobs:
       - "lib/dataos/identity.py"
       - "lib/dataos/nulls.py"
       - "lib/dataos/price.py"
+      - "lib/dataos/price_views.py"
       - "lib/dataos/quality.py"
       - "lib/dataos/read_contract.py"
       - "lib/dataos/registry.py"
@@ -8803,6 +8805,7 @@ jobs:
       - "lib/dataos/identity.py"
       - "lib/dataos/nulls.py"
       - "lib/dataos/price.py"
+      - "lib/dataos/price_views.py"
       - "lib/dataos/quality.py"
       - "lib/dataos/read_contract.py"
       - "lib/dataos/registry.py"
@@ -13050,6 +13053,7 @@ jobs:
       - lib/dataos/__init__.py
       - lib/dataos/nulls.py
       - lib/dataos/price.py
+      - lib/dataos/price_views.py
       - lib/dataos/quality.py
       - lib/dataos/read_contract.py
       - lib/dataos/registry.py
@@ -17442,6 +17446,7 @@ jobs:
       - lib/dataos/identity.py
       - lib/dataos/nulls.py
       - lib/dataos/price.py
+      - lib/dataos/price_views.py
       - lib/dataos/quality.py
       - lib/dataos/read_contract.py
       - lib/dataos/registry.py
@@ -24857,6 +24862,7 @@ jobs:
       - "lib/dataos/identity.py"
       - "lib/dataos/nulls.py"
       - "lib/dataos/price.py"
+      - "lib/dataos/price_views.py"
       - "lib/dataos/quality.py"
       - "lib/dataos/read_contract.py"
       - "lib/dataos/registry.py"
@@ -25992,6 +25998,7 @@ jobs:
       - lib/dataos/identity.py
       - lib/dataos/nulls.py
       - lib/dataos/price.py
+      - lib/dataos/price_views.py
       - lib/dataos/quality.py
       - lib/dataos/read_contract.py
       - lib/dataos/registry.py
@@ -26882,6 +26889,7 @@ jobs:
       - "lib/dataos/identity.py"
       - "lib/dataos/nulls.py"
       - "lib/dataos/price.py"
+      - "lib/dataos/price_views.py"
       - "lib/dataos/quality.py"
       - "lib/dataos/read_contract.py"
       - "lib/dataos/registry.py"
@@ -28455,6 +28463,7 @@ jobs:
       - lib/dataos/identity.py
       - lib/dataos/nulls.py
       - lib/dataos/price.py
+      - lib/dataos/price_views.py
       - lib/dataos/quality.py
       - lib/dataos/read_contract.py
       - lib/dataos/registry.py
