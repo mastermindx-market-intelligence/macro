@@ -1,59 +1,99 @@
-"""Non-regression freeze for the robotics_automation legacy decision outputs and
-public-leak guards.
+"""Non-regression for the robotics re-land: write-set disjointness and import isolation.
 
-Operation gmi-robotics-fable-ceo-e2e-20260923-chairman-001 (carrier Macro #7908),
-lane R3. Mirrors the accepted Energy pattern
-(tests/test_energy_economic_change_non_regression.py on #7895): frozen vs shape
-projections per section, a canonical sha256 per section, the Theme Tracker read
-through scripts/build_state_of_themes.py::compose(REPO_ROOT), the sparse-checkout
-skip guard, and a ``--regenerate-baseline <main-sha>`` CLI.
+The live freeze compared today's ``site/`` and ``data/`` bytes to a snapshot
+taken at ``3c93f819``, before any robotics product code. That comparison
+rejected the re-land: prophet ``member_tickers_present`` moved from
+``[ISRG, NOVT]`` to ``[CGNX, ISRG, NOVT, ROK, TRMB]``, and
+``site/prophet/index.json`` gained ``source_board_sha256``,
+``source_board_snapshot_encoding``, and ``source_board_snapshot_path``. The
+drift is the daily prophet board. Re-blessing the snapshot would fail again
+the next day.
 
-What this freezes (master packet section 3 items 4-5; RBV-28, RBV-31): the Robotics
-research vertical must NEVER change basket membership/weights, ThemeState, the Theme
-Tracker lane/stage/recommendation shape, entry fields, member ordering shape or Prophet
-presence, and must never leak a full-fidelity research payload through public pages,
-public JSON or the tracked evidence parquet. The baseline was taken at main
-3c93f8194f6c2cb19dad21c1347d8b3b8474aa31 BEFORE any Robotics product code existed.
+Assertion 1 — write-set disjointness. ``reland_write_set.json`` is
+``git diff --name-only`` of the re-land commit against its parent. No path
+may sit under ``site/``, ``data/``, or ``templates/``, and no path may be a
+builder or publisher the prophet board, membership, or theme tracker read.
+Every robotics engine module is AST-scanned for file writes.
+
+Assertion 2 — import isolation. The AST import closure of those builders
+contains no robotics engine module, so their outputs do not depend on the
+re-land.
+
+Live comparisons removed, and the assertion that covers each intent:
+
+- membership vs the frozen basket: (1) the artifact is under ``data/`` and
+  the membership builder/publisher is absent from the write set; (2) that
+  builder does not import robotics.
+- theme_state vs the freeze: (1) the artifact is under ``data/`` and ``site/``,
+  and ``scripts/build_thematic_state.py`` is absent from the write set;
+  (2) that publisher does not import robotics.
+- theme tracker ``compose()`` vs the freeze: (1) ``scripts/build_state_of_themes.py``
+  is absent from the write set and the artifacts it reads are under ``site/``
+  and ``data/``; (2) its closure does not import robotics.
+- basket confluence vs the freeze: (1) the artifact is under ``site/`` and
+  robotics modules perform no writes, so they cannot rewrite it.
+- prophet presence vs the freeze: (1) ``site/prophet/index.json`` is under
+  ``site/`` and ``scripts/build_prophet.py`` is absent from the write set;
+  (2) that publisher's closure does not import robotics. The frozen
+  ``prophet_presence`` block was removed because nothing reads it.
+- live public-page and public-JSON canary scan: (1) the write set has no
+  ``site/`` path and robotics modules perform no writes. The canary
+  vocabulary stays pinned below and does not open ``site/``.
+- live evidence-parquet cell scan: (1) the parquet is under ``data/`` and
+  robotics modules perform no writes. The column rule stays pinned and does
+  not open the parquet.
 """
 
 from __future__ import annotations
 
+import ast
 import hashlib
-import importlib.util
 import json
-import sys
+import subprocess
 from pathlib import Path
 from typing import Any
 
-import pytest
-
 REPO_ROOT = Path(__file__).resolve().parents[1]
 BASELINE_PATH = REPO_ROOT / "tests/fixtures/robotics_non_regression/robotics_baseline.json"
-MEMBERSHIP_PATH = REPO_ROOT / "data/baskets/membership.json"
-THEME_STATE_PATH = REPO_ROOT / "data/neuralweb/theme_state.json"
-BASKET_CONFLUENCE_PATH = REPO_ROOT / "site/marketdata/basket_confluence.json"
-PROPHET_INDEX_PATH = REPO_ROOT / "site/prophet/index.json"
-EVIDENCE_PARQUET_PATH = REPO_ROOT / "data/theme_graph/evidence.parquet"
-PUBLIC_PAGE_PATHS = (
-    REPO_ROOT / "site/state_of_themes.html",
-    REPO_ROOT / "site/basket/robotics_automation.html",
-)
-PUBLIC_JSON_ROOTS = ("site/marketdata", "site/prophet")
-BASKET_ID = "robotics_automation"
+WRITE_SET_PATH = REPO_ROOT / "tests/fixtures/robotics_non_regression/reland_write_set.json"
 BASELINE_SCHEMA = "robotics.theme_non_regression.v1"
+WRITE_SET_SCHEMA = "robotics.reland_write_set.v1"
 FROZEN_AT_MAIN = "3c93f8194f6c2cb19dad21c1347d8b3b8474aa31"
+RELAND_BASE = "2cd51ad3db37bc51383380a6fa3f29f397253060"
+RELAND_HEAD = "efe72f1292d17f9defb38d0a452fbfaf918cacef"
 
-MEMBERSHIP_FIELDS = ("ticker", "added", "removed", "curated_added")
-# theme_state: ``foresight`` is split — its DECISION sub-fields are frozen as
-# ``foresight_decision``; its nightly-moving ``score`` is a shape field
-# (``foresight_score``). Across the month before the freeze the foresight object
-# changed 8 times on main, every time score-only (review of R3, blocker 1).
+# Prophet board publisher writes site/prophet/index.json
+# (scripts/build_prophet.py:1-6).
+# Membership is the curated document engine/baskets.py:_membership reads
+# (engine/baskets.py:43) and compute_baskets turns into the basket payload
+# (engine/baskets.py:173). scripts/build_baskets.py publishes that payload
+# (scripts/build_baskets.py:4, compute_baskets at scripts/build_baskets.py:246).
+# US membership is not generated: scripts/reconcile_membership.py:36-38
+# refuses to auto-mutate data/baskets/membership.json.
+# Theme Tracker read is scripts/build_state_of_themes.py:compose
+# (scripts/build_state_of_themes.py:793). It reads theme_state.json published
+# by scripts/build_thematic_state.py (scripts/build_thematic_state.py:6-7,
+# read at scripts/build_state_of_themes.py:799).
+# ci-trigger-closure: data — parse-only isolation subjects; imports not followed
+SURFACE_BUILDERS: dict[str, tuple[str, ...]] = {
+    "prophet_board": ("scripts/build_prophet.py",),
+    "membership": ("engine/baskets.py", "scripts/build_baskets.py"),
+    "theme_tracker": (
+        "scripts/build_state_of_themes.py",
+        "scripts/build_thematic_state.py",
+    ),
+}
+FORBIDDEN_ROOTS = ("site", "data", "templates")
+REQUIRED_ROBOTICS_MODULES = (
+    "engine/market_ontology/robotics_owner_bundle.py",
+    "engine/market_ontology/robotics_theme_research.py",
+)
+ROBOTICS_MODULE_NAMES = (
+    "engine.market_ontology.robotics_owner_bundle",
+    "engine.market_ontology.robotics_theme_research",
+)
+
 FORESIGHT_DECISION_FIELDS = ("stage", "entry_ready", "tier", "bottleneck_band", "source")
-# The foresight KEY SET is frozen too (``foresight_keys``): a Robotics lane writing a
-# new field (a curation tier, a research flag) into the incumbent foresight object is
-# exactly the leak RBV-28 forbids, and the projection to five named sub-fields alone
-# would not see it (R3 re-review, nit 1). The key set had zero transitions across the
-# 28 theme_state checkpoints before the freeze, so freezing it costs no false reds.
 THEME_STATE_FROZEN = (
     "theme_id",
     "name_en",
@@ -97,9 +137,6 @@ THEME_TRACKER_SHAPE = (
     "leadership_context",
     "entry_context",
 )
-# basket_confluence: identity + the member SET are frozen; the emitted member ORDER is
-# sorted by a nightly return column (ret_20d at the freeze), so it is a shape field —
-# its type is pinned, its permutation is not (packet escape hatch, see README).
 BASKET_CONFLUENCE_FROZEN = (
     "key",
     "kind",
@@ -125,24 +162,13 @@ BASKET_CONFLUENCE_SHAPE = (
     "as_of",
     "member_order",
 )
-PROPHET_TOP_LEVEL_KEYS = (
-    "schema",
-    "asof",
-    "recorded_at",
-    "source_asof",
-    "source_board_asof",
-    "source_delayed",
-    "source_unknown",
-    "source_basis",
-    "plans",
-)
-PROPHET_ROW_TICKER_FIELD = "asset"
 PROPHET_FROZEN = ("member_tickers_present",)
-# one artifact outside the scan roots that theme_state.foresight.source names
+PUBLIC_PAGE_PATHS = (
+    "site/state_of_themes.html",
+    "site/basket/robotics_automation.html",
+)
+PUBLIC_JSON_ROOTS = ("site/marketdata", "site/prophet")
 EXTRA_PUBLIC_JSON = ("site/basketdata/foresight_cascade.json",)
-
-# Payload markers only. Shell markup such as a hidden mount element or an
-# /api/themes/v1/research URL is allowed and is deliberately NOT a canary.
 PUBLIC_PAGE_CANARIES = (
     "gmirca_",
     "theme_graph.curation_assertion.v1",
@@ -155,53 +181,11 @@ PUBLIC_PAGE_CANARIES = (
     "NarGo",
     "K-Series frameless",
 )
-PUBLIC_JSON_CANARIES = (b"gmirca_", b"curation_assertion")
+PUBLIC_JSON_CANARIES = ("gmirca_", "curation_assertion")
+EVIDENCE_PARQUET_REL = "data/theme_graph/evidence.parquet"
 PARQUET_FORBIDDEN_COLUMN = "curation_assertion"
 
-_NO_SKIP = pytest.mark.skipif(False, reason="required checkout directories are present")
-
-
-# ---------------------------------------------------------------------------
-# projections (verbatim from the Energy pattern where they apply)
-# ---------------------------------------------------------------------------
-
-def _json_type_name(value: Any) -> str:
-    if value is None:
-        return "null"
-    if isinstance(value, bool):
-        return "bool"
-    if isinstance(value, (int, float)):
-        return "number"
-    if isinstance(value, str):
-        return "string"
-    if isinstance(value, list):
-        return "array"
-    if isinstance(value, dict):
-        return "object"
-    return type(value).__name__
-
-
-def _project(value: dict[str, Any], fields: tuple[str, ...]) -> dict[str, Any]:
-    return {field: value.get(field) for field in fields}
-
-
-def _frozen_projection(value: dict[str, Any], fields: tuple[str, ...]) -> dict[str, Any]:
-    return _project(value, fields)
-
-
-def _shape_projection(value: dict[str, Any], fields: tuple[str, ...]) -> dict[str, str]:
-    return {field: _json_type_name(value.get(field)) for field in fields}
-
-
-def _projected_section(
-    value: dict[str, Any],
-    frozen_fields: tuple[str, ...],
-    shape_fields: tuple[str, ...],
-) -> dict[str, Any]:
-    return {
-        "frozen": _frozen_projection(value, frozen_fields),
-        "shape": _shape_projection(value, shape_fields),
-    }
+_CLOSURE_CACHE: dict[str, frozenset[str]] = {}
 
 
 def _canonical_sha256(value: Any) -> str:
@@ -213,136 +197,403 @@ def _read_baseline() -> dict[str, Any]:
     return json.loads(BASELINE_PATH.read_text(encoding="utf-8"))
 
 
-def _load_state_builder() -> Any:
-    module_path = REPO_ROOT / "scripts/build_state_of_themes.py"
-    spec = importlib.util.spec_from_file_location("build_state_of_themes", module_path)
-    if spec is None or spec.loader is None:
-        raise RuntimeError(f"Cannot import Theme Tracker builder from {module_path}.")
-    module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
-    return module
-
-
-def _needs_checkout(*directories: str) -> bool:
-    if str(REPO_ROOT) not in sys.path:
-        sys.path.insert(0, str(REPO_ROOT))
-    from scripts.worktree_sparse import missing_dirs
-
-    return bool(set(directories) & set(missing_dirs(REPO_ROOT)))
-
-
-# ---------------------------------------------------------------------------
-# section readers
-# ---------------------------------------------------------------------------
-
-def _basket_snapshot(basket_id: str) -> dict[str, Any]:
-    document = json.loads(MEMBERSHIP_PATH.read_text(encoding="utf-8"))
-    basket = document["baskets"][basket_id]
-    return {
-        "weighting": basket.get("weighting"),
-        "weights": basket.get("weights"),
-        "members": sorted(
-            (
-                {field: member.get(field) for field in MEMBERSHIP_FIELDS}
-                for member in basket.get("members", [])
-            ),
-            key=lambda member: member["ticker"],
-        ),
-    }
-
-
-def _member_tickers() -> list[str]:
-    return sorted(member["ticker"] for member in _basket_snapshot(BASKET_ID)["members"])
-
-
-def _robotics_theme_state() -> dict[str, Any]:
-    document = json.loads(THEME_STATE_PATH.read_text(encoding="utf-8"))
-    theme = next(theme for theme in document["themes"] if theme.get("theme_id") == BASKET_ID)
-    foresight = theme.get("foresight") or {}
-    view = dict(theme)
-    view["foresight_decision"] = (
-        {field: foresight.get(field) for field in FORESIGHT_DECISION_FIELDS}
-        if isinstance(foresight, dict) else None)
-    view["foresight_score"] = foresight.get("score") if isinstance(foresight, dict) else None
-    view["foresight_keys"] = sorted(foresight) if isinstance(foresight, dict) else None
-    return _projected_section(view, THEME_STATE_FROZEN, THEME_STATE_SHAPE)
-
-
-def _robotics_theme_tracker() -> dict[str, Any]:
-    builder = _load_state_builder()
-    context = builder.compose(REPO_ROOT)
-    theme = next(theme for theme in context["themes"] if theme.get("theme_id") == BASKET_ID)
-    projected = _projected_section(theme, THEME_TRACKER_FROZEN, THEME_TRACKER_SHAPE)
-    return json.loads(json.dumps(projected))
-
-
-def _robotics_basket_confluence() -> dict[str, Any]:
-    document = json.loads(BASKET_CONFLUENCE_PATH.read_text(encoding="utf-8"))
-    entry = next(row for row in document["baskets"] if row.get("basket_id") == BASKET_ID)
-    members = entry.get("members") or []
-    view = dict(entry)
-    view["member_order"] = [member.get("ticker") for member in members]
-    projected = _projected_section(view, BASKET_CONFLUENCE_FROZEN, BASKET_CONFLUENCE_SHAPE)
-    # the member SET is a decision output (membership) and is frozen; the ORDER is not
-    projected["frozen"]["member_tickers_sorted"] = sorted(view["member_order"])
-    return projected
-
-
-def _robotics_prophet_presence() -> dict[str, Any]:
-    document = json.loads(PROPHET_INDEX_PATH.read_text(encoding="utf-8"))
-    members = set(_member_tickers())
-    rows = [
-        row for row in document.get("plans", [])
-        if isinstance(row, dict) and str(row.get(PROPHET_ROW_TICKER_FIELD)) in members
-    ]
-    row_shape: dict[str, str] = {}
-    for row in rows:
-        for key in sorted(row):
-            type_name = _json_type_name(row.get(key))
-            row_shape[key] = type_name if key not in row_shape or row_shape[key] == type_name else "mixed"
-    present = sorted({str(row.get(PROPHET_ROW_TICKER_FIELD)) for row in rows})
-    frozen = {"member_tickers_present": present}
-    return {
-        "structure_checked": {
-            "top_level_keys_present": [key for key in PROPHET_TOP_LEVEL_KEYS if key in document],
-            "top_level_keys": sorted(document.keys()),
-            "rows_container": "plans",
-            "row_ticker_field": PROPHET_ROW_TICKER_FIELD,
-        },
-        "frozen": {field: frozen[field] for field in PROPHET_FROZEN},
-        "shape": {"row_fields": row_shape},
-    }
-
-
-def _public_json_files() -> list[Path]:
-    files: list[Path] = []
-    for root in PUBLIC_JSON_ROOTS:
-        files.extend(sorted((REPO_ROOT / root).rglob("*.json")))
-    files.extend(sorted((REPO_ROOT / "site").glob("*.json")))
-    files.extend(REPO_ROOT / extra for extra in EXTRA_PUBLIC_JSON if (REPO_ROOT / extra).exists())
-    return files
+def _read_write_set() -> dict[str, Any]:
+    return json.loads(WRITE_SET_PATH.read_text(encoding="utf-8"))
 
 
 def _public_pages_section() -> dict[str, Any]:
     return {
-        "pages": [str(path.relative_to(REPO_ROOT)) for path in PUBLIC_PAGE_PATHS],
+        "pages": list(PUBLIC_PAGE_PATHS),
         "canaries": list(PUBLIC_PAGE_CANARIES),
         "json_roots": list(PUBLIC_JSON_ROOTS) + ["site/*.json"] + list(EXTRA_PUBLIC_JSON),
-        "json_canaries": [token.decode() for token in PUBLIC_JSON_CANARIES],
+        "json_canaries": list(PUBLIC_JSON_CANARIES),
     }
 
 
 def _evidence_parquet_section() -> dict[str, Any]:
     return {
-        "path": str(EVIDENCE_PARQUET_PATH.relative_to(REPO_ROOT)),
+        "path": EVIDENCE_PARQUET_REL,
         "forbidden_column": PARQUET_FORBIDDEN_COLUMN,
         "rule": "column absent, or every cell null",
     }
 
 
-# ---------------------------------------------------------------------------
-# tests — one per section, comparing the live projection AND its sha256
-# ---------------------------------------------------------------------------
+def _surface_builder_paths() -> set[str]:
+    return {path for group in SURFACE_BUILDERS.values() for path in group}
+
+
+def _write_set_violation(path: str) -> str | None:
+    parts = path.split("/")
+    if parts and parts[0] in FORBIDDEN_ROOTS:
+        return parts[0] + "/"
+    if path in _surface_builder_paths():
+        return "surface builder/publisher"
+    return None
+
+
+def _git_name_only(base: str, head: str) -> list[str] | None:
+    """Name-only diff when both commits are in this clone. None when they are not.
+
+    A depth-1 CI checkout does not have the re-land parent. The committed
+    fixture remains the source of truth in that case.
+    """
+    try:
+        completed = subprocess.run(
+            ["git", "diff", "--name-only", base, head],
+            cwd=REPO_ROOT,
+            check=False,
+            capture_output=True,
+            text=True,
+        )
+    except OSError:
+        return None
+    if completed.returncode != 0:
+        return None
+    return sorted(line for line in completed.stdout.splitlines() if line)
+
+
+def _is_robotics_engine_module(rel: str) -> bool:
+    path = Path(rel)
+    if path.suffix != ".py":
+        return False
+    parts = path.parts
+    if not parts or parts[0] != "engine":
+        return False
+    return any("robotics" in part for part in parts)
+
+
+def _robotics_engine_modules() -> list[str]:
+    found: list[str] = []
+    for path in (REPO_ROOT / "engine").rglob("*.py"):
+        rel = path.relative_to(REPO_ROOT).as_posix()
+        if _is_robotics_engine_module(rel):
+            found.append(rel)
+    return sorted(found)
+
+
+def _const_str(node: ast.AST) -> str | None:
+    if isinstance(node, ast.Constant) and isinstance(node.value, str):
+        return node.value
+    return None
+
+
+def _sequence_strings(node: ast.AST) -> list[str] | None:
+    if isinstance(node, (ast.List, ast.Tuple, ast.Set)):
+        values: list[str] = []
+        for element in node.elts:
+            value = _const_str(element)
+            if value is None:
+                return None
+            values.append(value)
+        return values
+    return None
+
+
+def _is_import_call(node: ast.AST) -> bool:
+    if not isinstance(node, ast.Call):
+        return False
+    func = node.func
+    if isinstance(func, ast.Attribute) and func.attr == "import_module":
+        return True
+    return isinstance(func, ast.Name) and func.id == "__import__"
+
+
+def _bound_string_constants(tree: ast.AST) -> tuple[dict[str, list[str]], dict[str, list[str]]]:
+    sequences: dict[str, list[str]] = {}
+    dict_values: dict[str, list[str]] = {}
+    for node in ast.walk(tree):
+        target: str | None = None
+        value: ast.AST | None = None
+        if isinstance(node, ast.Assign) and len(node.targets) == 1 and isinstance(node.targets[0], ast.Name):
+            target = node.targets[0].id
+            value = node.value
+        elif isinstance(node, ast.AnnAssign) and isinstance(node.target, ast.Name) and node.value is not None:
+            target = node.target.id
+            value = node.value
+        if target is None or value is None:
+            continue
+        sequence = _sequence_strings(value)
+        if sequence is not None:
+            sequences[target] = sequence
+            continue
+        literal = _const_str(value)
+        if literal is not None:
+            sequences[target] = [literal]
+            continue
+        if isinstance(value, ast.Dict):
+            collected: list[str] = []
+            complete = True
+            for item in value.values:
+                item_literal = _const_str(item)
+                item_sequence = _sequence_strings(item)
+                if item_literal is not None:
+                    collected.append(item_literal)
+                elif item_sequence is not None:
+                    collected.extend(item_sequence)
+                else:
+                    complete = False
+                    break
+            if complete:
+                dict_values[target] = collected
+    return sequences, dict_values
+
+
+def _function_covering(tree: ast.AST, lineno: int) -> ast.AST | None:
+    chosen: ast.AST | None = None
+    chosen_span = -1
+    for node in ast.walk(tree):
+        if not isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
+            continue
+        end = getattr(node, "end_lineno", node.lineno)
+        if node.lineno <= lineno <= end:
+            span = end - node.lineno
+            if chosen is None or span < chosen_span:
+                chosen = node
+                chosen_span = span
+    return chosen
+
+
+def _string_constants(node: ast.AST) -> set[str]:
+    found: set[str] = set()
+    for child in ast.walk(node):
+        value = _const_str(child)
+        if value is not None:
+            found.add(value)
+    return found
+
+
+def _dynamic_import_names(tree: ast.AST) -> set[str]:
+    """Module names a file can import without a static Import node.
+
+    Covers three shapes these builders actually use: a literal
+    ``import_module("...")``, ``for name in SOME_TUPLE: import_module(name)``
+    where the tuple is a constant, and ``__import__("engine." + key)`` where
+    the pieces are string constants in the same function. Dict values that are
+    themselves module paths (the membership-source table) are included when
+    the file calls ``import_module`` at all.
+    """
+    names: set[str] = set()
+    sequences, dict_values = _bound_string_constants(tree)
+    calls = [node for node in ast.walk(tree) if _is_import_call(node) and node.args]
+    for node in ast.walk(tree):
+        if not isinstance(node, ast.For) or not isinstance(node.target, ast.Name):
+            continue
+        if isinstance(node.iter, ast.Name):
+            sequence = sequences.get(node.iter.id)
+        else:
+            sequence = _sequence_strings(node.iter)
+        if not sequence:
+            continue
+        for child in ast.walk(node):
+            if (
+                _is_import_call(child)
+                and child.args
+                and isinstance(child.args[0], ast.Name)
+                and child.args[0].id == node.target.id
+            ):
+                names.update(sequence)
+    for call in calls:
+        arg = call.args[0]
+        literal = _const_str(arg)
+        if literal is not None:
+            names.add(literal)
+            continue
+        if isinstance(arg, ast.Name):
+            names.update(sequences.get(arg.id, ()))
+        if not (isinstance(arg, ast.BinOp) and isinstance(arg.op, ast.Add)):
+            continue
+        prefix = _const_str(arg.left)
+        if prefix is None or not isinstance(arg.right, ast.Name):
+            continue
+        pieces = list(sequences.get(arg.right.id, ()))
+        pieces.extend(dict_values.get(arg.right.id, ()))
+        enclosing = _function_covering(tree, call.lineno)
+        if enclosing is not None:
+            pieces.extend(_string_constants(enclosing))
+        for piece in pieces:
+            names.add(prefix + piece)
+    if calls:
+        for values in dict_values.values():
+            for value in values:
+                if "." in value:
+                    names.add(value)
+    return names
+
+
+def _module_name(path: Path) -> str:
+    relative = path.relative_to(REPO_ROOT)
+    parts = list(relative.parts)
+    if parts[-1] == "__init__.py":
+        parts = parts[:-1]
+    elif parts[-1].endswith(".py"):
+        parts[-1] = parts[-1][:-3]
+    return ".".join(parts)
+
+
+def _resolve_module(name: str) -> Path | None:
+    if not name or any(not part.isidentifier() for part in name.split(".")):
+        return None
+    relative = Path(*name.split("."))
+    for candidate in (REPO_ROOT / relative.with_suffix(".py"), REPO_ROOT / relative / "__init__.py"):
+        if candidate.is_file():
+            return candidate
+    return None
+
+
+def _static_import_names(tree: ast.AST, current: Path) -> set[str]:
+    current_module = _module_name(current)
+    package = current_module if current.name == "__init__.py" else current_module.rpartition(".")[0]
+    found = set(_dynamic_import_names(tree))
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Import):
+            for alias in node.names:
+                found.add(alias.name)
+            continue
+        if not isinstance(node, ast.ImportFrom):
+            continue
+        if node.level:
+            parts = package.split(".") if package else []
+            drop = node.level - 1
+            if drop == 0:
+                base_parts = parts
+            elif drop <= len(parts):
+                base_parts = parts[:-drop]
+            else:
+                base_parts = []
+            base = ".".join(part for part in base_parts if part)
+            if node.module:
+                base = f"{base}.{node.module}" if base else node.module
+        else:
+            base = node.module or ""
+        if not base:
+            continue
+        found.add(base)
+        for alias in node.names:
+            if alias.name != "*":
+                found.add(f"{base}.{alias.name}")
+    return found
+
+
+def _import_closure(entry: str) -> frozenset[str]:
+    cached = _CLOSURE_CACHE.get(entry)
+    if cached is not None:
+        return cached
+    start = REPO_ROOT / entry
+    seen: set[Path] = set()
+    stack = [start]
+    while stack:
+        path = stack.pop()
+        if path in seen or not path.is_file():
+            continue
+        seen.add(path)
+        tree = ast.parse(path.read_text(encoding="utf-8"), filename=str(path))
+        for name in _static_import_names(tree, path):
+            resolved = _resolve_module(name)
+            if resolved is None:
+                continue
+            if resolved not in seen:
+                stack.append(resolved)
+            parent = REPO_ROOT
+            for part in resolved.relative_to(REPO_ROOT).parts[:-1]:
+                parent = parent / part
+                init = parent / "__init__.py"
+                if init.is_file() and init not in seen:
+                    stack.append(init)
+    closure = frozenset(path.relative_to(REPO_ROOT).as_posix() for path in seen)
+    _CLOSURE_CACHE[entry] = closure
+    return closure
+
+
+def _open_mode_writes(call: ast.Call) -> bool:
+    mode: ast.AST | None = call.args[1] if len(call.args) >= 2 else None
+    for keyword in call.keywords:
+        if keyword.arg == "mode":
+            mode = keyword.value
+    if mode is None:
+        return False
+    literal = _const_str(mode)
+    if literal is None:
+        return True
+    return any(mark in literal for mark in ("w", "a", "x", "+"))
+
+
+def _write_findings(tree: ast.AST) -> list[str]:
+    """File-write sites: open(..., w/a), Path.write_*, json.dump, shutil, os.replace.
+
+    ``json.dumps`` and ``datetime.replace`` are not writes. A non-literal open
+    mode counts, because the scan cannot prove it is read-only.
+    """
+    os_names = {"os"}
+    json_names = {"json"}
+    shutil_names: set[str] = set()
+    os_replace_names: set[str] = set()
+    json_dump_names: set[str] = set()
+    shutil_names_called: set[str] = set()
+    findings: list[str] = []
+
+    def add(node: ast.AST, text: str) -> None:
+        findings.append(f"line {getattr(node, 'lineno', '?')}: {text}")
+
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Import):
+            for alias in node.names:
+                root = alias.name.split(".", 1)[0]
+                bound = alias.asname or root
+                if root == "os":
+                    os_names.add(bound)
+                elif root == "json":
+                    json_names.add(bound)
+                elif root == "shutil":
+                    shutil_names.add(bound)
+                    add(node, f"import {alias.name}")
+        elif isinstance(node, ast.ImportFrom) and node.module:
+            root = node.module.split(".", 1)[0]
+            if root == "os":
+                for alias in node.names:
+                    if alias.name == "replace":
+                        os_replace_names.add(alias.asname or alias.name)
+                        add(node, "from os import replace")
+            elif root == "json":
+                for alias in node.names:
+                    if alias.name == "dump":
+                        json_dump_names.add(alias.asname or alias.name)
+                        add(node, "from json import dump")
+            elif root == "shutil":
+                add(node, f"from {node.module} import shutil")
+                for alias in node.names:
+                    shutil_names_called.add(alias.asname or alias.name)
+        elif isinstance(node, ast.Call):
+            func = node.func
+            if isinstance(func, ast.Name):
+                if func.id == "open" and _open_mode_writes(node):
+                    add(node, "open write mode")
+                elif func.id in os_replace_names:
+                    add(node, "os.replace")
+                elif func.id in json_dump_names:
+                    add(node, "json.dump")
+                elif func.id in shutil_names_called:
+                    add(node, "shutil call")
+            elif isinstance(func, ast.Attribute):
+                if func.attr.startswith("write_"):
+                    add(node, f"Path.{func.attr}")
+                elif func.attr == "open" and _open_mode_writes(node):
+                    add(node, "open write mode")
+                elif (
+                    func.attr == "replace"
+                    and isinstance(func.value, ast.Name)
+                    and func.value.id in os_names
+                ):
+                    add(node, "os.replace")
+                elif (
+                    func.attr == "dump"
+                    and isinstance(func.value, ast.Name)
+                    and func.value.id in json_names
+                ):
+                    add(node, "json.dump")
+                elif isinstance(func.value, ast.Name) and func.value.id in shutil_names:
+                    add(node, f"shutil.{func.attr}")
+    return findings
+
 
 def test_baseline_frozen_at_main_sha_is_pinned() -> None:
     baseline = _read_baseline()
@@ -350,15 +601,18 @@ def test_baseline_frozen_at_main_sha_is_pinned() -> None:
     assert baseline["frozen_at_main"] == FROZEN_AT_MAIN
 
 
-@pytest.mark.needs_full_checkout("data") if _needs_checkout("data") else _NO_SKIP
-def test_robotics_automation_membership_unchanged_vs_frozen_baseline() -> None:
+def test_prophet_presence_block_is_absent_from_the_baseline() -> None:
     baseline = _read_baseline()
-    assert _basket_snapshot(BASKET_ID) == baseline["basket_membership"][BASKET_ID]
-    assert set(baseline["basket_membership"]) == {BASKET_ID}, "cn_robotics is a different surface"
-    assert (
-        _canonical_sha256(baseline["basket_membership"])
-        == baseline["section_sha256"]["basket_membership"]
-    )
+    assert "prophet_presence" not in baseline
+    assert "prophet_presence" not in baseline["section_sha256"]
+    assert "prophet_presence" not in baseline["owners"]
+
+
+def test_baseline_section_hashes_match_stored_sections() -> None:
+    baseline = _read_baseline()
+    for name, digest in baseline["section_sha256"].items():
+        assert name in baseline, name
+        assert _canonical_sha256(baseline[name]) == digest, name
 
 
 def test_frozen_field_lists_exclude_nightly_volatile_fields() -> None:
@@ -393,114 +647,114 @@ def test_frozen_field_lists_exclude_nightly_volatile_fields() -> None:
         assert field not in PROPHET_FROZEN
         assert field not in FORESIGHT_DECISION_FIELDS
     assert PROPHET_FROZEN == ("member_tickers_present",)
+    assert set(THEME_STATE_FROZEN).isdisjoint(THEME_STATE_SHAPE)
+    assert set(THEME_TRACKER_FROZEN).isdisjoint(THEME_TRACKER_SHAPE)
+    assert set(BASKET_CONFLUENCE_FROZEN).isdisjoint(BASKET_CONFLUENCE_SHAPE)
+    assert set(FORESIGHT_DECISION_FIELDS).isdisjoint(THEME_STATE_SHAPE)
 
 
-@pytest.mark.needs_full_checkout("data") if _needs_checkout("data") else _NO_SKIP
-def test_theme_state_fields_for_robotics_unchanged() -> None:
-    baseline = _read_baseline()
-    assert _robotics_theme_state() == baseline["theme_state"]
-    assert _canonical_sha256(baseline["theme_state"]) == baseline["section_sha256"]["theme_state"]
-
-
-@pytest.mark.needs_full_checkout("data", "site") if _needs_checkout("data", "site") else _NO_SKIP
-def test_theme_tracker_robotics_entry_unchanged() -> None:
-    baseline = _read_baseline()
-    assert _robotics_theme_tracker() == baseline["theme_tracker"]
-    assert _canonical_sha256(baseline["theme_tracker"]) == baseline["section_sha256"]["theme_tracker"]
-
-
-@pytest.mark.needs_full_checkout("site") if _needs_checkout("site") else _NO_SKIP
-def test_basket_confluence_robotics_entry_unchanged() -> None:
-    baseline = _read_baseline()
-    assert _robotics_basket_confluence() == baseline["basket_confluence"]
-    assert (
-        _canonical_sha256(baseline["basket_confluence"])
-        == baseline["section_sha256"]["basket_confluence"]
-    )
-
-
-@pytest.mark.needs_full_checkout("data", "site") if _needs_checkout("data", "site") else _NO_SKIP
-def test_prophet_presence_of_robotics_members_unchanged() -> None:
-    baseline = _read_baseline()
-    assert _robotics_prophet_presence() == baseline["prophet_presence"]
-    assert (
-        _canonical_sha256(baseline["prophet_presence"])
-        == baseline["section_sha256"]["prophet_presence"]
-    )
-
-
-@pytest.mark.needs_full_checkout("site") if _needs_checkout("site") else _NO_SKIP
-def test_public_pages_carry_no_payload_canaries() -> None:
+def test_public_leak_canary_vocabulary_is_pinned() -> None:
     baseline = _read_baseline()
     assert baseline["public_pages"] == _public_pages_section()
     assert _canonical_sha256(baseline["public_pages"]) == baseline["section_sha256"]["public_pages"]
-    for path in PUBLIC_PAGE_PATHS:
-        assert path.exists(), f"Expected committed public page is absent: {path}"
-        content = path.read_text(encoding="utf-8")
-        for canary in PUBLIC_PAGE_CANARIES:
-            assert canary not in content, f"{canary!r} leaked into {path.relative_to(REPO_ROOT)}"
-    files = _public_json_files()
-    assert files, "no public JSON files found to scan"
-    for path in files:
-        blob = path.read_bytes()
-        for token in PUBLIC_JSON_CANARIES:
-            assert token not in blob, f"{token!r} leaked into {path.relative_to(REPO_ROOT)}"
 
 
-@pytest.mark.needs_full_checkout("data") if _needs_checkout("data") else _NO_SKIP
-def test_evidence_parquet_has_no_live_assertion_cells() -> None:
-    pandas = pytest.importorskip("pandas")
+def test_evidence_parquet_rule_is_pinned() -> None:
     baseline = _read_baseline()
     assert baseline["evidence_parquet"] == _evidence_parquet_section()
     assert (
         _canonical_sha256(baseline["evidence_parquet"])
         == baseline["section_sha256"]["evidence_parquet"]
     )
-    frame = pandas.read_parquet(EVIDENCE_PARQUET_PATH)
-    if PARQUET_FORBIDDEN_COLUMN in frame.columns:
-        assert frame[PARQUET_FORBIDDEN_COLUMN].isna().all(), (
-            "tracked evidence parquet carries live curation_assertion cells"
-        )
 
 
-# ---------------------------------------------------------------------------
-# baseline regeneration
-# ---------------------------------------------------------------------------
-
-def _baseline_document(main_sha: str) -> dict[str, Any]:
-    sections = {
-        "basket_membership": {BASKET_ID: _basket_snapshot(BASKET_ID)},
-        "theme_state": _robotics_theme_state(),
-        "theme_tracker": _robotics_theme_tracker(),
-        "basket_confluence": _robotics_basket_confluence(),
-        "prophet_presence": _robotics_prophet_presence(),
-        "public_pages": _public_pages_section(),
-        "evidence_parquet": _evidence_parquet_section(),
-    }
-    return {
-        "schema": BASELINE_SCHEMA,
-        "frozen_at_main": main_sha,
-        "owners": {
-            "basket_membership": {"artifact": "data/baskets/membership.json"},
-            "theme_state": {"artifact": "data/neuralweb/theme_state.json"},
-            "theme_tracker": {"reader": "scripts.build_state_of_themes.compose"},
-            "basket_confluence": {"artifact": "site/marketdata/basket_confluence.json"},
-            "prophet_presence": {"artifact": "site/prophet/index.json"},
-            "public_pages": {"artifacts": [str(p.relative_to(REPO_ROOT)) for p in PUBLIC_PAGE_PATHS]},
-            "evidence_parquet": {"artifact": "data/theme_graph/evidence.parquet"},
-        },
-        **sections,
-        "section_sha256": {name: _canonical_sha256(value) for name, value in sections.items()},
-    }
+def test_reland_write_set_is_disjoint_from_decision_surfaces() -> None:
+    document = _read_write_set()
+    assert document["schema"] == WRITE_SET_SCHEMA
+    assert document["base"] == RELAND_BASE
+    assert document["head"] == RELAND_HEAD
+    paths = document["paths"]
+    assert isinstance(paths, list) and paths, "write-set fixture is empty"
+    assert paths == sorted(paths)
+    assert set(REQUIRED_ROBOTICS_MODULES) <= set(paths)
+    violations = {path: _write_set_violation(path) for path in paths}
+    violations = {path: reason for path, reason in violations.items() if reason}
+    assert not violations, violations
+    for builder in sorted(_surface_builder_paths()):
+        assert (REPO_ROOT / builder).is_file(), builder
+    recorded = _git_name_only(RELAND_BASE, RELAND_HEAD)
+    if recorded is not None:
+        assert recorded == paths
 
 
-if __name__ == "__main__":
-    if len(sys.argv) != 3 or sys.argv[1] != "--regenerate-baseline":
-        raise SystemExit(
-            "usage: python3 tests/test_robotics_theme_non_regression.py --regenerate-baseline <main-sha>"
-        )
-    document = _baseline_document(sys.argv[2])
-    BASELINE_PATH.parent.mkdir(parents=True, exist_ok=True)
-    BASELINE_PATH.write_text(
-        json.dumps(document, ensure_ascii=False, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+def test_robotics_engine_modules_perform_no_writes() -> None:
+    modules = _robotics_engine_modules()
+    assert set(REQUIRED_ROBOTICS_MODULES) <= set(modules)
+    found: dict[str, list[str]] = {}
+    for rel in modules:
+        tree = ast.parse((REPO_ROOT / rel).read_text(encoding="utf-8"), filename=rel)
+        sites = _write_findings(tree)
+        if sites:
+            found[rel] = sites
+    assert not found, found
+
+
+def test_write_scanner_flags_banned_forms_and_ignores_reads() -> None:
+    banned = (
+        "open(p, 'w')",
+        "open(p, 'a')",
+        "open(p, 'wb')",
+        "open(p, mode='a+')",
+        "p.write_text('a')",
+        "p.write_bytes(b'a')",
+        "import json\njson.dump({}, fh)",
+        "import shutil\nshutil.copy('a', 'b')",
+        "import os\nos.replace('a', 'b')",
+        "from os import replace\nreplace('a', 'b')",
+        "import os as operating_system\noperating_system.replace('a', 'b')",
     )
+    allowed = (
+        "open(p)",
+        "open(p, 'r')",
+        "open(p, 'rb')",
+        "import json\njson.dumps({})",
+        "moment.replace(tzinfo=timezone.utc)",
+    )
+    for source in banned:
+        assert _write_findings(ast.parse(source)), source
+    for source in allowed:
+        assert not _write_findings(ast.parse(source)), source
+
+
+# ci-trigger-closure: data — parse-only pins of the isolation subjects; imports not followed
+def test_decision_builders_do_not_import_robotics_modules() -> None:
+    robotics = set(_robotics_engine_modules())
+    assert robotics
+    for surface, entries in SURFACE_BUILDERS.items():
+        for entry in entries:
+            assert (REPO_ROOT / entry).is_file(), entry
+            closure = _import_closure(entry)
+            assert entry in closure, entry
+            hit = sorted(path for path in closure if path in robotics or _is_robotics_engine_module(path))
+            assert not hit, f"{surface} builder {entry} reaches robotics: {hit}"
+            named = [
+                f"{rel} names {module}"
+                for rel in sorted(closure)
+                for module in ROBOTICS_MODULE_NAMES
+                if module in (REPO_ROOT / rel).read_text(encoding="utf-8")
+            ]
+            assert not named, named
+    tracker = _import_closure("scripts/build_state_of_themes.py")
+    assert "engine/market_ontology/theme_research_mounts.py" in tracker
+    assert "engine/theme_graph/store.py" in tracker
+    assert "engine/research_priority_ordering.py" in tracker
+    prophet = _import_closure("scripts/build_prophet.py")
+    assert "engine/prophet_board_read.py" in prophet
+    assert "engine/prophet_bridge.py" in prophet
+    publisher = _import_closure("scripts/build_baskets.py")
+    assert "engine/baskets.py" in publisher
+    assert "engine/bonds_alerts.py" in publisher
+    thematic = _import_closure("scripts/build_thematic_state.py")
+    assert "engine/neuralweb/theme_thesis.py" in thematic
+    assert "engine/neuralweb/theme_pathways.py" in thematic
+    assert "engine/neuralweb/theme_asymmetry.py" in thematic

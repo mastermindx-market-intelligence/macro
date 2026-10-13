@@ -136,9 +136,6 @@
     "evidence_parquet": {
       "artifact": "data/theme_graph/evidence.parquet"
     },
-    "prophet_presence": {
-      "artifact": "site/prophet/index.json"
-    },
     "public_pages": {
       "artifacts": [
         "site/state_of_themes.html",
@@ -150,124 +147,6 @@
     },
     "theme_tracker": {
       "reader": "scripts.build_state_of_themes.compose"
-    }
-  },
-  "prophet_presence": {
-    "frozen": {
-      "member_tickers_present": [
-        "ISRG",
-        "NOVT"
-      ]
-    },
-    "shape": {
-      "row_fields": {
-        "_conviction_score": "number",
-        "_priority_score": "number",
-        "_r_unit": "number",
-        "_signal_date": "string",
-        "admission_class": "string",
-        "age_days": "number",
-        "asset": "string",
-        "backfill_executed_at": "string",
-        "board_read": "object",
-        "clock_age_days": "number",
-        "closed": "bool",
-        "confirmed_date": "null",
-        "direction": "string",
-        "early_turn": "object",
-        "entry": "number",
-        "entry_basis": "object",
-        "entry_date": "string",
-        "entry_status": "string",
-        "entry_zone": "object",
-        "entry_zone_state": "object",
-        "formation_date": "string",
-        "horizon_days": "number",
-        "id": "string",
-        "integrity_reason": "null",
-        "integrity_status": "null",
-        "invalidation": "number",
-        "last_price": "number",
-        "lifecycle_state": "string",
-        "management_confidence": "number",
-        "management_error": "null",
-        "management_status": "string",
-        "observed_date": "string",
-        "option_contract": "null",
-        "origination_mode": "string",
-        "origination_note": "object",
-        "phase": "string",
-        "plan_asof": "string",
-        "price_basis_date": "string",
-        "profit_plan": "array",
-        "pulse": "string",
-        "pulse_zh": "string",
-        "recommended_action": "string",
-        "recorded_at": "string",
-        "selection_era": "string",
-        "signal_date": "string",
-        "signal_date_basis": "string",
-        "signal_provisional": "bool",
-        "signal_tier": "mixed",
-        "source_marker_date": "string",
-        "stage_tilt": "object",
-        "state": "object",
-        "targets": "array",
-        "thesis": "string",
-        "thesis_zh": "string",
-        "trigger": "number",
-        "what_to_do_now": "array",
-        "what_to_do_now_zh": "array"
-      }
-    },
-    "structure_checked": {
-      "row_ticker_field": "asset",
-      "rows_container": "plans",
-      "top_level_keys": [
-        "active_count",
-        "active_count_by_age",
-        "asof",
-        "authority_tier",
-        "board_read_coverage",
-        "board_read_lineage",
-        "cadence",
-        "gate_go",
-        "intake",
-        "leader_observation_summary",
-        "ledger_corrections",
-        "ledger_quarantine",
-        "lifecycle_counts",
-        "lifecycle_grand_total",
-        "lifecycle_live_total",
-        "note",
-        "open_count",
-        "origination_disclosure",
-        "plan_count",
-        "plan_integrity",
-        "plans",
-        "plans_sort_key",
-        "record",
-        "recorded_at",
-        "schema",
-        "selection_era",
-        "source_asof",
-        "source_basis",
-        "source_board_asof",
-        "source_delayed",
-        "source_mixed_vintage",
-        "source_unknown"
-      ],
-      "top_level_keys_present": [
-        "schema",
-        "asof",
-        "recorded_at",
-        "source_asof",
-        "source_board_asof",
-        "source_delayed",
-        "source_unknown",
-        "source_basis",
-        "plans"
-      ]
     }
   },
   "public_pages": {
@@ -303,7 +182,6 @@
     "basket_confluence": "1bfd53f771fbbab5f50aa2bffa92004a5827ef27b10aeaf5a5130f9d10168d62",
     "basket_membership": "0ffbf43cf2c3defacd966f513b7366747d25c3d1bf037c795002aebe285a2441",
     "evidence_parquet": "28f7795eb665822d740ffd0831dd50e299042ccbadec2ffe7e7e105b181a4150",
-    "prophet_presence": "1bb09a9117090a69e007c142986301d520ce58cc105f223ca079512dcdab483b",
     "public_pages": "9323f803ced57785108eaa34f1f4ff17dceeed32db60ee9fc14e4c01545df012",
     "theme_state": "d1539cf8cdc677c3a0f5173fb1c629d0a49954f3556c5d1238b252f3de61f259",
     "theme_tracker": "4f321a0e872ef2234046bbca9f40d71a4b7fc32930ab585cd5395d1dc0943a81"
