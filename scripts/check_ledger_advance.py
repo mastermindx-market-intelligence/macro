@@ -90,6 +90,8 @@ _LEDGER_MANIFEST: list[dict[str, Any]] = [
     {
         "path": "data/risk_radar/forward_log.jsonl",
         "label": "risk_radar",
+        # Stall when strictly more than 2 NYSE sessions behind yesterday.
+        "max_sessions_behind": 2,
         # NOTE: extend the list below as new forward ledgers are created;
         # add a short label for use in escalation messages.
     },
@@ -104,6 +106,8 @@ _LEDGER_MANIFEST: list[dict[str, Any]] = [
     {
         "path": "data/leadership_crack/forward_log.jsonl",
         "label": "leadership_crack",
+        # Stall when strictly more than 2 NYSE sessions behind yesterday.
+        "max_sessions_behind": 2,
         # NOTE: may not exist until CSP-W1 ships; silently skipped until then.
     },
     {

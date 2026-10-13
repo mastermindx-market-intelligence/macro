@@ -1023,3 +1023,13 @@ def test_no_advance_and_session_lag_are_one_alert(tmp_path, capsys):
     assert stalled == []
     assert dispatch.calls == []
     assert _load_state(state_path)["ledgers"][_LAG_REL]["lag_stalled_since"] == "2026-07-17"
+
+
+def test_risk_radar_and_leadership_crack_opt_in_at_two_sessions():
+    """risk_radar and leadership_crack use a 2-session ceiling; nothing else does."""
+    by_label = {entry["label"]: entry for entry in M._LEDGER_MANIFEST}
+    assert by_label["risk_radar"]["max_sessions_behind"] == 2
+    assert by_label["leadership_crack"]["max_sessions_behind"] == 2
+    for entry in M._LEDGER_MANIFEST:
+        if entry["label"] not in ("risk_radar", "leadership_crack"):
+            assert "max_sessions_behind" not in entry
