@@ -25732,6 +25732,8 @@ jobs:
       # change that created it - a suite CI never selects is a guard that cannot
       # fail, and this job is the whole program's only exclusive gate:code job.
       - "tests/test_industrials_financial_dossier.py"
+      # IND-T05: edition selection and dossier comparison. Same exclusive job.
+      - "tests/test_industrials_source_history.py"
     timeout-minutes: 6
     runs-on: ubuntu-latest
     steps:
@@ -25749,7 +25751,7 @@ jobs:
         # Stated identically in clean-venv proof below.
         run: pip install pytest pyyaml requests
       - name: Industrials synthetic dependency binding (T01)
-        run: python -m pytest tests/test_industrials_dependency_binding.py tests/test_industrials_result_cash.py tests/test_industrials_financial_dossier.py -q
+        run: python -m pytest tests/test_industrials_dependency_binding.py tests/test_industrials_result_cash.py tests/test_industrials_financial_dossier.py tests/test_industrials_source_history.py -q
 
   house-law-registry-code:
     if: ${{ false }}
