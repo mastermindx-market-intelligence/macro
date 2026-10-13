@@ -26636,7 +26636,12 @@ jobs:
     # contract-delta does not see the suites as unwired.
     # Full tracked inventory on 94b86c4 (git ls-files == git ls-tree -r HEAD,
     # 120893 paths): suite_dependency_closure of the six suites is 64 files
-    # and curated_exclusive_closure_findings is UNCOVERED 0. Unmarked literals
+    # and curated_exclusive_closure_findings is UNCOVERED 0. The same 64-file
+    # union on fe6d00ec still excludes engine/theme_graph/store.py,
+    # engine/market_ontology/theme_research_mounts.py and
+    # engine/research_priority_ordering.py (curated_exclusive_closure_findings
+    # uncovered 0 before and after the drop; probes stayed 134/5787/10,
+    # 134/5590/10, 129/5550/10), so those three are not declared. Unmarked literals
     # PUBLIC_PAGE_PATHS and EXTRA_PUBLIC_JSON
     # (site/state_of_themes.html, site/basket/robotics_automation.html,
     # site/basketdata/foresight_cascade.json) are reads and stay. Not reads,
@@ -26694,14 +26699,11 @@ jobs:
       - "engine/market_ontology/robotics_theme_research.py"
       - "engine/market_ontology/semiconductor_theme_research.py"
       - "engine/market_ontology/theme_research_binding.py"
-      - "engine/market_ontology/theme_research_mounts.py"
       - "engine/press/earnings_adapter.py"
-      - "engine/research_priority_ordering.py"
       - "engine/theme_graph/__init__.py"
       - "engine/theme_graph/curation_assertion.py"
       - "engine/theme_graph/identity.py"
       - "engine/theme_graph/rights.py"
-      - "engine/theme_graph/store.py"
       - "lib/__init__.py"
       - "lib/config.py"
       - "lib/dataos/identity.py"
