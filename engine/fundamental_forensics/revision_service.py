@@ -43,6 +43,8 @@ from .query_service import (
     FinancialQueryResult,
     FinancialQueryUnavailableError,
     admit_financial_request,
+    canonical_financial_delivery,
+    enforce_dataset_admission_floor,
     validate_supplied_dataset,
 )
 from .raw_ledger import canonical_json
@@ -66,6 +68,13 @@ class FinancialPacketDataset:
     registry: Any
     context: PacketBuildContext
     input_digests: PacketEvidenceDigests
+    # FIF D3: absent keeps the FIP1/golden revisions envelope byte-identical
+    # (no ``delivery`` key). The exact production object is validated by the
+    # shared delivery law and emitted additively.
+    delivery: Any = None
+    # FIF D3 (A12): the dataset's own admission clock, enforced by the
+    # transport before the packet is assembled.
+    dataset_admitted_at: Any = None
 
 
 class FinancialPacketProvider(Protocol):
@@ -190,6 +199,9 @@ def validate_packet_dataset(entity_id: str, dataset: FinancialPacketDataset) -> 
         raise FinancialQueryUnavailableError()
     if dataset.entity.source_entity_id != binding.source_entity_id:
         raise FinancialQueryUnavailableError()
+    # One delivery law across every surface: absent stays absent, the exact
+    # golden or production object passes, anything else is unavailable.
+    canonical_financial_delivery(dataset.delivery)
     return binding
 
 
@@ -263,6 +275,9 @@ def execute_financial_revisions(
         provider = provider_factory()
     dataset = provider.resolve(admitted.entity_id)
     binding = validate_packet_dataset(admitted.entity_id, dataset)
+    # A12: the dataset's own admission clock gates the system view. The
+    # admitted QueryPolicy object itself passes through untouched.
+    enforce_dataset_admission_floor(admitted.policy, dataset)
     _refuse_unsupported_metrics(
         binding=binding,
         dataset=dataset,
@@ -309,6 +324,14 @@ def execute_financial_revisions(
         },
         "revisions": packet["revisions"],
     }
+
+    # FIF D3: the delivery block is additive. Absent for FIP1/golden — the
+    # canonical key order simply never gains the key, so every accepted
+    # pre-D3 revisions response stays byte-identical — and the exact
+    # production object for a production dataset.
+    delivery = canonical_financial_delivery(dataset.delivery)
+    if delivery is not None:
+        envelope["delivery"] = delivery
 
     response_body = canonical_json(envelope).encode("utf-8")
     if len(response_body) > MAX_RESPONSE_BYTES:
