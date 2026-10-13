@@ -112,7 +112,7 @@ def _field_row(**overrides) -> dict:
         "dependency_field_ids": [],
         "quality_state": "missing",
         "coverage_state": "unmapped",
-        "reason": "probe row for schema pinning",
+        "reason": "missing_standard_fact:us-gaap:Assets",
     }
     row.update(overrides)
     return row
@@ -138,7 +138,7 @@ def _valued_row(**overrides) -> dict:
 def _set_applicable(obj: dict) -> dict:
     obj["applicability"] = {
         "state": "applicable",
-        "reason": "contract fixture treats the pack as applicable",
+        "reason": "applicability_rule_satisfied",
         "rule_id": "specialist_pack.fixture_applicable",
         "sic": None,
         "sic_source": None,
@@ -182,6 +182,30 @@ def _catalogue_field(**overrides) -> dict:
     return row
 
 
+def _reason_code(code: str, parameter, meaning: str) -> dict:
+    return {"code": code, "parameter": parameter, "meaning": meaning}
+
+
+_SPECIFIED_REASON_CODES = [
+    _reason_code(
+        "applicability_rule_satisfied",
+        None,
+        "the pack's versioned applicability rule evaluated true",
+    ),
+    _reason_code("missing_dependency", None, "a formula/check operand is not valued"),
+    _reason_code(
+        "missing_standard_fact",
+        "concept",
+        "the standard concept named by the parameter has no admitted fact for the period",
+    ),
+    _reason_code(
+        "extension_concept_unaliased",
+        "prefix",
+        "the value exists only under an extension prefix with no frozen alias",
+    ),
+]
+
+
 def _specified_catalogue() -> dict:
     schema = load_pack_schema("PK01")
     schema["catalogue_state"] = "specified"
@@ -193,6 +217,7 @@ def _specified_catalogue() -> dict:
             "operands": ["probe_field"],
         }
     ]
+    schema["reason_codes"] = deepcopy(_SPECIFIED_REASON_CODES)
     return schema
 
 
@@ -754,3 +779,231 @@ def test_cross_document_packet_ref_resolves_through_registry() -> None:
         item == "fields.0.non_value_state: 'bogus' is not valid under any of the given schemas"
         for item in errors
     )
+
+
+def test_reason_code_unknown_code_rejected(monkeypatch: pytest.MonkeyPatch) -> None:
+    fake = _specified_catalogue()
+    monkeypatch.setattr(pack_contract, "load_pack_schema", lambda pack_id: deepcopy(fake))
+    obj = _set_applicable(_minimal_result("PK01"))
+    obj["fields"] = [_field_row(reason="totally_unknown_code")]
+    _finish(obj)
+    errors = validate_pack_result(obj)
+    assert errors
+    assert any(item.startswith("fields.0.reason:") for item in errors)
+
+
+def test_reason_code_bad_concept_grammar_rejected(monkeypatch: pytest.MonkeyPatch) -> None:
+    fake = _specified_catalogue()
+    monkeypatch.setattr(pack_contract, "load_pack_schema", lambda pack_id: deepcopy(fake))
+    obj = _set_applicable(_minimal_result("PK01"))
+    obj["fields"] = [_field_row(reason="missing_standard_fact:Goodwill")]
+    _finish(obj)
+    errors = validate_pack_result(obj)
+    assert errors
+    assert any(item.startswith("fields.0.reason:") for item in errors)
+
+
+def test_reason_code_bad_prefix_grammar_rejected(monkeypatch: pytest.MonkeyPatch) -> None:
+    fake = _specified_catalogue()
+    monkeypatch.setattr(pack_contract, "load_pack_schema", lambda pack_id: deepcopy(fake))
+    obj = _set_applicable(_minimal_result("PK01"))
+    obj["fields"] = [_field_row(reason="extension_concept_unaliased:Bad_Prefix")]
+    _finish(obj)
+    errors = validate_pack_result(obj)
+    assert errors
+    assert any(item.startswith("fields.0.reason:") for item in errors)
+
+
+def test_reason_code_parameter_on_null_parameter_code_rejected(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    fake = _specified_catalogue()
+    monkeypatch.setattr(pack_contract, "load_pack_schema", lambda pack_id: deepcopy(fake))
+    obj = _set_applicable(_minimal_result("PK01"))
+    obj["fields"] = [_field_row(reason="missing_dependency:extra")]
+    _finish(obj)
+    errors = validate_pack_result(obj)
+    assert errors
+    assert any(item.startswith("fields.0.reason:") for item in errors)
+
+
+def test_reason_code_non_valued_field_row_with_null_reason_rejected(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    fake = _specified_catalogue()
+    monkeypatch.setattr(pack_contract, "load_pack_schema", lambda pack_id: deepcopy(fake))
+    obj = _set_applicable(_minimal_result("PK01"))
+    obj["fields"] = [_field_row(reason=None)]
+    _finish(obj)
+    errors = validate_pack_result(obj)
+    assert errors
+    assert any(item.startswith("fields.0.reason:") for item in errors)
+
+
+def test_reason_code_not_evaluable_check_with_null_reason_rejected(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    fake = _specified_catalogue()
+    monkeypatch.setattr(pack_contract, "load_pack_schema", lambda pack_id: deepcopy(fake))
+    obj = _set_applicable(_minimal_result("PK01"))
+    obj["fields"] = [_field_row()]
+    obj["checks"] = [
+        {
+            "check_id": "probe_sum",
+            "kind": "sum_identity",
+            "status": "not_evaluable",
+            "operands": ["probe_field"],
+            "tolerance": None,
+            "evidence_field_ids": ["probe_field"],
+            "reason": None,
+        }
+    ]
+    _finish(obj)
+    errors = validate_pack_result(obj)
+    assert errors
+    assert any(item.startswith("checks.0.reason:") for item in errors)
+
+
+def test_reason_code_applicable_with_other_member_reason_rejected(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    fake = _specified_catalogue()
+    monkeypatch.setattr(pack_contract, "load_pack_schema", lambda pack_id: deepcopy(fake))
+    obj = _set_applicable(_minimal_result("PK01"))
+    obj["applicability"]["reason"] = "missing_dependency"
+    obj["fields"] = [_field_row()]
+    _finish(obj)
+    errors = validate_pack_result(obj)
+    assert errors
+    assert any(item.startswith("applicability.reason:") for item in errors)
+
+
+def test_reason_code_well_formed_specified_result_accepted(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    fake = _specified_catalogue()
+    monkeypatch.setattr(pack_contract, "load_pack_schema", lambda pack_id: deepcopy(fake))
+    obj = _set_applicable(_minimal_result("PK01"))
+    obj["fields"] = [_valued_row(reason="extension_concept_unaliased:bac")]
+    obj["checks"] = [
+        {
+            "check_id": "probe_sum",
+            "kind": "sum_identity",
+            "status": "not_evaluable",
+            "operands": ["probe_field"],
+            "tolerance": None,
+            "evidence_field_ids": ["probe_field"],
+            "reason": "missing_standard_fact:us-gaap:Goodwill",
+        }
+    ]
+    _finish(obj)
+    assert validate_pack_result(obj) == []
+
+
+def test_rk4_numeric_text_span_valued_row_rejected_on_unspecified_catalogue() -> None:
+    obj = _set_applicable(_minimal_result("PK01"))
+    obj["fields"] = [
+        _valued_row(
+            evidence_kind="text_span",
+            required_evidence_kind="text_span",
+            source_occurrence_ids=[],
+            concept=None,
+            source_span={"start_offset": 0, "end_offset": 4},
+        )
+    ]
+    _finish(obj)
+    errors = validate_pack_result(obj)
+    assert errors
+    assert any(item.startswith("fields.0.evidence_kind:") for item in errors)
+
+
+@pytest.mark.parametrize("null_key", ["row", "column"])
+def test_rk4_valued_table_cell_without_row_or_column_rejected(null_key: str) -> None:
+    cell = {"table_id": "tbl-1", "row": 0, "column": 1}
+    cell[null_key] = None
+    obj = _set_applicable(_minimal_result("PK01"))
+    obj["fields"] = [
+        _valued_row(
+            evidence_kind="table_cell",
+            required_evidence_kind="table_cell",
+            source_occurrence_ids=[],
+            concept=None,
+            table_cell=cell,
+        )
+    ]
+    _finish(obj)
+    errors = validate_pack_result(obj)
+    assert errors
+    assert any(item.startswith("fields.0.table_cell:") for item in errors)
+
+
+def test_reason_code_catalogue_duplicate_code_rejected(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    fake = _specified_catalogue()
+    fake["reason_codes"] = [
+        _reason_code("missing_dependency", None, "a formula/check operand is not valued"),
+        _reason_code("missing_dependency", None, "duplicate entry"),
+    ]
+    monkeypatch.setattr(pack_contract, "load_pack_schema", lambda pack_id: deepcopy(fake))
+    errors = catalogue_errors("PK01")
+    assert errors
+    assert any(item.startswith("reason_codes.1.code:") for item in errors)
+
+
+def test_reason_code_catalogue_numeric_field_allowing_text_span_rejected(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    fake = _specified_catalogue()
+    fake["fields"] = [_catalogue_field(allowed_evidence_kinds=["xbrl_fact", "text_span"])]
+    monkeypatch.setattr(pack_contract, "load_pack_schema", lambda pack_id: deepcopy(fake))
+    errors = catalogue_errors("PK01")
+    assert errors
+    assert any(item.startswith("fields.0.allowed_evidence_kinds:") for item in errors)
+
+
+def test_reason_code_meta_schema_unspecified_with_reason_codes_rejected(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    fake = load_pack_schema("PK01")
+    fake["reason_codes"] = [
+        _reason_code("missing_dependency", None, "a formula/check operand is not valued")
+    ]
+    monkeypatch.setattr(pack_contract, "load_pack_schema", lambda pack_id: deepcopy(fake))
+    errors = catalogue_errors("PK01")
+    assert errors
+    assert any(item.startswith("reason_codes:") for item in errors)
+
+
+def test_reason_code_meta_schema_specified_with_empty_reason_codes_rejected(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    fake = _specified_catalogue()
+    fake["reason_codes"] = []
+    monkeypatch.setattr(pack_contract, "load_pack_schema", lambda pack_id: deepcopy(fake))
+    errors = catalogue_errors("PK01")
+    assert errors
+    assert any(item.startswith("reason_codes:") for item in errors)
+
+
+def test_reason_code_cross_catalogue_consistency() -> None:
+    seen: dict[str, tuple] = {}
+    for pack_id in PACK_IDS:
+        for row in load_pack_schema(pack_id).get("reason_codes") or []:
+            code = row.get("code")
+            signature = (row.get("parameter"), row.get("meaning"))
+            if code in seen:
+                assert seen[code] == signature, (
+                    f"{pack_id} reason code {code!r} disagrees with an earlier catalogue"
+                )
+            else:
+                seen[code] = signature
+
+
+@pytest.mark.parametrize("pack_id", PACK_IDS)
+def test_reason_code_all_pack_files_pass_catalogue_errors_with_empty_reason_codes(
+    pack_id: str,
+) -> None:
+    schema = load_pack_schema(pack_id)
+    assert schema.get("reason_codes", []) == []
+    assert catalogue_errors(pack_id) == []
