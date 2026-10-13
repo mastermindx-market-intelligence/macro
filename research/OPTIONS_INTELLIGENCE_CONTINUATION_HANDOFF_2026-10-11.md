@@ -581,10 +581,13 @@ minimax, grok, cursor, glm) → optional bounded workers. No native leaf swarm; 
 
 ## Lane matrix
 
-(2026-10-13T12:15Z snapshot.) Rows superseding older rows below:
+(2026-10-13T12:35Z snapshot.) Rows superseding older rows below:
 
 | lane | state |
 |---|---|
+| PP2-UI-c | DELIVERED `d8544ec5` (T·F·E; 70/70 browser, npm test 10785); REQUEST_REPAIR R1 norm hidden in exact mode, R2 empty live region, R3 open-row 4b never RED (D68) |
+| PP2-UI-c repair 1 | `fable-pp2uic-rep1-20261013` packet `3a65c9a6…` FROZEN; gate-held on mb (lane-ceiling 3/3, other sessions); watcher `bvgbvu6i7` (D68) |
+| PP2-UI-b | packet FROZEN `c799052c…`; BASE = PP2-UI-c REPAIR's accepted head (D68) |
 | PP2-UI-a run 2 | ACCEPTED at `65821c9b` (T·F·R·S·E; npm test 635/635); negative f GREEN carried into PP2-UI-c item 4b (D67) |
 | PP2-UI-c | `fable-pp2uic-r1-20261013` RUNNING on mb since 11:45:57Z (LEASE_OK; watcher `bxgvwph44`) (D67) |
 | PP2-UI-b | packet FROZEN `c799052c…` + header `2a89d0d6…`; ID `fable-pp2uib-r1-20261013` reserved; BASE = PP2-UI-c accepted head (D67) |
@@ -1405,3 +1408,31 @@ INTENDED_RESUME_SURFACE: this Claude Code session; successor reads this file + #
   - PP1-D: FROZEN (gate-held, ubuntu2 disk).
   - #948: CI (watcher `bt4a20yu0`); #983 green but BEHIND.
   - #985: watcher `bff4iyhaz`. Macro #9080/#8920: watcher `b64amfv2n`. Macro #9097: parked (circuit breaker).
+
+### D68 (2026-10-13T12:35Z) — PP2-UI-c judged REQUEST_REPAIR (R1–R3); repair lane frozen and gate-held on mb; every lane host refusing
+
+- FACT PP2-UI-c (`fable-pp2uic-r1-20261013`) DELIVERED at `d8544ec57ccd` (T `a7e39f20` · F `44537860` · E `d8544ec5`), return `/Users/chriswong/lanes/returns/pp2-ui-c/return.md` (22656 B, STATUS COMPLETE, 11:46Z→12:14Z).
+  - Judged by artifact. Verified by the seat: mb custody (local = remote = `d8544ec5`, clean); the changed files are only the owned ones; `lib/optionsScopeBounds.ts`, `lib/optionsCompanion.ts` and `lib/dte.ts` are byte-identical; `parseScopeBounds` now has a caller in `MatrixCompanion.tsx` (applied and draft parse, re-parsed against every snapshot's session, `options-scope-empty` instead of a zero on a newer build that drops the chosen range).
+  - Lane-reported gates: whole `options-companion.spec.ts` 70 passed / 2 spec-skipped on 3 projects × EN/ZH; vitest 123 on the eight scope files; `npm test` 10785 passed / 4 todo; negatives a–e RED.
+- DECIDED REQUEST_REPAIR, three numbered defects (O.11):
+  - **R1, contract defect.** `options-scope-norm` is rendered only in the preset fragment, so normalization cannot be changed in exact mode. This violates PP2-UI-c ruling 1 ("norm stays in both modes").
+  - **R2.** `options-scope-issues` (`role="status"`, `aria-live`) renders empty while `parseDraft` is null.
+  - **R3.** Negative f left `.receipts[open]{flex:1 0 100%}` unchanged, so the item-4b OPEN-row check (`detailsTop >= buttonBottom - 1`) was never shown RED. That NOT DONE UNLESS clause is unmet.
+- DECIDED a separate small repair lane, not folded into PP2-UI-b. Reasons: PP2-UI-b is already 8 files and a full 120-min budget (O.4), and a separate lane gives one review per artifact.
+  - Packet `leads/PP2UICREP1/commission.md` sha256 `ef01bfc80ba0…`, header `33607fa01c05…`, assembled `r1.md` `3a65c9a671fb…`. Run ID `fable-pp2uic-rep1-20261013`.
+  - Rulings: one norm select in both modes. Exact Apply commits `onPrefs({...prefs, norm})` only (never the draft's preset window, never the four strings). Exact `draftChanged` gains the norm term. The issue region renders only when `parseDraft && !parseDraft.ok`.
+  - Tests: RED jsdom n1/n2a/n2b/n3/n4, plus an EN/ZH browser assertion inside the existing PP2-UI-c test.
+  - Negatives a–d, plus f2 (`.receipts[open]{flex:none}` must turn the OPEN-row check RED on desktop and mobile; strengthen the assertion only if it stays GREEN).
+  - Budget 160 turns / 70 min; hard end at 90 min.
+- DECIDED PP2-UI-b (`fable-pp2uib-r1-20261013`) stays FROZEN. Its BASE placeholder is filled with the REPAIR's accepted head, not `d8544ec5`. Its gate-6d list already includes `optionsScopeExact.test.tsx`.
+- FACT host refusals at 12:19–12:33Z: no lane host is eligible for minimax.
+  - mb flipped ELIGIBLE (`lane-ceiling 2<3`) at 12:19Z, then back to `3<3` by 12:33Z: another session took the slot while the packet was written.
+  - ubuntu0 disk 285.7<300; ubuntu1 142.2<150; ubuntu2 118.1<150; ubuntu3 222.3<300; m2 load 64.41 (seat host).
+  - No refused lane was rerouted (D34/D35); nothing was deleted on any host.
+  - One mb watcher armed (`bvgbvu6i7`, sentinel `pr/host_mb.sentinel`, 3 h). The repair launches behind the in-command mb gate when it fires.
+- Rungs at 12:35Z:
+  - PP2-UI-c: DELIVERED, REQUEST_REPAIR.
+  - PP2-UI-c repair 1: FROZEN (gate-held on mb).
+  - PP2-UI-b: FROZEN.
+  - PP1-D: FROZEN (ubuntu2 disk).
+  - #948 CI (`bt4a20yu0`); #985 (`bff4iyhaz`); Macro #9080/#8920 (`b64amfv2n`); Macro #9097 parked (`bjywkkbf6`).
