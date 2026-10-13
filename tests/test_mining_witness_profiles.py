@@ -269,6 +269,19 @@ def test_unsourced_identity_fields_are_typed_absences() -> None:
     assert mining_private_registry().resolve_ticker("MP", asof=date(2026, 6, 30)) is None
 
 
+def test_empty_unsourced_tuple_does_not_yield_the_identity_class(monkeypatch) -> None:
+    """The else branch returned the IssuerIdentity class. An empty tuple must not."""
+    import engine.company_intelligence.mining_issuer_profiles as mining
+
+    monkeypatch.setattr(mining, "fcx_unsourced_identity", lambda: ())
+    monkeypatch.setattr(mining, "mp_unsourced_identity", lambda: ())
+    assert fcx_issuer() is None
+    assert mp_issuer() is None
+    source = _MODULE.read_text(encoding="utf-8")
+    assert "type: ignore" not in source
+    assert "_IDENTITY_TYPES" not in source
+
+
 def test_public_discovery_does_not_enroll_mining() -> None:
     """Mutant (c): a public ``profile_for_ticker`` branch for FCX must fail here."""
     registry = production_registry()

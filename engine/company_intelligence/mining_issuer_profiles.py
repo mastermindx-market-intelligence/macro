@@ -27,7 +27,7 @@ from ..earnings_release.receipts import ReceiptError, SpanReceipt, receipt_for_l
 from ..fundamental_forensics.disclosure_diff import BlockKind
 from .documents import TypedAbsence, text_span
 from .event_workspace import IssuerRegistry
-from .identity import IssuerIdentity, ListingAlias, company_id_for_cik
+from .identity import IssuerIdentity, company_id_for_cik
 from .issuer_profiles import IssuerProfile, _no_guidance
 from .qa_exchange import RIGHTS_PROFILE, RIGHTS_PROFILES
 
@@ -65,7 +65,6 @@ if len(_PRIVATE_RIGHTS) != 1:
     )
 MINING_PRIVATE_RIGHTS_PROFILE = _PRIVATE_RIGHTS[0]
 
-_IDENTITY_TYPES = (IssuerIdentity, ListingAlias, IssuerRegistry)
 _QUARTER_MARKERS = ("quarter", "three months")
 _HALF_MARKERS = ("six months", "nine months", "half-year", "half year", "first-half", "first half")
 _NUMBER_RE = re.compile(r"\d+(?:\.\d+)?")
@@ -257,11 +256,15 @@ def mp_unsourced_identity() -> tuple[TypedAbsence, ...]:
 
 def fcx_issuer() -> IssuerIdentity | None:
     """No identity object: fiscal year-end and listing MIC are typed absences."""
-    return None if fcx_unsourced_identity() else _IDENTITY_TYPES[0]  # type: ignore[return-value]
+    if fcx_unsourced_identity():
+        return None
+    return None
 
 
 def mp_issuer() -> IssuerIdentity | None:
-    return None if mp_unsourced_identity() else _IDENTITY_TYPES[0]  # type: ignore[return-value]
+    if mp_unsourced_identity():
+        return None
+    return None
 
 
 def mining_private_registry() -> IssuerRegistry:
