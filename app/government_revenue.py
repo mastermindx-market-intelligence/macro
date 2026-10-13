@@ -140,6 +140,14 @@ _SBIR_PROGRESSION_PATHS = (
     _REPO / "data/government_revenue/sbir_progression.json",
     _REPO / "site/government-revenue-data/sbir-progression.json",
 )
+_THEME_REFERENCE_PATHS = (
+    _REPO / "data/government_revenue/program_theme_context.json",
+    _REPO / "site/government-revenue-data/program-theme-context.json",
+)
+_THEME_PUBLIC_PATHS = (
+    _REPO / "data/government_revenue/program_theme_public_disclosure.json",
+    _REPO / "site/government-revenue-data/theme-context.json",
+)
 _DEFENSE_ECONOMICS_PATHS = (
     _REPO / "data/government_revenue/defense_economics.json",
     _REPO / "site/government-revenue-data/defense-economics.json",
@@ -1672,7 +1680,7 @@ def _public_subaward(row: dict) -> dict:
 
 
 def _public_budget_graph_envelope(payload: dict) -> dict:
-    """Expose stored DoD request evidence without a funding or issuer claim."""
+    """Expose stored DoD documentary evidence with its exact source stage."""
     documents = []
     for raw in payload.get("documents") or []:
         if not isinstance(raw, dict):
@@ -1687,6 +1695,12 @@ def _public_budget_graph_envelope(payload: dict) -> dict:
             if key in raw
         }
         document["source_url"] = _dod_budget_source_url(raw.get("source_url"))
+        if raw.get("document_kind") == "legislative_allocation_spend_plan":
+            from engine.government_revenue.budget_allocation_context import allocation_context_display
+            document["document_context"] = allocation_context_display(raw)
+            document["document_kind"] = raw["document_kind"]
+            document["document_stage"] = raw["document_stage"]
+            document["context_id"] = raw["context_id"]
         documents.append(document)
     return _scrub_public({
         "contract": payload.get("contract"),
@@ -2979,6 +2993,26 @@ def sbir_progression() -> dict:
         raise HTTPException(status_code=503, detail="SBIR progression twin mismatch")
     if not is_valid_sbir_progression_payload(payload):
         raise HTTPException(status_code=503, detail="SBIR progression schema mismatch")
+    return payload
+
+
+@router.get("/api/government-revenue/theme-context")
+def theme_context() -> dict:
+    """Serve the builder-precomputed closed public sibling after entitlement.
+
+    Reference binding validation is pure. No source/financial owner is opened,
+    reconstructed, acquired or joined at request time.
+    """
+    from engine.government_revenue.program_theme_publication import validate_precomputed_theme_pair
+    try:
+        reference, reference_twin = (path.read_bytes() for path in _THEME_REFERENCE_PATHS)
+        public, public_twin = (path.read_bytes() for path in _THEME_PUBLIC_PATHS)
+        if reference != reference_twin or public != public_twin:
+            raise ValueError("program theme twins differ")
+        payload = json.loads(public)
+        validate_precomputed_theme_pair(json.loads(reference), payload)
+    except (OSError, ValueError, TypeError, KeyError) as exc:
+        raise HTTPException(status_code=503, detail="Program theme context could not be verified") from exc
     return payload
 
 

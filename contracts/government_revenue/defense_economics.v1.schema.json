@@ -520,6 +520,198 @@
             "string",
             "null"
           ]
+        },
+        "interpretation": {
+          "type": [
+            "object",
+            "null"
+          ],
+          "required": [
+            "schema",
+            "chain",
+            "scenarios",
+            "unknowns"
+          ],
+          "properties": {
+            "schema": {
+              "const": "defense_economic_interpretation.v1"
+            },
+            "chain": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": [
+                  "stage",
+                  "state",
+                  "summary_en",
+                  "summary_zh",
+                  "fact_refs",
+                  "owner_refs"
+                ],
+                "properties": {
+                  "stage": {
+                    "enum": [
+                      "demand",
+                      "capture",
+                      "margin",
+                      "common_cash"
+                    ]
+                  },
+                  "state": {
+                    "enum": [
+                      "reported",
+                      "conditional",
+                      "unknown"
+                    ]
+                  },
+                  "summary_en": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 1000
+                  },
+                  "summary_zh": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 1000
+                  },
+                  "fact_refs": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "required": [
+                        "fact_id",
+                        "owner_ref"
+                      ],
+                      "properties": {
+                        "fact_id": {
+                          "type": "string",
+                          "maxLength": 256
+                        },
+                        "owner_ref": {
+                          "type": "string",
+                          "maxLength": 512
+                        }
+                      },
+                      "additionalProperties": false
+                    },
+                    "maxItems": 12
+                  },
+                  "owner_refs": {
+                    "type": "array",
+                    "maxItems": 0
+                  }
+                },
+                "additionalProperties": false
+              },
+              "minItems": 4,
+              "maxItems": 4
+            },
+            "scenarios": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": [
+                  "kind",
+                  "assumption_en",
+                  "assumption_zh",
+                  "implication_en",
+                  "implication_zh",
+                  "invalidation_en",
+                  "invalidation_zh",
+                  "fact_refs",
+                  "owner_refs"
+                ],
+                "properties": {
+                  "kind": {
+                    "enum": [
+                      "conditional_baseline",
+                      "downside"
+                    ]
+                  },
+                  "assumption_en": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 1000
+                  },
+                  "assumption_zh": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 1000
+                  },
+                  "implication_en": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 1000
+                  },
+                  "implication_zh": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 1000
+                  },
+                  "invalidation_en": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 1000
+                  },
+                  "invalidation_zh": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 1000
+                  },
+                  "fact_refs": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "required": [
+                        "fact_id",
+                        "owner_ref"
+                      ],
+                      "properties": {
+                        "fact_id": {
+                          "type": "string",
+                          "maxLength": 256
+                        },
+                        "owner_ref": {
+                          "type": "string",
+                          "maxLength": 512
+                        }
+                      },
+                      "additionalProperties": false
+                    },
+                    "maxItems": 12
+                  },
+                  "owner_refs": {
+                    "type": "array",
+                    "maxItems": 0
+                  }
+                },
+                "additionalProperties": false
+              },
+              "minItems": 2,
+              "maxItems": 2
+            },
+            "unknowns": {
+              "type": "array",
+              "items": {
+                "enum": [
+                  "program_workshare",
+                  "issuer_specific_forward_demand",
+                  "revenue_conversion_timing",
+                  "working_capital",
+                  "capital_spending",
+                  "common_shareholder_cash",
+                  "observed_market_expectations",
+                  "numerical_valuation",
+                  "preferred_common_cash_bridge",
+                  "sale_net_proceeds_to_common",
+                  "future_QIPO_valuation"
+                ]
+              },
+              "uniqueItems": true,
+              "maxItems": 16
+            }
+          },
+          "additionalProperties": false
         }
       },
       "additionalProperties": false

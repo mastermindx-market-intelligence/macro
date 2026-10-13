@@ -62,7 +62,14 @@ def reference_fingerprint(ref,rail,owner,as_of):
   dependencies={k:p[k] for k in ('issuer','event_id','fiscal_period','lifecycle')}
   dependencies['sources']=[x for x in p['sources'] if x.get('document_id')==(node.get('source_span') or {}).get('document_id')]
  # Case, budget document and identity leaf include all native stage/clocks/receipts.
- return sha256(t._json(dict(kind=kind,row=row,node=node,dependencies=dependencies)).encode()).hexdigest()
+ def normalize_transport(value):
+  if isinstance(value,dict):return {k:normalize_transport(v) for k,v in value.items()}
+  if isinstance(value,list):return [normalize_transport(v) for v in value]
+  if isinstance(value,str):
+   match=re.fullmatch(r'event_workspace:[a-f0-9]{24}:(evt_cik[0-9]{10}_[0-9]{4}q[1-4]_results)',value)
+   if match:return 'event_workspace:'+match.group(1)
+  return value
+ return sha256(t._json(normalize_transport(dict(kind=kind,row=row,node=node,dependencies=dependencies))).encode()).hexdigest()
 
 def make_reviewed_leaf_config(review,owners,*,as_of):
  """Explicit review-time conversion, never called automatically by publication."""
@@ -88,12 +95,22 @@ def load_current_reviewed_theme_inputs(root,*,as_of,review_path=t.THEME_REVIEW_P
  fields={'contract','schema_version','reviewed_at','reviewer','owners','assignments','reference_fingerprints'}
  if not isinstance(review,dict) or set(review)!=fields or review['contract']!=t.THEME_REVIEW_CONTRACT or review['schema_version']!='1.1.0' or not review['reviewer'].strip():raise ValueError('theme_review_invalid')
  if t._instant(review['reviewed_at'])>t._instant(as_of):raise ValueError('theme_review_not_yet_known')
- owners={};unavailable=set()
+ owners={};unavailable=set();current_company_snapshot=None
  for key,ref in review['owners'].items():
   if set(ref)!={'owner_kind','path','sha256','available_at','admission_ref','rights_state'} or not re.fullmatch('[a-f0-9]{64}',ref['sha256']):raise ValueError('theme_review_owner_invalid')
   path=file(ref['path'])
   try:
-   raw=path.read_bytes();p=json.loads(raw)
+   if ref['owner_kind']=='company_intelligence':
+    subject=re.fullmatch(r'data/company_intelligence/event_workspaces/generations/[a-f0-9]{24}/workspaces/(evt_cik[0-9]{10}_[0-9]{4}q[1-4]_results)\.json',ref['path'])
+    if subject is None:raise ValueError('theme_company_owner_native_path_required')
+    from .defense_economics_producer import load_defense_owner_snapshot
+    if current_company_snapshot is None:current_company_snapshot=load_defense_owner_snapshot(root)
+    if current_company_snapshot is None or subject.group(1) not in current_company_snapshot['rows']:raise ValueError('theme_current_company_owner_missing')
+    generation=current_company_snapshot['manifest']['generation_id'];relative='workspaces/'+subject.group(1)+'.json'
+    raw=(root/'data/company_intelligence/event_workspaces/generations'/generation/relative).read_bytes()
+    if sha256(raw).hexdigest()!=current_company_snapshot['manifest']['files'][relative]['sha256']:raise ValueError('theme_company_owner_current_hash_mismatch')
+   else:raw=path.read_bytes()
+   p=json.loads(raw)
    clocks=list(t._clocks(p));available=max([t._instant(ref['available_at'])]+clocks).isoformat()
    owner=t.OwnerSnapshot(ref['owner_kind'],raw,available,ref['admission_ref'],ref['rights_state']);owner.payload()
    if t._instant(available)>t._instant(as_of):raise ValueError('owner_not_yet_available')

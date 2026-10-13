@@ -5765,6 +5765,7 @@ jobs:
       - "engine/company_intelligence/issuer_supplements.py"
       - "engine/government_revenue/candidate_grader.py"
       - "engine/government_revenue/defense_economics.py"
+      - "engine/government_revenue/defense_interpretation.py"
       - "engine/government_revenue/research_state.py"
       - "engine/government_revenue/sbir_progression.py"
       - "research/GOVERNMENT_REVENUE_CANDIDATE_GRADER_PREREG.md"
@@ -17274,6 +17275,12 @@ jobs:
       - "site/rr_banner.json"
       - "site/wh_banner.json"
       - "templates/government-revenue-investor.css"
+      - "templates/government-revenue-theme-context.css"
+      - "templates/government-revenue-theme-context.js"
+      - "tests/test_government_revenue_theme_context_ui.js"
+      - "tests/test_government_revenue_investor_interpretation_ui.js"
+      - "tests/fixtures/defense_joint_interpretation.json"
+      - "tests/fixtures/theme_public_disclosure.json"
       - "templates/government-revenue-investor.js"
       - "tests/fixtures/defense_economics.json"
       - "tests/fixtures/scenario_composer.json"
@@ -17316,10 +17323,17 @@ jobs:
       - "engine/government_revenue/defense_market_context.py"
       - "engine/government_revenue/budget_allocation_context.py"
       - "engine/government_revenue/program_theme_context.py"
+      - "engine/government_revenue/program_theme_publication.py"
+      - "engine/government_revenue/defense_interpretation.py"
+      - "tests/test_defense_interpretation.py"
+      - "tests/fixtures/defense_interpretation.json"
       - "engine/government_revenue/program_theme_disclosure.py"
       - "engine/government_revenue/program_theme_reviewed_builder.py"
       - "tests/defense_o2_source_contracts/**"
+      - "tests/defense_o2_source_contracts"
       - "tests/test_govrev_push_observation.py"
+      - "tests/test_govrev_publisher_preflight.py"
+      - "scripts/ci/govrev_publisher_preflight.py"
       - "tests/test_financial_owner_symlink_guard.py"
       - "tests/test_lhx_reported_income.py"
       - "tests/test_defense_market_context.py"
@@ -17365,7 +17379,7 @@ jobs:
         with:
           node-version: "20"
       - name: Publication proof completeness and immutable evidence
-        run: python -m pytest tests/test_govrev_candidate_proof_gate.py tests/test_government_revenue_publisher_consumers.py tests/test_govrev_push_observation.py -q
+        run: python -m pytest tests/test_govrev_candidate_proof_gate.py tests/test_government_revenue_publisher_consumers.py tests/test_govrev_push_observation.py tests/test_govrev_publisher_preflight.py -q
       - name: Complete owner snapshot restoration and mutation fences
         run: python -m pytest tests/test_restore_event_workspace_owner.py tests/test_restore_defense_market_owner.py tests/test_financial_owner_symlink_guard.py -q
       - name: Tenant isolation and immutable reader selection
@@ -17375,18 +17389,18 @@ jobs:
       - name: Adverse evidence, ownership terms and complete source retention
         run: python -m pytest tests/test_noc_adverse.py tests/test_gd_profile.py tests/test_issuer_supplements.py tests/test_industrial_refresh.py tests/test_complete_owner_refresh.py tests/test_f2_composition.py tests/test_lhx_reported_income.py -q
       - name: Defense economics source binding and entitled read boundary
-        run: python -m pytest tests/test_government_revenue_defense_economics.py tests/test_defense_recognition_owner_guards.py tests/test_defense_recognition_market_clocks.py tests/test_government_revenue_asset_publication.py -q
+        run: python -m pytest tests/test_government_revenue_defense_economics.py tests/test_defense_recognition_owner_guards.py tests/test_defense_recognition_market_clocks.py tests/test_government_revenue_asset_publication.py tests/test_defense_interpretation.py -q
       - name: Registered research state and durable acknowledgement boundaries
         run: python -m pytest tests/test_government_revenue_research_state.py tests/test_government_revenue_publication_ack.py -q
       - name: Program filter and URL state regression
         run: python -m pytest tests/test_government_revenue_program_filters.py tests/test_government_revenue_filter_url.py -q
       - name: SBIR browser consumer hostile cases
-        run: node --test tests/test_government_revenue_sbir_ui.js tests/test_government_revenue_investor_ui.js tests/test_government_revenue_investor_research_ui.js tests/test_government_revenue_investor_market_clocks.js
+        run: node --test tests/test_government_revenue_sbir_ui.js tests/test_government_revenue_investor_ui.js tests/test_government_revenue_investor_research_ui.js tests/test_government_revenue_investor_market_clocks.js tests/test_government_revenue_theme_context_ui.js tests/test_government_revenue_investor_interpretation_ui.js
 
       - name: Canonical market owner and point-in-time joint producer
         run: python -m pytest tests/test_defense_market_context.py tests/test_defense_market_producer_integration.py -q
       - name: Six-theme official source and reviewed disclosure contracts
-        run: python -m pytest tests/defense_o2_source_contracts -q
+        run: python -m pytest tests/defense_o2_source_contracts/test_budget_allocation_context.py tests/defense_o2_source_contracts/test_nato_policy_extension.py tests/defense_o2_source_contracts/test_program_theme_context.py tests/defense_o2_source_contracts/test_program_theme_disclosure.py tests/defense_o2_source_contracts/test_program_theme_reviewed_builder.py tests/defense_o2_source_contracts/test_t0_reviewed_loader.py tests/defense_o2_source_contracts/test_program_theme_runtime_wiring.py -q
       - name: Ownership and foreign listing source-context journeys
         run: python -m pytest tests/test_government_revenue_archetype_context.py tests/test_government_revenue_archetype_ui.py tests/test_government_revenue_identity_subject_journey.py -q
 
@@ -22637,6 +22651,12 @@ jobs:
       - engine/falsifier_tripwires.py
       - engine/i18n.py
       - engine/thesis_condition_monitor.py
+      - engine/government_revenue/workspace.py
+      - engine/government_revenue/award_events.py
+      - contracts/government_revenue/government_procurement_event.v2.schema.json
+      - contracts/government_revenue/government_procurement_workspace.v2.schema.json
+      - contracts/government_revenue/government_entity_coverage.v1.schema.json
+      - contracts/government_revenue/government_recipient_resolution_coverage.v1.schema.json
       - engine/top_maturation.py
       - scripts/build_top_maturation.py
       - scripts/build_vector.py
@@ -22649,6 +22669,7 @@ jobs:
       - tests/test_massive_local_staleness.py
       - tests/test_price_pressure.py
       - tests/test_thesis_condition_monitor.py
+      - tests/fixtures/government_revenue_monitor_workspace.json
       - tests/test_top_anatomy.py
       - tests/test_top_anatomy_oot_receipt.py
       - tests/test_top_maturation.py
@@ -22663,7 +22684,7 @@ jobs:
         with:
           python-version: "3.12"
       - name: install falsifier, alert-zh, and price-pressure test dependencies
-        run: pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly requests beautifulsoup4 openpyxl scikit-learn fastapi httpx
+        run: pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly requests beautifulsoup4 openpyxl scikit-learn fastapi httpx jsonschema==4.26.0
       - name: falsifier tripwire state and v2 gate contracts
         run: python -m pytest tests/test_falsifier_tripwires.py -q
       # F11 packet B-F11-1: a pure projection over this owner's own
@@ -23301,6 +23322,7 @@ jobs:
       - "engine/company_intelligence/issuer_supplements.py"
       - "engine/government_revenue/candidate_grader.py"
       - "engine/government_revenue/defense_economics.py"
+      - "engine/government_revenue/defense_interpretation.py"
       - "engine/government_revenue/research_state.py"
       - "engine/government_revenue/sbir_progression.py"
       - "research/GOVERNMENT_REVENUE_CANDIDATE_GRADER_PREREG.md"

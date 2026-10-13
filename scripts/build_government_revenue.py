@@ -1135,7 +1135,7 @@ def _write_site_projection(
     )
     # Page-local assets travel with the projection in site-only and full renders.
     from lib import site_assets
-    for asset in ('government-revenue-parity.css', 'government-revenue-dossiers.js', 'government-revenue-candidate-radar.js', 'government-revenue-briefcase.js', 'government-revenue-briefcase-ui.js', 'government-revenue-sbir.js', 'government-revenue-sbir.css', 'government-revenue-investor.js', 'government-revenue-investor.css'):
+    for asset in ('government-revenue-parity.css', 'government-revenue-dossiers.js', 'government-revenue-candidate-radar.js', 'government-revenue-briefcase.js', 'government-revenue-briefcase-ui.js', 'government-revenue-sbir.js', 'government-revenue-sbir.css', 'government-revenue-investor.js', 'government-revenue-investor.css', 'government-revenue-theme-context.js', 'government-revenue-theme-context.css'):
         source = root / "templates" / asset
         if source.is_file():
             site_assets.copy_asset(asset, source, site_dir)
@@ -1223,6 +1223,84 @@ def _project_committed_defense_economics(root: Path) -> None:
             raise ValueError("defense economics site projection has no canonical source")
         return
     _write_defense_economics_twins(root, canonical.read_text(encoding="utf-8"))
+
+
+def _write_program_theme_twins(root: Path, reference_raw: str, public_raw: str) -> None:
+    from engine.government_revenue.program_theme_publication import validate_precomputed_theme_pair
+    reference, public = json.loads(reference_raw), json.loads(public_raw)
+    validate_precomputed_theme_pair(reference, public)
+    if _canonical_json(reference) != reference_raw or _canonical_json(public) != public_raw:
+        raise ValueError("program theme twins are non-canonical")
+    for path, raw in (
+        ("data/government_revenue/program_theme_context.json", reference_raw),
+        ("site/government-revenue-data/program-theme-context.json", reference_raw),
+        ("data/government_revenue/program_theme_public_disclosure.json", public_raw),
+        ("site/government-revenue-data/theme-context.json", public_raw),
+    ):
+        _atomic_write_text(root / path, raw)
+
+
+def _project_committed_program_themes(root: Path) -> None:
+    reference = root / "data/government_revenue/program_theme_context.json"
+    public = root / "data/government_revenue/program_theme_public_disclosure.json"
+    twins = (root / "site/government-revenue-data/program-theme-context.json",
+             root / "site/government-revenue-data/theme-context.json")
+    if not reference.exists() and not public.exists():
+        if any(path.exists() for path in twins):
+            raise ValueError("program theme public projection has no canonical source")
+        return
+    if not reference.exists() or not public.exists():
+        raise ValueError("program theme canonical pair is partial")
+    _write_program_theme_twins(root, reference.read_text(encoding="utf-8"), public.read_text(encoding="utf-8"))
+
+
+def _publish_reviewed_program_themes(root: Path, *, generated_at: str, as_of: str) -> dict:
+    from engine.government_revenue.program_theme_reviewed_builder import build_public_theme_candidate
+    candidate = build_public_theme_candidate(root, generated_at=generated_at, as_of=as_of)
+    _write_program_theme_twins(root, _canonical_json(candidate["reference_snapshot"]),
+                              _canonical_json(candidate["public_disclosure"]))
+    log.info("government program themes: %s", candidate["state"])
+    return candidate
+
+
+def _extend_budget_allocation_context(root: Path, graph: dict | None, *, dossier: dict,
+                                      generated_at: str, as_of: str) -> dict | None:
+    from engine.government_revenue.budget_allocation_context import (
+        ALLOCATION_RECEIPT_PATH, load_collected_allocation_context_input, compose_allocation_context_graph,
+    )
+    if not (root / ALLOCATION_RECEIPT_PATH).is_file():
+        return graph
+    # Source-body access stays with the existing owner and exact immutable key.
+    # An unavailable optional allocation source must not block other candidates.
+    try:
+        try:
+            source = load_collected_allocation_context_input(root)
+        except Exception as error:
+            response = getattr(error, "response", {})
+            status = response.get("ResponseMetadata", {}).get("HTTPStatusCode") if isinstance(response, dict) else None
+            code = response.get("Error", {}).get("Code") if isinstance(response, dict) else None
+            log.warning("DoD allocation source read refused/unavailable: type=%s code=%s status=%s; no alternate carrier",
+                        type(error).__name__, code, status)
+            return graph
+        if source is None:
+            return graph
+        receipt, body = source
+        cutoff = datetime.fromisoformat(as_of.replace("Z", "+00:00"))
+        if cutoff.tzinfo is None or datetime.fromisoformat(receipt["known_at"].replace("Z", "+00:00")) > cutoff:
+            raise ValueError("allocation context not yet known at exact cutoff")
+        if graph is None:
+            held = _load_optional_canonical_budget_graph(root, dossier)
+            graph = held[1] if held is not None else None
+        if graph is None:
+            log.warning("DoD allocation context source unavailable: canonical budget owner absent")
+            return None
+        return _validate_budget_program_graph_payload(compose_allocation_context_graph(
+            graph, receipt=receipt, pdf_bytes=body, sections=("20002", "20003", "20004"),
+            generated_at=generated_at, as_of=cutoff.astimezone(timezone.utc).date().isoformat(),
+        ))
+    except (OSError, ValueError, TypeError, KeyError) as exc:
+        log.warning("DoD allocation context source unavailable: %s", exc)
+        return graph
 
 
 def build(
@@ -1317,6 +1395,9 @@ def build(
         require_market_owner=live_materialization,
     )
     validate_defense_economics_payload(defense_economics)
+    budget_graph = _extend_budget_allocation_context(
+        root, budget_graph, dossier=dossier, generated_at=sbir_cutoff, as_of=sbir_cutoff,
+    )
 
     canonical_dir = root / "data" / "government_revenue"
     canonical_dir.mkdir(parents=True, exist_ok=True)
@@ -1380,6 +1461,7 @@ def build(
     preserved_fms_graph = _load_optional_canonical_fms_case_graph(root)
     if preserved_fms_graph is not None:
         _write_fms_case_twins(root, preserved_fms_graph[0])
+    _publish_reviewed_program_themes(root, generated_at=sbir_cutoff, as_of=sbir_cutoff)
     candidate_projection = _candidate_projection(
         root,
         live_materialization=live_materialization,
@@ -1533,6 +1615,7 @@ def build_site_only(root: Path) -> tuple[Path, Path, Path]:
 
     _project_committed_sbir_progression(root)
     _project_committed_defense_economics(root)
+    _project_committed_program_themes(root)
 
     candidate_projection = _candidate_projection(
         root,

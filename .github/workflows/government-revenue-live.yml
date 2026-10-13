@@ -106,6 +106,29 @@ on:
       - "lib/pages.py"
       - "scripts/ci/validate_government_revenue_award_event_bundle.py"
       - "scripts/build_government_revenue.py"
+      - "app/government_revenue.py"
+      - "config/government_revenue/**"
+      - "scripts/ci/govrev_candidate_proof.py"
+      - "scripts/ci/govrev_publisher_preflight.py"
+      - "scripts/restore_event_workspace_owner.py"
+      - "scripts/restore_defense_market_owner.py"
+      - "research/defense_intelligence/e2e_20261011/PUBLISHER_RECOVERY_BASELINE.json"
+      - "data/government_revenue/identity_atlas_curated.json"
+      - "data/government_revenue/program_ontology.json"
+      - "data/government_revenue/dod_budget_allocation_context_receipt.json"
+      - "engine/stock_technicals.py"
+      - "lib/nyse_calendar.py"
+      - "lib/dataos/identity.py"
+      - "lib/dataos/price.py"
+      - "config/dataset_registry.yml"
+      - "engine/company_intelligence/identity.py"
+      - "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md"
+      - "data/reference/security_master.parquet"
+      - "data/reference/vendor_aliases.parquet"
+      - "data/reference/issuer_master.parquet"
+      - "data/reference/_receipt.json"
+      - "templates/government-revenue-theme-context.js"
+      - "templates/government-revenue-theme-context.css"
       - "scripts/build_government_revenue_candidates.py"
       - "scripts/build_government_revenue_research_state.py"
       - "research/GOVERNMENT_REVENUE_CANDIDATE_GRADER_PREREG.md"
@@ -128,6 +151,7 @@ on:
 
 permissions:
   contents: write
+  actions: read
 
 concurrency:
   # A completed first-seen observation must not be discarded halfway through a
@@ -146,6 +170,13 @@ jobs:
           # production ref rather than the caller's checkout-time SHA.
           ref: main
           fetch-depth: 1
+
+      - name: reconcile retained GovRev publication outcomes
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          /opt/homebrew/bin/python3.12 scripts/ci/govrev_publisher_preflight.py \
+            --root . --out-dir "$RUNNER_TEMP"
 
       - name: python 3.12 (Homebrew venv — self-hosted runner)
         run: |
@@ -417,7 +448,9 @@ jobs:
               "$historical_suppression_path" \
               "$historical_suppression_schema_path" \
               "$issuance_correction_path" \
-              "$issuance_correction_schema_path"
+              "$issuance_correction_schema_path" \
+              config/government_revenue/program_theme_assignments.v1.json \
+              config/government_revenue/reviews/nato_policy_20250625.json
           }
 
           write_reviewed_controls_fingerprint() {
@@ -987,11 +1020,17 @@ jobs:
             site/government-revenue-data/fms-cases.json
             site/government-revenue-data/candidates.json
             data/government_revenue/defense_economics.json
+            data/government_revenue/program_theme_context.json
+            data/government_revenue/program_theme_public_disclosure.json
+            site/government-revenue-data/program-theme-context.json
+            site/government-revenue-data/theme-context.json
             data/government_revenue/candidate_research_state.json
             site/government-revenue-data/defense-economics.json
             site/government-revenue-data/research-state.json
             site/government-revenue-investor.js
             site/government-revenue-investor.css
+            site/government-revenue-theme-context.js
+            site/government-revenue-theme-context.css
             site/government-revenue-sbir.js
             site/government-revenue-sbir.css
             site/government-revenue-briefcase.js
@@ -1054,11 +1093,17 @@ jobs:
             site/government-revenue-data/fms-cases.json \
             site/government-revenue-data/candidates.json \
             data/government_revenue/defense_economics.json \
+            data/government_revenue/program_theme_context.json \
+            data/government_revenue/program_theme_public_disclosure.json \
+            site/government-revenue-data/program-theme-context.json \
+            site/government-revenue-data/theme-context.json \
             data/government_revenue/candidate_research_state.json \
             site/government-revenue-data/defense-economics.json \
             site/government-revenue-data/research-state.json \
             site/government-revenue-investor.js \
             site/government-revenue-investor.css \
+            site/government-revenue-theme-context.js \
+            site/government-revenue-theme-context.css \
             site/government-revenue-sbir.js \
             site/government-revenue-sbir.css \
             site/government-revenue-briefcase.js \
@@ -1135,11 +1180,17 @@ jobs:
                 site/government-revenue-data/program-dossier.json \
                 site/government-revenue-data/candidates.json \
                 data/government_revenue/defense_economics.json \
+                data/government_revenue/program_theme_context.json \
+                data/government_revenue/program_theme_public_disclosure.json \
+                site/government-revenue-data/program-theme-context.json \
+                site/government-revenue-data/theme-context.json \
                 data/government_revenue/candidate_research_state.json \
                 site/government-revenue-data/defense-economics.json \
                 site/government-revenue-data/research-state.json \
                 site/government-revenue-investor.js \
                 site/government-revenue-investor.css \
+                site/government-revenue-theme-context.js \
+                site/government-revenue-theme-context.css \
                 site/government-revenue-sbir.js \
                 site/government-revenue-sbir.css \
                 site/government-revenue-briefcase.js \
@@ -1197,11 +1248,17 @@ jobs:
                 site/government-revenue-data/fms-cases.json \
                 site/government-revenue-data/candidates.json \
                 data/government_revenue/defense_economics.json \
+                data/government_revenue/program_theme_context.json \
+                data/government_revenue/program_theme_public_disclosure.json \
+                site/government-revenue-data/program-theme-context.json \
+                site/government-revenue-data/theme-context.json \
                 data/government_revenue/candidate_research_state.json \
                 site/government-revenue-data/defense-economics.json \
                 site/government-revenue-data/research-state.json \
                 site/government-revenue-investor.js \
                 site/government-revenue-investor.css \
+                site/government-revenue-theme-context.js \
+                site/government-revenue-theme-context.css \
                 site/government-revenue-sbir.js \
                 site/government-revenue-sbir.css \
                 site/government-revenue-briefcase.js \

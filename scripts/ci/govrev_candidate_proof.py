@@ -99,6 +99,8 @@ SOURCE_DEPENDENCY_GLOBS = (
     "data/usaspending/**/*", "requirements*.txt", "pytest.ini", "pyproject.toml",
     "setup.cfg", "conftest.py", ".github/workflows/government-revenue-live.yml",
     "research/GOVERNMENT_REVENUE_CANDIDATE_GRADER_PREREG.md",
+    ".github/workflows/daily.yml", ".github/workflows/fms-acquire.yml",
+    "research/defense_intelligence/e2e_20261011/PUBLISHER_RECOVERY_BASELINE.json",
 )
 #: Prefixes a material source change may live under.  The checkout-delta half
 #: of the witness refuses (reprove) when anything here moved between the
@@ -122,6 +124,8 @@ MATERIAL_PREFIXES = (
     "site/government-revenue-",
     ".github/workflows/government-revenue-live.yml",
     "research/GOVERNMENT_REVENUE_CANDIDATE_GRADER_PREREG.md",
+    ".github/workflows/daily.yml", ".github/workflows/fms-acquire.yml",
+    "research/defense_intelligence/e2e_20261011/PUBLISHER_RECOVERY_BASELINE.json",
     "data/company_intelligence/event_workspaces/manifest.json",
     "data/massive_stock_day/", "data/reference/",
     "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md", "engine/stock_technicals.py",
@@ -808,7 +812,7 @@ def command_observe_push(args: argparse.Namespace) -> int:
         record.update({"push_identity": claimed, "proof_identity": identity["proof_identity"],
                        "expected_commit": identity["expected_commit"],
                        "origin_binding_sha256": identity["origin_binding_sha256"]})
-        if identity["expected_commit"] != _head_commit(root) or identity["origin_binding_sha256"] != _origin_binding(root):
+        if (not args.historical and identity["expected_commit"] != _head_commit(root)) or identity["origin_binding_sha256"] != _origin_binding(root):
             raise ValueError("original_carrier_changed")
         # One bounded same-origin observation. Never issue another push here.
         ref = subprocess.run(["git", "-C", str(root), "ls-remote", "origin", "refs/heads/main"],
@@ -822,7 +826,8 @@ def command_observe_push(args: argparse.Namespace) -> int:
         record["observed_commit"] = observed
         expected = identity["expected_commit"]
         if expected != observed:
-            subprocess.run(["git", "-C", str(root), "fetch", "--no-tags", "--no-write-fetch-head", "origin", observed],
+            history_args = ["--filter=blob:none", "--deepen=128"] if args.historical and _git(root, "rev-parse", "--is-shallow-repository").stdout.strip() == "true" else []
+            subprocess.run(["git", "-C", str(root), "fetch", "--no-tags", "--no-write-fetch-head", *history_args, "origin", observed, expected],
                            capture_output=True, check=True, timeout=20)
             ancestor = subprocess.run(["git", "-C", str(root), "merge-base", "--is-ancestor", expected, observed],
                                       capture_output=True, timeout=5)
@@ -1064,6 +1069,7 @@ def build_parser() -> argparse.ArgumentParser:
     observe = sub.add_parser("observe-push", help="one bounded read of the original origin; never retry a push")
     observe.add_argument("--root", default=".")
     observe.add_argument("--identity", required=True)
+    observe.add_argument("--historical", action="store_true", help="read-only reconciliation of an authenticated retained prior-run identity")
     observe.add_argument("--out", required=True)
     observe.set_defaults(func=command_observe_push)
     return parser

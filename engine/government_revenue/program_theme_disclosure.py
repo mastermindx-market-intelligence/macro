@@ -78,7 +78,9 @@ def _resolve(ref,rail,owners):
   if rail=='next_event':return profile.get('next_condition') or 'Next issuer condition not asserted.','下一发行人条件以原财务档案为准。',sources
  if owner.owner_kind=='company_intelligence':
   span=node['source_span'];source=next(x for x in p['sources'] if x.get('document_id')==span['document_id']);issuer=p['issuer']
-  sources=[_source(ref['owner_key'],ref,node,issuer['display_name']+' — '+node['period']+' '+node['metric'].replace('_',' '),_primary(source['url'],{'www.sec.gov'}),issuer_id=issuer['company_id'])]
+  primary=[x for x in issuer['listings'] if x.get('is_primary') and x.get('valid_to') is None]
+  security_id=primary[0]['security_id'] if len(primary)==1 else None
+  sources=[_source(ref['owner_key'],ref,node,issuer['display_name']+' — '+node['period']+' '+node['metric'].replace('_',' '),_primary(source['url'],{'www.sec.gov'}),issuer_id=issuer['company_id'],security_id=security_id)]
   for item in sources:item.update(source_available_at=p['lifecycle'].get('source_available_at'),house_known_at=p['lifecycle'].get('observed_at'))
   return issuer['display_name']+': reported segment context for '+node['period']+'; no program allocation is asserted.',issuer['display_name']+'：'+node['period']+'报告分部背景；未断言任何项目分配。',sources
  if owner.owner_kind=='budget':
@@ -140,7 +142,7 @@ absence or changed generation is a display state, not permission to re-admit.
   relative=ref.get('path');target=(root/str(relative)).resolve()
   if not isinstance(relative,str) or Path(relative).is_absolute() or not target.is_relative_to(root):raise ValueError('theme_owner_path_invalid')
   try:
-   raw=target.read_bytes();p=json.loads(raw);current=dict(state='available',sha256=sha256(raw).hexdigest(),content_id=p.get('content_id'),owner_alias_state='unchanged')
+   raw=retained_owners[key].raw_bytes if ref['owner_kind']=='company_intelligence' else target.read_bytes();p=json.loads(raw);current=dict(state='available',sha256=sha256(raw).hexdigest(),content_id=p.get('content_id'),owner_alias_state='unchanged')
    kind=ref['owner_kind']
    if kind in ('company_intelligence','defense_economics'):
     from engine.company_intelligence.event_workspace import validate_workspace_manifest

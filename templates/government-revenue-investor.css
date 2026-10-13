@@ -42,3 +42,11 @@ html[data-theme="light"] .gr-investor-contrary { background:transparent; border-
 .gr-investor-primary dd { font-size:var(--fs-md); font-weight:700; font-variant-numeric:tabular-nums; }
 
 .gr-investor-research { padding:var(--sp-3,12px) 0; margin-top:var(--sp-3,12px); border-top:1px solid var(--line); border-bottom:1px solid var(--line); font-size:var(--fs-sm); }
+
+.gr-investor-interpretation { margin-top:var(--sp-4,16px); padding-top:var(--sp-3,12px); border-top:1px solid var(--line); }
+.gr-investor-chain > div { padding:var(--sp-2,8px) 0; border-bottom:1px solid var(--line); }
+.gr-investor-chain dt span { display:block; margin-top:var(--sp-1,4px); color:var(--muted); font-size:var(--fs-xs); }
+.gr-investor-chain dd { font-size:var(--fs-sm); line-height:1.5; font-weight:400; }
+.gr-investor-case { margin-top:var(--sp-3,12px); padding:var(--sp-3,12px); border:1px solid var(--line); border-radius:var(--r-ctl,8px); background:var(--panel); }
+.gr-investor-case h4 { margin:0; font-size:var(--fs-sm); }
+html[data-theme="light"] .gr-investor-case { background:transparent; padding:var(--sp-3,12px) 0; border-width:0 0 1px; border-radius:0; }

@@ -14,6 +14,7 @@ import json
 import math
 import re
 from lib import nyse_calendar
+from engine.government_revenue.defense_interpretation import validate_defense_interpretation
 
 CONTRACT = 'defense_economics.v1'
 AXES = ('participation', 'demand', 'economics', 'recognition')
@@ -305,12 +306,15 @@ def compose_defense_economics(inputs, *, generated_at, source_bindings):
             axes['economics'] = _missing('issuer_identity_unqualified', state='unreviewed')
             axes['recognition'] = {**_missing('issuer_identity_unqualified', state='unreviewed'), 'expectations_kind':'not_observed'}
         complete = qualified_identity and all(axes[a]['state'] == 'supported' for a in AXES)
+        interpretation=data.get('interpretation')
+        validate_defense_interpretation(interpretation,ticker,axes['economics']['facts'])
         profiles.append(dict(
             issuer_id=issuer.get('issuer_id') if qualified_identity else None,
             security_id=identity.get('security_id') if qualified_identity else None,
             ticker_display=ticker, name=_text(data.get('name')) or ticker,
             identity_mode='current' if qualified_identity else None,
             identity_owner_ref=data.get('identity_owner_ref') if qualified_identity else None, axes=axes,
+            interpretation=deepcopy(interpretation),
             program_workshare=None, program_workshare_state='not_disclosed',
             shareholder_capture={'state':'not_asserted','source_refs':[]},
             contrary_case=_text(data.get('contrary_case')),
@@ -349,7 +353,7 @@ def validate_defense_economics_payload(payload):
     profile_keys = {'issuer_id','security_id','ticker_display','name','identity_mode','identity_owner_ref','axes','program_workshare','program_workshare_state','shareholder_capture','contrary_case','contrary_case_zh','next_condition','next_condition_zh','invalidation','invalidation_zh','research_state','authority'}
     axis_keys = {'state','summary_en','summary_zh','owner_ref','evidence_refs','observed_at','fiscal_period','reason_code','facts','limitations','price_response','valuation_scenario','expectations_kind'}
     for profile in profiles:
-        if set(profile) != profile_keys or profile['authority'] != AUTHORITY or profile['program_workshare'] is not None or profile['program_workshare_state'] != 'not_disclosed' or profile['shareholder_capture'] != {'state':'not_asserted','source_refs':[]}:
+        if not (profile_keys <= set(profile) <= profile_keys | {'interpretation'}) or profile['authority'] != AUTHORITY or profile['program_workshare'] is not None or profile['program_workshare_state'] != 'not_disclosed' or profile['shareholder_capture'] != {'state':'not_asserted','source_refs':[]}:
             raise ValueError('profile_fields_or_authority_invalid')
         if profile['research_state'] not in ('SOURCE_CONTEXT_COMPLETE','EVIDENCE_INSUFFICIENT') or profile['identity_mode'] not in ('current',None):
             raise ValueError('profile_state_invalid')
@@ -388,6 +392,7 @@ def validate_defense_economics_payload(payload):
                     if field in axis and _recognition_leg(axis[field],bindings,generated,subject,scenario=scenario) != axis[field]:
                         raise ValueError('recognition_fields_invalid')
                 if axis.get('expectations_kind') != 'not_observed': raise ValueError('expectations_invalid')
+        validate_defense_interpretation(profile.get('interpretation'),profile['ticker_display'],profile['axes']['economics']['facts'])
         expected_state='SOURCE_CONTEXT_COMPLETE' if qualified_identity and all(profile['axes'][a]['state']=='supported' for a in AXES) else 'EVIDENCE_INSUFFICIENT'
         if profile['research_state'] != expected_state: raise ValueError('research_state_not_supported')
     if payload['content_id'] != defense_economics_content_id(payload): raise ValueError('content_id_mismatch')

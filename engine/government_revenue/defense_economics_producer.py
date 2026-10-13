@@ -17,6 +17,7 @@ from engine.company_intelligence.event_workspace import (
 from engine.company_intelligence.defense_profiles import DEFENSE_TICKERS, SEGMENTS, METRICS, defense_issuer
 from engine.earnings_release.figures import parse_numeric
 from engine.government_revenue.defense_economics import compose_defense_economics
+from engine.government_revenue.defense_interpretation import build_defense_interpretation
 from engine.government_revenue.defense_market_context import (
     load_defense_market_inputs, compose_defense_market_context,
 )
@@ -216,6 +217,21 @@ def build_defense_economics_payload(root, *, generated_at=None, as_of=None, owne
     if 'LHX' in inputs and any(f['fact_id'].endswith(':space_business_sale_completed_terms') for f in inputs['LHX']['axes']['economics']['facts']):
         inputs['LHX']['contrary_case']='Preferred payout and conditional conversion terms affect common-shareholder transmission. The completed space-business sale has a different scope and value basis from the prior pending transaction.'
         inputs['LHX']['contrary_case_zh']='优先股支付及有条件转换条款影响普通股股东获益路径。已完成航天业务出售的范围及价值口径，与此前待完成交易分别记录。'
+    for ticker,data in inputs.items():
+        interpretation=build_defense_interpretation(ticker,data['axes']['economics']['facts'])
+        if interpretation is None:continue
+        data['interpretation']=interpretation
+        data['invalidation']=interpretation['scenarios'][0]['invalidation_en']+' A source or identity correction also requires requalification.'
+        data['invalidation_zh']=interpretation['scenarios'][0]['invalidation_zh']+' 来源或身份更正也需要重新核验。'
+        if ticker=='NOC':
+            data['next_condition']='Watch new EAC revisions and reported margin; qualify delivery, cost recovery and cash evidence separately.'
+            data['next_condition_zh']='关注新的EAC修订及已披露利润率；分别核验交付、成本回收及现金证据。'
+        elif ticker=='LHX':
+            data['next_condition']='Watch the contractual QIPO, milestone and redemption conditions, retained business scope and subsequent cash disclosures.'
+            data['next_condition_zh']='关注合约QIPO、里程碑及赎回条件、保留业务范围，以及后续现金披露。'
+        else:
+            data['next_condition']='Confirm contract scope and delivery, then review reported margin and cash conversion; evaluate observed market context separately.'
+            data['next_condition_zh']='先核实合约范围及交付，再检视已披露利润率及现金转化；独立评估已观察到的市场背景。'
     if use_market:
         # Reuse the verified financial snapshot and its selected subject inputs.
         # A missing/cutoff-excluded quartet cannot admit a price-only profile.

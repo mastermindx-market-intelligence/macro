@@ -56,21 +56,19 @@ def test_wrong_edition_and_unreviewed_host_refuse():
  with pytest.raises(ValueError,match='unreviewed_edition'):a.validate_allocation_plan_receipt(r,pdf_bytes=PDF+b'\n')
  with pytest.raises(ValueError,match='source_invalid'):a.build_allocation_plan_receipt(source_url='https://mirror.example/plan.pdf',final_url=REC['resolved_url'],pdf_bytes=PDF,observed_at=REC['retrieved_at'],known_at=REC['retrieved_at'],source_document_date='2026-05-04')
 
-@pytest.fixture(scope='module')
-def budget_candidate(tmp_path_factory):
- root=Path(os.environ.get('DEFENSE_BUDGET_VALIDATION_ROOT',str(tmp_path_factory.mktemp('budget-validation'))));contracts=root/'contracts/government_revenue';contracts.mkdir(parents=True,exist_ok=True)
+@pytest.fixture
+def budget_candidate(tmp_path, monkeypatch):
+ # Use the incumbent module object. The module guard checks every case, so
+ # a module-scoped sys.modules swap cannot be made safe by late restoration.
+ from engine.government_revenue import budget_program as p
+ root=tmp_path/'budget-validation';contracts=root/'contracts/government_revenue';contracts.mkdir(parents=True)
  for name in ('government_budget_line.v1.schema.json','government_budget_edge.v1.schema.json','government_budget_program_graph.v1.schema.json'):
-  p=contracts/name
-  if not p.exists():p.symlink_to(REPO/'contracts/government_revenue'/name)
- (contracts/'government_budget_program_graph.v1_1.schema.json').write_bytes(Path(os.environ.get('DEFENSE_BUDGET_SCHEMA',str(REPO/'contracts/government_revenue/government_budget_program_graph.v1_1.schema.json'))).read_bytes())
- sys.modules['engine.government_revenue.budget_allocation_context']=a
- name='engine.government_revenue.budget_program';original=sys.modules.get(name);spec=importlib.util.spec_from_file_location(name,Path(os.environ.get('DEFENSE_BUDGET_MODULE',str(REPO/'engine/government_revenue/budget_program.py'))));p=importlib.util.module_from_spec(spec);sys.modules[name]=p;spec.loader.exec_module(p);p._root=lambda supplied=None:root if supplied is None else Path(supplied)
- try:yield p
- finally:
-  if original is None:sys.modules.pop(name,None)
-  else:sys.modules[name]=original
+  (contracts/name).symlink_to(REPO/'contracts/government_revenue'/name)
+ (contracts/'government_budget_program_graph.v1_1.schema.json').write_bytes((REPO/'contracts/government_revenue/government_budget_program_graph.v1_1.schema.json').read_bytes())
+ monkeypatch.setattr(p,'_root',lambda supplied=None:root if supplied is None else Path(supplied))
+ return p
 
-@pytest.fixture(scope='module')
+@pytest.fixture
 def graph(budget_candidate):
  base=json.loads(gzip.decompress((FIXTURE/'accepted_budget_graph.v1.json.gz').read_bytes()));assert budget_candidate.is_valid_budget_program_graph(base)
  out=a.compose_allocation_context_graph(base,receipt=receipt(),pdf_bytes=PDF,sections=('20002','20003','20004'),generated_at=NOW,as_of='2026-10-13',require_storage=False)
