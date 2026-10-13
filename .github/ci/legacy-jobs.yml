@@ -2292,6 +2292,23 @@ jobs:
       - "tests/test_semiconductor_research_inputs.py"
       - "tests/test_semiconductor_research_composition.py"
       - "tests/test_semiconductor_research_temporal.py"
+      # Nuclear vertical on the same code gate. The suites import the
+      # semiconductor shell already listed above; these paths are the
+      # vertical's own subjects and its eleven suites.
+      - "engine/market_ontology/nuclear_theme_research.py"
+      - "engine/market_ontology/nuclear_owner_bundle.py"
+      - "tests/nuclear_research_helpers.py"
+      - "tests/test_market_ontology_nuclear_theme_research.py"
+      - "tests/test_nuclear_owner_bundle.py"
+      - "tests/test_nuclear_research_codes.py"
+      - "tests/test_nuclear_research_composition.py"
+      - "tests/test_nuclear_research_inputs.py"
+      - "tests/test_nuclear_research_interpretation_scope.py"
+      - "tests/test_nuclear_research_lineage.py"
+      - "tests/test_nuclear_research_review_gate.py"
+      - "tests/test_nuclear_research_route.py"
+      - "tests/test_nuclear_research_sections.py"
+      - "tests/test_nuclear_research_temporal.py"
       - "tests/test_basket_intelligence_mounts.py"
       - "scripts/build_state_of_themes.py"
       - "scripts/publish_company_intelligence_r2.py"
@@ -2378,6 +2395,12 @@ jobs:
         run: python -m pytest tests/test_semiconductor_guidance_history.py tests/test_semiconductor_earnings_witnesses.py tests/test_semiconductor_earnings_intake.py tests/test_semiconductor_earnings_intake_integration.py -q
       - name: semiconductor research composer (inputs, composition, temporal law)
         run: python -m pytest tests/test_semiconductor_research_inputs.py tests/test_semiconductor_research_composition.py tests/test_semiconductor_research_temporal.py -q
+      - name: nuclear research composer (contract, codes, composition, inputs, interpretation scope, lineage, review gate, sections, temporal)
+        run: python -m pytest tests/test_market_ontology_nuclear_theme_research.py tests/test_nuclear_research_codes.py tests/test_nuclear_research_composition.py tests/test_nuclear_research_inputs.py tests/test_nuclear_research_interpretation_scope.py tests/test_nuclear_research_lineage.py tests/test_nuclear_research_review_gate.py tests/test_nuclear_research_sections.py tests/test_nuclear_research_temporal.py -q
+      - name: nuclear owner-bundle loader (declared absence, rights revision, light import closure)
+        run: python -m pytest tests/test_nuclear_owner_bundle.py -q
+      - name: nuclear route (rights filter before composition, private cache headers on success and error)
+        run: python -m pytest tests/test_nuclear_research_route.py -q
       - name: binder read-side primitives (workspace projection; declared witness scope + owner identity join)
         run: python -m pytest tests/test_workspace_projection.py tests/test_semiconductor_witness_scope.py -q
       - name: registered owner-bundle loader (public half through the reader; private half declared absent)
