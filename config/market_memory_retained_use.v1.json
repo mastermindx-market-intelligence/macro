@@ -45,5 +45,13 @@
   "fit_eligible": false,
   "training_eligible": false,
   "promotion_eligible": false,
-  "store_id": "mmstore_794a3c80dd160cedf09f1fa510c8b2d0467a05e94e60f72f18bcdf1dde79bf88"
+  "store_id": "mmstore_794a3c80dd160cedf09f1fa510c8b2d0467a05e94e60f72f18bcdf1dde79bf88",
+  "service_consumers": {
+    "research_factory.contextual_evidence.v1": {
+      "enabled": true,
+      "purpose": "contextual_cited_evidence",
+      "binding_registry": "config/market_memory_factory_bindings.v1.json",
+      "binding_registry_sha256": "a1d3c3f7e921b40fec48331f4f267bdcc030d203cae8e621c9c896b90ef27e5f"
+    }
+  }
 }

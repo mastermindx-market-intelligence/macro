@@ -481,6 +481,7 @@ def run(
     data_dir: Path,
     dry_run: bool = True,
     count: bool = False,
+    market_memory_inputs: tuple = (),
 ) -> dict:
     """Main runner.  Returns a summary dict.
 
@@ -493,6 +494,14 @@ def run(
     as_of = datetime.datetime.now(datetime.timezone.utc).isoformat(timespec="seconds")
     # Enforce: counted writes require both count=True AND dry_run=False
     effective_count = count and not dry_run
+
+    if type(market_memory_inputs) is not tuple or len(market_memory_inputs) > 1:
+        raise ValueError("at_most_one_typed_market_memory_evidence_input")
+    evidence_caps = []
+    if market_memory_inputs:
+        from engine.research_factory import adapter_market_memory_evidence as mm_evidence
+        evidence_caps = [mm_evidence.build_market_memory_evidence_attachment(item)
+                         for item in market_memory_inputs]
 
     candidates = load_candidates(rf_dir)
     registered = filter_registered(candidates)
@@ -519,6 +528,17 @@ def run(
         "transitions_attempted": 0,
         "transitions_ok": 0,
     }
+
+    if evidence_caps:
+        summary["contextual_evidence"] = []
+        for capability in evidence_caps:
+            value = mm_evidence.disclose_market_memory_evidence_attachment(capability)
+            summary["contextual_evidence"].append(value)
+            summary["routes"].append({
+                "candidate_id": value["candidate"]["candidate_id"], "source": "market_memory",
+                "domain": "market_memory", "action": "no_action",
+                "projected_state": "proposed", "transition_ok": None,
+                "reason": "contextual_evidence_only", "attachment_id": value["attachment_id"]})
 
     # Shared cache for alpha_grammar route_all (one parquet load per run)
     _alpha_cache: dict = {}
@@ -670,6 +690,9 @@ def run(
         summary["transitions_attempted"],
         summary["transitions_ok"],
     )
+    if evidence_caps:
+        summary["contextual_evidence"] = [
+            mm_evidence.disclose_market_memory_evidence_attachment(cap) for cap in evidence_caps]
     return summary
 
 
@@ -713,6 +736,8 @@ def main(argv: list[str] | None = None) -> int:
         default=None,
         help="Research factory data dir (default: <data-dir>/research_factory/)",
     )
+    ap.add_argument("--market-memory-binding", default=None,
+                    help="Consume one installed current contextual evidence binding; grants no lifecycle")
     args = ap.parse_args(argv)
 
     data_dir = Path(args.data_dir)
@@ -721,12 +746,25 @@ def main(argv: list[str] | None = None) -> int:
     # --count implies --execute
     dry_run = not (args.execute or args.count)
 
+    memory_inputs = ()
+    if args.market_memory_binding:
+        from engine.research_factory import adapter_market_memory_evidence as mm_evidence
+        memory_inputs = (mm_evidence.load_registered_factory_evidence(ROOT,
+            binding_id=args.market_memory_binding,
+            attached_at=datetime.datetime.now(datetime.timezone.utc).isoformat(timespec="microseconds").replace("+00:00", "Z")),)
+
     summary = run(
         rf_dir=rf_dir,
         data_dir=data_dir,
         dry_run=dry_run,
         count=args.count,
+        market_memory_inputs=memory_inputs,
     )
+
+    if memory_inputs:
+        print(json.dumps({"contextual_evidence": summary["contextual_evidence"],
+                          "transitions_attempted": summary["transitions_attempted"],
+                          "transitions_ok": summary["transitions_ok"]}, sort_keys=True))
 
     if dry_run:
         print("\n[DRY-RUN] No writes performed.")

@@ -2736,11 +2736,10 @@ def symbol_context(
     }
 
 
-def retained_macro_context(reader, *, policy, query_id: str, generation_id: str,
+def compose_retained_macro_capabilities(reader, *, policy, query_id: str, generation_id: str,
                            generation_sha256: str, subject_id: str,
-                           query_cutoff: str, method, limit: int) -> dict:
-    """Consume exact retained owners through R2/N0, with no history fallback."""
-    from engine.neuralweb import brain_analogues as brain
+                           query_cutoff: str, method, limit: int):
+    """Return original sealed R2/N0 capabilities; never reconstruct from JSON."""
     from engine.neuralweb import market_memory_episode_features as features
     from engine.neuralweb import market_memory_episode_retrieval as retrieval
     from engine.neuralweb import market_memory_operating_cortex_service as evidence
@@ -2771,4 +2770,13 @@ def retained_macro_context(reader, *, policy, query_id: str, generation_id: str,
             population, query, policy=policy, k=limit, method=method)
         packet = evidence.build_real_evidence_packet(
             selection, reader, generation, policy=policy)
-        return brain.get_retained_market_context(selection, packet, policy=policy)
+        return selection, packet
+
+
+def retained_macro_context(reader, **request) -> dict:
+    """Existing Brain projection of the shared exact-owner composition."""
+    from engine.neuralweb import brain_analogues as brain
+    from engine.neuralweb import market_memory_pit as pit
+    with pit.bounded_owner_reads(maximum_bytes=64 * 1024 * 1024):
+        selection, packet = compose_retained_macro_capabilities(reader, **request)
+        return brain.get_retained_market_context(selection, packet, policy=request["policy"])
