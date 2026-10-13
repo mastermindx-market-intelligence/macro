@@ -20,7 +20,7 @@ from engine.close_pass.massive_split_evidence import SplitEvidenceError, _valida
 
 _REVIEWED_PACKET_SHA256 = "6b62d7e6ef2c95c766f6089cde9c51994c0b869746546e86732dc4cdddf5285e"
 
-_REVIEWED_ISSUER_PACKET_SHA256 = "7102c64fbf97f88ae567a6a1facf0835d7dc29f440819f00d70eedce66b46283"
+_REVIEWED_ISSUER_PACKET_SHA256 = "773077fa8070e1c309b5b35542c34767bedd22c5f8ab27dd694210faf35cae1d"
 
 CONVENTION = "backward_adjusted_close_ratio_native_cash_previous_raw_close_v1"
 

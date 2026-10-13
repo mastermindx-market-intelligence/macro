@@ -9,5 +9,8 @@ def test_actual_shared_theme_progressive_loader():
 
 
 def test_page_preserves_auth_boot_before_finance_starts():
-    source = (Path(__file__).resolve().parents[1] / 'templates/government_revenue.html.j2').read_text()
+    from jinja2 import Environment, FileSystemLoader
+    root = Path(__file__).resolve().parents[1]
+    source = Environment(loader=FileSystemLoader(str(root / 'templates'))).get_template(
+        'government_revenue.html.j2').render(payload_json='{}')
     assert source.index('<script data-sync src="supabase.js">') < source.index('<script data-sync src="theme.js">') < source.index('<script data-sync src="government-revenue-investor-start.js">')

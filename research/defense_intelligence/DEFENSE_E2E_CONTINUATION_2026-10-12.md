@@ -718,3 +718,34 @@ command preserved every assertion and all28 publisher-consumer cases then passed
 The full sealed default candidate suites and committed-generation witness remain
 due. No protected release, installed entitlement, product acceptance or mission
 completion is claimed. Root continues the next ready phase.
+
+
+### October13 21:43 UTC combined generation ready for final proof
+
+The normal full builder completed generation2026-10-13T21:39:51.410084+00:00
+with complete financialowner260310 and reviewed theme references. Its stored
+DoD allocation source was consumed through the incumbent R2 owner with the
+provisioned runtime; three native sections remain documentary allocation-plan
+context. The preceding runtime omitted R2 environment and returned no store
+before any transport, so its incomplete build is retained separately. The
+642-line candidate ledger remains byte-identical; research state adds zero
+issuances. HTML is189,334bytes against the unchanged311,296 limit.
+
+The actual standalone output exposed four preload/cache-key mismatches even
+though the optimized path passed. Ten discriminating builder tests preserved
+that RED4/PASS6 result; matching the three static script URLs and shared-nav
+hint in each path closes it. The119 affected checks now pass across the
+combined run and corrected actual-output drawer check. That check asserts
+stacking on both template and published CSS, whether inline or content-addressed.
+The3,000ms ten-sample target and24-cell visual matrix remain unclaimed.
+
+The actual root price loader now qualifies a distinct four-issuer258-session
+packet and unchanged16 adjustment witnesses; parent proof
+`b4c8d10de6682e80386d45319d8f490aa2e9acc7f5b45ce5c857d55b381bed60`.
+The old37-session packet/refusal and benchmark receipt are preserved. Fresh
+authenticated financial-owner preflight at21:33 still proves complete remote5
+preservation and a qualified successor, with zero upstream writes. Protected
+source release, fresh effect-boundary CAS, natural publication, installed
+entitlement/browser and independent investor acceptance remain distinct gates.
+The existing capacity-classification Fabric run is now worker-unknown and
+retry-unauthorized; it is not duplicated. OriginalQ3/P2 effects remain preserved.

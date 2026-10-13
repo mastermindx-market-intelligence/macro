@@ -60,3 +60,30 @@ revision remain preserved. This new observation does not backdate availability o
 alter a prior issuance. The adapter remains unwired to grading and issuance;
 security continuity, rights, issuer panels, original Q3 recovery and prospective
 entry/maturity gates remain open. No scientific efficacy is inferred.
+
+
+## Actual wider issuer vintage qualified at21:40UTC
+
+Root independently reviewed and published the separate RTX/NOC August18 gaps
+through the incumbent complete market-store publisher. Publication readback
+`800ba7ccc61ee9833762bf3d49debf30c1f9dc08de63990c808ba6f1ec44dae4`
+proves exactly two objects changed, all1,322 old rows per issuer preserved,
+ITA and21,710 other objects unchanged, and the full manifest byte-identical.
+The source rows came from the already retained complete grouped body; no
+new provider acquisition or collector-state reset occurred.
+
+A subsequent actual canonical read completed21:34:53.526681UTC. The distinct
+issuer packet`773077fa8070e1c309b5b35542c34767bedd22c5f8ab27dd694210faf35cae1d`
+passes the sole public root loader for258 sessions per LHX/LMT/NOC/RTX and16
+unchanged factor witnesses. Parent receipt
+`b4c8d10de6682e80386d45319d8f490aa2e9acc7f5b45ce5c857d55b381bed60`
+binds the actual revised source. All25 synthetic checks pass. The prior37
+sessions, all148 adjusted values, old wider refusal and benchmark receipt/basis
+remain preserved. The current pin intentionally names the new immutable packet;
+the original source revision continues to reproduce the older packet.
+
+This closes the four-issuer technical price-horizon gap. Runtime identity/rights
+admission, historical availability/security continuity, eligible issuer coverage,
+original Q3 recovery, issuance, grading and scientific efficacy remain open.
+Neither current price rows nor positive licensing evidence retroactively creates
+a prospective cohort. No new ledger or excluded owner implementation is added.

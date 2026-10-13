@@ -74,6 +74,43 @@
     "sha256": "90b6b079ed6a7784eaa552232474fcea2dca161d51af57b8080d19ff011f97c3",
     "verified_input_artifacts": 10
   },
+  "issuer_current_vintage_projection": {
+    "adapter_sha256": "2b7bec706d4d3ddbd7951768e4017751426c8aeb4b799dfccd228f92d09a900f",
+    "benchmark_receipt_and_basis_unchanged": true,
+    "complete_window": [
+      "2025-10-01",
+      "2026-10-09"
+    ],
+    "factor_witnesses": 16,
+    "licensed_raw_sources_in_git": false,
+    "not_admitted": [
+      "historical_availability",
+      "identity_continuity",
+      "runtime_rights",
+      "prospective_cohort",
+      "grading",
+      "issuance",
+      "scientific_efficacy"
+    ],
+    "original37_packet_sha256": "7102c64fbf97f88ae567a6a1facf0835d7dc29f440819f00d70eedce66b46283",
+    "original37_values_preserved": 148,
+    "parent_qualification_sha256": "b4c8d10de6682e80386d45319d8f490aa2e9acc7f5b45ce5c857d55b381bed60",
+    "price_vintage_id": "grv-price-c4f1e937e2d3c26103416f335d8f7c1b867ce8e2f71a1a5a26ccbb522c30c62e",
+    "review_sha256": "74d9b8eca53aaf778c85bd89ade83b84a5d7c81afb676269568db7023c1b782c",
+    "reviewed_packet_sha256": "773077fa8070e1c309b5b35542c34767bedd22c5f8ab27dd694210faf35cae1d",
+    "sessions": 258,
+    "source_observed_at": "2026-10-13T21:34:53.526681+00:00",
+    "state": "independently_reviewed_parent_verified_unwired_technical_projection",
+    "symbols": [
+      "LHX",
+      "LMT",
+      "NOC",
+      "RTX"
+    ],
+    "synthetic_tests_passed": 25,
+    "wider_old_refusal_preserved": true,
+    "wired_to_grading_or_issuance": false
+  },
   "ita_canonical_repair": {
     "canonical_manifest_sha256": "f8d87f2642ba14be4357ea035981ad08335be59c805ed1663b9c9f37937cad5d",
     "changed_market_objects": [
@@ -107,7 +144,7 @@
     "transport": "Existing engine.close_pass.massive_close._default_fetch; exact existing same-account provisioned credential, no redirects",
     "transport_attempt_counts_not_instrumented_for_default_fetch": true
   },
-  "minimum_next_owner_step": "Preserve both benchmark vintages and their original source-pin revisions. Qualify security continuity, rights, input availability and issuer-panel inputs, and reconcile the original Q3 carrier before any prospective enrollment. The 258-session technical benchmark projection remains unwired to issuance and grading.",
+  "minimum_next_owner_step": "Preserve prior/current benchmark and issuer vintages with their source-pin revisions. The current technical panel covers SPY/ITA and the four issuers for258sessions, but remains unwired to issuance/grading. Qualify actual runtime security continuity, rights/input availability and eligible issuer coverage; reconcile original Q3 on its existing carrier before prospective enrollment.",
   "missing_ita_session_source_qualification": {
     "actual_observed_at": "2026-10-13T10:31:05.779230+00:00",
     "canonical_store_repaired": false,
@@ -199,7 +236,7 @@
     "enterprise_rights_record": "POSITIVE_EXISTING_RECORD",
     "future_enrollment": "NOT_STARTED",
     "immutable_calendar_snapshot": "READY_FOR_OWNER_REVIEW_NOT_OBSERVED_FUTURE_SESSIONS",
-    "original_Q3_caller": "ACTIVE_OR_WAITING_WORKER_UNKNOWN_RETRY_UNAUTHORIZED_PER_ROOT08_00",
+    "original_Q3_caller": "ACTIVE_OR_WAITING_WORKER_UNKNOWN_RETRY_UNAUTHORIZED_PER_ROOT20_52; supported metadata observation REFUSED original_run_observation_unconfirmed21_04; no replay",
     "original_Q3_replayed": false,
     "registered_price_basis": "NOT_ADMITTED",
     "source_endpoint_capability": "OBSERVED"
@@ -212,6 +249,21 @@
     "planning_n_required": 545,
     "prereg_document_sha256": "d8dc5d3cf6ced25424906dfb31ee4b8565b74b625080a9664926f2959cc00c41",
     "version": "4.1.0"
+  },
+  "rtx_noc_canonical_repair": {
+    "completed_at": "2026-10-13T21:32:33.721290+00:00",
+    "global_manifest_bytes_unchanged": true,
+    "independent_review_sha256": "a14c34008453ce1ebda7ad86414ce35ce8c40a7dc97e823a66cb2120bde8ae76",
+    "new_rows_per_issuer": 1323,
+    "objects_changed": [
+      "massive_stock_day/NOC.parquet",
+      "massive_stock_day/RTX.parquet"
+    ],
+    "old_rows_preserved_per_issuer": 1322,
+    "only_added_date": "2026-08-18",
+    "other_objects_preserved": 21710,
+    "publication_receipt_sha256": "800ba7ccc61ee9833762bf3d49debf30c1f9dc08de63990c808ba6f1ec44dae4",
+    "state": "CANONICAL_REPAIR_VERIFIED"
   },
   "runtime_consumer_note": "Existing research_state.v1 closes source paths, count reasons and disclosure lists; this documentary receipt is not installed API state. No new runtime validator or schema change.",
   "scope": "Source-only input qualification; no registered TR basis, cohort, issuance, scientific efficacy or runtime activation",

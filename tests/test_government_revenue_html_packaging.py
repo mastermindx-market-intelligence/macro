@@ -57,7 +57,7 @@ def test_critical_css_preserves_canonical_components_order_and_link_identity():
     assert owner._government_revenue_critical_css(env) == "\n".join(parts)
     source = (ROOT / "templates/government_revenue.html.j2").read_text()
     assert 'href="government-revenue-critical-theme.css"' in source
-    assert '<script data-sync src="theme.js">' in source
+    assert '<script data-sync src="{{ asset_url(\'theme.js\')' in source
     assert '{% include "_site_nav.html.j2" %}' in source
     assert 'link[href*="theme.css"]' in (ROOT / "templates/theme.js").read_text()
 
@@ -90,3 +90,36 @@ def test_existing_sdk_executes_before_shared_auth_with_one_publisher_cache_key(t
     loading = re.search(r'<script data-sync src="(supabase.js[^"]*)"', text)
     assert loading is not None and loading.group(1) == target
     assert text.index(loading.group(0)) < text.index('<script data-sync src="theme.js')
+
+
+@pytest.mark.parametrize('optimized', (False, True))
+@pytest.mark.parametrize('name', ('theme.js', 'supabase.js', 'government-revenue-investor.js',
+                                  'government-revenue-investor-start.js', 'navigation-refresh.css'))
+def test_critical_hint_and_loading_urls_match_in_each_publisher_path(tmp_path, optimized, name):
+    from html.parser import HTMLParser
+    from urllib.parse import urlsplit
+    from scripts.optimize_assets import make_optimizer
+
+    (tmp_path / 'templates').symlink_to(ROOT / 'templates', target_is_directory=True)
+    html, _ = owner._write_site_projection(tmp_path, {'companies': []}, latest_raw='{}', workspace_raw='{}')
+    for asset in ('supabase.js', 'navigation-refresh.css'):
+        shutil.copyfile(ROOT / 'templates' / asset, tmp_path / 'site' / asset)
+    text = html.read_text()
+    if optimized:
+        text = make_optimizer(tmp_path / 'site')(text, tmp_path / 'site')
+    hints, loads = [], []
+
+    class Assets(HTMLParser):
+        def handle_starttag(self, tag, pairs):
+            attrs = dict(pairs)
+            url = attrs.get('src') if tag == 'script' else attrs.get('href') if tag == 'link' else None
+            if not url or urlsplit(url).path != name:
+                return
+            if tag == 'link' and attrs.get('rel') == 'preload':
+                hints.append(url)
+            elif tag == 'script' or attrs.get('rel') == 'stylesheet':
+                loads.append(url)
+
+    Assets().feed(text)
+    assert len(hints) == len(loads) == 1
+    assert hints == loads, 'normal and optimized publication must each reuse their preload cache key'

@@ -2111,15 +2111,18 @@ def test_native_select_labels_never_use_dual_language_spans() -> None:
 
 def test_source_drawer_stacking_is_above_mobile_parent() -> None:
     import hashlib
-    for source in (TEMPLATE,):
+    published_styles = re.findall(r"<style\b[^>]*>(.*?)</style>", SITE, re.S)
+    refs = re.findall(r"assets/css/([a-f0-9]{8})\.css\?v=\1", SITE)
+    for digest in refs:
+        css = ROOT / "site/assets/css" / f"{digest}.css"
+        assert hashlib.sha256(css.read_bytes()).hexdigest()[:8] == digest
+        published_styles.append(css.read_text())
+    published = next(style for style in published_styles if ".drawer-backdrop.above-mobile-sheet" in style)
+    for source in (TEMPLATE, published):
         sheet = int(re.search(r"\.mobile-sheet\{[^}]*z-index:(\d+)", source).group(1))
         drawer = int(re.search(r"\.evidence-drawer\{z-index:(\d+)", source).group(1))
         backdrop = int(re.search(r"\.drawer-backdrop\.above-mobile-sheet\{z-index:(\d+)", source).group(1))
         assert sheet < backdrop < drawer
-    refs = re.findall(r"assets/css/([a-f0-9]{8})\.css\?v=\1", SITE)
-    css_files = [ROOT / "site/assets/css" / f"{digest}.css" for digest in refs]
-    css = next(path for path in css_files if ".drawer-backdrop.above-mobile-sheet" in path.read_text())
-    assert hashlib.sha256(css.read_bytes()).hexdigest()[:8] == css.stem
 
 
 def test_deferred_tool_sources_remain_ordered_sync_assets_after_typed_finance():
