@@ -92,11 +92,11 @@
       <p class="ff-desk-stamp" id="ff-desk-stamp">{{ t('As of — · Source —', '截止 — · 来源 —') }}</p>
       {#- X2-s saved views: the device-local briefcase lives on this desk band.
           Hidden until fif_saved_briefcase.js wires it (progressive reveal, no
-          dead controls when the module is absent). Existing classes only:
-          ff-trace-receipts lends its flex-wrap, so at 390 the row folds into
-          select / name / actions instead of crushing the select to two
-          glyphs and stacking the save label one character per line. -#}
-      <div class="ff-asof-controls ff-trace-receipts" id="ff-saved-controls" hidden>
+          dead controls when the module is absent); the governed
+          `ff-asof-controls--saved` modifier wraps the row (at 390 it folds
+          into select / name / actions) and lets the select take the free row
+          width at 1440. -#}
+      <div class="ff-asof-controls ff-asof-controls--saved" id="ff-saved-controls" hidden>
         <label class="ff-topic-filter" for="ff-saved-select">
           <span>{{ t('Saved views', '已存视图') }}</span>
           <select id="ff-saved-select"></select>
