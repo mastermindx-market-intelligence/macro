@@ -12,6 +12,7 @@ import inspect
 import json
 import random
 import re
+import subprocess
 import sys
 from datetime import date, timedelta
 from pathlib import Path
@@ -58,6 +59,21 @@ REG = (ROOT / "research" / "single_name_intelligence" / "protocols"
 INPUT_REF = "5ef7a7f39f99232bf9b574c7603da1011ee3af66"
 
 
+def _ensure_input_ref() -> None:
+    """Depth-1 CI checkouts lack INPUT_REF: skip (never ERROR, never fetch).
+
+    Same idiom as tests/test_sni_s2_seal_integrity.py. A test must not fetch
+    into the shared checkout: a timed-out fetch is SIGKILLed and leaves
+    .git/shallow.lock behind, and even a clean depth-1 fetch rewrites
+    .git/shallow for every later job in the same CI pack (PR #8893).
+    These tests still run in any full-history checkout.
+    """
+    present = subprocess.run(["git", "cat-file", "-e", f"{INPUT_REF}^{{commit}}"],
+                             cwd=ROOT, capture_output=True).returncode == 0
+    if not present:
+        pytest.skip("input ref 5ef7a7f39f99 not present in this checkout (depth-1 CI)")
+
+
 def _v1_1_report() -> str:
     path = V1_1 / "REPORT.md"
     if not path.exists():
@@ -93,6 +109,7 @@ def _cell_blocks(report: str) -> list[str]:
 # ---------------------------------------------------------------------------
 
 def test_h1_x2_01_leak_scan_before_outcomes(tmp_path: Path, monkeypatch) -> None:
+    _ensure_input_ref()
     calls: list[tuple] = []
     orig_scan = OutcomeEngine.info_leak_scan
     orig_excess = OutcomeEngine.episode_excess
@@ -259,6 +276,7 @@ def test_h1_x2_03_seal_top_level_flags(monkeypatch) -> None:
         refuse_nonfalse_authority(tainted_labels)
 
     # v1 seal still verifies (absent top-level key falls back to labels)
+    _ensure_input_ref()
     loader = GitBlobLoader(ROOT, INPUT_REF)
     state = compute_state(loader)
     verify_seal(V1, state)
@@ -394,6 +412,7 @@ def test_h1_a7_f2_no_empty_tokens() -> None:
 # ---------------------------------------------------------------------------
 
 def test_h1_a7_f5_deterministic_exclusion_order() -> None:
+    _ensure_input_ref()
     loader = GitBlobLoader(ROOT, INPUT_REF)
     state = compute_state(loader)
     us = session_dates(nyse_calendar)
