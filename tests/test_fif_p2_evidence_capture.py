@@ -4,7 +4,7 @@ No browser, no network. The route handler is exercised directly with fake
 route/request objects; the router behind it is the REAL ``app.forensics.router``
 in-process. The only monkeypatch anywhere in this file is the state-blob source
 for the GET /api/forensics/state forwarding test (the kernel state itself is
-built for real from the tree's five parquet inputs in the temp-root tests).
+built for real from the tree's six parquet inputs in the temp-root tests).
 """
 from __future__ import annotations
 
@@ -529,11 +529,11 @@ def test_evidence_yml_exactly_three_keys(tmp_path: Path) -> None:
 
 
 # ---------------------------------------------------------------------------
-# kernel temp-root build: the five inputs, nothing writes through
+# kernel temp-root build: the six inputs, nothing writes through
 # ---------------------------------------------------------------------------
 
 
-def test_prepare_kernel_temp_root_symlinks_exactly_five_inputs(tmp_path: Path) -> None:
+def test_prepare_kernel_temp_root_symlinks_exactly_six_inputs(tmp_path: Path) -> None:
     created = tool.prepare_kernel_temp_root(ROOT, tmp_path)
     assert tuple(created) == tool.KERNEL_INPUTS
     for relative in tool.KERNEL_INPUTS:

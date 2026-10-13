@@ -670,6 +670,11 @@ test('NEGATIVE 3: a ticker that resolves to a different entity refuses issuer an
   assert.deepEqual(after, before, 'the desk state is exactly its pre-restore snapshot');
   assert.equal(drive.nodes['ff-saved-notice'].hidden, false, 'the unavailable notice shows');
   assert.match(drive.nodes['ff-saved-notice'].innerHTML, /not covered by the current run/);
+  // A refused restore is never the active view: no pinned badge, no
+  // newer-generation chip; the refused row stays deletable.
+  assert.equal(drive.nodes['ff-saved-badge'].hidden, true, 'no pinned badge for a refused restore');
+  assert.equal(drive.api.savedGenerationStale(), null, 'no newer-generation chip for a refused restore');
+  assert.equal(drive.nodes['ff-saved-delete'].hidden, false, 'the refused row stays deletable');
 });
 
 test('NEGATIVE 4: update() on a refused row refuses with that row\'s reason and never changes stored bytes', () => {

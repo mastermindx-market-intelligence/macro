@@ -33,7 +33,7 @@ HOW IT WORKS
   synthesized. Anonymous mode runs the REAL ``require_site_full_user`` with no
   Authorization header and records the real 401.
 * Populated mode first builds the private state into a TEMP root (outside the
-  repo) that symlinks ONLY the five read-only kernel inputs, calls
+  repo) that symlinks ONLY the six read-only kernel inputs, calls
   ``scripts.build_fundamental_forensics.compose_state``, and copies the
   produced gzip object to the tree's gitignored
   ``data/fundamental_forensics/private/state.json.gz``.
@@ -146,13 +146,17 @@ CATEGORY_FORENSICS_FORWARD_FAILED = "forensics_forward_failed"
 SCRUB_ENV_PREFIXES = ("R2_", "FF_ATTESTED_", "AWS_")
 SCRUB_ENV_NAMES = ("RESEARCH_LOCAL_STORE", "FIF_FINANCIAL_DATASET_MODE")
 
-# Exactly the five read-only kernel inputs symlinked into the temp build root.
+# Exactly the six read-only kernel inputs symlinked into the temp build root.
+# The committed issuer master is the builder's entity-id join
+# (ISSUER_MASTER_RELATIVE); without it every company carries entity_id=None
+# and no saved view can ever pass the page's issuer-identity check.
 KERNEL_INPUTS: tuple[str, ...] = (
     "data/edgar/statements_quarterly.parquet",
     "data/edgar/statements.parquet",
     "data/edgar/fundamentals.parquet",
     "data/universe/membership.parquet",
     "data/breadth/ticker_sectors.parquet",
+    "data/reference/issuer_master.parquet",
 )
 # A REAL directory in the temp root (never a symlink): the builder writes the
 # public summary + private state under here, and none of that may reach through
@@ -1338,7 +1342,7 @@ class KernelStateReceipt:
 
 
 def prepare_kernel_temp_root(tree_root: Path, temp_root: Path) -> list[str]:
-    """Symlink ONLY the five read-only inputs; make the output dir a real dir."""
+    """Symlink ONLY the six read-only inputs; make the output dir a real dir."""
     created: list[str] = []
     for relative in KERNEL_INPUTS:
         source = tree_root / relative

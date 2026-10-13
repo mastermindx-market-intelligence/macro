@@ -2556,7 +2556,12 @@
   }
 
   function savedActiveView() {
+    // A refused restore (issuer or any load refusal) is never the active view:
+    // no pinned badge, no newer-generation chip, no saved_against backfill from
+    // a desk it does not describe. 'store' is a mutation failure, not a refusal
+    // of the restored view. Delete stays reachable through savedActiveId.
     if (!savedBriefcase || !state.savedActiveId) return null;
+    if (state.savedRefusal && state.savedRefusal !== 'store') return null;
     var result = savedBriefcase.load(state.savedActiveId);
     return result.ok ? result.view : null;
   }
