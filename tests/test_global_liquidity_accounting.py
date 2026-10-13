@@ -481,3 +481,63 @@ def test_module_is_display_tier_and_pure():
     assert "datetime.now" not in source
     assert "import pandas" not in source
     assert "import numpy" not in source
+
+
+# --------------------------------------------------------------------------
+# B4 adversarial-review regressions (non-finite values fail closed)
+# --------------------------------------------------------------------------
+
+
+def test_overflowing_float_decomposition_is_null_with_reason_never_reconciles():
+    # Finite inputs whose float products overflow to inf (and inf - inf to NaN)
+    # are a null decomposition with a reason, never a garbage "reconciled" one.
+    d = decompose_fx_change(1e308, 1e308, 10.0, 10.0)
+    assert d.is_null
+    assert d.null_reason.startswith("non-finite result (overflow)")
+    assert d.usd_change is None and d.parts_sum() is None
+    with pytest.raises(ValueError):
+        assert_reconciles(d)
+
+
+def test_assert_reconciles_fails_closed_on_non_finite_fields():
+    # A hand-built decomposition carrying NaN must not pass because
+    # ``abs(nan) > limit`` is False.
+    d = decompose_fx_change(100.0, 120.0, 1.0, 1.1)
+    poisoned = dataclasses.replace(d, interaction=float("nan"))
+    with pytest.raises(AccountingReconciliationError):
+        assert_reconciles(poisoned)
+    inf_scale = dataclasses.replace(
+        d, usd_prev=float("inf"), usd_curr=float("inf"), usd_change=float("nan")
+    )
+    with pytest.raises(AccountingReconciliationError):
+        assert_reconciles(inf_scale)
+
+
+def test_exact_int_decomposition_beyond_float_range_reconciles_exactly():
+    # An exact decomposition too large for a float reconciles exactly (no
+    # OverflowError); a broken one of the same size fails closed.
+    d = decompose_fx_change(10**400, 10**400 + 5, Fraction(1, 3), Fraction(1, 2))
+    assert not d.is_null
+    assert d.parts_sum() == d.usd_change
+    assert_reconciles(d)
+    broken = dataclasses.replace(d, interaction=d.interaction + 1)
+    with pytest.raises(AccountingReconciliationError):
+        assert_reconciles(broken)
+
+
+def test_standardized_magnitude_non_finite_raw_is_null_never_nan():
+    raws = [
+        RawMagnitude(Decimal(v), "usd") for v in ("1", "2", "3", "1e400", "4")
+    ]
+    values = [m.value for m in standardized_magnitudes(raws, min_periods=2)]
+    assert values[3] is None  # the non-finite raw is null, not NaN
+    assert values[4] == 2.0  # and it never entered the prior sample [1, 2, 3]
+    assert all(v is None or v == v for v in values)  # no NaN anywhere
+
+
+def test_reserve_change_non_finite_side_is_null_never_nan():
+    prev = _reserve_ri(1000, 120, 80, 200)
+    curr = _reserve_ri(1010, 150, 50, 220)
+    assert reserve_change(prev, curr) == -10
+    assert reserve_change(prev, dataclasses.replace(curr, reserves=float("inf"))) is None
+    assert reserve_change(dataclasses.replace(prev, reserves=float("nan")), curr) is None

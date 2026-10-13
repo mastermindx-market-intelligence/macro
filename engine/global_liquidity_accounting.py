@@ -312,6 +312,31 @@ def decompose_fx_change(
     domestic = usd_per_local_prev * d_local
     fx_translation = local_prev * d_quote
     interaction = d_local * d_quote
+    usd_change = usd_curr - usd_prev
+    non_finite = [
+        name
+        for name, value in (
+            ("usd_prev", usd_prev),
+            ("usd_curr", usd_curr),
+            ("usd_change", usd_change),
+            ("domestic_at_prior_fx", domestic),
+            ("fx_translation", fx_translation),
+            ("interaction", interaction),
+        )
+        if _is_null(value)
+    ]
+    if non_finite:
+        # Finite inputs can still overflow a float product to inf (and inf - inf
+        # to NaN). That is not a decomposition: null with a reason, never a
+        # garbage value that a NaN comparison would let "reconcile".
+        return _null_decomposition(
+            local_prev,
+            local_curr,
+            usd_per_local_prev,
+            usd_per_local_curr,
+            "non-finite result (overflow): " + ", ".join(non_finite),
+            concept,
+        )
     return FxDecomposition(
         local_prev=local_prev,
         local_curr=local_curr,
@@ -319,7 +344,7 @@ def decompose_fx_change(
         usd_per_local_curr=usd_per_local_curr,
         usd_prev=usd_prev,
         usd_curr=usd_curr,
-        usd_change=usd_curr - usd_prev,
+        usd_change=usd_change,
         domestic_at_prior_fx=domestic,
         fx_translation=fx_translation,
         interaction=interaction,
@@ -349,6 +374,14 @@ def assert_reconciles(
 
     A null decomposition raises ``ValueError``: absence of data is never
     treated as "reconciled".
+
+    Fail-closed clauses (B4 review): when both residuals are exactly zero in
+    the input type the law holds without any float conversion (so an exact
+    ``int``/``Fraction`` decomposition too large for a float still
+    reconciles); otherwise a residual or scale that is not a finite float
+    (overflow, NaN, or not representable) raises
+    ``AccountingReconciliationError`` -- a NaN comparison is never allowed to
+    read as "within tolerance".
     """
     if decomp.is_null:
         raise ValueError(
@@ -367,17 +400,38 @@ def assert_reconciles(
         raise ValueError(
             "cannot reconcile: computed fields are missing but null_reason is None"
         )
-    scale = max(
-        abs(float(decomp.usd_prev)),
-        abs(float(decomp.usd_curr)),
-        abs(float(decomp.domestic_at_prior_fx)),
-        abs(float(decomp.fx_translation)),
-        abs(float(decomp.interaction)),
-        1.0,
-    )
+    residual_exact = parts_sum - decomp.usd_change
+    residual2_exact = decomp.usd_change - (decomp.usd_curr - decomp.usd_prev)
+    if residual_exact == 0 and residual2_exact == 0:
+        return
+    try:
+        scale = max(
+            abs(float(decomp.usd_prev)),
+            abs(float(decomp.usd_curr)),
+            abs(float(decomp.domestic_at_prior_fx)),
+            abs(float(decomp.fx_translation)),
+            abs(float(decomp.interaction)),
+            1.0,
+        )
+        residual = float(residual_exact)
+        residual2 = float(residual2_exact)
+    except OverflowError as exc:
+        raise AccountingReconciliationError(
+            f"fx decomposition for concept {decomp.concept!r} is not representable "
+            f"as a finite float and does not reconcile exactly: {exc}"
+        ) from None
     limit = abs_tol + rel_tol * scale
-    residual = float(parts_sum - decomp.usd_change)
-    residual2 = float(decomp.usd_change - (decomp.usd_curr - decomp.usd_prev))
+    if not (
+        math.isfinite(scale)
+        and math.isfinite(limit)
+        and math.isfinite(residual)
+        and math.isfinite(residual2)
+    ):
+        raise AccountingReconciliationError(
+            f"fx decomposition for concept {decomp.concept!r} has a non-finite "
+            f"residual or scale (residual={residual!r}, residual2={residual2!r}, "
+            f"scale={scale!r}); fail closed"
+        )
     if abs(residual) > limit:
         raise AccountingReconciliationError(
             f"fx decomposition does not reconcile for concept {decomp.concept!r}: "
@@ -484,7 +538,10 @@ def standardized_magnitudes(
     before ``t`` are used. If the raw at ``t`` is null, or fewer than
     ``min_periods`` prior non-null values exist, or the prior sample standard
     deviation (ddof=1) is zero, the value is ``None``. Otherwise
-    ``value = float((x_t - mean) / std)``. The result is prefix-causal by
+    ``value = float((x_t - mean) / std)``. A raw whose float conversion is
+    not finite (or overflows) is treated as null and never enters the prior
+    sample, and a non-finite z is ``None``, never NaN. The result is
+    prefix-causal by
     construction: the result over ``raws[:k]`` equals the first ``k`` results
     over the full sequence.
 
@@ -512,7 +569,15 @@ def standardized_magnitudes(
     result = []
     for raw in raws:
         value: Optional[float] = None
+        x: Optional[float] = None
         if not _is_null(raw.value):
+            try:
+                x = float(raw.value)
+            except OverflowError:
+                x = None
+            if x is not None and not math.isfinite(x):
+                x = None
+        if x is not None:
             if len(prior_values) >= min_periods and len(prior_values) >= 2:
                 count = len(prior_values)
                 mean = sum(prior_values) / count
@@ -520,9 +585,10 @@ def standardized_magnitudes(
                     (candidate - mean) ** 2 for candidate in prior_values
                 ) / (count - 1)
                 std = math.sqrt(variance)
-                if std != 0.0:
-                    value = float((float(raw.value) - mean) / std)
-            prior_values.append(float(raw.value))
+                if std != 0.0 and math.isfinite(std):
+                    z = float((x - mean) / std)
+                    value = z if math.isfinite(z) else None
+            prior_values.append(x)
         result.append(
             StandardizedMagnitude(value, unit, min_periods=min_periods)
         )
@@ -665,10 +731,15 @@ def assert_reserve_identity(
 
 
 def reserve_change(prev: ReserveIdentity, curr: ReserveIdentity) -> Optional[object]:
-    """``curr.reserves - prev.reserves``; ``None`` when either side is null."""
-    if prev.reserves is None or curr.reserves is None:
+    """``curr.reserves - prev.reserves``; ``None`` when either side is null.
+
+    Null means ``None``, NaN or infinite (``_is_null``), and a non-finite
+    difference is ``None`` too -- never NaN.
+    """
+    if _is_null(prev.reserves) or _is_null(curr.reserves):
         return None
-    return curr.reserves - prev.reserves
+    change = curr.reserves - prev.reserves
+    return None if _is_null(change) else change
 
 
 @dataclass(frozen=True)
