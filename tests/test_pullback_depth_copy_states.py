@@ -158,6 +158,43 @@ def test_c1_settled_close_is_a_time_only_when_asof_is_present():
             assert soup.select("time[datetime='']") == []
 
 
+def _gap_copy(count):
+    noun = "session" if count == 1 else "sessions"
+    return (
+        f"{count} {noun} missing from the closes used for this assessment",
+        f"本次评估所用收盘价缺少{count}个交易日",
+    )
+
+
+def _with_gaps(omitted):
+    full = weekday_closes([100.0] * 70 + [90, 94, 96, 97])
+    rows = [row for row in full if row[0] not in omitted]
+    read = observe(
+        rows,
+        expected_session=date.fromisoformat(rows[-1][0]),
+        is_session=session,
+    )
+    assert read["available"] is True and read["quality"] == "current", read.get("quality")
+    return read
+
+
+def test_d_missing_sessions_name_the_closes_used_for_this_assessment():
+    full = weekday_closes([100.0] * 70 + [90, 94, 96, 97])
+    one = _with_gaps({full[10][0]})
+    two = _with_gaps({full[10][0], full[40][0]})
+    assert one["history_gap_count"] == 1
+    assert two["history_gap_count"] == 2
+    for read in (one, two):
+        en, zh = _gap_copy(read["history_gap_count"])
+        for market in ("us", "cn"):
+            gaps = soup_of(read, market).select_one('[data-signal="gaps"]')
+            assert gaps is not None
+            assert gaps.select_one(".l-en").get_text() == en
+            assert gaps.select_one(".l-zh").get_text() == zh
+            assert "price history" not in gaps.get_text()
+            assert "价格历史缺少" not in gaps.get_text()
+
+
 def test_b2_close_equal_to_the_reference_high_stays_zero_under_the_old_label():
     read = observe_series([100] * 70 + [90, 100])
     assert read["phase"] == "recovering" and read["close"] == read["peak_close"]

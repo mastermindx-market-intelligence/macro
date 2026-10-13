@@ -174,7 +174,7 @@
       {% elif phase == 'stabilizing' %}<p class="rrp-verdict" data-signal="verdict">{{ t('Early repair evidence: the low is holding','初步修复证据：低点守住') }}</p>
       {% elif phase == 'recovering' %}<p class="rrp-verdict" data-signal="verdict">{{ t('Repair evidence building; not a confirmed recovery','修复证据增加中，尚未确认修复') }}</p>{% endif %}
       {% if trail %}{{ trail|safe }}{% endif %}
-      {% if gaps %}<p class="rrp-gaps" data-signal="gaps">{{ t(gaps ~ (' session' if gaps == '1' else ' sessions') ~ ' missing from the price history', '价格历史缺少' ~ gaps ~ '个交易日') }}</p>{% endif %}
+      {% if gaps %}<p class="rrp-gaps" data-signal="gaps">{{ t(gaps ~ (' session' if gaps == '1' else ' sessions') ~ ' missing from the closes used for this assessment', '本次评估所用收盘价缺少' ~ gaps ~ '个交易日') }}</p>{% endif %}
     </div>{% endif %}
     {% endif %}
   </div>

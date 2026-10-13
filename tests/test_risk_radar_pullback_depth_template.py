@@ -502,16 +502,16 @@ def test_evidence_rows_are_bilingual_and_the_verdict_matches_the_phase(phase, en
         "2026-09-16", "2026-09-24", "2026-09-29",
     ]
     gaps = _signal(soup, "gaps")
-    assert gaps.select_one(".l-en").get_text() == "2 sessions missing from the price history"
-    assert gaps.select_one(".l-zh").get_text() == "价格历史缺少2个交易日"
+    assert gaps.select_one(".l-en").get_text() == "2 sessions missing from the closes used for this assessment"
+    assert gaps.select_one(".l-zh").get_text() == "本次评估所用收盘价缺少2个交易日"
 
 
 
 def test_one_missing_session_reads_in_the_singular():
     soup = BeautifulSoup(render(evidence_view(history_gap_count=1)), "html.parser")
     gaps = _signal(soup, "gaps")
-    assert gaps.select_one(".l-en").get_text() == "1 session missing from the price history"
-    assert gaps.select_one(".l-zh").get_text() == "价格历史缺少1个交易日"
+    assert gaps.select_one(".l-en").get_text() == "1 session missing from the closes used for this assessment"
+    assert gaps.select_one(".l-zh").get_text() == "本次评估所用收盘价缺少1个交易日"
 
 def test_average_at_or_above_uses_the_other_label():
     soup = BeautifulSoup(render(evidence_view(below_20_close_average=False)), "html.parser")
