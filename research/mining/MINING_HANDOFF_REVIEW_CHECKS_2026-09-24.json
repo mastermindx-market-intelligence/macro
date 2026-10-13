@@ -1,7 +1,7 @@
 {
   "operation": "gmi-mining-principal-research-20260923-sol-001",
   "classification": "PLANNING_PACKAGE_INTEGRITY_AND_ADMISSION_LABELS_ONLY",
-  "run_utc": "2026-09-24T08:08:09.567524+00:00",
+  "run_utc": "2026-10-13T03:07:16.743659+00:00",
   "command": "python research/mining/check_mining_handoff.py",
   "passed": 22,
   "failed": 0,
@@ -44,10 +44,10 @@
       "git_blob_sha1": "33d9448142d1ce922201b9938ae755b6239ea1e2"
     },
     "docs/superpowers/plans/2026-09-24-mining-economic-dossier-implementation.md": {
-      "bytes": 46805,
-      "words": 5694,
-      "sha256": "900559afd62db3781f71310262a294a7830f196ef6913525ac38744cd8d1b71d",
-      "git_blob_sha1": "a2fca1c561b799b7e49d69c9095e5ffa7dd094cc"
+      "bytes": 46879,
+      "words": 5697,
+      "sha256": "8d5c2c4dffb1b89743661b53e114449a6490a6684a97cb924782d973960faa77",
+      "git_blob_sha1": "3063a646f8c69437f39c5a21d9b8ee2cfeb5eba3"
     },
     "research/mining/MINING_WITNESS_INPUT_QUALIFICATION_2026-09-24.md": {
       "bytes": 16277,
@@ -68,13 +68,13 @@
       "git_blob_sha1": "053a59e2b805c8e9eaffcd767c77f9d29cf380a8"
     },
     "agentos/handoffs/GMI-MINING-MASTER-FABLE-CEO-HANDOFF-2026-09-24.md": {
-      "bytes": 16176,
-      "words": 1984,
-      "sha256": "f5c3b66e08353a08e05578e728dbbfff6878e0c97f5aed1b1527e8a1a491541a",
-      "git_blob_sha1": "bb2372987e90f8f135ddb0acebecb029eec2a849"
+      "bytes": 20468,
+      "words": 2473,
+      "sha256": "917062c84204b0f16226ddaf99c87d9881850012a116a763076440d30f8248a8",
+      "git_blob_sha1": "d77b5c73bc3342e90094885336f5bde0ef0be053"
     }
   },
-  "checker_git_blob_sha1": "6b815443c1441daf47b40bd0c9cd379a761ba5b9",
+  "checker_git_blob_sha1": "89300c0cb94e86e7e65877791c645053145800ee",
   "not_claimed": [
     "native product tests",
     "upstream module execution",

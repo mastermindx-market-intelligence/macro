@@ -23,6 +23,21 @@ checks: list[dict] = []
 def check(name: str, condition: bool, evidence: object) -> None:
     checks.append({'check': name, 'passed': bool(condition), 'evidence': evidence})
 
+def write_stable_receipt(path: Path, receipt: dict, **dump_kwargs) -> None:
+    """Keep the pinned receipt when a green re-run differs only by run_utc."""
+    fresh = json.loads(json.dumps(receipt, **dump_kwargs))
+    fresh.pop('run_utc', None)
+    if path.is_file():
+        try:
+            previous = json.loads(path.read_text(encoding='utf-8'))
+        except (OSError, ValueError):
+            previous = None
+        if isinstance(previous, dict):
+            previous.pop('run_utc', None)
+            if previous == fresh:
+                return
+    path.write_text(json.dumps(receipt, **dump_kwargs) + '\n', encoding='utf-8')
+
 def rounded(value: D, places: str = '.0001') -> D:
     return value.quantize(D(places))
 
@@ -51,10 +66,10 @@ check('twenty_eight_requirements', requirements == [f'ME-{i:02}' for i in range(
 check('references_resolve', set(re.findall(r'AL-S\d{2}', text)) == set(sources), 'No unknown source identifier')
 check('research_and_handoff_held', '**Mission complete:** false.' in text and '**Final Fable implementation handoff:** not created.' in text, 'Explicit incomplete scope')
 check('mirror_limits_preserved', 'Screenshot route failed' in text and 'no table-derived arithmetic' in text, 'Chalco visual verification not invented')
-check('seven_canonical_passes', re.findall(r'^\| (P\d{2}) \|', coverage, re.M) == [f'P{i:02}' for i in range(1,8)], 'Existing coverage updated')
-check('corpus_table_contiguous', 'supplier value capture |\n| P07' in coverage, 'Single Markdown table')
+check('eight_canonical_passes', re.findall(r'^\| (P\d{2}) \|', coverage, re.M) == [f'P{i:02}' for i in range(1,9)], 'P01-P08 coverage rows')
+check('corpus_table_contiguous', 'supplier value capture |\n| P07' in coverage and 'nonduplicative recycling |\n| P08' in coverage, 'Single Markdown table through P08')
 check('canonical_P05_preserved', '42c90b4634b4b408c014b7ccb335744adb79bf48' in coverage and 'DO_NOT_PUBLISH_DUPLICATE' in coverage, 'Parallel P05 excluded')
-check('remaining_battery_gap', 'nickel/cobalt and graphite/anode' in coverage, 'Next regime not declared complete')
+check('remaining_battery_gap', 'P08 supplies the last prioritized representative battery-regime package.' in coverage and 'Representative regimes are now tested, not globally covered.' in coverage, 'Post-P08 battery regime represented; global coverage still incomplete')
 check('current_procedure_pin', 'a7d2b3049e5cdc523e91e61a6e9d70a1cb911157' in text and 'a7d2b3049e5cdc523e91e61a6e9d70a1cb911157' in coverage, 'Same protected SHA')
 
 # Sourced selected arithmetic; source classifications are retained in the report.
@@ -147,7 +162,7 @@ receipt={
     'notes':['Historical research suites not rerun.','Chalco narrative admitted with mirror provenance; table-derived arithmetic excluded after screenshot failure.','Only original report/coverage/check files are packaged.']
 }
 output=ROOT/'MINING_ALUMINIUM_RESEARCH_CHECKS_2026-09-23.json'
-output.write_text(json.dumps(receipt,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
+write_stable_receipt(output, receipt, ensure_ascii=False, indent=2)
 print(json.dumps({k:receipt[k] for k in ['total','passed','failed','documents','script_git_blob_sha1']},indent=2))
 if receipt['failed']:
     print(json.dumps([c for c in checks if not c['passed']],indent=2))

@@ -1,8 +1,8 @@
 {
   "operation": "gmi-mining-principal-research-20260923-sol-001",
   "classification": "OFFLINE_PLAN_TRACE_SYNTAX_AND_RESEARCH_ARITHMETIC_ONLY",
-  "run_utc": "2026-09-24T07:37:12.464918+00:00",
-  "command": "python check_mining_plan.py",
+  "run_utc": "2026-10-13T03:07:16.798146+00:00",
+  "command": "python research/mining/check_mining_plan.py",
   "documents": {
     "2026-09-24-mining-shared-foundation-economic-dossier-design.md": {
       "bytes": 41539,
@@ -11,10 +11,10 @@
       "git_blob_sha1": "33d9448142d1ce922201b9938ae755b6239ea1e2"
     },
     "2026-09-24-mining-economic-dossier-implementation.md": {
-      "bytes": 46805,
-      "words": 5694,
-      "sha256": "900559afd62db3781f71310262a294a7830f196ef6913525ac38744cd8d1b71d",
-      "git_blob_sha1": "a2fca1c561b799b7e49d69c9095e5ffa7dd094cc"
+      "bytes": 46879,
+      "words": 5697,
+      "sha256": "8d5c2c4dffb1b89743661b53e114449a6490a6684a97cb924782d973960faa77",
+      "git_blob_sha1": "3063a646f8c69437f39c5a21d9b8ee2cfeb5eba3"
     },
     "MINING_WITNESS_INPUT_QUALIFICATION_2026-09-24.md": {
       "bytes": 16277,
@@ -30,10 +30,10 @@
     }
   },
   "checker": {
-    "bytes": 9041,
-    "words": 672,
-    "sha256": "9b40f31d498393649fb143cdc86ddd2cdb903bad58e380910a16a163650a482d",
-    "git_blob_sha1": "e8b6c17bf00b1de47d37b21b62624c89d875998e"
+    "bytes": 9671,
+    "words": 728,
+    "sha256": "69aa8ff749a81e6b160760ea4a04d6bfe1f1cc8855e8e7ad2ec2ca3bc3885561",
+    "git_blob_sha1": "71933521cebfb3b7de155b6036dade543678ef47"
   },
   "checks": {
     "preserved_spec_hash": true,

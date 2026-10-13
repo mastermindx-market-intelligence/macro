@@ -77,6 +77,22 @@ def nutrient_cost(price: D, phosphate_fraction: D, nitrogen_kg: D,
     return (price - nitrogen_kg * nitrogen_credit) / phosphate_fraction
 
 
+def write_stable_receipt(path: Path, receipt: dict, **dump_kwargs) -> None:
+    """Keep the pinned receipt when a green re-run differs only by run_utc."""
+    fresh = json.loads(json.dumps(receipt, **dump_kwargs))
+    fresh.pop('run_utc', None)
+    if path.is_file():
+        try:
+            previous = json.loads(path.read_text(encoding='utf-8'))
+        except (OSError, ValueError):
+            previous = None
+        if isinstance(previous, dict):
+            previous.pop('run_utc', None)
+            if previous == fresh:
+                return
+    path.write_text(json.dumps(receipt, **dump_kwargs) + '\n', encoding='utf-8')
+
+
 def git_blob(raw: bytes) -> str:
     return hashlib.sha1(b"blob " + str(len(raw)).encode() + b"\0" + raw).hexdigest()
 
@@ -211,7 +227,7 @@ def run() -> dict[str, object]:
         "checks": checks,
         "not_claimed": ["application tests", "CI", "independent research review", "issuer-accounting reconciliation", "native benchmark normalization", "actual contract settlement", "customer or agronomic validation", "historical native retention", "source reuse rights", "Agent OS validator", "browser proof", "investment validation", "Fable dispatch"],
     }
-    RECEIPT.write_text(json.dumps(receipt, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+    write_stable_receipt(RECEIPT, receipt, indent=2, ensure_ascii=False)
     return receipt
 
 

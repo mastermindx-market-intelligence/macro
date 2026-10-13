@@ -47,6 +47,22 @@ def refuses(name: str, a: tuple[str, ...], b: tuple[str, ...]) -> None:
         check(name, False, 'Incompatible inputs were accepted')
 
 
+def write_stable_receipt(path: Path, receipt: dict, **dump_kwargs) -> None:
+    """Keep the pinned receipt when a green re-run differs only by run_utc."""
+    fresh = json.loads(json.dumps(receipt, **dump_kwargs))
+    fresh.pop('run_utc', None)
+    if path.is_file():
+        try:
+            previous = json.loads(path.read_text(encoding='utf-8'))
+        except (OSError, ValueError):
+            previous = None
+        if isinstance(previous, dict):
+            previous.pop('run_utc', None)
+            if previous == fresh:
+                return
+    path.write_text(json.dumps(receipt, **dump_kwargs) + '\n', encoding='utf-8')
+
+
 def main() -> None:
     docs = {}
     for name in (REPORT, COVERAGE):
@@ -161,8 +177,7 @@ def main() -> None:
                                'contract settlement', 'native source rights or historical retention',
                                'canonical Agent OS validator', 'customer confirmation', 'browser proof',
                                'investment validation', 'rerun of earlier research checks']}
-    (ROOT / 'MINING_SPECIALTY_RESEARCH_CHECKS_2026-09-23.json').write_text(
-        json.dumps(receipt, indent=2) + '\n', encoding='utf-8')
+    write_stable_receipt(ROOT / 'MINING_SPECIALTY_RESEARCH_CHECKS_2026-09-23.json', receipt, indent=2)
     print(json.dumps({k: receipt[k] for k in ['run_utc', 'documents', 'total', 'passed', 'failed']}, indent=2))
     if receipt['failed']:
         print(json.dumps([c for c in checks if not c['passed']], indent=2))

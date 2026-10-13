@@ -11,6 +11,22 @@ p = root / 'MINING_PRINCIPAL_RESEARCH_FOUNDATION_2026-09-23.md'
 raw = p.read_bytes()
 text = raw.decode('utf-8')
 checks: list[dict[str, object]] = []
+def write_stable_receipt(path: Path, receipt: dict, **dump_kwargs) -> None:
+    """Keep the pinned receipt when a green re-run differs only by run_utc."""
+    fresh = json.loads(json.dumps(receipt, **dump_kwargs))
+    fresh.pop('run_utc', None)
+    if path.is_file():
+        try:
+            previous = json.loads(path.read_text(encoding='utf-8'))
+        except (OSError, ValueError):
+            previous = None
+        if isinstance(previous, dict):
+            previous.pop('run_utc', None)
+            if previous == fresh:
+                return
+    path.write_text(json.dumps(receipt, **dump_kwargs) + '\n', encoding='utf-8')
+
+
 def check(name: str, passed: bool, evidence: object) -> None:
     checks.append({'check': name, 'passed': bool(passed), 'evidence': evidence})
 
@@ -65,7 +81,7 @@ receipt = {
     'checks': checks,
     'not_claimed': ['application tests', 'CI', 'independent review', 'canonical Agent OS validator', 'browser proof', 'native source ingestion', 'investment validation', 'Fable dispatch', 'implementation acceptance'],
 }
-(root / 'MINING_RESEARCH_CHECKS_2026-09-23.json').write_text(json.dumps(receipt, indent=2) + '\n')
+write_stable_receipt(root / 'MINING_RESEARCH_CHECKS_2026-09-23.json', receipt, indent=2)
 print(json.dumps({k: receipt[k] for k in ['document_bytes','document_words','document_sha256','document_git_blob_sha1','total_checks','passed','failed']}, indent=2))
 if receipt['failed']:
     raise SystemExit(1)

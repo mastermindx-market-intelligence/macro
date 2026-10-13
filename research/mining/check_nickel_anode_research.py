@@ -22,6 +22,22 @@ checks: list[dict[str, object]] = []
 def check(name: str, passed: bool, evidence: object) -> None:
     checks.append({'check': name, 'passed': bool(passed), 'evidence': evidence})
 
+def write_stable_receipt(path: Path, receipt: dict, **dump_kwargs) -> None:
+    """Keep the pinned receipt when a green re-run differs only by run_utc."""
+    fresh = json.loads(json.dumps(receipt, **dump_kwargs))
+    fresh.pop('run_utc', None)
+    if path.is_file():
+        try:
+            previous = json.loads(path.read_text(encoding='utf-8'))
+        except (OSError, ValueError):
+            previous = None
+        if isinstance(previous, dict):
+            previous.pop('run_utc', None)
+            if previous == fresh:
+                return
+    path.write_text(json.dumps(receipt, **dump_kwargs) + '\n', encoding='utf-8')
+
+
 def git_blob(raw: bytes) -> str:
     return hashlib.sha1(b'blob ' + str(len(raw)).encode() + b'\0' + raw).hexdigest()
 
@@ -150,7 +166,7 @@ receipt = {
  'contract settlement','customer confirmation','native historical retention','source rights',
  'Agent OS validation','browser proof','investment validation','earlier-suite rerun']
 }
-OUT.write_text(json.dumps(receipt,indent=2,ensure_ascii=False)+'\n',encoding='utf-8')
+write_stable_receipt(OUT, receipt, indent=2, ensure_ascii=False)
 print(json.dumps({k:receipt[k] for k in ('run_utc','documents','script_git_blob_sha1','total','passed','failed')},indent=2))
 if receipt['failed']:
     print(json.dumps([x for x in checks if not x['passed']],indent=2))

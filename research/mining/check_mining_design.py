@@ -19,6 +19,22 @@ SPEC = REPO_SPEC if REPO_SPEC.is_file() else ROOT / SPEC_NAME
 RECEIPT = ROOT / "MINING_SHARED_FOUNDATION_DESIGN_CHECKS_2026-09-24.json"
 
 
+def write_stable_receipt(path: Path, receipt: dict, **dump_kwargs) -> None:
+    """Keep the pinned receipt when a green re-run differs only by run_utc."""
+    fresh = json.loads(json.dumps(receipt, **dump_kwargs))
+    fresh.pop('run_utc', None)
+    if path.is_file():
+        try:
+            previous = json.loads(path.read_text(encoding='utf-8'))
+        except (OSError, ValueError):
+            previous = None
+        if isinstance(previous, dict):
+            previous.pop('run_utc', None)
+            if previous == fresh:
+                return
+    path.write_text(json.dumps(receipt, **dump_kwargs) + '\n', encoding='utf-8')
+
+
 def git_blob(raw: bytes) -> str:
     return hashlib.sha1(b"blob " + str(len(raw)).encode("ascii") + b"\0" + raw).hexdigest()
 
@@ -83,7 +99,7 @@ def main() -> None:
         ],
         "unverified": ["upstream module execution", "application tests", "current CI", "independent review", "private-source admission", "witness data availability outside inspected registry", "native derivation receipts", "browser proof", "design acceptance", "Fable dispatch", "implementation or investment validation"],
     }
-    RECEIPT.write_text(json.dumps(receipt, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+    write_stable_receipt(RECEIPT, receipt, indent=2, ensure_ascii=False)
     print(json.dumps({"passed": receipt["passed"], "failed": receipt["failed"], "mutation_traps": traps, "document_words": receipt["document_words"], "document_bytes": len(raw), "document_sha256": receipt["document_sha256"], "document_git_blob_sha1": receipt["document_git_blob_sha1"], "checker_git_blob_sha1": receipt["checker_git_blob_sha1"], "receipt_git_blob_sha1": git_blob(RECEIPT.read_bytes())}, indent=2))
     if not all(checks.values()) or not all(traps.values()):
         raise SystemExit(1)

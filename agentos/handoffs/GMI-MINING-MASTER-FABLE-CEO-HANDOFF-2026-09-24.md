@@ -1,3 +1,56 @@
+---
+workstream: "WS:GMI-THEME-GRAPH"
+session: sol/mining-principal-research-20260923
+model: sol
+ended_because: blocked
+finalization_classification: CHECKPOINTED_CONTINUATION
+mission: >
+  Hand a receiving integrator the prepared Mining packet: eight research passes,
+  the design, the plan, the addendum and two real-input tasks, while the shared
+  GMI foundation stays upstream-owned. BUILD_READY remains false.
+state_before: >
+  The eight-pass corpus, design, plan, qualification and forty-row trace were
+  already on #7795. This packet had no YAML frontmatter, so Agent OS validate
+  could not read it. Placement was WAITING_CAPACITY with no receiver assigned.
+changed:
+  - path: agentos/handoffs/GMI-MINING-MASTER-FABLE-CEO-HANDOFF-2026-09-24.md
+    what: "YAML frontmatter added. ended_because is blocked. The checkpoint label is finalization_classification CHECKPOINTED_CONTINUATION. The body still says BUILD_READY false and DISPATCHED_BY_THIS_PACKET false."
+  - path: docs/superpowers/plans/2026-09-24-mining-economic-dossier-implementation.md
+    what: "Line 60 records that engine/market_ontology/mining_theme_research.py exists on main (#8100, ce0065d8, blob 72c1a8f0)."
+  - path: research/mining/check_aluminium_research.py
+    what: "Coverage checks require P01-P08 and the post-P08 statement that the battery regime is represented and global coverage is not complete."
+  - path: research/mining/check_mining_handoff.py
+    what: "The plan blob pin follows the line-60 correction. A green re-run does not rewrite the receipt when only run_utc changes."
+verified:
+  - claim: "The coverage file on this HEAD is blob f42b811d49ae1b8dfa9aae7c1c6101b36a89cc29 and contains P01-P08."
+    command: "python3 -I research/mining/check_aluminium_research.py"
+    result: "Before the predicate repair the checker reported total 54, passed 52, failed 2 (seven_canonical_passes, remaining_battery_gap) and printed coverage git_blob_sha1 f42b811d49ae1b8dfa9aae7c1c6101b36a89cc29."
+  - claim: "origin/main already contains engine/market_ontology/mining_theme_research.py from #8100."
+    command: "git rev-parse origin/main:engine/market_ontology/mining_theme_research.py"
+    result: "blob 72c1a8f055f87f701ff84b6be7a3d7164b1a6e5a at commit ce0065d897326a31cdafe6d8d95e4dbb8d39ca67."
+unverified:
+  - claim: "Fable has received, accepted or started the integration."
+    what_would_verify: "A deliberate receiver assignment and a separate canonical pickup/START. This packet does not assign a receiver."
+  - claim: "Native Mining inputs or the first release are BUILD_READY."
+    what_would_verify: "Actual G2-G6 receipts, both W-C and W-R tasks, and G7 evidence. All forty trace rows stay NOT_RUN here."
+unresolved:
+  - "G2-G6 source, identity, economic, private and mount receipts are not closed. Request 5809893850 has no observed exact-interface return."
+  - "G7 product tests, independent review, integrated CI, merge, deployment and browser proof were not run."
+  - "M1 acceptance does not complete the full Mining intelligence program."
+next_actions:
+  - "Review and place this packet through a lawful receiver path. Do not dispatch from BUILD_READY false."
+  - "Consume the delivered mining_theme_research.py on main (#8100, ce0065d8) instead of creating another copy."
+  - "Qualify G2-G6 before protected-body writes. Keep all forty MGD rows NOT_RUN until the real product tests execute."
+do_not_redo:
+  - "Do not recreate the eight research passes, the design, the plan, the qualification or the forty-row trace."
+  - "Do not assign shared base code to Mining workers. T01 stays upstream consumption."
+  - "Canonical P05 blob 42c90b4634b4b408c014b7ccb335744adb79bf48. Excluded blob 587ee020adec174233c42ad987f531d767b7c0ea. Do not republish it."
+danger_areas:
+  - "BUILD_READY false is not permission to merge, deploy, or start workers."
+  - "A government-hosted filing is not a blanket source-use grant."
+  - "ended_because is blocked. CHECKPOINTED_CONTINUATION is kept as finalization_classification because checkpoint is outside the allowed ended_because enum."
+---
+
 # Mining — Master Fable CEO integration handoff
 
 24 September 2026. Prepared principal research/design package; not a dispatched job.
@@ -41,7 +94,7 @@ Read in this order, stopping retrieval once the next action is clear:
 1. Current `agentos/handoffs/GMI-MINING-PRINCIPAL-RESEARCH-2026-09-23.md` on #7795: cumulative state, exact latest effects and unfinished admissions.
 2. This packet and `docs/superpowers/plans/2026-09-24-mining-integration-plan-addendum.md`: consumed dependency answers, no-base-rebuild boundary and remaining action gates. Use their immutable publication references from the cumulative record.
 3. Written design `docs/superpowers/specs/2026-09-24-mining-shared-foundation-economic-dossier-design.md` at `cbdb18ba237cf18d370e19fc7814b744b7739ef1`, blob `33d9448142d1ce922201b9938ae755b6239ea1e2`.
-4. Plan `docs/superpowers/plans/2026-09-24-mining-economic-dossier-implementation.md` at `f8a2538c1af7e50ae4516d9829187974bbbc1450`, blob `a2fca1c561b799b7e49d69c9095e5ffa7dd094cc`, interpreted with the mandatory addendum.
+4. Plan `docs/superpowers/plans/2026-09-24-mining-economic-dossier-implementation.md`, published at `f8a2538c1af7e50ae4516d9829187974bbbc1450`, blob `a2fca1c561b799b7e49d69c9095e5ffa7dd094cc`, interpreted with the mandatory addendum. The current file's line 60 records that `engine/market_ontology/mining_theme_research.py` exists on main (#8100, `ce0065d8`, blob `72c1a8f0`). Current plan blob `3063a646f8c69437f39c5a21d9b8ee2cfeb5eba3`.
 5. `research/mining/MINING_WITNESS_INPUT_QUALIFICATION_2026-09-24.md` at `9803d2569bb95a0cac35228a9380f2c86be6844e`, blob `34548e6b874148e017ec9b4efb7566c3e94123c8`; `MINING_IMPLEMENTATION_TRACE_2026-09-24.json` at `d0778c7f1890f14ff2af422e1923bf8daffee80e`, blob `37ccaa92c301667b176be80c3fa6fbdcece72665`.
 6. `research/mining/MINING_COVERAGE_AND_DESIGN_FRONTIER_2026-09-23.md` at `b05d1821df3089312904daaf7b9ba38819183ea3`, blob `f42b811d49ae1b8dfa9aae7c1c6101b36a89cc29`, then the specific research sections needed below.
 

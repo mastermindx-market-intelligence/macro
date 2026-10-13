@@ -72,6 +72,22 @@ def compare(actual: Comparison, expected: Comparison) -> D:
     return pct(actual.value, expected.value)
 
 
+def write_stable_receipt(path: Path, receipt: dict, **dump_kwargs) -> None:
+    """Keep the pinned receipt when a green re-run differs only by run_utc."""
+    fresh = json.loads(json.dumps(receipt, **dump_kwargs))
+    fresh.pop('run_utc', None)
+    if path.is_file():
+        try:
+            previous = json.loads(path.read_text(encoding='utf-8'))
+        except (OSError, ValueError):
+            previous = None
+        if isinstance(previous, dict):
+            previous.pop('run_utc', None)
+            if previous == fresh:
+                return
+    path.write_text(json.dumps(receipt, **dump_kwargs) + '\n', encoding='utf-8')
+
+
 def main() -> int:
     raw = REPORT.read_bytes()
     text = raw.decode("utf-8")
@@ -172,7 +188,7 @@ def main() -> int:
         "known_unresolved": ["Antamina reported zinc production residual", "actual stream threshold balances", "full reserve/resource overlap convention", "native historical consensus retention"],
         "not_claimed": ["product tests", "CI", "independent review", "issuer accounting reconciliation", "investment validation", "source-rights acceptance", "Agent OS validation", "browser proof", "implementation", "Fable dispatch"],
     }
-    RECEIPT.write_text(json.dumps(receipt, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    write_stable_receipt(RECEIPT, receipt, ensure_ascii=False, indent=2)
     print(json.dumps({key: receipt[key] for key in ("document_words", "document_bytes", "document_sha256", "document_git_blob_sha1", "total", "passed", "failed")}, indent=2))
     for c in checks:
         if not c["passed"]:

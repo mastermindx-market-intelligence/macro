@@ -1,7 +1,7 @@
 {
   "operation": "gmi-mining-principal-research-20260923-sol-001",
   "classification": "LOCAL_RESEARCH_ARITHMETIC_DOCUMENT_AND_PEDAGOGICAL_COMPARISONS_ONLY",
-  "run_utc": "2026-09-24T00:56:25.200996+00:00",
+  "run_utc": "2026-10-13T03:07:16.692629+00:00",
   "research_cutoff": "2026-09-23",
   "command": "python check_fuel_cycle_research.py",
   "document": "MINING_URANIUM_FUEL_CYCLE_ECONOMICS_2026-09-23.md",
@@ -9,7 +9,7 @@
   "document_bytes": 49273,
   "document_sha256": "d02e136254b67f230004337f6b5e1a341ddd36768efef75b1392c107f6ffd248",
   "document_git_blob_sha1": "164f5f58b5f0ea47eaac5afad760385c89ff694a",
-  "script_git_blob_sha1": "afcf557cbc0db0c481e07c976c2f8e76e31ba3fa",
+  "script_git_blob_sha1": "6654dbd0820e5c3d1df9c00a0f832409f32d625c",
   "total": 55,
   "passed": 55,
   "failed": 0,

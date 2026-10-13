@@ -2,7 +2,8 @@
 workstream: "WS:GMI-THEME-GRAPH"
 session: sol/mining-principal-research-20260923
 model: sol
-ended_because: checkpoint
+ended_because: blocked
+finalization_classification: CHECKPOINTED_CONTINUATION
 mission: >
   Deliver deep Mining intelligence on the existing shared GMI sector/theme foundation.
   Preserve principal-led research and the full-sector ambition while preparing Fable
@@ -22,6 +23,10 @@ changed:
     what: "Actual 22/22 passing checks and five corrupted-artifact traps; all forty product tests remain NOT_RUN."
   - path: agentos/handoffs/GMI-MINING-PRINCIPAL-RESEARCH-2026-09-23.md
     what: "Same cumulative record now points to the prepared integration packet, not another broad research pass."
+  - path: docs/superpowers/plans/2026-09-24-mining-economic-dossier-implementation.md
+    what: "Line 60 records that engine/market_ontology/mining_theme_research.py exists on main (#8100, ce0065d8, blob 72c1a8f0)."
+  - path: agentos/handoffs/GMI-MINING-PRINCIPAL-RESEARCH-2026-09-23.md
+    what: "ended_because is blocked, an allowed enum value. The checkpoint label remains finalization_classification CHECKPOINTED_CONTINUATION. danger_areas is present."
 verified:
   - claim: "Compatible protected procedure and original carrier recovered."
     command: "Current master/INDEX and same-SHA companion reads; exact #7795 checkpoint/ref; get_repo permission preflight."
@@ -62,6 +67,10 @@ do_not_redo:
   - "Do not assign shared base code, stores, routes, publishers or generic UI to Mining workers. Preserve #7870/#7462/#7669/#7331 and later source custody."
   - "Canonical P05 blob42c90b4634b4b408c014b7ccb335744adb79bf48; excluded attachment blob587ee020adec174233c42ad987f531d767b7c0ea. No rename/republication or overwrite. Healthcare#7787 remains settled/separate."
   - "Previous stale-SHA409 at c34c1f5f was reconciled as a rejected duplicate. Do not repeat its completed checkpoint write or infer another writer."
+danger_areas:
+  - "BUILD_READY is false and no receiver is assigned. Do not dispatch workers, merge, or treat this checkpoint as implementation acceptance."
+  - "Do not rebuild the shared GMI foundation, and do not republish excluded P05 blob 587ee020adec174233c42ad987f531d767b7c0ea."
+  - "ended_because is blocked. CHECKPOINTED_CONTINUATION stays in finalization_classification and in the body because checkpoint is not an allowed ended_because value."
 ---
 
 # Mining cumulative continuation — master integration packet prepared

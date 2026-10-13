@@ -25,6 +25,22 @@ RECEIPT_NAME = 'MINING_IMPLEMENTATION_PLAN_CHECKS_2026-09-24.json'
 SPEC_HASH = '0925e376bc7504aa5e191cfc1795415ecbfe2b7128d6d2bc06ecd5d6d361530e'
 
 
+def write_stable_receipt(path: Path, receipt: dict, **dump_kwargs) -> None:
+    """Keep the pinned receipt when a green re-run differs only by run_utc."""
+    fresh = json.loads(json.dumps(receipt, **dump_kwargs))
+    fresh.pop('run_utc', None)
+    if path.is_file():
+        try:
+            previous = json.loads(path.read_text(encoding='utf-8'))
+        except (OSError, ValueError):
+            previous = None
+        if isinstance(previous, dict):
+            previous.pop('run_utc', None)
+            if previous == fresh:
+                return
+    path.write_text(json.dumps(receipt, **dump_kwargs) + '\n', encoding='utf-8')
+
+
 def resolve(name: str, kind: str) -> Path:
     candidate = REPO / 'docs' / 'superpowers' / kind / name
     return candidate if candidate.is_file() else ROOT / name
@@ -121,7 +137,7 @@ def main() -> None:
       ],
       'not_claimed':['executed product tests','upstream module execution','native source or identity admission','actual formula receipts','current CI','independent review','browser proof','design or plan acceptance','worker dispatch','deployment','investment validation']
     }
-    (ROOT/RECEIPT_NAME).write_text(json.dumps(receipt,indent=2,ensure_ascii=False)+'\n')
+    write_stable_receipt(ROOT/RECEIPT_NAME, receipt, indent=2, ensure_ascii=False)
     print(json.dumps({'total':receipt['total'],'passed':receipt['passed'],'failed':receipt['failed'],'changed_artifact_traps':mutations,'plan':receipt['documents'][PLAN_NAME],'checker_git_blob':receipt['checker']['git_blob_sha1']},indent=2))
     if not all(checks.values()) or not all(mutations.values()):
         raise SystemExit(1)

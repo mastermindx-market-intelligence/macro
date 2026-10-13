@@ -1,7 +1,7 @@
 {
   "operation": "gmi-mining-principal-research-20260923-sol-001",
   "classification": "LOCAL_RESEARCH_ARITHMETIC_DOCUMENT_AND_PEDAGOGICAL_EXAMPLES_ONLY",
-  "run_utc": "2026-09-24T02:30:09.921797+00:00",
+  "run_utc": "2026-10-13T03:07:16.863640+00:00",
   "research_cutoff": "2026-09-23",
   "command": "python check_specialty_research.py",
   "documents": {
@@ -12,13 +12,13 @@
       "git_blob_sha1": "835fda608cf0d68af42969c602b119546866873d"
     },
     "MINING_COVERAGE_AND_DESIGN_FRONTIER_2026-09-23.md": {
-      "bytes": 15967,
-      "words": 2110,
-      "sha256": "447fea0605b3c2b99ca5293171f0e0da2e42dd2f4fdf1dba8fd250d42012af13",
-      "git_blob_sha1": "8362465637263cefad4dce2abaa45ab834351823"
+      "bytes": 23319,
+      "words": 3031,
+      "sha256": "dd9dd7c01e90f75a5e4bd60ba23225703e50293892d5e96b4ff2425b38d252ca",
+      "git_blob_sha1": "f42b811d49ae1b8dfa9aae7c1c6101b36a89cc29"
     }
   },
-  "script_git_blob_sha1": "f4b3af56fb54b0ef00967aef55e3081dec21ea77",
+  "script_git_blob_sha1": "cb305d03d1d2750ba9766881ae344e3bb28b8f66",
   "total": 58,
   "passed": 58,
   "failed": 0,

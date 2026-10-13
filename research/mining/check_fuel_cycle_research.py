@@ -29,6 +29,22 @@ def pct(new: D, old: D) -> D:
 def rounded(value: D, places: str = '.01') -> D:
     return value.quantize(D(places))
 
+def write_stable_receipt(path: Path, receipt: dict, **dump_kwargs) -> None:
+    """Keep the pinned receipt when a green re-run differs only by run_utc."""
+    fresh = json.loads(json.dumps(receipt, **dump_kwargs))
+    fresh.pop('run_utc', None)
+    if path.is_file():
+        try:
+            previous = json.loads(path.read_text(encoding='utf-8'))
+        except (OSError, ValueError):
+            previous = None
+        if isinstance(previous, dict):
+            previous.pop('run_utc', None)
+            if previous == fresh:
+                return
+    path.write_text(json.dumps(receipt, **dump_kwargs) + '\n', encoding='utf-8')
+
+
 def git_blob(raw: bytes) -> str:
     return hashlib.sha1(b'blob ' + str(len(raw)).encode() + b'\0' + raw).hexdigest()
 
@@ -153,7 +169,7 @@ receipt = {
     ],
     'not_claimed': ['application tests','CI','independent research review','issuer-accounting reconciliation','contract settlement','native historical retention','source-rights approval','canonical Agent OS validation','investment validation','browser proof','Fable dispatch','product implementation']
 }
-RECEIPT.write_text(json.dumps(receipt, indent=2, ensure_ascii=False)+'\n', encoding='utf-8')
+write_stable_receipt(RECEIPT, receipt, indent=2, ensure_ascii=False)
 print(json.dumps({k:receipt[k] for k in ['document_words','document_bytes','document_sha256','document_git_blob_sha1','script_git_blob_sha1','total','passed','failed']},indent=2))
 for c in checks:
     if not c['passed']: print('FAIL:', c['check'], c['evidence'])

@@ -1,7 +1,7 @@
 {
   "operation": "gmi-mining-principal-research-20260923-sol-001",
   "classification": "LOCAL_RESEARCH_ARITHMETIC_DOCUMENT_AND_PEDAGOGICAL_COMPATIBILITY_ONLY",
-  "run_utc": "2026-09-24T01:32:33.326673+00:00",
+  "run_utc": "2026-10-13T03:07:16.666483+00:00",
   "research_cutoff": "2026-09-23",
   "command": "python check_bulk_research.py",
   "document": "MINING_BULK_FERTILIZER_ECONOMICS_2026-09-23.md",
@@ -9,7 +9,7 @@
   "document_bytes": 48503,
   "document_sha256": "5783d34df08a70ad66c7c2ea3b768d474a37bee7caa62537cb54c4e2cd04f882",
   "document_git_blob_sha1": "42c90b4634b4b408c014b7ccb335744adb79bf48",
-  "script_git_blob_sha1": "65ac71a37b7ccd402a7aba75f77277c193fa950e",
+  "script_git_blob_sha1": "98039edee3ba0dbca3771692acc89c97266a8143",
   "total": 63,
   "passed": 63,
   "failed": 0,

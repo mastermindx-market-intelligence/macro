@@ -19,7 +19,8 @@ ADDENDUM = 'docs/superpowers/plans/2026-09-24-mining-integration-plan-addendum.m
 PACKET = 'agentos/handoffs/GMI-MINING-MASTER-FABLE-CEO-HANDOFF-2026-09-24.md'
 FROZEN = {
     SPEC: '33d9448142d1ce922201b9938ae755b6239ea1e2',
-    PLAN: 'a2fca1c561b799b7e49d69c9095e5ffa7dd094cc',
+    # Line 60 records mining_theme_research.py on main (#8100, ce0065d8).
+    PLAN: '3063a646f8c69437f39c5a21d9b8ee2cfeb5eba3',
     QUAL: '34548e6b874148e017ec9b4efb7566c3e94123c8',
     TRACE: '37ccaa92c301667b176be80c3fa6fbdcece72665',
 }
@@ -64,6 +65,22 @@ def inspect(files: dict[str, bytes]) -> dict[str, bool]:
     return checks
 
 
+def write_stable_receipt(path: Path, receipt: dict, **dump_kwargs) -> None:
+    """Keep the pinned receipt when a green re-run differs only by run_utc."""
+    fresh = json.loads(json.dumps(receipt, **dump_kwargs))
+    fresh.pop('run_utc', None)
+    if path.is_file():
+        try:
+            previous = json.loads(path.read_text(encoding='utf-8'))
+        except (OSError, ValueError):
+            previous = None
+        if isinstance(previous, dict):
+            previous.pop('run_utc', None)
+            if previous == fresh:
+                return
+    path.write_text(json.dumps(receipt, **dump_kwargs) + '\n', encoding='utf-8')
+
+
 def main() -> None:
     paths = [SPEC, PLAN, QUAL, TRACE, ADDENDUM, PACKET]
     files = {path: (ROOT / path).read_bytes() for path in paths}
@@ -94,7 +111,7 @@ def main() -> None:
         'not_claimed': ['native product tests', 'upstream module execution', 'independent review', 'source admission', 'source rights grant', 'receiver assignment', 'START', 'CI', 'merge', 'deployment', 'browser proof', 'investment validation'],
     }
     output = ROOT / 'research/mining/MINING_HANDOFF_REVIEW_CHECKS_2026-09-24.json'
-    output.write_text(json.dumps(receipt, indent=2) + '\n', encoding='utf-8')
+    write_stable_receipt(output, receipt, indent=2)
     print(json.dumps({'passed': receipt['passed'], 'failed': receipt['failed'], 'mutations': mutations, 'receipt_blob': blob(output.read_bytes()), 'checker_blob': receipt['checker_git_blob_sha1']}, indent=2))
     if not all(checks.values()) or not all(mutations.values()):
         raise SystemExit(1)

@@ -57,7 +57,7 @@ Names below marked **proposed** are exact design contracts for owner review, not
 | `engine/market_ontology/theme_research.py` — proposed shared | One extracted F04 kernel and closed definition selection; #7870/F04 owner only. |
 | `contracts/market_ontology/theme_research.v1.schema.json` — proposed shared | Closed derived multi-sector response; no fact storage or authority. |
 | Existing `engine/market_ontology/semiconductor_theme_research.py` and its schema | Compatibility wrapper and frozen existing response; no Mining edits without owner assignment. |
-| `engine/market_ontology/mining_theme_research.py` — proposed | Two static Mining domain definitions and thin consumer wrapper; no I/O, identity minting, numerical finance or generic kernel copy. |
+| `engine/market_ontology/mining_theme_research.py` — exists on main (#8100, `ce0065d8`, blob `72c1a8f0`) | Delivered on main at commit `ce0065d897326a31cdafe6d8d95e4dbb8d39ca67`, blob `72c1a8f055f87f701ff84b6be7a3d7164b1a6e5a`. Do not recreate it as an absent proposal. |
 | `engine/company_intelligence/mining_issuer_profiles.py` — proposed | Native Company-owned FCX/MP source extraction and bounded profile factories; not a second registry/store. |
 | Existing Company `issuer_profiles.py`, `event_workspace_build.py` | Consume their current accepted seams; modify only if owner-approved injection cannot support the task. |
 | Existing `engine/earnings_release/receipts.py` | Unchanged source-byte receipt implementation; no local reimplementation. |
