@@ -290,8 +290,11 @@ waves:
     depends_on: [GD-0A]
   - id: GD-4C
     title: PBOC liquidity-composition read (display/context)
-    status: todo
+    status: in_progress
     depends_on: [GD-0A]
+    # 2026-10-13: W7 Grok lane GD-W7-PBOCLIQ (grok-4.7, mmx-ubuntu0, branch
+    # lane/grey-deer-w7-pbocliq-20261013 off main eb7c4d674235) drafts the display-tier
+    # engine read + tests + doc. Judged by artifact on return; nothing is merged yet.
   - id: GD-5A
     title: Long-end duration shock expert (shadow)
     status: todo
@@ -331,6 +334,9 @@ waves:
     title: Portfolio envelope shadow adapter (zero book mutation)
     status: todo
     depends_on: [GD-3]
+    # 2026-10-13: read-only census lane GD-W7-MMCENSUS (grok-4.7, mmx-ubuntu1) maps
+    # the Mastermind Portfolio consumer seams. The census is not the adapter, and the
+    # adapter build is still uncommissioned.
   - id: GD-10
     title: Portfolio market-truth cutover (Sol + Chairman)
     status: todo
@@ -402,12 +408,19 @@ waves:
     status: awaiting_ci
     pr: 9122
     # results 0 of 12 claims pass; Opus-class red team CHANGES_REQUIRED (F1-F7), answered by an addendum, never by editing results.
+    # head 728090e7be62; only red = inherited main ci-pack-0/ci-gate (packing probes), healed by sibling PR 9141. Not armed; hand-merge after update-branch.
     depends_on: [GD-PB-W4-S1B]
   - id: GD-PB-W5
     title: Prospective SPY pullback lane in the nightly (writer, grader, readiness floor, heartbeat, grading-closure audit)
     status: awaiting_ci
     pr: 9128
+    # head a4c0b146f5a8; ci-pack-0 red = test_exclusive_curation_narrows_ordinary_code_prs, which main fails too (build_free_content 5604 > 5600 s); the forward job is already scope exclusive. Heal = sibling PR 9141. Not armed; hand-merge after update-branch.
     depends_on: [GD-PB-W4-DOCS, GD-PB-W4-S1B]
+  - id: GD-PB-W7
+    title: W7 Grok fan-out - power-floor projection, episode-rule options v1.2, T12 episode samples, T13/T14/T19 prereg drafts, prospective panel addendum, W5 review, GD-4C, GD-9A census
+    status: in_progress
+    # 10 grok-4.7 lanes over ssh on mmx-ubuntu0/1/2/3, launched 2026-10-13 ~12:50Z. Lane matrix: agentos/handoffs/GREY-DEER-RISK-INTELLIGENCE-2026-10-13-OPUS-W5.md. Every return is a DRAFT judged by artifact; prereg drafts are not frozen and spend no trial budget.
+    depends_on: [GD-PB-W4-S1B-RUN, GD-PB-W5]
 next_action: >
   Read the first nightly after PR 9128 merges: data/grey_deer_pullback/forward_log.jsonl
   must exist on main with SPY rows and the run must carry no
@@ -433,7 +446,8 @@ next_action: >
   Resumption file: research/grey_deer/GREY_DEER_CONTINUATION_HANDOFF_2026-10-11.md;
   latest receipt: agentos/handoffs/GREY-DEER-RISK-INTELLIGENCE-2026-10-13-OPUS-W5.md.
   GD-UI-RADAR-1 is live and DO_NOT_REDO (PR 7467); GD-UI-RADAR-2 keeps its own
-  carrier; GD-3 accepted; GD-5A/B/C closed; GD-6/7/8/9/10 uncommissioned.
+  carrier; GD-3 accepted; GD-5A/B/C closed; GD-6/7/8/10 uncommissioned; GD-4C
+  is drafting and GD-9A has only a census running (both W7 Grok lanes, 2026-10-13).
 
 ---
 

@@ -56,6 +56,9 @@ verified:
   - claim: G-HB (PR 9070) and T03 (PR 8835) hold in production (PRODUCTION_PROOF).
     command: "git show 3a6071006ade:data/ci/ledger_heartbeat_state.json and git show ed391bf44d44:data/ci/ledger_heartbeat_state.json (two same-day main writes, before and after the 04:24Z merge of PR 9070)"
     result: "3a6071006ade (00:48Z) has no session fields. ed391bf44d44 (11:36Z) carries expected_session=2026-10-12 and sessions_behind on both max_sessions_behind:2 ledgers: risk_radar 0, leadership_crack 2, which is at the ceiling, so lag_stalled_since is correctly null. Every open stalled_since 2026-10-09 (leadership_crack, opex_windows, mag7_regime, basket_turn, us_basket_turn) survived the same-day unchanged-asof re-run. The above-ceiling session_lag alert path has not yet fired in production; tests cover it."
+  - claim: Under prereg v1.1's D9 episode rule, the panel's h10 and h21 event sets collapse into very few episodes, so those horizons cannot reach the 10-episode floor however many events accrue in the same window.
+    command: "python3 -I -c: load research/grey_deer/pullback_stage1b/PULLBACK_STAGE1B_RESULTS.json at PR 9122 head 728090e7 and print episodes/h*/binary scalars"
+    result: "h5 31 clusters -> 11 episodes (175 events, 35 event-months); h10 20 -> 4 (395 events, 44 months); h21 5 -> 1 (625 events, 46 months). A pooled panel date is an event if ANY of 14 tickers fires, and clusters merge at gap <= h with [c0-21, cN+h] windows merged on overlap, so the longer horizons chain almost every event into one window. This is a property of the frozen rule, not of the data; any repair is a v1.2 revision with its own trial budget (W7 lane GD-W7-D9ALT drafts the options)."
 unverified:
   - claim: The first nightly after PR 9128 merges writes SPY rows to data/grey_deer_pullback/forward_log.jsonl and raises no grey-deer-pullback-*-error annotation.
     what_would_verify: >-
@@ -66,7 +69,7 @@ unverified:
 unresolved:
   - "QLedger GH001 size partition (data/qledger/claims.jsonl): owner QLedger (#8042 -> #8669 lineage). The newest US collection on main is 2026-10-09 (cdab77c46a9e); prospective grading that reads US prices waits for it."
   - "Executive ingress enrollment: only the user can start the OAuth step. Labor runs as direct Grok CLI lanes on mmx-ubuntu0/2/3 instead."
-  - "Grok CLI login on mb, mini1, mini2 and mini4, plus an install and login on m1 (ubuntu1 was not probed). This is a human OAuth act; the seat never runs grok login or copies auth.json."
+  - "Grok CLI login on mb, mini1, mini2 and mini4, plus an install and login on m1. This is a human OAuth act; the seat never runs grok login or copies auth.json. mmx-ubuntu1 (mastermind-pc) was probed on 2026-10-13: grok is logged in, with ~/lanes/repos/{macro,Mastermind}, and it carries W7 doc lanes. mmx-ubuntu2's home disk is at 99% (~14 GB free), so give it only light lanes until someone frees space; the seat does not delete another seat's files there."
   - "#8188 join custody and the CN rights determination (G3): canonical placement owner and data-source owner. The CN evidence is filed in PULLBACK_G3_CN_RIGHTS_EVIDENCE_2026-10-12.md; the determination itself is not this seat's."
 next_actions:
   - "Once sibling heal PR 9141 merges, update-branch PR 9122 and PR 9128 (gh api -X PUT .../pulls/<n>/update-branch). Hand-merge each on concluded green with gh pr merge <n> --squash --match-head-commit <full head>, then check landing: bare git fetch origin main, a per-path blob compare, and a git grep needle (grey_deer_pullback_nightly for 9128). Neither PR is armed."
@@ -129,3 +132,33 @@ tier, so the next evidence is out-of-sample by construction and graded as each h
 The pullback forward log is a research-tier prospective prereg log, not a risk-episode record.
 `DEC:RISK-EPISODES-USE-CHRONICLE-AND-REFLEXES` therefore does not govern it. Should the log ever feed
 a user-facing risk episode, that later step owes the Chronicle/reflex route.
+
+## W7 Grok fan-out (launched 2026-10-13 ~12:50Z)
+
+The Chairman ordered labor onto the direct `grok` CLI over ssh, with no native Claude subagents.
+That order governs inside its scope and outranks the default "fabric/MCP first" route in Sol's
+handoff (the Executive ingress is also still at its OAuth step). Every lane runs `grok-4.7`,
+`--no-subagents`, in a sparse worktree with the push URL disabled. It writes
+`~/lanes/logs/GD-W7-<LANE>.log`, which ends with `EXIT rc=` / `LOCAL_HEAD` / `RETURN_PRESENT|ABSENT`,
+and `~/lanes/out/GD-W7-<LANE>.return.md`. Never re-launch a lane whose log exists.
+
+| Lane | Host | Base | Delivers |
+|---|---|---|---|
+| PBOCLIQ | mmx-ubuntu0 | main | GD-4C display-tier PBOC liquidity-composition read: engine module, test, doc |
+| FWDREVIEW | mmx-ubuntu0 | #9128 head | Read-only adversarial review of the W5 forward lane; only BLOCKER/MAJOR findings reach #9128 |
+| T12SAMPLE | mmx-ubuntu0 | main | Episode-sample script, test and spec (T12) |
+| FLOORPROJ | mmx-ubuntu2 | #9122 head | When the forward lane can meet the design-doc §5 floors, per horizon |
+| T14PRE | mmx-ubuntu2 | main | DRAFT prereg: leader-damage hypothesis (T14) |
+| D9ALT | mmx-ubuntu3 | #9122 head | Episode-rule options for a v1.2 revision (see the D9 finding above) |
+| PANELADD | mmx-ubuntu3 | #9128 head | DRAFT addendum: a prospective lane for the 14-ETF panel |
+| T19PRE | mmx-ubuntu3 | main | DRAFT prereg: costed protection (T19) |
+| T13PRE | mmx-ubuntu1 | main | DRAFT prereg: mechanisms (T13) |
+| MMCENSUS | mmx-ubuntu1 | main | Read-only census of the GD-9A Mastermind Portfolio consumer seams |
+
+Every prereg lane returns an unfrozen DRAFT. Freezing one is a separate seat act with blob pins and
+its own trial family, and no draft spends trial budget. Integrate an accepted lane by `git format-patch`
+-> scp -> `git am --keep-cr` into an SSD-minted seat worktree, add the CI `run:` registration (and the
+CURATED_EXCLUSIVE entry if the job is scope exclusive), then ship it as its own PR.
+
+Lanes not opened, with their owners: GD-8A (#8132/#8648), T18 (#7029), GD-4B/6B (held), GD-6A (#8141
+HOLD), GD-5A/B/C (Sol-gated), GD-7A/GD-10 (Chairman/Sol), GD-8B (Terminal #849/#852).

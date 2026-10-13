@@ -118,7 +118,7 @@ seat posts for this key → search the key before every once-per-operation act.
 - O-a #8188 join custody (owner inert since 10-02; questions 6105079256 unanswered) — canonical placement owner.
 - O-b QLedger GH001 size partition — QLedger owner (#8042 → #8669 lineage).
   Program effect: until US collection publishes again, prospective pullback outcomes that read US prices or issuer data cannot be graded on main. W3 must not claim prospective proof over the gap (pre-mortem (d) is live).
-- O-c Heartbeat `stalled_since` preservation — repaired in the owning script by the O7/T03 PR (red-first: 4 failed / 17 passed unfixed, 21 passed fixed). Closes at production proof: the first trading-day `daily` state write after merge. The wider proof gap (unconditional `--render-happened`, fail-open, prior-asof baseline instead of expected NYSE session) stays with the heartbeat owner.
+- O-c Heartbeat `stalled_since` preservation — repaired in the owning script by the O7/T03 PR (red-first: 4 failed / 17 passed unfixed, 21 passed fixed). Preservation half CLOSED at PRODUCTION_PROOF 2026-10-13 (`ed391bf44d44`, see O-g). The wider proof gap (unconditional `--render-happened`, fail-open, prior-asof baseline instead of expected NYSE session) stays with the heartbeat owner.
 - O-d CN rights determination + `510300.SS` labelling decision — data-source owner (this seat drafts the disposition in T02; the determination is recorded, never assumed).
 - O-e Executive ingress enrollment — user-only OAuth step; lane blocker, not a mission stop.
 - O-f Grok CLI login on mb, mini1, mini2 and mini4, plus an install and login on m1 (ubuntu1 not
@@ -137,7 +137,7 @@ seat posts for this key → search the key before every once-per-operation act.
 **NEXT (in order)**
 1. ~~Post START on the carrier (once), then open the W0 records PR and own it to MERGED.~~ DONE: START `1791709498.229729`; PR #8785 merged `2dd5f5078cba`; MERGED edge `1791710983.487829`.
 2. ~~O1/T02 qualification doc → PR → merge.~~ DONE: PR #8833 squash `565d883c2657`, landing verified by blob compare; MERGED edge `1791738462.005429`.
-3. O7/T03 publication-health note + heartbeat repair + owner routing comments → PR → merge → production read of the state file on the first trading-day run. MERGED: PR #8835 squash `f1ae1e0365fc`; MERGED edge `1791741691.143669`. Production read pending (first trading-day `daily` state write).
+3. ~~O7/T03 publication-health note + heartbeat repair + owner routing comments → PR → merge → production read.~~ DONE: PR #8835 squash `f1ae1e0365fc`; MERGED edge `1791741691.143669`; PRODUCTION_PROOF 2026-10-13 `ed391bf44d44` (see O-g).
 4. ~~O8/T22 preregistration → Opus READ_ONLY audit → freeze → PR → merge.~~ DONE: PR #8852 `8145c6e2e584`.
 5. ~~W2 primitives; W3 stage-1; W4 repairs, runner, freeze.~~ DONE (§2).
 6. PR #9122 (stage-1b results + addendum) and PR #9128 (W5 forward lane): hand-merge each on concluded
