@@ -380,6 +380,12 @@ MUST_RESTART = [
     "engine/market_ontology/semiconductor_owner_bundle.py",
     "engine/market_ontology/semiconductor_witness_scope.py",
     "engine/market_ontology/workspace_projection.py",
+    # The Nuclear theme-research chain is bound the same lazy way: the
+    # registry's load_bundle imports nuclear_owner_bundle (which imports
+    # nuclear_theme_research), and the build_query / compose /
+    # select_evidence lazy targets import nuclear_theme_research.
+    "engine/market_ontology/nuclear_owner_bundle.py",
+    "engine/market_ontology/nuclear_theme_research.py",
     # The canonical theme-id resolver: the research composer compares an
     # assertion's `scope.canonical_theme_id` against it on every request.
     "engine/theme_graph/identity.py",

@@ -1303,7 +1303,7 @@ fi
 # keeps serving its old bytes until a restart. Do not trim an entry on the
 # grounds that nothing imports it at import time; the enumeration below is
 # the set of modules a served request can bind, eagerly or lazily.
-# The nine engine/market_ontology modules are ENUMERATED, not globbed: the
+# The eleven engine/market_ontology modules are ENUMERATED, not globbed: the
 # rest of that package is nightly-only, and a wildcard would blip /api on
 # every ontology commit.
 API_RESTART_CONFIRMED=0

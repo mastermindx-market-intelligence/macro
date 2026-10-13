@@ -27197,6 +27197,7 @@ jobs:
       - "engine/prophet_board_read.py"
       - "engine/prophet_bridge.py"
       - "engine/prophet_candidate_state.py"
+      - "engine/prophet_candidate_state_sources.py"
       - "engine/prophet_daily_brief.py"
       - "engine/prophet_doors.py"
       - "engine/prophet_early_observations.py"
