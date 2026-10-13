@@ -1597,10 +1597,87 @@ def today_selection_row_receipts(source_bytes):
     return {ticker: next(iter(values)) for ticker, values in grouped.items() if len(values) == 1}
 
 
+class _NativeAssessmentBindingRefused(ValueError):
+    """A genuine owner read result did not bind the producer's own candidate."""
+
+
+# Owner reads this assembly still owes before a brief could ever be fully
+# available. The native factual assessment is no longer on this list once one
+# genuine owner read is bound; plan/evidence/quote/B4 stay unread here.
+_TODAY_BRIEF_OWNER_UNAVAILABLE_CODES = (
+    "PLAN_NATIVE_OWNER_READ_UNAVAILABLE",
+    "EVIDENCE_NATIVE_OWNER_READ_UNAVAILABLE",
+    "QUOTE_NATIVE_OWNER_READ_UNAVAILABLE",
+    "B4_NATIVE_OWNER_READ_UNAVAILABLE",
+)
+
+
+def _verify_native_assessment_pair(assessment, projection, *, candidate, source_key, source_receipt):
+    """Bind one genuine owner read result to this producer's candidate resolution.
+
+    ``assessment``/``projection`` are the detached ``verified_pair()`` of the ONE
+    ``build_native_factual_assessment_result`` read for this exact candidate.
+    The consumer re-checks, from its own side, that the displayed envelope
+    restates this candidate's four identity fields, asserts this exact source
+    key/receipt pair, and receipts this same read's native projection id and
+    bytes. The projection stays an internal owner capability for later B4 work:
+    it is verified here and never surfaced on the response.
+    """
+    from hashlib import sha256
+    from engine.prophet_candidate_state import ASSESSMENT_OWNER_REF
+    from engine.us_candidate_episode import canonical_json
+
+    def refuse(detail):
+        raise _NativeAssessmentBindingRefused(f"native assessment binding refused: {detail}")
+
+    if assessment.get("schema") != "prophet.daily_brief_assessment_input/v1":
+        refuse("envelope is not the Daily Brief assessment input schema")
+    if assessment.get("owner_ref") != ASSESSMENT_OWNER_REF:
+        refuse("envelope is not issued by the fixed native assessment owner")
+    summary = assessment.get("summary")
+    if (assessment.get("state") != "REVIEW_REQUIRED"
+            or not isinstance(summary, dict)
+            or summary.get("assessment_state") != "REVIEW_REQUIRED"):
+        refuse("assessment state is not the literal REVIEW_REQUIRED observation")
+    for field in ("security_id", "episode_id", "candidate_generation_id", "market_session"):
+        if assessment.get(field) != candidate.get(field):
+            refuse(f"{field} disagrees with the producer candidate binding")
+    provenance = assessment.get("provenance")
+    if not isinstance(provenance, dict):
+        refuse("assessment provenance is missing")
+    if provenance.get("input_binding") != {
+        "candidate_source_event_id": source_key, "candidate_source_receipt": source_receipt,
+    }:
+        refuse("assessed input binding is not this candidate source key/receipt")
+    matched = provenance.get("matched_relation")
+    if (not isinstance(matched, dict)
+            or matched.get("relation_source_event_id") != source_key
+            or matched.get("relation_source_receipt") != source_receipt):
+        refuse("matched native relation is not this candidate source key/receipt")
+    if provenance.get("b3_projection_id") != projection.get("projection_id"):
+        refuse("receipted projection id is not this read's native projection")
+    if provenance.get("b3_projection_sha256") != (
+        "sha256:" + sha256(canonical_json(projection).encode()).hexdigest()
+    ):
+        refuse("receipted projection digest is not this read's native projection bytes")
+    for field in ("candidate_generation_id", "market_session"):
+        if projection.get(field) != candidate.get(field):
+            refuse(f"native projection {field} disagrees with the producer candidate binding")
+    if projection.get("generated_at") != assessment.get("asof"):
+        refuse("native projection generated_at is not this read's assembly asof")
+    rows = [row for row in projection.get("rows") or []
+            if isinstance(row, dict) and row.get("episode_id") == candidate.get("episode_id")]
+    if len(rows) != 1 or rows[0].get("security_id") != candidate.get("security_id"):
+        refuse("native projection does not carry exactly this candidate's episode row")
+
+
 def read_today_candidate_projection(repo_root, *, expected_source_sha256, expected_pair_id,
                                     expected_selection_receipt, expected_candidate_generation_id=None):
     """Read exact finalized selection plus native B1; never mutate publication."""
     from hashlib import sha256
+    from engine.prophet_candidate_state import (
+        CandidateStateContractError, build_native_factual_assessment_result,
+    )
     from engine.us_candidate_episode import (
         attest_candidate_episode_store_bytes, canonical_json,
         load_candidate_episode_store_snapshot,
@@ -1616,7 +1693,8 @@ def read_today_candidate_projection(repo_root, *, expected_source_sha256, expect
               "generated_at": generated_at, "candidates": [], "reason_codes": []}
 
     def unavailable(reason):
-        return {**result, "status": "UNAVAILABLE", "candidates": [], "reason_codes": [reason]}
+        return {**result, "status": "UNAVAILABLE", "candidates": [], "reason_codes": [reason],
+                "generated_at": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")}
 
     try:
         raw = source_path.read_bytes()
@@ -1653,6 +1731,9 @@ def read_today_candidate_projection(repo_root, *, expected_source_sha256, expect
         return unavailable("CANDIDATE_CLOCK_UNAVAILABLE")
     withdrawn = {event.get("correction_of") for event in generation.events if event.get("event_type") == "RETRACTED"}
     candidates = []
+    # Aligned with `candidates`: the candidate input plus the assessment of the
+    # ONE genuine owner read bound to it, composed only after the final guards.
+    native_reads = []
     for row, selected in zip(doc["buy"], binding["ordered_rows"], strict=True):
         item = {"selection_index": selected["selection_index"], "row_receipt": selected["row_receipt"],
                 "status": "UNAVAILABLE", "candidate_input": None, "daily_brief": None, "reason_codes": []}
@@ -1700,19 +1781,38 @@ def read_today_candidate_projection(repo_root, *, expected_source_sha256, expect
                              "owner_ref": "scripts/build_stock_library.py::main", "asof": generated_at,
                              "source_receipt": source_receipt, "selection_receipt": binding["selection_receipt"],
                              "display": {"ticker": row.get("ticker"), "selection_index": selected["selection_index"]}}
+                # One genuine native owner read for this exact binding. The owner
+                # revalidates the snapshot against native disk and derives the
+                # original identity/session itself; the consumer only ever takes
+                # its verified_pair(), never a reprojection or caller-supplied
+                # JSON. Owner refusal leaves the candidate binding available and
+                # the assessment typed unavailable — no receipt is fabricated.
+                assessment = None
+                assessment_codes = ("ASSESSMENT_NATIVE_OWNER_READ_UNAVAILABLE",)
+                try:
+                    owner_result = build_native_factual_assessment_result(
+                        snapshot, candidate_source_event_id=source_key,
+                        candidate_source_receipt=source_receipt)
+                    assessment, projection = owner_result.verified_pair()
+                    _verify_native_assessment_pair(assessment, projection, candidate=candidate,
+                                                   source_key=source_key, source_receipt=source_receipt)
+                    assessment_codes = ()
+                except _NativeAssessmentBindingRefused:
+                    assessment = None
+                    assessment_codes = ("ASSESSMENT_NATIVE_BINDING_UNAVAILABLE",)
+                except (CandidateStateContractError, OSError, ValueError, TypeError):
+                    assessment = None
+                    assessment_codes = ("ASSESSMENT_NATIVE_OWNER_READ_UNAVAILABLE",)
                 provenance = {"source_event_id": source_key, "source_receipt": source_receipt,
                               "selection_source_emit": doc["emit"], "generation_recorded_at": generation.receipt["recorded_at"],
                               "relations": [{key: event.get(key) for key in ("event_id", "occurred_at", "known_at", "recorded_at")}
                                             for event in active_relations]}
-                brief = compose_daily_brief(candidate=candidate, entry_availability=None, plan=None, assessment=None,
-                                            evidence=None, assembly=None, recovery=None, previous=None,
-                                            now=generated_at, quote=None)
-                item.update(status="AVAILABLE", candidate_input=candidate, daily_brief=brief, native_provenance=provenance,
-                            reason_codes=["ASSESSMENT_NATIVE_OWNER_READ_UNAVAILABLE", "PLAN_NATIVE_OWNER_READ_UNAVAILABLE",
-                                          "EVIDENCE_NATIVE_OWNER_READ_UNAVAILABLE", "QUOTE_NATIVE_OWNER_READ_UNAVAILABLE",
-                                          "B4_NATIVE_OWNER_READ_UNAVAILABLE"])
+                item.update(status="AVAILABLE", candidate_input=candidate, daily_brief=None, native_provenance=provenance,
+                            reason_codes=[*assessment_codes, *_TODAY_BRIEF_OWNER_UNAVAILABLE_CODES])
+                native_reads.append((candidate, assessment))
         if reason is not None:
             item["reason_codes"] = [reason]
+            native_reads.append(None)
         candidates.append(item)
     try:
         if source_path.read_bytes() != raw:
@@ -1724,6 +1824,34 @@ def read_today_candidate_projection(repo_root, *, expected_source_sha256, expect
             return unavailable("SOURCE_SNAPSHOT_CHANGED")
     except (OSError, ValueError, TypeError):
         return unavailable("CANDIDATE_SNAPSHOT_UNAVAILABLE")
+    # Read completion is observed once, after every owner input above is gathered
+    # and every final raw/part/HEAD guard has held. Daily Brief views compose
+    # against this instant, so a genuine native read assembled after this request
+    # started is no longer a future clock — while the original request-start cut
+    # checks above stay exactly as they are, and a native read assembled after
+    # completion itself is still refused rather than consumed.
+    read_completed_at = datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
+    result["generated_at"] = read_completed_at
+    for item, native_read in zip(candidates, native_reads, strict=True):
+        if native_read is None:
+            continue
+        candidate, assessment = native_read
+        completion_codes = ()
+        if assessment is not None:
+            try:
+                after_completion = (_today_source_instant(assessment["asof"])
+                                    > _today_source_instant(read_completed_at))
+            except (KeyError, TypeError, ValueError):
+                after_completion = True
+            if after_completion:
+                assessment = None
+                completion_codes = ("ASSESSMENT_AFTER_READ_COMPLETION_UNAVAILABLE",)
+        item["daily_brief"] = compose_daily_brief(
+            candidate=candidate, entry_availability=None, plan=None, assessment=assessment,
+            evidence=None, assembly=None, recovery=None, previous=None,
+            now=read_completed_at, quote=None)
+        if completion_codes:
+            item["reason_codes"] = [*completion_codes, *_TODAY_BRIEF_OWNER_UNAVAILABLE_CODES]
     # Native candidate availability is narrower than a fully available brief.
     return {**result, "status": "PARTIAL", "candidates": candidates,
             "reason_codes": ["DAILY_BRIEF_OWNER_INPUTS_UNAVAILABLE"]}

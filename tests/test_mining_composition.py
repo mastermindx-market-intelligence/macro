@@ -1095,3 +1095,168 @@ def _assert_empty_path_degrades(result, label):
     assert result["authorized_coverage"]["industry_total"] is None, label
     # A degraded payload is still a VALID payload, never a raised exception.
     _validate(result)
+
+
+# ---------------------------------------------------------------------------
+# T04b — T03 fact rows carry period onto the native block (MGD-10, two arms)
+# ---------------------------------------------------------------------------
+
+_T04B_PERIOD = "Quarter ended 2026-06-30"
+_T04B_SCOPE = ("2026-04-01", "2026-06-30", "2025-04-01", "2025-06-30")
+_T04B_SUBJECT = "0000000421"
+_PERIOD_BEFORE_ISSUER_VALIDITY = "omitted:period_before_issuer_validity"
+
+
+def _t04b_copper_sales_rows() -> list[dict]:
+    """One synthetic FCX sales row from the witness profile. No live figure."""
+    from engine.company_intelligence.mining_issuer_profiles import (
+        FCX_METRICS,
+        bind_witness_release,
+        fcx_profile,
+    )
+
+    metric = next(item for item in FCX_METRICS if item.metric == "consolidated_copper_sales")
+    body = (
+        "<html><body>"
+        f"<h2>{metric.selection_label}</h2>"
+        "<table><tr>"
+        f"<th>Label</th><th>Basis</th><th>Unit</th><th>{_T04B_PERIOD}</th>"
+        "</tr><tr>"
+        f"<td>{metric.row_label}</td><td>consolidated</td><td>{metric.unit}</td><td>111</td>"
+        "</tr></table></body></html>"
+    )
+    bound = bind_witness_release(
+        cik="0000999991",
+        accession="0000999991-26-000001",
+        body=body,
+        form="8-K",
+        filing_date="2026-07-23",
+        acceptance_datetime="2026-07-23T13:00:00Z",
+        report_date="2026-06-30",
+        exhibit_url="https://example.invalid/synthetic/fcx-t04b",
+        content_type="text/html",
+    )
+    assert "sec.gov" not in (bound.revision.exhibit_url or "")
+    profile = fcx_profile(fiscal_scope=_T04B_SCOPE)
+    return profile.extract_release_facts(
+        bound=bound,
+        document_id="doc-t04b",
+        event_id="evt-t04b",
+    )
+
+
+def _t04b_bundle(*, valid_from: str | None = None, time_valid_bridge: bool = False):
+    from tests.mining_casebook import financial_packets_from_event_facts
+
+    case = synthetic_case("copper_complete")
+    packets = financial_packets_from_event_facts(
+        _t04b_copper_sales_rows(),
+        stable_subject_id=_T04B_SUBJECT,
+    )
+    identity = dict(case.bundle.identity_results[0])
+    identity["stable_subject_id"] = _T04B_SUBJECT
+    if valid_from is not None:
+        identity["valid_from"] = valid_from
+    if time_valid_bridge:
+        identity["time_valid_bridge"] = True
+    bundle = _replace(
+        case.bundle,
+        financial_packets=packets,
+        identity_results=(identity,),
+    )
+    return case.query, bundle
+
+
+def test_t04b_fact_row_period_is_on_the_native_block() -> None:
+    query, bundle = _t04b_bundle()
+    result = composition.compose_mining_research(query, bundle)
+    blocks = result["economics"]["native_blocks"]
+    assert len(blocks) == 1
+    assert blocks[0]["period"] == _T04B_PERIOD
+    assert blocks[0]["value"] == 111.0
+    assert blocks[0]["stable_subject_id"] == _T04B_SUBJECT
+    assert result["limitations"] == ["omitted:expectations"]
+    _validate(result)
+
+
+def test_t04b_period_before_issuer_validity_refuses_attribution() -> None:
+    query, bundle = _t04b_bundle(valid_from="2026-07-01")
+    result = composition.compose_mining_research(query, bundle)
+    assert result["limitations"] == [
+        "omitted:expectations",
+        _PERIOD_BEFORE_ISSUER_VALIDITY,
+    ]
+    assert result["economics"]["native_blocks"] == []
+    assert result["economics"]["status"] == "degraded"
+    assert result["summary"]["status"] == "degraded"
+    _validate(result)
+
+
+def test_t04b_time_valid_period_mints_attribution() -> None:
+    query, bundle = _t04b_bundle(valid_from="2026-07-01", time_valid_bridge=True)
+    result = composition.compose_mining_research(query, bundle)
+    assert result["limitations"] == ["omitted:expectations"]
+    blocks = result["economics"]["native_blocks"]
+    assert len(blocks) == 1
+    assert blocks[0]["period"] == _T04B_PERIOD
+    assert blocks[0]["stable_subject_id"] == _T04B_SUBJECT
+    assert blocks[0]["value"] == 111.0
+    assert result["economics"]["status"] == "ready"
+    _validate(result)
+
+
+def test_t04b_two_identity_bundle_withholds_only_the_early_subject() -> None:
+    """Each packet is withheld only against the identity row it names.
+
+    The window issuer is first, so a first-row validity check keeps the early
+    packet. The early packet's subject is that issuer's CIK, not its
+    stable_subject_id; the window packet matches by stable_subject_id.
+    """
+    case = synthetic_case("copper_complete")
+    window_subject = "subject:window-issuer"
+    early_cik = "0000002222"
+    window = {
+        "name": "Window Issuer Synthetic",
+        "cik": "0000001111",
+        "stable_subject_id": window_subject,
+        "valid_from": "2020-01-01",
+        "fictional": True,
+    }
+    early = {
+        "name": "Early Issuer Synthetic",
+        "cik": early_cik,
+        "stable_subject_id": "subject:early-issuer",
+        "valid_from": "2026-07-01",
+        "fictional": True,
+    }
+    early_packet = {
+        "stable_subject_id": early_cik,
+        "measure": "reported operating income",
+        "value": 11,
+        "basis": "fictional reported dollars",
+        "source_label": "synthetic-early",
+        "period": "Quarter ended 2026-06-30",
+    }
+    window_packet = {
+        "stable_subject_id": window_subject,
+        "measure": "reported operating income",
+        "value": 22,
+        "basis": "fictional reported dollars",
+        "source_label": "synthetic-window",
+        "period": "Quarter ended 2026-09-30",
+    }
+    bundle = _replace(
+        case.bundle,
+        identity_results=(window, early),
+        financial_packets=(early_packet, window_packet),
+    )
+    result = composition.compose_mining_research(case.query, bundle)
+    assert result["limitations"] == [
+        "omitted:expectations",
+        _PERIOD_BEFORE_ISSUER_VALIDITY,
+    ]
+    blocks = result["economics"]["native_blocks"]
+    assert [block["stable_subject_id"] for block in blocks] == [window_subject]
+    assert blocks[0]["period"] == "Quarter ended 2026-09-30"
+    assert blocks[0]["value"] == 22
+    _validate(result)

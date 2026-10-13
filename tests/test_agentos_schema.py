@@ -14,6 +14,7 @@ print, never through a logger.
 """
 from __future__ import annotations
 
+import argparse
 import datetime as _dt
 import importlib.util
 import json
@@ -1531,3 +1532,1279 @@ def test_wait_review_after_accepts_dates_including_past_ones(review_after: objec
         "condition": "Operator action remains outstanding.",
     }
     assert _wait_hard(rec) == []
+
+
+# ------------------------------------------------ D3 record drafts and strict pins
+#
+# Draft commands print a skeleton and write nothing. ``validate`` with no new
+# flags stays the fleet gate (warnings do not fail). ``--paths`` judges only
+# the named records. ``--strict`` also fails on schema warnings. ``--snapshot``
+# without ``--strict`` reports how many PRs the seat supplied and adds no
+# failure. Currency warnings (state_before, point-in-time transcripts) stay
+# non-blocking: they are history, not a malformed record.
+
+
+HEAD_8245 = "c72fde4b2307a389b7ec1c900f93362b5dfc104a"
+BASE_8245 = "1f25c4abd1ea1111111111111111111111111111"
+HEAD_7792 = "88970a1a1978aaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+BASE_7792 = "c4da107fe729e46b4d4036b3e0e290390315d0fd"
+HEAD_7870 = "839bd6a1aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+HEAD_7891 = "4eef39349741aaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+OLD_7870 = "acc72f3f"
+OLD_8245 = "b019f975"
+OLD_7891 = "861d4049"
+
+_D3_WS = """---
+key: DRAFT-ROUNDTRIP
+title: Draft round-trip fixture
+objective: Hold a workstream so a drafted handoff citation resolves.
+status: active
+program: project-active-build-control
+repos: [macro]
+owner: chairman
+class: build
+blast_radius: reversible
+ambiguity: specified
+waves:
+  - id: W0
+    title: Fixture
+    status: todo
+next_action: Nothing for this fixture.
+---
+"""
+
+
+def _agentos(*args: str, env: dict[str, str] | None = None) -> subprocess.CompletedProcess[str]:
+    environ = dict(os.environ)
+    if env:
+        environ.update(env)
+    return subprocess.run(
+        [sys.executable, str(CLI), *args],
+        capture_output=True,
+        text=True,
+        cwd=REPO,
+        env=environ,
+    )
+
+
+def _write_tree(tmp_path: Path, files: dict[str, str]) -> Path:
+    root = tmp_path / "agentos"
+    for rel, text in files.items():
+        path = root / rel
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(text, encoding="utf-8")
+    return root
+
+
+def _yaml_quote(value: str) -> str:
+    return json.dumps(value)
+
+
+def _handoff_payload(**overrides: object) -> dict:
+    payload: dict = {
+        "schema": "agentos.record_draft.v1",
+        "as_of": "2026-10-12T04:42:56Z",
+        "workstream": "WS:DRAFT-ROUNDTRIP",
+        "session": "lane-w2-agos-strict",
+        "model": "fable",
+        "ended_because": "ci_handoff",
+        "date": "2026-10-12",
+        "mission": "Draft a schema-valid handoff skeleton from a seat snapshot.",
+        "state_before": "No carrier pin is retyped.",
+        "changed": [{"path": "scripts/agentos.py", "what": "added draft subcommands"}],
+        "verified": [{
+            "claim": "The skeleton names the snapshot head and does not call the network.",
+            "command": "python3 scripts/agentos.py validate",
+            "result": "0 error(s)",
+        }],
+        "unresolved": ["Seat copies a real mission before any records PR."],
+        "next_actions": ["Keep validate without --strict as the fleet gate."],
+        "do_not_redo": ["Do not mint a suffixed handoff filename."],
+        "danger_areas": ["A strict check is path-scoped."],
+        "prs": [{
+            "number": 8245,
+            "head_sha": HEAD_8245,
+            "base_sha": BASE_8245,
+            "draft": True,
+            "state": "open",
+            "merged": False,
+            "read_label": "REQUEST_CHANGES",
+            "comments": [{"id": 6117441661}],
+            "reviewers": [{"id": 5927055846}],
+            "ci_runs": [{"id": 0, "name": "fixture", "conclusion": "skipped"}],
+        }],
+    }
+    payload.update(overrides)
+    return payload
+
+
+def _decision_payload(**overrides: object) -> dict:
+    payload: dict = {
+        "schema": "agentos.record_draft.v1",
+        "key": "DRAFT-ROUNDTRIP-DECISION",
+        "question": "Where do head SHAs in a new handoff come from?",
+        "answer": "From the seat-supplied snapshot, copied into carriers.",
+        "rationale": "Hand-copied heads go stale against the next dump.",
+        "alternatives": [{
+            "option": "Retype the SHAs from memory.",
+            "why_not": "They drift the same night the record is written.",
+        }],
+        "evidence": ["scripts/agentos.py:150"],
+        "affects": ["WS:DRAFT-ROUNDTRIP"],
+        "confidence": "high",
+        "reversibility": "easy",
+        "decided_by": "lane",
+        "decided_at": "2026-10-12",
+    }
+    payload.update(overrides)
+    return payload
+
+
+def _discovery_payload(**overrides: object) -> dict:
+    payload: dict = {
+        "schema": "agentos.record_draft.v1",
+        "key": "DRAFT-ROUNDTRIP-DISCOVERY",
+        "claim": "A handoff stem that does not end in a date is invisible to compile-context.",
+        "falsifier": "scripts/agentos.py:2737",
+        "so_what": "New drafts use the canonical filename and amend it in place.",
+        "kind": "landmine",
+        "verified_at": "2026-10-12",
+        "verified_by": "python3 scripts/agentos.py validate",
+        "scope": ["agentos/handoffs/"],
+        "confidence": "verified",
+    }
+    payload.update(overrides)
+    return payload
+
+
+def _dump_json(tmp_path: Path, name: str, payload: dict) -> Path:
+    path = tmp_path / name
+    path.write_text(json.dumps(payload), encoding="utf-8")
+    return path
+
+
+def _pr(number: int, head: str, **extra: object) -> dict:
+    row: dict = {
+        "number": number,
+        "head_sha": head,
+        "draft": True,
+        "state": "open",
+        "merged": False,
+    }
+    row.update(extra)
+    return row
+
+
+def _handoff_doc(
+    *,
+    state_before: str,
+    changed_what: str,
+    unresolved: list[str],
+    body: str,
+    verified_result: str = "0 error(s)",
+    extra_front: str = "",
+) -> str:
+    items = "\n".join(f"  - {item}" for item in unresolved)
+    extra = extra_front
+    if extra and not extra.endswith("\n"):
+        extra += "\n"
+    return (
+        "---\n"
+        "workstream: WS:DRAFT-ROUNDTRIP\n"
+        "session: lane-w2-agos-strict\n"
+        "model: fable\n"
+        "mission: Pin checks.\n"
+        f"state_before: {_yaml_quote(state_before)}\n"
+        "changed:\n"
+        "  - path: scripts/agentos.py\n"
+        f"    what: {_yaml_quote(changed_what)}\n"
+        "verified:\n"
+        "  - claim: pins\n"
+        "    command: python3 scripts/agentos.py validate\n"
+        f"    result: {_yaml_quote(verified_result)}\n"
+        "unverified: []\n"
+        "unresolved:\n"
+        f"{items}\n"
+        "next_actions:\n"
+        "  - Keep the fleet gate unscoped.\n"
+        "do_not_redo:\n"
+        "  - Do not mint a suffixed name.\n"
+        "danger_areas:\n"
+        "  - Strict mode is opt-in.\n"
+        "ended_because: ci_handoff\n"
+        f"{extra}"
+        "---\n"
+        "\n"
+        f"{body}"
+    )
+
+
+def _workstream_with_landmine(sentence: str) -> str:
+    return (
+        "---\n"
+        "key: DRAFT-WORDING\n"
+        "title: Wording fixture\n"
+        "objective: Hold one landmine sentence.\n"
+        "status: active\n"
+        "program: project-active-build-control\n"
+        "repos: [macro]\n"
+        "owner: chairman\n"
+        "class: build\n"
+        "blast_radius: reversible\n"
+        "ambiguity: specified\n"
+        "waves:\n"
+        "  - id: W0\n"
+        "    title: Fixture\n"
+        "    status: todo\n"
+        "next_action: Nothing for this fixture.\n"
+        "landmines:\n"
+        f"  - {_yaml_quote(sentence)}\n"
+        "---\n"
+    )
+
+
+def test_d3_draft_handoff_round_trips(tmp_path: Path) -> None:
+    """A drafted handoff is schema-valid, names the snapshot head, and is not written."""
+    canonical = STORE / "handoffs" / "DRAFT-ROUNDTRIP-2026-10-12.md"
+    assert not canonical.exists()
+    src = _dump_json(tmp_path, "handoff.json", _handoff_payload())
+    result = _agentos("draft-handoff", "--from", str(src))
+    assert result.returncode == 0, result.stderr
+    assert result.stdout.startswith("---\n"), result.stdout
+    assert "authored once" not in result.stdout.lower()
+    assert "is to be continued at head c72fde4b2307" in result.stdout
+    assert "REQUEST_CHANGES" in result.stdout
+    assert "not landed" in result.stdout
+    assert "6117441661" in result.stdout
+    assert HEAD_8245 in result.stdout
+    assert not canonical.exists()
+    root = _write_tree(tmp_path, {
+        "workstreams/WS-DRAFT-ROUNDTRIP.md": _D3_WS,
+        "handoffs/DRAFT-ROUNDTRIP-2026-10-12.md": result.stdout,
+    })
+    validated = _agentos("validate", "--root", str(root))
+    assert validated.returncode == 0, validated.stdout + validated.stderr
+    assert "0 error(s)" in validated.stdout
+    snap = _dump_json(tmp_path, "snap.json", _handoff_payload())
+    strict = _agentos(
+        "validate", "--strict", "--snapshot", str(snap), "--root", str(root),
+        "--paths", str(root / "handoffs" / "DRAFT-ROUNDTRIP-2026-10-12.md"),
+    )
+    assert strict.returncode == 0, strict.stdout + strict.stderr
+    assert "stale-head" not in strict.stdout
+    assert "base-sha-reference" not in strict.stdout
+
+
+def test_d3_draft_dec_and_decision_round_trip(tmp_path: Path) -> None:
+    src = _dump_json(tmp_path, "decision.json", _decision_payload())
+    alias = _agentos("draft-dec", "--from", str(src))
+    full = _agentos("draft-decision", "--from", str(src))
+    assert alias.returncode == 0, alias.stderr
+    assert full.returncode == 0, full.stderr
+    assert alias.stdout == full.stdout
+    assert alias.stdout.startswith("---\n")
+    assert "DEC-DRAFT-ROUNDTRIP-DECISION.md" in alias.stdout
+    root = _write_tree(tmp_path, {
+        "decisions/DEC-DRAFT-ROUNDTRIP-DECISION.md": alias.stdout,
+    })
+    validated = _agentos("validate", "--root", str(root))
+    assert validated.returncode == 0, validated.stdout + validated.stderr
+    assert "0 error(s)" in validated.stdout
+
+
+def test_d3_draft_dsc_and_discovery_round_trip(tmp_path: Path) -> None:
+    src = _dump_json(tmp_path, "discovery.json", _discovery_payload())
+    alias = _agentos("draft-dsc", "--from", str(src))
+    full = _agentos("draft-discovery", "--from", str(src))
+    assert alias.returncode == 0, alias.stderr
+    assert full.returncode == 0, full.stderr
+    assert alias.stdout == full.stdout
+    assert alias.stdout.startswith("---\n")
+    assert "DSC-DRAFT-ROUNDTRIP-DISCOVERY.md" in alias.stdout
+    root = _write_tree(tmp_path, {
+        "discoveries/DSC-DRAFT-ROUNDTRIP-DISCOVERY.md": alias.stdout,
+    })
+    validated = _agentos("validate", "--root", str(root))
+    assert validated.returncode == 0, validated.stdout + validated.stderr
+    assert "0 error(s)" in validated.stdout
+
+
+def test_d3_ws_append_phrase_and_no_write(tmp_path: Path) -> None:
+    canonical = STORE / "workstreams" / "WS-DRAFT-ROUNDTRIP.md"
+    assert not canonical.exists()
+    src = _dump_json(tmp_path, "append.json", _handoff_payload())
+    result = _agentos("draft-ws-append", "--from", str(src))
+    assert result.returncode == 0, result.stderr
+    assert "authored once" not in result.stdout.lower()
+    assert "#8245 is to be continued at head c72fde4b2307, draft=true, " \
+        "under a REQUEST_CHANGES read, not landed." in result.stdout
+    assert "6117441661" in result.stdout
+    assert not canonical.exists()
+    renamed = _handoff_payload()
+    renamed["prs"][0].pop("read_label")
+    renamed["prs"][0]["review_state"] = "REQUEST_CHANGES"
+    alt = _agentos("draft-ws-append", "--from", str(_dump_json(tmp_path, "alt.json", renamed)))
+    assert alt.returncode == 0, alt.stderr
+    assert "under a REQUEST_CHANGES read, not landed." in alt.stdout
+
+
+def test_d3_draft_refuses_suffix_priority_and_bad_shape(tmp_path: Path) -> None:
+    suffix = _dump_json(tmp_path, "suffix.json", _handoff_payload(suffix="frontier-delegation"))
+    refused = _agentos("draft-handoff", "--from", str(suffix))
+    assert refused.returncode == 2
+    assert refused.stdout == ""
+    assert "refusing a filename suffix" in refused.stderr
+
+    priority = _dump_json(tmp_path, "priority.json", _handoff_payload(priority=1))
+    refused = _agentos("draft-handoff", "--from", str(priority))
+    assert refused.returncode == 2
+    assert refused.stdout == ""
+    assert "refusing input key 'priority'" in refused.stderr
+
+    gated = _dump_json(tmp_path, "gate.json", _handoff_payload(gate="ship"))
+    refused = _agentos("draft-dec", "--from", str(gated))
+    assert refused.returncode == 2
+    assert refused.stdout == ""
+    assert "refusing input key 'gate'" in refused.stderr
+
+    equal = _handoff_payload()
+    equal["prs"][0]["base_sha"] = equal["prs"][0]["head_sha"]
+    refused = _agentos("draft-handoff", "--from", str(_dump_json(tmp_path, "equal.json", equal)))
+    assert refused.returncode == 2
+    assert refused.stdout == ""
+    assert "base_sha" in refused.stderr
+
+    bad_model = _dump_json(tmp_path, "model.json", _handoff_payload(model="telepathy"))
+    assert _agentos("draft-handoff", "--from", str(bad_model)).returncode == 2
+    bad_ended = _dump_json(tmp_path, "ended.json", _handoff_payload(ended_because="checkpoint"))
+    assert _agentos("draft-handoff", "--from", str(bad_ended)).returncode == 2
+
+    bad_alt = _decision_payload(alternatives=[{"option": "only one side"}])
+    refused = _agentos("draft-decision", "--from", str(_dump_json(tmp_path, "alt.json", bad_alt)))
+    assert refused.returncode == 2
+    assert refused.stdout == ""
+
+    bad_prov = _discovery_payload(falsifier="no")
+    refused = _agentos("draft-dsc", "--from", str(_dump_json(tmp_path, "prov.json", bad_prov)))
+    assert refused.returncode == 2
+    assert refused.stdout == ""
+    assert "falsifier" in refused.stderr
+
+
+def test_d3_strict_requires_snapshot_and_paths(tmp_path: Path) -> None:
+    missing_snap = _agentos("validate", "--strict", "--paths", str(tmp_path / "missing.md"))
+    assert missing_snap.returncode == 2
+    assert "requires --snapshot" in missing_snap.stderr
+    assert "records (" not in missing_snap.stdout
+
+    snap = _dump_json(tmp_path, "snap.json", {"prs": []})
+    missing_paths = _agentos("validate", "--strict", "--snapshot", str(snap))
+    assert missing_paths.returncode == 2
+    assert "requires --paths" in missing_paths.stderr
+    assert "records (" not in missing_paths.stdout
+
+
+def test_d3_snapshot_reports_counts_without_new_failures(tmp_path: Path) -> None:
+    """A stale prose pin is invisible unless --strict is set. --snapshot only counts."""
+    text = _handoff_doc(
+        state_before="previous",
+        changed_what=f"#8245 head {OLD_8245} is what the prose still says",
+        unresolved=["one"],
+        body="History only.\n",
+    )
+    root = _write_tree(tmp_path, {
+        "workstreams/WS-DRAFT-ROUNDTRIP.md": _D3_WS,
+        "handoffs/DRAFT-ROUNDTRIP-2026-10-12.md": text,
+    })
+    snap = _dump_json(tmp_path, "snap.json", {"prs": [_pr(8245, HEAD_8245, base_sha=BASE_8245)]})
+    reported = _agentos("validate", "--root", str(root), "--snapshot", str(snap))
+    assert reported.returncode == 0, reported.stdout + reported.stderr
+    assert "snapshot: 1 prs — counts only, not a failing gate" in reported.stdout
+    assert "stale-head" not in reported.stdout
+    assert "0 error(s)" in reported.stdout
+
+
+def test_d3_paths_validate_only_named_records(tmp_path: Path) -> None:
+    decision = """---
+key: DRAFT-ROUNDTRIP-DECISION
+question: Where do pins come from?
+answer: The seat snapshot.
+rationale: Hands go stale.
+alternatives:
+  - option: Retype them.
+    why_not: They drift the same night.
+evidence:
+  - scripts/agentos.py:150
+affects:
+  - WS:DRAFT-ROUNDTRIP
+confidence: high
+reversibility: easy
+decided_by: lane
+decided_at: "2026-10-12"
+review_by: "2020-01-01"
+---
+"""
+    root = _write_tree(tmp_path, {
+        "decisions/DEC-DRAFT-ROUNDTRIP-DECISION.md": decision,
+        "handoffs/GARBAGE-2026-10-12.md": "---\nthis: no\n---\n\nSee above.\n",
+    })
+    named = root / "decisions" / "DEC-DRAFT-ROUNDTRIP-DECISION.md"
+    scoped = _agentos("validate", "--root", str(root), "--paths", str(named))
+    assert scoped.returncode == 0, scoped.stdout + scoped.stderr
+    assert "review-overdue" in scoped.stdout
+    assert "unparseable" not in scoped.stdout
+    assert "context-free-handoff" not in scoped.stdout
+    whole = _agentos("validate", "--root", str(root))
+    assert whole.returncode == 1
+    assert "context-free-handoff" in whole.stdout
+
+
+def test_d3_strict_fails_on_schema_warnings(tmp_path: Path) -> None:
+    decision = """---
+key: DRAFT-ROUNDTRIP-DECISION
+question: Where do pins come from?
+answer: The seat snapshot.
+rationale: Hands go stale.
+alternatives:
+  - option: Retype them.
+    why_not: They drift the same night.
+evidence:
+  - scripts/agentos.py:150
+affects:
+  - WS:DRAFT-ROUNDTRIP
+confidence: high
+reversibility: easy
+decided_by: lane
+decided_at: "2026-10-12"
+review_by: "2020-01-01"
+---
+"""
+    root = _write_tree(tmp_path, {
+        "decisions/DEC-DRAFT-ROUNDTRIP-DECISION.md": decision,
+        "handoffs/GARBAGE-2026-10-12.md": "---\nthis: no\n---\n\nSee above.\n",
+    })
+    named = root / "decisions" / "DEC-DRAFT-ROUNDTRIP-DECISION.md"
+    snap = _dump_json(tmp_path, "snap.json", {"prs": []})
+    strict = _agentos(
+        "validate", "--strict", "--snapshot", str(snap),
+        "--root", str(root), "--paths", str(named),
+    )
+    assert strict.returncode == 1, strict.stdout + strict.stderr
+    assert "review-overdue" in strict.stdout
+    assert "context-free-handoff" not in strict.stdout
+    assert "unparseable" not in strict.stdout
+
+
+def test_d3_carriers_head_matches_and_base_pin_fails(tmp_path: Path) -> None:
+    src = _dump_json(tmp_path, "handoff.json", _handoff_payload())
+    drafted = _agentos("draft-handoff", "--from", str(src))
+    assert drafted.returncode == 0, drafted.stderr
+    root = _write_tree(tmp_path, {
+        "workstreams/WS-DRAFT-ROUNDTRIP.md": _D3_WS,
+        "handoffs/DRAFT-ROUNDTRIP-2026-10-12.md": drafted.stdout,
+    })
+    handoff = root / "handoffs" / "DRAFT-ROUNDTRIP-2026-10-12.md"
+    snap = _dump_json(tmp_path, "snap.json", _handoff_payload())
+    clean = _agentos(
+        "validate", "--strict", "--snapshot", str(snap),
+        "--root", str(root), "--paths", str(handoff),
+    )
+    assert clean.returncode == 0, clean.stdout + clean.stderr
+
+    planted = drafted.stdout.replace(HEAD_8245, BASE_8245, 1)
+    assert planted != drafted.stdout
+    handoff.write_text(planted, encoding="utf-8")
+    dirty = _agentos(
+        "validate", "--strict", "--snapshot", str(snap),
+        "--root", str(root), "--paths", str(handoff),
+    )
+    assert dirty.returncode == 1, dirty.stdout + dirty.stderr
+    assert "base-sha-reference" in dirty.stdout
+
+    plain = _agentos("validate", "--root", str(root))
+    assert plain.returncode == 0, plain.stdout + plain.stderr
+    assert "0 error(s)" in plain.stdout
+
+
+def test_d3_landmine_wording_and_stale_head(tmp_path: Path) -> None:
+    pre = (
+        "The role is authored once by #8245 "
+        f"(head {OLD_8245}, draft, open at 2026-10-11T19:24:48Z)."
+    )
+    post = (
+        "The role is to be authored by #8245 "
+        f"(head {OLD_8245}, under a REQUEST_CHANGES read, not landed)."
+    )
+    snap = _dump_json(tmp_path, "snap.json", {
+        "prs": [_pr(
+            8245, HEAD_8245, base_sha=BASE_8245, draft=True, merged=False,
+            state="open", read_label="REQUEST_CHANGES",
+        )],
+    })
+    pre_root = _write_tree(tmp_path / "pre", {
+        "workstreams/WS-DRAFT-WORDING.md": _workstream_with_landmine(pre),
+    })
+    pre_path = pre_root / "workstreams" / "WS-DRAFT-WORDING.md"
+    pre_run = _agentos(
+        "validate", "--strict", "--snapshot", str(snap),
+        "--root", str(pre_root), "--paths", str(pre_path),
+    )
+    assert pre_run.returncode == 1, pre_run.stdout + pre_run.stderr
+    assert "completion-wording" in pre_run.stdout
+    assert "status-wording" in pre_run.stdout
+
+    post_root = _write_tree(tmp_path / "post", {
+        "workstreams/WS-DRAFT-WORDING.md": _workstream_with_landmine(post),
+    })
+    post_path = post_root / "workstreams" / "WS-DRAFT-WORDING.md"
+    post_run = _agentos(
+        "validate", "--strict", "--snapshot", str(snap),
+        "--root", str(post_root), "--paths", str(post_path),
+    )
+    assert post_run.returncode == 1, post_run.stdout + post_run.stderr
+    assert "completion-wording" not in post_run.stdout
+    assert "status-wording" not in post_run.stdout
+    assert "stale-head" in post_run.stdout
+
+
+def test_d3_state_before_and_point_in_time_warn_only(tmp_path: Path) -> None:
+    text = _handoff_doc(
+        state_before=f"#7870 at {OLD_7870} was the previous head.",
+        changed_what="No live pin in this field.",
+        unresolved=["one"],
+        verified_result=f"#7891 at {OLD_7891} equal the heads at that read and were not re-run",
+        body="Narrative only.\n",
+    )
+    root = _write_tree(tmp_path, {
+        "workstreams/WS-DRAFT-ROUNDTRIP.md": _D3_WS,
+        "handoffs/DRAFT-ROUNDTRIP-2026-10-12.md": text,
+    })
+    snap = _dump_json(tmp_path, "snap.json", {"prs": [
+        _pr(7870, HEAD_7870, base_sha="bbbbbbbbaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", merged=True, state="merged", draft=False),
+        _pr(7891, HEAD_7891, base_sha=BASE_8245),
+    ]})
+    result = _agentos(
+        "validate", "--strict", "--snapshot", str(snap), "--root", str(root),
+        "--paths", str(root / "handoffs" / "DRAFT-ROUNDTRIP-2026-10-12.md"),
+    )
+    assert result.returncode == 0, result.stdout + result.stderr
+    assert "state-before-pin" in result.stdout
+    assert "point-in-time-head" in result.stdout
+    assert "stale-head" not in result.stdout
+
+
+def test_d3_stale_unresolved_count(tmp_path: Path) -> None:
+    text = _handoff_doc(
+        state_before="previous",
+        changed_what="no pin",
+        unresolved=["one", "two", "three", "four", "five"],
+        body="Reconcile note: unresolved: 112\n",
+    )
+    root = _write_tree(tmp_path, {
+        "workstreams/WS-DRAFT-ROUNDTRIP.md": _D3_WS,
+        "handoffs/DRAFT-ROUNDTRIP-2026-10-12.md": text,
+    })
+    snap = _dump_json(tmp_path, "snap.json", {"prs": []})
+    result = _agentos(
+        "validate", "--strict", "--snapshot", str(snap), "--root", str(root),
+        "--paths", str(root / "handoffs" / "DRAFT-ROUNDTRIP-2026-10-12.md"),
+    )
+    assert result.returncode == 1, result.stdout + result.stderr
+    assert "stale-unresolved-count" in result.stdout
+
+
+def test_d3_base_label_quiet_and_base_as_head_fires(tmp_path: Path) -> None:
+    quiet_text = _handoff_doc(
+        state_before="previous",
+        changed_what=f"#7792 at {BASE_7792} is the recorded base.",
+        unresolved=["one"],
+        body=(
+            "Research original base remains "
+            f"`{BASE_7792}` and must not be described as the head.\n"
+        ),
+    )
+    loud_text = _handoff_doc(
+        state_before="previous",
+        changed_what=f"#7792 at {BASE_7792[:12]} is the carrier head.",
+        unresolved=["one"],
+        body="Pinned wrong.\n",
+    )
+    root = _write_tree(tmp_path, {
+        "workstreams/WS-DRAFT-ROUNDTRIP.md": _D3_WS,
+        "handoffs/QUIET-2026-10-12.md": quiet_text,
+        "handoffs/LOUD-2026-10-12.md": loud_text,
+    })
+    snap = _dump_json(tmp_path, "snap.json", {
+        "prs": [_pr(7792, HEAD_7792, base_sha=BASE_7792, read_label="COMMENT")],
+    })
+    quiet = _agentos(
+        "validate", "--strict", "--snapshot", str(snap), "--root", str(root),
+        "--paths", str(root / "handoffs" / "QUIET-2026-10-12.md"),
+    )
+    assert quiet.returncode == 0, quiet.stdout + quiet.stderr
+    assert "base-sha-reference" not in quiet.stdout
+    loud = _agentos(
+        "validate", "--strict", "--snapshot", str(snap), "--root", str(root),
+        "--paths", str(root / "handoffs" / "LOUD-2026-10-12.md"),
+    )
+    assert loud.returncode == 1, loud.stdout + loud.stderr
+    assert "base-sha-reference" in loud.stdout
+
+
+def test_d3_absent_snapshot_pr_is_fail_open(tmp_path: Path) -> None:
+    text = _handoff_doc(
+        state_before="previous",
+        changed_what="no pin",
+        unresolved=["one"],
+        body="No prose pin.\n",
+        extra_front=(
+            "carriers:\n"
+            "  - pr: 12345\n"
+            "    role: head\n"
+            "    sha: abcdef1234567890abcdef1234567890abcdef12\n"
+            "    as_of: \"2026-10-12T04:42:56Z\"\n"
+        ),
+    )
+    root = _write_tree(tmp_path, {
+        "workstreams/WS-DRAFT-ROUNDTRIP.md": _D3_WS,
+        "handoffs/DRAFT-ROUNDTRIP-2026-10-12.md": text,
+    })
+    snap = _dump_json(tmp_path, "snap.json", {"prs": [_pr(8245, HEAD_8245)]})
+    result = _agentos(
+        "validate", "--strict", "--snapshot", str(snap), "--root", str(root),
+        "--paths", str(root / "handoffs" / "DRAFT-ROUNDTRIP-2026-10-12.md"),
+    )
+    assert result.returncode == 0, result.stdout + result.stderr
+    assert "snapshot-absent" in result.stdout
+    assert "fail-open" in result.stdout
+
+
+def test_d3_sockets_disabled(tmp_path: Path) -> None:
+    sitedir = tmp_path / "nonet"
+    sitedir.mkdir()
+    (sitedir / "sitecustomize.py").write_text(
+        "import socket\n"
+        "def _deny(*a, **k):\n"
+        "    raise RuntimeError('network access attempted by a zero-network command')\n"
+        "socket.socket = _deny\n"
+        "socket.create_connection = _deny\n"
+        "socket.getaddrinfo = _deny\n",
+        encoding="utf-8",
+    )
+    env = {"PYTHONPATH": str(sitedir)}
+    src = _dump_json(tmp_path, "handoff.json", _handoff_payload())
+    drafted = _agentos("draft-handoff", "--from", str(src), env=env)
+    assert drafted.returncode == 0, drafted.stderr
+    assert "network access attempted" not in (drafted.stdout + drafted.stderr)
+    root = _write_tree(tmp_path, {
+        "workstreams/WS-DRAFT-ROUNDTRIP.md": _D3_WS,
+        "handoffs/DRAFT-ROUNDTRIP-2026-10-12.md": drafted.stdout,
+    })
+    snap = _dump_json(tmp_path, "snap.json", _handoff_payload())
+    strict = _agentos(
+        "validate", "--strict", "--snapshot", str(snap), "--root", str(root),
+        "--paths", str(root / "handoffs" / "DRAFT-ROUNDTRIP-2026-10-12.md"),
+        env=env,
+    )
+    assert strict.returncode == 0, strict.stdout + strict.stderr
+    assert "network access attempted" not in (strict.stdout + strict.stderr)
+    reported = _agentos("validate", "--root", str(root), "--snapshot", str(snap), env=env)
+    assert reported.returncode == 0, reported.stdout + reported.stderr
+    assert "network access attempted" not in (reported.stdout + reported.stderr)
+
+
+_OUTSIDE_DECISION = """---
+key: OUTSIDE-PATH
+question: Cited by the workstream and left out of --paths.
+answer: The file is on disk.
+rationale: A partial load must not call this citation dangling.
+alternatives:
+  - option: Load every record.
+    why_not: The handoff joins are already named.
+evidence:
+  - scripts/agentos.py:2185
+affects:
+  - WS:DRAFT-ROUNDTRIP
+confidence: high
+reversibility: easy
+decided_by: lane
+decided_at: "2026-10-12"
+---
+"""
+
+
+def _join_fixture(tmp_path: Path) -> tuple[Path, Path, Path]:
+    """Handoff plus its workstream, and a decision the workstream cites.
+
+    The decision is a sibling of the named set: it is a real record, and it
+    is not a handoff join target. A garbage handoff sits beside them so a
+    full-store load is observable when the test does not block it.
+    """
+    workstream = _D3_WS.replace(
+        "next_action: Nothing for this fixture.\n---\n",
+        "next_action: Nothing for this fixture.\n"
+        "decisions:\n"
+        "  - DEC:OUTSIDE-PATH\n"
+        "---\n",
+    )
+    handoff = _handoff_doc(
+        state_before="previous",
+        changed_what="No live pin.",
+        unresolved=["one"],
+        body="Narrative only.\n",
+    )
+    root = _write_tree(tmp_path, {
+        "workstreams/WS-DRAFT-ROUNDTRIP.md": workstream,
+        "decisions/DEC-OUTSIDE-PATH.md": _OUTSIDE_DECISION,
+        "handoffs/DRAFT-ROUNDTRIP-2026-10-12.md": handoff,
+        "handoffs/GARBAGE-2026-10-12.md": "---\nthis: no\n---\n\nSee above.\n",
+    })
+    return (
+        root,
+        root / "handoffs" / "DRAFT-ROUNDTRIP-2026-10-12.md",
+        root / "workstreams" / "WS-DRAFT-ROUNDTRIP.md",
+    )
+
+
+def _boom_on_full_store(module: object, monkeypatch: pytest.MonkeyPatch) -> None:
+    def _boom(root: Path, programs: set[str] | None) -> object:
+        raise RuntimeError("full-store load")
+
+    monkeypatch.setattr(module, "load_store", _boom)
+
+
+def test_d3_self_contained_paths_skip_full_store(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str],
+) -> None:
+    """Named paths that already hold every handoff join must not load the store.
+
+    The workstream cites DEC:OUTSIDE-PATH, which is on disk and not named.
+    That citation is not a handoff join. It must not come back dangling, and
+    the garbage sibling must not be judged.
+    """
+    module = _load_agentos_module()
+    _boom_on_full_store(module, monkeypatch)
+    root, handoff, workstream = _join_fixture(tmp_path)
+    snap = _dump_json(tmp_path, "snap.json", {"prs": []})
+    args = argparse.Namespace(
+        root=str(root),
+        quiet=False,
+        strict=True,
+        snapshot=str(snap),
+        paths=[str(handoff), str(workstream)],
+    )
+    result = module.cmd_validate(args)
+    captured = capsys.readouterr()
+    assert result == 0, captured.out + captured.err
+    assert "dangling-ref" not in captured.out
+    assert "unparseable" not in captured.out
+    assert "context-free-handoff" not in captured.out
+    assert "2 records (1 workstreams, 0 decisions, 0 discoveries, 1 handoffs)" in captured.out
+
+
+def test_d3_paths_missing_join_target_loads_full_store(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """A handoff join that is not in --paths still loads the whole store."""
+    module = _load_agentos_module()
+    _boom_on_full_store(module, monkeypatch)
+    root, handoff, _workstream = _join_fixture(tmp_path)
+    snap = _dump_json(tmp_path, "snap.json", {"prs": []})
+    args = argparse.Namespace(
+        root=str(root),
+        quiet=False,
+        strict=True,
+        snapshot=str(snap),
+        paths=[str(handoff)],
+    )
+    with pytest.raises(RuntimeError, match="full-store load"):
+        module.cmd_validate(args)
+
+
+def _cycle_ws(key: str, depends_on: str) -> str:
+    """A schema-valid workstream whose only edge is one workstream depends_on."""
+    return _D3_WS.replace("key: DRAFT-ROUNDTRIP\n", f"key: {key}\n").replace(
+        "next_action: Nothing for this fixture.\n---\n",
+        "next_action: Nothing for this fixture.\n"
+        "depends_on:\n"
+        f"  - {depends_on}\n"
+        "---\n",
+    )
+
+
+def _decision_doc(key: str, extra: str = "") -> str:
+    """Schema-valid decision. ``extra`` is frontmatter inserted before the fence."""
+    tail = extra if not extra or extra.endswith("\n") else extra + "\n"
+    return _OUTSIDE_DECISION.replace("key: OUTSIDE-PATH\n", f"key: {key}\n").replace(
+        'decided_at: "2026-10-12"\n---\n',
+        'decided_at: "2026-10-12"\n' + tail + "---\n",
+    )
+
+
+def _plain_handoff() -> str:
+    return _handoff_doc(
+        state_before="previous",
+        changed_what="No live pin.",
+        unresolved=["one"],
+        body="Narrative only.\n",
+    )
+
+
+def _strict_paths_args(root: Path, paths: list[Path], snap: Path) -> argparse.Namespace:
+    return argparse.Namespace(
+        root=str(root),
+        quiet=False,
+        strict=True,
+        snapshot=str(snap),
+        paths=[str(path) for path in paths],
+    )
+
+
+def test_d3_partial_paths_report_outside_workstream_cycle(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str],
+) -> None:
+    """--paths names the handoff and one member of a two-workstream cycle.
+
+    The other workstream is on disk and is not a handoff join, so the partial
+    loader must read that file and exit 1 with workstream-cycle. It must not
+    call load_store, and the unparseable sibling must stay unjudged.
+    """
+    module = _load_agentos_module()
+    _boom_on_full_store(module, monkeypatch)
+    handoff = _handoff_doc(
+        state_before="previous",
+        changed_what="No live pin.",
+        unresolved=["one"],
+        body="Narrative only.\n",
+    ).replace("workstream: WS:DRAFT-ROUNDTRIP\n", "workstream: WS:CYCLE-NAMED\n")
+    root = _write_tree(tmp_path, {
+        "workstreams/WS-CYCLE-NAMED.md": _cycle_ws("CYCLE-NAMED", "WS:CYCLE-OUTSIDE"),
+        "workstreams/WS-CYCLE-OUTSIDE.md": _cycle_ws("CYCLE-OUTSIDE", "WS:CYCLE-NAMED"),
+        "handoffs/CYCLE-NAMED-2026-10-12.md": handoff,
+        "handoffs/GARBAGE-2026-10-12.md": "---\nthis: no\n---\n\nSee above.\n",
+    })
+    named = root / "workstreams" / "WS-CYCLE-NAMED.md"
+    handoff_path = root / "handoffs" / "CYCLE-NAMED-2026-10-12.md"
+    args = argparse.Namespace(
+        root=str(root),
+        quiet=False,
+        strict=False,
+        snapshot=None,
+        paths=[str(handoff_path), str(named)],
+    )
+    result = module.cmd_validate(args)
+    captured = capsys.readouterr()
+    assert result == 1, captured.out + captured.err
+    assert "workstream-cycle" in captured.out
+    assert "WS:CYCLE-NAMED" in captured.out
+    assert "WS:CYCLE-OUTSIDE" in captured.out
+    assert "dangling-ref" not in captured.out
+    assert "unparseable" not in captured.out
+    assert "2 records (1 workstreams, 0 decisions, 0 discoveries, 1 handoffs)" in captured.out
+
+
+def test_d3_partial_paths_report_outside_depends_on_cycle(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str],
+) -> None:
+    """A depends_on cycle through a workstream outside --paths still fails.
+
+    The handoff join is the named workstream, so the real cover predicate is
+    true. Nothing patches that predicate. The other workstream is on disk
+    and is not named. cmd_validate must exit 1 with workstream-cycle and
+    must not call load_store.
+    """
+    module = _load_agentos_module()
+    _boom_on_full_store(module, monkeypatch)
+    root = _write_tree(tmp_path, {
+        "workstreams/WS-DRAFT-ROUNDTRIP.md": _cycle_ws("DRAFT-ROUNDTRIP", "WS:CYCLE-OTHER"),
+        "workstreams/WS-CYCLE-OTHER.md": _cycle_ws("CYCLE-OTHER", "WS:DRAFT-ROUNDTRIP"),
+        "handoffs/DRAFT-ROUNDTRIP-2026-10-12.md": _plain_handoff(),
+        "handoffs/GARBAGE-2026-10-12.md": "---\nthis: no\n---\n\nSee above.\n",
+    })
+    handoff = root / "handoffs" / "DRAFT-ROUNDTRIP-2026-10-12.md"
+    named = root / "workstreams" / "WS-DRAFT-ROUNDTRIP.md"
+    snap = _dump_json(tmp_path, "snap.json", {"prs": []})
+    args = _strict_paths_args(root, [handoff, named], snap)
+    assert module._paths_cover_handoff_joins(root, args.paths) is True
+    result = module.cmd_validate(args)
+    captured = capsys.readouterr()
+    assert result == 1, captured.out + captured.err
+    assert "workstream-cycle" in captured.out
+    assert "WS:DRAFT-ROUNDTRIP" in captured.out
+    assert "WS:CYCLE-OTHER" in captured.out
+    assert "dangling-ref" not in captured.out
+    assert "unparseable" not in captured.out
+    assert "2 records (1 workstreams, 0 decisions, 0 discoveries, 1 handoffs)" in captured.out
+
+
+def test_d3_partial_paths_report_unreciprocated_supersession(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str],
+) -> None:
+    """An outside decision that supersedes a named one is still unreciprocated.
+
+    DEC-OLD-DEC is named and has no superseded_by. DEC-NEW-DEC is on disk,
+    not named, and lists supersedes DEC:OLD-DEC. The finding sits on the
+    named record. The real cover predicate is true; load_store must not run.
+    """
+    module = _load_agentos_module()
+    _boom_on_full_store(module, monkeypatch)
+    root = _write_tree(tmp_path, {
+        "workstreams/WS-DRAFT-ROUNDTRIP.md": _D3_WS,
+        "decisions/DEC-OLD-DEC.md": _decision_doc("OLD-DEC"),
+        "decisions/DEC-NEW-DEC.md": _decision_doc(
+            "NEW-DEC", "supersedes:\n  - DEC:OLD-DEC\n",
+        ),
+        "handoffs/DRAFT-ROUNDTRIP-2026-10-12.md": _plain_handoff(),
+        "handoffs/GARBAGE-2026-10-12.md": "---\nthis: no\n---\n\nSee above.\n",
+    })
+    paths = [
+        root / "handoffs" / "DRAFT-ROUNDTRIP-2026-10-12.md",
+        root / "workstreams" / "WS-DRAFT-ROUNDTRIP.md",
+        root / "decisions" / "DEC-OLD-DEC.md",
+    ]
+    snap = _dump_json(tmp_path, "snap.json", {"prs": []})
+    args = _strict_paths_args(root, paths, snap)
+    assert module._paths_cover_handoff_joins(root, args.paths) is True
+    result = module.cmd_validate(args)
+    captured = capsys.readouterr()
+    assert result == 1, captured.out + captured.err
+    assert "unreciprocated-supersession" in captured.out
+    assert "DEC:NEW-DEC" in captured.out
+    assert "one-sided-supersession" not in captured.out
+    assert "dangling-ref" not in captured.out
+    assert "unparseable" not in captured.out
+    assert "3 records (1 workstreams, 1 decisions, 0 discoveries, 1 handoffs)" in captured.out
+
+
+def test_d3_partial_paths_report_outbound_unreciprocated_supersession(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str],
+) -> None:
+    """A named decision that lists supersedes still fails when the old record is outside.
+
+    DEC-NEW-DEC is named and lists supersedes DEC:OLD-DEC. DEC-OLD-DEC is on
+    disk, not named, and has no superseded_by. check_references files
+    unreciprocated-supersession on the old file. Self-contained --paths must
+    report that finding on the named decision. The real cover predicate is
+    true; load_store must not run. The outside file is not counted.
+    """
+    module = _load_agentos_module()
+    _boom_on_full_store(module, monkeypatch)
+    root = _write_tree(tmp_path, {
+        "workstreams/WS-DRAFT-ROUNDTRIP.md": _D3_WS,
+        "decisions/DEC-OLD-DEC.md": _decision_doc("OLD-DEC"),
+        "decisions/DEC-NEW-DEC.md": _decision_doc(
+            "NEW-DEC", "supersedes:\n  - DEC:OLD-DEC\n",
+        ),
+        "handoffs/DRAFT-ROUNDTRIP-2026-10-12.md": _plain_handoff(),
+        "handoffs/GARBAGE-2026-10-12.md": "---\nthis: no\n---\n\nSee above.\n",
+    })
+    paths = [
+        root / "handoffs" / "DRAFT-ROUNDTRIP-2026-10-12.md",
+        root / "workstreams" / "WS-DRAFT-ROUNDTRIP.md",
+        root / "decisions" / "DEC-NEW-DEC.md",
+    ]
+    snap = _dump_json(tmp_path, "snap.json", {"prs": []})
+    args = _strict_paths_args(root, paths, snap)
+    assert module._paths_cover_handoff_joins(root, args.paths) is True
+    result = module.cmd_validate(args)
+    captured = capsys.readouterr()
+    assert result == 1, captured.out + captured.err
+    assert "DEC-NEW-DEC.md: [unreciprocated-supersession]" in captured.out
+    assert "DEC:NEW-DEC supersedes this record" in captured.out
+    assert "DEC-OLD-DEC.md:" not in captured.out
+    assert "one-sided-supersession" not in captured.out
+    assert "dangling-ref" not in captured.out
+    assert "filename-mismatch" not in captured.out
+    assert "unparseable" not in captured.out
+    assert "3 records (1 workstreams, 1 decisions, 0 discoveries, 1 handoffs)" in captured.out
+
+
+def test_d3_partial_paths_report_one_sided_supersession(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str],
+) -> None:
+    """superseded_by an outside decision that does not list supersedes still warns.
+
+    --strict blocks that warning. The outside file exists, so a partial load
+    must not drop the hole as a false dangling-ref. Cover is the real
+    predicate, and load_store must not run.
+    """
+    module = _load_agentos_module()
+    _boom_on_full_store(module, monkeypatch)
+    root = _write_tree(tmp_path, {
+        "workstreams/WS-DRAFT-ROUNDTRIP.md": _D3_WS,
+        "decisions/DEC-OLD-DEC.md": _decision_doc("OLD-DEC", "superseded_by: DEC:NEW-DEC\n"),
+        "decisions/DEC-NEW-DEC.md": _decision_doc("NEW-DEC"),
+        "handoffs/DRAFT-ROUNDTRIP-2026-10-12.md": _plain_handoff(),
+        "handoffs/GARBAGE-2026-10-12.md": "---\nthis: no\n---\n\nSee above.\n",
+    })
+    paths = [
+        root / "handoffs" / "DRAFT-ROUNDTRIP-2026-10-12.md",
+        root / "workstreams" / "WS-DRAFT-ROUNDTRIP.md",
+        root / "decisions" / "DEC-OLD-DEC.md",
+    ]
+    snap = _dump_json(tmp_path, "snap.json", {"prs": []})
+    args = _strict_paths_args(root, paths, snap)
+    assert module._paths_cover_handoff_joins(root, args.paths) is True
+    result = module.cmd_validate(args)
+    captured = capsys.readouterr()
+    assert result == 1, captured.out + captured.err
+    assert "one-sided-supersession" in captured.out
+    assert "DEC:NEW-DEC" in captured.out
+    assert "unreciprocated-supersession" not in captured.out
+    assert "dangling-ref" not in captured.out
+    assert "unparseable" not in captured.out
+    assert "0 error(s), 1 warning(s)" in captured.out
+    assert "3 records (1 workstreams, 1 decisions, 0 discoveries, 1 handoffs)" in captured.out
+
+
+def test_d3_paths_help_documents_uncited_discovery_drop(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str],
+) -> None:
+    """A --paths subset drops uncited-discovery, and validate --help says so.
+
+    The named discovery is old and cited by nothing in the tree. The partial
+    run must stay silent: an outside record this subset did not load could
+    still cite it, so keeping the finding would fail --strict where the full
+    store would not. Unscoped validate still reports the rule.
+    """
+    module = _load_agentos_module()
+    root = _write_tree(tmp_path, {
+        "workstreams/WS-DRAFT-ROUNDTRIP.md": _D3_WS,
+        "discoveries/DSC-ORPHAN-PROBE.md": ORPHAN_DISCOVERY,
+        "handoffs/DRAFT-ROUNDTRIP-2026-10-12.md": _plain_handoff(),
+    })
+    discovery = root / "discoveries" / "DSC-ORPHAN-PROBE.md"
+    paths = [
+        root / "handoffs" / "DRAFT-ROUNDTRIP-2026-10-12.md",
+        root / "workstreams" / "WS-DRAFT-ROUNDTRIP.md",
+        discovery,
+    ]
+    snap = _dump_json(tmp_path, "snap.json", {"prs": []})
+    args = _strict_paths_args(root, paths, snap)
+    args.strict = False
+    args.snapshot = None
+    assert module._paths_cover_handoff_joins(root, args.paths) is True
+    partial = module.cmd_validate(args)
+    partial_out = capsys.readouterr()
+    assert partial == 0, partial_out.out + partial_out.err
+    assert "uncited-discovery" not in partial_out.out
+    assert "3 records (1 workstreams, 0 decisions, 1 discoveries, 1 handoffs)" in partial_out.out
+
+    full_args = argparse.Namespace(
+        root=str(root), quiet=False, strict=False, snapshot=None, paths=[],
+    )
+    full = module.cmd_validate(full_args)
+    full_out = capsys.readouterr()
+    assert full == 0, full_out.out + full_out.err
+    assert "uncited-discovery" in full_out.out
+    assert "DSC-ORPHAN-PROBE" in full_out.out
+
+    help_run = _agentos("validate", "--help")
+    assert help_run.returncode == 0, help_run.stderr
+    assert "uncited-discovery" in help_run.stdout
+
+
+def test_d3_partial_paths_report_misnamed_stem_supersession(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str],
+) -> None:
+    """A decision stem that is not DEC-<key> still joins on the record's own key.
+
+    DEC-MISNAMED.md carries key OTHER-DEC and supersedes the named DEC-OLD-DEC.
+    load_store indexes that content key and reports unreciprocated-supersession
+    on the named record. --paths naming the handoff, the workstream, and
+    DEC-OLD-DEC must report the same edge, must not call load_store, and must
+    not count the outside file or judge its filename-mismatch.
+    """
+    module = _load_agentos_module()
+    root = _write_tree(tmp_path, {
+        "workstreams/WS-DRAFT-ROUNDTRIP.md": _D3_WS,
+        "decisions/DEC-OLD-DEC.md": _decision_doc("OLD-DEC"),
+        "decisions/DEC-MISNAMED.md": _decision_doc(
+            "OTHER-DEC", "supersedes:\n  - DEC:OLD-DEC\n",
+        ),
+        "handoffs/DRAFT-ROUNDTRIP-2026-10-12.md": _plain_handoff(),
+        "handoffs/GARBAGE-2026-10-12.md": "---\nthis: no\n---\n\nSee above.\n",
+    })
+    full = module.load_store(root, None)
+    inbound = [
+        problem for problem in full.problems
+        if problem.rule == "unreciprocated-supersession"
+        and problem.path.name == "DEC-OLD-DEC.md"
+    ]
+    assert inbound, [(problem.rule, problem.path.name) for problem in full.problems]
+    assert "DEC:OTHER-DEC" in inbound[0].message
+    _boom_on_full_store(module, monkeypatch)
+    paths = [
+        root / "handoffs" / "DRAFT-ROUNDTRIP-2026-10-12.md",
+        root / "workstreams" / "WS-DRAFT-ROUNDTRIP.md",
+        root / "decisions" / "DEC-OLD-DEC.md",
+    ]
+    snap = _dump_json(tmp_path, "snap.json", {"prs": []})
+    args = _strict_paths_args(root, paths, snap)
+    assert module._paths_cover_handoff_joins(root, args.paths) is True
+    result = module.cmd_validate(args)
+    captured = capsys.readouterr()
+    assert result == 1, captured.out + captured.err
+    assert "unreciprocated-supersession" in captured.out
+    assert "DEC:OTHER-DEC" in captured.out
+    assert "filename-mismatch" not in captured.out
+    assert "dangling-ref" not in captured.out
+    assert "one-sided-supersession" not in captured.out
+    assert "unparseable" not in captured.out
+    assert "3 records (1 workstreams, 1 decisions, 0 discoveries, 1 handoffs)" in captured.out
+
+
+def test_d3_partial_paths_resolve_misnamed_decision_by_content_key(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str],
+) -> None:
+    """A named superseded_by resolves a decision whose stem is not DEC-<key>.
+
+    The file is decisions/DEC-MISNAMED.md and its key is OTHER-DEC. The full
+    store reports one-sided-supersession on DEC-OLD-DEC, not a dangling ref.
+    --paths naming that decision must resolve the same edge and must not call
+    load_store. filename-mismatch stays on the outside file only.
+    """
+    module = _load_agentos_module()
+    root = _write_tree(tmp_path, {
+        "workstreams/WS-DRAFT-ROUNDTRIP.md": _D3_WS,
+        "decisions/DEC-OLD-DEC.md": _decision_doc("OLD-DEC", "superseded_by: DEC:OTHER-DEC\n"),
+        "decisions/DEC-MISNAMED.md": _decision_doc("OTHER-DEC"),
+        "handoffs/DRAFT-ROUNDTRIP-2026-10-12.md": _plain_handoff(),
+        "handoffs/GARBAGE-2026-10-12.md": "---\nthis: no\n---\n\nSee above.\n",
+    })
+    full = module.load_store(root, None)
+    sided = [
+        problem for problem in full.problems
+        if problem.rule == "one-sided-supersession" and problem.path.name == "DEC-OLD-DEC.md"
+    ]
+    assert sided, [(problem.rule, problem.path.name) for problem in full.problems]
+    assert "DEC:OTHER-DEC" in sided[0].message
+    assert not any(
+        problem.rule == "dangling-ref" and "OTHER-DEC" in problem.message
+        for problem in full.problems
+    )
+    _boom_on_full_store(module, monkeypatch)
+    paths = [
+        root / "handoffs" / "DRAFT-ROUNDTRIP-2026-10-12.md",
+        root / "workstreams" / "WS-DRAFT-ROUNDTRIP.md",
+        root / "decisions" / "DEC-OLD-DEC.md",
+    ]
+    snap = _dump_json(tmp_path, "snap.json", {"prs": []})
+    args = _strict_paths_args(root, paths, snap)
+    assert module._paths_cover_handoff_joins(root, args.paths) is True
+    result = module.cmd_validate(args)
+    captured = capsys.readouterr()
+    assert result == 1, captured.out + captured.err
+    assert "one-sided-supersession" in captured.out
+    assert "DEC:OTHER-DEC" in captured.out
+    assert "dangling-ref" not in captured.out
+    assert "filename-mismatch" not in captured.out
+    assert "unreciprocated-supersession" not in captured.out
+    assert "unparseable" not in captured.out
+    assert "0 error(s), 1 warning(s)" in captured.out
+    assert "3 records (1 workstreams, 1 decisions, 0 discoveries, 1 handoffs)" in captured.out
+
+
+def test_d3_partial_paths_report_reached_outside_cycle(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str],
+) -> None:
+    """A depends_on cycle that contains no named workstream still fails the one that reaches it.
+
+    WS-REACH depends on WS-OUT-B, and WS-OUT-B cycles with WS-OUT-C. Neither
+    cycle member is a handoff join. The full store reports workstream-cycle.
+    --paths naming the handoff and WS-REACH must too, on WS-REACH, without
+    calling load_store. The outside records stay uncounted.
+    """
+    module = _load_agentos_module()
+    handoff = _plain_handoff().replace(
+        "workstream: WS:DRAFT-ROUNDTRIP\n",
+        "workstream: WS:REACH\n",
+    )
+    root = _write_tree(tmp_path, {
+        "workstreams/WS-REACH.md": _cycle_ws("REACH", "WS:OUT-B"),
+        "workstreams/WS-OUT-B.md": _cycle_ws("OUT-B", "WS:OUT-C"),
+        "workstreams/WS-OUT-C.md": _cycle_ws("OUT-C", "WS:OUT-B"),
+        "handoffs/REACH-2026-10-12.md": handoff,
+        "handoffs/GARBAGE-2026-10-12.md": "---\nthis: no\n---\n\nSee above.\n",
+    })
+    full = module.load_store(root, None)
+    assert any(problem.rule == "workstream-cycle" for problem in full.problems)
+    _boom_on_full_store(module, monkeypatch)
+    paths = [
+        root / "handoffs" / "REACH-2026-10-12.md",
+        root / "workstreams" / "WS-REACH.md",
+    ]
+    snap = _dump_json(tmp_path, "snap.json", {"prs": []})
+    args = _strict_paths_args(root, paths, snap)
+    assert module._paths_cover_handoff_joins(root, args.paths) is True
+    result = module.cmd_validate(args)
+    captured = capsys.readouterr()
+    assert result == 1, captured.out + captured.err
+    assert "workstream-cycle" in captured.out
+    assert "WS-REACH.md" in captured.out
+    assert "WS:OUT-B" in captured.out
+    assert "WS:OUT-C" in captured.out
+    assert "dangling-ref" not in captured.out
+    assert "unparseable" not in captured.out
+    assert "2 records (1 workstreams, 0 decisions, 0 discoveries, 1 handoffs)" in captured.out
+
+
+def test_d3_paths_report_outside_only_cycle_on_lone_workstream(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str],
+) -> None:
+    """--paths of only the workstream that reaches an outside cycle still fails.
+
+    WS-REACH depends on WS-OUT-B, and WS-OUT-B cycles with WS-OUT-C. No
+    handoff is named, so the cover predicate is false and the whole store
+    loads. workstream-cycle is filed on the outside members. The named
+    workstream that reaches that cycle must still fail. The outside records
+    and the unparseable sibling stay uncounted.
+    """
+    module = _load_agentos_module()
+    handoff = _plain_handoff().replace(
+        "workstream: WS:DRAFT-ROUNDTRIP\n",
+        "workstream: WS:REACH\n",
+    )
+    root = _write_tree(tmp_path, {
+        "workstreams/WS-REACH.md": _cycle_ws("REACH", "WS:OUT-B"),
+        "workstreams/WS-OUT-B.md": _cycle_ws("OUT-B", "WS:OUT-C"),
+        "workstreams/WS-OUT-C.md": _cycle_ws("OUT-C", "WS:OUT-B"),
+        "handoffs/REACH-2026-10-12.md": handoff,
+        "handoffs/GARBAGE-2026-10-12.md": "---\nthis: no\n---\n\nSee above.\n",
+    })
+    named = root / "workstreams" / "WS-REACH.md"
+    args = argparse.Namespace(
+        root=str(root),
+        quiet=False,
+        strict=False,
+        snapshot=None,
+        paths=[str(named)],
+    )
+    assert module._paths_cover_handoff_joins(root, args.paths) is False
+    result = module.cmd_validate(args)
+    captured = capsys.readouterr()
+    assert result == 1, captured.out + captured.err
+    assert "WS-REACH.md: [workstream-cycle]" in captured.out
+    assert "WS:OUT-B" in captured.out
+    assert "WS:OUT-C" in captured.out
+    assert "WS-OUT-B.md:" not in captured.out
+    assert "WS-OUT-C.md:" not in captured.out
+    assert "dangling-ref" not in captured.out
+    assert "unparseable" not in captured.out
+    assert "required-field" not in captured.out
+    assert "1 records (1 workstreams, 0 decisions, 0 discoveries, 0 handoffs)" in captured.out
+
+
+def test_d3_no_network_or_gh_in_agentos() -> None:
+    source = CLI.read_text(encoding="utf-8")
+    assert source.count("subprocess.run") == 1
+    for forbidden in ("subprocess.Popen", "os.system", "os.execv", "sys.exit(1)", "merge-base"):
+        assert forbidden not in source, forbidden
+    for line in source.splitlines():
+        stripped = line.strip()
+        if stripped.startswith("#") or stripped.startswith("*"):
+            continue
+        assert '"gh"' not in stripped and "'gh'" not in stripped, line
+    for banned in ("import requests", "import urllib", "import http.client", "import socket"):
+        assert banned not in source
+

@@ -31,38 +31,37 @@ waves:
     title: Crypto H5 authority closure
     status: in_progress
     depends_on: [P0A]
+    pr: 8901
     next_action: >
-      Consume exact-head PR #8050 CI/fences for the H5 presentation/evidence head,
-      then reconcile release ordering with open #7645 and regenerate site/crypto.html
-      from the combined template source before any production acceptance. Prove the
-      merged generated artifact on the real deployment path; do not alter canonical
-      total-budget authority or the class split.
+      Integrate the accepted wave-1/wave-2 lane heads on top of merge 0918bc8c7c69 in
+      three streams (engine lane/cx-int-engine-20261013, science
+      lane/cx-int-science-20261013, governance lane/cx-int-governance-20261013),
+      each a DRAFT PR with its own committed visual-evidence receipt, reviewed and
+      merged by the seat on concluded-green checks. Then prove the regenerated
+      crypto.html and vector.html on the real deployment path
+      (https://www.mastermind-x.com/ plus /opt/macro/site bytes) with happy, valid-zero
+      and unavailable behavior intact before closing P0B.
     note: >
-      P0B remains BUILT_NOT_PROVEN at source head
-      d079adb6d532b7af20a487bd0ebdeddc3a414ee0. It preserves the exact canonical
-      cockpit receipt, now distinguishes a missing asset breakdown from an invalid
-      total budget, and renders a valid zero without depending on class-model inputs.
-      H5 uses source-specific bilingual failure explanations and a readable compact
-      layout; shared styles and H1/H2 are unchanged. The existing source-claim gate
-      caught an overstated Chinese validation sentence, which is corrected without
-      changing the gate. Final proof and receipts are in the owning H5 decision.
+      The H5 presentation/evidence head left #8050 and landed on main through PR #8901
+      (squash 0918bc8c7c69ba4db36c88bc8874da671c3f0572): canonical cockpit receipt preserved, missing asset breakdown
+      distinguished from an invalid total budget, valid zero rendered without
+      class-model inputs, bilingual source-specific failure copy, committed
+      visual-evidence receipt under mockups/evidence/crypto-r2-8901/. #7645 ordering is
+      no longer a release dependency for this carrier. Phase-1 integration of the
+      accepted lane heads and the production proof remain open.
 next_action: >
-  Keep PR #8050 as the H5 source/presentation carrier. Consume exact-head CI/fences,
-  then coordinate merge ordering with #7645: its template patch auto-merges with H5,
-  but site/crypto.html is a generated artifact with a pre-existing current-main
-  conflict and must be regenerated after source reconciliation. After merge-order
-  reconciliation, prove the combined production/deployed Crypto route and close P0B
-  only if canonical happy/zero/unavailable behavior survives.
+  Phase 1 of the lane integration: the integration orchestrator assembles the accepted
+  lane heads into the engine, science and governance streams on top of 0918bc8c7c69, applies
+  the seat rulings recorded in agentos/handoffs/CRYPTO-INTELLIGENCE-2026-10-12-grok-fanout.md
+  (decision-binding attributes without visible raw dates, plain-word lane copy, filled
+  unattributed hero summary, test registration in legacy-jobs.yml), and returns DRAFT PRs
+  the seat reviews, merges on concluded green and proves live. Close superseded lane
+  PRs once their content lands.
 blocked_by:
   - >
-    Exact-head PR #8050 CI/fences have not yet accepted the H5 presentation/evidence
-    head. Local source, governance, generated-route and visual-evidence gates pass.
-  - >
-    Open #7645 remains an independent Crypto source carrier. Exact merge simulation
-    shows templates/crypto.html.j2 auto-merges with H5 with zero conflict markers;
-    site/crypto.html conflicts already between current main and #7645 and is a
-    regenerated publication artifact. Release still needs source-order reconciliation,
-    regeneration and real deployed-route proof.
+    Integration stream PRs are not yet open; the seat sends the merge sha to the
+    orchestrator and judges returns by artifact. Production proof of the regenerated
+    routes after each stream merge is still owed.
 owns_paths:
   - "engine/btc_decision.py"
   - "contracts/btc_decision.schema.json"
@@ -75,6 +74,7 @@ owns_paths:
 decisions:
   - "DEC:BTC-MIDTERM-BLACKOUT-AUTHORITY-RETIRED"
   - "DEC:CRYPTO-H5-BTC-BUDGET-AUTHORITY"
+  - "DEC:CRYPTO-VECTOR-R2-20260926"
 discoveries:
   - "DSC:CRYPTO-H5-BYPASSES-BTC-DECISION"
   - "DSC:PERSONAL-PRO-INGRESS-PRINCIPAL-GAP"

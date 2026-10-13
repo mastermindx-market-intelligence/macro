@@ -12,7 +12,7 @@ import json
 import re
 from dataclasses import dataclass
 from datetime import datetime, timezone
-from typing import Any, Mapping
+from typing import Any, Mapping, Sequence
 from xml.etree import ElementTree as ET
 
 from collectors.sec_filing_parser import (
@@ -41,6 +41,21 @@ REQUIRED_STORED_ROLES = (
     "label",
     "presentation",
 )
+# C0-c ERRATA-4 R7 (seat-ratified D1 edit, scoped to ERRATA-4 ONLY): the
+# per-form map is ADDITIVE and relaxes EXACTLY the form string "8-K". Every
+# other form string — including 8-K/A and 10-K/A — resolves to the unchanged
+# strict REQUIRED_STORED_ROLES, and the 10-K/10-Q admission path is
+# behaviour-identical. The form is the WITNESS-BOUND form (R8 makes it equal
+# the contract form), and admission is no-I/O and holds no contract.
+FORM_REQUIRED_STORED_ROLES: dict[str, tuple[str, ...]] = {
+    "8-K": ("primary", "schema", "label", "presentation"),
+}
+_FORM_OPTIONAL_STORED_ROLES: dict[str, tuple[str, ...]] = {
+    "8-K": ("calculation", "definition"),
+}
+_ABSENT_MEMBER_KEYS = frozenset({"role", "name", "reason"})
+_ABSENT_MEMBER_REASON = "absent_in_archive_index"
+_OPTIONAL_ROLE_SUFFIX = {"calculation": "_cal.xml", "definition": "_def.xml"}
 
 _REFUSAL_CODES = frozenset(
     {
@@ -463,9 +478,22 @@ def admit_retained_filing_package(
         if isinstance(role, str) and role:
             stored_roles.add(role)
 
-    # A17: never return a partial package; every required role must be stored
-    # with a verified digest and length.
-    for role in REQUIRED_STORED_ROLES:
+    # A17 + R7: never return a partial package; every required role FOR THE
+    # FORM must be stored with a verified digest and length. The per-form map
+    # relaxes exactly "8-K" (schema/label/presentation + primary); every other
+    # form string resolves to the unchanged strict REQUIRED_STORED_ROLES.
+    form = str(manifest.get("form") or "")
+    required_roles = FORM_REQUIRED_STORED_ROLES.get(form, REQUIRED_STORED_ROLES)
+    # R7 bounds first: absent_members on any non-8-K form is inventory_
+    # mismatch even when the strict role loop would also refuse (8-K/A).
+    _admit_absent_members(
+        manifest,
+        index_names=index_names,
+        form=form,
+        stored_roles=stored_roles,
+        primary_name=primary_of_manifest(manifest),
+    )
+    for role in required_roles:
         if role not in stored_roles:
             _refuse(f"required stored role is missing: {role}", code="required_role_missing")
     if stored_count != manifest.get("retained_count"):
@@ -536,10 +564,92 @@ def admit_retained_filing_package(
     )
 
 
+def primary_of_manifest(manifest: Mapping[str, Any]) -> Any:
+    return manifest.get("primary_document")
+
+
+def _admit_absent_members(
+    manifest: Mapping[str, Any],
+    *,
+    index_names: Sequence[str],
+    form: str,
+    stored_roles: set[str],
+    primary_name: Any,
+) -> None:
+    """R2/R7: verify ``absent_members`` against the digest-bound index.
+
+    Refuses ``inventory_mismatch`` on any of: an optional role for the form
+    that is neither stored nor recorded (silence); an entry for a stored role
+    or a required role; ``absent_members`` present on any non-8-K form; an
+    empty list; a duplicate entry; an unknown reason; an entry whose name IS
+    among the index item names; an entry whose name is not
+    ``<primary stem><suffix>`` for its role; or an entry whose role is not
+    optional for the form.
+    """
+    absent = manifest.get("absent_members")
+    optional_roles = _FORM_OPTIONAL_STORED_ROLES.get(form, ())
+    if absent is None:
+        # Silence: an optional role that is neither stored nor recorded.
+        for role in optional_roles:
+            if role not in stored_roles:
+                _refuse(
+                    f"optional role is neither stored nor recorded absent: {role}",
+                    code="inventory_mismatch",
+                )
+        return
+    if not optional_roles:
+        # absent_members on any non-8-K form (including every amendment form).
+        _refuse(
+            f"absent_members are not lawful for form {form!r}",
+            code="inventory_mismatch",
+        )
+    if not isinstance(absent, list) or not absent:
+        _refuse("absent_members must be a non-empty list", code="inventory_mismatch")
+    seen: set[tuple[str, str]] = set()
+    index_set = set(index_names)
+    stem = (
+        str(primary_name).rsplit(".", 1)[0]
+        if isinstance(primary_name, str) and primary_name
+        else ""
+    )
+    for entry in absent:
+        if not isinstance(entry, Mapping) or set(entry) != _ABSENT_MEMBER_KEYS:
+            _refuse("absent member entry is malformed", code="inventory_mismatch")
+        role = entry.get("role")
+        name = entry.get("name")
+        if (str(role), str(name)) in seen:
+            _refuse(f"duplicate absent member entry: {name}", code="inventory_mismatch")
+        seen.add((str(role), str(name)))
+        if entry.get("reason") != _ABSENT_MEMBER_REASON:
+            _refuse(f"absent member reason is unknown: {name}", code="inventory_mismatch")
+        if role not in optional_roles:
+            _refuse(
+                f"absent member role is not optional for the form: {name}",
+                code="inventory_mismatch",
+            )
+        suffix = _OPTIONAL_ROLE_SUFFIX.get(str(role))
+        if not isinstance(name, str) or not suffix or name != f"{stem}{suffix}":
+            _refuse(
+                f"absent member name is not the primary stem's member: {name}",
+                code="inventory_mismatch",
+            )
+        if name in index_set:
+            _refuse(
+                f"absent member is named by the archive index: {name}",
+                code="inventory_mismatch",
+            )
+        if role in stored_roles:
+            _refuse(
+                f"absent member is recorded for a stored role: {name}",
+                code="inventory_mismatch",
+            )
+
+
 __all__ = [
     "ADMITTED_FILING_PACKAGE_SCHEMA",
     "AdmittedFilingPackage",
     "AdmittedFilingPackageError",
+    "FORM_REQUIRED_STORED_ROLES",
     "REQUIRED_STORED_ROLES",
     "admit_retained_filing_package",
 ]

@@ -90,6 +90,28 @@
         </div>
       </div>
       <p class="ff-desk-stamp" id="ff-desk-stamp">{{ t('As of — · Source —', '截止 — · 来源 —') }}</p>
+      {#- X2-s saved views: the device-local briefcase lives on this desk band.
+          Hidden until fif_saved_briefcase.js wires it (progressive reveal, no
+          dead controls when the module is absent); the governed
+          `ff-asof-controls--saved` modifier wraps the row (at 390 it folds
+          into select / name / actions) and lets the select take the free row
+          width at 1440. -#}
+      <div class="ff-asof-controls ff-asof-controls--saved" id="ff-saved-controls" hidden>
+        <label class="ff-topic-filter" for="ff-saved-select">
+          <span>{{ t('Saved views', '已存视图') }}</span>
+          <select id="ff-saved-select"></select>
+        </label>
+        <input id="ff-saved-name" class="ff-asof-input" type="text" maxlength="120" autocomplete="off"
+          data-placeholder-en="Name this view" data-placeholder-zh="为视图命名"
+          placeholder="Name this view">
+        <button type="button" class="ff-export-btn" id="ff-saved-save" disabled
+          data-tip-en="Save needs a company, a cutoff and a policy that can be queried."
+          data-tip-zh="需要可查询的公司、截止日与策略后才能保存。"
+          data-label-en="Save this view" data-label-zh="保存当前视图">{{ t('Save this view', '保存当前视图') }}</button>
+        <button type="button" class="ff-trace-open" id="ff-saved-rename" hidden>{{ t('Rename', '重命名') }}</button>
+        <button type="button" class="ff-trace-open" id="ff-saved-delete" hidden>{{ t('Delete', '删除') }}</button>
+      </div>
+      <p class="ff-desk-stamp" id="ff-saved-badge" hidden></p>
       <div class="ff-company-action" id="ff-company-action" hidden>
         <span class="ff-action-glyph" aria-hidden="true">·</span>
         <span class="ff-action-copy">{{ t('Loading', '正在载入') }}</span>
@@ -97,6 +119,10 @@
     </header>
 
     <section class="ff-data-notice" id="ff-data-notice" aria-live="polite" hidden></section>
+
+    {#- X2-s: the saved-views quiet chip (newer filing generation, or the plain
+        "saved view unavailable" state). One action at most, never values. -#}
+    <section class="ff-data-notice" id="ff-saved-notice" aria-live="polite" hidden></section>
 
     {#- The access gate. It replaces the workbench whenever the desk cannot be
         read, and the ANONYMOUS variant below is server-rendered on purpose: a
@@ -464,6 +490,11 @@
         </div>
       </header>
       <p class="ff-peer-policy" id="ff-peer-policy"></p>
+      {#- X2-s: the peers-panel save entry — saves the current desk with its
+          peer cohort state. Hidden until the briefcase module wires it. -#}
+      <div class="ff-asof-controls" id="ff-peer-save-row" hidden>
+        <button type="button" class="ff-trace-open" id="ff-peer-save">{{ t('Save this peer view', '保存同业视图') }}</button>
+      </div>
       <div id="ff-peer-included"></div>
       <div id="ff-peer-excluded"></div>
     </section>
@@ -518,6 +549,7 @@
 
 <script src="theme.js" defer></script>
 <script src="tier_preview.js" defer></script>
+<script src="fif_saved_briefcase.js?v=20261012-x2s1" defer></script>
 <script src="fundamental_forensics.js?v=20260816-ff0r1" defer></script>
 </body>
 </html>

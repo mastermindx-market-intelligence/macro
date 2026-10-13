@@ -4727,6 +4727,27 @@ CURATED_EXCLUSIVE = {
     # the fallback to engine/** and the plan_book packing probe selected the
     # job (130 > 129). scope: exclusive pins it to its measured closure.
     "sni-s2-event-response",
+    # 2026-10-13 Grey Deer W3 (#8938): the stage-1 pullback runner suite reads
+    # its own research tree, lib.nyse_calendar and the trial ledger. scope:
+    # exclusive pins it to that measured closure (57 paths once W4 added the
+    # stage-1b suites), so inference never unions the research/ fallback roots
+    # onto the packing probes.
+    "grey-deer-pullback-stage1",
+    # 2026-10-13 FIF X2-n saved-research notifications (seat R3): the three
+    # hermetic suites reach engine.fundamental_forensics and the research-vault
+    # store, so inference unioned the whole-tree fallback roots and selected the
+    # job on the PACKING_PROBES (check_contract_delta: 3 introduced findings).
+    # scope: exclusive pins it to its derived import closure.
+    "fif-saved-research-notifications",
+    # 2026-10-13 main packing-probe heal: Node harness subprocesses, a git
+    # subprocess and filesystem traversals rooted at templates/, scripts/,
+    # engine/, data/ and site/ widened inference for these two lanes to those
+    # whole roots, so both selected on all three PACKING_PROBES without
+    # importing or naming a probe file (CI measured
+    # scripts/build_free_content.py at 5604 > 5600 on main). scope: exclusive
+    # pins each to its measured static closure plus its fixture globs.
+    "research-price-panel",
+    "washout-turn-organ",
 }
 
 

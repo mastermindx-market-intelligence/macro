@@ -72,7 +72,7 @@ def backtest_core(close: pd.Series, alloc: pd.Series, cost_bps: float = 0.0,
     if dollar_adv is not None and aum_usd:
         # per-bar impact rate (fraction of traded notional), added to the linear cost
         sigma = ret.rolling(vol_window).std()
-        sigma = sigma.fillna(sigma.median()).fillna(0.0)
+        sigma = sigma.fillna(ret.expanding(min_periods=2).std()).fillna(0.0)   # warmup: trailing-only vol, no look-ahead (C19 WP07 N1)
         adv = dollar_adv.reindex(ret.index).ffill()
         traded_usd = float(aum_usd) * turnover
         participation = (traded_usd / adv.where(adv > 0)).clip(lower=0.0).fillna(0.0)

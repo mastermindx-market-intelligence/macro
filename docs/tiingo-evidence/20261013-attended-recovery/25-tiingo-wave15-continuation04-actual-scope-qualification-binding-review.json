@@ -1,0 +1,57 @@
+{
+  "schema": "tiingo.actual_scope_qualification_binding_review/v1",
+  "recorded_at_utc": "2026-10-13T05:05:12.411161+00:00",
+  "decision": "PASS_ACTUAL_SCOPE_BINDING",
+  "root": "01a12ab6-92cb-7c42-a711-42673ebb6b50",
+  "reviewer_native_thread": "01a13385-9767-7a32-83b2-d216c2c9778d",
+  "run_id": "eod-wave15-original-unadmitted-continuation04-20261013-01a12ab6",
+  "core_file": "tiingo-wave15-continuation04-disposition-pipeline-bound01.py",
+  "core_sha256": "f4a3c65db22325f9755b7ebaa6d425819f41aefdc916f0733341f35f06727ccc",
+  "controller_file": "tiingo-wave15-continuation04-attended-disposition-window-bound01.py",
+  "controller_sha256": "f68d236d182bc545cf6334e1efdff3c1ec5395b83680f309327792b789a9b886",
+  "accepted_unbound_template_review_sha256": "d39898cf9449333153aeb41faee29980ee8d3921c203acc29ed08d612168f7fb",
+  "core_template_sha256": "922a3cbde94f0440f3d67d67ba07e16e31e19c96bedd28d2ae6152032858426a",
+  "controller_template_sha256": "0bc225f4b7a351d159153abc51e3123cca27d924a35b42489ef4c7abed1b4bfa",
+  "actual_scope_sha256": "1ec636d0f27fe20e81dfc72a0853980e91c8af6522507d19269d67eea36eeb28",
+  "actual_scope_started_at_utc": "2026-10-13T05:00:56.237806+00:00",
+  "actual_capture_method_sha256": "a48d23bb49f16205a57ad46ce22c04a07068dc67eed52fc56e5ebdbe0330296f",
+  "actual_capture_plan_sha256": "eb75c83b6f5de511ea41377844f622a20a1ac5ff5656f81607d1daacb6b92aa5",
+  "actual_admission_observation_sha256": "682590e42e5b5e3e09be0a7b564a4575a05566d75e7215886f7b0b21fc1bfe8a",
+  "findings": [
+    "Recovered unbound template hashes match their accepted review. Bound core equals exact template after ONLY four placeholder substitutions: actual scope SHA, actual plan suffix, actual plan SHA and actual capture method SHA.",
+    "Bound controller equals exact accepted template after ONLY core SHA and scope SHA substitutions plus CORE path relocation to the persistent evidence file. No other source delta and no placeholder remains.",
+    "Both bound programs parse/compile. Normalizer, scalar validation, artifacts, preflight, qualification and coverage code remain unchanged apart from the context capture-method literal.",
+    "Actual retained scope clock is2026-10-13T05:00:56.237806+00:00 and binds accepted recovery03 method/plan,1816 request cap,34 holds, consumed READY/root parent, quota proof and prior four-phase accounting.",
+    "All11 bound PINS match current evidence files; all125 baseline qualification file hashes match. Baselinebfb remains joined to consumed prior03 coverage parent4a558.",
+    "All7 current producer/capture source-file hashes match plan and896f source binding. This review does not execute/import the pipeline to claim runtime dependency proof.",
+    "1816 exact selected symbol/request pairs equal four-phase never-admitted rows;34held symbols remain excluded. All2567 prior wave15 valid/quality dispositions are disjoint from the selected pairs.",
+    "Only actual phase04 records enter current seen. Prior accepted rows remain economic-date/foreign-owner evidence. Partial-artifact hashing, foreign custody and original scalar/whole-receipt quality policy are unchanged.",
+    "Root/controller/core/scope checks, consumed successful preflight before writer admission, sequential stages,8-prefix window,900-second new-start deadline and post-preflight deadline recheck remain unchanged.",
+    "Original capture81573 remains a separate active operation per parent commission. Review does not consume or assert its terminal result. No second capture or QA writer is created by this artifact."
+  ],
+  "acceptance_conditions": [
+    "Parent may start one finite controller with these exact bytes under the existing original root and sole QA-writer custody; retain original capture81573 and its same-operation return path.",
+    "The controller must execute and consume its own real preflight return before each admitted qualification stage and preserve already-started stage settlement at the deadline.",
+    "Any changed producer/pin, foreign custody, existing unmatched partial artifact or failed stage stops through the existing same-stage reconciliation; no replacement writer or relaxed validation.",
+    "Read-only binding approval is not actual QA completion. Parent still consumes the controller terminal return and original capture terminal return, then performs final accounting using actual retained results."
+  ],
+  "review_effects": {
+    "pipeline_executed": false,
+    "controller_executed": false,
+    "active_capture_logs_polled": false,
+    "provider_calls": 0,
+    "credentials_read": false,
+    "archive_reads": false,
+    "archive_writes": 0,
+    "source_edits": 0,
+    "review_artifact_only_exclusive_write": true
+  },
+  "capture_complete_claimed": false,
+  "qualification_complete_claimed": false,
+  "programme_acceptance_claimed": false,
+  "preserved_holds": [
+    "PR955 approval denial",
+    "Fundamentals provider refusals",
+    "Fabric permission refusals"
+  ]
+}
