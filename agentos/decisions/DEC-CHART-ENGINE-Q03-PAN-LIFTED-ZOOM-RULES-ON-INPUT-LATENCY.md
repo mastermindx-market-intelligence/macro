@@ -87,6 +87,7 @@ reversibility: easy
 decided_by: coo-fable (seat session 6dfa7fe4-64c1-4a36-a3bc-af2fa0e5ba79)
 decided_at: 2026-10-13
 supersedes: [DEC:CHART-ENGINE-P03-FLIP-GATED-ON-PRESENTED-FRAME-CADENCE]
+superseded_by: DEC:CHART-ENGINE-Q03B-ZOOM-HOLD-STANDS-TWO-DEFECTS
 ---
 
 # DEC-CHART-ENGINE-Q03-PAN-LIFTED-ZOOM-RULES-ON-INPUT-LATENCY

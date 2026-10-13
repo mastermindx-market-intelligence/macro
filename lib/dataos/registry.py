@@ -36,9 +36,9 @@ nothing for a dependency it will not use.
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from enum import Enum
+from enum import Enum, StrEnum
 from pathlib import Path
-from typing import Any
+from typing import Any, Mapping
 
 from lib.dataos import price
 from lib.dataos.temporal import TemporalProfile
@@ -58,6 +58,16 @@ __all__ = [
     "EVIDENCE_ROOTS",
     "load_registry",
     "validate_registry",
+    "ActionInputStatus",
+    "ActionInputVerdict",
+    "qualify_action_input",
+    "ACTION_INPUT_FIELDS",
+    "ACTION_INPUT_OPTIONAL_FIELDS",
+    "ACTION_INPUT_ORIGINS",
+    "ACTION_INPUT_RESPONSES",
+    "ACTION_FIELD_CONVENTIONS",
+    "ACTION_CONVENTIONS_ADMISSIBLE",
+    "ACTION_CONVENTIONS_NEVER_ADMISSIBLE",
 ]
 
 #: Resolved against THIS FILE, never the cwd — the nightly, the CI packs and a
@@ -627,3 +637,276 @@ def _cycles(registry: Registry) -> list[str]:
         if dataset_id not in state:
             walk(dataset_id, [])
     return found
+
+
+# ── P01 action-input qualification (2026-10-13, D00.D3; P01.01–P01.04) ────────
+# A corporate-action observation may enter a split/dividend factor only when it
+# IS a confirmed, as-observed event with its own original receipt (D00.D3: "the
+# only admitted source of events is a qualified original observation with its
+# own receipt").  Everything a consumer used to reach for instead — a provider
+# name, an `adjusted=true` flag, a price jump, a cumulative vendor factor, a
+# current-share cash amount, an adjusted close series — is one of the refusals
+# below, each with its own stable reason code, so P02–P04 never have to re-
+# argue the distinction per call site.  Pure stdlib, no I/O: the caller brings
+# the observation dict and the already-loaded :class:`Registry` (required).
+
+#: The keys an action observation MUST carry.  Absence is a caller bug
+#: (``ValueError``), not a missing-data status — an observation that cannot say
+#: where it came from has no verdict, and a silent ``None`` default would let
+#: exactly the label-only inputs this function exists to refuse slip through a
+#: forgotten key.
+ACTION_INPUT_FIELDS: tuple[str, ...] = (
+    "dataset_id", "endpoint", "field_convention", "receipt",
+    "origin", "response", "rights_limited",
+)
+
+#: Keys the caller MAY carry; all other keys are refused, never ignored — an
+#: ignored key is how `adjusted=true` hides next to a qualifying-looking dict.
+ACTION_INPUT_OPTIONAL_FIELDS: tuple[str, ...] = ("provider", "adjusted_flag")
+
+#: Where the observation claims to come from.  ``price_discontinuity`` is an
+#: inference from the price path, never an event observation (D00.D3, P01.02).
+ACTION_INPUT_ORIGINS: tuple[str, ...] = ("source_record", "price_discontinuity")
+
+#: What the qualified source response held.  ``None`` = no response was
+#: obtained (distinct from a qualified, authoritative empty).
+ACTION_INPUT_RESPONSES: tuple[str, ...] = ("events", "empty")
+
+#: Field conventions that state the event as observed: the exact split ratio
+#: (``2:1`` → ``Fraction(2,1)``, D00.D3 SADJ) or the per-share cash amount as
+#: declared by the payer (D00.D3/P04.02: original cash is one distinct fact).
+ACTION_CONVENTIONS_ADMISSIBLE: tuple[str, ...] = (
+    "as_observed_split_ratio", "as_declared_cash_amount",
+)
+
+#: Conventions that describe a DERIVED quantity and can never be an event:
+#: a cumulative vendor adjustment factor, a cash amount restated on the
+#: current share count, or an adjusted price series.  Each is real data —
+#: just not an as-observed corporate event (P01.04, D00.D3 P04.02).
+ACTION_CONVENTIONS_NEVER_ADMISSIBLE: tuple[str, ...] = (
+    "cumulative_adjustment_factor", "current_share_adjusted_cash",
+    "adjusted_close_only",
+)
+
+#: The closed convention vocabulary.  A convention outside it is a caller bug
+#: (``ValueError``), not a verdict — inventing a fourth convention is how the
+#: closed set stops being closed.
+ACTION_FIELD_CONVENTIONS: tuple[str, ...] = (
+    ACTION_CONVENTIONS_ADMISSIBLE + ACTION_CONVENTIONS_NEVER_ADMISSIBLE
+)
+
+#: Convention → refusal reason (rule 5).  One code per convention so a refusal
+#: audit can name WHICH derived quantity was offered as an event.
+_CONVENTION_REFUSALS: dict[str, str] = {
+    "cumulative_adjustment_factor": "CUMULATIVE_FACTOR_NOT_AS_OBSERVED",
+    "current_share_adjusted_cash": "CURRENT_SHARE_CASH_NOT_AS_DECLARED",
+    "adjusted_close_only": "ADJUSTED_SERIES_NOT_AN_EVENT",
+}
+
+
+class ActionInputStatus(StrEnum):
+    """May this observation enter a split/dividend factor?  Five answers.
+
+    ``StrEnum`` (the :mod:`lib.dataos.price` idiom) so a verdict serialises
+    without a ``.value`` dance and the statuses sort readably in a refusal log.
+    """
+
+    #: A qualified original observation with its own receipt, as-observed
+    #: convention, from a produced source (D00.D3).  The ONLY status a factor
+    #: may consume.
+    CONFIRMED = "CONFIRMED"
+    #: Inferred from a price discontinuity (P01.02).  Never confirmed, even
+    #: when a receipt is attached: the receipt authenticates the *inference*,
+    #: not an event observation.
+    SUSPECTED = "SUSPECTED"
+    #: Real data was offered as an event but is a derived quantity, a bare
+    #: provider label, an unregistered/not-produced source, or names no
+    #: convention at all.  Repairable only by bringing the real observation.
+    UNQUALIFIED = "UNQUALIFIED"
+    #: The qualified source answered and authoritatively held no action.
+    #: A CONFIRMED answer to a different question — absence, not defect.
+    NO_ACTION_IN_QUALIFIED_RESPONSE = "NO_ACTION_IN_QUALIFIED_RESPONSE"
+    #: The event was never captured: no receipt, no response, or the capture
+    #: is rights-limited (an unsupported family such as a rights issue —
+    #: D00.D3 ``UNSUPPORTED_ACTION`` families are never coerced).
+    UNCAPTURED = "UNCAPTURED"
+
+
+@dataclass(frozen=True)
+class ActionInputVerdict:
+    """The outcome of :func:`qualify_action_input` — immutable and loggable.
+
+    ``reason`` is a stable UPPER_SNAKE code (one per decision rule), so a
+    consumer's refusal path can branch on it without parsing prose.  ``receipt``
+    echoes the observation's receipt id/digest (or ``None``) so the verdict is
+    self-identifying in a coverage report without re-reading the observation.
+    """
+
+    status: ActionInputStatus
+    reason: str
+    dataset_id: str
+    receipt: str | None
+
+
+def qualify_action_input(
+    observation: Mapping[str, Any], *, registry: Registry
+) -> ActionInputVerdict:
+    """May this corporate-action observation enter a split/dividend factor?
+
+    One pure function for P02–P04: given one observation mapping, return the
+    :class:`ActionInputVerdict` for the FIRST matching decision rule below.
+    Raises (never returns a verdict) when the observation is structurally not
+    an action observation at all — an unknown key, a missing required key, a
+    value outside a closed vocabulary, a non-bool flag — because a structurally
+    impossible input has no honest status.
+
+    Decision order (first match wins; D00.D3, P01.01–P01.04):
+
+    1. ``origin == price_discontinuity`` → SUSPECTED / ``DISCONTINUITY_INFERRED``
+       — even with a receipt (P01.02).
+    2. ``rights_limited`` → UNCAPTURED / ``RIGHTS_LIMITED`` (P01.03).
+    3. no receipt: a ``provider``/``adjusted_flag`` label present → UNQUALIFIED /
+       ``PROVIDER_LABEL_ONLY`` (P01.01); otherwise UNCAPTURED / ``NO_RECEIPT``.
+    4. receipt but no ``endpoint`` or no ``field_convention`` → UNQUALIFIED /
+       ``UNIDENTIFIED_CONVENTION`` (P01.01).
+    5. a never-admissible convention → UNQUALIFIED with the per-convention code
+       (``CUMULATIVE_FACTOR_NOT_AS_OBSERVED`` / ``CURRENT_SHARE_CASH_NOT_AS_DECLARED``
+       / ``ADJUSTED_SERIES_NOT_AN_EVENT``) (P01.04).
+    6. ``response == empty`` → NO_ACTION_IN_QUALIFIED_RESPONSE / ``QUALIFIED_EMPTY``
+       (P01.03) — authoritative absence, deliberately NOT ``UNCAPTURED``.
+    7. ``response is None`` → UNCAPTURED / ``NO_RESPONSE``.
+    8. otherwise CONFIRMED / ``AS_OBSERVED`` — reachable ONLY here.
+
+    ``registry`` (a loaded :class:`Registry`) is REQUIRED (seat ruling on
+    D00.D3/D00.D6, R02 M3): an observation can never be CONFIRMED against a
+    source nobody registered, so there is no registry-free call shape.  A
+    non-``Registry`` value raises ``TypeError`` before any rule runs.  The
+    source checks run AFTER rule 1 and BEFORE rule 2: an unknown
+    ``dataset_id`` → UNQUALIFIED /
+    ``UNREGISTERED_SOURCE``; a row whose status is not PRODUCED (PROPOSED,
+    RETIRED) → UNQUALIFIED / ``SOURCE_NOT_PRODUCED`` (R00.04: the PROPOSED
+    Tiingo contracts stay PROPOSED until their original owner produces them).
+    The discontinuity rule outranks them because an inference from a produced
+    source's price path is still an inference; they outrank the rights rule
+    because a not-yet-produced source cannot witness anything, rights-limited
+    or not.
+    """
+    if not isinstance(observation, Mapping):
+        raise TypeError(
+            f"observation must be a Mapping, got {type(observation).__name__}"
+        )
+    if not isinstance(registry, Registry):
+        raise TypeError(f"registry must be a Registry, got {type(registry).__name__}")
+    known = set(ACTION_INPUT_FIELDS) | set(ACTION_INPUT_OPTIONAL_FIELDS)
+    unknown = sorted(set(observation) - known)
+    if unknown:
+        raise ValueError(
+            f"unknown observation key(s) {unknown}; action observations carry "
+            f"exactly {sorted(known)} — an ignored key is how a vendor label "
+            "hides beside a qualifying-looking dict"
+        )
+    missing = [name for name in ACTION_INPUT_FIELDS if name not in observation]
+    if missing:
+        raise ValueError(f"missing required observation key(s) {missing}")
+
+    dataset_id = observation["dataset_id"]
+    if not isinstance(dataset_id, str) or not dataset_id.strip():
+        raise ValueError(f"dataset_id must be a non-empty string, got {dataset_id!r}")
+    endpoint = observation["endpoint"]
+    if endpoint is not None and (not isinstance(endpoint, str) or not endpoint.strip()):
+        raise ValueError(f"endpoint must be a non-empty string or None, got {endpoint!r}")
+    field_convention = observation["field_convention"]
+    if field_convention is not None and field_convention not in ACTION_FIELD_CONVENTIONS:
+        raise ValueError(
+            f"field_convention {field_convention!r} is not one of "
+            f"({', '.join(ACTION_FIELD_CONVENTIONS)})"
+        )
+    receipt = observation["receipt"]
+    if receipt is not None and (
+        not isinstance(receipt, str) or not receipt.strip()
+    ):
+        raise ValueError(
+            f"receipt must be the exact original receipt id/digest or None, "
+            f"got {receipt!r}"
+        )
+    origin = observation["origin"]
+    if origin not in ACTION_INPUT_ORIGINS:
+        raise ValueError(
+            f"origin {origin!r} is not one of ({', '.join(ACTION_INPUT_ORIGINS)})"
+        )
+    response = observation["response"]
+    if response is not None and response not in ACTION_INPUT_RESPONSES:
+        raise ValueError(
+            f"response {response!r} is not one of (events, empty, None)"
+        )
+    rights_limited = observation["rights_limited"]
+    if not isinstance(rights_limited, bool):
+        raise ValueError(
+            f"rights_limited must be a bool, got {type(rights_limited).__name__} "
+            f"{rights_limited!r} — a truthiness coercion would invert the author's "
+            "meaning (the point_in_time_corporate_actions precedent)"
+        )
+    provider = observation.get("provider")
+    if provider is not None and (
+        not isinstance(provider, str) or not provider.strip()
+    ):
+        raise ValueError(f"provider must be a non-empty string or None, got {provider!r}")
+    adjusted_flag = observation.get("adjusted_flag")
+    if adjusted_flag is not None and not isinstance(adjusted_flag, bool):
+        raise ValueError(
+            f"adjusted_flag must be a bool or None, got {adjusted_flag!r}"
+        )
+
+    def verdict(status: ActionInputStatus, reason: str) -> ActionInputVerdict:
+        return ActionInputVerdict(
+            status=status, reason=reason, dataset_id=dataset_id, receipt=receipt
+        )
+
+    # Rule 1 — the price path is never an event witness, receipt or not (P01.02).
+    if origin == "price_discontinuity":
+        return verdict(ActionInputStatus.SUSPECTED, "DISCONTINUITY_INFERRED")
+
+    # Registry step — source checks run after rule 1, before rule 2: a produced
+    # source is a precondition for ANY capture question below.
+    contract = registry.get(dataset_id)
+    if contract is None:
+        return verdict(ActionInputStatus.UNQUALIFIED, "UNREGISTERED_SOURCE")
+    if contract.status is not DatasetStatus.PRODUCED:
+        # PROPOSED stays PROPOSED until its original owner produces it
+        # (R00.04); RETIRED no longer exists to witness new events.  Both
+        # refuse under one code: the source is not (currently) produced.
+        return verdict(ActionInputStatus.UNQUALIFIED, "SOURCE_NOT_PRODUCED")
+
+    # Rule 2 — rights-limited capture (an unsupported family, D00.D3) is never
+    # coerced into one (P01.03); refusal precedes the receipt/label questions.
+    if rights_limited:
+        return verdict(ActionInputStatus.UNCAPTURED, "RIGHTS_LIMITED")
+
+    # Rule 3 — no receipt: a provider label is the exact thing P01.01 exists to
+    # refuse; with no label either, the event was simply never captured.
+    if receipt is None:
+        if provider is not None or adjusted_flag is not None:
+            return verdict(ActionInputStatus.UNQUALIFIED, "PROVIDER_LABEL_ONLY")
+        return verdict(ActionInputStatus.UNCAPTURED, "NO_RECEIPT")
+
+    # Rule 4 — a receipt must identify WHERE and IN WHAT CONVENTION it observed.
+    if endpoint is None or field_convention is None:
+        return verdict(ActionInputStatus.UNQUALIFIED, "UNIDENTIFIED_CONVENTION")
+
+    # Rule 5 — derived quantities offered as events (P01.04).
+    refusal = _CONVENTION_REFUSALS.get(field_convention)
+    if refusal is not None:
+        return verdict(ActionInputStatus.UNQUALIFIED, refusal)
+
+    # Rule 6 — a qualified, authoritative empty is absence, not defect (P01.03).
+    if response == "empty":
+        return verdict(
+            ActionInputStatus.NO_ACTION_IN_QUALIFIED_RESPONSE, "QUALIFIED_EMPTY"
+        )
+
+    # Rule 7 — the capture never answered.
+    if response is None:
+        return verdict(ActionInputStatus.UNCAPTURED, "NO_RESPONSE")
+
+    # Rule 8 — the only door to CONFIRMED: as-observed, receipted, produced.
+    return verdict(ActionInputStatus.CONFIRMED, "AS_OBSERVED")
