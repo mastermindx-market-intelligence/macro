@@ -172,3 +172,40 @@ def test_main_cli_pre_rows_blocks_no_op_accrue(tmp_path):
     )
     assert rc.returncode == mod.EXIT_NO_LEDGER
     assert "did not grow" in rc.stderr
+
+
+def test_check_reads_ledger_single_threaded(tmp_path, monkeypatch):
+    """SKEWFLAKE: the ledger read passes use_threads=False.
+
+    pandas.read_parquet otherwise starts pyarrow's dataset readahead
+    worker. That worker's PyBuffer destructor can call PyGILState_Ensure
+    during interpreter shutdown and abort (SIGABRT, terminate called
+    without an active exception) after check() has already decided the
+    exit code. The script imports pandas locally inside check(); the
+    patch is on the pandas module object this test imports as pd, which
+    is the same module the local import resolves.
+    """
+    mod = _import_verify()
+    rows = [{"date": "2026-09-15", "underlying": f"SYM{i}",
+             "skew": 0.01 * i} for i in range(5)]
+    ledger = _write_ledger(tmp_path / "snapshots.parquet", rows)
+    before = mod.check(ledger, pre_rows=5)
+
+    real_read_parquet = pd.read_parquet
+    captured: list[dict] = []
+
+    def recorder(*args, **kwargs):
+        captured.append(dict(kwargs))
+        return real_read_parquet(*args, **kwargs)
+
+    monkeypatch.setattr(pd, "read_parquet", recorder)
+    code, info = mod.check(ledger, pre_rows=5)
+
+    assert captured, "pandas.read_parquet was not called"
+    kwargs = captured[-1]
+    assert kwargs.get("use_threads") is False, (
+        "recorder saw no use_threads kwarg"
+        if "use_threads" not in kwargs
+        else f"recorder saw use_threads={kwargs.get('use_threads')!r}"
+    )
+    assert (code, info) == before
