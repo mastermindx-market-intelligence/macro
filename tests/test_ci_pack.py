@@ -4736,6 +4736,12 @@ CURATED_EXCLUSIVE = {
     # exclusive pins it to that measured closure (46 paths), so inference never
     # unions the research/ fallback roots onto the packing probes.
     "grey-deer-pullback-stage1",
+    # 2026-10-12 Robotics re-land (#7908 after #8013, stacked on #7870).
+    # One exclusive gate:code job for the six Robotics suites. The declaration
+    # is their measured import closure (including the #7870 shared shell);
+    # exclusivity keeps that closure off the packing probes. The
+    # cover-their-own-import-closure test keeps the list honest.
+    "robotics-theme-research",
 }
 
 
