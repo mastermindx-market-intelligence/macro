@@ -1,0 +1,57 @@
+{
+  "schema": "press.reviewed_context_installed_consumer.v1",
+  "observed_at": "2026-10-13T23:52:56.869453+00:00",
+  "head": "2df04150e5302d4e9fd595315b5b953345c798aa",
+  "head_after": "2df04150e5302d4e9fd595315b5b953345c798aa",
+  "source_sha256": "6c18f0286d7a3042c704212652861713bd7df43359ff825b8ea1cb71c36259d2",
+  "positive_historical_fixture_routes": [
+    "fact-sheets",
+    "research",
+    "explicit-no-share",
+    "reviewed-context"
+  ],
+  "negative_controls": [
+    {
+      "control": "unknown-route",
+      "error": "source is not its canonical White House document"
+    },
+    {
+      "control": "expired-event",
+      "error": "event is outside the current Brief publication window"
+    },
+    {
+      "control": "rights",
+      "error": "source-specific candidate rights qualification required"
+    },
+    {
+      "control": "feed",
+      "error": "source feed identity mismatch"
+    },
+    {
+      "control": "body",
+      "error": "source body hash mismatch"
+    },
+    {
+      "control": "hash",
+      "error": "evidence hash mismatch"
+    },
+    {
+      "control": "identity",
+      "error": "reviewed context fact is not an existing engine measurement"
+    },
+    {
+      "control": "relevance",
+      "error": "reviewed context identity or relevance invalid"
+    },
+    {
+      "control": "duplicate",
+      "error": "reviewed context identity or relevance invalid"
+    }
+  ],
+  "runtime_inputs_unchanged": true,
+  "staging_writes": 0,
+  "provider_calls": 0,
+  "publication_approved": false,
+  "qualification_scope": "Synthetic historical consumer controls only, not admission of a current story",
+  "accepted": true
+}

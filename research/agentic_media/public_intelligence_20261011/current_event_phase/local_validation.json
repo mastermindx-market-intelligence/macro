@@ -1,0 +1,16 @@
+{
+  "implementation_base": "2df04150e5302d4e9fd595315b5b953345c798aa",
+  "command": "python3 -m pytest -q tests/test_press_external_candidate.py tests/test_press_planner.py tests/test_press_validators.py tests/test_press_run.py",
+  "result": "258 passed in 10.43s",
+  "exit_code": 0,
+  "evidence_origin": "captured local exec session82869 output",
+  "sha256": {
+    "engine/press/external_candidate.py": "6c18f0286d7a3042c704212652861713bd7df43359ff825b8ea1cb71c36259d2",
+    "tests/test_press_external_candidate.py": "f65d23b1e96f1a5e343b5310708edcf5cc709269ddf5b8cb5b9644b401cd3fff"
+  },
+  "test_first": {
+    "explicit_no_share": "1 failed, 10 passed, 52 deselected in 1.90s before implementation",
+    "reviewed_context": "5 failed, 8 passed, 63 deselected in 2.42s before implementation"
+  },
+  "publication_approved": false
+}

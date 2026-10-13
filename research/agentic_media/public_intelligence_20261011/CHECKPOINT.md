@@ -3,6 +3,98 @@
 Operation: `mmx-public-intelligence-delivery-20261011-local-ceo-001`
 Mission complete: **false**. Publication approved: **false**.
 
+## Active current-source phase — October 13 23:53 UTC
+
+The Chairman resumed the parent publication goal and directed non-earnings paths.
+New external-SSD carrier starts at `2df04150e5302d4e9fd595315b5b953345c798aa`:
+`/Volumes/Mastermind 2/agent-workspaces/claude/14851c4656838a3b/mmx-press-current-event-20261013-3acef99375769a7f`.
+Its two application changes allow an explicit reviewed no-share choice and selected,
+hash-bound first-party engine context in the existing planning-only external consumer.
+Four affected suites pass 258 tests; historical standalone probe passes four positive
+and nine negative controls, with no Press provider or staging writes. Exact independent
+review is running as `mmx-press-context-review-20261013-001`; no PR exists at this save.
+See `current_event_phase/READINESS.md` and its source readbacks/validation receipts.
+
+Fresh White House/Fed/BEA inspections and the normal Brief planner produced no ready
+current issuer story; BLS's 403 was preserved without retry. Research's selected old
+GS summary was not sent for generation without current rights/freshness qualification.
+No article is admitted or published. Earnings is only one unavailable source route.
+The prior four owned completion records and #9041 live proof were reconciled only
+after confirming protected-main bytes matched their prior source base. The completed
+release heartbeat remains paused; this is foreground continuation of the wider mission.
+
+
+## Both requested releases accepted — October 13 00:46 UTC
+
+Bounded two-release outcome: **complete**. Parent publication mission: **incomplete**.
+PR #8786 remains protected-merged, installed and accepted for scoped functional
+browser behavior. Aggregate follow-on PR #9041 is now protected-merged as
+`242ac8d2ca62dbc4440278f35c50c95ee99638af` at 00:31:47Z. Its exact candidate
+`85625d64a73508d2a9ce94d29d32e76c5ad0701c` passed CI `38325360762` at
+00:31:16Z, including all 12 packs and binding gates. Controller `38327651605`
+verified current proof at 5 active proofs against cap 8 and performed the merge.
+
+The normal updater installed stable `/opt/macro` HEAD
+`604d4ec4a5608dafa0442edbb237d188d1a7d5eb`. All 21 source hashes and all 3
+reviewed pages matched in site/site.served; public HTTP returned identical bytes
+for Blog, Learn and the Position Size Calculator. The shallow production clone's
+direct merge-base remains false; seven complete canonical raw commit objects
+verify the actual merge ancestry, each object hash and parent edge, bound to the
+stable installed HEAD. No production Git mutation or manual deployment occurred.
+
+The prepared consumer executed with installed `/opt/macro/.venv/bin/python -B`:
+both historical aggregate routes (fact-sheets, research) passed; unknown route,
+expired event, unqualified rights, mismatched feed and changed body were rejected.
+Runtime inputs and HEAD stayed unchanged, with zero provider calls and zero staging
+writes. This is installed historical-fixture proof, not a newly admitted story.
+Read-only installed staging reports zero items, cutover false, publication false
+and source freshness unverified. The same three page hashes permit reuse of the
+actual #8786 Chrome acceptance; no additional browser or signup/follow write is
+claimed. Its language-toggle and stale Morning Edition limits remain visible.
+
+Exact commands, source drift comparison, raw ancestry, CI/controller readback and
+executed acceptance are retained in `pr9041_live_acceptance/`, also at the existing
+portable bundle under `/Users/chriswong/agent-evidence/mmx-public-intelligence-20261011/postlanding-9041/85625d64a73508d2a9ce94d29d32e76c5ad0701c/`.
+Current GitHub outcome belongs to existing comment 6107930181 on #8786. These
+post-landing records are a local continuity delta, not another deployed release.
+Preserve the merged carrier at 85625; do not reuse it for new implementation.
+
+Next parent action: qualify one current event packet through its permitted source
+path, bind source-specific public-article rights and relevant first-party receipts,
+then test the existing staging ingress and editorial gates. The historical fixture
+does not satisfy freshness or article acceptance. Dedicated earnings read-only R2
+secret names were absent at the last name-only observation (October 12 23:57);
+that lane requires provisioning before its non-promoting audit. D14 receipt floors,
+ten consecutive unedited mixed-desk drafts and editorial approval remain unmet.
+Preserve the original 12:07 provider EFFECT_UNKNOWN, Commission 19, Catalyst #8678,
+all worktrees and shared accounting. The bounded `complete-press-delivery` heartbeat is now **PAUSED**, verified by
+the app result and installed automation readback after GitHub evidence persistence.
+The parent workstream remains active.
+
+## Aggregate follow-on submitted — October 13 00:08 UTC
+
+PR #9041 is created and attached:
+https://github.com/mastermindx-market-intelligence/macro/pull/9041
+Exact pushed head is `85625d64a73508d2a9ce94d29d32e76c5ad0701c`.
+Fresh CI `38325360762` is running; PR head/OPEN/native-auto-merge null were
+read back, and subsequent label readback confirms `merge-on-green`.
+Only the existing protected controller may land it. No duplicate PR or CI.
+
+The postlanding bundle is prepared at
+`/Users/chriswong/agent-evidence/mmx-public-intelligence-20261011/postlanding-9041/85625d64a73508d2a9ce94d29d32e76c5ad0701c/`.
+It binds 21 source hashes (only accepted external_candidate changed) and the
+same three pages. After actual protected merge, qualify the stable installed
+HEAD ancestry, run install-check with the actual merge SHA, then run the
+standalone consumer over SSH with installed Python -B. It uses historical
+fixtures only and does not require installing pytest on production. Reuse the
+original browser proof only while the served page hashes remain unchanged.
+
+These post-creation continuity edits are deliberately local and recoverable;
+do not push them merely to record a PR number and restart binding CI. Current
+release state is also retained in existing GitHub comment6107930181 and the
+read-back active heartbeat. Source/CI identity stays at85625d64. Complete the
+follow-on installed acceptance before pausing the two-release continuation.
+
 ## Protected release installed; aggregate follow-on ready — October 13 00:01 UTC
 
 PR #8786 landed at `4aabf95fd05079bd14b07bbbe554186531d65ddf`, October 12

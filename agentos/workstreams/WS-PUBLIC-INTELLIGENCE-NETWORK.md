@@ -21,8 +21,9 @@ waves:
     title: Verify publication, signup and explicit follow continuation
     status: in_progress
     depends_on: [qualified-story]
-next_action: PR8786 is protected-merged at4aabf95f, installed at490432d5 and accepted for the scoped public navigation paths. Create and ship the separate aggregate-feed follow-on integrated as489fa3a0;186affected tests and the standalone consumer controls pass. Complete its CI/protected landing/installed consumer acceptance. Publication remains unapproved; signed-in language persistence and stale Morning Edition inputs remain outside accepted navigation scope.
+next_action: Finish the reviewed-context external Press repair through its protected PR and installed consumer proof; current-source census and 258 local tests are saved in current_event_phase. Continue non-earnings source qualification. Both prior releases are accepted; no current article is admitted, and publication/cutover remain false.
 artifacts:
+  - https://github.com/mastermindx-market-intelligence/macro/pull/9041
   - https://github.com/mastermindx-market-intelligence/macro/pull/8786
   - https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/956
   - research/agentic_media/MEDIA_NETWORK_MASTERPLAN_BY_FABLE.md
@@ -81,3 +82,52 @@ Use this recovery branch in the existing SSD attempt-recovery worktree; the
 single-attempt worktree currently carries the original PR refresh branch. Both
 remain owned, preserved and separately recoverable; do not mutate the shared
 primary's dirty accounting. The live Terminal screenshot remains bound to8520e5d7.
+
+## Accepted release wave, October 13
+
+Bounded two-release outcome: **complete**. Parent publication mission: **incomplete**.
+PR #8786 remains protected-merged, installed and accepted for scoped functional
+browser behavior. Aggregate follow-on PR #9041 is now protected-merged as
+`242ac8d2ca62dbc4440278f35c50c95ee99638af` at 00:31:47Z. Its exact candidate
+`85625d64a73508d2a9ce94d29d32e76c5ad0701c` passed CI `38325360762` at
+00:31:16Z, including all 12 packs and binding gates. Controller `38327651605`
+verified current proof at 5 active proofs against cap 8 and performed the merge.
+
+The normal updater installed stable `/opt/macro` HEAD
+`604d4ec4a5608dafa0442edbb237d188d1a7d5eb`. All 21 source hashes and all 3
+reviewed pages matched in site/site.served; public HTTP returned identical bytes
+for Blog, Learn and the Position Size Calculator. The shallow production clone's
+direct merge-base remains false; seven complete canonical raw commit objects
+verify the actual merge ancestry, each object hash and parent edge, bound to the
+stable installed HEAD. No production Git mutation or manual deployment occurred.
+
+The prepared consumer executed with installed `/opt/macro/.venv/bin/python -B`:
+both historical aggregate routes (fact-sheets, research) passed; unknown route,
+expired event, unqualified rights, mismatched feed and changed body were rejected.
+Runtime inputs and HEAD stayed unchanged, with zero provider calls and zero staging
+writes. This is installed historical-fixture proof, not a newly admitted story.
+Read-only installed staging reports zero items, cutover false, publication false
+and source freshness unverified. The same three page hashes permit reuse of the
+actual #8786 Chrome acceptance; no additional browser or signup/follow write is
+claimed. Its language-toggle and stale Morning Edition limits remain visible.
+
+Exact commands, source drift comparison, raw ancestry, CI/controller readback and
+executed acceptance are retained in `pr9041_live_acceptance/`, also at the existing
+portable bundle under `/Users/chriswong/agent-evidence/mmx-public-intelligence-20261011/postlanding-9041/85625d64a73508d2a9ce94d29d32e76c5ad0701c/`.
+Current GitHub outcome belongs to existing comment 6107930181 on #8786. These
+post-landing records are a local continuity delta, not another deployed release.
+Preserve the merged carrier at 85625; do not reuse it for new implementation.
+
+Next parent action: qualify one current event packet through its permitted source
+path, bind source-specific public-article rights and relevant first-party receipts,
+then test the existing staging ingress and editorial gates. The historical fixture
+does not satisfy freshness or article acceptance. Dedicated earnings read-only R2
+secret names were absent at the last name-only observation (October 12 23:57);
+that lane requires provisioning before its non-promoting audit. D14 receipt floors,
+ten consecutive unedited mixed-desk drafts and editorial approval remain unmet.
+Preserve the original 12:07 provider EFFECT_UNKNOWN, Commission 19, Catalyst #8678,
+all worktrees and shared accounting. The bounded `complete-press-delivery` heartbeat is now **PAUSED**, verified by
+the app result and installed automation readback after GitHub evidence persistence.
+The parent workstream remains active.
+
+October 13 current-source continuation: two-file external consumer repair adds explicit no-share review and hash-bound selected engine context while retaining planning-only authority. `current_event_phase/READINESS.md` records source census, no ready Brief slot, exact validation and next executable release work. The original unknown provider effect remains unreplayed.
