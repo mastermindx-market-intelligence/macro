@@ -4489,6 +4489,14 @@ jobs:
           tests/test_us_pullback_split_gaps.py
           tests/test_verify_risk_radar_pullback_matrix.py
           tests/test_verify_risk_radar_pullback_served.py
+          tests/test_cn_dialog_focus_lifecycle.py
+          tests/test_cn_index_close_store_keys.py
+          tests/test_pullback_depth_glyphs.py
+          tests/test_pullback_depth_idrefs.py
+          tests/test_pullback_depth_template_mutants.py
+          tests/test_pullback_expiry_owner_js_mutants.py
+          tests/test_pullback_missing_sessions.py
+          tests/test_pullback_no_forecast_invariant.py
           tests/test_risk_state_live_copy_sync.py
           tests/test_build_china_risk_state.py
           tests/test_china_connect_leaderboard_render.py
