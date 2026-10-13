@@ -904,7 +904,7 @@ def ticker_news_stream(
     )
 
 
-_UNKNOWN_PATH_METHODS = ["POST", "PUT", "PATCH", "DELETE"]
+_UNKNOWN_PATH_METHODS = ["POST", "PUT", "PATCH", "DELETE", "HEAD", "OPTIONS"]
 _CATCH_ALL_PATHS = frozenset(
     {"/api/ticker-news", "/api/ticker-news/{rest:path}"}
 )
@@ -935,10 +935,13 @@ def ticker_news_unmatched(
     this catch-all the framework default 404 leaks without private headers.
     W12: an empty rest (the bare /api/ticker-news/ root) skips ticker
     validation and answers the private 404 directly instead of a 422.
+    W13: an empty leading segment (the /api/ticker-news//x shape) is an
+    unknown-path shape too, so only a non-empty head is ticker-validated.
     """
     _rate_or_429(user)
-    if rest != "":
-        _safe_ticker_or_422(rest.split("/", 1)[0])
+    head = rest.split("/", 1)[0]
+    if head != "":
+        _safe_ticker_or_422(head)
     raise _private_error(404, "not found")
 
 
@@ -947,8 +950,9 @@ def _real_route_method_not_allowed(rest: str) -> None:
 
     A non-GET catch-all at the same path would otherwise FULL-match and
     shadow the router's 405+Allow on the real routes; this re-raises the
-    same Starlette 405 the router would have raised.  It assumes the router
-    is included without a prefix (app/main.py).
+    same Starlette 405 the router would have raised.  It matches the
+    module router's own (prefix-free) route paths, so it also holds when
+    the router is included under a prefix.
     """
     for route in router.routes:
         if not isinstance(route, APIRoute):
@@ -980,7 +984,6 @@ def ticker_news_root_other_methods(
     "/api/ticker-news/{rest:path}",
     methods=_UNKNOWN_PATH_METHODS,
     include_in_schema=False,
-    dependencies=[Depends(_real_route_method_not_allowed)],
 )
 def ticker_news_unmatched_other_methods(
     rest: str,
@@ -988,10 +991,15 @@ def ticker_news_unmatched_other_methods(
 ) -> None:
     """Private terminal answer for non-GET methods on unmatched paths.
 
-    Re-raises the real-route 405 first (see _real_route_method_not_allowed),
-    then follows the GET catch-all chain.
+    W13: the parameter dependency authenticates before the real-route 405
+    re-raise (see _real_route_method_not_allowed), so unauthenticated
+    callers get the private 401 on every path instead of a 405 that leaks
+    which paths are real routes; the 405 re-raise runs before the rate
+    limiter, then the chain follows the GET catch-all.
     """
+    _real_route_method_not_allowed(rest)
     _rate_or_429(user)
-    if rest != "":
-        _safe_ticker_or_422(rest.split("/", 1)[0])
+    head = rest.split("/", 1)[0]
+    if head != "":
+        _safe_ticker_or_422(head)
     raise _private_error(404, "not found")

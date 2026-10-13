@@ -949,11 +949,11 @@ _VERDICT_PIN: dict[str, tuple[str, str]] = {
     ),
     "0000018230-26-000046": (
         "0007a8da08646f22132d8f653325c3686248d97b927cd795e94da966a6100832",
-        "primary_unparseable",
+        "ADMITTED",
     ),
     "0000018230-26-000021": (
         "60e12190a7f6825e5898c03c99b2b8e32441bda1542951cadabbd0098e8b6d04",
-        "primary_unparseable",
+        "ADMITTED",
     ),
     "0000018230-25-000040": (
         "08846e666e59d28250e15cfe6ef42cf6b9f435d4af658c2654762d5dc4a01cd4",
@@ -1027,8 +1027,8 @@ _VERDICT_PIN: dict[str, tuple[str, str]] = {
 _VERDICT_COUNTS: dict[str, dict[str, object]] = {
     "0000018230": {
         "packages": 5,
-        "admitted": 2,
-        "refusals": {"not_admitted": 1, "primary_unparseable": 2},
+        "admitted": 4,
+        "refusals": {"not_admitted": 1},
     },
     "0000070858": {
         "packages": 5,

@@ -6,7 +6,7 @@ objective: >
   declared authority for every decision-bearing output and advisory evidence
   unable to silently override it. Each wave is complete only at its separately
   authorized acceptance boundary.
-status: blocked
+status: active
 program: crypto-intelligence
 repos: [macro]
 owner: ceo-sol
@@ -32,48 +32,37 @@ waves:
     status: in_progress
     depends_on: [P0A]
     next_action: >
-      Do not submit a CEO runtime request while the current protected Sol Skillpack
-      keeps the Personal-Pro modifying path dependency-gated. Resume only after a
-      production-proven write path is canonically released; then load a fresh
-      MMX/SOL_STATE_V1, prove the required Slack/Relay/admission gates, re-run the
-      Macro main/open-PR collision fence and admit exactly one P0B implementation
-      carrier. Implement DEC:CRYPTO-H5-BTC-BUDGET-AUTHORITY and return PR,
-      exact-head tests and real H5 browser proof to Sol.
+      Consume exact-head PR #8050 CI/fences for the H5 presentation/evidence head,
+      then reconcile release ordering with open #7645 and regenerate site/crypto.html
+      from the combined template source before any production acceptance. Prove the
+      merged generated artifact on the real deployment path; do not alter canonical
+      total-budget authority or the class split.
+    note: >
+      P0B remains BUILT_NOT_PROVEN at source head
+      d079adb6d532b7af20a487bd0ebdeddc3a414ee0. It preserves the exact canonical
+      cockpit receipt, now distinguishes a missing asset breakdown from an invalid
+      total budget, and renders a valid zero without depending on class-model inputs.
+      H5 uses source-specific bilingual failure explanations and a readable compact
+      layout; shared styles and H1/H2 are unchanged. The existing source-claim gate
+      caught an overstated Chinese validation sentence, which is corrected without
+      changing the gate. Final proof and receipts are in the owning H5 decision.
 next_action: >
-  Unblock the canonical Executive OS Personal-Pro modifying path under its owning
-  program. Current protected Mastermind 51f9942733b86e550bb9169d2a43462bd28e774f
-  still requires B2/C2 production proof before EXECOS/CEO_REQUEST_V1 and a fresh
-  MMX/SOL_STATE_V1 handshake. Independent S0-R1/MAS-112 and C1/MAS-109 principal
-  provisioning remain concrete gates. Once those and all then-current COMMISSION_WAVE
-  gates are production-proven, re-run P0B's collision fence and admit one
-  implementation attempt. Do not create a substitute runtime carrier.
+  Keep PR #8050 as the H5 source/presentation carrier. Consume exact-head CI/fences,
+  then coordinate merge ordering with #7645: its template patch auto-merges with H5,
+  but site/crypto.html is a generated artifact with a pre-existing current-main
+  conflict and must be regenerated after source reconciliation. After merge-order
+  reconciliation, prove the combined production/deployed Crypto route and close P0B
+  only if canonical happy/zero/unavailable behavior survives.
 blocked_by:
   - >
-    Current protected Mastermind Skillpack at
-    51f9942733b86e550bb9169d2a43462bd28e774f, docs/sol_skills/COMMISSION_WAVE.md,
-    states that EXECOS/CEO_REQUEST_V1 may be used only after B2/C2 have proven it
-    and that any missing runtime/transport gate forbids submission.
+    Exact-head PR #8050 CI/fences have not yet accepted the H5 presentation/evidence
+    head. Local source, governance, generated-route and visual-evidence gates pass.
   - >
-    No fresh MMX/SOL_STATE_V1 was recovered from the connected Slack principal;
-    #ceo-control-room contains only older setup/operating messages and no
-    discoverable #sol-runtime channel was available during the current gate check.
-  - >
-    Mastermind PR #146 merged G7 autonomy-arm implementation as protected merge
-    51f9942733b86e550bb9169d2a43462bd28e774f, but its own completion class is
-    proof-required and explicitly leaves exact host install, provider readiness,
-    arm, boot re-attestation, one bounded real intent, disarm/re-arm and Agent OS
-    closeout outstanding. Merge therefore is not production admission proof.
-  - >
-    DSC:PERSONAL-PRO-INGRESS-PRINCIPAL-GAP — the current Slack workspace does not
-    expose a qualified disposable S0-R1 fixture bot in C0BRUL9F2V7 and does not
-    expose the dedicated production Relay bot in prepared private C1 channel
-    C0BSGABKBFY. Historical S0 fixture credentials are unsafe to reuse until secure
-    rotation/revocation because a later token-isolation proof recorded model-visible
-    exposure.
-  - >
-    Accepted Personal-Pro source law requires S0-R1 PASS plus accepted C1 before B2,
-    then accepted B2 plus C2 production modifying canary before a real P0B CEO
-    operation may be called admitted.
+    Open #7645 remains an independent Crypto source carrier. Exact merge simulation
+    shows templates/crypto.html.j2 auto-merges with H5 with zero conflict markers;
+    site/crypto.html conflicts already between current main and #7645 and is a
+    regenerated publication artifact. Release still needs source-order reconciliation,
+    regeneration and real deployed-route proof.
 owns_paths:
   - "engine/btc_decision.py"
   - "contracts/btc_decision.schema.json"
@@ -222,3 +211,170 @@ least-privilege host principal remain unproven.
 
 Therefore P0B is blocked upstream before B2. No current Executive operation identity or
 Job exists for P0B, and no Slack/Linear/GitHub projection may imply otherwise.
+
+
+## 2026-09-27 P0B source execution supersession
+
+Current protected Mastermind law `c01d890f6536539496f2d6744f3143ff49da296d` plus the Chairman's live continuation permitted this already-assigned, custody-clear source repair directly in the active Sol session. This supersedes only the historical claim above that P0B source implementation itself had to wait for a new Personal-Pro Executive/Slack runtime Job. It does not retroactively create such a Job, change Executive OS lifecycle truth, or waive any runtime/transport gate for work that actually requires those systems.
+
+P0B source authority is now **BUILT_NOT_PROVEN** at `fc93f8e7eeec8c70b285191aa2374e88f71332c3`:
+- the existing `btc.decision/v1` owner projects the only downstream total-budget value;
+- `crypto.cockpit/v1` exposes that decision status/final exposure as an existing display receipt;
+- `build_crypto` derives H5 total exposure only from the canonical projection;
+- the existing BTC/ETH/alt class grid remains split-only;
+- valid zero is distinct from unavailable; integrity-invalid state fails closed before Crypto page publication.
+
+Local verification on the candidate: Crypto CI-owner tests **34 passed**; Vector CI-owner tests **95 passed**; Python compile and diff checks passed. These are local receipts, not exact-head GitHub acceptance.
+
+Open #7645 owns the current Crypto template/publication bytes, so H5 unavailable-state UI integration and real browser acceptance remain fenced there. Do not touch #7645's template from this carrier and do not call P0B complete until that ownership is reconciled, exact-head checks pass, and the real generated H5 path proves valid-zero, unavailable/integrity-failure and happy-path states.
+
+
+## 2026-09-27 current continuation
+
+P0B source authority remains `BUILT_NOT_PROVEN` at local candidate `26fd88c7dad5448f69e6096037cf099d96d0c01e`. Additional adversarial tests now cover exact-budget conservation, named override final-vs-raw authority, stale decision dates and the fail-closed `project_budget()` projection. Combined Vector/Crypto authority regression pack: 147 passed locally.
+
+The only user-facing P0B blocker is still template custody plus real-route proof: #7645 remains open and owns `templates/crypto.html.j2` / `site/crypto.html`. Do not edit those paths from PR #8050 while that carrier remains unreconciled. After custody clears, add the explicit H5 unavailable state and prove valid-zero, canonical-unavailable/integrity-failure and happy-path allocations in EN/ZH and both themes before accepting P0B.
+
+## 2026-09-28 Market Board snapshot-integrity return
+
+PR #8050's earlier `9e30dd81504da62b228fffd2cbf6306c57040da3` completed CI/fences successfully; no merge/live acceptance followed. New source `31a60448e058f09b5cea4795cb4bdcfc3f7cfcba` removes mixed-date ranking, retains older observations as exclusions, preserves unknown return coverage, and stops price-history leakage across snapshot dates or unqualified asset/source identities. It changes neither P0A/P0B allocation authority nor the provider store. Local proof: 182 regression tests, 64 semantic/browser cells, 32 canonical captures. The same-source combined fixture includes #7645's accessible table with zero source merge conflicts. See the current R2 decision and `mockups/evidence/crypto-universe-snapshot-20260928/` for exact input hashes and proof limits.
+
+Parent remains in progress / BUILT_NOT_PROVEN on the deployed route. Next: consume the newly published exact-head CI/fences, follow source/release-order ownership with #7645 and regenerate/verify the actual deployed site. Do not redo the reviewed H5 or snapshot states; broader Crypto chart-led integration, floating Brain obstruction, native Paper qualification, review/alert integrations and participant comprehension remain unfinished.
+
+## 2026-09-28 Chairman science commission and R1 result
+
+The live Chairman instruction adds extensive scientific research on Crypto drivers, immediate risk transitions and multi-horizon pivots as a primary moat requirement within this same workstream. Sol completed a first source/data/temporal audit, with preregistration `47d4eacf6abd98055a085a779e9df75fee567d18`. See `research/CRYPTO_SCIENCE_R1_FINDINGS_AND_PROGRAMME_2026-09-28.md` and the current science frontier in `DEC-CRYPTO-VECTOR-R2-20260926.md`.
+
+The incumbent bottom-pressure history fails prefix invariance on 3/366 declared dates; raw-allocation sensitivity is up to 5.3156 percentage points on one date per variant. A separate exploratory probe finds immature future-label tails counted as False. These are documented timing/evaluation defects, not new profitable strategies or live-trade verdicts. Original/amended diagnostic outputs and all cutoffs are preserved; input/source hashes remained unchanged. No production engine/config/data changed, and no new final-allocation authority was created.
+
+Next scientific phase: reviewed temporal/label correction through existing owners, availability-qualified baseline replay, then preregistered fast-downside and washout/recovery experiments followed by trend/cycle work. Prior failed hypotheses and already-used historical holdouts remain explicit. Model promotion needs calibrated net utility, independent event evidence, realistic source/execution delays and fresh forward records—not decorative certainty or CI alone. Parent mission remains incomplete; no autonomous worker/watch cycle was started.
+
+## 2026-09-28 science R2 correction/replay return
+
+Source candidate a5a2d98cbb192f02113fc957fba28f40f37deff2 repairs higher-timeframe completion labels and immature impulse outcomes within existing engines. The original three-day grouping and all strategy/evaluator thresholds remain unchanged. Full stored-vintage paired replay completed:4393daily prefixes,54original bottom-pressure mismatches versus0corrected; only9of197columns changed. Original baseline matches stored principal columns exactly. Latest snapshot target unchanged; no live publication/gate/trade occurred.
+
+Final local pack235passed with25existing warnings; source-claim/static/diff/replay checks pass. All55inputfiles,18existing data gates/ledgers and9source/config hashes remain unchanged. Evidence is in research/crypto_science/r2; interpretation and complete limitations in CRYPTO_SCIENCE_R2_TIMING_REPAIR_RESULTS_2026-09-28.md and current R2 decision frontier. No independent review or live-release acceptance is claimed.
+
+The paired evaluator keeps D2/D3 demoted and U1 insufficient_n, consistent with the pre-existing stored gate; historical positive claims are not current predictive certification. Funding input selection is also identified:80recent first-column observations versus1089older observations in another field, with semantics not yet reconciled. Next: independent existing-owner timing review before release, then funding/source-time qualification and mature source-available cohorts before new fast-downside/recovery experiments. Parent scientific advantage and production mission remain incomplete.
+
+## 2026-09-28 / R3 source identity and episode evidence
+
+Within the same Chairman science commission, candidate cc5f0a2d16311db7639aba5f8f54ef6772a30374 protects the funding input against physical column-order changes and adds an opt-in nullable source-observed view to the existing radar. Current funding values and all default fire booleans remain unchanged; no live gate or allocation policy was switched. Legacy funding equivalence, settlement period and publication timing remain unresolved; old history was not spliced.
+
+The plan was committed before new cohort outcomes at953eedfa53a5a201efebc03b74853316cad6a2cf. The complete diagnostic now retains48cohort scenarios and2090scenario-episode rows, not independent events. In reused2024+, zero-delay separated onsets yield D2:8/35, D3:2/18 andU1:1/8 hits under the unchanged +/-5% next-three-close target. Assumed delays and seven-day episode spacing are retained as sensitivities. A stronger comparison lift after removing unavailable source periods does not represent additional correct forecasts, and sparse bounce episodes do not support choosing the most favorable delay.
+
+See research/CRYPTO_SCIENCE_R3_INPUT_COHORT_RESULTS_2026-09-28.md and research/crypto_science/r3/ for results, source/data/gate hashes, complete outcomes and actual test/evidence receipts. The fresh combined local pack passed247tests; independent review, source-time qualification and deployment remain owed. Next primary science unit is a frozen fast-downside and stabilization/reclaim experiment against the corrected incumbent with explicit latency/cost and episode rules. Current model authority, accepted UI work, reused-holdout designation and failed hypotheses remain intact. MISSION_COMPLETE:false; no worker, watcher, paid source or automatic continuation was started.
+
+## 2026-09-28 R4: first frozen execution-aware sequence comparison
+
+The existing science track completed hourly breakdown/shock and daily washout/reclaim hypotheses under protocol c458e016b094bbf28f6e4d89f5e622a56e92e697, research source f83e37e95d788f449ef3aa05d7f4e3b3e452671b. Report: research/CRYPTO_SCIENCE_R4_SEQUENCE_RESULTS_2026-09-28.md; complete initial/amended outputs and independent arithmetic under research/crypto_science/r4/. Production engine/config/data/gate/UI paths were not modified.
+
+Neither rule earns promotion. Shock filtering increases the descriptive downside-first fraction, but the fixed24h cash overlay has negative mean marginal return after the declared costs versus the corrected incumbent. The specified daily reclaim sequence waits a median5days among confirmed complete parents and loses on average versus immediate entry and the incumbent over common14-day endpoints, including no-entry cash. This does not establish immediate entry as safe or reject all confirmation/risk reduction; it rejects these particular candidate policies as sufficient evidence of a new edge.
+
+R4 retains2,378 scenario-event and6,738 account rows, not that many independent trades. Every summary and2,308 mature first-passage/6,738 account paths were independently arithmetically checked by the same session; no external-review claim. Combined regression pack256passed,25warnings; source/static/hash checks pass. All initial CSVs remain byte-identical after the disclosed terminal-open qualification repair. Result SHA256 b93f7b0408f59f2e688ccf043ce2c1600d9b02321b080e8af80e6ef6443ed636.
+
+Next science dependency is a separately frozen incremental absorption/spot-participation or properly qualified genuine-flow test with unchanged comparable action/endpoints/cost accounting, not a retuning of R4 until it wins. Independent review, historical publication qualification, source funding semantics, PR conflict reconciliation and live/forward proof remain open. Parent mission incomplete; no live policy, trade, subscription, worker or automatic continuation was started.
+
+## 2026-09-28 R5 participation experiment
+
+R5 completes the frozen same-parent participation comparison under PR8050. Protocol3cc4e46d2b7827ba5fce746d5b4bcd1875fb80c6; research implementation065f29376d82db77342a634496ccd2f4d97d0ab0; all647R4 parent episodes retained across1,294 event and3,882account scenarios. No engine/config/live-policy change.
+
+Downside volume filters only7of171persistent candidates and retains the same30downside-first outcomes; incremental mean -0.00178pp versus price-only at1h/10bp. Recovery volume increment+0.72003pp on53paired parents has wide uncertainty, period dependence and becomes nearly zero when2020 is removed. It leaves31parents in cash; zero all-parent median drawdown is not precise bottom timing. No candidate is promoted.
+
+261combined tests passed with27warnings; independent arithmetic checks647observations,1,279barrier paths,3,843accounts and all48summary cells/intervals. Prior inputs/gates/artifacts unchanged. Complete source/results and scope limits: research/CRYPTO_SCIENCE_R5_PARTICIPATION_RESULTS_2026-09-28.md and the current R5 frontier in DEC-CRYPTO-VECTOR-R2-20260926.md.
+
+Next: qualified signed-flow/venue/time information and a frozen continuous-probability/utility experiment versus R4/R5, with chronological selection and eventual issued-forward evidence. Coinbase unsigned spot and OKX CONTRACTS flow remain different measurements. Independent review, publication-time qualification, funding equivalence and production acceptance remain open. Mission incomplete; no worker, alert, trade, collector, automatic wake or deployment was started.
+
+## Current R6 scientific result — chronological probability versus action utility
+
+The same commissioned Crypto science track now includes a frozen quarterly continuous-model study, protocol067f0fb76f7fc20239aa4cdeae03b6cf5b279b85 and implementation7b63e8ab2608a4c280e410d5dfaab7df04042127. No production model/config/collector/gate/UI change or new forecast owner. See CRYPTO_SCIENCE_R6_PROBABILITY_RESULTS_2026-09-28.md and the cumulative current frontier in DEC-CRYPTO-VECTOR-R2-20260926.md.
+
+Primary404scored post-break episodes: continuous price/state Brier improves0.103774→0.098027 versus expanding past rate, but its paired block interval includeszero and mean forecast15.85% exceeds actual11.14%. Adding unsignedvolume worsens primary proper scores slightly. Chronological training-only class-payoff mapping still trails incumbent wealth: primary10bp mean−0.04916pp(price)/−0.03503pp(+volume). No accepted crash probability or exit rule. Recovery cannot satisfy the precommitted80row/15perclass fit gate; actual derivatives signed-flow remains unqualified for unit/time/availability and excluded, not relabeled spot.
+
+268combined tests passed,27warnings retained. Independent numeric expression by the same session verifies features,trainingdates,scalers,likelihoodgradients,allpredictions/actions and72utilitysummary cells; not independent researcher review. Allrecorded input/gate/prior-source/evidence hashes unchanged. Resultsb24832969f5758d0884dcbd85e75931f9fa5aaf20a23cab9182a760607cf3f54;manifest071d1475b40ec7214ec2af4a2b2d1da03045d09877dae8562bba200a889608c2. Complete derived evidence under research/crypto_science/r6/.
+
+Next: independent review and a separately frozen training-only calibration/recent-rate comparator plus explicit risk-budget,tail-protection and turnover utility; do not optimize prior thresholds/delay from observed results or rerun completed audits. Parent mission remains incomplete, no livepolicy promotion,background worker or wake created.
+
+## 2026-09-29 scientific continuation — recovered R6 and completed R7
+
+Network recovery found R6 already published at b445029abd6c84a66cadc572929e0beb702be4b7 with successful exact-head CI/fences; it was not replayed. R7 calibration/protection protocol2e8709464b643a33a5bca53b53999f53ad4756f5 and implementation01a2b9c1ad89bfaae9200f581c5ef3ffa6cf29e1 preceded one result run. Same operation/branch/M2 carrier; research/test/continuity only.
+
+Training-only recalibration lowers risk overstatement but recent-period Brier is essentially tied with a simple recency-weighted event-rate estimate. The primary calibrated-price protective rule loses mean return and declared drawdown-penalized utility. One calibrated-volume positive full-cohort cell has wide uncertainty, recent-period loss and cost/delay instability; no method earns promotion. Primary cohort289episodes,21target events; repeated37,611policy scenarios are not independent shocks.
+
+Fresh combined suite276passed,27warnings. Independent numerical expression checked7,038cash/coin paths,70quarter training fits,1,012predictions and37,611policies plus504utility summaries; this is same-session arithmetic, not independent review. All55input identities,18gates and87prior evidence artifacts remain unchanged. Full result/report at research/crypto_science/r7/ and research/CRYPTO_SCIENCE_R7_CALIBRATION_RESULTS_2026-09-29.md; exact cumulative frontier in existing DEC-CRYPTO-VECTOR-R2-20260926.md.
+
+Next scientific unit is action-aligned severity and timing: separate already-incurred loss from post-landmark avoidable risk and missed rebounds, then preregister the earlier observable cohort comparison. Independent review, signed-flow/publication qualification and fresh forward-issued evidence remain promotion gates. Current final allocation and all production/design/review/alert effects are unchanged. Parent scientific/product mission remains incomplete.
+
+## 2026-09-29 R8 — earlier action and direct protection-value research
+
+Same current Chairman continuation, operation crypto-vector-r2-20260926-sol-001, M2 Studio Direct and draft PR8050. R7 exactCI/fences succeeded. R8protocol89b6876ba0937691270b7b042427ea6fc4c2e042 and tested sourceede102e5eb9d83b4d13ef0f22b12148d72d433d5 preceded one new study. Research/tests/continuity only; no production model/collector/gate/UI/liveaction change.
+
+Same588breakdown parents compare earliest completed observation with six-hour follow-up on a common24h endpoint. Of43large marked-loss cases across586complete primary accounts, seven had already occurred byk6; most remaining tailrisk was hypothetically avoidable, but indiscriminate cash loses mean return. Direct ridge models predict cash-minus-incumbent return/excess-drawdown value rather than binary event probability. Earlymodel is modestly better than later on average, with uncertainty crossingzero and negative reused2024+return/utility. No model earns promotion; restrictedhindsight envelopes are not executable edge.
+
+Final combinedpack284passed,48warnings. Independently expressed SAME-session arithmetic checks1,998feature observations,14,076inventorypaths,420training snapshots,6,072predictions/30,204policyrows,288utilitysummaries and144paired method contrasts.55input identities/18gates/100prior artifacts remain unchanged. Fullreport andevidence: research/CRYPTO_SCIENCE_R8_ACTION_VALUE_RESULTS_2026-09-29.md and research/crypto_science/r8/; currentfrontier inexistingDEC-CRYPTO-VECTOR-R2-20260926.md.
+
+Nextscientificunit requires a preregistered pre-breakwatch population withquiet/non-event periods, true warningleadtime, episode-clustered falsealarms and actioneconomics. Conditioning every earlierstudy on an alreadyobserved72hbreak cannot prove anticipatory warning. Independentreview, sourcepublication/rights, actualsignedflow qualification, forwardissued evidence and productionacceptance remain gates. Oneoptional post-verification diagnosticprint was explicitlyrefused pre-dispatch andnotretried; independentpermitted evidencepersistence continued. Parentmission incomplete; no automaticwake or liveeffect asserted.
+
+## 2026-09-29 R9 pre-break research completion
+
+R9 changes the scientific population from observed breakdowns to a fixed six-hour UTC watch clock including quiet/non-event periods. Protocol3821bcdade52648ea1c18667b538a032c4c1808c and tested implementation6d23d1b5f9fbd1034c44523fd03c74ec66b8f9e0 preceded one empirical execution. Same operation/branch/M2 Studio Direct carrier; research/tests/continuity only. No live warning, sizing, collector or new forecast owner.
+
+Price features improve retrospective full-period Brier/ranking over a matched recent-rate baseline, but the proper-score gain is absent in the reused recent period. Fixed10%threshold emits1,114primary warnings with156own-window hits/953completed non-events/5unknown. Recent228warnings have20own hits and208non-events; only one strict anticipatory match among15damaging D0events, with5events actually supported. Hypothetical cash at those recent warning times loses−0.2222ppmean event return versus incumbent at10bp costs. Distinguish own-window precision, all-event versus supported recall, equivalent observed-watch-month burden and actual protection economics. No model or policy earns promotion.
+
+Combined existing pack293tests passed,48warnings; compile, source-claim and diff checks pass. Same-session independent numerical expression verifies31,372clock scenarios,26,508finite features,70fits,25,526predictions,4,665warning scenarios,1,176catalogue event/lag rows,65strict matches and27,840inventory paths plus all summary arithmetic. These scenario counts are not independent shocks, and arithmetic verification is not independent researcher review.55input identities,18gates,114prior artifacts and inherited source hashes unchanged.
+
+Full report/evidence: research/CRYPTO_SCIENCE_R9_PREBREAK_RESULTS_2026-09-29.md and research/crypto_science/r9/. Current cumulative exact frontier is DEC-CRYPTO-VECTOR-R2-20260926.md. Next dependency is independent review and exact existing flow/funding source semantics before a separately frozen coverage-matched incremental-information trial. Do not retune the completed price experiment, infer signed-flow units, splice unqualified history or weaken recovery minimums. Parent product/scientific mission remains incomplete; no automatic background continuation or release acceptance.
+
+## 2026-09-29 — R10 source qualification completed
+
+R10 moves the scientific frontier from another price-only forecasting variation to the exact meaning and availability of existing derivatives-flow/funding inputs. Same operation and M2 Studio Direct carrier; protocol38b8f6d2f2580730993e81de95ef1b7fa34e2a14 preceded the numeric audit. Initial implementation342cb1454d0aee29028f53df9019fbc7a568c5b3 and disclosed synthetic-receipt correction90adead20f7797b10446c54d0ca0bf0779bacd19 are retained with original and amended evidence.
+
+The actual flow store has2,957hourly observations and nine missing hours in one gap. One historical24-row window spans33hours; one72-row window spans81hours. The latest windows remain complete. Existing count-based CVD and its720-hour gap threshold cannot certify shorter elapsed windows. The exact endpoint identifies aggregate BTC CONTRACTS but leaves required units/timestamp/finality semantics unresolved; descriptive same-unit ratios and dollar-capital/predictive claims remain different.
+
+Secondary OKX funding capture retains predicted rates but drops actual settled rates and intraday settlement identity in a daily mean. This is not the active BGeometrics funding path. The latter has1,089legacy versus80current rate observations with one equal overlap, insufficient to authorize a splice. Generic publication schedules are not historical first-availability records. No new provider data or account was requested.
+
+Only364R9forecast-qualified clocks overlap mechanically complete flow windows under both tested label conventions; no clock has the full documented availability/contract evidence, and even the hypothetical overlap is below R9's unchanged1,000training-example floor. No forecast, PnL or outcome association was fitted. Research-only source/clock helpers now make the requirements executable; production owners are unchanged.
+
+Final combined suite306passed,49warnings. Same-session independent arithmetic verified five source frames,5,914window rows and125,488clock masks. All57input identities,18gates,137prior artifacts and inherited source hashes remained unchanged. The initial helper receipt-edge defect and verifier timestamp-unit mistake are disclosed and preserved. Report and exact evidence are under research/CRYPTO_SCIENCE_R10_SOURCE_QUALIFICATION_RESULTS_2026-09-29.md and research/crypto_science/r10/; cumulative frontier remains in DEC-CRYPTO-VECTOR-R2-20260926.md.
+
+Next: inspect current collector/storage custody, implement an additive existing-owner retention/elapsed-window repair, and obtain exact provider contract evidence before a coverage-matched incremental study. No new data/control plane, speculative history, live model promotion or deployment. Parent mission remains incomplete.
+
+## 2026-09-29 R11 producer/consumer repair
+
+Recovered the interrupted local implementation instead of repeating it. Final source candidateb53636f05b6374dafabcbc9c5d8085773d88fdf0 adds response-occurrence evidence through the existing collector/keep-first owner, preserves predicted/actual funding and as-of revision/reversion, and leaves legacy numerical series/request signatures unchanged in controlled tests. Display-only CVD now uses contiguous elapsed label windows, explicit native units/unknown causal qualification, no price forward-fill, and wall-clock freshness distinct from price-feed synchrony. Existing builder warnings match the repaired semantics. No primary allocation or forecasting policy change.
+
+The old R10 collecting archive filename and dynamically bound legacy diagnostic are repaired with exact original bytes preserved and manifest amendments, not waived tests or changed research outcomes. Final broad Crypto/Vector/storage/science368passed49warnings;50targeted collector/CVD tests; compile, source-claim and original enrollment checker pass with existing warnings retained. Normal run_adapter fake-HTTP/temporary-store proof checks9receipts,4as-of states,54elapsed-window cases, failure degradation and unchanged source-data/gate identities. These are same-session source/integration results, not independent review or live data accrual.
+
+Evidence: research/CRYPTO_SCIENCE_R11_COLLECTION_REPAIR_RESULTS_2026-09-29.md and research/crypto_science/r11/. Exact cumulative frontier is DEC-CRYPTO-VECTOR-R2-20260926.md. BUILT_NOT_PROVEN: no actual provider source_observations file created, new scheduler, alert, trade, design effect, merge or deployment. Next is exact-head CI/integration and independent source-boundary review before an admitted prospective existing-collector proof. Unknown units/timestamps/finality/daily completeness, sufficient scientific sample history and fresh forward evidence remain gates; no speculative splice or lowered model minimums. Mission incomplete.
+
+## R12 host integration — saved price guard and actual Parquet measurement
+
+The prior sandbox-only boolean-reference-price patch is now integrated in the existing repository at372cdf9f443a9b53e32df01feef718a00d07783f with full host proof:431tests passed49warnings, unchanged R11 entry/storage/as-of scenarios, source-claim/compile/diff checks and existing input/gate identities. Only malformed dependent prices suppress divergence; valid native flow and all scoring/allocation policy remain unchanged. Later test additions stay in the existing enrolled CVD suite.
+
+Actual synthetic Parquet measurements now replace the former in-memory-only storage evidence: at1000existing captures,100,527physical bytes represented20,868,848logical canonical bytes after one append. Observed append0.639146s and duplicate0.572471s are single warm-file measurements, not approved throughput/retention limits. No production capacity guard is implemented; a retention-plan append was refused before dispatch and not retried. The scope remains price-fix delivery plus measurement, not unattended collection.
+
+Full report/evidence: research/CRYPTO_SCIENCE_R12_RELEASE_HARDENING_RESULTS.md and research/crypto_science/r12/. Existing cumulative DEC-CRYPTO-VECTOR-R2-20260926.md contains exact source/effect/custody and recovery frontier. Independent review, operational capacity/source-semantic qualification, current-headCI and admitted prospective capture remain open. No production deployment, source-observation collection, live alert, trade or new authority owner. Parent mission incomplete.
+
+## R13 — truthful derivatives context and mobile headline integration
+
+The current Vector template now consumes the existing descriptive CVD context through a pure builder view. Exact source scope, currentness and24hcoverage qualify a dimensionless buy-side share; stale, missing, incomplete and no-activity states stay distinct from measured0%. Native keyboard disclosure carries source and observed/evaluated clocks. Unsupported annualized funding and the old daily-flow chip are withheld in this desk, without changing their underlying compatibility fields or BitcoinDecisionState.
+
+Full-page review also found and repaired the shared desktop-grid override that compressed the390pxChinese headline into42px. A page-local post-include mobile override restores a full-width stacked hero; shared style tokens remain untouched. Source commit684ce2965dab391c66bf551bbc6701d3f97f6c65 plus the explicitly repointed existing bilingual test are covered by439passing regressiontests(49warnings),112finalbrowsercases and16canonicalrest/focuscaptures. Same-session verifier checks source/data/PNG/geometry identities; not independentreview ordeployment.
+
+R13report/evidence: research/CRYPTO_SCIENCE_R13_USER_CONTEXT_RESULTS.md and research/crypto_science/r13/. Cumulativefrontier in existing DEC-CRYPTO-VECTOR-R2-20260926.md. Prior deniedretentioneffect andnewoptionaltestappend remainheld/unreplayed. No livecollector, account, alert, trade, allocation orPapereffect. Independent review, exact-headCI, source qualification, capacity/admittedprospectivecapture and deployed-userproof remainopen. Parentmission incomplete; donotreplaycompletedmarketstudies for thisUIdependency.
+
+## 2026-09-30 R14 — recovered UI delivery and repaired CI selection
+
+R13 was already published at b74875a6171a4d52cb48decf70d608f106a9fa8e despite the interrupted chat response. Preserve the source-to-Vector flow-coverage card, clock/funding limits and mobile Chinese hero repair. The R13 CI failure was traced to two missing exclusive dependency paths, not failing Crypto feature behavior.
+
+R14 adds only engine/btc_intraday_cvd.py to the existing conviction-profile and unrun-picks-boards declarations, preserving their code/data execution planes. Exact original closure test now passes; source-only CVD selection adds the proper job in each gate and removes none. Broad Crypto suite439passed49warnings. After restoring only omitted tracked admin/hook test dependencies, complete unchanged CI-planner suite135passed. Initial RED, sparse failures and verifier-scoping mistake are retained. No validator/waiver/model/source-data/UI logic changed.
+
+Current-main and sibling-source compatibility are tracked separately; combined sibling file projection has preexisting conflict hunks, not an all-branches integration guarantee. Hosted exact-head CI and independent review remain pending. Preferred review avenue Terra under existing CAPACITY_SELECTABLE placement; no receiver or worker started. Denied capacity/optional-test effects remain held, and no live collector or deployment is authorized. Current cumulative frontier and exact results: DEC-CRYPTO-VECTOR-R2-20260926.md and research/CRYPTO_SCIENCE_R14_CI_INTEGRATION_RESULTS.md. Mission incomplete.
+
+## R15 actual first-read Crypto desk — recovered and locally proven
+
+Current continuation recovered already-published R13/R14 and committed R15 work despite visible terminal failures. R15 runtime candidateba258da9217c6fc905475511d5597be5d8f37af0 adds the actual chart-led first-read view, a separate recorded canonical budget/date, source/section navigation and existing-owner in-page Brain access; unsupported annualized funding is withheld. Zero, unavailable/stale, missing class breakdown and missing history remain distinct. It neither fits a new model nor changes final allocation authority.
+
+Two final source defects were repaired: house-font token compliance and a responsive SVG dash that stopped painting the historical line before the endpoint on wide screens. The latter fix is local to this page; shared chart code/data are unchanged. Final proof112browsercases/4assistantfailurecases/32canonicalstates, with end-of-trace paint assertions in all96historycases, and448existinghosttests passed10warnings. Text integration with mainda1f7730 and sibling7645 is clean at the inspected identities; no actual merge. Original failures/images, pre-fix evidence and same-session limits remain preserved.
+
+See research/CRYPTO_R15_DESK_INTEGRATION_RESULTS.md and research/crypto_science/r15/MANIFEST.json/verify_final.py. The cumulative authoritative continuation is the existing DEC-CRYPTO-VECTOR-R2-20260926.md. All57input/18gate/137priorartifact fences match. Local account/livequotes/overlay404limits, syntheticbudgetfixture, unboundindependentreview, heldretention/testactions and production-proof gaps remain explicit. No live collection/trade/alert/deploy/automaticwake. Parent mission remains incomplete; next release dependency is exact-headCI and independent product/source review, not another replay of the completed empirical studies.
