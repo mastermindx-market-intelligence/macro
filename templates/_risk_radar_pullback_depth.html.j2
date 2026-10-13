@@ -85,7 +85,7 @@
    reports as recovering (or repaired); in any other phase it is contradictory. #}
 {% set price_ok = (p is float or p is integer) and (h is float or h is integer)
    and p-p == 0 and h-h == 0 and p > 0 and h > 0
-   and (p <= h or phase in ('recovering','repaired')) %}
+   and (p < h or phase in ('recovering','repaired')) %}
 {% set low_ok = (low is float or low is integer) and low-low == 0
    and low > 0 and price_ok and low <= p and low <= h %}
 {% set ns.low_ok = low_ok %}
@@ -133,7 +133,7 @@
     <div class="rrp-stamp">{{ t(o.get('benchmark_en') or '', o.get('benchmark_zh') or '') }}<br>
       {{ t('Settled close','收盘价') }} {% if o.get('asof') %}<time datetime="{{ o.get('asof')|e }}">{{ o.get('asof')|e }}</time>{% else %}—{% endif %}
       {%- set _vu_disp = valid_until_display(o.get('valid_until'))|trim -%}
-      {%- if _vu_disp %}<br>
+      {%- if current and _vu_disp %}<br>
       {{ t('Current until','有效至') }} <time datetime="{{ o.get('valid_until')|e }}">{{ _vu_disp|e }}</time>{% endif %}
     </div>
   </header>
@@ -196,9 +196,9 @@
       </details>{% endif %}
       {#- Copy says why only when the presenter says why; otherwise it stays neutral. #}
       {% elif current and v.get('detail_withheld') == 'short' %}<p>{{ t('Too few closes since the reference high to draw a chart yet.', '自参考高点以来的收盘价尚少，暂不绘制图表。') }}</p>
-      {% elif current and v.get('detail_withheld') == 'uncovered' %}<p>{{ t('Chart not shown: the closing history on record does not fully support these figures.', '图表不显示：现有收盘历史无法完整支持上述数据。') }}</p>
+      {% elif current and v.get('detail_withheld') == 'uncovered' %}<p>{{ t('Chart not shown: the closing history on record does not fully support these figures.', '暂不显示图表：现有收盘历史无法完整支持上述数据。') }}</p>
       {% elif current %}<p>{{ t('No chart is shown for this assessment.', '本次评估不显示图表。') }}</p>
-      {% else %}<p>{{ t('The chart needs current, usable price evidence.', '图表需要当前且可用的价格数据。') }}</p>{% endif %}
+      {% else %}<p>{{ t('A chart appears once current, usable price data is on record.', '待有当前可用的价格数据后再显示图表。') }}</p>{% endif %}
       <p class="rrp-note">{{ t('The chart is price history, not a forecast path.', '图表呈现历史价格，并非预测路径。') }}</p>
     </div>
     <div class="rrp-forecast" data-forecast-status="unavailable">

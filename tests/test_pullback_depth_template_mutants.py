@@ -261,9 +261,9 @@ _ZH = {
     "Session": "交易日",
     "From the reference high": "距参考高点",
     "Too few closes since the reference high to draw a chart yet.": "自参考高点以来的收盘价尚少，暂不绘制图表。",
-    "Chart not shown: the closing history on record does not fully support these figures.": "图表不显示：现有收盘历史无法完整支持上述数据。",
+    "Chart not shown: the closing history on record does not fully support these figures.": "暂不显示图表：现有收盘历史无法完整支持上述数据。",
     "No chart is shown for this assessment.": "本次评估不显示图表。",
-    "The chart needs current, usable price evidence.": "图表需要当前且可用的价格数据。",
+    "A chart appears once current, usable price data is on record.": "待有当前可用的价格数据后再显示图表。",
     "The chart is price history, not a forecast path.": "图表呈现历史价格，并非预测路径。",
     "FURTHER DOWNSIDE": "进一步跌幅",
     "Estimate unavailable": "估计暂不可用",
@@ -455,7 +455,7 @@ def test_m_unavailable_panel_names_the_missing_price_evidence():
     assert soup.select_one("section.rrp").get("data-pb-phase") == "unavailable"
     _forecast(soup)
     _zh(soup, "A current closing-price assessment is not available.")
-    _zh(soup, "The chart needs current, usable price evidence.")
+    _zh(soup, "A chart appears once current, usable price data is on record.")
     assert "Watch the retest of the low" not in soup.get_text()
 
 
@@ -491,7 +491,7 @@ def test_m_every_visible_label_keeps_its_chinese():
         "Too few closes since the reference high to draw a chart yet.",
         "Chart not shown: the closing history on record does not fully support these figures.",
         "No chart is shown for this assessment.",
-        "The chart needs current, usable price evidence.",
+        "A chart appears once current, usable price data is on record.",
         "The chart is price history, not a forecast path.",
         "FURTHER DOWNSIDE",
         "We can measure the decline that has already happened. A reliable range for the next low is not yet available.",

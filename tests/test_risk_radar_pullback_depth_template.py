@@ -280,11 +280,11 @@ def test_withheld_chart_without_a_reason_stays_neutral_not_that_prices_are_unusa
     v['detail_chart_html'] = ''
     evidence = BeautifulSoup(render(v), 'html.parser').select_one('.rrp-evidence')
     assert 'No chart is shown for this assessment.' in evidence.get_text()
-    for claim in ('needs current, usable price evidence', 'Chart withheld', 'Too few closes'):
+    for claim in ('A chart appears once current, usable price data is on record.', 'Chart withheld', 'Too few closes'):
         assert claim not in evidence.get_text()
     v['observation']['quality'] = 'delayed'
     evidence = BeautifulSoup(render(v), 'html.parser').select_one('.rrp-evidence')
-    assert 'needs current, usable price evidence' in evidence.get_text()
+    assert 'A chart appears once current, usable price data is on record.' in evidence.get_text()
 
 
 def test_close_above_the_retained_high_is_rejected_not_shown_as_zero_damage():
