@@ -760,7 +760,11 @@ def _validate_native_manifest_invariants(value: Mapping[str, Any]) -> None:
     for slug, selection in native["selections"].items():
         identity = (selection["company_id"], selection["event_id"])
         if identity in seen:
-            raise EarningsPrivateClosureError("malformed_native_section")
+            pair = ", ".join(sorted((seen[identity], slug)))
+            raise EarningsPrivateClosureError(
+                "malformed_native_section",
+                f"The native economic section is malformed: colliding slugs {pair}.",
+            )
         seen[identity] = slug
     registry = _seam(pg_profile.pg_private_registry, "cross_issuer")
     for company_id in native["economic_slots"]:

@@ -2003,10 +2003,17 @@ def test_full_scope_selection_refusals_survive_scoped_reader_fix(tmp_path: Path)
     }
     m_d["record_count"] = len(m_d["records"])
     objs_d = {**payloads, dup_key: dup_body}
+    # Encounter the later slug first. The refusal must still name the pair in sort order.
+    selections = m_d["native"]["selections"]
+    m_d["native"]["selections"] = {
+        dup_slug: selections[dup_slug],
+        **{key: value for key, value in selections.items() if key != dup_slug},
+    }
     m_d = reseal_manifest(m_d, pp)
-    expect_closure(
+    refused = expect_closure(
         "malformed_native_section", pp.validate_native_closure, m_d, objs_d
     )
+    assert ", ".join(sorted((PRIMARY_SLUG, dup_slug))) in str(refused)
 
     # (d-TWIN) replace the primary with the dup -> succeeds (no duplicate)
     m_t = json.loads(prepared.manifest_bytes)
