@@ -2,10 +2,12 @@
 
 from __future__ import annotations
 
+import hashlib
 import subprocess
 import tempfile
 from pathlib import Path
 
+import pytest
 import yaml
 
 from scripts.ci_pack_fragments import (
@@ -522,19 +524,101 @@ def test_merge3_cli_writes_ours_and_exits_like_a_merge_driver(tmp_path: Path) ->
     assert join(split(conflicted)) == conflicted
 
 
+def _commit_resolves(rev: str) -> bool:
+    """True when ``git cat-file -e <rev>^{commit}`` exits 0 in this checkout."""
+    proc = subprocess.run(
+        ["git", "cat-file", "-e", f"{rev}^{{commit}}"],
+        cwd=ROOT,
+        capture_output=True,
+    )
+    return proc.returncode == 0
+
+
 def test_merge3_replay_of_appended_jobs_is_clean_where_merge_file_conflicts(
     tmp_path: Path,
 ) -> None:
-    """Replay d6d1342b53, where both parents appended jobs onto legacy-jobs.yml.
+    """Two-sided end append, reconstructed without repository history.
+
+    This is the d6d1342b53 shape as fixture text: a short base manifest, ours
+    appends ``market-ontology-f09-usgs-mcs``, and theirs appends
+    ``recurring-briefs`` after the same last job. ``merge3`` is clean and
+    emits ours' job then theirs'. ``git merge-file`` still conflicts. The
+    recorded replay is ``test_merge3_d6d1342b53_replay_when_commits_resolve``.
+    """
+    base = _doc(
+        [
+            ("alpha", "echo alpha"),
+            ("beta", "echo beta"),
+            ("gamma", "echo gamma"),
+        ]
+    )
+    ours = _append(base, "market-ontology-f09-usgs-mcs", "echo usgs-mcs")
+    theirs = _append(base, "recurring-briefs", "echo recurring-briefs")
+    result = merge3(base, ours, theirs)
+
+    assert result.conflicts == ()
+    assert ("<" * 7) not in result.text
+    keys = _job_keys(result.text)
+    assert keys == [
+        "alpha",
+        "beta",
+        "gamma",
+        "market-ontology-f09-usgs-mcs",
+        "recurring-briefs",
+    ]
+    assert keys.index("market-ontology-f09-usgs-mcs") + 1 == keys.index(
+        "recurring-briefs"
+    )
+    _assert_loadable(result)
+
+    base_path = tmp_path / "base.yml"
+    ours_path = tmp_path / "ours.yml"
+    theirs_path = tmp_path / "theirs.yml"
+    base_path.write_text(base, encoding="utf-8")
+    ours_path.write_text(ours, encoding="utf-8")
+    theirs_path.write_text(theirs, encoding="utf-8")
+    proc = subprocess.run(
+        [
+            "git",
+            "merge-file",
+            "-p",
+            "-q",
+            str(ours_path),
+            str(base_path),
+            str(theirs_path),
+        ],
+        cwd=tmp_path,
+        capture_output=True,
+    )
+    assert 0 < proc.returncode < 128
+    assert ("<" * 7).encode() in proc.stdout
+    assert ours_path.read_text(encoding="utf-8") == ours
+    assert base_path.read_text(encoding="utf-8") == base
+    assert theirs_path.read_text(encoding="utf-8") == theirs
+
+
+def test_merge3_d6d1342b53_replay_when_commits_resolve(tmp_path: Path) -> None:
+    """Replay d6d1342b53 when both parent commits are in this checkout.
 
     Parent 203e0f19 added ``market-ontology-f09-usgs-mcs``. Parent e692d9dc
     added ``recurring-briefs`` at the same end plus two mid-file jobs. The
-    recorded resolution kept every added job. A line-level ``git merge-file``
-    still conflicts on that shared append.
+    recorded resolution kept every added job. A shallow checkout does not
+    contain those commits; this replay skips instead of calling merge-base.
     """
     ours_rev = "203e0f1992bf20b885cd3333d9a074be4cd172b0"
     theirs_rev = "e692d9dc4bdc812c0b51e45fc95764c1874ff0b2"
     merged_rev = "d6d1342b535beb784b149c123c7055fdbde206cb"
+    missing = [
+        rev
+        for rev in (ours_rev, theirs_rev, merged_rev)
+        if not _commit_resolves(rev)
+    ]
+    if missing:
+        pytest.skip(
+            "shallow checkout does not contain "
+            + ", ".join(missing)
+            + " (git cat-file -e <sha>^{commit} rc != 0)"
+        )
 
     def blob(rev: str) -> str:
         return subprocess.check_output(
@@ -569,6 +653,10 @@ def test_merge3_replay_of_appended_jobs_is_clean_where_merge_file_conflicts(
     ):
         assert added in keys
     assert result.text == blob(merged_rev)
+    digest = hashlib.sha256(result.text.encode("utf-8")).hexdigest()
+    assert digest == (
+        "e9dfd7ca0d26c702ca5daaacb0710b1bf7bae2b8a1e2b8ce0a6b5ebf48f128aa"
+    )
     assert join(split(result.text)) == result.text
 
     base_path = tmp_path / "base.yml"
@@ -681,6 +769,151 @@ def test_merge3_one_sided_order_only_change_returns_that_sides_bytes() -> None:
     _assert_loadable(merge3(base, reordered, base))
 
 
+def test_merge3_identical_order_only_permutation_is_taken_once() -> None:
+    """The same order-only permutation on both sides is taken once.
+
+    ``merge3(base, swapped, swapped)`` is that permutation and has no
+    conflict. Two different permutations stay a single ``__order__`` conflict.
+    """
+    base = _doc(
+        [
+            ("alpha", "echo alpha"),
+            ("beta", "echo beta"),
+            ("gamma", "echo gamma"),
+        ]
+    )
+    swapped = _doc(
+        [
+            ("beta", "echo beta"),
+            ("alpha", "echo alpha"),
+            ("gamma", "echo gamma"),
+        ]
+    )
+    other = _doc(
+        [
+            ("gamma", "echo gamma"),
+            ("beta", "echo beta"),
+            ("alpha", "echo alpha"),
+        ]
+    )
+    assert swapped != base
+    assert _job_keys(swapped) == ["beta", "alpha", "gamma"]
+
+    same = merge3(base, swapped, swapped)
+    assert same.conflicts == ()
+    assert same.text == swapped
+
+    positional = _positional_swap(base, "alpha", "beta")
+    assert positional != base
+    assert merge3(base, positional, positional).conflicts == ()
+    assert merge3(base, positional, positional).text == positional
+
+    different = merge3(base, swapped, other)
+    assert different.conflicts == ("__order__",)
+    assert different.text == _conflict_block(swapped, other)
+
+
+def test_merge3_order_only_permutation_applies_with_nonoverlapping_edit(
+    tmp_path: Path,
+) -> None:
+    """An order-only permutation and a non-overlapping scalar edit both apply.
+
+    Ours swaps alpha and beta. Theirs only changes gamma's run scalar. Key
+    order is the swap and gamma's scalar is theirs. The separator newline
+    ``_leading_start`` glues on moves with the permutation: a whole-fragment
+    swap keeps each job's own separator, and a positional swap keeps the
+    separator in the slot. Both directions exit clean.
+    """
+    base = _doc(
+        [
+            ("alpha", "echo alpha"),
+            ("beta", "echo beta"),
+            ("gamma", "echo gamma"),
+        ]
+    )
+    swapped = _doc(
+        [
+            ("beta", "echo beta"),
+            ("alpha", "echo alpha"),
+            ("gamma", "echo gamma"),
+        ]
+    )
+    edited = base.replace("run: echo gamma\n", "run: echo gamma-v2\n", 1)
+    expected = swapped.replace("run: echo gamma\n", "run: echo gamma-v2\n", 1)
+    assert expected != swapped
+    assert _job_keys(expected) == ["beta", "alpha", "gamma"]
+
+    from_ours = merge3(base, swapped, edited)
+    from_theirs = merge3(base, edited, swapped)
+    assert from_ours.conflicts == ()
+    assert from_theirs.conflicts == ()
+    assert from_ours.text == expected
+    assert from_theirs.text == expected
+    assert _job_keys(from_ours.text) == ["beta", "alpha", "gamma"]
+    assert "run: echo gamma-v2\n" in _fragment(from_ours.text, "gamma")
+    assert "run: echo beta\n" in _fragment(from_ours.text, "beta")
+    assert "run: echo alpha\n" in _fragment(from_ours.text, "alpha")
+    _assert_loadable(from_ours)
+    _assert_loadable(from_theirs)
+
+    whole = _swap_fragments(base, "alpha", "beta")
+    whole_expected = whole.replace("run: echo gamma\n", "run: echo gamma-v2\n", 1)
+    assert whole != expected
+    assert merge3(base, whole, edited).conflicts == ()
+    assert merge3(base, whole, edited).text == whole_expected
+    assert merge3(base, edited, whole).text == whole_expected
+
+    positional = _positional_swap(base, "alpha", "beta")
+    positional_expected = positional.replace(
+        "run: echo gamma\n", "run: echo gamma-v2\n", 1
+    )
+    placed = merge3(base, positional, edited)
+    assert placed.conflicts == ()
+    assert placed.text == positional_expected
+    assert merge3(base, edited, positional).text == positional_expected
+
+    alpha_edit = base.replace("run: echo alpha\n", "run: echo alpha-v2\n", 1)
+    moved = merge3(base, swapped, alpha_edit)
+    assert moved.conflicts == ()
+    assert _job_keys(moved.text) == ["beta", "alpha", "gamma"]
+    assert moved.text == swapped.replace(
+        "run: echo alpha\n", "run: echo alpha-v2\n", 1
+    )
+    assert "run: echo alpha-v2\n" in _fragment(moved.text, "alpha")
+
+    manifest = _text()
+    manifest_keys = _job_keys(manifest)
+    manifest_swap = _positional_swap(manifest, manifest_keys[0], manifest_keys[1])
+    target = manifest_keys[2]
+    target_fragment = _fragment(manifest, target)
+    assert target_fragment in manifest_swap
+    old_runs_on = "    runs-on: ubuntu-latest\n"
+    new_runs_on = "    runs-on: ubuntu-22.04\n"
+    assert target_fragment.count(old_runs_on) == 1
+    edited_fragment = target_fragment.replace(old_runs_on, new_runs_on, 1)
+    manifest_edit = manifest.replace(target_fragment, edited_fragment, 1)
+    manifest_expected = manifest_swap.replace(target_fragment, edited_fragment, 1)
+    manifest_result = merge3(manifest, manifest_swap, manifest_edit)
+    assert manifest_result.conflicts == ()
+    assert manifest_result.text == manifest_expected
+    assert _job_keys(manifest_result.text)[:2] == [
+        manifest_keys[1],
+        manifest_keys[0],
+    ]
+    assert new_runs_on in _fragment(manifest_result.text, target)
+
+    base_path = tmp_path / "base.yml"
+    ours_path = tmp_path / "ours.yml"
+    theirs_path = tmp_path / "theirs.yml"
+    base_path.write_text(base, encoding="utf-8")
+    ours_path.write_text(swapped, encoding="utf-8")
+    theirs_path.write_text(edited, encoding="utf-8")
+    assert main(["merge3", str(base_path), str(ours_path), str(theirs_path)]) == 0
+    assert ours_path.read_text(encoding="utf-8") == expected
+    assert base_path.read_text(encoding="utf-8") == base
+    assert theirs_path.read_text(encoding="utf-8") == edited
+
+
 def test_merge3_positional_swap_of_leading_real_jobs_returns_that_side() -> None:
     """Positional swap of the first two real jobs must not invent a third text.
 
@@ -716,12 +949,13 @@ def test_merge3_positional_swap_of_leading_real_jobs_returns_that_side() -> None
 def test_merge3_incumbent_order_change_is_one_conflict(
     tmp_path: Path, capsys
 ) -> None:
-    """Any incumbent reorder that is not exactly one order-only side conflicts.
+    """An incumbent reorder that is not an order-only merge conflicts.
 
     The record is a single ``__order__`` marker pair around the original
-    texts. A matching reorder on both sides, a reorder beside an edit, a
-    reorder beside an append, and a reorder beside a deletion all take that
-    path.
+    texts. Two different permutations, a reorder that also edits on the same
+    side, a reorder beside an append, and a reorder beside a deletion all
+    take that path. An identical permutation, and an order-only permutation
+    beside a text edit, are covered by their own tests.
     """
     base = _doc(
         [
@@ -750,14 +984,15 @@ def test_merge3_incumbent_order_change_is_one_conflict(
     assert both.text == _conflict_block(ours, theirs)
     assert both.text.count("<" * 7 + " ours") == 1
 
-    same = merge3(base, ours, ours)
-    assert same.conflicts == ("__order__",)
-    assert same.text == _conflict_block(ours, ours)
+    changed = ours.replace("run: echo gamma\n", "run: echo gamma-ours\n", 1)
+    same_side = merge3(base, changed, base)
+    assert same_side.conflicts == ("__order__",)
+    assert same_side.text == _conflict_block(changed, base)
 
-    edited = base.replace("run: echo alpha\n", "run: echo alpha-v2\n", 1)
-    mixed = merge3(base, ours, edited)
-    assert mixed.conflicts == ("__order__",)
-    assert mixed.text == _conflict_block(ours, edited)
+    other_append = _append(base, "delta", "echo delta")
+    assert merge3(base, ours, other_append).conflicts == ("__order__",)
+    other_delete = _drop(base, "gamma")
+    assert merge3(base, ours, other_delete).conflicts == ("__order__",)
 
     appended = _append(ours, "delta", "echo delta")
     added = merge3(base, appended, base)

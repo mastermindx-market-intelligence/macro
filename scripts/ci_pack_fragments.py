@@ -19,14 +19,26 @@ fragment in standard markers and records its key, in output order.
 The relative order of base keys that still exist on a side is part of the
 merge. When that order differs from the base on ours or theirs, the result is
 one conflict recorded as ``__order__``: the two original texts sit inside one
-marker pair. The exception is an order-only change on exactly one side while
-the other side's fragment texts equal the base. The result is then that
-side's original bytes, with no conflict. Order-only means the same job keys,
-the same preamble and trailer bytes, and the same bytes from each job's key
-line through the end of its fragment. A leading separator may sit with the
-other job after a positional swap. A side that reorders and also edits, adds,
-or deletes is not order-only, so the merge conflicts instead of applying the
-permutation.
+marker pair. Three shapes are clean instead.
+
+An order-only change on exactly one side, while the other side's fragment
+texts equal the base, returns that side's original bytes. The same order-only
+permutation on both sides is taken once: the job-key orders match, so the
+result is that side's original bytes and there is no conflict. Two different
+permutations still conflict.
+
+An order-only permutation on one side together with a text edit on the other
+is also clean when the edit side's job keys stay in base order. Merged jobs
+follow the order-only side's key order. Each job's leading separator moves
+with that permutation; a separator the permutation left on the same job can
+still take the edit side's text. Job bodies, the preamble, and the trailer
+come from the per-key resolve, so the edit's scalar wins.
+
+Order-only means the same job keys, the same preamble and trailer bytes, and
+the same bytes from each job's key line through the end of its fragment. A
+leading separator may sit with the other job after a positional swap. A side
+that reorders and also edits, adds, or deletes is not order-only, so the
+merge conflicts instead of applying the permutation.
 
 A job key repeated inside one manifest is a conflict. ``_index`` keeps every
 body of that key, and the marker contains each side's bodies, so a later body
@@ -464,19 +476,26 @@ def _merged_job_order(
     return order
 
 
-def _body_from_key(fragment: Fragment) -> str:
-    """Bytes from the job key line through the end of the fragment.
+def _lead_and_body(fragment: Fragment) -> tuple[str, str]:
+    """Separator glued on by ``_leading_start``, and the bytes from the key line.
 
-    ``_leading_start`` glues the preceding separator onto whichever job follows
-    it. That glue is not part of the body, so a positional swap can still be
-    order-only.
+    The separator is the blank lines and ``  #`` comments before the key. It is
+    not part of the body, so a positional swap can still be order-only. A
+    permutation keeps this separator with the fragment that carries it.
     """
     marker = f"  {fragment.key}:"
     lines = fragment.text.split("\n")
     for index, line in enumerate(lines):
         if line.rstrip("\r") == marker:
-            return "\n".join(lines[index:])
-    return fragment.text
+            if index == 0:
+                return "", "\n".join(lines)
+            return "\n".join(lines[:index]) + "\n", "\n".join(lines[index:])
+    return "", fragment.text
+
+
+def _body_from_key(fragment: Fragment) -> str:
+    """Bytes from the job key line through the end of the fragment."""
+    return _lead_and_body(fragment)[1]
 
 
 def _unique_map(fragments: list[Fragment]) -> dict[str, Fragment] | None:
@@ -554,6 +573,74 @@ def _repeated_block(
     return _conflict_block(side(ours_dups, ours_by), side(theirs_dups, theirs_by))
 
 
+def _apply_order_and_edits(
+    base_frags: list[Fragment],
+    order_frags: list[Fragment],
+    edit_frags: list[Fragment],
+    *,
+    order_is_ours: bool,
+) -> MergeResult | None:
+    """Apply one side's order-only permutation and the other side's text edits.
+
+    Job order and a separator the permutation moved come from the order-only
+    side. A separator that side left unchanged can take the edit. Bodies,
+    preamble, and trailer use the per-key resolve, so a one-sided scalar wins.
+    ``None`` means this shape is not that case; the caller records ``__order__``.
+    """
+    base_by = _unique_map(base_frags)
+    order_by = _unique_map(order_frags)
+    edit_by = _unique_map(edit_frags)
+    if (
+        base_by is None
+        or order_by is None
+        or edit_by is None
+        or set(base_by) != set(order_by)
+        or set(base_by) != set(edit_by)
+    ):
+        return None
+
+    def pick(base_text: str, order_text: str, edit_text: str) -> str | None:
+        if order_is_ours:
+            text, conflicted = _resolve_text(base_text, order_text, edit_text)
+        else:
+            text, conflicted = _resolve_text(base_text, edit_text, order_text)
+        if conflicted or text is None:
+            return None
+        return text
+
+    preamble = pick(
+        base_by[PREAMBLE_KEY].text,
+        order_by[PREAMBLE_KEY].text,
+        edit_by[PREAMBLE_KEY].text,
+    )
+    if preamble is None:
+        return None
+    pieces: list[str] = [preamble]
+    for key in _job_order(order_frags):
+        base_lead, base_body = _lead_and_body(base_by[key])
+        order_lead, order_body = _lead_and_body(order_by[key])
+        edit_lead, edit_body = _lead_and_body(edit_by[key])
+        body = pick(base_body, order_body, edit_body)
+        if body is None:
+            return None
+        if order_lead == base_lead:
+            lead = pick(base_lead, order_lead, edit_lead)
+            if lead is None:
+                return None
+        else:
+            lead = order_lead
+        pieces.append(lead + body)
+    trailer = pick(
+        base_by[TRAILER_KEY].text,
+        order_by[TRAILER_KEY].text,
+        edit_by[TRAILER_KEY].text,
+    )
+    if trailer is None:
+        return None
+    pieces.append(trailer)
+    return MergeResult("".join(pieces), ())
+
+
 def _fragment_texts(
     base_by: dict[str, Fragment],
     ours_by: dict[str, Fragment],
@@ -603,6 +690,26 @@ def merge3(base: str, ours: str, theirs: str) -> MergeResult:
             and _fragment_texts_equal(ours_frags, base_frags)
         ):
             return MergeResult(theirs, ())
+        if ours_only and theirs_only and ours_keys == theirs_keys:
+            return MergeResult(ours, ())
+        if ours_only and not theirs_only and theirs_keys == base_keys:
+            applied = _apply_order_and_edits(
+                base_frags,
+                ours_frags,
+                theirs_frags,
+                order_is_ours=True,
+            )
+            if applied is not None:
+                return applied
+        if theirs_only and not ours_only and ours_keys == base_keys:
+            applied = _apply_order_and_edits(
+                base_frags,
+                theirs_frags,
+                ours_frags,
+                order_is_ours=False,
+            )
+            if applied is not None:
+                return applied
         return MergeResult(_conflict_block(ours, theirs), (ORDER_KEY,))
 
     dropped: set[str] = set()
