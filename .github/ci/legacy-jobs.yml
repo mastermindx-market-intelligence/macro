@@ -1876,6 +1876,9 @@ jobs:
       # contract compilers adjacent.
       - name: K3-E Opportunity Evidence Vector contract and hostile-fixture kills
         run: python -m pytest tests/test_opportunity_evidence_vector_contract.py -q
+      # K3-D retains one native owner; run legacy, identity and V2 contracts together.
+      - name: K3-D Economic Propagation hypothesis contract and laundering kills
+        run: python -m pytest tests/test_economic_propagation_hypothesis_contract.py tests/test_economic_propagation_source_grain.py tests/test_economic_propagation_v2.py tests/test_economic_propagation_v2_semantics.py -q
       # K3E A9 descriptive coupling (engine/k3e_coupling.py, PR #8461) is a pure
       # stdlib composer over the EXP-1 declared-capture inspection and the MKT-1
       # market-response export: no store, no score, financial_influence false,

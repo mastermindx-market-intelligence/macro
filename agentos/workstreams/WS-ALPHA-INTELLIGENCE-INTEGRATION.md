@@ -29,6 +29,17 @@ owns_paths:
   - lib/institutional_intelligence.py
   - tests/fixtures/institutional_intelligence/
   - tests/test_institutional_manager_intent_contract.py
+  - contracts/economic_propagation/
+  - lib/economic_propagation.py
+  - lib/economic_propagation_v2.py
+  - tests/fixtures/economic_propagation/
+  - tests/test_economic_propagation_hypothesis_contract.py
+  - tests/test_economic_propagation_source_grain.py
+  - tests/test_economic_propagation_v2.py
+  - tests/test_economic_propagation_v2_semantics.py
+  - research/economic_propagation/K3D_PROPAGATION_HYPOTHESIS_CONTRACT_FREEZE_2026-08-27.md
+  - research/economic_propagation/k3d_real_proof_records/
+  - research/economic_propagation/k3d_v2_20261012/
   - data/reference/
   - data/symbol_directory/
   - data/openfigi/
@@ -315,3 +326,24 @@ EXP-1 remains NOT_BUILT; after source publication and a fresh relevant collision
 census it must be commissioned with a real consumer in a separate bounded PR.
 Historical defects stay retained/excluded; identity, basis, rights and public
 history are not certified; EVAL-0 and all financial authority remain unchanged.
+
+
+## K3-D integration candidate — 2026-10-13
+
+The existing operation `alpha-k3d-economic-propagation-20260826-sol-001`
+continues on original PR #6514. Its source-identity repair and side-by-side
+typed V2 compiler are BUILT_NOT_PROVEN, not an admitted economic fact or a
+served product. Independent corrective review of `fc19d16cae6397e2c5651f16a3283ae0a03bccc7`
+reported no major findings (comment 6144221753). V2 carries explicit mechanism
+polarity, separates non-test conditions from qualified falsification, and
+reconstructs narrative plus scenario identity. Legacy V1, all frozen fixtures
+and both archived real abstentions remain unchanged.
+
+This current-main integration retains every existing CI job and step, adding
+the four K3-D suites once under the incumbent signal-contract job. Integration
+checks, hosted CI and the normal Sol release decision remain pending; the PR
+stays DRAFT/HOLD. Historical wave notes above are not new current-liveness
+claims. No native source acquisition, identity/rights admission, Graph1 writer,
+store, grading/ranking/sizing/trading authority or product rollout is added.
+The K3E children, ownership inspector #8793 and source diagnostic #8803 retain
+their separate custody and acceptance boundaries.
