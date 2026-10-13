@@ -48,7 +48,7 @@ them with automated tests only:
   zero (ii), zero (iii), zero (i) leftover after the empty allowlist.
   Positive controls fire on synthetic strings.
 
-One FINDING (A20B-F1) is recorded as a strict xfail. Production code
+FINDING A20B-F1 is FIXED by lane A20F. Production code
 is not edited.
 
 ## Gap→test table
@@ -66,7 +66,7 @@ is not edited.
 | loader | exercised? | (b) outcome | (c) outcome | refusal class |
 |---|---|---|---|---|
 | `us_transfer/a8_draft_loader.py` `load_draft` | yes | non-text fields equal to (a) | refused (unknown top-level `trade_authority` plus nested true flag) | `A8DraftRefused` |
-| `event_response/p04_v2_draft_loader.py` `load_draft` | yes | non-text fields equal to (a) | accepted; true flags present in the return (A20B-F1, strict xfail) | `ValueError` on the two `authority_flags` blocks only |
+| `event_response/p04_v2_draft_loader.py` `load_draft` | yes | non-text fields equal to (a) | refused (A20F: recursive authority walk) | `ValueError` |
 | `acceptance/render_matrix.py` `load_matrix` | yes | non-text fields equal to (a) | refused | `ValueError` |
 | `evaluation/sni_eval_ledger.py` `replay` | yes | non-text fields equal to (a) (instruction lives in an extra payload `note` that the fold drops) | refused | `LedgerRefused` |
 | `evaluation/seal_full_check.py` JSON gate `refuse_nonfalse_authority` | yes | non-text fields equal to (a) | refused | `ValueError` |
@@ -77,6 +77,7 @@ is not edited.
 
 ### A20B-F1
 
+- FIXED by lane A20F: `_refuse_smuggled_authority` walks every dict and list; covered by `test_a20f_01_p04_refuses_top_level_smuggle`, `test_a20f_02_p04_refuses_nested_authority_flags`, `test_a20f_03_p04_refuses_falsy_non_false_values`, `test_a20f_04_p04_refuses_smuggle_inside_list`, `test_a20f_05_committed_p04_draft_still_loads`.
 - File:line: `research/single_name_intelligence/event_response/p04_v2_draft_loader.py:186` (`validate_draft`; public `load_draft` at L311 calls it).
 - What passes that should refuse: a synthetic DRAFT JSON that keeps the two required `authority_flags` maps literal false, then adds a sibling `trade_authority` true key and a nested `smuggle.authority_flags.rank_authority` true object. `validate_draft` / `load_draft` accept the document and return those true values. The loader only checks `authority_flags` and `labels.authority_flags` via `_check_authority_block` (L199–L205). It does not walk arbitrary nesting for smuggled flag keys.
 - Strict xfail: `test_a20b_08_loader_authority_smuggle_refused_or_not_true[p04]` with reason `A20B-F1: event_response/p04_v2_draft_loader.py:186 validate_draft does not walk smuggled *_authority keys outside the two authority_flags blocks`.
