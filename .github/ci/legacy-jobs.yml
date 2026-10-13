@@ -26365,7 +26365,11 @@ jobs:
     # three-clock census, the independent v1.1 reproduction, the eval-ledger
     # seeded properties and the four mutation-sweep suites that kill the
     # surviving mutants in inference/seal, S1 stats/direction, S1
-    # decomposition/info-leak and S2 event-response/US-stress. Hermetic: committed bytes, synthetic frames and
+    # decomposition/info-leak and S2 event-response/US-stress. INT3 adds the
+    # A12 half-day clock law, identity-refusal hardening, A20 injection
+    # extension, the IRP gap-4 bootstrap reproduction, the A09 DRAFT join
+    # guard, S2 non-finite abstain and nine further mutation-sweep suites.
+    # Hermetic: committed bytes, synthetic frames and
     # tmp_path only; no git history, no network. Every authority flag false.
     # Curated exclusive so the sys.path imports cannot widen inference; the
     # paths are the measured import closure (the A36 scan names S1/S2 module
@@ -26389,6 +26393,7 @@ jobs:
       - "collectors/edgar_flow_quality.py"
       - "collectors/edgar_share_quality.py"
       - "collectors/edgar_stock_quality.py"
+      - "collectors/equity_earnings.py"
       - "collectors/fred.py"
       - "collectors/openfigi.py"
       - "config/ai_pricing.yml"
@@ -26422,6 +26427,7 @@ jobs:
       - "engine/codex_provider.py"
       - "engine/desk_ledger.py"
       - "engine/desk_scorer.py"
+      - "engine/earnings_catalyst.py"
       - "engine/entity_resolver.py"
       - "engine/event_calendar.py"
       - "engine/forward_calendar_context.py"
@@ -26503,6 +26509,21 @@ jobs:
       - "tests/test_sni_mutation_decomp_infoleak.py"
       - "tests/test_sni_mutation_event_stress.py"
       - "tests/test_sni_mutation_stats_direction.py"
+      - "tests/test_sni_clocklaw_half_days.py"
+      - "tests/test_sni_identity_refusals_hardening.py"
+      - "tests/test_sni_injection_safety_ext.py"
+      - "tests/test_sni_irp_gap4_bootstrap_repro.py"
+      - "tests/test_sni_join_guard.py"
+      - "tests/test_sni_mutation_a33_matrix.py"
+      - "tests/test_sni_mutation_branch_copy.py"
+      - "tests/test_sni_mutation_build_seal.py"
+      - "tests/test_sni_mutation_draft_loaders.py"
+      - "tests/test_sni_mutation_ledger_seal.py"
+      - "tests/test_sni_mutation_manifest_synth.py"
+      - "tests/test_sni_mutation_prereg_challenger.py"
+      - "tests/test_sni_mutation_report_s2seal.py"
+      - "tests/test_sni_mutation_s2_state_loaders.py"
+      - "tests/test_sni_s2_nonfinite_abstain.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -26512,7 +26533,7 @@ jobs:
       - name: install minimal deps
         run: pip install pytest pandas numpy pyarrow pyyaml jsonschema
       - name: sni acceptance evidence (PARTIAL rows)
-        run: python -m pytest tests/test_sni_a07_then_known_exclusion.py tests/test_sni_a33_reference_evidence.py tests/test_sni_a39_receipts_ledger.py tests/test_sni_clocklaw_sessions.py tests/test_sni_copy_guard.py tests/test_sni_dual_counter_property.py tests/test_sni_eval_ledger_property.py tests/test_sni_identity_refusals.py tests/test_sni_independent_repro.py tests/test_sni_missing_not_zero.py tests/test_sni_no_ticker_branches.py tests/test_sni_p03_ulp_stability.py tests/test_sni_register_consistency.py tests/test_sni_three_clock_census.py tests/test_sni_mutation_common.py tests/test_sni_mutation_decomp_infoleak.py tests/test_sni_mutation_event_stress.py tests/test_sni_mutation_stats_direction.py -q -p no:cacheprovider
+        run: python -m pytest tests/test_sni_a07_then_known_exclusion.py tests/test_sni_a33_reference_evidence.py tests/test_sni_a39_receipts_ledger.py tests/test_sni_clocklaw_sessions.py tests/test_sni_copy_guard.py tests/test_sni_dual_counter_property.py tests/test_sni_eval_ledger_property.py tests/test_sni_identity_refusals.py tests/test_sni_independent_repro.py tests/test_sni_missing_not_zero.py tests/test_sni_no_ticker_branches.py tests/test_sni_p03_ulp_stability.py tests/test_sni_register_consistency.py tests/test_sni_three_clock_census.py tests/test_sni_mutation_common.py tests/test_sni_mutation_decomp_infoleak.py tests/test_sni_mutation_event_stress.py tests/test_sni_mutation_stats_direction.py tests/test_sni_clocklaw_half_days.py tests/test_sni_identity_refusals_hardening.py tests/test_sni_injection_safety_ext.py tests/test_sni_irp_gap4_bootstrap_repro.py tests/test_sni_join_guard.py tests/test_sni_mutation_a33_matrix.py tests/test_sni_mutation_branch_copy.py tests/test_sni_mutation_build_seal.py tests/test_sni_mutation_draft_loaders.py tests/test_sni_mutation_ledger_seal.py tests/test_sni_mutation_manifest_synth.py tests/test_sni_mutation_prereg_challenger.py tests/test_sni_mutation_report_s2seal.py tests/test_sni_mutation_s2_state_loaders.py tests/test_sni_s2_nonfinite_abstain.py -q -p no:cacheprovider
 
   c19-wp11-reader-pins:
     if: ${{ false }}
