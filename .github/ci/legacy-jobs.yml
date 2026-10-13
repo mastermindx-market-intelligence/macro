@@ -28806,6 +28806,27 @@ jobs:
         run: pip install pytest pandas numpy pyarrow pyyaml
       - name: c19-wp11-reader-pins
         run: python -m pytest tests/test_c19_wp11_reader_pins.py -q -p no:cacheprovider
+  c19-wp24-superseded-generations:
+    if: ${{ false }}
+    gate: code
+    # C19 WP24 DQ2 (MAS-263): FINRA short volume / short interest + IBKR borrow superseded-generation witnesses and the BCPC/BCpC case-fold pin. Hermetic: tmp_path only, no data/ reads, no network.
+    timeout-minutes: 10
+    paths:
+      - "collectors/finra.py"
+      - "collectors/finra_short_volume.py"
+      - "collectors/ibkr_borrow.py"
+      - "scripts/backfill_finra_short_volume.py"
+      - "tests/test_c19_wp24_superseded_generations.py"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install minimal deps
+        run: pip install pytest pandas numpy pyarrow pyyaml requests
+      - name: c19-wp24-superseded-generations
+        run: python -m pytest tests/test_c19_wp24_superseded_generations.py -q -p no:cacheprovider
   c19-wp29-hk-southbound-two-period:
     if: ${{ false }}
     gate: code
