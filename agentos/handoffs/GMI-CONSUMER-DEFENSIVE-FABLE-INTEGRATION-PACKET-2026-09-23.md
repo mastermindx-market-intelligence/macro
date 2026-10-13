@@ -28,12 +28,21 @@ unresolved:
     CDV1-01 through CDV1-36 are NOT_EXECUTED. The plan's 32 structural checks
     and 12 parsed snippets are not product tests, source admission, or browser proof.
   - >
-    Whether unmerged #8245 completes Task 4 is open. refs/grok/pr/8245 d9b1c6b803
-    is not an ancestor of origin/main 9a47ac7f94. It modifies
+    Whether local refs/grok/pr/8245 completes Task 4 is open. Observed
+    2026-10-13, refs/grok/pr/8245 is
+    d31341061191cc5c3e96f71b58cccfb13aca0f18 (subject "Merge main c62db362
+    into CDV-1 private publication v2"). d9b1c6b803e0892e334080f9ec32e75dc353fcef
+    is an ancestor of that tip and is not the tip. 239 commits are reachable
+    from the tip and not from that ancestor. The tip is not an ancestor of
+    refs/grok/main 20f8f675e6213883ee0f141fe383da1c8d6028c9, which equals
+    origin/main, nor of 9a47ac7f944442c6d6830df9ef25b3529a39888b. GitHub's
+    #8245 head is UNVERIFIED. Relative to refs/grok/main the tip modifies
     engine/earnings_narrative/private_publication.py and adds
     tests/earnings_economic_private_fixtures.py and
     tests/test_earnings_economic_private_store.py. It does not modify
-    tests/test_earnings_private_store.py, which the plan's Task 4 file list names.
+    tests/test_earnings_private_store.py (blob
+    16e2d93db363eec7f1d3ef8b01fb6e82be1ddf61 on the tip and on refs/grok/main),
+    which the plan's Task 4 file list names.
   - >
     Shared-mount readiness is open. At preparation, STSI #7777 was open at
     4122e3b7e1524482216fb156f201f8229c14011b, a five-file contract slice.
@@ -48,8 +57,10 @@ unresolved:
 next_actions:
   - "Resolve one eligible Fable receiver through the existing placement owner, then deliberately deliver this exact packet under current source/custody law."
   - >
-    After delivery, continue CDV-1 at Task 4 on unmerged #8245
-    (refs/grok/pr/8245 d9b1c6b803). Begin Task 5
+    After delivery, continue CDV-1 at Task 4 on local refs/grok/pr/8245
+    d31341061191cc5c3e96f71b58cccfb13aca0f18
+    (d9b1c6b803e0892e334080f9ec32e75dc353fcef is an ancestor of that tip,
+    not the tip). Begin Task 5
     (engine/earnings_narrative/private_economic_stage.py and
     tests/test_earnings_economic_refresh.py) only after #8245 merges.
     Tasks 1-3 are already on origin/main 9a47ac7f94, observed 2026-10-12:
@@ -76,8 +87,11 @@ danger_areas:
     newer_source_pending when a newer candidate is pending. Treating the older
     selected filing as up_to_date hides that pending failure.
   - >
-    #8245 declares earnings.tier_payload/v2 and earnings.private_manifest/v2 at
-    engine/earnings_narrative/private_publication.py:34-35. Task 4 owns that file.
+    On refs/grok/pr/8245 d31341061191cc5c3e96f71b58cccfb13aca0f18,
+    engine/earnings_narrative/private_publication.py:34-35 declares
+    earnings.tier_payload/v2 and earnings.private_manifest/v2. Ancestor
+    d9b1c6b803e0892e334080f9ec32e75dc353fcef has the same two lines. Task 4
+    owns that file.
     An independent edit, or a later wire run that drops the v2 slots, silently
     downgrades the private closure. On origin/main the same file is still blob
     0ee93909693893f419f0109f9eba1994d94e2b46, the inspection pin, with no Task 4 readers.
@@ -147,7 +161,7 @@ P&G is an engineering/proof scope choice, not a stock recommendation or theme me
 
 ## 4. Bounded execution sequence
 
-The plan provides exact proposed paths, interfaces, test code, RED/GREEN commands, mutation cases and commit boundaries. Observed 2026-10-12, steps 1-3 below are already on `origin/main` `9a47ac7f94` (`engine/company_intelligence/pg_profile.py:88`, `engine/company_intelligence/economic_observations.py:605`, `engine/earnings_narrative/economic_interpretation.py:24`, `scripts/refresh_event_workspaces.py:651` with `newer_source_pending`). Step 4 is unmerged #8245 (`refs/grok/pr/8245` `d9b1c6b803`). Step 5 starts after that merge.
+The plan provides exact proposed paths, interfaces, test code, RED/GREEN commands, mutation cases and commit boundaries. Observed 2026-10-12, steps 1-3 below are already on `origin/main` `9a47ac7f94` (`engine/company_intelligence/pg_profile.py:88`, `engine/company_intelligence/economic_observations.py:605`, `engine/earnings_narrative/economic_interpretation.py:24`, `scripts/refresh_event_workspaces.py:651` with `newer_source_pending`). Step 4 is local `refs/grok/pr/8245` `d31341061191cc5c3e96f71b58cccfb13aca0f18` (`d9b1c6b803e0892e334080f9ec32e75dc353fcef` is an ancestor of that tip, not the tip; the tip is not an ancestor of `refs/grok/main` `20f8f675e6213883ee0f141fe383da1c8d6028c9`). GitHub's #8245 head is UNVERIFIED. Step 5 starts after that merge.
 
 1. Add the private PG issuer profile and strict selected-fact validation in the existing Earnings owner.
 2. Extend the existing acquisition helper with truthful candidate/currentness evidence and prepare a native private workspace without public publication.
@@ -204,4 +218,4 @@ Sol remains responsible for the prepared packet and placement/return adjudicatio
 
 Verified effects are authored research, design, implementation plan, review and this preparation packet on the same research branch. No product branch or implementation, live fact, schema enrollment, source retention, deployment, Fable delivery/ACK/START, Executive Attempt or watcher is created here.
 
-**FABLE_HANDOFF: PREPARED_NOT_DELIVERED.** Keep #7792 Draft/HOLD. Next material action is concrete approved placement and delivery of this exact packet, followed by the action-scoped native/source/shared-custody preflight and CDV-1 Task 4 on unmerged #8245. Task 5 starts only after #8245 merges. Tasks 1-3 are already on origin/main (`pg_profile.py:88`, `economic_observations.py:605`, `economic_interpretation.py:24`, `refresh_event_workspaces.py:651`). Do not request another generic research approval or redo the company census.
+**FABLE_HANDOFF: PREPARED_NOT_DELIVERED.** Keep #7792 Draft/HOLD. Next material action is concrete approved placement and delivery of this exact packet, followed by the action-scoped native/source/shared-custody preflight and CDV-1 Task 4 on local refs/grok/pr/8245 d31341061191cc5c3e96f71b58cccfb13aca0f18 (ancestor d9b1c6b803e0892e334080f9ec32e75dc353fcef is not that tip). GitHub's #8245 head is UNVERIFIED. Task 5 starts only after #8245 merges. Tasks 1-3 are already on origin/main (`pg_profile.py:88`, `economic_observations.py:605`, `economic_interpretation.py:24`, `refresh_event_workspaces.py:651`). Do not request another generic research approval or redo the company census.

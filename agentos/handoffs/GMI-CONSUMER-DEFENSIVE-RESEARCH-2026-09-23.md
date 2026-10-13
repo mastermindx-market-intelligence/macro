@@ -39,14 +39,23 @@ unresolved:
     CDV1-01 through CDV1-36 remain NOT_EXECUTED. The 32 plan checks are document
     and syntax checks, not product tests, source admission, or browser proof.
   - >
-    Whether unmerged #8245 is the accepted Task 4 closure is open. refs/grok/pr/8245
-    d9b1c6b803 is not an ancestor of origin/main 9a47ac7f94. It modifies
+    Whether local refs/grok/pr/8245 is the accepted Task 4 closure is open.
+    Observed 2026-10-13, refs/grok/pr/8245 is
+    d31341061191cc5c3e96f71b58cccfb13aca0f18 (subject "Merge main c62db362
+    into CDV-1 private publication v2"). d9b1c6b803e0892e334080f9ec32e75dc353fcef
+    is an ancestor of that tip and is not the tip. 239 commits are reachable
+    from the tip and not from that ancestor. The tip is not an ancestor of
+    refs/grok/main 20f8f675e6213883ee0f141fe383da1c8d6028c9, which equals
+    origin/main, nor of 9a47ac7f944442c6d6830df9ef25b3529a39888b. GitHub's
+    #8245 head is UNVERIFIED. Relative to refs/grok/main the tip modifies
     engine/earnings_narrative/private_publication.py and adds
     tests/earnings_economic_private_fixtures.py and
     tests/test_earnings_economic_private_store.py. It does not modify
-    tests/test_earnings_private_store.py. Task 5 paths
-    engine/earnings_narrative/private_economic_stage.py and
-    tests/test_earnings_economic_refresh.py are absent on origin/main and on #8245.
+    tests/test_earnings_private_store.py (blob
+    16e2d93db363eec7f1d3ef8b01fb6e82be1ddf61 on the tip and on refs/grok/main).
+    Task 5 paths engine/earnings_narrative/private_economic_stage.py and
+    tests/test_earnings_economic_refresh.py are absent on refs/grok/main, on
+    9a47ac7f944442c6d6830df9ef25b3529a39888b, and on the tip.
   - >
     Whether the four source-register files that moved after inspection pin
     dd4d965de7d52f4c68f6dbc984c7a05a70e0d62b still match this plan's assumptions
@@ -58,17 +67,21 @@ unresolved:
 next_actions:
   - "Bind one eligible Fable receiver through the existing placement/direct-delivery owner and deliberately deliver the prepared packet; do not broadcast or allocate accounts through Chairman."
   - >
-    The implementation frontier is CDV-1 Task 4 on unmerged #8245, then Task 5
+    The implementation frontier is CDV-1 Task 4 on local refs/grok/pr/8245
+    d31341061191cc5c3e96f71b58cccfb13aca0f18, then Task 5
     only after #8245 merges. Tasks 1-3 are already on origin/main 9a47ac7f94,
     observed 2026-10-12: engine/company_intelligence/pg_profile.py:88 defines
     pg_issuer; engine/company_intelligence/economic_observations.py:605 defines
     validate_selected_facts; engine/earnings_narrative/economic_interpretation.py:24
     sets SCHEMA to earnings.economic_interpretation/v1;
     scripts/refresh_event_workspaces.py:651 sets currentness to
-    newer_source_pending when a newer candidate is pending. On refs/grok/pr/8245
-    d9b1c6b803, engine/earnings_narrative/private_publication.py defines
-    load_private_manifest_version at line 2048, load_economic_closure at 2113,
-    load_current_economic_view at 2198, and load_economic_evidence at 2243.
+    newer_source_pending when a newer candidate is pending. Observed 2026-10-13
+    on refs/grok/pr/8245 d31341061191cc5c3e96f71b58cccfb13aca0f18,
+    engine/earnings_narrative/private_publication.py defines
+    load_private_manifest_version at line 2052, load_economic_closure at 2117,
+    load_current_economic_view at 2202, and load_economic_evidence at 2247.
+    Ancestor d9b1c6b803e0892e334080f9ec32e75dc353fcef defined those four names
+    at lines 2048, 2113, 2198, and 2243.
     Begin Task 5 at engine/earnings_narrative/private_economic_stage.py and
     tests/test_earnings_economic_refresh.py only after #8245 merges. Before
     editing the moved owners, reload scripts/refresh_event_workspaces.py,
@@ -89,8 +102,11 @@ danger_areas:
     when a newer candidate is pending. Presenting that state as up_to_date
     makes an older filing look current.
   - >
-    Private publication on #8245 declares earnings.tier_payload/v2 and
-    earnings.private_manifest/v2 at engine/earnings_narrative/private_publication.py:34-35.
+    Private publication on refs/grok/pr/8245
+    d31341061191cc5c3e96f71b58cccfb13aca0f18 declares earnings.tier_payload/v2
+    and earnings.private_manifest/v2 at
+    engine/earnings_narrative/private_publication.py:34-35. Ancestor
+    d9b1c6b803e0892e334080f9ec32e75dc353fcef has the same two lines.
     A later unrelated wire run that drops those slots silently downgrades v2 to v1.
   - >
     Finding the prepared packet is not assignment, ACK, START, or custody transfer.
@@ -191,4 +207,4 @@ Keep #7792 Draft/HOLD. Product implementation requires its own lawful current-ma
 
 R6 reaches the actual planning-to-integration boundary: source-dependent implementation details are specified, self-reviewed, structurally verified and persisted, and the exact Fable packet is prepared. The turn accumulated substantial code, source-law and long-artifact context. Resume on a fresh bounded placement/integration surface from this checkpoint and the packet, not the earlier source/tool history. This is context/phase continuity, not completion, cancellation, writer release or a claim of hard failure.
 
-Exact next action: identify one eligible concrete Fable receiver through the existing approved placement/direct-delivery owner, reconcile no conflicting START/effect, deliver the prepared packet and establish separate pickup/START and return evidence. The implementation frontier is CDV-1 Task 4 on unmerged #8245 (`refs/grok/pr/8245` `d9b1c6b803`, not an ancestor of `origin/main`). Begin Task 5 (`engine/earnings_narrative/private_economic_stage.py` and `tests/test_earnings_economic_refresh.py`) only after #8245 merges. Tasks 1-3 are already on `origin/main` `9a47ac7f94`, observed 2026-10-12: `engine/company_intelligence/pg_profile.py:88` (`pg_issuer`), `engine/company_intelligence/economic_observations.py:605` (`validate_selected_facts`), `engine/earnings_narrative/economic_interpretation.py:24` (`earnings.economic_interpretation/v1`), and `scripts/refresh_event_workspaces.py:651` (`newer_source_pending`). Apply G1-G4 only to dependent actions. Before editing them, reload the four source-register files that moved on main: `scripts/refresh_event_workspaces.py`, `engine/company_intelligence/event_workspace.py`, `engine/company_intelligence/documents.py`, and `engine/earnings_release/binding.py`. Do not ask for the research mandate again or repeat the R1-R5 census. The overall Consumer Defensive mission remains incomplete until required real user capability and later milestone obligations are actually delivered and accepted.
+Exact next action: identify one eligible concrete Fable receiver through the existing approved placement/direct-delivery owner, reconcile no conflicting START/effect, deliver the prepared packet and establish separate pickup/START and return evidence. The implementation frontier is CDV-1 Task 4 on local `refs/grok/pr/8245` `d31341061191cc5c3e96f71b58cccfb13aca0f18` (`d9b1c6b803e0892e334080f9ec32e75dc353fcef` is an ancestor of that tip, not the tip; the tip is not an ancestor of `refs/grok/main` `20f8f675e6213883ee0f141fe383da1c8d6028c9`, which equals `origin/main`). GitHub's #8245 head is UNVERIFIED. Begin Task 5 (`engine/earnings_narrative/private_economic_stage.py` and `tests/test_earnings_economic_refresh.py`) only after #8245 merges. Tasks 1-3 are already on `origin/main` `9a47ac7f94`, observed 2026-10-12: `engine/company_intelligence/pg_profile.py:88` (`pg_issuer`), `engine/company_intelligence/economic_observations.py:605` (`validate_selected_facts`), `engine/earnings_narrative/economic_interpretation.py:24` (`earnings.economic_interpretation/v1`), and `scripts/refresh_event_workspaces.py:651` (`newer_source_pending`). Apply G1-G4 only to dependent actions. Before editing them, reload the four source-register files that moved on main: `scripts/refresh_event_workspaces.py`, `engine/company_intelligence/event_workspace.py`, `engine/company_intelligence/documents.py`, and `engine/earnings_release/binding.py`. Do not ask for the research mandate again or repeat the R1-R5 census. The overall Consumer Defensive mission remains incomplete until required real user capability and later milestone obligations are actually delivered and accepted.
