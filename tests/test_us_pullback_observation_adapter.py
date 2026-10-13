@@ -511,8 +511,9 @@ def test_chart_window_starts_at_the_retained_peak_not_before_it(monkeypatch):
     """Pre-peak closes measured against a later high would draw a rally as damage."""
     obs = _qualified({k: list(v) for k, v in PATH.items()}, peak_session="2026-09-16")
     seen, view = _drawn(monkeypatch, obs)
-    # The end point is the metric's own ratio, not the owner's rounded copy of it.
-    end = 100.0 * (obs["close"] / obs["peak_close"] - 1.0)
+    # The end point is the metric's own ratio at the owner's four places,
+    # recomputed from the close and the high rather than copied from the path.
+    end = round(100.0 * (obs["close"] / obs["peak_close"] - 1.0), 4)
     window = {"dates": PATH["dates"][2:], "vals": PATH["vals"][2:-1] + [end]}
     assert seen == [window]
     assert view["detail_path"] == window  # the history table's rows
@@ -573,7 +574,7 @@ def test_a_reclaimed_close_draws_above_the_reference_high(monkeypatch):
     obs = _qualified(path, peak_session="2026-09-16", close=100.4, phase="recovering",
                      low_close=97.5, low_session="2026-09-21")
     seen, view = _drawn(monkeypatch, obs)
-    window = {"dates": PATH["dates"][2:], "vals": path["vals"][2:-1] + [end]}
+    window = {"dates": PATH["dates"][2:], "vals": path["vals"][2:-1] + [round(end, 4)]}
     assert seen == [window]
     assert view["detail_path"] == window
     assert end > 0

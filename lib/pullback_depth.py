@@ -196,9 +196,10 @@ def episode_window(obs: dict) -> dict | None:
         if (abs(vals[dates.index(low_session)] - low_pct) > PATH_TOLERANCE_PP
                 or min(vals) < low_pct - PATH_TOLERANCE_PP):
             return None
-    # The owner rounds each point; a second rounding for the end tag can land
-    # one tenth away from the metric. Draw the end from the metric's own ratio.
-    return {"dates": dates, "vals": vals[:-1] + [end]}
+    # The end tag and the metric both read this close's ratio at the owner's
+    # four places; the fragment rounds its metrics the same way, so an exact
+    # half prints one tenth everywhere.
+    return {"dates": dates, "vals": vals[:-1] + [round(end, 4)]}
 
 
 def chart_accessible_names(aria_en: str, aria_zh: str) -> tuple[str, str] | None:

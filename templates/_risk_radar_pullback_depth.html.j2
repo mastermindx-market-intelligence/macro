@@ -140,19 +140,21 @@
   </header>
   <div class="pbx-expiry" role="status" aria-live="polite" aria-atomic="true"><template class="pbx-expiry-msg">{{ t('Awaiting a newer close. This assessment is no longer current.', '等待更新的收盘价。此评估已过时。') }}</template></div>
   <div class="pbx-current">
-    {% if current %}
+    {% if current %}{# Each metric prints the tenth of its ratio at four places, the
+        owner's precision for every history row, so a low or close on an exact
+        half prints the same tenth in the metric, the history and the end tag. #}
     <div class="rrp-metrics">
       <div><div class="rrp-label">{{ t('Above the reference high','高于参考高点') if p > h else t('From the reference high','距参考高点') }}</div>
-        {% if p > h %}{% set up_s = '%.1f'|format(100*(p/h-1)) %}<strong class="rrp-primary" data-metric="current">{{ '+' if up_s != '0.0' else '' }}{{ up_s }}%</strong>
-        {% else %}{% set dd = [0, 100*(1-p/h)]|max %}{% set dd_s = '%.1f'|format(dd) %}<strong class="rrp-primary" data-metric="current">{{ '−' if dd_s != '0.0' else '' }}{{ dd_s }}%</strong>{% endif %}
+        {% if p > h %}{% set up_s = '%.1f'|format((100*(p/h-1))|round(4)) %}<strong class="rrp-primary" data-metric="current">{{ '+' if up_s != '0.0' else '' }}{{ up_s }}%</strong>
+        {% else %}{% set dd = [0, (100*(1-p/h))|round(4)]|max %}{% set dd_s = '%.1f'|format(dd) %}<strong class="rrp-primary" data-metric="current">{{ '−' if dd_s != '0.0' else '' }}{{ dd_s }}%</strong>{% endif %}
         <div class="rrp-note">{{ t('Reference high','参考高点') }} {{ (o.get('peak_session') or '—')|e }}</div>
       </div>
       <div><div class="rrp-label">{{ t('Worst drawdown so far','已发生的最深回撤') }}</div>
-        <strong data-metric="worst">{% if low_ok %}{% set worst_s = '%.1f'|format(100*(1-low/h)) %}{{ '−' if worst_s != '0.0' else '' }}{{ worst_s }}%{% else %}{{ t('Unavailable','暂无') }}{% endif %}</strong>
+        <strong data-metric="worst">{% if low_ok %}{% set worst_s = '%.1f'|format((100*(1-low/h))|round(4)) %}{{ '−' if worst_s != '0.0' else '' }}{{ worst_s }}%{% else %}{{ t('Unavailable','暂无') }}{% endif %}</strong>
         <div class="rrp-note">{{ t('Measured at the lowest close so far','按本轮最低收盘价计算') }}</div>
       </div>
       <div><div class="rrp-label">{{ t('Rebound from the low','自低点回升') }}</div>
-        <strong class="rrp-rebound" data-metric="rebound">{% if low_ok and p/low-p/low == 0 %}{% set rebound_s = '%.1f'|format(100*(p/low-1)) %}{{ '+' if rebound_s != '0.0' else '' }}{{ rebound_s }}%{% else %}{{ t('Unavailable','暂无') }}{% endif %}</strong>
+        <strong class="rrp-rebound" data-metric="rebound">{% if low_ok and p/low-p/low == 0 %}{% set rebound_s = '%.1f'|format((100*(p/low-1))|round(4)) %}{{ '+' if rebound_s != '0.0' else '' }}{{ rebound_s }}%{% else %}{{ t('Unavailable','暂无') }}{% endif %}</strong>
         <div class="rrp-note">{{ t('Not recovery odds','并非修复概率') }}</div>
       </div>
     </div>

@@ -242,15 +242,15 @@ def test_a_consistent_episode_window_draws_whole_with_the_metric_end():
     assert view["detail_withheld"] is None
     assert view["detail_path"]["dates"] == DATES
     assert view["detail_path"]["vals"][0] == 0.0
-    assert view["detail_path"]["vals"][-1] == 100.0 * (CLOSE / PEAK - 1.0)
+    assert view["detail_path"]["vals"][-1] == round(100.0 * (CLOSE / PEAK - 1.0), 4)
 
 
 def test_the_drawn_end_point_is_the_metrics_own_ratio_not_the_path_tail():
-    # M38 (end point no longer re-drawn): the owner rounds its path to 4 dp, so
-    # its last value can sit half a tenth from the metric; the chart ends on
-    # the metric's own ratio.
+    # M38 (end point no longer re-drawn): the path's last value can sit half a
+    # tenth from the metric; the chart ends on the metric's own ratio, at the
+    # owner's four places like every other point.
     obs = _obs(path={"dates": list(DATES), "vals": [0.0, -3.0, -7.4, -6.2, -6.8005]})
-    assert _present(obs)["detail_path"]["vals"][-1] == 100.0 * (CLOSE / PEAK - 1.0)
+    assert _present(obs)["detail_path"]["vals"][-1] == round(100.0 * (CLOSE / PEAK - 1.0), 4)
 
 
 def test_a_peak_outside_the_retained_path_is_refused_without_raising():
@@ -294,7 +294,7 @@ def test_a_reclaimed_close_draws_above_the_reference_high():
                path={"dates": list(DATES), "vals": [0.0, -3.0, -7.4, -6.2, round(end, 4)]})
     view = _present(obs)
     assert view["detail_path"] is not None
-    assert view["detail_path"]["vals"][-1] == end
+    assert view["detail_path"]["vals"][-1] == round(end, 4)
     assert end > 0
 
 

@@ -353,7 +353,8 @@ def assert_i2(soup, obs, view, k, kind, rows):
     close, peak = obs.get("close"), obs.get("peak_close")
     if not isinstance(close, float) or not isinstance(peak, float) or peak <= 0:
         _fail(k, kind, rows, f"I2: cannot measure drawdown from close={close!r} peak={peak!r}")
-    ratio = 100.0 * (close / peak - 1.0)
+    # The owner's four places, the precision of every history row (I8).
+    ratio = round(100.0 * (close / peak - 1.0), 4)
     got = _split_pct(tag.get_text(strip=True))
     want_sign, want_num = _expected_signed(ratio)
     if got is None or got[0] != want_sign or got[1] != want_num:
@@ -485,6 +486,39 @@ def assert_i7(view, html, k, kind, rows):
     again = _ENV.from_string(_DETAIL).render(market="us", v=view)
     if again != html or again.encode() != html.encode():
         _fail(k, kind, rows, "I7: second render differs")
+
+
+def assert_i8(soup, obs, view, k, kind, rows):
+    """I8: one close, one tenth. The current metric, the drawn end tag and the
+    last history row read the same close; the worst metric and the history row
+    on the low session read the same low. All four must print the same text."""
+    cells = soup.select(".rrp-history tbody tr")
+    path = view.get("detail_path")
+    if not path or not cells:
+        return
+    by_day = {}
+    for cell in cells:
+        tds = cell.select("td")
+        by_day[tds[0].get_text(strip=True)] = _split_pct(tds[1].get_text(strip=True))
+    last = by_day.get(path["dates"][-1])
+    current = soup.select_one('[data-metric="current"]')
+    if current is not None and _split_pct(current.get_text(strip=True)) != last:
+        _fail(
+            k, kind, rows,
+            f"I8: current metric {current.get_text(strip=True)!r} but last history row {last!r}",
+        )
+    tag = soup.select_one(".ilx-tag")
+    if tag is not None and _split_pct(tag.get_text(strip=True)) != last:
+        _fail(k, kind, rows, f"I8: end tag {tag.get_text(strip=True)!r} but last history row {last!r}")
+    worst = soup.select_one('[data-metric="worst"]')
+    low_row = by_day.get(obs.get("low_session"))
+    if worst is not None and low_row is not None:
+        shown = _split_pct(worst.get_text(strip=True))
+        if shown is not None and shown != low_row:
+            _fail(
+                k, kind, rows,
+                f"I8: worst metric {worst.get_text(strip=True)!r} but low-session row {low_row!r}",
+            )
 
 
 def _expiry_owner(sections, now_ms):
@@ -649,6 +683,42 @@ def test_i1_rejects_probability_language_that_is_not_a_disclaimer(en, zh):
         assert_i1(BeautifulSoup(html, "html.parser"), k=0, kind="planted", rows=[("2026-06-12", 100.0)])
 
 
+def test_i8_one_low_prints_one_tenth_on_an_exact_half():
+    """An exact 10.25% drop (low 89.75 under a 100 high) sits on a half. The
+    binary ratio is a hair above 10.25, so formatting it raw gives 10.3 while
+    the owner's four-place history value gives 10.2. Every surface must use
+    the owner's value: the worst metric, the low row, and, when the low is the
+    last close, the current metric and the drawn end tag."""
+    base = [100.0] * 70
+    for tail, rows_with in (([94.0, 89.75, 91.33], "low inside"), ([94.0, 92.0, 89.75], "low last")):
+        rows = _zip(base + tail)
+        obs, _window, view, _qualified, html = _feed(rows)
+        soup = BeautifulSoup(html, "html.parser")
+        assert view.get("detail_path"), rows_with
+        assert_i8(soup, obs, view, k=0, kind=rows_with, rows=rows)
+        worst = soup.select_one('[data-metric="worst"]').get_text(strip=True)
+        assert worst == f"{_MINUS}10.2%", (rows_with, worst)
+        if rows_with == "low last":
+            current = soup.select_one('[data-metric="current"]').get_text(strip=True)
+            assert current == f"{_MINUS}10.2%", current
+
+
+def test_i8_rejects_a_worst_metric_that_disagrees_with_the_low_row():
+    html = (
+        f'<strong data-metric="current">{_MINUS}8.7%</strong>'
+        f'<strong data-metric="worst">{_MINUS}10.3%</strong>'
+        '<table class="rrp-history"><tbody>'
+        f'<tr><td>2026-06-11</td><td>{_MINUS}10.2%</td></tr>'
+        f'<tr><td>2026-06-12</td><td>{_MINUS}8.7%</td></tr>'
+        "</tbody></table>"
+    )
+    view = {"detail_path": {"dates": ["2026-06-11", "2026-06-12"], "vals": [-10.25, -8.67]}}
+    obs = {"low_session": "2026-06-11"}
+    with pytest.raises(AssertionError, match="I8: worst metric"):
+        assert_i8(BeautifulSoup(html, "html.parser"), obs, view, k=0, kind="planted",
+                  rows=[("2026-06-12", 91.33)])
+
+
 def test_seeded_episode_fuzz_across_owner_presenter_and_fragment():
     import time
 
@@ -675,6 +745,7 @@ def test_seeded_episode_fuzz_across_owner_presenter_and_fragment():
         vu = assert_i5_receipt(soup, rows, k, kind)
         assert_i6(soup, obs, view, qualified, k, kind, rows)
         assert_i7(view, html, k, kind, rows)
+        assert_i8(soup, obs, view, k, kind, rows)
         phases.add(obs.get("phase"))
         if view.get("detail_withheld"):
             withheld.add(view["detail_withheld"])

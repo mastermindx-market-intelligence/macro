@@ -50,6 +50,7 @@ from tests.test_pullback_episode_fuzz import (
     assert_i3,
     assert_i5_receipt,
     assert_i6,
+    assert_i8,
 )
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -363,6 +364,7 @@ def test_seeded_china_episode_fuzz_through_the_shared_dialog():
             # lead() is 1 only when assess() is current, so the fragment's
             # phase is the presenter's phase.
             assert_i6(soup, obs, view, qualified, k, kind, rows)
+            assert_i8(soup, obs, view, k, kind, rows)
             text = section.get_text(" ", strip=True)
             if "Shanghai Composite" not in text or "上证综指" not in text:
                 _fail(k, kind, rows, "shown fragment is not the China benchmark")
