@@ -541,3 +541,29 @@ def test_reserve_change_non_finite_side_is_null_never_nan():
     assert reserve_change(prev, curr) == -10
     assert reserve_change(prev, dataclasses.replace(curr, reserves=float("inf"))) is None
     assert reserve_change(dataclasses.replace(prev, reserves=float("nan")), curr) is None
+
+
+def test_standardized_magnitude_overflowing_prior_variance_is_null_never_raises():
+    # B5 NF1: all-finite raws whose squared prior deviations exceed float
+    # range used to raise OverflowError; the z is null instead.
+    raws = [RawMagnitude(v, "usd") for v in (1e200, -1e200, 1e200, 5e199)]
+    values = [m.value for m in standardized_magnitudes(raws, min_periods=2)]
+    assert values == [None, None, None, None]
+
+
+def test_standardized_magnitude_non_finite_z_is_null_never_inf():
+    # B5 NF2: a finite raw over a tiny-but-nonzero prior std gives a z that
+    # overflows to inf; the z guard makes it null.
+    raws = [RawMagnitude(v, "usd") for v in (0.0, 1e-150, 0.0, 1e308)]
+    values = [m.value for m in standardized_magnitudes(raws, min_periods=2)]
+    assert values[2] is not None and abs(values[2]) < float("inf")
+    assert values[3] is None
+
+
+def test_standardized_magnitude_silently_infinite_variance_is_null_never_zero():
+    # B5 NF2: priors whose squared deviations are each finite but whose sum
+    # overflows to inf silently; the std guard makes the head null, not 0.0.
+    priors = [5e153 if i % 2 == 0 else -5e153 for i in range(20)]
+    raws = [RawMagnitude(v, "usd") for v in priors + [1.0]]
+    values = [m.value for m in standardized_magnitudes(raws, min_periods=2)]
+    assert values[-1] is None

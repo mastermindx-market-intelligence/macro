@@ -581,10 +581,16 @@ def standardized_magnitudes(
             if len(prior_values) >= min_periods and len(prior_values) >= 2:
                 count = len(prior_values)
                 mean = sum(prior_values) / count
-                variance = sum(
-                    (candidate - mean) ** 2 for candidate in prior_values
-                ) / (count - 1)
-                std = math.sqrt(variance)
+                try:
+                    variance = sum(
+                        (candidate - mean) ** 2 for candidate in prior_values
+                    ) / (count - 1)
+                    std = math.sqrt(variance)
+                except OverflowError:
+                    # Finite priors whose squared deviations exceed float range
+                    # (float ``**`` raises where ``+`` overflows to inf): the
+                    # z is not computable, so it is null -- never a crash.
+                    std = math.inf
                 if std != 0.0 and math.isfinite(std):
                     z = float((x - mean) / std)
                     value = z if math.isfinite(z) else None
