@@ -117,6 +117,32 @@ test('Escape cancels reset without clearing assumptions',async t=>{
  await p.keyboard.press('Escape');assert.equal(await p.locator('[data-im-scenario-confirm-reset]').isVisible(),false);
  assert.equal(await p.locator('#im-scenario-local').inputValue(),'5');
 });
+for (const [action, attempted, retained, stateKey] of [
+ ['set_horizon','3m','1m','horizon'],
+ ['set_basis','local','usd_unhedged','currency_basis'],
+ ['select_market','KR','JP','selected_market'],
+]) for (const decision of ['cancel_reset','confirm_reset']) {
+ test(`reset confirmation restores a refused ${action} control before ${decision}`,async t=>{
+  const p=await setup(t);await calculate(p);
+  const old=await p.evaluate(()=>handle.getState()),url=p.url();
+  await p.locator('[data-im-scenario-action="request_reset"]').click();
+  const selector=action==='select_market'?'[data-im-history-panel] [data-im-action="select_market"]':`[data-im-action="${action}"]`;
+  await p.locator(selector).selectOption(attempted);
+  assert.equal(await p.locator(selector).inputValue(),retained,'refused input must show the committed research value');
+  assert.equal((await p.evaluate(()=>handle.getState()))[stateKey],retained);
+  assert.equal(p.url(),url);
+  assert.equal(await p.locator('[data-im-scenario-confirm-context]').isVisible(),false);
+  assert.equal(await p.locator('[data-im-scenario-confirm-reset]').isVisible(),true);
+  assert.equal(await p.locator('#im-scenario-local').inputValue(),'5');
+  assert.equal(await p.locator('[data-im-scenario-result]').isVisible(),true);
+  await p.locator(`[data-im-scenario-action="${decision}"]`).click();
+  assert.deepEqual(await p.evaluate(()=>handle.getState()),old);
+  assert.equal(p.url(),url);
+  assert.equal(await p.locator(selector).inputValue(),retained);
+  assert.equal(await p.locator('#im-scenario-local').inputValue(),decision==='cancel_reset'?'5':'');
+  assert.equal(await p.locator('[data-im-scenario-result]').isVisible(),decision==='cancel_reset');
+ });
+}
 test('browser Back stages changed context, restores URL, and cancel keeps original context',async t=>{
  const p=await setup(t);await p.locator('[data-im-action="set_horizon"]').selectOption('3m');await calculate(p);
  await p.goBack();await p.waitForFunction(()=>document.querySelector('[data-im-scenario-confirm-context]').hidden===false);

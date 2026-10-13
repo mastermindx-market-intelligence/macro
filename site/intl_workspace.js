@@ -1467,7 +1467,12 @@
     var current=scenarioContext(controller.state||result.state),next=scenarioContext(result.state);
     if(JSON.stringify(current)!==JSON.stringify(next)) {
       var proposal=IntlWorkspaceScenario.reduceDraft(prior,{type:'propose_context',context:next},normalLanguage(controller.root));
-      if(!proposal.ok)return {ok:false,state:controller.state,issues:[{code:'INVALID_ACTION',field:'scenario'}],intent:null};
+      if(!proposal.ok) {
+        // Native controls already show the attempted value. Restore the
+        // committed context when an open confirmation refuses that change.
+        paint(controller,controller.state,controller.issues);
+        return {ok:false,state:controller.state,issues:[{code:'INVALID_ACTION',field:'scenario'}],intent:null};
+      }
       controller.scenarioDraft=proposal.draft;
       if(proposal.draft.pending) {
         if(!historyPlan(controller,controller.state)){controller.scenarioDraft=prior;return {ok:false,state:controller.state,issues:[{code:'NO_MATCHING_PANEL',field:'history'}],intent:null};}

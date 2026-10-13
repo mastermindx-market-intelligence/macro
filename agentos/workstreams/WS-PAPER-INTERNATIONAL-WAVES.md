@@ -103,9 +103,11 @@ waves:
   depends_on:
   - IM00
   - IM03
-  next_action: History/scenario UI and same-read publication are independently accepted. Actual-page matrix40,
-    canonical captures48 and focus24 pass. Projector/publication review37, integrated foundation1269 and
-    render/publication334 pass. Qualify real source inputs and complete served acceptance.
+  next_action: J07 live manual calculation and recovery were exercised in the existing signed-in browser.
+    Reset/context selector disagreement reproduced live and is repaired with six red/green regressions,
+    184 controller browser tests and 12 full-page rollback cases. Publish the accepted repair through
+    the existing draft carrier after the retained release gates; verify repaired served behavior.
+    Real source qualification, full journey and accessibility acceptance remain open.
 - id: IM07
   title: Library and deterministic search
   status: in_progress
@@ -138,13 +140,15 @@ waves:
   - IM04
   - IM08
   - IM09
-next_action: Complete independent review and release of PR8754, which repairs the explicit serving boundary for
-  nine International UI assets after merged PR8527. Verify live controls and subsequent normal publication.
-  Recover the exact stalled pre-start reviews through their existing owner without duplication. Continue source
-  qualification and Investigation/Saved composition through the accepted incumbent interface.
+next_action: Retain draft PR8754 as the Macro carrier for the accepted J07 reset rollback and canonical CSS copy
+  repair; consume only genuinely new exact-head CI after publication. Original asset review, qualifier,
+  source-rights and release holds remain unresolved. Verify repaired served behavior only after lawful release.
+  IW2 alone owns Terminal PR804 source/capture/server/push/CI; no handback is implied. Genuine IntlSaved still
+  requires its existing owner admission and trusted context.
 artifacts:
 - research/paper_international_wave1_wave2/README.md
 - research/paper_international_wave1_wave2/INPUTS.json
+- research/paper_international_wave1_wave2/J07_RESET_ROLLBACK_ACCEPTANCE.json
 do_not_redo:
 - Do not repeat the 1589-board census; compare only materially changed assigned targets.
 - Do not recreate the legacy International R3 core; its named seam bytes match the pickup base.
