@@ -1990,13 +1990,14 @@ def admitted_training_labels(records: Iterable[Mapping[str, Any]]) -> list[dict]
     This function is the only admission point; it admits nothing until the
     policy's authority changes through its own owner.
 
-    ``ALL_FALSE_AUTHORITY`` is read at call time. While ``may_train_prophet``
-    is false, the result is empty for every status, including ``complete``.
+    ``ALL_FALSE_AUTHORITY`` is read at call time. The fence admits nothing
+    unless ``may_train_prophet`` is exactly ``True`` (a missing or non-boolean
+    value keeps it closed).
     Independently of that flag, a record is refused when its status is not
     ``complete`` or its ``net_return_pct`` is ``None``.
     """
 
-    if ALL_FALSE_AUTHORITY["may_train_prophet"] is False:
+    if ALL_FALSE_AUTHORITY.get("may_train_prophet") is not True:
         return []
     admitted: list[dict] = []
     for record in records:
