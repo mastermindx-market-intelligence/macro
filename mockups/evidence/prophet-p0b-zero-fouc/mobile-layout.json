@@ -17,7 +17,7 @@
   },
   "fixture_receipt": {
     "path": "mockups/evidence/prophet-p0b-zero-fouc/rendered-fixture.json",
-    "sha256": "c07034fa9d2f102af84b4ec145cedfb39fad982da854ed716bcaf543861835c8"
+    "sha256": "0d6d04e4293894a3e2d30420d1d3d5eb584dbcf0c48f42b54ade34247c7b8556"
   },
   "fixture_assets_root": "mockups/evidence/prophet-p0b-zero-fouc/inputs/browser-data",
   "fixture_market": "hk",
@@ -509,7 +509,7 @@
     "templates/_risk_radar_card.html.j2": "61c410f540c0bcd2db90c6244725a0cd20576fa5b3ca8afc2991efed19882c7d",
     "templates/_risk_radar_dlg.css.j2": "186239255efa4f7a938c3b0abb9c33c59c99e0711993269b5909980da2adf1ac",
     "templates/_risk_radar_dlg.html.j2": "190d49989050758ff781c601b54ed6d8531fd722f9cf8d1f32a6531fc50a6fa4",
-    "templates/_risk_radar_pullback_depth.html.j2": "10462c995ed7d133cf31fa55f4cf019ed16d715111dafbd33b66909b932a7847",
+    "templates/_risk_radar_pullback_depth.html.j2": "f78435df51fd83528cda6e813add95655ea9f87c451fffe8b0d4c6c306ad2f68",
     "templates/_seo_head.html.j2": "eda59eeb5f7cf0fb83a1a6430ff523939ee43cd214fe2b4aebba7ca4561bbbee",
     "templates/_site_nav.html.j2": "164f3119fd04b8886d2d29703dc9c017e13bceeae1ecc49a36f9842353d9e482",
     "templates/hk.html.j2": "b9d4299a4fafbb5b7d22d97d42d71888c4c7a41ce3c452ed6bb7873f115407e8"
