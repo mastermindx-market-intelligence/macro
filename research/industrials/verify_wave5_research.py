@@ -5,10 +5,34 @@ from dataclasses import replace
 from fractions import Fraction
 from pathlib import Path
 from math import isclose
+import importlib.util
 import json
 import re
-from calculate_wave5 import (results, ffp, fpi, cpff, cash_schedule, growth, midpoint,
-                             cumulative_buckets, Observation, comparable, available)
+import sys
+
+def _load_sibling(name: str):
+    # python3 -I does not put the script directory on sys.path.
+    path = Path(__file__).resolve().parent / f"{name}.py"
+    spec = importlib.util.spec_from_file_location(name, path)
+    if spec is None or spec.loader is None:
+        raise ImportError(f"sibling module {name} is not at {path}")
+    module = importlib.util.module_from_spec(spec)
+    sys.modules[name] = module
+    spec.loader.exec_module(module)
+    return module
+
+_calc = _load_sibling("calculate_wave5")
+results = _calc.results
+ffp = _calc.ffp
+fpi = _calc.fpi
+cpff = _calc.cpff
+cash_schedule = _calc.cash_schedule
+growth = _calc.growth
+midpoint = _calc.midpoint
+cumulative_buckets = _calc.cumulative_buckets
+Observation = _calc.Observation
+comparable = _calc.comparable
+available = _calc.available
 
 P=Path(__file__).parent
 checks=[]

@@ -4,11 +4,31 @@ from collections import Counter
 from fractions import Fraction as F
 from math import isclose
 from pathlib import Path
+import importlib.util
 import json
 import re
-from calculate_wave6 import (calculate, annuity_pv, project_npv, account_value,
-                             route_contribution, measurement_case, water_contribution,
-                             available_event)
+import sys
+
+def _load_sibling(name: str):
+    # python3 -I does not put the script directory on sys.path.
+    path = Path(__file__).resolve().parent / f"{name}.py"
+    spec = importlib.util.spec_from_file_location(name, path)
+    if spec is None or spec.loader is None:
+        raise ImportError(f"sibling module {name} is not at {path}")
+    module = importlib.util.module_from_spec(spec)
+    sys.modules[name] = module
+    spec.loader.exec_module(module)
+    return module
+
+_calc = _load_sibling("calculate_wave6")
+calculate = _calc.calculate
+annuity_pv = _calc.annuity_pv
+project_npv = _calc.project_npv
+account_value = _calc.account_value
+route_contribution = _calc.route_contribution
+measurement_case = _calc.measurement_case
+water_contribution = _calc.water_contribution
+available_event = _calc.available_event
 
 ROOT = Path(__file__).resolve().parent
 checks: list[dict] = []
