@@ -581,10 +581,11 @@ minimax, grok, cursor, glm) → optional bounded workers. No native leaf swarm; 
 
 ## Lane matrix
 
-(2026-10-13T12:35Z snapshot.) Rows superseding older rows below:
+(D69 snapshot.) Rows superseding older rows below:
 
 | lane | state |
 |---|---|
+| PP2-UI-c repair 1 | `fable-pp2uic-rep1-20261013` RUNNING on mb since 12:26:30Z from `d8544ec5` (LEASE_OK, LAUNCH_ATTEMPT 1); watcher `bu9phj367`; hard end 13:56Z (D69) |
 | PP2-UI-c | DELIVERED `d8544ec5` (T·F·E; 70/70 browser, npm test 10785); REQUEST_REPAIR R1 norm hidden in exact mode, R2 empty live region, R3 open-row 4b never RED (D68) |
 | PP2-UI-c repair 1 | `fable-pp2uic-rep1-20261013` packet `3a65c9a6…` FROZEN; gate-held on mb (lane-ceiling 3/3, other sessions); watcher `bvgbvu6i7` (D68) |
 | PP2-UI-b | packet FROZEN `c799052c…`; BASE = PP2-UI-c REPAIR's accepted head (D68) |
@@ -1436,3 +1437,19 @@ INTENDED_RESUME_SURFACE: this Claude Code session; successor reads this file + #
   - PP2-UI-b: FROZEN.
   - PP1-D: FROZEN (ubuntu2 disk).
   - #948 CI (`bt4a20yu0`); #985 (`bff4iyhaz`); Macro #9080/#8920 (`b64amfv2n`); Macro #9097 parked (`bjywkkbf6`).
+
+### D69 (2026-10-13T12:28Z) — PP2-UI-c repair 1 launched on mb behind the in-command gate; D68 clock times corrected
+
+- FACT the mb watcher `bvgbvu6i7` fired at 12:24:21Z (`lane-ceiling 1<3`, load 2.29<8, disk 93.5). Its log shows mb at `3<3` at 12:21:21Z.
+- CORRECTION to D68: its "12:33Z" and "12:35Z" times were seat estimates, not clock readings. The observed sequence is: mb `2<3` at about 12:19Z, `3<3` at 12:21:21Z, `1<3` at 12:24:21Z. D68's facts and rulings are otherwise unchanged.
+- FACT pre-launch custody re-checked at 12:24Z on mb `~/lanes/wt/pp2uia-20261013`: porcelain empty; local HEAD = `ls-remote` = `d8544ec57ccd212ffa6d54dd5ccea665e544d71e`; no rep1 return and no lane process yet.
+- FACT `fable-pp2uic-rep1-20261013` launched at 12:26:30Z through the in-command gate (`pr/pp2uicrep1_gate.txt`: mb ELIGIBLE score 0.7546).
+  - Packet `r1.md` sha `3a65c9a671fb…`, no placeholders.
+  - Fence observed: RUN_RESERVED, REMOTE_PROJECT_CWD_PREFLIGHT_OK, LEASE_OK pool=minimax, SUPPORT_VERSION_READY `418419b9…`, LAUNCH, LAUNCH_ATTEMPT attempt=1, POLL_PENDING.
+  - `sub.sh` processes are live on mb, and `~/lanes/returns/pp2-ui-c-rep1/shots/` was created.
+  - POOL_MAX_TURNS=200, REMOTE_SUB_MAX_SECS=5400. The launch task `bu9phj367` is the lane's one watcher.
+- Rungs at 12:28Z:
+  - PP2-UI-c repair 1: RUNNING.
+  - PP2-UI-b: FROZEN until the repair is accepted.
+  - PP1-D: FROZEN (ubuntu2 disk; watcher `bfcmghmnb`).
+  - Unchanged: #948 (`bt4a20yu0`), #985 (`bff4iyhaz`), Macro #9080/#8920 (`b64amfv2n`), Macro #9097 parked (`bjywkkbf6`).
