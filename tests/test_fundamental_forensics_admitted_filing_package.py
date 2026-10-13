@@ -52,17 +52,17 @@ T_FLOOR = datetime(2026, 8, 1, 0, 0, tzinfo=timezone.utc)
 # Captured on this branch at de6ee6a2 before the passthrough edit. Golden
 # manifests lack capture_basis/capture_recorded_at, so these ids/bytes must
 # stay identical after the additive D3 field list change.
-_FIP1_GENERATION_ID = "ffprods_181f4473001fd3d8d8090551bee67fc7a688834f92cc5d4057c968f166eeed8f"
+_FIP1_GENERATION_ID = "ffprods_099a50f4a0f65f632bdf197af27c4a3dd0f6bbc86d1cc3aee805dd12c191154e"
 _FIP1_INDEX_SHA = "22376a6171015e6efe1857a289edd36a657bf7762bcb37bc08efe14ab548f4d7"
 # re-pinned 2026-10-12 by seat ruling: P1 #8992 R2 added the optional
 # statement_trees_json role (packages-bearing generations only)
-_AAPL_GOLDEN_GENERATION_ID = "ffprods_0b5def029e7088a915d96db8a4261f9294350beb426e17600ac050943a0a0932"
+_AAPL_GOLDEN_GENERATION_ID = "ffprods_e0cc353b1372f883ab481c76dda453e6903cd03e9ef10bfd6cd5d387e2317866"
 _AAPL_GOLDEN_INDEX_SHA = "74c2975c1903ae026e2971490571463551ce33bf18cd9e40593e75b1e213bb3f"
-_AAPL_GOLDEN_MANIFEST_SHA = "f1e378e876001f09ea9c2355aedb8cacd6aa0b06f57de54aa184cb0d33e0d3fe"
+_AAPL_GOLDEN_MANIFEST_SHA = "65dd20e2ad55737c35c75656b15af699fa3e1b99392a24c8c1a14b8d70bc3b1e"
 _FIP1_QUERY_SHA = {
-    "as_reported": "c7c7c6b285f697597d50139e5991277bdac57e1c325d63424f35b12cf0201ba1",
-    "latest_known_as_of": "086a59ef400af43103d4e13572e384e6b7766b58a9179eabbb709265ad0aa019",
-    "latest_restated": "8044e58d7a09690d93111408c5f7df186f010a58a88f9c425af2bf4b24b84859",
+    "as_reported": "bf8e9099e0f94d891f8b739adf15eee8651a0478b55ecbed746ac19a734e2c02",
+    "latest_known_as_of": "2d9964257abbe545322c54e4572956dffeddae257fc49ff11cef7264d0bd79d7",
+    "latest_restated": "7ba7a23305a1284ddf6e75eba582eb58791922c46cd1d63b0147560888350c0a",
 }
 T1_SOURCE = "2024-12-31T23:59:59Z"
 T2_RECORDED = "2026-08-03T12:00:00Z"
