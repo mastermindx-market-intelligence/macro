@@ -889,6 +889,8 @@ class BEAIndustryCohortResearchTests(unittest.TestCase):
             self.assertEqual(report["returned_using_industry_count"], 2)
             self.assertEqual(report["source_records_scanned"], 2 * 1112)
             self.assertTrue(report["complete_requested_cohort"])
+            self.assertIsNone(report["pinned_research_manifest_evidence"])
+            self.assertFalse(report["original_view_bytes_hashed_by_this_comparison"])
             self.assertEqual(report["exact_code_namespace"],
                              "BEA_APP157_MAY2026_EXACT")
             self.assertEqual(report["publisher_edition_date"], "2026-05-21")
@@ -1079,7 +1081,7 @@ class BEAManifestResearchQualificationTests(unittest.TestCase):
             doc, sort_keys=True, separators=(",", ":"), allow_nan=False,
         ).encode("utf-8")
 
-    def _run(self, build, lineage, hardening, *, selected=("3341",)):
+    def _raw_triplet(self, build, lineage, hardening):
         raw_lineage = self._encode(lineage)
         hash_lineage = hashlib.sha256(raw_lineage).hexdigest()
         build["source_lineage_sha256"] = hash_lineage
@@ -1088,9 +1090,17 @@ class BEAManifestResearchQualificationTests(unittest.TestCase):
         hardening["immutable_lineage_sha256"] = hash_lineage
         hardening["immutable_view_build_receipt_sha256"] = hash_build
         raw_hardening = self._encode(hardening)
+        return raw_build, raw_lineage, raw_hardening
+
+    def _run(self, build, lineage, hardening, *, selected=("3341",)):
+        raw_build, raw_lineage, raw_hardening = self._raw_triplet(
+            build, lineage, hardening,
+        )
+        hash_lineage = hashlib.sha256(raw_lineage).hexdigest()
+        hash_build = hashlib.sha256(raw_build).hexdigest()
         with (
             patch.object(bea_module, "BUILD_RECEIPT_SHA256", hash_build),
-            patch.object(bea_module, "LINEAGE_SHA256", hash_lineage),
+            patch.object(bea_module, "METADATA_LINEAGE_SHA256", hash_lineage),
             patch.object(
                 bea_module, "HARDENING_RECEIPT_SHA256",
                 hashlib.sha256(raw_hardening).hexdigest(),
@@ -1188,6 +1198,85 @@ class BEAManifestResearchQualificationTests(unittest.TestCase):
                 with self.assertRaises(BEAContextRefused):
                     self._run(*self._fixture(), selected=codes)
 
+
+    def test_bounded_real_reader_attaches_only_pinned_metadata_claims(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            BEAIndustryCohortResearchTests._source(root, "3341")
+            BEAIndustryCohortResearchTests._source(root, "A003")
+            workspace = BEAIndustryCohortResearchTests._workspace(root)
+            build, lineage, hardening = self._fixture()
+            raws = self._raw_triplet(build, lineage, hardening)
+            with (
+                patch.object(
+                    bea_module, "BUILD_RECEIPT_SHA256",
+                    hashlib.sha256(raws[0]).hexdigest(),
+                ),
+                patch.object(
+                    bea_module, "METADATA_LINEAGE_SHA256",
+                    hashlib.sha256(raws[1]).hexdigest(),
+                ),
+                patch.object(
+                    bea_module, "HARDENING_RECEIPT_SHA256",
+                    hashlib.sha256(raws[2]).hexdigest(),
+                ),
+            ):
+                report = compare_private_bea_using_industries(
+                    workspace, industry_codes=("A003", "3341"),
+                    commodity_code="3344", research_receipts=raws,
+                )
+        self.assertEqual(report["requested_using_industry_codes"],
+                         ["A003", "3341"])
+        self.assertEqual(report["returned_using_industry_count"], 2)
+        self.assertEqual(report["source_records_scanned"], 2224)
+        metadata = report["pinned_research_manifest_evidence"]
+        self.assertTrue(metadata["metadata_receipts_pin_verified"])
+        self.assertEqual(metadata["requested_using_industry_codes"],
+                         ["A003", "3341"])
+        self.assertEqual(metadata["selected_original_builder_digest_claims"]["3341"],
+                         build["files"]["industry_3341.jsonl"]["sha256"])
+        self.assertFalse(metadata["original_source_bytes_authenticated_by_this_projection"])
+        self.assertFalse(report["original_view_bytes_hashed_by_this_comparison"])
+        self.assertFalse(report["historical_pit_eligible"])
+        self.assertFalse(report["dataos_native_admitted"])
+        self.assertFalse(report["may_publish"])
+
+    def test_invalid_metadata_refused_before_any_data_workspace_io(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            workspace = BEAIndustryCohortResearchTests._workspace(root)
+            build, lineage, hardening = self._fixture()
+            build["files"].pop("industry_3341.jsonl")
+            raws = self._raw_triplet(build, lineage, hardening)
+            with (
+                patch.object(
+                    bea_module, "BUILD_RECEIPT_SHA256",
+                    hashlib.sha256(raws[0]).hexdigest(),
+                ),
+                patch.object(
+                    bea_module, "METADATA_LINEAGE_SHA256",
+                    hashlib.sha256(raws[1]).hexdigest(),
+                ),
+                patch.object(
+                    bea_module, "HARDENING_RECEIPT_SHA256",
+                    hashlib.sha256(raws[2]).hexdigest(),
+                ),
+                patch.object(
+                    workspace, "describe",
+                    side_effect=AssertionError("no file access permitted"),
+                ),
+            ):
+                with self.assertRaisesRegex(BEAContextRefused, "file coverage"):
+                    compare_private_bea_using_industries(
+                        workspace, industry_codes=("3341",),
+                        commodity_code="3344", research_receipts=raws,
+                    )
+            with self.assertRaisesRegex(BEAContextRefused, "three immutable"):
+                compare_private_bea_using_industries(
+                    workspace, industry_codes=("3341",),
+                    commodity_code="3344", research_receipts=(b"partial",),
+                )
+
     def test_original_raw_bytes_are_pinned_even_if_json_remains_valid(self):
         build, lineage, hardening = self._fixture()
         raw_lineage = self._encode(lineage)
@@ -1200,7 +1289,7 @@ class BEAManifestResearchQualificationTests(unittest.TestCase):
         raw_hardening = self._encode(hardening)
         with (
             patch.object(bea_module, "BUILD_RECEIPT_SHA256", build_sha),
-            patch.object(bea_module, "LINEAGE_SHA256", lineage_sha),
+            patch.object(bea_module, "METADATA_LINEAGE_SHA256", lineage_sha),
             patch.object(
                 bea_module, "HARDENING_RECEIPT_SHA256",
                 hashlib.sha256(raw_hardening).hexdigest(),

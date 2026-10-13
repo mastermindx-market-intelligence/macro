@@ -21,6 +21,8 @@ from lib.dataos.temporal import TemporalError, utc
 
 PANEL_SHA256 = "f3ecdda2a8161b2f4ffa893d9d5ff43896280339ca85d76240d4979404e95448"
 LINEAGE_SHA256 = "e8856b6f546d55b8e0c41561cb0e60f28ddcd06a78fd04f70d05355890c745a7"
+# Separate testable metadata-receipt pin from the immutable signed row contract.
+METADATA_LINEAGE_SHA256 = LINEAGE_SHA256
 BUILD_RECEIPT_SHA256 = "ff6e2b3070e10f45ed2d14508c0425cde2aa5c687f0e289f9b7010dcdcf215ed"
 HARDENING_RECEIPT_SHA256 = "dcb553712321a37f297fe7e33e6ac2095c0165a9207bb87afdf7fad5185322b4"
 USE_PANEL_SHA256 = "99059f4530f6a2de18b571a5e9378f44fffece256f5c9c2516ee8717203beaa5"
@@ -574,6 +576,7 @@ def read_private_bea_accounting_brief(
 def compare_private_bea_using_industries(
     workspace: Any, *, industry_codes: Sequence[str], commodity_code: str,
     purpose: str = "private_research", as_of: object = None,
+    research_receipts: tuple[bytes, bytes, bytes] | None = None,
 ) -> dict[str, Any]:
     """Compare one imputed commodity input across bounded BEA using industries.
 
@@ -598,6 +601,17 @@ def compare_private_bea_using_industries(
     from lib.dataos.web_workspace import DataWorkspace
     if type(workspace) is not DataWorkspace:
         raise BEAContextRefused("host-bound DataWorkspace required")
+    receipt_evidence = None
+    if research_receipts is not None:
+        if (not isinstance(research_receipts, tuple)
+                or len(research_receipts) != 3
+                or any(type(item) is not bytes for item in research_receipts)):
+            raise BEAContextRefused("three immutable metadata receipt byte strings required")
+        # Authenticate only the accepted metadata claims, BEFORE opening a view
+        # through the existing reader. Neither result verifies view file bytes.
+        receipt_evidence = qualify_private_bea_research_manifest(
+            *research_receipts, industry_codes=industry_codes,
+        )
 
     briefs: list[dict[str, Any]] = []
     for code in industry_codes:
@@ -629,6 +643,8 @@ def compare_private_bea_using_industries(
         "source_records_scanned": SOURCE_ROWS_PER_INDUSTRY * len(briefs),
         "complete_requested_cohort": True,
         "industry_research_briefs": briefs,
+        "pinned_research_manifest_evidence": receipt_evidence,
+        "original_view_bytes_hashed_by_this_comparison": False,
         "comparability": "SAME_SOURCE_EDITION_SAME_COMMODITY_DISTINCT_USING_INDUSTRIES",
         "industry_input_allocation_is_estimate": True,
         "named_company_supplier_buyer_evidence": False,
@@ -694,7 +710,7 @@ def qualify_private_bea_research_manifest(
     build = _pinned_research_receipt_document(
         build_receipt_bytes, BUILD_RECEIPT_SHA256,
     )
-    lineage = _pinned_research_receipt_document(lineage_bytes, LINEAGE_SHA256)
+    lineage = _pinned_research_receipt_document(lineage_bytes, METADATA_LINEAGE_SHA256)
     hardening = _pinned_research_receipt_document(
         hardening_bytes, HARDENING_RECEIPT_SHA256,
     )
@@ -703,7 +719,7 @@ def qualify_private_bea_research_manifest(
             or build.get("rows_per_industry") != SOURCE_ROWS_PER_INDUSTRY
             or build.get("total_rows") !=
             EXPECTED_INDUSTRY_VIEW_COUNT * SOURCE_ROWS_PER_INDUSTRY
-            or build.get("source_lineage_sha256") != LINEAGE_SHA256
+            or build.get("source_lineage_sha256") != METADATA_LINEAGE_SHA256
             or build.get("original_inputs_unchanged") != {
                 "full_panel": PANEL_SHA256,
                 "full_receipt": QUALIFICATION_RECEIPT_SHA256,
@@ -806,7 +822,7 @@ def qualify_private_bea_research_manifest(
             or not set(gen_code).issubset(current_code)
             or any(not isinstance(v, str) or re.fullmatch(r"[0-9a-f]{64}", v) is None
                    for v in current_code.values())
-            or hardening.get("immutable_lineage_sha256") != LINEAGE_SHA256
+            or hardening.get("immutable_lineage_sha256") != METADATA_LINEAGE_SHA256
             or hardening.get("immutable_view_build_receipt_sha256") !=
             BUILD_RECEIPT_SHA256
             or hardening.get("rows_compared") !=
@@ -825,7 +841,7 @@ def qualify_private_bea_research_manifest(
         "metadata_receipts_pin_verified": True,
         "generation_code_hardening_transition_reconciled": True,
         "research_build_receipt_sha256": BUILD_RECEIPT_SHA256,
-        "research_lineage_sha256": LINEAGE_SHA256,
+        "research_lineage_sha256": METADATA_LINEAGE_SHA256,
         "research_hardening_receipt_sha256": HARDENING_RECEIPT_SHA256,
         "original_full_panel_declared_sha256": PANEL_SHA256,
         "edition_date": PUBLISHER_EDITION_DATE,
