@@ -1,0 +1,89 @@
+{
+  "asof": "2026-10-13T04:12:21.259Z",
+  "scope": "Actual loopback development server; no authenticated production acceptance",
+  "checks": [
+    {
+      "name": "Local server is not a simulated authenticated response",
+      "pass": true
+    },
+    {
+      "name": "All 54 source navigation routes remain present",
+      "pass": true
+    },
+    {
+      "name": "Command dialog focuses the search field",
+      "pass": true
+    },
+    {
+      "name": "Task search resolves customer help",
+      "pass": true
+    },
+    {
+      "name": "Closing dialog returns focus to its trigger",
+      "pass": true
+    },
+    {
+      "name": "Page can be pinned without an API mutation",
+      "pass": true
+    },
+    {
+      "name": "Pinned page survives reload",
+      "pass": true
+    },
+    {
+      "name": "Empty task search has a visible recovery",
+      "pass": true
+    },
+    {
+      "name": "All-tools reset restores every tool",
+      "pass": true
+    },
+    {
+      "name": "Failed refresh stays visible beside the retained snapshot",
+      "pass": true
+    },
+    {
+      "name": "A failed refresh cannot retain a healthy status badge",
+      "pass": true
+    },
+    {
+      "name": "Successful retry clears the persistent failure state",
+      "pass": true
+    },
+    {
+      "name": "Mobile shell has no horizontal overflow",
+      "pass": true
+    },
+    {
+      "name": "Mobile tool search has a full-width hit target on the title row",
+      "pass": true
+    },
+    {
+      "name": "Mobile dialog has no horizontal overflow",
+      "pass": true
+    },
+    {
+      "name": "Pin is reversible",
+      "pass": true
+    },
+    {
+      "name": "No JavaScript exceptions were observed",
+      "pass": true
+    },
+    {
+      "name": "Navigation observation used no API writes",
+      "pass": true
+    }
+  ],
+  "errors": [],
+  "apiMethods": [
+    "GET",
+    "GET",
+    "GET",
+    "GET",
+    "GET",
+    "GET",
+    "GET",
+    "GET"
+  ]
+}

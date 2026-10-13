@@ -375,3 +375,44 @@ def test_site_inventory_has_named_controls_and_read_error_recovery():
     assert 'Live-site check unavailable. Try again.' in content
     assert '$("#view").appendChild' not in content
     assert 'post(' not in content and 'dispatch(' not in content
+
+
+def test_overview_resource_pressure_uses_only_valid_observed_percentages():
+    _node_assert("""
+const model = new Function(block('function adminOverviewModel(', 'function adminOverviewMetric(') + '; return adminOverviewModel;')();
+const baseline = {health:{healthy:true,age_hours:1},services:{available:true,healthy:true}};
+const pressure = model({...baseline,system:{available:true,memory:{used_pct:94},disk:{used_pct:97}}});
+assert.equal(pressure.notices.length, 2);
+assert(pressure.notices.every(item => item.page === 'system' && item.tone === 'bad'));
+assert(pressure.notices.some(item => /memory/i.test(item.title)));
+assert(pressure.notices.some(item => /disk/i.test(item.title)));
+for (const used_pct of [null, -1, 101, Infinity, '95']) {
+ const invalid = model({...baseline,system:{available:true,memory:{used_pct},disk:{used_pct}}});
+ assert.equal(invalid.notices.length, 0);
+}
+assert.equal(model({...baseline,system:{available:false,memory:{used_pct:99}}}).notices.length, 0);
+""")
+
+
+def test_status_refresh_keeps_last_good_data_and_discards_obsolete_success():
+    _node_assert("""
+const pending = [], state = [];
+const workspace = {beginStatus:()=>state.push('reading'),statusReceived:()=>state.push('received'),statusFailed:()=>state.push('failed')};
+const api = () => new Promise((resolve,reject) => pending.push({resolve,reject}));
+const source = 'let SUMMARY = {kept:true};' + block('let ADMIN_SUMMARY_EPOCH = 0;', '/* ---- helpers') + ';return {refresh,getSummary:()=>SUMMARY};';
+const component = new Function('api','renderHeader','renderBanner','AdminWorkspace',source)(api,()=>{},()=>{},workspace);
+const first = component.refresh(), second = component.refresh();
+pending[1].resolve({meta:{revision:'new'},health:{healthy:true}}); await second;
+pending[0].resolve({meta:{revision:'old'},health:{healthy:false}}); await first;
+assert.equal(component.getSummary().meta.revision, 'new');
+const failed = component.refresh();pending[2].reject(new Error('transport unavailable'));
+await assert.rejects(failed,/transport unavailable/);
+assert.equal(component.getSummary().meta.revision,'new');
+assert.equal(state.at(-1),'failed');
+const retry=component.refresh();pending[3].resolve({meta:{revision:'recovered'},health:{healthy:true}});await retry;
+assert.equal(component.getSummary().meta.revision,'recovered');assert.equal(state.at(-1),'received');
+const obsolete=component.refresh(),latest=component.refresh();
+pending[5].resolve({meta:{revision:'latest'},health:{healthy:true}});await latest;
+pending[4].reject(new Error('obsolete failure'));await obsolete;
+assert.equal(component.getSummary().meta.revision,'latest');assert.equal(state.at(-1),'received');
+""")

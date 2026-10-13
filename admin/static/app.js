@@ -1,3 +1,4 @@
+/* global AdminWorkspace */
 "use strict";
 /* Mastermind Admin — single-page console. Vanilla JS, no external deps. */
 
@@ -250,7 +251,7 @@ function toast(msg, err) {
 }
 
 /* ---- login -------------------------------------------------------------- */
-function showLogin() { $("#login").classList.add("show"); $("#app").style.display = "none"; }
+function showLogin() { if (typeof AdminWorkspace !== "undefined") AdminWorkspace.close(); $("#login").classList.add("show"); $("#app").style.display = "none"; }
 function hideLogin() { $("#login").classList.remove("show"); $("#app").style.display = ""; }
 
 $("#loginForm").addEventListener("submit", async (e) => {
@@ -782,6 +783,7 @@ function go(id) {
   hideLobeTip();
   setActiveNav(id);
   setTopbarTitle(TAB_LABELS[id] || id);
+  if (typeof AdminWorkspace !== "undefined") AdminWorkspace.setPage(id);
   if (window.matchMedia("(max-width: 900px)").matches) setSidebarOpen(false);
   return runAdminRender(id, RENDER[id]);
 }
@@ -866,7 +868,7 @@ function renderHeader() {
   const hhDown = hh.down_count != null ? hh.down_count : ((hh.sources && hh.sources.down) || 0);
   const led = allOk ? "ok" : ((hh.broad_outage || hhDown > 0 || (sv.available && !sv.healthy)) ? "bad" : "warn");
   const el = $("#hmeta"); el.innerHTML = "";
-  el.appendChild(h(`<span class="pill"><span class="led ${led}"></span>${allOk ? "Healthy" : hasIssue ? "Attention" : "Incomplete"}</span>`));
+  el.appendChild(h(`<span class="pill" id="adminHealthStatus"><span class="led ${led}"></span>${allOk ? "Healthy" : hasIssue ? "Attention" : "Incomplete"}</span>`));
   const sysMeta = [
     m.deployed ? "deployed" : "local",
     `repo ${m.repo || "unknown"}`,
@@ -897,13 +899,24 @@ async function doCommit(push) {
   else toast(r.error || "commit failed", true);
 }
 
+let ADMIN_SUMMARY_EPOCH = 0;
 async function refresh() {
-  const next = await api("/api/summary");
-  if (!next || next.error || next.ok === false || !next.meta || !next.health) {
-    throw new Error((next && next.error) || "The admin status snapshot is unavailable.");
+  const epoch = ++ADMIN_SUMMARY_EPOCH;
+  if (typeof AdminWorkspace !== "undefined") AdminWorkspace.beginStatus();
+  try {
+    const next = await api("/api/summary");
+    if (epoch !== ADMIN_SUMMARY_EPOCH) return;
+    if (!next || next.error || next.ok === false || !next.meta || !next.health) {
+      throw new Error((next && next.error) || "The admin status snapshot is unavailable.");
+    }
+    SUMMARY = next; // keep the last good snapshot when a refresh fails
+    renderHeader(); renderBanner();
+    if (typeof AdminWorkspace !== "undefined") AdminWorkspace.statusReceived();
+  } catch (error) {
+    if (epoch !== ADMIN_SUMMARY_EPOCH) return; // an obsolete failure cannot invalidate a newer successful read
+    if (typeof AdminWorkspace !== "undefined") AdminWorkspace.statusFailed();
+    throw error;
   }
-  SUMMARY = next; // keep the last good snapshot when a refresh fails
-  renderHeader(); renderBanner();
 }
 
 /* ---- helpers ------------------------------------------------------------ */
@@ -1224,6 +1237,17 @@ function adminOverviewModel(s) {
   if (!healthKnown) notices.push({ page: "health", title: "Pipeline status unavailable", detail: "Open data health to inspect the latest report.", tone: "warn" });
   else if (!hh.healthy) notices.push({ page: "health", title: "Data pipeline needs attention", detail: "Review the latest pipeline report before rebuilding.", tone: "warn" });
   if (sv.available && sv.healthy === false) notices.push({ page: "system", title: "Background services need attention", detail: "Check service failures in System status.", tone: "bad" });
+  // Match the existing resource meter's critical threshold; invalid metrics
+  // are missing evidence, never a reason to raise or clear an incident.
+  if (sys.available === true) {
+    for (const [key, label] of [["memory", "Memory"], ["disk", "Disk"]]) {
+      const pct = (sys[key] || {}).used_pct;
+      if (Number.isFinite(pct) && pct >= 90 && pct <= 100) notices.push({
+        page: "system", title: `${label} use is high`,
+        detail: `${pct}% used in the latest host snapshot. Inspect System status.`, tone: "bad",
+      });
+    }
+  }
   return { hh, sv, sys, cost, healthKnown, serviceKnown, notices };
 }
 function adminOverviewMetric(page, label, value, detail, tone = "") {
@@ -1234,7 +1258,7 @@ RENDER.overview = async () => {
   const { hh, sv, sys, cost, healthKnown, serviceKnown, notices } = adminOverviewModel(s);
   const mem = sys.memory || {}, disk = sys.disk || {}, meta = s.meta || {};
   const sources = hh.sources || {};
-  const sourceDetail = Number.isFinite(sources.ok) && Number.isFinite(sources.total)
+  const sourceDetail = healthKnown && Number.isFinite(sources.ok) && Number.isFinite(sources.total) && sources.total > 0 && sources.ok >= 0 && sources.ok <= sources.total
     ? `${sources.ok}/${sources.total} sources · last run ${fmtAge(hh.age_hours)} ago`
     : "No current source report";
   const serviceCounts = Number.isFinite(sv.ok_count) && Number.isFinite(sv.total);
@@ -16307,6 +16331,10 @@ function schedulePostBootAdvisories() {
 
 async function boot() {
   renderSidebar();
+  if (typeof AdminWorkspace !== "undefined") AdminWorkspace.init({
+    groups: NAV_GROUPS, icons: ICONS, navigate: go, closeNavigation: () => setSidebarOpen(false),
+    refresh: async () => { clearApiCache(); await refresh(); if (CURRENT === "overview") await RENDER.overview(); },
+  });
   wireSidebarDrawer();
   startTableObserver();
   try {

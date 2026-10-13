@@ -6,16 +6,19 @@
   <meta name="robots" content="noindex,nofollow">
   <title>Mastermind Admin</title>
   <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="workspace.css">
 </head>
 <body>
+  <a class="admin-skip-link" href="#mainContent" onclick="event.preventDefault();document.getElementById('mainContent').focus()">Skip to page content</a>
   <!-- login gate (shown only when auth is enabled and there's no session) -->
   <div class="login-wrap" id="login">
     <div class="login-card">
       <h1><span style="color:var(--accent)">●</span> Mastermind Admin</h1>
       <div class="sub">Sign in to the control console.</div>
       <form id="loginForm" autocomplete="off">
+        <label class="admin-sr-only" for="pw">Admin password</label>
         <input type="password" id="pw" placeholder="Password" autocomplete="current-password" autofocus>
-        <div class="err" id="loginErr"></div>
+        <div class="err" id="loginErr" role="alert" aria-live="polite"></div>
         <button class="btn primary" type="submit">Sign in</button>
       </form>
     </div>
@@ -38,12 +41,15 @@
         <div class="topbar" id="topbar">
           <button class="sidebar-toggle" id="sidebarToggle" type="button" aria-label="Open navigation" aria-controls="sidebar" aria-expanded="false"><span></span><span></span><span></span></button>
           <span class="topbar-title" id="topbar-title">Overview</span>
+          <button type="button" id="workspaceOpen" aria-haspopup="dialog" aria-controls="workspaceDialog"><span>Find a tool</span><span class="workspace-key" aria-hidden="true">⌘ / Ctrl K</span></button>
           <span class="spacer"></span>
           <div id="hmeta" class="hmeta" style="margin-left:0"><span class="muted">loading…</span></div>
         </div>
 
+        <div class="workspace-toolbar" id="workspaceToolbar"><div class="workspace-context-copy"><span id="workspaceContext">Workspace</span><span id="workspaceDescription">Choose your next task.</span></div><button type="button" class="btn" id="workspacePin" aria-pressed="false">☆ Pin page</button></div>
+        <div class="workspace-status" id="workspaceStatus" data-state="unknown"><span class="workspace-status-dot" aria-hidden="true"></span><span id="workspaceStatusText" role="status">Status has not been read</span><button type="button" id="workspaceRefresh">Refresh status</button><span class="workspace-status-note">Read time is not data freshness.</span></div>
         <!-- Content -->
-        <main>
+        <main id="mainContent" tabindex="-1">
           <div class="banner" id="banner"></div>
           <div class="content" id="view"><div class="spin">Loading…</div></div>
         </main>
@@ -52,7 +58,9 @@
   </div>
   <button class="sidebar-scrim" id="sidebarScrim" type="button" aria-label="Close navigation"></button>
 
-  <div class="toast" id="toast"></div>
+  <div class="toast" id="toast" role="status"></div>
+  <div class="admin-sr-only" id="workspaceAnnouncement" role="status" aria-live="polite"></div>
+  <script src="workspace.js"></script>
   <script src="app.js"></script>
 </body>
 </html>
