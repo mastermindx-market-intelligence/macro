@@ -4903,7 +4903,7 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # each number is the docstring of the test below. scripts/check_contract_delta.py
 # reads both names with ast.literal_eval, so keep them plain module-level literals.
 PACKING_PROBES = (
-    ("templates/index.html", 135, 5_827),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("templates/index.html", 135, 5_800),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
     ("scripts/build_free_content.py", 134, 5_600),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
     ("engine/prophet/plan_book.py", 129, 5_600),
 )
@@ -5634,25 +5634,10 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     #8805 shape (move the added suites into an exclusive job with their
     measured closure) is the curation candidate.
 
-    2026-10-12 (#7870 packing curation, #8805 shape): the third base-sync
-    (origin/main c7543cd1cd94 merged into the carrier at 839bd6a1b065) had
-    measured 5,826 / 5,629 / 5,589, with the ONLY per-job weight deltas the
-    carrier's signal-contract 134 -> 136, tier-gate 41 -> 49 and
-    unrun-intl-libraries 101 -> 122. That measurement is retired by moving
-    the added suites, not by another ceiling raise. ``signal-contract`` drops
-    ``tests/test_semiconductor_native_identity.py`` from its K1 step (136 ->
-    134). ``tier-gate`` drops the T09 paid-transport step (49 -> 41).
-    ``unrun-intl-libraries`` drops the T01, T02, T03 and T07/T08 steps (122
-    -> 101). Each suite already runs in ``semiconductor-b-boundary``, which
-    is ``scope: exclusive`` and whose declared paths already name the suite
-    and the closure the closure audit measures, so no path is added and no
-    new job is created. That job is not selected by any probe. Declared
-    weights return to main's 134 / 41 / 101, and the probes that read
-    5,826 / 5,629 / 5,589 return to main's 5,795 / 5,598 / 5,558. The
-    scripts/build_free_content.py WEIGHT ceiling returns to 5,600 (the
-    5,602 and 5,629 raises are both retired). No other ceiling moves. No
-    suite, registration, assertion or selector is deleted: the exclusive
-    gate:code job remains the sole ``run:`` owner.
+    2026-10-12 (#7870 packing curation): the curation moved the duplicated
+    Semiconductor B suites onto the exclusive semiconductor-b-boundary job
+    and every probe is back at main's ceiling (135/5,800, 134/5,600,
+    129/5,600). No ceiling is raised.
     """
     rows = packing_probe_measurements(
         MANIFEST, PACKING_PROBES, max_packs=PACKING_PROBE_MAX_PACKS

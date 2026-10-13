@@ -17210,6 +17210,10 @@ jobs:
       - config/capability_manifest.yml
       - config/delisted_symbols.yml
       - config/metabolism_budget.yml
+      # #7870: build_theme_detail.py (already in this closure) imports the mount
+      # leaf, which reads the crosswalk. Without these two paths the job stops
+      # running when either file changes.
+      - config/theme_crosswalk.yml
       - contracts/theme_graph/membership_collection.v2.schema.json
       - engine/__init__.py
       - engine/active_alloc.py
@@ -17357,6 +17361,7 @@ jobs:
       - engine/manager_trades.py
       - engine/market_state.py
       - engine/market_state_ca.py
+      - engine/market_ontology/theme_research_mounts.py
       - engine/master_brain.py
       - engine/masterminds.py
       - engine/metabolism/__init__.py
