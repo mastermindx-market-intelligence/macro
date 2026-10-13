@@ -4168,7 +4168,8 @@ def _fast_visible_tool_schemas(
 
     Unknown/specialist profiles, Terminal, Pro/Research, and internals sessions fail open
     to the byte-equivalent full authorized list.  If a qualified family drifts and names a
-    tool absent from the current authorized surface, fail open rather than partially narrow.
+    required tool absent from the current authorized surface, fail open rather than
+    partially narrow. Explicit entitlement-only tools may be absent for this caller.
     """
     if (
         lane != "fast"
@@ -4191,7 +4192,14 @@ def _fast_visible_tool_schemas(
     authorized_names = {
         schema.get("name") for schema in full_schemas if isinstance(schema, dict)
     }
-    missing = [name for name in visible_names if name not in authorized_names]
+    # These schemas are deliberately withheld upstream when site-full access is
+    # absent. Their omission is not family drift and must not expose every other
+    # authorized tool to an otherwise qualified Fast question.
+    entitlement_optional_names = {"get_retained_market_context"}
+    missing = [
+        name for name in visible_names
+        if name not in authorized_names and name not in entitlement_optional_names
+    ]
     if missing:
         log.warning(
             "brain_gateway: Fast visibility fail-open for profile %s; missing schemas=%s",
