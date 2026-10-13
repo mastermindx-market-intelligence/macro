@@ -30,6 +30,7 @@ import logging
 import math
 from datetime import date, datetime, time, timedelta, timezone
 
+import numpy as np
 import pandas as pd
 
 from lib import config
@@ -89,16 +90,30 @@ def _session_key(day: object) -> str | None:
     """The one YYYY-MM-DD key a held or fetched session is compared on.
 
     The store's contract is YYYY-MM-DD strings, but a stamp that reaches the
-    store as a date/datetime/Timestamp, or as a "YYYY-MM-DD 00:00:00" string,
-    must still meet the vendor's print on the same key. Anything that does not
-    name an ISO day — an empty, missing or impossible value — is None, and the
-    caller refuses rather than guess.
+    store as a date/datetime/Timestamp, a numpy datetime64, or as a
+    "YYYY-MM-DD 00:00:00" or "YYYYMMDD" string must still meet the vendor's
+    print on the same key. Anything that does not name an ISO day — an empty,
+    missing, impossible or NaT value — is None, and the caller refuses rather
+    than guess.
     """
-    try:
-        text = day if isinstance(day, str) else day.isoformat()
-    except AttributeError:
+    if isinstance(day, str):
+        text = day
+    else:
+        try:
+            text = day.isoformat()
+        except AttributeError:
+            if not isinstance(day, np.datetime64):
+                return None
+            text = pd.Timestamp(day).isoformat()
+    if not isinstance(text, str):
         return None
-    if not isinstance(text, str) or len(text) < 10:
+    if len(text) == 8 and text.isdigit():
+        # Basic ISO 8601, which date.fromisoformat rejects before Python 3.11.
+        try:
+            return datetime.strptime(text, "%Y%m%d").date().isoformat()
+        except ValueError:
+            return None
+    if len(text) < 10:
         return None
     candidate = text[:10]
     try:
@@ -176,7 +191,13 @@ def refresh(*, today: date | None = None, now: datetime | None = None) -> int:
     held = _held()
     start = ANCHOR
     if held is not None:
-        start = max(ANCHOR, date.fromisoformat(str(held["trade_date"].max())) - timedelta(days=OVERLAP_DAYS))
+        # The store may hold typed stamps rather than the contracted ISO
+        # strings, so read the last session back through the same key the
+        # overlap is compared on. A value that names no ISO day (NaT/None)
+        # takes the empty-store path instead of raising mid-run.
+        last = _session_key(held["trade_date"].max())
+        if last is not None:
+            start = max(ANCHOR, date.fromisoformat(last) - timedelta(days=OVERLAP_DAYS))
     fetched = normalize(tc.query("index_daily", fields=_FIELDS, ts_code=TS_CODE,
                                  start_date=start.strftime("%Y%m%d"),
                                  end_date=today.strftime("%Y%m%d")))

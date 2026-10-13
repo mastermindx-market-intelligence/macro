@@ -5,13 +5,17 @@ written by any path that lets pandas keep its own stamps may hold Timestamps,
 ``datetime.date`` values or ``"YYYY-MM-DD 00:00:00"`` strings. These tests pin
 that ``first_disagreement()`` and ``merge()`` compare every held session with
 the vendor print on that one normalized key, and that a trade_date which does
-not name an ISO day is refused, never written. Synthetic frames only. No
-network and no token. Closes are made-up levels.
+not name an ISO day is refused, never written. ``refresh()`` reads the held
+store's last session — the fetch-overlap start — through that same key, so a
+typed store overlaps correctly and a store that names no day takes the
+empty-store path. Synthetic frames only. No network and no token. Closes are
+made-up levels.
 """
 from __future__ import annotations
 
-from datetime import date
+from datetime import date, datetime
 
+import numpy as np
 import pandas as pd
 import pytest
 
@@ -121,3 +125,119 @@ def test_a_vendor_row_before_the_anchor_is_still_not_merged():
     out = tid.merge(held, fetched, first_seen=FETCH_FIRST_SEEN)
     assert out["trade_date"].tolist() == ["2023-01-03", "2023-01-04"]
     assert out["close"].tolist() == [3100.0, 3110.0]
+
+
+#
+# refresh() reads the held store's last session through that same key.
+#
+
+# Two held sessions whose later day is 2026-10-09, so the overlap starts
+# 30 sessions back at 2026-09-09 — past the anchor either way.
+HELD_DAYS = ["2026-10-08", "2026-10-09"]
+OVERLAP_START = "20260909"
+NEW_SESSION = [("20261012", 3310.0)]
+
+
+@pytest.fixture
+def store(tmp_path, monkeypatch):
+    out = tmp_path / "tushare" / "index_daily.parquet"
+    monkeypatch.setattr(tid, "OUT", out)
+    monkeypatch.setattr(tid.tc, "enabled", lambda: True)
+    return out
+
+
+def _serve(monkeypatch, rows):
+    calls = []
+
+    def query(api_name, fields="", **params):
+        calls.append((api_name, fields, params))
+        return pd.DataFrame([{"ts_code": tid.TICKER, "trade_date": d, "close": c}
+                             for d, c in rows])
+
+    monkeypatch.setattr(tid.tc, "query", query)
+    return calls
+
+
+def _typed_days(shape):
+    """The same two held sessions as the store would keep them."""
+    if shape == "iso_str":
+        return HELD_DAYS
+    if shape == "compact_str":
+        return [d.replace("-", "") for d in HELD_DAYS]
+    if shape == "date":
+        return [date.fromisoformat(d) for d in HELD_DAYS]
+    if shape == "datetime":
+        return [datetime.fromisoformat(d) for d in HELD_DAYS]
+    if shape == "timestamp":
+        return [pd.Timestamp(d) for d in HELD_DAYS]
+    return [np.datetime64(d) for d in HELD_DAYS]
+
+
+STORED_SHAPES = ["compact_str", "date", "datetime", "iso_str",
+                 "np_datetime64", "timestamp"]
+
+
+@pytest.mark.parametrize("shape", STORED_SHAPES)
+def test_refresh_overlaps_from_the_held_session_whatever_type_it_stored(
+        shape, store, monkeypatch):
+    """A store that kept its own stamps still reads its true last session."""
+    held = _held(list(zip(_typed_days(shape), [3000.0, 3010.0])))
+    monkeypatch.setattr(tid, "_held", lambda: held)
+    calls = _serve(monkeypatch, NEW_SESSION)
+    assert tid.refresh(today=date(2026, 10, 12)) == 1
+    assert calls[0][2]["start_date"] == OVERLAP_START
+
+
+@pytest.mark.parametrize("shape", STORED_SHAPES)
+def test_refresh_overlaps_from_a_stored_frame_of_any_type(shape, store, monkeypatch):
+    """The same through a real store file: whatever the parquet round-trip
+    leaves on disk, the fetch still starts 30 sessions back."""
+    held = _held(list(zip(_typed_days(shape), [3000.0, 3010.0])))
+    store.parent.mkdir(parents=True, exist_ok=True)
+    held.to_parquet(store, index=False)
+    calls = _serve(monkeypatch, NEW_SESSION)
+    assert tid.refresh(today=date(2026, 10, 12)) == 1
+    assert calls[0][2]["start_date"] == OVERLAP_START
+    out = pd.read_parquet(store)
+    # Held rows are written back on the one ISO key, whatever they stored as.
+    assert out["trade_date"].tolist() == HELD_DAYS + ["2026-10-12"]
+
+
+@pytest.mark.parametrize("bad", [pd.NaT, None, pd.NA, float("nan")])
+def test_a_held_session_that_names_no_day_takes_the_empty_store_path(
+        bad, store, monkeypatch):
+    """NaT/None held days refuse to name an overlap start: the fetch falls
+    back to the anchor, the same path an absent store takes, never raising."""
+    held = pd.DataFrame([{"ticker": tid.TICKER, "trade_date": bad, "close": c,
+                          "first_seen": HELD_FIRST_SEEN} for c in (3000.0, 3010.0)])
+    monkeypatch.setattr(tid, "_held", lambda: held)
+    calls = _serve(monkeypatch, NEW_SESSION)
+    assert tid.refresh(today=date(2026, 10, 12)) == 0
+    assert calls[0][2]["start_date"] == "20230101"
+    assert not store.exists()
+
+
+@pytest.mark.parametrize("empty_case", ["missing", "empty_frame"])
+def test_an_empty_store_still_fetches_from_the_anchor(empty_case, store, monkeypatch):
+    if empty_case == "empty_frame":
+        store.parent.mkdir(parents=True, exist_ok=True)
+        pd.DataFrame(columns=list(tid.COLUMNS)).to_parquet(store, index=False)
+    calls = _serve(monkeypatch, NEW_SESSION)
+    assert tid.refresh(today=date(2026, 10, 12)) == 1
+    assert calls[0][2]["start_date"] == "20230101"
+
+
+def test_the_old_inline_held_max_reading_fails_on_a_timestamp_store(
+        store, monkeypatch):
+    """Teeth: the line this fix replaced is what a typed store broke."""
+    held = _held([(pd.Timestamp(d), c)
+                  for d, c in zip(HELD_DAYS, (3000.0, 3010.0))])
+    monkeypatch.setattr(tid, "_held", lambda: held)
+
+    def old_inline_key(day):
+        return date.fromisoformat(str(day)).isoformat()
+
+    monkeypatch.setattr(tid, "_session_key", old_inline_key)
+    _serve(monkeypatch, NEW_SESSION)
+    with pytest.raises(ValueError):
+        tid.refresh(today=date(2026, 10, 12))
