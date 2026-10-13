@@ -26,22 +26,26 @@ BENCHMARK = "SPY"
 # Internal provenance label. Product surfaces never name the vendor.
 SOURCE = "licensed_us_daily_bars/SPY.regular_session_close"
 # Raw regular-session closes are this basis only while no split sits inside the
-# observed window; licensed_spy_closes() refuses when one might.
+# observed window, including a session the store skipped. A dividend does not
+# move a raw close; licensed_spy_closes() refuses when a split might.
 PRICE_BASIS = "split_adjusted_dividend_unadjusted_close"
 # The daily store lands T+1; a longer gap is a stalled store, not a tip to patch.
 MAX_SESSION_TIP = 3
 SPLIT_LIKE_RATIO = core.LEVEL_BREAK_RATIO
 # Adjacent closes beyond this ratio are corroborated; size alone does not refuse them.
 SUSPECT_LOW = 0.88
-# A longer run of those closes is refused without querying the action guard.
+# Spans longer than this many NYSE sessions, including sessions the store
+# skipped, are refused without querying the action guard.
 MAX_SUSPECTS = 8
 
 
 def _suspect_stored_sessions(rows, stored_days: set[date]) -> list[str]:
-    """Later session of each stored adjacent pair outside the suspect band.
+    """NYSE sessions covered by each stored adjacent pair outside the suspect band.
 
     Adjacency matches ``level_break``: dated, positive closes, sorted by session.
-    Appended tip sessions are not in ``stored_days`` and are not returned.
+    For a pair (earlier_day, later_day) every session d with
+    earlier_day < d <= later_day is returned, including sessions the store
+    skipped. Appended tip sessions are not in ``stored_days`` and are not paired.
     """
     dated = sorted(
         (day, price)
@@ -53,16 +57,36 @@ def _suspect_stored_sessions(rows, stored_days: set[date]) -> list[str]:
     suspects: list[str] = []
     seen: set[str] = set()
     ceiling = 1 / SUSPECT_LOW
-    for (_, earlier), (later_day, later) in zip(dated, dated[1:]):
+    for (earlier_day, earlier), (later_day, later) in zip(dated, dated[1:]):
         ratio = later / earlier
         if SUSPECT_LOW <= ratio <= ceiling:
             continue
-        session = later_day.isoformat()
-        if session in seen:
-            continue
-        seen.add(session)
-        suspects.append(session)
+        for day in nyse_calendar.sessions_between(
+            earlier_day + timedelta(days=1), later_day
+        ):
+            session = day.isoformat()
+            if session in seen:
+                continue
+            seen.add(session)
+            suspects.append(session)
     return suspects
+
+
+def _benchmark_may_have_split(actions) -> bool:
+    """True when a split may have changed the benchmark's raw close.
+
+    ``tickers`` mixes splits and ex-dividends. A dividend cannot move a raw
+    print, so ``splits_n == 0`` leaves a named benchmark measurable. The guard
+    cannot say which name split: any positive count on that session fails
+    closed. A missing count is unknown and fails closed.
+    """
+    if BENCHMARK not in getattr(actions, "tickers", ()):
+        return False
+    try:
+        count = int(getattr(actions, "splits_n", None))
+    except (TypeError, ValueError):
+        return True
+    return count > 0
 
 
 def licensed_spy_closes(expected: date, *, load: Callable | None = None,
@@ -76,10 +100,16 @@ def licensed_spy_closes(expected: date, *, load: Callable | None = None,
     a not-yet-finalized snapshot close, is held, and the observer reports the
     series as delayed. Never falls back to another vendor.
 
-    A stored move past ``SUSPECT_LOW`` is corroborated against corporate actions.
-    A recorded action on the benchmark refuses the basis. A completed record that
-    does not name it leaves the move measurable, including a crash inside the
-    hard ratio band. Ratios outside that band still fail ``level_break``.
+    A stored move past ``SUSPECT_LOW`` is corroborated against corporate actions
+    on every NYSE session after the earlier close through the later one,
+    including sessions the store skipped. The benchmark refuses the basis only
+    when it is named and that session has a split (``splits_n > 0``). The guard
+    cannot say which name split, so any split on the session fails closed.
+    A missing split count is unknown and refuses. Dividends alone do not: the
+    series is raw. A completed record that does not name the benchmark leaves
+    the move measurable, including a crash inside the hard ratio band. Ratios
+    outside that band still fail ``level_break``. More than ``MAX_SUSPECTS``
+    sessions in those spans refuse without a query.
     """
     if load is None:
         from collectors.massive_stock_day import load_ticker as load
@@ -104,14 +134,15 @@ def licensed_spy_closes(expected: date, *, load: Callable | None = None,
         tip = []
     for day in tip:
         session = day.isoformat()
-        # Raw-on-raw is dividend-safe; a split is not. The shared guard cannot
-        # say which action it saw, so any action on SPY holds the tip.
+        # Raw closes are dividend-unadjusted. Hold the tip only when SPY is
+        # named and the session may contain a split. A dividend alone does not.
+        # An unknown split count fails closed. An incomplete guard holds first.
         actions = corp_actions(session)
         checked.add(session)
         if not getattr(actions, "complete", False):
             hold = "corporate_action_guard_down"
             break
-        if BENCHMARK in getattr(actions, "tickers", ()):
+        if _benchmark_may_have_split(actions):
             hold = "corporate_action_on_session"
             break
         got = session_closes(session, {BENCHMARK})
@@ -126,7 +157,8 @@ def licensed_spy_closes(expected: date, *, load: Callable | None = None,
         rows.append((session, price))
         appended.append({"session": session, "settlement": "final"})
     # Hard breaks stay a basis refusal. Inside that band, a 4:3 or 5:4 still
-    # passes level_break, so stored suspects are corroborated before use.
+    # passes level_break, so every session in the stored span is corroborated,
+    # including sessions the store skipped.
     if core.level_break(rows):
         raise SourceRefused("price_basis_discontinuity")
     suspects = [
@@ -139,7 +171,7 @@ def licensed_spy_closes(expected: date, *, load: Callable | None = None,
         actions = corp_actions(session)
         if not getattr(actions, "complete", False):
             raise SourceRefused("corporate_action_guard_down")
-        if BENCHMARK in getattr(actions, "tickers", ()):
+        if _benchmark_may_have_split(actions):
             raise SourceRefused("price_basis_discontinuity")
     return LicensedCloses(rows=rows, appended=tuple(appended), hold=hold)
 

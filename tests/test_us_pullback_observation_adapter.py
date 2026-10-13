@@ -168,7 +168,9 @@ def test_finalized_session_close_is_appended_as_final():
 
 @pytest.mark.parametrize("actions, hold", [
     (lambda s: CorpActions(session=s, complete=False, reason="page cap"), "corporate_action_guard_down"),
-    (lambda s: CorpActions(session=s, tickers=frozenset({"SPY"}), complete=True), "corporate_action_on_session"),
+    # A named split holds the tip. splits_n == 0 is a dividend and must not.
+    (lambda s: CorpActions(session=s, tickers=frozenset({"SPY"}), splits_n=1, complete=True),
+     "corporate_action_on_session"),
 ])
 def test_corporate_action_guard_holds_the_tip_and_the_owner_reports_delay(actions, hold):
     def no_close(*args, **kwargs):
@@ -251,12 +253,13 @@ def _no_observation(*args, **kwargs):
     pytest.param(64.0, id="5:4"),
 ])
 def test_stored_split_with_a_record_refuses_the_basis(later):
-    """4:3 (0.75) and 5:4 (0.80) sit inside the hard band; a recorded action refuses."""
+    """4:3 (0.75) and 5:4 (0.80) sit inside the hard band; a recorded split refuses."""
     calls = []
 
     def actions(session):
         calls.append(session)
-        return CorpActions(session=session, complete=True, tickers=frozenset({"SPY"}))
+        return CorpActions(session=session, complete=True, tickers=frozenset({"SPY"}),
+                           splits_n=1)
 
     out = snapshot(now=FIXED_NOW,
                    read=reader(load=_landed((80.0, later, later)), corp_actions=actions),
