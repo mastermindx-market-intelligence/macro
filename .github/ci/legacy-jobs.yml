@@ -13818,7 +13818,7 @@ jobs:
         with:
           python-version: "3.12"
       - name: install state-producer test dependencies
-        run: pip install pytest pandas numpy pyarrow pyyaml
+        run: pip install pytest pandas numpy pyarrow pyyaml jsonschema
       - name: global liquidity state producers — legacy parity and W-LIQ.1 contract
         run: python -m pytest tests/test_global_liquidity.py tests/test_global_liquidity_transmission.py tests/test_global_liquidity_transmission_liveness_v2.py -q
 
