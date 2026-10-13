@@ -80,11 +80,6 @@ TRUTHY_AUTHORITY_STRINGS: tuple[str, ...] = (
 # Empty on this pin: G3-(i) found no shell-shaped markdown lines outside fences.
 A20B_KNOWN_TEXT: dict[tuple[str, str], str] = {}
 
-A20B_F1_REASON = (
-    "A20B-F1: event_response/p04_v2_draft_loader.py:186 validate_draft does "
-    "not walk smuggled *_authority keys outside the two authority_flags blocks"
-)
-
 _DATA_SUFFIXES = {".json", ".yml", ".yaml", ".md", ".csv"}
 _AUTHORITY_TRUE_RE = re.compile(
     r"""["']?([A-Za-z_][A-Za-z0-9_]*_authority)["']?\s*:\s*true\b""",
@@ -762,10 +757,7 @@ def test_a20b_07_loader_instruction_text_is_data(
     "loader_id",
     [
         "a8",
-        pytest.param(
-            "p04",
-            marks=pytest.mark.xfail(strict=True, reason=A20B_F1_REASON),
-        ),
+        "p04",
         "matrix",
         "ledger",
         "stress",
@@ -881,3 +873,49 @@ def test_a20b_12_determinism() -> None:
     seal_b = build_seal(**_seal_kwargs())
     assert seal_a == seal_b
     assert verify_seal(seal_a) == verify_seal(seal_b) == []
+
+
+def test_a20f_01_p04_refuses_top_level_smuggle(tmp_path: Path) -> None:
+    draft = _p04_baseline()
+    draft["trade_authority"] = True
+    path = _write_json(tmp_path / "p04_a20f_01.json", draft)
+    with pytest.raises(ValueError, match=re.escape("trade_authority")):
+        p04_v2_draft_loader.load_draft(path)
+
+
+def test_a20f_02_p04_refuses_nested_authority_flags(tmp_path: Path) -> None:
+    draft = _p04_baseline()
+    draft["smuggle"] = {"authority_flags": {"rank_authority": True}}
+    path = _write_json(tmp_path / "p04_a20f_02.json", draft)
+    with pytest.raises(ValueError, match=re.escape("smuggle.authority_flags")):
+        p04_v2_draft_loader.load_draft(path)
+
+
+@pytest.mark.parametrize("value", ("", None, 0, "false", []))
+def test_a20f_03_p04_refuses_falsy_non_false_values(
+    value, tmp_path: Path
+) -> None:
+    draft = _p04_baseline()
+    draft["trade_authority"] = value
+    path = _write_json(tmp_path / "p04_a20f_03.json", draft)
+    with pytest.raises(ValueError, match=re.escape("trade_authority")):
+        p04_v2_draft_loader.load_draft(path)
+
+
+def test_a20f_04_p04_refuses_smuggle_inside_list(tmp_path: Path) -> None:
+    draft = _p04_baseline()
+    draft["extra_rows"] = [{"signal_authority": True}]
+    path = _write_json(tmp_path / "p04_a20f_04.json", draft)
+    with pytest.raises(
+        ValueError, match=re.escape("extra_rows[0].signal_authority")
+    ):
+        p04_v2_draft_loader.load_draft(path)
+
+
+def test_a20f_05_committed_p04_draft_still_loads() -> None:
+    path = SNI_ROOT / "event_response" / "P04_V2_PREREG_DRAFT.json"
+    loaded = p04_v2_draft_loader.load_draft(path)
+    again = p04_v2_draft_loader.load_draft(path)
+    assert loaded == again
+    assert loaded.get("status") == "DRAFT"
+    assert loaded.get("registered") is False

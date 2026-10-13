@@ -140,6 +140,31 @@ def _check_authority_block(flags, where: str) -> None:
             _fail(f"{where}.{name} must be literally False, got {value!r}")
 
 
+def _refuse_smuggled_authority(obj, path: str) -> None:
+    """Refuse a non-False *_authority value anywhere in the draft tree."""
+    if isinstance(obj, dict):
+        for key, value in obj.items():
+            here = f"{path}.{key}" if path else str(key)
+            if isinstance(key, str):
+                if key in AUTHORITY_FLAG_NAMES or key.endswith("_authority"):
+                    if value is not False:
+                        _fail(
+                            f"{here} must be literally False, got {value!r}"
+                        )
+                if key == "authority_flags":
+                    if not isinstance(value, dict) or any(
+                        item is not False for item in value.values()
+                    ):
+                        _fail(
+                            f"{here} must be a dict of literal False values, "
+                            f"got {value!r}"
+                        )
+            _refuse_smuggled_authority(value, here)
+    elif isinstance(obj, list):
+        for index, item in enumerate(obj):
+            _refuse_smuggled_authority(item, f"{path}[{index}]")
+
+
 def _check_as_of_rule(vintage_rule: dict) -> None:
     as_of = vintage_rule.get("as_of_utc")
     if not isinstance(as_of, dict):
@@ -203,6 +228,7 @@ def validate_draft(d: dict) -> None:
     _check_authority_block(
         labels_obj.get("authority_flags"), "labels.authority_flags"
     )
+    _refuse_smuggled_authority(d, "")
 
     vintage_rule = d.get("vintage_rule")
     if not isinstance(vintage_rule, dict):
