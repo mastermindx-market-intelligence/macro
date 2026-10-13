@@ -12,6 +12,10 @@ from pathlib import Path
 import pytest
 
 from engine.sector_intelligence.finance_case_signal import project_falsifier
+from engine.sector_intelligence.finance_page_signal import (
+    SynthesisAdmissionRefusal,
+    admit_synthesis,
+)
 
 
 _FIXTURE = (
@@ -32,39 +36,6 @@ def _measured_descriptive_row(document: dict) -> dict:
         for row in document["cases"]
         if row["descriptive_evidence_state"] == "MARKET_AND_VALUATION_MEASURED"
     )
-
-
-class SynthesisAdmissionRefusal(ValueError):
-    """The review gate refuses the document. ``str(exc)`` is the code."""
-
-    def __init__(self, code: str) -> None:
-        super().__init__(code)
-        self.code = code
-
-    def __str__(self) -> str:
-        return self.code
-
-
-def admit_synthesis(document: dict) -> list[dict]:
-    """Admit a synthetic synthesis only when no causal outcome is measured.
-
-    Calls :func:`project_falsifier` for every row. A descriptive state that
-    contains ``MEASURED`` does not admit a cause, and an alias does not
-    become the falsifier id.
-    """
-    if document.get("formal_causal_outcomes_measured") != 0:
-        raise SynthesisAdmissionRefusal("formal_causal_outcomes_measured")
-    if document.get("prospective_validation_started") is not False:
-        raise SynthesisAdmissionRefusal("prospective_validation_started")
-    rows = document.get("cases")
-    if not isinstance(rows, list) or not rows:
-        raise SynthesisAdmissionRefusal("no_rows")
-    admitted: list[dict] = []
-    for row in rows:
-        if row.get("formal_causal_outcome") != "UNMEASURED":
-            raise SynthesisAdmissionRefusal("row_outcome_not_unmeasured")
-        admitted.append(project_falsifier(row))
-    return admitted
 
 
 def test_fixture_outcomes_stay_unmeasured() -> None:

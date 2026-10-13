@@ -1333,6 +1333,102 @@ def test_unmeasured_case_paints_not_yet_evaluable_falsifier() -> None:
 
 
 @needs_node
+def test_page_signal_paints_not_yet_evaluable_on_card_networks() -> None:
+    """Admission places the alpha falsifier on card_networks, the painted slice.
+
+    The composer's slices[0] is not card_networks. The page paints
+    coverage.first_vertical.slice_ids[0], which is card_networks. This test
+    calls apply_page_signal rather than attach_falsifiers on slices[0].
+    """
+    from engine.sector_intelligence.finance_page_signal import apply_page_signal
+    from engine.sector_intelligence.finance_projection import compose_finance_projection
+    from tests.test_finance_intelligence_projection import (
+        _default_8slice_inputs,
+        _knowledge_cutoff,
+        _today,
+    )
+
+    case_path = (
+        Path(__file__).resolve().parent
+        / "fixtures"
+        / "finance_case_signal"
+        / "synthesis_v0.json"
+    )
+    case = json.loads(case_path.read_text(encoding="utf-8"))
+    alpha = next(
+        row for row in case["cases"] if row["canonical_case_id"] == "syn-fin-case-alpha"
+    )
+    doc = compose_finance_projection(
+        _default_8slice_inputs(),
+        generated_at=_today(),
+        knowledge_cutoff=_knowledge_cutoff(),
+    )
+    assert doc["coverage"]["first_vertical"]["slice_ids"][0] == "card_networks"
+    assert doc["slices"][0]["slice_id"] != "card_networks"
+    apply_page_signal(case, doc)
+    assert doc["slices"][0]["falsifiers"] == []
+    card = next(sl for sl in doc["slices"] if sl["slice_id"] == "card_networks")
+    assert card["falsifiers"][0]["state"] == "NOT_YET_EVALUABLE"
+    assert card["falsifiers"][0]["statement"] == alpha["primary_limit"]
+    snap = _run({"routes": _route(doc)})
+    markup = snap["first"]["dom"]
+    assert 'data-state-falsifier="NOT_YET_EVALUABLE"' in markup
+    assert alpha["primary_limit"] in markup
+
+
+@needs_node
+def test_roster_hint_paints_unvalidated_chip_without_a_route() -> None:
+    """Roster symbol V paints an unvalidated identity chip and no stock route.
+
+    The row is built the way the witness-hint compose test builds it:
+    hint_binding("V") is the identity binding. record_id stays on that
+    binding. The company-row identity keeps the four schema keys.
+    """
+    from engine.sector_intelligence.finance_projection import compose_finance_projection
+    from engine.sector_intelligence.finance_witness_hints import hint_binding
+    from tests.test_finance_intelligence_projection import (
+        _default_8slice_inputs,
+        _default_operating_record,
+        _knowledge_cutoff,
+        _today,
+    )
+
+    binding = hint_binding("V")
+    assert binding["record_id"] == "fin-research-v-2025"
+    assert binding["state"] == "RESEARCH_HINT_UNVALIDATED"
+    record = _default_operating_record(
+        slice_id="card_networks",
+        ticker="V",
+        identity_state="IDENTITY_VALIDATED",
+    )
+    document = compose_finance_projection(
+        _default_8slice_inputs(
+            identity_bindings={"V": binding},
+            source_records=[record],
+        ),
+        generated_at=_today(),
+        knowledge_cutoff=_knowledge_cutoff(),
+    )
+    rows = [row for row in document["company_exposures"] if row["ticker_hint"] == "V"]
+    assert len(rows) == 1
+    row = rows[0]
+    assert row["company_route"]["href"] is None
+    assert "record_id" not in row["identity"]
+    assert set(row["identity"]) == {
+        "state",
+        "company_node_id",
+        "security_ref",
+        "listing_note",
+    }
+    assert row["identity"]["state"] == "RESEARCH_HINT_UNVALIDATED"
+    section = _dom(_run({"routes": _route(document)})["first"]).one(
+        "section", id="company-exposure"
+    )
+    painted = section.one("tr", data_row_id=row["row_id"])
+    assert painted.attrs.get("data-state-identity") == "RESEARCH_HINT_UNVALIDATED"
+
+
+@needs_node
 def test_a_phone_card_lists_its_table_rows_cells_in_column_order() -> None:
     """The card took the first six cells of any vertical: a company with a cell
     in all eight first-vertical slices lost two on a phone, silently. It now
