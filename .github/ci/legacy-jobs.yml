@@ -3555,6 +3555,7 @@ jobs:
     paths:
       # Native DailyBrief registration/producer import closure (PR #9037).
       - "engine/prophet_candidate_state.py"
+      - "engine/prophet_candidate_state_sources.py"
       - "engine/prophet_daily_brief.py"
       - "engine/prophet_entry_availability.py"
       - "engine/prophet_strategy_definition.py"
@@ -5760,6 +5761,7 @@ jobs:
       # Native DailyBrief registration/producer import closure (PR #9037).
       - "app/prophet_daily_brief.py"
       - "engine/prophet_candidate_state.py"
+      - "engine/prophet_candidate_state_sources.py"
       - "engine/prophet_daily_brief.py"
       - "engine/prophet_entry_availability.py"
       - "engine/prophet_strategy_definition.py"
@@ -12007,6 +12009,7 @@ jobs:
       # Native DailyBrief registration/producer import closure (PR #9037).
       - "engine/path_risk_signals.py"
       - "engine/prophet_candidate_state.py"
+      - "engine/prophet_candidate_state_sources.py"
       - "engine/prophet_daily_brief.py"
       - "engine/prophet_entry_availability.py"
       - "engine/prophet_strategy_definition.py"
@@ -14082,6 +14085,7 @@ jobs:
     paths:
       # Native DailyBrief registration/producer import closure (PR #9037).
       - "engine/prophet_candidate_state.py"
+      - "engine/prophet_candidate_state_sources.py"
       - "engine/prophet_daily_brief.py"
       - "engine/prophet_entry_availability.py"
       - "engine/prophet_strategy_definition.py"
@@ -14799,6 +14803,7 @@ jobs:
     paths:
       # Native DailyBrief registration/producer import closure (PR #9037).
       - "engine/prophet_candidate_state.py"
+      - "engine/prophet_candidate_state_sources.py"
       - "engine/prophet_daily_brief.py"
       - "engine/prophet_entry_availability.py"
       - "engine/prophet_strategy_definition.py"
@@ -16564,6 +16569,9 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
       - name: install minimal deps
         run: pip install pytest pyyaml jinja2
       # --deselect: test_build_site_renders_help_page_with_the_full_view_model imports
@@ -16579,21 +16587,19 @@ jobs:
       # pure text checks on sector-intelligence.yml / whitehouse-sentinel.yml. They
       # live HERE (gate: code, minimal deps) because the engine suites next to them
       # (express-render-guards, outcome-spine) are gate: data and never run in a PR pack.
-        run: python -m pytest tests/test_public_render_fastlane.py tests/test_help_directory.py tests/test_help_directory_contract.py tests/test_workflow_publish_chains.py -q --deselect tests/test_help_directory.py::test_build_site_renders_help_page_with_the_full_view_model
+      # Also validate the data-free Market Memory shell and owned read-API wiring.
+      # This test registration does not alter production render/publish inventory.
+        run: node --version && python -m pytest tests/test_public_render_fastlane.py tests/test_help_directory.py tests/test_help_directory_contract.py tests/test_workflow_publish_chains.py tests/test_build_market_memory_page.py tests/test_glossary.py tests/test_glossary_contract.py tests/test_glossary_letter_rail_js.py tests/test_finance_intelligence_site_wiring.py -q -rs --deselect tests/test_help_directory.py::test_build_site_renders_help_page_with_the_full_view_model
       # F13-1 (2026-09-06): the public glossary directory is built by the same
       # scripts/build_public_pages.py fast path and shares this job's exact
       # dependency line (pytest pyyaml jinja2) with the help-directory suites
       # immediately above.
-      - name: public glossary directory (view-model contract + rendered-page wiring)
-        run: python -m pytest tests/test_glossary.py tests/test_glossary_contract.py tests/test_glossary_letter_rail_js.py -q
       # Finance Intelligence site-builder hook (2026-09-25). The suite reads
       # scripts/build_site.py as TEXT, and this job already owns the site builder, so
       # hosting it here adds no owned path and no packing-probe match. #8010 ran it
       # in its own job instead. That job matched every one-file probe in
       # tests/test_ci_pack.py::test_exclusive_curation_narrows_ordinary_code_prs
       # (templates/index.html 134/133), which turned integration-baseline red on main.
-      - name: finance intelligence site-builder wiring (build_site carries the render hook)
-        run: python -m pytest tests/test_finance_intelligence_site_wiring.py -q
 
   press-lane:
     if: ${{ false }}  # executed inside ci-pack; keep the legacy status definition runner-free
@@ -17196,27 +17202,40 @@ jobs:
           python -m pytest tests/test_us_today_source_binding.py
           tests/test_us_board_gate.py tests/test_us_board_hydration_merge.py
           -q -k "not test_shipped"
-      - name: Prophet source clocks and immutable correction provenance
-        run: python -m pytest tests/test_prophet_plan_chronology_audit.py tests/test_prophet_integrity.py -q
-      - name: grade_us_board outcome ledgers + tenure stamp + the strip it renders
-        run: python -m pytest tests/test_board_tenure_stamp.py tests/test_us_board_outcomes.py tests/test_us_board_outcomes_strip.py tests/test_entry_status_stamping.py tests/test_us_board_price_basis_era.py -q
-      - name: grade_us_board zero-accrual + truncated-history alarms
         # The nightly recorded nothing for nine days (2026-07-31..08-06) while the step
         # concluded `success`; these pin that the alarms fire, name the cause, and stay
         # quiet on a healthy night. An unrun guard is not a guard — this suite is named
         # here because ci.yml has no broad `pytest tests/`.
-        run: python -m pytest tests/test_us_board_zero_accrual_alarm.py -q
-      - name: claim accountability + track-record dialog + onboarding compare matrix
-        run: python -m pytest tests/test_claim_accountability.py tests/test_track_record_dlg.py tests/test_onboard_compare_matrix.py -q
       # Board continuity — both suites shipped 2026-08-05 (#4554, #4557) named by
       # NO workflow, so the VALE class they were written for was never guarded in
       # CI. Separate step from the outcome ledgers above so a red names the law
       # that broke: row-persistence/outage continuity (grade_us_board::emit_ledger)
       # vs the same-as_of Jaccard guard (build_stock_library::_board_continuity_warning).
-      - name: board ledger row-persistence + same-as_of continuity guard
         # Price-specific snapshot clocks import the same actual producer and use
         # committed synthetic series only; keep this guard on the existing code gate.
-        run: python -m pytest tests/test_us_board_ledger_continuity.py tests/test_us_board_continuity_guard.py tests/test_build_stock_library_price_clock.py -q
+      # 2026-10-13: consolidate the historical groups above into one actual pytest
+      # process. Keep every full-suite file and order; pytest still names each
+      # failed node. All 311 nodes equal the six original command collections.
+      - name: Board source clocks, outcome ledgers, accountability, continuity and Canada binding
+        run: >-
+          python -m pytest
+          tests/test_prophet_plan_chronology_audit.py
+          tests/test_prophet_integrity.py
+          tests/test_board_tenure_stamp.py
+          tests/test_us_board_outcomes.py
+          tests/test_us_board_outcomes_strip.py
+          tests/test_entry_status_stamping.py
+          tests/test_us_board_price_basis_era.py
+          tests/test_us_board_zero_accrual_alarm.py
+          tests/test_claim_accountability.py
+          tests/test_track_record_dlg.py
+          tests/test_onboard_compare_matrix.py
+          tests/test_us_board_ledger_continuity.py
+          tests/test_us_board_continuity_guard.py
+          tests/test_build_stock_library_price_clock.py
+          tests/test_canada_canonical_board.py
+          -q
+
 
   unrun-intl-libraries:
     # China / HK / Canada library writers behind the international surfaces.
@@ -17870,6 +17889,7 @@ jobs:
     paths:
       # Native DailyBrief registration/producer import closure (PR #9037).
       - "engine/prophet_candidate_state.py"
+      - "engine/prophet_candidate_state_sources.py"
       - "engine/prophet_daily_brief.py"
       - "engine/prophet_entry_availability.py"
       - "engine/prophet_strategy_definition.py"
@@ -19303,6 +19323,7 @@ jobs:
       # Native DailyBrief registration/producer import closure (PR #9037).
       - "engine/path_risk_signals.py"
       - "engine/prophet_candidate_state.py"
+      - "engine/prophet_candidate_state_sources.py"
       - "engine/prophet_daily_brief.py"
       - "engine/prophet_entry_availability.py"
       - "engine/prophet_strategy_definition.py"
@@ -21938,6 +21959,7 @@ jobs:
     paths:
       # Native DailyBrief registration/producer import closure (PR #9037).
       - "engine/prophet_candidate_state.py"
+      - "engine/prophet_candidate_state_sources.py"
       - "engine/prophet_daily_brief.py"
       - "engine/prophet_entry_availability.py"
       - "engine/prophet_strategy_definition.py"
@@ -22591,8 +22613,7 @@ jobs:
           tests/test_market_memory_trusted.py
           tests/test_market_memory_context_deploy.py
           tests/test_regime_latest_json_boundary.py
-          tests/test_release_target_truth.py
-          tests/test_build_market_memory_page.py -q
+          tests/test_release_target_truth.py -q
 
   group-pulse:
     # GR0 of the Group Reads program: engine/group_pulse.py, the basket-level
@@ -22790,6 +22811,82 @@ jobs:
         run: >-
           python -m pytest
           tests/test_group_linked_outsiders.py -q -rs
+
+  fif-saved-research-notifications:
+    # X2-n: the FIF saved-research notification producer (enqueue-only), its
+    # ownership guards, and the watchstore designated-list helper. A small
+    # first-class owner in the falsifier-tripwires shape so path-aware
+    # selection keeps the exact changed behavior lit: an edit to the producer,
+    # the runner, the alert-category enum, the watchlist store or the nightly
+    # step's own guards never ships dark. The designated-list suite shells
+    # node over the real templates/watchstore.js (the same idiom as the
+    # wri-risk-core watchstore steps, whose setup-node is copied here).
+    if: ${{ false }}  # executed inside ci-pack — NOT a disabled gate.
+    gate: code
+    # scope: exclusive — declared paths are the whole scope (no whole-tree
+    # fallback roots), so ordinary engine/scripts PRs do not select this job.
+    # The list is the job's derived import closure
+    # (scripts.run_ci_pack.inferred_as_if_not_exclusive) plus the two YAMLs
+    # the ownership guards parse; widening is always the safe direction.
+    scope: exclusive
+    paths:
+      - ".github/workflows/daily.yml"
+      - "collectors/edgar_forensics.py"
+      - "collectors/fundamental_forensics_acquisition.py"
+      - "collectors/fundamental_forensics_companyfacts.py"
+      - "collectors/sec_document_spine.py"
+      - "collectors/sec_filing_parser.py"
+      - "collectors/sec_request_pacer.py"
+      - "config/dag.yml"
+      - "config/fundamental_forensics_disclosure_diff.v1.json"
+      - "engine/__init__.py"
+      - "engine/fif_saved_research_notifications.py"
+      - "engine/fundamental_forensics/__init__.py"
+      - "engine/fundamental_forensics/detectors.py"
+      - "engine/fundamental_forensics/disclosure_diff.py"
+      - "engine/fundamental_forensics/filing_attestation.py"
+      - "engine/fundamental_forensics/filing_package.py"
+      - "engine/fundamental_forensics/ixbrl_extraction.py"
+      - "engine/fundamental_forensics/models.py"
+      - "engine/fundamental_forensics/normalize.py"
+      - "engine/fundamental_forensics/pipeline.py"
+      - "engine/fundamental_forensics/private_state.py"
+      - "engine/fundamental_forensics/sec_companyfacts.py"
+      - "engine/fundamental_forensics/sec_document_spine.py"
+      - "engine/fundamental_forensics/source_sync.py"
+      - "engine/research_vault/r2_store.py"
+      - "lib/__init__.py"
+      - "lib/config.py"
+      - "lib/user_prefs.py"
+      - "scripts/__init__.py"
+      - "scripts/run_fif_saved_research_notifications.py"
+      - "templates/watchlist.js"
+      - "templates/watchstore.js"
+      - "tests/test_fif_saved_research_notifications.py"
+      - "tests/test_fif_watchstore_designated_list_js.py"
+      - "tests/test_fif_x2_ownership_guards.py"
+      - "tests/test_watchstore_multilist_js.py"
+    timeout-minutes: 12
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: install minimal deps
+        # pyyaml: the ownership guards parse daily.yml + config/dag.yml. The
+        # producer and its suite are stdlib-only by design (no HTTP client at
+        # import; sockets blocked in an autouse fixture).
+        run: pip install pytest pyyaml
+      - name: fif saved-research producer — enqueue-only decisions + fail-soft IO (X2-n)
+        run: python -m pytest tests/test_fif_saved_research_notifications.py -q
+      - name: fif X2-n ownership guards — one step, no second scheduler, no DDL
+        run: python -m pytest tests/test_fif_x2_ownership_guards.py -q
+      - name: watchstore.js designated list — lazy create, unsubscribe, exact name (X2-n R2)
+        run: python -m pytest tests/test_fif_watchstore_designated_list_js.py -q
 
   falsifier-tripwires:
     # The stateful cycle-ontology falsifier engine was triggerable but its focused
@@ -23479,6 +23576,7 @@ jobs:
       # Native DailyBrief registration/producer import closure (PR #9037).
       - "app/prophet_daily_brief.py"
       - "engine/prophet_candidate_state.py"
+      - "engine/prophet_candidate_state_sources.py"
       - "engine/prophet_daily_brief.py"
       - "engine/prophet_entry_availability.py"
       - "engine/prophet_strategy_definition.py"

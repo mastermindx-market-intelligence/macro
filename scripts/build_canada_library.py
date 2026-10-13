@@ -797,15 +797,183 @@ def _setup_score(rec: dict) -> tuple[float, dict] | None:
     return setup_score(rec, alpha_weight=CA_ALPHA_WEIGHT)
 
 
-def _write_canada_standouts(board: dict, site: Path) -> None:
+# ── Canada original-source binding (bounded first phase) ────────────────────
+# A closed DESCRIPTIVE receipt binding the exact serialized canada_standouts.json
+# bytes to the board they encode — issued at the incumbent publication seam (this
+# writer) so a later consumer can capture what was actually published without
+# recomputing from enriched presentation rows. Evidence of source identity only:
+# NOT proof of live publication, NOT a native CA candidate/Plan owner, and NOT any
+# change to the board's "screen — accruing" authority. Byte identity is not
+# authority.
+#
+# Fail-closed by contract: any unusable source — malformed / duplicate-key /
+# non-finite JSON, wrong top shape, non-canonical as_of, unknown board_definition,
+# dishonest authority stamps, missing/non-list buy/watch, non-object rows, an
+# as_of that is not an actual CA session, or a year the incumbent calendar has
+# not verified — returns None, and the legacy board still publishes unchanged.
+# No coercion, no normalize/filter/cap/sort, no host-clock read, no network: the
+# session and coverage checks delegate entirely to the incumbent owner
+# lib.market_session (tsx_calendar rules). The helper never raises.
+import hashlib  # noqa: E402
+import re  # noqa: E402
+from datetime import date  # noqa: E402
+try:
+    from lib import market_session  # noqa: E402
+except Exception:  # receipt-only owner failure must not stop legacy publication
+    market_session = None
+
+_CA_BINDING_SCHEMA = "prophet.canada_selection_source_binding/v1"
+_CA_BINDING_TZ = "America/Toronto"
+_CA_BINDING_INFINITY = float("inf")
+
+
+def _ca_binding_digest(material: dict) -> str:
+    """sha256 over canonical digest material: explicit sorted keys, compact
+    separators, unescaped Unicode, non-finite refused, UTF-8. Every value is
+    taken from the decoded exact published bytes — nothing recomputed, nothing
+    enriched, no presentation-row substitution."""
+    payload = json.dumps(material, sort_keys=True, separators=(",", ":"),
+                         ensure_ascii=False, allow_nan=False).encode("utf-8")
+    return "sha256:" + hashlib.sha256(payload).hexdigest()
+
+
+def _ca_binding_pairs(pairs: list[tuple[str, object]]) -> dict:
+    """object_pairs_hook that refuses duplicate JSON object keys (fail closed)."""
+    out: dict = {}
+    for key, value in pairs:
+        if key in out:
+            raise ValueError(f"duplicate JSON object key: {key!r}")
+        out[key] = value
+    return out
+
+
+def _ca_binding_constant(name: str) -> None:
+    """parse_constant hook: NaN / Infinity / -Infinity literals are refused."""
+    raise ValueError(f"non-finite JSON literal: {name}")
+
+
+def _ca_binding_float(text: str) -> float:
+    """parse_float hook: a finite-syntax number that overflows (e.g. 1e999) is
+    refused, so a decoded binding can never carry a silent infinity."""
+    value = float(text)
+    if value != value or value in (_CA_BINDING_INFINITY, -_CA_BINDING_INFINITY):
+        raise ValueError(f"non-finite JSON number: {text}")
+    return value
+
+
+def canada_selection_source_binding(source_bytes: bytes) -> dict | None:
+    """Bind the EXACT serialized Canada board bytes to a closed descriptive
+    receipt, or return None when the source is unusable — never raise, never
+    coerce, never touch the board itself.
+
+    Decodes only the exact serialized original JSON bytes; preserves every
+    original key and row order (repeated tickers and identical rows stay
+    distinct; lane order in the receipt is descriptive only). Requires the
+    original canonical as_of to BE an actual CA session through the incumbent
+    owner (lib.market_session.is_session_date('CA', as_of)) and that owner's
+    calendar to have VERIFIED coverage of the year
+    (lib.market_session.calendar_verified('CA', year)) before producing a
+    session-validated receipt — an original session outside measured calendar
+    coverage returns None while the original bytes still publish unchanged.
+
+    The receipt says what the source IS, nothing more: market/timezone are the
+    owner's (America/Toronto), calendar_status is VERIFIED only because the
+    coverage gate passed, and the three authority stamps are copied verbatim
+    from the source, which must already state them honestly. No host read-time
+    is relabeled as source session; no freshness is implied.
+    """
+    try:
+        if not isinstance(source_bytes, (bytes, bytearray)) or not source_bytes:
+            return None
+        data = bytes(source_bytes)
+        board = json.loads(data.decode("utf-8"),
+                           object_pairs_hook=_ca_binding_pairs,
+                           parse_constant=_ca_binding_constant,
+                           parse_float=_ca_binding_float)
+        if not isinstance(board, dict):
+            return None
+        as_of = board.get("as_of")
+        if not isinstance(as_of, str) or not re.fullmatch(r"\d{4}-\d{2}-\d{2}", as_of):
+            return None
+        try:
+            as_of_day = date.fromisoformat(as_of)
+        except ValueError:
+            return None
+        if board.get("board_definition") != CA_BOARD_DEFINITION:
+            return None
+        if board.get("authority") != CA_BOARD_AUTHORITY:        # identity, not falsey
+            return None
+        if board.get("selection_status") != "accruing":         # identity, not falsey
+            return None
+        if board.get("official_pick_authority") is not False:   # strict bool identity
+            return None
+        ordered_rows: list[dict] = []
+        for lane in ("buy", "watch"):
+            rows = board.get(lane)
+            if not isinstance(rows, list):
+                return None
+            for index, row in enumerate(rows):
+                if not isinstance(row, dict):
+                    return None
+                ordered_rows.append({
+                    "lane": lane,
+                    "selection_index": index,   # original zero-based lane position
+                    "row_receipt": _ca_binding_digest(row),
+                })
+        # Session + coverage through the incumbent CA owner — never the host clock.
+        if market_session is None:
+            return None
+        if not market_session.is_session_date("CA", as_of_day):
+            return None
+        if not market_session.calendar_verified("CA", as_of_day.year):
+            return None
+        material = {
+            "schema": _CA_BINDING_SCHEMA,
+            "receipt_kind": "EXACT_SERIALIZED_SOURCE",
+            "market": "CA",
+            "timezone": _CA_BINDING_TZ,
+            "source_sha256": "sha256:" + hashlib.sha256(data).hexdigest(),
+            "as_of": as_of,
+            "market_session": as_of,
+            "calendar_status": "VERIFIED",
+            "board_definition": board["board_definition"],
+            "authority": board["authority"],
+            "selection_status": board["selection_status"],
+            "official_pick_authority": board["official_pick_authority"],
+            "ordered_rows": ordered_rows,
+        }
+        # Digest is taken BEFORE the receipt appends its own field: the closed
+        # material is exactly the keys above, no self-reference.
+        material["selection_receipt"] = _ca_binding_digest(material)
+        return material
+    except Exception:  # noqa: BLE001 — the receipt is best-effort and NEVER fatal
+        return None
+
+
+def _write_canada_standouts(board: dict, site: Path) -> dict | None:
     """The ONE write site for canada_standouts.json — CA-TRUTH: main() writes and
     returns the exact same `board` object (no re-derive, no re-sort, no partial
     copy). Extracted so a test can execute the real write and assert byte-for-byte
     parity against the returned object, rather than pattern-matching main()'s
-    source text."""
+    source text.
+
+    Bounded amendment (original-source binding): the board is still serialized
+    EXACTLY ONCE with the historical dumps call, and those exact bytes are both
+    what lands on disk and what the returned receipt binds. On write success the
+    writer returns canada_selection_source_binding(bytes_written) — a closed
+    descriptive receipt, or None when the source is not binding-eligible (the
+    legacy board is published unchanged either way; the helper never raises, so
+    a receipt failure cannot alter emission). A write failure still raises and
+    produces no receipt. main() may ignore this return; the board object carries
+    no receipt field and no second artifact is written."""
     (site / "factordata").mkdir(parents=True, exist_ok=True)
-    (site / "factordata" / "canada_standouts.json").write_text(
-        json.dumps(board, separators=(",", ":"), default=str))
+    payload = json.dumps(board, separators=(",", ":"), default=str)
+    # ensure_ascii defaults True, so `payload` is pure ASCII and encode("utf-8")
+    # is byte-identical to what the historical write_text() put on disk — while
+    # letting the receipt bind the exact bytes actually written.
+    data = payload.encode("utf-8")
+    (site / "factordata" / "canada_standouts.json").write_bytes(data)
+    return canada_selection_source_binding(data)
 
 
 def _build_canonical_board(cand: list, as_of, align_map: dict, sig_verdict: dict,
