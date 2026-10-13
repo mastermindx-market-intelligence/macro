@@ -1,11 +1,11 @@
 {
   "schema": "claim_accountability.v1",
-  "generated_at": "2026-10-11T14:35:48.690533+00:00",
+  "generated_at": "2026-10-12T23:55:24.973590+00:00",
   "global": {
-    "n_claims": 118022,
+    "n_claims": 118082,
     "n_grades": 202275,
-    "n_with_falsifier": 1203,
-    "falsifier_coverage": 0.010193,
+    "n_with_falsifier": 1209,
+    "falsifier_coverage": 0.010239,
     "falsifier_coverage_note": "~146/9069 = 1.6% global as of 2026-07-06; falsifier-starvation is a structural property of importance-signal and china_news desks, not a grader failure"
   },
   "by_desk": {
@@ -213,15 +213,15 @@
       }
     },
     "intel_hub": {
-      "n_claims": 6612,
-      "falsifier_coverage": 0.038415,
-      "n_with_falsifier": 254,
-      "hit_gradeable_share": 0.948578,
-      "n_hit_gradeable": 6272,
+      "n_claims": 6672,
+      "falsifier_coverage": 0.038969,
+      "n_with_falsifier": 260,
+      "hit_gradeable_share": 0.948441,
+      "n_hit_gradeable": 6328,
       "hit_gradeable_note": "direction=0 claims are not hit-gradeable (graded on excess only); this does not contradict the R2 audit CLOSED verdict",
       "maturity_mix": {
         "graded_5d_count": 9104,
-        "graded_5d_share": 1.376891,
+        "graded_5d_share": 1.364508,
         "matured_21d_count": 3227,
         "matured_63d_count": 0,
         "note": "21d/63d matured counts are 0 today \u2014 calendar-gated, not build-gated; earliest useful read ~2026-10-01"
@@ -824,15 +824,15 @@
       }
     },
     "intel_hub": {
-      "n_claims": 6612,
-      "falsifier_coverage": 0.038415,
-      "n_with_falsifier": 254,
-      "hit_gradeable_share": 0.948578,
-      "n_hit_gradeable": 6272,
+      "n_claims": 6672,
+      "falsifier_coverage": 0.038969,
+      "n_with_falsifier": 260,
+      "hit_gradeable_share": 0.948441,
+      "n_hit_gradeable": 6328,
       "hit_gradeable_note": "direction=0 claims are not hit-gradeable (graded on excess only); this does not contradict the R2 audit CLOSED verdict",
       "maturity_mix": {
         "graded_5d_count": 9104,
-        "graded_5d_share": 1.376891,
+        "graded_5d_share": 1.364508,
         "matured_21d_count": 3227,
         "matured_63d_count": 0,
         "note": "21d/63d matured counts are 0 today \u2014 calendar-gated, not build-gated; earliest useful read ~2026-10-01"
@@ -1144,7 +1144,7 @@
     }
   },
   "track_record_ref": {
-    "generated_at": "2026-10-11T14:31:30.393236+00:00",
+    "generated_at": "2026-10-12T23:51:04.530506+00:00",
     "grade_horizons": [
       5,
       21,
