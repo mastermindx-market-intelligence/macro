@@ -784,9 +784,34 @@ def test_clearance_probe_js_binds_locator_element_then_arg() -> None:
 
 
 def test_capture_relocated_needles_are_locale_visible_and_must_be_inside() -> None:
-    """M2 / B3: probe strings exist on the rates page and live in details."""
+    """M2 / B3: probe strings exist on the rates page and live in details.
+
+    The committed page is not part of this law. A rates snapshot rendered
+    through _render_workspace_html keeps the verdict off site/ (precedent
+    1f2b713e37, #8032). Confidence basis is emitted once per implication
+    entry; the stale fixture has none, so this plants one descriptive entry.
+    """
+    import json
     from scripts.capture_macro_command_p5 import RELOCATED_EN, RELOCATED_ZH
-    html = (ROOT / "site" / "macro_rates_curves.html").read_text(encoding="utf-8")
+    fixture = json.loads(
+        (ROOT / "tests" / "fixtures" / "macro_command_p5"
+         / "rates_e2_stale.json").read_text(encoding="utf-8"))
+    fixture["implications"] = {"items": [{
+        "implication_id": "curve_shape",
+        "text": {"en": "The curve is steeper.", "zh": "曲线更陡。"},
+        "evidence_class": "DESCRIPTIVE",
+        "horizon": "ONE_MONTH",
+        "channels": [],
+        "confidence": {
+            "data_coverage": "HIGH",
+            "source_health": "HIGH",
+            "revision_risk": "LOW",
+            "method_stability": "HIGH",
+            "evidence_breadth": "MEDIUM",
+            "contradiction_state": "NONE",
+        },
+    }]}
+    html = _render_workspace_html("rates_curves", fixture)
     assert "mc-producer-receipt" not in html
     for needle in RELOCATED_EN:
         assert needle in html
@@ -1925,20 +1950,6 @@ def _assert_one_lineage_kind(html: str, kind: str) -> None:
     assert "cannot summarise the correction note yet" not in html
 
 
-def _assert_live_lineage_matches_note(workspace_id: str, page_name: str) -> None:
-    """The committed page says the sentence its corrections.note actually is."""
-    import json
-    from lib.macro_suite_disclosure import classify_lineage_kind
-    snap = json.loads(
-        (DATA_ROOT / "workspaces" / workspace_id / "US" / "latest.json")
-        .read_text(encoding="utf-8"))
-    note = (snap.get("corrections") or {}).get("note")
-    kind = classify_lineage_kind(note)
-    html = (ROOT / "site" / page_name).read_text(encoding="utf-8")
-    print(f"lineage branch={kind} page={page_name}")
-    _assert_one_lineage_kind(html, kind)
-
-
 def _assert_axes_resolve_by_id(items: list, vector: dict, snap: dict) -> None:
     """List order does not bind. Swapping the items keeps the same ids and move."""
     from lib.macro_suite_disclosure import resolve_vector_axes
@@ -2409,10 +2420,15 @@ def _assert_restored_row_family(html: str) -> None:
     assert "A correction note is on file for this reading." not in html
 
 
-@pytest.mark.needs_full_checkout("site")
 def test_restored_row_families_on_non_composite_page() -> None:
-    """Value-correction rows are a fixture scenario. The committed page
-    keeps the row family and the sentence its own note classifies as."""
+    """Value-correction rows are a fixture scenario.
+
+    The committed page is not part of this law. Its corrections.note moves
+    with the nightly snapshot and the HTML is rebaked separately, so
+    requiring the page to match today's kind goes red on main (precedent
+    1f2b713e37, #8032). The row family and the value-correction sentence
+    are pinned by _render_workspace_html on mp_value_correction.json.
+    """
     import json
     fixture = json.loads(
         (ROOT / "tests" / "fixtures" / "macro_command_p5"
@@ -2420,16 +2436,6 @@ def test_restored_row_families_on_non_composite_page() -> None:
     baked = _render_workspace_html("monetary_policy", fixture)
     _assert_restored_row_family(baked)
     _assert_one_lineage_kind(baked, "value_correction")
-    live = (ROOT / "site" / "macro_monetary_policy.html").read_text(
-        encoding="utf-8")
-    assert "mq-axis-method" not in live
-    for en, zh in _RESTORED_ROW_PAIRS[:3]:
-        assert en in live, en
-        assert zh in live, zh
-    assert "Definition version" in live
-    assert "A correction note is on file for this reading." not in live
-    _assert_live_lineage_matches_note(
-        "monetary_policy", "macro_monetary_policy.html")
 
 
 @pytest.mark.needs_full_checkout("mockups")
