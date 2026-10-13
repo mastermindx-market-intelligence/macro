@@ -3526,6 +3526,63 @@ jobs:
       - "engine/options_signal_episode_contract.py"
       - "engine/session_digest.py"
       - "lib/live_flow_event_stage.py"
+      - "engine/canon.py"
+      - "engine/conditions.py"
+      - "engine/confluence_tiers.py"
+      - "engine/entry_primitives.py"
+      - "engine/hysteresis.py"
+      - "engine/indicators.py"
+      - "engine/path_personality.py"
+      - "engine/path_risk_signals.py"
+      - "engine/session_anchor.py"
+      - "engine/stock_identity/__init__.py"
+      - "engine/stock_identity/authority.py"
+      - "engine/stock_identity/fingerprint.py"
+      - "engine/stock_identity/plane.py"
+      - "engine/stock_technicals.py"
+      - "engine/technicals.py"
+      - "engine/us_candidate_episode.py"
+      - "lib/dataos/identity.py"
+      - "lib/store.py"
+      - "config/earnings_story_promotion.yml"
+      - "config/fundamental_forensics_disclosure_diff.v1.json"
+      - "config/theme_graph_identity_breaks.yml"
+      - "contracts/evidence_foundation/block.v1.schema.json"
+      - "contracts/evidence_foundation/recipe.v1.schema.json"
+      - "contracts/evidence_foundation/reference.v1.schema.json"
+      - "contracts/evidence_foundation/vocabulary.v1.json"
+      - "engine/company_intelligence/__init__.py"
+      - "engine/company_intelligence/contracts.py"
+      - "engine/company_intelligence/documents.py"
+      - "engine/company_intelligence/event_id_adapter.py"
+      - "engine/company_intelligence/event_workspace.py"
+      - "engine/company_intelligence/event_workspace_build.py"
+      - "engine/company_intelligence/events.py"
+      - "engine/company_intelligence/health.py"
+      - "engine/company_intelligence/identity.py"
+      - "engine/company_intelligence/issuer_profiles.py"
+      - "engine/company_intelligence/pg_envelope.py"
+      - "engine/company_intelligence/pg_profile.py"
+      - "engine/company_intelligence/qa_exchange.py"
+      - "engine/company_intelligence/qa_reconstruction.py"
+      - "engine/company_intelligence/views.py"
+      - "engine/earnings_narrative/contracts.py"
+      - "engine/earnings_narrative/digest.py"
+      - "engine/earnings_narrative/promotion.py"
+      - "engine/earnings_narrative/public_wire.py"
+      - "engine/earnings_narrative/story.py"
+      - "engine/earnings_narrative/story_packets.py"
+      - "engine/earnings_release/binding.py"
+      - "engine/earnings_release/figures.py"
+      - "engine/earnings_release/filing_key.py"
+      - "engine/earnings_release/receipts.py"
+      - "engine/fundamental_forensics/disclosure_diff.py"
+      - "engine/fundamental_forensics/models.py"
+      - "engine/press/earnings_adapter.py"
+      - "engine/theme_graph/__init__.py"
+      - "engine/theme_graph/identity.py"
+      - "lib/evidence_foundation.py"
+      - "lib/pages.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -6723,6 +6780,7 @@ jobs:
           tests/test_capital_structure_sec_discovery_clock.py
           tests/test_capital_structure_document_terms.py
           tests/test_capital_structure_instrument_candidates.py
+          tests/test_c19_wp14_capital_observation_pins.py
           tests/test_capital_structure_event_spine.py
           tests/test_capital_structure_graph.py
           tests/test_capital_structure_legacy_compat.py
@@ -7277,18 +7335,16 @@ jobs:
         run: python -m pytest tests/test_synapse_read_gate.py tests/test_horizon_firewall.py tests/test_delivery_waterfall.py tests/test_pricing_power_monitor.py tests/test_risk_envelope.py tests/test_live_risk_envelope.py tests/test_rotation_risk_envelope.py tests/test_rotation_risk_consumers.py -q
       - name: factor deescalation shadow + boundary guard tests
         run: python -m pytest tests/test_factor_deescalation_shadow.py -q
-      - name: edgar 8-K item-code expansion unit tests (LHB-R7)
-        run: python -m pytest tests/test_edgar_8k_items.py -q
+      # Share one pytest session across the three existing offline EDGAR suites.
+      # Test inventory, dependencies and ordinary scope inference are unchanged.
+      - name: edgar 8-K item-code expansion unit tests (LHB-R7) and all existing owning contracts in one pytest session
+        run: python -m pytest tests/test_edgar_8k_items.py tests/test_edgar_8k_counterparty.py tests/test_edgar_quarterly_tags.py -q
       # GR3b: 8-K counterparty extraction unlock. GR3 (#5008) measured the column
       # as null in all 50,667 committed rows -- the name leg was gated behind the
       # dollar leg, the "primary document" selector was reading the EDGAR submission
       # HEADER page (index.json's `type` field is the listing ICON name, never a form
       # type), and the fetched HTML was never stripped to prose. All three, plus the
       # bounded exhibit reads and the enrich_rev backfill bookkeeping, are pinned here.
-      - name: edgar 8-K counterparty extraction + exhibit reads (GR3b, no network)
-        run: python -m pytest tests/test_edgar_8k_counterparty.py -q
-      - name: LHB-R6 quarterly-store enrichment tag tests (no network)
-        run: python -m pytest tests/test_edgar_quarterly_tags.py -q
       - name: edgar fundamentals universe widening (W2-A — R2000 via committed constituents)
         run: python -m pytest tests/test_edgar_universe_widening.py -q
       - name: edgar FTS first-request abort guard fires on _CONFIRMED_ABSENT too (no network)
@@ -19028,7 +19084,7 @@ jobs:
         with:
           python-version: "3.12"
       - name: install minimal deps
-        run: pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly requests beautifulsoup4 html5lib openpyxl scikit-learn
+        run: pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly requests beautifulsoup4 html5lib openpyxl scikit-learn jsonschema==4.26.0
       - name: US candidate and plan source-date truth (PR-time gated journey)
         run: >-
           python -m pytest tests/test_p0_prophet_candidate_board.py -q -k "candidate_heading_discloses_source_date or gated_candidate_journey or historical_plan_wall_does_not"
@@ -19077,6 +19133,8 @@ jobs:
         run: python -m pytest tests/test_prophet_card_shared.py tests/test_prophet_plan_relation.py tests/test_prophet_candidate_plan_return.py tests/test_prophet_journey_reconcile.py tests/test_us_completed_session_panel.py tests/test_us_leader_observation_projection.py tests/test_prophet_candidate_state.py tests/test_prophet_candidate_state_sources.py tests/test_prophet_strategy_definition.py tests/test_build_live_quotes.py tests/test_vps_live_orchestration.py tests/test_prophet_daily_brief.py -q
       - name: Prophet detector, organ and disposition contracts (one native process)
         run: python -m pytest tests/test_prophet_doors.py tests/test_gate_crash_failopen.py tests/test_prophet_arena.py tests/test_washout_turn.py tests/test_mtf_upturn.py tests/test_oracle_memory_analogues_step.py tests/test_stock_events.py tests/test_event_atlas.py tests/test_us_leader_pullback.py tests/test_us_leader_pullback_coverage.py tests/test_mi_s2_theme_relative_intraday_registration.py tests/test_us_turn_watch.py tests/test_us_basket_turn.py tests/test_prophet_b2_disposition.py -q
+      - name: Prophet native Plan source-origin binding and malformed-input guards
+        run: python -m pytest tests/test_prophet_plan_clock.py tests/test_prophet_bridge.py -q -k 'PlanSourceOrigin or source_origin_extension or (test_validate_trade_plan and not (engines_required or schema_mismatch or invalid_direction or every_referenced))'
       - name: Prophet B4 producer basis and disclosed freshness guards
         run: python -m pytest tests/test_prophet_live_evaluator.py -q -k 'dark_artifact_discloses or malformed_threshold or row_exception_material or zero_or_negative or cfg_stamps or meta_discloses or stripping_only or basis_material or the_disclosure'
 
@@ -22514,13 +22572,13 @@ jobs:
         with:
           python-version: "3.12"
       - name: install minimal deps
-        run: pip install pytest pandas numpy pyarrow pyyaml requests
+        run: pip install pytest pandas numpy pyarrow pyyaml requests jsonschema fastapi httpx
       # RS Pullback Phase 1 adds synthetic first-seen/PIT input admission here:
       # gate: code makes it a PR check; signal-contract is data-plane only.
       # PTSE source-only research contracts are fixture-only: no live source/store
       # or provider reads and no publication authority. Register every suite here,
       # alongside the existing frozen/PIT research contracts, in this CODE gate.
-      - name: frozen price panel + RS pullback admission, retained observations and temporal conformance
+      - name: frozen price panel + RS pullback admission, retained observations and temporal conformance and all existing owning contracts in one pytest session
         run: >-
           python -m pytest
           tests/test_research_price_panel.py
@@ -22541,11 +22599,17 @@ jobs:
           tests/test_ptse_shadow_enrollment.py
           tests/test_ptse_shadow_integrity.py
           tests/test_ptse_shadow_outcome.py
-          tests/test_ptse_w3_publication.py -q
-      # M0D v2 uses offline tmp stores and committed source/deployment contracts.
-      # Keep its entire suite on the PR code gate as well as data-health.
-      - name: Market Memory M0D v2 source binding and static contracts
-        run: python -m pytest tests/test_market_memory_m0d_v2.py -q
+          tests/test_ptse_w3_publication.py
+          tests/test_market_memory_m0d_v2.py
+          tests/test_market_memory_population.py
+          tests/test_market_memory_episode_features.py
+          tests/test_market_memory_episode_comparison.py
+          tests/test_market_memory_experience_accrual.py
+          tests/test_market_memory_retained_context_cohort.py
+          tests/test_market_memory_episode_retrieval.py -q
+      # The command includes all original source/temporal owner tests plus
+      # retained population, label-free projection, comparison and retrieval.
+      # Original DATA registration remains; current rights use real tmp owners.
 
   entry-radar-rs-pullback-calendar:
     if: ${{ false }}
