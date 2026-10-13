@@ -1,0 +1,503 @@
+/* fif_saved_briefcase.js
+ *
+ * FIF X2-s saved views — the device-local briefcase for Filing Forensics,
+ * following the Government Revenue briefcase discipline
+ * (templates/government-revenue-briefcase.js): this module never fetches,
+ * polls, sends a notification, or talks to an account service. It is a
+ * page integration seam; the page owns rendering and every network call.
+ *
+ * Storage: one device-local key, mastermind.filing_forensics.saved_research.v1,
+ * holding {contract:"fundamental_forensics.saved_research.v1", saved_views:[…]}
+ * — no inbox key (no in-product inbox in this wave).
+ *
+ * Every saved view embeds the X0 request it was saved against, verbatim and
+ * canonicalised, plus a top-level request_contract naming that contract
+ * version. A load REFUSES — plain "saved view unavailable", never a crash,
+ * never a repair, never a migration, never a silent drop — when any contract
+ * check fails. A refused view stays listed (as unavailable) and may be
+ * deleted.
+ */
+(function (root) {
+  'use strict';
+
+  var SAVED_SCHEMA = 'fundamental_forensics.saved_research.v1';
+  var REQUEST_CONTRACT = 'fundamental_forensics.financial_query_request/v1';
+  var STORAGE_KEY = 'mastermind.filing_forensics.saved_research.v1';
+  var MANIFEST_V2_SCHEMA = 'investigation_manifest.v2';
+  // The A→B migration carrier: every saved field with no manifest-v2 home
+  // rides verbatim under this one key (X2-b, Terminal investigations).
+  var CARRIER_KEY = 'fif_saved_research';
+  var MANIFEST_OWNER = 'fif';
+  var MAX_VIEWS = 24;
+  var MAX_NAME_LENGTH = 120;
+  var MAX_EVIDENCE_REFS = 16;
+  var MAX_METRIC_IDS = 50;
+  var MAX_PERIODS = 8;
+  var MAX_CELLS = 400;
+  var ID_LENGTH = 22;
+  var ID_ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  var ROOT_REQUEST_KEYS = ['schema', 'entity_id', 'policy', 'metric_ids', 'periods'];
+  var POLICY_KEYS = ['selection', 'source_snapshot_at', 'recorded_at'];
+  var PERIOD_KEYS = ['kind', 'start', 'end', 'label'];
+  var SELECTIONS = ['as_reported', 'latest_known_as_of', 'latest_restated'];
+
+  function object(value) {
+    return !!value && typeof value === 'object' && !Array.isArray(value);
+  }
+
+  function array(value) {
+    return Array.isArray(value) ? value : [];
+  }
+
+  function copy(value) {
+    return JSON.parse(JSON.stringify(value));
+  }
+
+  function text(value, limit) {
+    if (typeof value !== 'string') return '';
+    return value.trim().slice(0, limit == null ? 1000 : limit);
+  }
+
+  function exactKeys(value, keys) {
+    if (!object(value)) return false;
+    var present = Object.keys(value);
+    if (present.length !== keys.length) return false;
+    for (var index = 0; index < keys.length; index += 1) {
+      if (!Object.prototype.hasOwnProperty.call(value, keys[index])) return false;
+    }
+    return true;
+  }
+
+  function hasNumber(value) {
+    if (typeof value === 'number') return true;
+    if (Array.isArray(value)) {
+      for (var index = 0; index < value.length; index += 1) {
+        if (hasNumber(value[index])) return true;
+      }
+      return false;
+    }
+    if (object(value)) {
+      var keys = Object.keys(value);
+      for (var keyIndex = 0; keyIndex < keys.length; keyIndex += 1) {
+        if (hasNumber(value[keys[keyIndex]])) return true;
+      }
+    }
+    return false;
+  }
+
+  // ── Request contract (mirrors engine/fundamental_forensics/query_service.py
+  // admit_financial_request root/policy/period key sets and bounds) ─────────
+  // Returns the canonicalised request object (fixed key order ⇒ stable bytes
+  // under JSON.stringify) or null when the request is not admittable-shaped.
+  function canonicalRequest(request) {
+    if (!object(request)) return null;
+    if (!exactKeys(request, ROOT_REQUEST_KEYS)) return null;
+    if (request.schema !== REQUEST_CONTRACT) return null;
+    var entityId = request.entity_id;
+    if (typeof entityId !== 'string' || !entityId) return null;
+
+    var policy = request.policy;
+    if (!exactKeys(policy, POLICY_KEYS)) return null;
+    if (SELECTIONS.indexOf(policy.selection) === -1) return null;
+    if (typeof policy.source_snapshot_at !== 'string' || !policy.source_snapshot_at) return null;
+    if (typeof policy.recorded_at !== 'string' || !policy.recorded_at) return null;
+
+    var metricIds = request.metric_ids;
+    if (!Array.isArray(metricIds) || !metricIds.length || metricIds.length > MAX_METRIC_IDS) return null;
+    var seenMetrics = {};
+    for (var metricIndex = 0; metricIndex < metricIds.length; metricIndex += 1) {
+      if (typeof metricIds[metricIndex] !== 'string' || !metricIds[metricIndex]) return null;
+      if (Object.prototype.hasOwnProperty.call(seenMetrics, metricIds[metricIndex])) return null;
+      seenMetrics[metricIds[metricIndex]] = true;
+    }
+
+    var periods = request.periods;
+    if (!Array.isArray(periods) || !periods.length || periods.length > MAX_PERIODS) return null;
+    var canonicalPeriods = [];
+    for (var periodIndex = 0; periodIndex < periods.length; periodIndex += 1) {
+      var raw = periods[periodIndex];
+      if (!exactKeys(raw, PERIOD_KEYS)) return null;
+      if (raw.kind === 'duration') {
+        if (typeof raw.start !== 'string' || !raw.start) return null;
+      } else if (raw.kind === 'instant') {
+        if (raw.start !== null) return null;
+      } else {
+        return null;
+      }
+      if (typeof raw.end !== 'string' || !raw.end) return null;
+      if (typeof raw.label !== 'string' || !raw.label) return null;
+      canonicalPeriods.push({ kind: raw.kind, start: raw.start, end: raw.end, label: raw.label });
+    }
+    if (metricIds.length * canonicalPeriods.length > MAX_CELLS) return null;
+    // No numbers anywhere in a request (X0: no floats; nothing here is numeric).
+    if (hasNumber(metricIds) || hasNumber(periods) || hasNumber(policy)) return null;
+
+    return {
+      schema: REQUEST_CONTRACT,
+      entity_id: entityId,
+      policy: {
+        selection: policy.selection,
+        source_snapshot_at: policy.source_snapshot_at,
+        recorded_at: policy.recorded_at
+      },
+      metric_ids: metricIds.slice(),
+      periods: canonicalPeriods
+    };
+  }
+
+  // ── Saved-view shape ────────────────────────────────────────────────────
+  // Refusal reasons (each has a test): 'schema', 'request_contract',
+  // 'request_schema', 'request_root', 'pinned_cutoffs'. A view that fails any
+  // check is listed as unavailable and may be deleted, never repaired.
+  function checkView(raw) {
+    if (!object(raw)) return { ok: false, reason: 'schema' };
+    if (raw.schema !== SAVED_SCHEMA) return { ok: false, reason: 'schema' };
+    if (raw.request_contract !== REQUEST_CONTRACT) return { ok: false, reason: 'request_contract' };
+    if (!object(raw.request)) return { ok: false, reason: 'request_schema' };
+    if (raw.request.schema !== raw.request_contract) return { ok: false, reason: 'request_schema' };
+    if (!exactKeys(raw.request, ROOT_REQUEST_KEYS)) return { ok: false, reason: 'request_root' };
+    if (raw.pinned === true) {
+      var policy = object(raw.request.policy) ? raw.request.policy : {};
+      if (!policy.source_snapshot_at || !policy.recorded_at) {
+        return { ok: false, reason: 'pinned_cutoffs' };
+      }
+    }
+    return { ok: true, view: raw };
+  }
+
+  function normalEvidenceRefs(values) {
+    var out = [];
+    array(values).forEach(function (entry) {
+      if (out.length >= MAX_EVIDENCE_REFS) return;
+      if (!object(entry)) return;
+      var span = Array.isArray(entry.source_span) && entry.source_span.length === 2 &&
+        typeof entry.source_span[0] === 'number' && typeof entry.source_span[1] === 'number' &&
+        Number.isFinite(entry.source_span[0]) && Number.isFinite(entry.source_span[1])
+        ? [Math.trunc(entry.source_span[0]), Math.trunc(entry.source_span[1])] : null;
+      if (!span) return; // no invented spans (AM1): a ref without a real span is dropped
+      out.push({
+        accession: text(entry.accession, 64),
+        occurrence_id: text(entry.occurrence_id, 128),
+        source_span: span
+      });
+    });
+    return out;
+  }
+
+  function normalPeers(value) {
+    value = object(value) ? value : {};
+    var peerN = Number.isFinite(value.peer_n) && value.peer_n >= 0 ? Math.trunc(value.peer_n) : 3;
+    var peerTol = Number.isFinite(value.peer_tol) && value.peer_tol >= 0 ? Math.trunc(value.peer_tol) : 45;
+    return {
+      cohort: text(value.cohort, 128) || null,
+      peer_metric: text(value.peer_metric, 128) || null,
+      align: value.align === 'shift_labeled' ? 'shift_labeled' : 'exclude',
+      peer_n: peerN,
+      peer_tol: peerTol
+    };
+  }
+
+  function normalSavedAgainst(value) {
+    value = object(value) ? value : {};
+    return {
+      generation_id: text(value.generation_id, 128) || null,
+      admitted_at: text(value.admitted_at, 80) || null,
+      response_sha256: /^[a-f0-9]{64}$/.test(text(value.response_sha256, 80)) ? text(value.response_sha256, 80) : null
+    };
+  }
+
+  function normalIssuer(value) {
+    value = object(value) ? value : {};
+    // Display/index metadata only; the query identity is request.entity_id
+    // and is never inferred from the ticker.
+    return {
+      entity_id: text(value.entity_id, 160) || null,
+      cik: text(value.cik, 32) || null,
+      ticker: text(value.ticker, 32) || null
+    };
+  }
+
+  function normalViewMeta(value) {
+    value = object(value) ? value : {};
+    var allowed = ['radar', 'statements', 'disclosures', 'redlines', 'timeline', 'compare', 'trace', 'peers'];
+    var tab = allowed.indexOf(value.tab) >= 0 ? value.tab : 'radar';
+    return { tab: tab, finding: text(value.finding, 128) || null };
+  }
+
+  // ── Container (GovRev discipline: contract-checked, self-healing blank) ──
+  function blankContainer() {
+    return { contract: SAVED_SCHEMA, saved_views: [] };
+  }
+
+  function normalContainer(value) {
+    if (!object(value) || value.contract !== SAVED_SCHEMA) return blankContainer();
+    var container = blankContainer();
+    var seenIds = {};
+    array(value.saved_views).forEach(function (row) {
+      if (!object(row)) return;
+      if (container.saved_views.length >= MAX_VIEWS) return;
+      var id = text(row.id, 64);
+      if (!id || Object.prototype.hasOwnProperty.call(seenIds, id)) return;
+      seenIds[id] = true;
+      container.saved_views.push(copy(row)); // kept verbatim — refused or not
+    });
+    return container;
+  }
+
+  // ── Module factory ──────────────────────────────────────────────────────
+  function createFifSavedBriefcase(api) {
+    api = object(api) ? api : {};
+    var storage = api.storage || null;
+    if (!storage) {
+      try { storage = root.localStorage; } catch (error) { storage = null; }
+    }
+    var cryptoSource = object(api.crypto) ? api.crypto : (root.crypto || null);
+    // Injected-clock seam (tests pass api.now); GovRev precedent
+    // government-revenue-briefcase.js:483-484.
+    var now = typeof api.now === 'function' ? api.now : function () { return new Date().toISOString(); };
+
+    function stamp() {
+      var value = text(now(), 80);
+      return value || new Date().toISOString();
+    }
+
+    function entropy(length) {
+      var bytes = new Array(length);
+      if (cryptoSource && typeof cryptoSource.getRandomValues === 'function') {
+        var view = new Uint8Array(length);
+        cryptoSource.getRandomValues(view);
+        for (var index = 0; index < length; index += 1) bytes[index] = view[index];
+      } else {
+        for (var fallback = 0; fallback < length; fallback += 1) {
+          bytes[fallback] = Math.floor(Math.random() * 256);
+        }
+      }
+      return bytes;
+    }
+
+    function makeId() {
+      var bytes = entropy(ID_LENGTH);
+      var id = '';
+      for (var index = 0; index < ID_LENGTH; index += 1) {
+        id += ID_ALPHABET[bytes[index] % ID_ALPHABET.length];
+      }
+      return id;
+    }
+
+    function read() {
+      if (!storage || typeof storage.getItem !== 'function') return blankContainer();
+      try {
+        return normalContainer(JSON.parse(storage.getItem(STORAGE_KEY) || 'null'));
+      } catch (error) {
+        return blankContainer();
+      }
+    }
+
+    var container = read();
+
+    function commit() {
+      var persisted = false;
+      if (storage && typeof storage.setItem === 'function') {
+        try {
+          storage.setItem(STORAGE_KEY, JSON.stringify(container));
+          persisted = true;
+        } catch (error) {}
+      }
+      return persisted;
+    }
+
+    function rowById(id) {
+      var wanted = text(id, 64);
+      for (var index = 0; index < container.saved_views.length; index += 1) {
+        if (text(container.saved_views[index].id, 64) === wanted) return container.saved_views[index];
+      }
+      return null;
+    }
+
+    function listing() {
+      return container.saved_views.map(function (row) {
+        var checked = checkView(row);
+        return {
+          id: text(row.id, 64),
+          name: text(row.name, MAX_NAME_LENGTH),
+          pinned: row.pinned === true,
+          updated_at: text(row.updated_at, 80),
+          available: checked.ok,
+          reason: checked.ok ? '' : checked.reason
+        };
+      });
+    }
+
+    function load(id) {
+      var row = rowById(id);
+      if (!row) return { ok: false, reason: 'missing' };
+      var checked = checkView(row);
+      if (!checked.ok) return { ok: false, reason: checked.reason };
+      return { ok: true, view: copy(row) };
+    }
+
+    function save(input) {
+      input = object(input) ? input : {};
+      if (container.saved_views.length >= MAX_VIEWS) return { ok: false, reason: 'limit' };
+      var name = text(input.name, MAX_NAME_LENGTH);
+      if (!name) return { ok: false, reason: 'name' };
+      var request = canonicalRequest(input.request);
+      if (!request) return { ok: false, reason: 'request' };
+      var pinned = input.pinned === true;
+      if (pinned && (!request.policy.source_snapshot_at || !request.policy.recorded_at)) {
+        return { ok: false, reason: 'pinned_cutoffs' };
+      }
+      var stamped = stamp();
+      var view = {
+        schema: SAVED_SCHEMA,
+        request_contract: REQUEST_CONTRACT,
+        id: makeId(),
+        name: name,
+        created_at: stamped,
+        updated_at: stamped,
+        issuer: normalIssuer(input.issuer),
+        request: request,
+        peers: normalPeers(input.peers),
+        view: normalViewMeta(input.view),
+        pinned: pinned,
+        saved_against: normalSavedAgainst(input.saved_against),
+        evidence_refs: normalEvidenceRefs(input.evidence_refs),
+        watch: { issuer: input.watch && object(input.watch) ? input.watch.issuer === true : false }
+      };
+      container.saved_views.push(view);
+      commit();
+      return { ok: true, view: copy(view) };
+    }
+
+    function update(id, input) {
+      input = object(input) ? input : {};
+      var row = rowById(id);
+      if (!row) return { ok: false, reason: 'missing' };
+      var next = copy(row);
+      if (Object.prototype.hasOwnProperty.call(input, 'name')) {
+        var name = text(input.name, MAX_NAME_LENGTH);
+        if (!name) return { ok: false, reason: 'name' };
+        next.name = name;
+      }
+      var pinned = Object.prototype.hasOwnProperty.call(input, 'pinned')
+        ? input.pinned === true : next.pinned === true;
+      if (Object.prototype.hasOwnProperty.call(input, 'request')) {
+        var request = canonicalRequest(input.request);
+        if (!request) return { ok: false, reason: 'request' };
+        next.request = request;
+      }
+      var nextPolicy = object(next.request) && object(next.request.policy) ? next.request.policy : null;
+      if (pinned && (!nextPolicy || !nextPolicy.source_snapshot_at || !nextPolicy.recorded_at)) {
+        return { ok: false, reason: 'pinned_cutoffs' };
+      }
+      next.pinned = pinned;
+      if (Object.prototype.hasOwnProperty.call(input, 'saved_against')) {
+        next.saved_against = normalSavedAgainst(input.saved_against);
+      }
+      next.schema = SAVED_SCHEMA;
+      next.request_contract = REQUEST_CONTRACT;
+      var checked = checkView(next);
+      if (!checked.ok) return { ok: false, reason: checked.reason };
+      next.updated_at = stamp();
+      var replaced = copy(next);
+      for (var index = 0; index < container.saved_views.length; index += 1) {
+        if (container.saved_views[index] === row) container.saved_views[index] = replaced;
+      }
+      commit();
+      return { ok: true, view: copy(replaced) };
+    }
+
+    function remove(id) {
+      var wanted = text(id, 64);
+      var before = container.saved_views.length;
+      container.saved_views = container.saved_views.filter(function (row) {
+        return text(row.id, 64) !== wanted;
+      });
+      if (container.saved_views.length === before) return { ok: true, deleted: false };
+      commit();
+      return { ok: true, deleted: true };
+    }
+
+    return {
+      list: listing,
+      load: load,
+      save: save,
+      update: update,
+      remove: remove
+    };
+  }
+
+  // ── A→B mapping (R1: lossless; X2-b is the consumer, nothing here is
+  // wired to a caller or a network today). Target field names come from the
+  // Terminal investigations manifest v2 contract at the pinned census commit
+  // (api/investigation_contracts.py): subjects kind/owner/object_id :94-100
+  // with 'issuer' in KINDS :19; evidence owner/object_type/object_id/mode
+  // :118-123 with mode pinned|follow_head :124 (pinned requires version_ref
+  // :125; follow_head carries neither version_ref nor fingerprint :130);
+  // intent.research_as_of is a plain YYYY-MM-DD date :146-158. ──────────
+  function manifestEvidenceRef(ref, pinned) {
+    var objectId = text(ref.occurrence_id, 256) || text(ref.accession, 256);
+    if (!objectId) return null;
+    var entry = {
+      owner: MANIFEST_OWNER,
+      object_type: 'occurrence',
+      object_id: objectId,
+      mode: pinned ? 'pinned' : 'follow_head'
+    };
+    if (pinned) entry.version_ref = text(ref.accession, 256) || objectId;
+    return entry;
+  }
+
+  function toInvestigationManifestV2(saved) {
+    var checked = checkView(saved);
+    if (!checked.ok || !object(saved.issuer) || !text(saved.issuer.entity_id, 160)) return null;
+    var pinned = saved.pinned === true;
+    var evidenceRefs = [];
+    array(saved.evidence_refs).forEach(function (ref) {
+      if (!object(ref)) return;
+      var mapped = manifestEvidenceRef(ref, pinned);
+      if (mapped) evidenceRefs.push(mapped);
+    });
+    var manifest = {
+      schema: MANIFEST_V2_SCHEMA,
+      intent: {
+        title: text(saved.name, 160),
+        question: 'Filing forensics saved view',
+        subjects: [
+          { kind: 'issuer', owner: MANIFEST_OWNER, object_id: text(saved.issuer.entity_id, 256) }
+        ]
+      },
+      layout_refs: [],
+      thesis_refs: [],
+      evidence_refs: evidenceRefs,
+      continuation: {}
+    };
+    if (pinned) {
+      var asOf = text(saved.request && saved.request.policy && saved.request.policy.source_snapshot_at, 10);
+      if (/^\d{4}-\d{2}-\d{2}$/.test(asOf)) manifest.intent.research_as_of = asOf;
+    }
+    // The carrier holds the complete saved object verbatim, so the round trip
+    // is lossless by construction; the mapped fields above are Terminal's
+    // native projection.
+    manifest[CARRIER_KEY] = copy(saved);
+    return manifest;
+  }
+
+  function fromInvestigationManifestV2(manifest) {
+    if (!object(manifest) || manifest.schema !== MANIFEST_V2_SCHEMA) return null;
+    var carried = manifest[CARRIER_KEY];
+    var checked = object(carried) ? checkView(carried) : { ok: false };
+    if (!checked.ok) return null;
+    return copy(carried);
+  }
+
+  root.FifSavedBriefcase = {
+    SAVED_SCHEMA: SAVED_SCHEMA,
+    REQUEST_CONTRACT: REQUEST_CONTRACT,
+    STORAGE_KEY: STORAGE_KEY,
+    CARRIER_KEY: CARRIER_KEY,
+    create: createFifSavedBriefcase,
+    toInvestigationManifestV2: toInvestigationManifestV2,
+    fromInvestigationManifestV2: fromInvestigationManifestV2
+  };
+}(typeof window !== 'undefined' ? window : this));
