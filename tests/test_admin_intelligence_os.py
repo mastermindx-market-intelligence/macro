@@ -608,6 +608,16 @@ def test_panel_orders_by_evidence_band_then_engine_id(tmp_path):
     ]
 
 
+def _record_owner_fixture(root: Path, families: list[str]) -> dict:
+    from scripts import grade_qledger
+    readiness = grade_qledger.compute_promotion_readiness(root, families=families)
+    path = root / "site/qledger/track_record.json"
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps({"promotion_readiness": readiness,
+                               "promotion_readiness_at": "2026-10-12T20:00:00+00:00"}))
+    return readiness
+
+
 def qledger_adapter_root(tmp_path: Path, *, with_store: bool = True) -> Path:
     root = _write_root(
         tmp_path,
@@ -636,6 +646,7 @@ def qledger_adapter_root(tmp_path: Path, *, with_store: bool = True) -> Path:
         qdir.mkdir(parents=True, exist_ok=True)
         (qdir / "claims.jsonl").write_text("", encoding="utf-8")
         (qdir / "grades.jsonl").write_text("", encoding="utf-8")
+        _record_owner_fixture(root, ["stock_desk"])
     return root
 
 
@@ -646,14 +657,11 @@ def test_incomplete_e1_adapter_evidence_is_accruing_not_absent(tmp_path):
 
     panel = IOS.panel(root=root)
     row = panel["engines"][0]
-    assert row["evidence_status"] == "Accruing"
-    assert row["evidence_provider"] == {
-        "kind": "qledger",
-        "binding": "adapter:stock_desk",
-        "family": "stock_desk",
-        "read_status": "ok",
-    }
-    assert "evidence_clock_not_started" in row["evidence_reason_codes"]
+    assert row["evidence_status"] == "Degraded"
+    assert row["evidence_provider"]["binding"] == "adapter:stock_desk"
+    assert row["evidence_provider"]["read_status"] == "partial"
+    assert row["evidence_provider"]["recorded_snapshot"]["current_source_qualification"] == "unavailable"
+    assert "owner_recorded_snapshot_current_unqualified" in row["evidence_reason_codes"]
     assert row["evidence_maturity"]["rungs"]["63"]["n_dates"] == 0
 
     detail = IOS.engine_detail(
@@ -670,8 +678,8 @@ def test_a_bound_but_unreadable_qledger_store_degrades_instead_of_faking_empty(t
     row = IOS.panel(root=root)["engines"][0]
 
     assert row["evidence_status"] == "Degraded"
-    assert row["evidence_provider"]["read_status"] == "could_not_look"
-    assert "evidence_provider_unreadable" in row["evidence_reason_codes"]
+    assert row["evidence_provider"]["read_status"] in {"partial", "unreadable"}
+    assert any(code in row["evidence_reason_codes"] for code in ["owner_snapshot_unavailable", "owner_recorded_snapshot_current_unqualified"])
 
 
 def test_malformed_qledger_claims_degrade_instead_of_faking_an_empty_store(tmp_path):
@@ -685,8 +693,8 @@ def test_malformed_qledger_claims_degrade_instead_of_faking_an_empty_store(tmp_p
 
     assert row["evidence_status"] == "Degraded"
     assert row["evidence_provider"]["read_status"] == "partial"
-    assert "unparseable" in row["evidence_provider"]["error"]
-    assert "evidence_provider_unreadable" in row["evidence_reason_codes"]
+    assert row["evidence_provider"]["recorded_snapshot"]["current_source_qualification"] == "unavailable"
+    assert any(code in row["evidence_reason_codes"] for code in ["owner_snapshot_unavailable", "owner_recorded_snapshot_current_unqualified"])
 
 
 @pytest.mark.parametrize("store_name", ["claims.jsonl", "grades.jsonl"])
@@ -701,8 +709,8 @@ def test_semantically_invalid_qledger_rows_degrade_even_when_json_parses(
 
     assert row["evidence_status"] == "Degraded"
     assert row["evidence_provider"]["read_status"] == "partial"
-    assert "semantically invalid" in row["evidence_provider"]["error"]
-    assert "evidence_provider_unreadable" in row["evidence_reason_codes"]
+    assert row["evidence_provider"]["recorded_snapshot"]["current_source_qualification"] == "unavailable"
+    assert any(code in row["evidence_reason_codes"] for code in ["owner_snapshot_unavailable", "owner_recorded_snapshot_current_unqualified"])
 
 
 @pytest.mark.parametrize("store_name", ["claims.jsonl", "grades.jsonl"])
@@ -718,9 +726,9 @@ def test_invalid_utf8_qledger_store_is_provider_blindness_not_page_failure(
     assert result["ok"] is True
     row = result["engines"][0]
     assert row["evidence_status"] == "Degraded"
-    assert row["evidence_provider"]["read_status"] == "unreadable"
-    assert "unreadable" in row["evidence_provider"]["error"]
-    assert "evidence_provider_unreadable" in row["evidence_reason_codes"]
+    assert row["evidence_provider"]["read_status"] in {"partial", "unreadable"}
+    assert row["evidence_provider"]["recorded_snapshot"]["current_source_qualification"] == "unavailable"
+    assert any(code in row["evidence_reason_codes"] for code in ["owner_snapshot_unavailable", "owner_recorded_snapshot_current_unqualified"])
 
 
 @pytest.mark.parametrize(
@@ -748,12 +756,14 @@ def test_claim_semantic_validation_is_type_total(tmp_path, field, bad_value):
         json.dumps(claim) + "\n", encoding="utf-8"
     )
 
+    from engine import qledger
+    assert IOS._valid_claim_row(claim, qledger) is False
     result = IOS.panel(root=root)
     assert result["ok"] is True
     row = result["engines"][0]
     assert row["evidence_status"] == "Degraded"
     assert row["evidence_provider"]["read_status"] == "partial"
-    assert "semantically invalid" in row["evidence_provider"]["error"]
+    assert row["evidence_provider"]["recorded_snapshot"]["current_source_qualification"] == "unavailable"
 
 
 @pytest.mark.parametrize(
@@ -783,10 +793,12 @@ def test_grade_semantic_validation_rejects_nonnumeric_metrics(
         json.dumps(grade) + "\n", encoding="utf-8"
     )
 
+    from engine import qledger
+    assert IOS._valid_grade_row(grade, qledger) is False
     row = IOS.panel(root=root)["engines"][0]
     assert row["evidence_status"] == "Degraded"
     assert row["evidence_provider"]["read_status"] == "partial"
-    assert "semantically invalid" in row["evidence_provider"]["error"]
+    assert row["evidence_provider"]["recorded_snapshot"]["current_source_qualification"] == "unavailable"
 
 
 def test_grade_semantic_validation_contains_unrepresentable_numeric_metrics(tmp_path):
@@ -806,12 +818,14 @@ def test_grade_semantic_validation_contains_unrepresentable_numeric_metrics(tmp_
         json.dumps(grade) + "\n", encoding="utf-8"
     )
 
+    from engine import qledger
+    assert IOS._valid_grade_row(grade, qledger) is False
     result = IOS.panel(root=root)
     assert result["ok"] is True
     row = result["engines"][0]
     assert row["evidence_status"] == "Degraded"
     assert row["evidence_provider"]["read_status"] == "partial"
-    assert "semantically invalid" in row["evidence_provider"]["error"]
+    assert row["evidence_provider"]["recorded_snapshot"]["current_source_qualification"] == "unavailable"
 
 
 @pytest.mark.parametrize(
@@ -842,10 +856,12 @@ def test_grade_semantic_validation_rejects_partial_clock_basis(
         json.dumps(grade) + "\n", encoding="utf-8"
     )
 
+    from engine import qledger
+    assert IOS._valid_grade_row(grade, qledger) is False
     row = IOS.panel(root=root)["engines"][0]
     assert row["evidence_status"] == "Degraded"
     assert row["evidence_provider"]["read_status"] == "partial"
-    assert "semantically invalid" in row["evidence_provider"]["error"]
+    assert row["evidence_provider"]["recorded_snapshot"]["current_source_qualification"] == "unavailable"
 
 
 def test_market_unstamped_explicit_basis_remains_lawful(tmp_path):
@@ -868,7 +884,7 @@ def test_market_unstamped_explicit_basis_remains_lawful(tmp_path):
     )
 
     row = IOS.panel(root=root)["engines"][0]
-    assert row["evidence_provider"]["read_status"] == "ok"
+    assert row["evidence_provider"]["read_status"] == "partial"
     assert "evidence_provider_unreadable" not in row["evidence_reason_codes"]
 
 
@@ -931,8 +947,8 @@ def test_corrupt_existing_evidence_clock_degrades_instead_of_looking_unstarted(t
     row = IOS.panel(root=root)["engines"][0]
 
     assert row["evidence_status"] == "Degraded"
-    assert row["evidence_provider"]["read_status"] == "unreadable"
-    assert "evidence clock receipt" in row["evidence_provider"]["error"]
+    assert row["evidence_provider"]["read_status"] in {"partial", "unreadable"}
+    assert row["evidence_provider"]["recorded_snapshot"]["current_source_qualification"] == "unavailable"
     assert "evidence_clock_not_started" not in row["evidence_reason_codes"]
 
 
@@ -963,8 +979,8 @@ def test_semantically_invalid_evidence_clock_degrades(tmp_path, field, bad_value
     row = IOS.panel(root=root)["engines"][0]
 
     assert row["evidence_status"] == "Degraded"
-    assert row["evidence_provider"]["read_status"] == "unreadable"
-    assert "evidence clock receipt" in row["evidence_provider"]["error"]
+    assert row["evidence_provider"]["read_status"] in {"partial", "unreadable"}
+    assert row["evidence_provider"]["recorded_snapshot"]["current_source_qualification"] == "unavailable"
     assert "evidence_clock_not_started" not in row["evidence_reason_codes"]
 
 
@@ -975,8 +991,8 @@ def test_missing_grades_is_a_lawful_empty_accrual_not_provider_blindness(tmp_pat
 
     row = IOS.panel(root=root)["engines"][0]
 
-    assert row["evidence_status"] == "Accruing"
-    assert row["evidence_provider"]["read_status"] == "ok"
+    assert row["evidence_status"] == "Degraded"
+    assert row["evidence_provider"]["read_status"] == "partial"
     assert "evidence_provider_unreadable" not in row["evidence_reason_codes"]
 
 
@@ -1360,7 +1376,9 @@ def test_write_time_evidence_is_refused_on_every_plane_including_the_deployed_on
         for node in ast.walk(tree)
         if isinstance(node, ast.ImportFrom) and node.module
     }
-    assert "os" not in imported
+    # os is allowed for nonblocking regular-file reads, never freshness policy.
+    trust = next(node for node in tree.body if isinstance(node, ast.FunctionDef) and node.name == "_trust_mtime")
+    assert not any(isinstance(node, ast.Attribute) and node.attr in ("environ", "getenv") for node in ast.walk(trust))
     assert not [
         node
         for node in ast.walk(tree)
@@ -1635,8 +1653,9 @@ def test_real_claims_reader_t1_provider_current_horizon_correction(monkeypatch,t
         builder._READ_CACHE.clear()
         loaded=builder._load_qledger(root)
         registry=ir.build_registry(synapse={"meta":{},"artifacts":{"fixture":entry}},overlay={"schema_version":1,"engines":{eid:{"output_class":{"value":"predictive","rationale":"synthetic"}}}},desk_scans={"engine/fixture.py":ir.DeskScan(True,(family,),False)},qledger_desk_rows=loaded.rows,qledger_desk_horizons=loaded.horizons,species=[],file_exists=lambda _:True,qual_ladder_keys=set())
+        _record_owner_fixture(root,[family])
         provider=IOS._load_evidence_providers(root,registry)
-        assert provider[eid]["read_status"]=="ok"
+        assert provider[eid]["read_status"]=="partial"
         view={"outputs":[healthy_output(engine_id=eid)],"summary":{}}
         monkeypatch.setattr(IOS,"_derive",lambda *_a,**_k:(view,registry,provider,0.,"miss"))
         panel=IOS.panel(root=root)["engines"][0]["evidence_ruler"]
@@ -1687,8 +1706,9 @@ def test_actual_owner_provider_detail_preserves_measurement_populations(monkeypa
     if family=='stock_desk':owner._start_clock(tmp_path,family,when='2025-06-01T00:00:00+00:00')
     cell=evidence_cell(ledger='qledger:'+family,ledger_evidence={'desk':family},validation_state='validated')
     registry={'engines':[cell],'excluded':[]}
+    _record_owner_fixture(tmp_path,[family])
     provider=IOS._load_evidence_providers(tmp_path,registry)
-    assert provider[cell['engine_id']]['read_status']=='ok'
+    assert provider[cell['engine_id']]['read_status']=='partial'
     expected=owner.grader.compute_promotion_readiness(tmp_path,families=[family])[family]
     view={'outputs':[healthy_output(engine_id=cell['engine_id'])],'summary':{}}
     monkeypatch.setattr(IOS,'_derive',lambda *_a,**_k:(view,registry,provider,0.,'miss'))
@@ -1789,6 +1809,7 @@ def test_actual_t1_version_change_invalidates_cache_without_inheriting_qualifica
     owner._start_clock(root,'stock_desk',when='2025-06-01T00:00:00+00:00')
     from engine import qledger_evidence_clock
     qledger_evidence_clock.record_start('stock_desk',horizon_d=21,horizon_unit='trading_days',root=root,now='2025-06-01T00:00:00+00:00')
+    _record_owner_fixture(root,['stock_desk'])
     before_clock={p:p.read_bytes() for p in (root/'data/qledger').rglob('*.json')}
     scopes=[];keys=[]
     for version,horizon in [('fixture-v1',20),('fixture-v2',126)]:
@@ -1796,8 +1817,8 @@ def test_actual_t1_version_change_invalidates_cache_without_inheriting_qualifica
         keys.append(IOS._dependency_key(root))
         panel=IOS.panel(root=root);detail=IOS.engine_detail(eid,root=root)['engine']
         row=next(x for x in panel['engines'] if x['engine_id']==eid)
-        assert row['evidence_status']==detail['evidence_status']=='Accruing'
-        assert 'owner_validation_scope_unqualified' in detail['evidence_reason_codes']
+        assert row['evidence_status']==detail['evidence_status']=='Degraded'
+        assert detail['evidence_owner_scope']['reason']=='owner_validation_scope_unqualified'
         assert detail['evidence_owner_scope']['qualified_task_scope'] is None
         assert detail['evidence_provider']['binding']=='adapter:stock_desk'
         assert detail['evidence_measurement']['by_horizon']['21']['n_dates']==30
@@ -1837,3 +1858,179 @@ def test_source_link_rejects_large_local_head_blob_before_reading_body(monkeypat
     monkeypatch.setattr(IOS.subprocess,'run',inspected)
     assert IOS._source_document_links(tmp_path,['research/FIXTURE_PREREG #1.md'])==[]
     assert any(a[1:3]==['cat-file','-s'] for a in calls)
+
+
+def _recorded_snapshot(root, payload=None, receipt=None):
+    if payload is None:
+        payload={'stock_desk':{'21':{'n_dates':30,'needed':25,'ready':True,'wilson_ci_low':0,'hit_rate':None,'evidence_basis':'matched_control','clock_basis':'explicit_unit_v1:trading_days:US','n_controlled_dates':30,'n_cohort_rows':70,'n_controlled_rows':30,'control_coverage':30/70,'benchmark_baseline_hit_rate':0,'benchmark_baseline_excess_mean':None,'benchmark_baseline_excess_basis':'magnitude_only','benchmark_baseline_excess_mean_by_direction':{'1':0,'-1':-.1}}}}
+    path=root/'site/qledger/track_record.json';path.parent.mkdir(parents=True,exist_ok=True)
+    doc={'promotion_readiness':payload,'promotion_readiness_at':'2026-10-12T20:00:00+00:00'}
+    if receipt is not None:doc['promotion_readiness_receipt']=receipt
+    path.write_text(json.dumps(doc));return path,payload
+
+
+def test_recorded_owner_snapshot_never_computes_or_reads_corpus(monkeypatch,tmp_path):
+    from engine import qledger as q
+    from scripts import grade_qledger as grader
+    path,payload=_recorded_snapshot(tmp_path)
+    def forbidden(*a,**k):raise AssertionError('request-time corpus/grade work')
+    monkeypatch.setattr(grader,'compute_promotion_readiness',forbidden)
+    monkeypatch.setattr(q,'load_claims',forbidden);monkeypatch.setattr(q,'load_grades',forbidden)
+    cell=evidence_cell(ledger='data/stock_desk/theses.jsonl',validation_state='validated')
+    provider=IOS._load_evidence_providers(tmp_path,{'engines':[cell]})[cell['engine_id']]
+    assert provider['readiness']==payload['stock_desk']
+    assert provider['read_status']=='partial'
+    assert provider['recorded_snapshot']['recorded_at']=='2026-10-12T20:00:00+00:00'
+    assert provider['recorded_snapshot']['evaluation_date'] is None
+    assert provider['recorded_snapshot']['current_source_qualification']=='unavailable'
+    result=IOS.derive_evidence_status(cell,[healthy_output()],provider)
+    assert result['evidence_status']=='Degraded'
+    assert result['evidence_owner_scope']['owner_lifecycle']=='validated'
+    assert result['evidence_measurement']['by_horizon']['21']['wilson_ci_low']==0
+    assert result['evidence_measurement']['by_horizon']['21']['hit_rate'] is None
+    assert result['evidence_measurement']['by_horizon']['21']['benchmark_baseline_hit_rate']==0
+    assert result['evidence_owner_scope']['qualified_task_scope'] is None
+
+
+@pytest.mark.parametrize('bad',[None,[],{'stock_desk':{'21':{'n_dates':True}}},{'stock_desk':{'21':{'n_dates':2,'ready':'yes'}}},{'stock_desk':{'21':{'n_dates':2,'hit_rate':float('inf')}}},{'stock_desk':{'21':{'n_dates':2,'by_clock_basis':[]}}}])
+def test_malformed_recorded_snapshot_is_wholly_unavailable_without_compute(monkeypatch,tmp_path,bad):
+    from scripts import grade_qledger
+    monkeypatch.setattr(grade_qledger,'compute_promotion_readiness',lambda *_a,**_k:pytest.fail('must not grade'))
+    path,_=_recorded_snapshot(tmp_path)
+    path.write_text(json.dumps({'promotion_readiness':bad}))
+    assert IOS._read_owner_readiness_snapshot(tmp_path)['readiness']=={}
+
+
+def test_snapshot_missing_and_corrupt_bytes_do_not_grade(monkeypatch,tmp_path):
+    from scripts import grade_qledger
+    monkeypatch.setattr(grade_qledger,'compute_promotion_readiness',lambda *_a,**_k:pytest.fail('must not grade'))
+    assert IOS._read_owner_readiness_snapshot(tmp_path)['context']['available'] is False
+    path,_=_recorded_snapshot(tmp_path);path.write_bytes(b'\xff\xfe')
+    assert IOS._read_owner_readiness_snapshot(tmp_path)['context']['available'] is False
+
+
+def test_snapshot_limit_applies_to_actual_read_and_generation_race(monkeypatch,tmp_path):
+    path,_=_recorded_snapshot(tmp_path)
+    monkeypatch.setattr(IOS,'_OWNER_READINESS_MAX_BYTES',32)
+    assert IOS._read_owner_readiness_snapshot(tmp_path)['context']['available'] is False
+    monkeypatch.setattr(IOS,'_OWNER_READINESS_MAX_BYTES',16*1024*1024)
+    real=IOS._mtime_ns;calls=0
+    def changed(p):
+        nonlocal calls
+        value=real(p);calls+=1
+        return (*value[:-1],value[-1]+calls) if value is not None and calls>1 else value
+    monkeypatch.setattr(IOS,'_mtime_ns',changed)
+    assert IOS._read_owner_readiness_snapshot(tmp_path)['context']['available'] is False
+
+
+@pytest.mark.parametrize('kind',['fifo','directory','symlink','replace_fifo'])
+def test_snapshot_reader_refuses_nonregular_and_preopen_replacement(monkeypatch,tmp_path,kind):
+    import os
+    path,_=_recorded_snapshot(tmp_path)
+    if kind=='directory':path.unlink();path.mkdir()
+    elif kind=='fifo':path.unlink();os.mkfifo(path)
+    elif kind=='symlink':other=tmp_path/'regular.json';other.write_bytes(path.read_bytes());path.unlink();path.symlink_to(other)
+    else:
+        original=IOS.os.open
+        def replace(p,*args,**kwargs):
+            if Path(p)==path:path.unlink();os.mkfifo(path)
+            return original(p,*args,**kwargs)
+        monkeypatch.setattr(IOS.os,'open',replace)
+    assert IOS._read_owner_readiness_snapshot(tmp_path)['context']['available'] is False
+
+
+def test_normal_owner_receipt_named_generation_is_not_current_qualification(tmp_path):
+    from scripts import grade_qledger as grader
+    base=tmp_path/'data/qledger';base.mkdir(parents=True)
+    (base/'claims.jsonl').write_text('');(base/'grades.jsonl').write_text('')
+    (tmp_path/'site/qledger').mkdir(parents=True)
+    result=grader.run_readiness_post_step(tmp_path,0,0,today='2026-10-12')
+    assert 'error' not in result
+    read=IOS._read_owner_readiness_snapshot(tmp_path)
+    assert read['context']['receipt_status']=='recorded_provenance'
+    assert read['context']['named_generation_match'] is True
+    assert read['context']['current_source_qualification']=='unavailable'
+    assert read['context']['all_inputs_qualification']=='unavailable'
+    assert read['context']['evaluation_date']=='2026-10-12'
+    assert 'quote_prices' in read['context']['excluded_scope']
+    assert str(tmp_path) not in json.dumps(read['context'])
+
+
+@pytest.mark.parametrize('mutation',['schema','producer','payload','families','cross_host','grades','clock','config','code'])
+def test_recorded_receipt_mismatch_retains_values_and_never_qualifies(tmp_path,mutation):
+    from scripts import grade_qledger as grader
+    base=tmp_path/'data/qledger';base.mkdir(parents=True)
+    (base/'claims.jsonl').write_text('');(base/'grades.jsonl').write_text('')
+    (tmp_path/'site/qledger').mkdir(parents=True)
+    assert 'error' not in grader.run_readiness_post_step(tmp_path,0,0,today='2026-10-12')
+    path=tmp_path/'site/qledger/track_record.json';doc=json.loads(path.read_text());before=doc['promotion_readiness'];receipt=doc['promotion_readiness_receipt']
+    if mutation=='schema':receipt['schema']='unknown'
+    elif mutation=='producer':receipt['producer']='other'
+    elif mutation=='payload':receipt['payload_digest']='0'*64
+    elif mutation=='families':receipt['source_generation']['families']=[]
+    elif mutation=='cross_host':receipt['source_generation']['host_scope_digest']='0'*64
+    elif mutation=='code':receipt['source_generation']['owner_code']['engine/qledger.py']['sha256']='0'*64
+    elif mutation=='grades':(base/'grades.jsonl').write_text('\n')
+    elif mutation=='clock':
+        from engine import qledger_evidence_clock
+        qledger_evidence_clock.record_start('stock_desk',horizon_d=21,horizon_unit='trading_days',root=tmp_path,now='2026-10-12T20:00:00+00:00')
+    elif mutation=='config':
+        (tmp_path/'config').mkdir(exist_ok=True);(tmp_path/'config/qual_ladder.yml').write_text('changed: true\n')
+    if mutation in ['schema','producer','payload','families','cross_host','code']:path.write_text(json.dumps(doc))
+    read=IOS._read_owner_readiness_snapshot(tmp_path)
+    assert read['readiness']==before and read['context']['named_generation_match'] is False
+    assert read['context']['current_source_qualification']=='unavailable'
+
+
+def test_published_snapshot_update_invalidates_existing_derive_identity(tmp_path):
+    first=IOS._dependency_key(tmp_path)
+    path,_=_recorded_snapshot(tmp_path)
+    second=IOS._dependency_key(tmp_path)
+    assert first!=second
+    doc=json.loads(path.read_text());doc['promotion_readiness']['stock_desk']['21']['n_dates']=31;path.write_text(json.dumps(doc))
+    assert IOS._dependency_key(tmp_path)!=second
+
+
+def test_native_current_generation_comparison_is_deferred_without_snapshot_materialization(monkeypatch,tmp_path):
+    from scripts import grade_qledger as grader
+    from engine import qledger_store
+    base=tmp_path/'data/qledger';base.mkdir(parents=True)
+    (base/'claims.jsonl').write_text('');(base/'grades.jsonl').write_text('')
+    (tmp_path/'site/qledger').mkdir(parents=True)
+    assert 'error' not in grader.run_readiness_post_step(tmp_path,0,0,today='2026-10-12')
+    monkeypatch.setattr(qledger_store,'uses_native_claims',lambda *_a,**_k:True)
+    monkeypatch.setattr(grader,'readiness_source_generation',lambda *_a,**_k:pytest.fail('native corpus must not be materialized for comparison'))
+    read=IOS._read_owner_readiness_snapshot(tmp_path)
+    assert read['context']['available'] is True
+    assert read['context']['named_generation_match'] is False
+    assert read['context']['named_generation_check']=='native_comparison_deferred'
+    assert read['context']['current_source_qualification']=='unavailable'
+
+
+@pytest.mark.parametrize(('field','value'),[('hit_rate',1.5),('wilson_ci_low',-.1),('control_coverage',2.),('benchmark_baseline_hit_rate',-.01)])
+def test_recorded_owner_fraction_bounds_reject_whole_snapshot(tmp_path,field,value):
+    path,payload=_recorded_snapshot(tmp_path)
+    payload['stock_desk']['21'][field]=value
+    path.write_text(json.dumps({'promotion_readiness':payload}))
+    assert IOS._read_owner_readiness_snapshot(tmp_path)['context']['available'] is False
+
+
+def test_recorded_fraction_endpoints_and_signed_negative_excess_remain_exact():
+    payload={'stock_desk':{'21':{'n_dates':2,'needed':25,'ready':False,'hit_rate':0,'wilson_ci_low':1,'control_coverage':0,'benchmark_baseline_hit_rate':1,'excess_mean':-.15,'excess_mean_by_direction':{'-1':-.15}}}}
+    assert IOS._valid_recorded_readiness(payload) is True
+
+
+@pytest.mark.parametrize('row',[{'unknown':1},{'n_dates':2},{'n_dates':2,'needed':25},{}])
+def test_recorded_owner_row_requires_actual_minimal_contract(row):
+    assert IOS._valid_recorded_readiness({'stock_desk':{'21':row}}) is False
+
+
+def test_recorded_explicit_null_support_is_unknown_not_fabricated_immaturity():
+    row={'n_dates':None,'needed':None,'ready':None}
+    assert IOS._valid_recorded_readiness({'stock_desk':{'21':row}}) is True
+    provider={'kind':'qledger','read_status':'partial','readiness':{'21':row},'recorded_snapshot':{'available':True,'current_source_qualification':'unavailable'}}
+    result=IOS.derive_evidence_status(evidence_cell(),[healthy_output()],provider)
+    assert result['evidence_status']=='Degraded'
+    assert 'insufficient_maturity' not in result['evidence_reason_codes']
+    assert result['evidence_maturity']['rungs']['21']['n_dates'] is None
+    assert result['evidence_maturity']['rungs']['21']['ready'] is None

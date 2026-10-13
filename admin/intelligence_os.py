@@ -46,6 +46,9 @@ really are producer-owned; nothing in this module can set it.
 from __future__ import annotations
 
 import math
+import json
+import os
+import stat
 import re
 import subprocess
 import sys
@@ -56,6 +59,11 @@ from pathlib import Path
 from typing import Any
 from urllib.parse import quote
 
+from admin.evidence_findings import (
+    ARTIFACT_REL as FINDINGS_ARTIFACT_REL,
+    for_engine as findings_for_engine,
+    load_findings,
+)
 from admin.evidence_status import (
     EVIDENCE_STATUS_ORDER,
     build_ceo_view,
@@ -382,10 +390,9 @@ def _valid_clock_receipt(clock: Any, family: str) -> bool:
 
 
 def _load_evidence_providers(root: Path, registry: dict) -> dict[str, dict]:
-    from engine.qledger_store import ClaimsReadScope
-
-    with ClaimsReadScope(root):
-        return _load_evidence_providers_scoped(root, registry)
+    # Recorded support does not independently read/retain the raw claims snapshot.
+    # The existing T1 composed derive keeps its own owner scope unchanged.
+    return _load_evidence_providers_scoped(root, registry)
 
 
 def _load_evidence_providers_scoped(root: Path, registry: dict) -> dict[str, dict]:
@@ -415,146 +422,189 @@ def _load_evidence_providers_scoped(root: Path, registry: dict) -> dict[str, dic
     if not bindings:
         return {}
 
-    claims_path = root / _QLEDGER_CLAIMS_REL
-    from engine.qledger_store import uses_native_claims
-
-    if not uses_native_claims(claims_path) and not claims_path.exists():
-        return {
-            engine_id: {
-                "kind": "qledger",
-                "binding": binding,
-                "family": family,
-                "read_status": "could_not_look",
-                "clock_start": None,
-                "readiness": {},
-                "error": f"{_QLEDGER_CLAIMS_REL} is absent",
-            }
-            for engine_id, (family, binding) in bindings.items()
-        }
-
-    read_status = "ok"
-    read_errors: list[str] = []
-    claims_candidates, claims_error = _claims_candidate_count(claims_path)
-    if claims_error:
-        read_status = "unreadable"
-        read_errors.append(claims_error)
-    else:
+    snapshot = _read_owner_readiness_snapshot(root)
+    results = {}
+    for engine_id, (family, binding) in bindings.items():
+        rows = (snapshot.get("readiness") or {}).get(family)
+        context = dict(snapshot.get("context") or {})
+        context["family_present"] = isinstance(rows, dict)
+        read_status = "partial" if isinstance(rows, dict) else "unreadable"
+        clock_start = None
         try:
-            claims_rows = qledger.load_claims(root)
-        except Exception:  # noqa: BLE001 — owner read failed; carry blindness
-            read_status = "unreadable"
-            read_errors.append("claims owner read failed")
-        else:
-            if claims_candidates != len(claims_rows):
-                read_status = "partial"
-                read_errors.append(
-                    f"claims.jsonl has {claims_candidates - len(claims_rows)} "
-                    f"unparseable candidate line(s) of {claims_candidates}"
-                )
-            invalid_claims = sum(
-                not _valid_claim_row(row, qledger) for row in claims_rows
-            )
-            if invalid_claims:
-                read_status = _read_status_worse(read_status, "partial")
-                read_errors.append(
-                    f"claims.jsonl has {invalid_claims} semantically invalid "
-                    f"owner row(s) of {len(claims_rows)}"
-                )
+            from engine import qledger_evidence_clock
+            clock_path = qledger_evidence_clock._clock_path(family, root)
+            clock_identity = _mtime_ns(clock_path)
+            if clock_identity is not None:
+                if not stat.S_ISREG(clock_path.lstat().st_mode):
+                    raise ValueError("clock annotation unavailable")
+                fd = os.open(clock_path, os.O_RDONLY | os.O_NONBLOCK | os.O_NOFOLLOW)
+                try:
+                    info = os.fstat(fd)
+                    if not stat.S_ISREG(info.st_mode) or (info.st_dev, info.st_ino, info.st_size, info.st_mtime_ns, info.st_ctime_ns) != clock_identity:
+                        raise ValueError("clock annotation changed")
+                    with os.fdopen(fd, "rb") as handle:
+                        fd = -1
+                        clock_bytes = handle.read(65537)
+                finally:
+                    if fd >= 0:
+                        os.close(fd)
+                if len(clock_bytes) <= 65536 and _mtime_ns(clock_path) == clock_identity:
+                    candidate = json.loads(clock_bytes)
+                    if _valid_clock_receipt(candidate, family):
+                        clock_start = candidate
+        except Exception:  # noqa: BLE001 — annotation unavailable, never compute
+            pass
+        results[engine_id] = {"kind": "qledger", "binding": binding, "family": family,
+                              "read_status": read_status, "clock_start": clock_start,
+                              "readiness": rows if isinstance(rows, dict) else {},
+                              "recorded_snapshot": context}
+    return results
 
-    grades_path = root / _QLEDGER_GRADES_REL
-    grades_candidates, grades_error = _jsonl_candidate_count(grades_path)
-    if grades_error:
-        read_status = _read_status_worse(read_status, "unreadable")
-        read_errors.append(grades_error)
-    elif grades_candidates is not None:
-        try:
-            grades_rows = qledger.load_grades(root)
-        except Exception:  # noqa: BLE001 — owner read failed; carry blindness
-            read_status = _read_status_worse(read_status, "unreadable")
-            read_errors.append("grades owner read failed")
-        else:
-            if grades_candidates != len(grades_rows):
-                read_status = _read_status_worse(read_status, "partial")
-                read_errors.append(
-                    f"grades.jsonl has {grades_candidates - len(grades_rows)} "
-                    f"unparseable candidate line(s) of {grades_candidates}"
-                )
-            invalid_grades = sum(
-                not _valid_grade_row(row, qledger) for row in grades_rows
-            )
-            if invalid_grades:
-                read_status = _read_status_worse(read_status, "partial")
-                read_errors.append(
-                    f"grades.jsonl has {invalid_grades} semantically invalid "
-                    f"owner row(s) of {len(grades_rows)}"
-                )
 
-    if read_status in {"unreadable", "error"}:
-        error = "; ".join(read_errors) or "qledger owner store is unreadable"
-        return {
-            engine_id: {
-                "kind": "qledger",
-                "binding": binding,
-                "family": family,
-                "read_status": read_status,
-                "clock_start": None,
-                "readiness": {},
-                "error": error,
-            }
-            for engine_id, (family, binding) in bindings.items()
-        }
+_OWNER_READINESS_REL = Path("site/qledger/track_record.json")
+_OWNER_READINESS_MAX_BYTES = 16 * 1024 * 1024
 
-    families = sorted({family for family, _binding in bindings.values()})
+
+def _valid_recorded_readiness(payload: Any) -> bool:
+    """Owner-specific shape check; retain values, never repair or fill a row."""
+    if not isinstance(payload, dict) or not payload:
+        return False
+    def valid_row(row: Any, *, partition: bool = False) -> bool:
+        if not isinstance(row, dict) or not {"n_dates", "needed", "ready"}.issubset(row):
+            return False
+        for key in ("n_dates", "needed", "n_cohort_dates", "n_controlled_dates", "n_cohort_rows", "n_controlled_rows", "n_control_refused_rows", "n_control_refused_dates"):
+            value = row.get(key)
+            if value is not None and (isinstance(value, bool) or not isinstance(value, int) or value < 0):
+                return False
+        for key in ("ready", "approaching"):
+            if row.get(key) is not None and not isinstance(row[key], bool):
+                return False
+        for key in ("wilson_ci_low", "hit_rate", "excess_mean", "mean_abs_excess", "benchmark_baseline_hit_rate", "benchmark_baseline_excess_mean", "benchmark_baseline_mean_abs_excess", "control_coverage"):
+            if not _finite_number_or_none(row.get(key)):
+                return False
+        for key in ("wilson_ci_low", "hit_rate", "benchmark_baseline_hit_rate", "control_coverage"):
+            value = row.get(key)
+            if value is not None and not 0 <= value <= 1:
+                return False
+        for key in ("clock_basis", "evidence_basis", "excess_basis", "benchmark_baseline_excess_basis", "reason", "migration_note", "projected_ready_date"):
+            if row.get(key) is not None and not isinstance(row[key], str):
+                return False
+        for key in ("excess_mean_by_direction", "benchmark_baseline_excess_mean_by_direction"):
+            if row.get(key) is not None and (not isinstance(row[key], dict) or any(not _finite_number_or_none(v) for v in row[key].values())):
+                return False
+        by_basis = row.get("by_clock_basis")
+        if by_basis is not None:
+            if partition or not isinstance(by_basis, dict):
+                return False
+            if any(not isinstance(key, str) or not valid_row(value, partition=True) for key, value in by_basis.items()):
+                return False
+        return True
+    for family, horizons in payload.items():
+        if not isinstance(family, str) or not family:
+            return False
+        if family == "_duel_context":
+            if not isinstance(horizons, dict):
+                return False
+            continue
+        if not isinstance(horizons, dict):
+            return False
+        for horizon, row in horizons.items():
+            if not isinstance(horizon, str) or not horizon.isdigit() or int(horizon) <= 0 or not valid_row(row):
+                return False
+    return True
+
+
+def _read_owner_readiness_snapshot(root: Path) -> dict:
+    """Bounded recorded owner result. No claims/grades parsing or price grading."""
+    unavailable = {"readiness": {}, "context": {"kind": "recorded_owner_snapshot", "available": False,
+                   "current_source_qualification": "unavailable", "reason": "owner_snapshot_unavailable",
+                   "owner_artifact": _OWNER_READINESS_REL.as_posix()}}
+    path = root / _OWNER_READINESS_REL
+    before = _mtime_ns(path)
+    if before is None:
+        return unavailable
     try:
-        from engine import qledger_evidence_clock  # noqa: PLC0415
-        from scripts.grade_qledger import compute_promotion_readiness  # noqa: PLC0415
+        if not stat.S_ISREG(path.lstat().st_mode):
+            return unavailable
+        fd = os.open(path, os.O_RDONLY | os.O_NONBLOCK | os.O_NOFOLLOW)
+        try:
+            opened = os.fstat(fd)
+            opened_identity = (opened.st_dev, opened.st_ino, opened.st_size, opened.st_mtime_ns, opened.st_ctime_ns)
+            if not stat.S_ISREG(opened.st_mode) or opened_identity != before:
+                return unavailable
+            with os.fdopen(fd, "rb") as handle:
+                fd = -1
+                raw = handle.read(_OWNER_READINESS_MAX_BYTES + 1)
+        finally:
+            if fd >= 0:
+                os.close(fd)
+        if len(raw) > _OWNER_READINESS_MAX_BYTES or _mtime_ns(path) != before:
+            return unavailable
+        document = json.loads(raw)
+        if not isinstance(document, dict) or not _valid_recorded_readiness(document.get("promotion_readiness")):
+            return unavailable
+        readiness = document["promotion_readiness"]
+        recorded_at = document.get("promotion_readiness_at")
+        context = {"kind": "recorded_owner_snapshot", "available": True,
+                   "owner_artifact": _OWNER_READINESS_REL.as_posix(),
+                   "recorded_at": recorded_at if _parse_iso_timestamp(recorded_at, require_timezone=True) else None,
+                   "evaluation_date": None, "receipt_status": "unversioned",
+                   "named_generation_match": False, "current_source_qualification": "unavailable",
+                   "all_inputs_qualification": "unavailable",
+                   "excluded_scope": ["quote_prices", "price_cache", "calendar_data", "market_freshness", "task_version_cohort"]}
+        receipt = document.get("promotion_readiness_receipt")
+        if receipt is not None:
+            context["receipt_status"] = "invalid_or_unmatched"
+            try:
+                from scripts.grade_qledger import (READINESS_RECEIPT_SCHEMA, READINESS_RECEIPT_PRODUCER,
+                                                   readiness_payload_digest, readiness_source_generation)
+                generation = receipt.get("source_generation") if isinstance(receipt, dict) else None
+                families = sorted(key for key in readiness if not key.startswith("_"))
+                evaluation_date = generation.get("evaluation_date") if isinstance(generation, dict) else None
+                date_valid = isinstance(evaluation_date, str) and len(evaluation_date) == 10
+                if date_valid:
+                    date_valid = datetime.strptime(evaluation_date, "%Y-%m-%d").strftime("%Y-%m-%d") == evaluation_date
+                valid = (isinstance(generation, dict) and receipt.get("schema") == READINESS_RECEIPT_SCHEMA
+                         and receipt.get("producer") == READINESS_RECEIPT_PRODUCER
+                         and receipt.get("payload_digest") == readiness_payload_digest(readiness)
+                         and generation.get("families") == families
+                         and generation.get("all_inputs_qualification") == "unavailable"
+                         and generation.get("qualified_scope") == "named_ledger_metadata_config_clocks_owner_code"
+                         and generation.get("portability") == "host_local_metadata" and date_valid)
+                if valid:
+                    context["receipt_status"] = "recorded_provenance"
+                    context["evaluation_date"] = evaluation_date
+                    context["portability"] = "host_local_metadata"
+                    from engine.qledger_store import uses_native_claims
+                    if uses_native_claims(root / _QLEDGER_CLAIMS_REL):
+                        # The native receipt remains recorded provenance. Do not load
+                        # its corpus merely to compare it for an HTTP snapshot read.
+                        context["named_generation_check"] = "native_comparison_deferred"
+                    else:
+                        current = readiness_source_generation(root, families, evaluation_date)
+                        context["named_generation_match"] = current == generation
+                        context["named_generation_check"] = "host_local_metadata"
+                    context["qualified_scope"] = "named_ledger_metadata_config_clocks_owner_code"
+            except Exception:  # noqa: BLE001 — retain recorded support, current provenance unavailable
+                context["receipt_status"] = "current_generation_unavailable"
+        if _mtime_ns(path) != before:
+            return unavailable
+        return {"readiness": readiness, "context": context}
+    except Exception:  # noqa: BLE001 — fixed unavailability, no fallback grading
+        return unavailable
 
-        readiness = compute_promotion_readiness(root, families=families)
-        providers: dict[str, dict] = {}
-        for engine_id, (family, binding) in bindings.items():
-            family_status = read_status
-            family_errors = list(read_errors)
-            clock_start = qledger_evidence_clock.read_start(family, root=root)
-            safe_family = "".join(
-                ch if (ch.isalnum() or ch in "-_") else "_" for ch in family
-            )
-            clock_path = root / _QLEDGER_CLOCK_DIR_REL / f"{safe_family}.json"
-            if clock_path.exists() and not _valid_clock_receipt(clock_start, family):
-                family_status = _read_status_worse(family_status, "unreadable")
-                family_errors.append(
-                    f"evidence clock receipt {clock_path.name} is unreadable or malformed"
-                )
-                clock_start = None
-            provider = {
-                "kind": "qledger",
-                "binding": binding,
-                "family": family,
-                "read_status": family_status,
-                "clock_start": clock_start,
-                "readiness": readiness.get(family) or {},
-            }
-            if family_errors:
-                provider["error"] = "; ".join(family_errors)
-            providers[engine_id] = provider
-        return providers
-    except Exception:  # noqa: BLE001 — admin reads fail open, but name the blind owner
-        return {
-            engine_id: {
-                "kind": "qledger",
-                "binding": binding,
-                "family": family,
-                "read_status": "error",
-                "clock_start": None,
-                "readiness": {},
-                "error": "evidence provider read failed",
-            }
-            for engine_id, (family, binding) in bindings.items()
-        }
+
+def recorded_snapshot_cache_identity(root: Path | None = None) -> tuple[Any, ...]:
+    """Existing response cache observes recorded publications; this is not freshness."""
+    root = Path(root) if root is not None else _ROOT
+    return (_mtime_ns(root / _OWNER_READINESS_REL),
+            _mtime_ns(root / FINDINGS_ARTIFACT_REL))
 
 
 def _dependency_key(root: Path) -> tuple[Any, ...]:
     return (str(root), _mtime_ns(root / _SYNAPSE_REL), _mtime_ns(root / _OVERLAY_REL),
-            *_t1_evidence_mtime_key(root), *_evidence_mtime_key(root))
+            *_t1_evidence_mtime_key(root), *_evidence_mtime_key(root),
+            recorded_snapshot_cache_identity(root))
 
 
 class EvidenceChangedDuringRead(EstateUnavailable):
@@ -622,6 +672,13 @@ def _derive_scoped(root: Path, force: bool) -> tuple[dict, dict, dict, float, st
             # The T4 builder's plain exit for an unreadable/unparseable config/synapse.yml.
             raise EstateUnavailable(f"SystemExit: {exc}") from exc
         evidence = _load_evidence_providers(root, registry)
+        canonical_ids = {str(row.get("engine_id")) for row in registry.get("engines") or []
+                         if isinstance(row, dict) and row.get("engine_id")}
+        canonical_outputs = [row for row in view.get("outputs") or []
+                             if isinstance(row, dict) and row.get("engine_id") in canonical_ids]
+        # One recorded report belongs to this same derived generation. Context
+        # association never enters derive_evidence_status or changes a band.
+        view["typed_findings"] = load_findings(root, canonical_outputs)
         if _dependency_key(root) != key:
             raise EvidenceChangedDuringRead("evidence inputs changed during read")
         view.setdefault("generated", {})["source_generation"] = {
@@ -791,6 +848,7 @@ def panel(root: Path | None = None, force: bool = False) -> dict[str, Any]:
             "top_reason_codes": [{"code": c, "n": n} for c, n in reasons[:12]],
         },
         "engines": engines,
+        "typed_findings": view.get("typed_findings"),
         "ceo_view": build_ceo_view(canonical_engines),
         "generated": {
             "observed_at": (view.get("generated") or {}).get("observed_at"),
@@ -966,6 +1024,7 @@ def engine_detail(engine_id: str, root: Path | None = None) -> dict[str, Any]:
     return {
         "ok": True,
         "engine": engine,
+        "typed_findings": findings_for_engine(view.get("typed_findings") or {}, wanted),
         "generated": view.get("generated") or {},
         "outputs": sorted(outputs, key=lambda r: str(r.get("artifact_id"))),
     }

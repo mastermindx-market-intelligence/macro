@@ -94,6 +94,10 @@ def __getattr__(name: str):
     if name == "_aidesk":
         from engine import ai_desk  # noqa: PLC0415 — see comment above
         return ai_desk
+    if name == "config":
+        # Preserve the public ROOT override without eager configuration imports.
+        from lib import config  # noqa: PLC0415 — same deferred owner as _root
+        return config
     raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
 # V1 metric-validity contract (engine/qledger_validity.py, PR #5471). _aggregate
 # is the single chokepoint every published excess figure passes through, so the

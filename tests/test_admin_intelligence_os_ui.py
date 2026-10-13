@@ -290,7 +290,7 @@ async function run(reject) {
  const c={RENDER:{},IOS:{},Date,$:s=>s==='#view'?v:s==='#ios-refresh'?b:s==='#iosRefreshStatus'?status:null,
  api:async p=>{calls.push(p);if(p.includes('force=1')){if(reject)throw Error('SECRET_CANARY');return{ok:true,marker:'fresh',generated:{observed_at:'fixture-fresh'},engines:[],census:{}}}return cache},
  clearApiCache:()=>{cache=null},apiCacheStore:(p,e)=>{cache=e.value},apiCacheTtl:()=>300000,
- iosText:s=>s,iosCopy:s=>s,iosHero:d=>d.generated.observed_at,iosReasonCard:()=>'',iosCeoView:()=>'',
+ iosText:s=>s,iosCopy:s=>s,iosHero:d=>d.generated.observed_at,iosReasonCard:()=>'',iosCeoView:()=>'',iosTypedFindings:()=>'',
  iosRenderChips:()=>{},iosRenderTable:()=>{},fmtNum:String,nwEmpty:()=>'',toast:s=>toasts.push(s),
  wrapViewTables:()=>{wrapped=true},iosRestoreFocus:()=>{if(!wrapped)throw Error('focus before synchronous table wrapping')},iosLanguageAttributes:()=>{status.textContent='Refresh failed '+status.dataset.assessed},go:()=>{}};
  vm.createContext(c);vm.runInContext(renderer,c);await c.RENDER.intelligence_os();await b.onclick();await Promise.resolve();await Promise.resolve();
@@ -407,3 +407,27 @@ iosRenderChips();console.log(el.innerHTML);'''
     assert result.returncode==0,result.stderr
     assert 'data-val="Accruing"' in result.stdout and '证据积累中' in result.stdout and '(3)' in result.stdout
     assert 'Accruing (3)</span>' not in result.stdout
+
+
+def test_recorded_owner_disclosure_keeps_asof_and_unknown_separate_from_freshness():
+    engine={'evidence_status':'Degraded','evidence_provider':{'recorded_snapshot':{'available':True,'recorded_at':'2026-01-01T00:00:00+00:00','evaluation_date':None,'named_generation_match':False,'current_source_qualification':'unavailable'}},'evidence_ruler':{'selected_qledger_rung':'21'},'evidence_measurement':{'by_horizon':{'21':{'evidence_basis':'matched_control','n_dates':0,'wilson_ci_low':None,'n_controlled_dates':0,'benchmark_baseline_hit_rate':0}}}}
+    html=_run([{'engine':engine,'statuses':[],'bands':[]}])[0]['detail']
+    assert 'Recorded owner support' in html and '原所有者记录的证据支持' in html
+    assert 'Recorded by owner at' in html and '所有者记录时间' in html and '2026-01-01T00:00:00+00:00' in html
+    assert 'Current source qualification' in html and '当前来源验证范围' in html
+    assert 'Unavailable' in html and '不可确认' in html
+    assert 'price, calendar freshness or task qualification' in html and '当前价格、交易日历新鲜度或任务验证范围' in html
+    assert '>0</code>' in html and 'Unknown (not projected by owner)' in html
+
+
+def test_intelligence_browser_reads_observe_server_snapshot_identity():
+    node=shutil.which('node')
+    if node is None:pytest.skip('node unavailable')
+    source=APP.read_text(encoding='utf-8')
+    section=source[source.index('const API_CACHE_BYPASS ='):source.index('function apiCacheStore')]
+    harness=section+"\nconsole.log(JSON.stringify({panel:apiCacheable('/api/intelligence_os'),detail:apiCacheable('/api/intelligence_os/engine?id=fixture'),other:apiCacheable('/api/summary')}));"
+    with tempfile.TemporaryDirectory() as td:
+        p=Path(td)/'cache-bypass.js';p.write_text(harness)
+        result=subprocess.run([node,str(p)],capture_output=True,text=True)
+    assert result.returncode==0,result.stderr
+    assert json.loads(result.stdout)=={'panel':False,'detail':False,'other':True}

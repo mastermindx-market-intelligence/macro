@@ -317,14 +317,17 @@ def derive_evidence_status(
     )
     provider_blocked = provider_read in _PROVIDER_BLIND
     if provider_blocked:
-        reasons.append("evidence_provider_unreadable")
+        recorded = provider.get("recorded_snapshot") if isinstance(provider, Mapping) else None
+        reasons.append("owner_recorded_snapshot_current_unqualified" if isinstance(recorded, Mapping) and recorded.get("available")
+                       else "owner_snapshot_unavailable" if isinstance(recorded, Mapping)
+                       else "evidence_provider_unreadable")
 
     mixed_basis = bool(basis.pop("mixed_explicit"))
     if mixed_basis:
         reasons.append("mixed_clock_basis_refused")
 
-    selected_ready = None if ruler_row is None else bool(ruler_row.get("ready"))
-    immature = ruler_row is not None and not selected_ready
+    selected_ready = None if ruler_row is None or ruler_row.get("ready") is None else bool(ruler_row["ready"])
+    immature = ruler_row is not None and selected_ready is False
     if immature and not mixed_basis:
         reasons.append("insufficient_maturity")
 
@@ -395,6 +398,8 @@ def derive_evidence_status(
         "family": provider.get("family") if isinstance(provider, Mapping) else None,
         "read_status": provider_read or "ok",
     }
+    if isinstance(provider, Mapping) and isinstance(provider.get("recorded_snapshot"), Mapping):
+        provider_summary["recorded_snapshot"] = dict(provider["recorded_snapshot"])
     if isinstance(provider, Mapping) and provider.get("error"):
         provider_summary["error"] = str(provider.get("error"))
 

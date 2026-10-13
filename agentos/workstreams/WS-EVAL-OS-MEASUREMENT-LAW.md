@@ -126,3 +126,7 @@ remaining thematic + cohort proof rather than silently moving the old worker/ses
 ## Current clock reconciliation — 2026-10-12
 
 `git show a8e054ce5d7d44e48ff552841dc93d3c0ec87149:data/qledger/evidence_clock_start/thematic_desk.json` confirms the original thematic first registration at `2026-08-31T05:01:42.762963+00:00`,20 trading days, source09cc2e0f465c5a27f7382b3656694b5d068ef00d. The stock receipt remains2026-08-29T11:08:11.609328+00:00. Earlier absent-clock text describes its historical observation only. No new receipt or registration is authorized by this correction. Current acceptance still owes real cohort/control qualification and natural-run status.
+
+## Current consumer qualification — 2026-10-13
+
+The internal existing response-eval owner now has accepted finite synthetic seven-class/overlap/trial/look/contamination contracts and136 affected controls. This is deterministic internal QA, not empirical class qualification or protected study access. The evidence consumer preserves recorded cohorts, control and whole-family baseline populations, clock partitions and explicit zero/null; current/all-input qualification remains unavailable even when named local generations match. No registration event, control origin or grade horizon changed. Natural owner progression and original excluded study/producer obligations remain open.

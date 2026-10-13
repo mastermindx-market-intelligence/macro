@@ -863,6 +863,8 @@ class Handler(BaseHTTPRequestHandler):
 
             if _cacheable_api_get(path, q):
                 cache_key = f"{_server_cache_namespace(self.server)}:{self.path}"
+                if path in {"/api/intelligence_os", "/api/intelligence_os/engine"}:
+                    cache_key += ":owner_snapshot:" + repr(intelligence_os.recorded_snapshot_cache_identity())
                 cached_body = _cached_api_body(cache_key)
                 if cached_body is not None:
                     return self._json_body(cached_body, cache_status="HIT")

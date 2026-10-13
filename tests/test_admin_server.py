@@ -761,3 +761,29 @@ def test_unversioned_theme_conditional_get_preserves_revalidation_policy():
         except urllib.error.HTTPError as exc:
             assert exc.code==304 and exc.headers["Cache-Control"]=="no-cache"
     finally:httpd.shutdown();httpd.server_close()
+
+
+def test_owner_snapshot_publication_invalidates_serialized_panel_and_detail(monkeypatch,tmp_path):
+    import os
+    from admin import server
+    path=tmp_path/'site/qledger/track_record.json';path.parent.mkdir(parents=True)
+    path.write_text('{"generation":1}')
+    monkeypatch.setattr(server.settings,'auth_enabled',lambda:False)
+    monkeypatch.setattr(server.intelligence_os,'_ROOT',tmp_path)
+    calls=[]
+    def response(*a,**k):
+        calls.append(1);return {'ok':True,**json.loads(path.read_text())}
+    monkeypatch.setattr(server.intelligence_os,'panel',response)
+    monkeypatch.setattr(server.intelligence_os,'engine_detail',response)
+    _clear_response_cache();httpd,port=_server()
+    try:
+        for route in ['/api/intelligence_os','/api/intelligence_os/engine?id=fixture']:
+            _,body,_=_get_with_headers(port,route);assert json.loads(body)['generation']==1
+            _,_,header=_get_with_headers(port,route);assert header['X-Admin-Cache']=='HIT'
+        before=path.stat();path.write_text('{"generation":2}')
+        os.utime(path,ns=(before.st_atime_ns,before.st_mtime_ns))
+        for route in ['/api/intelligence_os','/api/intelligence_os/engine?id=fixture']:
+            _,body,header=_get_with_headers(port,route)
+            assert json.loads(body)['generation']==2 and header['X-Admin-Cache']=='MISS'
+        assert len(calls)==4
+    finally:httpd.shutdown();httpd.server_close();_clear_response_cache()
