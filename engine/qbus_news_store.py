@@ -25,7 +25,6 @@ from typing import Iterable, Sequence
 
 from engine.qbus_news_contract import NewsRevision
 from engine.qbus_news_cluster import (
-    CLUSTER_POLICY_VERSION,
     ClusterCandidate,
     ClusterItem,
     ClusterPolicy,
@@ -580,14 +579,15 @@ def _redact_story(
     )
 
 
-def _cluster_policy_label(versions: list[str]) -> str:
+def _cluster_policy_label(versions: list[str], in_force: str) -> str:
     """One string naming every policy that minted the 24h cluster stories.
 
     An empty list means no stored cluster contributed to stories_24h, so the
-    policy in force is named, as before the per-row stamp existed.
+    policy in force is named: ``in_force`` is the store's
+    ``cluster_policy_version(self.cluster_policy)`` stamp.
     """
     if not versions:
-        return CLUSTER_POLICY_VERSION
+        return in_force
     if len(versions) == 1:
         return versions[0]
     return " + ".join(sorted(versions))
@@ -1604,7 +1604,8 @@ class NewsStore:
                 "a report in no cluster is its own story"
             ),
             "cluster_policy_version": _cluster_policy_label(
-                velocity["cluster_policy_versions_24h"]
+                velocity["cluster_policy_versions_24h"],
+                cluster_policy_version(self.cluster_policy),
             ),
             "windows": {
                 "reports_24h": (
