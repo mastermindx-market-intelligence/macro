@@ -22,6 +22,7 @@ V2_EXPECTED = {
  'program_funding_flow': ('backlog_orders','revenue','volume'),
  'common_end_market_demand': ('volume','revenue','pricing','backlog_orders','capacity_utilization'),
 }
+V2_POLARITY = {'demand_transfer': 'toward_target', 'supply_constraint': 'tightens', 'pricing_power_shift': 'strengthens', 'input_cost_shift': 'increases', 'capacity_reallocation': 'toward_target', 'share_shift_competitive': 'toward_target', 'regulatory_exposure': 'tightens', 'program_funding_flow': 'increases', 'common_end_market_demand': 'increases'}
 V2_COMBOS = [(m,k,d) for m,metrics in V2_EXPECTED.items() for k in metrics for d in ('improves','deteriorates','mixed')]
 V2_ALT_CLASSES = ('common_cause_macro','sector_factor','narrative_similarity_only','market_sympathy_only','liquidity_flow_technical','coincident_timing')
 V2_BAD_TEXT = (
@@ -37,7 +38,7 @@ V2_SLOTS = ('mechanism','alternative','condition','observable','expiry')
 def v2_kwargs():
  keys=('source_event','target','asof','compiled_at','generator_admissions','relationship_paths','similarity_evidence','market_evidence')
  kw={k:copy.deepcopy(V2_BASE[k]) for k in keys}
- kw.update(mechanism_spec={'mechanism_class':'demand_transfer','predicted_operating_direction':'improves','operating_metric_class':'revenue'}, alternative_classes=['sector_factor'],review_by=V2_BASE['expiry']['review_by'])
+ kw.update(mechanism_spec={'mechanism_class':'demand_transfer','mechanism_polarity':'toward_target','predicted_operating_direction':'improves','operating_metric_class':'revenue'}, alternative_classes=['sector_factor'],review_by=V2_BASE['expiry']['review_by'])
  return kw
 
 def v2_make(): return ep2.compose_hypothesis_v2(**v2_kwargs())
@@ -54,13 +55,16 @@ def v2_set_text(record,slot,text):
 
 @pytest.mark.parametrize('mechanism,metric,direction',V2_COMBOS)
 def test_v2_each_declared_combination_has_valid_conditional_narrative(mechanism,metric,direction):
- kw=v2_kwargs();kw['mechanism_spec']={'mechanism_class':mechanism,'predicted_operating_direction':direction,'operating_metric_class':metric}
+ kw=v2_kwargs();kw['mechanism_spec']={'mechanism_class':mechanism,'mechanism_polarity':V2_POLARITY[mechanism],'predicted_operating_direction':direction,'operating_metric_class':metric}
+ if direction=='mixed':
+  with pytest.raises(ep2.EconomicPropagationError,match='K3D_V2_UNSUPPORTED_COMBINATION'):ep2.compose_hypothesis_v2(**kw)
+  return
  before=copy.deepcopy(kw);record=ep2.compose_hypothesis_v2(**kw)
  assert ep2.validate_hypothesis_v2(record)==[]
  assert record['schema']=='economic_propagation.propagation_hypothesis/v2' and type(record['version']) is int and record['version']==2
- assert record['construction_profile']=='compiler_owned_qualitative.v1'
+ assert record['construction_profile']=='compiler_owned_qualitative.v2'
  assert record['mechanism']['hypothesis_text'].startswith('If ')
- assert record['mechanism']['hypothesis_text'].endswith('This is a qualitative operating hypothesis, not a measured effect.')
+ assert record['mechanism']['hypothesis_text'].endswith('This is an uncalibrated conditional research claim, not a measured effect.')
  assert record['mechanism']['operating_metric_class']==metric
  assert record['economic_share'] is None and record['authority']==V2_BASE['authority']
  assert record['binding_kills']==V2_BASE['binding_kills']
@@ -164,9 +168,12 @@ def test_v2_profile_and_reserved_fields_are_not_caller_promotable(tamper):
 
 @pytest.mark.parametrize('direction,expected',[('improves','decrease'),('deteriorates','increase'),('mixed','show mixed changes')])
 def test_v2_cost_direction_is_not_inverted(direction,expected):
- kw=v2_kwargs();kw['mechanism_spec'].update(mechanism_class='input_cost_shift',operating_metric_class='input_cost',predicted_operating_direction=direction)
+ kw=v2_kwargs();kw['mechanism_spec'].update(mechanism_class='input_cost_shift',mechanism_polarity='increases',operating_metric_class='input_cost',predicted_operating_direction=direction)
+ if direction=='mixed':
+  with pytest.raises(ep2.EconomicPropagationError,match='K3D_V2_UNSUPPORTED_COMBINATION'):ep2.compose_hypothesis_v2(**kw)
+  return
  r=ep2.compose_hypothesis_v2(**kw)
- assert 'input costs may '+expected+'.' in r['mechanism']['hypothesis_text']
+ assert ('an increase' if expected=='increase' else 'a decrease')+' in input costs' in r['mechanism']['hypothesis_text']
 
 def test_v2_ids_and_names_stay_untrusted_metadata_not_interpolated_claims():
  kw=v2_kwargs();kw['target']['requested_key']='<script>buy now</script>'
@@ -211,12 +218,13 @@ def test_v2_malformed_native_input_refuses_before_legacy_lookup(field,value):
 def test_v2_generated_sentences_have_no_unsupported_numbers():
  r=v2_make();prose=json.dumps([r['mechanism'],r['alternatives'],r['falsifiers'],r['expiry']['note']])
  assert not any(ch.isdigit() for ch in prose)
- assert 'missing disclosure alone does not resolve this test' in r['falsifiers'][0]['observable']
+ assert 'Absence of disclosure is not a contrary observation' in r['falsifiers'][0]['observable']
 
 def test_v2_representative_exact_sentence_is_fixed_independently():
  assert v2_make()['mechanism']['hypothesis_text']==(
-  "If a shift in demand between operating businesses occurs along the evidenced relationship, "
-  "the target's revenue may increase. This is a qualitative operating hypothesis, not a measured effect."
+  "If demand shifts toward the target under the evidenced relationship within the preregistered event window, "
+  "the target is hypothesized to show an increase in revenue relative to its preregistered comparable baseline "
+  "over the fixed outcome window. This is an uncalibrated conditional research claim, not a measured effect."
  )
 
 @pytest.mark.parametrize('field',['issuer_id','security_id'])

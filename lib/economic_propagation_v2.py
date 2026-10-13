@@ -23,7 +23,7 @@ from lib.economic_propagation import (
 # ---------------------------------------------------------------------------
 
 _V2_SCHEMA_ID = "economic_propagation.propagation_hypothesis/v2"
-_V2_PROFILE = "compiler_owned_qualitative.v1"
+_V2_PROFILE = "compiler_owned_qualitative.v2"
 _V2_MAX_BYTES = 256 * 1024
 _V2_METRICS = {
     "revenue": "revenue", "volume": "operating volume", "pricing": "realized pricing",
@@ -31,16 +31,45 @@ _V2_METRICS = {
     "backlog_orders": "order backlog", "capacity_utilization": "capacity utilization",
     "input_cost": "input costs", "market_share": "market share",
 }
-_V2_MECHANISMS = {
-    "demand_transfer": "a shift in demand between operating businesses",
-    "supply_constraint": "a constraint on qualified supply",
-    "pricing_power_shift": "a change in pricing power",
-    "input_cost_shift": "a change in the cost of operating inputs",
-    "capacity_reallocation": "a reallocation of operating capacity",
-    "share_shift_competitive": "a shift in competitive business share",
-    "regulatory_exposure": "a change in the applicable regulatory conditions",
-    "program_funding_flow": "a change in program funding",
-    "common_end_market_demand": "a change in shared end-market demand",
+# Antecedent polarity is supplied independently of the proposed target outcome.
+# These are conditional scenarios, not a finding that the antecedent occurred.
+_V2_ANTECEDENTS = {
+    "demand_transfer": {
+        "toward_target": "demand shifts toward the target",
+        "away_from_target": "demand shifts away from the target",
+    },
+    "supply_constraint": {
+        "tightens": "qualified supply available to the target tightens",
+        "eases": "qualified supply available to the target eases",
+    },
+    "pricing_power_shift": {
+        "strengthens": "the target's pricing power strengthens",
+        "weakens": "the target's pricing power weakens",
+    },
+    "input_cost_shift": {
+        "increases": "the cost of inputs used by the target increases",
+        "decreases": "the cost of inputs used by the target decreases",
+    },
+    "capacity_reallocation": {
+        "toward_target": "operating capacity is reallocated toward the target",
+        "away_from_target": "operating capacity is reallocated away from the target",
+    },
+    "share_shift_competitive": {
+        "toward_target": "competitive business share shifts toward the target",
+        "away_from_target": "competitive business share shifts away from the target",
+    },
+    "regulatory_exposure": {
+        "tightens": "restrictions applicable to the target tighten",
+        "eases": "restrictions applicable to the target ease",
+    },
+    "program_funding_flow": {
+        "increases": "funding for the target's program increases",
+        "decreases": "funding for the target's program decreases",
+    },
+    "common_end_market_demand": {
+        "increases": "demand in the target's shared end market increases",
+        "decreases": "demand in the target's shared end market decreases",
+    },
 }
 _V2_ALLOWED_METRICS = {
     "demand_transfer": ("revenue", "volume", "backlog_orders", "capacity_utilization"),
@@ -117,13 +146,14 @@ def _v2_snapshot(value: Any) -> Any:
 def _v2_spec(spec: Any) -> dict | None:
     if spec is None:
         return None
-    keys = {"mechanism_class", "predicted_operating_direction", "operating_metric_class"}
+    keys = {"mechanism_class", "mechanism_polarity", "predicted_operating_direction", "operating_metric_class"}
     if type(spec) is not dict or set(spec) != keys or any(type(v) is not str for v in spec.values()):
         raise EconomicPropagationError("K3D_V2_MECHANISM_SPEC")
     mechanism = spec["mechanism_class"]
     if (mechanism not in _V2_ALLOWED_METRICS
             or spec["operating_metric_class"] not in _V2_ALLOWED_METRICS[mechanism]
-            or spec["predicted_operating_direction"] not in ("improves", "deteriorates", "mixed")):
+            or spec["predicted_operating_direction"] not in ("improves", "deteriorates")
+            or spec["mechanism_polarity"] not in _V2_ANTECEDENTS[mechanism]):
         raise EconomicPropagationError("K3D_V2_UNSUPPORTED_COMBINATION")
     return dict(spec)
 
@@ -149,47 +179,95 @@ def _v2_calendar_date(value: Any) -> None:
         raise EconomicPropagationError("K3D_V2_DATE") from exc
 
 
+# This record defines a test; it does not register, run or grade that test.
+_V2_EVALUATION_REQUIREMENTS = [
+    "native_owner_confirmed_antecedent_occurrence",
+    "applicable_role_specific_relationship",
+    "preregistered_metric_scope_and_comparable_baseline",
+    "preregistered_event_window_outcome_lag_and_window",
+    "preregistered_rejection_rule_and_uncertainty_handling",
+    "sufficient_purpose_eligible_comparable_outcome_observations",
+]
+_V2_NONTEST_CONDITIONS = (
+    ("antecedent_not_observed",
+     "The specified antecedent did not occur or its occurrence is not established.",
+     "The conditional claim is untested, not falsified."),
+    ("relationship_inapplicable",
+     "The evidenced relationship is invalid or inapplicable to the proposed test.",
+     "The test is inapplicable, not falsified; preserve any source correction."),
+    ("outcome_unavailable",
+     "The relevant outcome is missing, incomparable, or not yet observable.",
+     "There is insufficient outcome evidence; absence of disclosure is not a contrary observation."),
+    ("evaluation_not_registered",
+     "The metric scope, baseline, event window, lag, outcome window, or rejection rule was not fixed before testing.",
+     "No qualified test exists; do not derive an empirical outcome from this record."),
+    ("review_expired_untested",
+     "The review deadline passed without a completed eligible test.",
+     "The claim expired untested, not falsified; a new query does not rewrite this record."),
+)
+_V2_COMPATIBILITY_FALSIFIER = {
+    "condition": "No directional claim exists in this internal compatibility object.",
+    "observable": "This internal placeholder is never emitted as a V2 falsifier.",
+}
+
+
+def _v2_applicability(spec: dict | None) -> list[dict]:
+    rows = [{"reason": reason, "condition": condition, "consequence": consequence}
+            for reason, condition, consequence in _V2_NONTEST_CONDITIONS]
+    if spec is None:
+        rows.insert(0, {
+            "reason": "no_directional_claim",
+            "condition": "The record abstains from a directional mechanism.",
+            "consequence": "There is no directional claim to falsify; later eligible evidence requires a new query.",
+        })
+    return rows
+
+
 def _v2_narrative(spec: dict | None, classes: list[str]) -> tuple[dict | None, list, list]:
     alternatives = [{"explanation_class": item, "text": _V2_ALT_TEXT[item]} for item in classes]
     if spec is None:
-        mechanism = None
-        falsifiers = [
-            {
-                "condition": "For a new query, the native owner resolves a stated blocking gap with eligible evidence.",
-                "observable": "An admitted identity, role-specific disclosure, rights decision or temporal receipt; later information does not rewrite this record.",
-            },
-            {
-                "condition": "A source correction establishes that the original evidence interpretation was invalid.",
-                "observable": "The native owner's correction record and the original evidence; missing disclosure alone is not a correction.",
-            },
-        ]
+        return None, alternatives, []
+    mechanism = dict(spec)
+    metric_key = spec["operating_metric_class"]
+    metric = _V2_METRICS[metric_key]
+    direction = spec["predicted_operating_direction"]
+    # "Mixed" needs a separately scoped component test; this profile refuses it.
+    if metric_key == "input_cost":
+        change = "decrease" if direction == "improves" else "increase"
     else:
-        mechanism = dict(spec)
-        metric_key = spec["operating_metric_class"]
-        metric = _V2_METRICS[metric_key]
-        direction = spec["predicted_operating_direction"]
-        if direction == "mixed":
-            change = "show mixed changes"
-        elif metric_key == "input_cost":
-            change = "decrease" if direction == "improves" else "increase"
-        else:
-            change = "increase" if direction == "improves" else "decrease"
-        mechanism["hypothesis_text"] = (
-            "If " + _V2_MECHANISMS[spec["mechanism_class"]] + " occurs along the evidenced relationship, "
-            "the target's " + metric + " may " + change + ". "
-            "This is a qualitative operating hypothesis, not a measured effect."
-        )
-        falsifiers = [
-            {
-                "condition": "An eligible observation establishes that the specified mechanism did not occur within the review horizon.",
-                "observable": "Native-owner evidence directly measuring " + metric + " and the stated mechanism conditions; missing disclosure alone does not resolve this test.",
-            },
-            {
-                "condition": "The native owner invalidates the relationship or the stated operating direction at the relevant cutoff.",
-                "observable": "A source correction or a directly comparable operating observation that contradicts the stated condition; a market move alone is insufficient.",
-            },
-        ]
+        change = "increase" if direction == "improves" else "decrease"
+    antecedent = _V2_ANTECEDENTS[spec["mechanism_class"]][spec["mechanism_polarity"]]
+    mechanism["hypothesis_text"] = (
+        "If " + antecedent + " under the evidenced relationship within the preregistered event window, "
+        "the target is hypothesized to show " + ("an increase" if change == "increase" else "a decrease")
+        + " in " + metric + " relative to its preregistered comparable baseline over the fixed outcome window. "
+        "This is an uncalibrated conditional research claim, not a measured effect."
+    )
+    falsifiers = [{
+        "condition": (
+            "The stated antecedent occurred under an applicable relationship, but a preregistered "
+            "test finds the target's " + metric + " did not " + change
+            + " over the fixed outcome window against its comparable baseline."
+        ),
+        "observable": (
+            "Eligible owner records of antecedent occurrence and relationship applicability, and comparable "
+            + metric + " observations satisfying the registered scope, baseline, lag, window, uncertainty "
+            "and rejection rule. Absence of disclosure is not a contrary observation."
+        ),
+    }]
     return mechanism, alternatives, falsifiers
+
+
+def _v2_native_mechanism(mechanism: dict | None) -> dict | None:
+    if mechanism is None:
+        return None
+    return {key: value for key, value in mechanism.items() if key != "mechanism_polarity"}
+
+
+def _v2_native_falsifiers(falsifiers: list[dict]) -> list[dict]:
+    # V1 requires a nonempty array, including on abstentions. This private
+    # shape bridge never gives that placeholder to a V2 consumer.
+    return falsifiers or [dict(_V2_COMPATIBILITY_FALSIFIER)]
 
 
 @lru_cache(maxsize=1)
@@ -199,10 +277,11 @@ def _v2_validator() -> Draft202012Validator:
     return Draft202012Validator(schema)
 
 
-def _derive_v2_record_id(event_id: str, target: dict, asof: str) -> str:
+def _derive_v2_record_id(event_id: str, target: dict, asof: str, spec: dict | None) -> str:
     payload = json.dumps(
-        ["k3d.record_id/typed-prose-v2", event_id, *derive_target_identity_component(target), asof],
-        ensure_ascii=False, separators=(",", ":"),
+        ["k3d.record_id/typed-prose-v2", _V2_PROFILE, event_id,
+         *derive_target_identity_component(target), asof, spec],
+        ensure_ascii=False, sort_keys=True, separators=(",", ":"),
     ).encode("utf-8")
     return "eph2:" + hashlib.sha256(payload).hexdigest()[:16]
 
@@ -232,7 +311,7 @@ def validate_hypothesis_v2(record: Any) -> list[Finding]:
         raw_mechanism = data["mechanism"]
         spec = None if raw_mechanism["state"] == "abstained" else _v2_spec({
             key: raw_mechanism[key] for key in (
-                "mechanism_class", "predicted_operating_direction", "operating_metric_class"
+                "mechanism_class", "mechanism_polarity", "predicted_operating_direction", "operating_metric_class"
             )
         })
         mechanism, alternatives, falsifiers = _v2_narrative(spec, classes)
@@ -240,17 +319,19 @@ def validate_hypothesis_v2(record: Any) -> list[Finding]:
         return [_f("K3D_V2_R020", "$", str(exc))]
     expected_mechanism = ({
         "state": "abstained", "mechanism_class": None, "hypothesis_text": None,
-        "predicted_operating_direction": None, "operating_metric_class": None,
+        "predicted_operating_direction": None, "operating_metric_class": None, "mechanism_polarity": None,
     } if mechanism is None else {"state": "hypothesized", **mechanism})
     for field, expected in (
         ("mechanism", expected_mechanism), ("alternatives", alternatives),
         ("falsifiers", falsifiers), ("alternative_classes", classes),
+        ("applicability_conditions", _v2_applicability(spec)),
+        ("evaluation_requirements", _V2_EVALUATION_REQUIREMENTS),
     ):
         if data[field] != expected:
             findings.append(_f("K3D_V2_R010", "$." + field, "not the exact compiler-owned construction"))
     if data["expiry"]["note"] != _V2_EXPIRY_NOTE:
         findings.append(_f("K3D_V2_R010", "$.expiry.note", "not the compiler-owned review note"))
-    expected_id = _derive_v2_record_id(data["source_event"]["event_id"], data["target"], data["asof"])
+    expected_id = _derive_v2_record_id(data["source_event"]["event_id"], data["target"], data["asof"], spec)
     if data["record_id"] != expected_id:
         findings.append(_f("K3D_V2_R082", "$.record_id", "not the versioned logical record identity"))
     if data["content_sha256"] != content_sha256(data):
@@ -260,6 +341,10 @@ def validate_hypothesis_v2(record: Any) -> list[Finding]:
     shadow = dict(data)
     shadow.pop("construction_profile")
     shadow.pop("alternative_classes")
+    shadow.pop("applicability_conditions")
+    shadow.pop("evaluation_requirements")
+    shadow["mechanism"] = _v2_native_mechanism(data["mechanism"])
+    shadow["falsifiers"] = _v2_native_falsifiers(data["falsifiers"])
     shadow["schema"] = SCHEMA_ID
     shadow["version"] = 1
     shadow["record_id"] = derive_record_id(data["source_event"]["event_id"], data["target"], data["asof"])
@@ -309,7 +394,7 @@ def compose_hypothesis_v2(
     # a conditional mechanism. This reuses its law instead of duplicating it.
     probe = compose_hypothesis(
         **inputs, mechanism_proposal=None, alternatives=alternatives,
-        falsifiers=refusal_falsifiers, expiry=expiry,
+        falsifiers=_v2_native_falsifiers(refusal_falsifiers), expiry=expiry,
     )
     if spec is None:
         base = probe
@@ -319,14 +404,20 @@ def compose_hypothesis_v2(
             raise EconomicPropagationError("K3D_V2_MECHANISM_NOT_ELIGIBLE")
         mechanism, alternatives, falsifiers = _v2_narrative(spec, classes)
         base = compose_hypothesis(
-            **inputs, mechanism_proposal=mechanism, alternatives=alternatives,
-            falsifiers=falsifiers, expiry=expiry,
+            **inputs, mechanism_proposal=_v2_native_mechanism(mechanism), alternatives=alternatives,
+            falsifiers=_v2_native_falsifiers(falsifiers), expiry=expiry,
         )
+    mechanism, _, falsifiers = _v2_narrative(spec, classes)
+    base["mechanism"] = ({**base["mechanism"], "mechanism_polarity": None}
+                         if mechanism is None else {"state": "hypothesized", **mechanism})
+    base["falsifiers"] = falsifiers
+    base["applicability_conditions"] = _v2_applicability(spec)
+    base["evaluation_requirements"] = list(_V2_EVALUATION_REQUIREMENTS)
     base["schema"] = _V2_SCHEMA_ID
     base["version"] = 2
     base["construction_profile"] = _V2_PROFILE
     base["alternative_classes"] = classes
-    base["record_id"] = _derive_v2_record_id(base["source_event"]["event_id"], base["target"], asof)
+    base["record_id"] = _derive_v2_record_id(base["source_event"]["event_id"], base["target"], asof, spec)
     base["content_sha256"] = content_sha256(base)
     findings = validate_hypothesis_v2(base)
     if findings:
