@@ -9,9 +9,14 @@ import logging
 import os
 from pathlib import Path
 import signal
+import sys
 import tempfile
 import time
 from typing import Any, Callable
+
+# Runnable directly as a file as well as via python -m. Pin this repository
+# before module-scope imports to avoid loading another checkout.
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from collectors import tushare_client
 from engine import china_heatmap_live as contract
