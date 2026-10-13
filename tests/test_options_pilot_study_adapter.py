@@ -966,6 +966,27 @@ class Q03GuardTests(unittest.TestCase):
         )
         self.assertIs(report["empirical_acceptance"], False)
 
+    def test_holm_refuses_non_finite_or_out_of_range_pvalues(self):
+        for value in (
+            float("nan"),
+            float("inf"),
+            float("-inf"),
+            -0.5,
+            -1e-12,
+            1.0000001,
+            2,
+        ):
+            pvalues = {"P1": 0.001, "P2": value, "P3": 1.0, "P4": 1.0, "P5": 1.0, "P6": 1.0}
+            with self.subTest(p2=value):
+                with self.assertRaises(adapter.Refusal) as ctx:
+                    adapter.holm_six_pilot(pvalues)
+                self.assertEqual(ctx.exception.code, "PVALUE_OUT_OF_RANGE")
+
+        at_bounds = {"P1": 0, "P2": 1, "P3": 1, "P4": 1, "P5": 1, "P6": 1}
+        self.assertEqual(adapter.holm_six_pilot(at_bounds)["rejected"], ["P1"])
+        all_one = {"P1": 1.0, "P2": 1.0, "P3": 1.0, "P4": 1.0, "P5": 1.0, "P6": 1.0}
+        self.assertEqual(adapter.holm_six_pilot(all_one)["rejected"], [])
+
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)
