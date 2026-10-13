@@ -37,6 +37,8 @@ import os
 import re
 import stat
 from collections.abc import Mapping
+from contextlib import contextmanager
+from contextvars import ContextVar
 from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
 from hashlib import sha256
@@ -236,6 +238,52 @@ def _strict_json_object(body: bytes, *, label: str) -> dict[str, Any]:
     return payload
 
 
+class OwnerReadBudgetError(MarketMemoryStoreError):
+    """A lexical request exhausted its cumulative canonical-owner I/O grant."""
+
+
+class OwnerReadBudget:
+    """Observed canonical-owner I/O for one lexical request, never a grant."""
+
+    __slots__ = ("_limit", "_bytes", "_objects")
+
+    def __init__(self, maximum_bytes: int):
+        if type(maximum_bytes) is not int or not 1 <= maximum_bytes <= _MAX_PIN_ANCESTRY_BYTES:
+            raise OwnerReadBudgetError("owner read budget exceeds its fixed ceiling")
+        self._limit = maximum_bytes
+        self._bytes = 0
+        self._objects = 0
+
+    @property
+    def bytes_read(self) -> int:
+        return self._bytes
+
+    @property
+    def objects_opened(self) -> int:
+        return self._objects
+
+
+_OWNER_READ_BUDGETS: ContextVar[tuple[OwnerReadBudget, ...]] = ContextVar(
+    "market_memory_owner_read_budgets", default=()
+)
+
+
+@contextmanager
+def bounded_owner_reads(*, maximum_bytes: int):
+    """Charge all canonical reads, including ancestry and failed reads.
+
+    Context-local scopes do not patch reader functions or affect other requests.
+    Nested scopes charge every enclosing budget and cannot reset its allowance.
+    The existing per-object and ancestry ceilings remain in force.
+    """
+    budget = OwnerReadBudget(maximum_bytes)
+    token = _OWNER_READ_BUDGETS.set((*_OWNER_READ_BUDGETS.get(), budget))
+    try:
+        yield budget
+    finally:
+        _OWNER_READ_BUDGETS.reset(token)
+
+
 def _read_canonical_object(
     path: Path,
     *,
@@ -258,12 +306,24 @@ def _read_canonical_object(
             raise MarketMemoryStoreError(f"{label} is not a regular file")
         if metadata.st_size <= 0 or metadata.st_size > limit:
             raise MarketMemoryStoreError(f"{label} exceeds its safe size bound")
+        budgets = _OWNER_READ_BUDGETS.get()
+        # Reserve room for the existing one-byte growth probe before reading.
+        # Every actual chunk is charged even if later validation rejects it.
+        if any(metadata.st_size + 1 > item._limit - item._bytes for item in budgets):
+            raise OwnerReadBudgetError("aggregate owner read byte budget exhausted")
+        for item in budgets:
+            item._objects += 1
         chunks: list[bytes] = []
         remaining = limit + 1
         while remaining > 0:
-            chunk = os.read(descriptor, min(65_536, remaining))
+            allowance = min((item._limit - item._bytes for item in budgets), default=remaining)
+            if allowance <= 0:
+                raise OwnerReadBudgetError("aggregate owner read byte budget exhausted")
+            chunk = os.read(descriptor, min(65_536, remaining, allowance))
             if not chunk:
                 break
+            for item in budgets:
+                item._bytes += len(chunk)
             chunks.append(chunk)
             remaining -= len(chunk)
         body = b"".join(chunks)

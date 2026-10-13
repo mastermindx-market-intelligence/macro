@@ -941,3 +941,107 @@ def symbol(
             headers={"Retry-After": str(_SYMBOL_FETCH_BUSY_RETRY_SECONDS)},
         ) from exc
     return _response(payload, status_code=200 if payload.get("available") else 404)
+
+
+def retained_method_catalog(root: Path) -> list[dict]:
+    """Public method identity inside an already authenticated owner request."""
+    from engine.neuralweb import market_memory_episode_retrieval as retrieval
+    from engine.neuralweb import market_memory_retained_use as use
+
+    registered, _digest = use.load_registration(root)
+    return [retrieval.RetainedContextMethodSpec(
+        registered["method"]["purge_calendar_days"],
+        registered["method"]["embargo_calendar_days"], mode).disclosure()
+        for mode in registered["modes"]]
+
+
+def retained_macro_for_user(root: Path, user_id: str, request_spec: dict,
+                            *, peer: str | None = None) -> dict:
+    """Shared same-process authority and resource boundary for HTTP and Brain."""
+    import re
+    from engine.neuralweb import market_memory_episode_features as features
+    from engine.neuralweb import market_memory_episode_retrieval as retrieval
+    from engine.neuralweb import market_memory_operating_cortex_service as evidence
+    from engine.neuralweb import market_memory_retained_context_cohort as cohort
+    from engine.neuralweb import market_memory_retained_use as use
+
+    use._enforce_current_site_user(user_id)
+    required = {"query_id", "subject_id", "generation_id", "generation_sha256",
+                "query_cutoff", "method_spec_id"}
+    if (type(request_spec) is not dict or not required <= set(request_spec)
+            or set(request_spec) - required - {"limit"}):
+        raise HTTPException(400, detail={"state": "INVALID_EXACT_REQUEST"})
+    spec = dict(request_spec)
+    limit = spec.pop("limit", 6)
+    if type(limit) is str and re.fullmatch(r"[1-8]", limit):
+        limit = int(limit)
+    if type(limit) is not int or not 1 <= limit <= 8:
+        raise HTTPException(400, detail={"state": "INVALID_EXACT_REQUEST"})
+    for key, pattern in (("query_id", r"mmquery_[a-f0-9]{64}"),
+                         ("subject_id", r"mmsecurity_[a-f0-9]{64}"),
+                         ("generation_id", r"mmgeneration_[a-f0-9]{64}"),
+                         ("generation_sha256", r"[a-f0-9]{64}"),
+                         ("method_spec_id", r"mmretainedmethod_[a-f0-9]{64}")):
+        if type(spec[key]) is not str or not re.fullmatch(pattern, spec[key]):
+            raise HTTPException(400, detail={"state": "INVALID_EXACT_REQUEST"})
+    try:
+        cohort.utc_instant(spec["query_cutoff"])
+    except cohort.RetainedContextCohortError as exc:
+        raise HTTPException(400, detail={"state": "INVALID_EXACT_REQUEST"}) from exc
+    with _symbol_rate_lock:
+        now = time.monotonic()
+        allowed = _book_symbol_rate(f"playback-user:{user_id}", limit=_PLAYBACK_USER_LIMIT, now=now)
+        if allowed and peer is not None:
+            allowed = _book_symbol_rate(f"playback-peer:{peer[:160]}", limit=_PLAYBACK_PEER_LIMIT, now=now)
+    if not allowed:
+        raise HTTPException(429, detail={"state": "RATE_LIMITED"}, headers={"Retry-After": "60"})
+    if not _playback_slots.acquire(blocking=False):
+        raise HTTPException(503, detail={"state": "BUSY"}, headers={"Retry-After": "2"})
+    try:
+        registered, _digest = use.load_registration(root)
+        methods = retained_method_catalog(root)
+        matches = [m for m in methods if m["method_spec_id"] == spec["method_spec_id"]]
+        if len(matches) != 1:
+            raise HTTPException(400, detail={"state": "REGISTERED_METHOD_REQUIRED"})
+        selected = matches[0]
+        policy = use.RetainedHouseUsePolicy(
+            root, user_id=user_id, store_id=registered["store_id"],
+            generation_id=spec["generation_id"], generation_sha256=spec["generation_sha256"],
+            subject_id=spec["subject_id"], query_cutoff=spec["query_cutoff"], mode=selected["mode"])
+        # Authorize metadata before resolving or opening the owner store.
+        policy.check("read_retained_generation_metadata", policy.expected)
+        reader = market_memory_trusted.TrustedFileAsKnownAtReader(
+            market_memory_trusted.default_trusted_store_root(root))
+        method = retrieval.RetainedContextMethodSpec(
+            selected["purge_calendar_days"], selected["embargo_calendar_days"], selected["mode"])
+        return market_memory.retained_macro_context(
+            reader, policy=policy, query_id=spec["query_id"],
+            generation_id=spec["generation_id"], generation_sha256=spec["generation_sha256"],
+            subject_id=spec["subject_id"], query_cutoff=spec["query_cutoff"], method=method, limit=limit)
+    except (use.RetainedUseError, features.EpisodeFeatureAccessError,
+            cohort.RetainedContextAccessError) as exc:
+        raise HTTPException(403, detail={"state": "SOURCE_USE_NOT_ADMITTED"}) from exc
+    except market_memory_pit.MarketMemoryContextNotFound as exc:
+        raise HTTPException(404, detail={"state": "EXACT_CAPTURE_NOT_FOUND"}) from exc
+    except market_memory_pit.OwnerReadBudgetError as exc:
+        raise HTTPException(503, detail={"state": "OWNER_READ_BUDGET_EXCEEDED"}) from exc
+    except (market_memory_pit.MarketMemoryPITError, features.EpisodeFeatureError,
+            cohort.RetainedContextCohortError, retrieval.EpisodeRetrievalError,
+            evidence.RealEvidenceError) as exc:
+        raise HTTPException(503, detail={"state": "EXACT_RETAINED_EVIDENCE_UNAVAILABLE"}) from exc
+    finally:
+        _playback_slots.release()
+
+
+@router.get("/macro/retained")
+def retained_macro(
+    request: Request,
+    _user: dict = Depends(require_site_full_user),
+) -> JSONResponse:
+    items = list(request.query_params.multi_items())
+    if len({k for k, _v in items}) != len(items):
+        raise HTTPException(400, detail={"state": "INVALID_EXACT_REQUEST"})
+    peer = str(request.headers.get(_SYMBOL_TRUSTED_PEER_HEADER)
+               or (request.client.host if request.client else "unknown"))[:160]
+    value = retained_macro_for_user(_repo_root(), str(_user.get("id") or ""), dict(items), peer=peer)
+    return _response(value, headers={"ETag": '"' + value["context_id"] + '"'})

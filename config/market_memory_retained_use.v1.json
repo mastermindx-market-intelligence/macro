@@ -1,0 +1,57 @@
+{
+  "schema": "market_memory.retained_house_use.v1",
+  "policy_id": "market_memory.retained_house_contextual_use.v1",
+  "enabled": true,
+  "source_authority": {
+    "record": "research/licenses/MARKET_MEMORY_HOUSE_MACRO_REUSE_2026-10-13.md",
+    "sha256": "ee228ed7da3eeca375f15ea4091e33a30cde4f45c3a3f7a3014f94c5ca162bce",
+    "confirmed_on": "2026-10-13",
+    "basis": "direct_chairman_confirmation"
+  },
+  "profile": "retained_original_house_macro_output.v1",
+  "store_profile": "market_memory.trusted.macro_regime_canary.v1",
+  "source_id": "market_regime_store",
+  "allowed_subject_ids": [
+    "mmsecurity_5fc37e8db34f74314b654c910ea8bacfa7de8b5d2d067f2e5421c9d5745ceb4c"
+  ],
+  "fields": [
+    "growth_score",
+    "inflation_score",
+    "quad",
+    "liquidity_overlay",
+    "cycle_tag"
+  ],
+  "purposes": [
+    "retention",
+    "reuse",
+    "customer_comparisons",
+    "cited_evidence"
+  ],
+  "modes": [
+    "historical_hypothetical",
+    "current_contextual_support"
+  ],
+  "method": {
+    "registration_id": "retained_house_fixed_l1_contextual_5d_20261013.v1",
+    "descriptor_id": "mmfixedscale_f53b98e4ee4db6b550c8726636b209ac6033d43e8fc457c9bb5974f65ade8c91",
+    "purge_calendar_days": 5,
+    "embargo_calendar_days": 5,
+    "reason": "near-query calendar exclusion for contextual comparison; not outcome-label purging or evidence of independent episodes",
+    "label_interval_coverage": "not_established",
+    "effective_n": "not_estimated"
+  },
+  "revoked_capture_ids": [],
+  "revoked_source_receipt_ids": [],
+  "fit_eligible": false,
+  "training_eligible": false,
+  "promotion_eligible": false,
+  "store_id": "mmstore_794a3c80dd160cedf09f1fa510c8b2d0467a05e94e60f72f18bcdf1dde79bf88",
+  "service_consumers": {
+    "research_factory.contextual_evidence.v1": {
+      "enabled": true,
+      "purpose": "contextual_cited_evidence",
+      "binding_registry": "config/market_memory_factory_bindings.v1.json",
+      "binding_registry_sha256": "a1d3c3f7e921b40fec48331f4f267bdcc030d203cae8e621c9c896b90ef27e5f"
+    }
+  }
+}
