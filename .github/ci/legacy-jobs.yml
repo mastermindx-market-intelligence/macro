@@ -17222,6 +17222,14 @@ jobs:
       # ledgers and would otherwise fail for a borrowed reason.
       # No dependency widened: probed at RUN time, both load only
       # pandas/numpy/pyarrow/pyyaml, all already on the install line above.
+      # Source binding reaches the full builder import graph. Keep this new
+      # hermetic check in the existing unscoped board owner; shipped-artifact
+      # assertions retain their existing nightly data owners unchanged.
+      - name: Today source binding and private hydration (hermetic)
+        run: >-
+          python -m pytest tests/test_us_today_source_binding.py
+          tests/test_us_board_gate.py tests/test_us_board_hydration_merge.py
+          -q -k "not test_shipped"
         # The nightly recorded nothing for nine days (2026-07-31..08-06) while the step
         # concluded `success`; these pin that the alarms fire, name the cause, and stay
         # quiet on a healthy night. An unrun guard is not a guard — this suite is named
