@@ -42,14 +42,18 @@ Lane O2-P02, programme DATA-OS-COMPLETION, base D00 (2026-10-13).
 """
 from __future__ import annotations
 
+import hashlib
+import json
 import re
-from dataclasses import dataclass
+from collections.abc import Iterable
+from dataclasses import dataclass, replace
 from datetime import date, datetime, timezone
 from decimal import Decimal
 from enum import StrEnum
 from fractions import Fraction
 from typing import Mapping
 
+from lib.dataos import read_contract
 from lib.dataos.price import (
     AdjustmentBasis,
     PriceError,
@@ -57,6 +61,15 @@ from lib.dataos.price import (
     is_ambiguous,
     parse_column,
 )
+from lib.dataos.read_contract import (
+    Dependency,
+    ReadMode,
+    ReadRequest,
+    ReadResult,
+    RetainedOutput,
+)
+from lib.dataos.registry import ActionInputStatus, Registry, qualify_action_input
+from lib.dataos.temporal import utc
 
 __all__ = [
     "ActionFamily",
@@ -81,6 +94,19 @@ __all__ = [
     "TotalReturnPolicy",
     "TotalReturnView",
     "total_return_view",
+    # ── correction-aware retained views + the qualify-first gate (O3-P05) ──
+    "ViewVintage",
+    "RetainedView",
+    "ReopenedView",
+    "ComposedView",
+    "admit_action_input",
+    "admit_revision_set",
+    "retain_view",
+    "reopen_view",
+    "reconstruct_price_view",
+    "simple_returns",
+    "view_label",
+    "view_receipt_sha256",
 ]
 
 #: The only P01 qualification string that may enter a split factor (D00.D3).
@@ -177,6 +203,10 @@ class RefusalReason(StrEnum):
     MISSING_PRICE = "missing_price"
     # ── added by the R02 heal of the total-return view (m5) ──
     DUPLICATE_ROW_DATE = "duplicate_row_date"
+    # ── added by lane O3-P05's retained views (D00.D5: one generation, one receipt) ──
+    MIXED_GENERATION = "mixed_generation"
+    RECEIPT_MISMATCH = "receipt_mismatch"
+    UNBOUND_GENERATION = "unbound_generation"
 
 
 class ViewRefusal(PriceError):
@@ -1271,3 +1301,616 @@ def total_return_view(
         events_applied=tuple(applied),
         executable=False,
     )
+
+
+# ── correction-aware retained views + the qualify-first gate (O3-P05) ─────────
+#
+# D00.D5 closes the loop this section implements: a view is a point-in-time
+# quantity over (rows, action revision set, identity generation, code), and a
+# CORRECTION is a new generation — never a rewrite of the old one.  So a view
+# that answered a question must be RETAINABLE exactly as it answered it, and
+# reopenable byte-exactly later, while a recomputation over a corrected source
+# is a different vintage that can never wear the old one's receipt.
+#
+# Three pieces, each a composition of accepted modules (never a re-implementation):
+#
+# * the QUALIFY-FIRST gate — :func:`admit_action_input` runs P01's
+#   ``registry.qualify_action_input`` BEFORE any event enters a composed view;
+#   the caller's qualification string is always discarded and replaced by the
+#   verdict, so a SUSPECTED inference can never arrive pre-labelled CONFIRMED;
+# * the VINTAGE — :class:`ViewVintage` + :func:`retain_view`/:func:`reopen_view`
+#   bind a view to its source generation, revision set, identity generation and
+#   code version through one canonical payload, one digest and one receipt
+#   (T01's ``read_contract.replay`` does the byte-exactness);
+# * the COMPOSITION — :func:`reconstruct_price_view` builds a view from a
+#   read_contract RECONSTRUCT result, so mode/cutoff/clock/generation refusals
+#   stay read_contract's own and are never re-implemented here.
+
+#: Schema tags written into every canonical payload / receipt, so a retained
+#: artifact declares what it is instead of relying on its file name.
+_RETAINED_VIEW_SCHEMA = "dataos.retained_price_view.v1"
+_RETAINED_RECEIPT_SCHEMA = "dataos.retained_price_view_receipt.v1"
+
+_HEX40 = re.compile(r"\A[0-9a-f]{40}\Z")
+_HEX64 = re.compile(r"\A[0-9a-f]{64}\Z")
+
+
+def _dumps_canonical(doc: Mapping) -> bytes:
+    """The one canonical JSON encoding: sorted keys, tight separators, no NaN."""
+    return json.dumps(
+        doc, sort_keys=True, separators=(",", ":"), ensure_ascii=False, allow_nan=False
+    ).encode("utf-8")
+
+
+# ── P05.05 — the qualify-first action-input gate ─────────────────────────────
+
+def admit_action_input(
+    event: ActionEvent, observation: Mapping, *, registry: Registry
+) -> ActionEvent:
+    """Stamp one action event with P01's verdict BEFORE it may enter a view.
+
+    The FIRST statement qualifies the observation (P01's
+    ``lib.dataos.registry.qualify_action_input``, imported — never copied); a
+    structurally impossible observation raises that function's ``ValueError``
+    unchanged, because a malformed input has no honest status to stamp.
+
+    The gate then refuses, typed, exactly the two shapes that cannot become an
+    event at all:
+
+    * a QUALIFIED EMPTY response — authoritative absence is not an event, so
+      there is nothing to stamp (NOT_CONFIRMED; P01.03);
+    * a receipt naming a DIFFERENT observation than the one the event claims
+      (RECEIPT_MISMATCH) — a verdict may not authenticate a substituted event.
+
+    Every other verdict is STAMPED onto the event as its qualification string:
+    the caller's own qualification is always discarded (``replace``), so a
+    SUSPECTED / UNQUALIFIED / UNCAPTURED event is recorded — never dropped —
+    and ``_check_window_event`` refuses it NOT_CONFIRMED in every view whose
+    window it enters, while outside any window it stays inert.
+    """
+    verdict = qualify_action_input(observation, registry=registry)
+    if verdict.status is ActionInputStatus.NO_ACTION_IN_QUALIFIED_RESPONSE:
+        raise ViewRefusal(
+            f"event {event.event_id!r} was offered against a qualified response "
+            f"that authoritatively held no action — absence is not an event "
+            f"(P01.03)",
+            reason=RefusalReason.NOT_CONFIRMED,
+            event_id=event.event_id,
+        )
+    if verdict.receipt is not None and verdict.receipt != event.source_receipt:
+        raise ViewRefusal(
+            f"event {event.event_id!r} carries source_receipt "
+            f"{event.source_receipt!r} but its observation was qualified under "
+            f"receipt {verdict.receipt!r} — a verdict may not authenticate a "
+            f"substituted event (D00.D5)",
+            reason=RefusalReason.RECEIPT_MISMATCH,
+            event_id=event.event_id,
+        )
+    return replace(event, qualification=verdict.status.value)
+
+
+def admit_revision_set(
+    revision_set_id: str,
+    inputs: Iterable[tuple[ActionEvent, Mapping]],
+    *,
+    registry: Registry,
+) -> ActionRevisionSet:
+    """An :class:`ActionRevisionSet` every event of which passed the gate.
+
+    Composes :func:`admit_action_input` over ``(event, observation)`` pairs;
+    the set itself is P02's, unchanged.  Direct ``ActionRevisionSet(...)``
+    construction stays legal for legacy callers and tests (see GAPS).
+    """
+    return ActionRevisionSet(
+        revision_set_id,
+        tuple(admit_action_input(event, obs, registry=registry) for event, obs in inputs),
+    )
+
+
+# ── P05.03 — the vintage, the canonical payload, the receipt, the label ───────
+
+@dataclass(frozen=True)
+class ViewVintage:
+    """What a view's numbers were computed FROM (D00.D1/D00.D5).
+
+    Four names, one vintage: the source generation of the rows, the action
+    revision set the factors resolved against, the identity generation the
+    request bound, and the code version that produced the view.  Two views with
+    equal vintages and equal digests are the same answer; anything else is a
+    different answer even when the rows happen to coincide.  ``revision_set_id``
+    is ``None`` ONLY for a RAW view (no action revisions were consulted).
+    """
+
+    source_generation_id: str
+    revision_set_id: str | None
+    identity_generation_id: str
+    code_version: str
+
+    def __post_init__(self) -> None:
+        for name in ("source_generation_id", "identity_generation_id"):
+            value = getattr(self, name)
+            if not isinstance(value, str):
+                raise TypeError(f"{name} must be a str, got {type(value).__name__}")
+            if not value:
+                raise ValueError(f"{name} must be a non-empty str, got {value!r}")
+        if self.revision_set_id is not None:
+            if not isinstance(self.revision_set_id, str):
+                raise TypeError(
+                    f"revision_set_id must be a str or None, "
+                    f"got {type(self.revision_set_id).__name__}"
+                )
+            if not self.revision_set_id:
+                raise ValueError(
+                    f"revision_set_id must be a non-empty str or None, "
+                    f"got {self.revision_set_id!r}"
+                )
+        if not isinstance(self.code_version, str):
+            raise TypeError(
+                f"code_version must be a str, got {type(self.code_version).__name__}"
+            )
+        if not _HEX40.match(self.code_version):
+            raise ValueError(
+                f"code_version must be a 40-char lowercase-hex code version "
+                f"(the read_contract rule), got {self.code_version!r}"
+            )
+
+
+def _encode_view_value(value, *, key: str):
+    """One row value -> its exact, reversible canonical form.
+
+    ``bool`` is checked before ``int`` (bool subclasses int) and ``datetime``
+    before ``date`` (likewise), exactly as the frozen table orders them.
+    Anything else — a float, a Decimal, a naive datetime, a nested container —
+    refuses NON_EXACT_INPUT: a value that cannot round-trip byte-exactly
+    cannot be retained, and converting it would silently restate history.
+    """
+    if isinstance(value, bool):
+        return value
+    if isinstance(value, Fraction):
+        return {"q": f"{value.numerator}/{value.denominator}"}
+    if isinstance(value, int):
+        return value
+    if isinstance(value, datetime):
+        return {"t": utc(value).isoformat()}
+    if isinstance(value, date):
+        return {"d": value.isoformat()}
+    if value is None or isinstance(value, str):
+        return value
+    raise ViewRefusal(
+        f"retained row column {key!r} carries {type(value).__name__} {value!r} — "
+        f"only exact reversible values (Fraction, date, aware datetime, str, "
+        f"int, bool, None) may be retained byte-exactly",
+        reason=RefusalReason.NON_EXACT_INPUT,
+        column=key,
+    )
+
+
+def _decode_view_value(value):
+    """Invert :func:`_encode_view_value` exactly (single-key ``q``/``d``/``t``)."""
+    if isinstance(value, dict) and len(value) == 1:
+        if "q" in value:
+            return Fraction(value["q"])
+        if "d" in value:
+            return date.fromisoformat(value["d"])
+        if "t" in value:
+            return datetime.fromisoformat(value["t"])
+    return value
+
+
+def _encode_view_row(row: Mapping) -> dict:
+    if not isinstance(row, Mapping):
+        raise TypeError(f"a view row must be a Mapping, got {type(row).__name__}")
+    encoded: dict = {}
+    for key, value in row.items():
+        if not isinstance(key, str):
+            raise ViewRefusal(
+                f"a retained row carries the non-string column {key!r} — a "
+                f"column that cannot be named cannot be retained",
+                reason=RefusalReason.NON_EXACT_INPUT,
+            )
+        encoded[key] = _encode_view_value(value, key=key)
+    return encoded
+
+
+def _decode_view_row(row: Mapping) -> dict:
+    return {key: _decode_view_value(value) for key, value in row.items()}
+
+
+def _vintage_doc(vintage: ViewVintage) -> dict:
+    return {
+        "source_generation_id": vintage.source_generation_id,
+        "revision_set_id": vintage.revision_set_id,
+        "identity_generation_id": vintage.identity_generation_id,
+        "code_version": vintage.code_version,
+    }
+
+
+def _canonical_view_payload(view: PriceView, vintage: ViewVintage) -> bytes:
+    """The canonical payload of (view, vintage) — the bytes a replay must serve.
+
+    One JSON document under the frozen dumps settings; every row value passes
+    through the exact/reversible encoder first, so the payload carries no float
+    anywhere and decodes back to the very objects it was built from.
+    """
+    reference = view.reference
+    return _dumps_canonical(
+        {
+            "schema": _RETAINED_VIEW_SCHEMA,
+            "basis": view.basis,
+            "executable": view.executable,
+            "reference": {
+                "basis": reference.basis,
+                "action_revision_set_id": reference.action_revision_set_id,
+                "as_at": (
+                    None if reference.as_at is None else utc(reference.as_at).isoformat()
+                ),
+            },
+            "vintage": _vintage_doc(vintage),
+            "rows": [_encode_view_row(row) for row in view.rows],
+        }
+    )
+
+
+def view_receipt_sha256(output_id: str, vintage: ViewVintage, view_digest: str) -> str:
+    """The receipt that PUBLISHED one retained view under ``output_id``.
+
+    Hashes the canonical JSON of the receipt schema — output id, the four
+    vintage names, the view digest — so an old receipt can never cover a new
+    source generation, factor set, identity generation or view: any one of them
+    moves the digest (D00.D5.3).
+    """
+    return hashlib.sha256(
+        _dumps_canonical(
+            {
+                "schema": _RETAINED_RECEIPT_SCHEMA,
+                "output_id": output_id,
+                "vintage": _vintage_doc(vintage),
+                "view_digest": view_digest,
+            }
+        )
+    ).hexdigest()
+
+
+def view_label(view: PriceView, vintage: ViewVintage) -> str:
+    """The one-line human label of (view, vintage): basis, as_at, ids, code."""
+    reference = view.reference
+    as_at = "-" if reference.as_at is None else utc(reference.as_at).isoformat()
+    revision_set = reference.action_revision_set_id or "-"
+    return (
+        f"{view.basis}|as_at={as_at}|revision_set={revision_set}"
+        f"|source_generation={vintage.source_generation_id}"
+        f"|identity_generation={vintage.identity_generation_id}"
+        f"|code_version={vintage.code_version}"
+    )
+
+
+# ── P05.01/P05.03 — retain and reopen ────────────────────────────────────────
+
+@dataclass(frozen=True)
+class RetainedView:
+    """A view frozen as it answered: vintage, payload, digest, receipt.
+
+    ``key`` is the vintage triple plus the digest — the identity two retained
+    views must share to be the same answer.  ``payload`` is the canonical bytes
+    (``None`` only on a destructured/tampered holder, which ``reopen_view``
+    routes to read_contract's NO_RETAINED_OUTPUT).
+    """
+
+    vintage: ViewVintage
+    view_digest: str
+    label: str
+    payload: bytes | None
+    output_id: str
+    publishing_receipt_sha256: str
+
+    def __post_init__(self) -> None:
+        if not isinstance(self.vintage, ViewVintage):
+            raise TypeError(
+                f"vintage must be a ViewVintage, got {type(self.vintage).__name__}"
+            )
+        for name in ("view_digest", "publishing_receipt_sha256"):
+            value = getattr(self, name)
+            if not isinstance(value, str) or not _HEX64.match(value):
+                raise ValueError(
+                    f"{name} must be a 64-char lowercase-hex sha256, got {value!r}"
+                )
+
+    @property
+    def key(self) -> tuple:
+        return (
+            self.vintage.source_generation_id,
+            self.vintage.revision_set_id,
+            self.vintage.code_version,
+            self.view_digest,
+        )
+
+
+def retain_view(
+    view: PriceView,
+    vintage: ViewVintage,
+    *,
+    output_id: str,
+    publishing_receipt_sha256: str | None = None,
+) -> RetainedView:
+    """Freeze one view as it answered, under one output id and one receipt.
+
+    Refuses MIXED_GENERATION — a vintage that does not belong to this view —
+    before anything is serialised, in each of its three shapes: a revision set
+    the view's own reference does not name; a RAW view (which consulted no
+    action revisions) carrying a revision set id; an adjusted view carrying
+    none.  After the digest is computed, a SUPPLIED receipt that does not equal
+    the receipt this (output_id, vintage, view) actually hashes to refuses the
+    same way: an old receipt can never cover a new generation, factor set,
+    identity generation or view.  With no receipt supplied, the computed one is
+    used.  A row value that cannot round-trip refuses NON_EXACT_INPUT.
+    """
+    if not isinstance(view, PriceView):
+        raise TypeError(f"view must be a PriceView, got {type(view).__name__}")
+    if not isinstance(vintage, ViewVintage):
+        raise TypeError(f"vintage must be a ViewVintage, got {type(vintage).__name__}")
+    if not isinstance(output_id, str) or not output_id:
+        raise TypeError(f"output_id must be a non-empty string, got {output_id!r}")
+    reference = view.reference
+    if vintage.revision_set_id != reference.action_revision_set_id:
+        raise ViewRefusal(
+            f"vintage names revision set {vintage.revision_set_id!r} but the view "
+            f"was computed against {reference.action_revision_set_id!r} — one "
+            f"vintage, one revision set (D00.D5.1)",
+            reason=RefusalReason.MIXED_GENERATION,
+        )
+    if view.basis == "RAW" and vintage.revision_set_id is not None:
+        raise ViewRefusal(
+            "a RAW view consulted no action revisions, so its vintage carries "
+            f"no revision set id (got {vintage.revision_set_id!r})",
+            reason=RefusalReason.MIXED_GENERATION,
+        )
+    if view.basis != "RAW" and vintage.revision_set_id is None:
+        raise ViewRefusal(
+            f"a {view.basis!r} view resolves factors against an action revision "
+            f"set, so its vintage must name it (got None)",
+            reason=RefusalReason.MIXED_GENERATION,
+        )
+    payload = _canonical_view_payload(view, vintage)
+    view_digest = hashlib.sha256(payload).hexdigest()
+    receipt = view_receipt_sha256(output_id, vintage, view_digest)
+    if publishing_receipt_sha256 is not None and publishing_receipt_sha256 != receipt:
+        raise ViewRefusal(
+            f"the supplied publishing receipt does not cover output "
+            f"{output_id!r} at this vintage and view digest — an old receipt "
+            f"can never publish a new generation, factor set, identity "
+            f"generation or view (D00.D5.3)",
+            reason=RefusalReason.MIXED_GENERATION,
+        )
+    return RetainedView(
+        vintage=vintage,
+        view_digest=view_digest,
+        label=view_label(view, vintage),
+        payload=payload,
+        output_id=output_id,
+        publishing_receipt_sha256=(
+            receipt if publishing_receipt_sha256 is None else publishing_receipt_sha256
+        ),
+    )
+
+
+@dataclass(frozen=True)
+class ReopenedView:
+    """A retained view reopened byte-exactly: the view, its label, its vintage
+    and the read_contract REPLAY result that served the bytes."""
+
+    view: PriceView
+    label: str
+    vintage: ViewVintage
+    result: ReadResult
+
+
+def reopen_view(retained: RetainedView, request: ReadRequest) -> ReopenedView:
+    """Reopen a retained view through ``read_contract.replay`` — byte-exactly.
+
+    The retained material (payload, digest, receipt) goes to T01's ``replay``
+    untouched: tampered bytes surface as read_contract's ``ReadRefusal`` with
+    ``RETAINED_DIGEST_MISMATCH``, and missing material (a ``None`` payload, a
+    wrong ``output_id``) as ``NO_RETAINED_OUTPUT`` — both propagate unchanged.
+    Only then is the payload decoded back into a :class:`PriceView` and its
+    :class:`ViewVintage`, and the decoded vintage must equal the retained one
+    and re-hash to the retained receipt, else MIXED_GENERATION: bytes that
+    decode to a different vintage than the one they were retained under are a
+    mixed generation no matter what their digest says.
+    """
+    if not isinstance(retained, RetainedView):
+        raise TypeError(
+            f"retained must be a RetainedView, got {type(retained).__name__}"
+        )
+    if not isinstance(request, ReadRequest):
+        raise TypeError(f"request must be a ReadRequest, got {type(request).__name__}")
+    result = read_contract.replay(
+        request,
+        RetainedOutput(
+            retained.output_id,
+            retained.payload,
+            retained.view_digest,
+            retained.publishing_receipt_sha256,
+        ),
+    )
+    doc = json.loads(result.payload.decode("utf-8"))
+    reference_doc = doc["reference"]
+    as_at = (
+        None
+        if reference_doc["as_at"] is None
+        else datetime.fromisoformat(reference_doc["as_at"])
+    )
+    view = PriceView(
+        doc["basis"],
+        tuple(_decode_view_row(row) for row in doc["rows"]),
+        AdjustmentReference(
+            reference_doc["basis"], reference_doc["action_revision_set_id"], as_at
+        ),
+        doc["executable"],
+    )
+    vintage = ViewVintage(**doc["vintage"])
+    if vintage != retained.vintage:
+        raise ViewRefusal(
+            f"the retained bytes for output {retained.output_id!r} decode to "
+            f"vintage {_vintage_doc(vintage)} but were retained under "
+            f"{_vintage_doc(retained.vintage)} — one artifact, one generation "
+            f"(D00.D5.1)",
+            reason=RefusalReason.MIXED_GENERATION,
+        )
+    if (
+        view_receipt_sha256(retained.output_id, vintage, retained.view_digest)
+        != retained.publishing_receipt_sha256
+    ):
+        raise ViewRefusal(
+            f"the retained bytes for output {retained.output_id!r} do not "
+            f"re-hash to the receipt that published them — the receipt and the "
+            f"artifact belong to different generations (D00.D5.3)",
+            reason=RefusalReason.MIXED_GENERATION,
+        )
+    label = view_label(view, vintage)
+    if label != retained.label:
+        raise ViewRefusal(
+            f"the retained bytes for output {retained.output_id!r} decode to "
+            f"label {label!r}, not the retained {retained.label!r}",
+            reason=RefusalReason.MIXED_GENERATION,
+        )
+    return ReopenedView(view, label, vintage, result)
+
+
+# ── P05.02 — the composition over read_contract.reconstruct ──────────────────
+
+@dataclass(frozen=True)
+class ComposedView:
+    """A view composed from a read_contract reconstruction: the view, its
+    vintage, the underlying ``ReadResult`` (evidence intact) and the label."""
+
+    view: PriceView
+    vintage: ViewVintage
+    result: ReadResult
+    label: str
+
+
+def _action_event_from_row(row: Mapping, *, clock_column: str) -> ActionEvent:
+    """One selected action row -> an ActionEvent stamped ``UNQUALIFIED``.
+
+    The placeholder qualification is exactly that: the qualify-first gate
+    overwrites it with the verdict before any view sees the event.
+    """
+    return ActionEvent(
+        event_id=row["event_id"],
+        family=ActionFamily(row["family"]),
+        ex_date=date.fromisoformat(row["ex_date"]),
+        known_at=utc(row[clock_column]),
+        source_receipt=row["source_receipt"],
+        qualification="UNQUALIFIED",
+        ratio=Fraction(row["ratio"]) if row.get("ratio") is not None else None,
+        cash_per_share=(
+            Fraction(row["cash_per_share"])
+            if row.get("cash_per_share") is not None
+            else None
+        ),
+        cash_basis=row.get("cash_basis"),
+        currency=row.get("currency"),
+        supersedes=row.get("supersedes"),
+        cancelled=bool(row.get("cancelled", False)),
+        sequence=row.get("sequence"),
+    )
+
+
+def reconstruct_price_view(
+    request: ReadRequest,
+    *,
+    bars: Dependency,
+    actions: Dependency,
+    observations: Mapping[str, Mapping],
+    registry: Registry,
+    code_version: str,
+    identity_generation_id: str,
+    basis: str = "SADJ",
+) -> ComposedView:
+    """Compose a correction-aware view over ``read_contract.reconstruct``.
+
+    Step 1 is the reconstruction itself, so every mode/cutoff/clock/generation
+    refusal is read_contract's own and is never re-implemented here.  Each
+    selected action row becomes an ``ActionEvent`` whose ``known_at`` is the
+    REQUESTED clock's value on that row; every event must carry an observation,
+    which the qualify-first gate stamps (or refuses on).  The revision set id is
+    ``"actions:" + <read_contract's digest of exactly the selected action
+    rows>``, so a correction that changes what was selected changes the vintage
+    even when the rows happen to compose the same view.  Bars rows are
+    projected to ``date`` plus their ``*_raw`` columns only — generation and
+    clock columns never enter a view.  The source generation is the bars
+    dependency's bound generation: a bars dependency that declared no
+    generations refuses UNBOUND_GENERATION, because a view with no source
+    generation can never be retained or superseded (D00.D5).
+    """
+    result = read_contract.reconstruct(
+        request,
+        {"bars": bars, "actions": actions},
+        required=("bars", "actions"),
+        code_version=code_version,
+    )
+    clock_column = result.evidence["clock"]
+    events = [
+        _action_event_from_row(row, clock_column=clock_column)
+        for row in result.values["actions"]
+    ]
+    for event in events:
+        if event.event_id not in observations:
+            raise ViewRefusal(
+                f"action event {event.event_id!r} has no observation — an event "
+                f"may enter a composed view only through P01's qualify-first "
+                f"gate (D00.D3)",
+                reason=RefusalReason.NOT_CONFIRMED,
+                event_id=event.event_id,
+            )
+    revisions = admit_revision_set(
+        "actions:" + read_contract.selected_input_sha256s(result)["actions"],
+        ((event, observations[event.event_id]) for event in events),
+        registry=registry,
+    )
+    projected = [
+        {
+            "date": date.fromisoformat(row["date"]),
+            **{k: v for k, v in row.items() if k.endswith("_raw")},
+        }
+        for row in result.values["bars"]
+    ]
+    normalized_basis = _normalize_basis(basis)
+    if normalized_basis == "SADJ":
+        view = sadj_view(projected, revisions, request.cutoff)
+    elif normalized_basis == "RAW":
+        view = raw_view(projected)
+    else:
+        raise ViewRefusal(
+            f"basis {basis!r} names no composable view (only SADJ and RAW)",
+            reason=RefusalReason.AMBIGUOUS_BASIS,
+        )
+    source_generation_id = result.evidence["dependency_generation_ids"]["bars"]
+    if source_generation_id is None:
+        raise ViewRefusal(
+            "the bars dependency declared no generations, so the view has no "
+            "source generation to be retained or superseded under (D00.D5)",
+            reason=RefusalReason.UNBOUND_GENERATION,
+        )
+    vintage = ViewVintage(
+        source_generation_id,
+        view.reference.action_revision_set_id,
+        identity_generation_id,
+        code_version,
+    )
+    return ComposedView(view, vintage, result, view_label(view, vintage))
+
+
+def simple_returns(view: PriceView, field: str = "close") -> tuple[Fraction, ...]:
+    """``p1 / p0 - 1`` over consecutive rows of ``<field>_<basis>`` — exact.
+
+    A common split factor on every endpoint cancels in these returns (V04) and
+    a single-bar correction does not (V05) — which is exactly why the retained
+    view, not the recomputation, is the artifact a return claim must cite.
+    """
+    column = f"{field}_{view.basis.lower()}"
+    prices = [
+        _exact_fraction(row[column], what=f"return column {column!r}", column=column)
+        for row in view.rows
+    ]
+    return tuple(prices[i + 1] / prices[i] - 1 for i in range(len(prices) - 1))
