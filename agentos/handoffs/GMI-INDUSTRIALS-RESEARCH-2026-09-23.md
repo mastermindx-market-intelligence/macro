@@ -22,7 +22,7 @@ changed:
 verified:
   - claim: "This continuation record parses under the handoff schema."
     command: "python3 scripts/agentos.py validate --quiet"
-    result: "agentos: 1706 records (94 workstreams, 453 decisions, 506 discoveries, 653 handoffs) — 0 error(s), 142 warning(s)"
+    result: "agentos: 1709 records (94 workstreams, 453 decisions, 507 discoveries, 655 handoffs) — 0 error(s), 143 warning(s)"
   - claim: "Wave 14 integrity checks still bind the packet files to the manifest."
     command: "python3 -I research/industrials/verify_wave14.py"
     result: "Ran 14 tests, OK"
@@ -83,9 +83,9 @@ Containing artifact/review commit: `6dab1cdee663c99a0063cc5ca9d33983150978e7`.
 
 | Artifact | Exact blob |
 |---|---|
-| `agentos/handoffs/GMI-INDUSTRIALS-MASTER-FABLE-CEO-HANDOFF-2026-09-24.md` | `3b65978ec4044c114ea5d409496b4389a60e5e0d` |
+| `agentos/handoffs/GMI-INDUSTRIALS-MASTER-FABLE-CEO-HANDOFF-2026-09-24.md` | `7da34b3b0ce20f22ac21654ecafadc58ea61e99d` |
 | `docs/superpowers/plans/2026-09-24-industrials-handoff-plan-addendum.md` | `a2416836ad973a9224c4823ae0b6ae4d1272a011` |
-| `research/industrials/WAVE14_HANDOFF_MANIFEST.json` | `0cbc358d1d13d3bdac5cfb7dc063ece22d24aff2` |
+| `research/industrials/WAVE14_HANDOFF_MANIFEST.json` | `292ec79e5d13b8434f1048ba2ce53bf108b1de82` |
 | `research/industrials/verify_wave14.py` | `f89cd7e65ede392a7c4d3643a7c6270aec43ff56` |
 | `research/industrials/INDUSTRIALS_WAVE14_HANDOFF_REVIEW_AND_VERIFICATION_2026-09-24.md` | `6a7247eb036b2891f8aeed561b887e3e6a840eba` |
 

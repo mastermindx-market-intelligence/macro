@@ -23,7 +23,7 @@ changed:
 verified:
   - claim: "Both Industrials handoffs parse, and they are no longer hard validation errors."
     command: "python3 scripts/agentos.py validate --quiet"
-    result: "agentos: 1706 records (94 workstreams, 453 decisions, 506 discoveries, 653 handoffs) — 0 error(s), 142 warning(s)"
+    result: "agentos: 1709 records (94 workstreams, 453 decisions, 507 discoveries, 655 handoffs) — 0 error(s), 143 warning(s)"
   - claim: "Wave 4 sibling calculator imports under isolated Python."
     command: "python3 -I research/industrials/verify_wave4_research.py"
     result: "77 PASS, 0 FAIL"
