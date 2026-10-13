@@ -1,0 +1,52 @@
+PYTHONDONTWRITEBYTECODE=1 python3 -B - <<'PY'
+from pathlib import Path
+from hashlib import sha256
+import ast,difflib,json,re,yaml
+root=Path('/Volumes/Mastermind/agent-workspaces/macro/web/gmi-economic-observations-20261009-pro-003')
+path=root/'.github/ci/legacy-jobs.yml';raw=path.read_bytes()
+assert sha256(raw).hexdigest()=='3c23ea9dcc9094a10a3e5874b8281998f203227f522752d00f578820c5b9e581'
+replacements=[
+(b'    # Private analyst inspection and immutable retained observation contracts.\n',b'    # Pure analyst inspection; no source ingestion, admission or publication.\n'),
+(b'      - engine/company_intelligence/relationship_observations.py\n',b''),
+(b'      - tests/test_company_relationship_observations.py\n',b''),
+(b'      - name: File, pinned-source and immutable observation replay contracts\n',b'      - name: File and pinned-source replay, manual boundary and temporal refusals\n'),
+(b'        run: python -m pytest tests/test_company_relationship_candidates.py tests/test_company_pinned_relationship_candidates.py tests/test_company_relationship_review_set.py tests/test_company_relationship_observations.py -q\n',b'        run: python -m pytest tests/test_company_relationship_candidates.py tests/test_company_pinned_relationship_candidates.py tests/test_company_relationship_review_set.py -q\n')]
+old=raw
+for source,target in replacements:
+ assert old.count(source)==1,source
+ old=old.replace(source,target,1)
+assert sha256(old).hexdigest()=='8754604c46e236023fab35aa6914196bc2462d9308772d406efed96c58dce7b2'
+a=yaml.safe_load(old);b=yaml.safe_load(raw);assert type(a['jobs']) is dict and type(b['jobs']) is dict
+owner='company-relationship-candidates';before=a['jobs'][owner];after=b['jobs'][owner]
+assert set(a['jobs'])==set(b['jobs'])
+assert all(a['jobs'][key]==b['jobs'][key] for key in a['jobs'] if key!=owner)
+pa=before['paths'];pb=after['paths'];assert len(pa)==69 and len(pb)==71
+assert len(set(pb))==71 and not any(any(c in p for c in '*?[') for p in pb)
+assert set(pb)-set(pa)=={'engine/company_intelligence/relationship_observations.py','tests/test_company_relationship_observations.py'}
+assert not set(pa)-set(pb)
+assert before['gate']==after['gate']=='code' and before['scope']==after['scope']=='exclusive'
+imports={}
+for p in ['engine/company_intelligence/relationship_observations.py','tests/test_company_relationship_observations.py']:
+ text=(root/p).read_text();tree=ast.parse(text);rows=[]
+ def get_imports(t,where):
+  for n in ast.walk(t):
+   if isinstance(n,ast.Import):
+    for item in n.names: rows.append({'from':where,'line':n.lineno,'module':item.name})
+   elif isinstance(n,ast.ImportFrom): rows.append({'from':where,'line':n.lineno,'module':n.module,'level':n.level})
+ get_imports(tree,'module')
+ for n in ast.walk(tree):
+  if isinstance(n,ast.Assign) and any(isinstance(x,ast.Name) and x.id=='child' for x in n.targets) and isinstance(n.value,ast.Constant) and isinstance(n.value.value,str):get_imports(ast.parse(n.value.value),'embedded_child')
+ first=[r for r in rows if r['module'] and r['module'].split('.')[0] in ('engine','lib','collectors','scripts','tests','app')]
+ for r in first:
+  rel=r['module'].replace('.','/')+'.py'
+  assert rel in pb,(p,rel)
+ imports[p]=first
+suites=re.findall(r'tests/[A-Za-z0-9_/]+\.py',after['steps'][-1]['run'])
+result={'manifest_sha256':sha256(raw).hexdigest(),'inverse_sha256':sha256(old).hexdigest(),'inverse_bytes':len(old),'inverse_exact':True,'job_count_before':len(a['jobs']),'job_count_after':len(b['jobs']),'other_jobs_equal':True,'owner':owner,'owner_fields_before':sorted(before),'owner_fields_after':sorted(after),'gate':after['gate'],'scope':after['scope'],'legacy_if':after['if'],'path_count_before':len(pa),'path_count_after':len(pb),'added_paths':sorted(set(pb)-set(pa)),'removed_paths':sorted(set(pa)-set(pb)),'broad_patterns_added':[],'suites':suites,'steps':after['steps'],'first_party_imports':imports,'missing_owner_paths':[],'diff':''.join(difflib.unified_diff(old.decode().splitlines(True),raw.decode().splitlines(True),fromfile='accepted875',tofile='pro003_3c23',n=3))}
+print(json.dumps(result,sort_keys=True))
+PY
+
+Observed PID: 52181
+Observed exit code: 1
+Traceback: File <stdin>, line 41; AssertionError: ('tests/test_company_relationship_observations.py', 'engine/company_intelligence.py')
+The preceding inverse/schema assertions passed before this reviewer-only resolver failure. This file records a failed read-only checker, not a test PASS.

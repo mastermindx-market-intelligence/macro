@@ -1,0 +1,93 @@
+{
+  "method": "Actual View all click, row/text geometry read and Escape. No data injection or private renderer invocation.",
+  "cells": [
+    {
+      "cell": "desktop-en-dark",
+      "http": 200,
+      "html_sha256": "1b38f01a97284801a4ec859d5ce19a11d898d565eb09bed8f340556feecf16da",
+      "rows": 30,
+      "human_conditions": 2,
+      "analysis_width_ratio": 0.433,
+      "overflow": 0,
+      "page_errors": [],
+      "passed": true
+    },
+    {
+      "cell": "desktop-en-light",
+      "http": 200,
+      "html_sha256": "1b38f01a97284801a4ec859d5ce19a11d898d565eb09bed8f340556feecf16da",
+      "rows": 30,
+      "human_conditions": 2,
+      "analysis_width_ratio": 0.433,
+      "overflow": 0,
+      "page_errors": [],
+      "passed": true
+    },
+    {
+      "cell": "desktop-zh-dark",
+      "http": 200,
+      "html_sha256": "1b38f01a97284801a4ec859d5ce19a11d898d565eb09bed8f340556feecf16da",
+      "rows": 30,
+      "human_conditions": 2,
+      "analysis_width_ratio": 0.433,
+      "overflow": 0,
+      "page_errors": [],
+      "passed": true
+    },
+    {
+      "cell": "desktop-zh-light",
+      "http": 200,
+      "html_sha256": "1b38f01a97284801a4ec859d5ce19a11d898d565eb09bed8f340556feecf16da",
+      "rows": 30,
+      "human_conditions": 2,
+      "analysis_width_ratio": 0.433,
+      "overflow": 0,
+      "page_errors": [],
+      "passed": true
+    },
+    {
+      "cell": "mobile-en-dark",
+      "http": 200,
+      "html_sha256": "1b38f01a97284801a4ec859d5ce19a11d898d565eb09bed8f340556feecf16da",
+      "rows": 30,
+      "human_conditions": 2,
+      "analysis_width_ratio": 0.846,
+      "overflow": 0,
+      "page_errors": [],
+      "passed": true
+    },
+    {
+      "cell": "mobile-en-light",
+      "http": 200,
+      "html_sha256": "1b38f01a97284801a4ec859d5ce19a11d898d565eb09bed8f340556feecf16da",
+      "rows": 30,
+      "human_conditions": 2,
+      "analysis_width_ratio": 0.846,
+      "overflow": 0,
+      "page_errors": [],
+      "passed": true
+    },
+    {
+      "cell": "mobile-zh-dark",
+      "http": 200,
+      "html_sha256": "1b38f01a97284801a4ec859d5ce19a11d898d565eb09bed8f340556feecf16da",
+      "rows": 30,
+      "human_conditions": 2,
+      "analysis_width_ratio": 0.846,
+      "overflow": 0,
+      "page_errors": [],
+      "passed": true
+    },
+    {
+      "cell": "mobile-zh-light",
+      "http": 200,
+      "html_sha256": "1b38f01a97284801a4ec859d5ce19a11d898d565eb09bed8f340556feecf16da",
+      "rows": 30,
+      "human_conditions": 2,
+      "analysis_width_ratio": 0.846,
+      "overflow": 0,
+      "page_errors": [],
+      "passed": true
+    }
+  ]
+}

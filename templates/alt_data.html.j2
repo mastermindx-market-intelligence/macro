@@ -117,6 +117,20 @@
     color:var(--ink-up, var(--up)); border-color:color-mix(in srgb,var(--up) 35%,transparent); }
   .ql-chip-graded-neg { background:color-mix(in srgb,var(--down) 14%,transparent);
     color:var(--ink-down, var(--down)); border-color:color-mix(in srgb,var(--down) 35%,transparent); }
+
+/* Related news retains the existing research-card hierarchy in both themes. */
+.sid-news-row{padding:8px 0;border-top:1px solid var(--line)}
+.sid-news-headlines{font-size:12px;margin-top:3px;line-height:1.5;overflow-wrap:anywhere}
+.sid-news-title{color:var(--ink-link,var(--link));text-decoration:none}
+.sid-news-title:hover{text-decoration:underline}
+.sid-news-meta{color:var(--muted);font-size:11px}
+.sid-news-status{font-size:12px;color:var(--muted);margin:0 0 10px}
+.sid-news-actions{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-top:10px}
+.sid-news-actions button,.sid-news-actions a{min-height:40px;display:inline-flex;align-items:center;touch-action:manipulation}
+.sid-news-actions button{font:inherit;color:var(--text);background:var(--panel2);border:1px solid var(--line);border-radius:var(--r-sm);padding:5px 12px;cursor:pointer}
+.sid-news-actions button[aria-disabled="true"]{opacity:.6;cursor:wait}
+.sid-news-actions :focus-visible,.sid-news-title:focus-visible{outline:2px solid var(--ink-link,var(--link));outline-offset:2px}
+#sid-news [hidden]{display:none!important}
 {% endblock %}
 
 {% macro ql_chip(chip) -%}
@@ -500,50 +514,111 @@
   {# ---------- NEWS CROSS-SURFACE (additive; client-fetched — no server coupling) ---------- #}
   <section class="sid-sec">
     <h2><span class="l-en">News on these names</span><span class="l-zh">这些标的的新闻</span>
-      <span class="h-note"><span class="l-en">the demand-side tape beside the supply-side signal — context only, never blended</span><span class="l-zh">需求侧舆情与供给侧信号并列——仅供参考，绝不混合</span></span></h2>
-    <div id="sid-news" class="sid-card"><p class="mut" style="font-size:12px"><span class="l-en">Loading…</span><span class="l-zh">加载中…</span></p></div>
+      <span class="h-note"><span class="l-en">Related headlines · research context</span><span class="l-zh">相关标题 · 研究背景</span></span></h2>
+    <div id="sid-news" class="sid-card" aria-busy="true">
+      <p id="sid-news-status" role="status" aria-atomic="true" class="sid-news-status"><span class="l-en">Loading related news…</span><span class="l-zh">正在加载相关新闻…</span></p>
+      <div id="sid-news-results" hidden></div>
+      <div class="sid-news-actions">
+        <button id="sid-news-retry" type="button" aria-disabled="false" hidden><span class="l-en">Try again</span><span class="l-zh">重试</span></button>
+        <a id="sid-news-open" href="news.html"><span class="l-en">Open News</span><span class="l-zh">打开新闻页</span></a>
+      </div>
+    </div>
   </section>
 
 </div>
 <script>
 (function () {
-  function esc(s) { return String(s == null ? "" : s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
-  function j(u) { return fetch(u, { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; }); }
-  function hl(h) {
-    var sent = h.sentiment === "pos" ? " ▲" : h.sentiment === "neg" ? " ▼" : "";
-    return '<a href="' + esc(h.url || "#") + '" target="_blank" rel="noopener noreferrer" style="color:var(--ink-link, var(--link));text-decoration:none">' +
-      esc(h.title || "") + '</a> <span style="opacity:.5">· ' + esc(h.source || h.domain || "") + sent + "</span>";
+  var mount=document.getElementById('sid-news'); if(!mount) return;
+  var status=document.getElementById('sid-news-status'), list=document.getElementById('sid-news-results');
+  var retry=document.getElementById('sid-news-retry'), open=document.getElementById('sid-news-open');
+  var busy=false, state='loading';
+  var messages={
+    loading:['Loading related news…','正在加载相关新闻…'],
+    related:['Recent headlines for these names.','这些标的的近期新闻。'],
+    market:['No related headlines in this snapshot. Showing market news.','当前快照中没有相关标题，以下为市场新闻。'],
+    market_gate:['Sign in for related headlines. Showing market news.','登录后可查看相关标题，以下为市场新闻。'],
+    market_unavailable:['Related headlines are unavailable. Showing market news.','相关新闻暂时不可用，以下为市场新闻。'],
+    gated:['Sign in to read news for these names.','登录后可查看这些标的的新闻。'],
+    restricted:['Access to this news is restricted.','这些新闻的访问受到限制。'],
+    market_restricted:['Related news access is restricted. Showing market news.','相关新闻的访问受到限制，以下为市场新闻。'],
+    unavailable:['News is unavailable right now. Try again.','新闻暂时无法加载，请重试。'],
+    empty:['No headlines in this snapshot.','当前快照中没有新闻标题。']
+  };
+  function localize(){
+    var pair=messages[state]||messages.unavailable;
+    status.textContent=pair[document.documentElement.getAttribute('data-lang')==='zh'?1:0];
   }
-  Promise.all([j("altdata/mastermind.json"), j("news/by_ticker.json"), j("news/financial.json")]).then(function (res) {
-    var mount = document.getElementById("sid-news"); if (!mount) return;
-    var sigs = ((res[0] || {}).signals || []).slice(0, 12);
-    var bt = (res[1] || {}).tickers || {};
-    var fin = res[2] || {};
-    var rows = [];
-    sigs.forEach(function (sg) {
-      var n = bt[sg.ticker];
-      if (!n || !(n.top && n.top.length)) return;
-      rows.push('<div style="padding:8px 0;border-top:1px solid rgba(128,128,128,.15)">' +
-        '<b style="font-family:ui-monospace,Menlo,monospace">' + esc(sg.ticker) + "</b> " +
-        '<span style="opacity:.55;font-size:11px">' + esc(n.sentiment_lean || "neutral") + " · " + (n.n_recent || 0) +
-        ' hl · alt signal ' + (sg.signal_score == null ? "—" : sg.signal_score) + "</span>" +
-        '<div style="font-size:12px;margin-top:3px;line-height:1.5">' + n.top.slice(0, 2).map(hl).join("<br>") + "</div></div>");
+  function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+  function words(en,zh){return '<span class="l-en">'+esc(en)+'</span><span class="l-zh">'+esc(zh||en)+'</span>';}
+  function record(v){return v&&typeof v==='object'&&!Array.isArray(v);}
+  function text(v){return typeof v==='string'?v:'';}
+  function read(url,valid){
+    return fetch(url,{cache:'no-store'}).then(function(r){
+      if(r.status===401) return {kind:'gated'};
+      if(r.status===403) return {kind:'restricted'};
+      if(!r.ok) return {kind:'unavailable'};
+      return r.json().then(function(data){return valid(data)?{kind:'ready',data:data}:{kind:'unavailable'};});
+    }).catch(function(){return {kind:'unavailable'};});
+  }
+  function headline(h){
+    if(!record(h)) return '';
+    var title=text(h.title)||text(h.title_zh); if(!title.trim()) return '';
+    var label=words(title,text(h.title_zh)||title), url=text(h.url), safe=false;
+    try{var parsed=new URL(url,window.location.href);safe=!!url&&/^https?:$/.test(parsed.protocol);}catch(e){}
+    var link=safe?'<a class="sid-news-title" href="'+esc(url)+'" target="_blank" rel="noopener noreferrer">'+label+'</a>':'<span>'+label+'</span>';
+    var source=text(h.source)||text(h.domain);
+    return link+(source?' <span class="sid-news-meta">· '+esc(source)+'</span>':'');
+  }
+  function setView(kind,html,canRetry){
+    var hadRetryFocus=document.activeElement===retry;
+    state=kind;mount.dataset.state=kind;localize();
+    list.innerHTML=html;list.hidden=!html;
+    retry.hidden=!canRetry;
+    if(hadRetryFocus&&!canRetry) open.focus({preventScroll:true});
+  }
+  function paint(res){
+    var relatedReady=res[0].kind==='ready'&&res[1].kind==='ready';
+    var rows=[], bad=false;
+    if(relatedReady){
+      var bt=res[1].data.tickers;
+      res[0].data.signals.slice(0,12).forEach(function(sg){
+        if(!record(sg)||!text(sg.ticker)) {bad=true;return;}
+        var n=Object.prototype.hasOwnProperty.call(bt,sg.ticker)?bt[sg.ticker]:null;
+        if(!n) return;
+        if(!record(n)||!Array.isArray(n.top)){bad=true;return;}
+        var headlines=n.top.slice(0,2).map(headline);if(headlines.some(function(h){return !h;})) bad=true;
+        headlines=headlines.filter(Boolean);if(!headlines.length) return;
+        rows.push('<div class="sid-news-row"><b>'+esc(sg.ticker)+'</b><div class="sid-news-headlines">'+headlines.join('<br>')+'</div></div>');
+      });
+    }
+    if(rows.length){setView('related',rows.join(''),false);return;}
+    var mk=res[2].kind==='ready'?res[2].data.market.slice(0,6):[];
+    var market=mk.map(headline);if(market.some(function(h){return !h;})) bad=true;
+    market=market.filter(Boolean);
+    var unavailable=bad||res.some(function(r){return r.kind==='unavailable';});
+    var gated=res.some(function(r){return r.kind==='gated';});
+    var restricted=res.some(function(r){return r.kind==='restricted';});
+    if(market.length){
+      setView(relatedReady&&!bad?'market':(restricted?'market_restricted':(gated?'market_gate':'market_unavailable')),market.map(function(h){return '<div class="sid-news-row">'+h+'</div>';}).join(''),unavailable);
+    }else if(unavailable){setView('unavailable','',true);}
+    else if(restricted){setView('restricted','',false);}
+    else if(gated){setView('gated','',false);}
+    else{setView('empty','',false);}
+  }
+  function load(){
+    if(busy) return;
+    busy=true;retry.setAttribute('aria-disabled','true');mount.setAttribute('aria-busy','true');state='loading';localize();
+    Promise.all([
+      read('altdata/mastermind.json',function(x){return record(x)&&Array.isArray(x.signals);}),
+      read('news/by_ticker.json',function(x){return record(x)&&record(x.tickers);}),
+      read('news/financial.json',function(x){return record(x)&&Array.isArray(x.market);})
+    ]).then(paint).catch(function(){setView('unavailable','',true);}).then(function(){
+      busy=false;retry.setAttribute('aria-disabled','false');mount.setAttribute('aria-busy','false');
     });
-    if (rows.length) {
-      mount.innerHTML = '<div style="font-size:11px;opacity:.6;margin-bottom:4px">' +
-        '<span class="l-en">Recent news for the top conviction-board names that the tape is also talking about — the overlap (or its absence) is the early-edge / crowded read.</span>' +
-        '<span class="l-zh">置信榜上同时被舆情讨论的标的的近期新闻——重叠（或其缺失）即"早期边际/拥挤"读数。</span></div>' + rows.join("");
-      return;
-    }
-    // fallback: no per-name overlap yet → show the market tape
-    var mk = (fin.market || []).slice(0, 6);
-    if (mk.length) {
-      mount.innerHTML = '<div style="font-size:11px;opacity:.6;margin-bottom:4px"><span class="l-en">No news yet on today\'s signals — broad market tape:</span><span class="l-zh">今日信号暂无对应新闻——大盘舆情：</span></div>' +
-        mk.map(function (h) { return '<div style="padding:5px 0;font-size:12px;border-top:1px solid rgba(128,128,128,.12)">' + hl(h) + "</div>"; }).join("");
-    } else {
-      mount.innerHTML = '<p class="mut" style="font-size:12px"><span class="l-en">News surface not built yet — runs on the next daily build.</span><span class="l-zh">新闻层尚未生成——将在下次每日构建后出现。</span></p>';
-    }
-  });
+  }
+  retry.addEventListener('click',load);
+  document.addEventListener('langchange',localize);
+  load();
 })();
 </script>
 {% endblock %}

@@ -3,7 +3,10 @@
 The international sibling of ``scripts/build_sp500_heatmap.py``. Reads each
 market's local close matrix + sector classification (offline-safe, no keys) and
 writes ``site/marketdata/<market>_heatmap.json`` consumed by the shared
-``site/heatmap.js`` (flat Sector → stock treemap, ``map_type:"stocks"``).
+``site/heatmap.js`` (flat Sector → stock treemap, ``map_type:"stocks"``). The
+optional page publisher renders the matching standalone SSR shell from that
+same payload so a close-cycle lane cannot advance the JSON while leaving the
+crawler-visible summary on an older observation session.
 
 Sizing
 ------
@@ -15,28 +18,34 @@ Sizing
 
 Usage
 -----
-    python -m scripts.build_market_heatmap                 # all three markets
-    python -m scripts.build_market_heatmap --market china  # one market
+    python -m scripts.build_market_heatmap                 # all three feeds
+    python -m scripts.build_market_heatmap --market china  # one feed
+    python -m scripts.build_market_heatmap --market china --render-page
+                                                          # feed + matching SSR page
 """
 from __future__ import annotations
 
 import argparse
 import json
 import logging
+import os
+import shutil
 import sys
+import tempfile
 from datetime import date, datetime, timezone
 from pathlib import Path
 
 import numpy as np
 import pandas as pd
+from jinja2 import Environment, FileSystemLoader
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from engine import market_heatmap as hm  # noqa: E402
 from lib import config  # noqa: E402
+from lib.pages import write_page  # noqa: E402
 from scripts.check_china_heatmap_freshness import (  # noqa: E402
-    ChinaHeatmapFreshnessError,
-    validate_china_heatmap,
+    ChinaHeatmapFreshnessError, validate_china_heatmap,
 )
 
 log = logging.getLogger("build_market_heatmap")
@@ -313,57 +322,12 @@ def _plausible_published_china_session(payload: object) -> str | None:
     return session
 
 
-def render_standalone_page(
-    market: str,
-    payload: dict,
-    *,
-    site: Path | None = None,
-) -> Path:
-    """Render the crawlable/fallback heatmap page from the exact tile payload."""
-    from jinja2 import Environment, FileSystemLoader
-
-    from engine import i18n
-    from lib.pages import write_page
-    from lib.seo import SITE_BASE, is_public_path
-
-    site = site or (config.ROOT / config.load()["storage"]["site_dir"])
-    env = Environment(
-        loader=FileSystemLoader(config.ROOT / "templates"),
-        autoescape=True,
-    )
-    env.filters["min"] = lambda seq: min(seq)
-    env.globals.update(td=i18n.td, tr=i18n.tr, zip=zip, SITE_BASE=SITE_BASE)
-    summary = hm.page_summary(payload)
-    out = site / f"{market}_heatmap.html"
-    write_page(
-        out,
-        env.get_template("market_heatmap.html.j2").render(
-            mk=hm.PAGE_META[market],
-            summary=summary,
-            gated=is_public_path(f"/{market}_heatmap.html"),
-            n_tiles=(summary or {}).get("n_tiles") or payload.get("n_tiles") or 0,
-            siblings=hm.sibling_markets(market),
-        ),
-    )
-    log.info("wrote %s (%.0f KB, ssr=%s)", out, out.stat().st_size / 1024, bool(summary))
-    return out
-
-
 def build(
-    market: str,
-    site: Path | None = None,
-    *,
+    market: str, site: Path | None = None, *,
     generated_utc: str | None = None,
     now: datetime | None = None,
-    render_page: bool = False,
 ) -> dict:
-    """Assemble + write one market's heatmap JSON. Returns the payload.
-
-    China is validated against the completed mainland-session clock before the
-    output path is touched.  This prevents a generic render running from a stale
-    checkout from overwriting a newer production heatmap with an old session and
-    a deceptively fresh ``generated_utc`` timestamp.
-    """
+    """Assemble + write one market's heatmap JSON. Returns the payload."""
     site = site or (config.ROOT / config.load()["storage"]["site_dir"])
     cons, closes, caps, weights, names_zh = _LOADERS[market]()
 
@@ -378,107 +342,241 @@ def build(
         board_breadth=_board_breadth(market),
     )
     if market == "china":
-        # Binding pre-write fence: build_all() is invoked by generic render lanes
-        # whose checkout can predate the settled-close collector.  Never let one
-        # of those lanes replace a newer production JSON with stale tiles merely
-        # because it stamped a new generated_utc value.
         validate_china_heatmap(
-            payload,
-            closes,
-            now=clock,
-            expected_tickers={str(ticker) for ticker in cons.index},
+            payload, closes, now=clock,
+            expected_tickers={str(t) for t in cons.index},
         )
 
     outdir = site / "marketdata"
     outdir.mkdir(parents=True, exist_ok=True)
     out = outdir / f"{market}_heatmap.json"
-
-    # The asia push loop rebuilds after every rebase to repair a racing stale
-    # payload.  Do not manufacture a follow-up commit when the only difference
-    # is the wall-clock generation stamp; preserve the already-published stamp
-    # when every semantic field is identical.  A changed session/tile/contract
-    # still writes normally and receives the fresh generated_utc above.
-    result = payload
-    write_payload = True
-    if market == "china" and out.exists():
+    if market == "china" and out.is_file():
         try:
             existing = json.loads(out.read_text(encoding="utf-8"))
-        except (OSError, json.JSONDecodeError):
+        except (OSError, ValueError):
             existing = None
-        if isinstance(existing, dict):
-            existing_session = _plausible_published_china_session(existing)
-            candidate_session = str(payload.get("asof") or "").strip()
-            if existing_session is not None and existing_session > candidate_session:
-                # Monotonic publication fence.  Do not ask an inferior checkout
-                # to validate a session it cannot know; that turns "newer than
-                # me" into "invalid" and rewrites production backward.
-                raise ChinaHeatmapFreshnessError(
-                    "China heatmap regression refused",
-                    f"existing={existing_session} candidate={candidate_session}",
-                )
+        old_session = _plausible_published_china_session(existing)
+        candidate_session = str(payload.get("asof") or "")
+        if old_session and old_session > candidate_session:
+            raise ChinaHeatmapFreshnessError(
+                "China heatmap regression refused",
+                f"existing={old_session} candidate={candidate_session}",
+            )
+        if old_session == candidate_session and isinstance(existing, dict):
             try:
                 validate_china_heatmap(
-                    existing,
-                    closes,
-                    now=clock,
-                    expected_tickers={str(ticker) for ticker in cons.index},
+                    existing, closes, now=clock,
+                    expected_tickers={str(t) for t in cons.index},
                 )
-            except ChinaHeatmapFreshnessError as exc:
-                log.warning(
-                    "%s existing payload is not preservable (%s: %s) — rewriting",
-                    out.name,
-                    exc.title,
-                    exc.detail,
-                )
+            except ChinaHeatmapFreshnessError:
+                pass
             else:
-                existing_semantic = dict(existing)
-                payload_semantic = dict(payload)
-                existing_semantic.pop("generated_utc", None)
-                payload_semantic.pop("generated_utc", None)
-                if existing_semantic == payload_semantic:
-                    log.info(
-                        "%s unchanged for asof=%s — preserving generated_utc=%s",
-                        out.name,
-                        payload["asof"],
-                        existing.get("generated_utc"),
-                    )
-                    result = existing
-                    write_payload = False
-
-    if write_payload:
-        out.write_text(
-            json.dumps(payload, separators=(",", ":"), ensure_ascii=False),
-            encoding="utf-8",
-        )
-        log.info("wrote %s — %d tiles, %d sectors, size=%s, asof=%s",
-                 out.name, payload["n_tiles"], len(payload["sectors"]),
-                 payload["size_basis"], payload["asof"])
-    if render_page:
-        render_standalone_page(market, result, site=site)
-    return result
+                old_fields, new_fields = dict(existing), dict(payload)
+                old_fields.pop("generated_utc", None)
+                new_fields.pop("generated_utc", None)
+                if old_fields == new_fields:
+                    return existing
+    out.write_text(json.dumps(payload, separators=(",", ":"), ensure_ascii=False))
+    log.info("wrote %s — %d tiles, %d sectors, size=%s, asof=%s",
+             out.name, payload["n_tiles"], len(payload["sectors"]),
+             payload["size_basis"], payload["asof"])
+    return payload
 
 
 def build_all(
-    site: Path | None = None,
-    *,
-    generated_utc: str | None = None,
-    now: datetime | None = None,
-    render_pages: bool = False,
+    site: Path | None = None, *,
+    generated_utc: str | None = None, now: datetime | None = None,
 ) -> dict[str, dict]:
     out: dict[str, dict] = {}
     clock = _normalise_now(now)
     for m in MARKETS:
         try:
-            out[m] = build(
-                m,
-                site,
-                generated_utc=generated_utc,
-                now=clock,
-                render_page=render_pages,
-            )
+            out[m] = build(m, site, generated_utc=generated_utc, now=clock)
         except Exception as e:  # noqa: BLE001 — one market must never break the others / the site
             log.error("%s heatmap failed: %s", m, e)
     return out
+
+
+def _page_environment() -> Environment:
+    """Standalone renderer environment matching the build_site heatmap surface."""
+    env = Environment(loader=FileSystemLoader(config.ROOT / "templates"), autoescape=True)
+    env.filters["min"] = lambda seq: min(seq)
+    from engine import i18n
+    from lib.seo import SITE_BASE
+
+    env.globals.update(td=i18n.td, tr=i18n.tr, zip=zip, SITE_BASE=SITE_BASE)
+    return env
+
+
+def _page_payload(market: str, payload: dict | None, site: Path) -> dict | None:
+    """Use the just-built payload or the last committed file, exactly as the browser will."""
+    if payload:
+        return payload
+    try:
+        return json.loads((site / "marketdata" / f"{market}_heatmap.json").read_text(encoding="utf-8"))
+    except Exception as e:  # noqa: BLE001 — no map means an honest empty shell
+        log.debug("%s heatmap page has no readable payload (%s)", market, e)
+        return None
+
+
+def render_page(
+    market: str,
+    payload: dict | None = None,
+    site: Path | None = None,
+    *,
+    env: Environment | None = None,
+) -> Path:
+    """Render one standalone heatmap page from the payload its browser will fetch."""
+    site = site or (config.ROOT / config.load()["storage"]["site_dir"])
+    payload = _page_payload(market, payload, site)
+    summary = hm.page_summary(payload)
+    from lib.seo import is_public_path
+
+    gated = is_public_path(f"/{market}_heatmap.html")
+    env = env or _page_environment()
+    out = site / f"{market}_heatmap.html"
+    write_page(out, env.get_template("market_heatmap.html.j2").render(
+        mk=hm.PAGE_META[market],
+        summary=summary,
+        gated=gated,
+        n_tiles=(summary or {}).get("n_tiles") or (payload or {}).get("n_tiles") or 0,
+        siblings=hm.sibling_markets(market),
+    ))
+    log.info("wrote %s (%.0f KB, ssr=%s, gated=%s)", out, out.stat().st_size / 1024,
+             bool(summary), gated)
+    return out
+
+
+def render_pages(
+    payloads: dict[str, dict] | None = None,
+    site: Path | None = None,
+    *,
+    env: Environment | None = None,
+) -> dict[str, Path]:
+    """Render all three pages through the one shared payload-to-SSR owner."""
+    site = site or (config.ROOT / config.load()["storage"]["site_dir"])
+    payloads = payloads or {}
+    env = env or _page_environment()
+    return {market: render_page(market, payloads.get(market), site, env=env) for market in MARKETS}
+
+
+def _commit_staged_pair(market: str, staged_site: Path, site: Path) -> None:
+    """Replace the generated pair only after both staged artifacts exist."""
+    source_json = staged_site / "marketdata" / f"{market}_heatmap.json"
+    source_page = staged_site / f"{market}_heatmap.html"
+    if not source_json.is_file() or not source_page.is_file():
+        raise RuntimeError(f"{market} heatmap staging did not produce a complete pair")
+
+    target_json = site / "marketdata" / f"{market}_heatmap.json"
+    target_page = site / f"{market}_heatmap.html"
+    target_json.parent.mkdir(parents=True, exist_ok=True)
+    site.mkdir(parents=True, exist_ok=True)
+    token = f"{os.getpid()}-{market}"
+    pending_json = target_json.with_name(f".{target_json.name}.{token}.tmp")
+    pending_page = target_page.with_name(f".{target_page.name}.{token}.tmp")
+    backup_json = target_json.with_name(f".{target_json.name}.{token}.bak")
+    backup_page = target_page.with_name(f".{target_page.name}.{token}.bak")
+    had_json = target_json.is_file()
+    had_page = target_page.is_file()
+    replaced_json = False
+    replaced_page = False
+    try:
+        # Prepare both target-filesystem copies and rollback material before
+        # exposing either new artifact. Two paths cannot be renamed atomically;
+        # if the second replacement fails, restore the first before returning.
+        shutil.copyfile(source_json, pending_json)
+        shutil.copyfile(source_page, pending_page)
+        if had_json:
+            shutil.copy2(target_json, backup_json)
+        if had_page:
+            shutil.copy2(target_page, backup_page)
+        os.replace(pending_json, target_json)
+        replaced_json = True
+        os.replace(pending_page, target_page)
+        replaced_page = True
+    except Exception as exc:
+        rollback_errors: list[str] = []
+        for replaced, had_prior, backup, target in (
+            (replaced_page, had_page, backup_page, target_page),
+            (replaced_json, had_json, backup_json, target_json),
+        ):
+            if not replaced:
+                continue
+            try:
+                if had_prior:
+                    os.replace(backup, target)
+                else:
+                    target.unlink(missing_ok=True)
+            except Exception as rollback_exc:  # noqa: BLE001 — preserve exact damage
+                rollback_errors.append(f"{target}: {rollback_exc}")
+        if rollback_errors:
+            raise RuntimeError(
+                f"{market} heatmap pair replacement failed and rollback was incomplete: "
+                + "; ".join(rollback_errors)
+            ) from exc
+        raise
+    finally:
+        for path in (pending_json, pending_page, backup_json, backup_page):
+            path.unlink(missing_ok=True)
+
+
+def publish(
+    market: str,
+    site: Path | None = None,
+    *,
+    generated_utc: str | None = None,
+    now: datetime | None = None,
+    env: Environment | None = None,
+) -> dict:
+    """Publish one coherent JSON + SSR-page pair and return the exact payload.
+
+    The payload and page are built outside the destination first. A template or
+    validation failure therefore leaves the prior committed pair untouched rather
+    than advancing only the browser JSON before asia-close's final site commit.
+    """
+    site = site or (config.ROOT / config.load()["storage"]["site_dir"])
+    site.parent.mkdir(parents=True, exist_ok=True)
+    # Stage outside the repository: an interrupted runner must not leave an
+    # untracked publish directory in the worktree that the final site commit can
+    # mistake for product output. _commit_staged_pair prepares same-filesystem
+    # destination temps only after both artifacts are complete.
+    with tempfile.TemporaryDirectory(prefix=f".{market}-heatmap-publish-") as staging:
+        staged_site = Path(staging)
+        clock = _normalise_now(now)
+        payload = build(market, staged_site, generated_utc=generated_utc, now=clock)
+        render_page(market, payload, staged_site, env=env)
+        if market == "china":
+            current_json = site / "marketdata" / "china_heatmap.json"
+            current_html = site / "china_heatmap.html"
+            if current_json.is_file():
+                try:
+                    old = json.loads(current_json.read_text(encoding="utf-8"))
+                except (OSError, ValueError):
+                    old = None
+                old_session = _plausible_published_china_session(old)
+                if old_session and old_session > str(payload.get("asof") or ""):
+                    raise ChinaHeatmapFreshnessError(
+                        "China heatmap regression refused",
+                        f"published={old_session} candidate={payload.get('asof')}",
+                    )
+                if old_session == payload.get("asof") and isinstance(old, dict):
+                    old_fields, new_fields = dict(old), dict(payload)
+                    old_fields.pop("generated_utc", None)
+                    new_fields.pop("generated_utc", None)
+                    if old_fields == new_fields and current_html.is_file():
+                        from scripts.check_china_heatmap_freshness import validate_china_heatmap_page
+                        try:
+                            validate_china_heatmap_page(
+                                current_html.read_text(encoding="utf-8"),
+                                str(payload["asof"]),
+                            )
+                        except (ChinaHeatmapFreshnessError, OSError, ValueError):
+                            pass
+                        else:
+                            log.info("China JSON/SSR unchanged — preserve published pair")
+                            return old
+        _commit_staged_pair(market, staged_site, site)
+    return payload
 
 
 def _parse_now(raw: str | None) -> datetime | None:
@@ -491,17 +589,22 @@ def main(argv: list[str] | None = None) -> int:
     logging.basicConfig(level=logging.INFO, format="%(levelname)s %(name)s: %(message)s")
     ap = argparse.ArgumentParser(description="Build the CN/HK/CA sector heatmap feeds")
     ap.add_argument("--market", choices=MARKETS, help="build a single market (default: all)")
-    ap.add_argument("--render-page", action="store_true", help="also render standalone SSR page(s)")
-    ap.add_argument("--now", help="freeze the build/session clock (ISO-8601)")
+    ap.add_argument("--render-page", action="store_true",
+                    help="also render the matching standalone SSR page(s)")
+    ap.add_argument("--generated-utc",
+                    help="stable generation label (YYYY-MM-DD HH:MM) for publish retries")
+    ap.add_argument("--now", help="freeze the completed-session clock (ISO-8601)")
     args = ap.parse_args(argv)
-    try:
-        now = _parse_now(args.now)
-    except ValueError as exc:
-        ap.error(f"invalid --now: {exc}")
+    now = _parse_now(args.now)
     if args.market:
-        build(args.market, now=now, render_page=args.render_page)
+        if args.render_page:
+            publish(args.market, generated_utc=args.generated_utc, now=now)
+        else:
+            build(args.market, generated_utc=args.generated_utc, now=now)
     else:
-        build_all(now=now, render_pages=args.render_page)
+        payloads = build_all(generated_utc=args.generated_utc, now=now)
+        if args.render_page:
+            render_pages(payloads)
     return 0
 
 

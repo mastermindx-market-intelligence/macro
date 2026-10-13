@@ -1174,6 +1174,26 @@ def _stamp_rs_ranks(recs: list[dict]) -> None:
             r["now"][field] = n
 
 
+def _latest_cycle_session(
+    closes: pd.DataFrame,
+    benchmark: str,
+) -> pd.Timestamp | None:
+    """Last session with an observed benchmark close.
+
+    The shared Yahoo panel is a calendar union and can end in weekend, partial-feed,
+    or future-placeholder rows. Anchoring the desk to ``closes.index[-1]`` launders
+    those rows into the public ``asOf`` even when the relative-strength benchmark has
+    no price. Sector cycles are benchmark-relative, so the benchmark observation is
+    the honest common session boundary.
+    """
+    if closes is None or closes.empty or benchmark not in closes.columns:
+        return None
+    observed = closes[benchmark].dropna()
+    if observed.empty:
+        return None
+    return pd.Timestamp(observed.index[-1])
+
+
 def compute(asof: str | None = None) -> dict | None:
     """Top-level: build every sector's cycle record + page meta. Returns None if the
     close panel can't be loaded (build script then no-ops).
@@ -1204,7 +1224,20 @@ def compute(asof: str | None = None) -> dict | None:
         closes = closes[closes.index <= pd.Timestamp(asof)]
         if closes_px is not None:
             closes_px = closes_px[closes_px.index <= pd.Timestamp(asof)]
-    last_ts = closes.index[-1]
+    benchmark = config.load()["engine"]["rs_ranking"]["benchmark"]
+    last_ts = _latest_cycle_session(closes, benchmark)
+    if last_ts is None:
+        log.error("sector_cycles: benchmark %s has no observed close", benchmark)
+        return None
+    raw_tip = pd.Timestamp(closes.index[-1])
+    if raw_tip > last_ts:
+        log.warning(
+            "sector_cycles: raw calendar tip %s has no %s close; effective asOf=%s",
+            raw_tip.date(), benchmark, last_ts.date(),
+        )
+    closes = closes.loc[:last_ts]
+    if closes_px is not None:
+        closes_px = closes_px.loc[:last_ts]
     win_start = last_ts - pd.DateOffset(years=WINDOW_YEARS)
 
     sectors = []
@@ -1263,7 +1296,7 @@ def compute(asof: str | None = None) -> dict | None:
             "window_years": WINDOW_YEARS,
             "default_window_years": DEFAULT_WINDOW_YEARS,
             "rebaseDate": str(win_start.date()),
-            "benchmark": config.load()["engine"]["rs_ranking"]["benchmark"],
+            "benchmark": benchmark,
             "n_sectors": len(sectors),
             "n_baskets": len(baskets),
             "families": [{"key": ns, "label": _AMALGAM_FAMILIES[ns]["label"],

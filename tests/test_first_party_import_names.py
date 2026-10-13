@@ -89,6 +89,32 @@ _ALLOWED_UNRESOLVED: frozenset[tuple[str, str, str]] = frozenset()
 # Static resolution
 # ---------------------------------------------------------------------------
 
+def test_parse_releases_raw_ast_after_caller_drops_reference(tmp_path):
+    """A repo-wide sweep must not pin every parsed AST in an unbounded cache.
+
+    The WSL trusted pool shares a 10 GiB MemoryHigh / 12 GiB MemoryMax envelope.
+    Caching every source AST made two ordinary copies of this guard retain more
+    than that envelope by themselves and stretched otherwise-small packs from
+    seconds into tens of minutes. Module-scope summaries and the completed
+    sweep may stay memoized; raw per-file ASTs must remain transient regardless
+    of which caching implementation a future edit might otherwise choose.
+    """
+    import gc
+    import weakref
+
+    probe = tmp_path / "ast-lifetime-probe.py"
+    probe.write_text("VALUE = 1\n", encoding="utf-8")
+    tree = _parse(probe)
+    retained = weakref.ref(tree)
+    del tree
+    gc.collect()
+
+    assert retained() is None, (
+        "_parse retained a raw AST after its caller released it; a repo-wide "
+        "sweep would pin the first-party AST estate for the pytest lifetime"
+    )
+
+
 def _python_files(root: Path) -> list[Path]:
     """*.py under root, pruning _SKIP_DIRS without descending into them."""
     out: list[Path] = []
@@ -100,7 +126,6 @@ def _python_files(root: Path) -> list[Path]:
     return sorted(out)
 
 
-@lru_cache(maxsize=None)
 def _parse(path: Path) -> ast.Module | None:
     try:
         return ast.parse(path.read_text(encoding="utf-8"), filename=str(path))

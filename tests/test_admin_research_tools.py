@@ -35,7 +35,8 @@ def _renderer(source: str) -> str:
 def test_research_tools_is_a_first_class_sidebar_route():
     source = _source()
     assert "research_tools: NAV_ICO(" in source
-    assert '{ label: "Research", items: [["research_tools", "Research Tools"]] }' in source
+    assert '["research_tools", "Research Tools"]' in source
+    assert 'label: "Intelligence & research"' in source
     assert "RENDER.research_tools = () => {" in source
 
 
@@ -73,8 +74,8 @@ def test_internal_surfaces_are_admin_host_only():
 def test_research_copy_and_responsive_styles_keep_the_internal_boundary_clear():
     renderer = _renderer(_source())
     styles = STYLES_CSS.read_text(encoding="utf-8")
-    assert "Internal diagnostics and proprietary methods" in renderer
-    assert "Hidden from public navigation" in renderer
+    assert "Diagnostics, calibration, and internal research methods." in renderer
+    assert "Admin-only research workspace." in renderer
     assert renderer.count("<svg") >= 16
     assert "@media (max-width: 700px)" in styles
     assert ".rt-grid" in styles

@@ -833,3 +833,194 @@ def test_gitignored_russell_cache_uses_the_collect_jobs_exact_same_run_key():
         "engine's Russell restore must remain exact-key-only; a prefix fallback may select "
         "a prior run and silently reintroduce stale source data"
     )
+
+
+# The 2026-09-15 recurrence crossed the old guard: restore-only rendering jobs
+# can publish stale DERIVED boards even when they never commit the raw panel.
+_US_COMMITTED_PRICE_PANELS = {
+    "data/breadth/_closes_cache.parquet": "breadth-closes-",
+    "data/smallcap_breadth/_closes_cache.parquet": "smallcap-closes-",
+    "data/midcap_breadth/_closes_cache.parquet": "midcap-closes-",
+}
+
+
+def _workflow_files() -> list[Path]:
+    workflow_dir = ROOT / ".github/workflows"
+    return sorted({*workflow_dir.glob("*.yml"), *workflow_dir.glob("*.yaml")})
+
+
+def _action_paths(value: object):
+    values = value if isinstance(value, (list, tuple)) else [value]
+    for item in values:
+        for line in str(item or "").splitlines():
+            path = line.strip()
+            if path:
+                yield path
+
+
+def _us_panel_cache_steps():
+    for workflow in _workflow_files():
+        document = yaml.safe_load(workflow.read_text()) or {}
+        for job_name, job in (document.get("jobs") or {}).items():
+            for step in job.get("steps", []):
+                uses = str(step.get("uses") or "")
+                if not uses.startswith(("actions/cache@", "actions/cache/restore@")):
+                    continue
+                with_ = step.get("with") or {}
+                for path in _action_paths(with_.get("path")):
+                    if path in _US_COMMITTED_PRICE_PANELS:
+                        yield workflow.name, job_name, step, path
+
+
+def test_all_readonly_us_panel_consumers_preserve_git_authority():
+    """A rendering job's lack of data/ staging does not make stale input safe."""
+    readers = [(workflow, job, step, path)
+               for workflow, job, step, path in _us_panel_cache_steps()
+               if (workflow, job) != ("daily.yml", "collect")]
+    required_workflows = {
+        "daily.yml", "closing-bell.yml", "earlyclose.yml", "engine-render.yml",
+        "render.yml", "weekly.yml", "special-sits-backfill.yml",
+    }
+    assert required_workflows <= {
+        p.name for p in _workflow_files()
+    }, "a missing workflow is not proof of a repaired reader"
+    offenders = [f"{workflow}:{job}:{path}"
+                 for workflow, job, step, path in readers]
+    assert not offenders, (
+        "Read-only consumers overwrite committed US price panels with cached "
+        f"copies and publish stale derived boards: {offenders}. Read the Git "
+        "checkout directly. Even an exact cache key can restore an earlier "
+        "attempt's input on a same-run retry. Never restamp stale inputs or "
+        "remove the distinct gitignored Russell handoff."
+    )
+
+
+def test_daily_collector_keeps_us_panel_seed_cache_authority():
+    """The producer seed remains useful; consumers cannot impersonate it."""
+    seeds: dict[str, list[object]] = {}
+    for workflow, job, step, path in _us_panel_cache_steps():
+        if (workflow, job) != ("daily.yml", "collect"):
+            continue
+        seeds.setdefault(path, []).append((step.get("with") or {}).get("restore-keys"))
+
+    assert set(seeds) == set(_US_COMMITTED_PRICE_PANELS)
+    for path, expected_restore_key in _US_COMMITTED_PRICE_PANELS.items():
+        assert len(seeds[path]) == 1, (
+            f"{path} must have exactly one producer seed in daily.collect; found "
+            f"{len(seeds[path])} cache steps"
+        )
+        assert seeds[path][0] == expected_restore_key
+        assert _is_git_tracked(path), (
+            f"{path} changed data ownership; do not silently replace the reviewed "
+            "Git-authoritative reader policy with a cache fallback"
+        )
+
+
+
+def test_stock_briefs_restores_r2_stock_context_before_precompute():
+    """The clean brief job must materialize its canonical R2-only stock context."""
+    document = yaml.safe_load(DAILY.read_text()) or {}
+    steps = document["jobs"]["stock_briefs"]["steps"]
+    build_indexes = [
+        index for index, step in enumerate(steps)
+        if "python -m scripts.build_stock_briefs" in str(step.get("run") or "")
+    ]
+    assert len(build_indexes) == 1
+    build_index = build_indexes[0]
+    assert str(steps[build_index].get("run") or "").strip() == (
+        "python -m scripts.build_stock_briefs"
+    ), (
+        "stock_briefs is an additive job that does not gate publish; do not turn a "
+        "deterministic context failure into a green workflow with shell fail-open."
+    )
+
+    restores = [
+        (index, step) for index, step in enumerate(steps[:build_index])
+        if str(step.get("run") or "").strip()
+        == "python -m scripts.fetch_r2 --dirs stockdata"
+    ]
+    assert len(restores) == 1, (
+        "stock_briefs starts from a clean checkout while site/stockdata is R2-only. "
+        "Restore the existing stockdata store before catalyst_stock asks for its "
+        "deterministic ladder context; a green no_context batch is not usable output."
+    )
+    restore_index, restore = restores[0]
+    assert restore_index < build_index
+    gha = lambda name: "$" + "{{ secrets." + name + " }}"
+    assert restore.get("env") == {
+        "R2_ENDPOINT": gha("R2_ENDPOINT"),
+        "R2_ACCESS_KEY_ID": gha("R2_ACCESS_KEY_ID"),
+        "R2_SECRET_ACCESS_KEY": gha("R2_SECRET_ACCESS_KEY"),
+        "R2_BUCKET": gha("R2_BUCKET"),
+    }, "scope the existing R2 credentials to the stockdata restore step only"
+
+
+def _write_panel_workflow(root: Path, filename: str, body: str) -> Path:
+    workflow = root / ".github/workflows" / filename
+    workflow.parent.mkdir(parents=True, exist_ok=True)
+    workflow.write_text(body)
+    return workflow
+
+
+def test_us_panel_cache_scan_splits_multiline_action_paths(tmp_path, monkeypatch):
+    _write_panel_workflow(tmp_path, "multiline.yml", """
+jobs:
+  engine:
+    steps:
+      - uses: actions/cache/restore@v4
+        with:
+          path: |
+            data/breadth/_closes_cache.parquet
+            data/unrelated.parquet
+""")
+    monkeypatch.setattr(sys.modules[__name__], "ROOT", tmp_path)
+
+    paths = [path for _, _, _, path in _us_panel_cache_steps()]
+
+    assert paths == ["data/breadth/_closes_cache.parquet"]
+
+
+def test_us_panel_cache_scan_includes_yaml_workflows(tmp_path, monkeypatch):
+    _write_panel_workflow(tmp_path, "reader.yaml", """
+jobs:
+  engine:
+    steps:
+      - uses: actions/cache/restore@v4
+        with:
+          path: data/midcap_breadth/_closes_cache.parquet
+""")
+    monkeypatch.setattr(sys.modules[__name__], "ROOT", tmp_path)
+
+    paths = [path for _, _, _, path in _us_panel_cache_steps()]
+
+    assert paths == ["data/midcap_breadth/_closes_cache.parquet"]
+
+
+def test_duplicate_daily_panel_seed_steps_are_rejected(tmp_path, monkeypatch):
+    daily = _write_panel_workflow(tmp_path, "daily.yml", """
+jobs:
+  collect:
+    steps:
+      - uses: actions/cache@v4
+        with:
+          path: data/breadth/_closes_cache.parquet
+          restore-keys: breadth-closes-
+      - uses: actions/cache@v4
+        with:
+          path: data/breadth/_closes_cache.parquet
+          restore-keys: breadth-closes-
+      - uses: actions/cache@v4
+        with:
+          path: data/smallcap_breadth/_closes_cache.parquet
+          restore-keys: smallcap-closes-
+      - uses: actions/cache@v4
+        with:
+          path: data/midcap_breadth/_closes_cache.parquet
+          restore-keys: midcap-closes-
+""")
+    monkeypatch.setattr(sys.modules[__name__], "ROOT", tmp_path)
+    monkeypatch.setattr(sys.modules[__name__], "DAILY", daily)
+    monkeypatch.setattr(sys.modules[__name__], "_is_git_tracked", lambda _: True)
+
+    with pytest.raises(AssertionError, match="exactly one producer seed"):
+        test_daily_collector_keeps_us_panel_seed_cache_authority()

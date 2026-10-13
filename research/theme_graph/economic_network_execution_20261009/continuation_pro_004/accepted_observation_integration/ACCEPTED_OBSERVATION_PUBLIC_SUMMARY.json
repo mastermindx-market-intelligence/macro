@@ -1,0 +1,17 @@
+{
+  "actual_conditional_write_count": 37,
+  "actual_manifest_write_count": 1,
+  "fresh_process_count": 2,
+  "fresh_processes_byte_identical": true,
+  "fresh_process_output_sha256": "b7cc305b730e07f242f8f1d62a7bb022f2321589844d212f9cc2d0bd42d5843c",
+  "automatic_retry_permitted": false,
+  "accepted_source_commit": "430198676d96708fd47afd6620348530c1ac6c2a",
+  "canonical_acceptance": "https://github.com/mastermindx-market-intelligence/macro/pull/8711#issuecomment-6108723451",
+  "scope": "PRIVATE_LOCALSTORE_ONLY_NOT_ADMITTED",
+  "repeat_and_reads_write_count": 0,
+  "source_files_reconciled": 53,
+  "historical_verdict": "ABSTAINED/AS_OF_DATASET_REQUIRED",
+  "public_receipt_sha256": "3e5e647086b7129b9e65827c4dd00f02ed40f997356da7e77e5803a494be6e76",
+  "accepted_manifest_sha256": "84004975117808cbd05bcfb192688da830344a36a7683459ad542ae48b382bbd",
+  "proof_repeated": false
+}

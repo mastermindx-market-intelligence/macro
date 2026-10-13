@@ -1,0 +1,83 @@
+{
+  "closure": {
+    "biocatalyst-history": [
+      "scripts/compile_capital_structure_events.py"
+    ],
+    "biocatalyst-serving": [
+      "scripts/compile_capital_structure_events.py"
+    ],
+    "conviction-profile": [
+      "collectors/edgar_8k.py",
+      "collectors/edgar_dilution.py",
+      "collectors/sec_capital_structure.py",
+      "contracts/capital_structure_event.schema.json",
+      "contracts/capital_structure_ingestion_health.schema.json",
+      "contracts/capital_structure_retrieval_queue_receipt.schema.json",
+      "contracts/capital_structure_source_manifest.schema.json",
+      "engine/_text_scrub.py",
+      "engine/capital_structure/ingestion_health.py",
+      "engine/capital_structure/sec_discovery_clock.py",
+      "engine/capital_structure/source_ledger_io.py",
+      "engine/capital_structure/source_store.py",
+      "engine/chronicle/__init__.py",
+      "engine/chronicle/adapters.py",
+      "engine/chronicle/earnings_calls.py",
+      "engine/chronicle/schema.py",
+      "engine/chronicle/spine.py",
+      "engine/chronicle/state_log.py",
+      "engine/earnings_narrative/context_packets.py",
+      "engine/earnings_narrative/private_publication.py",
+      "engine/earnings_qual.py",
+      "engine/neuralweb/analyst_doctrine.py",
+      "engine/neuralweb/ask_brain.py",
+      "engine/neuralweb/chat_plain_words.py",
+      "engine/neuralweb/company_intelligence_reader.py",
+      "engine/neuralweb/cortex.py",
+      "engine/neuralweb/doctrine.py",
+      "engine/neuralweb/earnings_context_reader.py",
+      "engine/neuralweb/metabolism.py",
+      "engine/neuralweb/query.py",
+      "engine/neuralweb/reflexes.py",
+      "engine/prophet_integrity.py",
+      "engine/research_vault/r2_store.py",
+      "engine/research_vault/sidecar.py",
+      "engine/research_vault/slugs.py",
+      "engine/seasonality/contracts.py",
+      "scripts/compile_capital_structure_events.py",
+      "tests/test_capital_structure_event_spine.py"
+    ],
+    "defense-rail-laws": [
+      "scripts/compile_capital_structure_events.py"
+    ],
+    "flow-surface": [
+      "scripts/compile_capital_structure_events.py"
+    ],
+    "intelligence-registry": [
+      "collectors/edgar_8k.py",
+      "collectors/edgar_dilution.py",
+      "collectors/sec_capital_structure.py",
+      "contracts/capital_structure_document_term_observation.schema.json",
+      "contracts/capital_structure_ingestion_health.schema.json",
+      "contracts/capital_structure_projection.schema.json",
+      "contracts/capital_structure_retrieval_queue_receipt.schema.json",
+      "contracts/capital_structure_source_manifest.schema.json",
+      "scripts/compile_capital_structure_events.py"
+    ],
+    "unrun-government-revenue-grader": [
+      "scripts/compile_capital_structure_events.py"
+    ],
+    "unrun-picks-boards": [
+      "engine/capital_structure/__init__.py",
+      "engine/capital_structure/document_terms.py",
+      "engine/capital_structure/event_spine.py",
+      "engine/capital_structure/ingestion_health.py",
+      "engine/capital_structure/projection.py",
+      "engine/capital_structure/sec_discovery_clock.py",
+      "engine/capital_structure/source_identity.py",
+      "engine/capital_structure/source_ledger_io.py",
+      "engine/capital_structure/source_store.py",
+      "scripts/compile_capital_structure_events.py"
+    ]
+  },
+  "suites": []
+}

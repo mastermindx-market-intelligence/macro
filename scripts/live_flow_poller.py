@@ -7,7 +7,7 @@ Config block 'live_flow:' in config.yml:
   cadence_sec:    120     # minimum interval between cycle starts (poll floor)
   max_concurrent: 2       # HARD LAW — T1 backfill shares the 8-request cap
   etf_anchors:    [...]   # defaults to build_tape_flow's 21 + DIA
-  top_names:      100     # resolved from gex_symbols() after anchors
+  top_names:      128     # bounded rotating names after ETF anchors
   etf_floor:      1000000 # $ gross premium floor for ETF anchors
   name_floor:     250000  # $ gross premium floor for single names
   retention_hours: 24     # trailing window for feed events
@@ -30,7 +30,7 @@ NEVER raise max_concurrent above 2 without explicit Fable adjudication.
 New R2 objects emitted each cycle (live_flow/ prefix):
   tide_current.json       — market tide (NCP/NPP/gross/vol cumulative minutes + sectors)
   dte_tide_current.json   — DTE-bucket tide (5 buckets)
-  tickers/{ROOT}.json     — per-root drill (top ~40 by day gross premium)
+  tickers/{ROOT}.json     — per-root drill for successful roots with session data
   tide/{DATE}.json        — dated archive of tide_current (same bytes; OIP W0 T-lane)
   dte_tide/{DATE}.json    — dated archive of dte_tide_current (same bytes)
   {tide,dte_tide}/dates.json — sessions index per family (see scripts/build_flow_archive.py)
@@ -97,6 +97,8 @@ OUT_DIR   = "live_flow_out"
 STATE_DIR = "live_flow_state"
 EVENT_STAGE_SCHEMA = "live_flow.event_stage/v1"
 EVENT_STAGE_RETAIN_SESSIONS = 64
+PRIOR_SESSION_WAL_QUARANTINE_SCHEMA = "live_flow.prior_session_wal_quarantine/v1"
+PRIOR_SESSION_WAL_CLASSIFICATION = "cross_session_decision_clock_nonadmissible"
 
 # Prospective Market Memory capture is opt-in and private. The poller queues a
 # request only after both owner receipts are fsynced. Historical/manual runs
@@ -106,9 +108,6 @@ OPTIONS_CONTEXT_CAPTURE_ROOT_ENV = "MARKET_MEMORY_OPTIONS_CONTEXT_OUTBOX"
 OPTIONS_CONTEXT_CAPTURE_TARGET_ENV = "MARKET_MEMORY_OPTIONS_CONTEXT_SSH_TARGET"
 OPTIONS_CONTEXT_CAPTURE_KEY_ENV = "MARKET_MEMORY_OPTIONS_CONTEXT_SSH_KEY"
 _OPTIONS_CONTEXT_DISPATCHER = None
-
-# Top tickers to publish per cycle (by day gross premium)
-TOP_TICKERS_N = 40
 
 # Day-state size guard: warn if exceeds this byte threshold
 DAY_STATE_SIZE_WARN_BYTES = 50 * 1024 * 1024  # 50 MB
@@ -143,16 +142,6 @@ TIER1_ROOTS = [
     # Mag7
     "AAPL", "MSFT", "NVDA", "AMZN", "GOOGL", "META", "TSLA",
     # Memory storage (flow continuity names)
-    "MU", "WDC", "STX", "SNDK",
-]
-
-# Task 3: pinned always-publish roots (Mag7 + memory + ETF majors).
-# When LIVE_FLOW_PINNED_PUBLISH=1 (DEFAULT ON), these roots are included in the
-# published ticker JSON even if they fall outside the top-40 by gross premium.
-PINNED_PUBLISH_ENV = "LIVE_FLOW_PINNED_PUBLISH"
-PINNED_PUBLISH_ROOTS = [
-    "SPY", "QQQ", "SMH",
-    "AAPL", "MSFT", "NVDA", "AMZN", "GOOGL", "META", "TSLA",
     "MU", "WDC", "STX", "SNDK",
 ]
 
@@ -268,11 +257,182 @@ def _select_cycle_roots(
     return cycle_roots, bucket_idx
 
 
-# ── Task 3: pinned-publish helper ─────────────────────────────────────────────
+# ── Intraday root coverage catalog (Terminal issue #681) ─────────────────────
+_ROOT_TOKEN = re.compile(r"^[A-Z][A-Z0-9.\-]{0,9}$")
 
-def _pinned_publish_enabled() -> bool:
-    """True by default; set LIVE_FLOW_PINNED_PUBLISH=0 to disable."""
-    return os.environ.get(PINNED_PUBLISH_ENV, "1").strip() != "0"
+
+def _normalise_root_list(values) -> list[str]:
+    """Return safe uppercase roots in first-seen order."""
+    out: list[str] = []
+    seen: set[str] = set()
+    for value in values or []:
+        if not isinstance(value, str):
+            continue
+        root = value.strip().upper()
+        if not _ROOT_TOKEN.fullmatch(root) or root in seen:
+            continue
+        seen.add(root)
+        out.append(root)
+    return out
+
+
+def _valid_source_receipts(receipts) -> dict[str, str]:
+    """Keep only normalized roots with non-empty UTC ISO receipts."""
+    if not isinstance(receipts, dict):
+        return {}
+    out: dict[str, str] = {}
+    for raw_root, raw_ts in receipts.items():
+        roots = _normalise_root_list([raw_root])
+        if not roots or not isinstance(raw_ts, str) or not raw_ts.strip():
+            continue
+        ts = raw_ts.strip()
+        try:
+            parsed = datetime.fromisoformat(ts.replace("Z", "+00:00"))
+        except ValueError:
+            continue
+        if parsed.tzinfo is None or parsed.utcoffset() != timedelta(0):
+            continue
+        out[roots[0]] = parsed.astimezone(timezone.utc).isoformat().replace("+00:00", "Z")
+    return out
+
+
+def _real_accumulator_row(row, value_fields: tuple[str, ...]) -> bool:
+    """Return whether an engine accumulator row contains usable numeric activity.
+
+    Engine-produced minute and strike rows always carry their complete field set.
+    Missing fields, booleans, strings, non-finite values, and negative volume are
+    malformed persisted state and must not advertise drill availability.  A
+    legitimate net-zero row remains real when positive volume proves prints were
+    accumulated.
+    """
+    if not isinstance(row, dict):
+        return False
+
+    values: list[float] = []
+    for field in value_fields:
+        value = row.get(field)
+        if isinstance(value, bool) or not isinstance(value, (int, float)):
+            return False
+        numeric = float(value)
+        if not math.isfinite(numeric):
+            return False
+        values.append(numeric)
+
+    volume = values[-1]
+    if volume < 0 or not volume.is_integer():
+        return False
+    return volume > 0 or any(value != 0 for value in values[:-1])
+
+
+def _roots_with_ticker_data(day_state: dict) -> set[str]:
+    """Roots with real accumulated minute or strike rows."""
+    if not isinstance(day_state, dict):
+        return set()
+
+    fields_by_container = {
+        "root_minutes": ("ncp", "npp", "vol"),
+        "root_strikes": ("call_prem", "put_prem", "vol"),
+    }
+    out: set[str] = set()
+    for field, value_fields in fields_by_container.items():
+        values = day_state.get(field)
+        if not isinstance(values, dict):
+            continue
+        for raw_root, rows in values.items():
+            roots = _normalise_root_list([raw_root])
+            if not roots or not isinstance(rows, dict):
+                continue
+            if any(_real_accumulator_row(row, value_fields) for row in rows.values()):
+                out.add(roots[0])
+    return out
+
+
+def _select_ticker_publish_roots(
+    cycle_roots: list[str],
+    successful_roots: list[str],
+    day_state: dict,
+) -> list[str]:
+    """Current-cycle roots eligible for a non-empty ticker artifact."""
+    successful = set(_normalise_root_list(successful_roots))
+    data_roots = _roots_with_ticker_data(day_state)
+    return [
+        root for root in _normalise_root_list(cycle_roots)
+        if root in successful and root in data_roots
+    ]
+
+
+def _build_root_catalog(
+    configured_roots: list[str],
+    cycle_roots: list[str],
+    successful_roots: list[str],
+    receipts: dict,
+    day_state: dict,
+) -> list[dict]:
+    """Build deterministic display-only coverage rows for live_flow.meta/v2."""
+    configured = _normalise_root_list(configured_roots)
+    cycle = set(_normalise_root_list(cycle_roots))
+    successful = set(_normalise_root_list(successful_roots))
+    valid_receipts = _valid_source_receipts(receipts)
+    data_roots = _roots_with_ticker_data(day_state)
+
+    raw_gross = day_state.get("root_gross_today", {}) if isinstance(day_state, dict) else {}
+    gross: dict[str, float] = {}
+    if isinstance(raw_gross, dict):
+        for raw_root, raw_value in raw_gross.items():
+            roots = _normalise_root_list([raw_root])
+            if not roots or isinstance(raw_value, bool):
+                continue
+            try:
+                value = float(raw_value)
+            except (TypeError, ValueError):
+                continue
+            if math.isfinite(value) and value > 0 and roots[0] in configured:
+                gross[roots[0]] = value
+
+    position = {root: idx for idx, root in enumerate(configured)}
+    active = sorted(gross, key=lambda root: (-gross[root], position[root]))
+    active_set = set(active)
+    tier1 = set(TIER1_ROOTS)
+    core = [root for root in configured if root not in active_set and root in tier1]
+    rotating = [root for root in configured if root not in active_set and root not in tier1]
+    ordered = active + core + rotating
+    ranks = {root: idx + 1 for idx, root in enumerate(active)}
+
+    return [
+        {
+            "root": root,
+            "tier": "core" if root in tier1 else "rotating",
+            "scheduled_this_cycle": root in cycle,
+            "source_ok_this_cycle": root in successful,
+            "last_source_success": valid_receipts.get(root),
+            "has_session_data": root in data_roots,
+            "activity_rank": ranks.get(root),
+        }
+        for root in ordered
+    ]
+
+
+def _attach_root_catalog(
+    meta: dict,
+    configured_roots: list[str],
+    cycle_roots: list[str],
+    receipts: dict,
+    day_state: dict,
+) -> dict:
+    """Attach the full configured coverage catalog without changing cycle counts."""
+    successful = meta.get("roots_with_source_payload_names", [])
+    if not isinstance(successful, list):
+        successful = []
+    catalog = _build_root_catalog(
+        configured_roots=configured_roots,
+        cycle_roots=cycle_roots,
+        successful_roots=successful,
+        receipts=receipts,
+        day_state=day_state,
+    )
+    meta["roots_configured"] = len(catalog)
+    meta["root_catalog"] = catalog
+    return meta
 
 
 # ── output paths ─────────────────────────────────────────────────────────────
@@ -562,15 +722,7 @@ def _prepare_event_stage_batch(session_date: str, events: list[dict]) -> list[di
             )
         except (TypeError, ValueError) as exc:
             raise RuntimeError("event staging requires timezone-aware causal clocks") from exc
-        if any(value.tzinfo is None for value in (event_dt, observed_dt, decision_dt)):
-            raise RuntimeError("event staging requires timezone-aware causal clocks")
-        if not (event_dt <= observed_dt <= decision_dt):
-            raise RuntimeError("event staging clock order must be event <= observed <= decision")
-        event_session = event_dt.astimezone(ET).date().isoformat()
-        if event_session != session_date:
-            raise RuntimeError(
-                f"event {event_id} belongs to {event_session}, not stage {session_date}"
-            )
+        _validate_learning_event_clocks(session_date, event)
         if not _event_inside_regular_session(session_date, event):
             raise RuntimeError(
                 f"event {event_id} is outside the regular-session learning window"
@@ -589,6 +741,43 @@ def _prepare_event_stage_batch(session_date: str, events: list[dict]) -> list[di
             )
         })
     return prepared
+
+
+def _validate_learning_event_clocks(session_date: str, event: dict) -> None:
+    event_id = event.get("id")
+    if (
+        type(event_id) is not str
+        or not event_id
+        or event_id != event_id.strip()
+    ):
+        raise RuntimeError("learning event requires a normalized string id")
+    try:
+        event_dt = datetime.fromisoformat(str(event.get("ts") or "").replace("Z", "+00:00"))
+        observed_dt = datetime.fromisoformat(
+            str(event.get("observed_at") or "").replace("Z", "+00:00")
+        )
+        decision_dt = datetime.fromisoformat(
+            str(event.get("decision_at") or "").replace("Z", "+00:00")
+        )
+    except (TypeError, ValueError) as exc:
+        raise RuntimeError(
+            f"learning event {event_id} requires timezone-aware causal clocks"
+        ) from exc
+    if any(value.tzinfo is None for value in (event_dt, observed_dt, decision_dt)):
+        raise RuntimeError(
+            f"learning event {event_id} requires timezone-aware causal clocks"
+        )
+    if not (event_dt <= observed_dt <= decision_dt):
+        raise RuntimeError(
+            f"learning event {event_id} violates event <= observed <= decision"
+        )
+    if any(
+        value.astimezone(ET).date().isoformat() != session_date
+        for value in (event_dt, observed_dt, decision_dt)
+    ):
+        raise RuntimeError(
+            f"learning event {event_id} leaves session date {session_date}"
+        )
 
 
 def _parse_event_stage_bytes(
@@ -940,7 +1129,7 @@ def _resolve_universe(cfg: dict) -> list[str]:
         "KRE", "SMH", "XBI", "ARKK", "DIA",
     ]
     anchors = [a.upper() for a in (cfg.get("etf_anchors") or default_anchors)]
-    top_n   = int(cfg.get("top_names", 100))
+    top_n   = int(cfg.get("top_names", 128))
 
     seen: dict[str, None] = {}
     for t in anchors:
@@ -1259,29 +1448,45 @@ def _log_rss_phase(phase: str, *, cycle_n: int | None = None) -> tuple[int | Non
 # session — cache the {(exp,strike,right)→oi} map per surface root ONCE per session so the
 # greek path costs no extra parquet read after the first cycle. Reuses _load_oi_prev (the
 # same EOD-t-1 source the feed uses) — no new API fetch, no 8-request-ceiling contention.
-_SURFACE_OI_CACHE: dict[str, dict] = {}
+_SURFACE_OI_CACHE: dict[str, tuple[dict, str | None]] = {}
 
 
-def _surface_oi_map(root: str, session_date: str) -> dict:
-    """Session-cached {(exp_str,strike,right)→oi} for a surface root (Lane G). {} if absent."""
+def _surface_oi_snapshot(root: str, session_date: str) -> tuple[dict, str | None]:
+    """Session-cached ({contract→oi}, exact source session) for one surface root."""
     key = f"{session_date}:{root.upper()}"
     if key in _SURFACE_OI_CACHE:
         return _SURFACE_OI_CACHE[key]
+
     oi_map: dict = {}
+    oi_vintage: str | None = None
     try:
-        oi_df = _load_oi_prev(root, session_date)  # cols: expiration, strike, right, open_interest
+        oi_df = _load_oi_prev(root, session_date)  # attrs carries exact oi_vintage
         if oi_df is not None:
             from scripts.build_flow_surface import oi_by_contract
             oi_map = oi_by_contract(oi_df)
+            raw_vintage = oi_df.attrs.get("oi_vintage")
+            if isinstance(raw_vintage, str) and raw_vintage:
+                oi_vintage = raw_vintage
     except Exception as e:  # noqa: BLE001 — never break a cycle for greek OI
-        log.debug("poller: surface OI map failed for %s: %s", root, e)
+        log.debug("poller: surface OI snapshot failed for %s: %s", root, e)
         oi_map = {}
-    _SURFACE_OI_CACHE[key] = oi_map
+        oi_vintage = None
+
+    snapshot = (oi_map, oi_vintage)
+    _SURFACE_OI_CACHE[key] = snapshot
     if oi_map:
-        log.info("poller: surface OI cached %s — %d contracts (EOD t-1)", root.upper(), len(oi_map))
+        log.info(
+            "poller: surface OI cached %s — %d contracts vintage=%s",
+            root.upper(), len(oi_map), oi_vintage or "unknown",
+        )
     else:
         log.info("poller: surface OI empty for %s (greek grids will show 0 coverage)", root.upper())
-    return oi_map
+    return snapshot
+
+
+def _surface_oi_map(root: str, session_date: str) -> dict:
+    """Backward-compatible map-only projection of the surface OI snapshot."""
+    return _surface_oi_snapshot(root, session_date)[0]
 
 
 # ── prior-session close loader (FIX 3 — moneyness) ───────────────────────────
@@ -1405,6 +1610,15 @@ def _load_day_state(session_date: str) -> dict:
             raw["source_asof"] = _canonical_utc_timestamp(
                 raw["source_asof"], field="day_state.source_asof",
             )
+        # Per-root source and ticker clocks are durable session state. Missing or
+        # malformed prior entries degrade independently instead of erasing the
+        # valid receipts needed to describe off-cycle roots after a restart.
+        raw["root_source_receipts"] = _valid_source_receipts(
+            raw.get("root_source_receipts", {})
+        )
+        raw["root_ticker_receipts"] = _valid_source_receipts(
+            raw.get("root_ticker_receipts", {})
+        )
         raw.setdefault("pending_learning_events", [])
         raw.setdefault("cycle_watermarks", {})
         return raw
@@ -1444,10 +1658,28 @@ def _save_day_state(session_date: str, state: dict) -> Path:
         from engine.live_flow import DAY_STATE_VERSION as _DSV  # noqa: PLC0415
         raw: dict = {}
         raw["schema_version"] = _DSV   # Item 2: stamp version for forward-compat checks
-        raw["emitted_ids"] = list(state.get("emitted_ids", set()))
-        raw["all_events"]  = state.get("all_events", [])
+        pending_learning_events = state.get("pending_learning_events", [])
+        if not isinstance(pending_learning_events, list):
+            raise RuntimeError("day_state pending_learning_events must be a list")
+        all_events = state.get("all_events", [])
+        if not isinstance(all_events, list):
+            raise RuntimeError("day_state all_events must be a list")
+        emitted_ids = state.get("emitted_ids", set())
+        if not isinstance(emitted_ids, (set, list)):
+            raise RuntimeError("day_state emitted_ids must be a set or list")
+        emitted_id_list = list(emitted_ids)
+        for event in pending_learning_events:
+            if not isinstance(event, dict):
+                raise RuntimeError("day_state pending_learning_events entries must be objects")
+            _validate_learning_event_clocks(session_date, event)
+            if {
+                "available_at", "published_at", "source_snapshot_asof", "anchor_strategy",
+            }.intersection(event):
+                raise RuntimeError("pending learning events contain post-durability fields")
+        raw["emitted_ids"] = emitted_id_list
+        raw["all_events"]  = all_events
         raw["root_gross_today"] = state.get("root_gross_today", {})
-        raw["pending_learning_events"] = state.get("pending_learning_events", [])
+        raw["pending_learning_events"] = pending_learning_events
         raw["cycle_watermarks"] = state.get("cycle_watermarks", {})
         # Source age survives a process restart.  A fully failed recovery cycle
         # must keep the last represented response clock instead of looking new.
@@ -1455,6 +1687,15 @@ def _save_day_state(session_date: str, state: dict) -> Path:
         raw["source_asof"] = (
             _canonical_utc_timestamp(source_asof, field="day_state.source_asof")
             if source_asof is not None else None
+        )
+        # Preserve the producer-owned per-root clocks across process restarts.
+        # Canonicalizing here also prevents malformed legacy entries from being
+        # re-emitted into the atomic Terminal catalog claim.
+        raw["root_source_receipts"] = _valid_source_receipts(
+            state.get("root_source_receipts", {})
+        )
+        raw["root_ticker_receipts"] = _valid_source_receipts(
+            state.get("root_ticker_receipts", {})
         )
         # Tuple-keyed dicts → string-keyed for JSON serialisation
         raw["contract_vol"]      = {_state_key(k): v
@@ -1533,6 +1774,8 @@ def _drain_pending_learning_events(
     }
     pending_ids: list[str] = []
     for event in pending:
+        if not isinstance(event, dict):
+            raise RuntimeError("pending learning WAL entries must be objects")
         event_id = event.get("id") if isinstance(event, dict) else None
         if (
             type(event_id) is not str
@@ -1542,6 +1785,7 @@ def _drain_pending_learning_events(
             raise RuntimeError("pending learning WAL contains an invalid event id")
         if durable_fields.intersection(event):
             raise RuntimeError("pending learning WAL contains post-durability fields")
+        _validate_learning_event_clocks(session_date, event)
         pending_ids.append(event_id)
     if len(set(pending_ids)) != len(pending_ids):
         raise RuntimeError("pending learning WAL contains duplicate event ids")
@@ -1606,6 +1850,358 @@ def _drain_pending_learning_events(
 
 DAY_STATE_RETENTION_DAYS_DEFAULT = 5
 _DAY_STATE_RE = re.compile(r"^day_state_(\d{4}-\d{2}-\d{2})(?:\.tmp)?\.json$")
+_QUARANTINE_RE = re.compile(
+    r"^prior_session_wal_quarantine_(\d{4}-\d{2}-\d{2})\.json$"
+)
+
+# Immutable production incident descriptor. The only reviewed prior-session WAL
+# eligible for quarantine is the Chairman Options Alpha parent599 case. Any
+# operator-supplied digest is rejected even if syntactically well-formed; the
+# descriptor is bound to the exact production bytes and clock bounds below.
+PRIOR_SESSION_WAL_INCIDENT: dict = {
+    "deployed_sha": "bffd9931b2e37b5011fe50e0633f62c356879dd8",
+    "state_sha256": "d9a25966a8d50090f8619d878e4133860cc54682b53764126bf7299e1ca00b06",
+    "session_date": "2026-09-28",
+    "schema_version": 5,
+    "pending_event_count": 170,
+    "ordered_event_id_sha256": "c52ee12c27b31775e2acef188e434134202e3f745ebb2d55c68a0e12749df218",
+    "observed_at_min": "2026-09-28T13:37:09.179619Z",
+    "observed_at_max": "2026-09-28T13:38:55.752263Z",
+    "decision_at_min": "2026-09-30T23:51:45.034847Z",
+    "decision_at_max": "2026-09-30T23:53:18.537416Z",
+}
+
+
+def _prior_session_wal_quarantine_receipt_path(session_date: str) -> Path:
+    return _state_dir() / "quarantine" / (
+        f"prior_session_wal_quarantine_{session_date}.json"
+    )
+
+
+def _canonical_utc_timestamp_required(value: object, *, field: str) -> datetime:
+    timestamp = _canonical_utc_timestamp(value, field=field)
+    return datetime.fromisoformat(timestamp.replace("Z", "+00:00"))
+
+
+def _exact_incident_incident(
+    expectations: object,
+    *,
+    field: str,
+    expected_incident: dict | None = None,
+) -> dict:
+    """Bind the receipt's incident block to the immutable production descriptor.
+
+    Without an injected ``expected_incident``, the only acceptable values are
+    the literal production digests and clock bounds — operator-provided
+    digests of any other hex string are rejected, regardless of shape.
+    Tests may inject a synthetic descriptor to exercise the happy path.
+    """
+    if not isinstance(expectations, dict):
+        raise RuntimeError(f"{field} must be an object")
+    required_fields = {
+        "deployed_sha",
+        "state_sha256",
+        "session_date",
+        "schema_version",
+        "pending_event_count",
+        "ordered_event_id_sha256",
+        "observed_at_min",
+        "observed_at_max",
+        "decision_at_min",
+        "decision_at_max",
+    }
+    if set(expectations) != required_fields:
+        raise RuntimeError(f"{field} has an invalid field set")
+    target = (
+        PRIOR_SESSION_WAL_INCIDENT
+        if expected_incident is None
+        else expected_incident
+    )
+    for key, expected in target.items():
+        if expectations.get(key) != expected:
+            raise RuntimeError(f"{field}.{key} does not match the immutable production descriptor")
+    for clock_field in (
+        "observed_at_min",
+        "observed_at_max",
+        "decision_at_min",
+        "decision_at_max",
+    ):
+        _canonical_utc_timestamp_required(expectations[clock_field], field=clock_field)
+    return expectations
+
+
+def _read_prior_session_wal_quarantine_receipt(
+    session_date: str,
+    *,
+    quarantine_dir: Path | None = None,
+) -> dict | None:
+    if quarantine_dir is None:
+        quarantine_dir = _state_dir() / "quarantine"
+    path = quarantine_dir / (
+        f"prior_session_wal_quarantine_{session_date}.json"
+    )
+    if not path.exists():
+        return None
+    try:
+        receipt = _strict_json_loads(path.read_text(encoding="utf-8"))
+    except Exception as exc:  # noqa: BLE001
+        raise RuntimeError(f"malformed prior-session WAL quarantine receipt: {path}") from exc
+    if not isinstance(receipt, dict):
+        raise RuntimeError(f"prior-session WAL quarantine receipt is not an object: {path}")
+    return receipt
+
+
+def _pure_validate_prior_session_wal_quarantine(
+    receipt: dict,
+    state_raw: bytes,
+    *,
+    session_date: str,
+    stage_path: Path,
+    expected_incident: dict | None = None,
+) -> dict:
+    """Pure check: receipt + raw day_state + canonical stage absence.
+
+    Does not perform any IO. ``stage_path.exists()`` is observed by the caller
+    and passed in as ``stage_present`` so this function remains pure.
+    Returns the validated incident dict for downstream provenance.
+    """
+    path = stage_path  # only used in error messages
+    required = {
+        "schema",
+        "classification",
+        "review_reference",
+        "incident",
+        "protected_source",
+    }
+    if set(receipt) != required:
+        raise RuntimeError(
+            f"prior-session WAL quarantine receipt has an invalid shape: {path}"
+        )
+    if receipt.get("schema") != PRIOR_SESSION_WAL_QUARANTINE_SCHEMA:
+        raise RuntimeError(
+            f"prior-session WAL quarantine receipt has a wrong schema: {path}"
+        )
+    if receipt.get("classification") != PRIOR_SESSION_WAL_CLASSIFICATION:
+        raise RuntimeError(
+            f"prior-session WAL quarantine receipt has a wrong classification: {path}"
+        )
+    if type(receipt.get("review_reference")) is not str or not receipt["review_reference"].strip():
+        raise RuntimeError(
+            f"prior-session WAL quarantine receipt has no review reference: {path}"
+        )
+    incident = _exact_incident_incident(
+        receipt.get("incident"),
+        field="quarantine incident",
+        expected_incident=expected_incident,
+    )
+
+    protected_source = receipt.get("protected_source")
+    if not isinstance(protected_source, dict):
+        raise RuntimeError(
+            f"prior-session WAL quarantine receipt has invalid provenance: {path}"
+        )
+    if set(protected_source) != {"sha256", "bytes"}:
+        raise RuntimeError(
+            f"prior-session WAL quarantine receipt has invalid provenance: {path}"
+        )
+    if protected_source.get("sha256") != incident["state_sha256"]:
+        raise RuntimeError(
+            f"prior-session WAL quarantine receipt has mismatched provenance: {path}"
+        )
+
+    observed_hash = hashlib.sha256(state_raw).hexdigest()
+    if observed_hash != incident["state_sha256"]:
+        raise RuntimeError(
+            f"quarantined prior-session day_state changed: {path}"
+        )
+    if (
+        type(protected_source.get("bytes")) is not int
+        or protected_source["bytes"] != len(state_raw)
+    ):
+        raise RuntimeError(
+            f"prior-session WAL quarantine receipt has a mismatched byte count: {path}"
+        )
+    try:
+        state = _strict_json_loads(state_raw.decode("utf-8"))
+    except Exception as exc:  # noqa: BLE001
+        raise RuntimeError(
+            f"quarantined prior-session day_state is malformed: {path}"
+        ) from exc
+    if not isinstance(state, dict):
+        raise RuntimeError(
+            f"quarantined prior-session day_state is not an object: {path}"
+        )
+    if state.get("schema_version") != incident["schema_version"]:
+        raise RuntimeError(
+            f"quarantined prior-session day_state has a mismatched schema: {path}"
+        )
+    if state.get("session_date") not in (None, session_date):
+        raise RuntimeError(
+            f"quarantined prior-session day_state has a mismatched session: {path}"
+        )
+    pending = state.get("pending_learning_events")
+    if (
+        not isinstance(pending, list)
+        or len(pending) != incident["pending_event_count"]
+    ):
+        raise RuntimeError(
+            f"quarantined prior-session day_state has a mismatched count: {path}"
+        )
+    event_ids: list[str] = []
+    observed: list[datetime] = []
+    decisions: list[datetime] = []
+    events_in_session: list[datetime] = []
+    durable_fields = {
+        "available_at", "published_at", "source_snapshot_asof", "anchor_strategy",
+    }
+    for event in pending:
+        if not isinstance(event, dict):
+            raise RuntimeError(
+                f"quarantined prior-session day_state has an invalid WAL: {path}"
+            )
+        event_id = event.get("id")
+        if (
+            type(event_id) is not str
+            or not event_id
+            or event_id != event_id.strip()
+        ):
+            raise RuntimeError(
+                f"quarantined prior-session day_state has an invalid WAL id: {path}"
+            )
+        if durable_fields.intersection(event):
+            raise RuntimeError(
+                f"quarantined prior-session WAL has availability fields: {path}"
+            )
+        # Per-event classification: event <= observed <= decision;
+        # observed ET date MUST equal the review session;
+        # decision ET date MUST NOT equal the review session.
+        try:
+            event_dt = datetime.fromisoformat(
+                str(event.get("ts") or "").replace("Z", "+00:00")
+            )
+        except (TypeError, ValueError) as exc:
+            raise RuntimeError(
+                f"quarantined prior-session day_state has invalid ts: {path}"
+            ) from exc
+        observed_dt = _canonical_utc_timestamp_required(
+            event.get("observed_at"), field="observed_at",
+        )
+        decision_dt = _canonical_utc_timestamp_required(
+            event.get("decision_at"), field="decision_at",
+        )
+        if event_dt.tzinfo is None or observed_dt.tzinfo is None or decision_dt.tzinfo is None:
+            raise RuntimeError(
+                f"quarantined prior-session day_state has naive clocks: {path}"
+            )
+        if not (event_dt <= observed_dt <= decision_dt):
+            raise RuntimeError(
+                f"quarantined prior-session day_state violates event <= observed <= decision: {path}"
+            )
+        observed_et_date = observed_dt.astimezone(ET).date().isoformat()
+        decision_et_date = decision_dt.astimezone(ET).date().isoformat()
+        if observed_et_date != session_date:
+            raise RuntimeError(
+                f"quarantined prior-session day_state observed clock leaves session: {path}"
+            )
+        if decision_et_date == session_date:
+            raise RuntimeError(
+                f"quarantined prior-session day_state decision clock stays in session: {path}"
+            )
+        event_ids.append(event_id)
+        observed.append(observed_dt)
+        decisions.append(decision_dt)
+        events_in_session.append(event_dt)
+    if len(set(event_ids)) != len(event_ids):
+        raise RuntimeError(
+            f"quarantined prior-session day_state has duplicate WAL IDs: {path}"
+        )
+    ordered_digest = hashlib.sha256(
+        b"".join(f"{event_id}\n".encode("utf-8") for event_id in event_ids)
+    ).hexdigest()
+    if ordered_digest != incident["ordered_event_id_sha256"]:
+        raise RuntimeError(
+            f"quarantined prior-session day_state changed WAL order: {path}"
+        )
+    if min(observed).isoformat().replace("+00:00", "Z") != incident["observed_at_min"]:
+        raise RuntimeError(
+            f"quarantined prior-session day_state changed observed clocks: {path}"
+        )
+    if max(observed).isoformat().replace("+00:00", "Z") != incident["observed_at_max"]:
+        raise RuntimeError(
+            f"quarantined prior-session day_state changed observed clocks: {path}"
+        )
+    if min(decisions).isoformat().replace("+00:00", "Z") != incident["decision_at_min"]:
+        raise RuntimeError(
+            f"quarantined prior-session day_state changed decision clocks: {path}"
+        )
+    if max(decisions).isoformat().replace("+00:00", "Z") != incident["decision_at_max"]:
+        raise RuntimeError(
+            f"quarantined prior-session day_state changed decision clocks: {path}"
+        )
+    if state.get("all_events") != []:
+        raise RuntimeError(
+            f"quarantined prior-session day_state has display events: {path}"
+        )
+    for field in ("root_source_receipts", "root_ticker_receipts"):
+        receipts = state.get(field)
+        if not isinstance(receipts, dict):
+            raise RuntimeError(
+                f"quarantined prior-session day_state has invalid source receipts: {path}"
+            )
+        for root, clock in receipts.items():
+            _canonical_utc_timestamp_required(clock, field=f"{field}.{root}")
+    if state.get("source_asof") is not None:
+        _canonical_utc_timestamp_required(
+            state.get("source_asof"), field="day_state.source_asof",
+        )
+    return incident
+
+
+def _validate_prior_session_wal_quarantine(
+    session_date: str,
+    *,
+    quarantine_dir: Path | None = None,
+    expected_incident: dict | None = None,
+) -> bool:
+    """Validate one reviewed prior-session WAL without making it admissible."""
+    if quarantine_dir is None:
+        quarantine_dir = _state_dir() / "quarantine"
+    path = quarantine_dir / (
+        f"prior_session_wal_quarantine_{session_date}.json"
+    )
+    receipt = _read_prior_session_wal_quarantine_receipt(
+        session_date, quarantine_dir=quarantine_dir,
+    )
+    if receipt is None:
+        return False
+
+    state_path = _state_dir() / f"day_state_{session_date}.json"
+    if not state_path.exists():
+        raise RuntimeError(f"quarantined prior-session day_state is absent: {state_path}")
+    state_raw = state_path.read_bytes()
+    stage_path = _event_stage_path(session_date)
+    try:
+        stage_present = stage_path.exists()
+    except Exception as exc:  # noqa: BLE001
+        raise RuntimeError(
+            f"cannot inspect canonical event stage for quarantine: {stage_path}"
+        ) from exc
+    if stage_present:
+        # The reviewed prior-session incident is the only one currently
+        # admissible: a present, disjoint, empty, or malformed canonical
+        # stage all refuse. We never clear, replay, or rewrite the stage.
+        raise RuntimeError(
+            f"canonical event stage present; quarantine refuses to share a stage: {stage_path}"
+        )
+
+    _pure_validate_prior_session_wal_quarantine(
+        receipt,
+        state_raw,
+        session_date=session_date,
+        stage_path=stage_path,
+        expected_incident=expected_incident,
+    )
+    return True
 
 
 def _stale_pending_learning_sessions(current_session: str) -> list[str]:
@@ -1618,6 +2214,7 @@ def _stale_pending_learning_sessions(current_session: str) -> list[str]:
     and are never backdated with a clock from a later exchange date.
     """
     stale: list[str] = []
+    quarantine_dir = _state_dir() / "quarantine"
     for path in sorted(_state_dir().glob("day_state_*.json")):
         match = _DAY_STATE_RE.fullmatch(path.name)
         if match is None:
@@ -1636,8 +2233,14 @@ def _stale_pending_learning_sessions(current_session: str) -> list[str]:
         pending = payload.get("pending_learning_events", [])
         if not isinstance(pending, list):
             raise RuntimeError(f"retained prior day_state has invalid pending WAL: {path}")
-        if pending:
+        if pending and _read_prior_session_wal_quarantine_receipt(
+            session, quarantine_dir=quarantine_dir,
+        ) is None:
             stale.append(session)
+        if pending:
+            _validate_prior_session_wal_quarantine(
+                session, quarantine_dir=quarantine_dir,
+            )
     return stale
 
 
@@ -1677,11 +2280,30 @@ def _prune_day_states(session_date: str, cfg: dict) -> None:
     sessions (default 5).  The current session's file is never touched; every
     deletion is logged.  INERT: never raises.
     """
+    # A malformed quarantine receipt must block retention, not merely warn:
+    # otherwise the sweep could delete the protected raw state after the inner
+    # per-file handler converted the integrity failure into a warning.
+    quarantine_receipts = {
+        match.group(1)
+        for match in (
+            _QUARANTINE_RE.fullmatch(path.name)
+            for path in (_state_dir() / "quarantine").glob(
+                "prior_session_wal_quarantine_*.json"
+            )
+        )
+        if match is not None
+    }
+    for session in quarantine_receipts:
+        _validate_prior_session_wal_quarantine(session)
     try:
         keep_days = int(cfg.get("state_retention_days", DAY_STATE_RETENTION_DAYS_DEFAULT))
         sdir = _state_dir()
         names = sorted(p.name for p in sdir.glob("day_state_*") if p.is_file())
-        doomed = _select_prunable_day_states(names, session_date, keep_days)
+        doomed = [
+            name for name in _select_prunable_day_states(names, session_date, keep_days)
+            if _DAY_STATE_RE.match(name) is None
+            or _DAY_STATE_RE.match(name).group(1) not in quarantine_receipts
+        ]
         if not doomed:
             log.debug("poller: day_state retention sweep — nothing to prune (keep=%d sessions)",
                       keep_days)
@@ -2092,6 +2714,32 @@ def _session_date(override: str | None = None) -> str:
     return datetime.now(ET).strftime("%Y-%m-%d")
 
 
+def _current_session_matches_frozen_run(session_date: str, now_fn=None) -> bool:
+    try:
+        current_date = (
+            now_fn() if now_fn is not None else datetime.now(ET)
+        )
+    except Exception as exc:  # noqa: BLE001
+        raise RuntimeError("cannot determine the current live-flow exchange date") from exc
+    return current_date.astimezone(ET).date().isoformat() == session_date
+
+
+def _session_rollover(
+    session_date: str,
+    day_state: dict,
+    now_fn=None,
+) -> str | None:
+    if _current_session_matches_frozen_run(session_date, now_fn=now_fn):
+        return None
+    if day_state.get("pending_learning_events"):
+        log.error(
+            "poller: exchange-session rollover found a pending learning WAL; preserving state"
+        )
+        return "pending"
+    log.info("poller: exchange-session rollover found no pending WAL; exiting cleanly")
+    return "empty"
+
+
 # ── single-cycle logic ────────────────────────────────────────────────────────
 
 def run_cycle(
@@ -2165,7 +2813,10 @@ def run_cycle(
         # Advance watermark by subtracting overlap
         try:
             wm_dt = datetime.fromisoformat(wm["ts"].replace("Z", "+00:00"))
-            wm_et = wm_dt.astimezone(ET)
+            wm_et = (
+                wm_dt.replace(tzinfo=ET) if wm_dt.tzinfo is None
+                else wm_dt.astimezone(ET)
+            )
             overlap_dt = wm_et - timedelta(seconds=_OVERLAP_SEC)
             return overlap_dt.strftime("%H:%M:%S")
         except Exception:  # noqa: BLE001
@@ -2208,11 +2859,20 @@ def run_cycle(
         _surface_root_set = set()
     surface_quotes: dict[str, list] = {}
     surface_spot_fallback: dict[str, float] = {}
+    surface_observed_at: dict[str, str] = {}
     surface_quote_sec: float = 0.0
 
     # Fetch in parallel (max_concurrent=2); per-root start_time in time_window mode
     fetch_results: dict[str, tuple] = {}
     source_response_times: list[str] = []
+    roots_with_source_payload_names: list[str] = []
+    roots_with_ticker_state_names: list[str] = []
+    root_source_receipts = _valid_source_receipts(
+        day_state.get("root_source_receipts", {})
+    )
+    root_ticker_receipts = _valid_source_receipts(
+        day_state.get("root_ticker_receipts", {})
+    )
     with ThreadPoolExecutor(max_workers=max_w) as pool:
         futs = {
             pool.submit(
@@ -2229,16 +2889,31 @@ def run_cycle(
             # network response and create false point-in-time provenance.
             observed_at = _utc_now_iso()
             fetch_results[r] = (calls_df, puts_df, observed_at)
-            if calls_df is not None or puts_df is not None:
+            if calls_df is not None and puts_df is not None:
                 source_response_times.append(observed_at)
             requests_count += 2  # two calls per root (call + put)
     _log_rss_phase("post_fetch", cycle_n=cycle_n)
 
-    # Process each root
+    # Process each root in requested order.  Thread completion order is not a
+    # coverage contract, so the named receipt list is derived here rather than
+    # from ``as_completed`` above.
     for root in roots:
         calls_df, puts_df, observed_at = fetch_results.get(root, (None, None, None))
-        if calls_df is None and puts_df is None:
-            log.debug("poller: skip %s (both legs failed)", root)
+        named_root: str | None = None
+        if calls_df is not None and puts_df is not None:
+            normalised = _normalise_root_list([root])
+            if normalised:
+                named_root = normalised[0]
+                roots_with_source_payload_names.append(named_root)
+                if isinstance(observed_at, str) and observed_at:
+                    root_source_receipts[named_root] = observed_at
+        if calls_df is None or puts_df is None:
+            log.warning(
+                "poller: skip %s (incomplete source response: calls=%s puts=%s)",
+                root,
+                "failed" if calls_df is None else "ok",
+                "failed" if puts_df is None else "ok",
+            )
             continue
 
         # Derive, but do not yet commit, the fetched-root watermark. It advances
@@ -2334,6 +3009,12 @@ def run_cycle(
         sweep_clusters_acc  = state_out.get("sweep_clusters", sweep_clusters_acc)
         if candidate_watermark:
             cycle_watermarks[root] = candidate_watermark
+        # A source receipt proves the vendor response arrived.  A ticker-state
+        # receipt additionally proves the engine accepted that response and merged
+        # its accumulators.  Failed processing must never freshen an old drill.
+        if named_root is not None and isinstance(observed_at, str) and observed_at:
+            roots_with_ticker_state_names.append(named_root)
+            root_ticker_receipts[named_root] = observed_at
 
         # Decision completion is later than fetch observation. Durably stage the
         # events before they can enter the capped/retained display feed.
@@ -2377,11 +3058,15 @@ def run_cycle(
         # spot fallback the greek engine uses when parity can't resolve.
         if root.upper() in _surface_root_set:
             _sq_t0 = time.perf_counter()
+            if observed_at is not None:
+                surface_observed_at[root.upper()] = observed_at
             try:
                 from scripts.build_flow_surface import extract_cycle_quotes
                 near_cap = cfg.get("near_dte_cap_days", 90)
                 quotes = extract_cycle_quotes(
-                    calls_df, puts_df, session_date=session_date,
+                    calls_df, puts_df,
+                    session_date=session_date,
+                    observed_at=observed_at,
                     near_dte_cap_days=int(near_cap) if near_cap is not None else None)
                 if quotes:
                     surface_quotes[root.upper()] = quotes
@@ -2539,6 +3224,8 @@ def run_cycle(
         ),
         "roots_requested":       len(roots),
         "roots_with_source_payload": len(source_response_times),
+        "roots_with_source_payload_names": roots_with_source_payload_names,
+        "roots_with_ticker_state_names": roots_with_ticker_state_names,
         # Compatibility count aliases.  They do not define cadence truth.
         "universe_n":            len(roots),
         "roots_polled":          len(source_response_times),
@@ -2568,6 +3255,7 @@ def run_cycle(
         # ephemeral, never serialized to day_state). Consumed by build_and_stage_surfaces.
         "surface_quotes":         surface_quotes,
         "surface_spot_fallback":  surface_spot_fallback,
+        "surface_observed_at":    surface_observed_at,
     }
 
     updated_state = {
@@ -2590,6 +3278,11 @@ def run_cycle(
         # Retain the newest successful source response across a fully failed
         # cycle so an unchanged cumulative snapshot cannot acquire a fresh age.
         "source_asof":         source_asof,
+        # Per-root receipts share this session state owner.  Off-cycle and failed
+        # roots retain their previous exact source-success clock.
+        "root_source_receipts": root_source_receipts,
+        # Updated only after process_batch succeeds and its state is merged.
+        "root_ticker_receipts": root_ticker_receipts,
     }
 
     return feed_payload, heat_payload, meta_payload, updated_state, tide_day_state
@@ -2733,6 +3426,13 @@ def main(argv: list[str] | None = None) -> int:  # noqa: PLR0912, PLR0915
         "--once", action="store_true",
         help="Run one mutating live-output cycle; not a smoke test",
     )
+    parser.add_argument(
+        "--recover-reviewed-prior-session-wal",
+        nargs=2,
+        metavar=("SESSION", "REVIEW_REFERENCE"),
+        help="Write the explicit reviewed prior-session WAL quarantine receipt "
+             "(session and reviewer reference only; digests are immutable)",
+    )
     parser.add_argument("--date",  metavar="YYYY-MM-DD",
                         help="Legacy diagnostic override; unsafe for smoke/PIT staging")
     parser.add_argument("--roots", nargs="+", metavar="ROOT",
@@ -2745,6 +3445,100 @@ def main(argv: list[str] | None = None) -> int:  # noqa: PLR0912, PLR0915
                              "(use with launchd StartCalendarInterval)")
     parser.add_argument("--verbose", "-v", action="store_true")
     args = parser.parse_args(argv)
+
+    if args.recover_reviewed_prior_session_wal is not None:
+        if args.date or args.once:
+            log.error(
+                "poller: quarantine recovery cannot be combined with --date or --once"
+            )
+            return 2
+        session, review = args.recover_reviewed_prior_session_wal
+        # Confirm the requested session matches the immutable incident — no
+        # operator-supplied digests, no env/config/test overrides.
+        if session != PRIOR_SESSION_WAL_INCIDENT["session_date"]:
+            log.error(
+                "poller: quarantine session %s is not the immutable incident session",
+                session,
+            )
+            return 2
+        try:
+            state_path = _state_dir() / f"day_state_{session}.json"
+            if not state_path.exists():
+                raise RuntimeError(f"quarantined prior-session day_state is absent: {state_path}")
+            state_raw = state_path.read_bytes()
+            stage_path = _event_stage_path(session)
+            if stage_path.exists():
+                raise RuntimeError(
+                    f"canonical event stage present; quarantine refuses to share a stage: {stage_path}"
+                )
+            payload = {
+                "schema": PRIOR_SESSION_WAL_QUARANTINE_SCHEMA,
+                "classification": PRIOR_SESSION_WAL_CLASSIFICATION,
+                "review_reference": review,
+                "incident": dict(PRIOR_SESSION_WAL_INCIDENT),
+            }
+            payload["protected_source"] = {
+                "sha256": PRIOR_SESSION_WAL_INCIDENT["state_sha256"],
+                "bytes": len(state_raw),
+            }
+            # Validate candidate receipt fully BEFORE publication.
+            _pure_validate_prior_session_wal_quarantine(
+                payload,
+                state_raw,
+                session_date=session,
+                stage_path=stage_path,
+            )
+            receipt_path = _prior_session_wal_quarantine_receipt_path(session)
+            if receipt_path.exists():
+                # An existing receipt is preserved (never overwritten) and
+                # re-validated; any inconsistency blocks the operator.
+                existing = _read_prior_session_wal_quarantine_receipt(session)
+                if existing is None:
+                    raise RuntimeError(
+                        f"existing prior-session WAL quarantine receipt is unreadable: {receipt_path}"
+                    )
+                _pure_validate_prior_session_wal_quarantine(
+                    existing,
+                    state_raw,
+                    session_date=session,
+                    stage_path=stage_path,
+                )
+                log.info(
+                    "poller: reviewed prior-session WAL quarantine receipt already present: %s",
+                    receipt_path,
+                )
+                return 0
+            # Atomic fsync + readback: write to temp, fsync, rename, fsync dir,
+            # then read the published file back and confirm the bytes match.
+            _ensure_directory_durable(receipt_path.parent)
+            tmp_path = receipt_path.with_suffix(receipt_path.suffix + ".tmp")
+            try:
+                serialised = (
+                    json.dumps(payload, sort_keys=True, allow_nan=False) + "\n"
+                ).encode("utf-8")
+                with tmp_path.open("wb") as fh:
+                    fh.write(serialised)
+                    fh.flush()
+                    os.fsync(fh.fileno())
+                os.replace(tmp_path, receipt_path)
+                _fsync_directory(receipt_path.parent)
+            finally:
+                if tmp_path.exists():
+                    tmp_path.unlink()
+            readback = receipt_path.read_bytes()
+            if readback != serialised:
+                raise RuntimeError(
+                    f"readback mismatch after atomic write: {receipt_path}"
+                )
+            _validate_prior_session_wal_quarantine(session)
+            log.info(
+                "poller: reviewed prior-session WAL quarantine receipt validated: %s",
+                receipt_path,
+            )
+            return 0
+        except Exception as exc:  # noqa: BLE001
+            log.error("poller: reviewed prior-session WAL quarantine failed: %s", exc)
+            return 1
 
     logging.basicConfig(
         level=logging.DEBUG if args.verbose else logging.INFO,
@@ -2759,6 +3553,9 @@ def main(argv: list[str] | None = None) -> int:  # noqa: PLR0912, PLR0915
         log.info("poller: retention_hours overridden to %d (CLI)", args.retention_hours)
 
     session_date = _session_date(args.date)
+    if args.date:
+        log.error("poller: --date is diagnostic-only and cannot run a write-capable poller")
+        return 2
     log.info("poller: session_date=%s once=%s", session_date, args.once)
     _OPTIONS_CONTEXT_DISPATCHER = _initialize_options_context_dispatcher(
         session_date, historical=bool(args.date),
@@ -2793,6 +3590,12 @@ def main(argv: list[str] | None = None) -> int:  # noqa: PLR0912, PLR0915
     except Exception as exc:  # noqa: BLE001
         log.error("poller: startup learning-WAL recovery failed: %s", exc, exc_info=True)
         return 1
+
+    rollover = _session_rollover(session_date, day_state)
+    if rollover == "pending":
+        return 1
+    if rollover == "empty":
+        return 0
 
     # The clean outside-RTH exit remains zero, so launchd's SuccessfulExit=false
     # policy will not respawn it. Crash/Theta failures are nonzero and retry after
@@ -2921,6 +3724,11 @@ def main(argv: list[str] | None = None) -> int:  # noqa: PLR0912, PLR0915
     previous_cycle_started_perf: float | None = None
     while True:
         loop_t0 = time.perf_counter()
+        rollover = _session_rollover(session_date, day_state)
+        if rollover == "pending":
+            return 1
+        if rollover == "empty":
+            return 0
         cycle_started_at = _utc_now_iso()
         observed_start_to_start_sec = (
             loop_t0 - previous_cycle_started_perf
@@ -2990,6 +3798,13 @@ def main(argv: list[str] | None = None) -> int:  # noqa: PLR0912, PLR0915
             # Publication durability gets its own build clock instead of making
             # an unchanged source snapshot appear fresh.
             meta["built_at"] = committed_asof
+            _attach_root_catalog(
+                meta=meta,
+                configured_roots=roots,
+                cycle_roots=cycle_roots,
+                receipts=updated_state.get("root_source_receipts", {}),
+                day_state=tide_day_state,
+            )
         except Exception as e:  # noqa: BLE001
             log.error("poller: cycle #%d unhandled error: %s", cycle_n, e, exc_info=True)
             # Restore the last durable transaction. If it owns a pending event WAL,
@@ -3064,32 +3879,37 @@ def main(argv: list[str] | None = None) -> int:  # noqa: PLR0912, PLR0915
             except Exception as arch_err:  # noqa: BLE001
                 log.warning("poller: dated tide archive staging failed: %s", arch_err)
 
-        # Build ticker JSONs for top ~40 roots by gross premium + pinned roots (Task 3).
+        # Build one current artifact for every successfully polled root that has
+        # real accumulated drill state.  Session activity ranks presentation; it
+        # no longer gates availability.
         ns_map  = _load_names_sectors()
         rg_dict = tide_day_state.get("root_gross_today", {})
-        top_roots_by_gross = sorted(rg_dict.items(), key=lambda kv: kv[1], reverse=True)
         ticker_count = 0
         ticker_paths: list[tuple[Path, str]] = []  # (local_path, r2_key)
         _tickers_out_dir = _out_dir() / "tickers"
         _tickers_out_dir.mkdir(parents=True, exist_ok=True)
-
-        # Task 3: pinned-publish roots guarantee — Mag7 + memory + SPY/QQQ/SMH are
-        # always included in the published set even if they fall outside the top-40.
-        # Default ON (LIVE_FLOW_PINNED_PUBLISH=1); set =0 to disable.
-        top40_set = {r for r, _ in top_roots_by_gross[:TOP_TICKERS_N]}
-        if _pinned_publish_enabled():
-            pinned_extra = [r for r in PINNED_PUBLISH_ROOTS
-                            if r.upper() not in top40_set and r.upper() in rg_dict]
-            publish_roots = [r for r, _ in top_roots_by_gross[:TOP_TICKERS_N]] + pinned_extra
-        else:
-            publish_roots = [r for r, _ in top_roots_by_gross[:TOP_TICKERS_N]]
+        root_receipts = _valid_source_receipts(
+            updated_state.get("root_ticker_receipts", {})
+        )
+        publish_roots = _select_ticker_publish_roots(
+            cycle_roots=cycle_roots,
+            successful_roots=meta.get("roots_with_ticker_state_names", []),
+            day_state=tide_day_state,
+        )
 
         for tick_root in publish_roots:
             try:
+                root_asof = root_receipts.get(tick_root)
+                if root_asof is None:
+                    log.warning(
+                        "poller: skip ticker JSON for %s (successful root has no receipt)",
+                        tick_root,
+                    )
+                    continue
                 tk_payload = lf_mod.build_ticker_json(
                     root=tick_root,
                     session_date=session_date,
-                    asof=meta.get("asof", feed.get("asof", "")),
+                    asof=root_asof,
                     day_state=tide_day_state,
                     root_gross_today=rg_dict,
                     baselines=baselines,
@@ -3138,11 +3958,17 @@ def main(argv: list[str] | None = None) -> int:  # noqa: PLR0912, PLR0915
             surf_roots = resolve_surface_roots(cfg, rg_dict)
             surf_quotes = tide_day_state.get("surface_quotes", {}) or {}
             surf_spot_fb = tide_day_state.get("surface_spot_fallback", {}) or {}
-            # EOD-t-1 OI map per surface root that has quotes (session-cached; no new fetch).
+            surf_observed = tide_day_state.get("surface_observed_at", {}) or {}
+            # Pre-session OI map + exact source session per surface root that
+            # has quotes (session-cached; no new fetch).
             surf_oi = {}
+            surf_oi_vintage = {}
             for _sr in surf_roots:
                 if surf_quotes.get(_sr.upper()):
-                    surf_oi[_sr.upper()] = _surface_oi_map(_sr, session_date)
+                    oi_map, oi_vintage = _surface_oi_snapshot(_sr, session_date)
+                    surf_oi[_sr.upper()] = oi_map
+                    if oi_vintage is not None:
+                        surf_oi_vintage[_sr.upper()] = oi_vintage
             surface_paths = build_and_stage_surfaces(
                 root_strikes_by_root=tide_day_state.get("root_strikes", {}),
                 roots=surf_roots,
@@ -3152,6 +3978,8 @@ def main(argv: list[str] | None = None) -> int:  # noqa: PLR0912, PLR0915
                 quotes_by_root=surf_quotes,
                 oi_by_root=surf_oi,
                 spot_fallback_by_root=surf_spot_fb,
+                observed_at_by_root=surf_observed,
+                oi_vintage_by_root=surf_oi_vintage,
                 retain_sessions=int(cfg.get("surface_retain_sessions",
                                             SURFACE_RETAIN_SESSIONS) or
                                     SURFACE_RETAIN_SESSIONS),

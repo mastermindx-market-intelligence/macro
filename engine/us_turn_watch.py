@@ -72,9 +72,11 @@ design lane.  Falsifier/refutation vocabulary is never used here (operator 2026-
 """
 from __future__ import annotations
 
+import hashlib
 import json
 import logging
 import time
+from collections import Counter
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
@@ -105,10 +107,10 @@ SELECTION_ERA = "anticipation-v1-2026-08-08"
 INDICATOR_SOURCE = "engine.confluence_tiers"
 
 # ── universe ────────────────────────────────────────────────────────────────────────────
-#: Store ladder.  ``yahoo`` is the deck universe (R8 brief); the later rungs exist so the
-#: acceptance replay can measure a name that has price history but no yahoo store file
-#: (ADAM is the live example — it lives only under ``baskets/ohlcv``).  A name reached
-#: through a later rung is OUTSIDE the nightly deck universe and is stamped as such.
+#: Store ladder. ``yahoo`` is the price source for the immutable v1 deck population; the
+#: later rungs exist only so the acceptance replay can measure a name that has price history
+#: outside that contracted population. Population membership itself comes from the versioned
+#: selection-era contract below, never from whatever files happen to be in the shared store.
 STORE_LADDER: tuple[str, ...] = ("yahoo", "stocks", "baskets/ohlcv")
 DECK_STORE = "yahoo"
 #: Minimum daily closes to be graded here (R8 brief).  Above `confluence_tiers.MIN_HISTORY`
@@ -134,6 +136,158 @@ MIN_BARS = 200
 _UNIVERSE_SKIP_PREFIXES = ("_",)
 _UNIVERSE_SKIP_CHARS = (".", "=", "^")
 _UNIVERSE_SKIP_SUFFIXES = ("-USD", "-EUR", "-GBP", "_X", "_F")
+
+#: Immutable selection-era population.  The raw Yahoo directory is a shared store and may
+#: grow for unrelated products; directory membership is therefore not strategy semantics.
+UNIVERSE_CONTRACT_SCHEMA = "us_turn_watch_universe.v1"
+UNIVERSE_CONTRACT_REL = Path("config/us_turn_watch_universe.v1.json")
+
+
+def _universe_contract_path(data_root: Path) -> Path:
+    root = Path(data_root)
+    repo_root = root.parent if root.name == "data" else root
+    return repo_root / UNIVERSE_CONTRACT_REL
+
+
+def universe_contract(data_root: Path) -> dict[str, Any] | None:
+    """Load and authenticate the frozen selection-era population contract.
+
+    Fail closed.  A missing/malformed contract must never fall back to enumerating the raw
+    shared price directory: doing so silently redefines every cross-sectional RS percentile.
+    """
+    p = _universe_contract_path(data_root)
+    try:
+        raw = json.loads(p.read_text(encoding="utf-8"))
+    except Exception as e:  # noqa: BLE001
+        print(f"::warning title=us-turn-watch-universe::contract unavailable ({e})", flush=True)
+        return None
+    tickers = raw.get("tickers")
+    if (raw.get("schema") != UNIVERSE_CONTRACT_SCHEMA
+            or raw.get("selection_era") != SELECTION_ERA
+            or not isinstance(tickers, list)
+            or not tickers
+            or not all(isinstance(t, str) and t for t in tickers)
+            or tickers != sorted(set(tickers))
+            or raw.get("population_count") != len(tickers)
+            or not isinstance(raw.get("freshness"), dict)
+            or raw["freshness"].get("reference") != "lib.nyse_calendar.expected_last_session"
+            or not isinstance(raw["freshness"].get("max_completed_session_lag"), int)
+            or raw["freshness"]["max_completed_session_lag"] < 0):
+        print("::warning title=us-turn-watch-universe::contract shape/era invalid", flush=True)
+        return None
+    digest = hashlib.sha256(("\n".join(tickers) + "\n").encode("utf-8")).hexdigest()
+    if raw.get("tickers_sha256") != digest:
+        print("::warning title=us-turn-watch-universe::ticker digest mismatch", flush=True)
+        return None
+    return raw
+
+
+def source_contract_status(
+    data_root: Path,
+    *,
+    members: list[str],
+    closes: dict[str, pd.Series],
+    missing_store: list[str],
+    benchmark: pd.Series | None,
+    min_bars: int,
+    universe_limit: int | None = None,
+    now_utc: datetime | None = None,
+) -> dict[str, Any]:
+    """Truth receipt for the fixed population and its current source-session coverage.
+
+    This is source integrity, not an alpha gate. It uses no forward outcomes and changes no
+    trading threshold. A run is source-qualified only when the immutable population is intact,
+    enough selection-era members remain gradable, a strict majority agrees on one session, the
+    benchmark reaches that session, and that modal session is no more stale than the versioned
+    contract permits versus the existing NYSE calendar owner.
+    """
+    contract = universe_contract(data_root)
+    dates: list[str] = []
+    for series in closes.values():
+        try:
+            if len(series):
+                dates.append(str(pd.Timestamp(series.index[-1]).date()))
+        except Exception:  # noqa: BLE001, S112
+            continue
+    counts = Counter(dates)
+    modal_session = counts.most_common(1)[0][0] if counts else None
+    modal_count = counts.get(modal_session, 0) if modal_session else 0
+    strict_majority = bool(dates) and modal_count * 2 > len(dates)
+
+    benchmark_session = None
+    if benchmark is not None and len(benchmark):
+        try:
+            benchmark_session = str(pd.Timestamp(benchmark.index[-1]).date())
+        except Exception:  # noqa: BLE001, S112
+            benchmark_session = None
+
+    snapshot = (contract or {}).get("snapshot") or {}
+    minimum_graded = snapshot.get(f"graded_min_bars_{min_bars}")
+    if not isinstance(minimum_graded, int):
+        minimum_graded = None
+    population_count = (contract or {}).get("population_count")
+    full_population = bool(contract) and members == (contract or {}).get("tickers")
+    benchmark_covers_session = bool(
+        modal_session and benchmark_session and benchmark_session >= modal_session
+    )
+
+    freshness = (contract or {}).get("freshness") or {}
+    max_completed_session_lag = freshness.get("max_completed_session_lag")
+    expected_session = None
+    completed_session_lag = None
+    freshness_ok = False
+    if modal_session and isinstance(max_completed_session_lag, int):
+        try:
+            from lib import nyse_calendar  # noqa: PLC0415
+
+            expected = nyse_calendar.expected_last_session(now_utc)
+            expected_session = str(expected)
+            modal_date = pd.Timestamp(modal_session).date()
+            completed_session_lag = len(
+                nyse_calendar.sessions_between((pd.Timestamp(modal_session) + pd.Timedelta(days=1)).date(), expected)
+            ) if modal_date < expected else 0
+            freshness_ok = completed_session_lag <= max_completed_session_lag
+        except Exception:  # noqa: BLE001, S110
+            freshness_ok = False
+
+    passed = bool(
+        contract
+        and universe_limit is None
+        and full_population
+        and not missing_store
+        and closes
+        and (minimum_graded is None or len(closes) >= minimum_graded)
+        and strict_majority
+        and benchmark_covers_session
+        and freshness_ok
+    )
+    return {
+        "schema": "us_turn_watch.source_contract.v1",
+        "pass": passed,
+        "universe_id": (contract or {}).get("universe_id"),
+        "selection_era": (contract or {}).get("selection_era"),
+        "population_count": population_count,
+        "tickers_sha256": (contract or {}).get("tickers_sha256"),
+        "source_commit": ((contract or {}).get("source") or {}).get("commit"),
+        "selected_count": len(members),
+        "universe_limit": universe_limit,
+        "missing_store_count": len(missing_store),
+        "missing_store": sorted(missing_store),
+        "graded": len(closes),
+        "selection_era_minimum_graded": minimum_graded,
+        "session_counts": dict(sorted(counts.items())),
+        "modal_session": modal_session,
+        "modal_count": modal_count,
+        "strict_majority": strict_majority,
+        "benchmark_session": benchmark_session,
+        "benchmark_covers_session": benchmark_covers_session,
+        "freshness_reference": freshness.get("reference"),
+        "expected_completed_session": expected_session,
+        "completed_session_lag": completed_session_lag,
+        "max_completed_session_lag": max_completed_session_lag,
+        "freshness_ok": freshness_ok,
+    }
+
 
 # ── triggers ────────────────────────────────────────────────────────────────────────────
 #: A trigger counts for admission while it fired within this many trailing sessions.
@@ -299,28 +453,21 @@ def load_close(ticker: str, data_root: Path,
 
 
 def universe(data_root: Path, limit: int | None = None) -> list[str]:
-    """The graded deck universe: every plain ticker under ``data/<DECK_STORE>/``.
+    """The immutable selection-era deck population, never raw-directory membership.
 
-    Index proxies (``_GSPC``) and FX/futures store files (``DX-Y.NYB``) are excluded — they
-    are not names a desk reviews.  The bar-count floor is applied later, per name, because
-    it needs the frame.  ``limit`` takes the first N ALPHABETICALLY: a deterministic subset,
-    never a sample, and disclosed in the artifact when used.
+    The bar-count floor is still applied later, per name, exactly as in the original v1
+    construction. ``limit`` remains a deterministic diagnostic lever, but source-contract
+    qualification rejects limited populations so a subset cannot masquerade as the v1 RS ruler.
     """
-    d = data_root / DECK_STORE
+    d = Path(data_root) / DECK_STORE
     if not d.exists():
         print(f"::warning title=us-turn-watch::price store {d} not found "
               f"— the deck is EMPTY for this run", flush=True)
         return []
-    out = []
-    for p in sorted(d.glob("*.parquet")):
-        stem = p.stem
-        if stem.startswith(_UNIVERSE_SKIP_PREFIXES):
-            continue
-        if stem.endswith(_UNIVERSE_SKIP_SUFFIXES):
-            continue
-        if any(ch in stem for ch in _UNIVERSE_SKIP_CHARS):
-            continue
-        out.append(stem)
+    contract = universe_contract(Path(data_root))
+    if contract is None:
+        return []
+    out = list(contract["tickers"])
     return out[:limit] if limit else out
 
 
@@ -1016,7 +1163,8 @@ def _pick_basket(bids: list[str], membership: dict[str, dict],
 
 def evaluate(ticker: str, close: pd.Series, *, benchmark: pd.Series | None = None,
              basket_ctx: dict[str, Any] | None = None, market: str = "US",
-             store: str | None = None, rs_pct: pd.Series | None = None) -> dict[str, Any]:
+             store: str | None = None, rs_pct: pd.Series | None = None,
+             _skip_untriggered_details: bool = False) -> dict[str, Any]:
     """One deck row: the trigger union plus the whole pre-computed checklist. Never raises.
 
     ``basket_ctx`` carries the cohort columns the caller resolved once for the whole run
@@ -1079,6 +1227,11 @@ def evaluate(ticker: str, close: pd.Series, *, benchmark: pd.Series | None = Non
         }
 
         row["triggers_fired"] = [t for t in TRIGGER_IDS if row["triggers"][t]["fired"]]
+        # The bulk producer discards this row if its entire trigger union is
+        # empty. Keep every trigger and RS participant; skip only explanatory
+        # details that no consumer receives. Standalone evaluation stays complete.
+        if _skip_untriggered_details and not row["triggers_fired"]:
+            return row
         row["htf_washout"] = htf_washout(close)
         row["base"] = base_context(close)
         row["reset"] = reset_low(close)
@@ -1196,9 +1349,11 @@ def compute_deck_with_candidates(
     closes: dict[str, pd.Series] = {}
     stores: dict[str, str] = {}
     short: list[str] = []
+    missing_store: list[str] = []
     for tk in tickers:
         s, st = load_close(tk, root, ladder=(DECK_STORE,))
         if s is None:
+            missing_store.append(tk)
             continue
         if len(s) < MIN_BARS:
             short.append(tk)
@@ -1230,7 +1385,8 @@ def compute_deck_with_candidates(
             "turn_state_evaluated": turn_evaluated,
         }
         row = evaluate(tk, closes[tk], benchmark=bench, basket_ctx=ctx, market=market,
-                       store=stores.get(tk), rs_pct=rs_cross.get(tk))
+                       store=stores.get(tk), rs_pct=rs_cross.get(tk),
+                       _skip_untriggered_details=True)
         if row.get("triggers_fired"):
             rows.append(row)
 
@@ -1238,6 +1394,10 @@ def compute_deck_with_candidates(
     deck, beyond = apply_cap(rows, cap, lane_floor)
 
     session, max_session, session_note = _session_stamp(closes, bench)
+    source_contract = source_contract_status(
+        root, members=tickers, closes=closes, missing_store=missing_store, benchmark=bench,
+        min_bars=MIN_BARS, universe_limit=universe_limit,
+    )
 
     elapsed = round(time.time() - t0, 2)
     if elapsed > RUNTIME_WARN_SECONDS:
@@ -1271,6 +1431,8 @@ def compute_deck_with_candidates(
             "universe": len(tickers),
             "graded": len(closes),
             "skipped_short_history": len(short),
+            "missing_store": len(missing_store),
+            "source_contract": source_contract,
             "min_bars": MIN_BARS,
             "triggered": len(rows),
             "deck": len(deck),
@@ -1506,6 +1668,10 @@ def run(data_root: Path | None = None, site_root: Path | None = None, *,
         universe_limit: int | None = None) -> dict[str, Any]:
     """Nightly entry point: compute the deck and write the artifact."""
     art = compute_deck(data_root, site_root, universe_limit=universe_limit)
+    if not ((art.get("coverage") or {}).get("source_contract") or {}).get("pass"):
+        print("::warning title=us-turn-watch-source-contract::source contract failed — "
+              "previous artifact retained", flush=True)
+        return art
     p = write_artifact(art, site_root)
     log.info("us_turn_watch: wrote %s (%d rows, %d triggered, %.1fs)",
              p, len(art["deck"]), art["coverage"]["triggered"], art["runtime_seconds"])

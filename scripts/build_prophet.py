@@ -49,11 +49,15 @@ is forbidden in site artifacts (enforced by check_validated_claims.py).
 from __future__ import annotations
 
 import argparse
+import copy
+import gzip
+import hashlib
 import json
 import logging
 import math
 import os
 import sys
+import tempfile
 from collections.abc import Iterable
 from datetime import date, datetime
 from pathlib import Path
@@ -121,6 +125,88 @@ STATES_DIR     = SITE_PROPHET / "states"
 INDEX_PATH     = SITE_PROPHET / "index.json"
 LEDGER_DIR     = _REPO / "data" / "prophet"
 LEDGER_PATH    = LEDGER_DIR / "ledger.jsonl"
+
+
+def _freeze_origination_source_board(
+    board_path: str | Path | None = None,
+) -> tuple[dict[str, Any], str, str]:
+    """Persist the exact board bytes under the existing Prophet provenance root.
+
+    ``us_standouts.json`` is a live product artifact with several lawful render
+    publishers, so it cannot itself be owned by the narrow Prophet checkpoint.
+    Prophet instead binds its index to this content-addressed immutable gzip copy.
+    The filename hashes the raw bytes; zero-mtime gzip bounds repository growth
+    while decompression recovers the exact source. Reusing the same raw bytes
+    is idempotent, and a hash-path collision fails closed.
+    """
+    path = Path(STANDOUTS_PATH if board_path is None else board_path)
+    if path.is_symlink():
+        raise RuntimeError(f"refusing symlinked Prophet source board: {path}")
+    try:
+        raw = path.read_bytes()
+    except FileNotFoundError as exc:
+        raise RuntimeError(f"Prophet source board missing: {path}") from exc
+    except OSError as exc:
+        raise RuntimeError(f"Prophet source board unreadable: {path}: {exc}") from exc
+    try:
+        doc = json.loads(raw)
+    except (UnicodeDecodeError, json.JSONDecodeError) as exc:
+        raise RuntimeError(f"Prophet source board is not valid JSON: {path}: {exc}") from exc
+    if not isinstance(doc, dict):
+        raise RuntimeError(f"Prophet source board must be a JSON object: {path}")
+
+    sha256 = hashlib.sha256(raw).hexdigest()
+    compressed = gzip.compress(raw, compresslevel=9, mtime=0)
+    source_dir = LEDGER_DIR / "origination_sources"
+    source_dir.mkdir(parents=True, exist_ok=True)
+    snapshot = source_dir / f"{sha256}.json.gz"
+
+    def _read_snapshot_raw() -> bytes:
+        if snapshot.is_symlink():
+            raise RuntimeError(f"refusing symlinked Prophet source snapshot: {snapshot}")
+        try:
+            return gzip.decompress(snapshot.read_bytes())
+        except (OSError, EOFError) as exc:
+            raise RuntimeError(
+                f"Prophet source snapshot collision at {snapshot}: unreadable gzip payload"
+            ) from exc
+
+    if snapshot.exists():
+        if _read_snapshot_raw() != raw:
+            raise RuntimeError(
+                f"Prophet source snapshot collision at {snapshot}: raw bytes differ"
+            )
+    else:
+        temporary: Path | None = None
+        try:
+            fd, temporary_name = tempfile.mkstemp(
+                prefix=f".{sha256}.", suffix=".tmp", dir=source_dir
+            )
+            temporary = Path(temporary_name)
+            with os.fdopen(fd, "wb") as handle:
+                handle.write(compressed)
+                handle.flush()
+                os.fsync(handle.fileno())
+            try:
+                os.link(temporary, snapshot)
+            except FileExistsError:
+                if _read_snapshot_raw() != raw:
+                    raise RuntimeError(
+                        f"Prophet source snapshot collision at {snapshot}: concurrent raw bytes differ"
+                    )
+        finally:
+            if temporary is not None:
+                temporary.unlink(missing_ok=True)
+
+    repo_root = LEDGER_DIR.parents[1]
+    try:
+        relative = snapshot.relative_to(repo_root).as_posix()
+    except ValueError as exc:
+        raise RuntimeError(
+            f"Prophet provenance root {source_dir} is outside repository root {repo_root}"
+        ) from exc
+    return doc, sha256, relative
+
 
 # R2_INDEX_KEY is GONE ON PURPOSE (DEC:B1-PROPHET-PUBLIC-SPLIT).  The full
 # Prophet plan book (site/prophet/index.json) is premium/private and must
@@ -1893,7 +1979,11 @@ def main() -> None:
 
     asof: str = args.date
     log.info("build_prophet: starting — asof=%s publish=%s", asof, args.publish)
-    _standouts_doc = _read_json(STANDOUTS_PATH) or {}
+    (
+        _standouts_doc,
+        source_board_sha256,
+        source_board_snapshot_path,
+    ) = _freeze_origination_source_board(STANDOUTS_PATH)
     _source_staleness = (
         _standouts_doc.get("staleness")
         if isinstance(_standouts_doc.get("staleness"), dict) else {}
@@ -1973,6 +2063,7 @@ def main() -> None:
     intake_stats: dict[str, Any] = {}
     new_plans = originate_plans(
         standouts_path=STANDOUTS_PATH,
+        standouts_doc=_standouts_doc,
         asof=asof,
         existing_ids=existing_ids,
         thetadata_store=thetadata_store,
@@ -2003,17 +2094,15 @@ def main() -> None:
     # original set already contains tonight's new ids and would suppress everything C0
     # tried to mirror. existing_plans itself is untouched.
     #
-    # The standouts artifact is loaded HERE and passed in-memory, so the arena provably
-    # slices the same world the live origination did rather than re-reading a file that
-    # another lane could have rewritten in between. C0's plan ids are checked against the
-    # live ids as the harness-validity pin.
+    # The exact source board was frozen once at the start of this build.  Arena gets an
+    # isolated deep copy of that object, so an ABA rewrite of the mutable product board
+    # cannot make the shadow harness slice different bytes than live origination.
+    # C0's plan ids are checked against the live ids as the harness-validity pin.
     try:
         from engine.prophet_arena import run_arena  # noqa: PLC0415
 
-        with STANDOUTS_PATH.open(encoding="utf-8") as _f:
-            _arena_standouts = json.load(_f)
         _arena_board = run_arena(
-            _arena_standouts,
+            copy.deepcopy(_standouts_doc),
             asof=asof,
             existing_ids=set(existing_plans.keys()),
             active_keys=active_keys,
@@ -2059,10 +2148,8 @@ def main() -> None:
     shadow_rows: list[dict] = []
     shadow_written = 0
     try:
-        with STANDOUTS_PATH.open(encoding="utf-8") as _f:
-            _shadow_standouts = json.load(_f)
         shadow_rows = legacy_shadow_rows(
-            _shadow_standouts,
+            copy.deepcopy(_standouts_doc),
             asof=asof,
             existing_ids=set(existing_plans.keys()),
             active_keys=active_keys,
@@ -2499,6 +2586,20 @@ def main() -> None:
         log.info("build_prophet: lifecycle `watch` cell WITHHELD — the intake published "
                  "no early_turn_watch roster (key-absence, not zero)")
 
+    # P1 leader-observation receipt. The full ticker roster remains owned by
+    # site/anticipationdata/us_leader_pullback.json and the protected US page payload;
+    # index.json receives source clocks and aggregate counts only. This read happens
+    # after every plan/lifecycle decision above and cannot alter their bytes or order.
+    from engine.us_leader_pullback_coverage import (  # noqa: PLC0415
+        load_prophet_observations,
+        prophet_observation_summary,
+    )
+    _leader_observations = load_prophet_observations(
+        site_root=_REPO / "site",
+        reference_session=source_asof,
+    )
+    _leader_observation_summary = prophet_observation_summary(_leader_observations)
+
     index: dict[str, Any] = {
         "schema": "prophet.index/v1",
         # Compatibility run clock.  Freshness sentinels MUST use source_asof below:
@@ -2511,13 +2612,16 @@ def main() -> None:
         "source_unknown": source_unknown,
         "source_basis": source_basis,
         "source_mixed_vintage": source_mixed_vintage,
+        "source_board_sha256": source_board_sha256,
+        "source_board_snapshot_path": source_board_snapshot_path,
+        "source_board_snapshot_encoding": "gzip",
         "cadence": "nightly-EOD",
         "authority_tier": "display",
         # ANTICIPATION §6.2 A1 — the selection rule tonight's plans were originated
         # under.  Stamped at the top level as well as on every plan so a reader (and a
         # later side-by-side) never has to infer the era from a date.
         "selection_era": SELECTION_ERA,
-        "gate_go": _read_standouts_gate_go(),
+        "gate_go": _read_standouts_gate_go(_standouts_doc),
         "plan_count": len(all_plans),
         # MISNOMER, deliberately preserved: `active_count` (and `plans[]`) count every
         # plan the management engine could state, INCLUDING forward-ledger-closed ones.
@@ -2541,6 +2645,7 @@ def main() -> None:
         "lifecycle_counts": _life_counts,
         "lifecycle_live_total": _life_live_total,
         "lifecycle_grand_total": _life_grand_total,
+        "leader_observation_summary": _leader_observation_summary,
         # P6 — the order `plans[]` actually ships in, stated where the reader can check
         # it against the `_priority_score` on every row.
         "plans_sort_key": (
@@ -2800,8 +2905,10 @@ def main() -> None:
     return active_entries
 
 
-def _read_standouts_gate_go() -> bool:
-    """Read gate_go from standouts for the index."""
+def _read_standouts_gate_go(standouts_doc: dict[str, Any] | None = None) -> bool:
+    """Read ``gate_go`` from a supplied frozen board or the legacy path fallback."""
+    if isinstance(standouts_doc, dict):
+        return bool(standouts_doc.get("gate_go", False))
     try:
         with STANDOUTS_PATH.open(encoding="utf-8") as f:
             return bool(json.load(f).get("gate_go", False))

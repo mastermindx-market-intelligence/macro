@@ -1,0 +1,22 @@
+config/synapse.yml	5940	gamma_flow, 0DTE pct) is reliable. Accrual store: data/options_flow/summary_<SYM>.parquet
+config/synapse.yml	6137	path: data/options_entry/state.parquet
+config/synapse.yml	11574	# --- prophet-ledger: Prophet forward outcome ledger ---
+scripts/build_ext_quotes.py	108	R2_KEY = "live_flow/ext_quotes.json"
+scripts/publish_r2.py	72	# The heavy per-ticker stores that dominate site/ size (see the site-size audit:
+scripts/publish_r2.py	84	# — masterplan §3 H4, §8 W1 (collectors/hk_universe.py)
+scripts/publish_r2.py	85	"massive_stock_day",  # whole-market daily OHLCV per-ticker parquets
+scripts/publish_r2.py	88	"thetadata_eod",      # ThetaData EOD options chain parquets — one per root per year
+scripts/publish_r2.py	91	# git-committed — local cache + R2 with manifest + audit tripwire).
+scripts/publish_r2.py	99	"oddsmatrix",  # Odds Desk per-ticker factor matrices (site/oddsmatrix/<T>.json,
+scripts/publish_r2.py	102	# git-tracked on Pages. See research/ODDS_DESK.md.
+scripts/publish_r2.py	106	# slots, twice (raw + market-neutral), ~28 MB across the covered
+scripts/publish_r2.py	122	# massive_stock_day pattern. See research/ODDS_DESK.md.
+scripts/publish_r2.py	127	# reports/slf048-wiki-attention-phase0.md §Nightly wiring.
+scripts/publish_r2.py	128	"price_pressure",  # DRL W1 event ledger (data/price_pressure/events.parquet,
+scripts/publish_r2.py	147	# host that holds the ThetaData store, and a lost host means a lost
+scripts/publish_r2.py	150	"options_skew",  # MO-PAID-013 W2-2 (A-F03-W2-2): ThetaData skew-accrual lane
+scripts/publish_r2.py	170	"options_payoff_lab",  # MO-A3 W2-5a (A-F03-W2-5a, 2026-09-23): options
+scripts/publish_r2.py	186	# gitignored — a CI runner checkout holds just the committed _manifest.json +
+scripts/publish_r2.py	205	_DATA_DIR_MIN_FILES_OVERRIDE = {"index_gex_history": 5, "price_pressure": 3,
+scripts/publish_r2.py	480	def _uploadable(d: str, base: Path, files: list[Path]) -> list[Path]:
+scripts/publish_r2.py	594	files = _uploadable(d, base, _walk_files(base))

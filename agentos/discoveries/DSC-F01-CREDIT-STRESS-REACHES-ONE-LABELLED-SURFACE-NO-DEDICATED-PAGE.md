@@ -6,7 +6,7 @@ claim: >
   scripts/build_bonds.py:748 from engine/credit_momentum.py:1951-1956, whose HY/IG series load
   from ICE BofA BAMLH0A0HYM2 / BAMLC0A0CM at :1596-1597. Single-issuer is true only of the ORCL
   watch chip at templates/bonds.html.j2:775-782. Separately, the credit_stress AXIS reaches
-  exactly one credit-labelled consumer surface today: templates/dashboard.html.j2:14029
+  exactly one credit-labelled consumer surface today: templates/dashboard.html.j2:14062
   (`'E4_credit_stress': {'en':'Credit stress','zh':'信用压力'},`) and its bilingual blurb at
   templates/dashboard.html.j2:101-102, driven by engine/rates_inflation_command.py:557-575
   (`# E4 — credit_stress (weight 1)`, `hy_oas_z = _safe_get(tx, "breakeven_decomp", "costate",
@@ -39,8 +39,8 @@ kind: architecture
 verified_at: 2026-09-06
 verified_by: >
   templates/bonds.html.j2:707-726; scripts/build_bonds.py:748;
-  engine/credit_momentum.py:1596-1597; templates/dashboard.html.j2:14029,101-102;
-  engine/rates_inflation_command.py:557-575; scripts/build_rates_command.py:129;
+  engine/credit_momentum.py:1596-1597; templates/dashboard.html.j2:14062,101-102;
+  engine/rates_inflation_command.py:557-575; 2026-09-19 re-pin: the E4_credit_stress label moved templates/dashboard.html.j2:14029 → :14062 under nightly renders; content unchanged (seat 026851bd, W5-E-M read pass);
   scripts/build_site.py:6077-6079,6701,6802;
   gh pr view 6904 --json state,headRefName,title,files
 scope: [macro, engine/credit_*, engine/bond_cross_asset.py, engine/market_drivers.py, engine/rates_inflation_command.py, templates/bonds.html.j2, templates/dashboard.html.j2, scripts/build_rates_command.py, scripts/build_site.py, F01]

@@ -34,6 +34,7 @@ from __future__ import annotations
 
 import inspect
 import json
+from datetime import datetime, timezone
 from pathlib import Path
 
 import numpy as np
@@ -86,6 +87,41 @@ _LEADER_PULLBACK = _wobble(
 def _bench(n: int, end: str = _FIXTURE_END) -> pd.Series:
     """A flat-ish benchmark: any name that rises at all out-performs it."""
     return _series(_wobble([100.0 * (1.0 + 0.0002) ** i for i in range(n)]), end)
+
+
+def _write_universe_contract(data_root: Path) -> None:
+    import hashlib
+
+    d = Path(data_root) / TW.DECK_STORE
+    tickers = []
+    if d.exists():
+        for file in sorted(d.glob("*.parquet")):
+            stem = file.stem
+            if stem.startswith(TW._UNIVERSE_SKIP_PREFIXES):
+                continue
+            if stem.endswith(TW._UNIVERSE_SKIP_SUFFIXES):
+                continue
+            if any(ch in stem for ch in TW._UNIVERSE_SKIP_CHARS):
+                continue
+            tickers.append(stem)
+    digest = hashlib.sha256(("\n".join(tickers) + "\n").encode()).hexdigest()
+    repo_root = Path(data_root).parent if Path(data_root).name == "data" else Path(data_root)
+    out = repo_root / TW.UNIVERSE_CONTRACT_REL
+    out.parent.mkdir(parents=True, exist_ok=True)
+    out.write_text(json.dumps({
+        "schema": TW.UNIVERSE_CONTRACT_SCHEMA,
+        "universe_id": "test:synthetic",
+        "selection_era": TW.SELECTION_ERA,
+        "source": {"commit": "test-fixture"},
+        "population_count": len(tickers),
+        "tickers_sha256": digest,
+        "snapshot": {},
+        "freshness": {
+            "reference": "lib.nyse_calendar.expected_last_session",
+            "max_completed_session_lag": 10000,
+        },
+        "tickers": tickers,
+    }))
 
 
 # ---------------------------------------------------------------------------
@@ -671,6 +707,7 @@ def test_universe_excludes_index_fx_futures_and_crypto_store_files(tmp_path):
                  "ETH-USD", "BTC_F", "GC_F", "PL_F"):
         (d / f"{stem}.parquet").write_bytes(b"")
     # PL (Planet Labs) stays; PL_F (platinum futures) leaves — the suffix match is exact.
+    _write_universe_contract(tmp_path)
     assert TW.universe(tmp_path) == ["AAPL", "NVDA", "PL"]
 
 
@@ -679,6 +716,7 @@ def test_universe_limit_is_deterministic_alphabetical(tmp_path):
     d.mkdir(parents=True)
     for stem in ("ZZZ", "AAA", "MMM"):
         (d / f"{stem}.parquet").write_bytes(b"")
+    _write_universe_contract(tmp_path)
     assert TW.universe(tmp_path, limit=2) == ["AAA", "MMM"]
 
 
@@ -686,6 +724,112 @@ def test_missing_price_store_is_announced_not_silent(tmp_path, capsys):
     assert TW.universe(tmp_path) == []
     out = capsys.readouterr().out
     assert "::warning" in out
+
+
+def test_committed_selection_era_universe_is_content_addressed():
+    repo_root = Path(TW.__file__).resolve().parents[1]
+    contract = TW.universe_contract(repo_root / "data")
+    assert contract is not None
+    assert contract["schema"] == "us_turn_watch_universe.v1"
+    assert contract["selection_era"] == TW.SELECTION_ERA == "anticipation-v1-2026-08-08"
+    assert contract["population_count"] == len(contract["tickers"]) == 697
+    assert contract["tickers_sha256"] == (
+        "9f9daa60db10bce3edc65a8d4b8e02e79ee327c962bec46d2973d32791752282"
+    )
+    assert contract["source"]["commit"] == "c3eed6fcc15ae89799fe28454634c9d075897717"
+    assert contract["source"]["tree"] == "5e44798053537ad8506ce659b316bf837b9f4f33"
+    assert contract["snapshot"]["graded_min_bars_200"] == 681
+    assert contract["snapshot"]["graded_min_bars_260"] == 680
+
+
+def test_raw_store_growth_cannot_widen_the_versioned_universe(tmp_path):
+    d = tmp_path / TW.DECK_STORE
+    d.mkdir(parents=True)
+    for stem in ("AAA", "BBB"):
+        (d / f"{stem}.parquet").write_bytes(b"")
+    _write_universe_contract(tmp_path)
+    (d / "FUTURE.parquet").write_bytes(b"")
+    assert TW.universe(tmp_path) == ["AAA", "BBB"]
+
+
+def test_corrupt_universe_contract_fails_closed_instead_of_scanning_store(tmp_path, capsys):
+    d = tmp_path / TW.DECK_STORE
+    d.mkdir(parents=True)
+    (d / "AAA.parquet").write_bytes(b"")
+    _write_universe_contract(tmp_path)
+    contract = tmp_path / TW.UNIVERSE_CONTRACT_REL
+    payload = json.loads(contract.read_text())
+    payload["tickers_sha256"] = "0" * 64
+    contract.write_text(json.dumps(payload))
+    assert TW.universe(tmp_path) == []
+    assert "ticker digest mismatch" in capsys.readouterr().out
+
+
+def test_source_contract_fails_on_missing_member_fractured_session_and_limit(tmp_path):
+    d = tmp_path / TW.DECK_STORE
+    d.mkdir(parents=True)
+    for stem in ("AAA", "BBB", "CCC", "DDD"):
+        (d / f"{stem}.parquet").write_bytes(b"")
+    _write_universe_contract(tmp_path)
+    idx_a = pd.date_range(end="2026-09-18", periods=10, freq="B")
+    idx_b = pd.date_range(end="2026-09-17", periods=10, freq="B")
+    closes = {
+        "AAA": pd.Series(range(10), index=idx_a, dtype=float),
+        "BBB": pd.Series(range(10), index=idx_a, dtype=float),
+        "CCC": pd.Series(range(10), index=idx_b, dtype=float),
+        "DDD": pd.Series(range(10), index=idx_b, dtype=float),
+    }
+    bench = pd.Series(range(10), index=idx_a, dtype=float)
+    fractured = TW.source_contract_status(
+        tmp_path, members=["AAA", "BBB", "CCC", "DDD"], closes=closes,
+        missing_store=[], benchmark=bench, min_bars=200,
+    )
+    assert fractured["pass"] is False
+    assert fractured["strict_majority"] is False
+
+    missing = TW.source_contract_status(
+        tmp_path, members=["AAA", "BBB", "CCC", "DDD"], closes=closes,
+        missing_store=["DDD"], benchmark=bench, min_bars=200,
+    )
+    assert missing["pass"] is False
+    assert missing["missing_store_count"] == 1
+
+    limited = TW.source_contract_status(
+        tmp_path, members=["AAA", "BBB"], closes={"AAA": closes["AAA"], "BBB": closes["BBB"]},
+        missing_store=[], benchmark=bench, min_bars=200, universe_limit=2,
+    )
+    assert limited["pass"] is False
+    assert limited["universe_limit"] == 2
+
+
+def test_source_contract_fails_when_modal_session_lags_expected_completed_session(tmp_path):
+    d = tmp_path / TW.DECK_STORE
+    d.mkdir(parents=True)
+    for stem in ("AAA", "BBB", "CCC"):
+        (d / f"{stem}.parquet").write_bytes(b"")
+    _write_universe_contract(tmp_path)
+    contract_path = tmp_path / TW.UNIVERSE_CONTRACT_REL
+    payload = json.loads(contract_path.read_text())
+    payload["freshness"]["max_completed_session_lag"] = 0
+    contract_path.write_text(json.dumps(payload))
+
+    idx = pd.date_range(end="2026-09-17", periods=10, freq="B")
+    closes = {stem: pd.Series(range(10), index=idx, dtype=float) for stem in ("AAA", "BBB", "CCC")}
+    bench = pd.Series(range(10), index=idx, dtype=float)
+    status = TW.source_contract_status(
+        tmp_path,
+        members=["AAA", "BBB", "CCC"],
+        closes=closes,
+        missing_store=[],
+        benchmark=bench,
+        min_bars=200,
+        now_utc=datetime(2026, 9, 20, 12, tzinfo=timezone.utc),
+    )
+    assert status["pass"] is False
+    assert status["freshness_ok"] is False
+    assert status["expected_completed_session"] == "2026-09-18"
+    assert status["completed_session_lag"] == 1
+    assert status["max_completed_session_lag"] == 0
 
 
 def test_short_history_names_are_excluded_and_counted(tmp_path, monkeypatch):
@@ -697,6 +841,7 @@ def test_short_history_names_are_excluded_and_counted(tmp_path, monkeypatch):
     idx = pd.date_range(end=_FIXTURE_END, periods=50, freq="B")
     pd.DataFrame({"close": np.linspace(10, 12, 50)}, index=idx).to_parquet(
         root / TW.DECK_STORE / "SHORT.parquet")
+    _write_universe_contract(root)
     art = TW.compute_deck(root, tmp_path / "site")
     assert art["coverage"]["skipped_short_history"] == 1
     assert art["coverage"]["graded"] == 0
@@ -790,6 +935,7 @@ def test_compute_deck_end_to_end_on_a_frozen_store(tmp_path):
         "baskets": {"test_theme": {"state": "TURNING", "days_in_state": 3,
                                    "data_session": _FIXTURE_END}}}))
 
+    _write_universe_contract(root)
     art = TW.compute_deck(root, site)
 
     assert art["schema"] == TW.SCHEMA
@@ -843,6 +989,7 @@ def test_beyond_cap_rows_carry_their_reason_not_a_bare_ticker(tmp_path):
         "baskets": {"test_theme": {"state": "TURNING", "days_in_state": 3,
                                    "data_session": _FIXTURE_END}}}))
 
+    _write_universe_contract(root)
     art = TW.compute_deck(root, site, cap=2, lane_floor=1)
     beyond = art["beyond_cap"]
     assert beyond, "the cap did not push any name beyond the deck"
@@ -886,6 +1033,7 @@ def test_compute_deck_with_candidates_keeps_private_uncapped_rows_out_of_public_
     (site / "basketdata" / "us_basket_turn.json").write_text(json.dumps({"baskets": {
         "test_theme": {"state": "TURNING", "days_in_state": 3, "data_session": _FIXTURE_END}}}))
 
+    _write_universe_contract(root)
     artifact, rows = TW.compute_deck_with_candidates(root, site, cap=2, lane_floor=1)
     public = TW.compute_deck(root, site, cap=2, lane_floor=1)
     assert {key: value for key, value in artifact.items() if key != "runtime_seconds"} == {
@@ -922,3 +1070,61 @@ def test_the_deck_never_writes_under_prophet_authority(tmp_path):
                / "scripts" / "build_turn_watch.py").read_text(encoding="utf-8")
     assert "site/turn_watch/turn_watch.json" in builder
     assert "site/prophet/turn_watch.json" not in builder
+
+
+@pytest.mark.parametrize("active_count", (0, 3))
+def test_bulk_does_not_build_discarded_untriggered_context(tmp_path, monkeypatch, active_count):
+    """Every name keeps trigger/RS participation; detail work follows the uncapped union."""
+    root, site = tmp_path / "data", tmp_path / "site"
+    (root / TW.DECK_STORE).mkdir(parents=True)
+    (root / "baskets").mkdir()
+    (site / "basketdata").mkdir(parents=True)
+    active = [f"ACT{i}" for i in range(active_count)]
+    names = ["QUIET", TW.BENCHMARK] + active
+    close = _series(_UPTREND)
+    for ticker in names:
+        close.to_frame("close").to_parquet(root / TW.DECK_STORE / f"{ticker}.parquet")
+    (root / "baskets/membership.json").write_text(json.dumps({"baskets": {
+        "test_theme": {"name": "Test", "members": [{"ticker": t} for t in active]}}}))
+    (site / "basketdata/us_basket_turn.json").write_text(json.dumps({"baskets": {
+        "test_theme": {"state": "TURNING", "days_in_state": 1, "data_session": _FIXTURE_END}}}))
+    _write_universe_contract(root)
+    monkeypatch.setattr(TW, "dot_signature", lambda c: pd.Series(False, index=c.index))
+    monkeypatch.setattr(TW, "pre_confluence_2d", lambda c, market: (
+        pd.Series(False, index=c.index), pd.Series(np.nan, index=c.index)))
+    monkeypatch.setattr(TW, "_leader_stream", lambda c, bench, rs: (
+        pd.Series(False, index=c.index), "test_false_stream"))
+    cross_sections = []
+    original_cross = TW._leader_rs_cross_section
+    def cross(closes, benchmark):
+        cross_sections.append(set(closes))
+        return original_cross(closes, benchmark)
+    monkeypatch.setattr(TW, "_leader_rs_cross_section", cross)
+    context_calls = []
+    original_context = TW.slow_tier_cell
+    def context(*args, **kwargs):
+        context_calls.append(1)
+        return original_context(*args, **kwargs)
+    monkeypatch.setattr(TW, "slow_tier_cell", context)
+    artifact, rows = TW.compute_deck_with_candidates(root, site, cap=1, lane_floor=1)
+    assert cross_sections == [set(names)], "do not shrink the cross-sectional universe"
+    assert artifact["coverage"]["universe"] == len(names)
+    assert artifact["coverage"]["graded"] == len(names)
+    assert artifact["coverage"]["leader_rs_cross_section"] == len(names)
+    assert {r["ticker"] for r in rows} == set(active)
+    assert all("slow_tier" in r and "htf_washout" in r and "context_score" in r for r in rows)
+    assert len(context_calls) == active_count, "discarded rows must not compute explanatory context"
+    assert len(artifact["deck"]) == min(1, active_count)
+    assert len(artifact["beyond_cap"]) == max(0, active_count - 1)
+
+
+def test_standalone_untriggered_evaluation_keeps_complete_explanatory_fields(monkeypatch):
+    close = _series(_UPTREND)
+    monkeypatch.setattr(TW, "dot_signature", lambda c: pd.Series(False, index=c.index))
+    monkeypatch.setattr(TW, "pre_confluence_2d", lambda c, market: (
+        pd.Series(False, index=c.index), pd.Series(np.nan, index=c.index)))
+    monkeypatch.setattr(TW, "_leader_stream", lambda c, bench, rs: (
+        pd.Series(False, index=c.index), "test_false_stream"))
+    row = TW.evaluate("QUIET", close, benchmark=close, store=TW.DECK_STORE)
+    assert row["triggers_fired"] == []
+    assert {"slow_tier", "htf_washout", "context_score", "base", "reset"} <= set(row)

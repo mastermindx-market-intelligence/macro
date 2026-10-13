@@ -33,6 +33,12 @@ def _get_with_headers(port, path):
         return r.status, r.read(), dict(r.headers)
 
 
+def _head_with_headers(port, path):
+    req = urllib.request.Request(f"http://127.0.0.1:{port}{path}", method="HEAD")
+    with urllib.request.urlopen(req, timeout=10) as r:
+        return r.status, r.read(), dict(r.headers)
+
+
 def test_static_and_local_api_routes():
     httpd, port = _server()
     try:
@@ -58,6 +64,20 @@ def test_static_and_local_api_routes():
             raise AssertionError("expected 404")
         except urllib.error.HTTPError as e:
             assert e.code == 404
+    finally:
+        httpd.shutdown(); httpd.server_close()
+
+
+def test_head_mirrors_public_get_without_response_body():
+    httpd, port = _server()
+    try:
+        for path in ("/", "/app.js", "/styles.css", "/healthz", "/api/session"):
+            get_code, get_body, get_headers = _get_with_headers(port, path)
+            head_code, head_body, head_headers = _head_with_headers(port, path)
+            assert head_code == get_code == 200
+            assert head_body == b""
+            assert head_headers.get("Content-Type") == get_headers.get("Content-Type")
+            assert head_headers.get("Content-Length") == str(len(get_body))
     finally:
         httpd.shutdown(); httpd.server_close()
 
@@ -210,6 +230,39 @@ def test_spa_reuses_recent_reads_and_prefetches_nav_targets():
     assert 'it.addEventListener("pointerenter", () => scheduleTabPrefetch(id)' in source
     assert 'it.addEventListener("pointerleave", cancelTabPrefetch' in source
     assert 'neural_web: ["/api/neural_web/lobes"]' in source
+    # First paint and the next click must not compete with speculative multi-second
+    # server folds.  Only the tiny Support badge is deferred after paint; expensive
+    # panel prefetch remains intent-driven on the nav items above.
+    assert "function schedulePostBootAdvisories()" in source
+    advisory_body = source.split("function schedulePostBootAdvisories()", 1)[1].split(
+        "async function boot()", 1
+    )[0]
+    assert "refreshSupportNavDot()" in advisory_body
+    assert "refreshOutboxNavDot()" not in advisory_body
+    for path in (
+        "/api/intelligence_os",
+        "/api/metabolism",
+        "/api/neural_web/lobes",
+        "/api/orchestrator",
+    ):
+        assert f'api("{path}")' not in advisory_body
+    boot_body = source.split("async function boot()", 1)[1].split(
+        "(async function init()", 1
+    )[0]
+    assert "schedulePostBootAdvisories();" in boot_body
+    assert "refreshOutboxNavDot();" not in boot_body
+    assert "refreshSupportNavDot();" not in boot_body
+
+    outbox_body = source.split("RENDER.marketing_outbox = async () => {", 1)[1].split(
+        "function obxRenderLive", 1
+    )[0]
+    assert "Promise.all([" in outbox_body
+    for path in (
+        "/api/marketing/outbox",
+        "/api/marketing/rejections",
+        "/api/marketing/sentinel",
+    ):
+        assert f'api("{path}")' in outbox_body
 
 
 def _post(port, path, body, headers=None, host=None):
@@ -486,9 +539,12 @@ if __name__ == "__main__":
         fn(); print("PASS", fn.__name__)
 
 
-def test_analytics_panels_get_a_longer_response_cache_than_other_apis():
-    """The fp panels are window snapshots, not live readings — 15s was shorter than
-    the time it takes to read one, so every trip back to a tab re-folded the panel."""
+def test_expensive_snapshot_panels_get_ttls_that_match_their_real_freshness():
+    """Slow snapshot folds stay hot; genuinely live endpoints remain separately bypassed."""
+    assert _api_cache_ttl("/api/intelligence_os") == 300.0
+    assert _api_cache_ttl("/api/intelligence_os/engine") == 300.0
+    assert _api_cache_ttl("/api/metabolism") == 60.0
+    assert _api_cache_ttl("/api/metabolism/history") == 60.0
     assert _api_cache_ttl("/api/analytics/fp/visitors") == 60.0
     assert _api_cache_ttl("/api/analytics/fp/overview") == 60.0
     assert _api_cache_ttl("/api/health") == 15.0
@@ -500,3 +556,91 @@ def test_the_one_live_analytics_reading_is_still_never_cached():
     the operator watches for freshness, so the longer TTL above must not reach it."""
     assert not _cacheable_api_get("/api/analytics/fp/realtime", {})
     assert _cacheable_api_get("/api/analytics/fp/visitors", {})
+
+
+def test_content_review_representation_and_revision_routes(monkeypatch):
+    from admin import server
+    calls = []
+
+    def content(**kwargs):
+        calls.append(kwargs)
+        return {"ok": True, "chart_mode": kwargs.get("chart_mode", "inline")}
+
+    def chart(chart_id, revision):
+        if chart_id == "current" and revision == "a" * 64:
+            return {"ok": True, "chart": {"id": chart_id, "svg": "<svg/>"}}
+        return {"ok": False, "reason": "plan_changed", "error": "Refresh the plan."}
+
+    monkeypatch.setattr(server.marketing, "content", content)
+    monkeypatch.setattr(server.marketing, "content_chart", chart)
+    _clear_response_cache()
+    httpd, port = _server()
+    try:
+        _, body = _get(port, "/api/marketing/content")
+        assert json.loads(body)["chart_mode"] == "inline"
+        _, body = _get(port, "/api/marketing/content?charts=metadata")
+        assert json.loads(body)["chart_mode"] == "metadata"
+        assert calls == [{}, {"chart_mode": "metadata"}]
+        _, body = _get(port, "/api/marketing/content/chart?id=current&revision=" + "a" * 64)
+        assert json.loads(body)["ok"] is True
+        for path, status in [
+            ("/api/marketing/content?charts=bad", 400),
+            ("/api/marketing/content/chart?id=old&revision=" + "b" * 64, 409),
+        ]:
+            try:
+                _get(port, path)
+                raise AssertionError("The route should reject this read")
+            except urllib.error.HTTPError as error:
+                assert error.code == status
+    finally:
+        httpd.shutdown(); httpd.server_close(); _clear_response_cache()
+
+
+def test_content_chart_read_remains_behind_existing_session_guard(monkeypatch):
+    from admin import server
+    monkeypatch.setattr(server.settings, "auth_enabled", lambda: True)
+    monkeypatch.setattr(Handler, "_authed", lambda self: False)
+    called = []
+    monkeypatch.setattr(server.marketing, "content_chart", lambda *args: called.append(args))
+    _clear_response_cache()
+    httpd, port = _server()
+    try:
+        try:
+            _get(port, "/api/marketing/content/chart?id=private&revision=" + "a" * 64)
+            raise AssertionError("Anonymous reads must not reach the chart adapter")
+        except urllib.error.HTTPError as error:
+            assert error.code == 401
+        assert called == []
+    finally:
+        httpd.shutdown(); httpd.server_close(); _clear_response_cache()
+
+
+def test_semantic_failure_response_is_not_cached(monkeypatch):
+    from admin import server
+
+    calls = 0
+
+    def flaky_health():
+        nonlocal calls
+        calls += 1
+        if calls == 1:
+            return {"ok": False, "error": "transient upstream timeout"}
+        return {"ok": True, "healthy": True, "call": calls}
+
+    monkeypatch.setattr(server.health, "summary", flaky_health)
+    _clear_response_cache()
+    httpd, port = _server()
+    try:
+        _, first, first_headers = _get_with_headers(port, "/api/health?semantic_cache=1")
+        _, second, second_headers = _get_with_headers(port, "/api/health?semantic_cache=1")
+        _, third, third_headers = _get_with_headers(port, "/api/health?semantic_cache=1")
+        assert json.loads(first)["ok"] is False
+        assert json.loads(second)["call"] == 2
+        assert json.loads(third)["call"] == 2
+        assert calls == 2
+        assert "X-Admin-Cache" not in first_headers
+        assert second_headers["X-Admin-Cache"] == "MISS"
+        assert third_headers["X-Admin-Cache"] == "HIT"
+    finally:
+        _clear_response_cache()
+        httpd.shutdown(); httpd.server_close()

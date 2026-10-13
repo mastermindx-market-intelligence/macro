@@ -1,0 +1,22 @@
+{
+  "schema": "options.alpha_candidate_feed_publication_receipt/v1",
+  "receipt_id": "oacfr_0000000000000000000000000",
+  "feed_id": "oacf_000000000000000000000000",
+  "feed_schema": "options.alpha_candidate_feed/v2",
+  "payload_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+  "payload_bytes": 1,
+  "campaign_prefix": {
+    "path": "data/options_signal_campaign/campaigns.jsonl",
+    "records": 1,
+    "prefix_sha256": "0000000000000000000000000000000000000000000000000000000000000000"
+  },
+  "prior_receipt": null,
+  "local_durability_confirmed_at": "2026-10-03T00:00:00Z",
+  "payload_r2_confirmed_at": "2026-10-03T00:00:01Z",
+  "r2": {
+    "payload_key": "options_alpha/candidate_feed.json",
+    "payload_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+    "etag": "synthetic-contract-fixture"
+  },
+  "candidates": {}
+}

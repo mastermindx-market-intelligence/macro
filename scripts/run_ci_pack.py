@@ -79,6 +79,7 @@ from scripts.ci_scope_dependencies import (  # noqa: E402
 
 
 PACK_JOB_ID = "ci-pack"
+LEGACY_MANIFEST_PATH = ".github/ci/legacy-jobs.yml"
 DISABLED_IF = "${{ false }}"
 ALLOWED_JOB_KEYS = {
     "gate",
@@ -215,8 +216,8 @@ GLOBAL_INVALIDATORS = (
     "scripts/ci_scope_dependencies.py",
     "scripts/check_ci_trigger_closure.py",
     "scripts/audit_unrun_tests.py",
-    "config/dag.yml",
-    "config/synapse.yml",
+    "config/dag.yml",  # ci-trigger-closure: data — global-invalidator pattern, matched by name, never opened
+    "config/synapse.yml",  # ci-trigger-closure: data — global-invalidator pattern, matched by name, never opened
     "conftest.py",
     "**/conftest.py",
     "requirements*.txt",
@@ -406,10 +407,18 @@ SUPPORTED_PLAN_ROLE_EVENTS = frozenset({
 
 PACK_TARGET_SECONDS = 600
 OBSERVED_COMMAND_SECONDS = {
-    "engine-render-guards": 860,
+    "engine-render-guards": 875,
     "express-render-guards": 150,
     "attested-history-guards": 60,
-    "workflow-yaml": 438,
+    # 2026-09-25 split of workflow-yaml. On a hosted pack (data-health run
+    # 36097809562, pack 1) the "hosted-runner packing contract" step took 1,122 s
+    # and the structure step 25 s (0.84x and 0.51x their local times). The later
+    # steps never ran there because the packing step failed first, so they are
+    # local timings scaled by 0.7. workflow-yaml keeps the parse gate, the
+    # render-lane contracts and the options/sparse suites: about 90 s including
+    # its data-stack install.
+    "ci-control-plane-contracts": 1400,
+    "workflow-yaml": 90,
     "market-memory-contract": 416,
     "unrun-government-revenue-grader": 322,
     "biocatalyst-worker": 274,
@@ -1294,26 +1303,74 @@ def _job_diff_match(job: LegacyJob, changed: Iterable[str]) -> tuple[str, str] |
     return None
 
 
+def _global_invalidator_paths(
+    changed: Iterable[str],
+    *,
+    bounded_manifest_delta: bool = False,
+) -> list[str]:
+    """Return changed paths that make per-job scope unknowable.
+
+    legacy-jobs.yml remains a global invalidator by default. The only
+    exception is caller-supplied positive evidence that its semantic delta is
+    bounded to existing logical jobs. The exact path is
+    exempted before glob matching so the broader .github/ci/** rule keeps
+    every other CI-manifest/control file fail-closed.
+    """
+    return [
+        path
+        for path in changed
+        if not (
+            bounded_manifest_delta
+            and path == LEGACY_MANIFEST_PATH
+        )
+        and _matches_any(GLOBAL_INVALIDATORS, path)
+    ]
+
+
 def select_jobs(
-    jobs: Iterable[LegacyJob], changed: list[str] | None
+    jobs: Iterable[LegacyJob],
+    changed: list[str] | None,
+    *,
+    manifest_changed_job_ids: Iterable[str] | None = None,
 ) -> tuple[list[LegacyJob], str]:
-    """Pick the jobs a diff can actually affect, erring toward running more."""
+    """Pick the jobs a diff can actually affect, erring toward running more.
+
+    manifest_changed_job_ids is tri-state. None means there is no positive
+    proof that a legacy-manifest edit is bounded, so the historical full-suite
+    invalidation remains. A tuple (including empty for a semantic no-op) means
+    the higher-level planner compared exact base and candidate manifests and
+    proved the semantic delta is limited to existing logical jobs. Every job
+    named by that proof is forced into the selection.
+    """
     jobs = list(jobs)
     if changed is None:
         return jobs, "full suite: changed-file set unavailable"
-    invalidators = [path for path in changed if _matches_any(GLOBAL_INVALIDATORS, path)]
+    bounded_manifest = manifest_changed_job_ids is not None
+    invalidators = _global_invalidator_paths(
+        changed,
+        bounded_manifest_delta=bounded_manifest,
+    )
     if invalidators:
         return jobs, f"full suite: global invalidator changed ({invalidators[0]})"
+    forced_job_ids = set(manifest_changed_job_ids or ())
     scoped_jobs = [job for job in jobs if job.is_scoped]
     unowned = [
         path for path in changed
-        if not any(_job_diff_match(job, [path]) for job in scoped_jobs)
+        if not (
+            bounded_manifest
+            and path == LEGACY_MANIFEST_PATH
+        )
+        and not any(_job_diff_match(job, [path]) for job in scoped_jobs)
         and not _matches_any(PASSIVE_UNOWNED_PATTERNS, path)
     ]
     selected = [
         job
         for job in jobs
-        if not job.is_scoped or _job_diff_match(job, changed)
+        if (
+            not job.is_scoped
+            or _job_diff_match(job, changed)
+            or job.job_id in forced_job_ids
+        )
     ]
     unscoped = sum(1 for job in jobs if not job.is_scoped)
     reason = (
@@ -1325,6 +1382,14 @@ def select_jobs(
         reason += (
             f"; {len(unowned)} unowned path(s) did not widen "
             f"({unowned[0]})"
+        )
+    if bounded_manifest and LEGACY_MANIFEST_PATH in changed:
+        forced_present = sum(
+            1 for job in selected if job.job_id in forced_job_ids
+        )
+        reason += (
+            "; bounded manifest job delta "
+            f"changed {forced_present} selected job(s)"
         )
     return selected, reason
 
@@ -1338,6 +1403,121 @@ def _workflow_jobs(path: Path) -> dict[str, dict[str, Any]]:
         raise ManifestError(f"{path} must contain a jobs mapping")
     return payload["jobs"]
 
+
+def _classify_bounded_manifest_job_delta(
+    base_document: object,
+    candidate_document: object,
+) -> tuple[str, ...] | None:
+    """Return exactly the existing jobs whose manifest semantics changed.
+
+    This proves the legacy manifest edit is job-local rather than globally
+    semantic. The candidate manifest has already passed load_legacy_jobs
+    validation before this classifier is consulted. We still fail closed when
+    the YAML document shape changes, any non-jobs top-level semantic changes,
+    an incumbent job is removed/renamed/reordered, or a job moves between the
+    code/data gate planes. Those cases preserve the historical full-suite
+    invalidation. Additive jobs are admitted because candidate validation plus
+    forced selection proves their complete new execution surface.
+
+    Within one existing job, any candidate-local change is bounded to that job:
+    commands, setup dependencies, paths/scope, timeout, proof IDs and step
+    structure cannot change what an unchanged sibling job means. The changed
+    job is forced into the candidate plan regardless of its new path scope, so
+    narrowing its own declaration cannot hide the job on the PR that makes the
+    change.
+    """
+    if not isinstance(base_document, dict) or not isinstance(candidate_document, dict):
+        return None
+    if set(base_document) != set(candidate_document):
+        return None
+    for key in base_document:
+        if key != "jobs" and base_document[key] != candidate_document[key]:
+            return None
+
+    base_jobs = base_document.get("jobs")
+    candidate_jobs = candidate_document.get("jobs")
+    if not isinstance(base_jobs, dict) or not isinstance(candidate_jobs, dict):
+        return None
+    base_order = list(base_jobs)
+    candidate_order = list(candidate_jobs)
+    if any(job_id not in candidate_jobs for job_id in base_order):
+        # Deletion/rename removes a proof surface and remains full-suite.
+        return None
+    if [job_id for job_id in candidate_order if job_id in base_jobs] != base_order:
+        # Reordering existing jobs changes ordinal/partition semantics. Additive
+        # jobs may be inserted anywhere, but incumbent relative order is frozen.
+        return None
+
+    changed_job_ids: list[str] = []
+    for job_id in candidate_order:
+        after = candidate_jobs[job_id]
+        if job_id not in base_jobs:
+            # The loader validates every ordinary candidate job before this
+            # classifier. PACK_JOB_ID is a synthetic-fixture compatibility hole
+            # in that loader and is therefore never eligible for bounded add.
+            if job_id == PACK_JOB_ID or not isinstance(after, dict):
+                return None
+            changed_job_ids.append(str(job_id))
+            continue
+        before = base_jobs[job_id]
+        if before == after:
+            continue
+        if not isinstance(before, dict) or not isinstance(after, dict):
+            return None
+        # Moving a job between code and post-nightly data proof planes changes
+        # which authority workflow can execute it. Preserve the full-suite
+        # invalidator rather than treating that as an ordinary job-local edit.
+        if before.get("gate", "code") != after.get("gate", "code"):
+            return None
+        changed_job_ids.append(str(job_id))
+    return tuple(changed_job_ids)
+
+
+def _safe_manifest_changed_job_ids(
+    workflow: Path,
+    changed_from: str | None,
+    *,
+    repo_root: Path | None = None,
+) -> tuple[str, ...] | None:
+    """Prove a job-local manifest delta from exact base/candidate YAML bytes.
+
+    Any inability to bind the repository path, exact 40-hex base commit, base
+    object, UTF-8 bytes or YAML structure returns None and therefore keeps the
+    historical full-suite invalidation. The candidate itself is validated
+    separately through load_legacy_jobs before this proof is used.
+    """
+    if changed_from is None or not re.fullmatch(r"[0-9a-f]{40}", changed_from):
+        return None
+    if repo_root is None:
+        try:
+            from scripts.audit_unrun_tests import ROOT as audit_repository_root
+        except (ImportError, OSError, RuntimeError, SyntaxError):
+            return None
+        root = Path(audit_repository_root).resolve()
+    else:
+        root = repo_root.resolve()
+    try:
+        relative = workflow.resolve().relative_to(root).as_posix()
+    except (OSError, ValueError):
+        return None
+    if relative != LEGACY_MANIFEST_PATH:
+        return None
+    try:
+        base = subprocess.run(
+            ["git", "-C", str(root), "show", f"{changed_from}:{LEGACY_MANIFEST_PATH}"],
+            capture_output=True,
+            text=True,
+            check=True,
+        ).stdout
+        candidate = workflow.read_text(encoding="utf-8")
+        base_document = yaml.safe_load(base)
+        candidate_document = yaml.safe_load(candidate)
+    except (OSError, UnicodeError, subprocess.CalledProcessError, yaml.YAMLError):
+        return None
+    return _classify_bounded_manifest_job_delta(
+        base_document,
+        candidate_document,
+    )
 
 def _job_weight(job_id: str, definition: dict[str, Any]) -> int:
     """Estimate work well enough to avoid putting both giant suites together."""
@@ -1551,6 +1731,64 @@ def curated_exclusive_closure_findings(manifest_path: Path) -> dict[str, tuple[s
         if uncovered:
             misses[job_id] = uncovered
     return misses
+
+
+def packing_probe_measurements(
+    manifest_path: Path,
+    probes: Iterable[tuple[str, int, int]],
+    *,
+    max_packs: int,
+) -> list[dict[str, Any]]:
+    """One row per packing probe: what an ordinary code PR touching it selects.
+
+    This IS ``tests/test_ci_pack.py::test_exclusive_curation_narrows_ordinary_code_prs``'s
+    measurement, factored out so that test and ``scripts/check_contract_delta.py``
+    import one copy, for the reason ``curated_exclusive_closure_findings`` gives
+    above. ``probes`` is that test's ``PACKING_PROBES``: ``(changed path, max
+    selected jobs, max selected weight-seconds)``. The ceilings stay in the test,
+    beside the history that set them; this function only measures, and each row
+    carries its ceilings so ``packing_probe_breaches`` can judge it.
+
+    The verdict depends on the whole tree, not on the probe files: inference
+    walks every job's suites, so a suite that starts reading a probe file puts
+    its job on that probe without touching the manifest.
+    """
+    jobs, _note = infer_job_scopes(load_legacy_jobs(manifest_path))
+    rows: list[dict[str, Any]] = []
+    for probe, max_jobs, max_weight in probes:
+        selected, reason = select_jobs(jobs, [probe])
+        weight = sum(job.weight for job in selected)
+        rows.append({
+            "probe": probe,
+            "jobs": len(selected),
+            "weight": weight,
+            # Runners are what the incident actually spends: the pack count
+            # follows the SELECTED weight, so the weight cut is a runner cut.
+            "packs": max(1, min(12, -(-weight // PACK_TARGET_SECONDS))),
+            "max_jobs": max_jobs,
+            "max_weight": max_weight,
+            "max_packs": max_packs,
+            "job_ids": sorted(job.job_id for job in selected),
+            "reason": reason,
+        })
+    return rows
+
+
+PACKING_PROBE_AXES = (("jobs", "max_jobs"), ("weight", "max_weight"), ("packs", "max_packs"))
+
+
+def packing_probe_breaches(rows: Iterable[dict[str, Any]]) -> list[tuple[str, str, int, int]]:
+    """``(probe, axis, measured, ceiling)`` for every probe axis over its ceiling.
+
+    The packing contract's verdict over ``packing_probe_measurements`` rows. An
+    empty list is a pass. Shared by the test and ``check_contract_delta.py``.
+    """
+    return [
+        (row["probe"], axis, row[axis], row[ceiling])
+        for row in rows
+        for axis, ceiling in PACKING_PROBE_AXES
+        if row[axis] > row[ceiling]
+    ]
 
 
 def partition_jobs(jobs: Iterable[LegacyJob], pack_count: int) -> list[list[LegacyJob]]:
@@ -1811,6 +2049,7 @@ def build_plan(
     changed_from: str | None,
     scope_mode: str,
     pack_count: int = 12,
+    manifest_changed_job_ids: Iterable[str] | None = None,
     workflow_run_id: str | None = None,
     workflow: str | None = None,
     event: str | None = None,
@@ -1830,7 +2069,11 @@ def build_plan(
     # one is not merely useless — it spends a minute deriving ownership that
     # select_jobs is about to discard.
     invalidated = bool(
-        changed and any(_matches_any(GLOBAL_INVALIDATORS, path) for path in changed)
+        changed
+        and _global_invalidator_paths(
+            changed,
+            bounded_manifest_delta=manifest_changed_job_ids is not None,
+        )
     )
     scope_summary = "scope inference not needed"
     if (
@@ -1841,7 +2084,11 @@ def build_plan(
     ):
         jobs, scope_summary = infer_job_scopes(jobs)
 
-    eligible, reason = select_jobs(jobs, changed)
+    eligible, reason = select_jobs(
+        jobs,
+        changed,
+        manifest_changed_job_ids=manifest_changed_job_ids,
+    )
     predicted_job_ids = tuple(job.job_id for job in eligible)
     if scope_mode == "off" and changed_from:
         eligible = jobs
@@ -2030,12 +2277,19 @@ def plan_from_workflow(
         changed = resolve_changed_files(
             changed_from, explicit_file=changed_files_file
         )
+        manifest_changed_job_ids: tuple[str, ...] | None = None
+        if changed and LEGACY_MANIFEST_PATH in changed:
+            manifest_changed_job_ids = _safe_manifest_changed_job_ids(
+                workflow,
+                changed_from,
+            )
         return build_plan(
             legacy,
             changed,
             changed_from=changed_from,
             scope_mode=scope_mode,
             pack_count=pack_count,
+            manifest_changed_job_ids=manifest_changed_job_ids,
             workflow_run_id=workflow_run_id,
             workflow=workflow_name,
             event=event,
@@ -2927,6 +3181,69 @@ def _current_commit_sha(root: Path) -> str:
     return value
 
 
+_EXACT_TESTED_TREE_DEPTHS = (2, 8, 32, 128, 512, 2048)
+
+
+def _tested_tree_ancestry_ready(
+    root: Path,
+    git_env: Mapping[str, str],
+    tested_tree_sha: str,
+) -> bool:
+    """Return whether the tested tree exposes all ancestry current consumers need.
+
+    Pull-request runs execute a synthetic two-parent merge. The six current
+    fetch-depth-0 consumers need the merge parents to be visible and need a real
+    merge base between those parents so PR commit trailers and diff-scoped
+    guards can walk to the branch point. They do not need unrelated refs/tags or
+    history older than that merge base. Main/workflow-dispatch runs use a normal
+    zero/one-parent commit, where making the immediate parent visible is enough:
+    each consumer explicitly fetches its canonical base before its own guard.
+    """
+
+    raw = _git_cmd(root, git_env, "cat-file", "-p", tested_tree_sha)
+    if raw.returncode != 0:
+        return False
+    raw_parents = [
+        line.split()[1].lower()
+        for line in raw.stdout.splitlines()
+        if line.startswith("parent ") and len(line.split()) == 2
+    ]
+    if len(raw_parents) > 2 or any(
+        not re.fullmatch(r"[0-9a-f]{40}", parent) for parent in raw_parents
+    ):
+        return False
+
+    visible = _git_cmd(
+        root,
+        git_env,
+        "rev-list",
+        "--parents",
+        "-n",
+        "1",
+        tested_tree_sha,
+    )
+    if visible.returncode != 0:
+        return False
+    parts = visible.stdout.strip().lower().split()
+    if not parts or parts[0] != tested_tree_sha.lower():
+        return False
+    if parts[1:] != raw_parents:
+        return False
+
+    if len(raw_parents) < 2:
+        return True
+
+    merge_base = _git_cmd(
+        root,
+        git_env,
+        "merge-base",
+        raw_parents[0],
+        raw_parents[1],
+    )
+    value = merge_base.stdout.strip().lower()
+    return merge_base.returncode == 0 and bool(re.fullmatch(r"[0-9a-f]{40}", value))
+
+
 def _prepare_provided_actions(
     job: LegacyJob,
     *,
@@ -2937,10 +3254,17 @@ def _prepare_provided_actions(
 
     setup-python 3.12 and setup-node 20 are supplied by the pack job itself.
     The ordinary checkout is represented by the exact-tree reset. A manifest
-    checkout requesting fetch-depth 0 additionally receives every advertised
-    branch and tag with complete history, matching checkout@v4's closed input
-    contract. Exact-base replay points ``origin`` at its isolated base-only
-    remote, so this same operation can never substitute moving current main.
+    checkout requesting fetch-depth 0 first deepens only the authoritative
+    tested tree, in bounded steps, until the synthetic merge parents have a
+    usable merge base. That is the actual history contract of every current
+    fetch-depth-0 consumer: each fetches its canonical base itself, none reads
+    tags/unrelated remote refs, and self-mod-fence needs the PR-commit ancestry
+    only through the branch point.
+
+    If exact-tree ancestry cannot be established within the bounded ladder, or
+    any exact fetch fails, preserve the established all-branches -> main-only
+    -> 30-day recovery ladder. Exact-base replay points ``origin`` at its
+    isolated base-only remote, so the same fail-closed recovery remains intact.
     """
     contracts = _job_action_contract(job)
     if not any(
@@ -2955,21 +3279,128 @@ def _prepare_provided_actions(
         raise RuntimeError(
             f"job {job.job_id!r} requires fetch-depth 0 without an exact tested tree"
         )
-    subprocess.run(
-        [
-            "git",
-            "fetch",
-            "--no-recurse-submodules",
-            "--prune",
-            "--tags",
-            "--depth=2147483647",
-            "origin",
-            "+refs/heads/*:refs/remotes/origin/*",
-        ],
-        cwd=root,
-        env=_trusted_git_environment(root),
-        check=True,
-    )
+
+    git_env = _trusted_git_environment(root)
+    exact_fetch_failed = False
+    for index, depth in enumerate(_EXACT_TESTED_TREE_DEPTHS):
+        try:
+            subprocess.run(
+                [
+                    "git",
+                    "fetch",
+                    "--no-recurse-submodules",
+                    "--no-tags",
+                    f"--depth={depth}",
+                    "origin",
+                    tested_tree_sha,
+                ],
+                cwd=root,
+                env=git_env,
+                check=True,
+            )
+        except subprocess.CalledProcessError:
+            exact_fetch_failed = True
+            print(
+                "::warning title=run-ci-pack::exact tested-tree ancestry fetch failed "
+                f"at depth {depth}; retrying legacy all-branches deepen",
+                flush=True,
+            )
+            break
+
+        if _tested_tree_ancestry_ready(root, git_env, tested_tree_sha):
+            return
+
+        if index + 1 < len(_EXACT_TESTED_TREE_DEPTHS):
+            print(
+                "::notice title=run-ci-pack::exact tested-tree ancestry incomplete "
+                f"at depth {depth}; deepening to "
+                f"{_EXACT_TESTED_TREE_DEPTHS[index + 1]}",
+                flush=True,
+            )
+
+    if not exact_fetch_failed:
+        print(
+            "::warning title=run-ci-pack::exact tested-tree ancestry remained "
+            f"incomplete through depth {_EXACT_TESTED_TREE_DEPTHS[-1]}; "
+            "retrying legacy all-branches deepen",
+            flush=True,
+        )
+
+    try:
+        subprocess.run(
+            [
+                "git",
+                "fetch",
+                "--no-recurse-submodules",
+                "--prune",
+                "--tags",
+                "--depth=2147483647",
+                "origin",
+                "+refs/heads/*:refs/remotes/origin/*",
+            ],
+            cwd=root,
+            env=git_env,
+            check=True,
+        )
+    except subprocess.CalledProcessError:
+        # One broken sibling ref must not fail every fetch-depth-0 job. On
+        # 2026-09-21 an all-branches deepen died fleet-wide with "fatal:
+        # missing blob object ..." / "error: remote did not send all
+        # necessary objects" — a ref whose objects the server could not
+        # serve — and every design-governance run after it red as
+        # "infrastructure unknown". The checks behind this contract diff
+        # against main and the PR's own refs (already present in the
+        # workspace), so full main history is the part that must succeed.
+        print(
+            "::warning title=run-ci-pack::all-branches deepen failed; "
+            "retrying with refs/heads/main only",
+            flush=True,
+        )
+        try:
+            subprocess.run(
+                [
+                    "git",
+                    "fetch",
+                    "--no-recurse-submodules",
+                    "--tags",
+                    "--depth=2147483647",
+                    "origin",
+                    "+refs/heads/main:refs/remotes/origin/main",
+                ],
+                cwd=root,
+                env=git_env,
+                check=True,
+            )
+        except subprocess.CalledProcessError:
+            # 2026-09-21 16:08Z: even the main-only full deepen died the same
+            # way ("fatal: missing blob object 9cd3bb31..."), while the
+            # all-branches fetch had SUCCEEDED on sibling runs minutes
+            # earlier — the failures are intermittent server-side pack
+            # assembly on these enormous full-history fetches, not one
+            # broken ref. The checks behind this contract only ever diff
+            # against a merge base that is hours-to-days old, so a bounded
+            # window is always sufficient in practice and is orders of
+            # magnitude smaller to assemble. Tags are dropped on this rung:
+            # none of the gated checks read tags, and a tag pinning
+            # unreachable history would re-break the fetch.
+            print(
+                "::warning title=run-ci-pack::main-only deepen failed; "
+                "retrying refs/heads/main with --shallow-since=30 days",
+                flush=True,
+            )
+            subprocess.run(
+                [
+                    "git",
+                    "fetch",
+                    "--no-recurse-submodules",
+                    "--shallow-since=30 days ago",
+                    "origin",
+                    "+refs/heads/main:refs/remotes/origin/main",
+                ],
+                cwd=root,
+                env=git_env,
+                check=True,
+            )
 
 
 def _run_job(
@@ -3703,7 +4134,9 @@ def _hydrate_exact_base_objects(root: Path, sha: str, *, deadline: float) -> Non
     one's object database through ``objects/info/alternates``. Alternates share
     OBJECTS, never the partial-clone extension or the promisor remote that can
     go and get the omitted ones — so on a ``blob:none`` runner checkout
-    (ci.yml gives every pack ``filter: blob:none``) the borrowing repository
+    (every hosted pack's shape until 2026-09-23; see
+    DSC:CI-PROMISOR-OBJECT-FETCH-TRUNCATION for why the hosted packs now fetch
+    the full tree, which makes this a no-op there) the borrowing repository
     cannot lazily fetch, and ``git checkout`` dies with "unable to read sha1
     file" on precisely the blobs the PR changed. Hydrating here, in the
     checkout that DOES hold the promisor remote and its credentials, is what

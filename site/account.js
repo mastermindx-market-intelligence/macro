@@ -22,16 +22,74 @@
    Preference sync: when signed in, theme + language changes are saved to the
    account (Supabase user_metadata) and re-applied on load, so a user's look
    follows them to any device/site. Hooks the EXISTING theme.js toggles via the
-   `themechange` / `langchange` document events. */
+   `themechange` / `langchange` document events.
+
+   Single owner (site-20 S1 follow-up): once this panel is mounted and holds a
+   loaded, signed-in account it is the ONLY writer of the shared `theme` and
+   `lang` atomics. theme.js asks `MMAccount.claimsPref(key)` before its own
+   `updateUser` save and skips a claimed key; it keeps the browser-only
+   `theme_auto` flag, which this panel never writes. One writer per key means an
+   acked POST here IS the server copy, and a failed save stays visible as
+   `failed` instead of being masked by a second, silent writer. */
 (function () {
   'use strict';
 
-  var API = (window.MM_API || '').replace(/\/+$/, '');   // '' => same-origin (app)
+  // Same-origin on every mastermind-x.com host — theme.js's /api/me idiom. The app. host
+  // has no /api/account routes and sends no CORS headers, so resolving MM_API there left
+  // every control on this panel calling a 404 from another origin.
+  var API = /(^|\.)mastermind-x\.com$/i.test(location.hostname || '') ? '' : (window.MM_API || '').replace(/\/+$/, '');
   var SUPA = normSupa(window.SUPABASE_CFG);              // may be filled in from the API
   var SDK_URL = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js';
 
   var state = { acct: null, loaded: false };
   var _sb = null, _sbLoad = null, _hydrating = false, _prefTimer = null, _mounted = false, _macro = false;
+  // Continuity fences (site-20 S1). _loadGen orders account reads; _wgen invalidates every
+  // queued/in-flight preference write when the signed-in account changes.
+  var _loadGen = 0, _wgen = 0, _soAllBusy = false;
+  var _prefPending = {}, _prefOwner = '', _prefFlight = null, _prefState = {};
+  var _alertQueued = {}, _alertInflight = {};
+  // theme.js applies the signed-in account's saved theme/lang on SIGNED_IN (setTheme/setLang
+  // inside the 'mdx-auth' dispatch). Those are not user edits, so they must not echo a save.
+  var _authApplying = false;
+  // Pending-pref owner key. /api/account carries the stable Supabase user id, so the
+  // fence keys on it; the email is the fallback only when the id is absent.
+  function _acctKey(a) {
+    if (!(a && a.authenticated)) return '';
+    if (a.id) return 'id:' + String(a.id);
+    return 'u:' + String(a.email || '').toLowerCase();
+  }
+  // The key a SIGNED_IN session user resolves to, in the same basis as the loaded
+  // account: by id when the account read carried one, else by email.
+  function _sessionKey(user, acct) {
+    if (!user) return '';
+    if (acct && acct.id) return user.id ? 'id:' + String(user.id) : '';
+    return user.email ? 'u:' + String(user.email).toLowerCase() : '';
+  }
+  // The server answers ok:true when only the email_prefs mirror stored a lang
+  // (metadata:false). /api/account reads user_metadata back, so that is not a saved pref.
+  function _saveOk(res) {
+    return !!(res && res.ok && res.data && res.data.ok === true && res.data.metadata !== false);
+  }
+  function _dropPendingWrites() {
+    _wgen++; _prefPending = {}; _prefOwner = ''; _prefFlight = null;
+    clearTimeout(_prefTimer); _prefTimer = null;
+    for (var k in _alertPrefTimers) clearTimeout(_alertPrefTimers[k]);
+    _alertPrefTimers = {}; _alertQueued = {}; _alertInflight = {};
+  }
+  function _onAuthTransition(user, evt) {
+    if (evt !== 'SIGNED_IN' && evt !== 'SIGNED_OUT') return;
+    if (evt === 'SIGNED_IN' && !(user && (user.id || user.email))) return;
+    var next = (evt === 'SIGNED_IN') ? _sessionKey(user, state.acct) : '';
+    if (state.loaded && !state.unavail && _acctKey(state.acct) === next) return;
+    _dropPendingWrites(); _loadGen++;
+    state.acct = null; state.loaded = false; state.unavail = false;
+    if (panel && panel.classList.contains('open')) { render(); load(); } else render();
+  }
+  function _wireAuthTransitions() {
+    if (window.MDXAuth && typeof window.MDXAuth.onChange === 'function') {
+      try { window.MDXAuth.onChange(_onAuthTransition); } catch (e) {}
+    }
+  }
   var _mode = null;                 // 'standalone' | 'embed'
   var _root = null;                 // the element whose innerHTML we render into
   var trigger = null, scrim = null, panel = null;
@@ -91,16 +149,41 @@
     new_pw: ['New password', '新密码'], confirm_pw: ['Confirm password', '确认密码'],
     prefs_synced: ['Theme & language are saved to your account — they follow you wherever you sign in.',
       '主题与语言已保存到账户，登录任意设备都会自动同步。'],
-    notifications: ['Notifications', '通知'],
-    notif_email: ['Email alerts', '邮件提醒'], notif_product: ['Product updates', '产品更新'],
+    al_group: ['Alert emails', '提醒邮件'],
+    al_master: ['Email me when something I hold changes materially',
+      '我持有的资产出现重要变化时，发邮件通知我'],
+    al_off: ['Alert emails are off. Nothing will be sent.', '提醒邮件已关闭，不会发送任何邮件。'],
+    al_unknown: ["We can't reach your settings right now, so we can't show what's saved. Nothing has changed.",
+      '暂时无法读取你的设置，因此无法显示已保存的内容。当前没有任何改动。'],
+    al_what: ['What to send', '发送哪些提醒'],
+    al_cat_hold: ['A position I hold moves on real news', '我持有的仓位因真实消息出现变动'],
+    al_cat_thes: ['A market view I’m watching starts or ends', '我关注的市场观点开始或结束'],
+    al_none: ["No alert types chosen yet — you won't get any alert emails.",
+      '尚未选择提醒类型 — 你不会收到提醒邮件。'],
+    al_tz: ['Your time zone', '你的时区'],
+    al_tz_placeholder: ['Not set yet', '尚未设置'],
+    al_tz_unset: ['Not saved yet — we are using your browser’s time zone until you pick one.',
+      '尚未保存 — 在你选择之前，暂时使用你浏览器的时区。'],
+    al_qh: ['Quiet hours', '免打扰时段'],
+    al_qh_hint: ['Nothing is sent between these times. Alerts wait and are sent when the window ends.',
+      '此时段内不发送。提醒会等待，时段结束后再发送。'],
+    al_qh_s: ['Quiet hours start', '免打扰开始时间'],
+    al_qh_e: ['Quiet hours end', '免打扰结束时间'],
+    al_clear: ['Clear', '清除'],
+    al_saved: ['Saved', '已保存'],
     security: ['Security', '安全'], login_method: ['Login method', '登录方式'],
     member_since: ['Member since', '注册于'], last_signin: ['Last sign-in', '上次登录'],
     user_id: ['User ID', '用户 ID'], copy: ['Copy', '复制'], copied: ['Copied', '已复制'],
     sign_out: ['Sign out', '退出登录'], sign_out_all: ['Sign out everywhere', '退出所有设备'],
-    danger: ['Danger zone', '危险区域'], delete_acct: ['Delete account', '删除账户'],
-    delete_warn: ['This permanently deletes your account and data.', '这将永久删除你的账户及数据。'],
+    danger: ['Danger zone', '危险区域'], delete_acct: ['Request account deletion', '申请删除账户'],
+    delete_warn: ['This files a request. Our team then removes your account and its data; nothing is removed the moment you send it.',
+      '这会提交一个删除申请。之后由我们的团队删除你的账户及数据；发送申请的当下不会立即删除。'],
     delete_type: ['Type your email to confirm', '输入邮箱以确认'],
-    delete_go: ['Delete permanently', '永久删除'],
+    delete_go: ['Send request', '发送申请'],
+    del_ok: ['Your request is recorded. Reference {code}. Nothing is removed yet; our team completes it and you keep access until then.',
+      '你的请求已记录，参考编号 {code}。目前尚未删除任何内容；之后由我们的团队处理，处理完成前你仍可正常使用。'],
+    del_open: ['You already have a deletion request open. Reference {code}.',
+      '你已有一个进行中的删除申请，参考编号 {code}。'],
     signin_title: ['Sign in to Mastermind', '登录 Mastermind'],
     signin_sub: ['Sync your watchlist, preferences & account across every Mastermind site.',
       '在所有 Mastermind 站点同步你的自选、偏好与账户。'],
@@ -118,9 +201,16 @@
     guest_title: ['Access session', '访问会话'],
     guest_sub: ['You’re in with the site access password. Sign in with an account to manage email, password & preferences.',
       '你正通过站点访问密码登录。使用账户登录以管理邮箱、密码与偏好。'],
+    acct_unavail_t: ['Can’t load your account right now', '暂时无法加载你的账户'],
+    acct_unavail: ['This is a connection problem, not a sign-out. Nothing has changed — try again in a moment.',
+      '这是连接问题，并非已退出登录。没有任何改动，请稍后重试。'],
+    retry: ['Try again', '重试'],
+    so_all_unknown: ['We couldn’t confirm that your other devices were signed out. You’re still signed in here — try again later.',
+      '无法确认其他设备已退出登录。你在此设备上仍处于登录状态，请稍后重试。'],
     close: ['Close', '关闭'], loading: ['Loading…', '加载中…']
   };
   function T(k) { var v = STR[k] || ['', '']; return v[lang() === 'zh' ? 1 : 0]; }
+  function errText(r) { var d = r.data || {}; return (lang() === 'zh' && d.error_zh) ? d.error_zh : (d.error || T('err')); }
 
   // ---------------------------------------------------- Supabase JS ----------
   function hasPersisted() {
@@ -178,45 +268,115 @@
       return _sb;
     });
   }
-  function getToken() {
-    // macro rides the shared cookie (credentials:include) — never load the SDK there
-    // (jsdelivr is GFW-blocked; the app broker reads the cookie directly).
-    if (_macro || !SUPA || !hasPersisted()) return Promise.resolve(null);
-    return sbClient().then(function (sb) { return sb ? sb.auth.getSession() : null; })
-      .then(function (r) { var s = r && r.data && r.data.session; return s ? s.access_token : null; })
-      .catch(function () { return null; });
+  async function getToken() {
+    // macro: MDXAuth.client is getSupabaseClient (theme.js:1902), which ALWAYS
+    // returns a Promise (theme.js:1819-1837). Calling .getSession() on that
+    // Promise throws. Await the client, then getSession — the same path
+    // theme.js:3709-3711 uses: getSupabaseClient().then(sb => sb.auth.getSession()).
+    if (_macro) {
+      try {
+        if (!(window.MDXAuth && window.MDXAuth.client)) return null;
+        const sb = await window.MDXAuth.client();
+        const { data } = await sb.auth.getSession();
+        return data?.session?.access_token ?? null;
+      } catch (e) {
+        return null;
+      }
+    }
+    // standalone: use the SDK-backed client.
+    if (!SUPA || !hasPersisted()) return null;
+    try {
+      var standalone = await sbClient();
+      if (!standalone) return null;
+      var result = await standalone.auth.getSession();
+      var session = result && result.data && result.data.session;
+      return session ? session.access_token : null;
+    } catch (e) {
+      return null;
+    }
   }
 
   // ------------------------------------------------------------- API ---------
+  // Every panel request is bounded. 30 s is deliberately conservative: a pref save can
+  // make up to three sequential Supabase admin calls server-side (6 s each, see
+  // app/account_prefs.py) and the browser's own default is far longer. A request that
+  // outlives it is aborted and takes the SAME path as a transport failure
+  // ({ok:false, status:0}): the account read shows the unavailable state (S1-03), a
+  // pending pref/alert write is marked failed and reverted (S1-01/S1-02), and sign-out
+  // everywhere reports "not confirmed" (S1-04). Without AbortController the request
+  // stays unbounded, exactly as before.
+  var API_TIMEOUT_MS = 30000;
   function api(path, opts) {
     opts = opts || {};
+    var ctl = (typeof AbortController === 'function') ? new AbortController() : null;
+    var timer = null;
     return getToken().then(function (token) {
       var headers = {};
       if (opts.body) headers['Content-Type'] = 'application/json';
+      // A null token is lawful on www (cookie carries identity): still send the
+      // request with credentials:'include' and no Authorization header.
       if (token) headers['Authorization'] = 'Bearer ' + token;
+      if (ctl) timer = setTimeout(function () { ctl.abort(); }, API_TIMEOUT_MS);
       return fetch(API + path, {
         method: opts.method || 'GET', headers: headers, credentials: 'include',
-        body: opts.body ? JSON.stringify(opts.body) : undefined
+        body: opts.body ? JSON.stringify(opts.body) : undefined,
+        signal: ctl ? ctl.signal : undefined
       });
     }).then(function (r) {
       return r.json().catch(function () { return {}; }).then(function (j) {
         return { ok: r.ok, status: r.status, data: j };
       });
-    }).catch(function () { return { ok: false, status: 0, data: {} }; });
+    }).catch(function () { return { ok: false, status: 0, data: {} }; })
+      .then(function (res) { clearTimeout(timer); return res; });
+  }
+  // An account read is authoritative only as a 2xx JSON object carrying a boolean
+  // `authenticated`, or as a 401 (a real anonymous answer). 5xx, network failure and
+  // malformed envelopes are UNAVAILABLE — never a guest or account snapshot (S1-03).
+  function _classifyAccount(res) {
+    if (!res) return null;
+    var d = res.data;
+    if (res.ok && d && typeof d === 'object' && typeof d.authenticated === 'boolean') return d;
+    if (res.status === 401) { var g = (d && typeof d === 'object') ? d : {}; g.authenticated = false; return g; }
+    return null;
   }
   function load() {
+    var gen = ++_loadGen;
     return api('/api/account').then(function (res) {
-      var a = res.data || {};
-      if (!SUPA && a.supabase) SUPA = normSupa(a.supabase);
-      if (!a.authenticated && SUPA && hasPersisted()) {
-        return api('/api/account').then(function (r2) { finishLoad(r2.data || a); });
+      if (gen !== _loadGen) return;
+      var a = _classifyAccount(res);
+      if (a && !SUPA && a.supabase) SUPA = normSupa(a.supabase);
+      if (a && !a.authenticated && SUPA && hasPersisted()) {
+        return api('/api/account').then(function (r2) {
+          if (gen !== _loadGen) return;
+          _settleLoad(_classifyAccount(r2));
+        });
       }
-      finishLoad(a);
+      _settleLoad(a);
     });
+  }
+  function _settleLoad(a) {
+    if (!a) { state.acct = null; state.loaded = true; state.unavail = true; render(); return; }
+    state.unavail = false;
+    if (_prefOwner && _prefOwner !== _acctKey(a)) _dropPendingWrites();
+    finishLoad(a);
   }
   function finishLoad(a) {
     state.acct = a; state.loaded = true;
     applyPrefs(a);
+    if (a && a.authenticated) {
+      api('/api/account/prefs').then(function (res) {
+        if (state.acct !== a) return;
+        if (res && res.ok && res.data) {
+          a.alert_prefs = res.data.prefs || {};
+          a.alert_prefs_unset = res.data.unset || [];
+        } else {
+          a.alert_prefs = {}; a.alert_prefs_unset = ['alert_email_optin'];
+        }
+        if (_mode === 'standalone') paintTrigger();
+        render();
+      });
+      return;
+    }
     if (_mode === 'standalone') paintTrigger();
     render();
   }
@@ -234,13 +394,100 @@
     } catch (e) {}
     _hydrating = false;
   }
+  // S1-01: theme/lang edits coalesce into ONE pending body owned by the signed-in account,
+  // sent single-flight; each field is marked queued -> sent -> acked|failed on the root.
+  function _setPrefState(key, s) { _prefState[key] = s; if (_root) _root.setAttribute('data-pref-' + key, s); }
   function persistPref(key, val) {
-    if (_hydrating || !state.acct || !state.acct.authenticated) return;
+    if (_hydrating || _authApplying || !state.acct || !state.acct.authenticated) return;
+    var owner = _acctKey(state.acct);
+    if (_prefOwner !== owner) { _prefPending = {}; _prefOwner = owner; }
+    _prefPending[key] = val; _setPrefState(key, 'queued');
     clearTimeout(_prefTimer);
-    _prefTimer = setTimeout(function () {
-      var body = {}; body[key] = val;
-      api('/api/account/prefs', { method: 'POST', body: body });
-    }, 500);
+    _prefTimer = setTimeout(function () { _prefTimer = null; _flushPrefs(); }, 500);
+  }
+  function _flushPrefs() {
+    if (_prefFlight) return;
+    var keys = Object.keys(_prefPending); if (!keys.length) return;
+    if (_prefOwner !== _acctKey(state.acct)) { _prefPending = {}; return; }
+    var body = _prefPending; _prefPending = {};
+    var flight = { wg: _wgen, body: body }; _prefFlight = flight;
+    keys.forEach(function (k) { _setPrefState(k, 'sent'); });
+    api('/api/account/prefs', { method: 'POST', body: body }).then(function (res) {
+      if (_prefFlight === flight) _prefFlight = null;
+      if (flight.wg !== _wgen) return;
+      var ok = _saveOk(res);
+      keys.forEach(function (k) { if (!(k in _prefPending)) _setPrefState(k, ok ? 'acked' : 'failed'); });
+      if (Object.keys(_prefPending).length && !_prefTimer) _flushPrefs();
+    });
+  }
+  var _alertPrefTimers = {};
+  // S1-02: each alert field keeps an immutable submitted value, one request in flight per
+  // field, and a write generation. Only the newest intent may drive the UI callbacks; an
+  // ack commits its OWN value to the account state; an account change makes old work inert.
+  function persistAlertPref(key, val, onOk, onErr) {
+    if (_hydrating || !state.acct || !state.acct.authenticated) return;
+    _alertQueued[key] = { val: JSON.parse(JSON.stringify(val)), owner: _acctKey(state.acct), wgen: _wgen, onOk: onOk, onErr: onErr };
+    clearTimeout(_alertPrefTimers[key]);
+    _alertPrefTimers[key] = setTimeout(function () { delete _alertPrefTimers[key]; _sendAlertPref(key); }, 500);
+  }
+  function _sendAlertPref(key) {
+    var job = _alertQueued[key];
+    if (!job || _alertInflight[key]) return;
+    delete _alertQueued[key];
+    if (job.wgen !== _wgen || job.owner !== _acctKey(state.acct)) return;
+    _alertInflight[key] = job;
+    var body = {}; body[key] = job.val;
+    api('/api/account/prefs', { method: 'POST', body: body }).then(function (res) {
+      if (_alertInflight[key] === job) delete _alertInflight[key];
+      if (job.wgen !== _wgen) return;
+      var newer = !!_alertQueued[key];
+      if (_saveOk(res)) {
+        _ackAlertPref(key, job.val);
+        if (!newer) { _syncAlertControl(key, job.val); if (job.onOk) job.onOk(res); }
+      }
+      else if (!newer && job.onErr) job.onErr(res);
+      if (_alertQueued[key] && !_alertPrefTimers[key]) _sendAlertPref(key);
+    });
+  }
+  function _ackAlertPref(key, val) {
+    var a = state.acct; if (!a) return;
+    var p = a.alert_prefs = a.alert_prefs || {};
+    p[key] = (key === 'quiet_hours' && val === 'off') ? null : val;
+    var u = a.alert_prefs_unset || []; var i = u.indexOf(key); if (i > -1) u.splice(i, 1);
+    a.alert_prefs_unset = u;
+    if (key === 'tz') { var sel = E('mmacc-tz'); if (sel) sel.setAttribute('data-prev', val); }
+    if (key === 'quiet_hours') {
+      var qh = p.quiet_hours, s = E('mmacc-qh-start'), e2 = E('mmacc-qh-end');
+      if (s) s.setAttribute('data-prev', (qh && qh.start) || '');
+      if (e2) e2.setAttribute('data-prev', (qh && qh.end) || '');
+      var g = document.querySelector('.mmacc-alerts'); if (g) g.setAttribute('data-quiet', qh ? 'true' : 'false');
+    }
+  }
+  function _ackedAlerts() { return (state.acct && state.acct.alert_prefs) || {}; }
+  // Point the CURRENT control (a close/reopen re-renders it) at a value: the newest acked
+  // intent after a save, or the last acked value after a failed one.
+  function _syncAlertControl(key, val) {
+    if (key === 'tz') { var sel = E('mmacc-tz'); if (sel && val) sel.value = val; return; }
+    if (key === 'quiet_hours') {
+      var on = !!(val && val !== 'off'), s = E('mmacc-qh-start'), e2 = E('mmacc-qh-end');
+      if (s) s.value = on ? val.start : '';
+      if (e2) e2.value = on ? val.end : '';
+      return;
+    }
+    if (key === 'alert_email_optin') {
+      var b = document.querySelector('[data-act="alert-optin"]');
+      if (b) b.setAttribute('aria-checked', val ? 'true' : 'false');
+      var g = document.querySelector('.mmacc-alerts');
+      if (g) g.setAttribute('data-on', val ? 'true' : 'false');
+      var d = E('mmacc-alert-detail');
+      if (d) d.classList.toggle('open', !!val);
+      return;
+    }
+    if (key === 'alert_categories') {
+      document.querySelectorAll('[data-act="alert-cat"]').forEach(function (c) {
+        c.setAttribute('aria-checked', (val || []).indexOf(c.getAttribute('data-cat')) !== -1 ? 'true' : 'false');
+      });
+    }
   }
 
   // -------------------------------------------------- section builders -------
@@ -312,15 +559,113 @@
         '<div class="mmacc-hint">' + esc(T('prefs_synced')) + '</div>' +
       '</div>';
   }
-  function notifRow(label) {
-    return '<div class="mmacc-row mmacc-row-toggle"><span class="mmacc-k">' + esc(label) + '</span>' +
-      '<span class="mmacc-switch" aria-disabled="true"></span></div>';
+  var TZ_SHORTLIST = [
+    'Asia/Hong_Kong',
+    'Asia/Shanghai',
+    'Asia/Singapore',
+    'Asia/Tokyo',
+    'Asia/Seoul',
+    'Asia/Kolkata',
+    'Asia/Dubai',
+    'Europe/London',
+    'Europe/Paris',
+    'Europe/Berlin',
+    'Europe/Zurich',
+    'Europe/Moscow',
+    'America/New_York',
+    'America/Chicago',
+    'America/Denver',
+    'America/Los_Angeles',
+    'America/Sao_Paulo',
+    'America/Toronto',
+    'Australia/Sydney',
+    'Australia/Perth',
+    'Pacific/Auckland',
+    'Africa/Johannesburg',
+    'Asia/Taipei',
+    'UTC'
+  ];
+  function _tzLabel(z) {
+    if (!z) return '';
+    if (z === 'UTC') return 'UTC';
+    var parts = String(z).split('/');
+    return parts[parts.length - 1].replace(/_/g, ' ');
   }
-  function notifGroupHTML() {
-    return '<div class="mmacc-group">' +
-        '<div class="mmacc-glabel">' + esc(T('notifications')) +
-          ' <span class="mmacc-soon mmacc-soon-sm">' + esc(T('soon')) + '</span></div>' +
-        notifRow(T('notif_email')) + notifRow(T('notif_product')) +
+  function _tzOptions(current) {
+    var zones = (window.Intl && Intl.supportedValuesOf) ? Intl.supportedValuesOf('timeZone') : TZ_SHORTLIST.slice();
+    var browserTz = 'UTC';
+    try { browserTz = Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC'; } catch (e) {}
+    if (zones.indexOf(browserTz) === -1) zones = [browserTz].concat(zones);
+    var sel = current || browserTz;
+    return zones.map(function (z) {
+      return '<option value="' + esc(z) + '"' + (z === sel ? ' selected' : '') + '>' + esc(_tzLabel(z)) + '</option>';
+    }).join('');
+  }
+  function _applySavedTz(tz) {
+    if (!tz) return;
+    var sel = E('mmacc-tz');
+    if (sel) {
+      var found = false;
+      for (var i = 0; i < sel.options.length; i++) {
+        if (sel.options[i].value === tz) { found = true; break; }
+      }
+      if (!found) {
+        var opt = document.createElement('option');
+        opt.value = tz;
+        opt.textContent = _tzLabel(tz);
+        sel.appendChild(opt);
+      }
+      sel.value = tz;
+      sel.setAttribute('data-prev', tz);
+    }
+    var hint = document.querySelector('.mmacc-hint-tz');
+    if (hint) hint.remove();
+  }
+  function alertCatRow(cat, label, checked) {
+    return '<div class="mmacc-row mmacc-row-toggle"><span class="mmacc-k">' + esc(label) + '</span>' +
+      '<button type="button" class="mmacc-switch mmacc-switch-sm" role="switch" ' +
+        'aria-checked="' + (checked ? 'true' : 'false') + '" aria-label="' + esc(label) + '" ' +
+        'data-act="alert-cat" data-cat="' + cat + '"></button></div>';
+  }
+  function alertPrefsGroupHTML(p, unset) {
+    p = p || {}; unset = unset || [];
+    var known = unset.indexOf('alert_email_optin') === -1;
+    var on = !!p.alert_email_optin;
+    var cats = p.alert_categories || [];
+    var qh = p.quiet_hours || null;
+    var tzKnown = unset.indexOf('tz') === -1;
+    var tz = tzKnown ? p.tz : null;
+    var state = known ? 'known' : 'unknown';
+    return '<div class="mmacc-group mmacc-alerts" data-on="' + (on ? 'true' : 'false') + '" ' +
+        'data-state="' + state + '" data-quiet="' + (qh ? 'true' : 'false') + '">' +
+        '<div class="mmacc-glabel">' + esc(T('al_group')) + '</div>' +
+        '<div class="mmacc-row mmacc-row-toggle">' +
+          '<span class="mmacc-k mmacc-k-lead">' + esc(T('al_master')) + '</span>' +
+          '<button type="button" class="mmacc-switch" role="switch" aria-checked="' + (on ? 'true' : 'false') + '" ' +
+            'aria-label="' + esc(T('al_master')) + '" data-act="alert-optin"></button>' +
+        '</div>' +
+        (!known ? '<div class="mmacc-hint mmacc-hint-unknown">' + esc(T('al_unknown')) + '</div>' :
+          (!on ? '<div class="mmacc-hint mmacc-hint-off">' + esc(T('al_off')) + '</div>' : '')) +
+        '<div class="mmacc-field mmacc-alert-detail' + (on ? ' open' : '') + '" id="mmacc-alert-detail">' +
+          '<div class="mmacc-sublabel">' + esc(T('al_what')) + '</div>' +
+          alertCatRow('holdings_material_change', T('al_cat_hold'), cats.indexOf('holdings_material_change') !== -1) +
+          alertCatRow('thesis_window', T('al_cat_thes'), cats.indexOf('thesis_window') !== -1) +
+          (cats.length === 0 ? '<div class="mmacc-hint mmacc-hint-none">' + esc(T('al_none')) + '</div>' : '') +
+          '<div class="mmacc-sublabel">' + esc(T('al_tz')) + '</div>' +
+          '<select class="mmacc-input mmacc-select" id="mmacc-tz" data-act="alert-tz" data-prev="' + esc(tz || '') + '" aria-label="' + esc(T('al_tz')) + '">' + _tzOptions(tz) + '</select>' +
+          (!tzKnown ? '<div class="mmacc-hint mmacc-hint-tz">' + esc(T('al_tz_unset')) + '</div>' : '') +
+          '<div class="mmacc-sublabel">' + esc(T('al_qh')) + '</div>' +
+          '<div class="mmacc-timepair">' +
+            '<input type="time" class="mmacc-input mmacc-time" id="mmacc-qh-start" aria-label="' + esc(T('al_qh_s')) + '" ' +
+              'data-act="alert-qh" data-prev="' + esc((qh && qh.start) || '') + '" value="' + esc((qh && qh.start) || '') + '">' +
+            '<span class="mmacc-timesep">\u2192</span>' +
+            '<input type="time" class="mmacc-input mmacc-time" id="mmacc-qh-end" aria-label="' + esc(T('al_qh_e')) + '" ' +
+              'data-act="alert-qh" data-prev="' + esc((qh && qh.end) || '') + '" value="' + esc((qh && qh.end) || '') + '">' +
+            '<button type="button" class="mmacc-mini" data-act="alert-qh-clear">' + esc(T('al_clear')) + '</button>' +
+          '</div>' +
+          '<div class="mmacc-hint">' + esc(T('al_qh_hint')) + '</div>' +
+          '<div class="mmacc-msg" id="mmacc-alert-msg"></div>' +
+        '</div>' +
       '</div>';
   }
   function infoRow(k, v) {
@@ -337,6 +682,7 @@
         infoRow(T('last_signin'), esc(fmtDate(a.last_sign_in_at))) +
         '<div class="mmacc-row"><span class="mmacc-k">' + esc(T('user_id')) + '</span>' +
           '<button class="mmacc-mini" data-act="copy-id">' + esc(T('copy')) + '</button></div>' +
+        '<div class="mmacc-msg" id="mmacc-signout-msg" role="status"></div>' +
         '<div class="mmacc-btnrow mmacc-btnrow-wide">' +
           '<button class="mmacc-btn mmacc-ghost" data-act="signout">' + esc(T('sign_out')) + '</button>' +
           '<button class="mmacc-btn mmacc-ghost" data-act="signout-all">' + esc(T('sign_out_all')) + '</button>' +
@@ -377,7 +723,8 @@
       '</div>';
   }
   function bodySignedIn(a) {
-    return planCardHTML(a) + emailGroupHTML(a) + pwGroupHTML() + notifGroupHTML() +
+    var ap = (a && a.alert_prefs) || {}; var unset = (a && a.alert_prefs_unset) || [];
+    return planCardHTML(a) + emailGroupHTML(a) + pwGroupHTML() + alertPrefsGroupHTML(ap, unset) +
       securityGroupHTML(a) + dangerGroupHTML();
   }
   function bodySignedOut(a) {
@@ -407,11 +754,22 @@
     return '<div class="mmacc-head mmacc-head-out">' +
         '<div class="mmacc-idbox"><div class="mmacc-name">' + esc(T('account')) + '</div></div>' +
         '<button class="mmacc-x" data-act="close" aria-label="' + esc(T('close')) + '">✕</button>' +
-      '</div><div class="mmacc-body">' + bodySignedOut(a) + '</div>';
+      '</div><div class="mmacc-body">' + (state.unavail ? unavailHTML() : bodySignedOut(a)) + '</div>';
   }
+  // S1-03: the account could not be read. Not a sign-out; offer one explicit retry.
+  function unavailHTML() {
+    return '<div class="mmacc-group" data-acct-state="unavailable" role="status">' +
+        '<div class="mmacc-signin-title">' + esc(T('acct_unavail_t')) + '</div>' +
+        '<div class="mmacc-signin-sub">' + esc(T('acct_unavail')) + '</div>' +
+        '<div class="mmacc-btnrow"><button type="button" class="mmacc-btn mmacc-ghost" data-act="retry-load">' +
+          esc(T('retry')) + '</button></div>' +
+      '</div>';
+  }
+  function onRetryLoad() { state.loaded = false; state.unavail = false; render(); load(); }
   function embedHTML(a) {
     a = a || {};
     if (!state.loaded) return '<div class="mmacc-loading">' + esc(T('loading')) + '</div>';
+    if (state.unavail) return '<div class="mmacc-embed">' + unavailHTML() + '</div>';
     if (a.authenticated) return '<div class="mmacc-embed">' + profileStripHTML(a, false) + bodySignedIn(a) + '</div>';
     return '<div class="mmacc-embed">' + bodySignedOut(a) + '</div>';
   }
@@ -440,7 +798,7 @@
       if (r.ok && r.data.ok) {
         setMsg('mmacc-email-msg', r.data.confirmation_required ? T('email_confirm') : T('email_ok'), 'ok');
         setTimeout(load, 500);
-      } else setMsg('mmacc-email-msg', r.data.error || T('err'), 'bad');
+      } else setMsg('mmacc-email-msg', errText(r), 'bad');
     });
   }
   function onSavePw(btn) {
@@ -454,7 +812,7 @@
         setMsg('mmacc-pw-msg', T('pw_ok'), 'ok');
         E('mmacc-pw-in').value = ''; E('mmacc-pw2-in').value = '';
         setTimeout(function () { showField('mmacc-pw-field', false); }, 1100);
-      } else setMsg('mmacc-pw-msg', r.data.error || T('err'), 'bad');
+      } else setMsg('mmacc-pw-msg', errText(r), 'bad');
     });
   }
   function onDelete(btn) {
@@ -462,8 +820,16 @@
     setMsg('mmacc-del-msg', ''); busy(btn, true, T('saving'));
     api('/api/account/delete', { method: 'POST', body: { confirm: v } }).then(function (r) {
       busy(btn, false);
-      if (r.ok && r.data.ok) doSignOut();
-      else setMsg('mmacc-del-msg', r.data.error || T('err'), 'bad');
+      if (r.ok && r.data.ok) {
+        // The control FILES a request; it deletes nothing, so it must not sign the reader
+        // out. Report the reference they will quote to support, then fold the field away
+        // exactly the way onSavePw does.
+        var key = r.data.already_open ? 'del_open' : 'del_ok';
+        var code = (r.data.receipt && r.data.receipt.receipt_code) || '';
+        setMsg('mmacc-del-msg', T(key).replace('{code}', code), 'ok');
+        var ci = E('mmacc-del-in'); if (ci) ci.value = '';
+        setTimeout(function () { showField('mmacc-del-field', false); }, 1100);
+      } else setMsg('mmacc-del-msg', errText(r), 'bad');
     });
   }
   function onSendLink(btn) {
@@ -503,6 +869,7 @@
     } catch (e) {}
   }
   function doSignOut() {
+    _dropPendingWrites();
     if (_macro && window.MDXAuth && window.MDXAuth.signOut) {
       try { window.MDXAuth.signOut(); } catch (e) {}   // let the gear's auth own sign-out
       close(); return;
@@ -515,13 +882,104 @@
     if (SUPA && hasPersisted()) sbClient().then(function (sb) { return sb.auth.signOut(); }).then(fin, fin);
     else fin();
   }
+  // S1-04: only an authoritative {ok:true} reply is a global sign-out. A server error, a
+  // transport failure or an unreadable reply leaves this device signed in and says the
+  // other devices are unconfirmed; there is no automatic retry.
   function doSignOutAll() {
-    api('/api/account/signout-everywhere', { method: 'POST' }).then(doSignOut, doSignOut);
+    if (_soAllBusy) return;
+    _soAllBusy = true;
+    api('/api/account/signout-everywhere', { method: 'POST' }).then(function (r) {
+      _soAllBusy = false;
+      if (r.ok && r.data && r.data.ok === true) { doSignOut(); return; }
+      if (r.data && r.data.error) { setMsg('mmacc-signout-msg', errText(r), 'bad'); return; }
+      setMsg('mmacc-signout-msg', T('so_all_unknown'), 'bad');
+    }, function () { _soAllBusy = false; setMsg('mmacc-signout-msg', T('so_all_unknown'), 'bad'); });
+  }
+  function _alertErr(res) {
+    if (res && res.status === 0) { _alertGroupState(false); setMsg('mmacc-alert-msg', T('al_unknown'), 'bad'); return; }
+    var detail = res && res.data && res.data.detail;
+    if (detail && typeof detail === 'object') {
+      setMsg('mmacc-alert-msg', (lang() === 'zh' ? detail.zh : detail.en) || T('err'), 'bad');
+    } else {
+      setMsg('mmacc-alert-msg', T('err'), 'bad');
+    }
+  }
+  function _alertGroupState(known) {
+    var g = document.querySelector('.mmacc-alerts'); if (!g) return;
+    g.setAttribute('data-state', known ? 'known' : 'unknown');
+  }
+  function onAlertOptin(btn) {
+    var was = btn.getAttribute('aria-checked') === 'true';
+    var next = !was;
+    btn.setAttribute('aria-checked', next ? 'true' : 'false');
+    var g = btn.closest('.mmacc-alerts');
+    if (g) g.setAttribute('data-on', next ? 'true' : 'false');
+    var detail = E('mmacc-alert-detail');
+    if (detail) detail.classList.toggle('open', next);
+    persistAlertPref('alert_email_optin', next, function (res) {
+      var prefs = (res && res.data && res.data.prefs) || {};
+      if (next && prefs.tz && !_alertQueued.tz && !_alertInflight.tz) { _ackAlertPref('tz', prefs.tz); _applySavedTz(prefs.tz); }
+      setMsg('mmacc-alert-msg', T('al_saved'), 'ok');
+    }, function (res) {
+      _syncAlertControl('alert_email_optin', !!_ackedAlerts().alert_email_optin);
+      _alertErr(res);
+    });
+  }
+  function onAlertCat(btn) {
+    var was = btn.getAttribute('aria-checked') === 'true';
+    var next = !was;
+    btn.setAttribute('aria-checked', next ? 'true' : 'false');
+    var cats = [];
+    document.querySelectorAll('[data-act="alert-cat"]').forEach(function (b) {
+      if (b.getAttribute('aria-checked') === 'true') cats.push(b.getAttribute('data-cat'));
+    });
+    persistAlertPref('alert_categories', cats, function () {
+      setMsg('mmacc-alert-msg', T('al_saved'), 'ok');
+    }, function (res) {
+      _syncAlertControl('alert_categories', _ackedAlerts().alert_categories || []);
+      _alertErr(res);
+    });
+  }
+  function onAlertTz(sel) {
+    persistAlertPref('tz', sel.value, function () {
+      setMsg('mmacc-alert-msg', T('al_saved'), 'ok');
+    }, function (res) {
+      var cur = E('mmacc-tz'), pv = cur && cur.getAttribute('data-prev');
+      if (cur && pv) cur.value = pv;
+      _alertErr(res);
+    });
+  }
+  function _sendQuietHours() {
+    var s = E('mmacc-qh-start'), e2 = E('mmacc-qh-end');
+    var sv = (s && s.value) || '', ev = (e2 && e2.value) || '';
+    var payload = (!sv || !ev || sv === ev) ? 'off' : { start: sv, end: ev };
+    persistAlertPref('quiet_hours', payload, function () {
+      setMsg('mmacc-alert-msg', T('al_saved'), 'ok');
+    }, function (res) {
+      var s1 = E('mmacc-qh-start'), e1 = E('mmacc-qh-end');
+      if (s1) s1.value = s1.getAttribute('data-prev') || '';
+      if (e1) e1.value = e1.getAttribute('data-prev') || '';
+      _alertErr(res);
+    });
+  }
+  function onAlertQhClear() {
+    var s = E('mmacc-qh-start'), e2 = E('mmacc-qh-end');
+    if (s) s.value = ''; if (e2) e2.value = '';
+    _sendQuietHours();
+  }
+  function onChange(e) {
+    var t = e.target; var act = t.getAttribute && t.getAttribute('data-act'); if (!act) return;
+    if (act === 'alert-tz') return onAlertTz(t);
+    if (act === 'alert-qh') return _sendQuietHours();
   }
   function onClick(e) {
     var b = e.target.closest('[data-act]'); if (!b) return;
     switch (b.getAttribute('data-act')) {
       case 'close': return close();
+      case 'retry-load': return onRetryLoad();
+      case 'alert-optin': return onAlertOptin(b);
+      case 'alert-cat': return onAlertCat(b);
+      case 'alert-qh-clear': return onAlertQhClear();
       case 'edit-email': showField('mmacc-email-field'); var ei = E('mmacc-email-in'); if (ei) ei.focus(); return;
       case 'cancel-email': showField('mmacc-email-field', false); setMsg('mmacc-email-msg', ''); return;
       case 'save-email': return onSaveEmail(b);
@@ -555,7 +1013,7 @@
     }
   }
   function open() {
-    if (!state.loaded) { render(); load(); } else render();
+    if (!state.loaded || state.unavail) { state.loaded = false; state.unavail = false; render(); load(); } else render();
     scrim.classList.add('open'); panel.classList.add('open');
     document.addEventListener('keydown', onEsc);
   }
@@ -573,6 +1031,17 @@
     document.head.appendChild(st);
   }
   function wirePrefSync() {
+    // window is the target of 'mdx-auth', so this capture listener runs before every bubble
+    // listener there, theme.js's server-pref apply included, whatever the load order. The
+    // apply is synchronous inside the dispatch; a microtask lifts the fence after it.
+    if (window.addEventListener) {
+      window.addEventListener('mdx-auth', function (e) {
+        var d = e && e.detail;
+        if (!(d && d.event === 'SIGNED_IN' && d.user)) return;
+        _authApplying = true;
+        Promise.resolve().then(function () { _authApplying = false; });
+      }, true);
+    }
     document.addEventListener('themechange', function (e) { persistPref('theme', e.detail || curTheme()); });
     document.addEventListener('langchange', function (e) {
       persistPref('lang', e.detail || lang());
@@ -595,6 +1064,7 @@
     panel = document.createElement('div'); panel.className = 'mmacc';
     panel.setAttribute('role', 'dialog'); panel.setAttribute('aria-label', T('account'));
     panel.addEventListener('click', onClick);
+    panel.addEventListener('change', onChange, true);
     document.body.appendChild(scrim); document.body.appendChild(panel);
     _root = panel;
     wirePrefSync();
@@ -608,6 +1078,7 @@
     el.className = (el.className || '') + ' mmacc-embed-host';
     el.removeAttribute('style');
     el.addEventListener('click', onClick);
+    el.addEventListener('change', onChange, true);
     // this section is live now — drop the "coming soon" badge theme.js rendered
     var soon = document.querySelector('#settings-modal .settings-sec-t .settings-soon');
     if (soon) soon.style.display = 'none';
@@ -638,13 +1109,26 @@
     panel = document.createElement('div'); panel.className = 'mmacc';
     panel.setAttribute('role', 'dialog'); panel.setAttribute('aria-label', T('account'));
     panel.addEventListener('click', onClick);
+    panel.addEventListener('change', onChange, true);
     document.body.appendChild(scrim); document.body.appendChild(panel);
     _root = panel;
     wirePrefSync();
+    _wireAuthTransitions();
+  }
+  // Single-owner handshake for the shared theme/lang atomics (see the header). True
+  // exactly when persistPref would queue a write for `key`: the panel is mounted, the
+  // account read settled as signed-in, and no hydration or auth-apply fence is up.
+  // theme.js consults this before its own updateUser save and leaves those keys here.
+  function claimsPref(key) {
+    if (!_mounted) return false;
+    if (key !== 'theme' && key !== 'lang') return false;
+    if (_hydrating || _authApplying) return false;
+    return !!(state.loaded && !state.unavail && state.acct && state.acct.authenticated);
   }
   window.MMAccount = {
     embed: function (el) { try { mountEmbed(el); } catch (e) {} },   // legacy (old settings modal)
-    open: function () { try { if (!_mounted) mountMacro(); open(); } catch (e) {} }
+    open: function () { try { if (!_mounted) mountMacro(); open(); } catch (e) {} },
+    claimsPref: function (key) { try { return claimsPref(key); } catch (e) { return false; } }
   };
 
   function boot() {
@@ -737,10 +1221,11 @@
   '.mmacc-msg{font-size:11.5px;line-height:1.4;max-height:0;overflow:hidden;transition:max-height .2s ease;margin:0}' +
   '.mmacc-msg.show{max-height:60px;margin:0 0 8px}' +
   '.mmacc-msg.ok{color:var(--ink-ok, var(--ok,#3da564))}' +
-  '.mmacc-msg.bad{color:var(--ink-down, var(--down,#e06464))}' +
+  '.mmacc-msg.bad{color:var(--ink-act, var(--act))}' +
   '.mmacc-signin-title{font-size:15px;font-weight:800;color:var(--text,var(--ink))}' +
   '.mmacc-signin-sub{font-size:12px;color:var(--muted,var(--ink-3));line-height:1.5;margin:5px 0 12px}' +
   '.mmacc-loading{padding:26px;text-align:center;color:var(--muted,var(--ink-3))}' +
+  '@media (max-width:560px){.mmacc-group[data-acct-state="unavailable"] .mmacc-btnrow{justify-content:flex-start}}' +
   '@media (max-width:560px){.mmacc{top:auto;bottom:0;left:0;right:0;width:100%;max-width:none;max-height:88vh;border-radius:18px 18px 0 0;transform-origin:bottom center;transform:translateY(16px)}.mmacc.open{transform:none}.mmacc-scrim.open{background:color-mix(in srgb,var(--bg,#0f1115) 52%,transparent)}}' +
   '@media (prefers-reduced-motion:reduce){.mmacc{transition:opacity .15s ease,visibility 0s linear .15s;transform:none}.mmacc.open{transform:none;transition:opacity .15s ease}.mmacc-field{transition:none}}';
 
@@ -764,7 +1249,7 @@
     var s = document.createElement('script');
     // nav_market.js owns the runtime menu composition, so it must never inherit
     // a stale year-cached response after a navigation release.
-    s.src = pfx + 'nav_market.js?v=20260814-sf-inter-font-upgrade';
+    s.src = pfx + 'nav_market.js?v=20261011-account-identity';
     s.async = true;
     (document.head || document.documentElement).appendChild(s);
   })();

@@ -29,6 +29,7 @@ from engine.us_candidate_episode import (
     SUPPRESSION_REASONS,
     SUPPRESSION_SCHEMA,
     EpisodeContractError,
+    _event_order as _core_event_order,
     _load_partitioned_events as _core_load_event_partitions,
     _load_partitioned_suppressions as _core_load_suppression_partitions,
     _ordinary_source_key,
@@ -458,7 +459,8 @@ def _load_and_build(*, repo_root: Path, recorded_at: str, correction_path: Path 
 
 
 def _event_order(row: Mapping[str, object]):
-    return str(row["known_at"]), str(row["source_system"]), str(row["source_event_id"])
+    """Reuse the canonical B1 parsed-instant ledger ordering at the durable writer boundary."""
+    return _core_event_order(row)
 
 
 def _jsonl_bytes(rows: Sequence[Mapping[str, object]]) -> bytes:

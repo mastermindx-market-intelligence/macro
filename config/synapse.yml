@@ -798,10 +798,17 @@ artifacts:
     weights: none
     scored_path_surfaces: []
     consumers:
+      - engine/neuralweb/rotation_risk_context.py
+      - engine/neuralweb/world_state.py
+      - engine/neuralweb/brain_gateway.py
+      - engine/neuralweb/mastermind_context.py
+      - scripts/build_world_state.py
       - scripts/build_site.py
-    external_consumers: []
+    external_consumers:
+      - mastermind:brain/neural_web_context.py
+      - mastermind-terminal:ingest/pull_macro_risk.py
     qual_ladder_ref: null
-    notes: "Grey Deer GD-2 settled Risk Envelope. weights=none by construction: the composer SELECTS and CARRIES source-native states (market-state-latest verdict/score verbatim, leadership_crack state, the radar read on market-state) and mints NO new weighted number — the hazard stage is a max over an ordinal, never a mean, and a stale or missing source may only shrink confidence or null the stage, never cast a calm vote. Birth authority is DESCRIPTIVE ONLY (Sol ruling 2026-08-19): every authority boolean is hard-false, policy_actions_require_individual_authority is true, hazard_stage is restricted to NONE|FRAGILE|TRANSMITTING|BREAKDOWN|null (ARMED/TRIGGERING are anticipatory and reserved for promoted experts), and zero policies exist. engine/risk_state.py's frozen legacy fused score is excluded by contract and by regression test. Live provisional lane (site/live/risk_envelope.json) is GD-3, not yet built."
+    notes: "Grey Deer GD-2 settled Risk Envelope. weights=none by construction: the composer SELECTS and CARRIES source-native states (market-state-latest verdict/score verbatim, leadership_crack state, the radar read on market-state) and mints NO new weighted number — the hazard stage is a max over an ordinal, never a mean, and a stale or missing source may only shrink confidence or null the stage, never cast a calm vote. Birth authority is DESCRIPTIVE ONLY (Sol ruling 2026-08-19): every authority boolean is hard-false, policy_actions_require_individual_authority is true, hazard_stage is restricted to NONE|FRAGILE|TRANSMITTING|BREAKDOWN|null (ARMED/TRIGGERING are anticipatory and reserved for promoted experts), and zero policies exist. engine/risk_state.py's frozen legacy fused score is excluded by contract and by regression test. The live provisional lane is owned by scripts/build_live_risk_envelope.py at site/live/risk_envelope.json. Early rotation and lineage are descriptive context only; all capital authority remains separate."
 
   cycle-ontology-falsifiers:
     path: data/cycle_ontology/falsifiers.json
@@ -1927,11 +1934,14 @@ artifacts:
     weights: none
     scored_path_surfaces: []
     consumers:
+      - scripts/build_risk_envelope.py
+      - scripts/build_live_risk_envelope.py
       - engine/market_state_audit.py
       - engine/market_state_tune.py
       - scripts/build_site.py
     external_consumers: []
     notes: "Producer: engine/market_state_audit.py append, idempotent by as-of."
+    # Risk Envelope carries only qualified first-writer logged_at receipts for recorded transitions; current snapshots remain separately qualified and are not reconstructed onset evidence.
 
   vol-regime-gate:
     path: data/vol_regime/gate.json
@@ -6834,6 +6844,40 @@ artifacts:
       Current coverage: 1516 tickers total, 1508/2589 sp1500_pit_membership (58.2%).
       GICS entries are authoritative; sic_mapped entries are derived from SEC SIC codes.
       FIREWALL: horizon_role=context. No scored_path_surfaces. Display-only context artifact.
+
+  # --- Trend Persistence Wave C-0: S&P 1500 point-in-time sector substrate ---
+  sp1500-pit-sectors:
+    path: data/breadth/sp1500_pit_sectors.parquet
+    format: parquet
+    producer: collectors/sp1500_pit_sectors.py
+    known_extra_writers: []
+    owner_program: engine-fix
+    cadence: on-demand
+    storage: git
+    asof_field: null
+    freshness_sla_hours: 8760
+    schema: implicit
+    tier: display
+    horizon_role: context
+    weights: none
+    scored_path_surfaces: []
+    consumers: []
+    external_consumers: []
+    notes: >
+      Trend Persistence Wave C precondition: one row per ticker ever in
+      data/breadth/sp1500_pit_membership.parquet (current members + leavers) with the best
+      available 11-sector label and a basis column (gics_current / sic_current / sic_derived /
+      unlabeled). AS-OF-NOW CAVEAT: no channel supplies the membership-era GICS sector; every
+      label is the current GICS map or the filer's CURRENT SEC SIC mapped to GICS-style sectors,
+      and era_correct is False for every row. LEAVERS ARE LABELED THROUGH THE FILER CIK BRIDGE
+      ONLY (label_join='cik'; SIC mapped text-first, numeric range fallback): ticker-string
+      channels are never consulted for a leaver because its ticker may now belong to a different
+      listing (ticker reuse, e.g. ECHO), and a leaver's CIK is bridged only when dead_name_cik
+      resolved it by edgar_fts or seed (company_tickers/polygon return the CURRENT holder and
+      leave the leaver unlabeled). label_join='ticker' appears only on current members.
+      Coverage receipt:
+      data/breadth/_sp1500_pit_sectors_coverage.json. FIREWALL: horizon_role=context, no
+      scored_path_surfaces, display-only substrate.
 
   # --- Long-Hold label panel (W1 PR-E) ---
   long-hold-labels:
@@ -12414,6 +12458,7 @@ artifacts:
       - engine/neuralweb/ask_brain.py
       - scripts/build_stock_library.py
       - scripts/build_macro_snapshot.py
+      - engine/credit_momentum.py
     notes: >
       Macro transmission/decomposition snapshot. Breakeven decomp (real rate vs
       inflation compensation), transmission chains (policy rate → credit → activity),
@@ -14145,6 +14190,40 @@ artifacts:
       nuclear_power / copper_steel_electrify / glp1_obesity /
       diagnostics_lifesci / defense_aerospace / medical_devices.
 
+  neuralweb-critical-minerals-supply:
+    path: data/neuralweb/critical_minerals_supply.json
+    format: json
+    producer: engine/critical_minerals_supply.py
+    known_extra_writers: []
+    owner_program: mo-b-f09-10-usgs-mcs
+    cadence: collect
+    storage: git
+    asof_field: as_of
+    freshness_sla_hours: 2160
+    schema: critical_minerals_supply.v1
+    tier: display
+    horizon_role: context
+    weights: none
+    scored_path_surfaces: []
+    consumers:
+      - engine/critical_minerals_supply.py
+    external_consumers: []
+    notes: >
+      MO-B F09-10 (MO-DELTA-029) raw-layer critical-minerals supply context
+      from USGS Mineral Commodity Summaries (ScienceBase NMIC, public-domain
+      US Government work, keyless). Schema: {schema, as_of, generated_at,
+      authority, honesty_header, edition, commodities, coverage_stats,
+      source_note}. Per commodity: US net-import reliance, leading-producer
+      share (T7 Leading_source_precent_world), top-3 import-source share
+      (sum of the three largest named-country shares from Fig3, sorted by
+      (-pct, name), excluding "Other"/"其他" rows), China share of world
+      production (China ÷ World total from Commodities_Data, same period).
+      No score, rank, composite or concentration index. Authority: all
+      may_* false; is_context_only=true. FENCE: never fold into fused_obs_z.
+      Nightly collect_tail steps are if:-gated on vars.USGS_MCS_ENABLED.
+      Honest null with fresh as_of when the parquet is absent. Off render
+      path. Display/context only.
+
   site-trade-flows:
     path: site/basketdata/trade_flows.json
     format: json
@@ -15779,6 +15858,8 @@ artifacts:
     weights: none
     scored_path_surfaces: []
     consumers:
+      - scripts/build_risk_envelope.py
+      - scripts/build_live_risk_envelope.py
       - engine/neuralweb/world_state.py
     external_consumers: []
     notes: >
@@ -15798,6 +15879,7 @@ artifacts:
       inline); coldstart replay seeds data/rotation_events/coldstart_seed.jsonl
       (EXCLUDED from the graded census — see ROTATION_UNIVERSE_EXTENSION_PREREG).
       Display-only; authority.may_rank/gate/size/escalate=false.
+    # early_context.as_of is the actual price session; legacy as_of retains confirmed-event semantics. No early-state ledger, severity vote, or capital authority is added.
 
   data-rotation-events-ledger:
     path: data/rotation_events/events.jsonl
@@ -18819,7 +18901,7 @@ artifacts:
     path: data/theme_graph/edges.parquet
     format: parquet
     producer: scripts/build_theme_graph.py
-    known_extra_writers: []
+    known_extra_writers: [scripts/correct_gmi_identity_lineage.py]
     owner_program: gmi-theme-graph
     cadence: daily-engine
     storage: git
@@ -18850,12 +18932,19 @@ artifacts:
       where a series begins, not when a company joined a theme. The three exposure axes
       and their display enums are RESERVED-NULL until W2 measures them. Contradictory
       evidence coexists as rows; nothing nets. Ordering is recency/id only (G0.11).
+      Known extra writer: scripts/correct_gmi_identity_lineage.py (V4-D2B3 one-shot,
+      idempotent identity-lineage correction, contract
+      research/prophet_v4/d2/D2B3_FROZEN_CONTRACT_2026-08-21.md) APPENDS
+      belief-lineage rows — identity_break truncations and entity_type_conflict
+      annulments of open MEMBER_OF edges — and their evidence rows through
+      engine.theme_graph.store with allow_backfill=True; it never rewrites an
+      existing row.
 
   theme-graph-evidence:
     path: data/theme_graph/evidence.parquet
     format: parquet
     producer: scripts/build_theme_graph.py
-    known_extra_writers: []
+    known_extra_writers: [scripts/correct_gmi_identity_lineage.py]
     owner_program: gmi-theme-graph
     cadence: daily-engine
     storage: git
@@ -18883,6 +18972,11 @@ artifacts:
       land quietly. Licensing tags travel with the receipt: house-authored curation is
       internal/display/redistribution true, vendor-derived (同花顺) rows keep
       redistribution false. Corroborating and contradictory receipts are separate rows.
+      Known extra writer: scripts/correct_gmi_identity_lineage.py (V4-D2B3 one-shot,
+      idempotent identity-lineage correction, contract
+      research/prophet_v4/d2/D2B3_FROZEN_CONTRACT_2026-08-21.md) appends the evidence
+      rows citing those corrections through engine.theme_graph.store with
+      allow_backfill=True; it never rewrites an existing row.
 
   theme-graph-capability:
     path: data/theme_graph/capability.parquet

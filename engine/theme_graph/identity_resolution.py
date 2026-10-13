@@ -193,6 +193,11 @@ def load_master_inputs(data_dir: Path | None = None) -> MasterInputs | None:
             "security_id": str(r["security_id"]),
             "valid_from": _as_bound(r.get("valid_from")),
             "valid_to": _as_bound(r.get("valid_to")),
+            # Preserve native evidence fields when loading the complete table;
+            # this does not enable date-only native lookups in the graph.
+            "known_at": r.get("known_at"),
+            "evidence_sha256": r.get("evidence_sha256"),
+            "binding_sha256": r.get("binding_sha256"),
         })
     table = VendorAliasTable.from_records(records)
 
@@ -354,7 +359,7 @@ _CURRENT_CATALOG_VENDORS = frozenset({"store", "yahoo_fetch"})
 
 def _historical_alias_resolve(table: VendorAliasTable, vendor: str, vendor_symbol: str,
                               on: date) -> str | None:
-    if vendor in _CURRENT_CATALOG_VENDORS:
+    if vendor in _CURRENT_CATALOG_VENDORS or vendor == "polygon":
         return None  # a current-catalog space was never asked a historical question
     for r in table.rows:
         if r.vendor != vendor or r.vendor_symbol != vendor_symbol:
@@ -468,7 +473,7 @@ def _resolve_node_row(*, node_id: str, resolution_asof: str, inputs: MasterInput
                     {"master_inception_code": symbol, "security_id": exact["security_id"]},
                     sort_keys=True)}
 
-    # rule 6 — alias: query EVERY vendor present in the table, collect the SET of
+    # rule 6 — alias: query each eligible date-only vendor, collect the SET of
     # distinct security_ids. Never a ticker-equality fallback — a symbol absent from
     # every vendor space here falls straight through to rule 7. HISTORICAL mode (an
     # explicit asof from resolve_graph_node_identity) restricts evidence to DATED alias
@@ -477,6 +482,10 @@ def _resolve_node_row(*, node_id: str, resolution_asof: str, inputs: MasterInput
     asof_date = _as_date(resolution_asof)
     matches: dict[str, set[str]] = {}
     for vendor in sorted(inputs.vendors):
+        # This graph has only a date, not the native source/consumer receipt
+        # cutoff contract. Keep timestamp-gated reference observations ineligible.
+        if vendor == "polygon":
+            continue
         if historical:
             sec = _historical_alias_resolve(inputs.alias_table, vendor, symbol, asof_date)
         else:
@@ -519,11 +528,11 @@ def _resolve_node_row(*, node_id: str, resolution_asof: str, inputs: MasterInput
     # amendment); the two-clock law makes that a materially different "no" from a
     # symbol absent everywhere.
     refusal_reason = "no security-master or vendor-alias row resolves this symbol"
-    receipts: dict = {"checked_vendors": sorted(inputs.vendors)}
+    receipts: dict = {"checked_vendors": sorted(v for v in inputs.vendors if v != "polygon")}
     if historical:
         open_hit = any(
             inputs.alias_table.resolve(vendor, symbol, on=asof_date) is not None
-            for vendor in inputs.vendors)
+            for vendor in inputs.vendors if vendor != "polygon")
         if open_hit:
             refusal_reason = (
                 "no dated alias evidence at asof; current-catalog rows exist but are "

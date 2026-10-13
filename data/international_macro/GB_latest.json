@@ -7,21 +7,21 @@
   "flag": "🇬🇧",
   "scope_en": "United Kingdom national economy; FTSE 100 and FTSE 250 are market context.",
   "scope_zh": "英国全国经济；富时100与富时250仅作市场背景。",
-  "asof": "2026-09-17",
-  "built": "2026-09-18 07:10 UTC",
+  "asof": "2026-10-08",
+  "built": "2026-10-09 14:40 UTC",
   "regime": {
     "quad": "Q3",
     "name": "Stagflation",
-    "growth_score": 0.2,
-    "inflation_score": 0.5,
-    "confidence": 0.35,
+    "growth_score": -0.2,
+    "inflation_score": -0.5,
+    "confidence": 0.3,
     "liquidity": "unknown",
-    "recession_score": 5.0,
+    "recession_score": 17.0,
     "recession_band": "low",
     "data_limited": false
   },
   "decision": {
-    "score": 44,
+    "score": 43,
     "state": "defensive",
     "state_en": "Defensive",
     "state_zh": "防御",
@@ -39,32 +39,17 @@
     ],
     "parts": {
       "base": 50.0,
-      "growth": 4.4,
-      "inflation": -5.0,
-      "recession": -0.9,
+      "growth": -4.4,
+      "inflation": -0.0,
+      "recession": -3.06,
       "liquidity": 0.0,
-      "risk_state": -4.0
+      "risk_state": 0.0
     },
     "method_en": "50 + growth impulse − inflation pressure − recession stress + liquidity + current calibrated-risk state. Descriptive, not a forecast.",
     "method_zh": "50 + 增长脉冲 − 通胀压力 − 衰退压力 + 流动性 + 当前校准风险状态。仅作描述，不是预测。"
   },
   "history": {
     "values": [
-      58,
-      52,
-      52,
-      52,
-      55,
-      59,
-      55,
-      55,
-      55,
-      55,
-      49,
-      47,
-      47,
-      47,
-      53,
       45,
       42,
       42,
@@ -109,24 +94,24 @@
       44,
       43,
       44,
-      49
+      49,
+      39,
+      48,
+      39,
+      39,
+      48,
+      39,
+      39,
+      44,
+      44,
+      42,
+      43,
+      43,
+      43,
+      43,
+      42
     ],
     "dates": [
-      "2026-06-26",
-      "2026-06-29",
-      "2026-06-30",
-      "2026-07-01",
-      "2026-07-02",
-      "2026-07-03",
-      "2026-07-06",
-      "2026-07-07",
-      "2026-07-08",
-      "2026-07-09",
-      "2026-07-10",
-      "2026-07-13",
-      "2026-07-14",
-      "2026-07-15",
-      "2026-07-16",
       "2026-07-17",
       "2026-07-20",
       "2026-07-21",
@@ -171,28 +156,43 @@
       "2026-09-14",
       "2026-09-15",
       "2026-09-16",
-      "2026-09-17"
+      "2026-09-17",
+      "2026-09-18",
+      "2026-09-21",
+      "2026-09-22",
+      "2026-09-23",
+      "2026-09-24",
+      "2026-09-25",
+      "2026-09-28",
+      "2026-09-29",
+      "2026-09-30",
+      "2026-10-01",
+      "2026-10-02",
+      "2026-10-05",
+      "2026-10-06",
+      "2026-10-07",
+      "2026-10-08"
     ],
-    "points": "0.00,42.00 1.69,48.00 3.39,48.00 5.08,48.00 6.78,45.00 8.47,41.00 10.17,45.00 11.86,45.00 13.56,45.00 15.25,45.00 16.95,51.00 18.64,53.00 20.34,53.00 22.03,53.00 23.73,47.00 25.42,55.00 27.12,58.00 28.81,58.00 30.51,51.00 32.20,58.00 33.90,51.00 35.59,51.00 37.29,54.00 38.98,46.00 40.68,46.00 42.37,42.00 44.07,47.00 45.76,47.00 47.46,42.00 49.15,42.00 50.85,51.00 52.54,51.00 54.24,51.00 55.93,51.00 57.63,52.00 59.32,52.00 61.02,52.00 62.71,52.00 64.41,60.00 66.10,60.00 67.80,60.00 69.49,60.00 71.19,60.00 72.88,60.00 74.58,60.00 76.27,60.00 77.97,60.00 79.66,60.00 81.36,69.00 83.05,60.00 84.75,56.00 86.44,56.00 88.14,56.00 89.83,61.00 91.53,66.00 93.22,57.00 94.92,56.00 96.61,57.00 98.31,56.00 100.00,51.00",
+    "points": "0.00,55.00 1.69,58.00 3.39,58.00 5.08,51.00 6.78,58.00 8.47,51.00 10.17,51.00 11.86,54.00 13.56,46.00 15.25,46.00 16.95,42.00 18.64,47.00 20.34,47.00 22.03,42.00 23.73,42.00 25.42,51.00 27.12,51.00 28.81,51.00 30.51,51.00 32.20,52.00 33.90,52.00 35.59,52.00 37.29,52.00 38.98,60.00 40.68,60.00 42.37,60.00 44.07,60.00 45.76,60.00 47.46,60.00 49.15,60.00 50.85,60.00 52.54,60.00 54.24,60.00 55.93,69.00 57.63,60.00 59.32,56.00 61.02,56.00 62.71,56.00 64.41,61.00 66.10,66.00 67.80,57.00 69.49,56.00 71.19,57.00 72.88,56.00 74.58,51.00 76.27,61.00 77.97,52.00 79.66,61.00 81.36,61.00 83.05,52.00 84.75,61.00 86.44,61.00 88.14,56.00 89.83,56.00 91.53,58.00 93.22,57.00 94.92,57.00 96.61,57.00 98.31,57.00 100.00,58.00",
     "min": 31,
-    "max": 59,
-    "start": "2026-06-26",
-    "end": "2026-09-17"
+    "max": 58,
+    "start": "2026-07-17",
+    "end": "2026-10-08"
   },
   "market": {
     "index_label": "FTSE 100 / FTSE 250",
     "currency_label": "GBP/USD",
     "equity": {
-      "price": 10776.78,
-      "off_52w_high": -1.2,
-      "above_50d": true,
-      "above_200d": true,
-      "realvol": 8.2,
-      "rsi": 53.0,
-      "ext_z": -1.27,
+      "price": 10441.6,
+      "off_52w_high": -4.3,
+      "above_50d": false,
+      "above_200d": false,
+      "realvol": 10.7,
+      "rsi": 36.0,
+      "ext_z": -2.3,
       "ext_grade": "intrend",
-      "drawdown_risk": 2.0,
-      "drawdown_band": "low",
+      "drawdown_risk": 39.0,
+      "drawdown_band": "watch",
       "bubble_flag": false
     }
   },
@@ -203,40 +203,25 @@
     "curve": 1.23
   },
   "risk": {
-    "state": "caution",
-    "top_score": 81,
+    "state": "watch",
+    "top_score": 64,
     "dominant_en": "US rate shock",
     "dominant_zh": "美债利率冲击",
     "h21": 0.186,
     "measure": ">=5% index pullback within h business days (measured on this market's own history)",
     "trajectory": {
-      "intensity": 81.2,
-      "peak": 81.2,
-      "peak_days_ago": 0,
-      "off_peak": 0.0,
-      "velocity": 34.9,
+      "intensity": 64.1,
+      "peak": 88.3,
+      "peak_days_ago": 9,
+      "off_peak": 24.2,
+      "velocity": 6.3,
       "phase": "rising",
       "reached_risk": true,
-      "state_now": "caution",
+      "state_now": "watch",
       "odds_now": 0.186,
       "odds_peak": 0.186,
       "odds_delta": 0.0,
       "spark": [
-        51.2,
-        49.0,
-        35.3,
-        24.8,
-        14.5,
-        14.7,
-        12.5,
-        8.3,
-        12.5,
-        10.3,
-        28.0,
-        31.0,
-        43.7,
-        49.2,
-        48.4,
         42.1,
         44.0,
         33.7,
@@ -245,16 +230,31 @@
         66.7,
         64.1,
         70.4,
-        81.2
+        81.5,
+        78.4,
+        81.9,
+        81.2,
+        85.3,
+        86.7,
+        88.3,
+        86.3,
+        81.2,
+        77.2,
+        57.7,
+        68.1,
+        69.4,
+        70.4,
+        61.1,
+        64.1
       ],
-      "spark_pts": "3.0,11.2 6.9,11.8 10.8,15.6 14.7,18.5 18.7,21.3 22.6,21.2 26.5,21.8 30.4,23.0 34.3,21.8 38.2,22.5 42.1,17.6 46.0,16.8 50.0,13.3 53.9,11.8 57.8,12.0 61.7,13.7 65.6,13.2 69.5,16.0 73.4,12.6 77.3,7.5 81.3,7.0 85.2,7.7 89.1,6.0 93.0,3.0",
+      "spark_pts": "3.0,19.9 6.9,19.2 10.8,23.0 14.7,18.4 18.7,11.6 22.6,10.9 26.5,11.9 30.4,9.6 34.3,5.5 38.2,6.6 42.1,5.3 46.0,5.6 50.0,4.1 53.9,3.6 57.8,3.0 61.7,3.7 65.6,5.6 69.5,7.1 73.4,14.2 77.3,10.4 81.3,9.9 85.2,9.6 89.1,13.0 93.0,11.9",
       "spark_peak": {
-        "x": 93.0,
+        "x": 57.8,
         "y": 3.0
       },
       "spark_last": {
         "x": 93.0,
-        "y": 3.0
+        "y": 11.9
       },
       "spark_w": 96,
       "spark_h": 26,
@@ -266,22 +266,22 @@
         "tier": "A",
         "label_en": "US rate shock",
         "label_zh": "美债利率冲击",
-        "score": 94.3,
+        "score": 94.7,
         "band": "risk-off",
         "firing_legs": [
           {
-            "leg": "us_rate_2y",
-            "pctile": 0.995,
-            "confirmed": true
-          },
-          {
             "leg": "us_real_rate",
-            "pctile": 0.936,
+            "pctile": 0.982,
             "confirmed": true
           },
           {
             "leg": "us_rate_10y",
-            "pctile": 0.898,
+            "pctile": 0.952,
+            "confirmed": true
+          },
+          {
+            "leg": "us_rate_2y",
+            "pctile": 0.907,
             "confirmed": true
           }
         ]
@@ -291,13 +291,13 @@
         "tier": "A",
         "label_en": "Sterling depreciation / outflows",
         "label_zh": "英镑贬值／资金外流",
-        "score": 74.6,
-        "band": "caution",
+        "score": 91.1,
+        "band": "risk-off",
         "firing_legs": [
           {
             "leg": "gbp_depreciation",
-            "pctile": 0.746,
-            "confirmed": false
+            "pctile": 0.911,
+            "confirmed": true
           }
         ]
       },
@@ -306,15 +306,9 @@
         "tier": "A",
         "label_en": "Parabolic extension / exhaustion",
         "label_zh": "抛物线伸展／透支",
-        "score": 48.8,
+        "score": 25.1,
         "band": "calm",
-        "firing_legs": [
-          {
-            "leg": "ext_idx",
-            "pctile": 0.563,
-            "confirmed": false
-          }
-        ]
+        "firing_legs": []
       }
     ],
     "calibrated": true
@@ -378,8 +372,8 @@
       "key": "fx",
       "label_en": "FX reference",
       "label_zh": "汇率参考",
-      "raw": 1.3383,
-      "value": "1.34",
+      "raw": 1.3215,
+      "value": "1.32",
       "unit": "",
       "asof": null
     },
@@ -387,8 +381,8 @@
       "key": "fx_strength_3m",
       "label_en": "Currency strength, 3m",
       "label_zh": "货币强弱，3个月",
-      "raw": 0.43,
-      "value": "0.43%",
+      "raw": -1.83,
+      "value": "-1.83%",
       "unit": "%",
       "asof": null
     },
@@ -396,8 +390,8 @@
       "key": "drawdown",
       "label_en": "Index from 52w high",
       "label_zh": "指数距52周高点",
-      "raw": -1.2,
-      "value": "-1.20%",
+      "raw": -4.3,
+      "value": "-4.30%",
       "unit": "%",
       "asof": null
     },
@@ -405,8 +399,8 @@
       "key": "realvol",
       "label_en": "Realized volatility",
       "label_zh": "实现波动率",
-      "raw": 8.2,
-      "value": "8.20%",
+      "raw": 10.7,
+      "value": "10.70%",
       "unit": "%",
       "asof": null
     }
@@ -496,7 +490,7 @@
       "title_zh": "英镑",
       "why_en": "Imported inflation and cross-border confidence signal.",
       "why_zh": "输入性通胀与跨境信心信号。",
-      "value": "1.34",
+      "value": "1.32",
       "available": true,
       "metric": "fx",
       "source_key": "boe",
@@ -550,7 +544,7 @@
     {
       "metric": "cpi_yoy",
       "asof": "2025-03",
-      "age_days": 566,
+      "age_days": 587,
       "state": "stale",
       "label_en": "Inflation",
       "label_zh": "通胀"
@@ -558,7 +552,7 @@
     {
       "metric": "gdp",
       "asof": "2026-04",
-      "age_days": 170,
+      "age_days": 191,
       "state": "stale",
       "label_en": "Growth",
       "label_zh": "增长"
@@ -566,7 +560,7 @@
     {
       "metric": "unemployment",
       "asof": "2026-05",
-      "age_days": 140,
+      "age_days": 161,
       "state": "stale",
       "label_en": "Labour",
       "label_zh": "就业"
@@ -574,7 +568,7 @@
     {
       "metric": "yield_10y",
       "asof": "2026-08",
-      "age_days": 48,
+      "age_days": 69,
       "state": "fresh",
       "label_en": "Rates",
       "label_zh": "利率"
@@ -624,6 +618,73 @@
   ],
   "caveat_en": "ONS labour-market estimates carry survey-response and methodology uncertainty; the dashboard treats labour as one input, not a standalone trigger.",
   "caveat_zh": "ONS劳动力市场估计受调查回复率与方法变化影响；本看板将就业视为一项输入，而非独立触发器。",
+  "dossier": {
+    "schema": "intl_country_dossier.v1",
+    "state": "covered",
+    "items": [
+      {
+        "publisher": "Bank of England",
+        "source_key": "boe_news",
+        "jurisdiction": "UK",
+        "title": "Bank of England announces the four animals that will feature on our next series of banknotes",
+        "url": "https://www.bankofengland.co.uk/news/2026/october/boe-announces-the-four-animals-that-will-feature-on-next-series-of-banknotes",
+        "published": "2026-10-07T23:01:00+00:00",
+        "known_at": "2026-10-08T04:16:28.376473+00:00",
+        "rights_basis": "Open Government Licence v3.0 — https://www.bankofengland.co.uk/legal — 'commercial re-use of the Resources' explicitly named",
+        "rights_state": "VERIFIED_PUBLIC_REUSE"
+      },
+      {
+        "publisher": "Bank of England",
+        "source_key": "boe_news",
+        "jurisdiction": "UK",
+        "title": "Minutes of the London FXJSC Legal Sub Committee Meeting – 16 June 2026",
+        "url": "https://www.bankofengland.co.uk/minutes/2026/june/fxjsc-legal-sub-committee-meeting-16-june-26",
+        "published": "2026-10-07T13:36:25+00:00",
+        "known_at": "2026-10-08T04:16:28.376473+00:00",
+        "rights_basis": "Open Government Licence v3.0 — https://www.bankofengland.co.uk/legal — 'commercial re-use of the Resources' explicitly named",
+        "rights_state": "VERIFIED_PUBLIC_REUSE"
+      },
+      {
+        "publisher": "Bank of England",
+        "source_key": "boe_news",
+        "jurisdiction": "UK",
+        "title": "Minutes of the London FXJSC Operations Sub-Committee Meeting – 16 June 2026",
+        "url": "https://www.bankofengland.co.uk/minutes/2026/june/fxjsc-operations-sub-committee-meeting-16-june-2026",
+        "published": "2026-10-07T09:49:25+00:00",
+        "known_at": "2026-10-08T04:16:28.376473+00:00",
+        "rights_basis": "Open Government Licence v3.0 — https://www.bankofengland.co.uk/legal — 'commercial re-use of the Resources' explicitly named",
+        "rights_state": "VERIFIED_PUBLIC_REUSE"
+      },
+      {
+        "publisher": "Bank of England",
+        "source_key": "boe_news",
+        "jurisdiction": "UK",
+        "title": "Minutes of the London FXJSC Main Committee Meeting – 24 June 2026",
+        "url": "https://www.bankofengland.co.uk/minutes/2026/june/fxjsc-main-committee-meeting-24-june-2026",
+        "published": "2026-10-07T09:08:40+00:00",
+        "known_at": "2026-10-08T04:16:28.376473+00:00",
+        "rights_basis": "Open Government Licence v3.0 — https://www.bankofengland.co.uk/legal — 'commercial re-use of the Resources' explicitly named",
+        "rights_state": "VERIFIED_PUBLIC_REUSE"
+      },
+      {
+        "publisher": "Bank of England",
+        "source_key": "boe_news",
+        "jurisdiction": "UK",
+        "title": "Regulatory thresholds set to shift to automatic increases",
+        "url": "https://www.bankofengland.co.uk/news/2026/october/regulatory-thresholds-set-to-shift-to-automatic-increases",
+        "published": "2026-10-07T09:00:00+00:00",
+        "known_at": "2026-10-07T13:12:47.405757+00:00",
+        "rights_basis": "Open Government Licence v3.0 — https://www.bankofengland.co.uk/legal — 'commercial re-use of the Resources' explicitly named",
+        "rights_state": "VERIFIED_PUBLIC_REUSE"
+      }
+    ],
+    "stance": {
+      "label": "supportive",
+      "provider_label": "assistant",
+      "authoritative": false
+    },
+    "leadership": "no rights-cleared source"
+  },
   "navigation": [
     {
       "cc": "JP",

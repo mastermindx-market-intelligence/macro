@@ -11,6 +11,8 @@ import hashlib
 from pathlib import Path
 import re
 
+import pytest
+
 
 ROOT = Path(__file__).resolve().parents[1]
 LANES = (
@@ -42,6 +44,10 @@ _INCIDENT_DEAD_CSS = "94a4f2e3.css"
 _CONTENT_ADDRESSED_CSS = re.compile(r'href="assets/css/([0-9a-f]{8})\.css\?v=\1"')
 
 
+# Reads the generated site/crypto.html and the stylesheet it links, so the verdict moves
+# with each render. `data_gate` (tests/conftest.py) runs it on the data gate only; the
+# lane-fence tests below read workflow text and stay on the code gate.
+@pytest.mark.data_gate
 def test_crypto_page_restores_current_house_style_asset_contract() -> None:
     """The page's content-addressed stylesheet must RESOLVE.  The hash is weather.
 

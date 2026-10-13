@@ -30,12 +30,29 @@ jobs:
           echo "$VENV/bin" >> "$GITHUB_PATH"
           "$VENV/bin/python" -m pip install --quiet --upgrade pip
       - run: pip install -r requirements.txt
+      - name: guard China-gold proof to protected main
+        run: |
+          case ",${{ github.event.inputs.only }}," in
+            *,gold_china_basis,*)
+              if [ "$GITHUB_REF_NAME" != "main" ]; then
+                echo "::error title=China gold backfill wrong ref::gold_china_basis may only run from main; got $GITHUB_REF_NAME"
+                exit 1
+              fi
+              ;;
+          esac
       - name: fetch archived OAS history (idempotent)
+        if: github.event.inputs.only != 'gold_china_basis'
         run: python -m scripts.fetch_archive
       - name: full-history collection
         env:
           FRED_API_KEY: ${{ secrets.FRED_API_KEY }}
           FINNHUB_KEY: ${{ secrets.FINNHUB_KEY }}
+          # Reuse the same governed bindings as daily.yml so an explicit
+          # workflow_dispatch only=gold_china_basis can prove/backfill the
+          # China-gold source plane immediately after merge without a new lane.
+          TUSHARE_TOKEN: ${{ secrets.TUSHARE_TOKEN }}
+          POLYGON_API_KEY: ${{ secrets.POLYGON_API_KEY }}
+          MASSIVE_API_KEY: ${{ secrets.MASSIVE_API_KEY }}
         run: |
           if [ -n "${{ github.event.inputs.only }}" ]; then
             python -m scripts.collect --full-history --only "${{ github.event.inputs.only }}"

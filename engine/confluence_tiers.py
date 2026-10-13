@@ -877,12 +877,16 @@ def _completed_resample(daily: pd.Series, rule: str):
     if rule != "2W-FRI":
         raw = daily.resample(rule).last().dropna()
         raw = raw[raw.index <= last_obs]
-        known = (
-            daily.resample(rule)
-            .apply(lambda x: x.dropna().index.max())
-            .reindex(raw.index)
-            .dropna()
-        )
+        # Only dates with an observed close can make a completed bar knowable.
+        # Native resample/max is equivalent to each bucket's nonnull index.max(),
+        # without a Python Series/dropna callback for every historical bucket.
+        has_close = daily.notna()
+        observed_dates = pd.Series(daily.index, index=daily.index).where(has_close)
+        known = observed_dates.resample(rule).max().reindex(raw.index).dropna()
+        if not has_close.any():
+            # The original all-NaT/empty aggregation infers pandas' default
+            # datetime unit, rather than inheriting the input index's unit.
+            known = pd.Series(pd.to_datetime([]), index=known.index)
         raw = raw.reindex(known.index)
         known_dt = pd.Series(pd.to_datetime(known.values), index=known.index)
         return raw, known_dt
