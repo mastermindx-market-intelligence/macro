@@ -1017,3 +1017,172 @@ def test_member_states_reuse_the_incumbent_vocabulary() -> None:
     assert AFP._MEMBER_STATES == frozenset(
         {"stored", "missing", "not_requested", "rejected_by_policy"}
     )
+
+
+# ---------------------------------------------------------------------------
+# C0-c ERRATA-4 R7: form-keyed admission of the 8-K member set (a1..a6, a8)
+# ---------------------------------------------------------------------------
+
+_EIGHT_K_DROP = ("_cal.xml", "_def.xml")
+
+
+def _eight_k_capture(
+    accession: str,
+    *,
+    drop_suffixes: tuple[str, ...] = _EIGHT_K_DROP,
+    record_absent: bool = True,
+    form: str = "8-K",
+) -> tuple[dict, bytes, dict[str, bytes], bytes]:
+    """A golden capture reshaped into the C0-c 8-K member-set shape.
+
+    Form re-bound in BOTH the manifest and the witness (R8 makes them equal);
+    the dropped members removed from the index, the inventory, and the member
+    dict; absent_members recorded per R2 when ``record_absent``.
+    """
+    manifest, index_bytes, members, witness_bytes = _load_capture(accession)
+    manifest = json.loads(json.dumps(manifest))
+    stem = str(manifest["primary_document"]).rsplit(".", 1)[0]
+    payload = json.loads(index_bytes.decode("utf-8"))
+    dropped_names = [f"{stem}{suffix}" for suffix in drop_suffixes]
+    payload["directory"]["item"] = [
+        item
+        for item in payload["directory"]["item"]
+        if item.get("name") not in dropped_names
+    ]
+    new_index = (json.dumps(payload, sort_keys=True) + "\n").encode("utf-8")
+    _rebind_index(manifest, new_index)
+    manifest["members"] = [
+        item for item in manifest["members"] if item.get("name") not in dropped_names
+    ]
+    manifest["member_count"] = len(payload["directory"]["item"])
+    manifest["retained_count"] = sum(
+        1 for item in manifest["members"] if item.get("state") == "stored"
+    )
+    members = {name: value for name, value in members.items() if name not in dropped_names}
+    manifest["form"] = form
+    witness = json.loads(witness_bytes.decode("utf-8"))
+    witness["form"] = form
+    new_witness = (json.dumps(witness, indent=2, sort_keys=True) + "\n").encode("utf-8")
+    _rebind_witness(manifest, new_witness)
+    if record_absent and drop_suffixes:
+        role_of = {"_cal.xml": "calculation", "_def.xml": "definition"}
+        manifest["absent_members"] = sorted(
+            (
+                {"role": role_of[suffix], "name": f"{stem}{suffix}", "reason": "absent_in_archive_index"}
+                for suffix in drop_suffixes
+            ),
+            key=lambda entry: entry["name"],
+        )
+    return manifest, new_index, members, new_witness
+
+
+def _admit_capture(capture: tuple[dict, bytes, dict[str, bytes], bytes]) -> AdmittedFilingPackage:
+    manifest, index_bytes, members, witness_bytes = capture
+    return admit_retained_filing_package(
+        index_bytes=index_bytes,
+        manifest=manifest,
+        members=members,
+        witness_bytes=witness_bytes,
+        capture_recorded_at=CAPTURE_RECORDED_AT,
+    )
+
+
+def test_c0c_a1_eight_k_with_recorded_absent_optionals_admits() -> None:
+    """(a1) An 8-K with _cal and _def recorded absent is admitted."""
+    accession = sorted(GOLDEN_AAPL_FIXTURES)[0]
+    admitted = _admit_capture(_eight_k_capture(accession))
+    assert admitted.manifest["form"] == "8-K"
+    assert "absent_members" in admitted.manifest
+
+
+def test_c0c_a2_absent_entry_naming_an_indexed_member_refuses() -> None:
+    """(a2) An absent entry naming a member that IS in the index ->
+    ``inventory_mismatch``."""
+    accession = sorted(GOLDEN_AAPL_FIXTURES)[0]
+    capture = _eight_k_capture(accession, drop_suffixes=("_def.xml",))
+    manifest, index_bytes, members, witness_bytes = capture
+    stem = str(manifest["primary_document"]).rsplit(".", 1)[0]
+    # The entry claims _cal absent while the index still names AND stores it.
+    manifest["absent_members"] = [
+        {
+            "role": "calculation",
+            "name": f"{stem}_cal.xml",
+            "reason": "absent_in_archive_index",
+        }
+    ]
+    with pytest.raises(AdmittedFilingPackageError) as caught:
+        _admit_capture((manifest, index_bytes, members, witness_bytes))
+    assert caught.value.code == "inventory_mismatch"
+
+
+def test_c0c_a3_eight_k_missing_optional_without_record_refuses() -> None:
+    """(a3) An 8-K missing _def with no record (silence) -> refused."""
+    accession = sorted(GOLDEN_AAPL_FIXTURES)[0]
+    capture = _eight_k_capture(
+        accession, drop_suffixes=("_def.xml",), record_absent=False
+    )
+    with pytest.raises(AdmittedFilingPackageError) as caught:
+        _admit_capture(capture)
+    assert caught.value.code == "inventory_mismatch"
+
+
+def test_c0c_a4_ten_k_carrying_absent_members_refuses() -> None:
+    """(a4) A 10-K carrying ``absent_members`` -> refused (R7 bounds: the map
+    relaxes exactly "8-K")."""
+    accession = sorted(GOLDEN_AAPL_FIXTURES)[0]
+    manifest, index_bytes, members, witness_bytes = _load_capture(accession)
+    manifest = json.loads(json.dumps(manifest))
+    stem = str(manifest["primary_document"]).rsplit(".", 1)[0]
+    manifest["absent_members"] = [
+        {
+            "role": "calculation",
+            "name": f"{stem}_cal.xml",
+            "reason": "absent_in_archive_index",
+        }
+    ]
+    with pytest.raises(AdmittedFilingPackageError) as caught:
+        admit_retained_filing_package(
+            index_bytes=index_bytes,
+            manifest=manifest,
+            members=members,
+            witness_bytes=witness_bytes,
+            capture_recorded_at=CAPTURE_RECORDED_AT,
+        )
+    assert caught.value.code == "inventory_mismatch"
+
+
+def test_c0c_a5_eight_k_missing_label_refuses() -> None:
+    """(a5) An 8-K missing _lab -> ``required_role_missing`` (label is
+    required for the form)."""
+    accession = sorted(GOLDEN_AAPL_FIXTURES)[0]
+    capture = _eight_k_capture(
+        accession, drop_suffixes=("_lab.xml",), record_absent=False
+    )
+    with pytest.raises(AdmittedFilingPackageError) as caught:
+        _admit_capture(capture)
+    assert caught.value.code == "required_role_missing"
+
+
+def test_c0c_a6_every_golden_admission_unchanged() -> None:
+    """(a6) Every existing golden admission passes unchanged: each committed
+    golden capture still admits exactly as before the R7 edit."""
+    for accession in sorted(GOLDEN_AAPL_FIXTURES):
+        admitted = _admit(accession)
+        assert admitted.manifest["schema"] == ADMITTED_FILING_PACKAGE_SCHEMA
+        assert admitted.manifest["capture_basis"] == "reconstruction"
+        for role in REQUIRED_STORED_ROLES:
+            assert role in {
+                item.get("role")
+                for item in admitted.manifest["members"]
+                if item.get("state") == "stored"
+            }, (accession, role)
+
+
+def test_c0c_a8_eight_k_a_carrying_absent_members_refuses() -> None:
+    """(a8) An 8-K/A carrying ``absent_members`` -> refused: every form string
+    other than exactly "8-K" resolves to the strict policy."""
+    accession = sorted(GOLDEN_AAPL_FIXTURES)[0]
+    capture = _eight_k_capture(accession, form="8-K/A")
+    with pytest.raises(AdmittedFilingPackageError) as caught:
+        _admit_capture(capture)
+    assert caught.value.code == "inventory_mismatch"
