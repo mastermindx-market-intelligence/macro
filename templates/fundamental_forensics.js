@@ -67,7 +67,15 @@
       detail: null,
       detailPhase: 'idle',
       lastFocus: null
-    }
+    },
+    // X2-s saved views: the id of the restored view (kept until the user
+    // navigates away), a T1 refusal reason when a listed view will not load,
+    // and the stored request of a pinned restore, re-POSTed verbatim while
+    // the desk still matches the view's subject, policy and cutoff.
+    savedActiveId: '',
+    savedRefusal: '',
+    savedStoreError: false,
+    pinnedRequest: null
   };
 
   var ui = {};
@@ -1162,6 +1170,12 @@
     closeSearch();
     closeEvidence(false);
     if (updateUrl) {
+      // A manual company switch ends the restored view's context — the badge
+      // and the pinned-bytes override must not describe another issuer.
+      state.savedActiveId = '';
+      state.savedRefusal = '';
+      state.savedStoreError = false;
+      state.pinnedRequest = null;
       writeUrl(true);
       state.unknownRequestedSymbol = '';
     }
@@ -1200,7 +1214,17 @@
       })
       .then(function (response) {
         if (!response.ok) throw response;
-        return response.json();
+        // X2-s: the newer-generation signal rides the SAME health fetch —
+        // names/ids only (app/forensics.py health headers), never a second
+        // request. Annotated onto the client-side copy, not the wire contract.
+        var generation = {
+          id: String(response.headers.get('X-FIF-Dataset-Generation-Id') || ''),
+          admitted_at: String(response.headers.get('X-FIF-Dataset-Admitted-At') || '')
+        };
+        return response.json().then(function (payload) {
+          if (generation.id) payload.generation = generation;
+          return payload;
+        });
       })
       .then(applyHealth)
       .catch(function () {
@@ -1237,6 +1261,7 @@
     }
     setAsofControlsFromState();
     refreshExportState();
+    renderSavedUI();
   }
 
   function renderCompany() {
@@ -1830,7 +1855,7 @@
     return body;
   }
 
-  function financialPost(url, body) {
+  function financialPost(url, body, meta) {
     return withAuth({ 'Content-Type': 'application/json', Accept: 'application/json' })
       .then(function (headers) {
         return fetch(url, {
@@ -1851,6 +1876,9 @@
         // body before anything parses; a missing or mismatched digest is
         // treated as a 503 and no number renders.
         var claimed = String(response.headers.get('X-FIF-Response-SHA256') || '').toLowerCase();
+        // X2-s: hand the verified digest to the caller (saved_against) without
+        // touching the envelope — meta is an optional sink, never read back.
+        if (meta) meta.responseSha256 = claimed;
         return response.arrayBuffer().then(function (buffer) {
           return sha256Hex(buffer).then(function (actual) {
             if (!claimed || !actual || actual !== claimed) {
@@ -1898,7 +1926,13 @@
     if (state.tab !== 'compare') return;
     var target = company();
     if (!target) return;
-    var latestBody = buildQueryBody('latest_known_as_of');
+    // X2-s: a restored PINNED view re-POSTs its stored request bytes verbatim
+    // on every leg — the latest-known leg too is the STORED bytes with only
+    // policy.selection switched to latest_known_as_of, so a pinned view saved
+    // under as_reported still compares like against like; without a pinned
+    // view the desk builds each leg exactly as before.
+    var pinnedBody = activePinnedRequest();
+    var latestBody = pinnedBody ? pinnedVariant('latest_known_as_of') : buildQueryBody('latest_known_as_of');
     if (!latestBody.entity_id) {
       state.financial = { phase: 'no-entity' };
       renderRevisions();
@@ -1916,15 +1950,20 @@
     }
     var token = state.financialToken + 1;
     state.financialToken = token;
-    state.financial = { phase: 'loading', queryBody: buildQueryBody() };
+    // X2-s r1: the exported body is the pinned bytes while the pinned view is
+    // active, otherwise the DESK's own selection (buildQueryBody() with no
+    // argument) — never the forced latest_known_as_of leg above.
+    state.financial = { phase: 'loading', queryBody: pinnedBody || buildQueryBody() };
     renderRevisions();
+    var latestMeta = {};
     Promise.all([
-      financialPost(FINANCIAL_QUERY_URL, buildQueryBody('as_reported')),
-      financialPost(FINANCIAL_QUERY_URL, latestBody),
-      financialPost(FINANCIAL_QUERY_URL, buildQueryBody('latest_restated')),
+      financialPost(FINANCIAL_QUERY_URL, pinnedBody ? pinnedVariant('as_reported') : buildQueryBody('as_reported')),
+      financialPost(FINANCIAL_QUERY_URL, latestBody, latestMeta),
+      financialPost(FINANCIAL_QUERY_URL, pinnedBody ? pinnedVariant('latest_restated') : buildQueryBody('latest_restated')),
       financialPost(FINANCIAL_REVISIONS_URL, revisionsRequestBody(latestBody))
     ]).then(function (answers) {
       if (token !== state.financialToken) return;
+      var delivery = objectValue(answers[1] && answers[1].delivery) || {};
       state.financial = {
         phase: 'ready',
         asReported: queryNodesFrom(answers[0]),
@@ -1932,10 +1971,16 @@
         restated: queryNodesFrom(answers[2]),
         revisions: revisionsRowsFrom(answers[3]),
         receiptPolicy: objectValue(objectValue(answers[1] && answers[1].receipt) && objectValue(answers[1].receipt).policy) || {},
-        queryBody: buildQueryBody()
+        queryBody: pinnedBody || buildQueryBody(),
+        // X2-s: the verified digest and the dataset generation the answer was
+        // served from — refs for saved_against, never values.
+        responseSha256: latestMeta.responseSha256 || '',
+        generationId: String(delivery.dataset_generation_id || '')
       };
       state.queryNodes = state.financial.latest;
       renderRevisions();
+      backfillSavedAgainst();
+      renderSavedUI();
     }).catch(function (error) {
       if (token !== state.financialToken) return;
       if (error && (error.status === 401 || error.status === 403)) {
@@ -2346,6 +2391,428 @@
         renderPeers();
       });
     }
+  }
+
+  // ── Saved views (X2-s) ──────────────────────────────────────────────────
+  // Device-local briefcase (templates/fif_saved_briefcase.js, GovRev
+  // discipline: never fetches) + P2's URL writer as the permalink. The saved
+  // object binds to X0's request contract via its request_contract field; a
+  // drift refuses the load with the plain "saved view unavailable" state —
+  // never a repair, never a crash. Composed only from existing classes.
+  var SAVED_COPY = {
+    listLabel: ['Saved views', '已存视图'],
+    empty: ['No saved views yet', '暂无已存视图'],
+    choose: ['Choose a saved view', '选择已存视图'],
+    save: ['Save this view', '保存当前视图'],
+    rename: ['Rename', '重命名'],
+    remove: ['Delete', '删除'],
+    unavailable: ['unavailable', '不可用'],
+    unavailableTitle: ['Saved view unavailable', '已存视图不可用'],
+    unavailableContractCopy: [
+      'This view was saved against an older contract and cannot be opened here. You can still delete it.',
+      '此视图基于较早的契约保存，无法在此打开。你仍可将其删除。'
+    ],
+    unavailableIssuerCopy: [
+      'This view\'s company is not covered by the current run, so it cannot be opened.',
+      '当前更新未覆盖此视图的公司，因此无法打开。'
+    ],
+    unavailableMissingCopy: [
+      'This saved view is no longer on this device — it may have been deleted in another tab.',
+      '此已存视图已不在本设备上——可能已在其他标签页中删除。'
+    ],
+    unavailableStoreCopy: [
+      'Saved views on this device could not be read, so they are left untouched. Saving is paused here.',
+      '无法读取本设备上的已存视图，因此保持原样不作改动。此处暂停保存。'
+    ],
+    writeFailedCopy: [
+      'Your browser did not save this change. Nothing else was changed.',
+      '浏览器未保存此更改，其他内容未变。'
+    ],
+    pinnedTo: ['Pinned to', '固定于'],
+    latest: ['latest', '最新'],
+    asOf: ['As of', '截止'],
+    newerGeneration: [
+      'A newer filing generation exists — this view stays pinned to its cutoff.',
+      '已有更新的财报数据版本——本视图仍固定于其截止日。'
+    ],
+    reResolve: ['Re-resolve at latest', '按最新重新解析'],
+    peerSave: ['Save this peer view', '保存同业视图']
+  };
+  var POLICY_PLAIN = {
+    as_reported: ['As reported', '按披露原样'],
+    // The badge reads "Pinned to <date> · <phrase>", so the phrase must
+    // stand on its own after the date (X2-s r1: no dangling "as of").
+    latest_known_as_of: ['Latest known on that date', '该日已知最新'],
+    latest_restated: ['Latest restated', '最新重述']
+  };
+
+  var savedBriefcase = null;
+
+  function initSavedBriefcase() {
+    if (!(window.FifSavedBriefcase && typeof window.FifSavedBriefcase.create === 'function')) return;
+    savedBriefcase = window.FifSavedBriefcase.create();
+    var controls = byId('ff-saved-controls');
+    if (controls) controls.hidden = false;
+    var peerRow = byId('ff-peer-save-row');
+    if (peerRow) peerRow.hidden = false;
+  }
+
+  function savedPlainPolicy(selection) {
+    var entry = POLICY_PLAIN[String(selection || '')];
+    return entry || POLICY_PLAIN.latest_known_as_of;
+  }
+
+  function savedStampDate() {
+    var clocks = (state.health && state.health.clocks) || {};
+    var payload = state.payload || {};
+    return clocks.broad_source_at || clocks.composed_state_at || payload.generated_at || '';
+  }
+
+  function savedSavePhase() {
+    if (state.access === 'signin' || state.access === 'pending') return 'signin';
+    if (state.access === 'upgrade') return 'upgrade';
+    var target = company() || {};
+    var body = buildQueryBody();
+    var legal = !!target.entity_id && !!body.periods.length &&
+      !!body.policy.source_snapshot_at && !!body.policy.recorded_at;
+    return legal ? 'ready' : 'unavailable';
+  }
+
+  function buildSavedViewInput(name) {
+    var target = company() || {};
+    var body = buildQueryBody();
+    var evidenceRefs = [];
+    // A ref is stored only for an open cell evidence view with a REAL span —
+    // a span is never invented (AM1); ids and spans only, never values.
+    if (state.evidenceKind === 'cell' && state.cellEvidence) {
+      var evidence = state.cellEvidence;
+      var spanStart = numberValue(evidence.spanStart);
+      var spanEnd = numberValue(evidence.spanEnd);
+      if ((evidence.occurrenceId || evidence.accession) && spanStart != null && spanEnd != null) {
+        evidenceRefs.push({
+          accession: String(evidence.accession || ''),
+          occurrence_id: String(evidence.occurrenceId || ''),
+          source_span: [Math.trunc(spanStart), Math.trunc(spanEnd)]
+        });
+      }
+    }
+    return {
+      name: name,
+      issuer: {
+        entity_id: String(target.entity_id || ''),
+        cik: String(target.cik || ''),
+        ticker: String(target.symbol || state.symbol || '')
+      },
+      request: body,
+      peers: {
+        cohort: state.cohortId || null,
+        peer_metric: state.peerMetric || null,
+        align: state.peerAlign === 'shift_labeled' ? 'shift_labeled' : 'exclude',
+        peer_n: state.peerN,
+        peer_tol: state.peerTol
+      },
+      view: {
+        tab: state.tab,
+        finding: state.tab === 'radar' ? (state.findingId || null) : null
+      },
+      pinned: !!state.asOfDate,
+      saved_against: {
+        generation_id: ((state.health && state.health.generation) || {}).id ||
+          String(state.financial && state.financial.generationId || '') || null,
+        admitted_at: ((state.health && state.health.generation) || {}).admitted_at || null,
+        response_sha256: state.financial && state.financial.responseSha256 || null
+      },
+      evidence_refs: evidenceRefs,
+      watch: { issuer: false }
+    };
+  }
+
+  function performSavedSave(name) {
+    if (!savedBriefcase) return { ok: false, reason: 'module' };
+    var result = savedBriefcase.save(buildSavedViewInput(name));
+    if (result.ok) {
+      state.savedActiveId = result.view.id;
+      state.savedRefusal = '';
+      state.savedStoreError = false;
+      state.pinnedRequest = result.view.pinned ? result.view.request : null;
+    } else if (result.reason === 'storage') {
+      state.savedStoreError = true;
+    }
+    renderSavedUI();
+    return result;
+  }
+
+  // A pinned restore re-POSTs the stored request bytes VERBATIM — but only
+  // while the desk still matches the view's subject, policy and cutoff day.
+  // Any manual navigation away makes the override inert by itself.
+  function activePinnedRequest() {
+    var request = state.pinnedRequest;
+    if (!request || typeof request !== 'object') return null;
+    var target = company() || {};
+    if (!target.entity_id || String(target.entity_id) !== String(request.entity_id)) return null;
+    var selection = String((request.policy || {}).selection || '');
+    if (String(state.policy || 'latest_known_as_of') !== selection) return null;
+    if (state.asOfDate !== String((request.policy || {}).source_snapshot_at || '').slice(0, 10)) return null;
+    return request;
+  }
+
+  function pinnedVariant(selection) {
+    var request = activePinnedRequest();
+    if (!request) return null;
+    return Object.assign({}, request, {
+      policy: Object.assign({}, request.policy, { selection: selection })
+    });
+  }
+
+  function savedActiveView() {
+    // A refused restore (issuer or any load refusal) is never the active view:
+    // no pinned badge, no newer-generation chip, no saved_against backfill from
+    // a desk it does not describe. Any refusal keeps the view inactive; a
+    // write failure is tracked separately in state.savedStoreError. Delete
+    // stays reachable through savedActiveId.
+    if (!savedBriefcase || !state.savedActiveId) return null;
+    if (state.savedRefusal) return null;
+    var result = savedBriefcase.load(state.savedActiveId);
+    return result.ok ? result.view : null;
+  }
+
+  function backfillSavedAgainst() {
+    var view = savedActiveView();
+    if (!view || view.pinned) return;
+    var digest = state.financial && state.financial.responseSha256 || '';
+    if (!digest || view.saved_against.response_sha256 === digest) return;
+    savedBriefcase.update(view.id, {
+      saved_against: {
+        generation_id: view.saved_against.generation_id,
+        admitted_at: view.saved_against.admitted_at,
+        response_sha256: digest
+      }
+    });
+  }
+
+  function savedNoticeHtml(kind) {
+    var copy = kind === 'issuer' ? SAVED_COPY.unavailableIssuerCopy
+      : kind === 'missing' ? SAVED_COPY.unavailableMissingCopy
+      : kind === 'store' ? SAVED_COPY.unavailableStoreCopy
+      : SAVED_COPY.unavailableContractCopy;
+    // Existing classes only: the notice is an icon span plus a title element
+    // and a copy element inside one container div (X2-s r1, MINOR-5).
+    return '<span class="ff-notice-icon" aria-hidden="true">i</span><div><strong>' +
+      pair(SAVED_COPY.unavailableTitle[0], SAVED_COPY.unavailableTitle[1]) +
+      '</strong><div>' + pair(copy[0], copy[1]) + '</div></div>';
+  }
+
+  function renderSavedUI() {
+    var select = byId('ff-saved-select');
+    if (!select || !savedBriefcase) return;
+    var saveBtn = byId('ff-saved-save');
+    var nameInput = byId('ff-saved-name');
+    var renameBtn = byId('ff-saved-rename');
+    var deleteBtn = byId('ff-saved-delete');
+    var badge = byId('ff-saved-badge');
+    var notice = byId('ff-saved-notice');
+    var peerSave = byId('ff-peer-save');
+    var listing = savedBriefcase.list();
+    var current = lang();
+    // X2-s r1: a populated list offers a choice; only a truly empty list says
+    // "No saved views yet".
+    var placeholder = listing.length ? SAVED_COPY.choose : SAVED_COPY.empty;
+
+    var options = '<option value="">' + (current === 'zh' ? placeholder[1] : placeholder[0]) + '</option>';
+    listing.forEach(function (entry) {
+      var label = entry.name;
+      if (!entry.available) label += ' · ' + (current === 'zh' ? SAVED_COPY.unavailable[1] : SAVED_COPY.unavailable[0]);
+      options += '<option value="' + esc(entry.id) + '">' + esc(label) + '</option>';
+    });
+    select.innerHTML = options;
+    select.value = state.savedActiveId || '';
+
+    // X2-s r1 (MAJOR-3): an unreadable store is read-only — Save/peer-save
+    // stay disabled and Rename/Delete stay hidden through attributes only,
+    // and the notice names the paused store instead of a contract drift.
+    var storeReadOnly = savedBriefcase.readOnly();
+    var phase = savedSavePhase();
+    var name = nameInput && nameInput.value ? String(nameInput.value).trim() : '';
+    if (saveBtn) {
+      saveBtn.disabled = storeReadOnly || phase !== 'ready' || !name;
+      saveBtn.setAttribute('data-label-en', SAVED_COPY.save[0]);
+      saveBtn.setAttribute('data-label-zh', SAVED_COPY.save[1]);
+      saveBtn.setAttribute('aria-label', current === 'zh' ? SAVED_COPY.save[1] : SAVED_COPY.save[0]);
+    }
+    if (peerSave) {
+      peerSave.disabled = storeReadOnly || phase !== 'ready';
+      peerSave.innerHTML = pair(SAVED_COPY.peerSave[0], SAVED_COPY.peerSave[1]);
+    }
+    var active = storeReadOnly ? null : savedActiveView();
+    var renameable = !!active;
+    if (renameBtn) renameBtn.hidden = !renameable;
+    if (deleteBtn) deleteBtn.hidden = !state.savedActiveId || storeReadOnly;
+
+    if (badge) {
+      if (active && active.pinned) {
+        var pinnedDate = formatDate(String((active.request.policy || {}).source_snapshot_at || ''));
+        var policyCopy = savedPlainPolicy((active.request.policy || {}).selection);
+        badge.innerHTML = pair(SAVED_COPY.pinnedTo[0] + ' ' + pinnedDate + ' · ' + policyCopy[0],
+          SAVED_COPY.pinnedTo[1] + ' ' + pinnedDate + ' · ' + policyCopy[1]);
+        badge.hidden = false;
+      } else if (active) {
+        var latestDate = formatDate(savedStampDate());
+        badge.innerHTML = pair(SAVED_COPY.asOf[0] + ' ' + latestDate + ' · ' + SAVED_COPY.latest[0],
+          SAVED_COPY.asOf[1] + ' ' + latestDate + ' · ' + SAVED_COPY.latest[1]);
+        badge.hidden = false;
+      } else {
+        badge.hidden = true;
+      }
+    }
+
+    if (notice) {
+      // X2-s r2 (R2-4) precedence, exactly: an unreadable store (read
+      // failure) -> a failed write (state.savedStoreError) -> a stale
+      // newer-generation chip -> a refused view -> hidden.
+      var action = '';
+      var stale = savedGenerationStale();
+      if (storeReadOnly) {
+        notice.innerHTML = savedNoticeHtml('store');
+        notice.hidden = false;
+      } else if (state.savedStoreError) {
+        notice.innerHTML = '<span class="ff-notice-icon" aria-hidden="true">i</span><div>' +
+          pair(SAVED_COPY.writeFailedCopy[0], SAVED_COPY.writeFailedCopy[1]) + '</div>';
+        notice.hidden = false;
+      } else if (stale) {
+        action = ' <button type="button" class="ff-retry" data-saved-reresolve="1">' +
+          pair(SAVED_COPY.reResolve[0], SAVED_COPY.reResolve[1]) + '</button>';
+        notice.innerHTML = '<span class="ff-notice-icon" aria-hidden="true">i</span><div>' +
+          pair(SAVED_COPY.newerGeneration[0], SAVED_COPY.newerGeneration[1]) + action + '</div>';
+        notice.hidden = false;
+      } else if (state.savedRefusal) {
+        notice.innerHTML = savedNoticeHtml(state.savedRefusal);
+        notice.hidden = false;
+      } else {
+        notice.hidden = true;
+        notice.innerHTML = '';
+      }
+    }
+  }
+
+  // The newer-generation signal: the view was saved against one production
+  // dataset generation and health now names a different one (headers read on
+  // the SAME health fetch P2 already makes; never ffprods_… at glance).
+  function savedGenerationStale() {
+    var view = savedActiveView();
+    if (!view || !view.pinned) return null;
+    var against = view.saved_against || {};
+    var generation = (state.health && state.health.generation) || {};
+    if (!against.generation_id || !generation.id) return null;
+    if (against.generation_id === generation.id) return null;
+    return { view: view, generation: generation };
+  }
+
+  function reResolveSavedView() {
+    var stale = savedGenerationStale();
+    if (!stale || !savedBriefcase) return { ok: false, reason: 'stale' };
+    var clocks = (state.health && state.health.clocks) || {};
+    if (!clocks.broad_source_at || !clocks.composed_state_at) return { ok: false, reason: 'clocks' };
+    var request = JSON.parse(JSON.stringify(stale.view.request));
+    request.policy.source_snapshot_at = clocks.broad_source_at;
+    request.policy.recorded_at = clocks.composed_state_at;
+    var result = savedBriefcase.update(stale.view.id, {
+      request: request,
+      pinned: false,
+      saved_against: {
+        generation_id: stale.generation.id,
+        admitted_at: stale.generation.admitted_at || '',
+        response_sha256: ''
+      }
+    });
+    if (result.ok) restoreSavedView(stale.view.id);
+    else if (result.reason === 'storage') {
+      state.savedStoreError = true;
+      renderSavedUI();
+    }
+    return result;
+  }
+
+  function restoreSavedView(id) {
+    if (!savedBriefcase) return { ok: false, reason: 'module' };
+    state.savedStoreError = false;
+    var result = savedBriefcase.load(id);
+    state.savedActiveId = String(id || '');
+    if (!result.ok) {
+      // 'missing' keeps its own kind (its own notice copy): the view was on
+      // this device and is gone now; everything else keeps its refusal reason.
+      state.savedRefusal = result.reason;
+      state.pinnedRequest = null;
+      renderSavedUI();
+      return result;
+    }
+    state.savedRefusal = '';
+    var view = result.view;
+    // issuer is display/index metadata; the query identity stays
+    // request.entity_id and is never inferred from the ticker. The ticker
+    // must resolve AND the resolved issuer must still carry the stored
+    // entity_id — a ticker that resolves to a different entity refuses as
+    // 'issuer' BEFORE any desk-state mutation.
+    var resolved = view.issuer && view.issuer.ticker ? resolveSymbol(view.issuer.ticker) : '';
+    var resolvedCompany = resolved ? companies()[resolved] : null;
+    if (!resolvedCompany || String(resolvedCompany.entity_id) !== String(view.request.entity_id)) {
+      state.savedRefusal = 'issuer';
+      state.pinnedRequest = null;
+      renderSavedUI();
+      return { ok: false, reason: 'issuer' };
+    }
+    // Desk state first, then setCompany: the financial query it triggers must
+    // see the restored policy, cutoff and pinned bytes, not the defaults.
+    // checkView guarantees every field read below exists in canonical form —
+    // no defaults are applied here; an un-appliable value refuses at load as
+    // a contract refusal, never silently coerces.
+    state.policy = view.request.policy.selection;
+    state.asOfDate = view.pinned ? view.request.policy.source_snapshot_at.slice(0, 10) : '';
+    state.cohortId = view.peers.cohort == null ? '' : view.peers.cohort;
+    state.peerMetric = view.peers.peer_metric == null ? '' : view.peers.peer_metric;
+    state.peerAlign = view.peers.align === 'shift_labeled' ? 'shift_labeled' : 'exclude';
+    state.peerN = view.peers.peer_n;
+    state.peerTol = view.peers.peer_tol;
+    state.pinnedRequest = view.pinned ? view.request : null;
+    setCompany(resolved, false);
+    setTab(view.view.tab, false);
+    if (view.view.finding && state.tab === 'radar') {
+      state.findingId = String(view.view.finding);
+      state.evidenceKind = 'finding';
+      renderFindings();
+      renderCurrentEvidence();
+    }
+    // The permalink is P2's own writer — never a second URL builder.
+    writeUrl(true);
+    updateViewStatus();
+    // X2-s r1: the as-of controls and the desk stamp follow the restored
+    // cutoff (a pinned view shows its date, never "Latest" plus an empty
+    // field); renderRunMeta re-syncs both and then renders the saved UI.
+    renderRunMeta();
+    return { ok: true, view: view };
+  }
+
+  function savedRenameActive(name) {
+    if (!savedBriefcase || !state.savedActiveId) return { ok: false, reason: 'missing' };
+    var result = savedBriefcase.update(state.savedActiveId, { name: name });
+    if (result.ok) state.savedStoreError = false;
+    else if (result.reason === 'storage') state.savedStoreError = true;
+    renderSavedUI();
+    return result;
+  }
+
+  function savedDeleteActive() {
+    if (!savedBriefcase || !state.savedActiveId) return { ok: false, reason: 'missing' };
+    var result = savedBriefcase.remove(state.savedActiveId);
+    if (result.ok) {
+      state.savedActiveId = '';
+      state.savedRefusal = '';
+      state.savedStoreError = false;
+      state.pinnedRequest = null;
+    } else if (result.reason === 'storage') {
+      state.savedStoreError = true;
+    }
+    renderSavedUI();
+    return result;
   }
 
   // ── Export entry (§5, R6) ───────────────────────────────────────────────
@@ -4428,6 +4895,8 @@
   function updateLocalizedAttributes() {
     var current = lang();
     if (ui.search) ui.search.placeholder = ui.search.getAttribute('data-placeholder-' + current) || '';
+    var savedNameNode = byId('ff-saved-name');
+    if (savedNameNode) savedNameNode.placeholder = savedNameNode.getAttribute('data-placeholder-' + current) || '';
     Array.prototype.forEach.call(document.querySelectorAll('[data-label-en][data-label-zh]'), function (node) {
       var label = node.getAttribute('data-label-' + current);
       if (label) node.setAttribute('aria-label', label);
@@ -4447,6 +4916,7 @@
       renderReceipt();
       renderReceiptInspector();
     }
+    renderSavedUI();
   }
 
   function bindEvents() {
@@ -4635,6 +5105,10 @@
     if (ui.asofLatest) {
       ui.asofLatest.addEventListener('click', function () {
         state.asOfDate = '';
+        state.savedActiveId = '';
+        state.savedRefusal = '';
+        state.savedStoreError = false;
+        state.pinnedRequest = null;
         setAsofControlsFromState();
         writeUrl(true);
         renderRunMeta();
@@ -4646,6 +5120,10 @@
         var value = String(ui.asofInput.value || '');
         if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) return;
         state.asOfDate = value;
+        state.savedActiveId = '';
+        state.savedRefusal = '';
+        state.savedStoreError = false;
+        state.pinnedRequest = null;
         setAsofControlsFromState();
         writeUrl(true);
         renderRunMeta();
@@ -4654,6 +5132,74 @@
     }
     if (ui.exportBtn) {
       ui.exportBtn.addEventListener('click', runExport);
+    }
+
+    // X2-s saved views: restore via the list, save/rename/delete in the desk
+    // band, one save entry on the peers panel, one action on the notice chip.
+    var savedSelect = byId('ff-saved-select');
+    if (savedSelect) {
+      savedSelect.addEventListener('change', function () {
+        if (!savedSelect.value) {
+          state.savedActiveId = '';
+          state.savedRefusal = '';
+          state.savedStoreError = false;
+          state.pinnedRequest = null;
+          renderSavedUI();
+          return;
+        }
+        restoreSavedView(savedSelect.value);
+      });
+    }
+    var savedName = byId('ff-saved-name');
+    var savedSaveBtn = byId('ff-saved-save');
+    function savedNameValue() {
+      return savedName ? String(savedName.value || '').trim() : '';
+    }
+    if (savedSaveBtn) {
+      savedSaveBtn.addEventListener('click', function () {
+        var name = savedNameValue();
+        if (!name) return;
+        performSavedSave(name);
+      });
+    }
+    if (savedName) {
+      savedName.addEventListener('input', renderSavedUI);
+      savedName.addEventListener('keydown', function (event) {
+        if (event.key !== 'Enter') return;
+        event.preventDefault();
+        var name = savedNameValue();
+        if (name) performSavedSave(name);
+      });
+    }
+    var savedRenameBtn = byId('ff-saved-rename');
+    if (savedRenameBtn) {
+      savedRenameBtn.addEventListener('click', function () {
+        var name = savedNameValue();
+        if (name) savedRenameActive(name);
+      });
+    }
+    var savedDeleteBtn = byId('ff-saved-delete');
+    if (savedDeleteBtn) {
+      savedDeleteBtn.addEventListener('click', savedDeleteActive);
+    }
+    var peerSaveBtn = byId('ff-peer-save');
+    if (peerSaveBtn) {
+      peerSaveBtn.addEventListener('click', function () {
+        if (!savedName) return;
+        if (!savedNameValue()) {
+          // A generated, editable default — the user's text stays verbatim
+          // once they touch it; nothing here is bilingual storage.
+          savedName.value = String(state.symbol || '') + ' peers';
+        }
+        var name = savedNameValue();
+        if (name) performSavedSave(name);
+      });
+    }
+    var savedNotice = byId('ff-saved-notice');
+    if (savedNotice) {
+      savedNotice.addEventListener('click', function (event) {
+        if (event.target.closest('[data-saved-reresolve]')) reResolveSavedView();
+      });
     }
     ui.workspace.addEventListener('click', function (event) {
       if (!event.target.closest('[data-financial-retry]')) return;
@@ -4735,6 +5281,12 @@
       if (!url.drawer && ui.evidence.classList.contains('is-open')) {
         closeEvidence(true);
       }
+      // A history move re-addresses the desk from the URL alone: the restored
+      // saved view (and its pinned bytes) no longer describes this frame.
+      state.savedActiveId = '';
+      state.savedRefusal = '';
+      state.savedStoreError = false;
+      state.pinnedRequest = null;
       if (url.symbol) {
         var next = resolveSymbol(url.symbol);
         if (next && next !== state.symbol) setCompany(next, false);
@@ -4752,12 +5304,14 @@
       if (url.redline) state.redlineId = url.redline;
       setTab(url.peers ? 'peers' : url.tab, false);
       if (url.drawer) openDrawerFromUrl(url);
+      renderSavedUI();
     });
   }
 
   function init() {
     cacheUi();
     bindEvents();
+    initSavedBriefcase();
     updateLocalizedAttributes();
     // tier_preview.js resolves the visitor's tier from the session cookie before
     // any network call and stamps it on <html>; both scripts are deferred, so it
@@ -4807,10 +5361,25 @@
       writeUrl: writeUrl,
       readUrlParams: readUrlParams,
       applyUrlState: applyUrlState,
+      setTab: setTab,
       closeDrawerAndSync: closeDrawerAndSync,
       renderCellEvidence: renderCellEvidence,
       cellEvidenceFromControl: cellEvidenceFromControl,
-      bindEvents: bindEvents
+      bindEvents: bindEvents,
+      // X2-s saved-views seams (same opt-in contract as above).
+      initSavedBriefcase: initSavedBriefcase,
+      renderSavedUI: renderSavedUI,
+      restoreSavedView: restoreSavedView,
+      performSavedSave: performSavedSave,
+      savedRenameActive: savedRenameActive,
+      savedDeleteActive: savedDeleteActive,
+      reResolveSavedView: reResolveSavedView,
+      buildSavedViewInput: buildSavedViewInput,
+      backfillSavedAgainst: backfillSavedAgainst,
+      activePinnedRequest: activePinnedRequest,
+      savedSavePhase: savedSavePhase,
+      savedGenerationStale: savedGenerationStale,
+      exportQueryBody: exportQueryBody
     };
   } else if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', init, { once: true });

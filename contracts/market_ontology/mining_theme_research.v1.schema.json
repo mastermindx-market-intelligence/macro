@@ -109,14 +109,15 @@
           "items": {
             "type": "object",
             "additionalProperties": false,
-            "required": ["stable_subject_id", "measure", "value", "sign", "basis", "source_label"],
+            "required": ["stable_subject_id", "measure", "value", "sign", "basis", "source_label", "period"],
             "properties": {
               "stable_subject_id": {"type": "string", "minLength": 1},
               "measure": {"type": "string", "minLength": 1},
               "value": {"type": ["number", "integer", "string"]},
               "sign": {"type": "string", "minLength": 1},
               "basis": {"type": "string", "minLength": 1},
-              "source_label": {"type": "string", "minLength": 1}
+              "source_label": {"type": "string", "minLength": 1},
+              "period": {"type": "string", "minLength": 1}
             }
           }
         },

@@ -1760,6 +1760,11 @@ def _degraded_index_entry(
         "thesis_zh": plan.get("thesis_zh") or "",
         "horizon_days": plan.get("horizon_days"),
         "stage_tilt": plan.get("stage_tilt"),
+        # Prospective source_origin, carried through EXACTLY as the new plan
+        # carries it.  A historical plan without one stays without the key (no
+        # invented null field), and no plan file is rewritten here.
+        **({"source_origin": plan["source_origin"]}
+           if "source_origin" in plan else {}),
     }
 
 
@@ -1898,6 +1903,36 @@ def _load_macro_stance(asof: str) -> str | None:
         return None
 
 
+def _load_origination_source_binding(
+    *, source_board_sha256: str, source_board_doc: dict[str, Any]
+) -> dict[str, Any]:
+    """Derive the original producer binding from the RETAINED frozen snapshot.
+
+    Decompresses ONLY the content-addressed gzip copy this builder already stored
+    under ``LEDGER_DIR/origination_sources``, re-verifies the raw bytes and the
+    parsed document against the already-frozen board, and hands those exact raw
+    bytes to the frozen original-producer callable.  The moving ``STANDOUTS_PATH``
+    is never read here, so a source board that moves or is rewritten after the
+    freeze cannot alter the binding.  Any failure raises; the caller treats
+    provenance as optional and ships the plans unstamped.
+    """
+    snapshot = LEDGER_DIR / "origination_sources" / f"{source_board_sha256}.json.gz"
+    if snapshot.is_symlink():
+        raise RuntimeError(f"refusing symlinked Prophet source snapshot: {snapshot}")
+    raw = gzip.decompress(snapshot.read_bytes())
+    if hashlib.sha256(raw).hexdigest() != source_board_sha256:
+        raise RuntimeError(
+            "retained Prophet source snapshot does not hash to the frozen board "
+            f"{source_board_sha256}")
+    if json.loads(raw) != source_board_doc:
+        raise RuntimeError(
+            "retained Prophet source snapshot does not parse to the frozen board")
+    from scripts.build_stock_library import (  # noqa: PLC0415
+        today_selection_source_binding,
+    )
+    return today_selection_source_binding(raw)
+
+
 def _load_futures_chg(asof: str) -> dict | None:
     """Prior close-to-close % change for SPY/QQQ from the yahoo price store.
 
@@ -1984,6 +2019,17 @@ def main() -> None:
         source_board_sha256,
         source_board_snapshot_path,
     ) = _freeze_origination_source_board(STANDOUTS_PATH)
+    # Prospective Plan source_origin (pre-B1 prerequisite, display metadata).
+    # Derived ONLY from the retained frozen snapshot above; any failure leaves the
+    # new plans unstamped and leaves legacy selection/admission byte-identical.
+    try:
+        source_binding: dict[str, Any] | None = _load_origination_source_binding(
+            source_board_sha256=source_board_sha256,
+            source_board_doc=_standouts_doc,
+        )
+    except Exception as e:  # noqa: BLE001 — provenance is optional, never fatal
+        log.warning("build_prophet: plan source_origin unavailable (%s)", e)
+        source_binding = None
     _source_staleness = (
         _standouts_doc.get("staleness")
         if isinstance(_standouts_doc.get("staleness"), dict) else {}
@@ -2064,6 +2110,7 @@ def main() -> None:
     new_plans = originate_plans(
         standouts_path=STANDOUTS_PATH,
         standouts_doc=_standouts_doc,
+        source_binding=source_binding,
         asof=asof,
         existing_ids=existing_ids,
         thetadata_store=thetadata_store,
@@ -2463,6 +2510,11 @@ def main() -> None:
             # DERIVED tonight, never stored on the plan.
             "entry_zone_state": zone_state,
             "early_turn": plan.get("early_turn"),
+            # Prospective source_origin, carried through EXACTLY as the plan
+            # carries it; a historical plan without one ships without the key
+            # (no invented null field).
+            **({"source_origin": plan["source_origin"]}
+               if "source_origin" in plan else {}),
         })
 
     # ── 3b. Advance ledger (nightly-only — idempotent close-event writer) ────────
