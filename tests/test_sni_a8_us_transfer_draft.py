@@ -8,6 +8,7 @@ false; a caller that sets any of them true is refused (raise).
 """
 from __future__ import annotations
 
+import hashlib
 import json
 import re
 import sys
@@ -458,3 +459,102 @@ def test_r1_12_authority_true_refused_on_tmp_copy(tmp_path: Path) -> None:
     with pytest.raises(draft_loader.A8DraftRefused) as excinfo:
         draft_loader.load_draft(path)
     assert excinfo.value.code == "AUTHORITY_TRUTHY"
+
+
+REGISTER_PATH = (
+    ROOT
+    / "research"
+    / "single_name_intelligence"
+    / "protocols"
+    / "S0_PROTOCOL_REGISTER.md"
+)
+S0_CITE_RE = re.compile(r"S0_PROTOCOL_REGISTER\.md(?:\s+L|:)\s*(\d+)")
+MD_PIN_ROW_RE = re.compile(
+    r"^\|\s*(REG|IL|SL)\s*\|\s*(\S+)\s*\|\s*`([0-9a-f]{40})`\s*\|",
+    re.MULTILINE,
+)
+PROTO_ID_RE = re.compile(r"\bP\d{2}\b")
+ALLOWED_REGISTERED_FORM = re.compile(
+    r"unregistered|not\s+registered|pre-registered|"
+    r"\*\*registered:\*\*\s*false",
+    re.IGNORECASE,
+)
+REGISTERED_WORD = re.compile(r"\bregistered\b", re.IGNORECASE)
+
+
+def _git_blob_sha(data: bytes) -> str:
+    return hashlib.sha1(b"blob %d\0" % len(data) + data).hexdigest()
+
+
+def test_r1_01_s0_blobs_match_disk() -> None:
+    loaded = draft_loader.load_draft(JSON_PATH)
+    blobs = loaded["s0_blobs"]
+    assert blobs
+    for key, rec in blobs.items():
+        data = (ROOT / rec["path"]).read_bytes()
+        actual = _git_blob_sha(data)
+        assert actual == rec["blob"], f"{key}: pinned {rec['blob']} != disk {actual}"
+
+
+def test_r1_02_md_pin_table_matches_json() -> None:
+    loaded = draft_loader.load_draft(JSON_PATH)
+    md = MD_PATH.read_text(encoding="utf-8")
+    rows = {
+        match.group(1): (match.group(2), match.group(3))
+        for match in MD_PIN_ROW_RE.finditer(md)
+    }
+    assert set(rows) == set(loaded["s0_blobs"])
+    for key, rec in loaded["s0_blobs"].items():
+        path, sha = rows[key]
+        assert path == rec["path"], key
+        assert sha == rec["blob"], key
+
+
+def test_r1_03_register_line_citations_resolve() -> None:
+    register_lines = REGISTER_PATH.read_text(encoding="utf-8").splitlines()
+    found = 0
+    for source, text in (
+        ("json", JSON_PATH.read_text(encoding="utf-8")),
+        ("md", MD_PATH.read_text(encoding="utf-8")),
+    ):
+        for match in S0_CITE_RE.finditer(text):
+            found += 1
+            line_no = int(match.group(1))
+            assert 1 <= line_no <= len(register_lines), f"{source} L{line_no}"
+            register_line = register_lines[line_no - 1]
+            line_start = text.rfind("\n", 0, match.start()) + 1
+            line_end = text.find("\n", match.end())
+            if line_end < 0:
+                line_end = len(text)
+            sentence = text[line_start:line_end]
+            protos = PROTO_ID_RE.findall(sentence) or ["P01"]
+            for proto in protos:
+                assert proto in register_line, (
+                    f"{source} citation L{line_no} names {proto}; "
+                    f"register line is {register_line!r}"
+                )
+            assert register_line.startswith("| P01 ") or any(
+                register_line.startswith(f"| {proto} ") for proto in protos
+            ), f"{source} L{line_no}: {register_line!r}"
+    assert found >= 1
+
+
+def test_r1_04_still_unregistered_draft() -> None:
+    loaded = draft_loader.load_draft(JSON_PATH)
+    md = MD_PATH.read_text(encoding="utf-8")
+    assert loaded["status"] == "DRAFT"
+    assert loaded["registered"] is False
+    assert loaded["outcome"] == "none"
+    assert loaded["family_id"] == FAMILY_ID
+    flags = loaded["authority_flags"]
+    assert set(flags) == AUTHORITY_KEYS
+    for key in AUTHORITY_KEYS:
+        assert flags[key] is False
+    remainder = ALLOWED_REGISTERED_FORM.sub("", md)
+    leftover = []
+    for sentence in sentences_of(remainder):
+        if REGISTERED_WORD.search(sentence) and not banned_phrase_is_negated(
+            sentence, "registered"
+        ):
+            leftover.append(sentence)
+    assert leftover == []
