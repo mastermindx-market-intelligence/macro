@@ -26,6 +26,9 @@ from tests.test_watchstore_multilist_js import (  # noqa: F401  (harness reuse)
     _ws,
     needs_node,
     USER,
+    EMPTY_BLOB,
+    LOCAL_BLOB,
+    WL_STUB,
 )
 
 FIF_NAME = "Filing Forensics"
@@ -258,3 +261,209 @@ def test_signed_out_is_zero_network():
     assert "no-session" in json.dumps(out["rejected"])
     assert out["statements"] == 0
     assert out["lists"] == 0 and out["symbols"] == 0
+
+
+# ===========================================================================
+# 6 — seat ruling R1 (X2-n r1): the designated list is never the bound list
+# ===========================================================================
+# The MAJOR defect: on a zero-list account whose first act is fifWatch,
+# fifEnsureList -> listCreate('Filing Forensics') took position 0 and the next
+# pull()'s resolveBoundList branch 2 bound listsCache[0] — the designated list
+# — so ordinary stars and pushList full-membership diffs wrote into the
+# subscription surface. The six cases below pin the repaired ordering.
+@needs_node
+def test_r1_zero_list_first_watch_mints_watchlist_first_then_fif():
+    out = _ws(
+        WL_STUB + """
+        installWL(BLOB);
+        var db = makeDb({watchlists: [], watchlist_symbols: []});
+        WS._setTestSession(USER, db.client);
+        WS.fif.watch('AAPL').then(function (r) {
+          return WS.pull().then(function () {
+            var st = WS._testState();
+            var fif = db.tables.watchlists.filter(function (l) {
+              return l.name === 'Filing Forensics'; })[0];
+            var wl = db.tables.watchlists.filter(function (l) {
+              return l.name === 'Watchlist'; })[0];
+            OUT({names: db.tables.watchlists.map(function (l) { return l.name; }),
+                 wlPos: wl && wl.position, fifPos: fif && fif.position,
+                 bound: st.activeId,
+                 boundIsWatchlist: !!(wl && String(st.activeId) === String(wl.id)),
+                 fifSymbols: symbolsOf(db, fif.id)});
+          });
+        });
+        """
+        , {"USER": USER, "BLOB": EMPTY_BLOB},
+    )
+    # 'Watchlist' exists BEFORE the designated list and holds position 0; the
+    # designated list is position >= 1; the following pull binds 'Watchlist'.
+    assert out["names"] == ["Watchlist", "Filing Forensics"]
+    assert out["wlPos"] == 0 and out["fifPos"] >= 1
+    assert out["boundIsWatchlist"] is True
+    assert out["bound"] is not None
+    assert out["fifSymbols"] == ["AAPL"]
+
+
+@needs_node
+def test_r1_ordinary_star_after_first_watch_writes_only_watchlist():
+    out = _ws(
+        WL_STUB + """
+        installWL(BLOB);
+        var db = makeDb({watchlists: [], watchlist_symbols: []});
+        WS._setTestSession(USER, db.client);
+        WS.fif.watch('AAPL').then(function () {
+          return WS.pull().then(function () {
+            return WS.symbols.add(WS._testState().activeId, 'MSFT').then(function () {
+              var fif = db.tables.watchlists.filter(function (l) {
+                return l.name === 'Filing Forensics'; })[0];
+              var wl = db.tables.watchlists.filter(function (l) {
+                return l.name === 'Watchlist'; })[0];
+              OUT({wlSymbols: symbolsOf(db, wl.id),
+                   fifSymbols: symbolsOf(db, fif.id)});
+            });
+          });
+        });
+        """
+        , {"USER": USER, "BLOB": EMPTY_BLOB},
+    )
+    assert out["wlSymbols"] == ["MSFT"]
+    assert out["fifSymbols"] == ["AAPL"]     # the subscription list is untouched
+
+
+@needs_node
+def test_r1_pushlist_on_bound_list_never_touches_the_fif_list_id():
+    out = _ws(
+        WL_STUB + """
+        installWL(BLOB);
+        var db = makeDb({watchlists: [
+          {id: 'L-W', user_id: 'u1', name: 'Watchlist', position: 0},
+          {id: 'L-FIF', user_id: 'u1', name: 'Filing Forensics', position: 1}],
+          watchlist_symbols: [
+            {id: 'w1', watchlist_id: 'L-W', symbol: 'MSFT', position: 0},
+            {id: 'f1', watchlist_id: 'L-FIF', symbol: 'AAPL', position: 0}]});
+        WS._setTestSession(USER, db.client);
+        WS.pull().then(function () {
+          var bound = WS._testState().activeId;
+          return WS.pushList(bound, ['MSFT', 'TSLA']).then(function () {
+            var fifOps = db.ops.filter(function (o) {
+              if (o.kind === 'insert' && o.table === 'watchlist_symbols') {
+                return o.rows.some(function (r) {
+                  return String(r.watchlist_id) === 'L-FIF'; });
+              }
+              if (o.kind === 'delete' && o.table === 'watchlist_symbols') {
+                return o.filters.some(function (f) {
+                  return f.col === 'watchlist_id' && String(f.val) === 'L-FIF'; });
+              }
+              return false;
+            });
+            OUT({boundIsWatchlist: String(bound) === 'L-W',
+                 fifOps: fifOps.length,
+                 wlSymbols: symbolsOf(db, 'L-W'),
+                 fifSymbols: symbolsOf(db, 'L-FIF')});
+          });
+        });
+        """
+        , {"USER": USER, "BLOB": EMPTY_BLOB},
+    )
+    assert out["boundIsWatchlist"] is True
+    assert out["fifOps"] == 0           # no insert, no delete, ever, against L-FIF
+    assert out["wlSymbols"] == ["MSFT", "TSLA"]
+    assert out["fifSymbols"] == ["AAPL"]
+
+
+@needs_node
+def test_r1_only_list_is_fif_pull_creates_and_binds_watchlist():
+    out = _ws(
+        WL_STUB + """
+        installWL(BLOB);
+        var db = makeDb({watchlists: [
+          {id: 'L-FIF', user_id: 'u1', name: 'Filing Forensics', position: 0}],
+          watchlist_symbols: [
+            {id: 'f1', watchlist_id: 'L-FIF', symbol: 'AAPL', position: 0}]});
+        WS._setTestSession(USER, db.client);
+        WS.pull().then(function () {
+          var st = WS._testState();
+          OUT({names: db.tables.watchlists.map(function (l) { return l.name; }),
+               bound: st.activeId,
+               boundIsNotFif: String(st.activeId) !== 'L-FIF',
+               boundIsWatchlist: !!db.tables.watchlists.some(function (l) {
+                 return l.name === 'Watchlist' && String(l.id) === String(st.activeId); }),
+               fifSymbols: symbolsOf(db, 'L-FIF')});
+        });
+        """
+        , {"USER": USER, "BLOB": EMPTY_BLOB},
+    )
+    # branch 2 declines an all-designated cache and falls to branch 3: pull()
+    # creates 'Watchlist' and binds it, never the designated list.
+    assert out["names"] == ["Filing Forensics", "Watchlist"]
+    assert out["boundIsNotFif"] is True and out["boundIsWatchlist"] is True
+    assert out["fifSymbols"] == ["AAPL"]
+
+
+@needs_node
+def test_r1_only_default_pull_binds_default_and_fifwatch_takes_max_plus_one():
+    out = _ws(
+        WL_STUB + """
+        installWL(BLOB);
+        var db = makeDb({watchlists: [
+          {id: 'L-DEF', user_id: 'u1', name: 'Default', position: 0}],
+          watchlist_symbols: [
+            {id: 'd1', watchlist_id: 'L-DEF', symbol: 'SPY', position: 0}]});
+        WS._setTestSession(USER, db.client);
+        WS.pull().then(function () {
+          var boundAtPull = WS._testState().activeId;
+          return WS.fif.watch('SMCI').then(function () {
+            var fif = db.tables.watchlists.filter(function (l) {
+              return l.name === 'Filing Forensics'; })[0];
+            OUT({names: db.tables.watchlists.map(function (l) { return l.name; }),
+                 boundAtPull: boundAtPull,
+                 boundIsDefault: String(boundAtPull) === 'L-DEF',
+                 fifPos: fif && fif.position,
+                 fifSymbols: symbolsOf(db, fif.id),
+                 defSymbols: symbolsOf(db, 'L-DEF')});
+          });
+        });
+        """
+        , {"USER": USER, "BLOB": EMPTY_BLOB},
+    )
+    # a non-designated list exists: bind Default, mint no 'Watchlist', and the
+    # designated list goes to max(position)+1
+    assert out["names"] == ["Default", "Filing Forensics"]
+    assert out["boundIsDefault"] is True
+    assert out["fifPos"] == 1
+    assert out["fifSymbols"] == ["SMCI"]
+    assert out["defSymbols"] == ["SPY"]
+
+
+@needs_node
+def test_r1_fold_target_with_fif_present_resolves_to_watchlist_never_fif():
+    out = _ws(
+        WL_STUB + """
+        installWL(BLOB);
+        var db = makeDb({watchlists: [
+          {id: 'L-FIF', user_id: 'u1', name: 'Filing Forensics', position: 0}],
+          watchlist_symbols: [
+            {id: 'f1', watchlist_id: 'L-FIF', symbol: 'AAPL', position: 0}]});
+        WS._setTestSession(USER, db.client);
+        WS.pull().then(function () {
+          var st = WS._testState();
+          OUT({foldTarget: st.foldTargetId,
+               foldTargetIsNotFif: String(st.foldTargetId) !== 'L-FIF',
+               foldTargetName: (db.tables.watchlists.filter(function (l) {
+                 return String(l.id) === String(st.foldTargetId); })[0] || {}).name,
+               boundIsNotFif: String(st.activeId) !== 'L-FIF',
+               fifSymbols: symbolsOf(db, 'L-FIF'),
+               wlSymbols: db.tables.watchlist_symbols
+                 .filter(function (s) { return String(s.watchlist_id) !== 'L-FIF'; })
+                 .map(function (s) { return s.symbol; }).sort()});
+        });
+        """
+        , {"USER": USER, "BLOB": LOCAL_BLOB},
+    )
+    # the fold is name-targeted at 'Watchlist' (created if absent) even when the
+    # account's only pre-existing list is the designated one
+    assert out["foldTargetIsNotFif"] is True
+    assert out["foldTargetName"] == "Watchlist"
+    assert out["boundIsNotFif"] is True
+    assert out["fifSymbols"] == ["AAPL"]        # the designated list keeps its row
+    assert out["wlSymbols"] == ["AAPL", "MSFT"]  # the local book folded into Watchlist
