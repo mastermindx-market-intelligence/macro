@@ -10,7 +10,7 @@ import pytest
 
 from engine.market_ontology.communications_measures import (
     AccountingDependency, AccountingRule, AccountingTerm, ComparisonRule,
-    Guidance, InputBinding, Interval, Measure,
+    Guidance, InputBinding, Interval, Measure, accounting_bridge,
 )
 from engine.market_ontology.communications_research import (
     ClaimInputError, CompanyClaimInput, PairSelection, compose_four_company_claims,
@@ -1076,3 +1076,65 @@ def test_accounting_refusal_missing_output_roles_stays_one_incompatible_view():
     wire_views = [view for group in payload['projection']['panels'][3]['accounting']
                   for view in group['views']]
     assert sum(view['result']['status'] == 'INCOMPATIBLE' for view in wire_views) == 1
+
+
+def test_partial_refusal_colliding_with_identified_outcome_is_dropped():
+    """Drop a partial refusal whose first two refs are an identified outcome.
+
+    The channels view already identifies the contribution ex-TAC pair. The cost
+    recipe's output roles are gone, and its first two remaining binding refs
+    are that same pair, so the refusal is partial and collides. It must not
+    join the qualified group. Removing ``partial and key in identified`` at
+    the composer admits this refusal; the non-colliding cost recipe in
+    test_accounting_refusal_missing_output_roles_stays_one_incompatible_view
+    still keeps its own group.
+    """
+    item = accounting_magnite()
+    baseline = compose_four_company_claims((item,))
+    qualified = panel(baseline, 'magnite')
+    assert len(qualified.accounting) == 1
+    sibling_key = qualified.accounting[0].outcome_refs
+    assert sibling_key == (
+        'fixture:magnite:contribution_ex_tac:current',
+        'fixture:magnite:contribution_ex_tac:prior',
+    )
+
+    cost = item.accounting_rules[0]
+    by_ref = {measure.ref: measure for measure in item.measures}
+    component_bindings = tuple(
+        binding for binding in cost.comparison.bindings
+        if binding.role not in ('output_current', 'output_prior')
+        and binding.ref not in sibling_key)
+    lead = []
+    for ref, role in zip(sibling_key, ('lead_current', 'lead_prior')):
+        measure = by_ref[ref]
+        lead.append(InputBinding(
+            role, measure.ref, measure.definition_ref, measure.population, measure.period,
+            measure.unit, measure.currency, measure.scale, measure.domain))
+    bindings = tuple(lead) + component_bindings
+    assert [binding.ref for binding in bindings[:2]] == list(sibling_key)
+    assert all(binding.role not in ('output_current', 'output_prior') for binding in bindings)
+    broken = replace(cost, comparison=replace(cost.comparison, bindings=bindings))
+    refused_view = accounting_bridge(
+        measures=tuple(by_ref[binding.ref] for binding in bindings), rule=broken)
+    key, partial = cr._refusal_outcome_refs(broken, refused_view)
+    assert refused_view.result.status == 'INCOMPATIBLE'
+    assert refused_view.result.reason == 'INPUT_BINDING_MISMATCH'
+    assert partial is True and key == sibling_key and key in {
+        group.outcome_refs for group in qualified.accounting}
+
+    item = replace(item, accounting_rules=(broken,) + item.accounting_rules[1:])
+    result = compose_four_company_claims((item,))
+    out = panel(result, 'magnite')
+    refused = [view for group in out.accounting for view in group.views
+               if view.result.status == 'INCOMPATIBLE']
+    assert refused == []
+    assert len(out.accounting) == len(qualified.accounting) == 1
+    assert out.accounting[0].outcome_refs == sibling_key
+    assert [view.result.status for view in out.accounting[0].views] == ['QUALIFIED']
+    assert result.headline_issuer_count == baseline.headline_issuer_count
+    payload = cr.compose_communications_payload((item,))
+    assert payload['binding_state'] == 'unbound'
+    wire_views = [view for group in payload['projection']['panels'][3]['accounting']
+                  for view in group['views']]
+    assert [view['result']['status'] for view in wire_views] == ['QUALIFIED']
