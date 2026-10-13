@@ -317,6 +317,7 @@ _BRAIN_TOOLS = frozenset({
     # Analyst OS W2 — depth retrieval: dated historical episodes (display-tier,
     # China-analog idiom) and the full curve read (pure slice of yield_curve snapshot)
     "get_historical_analogues",
+    "get_retained_market_context",
     "get_curve_detail",
     # Analyst OS W3 — per-user memory: own-session recall + own trade journal
     # (signed-in only, per-user scoped; derived from canonical stores — CXI-R12)
@@ -370,6 +371,7 @@ _BRAIN_ONLY_TOOLS = frozenset({
     "search_research",
     # Analyst OS W2
     "get_historical_analogues",
+    "get_retained_market_context",
     "get_curve_detail",
     # Analyst OS W3
     "recall_sessions",
@@ -3980,6 +3982,15 @@ def _dispatch_brain_tool(
                 report_id=str(tool_params.get("report_id") or ""),
                 user_ctx={"user_id": user_id} if _mode == "report" else None,
             )
+        if tool_name == "get_retained_market_context":
+            from app.market_memory import retained_macro_for_user
+            from fastapi import HTTPException
+            try:
+                return retained_macro_for_user(root, user_id, tool_params)
+            except HTTPException as exc:
+                return {"error": "retained_context_unavailable", "http_status": exc.status_code,
+                        "state": exc.detail.get("state", "SITE_ENTITLEMENT_REQUIRED")
+                        if isinstance(exc.detail, dict) else "SITE_ENTITLEMENT_REQUIRED"}
         if tool_name == "get_historical_analogues":
             # Analyst OS W2 — dated episodes whose measured state rhymed with today
             # (display-tier, China-analog idiom). Depth capability → Essential/Pro,
@@ -4108,6 +4119,14 @@ def _all_brain_tool_schemas(
     try:
         from engine.neuralweb import brain_analogues as _ban  # noqa: PLC0415
         schemas = schemas + [_ban.ANALOGUES_TOOL_SCHEMA]
+        if user_id:
+            from app.paywall import enforce_site_full
+            try:
+                enforce_site_full({"id": user_id}, always=True)
+            except Exception:
+                pass
+            else:
+                schemas = schemas + [_ban.RETAINED_CONTEXT_TOOL_SCHEMA]
     except Exception:  # noqa: BLE001
         pass
     try:
@@ -7108,6 +7127,7 @@ _TOOL_LABELS: dict[str, tuple[str, str]] = {
     "get_market_events":      ("Skimming the wire for news",    "扫一眼最新消息"),
     "search_research":        ("Digging through the research shelf", "翻找机构研报"),
     "get_historical_analogues": ("Searching the desk's history books", "检索历史相似情景"),
+    "get_retained_market_context": ("Reading original retained evidence", "读取原始留存证据"),
     "get_curve_detail":       ("Reading the yield curve",       "解读收益率曲线"),
     "recall_sessions":        ("Recalling your past sessions",  "回顾您最近的会话"),
     "get_trade_episodes":     ("Reading your trade journal",    "读取您的交易日志"),
