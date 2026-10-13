@@ -46,6 +46,33 @@ header. `nav_prefix` may vary by directory depth; typography, geometry, menu
 contents, search behavior, responsive breakpoints, and motion may vary only in
 the shared family source.
 
+## Assigned Meta-CEO: Fabric first for bounded execution (2026-10-12)
+
+This is **only** for an explicitly Chairman-assigned Codex or Claude principal;
+ordinary workers keep their bounded role. Read the shared, source-controlled
+[`docs/CODEX_META_CEO_FABRIC.md`](docs/CODEX_META_CEO_FABRIC.md)
+alongside the applicable current grant/Executive/Fabric admission procedure.
+An assigned principal owns mission direction, genuine C3 judgment, review,
+integration, acceptance and durable continuity. It should **decide on Fabric
+delegation before undertaking substantial C0/C1/C2 implementation, research,
+tests and repairs itself**. When there is real independent ready work, use
+qualified admitted paid Fabric workers and the existing sanctioned adapter.
+For enrolled Codex, this is the already-installed
+`mastermind-fabric-delegate` skill + `fabric_task.py` path with the verified
+current native-thread root, not Codex native `spawn_agent` as a labor shortcut.
+For Claude, the existing approved Executive/Fabric route applies; a native
+`Agent/Task` child is a distinct path, never silently counted as paid Fabric.
+
+Do not infer role, runtime identity, a root grant or provider access from the
+harness/model name. Never duplicate a submitted run or bypass a real denial.
+Decompose into bounded independent work, retain the parent as an active
+decision-maker, inspect compact returns with artifact hashes and tests, and keep
+long logs outside frontier context. Current resource, writer, user-consent,
+review, merge and release gates are unchanged. Do not fan out just to use
+114 physical lane ceilings; only genuine accepted work counts. A document or
+an installed adapter is not production adoption proof. Existing model-routing
+rules below still apply to separately justified native Claude children.
+
 ## Model routing (STANDING — token economy)
 
 The main session may run a frontier model (Fable/Opus). **Never let fan-outs inherit it.** Workflow `agent()` calls and Agent-tool spawns inherit the session model unless you pass `model:` explicitly — under ultracode that silently burns frontier tokens on mechanical work. Route every spawn:
@@ -68,6 +95,16 @@ Also set `effort: 'low'` on mechanical workflow stages; reserve high effort for 
 Enforcement: a PreToolUse hook (`.claude/hooks/model_routing_guard.py`, wired in `.claude/settings.json`) denies Agent/Task spawns without an explicit model, `fable` spawns outside the orchestrator+FABLE-WHY gate, fable-pinned agent frontmatter outside that gate, and Workflow scripts whose `agent()` calls carry no `model:`/`agentType` routing (or route to fable without a script-level FABLE-WHY line). Model-pinned agent types are available: `builder` (sonnet, build lane restored 2026-08-17) for build stages, `reviewer` (opus) for review stages, `designer` (opus) for design stages — spawns using them pass the guard without a `model:` param; `orchestrator` (opus floor; fable only via the gate above, always with explicit `model:`).
 
 **Direct-spawn routing (hook-enforced amendment, 2026-08-17 — semantic ROUTE contract):** every direct Agent/Task spawn declares a semantic `ROUTE: <class>` line; `.claude/agent-routing.json` (execution-policy registry, NOT a strategic control plane) maps each route to its ONE canonical custom agent and model — `extract`→`extractor`(haiku), `census`→`scout`(sonnet), `research`→`researcher`(sonnet), `draft`→`drafter`(sonnet), `analysis`→`analyst`(opus), `debug`→`debugger`(opus), `build`→`builder`(sonnet), `review`→`reviewer`(opus), `design`→`designer`(opus), `judgment`→main loop ONLY (never spawned), `orchestration`→`orchestrator`. The orchestrator seat runs either explicit `model: 'fable'` + FABLE-WHY (unchanged gate, work failing the draft-and-review test) or — for easier orchestration that does not need frontier judgment — explicit `model: 'opus'` with a prompt directive to load the `fable-mode` skill (`.claude/skills/fable-mode`), at roughly half Fable's price and with no FABLE-WHY because no fable is spent; the same skill lets an Opus MAIN session hold the orchestrator role. `model_routing_guard.py` denies missing/unknown routes, route↔agent/model mismatches, under-specified commissions (each route's required `SECTION:` labels live in the registry), and bypass via `general-purpose`/`Explore`/`Plan`/`fork`; a `SubagentStop` hook (`.claude/hooks/agent_return_guard.py`) blocks a routed worker ONCE if its final message misses the STATUS/RESULT/EVIDENCE/GAPS/DEVIATIONS packet, then lets the second stop through (no loops). Treat a guard rejection as feedback — fix the route or commission, never evade the registry to obtain a different model. Frontmatter pins are the runtime truth; `tests/test_agent_routing_control.py` keeps registry↔frontmatter from drifting.
+
+**Assigned Codex Meta-CEO selective-read rule (2026-10-12):** `AGENTS.md`
+is already the repository's Codex-facing instruction source. An *explicitly
+assigned* Codex principal reads this `CLAUDE.md` for the sections relevant to
+its mission and governing authority/delivery gates, rather than automatically
+pasting the whole overlapping guide into its frontier transcript. The current
+task's source and effect may require more sections; read those on demand and do
+not bypass any substantive law. This is not an exemption for ordinary Codex
+workers or Claude-native sessions, and does not imply provider context
+compaction controls, new installation or a different worker admission path.
 
 ## Context economy (STANDING — Fable burn is CONTEXT × TURNS, not thinking; measured 2026-08-06)
 

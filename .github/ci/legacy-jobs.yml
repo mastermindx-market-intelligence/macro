@@ -10976,6 +10976,10 @@ jobs:
       - research/market_intelligence_productization/receipts/supabase_receipt_0016_account_lifecycle_requests_2026-09-09.json
       - tests/test_self_mod_fence.py
       - tests/test_ci_authority.py
+      - docs/CODEX_META_CEO_FABRIC.md
+      - scripts/fabric_harness_attribution.py
+      - tests/test_meta_ceo_fabric_contract.py
+      - tests/test_fabric_harness_attribution.py
       - tests/test_ci_semantic_proof.py
       - tests/test_ship_loop_guard.py
       - tests/test_ship_loop_semantic.py
@@ -11107,6 +11111,12 @@ jobs:
             --trailers-file "$TRAILERS_FILE"
       - name: self-mod-fence test suite
         run: python -m pytest tests/test_self_mod_fence.py tests/test_ci_authority.py -q
+      - name: assigned Meta-CEO and Fabric parent-attribution regression tests
+        # Runs after self-mod security fences. This scoped job is NOT included
+        # in unrelated build_free_content.py probes; AGENTS, CLAUDE, playbook,
+        # adapter source and suites are explicitly part of its changed-path closure.
+        # The pre-existing agent-os record contract remains the final job step.
+        run: python -m pytest tests/test_meta_ceo_fabric_contract.py tests/test_fabric_harness_attribution.py -q
       - name: agent-os record contract (schema fail-closed, join fail-open)
         # ORDERED LAST IN THIS JOB, deliberately. `run_ci_pack.py:_run_job` returns on
         # the FIRST nonzero step, so any step placed before `self-mod-fence live check`
