@@ -56,9 +56,11 @@ verified:
     result: "exit 0; passed 9; failed 0; native_application_tests 0; native_staging_actions 0; browser_proofs 0; production_acceptance false. Companion blob research/consumer_cyclical/CONSUMER_CYCLICAL_R6_DESIGN_EVIDENCE_2026-09-23.json is 20035360961f4087b24a4df23b047c8eadd03680."
   - claim: "The Consumer handoff satisfies the agentos required-field floor."
     command: "python3 scripts/agentos.py validate --root agentos --quiet"
-    result: "exit 0; 1705 records (94 workstreams, 453 decisions, 506 discoveries, 652 handoffs) — 0 error(s), 142 warning(s)."
-  - claim: "On refs/grok/pr/7870, an unmapped family is withheld and the SEC Archives prefix maps to sec_edgar."
-    command: "git show refs/grok/pr/7870:app/theme_research.py; git show refs/grok/pr/7870:engine/theme_graph/rights.py"
+    result: |
+      exit 0; 1705 records (94 workstreams, 453 decisions, 506 discoveries, 652 handoffs) — 0 error(s), 142 warning(s).
+      Observed 2026-10-13 at 3d7ab09377ff: exit 0; 1708 records (94 workstreams, 453 decisions, 507 discoveries, 654 handoffs) — 0 error(s), 143 warning(s).
+  - claim: "At 839bd6a1b065959b90e48d3171edbbe85f4f74f3, an unmapped family is withheld and the SEC Archives prefix maps to sec_edgar."
+    command: "git show 839bd6a1b065959b90e48d3171edbbe85f4f74f3:app/theme_research.py; git show 839bd6a1b065959b90e48d3171edbbe85f4f74f3:engine/theme_graph/rights.py"
     result: >
       Ref 839bd6a1b065959b90e48d3171edbbe85f4f74f3. app/theme_research.py:454
       withholds the assertion when the attributable family is None.

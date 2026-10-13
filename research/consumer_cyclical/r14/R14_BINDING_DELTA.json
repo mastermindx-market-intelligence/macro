@@ -23,7 +23,8 @@
     "company_history_7426": "7bc04876747d773861b47519061279ae033a148d",
     "buildout_ruling_7780_head": "b68069b2e1296bfc772e4f4e3a0c1cc3845f89eb"
   },
-  "current_blobs": {
+  "blobs_as_of_2026_09_24_note": "Relabeled from current_blobs on 2026-10-13. The six blobs match commit 3e3a7956d014b8c50be7b197fdbea847cecfa641 (2026-09-24) and are not a live head.",
+  "blobs_as_of_2026_09_24": {
     "config/theme_sources.yml": "1073ca1e9841dc95084a57b4577d159e74f9d211",
     "engine/company_intelligence/guidance_history.py": "155f7d0feca825cff3c63b9165aa19feb62f46ba",
     "app/theme_research.py": "f3c70ffd67ccab5225189ec1a3106bd1ea38c11e",
