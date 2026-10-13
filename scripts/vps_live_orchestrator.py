@@ -310,8 +310,12 @@ class Orchestrator:
         self.module(
             "display_quotes",
             "scripts.build_live_quotes",
-            ["--display", "--out", str(self.stage_dir / "quotes.json")],
-            outputs=self._publish_pairs(("quotes.json",)),
+            ["--display", "--out", str(self.stage_dir / "quotes.json"),
+             "--hk-heatmap-out", str(self.stage_dir / "hk_heatmap.json")],
+            # One collector, two access scopes. The ordinary anonymous display
+            # feed is pruned back to its incumbent allowlist; the HK sidecar is
+            # served ONLY through the default-deny registered-member path.
+            outputs=self._publish_pairs(("quotes.json", "hk_heatmap.json")),
             timeout=45,
             # Coverage is resolved/REQUESTED, and --display's universe is no longer
             # ~35 macro tiles: it now carries the scraped board leg too (2026-08-13,

@@ -189,3 +189,26 @@ def test_globe_index_symbols_route_to_expected_non_us_provider():
         assert not lq.is_us_symbol(sym)
         assert not lq.is_cn_symbol(sym)
     assert lq.is_cn_symbol("000001.SS")
+
+
+def test_fetch_tencent_cn_supports_bounded_parallel_batches(monkeypatch):
+    calls = []
+
+    def http_text(url, timeout=12, retries=2, backoff=1.5):
+        calls.append((url, timeout, retries))
+        codes = url.split("q=", 1)[1].split(",")
+        return "".join(_tencent_record(code, {
+            3: "10.10", 4: "10.00", 5: "10.00", 6: "10",
+            30: "20260928101530", 32: "1.00", 33: "10.20",
+            34: "9.90", 37: "1000",
+        }) for code in codes)
+
+    monkeypatch.setattr(lq, "_http_text", http_text)
+    symbols = ["600519.SS", "601398.SS", "000001.SZ", "300750.SZ"]
+    quotes, fallback, status = lq.fetch_tencent_cn(
+        symbols, batch_size=2, max_workers=2, timeout=3, retries=0,
+    )
+    assert set(quotes) == set(symbols)
+    assert fallback == [] and status == "ok"
+    assert len(calls) == 2
+    assert all(timeout == 3 and retries == 0 for _, timeout, retries in calls)

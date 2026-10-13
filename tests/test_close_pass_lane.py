@@ -355,9 +355,10 @@ def test_the_public_live_exceptions_are_exactly_the_reviewed_files():
     # close-pass / entry-radar lanes are touched, so main's routine data pushes
     # never triggered it. Recorded here as reviewed rather than re-litigated —
     # the exposure was the intent of a merged PR, not an accident.
-    assert live_public == ["/live/breadth.json", "/live/flow_pulse.json",
-                           "/live/intraday_quotes.json", "/live/quotes.json",
-                           "/live/release_publications.json", "/live/staleness.json"]
+    assert live_public == ["/live/breadth.json", "/live/china_heatmap.json",
+                           "/live/flow_pulse.json", "/live/intraday_quotes.json",
+                           "/live/quotes.json", "/live/release_publications.json",
+                           "/live/staleness.json"]
     assert not any(p.startswith("/live/") for p in POLICY["public"]["prefixes"])
 
 

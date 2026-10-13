@@ -757,9 +757,10 @@ def test_the_public_live_exceptions_are_still_exactly_the_reviewed_files():
     # fetchable on purpose by #6105 (2026-08-20) and neither copy of this list was
     # updated, so both have been red on main since. Healed together — a pack is one
     # check, so healing only one copy would deadlock the other.
-    assert live_public == ["/live/breadth.json", "/live/flow_pulse.json",
-                           "/live/intraday_quotes.json", "/live/quotes.json",
-                           "/live/release_publications.json", "/live/staleness.json"]
+    assert live_public == ["/live/breadth.json", "/live/china_heatmap.json",
+                           "/live/flow_pulse.json", "/live/intraday_quotes.json",
+                           "/live/quotes.json", "/live/release_publications.json",
+                           "/live/staleness.json"]
 
 
 # ─────────────────────────────────────────────────────────────────────────────

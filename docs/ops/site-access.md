@@ -34,9 +34,15 @@ exceptions the policy file cannot express:
   so these live in the test's `NON_POLICY_ROUTES` set instead. Never add a route
   to `public.exact` to silence the drift test — that would tell `app/paywall.py`
   the path is public content.
+- **China heatmap live overlay.** `/live/china_heatmap.json` is an exact public
+  exception, served `no-store` from the VPS live root. It carries only normalized
+  current-session price/change, breadth, coverage and phase metadata for names
+  already disclosed by the public daily heatmap; no score, rank, signal, raw
+  vendor response, credential, customer data or `/live/*` prefix widening.
+
 - **Runtime artifacts.** `site/live/` is gitignored: the systemd lanes publish
   by atomic rename into `/var/lib/macro-live/public`, so a fresh checkout may
-  not contain `/live/quotes.json` or `/live/breadth.json`. The
+  not contain `/live/quotes.json`, `/live/china_heatmap.json`, or `/live/breadth.json`. The
   policy-targets-exist check exempts that prefix; the Caddy-alignment check
   still covers those entries, so a typo'd `/live/*` path is caught.
 
