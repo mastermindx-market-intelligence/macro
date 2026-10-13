@@ -25992,23 +25992,71 @@ jobs:
   grey-deer-pullback-forward:
     if: ${{ false }}
     gate: code
+    scope: exclusive
     # Grey Deer W5 (WS:GREY-DEER-RISK-INTELLIGENCE): pullback forward lane - the
     # prospective prereg writer, its grader, the nightly entry point and the
     # readiness reporter. Hermetic: synthetic series and tmp_path logs only; the
     # writer/grader identity env is monkeypatched by the tests, never set here.
+    # Curated exclusive (like grey-deer-pullback-stage1): the lane imports the
+    # frozen stage-1 runner, whose lazy risk_radar closure would otherwise pull
+    # this job into ordinary code PRs past the packing-probe ceilings. paths:
+    # below therefore replace inference and list the whole import closure.
     timeout-minutes: 10
     paths:
       - "engine/grey_deer_pullback_forward.py"
       - "engine/grey_deer_pullback_forward_grade.py"
+      - "scripts/__init__.py"
       - "scripts/grey_deer_pullback_nightly.py"
       - "scripts/research/grey_deer_pullback_readiness.py"
       - "scripts/research/grey_deer_pullback_stage1.py"
-      - "lib/observed_moves.py"
-      - "lib/nyse_calendar.py"
       - "tests/test_grey_deer_pullback_forward.py"
       - "tests/test_grey_deer_pullback_forward_grade.py"
       - "tests/test_grey_deer_pullback_nightly.py"
       - "tests/test_grey_deer_pullback_readiness.py"
+      - "lib/observed_moves.py"
+      - "engine/vol_forecast.py"
+      - "lib/nyse_calendar.py"
+      - "collectors/base.py"
+      - "collectors/fred.py"
+      - "collectors/massive_flatfiles.py"
+      - "collectors/massive_stock_day.py"
+      - "engine/__init__.py"
+      - "engine/axes.py"
+      - "engine/base_effect.py"
+      - "engine/canon.py"
+      - "engine/election_cycle.py"
+      - "engine/indicators.py"
+      - "engine/inputs.py"
+      - "engine/oracle/__init__.py"
+      - "engine/oracle/washout_counterread.py"
+      - "engine/pit.py"
+      - "engine/pit_lag_recorder.py"
+      - "engine/regime.py"
+      - "engine/regime_one.py"
+      - "engine/risk_radar.py"
+      - "engine/risk_radar_backtest.py"
+      - "engine/trial_ledger.py"
+      - "engine/yield_momentum.py"
+      - "lib/__init__.py"
+      - "lib/cn_calendar.py"
+      - "lib/config.py"
+      - "lib/exchange_holidays.py"
+      - "lib/hk_calendar.py"
+      - "lib/market_observations.py"
+      - "lib/market_session.py"
+      - "lib/massive_ticker.py"
+      - "lib/store.py"
+      - "lib/tsx_calendar.py"
+      - "lib/us_cash_calendar.py"
+      - "research/grey_deer/PULLBACK_PREREGISTRATION_2026-10-11.md"
+      - "research/grey_deer/PULLBACK_SOURCE_RIGHTS_QUALIFICATION_2026-10-11.md"
+      - "research/grey_deer/RISK_RADAR_DISPLAYED_PROBABILITY_AUDIT_PREREG_2026-09-22.md"
+      - "research/grey_deer/RISK_RADAR_DISPLAYED_PROBABILITY_AUDIT_RESULTS_2026-09-22.md"
+      - "research/grey_deer/RISK_RADAR_STATE_LADDER_CALIBRATION_PREREG_2026-09-21.md"
+      - "research/grey_deer/RISK_RADAR_STATE_LADDER_CALIBRATION_RESULTS_2026-09-21.md"
+      - "scripts/research/risk_radar_displayed_probability_audit.py"
+      - "scripts/research/risk_radar_state_ladder_calibration.py"
+      - "scripts/validate_regime_fwd.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
