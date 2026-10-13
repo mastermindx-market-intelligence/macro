@@ -234,7 +234,9 @@ def present(observation: dict, *, market: str, aria_en: str, aria_zh: str) -> di
             accent="var(--down)",
             reference=0,
             # "z": a value that rounds to zero prints 0.0%, as the metric does.
-            value_fmt="{:z.1f}%",
+            # A close above the high prints "+", as the history table does,
+            # so a reclaim never reads as an unsigned drawdown.
+            value_fmt="{:+.1f}%" if round(shown["vals"][-1], 1) > 0 else "{:z.1f}%",
             # U+2212: the metric and the history table print the true minus
             # sign, so the chart's own end tag must print the same glyph.
             minus="−",

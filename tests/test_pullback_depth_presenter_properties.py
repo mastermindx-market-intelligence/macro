@@ -534,3 +534,30 @@ def test_p7_pre_episode_windows_draw_from_the_reference_high_and_stay_monitoring
     assert "Pullback monitor" in html and "回撤观察" in html
     assert "Pullback underway" not in html and "回撤进行中" not in html
     assert '<div class="rrp-chart"' in html  # the pre-episode window is drawn
+
+
+def test_p3_a_close_above_the_high_tags_the_chart_end_with_a_plus():
+    """The chart's end tag and the history table print one signed number.
+
+    A recovering close above the frozen high is a positive ratio. Printed
+    unsigned inside a drawdown chart it would read as a 1% drawdown.
+    """
+    case = _observe_case(rows_for([100.0] * 62 + [94.0, 97.0, 101.0]))
+    obs, view = case["obs"], case["view"]
+    assert obs["close"] > obs["peak_close"]
+    assert view["detail_path"]["vals"][-1] == pytest.approx(1.0, abs=1e-9)
+    tags = re.findall(r'<span class="ilx-tag">([^<]*)<', view["detail_chart_html"])
+    assert tags == ["+1.0%"]
+
+
+@pytest.mark.parametrize("tail, tag", [
+    ([94.0, 96.0, 95.0], "\u22125.0%"),
+    ([94.0, 97.0, 100.0], "0.0%"),
+])
+def test_p3_an_end_at_or_below_the_high_keeps_its_unsigned_or_minus_tag(tail, tag):
+    case = _observe_case(rows_for([100.0] * 62 + tail))
+    view = case["view"]
+    if view["detail_path"] is None:
+        pytest.skip("presenter withheld this path")
+    tags = re.findall(r'<span class="ilx-tag">([^<]*)<', view["detail_chart_html"])
+    assert tags == [tag]
