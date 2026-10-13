@@ -462,7 +462,9 @@ def test_head_and_options_unknown_paths_are_private(monkeypatch, tmp_path):
         for path in unknown_paths:
             response = surface["client"].request(method, path, follow_redirects=False)
             assert response.status_code == 404, (method, path, response.text)
-            assert response.json() == {"detail": "not found"}
+            # A HEAD answer carries no body; only OPTIONS is decodable.
+            if method == "OPTIONS":
+                assert response.json() == {"detail": "not found"}
             assert "location" not in response.headers
             _assert_private(response)
 
