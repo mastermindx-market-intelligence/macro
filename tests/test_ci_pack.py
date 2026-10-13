@@ -4875,9 +4875,22 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # selected weight-seconds), plus one pack ceiling for every probe. The history of
 # each number is the docstring of the test below. scripts/check_contract_delta.py
 # reads both names with ast.literal_eval, so keep them plain module-level literals.
+#
+# 2026-10-13 settled-close #7193: hosted contract-delta run 38338649990
+# verified scripts/build_free_content.py still selects exactly 134/134 jobs
+# and 10/10 packs; weight increased 5,598 -> 5,602 from adding the separate,
+# formerly unwired 28-case China completed-session/atomic-publication suite
+# to the existing china-board-breadth pytest command. Its current inference
+# traverses 804 named paths plus 113 legitimate dynamic-scan fallback patterns.
+# A tiny "exclusive" selector would hide that breadth; none of those tests
+# may be removed or moved into an unmeasured owner to artificially pass CI.
+# This is a measured 4-second estimator increase on the same selected work,
+# not 4 s of observed runner elapsed time. Rebase ONLY this one weight ceiling
+# to the exact head 5,602; preserve all job, pack, and other weight ceilings.
+# A further increase from this head remains a blocking packing regression.
 PACKING_PROBES = (
     ("templates/index.html", 135, 5_800),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 134, 5_600),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 134, 5_602),  # ci-trigger-closure: data — fixed measured 2026-10-13, see #7193 below
     ("engine/prophet/plan_book.py", 129, 5_600),
 )
 # Twelve packs per shape was the pre-curation measurement.
