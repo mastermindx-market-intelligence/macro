@@ -2299,8 +2299,10 @@ def _read_outside_workstream_dependencies(store: Store) -> None:
     This read does not walk the store and does not call
     :func:`load_store`. A cycle that leaves ``--paths`` is invisible unless
     each cited workstream file is opened and its ``depends_on`` edges join
-    the graph. One file per key, at ``workstreams/WS-<KEY>.md`` only. The
-    extra records are not counted, and their schema findings are not
+    the graph. The file for a key is the alphabetically first
+    ``workstreams/WS-*.md`` whose own ``key`` is that key, the same record
+    :func:`load_store` keeps. A stem other than ``WS-<key>`` still joins.
+    The extra records are not counted, and their schema findings are not
     recorded: this invocation did not name them.
     """
     named = {ident[3:] for ident in store.records if ident.startswith("WS/")}
@@ -2311,24 +2313,19 @@ def _read_outside_workstream_dependencies(store: Store) -> None:
         for dep in _refs(rec.get("depends_on"), "WS")
         if dep not in named
     ]
+    if not pending:
+        return
+    by_key = _first_workstream_by_content_key(store.root)
     seen = set(named)
     while pending:
         key = pending.pop()
         if key in seen:
             continue
         seen.add(key)
-        if not KEY_RE.match(key):
+        found = by_key.get(key)
+        if found is None:
             continue
-        path = _citation_path(store.root, "WS", key)
-        if path is None or not path.is_file():
-            continue
-        try:
-            rec, body = parse_record(path)
-        except ValueError:
-            continue
-        if rec.get("key") != key:
-            continue
-        rec["_body"] = body
+        path, rec = found
         ident = f"WS/{key}"
         if ident in store.records:
             continue
@@ -2337,6 +2334,52 @@ def _read_outside_workstream_dependencies(store: Store) -> None:
         pending.extend(
             dep for dep in _refs(rec.get("depends_on"), "WS") if dep not in seen
         )
+
+
+def _outside_workstream(path: Path) -> tuple[str, dict[str, Any]] | None:
+    """A workstream file worth joining, or None. Schema findings are not kept.
+
+    The graph key is the record's own ``key``, the same index
+    :func:`load_store` uses. A stem other than ``WS-<key>`` is still
+    joined when this file is the alphabetically first ``WS-*.md`` with
+    that key: the full store keeps that record and reports
+    ``filename-mismatch`` beside it. This read skips that schema finding
+    and keeps the edge. A name that does not start with ``WS-`` is not
+    indexed by the full store either.
+    """
+    if not path.name.startswith("WS-"):
+        return None
+    try:
+        rec, body = parse_record(path)
+    except ValueError:
+        return None
+    key = rec.get("key")
+    if not isinstance(key, str) or not KEY_RE.match(key):
+        return None
+    rec["_body"] = body
+    return key, rec
+
+
+def _first_workstream_by_content_key(
+    root: Path,
+) -> dict[str, tuple[Path, dict[str, Any]]]:
+    """Alphabetically first ``WS-*.md`` for each content key.
+
+    Does not call :func:`load_store`. A later file with the same key is
+    the full store's ``duplicate-key`` and is not a graph node.
+    """
+    folder = root / "workstreams"
+    found: dict[str, tuple[Path, dict[str, Any]]] = {}
+    if not folder.is_dir():
+        return found
+    for path in sorted(folder.glob("WS-*.md")):
+        parsed = _outside_workstream(path)
+        if parsed is None:
+            continue
+        key, rec = parsed
+        if key not in found:
+            found[key] = (path, rec)
+    return found
 
 
 def _outside_decision(path: Path) -> tuple[str, dict[str, Any]] | None:
@@ -2439,7 +2482,9 @@ def _report_reached_outside_cycles(store: Store, path_args: list[str]) -> None:
     :func:`check_references` attributes ``workstream-cycle`` to cycle members.
     When every member sits outside ``--paths``, the path filter would drop
     the finding. The named workstream whose edges reached that cycle still
-    fails. A cycle that already lands on a named path is left as written.
+    fails. Member identity is the store key, not the filename stem: a
+    joined file whose stem is not ``WS-<key>`` is still a graph node.
+    A cycle that already lands on a named path is left as written.
     :func:`_load_named_store` calls this for a covered set.
     :func:`_named_record_problems` calls it when ``--paths`` loaded the whole
     store. A second call sees the finding already on a named path and returns.
@@ -2448,10 +2493,15 @@ def _report_reached_outside_cycles(store: Store, path_args: list[str]) -> None:
     cycles = [problem for problem in store.problems if problem.rule == "workstream-cycle"]
     if not cycles or any(problem.path.resolve() in named_paths for problem in cycles):
         return
+    path_key = {
+        stored.resolve(): ident[3:]
+        for ident, stored in store.paths.items()
+        if ident.startswith("WS/")
+    }
     member_keys = {
-        problem.path.stem[3:]
+        path_key[problem.path.resolve()]
         for problem in cycles
-        if problem.path.stem.startswith("WS-") and len(problem.path.stem) > 3
+        if problem.path.resolve() in path_key
     }
     if not member_keys:
         return
@@ -2494,7 +2544,9 @@ def _file_outbound_unreciprocated(store: Store, path_args: list[str]) -> None:
     message names the decision whose ``supersedes`` list produced the
     finding; a named path for that decision still fails. A finding already
     on a named path is left as written. Calling this twice does not duplicate
-    it. Unscoped ``validate`` does not call this, so a full-store run keeps
+    it. :func:`_load_named_store` calls this for a covered set.
+    :func:`_named_record_problems` calls it when ``--paths`` loaded the whole
+    store. Unscoped ``validate`` does not call this, so a full-store run keeps
     the finding on the old record.
     """
     named_paths = {Path(raw).resolve() for raw in path_args}
@@ -2605,15 +2657,16 @@ def _named_record_problems(
     holds every handoff join, only those files. Findings on every other
     file stay out of this invocation: a stale or malformed sibling must
     not fail a path-scoped check. Before that filter, an outside-only
-    workstream cycle is copied onto the named workstream that reaches it.
-    An unreciprocated supersession was already copied onto the named
-    decision by :func:`_load_named_store` when the set was covered; a path
-    list that loaded the whole store keeps that finding on the old record.
+    workstream cycle is copied onto the named workstream that reaches it,
+    and an unreciprocated supersession is copied onto the named decision
+    that lists supersedes. :func:`_load_named_store` copies both when the
+    set was covered; calling them again does not duplicate either finding.
     """
     counts = {"workstreams": 0, "decisions": 0, "discoveries": 0, "handoffs": 0}
     wanted = [Path(raw).resolve() for raw in path_args]
     wanted_set = set(wanted)
     _report_reached_outside_cycles(store, path_args)
+    _file_outbound_unreciprocated(store, path_args)
     problems = [problem for problem in store.problems if problem.path.resolve() in wanted_set]
     in_store = {path.resolve() for path in store.paths.values()}
     known = set(in_store)
