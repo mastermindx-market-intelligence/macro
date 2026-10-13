@@ -30,7 +30,7 @@ changed:
 verified:
   - claim: Independent source review accepts the repaired seven-file core with explicit production adoption gates.
     command: Independent science review of the exact repaired source manifest.
-    result: PASS_SOURCE_CORE_WITH_EXPLICIT_PRODUCTION_ADOPTION_GATES; all seven reviewed SHA256 values preserved through the backend and main unions.
+    result: PASS_SOURCE_CORE_WITH_EXPLICIT_PRODUCTION_ADOPTION_GATES; all seven reviewed SHA256 values preserved through the backend and main unions. The later CLI-only standard import-pin repair is separately independently accepted; the six non-CLI core files remain unchanged.
   - claim: The expanded actual CODE research command includes all prior suites and the new lineage suite.
     command: The exact research-price-panel pytest command from the committed CI manifest.
     result: 882 passed and 409 subtests passed in 177.43 seconds; three existing environment deprecation warnings.
@@ -43,6 +43,9 @@ verified:
   - claim: Consolidated CODE commands retain complete owning coverage.
     command: Exact WRI and DAG grouped commands; Node20.20.2 for existing JS contracts.
     result: WRI415 passed, two inherited absent-nightly-library skips; DAG217 passed. Nine missing sparse fixtures hydrated from exact HEAD, with no content edits.
+  - claim: Hosted import-closure and CLI-pin failures are repaired without waivers or omitted tests.
+    command: test_check_script_import_pinning.py plus test_market_memory_lineage.py; test_ci_pack.py::test_curated_exclusive_scopes_cover_their_own_import_closure.
+    result: 75 CLI-pin/lineage cases passed; corrected full exclusive closure test passed. Independent review848a3c5a confirms exactly five added dependency paths across three existing jobs and standard unconditional root pin. All other job fields and old paths are unchanged.
   - claim: Existing owner regression failures remain distinct from the new source acceptance.
     command: Exact owner tests against the original committed data fixtures.
     result: 100 passed; two inherited options-ledger row and byte cap refusals retained. No cap increase or data pruning.
@@ -69,7 +72,7 @@ do_not_redo:
 danger_areas:
   - A certificate proves qualified same-owner publication lineage, not external origin or clock authenticity.
   - A newer source HEAD yields proof_pending and must not silently substitute another certificate or generation.
-prs: [6528, 8694, 9078, 9098]
+prs: [6528, 8694, 9078, 9098, 9140]
 ---
 
 All28 tasks and49 acceptance cases remain assigned. This source checkpoint is not

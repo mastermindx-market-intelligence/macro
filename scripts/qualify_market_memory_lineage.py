@@ -13,8 +13,8 @@ import os
 import sys
 from pathlib import Path
 
-if __package__ in (None, ""):
-    sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+_ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(_ROOT))
 
 from engine.neuralweb import market_memory_lineage as lineage
 from engine.neuralweb import market_memory_pit as pit

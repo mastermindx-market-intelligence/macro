@@ -84,6 +84,9 @@ jobs:
     # reads by a joined path the resolver cannot derive.
     scope: exclusive
     paths:
+      - engine/neuralweb/market_memory_lineage.py
+      - engine/neuralweb/market_memory_projection.py
+      - engine/neuralweb/market_memory_trusted.py
       - "lib/exchange_holidays.py"
       - "collectors/__init__.py"
       - "collectors/edgar.py"
@@ -5816,6 +5819,7 @@ jobs:
     # every concrete static import-closure path (curated_exclusive_closure_findings
     # gates it) plus the measured runtime in-tree reads of every class-A suite.
     paths:
+      - engine/neuralweb/market_memory_lineage.py
       # Native DailyBrief registration/producer import closure (PR #9037).
       - "app/prophet_daily_brief.py"
       - "engine/prophet_candidate_state.py"
@@ -23688,6 +23692,7 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - engine/neuralweb/market_memory_lineage.py
       # Native DailyBrief registration/producer import closure (PR #9037).
       - "app/prophet_daily_brief.py"
       - "engine/prophet_candidate_state.py"
