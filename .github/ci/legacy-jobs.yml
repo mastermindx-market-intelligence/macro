@@ -18955,6 +18955,8 @@ jobs:
       - name: US candidate and plan source-date truth (PR-time gated journey)
         run: >-
           python -m pytest tests/test_p0_prophet_candidate_board.py -q -k "candidate_heading_discloses_source_date or gated_candidate_journey or historical_plan_wall_does_not"
+      - name: Prophet Plan read error and loading guards (hermetic)
+        run: python -m pytest tests/test_p_mp1_shell_ladder_error_state.py -q
       - name: Prophet Today and Company context - owner selection and typed responses
         run: python -m pytest tests/test_p0_prophet_candidate_board.py -q -k "today or company_context"
       - name: stock-brief context health (R2 context must yield a nonempty batch)

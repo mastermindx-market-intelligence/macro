@@ -5411,32 +5411,88 @@ def _us_board_row_flat(n: dict) -> dict:
     }
 
 
+def _read_us_prophet_book(path: Path) -> "tuple[dict | None, bool]":
+    """Admit the published book before its stock-route consumers use it.
+
+    A missing file retains the existing loading state. An unreadable collection
+    uses the existing error state, rather than masquerading as an empty book.
+    Valid books pass through unchanged, including published order and totals.
+    """
+    if not path.exists():
+        return None, False
+    try:
+        book = json.loads(path.read_text())
+        if not isinstance(book, dict):
+            raise ValueError("plan book must be an object")
+        counts = book.get("lifecycle_counts")
+        if counts is not None and not isinstance(counts, dict):
+            raise ValueError("lifecycle counts must be an object when provided")
+        intake = book.get("intake")
+        if intake and not isinstance(intake, (dict, list, str)):
+            raise ValueError("intake must support the published membership check")
+        plans = book.get("plans", [])
+        if not isinstance(plans, list):
+            raise ValueError("plan collection must be a list")
+        for plan in plans:
+            # Closed rows also reach the episode map and lifecycle context.
+            if not isinstance(plan, dict):
+                raise ValueError("plan record must be an object")
+            for field in ("id", "asset"):
+                value = plan.get(field)
+                if not isinstance(value, str) or not value.strip():
+                    raise ValueError(f"plan {field} must be a nonblank string")
+            opened = plan.get("entry_date") or plan.get("recorded_at") or plan.get("signal_date") or ""
+            if not isinstance(opened, str):
+                raise ValueError("episode opening date must be a string")
+            # Existing lifecycle labels use this value as a dictionary key.
+            # Preserve hashable historical values; reject collection values.
+            hash(plan.get("lifecycle_state"))
+        return book, False
+    except Exception as exc:  # noqa: BLE001 — unreadable books never stop the build
+        log.warning("prophet/index.json unreadable (%s)", exc)
+        return None, True
+
+
 def _plan_relations_for(
     book: "dict | None", book_error: object = False
 ) -> "tuple[str, dict[str, list[dict]]]":
-    """Return open, same-security plan summaries keyed by normalized ticker."""
-    if book_error:
+    """Return open, same-security plan summaries keyed by normalized ticker.
+
+    A malformed plans container, or any malformed open record, leaves the
+    whole owner unreadable: the result is ("unknown", {}) rather than a
+    silent skip. Truthy ``closed`` records are excluded before validation.
+    """
+    if book_error or not isinstance(book, dict):
         return "unknown", {}
-    if not isinstance(book, dict):
+    plans = book.get("plans", [])
+    if not isinstance(plans, list):
         return "unknown", {}
     by_ticker: dict[str, list[dict]] = {}
-    for plan in book.get("plans") or []:
-        if not isinstance(plan, dict) or plan.get("closed"):
+    for plan in plans:
+        if not isinstance(plan, dict):
+            return "unknown", {}
+        if plan.get("closed"):
             continue
+        plan_id = plan.get("id")
         asset = plan.get("asset")
+        if not isinstance(plan_id, str) or not plan_id.strip():
+            return "unknown", {}
         if not isinstance(asset, str) or not asset.strip():
-            continue
-        ticker = asset.strip().upper()
-        by_ticker.setdefault(ticker, []).append({
-            "id": plan.get("id"),
+            return "unknown", {}
+        try:
+            hash(plan.get("lifecycle_state"))
+        except TypeError:
+            return "unknown", {}
+        by_ticker.setdefault(asset.strip().upper(), []).append({
+            "id": plan_id,
             "lifecycle_state": plan.get("lifecycle_state"),
             "formation_date": plan.get("formation_date"),
             "signal_date": plan.get("signal_date"),
             "plan_asof": plan.get("plan_asof"),
         })
-    for plans in by_ticker.values():
-        plans.sort(key=lambda plan: (
-            str(plan.get("formation_date") or ""), str(plan.get("id") or "")), reverse=True)
+    for grouped in by_ticker.values():
+        grouped.sort(key=lambda entry: (
+            str(entry.get("formation_date") or ""), str(entry.get("id") or "")), reverse=True)
     return "none", by_ticker
 
 
@@ -6214,15 +6270,8 @@ def main() -> int:
     #     (§10's ".mx-error" state, names what failed, offers Retry).
     # Both leave us_prophet_book None; only the flag differs, and only the
     # flag decides which of the two non-live states the ladder renders.
-    us_prophet_book = None
-    us_prophet_book_error = False
-    _pbk = site / "prophet" / "index.json"
-    if _pbk.exists():
-        try:
-            us_prophet_book = json.loads(_pbk.read_text())
-        except Exception as e:  # noqa: BLE001 — additive, never fatal
-            log.warning("prophet/index.json unreadable (%s)", e)
-            us_prophet_book_error = True
+    us_prophet_book, us_prophet_book_error = _read_us_prophet_book(
+        site / "prophet" / "index.json")
 
     # P1 — read the incumbent leader-pullback coverage independently of Candidates and
     # Plans. The full roster exists only in this in-memory view and the existing protected
