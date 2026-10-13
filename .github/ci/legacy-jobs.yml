@@ -2945,6 +2945,7 @@ jobs:
       - "lib/dataos/__init__.py"
       - "lib/dataos/nulls.py"
       - "lib/dataos/price.py"
+      - "lib/dataos/price_views.py"
       - "lib/dataos/quality.py"
       - "lib/dataos/read_contract.py"
       - "lib/dataos/registry.py"
@@ -6481,6 +6482,7 @@ jobs:
       - "lib/dataos/identity.py"
       - "lib/dataos/nulls.py"
       - "lib/dataos/price.py"
+      - "lib/dataos/price_views.py"
       - "lib/dataos/quality.py"
       - "lib/dataos/read_contract.py"
       - "lib/dataos/registry.py"
@@ -8813,6 +8815,7 @@ jobs:
       - "lib/dataos/identity.py"
       - "lib/dataos/nulls.py"
       - "lib/dataos/price.py"
+      - "lib/dataos/price_views.py"
       - "lib/dataos/quality.py"
       - "lib/dataos/read_contract.py"
       - "lib/dataos/registry.py"
@@ -8944,7 +8947,7 @@ jobs:
         with:
           python-version: "3.12"
       - name: install minimal deps
-        run: pip install pytest pyyaml
+        run: pip install pytest pyyaml pandas numpy
       - name: authority guard (hard fail on Article-2 forbidden reads)
         run: python scripts/check_research_factory_authority.py
       - name: authority guard selftest (gate fires on planted violation)
@@ -8955,6 +8958,9 @@ jobs:
           tests/test_research_factory_state.py
           tests/test_research_factory_schema.py
           tests/test_research_factory_market_memory.py
+          tests/test_research_codegen_accounting_contract.py
+          tests/test_research_codegen_evaluation.py
+          tests/test_research_codegen_transport.py
           -q
 
   cycle-pattern-authority:
@@ -13057,6 +13063,7 @@ jobs:
       - lib/dataos/__init__.py
       - lib/dataos/nulls.py
       - lib/dataos/price.py
+      - lib/dataos/price_views.py
       - lib/dataos/quality.py
       - lib/dataos/read_contract.py
       - lib/dataos/registry.py
@@ -17449,6 +17456,7 @@ jobs:
       - lib/dataos/identity.py
       - lib/dataos/nulls.py
       - lib/dataos/price.py
+      - lib/dataos/price_views.py
       - lib/dataos/quality.py
       - lib/dataos/read_contract.py
       - lib/dataos/registry.py
@@ -20467,6 +20475,7 @@ jobs:
       - "lib/hk_calendar.py"
       - "lib/intl_compare_mount.py"
       - "lib/intl_compare_view.py"
+      - "lib/intl_eod_publication.py"
       - "lib/intl_history_mount.py"
       - "lib/intl_inspector_mount.py"
       - "lib/intl_inspector_view.py"
@@ -24863,6 +24872,7 @@ jobs:
       - "lib/dataos/identity.py"
       - "lib/dataos/nulls.py"
       - "lib/dataos/price.py"
+      - "lib/dataos/price_views.py"
       - "lib/dataos/quality.py"
       - "lib/dataos/read_contract.py"
       - "lib/dataos/registry.py"
@@ -25998,6 +26008,7 @@ jobs:
       - lib/dataos/identity.py
       - lib/dataos/nulls.py
       - lib/dataos/price.py
+      - lib/dataos/price_views.py
       - lib/dataos/quality.py
       - lib/dataos/read_contract.py
       - lib/dataos/registry.py
@@ -26888,6 +26899,7 @@ jobs:
       - "lib/dataos/identity.py"
       - "lib/dataos/nulls.py"
       - "lib/dataos/price.py"
+      - "lib/dataos/price_views.py"
       - "lib/dataos/quality.py"
       - "lib/dataos/read_contract.py"
       - "lib/dataos/registry.py"
@@ -28461,6 +28473,7 @@ jobs:
       - lib/dataos/identity.py
       - lib/dataos/nulls.py
       - lib/dataos/price.py
+      - lib/dataos/price_views.py
       - lib/dataos/quality.py
       - lib/dataos/read_contract.py
       - lib/dataos/registry.py
