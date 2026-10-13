@@ -17,6 +17,26 @@ from urllib.parse import urlsplit
 
 from engine.whitehouse_feed import FEEDS, _slug_id
 
+# Aggregate /news/feed/ labels retained items section=news. Canonical pages from
+# that feed use a finite official route set; section-specific feeds stay bound
+# to their own path. Source identity stays as qualified.
+_AGGREGATE_SECTION = "news"
+_AGGREGATE_ROUTES = frozenset({
+    "news", "fact-sheets", "presidential-actions", "research",
+    "remarks", "briefings-statements", "releases",
+})
+_CANONICAL_PATH = re.compile(r"^/([a-z0-9-]+)/(?:[a-z0-9-]+/)*[a-z0-9-]+/?$")
+
+
+def _allowed_route(section: str, path: str) -> bool:
+    match = _CANONICAL_PATH.fullmatch(path)
+    if match is None:
+        return False
+    route = match.group(1)
+    if section == _AGGREGATE_SECTION:
+        return route in _AGGREGATE_ROUTES
+    return route == section
+
 
 def _read_bound(path: Path, digest: str, limit: int) -> str:
     if not re.fullmatch(r"[0-9a-f]{64}", str(digest)):
@@ -92,12 +112,14 @@ def plan_whitehouse_candidate(*, document_path: Path, document_sha256: str,
             raise ValueError("qualified source identity mismatch")
     url = urlsplit(document["url"])
     if (url.scheme != "https" or url.netloc != "www.whitehouse.gov"
+            or url.geturl() != document["url"]
             or url.query or url.fragment
-            or not url.path.startswith(f"/{document['section']}/")
+            or not _allowed_route(document["section"], url.path)
             or document["id"] != _slug_id(document["url"], document["published"])):
         raise ValueError("source is not its canonical White House document")
     feed = next((u for u, section in FEEDS if section == document["section"]), None)
-    if q["feed_url"] != feed or q["feed_url"] != qualification["existing_feed_ingress"]["url"]:
+    if (feed is None or q["feed_url"] != feed
+            or q["feed_url"] != qualification["existing_feed_ingress"]["url"]):
         raise ValueError("source feed identity mismatch")
     body = document.get("body")
     if (document.get("schema") != "whitehouse.source_document.v1"
