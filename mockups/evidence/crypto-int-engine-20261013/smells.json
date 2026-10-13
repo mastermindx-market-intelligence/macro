@@ -19,18 +19,18 @@
         "asof_present": true,
         "by_viewport": {
           "desktop": {
-            "document_height_px": 4619,
+            "document_height_px": 4634,
             "elements_wider_than_viewport": 0,
             "horizontal_overflow": false
           },
           "mobile": {
-            "document_height_px": 8294,
+            "document_height_px": 8325,
             "elements_wider_than_viewport": 0,
             "horizontal_overflow": false
           }
         },
         "console_error_count": 0,
-        "document_height_px": 4619,
+        "document_height_px": 4634,
         "duplicate_heading_texts": [],
         "elements_wider_than_viewport": 0,
         "heading_counts": {
@@ -50,7 +50,7 @@
           "viewport": "desktop"
         },
         "panel_count": 1,
-        "payload_bytes_total": 238083,
+        "payload_bytes_total": 64592,
         "raw_slug_hit_count": 0,
         "raw_slug_hits": [],
         "request_count": 21,
@@ -59,7 +59,7 @@
         "source_present": true,
         "todo_placeholder_hit_count": 0,
         "todo_placeholder_hits": [],
-        "visible_word_count": 930
+        "visible_word_count": 946
       },
       "page_id": "macro:crypto",
       "route": "/crypto.html"
