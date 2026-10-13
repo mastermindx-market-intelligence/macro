@@ -1931,6 +1931,65 @@
     });
   }
 
+  // ---- FIF X2-n designated list (seat ruling R2) ------------------------------
+  /* The issuer-watch subscription surface: ONE designated watchlist named
+     "Filing Forensics". DATA FUNCTIONS ONLY — no DOM of its own, no styling,
+     and NO caller is wired anywhere in this repo (the FIF watch toggle is a
+     later, separately owned lane). Laws:
+       • created LAZILY, only on an explicit watch action — never auto-created,
+         never backfilled. findList() never creates; ensureList() is the only
+         creator, and a two-tab create race adopts the winner (listCreate's
+         23505 path).
+       • identified by the verbatim stored NAME: the watchlists schema carries
+         no kind/system/metadata column (Terminal 0001_init.sql:29-36), so the
+         unique (user_id, name) index is the identity. The FIF UI shows a
+         localized label; the stored row keeps this exact name.
+       • removing the symbol (or the whole list) IS the unsubscribe — the
+         producer treats absence as "no subscription".
+     Composed strictly from the registered multi-list primitives above; no
+     other watchlist semantics change. Signed-out callers get rejected
+     promises from _listsGuard() — zero network when signed out. Symbols are
+     normalized to uppercase tickers here so the producer's read (which
+     uppercases) and the Terminal rows agree. */
+  var FIF_LIST_NAME = 'Filing Forensics';
+
+  function fifFindList() {
+    return _listsGuard().then(function () { return _findListByName(FIF_LIST_NAME); });
+  }
+  function fifEnsureList() {
+    return fifFindList().then(function (found) {
+      if (found) return found;
+      return listCreate(FIF_LIST_NAME);
+    });
+  }
+  function fifWatch(symbol) {
+    var t = String(symbol == null ? '' : symbol).trim().toUpperCase();
+    if (!t) return Promise.reject(new Error('bad-args'));
+    return fifEnsureList().then(function (list) {
+      return symbolAdd(list.id, t).then(function (r) { return { list: list, result: r }; });
+    });
+  }
+  function fifUnwatch(symbol) {
+    var t = String(symbol == null ? '' : symbol).trim().toUpperCase();
+    if (!t) return Promise.reject(new Error('bad-args'));
+    return fifFindList().then(function (list) {
+      // No designated list = already unsubscribed; never create to delete.
+      if (!list) return { removed: false };
+      return symbolRemove(list.id, t).then(function (r) { return { removed: true, result: r }; });
+    });
+  }
+  function fifIsWatched(symbol) {
+    var t = String(symbol == null ? '' : symbol).trim().toUpperCase();
+    if (!t) return Promise.resolve(false);
+    return fifFindList().then(function (list) {
+      if (!list) return false;
+      return symbolsFetch(list.id).then(function () {
+        var c = _cloudOf(list.id);
+        return !!(c && c.set[t]);
+      });
+    });
+  }
+
   // ---- public API ------------------------------------------------------------
   window.WatchStore = {
     status: status,
@@ -1957,6 +2016,16 @@
       add: symbolAdd,
       remove: symbolRemove,
       push: pushList                 // full-membership diff, scoped to one list
+    },
+    // FIF X2-n designated-list helper (R2): the issuer-watch subscription
+    // surface. Data functions only; no call site ships in this wave.
+    fif: {
+      listName: function () { return FIF_LIST_NAME; },
+      findList: fifFindList,
+      ensureList: fifEnsureList,
+      watch: fifWatch,
+      unwatch: fifUnwatch,
+      isWatched: fifIsWatched
     },
     portfolio: {
       list: portfolioList,
@@ -2253,6 +2322,7 @@
       portfolio: window.WatchStore.portfolio,
       lists: window.WatchStore.lists,
       symbols: window.WatchStore.symbols,
+      fif: window.WatchStore.fif,
       pull: pull,
       pushList: pushList,
       resolveBoundList: resolveBoundList,

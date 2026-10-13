@@ -4709,6 +4709,12 @@ CURATED_EXCLUSIVE = {
     # import app.main) and breach all three PACKING_PROBES; scope: exclusive
     # pins the job to the FIF globs plus its measured static/runtime closure.
     "fif-kernel-guards",
+    # 2026-10-13 FIF X2-n saved-research notifications (seat R3): the three
+    # hermetic suites reach engine.fundamental_forensics and the research-vault
+    # store, so inference unioned the whole-tree fallback roots and selected the
+    # job on the PACKING_PROBES (check_contract_delta: 3 introduced findings).
+    # scope: exclusive pins it to its derived import closure.
+    "fif-saved-research-notifications",
 }
 
 
