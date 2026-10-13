@@ -65,10 +65,11 @@ def _apply(patch: Path, relative: str, dest_root: Path) -> Path:
     target = dest_root / relative
     target.parent.mkdir(parents=True, exist_ok=True)
     shutil.copy(ROOT / relative, target)
-    proc = subprocess.run(
-        ["patch", "-p0", "--forward", "--batch", "--directory", str(dest_root), "--input", str(patch)],
-        check=False, capture_output=True, text=True,
-    )
+    base = ["patch", "-p0", "--batch", "--directory", str(dest_root), "--input", str(patch)]
+    applied = subprocess.run(base + ["--reverse", "--dry-run"], check=False, capture_output=True, text=True)
+    if applied.returncode == 0:  # integrated tree: the patch already lives in ROOT
+        return target
+    proc = subprocess.run(base + ["--forward"], check=False, capture_output=True, text=True)
     if proc.returncode != 0:
         raise AssertionError(f"patch failed\n{proc.stdout}\n{proc.stderr}")
     return target

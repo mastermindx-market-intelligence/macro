@@ -52,7 +52,14 @@ def test_a_absent_r9_module_is_unavailable_and_not_a_number(tmp_path: Path) -> N
 
     absent = t15.load_r9_prebreak_study(tmp_path)
     _assert_absent(absent)
-    _assert_absent(t15.load_r9_prebreak_study())
+    in_tree = t15.load_r9_prebreak_study()
+    if (_MODULE_PATH.parent / "r9_prebreak_study.py").is_file():
+        # #8901 landed the R9 module on main; the loader still must not import or run it.
+        assert in_tree["status"] == "present_not_executed"
+        assert in_tree["reason"] == "not_executed"
+        _no_numbers(in_tree)
+    else:
+        _assert_absent(in_tree)
 
     present = tmp_path / "research" / "crypto_science"
     present.mkdir(parents=True)

@@ -280,7 +280,6 @@ def _thesis_decision(close, as_of):
     }
 
 
-@pytest.mark.xfail(strict=True, reason="T13 look-ahead defect in engine/btc_cycle_thesis.py monitor(); fixed by research/crypto_science/patches/cx-t13p-20261012__btc_cycle_thesis.patch — remove this marker in the same commit that applies the patch")
 def test_cycle_thesis_label_at_t_ignores_rows_after_t():
     close, as_of = _thesis_path()
     pinned = _thesis_decision(close.loc[:as_of], as_of)

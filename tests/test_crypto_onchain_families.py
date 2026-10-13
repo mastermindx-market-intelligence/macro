@@ -238,21 +238,6 @@ def _assert_unavailable(series: pd.Series) -> None:
         assert not (isinstance(value, float) and math.isinf(value))
 
 
-_INPUTS_DEFECT = (
-    "DEFECT: non-positive or non-finite denominators become inf, 0, or 1; "
-    "fixed by research/crypto_science/patches/cx-t11-20261012__btc_inputs.py.patch "
-    "- remove marker when applying"
-)
-
-
-@pytest.mark.xfail(
-    strict=True,
-    reason=(
-        "DEFECT: market_extreme counts NUPL and MVRV-Z as two votes; "
-        "fixed by research/crypto_science/patches/cx-t11-20261012__btc_signals.py.patch "
-        "- remove this marker in the same commit that applies the patch"
-    ),
-)
 def test_market_extreme_still_runs_and_vote_names_are_one_family() -> None:
     """One F-MVRV family cannot satisfy min_votes of 2.
 
@@ -311,7 +296,6 @@ def test_mvrv_family_plus_supply_in_profit_is_capitulation() -> None:
     assert set(out["market_extreme"]) == {"capitulation"}
 
 
-@pytest.mark.xfail(strict=True, reason=_INPUTS_DEFECT)
 def test_mvrv_zero_derived_identity_is_unavailable(root: Path) -> None:
     """mvrv == 0 leaves realized_cap and nupl unavailable."""
     days = _days("2024-01-01")
@@ -322,7 +306,6 @@ def test_mvrv_zero_derived_identity_is_unavailable(root: Path) -> None:
     _assert_unavailable(out["nupl"])
 
 
-@pytest.mark.xfail(strict=True, reason=_INPUTS_DEFECT)
 def test_mvrv_nonfinite_derived_identity_is_unavailable(root: Path) -> None:
     """Non-finite mvrv leaves realized_cap and nupl unavailable, never 0 or 1."""
     days = _days("2024-01-01", "2024-01-02")
@@ -333,7 +316,6 @@ def test_mvrv_nonfinite_derived_identity_is_unavailable(root: Path) -> None:
     _assert_unavailable(out["nupl"])
 
 
-@pytest.mark.xfail(strict=True, reason=_INPUTS_DEFECT)
 def test_nonpositive_stablecoin_denominator_ssr_is_unavailable(root: Path) -> None:
     """Stablecoin denominator <= 0 or non-finite leaves ssr unavailable."""
     days = _days("2024-01-01", "2024-01-02", "2024-01-03")
@@ -344,7 +326,6 @@ def test_nonpositive_stablecoin_denominator_ssr_is_unavailable(root: Path) -> No
     _assert_unavailable(out["ssr"])
 
 
-@pytest.mark.xfail(strict=True, reason=_INPUTS_DEFECT)
 def test_nonpositive_supply_denominator_share_is_unavailable(root: Path) -> None:
     """Supply denominator <= 0 or non-finite leaves the share unavailable, never 0 or 1."""
     days = _days("2024-01-01", "2024-01-02", "2024-01-03")
