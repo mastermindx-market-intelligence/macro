@@ -13,8 +13,15 @@ function element() {
       add: (name) => classes.add(name),
       remove: (name) => classes.delete(name),
       contains: (name) => classes.has(name),
+      toggle: (name, force) => {
+        const next = force === undefined ? !classes.has(name) : Boolean(force);
+        if (next) classes.add(name);
+        else classes.delete(name);
+      },
     },
     hidden: true,
+    disabled: false,
+    value: '',
     innerHTML: '',
     textContent: '',
     setAttribute: (key, value) => {

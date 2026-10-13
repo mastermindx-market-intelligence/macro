@@ -1,0 +1,24 @@
+{
+  "observed_at": "2026-10-12T04:27:11.363322+00:00",
+  "canonical_url": "https://www.whitehouse.gov/fact-sheets/2026/10/fact-sheet-trump-administration-announces-the-most-ambitious-set-of-science-initiatives-this-century/",
+  "event_date": "2026-10-08",
+  "original_retained_document_sha256": "b8b7f02bbbbfd153c9c9f9a2de53de38cd76a39d6d3ff728513e72faf868c6cd",
+  "current_aggregate_feed_sha256": "1d0b7af8f564569c793aa9bf3dba9878999ac6e098b54f1ed0ee536bc1dd47ba",
+  "identity_fields_equal": {
+    "id": true,
+    "guid": true,
+    "title": true,
+    "url": true,
+    "published": true
+  },
+  "same_normalized_body": false,
+  "original_body_sha256": "dbd78e4a97171a4bf6ffb9334f430deefca04d19d68b6abc64835daaea634bf9",
+  "aggregate_body_sha256": "f799dc909c3740ab7d892d769bec22018ef78d3f178916f2e58d2833280f9dae",
+  "original_body_chars": 10793,
+  "aggregate_body_chars": 10883,
+  "original_feed_section": "fact-sheets",
+  "aggregate_feed_section": "news",
+  "allow_stage": false,
+  "allow_emit": false,
+  "scope": "Actual cross-feed comparison; source equivalence is not assumed and the October8 event remains expired."
+}

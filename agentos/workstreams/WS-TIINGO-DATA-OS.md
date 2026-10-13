@@ -32,42 +32,64 @@ waves:
   - id: consumer-delivery
     title: Integrate incumbent Data OS and Quote Hub, release and prove live
     status: in_progress
-    pr: [8698, 945, 955, 8986, 9004, 9018, 9020, 9022]
+    pr: [8698, 945, 955, 8986, 9004, 9018, 9020, 9022, 9027]
 next_action: >-
-  Original wave12 settled 2026-10-12 20:14:21 UTC: 5000 successful captures, zero
-  capture failures, 8103921 served row hints and 1772986058 uncompressed bytes.
-  Its final quality partition accounts for all original selections exactly once:
-  4999 qualified responses (4987 nonempty, 12 empty, 8099778 bars) and one retained
-  WTFNF source-quality quarantine. One negative raw/adjusted volume row correctly
-  failed unchanged validation; the entire receipt remains unprojected, with no
-  value repair or provider retry. Original failed prefix18 was reconciled: 194
-  valid receipts, 145 existing views reused and 49 new. Independent review passed
-  the quarantine and disjoint continuation. Actual local admission trace passed:
-  four-admission minimum separation 5.000027 seconds, maximum 2879 per half-open
-  hour. The census is 33171 nonempty histories, 69804547 bars, 112 empty responses,
-  14405 uncaptured windows and one captured quality quarantine. Deduplicate the
-  quarantine by receipt identity; missing qualified windows are not a retry queue.
-  Continue original wave13, actually started at 20:17:46 UTC after successful
-  prior raw settlement and fresh source/collision/quota/storage checks. Its 5000
-  selections exclude every wave12 reservation, including WTFNF. Qualify only new
-  owned completed responses; preserve source/key custody, four in flight, rolling
-  local admissions no faster than four per five seconds, 24 GiB raw byte stop
-  threshold and 40 GiB admission floor. Save truthful partition and actual timing
-  evidence after settlement, then start the next disjoint ready capture.
-  Macro source/evidence 9018, 9020 and 9022 are merged. New safe proof lives in
-  docs/tiingo-evidence/20261012-wave12-quality-partition/. The immutable installed
-  research release remains 0b204cde017b88a9fec03ddb583f6b5e02ea4886; accepted real
-  Lab/reader proof remains valid. Four contracts are PRODUCED, twenty PROPOSED.
-  Fresh Terminal 955 remains OPEN/BLOCKED at 1a74e3cf93368a5c5381f0110b80601dff0ae3e3;
-  its original PR run 38272372019 remains action_required, required aggregate
-  absent, incumbent auto-merge retained. Original dispatched all-twelve success
-  38272365047 is accepted for that exact head. Preserve the actual approval
-  refusal and require protected landing before the existing VPS builder path.
-  Next published BOATS opening is 2026-10-13 00:00 UTC; no subscriber or scheduler
-  is launched. All sixteen prior provider failure exclusions, standalone split
-  and SHW/PFE holds remain. The 75 accepted fundamental captures across 25
-  companies serve roughly three years. Deep/all-symbol serving, dated identity,
-  PIT and responsive live BOATS acceptance remain open. Continue ready work.
+  Preserve accepted producer integrity, the four PRODUCED research contracts and
+  all prior dispositions. Macro #9045 passed all twelve expanded jobs and its
+  original overall CI 38331358673 before normal protected merge to
+  88eb65415f3564bf2c99cd8f9ee9d9774fa68ada. All 27 reviewed changed blobs are
+  identical in canonical main. Original wave15 capture 43992 settled exit one;
+  its actual return is consumed. Actual accounting 38800 covers all 4,392
+  original identities exactly once: 1,757 qualified responses, one whole SCNG
+  source-quality quarantine, three held timeouts (TACI, TACJF, TAER) and 2,631
+  never-admitted requests. Qualified bars are 3,972,327 and whole quarantined
+  raw rows are 4,454; their raw bytes sum to actual capture's 898,220,411.
+  No failed request was retried. Preserve failed prefix01 and prefix03 artifacts.
+  Reviewed preflight traverses every unchanged normalizer input before a writer;
+  only negative JSON integer volume fields within signed int64, excluding bool,
+  can receive whole-response quarantine. Other defects hold the exact stage.
+  Prefix02 reused all 171 valid partial projections and preserved all 342 hashes.
+  The later content-path collision keeps prior PXSTD receipt artifacts unchanged
+  while the existing producer writes STMGD's separate current-receipt view. No
+  security alias or dated-identity claim follows. Original window03 10051 and
+  all prefix02/04/05 qualification, coverage and accounting returns are consumed.
+  The accepted census is 44,915 nonempty histories and 95,040,047 bars, with
+  117 empty catalogue windows, 2,654 uncaptured and three quality quarantines.
+  The installed immutable research release consumed newly qualified SAPIF's
+  4,787 adjusted bars through one declared-budget Lab trial. Original 81369
+  settled exit zero; host status, request, result and one budget artifact are
+  joined. Source hashes, selected runtime and production ledger remain unchanged.
+  The independently reviewed continuation on original execution 33372 created
+  its actual scope at 2026-10-13 02:03:45 UTC for the exact 2,631 never-admitted
+  requests. It excludes all 28 held or quarantined symbols and carries only the
+  remaining original raw budget, 24,871,583,365 bytes. Final read-only preflight
+  passed with zero EOD collisions. Capture settlement and its new qualification
+  remain pending. Consume the actual original return, disposition every new
+  response and finish combined two-phase accounting. Preserve rolling-five-second
+  pacing, first-error admission stop and drain, 40 GiB floor, whole source-quality
+  quarantines and prior foreign artifact hashes. Every started writer settles
+  before a successor. Continue source review and landing while capture proceeds.
+  BOATS capture 90361 and qualifier 48859 are settled with consumed original
+  exit-zero returns. The 00:00:19-00:09:30 UTC capture retained 2,000,000 messages,
+  2,000 segments and 448,959,986 bytes on one connection with zero observed
+  transport breaks. All raw and reader lineage is verified: 1,939,898 Q events,
+  60,096 T events, zero B events and six other frames, with 11,577 vendor symbols.
+  Original uppercase zero-match audits remain immutable. A separate reader-only
+  audit found events for eight of nine literal lowercase names; AMZN has zero
+  only within that selected slice. Its 32 segments follow receipt path order;
+  chronological final-interval coverage is unproved. No canonical identity,
+  PIT, full-session continuity, public publication or live consumer acceptance
+  follows. Installed research release 0b204cde and accepted Lab/reader proof
+  remain valid. Terminal #955 last verified head is
+  8811e38c64eb14fadc40a00ccfbfb31c37f863e8. Existing dispatched CI 38319936924 passed
+  all twelve jobs; original PR CI 38319943025 is action_required and the protected
+  PR is OPEN/BLOCKED with required CI absent. Preserve the original approval
+  refusal and release gate. Standalone split, SHW/PFE and provider access holds
+  remain. The 75 accepted fundamentals captures across 25 companies serve about
+  three years; deep/full serving, dated identity, knowledge-time qualification
+  and responsive live Terminal acceptance remain open. Continue every ready
+  permitted lane. Proof and reviewed methods are saved in
+  docs/tiingo-evidence/20261013-final-scope-disposition/.
 owns_paths:
   - collectors/tiingo_archive.py
   - lib/dataos/tiingo_*.py
@@ -75,6 +97,10 @@ owns_paths:
   - docs/TIINGO_DATA_OS_INGESTION_20261009.md
   - docs/tiingo-evidence/
 artifacts:
+  - docs/tiingo-evidence/20261013-final-scope-disposition/
+  - docs/tiingo-evidence/20261013-open-session-history-frontier/
+  - docs/tiingo-evidence/20261012-final-capture-preparation/
+  - docs/tiingo-evidence/20261012-wave13-held-outcome/
   - docs/tiingo-evidence/20261012-wave12-quality-partition/
   - docs/TIINGO_DATA_OS_INGESTION_20261009.md
   - docs/tiingo-evidence/20261011-producer-integrity/

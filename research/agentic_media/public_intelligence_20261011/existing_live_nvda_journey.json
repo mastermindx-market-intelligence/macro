@@ -1,0 +1,23 @@
+{
+  "kind": "existing_public_dossier_journey",
+  "observed_at": "2026-10-11T21:31:18.799Z",
+  "new_press_release_installed": false,
+  "steps": [
+    "NVIDIA dossier link opened public earnings record",
+    "Source receipt disclosure expanded",
+    "Return link restored NVIDIA dossier"
+  ],
+  "dossier_canonical": "https://www.mastermind-x.com/stocks/NVDA.html",
+  "earnings_record_canonical": "https://www.mastermind-x.com/stocks/earnings/nvda-2027q1-call-record.html",
+  "receipt_panel_expanded": true,
+  "return_url": "https://www.mastermind-x.com/stocks/NVDA.html?from=earnings-wire&tx=2027Q1",
+  "terminal_target": "https://app.mastermind-x.com/terminal?sym=NVDA&pane=transcripts&tx=2027Q1&utm_source=earnings_wire&utm_medium=organic_research&utm_campaign=company_intelligence",
+  "terminal_follow_verified": false,
+  "press_admission_granted": false,
+  "screenshot": {
+    "path": "existing_live_nvda_source_receipts.jpg",
+    "sha256": "4924968e1e13e20922e8164d250176eec3157dd8fcbff3cea182241b01d76745",
+    "bytes": 139343
+  },
+  "scope": "Observed public navigation and receipt disclosure, not independently replayed transcript receipts or public-article rights."
+}

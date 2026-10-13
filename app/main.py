@@ -2414,6 +2414,10 @@ app.include_router(prophet_lab_router)
 from app.prophet_observations import router as prophet_observations_router  # noqa: E402
 app.include_router(prophet_observations_router)
 
+# Read-only DailyBrief uses the original producer after site_full authentication.
+from app.prophet_daily_brief import router as prophet_daily_brief_router  # noqa: E402
+app.include_router(prophet_daily_brief_router)
+
 # Capital Structure observed filing-state desk.  This is an authenticated
 # artifact-serving boundary: it reads the verified projection only and does not
 # calculate financing terms, capacity, runway, or probability in the API tier.

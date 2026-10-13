@@ -25,7 +25,7 @@ from typing import Iterable, Sequence
 
 from engine.qbus_news_contract import NewsRevision
 from engine.qbus_news_cluster import (
-    CLUSTER_POLICY_VERSION,
+    UNKNOWN_CLUSTER_POLICY_VERSION,
     ClusterCandidate,
     ClusterItem,
     ClusterPolicy,
@@ -183,6 +183,11 @@ class StoryDetail:
     item_count: int
     members: tuple[StoryRow, ...]
 
+
+# qbus_meta key naming the cluster policy version of the most recent
+# writer; a read-only open with no policy passed reads it to know the
+# policy in force. Absent only in stores written before it existed.
+_META_CLUSTER_POLICY_KEY = "cluster_policy_version"
 
 _SCHEMA_SQL = """
 CREATE TABLE IF NOT EXISTS qbus_meta (
@@ -580,14 +585,17 @@ def _redact_story(
     )
 
 
-def _cluster_policy_label(versions: list[str]) -> str:
+def _cluster_policy_label(versions: list[str], in_force: str) -> str:
     """One string naming every policy that minted the 24h cluster stories.
 
     An empty list means no stored cluster contributed to stories_24h, so the
-    policy in force is named, as before the per-row stamp existed.
+    policy in force is named: ``in_force`` is the open's passed policy
+    stamp, or — when no policy was passed — the version the most recent
+    writer recorded in ``qbus_meta`` (``UNKNOWN_CLUSTER_POLICY_VERSION``
+    only for stores written before that key existed).
     """
     if not versions:
-        return CLUSTER_POLICY_VERSION
+        return in_force
     if len(versions) == 1:
         return versions[0]
     return " + ".join(sorted(versions))
@@ -606,6 +614,9 @@ class NewsStore:
         self.path = Path(path)
         self.source_key = _validate_token(source_key, "source_key", 256)
         self.cluster_policy = cluster_policy or ClusterPolicy()
+        # A writer's policy is in force by construction (and is recorded
+        # in qbus_meta by _initialize), passed or not.
+        self._cluster_policy_passed = True
         self._read_only = False
         self.path.parent.mkdir(parents=True, exist_ok=True)
         self._conn = sqlite3.connect(
@@ -633,6 +644,7 @@ class NewsStore:
         obj.path = db
         obj.source_key = _validate_token(source_key, "source_key", 256)
         obj.cluster_policy = cluster_policy or ClusterPolicy()
+        obj._cluster_policy_passed = cluster_policy is not None
         obj._read_only = True
         try:
             obj._conn = sqlite3.connect(
@@ -672,6 +684,24 @@ class NewsStore:
             self._conn.close()
             self._conn = None  # type: ignore[assignment]
 
+    def _in_force_cluster_policy_version(self) -> str:
+        """Return the cluster policy version in force for this open.
+
+        The policy is KNOWN iff a policy was passed to this open or the
+        most recent writer recorded its ``cluster_policy_version`` in
+        ``qbus_meta``; otherwise it is ``UNKNOWN_CLUSTER_POLICY_VERSION``
+        — never the default ``ClusterPolicy()`` label for an unpassed
+        policy.
+        """
+        if self._cluster_policy_passed:
+            return cluster_policy_version(self.cluster_policy)
+        row = self._conn.execute(
+            "SELECT value FROM qbus_meta WHERE key=?", (_META_CLUSTER_POLICY_KEY,)
+        ).fetchone()
+        if row is None:
+            return UNKNOWN_CLUSTER_POLICY_VERSION
+        return str(row["value"])
+
     def _configure(self) -> None:
         self._conn.execute("PRAGMA foreign_keys=ON")
         self._conn.execute("PRAGMA synchronous=FULL")
@@ -696,6 +726,13 @@ class NewsStore:
         # Only a writable open runs here; a wrong-schema store was already
         # refused above. Pre-existing rows stay NULL (never backfilled), so a
         # reader labels them "unknown (pre-column)".
+        #
+        # The same additive, no-SCHEMA-bump treatment records this writer's
+        # policy version in qbus_meta, so a read-only open with no policy
+        # passed knows the version in force. The upsert names the most
+        # recent writer's policy (a different policy overwrites the key)
+        # and writes nothing when the value is unchanged; a store written
+        # before the key existed keeps reporting "unknown (pre-column)".
         columns = self._conn.execute(
             "PRAGMA table_info(news_clusters)"
         ).fetchall()
@@ -719,6 +756,15 @@ class NewsStore:
                     )
                 ):
                     raise
+        self._conn.execute(
+            "INSERT INTO qbus_meta(key,value) VALUES(?,?)"
+            " ON CONFLICT(key) DO UPDATE SET value=excluded.value"
+            " WHERE qbus_meta.value IS NOT excluded.value",
+            (
+                _META_CLUSTER_POLICY_KEY,
+                cluster_policy_version(self.cluster_policy),
+            ),
+        )
         self._backfill_read_projection()
 
     def _backfill_read_projection(self) -> None:
@@ -1604,7 +1650,8 @@ class NewsStore:
                 "a report in no cluster is its own story"
             ),
             "cluster_policy_version": _cluster_policy_label(
-                velocity["cluster_policy_versions_24h"]
+                velocity["cluster_policy_versions_24h"],
+                self._in_force_cluster_policy_version(),
             ),
             "windows": {
                 "reports_24h": (
