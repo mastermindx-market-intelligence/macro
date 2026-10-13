@@ -9,6 +9,7 @@ from __future__ import annotations
 import pandas as pd
 
 from engine.crypto_market_state import (
+    _basis_words,
     build_market_state,
     class_regimes,
     observation_status,
@@ -128,6 +129,10 @@ def test_cap_splice_discloses_basis_and_skips_fake_regime() -> None:
     assert splice["date"] == str(dates[120].date())
     assert splice["from_basis"] == "derived"
     assert splice["to_basis"] == "direct"
+    assert splice["from_label_en"] == "derived total"
+    assert splice["from_label_zh"] == "推算总量"
+    assert splice["to_label_en"] == "direct total"
+    assert splice["to_label_zh"] == "直接总量"
     assert splice["support_before"] == 120
     assert splice["support_after"] == 40
     assert splice["level_ratio"] == 2.0
@@ -405,3 +410,9 @@ def test_cap_attribution_publishes_threshold_numbers() -> None:
     assert "3.0" not in attribution["note_en"]
     assert "1.0" not in attribution["note_zh"]
     assert "3.0" not in attribution["note_zh"]
+
+
+def test_unknown_cap_basis_gets_reader_words_not_its_code() -> None:
+    """A basis code outside the known pair still reaches the page as words."""
+    assert _basis_words("something-else") == ("other basis", "其他口径")
+    assert _basis_words(None) == ("other basis", "其他口径")

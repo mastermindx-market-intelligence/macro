@@ -554,3 +554,108 @@ def test_s2_withholds_risk_word_when_index_is_none():
     assert "/100" not in ctx
     assert "暂无" in ctx
     assert "—" in ctx
+
+
+# --- R12 design-review repair: basis words, Tier-2 stale readings, sign before symbol.
+
+_STALE_EN = "Stale — later than this source's cadence"
+_STALE_ZH = "过期 — 晚于该来源的发布节奏"
+
+
+def _reading(lang: str, fragment: str) -> str:
+    """What a reader in one language sees: drop the other language's spans, then all tags."""
+    other = "l-zh" if lang == "en" else "l-en"
+    kept = re.sub(rf'<span class="{other}">.*?</span>', "", fragment, flags=re.S)
+    return re.sub(r"<[^>]+>", "", kept)
+
+
+def _div_text(block: str, cls: str) -> str:
+    return re.sub(r"<[^>]+>", "", _slice(block, f'<div class="{cls}">', "</div>"))
+
+
+def _etf_block(html: str) -> str:
+    return _slice(html, "US spot-BTC ETFs · 5D", "Stablecoin supply · 30D")
+
+
+def _stable_block(html: str) -> str:
+    return _slice(html, "Stablecoin supply · 30D", "Spot participation proxy")
+
+
+def test_splice_line_speaks_words_not_codes(tmp_path, monkeypatch):
+    case = _crypto_case("valid_zero")
+    case["market"]["cap_basis"] = {"splices": [{
+        "date": "2026-08-01", "from_basis": "derived", "to_basis": "direct",
+        "from_label_en": "derived total", "from_label_zh": "推算总量",
+        "to_label_en": "direct total", "to_label_zh": "直接总量",
+        "support_before": 120, "support_after": 40,
+    }]}
+    crypto = _render_crypto(tmp_path, monkeypatch, case)
+    line = _slice(crypto, '<p class="desk-splice">', "</p>")
+    zh = _reading("zh", line)
+    for word in ("derived", "direct", "support"):
+        assert word not in zh.lower()
+    assert "推算总量" in zh and "直接总量" in zh and "在册天数" in zh
+    en = _reading("en", line)
+    assert "derived total" in en and "direct total" in en and "days on file" in en
+    assert "support" not in en.lower()
+    assert "120/40" in en
+
+
+def test_stale_etf_reading_moves_to_receipt(tmp_path, monkeypatch):
+    case = _crypto_case("valid_zero")
+    case["market"]["flows"]["etf"] = {
+        "kind": "subscription", "value": -505.0, "latest": -120.0,
+        "state": "Unavailable", "tone": "neutral", "as_of": "2026-10-09",
+        "observation": "stale", "observation_label_en": _STALE_EN,
+        "observation_label_zh": _STALE_ZH, "percentile": None,
+    }
+    crypto = _render_crypto(tmp_path, monkeypatch, case)
+    etf = _etf_block(crypto)
+    reading = _div_text(etf, "reading")
+    assert reading == "—"
+    assert "505" not in reading
+    receipt = re.sub(r"<[^>]+>", "", etf[etf.index('class="receipt"'):])
+    assert "-$505M" in receipt
+    assert "Last on file" in receipt and "最近在册" in receipt
+    assert "2026-10-09" in receipt
+    assert "$-" not in crypto
+
+
+def test_stale_stablecoin_reading_moves_to_receipt(tmp_path, monkeypatch):
+    case = _crypto_case("valid_zero")
+    case["market"]["flows"]["stablecoins"] = {
+        "kind": "supply", "value": 1.6e11, "change_30d_usd": -2.5e9,
+        "change_30d_pct": -1.6, "state": "Unavailable", "tone": "neutral",
+        "as_of": "2026-10-09", "observation": "stale",
+        "observation_label_en": _STALE_EN, "observation_label_zh": _STALE_ZH,
+        "percentile": None,
+    }
+    crypto = _render_crypto(tmp_path, monkeypatch, case)
+    block = _stable_block(crypto)
+    assert _div_text(block, "reading") == "—"
+    label = _div_text(block, "read-label")
+    assert "·" not in label and "%" not in label
+    receipt = re.sub(r"<[^>]+>", "", block[block.index('class="receipt"'):])
+    assert "-$2.5B" in receipt and "Last on file" in receipt and "2026-10-09" in receipt
+    assert "$-" not in crypto
+
+
+def test_live_negative_flow_puts_sign_before_symbol(tmp_path, monkeypatch):
+    assert build_crypto._signed_musd(-505) == "-$505M"
+    assert build_crypto._signed_musd(505) == "+$505M"
+    assert build_crypto._signed_musd(None) == "—"
+    assert build_crypto._money(-2.5e9, compact=True, signed=True) == "-$2.5B"
+    assert build_crypto._money(2.5e9, compact=True, signed=True) == "+$2.5B"
+    assert build_crypto._money(-2.5e9, compact=True) == "$-2.5B"  # unsigned path unchanged
+    case = _crypto_case("valid_zero")
+    case["market"]["flows"]["etf"] = {
+        "kind": "subscription", "value": -505.0, "latest": -120.0,
+        "state": "Falling", "tone": "bear", "as_of": "2026-10-12",
+        "observation": "current", "observation_label_en": "Current print",
+        "observation_label_zh": "已有最新发布", "percentile": None,
+    }
+    crypto = _render_crypto(tmp_path, monkeypatch, case)
+    etf = _etf_block(crypto)
+    assert _div_text(etf, "reading") == "-$505M"
+    assert "Last on file" not in etf
+    assert "$-" not in crypto

@@ -51,6 +51,18 @@ _BASIS_SOURCE = {
     "direct": "coingecko.global_market.total_mcap_usd",
     "derived": "coinmetrics.mcap_usd / (bgeo.btc_dominance/100)",
 }
+_BASIS_WORDS = {
+    "direct": ("direct total", "直接总量"),
+    "derived": ("derived total", "推算总量"),
+}
+_BASIS_WORDS_FALLBACK = ("other basis", "其他口径")
+
+
+def _basis_words(basis) -> tuple[str, str]:
+    """Reader words for a cap basis; internal codes never reach the page."""
+    return _BASIS_WORDS.get(str(basis), _BASIS_WORDS_FALLBACK)
+
+
 _OBS_LABEL = {
     "pending": ("Pending — no print expected on this date", "待公布 — 此日不预期发布"),
     "stale": ("Stale — later than this source's cadence", "过期 — 晚于该来源的发布节奏"),
@@ -159,6 +171,10 @@ def _cap_assembly(reader: Reader) -> tuple[pd.Series, dict]:
                 "date": str(pd.Timestamp(splice_ts).date()),
                 "from_basis": segments[seg_i - 1]["basis"],
                 "to_basis": seg["basis"],
+                "from_label_en": _basis_words(segments[seg_i - 1]["basis"])[0],
+                "from_label_zh": _basis_words(segments[seg_i - 1]["basis"])[1],
+                "to_label_en": _basis_words(seg["basis"])[0],
+                "to_label_zh": _basis_words(seg["basis"])[1],
                 "support_before": segments[seg_i - 1]["support"],
                 "support_after": seg["support"],
                 "level_ratio": None if level_ratio is None else float(level_ratio),

@@ -51,10 +51,14 @@ def _payload(series: pd.Series, days: int = 90) -> dict:
     }
 
 
-def _money(value, *, compact: bool = False) -> str:
+def _money(value, *, compact: bool = False, signed: bool = False) -> str:
     if value is None or pd.isna(value):
         return "—"
     value = float(value)
+    if signed:
+        # Sign before the currency symbol (-$505M, +$2.5B); ASCII minus like the unsigned path.
+        sign = "+" if value > 0 else ("-" if value < 0 else "")
+        return sign + _money(abs(value), compact=compact)
     if compact:
         if abs(value) >= 1e12:
             return f"${value / 1e12:,.2f}T"
@@ -67,6 +71,15 @@ def _money(value, *, compact: bool = False) -> str:
     if abs(value) < 100:
         return f"${value:,.2f}"
     return f"${value:,.0f}"
+
+
+def _signed_musd(value) -> str:
+    """Signed millions of US dollars, sign before the symbol: +$505M / -$505M."""
+    if value is None or pd.isna(value):
+        return "—"
+    value = float(value)
+    sign = "+" if value > 0 else ("-" if value < 0 else "")
+    return f"{sign}${abs(value):,.0f}M"
 
 
 def _pct(value, digits: int = 1, signed: bool = True) -> str:
@@ -655,6 +668,7 @@ def build(site_dir: Path | None = None) -> Path:
         "equities": _equities(rendered_ticker_pages(site)),
         "calendar": _calendar(market["as_of"]),
         "fmt_money": _money,
+        "fmt_signed_musd": _signed_musd,
         "fmt_pct": _pct,
     }
 
