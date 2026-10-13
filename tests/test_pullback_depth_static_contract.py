@@ -12,7 +12,10 @@ level, one rule per test:
    names carry the ``rrp``/``pb`` prefix;
 4. every declared animation/transition has a ``prefers-reduced-motion:
    reduce`` override that disables it;
-5. every ``data-*`` attribute the script reads is emitted by the template.
+5. every ``data-*`` attribute the script reads is emitted by the template;
+6. the phone (max-width:480px) block lowers the study and chart-card gutters
+   so the chart clears 0.88 of the popup width at 390px, never fixes the svg's
+   height, and adds neither ``!important`` nor an ``overflow:hidden``.
 
 Parsing is regexes over the template SOURCE: Jinja spans and comments are
 stripped first, so the contract holds for every render, not one. A class the
@@ -58,6 +61,18 @@ HOST_MODAL_CLASSES = frozenset({"riskdlg-legacy-details"})
 HOST_DETAIL_EMITTERS = ("dashboard.html.j2", "_risk_radar_dlg.html.j2")
 
 SCOPED_SELECTOR_EXCEPTIONS: tuple[str, ...] = ()
+
+# The phone fix, measured at 390px in headless Chromium over synthetic pages:
+# the collapsed study's 16px gutters, the chart card's 20px gutters and its 1px
+# borders eat ~74px of the popup, so the chart svg spanned only 0.76 of the
+# .rrp content width (238/312 cn, 248/322 us). The max-width:480px block lowers
+# both gutters to <=8px per side, which puts the svg at ~0.89 (278/312,
+# 288/322) without touching the svg's viewBox aspect ratio.
+NARROW_MEDIA = re.compile(r"^@media\s*\(\s*max-width\s*:\s*480px\s*\)$")
+STUDY_SELECTOR = re.compile(r"^\.rrp \.rrp-study$")
+CHART_CARD_SELECTOR = re.compile(r"^\.rrp \.rrp-study>div$")
+CHART_SIZING_SELECTOR = re.compile(r"\.rrp-chart\b|\.ilx\b")
+PHONE_GUTTER_PX = 8.0
 
 _JINJA_SPANS = tuple(re.compile(p, re.S) for p in (r"\{#.*?#\}", r"\{%.*?%\}", r"\{\{.*?\}\}"))
 _BLOCK_COMMENTS = re.compile(r"/\*.*?\*/", re.S)
@@ -133,6 +148,54 @@ def _declarations(body):
         if sep:
             out.append((prop.strip().lower(), value.strip()))
     return out
+
+
+def _norm_selector(selector):
+    """Collapse the whitespace a hand-written selector may or may not carry."""
+    text = re.sub(r"\s*([>~+])\s*", r"\1", selector.strip())
+    return re.sub(r"\s+", " ", text)
+
+
+def _px(value):
+    """One padding component in px, ``var()`` fallbacks resolved.
+
+    Fails closed: a gutter this helper cannot resolve to px (a bare ``var()``,
+    a ``%``, an ``em``) is a failure, never an unverifiable pass."""
+    text = value.strip()
+    fallback = re.fullmatch(r"var\(--[\w-]+,\s*(.+)\)", text)
+    if fallback:
+        text = fallback.group(1).strip()
+    match = re.fullmatch(r"([0-9.]+)px", text)
+    assert match, f"cannot resolve a padding component to px: {value!r}"
+    return float(match.group(1))
+
+
+def _horizontal_padding(body):
+    """(left, right) px that the declarations in one rule body set."""
+    left = right = None
+    for prop, value in _declarations(body):
+        if prop == "padding":
+            sides = [_px(side) for side in value.split()]
+            if len(sides) == 1:
+                left = right = sides[0]
+            elif len(sides) == 4:
+                left, right = sides[3], sides[1]
+            else:
+                # 2 values: vertical | horizontal; 3: top | horizontal | bottom.
+                assert len(sides) in (2, 3), (
+                    f"padding shorthand with {len(sides)} values: {value!r}")
+                left = right = sides[1]
+        elif prop == "padding-left":
+            left = _px(value)
+        elif prop == "padding-right":
+            right = _px(value)
+    return left, right
+
+
+def _narrow_rules():
+    """Every rule inside the phone (max-width:480px) block, as (head, body)."""
+    return [(head, body) for preludes, head, body in _css_rules(_css_source())
+            if any(NARROW_MEDIA.match(prelude) for prelude in preludes)]
 
 
 def _css_classes():
@@ -312,3 +375,75 @@ def test_every_data_attribute_the_script_reads_the_template_emits():
     assert not missing, (
         "the script reads data-* attributes the template never emits: "
         + ", ".join(missing))
+
+
+def test_narrow_viewport_block_exists_and_stays_in_the_fragment_scope():
+    rules = _narrow_rules()
+    assert rules, (
+        "no @media (max-width:480px) block: the phone chart fix must live in one")
+    offenders = [
+        selector
+        for head, _ in rules
+        for selector in (part.strip() for part in head.split(","))
+        if selector and not any(pattern.match(selector)
+                                for pattern in _SCOPED_SELECTORS)
+    ]
+    assert not offenders, (
+        "selectors in the narrow-viewport block outside the fragment's .rrp "
+        "scope: " + "; ".join(offenders))
+
+
+def _narrow_gutter(rules, selector_pattern, role):
+    """The (left, right) px gutters the block's one rule for `role` declares."""
+    hits = [(head, body) for head, body in rules
+            if any(selector_pattern.match(_norm_selector(part))
+                   for part in head.split(","))]
+    assert len(hits) == 1, (
+        f"expected exactly one narrow-viewport rule for {role}, found {len(hits)}")
+    left, right = _horizontal_padding(hits[0][1])
+    assert left is not None and right is not None, (
+        f"the narrow-viewport rule for {role} sets no horizontal padding")
+    assert left <= PHONE_GUTTER_PX and right <= PHONE_GUTTER_PX, (
+        f"{role} keeps {left:g}px/{right:g}px gutters in the narrow block; both "
+        f"must be <= {PHONE_GUTTER_PX:g}px per side (parsed values) so the chart "
+        "svg reaches >= 0.88 of the .rrp content width at 390px (measured "
+        "238/312 at the 16px study + 20px card gutters)")
+    return left, right
+
+
+def test_narrow_viewport_lowers_the_study_and_chart_card_gutters():
+    study = _narrow_gutter(_narrow_rules(), STUDY_SELECTOR, ".rrp .rrp-study")
+    card = _narrow_gutter(_narrow_rules(), CHART_CARD_SELECTOR,
+                          ".rrp .rrp-study>div")
+    # Equal gutters per rule keep the width:100% svg centred; both dialogs then
+    # clear 0.88 with the borders included: 312 - 2*8 - 2*8 - 2 = 278px
+    # (278/312 = 0.891) and 322 - 2*8 - 2*8 - 2 = 288px (288/322 = 0.894).
+    assert study[0] == study[1] and card[0] == card[1], (
+        "asymmetric gutters would off-centre the chart: "
+        f"study {study}, card {card}")
+
+
+def test_narrow_viewport_sets_no_fixed_height_on_the_chart():
+    offenders = []
+    for head, body in _narrow_rules():
+        if not CHART_SIZING_SELECTOR.search(_norm_selector(head)):
+            continue
+        for prop, value in _declarations(body):
+            if prop in ("height", "min-height", "max-height") and value != "auto":
+                offenders.append(f"{head} {{{prop}: {value}}}")
+    assert not offenders, (
+        "the narrow-viewport block fixes the chart's height and would break its "
+        "viewBox aspect ratio: " + "; ".join(offenders))
+
+
+def test_narrow_viewport_adds_no_important_and_no_overflow_hidden():
+    offenders = []
+    for head, body in _narrow_rules():
+        for prop, value in _declarations(body):
+            if "!important" in value:
+                offenders.append(f"{head} {{{prop}: {value}}}")
+            if prop == "overflow" and "hidden" in value:
+                offenders.append(f"{head} {{overflow:{value}}} clips focus rings")
+    assert not offenders, (
+        "the narrow-viewport block must stay a plain gutter change: "
+        + "; ".join(offenders))

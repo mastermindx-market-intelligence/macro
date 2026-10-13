@@ -52,6 +52,15 @@ html[data-theme="light"] .rrp .rrp-study>div{background:var(--panel);box-shadow:
  .rrp .rrp-study{grid-template-columns:minmax(0,1fr);padding:var(--sp-4,16px);gap:var(--sp-4,16px)}
  .rrp .rrp-age,.rrp .rrp-limit,.rrp .pbx-expiry,.rrp .rrp-signals{padding-left:var(--sp-5,20px);padding-right:var(--sp-5,20px)}
 }
+/* Phones: the collapsed study's 16px gutters plus the chart card's 20px gutters
+   and its 1px borders eat ~74px of the popup, so the chart svg measured 0.76 of
+   the .rrp content width at 390px (238/312 cn, 248/322 us). 8px gutters on the
+   study and its cards put the svg at ~0.89 (278/312, 288/322); the svg keeps
+   its viewBox aspect ratio (no height here) and no rule clips a focus ring. */
+@media(max-width:480px){
+ .rrp .rrp-study{padding:var(--sp-4,16px) var(--sp-2,8px)}
+ .rrp .rrp-study>div{padding:var(--sp-5,20px) var(--sp-2,8px)}
+}
 
 .rrp .rrp-chart-caption{font-size:var(--fs-sm);line-height:1.6;color:var(--muted)}
 .rrp .rrp-history table{width:100%;table-layout:fixed;border-collapse:collapse;font-size:var(--fs-sm)}
