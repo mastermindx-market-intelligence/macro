@@ -12915,7 +12915,8 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
           {% if _h5 is not none %}{% set _odds_ns.mx = [_odds_ns.mx, _h5]|max %}{% endif %}
           {% if _h10 is not none %}{% set _odds_ns.mx = [_odds_ns.mx, _h10]|max %}{% endif %}
           {% if _bn is not none %}{% set _odds_ns.mx = [_odds_ns.mx, _bn]|max %}{% endif %}
-          {% set _span = _odds_ns.mx if _odds_ns.mx > 0 else none %}
+          {% set _span = _odds_ns.mx if _odds_ns.mx > 0 else none %}{% if _us_pb_active %}
+          <div class="riskdlg-odds-k">{{ t('Pre-pullback odds are not shown while a measured pullback is underway.','回撤进行中，不显示回撤前的概率。') }}</div>{% else %}
           <div class="riskdlg-odds">
             <div class="riskdlg-odds-k">{{ t('Pullback odds ≥5%','回撤概率 ≥5%') }}</div>
             <div class="riskdlg-odds-h">
@@ -12935,7 +12936,7 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
             {% if _bn is not none %}
             <div class="riskdlg-odds-note">{% if _rd.dd_lift is defined and _rd.dd_lift is not none %}{{ _rd.dd_lift }}× {% endif %}{{ t('vs normal','对比常态') }} {{ _bn }}%</div>
             {% endif %}
-          </div>
+          </div>{% endif %}
           {% endif %}
           {% set _dlgr_fed_st = (latest.fed_stance.stance if (latest.fed_stance is defined and latest.fed_stance and latest.fed_stance.stance is defined and latest.fed_stance.stance != 'unknown') else none) %}
           {% set _rk_cy_chip = (_rd.cycle if (_rd.cycle is defined and _rd.cycle and _rd.cycle.show is defined and _rd.cycle.show) else none) %}
