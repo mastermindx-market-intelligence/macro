@@ -9,7 +9,11 @@ import argparse
 from hashlib import sha256
 import json
 from pathlib import Path
+import sys
 from typing import Sequence
+
+_ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(_ROOT))
 
 from engine.government_revenue.candidate_grader import GRV_FA1, ISSUANCE_LOG_FILENAME, canonical_bytes
 from engine.government_revenue.research_state import build_not_started_state

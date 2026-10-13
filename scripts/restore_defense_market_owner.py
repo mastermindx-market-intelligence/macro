@@ -10,7 +10,11 @@ from hashlib import md5, sha256
 import json
 import os
 from pathlib import Path
+import sys
 import tempfile
+
+_ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(_ROOT))
 
 TICKERS = ('LMT', 'RTX', 'NOC', 'LHX')
 PREFIX = 'massive_stock_day/'

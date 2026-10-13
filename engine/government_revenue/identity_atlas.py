@@ -576,7 +576,7 @@ def _listing_research_identity(row: Mapping[str, Any], cutoff: datetime) -> dict
 
 def _archetype_context(
     entities: list[dict[str, Any]], curated_issuer: Mapping[str, Any] | None,
-    *, analysis_as_of: str, public_security: Mapping[str, Any],
+    *, analysis_as_of: str | None, public_security: Mapping[str, Any],
 ) -> dict[str, Any]:
     """Derived context over existing owners, with no financial capture calculation.
 
@@ -686,7 +686,7 @@ def _build_issuer(
     backlog_by_ticker: Mapping[str, Mapping[str, Any]],
     dossier_awards: Iterable[Mapping[str, Any]],
     curated_issuers: Mapping[str, Mapping[str, Any]],
-    analysis_as_of: str,
+    analysis_as_of: str | None,
 ) -> dict[str, Any]:
     company = companies_by_ticker.get(ticker)
     curated_issuer = curated_issuers.get(ticker)
@@ -831,6 +831,7 @@ def build_identity_atlas(
     curated: Mapping[str, Any] | None = None,
     generated_at: str,
     graph_as_of: str | None = None,
+    context_as_of: str | None = None,
 ) -> dict[str, Any]:
     """Pure projector: reviewed graph + SI snapshot + backlog + dossier + curated -> Atlas.
 
@@ -842,6 +843,17 @@ def build_identity_atlas(
     is not what this projector is for. Callers replaying a historical
     ``as_of`` may still pass one explicitly.
     """
+    # Graph/plane admission and curated source review answer separate clock
+    # questions. A live builder supplies its frozen generation instant for
+    # source review; replay callers retain their explicit historical cutoff.
+    # Use the incumbent inclusive-day convention, never round precise times up.
+    from engine.government_revenue.point_in_time import analysis_clock
+
+    context_input = context_as_of if context_as_of is not None else (graph_as_of or generated_at)
+    try:
+        context_cutoff = analysis_clock(context_input)[1].isoformat()
+    except (TypeError, ValueError):
+        context_cutoff = None
     raw_graph = graph if isinstance(graph, Mapping) else None
     as_of = graph_as_of if graph_as_of is not None else (
         raw_graph.get("graph_known_at") if raw_graph is not None else None
@@ -879,7 +891,7 @@ def build_identity_atlas(
             backlog_by_ticker=backlog_by_ticker,
             dossier_awards=dossier_awards,
             curated_issuers=curated_issuers,
-            analysis_as_of=graph_as_of or generated_at,
+            analysis_as_of=context_cutoff,
         )
         for ticker in tickers
     ]
@@ -892,6 +904,7 @@ def build_identity_atlas(
         "contract": CONTRACT,
         "schema_version": SCHEMA_VERSION,
         "generated_at": generated_at,
+        "context_as_of": context_cutoff,
         "graph_id": loaded.get("graph_id"),
         "graph_digest": loaded.get("graph_digest"),
         "graph_status": loaded.get("status"),
@@ -913,7 +926,8 @@ def _default_root() -> Path:
 
 
 def build_identity_atlas_payload(
-    *, root: Path | None = None, generated_at: str, graph_as_of: str | None = None
+    *, root: Path | None = None, generated_at: str, graph_as_of: str | None = None,
+    context_as_of: str | None = None
 ) -> dict[str, Any]:
     """Read the committed inputs from disk and build the Atlas payload.
 
@@ -961,6 +975,7 @@ def build_identity_atlas_payload(
         curated=curated,
         generated_at=generated_at,
         graph_as_of=graph_as_of,
+        context_as_of=context_as_of,
     )
 
 

@@ -733,6 +733,7 @@ def _build_budget_program_graph_if_ready(
     *,
     as_of: str | None,
     dossier: dict,
+    generated_at: str | None = None,
 ) -> dict | None:
     """Project one complete DoD source bundle, or retain an absent rail as absent.
 
@@ -766,6 +767,7 @@ def _build_budget_program_graph_if_ready(
         receipts=receipts,
         projection_state=projection_state,
         as_of=as_of or "1970-01-01",
+        generated_at=generated_at,
         reviewed_edge_set=load_reviewed_edges(root),
         award_keys=set(_prime_award_key_by_generated_id(dossier).values()),
     ))
@@ -1352,6 +1354,7 @@ def build(
         root,
         as_of=payload.get("as_of"),
         dossier=dossier,
+        generated_at=payload.get("generated_at"),
     )
     # D2 Identity Atlas: display/context only, read-only over the reviewed
     # graph/SI snapshot/mapping backlog/dossier observations/curated PIT file.
@@ -1376,6 +1379,9 @@ def build(
         root=root,
         generated_at=identity_atlas_generated_at,
         graph_as_of=payload.get("as_of"),
+        # Current source review is bounded by this generation's actual instant,
+        # not the plane's day label. Explicit historical replay stays historical.
+        context_as_of=as_of if as_of is not None else identity_atlas_generated_at,
     )
     if not is_valid_identity_atlas_payload(identity_atlas):
         raise ValueError("government revenue identity atlas returned an invalid schema")

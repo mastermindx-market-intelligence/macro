@@ -441,3 +441,94 @@ publication suites against that exact generation, and run the final visual and
 network evidence. Continue protected release and installed independent acceptance
 while the scientific and Terminal owner contributions advance through their own
 actual gates. **MISSION_COMPLETE=false.**
+
+## 2026-10-13 09:35 UTC — failed canonical generation and demonstrated repairs
+
+PR9066 now carries source `75da11947eb007cefb01125533df08a4703866d2`.
+The first actual canonical build began at 08:51:23 UTC and failed at 08:55:06,
+after generating the 08:53:36.399358 UTC projection. The final HTML measured
+312739 bytes against the unchanged 311296-byte budget. No research-state run,
+sealed publication proof, GitHub publication, owner-store update or installation
+followed that failure. Immutable failed output and its manifest are retained at
+`/Volumes/Mastermind/evidence/defense-e2e-20261012-01a13300/final-generation-75da119/failed-output`.
+The candidate observation ledger retained its original 235-line prefix and
+appended 407 observations; its 642-line SHA256 is
+`da1ed3014a967963165c56944846059d94099927aa8500d926429aaa3c7e0fd6`.
+This is projection evidence, not forecast issuance. Preserve the prefix on repair.
+
+The actual generation also demonstrated three source/runtime mismatches. The
+original DoD receipt requires pdfplumber 0.11.10; the local runtime had 0.11.9.
+Restoring and pinning the original extractor reproduced the original receipt,
+body and three budget sections without acquisition, storage writes or receipt
+reminting. The budget constructor now receives the existing frozen build clock
+instead of stamping a later instant. The selected identity fingerprint excludes
+only its unconsumed archetype-context sibling while preserving the selected
+legal entity and material issuer/listing/source dependencies. Current curated
+identity context now uses the frozen generation instant; explicit historical
+cutoffs retain their precision or incumbent inclusive-day semantics. Graph and
+SI admission remain separate. Root verified 49 identity/clock and 16 theme checks.
+Independent review `630c58d334c21215c7a174cd5f1a1d0a1ba1289ebd0860c4c1ec7bd024f1a663`
+accepts these repairs for the next build, not the failed generation or release.
+
+The bounded publication census added one actual run, 38368851360, whose build,
+proof and sole publication step all completed/skipped. Its existing-classifier
+receipt is `3b00d1101e902eb2047ec0ad78fdfb38fbdc4ae3e1b89e8872eaa745d85a7491`.
+No active or ambiguous publisher effect was found. Four original August Daily
+callers remain queued with zero jobs: 31553295271, 31551232668, 31550077044 and
+31543112462. Current preflight already includes active/queued callers regardless
+of creation floor and retains them as pending. They are not terminally retired;
+before publication, rerun the existing preflight and preserve their identities.
+The original 33 accepted rows and their actual reconciliation clock are unchanged.
+
+Terminal PR778 remains open/draft at
+`122694a1249cc15f563f139aa6ee5e36c7862f12`. The reviewed persistence contribution
+matches its exact source, reproduces all proposed hashes and passes 12 checks.
+The material contribution was delivered on its original GitHub carrier in
+comment 6141933267. No receiving-owner ACK, lease transfer, SQL effect, production
+adoption or entitlement change is claimed. Preserve adjacent R16 overlays and
+the incumbent review/release holds. The source qualification is now recorded in
+the contribution manifest rather than inferred from an older local checkout.
+
+Next: finish the measured HTML packaging repair, save the reviewed source, and
+perform one new canonical build. Then verify actual theme/identity output,
+prepare the research-state sibling, run the final exact-built browser matrix
+and cold-network measurement, and seal the unfiltered publication proof.
+Protected release and installed acceptance remain separate. **MISSION_COMPLETE=false.**
+
+The completed source-75da119 CI run 38372140451 failed before these repairs.
+Its candidate failures correctly rejected the September analysis boundary paired
+with the October graph. Three canaries over the coherent October boundary pass,
+including future-known-source refusal; the frozen August incident remains
+unchanged and admissible. Diagnostic receipt
+`fcc3c21a2c83743042093c6ec3602a54a259d646bb889d9a4e09b066a3e73a91`
+does not substitute for the final three-suite proof.
+
+Three new file-path entrypoints now pin the current repository before importing
+its packages; all 11 import-hygiene checks pass. The publisher wrapper now checks
+the actual main branch before each push identity/network effect. Its existing
+terminal-refusal handling remains in force. Isolated acceptance
+`0a3e46124e7c8ed3c34d32c2e0ed9fe7e800e3a656464d7fb4002ddbfebd2a27`
+records 46 affected checks and a killed guard-removal mutation. Only the current
+workflow source binding was updated; historical recovery rows and clocks remain
+unchanged. The integrated workflow SHA256 is
+`add6379f90753c645d1ec8b55843e22dde45b6d4d934bd8a19df1ed47b657488`.
+
+The CI dependency declaration now covers 60 exact newly reached files across
+eight existing jobs. The Government Revenue ontology job retains its measured
+import closure, dynamic Government Revenue schema/input directories and frozen
+fixtures while removing an unrelated whole-template fallback. No suite, assertion
+or packing ceiling was removed or relaxed. Both the estate import-closure check
+and ordinary-change packing check pass (174.54 seconds). Generated asset parity
+must be committed with the successful new generation; it was not present in the
+earlier source-only checkpoint. CI acceptance still requires the final current
+head, not these repairs' local results. A separate older-run log request was
+refused by the redundant-poll guard; no alternate read path or watcher was used.
+
+The HTML repair retains 36 developer comment lines as Jinja source comments.
+Exact replay and the actual incumbent site writer both reduce the failed HTML
+from 312739 to 310112 bytes, beneath the unchanged 311296-byte limit. Visible
+markup and embedded JSON remain byte-identical; executable JavaScript is equal
+after comment-text removal and both versions pass syntax checks. Two portable
+packaging checks pass and are explicitly registered in the existing Defense CI
+job. This source repair permits the next full canonical build; it is not yet a
+successful new generation or a final browser/timing result.

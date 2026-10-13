@@ -48,7 +48,9 @@ def reference_fingerprint(ref,rail,owner,as_of):
   dependencies['review_coverage']=p.get('review_coverage',p.get('coverage',[]));dependencies['overrides']=p.get('overrides',[])
  elif kind=='identity_atlas':
   issuer=next(x for x in anc if isinstance(x,dict) and 'entities' in x and x.get('ticker'))
-  dependencies['issuer']={k:v for k,v in issuer.items() if k!='entities'}
+  # Sibling archetype displays do not qualify this approved legal entity/listing.
+  # Selected leaf, issuer identity, source/rights and listing dependencies remain bound.
+  dependencies['issuer']={k:v for k,v in issuer.items() if k not in ('entities','archetype_context')}
  elif kind=='defense_economics':
   profile=next(x for x in anc if isinstance(x,dict) and 'ticker_display' in x)
   dependencies['profile']={k:profile[k] for k in ('issuer_id','security_id','ticker_display','name','identity_mode','identity_owner_ref','program_workshare','program_workshare_state','shareholder_capture','authority')}

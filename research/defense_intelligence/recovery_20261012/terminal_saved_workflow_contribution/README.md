@@ -2,7 +2,7 @@
 
 Source-only contribution for the incumbent [Terminal #778](https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/778), not a new Terminal writer or release. Root publishes this review packet through Macro #9066 and may post one canonical #778 contribution/custody question after review. No receiving owner, delivery acknowledgment or custody transfer is claimed.
 
-`terminal-contribution.patch` extends existing saved-view and immutable Thesis owners with a closed Government Revenue declaration. `source-manifest.json` binds exact original Git blobs and proposed bytes. `checks.mjs` refuses source drift before importing those bytes. Saved-view contract/implementation/API inputs come from #778 head `122694a1249cc15f563f139aa6ee5e36c7862f12`; Thesis and SQL inputs are separately qualified owning-default blobs. Their default commit was not captured. This mixed-source contribution still needs incumbent compatibility reconciliation; it is not a complete rebased #778 head.
+`terminal-contribution.patch` extends existing saved-view and immutable Thesis owners with a closed Government Revenue declaration. `source-manifest.json` binds exact original Git blobs and proposed bytes. `checks.mjs` refuses source drift before importing those bytes. All source inputs are now qualified against #778 head `122694a1249cc15f563f139aa6ee5e36c7862f12`. Fresh pinned reads show its Thesis/SQL validator and `rmsViews`/`analysisSymbol` leaves byte-identical to current protected `master` at `abea23b1f75231aa7ae8f3a971c44094ff4f9726`. The same patch applies to an exact #778 artifact copy and reproduces every tested proposed hash. This closes the earlier mixed-source uncertainty; it does not qualify source custody, native Terminal CI or release.
 
 ## Correct v2 consumer shape
 
@@ -50,3 +50,11 @@ Notification and drain enablement remain a separate gate requiring independent p
 ## Source materialization correction
 
 The initial fetched-source Add File serializer split content ending in LF and emitted an extra empty plus-line, appending one LF to each of seven source files. The original artifacts remain retained. Removing exactly that introduced byte reproduces every original advertised Git blob. This packet uses the reconstructed exact bytes and fresh checks; its manifest records the cause and original corrupted hashes. No logic, fixture, upstream fix or incumbent source was rewritten to resolve the mismatch.
+
+## Receiving frontier qualification — October 13
+
+The root published this packet at Macro commit `75da11947eb007cefb01125533df08a4703866d2` and posted exactly one [canonical #778 handoff](https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/778#issuecomment-6141933267). No owner ACK follows in the inspected discussion.
+
+The precise original source frontier is [issue770 comment5889320517](https://github.com/mastermindx-market-intelligence/mastermind-terminal/issues/770#issuecomment-5889320517), operation `heatmap-recovery-20260929-sol`, last updated October3. It records an in-turn Sol receiver, no worker/watcher/background execution, and unresolved original source-writer custody. It also retains an unlanded R16 Atlas/SavedViewClient candidate. Four GovRev target TypeScript source files in that candidate match #778 exactly; the R16 overlays are adjacent and must be preserved during any eventual integration. The candidate's absence of a SQL file is not database or installation evidence.
+
+Current inspected native sessions do not qualify a #778 receiving owner: Intelligence Workspace 2.0 retains #804; Complete Finviz Theme/Subtheme Clust is a separate mission without a current #778 custody declaration. The existing handoff requests the receiving session or an explicit lawful custody disposition. The next source integration edge remains that original-writer consumption or custody handoff on #770/#778; no duplicate message, worker, source carrier or held-effect retry follows from this source qualification.

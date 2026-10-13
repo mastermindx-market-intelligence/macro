@@ -103,6 +103,12 @@
       "items": {
         "$ref": "#/$defs/issuer"
       }
+    },
+    "context_as_of": {
+      "type": [
+        "string",
+        "null"
+      ]
     }
   },
   "$defs": {

@@ -116,7 +116,7 @@ def test_wrapper_does_not_replay_unknown_or_refusal(tmp_path,state):
         push="printf '%s\\n' '! [rejected] HEAD -> main (fetch first)'; return 1"
     else:
         push="printf '%s\\n' 'fatal: transport reset'; return 142"
-    script='set -euo pipefail\n'+f'python() {{ {sys.executable} "$@"; }}\n'+wrapper()+f'\npush_do() {{ {push}; }}\n'+'''govrev_push_rc=0
+    script='set -euo pipefail\n'+f'. "{BASE / "scripts/ci/push_retry.sh"}"\n'+f'python() {{ {sys.executable} "$@"; }}\n'+wrapper()+f'\npush_do() {{ {push}; }}\n'+'''govrev_push_rc=0
 govrev_push_same_carrier || govrev_push_rc=$?
 if [ "$govrev_push_rc" -eq 0 ]; then
   printf '%s' "$GOVREV_PUSH_STATUS" > "$RUNNER_TEMP/success"
@@ -173,7 +173,7 @@ def test_interrupted_push_raw_response_is_outside_retained_artifact_namespace(tm
     runtemp = tmp_path / "temp"
     runtemp.mkdir()
     (runtemp / "govrev-candidate-proof.receipt.json").write_bytes(gate._receipt_path(tmp_path).read_bytes())
-    script = "set -euo pipefail\n" + f'python() {{ {sys.executable} "$@"; }}\n' + wrapper() + '''
+    script = "set -euo pipefail\n" + f'. "{BASE / "scripts/ci/push_retry.sh"}"\n' + f'python() {{ {sys.executable} "$@"; }}\n' + wrapper() + '''
 push_do() { printf '%s' 'synthetic-credential-url'; exit 97; }
 govrev_push_same_carrier
 '''
@@ -187,3 +187,38 @@ govrev_push_same_carrier
     retained = list(runtemp.glob("govrev-candidate-proof*"))
     assert private[0] not in retained
     assert all("synthetic-credential-url" not in path.read_text() for path in retained)
+
+
+@pytest.mark.parametrize("checkout", ["main", "dispatch_branch", "detached", "unreadable"])
+def test_wrapper_checks_actual_main_before_any_push_effect(tmp_path, checkout):
+    root = tmp_path / "checkout"
+    root.mkdir()
+    if checkout != "unreadable":
+        gate._git(root, "init", "-q", "-b", "main")
+        gate._git(root, "config", "user.name", "guard test")
+        gate._git(root, "config", "user.email", "guard@test")
+        (root / "seed").write_text("seed")
+        gate._git(root, "add", "seed")
+        gate._git(root, "commit", "-qm", "seed")
+        if checkout == "dispatch_branch":
+            gate._git(root, "checkout", "-qb", "feature/dispatch")
+        elif checkout == "detached":
+            gate._git(root, "checkout", "-q", "--detach", "HEAD")
+    runtemp = tmp_path / "temp"
+    runtemp.mkdir()
+    script = "set -euo pipefail\n" + f'. "{BASE / "scripts/ci/push_retry.sh"}"\n' + wrapper() + '''
+python() { printf '%s\n' "$*" >> "$RUNNER_TEMP/python-called"; }
+push_do() { touch "$RUNNER_TEMP/push-called"; }
+govrev_push_same_carrier
+'''
+    result = subprocess.run(["/bin/bash", "-c", script], cwd=root,
+        env={**os.environ, "RUNNER_TEMP": str(runtemp), "PUSH_ATTEMPT": "1",
+             "PUSH_MAIN_BRANCHES": "main", "GIT_CEILING_DIRECTORIES": str(tmp_path)},
+        capture_output=True, text=True)
+    allowed = checkout == "main"
+    assert result.returncode == (0 if allowed else 76), result.stdout + result.stderr
+    assert (runtemp / "python-called").exists() is allowed
+    assert (runtemp / "push-called").exists() is allowed
+    if not allowed:
+        assert not list(runtemp.glob("govrev-candidate-proof*"))
+        assert not list(runtemp.glob("govrev-private-push-response.*"))

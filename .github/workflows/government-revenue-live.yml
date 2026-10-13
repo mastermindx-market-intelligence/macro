@@ -704,6 +704,7 @@ jobs:
           }
 
           govrev_push_same_carrier() {
+            push_on_main_ok || return 76
             local rc=0 outcome_rc=0
             local prefix="$RUNNER_TEMP/govrev-candidate-proof.push-${PUSH_ATTEMPT}"
             GOVREV_PUSH_OBSERVATION="$prefix.observation.json"

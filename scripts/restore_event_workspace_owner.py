@@ -7,9 +7,14 @@ mirror keeps owner bytes/IDs/clocks; it is a build dependency, not a truth store
 from __future__ import annotations
 import argparse
 from pathlib import Path
+import sys
 from hashlib import sha256
 import json
 from datetime import datetime,timezone
+
+_ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(_ROOT))
+
 from engine.neuralweb import company_intelligence_reader as reader
 from engine.company_intelligence.event_workspace import (
     _atomic_write,validate_workspace_manifest,validate_event_workspace,

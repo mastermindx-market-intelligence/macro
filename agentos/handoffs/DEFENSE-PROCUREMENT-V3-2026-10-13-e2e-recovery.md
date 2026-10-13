@@ -52,7 +52,7 @@ This is continuity for the active original root, not a source-custody transfer,
 runtime START receipt, new controller or terminal mission state. The sole writer
 is the root checkout on `claude/defense-e2e-recovery-20261012-01a13300`; child
 coordinators return isolated reviewed artifacts. Last published source is
-`984ed6e16cca71bed534e39d707883fee87bd673`; the cumulative continuation identifies
+`75da11947eb007cefb01125533df08a4703866d2`; the cumulative continuation identifies
 later integrated changes explicitly. PR7175 is preserved unchanged.
 
 The four axes remain distinct: funded demand, actual participation, issuer/common
@@ -78,3 +78,12 @@ six conditional theme interpretations, and the measured mobile first-view repair
 are integrated. DEV pilot results and benchmark-owner input readiness are retained
 with their limits. Final generation proof, protected release, installed browser
 acceptance and original Terminal/science owner obligations remain open.
+
+The 09:35 UTC continuation preserves the failed canonical build and its 642-line
+append-only observation ledger. The build failed its unchanged HTML budget;
+no sealed proof or publication followed. Independent review accepts the precise
+context clock, same-generation budget constructor, selected-identity fingerprint
+and original PDF extractor replay repairs for the next canonical build. The
+bounded publisher frontier found one new terminal skipped run and four older
+queued callers still pending. Terminal's contribution was delivered on PR778;
+source compatibility is proven, receiver acceptance and deployment are not.

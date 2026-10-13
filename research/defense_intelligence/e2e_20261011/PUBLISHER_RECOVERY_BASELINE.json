@@ -9,7 +9,7 @@
   "source_closure": {
     "scripts/ci/govrev_publisher_preflight.py": "3f24c2e2139ea6f11103997bd07a1e69ec938e1012856f5112557ba2d65948f9",
     "scripts/ci/govrev_candidate_proof.py": "9cc0873cc5ed19fc9f5896944817100c5865ccf4a5c1a76b1cf9fa85fa4aa281",
-    ".github/workflows/government-revenue-live.yml": "8d0ea1f54a92853badcb233de7f0bc6b7fc33cb39dc6f38615812c8e888b293c",
+    ".github/workflows/government-revenue-live.yml": "add6379f90753c645d1ec8b55843e22dde45b6d4d934bd8a19df1ed47b657488",
     ".github/workflows/daily.yml": "b8f98575df9d73762f3650cd1c79cefb2cfc43a040218bf07caa6821200c4732",
     ".github/workflows/fms-acquire.yml": "5995f83b35c5a39ea663e5e802f6431c9cd805a69d557be06596041dcd16175e"
   },
