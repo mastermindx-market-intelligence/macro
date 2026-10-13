@@ -134,10 +134,13 @@ def _base_first_session_after(t_avail_utc: dt.datetime, market: str) -> dt.date:
 
 
 def _label_before_ec(market: str, ec: dt.time) -> str:
-    before = _shift_clock(ec, minutes=-1)
-    brk = _BASE_MIDDAY.get(market)
-    if brk and ec > brk[0] and brk[0] <= before < brk[1]:
-        return "midday_break"
+    """One minute before a published early close is still in session.
+
+    A half day has no midday break: HK's 12:10 early close is the end of the
+    closing auction that follows the 12:00 continuous-session end, so 12:09
+    is in_session, not midday_break.
+    """
+    del market, ec
     return "in_session"
 
 

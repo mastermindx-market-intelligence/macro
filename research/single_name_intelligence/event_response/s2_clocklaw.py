@@ -59,7 +59,9 @@ def session_part(t_avail_utc: datetime, market: str) -> str:
     if t < _REGULAR_OPEN_LOCAL[market]:
         return "pre_open"
     brk = _MIDDAY_BREAK.get(market)
-    if brk and brk[0] <= t < brk[1] and t < session_end:
+    # A published half day runs one continuous morning session through its
+    # closing auction (HK: 12:00-12:10 CAS); it has no midday break.
+    if brk and ec is None and brk[0] <= t < brk[1]:
         return "midday_break"
     if t < session_end:
         return "in_session"
