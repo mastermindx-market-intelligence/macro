@@ -4739,6 +4739,13 @@ CURATED_EXCLUSIVE = {
     # job on the PACKING_PROBES (check_contract_delta: 3 introduced findings).
     # scope: exclusive pins it to its derived import closure.
     "fif-saved-research-notifications",
+    # 2026-10-13 Communications Build 1: Alphabet GOOGL/GOOG enrollment.
+    # issuer_profiles' import closure reaches lib/pages.py and
+    # engine/press/earnings_adapter.py, whose subprocess/filesystem edges
+    # smear site/** and templates/** onto templates/index.html. scope:
+    # exclusive pins the job to the measured 35-path closure so that smear
+    # stays off the packing probes. Ceilings stay fixed.
+    "communications-issuer-enrollment",
 }
 
 
