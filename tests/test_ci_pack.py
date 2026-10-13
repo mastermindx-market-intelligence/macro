@@ -4727,6 +4727,11 @@ CURATED_EXCLUSIVE = {
     # the fallback to engine/** and the plan_book packing probe selected the
     # job (130 > 129). scope: exclusive pins it to its measured closure.
     "sni-s2-event-response",
+    # 2026-10-13 Grey Deer W3 (#8938): the stage-1 pullback runner suite reads
+    # its own research tree, lib.nyse_calendar and the trial ledger. scope:
+    # exclusive pins it to that measured closure (46 paths), so inference never
+    # unions the research/ fallback roots onto the packing probes.
+    "grey-deer-pullback-stage1",
 }
 
 
