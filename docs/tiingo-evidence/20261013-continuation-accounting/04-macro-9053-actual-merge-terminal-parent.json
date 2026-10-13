@@ -1,0 +1,16 @@
+{
+  "schema": "tiingo.actual_normal_exact_head_merge_terminal_parent/v1",
+  "recorded_at_utc": "2026-10-13T02:40:38.987291+00:00",
+  "root": "01a12ab6-92cb-7c42-a711-42673ebb6b50",
+  "pr": 9053,
+  "head": "fdfed5e5436a875936113af5e90a3fbfef25fdba",
+  "original_merge_tool_session": 1019,
+  "original_exit_code": 0,
+  "actual_original_merge_terminal_return_consumed": true,
+  "normal_squash_match_head_merge": true,
+  "admin_override": false,
+  "protection_changed": false,
+  "exact_head_ci_acceptance_sha256": "d8a74c7dd9fc309979784eb924e3b466b81104c57540863097bfefa7051ed50a",
+  "github_merged_state_read_pending": true,
+  "deployment_claimed": false
+}

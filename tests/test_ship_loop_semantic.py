@@ -1559,7 +1559,14 @@ def test_ship_loop_linked_red_call_delta_is_three_json_plus_one_archive(monkeypa
     archive_calls = []
     loader_kwargs = {}
     loaded = SimpleNamespace(
-        mode="semantic", evidence={"fixture": True, "tested_tree_sha": MERGE}
+        mode="semantic",
+        evidence={
+            "fixture": True,
+            "role": "pr_head",
+            "subject_head_sha": HEAD,
+            "base_sha": BASE,
+            "tested_tree_sha": MERGE,
+        },
     )
     artifact = {
         "name": "ci-semantic-evidence-77",
@@ -1656,7 +1663,13 @@ def test_ship_loop_artifact_cannot_self_claim_tested_merge_tree(
         GUARD.semantic_proof,
         "load_semantic_evidence",
         lambda *_a, **_k: SimpleNamespace(
-            mode="semantic", evidence={"tested_tree_sha": MERGE}
+            mode="semantic",
+            evidence={
+                "role": "pr_head",
+                "subject_head_sha": HEAD,
+                "base_sha": BASE,
+                "tested_tree_sha": MERGE,
+            },
         ),
     )
 
@@ -1674,6 +1687,149 @@ def test_ship_loop_artifact_cannot_self_claim_tested_merge_tree(
             },
             role="pr_head",
             expected_base_sha=BASE,
+        )
+
+
+TESTED_BASE = "e" * 40
+
+
+def _stale_base_run() -> dict:
+    return {
+        "id": 77,
+        "name": "ci",
+        "path": ".github/workflows/ci.yml",
+        "event": "pull_request",
+        "head_sha": HEAD,
+        "pull_requests": _check("ci-gate", "failure")["pull_requests"],
+    }
+
+
+def _faithful_loader(evidence: dict):
+    """Mirror the real loader's exact-string identity check on ``base_sha``."""
+
+    def load(_source, *, advertised, **expected):
+        assert advertised is True
+        bound = expected.get("expected_base_sha")
+        if bound is not None and str(evidence.get("base_sha")) != str(bound):
+            raise GUARD.semantic_proof.SemanticProofError(
+                "semantic evidence base_sha mismatch"
+            )
+        return SimpleNamespace(mode="semantic", evidence=evidence)
+
+    return load
+
+
+def test_ship_loop_accepts_stale_advertised_base_that_is_an_ancestor(monkeypatch):
+    """Guard mirror of the PR #8844 stale-base defect (2026-10-11)."""
+    api_calls = []
+    artifact = {
+        "name": "ci-semantic-evidence-77",
+        "archive_download_url": "https://api.github.com/artifact.zip",
+        "expired": False,
+    }
+    evidence = {
+        "role": "pr_head",
+        "subject_head_sha": HEAD,
+        "base_sha": TESTED_BASE,
+        "tested_tree_sha": MERGE,
+    }
+
+    def get(url):
+        api_calls.append(url)
+        if url.endswith("/actions/runs/77/artifacts?per_page=100"):
+            return {"total_count": 1, "artifacts": [artifact]}
+        if url.endswith(f"/compare/{BASE}...{TESTED_BASE}?per_page=1"):
+            return {"status": "ahead", "ahead_by": 12, "behind_by": 0}
+        if url.endswith(f"/git/commits/{MERGE}"):
+            return {"sha": MERGE, "parents": [{"sha": TESTED_BASE}, {"sha": HEAD}]}
+        raise AssertionError(url)
+
+    monkeypatch.setattr(GUARD, "_get_json", get)
+    monkeypatch.setattr(GUARD, "_get_artifact_bytes", lambda _url: b"archive")
+    monkeypatch.setattr(GUARD, "_semantic_json_from_archive", lambda _raw: {"v": 1})
+    monkeypatch.setattr(
+        GUARD.semantic_proof, "load_semantic_evidence", _faithful_loader(evidence)
+    )
+
+    loaded = GUARD._semantic_evidence_for_run(
+        "acme", "widgets", _stale_base_run(), role="pr_head", expected_base_sha=BASE
+    )
+    assert loaded.mode == "semantic"
+    assert loaded.evidence is evidence
+    assert [url.rsplit("/repos/acme/widgets/", 1)[1] for url in api_calls] == [
+        "actions/runs/77/artifacts?per_page=100",
+        f"compare/{BASE}...{TESTED_BASE}?per_page=1",
+        f"git/commits/{MERGE}",
+    ]
+
+
+@pytest.mark.parametrize("relation", ["diverged", "behind"])
+def test_ship_loop_refuses_a_non_ancestor_advertised_base(monkeypatch, relation):
+    api_calls = []
+    artifact = {
+        "name": "ci-semantic-evidence-77",
+        "archive_download_url": "https://api.github.com/artifact.zip",
+        "expired": False,
+    }
+    evidence = {
+        "role": "pr_head",
+        "subject_head_sha": HEAD,
+        "base_sha": TESTED_BASE,
+        "tested_tree_sha": MERGE,
+    }
+
+    def get(url):
+        api_calls.append(url)
+        if url.endswith("/actions/runs/77/artifacts?per_page=100"):
+            return {"total_count": 1, "artifacts": [artifact]}
+        if url.endswith(f"/compare/{BASE}...{TESTED_BASE}?per_page=1"):
+            return {"status": relation}
+        raise AssertionError(url)
+
+    monkeypatch.setattr(GUARD, "_get_json", get)
+    monkeypatch.setattr(GUARD, "_get_artifact_bytes", lambda _url: b"archive")
+    monkeypatch.setattr(GUARD, "_semantic_json_from_archive", lambda _raw: {"v": 1})
+    monkeypatch.setattr(
+        GUARD.semantic_proof, "load_semantic_evidence", _faithful_loader(evidence)
+    )
+
+    with pytest.raises(GUARD.semantic_proof.SemanticProofError, match="base_sha mismatch"):
+        GUARD._semantic_evidence_for_run(
+            "acme", "widgets", _stale_base_run(), role="pr_head", expected_base_sha=BASE
+        )
+    assert not any("/git/commits/" in url for url in api_calls)
+
+
+def test_ship_loop_refuses_a_stale_base_with_a_different_head(monkeypatch):
+    artifact = {
+        "name": "ci-semantic-evidence-77",
+        "archive_download_url": "https://api.github.com/artifact.zip",
+        "expired": False,
+    }
+    evidence = {
+        "role": "pr_head",
+        "subject_head_sha": "f" * 40,
+        "base_sha": TESTED_BASE,
+        "tested_tree_sha": MERGE,
+    }
+
+    def get(url):
+        if url.endswith("/actions/runs/77/artifacts?per_page=100"):
+            return {"total_count": 1, "artifacts": [artifact]}
+        raise AssertionError(url)
+
+    monkeypatch.setattr(GUARD, "_get_json", get)
+    monkeypatch.setattr(GUARD, "_get_artifact_bytes", lambda _url: b"archive")
+    monkeypatch.setattr(GUARD, "_semantic_json_from_archive", lambda _raw: {"v": 1})
+    monkeypatch.setattr(
+        GUARD.semantic_proof, "load_semantic_evidence", _faithful_loader(evidence)
+    )
+
+    with pytest.raises(
+        GUARD.semantic_proof.SemanticProofError, match="subject_head_sha mismatch"
+    ):
+        GUARD._semantic_evidence_for_run(
+            "acme", "widgets", _stale_base_run(), role="pr_head", expected_base_sha=BASE
         )
 
 

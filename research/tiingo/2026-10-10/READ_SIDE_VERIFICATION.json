@@ -1,0 +1,70 @@
+{
+  "all_tiingo_and_registry_tests": {
+    "exit_code": 1,
+    "failed": 11,
+    "failed_ids": [
+      "tests/test_tiingo_ingestion_integrity.py::test_identical_prices_for_different_tickers_never_alias",
+      "tests/test_tiingo_ingestion_integrity.py::test_same_statement_bytes_different_query_dimension_never_alias",
+      "tests/test_tiingo_ingestion_integrity.py::test_existing_corrupt_output_is_not_reported_as_exists",
+      "tests/test_tiingo_ingestion_integrity.py::test_corrupt_existing_raw_is_not_idempotent_success",
+      "tests/test_tiingo_ingestion_integrity.py::test_capture_clock_must_be_aware_and_valid[../outside]",
+      "tests/test_tiingo_ingestion_integrity.py::test_capture_clock_must_be_aware_and_valid[2026-10-09]",
+      "tests/test_tiingo_ingestion_integrity.py::test_capture_clock_must_be_aware_and_valid[2026-10-09T12:00:00]",
+      "tests/test_tiingo_ingestion_integrity.py::test_capture_clock_must_be_aware_and_valid[not-a-clock]",
+      "tests/test_tiingo_ingestion_integrity.py::test_exact_endpoint_not_just_prefix_must_match",
+      "tests/test_tiingo_ingestion_integrity.py::test_repeated_raw_uses_original_receipt_observation",
+      "tests/test_tiingo_ingestion_integrity.py::test_receipt_context_must_match_output_rows"
+    ],
+    "passed": 266
+  },
+  "authenticated_vendor_reads": false,
+  "base_revision": "4a2979e1839ce2c7bb07f65af7b4e85e95ee332b",
+  "changed_file_sha256": {
+    "lib/dataos/tiingo_reader.py": "4405710de699cc884c05b96d1fc6a3e617e3e656cff99bbf96723a0f0fc7862f",
+    "lib/dataos/tiingo_views.py": "6203d96176f61e7ca5a2728e176dfad2f32243e914a41765e339c9e7f2dcbedb",
+    "scripts/tiingo_corpus_audit.py": "bd1e3170c6e44080835c6a3d61ee83bd993b49a6807c82f0125de1ee0edcf054",
+    "tests/test_tiingo_corpus_audit.py": "ace86990b41558f24b8354408d29c834b18f449312534327a7e3480f52e3355c",
+    "tests/test_tiingo_reader.py": "5a393f36daac1cc7e9d219ca5265ad39d400894769a339f010a16ec34e85107d",
+    "tests/test_tiingo_views.py": "ce668a6f5f3e754884fcbdd6daeef4c76c25d94b1701dd2f118ce8380bfc9361"
+  },
+  "ci_scope": {
+    "inferred_dependencies": 46,
+    "other_unwired_count": 0,
+    "owner": "dataos-prospective-reference",
+    "uncovered_paths": [],
+    "unwired_tiingo": []
+  },
+  "collector_or_materializer_repaired": false,
+  "corpus_audit_schema": "mastermind.tiingo.corpus_audit.v2",
+  "direct_execution_reason": "PRINCIPAL_JUDGMENT: bounded source-schema interpretation and read-side regression repair; no delegated writer or prohibited effect.",
+  "evidence_logs": {
+    "/Volumes/Mastermind/evidence/tiingo-8698-readside-20261010/import-guard.log": "f0de9208322d7ec2be17f55d2a838f3053f085c54a17c64abb235d61532a2e7e",
+    "/Volumes/Mastermind/evidence/tiingo-8698-readside-20261010/pytest-all-final.log": "1e1fe5e019ac2f4ebcb0cbe9fad009ed5ecff795922dfaf3df837d6e10aaefc8"
+  },
+  "frozen_file_sha256": {
+    "collectors/tiingo_archive.py": "1932ff35a5b2d0eff3204253c51924e945db10df07b7f05858d2f3ea3290e86d",
+    "scripts/tiingo_ingest.py": "1364af1c3ce08c2c91b57a6415e0a099064918306dfbf4fc2729e55b72e11797",
+    "scripts/tiingo_materialize.py": "0b54f919a2a57e1014ff10ea001acbdb4cfa9937be5b97bcecb7919848b41969",
+    "tests/test_tiingo_ingestion_integrity.py": "c1a1e6c3e312ce84179f25e47f9dc493d8440f25efb33e8f96cf931279dbec12"
+  },
+  "hosted_new_candidate_ci_accepted": false,
+  "independent_review_complete": false,
+  "mission_complete": false,
+  "new_runtime_or_scheduler": false,
+  "observed_at_utc": "2026-10-11T01:41:05.315019+00:00",
+  "prior_tool_refusals_preserved": true,
+  "procedure_revision": "326c8469a21d7f50fc9ecb1848196bf1c6e66685",
+  "production_archive_exists": false,
+  "public_references": [
+    "https://www.tiingo.com/documentation/end-of-day",
+    "https://www.tiingo.com/documentation/fundamentals"
+  ],
+  "schema": "mastermind.tiingo.read_side_verification.v1",
+  "scope": "READ_ONLY_PROJECTORS_RESEARCH_READER_AND_CORPUS_AUDIT",
+  "script_import_guard": {
+    "exit_code": 0,
+    "failed": 0,
+    "passed": 11
+  },
+  "view_schema": "mastermind.tiingo.research_views.v2"
+}

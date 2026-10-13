@@ -1,0 +1,99 @@
+{
+  "schema": "tiingo.completed_research_corpus_registration.v1",
+  "recorded_at_utc": "2026-10-12T09:52:02.511493+00:00",
+  "produced_dataset_ids": [
+    "vendor.tiingo.raw.equity_eod",
+    "vendor.tiingo.raw.fundamentals",
+    "vendor.tiingo.research.eod",
+    "vendor.tiingo.research.fundamentals"
+  ],
+  "status_semantics": "Intended store exists with a named producer and verified completed authenticated research artifacts; no further admission is implied.",
+  "collector_source_revision": "2a08250fe61aa59ad3e1581149f0b93e9d5a17cf",
+  "landed_producer_revision": "2c90e1c01d53516c6920e8cb1edd835f82354e28",
+  "eod": {
+    "qualified_nonempty_histories": 11690,
+    "qualified_distinct_bars": 24600974,
+    "captured_empty_catalogue_candidates": 21,
+    "eligible_catalogue_candidates": 47689,
+    "uncaptured_catalogue_windows": 35978,
+    "uncaptured_does_not_mean_unattempted": true,
+    "snapshot_before_utc": "2026-10-12T09:36:49.632323+00:00",
+    "all_selected_raw_and_reader_lineage_verified": true
+  },
+  "fundamentals": {
+    "qualified_cohort_companies": 25,
+    "successful_requests": 75,
+    "projected_rows": 146717,
+    "unambiguous_period_section_metric_keys_compared": 25342,
+    "original_revised_changed_values": 1598,
+    "original_revised_request_dimensions_preserved": true,
+    "requested_start": "1990-01-01",
+    "requested_end": "2026-10-09",
+    "earliest_served_date": "2023-10-12",
+    "latest_served_date": "2026-10-09",
+    "all_raw_hashes_requests_and_reader_lineage_verified": true,
+    "held_new_requests": [
+      {
+        "symbol": "shw",
+        "source": "fund-statements",
+        "asReported": true,
+        "requested_start": "1990-01-01",
+        "requested_end": "2026-10-09",
+        "http_status": 400,
+        "retried": false
+      },
+      {
+        "symbol": "pfe",
+        "source": "fund-statements",
+        "asReported": true,
+        "requested_start": "1990-01-01",
+        "requested_end": "2026-10-09",
+        "http_status": 400,
+        "retried": false
+      }
+    ]
+  },
+  "installed_consumer": {
+    "revision": "2c90e1c01d53516c6920e8cb1edd835f82354e28",
+    "eod_symbols_read": [
+      "EBAY",
+      "DWCH"
+    ],
+    "fundamentals_three_modes_read": [
+      "jpm",
+      "axp"
+    ],
+    "source_access": "read_only",
+    "production_qualification": "NOT_ESTABLISHED_BY_THIS_ADAPTER",
+    "root_bindings_changed": false,
+    "new_contract_release_installed": false
+  },
+  "unproven_or_unadmitted": {
+    "complete_vendor_history": false,
+    "capture_campaign_complete": false,
+    "all_symbol_deep_fundamentals_scope": false,
+    "dated_canonical_identity": false,
+    "historical_upstream_availability": false,
+    "pit_backtest_eligibility": false,
+    "canonical_price_authority": false,
+    "continuous_service": false,
+    "operational_rights_mapping": false,
+    "boats_publication": false,
+    "terminal_release": false
+  },
+  "proof_document_sha256": {
+    "eod-wave8-fixed-prefix04-qualified.json": "8fb16e6ffb46cd383abd3696687a51c5f1291b9e7c9eebbeca9c580649ecc324",
+    "eod-qualified-catalogue-coverage-fixed-prefix04-delta.json": "736f0be843f020649d7deecbf44e33c4c4c1eaf39c8feb89bda534b2d6eb2223",
+    "fundamentals-traditional-dow10-20261012-01a12ab6-qualified.json": "94aa7890f142910655dd9c78876a528be66048dc19c3c52b5767dd0980e53d74",
+    "fundamentals-large-company16-20261012-01a12ab6-qualified.json": "aaaf47a6a252d2e609f9e353c4aa43ee5512ae4039d4dcb4341b5034884a6aa6",
+    "eod-fixed-prefix01-installed-reader-accepted.json": "05b2b8bd8bbdd955e6fad206a2d26a6b93a70493789c6b4e1fb068b1ebd4f764",
+    "fundamentals-dow10-installed-reader-accepted.json": "f4a273fc5f49b425e473f6c7c6ff95a8757e6eb6c9129568cfd4f298dd90de8b",
+    "fundamentals-company16-installed-reader-accepted.json": "3a35f45e824aaef0e21cd8887953df4a8084faa5187c0cd48a51470e5e32e3bf"
+  },
+  "source_lineage_rule": "Compare row/manifest source_sha256 with original receipt raw_sha256, and source_receipt_id with validated receipt identity; qualification document digest is separate.",
+  "independent_architecture_ruling": "ADOPT_BOUNDED_RESEARCH_EXISTENCE_ONLY",
+  "parent_architecture_ruling_sha256": "38762a19cfb8f469cb382c734286427f736ac8fe40614193b9dc25a04fb1c7e8",
+  "previous_paid_review_accepted": false,
+  "held_effects_retried": false,
+  "licensed_row_values_or_credentials_included": false
+}

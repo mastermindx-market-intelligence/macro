@@ -93,12 +93,26 @@
       "zh": null
     },
     "coverage_ratio": 1.0,
-    "degraded": [],
-    "reasons": [],
+    "degraded": [
+      "us3m",
+      "us6m",
+      "us2y",
+      "us5y",
+      "us10y",
+      "us30y",
+      "us5y_real",
+      "us10y_real",
+      "term_premium_10y",
+      "effr",
+      "sofr"
+    ],
+    "reasons": [
+      "worst_required_source_freshness=LATE_WITHIN_TOLERANCE"
+    ],
     "required": [
       {
         "component_id": "us3m",
-        "freshness": "CURRENT",
+        "freshness": "LATE_WITHIN_TOLERANCE",
         "label": {
           "en": "3-month node (us3m)",
           "zh": "3-month节点（us3m）"
@@ -106,11 +120,11 @@
         "null_reason": null,
         "required": true,
         "source_asof": "2026-10-07",
-        "status": "PRESENT"
+        "status": "PARTIAL"
       },
       {
         "component_id": "us6m",
-        "freshness": "CURRENT",
+        "freshness": "LATE_WITHIN_TOLERANCE",
         "label": {
           "en": "6-month node (us6m)",
           "zh": "6-month节点（us6m）"
@@ -118,11 +132,11 @@
         "null_reason": null,
         "required": true,
         "source_asof": "2026-10-07",
-        "status": "PRESENT"
+        "status": "PARTIAL"
       },
       {
         "component_id": "us2y",
-        "freshness": "CURRENT",
+        "freshness": "LATE_WITHIN_TOLERANCE",
         "label": {
           "en": "2-year node (us2y)",
           "zh": "2-year节点（us2y）"
@@ -130,11 +144,11 @@
         "null_reason": null,
         "required": true,
         "source_asof": "2026-10-07",
-        "status": "PRESENT"
+        "status": "PARTIAL"
       },
       {
         "component_id": "us5y",
-        "freshness": "CURRENT",
+        "freshness": "LATE_WITHIN_TOLERANCE",
         "label": {
           "en": "5-year node (us5y)",
           "zh": "5-year节点（us5y）"
@@ -142,11 +156,11 @@
         "null_reason": null,
         "required": true,
         "source_asof": "2026-10-07",
-        "status": "PRESENT"
+        "status": "PARTIAL"
       },
       {
         "component_id": "us10y",
-        "freshness": "CURRENT",
+        "freshness": "LATE_WITHIN_TOLERANCE",
         "label": {
           "en": "10-year node (us10y)",
           "zh": "10-year节点（us10y）"
@@ -154,11 +168,11 @@
         "null_reason": null,
         "required": true,
         "source_asof": "2026-10-07",
-        "status": "PRESENT"
+        "status": "PARTIAL"
       },
       {
         "component_id": "us30y",
-        "freshness": "CURRENT",
+        "freshness": "LATE_WITHIN_TOLERANCE",
         "label": {
           "en": "30-year node (us30y)",
           "zh": "30-year节点（us30y）"
@@ -166,11 +180,11 @@
         "null_reason": null,
         "required": true,
         "source_asof": "2026-10-07",
-        "status": "PRESENT"
+        "status": "PARTIAL"
       },
       {
         "component_id": "us5y_real",
-        "freshness": "CURRENT",
+        "freshness": "LATE_WITHIN_TOLERANCE",
         "label": {
           "en": "5-year node (us5y_real)",
           "zh": "5-year节点（us5y_real）"
@@ -178,11 +192,11 @@
         "null_reason": null,
         "required": true,
         "source_asof": "2026-10-07",
-        "status": "PRESENT"
+        "status": "PARTIAL"
       },
       {
         "component_id": "us10y_real",
-        "freshness": "CURRENT",
+        "freshness": "LATE_WITHIN_TOLERANCE",
         "label": {
           "en": "10-year node (us10y_real)",
           "zh": "10-year节点（us10y_real）"
@@ -190,7 +204,7 @@
         "null_reason": null,
         "required": true,
         "source_asof": "2026-10-07",
-        "status": "PRESENT"
+        "status": "PARTIAL"
       },
       {
         "component_id": "breakeven_10y",
@@ -218,7 +232,7 @@
       },
       {
         "component_id": "term_premium_10y",
-        "freshness": "CURRENT",
+        "freshness": "LATE_WITHIN_TOLERANCE",
         "label": {
           "en": "10-year node (term_premium_10y)",
           "zh": "10-year节点（term_premium_10y）"
@@ -226,11 +240,11 @@
         "null_reason": null,
         "required": true,
         "source_asof": "2026-10-02",
-        "status": "PRESENT"
+        "status": "PARTIAL"
       },
       {
         "component_id": "effr",
-        "freshness": "CURRENT",
+        "freshness": "LATE_WITHIN_TOLERANCE",
         "label": {
           "en": "Effective Fed Funds Rate node (effr)",
           "zh": "Effective Fed Funds Rate节点（effr）"
@@ -238,11 +252,11 @@
         "null_reason": null,
         "required": true,
         "source_asof": "2026-10-07",
-        "status": "PRESENT"
+        "status": "PARTIAL"
       },
       {
         "component_id": "sofr",
-        "freshness": "CURRENT",
+        "freshness": "LATE_WITHIN_TOLERANCE",
         "label": {
           "en": "Secured Overnight Financing Rate node (sofr)",
           "zh": "Secured Overnight Financing Rate节点（sofr）"
@@ -250,7 +264,7 @@
         "null_reason": null,
         "required": true,
         "source_asof": "2026-10-07",
-        "status": "PRESENT"
+        "status": "PARTIAL"
       },
       {
         "component_id": "iorb",
@@ -266,7 +280,7 @@
       },
       {
         "component_id": "us1y",
-        "freshness": "CURRENT",
+        "freshness": "LATE_WITHIN_TOLERANCE",
         "label": {
           "en": "1-year node (us1y)",
           "zh": "1-year节点（us1y）"
@@ -274,11 +288,11 @@
         "null_reason": null,
         "required": false,
         "source_asof": "2026-10-07",
-        "status": "PRESENT"
+        "status": "PARTIAL"
       },
       {
         "component_id": "us3y",
-        "freshness": "CURRENT",
+        "freshness": "LATE_WITHIN_TOLERANCE",
         "label": {
           "en": "3-year node (us3y)",
           "zh": "3-year节点（us3y）"
@@ -286,11 +300,11 @@
         "null_reason": null,
         "required": false,
         "source_asof": "2026-10-07",
-        "status": "PRESENT"
+        "status": "PARTIAL"
       },
       {
         "component_id": "us7y",
-        "freshness": "CURRENT",
+        "freshness": "LATE_WITHIN_TOLERANCE",
         "label": {
           "en": "7-year node (us7y)",
           "zh": "7-year节点（us7y）"
@@ -298,11 +312,11 @@
         "null_reason": null,
         "required": false,
         "source_asof": "2026-10-07",
-        "status": "PRESENT"
+        "status": "PARTIAL"
       },
       {
         "component_id": "us20y",
-        "freshness": "CURRENT",
+        "freshness": "LATE_WITHIN_TOLERANCE",
         "label": {
           "en": "20-year node (us20y)",
           "zh": "20-year节点（us20y）"
@@ -310,11 +324,11 @@
         "null_reason": null,
         "required": false,
         "source_asof": "2026-10-07",
-        "status": "PRESENT"
+        "status": "PARTIAL"
       },
       {
         "component_id": "obfr",
-        "freshness": "CURRENT",
+        "freshness": "LATE_WITHIN_TOLERANCE",
         "label": {
           "en": "Overnight Bank Funding Rate node (obfr)",
           "zh": "Overnight Bank Funding Rate节点（obfr）"
@@ -322,11 +336,11 @@
         "null_reason": null,
         "required": false,
         "source_asof": "2026-10-07",
-        "status": "PRESENT"
+        "status": "PARTIAL"
       }
     ],
-    "state": "CURRENT",
-    "worst_freshness": "CURRENT"
+    "state": "LATE_WITHIN_TOLERANCE",
+    "worst_freshness": "LATE_WITHIN_TOLERANCE"
   },
   "axes": {
     "items": []
@@ -373,7 +387,7 @@
     "changed_fingerprints": [],
     "correction_state": "none",
     "note": "Same reference period as the predecessor print; no tracked metric changed value (no-change republication).",
-    "predecessor_generation_id": "rates_curves-US-4d8bb343b80f7ef5"
+    "predecessor_generation_id": "rates_curves-US-5601dfd23de8932d"
   },
   "drivers": {
     "balance_sheet": [
@@ -508,11 +522,11 @@
     ]
   },
   "generation": {
-    "built_at": "2026-10-11T03:40:41Z",
+    "built_at": "2026-10-13T06:57:13Z",
     "calculation_as_of": "2026-10-09",
-    "code_version": "49319de9aafa51427b9c50cbb653d73d35d5288b",
-    "content_sha256": "d68281370bdf032733fc9db8f09ebeb5bdfe41468e01f456064e01b53e75c1d0",
-    "generation_id": "rates_curves-US-d68281370bdf0327",
+    "code_version": "8847cfc6de330b36595e3793010e6599845adc2f",
+    "content_sha256": "8eef40507df431922151db11367d81c46a53bc01840087756528272537093bb8",
+    "generation_id": "rates_curves-US-8eef40507df43192",
     "producer": "engine.market_os.macro_workspaces.rates_curves",
     "rendered_at": null
   },
@@ -576,7 +590,7 @@
           "evidence_breadth": "HIGH",
           "method_stability": "HIGH",
           "revision_risk": "LOW",
-          "source_health": "HIGH"
+          "source_health": "LOW"
         },
         "contradictions": [],
         "evidence_class": "DESCRIPTIVE",
@@ -598,7 +612,7 @@
           "evidence_breadth": "HIGH",
           "method_stability": "HIGH",
           "revision_risk": "LOW",
-          "source_health": "HIGH"
+          "source_health": "LOW"
         },
         "contradictions": [],
         "evidence_class": "DESCRIPTIVE",
@@ -621,7 +635,7 @@
           "evidence_breadth": "HIGH",
           "method_stability": "HIGH",
           "revision_risk": "LOW",
-          "source_health": "HIGH"
+          "source_health": "LOW"
         },
         "contradictions": [],
         "evidence_class": "DESCRIPTIVE",
@@ -645,7 +659,7 @@
           "evidence_breadth": "HIGH",
           "method_stability": "HIGH",
           "revision_risk": "LOW",
-          "source_health": "HIGH"
+          "source_health": "LOW"
         },
         "contradictions": [],
         "evidence_class": "DESCRIPTIVE",
@@ -668,7 +682,7 @@
           "evidence_breadth": "HIGH",
           "method_stability": "HIGH",
           "revision_risk": "LOW",
-          "source_health": "HIGH"
+          "source_health": "LOW"
         },
         "contradictions": [],
         "evidence_class": "DESCRIPTIVE",
@@ -690,7 +704,7 @@
           "evidence_breadth": "HIGH",
           "method_stability": "HIGH",
           "revision_risk": "LOW",
-          "source_health": "HIGH"
+          "source_health": "LOW"
         },
         "contradictions": [],
         "evidence_class": "DESCRIPTIVE",
@@ -713,7 +727,7 @@
           "evidence_breadth": "HIGH",
           "method_stability": "HIGH",
           "revision_risk": "LOW",
-          "source_health": "HIGH"
+          "source_health": "LOW"
         },
         "contradictions": [],
         "evidence_class": "DESCRIPTIVE",
@@ -735,7 +749,7 @@
           "evidence_breadth": "HIGH",
           "method_stability": "HIGH",
           "revision_risk": "LOW",
-          "source_health": "HIGH"
+          "source_health": "LOW"
         },
         "contradictions": [],
         "evidence_class": "DESCRIPTIVE",
@@ -757,7 +771,7 @@
           "evidence_breadth": "HIGH",
           "method_stability": "HIGH",
           "revision_risk": "LOW",
-          "source_health": "HIGH"
+          "source_health": "LOW"
         },
         "contradictions": [],
         "evidence_class": "DESCRIPTIVE",
@@ -779,7 +793,7 @@
           "evidence_breadth": "HIGH",
           "method_stability": "HIGH",
           "revision_risk": "LOW",
-          "source_health": "HIGH"
+          "source_health": "LOW"
         },
         "contradictions": [],
         "evidence_class": "DESCRIPTIVE",
@@ -817,7 +831,7 @@
         "definition_id": "fred.DGS3MO.us3m",
         "definition_version": "1.0.0",
         "direction_semantics": "higher_more_restrictive",
-        "freshness": "CURRENT",
+        "freshness": "LATE_WITHIN_TOLERANCE",
         "market_session": null,
         "metric_id": "us3m_level",
         "model_version": "rates_curves.compose.v1",
@@ -853,7 +867,7 @@
         "definition_id": "fred.DGS6MO.us6m",
         "definition_version": "1.0.0",
         "direction_semantics": "higher_more_restrictive",
-        "freshness": "CURRENT",
+        "freshness": "LATE_WITHIN_TOLERANCE",
         "market_session": null,
         "metric_id": "us6m_level",
         "model_version": "rates_curves.compose.v1",
@@ -889,7 +903,7 @@
         "definition_id": "fred.DGS1.us1y",
         "definition_version": "1.0.0",
         "direction_semantics": "higher_more_restrictive",
-        "freshness": "CURRENT",
+        "freshness": "LATE_WITHIN_TOLERANCE",
         "market_session": null,
         "metric_id": "us1y_level",
         "model_version": "rates_curves.compose.v1",
@@ -925,7 +939,7 @@
         "definition_id": "fred.DGS2.us2y",
         "definition_version": "1.0.0",
         "direction_semantics": "higher_more_restrictive",
-        "freshness": "CURRENT",
+        "freshness": "LATE_WITHIN_TOLERANCE",
         "market_session": null,
         "metric_id": "us2y_level",
         "model_version": "rates_curves.compose.v1",
@@ -961,7 +975,7 @@
         "definition_id": "fred.DGS3.us3y",
         "definition_version": "1.0.0",
         "direction_semantics": "higher_more_restrictive",
-        "freshness": "CURRENT",
+        "freshness": "LATE_WITHIN_TOLERANCE",
         "market_session": null,
         "metric_id": "us3y_level",
         "model_version": "rates_curves.compose.v1",
@@ -997,7 +1011,7 @@
         "definition_id": "fred.DGS5.us5y",
         "definition_version": "1.0.0",
         "direction_semantics": "higher_more_restrictive",
-        "freshness": "CURRENT",
+        "freshness": "LATE_WITHIN_TOLERANCE",
         "market_session": null,
         "metric_id": "us5y_level",
         "model_version": "rates_curves.compose.v1",
@@ -1033,7 +1047,7 @@
         "definition_id": "fred.DGS7.us7y",
         "definition_version": "1.0.0",
         "direction_semantics": "higher_more_restrictive",
-        "freshness": "CURRENT",
+        "freshness": "LATE_WITHIN_TOLERANCE",
         "market_session": null,
         "metric_id": "us7y_level",
         "model_version": "rates_curves.compose.v1",
@@ -1069,7 +1083,7 @@
         "definition_id": "fred.DGS10.us10y",
         "definition_version": "1.0.0",
         "direction_semantics": "higher_more_restrictive",
-        "freshness": "CURRENT",
+        "freshness": "LATE_WITHIN_TOLERANCE",
         "market_session": null,
         "metric_id": "us10y_level",
         "model_version": "rates_curves.compose.v1",
@@ -1105,7 +1119,7 @@
         "definition_id": "fred.DGS20.us20y",
         "definition_version": "1.0.0",
         "direction_semantics": "higher_more_restrictive",
-        "freshness": "CURRENT",
+        "freshness": "LATE_WITHIN_TOLERANCE",
         "market_session": null,
         "metric_id": "us20y_level",
         "model_version": "rates_curves.compose.v1",
@@ -1141,7 +1155,7 @@
         "definition_id": "fred.DGS30.us30y",
         "definition_version": "1.0.0",
         "direction_semantics": "higher_more_restrictive",
-        "freshness": "CURRENT",
+        "freshness": "LATE_WITHIN_TOLERANCE",
         "market_session": null,
         "metric_id": "us30y_level",
         "model_version": "rates_curves.compose.v1",
@@ -1177,7 +1191,7 @@
         "definition_id": "fred.DFII5.us5y_real",
         "definition_version": "1.0.0",
         "direction_semantics": "higher_more_restrictive_real_financing_cost",
-        "freshness": "CURRENT",
+        "freshness": "LATE_WITHIN_TOLERANCE",
         "market_session": null,
         "metric_id": "us5y_real_level",
         "model_version": "rates_curves.compose.v1",
@@ -1213,7 +1227,7 @@
         "definition_id": "fred.DFII10.us10y_real",
         "definition_version": "1.0.0",
         "direction_semantics": "higher_more_restrictive_real_financing_cost",
-        "freshness": "CURRENT",
+        "freshness": "LATE_WITHIN_TOLERANCE",
         "market_session": null,
         "metric_id": "us10y_real_level",
         "model_version": "rates_curves.compose.v1",
@@ -1321,7 +1335,7 @@
         "definition_id": "fred.THREEFYTP10.term_premium_10y",
         "definition_version": "1.0.0",
         "direction_semantics": "higher_more_term_compensation_demanded",
-        "freshness": "CURRENT",
+        "freshness": "LATE_WITHIN_TOLERANCE",
         "market_session": null,
         "metric_id": "term_premium_10y_level",
         "model_version": "rates_curves.compose.v1",
@@ -1357,7 +1371,7 @@
         "definition_id": "fred.EFFR.effr",
         "definition_version": "1.0.0",
         "direction_semantics": "higher_tighter_policy_stance",
-        "freshness": "CURRENT",
+        "freshness": "LATE_WITHIN_TOLERANCE",
         "market_session": null,
         "metric_id": "effr_level",
         "model_version": "rates_curves.compose.v1",
@@ -1393,7 +1407,7 @@
         "definition_id": "fred.OBFR.obfr",
         "definition_version": "1.0.0",
         "direction_semantics": "higher_tighter_policy_stance",
-        "freshness": "CURRENT",
+        "freshness": "LATE_WITHIN_TOLERANCE",
         "market_session": null,
         "metric_id": "obfr_level",
         "model_version": "rates_curves.compose.v1",
@@ -1429,7 +1443,7 @@
         "definition_id": "fred.SOFR.sofr",
         "definition_version": "1.0.0",
         "direction_semantics": "higher_tighter_policy_stance",
-        "freshness": "CURRENT",
+        "freshness": "LATE_WITHIN_TOLERANCE",
         "market_session": null,
         "metric_id": "sofr_level",
         "model_version": "rates_curves.compose.v1",
@@ -1501,7 +1515,7 @@
         "definition_id": "fred.DGS2",
         "definition_version": "1.0.0",
         "direction_semantics": "positive_is_yields_rising_over_13w",
-        "freshness": "CURRENT",
+        "freshness": "LATE_WITHIN_TOLERANCE",
         "market_session": null,
         "metric_id": "us2y_change_13w",
         "model_version": "rates_curves.compose.v1",
@@ -1537,7 +1551,7 @@
         "definition_id": "fred.DGS10",
         "definition_version": "1.0.0",
         "direction_semantics": "positive_is_yields_rising_over_13w",
-        "freshness": "CURRENT",
+        "freshness": "LATE_WITHIN_TOLERANCE",
         "market_session": null,
         "metric_id": "us10y_change_13w",
         "model_version": "rates_curves.compose.v1",
@@ -1573,7 +1587,7 @@
         "definition_id": "fred.DGS30",
         "definition_version": "1.0.0",
         "direction_semantics": "positive_is_yields_rising_over_13w",
-        "freshness": "CURRENT",
+        "freshness": "LATE_WITHIN_TOLERANCE",
         "market_session": null,
         "metric_id": "us30y_change_13w",
         "model_version": "rates_curves.compose.v1",
@@ -1609,7 +1623,7 @@
         "definition_id": "fred.THREEFYTP10",
         "definition_version": "1.0.0",
         "direction_semantics": "positive_is_term_compensation_rising_over_13w",
-        "freshness": "CURRENT",
+        "freshness": "LATE_WITHIN_TOLERANCE",
         "market_session": null,
         "metric_id": "term_premium_10y_change_13w",
         "model_version": "rates_curves.compose.v1",
@@ -1645,7 +1659,7 @@
         "definition_id": "fred.DGS10 - fred.DGS2",
         "definition_version": "1.0.0",
         "direction_semantics": "higher_steeper_curve",
-        "freshness": "CURRENT",
+        "freshness": "LATE_WITHIN_TOLERANCE",
         "market_session": null,
         "metric_id": "curve_2s10s_level",
         "model_version": "rates_curves.compose.v1",
@@ -1682,7 +1696,7 @@
         "definition_id": "fred.DGS10 - fred.DGS3MO",
         "definition_version": "1.0.0",
         "direction_semantics": "higher_steeper_curve",
-        "freshness": "CURRENT",
+        "freshness": "LATE_WITHIN_TOLERANCE",
         "market_session": null,
         "metric_id": "curve_3m10y_level",
         "model_version": "rates_curves.compose.v1",
@@ -1719,7 +1733,7 @@
         "definition_id": "fred.DGS30 - fred.DGS5",
         "definition_version": "1.0.0",
         "direction_semantics": "higher_steeper_curve",
-        "freshness": "CURRENT",
+        "freshness": "LATE_WITHIN_TOLERANCE",
         "market_session": null,
         "metric_id": "curve_5s30s_level",
         "model_version": "rates_curves.compose.v1",
@@ -1756,7 +1770,7 @@
         "definition_id": "fred.DGS10 - fred.DGS2",
         "definition_version": "1.0.0",
         "direction_semantics": "longer_run_more_entrenched_regime",
-        "freshness": "CURRENT",
+        "freshness": "LATE_WITHIN_TOLERANCE",
         "market_session": null,
         "metric_id": "curve_2s10s_inversion_run_length_bd",
         "model_version": "rates_curves.compose.v1",
@@ -1793,7 +1807,7 @@
         "definition_id": "fred.DGS10 - fred.DGS3MO",
         "definition_version": "1.0.0",
         "direction_semantics": "longer_run_more_entrenched_regime",
-        "freshness": "CURRENT",
+        "freshness": "LATE_WITHIN_TOLERANCE",
         "market_session": null,
         "metric_id": "curve_3m10y_inversion_run_length_bd",
         "model_version": "rates_curves.compose.v1",
@@ -1830,7 +1844,7 @@
         "definition_id": "2*fred.DGS5 - fred.DGS2 - fred.DGS10",
         "definition_version": "1.0.0",
         "direction_semantics": "higher_more_humped_curve",
-        "freshness": "CURRENT",
+        "freshness": "LATE_WITHIN_TOLERANCE",
         "market_session": null,
         "metric_id": "curvature_butterfly_2s5s10s",
         "model_version": "rates_curves.compose.v1",
@@ -1868,7 +1882,7 @@
         "definition_id": "fred.DGS10 - (fred.DFII10 + fred.T10YIE)",
         "definition_version": "1.0.0",
         "direction_semantics": "magnitude_indicates_cross_curve_interpolation_noise",
-        "freshness": "CURRENT",
+        "freshness": "LATE_WITHIN_TOLERANCE",
         "market_session": null,
         "metric_id": "nominal_real_breakeven_residual_10y",
         "model_version": "rates_curves.compose.v1",
@@ -1906,7 +1920,7 @@
         "definition_id": "fred.EFFR - fred.IORB",
         "definition_version": "1.0.0",
         "direction_semantics": "higher_leg_a_trading_rich_to_leg_b",
-        "freshness": "CURRENT",
+        "freshness": "LATE_WITHIN_TOLERANCE",
         "market_session": null,
         "metric_id": "corridor_effr_minus_iorb_bp",
         "model_version": "rates_curves.compose.v1",
@@ -1943,7 +1957,7 @@
         "definition_id": "fred.SOFR - fred.EFFR",
         "definition_version": "1.0.0",
         "direction_semantics": "higher_leg_a_trading_rich_to_leg_b",
-        "freshness": "CURRENT",
+        "freshness": "LATE_WITHIN_TOLERANCE",
         "market_session": null,
         "metric_id": "corridor_sofr_minus_effr_bp",
         "model_version": "rates_curves.compose.v1",
@@ -1980,7 +1994,7 @@
         "definition_id": "fred.SOFR - fred.IORB",
         "definition_version": "1.0.0",
         "direction_semantics": "higher_leg_a_trading_rich_to_leg_b",
-        "freshness": "CURRENT",
+        "freshness": "LATE_WITHIN_TOLERANCE",
         "market_session": null,
         "metric_id": "corridor_sofr_minus_iorb_bp",
         "model_version": "rates_curves.compose.v1",
@@ -3346,7 +3360,7 @@
     "items": [
       {
         "basis": "constant_maturity_investment_basis",
-        "freshness": "CURRENT",
+        "freshness": "LATE_WITHIN_TOLERANCE",
         "label": {
           "en": "3-month Treasury yield",
           "zh": "3月期美债收益率"
@@ -3488,7 +3502,7 @@
       },
       {
         "basis": "constant_maturity_investment_basis",
-        "freshness": "CURRENT",
+        "freshness": "LATE_WITHIN_TOLERANCE",
         "label": {
           "en": "6-month Treasury yield",
           "zh": "6月期美债收益率"
@@ -3630,7 +3644,7 @@
       },
       {
         "basis": "constant_maturity_investment_basis",
-        "freshness": "CURRENT",
+        "freshness": "LATE_WITHIN_TOLERANCE",
         "label": {
           "en": "1-year Treasury yield",
           "zh": "1年期美债收益率"
@@ -3772,7 +3786,7 @@
       },
       {
         "basis": "constant_maturity_investment_basis",
-        "freshness": "CURRENT",
+        "freshness": "LATE_WITHIN_TOLERANCE",
         "label": {
           "en": "2-year Treasury yield",
           "zh": "2年期美债收益率"
@@ -3914,7 +3928,7 @@
       },
       {
         "basis": "constant_maturity_investment_basis",
-        "freshness": "CURRENT",
+        "freshness": "LATE_WITHIN_TOLERANCE",
         "label": {
           "en": "3-year Treasury yield",
           "zh": "3年期美债收益率"
@@ -4056,7 +4070,7 @@
       },
       {
         "basis": "constant_maturity_investment_basis",
-        "freshness": "CURRENT",
+        "freshness": "LATE_WITHIN_TOLERANCE",
         "label": {
           "en": "5-year Treasury yield",
           "zh": "5年期美债收益率"
@@ -4198,7 +4212,7 @@
       },
       {
         "basis": "constant_maturity_investment_basis",
-        "freshness": "CURRENT",
+        "freshness": "LATE_WITHIN_TOLERANCE",
         "label": {
           "en": "7-year Treasury yield",
           "zh": "7年期美债收益率"
@@ -4340,7 +4354,7 @@
       },
       {
         "basis": "constant_maturity_investment_basis",
-        "freshness": "CURRENT",
+        "freshness": "LATE_WITHIN_TOLERANCE",
         "label": {
           "en": "10-year Treasury yield",
           "zh": "10年期美债收益率"
@@ -4482,7 +4496,7 @@
       },
       {
         "basis": "constant_maturity_investment_basis",
-        "freshness": "CURRENT",
+        "freshness": "LATE_WITHIN_TOLERANCE",
         "label": {
           "en": "20-year Treasury yield",
           "zh": "20年期美债收益率"
@@ -4624,7 +4638,7 @@
       },
       {
         "basis": "constant_maturity_investment_basis",
-        "freshness": "CURRENT",
+        "freshness": "LATE_WITHIN_TOLERANCE",
         "label": {
           "en": "30-year Treasury yield",
           "zh": "30年期美债收益率"
@@ -4777,7 +4791,7 @@
         "definition_id": null,
         "definition_version": null,
         "first_known_at": null,
-        "freshness": "CURRENT",
+        "freshness": "LATE_WITHIN_TOLERANCE",
         "label": {
           "en": "3-month (DGS3MO, via FRED)",
           "zh": "3-month（DGS3MO，经FRED）"
@@ -4798,7 +4812,7 @@
         "definition_id": null,
         "definition_version": null,
         "first_known_at": null,
-        "freshness": "CURRENT",
+        "freshness": "LATE_WITHIN_TOLERANCE",
         "label": {
           "en": "6-month (DGS6MO, via FRED)",
           "zh": "6-month（DGS6MO，经FRED）"
@@ -4819,7 +4833,7 @@
         "definition_id": null,
         "definition_version": null,
         "first_known_at": null,
-        "freshness": "CURRENT",
+        "freshness": "LATE_WITHIN_TOLERANCE",
         "label": {
           "en": "1-year (DGS1, via FRED)",
           "zh": "1-year（DGS1，经FRED）"
@@ -4840,7 +4854,7 @@
         "definition_id": null,
         "definition_version": null,
         "first_known_at": null,
-        "freshness": "CURRENT",
+        "freshness": "LATE_WITHIN_TOLERANCE",
         "label": {
           "en": "2-year (DGS2, via FRED)",
           "zh": "2-year（DGS2，经FRED）"
@@ -4861,7 +4875,7 @@
         "definition_id": null,
         "definition_version": null,
         "first_known_at": null,
-        "freshness": "CURRENT",
+        "freshness": "LATE_WITHIN_TOLERANCE",
         "label": {
           "en": "3-year (DGS3, via FRED)",
           "zh": "3-year（DGS3，经FRED）"
@@ -4882,7 +4896,7 @@
         "definition_id": null,
         "definition_version": null,
         "first_known_at": null,
-        "freshness": "CURRENT",
+        "freshness": "LATE_WITHIN_TOLERANCE",
         "label": {
           "en": "5-year (DGS5, via FRED)",
           "zh": "5-year（DGS5，经FRED）"
@@ -4903,7 +4917,7 @@
         "definition_id": null,
         "definition_version": null,
         "first_known_at": null,
-        "freshness": "CURRENT",
+        "freshness": "LATE_WITHIN_TOLERANCE",
         "label": {
           "en": "7-year (DGS7, via FRED)",
           "zh": "7-year（DGS7，经FRED）"
@@ -4924,7 +4938,7 @@
         "definition_id": null,
         "definition_version": null,
         "first_known_at": null,
-        "freshness": "CURRENT",
+        "freshness": "LATE_WITHIN_TOLERANCE",
         "label": {
           "en": "10-year (DGS10, via FRED)",
           "zh": "10-year（DGS10，经FRED）"
@@ -4945,7 +4959,7 @@
         "definition_id": null,
         "definition_version": null,
         "first_known_at": null,
-        "freshness": "CURRENT",
+        "freshness": "LATE_WITHIN_TOLERANCE",
         "label": {
           "en": "20-year (DGS20, via FRED)",
           "zh": "20-year（DGS20，经FRED）"
@@ -4966,7 +4980,7 @@
         "definition_id": null,
         "definition_version": null,
         "first_known_at": null,
-        "freshness": "CURRENT",
+        "freshness": "LATE_WITHIN_TOLERANCE",
         "label": {
           "en": "30-year (DGS30, via FRED)",
           "zh": "30-year（DGS30，经FRED）"
@@ -4987,7 +5001,7 @@
         "definition_id": null,
         "definition_version": null,
         "first_known_at": null,
-        "freshness": "CURRENT",
+        "freshness": "LATE_WITHIN_TOLERANCE",
         "label": {
           "en": "5-year (DFII5, via FRED)",
           "zh": "5-year（DFII5，经FRED）"
@@ -5008,7 +5022,7 @@
         "definition_id": null,
         "definition_version": null,
         "first_known_at": null,
-        "freshness": "CURRENT",
+        "freshness": "LATE_WITHIN_TOLERANCE",
         "label": {
           "en": "10-year (DFII10, via FRED)",
           "zh": "10-year（DFII10，经FRED）"
@@ -5071,7 +5085,7 @@
         "definition_id": null,
         "definition_version": null,
         "first_known_at": null,
-        "freshness": "CURRENT",
+        "freshness": "LATE_WITHIN_TOLERANCE",
         "label": {
           "en": "10-year (THREEFYTP10, via FRED)",
           "zh": "10-year（THREEFYTP10，经FRED）"
@@ -5092,7 +5106,7 @@
         "definition_id": null,
         "definition_version": null,
         "first_known_at": null,
-        "freshness": "CURRENT",
+        "freshness": "LATE_WITHIN_TOLERANCE",
         "label": {
           "en": "Effective Fed Funds Rate (EFFR, via FRED)",
           "zh": "Effective Fed Funds Rate（EFFR，经FRED）"
@@ -5113,7 +5127,7 @@
         "definition_id": null,
         "definition_version": null,
         "first_known_at": null,
-        "freshness": "CURRENT",
+        "freshness": "LATE_WITHIN_TOLERANCE",
         "label": {
           "en": "Overnight Bank Funding Rate (OBFR, via FRED)",
           "zh": "Overnight Bank Funding Rate（OBFR，经FRED）"
@@ -5134,7 +5148,7 @@
         "definition_id": null,
         "definition_version": null,
         "first_known_at": null,
-        "freshness": "CURRENT",
+        "freshness": "LATE_WITHIN_TOLERANCE",
         "label": {
           "en": "Secured Overnight Financing Rate (SOFR, via FRED)",
           "zh": "Secured Overnight Financing Rate（SOFR，经FRED）"

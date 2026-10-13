@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import json
 import logging
+import math
 import re
 import sys
 from datetime import date, datetime, timezone
@@ -21,7 +22,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from engine import alt_cycle, btc_mtf  # noqa: E402
 from engine.btc_options import build_contract as build_btc_options, write_contract as write_btc_options  # noqa: E402
 from engine.crypto_market_state import build_market_state  # noqa: E402
-from engine.crypto_universe import breadth_read, load_universe  # noqa: E402
+from engine.crypto_universe import breadth_read, display_price_path, load_universe_snapshot  # noqa: E402
 from engine.eth_state import build_states as build_asset_states  # noqa: E402
 from engine.event_calendar import us_macro_events  # noqa: E402
 from lib import config, store  # noqa: E402
@@ -50,10 +51,14 @@ def _payload(series: pd.Series, days: int = 90) -> dict:
     }
 
 
-def _money(value, *, compact: bool = False) -> str:
+def _money(value, *, compact: bool = False, signed: bool = False) -> str:
     if value is None or pd.isna(value):
         return "—"
     value = float(value)
+    if signed:
+        # Sign before the currency symbol (-$505M, +$2.5B); ASCII minus like the unsigned path.
+        sign = "+" if value > 0 else ("-" if value < 0 else "")
+        return sign + _money(abs(value), compact=compact)
     if compact:
         if abs(value) >= 1e12:
             return f"${value / 1e12:,.2f}T"
@@ -66,6 +71,15 @@ def _money(value, *, compact: bool = False) -> str:
     if abs(value) < 100:
         return f"${value:,.2f}"
     return f"${value:,.0f}"
+
+
+def _signed_musd(value) -> str:
+    """Signed millions of US dollars, sign before the symbol: +$505M / -$505M."""
+    if value is None or pd.isna(value):
+        return "—"
+    value = float(value)
+    sign = "+" if value > 0 else ("-" if value < 0 else "")
+    return f"{sign}${abs(value):,.0f}M"
 
 
 def _pct(value, digits: int = 1, signed: bool = True) -> str:
@@ -108,6 +122,9 @@ def _state_zh(state: str) -> str:
         "Alt participation broad": "山寨参与广泛",
         "Bitcoin-led": "比特币主导",
         "Mixed participation": "参与度混合",
+        "ETH leading on relative trend": "相对趋势上以太坊领先",
+        "BTC leading on relative trend": "相对趋势上比特币领先",
+        "Mixed relative trend": "相对趋势混合",
         "Broad": "广泛",
         "Narrow": "狭窄",
         "Mixed": "混合",
@@ -126,8 +143,17 @@ def _load_e0(site: Path) -> dict:
                 "stance_zh": "暂无",
                 "summary_en": "Bitcoin authority contract is awaiting its next build.",
                 "summary_zh": "比特币权威合约正在等待下一次构建。",
-                "exposure_pct": 0,
+                "exposure_pct": None,
                 "gate_active": False,
+            },
+            "decision": {
+                "schema": "btc.decision/v1",
+                "status": "unavailable",
+                "as_of": None,
+                "integrity_ok": False,
+                "final_exposure_pct": None,
+                "errors": ["COCKPIT_DECISION_UNAVAILABLE"],
+                "authority_source": "btc.decision/v1.final.exposure_pct",
             },
             "axes": [],
         }
@@ -149,12 +175,18 @@ def _enrich_universe(rows: list[dict]) -> list[dict]:
             deep[symbol] = _series("yahoo", f"{symbol}-USD")
     for row in rows:
         series = deep.get(row["symbol"])
+        if series is not None and row.get("as_of"):
+            # A deeper history must not advance a dated Market Board snapshot.
+            dates = pd.to_datetime(series.index, utc=True)
+            cutoff = pd.Timestamp(row["as_of"], tz="UTC")
+            series = series.loc[dates.normalize() <= cutoff]
+            series = series.loc[series.map(lambda x: math.isfinite(x) and x > 0)]
         if series is not None and len(series) >= 30:
             hist = series.tail(90)
             row["spark_dates"] = [str(pd.Timestamp(x).date()) for x in hist.index]
             row["spark_values"] = [float(x) for x in hist.to_numpy()]
             row["history_days"] = len(hist)
-            row["history_chip"] = "90D"
+            row["history_chip"] = f"{len(hist)}D"
         if len(row.get("spark_values") or []) >= 4:
             row["spark"] = illus(
                 {"dates": row["spark_dates"], "vals": row["spark_values"]},
@@ -174,21 +206,106 @@ def _enrich_universe(rows: list[dict]) -> list[dict]:
     return rows
 
 
-def _allocation(signals: pd.DataFrame, market: dict) -> dict:
-    if signals is None or signals.empty or "close" not in signals.columns:
-        return {
-            "btc": 0,
-            "eth": 0,
-            "alts": 0,
-            "cash": 100,
-            "exposure": 0,
-            "season": "Unavailable",
-            "season_score": None,
-            "regime": "neutral",
-            "ethbtc": None,
-        }
-    cfg = config.load()["vector"]["alt_cycle"]
+def _allocation_unavailable(
+    reason: str, decision: dict | None = None, *, budget: int | None = None
+) -> dict:
+    """Keep independent, already-qualified budget information on a split failure."""
+    projection = decision if isinstance(decision, dict) else {}
+    reasons = {
+        "CANONICAL_DECISION_UNAVAILABLE": (
+            "The model decision is missing or did not pass its integrity checks.",
+            "模型决策缺失，或未通过完整性检查。",
+        ),
+        "CANONICAL_DECISION_AS_OF_MISMATCH": (
+            "The decision belongs to a different snapshot. Its old target is not shown as current.",
+            "决策与当前快照日期不一致。旧目标不会作为当前配置展示。",
+        ),
+        "CANONICAL_SNAPSHOT_UNAVAILABLE": (
+            "The matching market snapshot is unavailable, so this decision cannot be shown as current.",
+            "对应的市场快照暂不可用，因此无法将这条决策作为当前配置展示。",
+        ),
+        "CLASS_SPLIT_INPUT_UNAVAILABLE": (
+            "The total model budget is available, but current inputs for the asset breakdown are missing.",
+            "模型总预算可用，但计算类别明细所需的当前数据缺失。",
+        ),
+        "CLASS_SPLIT_UNAVAILABLE": (
+            "The total model budget is available, but the asset breakdown could not be calculated reliably.",
+            "模型总预算可用，但暂时无法可靠地计算类别明细。",
+        ),
+    }
+    reason_en, reason_zh = reasons.get(reason, reasons["CANONICAL_DECISION_UNAVAILABLE"])
+    errors = projection.get("errors")
+    return {
+        "available": False,
+        "budget_available": budget is not None,
+        "split_context_available": False,
+        "btc": None,
+        "eth": None,
+        "alts": None,
+        "cash": 100 - budget if budget is not None else None,
+        "exposure": budget,
+        "season": "Unavailable",
+        "season_score": None,
+        "regime": "unavailable",
+        "ethbtc": None,
+        "authority_source": "btc.decision/v1.final.exposure_pct",
+        "authority_error": reason,
+        "reason_en": reason_en,
+        "reason_zh": reason_zh,
+        "decision_status": projection.get("status") or "unavailable",
+        "decision_as_of": projection.get("as_of"),
+        "decision_errors": list(errors) if isinstance(errors, (list, tuple)) else [],
+    }
+
+
+def _allocation(signals: pd.DataFrame, market: dict, decision: dict) -> dict:
+    """Split the existing exact BTC budget receipt, preserving partial knowledge.
+
+    available describes the full class allocation; budget_available describes
+    only the dated canonical total. Neither raw signals nor split data can
+    originate that total or rescue an invalid/stale decision.
+    """
+    projection = decision if isinstance(decision, dict) else {}
+    exposure = projection.get("final_exposure_pct")
+    # The producer emits an integer display percentage. Reject malformed JSON
+    # types and fractional replacements rather than coercing/rounding authority.
+    canonical_ok = (
+        projection.get("schema") == "btc.decision/v1"
+        and projection.get("status") == "ok"
+        and projection.get("integrity_ok") is True
+        and isinstance(exposure, (int, float))
+        and not isinstance(exposure, bool)
+        and 0 <= exposure <= 100
+        and math.isfinite(exposure)
+        and float(exposure).is_integer()
+    )
+    if not canonical_ok:
+        return _allocation_unavailable("CANONICAL_DECISION_UNAVAILABLE", projection)
+    if signals is None or signals.empty:
+        return _allocation_unavailable("CANONICAL_SNAPSHOT_UNAVAILABLE", projection)
+    try:
+        signal_date = pd.Timestamp(signals.index[-1])
+        signal_as_of = str(signal_date.date()) if pd.notna(signal_date) else None
+    except (ValueError, TypeError, OverflowError):
+        signal_as_of = None
+    if not signal_as_of or projection.get("as_of") != signal_as_of:
+        return _allocation_unavailable("CANONICAL_DECISION_AS_OF_MISMATCH", projection)
+
+    budget = int(exposure)
+    out = _allocation_unavailable("CLASS_SPLIT_INPUT_UNAVAILABLE", projection, budget=budget)
+    if budget == 0:
+        # Zero needs no trend/volume/grid opinion: there are no risk assets to
+        # divide. The snapshot/date checks above still apply.
+        out.update(available=True, btc=0, eth=0, alts=0, authority_error=None,
+                   reason_en="", reason_zh="")
+        return out
+    if "close" not in signals.columns:
+        return out
     close = pd.to_numeric(signals["close"], errors="coerce").dropna()
+    if close.empty or close.index[-1] != signals.index[-1] or not math.isfinite(close.iloc[-1]) or close.iloc[-1] <= 0:
+        return out
+
+    cfg = config.load()["vector"]["alt_cycle"]
     btc_bars = store.read("coinbase", "btc_daily")
     high = (
         pd.to_numeric(btc_bars["high"], errors="coerce").reindex(close.index).ffill()
@@ -199,37 +316,81 @@ def _allocation(signals: pd.DataFrame, market: dict) -> dict:
     regime = ladder.get("regime")
     eth = _series("yahoo", "ETH-USD")
     eb = alt_cycle.ethbtc_signal(eth, close, cfg)
-    score, bucket = alt_cycle.alt_season_score(
-        eb, market.get("btc_dominance"), cfg
-    )
+    score, bucket = alt_cycle.alt_season_score(eb, market.get("btc_dominance"), cfg)
     grid = alt_cycle.alloc_grid(regime, bucket)
-
-    # Load-bearing parity with the retired allocation page: alloc_optimal sets
-    # the TOTAL crypto budget; the alt grid only splits that budget.
-    latest = signals.iloc[-1]
-    alloc_pct = (
-        round(100 * latest["alloc_optimal"])
-        if pd.notna(latest.get("alloc_optimal"))
-        else 0
+    weights = [grid.get(k) for k in ("btc", "eth", "alts")] if isinstance(grid, dict) else []
+    if len(weights) != 3 or any(
+        not isinstance(w, (int, float)) or isinstance(w, bool) or not math.isfinite(w) or w < 0
+        for w in weights
+    ):
+        return _allocation_unavailable("CLASS_SPLIT_UNAVAILABLE", projection, budget=budget)
+    risk_assets = sum(weights)
+    if not math.isfinite(risk_assets) or risk_assets <= 0:
+        return _allocation_unavailable("CLASS_SPLIT_UNAVAILABLE", projection, budget=budget)
+    # Preserve the existing class arithmetic; fail closed on an invalid rounded
+    # destination instead of introducing a new optimizer or redistributing it.
+    btc_pct = round(budget * weights[0] / risk_assets)
+    eth_pct = round(budget * weights[1] / risk_assets)
+    alt_pct = budget - btc_pct - eth_pct
+    if any(v < 0 or (w == 0 and v > 0) for v, w in zip((btc_pct, eth_pct, alt_pct), weights)):
+        return _allocation_unavailable("CLASS_SPLIT_UNAVAILABLE", projection, budget=budget)
+    out.update(
+        available=True, split_context_available=True,
+        btc=btc_pct, eth=eth_pct, alts=alt_pct,
+        season=bucket, season_score=score, regime=grid.get("regime_key") or "unavailable",
+        ethbtc=round(eb["level"], 4) if eb and eb.get("level") is not None else None,
+        authority_error=None, reason_en="", reason_zh="",
     )
-    risk_assets = grid["btc"] + grid["eth"] + grid["alts"]
-    if risk_assets > 0 and alloc_pct > 0:
-        btc_pct = round(alloc_pct * grid["btc"] / risk_assets)
-        eth_pct = round(alloc_pct * grid["eth"] / risk_assets)
-        alt_pct = alloc_pct - btc_pct - eth_pct
-    else:
-        btc_pct = eth_pct = alt_pct = 0
-    return {
-        "btc": btc_pct,
-        "eth": eth_pct,
-        "alts": alt_pct,
-        "cash": 100 - alloc_pct,
-        "exposure": alloc_pct,
-        "season": bucket,
-        "season_score": score,
-        "regime": grid["regime_key"],
-        "ethbtc": round(eb["level"], 4) if eb and eb.get("level") is not None else None,
+    return out
+
+
+
+def _coinbase_daily_close(symbol: str) -> pd.Series:
+    """Coinbase daily close for the display price path.
+
+    No Yahoo splice and no forward-fill. A missing file or a non-numeric
+    close stays missing.
+    """
+    series_name = {"ETH": "eth_daily", "SOL": "sol_daily"}.get(symbol)
+    if series_name is None:
+        return pd.Series(dtype=float)
+    frame = store.read("coinbase", series_name)
+    if frame is None or frame.empty or "close" not in frame.columns:
+        return pd.Series(dtype=float)
+    close = pd.to_numeric(frame["close"], errors="coerce")
+    idx = pd.to_datetime(close.index, utc=True)
+    if getattr(idx, "tz", None) is not None:
+        idx = idx.tz_convert("UTC").tz_localize(None)
+    close = pd.Series(close.to_numpy(dtype=float), index=pd.DatetimeIndex(idx).normalize())
+    close = close.loc[close.index.notna()].sort_index()
+    return close.loc[~close.index.duplicated(keep="last")]
+
+
+def _price_path_lane_fields(symbol: str) -> dict:
+    """Latest ETH/SOL momentum and risk state. Display tier, no size."""
+    fields = {
+        "path_momentum": "unavailable",
+        "path_risk": "unavailable",
+        "path_tier": "display",
+        "path_authority": "none",
     }
+    try:
+        close = _coinbase_daily_close(symbol)
+        if close.empty:
+            return fields
+        frame = display_price_path(close, symbol)
+    except Exception:
+        log.warning("price path unavailable for %s", symbol)
+        return fields
+    if frame.empty:
+        return fields
+    last = frame.iloc[-1]
+    mom, risk = last["momentum_state"], last["risk_regime"]
+    if isinstance(mom, str) and mom:
+        fields["path_momentum"] = mom
+    if isinstance(risk, str) and risk:
+        fields["path_risk"] = risk
+    return fields
 
 
 def _asset_lanes(e0: dict, asset_states: dict) -> list[dict]:
@@ -261,6 +422,7 @@ def _asset_lanes(e0: dict, asset_states: dict) -> list[dict]:
         trend = state.get("trend") or {}
         coverage = state.get("coverage") or {}
         name_en, name_zh = names[symbol]
+        path = _price_path_lane_fields(symbol)
         lanes.append(
             {
                 "symbol": symbol,
@@ -279,6 +441,10 @@ def _asset_lanes(e0: dict, asset_states: dict) -> list[dict]:
                 "href": "crypto.html#market-board",
                 "cta": "See the class board",
                 "cta_zh": "查看全市场看板",
+                "path_momentum": path["path_momentum"],
+                "path_risk": path["path_risk"],
+                "path_tier": path["path_tier"],
+                "path_authority": path["path_authority"],
             }
         )
     return lanes
@@ -371,11 +537,24 @@ def build(site_dir: Path | None = None) -> Path:
     site.mkdir(parents=True, exist_ok=True)
     e0 = _load_e0(site)
     market = build_market_state()
-    universe = _enrich_universe(load_universe(50))
+    universe_snapshot = load_universe_snapshot(50)
+    universe = _enrich_universe(universe_snapshot["rows"])
     breadth = breadth_read(universe)
     breadth["state_zh"] = _state_zh(breadth["state"])
     signals = store.read("vector", "signals")
-    allocation = _allocation(signals, market)
+    decision_projection = e0.get("decision") if isinstance(e0.get("decision"), dict) else {}
+    allocation = _allocation(signals, market, decision_projection)
+    if not allocation.get("available"):
+        if allocation.get("budget_available"):
+            log.warning(
+                "Crypto H5 breakdown unavailable (%s); preserving the known model budget",
+                allocation.get("authority_error") or "UNKNOWN",
+            )
+        else:
+            log.warning(
+                "Crypto H5 budget unavailable (%s); rendering a non-actionable H5 state",
+                allocation.get("authority_error") or "UNKNOWN",
+            )
     asset_states = build_asset_states()
     options_contract = build_btc_options()
     write_btc_options(site, options_contract)
@@ -388,15 +567,33 @@ def build(site_dir: Path | None = None) -> Path:
         "tier": "display",
         "display_only": True,
         "as_of": market["as_of"],
+        "universe_coverage": {
+            "as_of": universe_snapshot["as_of"],
+            "listed": len(universe),
+            "requested": universe_snapshot["requested"],
+            "excluded": universe_snapshot["excluded"],
+            "coverage": universe_snapshot.get("coverage"),
+            "breadth": breadth,
+        },
         "market": {
             "stance": market.get("stance"),
             "total_state": market.get("total_state"),
             "dominance_state": market.get("dominance_state"),
             "fear_state": market.get("fear_state"),
             "breadth_state": breadth.get("state"),
+            "cap_move": (market.get("cap_attribution") or {}).get("kind"),
+            "cap_splices": (market.get("cap_basis") or {}).get("splices") or [],
         },
         "flows": {
             key: value.get("state") for key, value in (market.get("flows") or {}).items()
+        },
+        "flow_kinds": {
+            key: {
+                "kind": value.get("kind"),
+                "observation": value.get("observation"),
+                "expected_cadence": value.get("expected_cadence"),
+            }
+            for key, value in (market.get("flows") or {}).items()
         },
         "heat": {
             key: value.get("state") for key, value in (market.get("heat") or {}).items()
@@ -434,8 +631,8 @@ def build(site_dir: Path | None = None) -> Path:
         height=218,
         accent="var(--crypto)",
         value_fmt="${:,.2f}T",
-        aria_en="Derived total crypto market cap with descriptive class-regime bands",
-        aria_zh="衍生加密总市值及描述性市场阶段",
+        aria_en="Total crypto market capitalization. Regime bands skip a basis-splice level gap.",
+        aria_zh="加密总市值。阶段带不计口径切换造成的水平跳变。",
     )
     for flow in market["flows"].values():
         flow["state_zh"] = _state_zh(flow["state"])
@@ -460,6 +657,7 @@ def build(site_dir: Path | None = None) -> Path:
         "top_assets": universe[:20],
         "more_assets": universe[20:50],
         "universe_count": len(universe),
+        "universe_snapshot": universe_snapshot,
         "universe_sources": sorted({row.get("source") for row in universe if row.get("source")}),
         "breadth": breadth,
         "allocation": allocation,
@@ -470,6 +668,7 @@ def build(site_dir: Path | None = None) -> Path:
         "equities": _equities(rendered_ticker_pages(site)),
         "calendar": _calendar(market["as_of"]),
         "fmt_money": _money,
+        "fmt_signed_musd": _signed_musd,
         "fmt_pct": _pct,
     }
 
@@ -480,9 +679,10 @@ def build(site_dir: Path | None = None) -> Path:
     try:
         from engine import i18n
 
-        env.globals.update(td=i18n.td, tr=i18n.tr)
+        env.globals.update(td=i18n.td, tr=i18n.tr, t_pctile=i18n.t_pctile)
     except Exception:
-        env.globals.update(td=lambda value: value, tr=lambda value: value)
+        env.globals.update(td=lambda value: value, tr=lambda value: value,
+                           t_pctile=lambda n: f"{int(round(float(n)))} percentile")
     html = env.get_template("crypto.html.j2").render(**vm)
     html = re.sub(r">\s+<", "> <", html)
     output = site / "crypto.html"

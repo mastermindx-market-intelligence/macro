@@ -195,11 +195,16 @@ EDGE_PAIRING: dict[str, set[tuple[str, str]]] = {
 }
 
 #: GMI theme hierarchy (W-C1, DEC:GMI-THEME-HIERARCHY-ON-CROSSWALK).
-THEME_TIERS: frozenset[str] = frozenset({"macro_category", "theme", "micro_theme"})
+THEME_TIERS: frozenset[str] = frozenset(
+    {"macro_category", "theme", "sub_theme", "micro_theme"})
 THEME_NODE_ID_RE = re.compile(r"^theme:[a-z0-9][a-z0-9_]{1,62}$")
 CROSSWALK_NODE_PROVENANCE = "crosswalk:config/theme_crosswalk.yml"
-PARENT_OF_ADJACENT: frozenset[tuple[str, str]] = frozenset(
-    {("macro_category", "theme"), ("theme", "micro_theme")})
+PARENT_OF_ADJACENT: frozenset[tuple[str, str]] = frozenset({
+    ("macro_category", "theme"),
+    ("theme", "sub_theme"),
+    ("sub_theme", "micro_theme"),
+    ("theme", "micro_theme"),
+})
 
 
 # ---------------------------------------------------------------------------
@@ -1151,15 +1156,38 @@ def audit(store_dir: Path, breaks_file: Path) -> tuple[list[str], list[str]]:
                        else pd.Series([""] * len(nodes), index=nodes.index))
         tier_series = (nodes["tier"] if "tier" in nodes.columns
                        else pd.Series([None] * len(nodes), index=nodes.index))
-        for nid, kind, tier, prov in zip(nodes["node_id"], nodes["kind"],
-                                         tier_series, prov_series):
+        meta_series = (nodes["source_meta"] if "source_meta" in nodes.columns
+                       else pd.Series([None] * len(nodes), index=nodes.index))
+        for nid, kind, tier, prov, meta in zip(
+                nodes["node_id"], nodes["kind"], tier_series, prov_series,
+                meta_series):
             nid_s, kind_s = str(nid), str(kind)
             tier_s = None if _is_null(tier) else str(tier)
             if kind_s == "theme":
                 if tier_s not in THEME_TIERS:
                     breaches.append(
                         f"hierarchy: node {nid_s!r} kind=theme requires tier "
-                        f"macro_category|theme|micro_theme (got {tier_s!r})")
+                        f"macro_category|theme|sub_theme|micro_theme "
+                        f"(got {tier_s!r})")
+                if not _is_null(meta):
+                    try:
+                        parsed_meta = json.loads(str(meta))
+                    except Exception:  # noqa: BLE001 — unreadable JSON is the rights check
+                        parsed_meta = None
+                    if (isinstance(parsed_meta, dict)
+                            and "value_chain_position" in parsed_meta):
+                        pos = parsed_meta["value_chain_position"]
+                        if pos not in ("upstream", "midstream", "downstream",
+                                       "enabler"):
+                            breaches.append(
+                                f"hierarchy: node {nid_s!r} value_chain_position "
+                                f"{pos!r} is not one of "
+                                f"upstream|midstream|downstream|enabler")
+                        if tier_s not in ("sub_theme", "micro_theme"):
+                            breaches.append(
+                                f"hierarchy: node {nid_s!r} value_chain_position "
+                                f"is a display attribute of tier "
+                                f"sub_theme|micro_theme only (got {tier_s!r})")
             elif tier_s is not None:
                 breaches.append(
                     f"hierarchy: node {nid_s!r} kind={kind_s!r} must have tier null "
@@ -1239,7 +1267,8 @@ def audit(store_dir: Path, breaks_file: Path) -> tuple[list[str], list[str]]:
                 breaches.append(
                     f"hierarchy: PARENT_OF edge {eid!r} tier adjacency "
                     f"({src_tier!r}→{dst_tier!r}) not in "
-                    f"macro_category→theme or theme→micro_theme")
+                    f"macro_category→theme, theme→sub_theme, "
+                    f"sub_theme→micro_theme, or theme→micro_theme")
             if _is_null(row.get("valid_to")):
                 open_parent_of.append((src, dst))
                 parent_count.setdefault(dst, set()).add(src)

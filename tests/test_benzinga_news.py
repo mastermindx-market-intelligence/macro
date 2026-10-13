@@ -363,7 +363,9 @@ def test_complete_catchup_commits_rows_and_cursor_together(tmp_path):
         ).rows[0].source_item_id == "1"
 
 
-def test_incomplete_catchup_never_commits_rows_or_cursor(tmp_path):
+def test_incomplete_first_catchup_commits_no_rows_and_holds_the_lookback_base(
+    tmp_path,
+):
     universe = _universe()
     http = FakeHttp(
         [
@@ -389,7 +391,93 @@ def test_incomplete_catchup_never_commits_rows_or_cursor(tmp_path):
             universe=universe,
             observed_at=POLL_AT,
         )
+        base = max(
+            0, int(POLL_AT.timestamp()) - client.initial_lookback_seconds
+        )
         assert result.committed is False
         assert result.gap_unresolved is True
-        assert store.current_cursor() is None
+        assert store.counts()["revisions"] == 0
+        assert store.current_cursor() == str(base)
+
+
+def test_incomplete_catchup_never_moves_an_existing_cursor(tmp_path):
+    universe = _universe()
+    http = FakeHttp(
+        [
+            ("/api/v2/news", 0, FakeResponse([
+                _article(i, updated="Mon, 05 Oct 2026 10:30:01 -0400")
+                for i in (1, 2)
+            ])),
+            ("/api/v2/news-removed", 0, FakeResponse({"items": []})),
+        ]
+    )
+    client = benzinga_news.BenzingaNewsClient(
+        token="k",
+        http_get=http,
+        page_size=2,
+        max_pages=1,
+    )
+    db = tmp_path / "qbus.sqlite3"
+
+    with store_mod.NewsStore(db, source_key="benzinga-rest") as store:
+        store.commit((), expected_cursor=None, next_cursor="1791201000")
+        result = benzinga_news.catch_up_once(
+            client=client,
+            store=store,
+            universe=universe,
+            observed_at=POLL_AT,
+        )
+        assert result.committed is False
+        assert result.gap_unresolved is True
+        assert store.current_cursor() == "1791201000"
+        assert store.counts()["revisions"] == 0
+
+
+class _NullCursorStore:
+    """Shows ``catch_up_once`` a null cursor while committing for real.
+
+    A wrapper, not a monkeypatch: ``NewsStore.commit`` itself calls
+    ``self.current_cursor()``, so the real store must still see its own
+    (non-null) cursor for the compare-and-set to conflict.
+    """
+
+    def __init__(self, store: store_mod.NewsStore) -> None:
+        self._store = store
+
+    def current_cursor(self) -> str | None:
+        return None
+
+    def commit(self, *args, **kwargs):
+        return self._store.commit(*args, **kwargs)
+
+
+def test_null_cursor_gap_hold_raises_cursor_conflict(tmp_path):
+    universe = _universe()
+    http = FakeHttp(
+        [
+            ("/api/v2/news", 0, FakeResponse([
+                _article(i, updated="Mon, 05 Oct 2026 10:30:01 -0400")
+                for i in (1, 2)
+            ])),
+            ("/api/v2/news-removed", 0, FakeResponse({"items": []})),
+        ]
+    )
+    client = benzinga_news.BenzingaNewsClient(
+        token="k",
+        http_get=http,
+        page_size=2,
+        max_pages=1,
+    )
+    db = tmp_path / "qbus.sqlite3"
+
+    with store_mod.NewsStore(db, source_key="benzinga-rest") as store:
+        store.commit((), expected_cursor=None, next_cursor="1791201000")
+        with pytest.raises(store_mod.CursorConflict):
+            benzinga_news.catch_up_once(
+                client=client,
+                store=_NullCursorStore(store),
+                universe=universe,
+                observed_at=POLL_AT,
+            )
+        assert store.current_cursor() == "1791201000"
         assert store.counts()["revisions"] == 0

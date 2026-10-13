@@ -1,5 +1,5 @@
 {
-"applied": "2026-10-04T06:35:18.760814+00:00",
+"applied": "2026-10-12T08:01:51.404202+00:00",
 "rows_flagged": 1101,
 "tickers_flagged": 677,
 "by_flag": {
@@ -6134,14 +6134,6 @@
 "note": "period_end<2012-03-02"
 },
 {
-"ticker": "PSKY",
-"fy": 2025,
-"flag": "placeholder",
-"shares_raw": 1000.0,
-"repair": null,
-"note": "no clean flank snap"
-},
-{
 "ticker": "PSNL",
 "fy": 2018,
 "flag": "pre_public",
@@ -6972,6 +6964,14 @@
 "shares_raw": 57753517000.0,
 "repair": 57753517.0,
 "note": "x1e-3"
+},
+{
+"ticker": "SKYD",
+"fy": 2025,
+"flag": "placeholder",
+"shares_raw": 1000.0,
+"repair": null,
+"note": "no clean flank snap"
 },
 {
 "ticker": "SLDE",

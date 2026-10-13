@@ -1,0 +1,180 @@
+{
+  "operation": "mmx-public-intelligence-delivery-20261011-local-ceo-001",
+  "kind": "editorial_source_qualification",
+  "observed_at": "2026-10-11T19:50:16.599339+00:00",
+  "event_date": "2026-10-08",
+  "candidate": "NVIDIA Genesis Mission Consortium commitment",
+  "source_retrievals": [
+    {
+      "name": "announcement",
+      "url": "https://www.whitehouse.gov/fact-sheets/2026/10/fact-sheet-trump-administration-announces-the-most-ambitious-set-of-science-initiatives-this-century/",
+      "final_url": "https://www.whitehouse.gov/fact-sheets/2026/10/fact-sheet-trump-administration-announces-the-most-ambitious-set-of-science-initiatives-this-century/",
+      "http_status": 200,
+      "sha256": "039c0b35ba3c3eca514fc13d0aca9e8bb83c85289a81a2b273095e9eede9c09a",
+      "bytes": 276057,
+      "observed_at": "2026-10-11T19:48:05.828611+00:00"
+    },
+    {
+      "name": "copyright",
+      "url": "https://www.whitehouse.gov/copyright/",
+      "final_url": "https://www.whitehouse.gov/copyright/",
+      "http_status": 200,
+      "sha256": "fb9735e8da52ccea7a636d7b97fb1fea2397f2e35a748845dd7940c9843bc3e0",
+      "bytes": 238276,
+      "observed_at": "2026-10-11T19:48:05.963376+00:00"
+    }
+  ],
+  "normalized_text_sha256": {
+    "announcement": "958c1db110b4269ae5de3480f2018e9d31d24cbcdecb8a861a1d9c43261cd63e",
+    "copyright": "edae2164b1f943752eceb14b677dee3f90e612607084aa7658f54b78821e25d1"
+  },
+  "source_text_checks": {
+    "October 8, 2026": true,
+    "$2.4B": true,
+    "eleven industry partners": true,
+    "over 15 Federal agencies": true,
+    "NVIDIA ($1B)": true,
+    "AMD ($500M)": true,
+    "OpenAI ($200M)": true,
+    "$150M each from Anthropic and Google": true,
+    "over $6 billion": true
+  },
+  "derived_checks": {
+    "nvidia_plus_amd_usd_billions": 1.5,
+    "stated_consortium_usd_billions": 2.4,
+    "approximate_share_pct": 62.5,
+    "basis": "Arithmetic on rounded announced commitments, not revenue or market reaction"
+  },
+  "rights_basis": {
+    "qualification": "government_authored_factual_reporting",
+    "policy_url": "https://www.whitehouse.gov/copyright/",
+    "scope": "Original reporting and analysis from this named fact sheet; no third-party imagery, marks or prose; no endorsement",
+    "publication_approval": false
+  },
+  "draft": {
+    "path": "research/agentic_media/public_intelligence_20261011/QUALIFIED_EVENT_CANDIDATE.md",
+    "sha256": "062fbdd0878a485caf2670776e72424cea1885a5492dc961f077dbae885d381c",
+    "body_word_count": 349,
+    "origin": "root_editorial_draft",
+    "press_admitted": false,
+    "d14_generated_batch_credit": false
+  },
+  "dossier_browser": {
+    "url": "https://www.mastermind-x.com/stocks/NVDA.html",
+    "title": "NVDA \u2014 Nvidia: signals, options & factor profile | MastermindX",
+    "verified_in_chrome": true,
+    "terminal_continuation": "https://app.mastermind-x.com/terminal?sym=NVDA&from=macro",
+    "signup_verified": false,
+    "persisted_follow_verified": false
+  },
+  "allow_stage": false,
+  "allow_emit": false,
+  "open_gates": [
+    "existing external-source intake integration",
+    "D14 validation and editorial acceptance",
+    "publication release",
+    "authenticated signup/follow acceptance"
+  ],
+  "existing_feed_ingress": {
+    "url": "https://www.whitehouse.gov/fact-sheets/feed/",
+    "final_url": "https://www.whitehouse.gov/fact-sheets/feed/",
+    "http_status": 200,
+    "observed_at": "2026-10-11T19:51:58.523118+00:00",
+    "bytes": 500940,
+    "sha256": "7062a8e0914fe8fbbd435885b6a55be9e07feac858b4e2accbb337a39009aae4",
+    "parsed_items": 30,
+    "exact_candidate_matches": 1,
+    "parser": "engine.whitehouse_feed._parse",
+    "parser_sha256": "05716af53fcaec05ac5eb04e8105eb653b3caa4dd6c42bd85380609f644369e7",
+    "candidate": {
+      "id": "wh-2026-10-08-fact-sheet-trump-administration-announces-the-most-ambitious-set-of-science-init",
+      "guid": "https://www.whitehouse.gov/?p=52455",
+      "title": "Fact Sheet: Trump Administration Announces the Most Ambitious Set of Science Initiatives This Century",
+      "url": "https://www.whitehouse.gov/fact-sheets/2026/10/fact-sheet-trump-administration-announces-the-most-ambitious-set-of-science-initiatives-this-century/",
+      "published": "2026-10-08T15:05:06+00:00",
+      "section": "fact-sheets",
+      "categories": [
+        "Fact Sheets"
+      ]
+    },
+    "candidate_body_sha256": "dbd78e4a97171a4bf6ffb9334f430deefca04d19d68b6abc64835daaea634bf9",
+    "candidate_body_characters": 10793
+  },
+  "retained_public_source": {
+    "path": "research/agentic_media/public_intelligence_20261011/sources/whitehouse_science_20261008.json",
+    "sha256": "21ca4a550185c119af8013b26a74921bed45383ab64f164debb86ed339507a6e",
+    "body_sha256": "dbd78e4a97171a4bf6ffb9334f430deefca04d19d68b6abc64835daaea634bf9",
+    "policy_path": "research/agentic_media/public_intelligence_20261011/sources/whitehouse_copyright_20261011.txt",
+    "policy_file_sha256": "2c765b6ed9c845d1f916fea389bdb5d23a59b911d68f2771ade761d0c09de254"
+  },
+  "review": {
+    "kind": "bounded_native_source_and_rights_judgment",
+    "result": "accepted_as_editorial_candidate_only",
+    "limitations": [
+      "Rights basis is source-specific, not universal",
+      "External government figures are not first-party numeric measurements",
+      "D14 our-value share and first-party receipt floor remain unproven",
+      "No Press source-intake adapter exists yet"
+    ]
+  },
+  "external_planning": {
+    "document_sha256": "b8b7f02bbbbfd153c9c9f9a2de53de38cd76a39d6d3ff728513e72faf868c6cd",
+    "feed_url": "https://www.whitehouse.gov/fact-sheets/feed/",
+    "normalization": "whitehouse-feed-text/v1",
+    "body_origin": "content_encoded",
+    "body_truncated": false,
+    "reviewed_claims": [
+      {
+        "id": "nvidia",
+        "literal": "NVIDIA ($1B)",
+        "quantity_literal": "$1B"
+      },
+      {
+        "id": "consortium",
+        "literal": "$2.4B in SI for science tools and compute credits",
+        "quantity_literal": "$2.4B"
+      },
+      {
+        "id": "partners",
+        "literal": "eleven industry partners",
+        "quantity_literal": "eleven"
+      },
+      {
+        "id": "agencies",
+        "literal": "over 15 Federal agencies",
+        "quantity_literal": "15"
+      },
+      {
+        "id": "amd",
+        "literal": "AMD ($500M)",
+        "quantity_literal": "$500M"
+      },
+      {
+        "id": "openai",
+        "literal": "OpenAI ($200M)",
+        "quantity_literal": "$200M"
+      },
+      {
+        "id": "anthropic_google",
+        "literal": "$150M each from Anthropic and Google",
+        "quantity_literal": "$150M"
+      },
+      {
+        "id": "initiative",
+        "literal": "over $6 billion",
+        "quantity_literal": "$6 billion"
+      }
+    ],
+    "reviewed_tickers": {
+      "NVDA": "NVIDIA"
+    },
+    "derived_share": {
+      "numerators": [
+        "nvidia",
+        "amd"
+      ],
+      "denominator": "consortium",
+      "percent": "62.5"
+    }
+  }
+}

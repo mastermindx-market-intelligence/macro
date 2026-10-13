@@ -1,21 +1,9 @@
 {
   "schema": "china_calendar.v1",
-  "asof": "2026-10-09",
-  "generated_at_utc": "2026-10-11T15:13:31.742291+00:00",
+  "asof": "2026-10-13",
+  "generated_at_utc": "2026-10-13T16:28:20.378946+00:00",
   "horizon_days": 45,
   "entries": [
-    {
-      "date": "2026-10-12",
-      "window_end": null,
-      "etype": "CREDIT",
-      "label_en": "Money supply, RMB loans & TSF",
-      "label_zh": "货币供应、人民币贷款与社融",
-      "region": "cn",
-      "impact": "high",
-      "source_class": "rule",
-      "source": "engine.china_event_calendar",
-      "approx": true
-    },
     {
       "date": "2026-10-13",
       "window_end": null,
@@ -387,6 +375,30 @@
       "source_class": "static",
       "source": "engine.hk_event_calendar",
       "approx": false
+    },
+    {
+      "date": "2026-11-26",
+      "window_end": null,
+      "etype": "HK_TRADE",
+      "label_en": "HK external trade",
+      "label_zh": "香港对外商品贸易",
+      "region": "hk",
+      "impact": "medium",
+      "source_class": "static",
+      "source": "engine.hk_event_calendar",
+      "approx": true
+    },
+    {
+      "date": "2026-11-27",
+      "window_end": null,
+      "etype": "HK_RETAIL",
+      "label_en": "HK retail sales",
+      "label_zh": "香港零售业销货",
+      "region": "hk",
+      "impact": "medium",
+      "source_class": "static",
+      "source": "engine.hk_event_calendar",
+      "approx": true
     }
   ],
   "data_gaps": [

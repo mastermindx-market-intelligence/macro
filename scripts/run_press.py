@@ -13,7 +13,12 @@ Two modes, and the default is the safe one:
            tests/test_press_run.py::test_staging_writes_nothing_outside_staging
            snapshots the tree and fails on any other write.
 
---emit     Takes the staged items whose status is `passed`, writes
+           A non-publishable record precedes each slot's first provider call;
+           returned drafts are retained before validation. An interrupted slot
+           stays reserved by the existing planner until its same attempt is
+           reconciled. Provider-owned accounting may still write its own ledgers.
+
+--emit     Revalidates staged items whose status is `passed`, writes
            content/seo/blog/<slug>.md, renders the estate with the EXISTING
            free-content builder, copies the /blog/ subtree (pages + feed.xml)
            into site/, and appends one row per piece to
@@ -482,6 +487,33 @@ def reconcile_earnings_call_revisions(root: Path, cfg: dict) -> dict:
     }
 
 
+def _write_stage_checkpoint(path: Path, item: dict, *, create: bool = False) -> None:
+    """Durably retain one slot without exposing a partially written JSON record.
+
+    The first write must never replace a prior attempt: even a caller bypassing
+    planner deduplication cannot replay an unsettled provider effect. Later
+    writes belong to that same invocation. These are ordinary staging records,
+    never a publication approval or a separate execution queue.
+    """
+    fd, temporary = tempfile.mkstemp(prefix=f".{path.name}.", suffix=".tmp", dir=path.parent)
+    try:
+        with os.fdopen(fd, "w", encoding="utf-8") as handle:
+            handle.write(json.dumps(item, ensure_ascii=False, indent=2, default=str) + "\n")
+            handle.flush()
+            os.fsync(handle.fileno())
+        if create:
+            os.link(temporary, path)  # atomic exclusive create, including symlinks
+        else:
+            os.replace(temporary, path)
+        directory = os.open(path.parent, os.O_RDONLY)
+        try:
+            os.fsync(directory)
+        finally:
+            os.close(directory)
+    finally:
+        Path(temporary).unlink(missing_ok=True)
+
+
 def _stage_preplanned_slots(
     root: Path,
     cfg: dict,
@@ -518,6 +550,13 @@ def _stage_preplanned_slots(
         attempts: list[dict] = []
         prior: list[str] = []
         passed_payload = None
+        out = staging_dir / f"{slot['id']}.json"
+        checkpoint = _stage_item(slot, None, attempts, run_date,
+                                 admission_receipt=admission_receipt)
+        checkpoint.pop("quarantine_reason", None)
+        checkpoint.update(status="in_progress",
+                          progress={"phase": "provider_started", "attempt": 0})
+        _write_stage_checkpoint(out, checkpoint, create=True)
         writer_kwargs: dict[str, bool] = {}
         if single_provider_attempt:
             writer_kwargs["single_provider_attempt"] = True
@@ -525,6 +564,9 @@ def _stage_preplanned_slots(
             writer_kwargs["admitted_token_cap"] = True
 
         for attempt in range(max_regenerations + 1):
+            if attempt:
+                checkpoint["progress"] = {"phase": "provider_started", "attempt": attempt}
+                _write_stage_checkpoint(out, checkpoint)
             res = writer.write(slot, cfg, state=state, attempt=attempt,
                                prior_failures=prior or None, **writer_kwargs)
             if not res.get("ok"):
@@ -545,6 +587,15 @@ def _stage_preplanned_slots(
             draft = dict(res["draft"])
             draft["slug"] = _unique_slug(draft.get("slug") or slot.get("slug_hint") or "",
                                          slot, taken_slugs)
+            checkpoint.update(draft=draft, slug=draft["slug"],
+                              provider=res.get("provider"), model=res.get("model"),
+                              retained_draft_attempt=attempt,
+                              writer_state=res.get("state"),
+                              progress={"phase": "validation_pending", "attempt": attempt})
+            for key in ("token_cap", "provider_usage"):
+                if key in res:
+                    checkpoint[key] = res[key]
+            _write_stage_checkpoint(out, checkpoint)
             report = validators.validate(draft, slot, cfg, root=root)
             attempt_row = {"attempt": attempt, "ok": bool(report["ok"]),
                            "failed": report["failed"],
@@ -568,9 +619,7 @@ def _stage_preplanned_slots(
             run_date,
             admission_receipt=admission_receipt,
         )
-        out = staging_dir / f"{slot['id']}.json"
-        out.write_text(json.dumps(item, ensure_ascii=False, indent=2, default=str) + "\n",
-                       encoding="utf-8")
+        _write_stage_checkpoint(out, item)
         summary["items"].append({"id": slot["id"], "desk": slot["desk"],
                                  "status": item["status"],
                                  "reason": item.get("quarantine_reason", "")})
@@ -582,9 +631,7 @@ def _stage_preplanned_slots(
                         item.get("quarantine_reason"))
 
     summary["writer_state"] = state.snapshot()
-    (staging_dir / "_run_summary.json").write_text(
-        json.dumps(summary, ensure_ascii=False, indent=2, default=str) + "\n",
-        encoding="utf-8")
+    _write_stage_checkpoint(staging_dir / "_run_summary.json", summary)
 
     _annotate("notice", "press_staging",
               f"press staging: {summary['passed']} passed, "
@@ -599,8 +646,14 @@ def _stage_preplanned_slots(
 
 
 def run_staging(root: Path, cfg: dict, *, desks=None, as_of=None,
-                max_slots: int | None = None) -> dict:
-    """Plan, reconcile, then stage the ordinary multi-slot Press run."""
+                max_slots: int | None = None, single_attempt: bool = False) -> dict:
+    """Plan, reconcile, then stage the ordinary multi-slot Press run.
+
+    Qualification runs may opt into one provider-adapter invocation per slot,
+    disabling Anthropic SDK retries, Press fallback and draft regeneration.
+    Codex CLI internal requests are outside this bound. This does not change
+    source admission, token accounting, validation or publication authority.
+    """
     paths = _paths(cfg, root)
     # Preserve the generic lane's original timing: its staging directory
     # existed before either mutable discovery step ran.
@@ -620,6 +673,8 @@ def run_staging(root: Path, cfg: dict, *, desks=None, as_of=None,
                                    int(llm_cfg.get("circuit_breaker_consecutive_failures") or 3)),
     )
     max_regen = int(((cfg.get("quarantine") or {}).get("max_regenerations")) or 2)
+    if single_attempt:
+        max_regen = 0
 
     _pub_refs, pub_slugs = desk_planner.published_refs(root, cfg)
     _stg_refs, stg_slugs = desk_planner.staged_refs(root, cfg)
@@ -634,6 +689,7 @@ def run_staging(root: Path, cfg: dict, *, desks=None, as_of=None,
         max_regenerations=max_regen,
         taken_slugs=taken,
         revision_reconciliation=revision_reconciliation,
+        single_provider_attempt=single_attempt,
     )
 
 
@@ -932,6 +988,26 @@ def run_emit(root: Path, cfg: dict) -> dict:
                     f"press emit: canonical slot {obj.get('id')} requires verified approval",
                 )
                 continue
+            # Staging is mutable: its saved report describes the earlier draft,
+            # not necessarily the copy we just loaded. Re-run the same suite
+            # before ANY content/render/ledger write and retain the fresh report
+            # for both quarantine and the eventual ledger row. The validator's
+            # slot-id exclusion keeps this candidate out of its staged peers.
+            report = validators.validate(obj["draft"], slot, cfg, root=root)
+            obj["validator_report"] = report
+            if not report["ok"]:
+                obj["status"] = "quarantined"
+                obj["quarantine_reason"] = "validators at emit: " + ", ".join(report["failed"])
+            path.write_text(
+                json.dumps(obj, ensure_ascii=False, indent=2, default=str) + "\n",
+                encoding="utf-8",
+            )
+            if not report["ok"]:
+                _annotate(
+                    "warning", "press_emit_validation",
+                    f"press emit: slot {obj.get('id')} quarantined — {obj['quarantine_reason']}",
+                )
+                continue
             items.append((path, obj))
 
     if not items:
@@ -1140,7 +1216,13 @@ def main(argv=None) -> int:
     ap.add_argument("--root", default="", help="repo root override (tests)")
     ap.add_argument("--max-slots", type=int, default=None,
                     help="cap the number of slots this run attempts")
+    ap.add_argument("--single-attempt", action="store_true",
+                    help="stage with one provider-adapter invocation per slot; "
+                         "disable Anthropic SDK retries, Press fallback and "
+                         "regeneration (Codex CLI internal requests are not bounded)")
     args = ap.parse_args(argv)
+    if args.emit and args.single_attempt:
+        ap.error("--single-attempt applies only to staging, not --emit")
 
     logging.basicConfig(level=logging.INFO, format="%(levelname)s %(name)s: %(message)s")
 
@@ -1157,7 +1239,8 @@ def main(argv=None) -> int:
         out = run_emit(root, cfg)
     else:
         out = run_staging(root, cfg, desks=desks,
-                          as_of=(args.as_of or None), max_slots=args.max_slots)
+                          as_of=(args.as_of or None), max_slots=args.max_slots,
+                          single_attempt=args.single_attempt)
 
     print(json.dumps(out, ensure_ascii=False, indent=2, default=str))
     return 0

@@ -20,6 +20,84 @@ from .normalize import DetectorSpec, ForensicsRegistry
 MIN_PERIOD_GAP_DAYS = 300
 MAX_PERIOD_GAP_DAYS = 430
 
+ISSUER_CLASSES: frozenset[str] = frozenset(
+    {"industrial", "software", "bank", "insurance", "reit", "utility", "unknown"}
+)
+_INDUSTRIAL_OR_SOFTWARE: frozenset[str] = frozenset({"industrial", "software"})
+DETECTOR_APPLICABILITY: dict[str, frozenset[str]] = {
+    "margin_compression_despite_revenue_growth": _INDUSTRIAL_OR_SOFTWARE,
+    "receivables_stretch": _INDUSTRIAL_OR_SOFTWARE,
+    "inventory_build": _INDUSTRIAL_OR_SOFTWARE,
+    "capital_intensity_rising": _INDUSTRIAL_OR_SOFTWARE,
+    "accruals_trending_up": ISSUER_CLASSES - frozenset({"bank", "insurance"}),
+}
+
+NOT_EVALUABLE_REASON_NOT_APPLICABLE_FOR_ISSUER_CLASS = "not_applicable_for_issuer_class"
+NOT_EVALUABLE_REASONS: frozenset[str] = frozenset(
+    {
+        "two_consecutive_annual_periods",
+        "three_consecutive_annual_periods",
+        "consecutive_annual_periods",
+        "positive_revenue_required",
+        "positive_revenue_and_nonzero_prior_balance_required",
+        "nonzero_revenue_and_positive_capex_required",
+        "nonzero_prior_operating_income_required",
+        "positive_assets_required",
+        "detector_rule_unavailable_at_as_of",
+        NOT_EVALUABLE_REASON_NOT_APPLICABLE_FOR_ISSUER_CLASS,
+    }
+)
+
+
+def issuer_class_for_sic(sic: str | int | None) -> str:
+    """Map an SEC SIC code onto an issuer class.
+
+    6020–6199 and 6710–6719 are bank; 6300–6411 insurance; 6798 reit;
+    4900–4991 utility; 7370–7379 software; any other parseable code industrial;
+    None or unparseable unknown.
+    """
+    code = _parse_sic(sic)
+    if code is None:
+        return "unknown"
+    if 6020 <= code <= 6199 or 6710 <= code <= 6719:
+        return "bank"
+    if 6300 <= code <= 6411:
+        return "insurance"
+    if code == 6798:
+        return "reit"
+    if 4900 <= code <= 4991:
+        return "utility"
+    if 7370 <= code <= 7379:
+        return "software"
+    return "industrial"
+
+
+def _parse_sic(sic: str | int | None) -> int | None:
+    if sic is None or isinstance(sic, bool):
+        return None
+    if isinstance(sic, int):
+        return sic if sic >= 0 else None
+    text = str(sic).strip()
+    if not text or not text.isdigit():
+        return None
+    return int(text)
+
+
+def _gated_issuer_class(detector_id: str, issuer_sic: str | int | None) -> str | None:
+    """Return the issuer class when this detector must not evaluate, else None.
+
+    None SIC and class ``unknown`` gate nothing and record nothing new.
+    """
+    if issuer_sic is None:
+        return None
+    issuer_class = issuer_class_for_sic(issuer_sic)
+    if issuer_class == "unknown":
+        return None
+    applicable = DETECTOR_APPLICABILITY.get(detector_id)
+    if applicable is None or issuer_class in applicable:
+        return None
+    return issuer_class
+
 
 def _decimal(observation: NormalizedObservation) -> Decimal:
     return Decimal(observation.value)
@@ -379,6 +457,7 @@ def evaluate_detectors(
     computed_at: datetime,
     detector_rules_eligible: bool = True,
     entity_cik: str,
+    issuer_sic: str | int | None = None,
 ) -> tuple[Finding, ...]:
     """Evaluate every registered detector; absence always becomes an explicit state."""
     observations = {item.observation_id: item for item in normalized_observations}
@@ -396,6 +475,22 @@ def evaluate_detectors(
                     source_observations=[],
                     missing_inputs=("detector_rule_unavailable_at_as_of",),
                     computed_at=computed_at,
+                )
+            )
+            continue
+        gated_class = _gated_issuer_class(spec.detector_id, issuer_sic)
+        if gated_class is not None:
+            results.append(
+                _not_evaluable(
+                    spec,
+                    registry,
+                    entity_cik=entity_cik,
+                    period_ends=tuple(item.period_end for item in selected),
+                    inputs=(),
+                    source_observations=[],
+                    missing_inputs=(NOT_EVALUABLE_REASON_NOT_APPLICABLE_FOR_ISSUER_CLASS,),
+                    computed_at=computed_at,
+                    limitations=(f"issuer_class:{gated_class}",),
                 )
             )
             continue

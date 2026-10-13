@@ -2,8 +2,10 @@
 from __future__ import annotations
 
 from copy import deepcopy
+from hashlib import sha256
 from pathlib import Path
 import builtins
+import json
 import re
 import socket
 
@@ -232,6 +234,254 @@ def test_escaped_nonnumeric_continuation_and_uri_boundary() -> None:
     )
     with pytest.raises(SecFilingParseError, match="relative URI"):
         parse_sec_filing_document(relative_uri, document_name="escaped-relative-uri.xhtml")
+
+
+def test_escaped_nonnumeric_same_document_fragment_href_is_admitted() -> None:
+    # (P1) The fragment target sits inside the same fact.
+    fact = (
+        '<ix:nonNumeric id="f" name="ex:F" contextRef="c" escape="true">'
+        '<p><a style="color:#0000ff" href="#t1">see</a></p><span id="t1"></span></ix:nonNumeric>'
+    )
+    content = _inline(fact)
+    parsed = parse_sec_filing_document(content, document_name="fragment-in-fact.xhtml")
+    assert parsed["facts"][0]["raw_value"] == (
+        '<p><a style="color:#0000ff" href="#t1">see</a></p><span id="t1"></span>'
+    )
+    validate_sec_filing_parse_result(parsed, source_content=content)
+
+    # (P2) The fragment target sits in the body outside every ix element.
+    fact = (
+        '<ix:nonNumeric id="f" name="ex:F" contextRef="c" escape="true">'
+        '<a href="#t2">x</a></ix:nonNumeric>'
+    )
+    content = _inline(fact + '<div id="t2"></div>')
+    parsed = parse_sec_filing_document(content, document_name="fragment-in-body.xhtml")
+    assert parsed["facts"][0]["raw_value"] == '<a href="#t2">x</a>'
+    validate_sec_filing_parse_result(parsed, source_content=content)
+
+    # (P3) The fragment link sits in an escaped continuation whose target id
+    # is carried by the fact head.
+    fact = (
+        '<ix:nonNumeric id="f" name="ex:F" contextRef="c" continuedAt="a" escape="true">'
+        '<span id="t3"></span><p>A</p></ix:nonNumeric>'
+    )
+    continuation = '<ix:continuation id="a"><a href="#t3">go</a></ix:continuation>'
+    content = _inline(fact, continuations=continuation)
+    parsed = parse_sec_filing_document(content, document_name="fragment-in-continuation.xhtml")
+    assert parsed["facts"][0]["raw_value"] == '<span id="t3"></span><p>A</p><a href="#t3">go</a>'
+    validate_sec_filing_parse_result(parsed, source_content=content)
+
+    # (P4) Removing the fragment link changes only the retained markup value;
+    # no other record moves.
+    linked = parse_sec_filing_document(
+        _inline(
+            '<ix:nonNumeric id="f" name="ex:F" contextRef="c" escape="true">'
+            '<p><a style="color:#0000ff" href="#t1">see</a></p><span id="t1"></span></ix:nonNumeric>'
+        ),
+        document_name="fragment-p4.xhtml",
+    )
+    unlinked = parse_sec_filing_document(
+        _inline(
+            '<ix:nonNumeric id="f" name="ex:F" contextRef="c" escape="true">'
+            '<p>see</p><span id="t1"></span></ix:nonNumeric>'
+        ),
+        document_name="fragment-p4.xhtml",
+    )
+    anchor = '<a style="color:#0000ff" href="#t1">see</a>'
+    assert linked["facts"][0]["raw_value"].replace(anchor, "see") == unlinked["facts"][0]["raw_value"]
+    assert linked["contexts"] == unlinked["contexts"]
+    assert linked["units"] == unlinked["units"]
+    assert len(linked["facts"]) == len(unlinked["facts"]) == 1
+    span_and_value_fields = {
+        "raw_value",
+        "transformed_value",
+        "normalized_value",
+        "text_spans",
+        "excluded_text_spans",
+        "source_span",
+    }
+    assert {key: value for key, value in linked["facts"][0].items() if key not in span_and_value_fields} == {
+        key: value for key, value in unlinked["facts"][0].items() if key not in span_and_value_fields
+    }
+
+
+_BAD_FRAGMENT_HREFS = [
+    "#",
+    "# t1",
+    "#t1 ",
+    " #t1",
+    "#t1&#9;",
+    "#t1&#x85;",
+    "#t1&#x200B;",
+    "#t/1",
+    "#t\\1",
+    "#t:1",
+    "#t?1",
+    "#t#1",
+    "#t%31",
+    "#1t",
+    "t1",
+    "a.htm",
+    "./a",
+    "../a",
+    "//host/a",
+    "?q",
+    "a.htm#t1",
+    "",
+]
+
+
+@pytest.mark.parametrize(
+    ("case", "markup", "body_suffix", "match"),
+    [
+        *[
+            (f"href={value!r}", f'<a href="{value}">x</a>', '<span id="t1"></span>', "relative URI")
+            for value in _BAD_FRAGMENT_HREFS
+        ],
+        ("unknown-id", '<a href="#nope">x</a>', '<span id="t1"></span>', "relative URI"),
+        # The parser keeps one document-wide id namespace across ALL elements,
+        # so a duplicated id is refused by that pre-existing rule first.
+        (
+            "duplicate-id",
+            '<a href="#t1">x</a>',
+            '<span id="t1"></span><span id="t1"></span>',
+            "duplicate Inline XBRL id",
+        ),
+        ("non-a-element", '<span href="#t1">x</span>', '<span id="t1"></span>', "relative URI"),
+        ("src-not-href", '<img src="#t1"/>', '<span id="t1"></span>', "relative URI"),
+        (
+            "prefixed-href",
+            '<a xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#t1">x</a>',
+            '<span id="t1"></span>',
+            "relative URI",
+        ),
+        ("non-xhtml-a", '<ex:a href="#t1">x</ex:a>', '<span id="t1"></span>', "relative URI"),
+    ],
+)
+def test_escaped_nonnumeric_fragment_href_refusals(case, markup, body_suffix, match) -> None:
+    body = (
+        '<ix:nonNumeric id="f" name="ex:F" contextRef="c" escape="true">'
+        f"{markup}</ix:nonNumeric>{body_suffix}"
+    )
+    with pytest.raises(SecFilingParseError, match=match):
+        parse_sec_filing_document(_inline(body), document_name="fragment-refusal.xhtml")
+
+
+@pytest.mark.parametrize(
+    ("case", "markup", "body_suffix", "inject_base_element"),
+    [
+        (
+            "xml-base-on-anchor",
+            '<a xml:base="https://evil.example/other.htm" href="#t1">x</a>',
+            '<span id="t1"></span>',
+            False,
+        ),
+        (
+            "xml-base-on-ancestor",
+            '<div xml:base="https://evil.example/other.htm"><a href="#t1">x</a></div>',
+            '<span id="t1"></span>',
+            False,
+        ),
+        (
+            "relative-xml-base-on-ancestor",
+            '<div xml:base="other.htm"><a href="#t1">x</a></div>',
+            '<span id="t1"></span>',
+            False,
+        ),
+        (
+            "xhtml-base-element-in-head",
+            '<a href="#t1">x</a>',
+            '<span id="t1"></span>',
+            True,
+        ),
+        (
+            "xml-base-elsewhere-in-document",
+            '<a href="#t1">x</a>',
+            '<span id="t1"></span><div xml:base="other.htm"></div>',
+            False,
+        ),
+    ],
+)
+def test_escaped_nonnumeric_fragment_href_refused_under_a_changed_base(
+    case, markup, body_suffix, inject_base_element
+) -> None:
+    # A same-document fragment resolves against the document base URI, so any
+    # base-changing construct anywhere in the member - xml:base on the anchor,
+    # on an ancestor, or elsewhere, or an XHTML base element in the head -
+    # makes the fragment exception inapplicable and the refusal fires.
+    body = (
+        '<ix:nonNumeric id="f" name="ex:F" contextRef="c" escape="true">'
+        f"{markup}</ix:nonNumeric>{body_suffix}"
+    )
+    content = _inline(body)
+    if inject_base_element:
+        assert content.count(b"<head></head>") == 1
+        content = content.replace(
+            b"<head></head>",
+            b'<head><base href="https://evil.example/other.htm"/></head>',
+        )
+    with pytest.raises(SecFilingParseError, match="relative URI markup is unsupported"):
+        parse_sec_filing_document(content, document_name="fragment-base-refusal.xhtml")
+
+
+def test_escaped_nonnumeric_fragment_href_is_admitted_without_a_base_construct() -> None:
+    # Same shape as the document-level negative, minus the base construct:
+    # the fragment exception applies and the markup is retained unchanged.
+    body = (
+        '<ix:nonNumeric id="f" name="ex:F" contextRef="c" escape="true">'
+        '<a href="#t1">x</a></ix:nonNumeric><span id="t1"></span><div></div>'
+    )
+    content = _inline(body)
+    parsed = parse_sec_filing_document(content, document_name="fragment-no-base.xhtml")
+    assert parsed["facts"][0]["raw_value"] == '<a href="#t1">x</a>'
+    validate_sec_filing_parse_result(parsed, source_content=content)
+
+
+@pytest.mark.parametrize(
+    ("case", "head_markup", "body_suffix"),
+    [
+        ("upper_xhtml_head", '<BASE href="https://evil.example/other.htm"/>', ""),
+        ("foreign_namespace_body", "", '<x:base xmlns:x="urn:example:other"/>'),
+        ("mixed_case_head", '<Base href="https://evil.example/other.htm"/>', ""),
+        ("no_namespace_body", "", '<base xmlns=""/>'),
+    ],
+)
+def test_escaped_nonnumeric_fragment_href_refused_under_any_casefold_base_element(
+    case, head_markup, body_suffix
+) -> None:
+    # D1X-5: a same-document fragment resolves against the document base URI,
+    # and HTML base-construct matching is case-insensitive, so ANY element
+    # whose local name casefolds to "base" - uppercase/mixed-case XHTML in the
+    # head, a foreign namespace, or no namespace at all - changes the base and
+    # voids the fragment exception exactly like a lowercase XHTML <base>.
+    body = (
+        '<ix:nonNumeric id="f" name="ex:F" contextRef="c" escape="true">'
+        f'<a href="#t1">x</a></ix:nonNumeric><span id="t1"></span><div></div>{body_suffix}'
+    )
+    content = _inline(body)
+    if head_markup:
+        assert content.count(b"<head></head>") == 1
+        content = content.replace(b"<head></head>", f"<head>{head_markup}</head>".encode())
+    with pytest.raises(SecFilingParseError, match="relative URI markup is unsupported"):
+        parse_sec_filing_document(content, document_name=f"fragment-casefold-base-{case}.xhtml")
+
+
+def test_same_document_fragment_predicate_requires_exactly_one_target_and_no_base() -> None:
+    anchor = parser_module._Node(
+        qname=f"{{{parser_module.XHTML}}}a",
+        lexical_name="a",
+        attrs={"href": "#t1"},
+        namespaces={},
+        start=0,
+        start_tag_end=0,
+        self_closing=False,
+        parent=None,
+    )
+    pred = parser_module._is_same_document_fragment_href
+    assert pred(anchor, "href", "#t1", {"t1": 1}, document_base_changed=False) is True
+    assert pred(anchor, "href", "#t1", {"t1": 2}, document_base_changed=False) is False
+    assert pred(anchor, "href", "#t1", {}, document_base_changed=False) is False
+    assert pred(anchor, "href", "#t1", {"t1": 1}, document_base_changed=True) is False
 
 
 def test_escape_attribute_is_limited_to_inline_nonnumeric_facts() -> None:
@@ -990,3 +1240,308 @@ def test_validator_replays_accuracy_nil_and_identity_invariants_without_source_b
     for forged in (bad_decimals, bad_precision, bad_nil, bad_root):
         with pytest.raises(SecFilingParseError):
             validate_sec_filing_parse_result(forged)
+
+
+# ---------------------------------------------------------------------------
+# Inline XBRL 1.1 ix:relationship / ix:footnote admission (D1-ext).  Neither
+# element is a fact: relationships are empty resources-only links, footnotes
+# are transparent body content, and previously admitted documents must stay
+# byte-identical (pinned against the base parser's semantic bytes below).
+
+_FOOTNOTE_ARCROLE = "http://www.xbrl.org/2003/arcrole/fact-footnote"
+_FOOTNOTE_ROLE = "http://www.xbrl.org/2003/role/footnote"
+_LINK_ROLE = "http://www.xbrl.org/2003/role/link"
+_BASE_RESOURCES = f'''
+      <xbrli:context id="c"><xbrli:entity><xbrli:identifier scheme="s">1</xbrli:identifier></xbrli:entity><xbrli:period><xbrli:instant>2025-12-31</xbrli:instant></xbrli:period></xbrli:context>
+      <xbrli:unit id="u"><xbrli:measure>ex:USD</xbrli:measure></xbrli:unit>
+    '''
+
+
+def test_relationship_and_footnote_parse_with_transparent_fact_ownership():
+    relationship = (
+        f'<ix:relationship arcrole="{_FOOTNOTE_ARCROLE}" fromRefs="f1" '
+        f'linkRole="{_LINK_ROLE}" toRefs="fn1" order="1"/>'
+    )
+    footnote_open = f'<ix:footnote id="fn1" footnoteRole="{_FOOTNOTE_ROLE}">'
+    footnote_close = "</ix:footnote>"
+    fact = '<ix:nonNumeric id="f1" name="ex:F" contextRef="c">revenue</ix:nonNumeric>'
+    inner_fact = (
+        '<ix:nonFraction id="f2" name="ex:N" contextRef="c" unitRef="u" '
+        'decimals="0">7</ix:nonFraction>'
+    )
+    content = _inline(
+        fact + footnote_open + "note " + inner_fact + footnote_close,
+        resources=_BASE_RESOURCES + relationship,
+    )
+    result = parse_sec_filing_document(content, document_name="footnote.xhtml")
+    assert result["coverage"]["ix_relationship_count"] == 1
+    assert result["coverage"]["ix_footnote_count"] == 1
+    assert result["coverage"]["ix_footnote_continuation_count"] == 0
+    facts = {item["fact_id"]: item for item in result["facts"]}
+    assert facts["f1"]["raw_value"] == "revenue"
+    # A footnote is transparent: facts inside it are ordinary facts.
+    assert facts["f2"]["raw_value"] == "7"
+    assert facts["f2"]["normalized_value"] == "7"
+    assert facts["f2"]["hidden"] is False
+    validate_sec_filing_parse_result(result, source_content=content)
+
+    # Neutralize the new material at identical byte offsets; the fact records
+    # and the 17-key coverage must be exactly what the base parser produced.
+    stripped = (
+        content.replace(relationship.encode(), b" " * len(relationship), 1)
+        .replace(footnote_open.encode(), b"<span" + b" " * (len(footnote_open) - 6) + b">", 1)
+        .replace(footnote_close.encode(), b"</span" + b" " * (len(footnote_close) - 7) + b">", 1)
+    )
+    baseline = parse_sec_filing_document(stripped, document_name="footnote-stripped.xhtml")
+    assert len(baseline["coverage"]) == 17
+    baseline_facts = {item["fact_id"]: item for item in baseline["facts"]}
+    assert facts["f1"] == baseline_facts["f1"]
+    assert facts["f2"] == baseline_facts["f2"]
+
+
+@pytest.mark.parametrize(
+    ("resources_suffix", "body_suffix", "match"),
+    [
+        # fromRefs must resolve to inline fact elements.
+        (
+            '<ix:relationship fromRefs="missing" toRefs="fn1"/>',
+            '<ix:footnote id="fn1">n</ix:footnote>',
+            r"ix:relationship fromRefs does not resolve to an inline fact",
+        ),
+        # toRefs must resolve to an ix:footnote, never to a fact.
+        (
+            '<ix:relationship fromRefs="f1" toRefs="nofn"/>',
+            '<ix:footnote id="fn1">n</ix:footnote>',
+            r"ix:relationship toRefs does not resolve to an ix:footnote",
+        ),
+        (
+            '<ix:relationship fromRefs="f1" toRefs="f1"/>',
+            '<ix:footnote id="fn1">n</ix:footnote>',
+            r"ix:relationship toRefs does not resolve to an ix:footnote",
+        ),
+        # Only the standard fact-footnote arcrole is admitted.
+        (
+            f'<ix:relationship arcrole="http://example.com/other" fromRefs="f1" toRefs="fn1"/>',
+            '<ix:footnote id="fn1">n</ix:footnote>',
+            r"ix:relationship has unsupported arcrole",
+        ),
+        # A relationship carries no content at all.
+        (
+            '<ix:relationship fromRefs="f1" toRefs="fn1"><span>x</span></ix:relationship>',
+            '<ix:footnote id="fn1">n</ix:footnote>',
+            r"ix:relationship must be empty",
+        ),
+        # Footnote attributes are exactly id/footnoteRole/continuedAt.
+        (
+            '<ix:relationship fromRefs="f1" toRefs="fn1"/>',
+            '<ix:footnote id="fn1" bogus="x">n</ix:footnote>',
+            r"ix:footnote has unsupported attributes",
+        ),
+    ],
+)
+def test_relationship_and_footnote_grammar_fails_closed(resources_suffix, body_suffix, match):
+    fact = '<ix:nonNumeric id="f1" name="ex:F" contextRef="c">revenue</ix:nonNumeric>'
+    content = _inline(fact + body_suffix, resources=_BASE_RESOURCES + resources_suffix)
+    with pytest.raises(SecFilingParseError, match=match):
+        parse_sec_filing_document(content, document_name="bad-footnote.xhtml")
+
+
+def test_relationship_outside_ix_resources_and_unreferenced_footnote_fail_closed():
+    fact = '<ix:nonNumeric id="f1" name="ex:F" contextRef="c">revenue</ix:nonNumeric>'
+    footnote = '<ix:footnote id="fn1">n</ix:footnote>'
+    outside = _inline(
+        fact + '<ix:relationship fromRefs="f1" toRefs="fn1"/>' + footnote,
+        resources=_BASE_RESOURCES,
+    )
+    with pytest.raises(SecFilingParseError, match=r"ix:relationship must be a direct child of ix:resources"):
+        parse_sec_filing_document(outside, document_name="relationship-in-body.xhtml")
+
+    unreferenced = _inline(fact + footnote, resources=_BASE_RESOURCES)
+    with pytest.raises(SecFilingParseError, match=r"ix:footnote is not referenced by any ix:relationship"):
+        parse_sec_filing_document(unreferenced, document_name="unreferenced-footnote.xhtml")
+
+
+def test_footnote_must_not_appear_in_ix_header():
+    content = _inline(
+        '<ix:nonNumeric id="f1" name="ex:F" contextRef="c">revenue</ix:nonNumeric>',
+        resources=_BASE_RESOURCES + '<ix:relationship fromRefs="f1" toRefs="fn1"/>',
+    ).replace(
+        b"</ix:resources></ix:header>",
+        b'</ix:resources><ix:footnote id="fn1">n</ix:footnote></ix:header>',
+        1,
+    )
+    with pytest.raises(SecFilingParseError, match=r"ix:footnote must not appear in ix:header"):
+        parse_sec_filing_document(content, document_name="footnote-in-header.xhtml")
+
+
+def test_footnote_continuation_chains_are_excluded_from_fact_continuations():
+    relationship = '<ix:relationship fromRefs="f1" toRefs="fn1"/>'
+    footnote = '<ix:footnote id="fn1" continuedAt="fn1c">part one </ix:footnote>'
+    continuation = '<ix:continuation id="fn1c">part two</ix:continuation>'
+    fact = '<ix:nonNumeric id="f1" name="ex:F" contextRef="c">head</ix:nonNumeric>'
+    content = _inline(
+        fact + footnote,
+        continuations=continuation,
+        resources=_BASE_RESOURCES + relationship,
+    )
+    result = parse_sec_filing_document(content, document_name="footnote-chain.xhtml")
+    assert result["continuations"] == []
+    assert result["coverage"]["continuation_count"] == 0
+    assert result["coverage"]["ix_footnote_continuation_count"] == 1
+    validate_sec_filing_parse_result(result, source_content=content)
+
+    # A continuation may not be shared between a fact chain and a footnote chain.
+    shared_fact = (
+        '<ix:nonNumeric id="f1" name="ex:F" contextRef="c" '
+        'continuedAt="c1">head</ix:nonNumeric>'
+    )
+    shared_footnote = '<ix:footnote id="fn1" continuedAt="c1">part one</ix:footnote>'
+    shared_continuation = '<ix:continuation id="c1">tail</ix:continuation>'
+    shared = _inline(
+        shared_fact + shared_footnote,
+        continuations=shared_continuation,
+        resources=_BASE_RESOURCES + relationship,
+    )
+    with pytest.raises(SecFilingParseError, match="shared"):
+        parse_sec_filing_document(shared, document_name="shared-chain.xhtml")
+
+    # A footnote continuedAt must name an existing ix:continuation.
+    dangling = _inline(
+        fact + '<ix:footnote id="fn1" continuedAt="gone">part one</ix:footnote>',
+        resources=_BASE_RESOURCES + relationship,
+    )
+    with pytest.raises(SecFilingParseError, match="footnote references a missing continuation"):
+        parse_sec_filing_document(dangling, document_name="dangling-footnote-chain.xhtml")
+
+
+def test_node_budget_is_raised_to_300k_nodes():
+    # 1 root + 299,999 children = 300,000 nodes: admitted at the 300,000
+    # budget.  The node check is `len(self.nodes) >= max_nodes` before append,
+    # so N nodes are admitted and N + 1 refused.  No text between tags, so no
+    # text events.
+    within = b"<root>" + b"<span/>" * 299_999 + b"</root>"
+    result = parse_sec_filing_document(within, document_name="nodes-within.xml")
+    assert result["document"]["kind"] == "other_xml"
+    assert len(result["coverage"]) == 17
+
+    beyond = b"<root>" + b"<span/>" * 300_000 + b"</root>"
+    with pytest.raises(SecFilingParseError, match="node limit"):
+        parse_sec_filing_document(beyond, document_name="nodes-beyond.xml")
+
+
+def test_b2_cap_literals_are_frozen():
+    # The B'2 seat values; every other _HARD_LIMITS key is unchanged and the
+    # parser identity (version + fingerprint) must not move with caps.
+    assert parser_module._HARD_LIMITS["max_nodes"] == 300_000
+    assert parser_module._HARD_LIMITS["max_fact_text_bytes"] == 2 * 1024 * 1024
+    assert parser_module._HARD_LIMITS["max_facts"] == 12_000
+    assert parser_module._HARD_LIMITS["max_continuation_chain"] == 32
+    assert parser_module._HARD_LIMITS["max_output_bytes"] == 64 * 1024 * 1024
+    assert SEC_FILING_PARSER_VERSION == "1"
+
+
+def test_fact_budget_boundary_is_12000():
+    # The fact check is `len(facts_nodes) > limits["max_facts"]` after
+    # collection, so exactly 12,000 facts are admitted and the 12,001st
+    # refuses.  Repeated identical element names are legal: facts carry no
+    # name-uniqueness rule (only ids are unique, and these have none).
+    within = _instance('<ex:F contextRef="c">x</ex:F>' * 12_000)
+    result = parse_sec_filing_document(within, document_name="facts-within.xml")
+    assert result["coverage"]["fact_count"] == 12_000
+
+    beyond = _instance('<ex:F contextRef="c">x</ex:F>' * 12_001)
+    with pytest.raises(SecFilingParseError, match="fact limit"):
+        parse_sec_filing_document(beyond, document_name="facts-beyond.xml")
+
+
+def test_continuation_chain_boundary_is_32():
+    # A chain is counted as the number of ix:continuation elements reachable
+    # from the owning fact's continuedAt by following continued_at links (the
+    # owning fact itself is not counted).  The root walk checks
+    # `len(chain) >= limits["max_continuation_chain"]` before appending each
+    # member, so exactly 32 linked continuations are admitted and a 33rd
+    # refuses with the chain-limit message.
+    def chain_document(count: int) -> bytes:
+        continuations = "".join(
+            f'<ix:continuation id="c{index}"'
+            + (f' continuedAt="c{index + 1}"' if index < count - 1 else "")
+            + f">t{index}</ix:continuation>"
+            for index in range(count)
+        )
+        return _inline(
+            '<ix:nonNumeric id="f" name="ex:F" contextRef="c" continuedAt="c0">x</ix:nonNumeric>',
+            continuations=continuations,
+        )
+
+    within = parse_sec_filing_document(chain_document(32), document_name="chain-within.xhtml")
+    assert len(within["facts"][0]["continuation_chain"]) == 32
+
+    with pytest.raises(SecFilingParseError, match="chain limit"):
+        parse_sec_filing_document(chain_document(33), document_name="chain-beyond.xhtml")
+
+
+def test_fact_text_boundary_is_2mib():
+    # The fact-text check measures the UTF-8 encoding of the joined lexical
+    # text value (`len(value.encode("utf-8")) > max_fact_text_bytes`), so an
+    # ASCII text of exactly 2 MiB is admitted and one byte more refuses.
+    cap = 2 * 1024 * 1024
+    within = _inline(f'<ix:nonNumeric name="ex:F" contextRef="c">{"a" * cap}</ix:nonNumeric>')
+    result = parse_sec_filing_document(within, document_name="fact-text-within.xhtml")
+    assert len(result["facts"][0]["raw_value"].encode("utf-8")) == cap
+
+    beyond = _inline(f'<ix:nonNumeric name="ex:F" contextRef="c">{"a" * (cap + 1)}</ix:nonNumeric>')
+    with pytest.raises(SecFilingParseError, match="text byte limit"):
+        parse_sec_filing_document(beyond, document_name="fact-text-beyond.xhtml")
+
+
+def test_output_byte_boundary_is_exact(monkeypatch):
+    # The output check measures the canonical JSON encoding of the complete
+    # result (`json.dumps(..., sort_keys=True, separators=(",", ":"))` bytes)
+    # against max_output_bytes on both the parse and validate paths.  The
+    # real-value boundary artifact would be a 64 MiB document, so the boundary
+    # is proven at the exact measured length with the cap lowered to it.
+    assert parser_module._HARD_LIMITS["max_output_bytes"] == 64 * 1024 * 1024
+    content = b"<root/>"
+    result = parse_sec_filing_document(content, document_name="output-exact.xml")
+    measured = len(
+        json.dumps(result, sort_keys=True, separators=(",", ":"), ensure_ascii=False).encode("utf-8")
+    )
+
+    at_cap = dict(PARSER_LIMITS)
+    at_cap["max_output_bytes"] = measured
+    monkeypatch.setattr(parser_module, "PARSER_LIMITS", at_cap)
+    parse_sec_filing_document(content, document_name="output-exact.xml")
+
+    below_cap = dict(PARSER_LIMITS)
+    below_cap["max_output_bytes"] = measured - 1
+    monkeypatch.setattr(parser_module, "PARSER_LIMITS", below_cap)
+    with pytest.raises(SecFilingParseError, match="output byte limit"):
+        parse_sec_filing_document(content, document_name="output-beyond.xml")
+
+
+# Semantic byte pins computed by the BASE parser (version 1, fingerprint
+# 95f7e4b7...) for every pinned corpus member it accepts.  The D1-ext change
+# must keep each accepted member byte-identical.
+_BYTE_IDENTITY_PINS = {
+    "fundamental_forensics/aapl_10k_2025/members/aapl-20250927.htm": "7a32e79244ab7138af42b8b679ee9e1043b0a297534884a14d66a5df1be89ed1",
+    "fundamental_forensics/aapl_10k_2025/members/aapl-20250927.xsd": "0ee751300128648bb3bfcb47568877153e01a253e3cf9aec3c45577680007fb8",
+    "fundamental_forensics/aapl_10k_2025/members/aapl-20250927_cal.xml": "90531b850f7a9f097d86ed426b151c1e8f59dbc4e43238f8d76ed18a8fb519fe",
+    "fundamental_forensics/aapl_10k_2025/members/aapl-20250927_def.xml": "039be93ededb56777b0e7620c5b265c558b940685fd6ad548892027274d2beef",
+    "fundamental_forensics/aapl_10k_2025/members/aapl-20250927_lab.xml": "253ff7e65e3b86501f59fb0e4a8501cf7284c2feba7f28a863641689590cef7c",
+    "fundamental_forensics/aapl_10k_2025/members/aapl-20250927_pre.xml": "7c54fac85534a5d2a63dff5d905985693fe9204215a67dd84e01028f42e77c9d",
+    "fundamental_forensics/aapl_10q_2026q3/members/aapl-20260627.htm": "d65c849a700c780533188175ef5bc1d29e0d32f61a0b58e72ea2111e6835f0ff",
+    "fundamental_forensics/aapl_10q_2026q3/members/aapl-20260627.xsd": "5f894b33ffadaebd9ad828e14ddcb7b1c77f84128eed7da222ba3f301cde63c0",
+    "fundamental_forensics/aapl_10q_2026q3/members/aapl-20260627_cal.xml": "cf0141cb72cfc124c4a50292d5599dfcb63d71da22c199e0f8b1cccad9f9fbe6",
+    "fundamental_forensics/aapl_10q_2026q3/members/aapl-20260627_def.xml": "b8e8bade6a2563e10682625938227fdc198d863a2c99069e0428f2da6e4ebe39",
+    "fundamental_forensics/aapl_10q_2026q3/members/aapl-20260627_lab.xml": "cdb991293ff0b3a4028add1a070fe36c198824a153c579f4e6bbea898010ce68",
+    "fundamental_forensics/aapl_10q_2026q3/members/aapl-20260627_pre.xml": "648e30661e98ff74d6cb402c0b7419c8aa89344fd1b189ffa39e5d33546ebed6",
+    "sec_filings/minimal_inline.xhtml": "ce0b664e6be463202ff164f30b06aedad8bdef890c1c16fc8f7f9b212949f958",
+    "sec_filings/minimal_instance.xml": "607d16eadfffc53c86415c14340830b24277dbd0e46587ec8a45f648e11557b8",
+}
+
+
+@pytest.mark.parametrize(("member", "expected_sha"), sorted(_BYTE_IDENTITY_PINS.items()))
+def test_accepted_corpus_members_stay_byte_identical(member, expected_sha):
+    content = (Path(__file__).parent / "fixtures" / member).read_bytes()
+    result = parse_sec_filing_document(content, document_name=Path(member).name)
+    assert sha256(parser_module._semantic_result_bytes(result)).hexdigest() == expected_sha

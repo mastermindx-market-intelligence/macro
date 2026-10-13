@@ -1,0 +1,153 @@
+{
+  "source_commit": "a58cf3cb6de26b702069515292beeba8309e32ab",
+  "generated_at": "2026-10-11T03:40:41Z",
+  "files": [
+    {
+      "path": "workspaces/manifest.json",
+      "bytes": 6932,
+      "sha256": "4ad8553e56c247eeb1588f575f5b590e3dd11a0ef4a74af1a17f0da42a76b61d"
+    },
+    {
+      "path": "workspaces/business_activity/US/latest.json",
+      "bytes": 107310,
+      "sha256": "39d271b9c5b0d7f42485ba85510e77d0a8756041630884dd3715897301e1d159"
+    },
+    {
+      "path": "workspaces/capital_structure/US/latest.json",
+      "bytes": 111181,
+      "sha256": "c307388ffb68c3634fbb177452443904a8f3b123ffedba6c7f9233c189bc13cc"
+    },
+    {
+      "path": "workspaces/consumer_payments/US/latest.json",
+      "bytes": 101374,
+      "sha256": "2215dd8beb29f7618743396fd13584ffb1d33feecff251c1c96f3127b749ce51"
+    },
+    {
+      "path": "workspaces/financial_conditions/US/latest.json",
+      "bytes": 103423,
+      "sha256": "4f10de353bf317d230cab1ebe18181b9b2e6a120cbbba69164072304193d528d"
+    },
+    {
+      "path": "workspaces/growth_real_economy/US/latest.json",
+      "bytes": 83482,
+      "sha256": "52a71eaf48283ffe41b3e83bd6be49c3d501b54e812feaf3afad293dfe4bae98"
+    },
+    {
+      "path": "workspaces/housing_real_estate/US/latest.json",
+      "bytes": 94843,
+      "sha256": "6e0404ee830ab81547b57b8b86426dc801767797db9d249008c2c0bdd25d2ae9"
+    },
+    {
+      "path": "workspaces/inflation_system/US/latest.json",
+      "bytes": 62053,
+      "sha256": "3664bf016a170efedf2c8250ad63fa0f1fd3f83e79dce0e49099cd378334e61d"
+    },
+    {
+      "path": "workspaces/labor_markets/US/latest.json",
+      "bytes": 73432,
+      "sha256": "d2edf87a8ab48eb9d1aa2f0a62db507fbbba7243356ef5b60eaca12c2dbdb77e"
+    },
+    {
+      "path": "workspaces/liquidity_central_banks/US/latest.json",
+      "bytes": 60911,
+      "sha256": "93b85b083582e2295a4a55c9ce51007e2c279c01350ea26eda44653918b5a55b"
+    },
+    {
+      "path": "workspaces/liquidity_regime/US/latest.json",
+      "bytes": 49637,
+      "sha256": "1985d64afdd0ea1896d82d10a9f2766d7089022c4108e201e8d2a74509ff3c28"
+    },
+    {
+      "path": "workspaces/monetary_policy/US/latest.json",
+      "bytes": 82157,
+      "sha256": "16e91903e64a3e2107404c65adf1d53f32a9475d15aeb54b48758f3f1198a66a"
+    },
+    {
+      "path": "workspaces/national_debt_liabilities/US/latest.json",
+      "bytes": 140550,
+      "sha256": "97dcbf0d838f18c362d409fc4e7d7e77ea2d1ec9e80336013d15b6c3ad2d4384"
+    },
+    {
+      "path": "workspaces/rates_curves/US/latest.json",
+      "bytes": 171868,
+      "sha256": "10f2f950129e7bd1f3b6224bd0859193fabec56d421f788ff9c4be6d0e5840be"
+    },
+    {
+      "path": "workspaces/trade_flows/US/latest.json",
+      "bytes": 98393,
+      "sha256": "58ebb20ae035f50134a5f5ad05be873b24c09bb4e56c428cc596759e21a5df40"
+    }
+  ],
+  "expected_pages": [
+    {
+      "path": "site/macro_business_activity.html",
+      "git_blob": "bf170c9441ddf78d0888312349761563ad6711ba",
+      "sha256": "762d496b13e211bea93416ad5fd029b45ebb26cfdd6ba2f284a22a077bb27b4b"
+    },
+    {
+      "path": "site/macro_capital_structure.html",
+      "git_blob": "b40e234a597ef6046225e0d9f22888672be16b73",
+      "sha256": "c7711233f8865efff90e91845ba43f27f2661859843465a0acf49b9ab4c22789"
+    },
+    {
+      "path": "site/macro_consumer_payments.html",
+      "git_blob": "171581e309bc3655ae33f52d321973974dc38620",
+      "sha256": "fc9c097d0d285a72794a88cb0bfad89a0f5ac8be236956243d0a1f77f0e6eb58"
+    },
+    {
+      "path": "site/macro_financial_conditions.html",
+      "git_blob": "9a166112710282d3bbb74e98aeeedf8816e204ad",
+      "sha256": "e0e9b18268d80fa0e0b9d542bfa87b150f2207a0d9c43a4f6209b481d524cae9"
+    },
+    {
+      "path": "site/macro_growth_real_economy.html",
+      "git_blob": "a7929f0811a78676b395431ec90a3d1d76cc8b3f",
+      "sha256": "7b16a7dea6f7b4bc0f2c4048721936ec62a40ab62dbc53069420b4364b5191d4"
+    },
+    {
+      "path": "site/macro_housing_real_estate.html",
+      "git_blob": "00629bb5203f68781f6673a7af00d6c6d44c313c",
+      "sha256": "17c6d331a77e0902d50ea6b802bbbd05b87f5d5b2c8e8fedf375e4048a856fda"
+    },
+    {
+      "path": "site/macro_inflation_system.html",
+      "git_blob": "f1ad213a6e853b9c8fda9223ae27d3ade472d488",
+      "sha256": "b0f707fb9ae098303f1e4d1f547a8cf3384507c4d24c4fba1c05e6e1ddce5276"
+    },
+    {
+      "path": "site/macro_labor_markets.html",
+      "git_blob": "13fb5f80a35e88514c9e3758c86a36ac6e68cc80",
+      "sha256": "23bbc3f3cfefcc840191fa5afcdd26a52653f9620966c57edd693aee9869c3bb"
+    },
+    {
+      "path": "site/macro_liquidity_central_banks.html",
+      "git_blob": "1d7227c91b4a11f8a73368d562c0d8e3c8123732",
+      "sha256": "45cdc95688d6d28f914a948b7481792c824a68bf40336b57fcc46ef2bca41cec"
+    },
+    {
+      "path": "site/macro_liquidity_regime.html",
+      "git_blob": "5dfb0171ff3816423467e07ca73d2c89458ce7c8",
+      "sha256": "4458447443bc33a6c182c1cb7363d19246d7d976e6574b80614935906cdac7a9"
+    },
+    {
+      "path": "site/macro_monetary.html",
+      "git_blob": "609a0a04acbd1e593cf1781f601b544c84311242",
+      "sha256": "ec7eb844ef36248e3942db80196fba83f804dda82a42844d6dd2f8435382e1a9"
+    },
+    {
+      "path": "site/macro_monetary_policy.html",
+      "git_blob": "7a24fc529cce546858ddf290e1510463d75b4458",
+      "sha256": "fc0a8c564c355f2b983ef96b43edb5b88c1982fa1e3f7e266357669cdea07bea"
+    },
+    {
+      "path": "site/macro_national_debt_liabilities.html",
+      "git_blob": "b571252ad1dd5db35fe24179bb89cde50ce434ac",
+      "sha256": "24cf2678fe1bad8b9103a9fdebf636baed3a8e9b9528d4857188d0f6009f8219"
+    },
+    {
+      "path": "site/macro_trade_flows.html",
+      "git_blob": "633413a28c0275d0d2b0eb97c4233d58f8673b15",
+      "sha256": "7727bba5a67e72aa9c1acb577b6469d90f5a40cb0d584017fb3927f3083d8c80"
+    }
+  ]
+}

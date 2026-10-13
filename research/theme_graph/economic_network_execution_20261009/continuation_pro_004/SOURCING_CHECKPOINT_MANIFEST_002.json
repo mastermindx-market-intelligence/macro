@@ -1,0 +1,70 @@
+{
+  "files": [
+    {
+      "byte_length": 8470,
+      "path": "research/theme_graph/economic_network_execution_20261009/continuation_pro_004/README.md",
+      "sha256": "de17d4cfaa3f077ded42d6c3593bb9782d2d6e869f7c13c8a4264db728398b27"
+    },
+    {
+      "byte_length": 4891,
+      "path": "research/theme_graph/economic_network_execution_20261009/continuation_pro_004/native_validation/sourcing-checkpoint-002.json",
+      "sha256": "cd298bb8b5ed0f83c4b761a81207ad6a22721a25a27127483841572c6205e19b"
+    },
+    {
+      "byte_length": 12922,
+      "path": "research/theme_graph/economic_network_execution_20261009/continuation_pro_004/source_owner_interface_census_v1/FINDINGS.md",
+      "sha256": "e14fe4557826aa4750f438dacdade7a8f95038b779c1bd3fd5b4b31f9a12e1ef"
+    },
+    {
+      "byte_length": 1595,
+      "path": "research/theme_graph/economic_network_execution_20261009/continuation_pro_004/source_owner_interface_census_v1/MANIFEST.json",
+      "sha256": "380fea0e33dc73acca8118f2e9703d181fd2fe42c1473f607200b5e9d8b20cf9"
+    },
+    {
+      "byte_length": 4484,
+      "path": "research/theme_graph/economic_network_execution_20261009/continuation_pro_004/source_owner_interface_census_v1/PROCESS_AND_EFFECT_RECEIPT.json",
+      "sha256": "effa51990d13b76449dd0c6ee4f4db00e549e95334c2f285e1fee05af6183605"
+    },
+    {
+      "byte_length": 642,
+      "path": "research/theme_graph/economic_network_execution_20261009/continuation_pro_004/source_owner_interface_census_v1/READBACK_VALIDATION.json",
+      "sha256": "e28efb4aa2aaaad66f4db349b8c56fa4de4cf2cd41fa84fdc950a0366ff254b1"
+    },
+    {
+      "byte_length": 4815,
+      "path": "research/theme_graph/economic_network_execution_20261009/continuation_pro_004/source_owner_interface_census_v1/SCOPE_AND_CENSUS.json",
+      "sha256": "75cc57200a49b0daa4a0d368f8b5b98af3fa48174515800216c72b440e448a8c"
+    },
+    {
+      "byte_length": 21149,
+      "path": "research/theme_graph/economic_network_execution_20261009/continuation_pro_004/source_owner_interface_census_v1/SOURCE_PINS.json",
+      "sha256": "234633f44f9a90e07511b7ef8e98fb7f4ccf5a4d2a251e28929729e6b0e04393"
+    },
+    {
+      "byte_length": 736,
+      "path": "research/theme_graph/economic_network_execution_20261009/continuation_pro_004/source_product_scope_addendum_v1/MANIFEST.json",
+      "sha256": "83d2145a8a2711a089ca77a73e4cad5baee3926955661b17e62d3197e72f78f6"
+    },
+    {
+      "byte_length": 7342,
+      "path": "research/theme_graph/economic_network_execution_20261009/continuation_pro_004/source_product_scope_addendum_v1/MASSIVE_SCOPE_ADJUDICATION.md",
+      "sha256": "35548286eaee7ba2f999f14e198846946076094e3672924be9cc56cd0f71c42b"
+    },
+    {
+      "byte_length": 3092,
+      "path": "research/theme_graph/economic_network_execution_20261009/continuation_pro_004/source_product_scope_addendum_v1/PRIMARY_SOURCE_REGISTER.json",
+      "sha256": "1fdcb9a8e60afeeda0e66c472146689b57d4d16f5df7c3fdbbb29119c555721f"
+    },
+    {
+      "byte_length": 1180,
+      "path": "research/theme_graph/economic_network_execution_20261009/continuation_pro_004/source_product_scope_addendum_v1/RETRIEVAL_AND_EFFECT_RECEIPT.json",
+      "sha256": "ce575d69255854436ec7f9d888368e05e2c29089cfd3fa32debc55b582f4cbb0"
+    }
+  ],
+  "frozen_source_packages_preserved": true,
+  "parent_head": "7c1463015b8f1a3296f09d12a8052112939b4c25",
+  "real_admission": false,
+  "schema": "economic_network.sourcing_checkpoint_manifest/v1",
+  "scope": "Completed source-owner census and product-scope findings plus principal index and transfer proof; no kernel integration",
+  "self_excluded": "research/theme_graph/economic_network_execution_20261009/continuation_pro_004/SOURCING_CHECKPOINT_MANIFEST_002.json"
+}

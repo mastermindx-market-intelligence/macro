@@ -1,0 +1,12 @@
+{"phase": "starting", "selection_scope": "first 50 exact-identifier US exchange stocks within first 1000 audited catalogue candidates; acquisition pilot only", "catalogue_sha256": "015cda96b828344e26f5937f426cbc40a7b8fe2edc9a023a342a3743799abcf0", "request_cap": 50, "account_read_hourly_allocation": 20000, "account_read_monthly_bandwidth_gb": 100, "reacquired_catalogue": false}
+{
+  "attempted": 50,
+  "bytes": 18026275,
+  "elapsed_seconds": 110.7,
+  "errors": [],
+  "failed": 0,
+  "new": 50,
+  "ok": 50,
+  "phase": "settled",
+  "row_hints": 77828
+}

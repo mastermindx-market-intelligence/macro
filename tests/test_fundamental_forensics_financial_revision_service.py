@@ -813,3 +813,81 @@ def test_fif2a_query_hashes_unchanged_after_shared_admission() -> None:
         periods=[FY2023, AR_INSTANT],
     )
     assert mixed == _HASH_MIXED_T3
+
+
+# ---------------------------------------------------------------------------
+# FIF D3: revision envelope delivery — absent for golden, exact for production
+# ---------------------------------------------------------------------------
+
+_FROZEN_FIP1_REVISIONS_SHA = "4f2096d356ef54449add0da27e5897a03666d7e8df2a6ca6258a6b9258711c60"
+
+
+def test_revision_envelope_delivery_absent_for_golden_present_for_production() -> None:
+    # Golden/FIP1: no delivery key, byte-identical to the pre-D3 response
+    # (frozen baseline captured on the untouched tree at 5267c66846e).
+    golden = execute_financial_revisions(body=_make_request(), provider=_fip1_provider())
+    assert "delivery" not in golden.envelope
+    assert golden.sha256 == _FROZEN_FIP1_REVISIONS_SHA
+
+    # Production: the exact five-key production object, validated by the one
+    # shared delivery law.
+    from datetime import datetime, timezone
+
+    from engine.fundamental_forensics import production_datasets as PDS
+    from engine.fundamental_forensics.financial_intelligence_packet import EntityInput
+    from engine.fundamental_forensics.production_provider import (
+        ProductionFinancialPacketProvider,
+    )
+
+    base = fip1_fixture_dataset(ROOT)
+    material = PDS.ProductionDatasetMaterial(
+        binding=base.binding,
+        entity=EntityInput(
+            entity_id=base.binding.entity_id,
+            cik=base.binding.cik,
+            ticker=base.binding.ticker,
+            name="FIP1 Fixture",
+            identity_basis="sec-cik",
+            source_entity_id=base.binding.source_entity_id,
+        ),
+        ledger=base.ledger,
+        filing_metadata=base.filing_metadata,
+        registry_payload=PDS.snapshot_core_registry_payload(ROOT),
+        admitted_at=datetime(2026, 8, 1, tzinfo=timezone.utc),
+        source_recorded_at_floor=datetime(2026, 8, 1, tzinfo=timezone.utc),
+    )
+    store = PDS.InMemoryStrictConditionalStore()
+    PDS.publish_production_dataset(store, material)
+    provider = ProductionFinancialPacketProvider(store, repo_root=ROOT)
+    production = execute_financial_revisions(body=_make_request(), provider=provider)
+    delivery = production.envelope["delivery"]
+    assert delivery["kind"] == "production_issuer_dataset"
+    assert delivery["attested"] is False
+    assert delivery["production_issuer_service"] is True
+    assert delivery["capture_basis"] == "reconstruction"
+    assert PDS.GENERATION_ID_RE.fullmatch(delivery["dataset_generation_id"])
+    assert production.sha256 != golden.sha256
+
+    # An unlawful delivery on a packet dataset is unavailable, never served.
+    from engine.fundamental_forensics.financial_intelligence_packet import (
+        load_filing_package_fixture,
+    )
+
+    unlawful = packet_dataset_from_fixture(
+        ROOT, load_filing_package_fixture(ROOT / "tests/fixtures/fundamental_forensics/filing_package_raw_ledger_v1.json")
+    )
+    object.__setattr__(
+        unlawful,
+        "delivery",
+        {"kind": "production_issuer_dataset", "attested": True},
+    )
+    with pytest.raises(FinancialQueryUnavailableError):
+        execute_financial_revisions(body=_make_request(), provider=_StaticPacketProvider(unlawful))
+
+
+class _StaticPacketProvider:
+    def __init__(self, dataset) -> None:
+        self._dataset = dataset
+
+    def resolve(self, entity_id: str) -> FinancialPacketDataset:
+        return self._dataset

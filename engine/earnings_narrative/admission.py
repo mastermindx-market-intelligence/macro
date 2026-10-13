@@ -17,9 +17,6 @@ from __future__ import annotations
 
 import re
 from typing import Any, Mapping
-
-from engine.press.earnings_adapter import story_to_press_slot
-
 from .contracts import (
     AUTHORITY,
     EXECUTION_RECEIPT,
@@ -34,7 +31,8 @@ from .contracts import (
 )
 from .story_packets import (
     STORY_PACKET_MANIFEST_SCHEMA,
-    STORY_PACKET_SCHEMA,
+    STORY_PACKET_SCHEMAS,
+    replay_story_packet_slot,
     validate_story_packet,
     validate_story_packet_manifest,
 )
@@ -179,9 +177,7 @@ def _expected_admission(audit_binding: object, packet: object) -> dict[str, Any]
     if not isinstance(slot, Mapping) or slot.get("canonical_emit_allowed") is not False:
         raise ContractError("Press admission requires a non-emittable canonical Press slot")
 
-    prior = row.get("prior")
-    prior_story = prior.get("story") if isinstance(prior, Mapping) else None
-    replayed_slot = story_to_press_slot(story, row["digest"], prior_story=prior_story)
+    replayed_slot = replay_story_packet_slot(row)
     if canonical_json_bytes(slot) != canonical_json_bytes(replayed_slot):
         raise ContractError("Press admission slot differs from canonical adapter replay")
 
@@ -201,7 +197,7 @@ def _expected_admission(audit_binding: object, packet: object) -> dict[str, Any]
         or index.get("source_sha256") != row["digest"]["source"]["body_sha256"]
         or index.get("story_id") != story.get("story_id")
         or index.get("story_revision_id") != story.get("story_revision_id")
-        or receipt.get("schema") != STORY_PACKET_SCHEMA
+        or receipt.get("schema") != row["schema"]
         or receipt.get("object_key") != object_key
         or receipt.get("sha256") != sha256_bytes(body)
         or receipt.get("bytes") != len(body)
@@ -221,7 +217,7 @@ def _expected_admission(audit_binding: object, packet: object) -> dict[str, Any]
             "marker_etag": audit["marker_etag"],
         },
         "packet": {
-            "schema": STORY_PACKET_SCHEMA,
+            "schema": str(row["schema"]),
             "event_key": key,
             "packet_id": str(row["packet_id"]),
             "source_sha256": str(row["digest"]["source"]["body_sha256"]),
@@ -287,7 +283,7 @@ def validate_press_admission(
 
     receipt = _mapping(row.get("packet"), name="earnings_press_admission.packet")
     _keys(receipt, _PACKET_RECEIPT_KEYS, name="earnings_press_admission.packet")
-    if receipt.get("schema") != STORY_PACKET_SCHEMA:
+    if receipt.get("schema") not in STORY_PACKET_SCHEMAS:
         raise ContractError("earnings_press_admission packet schema mismatch")
     _event_key(receipt.get("event_key"), field="earnings_press_admission.packet.event_key")
     if not isinstance(receipt.get("packet_id"), str) or not _PACKET.fullmatch(receipt["packet_id"]):

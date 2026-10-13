@@ -216,18 +216,24 @@ def _quarterly(entries: list, instant: bool = False) -> list[dict]:
 
         key = (int(fy), fq)
         rank = (filed, end)
+        # FIF P1-b (I2): retain the companyfacts duration start alongside the
+        # flow value. Instant concepts contribute no start by construction.
+        start = e.get("start") if not instant else None
         if key not in best or rank > best[key][0]:
-            best[key] = (rank, float(val), end, filed)
+            best[key] = (rank, float(val), end, filed, start)
 
     result = []
-    for (fy, fq), (_, val, end, filed) in sorted(best.items()):
-        result.append({"fy": fy, "fq": fq, "period_end": end, "filed": filed, "val": val})
+    for (fy, fq), (_, val, end, filed, start) in sorted(best.items()):
+        result.append({
+            "fy": fy, "fq": fq, "period_end": end, "filed": filed,
+            "period_start": start, "val": val,
+        })
     return result
 
 
 def _concept_q(usgaap: dict, names: list[str], unit: str = "USD",
                instant: bool = False) -> dict[tuple, dict]:
-    """Merge fallback chain → {(fy, fq): {val, period_end, filed}}."""
+    """Merge fallback chain → {(fy, fq): {val, period_end, filed, period_start}}."""
     combined: dict[tuple, dict] = {}
     for nm in names:
         node = usgaap.get(nm)
@@ -240,7 +246,8 @@ def _concept_q(usgaap: dict, names: list[str], unit: str = "USD",
             key = (rec["fy"], rec["fq"])
             combined.setdefault(key, {"val": rec["val"],
                                       "period_end": rec["period_end"],
-                                      "filed": rec["filed"]})
+                                      "filed": rec["filed"],
+                                      "period_start": rec.get("period_start")})
     return combined
 
 
@@ -274,10 +281,16 @@ def _statements_quarterly(cik: int, ua: str) -> list[dict]:
         all_keys.update(s.keys())
 
     rows = []
+    # FIF P1-b (I2): the row's period_start is the retained companyfacts
+    # duration start of the flow series consulted in the existing iteration
+    # order — first non-null wins. Instant-only rows keep None; nothing is
+    # ever derived from a fiscal calendar.
+    flow_keys = frozenset(FLOW_Q) | frozenset(REPURCHASE_Q)
     for (fy, fq) in sorted(all_keys):
         row: dict = {"fiscal_year": fy, "fiscal_quarter": fq}
         period_end = None
         filed = None
+        period_start = None
         for key, s in series.items():
             entry = s.get((fy, fq))
             if entry:
@@ -286,6 +299,10 @@ def _statements_quarterly(cik: int, ua: str) -> list[dict]:
                     period_end = entry["period_end"]
                 if filed is None:
                     filed = entry["filed"]
+                if period_start is None and key in flow_keys:
+                    start = entry.get("period_start")
+                    if start:
+                        period_start = start
             else:
                 row[key] = None
         # Derive missing combos
@@ -303,6 +320,7 @@ def _statements_quarterly(cik: int, ua: str) -> list[dict]:
             row["net_debt"] = (ltd or 0.0) + (cur or 0.0) - (csh or 0.0)
         row["period_end"] = period_end
         row["filed"] = filed
+        row["period_start"] = period_start
         rows.append(row)
     return rows
 

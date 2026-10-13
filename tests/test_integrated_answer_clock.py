@@ -87,7 +87,7 @@ def _absent_seams(monkeypatch) -> None:
 def _compose_with_legs(monkeypatch, *, financial: dict, publication: dict | None = None) -> dict:
     _absent_seams(monkeypatch)
     monkeypatch.setattr(integrated_answer, "_utc_now", lambda: NOW)
-    monkeypatch.setattr(integrated_answer, "_leg_financial_facts", lambda _t: financial)
+    monkeypatch.setattr(integrated_answer, "_leg_financial_facts", lambda _t, *_a, **_k: financial)
     if publication is not None:
         monkeypatch.setattr(integrated_answer, "_leg_publication_seam", lambda: publication)
     return integrated_answer._compose_page("AAPL")
@@ -198,7 +198,7 @@ def test_event_workspace_leg_is_exempt_from_stale_sweep(monkeypatch) -> None:
     _absent_seams(monkeypatch)
     monkeypatch.setattr(integrated_answer, "_utc_now", lambda: NOW)
     monkeypatch.setattr(
-        integrated_answer, "_leg_financial_facts", lambda _t: _surfaced_leg(
+        integrated_answer, "_leg_financial_facts", lambda _t, *_a, **_k: _surfaced_leg(
             "financial_facts", route=FINANCIAL_ROUTE, as_of=NOW, payload={"request": {}}
         )
     )
@@ -278,7 +278,6 @@ def test_missing_owner_clock_fallbacks(monkeypatch, tmp_path) -> None:
     assert exposure["ref"]["as_of"] == NOW
 
 
-@pytest.mark.xfail(strict=True, reason=DEFECT_D1_REASON)
 def test_financial_leg_clock_is_threaded_and_producer_derived(monkeypatch) -> None:
     from engine.fundamental_forensics import query_service
 

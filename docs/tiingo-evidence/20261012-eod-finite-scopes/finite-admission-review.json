@@ -1,0 +1,43 @@
+{
+  "schema": "tiingo_finite_callback_admission_review/v1",
+  "recorded_at_utc": "2026-10-12T15:39:02.737874+00:00",
+  "review_origin": "existing native C3 reasoning coordinator /root/tiingo_contract_adjudication",
+  "review_conclusion": "PASS",
+  "reviewed_files_sha256": {
+    "lib/dataos/tiingo_capture_admission.py": "3d204f2e7a6ebc5d3693606a7b59b665be8f53546314c0b8053bee2be4154926",
+    "tests/test_tiingo_capture_admission.py": "3fbf7efbf9795bc1551537007d30d04a1681688affa2d0b73b506bbe3094f97a",
+    ".github/ci/legacy-jobs.yml": "4aaf7d506f5eed4b4940c22caaf85902b9d1cf27ac544f89006c6311ab25d55f"
+  },
+  "test_log_sha256": "f89331746dfb99912a71fcd59f67398a8f98731808621cab8b03e740a25cc6b2",
+  "offline_tests_passed": 22,
+  "test_seconds": 1.5,
+  "max_submitted_unsettled_futures": 4,
+  "actual_local_admission_relation": "s_i - s_(i-4) >= 5 monotonic seconds",
+  "minimum_initial_prior_wave_delay_seconds": 5,
+  "maximum_local_admissions_per_half_open_hour": 2880,
+  "failure_latch_precedes_caller_diagnostics": true,
+  "already_admitted_requests_must_settle": true,
+  "raw_budget_is_existing_stop_threshold": true,
+  "maximum_already_admitted_overshoot_bytes": 2147483648,
+  "required_caller_free_floor_gib": 40,
+  "required_caller_inflight_headroom_gib": 5,
+  "collector_credential_and_live_wave10_unchanged": true,
+  "prepared_wave11_original_helper_sha256": "ce8d4524bc937598474a8824c5ac71b22428b0b432c08fa1eddb05dd33e83529",
+  "source_ci_accepted": false,
+  "future_helper_integration_accepted": false,
+  "future_capture_launched": false,
+  "retained_initial_test_failure": {
+    "original_tool_session": 70426,
+    "failure": "Test assumed submitted outcomes equal provider admissions; one queued task was correctly nonadmitted after latch closure. Corrected test observes actual admission count at latch and accounts all admitted results."
+  },
+  "affected_validation": {
+    "tests_passed": 511,
+    "seconds": 124.48,
+    "original_log_sha256": "4aea592fda209981bb5f7e3031e45b614fc6a0198716961a1f62a56653d285d7",
+    "existing_tiingo_integrity_and_consumers_included": true,
+    "curated_ci_import_closure_passed": true,
+    "agentos_errors": 0,
+    "agentos_existing_warnings": 114,
+    "agentos_log_sha256": "11f03ca51e47dca6fcbcf69e81523b7dc4c3b4949942a99576d2d460b951b4f9"
+  }
+}

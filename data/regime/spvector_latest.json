@@ -1,8 +1,8 @@
 {
-  "date": "2026-10-09",
-  "score": 16,
-  "band": "low",
-  "band_label": "LOW \u2014 fully invested",
+  "date": "2026-10-12",
+  "score": 31,
+  "band": "elevated",
+  "band_label": "ELEVATED \u2014 trim",
   "equity_w": 100,
   "cash_w": 0,
   "stance": "100% equity",
@@ -10,6 +10,6 @@
   "sharpe": 0.89,
   "maxdd": -36.2,
   "equity_weight": 100,
-  "risk_score": 16,
-  "asof": "2026-10-09"
+  "risk_score": 31,
+  "asof": "2026-10-12"
 }

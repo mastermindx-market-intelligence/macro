@@ -1,0 +1,82 @@
+{"schema": "tiingo_attended_eod_batch.v1", "observed_at_utc": "2026-10-11T21:41:55.785799+00:00", "source_logic_sha": "bddd8da1f5c5225b258ff4d6d35ce72fca5a09fb", "calling_carrier_sha": "6eccb5aa3d3f640b8aea8dc61653bc0b4b5e9bde", "loaded_source_sha256": {"scripts/tiingo_ingest.py": "ef52fd2f90842c85a362254dae219a2593fed024b340a38fa5333a50e06981e6", "collectors/tiingo_archive.py": "54b694af53a940f8ea1148215b0a3ccfcfa5313270286b04a99c72d7dc004fa6"}, "source_worktree_dirty": true, "catalogue_sha256": "015cda96b828344e26f5937f426cbc40a7b8fe2edc9a023a342a3743799abcf0", "reacquired_catalogue": false, "selection_scope": "fourth additional 1000 exact-identifier USD stocks/ETFs on US exchanges in digest-bound catalogue pages; acquisition only", "request_cap": 1000, "completed_symbols_excluded": 3555, "full_catalogue_candidate_count_before_exchange_filter": 47960, "account_hourly_allocation": 20000, "account_daily_allocation": 150000, "account_monthly_bandwidth_gb": 100, "preflight_free_gib": 255.48871231079102, "largest_observed_full_eod_response_bytes": 4087908, "conservative_batch_bandwidth_gb_at_largest_observed_response": 4.087908, "free_reserve_gib": 35, "canonical_identity_admitted": false, "pit_backtest_eligible": false, "attended_bounded_process": true, "persistent_queue_created": false}
+{"phase": "progress", "elapsed_seconds": 56.504, "attempted": 25, "ok": 25, "new": 25, "failed": 0, "row_hints": 47175, "bytes": 10460854, "errors": []}
+{"phase": "progress", "elapsed_seconds": 118.934, "attempted": 50, "ok": 50, "new": 50, "failed": 0, "row_hints": 90803, "bytes": 20334773, "errors": []}
+{"phase": "progress", "elapsed_seconds": 190.003, "attempted": 75, "ok": 75, "new": 75, "failed": 0, "row_hints": 160179, "bytes": 36334453, "errors": []}
+{"phase": "progress", "elapsed_seconds": 234.786, "attempted": 100, "ok": 100, "new": 100, "failed": 0, "row_hints": 184524, "bytes": 41630067, "errors": []}
+{"phase": "progress", "elapsed_seconds": 286.511, "attempted": 125, "ok": 125, "new": 125, "failed": 0, "row_hints": 240838, "bytes": 54691860, "errors": []}
+{"phase": "progress", "elapsed_seconds": 369.445, "attempted": 150, "ok": 150, "new": 150, "failed": 0, "row_hints": 318923, "bytes": 72414100, "errors": []}
+{"phase": "progress", "elapsed_seconds": 438.355, "attempted": 175, "ok": 175, "new": 175, "failed": 0, "row_hints": 377544, "bytes": 85641563, "errors": []}
+{"phase": "progress", "elapsed_seconds": 512.465, "attempted": 200, "ok": 200, "new": 200, "failed": 0, "row_hints": 451429, "bytes": 102543973, "errors": []}
+{"phase": "progress", "elapsed_seconds": 572.767, "attempted": 225, "ok": 225, "new": 225, "failed": 0, "row_hints": 495789, "bytes": 112656206, "errors": []}
+{"phase": "progress", "elapsed_seconds": 632.711, "attempted": 250, "ok": 250, "new": 250, "failed": 0, "row_hints": 559511, "bytes": 127187896, "errors": []}
+{"phase": "progress", "elapsed_seconds": 681.722, "attempted": 275, "ok": 275, "new": 275, "failed": 0, "row_hints": 595435, "bytes": 135000159, "errors": []}
+{"phase": "progress", "elapsed_seconds": 739.242, "attempted": 300, "ok": 300, "new": 300, "failed": 0, "row_hints": 644121, "bytes": 145746409, "errors": []}
+{"phase": "progress", "elapsed_seconds": 784.244, "attempted": 325, "ok": 325, "new": 325, "failed": 0, "row_hints": 683180, "bytes": 154796901, "errors": []}
+{"phase": "progress", "elapsed_seconds": 833.33, "attempted": 350, "ok": 350, "new": 350, "failed": 0, "row_hints": 729932, "bytes": 165416333, "errors": []}
+{"phase": "progress", "elapsed_seconds": 888.57, "attempted": 375, "ok": 375, "new": 375, "failed": 0, "row_hints": 764787, "bytes": 173245303, "errors": []}
+{"phase": "progress", "elapsed_seconds": 944.983, "attempted": 400, "ok": 400, "new": 400, "failed": 0, "row_hints": 790826, "bytes": 179342293, "errors": []}
+{"phase": "progress", "elapsed_seconds": 996.775, "attempted": 425, "ok": 425, "new": 425, "failed": 0, "row_hints": 831395, "bytes": 188542849, "errors": []}
+{"phase": "progress", "elapsed_seconds": 1048.753, "attempted": 450, "ok": 450, "new": 450, "failed": 0, "row_hints": 853734, "bytes": 193575178, "errors": []}
+{"phase": "progress", "elapsed_seconds": 1130.7, "attempted": 475, "ok": 475, "new": 475, "failed": 0, "row_hints": 904995, "bytes": 205097074, "errors": []}
+{"phase": "progress", "elapsed_seconds": 1182.756, "attempted": 500, "ok": 500, "new": 500, "failed": 0, "row_hints": 950052, "bytes": 215166625, "errors": []}
+{"phase": "progress", "elapsed_seconds": 1253.819, "attempted": 525, "ok": 525, "new": 525, "failed": 0, "row_hints": 1002939, "bytes": 227397117, "errors": []}
+{"phase": "progress", "elapsed_seconds": 1321.804, "attempted": 550, "ok": 550, "new": 550, "failed": 0, "row_hints": 1047647, "bytes": 237733845, "errors": []}
+{"phase": "progress", "elapsed_seconds": 1383.222, "attempted": 575, "ok": 575, "new": 575, "failed": 0, "row_hints": 1101644, "bytes": 250056413, "errors": []}
+{"phase": "progress", "elapsed_seconds": 1465.225, "attempted": 600, "ok": 600, "new": 600, "failed": 0, "row_hints": 1174352, "bytes": 266514560, "errors": []}
+{"phase": "progress", "elapsed_seconds": 1549.288, "attempted": 625, "ok": 625, "new": 625, "failed": 0, "row_hints": 1234459, "bytes": 280187393, "errors": []}
+{"phase": "progress", "elapsed_seconds": 1622.785, "attempted": 650, "ok": 650, "new": 650, "failed": 0, "row_hints": 1276187, "bytes": 289391138, "errors": []}
+{"phase": "progress", "elapsed_seconds": 1680.649, "attempted": 675, "ok": 675, "new": 675, "failed": 0, "row_hints": 1334403, "bytes": 302428595, "errors": []}
+{"phase": "progress", "elapsed_seconds": 1744.23, "attempted": 700, "ok": 700, "new": 700, "failed": 0, "row_hints": 1396046, "bytes": 316335726, "errors": []}
+{"phase": "progress", "elapsed_seconds": 1806.91, "attempted": 725, "ok": 725, "new": 725, "failed": 0, "row_hints": 1449606, "bytes": 328725223, "errors": []}
+{"phase": "progress", "elapsed_seconds": 1878.334, "attempted": 750, "ok": 750, "new": 750, "failed": 0, "row_hints": 1495235, "bytes": 339028802, "errors": []}
+{"phase": "progress", "elapsed_seconds": 1959.314, "attempted": 775, "ok": 775, "new": 775, "failed": 0, "row_hints": 1574063, "bytes": 357126602, "errors": []}
+{"phase": "progress", "elapsed_seconds": 2016.044, "attempted": 800, "ok": 800, "new": 800, "failed": 0, "row_hints": 1634686, "bytes": 371852830, "errors": []}
+{"phase": "progress", "elapsed_seconds": 2080.267, "attempted": 825, "ok": 825, "new": 825, "failed": 0, "row_hints": 1673462, "bytes": 381122911, "errors": []}
+Traceback (most recent call last):
+  File "/private/tmp/tiingo-eod-wave4-01a12ab6.py", line 69, in <module>
+    result=collect((Task('eod-bars',r['ticker'],{'startDate':r['request_start'],'endDate':r['request_end']}) for r in chunk),
+        max_requests=len(chunk), pause_seconds=1.25, archive=archive)
+  File "/Volumes/Mastermind/agent-workspaces/sol/tiingo-ingestion-20261009/scripts/tiingo_ingest.py", line 243, in collect
+    saved = collect_one(archive, item.source, item.symbol, key, item.params)
+  File "/Volumes/Mastermind/agent-workspaces/sol/tiingo-ingestion-20261009/collectors/tiingo_archive.py", line 401, in collect_one
+    raw, mime = fetch_json_bytes(path, key)
+                ~~~~~~~~~~~~~~~~^^^^^^^^^^^
+  File "/Volumes/Mastermind/agent-workspaces/sol/tiingo-ingestion-20261009/collectors/tiingo_archive.py", line 385, in fetch_json_bytes
+    with urllib.request.urlopen(req, timeout=timeout) as response:
+         ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/urllib/request.py", line 187, in urlopen
+    return opener.open(url, data, timeout)
+           ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/urllib/request.py", line 487, in open
+    response = self._open(req, data)
+  File "/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/urllib/request.py", line 504, in _open
+    result = self._call_chain(self.handle_open, protocol, protocol +
+                              '_open', req)
+  File "/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/urllib/request.py", line 464, in _call_chain
+    result = func(*args)
+  File "/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/urllib/request.py", line 1368, in https_open
+    return self.do_open(http.client.HTTPSConnection, req,
+           ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                        context=self._context)
+                        ^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/urllib/request.py", line 1324, in do_open
+    r = h.getresponse()
+  File "/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/http/client.py", line 1478, in getresponse
+    response.begin()
+    ~~~~~~~~~~~~~~^^
+  File "/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/http/client.py", line 343, in begin
+    version, status, reason = self._read_status()
+                              ~~~~~~~~~~~~~~~~~^^
+  File "/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/http/client.py", line 304, in _read_status
+    line = str(self.fp.readline(_MAXLINE + 1), "iso-8859-1")
+               ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/socket.py", line 729, in readinto
+    return self._sock.recv_into(b)
+           ~~~~~~~~~~~~~~~~~~~~^^^
+  File "/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/ssl.py", line 1304, in recv_into
+    return self.read(nbytes, buffer)
+           ~~~~~~~~~^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/ssl.py", line 1138, in read
+    return self._sslobj.read(len, buffer)
+           ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+TimeoutError: The read operation timed out

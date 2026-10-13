@@ -57,7 +57,44 @@ owns_paths:
   - contracts/statement_cell.v1.md
   - scripts/capture_fif3a1_aapl_package.py
   - scripts/capture_fif3a2_aapl_package.py
+  - engine/fundamental_forensics/lineage_evidence.py
+  - engine/fundamental_forensics/query.py
+  - tests/test_fundamental_forensics_cross_filing_lineage.py
+  - scripts/fif_compatibility_seal.py
+  - tests/fixtures/fundamental_forensics/t1_compatibility_seal_manifest_v1.json
+  - tests/test_fundamental_forensics_t1_compatibility_seal.py
+  - engine/fundamental_forensics/statement_graph.py
+  - tests/fixtures/fundamental_forensics/synthetic_statement_tables/
+  - tests/test_fundamental_forensics_statement_grid.py
+  - engine/fundamental_forensics/metric_registry.py
+  - tests/fixtures/fundamental_forensics/metric_registry_qualification/
+  - tests/test_fundamental_forensics_metric_qualification.py
+  - engine/fundamental_forensics/detectors.py
+  - engine/fundamental_forensics/pipeline.py
+  - tests/test_fundamental_forensics_detector_applicability.py
+  - tests/test_fundamental_forensics_detectors.py
+  - engine/fundamental_forensics/peer_cohort.py
+  - tests/test_fundamental_forensics_peer_cohort.py
+  - engine/fundamental_forensics/production_datasets.py
+  - engine/fundamental_forensics/production_provider.py
+  - tests/test_fundamental_forensics_production_dataset_store.py
+  - tests/test_fundamental_forensics_production_provider.py
+  - engine/fundamental_forensics/excel_export.py
+  - contracts/excel/fif_financial_query.pq
+  - docs/financial_intelligence_fabric/
+  - tests/test_fundamental_forensics_excel_export.py
+  - app/forensics.py
+  - contracts/specialist_pack_result.v1.schema.json
+  - contracts/specialist_packs/
+  - engine/fundamental_forensics/specialist_pack_contract.py
+  - tests/test_fundamental_forensics_specialist_pack_contract.py
 depends_on: []
+artifacts:
+  - research/financial_intelligence_fabric/e2e_20261011/
+  - research/financial_intelligence_fabric/e2e_20261011/MASTERPLAN.md
+  - research/financial_intelligence_fabric/e2e_20261011/FABLE_HANDOFF.md
+  - research/financial_intelligence_fabric/e2e_20261011/TASK_GRAPH.json
+  - research/financial_intelligence_fabric/e2e_20261011/ACCEPTANCE_MATRIX.json
 discoveries:
   - DSC:COMPANYFACTS-CANNOT-FEED-CORE-METRIC-QUERY
   - DSC:PR-HOLD-REQUIRES-NATIVE-AUTOMERGE-DISARM
@@ -70,6 +107,8 @@ discoveries:
   - DSC:AAPL-UNLINKED-VINTAGES-REQUIRE-TYPED-REVISION-LINEAGE
   - DSC:XBRL-DUPLICATE-LAW-IS-INTRA-INSTANCE
   - DSC:AAPL-A1-A2-CROSS-FILING-OVERLAP-CENSUS
+  - DSC:CONTRACT-DELTA-UNRUN-SUITE-GATE-IS-LITERAL-MATCH
+  - DSC:FIF-LANE-HOST-DEPENDENCY-SPLIT
 decisions:
   - DEC:FIF-1-INDEPENDENT-FILING-PACKAGE-FIXTURE
   - DEC:FIF-1R-HERMETIC-PACKET-CONTRACT
@@ -95,19 +134,26 @@ decisions:
   - DEC:FIF-3A3-REUSE-MAP
   - DEC:FIF-3A3-ACCEPTED-GOLDEN-QUERY-ON-MAIN
   - DEC:FIF-3A4R-CROSS-FILING-LINEAGE-ACCEPTED-ON-MAIN
+  - DEC:FIF-T1-ENVELOPE-PIN
+  - DEC:FIF-S0-RAGGED-LAYOUT-FAIL-CLOSED
+  - DEC:FIF-D3-DATASET-MODE-SELECTOR
+  - DEC:FIF-PER-PR-CI-WIRING-STAGGERED-ANCHORS
+  - DEC:FIF-C0-ADMISSION-CLOCK-PLAN-BEFORE-WRITE
+  - DEC:FIF-PARSER-FINGERPRINT-BINDS-ACCEPTED-OUTPUT
+  - DEC:FIF-X2-SAVED-VIEW-BINDS-EXPORT-CONTRACT
 next_action: >
-  FIF-3A4R is ACCEPTED_ARCHITECTURE / ON_MAIN / NOT_BUILT via PR #6382
-  (accepted head 07755cb557a53af1341d8b6323a412631af8d83e; squash merge
-  fe8caca04b634686fc8d8707a188ea1a8477c31c;
-  DEC:FIF-3A4R-CROSS-FILING-LINEAGE-ACCEPTED-ON-MAIN). Sol has closed the
-  A4R research gate. Do not implement FIF-3A4 from this records closeout;
-  implementation requires a separate Sol commission. FIF-1 remains DONE /
-  FROZEN. FIF-2 remains DONE / FIXTURE_PROVEN SERVICE SUBSTRATE. FIF-3
-  remains IN_PROGRESS. FIF-3A1/A2 remain ACCEPTED / GOLDEN FIXTURE PROVEN /
-  ON_MAIN. FIF-3A3 remains ACCEPTED / GOLDEN QUERY CONVERGENCE PROVEN /
-  ON_MAIN. Production attested issuer service remains NOT_BUILT. Do not call
-  FIF-3 done, do not claim production issuer coverage, and do not start another
-  issuer from the A4R closeout.
+  Wave 2 merged (handoff FINANCIAL-INTELLIGENCE-FABRIC-2026-10-13-fif-e2e-wave2):
+  D0–D3, C0/C0-b (#9021, ERRATA-3 clock), G-SRC #9030, D1-ext #9042 (admitted
+  6/16 → 10/16), S2/S1-b/S2-p, E1/E-FIX, P1/P1-b/P2 #9011, X0 #8996, X1 #8949,
+  A0-a #9024, T11 #9028. Live /api/health = golden by design. Next: C0-c
+  (opus review → hand merge on concluded green) → A0 gate (VPS
+  FIF_FINANCIAL_DATASET_MODE=production flip + macro-api restart held for the
+  Chairman or a Sol-delegated root; A45 entitled-browser receipts;
+  schedule-born production proof) → G1–G4 → A1 → C2/E2/K1–K4/Q1/Q2/V0/V1 →
+  coverage tiers (250-deep, then 1,000-core) → independent acceptance.
+  Parallel: D1-ext C (fragment-only hrefs, 3 CAT 10-Qs) then B'2 (BAC cap
+  co-raise, after step-0 measurement and ruling); X2-n then X2-s, then X2-b.
+  Merge by hand with --match-head-commit on concluded green; never arm.
 landmines:
   - >
     Core catalog is consolidated_only. Company Facts conversion sets
@@ -226,6 +272,31 @@ do_not_redo:
   - Do not mint generation_id as financial-statement truth; related_event_ref is a stable event_id plus distinct SEC accessions.
   - Do not rewrite source-native SEC/XBRL identity to mint a Mastermind issuer ID.
   - Do not use the live full-registry digest as historical packet identity.
+  - >
+    Wave 1 (2026-10-11/12, e2e commission) is built on eight armed lane
+    branches — do not rebuild it. T1/T1b evidence+envelope binding
+    (DEC:FIF-T1-ENVELOPE-PIN); T2 pre-T1 compatibility hash seal
+    (scripts/fif_compatibility_seal.py + committed manifest — regenerate via
+    the tool only, never hand-edit); S0 statement-grid generalization with
+    fail-closed ragged layouts (DEC:FIF-S0-RAGGED-LAYOUT-FAIL-CLOSED);
+    S1-a registry-side metric qualification (default-inert; query-side wiring
+    belongs to S2, which shares query.py); E0 detector applicability by
+    issuer class; C1 peer cohort; D3 production provider + explicit dataset
+    mode selector (DEC:FIF-D3-DATASET-MODE-SELECTOR); X1 stdlib xlsx export +
+    API sibling route; K specialist-pack contract schemas (branch
+    claude/fif-k-pack-schemas-20261012, PR not yet open — do not duplicate
+    the 12 pack schemas).
+  - >
+    Do not redo the G1–G4 issuer census: the GOOGL/SNOW/CAT/BAC
+    accession/concept census notes are un-merged seat-scratchpad research
+    inputs for D0, not completed packs.
+  - >
+    Wave 2 (2026-10-13): do not re-derive the C0-b admission clock
+    (DEC:FIF-C0-ADMISSION-CLOCK-PLAN-BEFORE-WRITE); do not bump the parser
+    VERSION or fingerprint for a widening proved byte-identical over accepted
+    output (DEC:FIF-PARSER-FINGERPRINT-BINDS-ACCEPTED-OUTPUT); do not rebuild
+    X0 #8996 or X1 #8949 (TASK_GRAPH status is stale); do not re-spec X2
+    (rulings R0–R5, DEC:FIF-X2-SAVED-VIEW-BINDS-EXPORT-CONTRACT).
 waves:
   - id: FIF-0
     title: Program reset — land masterplan, naming, and collision map
@@ -446,3 +517,27 @@ NOT_BUILT via PR #6382 and
 `DEC:FIF-3A4R-CROSS-FILING-LINEAGE-ACCEPTED-ON-MAIN`. This acceptance
 freezes source law only; FIF-3A4 implementation requires a separate Sol
 commission.
+
+## End-to-end commission and wave 1 (2026-10-11/12)
+
+The FIF-3A4 NOT_BUILT reading above is superseded by events: PR #7518
+merged 2026-10-04 (commit 4294fd498e, "feat(fif-3a4): cross-filing lineage
+evidence overlay (#7518)") — `engine/fundamental_forensics/lineage_evidence.py`
+is on main and the served corpus remains the committed AAPL golden pair.
+
+The Chairman's 2026-10-11 commission selected FIF as the end-to-end program.
+Sol's masterplan lives on DRAFT branch `sol/fif-e2e-masterplan-20261011`
+(`research/financial_intelligence_fabric/e2e_20261011/`: MASTERPLAN.md with
+the five accounting stress packs AAPL/SNOW/CAT/BAC/GOOGL in §5, TASK_GRAPH.json
+with 39 tasks and `requires_all` edges, ACCEPTANCE_MATRIX.json, FABLE_HANDOFF.md
+naming the Fable-principal seat). Wave 1 (night of 2026-10-11/12) shipped
+eight armed lane PRs off base `5267c66846e7` — T1/T1b #8929, T2 #8936,
+S0 #8928, S1-a #8952, E0 #8930, C1 #8950, D3 #8951, X1 #8949 — plus the
+suborchestrator K-pack branch `claude/fif-k-pack-schemas-20261012`; all
+unmerged at recording. Seven PRs wire their new suites literally into
+`engine-render-guards` on staggered anchors
+(`DEC:FIF-PER-PR-CI-WIRING-STAGGERED-ANCHORS`); the unrun-suite gate's
+literal-match law and the lane-host dependency split are recorded as
+`DSC:CONTRACT-DELTA-UNRUN-SUITE-GATE-IS-LITERAL-MATCH` and
+`DSC:FIF-LANE-HOST-DEPENDENCY-SPLIT`. Full state, evidence and obligations:
+`agentos/handoffs/FINANCIAL-INTELLIGENCE-FABRIC-2026-10-12-fif-e2e-wave1.md`.

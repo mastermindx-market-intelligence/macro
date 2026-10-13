@@ -205,3 +205,46 @@ def test_complete_rows_match_existing_four_sensor_booleans() -> None:
     }
     new = _states(result)
     assert {name: new[name] == "triggered" for name in old} == old
+
+
+def test_bank_class_issuer_does_not_receive_industrial_detectors() -> None:
+    submissions = deepcopy(_load("submissions_versions.json"))
+    submissions["sic"] = "6021"
+    result = run_fixture_slice(
+        _load("companyfacts_versions.json"),
+        submissions,
+        load_registry(REGISTRY_PATH),
+        as_of="2025-12-31T23:59:59Z",
+        recorded_at="2026-08-01T12:00:00Z",
+        computed_at="2026-08-01T12:05:00Z",
+        knowledge_clock="source_event",
+        vintage_policy="latest_known",
+    )
+    by_id = {item.detector_id: item for item in result.findings}
+    for detector_id in (
+        "margin_compression_despite_revenue_growth",
+        "receivables_stretch",
+        "inventory_build",
+        "capital_intensity_rising",
+        "accruals_trending_up",
+    ):
+        finding = by_id[detector_id]
+        assert finding.state.value == "not_evaluable"
+        assert "not_applicable_for_issuer_class" in finding.missing_inputs
+        assert "issuer_class:bank" in finding.limitations
+
+
+def test_fixture_without_sic_still_triggers_all_five() -> None:
+    submissions = deepcopy(_load("submissions_versions.json"))
+    submissions.pop("sic", None)
+    result = run_fixture_slice(
+        _load("companyfacts_versions.json"),
+        submissions,
+        load_registry(REGISTRY_PATH),
+        as_of="2025-12-31T23:59:59Z",
+        recorded_at="2026-08-01T12:00:00Z",
+        computed_at="2026-08-01T12:05:00Z",
+        knowledge_clock="source_event",
+        vintage_policy="latest_known",
+    )
+    assert set(_states(result).values()) == {"triggered"}

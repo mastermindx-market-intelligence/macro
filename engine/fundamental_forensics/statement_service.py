@@ -20,6 +20,7 @@ from .query_service import (
     FinancialQueryAdmissionError,
     FinancialQueryUnavailableError,
     admit_request_bytes,
+    canonical_financial_delivery,
 )
 from .raw_ledger import canonical_json
 from .statement_graph import (
@@ -186,6 +187,55 @@ def _bind_data_os_issuer(
     )
 
 
+def bind_production_issuer_identity(
+    entity_id: str,
+    *,
+    issuer_master: Any,
+    issuer_metadata: dict[str, str],
+    security_id: str | None,
+    listing_key: str | None,
+    expected_cik: str | None = None,
+) -> dict[str, str]:
+    """Issuer-level production binding (FIF D3 / A14): CIK once, no class pick.
+
+    Differs from :func:`bind_canonical_identity` in exactly one way: identity
+    is the Data OS *issuer* axis, so a two-class issuer (one ``ISS:`` id, one
+    registrant CIK, two securities) binds ONCE through
+    ``IssuerMaster.cik_of_issuer`` instead of being refused by the
+    single-security membership rule — which stays untouched for the golden
+    path. This function never calls ``securities_of_issuer``: the single
+    kernel label was chosen at dataset admission and is recorded in the
+    generation manifest; the request path must not pick among securities.
+    Conflicting CIK observations are an ambiguous identity fact and are
+    refused as unavailable, never guessed.
+    """
+    from lib.dataos.identity import IdentityError, IssuerMaster
+
+    if not isinstance(issuer_master, IssuerMaster):
+        raise FinancialQueryUnavailableError()
+    try:
+        cik = issuer_master.cik_of_issuer(entity_id)
+    except IdentityError as exc:
+        raise FinancialQueryUnavailableError() from exc
+    if cik is None:
+        raise FinancialQueryAdmissionError(400, "unknown entity")
+    if expected_cik is not None and cik != expected_cik:
+        # The generation's binding and the identity owner disagree: drift,
+        # never a silent substitution of either side.
+        raise FinancialQueryUnavailableError()
+    if not isinstance(security_id, str) or not security_id:
+        raise FinancialQueryUnavailableError()
+    if not isinstance(listing_key, str) or not listing_key:
+        raise FinancialQueryUnavailableError()
+    return {
+        "entity_id": entity_id,
+        "cik": cik,
+        "security_id": security_id,
+        "listing_key": listing_key,
+        "legal_name": str(issuer_metadata.get("legal_name") or ""),
+    }
+
+
 def _related_event_ref(manifest: dict[str, Any]) -> dict[str, Any] | None:
     raw = manifest.get("related_event_ref")
     if raw is None:
@@ -220,16 +270,28 @@ def execute_financial_statements(
     issuer_metadata: dict[str, str] | None = None,
 ) -> FinancialStatementResult:
     admitted = admit_statement_request(body)
-    binding = _bind_data_os_issuer(
-        repo_root,
-        admitted.entity_id,
-        issuer_master=issuer_master,
-        issuer_metadata=issuer_metadata,
-    )
+    # Provider construction precedes binding so a production provider — whose
+    # issuer-level binding needs the admitted generation — can supply it.
+    # Construction opens no dataset; resolve still happens only after
+    # admission, exactly as before.
     if provider is None:
         if provider_factory is None:
             raise FinancialQueryUnavailableError()
         provider = provider_factory()
+    if getattr(provider, "issuer_level_binding", False):
+        binding = provider.bind_issuer(
+            repo_root,
+            admitted.entity_id,
+            issuer_master=issuer_master,
+            issuer_metadata=issuer_metadata,
+        )
+    else:
+        binding = _bind_data_os_issuer(
+            repo_root,
+            admitted.entity_id,
+            issuer_master=issuer_master,
+            issuer_metadata=issuer_metadata,
+        )
     package = provider.resolve(admitted.entity_id, admitted.accession)
     if package.manifest.get("entity_id") != binding["entity_id"]:
         raise FinancialQueryUnavailableError()
@@ -237,15 +299,41 @@ def execute_financial_statements(
         raise FinancialQueryUnavailableError()
     if package.manifest.get("accession") != admitted.accession:
         raise FinancialQueryUnavailableError()
-    try:
-        registry = load_core_registry(repo_root)
-        reconstructed = reconstruct_primary_statements(package=package, registry=registry)
-    except FinancialQueryAdmissionError:
-        raise
-    except StatementGraphError:
-        raise FinancialQueryUnavailableError() from None
-    except Exception:
-        raise FinancialQueryUnavailableError() from None
+    # FIF P1 (F1): a production package serves the statement trees that were
+    # precomputed at dataset publication; only the golden demonstration
+    # path (no delivery object) reconstructs — i.e. parses — at request
+    # time, byte-for-byte as before. A production package whose trees are
+    # missing NEVER falls back to parsing the members.
+    package_delivery = getattr(package, "delivery", None)
+    precomputed_trees = getattr(package, "statement_trees", None)
+    if precomputed_trees is not None:
+        reconstructed = precomputed_trees
+    elif package_delivery is None:
+        try:
+            registry = load_core_registry(repo_root)
+            reconstructed = reconstruct_primary_statements(package=package, registry=registry)
+        except FinancialQueryAdmissionError:
+            raise
+        except StatementGraphError:
+            raise FinancialQueryUnavailableError() from None
+        except Exception:
+            raise FinancialQueryUnavailableError() from None
+    else:
+        raise FinancialQueryUnavailableError()
+
+    # FIF P1-b (I3): boundary pin, not a conversion. Every served cell value
+    # must already be the parser's canonical decimal TEXT or an explicit null;
+    # any other type (int, float, Decimal, ...) is a producer contract break
+    # answered with this file's typed unavailability — no re-formatting, no
+    # rounding, no scale math here. Scale and decimals already ride beside the
+    # value as display hints, and both paths above (precomputed trees and the
+    # golden reconstruction) sit behind this same rule.
+    for statement in reconstructed["statements"]:
+        for statement_row in statement["rows"]:
+            for cell in statement_row["cells"]:
+                value = cell["value"]
+                if value is not None and not isinstance(value, str):
+                    raise FinancialQueryUnavailableError()
 
     envelope = {
         "schema": _RESPONSE_SCHEMA,
@@ -292,12 +380,20 @@ def execute_financial_statements(
             "fact_count": reconstructed["fact_count"],
             "context_count": reconstructed["context_count"],
         },
-        "delivery": {
+    }
+    # FIF D3: delivery is provider-supplied. A package that does not carry one
+    # (every golden fixture package and every directly-constructed test
+    # package) keeps today's exact golden object, so those responses stay
+    # byte-identical; a production package supplies the exact production
+    # object, fail-closed by the shared delivery law.
+    if package_delivery is None:
+        envelope["delivery"] = {
             "kind": "committed_golden_fixture",
             "attested": False,
             "production_issuer_service": False,
-        },
-    }
+        }
+    else:
+        envelope["delivery"] = canonical_financial_delivery(package_delivery)
     related = _related_event_ref(package.manifest)
     if related is not None:
         envelope["related_event_ref"] = related
@@ -316,6 +412,7 @@ __all__ = [
     "UnavailableFinancialStatementProvider",
     "admit_statement_request",
     "bind_canonical_identity",
+    "bind_production_issuer_identity",
     "execute_financial_statements",
     "MAX_REQUEST_BYTES",
 ]

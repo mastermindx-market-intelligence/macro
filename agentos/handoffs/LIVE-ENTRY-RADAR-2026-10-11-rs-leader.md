@@ -36,14 +36,28 @@ changed:
     what: >
       Clock regressions: follows-universe-when-SPY-leads, equals-incumbent-when-aligned,
       and ignores-issuer-rows-after-SPY-cut (AAPL; AAPL+MSFT), red-before/green-after.
+      PR 8855 added test_recovery_panel_renders_from_builder_artifact.
   - path: tests/test_leader_recovery.py
     what: Paired-reference and fixed-peak assertions for the repaired engine capture.
   - path: templates/leader_radar.html.j2
-    what: Hosts the rs-highs-panel block the builder emits; no new header family.
+    what: >
+      Hosts the rs-highs-panel block the builder emits; no new header family. PR 8855
+      (squash c4e599eac775) added the deep corrections and recovery panel (lr-rec-panel)
+      rendered from the builder's recovery artifact: ticker search, four navigation
+      orders, per-name stage history and plain-word null disclosures; order is navigation,
+      not a ranking.
   - path: mockups/evidence/rs-leader-highs-watch/
     what: >
       Committed visual evidence (manifest.json, EVIDENCE.yml, dark/light x EN/ZH x
       desktop/mobile captures with focus and hover states) for the RS-highs panel.
+  - path: mockups/evidence/rs-leader-recovery/
+    what: >
+      (PR 8855) Committed recovery-panel evidence: EVIDENCE.yml, manifest.json and eight
+      captures, dark/light x EN/ZH x desktop/mobile.
+  - path: config.yml
+    what: >
+      (PR 8804, squash 6ba70f04ecbc) One line activating first-seen recovery observation
+      capture. Observations are display-tier; nothing reads them for rank, size or gate.
   - path: research/leader_recovery/RESEARCH_AND_IMPLEMENTATION.md
     what: >
       Hosted-verification receipt, additive-clock receipt, and the regenerated census /
@@ -117,19 +131,45 @@ verified:
   - claim: The lineage descriptor suite passes in its own lane.
     command: python3 -m pytest tests/test_leader_lineage.py -q
     result: 15 passed; scripts/audit_unrun_tests.py sees the suite via the new legacy-jobs step.
+  - claim: The served anonymous Leader Radar page carries rs-highs-panel after the PR 8750 merge.
+    command: curl -s https://www.mastermind-x.com/leader_radar.html (anonymous, 2026-10-11 15:55:40Z)
+    result: >
+      200, 600,431 bytes; rs-highs-panel x1 and rs-highs-entry x9 after render run
+      38137913516 concluded success at main descendant 69d6326bec3f. Receipt: PR 8750
+      comment 6111009378.
+  - claim: The lineage PR is merged, landed, and its authority freeze is cleared.
+    command: >
+      gh pr view 8802 --json mergedAt,mergeCommit,headRefOid; verify_merge.py after a
+      standalone git fetch origin; gh run view 38158841888 --json conclusion,headSha
+    result: >
+      Merged 2026-10-11T17:13:50Z by hand on sweeper-moved head 34b444d1f29c as squash
+      b5cafed61751; 11 of 11 paths blob-identical in origin/main; main ci.yml proof
+      38158841888 concluded success on a main descendant, clearing the freeze. Receipt:
+      PR 8802 comment 6112728164.
+  - claim: PR 8804 activated first-seen recovery observation capture.
+    command: gh pr view 8804 --json mergedAt,mergeCommit; verify_merge.py after git fetch origin
+    result: Merged 2026-10-11T12:42:40Z as 6ba70f04ecbc; its single config.yml line is in origin/main.
+  - claim: The PR 8855 recovery panel is merged, landed and served anonymously.
+    command: >
+      git fetch origin; verify_merge.py 1d775a3331d7 lr-rec-panel:templates/leader_radar.html.j2
+      test_recovery_panel_renders_from_builder_artifact:tests/test_leader_recovery_integration.py;
+      curl -sL https://www.mastermind-x.com/leader_radar.html
+    result: >
+      Merged 2026-10-11T22:11:07Z on sweeper-moved head 1d775a3331d7 as squash
+      c4e599eac775; verdict LANDED, all 12 paths byte-identical in origin/main. Anonymous
+      GET at 2026-10-12T00:30Z: 200, 1,465,379 bytes, last-modified 23:57:28Z (after the
+      merge); lr-rec-panel x1 with a 169-name roster and 170 lr-rec-row tokens, EN and ZH
+      copy, the observed-date note "1 session behind radar clock" and plain-word null
+      disclosures; rs-highs-panel still x1.
   - claim: The pre-merge anonymous production page carried no RS-highs panel.
     command: curl -s -o live_page_pre.html -w "%{http_code} %{size_download}" https://www.mastermind-x.com/leader_radar.html
     result: 200, 593335 bytes, zero occurrences of rs-highs-panel; /leaderradar/radar.json answered 401 (not signed in).
 unverified:
-  - claim: The served anonymous Leader Radar page carries rs-highs-panel after the merge.
+  - claim: The first-seen capture activated by PR 8804 writes recovery observations in production.
     what_would_verify: >
-      After the shared render.yml lane covering the merge SHA concludes and the VPS
-      3-minute pull lands: curl https://www.mastermind-x.com/leader_radar.html must
-      contain rs-highs-panel. Render run 38137701513 on 9667d803cf6b was pending when this handoff was committed; the live outcome is recorded in PR 8750's closing comment, not asserted here.
-  - claim: The lineage PR's CI-authority edits are proven under the merged authority.
-    what_would_verify: >
-      A completed ci.yml run concluding SUCCESS on a main descendant of the lineage
-      merge (gh workflow run ci.yml --ref main only over a clear field).
+      The scheduled WP5 readback (fires on or after 2026-10-14T02:30Z) classifies the
+      nightly store as CAPTURED, COLUMNS_ONLY or NOT_CAPTURED and posts one
+      "## WP5 READBACK" comment on PR 8804.
 unresolved:
   - >
     Refused recovery-UI write on the sol carrier: not replayed, not delegated; the
@@ -147,18 +187,21 @@ unresolved:
     Production/capture approval for anything beyond the natural producer path stays a
     separate human gate; no manual deploy was performed.
   - >
-    PR 8649 (d0beadc40436) RS-high discovery-cohort evaluation is an FYI to its owner,
-    no custody transfer; PR 8586 (fe3f076b7c9f) untouched.
+    PR 8649 (d0beadc40436) RS-high discovery-cohort evaluation stays with its owner. One
+    FYI pointing to research/leader_lineage/CONSUMER_SPEC.md was posted 2026-10-11T19:25:16Z
+    (comment 6112801554); no custody transfer. PR 8586 (fe3f076b7c9f) untouched.
 next_actions:
-  - Confirm the post-merge render.yml covering run and the anonymous page proof; post the final receipt on PR 8750.
-  - Merge the lineage PR on concluded checks and clear its authority freeze with one green main-descendant ci.yml run.
-  - Prospective evidence only: enrol the lineage descriptor into observation history as display-tier; no rank/size/gate promotion.
-  - Leave the #8649 discovery-cohort evaluation to its owner; offer the lineage CONSUMER_SPEC as upstream context.
+  - On or after 2026-10-14T02:30Z the scheduled WP5 readback classifies first-seen capture and posts one comment on PR 8804. Answer NOT_CAPTURED or COLUMNS_ONLY by diagnosing the capture path, never by backfilling first-seen dates.
+  - Lineage observation-history enrolment stays gated on the PR 8649 owner's read-path admission (CONSUMER_SPEC section 1); never wire it unilaterally. Display-tier only; no rank/size/gate promotion.
+  - The unknown audit and the refused publication stay with their original carriers.
 do_not_redo:
   - The additive-clock repair (per-issuer truncation to the cut) and its two regressions; reviewer finding 6107896566 is answered at fadabdd26ceb.
   - The research-script import pin and RS-highs radii tokenisation (a7189a98f1c1).
   - The visual-evidence capture set under mockups/evidence/rs-leader-highs-watch/.
   - The self-remedy hook law (PR 8767).
+  - The lineage descriptor (PR 8802), the capture activation (PR 8804), and the recovery
+    panel with its evidence set (PR 8855).
+  - The PR 8649 FYI (comment 6112801554); post nothing further there unless its owner asks.
   - Any retry of the refused UI write, the unknown audit, or the refused handoff publication.
 danger_areas:
   - Never push to an armed merge-on-green PR; a late push can land after the sweeper's merge with every PR field reading success.
@@ -167,7 +210,7 @@ danger_areas:
   - /Users/chriswong/Documents/Cluade/macro-main/data is read-only for research regeneration; run with COLLECT_LANE unset and hash stores before/after.
   - The served radar.json is sign-in locked; live proof uses the anonymous page HTML, never a credential.
   - The lineage lane edits CI-authority paths; its merged head is authority-frozen until a main-descendant ci.yml run is green.
-prs: [8750, 8767, 8802]
+prs: [8750, 8767, 8802, 8804, 8855]
 discoveries:
   - DSC:A-CLAUDE-SESSION-CANNOT-CHECK-OUT-A-SOL-PR-BRANCH
   - DSC:THE-DESKTOP-WORKTREE-ISOLATION-HOOK-REFUSES-HEREDOCS-GIT-SUBSTRINGS-AND-COMPLEX-JQ
@@ -180,27 +223,33 @@ PR 8750 carried the whole RS LEADER deep-recovery implementation from a71eea31af
 fadabdd26ceb: hosted collection repair, RS-highs panel with committed visual evidence,
 fixed-peak restoration, paired drawdown references, and the additive layer clock whose
 last repair (issuer stores ahead of the SPY cut are read at the cut, not excluded) is
-red-before/green-after proven. Merged 2026-10-11T12:01:23Z as squash 9667d803cf6b; the served-page proof is pending the covering render run 38137701513 and is reported in the PR 8750 closing comment.
+red-before/green-after proven. Merged 2026-10-11T12:01:23Z as squash 9667d803cf6b and
+served: the anonymous Leader Radar page has carried rs-highs-panel since 15:55Z (PR 8750
+comment 6111009378).
 
 The Chairman's lineage requirement is implemented as a separate read-only descriptor
 (engine/leader_lineage.py, schema leader_lineage.v1) with its own suite, frozen SPEC_V1
 and integrated consumer specification, registered in the leader-radar CI job. It is
 descriptive, display-tier, AUTHORITY all false, and is not represented as 8750
-functionality or as live. Its PR is opened from branch claude/ssd-rs-leader-lineage-306ae39d82ed23df as PR 8802; merge state must be read from GitHub, never from this file.
+functionality. PR 8802 merged as b5cafed61751 and its authority freeze was cleared by
+main proof 38158841888. No consumer reads the descriptor yet.
+
+PR 8804 switched on first-seen recovery observation capture (config only). PR 8855 added
+the deep corrections and recovery panel to the anonymous Leader Radar page; it is live
+with the recovery roster, plain-word nulls, and an observed-date note whenever the
+recovery read lags the radar clock.
 
 The four preserved boundaries (refused UI write, unknown audit, source/CI protection,
 refused handoff publication) were not replayed, split, rerouted or delegated.
 
 ## What is left — in order
 
-1. Post-merge live proof on the anonymous page (rs-highs-panel present) once the
-   covering render run and VPS pull land; final receipt comment on PR 8750.
-2. Lineage PR: merge on concluded checks; one green main-descendant ci.yml run clears
-   the authority freeze its CI edits create.
-3. Prospective-only enrolment of the lineage descriptor into observation history as
-   display-tier context; PIT membership, matched controls and forward evidence before
-   any promotion request.
-4. The unknown audit and the refused publication stay with their original carriers
+1. WP5 readback on or after 2026-10-14T02:30Z: one comment on PR 8804 classifying
+   first-seen capture as CAPTURED, COLUMNS_ONLY or NOT_CAPTURED.
+2. Lineage enrolment into observation history, only after the PR 8649 owner admits the
+   read path; PIT membership, matched controls and forward evidence before any promotion
+   request.
+3. The unknown audit and the refused publication stay with their original carriers
    until legitimate permission/platform resolution.
 
 ## What will bite you

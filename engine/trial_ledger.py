@@ -178,12 +178,14 @@ class TrialLedger:
         with _WRITE_LOCK:
             seen = self._seen.setdefault(fam, set())
             new_hashes: list[str] = []
+            new_set: set[str] = set()
             rows: list[dict] = []
             for config in configs:
                 h = _hash(fam, config)
-                if h in seen or h in new_hashes:  # dedup vs disk-memory AND this batch
+                if h in seen or h in new_set:  # dedup vs disk-memory AND this batch
                     continue
                 new_hashes.append(h)
+                new_set.add(h)
                 rows.append({
                     "ts": datetime.now(timezone.utc).isoformat(),
                     "family": fam,

@@ -1,0 +1,103 @@
+{
+  "accepted_at_utc": "2026-10-13T00:01:27.603141+00:00",
+  "expanded_jobs_successful": 12,
+  "job_evidence": [
+    {
+      "completedAt": "2026-10-12T23:37:38Z",
+      "conclusion": "success",
+      "name": "ci-pack-2",
+      "startedAt": "2026-10-12T23:24:21Z",
+      "status": "completed"
+    },
+    {
+      "completedAt": "2026-10-12T23:32:20Z",
+      "conclusion": "success",
+      "name": "ci-pack-4",
+      "startedAt": "2026-10-12T23:24:21Z",
+      "status": "completed"
+    },
+    {
+      "completedAt": "2026-10-12T23:33:49Z",
+      "conclusion": "success",
+      "name": "ci-pack-6",
+      "startedAt": "2026-10-12T23:24:22Z",
+      "status": "completed"
+    },
+    {
+      "completedAt": "2026-10-12T23:32:00Z",
+      "conclusion": "success",
+      "name": "ci-pack-1",
+      "startedAt": "2026-10-12T23:24:22Z",
+      "status": "completed"
+    },
+    {
+      "completedAt": "2026-10-12T23:35:41Z",
+      "conclusion": "success",
+      "name": "ci-pack-11",
+      "startedAt": "2026-10-12T23:24:21Z",
+      "status": "completed"
+    },
+    {
+      "completedAt": "2026-10-12T23:30:53Z",
+      "conclusion": "success",
+      "name": "ci-pack-10",
+      "startedAt": "2026-10-12T23:24:22Z",
+      "status": "completed"
+    },
+    {
+      "completedAt": "2026-10-12T23:57:19Z",
+      "conclusion": "success",
+      "name": "ci-pack-5",
+      "startedAt": "2026-10-12T23:24:22Z",
+      "status": "completed"
+    },
+    {
+      "completedAt": "2026-10-12T23:34:46Z",
+      "conclusion": "success",
+      "name": "ci-pack-7",
+      "startedAt": "2026-10-12T23:24:22Z",
+      "status": "completed"
+    },
+    {
+      "completedAt": "2026-10-12T23:29:19Z",
+      "conclusion": "success",
+      "name": "ci-pack-0",
+      "startedAt": "2026-10-12T23:24:21Z",
+      "status": "completed"
+    },
+    {
+      "completedAt": "2026-10-12T23:31:58Z",
+      "conclusion": "success",
+      "name": "ci-pack-9",
+      "startedAt": "2026-10-12T23:24:22Z",
+      "status": "completed"
+    },
+    {
+      "completedAt": "2026-10-12T23:35:04Z",
+      "conclusion": "success",
+      "name": "ci-pack-8",
+      "startedAt": "2026-10-12T23:24:22Z",
+      "status": "completed"
+    },
+    {
+      "completedAt": "2026-10-12T23:30:51Z",
+      "conclusion": "success",
+      "name": "ci-pack-3",
+      "startedAt": "2026-10-12T23:24:22Z",
+      "status": "completed"
+    }
+  ],
+  "original_final_tool_exit_code": 0,
+  "original_final_tool_return_consumed": true,
+  "original_final_tool_session_id": 19418,
+  "original_terminal_conclusion": "success",
+  "original_terminal_status": "completed",
+  "pr": 9039,
+  "prior_same_run_read_sha256": "87adc082819f08b2d660a67c8d3cfe58d24593f9f460cbfce399b0bcd08b3162",
+  "protected_merge_not_yet_performed": true,
+  "run_id": 38321632850,
+  "runtime_change": false,
+  "schema": "tiingo_exact_head_original_ci_terminal_acceptance.v1",
+  "terminal_same_run_read_sha256": "0119779bf9ee2021bbcd0a20f60ff036c60c989912fd09e946e6b6ac5bdff508",
+  "tested_head": "5b011af8e25ead31bb20b23d451b74a60bd6f44c"
+}

@@ -1,0 +1,52 @@
+name: press-source-qualification
+
+# Fixed one-off analytical evidence. No inputs, schedule, collector state or Press writer.
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: press-source-qualification
+  cancel-in-progress: false
+
+jobs:
+  qualify:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          fetch-depth: 1
+          filter: blob:none
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            .github/workflows/press-source-qualification.yml
+            config.yml
+            engine
+            lib
+            scripts/qualify_press_nvda_baseline.py
+            research/licenses/MASSIVE_ENTITLEMENT_RECORD.md
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: install bounded analytical dependencies
+        run: python -m pip install --quiet numpy pandas pyyaml requests
+      - name: qualify one fixed adjusted baseline
+        env:
+          MASSIVE_API_KEY: ${{ secrets.MASSIVE_API_KEY }}
+          POLYGON_API_KEY: ${{ secrets.POLYGON_API_KEY }}
+        run: >-
+          python -m scripts.qualify_press_nvda_baseline
+          --output-dir "$RUNNER_TEMP/press-source-qualification-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+      - name: retain qualification or failure evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: press-source-qualification-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/press-source-qualification-${{ github.run_id }}-${{ github.run_attempt }}/
+          if-no-files-found: warn
+          retention-days: 14

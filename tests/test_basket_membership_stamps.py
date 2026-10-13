@@ -36,6 +36,7 @@ import re
 from datetime import date
 from pathlib import Path
 
+import pandas as pd
 import pytest
 import yaml
 
@@ -480,3 +481,90 @@ def test_a_same_sweep_exit_is_explained_by_the_changelog_instead() -> None:
     b["changelog"] = [{"date": "2026-08-06", "action": "remove",
                        "note": "SVM: removed after coherence audit."}]
     assert any("nothing explains it" in v for v in pit_violations(doc))
+
+
+US_SECTOR_BASKETS = {
+    "us_sector_tech": "Information Technology",
+    "us_sector_financials": "Financials",
+    "us_sector_health": "Health Care",
+    "us_sector_discretionary": "Consumer Discretionary",
+    "us_sector_comm": "Communication Services",
+    "us_sector_industrials": "Industrials",
+    "us_sector_staples": "Consumer Staples",
+    "us_sector_energy": "Energy",
+    "us_sector_utilities": "Utilities",
+    "us_sector_realestate": "Real Estate",
+    "us_sector_materials": "Materials",
+}
+
+
+def _member_row(doc: dict, basket_id: str, ticker: str) -> dict:
+    return next(
+        member for member in doc["baskets"][basket_id]["members"]
+        if member.get("ticker") == ticker
+    )
+
+
+def test_us_sector_active_rosters_match_current_sp500_reference(membership) -> None:
+    """The structural us_sector_* sleeves must not silently drift from their owner."""
+    ref = ROOT / "data" / "breadth" / "constituents.parquet"
+    if not ref.exists():
+        pytest.skip("data/breadth/constituents.parquet not materialized")
+    constituents = pd.read_parquet(ref, columns=["sector"])
+    failures = {}
+    for basket_id, sector in US_SECTOR_BASKETS.items():
+        active = {
+            str(m["ticker"]) for m in membership["baskets"][basket_id]["members"]
+            if m.get("ticker") and not m.get("removed")
+        }
+        expected = {str(t) for t in constituents[constituents["sector"].eq(sector)].index}
+        if active != expected:
+            failures[basket_id] = {
+                "extra": sorted(active - expected),
+                "missing": sorted(expected - active),
+            }
+    assert failures == {}
+
+
+def test_2026_us_sector_changes_preserve_effective_membership_boundaries(membership) -> None:
+    """Known 2026 index/GICS changes are represented as [added, removed) intervals."""
+    expected = {
+        ("us_sector_industrials", "HONA"): ("2026-06-29", None),
+        ("us_sector_staples", "CAG"): ("2023-05-09", "2026-06-30"),
+        ("us_sector_tech", "APP"): ("2023-05-09", "2026-08-03"),
+        ("us_sector_comm", "APP"): ("2026-08-03", None),
+        ("us_sector_materials", "DD"): ("2023-05-09", "2026-08-03"),
+        ("us_sector_industrials", "DD"): ("2026-08-03", None),
+        ("us_sector_industrials", "FERG"): ("2026-08-05", None),
+        ("us_sector_comm", "EA"): ("2023-05-09", "2026-08-05"),
+        ("us_sector_comm", "RDDT"): ("2026-08-18", None),
+        ("us_sector_realestate", "AVB"): ("2023-05-09", "2026-08-18"),
+        ("us_sector_tech", "P"): ("2026-09-21", None),
+        ("us_sector_comm", "TTD"): ("2023-05-09", "2026-09-21"),
+        ("us_sector_health", "ILMN"): ("2026-09-21", None),
+        ("us_sector_industrials", "BE"): ("2026-09-21", None),
+        ("us_sector_industrials", "BLDR"): ("2023-05-09", "2026-09-21"),
+        ("us_sector_staples", "TAP"): ("2023-05-09", "2026-09-21"),
+    }
+    for (basket_id, ticker), (added, removed) in expected.items():
+        row = _member_row(membership, basket_id, ticker)
+        assert row["added"] == added, (basket_id, ticker, row)
+        assert row.get("removed") == removed, (basket_id, ticker, row)
+
+    # These rows were curated only when their drift repair was recorded.
+    # Historical added preserves effective membership; curation knowledge stays separate.
+    for basket_id, ticker in (
+        ("us_sector_industrials", "HONA"),
+        ("us_sector_comm", "APP"),
+        ("us_sector_industrials", "DD"),
+        ("us_sector_industrials", "FERG"),
+        ("us_sector_comm", "RDDT"),
+    ):
+        assert _member_row(membership, basket_id, ticker)["curated_added"] == "2026-09-17"
+
+    for basket_id, ticker in (
+        ("us_sector_tech", "P"),
+        ("us_sector_health", "ILMN"),
+        ("us_sector_industrials", "BE"),
+    ):
+        assert _member_row(membership, basket_id, ticker)["curated_added"] == "2026-09-23"

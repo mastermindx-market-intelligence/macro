@@ -398,20 +398,21 @@ def test_press_lane_job_exists_and_obeys_the_pack_manifest_rules():
     assert len(installs) == 1, "run_ci_pack.py allows at most one pip-install step"
 
 
-def test_press_lane_follows_the_estate_jobs_minimal_deps_convention():
-    """Same three packages, spelled the same way.
+def test_press_lane_covers_estate_and_analytical_dependencies():
+    """The fixed baseline adds the incumbent pandas/numpy engine and REST seam.
 
-    NOT a venv-sharing claim: run_ci_pack.py shares an environment only between
-    ADJACENT jobs in the same pack, and these two currently land in different
-    packs. The convention is worth holding anyway — one spelling for one
-    closure keeps the manifest readable and keeps the door open to sharing."""
+    Preserve the estate dependencies and the single-install pack contract;
+    analytical tests must import in the lane's isolated environment.
+    """
     jobs = _load(_LEGACY)["jobs"]
 
-    def _install(name):
-        return next(str(s["run"]).strip() for s in jobs[name]["steps"]
-                    if "pip install" in str(s.get("run") or ""))
+    def _packages(name):
+        command = next(str(s["run"]).strip() for s in jobs[name]["steps"]
+                       if "pip install" in str(s.get("run") or ""))
+        return set(command.split()[2:])
 
-    assert _install("press-lane") == _install("free-content-estate")
+    assert _packages("press-lane") == _packages("free-content-estate") | {
+        "numpy", "pandas", "requests"}
 
 
 def test_every_press_suite_is_named_by_the_ci_job():

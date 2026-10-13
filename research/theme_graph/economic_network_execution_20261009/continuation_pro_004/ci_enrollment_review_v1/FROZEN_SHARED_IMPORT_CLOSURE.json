@@ -1,0 +1,216 @@
+{
+  "edges": {
+    "engine/__init__.py": [],
+    "engine/basket_breadth_divergence.py": [
+      "lib/__init__.py",
+      "lib/config.py"
+    ],
+    "engine/catalyst_tone.py": [
+      "lib/__init__.py",
+      "lib/config.py"
+    ],
+    "engine/desk_ledger.py": [],
+    "engine/gdelt_client.py": [
+      "lib/__init__.py",
+      "lib/config.py"
+    ],
+    "engine/marketing/__init__.py": [
+      "engine/__init__.py",
+      "engine/marketing/state.py"
+    ],
+    "engine/marketing/accounts.py": [],
+    "engine/marketing/authority.py": [],
+    "engine/marketing/chart_render.py": [],
+    "engine/marketing/charter.py": [],
+    "engine/marketing/claims.py": [],
+    "engine/marketing/cmo.py": [
+      "engine/__init__.py",
+      "engine/marketing/__init__.py",
+      "engine/marketing/departments.py"
+    ],
+    "engine/marketing/departments.py": [],
+    "engine/marketing/economics.py": [],
+    "engine/marketing/events.py": [],
+    "engine/marketing/ledgers.py": [],
+    "engine/marketing/logo_cache.py": [],
+    "engine/marketing/opportunity_bus.py": [],
+    "engine/marketing/publication.py": [],
+    "engine/marketing/state.py": [
+      "engine/__init__.py",
+      "engine/marketing/__init__.py",
+      "engine/marketing/authority.py",
+      "engine/marketing/charter.py",
+      "engine/marketing/claims.py",
+      "engine/marketing/cmo.py",
+      "engine/marketing/departments.py",
+      "engine/marketing/economics.py",
+      "engine/marketing/events.py",
+      "engine/marketing/ledgers.py",
+      "engine/marketing/opportunity_bus.py",
+      "engine/marketing/publication.py"
+    ],
+    "engine/master_brain.py": [
+      "engine/__init__.py",
+      "engine/catalyst_tone.py",
+      "engine/desk_ledger.py",
+      "lib/__init__.py",
+      "lib/config.py"
+    ],
+    "lib/__init__.py": [],
+    "lib/config.py": [],
+    "scripts/__init__.py": [],
+    "scripts/worktree_sparse.py": [],
+    "tests/__init__.py": [],
+    "tests/conftest.py": [
+      "engine/__init__.py",
+      "engine/basket_breadth_divergence.py",
+      "engine/gdelt_client.py",
+      "engine/marketing/__init__.py",
+      "engine/marketing/accounts.py",
+      "engine/marketing/chart_render.py",
+      "engine/marketing/logo_cache.py",
+      "engine/master_brain.py",
+      "scripts/__init__.py",
+      "scripts/worktree_sparse.py"
+    ]
+  },
+  "files": {
+    "engine/__init__.py": {
+      "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "engine/basket_breadth_divergence.py": {
+      "blob": "0ad5ecbfc6a0b983d43bf3d591904878e7bb004f",
+      "bytes": 16985,
+      "sha256": "f073f778f43f9e040b5b3b76cfb66fe5085940ca00b92e7ae2fac359d1d68be6"
+    },
+    "engine/catalyst_tone.py": {
+      "blob": "0540c15eefbff8944730c3ea6e1df1b9c5fe9b84",
+      "bytes": 31503,
+      "sha256": "1856dc10ea0c9fc480517d50b1b8488303ea29dbc18c7b86cd11d29ea0e7dbb0"
+    },
+    "engine/desk_ledger.py": {
+      "blob": "379028a7bf1fbf4ec96c86e39eeb0339b1d69381",
+      "bytes": 6683,
+      "sha256": "9e079f7d26e3a60e75ee651140612c2efd6a9d00a9405ac5c424fe219600dbc2"
+    },
+    "engine/gdelt_client.py": {
+      "blob": "27f194c1002021331572635b3b9faab1d3b58775",
+      "bytes": 17148,
+      "sha256": "9282e05655b3de93da3046c0fe36d17e6b682d5825237fd68a16017ae788ab6a"
+    },
+    "engine/marketing/__init__.py": {
+      "blob": "43080bba5ba2a0649a4ae0a7a18a1493cb5f39b2",
+      "bytes": 660,
+      "sha256": "6c9056208c0a9c0115eb54b9f8abfd01b36fd168e843b0d5235c9291240bfa5c"
+    },
+    "engine/marketing/accounts.py": {
+      "blob": "8af0b7119cd4cb9e0bcb8591ae6ac216e1aacd8d",
+      "bytes": 5038,
+      "sha256": "868a6f728f177009808c9321416d08a9a8e610ff2c6aa3733bf3cb1c0adcc40f"
+    },
+    "engine/marketing/authority.py": {
+      "blob": "b106235bcbf842dc793680585e9b1f2144910682",
+      "bytes": 5355,
+      "sha256": "0d73e0cdd1bc36b24a6ea45658e63c254094bd3b8ef8878b092020afd1a27368"
+    },
+    "engine/marketing/chart_render.py": {
+      "blob": "2de10f26bfebde3a5baf28756823a8e4a7e19c92",
+      "bytes": 287289,
+      "sha256": "2d8d596c39545c9c0b064a56ec8508b41fb7845ff8fb124902a956896668fbcd"
+    },
+    "engine/marketing/charter.py": {
+      "blob": "150e34351754dcbc2aad5a796752c2bd88735109",
+      "bytes": 3628,
+      "sha256": "af4bef84e91e4631534e7da7508c4c6eae9b0529272365228339fe7b48ec4f1f"
+    },
+    "engine/marketing/claims.py": {
+      "blob": "ecc812e3cd5d2b0a9675ceed600542e300dfa107",
+      "bytes": 4436,
+      "sha256": "ad6667e71d23ddb4cda28cf5b8d79fc7328a80f94f415540063822c6dd0d9d0b"
+    },
+    "engine/marketing/cmo.py": {
+      "blob": "9c401b07af2080ddb4dcb706de67369d27cf6fd8",
+      "bytes": 10714,
+      "sha256": "f2b124754fb808d1935fcde19bdad3d66f334ada97b1f292fbfc9af0686974f9"
+    },
+    "engine/marketing/departments.py": {
+      "blob": "1f3d42cb9afae285cada2606dc4138962d3cd3bc",
+      "bytes": 45779,
+      "sha256": "f42be96b317a040bf28c6dcdb4343aa9d8b83fce0133ef77121448f2015f889f"
+    },
+    "engine/marketing/economics.py": {
+      "blob": "d2b9da7d075f1dc1f1e67cec2ed931e826a055ff",
+      "bytes": 4797,
+      "sha256": "bb4e78bb1251366d536a79aa789a357ce6ece47c32ca4534e920e8ee4d24b3d9"
+    },
+    "engine/marketing/events.py": {
+      "blob": "2773e8872a3f14599d0c6b5c5fd0680b6bbba6fe",
+      "bytes": 2136,
+      "sha256": "f940ba236256f56841cc944fdab5914ee4c5a85a5b9ce774137bcede7c5caace"
+    },
+    "engine/marketing/ledgers.py": {
+      "blob": "fa7759742dfb9cab8605d8104e93fc9f37951d70",
+      "bytes": 1686,
+      "sha256": "a94a60f25914ff67328c3b54eb46befa81c1b3910a9a0f72c260fb0609c7a3e8"
+    },
+    "engine/marketing/logo_cache.py": {
+      "blob": "43685a6ccd37403e93f91e88f4eb845253e5d82e",
+      "bytes": 14389,
+      "sha256": "afc70743c63ba6c7ddc732914876baa38ef0eff384b296b42f249fe09510d0c6"
+    },
+    "engine/marketing/opportunity_bus.py": {
+      "blob": "624fc8d229e61de1f92d2142a34fe56c8382eb30",
+      "bytes": 5350,
+      "sha256": "09f0ce3e55bcbda2e83051c396ba78bdc68d9e7d0fdfb093fdb4b09197f94df2"
+    },
+    "engine/marketing/publication.py": {
+      "blob": "5b466cda88cdb05f37461a2184c07347734aceee",
+      "bytes": 7182,
+      "sha256": "9904f90241f1b236dd88094aa6b388fdf43d627c6117900a3b36ededb6f4beb2"
+    },
+    "engine/marketing/state.py": {
+      "blob": "4acc5934c0c23316e6893cb50fde0b0199948bab",
+      "bytes": 18901,
+      "sha256": "1b933891c7c3c1d22018ea6b49fbb370a7f6cd5f9e5e9123912405081b81c15b"
+    },
+    "engine/master_brain.py": {
+      "blob": "67bf21c6bb387505bd4c8b237804ba664181ff38",
+      "bytes": 142755,
+      "sha256": "9d58cfe754f365206be998d95b29a60cf2a54df46a1cad8ac7788fae66a16b70"
+    },
+    "lib/__init__.py": {
+      "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "lib/config.py": {
+      "blob": "b6fc888269876242597da354aaa726c20ed95802",
+      "bytes": 1131,
+      "sha256": "fa22ec934ec5294072b6bb4bf081d787f3f8ad5da4702ce3f4818b1674dbd53f"
+    },
+    "scripts/__init__.py": {
+      "blob": "dafbbd0c3a49c56a2635c0d3d8918302d10689a6",
+      "bytes": 2217,
+      "sha256": "099b906ef95aec83bbfc4d84b5ceb4f050e57a5fd2840e99faa9dc202e90c378"
+    },
+    "scripts/worktree_sparse.py": {
+      "blob": "296e47bab2d28f9a019e81b5aef76eeea62a6cc3",
+      "bytes": 88324,
+      "sha256": "08a6c23c75569c7acb6c8e1ef028bd7d752d283bbb37d540d666c25ab117657f"
+    },
+    "tests/__init__.py": {
+      "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "tests/conftest.py": {
+      "blob": "b2d40ef0eebddcfa3b4292a0d1cd296563222cdc",
+      "bytes": 34456,
+      "sha256": "ad0b342a4303b5dc098d203530e8e8a83d4b5c3cbc38730309448cac14570425"
+    }
+  },
+  "fixture_top_level_import_closure_count": 27,
+  "source_head": "7c1463015b8f1a3296f09d12a8052112939b4c25"
+}

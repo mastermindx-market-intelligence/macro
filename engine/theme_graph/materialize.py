@@ -126,7 +126,12 @@ HIERARCHY_EPOCH = "2026-10-07"
 _HIERARCHY_SLUG_RE = re.compile(r"^[a-z0-9][a-z0-9_]{1,62}$")
 _HIERARCHY_FORBIDDEN_KEY_WORDS = ("weight", "share", "count", "score")
 _HIERARCHY_TIER_ADJACENCIES = frozenset({
-    ("macro_category", "theme"), ("theme", "micro_theme")})
+    ("macro_category", "theme"),
+    ("theme", "sub_theme"),
+    ("sub_theme", "micro_theme"),
+    ("theme", "micro_theme"),
+})
+_VALUE_CHAIN_POSITIONS = ("upstream", "midstream", "downstream", "enabler")
 
 
 class ThemeHierarchyError(ValueError):
@@ -185,6 +190,16 @@ def _validate_nominated_from(value: object) -> None:
         raise ThemeHierarchyError(reason, detail)
 
 
+def _hierarchy_value_chain(row: dict, context: str) -> None:
+    if "value_chain_position" not in row:
+        return
+    value = row.get("value_chain_position")
+    if value not in _VALUE_CHAIN_POSITIONS:
+        raise ThemeHierarchyError(
+            "VALUE_CHAIN_POSITION",
+            f"{context}: {value!r} not in upstream|midstream|downstream|enabler")
+
+
 def _values(value: object) -> list[object]:
     if isinstance(value, dict):
         return list(value.values())
@@ -200,12 +215,15 @@ def validate_theme_hierarchy(doc: object) -> dict:
         return {"categories": [], "micro_themes": [], "parents": []}
     if not isinstance(hierarchy, dict):
         raise ThemeHierarchyError("BLOCK_SHAPE", "hierarchy must be a mapping")
-    unknown = set(hierarchy) - {"categories", "micro_themes", "parents"}
+    unknown = set(hierarchy) - {"categories", "sub_themes", "micro_themes", "parents"}
     if unknown:
         raise ThemeHierarchyError("BLOCK_SHAPE",
                                   f"unknown hierarchy key {sorted(unknown)[0]!r}")
+    has_sub_themes = "sub_themes" in hierarchy
     lists: dict[str, list] = {}
-    for key in ("categories", "micro_themes", "parents"):
+    for key in ("categories", "sub_themes", "micro_themes", "parents"):
+        if key == "sub_themes" and not has_sub_themes:
+            continue
         value = hierarchy.get(key, [])
         if not isinstance(value, list):
             raise ThemeHierarchyError("BLOCK_SHAPE", f"hierarchy.{key} must be a list")
@@ -222,21 +240,39 @@ def validate_theme_hierarchy(doc: object) -> dict:
         categories.append({"id": node_id, "tier": "macro_category",
                            "asserted_on": asserted_on, "row": row})
 
+    sub_themes = []
+    if has_sub_themes:
+        for position, row in enumerate(lists["sub_themes"], start=1):
+            context = f"sub_theme {position}"
+            row = _hierarchy_row(
+                row,
+                allowed=("id", "name_en", "name_zh", "asserted_on", "nominated_from",
+                         "note", "value_chain_position"),
+                required=("id", "name_en", "name_zh", "asserted_on", "nominated_from"),
+                context=context)
+            node_id = _hierarchy_id(row, context)
+            asserted_on = _hierarchy_date(row, context)
+            _hierarchy_value_chain(row, context)
+            sub_themes.append({"id": node_id, "tier": "sub_theme",
+                               "asserted_on": asserted_on, "row": row})
+
     micro_themes = []
     for position, row in enumerate(lists["micro_themes"], start=1):
         context = f"micro_theme {position}"
         row = _hierarchy_row(
             row,
-            allowed=("id", "name_en", "name_zh", "asserted_on", "nominated_from", "note"),
+            allowed=("id", "name_en", "name_zh", "asserted_on", "nominated_from", "note",
+                     "value_chain_position"),
             required=("id", "name_en", "name_zh", "asserted_on", "nominated_from"),
             context=context)
         node_id = _hierarchy_id(row, context)
         asserted_on = _hierarchy_date(row, context)
+        _hierarchy_value_chain(row, context)
         micro_themes.append({"id": node_id, "tier": "micro_theme",
                              "asserted_on": asserted_on, "row": row})
 
     declared: dict[str, dict] = {}
-    for declaration in categories + micro_themes:
+    for declaration in categories + sub_themes + micro_themes:
         node_id = declaration["id"]
         if node_id in declared:
             raise ThemeHierarchyError("DUPLICATE_ID", node_id)
@@ -326,11 +362,14 @@ def validate_theme_hierarchy(doc: object) -> dict:
             raise ThemeHierarchyError("NEW_TIER_IN_EXPRESSES_MAP",
                                       key if key in new_tier_ids else "mapping value")
 
-    for row in micro_themes:
+    for row in sub_themes + micro_themes:
         _validate_nominated_from(row["row"].get("nominated_from"))
 
-    return {"categories": categories, "micro_themes": micro_themes,
-            "parents": parent_rows}
+    validated = {"categories": categories, "micro_themes": micro_themes,
+                 "parents": parent_rows}
+    if has_sub_themes:
+        validated["sub_themes"] = sub_themes
+    return validated
 
 
 # ---------------------------------------------------------------------------
@@ -1383,17 +1422,23 @@ class _Builder:
                     and (source_node.get("tier"), destination_node.get("tier"))
                     in _HIERARCHY_TIER_ADJACENCIES)
 
-        for entry in validated["categories"] + validated["micro_themes"]:
+        for entry in (validated["categories"]
+                      + validated.get("sub_themes", [])
+                      + validated["micro_themes"]):
             if entry["asserted_on"] > belief_date:
                 continue
             row = entry["row"]
+            source_meta = None
+            if entry["tier"] in {"sub_theme", "micro_theme"}:
+                source_meta = {"nominated_from": row.get("nominated_from")}
+                if "value_chain_position" in row:
+                    source_meta["value_chain_position"] = row["value_chain_position"]
             self._node(
                 entry["id"], kind="theme", market_scope="global", tier=entry["tier"],
                 provenance="crosswalk:config/theme_crosswalk.yml",
                 name_en=row.get("name_en"), name_zh=row.get("name_zh"),
                 external_ids={}, birth_date=entry["asserted_on"],
-                source_meta={"nominated_from": row.get("nominated_from")}
-                if entry["tier"] == "micro_theme" else None)
+                source_meta=source_meta)
 
         for row in validated["parents"]:
             if row["asserted_on"] > belief_date:

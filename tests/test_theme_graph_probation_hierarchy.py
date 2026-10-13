@@ -662,3 +662,131 @@ def test_research_path_laundering_refused(nominated_from, reason_token):
 )
 def test_house_research_nominators_accepted(nominated_from):
     assert probation.nominated_from_errors(nominated_from) == []
+
+
+# Taxonomy V2 L16: child_tier may be sub_theme. Proposal ids stay content-addressed.
+_HIERARCHY_ID_PINS: dict[str, tuple[str, dict]] = {
+    "theme": (
+        "prop:4d6d60edc948d9a7",
+        {
+            "parent_id": "theme:macro_energy",
+            "child_id": "theme:ai_power",
+            "child_tier": "theme",
+            "proposed_asserted_on": "2026-10-07",
+            "nominated_from": "vertical:energy:nuclear",
+        },
+    ),
+    "micro_theme": (
+        "prop:3a2b6cd8cb593984",
+        {
+            "parent_id": "theme:macro_energy",
+            "child_id": "theme:ai_power_micro",
+            "child_tier": "micro_theme",
+            "proposed_asserted_on": "2026-10-07",
+            "nominated_from": "vertical:energy:nuclear",
+        },
+    ),
+}
+
+_SUB_THEME_CHILD_TIER_REFUSAL = (
+    "HIERARCHY_CHILD_TIER: hierarchy child_tier 'subtheme' "
+    "is outside ['micro_theme', 'sub_theme', 'theme']"
+)
+
+
+def _sub_theme_subject(**overrides) -> dict:
+    base = _hierarchy_subject(
+        child_tier="sub_theme",
+        child_id="theme:ai_power_sub",
+    )
+    base.update(overrides)
+    return base
+
+
+def test_sub_theme_child_proposal_validates_python_and_schema():
+    row = _hierarchy_row(subject=_sub_theme_subject())
+    _VALIDATOR.validate(row)
+    assert probation.validate(row) == []
+    assert row["proposal_id"] == probation.proposal_id("hierarchy", row["subject"])
+
+
+def test_child_tier_subtheme_typo_refused_with_sorted_tier_list():
+    row = _hierarchy_row(subject=_hierarchy_subject(child_tier="subtheme"))
+    assert _SUB_THEME_CHILD_TIER_REFUSAL in probation.validate(row)
+    with pytest.raises(jsonschema.ValidationError):
+        _VALIDATOR.validate(row)
+
+
+def test_llm_originated_sub_theme_proposal_cannot_be_ratified():
+    proposed = _hierarchy_row(
+        subject=_sub_theme_subject(),
+        proposed_by="llm_proposed",
+        status="proposed",
+    )
+    _VALIDATOR.validate(proposed)
+    assert probation.validate(proposed) == []
+
+    rejected = _hierarchy_row(
+        subject=_sub_theme_subject(),
+        proposed_by="llm_proposed",
+        status="rejected",
+        adjudicated_at="2026-10-08T00:00:00Z",
+    )
+    _VALIDATOR.validate(rejected)
+    assert probation.validate(rejected) == []
+
+    ratified = _hierarchy_row(
+        subject=_sub_theme_subject(),
+        proposed_by="llm_proposed",
+        status="ratified",
+        ratified_by="bot",
+        adjudicated_at="2026-10-08T00:00:00Z",
+    )
+    with pytest.raises(jsonschema.ValidationError):
+        _VALIDATOR.validate(ratified)
+    errors = probation.validate(ratified)
+    assert any(error.startswith("LLM_HIERARCHY_NOT_RATIFIABLE") for error in errors)
+    messages = [error.message for error in _VALIDATOR.iter_errors(ratified)]
+    assert any("LLM_HIERARCHY_NOT_RATIFIABLE" in message for message in messages)
+
+
+@pytest.mark.parametrize(
+    "nominated_from",
+    [
+        "basket:baskets_china_ths:thsc900001",
+        "basket:finviz_themes:aicompute",
+        "research:ths_dump",
+    ],
+)
+def test_vendor_nominated_from_on_sub_theme_refused_like_micro_theme(nominated_from):
+    sub = _hierarchy_row(
+        subject=_sub_theme_subject(nominated_from=nominated_from)
+    )
+    micro = _hierarchy_row(
+        subject=_hierarchy_subject(
+            child_tier="micro_theme",
+            child_id="theme:ai_power_sub",
+            nominated_from=nominated_from,
+        )
+    )
+    sub_errors = probation.validate(sub)
+    micro_errors = probation.validate(micro)
+    assert sub_errors == micro_errors
+    assert sub_errors
+    assert all(error.startswith("VENDOR_NOMINATOR") for error in sub_errors)
+
+
+def test_existing_proposal_ids_unchanged_with_sub_theme_tier():
+    for kind, (expected_id, expected_line) in _EXISTING_KIND_PINS.items():
+        row = json.loads(expected_line)
+        assert row["proposal_id"] == expected_id
+        assert probation.proposal_id(kind, row["subject"]) == expected_id
+    for _tier, (expected_id, subject) in _HIERARCHY_ID_PINS.items():
+        assert probation.proposal_id("hierarchy", subject) == expected_id
+        row = probation.make_proposal(
+            kind="hierarchy",
+            subject=subject,
+            proposed_by="coverage_gap",
+            created="2026-10-07T00:00:00Z",
+        )
+        assert row["proposal_id"] == expected_id

@@ -446,6 +446,23 @@ options_fail_closed_on_exit() {
 }
 trap options_fail_closed_on_exit EXIT
 # END W1B5_TIMER_EXIT_GUARD
+# A W2C owner-replay or attestation refusal freezes ONLY the W2C lane.  Each
+# refusal keeps its exact stderr line and still fails the run with status 1,
+# but the lane-independent steps after W1B5_TIMER_FINALIZATION (live-plane
+# timers, press feeds, ticker news, BioCatalyst, unit reconcile, daemon
+# restarts) still run: CHANGED is per-run, so a step skipped here is lost.
+# BEGIN W2C_LANE_FREEZE
+W2C_LANE_FROZEN=0
+W2C_LANE_FROZEN_REASON=
+DEPLOY_EXIT_STATUS=0
+freeze_w2c_lane() {
+	W2C_LANE_FROZEN=1
+	DEPLOY_EXIT_STATUS=1
+	if [ -z "$W2C_LANE_FROZEN_REASON" ]; then
+		W2C_LANE_FROZEN_REASON=$1
+	fi
+}
+# END W2C_LANE_FREEZE
 
 # W1A has no scheduled context writer, so directory provisioning alone cannot
 # create its manifest/genesis/HEAD. Reconcile and authenticate that metadata on
@@ -476,6 +493,14 @@ if [ -L /var/lib/macro-ticker-news ]; then
 	exit 1
 fi
 install -d -m 0700 /var/lib/macro-ticker-news
+
+# BEGIN COMPANY_INTELLIGENCE_PRIVATE_ROOTS
+# Empty directories only: GMI owns publication and current-generation admission.
+if ! /opt/macro-api/.venv/bin/python "$APP_DIR/app/deploy/company-intelligence-private-roots.py"; then
+  echo "update.sh: private Company Intelligence provisioning failed; refusing API readiness" >&2
+  exit 1
+fi
+# END COMPANY_INTELLIGENCE_PRIVATE_ROOTS
 
 if ! mm_reviewed_unit_file_ready \
 	"$APP_DIR/app/deploy/macro-api.service" \
@@ -1270,7 +1295,7 @@ fi
 API_RESTART_CONFIRMED=0
 API_RESTART_NEEDED=0
 # BEGIN MACRO_API_RESTART_TRIGGER
-if [ "$API_UNIT_UPDATED" -eq 1 ] || ! mm_api_fence_marker_ready || grep -qE '^(app/.*\.py|app/requirements\.txt|app/deploy/macro-api\.service|config\.yml|config/(site_access|dataset_registry|theme_sources|plans)\.yml|config/intelligence_workspace/datapoints\.v1\.json|contracts/intelligence_workspace/(datapoint_(registry|value)|ai_context_envelope\.v1)\.schema\.json|collectors/equity_earnings\.py|engine/neuralweb/(ask_brain|cortex|brain_gateway|rotation_risk_context|brain_native_inputs|native_facts|chart_perception|chat_plain_words|company_intelligence_reader|earnings_context_reader|doctrine|analyst_doctrine|market_packet|market_memory|market_memory_pit|market_memory_playback|market_memory_projection|market_memory_trusted|brain_market_intel|brain_analogues|brain_curve|brain_user_memory|envelope|key_pool|synapse)\.py|engine/intelligence_workspace/.*\.py|engine/theme_graph/(store|rights)\.py|engine/qbus_news_.*\.py|engine/qkernel\.py|engine/earnings_catalyst\.py|engine/sue\.py|engine/earnings_narrative/(__init__|context_packets|contracts|digest|private_publication|promotion|public_wire|story|story_packets)\.py|engine/press/(__init__|earnings_adapter)\.py|engine/(codex_provider|llm_auth|ontology_explorer|prophet_integrity|risk_envelope|options_issue_desk|portfolio_brief|portfolio_changes|portfolio_vocab|live_quotes|quote_resolution|tushare_freshness)\.py|engine/codex_lane/runner\.py|engine/prophet_lab/.*\.py|engine/(canon|confluence_tiers|entry_primitives|hysteresis|indicators|path_personality|path_risk_signals|prophet_early_observations|session_anchor|session_digest|stock_technicals|technicals|us_candidate_episode|us_candidate_episode_intake)\.py|engine/stock_identity/(__init__|authority|fingerprint|plane)\.py|engine/entry_radar/(__init__|contracts|spool)\.py|engine/prophet_live/(__init__|interval|live_states)\.py|engine/research_vault/.*\.py|engine/fundamental_forensics/.*\.py|engine/biocatalyst/.*\.py|engine/sector_intelligence/.*\.py|engine/company_intelligence/.*\.py|engine/company_theme_exposure/(__init__|contracts)\.py|engine/(expectation_state|k3e_expectation_surface|theme_context)\.py|scripts/query_k3e_expectation_surface\.py|engine/seasonality/(__init__|contracts|event_clock|model|multiplicity|program_watch|prophet_bridge|regime|screener|universe)\.py|engine/capital_structure/(__init__|document_terms|event_spine|projection|source_identity)\.py|engine/government_revenue/(__init__|amount_semantics|award_events|budget_program|candidates|dossiers|entity_resolution|federation|fms_cases|freshness|idv_bridge|idv_dossiers|metrics|opportunities|point_in_time|subaward_dossiers|workspace)\.py|contracts/government_revenue/(government_entity_coverage\.v1|government_idv_bridge\.v1|government_idv_dossiers\.v1|government_procurement_(event|workspace)\.v2|government_recipient_resolution_coverage\.v1|government_revenue_candidate(_queue|_historical_suppressions|_issuance_corrections)?\.v1|government_revenue_dossiers\.v1|government_subaward_dossiers\.v1)\.schema\.json|contracts/options/options\.(issue_desk(_proposal|_decision)?|issue_receipt)\.v1\.schema\.json|engine/context_index/(packet|fusion|gitinfo|lexical|structured)\.py|engine/marketing/(__init__|authority|chart_render|charter|claims|cmo|confluence_source|departments|economics|events|ledgers|opportunity_bus|publication|state)\.py|lib/dataos/.*\.py|lib/(config|ai_costs|commercial_path|growth_registry|help_directory|mastermind_response_log|nyse_calendar|us_cash_calendar|exchange_holidays|user_prefs|tiers|team_membership)\.py)$' <<<"$CHANGED" || \
+if [ "$API_UNIT_UPDATED" -eq 1 ] || ! mm_api_fence_marker_ready || grep -qE '^(app/.*\.py|app/requirements\.txt|app/deploy/macro-api\.service|config\.yml|config/(site_access|dataset_registry|theme_sources|plans)\.yml|config/intelligence_workspace/datapoints\.v1\.json|contracts/intelligence_workspace/(datapoint_(registry|value)|ai_context_envelope\.v1)\.schema\.json|collectors/equity_earnings\.py|engine/neuralweb/(ask_brain|cortex|brain_gateway|rotation_risk_context|brain_native_inputs|native_facts|chart_perception|chat_plain_words|company_intelligence_reader|earnings_context_reader|doctrine|analyst_doctrine|market_packet|market_memory|market_memory_pit|market_memory_playback|market_memory_projection|market_memory_trusted|brain_market_intel|brain_analogues|brain_curve|brain_user_memory|envelope|key_pool|synapse)\.py|engine/intelligence_workspace/.*\.py|engine/theme_graph/(store|rights)\.py|engine/qbus_news_.*\.py|engine/qkernel\.py|engine/earnings_catalyst\.py|engine/sue\.py|engine/earnings_narrative/(__init__|context_packets|contracts|digest|private_publication|promotion|public_wire|story|story_packets)\.py|engine/press/(__init__|earnings_adapter)\.py|engine/(codex_provider|llm_auth|news_events|ontology_explorer|prophet_integrity|risk_envelope|options_issue_desk|portfolio_brief|portfolio_changes|portfolio_vocab|live_quotes|quote_resolution|tushare_freshness)\.py|engine/codex_lane/runner\.py|engine/prophet_lab/.*\.py|engine/(canon|confluence_tiers|entry_primitives|hysteresis|indicators|path_personality|path_risk_signals|prophet_early_observations|session_anchor|session_digest|stock_technicals|technicals|us_candidate_episode|us_candidate_episode_intake)\.py|engine/stock_identity/(__init__|authority|fingerprint|plane)\.py|engine/entry_radar/(__init__|contracts|spool)\.py|engine/prophet_live/(__init__|interval|live_states)\.py|engine/research_vault/.*\.py|engine/fundamental_forensics/.*\.py|engine/biocatalyst/.*\.py|engine/sector_intelligence/.*\.py|engine/company_intelligence/.*\.py|engine/company_theme_exposure/(__init__|contracts)\.py|engine/(expectation_state|k3e_expectation_surface|theme_context)\.py|scripts/query_k3e_expectation_surface\.py|engine/seasonality/(__init__|contracts|event_clock|model|multiplicity|program_watch|prophet_bridge|regime|screener|universe)\.py|engine/capital_structure/(__init__|document_terms|event_spine|projection|source_identity)\.py|engine/government_revenue/(__init__|amount_semantics|award_events|budget_program|candidates|dossiers|entity_resolution|federation|fms_cases|freshness|idv_bridge|idv_dossiers|metrics|opportunities|point_in_time|subaward_dossiers|workspace)\.py|contracts/government_revenue/(government_entity_coverage\.v1|government_idv_bridge\.v1|government_idv_dossiers\.v1|government_procurement_(event|workspace)\.v2|government_recipient_resolution_coverage\.v1|government_revenue_candidate(_queue|_historical_suppressions|_issuance_corrections)?\.v1|government_revenue_dossiers\.v1|government_subaward_dossiers\.v1)\.schema\.json|contracts/options/options\.(issue_desk(_proposal|_decision)?|issue_receipt)\.v1\.schema\.json|engine/context_index/(packet|fusion|gitinfo|lexical|structured)\.py|engine/marketing/(__init__|authority|chart_render|charter|claims|cmo|confluence_source|departments|economics|events|ledgers|opportunity_bus|publication|state)\.py|lib/dataos/.*\.py|lib/(config|ai_costs|commercial_path|growth_registry|help_directory|mastermind_response_log|nyse_calendar|us_cash_calendar|exchange_holidays|user_prefs|tiers|team_membership)\.py|engine/capital_need\.py|engine/coiled\.py|engine/conditions\.py|engine/cycles\.py|engine/dannytrades\.py|engine/dannytrades_chip\.py|engine/debt_maturity\.py|engine/demand_chain\.py|engine/dispersion\.py|engine/donor\.py|engine/earnings_blackout\.py|engine/entry_signal\.py|engine/event_atlas\.py|engine/extension\.py|engine/gex_confirm\.py|engine/grading\.py|engine/hold\.py|engine/htf_durability\.py|engine/i18n\.py|engine/ledger_lane\.py|engine/mtf_upturn\.py|engine/name_score\.py|engine/name_score_grader\.py|engine/options_ivspread\.py|engine/playbook\.py|engine/pullback_zone\.py|engine/risk_sizing\.py|engine/setups\.py|engine/signal_gate\.py|engine/signal_quality\.py|engine/stock_events\.py|engine/stock_fundamentals\.py|engine/stock_macro_sensitivity\.py|engine/stock_score\.py|engine/stock_view\.py|engine/ticker_alerts\.py|engine/us_board_rank\.py|engine/valuation\.py|engine/valuation_scenario\.py|engine/vol_forecast\.py|engine/vol_squeeze\.py|engine/washout_turn\.py|lib/delisted_symbols\.py|lib/store\.py|lib/ticker_popularity\.py|scripts/build_debt_maturity\.py|scripts/build_stock_library\.py|scripts/security_state_producer\.py)$' <<<"$CHANGED" || \
    [ "$API_DEPS_UPDATED" -eq 1 ]; then
 	API_RESTART_NEEDED=1
 
@@ -1470,7 +1495,7 @@ fi
 # must reload this separate issuer process as well as macro-api. The admin unit
 # generation forces the initial adoption even when the installed updater began
 # this cycle with the previous trigger. No entitlement rows are changed here.
-if [ "$ADMIN_UNIT_UPDATED" -eq 1 ] || echo "$CHANGED" | grep -qE '^(admin/.*|app/billing\.py|config/plans\.yml|lib/(ai_costs|mastermind_response_log|project_runtime_state|tiers)\.py|lib/dataos/(__init__|identity|nulls|price|quality|registry|temporal)\.py|engine/(codex_provider|llm_auth|macro_thesis|prophet_integrity|intelligence_registry|output_health)\.py|engine/codex_lane/runner\.py|engine/chronicle/(impact|schema)\.py|engine/neuralweb/(key_pool|ask_brain|support_map|orchestrator_log|trade_memory)\.py|engine/metabolism/(throttle|budget_gate)\.py|engine/marketing/(__init__|accounts|ad_allocator|ad_arena|ad_central|ad_stats|approval_desk|authority|cadence_resolver|charter|claims|cmo|cold_read|copywriter|departments|economics|events|ledgers|market_clock|media_publish|opportunity_bus|outbox|personas|publication|rejections|blind_identity|health_monitor|labels|learned_rules|reply_critics|reply_discovery|reply_drafter|reply_export|reply_producer|reply_queue|reply_voice|rewrite|sentinel|social_publisher|state|story_lock|wire_routing)\.py|engine/press/(__init__|desk_planner)\.py|scripts/(marketing_publisher|build_intelligence_registry|build_output_health)\.py)$'; then
+if [ "$ADMIN_UNIT_UPDATED" -eq 1 ] || echo "$CHANGED" | grep -qE '^(admin/.*|app/billing\.py|config/plans\.yml|lib/(ai_costs|mastermind_response_log|project_runtime_state|tiers)\.py|lib/dataos/(__init__|identity|nulls|price|quality|read_contract|registry|temporal)\.py|engine/(codex_provider|llm_auth|macro_thesis|prophet_integrity|intelligence_registry|output_health)\.py|engine/codex_lane/runner\.py|engine/chronicle/(impact|schema)\.py|engine/neuralweb/(key_pool|ask_brain|support_map|orchestrator_log|trade_memory)\.py|engine/metabolism/(throttle|budget_gate)\.py|engine/marketing/(__init__|accounts|ad_allocator|ad_arena|ad_central|ad_stats|approval_desk|authority|cadence_resolver|charter|claims|cmo|cold_read|copywriter|departments|economics|events|ledgers|market_clock|media_publish|opportunity_bus|outbox|personas|publication|rejections|blind_identity|health_monitor|labels|learned_rules|reply_critics|reply_discovery|reply_drafter|reply_export|reply_producer|reply_queue|reply_voice|rewrite|sentinel|social_publisher|state|story_lock|wire_routing)\.py|engine/press/(__init__|desk_planner)\.py|scripts/(marketing_publisher|build_intelligence_registry|build_output_health)\.py)$'; then
 	systemctl is-enabled admin >/dev/null 2>&1 && systemctl restart admin || true
 fi
 
@@ -1493,32 +1518,38 @@ w2c_terminal_ledger_state || MARKET_MEMORY_EXPERIENCE_TERMINAL_STATE=$?
 if [ "$MARKET_MEMORY_EXPERIENCE_TERMINAL_STATE" -eq 0 ]; then
 	if ! w2c_verify_installation; then
 		echo "macro-update: terminal W2C ledger has no authentic installation receipt" >&2
-		exit 1
+		freeze_w2c_lane "terminal W2C ledger has no authentic installation receipt"
 	fi
-	MARKET_MEMORY_EXPERIENCE_RUN_NEEDED=0
-	if [ "$RECIPROCAL_TIMERS_PAUSED" -eq 0 ] && ! w2c_reconcile_timer; then
+	if [ "${W2C_LANE_FROZEN:-0}" -eq 0 ]; then
+		MARKET_MEMORY_EXPERIENCE_RUN_NEEDED=0
+	fi
+	if [ "${W2C_LANE_FROZEN:-0}" -eq 0 ] && \
+	   [ "$RECIPROCAL_TIMERS_PAUSED" -eq 0 ] && ! w2c_reconcile_timer; then
 		echo "macro-update: authenticated terminal W2C timer disarm failed" >&2
-		exit 1
+		freeze_w2c_lane "authenticated terminal W2C timer disarm failed"
 	fi
-	if [ "$RECIPROCAL_TIMERS_PAUSED" -eq 0 ]; then
+	if [ "${W2C_LANE_FROZEN:-0}" -eq 0 ] && \
+	   [ "$RECIPROCAL_TIMERS_PAUSED" -eq 0 ]; then
 		MARKET_MEMORY_EXPERIENCE_ATTESTED=1
 	fi
 elif [ "$MARKET_MEMORY_EXPERIENCE_TERMINAL_STATE" -ne 3 ]; then
 	echo "macro-update: W2C terminal ledger is invalid" >&2
-	exit 1
+	freeze_w2c_lane "W2C terminal ledger is invalid"
 fi
-if [ "$MARKET_MEMORY_EXPERIENCE_TERMINAL_STATE" -eq 3 ] && \
+if [ "${W2C_LANE_FROZEN:-0}" -eq 0 ] && \
+   [ "$MARKET_MEMORY_EXPERIENCE_TERMINAL_STATE" -eq 3 ] && \
    [ "$MARKET_MEMORY_EXPERIENCE_INSTALLATION_REQUIRED" -eq 0 ] && \
    ! w2c_verify_installation; then
 	echo "macro-update: existing W2C installation receipt failed authentication" >&2
-	exit 1
+	freeze_w2c_lane "existing W2C installation receipt failed authentication"
 fi
-if [ "$MARKET_MEMORY_EXPERIENCE_TERMINAL_STATE" -eq 3 ]; then
+if [ "${W2C_LANE_FROZEN:-0}" -eq 0 ] && \
+   [ "$MARKET_MEMORY_EXPERIENCE_TERMINAL_STATE" -eq 3 ]; then
 	if [ "$RECIPROCAL_TIMERS_PAUSED" -eq 1 ]; then
 		echo "macro-update: deferring W2C replay and attestation until reciprocal boundary closure" >&2
 	elif [ "$API_DEPS_OK" -ne 1 ]; then
 		echo "macro-update: W2C attestation unavailable — shared runtime dependencies are not current" >&2
-		exit 1
+		freeze_w2c_lane "W2C attestation unavailable — shared runtime dependencies are not current"
 	else
 		W2C_OWNER_REPLAY_READY=0
 		if [ "$MARKET_MEMORY_EXPERIENCE_RUN_NEEDED" -eq 1 ] || \
@@ -1526,27 +1557,35 @@ if [ "$MARKET_MEMORY_EXPERIENCE_TERMINAL_STATE" -eq 3 ]; then
 		   ! systemctl is-active macro-market-memory-experience.timer >/dev/null 2>&1; then
 			if ! w2c_start_owner_chain; then
 				echo "macro-update: refusing W2C activation before owner replay completion" >&2
-				exit 1
+				freeze_w2c_lane "refusing W2C activation before owner replay completion"
+			else
+				W2C_OWNER_REPLAY_READY=1
 			fi
-			W2C_OWNER_REPLAY_READY=1
 		fi
-		if [ "$MARKET_MEMORY_EXPERIENCE_RUN_NEEDED" -eq 1 ] && \
+		if [ "${W2C_LANE_FROZEN:-0}" -eq 0 ] && \
+		   [ "$MARKET_MEMORY_EXPERIENCE_RUN_NEEDED" -eq 1 ] && \
 		   ! systemctl start macro-market-memory-experience.service; then
 			echo "macro-update: W2C accrual failed before deployment attestation" >&2
-			exit 1
+			freeze_w2c_lane "W2C accrual failed before deployment attestation"
 		fi
-		if ! w2c_verify_installation; then
+		if [ "${W2C_LANE_FROZEN:-0}" -eq 0 ] && ! w2c_verify_installation; then
 			echo "macro-update: W2C installation attestation failed after replay" >&2
-			exit 1
+			freeze_w2c_lane "W2C installation attestation failed after replay"
 		fi
-		if ! w2c_reconcile_timer; then
+		if [ "${W2C_LANE_FROZEN:-0}" -eq 0 ] && ! w2c_reconcile_timer; then
 			echo "macro-update: W2C timer reconciliation failed" >&2
-			exit 1
+			freeze_w2c_lane "W2C timer reconciliation failed"
 		fi
-		MARKET_MEMORY_EXPERIENCE_ATTESTED=1
+		if [ "${W2C_LANE_FROZEN:-0}" -eq 0 ]; then
+			MARKET_MEMORY_EXPERIENCE_ATTESTED=1
+		fi
 	fi
 fi
 # END W2C_RUNTIME_ATTESTATION
+# Everything from here through W1B5_TIMER_FINALIZATION depends on an
+# authenticated W2C state (the API-fence note below: a W2C refusal must not
+# reach it), so a frozen W2C lane skips it exactly as the old `exit 1` did.
+if [ "$W2C_LANE_FROZEN" -eq 0 ]; then
 
 # First admitted production-record writer: network-dark, credential-free, and
 # confined to one private store. It can read only the committed owner ledger;
@@ -1795,56 +1834,83 @@ if [ "$RECIPROCAL_TIMERS_PAUSED" -eq 1 ] && \
 	if [ "$MARKET_MEMORY_EXPERIENCE_TERMINAL_STATE" -eq 3 ]; then
 		if [ "$API_DEPS_OK" -ne 1 ]; then
 			echo "macro-update: refusing deferred W2C attestation with stale dependencies" >&2
-			exit 1
+			freeze_w2c_lane "refusing deferred W2C attestation with stale dependencies"
 		fi
-		if ! w2c_start_owner_chain; then
+		if [ "${W2C_LANE_FROZEN:-0}" -eq 0 ] && ! w2c_start_owner_chain; then
 			echo "macro-update: refusing deferred W2C activation before owner replay completion" >&2
-			exit 1
+			freeze_w2c_lane "refusing deferred W2C activation before owner replay completion"
 		fi
-		W2C_OWNER_REPLAY_READY=1
-		if [ "$MARKET_MEMORY_EXPERIENCE_RUN_NEEDED" -eq 1 ] && \
+		if [ "${W2C_LANE_FROZEN:-0}" -eq 0 ]; then
+			W2C_OWNER_REPLAY_READY=1
+		fi
+		if [ "${W2C_LANE_FROZEN:-0}" -eq 0 ] && \
+		   [ "$MARKET_MEMORY_EXPERIENCE_RUN_NEEDED" -eq 1 ] && \
 		   ! systemctl start macro-market-memory-experience.service; then
 			echo "macro-update: deferred W2C accrual failed before attestation" >&2
-			exit 1
+			freeze_w2c_lane "deferred W2C accrual failed before attestation"
 		fi
 	fi
-	if ! w2c_verify_installation; then
+	if [ "${W2C_LANE_FROZEN:-0}" -eq 0 ] && ! w2c_verify_installation; then
 		echo "macro-update: deferred W2C installation attestation failed" >&2
-		exit 1
+		freeze_w2c_lane "deferred W2C installation attestation failed"
 	fi
 	# END W2C_DEFERRED_REPLAY
-	for RECIPROCAL_PROFILE in source source-spy-rest context identity breadth technicals technicals-v2 experience-v2 production-records options-context-audit; do
-		if [ -e "/etc/systemd/system/macro-market-memory-$RECIPROCAL_PROFILE.timer" ]; then
-			if [ "$RECIPROCAL_PROFILE" = production-records ] || [ "$RECIPROCAL_PROFILE" = options-context-audit ]; then
-				systemctl enable --now "macro-market-memory-$RECIPROCAL_PROFILE.timer" || true
-			else
-				systemctl start "macro-market-memory-$RECIPROCAL_PROFILE.timer" || true
+	if [ "${W2C_LANE_FROZEN:-0}" -eq 0 ]; then
+		for RECIPROCAL_PROFILE in source source-spy-rest context identity breadth technicals technicals-v2 experience-v2 production-records options-context-audit; do
+			if [ -e "/etc/systemd/system/macro-market-memory-$RECIPROCAL_PROFILE.timer" ]; then
+				if [ "$RECIPROCAL_PROFILE" = production-records ] || [ "$RECIPROCAL_PROFILE" = options-context-audit ]; then
+					systemctl enable --now "macro-market-memory-$RECIPROCAL_PROFILE.timer" || true
+				else
+					systemctl start "macro-market-memory-$RECIPROCAL_PROFILE.timer" || true
+				fi
 			fi
+		done
+		if ! w2c_reconcile_timer; then
+			echo "macro-update: W2C timer reconciliation failed" >&2
+			freeze_w2c_lane "W2C timer reconciliation failed"
 		fi
-	done
-	if ! w2c_reconcile_timer; then
-		echo "macro-update: W2C timer reconciliation failed" >&2
-		exit 1
 	fi
-	MARKET_MEMORY_EXPERIENCE_ATTESTED=1
-	# The production-record first run was intentionally deferred while the
-	# reciprocal namespace was stopped. Capture immediately after the reviewed
-	# units are re-armed; do not wait for the next nightly calendar edge.
-	if [ "$MARKET_MEMORY_PRODUCTION_RECORDS_RUN_NEEDED" -eq 1 ]; then
-		if [ "$API_DEPS_OK" -ne 1 ]; then
-			echo "macro-update: deferring Market Memory production-record capture — shared runtime dependencies are not current" >&2
-		elif ! systemctl start macro-market-memory-production-records.service; then
-			echo "macro-update: Market Memory production-record capture failed closed; nightly timer will retry" >&2
+	if [ "${W2C_LANE_FROZEN:-0}" -eq 0 ]; then
+		MARKET_MEMORY_EXPERIENCE_ATTESTED=1
+		# The production-record first run was intentionally deferred while the
+		# reciprocal namespace was stopped. Capture immediately after the reviewed
+		# units are re-armed; do not wait for the next nightly calendar edge.
+		if [ "$MARKET_MEMORY_PRODUCTION_RECORDS_RUN_NEEDED" -eq 1 ]; then
+			if [ "$API_DEPS_OK" -ne 1 ]; then
+				echo "macro-update: deferring Market Memory production-record capture — shared runtime dependencies are not current" >&2
+			elif ! systemctl start macro-market-memory-production-records.service; then
+				echo "macro-update: Market Memory production-record capture failed closed; nightly timer will retry" >&2
+			fi
 		fi
 	fi
 fi
 if [ "${MARKET_MEMORY_EXPERIENCE_ATTESTED:-1}" -ne 1 ]; then
-	echo "macro-update: W2C installation and terminal state were not authenticated" >&2
-	exit 1
+	if [ "${W2C_LANE_FROZEN:-0}" -eq 0 ]; then
+		echo "macro-update: W2C installation and terminal state were not authenticated" >&2
+		freeze_w2c_lane "W2C installation and terminal state were not authenticated"
+	fi
 fi
-OPTIONS_RECONCILIATION_COMPLETE=1
-trap - EXIT
+# A frozen W2C lane leaves OPTIONS_RECONCILIATION_COMPLETE=0, so the EXIT trap
+# stays armed: any later failure still fails closed with the option-OI timer
+# disarmed, and the final exit re-runs a latched (no-op) disarm.
+if [ "${W2C_LANE_FROZEN:-0}" -eq 0 ]; then
+	OPTIONS_RECONCILIATION_COMPLETE=1
+	trap - EXIT
+fi
 # END W1B5_TIMER_FINALIZATION
+fi
+# BEGIN W2C_LANE_FROZEN_CONTINUE
+# The old `exit 1` disarmed the option-OI timer through the EXIT trap at the
+# moment W2C refused.  Do the same disarm now, before any lane-independent step
+# runs; if it fails, keep the old abort (the trap retries the disarm).
+if [ "${W2C_LANE_FROZEN:-0}" -eq 1 ]; then
+	if ! disarm_options_timer; then
+		echo "macro-update: W2C lane frozen but option-OI disarm failed; aborting deploy" >&2
+		exit 1
+	fi
+	echo "macro-update: W2C lane frozen — $W2C_LANE_FROZEN_REASON; continuing lane-independent deploy steps" >&2
+fi
+# END W2C_LANE_FROZEN_CONTINUE
 
 # Live-plane systemd definitions are installed by live-setup.sh. Once that setup
 # has happened, keep unit/resource/timer changes tracking main automatically.
@@ -2476,3 +2542,9 @@ fi
 if [ "$REPO_UPDATED" -eq 1 ] || [ "$RECONCILED" -eq 1 ]; then
 	echo "macro-update $(date -u +%FT%TZ) ${OLD:0:8}..$(git -C "$APP_DIR" rev-parse --short HEAD)"
 fi
+# BEGIN DEPLOY_EXIT_STATUS
+if [ "${W2C_LANE_FROZEN:-0}" -eq 1 ]; then
+	echo "macro-update: deploy finished with status ${DEPLOY_EXIT_STATUS:-1} (frozen lanes: w2c)" >&2
+fi
+exit "${DEPLOY_EXIT_STATUS:-0}"
+# END DEPLOY_EXIT_STATUS

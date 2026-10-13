@@ -1,0 +1,46 @@
+{
+  "schema": "tiingo.attended_qualification_window_parent_acceptance/v1",
+  "original_tool_session": 7455,
+  "original_terminal_return_consumed": true,
+  "original_exit_code": 0,
+  "method_sha256": "4224883f79dc93f32a58afcc1b4d797cc63a32e6b0dd87b21d8d5ff743c4595c",
+  "log_sha256": "2b9fc981a7b5e6f0a43c0b3f7da672916d0b79da86384f840df875a0a201f9b4",
+  "started_at_utc": "2026-10-12T22:52:48.844339+00:00",
+  "settled_at_utc": "2026-10-12T23:08:37.404421+00:00",
+  "completed_window_prefixes": [
+    "02",
+    "03",
+    "04",
+    "05"
+  ],
+  "all_accepted_prefixes": [
+    "01",
+    "02",
+    "03",
+    "04",
+    "05"
+  ],
+  "proof_sha256": {
+    "eod-wave14-prefix01-qualified.json": "ec6f97fde66570c4e4ef4d0f17594f93f91736d7c80f214399adc6efc978a21b",
+    "eod-qualified-catalogue-coverage-wave14-prefix01-delta.json": "70ce174dca4b4acee3b8e8a1ce653946cd6562f5093d2e76a7c7382c6dfcfffa",
+    "eod-wave14-prefix02-qualified.json": "675b8f8d787d0e1e9819afe0a62895434597bbebe678b214be6dbc69b8ce68e7",
+    "eod-qualified-catalogue-coverage-wave14-prefix02-delta.json": "2f92da70fef81dfaa619d306878f684301035351b6220fb872d66af0938e14a8",
+    "eod-wave14-prefix03-qualified.json": "dfbc4fbb6940beebe92fc8a4cf6fb0a6f4909ceceab41ef1a81414b36b2eb3ea",
+    "eod-qualified-catalogue-coverage-wave14-prefix03-delta.json": "e5f07120b9cde49fde15339a90c4222364ebcaef3c21155e7f5c27902c00ec00",
+    "eod-wave14-prefix04-qualified.json": "feca8ef10e8ce6b31c8536f131033f20d0393ea57e09eea60a463dcd1763d491",
+    "eod-qualified-catalogue-coverage-wave14-prefix04-delta.json": "73e073bfc14bd8122274e274486e4e7161c407dc1adf4d56c1f1e93fe526de3a",
+    "eod-wave14-prefix05-qualified.json": "79093e7599973d64ad36b6cab016094423bd2f4b7c3610d0431564c63c3fed4d",
+    "eod-qualified-catalogue-coverage-wave14-prefix05-delta.json": "3a1e6b4d09f4efd395412113aa0719387172b2b2ec60e7f07dd245a769c04895"
+  },
+  "qualified_wave14_totals": {
+    "responses": 1048,
+    "histories": 1048,
+    "bars": 2218523
+  },
+  "last_census_histories": 39213,
+  "last_census_bars": 82999787,
+  "capture_original_tool_session": 41115,
+  "capture_settlement_claimed": false,
+  "next_unstarted_prefix": "06",
+  "provider_requests": 0
+}
