@@ -28,6 +28,7 @@ anywhere: a read without an explicit cutoff is refused, never defaulted.
 from __future__ import annotations
 
 import hashlib
+import json
 import re
 from collections.abc import Collection, Iterable, Mapping
 from dataclasses import dataclass
@@ -44,6 +45,7 @@ __all__ = [
     "ReadRefusal", "ViewContract", "ReadRequest", "GenerationRef", "Dependency",
     "CurrentEvidence", "RetainedOutput", "ReadResult", "eligible_rows",
     "resolve_revisions", "select_generation", "reconstruct", "current", "replay",
+    "selected_input_sha256s",
 ]
 
 READ_CONTRACT_VERSION = "mastermind.read_contract.v1"
@@ -575,3 +577,51 @@ def replay(request: ReadRequest, retained: RetainedOutput | None, *,
             "publishing_receipt_sha256": retained.publishing_receipt_sha256,
         },
         {}, payload=retained.payload)
+
+
+def _canonical_value(value: object) -> object:
+    """JSON-able form of one row value; datetimes bind through ``utc().isoformat()``."""
+    if isinstance(value, datetime):
+        return utc(value).isoformat()
+    if value is None or isinstance(value, (str, bool, int, float)):
+        return value
+    if isinstance(value, Mapping):
+        return {str(key): _canonical_value(item) for key, item in value.items()}
+    if isinstance(value, (list, tuple)):
+        return [_canonical_value(item) for item in value]
+    raise ReadContractError(
+        f"row value {value!r} of type {type(value).__name__} is neither JSON nor a "
+        "datetime — it cannot bind as a selected input")
+
+
+def _canonical_row_text(row: Mapping[str, object]) -> str:
+    normalized = {str(key): _canonical_value(value) for key, value in row.items()}
+    try:
+        return json.dumps(normalized, sort_keys=True, separators=(",", ":"),
+                          ensure_ascii=False, allow_nan=False)
+    except (TypeError, ValueError) as exc:
+        raise ReadContractError(f"row is not canonical JSON: {exc}") from exc
+
+
+def selected_input_sha256s(result: ReadResult) -> Mapping[str, str]:
+    """Per dependency, a digest of EXACTLY the rows this result selected.
+
+    Binds a reconstruction to its inputs: two reads that selected the same rows
+    digest equal whatever order the rows were supplied in, and a read that
+    selected different rows can never present itself as the same input state.
+    Each row becomes one canonical JSON text (sort_keys, tight separators,
+    datetimes through ``utc().isoformat()``), the texts are SORTED, and the
+    sorted texts are hashed together — so selection, not supply order, decides.
+    A REPLAY result selected no inputs: it binds the retained ``sha256``
+    instead, so asking it for input digests is a contract error, not a digest.
+    """
+    if result.mode is ReadMode.REPLAY:
+        raise ReadContractError(
+            "a REPLAY result binds the retained output sha256, not selected inputs")
+    digests: dict[str, str] = {}
+    for name, rows in result.values.items():
+        texts = sorted(_canonical_row_text(row) for row in rows)
+        blob = json.dumps(texts, sort_keys=True, separators=(",", ":"),
+                          ensure_ascii=False)
+        digests[name] = hashlib.sha256(blob.encode("utf-8")).hexdigest()
+    return MappingProxyType(digests)
