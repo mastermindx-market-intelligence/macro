@@ -316,6 +316,14 @@ def _copy_json(
                 raise IxbrlExtractionError(f"{field} string exceeds bounded text length")
         except UnicodeError as exc:
             raise IxbrlExtractionError(f"{field} string is not valid UTF-8 text") from exc
+        # mint ⊆ read: the read preflight bounds the raw JSON string token (both quotes
+        # plus every escape) at HARD_MAX_JSON_STRING_TOKEN_BYTES, and canonical_json escapes
+        # exactly like json.dumps(value, ensure_ascii=False).  One UTF-8 byte escapes to at
+        # most 6 bytes, so the first operand only skips strings that cannot exceed the cap.
+        if len(encoded) * 6 + 2 > HARD_MAX_JSON_STRING_TOKEN_BYTES and (
+            len(json.dumps(value, ensure_ascii=False).encode("utf-8")) > HARD_MAX_JSON_STRING_TOKEN_BYTES
+        ):
+            raise IxbrlExtractionError(f"{field} string exceeds bounded text length")
         string_budget[0] -= len(encoded)
         if string_budget[0] < 0:
             raise IxbrlExtractionError(f"{field} exceeds decoded-string safety limit")
@@ -349,6 +357,10 @@ def _copy_json(
                     raise IxbrlExtractionError(f"{field} object key exceeds bounded text length")
             except UnicodeError as exc:
                 raise IxbrlExtractionError(f"{field} object key is not valid UTF-8 text") from exc
+            if len(encoded_key) * 6 + 2 > HARD_MAX_JSON_STRING_TOKEN_BYTES and (
+                len(json.dumps(key, ensure_ascii=False).encode("utf-8")) > HARD_MAX_JSON_STRING_TOKEN_BYTES
+            ):
+                raise IxbrlExtractionError(f"{field} object key exceeds bounded text length")
             string_budget[0] -= len(encoded_key)
             if string_budget[0] < 0:
                 raise IxbrlExtractionError(f"{field} exceeds decoded-string safety limit")

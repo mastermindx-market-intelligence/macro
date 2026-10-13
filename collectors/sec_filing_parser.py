@@ -41,7 +41,12 @@ SEC_FILING_PARSER_VERSION = "1"
 # on previously accepted inputs holds by construction - the new predicate
 # runs only on the path that used to raise - and the 132/132 corpus byte
 # identity was checked out of band by the D1-ext lane; its receipts live on
-# the lane host, not in git.  Refusal verdicts are not fingerprint-bound;
+# the lane host, not in git.  The one exception to "strict superset": D1X-5
+# (PR #9095) narrowed that widening under this same fingerprint - a member
+# carrying ANY element whose local name casefolds to ``base`` (any namespace;
+# previously only an exact-case XHTML ``base``) now refuses where a pre-D1X-5
+# build admits it.  The 140-file corpus census found 0 such members, so no
+# accepted output changed.  Refusal verdicts are not fingerprint-bound;
 # they are bound by the committed ``_VERDICT_PIN`` in
 # tests/test_fif_gsrc_capture.py, regenerated in the same PR.  Runtime
 # library versions are observed provenance and must not invalidate retained
@@ -567,9 +572,10 @@ def _is_same_document_fragment_href(
 ) -> bool:
     """Admit exactly one base-URI-free shape inside escaped nonNumeric markup.
 
-    A document carrying any ``xml:base`` attribute or any XHTML ``base``
-    element can redirect a fragment to another resource, so such a document
-    never qualifies.
+    A document carrying any ``xml:base`` attribute, or any element whose local
+    name casefolds to ``base`` in any namespace, is treated as able to redirect
+    a fragment to another resource (fail closed), so such a document never
+    qualifies.
     """
     return (
         not document_base_changed
@@ -602,7 +608,7 @@ def _escaped_nonnumeric_markup(
     ``#`` plus an ASCII name that is the ``id`` of exactly one element in this
     member - which needs no base URI, so its markup is retained unchanged,
     and only when the member carries no base-changing construct (``xml:base``
-    anywhere, or an XHTML ``base`` element).
+    anywhere, or any element whose local name casefolds to ``base``).
     """
     chunks: list[bytes] = []
 

@@ -394,3 +394,20 @@ def test_exact_companyfacts_projection_is_one_to_one_and_preserves_decimal_preci
     )
     assert len(same_day.to_dict()["company_facts"]["matches"]) == 1
     assert filing_attestation_from_json_bytes(same_day.to_json_bytes()).to_dict() == same_day.to_dict()
+
+
+def test_attestation_match_cap_admits_every_mintable_fact_count():
+    # Each attested match binds one fact, so the match cap must admit every fact
+    # count the wrapper and the parser can mint (B'2 raised max_facts to 12,000).
+    # The cap is a bound, not an id input: it never enters the policy
+    # fingerprint, a match id, or the attestation id.
+    import importlib
+
+    from engine.fundamental_forensics import filing_attestation, ixbrl_extraction
+
+    real_parser = importlib.import_module("collectors.sec_filing_parser")
+    assert hasattr(real_parser, "_HARD_LIMITS")
+    assert Path(real_parser.__file__).as_posix().endswith("collectors/sec_filing_parser.py")
+    assert filing_attestation.HARD_MAX_MATCHES == 12_000
+    assert filing_attestation.HARD_MAX_MATCHES >= ixbrl_extraction.FFXBRL_LIMITS["max_facts"]
+    assert filing_attestation.HARD_MAX_MATCHES >= real_parser._HARD_LIMITS["max_facts"]

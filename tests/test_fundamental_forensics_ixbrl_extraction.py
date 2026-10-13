@@ -1079,22 +1079,71 @@ def test_continuation_chain_boundary_round_trips_at_32(install_parser):
         build_ixbrl_extraction(_package(), "annual.htm", CONTENT, computed_at="2026-08-02T14:00:00Z")
 
 
-def test_max_text_mint_boundary_is_one_sided_at_the_real_cap(install_parser):
-    # NOTE (a): no exact-cap round trip exists today.  The mint admits a fact
-    # text value of exactly MAX_TEXT_BYTES (2 MiB decoded), but that value
-    # serializes to a raw JSON string token of MAX_TEXT_BYTES + 2 (quotes),
-    # which the read preflight refuses - the known follow-up D1X-4.
-    cap = MAX_TEXT_BYTES
-    within = _parser_output(CONTENT, "annual.htm")
-    within["facts"][0]["normalized_value"] = "a" * cap
-    install_parser(output=within)
-    build_ixbrl_extraction(_package(), "annual.htm", CONTENT, computed_at="2026-08-02T14:00:00Z")
+def test_max_text_mint_refuses_escaped_overflow_and_exact_cap_round_trips(install_parser):
+    # mint ⊆ read for text.  The read preflight bounds the RAW JSON string token
+    # (both quotes plus every escape byte) at HARD_MAX_JSON_STRING_TOKEN_BYTES;
+    # the mint also bounds the decoded UTF-8 length at MAX_TEXT_BYTES.  A string
+    # whose decoded length fits but whose escaped token does not is refused at
+    # mint; a string whose token is exactly the cap mints AND reads back.
+    import engine.fundamental_forensics.ixbrl_extraction as ixbrl_module
 
-    beyond = _parser_output(CONTENT, "annual.htm")
-    beyond["facts"][0]["normalized_value"] = "a" * (cap + 1)
-    install_parser(output=beyond)
+    cap = HARD_MAX_JSON_STRING_TOKEN_BYTES
+    assert cap == MAX_TEXT_BYTES == 2 * 1024 * 1024
+
+    def token(value):
+        return len(json.dumps(value, ensure_ascii=False).encode("utf-8"))
+
+    def mint(value):
+        output = _parser_output(CONTENT, "annual.htm")
+        output["facts"][0]["normalized_value"] = value
+        install_parser(output=output)
+        return build_ixbrl_extraction(_package(), "annual.htm", CONTENT, computed_at="2026-08-02T14:00:00Z")
+
+    refused = {
+        "letters": "a" * (cap - 1),      # decoded cap - 1, token cap + 1
+        "quotes": '"' * (cap // 2),      # decoded cap / 2, token cap + 2
+    }
+    for label, value in refused.items():
+        assert len(value.encode("utf-8")) <= MAX_TEXT_BYTES, label
+        assert token(value) > cap, label
+        with pytest.raises(IxbrlExtractionError, match="string exceeds bounded text length"):
+            mint(value)
+
+    exact = {
+        "letters": "a" * (cap - 2),              # token == cap
+        "quotes": '"' * ((cap - 2) // 2),        # token == cap
+    }
+    for label, value in exact.items():
+        assert token(value) == cap, label
+        content = mint(value).to_json_bytes()
+        assert json.dumps(value, ensure_ascii=False).encode("utf-8") in content, label
+        ixbrl_module._preflight_ixbrl_json(content)
+        assert ixbrl_extraction_from_json_bytes(content).to_json_bytes() == content, label
+
     with pytest.raises(IxbrlExtractionError, match="string exceeds bounded text length"):
-        build_ixbrl_extraction(_package(), "annual.htm", CONTENT, computed_at="2026-08-02T14:00:00Z")
+        mint("a" * (MAX_TEXT_BYTES + 1))
+
+
+def test_copy_json_value_and_key_tokens_are_bounded_by_the_read_cap(monkeypatch):
+    # Patched-cap form of the same rule for BOTH _copy_json branches.  The key
+    # branch is inert at the shipped values (keys <= MAX_METADATA_BYTES, token
+    # <= 6 * 16 KiB + 2 < cap), so it is exercised here.  "\x01" escapes to the
+    # 6-byte "\u0001", the worst-case expansion, which pins the guard boundary.
+    import engine.fundamental_forensics.ixbrl_extraction as ixbrl_module
+
+    monkeypatch.setattr(ixbrl_module, "HARD_MAX_JSON_STRING_TOKEN_BYTES", 32)
+
+    def copy(value):
+        return ixbrl_module._copy_json(value, field="probe", budget=[64])
+
+    for ok in ("a" * 30, '"' * 15, "\x01" * 5):          # tokens 32, 32, 32
+        assert copy(ok) == ok
+        assert copy({ok: 0}) == {ok: 0}
+    for bad in ("a" * 31, '"' * 16, "\x01" * 5 + "a"):   # tokens 33, 34, 33
+        with pytest.raises(IxbrlExtractionError, match="string exceeds bounded text length"):
+            copy(bad)
+        with pytest.raises(IxbrlExtractionError, match="object key exceeds bounded text length"):
+            copy({bad: 0})
 
 
 def test_max_text_read_boundary_is_one_sided_at_the_real_cap(install_parser):
