@@ -7,7 +7,8 @@ of interpreter finalization, its destructor's PyGILState_Ensure makes CPython
 force pthread_exit for the pool worker, and the forced unwind ends in
 std::terminate — SIGABRT, "terminate called without an active exception", after
 the program's output is already written. The live-breadth poller hit this on
-3/200 --once --offline census runs; PR #9043 measured the same hazard in the
+3/200 --once --offline census runs (the build-lane fixture tree measured 0/600
+base — the rate is harness-dependent); PR #9043 measured the same hazard in the
 news-universe builder at 63/1002 runs -> 0/1002 after reading natively.
 use_threads=False and pre_buffer=False shrink the pool-thread census rather
 than emptying it — on pandas 2.2, where read_parquet has no to_pandas_kwargs,

@@ -235,7 +235,9 @@ class ThresholdStore:
         if cpath.exists():
             try:
                 # Parquet reads go through lib/native_parquet.py: Python-backed
-                # buffers on Arrow's IO pool abort ~3/200 runs at exit (its docstring).
+                # buffers on Arrow's IO pool aborted at exit in 3/200 census runs
+                # of --once --offline (0/600 in the build-lane fixture tree) —
+                # its docstring has the hazard and the harness-dependent rates.
                 idx = read_parquet_native(cpath).index
                 syms = [canonical_symbol(s) for s in idx]
             except Exception as e:  # noqa: BLE001

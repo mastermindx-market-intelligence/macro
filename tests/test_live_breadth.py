@@ -551,8 +551,9 @@ def test_threshold_store_reads_parquet_through_native_filesystem(monkeypatch, tm
     otherwise opens plain local paths as Python file objects and hands those to
     pyarrow; a delayed pyarrow IO-pool completion destroying such a buffer once
     interpreter finalization has begun ends in std::terminate (SIGABRT, after
-    the output is written) — the 3/200 poller aborts, PR #9043's 63/1002 ->
-    0/1002 on the news-universe builder."""
+    the output is written) — the census harness's 3/200 poller aborts (0/600 in
+    the build-lane fixture tree), PR #9043's 63/1002 -> 0/1002 on the
+    news-universe builder."""
     import inspect
     from pathlib import Path
 
