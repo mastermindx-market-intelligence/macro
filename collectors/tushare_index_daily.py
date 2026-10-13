@@ -85,16 +85,47 @@ def normalize(raw: pd.DataFrame | None) -> pd.DataFrame | None:
     return pd.DataFrame({"trade_date": list(closes), "close": list(closes.values())})
 
 
+def _session_key(day: object) -> str | None:
+    """The one YYYY-MM-DD key a held or fetched session is compared on.
+
+    The store's contract is YYYY-MM-DD strings, but a stamp that reaches the
+    store as a date/datetime/Timestamp, or as a "YYYY-MM-DD 00:00:00" string,
+    must still meet the vendor's print on the same key. Anything that does not
+    name an ISO day — an empty, missing or impossible value — is None, and the
+    caller refuses rather than guess.
+    """
+    try:
+        text = day if isinstance(day, str) else day.isoformat()
+    except AttributeError:
+        return None
+    if not isinstance(text, str) or len(text) < 10:
+        return None
+    candidate = text[:10]
+    try:
+        date.fromisoformat(candidate)
+    except (TypeError, ValueError):
+        return None
+    return candidate
+
+
 def first_disagreement(held: pd.DataFrame | None,
                        fetched: pd.DataFrame) -> tuple[str, float, float] | None:
     """(session, held close, vendor close) for the first held session the vendor
     now prints differently, or None when every overlapping session agrees."""
     if held is None:
         return None
-    known = dict(zip(held["trade_date"], held["close"]))
+    known = {}
+    for day, close in zip(held["trade_date"], held["close"]):
+        key = _session_key(day)
+        if key is not None:
+            known[key] = close
     for day, price in zip(fetched["trade_date"], fetched["close"]):
-        if day in known and round(float(known[day]), _CLOSE_DP) != price:
-            return day, round(float(known[day]), _CLOSE_DP), price
+        key = _session_key(day)
+        if key is None or key not in known:
+            continue
+        held_price = round(float(known[key]), _CLOSE_DP)
+        if held_price != price:
+            return key, held_price, price
     return None
 
 
@@ -102,15 +133,29 @@ def merge(held: pd.DataFrame | None, fetched: pd.DataFrame, *, first_seen: str) 
     """Keep every held row; add new sessions. None if any held session disagrees."""
     if first_disagreement(held, fetched) is not None:
         return None
-    known = {} if held is None else dict(zip(held["trade_date"], held["close"]))
+    held_rows = None
+    if held is not None and not held.empty:
+        keys: list[str] = []
+        for day in held["trade_date"]:
+            key = _session_key(day)
+            if key is None:
+                return None
+            keys.append(key)
+        held_rows = held.copy()
+        held_rows["trade_date"] = keys
+    known = {} if held_rows is None else dict(zip(held_rows["trade_date"], held_rows["close"]))
+    anchor = ANCHOR.isoformat()
     fresh = []
     for day, price in zip(fetched["trade_date"], fetched["close"]):
+        key = _session_key(day)
+        if key is None:
+            return None
         # The replay is anchored; a vendor row dated before the anchor is not held.
-        if day in known or day < ANCHOR.isoformat():
+        if key in known or key < anchor:
             continue
-        fresh.append({"ticker": TICKER, "trade_date": day, "close": price,
+        fresh.append({"ticker": TICKER, "trade_date": key, "close": price,
                       "first_seen": first_seen})
-    frames = [f for f in (held, pd.DataFrame(fresh, columns=list(COLUMNS))) if f is not None and not f.empty]
+    frames = [f for f in (held_rows, pd.DataFrame(fresh, columns=list(COLUMNS))) if f is not None and not f.empty]
     if not frames:
         return None
     out = pd.concat(frames, ignore_index=True)
