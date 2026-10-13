@@ -10260,3 +10260,11 @@
 {"id":"ob-2026-10-13-8f67af249d","from":"approved","to":"quarantined","at":"2026-10-13T19:55:35Z","actor":"publisher","note":"clock: yesterday_word_off_session:yesterday","receipt":null}
 {"id":"ob-2026-10-13-907cfd5085","from":"approved","to":"posting","at":"2026-10-13T19:55:36Z","actor":"publisher","note":"in-flight (pre-publish)","receipt":null}
 {"id":"ob-2026-10-13-907cfd5085","from":"posting","to":"posted","at":"2026-10-13T19:55:37Z","actor":"publisher","note":"published","receipt":{"backend":"buffer","external_id":"6ace8cb8cb3665561f644af0","external_url":null,"at":"2026-10-13T19:55:32Z","booked_at":"2026-10-13T19:55:32Z"}}
+{"id":"ob-2026-10-13-858f628d22","from":"queued","to":"approved","at":"2026-10-13T20:01:23Z","actor":"publisher-autoapprove","note":"auto-approved (all gates passed)","receipt":null}
+{"id":"ob-2026-10-13-caad8869a1","from":"queued","to":"approved","at":"2026-10-13T20:01:23Z","actor":"publisher-autoapprove","note":"auto-approved (all gates passed)","receipt":null}
+{"id":"ob-2026-10-13-f7cc21e558","from":"queued","to":"approved","at":"2026-10-13T20:01:23Z","actor":"publisher-autoapprove","note":"auto-approved (all gates passed)","receipt":null}
+{"id":"ob-2026-10-13-858f628d22","from":"approved","to":"posting","at":"2026-10-13T20:01:25Z","actor":"publisher","note":"in-flight (pre-publish)","receipt":null}
+{"id":"ob-2026-10-13-858f628d22","from":"posting","to":"posted","at":"2026-10-13T20:01:27Z","actor":"publisher","note":"published","receipt":{"backend":"buffer","external_id":"6ace8e16eaea728d3cafd762","external_url":null,"at":"2026-10-13T20:01:22Z","booked_at":"2026-10-13T20:01:22Z"}}
+{"id":"ob-2026-10-13-caad8869a1","from":"approved","to":"posting","at":"2026-10-13T20:01:27Z","actor":"publisher","note":"in-flight (pre-publish)","receipt":null}
+{"id":"ob-2026-10-13-caad8869a1","from":"posting","to":"posted","at":"2026-10-13T20:01:28Z","actor":"publisher","note":"published","receipt":{"backend":"buffer","external_id":"6ace8e189abb1755a473f106","external_url":null,"at":"2026-10-13T20:01:22Z","booked_at":"2026-10-13T20:01:22Z"}}
+{"id":"ob-2026-10-13-f7cc21e558","from":"approved","to":"quarantined","at":"2026-10-13T20:01:28Z","actor":"publisher","note":"clock: yesterday_word_off_session:yesterday","receipt":null}
