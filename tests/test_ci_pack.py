@@ -4709,6 +4709,11 @@ CURATED_EXCLUSIVE = {
     # import app.main) and breach all three PACKING_PROBES; scope: exclusive
     # pins the job to the FIF globs plus its measured static/runtime closure.
     "fif-kernel-guards",
+    # 2026-10-12 SNI S2 event response (#8893): the runner's `git` subprocess
+    # calls and the language test's rglob are opaque, so inference widened
+    # the fallback to engine/** and the plan_book packing probe selected the
+    # job (130 > 129). scope: exclusive pins it to its measured closure.
+    "sni-s2-event-response",
 }
 
 
