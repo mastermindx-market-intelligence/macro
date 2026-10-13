@@ -164,6 +164,7 @@ function advance(ms) {
     for (const t of timers.filter(x => !x.dead && x.ms <= 0)) { t.dead = true; t.fn(); }
   }
 }
+let preferReduced = false;
 function makeClassList(initial) {
   const set = new Set(initial || []);
   return {
@@ -182,7 +183,11 @@ function boot() {
     removeEventListener(type, fn) {
       this.listeners = this.listeners.filter(l => l.type !== type || l.fn !== fn);
     },
-    getElementById(id) { return id === 'dlg-risk' ? dlg : null; },
+    getElementById(id) {
+      if (id === 'dlg-risk') return dlg;
+      if (id === 'dlg-markets') return markets;
+      return null;
+    },
     querySelector(sel) {
       if (sel === '.mx5-hm-stage' || sel === '.rr-tr-overlay.is-open' || sel === '.hm-ov') return null;
       throw new Error('document.querySelector ' + sel);
@@ -244,14 +249,19 @@ function boot() {
   add(dlg, el('backdrop', 'div', ['mx5-dlg-backdrop']));
   const opener = el('opener', 'button');
   const stray = el('stray', 'button');
+  const markets = el('markets', 'div');
+  const mpanel = add(markets, el('mpanel', 'div', ['mx5-dlg-panel']));
+  const mclose = add(mpanel, el('mclose', 'button'));
+  add(markets, el('mbackdrop', 'div', ['mx5-dlg-backdrop']));
+  const marketsOpener = el('markets-opener', 'button');
   const win = {
     pageYOffset: 0, scrollTo() {}, dispatchEvent() {},
-    matchMedia() { return {matches: false}; },
+    matchMedia() { return {matches: preferReduced}; },
     mx5CloseAllPopovers() {}, mmPbExpire() {},
     MMXAccessPreview: {isAnon() { return false; }},
   };
   const api = new Function('document', 'window', src + '\nreturn {open: window.mx5OpenDlg, close: window.mx5CloseDlg};')(doc, win);
-  return {doc, dlg, panel, closeBtn, opener, stray, open: api.open, close: api.close};
+  return {doc, dlg, panel, closeBtn, opener, stray, markets, mclose, marketsOpener, open: api.open, close: api.close};
 }
 function key(doc, from) {
   doc.activeElement = from;
@@ -292,6 +302,77 @@ if (which === 'reopen') {
   const e = key(h.doc, h.stray);
   assert.equal(e.defaultPrevented, false, 'Tab after close');
   assert.equal(h.doc.activeElement, h.stray, 'focus stays after close');
+} else if (which === 'cross') {
+  // Unchanged happy path: open, let the exit finish, focus is the opener.
+  {
+    const h = boot();
+    h.doc.activeElement = h.opener;
+    h.open('dlg-risk');
+    flushRaf();
+    h.close();
+    advance(400);
+    assert.equal(h.dlg.classList.contains('open'), false, 'happy closed');
+    assert.equal(h.doc.activeElement, h.opener, 'happy opener');
+  }
+  // Reduced motion closes synchronously and still returns focus to the opener.
+  {
+    preferReduced = true;
+    const h = boot();
+    h.doc.activeElement = h.opener;
+    h.open('dlg-risk');
+    flushRaf();
+    h.close();
+    assert.equal(h.dlg.classList.contains('open'), false, 'reduced closed sync');
+    assert.equal(h.dlg.classList.contains('mx5-dlg-closing'), false, 'reduced not closing');
+    assert.equal(h.doc.activeElement, h.opener, 'reduced opener');
+    advance(400);
+    assert.equal(h.doc.activeElement, h.opener, 'reduced stayed');
+    preferReduced = false;
+  }
+  // R1: open B before A's exit finishes. Focus stays inside B.
+  {
+    const h = boot();
+    h.doc.activeElement = h.opener;
+    h.open('dlg-risk');
+    flushRaf();
+    assert.equal(h.doc.activeElement, h.closeBtn, 'risk took focus');
+    h.close();
+    advance(50);
+    assert.equal(h.dlg.classList.contains('mx5-dlg-closing'), true, 'risk exit pending');
+    h.doc.activeElement = h.marketsOpener;
+    h.open('dlg-markets');
+    flushRaf();
+    assert.equal(h.markets.classList.contains('open'), true, 'markets open');
+    assert.ok(h.markets.contains(h.doc.activeElement), 'focus entered markets');
+    h.panel.dispatchEvent({type: 'transitionend', target: h.panel, propertyName: 'transform'});
+    advance(400);
+    assert.equal(h.markets.classList.contains('open'), true, 'markets stayed open');
+    assert.equal(h.dlg.classList.contains('open'), false, 'risk closed');
+    assert.equal(h.dlg.classList.contains('mx5-dlg-closing'), false, 'risk not closing');
+    assert.ok(h.markets.contains(h.doc.activeElement), 'focus stayed in markets');
+    assert.notEqual(h.doc.activeElement, h.opener, 'risk tile did not take focus');
+  }
+} else if (which === 'same') {
+  // R2: reopen while focus is still on this dialog's Close, then close again.
+  const h = boot();
+  h.doc.activeElement = h.opener;
+  h.open('dlg-risk');
+  flushRaf();
+  assert.equal(h.doc.activeElement, h.closeBtn, 'opened onto close');
+  h.close();
+  advance(50);
+  assert.equal(h.doc.activeElement, h.closeBtn, 'close button still focused');
+  assert.ok(h.dlg.contains(h.doc.activeElement), 'focus still inside during exit');
+  h.open('dlg-risk');
+  flushRaf();
+  assert.equal(h.dlg.classList.contains('open'), true, 'reopened');
+  assert.equal(h.dlg.classList.contains('mx5-dlg-closing'), false, 'reopen cleared closing');
+  assert.ok(h.dlg.contains(h.doc.activeElement), 'focus stayed in the dialog');
+  h.close();
+  advance(400);
+  h.panel.dispatchEvent({type: 'transitionend', target: h.panel, propertyName: 'transform'});
+  assert.equal(h.dlg.classList.contains('open'), false, 'second close finished');
+  assert.equal(h.doc.activeElement, h.opener, 'original tile');
 } else {
   throw new Error('U2_CASE');
 }
@@ -327,6 +408,19 @@ def test_reopen_during_close_keeps_the_dialog_and_its_trap():
 def test_completed_close_does_not_trap_tab():
     """Once the exit finishes, a Tab on the page is a normal page Tab."""
     _lifecycle("closed")
+
+
+def test_other_dialog_opened_during_close_keeps_focus():
+    """Open A, close it, open B before the exit timer. Focus stays inside B.
+
+    Also pins the happy path and the synchronous reduced-motion close.
+    """
+    _lifecycle("cross")
+
+
+def test_reopen_during_close_restores_the_original_opener():
+    """Reopening during the exit must not recapture the dialog's own Close button."""
+    _lifecycle("same")
 
 
 _HIDDEN_TRAP_JS = r"""

@@ -15206,6 +15206,7 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
     ─────────────────────────────────────────────────────────────── */
     var _dlgActive = null;
     var _dlgTrigger = null;
+    var _dlgClosing = []; /* exits whose 340ms done() has not run yet */
     var _dlgScrollY = 0;   /* page scroll captured at first dialog open (M03 scroll lock) */
 
     /* Release the document scroll lock and restore the saved scroll position.
@@ -15289,6 +15290,20 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
       if(restoreFocus && _dlgTrigger && typeof _dlgTrigger.focus === 'function') _dlgTrigger.focus();
     }
 
+    /* China cnxOpenDlg / _cnxCancelClose: stop an exit that has not finished so
+       its done() cannot take .open off or move focus. `hide` is for a different
+       dialog; the one this open is showing must keep .open. Never refocuses. */
+    function _mx5CancelClose(dlg, hide){
+      if(dlg._closeTimer){ clearTimeout(dlg._closeTimer); delete dlg._closeTimer; }
+      if(dlg._endH){
+        var pnl = dlg.querySelector('.mx5-dlg-panel');
+        if(pnl) pnl.removeEventListener('transitionend', dlg._endH);
+        delete dlg._endH;
+      }
+      for(var i = _dlgClosing.length - 1; i >= 0; i--) if(_dlgClosing[i] === dlg) _dlgClosing.splice(i, 1);
+      if(hide) dlg.classList.remove('open','mx5-dlg-in','mx5-dlg-closing');
+    }
+
     window.mx5OpenDlg = function(id){
       /* macro.html is publicly readable, but the detailed card dialogs are the
          registration benefit. The shared preview controller resolves signed-in
@@ -15306,15 +15321,11 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
       if(_dlgActive){ _dlgTeardown(_dlgActive, false); _dlgActive = null; }
       var dlg = document.getElementById(id);
       if(!dlg) return;
-      /* Reopening inside the 340ms exit skipped teardown (_dlgActive is already
-         null). Drop this dialog's pending close so it cannot strip .open or
-         move focus back to the opener from the close that just started. */
-      if(dlg._closeTimer){ clearTimeout(dlg._closeTimer); delete dlg._closeTimer; }
-      if(dlg._endH){
-        var pnlPending = dlg.querySelector('.mx5-dlg-panel');
-        if(pnlPending) pnlPending.removeEventListener('transitionend', dlg._endH);
-        delete dlg._endH;
-      }
+      /* China cnxOpenDlg cancels every pending _cnxCancelClose. Reopening this
+         dialog during its own exit must not let that exit strip .open; opening
+         a different one must not let the stale exit refocus the old tile. */
+      var closing = _dlgClosing.slice();
+      for(var pi = 0; pi < closing.length; pi++) _mx5CancelClose(closing[pi], closing[pi] !== dlg);
       /* Heatmap adoption: on first open of dlg-markets, move #heatmap-scorecard into the
          dialog placeholder so it renders at 920px dialog scale (idempotent). */
       if(id === 'dlg-markets'){
@@ -15327,7 +15338,10 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
           window.dispatchEvent(new Event('resize'));
         }
       }
-      _dlgTrigger = document.activeElement;
+      /* China cnxOpenDlg stores the opener only when focus is outside the dialog
+         being opened. During the exit, focus is still on Close; recapturing it
+         would return focus into the hidden dialog on the next close. */
+      if(!dlg.contains(document.activeElement)) _dlgTrigger = document.activeElement;
       _dlgActive = dlg;
       dlg.classList.remove('mx5-dlg-closing');
       /* 1) make it displayed (start state painted) */
@@ -15381,8 +15395,14 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
       if(dlg._trapHandler){ document.removeEventListener('keydown', dlg._trapHandler); delete dlg._trapHandler; }
       var bd = dlg.querySelector('.mx5-dlg-backdrop');
       if(bd && bd._clickH){ bd.removeEventListener('click', bd._clickH); delete bd._clickH; }
-      var trig = _dlgTrigger; _dlgTrigger = null;
-      var refocus = function(){ if(trig && typeof trig.focus === 'function') trig.focus(); };
+      /* Keep _dlgTrigger until this close actually refocuses. China leaves
+         _riskReturnFocus in place so _cnxCancelClose can drop the exit without
+         forgetting the original tile. */
+      var trig = _dlgTrigger;
+      var refocus = function(){
+        if(trig && typeof trig.focus === 'function') trig.focus();
+        if(_dlgTrigger === trig) _dlgTrigger = null;
+      };
       if(_prefReduced()){
         _dlgTeardown(dlg, false); refocus(); return;
       }
@@ -15395,12 +15415,14 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
       var done = function(){
         if(dlg._closeTimer){ clearTimeout(dlg._closeTimer); delete dlg._closeTimer; }
         if(dlg._endH && pnl){ pnl.removeEventListener('transitionend', dlg._endH); delete dlg._endH; }
+        for(var ci = _dlgClosing.length - 1; ci >= 0; ci--) if(_dlgClosing[ci] === dlg) _dlgClosing.splice(ci, 1);
         dlg.classList.remove('open','mx5-dlg-closing');
         refocus();
       };
       dlg._endH = function(e){ if(e.target === pnl && (e.propertyName === 'transform' || e.propertyName === 'opacity')) done(); };
       if(pnl) pnl.addEventListener('transitionend', dlg._endH);
       dlg._closeTimer = setTimeout(done, 340);
+      _dlgClosing.push(dlg);
     };
 
     /* Escape handler: dialog > scorecard popover > release radar modal guards */
