@@ -4241,9 +4241,8 @@ def originate_plans(
             )
         # Receipt identity is established HERE, before any policy, sorting or
         # mutation runs: every ordered receipt must re-hash — with the original
-        # producer's OWN canonicalization
-        # (``engine.us_candidate_episode.canonical_json``, the function the frozen
-        # producer hashes with — never a rival normalizer) — to the ACTUAL board
+        # producer's canonical bytes, using the neutral evidence codec with its
+        # single document newline removed — to the ACTUAL board
         # row at the SAME original ordinal, and the scalar pins must match this
         # document wherever this document can represent them.  A same-count board
         # whose rows were replaced or reordered is therefore REFUSED at the
@@ -4254,7 +4253,15 @@ def originate_plans(
         # UPSTREAM retained-snapshot check's job, which re-verifies the gzip copy
         # against the frozen board before any binding can exist.
         import hashlib  # noqa: PLC0415
-        from engine.us_candidate_episode import canonical_json  # noqa: PLC0415
+        from lib.evidence_foundation import canonical_json_bytes  # noqa: PLC0415
+
+        def source_receipt_bytes(value: object) -> bytes:
+            # The producer hashes compact JSON without a document terminator.
+            try:
+                return canonical_json_bytes(value).removesuffix(b"\n")
+            except (TypeError, ValueError) as exc:
+                raise ValueError(f"value is not canonical JSON: {exc}") from exc
+
         source_sha256 = source_binding.get("source_sha256")
         if (not isinstance(source_sha256, str)
                 or not source_sha256.startswith("sha256:")
@@ -4296,13 +4303,13 @@ def originate_plans(
                     f"source_binding.ordered_rows[{ordinal}].row_receipt must be "
                     "'sha256:<64 lowercase hex>'")
             actual_receipt = "sha256:" + hashlib.sha256(
-                canonical_json(board_rows[ordinal]).encode("utf-8")).hexdigest()
+                source_receipt_bytes(board_rows[ordinal])).hexdigest()
             if row_receipt != actual_receipt:
                 raise ValueError(
                     f"source_binding.ordered_rows[{ordinal}].row_receipt does not "
                     "hash to the actual board row at that original ordinal — the "
                     "binding is not over this board's buy lane")
-        expected_selection_receipt = "sha256:" + hashlib.sha256(canonical_json({
+        expected_selection_receipt = "sha256:" + hashlib.sha256(source_receipt_bytes({
             "source_sha256": source_sha256,
             "pair_id": source_binding.get("pair_id"),
             "market_session": source_binding.get("market_session"),
@@ -4311,7 +4318,7 @@ def originate_plans(
                  "row_receipt": receipt_row.get("row_receipt")}
                 for receipt_row in binding_rows
             ],
-        }).encode("utf-8")).hexdigest()
+        })).hexdigest()
         if source_binding.get("selection_receipt") != expected_selection_receipt:
             raise ValueError(
                 "source_binding.selection_receipt does not match the binding "

@@ -976,8 +976,8 @@ def _plan_source_receipt(value: Any) -> str | None:
 def _validate_source_binding_material(binding: Any) -> list[str]:
     """Re-hash a binding's material with the frozen producer's canonicalization.
 
-    Reuses ``engine.us_candidate_episode.canonical_json`` — the SAME function the
-    original producer hashes with — so no rival normalization exists.  This checks
+    Uses the neutral evidence codec without its single document newline,
+    preserving the original producer's compact JSON bytes.  This checks
     the internal integrity of the SUPPLIED material only: a whole self-hashed
     ``source_binding`` is source origin metadata, never native authentication and
     never a source authorization decision.
@@ -1033,15 +1033,18 @@ def _validate_source_binding_material(binding: Any) -> list[str]:
             "selection_index": selection_index,
             "row_receipt": row.get("row_receipt"),
         })
-    from engine.us_candidate_episode import canonical_json  # noqa: PLC0415
+    from lib.evidence_foundation import canonical_json_bytes  # noqa: PLC0415
     material = {
         "source_sha256": binding.get("source_sha256"),
         "pair_id": pair_id,
         "market_session": market_session,
         "ordered_rows": material_rows,
     }
-    expected = "sha256:" + hashlib.sha256(
-        canonical_json(material).encode("utf-8")).hexdigest()
+    try:
+        canonical_material = canonical_json_bytes(material).removesuffix(b"\n")
+    except (TypeError, ValueError) as exc:
+        raise ValueError(f"value is not canonical JSON: {exc}") from exc
+    expected = "sha256:" + hashlib.sha256(canonical_material).hexdigest()
     if binding.get("selection_receipt") != expected:
         errors.append(
             "source_origin.source_binding.selection_receipt does not match the "

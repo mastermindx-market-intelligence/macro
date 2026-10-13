@@ -2485,3 +2485,56 @@ class TestPriceFrameFreshness:
         fr = self._frame("2026-02-16", 11)
         out = price_frame_freshness(fr, "2026-03-06")
         assert out["max_lag"] == STALE_BASIS_MAX_SESSIONS == 3
+
+
+class TestPlanSourceOriginCodec:
+    """Actual producer receipts verify without a candidate-ledger dependency."""
+
+    @staticmethod
+    def _fixture(tmp_path, payload):
+        from scripts.build_stock_library import today_selection_source_binding
+
+        doc = _make_standouts(buys=[_make_buy("AAA")])
+        doc["emit"] = {"pair_id": "1" * 32, "at_utc": "2026-07-02T21:00:00Z"}
+        doc["board_definition"] = "us_prophet_v3"
+        doc["buy"][0]["receipt_probe"] = payload
+        path = tmp_path / "codec-board.json"
+        raw = json.dumps(doc, ensure_ascii=False, allow_nan=False).encode("utf-8")
+        path.write_bytes(raw)
+        return path, json.loads(raw), today_selection_source_binding(raw)
+
+    @pytest.mark.parametrize("payload", [
+        {"unicode": "研究é🙂", "escapes": "line\n\t\\\""},
+        {"z": [None, True, False], "a": {"nested": [1, -2, 0]}},
+        {"negative_zero": -0.0, "fraction": 0.125, "exponent": 1e20},
+        ["array", {}, [], 123456789012345678901234567890],
+    ], ids=["unicode-escapes", "nested-order-scalars", "floats", "array-large-int"])
+    def test_producer_receipts_survive_without_ledger_import(
+            self, tmp_path, monkeypatch, payload):
+        import builtins
+
+        path, doc, binding = self._fixture(tmp_path, payload)
+        original_import = builtins.__import__
+
+        def reject_ledger(name, globals=None, locals=None, fromlist=(), level=0):
+            if name == "engine.us_candidate_episode" or (
+                    name == "engine" and "us_candidate_episode" in (fromlist or ())):
+                raise AssertionError("Plan consumer imported the candidate ledger")
+            return original_import(name, globals, locals, fromlist, level)
+
+        monkeypatch.setattr(builtins, "__import__", reject_ledger)
+        plans = originate_plans(path, "2026-07-02", set(), None,
+                                standouts_doc=doc, source_binding=binding)
+        assert len(plans) == 1
+        assert plans[0]["source_origin"]["source_binding"] == binding
+        assert plans[0]["source_origin"]["row_receipt"] == binding["ordered_rows"][0]["row_receipt"]
+        assert validate_trade_plan(plans[0]) == []
+
+    @pytest.mark.parametrize("payload", [float("nan"), float("inf"), -float("inf"), {1, 2}, object()],
+                             ids=["nan", "inf", "negative-inf", "set", "object"])
+    def test_non_json_row_is_rejected_before_origination(self, tmp_path, payload):
+        path, doc, binding = self._fixture(tmp_path, "valid")
+        doc["buy"][0]["receipt_probe"] = payload
+        with pytest.raises(ValueError, match="value is not canonical JSON"):
+            originate_plans(path, "2026-07-02", set(), None,
+                            standouts_doc=doc, source_binding=binding)
