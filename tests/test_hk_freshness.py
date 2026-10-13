@@ -709,3 +709,98 @@ def test_hk_heatmap_uses_the_incumbent_asia_publisher_not_us_nightly():
     assert 'if [ "$failed" -ne 0 ]; then exit 1; fi' in tail
     assert "id: publish_hk_heatmap" in dag
     assert "module: scripts.build_market_heatmap" in dag
+
+
+def test_hk_deep_source_reuses_adjusted_breadth_cache_for_completed_day():
+    """Same existing HK stock owner, no new provider and 95% exact session."""
+    from collectors.hk_closes_deep import reconcile_settled_hk_cache
+    names=[f"{i:04d}.HK" for i in range(1,161)]
+    days=pd.to_datetime(["2026-10-08","2026-10-09"])
+    baseline=pd.DataFrame({s:[99.,100.] for s in names},index=days)
+    cache=pd.DataFrame({s:[99.,100.,101. if i<152 else float("nan")]
+                        for i,s in enumerate(names)},
+                      index=pd.to_datetime(["2026-10-08","2026-10-09","2026-10-12"]))
+    before=baseline.copy(deep=True)
+    result=reconcile_settled_hk_cache(
+        baseline,names,cache=cache,reference=baseline,
+        now=datetime(2026,10,12,12,tzinfo=timezone.utc))
+    assert result.index.max()==pd.Timestamp("2026-10-12")
+    assert int(result.loc["2026-10-12"].notna().sum())==152
+    assert pd.isna(result.at[pd.Timestamp("2026-10-12"),names[-1]])
+    pd.testing.assert_frame_equal(before,baseline)
+    assert (result.loc["2026-10-09"]==100.).all()
+
+
+def test_hk_deep_source_never_rebases_different_adjustment_histories():
+    import pytest
+    from collectors.hk_closes_deep import reconcile_settled_hk_cache
+    names=[f"{i:04d}.HK" for i in range(1,21)]
+    dates=pd.to_datetime(["2026-10-08","2026-10-09"])
+    baseline=pd.DataFrame({s:[99.,100.] for s in names},index=dates)
+    cache=pd.DataFrame({s:[99.,100.,101.] for s in names},
+                       index=pd.to_datetime(["2026-10-08","2026-10-09","2026-10-12"]))
+    for name in names[18:]:
+        cache.loc["2026-10-09",name]=105.
+    with pytest.raises(RuntimeError,match="18/20"):
+        reconcile_settled_hk_cache(
+            baseline,names,cache=cache,reference=baseline,
+            now=datetime(2026,10,12,12,tzinfo=timezone.utc))
+    assert baseline.index.max()==pd.Timestamp("2026-10-09")
+
+
+def test_hk_deep_source_respects_1730_hkt_settlement():
+    from collectors.hk_closes_deep import reconcile_settled_hk_cache
+    names=[f"{i:04d}.HK" for i in range(1,21)]
+    dates=pd.to_datetime(["2026-10-08","2026-10-09"])
+    baseline=pd.DataFrame({s:[99.,100.] for s in names},index=dates)
+    cache=pd.DataFrame({s:[99.,100.,101.] for s in names},
+                       index=pd.to_datetime(["2026-10-08","2026-10-09","2026-10-12"]))
+    before_close=reconcile_settled_hk_cache(
+        baseline,names,cache=cache,reference=baseline,
+        now=datetime(2026,10,12,8,30,tzinfo=timezone.utc))
+    assert before_close.index.max()==pd.Timestamp("2026-10-09")
+    assert pd.Timestamp("2026-10-12") not in before_close.index
+
+
+def test_hk_deep_owner_orders_after_breadth_in_existing_asia_shard():
+    from pathlib import Path
+    src=(Path(__file__).resolve().parents[1]/"scripts/collect.py").read_text()
+    assert src.index('("hk_breadth", "collectors.hk_breadth"') < src.index(
+        '("hk_closes_deep", "collectors.hk_closes_deep"')
+    assert 'serial_keys = [k for k in registry if k not in _CONCURRENT_HOSTS]' in src
+
+
+def test_hk_deep_cold_runner_preserves_published_close_without_breadth_cache():
+    """A missed Actions cache restore cannot erase a qualified deep close."""
+    from collectors.hk_closes_deep import reconcile_settled_hk_cache
+    names=[f"{i:04d}.HK" for i in range(1,161)]
+    old=pd.DataFrame({s:[99.,100.] for s in names},
+                     index=pd.to_datetime(["2026-10-08","2026-10-09"]))
+    durable=old.copy()
+    durable.loc[pd.Timestamp("2026-10-12"),:] = float("nan")
+    for t in names[:153]:
+        durable.at[pd.Timestamp("2026-10-12"),t]=101.
+    out=reconcile_settled_hk_cache(
+        old,names,cache=None,reference=durable,
+        now=datetime(2026,10,13,6,45,tzinfo=timezone.utc))
+    assert out.index.max()==pd.Timestamp("2026-10-12")
+    assert int(out.loc["2026-10-12"].notna().sum())==153
+    assert (out.loc["2026-10-09"]==100.).all()
+
+
+def test_hk_deep_cold_runner_rejects_unverified_stored_prices():
+    from collectors.hk_closes_deep import reconcile_settled_hk_cache
+    names=[f"{i:04d}.HK" for i in range(1,21)]
+    old=pd.DataFrame({s:[99.,100.] for s in names},
+                     index=pd.to_datetime(["2026-10-08","2026-10-09"]))
+    wrong=old.copy()
+    wrong.loc[pd.Timestamp("2026-10-12"),:] = 101.
+    # A forged back-adjusted reference that disagrees on the prior close can
+    # never be laundered through the durable-store fallback.
+    for ticker in names[18:]:
+        wrong.loc["2026-10-09",ticker]=105.
+    import pytest
+    with pytest.raises(RuntimeError,match="18/20"):
+        reconcile_settled_hk_cache(
+            old,names,cache=None,reference=wrong,
+            now=datetime(2026,10,13,6,45,tzinfo=timezone.utc))
