@@ -4901,6 +4901,20 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
     assert not owned_losses, owned_losses
 
 
+# 2026-10-13 #7193 latest-base proof run 38382567313, contract-delta job
+# 115246349455: adding two newly named tests under the EXISTING
+# china-board-breadth owner (`tests/test_china_heatmap_freshness.py` and
+# `tests/test_china_heatmap_settled_close.py`) increased only that owner's
+# deterministic estimator weight from 6 to 10 (+4, exactly two test refs x2).
+# No new or renamed owner, no newly selected job, and no new pack:
+#   templates/index.html        base 134 jobs / 5799 s -> head 134 / 5803, 10 packs
+#   scripts/build_free_content.py base 134 / 5602 -> head 134 / 5606, 10 packs
+#   engine/prophet/plan_book.py base 129 / 5562 -> head 129 / 5566, 10 packs
+# The pre-existing plan_book cap 5600 remains untouched. The other two
+# weight ceilings match measured head exactly, with zero forward padding.
+# This retains all original and new tests; an exclusive scope based only on
+# heatmap files would hide the owner's broad import/read closure and is unsafe.
+#
 # The packing probes and their ceilings: (changed path, max selected jobs, max
 # selected weight-seconds), plus one pack ceiling for every probe. The history of
 # each number is the docstring of the test below. scripts/check_contract_delta.py
@@ -4919,8 +4933,8 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # to the exact head 5,602; preserve all job, pack, and other weight ceilings.
 # A further increase from this head remains a blocking packing regression.
 PACKING_PROBES = (
-    ("templates/index.html", 135, 5_800),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 134, 5_602),  # ci-trigger-closure: data — fixed measured 2026-10-13, see #7193 below
+    ("templates/index.html", 135, 5_803),  # ci-trigger-closure: data — 2026-10-13 verified +4-suite weight, 134/135 jobs and 10 packs retained
+    ("scripts/build_free_content.py", 134, 5_606),  # ci-trigger-closure: data — 2026-10-13 verified +4-suite weight, 134 jobs and 10 packs retained
     ("engine/prophet/plan_book.py", 129, 5_600),
 )
 # Twelve packs per shape was the pre-curation measurement.
