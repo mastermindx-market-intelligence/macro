@@ -91,7 +91,7 @@ COCKPIT_AXIS_PRESENTATION = (
         "label_en": "Cycle & Valuation",
         "label_zh": "周期与估值",
         "primary": "valuation",
-        "spark_source": "signals.mvrv_z",
+        "spark_source": "signals.cycle_position",
         "receipt_members": ("cycle", "reserve_risk", "extreme"),
     },
     {
@@ -99,7 +99,7 @@ COCKPIT_AXIS_PRESENTATION = (
         "label_en": "Liquidity & Flows",
         "label_zh": "流动性与资金流",
         "primary": "etf",
-        "spark_source": "signals.etf_flow_z",
+        "spark_source": "signals.stbl_growth",
         "receipt_members": ("stbl", "premium"),
     },
     {
@@ -107,7 +107,7 @@ COCKPIT_AXIS_PRESENTATION = (
         "label_en": "Leverage & Derivatives",
         "label_zh": "杠杆与衍生品",
         "primary": "leverage_cascade",
-        "spark_source": "signals.oi_mcap_ratio",
+        "spark_source": "signals.leverage_stress",
         "receipt_members": ("funding", "cot"),
     },
     {
@@ -123,10 +123,30 @@ COCKPIT_AXIS_PRESENTATION = (
         "label_en": "Macro Backdrop",
         "label_zh": "宏观背景",
         "primary": "macro",
-        "spark_source": "signals.macro_score",
+        "spark_source": "signals.global_m2_yoy",
         "receipt_members": ("beta",),
     },
 )
+
+# One subject per S3 row (R31): the spark and the micro figure both read the column named by the
+# row's ``spark_source`` (``_axis_source_column``). This table carries only how that column prints
+# and what it is called: (formatter, micro_en, micro_zh, series_en, series_zh). No column literal.
+COCKPIT_AXIS_MICRO = {
+    "trend_momentum": (lambda v: f"{v:+.2f}", "momentum", "动量", "the momentum score", "动量评分"),
+    "cycle_valuation": (lambda v: f"{round(100 * v)}%", "cycle", "周期", "cycle position", "周期位置"),
+    "liquidity_flows": (lambda v: f"{v:+.1f}%", "stablecoin growth", "稳定币增长",
+                        "stablecoin supply growth", "稳定币供应增长"),
+    "leverage_derivatives": (lambda v: f"{round(v)}/100", "pressure", "压力",
+                             "the leverage pressure score", "杠杆压力评分"),
+    "network_miners": (lambda v: f"{round(v)}/100", "BFI", "BFI", "the BFI score", "BFI 评分"),
+    "macro_backdrop": (lambda v: f"{v:+.1f}%", "global M2", "全球 M2",
+                       "global M2 growth, year on year", "全球 M2 同比增速"),
+}
+
+
+def _axis_source_column(spec: dict) -> str:
+    """The signals column one S3 row describes: its spark AND its micro figure."""
+    return spec["spark_source"].split(".", 1)[-1]
 
 
 def _zh_date(ts) -> str:
@@ -577,54 +597,25 @@ def _vector_presentations(
         }
 
     axes = _cockpit_axis_rows(master, regime)
-    micro = {
-        "trend_momentum": (
-            f"{float(last.get('momentum')):+.2f}" if pd.notna(last.get("momentum")) else "—",
-            "momentum",
-            "动量",
-        ),
-        "cycle_valuation": (
-            f"{round(100 * float(last.get('cycle_position')))}%" if pd.notna(last.get("cycle_position")) else "—",
-            "cycle",
-            "周期",
-        ),
-        "liquidity_flows": (
-            f"{float(last.get('stbl_growth')):+.1f}%" if pd.notna(last.get("stbl_growth")) else "—",
-            "stablecoin growth",
-            "稳定币增长",
-        ),
-        "leverage_derivatives": (
-            f"{round(float(last.get('leverage_stress')))}/100" if pd.notna(last.get("leverage_stress")) else "—",
-            "pressure",
-            "压力",
-        ),
-        "network_miners": (
-            f"{round(float(last.get('bfi')))}/100" if pd.notna(last.get("bfi")) else "—",
-            "BFI",
-            "BFI",
-        ),
-        "macro_backdrop": (
-            f"{float(last.get('global_m2_yoy')):+.1f}%" if pd.notna(last.get("global_m2_yoy")) else "—",
-            "global M2",
-            "全球 M2",
-        ),
-    }
     for row, spec in zip(axes, COCKPIT_AXIS_PRESENTATION):
-        source_col = spec["spark_source"].split(".", 1)[-1]
-        row["spark"] = _spark_points(sig[source_col] if source_col in sig else None)
-        row["micro"], row["micro_en"], row["micro_zh"] = micro[row["id"]]
+        col = _axis_source_column(spec)
+        fmt, row["micro_en"], row["micro_zh"], series_en, series_zh = COCKPIT_AXIS_MICRO[row["id"]]
+        # An absent column still hands _spark_points a Series (empty -> the existing null spark).
+        row["spark"] = _spark_points(sig[col] if col in sig else pd.Series(dtype="float64", name=col))
+        value = last.get(col)
+        row["micro"] = fmt(float(value)) if pd.notna(value) else "—"
         all_receipts = [row["primary"], *row["receipt_members"]]
         row["receipt_en"] = (
             "Primary: "
             + " — ".join((all_receipts[0]["label_en"], all_receipts[0]["state_en"]))
-            + ". Also watching: "
+            + f"; it sets the row state. The chart and figure follow {series_en}. Also watching: "
             + "; ".join(f"{r['label_en']} — {r['state_en']}" for r in all_receipts[1:])
             + ". Display context only; position size comes from the final allocation."
         )
         row["receipt_zh"] = (
             "主读数："
             + " — ".join((all_receipts[0]["label_zh"], all_receipts[0]["state_zh"]))
-            + "。同时观察："
+            + f"，决定本行状态。图表与数字跟随{series_zh}。同时观察："
             + "；".join(f"{r['label_zh']} — {r['state_zh']}" for r in all_receipts[1:])
             + "。仅作展示背景；仓位取自最终配置。"
         )

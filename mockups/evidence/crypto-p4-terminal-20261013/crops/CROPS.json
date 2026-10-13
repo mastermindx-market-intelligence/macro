@@ -1,0 +1,384 @@
+[
+ {
+  "file": "crypto_H3_dark_en_1440.png",
+  "page": "crypto.html",
+  "shelf": "H3",
+  "theme": "dark",
+  "lang": "en",
+  "doc_theme": "dark",
+  "doc_lang": "en",
+  "qm": [
+   {
+    "tip": "Farside fund-level net creations and redemptions, in million",
+    "title": null,
+    "w": 18,
+    "h": 18,
+    "dy_center": 1,
+    "color": "rgb(139, 147, 161)",
+    "border": "rgb(58, 65, 80)",
+    "radius": "999px"
+   },
+   {
+    "tip": "DefiLlama aggregate circulating supply. A supply change, not",
+    "title": null,
+    "w": 18,
+    "h": 18,
+    "dy_center": 1,
+    "color": "rgb(139, 147, 161)",
+    "border": "rgb(58, 65, 80)",
+    "radius": "999px"
+   },
+   {
+    "tip": "BTC spot-volume percentile is an honest proxy until full cla",
+    "title": null,
+    "w": 18,
+    "h": 18,
+    "dy_center": 1,
+    "color": "rgb(139, 147, 161)",
+    "border": "rgb(58, 65, 80)",
+    "radius": "999px"
+   }
+  ]
+ },
+ {
+  "file": "crypto_H4_dark_en_1440.png",
+  "page": "crypto.html",
+  "shelf": "H4",
+  "theme": "dark",
+  "lang": "en",
+  "doc_theme": "dark",
+  "doc_lang": "en",
+  "qm": [
+   {
+    "tip": "An annualized cost needs a qualified interval and source. Pr",
+    "title": null,
+    "w": 18,
+    "h": 18,
+    "dy_center": 1,
+    "color": "rgb(139, 147, 161)",
+    "border": "rgb(58, 65, 80)",
+    "radius": "999px"
+   },
+   {
+    "tip": "ETH/BTC relative trend plus BTC dominance; display context o",
+    "title": null,
+    "w": 18,
+    "h": 18,
+    "dy_center": 1,
+    "color": "rgb(139, 147, 161)",
+    "border": "rgb(58, 65, 80)",
+    "radius": "999px"
+   }
+  ]
+ },
+ {
+  "file": "crypto_lens_etf_dark_en_1440.png",
+  "page": "crypto.html",
+  "shelf": "H3",
+  "state": "lens-open-etf",
+  "theme": "dark",
+  "lang": "en",
+  "doc_theme": "dark",
+  "doc_lang": "en",
+  "popover": {
+   "text": "Farside fund-level net creations and redemptions, in millions of dollars. A bitcoin-ETF subscription measurement, not class capitalization.",
+   "bg": "color(srgb 0.0823529 0.0941176 0.12549 / 0.86)",
+   "color": "rgb(200, 208, 220)"
+  },
+  "sensor_bbox": {
+   "x": 82,
+   "y": 371.609375,
+   "width": 425.328125,
+   "height": 173
+  },
+  "pop_bbox": {
+   "x": 100,
+   "y": 274,
+   "width": 300,
+   "height": 105
+  }
+ },
+ {
+  "file": "vector_S3_dark_en_1440.png",
+  "page": "vector.html",
+  "shelf": "S3",
+  "theme": "dark",
+  "lang": "en",
+  "doc_theme": "dark",
+  "doc_lang": "en",
+  "rows": []
+ },
+ {
+  "file": "crypto_H3_dark_zh_1440.png",
+  "page": "crypto.html",
+  "shelf": "H3",
+  "theme": "dark",
+  "lang": "zh",
+  "doc_theme": "dark",
+  "doc_lang": "zh-CN",
+  "qm": [
+   {
+    "tip": "Farside 基金级净申购与赎回，单位为百万美元。这是比特币 ETF 申购测量，不是全市场市值。",
+    "title": null,
+    "w": 18,
+    "h": 18,
+    "dy_center": 1,
+    "color": "rgb(139, 147, 161)",
+    "border": "rgb(58, 65, 80)",
+    "radius": "999px"
+   },
+   {
+    "tip": "DefiLlama 汇总流通供应量。这是供应量变化，不是已测量的 ETF 申购。",
+    "title": null,
+    "w": 18,
+    "h": 18,
+    "dy_center": 1,
+    "color": "rgb(139, 147, 161)",
+    "border": "rgb(58, 65, 80)",
+    "radius": "999px"
+   },
+   {
+    "tip": "在全市场成交量积累完成前，以 BTC 现货成交量百分位作为明确标注的代理。",
+    "title": null,
+    "w": 18,
+    "h": 18,
+    "dy_center": 1,
+    "color": "rgb(139, 147, 161)",
+    "border": "rgb(58, 65, 80)",
+    "radius": "999px"
+   }
+  ]
+ },
+ {
+  "file": "crypto_H4_dark_zh_1440.png",
+  "page": "crypto.html",
+  "shelf": "H4",
+  "theme": "dark",
+  "lang": "zh",
+  "doc_theme": "dark",
+  "doc_lang": "zh-CN",
+  "qm": [
+   {
+    "tip": "年化成本需要明确的结算间隔与来源。预测资金费率并非实际结算支付。",
+    "title": null,
+    "w": 18,
+    "h": 18,
+    "dy_center": 1,
+    "color": "rgb(139, 147, 161)",
+    "border": "rgb(58, 65, 80)",
+    "radius": "999px"
+   },
+   {
+    "tip": "ETH/BTC 相对趋势结合 BTC 占比；仅作展示背景。",
+    "title": null,
+    "w": 18,
+    "h": 18,
+    "dy_center": 1,
+    "color": "rgb(139, 147, 161)",
+    "border": "rgb(58, 65, 80)",
+    "radius": "999px"
+   }
+  ]
+ },
+ {
+  "file": "vector_S3_dark_zh_1440.png",
+  "page": "vector.html",
+  "shelf": "S3",
+  "theme": "dark",
+  "lang": "zh",
+  "doc_theme": "dark",
+  "doc_lang": "zh-CN",
+  "rows": []
+ },
+ {
+  "file": "crypto_H3_light_en_1440.png",
+  "page": "crypto.html",
+  "shelf": "H3",
+  "theme": "light",
+  "lang": "en",
+  "doc_theme": "light",
+  "doc_lang": "en",
+  "qm": [
+   {
+    "tip": "Farside fund-level net creations and redemptions, in million",
+    "title": null,
+    "w": 18,
+    "h": 18,
+    "dy_center": 1,
+    "color": "rgb(76, 90, 108)",
+    "border": "rgb(192, 196, 205)",
+    "radius": "999px"
+   },
+   {
+    "tip": "DefiLlama aggregate circulating supply. A supply change, not",
+    "title": null,
+    "w": 18,
+    "h": 18,
+    "dy_center": 1,
+    "color": "rgb(76, 90, 108)",
+    "border": "rgb(192, 196, 205)",
+    "radius": "999px"
+   },
+   {
+    "tip": "BTC spot-volume percentile is an honest proxy until full cla",
+    "title": null,
+    "w": 18,
+    "h": 18,
+    "dy_center": 1,
+    "color": "rgb(76, 90, 108)",
+    "border": "rgb(192, 196, 205)",
+    "radius": "999px"
+   }
+  ]
+ },
+ {
+  "file": "crypto_H4_light_en_1440.png",
+  "page": "crypto.html",
+  "shelf": "H4",
+  "theme": "light",
+  "lang": "en",
+  "doc_theme": "light",
+  "doc_lang": "en",
+  "qm": [
+   {
+    "tip": "An annualized cost needs a qualified interval and source. Pr",
+    "title": null,
+    "w": 18,
+    "h": 18,
+    "dy_center": 1,
+    "color": "rgb(76, 90, 108)",
+    "border": "rgb(192, 196, 205)",
+    "radius": "999px"
+   },
+   {
+    "tip": "ETH/BTC relative trend plus BTC dominance; display context o",
+    "title": null,
+    "w": 18,
+    "h": 18,
+    "dy_center": 1,
+    "color": "rgb(76, 90, 108)",
+    "border": "rgb(192, 196, 205)",
+    "radius": "999px"
+   }
+  ]
+ },
+ {
+  "file": "vector_S3_light_en_1440.png",
+  "page": "vector.html",
+  "shelf": "S3",
+  "theme": "light",
+  "lang": "en",
+  "doc_theme": "light",
+  "doc_lang": "en",
+  "rows": []
+ },
+ {
+  "file": "crypto_H3_light_zh_1440.png",
+  "page": "crypto.html",
+  "shelf": "H3",
+  "theme": "light",
+  "lang": "zh",
+  "doc_theme": "light",
+  "doc_lang": "zh-CN",
+  "qm": [
+   {
+    "tip": "Farside 基金级净申购与赎回，单位为百万美元。这是比特币 ETF 申购测量，不是全市场市值。",
+    "title": null,
+    "w": 18,
+    "h": 18,
+    "dy_center": 1,
+    "color": "rgb(76, 90, 108)",
+    "border": "rgb(192, 196, 205)",
+    "radius": "999px"
+   },
+   {
+    "tip": "DefiLlama 汇总流通供应量。这是供应量变化，不是已测量的 ETF 申购。",
+    "title": null,
+    "w": 18,
+    "h": 18,
+    "dy_center": 1,
+    "color": "rgb(76, 90, 108)",
+    "border": "rgb(192, 196, 205)",
+    "radius": "999px"
+   },
+   {
+    "tip": "在全市场成交量积累完成前，以 BTC 现货成交量百分位作为明确标注的代理。",
+    "title": null,
+    "w": 18,
+    "h": 18,
+    "dy_center": 1,
+    "color": "rgb(76, 90, 108)",
+    "border": "rgb(192, 196, 205)",
+    "radius": "999px"
+   }
+  ]
+ },
+ {
+  "file": "crypto_H4_light_zh_1440.png",
+  "page": "crypto.html",
+  "shelf": "H4",
+  "theme": "light",
+  "lang": "zh",
+  "doc_theme": "light",
+  "doc_lang": "zh-CN",
+  "qm": [
+   {
+    "tip": "年化成本需要明确的结算间隔与来源。预测资金费率并非实际结算支付。",
+    "title": null,
+    "w": 18,
+    "h": 18,
+    "dy_center": 1,
+    "color": "rgb(76, 90, 108)",
+    "border": "rgb(192, 196, 205)",
+    "radius": "999px"
+   },
+   {
+    "tip": "ETH/BTC 相对趋势结合 BTC 占比；仅作展示背景。",
+    "title": null,
+    "w": 18,
+    "h": 18,
+    "dy_center": 1,
+    "color": "rgb(76, 90, 108)",
+    "border": "rgb(192, 196, 205)",
+    "radius": "999px"
+   }
+  ]
+ },
+ {
+  "file": "crypto_lens_etf_light_zh_1440.png",
+  "page": "crypto.html",
+  "shelf": "H3",
+  "state": "lens-open-etf",
+  "theme": "light",
+  "lang": "zh",
+  "doc_theme": "light",
+  "doc_lang": "zh-CN",
+  "popover": {
+   "text": "Farside 基金级净申购与赎回，单位为百万美元。这是比特币 ETF 申购测量，不是全市场市值。",
+   "bg": "color(srgb 1 1 1 / 0.64)",
+   "color": "rgb(46, 57, 80)"
+  },
+  "sensor_bbox": {
+   "x": 82,
+   "y": 386.859375,
+   "width": 425.328125,
+   "height": 157.46875
+  },
+  "pop_bbox": {
+   "x": 89,
+   "y": 309,
+   "width": 300,
+   "height": 85
+  }
+ },
+ {
+  "file": "vector_S3_light_zh_1440.png",
+  "page": "vector.html",
+  "shelf": "S3",
+  "theme": "light",
+  "lang": "zh",
+  "doc_theme": "light",
+  "doc_lang": "zh-CN",
+  "rows": []
+ }
+]

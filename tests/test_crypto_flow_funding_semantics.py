@@ -110,6 +110,9 @@ def _macros() -> str:
         {% macro tone(tone) -%}
         {{- 'tone-up' if tone == 'bull' else ('tone-down' if tone == 'bear' else 'tone-flat') -}}
         {%- endmacro %}
+        {% macro qmark(en, zh='') -%}
+        <span class="qm" tabindex="0" role="note" data-tip-en="{{ en }}"{% if zh %} data-tip-zh="{{ zh }}"{% endif %}>?</span>
+        {%- endmacro %}
     """)
 
 
