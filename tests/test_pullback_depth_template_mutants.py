@@ -256,9 +256,35 @@ H219 | KILLED | test_zoned_valid_until_is_readable_without_js[2026-10-01T09:00:0
 H220 | KILLED | test_e2_e3_chart_sentences_replace_the_old_copy[cn] | swap the uncovered branch's ZH output back to the pre-hunk string
 H221 | KILLED | test_withheld_chart_without_a_reason_stays_neutral_not_that_prices_are_unusable | swap `==` -> `!=` in `v.get('detail_withheld') == 'uncovered'`
 H222 | KILLED | test_withheld_chart_without_a_reason_stays_neutral_not_that_prices_are_unusable | swap the else branch's EN output back to the pre-hunk string
+
+2026-10-13 addendum: lane MT3 re-surveyed the newest signed-path and dialog
+hunks (lib/pullback_depth.py's value_fmt gate and end ratio,
+lib/pullback_observation.py's unclipped path vals, the history cell's sign
+branch, the stamp and verdict conditions) with 35 single-edit mutants. Rows
+H223-H225 are the survivors the suites above missed; each is killed here.
+
+H223 | KILLED | test_m_chart_end_tag_format_follows_the_rounded_end_value | swap `>` -> `>=` in lib/pullback_depth.py's `value_fmt="{:+.1f}%" if round(shown["vals"][-1], 1) > 0`
+H224 | KILLED | test_m_chart_end_tag_format_follows_the_rounded_end_value | drop the `round` in that same gate: `if shown["vals"][-1] > 0`
+H225 | KILLED | test_m_history_cell_prints_the_owner_rounded_negative_zero_unsigned | swap `>` -> `>=` in the history cell's `{% if value > 0 %}`
+
+Four further survivors are equivalent, so no test can kill them. The close's
+refocus guard (`if(_dlgTrigger === trig) _dlgTrigger = null;` -> unconditional
+null): refocus() runs at most once per close, and every later ``_dlgTrigger``
+recapture runs open()'s cancel loop first, which clears that close's timer and
+transitionend handler so its refocus can never run — ``_dlgTrigger === trig``
+holds at every refocus() that executes. The done() splice loop (`ci >= 0` ->
+`ci > 0`, or the line deleted): the only reader of ``_dlgClosing`` is open()'s
+cancel loop, whose own intact splice removes the stale entry before anything
+can observe it, and cancel's class stripping is a no-op on an already-done
+dialog. The ``_vu_disp`` ``|trim``: valid_until_display emits with whitespace
+control on every tag, so its result carries no surrounding space — verified
+byte-identical renders with and without the filter across all four stamp
+shapes plus two rejected values.
 """
 from bs4 import BeautifulSoup
+import pytest
 
+from lib import pullback_depth as core
 from tests.test_risk_radar_pullback_depth_template import native_view, render
 
 # English span text -> the Chinese span that must sit beside it.
@@ -549,3 +575,72 @@ def test_m_monitoring_above_the_retained_high_stays_contradictory():
     soup = _soup(view)
     assert soup.select_one("section.rrp").get("data-pb-phase") == "unavailable"
     assert soup.select_one('[data-metric="current"]') is None
+
+
+def _end_tag_obs(close, end_val):
+    """A four-close recovering window whose end is ``close`` against the 100.0 peak."""
+    return {
+        "schema": core.OBSERVATION_SCHEMA, "market": "cn", "available": True,
+        "quality": "current", "clock": "settled_close", "phase": "recovering",
+        "active": True, "asof": "2026-09-30", "peak_session": "2026-09-14",
+        "peak_close": 100.0, "close": close, "low_close": 92.6,
+        "low_session": "2026-09-21", "drawdown_pct": -7.4,
+        "price_path": {
+            "dates": ["2026-09-14", "2026-09-21", "2026-09-24", "2026-09-30"],
+            "vals": [0.0, -7.4, -6.2, end_val],
+        },
+    }
+
+
+def test_m_chart_end_tag_format_follows_the_rounded_end_value():
+    """The end tag's format follows the rounded end value, so a reclaim under a tenth of a percent stays unsigned.
+
+    The gate reads ``round(shown["vals"][-1], 1) > 0``. H223 widened it to
+    ``>= 0``: a close 0.04 under the high rounds to ``-0.0``, which ``>= 0``
+    lets through as signed and prints ``-0.0%``. H224 dropped the ``round``: a
+    close 0.04 above the high is positive raw but rounds to ``0.0``, which must
+    stay the unsigned ``0.0%`` the metric and the history table print. Both
+    near-zero reclaims are drawn here, beside a real reclaim and a drawdown.
+    """
+    import lib.illus as illus_module
+
+    cases = [
+        (100.04, 0.04, "{:z.1f}%"),   # raw +0.04 but rounds to 0.0: kills H224
+        (99.96, -0.04, "{:z.1f}%"),   # rounds to -0.0: kills H223's >= 0
+        (100.5, 0.5, "{:+.1f}%"),     # a real reclaim keeps its plus
+        (93.2, -6.8, "{:z.1f}%"),     # a drawdown never prints a plus
+    ]
+    for close, end_val, fmt in cases:
+        seen = {}
+
+        def fake_illus(series, **kwargs):
+            seen.update(kwargs)
+            return ""
+
+        patch = pytest.MonkeyPatch()
+        try:
+            patch.setattr(illus_module, "illus", fake_illus)
+            view = core.present(_end_tag_obs(close, end_val), market="cn",
+                                aria_en="Drawdown", aria_zh="回撤")
+        finally:
+            patch.undo()
+        assert view["detail_withheld"] is None, close
+        assert view["detail_chart_html"] == ""
+        assert seen["value_fmt"] == fmt, (close, seen["value_fmt"])
+
+
+def test_m_history_cell_prints_the_owner_rounded_negative_zero_unsigned():
+    """A close less than a hundredth of a percent under the high rounds the owner's path value to -0.0, and the cell still prints an unsigned 0.0%.
+
+    ``round(100.0 * (p / peak - 1.0), 4)`` emits ``-0.0`` there, and H225's
+    widened ``value >= 0`` catches it: ``'%.1f'|format(-0.0)`` is ``-0.0``, so
+    the cell would print ``+-0.0%`` — a plus glued to a formatted minus, on a
+    figure the three metrics above print unsigned.
+    """
+    view = _chart_view()
+    view["detail_path"]["dates"] = view["detail_path"]["dates"][:3]
+    view["detail_path"]["vals"] = [0.0, -0.0, -6.8]
+    cells = [row.select("td")[1] for row in _soup(view).select(".rrp-history tbody tr")]
+    assert [cell.get_text() for cell in cells] == ["0.0%", "0.0%", _MINUS + "6.8%"]
+    for text in (cells[0].get_text(), cells[1].get_text()):
+        assert "+" not in text and _MINUS not in text and "-" not in text
