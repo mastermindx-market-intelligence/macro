@@ -74,7 +74,7 @@ changed:
       (line 124) now qualifies both check-run read times, 19:13:04Z and 19:13:06Z, as the seat's
       own log timestamps, not reproducible from the carrier (the 19:13:04Z qualification and the
       matching WS-GMI-SEMICONDUCTORS lines 94 and 97 were added by the third repair).
-  - path: agentos/handoffs/GMI-SEMICONDUCTORS-2026-10-12-frontier-delegation.md
+  - path: agentos/handoffs/GMI-SEMICONDUCTORS-2026-10-12.md
     what: >
       New (this file). Carry-over (d): re-read #4 (#8847 comment 6113181732, item (d)) found
       that "the handoff's verified summary omits the 839bd6a1 hosted-CI entry (handoff lines
