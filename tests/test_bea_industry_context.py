@@ -1413,6 +1413,118 @@ class BEAManifestResearchQualificationTests(unittest.TestCase):
                 hardening_bytes=receipts[2],
             )
 
+    @staticmethod
+    def _selected_workspace_response_from_supplied_view(source: bytes):
+        response = _synthetic_workspace_response()
+        lines = source.split(b"\n")
+        positions = [139 * i for i in range(8)]
+        response["result"]["row_positions"] = positions
+        response["result"]["rows"] = [
+            json.loads(lines[position]) for position in positions
+        ]
+        response["result"]["scanned_rows"] = 1112
+        response["result"]["scan_complete"] = True
+        response["result"]["next_offset"] = None
+        return response
+
+    def _run_workspace_view_binding(self, source, receipts, response):
+        mock_history = {
+            "observations": [
+                {"accounting_year": year} for year in range(2017, 2025)
+            ],
+            "reader_provenance": {
+                "stat_file_version": response["source"]["file_version"],
+                "query_receipt_sha256": response["query_receipt_sha256"],
+            },
+        }
+        # The strict canonical reader is separately exercised against real
+        # synthetic DataWorkspace.read results. This mock isolates the
+        # selection-byte equality contract without patching original row pins.
+        with (
+            patch.object(
+                bea_module, "BUILD_RECEIPT_SHA256",
+                hashlib.sha256(receipts[0]).hexdigest(),
+            ),
+            patch.object(
+                bea_module, "METADATA_LINEAGE_SHA256",
+                hashlib.sha256(receipts[1]).hexdigest(),
+            ),
+            patch.object(
+                bea_module, "HARDENING_RECEIPT_SHA256",
+                hashlib.sha256(receipts[2]).hexdigest(),
+            ),
+            patch.object(
+                bea_module, "adapt_workspace_bea_history",
+                return_value=mock_history,
+            ),
+        ):
+            return bea_module.attest_workspace_bea_selection_against_supplied_view(
+                response, source, industry_code="3341",
+                commodity_code="3344",
+                build_receipt_bytes=receipts[0],
+                lineage_bytes=receipts[1],
+                hardening_bytes=receipts[2],
+            )
+
+    def test_workspace_selected_rows_match_pinned_research_view_bytes(self):
+        source, receipts = self._synthetic_supplied_industry_view()
+        response = self._selected_workspace_response_from_supplied_view(source)
+        result = self._run_workspace_view_binding(source, receipts, response)
+        self.assertEqual(result["selected_workspace_rows_matched"], 8)
+        self.assertEqual(result["selected_workspace_row_positions"],
+                         [139 * i for i in range(8)])
+        self.assertEqual(result["source_research_view_sha256"],
+                         hashlib.sha256(source).hexdigest())
+        self.assertTrue(result["selected_workspace_rows_match_pinned_view_bytes"])
+        self.assertTrue(result["research_view_bytes_verified_by_supplied_input"])
+        for key in (
+            "unselected_workspace_disk_bytes_authenticated",
+            "upstream_original_BEA_L0_response_bytes_authenticated",
+            "native_dataset_admitted",
+            "historical_pit_eligible", "may_publish", "may_rank",
+            "may_train", "may_trade",
+        ):
+            with self.subTest(key=key):
+                self.assertFalse(result[key])
+
+    def test_changed_row_or_position_never_becomes_byte_attested(self):
+        source, receipts = self._synthetic_supplied_industry_view()
+        base = self._selected_workspace_response_from_supplied_view(source)
+        bad_row = self._selected_workspace_response_from_supplied_view(source)
+        bad_row["result"]["rows"][0]["total_use_million_USD"] += 1
+        with self.assertRaisesRegex(BEAContextRefused, "row differs"):
+            self._run_workspace_view_binding(source, receipts, bad_row)
+        bad_position = self._selected_workspace_response_from_supplied_view(source)
+        bad_position["result"]["row_positions"][0] = 1
+        with self.assertRaisesRegex(BEAContextRefused, "row differs"):
+            self._run_workspace_view_binding(source, receipts, bad_position)
+
+    def test_real_source_row_lineage_pin_never_follows_synthetic_test_metadata(self):
+        source, receipts = self._synthetic_supplied_industry_view()
+        response = self._selected_workspace_response_from_supplied_view(source)
+        with (
+            patch.object(
+                bea_module, "BUILD_RECEIPT_SHA256",
+                hashlib.sha256(receipts[0]).hexdigest(),
+            ),
+            patch.object(
+                bea_module, "METADATA_LINEAGE_SHA256",
+                hashlib.sha256(receipts[1]).hexdigest(),
+            ),
+            patch.object(
+                bea_module, "HARDENING_RECEIPT_SHA256",
+                hashlib.sha256(receipts[2]).hexdigest(),
+            ),
+        ):
+            with self.assertRaisesRegex(BEAContextRefused, "immutable source lineage"):
+                bea_module.attest_workspace_bea_selection_against_supplied_view(
+                    response, source, industry_code="3341",
+                    commodity_code="3344",
+                    build_receipt_bytes=receipts[0],
+                    lineage_bytes=receipts[1],
+                    hardening_bytes=receipts[2],
+                )
+
     def test_original_raw_bytes_are_pinned_even_if_json_remains_valid(self):
         build, lineage, hardening = self._fixture()
         raw_lineage = self._encode(lineage)

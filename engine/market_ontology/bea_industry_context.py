@@ -1015,3 +1015,78 @@ def verify_supplied_bea_research_view_bytes(
         "may_train": False,
         "may_trade": False,
     }
+
+
+def attest_workspace_bea_selection_against_supplied_view(
+    response: Mapping[str, Any], supplied_view_bytes: bytes, *,
+    industry_code: str, commodity_code: str,
+    build_receipt_bytes: bytes, lineage_bytes: bytes, hardening_bytes: bytes,
+) -> dict[str, Any]:
+    """Match selected *read-only DataWorkspace rows* to pinned research-view bytes.
+
+    This attests the selected eight result rows only. The separate supplied
+    research-view file has its *own* complete-byte hash check. The existing
+    DataWorkspace stat version is NOT converted into a file-content hash and
+    is not proof that unselected on-disk bytes equal the supplied view.
+    No file is opened, no registration is performed, and nothing is published.
+    """
+    if not isinstance(commodity_code, str) or not _CODE.fullmatch(commodity_code):
+        raise BEAContextRefused("one exact BEA commodity code required")
+    provenance = verify_supplied_bea_research_view_bytes(
+        supplied_view_bytes, industry_code=industry_code,
+        build_receipt_bytes=build_receipt_bytes,
+        lineage_bytes=lineage_bytes, hardening_bytes=hardening_bytes,
+    )
+    history = adapt_workspace_bea_history(
+        response, industry_code=industry_code, commodity_code=commodity_code,
+        purpose="private_research", as_of=None,
+    )
+    result = response["result"]
+    positions = result["row_positions"]
+    returned = result["rows"]
+    lines = supplied_view_bytes.split(b"\n")
+    if len(positions) != len(returned) or len(positions) != 8:
+        raise BEAContextRefused("exact eight workspace source rows required")
+
+    for year, (position, workspace_row) in enumerate(
+        zip(positions, returned, strict=True), start=2017,
+    ):
+        if type(position) is not int or not 0 <= position < SOURCE_ROWS_PER_INDUSTRY:
+            raise BEAContextRefused("workspace source position outside pinned view")
+        # The view's entire original JSONL was strictly parsed and verified
+        # above. Repeating only eight decoded rows cannot grant L0 authority.
+        raw_row = json.loads(lines[position].decode("utf-8"))
+        if raw_row != workspace_row:
+            raise BEAContextRefused("workspace row differs from authenticated research view")
+        if (raw_row.get("accounting_year") != year
+                or raw_row.get("industry_code_exact") != industry_code
+                or raw_row.get("commodity_code_exact") != commodity_code
+                or history["observations"][year - 2017]["accounting_year"] != year):
+            raise BEAContextRefused("workspace selection does not match exact source grain")
+
+    return {
+        "schema": "market_ontology.bea_workspace_selection_receipt/v1",
+        "authority": "PRIVATE_RESEARCH_ONLY",
+        "industry_code_exact": industry_code,
+        "commodity_code_exact": commodity_code,
+        "exact_code_namespace": EXACT_CODE_NAMESPACE,
+        "publisher_edition_date": PUBLISHER_EDITION_DATE,
+        "publisher_edition_precision": "DAY",
+        "source_research_view_sha256": provenance["supplied_view_sha256"],
+        "pinned_builder_view_sha256": provenance["pinned_builder_view_sha256"],
+        "workspace_stat_file_version": history["reader_provenance"]["stat_file_version"],
+        "workspace_query_receipt_sha256": history["reader_provenance"]["query_receipt_sha256"],
+        "selected_workspace_row_positions": list(positions),
+        "selected_workspace_rows_matched": 8,
+        "research_view_bytes_verified_by_supplied_input": True,
+        "selected_workspace_rows_match_pinned_view_bytes": True,
+        "unselected_workspace_disk_bytes_authenticated": False,
+        "upstream_original_BEA_L0_response_bytes_authenticated": False,
+        "native_dataset_admitted": False,
+        "original_historical_known_at": None,
+        "historical_pit_eligible": False,
+        "may_publish": False,
+        "may_rank": False,
+        "may_train": False,
+        "may_trade": False,
+    }
