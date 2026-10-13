@@ -187,10 +187,17 @@ def compose_program_theme_context(assignments,*,owners,generated_at,as_of):
     if rail=='economics' and owners[ref['owner_key']].owner_kind=='defense_economics':
      axis,_=_pointer(owners[ref['owner_key']].payload(),ref['pointer'].split('/facts/')[0])
      if axis['state']=='stale' and item['state'] in ('supported','partial'): raise ValueError('stale_finance_promotion')
-    if rail=='contrary_case' and (owners[ref['owner_key']].owner_kind=='company_intelligence' or owners[ref['owner_key']].owner_kind=='defense_economics' and item['reason_code'] in ('reported_space_ownership_change','reported_unfunded_backlog_category')):
+    if rail=='contrary_case' and (owners[ref['owner_key']].owner_kind=='company_intelligence' or owners[ref['owner_key']].owner_kind=='defense_economics' and item['reason_code'] in ('reported_space_ownership_change','reported_unfunded_backlog_category','reported_program_cost_maturation_charge')):
      _ref(ref,'economics',owners,cutoff)
-     allowed={'space':('reported_space_ownership_change',{'evt_cik0000202058_2026q2_results:space_business_sale_completed_terms','evt_cik0000202058_2026q2_results:space_business_sale_retained_scope'}),'shipbuilding':('reported_unfunded_backlog_category',{'evt_cik0000040533_2026q2_results:marine_unfunded_backlog'})}
+     allowed={'munitions_replenishment':('reported_program_cost_maturation_charge',{'evt_cik0001133421_2026q2_results:siaw_unfavorable_eac'}),'space':('reported_space_ownership_change',{'evt_cik0000202058_2026q2_results:space_business_sale_completed_terms','evt_cik0000202058_2026q2_results:space_business_sale_retained_scope'}),'shipbuilding':('reported_unfunded_backlog_category',{'evt_cik0000040533_2026q2_results:marine_unfunded_backlog'})}
      if theme not in allowed or item['state'] not in ('partial','stale') or item['reason_code']!=allowed[theme][0] or ref['row_id'] not in allowed[theme][1]:raise ValueError('theme_contrary_fact_scope_invalid')
+     if item['reason_code']=='reported_program_cost_maturation_charge':
+      # Fixed paragraph context is qualified only for this retained immutable report.
+      # The selected numeric span alone does not license generic AARGM-ER claims.
+      span=node.get('source_span') or {}
+      axis,_=_pointer(owners[ref['owner_key']].payload(),ref['pointer'].split('/facts/')[0])
+      if axis.get('state')=='stale' and item['state']!='stale':raise ValueError('stale_finance_promotion')
+      if owners[ref['owner_key']].owner_kind!='defense_economics' or any(node.get(k)!=v for k,v in {'value':68.0,'unit':'USD_million','period':'2026Q2','accounting_basis':'issuer_reported_program_cost_estimate:SiAW:unfavorable_EAC','fact_class':'reported_eac'}.items()) or any(span.get(k)!=v for k,v in {'document_id':'disclosure_document_c0a6de7d1e4ca1fe32680d634e2e01e5ca9f52e915325170510f99b7e01f6581','text_sha256':'a21855da08cb102d1d217c53dc5824a3a795c1c1a44e971bf01ab9da3a2acbbf','source_url':'https://www.sec.gov/Archives/edgar/data/1133421/000113342126000033/noc-06302026xearningsrelea.htm'}.items()):raise ValueError('program_cost_context_source_changed')
     if rail=='market_context' and ref['pointer'].endswith('/axes/participation'):
      if item['reason_code']!='shared_defense_basket_not_theme_portfolio' or item['state'] not in ('partial','stale'):raise ValueError('shared_basket_theme_promotion')
      if node.get('state')=='stale' and item['state']!='stale':raise ValueError('stale_basket_promotion')

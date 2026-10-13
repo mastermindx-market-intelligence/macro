@@ -3,7 +3,9 @@
 Version 1.0 exact-byte reviews stay strict. Version 1.1 stores fingerprints of
 approved leaves plus their source/identity dependencies. Current complete owner
 validation precedes resolution; irrelevant header clocks or unrelated rows do
-not mint new authority. Missing or materially changed leaves degrade only themes.
+not mint new authority. Version 1.2 explicitly narrows financial leaves to consumed
+periods and excludes unconsumed profile narratives; migration proves prior approval
+and unchanged selected semantics. Missing or changed leaves degrade only themes.
 """
 from pathlib import Path
 from hashlib import sha256
@@ -38,8 +40,9 @@ def stable_reference(ref,owner):
  if len(hits)!=1:raise ValueError('reviewed_stable_reference_missing_or_ambiguous')
  return hits[0]
 
-def reference_fingerprint(ref,rail,owner,as_of):
+def reference_fingerprint(ref,rail,owner,as_of,*,version='1.1.0'):
  """Hash the approved leaf and all source/identity dependencies it consumes."""
+ if version not in ('1.1.0','1.2.0'):raise ValueError('review_fingerprint_version_invalid')
  row,node=t._ref(ref,rail,{ref['owner_key']:owner},t._instant(as_of));p=owner.payload();_,anc=t._pointer(p,ref['pointer']);kind=owner.owner_kind
  dependencies={}
  if kind=='program_ontology':
@@ -54,10 +57,20 @@ def reference_fingerprint(ref,rail,owner,as_of):
  elif kind=='defense_economics':
   profile=next(x for x in anc if isinstance(x,dict) and 'ticker_display' in x)
   dependencies['profile']={k:profile[k] for k in ('issuer_id','security_id','ticker_display','name','identity_mode','identity_owner_ref','program_workshare','program_workshare_state','shareholder_capture','authority')}
-  if rail in ('contrary_case','next_event'):dependencies['narrative']={k:profile[k] for k in ('contrary_case','contrary_case_zh','next_condition','next_condition_zh','invalidation','invalidation_zh')}
+  selected_fact=isinstance(node,dict) and node.get('fact_id')==ref['row_id'] and '/axes/economics/facts/' in ref['pointer']
+  if rail in ('contrary_case','next_event') and not (version=='1.2.0' and selected_fact):dependencies['narrative']={k:profile[k] for k in ('contrary_case','contrary_case_zh','next_condition','next_condition_zh','invalidation','invalidation_zh')}
   axis=next((x for x in reversed(anc) if isinstance(x,dict) and 'state' in x and 'facts' in x),None)
   if axis:dependencies['axis']={k:axis[k] for k in ('state','owner_ref','observed_at','fiscal_period','reason_code')}
   if isinstance(node,dict) and node.get('owner_ref'):dependencies['source_binding']={k:v for k,v in p['source_bindings'][node['owner_ref']].items() if k not in ('sha256','content_id','owner_admission_ref')}
+  if version=='1.2.0' and selected_fact:
+   # Owner validation has already established subject, source and period membership.
+   # Bind only periods consumed by this fact, including any derived operands.
+   def selected_binding(fact):
+    binding=p['source_bindings'][fact['owner_ref']]
+    if fact['period'] not in binding['periods']:raise ValueError('selected_fact_period_missing')
+    return {k:([fact['period']] if k=='periods' else v) for k,v in binding.items() if k not in ('sha256','content_id','owner_admission_ref')}
+   dependencies['source_binding']=selected_binding(node)
+   dependencies['operand_bindings']={key:selected_binding(node[key]) for key in ('numerator','denominator') if key in node}
   # Whole-owner receipt revisions are requalified by the incumbent producer.
   # The approved fact still binds its exact full source hash, literal and span.
  elif kind=='company_intelligence':
@@ -78,17 +91,50 @@ def reference_fingerprint(ref,rail,owner,as_of):
   if isinstance(value,str):
    match=re.fullmatch(r'event_workspace:[a-f0-9]{24}:(evt_cik[0-9]{10}_[0-9]{4}q[1-4]_results)',value)
    if match:return 'event_workspace:'+match.group(1)
+   if version=='1.2.0':
+    match=re.fullmatch(r'event_workspace:[a-f0-9]{24}:(evt_cik[0-9]{10}_[0-9]{4}q[1-4]_results):(disclosure_document_[a-f0-9]{64})',value)
+    if match:return 'event_workspace:'+match.group(1)+':'+match.group(2)
   return value
- return sha256(t._json(normalize_transport(dict(kind=kind,row=row,node=node,dependencies=dependencies))).encode()).hexdigest()
+ payload=dict(kind=kind,row=row,node=node,dependencies=dependencies)
+ if version=='1.2.0':
+  payload['fingerprint_version']=version
+  dependencies['owner_authority']={'admission_ref':owner.admission_ref,'rights_state':owner.rights_state}
+ return sha256(t._json(normalize_transport(payload)).encode()).hexdigest()
 
-def make_reviewed_leaf_config(review,owners,*,as_of):
+def make_reviewed_leaf_config(review,owners,*,as_of,version='1.1.0'):
  """Explicit review-time conversion, never called automatically by publication."""
- out=deepcopy(review);out['schema_version']='1.1.0';fingerprints={}
+ if version not in ('1.1.0','1.2.0'):raise ValueError('review_fingerprint_version_invalid')
+ out=deepcopy(review);out['schema_version']=version;fingerprints={}
  for theme,rails in out['assignments'].items():
   for rail,item in rails.items():
    for i,ref in enumerate(item['references']):
-    fingerprints[f'{theme}/{rail}/{i}']=reference_fingerprint(ref,rail,owners[ref['owner_key']],as_of)
+    fingerprints[f'{theme}/{rail}/{i}']=reference_fingerprint(ref,rail,owners[ref['owner_key']],as_of,version=version)
  out['reference_fingerprints']=fingerprints
+ return out
+
+def migrate_reviewed_leaf_config(review,reviewed_owners,current_owners,*,as_of,reviewed_at,reviewer):
+ """Explicit 1.1 to 1.2 review: prove old approval and unchanged selected semantics.
+
+ A narrower fingerprint alone cannot reapprove changed facts. Both retained
+ reviewed bytes and qualified current owners are required for every reference.
+ """
+ if review.get('schema_version')!='1.1.0' or not isinstance(reviewer,str) or not reviewer.strip():raise ValueError('review_migration_invalid')
+ if t._instant(reviewed_at)>t._instant(as_of):raise ValueError('theme_review_not_yet_known')
+ out=deepcopy(review);fingerprints={};seen=set()
+ for theme,rails in review['assignments'].items():
+  for rail,item in rails.items():
+   for i,ref in enumerate(item['references']):
+    token=f'{theme}/{rail}/{i}';seen.add(token);key=ref['owner_key']
+    prior=stable_reference(ref,reviewed_owners[key]);current=stable_reference(ref,current_owners[key])
+    if reference_fingerprint(prior,rail,reviewed_owners[key],as_of)!=review['reference_fingerprints'].get(token):raise ValueError('review_migration_prior_approval_mismatch')
+    old=reference_fingerprint(prior,rail,reviewed_owners[key],as_of,version='1.2.0')
+    new=reference_fingerprint(current,rail,current_owners[key],as_of,version='1.2.0')
+    if old!=new:raise ValueError('review_migration_selected_dependency_changed')
+    out['assignments'][theme][rail]['references'][i]=current;fingerprints[token]=new
+ if seen!=set(review['reference_fingerprints']):raise ValueError('review_fingerprint_inventory_invalid')
+ for key,owner in current_owners.items():
+  out['owners'][key]['sha256']=sha256(owner.raw_bytes).hexdigest()
+ out.update(schema_version='1.2.0',reviewed_at=reviewed_at,reviewer=reviewer,reference_fingerprints=fingerprints)
  return out
 
 def load_current_reviewed_theme_inputs(root,*,as_of,review_path=t.THEME_REVIEW_PATH):
@@ -103,7 +149,7 @@ def load_current_reviewed_theme_inputs(root,*,as_of,review_path=t.THEME_REVIEW_P
   assignments,owners=t.load_reviewed_program_theme_inputs(root,review_path=review_path)
   return review,assignments,owners
  fields={'contract','schema_version','reviewed_at','reviewer','owners','assignments','reference_fingerprints'}
- if not isinstance(review,dict) or set(review)!=fields or review['contract']!=t.THEME_REVIEW_CONTRACT or review['schema_version']!='1.1.0' or not review['reviewer'].strip():raise ValueError('theme_review_invalid')
+ if not isinstance(review,dict) or set(review)!=fields or review['contract']!=t.THEME_REVIEW_CONTRACT or review['schema_version'] not in ('1.1.0','1.2.0') or not review['reviewer'].strip():raise ValueError('theme_review_invalid')
  if t._instant(review['reviewed_at'])>t._instant(as_of):raise ValueError('theme_review_not_yet_known')
  owners={};unavailable=set();current_company_snapshot=None
  for key,ref in review['owners'].items():
@@ -136,7 +182,7 @@ def load_current_reviewed_theme_inputs(root,*,as_of,review_path=t.THEME_REVIEW_P
     if ref['owner_key'] in unavailable:failure='source_unavailable';continue
     try:
      current=stable_reference(ref,owners[ref['owner_key']])
-     if reference_fingerprint(current,rail,owners[ref['owner_key']],as_of)!=expected:raise ValueError('reviewed_leaf_changed')
+     if reference_fingerprint(current,rail,owners[ref['owner_key']],as_of,version=review['schema_version'])!=expected:raise ValueError('reviewed_leaf_changed')
      resolved.append(current)
     except (ValueError,TypeError,KeyError,StopIteration):failure='stale'
    if failure:item.update(state=failure,reason_code='reviewed_source_unavailable' if failure=='source_unavailable' else 'reviewed_leaf_changed',references=[])

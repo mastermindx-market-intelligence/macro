@@ -185,3 +185,51 @@ source release, fresh effect-boundary CAS, natural publication, installed
 entitlement/browser and independent investor acceptance remain distinct gates.
 The existing capacity-classification Fabric run is now worker-unknown and
 retry-unauthorized; it is not duplicated. OriginalQ3/P2 effects remain preserved.
+
+
+### October13 21:59 UTC theme dependency repair and unified research inputs
+
+The v2 combined candidate proof completed all three unfiltered suites: 104
+passed and one conditional live-ledger case skipped because no unaccounted
+candidate rows exist. Receipt SHA256
+`8624a7a5bdd124a4d1a8a557e6501674fff18814ede866945703c5b1f636eabe`
+is retained with its exact source/output identity and parent skip adjudication.
+This does not accept v2 as the product: actual composed themes exposed stale
+references caused by expanded, unconsumed financial period inventories and
+narrative context. The v2 product freeze was withdrawn before final timing.
+
+An explicit theme fingerprint1.2 migration proves all42 original1.1 approvals
+against their retained inputs and equality of their selected1.2 dependencies.
+It binds selected period membership, exact fact/source/span/subject/authority
+and native financial clocks, while removing unconsumed period inventories and
+profile narrative from selected-fact references. Supplemental transport prefix
+normalization still binds exact event and disclosure-document SHA.112 affected
+root tests pass. Existing1.1 semantics remain available; runtime does not
+silently restamp changed facts. The replacement combined generation and its
+actual rendered states still require qualification.
+
+A distinct exact six-symbol technical packet
+`f10935de7cacd0cf2c1554cf5a01e35a939645e6459b732b3e9f86f2592e0cd1`
+now supports one258-session PriceBasis for LMT/RTX/NOC/LHX/SPY/ITA,
+`grv-price-076efbccf0d19608dd181ce133e8471e6f8ac39025a60fd4ec741b8b253940e5`.
+The actual root public loader independently matches the coordinator receipt;
+parent proof SHA256
+`819d60616a1bda1e6da47c165ca6635828c3611aac8e7d01de6943f7345de2a5`.
+All1548 prior adjusted observations remain identical, as do the separate
+benchmark and issuer receipts. Four new benchmark action reads establish the
+October13 adjustment cutoff, distinct from the last retained bar October9.
+No research issuance, grading, historical identity/rights admission or efficacy
+is implied. Q3 remains on its original refused-observation carrier; a supported
+P2 status read still reports workerUNKNOWN, no result and retry unauthorized.
+The capacity-classification run returned on its original carrier; its revenue
+and live-fire examples do not establish manufacturing capacity or throughput.
+
+
+Independent finance review subsequently replayed all42 original fingerprints
+with the exact4166 builder and rejected13 material mutations. The NOC
+munitions contrary rail now binds the retained Q2 SiAW68USDm unfavorable EAC
+fact and immutable full report, preserving the current unquantified favorable
+Sentinel incentive offset.125 root theme checks pass. No manufacturing
+capacity, throughput, cash loss or future profitability is inferred. The
+six-symbol source and37 root tests pass after correcting sibling test imports
+for the real repository package and enrolling the new suite in CI.

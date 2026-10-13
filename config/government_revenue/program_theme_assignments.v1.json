@@ -1,13 +1,13 @@
 {
   "contract": "government_program_theme_assignment_review.v1",
-  "schema_version": "1.1.0",
-  "reviewed_at": "2026-10-13T21:31:43.142680+00:00",
-  "reviewer": "01a13703 independent current-owner theme-bridge source review; root integration pending; 01a13703 reviewed existing Virginia/AUKUS future window as partial context only",
+  "schema_version": "1.2.0",
+  "reviewed_at": "2026-10-13T22:00:32.544176+00:00",
+  "reviewer": "01a13703 independent current-owner theme-bridge source review; root integration pending; 01a13703 reviewed existing Virginia/AUKUS future window as partial context only; explicit v1.2 selected-fact migration: retained prior approval and unchanged current selected semantics independently checked; independently reviewed exact NOC SiAW68/AARGM-ER maturation paragraph and favorable Sentinel offset as partial munitions contrary context",
   "owners": {
     "fms": {
       "owner_kind": "fms",
       "path": "data/government_revenue/fms_case_graph.json",
-      "sha256": "f586d2a25722d8aa98a61b0be1863bee7f736c7025a45e26c35f3e8e15a2581e",
+      "sha256": "3c3719c7cfaa3a0813e6db8ad5a64c1b2ac6bb6834f15077543badf702343a27",
       "available_at": "2026-10-11T16:29:02.044466+00:00",
       "admission_ref": "existing:fms_case_graph.json",
       "rights_state": "qualified_public_display"
@@ -23,7 +23,7 @@
     "atlas": {
       "owner_kind": "identity_atlas",
       "path": "data/government_revenue/identity_atlas.json",
-      "sha256": "cc1d26e024f3bd5290b935b64b9290b6e0aba6d64eda8185eda15b241004a9a2",
+      "sha256": "9af3525d93ce71b941b236ae30713d3601ecbb14b74c7c2bd43dca5cbbcea39f",
       "available_at": "2026-08-19T05:44:34.128190+00:00",
       "admission_ref": "existing:identity_atlas.json",
       "rights_state": "qualified_public_display"
@@ -31,7 +31,7 @@
     "quartet_economics": {
       "owner_kind": "defense_economics",
       "path": "data/government_revenue/defense_economics.json",
-      "sha256": "c62768ac3d276694140e23b7d99ab95c4282a99088bd7b268128645eb1b42ba3",
+      "sha256": "9d80423c7de3ad9a7c0c3b93b714bc6559c101467b2e3795d18c91452cb5e2e0",
       "available_at": "2026-10-13T20:53:13.684818+00:00",
       "admission_ref": "O3review:MANIFEST.sha256:2df3b88823aa9a5bea7931c772c4bdf44d9f93d84375ce094eb652ccb93610ff",
       "rights_state": "qualified_public_display"
@@ -39,7 +39,7 @@
     "budget": {
       "owner_kind": "budget",
       "path": "data/government_revenue/budget_program_graph.json",
-      "sha256": "c77b0613793d25eafb341ca87519a684834216f0379702bf2f15ebc7ecc81320",
+      "sha256": "86d064269684c7e9b07ad8eff608bc637057eec9f710c5d0115ee07ec2a6ae71",
       "available_at": "2026-10-13T07:05:58.429543+00:00",
       "admission_ref": "existing:dod_budget_live:verified-source:4dcd91ae15ea",
       "rights_state": "qualified_public_display"
@@ -47,7 +47,7 @@
     "gd_company_economics": {
       "owner_kind": "company_intelligence",
       "path": "data/company_intelligence/event_workspaces/generations/883fb5c69607c3d248b45f7e/workspaces/evt_cik0000040533_2026q2_results.json",
-      "sha256": "52f21e73c1cc0b7473cd7eba86ffe9ebfcb148d883e385755e1c12466bf50a41",
+      "sha256": "5c51c7a1f89f6cb20fadcf9acdfd68fc8bd302df333b28daae256c832cd06260",
       "available_at": "2026-10-13T05:48:30+00:00",
       "admission_ref": "existing:EventWorkspace:owner883:GD-native-SEC013e22cc",
       "rights_state": "qualified_public_display"
@@ -100,9 +100,15 @@
     },
     "munitions_replenishment": {
       "contrary_case": {
-        "reason_code": "owner_reference_absent",
-        "references": [],
-        "state": "source_unavailable"
+        "state": "partial",
+        "reason_code": "reported_program_cost_maturation_charge",
+        "references": [
+          {
+            "owner_key": "quartet_economics",
+            "pointer": "/profiles/2/axes/economics/facts/4",
+            "row_id": "evt_cik0001133421_2026q2_results:siaw_unfavorable_eac"
+          }
+        ]
       },
       "economics": {
         "state": "partial",
@@ -438,7 +444,7 @@
           },
           {
             "owner_key": "atlas",
-            "pointer": "/issuers/4/entities/1",
+            "pointer": "/issuers/5/entities/1",
             "row_id": "legal:gd:electric-boat-corp"
           }
         ],
@@ -480,47 +486,48 @@
     }
   },
   "reference_fingerprints": {
-    "golden_dome/funding_stage/0": "7e67b6d61b41d56712f78a6694fd2799dd045e88aaaacc09edbb3f618655e60b",
-    "munitions_replenishment/economics/0": "ad364baa611bf9fbfa86baffb9eea41951865a8c0162530c9180cb6a8fa18280",
-    "munitions_replenishment/economics/1": "75e658853d6ee91c930908a29bb846578b1a0de3315568196c596859d037b659",
-    "munitions_replenishment/economics/2": "9637823f031d816d77efb55613588858711f578458e7657f62baffd3ef73d46c",
-    "munitions_replenishment/economics/3": "966669dfda31984cf3bf7b4fbb997183c57119c5a6ceb2dc309fa6d6dca82409",
-    "munitions_replenishment/economics/4": "34929411d472c19003db0ec8b8fb754108e2497dfd814edd4f27695e3003239c",
-    "munitions_replenishment/economics/5": "10efa592e6a6efa516e1dd9aafefce136827caa141e7b5e00c4ecb0594ffc06d",
-    "munitions_replenishment/funding_stage/0": "e859bb151f93d01b4de2d58f7413c49fd0630b043b9260b55cbdd0e48e66132e",
-    "space/economics/0": "6efb51ab156af5382e862767fa12f6b7001d73e84e2df5b956fcfe603bdf3395",
-    "space/economics/1": "b56b7fa8eee3feed45cbdb681d3e0fac7ea26e6c421f13fe7ab977c0752c5415",
-    "space/economics/2": "8a6daa493890cbaef8d7a126c5deed9661ad2c6db7893d6ded1dd880802ebbcf",
-    "space/economics/3": "18f171a97378a3ac92a50a1c72df531d3882daa4ab5090dbc6272ce5b74c52c5",
-    "space/economics/4": "1bd5ba2521a9c5aa9fede3a51a73545bc466586709559db5d602740f2c830c51",
-    "space/economics/5": "1c2b53b2f57f96ac92f266c5431282c750c76b9be4e77a8f708dca288619d54e",
-    "nato_fms_demand/exposure/0": "89e8ac99c785560081967ac75af468bd16cce426ad691a52b223812ccfb3fe2d",
-    "nato_fms_demand/funding_stage/0": "6f193eede719832bac7e12fd7bf628a4028344a122de53d66e543e9e7eb440c9",
-    "nato_fms_demand/funding_stage/1": "c0d00a0610133486c54051b2b59c178faec2b0069e0b4c1202f091fdc40e3d3f",
-    "nato_fms_demand/next_event/0": "0ac96f262997c132761f5e08bcb9baf3b94445412e34e7b475f8af557830b229",
-    "fleet_sustainment_upgrades/exposure/0": "89e8ac99c785560081967ac75af468bd16cce426ad691a52b223812ccfb3fe2d",
-    "fleet_sustainment_upgrades/funding_stage/0": "6f193eede719832bac7e12fd7bf628a4028344a122de53d66e543e9e7eb440c9",
-    "fleet_sustainment_upgrades/next_event/0": "0ac96f262997c132761f5e08bcb9baf3b94445412e34e7b475f8af557830b229",
-    "shipbuilding/economics/0": "a964a036e02263cbbc54e0315d377a91e43d4015157ebdd180822e2d4f905f65",
-    "shipbuilding/economics/1": "6c87d7ad752fb0bc9f949d39a61626d4b0648e36a3fa7660c4fc46a50499cad7",
-    "shipbuilding/economics/2": "c6123e298ad5d66895fe9bfae17cb7058d02a5253d41b8253d5aab7926abd704",
-    "shipbuilding/economics/3": "15b877f0c775b495be9305846ad8309ad7968a795437ee3fb51b19819ad27b75",
-    "shipbuilding/economics/4": "283d552eb0d1b8fa24be2cd9863e13cceae600fe81dcfc1bfdf5ad9c216bd321",
-    "shipbuilding/economics/5": "5055ec9517776e3343295c9b58557c15932df1673217585a0ee73da8e0b0b628",
-    "shipbuilding/economics/6": "92b78937a79c5d6d4cb7a2b89b879602b39161eb66996d079915f669de3071c6",
-    "shipbuilding/economics/7": "faee4f3ac9f6caae200f6d68caecd52e3861fbec476750e8c9c4e76d19f7dbc0",
-    "shipbuilding/exposure/0": "e0a74eacf483a34963b06698a595c7ee183faba6315e69eed688168be2291400",
-    "shipbuilding/exposure/1": "98689d72b08a6fa96d4a01f4077f241c1909350c8067425ed478bca86c3b33a6",
-    "shipbuilding/funding_stage/0": "92ab1560efb6b99c48e2a5993c81024b3c7c0e2501e9fdf138aab751250a9799",
-    "golden_dome/market_context/0": "951deeb8707250d581e03415d3f8b99140d1754fe0d1c008a4fe9ec246360786",
-    "munitions_replenishment/market_context/0": "951deeb8707250d581e03415d3f8b99140d1754fe0d1c008a4fe9ec246360786",
-    "space/market_context/0": "951deeb8707250d581e03415d3f8b99140d1754fe0d1c008a4fe9ec246360786",
-    "nato_fms_demand/market_context/0": "951deeb8707250d581e03415d3f8b99140d1754fe0d1c008a4fe9ec246360786",
-    "fleet_sustainment_upgrades/market_context/0": "951deeb8707250d581e03415d3f8b99140d1754fe0d1c008a4fe9ec246360786",
-    "shipbuilding/market_context/0": "951deeb8707250d581e03415d3f8b99140d1754fe0d1c008a4fe9ec246360786",
-    "space/contrary_case/0": "1542d11ee8c592ac0d868f96141a6157239527dd5468d4e737f556c609b23e31",
-    "space/contrary_case/1": "94353fbc4c1425faf0e07206722dd9c68e6335972ce1e84f3a275dd43cd6f16a",
-    "shipbuilding/contrary_case/0": "283d552eb0d1b8fa24be2cd9863e13cceae600fe81dcfc1bfdf5ad9c216bd321",
-    "shipbuilding/next_event/0": "abb165b8c67766aeb14feacd055c6cdc8b6903d00949ffe854560cdd3aed70bc"
+    "golden_dome/funding_stage/0": "196edacde632e80f7968a6f2f1cddbbf9b043f1ac50cdd003462260287d0c8d3",
+    "golden_dome/market_context/0": "29c90b910b96ff17a6165f9252081fa49a262d7c43933250cc609c9341eb44e7",
+    "munitions_replenishment/economics/0": "e9d81533dc120821131e1a31445a62c6c636c1e3db40159597fc75d14f7d2308",
+    "munitions_replenishment/economics/1": "317b4e4e19751308e3c335da13cd626a17c529da06415b6b341fb2ed3a7b31cb",
+    "munitions_replenishment/economics/2": "f869416f404c0e69256c2a059e2ba1d8073acb685f5386373a2125df15aa5678",
+    "munitions_replenishment/economics/3": "905eb0f940266495183eaa901cfdf8cdbc2b4baf4ca139ec59bf9927ec20722f",
+    "munitions_replenishment/economics/4": "7f437bbf78e07c2dad50ff704773e78c49d499f462c1ec2190fa70945003e3ad",
+    "munitions_replenishment/economics/5": "ce7af13a990d323536110c751df8ac77325fd5be2cb97019de204f300c49a233",
+    "munitions_replenishment/funding_stage/0": "27c30b10d142c94b63c975a9f4c6a93cb7e951425011bf1f3a91d4aeda67d073",
+    "munitions_replenishment/market_context/0": "29c90b910b96ff17a6165f9252081fa49a262d7c43933250cc609c9341eb44e7",
+    "space/contrary_case/0": "4e95fe25f5510e36907c5bac8fa3a08e836c0489b62cc104fd915fb12bba5651",
+    "space/contrary_case/1": "2feacb2fe5d4742fe8656ec13751510ed249b7b59810840854f3f338e8e58141",
+    "space/economics/0": "ac0a0d6cac96405b6a141c42133ad61d3ef15393a1f3df2515536fff18cba7a5",
+    "space/economics/1": "0e0c4ce4e137304464308bbb4e08aafb6b91dab68776181040ebbed285fd3068",
+    "space/economics/2": "35516386e9e51900e58c22f25996031228da17fe9bdda9057b81200ca7af9f5e",
+    "space/economics/3": "e0202396f32bede23898562682ff3eed72c2346ff20685a7f84d660ef0257db0",
+    "space/economics/4": "f4a7227b580bbffbe05b58bd0cc347aa88f8ad92491ad1da37d99bac9e21cdbb",
+    "space/economics/5": "2fa9995840e61403aed371ed7f96ed4c9e431cb011dd0cc8767d3188a8e1010f",
+    "space/market_context/0": "29c90b910b96ff17a6165f9252081fa49a262d7c43933250cc609c9341eb44e7",
+    "nato_fms_demand/exposure/0": "21311281ed649eb6e33f6c7e558d4b3350c2d0cfb13fa504965cdf9ce3c4b823",
+    "nato_fms_demand/funding_stage/0": "36a1656f1b81f7a44ab07c6b0ca6888c4c81b29f88a2665eb4191fd58fe59c9d",
+    "nato_fms_demand/funding_stage/1": "67fa90c3dc185add345469257de09ebd841ec5b194427a7dea8a1bdf64566982",
+    "nato_fms_demand/market_context/0": "29c90b910b96ff17a6165f9252081fa49a262d7c43933250cc609c9341eb44e7",
+    "nato_fms_demand/next_event/0": "4815599ff7f6e6d1cb52696b082e1383e624e995f169b769652c3a86d0666395",
+    "fleet_sustainment_upgrades/exposure/0": "21311281ed649eb6e33f6c7e558d4b3350c2d0cfb13fa504965cdf9ce3c4b823",
+    "fleet_sustainment_upgrades/funding_stage/0": "36a1656f1b81f7a44ab07c6b0ca6888c4c81b29f88a2665eb4191fd58fe59c9d",
+    "fleet_sustainment_upgrades/market_context/0": "29c90b910b96ff17a6165f9252081fa49a262d7c43933250cc609c9341eb44e7",
+    "fleet_sustainment_upgrades/next_event/0": "4815599ff7f6e6d1cb52696b082e1383e624e995f169b769652c3a86d0666395",
+    "shipbuilding/contrary_case/0": "67f20d0c4233f48d22df09414e2a2db3df96d5359a59cf5a2eb301e7d8a284bc",
+    "shipbuilding/economics/0": "bccc781c5850d48f39b5c8071f5221a6f02128a84a5f4b8dd0b28c9e0a9bb6a2",
+    "shipbuilding/economics/1": "b510760bc7ae611c80772e3ddd86cb6a681601012b55f9386ed11278c3e02949",
+    "shipbuilding/economics/2": "b450c6f3621ab5066e9d7c0722665e770ffb989a9843d59d2e77ee0aa8a5655c",
+    "shipbuilding/economics/3": "81a12da834aaf4faaf845baa893a40392cdbc472008655630a604b256b737cf3",
+    "shipbuilding/economics/4": "67f20d0c4233f48d22df09414e2a2db3df96d5359a59cf5a2eb301e7d8a284bc",
+    "shipbuilding/economics/5": "7cf5142e49999f9adf53877ed9f468729f5f9910dfe5c46fed9e26420bf59867",
+    "shipbuilding/economics/6": "7f8372949add639940e2bc6faf024ed2611759c9bb86872996570da765455ddb",
+    "shipbuilding/economics/7": "9ef642ef323254461967e6f0522d5b2fc272658fb048bfe2cbfd0942af719688",
+    "shipbuilding/exposure/0": "ef2872ccb794fb02a66bbfadb45b86d8e205570fa3fb262fbac55a5237d851e8",
+    "shipbuilding/exposure/1": "09d3d6ff9ae28b2f1837a6a1cb5b00f0234d4e570d4af43eff7fe9c43aa00d3e",
+    "shipbuilding/funding_stage/0": "fddb75dc4c7a4e8935af5184b5ec0049440a674ca563ce2bac03c5beb801e6c9",
+    "shipbuilding/market_context/0": "29c90b910b96ff17a6165f9252081fa49a262d7c43933250cc609c9341eb44e7",
+    "shipbuilding/next_event/0": "c7360bac102b28ccd1b6a6f10041ece117693d0e779f04435bd5e31f25384231",
+    "munitions_replenishment/contrary_case/0": "f5f78ae262a02c32bddbd9031169123ebde9cbccc8d82e17ba117de2f91b28dd"
   }
 }

@@ -180,3 +180,170 @@ def test_past_window_cannot_remain_a_next_event_after_valid_native_id_rebuild():
  assert owners['ontology'].payload()
  assignment['shipbuilding']['next_event']['references'][0]['row_id']=row['id']
  with pytest.raises(ValueError,match='past_milestone_as_next_event'):compose(assignment,owners)
+
+
+def selected_case():
+ owners=financial_owners();ref=financial_assignments(owners)['space']['contrary_case']['references'][0]
+ payload=owners['economic'].payload();node,_=t._pointer(payload,ref['pointer'])
+ return owners,ref,payload,node
+
+
+def version_fingerprint(payload,ref,version='1.2.0',rail='contrary_case'):
+ payload['content_id']=defense_economics_content_id(payload)
+ return b.reference_fingerprint(ref,rail,snapshot('defense_economics',payload),NOW,version=version)
+
+
+def test_explicit_selected_fact_version_ignores_only_unconsumed_sibling_context():
+ owners,ref,payload,node=selected_case();legacy=version_fingerprint(payload,ref,'1.1.0');selected=version_fingerprint(payload,ref)
+ payload['source_bindings'][node['owner_ref']]['periods'].append('2026H1')
+ payload['profiles'][3]['contrary_case']+=' Unrelated newly qualified cash interpretation.'
+ payload['profiles'][3]['next_condition']+=' Unrelated company cash condition.'
+ assert version_fingerprint(payload,ref)==selected
+ assert version_fingerprint(payload,ref,'1.1.0')!=legacy
+ assert b.reference_fingerprint(ref,'contrary_case',owners['economic'],NOW)==legacy
+ assert selected!=legacy  # Version domain separation prevents silent compatibility.
+
+
+@pytest.mark.parametrize('mutation',['value','unit','basis','class','period','document','source_span_hash','source_url','source_clock','available_clock','subject','axis_state','axis_qualification','identity','rights','admission'])
+def test_selected_fact_material_dependencies_cannot_survive_version_two(mutation):
+ owners,ref,payload,node=selected_case();expected=version_fingerprint(payload,ref);binding=payload['source_bindings'][node['owner_ref']];profile=payload['profiles'][3]
+ if mutation=='value':node['value']+=' Changed literal.'
+ if mutation=='unit':node['unit']='changed unit'
+ if mutation=='basis':node['accounting_basis']='changed basis'
+ if mutation=='class':node['fact_class']='reported_guidance'
+ if mutation=='period':node['period']='2026H1';binding['periods'].append('2026H1')
+ if mutation=='document':node['source_span']['document_id']+='changed'
+ if mutation=='source_span_hash':node['source_span']['text_sha256']='a'*64
+ if mutation=='source_url':node['source_span']['source_url']='https://example.invalid/changed'
+ if mutation=='source_clock':binding['observed_at']='2026-10-13T06:00:00+00:00'
+ if mutation=='available_clock':binding['source_available_at']='2026-07-29T01:00:00+00:00'
+ if mutation=='subject':binding['issuer_id']='cik:changed'
+ if mutation=='axis_state':profile['axes']['economics']['state']='stale'
+ if mutation=='axis_qualification':profile['axes']['economics']['reason_code']='changed_qualification'
+ if mutation=='identity':profile['identity_mode']='changed'
+ payload['content_id']=defense_economics_content_id(payload)
+ owner=snapshot('defense_economics',payload)
+ if mutation in ('rights','admission'):
+  owner=t.OwnerSnapshot(owner.owner_kind,owner.raw_bytes,owner.available_at,'changed_admission' if mutation=='admission' else owner.admission_ref,'unknown' if mutation=='rights' else owner.rights_state)
+ try:actual=b.reference_fingerprint(ref,'contrary_case',owner,NOW,version='1.2.0')
+ except ValueError:return  # A closed owner validation rejection is stronger than staling.
+ assert actual!=expected
+
+
+def test_selected_period_must_remain_in_qualified_source_inventory():
+ owners,ref,payload,node=selected_case()
+ payload['source_bindings'][node['owner_ref']]['periods'].remove(node['period'])
+ with pytest.raises(ValueError):version_fingerprint(payload,ref)
+
+
+def test_legacy_profile_text_still_binds_consumed_narrative_in_version_two():
+ owners,_,payload,_=selected_case();profile=payload['profiles'][3]
+ ref=dict(owner_key='economic',pointer='/profiles/3/contrary_case',row_id=profile['issuer_id'])
+ expected=version_fingerprint(payload,ref);profile['contrary_case']+=' Changed consumed profile text.'
+ assert version_fingerprint(payload,ref)!=expected
+
+
+def migration_fixture():
+ owners,ref,payload,node=selected_case()
+ review=dict(contract=t.THEME_REVIEW_CONTRACT,schema_version='1.1.0',reviewed_at=NOW,reviewer='portable prior reviewer',owners={'economic':dict(owner_kind='defense_economics',path='data/government_revenue/defense_economics.json',sha256=sha256(owners['economic'].raw_bytes).hexdigest(),available_at=NOW,admission_ref=owners['economic'].admission_ref,rights_state=owners['economic'].rights_state)},assignments={'space':{'contrary_case':dict(state='partial',reason_code='reported_space_ownership_change',references=[ref])}})
+ review=b.make_reviewed_leaf_config(review,owners,as_of=NOW)
+ return review,owners,ref,payload,node
+
+
+def test_explicit_migration_proves_old_approval_and_semantic_equality():
+ review,prior,ref,payload,node=migration_fixture();payload['source_bindings'][node['owner_ref']]['periods'].append('2026H1');payload['profiles'][3]['contrary_case']+=' New unconsumed cash narrative.';payload['content_id']=defense_economics_content_id(payload)
+ current={'economic':snapshot('defense_economics',payload)}
+ result=b.migrate_reviewed_leaf_config(review,prior,current,as_of=NOW,reviewed_at=NOW,reviewer='explicit semantic adjudication')
+ assert review['schema_version']=='1.1.0' and result['schema_version']=='1.2.0'
+ assert result['reference_fingerprints']['space/contrary_case/0']==version_fingerprint(payload,ref)
+ assert result['assignments']['space']['contrary_case']['state']=='partial'
+
+
+@pytest.mark.parametrize('mutation',['prior_fingerprint','selected_value','selected_period','selected_document','source_clock','inventory'])
+def test_migration_never_restamps_changed_selected_dependencies(mutation):
+ review,prior,ref,payload,node=migration_fixture()
+ if mutation=='prior_fingerprint':review['reference_fingerprints']['space/contrary_case/0']='a'*64
+ if mutation=='selected_value':node['value']+=' Changed literal.'
+ if mutation=='selected_period':node['period']='2026H1';payload['source_bindings'][node['owner_ref']]['periods'].append('2026H1')
+ if mutation=='selected_document':node['source_span']['document_id']+='changed'
+ if mutation=='source_clock':payload['source_bindings'][node['owner_ref']]['observed_at']='2026-10-13T06:00:00+00:00'
+ if mutation=='inventory':review['reference_fingerprints']['space/contrary_case/1']='b'*64
+ payload['content_id']=defense_economics_content_id(payload)
+ with pytest.raises(ValueError,match='migration_|inventory'):
+  b.migrate_reviewed_leaf_config(review,prior,{'economic':snapshot('defense_economics',payload)},as_of=NOW,reviewed_at=NOW,reviewer='explicit semantic adjudication')
+
+
+def test_loader_cannot_silently_use_new_algorithm_for_existing_version(tmp_path):
+ from test_program_theme_reviewed_builder import reviewed
+ review,path=reviewed(tmp_path);_,_,owners=b.load_current_reviewed_theme_inputs(tmp_path,as_of=NOW)
+ newer=b.make_reviewed_leaf_config(review,owners,as_of=NOW,version='1.2.0');newer['schema_version']='1.1.0';path.write_text(json.dumps(newer))
+ _,assignment,_=b.load_current_reviewed_theme_inputs(tmp_path,as_of=NOW)
+ assert assignment['munitions_replenishment']['economics']['state']=='stale'
+ newer['schema_version']='1.2.0';path.write_text(json.dumps(newer));_,assignment,_=b.load_current_reviewed_theme_inputs(tmp_path,as_of=NOW)
+ assert assignment['munitions_replenishment']['economics']['state']=='partial'
+ newer['schema_version']='1.3.0';path.write_text(json.dumps(newer))
+ with pytest.raises(ValueError,match='theme_review_invalid'):b.load_current_reviewed_theme_inputs(tmp_path,as_of=NOW)
+
+
+def test_supplement_transport_normalization_retains_exact_event_and_document():
+ _,ref,payload,node=selected_case();binding=deepcopy(payload['source_bindings'][node['owner_ref']]);event='evt_cik0000202058_2026q2_results';doc='disclosure_document_'+'a'*64
+ def rebind(generation,document=doc,subject=event):
+  key=f'event_workspace:{generation}:{subject}:{document}';node['owner_ref']=key;payload['source_bindings'][key]=binding
+  return version_fingerprint(payload,ref)
+ old=rebind('1'*24);legacy=version_fingerprint(payload,ref,'1.1.0')
+ assert rebind('2'*24)==old
+ assert version_fingerprint(payload,ref,'1.1.0')!=legacy
+ assert rebind('2'*24,'disclosure_document_'+'b'*64)!=old
+ assert rebind('2'*24,doc,'evt_cik0000202058_2025q2_results')!=old
+
+
+def test_derived_selected_fact_preserves_each_operand_source_dependency():
+ from test_program_theme_disclosure import inputs
+ p,owners,_=inputs();ref=p['themes'][1]['rails']['economics']['references'][0]
+ owner=owners[ref['owner_key']];payload=owner.payload();node,_=t._pointer(payload,ref['pointer'])
+ # Synthetic comparable operands exercise provenance only, not a production calculation.
+ node['derived']=True
+ operand={key:deepcopy(node[key]) for key in ('fact_id','value','unit','period','accounting_basis','owner_ref')}
+ node['numerator']=deepcopy(operand);node['denominator']=deepcopy(operand)
+ key=operand['owner_ref']+':operand_fixture';binding=deepcopy(payload['source_bindings'][operand['owner_ref']]);payload['source_bindings'][key]=binding;node['numerator']['owner_ref']=key
+ payload['content_id']=defense_economics_content_id(payload)
+ prior=snapshot('defense_economics',payload);expected=b.reference_fingerprint(ref,'economics',prior,NOW,version='1.2.0')
+ binding['observed_at']='2026-10-13T06:00:00+00:00';payload['content_id']=defense_economics_content_id(payload)
+ assert b.reference_fingerprint(ref,'economics',snapshot('defense_economics',payload),NOW,version='1.2.0')!=expected
+
+
+def munitions_case():
+ payload=json.loads(BASE.read_bytes());payload['generated_at']=NOW
+ frozen=json.loads((HERE/'fixtures/noc_siaw_theme_fact.json').read_bytes());fact=frozen['fact'];payload['profiles'][2]['axes']['economics']['facts'].append(fact);payload['source_bindings'][fact['owner_ref']]=frozen['source_binding'];payload['content_id']=defense_economics_content_id(payload)
+ owner=snapshot('defense_economics',payload);ref=t.financial_fact_reference('economic',owner,fact['fact_id'])
+ return payload,{'economic':owner},{'munitions_replenishment':{'contrary_case':dict(state='partial',reason_code='reported_program_cost_maturation_charge',references=[ref])}}
+
+
+def test_munitions_contrary_is_exact_cost_context_with_favorable_offset():
+ payload,owners,assignment=munitions_case();canonical=compose(assignment,owners)
+ display=d.disclose_program_themes(canonical,owners=owners,current_owner_receipts={'economic':dict(state='available',sha256=sha256(owners['economic'].raw_bytes).hexdigest(),owner_alias_state='unchanged')})
+ row=display['themes'][1]
+ assert row['rail_states']['contrary_case']=='partial' and row['research_state']=='EVIDENCE_INSUFFICIENT'
+ assert '68 USD million' in row['known_en'] and 'AARGM-ER' in row['known_en'] and 'favorable Sentinel' in row['known_en']
+ assert 'future profitability' in row['known_en'] and '部分抵销' in row['known_zh']
+ assert row['sources'][0]['row_id']=='evt_cik0001133421_2026q2_results:siaw_unfavorable_eac'
+ assert row['sources'][0]['house_known_at']=='2026-10-13T05:44:47Z'
+
+
+@pytest.mark.parametrize('mutation',['wrong_theme','supported','profile_text','prior_favorable','value','unit','basis','period','document','span_hash','source_url','stale_axis'])
+def test_munitions_cost_context_cannot_escape_exact_disclosure_scope(mutation):
+ payload,owners,assignment=munitions_case();item=assignment['munitions_replenishment']['contrary_case'];ref=item['references'][0];node,_=t._pointer(payload,ref['pointer'])
+ if mutation=='wrong_theme':assignment['space']=assignment.pop('munitions_replenishment')
+ if mutation=='supported':item['state']='supported'
+ if mutation=='profile_text':ref.update(pointer='/profiles/2/contrary_case',row_id=payload['profiles'][2]['issuer_id'])
+ if mutation=='prior_favorable':node['fact_id']='evt_cik0001133421_2026q2_results:sentinel_prior_favorable_eac';ref['row_id']=node['fact_id']
+ if mutation=='value':node['value']=680.0
+ if mutation=='unit':node['unit']='USD_billion'
+ if mutation=='basis':node['accounting_basis']='issuer_reported_program_cost_estimate:Sentinel:favorable_EAC'
+ if mutation=='period':node['period']='2025Q2';payload['source_bindings'][node['owner_ref']]['periods'].append('2025Q2')
+ if mutation=='document':node['source_span']['document_id']='disclosure_document_'+'a'*64
+ if mutation=='span_hash':node['source_span']['text_sha256']='a'*64
+ if mutation=='source_url':node['source_span']['source_url']='https://www.sec.gov/Archives/edgar/data/changed.htm'
+ if mutation=='stale_axis':payload['profiles'][2]['axes']['economics']['state']='stale'
+ payload['content_id']=defense_economics_content_id(payload);owners['economic']=snapshot('defense_economics',payload)
+ with pytest.raises(ValueError):compose(assignment,owners)

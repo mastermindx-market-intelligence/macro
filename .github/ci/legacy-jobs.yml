@@ -18687,6 +18687,7 @@ jobs:
       - "tests/test_government_revenue_research_report_clock.py"
       - "tests/test_government_revenue_price_source_binding.py"
       - "tests/test_government_revenue_issuer_price_pin.py"
+      - "tests/test_government_revenue_joint_price_pin.py"
       - "engine/government_revenue/price_panel_adapter.py"
       - "tests/test_government_revenue_publication_ack.py"
       - "tests/fixtures/government_revenue_candidate_queue_20260901.json.gz"
@@ -18790,7 +18791,7 @@ jobs:
       - name: Defense economics source binding and entitled read boundary
         run: python -m pytest tests/test_government_revenue_defense_economics.py tests/test_defense_recognition_owner_guards.py tests/test_defense_recognition_market_clocks.py tests/test_government_revenue_asset_publication.py tests/test_defense_interpretation.py tests/test_defense_government_context.py tests/test_defense_participation_context.py -q
       - name: Registered research state and durable acknowledgement boundaries
-        run: python -m pytest tests/test_government_revenue_research_state.py tests/test_government_revenue_research_report_clock.py tests/test_government_revenue_publication_ack.py tests/test_government_revenue_price_source_binding.py tests/test_government_revenue_issuer_price_pin.py -q
+        run: python -m pytest tests/test_government_revenue_research_state.py tests/test_government_revenue_research_report_clock.py tests/test_government_revenue_publication_ack.py tests/test_government_revenue_price_source_binding.py tests/test_government_revenue_issuer_price_pin.py tests/test_government_revenue_joint_price_pin.py -q
       - name: Program filter and URL state regression
         run: python -m pytest tests/test_government_revenue_program_filters.py tests/test_government_revenue_filter_url.py -q
       - name: SBIR browser consumer hostile cases

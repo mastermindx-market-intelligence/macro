@@ -67,7 +67,7 @@ def _resolve(ref,rail,owners,reason_code=None):
   return node['canonical_name']+': reviewed ownership path; this is not program workshare.',node['canonical_name']+'：已审查的所有权路径；这不代表项目份额。',sources
  if owner.owner_kind=='defense_economics':
   profile=next(a for a in ancestors if isinstance(a,dict) and 'ticker_display' in a)
-  if rail=='economics' or rail=='contrary_case' and reason_code=='reported_space_ownership_change':
+  if rail=='economics' or rail=='contrary_case' and reason_code in ('reported_space_ownership_change','reported_program_cost_maturation_charge'):
    span=node['source_span'];hosts={'www.sec.gov'}
    if rail=='contrary_case' and profile['issuer_id']=='cik:0000202058':hosts.add('investors.l3harris.com')
    url=_primary(span.get('source_url'),hosts)
@@ -76,6 +76,8 @@ def _resolve(ref,rail,owners,reason_code=None):
    binding=p['source_bindings'][node['owner_ref']]
    for item in sources:item.update(source_available_at=binding.get('source_available_at'),house_known_at=binding.get('observed_at'))
    if rail=='contrary_case':
+    if reason_code=='reported_program_cost_maturation_charge':
+     return 'Northrop Grumman reported a 68 USD million unfavorable SiAW estimate-at-completion adjustment for Q2 2026. The same disclosure projects higher costs to mature AARGM-ER production and to develop and qualify SiAW, and reports a favorable Sentinel adjustment tied to contract incentives as a partial offset. This is disclosed cost and execution context, not installed capacity, unit throughput or future profitability.','Northrop Grumman披露2026年第二季度SiAW预计完工成本不利调整为6800万美元。同一披露预计AARGM-ER生产成熟化及SiAW开发与认证的成本上升，并披露与合同激励挂钩的Sentinel有利调整作为部分抵销。这属于已披露成本与执行背景，不代表已安装产能、单位产量或未来盈利能力。',sources
     if node['fact_id'].endswith(':space_business_sale_completed_terms'):
      return 'L3Harris reports the completed majority sale of its commercial space propulsion, power and electronics businesses; broad space demand cannot be attributed wholly to LHX after the sale. This is ownership context, not a measured revenue loss.','L3Harris披露已完成商业航天推进、电力及电子业务的多数股权出售；出售后不能将广泛航天需求全部归于LHX。这属于所有权背景，未量化收入损失。',sources
     return 'L3Harris reports approximately 40% retained ownership in Rocketdyne and excludes RS-25 operations from the sale. Ownership share is not program workshare or revenue share.','L3Harris披露保留Rocketdyne约40%的股权，RS-25业务不在出售范围内。股权比例不等于项目份额或收入份额。',sources

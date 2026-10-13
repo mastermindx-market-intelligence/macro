@@ -22,6 +22,8 @@ _REVIEWED_PACKET_SHA256 = "6b62d7e6ef2c95c766f6089cde9c51994c0b869746546e86732dc
 
 _REVIEWED_ISSUER_PACKET_SHA256 = "773077fa8070e1c309b5b35542c34767bedd22c5f8ab27dd694210faf35cae1d"
 
+_REVIEWED_COMBINED_PACKET_SHA256 = "f10935de7cacd0cf2c1554cf5a01e35a939645e6459b732b3e9f86f2592e0cd1"
+
 CONVENTION = "backward_adjusted_close_ratio_native_cash_previous_raw_close_v1"
 
 
@@ -216,8 +218,14 @@ def load_reviewed_current_vintage_panel(
     packet_bytes = packet_path.read_bytes()
     packet_digest = sha256(packet_bytes).hexdigest()
     issuer_packet = packet_digest == _REVIEWED_ISSUER_PACKET_SHA256
-    _require(packet_digest in {_reviewed_packet_digest(), _REVIEWED_ISSUER_PACKET_SHA256}, "unreviewed_packet_digest")
+    combined_packet = packet_digest == _REVIEWED_COMBINED_PACKET_SHA256
+    _require(packet_digest in {_reviewed_packet_digest(), _REVIEWED_ISSUER_PACKET_SHA256,
+                               _REVIEWED_COMBINED_PACKET_SHA256}, "unreviewed_packet_digest")
     packet = _json_bytes(packet_bytes)
+    if combined_packet:
+        _require(packet.get("technical_scope") == "six_symbol_current_input_only"
+                 and sorted(ref.get("symbol", "") for ref in packet.get("symbols", []))
+                 == ["ITA", "LHX", "LMT", "NOC", "RTX", "SPY"], "combined_packet_scope_mismatch")
     if issuer_packet:
         _require(packet.get("technical_scope") == "four_issuer_current_input_only"
                  and sorted(ref.get("symbol", "") for ref in packet.get("symbols", []))
@@ -302,6 +310,8 @@ def load_reviewed_current_vintage_panel(
     receipt["qualification_boundary"] = "exact_retained_bytes_verified_owner_receipts_canonical_calendar"
     if issuer_packet:
         receipt["technical_scope"] = "four_issuer_current_input_only"
+    if combined_packet:
+        receipt["technical_scope"] = "six_symbol_current_input_only"
     receipt["not_wired_to_issuance_or_grading"] = True
     # Seal the public closure after every source binding is attached. The sole
     # excluded field is the seal itself; PriceBasis carries this same identity.

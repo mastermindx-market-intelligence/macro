@@ -3,7 +3,7 @@ from datetime import date
 from hashlib import sha256
 import json
 import pytest
-from test_government_revenue_price_source_binding import a, synthetic_packet
+from tests.test_government_revenue_price_source_binding import a, synthetic_packet
 
 
 def rewrite(packet,mutator):
