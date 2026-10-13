@@ -5375,6 +5375,7 @@ jobs:
       - "scripts/reconcile_us_candidate_episodes.py"
       - "tests/test_us_candidate_episode.py"
       - "tests/test_us_candidate_episode_intake.py"
+      - "tests/test_prophet_today_provenance.py"
       - "tests/test_us_candidate_episode_reconciler.py"
       - "tests/test_us_candidate_episode_wiring.py"
       - "tests/fixtures/us_candidate_episode/**"
