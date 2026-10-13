@@ -320,6 +320,17 @@ def test_capture_step_uses_the_contract_coverage_file() -> None:
     assert "--recorded-at" in capture["run"]
 
 
+def test_contract_sec_steps_pace_at_two_requests_per_second() -> None:
+    # Seat ruling (C0-c r6): the production contract lane is held to <=2 SEC
+    # requests/s, so both SEC-touching contract steps pass an explicit 0.5 s
+    # minimum interval instead of inheriting the 0.12 s argparse default.
+    workflow = _workflow()
+    steps = _steps(workflow)
+    for name in (CONTRACT_ACQUIRE_STEP, CAPTURE_STEP):
+        step = next(step for step in steps if step.get("name") == name)
+        assert "--min-interval-seconds 0.5" in step["run"], name
+
+
 def test_publish_step_publishes_then_verifies() -> None:
     workflow = _workflow()
     steps = _steps(workflow)

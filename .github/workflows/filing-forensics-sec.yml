@@ -265,6 +265,7 @@ jobs:
             --coverage-file config/fundamental_forensics/coverage/five_issuer_v1.json \
             --raw-root "$RAW" --archive-root "$ARCHIVE" \
             --recorded-at "$(utc_now)" \
+            --min-interval-seconds 0.5 \
             --contract-acquire-summary "$RUNNER_TEMP/fif-contract-acquire-summary-${GITHUB_RUN_ID}.json" \
             --report-path "$RUNNER_TEMP/fif-contract-acquire-acquire-report-${GITHUB_RUN_ID}.json"
       - name: capture FIF filing packages (contract issuers)
@@ -296,6 +297,7 @@ jobs:
             --coverage-file config/fundamental_forensics/coverage/five_issuer_v1.json \
             --raw-root "$RAW" --archive-root "$ARCHIVE" \
             --recorded-at "$(utc_now)" \
+            --min-interval-seconds 0.5 \
             --contract-acquire-report "$CONTRACT_ACQUIRE_SUMMARY" \
             --report-path "$CAPTURE_REPORT"
       - name: publish FIF production datasets (hard gate)
