@@ -18,7 +18,7 @@ R13 adds the exact machine-readable evidence the next reviewer needs for M6–M9
 
 The original independent review omitted three existing companion maps. The targeted re-review must consume them directly:
 
-- R6 design evidence: CONSUMER_CYCLICAL_R6_DESIGN_EVIDENCE_2026-09-23.json, blob 7265ab9b91df4fb7b0e3d8166a1603c6d7a47d88, 32 mapped requirements. The 2026-10-12 CC6-C14 tolerance note moved this blob from the review identity cdab90b867e16b36ff08fd6a678d4547308cec95.
+- R6 design evidence: CONSUMER_CYCLICAL_R6_DESIGN_EVIDENCE_2026-09-23.json, blob 20035360961f4087b24a4df23b047c8eadd03680, 32 mapped requirements. The 2026-10-12 CC6-C14 tolerance note moved the review identity cdab90b867e16b36ff08fd6a678d4547308cec95 to 7265ab9b91df4fb7b0e3d8166a1603c6d7a47d88. On 2026-10-12 the companion blob moved to 20035360961f4087b24a4df23b047c8eadd03680 because proposed_interfaces[2].name was corrected from economic_change.consumer.v1 to consumer_economic_change.v1, not a new arithmetic result.
 - R7 delivery map: CONSUMER_CYCLICAL_R7_REVIEW_AND_DELIVERY_MAP_2026-09-23.json, blob 58c26b787da834f92efb82363daecc631e034367, 10 mapped requirements.
 - R10 foundation map: CONSUMER_CYCLICAL_FOUNDATION_INTEGRATION_MAP_R10_2026-09-24.json, blob 6b69882a3bf9cc43b686ddfdd41475606258334c, 16 mapped requirements.
 

@@ -41,7 +41,8 @@
       "proof_level": "research_only"
     }
   },
-  "current_pins": {
+  "packet_freeze_pins_2026_09_24_note": "Relabeled from current_pins on 2026-10-12. Values are the 2026-09-24 packet-freeze pins and are not a live #7870 head.",
+  "packet_freeze_pins_2026_09_24": {
     "macro_main": "c99fdde7302dcc8ce66566802ea319ff3fdb9c11",
     "pr7870": "3e3a7956d014b8c50be7b197fdbea847cecfa641",
     "pr7780": "b68069b2e1296bfc772e4f4e3a0c1cc3845f89eb",
@@ -74,6 +75,9 @@
       "unmapped_families": "fail-closed at app/theme_research.py:454",
       "sec_archives_prefix": "https://www.sec.gov/Archives/ maps to sec_edgar at engine/theme_graph/rights.py:104",
       "freeze_pin_superseded": "3e3a7956d014b8c50be7b197fdbea847cecfa641",
+      "rights_refresh_test_path": "tests/test_theme_research_rights_refresh.py",
+      "rights_refresh_test_blob": "e9152582a0f37e2b785443a5065a371c7b0d43b0",
+      "rights_refresh_proof": "git show 839bd6a1b065959b90e48d3171edbbe85f4f74f3:tests/test_theme_research_rights_refresh.py | git hash-object --stdin",
       "consumer_accepted": false
     },
     "T08b": "REVIEW_REJECTED__FIX_QUEUED",

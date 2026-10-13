@@ -44,9 +44,9 @@
     "companions": [
       {
         "path": "research/consumer_cyclical/CONSUMER_CYCLICAL_R6_DESIGN_EVIDENCE_2026-09-23.json",
-        "blob": "7265ab9b91df4fb7b0e3d8166a1603c6d7a47d88",
+        "blob": "20035360961f4087b24a4df23b047c8eadd03680",
         "pre_correction_blob": "cdab90b867e16b36ff08fd6a678d4547308cec95",
-        "blob_note": "2026-10-12 CC6-C14 records exact rational -2600/443 and the truncation tolerance. The pre_correction_blob is the R13 review identity.",
+        "blob_note": "2026-10-12 CC6-C14 records exact rational -2600/443 and the truncation tolerance. The pre_correction_blob is the R13 review identity. 2026-10-12 companions[0].blob moved to 20035360961f4087b24a4df23b047c8eadd03680 because proposed_interfaces[2].name was corrected from economic_change.consumer.v1 to consumer_economic_change.v1, not a new arithmetic result.",
         "mapped_requirements": 32,
         "role": "R6 design and acceptance mapping"
       },
