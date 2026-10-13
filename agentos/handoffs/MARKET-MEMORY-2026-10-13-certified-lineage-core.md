@@ -26,7 +26,7 @@ changed:
   - path: tests/test_market_memory_lineage.py
     what: Exercise real owner fixtures, corruption, gaps, source identity, actual subject permissions, certificate admission, timestamp and complete batch accounting.
   - path: .github/ci/legacy-jobs.yml
-    what: Add lineage to the existing CODE research-price-panel command and consolidate five existing EDGAR suites with their entire inventories preserved.
+    what: Add lineage to the existing CODE research-price-panel command and consolidate five EDGAR suites plus the WRI and DAG CODE commands with all test files, options and inferred scopes preserved.
 verified:
   - claim: Independent source review accepts the repaired seven-file core with explicit production adoption gates.
     command: Independent science review of the exact repaired source manifest.
@@ -39,7 +39,10 @@ verified:
     result: 145 passed in 4.89 seconds; no inventory, dependency or selector removal.
   - claim: The existing packing budgets remain satisfied.
     command: Full selected-job set comparisons across the three canonical packing probes.
-    result: 134 jobs at weight5796, 134 at5599, 129 at5559; ten packs each and zero breaches. Research weight55 to57 is balanced by five-suite EDGAR consolidation50 to48.
+    result: 134 jobs at weight5792, 134 at5597, 129 at5559; ten packs each and zero breaches. Reused actual full-tree measurement with exact equality of changed-job inferred scopes and all other definitions. Research55 to57 is balanced by EDGAR50 to48. WRI48 to34 and DAG28 to21 recover an inherited main packing breach; no ceiling increase.
+  - claim: Consolidated CODE commands retain complete owning coverage.
+    command: Exact WRI and DAG grouped commands; Node20.20.2 for existing JS contracts.
+    result: WRI415 passed, two inherited absent-nightly-library skips; DAG217 passed. Nine missing sparse fixtures hydrated from exact HEAD, with no content edits.
   - claim: Existing owner regression failures remain distinct from the new source acceptance.
     command: Exact owner tests against the original committed data fixtures.
     result: 100 passed; two inherited options-ledger row and byte cap refusals retained. No cap increase or data pruning.
@@ -56,7 +59,7 @@ unresolved:
   - Source ownership and file custody alone do not grant certificate use, retention, comparison, training or promotion.
   - Actual 401/auth callback, signout and naturally ordered late-response browser cases remain open on the otherwise merged and live-verified UI8694.
 next_actions:
-  - Complete the exact backend9098 dependency merge, then publish and qualify this same lineage carrier through ordinary CI and merge.
+  - Backend9098 is merged and installed; publish and qualify this same lineage carrier through ordinary CI and merge.
   - Implement and review the bounded same-owner publisher and actual installed qualification without rerunning old captures.
   - Continue current source-purpose policy, real consumers, three-mode inspection and independent scientific acceptance.
 do_not_redo:
