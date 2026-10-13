@@ -1,32 +1,32 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "KALU-BULL-20260810",
-  "asof": "2026-09-26",
-  "phase": "pre_trigger",
-  "detection_phase": "pre_trigger",
-  "management_confidence": 39.5,
-  "raw_confidence": 38.9,
-  "delta_vs_base": -20.5,
-  "recommended_action": "wait",
-  "human_state": "Approaching Trigger",
+  "asof": "2026-10-09",
+  "phase": "overtime",
+  "detection_phase": "overtime",
+  "management_confidence": 30.4,
+  "raw_confidence": 29.0,
+  "delta_vs_base": -29.6,
+  "recommended_action": "trim",
+  "human_state": "Window Elapsed \u2014 Awaiting Close",
   "components": {
-    "validity": 38.7,
+    "validity": 34.7,
     "progress": 0.0,
-    "pace": 0.0,
-    "retention": 50.0,
-    "overlay": 53.0
+    "pace": 12.7,
+    "retention": 10.2,
+    "overlay": 47.0
   },
   "geometry": {
-    "dist_to_stop_r": 0.495,
+    "dist_to_stop_r": 0.456,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 100.0,
-    "p1": -0.3368,
-    "p2": -0.1684,
+    "horizon_pct_used": 128.9,
+    "p1": -0.3624,
+    "p2": -0.1812,
     "p3": null,
-    "move_r": -0.505,
+    "move_r": -0.544,
     "mfe_r": 0.0,
-    "mae_r": -0.553
+    "mae_r": -0.611
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
@@ -40,11 +40,11 @@
     "ceiling": "hard cap at 92 \u2014 uncertainty is honest"
   },
   "_mfe": 0.0,
-  "_mae": -40.44000244140625,
+  "_mae": -44.67999267578125,
   "_max_p1": 0.0,
   "_first_trigger_ts": null,
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 45,
-  "tau": 1.0
+  "days_elapsed": 58,
+  "tau": 1.2889
 }

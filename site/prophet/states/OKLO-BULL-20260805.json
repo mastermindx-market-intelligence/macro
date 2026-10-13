@@ -1,32 +1,32 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "OKLO-BULL-20260805",
-  "asof": "2026-09-26",
-  "phase": "overtime",
-  "detection_phase": "overtime",
-  "management_confidence": 28.9,
-  "raw_confidence": 28.3,
-  "delta_vs_base": -31.1,
-  "recommended_action": "trim",
-  "human_state": "Window Elapsed \u2014 Awaiting Close",
+  "asof": "2026-10-09",
+  "phase": "invalidated",
+  "detection_phase": "invalidated",
+  "management_confidence": 10.1,
+  "raw_confidence": 8.0,
+  "delta_vs_base": -49.9,
+  "recommended_action": "invalidated",
+  "human_state": "Invalidated",
   "components": {
-    "validity": 16.5,
+    "validity": 0.0,
     "progress": 0.0,
-    "pace": 27.3,
+    "pace": 0.0,
     "retention": 0.0,
     "overlay": 53.0
   },
   "geometry": {
-    "dist_to_stop_r": 0.264,
+    "dist_to_stop_r": -0.132,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 104.4,
-    "p1": -0.4909,
-    "p2": -0.2454,
+    "horizon_pct_used": 133.3,
+    "p1": -0.7549,
+    "p2": -0.3775,
     "p3": null,
-    "move_r": -0.736,
+    "move_r": -1.132,
     "mfe_r": 0.224,
-    "mae_r": -1.013
+    "mae_r": -1.132
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
@@ -40,11 +40,11 @@
     "ceiling": "hard cap at 92 \u2014 uncertainty is honest"
   },
   "_mfe": 1.9600007629394511,
-  "_mae": -8.870001068115236,
+  "_mae": -9.920000305175783,
   "_max_p1": 0.14916291955399172,
   "_first_trigger_ts": "2026-08-10",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 47,
-  "tau": 1.0444
+  "days_elapsed": 60,
+  "tau": 1.3333
 }

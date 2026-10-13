@@ -1,0 +1,41 @@
+{
+  "schema": "research.gmi.wp02.ci_enrollment_review_manifest/v1",
+  "status": "RECOMMENDATION_NOT_APPLIED",
+  "source_head": "7c1463015b8f1a3296f09d12a8052112939b4c25",
+  "upstream_comparison": "40ebaebdbcd57eedaa627623f1cfd1860ff3ee3a",
+  "files": [
+    {
+      "path": "CI_ENROLLMENT_RECOMMENDATION.md",
+      "bytes": 17155,
+      "sha256": "f335ea83c01b7086c9392c3dad481fc64cc1d60aeeae4395e8a88df6b150fba8"
+    },
+    {
+      "path": "CONTROL_SOURCE_IDENTITIES.json",
+      "bytes": 6244,
+      "sha256": "b51d021f6ee14a5751a8dc03180803efcdb9aaf438fe530452dfd3a07a797f76"
+    },
+    {
+      "path": "CURATED_EXCLUSIVE_INSERTION.txt",
+      "bytes": 202,
+      "sha256": "83a9e36189265a3ff21cbf703a33886cf487db7c17b60bba0867c11553fb4f2b"
+    },
+    {
+      "path": "FROZEN_SHARED_IMPORT_CLOSURE.json",
+      "bytes": 7952,
+      "sha256": "3576eee1a0259abda147d0c97744985389c2f6642e6fc62311f03f177d2d6b6b"
+    },
+    {
+      "path": "LEGACY_JOB_INSERTION.yaml",
+      "bytes": 2173,
+      "sha256": "f0286d2a2a767bb0f6ba79f11b61a9a48e3d19e5ee9918ce573f08fa3e998b02"
+    },
+    {
+      "path": "RUNTIME_PATHS.json",
+      "bytes": 3548,
+      "sha256": "cb12344a306636c2c5e5086cd98652744dac6b8eccf48fa6f4d19657fdc1c886"
+    }
+  ],
+  "self_excluded": true,
+  "native_mutation": false,
+  "native_test_execution_claim": false
+}

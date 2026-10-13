@@ -52,9 +52,9 @@ Accepted, merged, or ratified work is reopened only on a **material invalidator*
 
 ## 6. Blocked lanes and direct execution — L.6, L.7
 
-**Blocked lane.** One blocked review, tool, provider, or check freezes *that lane*. The procedure before any stop: list every authorized lane in scope; mark each RUNNABLE / BLOCKED with the blocker named; continue on the runnable ones. `ALL_SCOPED_LANES_BLOCKED` is a claim about a list, and the list is part of the claim.
+**Blocked lane.** One blocked review, tool, provider, or check freezes *that lane*. List every authorized lane in scope; mark each RUNNABLE / BLOCKED; continue the runnable ones. `ALL_SCOPED_LANES_BLOCKED` is a diagnostic claim about that list, never a seat/principal exit. For every internal blocker, convert the noun into a verb: resolve it, route it to the canonical owner, or prove an already-running durable owner plus return path. Ownership can block your write; it cannot make the dependency disappear from the mission.
 
-**Direct execution — the four conditions.** A delegation surface being unavailable (a fabric down, a pool exhausted, a spawn refused) is not evidence that execution is impossible. If (1) no worker actually started on the artifact, (2) you hold lawful tools and custody of it, (3) no other owner is working it, and (4) no act of yours on it is EFFECT_UNKNOWN — execute the bounded work yourself. When any condition is false, the lawful outcome is `ALL_SCOPED_LANES_BLOCKED` or `EXACT_HUMAN_GATE` naming the exact missing thing. The two errors this prevents are opposite: a seat that stops because its favorite delegation surface was down, and a seat that puts a second worker on an artifact that already has one.
+**Direct execution — the four conditions.** A delegation surface being unavailable (a fabric down, a pool exhausted, a spawn refused) is not evidence that execution is impossible. If (1) no worker actually started on the artifact, (2) you hold lawful tools and custody of it, (3) no other owner is working it, and (4) no act of yours on it is EFFECT_UNKNOWN — execute the bounded work yourself. When any condition is false, do not create a second worker: route/reconcile through the canonical owner. A bounded worker may return `STATUS: BLOCKED` to its parent. A seat stops only when the remaining blocker is a genuinely external terminal boundary (`EXACT_HUMAN_GATE`, `PLATFORM_FAILURE`, `EFFECT_UNKNOWN`) or real durable execution owns the wait. This prevents both favorite-surface stalls and contested duplicate writers.
 
 ## 7. Waiting and quiet — L.8
 
@@ -73,9 +73,10 @@ Accepted, merged, or ratified work is reopened only on a **material invalidator*
 | `PROVEN_OUTCOME` | the mission's exit gate is met with evidence at the rung it named | a wave merged but the mission is not done |
 | `EXACT_HUMAN_GATE` | the next act needs a specific human decision, named, with your default | you would like confirmation you were not asked to seek |
 | `EFFECT_UNKNOWN` | an act's effect could not be reconciled on its carrier | you did not try the carrier |
-| `ALL_SCOPED_LANES_BLOCKED` | every authorized lane is listed with its blocker | one lane is blocked and others were not checked |
-| `DURABLE_EXECUTION_RUNNING` | watchers own the wait; the program file is current; real events re-invoke you | you are about to poll — or a change you opened is unmerged or not yet proven live: that wait is yours to the end (O.14), and the state does not excuse it |
-| `MORE_WORK_EXISTS` | never a valid stopping state | — |
+| `PLATFORM_FAILURE` | a required external platform/substrate is proven unavailable, no safe internal resolver or independent lane remains | an internal repo/owner/PR dependency or an unprobed capability |
+| `ALL_SCOPED_LANES_BLOCKED` | diagnostic only: every current lane is listed; convert internal blockers into owned actions | **never a valid stopping state** |
+| `DURABLE_EXECUTION_RUNNING` | real external execution owns the wait; the program file is current; real events re-invoke you | you are about to poll — or a change you opened is unmerged or not yet proven live: that wait is yours to the end (O.14), and the state does not excuse it |
+| `MORE_WORK_EXISTS` | diagnostic only | **never a valid stopping state** |
 
 A session that reaches the outcome or the exact human gate in ten minutes is complete; a session that stops with authorized work remaining is not, however long it ran.
 

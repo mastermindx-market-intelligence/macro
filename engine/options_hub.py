@@ -506,7 +506,12 @@ def compute_gex(
     if miss.any():
         def _bs_g(k, t, s, call):
             s = float(s) if s is not None and np.isfinite(float(s) if s is not None else float("nan")) else float("nan")
-            if not np.isfinite(s) or s < _MIN_IV or not (t and t > 0):
+            # No usable iv: the greek is unknown. Do not publish that as an
+            # observed zero. A present-but-degenerate tenor still contributes 0
+            # (the historical fallback); only the unpriceable quote stays missing.
+            if not np.isfinite(s):
+                return float("nan")
+            if s < _MIN_IV or not (t and t > 0):
                 return 0.0
             try:
                 return _bs_greeks(spot, float(k), float(t), float(s), bool(call))[1]
@@ -516,8 +521,10 @@ def compute_gex(
             _bs_g(k, t, s, c)
             for k, t, s, c in zip(g["K"], g["T"], g["iv"], g["is_call"])
         ], dtype=float)
-        raw_gamma = raw_gamma.copy()
-        raw_gamma.values[miss] = bs_vals[miss]
+        # Series.values is read-only on this pandas build; assign into a copy.
+        filled = np.array(raw_gamma.to_numpy(dtype=float), dtype=float, copy=True)
+        filled[miss] = bs_vals[miss]
+        raw_gamma = pd.Series(filled, index=raw_gamma.index)
     g["_gamma"] = raw_gamma.astype(float)
 
     # ── dealer $ exposure ─────────────────────────────────────────────────────
@@ -549,19 +556,30 @@ def compute_gex(
     g["_put_gex"]   = np.where(~g["is_call"], g["_net_gex"], 0.0)
 
     # ── headline ──────────────────────────────────────────────────────────────
-    net_gex_bn = float(g["_net_gex"].sum() / 1e9)
+    # skipna sum of the known contracts — identical to the historical headline
+    # when every gamma is finite. A missing gamma must not be presented as a
+    # complete book total; the known sum is the additive net_gex_known_bn.
+    _gamma_arr = g["_gamma"].to_numpy(dtype=float)
+    n_gamma_missing = int((~np.isfinite(_gamma_arr)).sum())
+    net_gex_known_bn = float(g["_net_gex"].sum() / 1e9)
+    net_gex_bn = None if n_gamma_missing else net_gex_known_bn
 
     # ── gamma flip + exposure profile (ONE ±25% spot-grid evaluation) ─────────
     gamma_flip, profile = _flip_and_profile(g, spot)
 
     # ── walls: max |call_gex| above spot / max |put_gex| below ────────────────
+    def _sum_known(series: pd.Series) -> float:
+        # All-missing inputs are NaN, not the skipna sum of nothing (0.0).
+        # A real cancellation (equal call and put) still sums to 0.0.
+        return series.sum(min_count=1)
+
     by_k = g.groupby("K").agg(
-        gamma_net=("_net_gex", "sum"),
-        gamma_call=("_call_gex", "sum"),
-        gamma_put=("_put_gex", "sum"),
-        delta_net=("_net_delta", "sum"),
-        vanna_net=("_net_vanna", "sum"),
-        charm_net=("_net_charm", "sum"),
+        gamma_net=("_net_gex", _sum_known),
+        gamma_call=("_call_gex", _sum_known),
+        gamma_put=("_put_gex", _sum_known),
+        delta_net=("_net_delta", _sum_known),
+        vanna_net=("_net_vanna", _sum_known),
+        charm_net=("_net_charm", _sum_known),
     ).reset_index()
 
     above = by_k[(by_k["K"] > spot) & (by_k["gamma_net"] > 0)]
@@ -639,6 +657,7 @@ def compute_gex(
         "oi_date": "t-1",  # OI is always t-1 per OI timing law
         "n_days": len(greeks_dates),
         "since": greeks_dates[0] if greeks_dates else asof,
+        "n_gamma_missing": n_gamma_missing,
     }
 
     return {
@@ -646,7 +665,8 @@ def compute_gex(
         "asof": asof,
         "root": root,
         "spot_ref": _f(spot),
-        "net_gex_bn": _f(net_gex_bn, 4),
+        "net_gex_bn": None if net_gex_bn is None else _f(net_gex_bn, 4),
+        "net_gex_known_bn": _f(net_gex_known_bn, 4),
         "gamma_flip": _f(gamma_flip),
         # The §4.2 profile block — the flip's own grid, published as a curve.
         # None when the chain is too iv-sparse to re-price (same gate as the flip).

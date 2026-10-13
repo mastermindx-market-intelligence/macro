@@ -15,6 +15,7 @@
  *   linkPattern: 'china_lookup.html#{ticker}', // row link template
  *   columns:    [...],                // column schema array (see below)
  *   stageFilter: true,                // show stage filter row
+ *   searchTicker: false,              // opt in to symbol matching as well as name/theme
  *   searchPlaceholder: ['Search…','搜索…'], // override search input placeholder
  *   optionLabels: { filterName: { VALUE: [en, zh] } }, // display labels for filter values
  * }
@@ -598,7 +599,9 @@
           var themeVal = ((r.narrative && r.narrative.theme) || '').toLowerCase();
           var themeZh  = ((r.narrative && r.narrative.theme_zh) || '').toLowerCase();
           var nm = (r.name || '').toLowerCase();
-          if (themeVal.indexOf(th) === -1 && themeZh.indexOf(th) === -1 && nm.indexOf(th) === -1) return false;
+          // US opts into native ticker search; other market callers retain name/theme behavior.
+          var tk = cfg.searchTicker === true ? String(r.ticker || '').toLowerCase() : '';
+          if (themeVal.indexOf(th) === -1 && themeZh.indexOf(th) === -1 && nm.indexOf(th) === -1 && tk.indexOf(th) === -1) return false;
         }
         return true;
       });
@@ -683,7 +686,7 @@
             tr.addEventListener('click', function(e) {
               // Feature 2: let .stf-tkr anchor and modified clicks pass through
               // to the browser / theme.js Terminal intercept naturally.
-              if (e.target.closest('a')) return;
+              if (e.target.closest('a,button,input,select,textarea,summary,details,[role="button"]')) return;
               var T = window.MDXTerminal;
               if (T && T.on && T.on() && T.open) {
                 T.open(row.ticker || '', tr);

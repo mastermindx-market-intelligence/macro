@@ -1,0 +1,135 @@
+{
+  "accepted_code_pins_verified": 53,
+  "actual_artifact_json_member_count": 15,
+  "actual_artifact_zip_count": 15,
+  "all_manifest_entries_extracted_and_verified": true,
+  "all_preserved_extracted_files_unchanged_after_verifiers": true,
+  "archive": {
+    "bytes": 4171717,
+    "name": "PR8711_REFRESHED_CANDIDATE_CI_EVIDENCE.tar.gz",
+    "sha256": "9c6baa4681447f390cb176ebbe18ae39b6362daee64884799a0fec9bf42b00ce"
+  },
+  "attempt": 1,
+  "authority": {
+    "application_imports_or_tests": false,
+    "ci_rerun": false,
+    "git_mutation": false,
+    "merge_authorized": false,
+    "native_mutation": false,
+    "policy_waiver": false
+  },
+  "ci_verifier_assertions_passed": 2302,
+  "deterministic_reencode_byte_identical": true,
+  "disposition": "CONCLUDED_RUN_PASS__COMPLETE_ALL_PASS_SEMANTIC_RECONCILIATION_VALID",
+  "executed_verifier_count": 3,
+  "extra_extracted_outputs_accounted_for": [
+    "pr8711_refreshed_ci_release_evidence_v1/ARCHIVE_REPLAY_SOURCE_REFRESH_ASSESSMENT.json",
+    "pr8711_refreshed_ci_release_evidence_v1/ARCHIVE_REPLAY_SOURCE_PIN_VERIFICATION.json",
+    "pr8711_refreshed_ci_release_evidence_v1/ARCHIVE_REPLAY_CI_EVIDENCE_VERIFICATION.json"
+  ],
+  "identity": {
+    "base_sha": "3bb1ee47939d9caa1db10a4e764365d3a2ee5b77",
+    "event": "pull_request",
+    "plan_sha256": "5545065ee276bfda077d80ab6ce243eff0142223066378eb3ed2d36ccd05d0e0",
+    "role": "pr_head",
+    "subject_head_sha": "693ee939c8a28920ef9de7bc32a9f47a7ba76b82",
+    "tested_tree_sha": "7d5fd7428fa91567db755117657f856e1347c5f9",
+    "workflow": "ci",
+    "workflow_run_id": "37938576895"
+  },
+  "manifest": {
+    "bytes": 29242,
+    "name": "ARCHIVE_MANIFEST.json",
+    "sha256": "6b44652c3390957569f5190e31c9a89e3d49b49206ee35043f93631cde520bc5"
+  },
+  "normalized_metadata_verified": true,
+  "observed_fragments": 12,
+  "original_file_mtimes_unchanged": true,
+  "original_files_unchanged_after_packaging": true,
+  "proof_steps": 316,
+  "regular_file_count": 98,
+  "replay_verifiers": [
+    {
+      "exit_code": 0,
+      "matches_original_bytes": true,
+      "matches_original_except_created_at_utc": true,
+      "original_preserved_report": "pr8711_refreshed_ci_release_evidence_v1/SOURCE_REFRESH_ASSESSMENT.json",
+      "output": {
+        "archive_relative_path": "pr8711_refreshed_ci_release_evidence_v1/ARCHIVE_REPLAY_SOURCE_REFRESH_ASSESSMENT.json",
+        "bytes": 15241,
+        "name": "ARCHIVE_REPLAY_SOURCE_REFRESH_ASSESSMENT.json",
+        "sha256": "afefdf230cf75aaa4e83d3e572f261bf8736e00a319d96be763378a84d9a443d"
+      },
+      "relative_command": [
+        "python",
+        "-B",
+        "pr8711_refreshed_ci_release_evidence_v1/assess_source_refresh.py",
+        "--output",
+        "ARCHIVE_REPLAY_SOURCE_REFRESH_ASSESSMENT.json"
+      ],
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_bytes": 424,
+      "stdout_sha256": "832aa80a7da909786ac42793773f84659710056238f75acde4c44ce5a9e5c948"
+    },
+    {
+      "exit_code": 0,
+      "matches_original_bytes": false,
+      "matches_original_except_created_at_utc": true,
+      "original_preserved_report": "pr8711_refreshed_ci_release_evidence_v1/SOURCE_PIN_VERIFICATION.json",
+      "output": {
+        "archive_relative_path": "pr8711_refreshed_ci_release_evidence_v1/ARCHIVE_REPLAY_SOURCE_PIN_VERIFICATION.json",
+        "bytes": 17458,
+        "name": "ARCHIVE_REPLAY_SOURCE_PIN_VERIFICATION.json",
+        "sha256": "fcc19e9cd22b69293e2d3d8266e75fbd60d2f4d927497e1368a1b36cca7e6ba5"
+      },
+      "relative_command": [
+        "python",
+        "-B",
+        "pr8711_refreshed_ci_release_evidence_v1/verify_tested_code_pins.py",
+        "--output",
+        "ARCHIVE_REPLAY_SOURCE_PIN_VERIFICATION.json"
+      ],
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_bytes": 459,
+      "stdout_sha256": "d8071e5057a5f49b54d1d26ec8b2f61aeb9b521967da65cf1a6bc5be9a422c49"
+    },
+    {
+      "exit_code": 0,
+      "matches_original_bytes": false,
+      "matches_original_except_created_at_utc": true,
+      "original_preserved_report": "pr8711_refreshed_ci_release_evidence_v1/CI_EVIDENCE_VERIFICATION.json",
+      "output": {
+        "archive_relative_path": "pr8711_refreshed_ci_release_evidence_v1/ARCHIVE_REPLAY_CI_EVIDENCE_VERIFICATION.json",
+        "bytes": 726831,
+        "name": "ARCHIVE_REPLAY_CI_EVIDENCE_VERIFICATION.json",
+        "sha256": "a2ab2176a794026d512ea2cc5b36734d69ff6e8156c51bcbbb37a55d60be51ee"
+      },
+      "relative_command": [
+        "python",
+        "-B",
+        "pr8711_refreshed_ci_release_evidence_v1/verify_refreshed_artifacts.py",
+        "--snapshot",
+        "artifact_read_005_and_snapshot_005.json",
+        "--output",
+        "ARCHIVE_REPLAY_CI_EVIDENCE_VERIFICATION.json"
+      ],
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_bytes": 1217,
+      "stdout_sha256": "f7c4ed8b6476df0e33756ddbe06343ca717dc62b9ceb4019f7576def86e485be"
+    }
+  ],
+  "schema": "gmi.pr8711.refreshed_deterministic_evidence_archive_verification/v1",
+  "selected_jobs": 98,
+  "source_refresh_assessment_replay_byte_identical": true,
+  "status": "VERIFIED_FROZEN_REFRESHED_CANDIDATE_COMPLETE_CI_EVIDENCE",
+  "step_classifications": {
+    "passed": 316
+  },
+  "uncompressed_file_bytes": 11768732,
+  "unique_regular_files_only": true,
+  "verified_at_utc": "2026-10-09T14:20:59.531029+00:00",
+  "whole_raw_log_count": 3
+}

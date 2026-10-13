@@ -218,11 +218,12 @@ def test_self_mod_fence_suite_pins_checkout_contract() -> None:
 def test_hosted_merge_control_canary_contract_executes_in_fast_fence() -> None:
     """Reuse the canonical W1-A assertions inside the always-on PR fence.
 
-    ``workflow-yaml`` also names ``test_ci_canary_workflows.py``, but that logical
-    job is ``gate: data`` and therefore is not a PR merge precondition. Loading the
-    canonical module here makes the hosted-canary safety contract execute in the
-    already-required ``fence-pack`` without copying the assertions or adding a
-    parallel CI workflow.
+    ``ci-control-plane-contracts`` also names ``test_ci_canary_workflows.py``. That
+    logical job is ``gate: code`` (since 2026-09-25; its predecessor, workflow-yaml,
+    was ``gate: data``) but ``scope: exclusive``, so a PR runs it only when the CI
+    plane's own files change. Loading the canonical module here makes the
+    hosted-canary safety contract execute on every PR in the already-required
+    ``fence-pack`` without copying the assertions or adding a parallel CI workflow.
     """
     contract = _load_canary_contract_module()
     contract.test_canaries_are_dispatch_only_and_not_merge_authority()

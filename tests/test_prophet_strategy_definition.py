@@ -33,6 +33,8 @@ from engine.prophet_strategy_definition import (
     STRATEGY_ID,
     StrategyDefinitionContractError,
     build_early_leadership_sector_rotation_definition,
+    build_strategy_catalog,
+    validate_strategy_catalog,
     validate_strategy_definition,
 )
 
@@ -520,6 +522,41 @@ def _b4_runtime_kwargs(symbol="UNIT", **extra):
     }
     out.update(extra)
     return out
+
+
+def test_private_quote_projection_preserves_b4_clock_provenance_only_when_opted_in():
+    from scripts import build_live_quotes as live_snapshot
+
+    quotes, live, entry, metrics = _b4_runtime_sources()
+    private_quotes = live_snapshot.to_worker_quotes(
+        quotes,
+        include_private_provenance=True,
+    )
+    facts = compose_runtime_owner_facts(
+        _b4_projection(),
+        episode_id=_b4_cid(),
+        **_b4_runtime_kwargs(
+            quotes_by_symbol=private_quotes,
+            live_state_artifact=live,
+            entry_rows_by_symbol=entry,
+            metric_inputs=metrics,
+        ),
+    )
+    assert facts["quote"]["asof"] == "2026-09-18T19:30:00Z"
+
+    public_quotes = live_snapshot.to_worker_quotes(quotes)
+    assert "quote_ts_synthetic" not in public_quotes["UNIT"]
+    with pytest.raises(RuntimeOwnerFactError, match="real source-market timestamp"):
+        compose_runtime_owner_facts(
+            _b4_projection(),
+            episode_id=_b4_cid(),
+            **_b4_runtime_kwargs(
+                quotes_by_symbol=public_quotes,
+                live_state_artifact=live,
+                entry_rows_by_symbol=entry,
+                metric_inputs=metrics,
+            ),
+        )
 
 
 def test_b4_runtime_adapter_binds_identity_quote_basis_and_geometry_without_minting_gates():
@@ -1057,10 +1094,10 @@ def test_b4_session_policy_passes_only_inside_actual_rth_window():
     assert out["session_policy_era"] == SESSION_POLICY_ERA
     assert out["calendar_owner"] == "lib.nyse_calendar.is_session"
     assert out["execution_window_owner"] == "engine.prophet_entry_policy._execution_session_window_et"
-    assert out["execution_schedule_source"] == "NYSE_HOLIDAYS_AND_TRADING_HOURS_2026"
-    assert out["execution_schedule_verified_on"] == "2026-09-22"
-    assert out["supported_session_years"] == [2026]
-    assert out["early_close_dates"] == ["2026-11-27", "2026-12-24"]
+    assert out["execution_schedule_source"] == "NYSE_BETA_HOLIDAYS_AND_TRADING_HOURS_2026_2027"
+    assert out["execution_schedule_verified_on"] == "2026-10-07"
+    assert out["supported_session_years"] == [2026, 2027]
+    assert out["early_close_dates"] == ["2026-11-27", "2026-12-24", "2027-11-26"]
     assert out["policy_receipt"].startswith("pep:")
     assert out["session_receipt"].startswith("pes:")
     assert out["fact_receipt"].startswith("pepf:")
@@ -1125,8 +1162,8 @@ def test_b4_session_policy_requires_aware_clock_and_accepted_strategy_definition
             market_session="2026-09-22",
         )
 
-    with pytest.raises(EntryPolicyContractError, match="outside NYSE_RTH_2026"):
-        _session_policy("2027-01-04T15:00:00Z", "2027-01-04")
+    with pytest.raises(EntryPolicyContractError, match="outside NYSE_RTH_2026_2027"):
+        _session_policy("2028-01-03T15:00:00Z", "2028-01-03")
 
 
 def _risk_policy(current_price=100.0, invalidation_price=97.0, atr=2.0):
@@ -1378,3 +1415,148 @@ def test_b4_new_policy_owners_require_the_accepted_strategy_identity():
             prev_close=99.0,
             atr=2.0,
         )
+
+
+# ---------------------------------------------------------------------------
+# Full eight-sleeve roadmap catalog.  This is authority-false architecture
+# truth only: it must not turn retained research avenues into live strategies.
+# ---------------------------------------------------------------------------
+
+
+def _catalog_by_id():
+    catalog = build_strategy_catalog()
+    return catalog, {row["strategy_id"]: row for row in catalog["sleeves"]}
+
+
+def test_strategy_catalog_retains_all_eight_architecture_backed_sleeves():
+    catalog, sleeves = _catalog_by_id()
+    assert [row["strategy_id"] for row in catalog["sleeves"]] == [
+        "CYCLE_CAPTURE",
+        "EARLY_LEADERSHIP_SECTOR_ROTATION",
+        "QUALITY_EARNINGS_EXPECTATION_REVISION",
+        "POLICY_EVENT_SWING",
+        "CATALYST_DISLOCATION",
+        "LIQUIDITY_DEBASEMENT_REAL_ASSETS",
+        "RANGE_MEAN_REVERSION",
+        "DEFENSIVE_AVOIDANCE_HEDGE_RESEARCH",
+    ]
+    assert set(catalog["initial_core_sleeves"]) == {
+        "EARLY_LEADERSHIP_SECTOR_ROTATION",
+        "QUALITY_EARNINGS_EXPECTATION_REVISION",
+        "CYCLE_CAPTURE",
+    }
+    assert set(catalog["retained_later_sleeves"]) == set(sleeves) - set(catalog["initial_core_sleeves"])
+
+
+def test_catalog_preserves_only_existing_early_leadership_control_definition():
+    _catalog, sleeves = _catalog_by_id()
+    early = sleeves["EARLY_LEADERSHIP_SECTOR_ROTATION"]
+    accepted = build_early_leadership_sector_rotation_definition()
+    assert early["definition_status"] == "CONTROL_DEFINED_SHADOW_ONLY"
+    assert early["definition_ref"]["strategy_definition_id"] == accepted["strategy_definition_id"]
+    assert early["horizon"]["primary"] == "2_15_SESSIONS"
+    for strategy_id, row in sleeves.items():
+        if strategy_id == "EARLY_LEADERSHIP_SECTOR_ROTATION":
+            continue
+        assert row["definition_ref"] is None
+        assert "CONTROL_DEFINED" not in row["definition_status"]
+
+
+def test_earnings_and_cycle_horizons_are_research_proposals_not_hold_laws():
+    _catalog, sleeves = _catalog_by_id()
+    earnings = sleeves["QUALITY_EARNINGS_EXPECTATION_REVISION"]
+    cycle = sleeves["CYCLE_CAPTURE"]
+    assert earnings["horizon"] == {
+        "status": "RESEARCH_PROPOSAL_NOT_POLICY",
+        "primary": "H42",
+        "supporting": ["H21", "H63"],
+        "narrative": "weeks to months; proposed research checkpoints are not a printed holding duration",
+        "not_a_hold_law": True,
+    }
+    assert cycle["horizon"]["status"] == "RESEARCH_PROPOSAL_NOT_POLICY"
+    assert cycle["horizon"]["primary"] == "H252"
+    assert cycle["horizon"]["supporting"] == ["H126", "H504"]
+    assert cycle["horizon"]["not_a_hold_law"] is True
+
+
+def test_retained_later_sleeves_do_not_copy_the_tactical_horizon():
+    _catalog, sleeves = _catalog_by_id()
+    for strategy_id in (
+        "POLICY_EVENT_SWING",
+        "CATALYST_DISLOCATION",
+        "LIQUIDITY_DEBASEMENT_REAL_ASSETS",
+        "RANGE_MEAN_REVERSION",
+        "DEFENSIVE_AVOIDANCE_HEDGE_RESEARCH",
+    ):
+        horizon = sleeves[strategy_id]["horizon"]
+        assert horizon["status"] == "OWNER_SPEC_REQUIRED"
+        assert horizon["primary"] is None
+        assert horizon["supporting"] == []
+        assert "2_15_SESSIONS" not in json.dumps(horizon)
+
+
+def test_catalog_keeps_regime_out_of_universal_cross_sectional_ranking():
+    catalog, sleeves = _catalog_by_id()
+    law = catalog["cross_sleeve_law"]
+    assert law["universal_score_authorized"] is False
+    assert law["row_constant_macro_may_rank_stocks"] is False
+    assert law["candidate_may_match_multiple_sleeves"] is True
+    assert law["sleeve_disagreements_are_preserved"] is True
+    assert "general-purpose" in sleeves["RANGE_MEAN_REVERSION"]["constraints"][0].lower()
+
+
+def test_cycle_catalog_does_not_launder_killed_washout_or_rotation_confluence():
+    _catalog, sleeves = _catalog_by_id()
+    cycle = sleeves["CYCLE_CAPTURE"]
+    assert "DNR:KILL-WASHOUT-TURN" in cycle["constraints"]
+    assert "DNR:KILL-ROTATION-CYCLE-CONFLUENCE" in cycle["constraints"]
+    assert any("surviv" in fact for fact in cycle["required_evidence"])
+    assert any("dilution" in fact for fact in cycle["required_evidence"])
+
+
+def test_defensive_sleeve_does_not_mint_short_or_hedge_authority():
+    catalog, sleeves = _catalog_by_id()
+    defensive = sleeves["DEFENSIVE_AVOIDANCE_HEDGE_RESEARCH"]
+    assert "DNR:KILL-DIRECTIONAL-SHORTING" in defensive["constraints"]
+    assert defensive["authority"]["can_activate_short"] is False
+    assert defensive["authority"]["can_activate_options"] is False
+    assert catalog["authority"]["can_activate_short"] is False
+
+
+def test_every_sleeve_has_mechanism_evidence_falsifiers_and_zero_authority():
+    catalog, _sleeves = _catalog_by_id()
+    for row in catalog["sleeves"]:
+        assert row["user_job"]
+        assert row["economic_thesis"]
+        assert row["required_evidence"]
+        assert row["primary_falsifiers"]
+        assert row["promotion_requirements"]
+        assert row["entry_owner"]
+        assert row["hold_law"]
+        assert all(value is False for value in row["authority"].values())
+
+
+def test_strategy_catalog_is_stable_content_addressed_and_deep_copy_safe():
+    left = build_strategy_catalog()
+    right = build_strategy_catalog()
+    assert left == right
+    assert left["catalog_id"].startswith("psc:")
+    left["sleeves"][0]["family_name"] = "MUTATED"
+    assert build_strategy_catalog() == right
+
+
+def test_strategy_catalog_rejects_semantic_authority_and_identity_mutation():
+    payload = build_strategy_catalog()
+    payload["sleeves"][2]["horizon"]["primary"] = "2_15_SESSIONS"
+    with pytest.raises(StrategyDefinitionContractError, match="frozen roadmap"):
+        validate_strategy_catalog(payload)
+
+    payload = build_strategy_catalog()
+    payload["authority"]["can_route_strategy"] = True
+    with pytest.raises(StrategyDefinitionContractError):
+        validate_strategy_catalog(payload)
+
+    payload = build_strategy_catalog()
+    payload["catalog_id"] = "psc:" + "0" * 64
+    with pytest.raises(StrategyDefinitionContractError, match="catalog_id mismatch"):
+        validate_strategy_catalog(payload)

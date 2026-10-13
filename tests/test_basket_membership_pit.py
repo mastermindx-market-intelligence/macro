@@ -225,8 +225,11 @@ def test_unknown_basket_is_not_reported_as_an_authoritative_empty(data_root):
 
 
 def test_a_basket_that_postdates_the_snapshot_is_pit_and_explains_itself(data_root):
-    _write_membership(data_root, THS, _doc({"ths_ai": [_m("A.SZ")]}))
-    pit.append_snapshot(THS, asof="2026-07-08", lane="asia")
+    # Preserve the accepted legacy-v1 snapshot interpretation; do not relabel
+    # these old rows as qualified v2 completeness.
+    doc = _doc({"ths_ai": [_m("A.SZ")]})
+    _write_membership(data_root, THS, doc)
+    pit._append_rows(THS, pit._rows_from_doc(doc, "2026-07-08", THS))
     _write_membership(data_root, THS, _doc({"ths_ai": [_m("A.SZ")],
                                             "ths_new": [_m("C.SZ")]}))
     got = pit.members_asof("ths_new", "2026-07-08", suite=THS)
@@ -380,3 +383,13 @@ def test_a_company_rename_is_not_a_membership_change(data_root):
     _write_membership(data_root, THS, doc)
     res = pit.append_snapshot(THS, asof="2026-07-09", lane="asia")
     assert res["written"] is False and "unchanged" in (res["reason"] or "")
+
+
+def test_new_unreceipted_snapshot_cannot_prove_an_absent_basket(data_root):
+    _write_membership(data_root, THS, _doc({"ths_ai": [_m("A.SZ")]}))
+    assert pit.append_snapshot(THS, asof="2026-07-08", lane="asia")["written"]
+    _write_membership(data_root, THS, _doc({"ths_ai": [_m("A.SZ")],
+                                          "ths_new": [_m("C.SZ")]}))
+    got = pit.members_asof("ths_new", "2026-07-08", suite=THS)
+    assert got["pit"] is False and got["members"] == []
+    assert got["note"] == "no basket-scoped observation"

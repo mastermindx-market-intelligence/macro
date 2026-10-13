@@ -941,3 +941,340 @@ def test_nav_icon_is_sunrise_line_not_clock():
     # The shape: vertical sun position with rays, NOT clock hands.
     # Block contains an M24 8 (top-of-circle sunrise origin) and M24 8l-7 7 / l7 7 rays.
     assert "M24 8" in block, "expected the sunrise line origin at M24 8"
+
+
+# ── F01 AM Edition minors (M1 brief strip / M2 research watch disclosed-null) ──
+
+
+# The producer's disclosed-null pair (verified by the commissioning seat against
+# origin/main). The contract is: condition_zh carries the literal "原文为英文条件。"
+# placeholder when no human ZH exists, and condition_zh_disclosed_why names the
+# reason. The consumer MUST render the EN condition verbatim (A7) and surface
+# the why via a single hoisted element.
+_F01_ZH_DISCLOSURE = "原文为英文条件。"
+_F01_ZH_DISCLOSURE_WHY = "观察条件以英文记录，此栏不提供中文译文。"
+_F01_EN_CONDITION = "Watch when the dollar breaks its 20-day range."
+_F01_ZH_TRANSLATION = "观察美元是否突破20日区间。"
+
+
+def _research_watch_block(tmp_path: Path, rows: list[dict], state: str = "CURRENT") -> dict:
+    """Build a single research_watch block with the supplied rows. Mirrors the
+    fixture shape in _make_fresh_blocks so it composes with _build_payload."""
+    return {
+        "key": "research_watch",
+        "title_en": "Research watch",
+        "title_zh": "研究观察",
+        "state": state,
+        "source_as_of": "2026-09-08T10:00:00+00:00",
+        "calibration_note_en": "Calibration summary covers through 2026-09-08.",
+        "calibration_note_zh": "校准汇总更新至 2026-09-08。",
+        "rows": rows,
+    }
+
+
+def test_f01_m2_t1_disclosed_row_renders_owner_english_with_hoisted_why(tmp_path):
+    """F01 M2 T1: a disclosed-null row must render the OWNER'S EN condition in
+    the ZH view (A7 verbatim), never "原文为英文条件。" — the producer's
+    placeholder must never reach visible copy. The why must appear ONCE in a
+    dedicated hoisted element scoped to the panel."""
+    blocks = _make_fresh_blocks(tmp_path)
+    blocks[1] = _research_watch_block(
+        tmp_path,
+        [{
+            "condition_en": _F01_EN_CONDITION,
+            "condition_zh": _F01_ZH_DISCLOSURE,
+            "condition_zh_disclosed_why": _F01_ZH_DISCLOSURE_WHY,
+            "since": "2026-09-08",
+            "as_of": "2026-09-08T10:00:00+00:00",
+            "source_ref": "data/master_brain/theses.jsonl",
+        }],
+    )
+    payload = _build_payload(tmp_path, blocks)
+    html = _render_am_edition(payload)
+    rw_panel = _panel_html(html, "Research watch")
+    # (a) The owner's EN condition is rendered in the ZH view verbatim.
+    assert (
+        '<span class="l-zh">Watch when the dollar breaks its 20-day range.</span>'
+        in rw_panel
+    ), "disclosed-null row's ZH view must render the owner's EN condition verbatim"
+    # (b) The producer's placeholder phrase must NEVER appear in visible copy.
+    assert _F01_ZH_DISCLOSURE not in _strip_html(html), (
+        "disclosed-null placeholder '原文为英文条件。' leaked into visible copy"
+    )
+    # (c) The why is hoisted ONCE inside the research-watch panel.
+    assert rw_panel.count('class="mx-rw-zh-note l-zh"') == 1, (
+        "expected one hoisted .mx-rw-zh-note l-zh element in the research-watch panel"
+    )
+    # (d) The hoisted element carries the why text.
+    m = re.search(
+        r'<div class="mx-rw-zh-note l-zh">([^<]*)</div>',
+        rw_panel,
+    )
+    assert m is not None, "hoisted .mx-rw-zh-note element missing"
+    assert m.group(1) == _F01_ZH_DISCLOSURE_WHY, (
+        f"hoisted element text mismatch (got {m.group(1)!r})"
+    )
+
+
+def test_f01_m2_t2_translated_row_keeps_zh_and_no_disclosure_note(tmp_path):
+    """F01 M2 T2: the existing human-translated fixture row must keep its ZH
+    twin and the panel must NOT carry a .mx-rw-zh-note element (no disclosed-
+    null rows means no why to render)."""
+    blocks = _make_fresh_blocks(tmp_path)  # fixture row is the translated one
+    payload = _build_payload(tmp_path, blocks)
+    html = _render_am_edition(payload)
+    rw_panel = _panel_html(html, "Research watch")
+    # (a) The ZH twin is preserved on the translated row.
+    assert (
+        '<span class="l-zh">观察美元是否突破20日区间。</span>'
+        in rw_panel
+    ), "translated row must keep its ZH twin"
+    # (b) No hoisted disclosure note is rendered when every row is translated.
+    assert 'class="mx-rw-zh-note l-zh"' not in rw_panel, (
+        "no .mx-rw-zh-note should render when no row carries a disclosed null"
+    )
+
+
+def test_f01_m2_t3_mixed_rows_render_one_hoisted_note(tmp_path):
+    """F01 M2 T3: a panel with one translated row + two disclosed rows
+    (same why) must render exactly ONE .mx-rw-zh-note element (Law 4: a
+    constant is said once, never per row). The disclosed rows' .l-zh spans
+    carry the owner's EN condition verbatim; the translated row keeps its ZH."""
+    blocks = _make_fresh_blocks(tmp_path)
+    blocks[1] = _research_watch_block(
+        tmp_path,
+        [
+            {
+                "condition_en": _F01_EN_CONDITION,
+                "condition_zh": _F01_ZH_TRANSLATION,
+                "condition_zh_disclosed_why": None,
+                "since": "2026-09-08",
+                "as_of": "2026-09-08T10:00:00+00:00",
+                "source_ref": "data/master_brain/theses.jsonl",
+            },
+            {
+                "condition_en": "Watch the dollar's reaction to the CPI print.",
+                "condition_zh": _F01_ZH_DISCLOSURE,
+                "condition_zh_disclosed_why": _F01_ZH_DISCLOSURE_WHY,
+                "since": "2026-09-08",
+                "as_of": "2026-09-08T10:00:00+00:00",
+                "source_ref": "data/master_brain/theses.jsonl",
+            },
+            {
+                "condition_en": "Watch a sustained break of the 200-day moving average.",
+                "condition_zh": _F01_ZH_DISCLOSURE,
+                "condition_zh_disclosed_why": _F01_ZH_DISCLOSURE_WHY,
+                "since": "2026-09-08",
+                "as_of": "2026-09-08T10:00:00+00:00",
+                "source_ref": "data/master_brain/theses.jsonl",
+            },
+        ],
+    )
+    payload = _build_payload(tmp_path, blocks)
+    html = _render_am_edition(payload)
+    rw_panel = _panel_html(html, "Research watch")
+    # Exactly one note regardless of how many disclosed rows share the same why.
+    assert rw_panel.count('class="mx-rw-zh-note l-zh"') == 1, (
+        f"expected ONE hoisted note for two disclosed rows sharing the same why; "
+        f"got {rw_panel.count('class=\"mx-rw-zh-note l-zh\"')}"
+    )
+    # Disclosed rows' .l-zh spans equal their EN condition (A7 verbatim).
+    assert (
+        '<span class="l-zh">Watch the dollar\'s reaction to the CPI print.</span>'
+        in rw_panel
+    )
+    assert (
+        '<span class="l-zh">Watch a sustained break of the 200-day moving average.</span>'
+        in rw_panel
+    )
+    # Translated row keeps its ZH twin.
+    assert (
+        '<span class="l-zh">观察美元是否突破20日区间。</span>' in rw_panel
+    )
+
+
+def test_f01_m1_t4_brief_strip_geometry_classes(tmp_path):
+    """F01 M1 T4: the prior-close brief strip CSS rules carry the geometry
+    additions (flex-wrap, white-space:nowrap on the link, the three new
+    helper classes with their responsive breakpoint). Markup uses the two
+    new classes when the built stamp is present (the existing aibrief-link
+    fixture renders the strip)."""
+    # (a) CSS changes — read the template as text.
+    src = Path("templates/am_edition.html.j2").read_text(encoding="utf-8")
+    # flex-wrap added to .brief-link-panel
+    assert re.search(
+        r"\.brief-link-panel\s*\{\s*display:flex;\s*flex-wrap:wrap;",
+        src,
+    ), "M1: .brief-link-panel must carry flex-wrap:wrap"
+    # white-space:nowrap on .brief-link (not just on the helper classes)
+    assert re.search(r"\.brief-link\s*\{[^}]*white-space:nowrap;", src), "M1: .brief-link rule must carry white-space:nowrap;"
+    # The three new CSS lines (helper classes + media query)
+    assert ".brief-link-label { white-space:nowrap; flex:0 0 auto; }" in src
+    assert (
+        ".brief-link-built { white-space:nowrap; font-variant-numeric:tabular-nums; }"
+        in src
+    )
+    assert (
+        "@media (max-width:600px){ .brief-link-built { flex-basis:100%; } }" in src
+    )
+    # (b) Markup uses the helper classes when the built stamp is present.
+    env_src = Path("templates/am_edition.html.j2").read_text(encoding="utf-8")
+    assert "muted sm brief-link-label" in env_src
+    assert "muted sm brief-link-built" in env_src
+    # (c) Render via the existing aibrief-link fixture (the brief-link-panel is
+    # populated when site/master_brief.json exists, see _fresh_tree).
+    from jinja2 import Environment, FileSystemLoader, select_autoescape
+    env = Environment(
+        loader=FileSystemLoader("templates"),
+        autoescape=select_autoescape(["html", "xml"]),
+    )
+    now = datetime(2026, 9, 8, 15, 0, tzinfo=timezone.utc)
+    site, data = _fresh_tree(
+        tmp_path, tape_asof="2026-09-08T13:00:00Z", session_date="2026-09-08"
+    )
+    payload = build_payload(site, data, now=now)
+    template = env.get_template("am_edition.html.j2")
+    html = template.render(payload=payload, as_of="2026-09-08T15:00Z")
+    assert 'class="muted sm brief-link-label"' in html, (
+        "rendered strip must carry the .brief-link-label helper class on the label"
+    )
+    assert 'class="muted sm brief-link-built"' in html, (
+        "rendered strip must carry the .brief-link-built helper class on the built stamp"
+    )
+
+
+def test_f01_m2_t5_balance_per_rw_text_one_en_one_zh(tmp_path):
+    """F01 M2 T5: every .mx-rw-text must contain exactly ONE l-en span and
+    exactly ONE l-zh span. The disclosed-null fix must NOT turn the rendered
+    twin into a twin-with-pair OR zero-pair — the l-zh leg just carries the
+    owner's EN verbatim, but it is still the second leg of a balanced pair."""
+    blocks = _make_fresh_blocks(tmp_path)
+    blocks[1] = _research_watch_block(
+        tmp_path,
+        [
+            {
+                "condition_en": _F01_EN_CONDITION,
+                "condition_zh": _F01_ZH_TRANSLATION,
+                "condition_zh_disclosed_why": None,
+                "since": "2026-09-08",
+                "as_of": "2026-09-08T10:00:00+00:00",
+                "source_ref": "data/master_brain/theses.jsonl",
+            },
+            {
+                "condition_en": "Watch the dollar's reaction to the CPI print.",
+                "condition_zh": _F01_ZH_DISCLOSURE,
+                "condition_zh_disclosed_why": _F01_ZH_DISCLOSURE_WHY,
+                "since": "2026-09-08",
+                "as_of": "2026-09-08T10:00:00+00:00",
+                "source_ref": "data/master_brain/theses.jsonl",
+            },
+        ],
+    )
+    payload = _build_payload(tmp_path, blocks)
+    html = _render_am_edition(payload)
+    rw_panel = _panel_html(html, "Research watch")
+    rw_texts = re.findall(r'<div class="mx-rw-text">(.*?)</div>', rw_panel, flags=re.DOTALL)
+    assert len(rw_texts) >= 2, f"expected >=2 .mx-rw-text rows; got {len(rw_texts)}"
+    for i, body in enumerate(rw_texts):
+        en_count = body.count('class="l-en"')
+        zh_count = body.count('class="l-zh"')
+        assert en_count == 1, (
+            f"row {i} carries {en_count} l-en spans inside .mx-rw-text; expected 1"
+        )
+        assert zh_count == 1, (
+            f"row {i} carries {zh_count} l-zh spans inside .mx-rw-text; expected 1"
+        )
+
+
+@pytest.mark.parametrize("missing_state", ["NOT_COVERED", "UNAVAILABLE"])
+def test_context_planes_partial_rows_remain_visible(tmp_path, missing_state):
+    blocks = _make_fresh_blocks(tmp_path)
+    context = blocks[0]
+    context["state"] = missing_state
+    context["state_reason_en"] = "Some context planes are not yet covered."
+    context["state_reason_zh"] = "部分背景面尚未覆盖。"
+    context["rows"][1]["state"] = "STALE_WITH_LAST_KNOWN"
+    context["rows"][1]["state_reason_en"] = "Latest known commodity reading."
+    context["rows"][1]["state_reason_zh"] = "最新已知商品读数。"
+    context["rows"].append({
+        "plane": "credit", "state": missing_state,
+        "label_en": "MUST_NOT_RENDER_UNAVAILABLE_LABEL",
+        "read_en": "MUST_NOT_RENDER_UNAVAILABLE_READING",
+        "state_reason_en": "Credit reading is not available.",
+        "state_reason_zh": "信用读数暂不可用。",
+    })
+    html = _render_am_edition(_build_payload(tmp_path, blocks))
+    text = _strip_html(html)
+    assert "Rates are steady this morning." in text
+    assert "今晨利率保持稳定。" in text
+    assert "Commodity complex is steady with a soft bid." in text
+    assert "Latest known commodity reading." in text
+    assert "最新已知商品读数。" in text
+    assert "Credit reading is not available." in text
+    assert "信用读数暂不可用。" in text
+    assert "MUST_NOT_RENDER_UNAVAILABLE" not in text
+    assert html.count('class="mx-cp-row"') == 3
+    assert context["state_reason_en"] in text
+
+
+@pytest.mark.parametrize("key,title,label,zh_label", [
+    ("market_state", "Market regime", "Risk-on", "风险偏好"),
+    ("regime", "Macroeconomic regime", "Reflation", "再通胀"),
+])
+@pytest.mark.parametrize("state", ["CURRENT", "STALE_WITH_LAST_KNOWN"])
+def test_regime_panels_keep_owner_reading_and_clock(tmp_path, key, title, label, zh_label, state):
+    site, data = _fresh_tree(tmp_path, tape_asof="2026-09-08T13:00:00Z", session_date="2026-09-08")
+    payload = build_payload(site, data, now=datetime(2026, 9, 8, 15, tzinfo=timezone.utc))
+    block = next(b for b in payload["blocks"] if b["key"] == key)
+    block.update(state=state, state_reason_en="Owner reading is dated; retain this limitation.",
+                 state_reason_zh="主理读数有日期限制，请保留此说明。")
+    panel = _panel_html(_render_am_edition(payload), title)
+    text = _strip_html(panel)
+    for expected in (label, zh_label, "2026-09-08", block["state_reason_en"], block["state_reason_zh"]):
+        assert expected in text
+    assert "2026-09-08T00:00" not in text  # the owner supplies a day, not a midnight observation
+    if state == "STALE_WITH_LAST_KNOWN":
+        assert "Stale — last known" in text
+        assert "已滞后 — 最新已知" in text
+    if key == "market_state":
+        assert "Constructive" in text and "积极" in text
+
+
+@pytest.mark.parametrize("key,title", [("market_state", "Market regime"), ("regime", "Macroeconomic regime")])
+@pytest.mark.parametrize("state", ["UNAVAILABLE", "NOT_COVERED", "NOT_YET_OPEN"])
+def test_regime_panels_do_not_expose_unusable_rows(tmp_path, key, title, state):
+    block = {"key": key, "state": state, "source_as_of": None,
+             "state_reason_en": "The owner source could not be read.",
+             "state_reason_zh": "无法读取主理数据源。",
+             "rows": [{"label_en": "POISON_OWNER_LABEL", "quad_name_en": "POISON_OWNER_LABEL"}]}
+    panel = _panel_html(_render_am_edition(_build_payload(tmp_path, [block])), title)
+    assert "POISON_OWNER_LABEL" not in panel
+    assert block["state_reason_en"] in panel and block["state_reason_zh"] in panel
+    assert 'class="dtp-asof"' not in panel
+
+
+def test_macro_regime_unknown_translation_remains_disclosed(tmp_path):
+    from bs4 import BeautifulSoup
+
+    site, data = _fresh_tree(tmp_path, tape_asof="2026-09-08T13:00:00Z", session_date="2026-09-08")
+    _write(data / "regime" / "latest.json", {
+        "asof": "2026-09-08", "label": "UNKNOWN", "quad_name": "Unmapped owner regime",
+    })
+    payload = build_payload(site, data, now=datetime(2026, 9, 8, 15, tzinfo=timezone.utc))
+    panel = BeautifulSoup(_panel_html(_render_am_edition(payload), "Macroeconomic regime"), "html.parser")
+    assert "Unmapped owner regime" in panel.get_text()
+    zh = " ".join(s.get_text() for s in panel.select(".l-zh"))
+    assert "Unmapped owner regime" not in zh
+    assert "宏观周期名称尚无中文对照" in zh
+
+
+def test_context_planes_current_row_keeps_partial_source_reason(tmp_path):
+    blocks = _make_fresh_blocks(tmp_path)
+    row = blocks[0]["rows"][0]
+    row["plane"] = "international"
+    row["state_reason_en"] = "Hong Kong reading unavailable."
+    row["state_reason_zh"] = "香港读数不可用。"
+    text = _strip_html(_render_am_edition(_build_payload(tmp_path, blocks)))
+    assert "Rates are steady this morning." in text
+    assert "Hong Kong reading unavailable." in text
+    assert "香港读数不可用。" in text
