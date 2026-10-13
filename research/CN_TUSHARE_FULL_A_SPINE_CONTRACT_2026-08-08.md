@@ -1,6 +1,6 @@
 # CN TuShare full-A spine contract — 2026-08-08
 
-Status: foundation-only; synthetic verification complete, no live vendor request or bulk backfill.
+Status: technical backfill gate promoted 2026-09-12; exact-head live canary complete; full range backfill and sanitized completeness manifest still pending.
 Authority: `context_only` — data/universe infrastructure, never a signal or promotion.
 Collector: `collectors/china_tushare_spine.py`
 Manifest schema: `contracts/cn_tushare_a_share_spine_manifest.v1.schema.json`
@@ -21,9 +21,13 @@ gate may request or verify those documents
 nulls the former written-grant/receipt/trust-allowlist requirement this contract
 previously carried). DEP-EXACT gates only on independently technical exact-plane
 correctness, access operation, canary, range-campaign and completeness
-requirements. Until the live canary runs and the scalable cap plan is reviewed,
-this lane is `foundation_only_range_shards_synthetic_no_live_canary` on that
-technical evidence alone.
+requirements. Exact-head live canary run `33043190487` (post-#6513,
+2018-01-02) completed on the real self-hosted store with 6 requests, zero
+failures and `stage=complete`; the accepted #5523 range-shard implementation
+and adversarial suite remain unchanged and CI-wired. Those receipts satisfy the
+separate technical-readiness promotion law. The lane is now
+`operational_backfill_gate_code_reviewed`, but DEP-EXACT is still open until the
+range campaign and sanitized completeness manifest close.
 
 The Wave-0 Yahoo-derived 71,692-event artifact remains incompatible with exact
 legal-limit strategy claims: its nominally “raw” prices are split-adjusted and its
@@ -43,7 +47,7 @@ All links are primary TuShare or exchange documentation checked 2026-08-08/09.
 | `trade_cal` | <https://tushare.pro/document/2?doc_id=26> | Exact exchange/range/day response; SSE and SZSE must have identical open-session sets. |
 | `bak_basic` | <https://tushare.pro/document/2?doc_id=262> | Exact-date historical stock-list witness from 2016; 7,000 cap. Pre-2016 stays an explicit gap. |
 | `namechange` | <https://tushare.pro/document/2?doc_id=100> | Active year is refreshed to the actual end-date anchor; announcement dates must stay inside the request. A valid row is its own source evidence and lands with or without an external witness; only malformed keys, non-A identities, contradictory lifecycle intervals and unresolved same-day name conflicts block. |
-| `daily` | <https://tushare.pro/document/2?doc_id=27> | Direct unadjusted nominal OHLCV, exact date, 6,000 cap; on cap the endpoint's requested interval switches to the bounded ticker×date-range campaign (amended 2026-08-13), correctness-tested synthetically and still gated. |
+| `daily` | <https://tushare.pro/document/2?doc_id=27> | Direct unadjusted nominal OHLCV, exact date, 6,000 cap; on cap the endpoint's requested interval switches to the bounded ticker×date-range campaign (amended 2026-08-13). The implementation/adversarial suite was accepted in #5523; the 2026-09-12 technical promotion permits the first bounded live range execution, which remains production proof rather than a precondition. |
 | `daily_basic` | <https://tushare.pro/document/2?doc_id=32> | Exact date/ticker; 6,000 cap; `limit_status` domain 0–6 and close/limit semantics are audited. |
 | `stk_limit` | <https://tushare.pro/document/2?doc_id=183> | Exact source pre-close/up/down limits; 5,800 cap; non-A rows require independent exclusion or quarantine. |
 | `suspend_d` | <https://tushare.pro/document/2?doc_id=214> | Successful empty days are checkpointed; only a full-day `S` with no timing explains a missing daily row. |
@@ -74,14 +78,14 @@ technical:
 
 - `BULK_HISTORICAL_BACKFILL_READY` — a **technical readiness** gate (live canary
   parity, sustained throughput, range/completeness correctness), never a
-  licensing gate. It is `False` until a separately reviewed change cites those
-  measurements. Because that gate waits on canary evidence, the canary itself is
-  **not** gated on it: `collect(canary=True)` (lane `mode=canary`) performs real
-  collection while the gate is still `False`, hard-bounded to
-  `CANARY_MAX_REQUESTS` (12) requests over `CANARY_MAX_RANGE_DAYS` (5) calendar
-  days, never with `allow_bulk`, and refusing a documented row cap rather than
-  starting the unproven ticker-range campaign. `mode=backfill` stays refused
-  until the gate is promoted.
+  licensing gate. It is `True` only because the separate 2026-09-12 reviewed
+  promotion cites exact-head canary run `33043190487` plus the unchanged #5523
+  range-shard adversarial implementation/suite. Before promotion, canary was
+  deliberately runnable while the gate was `False` so the evidence sequence was
+  not circular. Canary remains hard-bounded to `CANARY_MAX_REQUESTS` (12) over
+  `CANARY_MAX_RANGE_DAYS` (5), never with `allow_bulk`. Promotion authorizes
+  `mode=backfill`; it does **not** make DEP-EXACT or the historical corpus
+  complete. The first bounded post-promotion range run is production proof.
 - token hygiene — the token is read only through `collectors.tushare_client` and
   is never accepted, persisted, hashed, or logged by the spine; artifacts are
   scanned for configured credential bytes before hashing or receipting.
@@ -274,10 +278,11 @@ effective-dated IPO/ST/board/no-limit state must not be guessed from one ratio.
 > full-A backfill, and it has been **superseded in code** by the bounded
 > **ticker×date-range campaign** the original text named as the promotion
 > prerequisite. The paragraphs below describe the design as implemented in
-> `collectors/china_tushare_range_shards.py`. The gate itself is unchanged:
-> `BULK_HISTORICAL_BACKFILL_READY` remains code-reviewed `False`. The superseded
-> date-by-ticker wording is retained in this note only so the amendment is legible;
-> it is no longer the contract.
+> `collectors/china_tushare_range_shards.py`. At that 2026-08-13 amendment the
+> gate itself remained code-reviewed `False`; the superseded date-by-ticker wording
+> is retained in this note only so the amendment is legible. A separate 2026-09-12
+> technical-readiness change later promoted the gate on exact-head live-canary +
+> unchanged adversarial range-shard evidence; it did not alter this campaign design.
 
 Whole-market responses at the documented limit are potentially truncated. For
 `daily`/`daily_basic` (6,000) and `stk_limit` (5,800), the collector freezes the
@@ -320,16 +325,18 @@ for endpoint `e` is `H_e + I_e * ceil(S/(C_e-1)) + R_e` for `S` requested sessio
 `I_e` query identities, cap `C_e`, whole-market probes `H_e`, and retries `R_e` —
 bounded, and the basis on which throughput is to be judged.
 
-**The technical gate is unchanged and this design does not open it.**
-`BULK_HISTORICAL_BACKFILL_READY` remains code-reviewed `False`; network and
-injected collection still fail before store mutation, and manifest completeness
-still cannot close. The range-shard campaign is verified **synthetically only** —
-every test injects responses, none contacts the vendor. Promotion additionally
-requires a live canary against real quota, which has not been run; the manifest
-states this directly as `cap_fallback.live_canary_complete: false` alongside
-`live_canary_required_for_promotion: true`. Opening the gate is a separate,
-separately reviewed change resting on canary/throughput/correctness evidence —
-never on a licensing artifact.
+**2026-09-12 technical-readiness promotion.** The campaign design above is
+unchanged. `BULK_HISTORICAL_BACKFILL_READY` is now code-reviewed `True` after
+exact-head live-canary run `33043190487` completed with 6 requests, zero failures
+and `stage=complete`, prior live waves had established sustained request
+throughput, and the accepted #5523 range-shard implementation/adversarial suite
+remained unchanged and CI-wired. The range-shard campaign itself is still
+**live-unproven** at the moment of promotion: that is intentional under Sol 10B,
+which makes the first bounded post-promotion range execution the production
+proof. The manifest now states `cap_fallback.live_canary_complete: true` and keeps
+`live_canary_required_for_promotion: true` as the historical requirement. Gate
+promotion does not close manifest completeness; the full resumable campaign and
+sanitized completeness manifest still have to finish.
 
 Unattempted source units precede retries; retries are deterministic. Active-year
 name history uses an end-date-qualified unit so a partial-year success cannot
