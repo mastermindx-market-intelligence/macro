@@ -67,19 +67,13 @@ secs.forEach((sec, i) => assertExpired(sec, stamps[i] + ' on the shared instant'
     )
 
 
-@pytest.mark.xfail(
-    strict=True,
-    reason="PRODUCT FINDING: the shipped owner expires a naive stamp (no offset) "
-    "instead of leaving the section current — observed on the shipped template "
-    "under Node. Flagged to the orchestrator; strict so a fix unmasks this.",
-)
-def test_e2_naive_stamp_leaves_the_section_current():
-    """A stamp with no zone leaves the section current and throws nothing.
+def test_e2_naive_stamp_expires_fail_closed():
+    """A stamp with no zone is not a deadline the page can read, so it expires.
 
-    The packet expectation is that a section stays current unless its stamp
-    denotes a passed instant. The shipped owner treats a zone-less stamp as
-    expired fail-safe (template comment 'a bare local time would move with
-    the viewer's zone'), so this fails today and is recorded xfail strict.
+    Adjudicated: a bare local time would move with the viewer's zone, so the
+    owner refuses to treat it as current. Leaving it current would let a stale
+    assessment read as fresh indefinitely — the unsafe direction. The section
+    expires on boot and stays expired on a re-check, without throwing.
     """
     harness._run(
         """
@@ -90,26 +84,18 @@ assert.equal(Number.isFinite(localMs), true, 'engine parses the naive stamp as l
 assert.ok(localMs > now, 'even the local reading is ahead of the clock');
 const sec = section(naive);
 const ctx = boot([sec]);
-assertCurrent(sec, 'naive stamp, clock before every reading');
+assertExpired(sec, 'naive stamp is not a readable deadline');
 ctx.window.mmPbExpire();
-assertCurrent(sec, 'naive stamp after an explicit re-check');
+assertExpired(sec, 'naive stamp after an explicit re-check');
 """
     )
 
 
-@pytest.mark.xfail(
-    strict=True,
-    reason="PRODUCT FINDING: the shipped owner expires unparseable stamps "
-    "('', 'soon', an impossible calendar date) instead of leaving the section "
-    "current — observed on the shipped template under Node. Flagged to the "
-    "orchestrator; strict so a fix unmasks this.",
-)
-def test_e2_garbage_stamps_leave_the_section_current():
-    """Unparseable stamps leave the section current and throw nothing.
+def test_e2_garbage_stamps_expire_fail_closed():
+    """Unparseable stamps expire instead of reading as current.
 
-    Packet expectation: garbage in, section still current, no exception. The
-    shipped owner expires them fail-safe, so this fails today and is
-    recorded xfail strict.
+    '', 'soon' and an impossible calendar date give no deadline, so the owner
+    withdraws the current claim rather than showing stale closes as fresh.
     """
     harness._run(
         """
@@ -117,9 +103,9 @@ now = at('2026-10-12T00:00:00Z');
 const stamps = ['', 'soon', '2026-13-40T00:00:00Z'];
 const secs = stamps.map(section);
 const ctx = boot(secs);
-secs.forEach((sec, i) => assertCurrent(sec, JSON.stringify(stamps[i])));
+secs.forEach((sec, i) => assertExpired(sec, JSON.stringify(stamps[i])));
 ctx.window.mmPbExpire();
-secs.forEach((sec, i) => assertCurrent(sec, 'again ' + JSON.stringify(stamps[i])));
+secs.forEach((sec, i) => assertExpired(sec, 'again ' + JSON.stringify(stamps[i])));
 """
     )
 
