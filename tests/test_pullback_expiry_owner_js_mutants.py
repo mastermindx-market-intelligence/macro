@@ -1,4 +1,4 @@
-"""Mutation-survey kills for the pullback expiry owner.
+r"""Mutation-survey kills for the pullback expiry owner.
 
 The sweep that produced the table below ran outside pytest, against
 ``tests/test_pullback_expiry_owner_js.py`` and
