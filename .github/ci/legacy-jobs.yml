@@ -15282,10 +15282,12 @@ jobs:
           python-version: "3.12"
       - name: install BioCatalyst test deps
         run: pip install pytest fastapi httpx requests pyyaml jsonschema jinja2 boto3
-      - name: BioCatalyst deployment self-heal integration contracts
+      - name: Deployment self-heal, private bootstrap and Git history contracts
         run: >
           python -m pytest
-          tests/test_deploy_update_self_heal.py -q
+          tests/test_deploy_update_self_heal.py
+          tests/test_deploy_bootstrap_private.py
+          tests/test_deploy_git_history.py -q
 
   biocatalyst-regulatory:
     if: ${{ false }}
