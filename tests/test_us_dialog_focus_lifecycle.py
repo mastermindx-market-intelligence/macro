@@ -395,3 +395,127 @@ def test_trap_is_inert_while_the_dialog_is_hidden_or_closing():
     """A handler left on the document must not steal Tab into a dialog that is not shown."""
     src = _between("templates/dashboard.html.j2", "function _tabStop(el){", "function _prefReduced(")
     _node_raw(_HIDDEN_TRAP_JS, src)
+
+
+def _skip_jinja_or_comment(text: str, i: int) -> int | None:
+    if text.startswith("/*", i):
+        end = text.find("*/", i + 2)
+        return len(text) if end < 0 else end + 2
+    if text.startswith("{{", i):
+        end = text.find("}}", i + 2)
+        return len(text) if end < 0 else end + 2
+    if text.startswith("{%", i):
+        end = text.find("%}", i + 2)
+        return len(text) if end < 0 else end + 2
+    return None
+
+
+def _matching_brace(text: str, open_at: int) -> int:
+    """`open_at` points at `{`. Return the index just after the matching `}`."""
+    depth = 0
+    i = open_at
+    n = len(text)
+    while i < n:
+        skipped = _skip_jinja_or_comment(text, i)
+        if skipped is not None:
+            i = skipped
+            continue
+        ch = text[i]
+        if ch == "{":
+            depth += 1
+        elif ch == "}":
+            depth -= 1
+            if depth == 0:
+                return i + 1
+        i += 1
+    raise ValueError("unbalanced brace at %s" % open_at)
+
+
+def _reduce_motion_blocks(text: str) -> list[str]:
+    """Bodies of `@media (prefers-reduced-motion: reduce)`, brace-matched."""
+    import re
+    header = re.compile(r"@media[^{]*prefers-reduced-motion\s*:\s*reduce\b", re.I)
+    blocks = []
+    i = 0
+    while True:
+        match = header.search(text, i)
+        if not match:
+            break
+        brace = text.find("{", match.end())
+        if brace < 0:
+            break
+        end = _matching_brace(text, brace)
+        blocks.append(text[brace + 1:end - 1])
+        i = end
+    return blocks
+
+
+def _css_rules(body: str) -> list[tuple[str, str]]:
+    rules = []
+    i = 0
+    n = len(body)
+    while i < n:
+        skipped = _skip_jinja_or_comment(body, i)
+        if skipped is not None:
+            i = skipped
+            continue
+        if body[i].isspace():
+            i += 1
+            continue
+        if body[i] == "@":
+            brace = body.find("{", i)
+            if brace < 0:
+                break
+            i = _matching_brace(body, brace)
+            continue
+        brace = body.find("{", i)
+        if brace < 0:
+            break
+        selector = body[i:brace].strip()
+        end = _matching_brace(body, brace)
+        rules.append((selector, body[brace + 1:end - 1]))
+        i = end
+    return rules
+
+
+def _covers_class(selector_list: str, class_name: str) -> bool:
+    import re
+    parts = []
+    buf = []
+    depth = 0
+    for ch in selector_list:
+        if ch == "(":
+            depth += 1
+        elif ch == ")":
+            depth = max(0, depth - 1)
+        elif ch == "," and depth == 0:
+            parts.append("".join(buf).strip())
+            buf = []
+            continue
+        buf.append(ch)
+    if buf:
+        parts.append("".join(buf).strip())
+    token = re.compile(r"\." + re.escape(class_name) + r"(?![-\w])")
+    return any(token.search(part) for part in parts)
+
+
+def _declares_transition_none(declarations: str) -> bool:
+    import re
+    cleaned = re.sub(r"/\*.*?\*/", "", declarations, flags=re.S)
+    return re.search(r"(?:^|[;{\s])transition\s*:\s*none\b", cleaned) is not None
+
+
+def test_reduced_motion_kills_dialog_close_and_signal_tip_transitions():
+    """Under prefers-reduced-motion, the close control and signal tip do not transition."""
+    text = (ROOT / "templates/dashboard.html.j2").read_text()
+    found = {"mx5-dlg-close": False, "rkc-sig-tip": False}
+    for body in _reduce_motion_blocks(text):
+        for selector, declarations in _css_rules(body):
+            if not _declares_transition_none(declarations):
+                continue
+            if _covers_class(selector, "mx5-dlg-close"):
+                found["mx5-dlg-close"] = True
+            if _covers_class(selector, "rkc-sig-tip"):
+                found["rkc-sig-tip"] = True
+    missing = [name for name, ok in found.items() if not ok]
+    assert not missing, "reduced-motion transition:none missing for " + ", ".join(missing)

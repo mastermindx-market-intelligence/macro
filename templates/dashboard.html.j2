@@ -5184,7 +5184,7 @@ body.mx5-dlg-open{ overflow:hidden; }
 .mx5-dlg-close:active{transform:translateY(0) scale(.985);box-shadow:inset 0 1px 0 var(--gbtn-sheen);}
 .mx5-dlg-close:focus-visible{outline:2px solid var(--link,#22d97a);outline-offset:2px;}
 @media (prefers-reduced-motion: reduce){
-  .mx5-dlg-close,.mx5-dlg-close:hover,.mx5-dlg-close:active{transform:none;}
+  .mx5-dlg-close,.mx5-dlg-close:hover,.mx5-dlg-close:active{transform:none;transition:none;}
 }
 
 /* Dialog body */
@@ -6614,6 +6614,9 @@ body.page-macro.mx4-grid .mx5-fed-policy-note strong{color:var(--ink-1,rgba(255,
   font:700 10px/1 var(--font-ui);cursor:help;user-select:none;margin-left:auto;transition:border-color .2s,color .2s;}
 .rkc-sig-tip:hover{border-color:var(--isle-risk);color:var(--isle-risk);}
 [data-theme="light"] .rkc-sig-tip{border-color:var(--line);color:var(--ink-2);}
+@media(prefers-reduced-motion:reduce){
+  .rkc-sig-tip{transition:none;}
+}
 
 /* ── rlx-* : rich-lens popover anatomy (Tier-2 rework 2026-07-20) ────────────
    Illustrated hover cards for the six dlg-risk signal tiles (+ any heavy tip).
