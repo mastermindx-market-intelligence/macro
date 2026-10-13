@@ -1138,3 +1138,40 @@ INTENDED_RESUME_SURFACE: this Claude Code session; successor reads this file + #
   - Integrate PP1-SM and PP2-L on the #723 lane branch.
   - Launch PP2-UI-a and PP1-D per placement.
   - On #986 merge, deploy the master tip git-gated (it carries #981) and verify live, then release F02-Q2 once #9080 merges.
+
+### D61 (2026-10-13T08:32Z) — PP2-L independent review consumed (parent REQUEST_REPAIR governs); PP2L-R1 launched; PP1-SM accepted and fast-forwarded onto #723 with tablet defect D1 carried
+- FACT the independent PP2-L review `fable-pp2l-independent-review-20261013` is terminal and consumed by the Codex root (normal MiniMax route, stdout sha256 `6c9333971513…`). Its broad APPROVE is NOT accepted. The binding ruling is the parent adjudication `fable-pp2l-independent-review-20261013-adjudication.json` (REQUEST_REPAIR_WITH_NARROW_REACHABILITY_LIMITS) together with #723 comment 6141286872. The exact-source probes showed:
+  - the new bounds parser admits `not-a-date` and a malformed context session as 0DTE;
+  - it rolls `2026-02-30` to `2026-03-02`;
+  - `buildClock` accepts `2026-02-30T21:04:11Z` and the unzoned `2026-10-09T21:04:11`.
+  Normal readers limit current reachability; this is an exported-contract defect, not a live-data failure claim. Useful review observations are retained: feed-change and liveness guards exist; `holdRef` is not a load-effect dependency; the snapshot key is root/session/asof with no cell iteration. No replacement review and no competing source lane.
+- DECIDED PP2L-R1 rulings (repair round 1 on the PP2-L carrier, same worktree `pc:~/lanes/wt/pp2l`, branch `claude/pp2l-options-lib-20261013`):
+  1. Text checks stay first and unchanged. Then `isoSession(ctx.session) === null` → `{ok:false, issues:["session_invalid"]}`. The new issue code goes before `no_strikes`. The qualified session feeds `dteRaw`.
+  2. Expiries that fail `isoSession` are dropped, so they fall to `no_expiries`; no new code.
+  3. `lib/dte.ts` is unchanged.
+  4. `buildClock` returns the original bytes only for `YYYY-MM-DDTHH:MM:SS(.1–9 digits)?(Z|±HH:MM)` with: a real calendar date via `isoSession`; hour 00–23, minute and second 00–59; a zone offset in range; and a finite `Date.parse`. This preserves the microsecond+offset producer form.
+  5. Existing expectations are unchanged.
+  Tests B1–B6 and C1–C2 plus four negative controls; push fast-forward; no PR. Commission `$S/leads/PP2LR1/commission.md`; prompt sha256 `5da78ba710c8164f…`.
+- FACT PP2L-R1 RUNNING: pc pid 2764977, launched 08:26:13Z, grok-4.7, 110 turns / 3 h; watcher `bltc64e0h`.
+- FACT PP1-SM ACCEPTED by artifact at `d64a1dd698ca` (T `8fa15f6a` → F1 `scaleOver: "selected-scope"` `3795e497` → F2 `29e24f54` → sheet fit `204fc84c` → e2e `d64a1dd6`; master `3b0cd9e1` via non-rewriting merge `d4088af9`).
+  - The scale over the selected scope is computed before the row cap and is independent of `displayCenterStrike`. `byKey`, the returned strikes and sigma stay displayed-only. The default `"displayed"` keeps the Positioning card and the Exposure desk unchanged.
+  - asinh appears only in the test asserting its absence.
+  - #723 head fast-forwarded `3a9dd064` → `d64a1dd698ca41d0311e34420adb4faf401772b6` (no force; ls-remote verified). PR body updated.
+- FACT carried defect PP1-SM-D1, corroborated by the Codex root (#723 comment 6141466870; `FABLE_PP1SM_VISUAL_RETURN_20261013.md` sha256 `4d30f39c…`). `.mapLayout` declares `container-type: inline-size` and is styled by its own `@container (min-width:640px)` rule, which cannot apply to the container element. As a result, at 820×1180 the map and inspector are stacked and the selected strip sits at y 1257.94–1301.94, outside 1180.
+  - Test gap: the tablet e2e asserted rows and button heights but neither strip visibility nor side-by-side geometry, so it stayed green.
+  - DECIDED: the PP2-UI-a commission owns the repair. Move the container to a parent wrapper, then add two tablet assertions: (1) the selected strip is fully visible at the opening detent; (2) inspector left ≥ map right with overlapping vertical extents. Recapture after the repair.
+  - Intermediate expanded phone evidence does not replace the final `/options` page proof.
+- FACT chart-return edge consumed. The held design stands: the return ticket carries the build key plus held `{data, pending}`; `useOptionsSnapshot` is seeded from it; pins clear only on a root, session or entitlement mismatch. Required proof: A pinned → Show on chart → newer same-root/same-session build B arrives → Return. A must be held with B pending (or an explicit choice offered), never silently swapped. Seeding `useOptionsSnapshot` changes PP2-L library bytes; those bytes need review at final adjudication.
+- FACT Macro #9097: the earlier watcher timeout was controller-owned (stale proof refreshed only when a CI workload slot frees under the global cap of 8), not a failing check. Watcher re-armed `brq8ytnaj`. The `ci-authority/codex/merge-queue-pilot` FAILURE context appears on every recent merged Macro PR and is not a blocker.
+- Rungs at 08:32Z:
+  - PP2L-R1: RUNNING.
+  - PP1-SM: ACCEPTED, on the #723 head (CI owed at the final head).
+  - PP2-L: ACCEPTED pending R1; not integrated.
+  - #986 / #985 / #948 / #983: CI (armed).
+  - Macro #9097 / #9080 / #8920: CI (label).
+  - #9079 / #9083: HELD to 2026-10-14 00:00Z.
+  - D04A: HELD.
+- NEXT:
+  - Judge PP2L-R1 by artifact, then merge PP2-L into the #723 lane branch.
+  - Freeze PP2-UI-a with D1 and the two tablet assertions; launch it and PP1-D under normal admission.
+  - Then PP2-UI-b.
