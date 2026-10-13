@@ -62,6 +62,7 @@ FIXTURE_NAMES = frozenset(path.stem for path in FIXTURE_DIR.glob("*.json"))
 # test touches the same code.  Rows for requirements owned by tasks that have
 # not started yet do not belong here: their absence is the honest signal.
 _T01_SUITE = "tests/test_industrials_dependency_binding.py"
+_T02_SUITE = "tests/test_industrials_issuer_enrollment.py"
 _T04_SUITE = "tests/test_industrials_result_cash.py"
 _T06_SUITE = "tests/test_industrials_financial_dossier.py"
 
@@ -70,6 +71,10 @@ PLAN_REQUIREMENT_ANCHORS: Mapping[str, tuple[str, str]] = {
     "IND-SF07": (_T01_SUITE, "test_ind_sf07"),
     "IND-D02": (_T01_SUITE, "test_ind_d02"),
     "IND-D06": (_T01_SUITE, "test_ind_d06"),
+    # T02 — native issuer/profile enrollment on recovered original wording.
+    "IND-D04": (_T02_SUITE, "test_ind_d04"),
+    "IND-D05": (_T02_SUITE, "test_ind_d05"),
+    "IND-R210": (_T02_SUITE, "test_ind_r210"),
     # T04 — signed exact-decimal result-to-cash derivation.
     "IND-SF01": (_T04_SUITE, "test_ind_sf01"),
     "IND-D07": (_T04_SUITE, "test_ind_d07"),
