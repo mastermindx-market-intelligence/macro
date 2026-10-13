@@ -1,6 +1,6 @@
 {
   "schema": "risk_radar_scorecard.v1",
-  "generated_at": "2026-10-13T15:55:25+00:00",
+  "generated_at": "2026-10-13T16:23:07+00:00",
   "markets": {
     "us": {
       "asof_last_row": "2026-10-12",
@@ -421,22 +421,22 @@
       }
     },
     "cn": {
-      "asof_last_row": "2026-10-09",
+      "asof_last_row": "2026-10-13",
       "monitoring": {
-        "log_fresh": false,
-        "last_logged_days_ago": 4,
+        "log_fresh": true,
+        "last_logged_days_ago": 0,
         "ungraded_backlog": 0,
-        "awaiting_maturity": 19,
+        "awaiting_maturity": 18,
         "backlog_cutoff_bd": 28,
-        "graded_n": 20
+        "graded_n": 22
       },
       "windows": {
         "full": {
           "alerts": {
-            "n": 5,
+            "n": 7,
             "tp": 2,
-            "fp": 3,
-            "hit_rate": 0.4
+            "fp": 5,
+            "hit_rate": 0.286
           },
           "watch_caution": {
             "n": 15,
@@ -452,20 +452,20 @@
           },
           "by_scare": {
             "breadth": {
-              "n": 5,
+              "n": 7,
               "tp": 2,
-              "fp": 3,
-              "hit_rate": 0.4
+              "fp": 5,
+              "hit_rate": 0.286
             }
           },
           "recovery": null
         },
         "y1": {
           "alerts": {
-            "n": 5,
+            "n": 7,
             "tp": 2,
-            "fp": 3,
-            "hit_rate": 0.4
+            "fp": 5,
+            "hit_rate": 0.286
           },
           "watch_caution": {
             "n": 15,
@@ -481,10 +481,10 @@
           },
           "by_scare": {
             "breadth": {
-              "n": 5,
+              "n": 7,
               "tp": 2,
-              "fp": 3,
-              "hit_rate": 0.4
+              "fp": 5,
+              "hit_rate": 0.286
             }
           },
           "recovery": null
@@ -492,14 +492,14 @@
       }
     },
     "hk": {
-      "asof_last_row": "2026-10-09",
+      "asof_last_row": "2026-10-13",
       "monitoring": {
-        "log_fresh": false,
-        "last_logged_days_ago": 4,
+        "log_fresh": true,
+        "last_logged_days_ago": 0,
         "ungraded_backlog": 0,
-        "awaiting_maturity": 19,
+        "awaiting_maturity": 18,
         "backlog_cutoff_bd": 28,
-        "graded_n": 25
+        "graded_n": 27
       },
       "windows": {
         "full": {
@@ -510,16 +510,16 @@
             "hit_rate": null
           },
           "watch_caution": {
-            "n": 10,
+            "n": 11,
             "tp": 1,
-            "tn": 9,
-            "precursor_rate": 0.1
+            "tn": 10,
+            "precursor_rate": 0.091
           },
           "calm": {
-            "n": 12,
+            "n": 13,
             "dd_missed": 4,
-            "quiet": 8,
-            "quiet_rate": 0.667
+            "quiet": 9,
+            "quiet_rate": 0.692
           },
           "by_scare": {
             "capital_flow": {
@@ -539,16 +539,16 @@
             "hit_rate": null
           },
           "watch_caution": {
-            "n": 10,
+            "n": 11,
             "tp": 1,
-            "tn": 9,
-            "precursor_rate": 0.1
+            "tn": 10,
+            "precursor_rate": 0.091
           },
           "calm": {
-            "n": 12,
+            "n": 13,
             "dd_missed": 4,
-            "quiet": 8,
-            "quiet_rate": 0.667
+            "quiet": 9,
+            "quiet_rate": 0.692
           },
           "by_scare": {
             "capital_flow": {
