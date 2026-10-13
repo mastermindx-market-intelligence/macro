@@ -82,7 +82,7 @@ SUPPORTED_TRANSFORMS: Mapping[str, str] = {
 
 _HARD_LIMITS = MappingProxyType({
     "max_bytes": 32 * 1024 * 1024,
-    "max_nodes": 200_000,
+    "max_nodes": 300_000,
     "max_depth": 128,
     "max_attributes_per_element": 256,
     "max_total_attributes": 500_000,
@@ -94,16 +94,16 @@ _HARD_LIMITS = MappingProxyType({
     "max_total_namespace_bytes": 8 * 1024 * 1024,
     "max_text_bytes": 16 * 1024 * 1024,
     "max_text_events": 100_000,
-    "max_fact_text_bytes": 1 * 1024 * 1024,
+    "max_fact_text_bytes": 2 * 1024 * 1024,
     "max_contexts": 5_000,
     "max_units": 2_000,
-    "max_facts": 10_000,
+    "max_facts": 12_000,
     "max_continuations": 10_000,
-    "max_continuation_chain": 16,
+    "max_continuation_chain": 32,
     "max_dimensions_per_context": 256,
     "max_measures_per_unit": 256,
     "max_abs_scale": 308,
-    "max_output_bytes": 24 * 1024 * 1024,
+    "max_output_bytes": 64 * 1024 * 1024,
     "max_metadata_bytes": 16 * 1024,
 })
 # Public immutable admission profile.  A deployment may replace the mapping

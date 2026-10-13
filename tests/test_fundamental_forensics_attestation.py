@@ -116,7 +116,7 @@ def install_parser(monkeypatch):
     module.SEC_FILING_PARSER_PROFILE = "strict_offline_ixbrl/v1"
     module.SEC_FILING_PARSER_VERSION = "1"
     module.SEC_FILING_PARSER_ALGORITHM_FINGERPRINT = sha256(b"fixture parser").hexdigest()
-    module.PARSER_LIMITS = {"max_contexts": 5_000, "max_units": 2_000, "max_continuations": 10_000, "max_facts": 10_000, "max_continuation_chain": 16, "max_output_bytes": 24 * 1024 * 1024}
+    module.PARSER_LIMITS = {"max_contexts": 5_000, "max_units": 2_000, "max_continuations": 10_000, "max_facts": 12_000, "max_continuation_chain": 32, "max_output_bytes": 64 * 1024 * 1024}
     module.SUPPORTED_TRANSFORMS = {}
     module.parse_sec_filing_document = parse
     module.validate_sec_filing_parse_result = lambda value, *, source_content=None: value
@@ -194,7 +194,7 @@ def _numeric_extraction(
     module.SEC_FILING_PARSER_PROFILE = "strict_offline_ixbrl/v1"
     module.SEC_FILING_PARSER_VERSION = "1"
     module.SEC_FILING_PARSER_ALGORITHM_FINGERPRINT = fingerprint
-    module.PARSER_LIMITS = {"max_contexts": 5_000, "max_units": 2_000, "max_continuations": 10_000, "max_facts": 10_000, "max_continuation_chain": 16, "max_output_bytes": 24 * 1024 * 1024}
+    module.PARSER_LIMITS = {"max_contexts": 5_000, "max_units": 2_000, "max_continuations": 10_000, "max_facts": 12_000, "max_continuation_chain": 32, "max_output_bytes": 64 * 1024 * 1024}
     module.SUPPORTED_TRANSFORMS = {}
     module.parse_sec_filing_document = parse
     module.validate_sec_filing_parse_result = lambda value, *, source_content=None: value

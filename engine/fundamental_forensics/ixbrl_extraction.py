@@ -34,16 +34,16 @@ FFXBRL_ID_PREFIX = "ffxbrl_"
 # envelope than a generic XML parser.  Do not loosen one of these values in
 # isolation: `_parser_api` proves that the selected parser profile has been
 # configured no wider than this wrapper can faithfully seal.
-HARD_MAX_FFXBRL_BYTES = 64 * 1024 * 1024
-HARD_MAX_PARSER_OUTPUT_BYTES = 24 * 1024 * 1024
-HARD_MAX_JSON_NODES = 1_200_000
+HARD_MAX_FFXBRL_BYTES = 96 * 1024 * 1024
+HARD_MAX_PARSER_OUTPUT_BYTES = 64 * 1024 * 1024
+HARD_MAX_JSON_NODES = 1_800_000
 HARD_MAX_JSON_DEPTH = 64
-HARD_MAX_JSON_TOKENS = 1_500_000
-HARD_MAX_JSON_SCALARS = 900_000
-HARD_MAX_JSON_OBJECT_KEYS = 600_000
-HARD_MAX_JSON_DECODED_STRING_BYTES = 48 * 1024 * 1024
+HARD_MAX_JSON_TOKENS = 1_800_000
+HARD_MAX_JSON_SCALARS = 1_800_000
+HARD_MAX_JSON_OBJECT_KEYS = 900_000
+HARD_MAX_JSON_DECODED_STRING_BYTES = 64 * 1024 * 1024
 HARD_MAX_JSON_NUMBER_TOKEN_BYTES = 128
-MAX_TEXT_BYTES = 1 * 1024 * 1024
+MAX_TEXT_BYTES = 2 * 1024 * 1024
 MAX_METADATA_BYTES = 16 * 1024
 HARD_MAX_JSON_STRING_TOKEN_BYTES = MAX_TEXT_BYTES
 FFXBRL_LIMITS = MappingProxyType(
@@ -51,8 +51,8 @@ FFXBRL_LIMITS = MappingProxyType(
         "max_contexts": 5_000,
         "max_units": 2_000,
         "max_continuations": 10_000,
-        "max_facts": 10_000,
-        "max_continuation_chain": 16,
+        "max_facts": 12_000,
+        "max_continuation_chain": 32,
         "max_diagnostics": 15_000,
         "max_parser_output_bytes": HARD_MAX_PARSER_OUTPUT_BYTES,
         "max_artifact_bytes": HARD_MAX_FFXBRL_BYTES,
