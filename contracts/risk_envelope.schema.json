@@ -202,6 +202,626 @@
       }
     },
 
+    "rotation_context": {
+      "type": "object",
+      "required": [
+        "source_artifact",
+        "state",
+        "as_of",
+        "usable",
+        "coverage",
+        "early_context",
+        "confirmed_events",
+        "excluded_reason",
+        "display_only"
+      ],
+      "properties": {
+        "source_artifact": {
+          "const": "site-marketdata-rotation-events"
+        },
+        "state": {
+          "enum": [
+            "DEFENSIVE_RELATIVE_STRENGTH",
+            "BROADENING",
+            "MIXED_ROTATION",
+            "NO_EARLY_SHIFT",
+            null
+          ]
+        },
+        "as_of": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "usable": {
+          "type": "boolean"
+        },
+        "coverage": {
+          "enum": [
+            "FRESH",
+            "STALE",
+            "MISSING"
+          ]
+        },
+        "early_context": {
+          "anyOf": [
+            {
+              "type": "object",
+              "required": [
+                "schema",
+                "definition_id",
+                "as_of",
+                "display_only",
+                "state",
+                "coverage",
+                "pairs",
+                "source_pair_count",
+                "pairs_omitted",
+                "omitted_pair_ids",
+                "lineage_source"
+              ],
+              "properties": {
+                "schema": {
+                  "const": "rotation_early_context/v1"
+                },
+                "definition_id": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "as_of": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "generated_utc": {"type": ["string", "null"]},
+                "stale_after": {"type": ["string", "null"]},
+                "freshness": {
+                  "type": ["object", "null"],
+                  "properties": {"stale": {"type": "boolean"}},
+                  "additionalProperties": false
+                },
+                "produced_at": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "available_at": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "availability": {
+                  "type": [
+                    "object",
+                    "null"
+                  ]
+                },
+                "display_only": {
+                  "const": true
+                },
+                "state": {
+                  "enum": [
+                    "DEFENSIVE_RELATIVE_STRENGTH",
+                    "BROADENING",
+                    "MIXED_ROTATION",
+                    "NO_EARLY_SHIFT",
+                    null
+                  ]
+                },
+                "reason_codes": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "coverage": {
+                  "type": "object"
+                },
+                "prior_loser_constituent_claim": {
+                  "type": [
+                    "boolean",
+                    "string",
+                    "null"
+                  ]
+                },
+                "pairs": {
+                  "type": "array",
+                "maxItems": 12,
+                  "items": {
+                    "type": "object"
+                  }
+                },
+                "source_pair_count": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "pairs_omitted": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "omitted_pair_ids": {
+                  "type": "array",
+                  "items": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  }
+                },
+                "lineage_source": {
+                  "const": "site-marketdata-rotation-events"
+                }
+              },
+              "additionalProperties": false
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "source_clock_receipt": {
+          "type": "object",
+          "properties": {
+            "generated_utc": {"type": ["string", "null"]},
+            "produced_at": {"type": ["string", "null"]},
+            "available_at": {"type": ["string", "null"]},
+            "stale_after": {"type": ["string", "null"]},
+            "availability": {
+              "type": ["object", "null"],
+              "properties": {
+                "status": {"type": ["string", "null"]},
+                "available_at": {"type": ["string", "null"]}
+              },
+              "additionalProperties": false
+            },
+            "freshness": {
+              "type": ["object", "null"],
+              "properties": {"stale": {"type": "boolean"}},
+              "additionalProperties": false
+            }
+          },
+          "additionalProperties": false
+        },
+        "confirmed_events": {
+          "anyOf": [
+            {
+              "type": "object",
+              "required": [
+                "active_count",
+                "active_ids",
+                "active_ids_omitted",
+                "as_of",
+                "usable"
+              ],
+              "properties": {
+                "active_count": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "active_ids": {
+                  "type": "array",
+                  "maxItems": 20,
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "active_ids_omitted": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "as_of": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "usable": {
+                  "type": "boolean"
+                }
+              },
+              "additionalProperties": false
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "excluded_reason": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "display_only": {
+          "const": true
+        }
+      },
+      "additionalProperties": false
+    },
+
+    "confluence": {
+      "type": "object",
+      "required": [
+        "definition_id",
+        "state",
+        "measured_backdrop",
+        "rotation_state",
+        "source_relationships",
+        "nonredundant_components",
+        "nonredundant_component_count",
+        "unknown_lineage_sources",
+        "excluded_sources",
+        "lineage_status",
+        "statistical_independence_established",
+        "changes_hazard_stage",
+        "changes_policy",
+        "display_only"
+      ],
+      "properties": {
+        "definition_id": {
+          "const": "rotation-risk-confluence-v1"
+        },
+        "state": {
+          "enum": [
+            "DEFENSIVE_RELATIVE_STRENGTH__RISK_ON",
+            "DEFENSIVE_RELATIVE_STRENGTH__MIXED",
+            "DEFENSIVE_RELATIVE_STRENGTH__RISK_OFF",
+            "BROADENING__RISK_ON",
+            "BROADENING__MIXED",
+            "BROADENING__RISK_OFF",
+            "MIXED_ROTATION__RISK_ON",
+            "MIXED_ROTATION__MIXED",
+            "MIXED_ROTATION__RISK_OFF",
+            "NO_EARLY_SHIFT__RISK_ON",
+            "NO_EARLY_SHIFT__MIXED",
+            "NO_EARLY_SHIFT__RISK_OFF",
+            "ROTATION_WITH_UNAVAILABLE_BACKDROP",
+            "ROTATION_UNAVAILABLE"
+          ]
+        },
+        "measured_backdrop": {
+          "enum": [
+            "RISK_ON",
+            "MIXED",
+            "RISK_OFF",
+            null
+          ]
+        },
+        "rotation_state": {
+          "enum": [
+            "DEFENSIVE_RELATIVE_STRENGTH",
+            "BROADENING",
+            "MIXED_ROTATION",
+            "NO_EARLY_SHIFT",
+            null
+          ]
+        },
+        "source_relationships": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "sources",
+              "relationship",
+              "shared_roots",
+              "shared_dependency_groups",
+              "shared_ancestors"
+            ],
+            "properties": {
+              "sources": {
+                "type": "array",
+                "minItems": 2,
+                "maxItems": 2,
+                "items": {
+                  "type": "string"
+                },
+                "uniqueItems": true
+              },
+              "relationship": {
+                "enum": [
+                  "SHARED",
+                  "DISTINCT_RECORDED_ROOTS",
+                  "UNKNOWN"
+                ]
+              },
+              "shared_roots": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "uniqueItems": true
+              },
+              "shared_dependency_groups": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "uniqueItems": true
+              },
+              "shared_ancestors": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "uniqueItems": true
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "nonredundant_components": {
+          "type": "array",
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "uniqueItems": true
+          }
+        },
+        "nonredundant_component_count": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "unknown_lineage_sources": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "uniqueItems": true
+        },
+        "excluded_sources": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "source_id",
+              "coverage",
+              "reason"
+            ],
+            "properties": {
+              "source_id": {
+                "type": "string"
+              },
+              "coverage": {
+                "enum": [
+                  "STALE",
+                  "MISSING"
+                ]
+              },
+              "reason": {
+                "type": "string"
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "lineage_status": {
+          "enum": [
+            "COMPLETE",
+            "PARTIAL",
+            "UNKNOWN"
+          ]
+        },
+        "statistical_independence_established": {
+          "const": false
+        },
+        "changes_hazard_stage": {
+          "const": false
+        },
+        "changes_policy": {
+          "const": false
+        },
+        "display_only": {
+          "const": true
+        }
+      },
+      "additionalProperties": false
+    },
+
+    "market_transition": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "description": "Actual first-writer comparisons. Native differences are not a causal attribution or an envelope onset.",
+      "properties": {
+        "basis": {
+          "const": "market_state_forward_log_first_writer"
+        },
+        "status": {
+          "enum": [
+            "UNKNOWN",
+            "RECORDED",
+            "RECORDED_PRIOR_SESSION"
+          ]
+        },
+        "source_session": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "latest_recorded": {
+          "type": [
+            "object",
+            "null"
+          ],
+          "description": "Verbatim selected native first-writer fields; logged_at is an actual receipt, never inferred from asof."
+        },
+        "previous_recorded": {
+          "type": [
+            "object",
+            "null"
+          ],
+          "description": "Verbatim selected native first-writer fields; logged_at is an actual receipt, never inferred from asof."
+        },
+        "latest_comparison": {
+          "type": [
+            "object",
+            "null"
+          ],
+          "properties": {
+            "before": {
+              "type": [
+                "object",
+                "null"
+              ],
+              "description": "Verbatim selected native first-writer fields; logged_at is an actual receipt, never inferred from asof."
+            },
+            "after": {
+              "type": [
+                "object",
+                "null"
+              ],
+              "description": "Verbatim selected native first-writer fields; logged_at is an actual receipt, never inferred from asof."
+            },
+            "verdict_changed": {
+              "type": "boolean"
+            },
+            "adjacent_sessions": {
+              "type": "boolean"
+            },
+            "component_movements": {
+              "type": "array",
+              "items": {
+                "type": "object"
+              }
+            },
+            "changed_native_fields": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "uniqueItems": true
+            },
+            "cause": {
+              "const": "not_inferred_from_snapshot_differences"
+            }
+          },
+          "required": [
+            "before",
+            "after",
+            "verdict_changed",
+            "adjacent_sessions",
+            "component_movements",
+            "changed_native_fields",
+            "cause"
+          ],
+          "additionalProperties": false
+        },
+        "latest_recorded_change": {
+          "type": [
+            "object",
+            "null"
+          ],
+          "properties": {
+            "before": {
+              "type": [
+                "object",
+                "null"
+              ],
+              "description": "Verbatim selected native first-writer fields; logged_at is an actual receipt, never inferred from asof."
+            },
+            "after": {
+              "type": [
+                "object",
+                "null"
+              ],
+              "description": "Verbatim selected native first-writer fields; logged_at is an actual receipt, never inferred from asof."
+            },
+            "verdict_changed": {
+              "type": "boolean"
+            },
+            "adjacent_sessions": {
+              "type": "boolean"
+            },
+            "component_movements": {
+              "type": "array",
+              "items": {
+                "type": "object"
+              }
+            },
+            "changed_native_fields": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "uniqueItems": true
+            },
+            "cause": {
+              "const": "not_inferred_from_snapshot_differences"
+            }
+          },
+          "required": [
+            "before",
+            "after",
+            "verdict_changed",
+            "adjacent_sessions",
+            "component_movements",
+            "changed_native_fields",
+            "cause"
+          ],
+          "additionalProperties": false
+        },
+        "current_snapshot": {
+          "type": [
+            "object",
+            "null"
+          ],
+          "description": "Qualified current persisted source fields; never substitutes for an actual first-writer receipt."
+        },
+        "current_snapshot_basis": {
+          "const": "current_persisted_snapshot_not_a_first_writer_receipt"
+        },
+        "current_snapshot_excluded_reason": {
+          "type": ["string", "null"],
+          "description": "Why the current persisted snapshot was excluded; actual recorded history remains separately qualified."
+        },
+        "current_matches_latest_record": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "excluded_record_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "display_only": {
+          "const": true
+        },
+        "reason": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "required": [
+        "basis",
+        "status",
+        "source_session",
+        "latest_recorded",
+        "previous_recorded",
+        "latest_comparison",
+        "latest_recorded_change",
+        "current_snapshot",
+        "current_snapshot_basis",
+        "current_matches_latest_record",
+        "excluded_record_count",
+        "display_only"
+      ],
+      "additionalProperties": false
+    },
+
     "authority": {
       "type": "object",
       "description": "Birth authority is DESCRIPTIVE ONLY (Sol ruling 2026-08-19). Every permission is hard-false; any action traces to one separately registered, separately promoted policy rule.",

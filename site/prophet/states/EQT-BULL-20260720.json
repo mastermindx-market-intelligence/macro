@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "EQT-BULL-20260720",
-  "asof": "2026-10-07",
+  "asof": "2026-10-09",
   "phase": "overtime",
   "detection_phase": "overtime",
   "management_confidence": 37.4,
@@ -11,20 +11,20 @@
   "human_state": "Window Elapsed \u2014 Awaiting Close",
   "components": {
     "validity": 100.0,
-    "progress": 9.0,
+    "progress": 15.2,
     "pace": 0.0,
-    "retention": 12.5,
+    "retention": 25.1,
     "overlay": 59.0
   },
   "geometry": {
-    "dist_to_stop_r": 1.102,
-    "dist_to_t1_r": 1.398,
-    "dist_to_t2_r": 2.898,
-    "horizon_pct_used": 160.0,
-    "p1": 0.0678,
-    "p2": 0.0339,
+    "dist_to_stop_r": 1.203,
+    "dist_to_t1_r": 1.297,
+    "dist_to_t2_r": 2.797,
+    "horizon_pct_used": 164.4,
+    "p1": 0.1356,
+    "p2": 0.0678,
     "p3": null,
-    "move_r": 0.102,
+    "move_r": 0.203,
     "mfe_r": 0.812,
     "mae_r": -0.745
   },
@@ -45,6 +45,6 @@
   "_first_trigger_ts": "2026-07-29",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 72,
-  "tau": 1.6
+  "days_elapsed": 74,
+  "tau": 1.6444
 }

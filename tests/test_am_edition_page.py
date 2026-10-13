@@ -1184,3 +1184,97 @@ def test_f01_m2_t5_balance_per_rw_text_one_en_one_zh(tmp_path):
         assert zh_count == 1, (
             f"row {i} carries {zh_count} l-zh spans inside .mx-rw-text; expected 1"
         )
+
+
+@pytest.mark.parametrize("missing_state", ["NOT_COVERED", "UNAVAILABLE"])
+def test_context_planes_partial_rows_remain_visible(tmp_path, missing_state):
+    blocks = _make_fresh_blocks(tmp_path)
+    context = blocks[0]
+    context["state"] = missing_state
+    context["state_reason_en"] = "Some context planes are not yet covered."
+    context["state_reason_zh"] = "部分背景面尚未覆盖。"
+    context["rows"][1]["state"] = "STALE_WITH_LAST_KNOWN"
+    context["rows"][1]["state_reason_en"] = "Latest known commodity reading."
+    context["rows"][1]["state_reason_zh"] = "最新已知商品读数。"
+    context["rows"].append({
+        "plane": "credit", "state": missing_state,
+        "label_en": "MUST_NOT_RENDER_UNAVAILABLE_LABEL",
+        "read_en": "MUST_NOT_RENDER_UNAVAILABLE_READING",
+        "state_reason_en": "Credit reading is not available.",
+        "state_reason_zh": "信用读数暂不可用。",
+    })
+    html = _render_am_edition(_build_payload(tmp_path, blocks))
+    text = _strip_html(html)
+    assert "Rates are steady this morning." in text
+    assert "今晨利率保持稳定。" in text
+    assert "Commodity complex is steady with a soft bid." in text
+    assert "Latest known commodity reading." in text
+    assert "最新已知商品读数。" in text
+    assert "Credit reading is not available." in text
+    assert "信用读数暂不可用。" in text
+    assert "MUST_NOT_RENDER_UNAVAILABLE" not in text
+    assert html.count('class="mx-cp-row"') == 3
+    assert context["state_reason_en"] in text
+
+
+@pytest.mark.parametrize("key,title,label,zh_label", [
+    ("market_state", "Market regime", "Risk-on", "风险偏好"),
+    ("regime", "Macroeconomic regime", "Reflation", "再通胀"),
+])
+@pytest.mark.parametrize("state", ["CURRENT", "STALE_WITH_LAST_KNOWN"])
+def test_regime_panels_keep_owner_reading_and_clock(tmp_path, key, title, label, zh_label, state):
+    site, data = _fresh_tree(tmp_path, tape_asof="2026-09-08T13:00:00Z", session_date="2026-09-08")
+    payload = build_payload(site, data, now=datetime(2026, 9, 8, 15, tzinfo=timezone.utc))
+    block = next(b for b in payload["blocks"] if b["key"] == key)
+    block.update(state=state, state_reason_en="Owner reading is dated; retain this limitation.",
+                 state_reason_zh="主理读数有日期限制，请保留此说明。")
+    panel = _panel_html(_render_am_edition(payload), title)
+    text = _strip_html(panel)
+    for expected in (label, zh_label, "2026-09-08", block["state_reason_en"], block["state_reason_zh"]):
+        assert expected in text
+    assert "2026-09-08T00:00" not in text  # the owner supplies a day, not a midnight observation
+    if state == "STALE_WITH_LAST_KNOWN":
+        assert "Stale — last known" in text
+        assert "已滞后 — 最新已知" in text
+    if key == "market_state":
+        assert "Constructive" in text and "积极" in text
+
+
+@pytest.mark.parametrize("key,title", [("market_state", "Market regime"), ("regime", "Macroeconomic regime")])
+@pytest.mark.parametrize("state", ["UNAVAILABLE", "NOT_COVERED", "NOT_YET_OPEN"])
+def test_regime_panels_do_not_expose_unusable_rows(tmp_path, key, title, state):
+    block = {"key": key, "state": state, "source_as_of": None,
+             "state_reason_en": "The owner source could not be read.",
+             "state_reason_zh": "无法读取主理数据源。",
+             "rows": [{"label_en": "POISON_OWNER_LABEL", "quad_name_en": "POISON_OWNER_LABEL"}]}
+    panel = _panel_html(_render_am_edition(_build_payload(tmp_path, [block])), title)
+    assert "POISON_OWNER_LABEL" not in panel
+    assert block["state_reason_en"] in panel and block["state_reason_zh"] in panel
+    assert 'class="dtp-asof"' not in panel
+
+
+def test_macro_regime_unknown_translation_remains_disclosed(tmp_path):
+    from bs4 import BeautifulSoup
+
+    site, data = _fresh_tree(tmp_path, tape_asof="2026-09-08T13:00:00Z", session_date="2026-09-08")
+    _write(data / "regime" / "latest.json", {
+        "asof": "2026-09-08", "label": "UNKNOWN", "quad_name": "Unmapped owner regime",
+    })
+    payload = build_payload(site, data, now=datetime(2026, 9, 8, 15, tzinfo=timezone.utc))
+    panel = BeautifulSoup(_panel_html(_render_am_edition(payload), "Macroeconomic regime"), "html.parser")
+    assert "Unmapped owner regime" in panel.get_text()
+    zh = " ".join(s.get_text() for s in panel.select(".l-zh"))
+    assert "Unmapped owner regime" not in zh
+    assert "宏观周期名称尚无中文对照" in zh
+
+
+def test_context_planes_current_row_keeps_partial_source_reason(tmp_path):
+    blocks = _make_fresh_blocks(tmp_path)
+    row = blocks[0]["rows"][0]
+    row["plane"] = "international"
+    row["state_reason_en"] = "Hong Kong reading unavailable."
+    row["state_reason_zh"] = "香港读数不可用。"
+    text = _strip_html(_render_am_edition(_build_payload(tmp_path, blocks)))
+    assert "Rates are steady this morning." in text
+    assert "Hong Kong reading unavailable." in text
+    assert "香港读数不可用。" in text

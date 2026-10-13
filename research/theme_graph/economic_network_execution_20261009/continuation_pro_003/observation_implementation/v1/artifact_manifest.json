@@ -1,0 +1,72 @@
+{
+  "admission": "NOT_ADMITTED",
+  "artifact_version": "v1",
+  "artifacts": [
+    {
+      "bytes": 42432,
+      "name": "relationship_observations.py",
+      "sha256": "4239285b177d2947173404f96f1672394b6f246e70ea4a82885e25ca8990196b"
+    },
+    {
+      "bytes": 43659,
+      "name": "test_company_relationship_observations.py",
+      "sha256": "80acae7aadcecec3214fe86d77c99da841d2544629d35380ec11b5d9cc94d67e"
+    },
+    {
+      "bytes": 18426,
+      "name": "implementation_return.md",
+      "sha256": "1f6331c43ac797f5814025fe3aef5c76860217694a0af4ef0bfad5600f289395"
+    }
+  ],
+  "authority": {
+    "gate": false,
+    "prediction": false,
+    "rank": false,
+    "size": false,
+    "trade": false
+  },
+  "git_publication": "PRINCIPAL_OWNED",
+  "graph1_projection": null,
+  "incumbent_inspector": {
+    "bytes": 45473,
+    "sha256": "a558922c0586a5532f3912524b48f3cf592c3c6c9c21f689e3d416976e9cae55"
+  },
+  "independent_storage_adjudication": {
+    "bytes": 45586,
+    "sha256": "e4966d1e38fe0c5cc495982b74600ab77860fdf0d807db1129d70638bba67543"
+  },
+  "lane": "/root/native_adoption_frontier",
+  "max_chunk_bytes": 16384,
+  "max_chunks": 64,
+  "max_manifest_bytes": 16384,
+  "max_serialized_package_bytes": 1048576,
+  "native_adapter_source_read": {
+    "bytes": 47498,
+    "exit_code": 0,
+    "pid": 30946,
+    "sha256": "7ba42eb8f74c034413997707a35156e67342fb9a30ca2b80dde0f11d1dc7e2bd",
+    "store_constructed": false,
+    "store_invoked": false
+  },
+  "native_tests": "NOT_RUN_BY_THIS_LANE",
+  "native_write_fence": [
+    "engine/company_intelligence/relationship_observations.py",
+    "tests/test_company_relationship_observations.py"
+  ],
+  "principal_attributed_decision_commit": "a48d5c0c078bc531cfc0f6b37643f44f77c2e937",
+  "public_api": [
+    "append_relationship_observation",
+    "read_relationship_observation"
+  ],
+  "real_evidence_append": "NOT_RUN_BY_THIS_LANE",
+  "schema": "research.prepared_observation_artifact_manifest/v1",
+  "scope": "C01_PILOT_SPECIFIC_PRIVATE_PLANNED_H200_OBSERVATION",
+  "state": "FROZEN_PREPARED_SOURCE_NATIVE_EXECUTION_NOT_RUN",
+  "syntax_check": {
+    "application_imports": false,
+    "embedded_child_sha256": "b89dcdaff980f88fddeaf86ee6d57839ad03fe857bddd70ac4bc37f725732d15",
+    "embedded_child_syntax": "PASS",
+    "status": "PASS_COMPILE_ONLY",
+    "tests_executed": false
+  }
+}

@@ -34,9 +34,16 @@ Run: python -m scripts.build_theme_graph [--backfill] [--force-backfill]
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import logging
+import os
+import re
+import shutil
+import subprocess
 import sys
+import tempfile
+from datetime import datetime, timezone
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
@@ -46,6 +53,151 @@ from engine.theme_graph import materialize, probation, store  # noqa: E402
 
 logging.basicConfig(level=logging.INFO, format="%(levelname)s %(message)s")
 log = logging.getLogger("build_theme_graph")
+
+_WITNESS_MARKER = "theme_graph_meta_written "
+_WITNESS_SOURCES = (
+    "scripts/build_theme_graph.py", "scripts/check_theme_graph_contracts.py",
+    "scripts/ci/daily_engine_regional_desk_builders.sh", ".github/workflows/daily.yml",
+)
+_WITNESS_OUTPUTS = (
+    "nodes.parquet", "node_lifecycle.parquet", "edges.parquet", "evidence.parquet",
+    "capability.parquet", "identity_resolution.parquet", "probation/proposals.jsonl",
+)
+
+
+def _witness_hash(path: Path) -> dict:
+    digest = hashlib.sha256()
+    with path.open("rb") as source:
+        for chunk in iter(lambda: source.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return {"sha256": digest.hexdigest(), "bytes": path.stat().st_size}
+
+
+def _emit_meta_write_receipt(meta: dict, materialization_computed_at: str) -> None:
+    """A post-write diagnostic, never a replacement for either generation clock."""
+    try:
+        receipt = {
+            "witness_id": os.environ.get("THEME_GRAPH_WITNESS_ID"),
+            "meta_computed_at": meta["computed_at"],
+            "materialization_computed_at": materialization_computed_at,
+            "meta_sha256": _witness_hash(store.meta_path())["sha256"],
+            **{key: meta[key] for key in ("lane", "mode", "era", "belief_time")},
+        }
+        print(_WITNESS_MARKER + json.dumps(receipt, sort_keys=True), flush=True)
+    except Exception:  # diagnostics cannot change a completed graph write
+        log.exception("theme graph metadata receipt unavailable")
+
+
+def start_nightly_witness() -> str:
+    """Called by the existing builder band; stdout is only its fresh scratch path."""
+    try:
+        identity = {key: os.environ.get(key) for key in (
+            "GITHUB_REPOSITORY", "GITHUB_RUN_ID", "GITHUB_RUN_ATTEMPT",
+            "GITHUB_EVENT_NAME", "GITHUB_JOB", "GITHUB_SHA", "GITHUB_WORKFLOW_REF",
+        )}
+        run_id, attempt, job = (identity[key] or "" for key in (
+            "GITHUB_RUN_ID", "GITHUB_RUN_ATTEMPT", "GITHUB_JOB"))
+        if not (run_id.isdigit() and attempt.isdigit()
+                and re.fullmatch(r"[A-Za-z0-9_-]+", job)):
+            raise ValueError("missing or invalid run/attempt/job identity")
+        directory = Path(tempfile.mkdtemp(
+            prefix=f"theme-graph-witness-{run_id}-{attempt}-{job}-",
+            dir=os.environ["RUNNER_TEMP"]))
+        root = Path(__file__).resolve().parents[1]
+        errors = [f"missing_identity:{key}" for key, value in identity.items() if not value]
+        try:
+            head = subprocess.check_output(
+                ["git", "rev-parse", "HEAD"], cwd=root, text=True,
+                stderr=subprocess.DEVNULL).strip()
+        except (OSError, subprocess.CalledProcessError):
+            head = None
+            errors.append("actual_head_unavailable")
+        sources = {}
+        for name in _WITNESS_SOURCES:
+            try:
+                sources[name] = _witness_hash(root / name)
+            except OSError:
+                errors.append(f"source_unavailable:{name}")
+        manifest = {
+            "schema": "theme_graph_nightly_witness/v1",
+            "capture_status": "incomplete", "acceptance": "not_evaluated",
+            "witness_id": directory.name, "started_at": datetime.now(timezone.utc).isoformat(),
+            "run_identity": identity, "actual_head_sha": head,
+            "source_files": sources, "errors": errors,
+        }
+        (directory / "manifest.json").write_text(
+            json.dumps(manifest, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+        # Only this freshly created directory can become the workflow's upload input.
+        with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as output:
+            output.write(f"theme_graph_witness={directory}\n")
+        return str(directory)
+    except Exception:  # retention is advisory, just like the existing band
+        log.exception("theme graph witness start unavailable")
+        return ""
+
+
+def finish_nightly_witness(directory: str, band_dir: str) -> None:
+    """Retain only this owner's receipts before the unrelated parallel barrier."""
+    if not directory:
+        return
+    try:
+        target, band = Path(directory), Path(band_dir)
+        manifest = json.loads((target / "manifest.json").read_text(encoding="utf-8"))
+        errors = manifest["errors"]
+        files = {}
+        for slug in ("theme_graph", "theme_graph_guard"):
+            for suffix in ("log", "rc", "sec"):
+                name = f"{slug}.{suffix}"
+                try:
+                    shutil.copyfile(band / name, target / name)
+                    files[name] = _witness_hash(target / name)
+                    if suffix == "rc" and (target / name).read_text().strip() != "0":
+                        errors.append(f"nonzero_or_invalid_rc:{slug}")
+                    if suffix == "sec" and not (target / name).read_text().strip().isdigit():
+                        errors.append(f"invalid_seconds:{slug}")
+                except OSError:
+                    errors.append(f"receipt_unavailable:{name}")
+        meta_path = store.meta_path()
+        try:
+            shutil.copyfile(meta_path, target / "_meta.json")
+            files["_meta.json"] = _witness_hash(target / "_meta.json")
+            meta = json.loads((target / "_meta.json").read_text(encoding="utf-8"))
+            lines = (target / "theme_graph.log").read_text(encoding="utf-8").splitlines()
+            markers = [json.loads(line[len(_WITNESS_MARKER):]) for line in lines
+                       if line.startswith(_WITNESS_MARKER)]
+            if len(markers) != 1:
+                errors.append("post_write_marker_missing_or_ambiguous")
+            else:
+                marker = markers[0]
+                manifest["post_write_receipt"] = marker
+                if (marker.get("witness_id") != manifest["witness_id"]
+                        or marker.get("meta_sha256") != files["_meta.json"]["sha256"]
+                        or marker.get("meta_computed_at") != meta.get("computed_at")
+                        or any(marker.get(key) != meta.get(key)
+                               for key in ("lane", "mode", "era", "belief_time"))):
+                    errors.append("post_write_marker_metadata_mismatch")
+        except (OSError, ValueError, TypeError):
+            errors.append("metadata_or_post_write_marker_unreadable")
+        # The native guard is advisory: rc=0 alone does not mean no contract breach.
+        guard = target / "theme_graph_guard.log"
+        if guard.exists() and re.search(r"::(?:warning|error)\b", guard.read_text()):
+            errors.append("guard_warning_or_error")
+        outputs = {}
+        for name in _WITNESS_OUTPUTS:
+            try:
+                outputs[name] = _witness_hash(meta_path.parent / name)
+            except OSError:
+                errors.append(f"graph_output_unavailable:{name}")
+        manifest.update(
+            files=files, graph_output_files=outputs,
+            finished_at=datetime.now(timezone.utc).isoformat(),
+            capture_status="incomplete" if errors else "complete")
+        pending = target / "manifest.pending.json"
+        pending.write_text(json.dumps(manifest, indent=2, sort_keys=True) + "\n",
+                           encoding="utf-8")
+        pending.replace(target / "manifest.json")
+    except Exception:  # initial manifest stays incomplete if final capture fails
+        log.exception("theme graph witness finish unavailable")
 
 
 def _newest_raw_snapshot() -> tuple[str, dict] | None:
@@ -304,6 +456,7 @@ def run(*, backfill: bool, force_backfill: bool,
     if store.write_meta(meta, lane=lane, allow_backfill=allow):
         log.info("wrote %s — appended %d nodes / %d edges / %d evidence rows",
                  store.meta_path(), added_nodes, added_edges, added_ev)
+        _emit_meta_write_receipt(meta, run_computed_at)
     else:
         log.info("off-lane: computed %d nodes / %d edges / %d evidence rows and wrote "
                  "nothing (COLLECT_LANE=%r)", len(view.nodes), len(edges),

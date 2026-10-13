@@ -1,6 +1,6 @@
 {
   "schema": "neuralweb.mechanism_pathways.v1",
-  "as_of": "2026-10-07",
+  "as_of": "2026-10-11",
   "display_only": true,
   "not_a_signal": true,
   "authority": {
@@ -25,30 +25,30 @@
   },
   "pathways": [
     {
-      "family": "real_rate_shock",
-      "driver": "real_rate_shock",
+      "family": "equity-leadership",
+      "driver": "ai_semis",
       "pathway_role": "primary",
-      "as_of": "2026-10-07",
-      "direction_en": "Rates / inflation shock",
-      "direction_zh": "利率/通胀冲击",
+      "as_of": "2026-10-11",
+      "direction_en": "AI/semis unwind — tech-led de-rating",
+      "direction_zh": "AI/半导体回吐 — 科技主导的回调",
       "confidence_ceiling": "context_only",
-      "coverage_score": null,
-      "coherence": "partial",
+      "coverage_score": 1.0,
+      "coherence": "supported",
       "stale_legs": [],
       "nodes": [
         {
-          "node_id": "driver_real_rate_shock",
-          "as_of": "2026-10-07",
+          "node_id": "driver_ai_semis",
+          "as_of": "2026-10-11",
           "domain": "market_drivers",
           "source_artifact": "data/regime/latest.json#market_drivers",
-          "entity": "real_rate_shock",
+          "entity": "ai_semis",
           "observation": {
-            "en": "Rates / inflation shock",
-            "zh": "利率/通胀冲击"
+            "en": "AI/semis unwind — tech-led de-rating",
+            "zh": "AI/半导体回吐 — 科技主导的回调"
           },
-          "direction": "",
-          "value": 84.8,
-          "z_or_percentile": null,
+          "direction": -1,
+          "value": 1.11,
+          "z_or_percentile": 1.64,
           "source_tier": "display",
           "lag_class": "same_day",
           "pathway_role": "trigger",
@@ -57,114 +57,111 @@
           ]
         },
         {
-          "node_id": "transmission_real_rate_order1",
-          "as_of": "2026-10-07",
-          "domain": "transmission",
-          "source_artifact": "data/transmission/latest.json",
-          "entity": "transmission channel",
+          "node_id": "leg_ai_semis_0",
+          "as_of": "2026-10-11",
+          "domain": "market_drivers",
+          "source_artifact": "data/regime/latest.json#market_drivers",
+          "entity": "semis RS",
           "observation": {
-            "en": "Rising real 10y yields lift the discount rate → long-duration equities, REITs and other long-duration assets de-rate first.",
-            "zh": "实际10年期收益率上行抬高贴现率→长久期股票、REITs等长久期资产首先承压。"
+            "en": "semis RS (-1.6σ)",
+            "zh": "半导体相对强度 (-1.6σ)"
           },
-          "direction": "",
-          "value": null,
-          "z_or_percentile": null,
-          "source_tier": "context_only",
+          "direction": "negative",
+          "value": -1.6,
+          "z_or_percentile": -1.6,
+          "source_tier": "display",
           "lag_class": "same_day",
-          "pathway_role": "transmission_order_1",
+          "pathway_role": "required_leg",
           "evidence_refs": [
-            "transmission.chains.real_rate.order1"
+            "market_drivers.evidence_legs[0]"
           ]
         },
         {
-          "node_id": "transmission_real_rate_order2",
-          "as_of": "2026-10-07",
-          "domain": "transmission",
-          "source_artifact": "data/transmission/latest.json",
-          "entity": "transmission channel",
+          "node_id": "leg_ai_semis_1",
+          "as_of": "2026-10-11",
+          "domain": "market_drivers",
+          "source_artifact": "data/regime/latest.json#market_drivers",
+          "entity": "tech vs utilities",
           "observation": {
-            "en": "Higher US real yields pull capital in → the dollar firms → gold, industrial commodities and EM are pressured.",
-            "zh": "美国实际收益率走高吸引资本流入→美元走强→黄金、工业商品与新兴市场受压。"
+            "en": "tech vs utilities (-1.2σ)",
+            "zh": "科技对公用事业 (-1.2σ)"
           },
-          "direction": "",
-          "value": null,
-          "z_or_percentile": null,
-          "source_tier": "context_only",
-          "lag_class": "days_1_5",
-          "pathway_role": "transmission_order_2",
+          "direction": "negative",
+          "value": -1.2,
+          "z_or_percentile": -1.2,
+          "source_tier": "display",
+          "lag_class": "same_day",
+          "pathway_role": "required_leg",
           "evidence_refs": [
-            "transmission.chains.real_rate.order2"
+            "market_drivers.evidence_legs[1]"
           ]
         },
         {
-          "node_id": "transmission_real_rate_order3",
-          "as_of": "2026-10-07",
-          "domain": "transmission",
-          "source_artifact": "data/transmission/latest.json",
-          "entity": "transmission channel",
+          "node_id": "leg_ai_semis_2",
+          "as_of": "2026-10-11",
+          "domain": "market_drivers",
+          "source_artifact": "data/regime/latest.json#market_drivers",
+          "entity": "cap-weight vs equal-weight",
           "observation": {
-            "en": "A firm dollar + soft commodities → energy/materials relative headwind and EM-revenue exporters de-rate; financials are the relative beneficiary as curves steepen.",
-            "zh": "强美元＋商品走软→能源/材料相对承压、新兴市场营收型出口商估值下修；曲线变陡时金融为相对受益者。"
+            "en": "cap-weight vs equal-weight (-0.7σ)",
+            "zh": "市值加权对等权重 (-0.7σ)"
           },
-          "direction": "",
-          "value": null,
-          "z_or_percentile": null,
-          "source_tier": "context_only",
-          "lag_class": "weeks_1_4",
-          "pathway_role": "transmission_order_3",
+          "direction": "negative",
+          "value": -0.7,
+          "z_or_percentile": -0.7,
+          "source_tier": "display",
+          "lag_class": "same_day",
+          "pathway_role": "required_leg",
           "evidence_refs": [
-            "transmission.chains.real_rate.order3"
+            "market_drivers.evidence_legs[2]"
           ]
         }
       ],
       "edges": [
         {
-          "src_node": "driver_real_rate_shock",
-          "dst_node": "transmission_real_rate_order1",
-          "mechanism_type": "transmission_channel",
+          "src_node": "driver_ai_semis",
+          "dst_node": "leg_ai_semis_0",
+          "mechanism_type": "evidence_leg",
           "expected_lag": "same_day",
-          "expected_sign": "",
-          "observed_sign": null,
+          "expected_sign": "negative",
+          "observed_sign": "negative",
           "status": "measured",
           "evidence_refs": [
-            "transmission.chains.real_rate.order1"
+            "market_drivers.evidence_legs[0]"
           ]
         },
         {
-          "src_node": "transmission_real_rate_order1",
-          "dst_node": "transmission_real_rate_order2",
-          "mechanism_type": "transmission_channel",
-          "expected_lag": "days_1_5",
-          "expected_sign": "",
-          "observed_sign": null,
+          "src_node": "driver_ai_semis",
+          "dst_node": "leg_ai_semis_1",
+          "mechanism_type": "evidence_leg",
+          "expected_lag": "same_day",
+          "expected_sign": "negative",
+          "observed_sign": "negative",
           "status": "measured",
           "evidence_refs": [
-            "transmission.chains.real_rate.order2"
+            "market_drivers.evidence_legs[1]"
           ]
         },
         {
-          "src_node": "transmission_real_rate_order2",
-          "dst_node": "transmission_real_rate_order3",
-          "mechanism_type": "transmission_channel",
-          "expected_lag": "weeks_1_4",
-          "expected_sign": "",
-          "observed_sign": null,
+          "src_node": "driver_ai_semis",
+          "dst_node": "leg_ai_semis_2",
+          "mechanism_type": "evidence_leg",
+          "expected_lag": "same_day",
+          "expected_sign": "negative",
+          "observed_sign": "negative",
           "status": "measured",
           "evidence_refs": [
-            "transmission.chains.real_rate.order3"
+            "market_drivers.evidence_legs[2]"
           ]
         }
-      ],
-      "coverage_basis": "scare_trigger",
-      "source_trigger": "risk_radar",
-      "scare": "rates"
+      ]
     },
     {
-      "family": "equity-leadership",
-      "driver": "ai_semis",
+      "family": "liquidity",
+      "driver": "liquidity_impulse",
       "pathway_role": "alternate",
-      "as_of": "2026-10-07",
-      "direction_en": "AI/semis leadership — narrow tech-led tape",
+      "as_of": "2026-10-11",
+      "direction_en": "net liquidity draining — risk headwind",
       "direction_zh": "",
       "confidence_ceiling": "context_only",
       "coverage_score": null,
@@ -172,17 +169,17 @@
       "stale_legs": [],
       "nodes": [
         {
-          "node_id": "driver_ai_semis",
-          "as_of": "2026-10-07",
+          "node_id": "driver_liquidity_impulse",
+          "as_of": "2026-10-11",
           "domain": "market_drivers",
           "source_artifact": "data/regime/latest.json#market_drivers",
-          "entity": "ai_semis",
+          "entity": "liquidity_impulse",
           "observation": {
-            "en": "AI/semis leadership — narrow tech-led tape",
+            "en": "net liquidity draining — risk headwind",
             "zh": ""
           },
           "direction": "",
-          "value": 0.42,
+          "value": 0.68,
           "z_or_percentile": null,
           "source_tier": "display",
           "lag_class": "same_day",
@@ -199,8 +196,8 @@
       "family": "crypto",
       "driver": "crypto_liquidity",
       "pathway_role": "alternate",
-      "as_of": "2026-10-07",
-      "direction_en": "crypto liquidity surging — BTC/ETH lead up",
+      "as_of": "2026-10-11",
+      "direction_en": "crypto liquidity draining — BTC/ETH lead down",
       "direction_zh": "",
       "confidence_ceiling": "context_only",
       "coverage_score": null,
@@ -209,16 +206,16 @@
       "nodes": [
         {
           "node_id": "driver_crypto_liquidity",
-          "as_of": "2026-10-07",
+          "as_of": "2026-10-11",
           "domain": "market_drivers",
           "source_artifact": "data/regime/latest.json#market_drivers",
           "entity": "crypto_liquidity",
           "observation": {
-            "en": "crypto liquidity surging — BTC/ETH lead up",
+            "en": "crypto liquidity draining — BTC/ETH lead down",
             "zh": ""
           },
           "direction": "",
-          "value": 0.36,
+          "value": 0.58,
           "z_or_percentile": null,
           "source_tier": "display",
           "lag_class": "same_day",

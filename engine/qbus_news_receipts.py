@@ -15,6 +15,7 @@ from datetime import datetime, timezone
 import json
 import os
 from pathlib import Path
+import re
 import tempfile
 from typing import Mapping
 
@@ -44,6 +45,7 @@ class QualifiedNewsRights:
     effective_at: datetime
     expires_at: datetime
     rights: NewsReadRights
+    provider: str | None = None
 
 
 def _mapping(value: object, code: str) -> Mapping[str, object]:
@@ -129,6 +131,7 @@ def parse_rights_receipt(
     receipt_id = _text(obj.get("receipt_id"), "rights_receipt_id", maximum=256)
     owner_ref = _text(obj.get("owner_ref"), "rights_owner_ref", maximum=1024)
     product_id = _text(obj.get("product_id"), "rights_product_id", maximum=256)
+    provider = None if obj.get("provider") is None else _text(obj.get("provider"), "rights_provider", maximum=64)
     requested_audience = _text(audience, "rights_audience_requested", maximum=128)
 
     audiences_raw = obj.get("audiences")
@@ -185,6 +188,7 @@ def parse_rights_receipt(
             allow_url=allow_url,
             allow_teaser=allow_teaser,
         ),
+        provider=provider,
     )
 
 
@@ -204,6 +208,18 @@ def load_rights_receipt(
         return None
 
 
+def _diagnostic_code(value: object) -> str | None:
+    """Project one secret-free diagnostic error code; anything else is None.
+
+    Diagnostics never gate: a wrong type, an over-long value, or stray
+    characters collapse to None instead of invalidating the receipt or
+    moving state/reason.
+    """
+    if isinstance(value, str) and re.fullmatch(r"[a-z0-9_]{1,64}", value):
+        return value
+    return None
+
+
 def _health_base(reason: str) -> dict[str, object]:
     return {
         "schema": HEALTH_SCHEMA,
@@ -216,6 +232,8 @@ def _health_base(reason: str) -> dict[str, object]:
         "connect_attempts": 0,
         "disconnects": 0,
         "catchups_failed": 0,
+        "last_catchup_error": None,
+        "last_stream_error": None,
         "reason": reason,
     }
 
@@ -270,6 +288,8 @@ def parse_health_receipt(
     catchups_failed = _nonnegative_int(
         obj.get("catchups_failed", 0), "health_catchups_failed"
     )
+    last_catchup_error = _diagnostic_code(obj.get("last_catchup_error"))
+    last_stream_error = _diagnostic_code(obj.get("last_stream_error"))
 
     observation_age = (current - observed_at).total_seconds()
     catchup_age = (
@@ -308,6 +328,8 @@ def parse_health_receipt(
         "connect_attempts": connect_attempts,
         "disconnects": disconnects,
         "catchups_failed": catchups_failed,
+        "last_catchup_error": last_catchup_error,
+        "last_stream_error": last_stream_error,
         "reason": reason,
     }
 
