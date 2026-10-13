@@ -7808,10 +7808,19 @@ jobs:
       - "lib/config.py"
       - "config/theme_crosswalk.yml"
       - "config/theme_sources.yml"
-      # The #7870-owned modules absent on main. Named so the job re-runs the day
-      # they land: the economic-change strict xfail (curation_assertion) turns
-      # XPASS, and the registration suite's company_profile hold pin re-checks
-      # against the real registry.
+      # The #7870-owned modules absent on main (refs/grok/main has none of
+      # engine/theme_graph/curation_assertion.py,
+      # engine/market_ontology/theme_research_registry.py, or
+      # engine/market_ontology/semiconductor_theme_research.py). Named so the
+      # job re-runs the day they land. Landing curation_assertion does not
+      # turn test_shared_assertion_roundtrip_through_pinned_contract into an
+      # XPASS: the economic-change suite records that the fixture is
+      # non-conformant (55 errors), so the real validator refuses it and the
+      # strict xfail stays green until that gap closes. The registration hold
+      # pin test_shared_shell_registration_roundtrip_pinned_to_7870
+      # monkeypatches a local _Post7870VerticalRegistration and does not
+      # import theme_research_registry; once that module is importable, the
+      # absent-shell assertion (shared_shell_unavailable) fails first.
       - "engine/theme_graph/curation_assertion.py"
       - "engine/market_ontology/theme_research_registry.py"
       - "engine/market_ontology/semiconductor_theme_research.py"

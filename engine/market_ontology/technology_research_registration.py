@@ -207,9 +207,15 @@ def _resolve_vertical_registration() -> Any:
     The registration path (:func:`registration_entry_or_refusal`) depends on
     VerticalRegistration alone — gating it on the sibling module's
     ``OwnerBundle``/``ResearchQuery`` symbols would type
-    ``shared_shell_unavailable`` for a shell whose registry ACCEPTS the §8
-    entry, losing exactly the XPASS signal the pinned round-trip exists to
-    detect. The full three-symbol resolver below is NOT kept for production
+    ``shared_shell_unavailable`` while the registry module is present, and
+    the hold this tree implements would never run. That hold is
+    ``vertical_registration_held:company_profile``, raised before
+    construction when the facts lack a string ``anchor_theme_id`` or have
+    empty ``slice_keys``. The pinned round-trip
+    ``test_shared_shell_registration_roundtrip_pinned_to_7870`` asserts the
+    hold against an injected registry and keeps constructor calls empty;
+    480eb2bd removed the strict xfail on that round-trip. The full
+    three-symbol resolver below is NOT kept for production
     consumers — it has none today, only the tests call it; it is kept as the
     pinned three-symbol shape of the §8 binding."""
     registry = _import_shell_module(_SHELL_REGISTRY_MODULE)
@@ -231,7 +237,7 @@ def _load_shared_shell() -> tuple[Any, Any, Any] | None:
     §8 binding, and the registration path does NOT use it (it needs only
     VerticalRegistration and resolves it through
     :func:`_resolve_vertical_registration` so sibling-symbol drift cannot
-    drown the acceptance signal)."""
+    skip the company_profile hold)."""
     registry = _import_shell_module(_SHELL_REGISTRY_MODULE)
     semiconductor = _import_shell_module(_SHELL_SIBLING_MODULE)
     if registry is None or semiconductor is None:
@@ -709,10 +715,14 @@ _VERTICAL_REGISTRATION_FIELDS: tuple[str, ...] = (
     "title_en", "title_zh", "note_en", "note_zh",
 )
 
-#: Typed HOLD code, the Technology mirror of Finance's
-#: ``vertical_registration_held:sector_profile`` (H1 ruling, option B,
-#: #7870 2026-10-11). The shared shell keys every registration on a
-#: canonical ``anchor_theme_id`` plus a non-empty ``slice_keys`` tuple;
+#: Typed HOLD code. On this tree
+#: ``engine.sector_intelligence.finance_research_registration.registration_entry_or_refusal``
+#: does not emit a held code: once its shell class resolves it constructs
+#: ``VerticalRegistration`` and propagates ``TypeError`` (any other
+#: exception becomes ``vertical_registration_refused:<ExcType>``).
+#: Technology holds before construction. The shared shell keys every
+#: registration on a canonical ``anchor_theme_id`` plus a non-empty
+#: ``slice_keys`` tuple;
 #: Technology's §8 facts are a ``company_profile`` with no theme anchor and
 #: no slices, so Technology is NOT registered on the shell. The hold is
 #: raised BEFORE the shell constructor is reached, so it names the real

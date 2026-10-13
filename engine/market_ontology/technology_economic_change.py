@@ -361,12 +361,12 @@ def _load_shared_curation_contract() -> Any | None:
     # are unchanged: ``import_module`` raises ImportError both for the absent
     # module and for one that resolves and then fails to import, and both still
     # return None here (typed shared_contract_unavailable by the caller).
-    # The technology-ex-semis-boundary scope comment ("measured import closure")
-    # does not mention the empty package inits engine/__init__.py and
-    # lib/__init__.py (both 0 lines) or the lazily read config.yml, which the
-    # paths omit. This is harmless now: the repo's own closure-coverage test
-    # passes and main runs the full manifest. Recorded only so a future
-    # non-empty engine/__init__.py is remembered as an un-scoped dependency.
+    # The technology-ex-semis-boundary scope comment records the empty package
+    # inits engine/__init__.py and lib/__init__.py (both 0 bytes at this head)
+    # and config.yml as not listed in the job paths ("Not listed: the empty
+    # package inits", .github/ci/legacy-jobs.yml). Harmless while those inits
+    # stay empty; a non-empty engine/__init__.py would be an un-scoped
+    # dependency of that job.
     try:
         shared = importlib.import_module("engine.theme_graph.curation_assertion")
     except ImportError:
