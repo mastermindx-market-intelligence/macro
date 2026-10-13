@@ -295,3 +295,59 @@ def extract_maturity_ladder(
         "buckets_total": len(BUCKETS),
         "as_of": as_of.isoformat() if as_of else None,
     }
+
+
+def extract_maturity_ladder_as_of(
+    companyfacts: Mapping[str, Any] | None,
+    *,
+    cik: str,
+    as_of: date,
+) -> dict[str, Any]:
+    """Point-in-time variant of :func:`extract_maturity_ladder`.
+
+    Only facts whose ``filed`` value parses to a date on or before ``as_of``
+    are eligible: a missing or unparseable ``filed`` is never eligible (the
+    extractor fails closed rather than guessing a filing date). ``as_of`` is
+    required and must be a real :class:`datetime.date`, so a historical or
+    backtest caller can never observe an annual filing that did not exist yet
+    — the lookahead that ``extract_maturity_ladder`` permits, where ``as_of``
+    only drives the ``stale`` flag. The input is never mutated: filtering
+    happens on a copy, and the copy is delegated to
+    :func:`extract_maturity_ladder`, which produces the result (including the
+    ``no_filings`` / ``identity_mismatch`` / ``no_maturity_facts`` shapes).
+    """
+    if type(as_of) is not date:
+        raise TypeError("as_of must be a datetime.date")
+
+    if not companyfacts:
+        return extract_maturity_ladder(companyfacts, cik=cik, as_of=as_of)
+
+    filtered = dict(companyfacts)
+    top_facts = companyfacts.get("facts")
+    if isinstance(top_facts, Mapping):
+        facts = dict(top_facts)
+        us_gaap = facts.get("us-gaap")
+        if isinstance(us_gaap, Mapping):
+            gaap = dict(us_gaap)
+            for tag, tag_facts in us_gaap.items():
+                if not isinstance(tag_facts, Mapping):
+                    continue
+                new_tag = dict(tag_facts)
+                units = tag_facts.get("units")
+                if isinstance(units, Mapping):
+                    new_units = dict(units)
+                    for unit_key, entries in units.items():
+                        if isinstance(entries, list):
+                            new_units[unit_key] = [
+                                entry
+                                for entry in entries
+                                if isinstance(entry, Mapping)
+                                and (filed_date := _parse_date(entry.get("filed"))) is not None
+                                and filed_date <= as_of
+                            ]
+                    new_tag["units"] = new_units
+                gaap[tag] = new_tag
+            facts["us-gaap"] = gaap
+        filtered["facts"] = facts
+
+    return extract_maturity_ladder(filtered, cik=cik, as_of=as_of)
