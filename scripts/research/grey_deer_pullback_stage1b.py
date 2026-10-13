@@ -9,11 +9,15 @@ and quantile fits, intersection of issued masks, block length, draw
 statistics, quantile bounds, leave-one-episode-out and the 12-claim
 gate — is a stage-1 function.
 
-No real-market outcome is computed here. Identity pins and the trial
-budget stay ``PREREG_V11_PENDING`` until the seat freezes prereg v1.1,
-and that literal refuses a run before any feature, label or outcome.
-This module never appends to ``data/trial_ledger.jsonl`` (the sparse
-worktree does not carry ``data/``).
+Prereg v1.1 is FROZEN: the identity pins, the trial budget (66) and the
+manifest/prereg blob pins below are filled from the seat's ``--blocks-only``
+pass over the pinned Massive store. A pin put back to ``PREREG_V11_PENDING``
+still refuses a run before any feature, label or outcome. A real run
+registers family ``grey_deer_pullback_v11`` (budget 66, itemized) in the
+checkout's ``data/trial_ledger.jsonl`` before any outcome is computed and
+refuses when that file is absent (a sparse worktree: opt in with
+``python3 scripts/worktree_sparse.py add data``). ``--blocks-only`` and every
+refusal never touch the ledger.
 
 Decisions implemented:
 
@@ -30,8 +34,8 @@ Decisions implemented:
 * D8  circular block bootstrap on the DATE index, seed root 221012
 * D9  event date = any ticker with Y=1; LOEO drops that date everywhere
 * D10 12 claims; P-active ``OBSERVER_NOT_ON_MAIN``; INC ``NOT_APPLICABLE``
-* D11 family ``grey_deer_pullback_v11``; budget literal pending (22 × 3
-      once INC is removed from v1's 23, 66 in total, not yet frozen)
+* D11 family ``grey_deer_pullback_v11``; budget 66 (22 × 3, INC removed
+      from v1's 23), frozen with prereg v1.1 and registered before outcomes
 * D12 schema ``grey_deer_pullback_stage1b/v1``; ``main`` writes only under
       the directory it was given
 * D13 pending pins / budget refuse before any panel outcome
@@ -55,6 +59,7 @@ from scipy.special import expit
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT))
 
+from engine import trial_ledger
 from scripts.research import grey_deer_pullback_stage1 as s1
 from scripts.research.grey_deer_panel_adjust import (
     PINNED_CALENDAR_EXCLUSIONS,
@@ -88,10 +93,10 @@ N_DRAWS = s1.N_DRAWS
 SCHEMA = "grey_deer_pullback_stage1b/v1"
 TRIAL_FAMILY = "grey_deer_pullback_v11"
 # v1 §6 counts 23 per horizon including INC. D11 drops INC (SPY-only incumbent):
-# 22 per horizon, 66 in total. The budget stays the pending literal until freeze.
+# 22 per horizon, 66 in total. Frozen with prereg v1.1 (checklist (c)).
 TRIALS_PER_HORIZON = 22
 TRIALS_TOTAL = 66
-TRIAL_BUDGET = PIN_PENDING
+TRIAL_BUDGET = 66
 DEFAULT_OUT_DIR = "research/grey_deer/pullback_stage1b"
 RESULTS_JSON_NAME = "PULLBACK_STAGE1B_RESULTS.json"
 RESULTS_MD_NAME = "PULLBACK_STAGE1B_RESULTS.md"
@@ -107,9 +112,9 @@ DIVIDEND_DISCLOSURE = (
 EXPECTED_COMMON_SESSIONS = 1320
 MANIFEST_PATH = "research/grey_deer/PULLBACK_SOURCE_RIGHTS_QUALIFICATION_V1_1_2026-10-12.md"
 MANIFEST_VERSION = "1.1.0"
-MANIFEST_BLOB_SHA = PIN_PENDING
+MANIFEST_BLOB_SHA = "c52d93e98f4e4a776a7cf38fce46bcf4a84c52d7"
 PREREG_PATH = "research/grey_deer/PULLBACK_PREREGISTRATION_V1_1_2026-10-12.md"
-PREREG_BLOB_SHA = PIN_PENDING
+PREREG_BLOB_SHA = "53837859164ab1d33785101dc0b464272acd5704"
 SCRIPT_REL = "scripts/research/grey_deer_pullback_stage1b.py"
 TEST_REL = "tests/test_grey_deer_pullback_stage1b.py"
 ADJUST_REL = "scripts/research/grey_deer_panel_adjust.py"
@@ -125,7 +130,95 @@ def _pending_pin() -> dict:
     }
 
 
-IDENTITY_PINS: dict[str, dict] = {ticker: _pending_pin() for ticker in PANEL_TICKERS}
+# Prereg v1.1 §3, copied from the seat's --blocks-only PIN lines over the
+# pinned Massive store (manifest v1.1.0 §4). ``_pending_pin`` stays for the
+# refusal tests.
+IDENTITY_PINS: dict[str, dict] = {
+    "QQQ": {
+        "subframe_sha256": "d6bd7575c5db3f0fb5d63e6baa2892a5a9d3610a8885562f8ead677a4444373f",
+        "rows": 1320,
+        "first_date": "2021-07-06",
+        "last_date": "2026-10-07",
+    },
+    "IWM": {
+        "subframe_sha256": "ca2df002ee03ed68c19cd77e73b702c057be11f92435936b1f7d4fd57e218b8b",
+        "rows": 1320,
+        "first_date": "2021-07-06",
+        "last_date": "2026-10-07",
+    },
+    "DIA": {
+        "subframe_sha256": "f11d142d015fca21c404e4a96524791d17ecaee4eb08f489f620ac47a753d618",
+        "rows": 1321,
+        "first_date": "2021-07-06",
+        "last_date": "2026-10-07",
+    },
+    "XLB": {
+        "subframe_sha256": "0863d459e79a40b0943b2ced0aeea42801e81d9a989b8df07823ee6445055628",
+        "rows": 1321,
+        "first_date": "2021-07-06",
+        "last_date": "2026-10-07",
+    },
+    "XLC": {
+        "subframe_sha256": "121c9b52c6ef4231540b73ad15362cf5927e7e5ae3c8df073ae231cbd158374d",
+        "rows": 1321,
+        "first_date": "2021-07-06",
+        "last_date": "2026-10-07",
+    },
+    "XLE": {
+        "subframe_sha256": "ebf4be8c9f7f53b2472b1a032d5f105f7ed5ce7f439411f468b6435939176ba3",
+        "rows": 1320,
+        "first_date": "2021-07-06",
+        "last_date": "2026-10-07",
+    },
+    "XLF": {
+        "subframe_sha256": "da3a5aa47a06f469dd6a99288e7be423ff63e9a8b9dc10d6832dc7a4af5b1491",
+        "rows": 1320,
+        "first_date": "2021-07-06",
+        "last_date": "2026-10-07",
+    },
+    "XLI": {
+        "subframe_sha256": "d153ab22f333d536bdf7c8ef84c981b9c5614e8f62969687d765f043e35e596c",
+        "rows": 1320,
+        "first_date": "2021-07-06",
+        "last_date": "2026-10-07",
+    },
+    "XLK": {
+        "subframe_sha256": "7dc854d1e340f1619340c1c26c9be4cc17fd0c925a0bbe036c74c058d53d0e63",
+        "rows": 1321,
+        "first_date": "2021-07-06",
+        "last_date": "2026-10-07",
+    },
+    "XLP": {
+        "subframe_sha256": "a480545513732922a2be49c2cf807f7500baf923beb909cdf8d59eae70ef885b",
+        "rows": 1320,
+        "first_date": "2021-07-06",
+        "last_date": "2026-10-07",
+    },
+    "XLRE": {
+        "subframe_sha256": "c578f88c142f67a237f45a324097fc912c6994abd2aaa355080b5e94ca41fcae",
+        "rows": 1320,
+        "first_date": "2021-07-06",
+        "last_date": "2026-10-07",
+    },
+    "XLU": {
+        "subframe_sha256": "238dbbd6d68fa71ae074020ad83a2bbc4ffcd0a45cc087ca1982d56fb4a5b2f1",
+        "rows": 1320,
+        "first_date": "2021-07-06",
+        "last_date": "2026-10-07",
+    },
+    "XLV": {
+        "subframe_sha256": "64f9d9b448b7e93b9e11137db11d9860c1c61d4682b0c685f43a6ff73db5d251",
+        "rows": 1321,
+        "first_date": "2021-07-06",
+        "last_date": "2026-10-07",
+    },
+    "XLY": {
+        "subframe_sha256": "870fa4c0b19e31d5ef33b2d0702b9e9815b89285f3e3eb925434afb36b758ed5",
+        "rows": 1320,
+        "first_date": "2021-07-06",
+        "last_date": "2026-10-07",
+    },
+}
 
 
 def _refuse(type_: str, detail: str, **extra) -> None:
@@ -178,6 +271,29 @@ def _raise_if_unfrozen() -> None:
     reason = freeze_block_reason()
     if reason is not None:
         _refuse("PREREG_V11_PENDING", reason)
+
+
+def trial_ledger_scope(ledger_path: Path | None = None) -> trial_ledger.register_trials:
+    """Prereg v1.1 §6: register the v11 family before any outcome is computed.
+
+    The ledger is the checkout's own ``data/trial_ledger.jsonl`` (never the
+    process cwd). A missing file means a sparse worktree; appending there
+    would create a one-row file that replaces the committed ledger, so the
+    run refuses instead.
+    """
+    _raise_if_unfrozen()
+    path = ledger_path if ledger_path is not None else ROOT / trial_ledger.DEFAULT_PATH
+    if not path.is_file():
+        raise RuntimeError(
+            f"{path} is absent; the trial family cannot be registered. "
+            "Opt this checkout into data/ with `python3 scripts/worktree_sparse.py add data`."
+        )
+    return trial_ledger.register_trials(
+        family=TRIAL_FAMILY,
+        budget=TRIAL_BUDGET,
+        basis="itemized",
+        ledger=trial_ledger.TrialLedger(path),
+    )
 
 
 # ── D2–D5: load the panel ────────────────────────────────────────────────────
@@ -1343,7 +1459,7 @@ def _assemble_payload(
             "per_horizon": TRIALS_PER_HORIZON,
             "total": TRIALS_TOTAL,
             "inc": "removed from v1's 23",
-            "note": "budget constant stays PREREG_V11_PENDING until the seat freezes v1.1",
+            "note": "frozen with prereg v1.1; registered in data/trial_ledger.jsonl before outcomes",
         },
         "dividend_basis": DIVIDEND_BASIS,
         "dividend_disclosure": DIVIDEND_DISCLOSURE,
@@ -1555,7 +1671,9 @@ def main(argv: list[str] | None = None) -> int:
     Writes only under ``--out-dir``. The default is
     ``research/grey_deer/pullback_stage1b`` and is not used unless the
     caller leaves the flag off. ``--blocks-only`` prints the block table
-    and the 14 raw subframe hashes and writes nothing.
+    and the 14 raw subframe hashes and writes nothing. A checkout without
+    ``data/trial_ledger.jsonl`` raises before any outcome: that is an
+    environment error, not a panel refusal, so it writes no artifact.
     """
     args = build_parser().parse_args(argv)
     out_dir = _resolve_out(args.out_dir)
@@ -1573,11 +1691,12 @@ def main(argv: list[str] | None = None) -> int:
             return 0
         # Print and retain the table before any pooled fit.
         _print_block_table(table)
-        payload = execute_panel(
-            loaded.frames,
-            fold_block_table=table,
-            subframe_sha256=loaded.subframe_sha256,
-        )
+        with trial_ledger_scope():
+            payload = execute_panel(
+                loaded.frames,
+                fold_block_table=table,
+                subframe_sha256=loaded.subframe_sha256,
+            )
         write_payload(out_dir, payload)
     except s1.Blocked as exc:
         try:
