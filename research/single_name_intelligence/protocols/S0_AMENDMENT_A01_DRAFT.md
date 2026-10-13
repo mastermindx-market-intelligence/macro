@@ -12,7 +12,7 @@ unknown identity stays UNRESOLVED / null.
 
 **amends:** `research/single_name_intelligence/protocols/S0_PROTOCOL_REGISTER.md`
 
-**amends_blob:** `a0b5cc584a4414ac85ff4cd56616fe23254f595f` (origin/main `git ls-tree` blob)
+**amends_blob:** `18cb5aa3a611bf1bc394d49d690e2059f68c4225` (origin/main `git rev-parse` blob)
 
 **drafted_by:** grok-4.6 lane S0D under seat 508c3757
 
@@ -28,12 +28,12 @@ pointers live only here. The frozen register §7 cells that still read
 
 | protocol_id | retired_version | split | retirement_source | successor_pointer | successor_status | budget_floor_carried | owner |
 |---|---|---|---|---|---|---|---|
-| P01 | v1 | TUNE | research/single_name_intelligence/protocols/S0_PROTOCOL_REGISTER.md:290 (origin/main §7; information_leak) | P01 v2 — NOT DRAFTED; owner seat/S0 | NOT DRAFTED | 6 | seat/S0 |
-| P02 | v1 | n/a (freeze, not a §7 retirement) | research/single_name_intelligence/protocols/S0_PROTOCOL_REGISTER.md:303 (origin/main §8 budget freeze: "frozen before the bridge, so a bridged successor cannot claim a fresh budget"); also §9 P02 L362 | bridged successor — BRIDGE-FROZEN; inherits the carried budget floor 4 per register §8 'Successors'; NOT DRAFTED | BRIDGE-FROZEN | 4 | seat/S0 |
-| P03 | v1 | TUNE | research/single_name_intelligence/protocols/S0_PROTOCOL_REGISTER.md:291 (origin/main §7; information_leak) | P03 v2 — NOT DRAFTED; owner seat/S0; still BRIDGE REQUIRED | NOT DRAFTED | 4 | seat/S0 |
-| P04 | v1 | TUNE | research/single_name_intelligence/protocols/S0_PROTOCOL_REGISTER.md:324 (claude/sni-s2-ship-20261012 @ 413ea4ad8497f9bd07235fd583b9b67eca085559; information_leak; row not on origin/main) | P04 v2 — DRAFT at research/single_name_intelligence/event_response/P04_V2_PREREG_DRAFT.md (not registered; no outcome) | DRAFT | 6 | seat/S0 |
+| P01 | v1 | TUNE | research/single_name_intelligence/protocols/S0_PROTOCOL_REGISTER.md:322 (origin/main §7; information_leak) | P01 v2 — NOT DRAFTED; owner seat/S0 | NOT DRAFTED | 6 | seat/S0 |
+| P02 | v1 | n/a (freeze, not a §7 retirement) | research/single_name_intelligence/protocols/S0_PROTOCOL_REGISTER.md:336 (origin/main §8 budget freeze: "frozen before the bridge, so a bridged successor cannot claim a fresh budget"); also §9 P02 L395 | bridged successor — BRIDGE-FROZEN; inherits the carried budget floor 4 per register §8 'Successors'; NOT DRAFTED | BRIDGE-FROZEN | 4 | seat/S0 |
+| P03 | v1 | TUNE | research/single_name_intelligence/protocols/S0_PROTOCOL_REGISTER.md:323 (origin/main §7; information_leak) | P03 v2 — NOT DRAFTED; owner seat/S0; still BRIDGE REQUIRED | NOT DRAFTED | 4 | seat/S0 |
+| P04 | v1 | TUNE | research/single_name_intelligence/protocols/S0_PROTOCOL_REGISTER.md:324 (origin/main §7; information_leak) | P04 v2 — DRAFT at research/single_name_intelligence/event_response/P04_V2_PREREG_DRAFT.md (not registered; no outcome) | DRAFT | 6 | seat/S0 |
 
-Budget floors are the declared n values in register §8 (origin/main L302–L305).
+Budget floors are the declared n values in register §8 (origin/main L335–L338).
 A01 does not raise, lower, or refill them.
 
 ## 3. Successor rule (SL §8)
@@ -43,8 +43,8 @@ Restated by citation only (Split and Contamination Law
 
 - A successor is a **new version** (SL §8 step 5, L189).
 - Nothing is refilled (SL §8 L144: never repaired, refilled or dropped; step 5 L189: never refills retired members).
-- A successor's budget is at least the carried count (SL §8 step 5 L192; register §8 **Successors** L298).
-- Retired rows are never deleted (SL §8 step 3 L185; register §7 L284).
+- A successor's budget is at least the carried count (SL §8 step 5 L192; register §8 **Successors** L331).
+- Retired rows are never deleted (SL §8 step 3 L185; register §7 L318).
 
 P04 v2 exists as a DRAFT at
 `research/single_name_intelligence/event_response/P04_V2_PREREG_DRAFT.md`
@@ -56,12 +56,11 @@ and does not edit register §7.
 
 Family `sni.us_transfer.RESID-DIR-US`.
 
-**status:** DRAFT IN FLIGHT — not on main
+**status:** DRAFT — pointer only
 
 **path:** `research/single_name_intelligence/us_transfer/A8_US_RESIDUAL_TRANSFER_PREREG_DRAFT.md`
 
-This path is a parallel-lane target. The file does not exist on origin/main.
-A01 does not claim the file exists.
+A01 points at this path only. Whether or not the file is present, A01 does not register it and does not claim it is registered.
 
 **NOT P07** (P07 = EVT-RESPONSE-WINDOW, intraday, procurement-gated).
 
@@ -86,18 +85,19 @@ instrument from its ticker, name, CIK, FIGI or ISIN.
 ### Facts (each with source)
 
 1. A yahoo price file is present at `data/yahoo/TCEHY.parquet` (origin/main
-   blob `0c03b5f83178ddf2ed9c25f39ef7688139ed24be`, `git ls-tree` metadata
+   blob `0c03b5f83178ddf2ed9c25f39ef7688139ed24be`, `git rev-parse` metadata
    only). Presence is not admission.
-2. TCEHY is absent from `data/reference/security_master.parquet` (U0 reuse
-   map L15 and L20: "UNRESOLVED (absent from security_master)"). The master
-   blob on origin/main is `85ef75104840b6b5be3aceeac21f1dbfabad6472`
-   (`git ls-tree` metadata only; this lane did not open the parquet).
-3. KWEB is a proxy and never a Tencent quote (register P13 L611:
+2. TCEHY is absent from `data/reference/security_master.parquet` (origin/main
+   blob `85ef75104840b6b5be3aceeac21f1dbfabad6472`, `git rev-parse` metadata
+   only; this lane did not open the parquet). U0 reuse map L15 and L20:
+   "UNRESOLVED (absent from security_master)".
+3. KWEB is a proxy and never a Tencent quote (register P13 L645:
    `engine/hk_adr_bridge.py` pairs 0700.HK with KWEB as `"proxy"` (L85);
    "KWEB is never a Tencent quote"). Independence Law L80 lists KWEB as a
    proxy exclusion. M0 L133–L134: the bridge pairs 0700.HK→KWEB (pair kind
    `proxy`); "KWEB is an ETF and is never a Tencent quote." KWEB price file
-   blob `d42bd75db56f8ad5c2530ee415262a0c68b913bd` (metadata only).
+   `data/yahoo/KWEB.parquet` origin/main blob
+   `d42bd75db56f8ad5c2530ee415262a0c68b913bd` (metadata only).
 4. Tencent coverage profile (paraphrase of
    `config/single_name_intelligence/coverage_profiles/tencent.yml` L499–L507):
    no same-issuer ADR counter in Data OS; KWEB is an ETF proxy; the yahoo
@@ -118,14 +118,15 @@ instrument from its ticker, name, CIK, FIGI or ISIN.
    - IL L81: TCEHY is a Step 0 exclusion (source tencent.yml L499–L500).
    - V0 matrix L31: `data/yahoo/` holds `TCEHY.parquet`; that listing is
      path presence, and presence is not admission.
-   - issuer_master origin/main blob `6643e7eae37940d800659f7b4589f242ec70ef45`
-     (`git ls-tree` metadata only).
+   - `data/reference/issuer_master.parquet` origin/main blob
+     `6643e7eae37940d800659f7b4589f242ec70ef45`
+     (`git rev-parse` metadata only).
 
 ### exit_conditions (ordered)
 
 1. Data OS admits the security (owner: Data OS identity / security master).
 2. An ADS-ratio owner exists (owner: Capital Structure / corporate actions;
-   register P13 L620 cites M0 gap 3, M0 L205).
+   register P13 L653 cites M0 gap 3, M0 L205).
 3. FX leg/clock receives Data OS market-data admission (owner: Data OS
    market data; M0 gap 5, M0 L207).
 4. Then the seat may draft a Tencent leg for a P13-style DIAGNOSTIC only
