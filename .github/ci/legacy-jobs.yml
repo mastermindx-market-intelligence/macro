@@ -5380,6 +5380,8 @@ jobs:
       - "tests/fixtures/us_candidate_episode/**"
       - "engine/prophet_object_change.py"
       - "tests/test_prophet_object_change.py"
+      - "engine/prophet_daily_brief_evidence_sources.py"
+      - "tests/test_prophet_daily_brief_evidence_sources.py"
       # Native DailyBrief is a read-only projection over the incumbent Today owner.
       - "app/prophet_daily_brief.py"
       - "app/main.py"
@@ -5428,7 +5430,8 @@ jobs:
         run: python -m pytest tests/test_prophet_object_change.py -q
       - name: Prophet native DailyBrief — source binding, B1 reconciliation and private API
         run: >-
-          python -m pytest tests/test_prophet_today_provenance.py
+          python -m pytest tests/test_prophet_daily_brief_evidence_sources.py
+          tests/test_prophet_today_provenance.py
           tests/test_prophet_daily_brief_api.py -q
       - name: install observation browser
         run: python -m playwright install --with-deps chromium
