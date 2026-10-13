@@ -216,7 +216,7 @@ def _synthetic_profile_yaml(*, ticker: str, display_name: str, extra: str = "") 
 
 
 def pin_alias_load_behaviour(tmp_path: Path) -> dict:
-    """load_profiles keys by filename stem and does not collapse ticker aliases."""
+    """load_profiles keys by filename stem; colliding aliases and self-asserted identity refuse."""
     alias_dir = tmp_path / "aliases"
     alias_dir.mkdir()
     (alias_dir / "syn0700.yml").write_text(
@@ -231,11 +231,8 @@ def pin_alias_load_behaviour(tmp_path: Path) -> dict:
         _synthetic_profile_yaml(ticker=" 0700.HK", display_name="SyntheticAlpha"),
         encoding="utf-8",
     )
-    loaded = load_profiles(alias_dir)
-    assert set(loaded) == {"syn0700", "syn700", "syn0700hk"}
-    assert loaded["syn0700"]["ticker"] == "0700"
-    assert loaded["syn700"]["ticker"] == 700 or loaded["syn700"]["ticker"] == "700"
-    assert loaded["syn0700hk"]["ticker"] == " 0700.HK"
+    with pytest.raises(ValueError):
+        load_profiles(alias_dir)
 
     tme_dir = tmp_path / "tme"
     tme_dir.mkdir()
@@ -246,11 +243,8 @@ def pin_alias_load_behaviour(tmp_path: Path) -> dict:
         ),
         encoding="utf-8",
     )
-    tme_loaded = load_profiles(tme_dir)
-    assert "tme" in tme_loaded
-    assert tme_loaded["tme"]["ticker"] == "TME"
-    assert tme_loaded["tme"]["display_name"] == "Tencent Holdings Ltd"
-    assert tme_loaded["tme"]["canonical_issuer_id"] is None
+    with pytest.raises(ValueError):
+        load_profiles(tme_dir)
 
     tcehy_dir = tmp_path / "tcehy"
     tcehy_dir.mkdir()
@@ -262,12 +256,9 @@ def pin_alias_load_behaviour(tmp_path: Path) -> dict:
         ),
         encoding="utf-8",
     )
-    tcehy_loaded = load_profiles(tcehy_dir)
-    assert "tcehy" in tcehy_loaded
-    assert tcehy_loaded["tcehy"]["ticker"] == "TCEHY"
-    assert tcehy_loaded["tcehy"]["identity_state"] == "ADMITTED"
-    assert tcehy_loaded["tcehy"]["canonical_issuer_id"] is None
-    return {"aliases": loaded, "tme": tme_loaded, "tcehy": tcehy_loaded}
+    with pytest.raises(ValueError):
+        load_profiles(tcehy_dir)
+    return {"aliases": None, "tme": None, "tcehy": None}
 
 
 def assert_currency_venue_pairs():
@@ -363,7 +354,8 @@ def run_idr_01_through_06(tmp_path: Path) -> None:
     for kind in NEST_KINDS:
         assert_variant_none_passes("issuer_link", kind)
         check_profile(_nest("issuer_link", "UNRESOLVED", kind))
-    check_profile(_nest(CYRILLIC_I_ISSUER, REFUSE_VALUE, "depth1"))
+    with pytest.raises(ValueError):
+        check_profile(_nest(CYRILLIC_I_ISSUER, REFUSE_VALUE, "depth1"))
     pin_alias_load_behaviour(tmp_path)
     assert_currency_venue_pairs()
     n_py, mint_hits = scan_sni_python_for_id_minting()
@@ -412,13 +404,6 @@ def test_idr_03_issuer_link_variants_refused(value, kind):
     check_profile(_nest("issuer_link", "UNRESOLVED", kind))
 
 
-@pytest.mark.xfail(
-    strict=True,
-    reason=(
-        "IDR-F1: Cyrillic іssuer_id is not strip().casefold()-equal to issuer_id; "
-        "check_profile leaves a non-null value unrefused"
-    ),
-)
 def test_idr_03_unicode_lookalike_refused():
     with pytest.raises(ValueError):
         check_profile(_nest(CYRILLIC_I_ISSUER, REFUSE_VALUE, "depth1"))
@@ -428,13 +413,6 @@ def test_idr_04_alias_cannot_cross_bind(tmp_path):
     pin_alias_load_behaviour(tmp_path)
 
 
-@pytest.mark.xfail(
-    strict=True,
-    reason=(
-        "IDR-F2: load_profiles keys by filename stem; tickers 0700 / 700 / "
-        "' 0700.HK' load as distinct companies with no alias refusal"
-    ),
-)
 def test_idr_04_leading_zero_aliases_refused(tmp_path):
     alias_dir = tmp_path / "aliases"
     alias_dir.mkdir()
@@ -450,13 +428,6 @@ def test_idr_04_leading_zero_aliases_refused(tmp_path):
         load_profiles(alias_dir)
 
 
-@pytest.mark.xfail(
-    strict=True,
-    reason=(
-        "IDR-F3: load_profiles accepts ticker TME with company Tencent; "
-        "TME is Tencent Music, a different issuer"
-    ),
-)
 def test_idr_04_tme_tencent_refused(tmp_path):
     tme_dir = tmp_path / "tme"
     tme_dir.mkdir()
@@ -471,13 +442,6 @@ def test_idr_04_tme_tencent_refused(tmp_path):
         load_profiles(tme_dir)
 
 
-@pytest.mark.xfail(
-    strict=True,
-    reason=(
-        "IDR-F4: load_profiles accepts ticker TCEHY with identity_state ADMITTED; "
-        "TCEHY is an unresolved ADR, not an admitted issuer"
-    ),
-)
 def test_idr_04_tcehy_admitted_issuer_refused(tmp_path):
     tcehy_dir = tmp_path / "tcehy"
     tcehy_dir.mkdir()
