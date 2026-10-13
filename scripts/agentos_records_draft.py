@@ -448,9 +448,10 @@ def _render_handoff(
         "## Seat-supplied pull request",
         "",
         f"- number: {number} - UNVERIFIED (this command does not call GitHub)",
-        f"- title: {title} - UNVERIFIED (this command does not call GitHub)",
+        f"- title: {_q(title)} - UNVERIFIED (this command does not call GitHub)",
         f"- merged_at: {pr['merged_at']} - UNVERIFIED (this command does not call GitHub)",
-        f"- head_sha: {head_sha} - {_sha_note(object_type)}",
+        f"- head_sha: {_q(head_sha)} - {_sha_note(object_type)}",
+        f"- session: {_q(session)}",
         "- files:",
     ])
     for row in file_rows:
@@ -484,6 +485,7 @@ def _render_append(
     pr: dict,
     file_rows: list[dict],
     object_type: str | None,
+    session: str,
 ) -> str:
     number = pr["number"]
     lines = [
@@ -495,9 +497,10 @@ def _render_append(
         "",
         f"- workstream: WS:{key}",
         f"- number: {number} (UNVERIFIED against GitHub)",
-        f"- title: {pr['title']} (UNVERIFIED against GitHub)",
+        f"- title: {_q(pr['title'])} (UNVERIFIED against GitHub)",
         f"- merged_at: {pr['merged_at']} (UNVERIFIED against GitHub)",
-        f"- head_sha: {pr['head_sha']} ({_sha_note(object_type)})",
+        f"- head_sha: {_q(pr['head_sha'])} ({_sha_note(object_type)})",
+        f"- session: {_q(session)}",
         "- files:",
     ]
     for row in file_rows:
@@ -739,7 +742,11 @@ def build_draft(pr_json: Path, repo: Path | None = None) -> dict:
             "mode": "append",
             "path": f"agentos/workstreams/WS-{key}.md",
             "markdown": _render_append(
-                key=key, pr=pr, file_rows=file_rows, object_type=object_type
+                key=key,
+                pr=pr,
+                file_rows=file_rows,
+                object_type=object_type,
+                session=session,
             ),
         },
         "handoff": {"path": handoff_rel, "markdown": markdown},

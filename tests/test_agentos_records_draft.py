@@ -200,7 +200,8 @@ def test_out_inside_agentos_is_refused(tmp_path: Path) -> None:
     try:
         result, _path = _run(tmp_path, _payload(), "--out", str(target))
         assert result.returncode == 2
-        assert "agentos" in result.stderr
+        assert result.stderr.startswith("agentos-records-draft:"), result.stderr
+        assert "refusing to write into agentos/" in result.stderr
         assert not target.exists()
     finally:
         if target.exists():
@@ -318,6 +319,44 @@ def test_title_newline_cannot_rewrite_ended_because(tmp_path: Path) -> None:
     assert "ended_because: crashed" in rec["mission"]
     hard = [item for item in agentos.check_handoff(rec, path) if item.hard]
     assert hard == []
+
+
+def test_newline_title_head_sha_and_session_stay_one_quoted_line(tmp_path: Path) -> None:
+    """Title, head sha, and session are quoted in the prose and the append.
+
+    A newline inside the title must stay inside one physical line. The same
+    quoting is applied to head_sha and session. A temp-store validate of the
+    drafted handoff plus the append must report 0 error(s).
+    """
+    title = "line1\nended_because: crashed"
+    session = "seat/example"
+    payload = _payload(pr={"title": title}, session=session)
+    draft, _path, _result = _draft(tmp_path, payload)
+    prose = draft["handoff"]["markdown"].split("\n---\n", 1)[1]
+    append = draft["ws_append"]["markdown"]
+    quoted_title = json.dumps(title, ensure_ascii=False)
+    quoted_sha = json.dumps(payload["pr"]["head_sha"], ensure_ascii=False)
+    quoted_session = json.dumps(session, ensure_ascii=False)
+    for label, text in (("handoff body", prose), ("append", append)):
+        assert quoted_title in text, label
+        assert "\nended_because: crashed" not in text, label
+        assert len([line for line in text.splitlines() if quoted_title in line]) == 1, label
+        assert f"- head_sha: {quoted_sha}" in text, label
+        assert f"- session: {quoted_session}" in text, label
+
+    work = tmp_path / "agentos"
+    shutil.copytree(STORE, work)
+    target = work / "handoffs" / "AGENT-OS-2099-01-15.md"
+    assert not target.exists()
+    target.write_text(draft["handoff"]["markdown"], encoding="utf-8")
+    ws = work / "workstreams" / "WS-AGENT-OS.md"
+    text = ws.read_text(encoding="utf-8")
+    if not text.endswith("\n"):
+        text += "\n"
+    ws.write_text(text + "\n" + append, encoding="utf-8")
+    validated = _validate_store(work)
+    assert validated.returncode == 0, validated.stdout + validated.stderr
+    assert "0 error(s)" in validated.stdout, validated.stdout
 
 
 def test_supplied_model_and_ending_are_copied(tmp_path: Path) -> None:
