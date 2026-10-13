@@ -737,6 +737,10 @@ _ACCOUNTING_UNKNOWN_CASES = (
     ("Unknown ", True),
     ("UNKNOWN ", True),
     (" unknown", True),
+    # Whitespace-only is not the token unknown: the raw string is truthy and
+    # its stripped casefold is empty, so qualify and derive stay ready.
+    ("   ", False),
+    (" ", False),
 )
 
 
@@ -751,6 +755,8 @@ _ACCOUNTING_UNKNOWN_CASES = (
         "Unknown_trailing",
         "UNKNOWN_trailing",
         "leading_space",
+        "whitespace_only",
+        "single_space",
     ],
 )
 def test_unknown_accounting_token_casing(accounting: str, refused: bool) -> None:
@@ -759,8 +765,9 @@ def test_unknown_accounting_token_casing(accounting: str, refused: bool) -> None
     Both operands carry the token, recast is present, and every receipt gate
     is checked. ``unknown``, ``Unknown``, ``UNKNOWN``, ``" unknown "``,
     ``"Unknown "``, ``"UNKNOWN "``, and ``" unknown"`` refuse with
-    ``required_basis_unknown`` and publish no number. GAAP and IFRS on both
-    sides still certify growth ``10``.
+    ``required_basis_unknown`` and publish no number. Whitespace-only
+    ``"   "`` and ``" "`` stay qualify ready, derive ready, value ``"10"``.
+    GAAP and IFRS on both sides still certify growth ``10``.
     """
     checked_all = {
         name: True
