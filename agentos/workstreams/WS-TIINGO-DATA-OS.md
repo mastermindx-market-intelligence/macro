@@ -34,56 +34,36 @@ waves:
     status: in_progress
     pr: [8698, 945, 955, 8986, 9004, 9018, 9020, 9022, 9027]
 next_action: >-
-  Preserve accepted producer integrity, previous source dispositions and the
-  four PRODUCED EOD/fundamentals research contracts. Macro #9039 passed all twelve
-  jobs and original overall CI 38321632850 before its protected merge to
-  a13962ee3915e18a8ee21fa8e3a8fa05d475d62f; all eleven reviewed tree entries are
-  verified in canonical main. Original wave14 capture 41115 and continuation
-  40732 are settled and their actual returns are consumed. Actual quality-aware
-  accounting covers all 5,000 identities exactly once: 4,998 qualified successes,
-  one whole RBGPF raw quality quarantine and one held MYRUF transport failure,
-  with zero never-admitted requests. No failed request was retried. Preserve
-  failed prefix16 and window05 artifacts. Reconciliation 37818 verified and
-  reused 758 existing projections, wrote 809 missing valid projections and
-  verified two empty responses; all 1,516 partial-file hashes stayed unchanged.
-  Original reconciliation, coverage and accounting 26646 returns were consumed.
-  The accepted census is 43,160 nonempty histories and 91,067,720 bars, with both
-  WTFNF and RBGPF retained as source-quality quarantines. Final wave15 capture
-  43992 actually started at 2026-10-13 00:55:03 UTC on 4,392 unreserved symbols,
-  excluding all 24 holds. Its source, quota, storage, original reservations and
-  collision gates passed. Qualification window01 15584 stopped during prefix01
-  under the unchanged normalization guard; its actual exit-one return was
-  consumed. Read-only diagnosis 22625 verified the exact 253-response failed
-  snapshot, 171 retained valid partial projections and one SCNG receipt with
-  negative integer volumes and no projection. Complete supplemental validation
-  and disposition remain pending. Prepare and source-review the narrow reusable
-  preflight-and-reconciliation flow, preserving every whole invalid receipt and
-  all valid partial work. No successor qualification writer has started. Consume actual capture and qualification returns, qualify each
-  valid response, diagnose any new source-quality failure and finish the exact
-  final scope accounting. Preserve per-ticker history bounds, empty responses,
-  rolling-five-second admission pacing, raw threshold and 40 GiB floor. A started
-  qualification settles before return; no successor writer precedes consumption.
-  BOATS capture 90361 and qualifier 48859 are settled with consumed original
-  exit-zero returns. The 00:00:19-00:09:30 UTC capture retained 2,000,000 messages,
-  2,000 segments and 448,959,986 bytes on one connection with zero observed
-  transport breaks. All raw and reader lineage is verified: 1,939,898 Q events,
-  60,096 T events, zero B events and six other frames, with 11,577 vendor symbols.
-  Original uppercase zero-match audits remain immutable. A separate reader-only
-  audit found events for eight of nine literal lowercase names; AMZN has zero
-  only within that selected slice. Its 32 segments follow receipt path order;
-  chronological final-interval coverage is unproved. No canonical identity,
-  PIT, full-session continuity, public publication or live consumer acceptance
-  follows. Installed research release 0b204cde and accepted Lab/reader proof
-  remain valid. Terminal #955 last verified head is
-  8811e38c64eb14fadc40a00ccfbfb31c37f863e8. Existing dispatched CI 38319936924 passed
-  all twelve jobs; original PR CI 38319943025 is action_required and the protected
-  PR is OPEN/BLOCKED with required CI absent. Preserve the original approval
-  refusal and release gate. Standalone split, SHW/PFE and provider access holds
-  remain. The 75 accepted fundamentals captures across 25 companies serve about
-  three years; deep/full serving, dated identity, knowledge-time qualification
-  and responsive live Terminal acceptance remain open. Continue every ready
-  permitted lane. Proof and reviewed methods are saved in
-  docs/tiingo-evidence/20261013-open-session-history-frontier/.
+  Preserve accepted producer integrity, quality/foreign-custody dispositions and
+  exactly four PRODUCED research contracts; twenty remain PROPOSED. Macro #9075
+  passed all12 original CI packs and ci-gate38346775069 at ca8852f, normally
+  merged21652b3a0ff316de74e66eb930251f33402c773a and all39 reviewed blobs match
+  canonical source. All physical03 capture85004, qualifier45885 and accounting
+  returns are consumed. The four-phase partition covers all4,392 identities:
+  2,566 qualified, one wholeSCNG quarantine, nine held timeouts and1,816 never
+  admitted. Accepted coverage is45,724 histories and96,788,107 bars;117 empty,
+  1,845 uncaptured and three quality quarantines remain. No failed retry or
+  full-history, dated-identity orPIT claim follows. Restart recovery preserves
+  lost76884 terminal status, unchanged source77134, retained orphan lock and
+  exact historical script hashes. A reviewed one-shot attended gate consumes
+  actual validation READY with terminal exitnull, fresh visible quota and full
+  snapshot/source/module/evidence/storage checks before exclusive scope/key.
+  Original20348 rc0 remains historical; rejected recovery01 is retained.
+  Original81573 admitted the exact1,816-request phase04 at05:00:56.237806UTC,
+  excluding34 holds with24,478,712,262 remaining raw bytes. Capture is ongoing
+  in this snapshot; one reviewed finite qualifier29227 is also pending. Consume
+  their actual returns, qualify every response, extend final accounting and
+  continue useful ready work. Preserve one raw and oneQA writer, unchanged
+  collector/credential/TLS, four-inflight rolling-five-second admission,
+  first-error stop/drain and40GiB floor. Accepted BOATS2,000,000-frame and
+  SAPIF installedLab/host proofs stay valid. Terminal955 retains its actual
+  approval refusal at8811e38c64eb14fadc40a00ccfbfb31c37f863e8; required PR CI
+  remains absent at the last protected read, independently dispatched jobs
+  do not substitute. Preserve incumbent QuoteHub/News/peerintraday writers,
+  SHW/PFE/evaluation/split/provider holds, deepfundamentals/identity/knowledge
+  time/rights/runtime publication and responsive production acceptance gates.
+  Actual reviewed methods and proof are saved in
+  docs/tiingo-evidence/20261013-attended-recovery/.
 owns_paths:
   - collectors/tiingo_archive.py
   - lib/dataos/tiingo_*.py
@@ -91,6 +71,9 @@ owns_paths:
   - docs/TIINGO_DATA_OS_INGESTION_20261009.md
   - docs/tiingo-evidence/
 artifacts:
+  - docs/tiingo-evidence/20261013-attended-recovery/
+  - docs/tiingo-evidence/20261013-continuation-accounting/
+  - docs/tiingo-evidence/20261013-final-scope-disposition/
   - docs/tiingo-evidence/20261013-open-session-history-frontier/
   - docs/tiingo-evidence/20261012-final-capture-preparation/
   - docs/tiingo-evidence/20261012-wave13-held-outcome/

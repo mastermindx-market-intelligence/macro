@@ -1,6 +1,6 @@
 """FIF C0-b: publish production issuer datasets from lane-retained bytes (hard gate).
 
-Scheduled-lane producer for the D3 production dataset store. Five subcommands,
+Scheduled-lane producer for the D3 production dataset store. Six subcommands,
 one frozen coverage contract, and NO ticker or CIK literal anywhere — the
 issuer universe is read from the contract at runtime:
 
@@ -8,6 +8,13 @@ issuer universe is read from the contract at runtime:
   adds over the incumbent pinned targets file, and hard-fails if the union
   would exceed ``--max-tickers``. The first wave-2 invocation consumes its
   stdout verbatim, so no issuer ever rides a YAML literal.
+* ``acquire-contract`` (C0-c E1) acquires every contract accession's primary
+  plus manifest keyed by ACCESSION — never a latest-N selector — reusing
+  retained manifests/pages/primaries first (zero requests on a hit), locating
+  rows in the verified latest.json's recent window or its unique covering
+  ``filings.files[]`` page, retaining pages ONLY through the incumbent
+  historical-shard fetch, and reporting per-accession typed codes with a
+  line-start ``::warning title=fif-contract-acquire::`` on a partial run.
 * ``capture-members`` performs the D1 member-capture pass (see
   ``engine/fundamental_forensics/fif_member_capture.py``) over the warm
   ``--raw-root``/``--archive-root`` trees under the ONE shared
@@ -53,7 +60,7 @@ import shutil
 import sys
 import tempfile
 import traceback
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Mapping, Sequence
@@ -61,13 +68,17 @@ from typing import Any, Mapping, Sequence
 _ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(_ROOT))
 
-from collectors.edgar_forensics import _user_agent  # noqa: E402
+from collectors.edgar_forensics import SecForensicsCollector, _user_agent  # noqa: E402
+from collectors.fundamental_forensics_acquisition import (  # noqa: E402
+    DEFAULT_MAX_SUBMISSIONS_BYTES,
+)
 from collectors.sec_document_spine import SecFilingArchiveCollector  # noqa: E402
 from collectors.sec_request_pacer import SecRequestPacer  # noqa: E402
 from engine.fundamental_forensics.admitted_filing_package import (  # noqa: E402
     AdmittedFilingPackageError,
     admit_retained_filing_package,
 )
+from engine.fundamental_forensics.sec_document_spine import canonical_cik  # noqa: E402
 from engine.fundamental_forensics.fif_member_capture import (  # noqa: E402
     DEFAULT_RUN_BUDGET_BYTES,
     RETAINED_PACKAGE_INTEGRITY_CODES,
@@ -75,6 +86,10 @@ from engine.fundamental_forensics.fif_member_capture import (  # noqa: E402
     capture_fif_filing_packages,
     read_retained_fif_packages,
     refuse_repository_fixture_inputs,
+)
+from engine.fundamental_forensics.fif_contract_acquisition import (  # noqa: E402
+    CONTRACT_ACQUISITION_RUN_SCHEMA,
+    acquire_contract_primaries,
 )
 from engine.fundamental_forensics.financial_intelligence_packet import EntityInput  # noqa: E402
 from engine.fundamental_forensics.ixbrl_raw_ledger import convert_parsed_filings  # noqa: E402
@@ -108,6 +123,10 @@ PUBLISH_REPORT_SCHEMA = "fundamental_forensics.fif_production_publish_report/v1"
 CONTRACT_ACQUIRE_SUMMARY_SCHEMA = "fundamental_forensics.fif_contract_acquire_summary/v1"
 EXCLUSION_IDENTITY_NOT_FROZEN = "identity_not_frozen"
 EXCLUSION_NO_RETAINED_PACKAGE = "no_retained_package"
+# C0-c ERRATA-6 rule 5: an issuer whose only admitted packages are 8-K event
+# packages publishes nothing new for that issuer — one typed exclusion row,
+# never silence, never a generation write.
+EXCLUSION_ONLY_EVENT_PACKAGES = "only_event_packages"
 PUBLISHER_ERROR_CODES = frozenset(
     {
         "contract_malformed",
@@ -368,11 +387,27 @@ def _validated_summary_shape(document: Any, *, origin: str) -> dict[str, Any]:
                 f"contract acquire summary shortfall row is malformed: {origin}",
                 code="contract_acquire_result_unreadable",
             )
-    return {
+    out = {
         "schema": CONTRACT_ACQUIRE_SUMMARY_SCHEMA,
         "status": str(status),
         "shortfalls": [dict(row) for row in shortfalls],
     }
+    # C0-c E1 (amendment E): acquire-contract merges its own run report into
+    # the summary file under ``acquire_contract``; carry it onward verbatim so
+    # capture/publish reports expose one acquisition-state trail. Absent on
+    # summaries written before acquire-contract ran — lawful.
+    acquire_contract = document.get("acquire_contract")
+    if acquire_contract is not None:
+        if (
+            not isinstance(acquire_contract, Mapping)
+            or acquire_contract.get("schema") != CONTRACT_ACQUISITION_RUN_SCHEMA
+        ):
+            _fail(
+                f"contract acquire summary acquire_contract block is malformed: {origin}",
+                code="contract_acquire_result_unreadable",
+            )
+        out["acquire_contract"] = dict(acquire_contract)
+    return out
 
 
 def _run_contract_acquire_summary(args: argparse.Namespace) -> int:
@@ -435,6 +470,83 @@ def _run_contract_acquire_summary(args: argparse.Namespace) -> int:
 
 
 # ---------------------------------------------------------------------------
+# acquire-contract (C0-c E1: contract-keyed primary acquisition)
+# ---------------------------------------------------------------------------
+
+
+def _run_acquire_contract(args: argparse.Namespace) -> int:
+    contract = load_fif_coverage_contract(args.coverage_file)
+    raw_root = Path(args.raw_root)
+    archive_root = Path(args.archive_root)
+    refuse_repository_fixture_inputs(raw_root, archive_root)
+    recorded_at = _require_clock(args.recorded_at, "--recorded-at")
+    user_agent = _resolve_user_agent(args)
+    if "@" not in user_agent:
+        _fail("SEC user agent must identify an application and contact email", code="contract_malformed")
+    # E1-c amendment (C): ONE SecRequestPacer shared by the SecForensicsCollector
+    # (pages) and the SecFilingArchiveCollector (primaries); a privately paced
+    # collector is the typed private_pacer refusal (asserted inside the engine).
+    pacer = SecRequestPacer(min_interval_seconds=args.min_interval_seconds)
+    submissions_collector = SecForensicsCollector(
+        raw_root,
+        user_agent=user_agent,
+        min_interval_seconds=args.min_interval_seconds,
+        max_response_bytes=DEFAULT_MAX_SUBMISSIONS_BYTES,
+        pacer=pacer,
+    )
+    archive_collector = SecFilingArchiveCollector(
+        archive_root,
+        user_agent=user_agent,
+        min_interval_seconds=args.min_interval_seconds,
+        max_document_bytes=args.max_document_bytes,
+        pacer=pacer,
+    )
+    report = acquire_contract_primaries(
+        raw_root=raw_root,
+        archive_root=archive_root,
+        issuers=list(contract["issuers"]),
+        submissions_collector=submissions_collector,
+        archive_collector=archive_collector,
+        pacer=pacer,
+        recorded_at=utc_text(recorded_at) or "",
+        run_budget_bytes=args.run_budget_bytes,
+    )
+    # Evidence first (D6 discipline): the report is printed and written BEFORE
+    # any refusal or warning below.
+    print(json.dumps(report, ensure_ascii=False, sort_keys=True, indent=2), flush=True)
+    _write_report(report, args.report_path)
+    if args.contract_acquire_summary:
+        # Amendment (E): the run's per-accession codes ride the SAME summary
+        # file capture already reads (--contract-acquire-report), so no other
+        # workflow step or file handoff changes. Shape-checked load, then one
+        # rewrite with the acquire_contract block attached.
+        summary = _load_contract_acquire_summary(args.contract_acquire_summary)
+        summary["acquire_contract"] = report
+        Path(args.contract_acquire_summary).write_text(
+            json.dumps(summary, ensure_ascii=False, sort_keys=True, indent=2) + "\n",
+            encoding="utf-8",
+        )
+    failures = [
+        row
+        for issuer in report["issuers"]
+        for row in issuer["accessions"]
+        if str(row.get("outcome") or "").startswith("acquire_failed:")
+    ]
+    if failures:
+        # Amendment (E): a partial run emits the line-start
+        # ``::warning title=fif-contract-acquire::`` per failing accession
+        # (bare print with flush; never a logger, never fatal).
+        for row in failures:
+            print(
+                f"::warning title=fif-contract-acquire::{row['accession']} "
+                f"{row['outcome']} (contract-keyed acquire partial; typed code "
+                "recorded)",
+                flush=True,
+            )
+    return 0
+
+
+# ---------------------------------------------------------------------------
 # capture-members
 # ---------------------------------------------------------------------------
 
@@ -483,6 +595,17 @@ def _run_capture_members(args: argparse.Namespace) -> int:
         max_document_bytes=args.max_document_bytes,
         pacer=pacer,
     )
+    # C0-c ERRATA-5 rule 3: the page-fetch collector rides the SAME shared
+    # pacer (A20) and the incumbent 16 MiB submissions ceiling; pages are
+    # retained only through the incumbent historical-shard fetch
+    # (publish_latest=False), so latest.json never moves.
+    submissions_collector = SecForensicsCollector(
+        raw_root,
+        user_agent=user_agent,
+        min_interval_seconds=args.min_interval_seconds,
+        max_response_bytes=DEFAULT_MAX_SUBMISSIONS_BYTES,
+        pacer=pacer,
+    )
     report = capture_fif_filing_packages(
         raw_root=raw_root,
         archive_root=archive_root,
@@ -491,6 +614,7 @@ def _run_capture_members(args: argparse.Namespace) -> int:
         pacer=pacer,
         recorded_at=utc_text(recorded_at) or "",
         run_budget_bytes=args.run_budget_bytes,
+        submissions_collector=submissions_collector,
     )
     if contract_acquire_summary is not None:
         # D13 W3: the isolated contract acquire's state rides the capture
@@ -656,12 +780,29 @@ def _issuer_binding(issuer: Mapping[str, Any]) -> CanonicalEntityBinding | None:
 
 @dataclass(frozen=True)
 class _StagedIssuer:
-    """One contract issuer with its admitted package set, ready to plan."""
+    """One contract issuer with its admitted package set, ready to plan.
+
+    ERRATA-6: ``admitted_packages`` is the MATERIAL set only (an admitted
+    package whose witness-bound form is exactly ``8-K`` is admitted and
+    counted but NEVER enters the build_production_dataset_store material, so
+    its capture clock cannot contribute to T_c or the ERRATA-3 floor —
+    otherwise every 8-K capture would mint a content-identical generation
+    with a new admitted_at). ``event_accessions`` names the admitted 8-Ks for
+    the report-only ``admitted_event_accessions`` key.
+    """
 
     issuer: Mapping[str, Any]
     binding: CanonicalEntityBinding
     admitted_packages: tuple[Any, ...]
     capture_clocks: tuple[datetime, ...]
+    event_accessions: tuple[str, ...] = ()
+
+    @property
+    def admitted_accessions(self) -> tuple[str, ...]:
+        material = tuple(
+            str(package.manifest["accession"]) for package in self.admitted_packages
+        )
+        return tuple(sorted({*material, *self.event_accessions}))
 
 
 def _load_capture_failures(path_value: Any) -> dict[str, list[tuple[str, str]]]:
@@ -697,6 +838,144 @@ def _load_capture_failures(path_value: Any) -> dict[str, list[tuple[str, str]]]:
                 rows.append((outcome.split(":", 1)[1], str(row.get("error") or outcome)))
         failures[issuer["cik"]] = rows
     return failures
+
+
+def _acquire_outcomes(capture_doc: Mapping[str, Any] | None) -> dict[str, dict[str, str]]:
+    """Per-CIK per-accession acquire-contract outcomes from the capture
+    report's ``contract_acquire.acquire_contract`` block (E1 amendment E)."""
+    if not isinstance(capture_doc, Mapping):
+        return {}
+    block = capture_doc.get("contract_acquire")
+    if not isinstance(block, Mapping):
+        return {}
+    acquire_contract = block.get("acquire_contract")
+    if not isinstance(acquire_contract, Mapping):
+        return {}
+    outcomes: dict[str, dict[str, str]] = {}
+    for issuer in acquire_contract.get("issuers") or []:
+        if not isinstance(issuer, Mapping) or not isinstance(issuer.get("cik"), str):
+            continue
+        rows = outcomes.setdefault(issuer["cik"], {})
+        for row in issuer.get("accessions") or []:
+            if isinstance(row, Mapping) and isinstance(row.get("accession"), str):
+                rows[row["accession"]] = str(row.get("outcome") or "")
+    return outcomes
+
+
+def _coverage_rows(
+    contract: Mapping[str, Any],
+    staged: Sequence[_StagedIssuer],
+    capture_doc: Mapping[str, Any] | None,
+    excluded: Sequence[Mapping[str, Any]],
+) -> list[dict[str, Any]]:
+    """E4 + ERRATA-6 rule 4: one coverage row per contract issuer.
+
+    ``captured``/``admitted``/``served`` per accession — an 8-K counts
+    captured=true, admitted=true, served=false; no product-facing coverage
+    tier may count an 8-K as served. r4/D1: an ``only_event_packages``
+    issuer is excluded and never staged, yet its admitted 8-Ks — carried
+    report-only on its exclusion row — still count admitted (never served).
+    Each MISSING accession carries its typed code, joined across the acquire
+    and capture reports (the acquire code wins when capture says
+    ``no_retained_primary``). REPORT ONLY: this block never enters manifest
+    or generation bytes.
+    """
+    staged_by_cik = {str(row.binding.cik): row for row in staged}
+    admitted_events_by_cik: dict[str, set[str]] = {}
+    for exclusion in excluded:
+        if exclusion.get("reason") != EXCLUSION_ONLY_EVENT_PACKAGES:
+            continue
+        events = admitted_events_by_cik.setdefault(str(exclusion["cik"]), set())
+        events.update(
+            str(accession)
+            for accession in exclusion.get("admitted_event_accessions") or ()
+        )
+    capture_by_cik = _capture_outcomes_from_doc(capture_doc)
+    acquire_by_cik = _acquire_outcomes(capture_doc)
+    coverage: list[dict[str, Any]] = []
+    for issuer in contract["issuers"]:
+        cik = str(issuer["cik"])
+        capture_rows = capture_by_cik.get(cik, {})
+        acquire_rows = acquire_by_cik.get(cik, {})
+        staged_row = staged_by_cik.get(cik)
+        admitted = set(staged_row.admitted_accessions) if staged_row else set()
+        # An excluded only-event-packages issuer has no staged row; its 8-Ks
+        # still count admitted (served stays staged-only, so never served).
+        admitted |= admitted_events_by_cik.get(cik, set())
+        served = (
+            {
+                str(package.manifest["accession"])
+                for package in staged_row.admitted_packages
+            }
+            if staged_row
+            else set()
+        )
+        accession_rows: list[dict[str, Any]] = []
+        for entry in issuer.get("accessions") or []:
+            accession = str(entry["accession"])
+            outcome = capture_rows.get(accession, "")
+            captured = outcome in ("captured", "retained_reused") or accession in admitted
+            row = {
+                "accession": accession,
+                "captured": captured,
+                "admitted": accession in admitted,
+                "served": accession in served,
+            }
+            if not captured:
+                code = (
+                    outcome.split(":", 1)[1]
+                    if outcome.startswith("member_capture_failed:")
+                    else (outcome or "not_attempted")
+                )
+                if code == "no_retained_primary":
+                    acquire_outcome = acquire_rows.get(accession, "")
+                    if acquire_outcome.startswith("acquire_failed:"):
+                        code = acquire_outcome.split(":", 1)[1]
+                row["missing_code"] = code
+            accession_rows.append(row)
+        coverage.append(
+            {
+                "ticker": str(issuer["ticker"]),
+                "cik": cik,
+                "contract_accessions": len(accession_rows),
+                "captured": sum(1 for row in accession_rows if row["captured"]),
+                "admitted": sum(1 for row in accession_rows if row["admitted"]),
+                "served": sum(1 for row in accession_rows if row["served"]),
+                "accessions": accession_rows,
+            }
+        )
+    return coverage
+
+
+def _capture_outcomes_from_doc(
+    capture_doc: Mapping[str, Any] | None
+) -> dict[str, dict[str, str]]:
+    if not isinstance(capture_doc, Mapping) or not isinstance(
+        capture_doc.get("issuers"), list
+    ):
+        return {}
+    outcomes: dict[str, dict[str, str]] = {}
+    for issuer in capture_doc["issuers"]:
+        if not isinstance(issuer, dict) or not isinstance(issuer.get("cik"), str):
+            continue
+        rows = outcomes.setdefault(issuer["cik"], {})
+        for row in issuer.get("accessions") or []:
+            if isinstance(row, dict) and isinstance(row.get("accession"), str):
+                rows[row["accession"]] = str(row.get("outcome") or "")
+    return outcomes
+
+
+def _print_coverage_shortfalls(coverage: Sequence[Mapping[str, Any]]) -> None:
+    """E4: a shortfall never blocks publish, but it is printed LOUDLY."""
+    for issuer in coverage:
+        for row in issuer["accessions"]:
+            if not row.get("captured"):
+                print(
+                    f"::warning title=fif-production-coverage::{issuer['ticker']} "
+                    f"{row['accession']} not captured "
+                    f"({row.get('missing_code')}); coverage shortfall recorded",
+                    flush=True,
+                )
 
 
 def _load_contract_acquire_block(path_value: Any) -> dict[str, Any] | None:
@@ -793,6 +1072,7 @@ def _stage_contract_issuers(
                 )
             continue
         admitted = []
+        event_accessions: list[str] = []
         refusals: list[str] = []
         capture_clocks: list[datetime] = []
         for package in retained:
@@ -807,19 +1087,67 @@ def _stage_contract_issuers(
             except AdmittedFilingPackageError as exc:
                 refusals.append(f"admission_refused:{exc.code}")
                 continue
+            # A0 (R-1): bind the admitted package to the staged issuer BEFORE
+            # it can reach the store material. The capture manifest carries
+            # no entity identity, while the served statement path binds at
+            # the issuer level and refuses a package whose manifest
+            # entity_id/cik disagree with the issuer binding — so the binding
+            # is stamped here, once, at the only publisher seam, from the
+            # SAME binding the issuer is staged with (never derived from a
+            # ticker). A package whose own identity cross-claims another
+            # issuer is refused, never relabelled. No digest inside
+            # AdmittedFilingPackage covers the manifest mapping (the index,
+            # member, and witness digests bind bytes that this stamp does not
+            # touch), so the frozen-dataclass replace is integrity-neutral.
+            if canonical_cik(admitted_package.manifest.get("cik")) != binding.cik:
+                refusals.append("admission_refused:issuer_cik_mismatch")
+                continue
+            manifest_entity_id = admitted_package.manifest.get("entity_id")
+            if (
+                isinstance(manifest_entity_id, str)
+                and manifest_entity_id
+                and manifest_entity_id != binding.entity_id
+            ):
+                refusals.append("admission_refused:issuer_entity_mismatch")
+                continue
+            if manifest_entity_id != binding.entity_id:
+                admitted_package = replace(
+                    admitted_package,
+                    manifest={**admitted_package.manifest, "entity_id": binding.entity_id},
+                )
+            # ERRATA-6 rule 1: an admitted 8-K is counted but NEVER passed
+            # into the build_production_dataset_store material (the false R6
+            # premise: production_datasets._statement_trees_role_payload
+            # calls reconstruct_primary_statements on EVERY package).
+            if str(admitted_package.manifest.get("form") or "") == "8-K":
+                event_accessions.append(str(admitted_package.manifest["accession"]))
+                continue
             admitted.append(admitted_package)
+            # ERRATA-6 rule 3: only MATERIAL packages contribute clocks.
             capture_clocks.append(
                 _require_clock(package.capture_recorded_at, "capture_recorded_at")
             )
         if not admitted:
-            excluded.append(
-                {
-                    "ticker": ticker,
-                    "cik": cik,
-                    "reason": refusals[0] if refusals else EXCLUSION_NO_RETAINED_PACKAGE,
-                    "detail": "; ".join(sorted(set(refusals))),
-                }
+            reason = (
+                EXCLUSION_ONLY_EVENT_PACKAGES
+                if event_accessions
+                else (refusals[0] if refusals else EXCLUSION_NO_RETAINED_PACKAGE)
             )
+            exclusion = {
+                "ticker": ticker,
+                "cik": cik,
+                "reason": reason,
+                "detail": "; ".join(sorted(set(refusals))),
+            }
+            if reason == EXCLUSION_ONLY_EVENT_PACKAGES:
+                # r4/D1 (ERRATA-6 rule 4): this issuer is never staged, but its
+                # admitted 8-Ks must stay countable as admitted — carry them
+                # REPORT-ONLY on the exclusion row so _coverage_rows can count
+                # them admitted (never served) without staging the issuer. The
+                # accessions still never enter material, manifest, generation,
+                # index or role bytes, and their clocks never enter T_c.
+                exclusion["admitted_event_accessions"] = sorted(set(event_accessions))
+            excluded.append(exclusion)
             continue
         staged.append(
             _StagedIssuer(
@@ -827,6 +1155,7 @@ def _stage_contract_issuers(
                 binding=binding,
                 admitted_packages=tuple(admitted),
                 capture_clocks=tuple(capture_clocks),
+                event_accessions=tuple(sorted(set(event_accessions))),
             )
         )
     return staged, excluded
@@ -898,6 +1227,26 @@ class _IssuerPlan:
     lineage_receipt_count: int
     material: Any = field(repr=False, default=None)
 
+    # M1 (reviewer minor, C0-c): the outcome/clock_basis pairing is a
+    # programming invariant, enforced at construction. ``published`` pairs
+    # with a content or run-recorded clock basis; ``unchanged`` pairs with
+    # latest_unchanged ONLY. Any other pair is a constructor ValueError
+    # naming the pair — never a silently inconsistent report row.
+    _VALID_OUTCOME_CLOCK_BASIS = frozenset(
+        {
+            ("published", "content"),
+            ("published", "run_recorded_at"),
+            ("unchanged", "latest_unchanged"),
+        }
+    )
+
+    def __post_init__(self) -> None:
+        pair = (str(self.outcome), str(self.clock_basis))
+        if pair not in self._VALID_OUTCOME_CLOCK_BASIS:
+            raise ValueError(
+                f"invalid issuer-plan outcome/clock_basis pair: {pair!r}"
+            )
+
 
 def _plan_issuer(
     staged: _StagedIssuer,
@@ -936,6 +1285,15 @@ def _plan_issuer(
         raise PublisherError(
             f"latest.json for {binding.entity_id} exists but cannot be verified "
             f"(latest_pointer_unreadable): {exc}",
+            code="latest_pointer_unreadable",
+        ) from exc
+    except PublisherError:
+        raise
+    except Exception as exc:  # noqa: BLE001 - M2: a transient store read is typed
+        raise PublisherError(
+            f"latest.json transient store read for {binding.entity_id} "
+            f"({type(exc).__name__}: {exc}) cannot be verified "
+            "(latest_pointer_unreadable)",
             code="latest_pointer_unreadable",
         ) from exc
     if latest is not None and floor <= latest.admitted_at:
@@ -1030,6 +1388,10 @@ def _report_row(
             str(package.manifest["accession"])
             for package in plan.staged.admitted_packages
         ],
+        # ERRATA-6 rule 2: the 8-K accessions appear ONLY here — a report-only
+        # key of the publish report; never in manifest, generation, index or
+        # role bytes.
+        "admitted_event_accessions": list(plan.staged.event_accessions),
         "lineage_receipt_count": plan.lineage_receipt_count,
     }
 
@@ -1075,6 +1437,48 @@ def _write_report(report: Mapping[str, Any], report_path_value: Any) -> None:
     )
 
 
+def _demote_coverage_after_commit_failure(
+    coverage: Sequence[Mapping[str, Any]],
+    *,
+    failed_cik: str,
+    failed_code: str,
+    not_attempted_ciks: set[str],
+) -> list[dict[str, Any]]:
+    """MINOR-5: the PARTIAL report's coverage must reflect the commit loop.
+
+    Coverage is computed before planning and the commit loop, so without this
+    demotion the partial report would claim served=true for an issuer whose
+    commit failed or was never attempted. Every accession row of the FAILED
+    issuer gets served=False plus ``served_withheld: "commit_failed:<code>"``;
+    every NOT-ATTEMPTED issuer's rows get served=False plus
+    ``served_withheld: "commit_not_attempted"``; those issuers' ``served``
+    counts are recomputed. Published and unchanged issuers keep served.
+    REPORT ONLY — this never enters manifest or generation bytes.
+    """
+    demoted: dict[str, str] = {}
+    if failed_cik:
+        demoted[failed_cik] = f"commit_failed:{failed_code}"
+    for cik in not_attempted_ciks:
+        demoted.setdefault(cik, "commit_not_attempted")
+    if not demoted:
+        return [dict(row) for row in coverage]
+    out: list[dict[str, Any]] = []
+    for issuer_row in coverage:
+        row = dict(issuer_row)
+        withheld = demoted.get(str(row.get("cik") or ""))
+        if withheld is not None:
+            accessions = []
+            for item in row.get("accessions") or []:
+                entry = dict(item)
+                entry["served"] = False
+                entry["served_withheld"] = withheld
+                accessions.append(entry)
+            row["accessions"] = accessions
+            row["served"] = sum(1 for entry in accessions if entry["served"])
+        out.append(row)
+    return out
+
+
 def _run_publish(args: argparse.Namespace) -> int:
     contract = load_fif_coverage_contract(args.coverage_file)
     raw_root = Path(args.raw_root)
@@ -1093,6 +1497,16 @@ def _run_publish(args: argparse.Namespace) -> int:
     # ONLY — no generation byte moves; the block was validated against the
     # frozen summary shape above).
     contract_acquire = _load_contract_acquire_block(args.capture_report)
+    # C0-c E4: the publish coverage row (report only). The capture document —
+    # outcomes plus its contract_acquire.acquire_contract block — is the join
+    # input for per-accession typed codes.
+    capture_doc: dict[str, Any] | None = None
+    if args.capture_report:
+        try:
+            capture_doc = json.loads(Path(args.capture_report).read_text(encoding="utf-8"))
+        except (OSError, UnicodeDecodeError, json.JSONDecodeError):
+            capture_doc = None
+    coverage = _coverage_rows(contract, staged, capture_doc, excluded)
 
     # FUTURE-CLOCK REFUSAL (seat amendment (a)) — still FIRST and unchanged
     # (ERRATA-3 1.d): every issuer's CLOCK RULE is computed BEFORE any store
@@ -1146,9 +1560,10 @@ def _run_publish(args: argparse.Namespace) -> int:
     failed: dict[str, Any] | None = None
     not_attempted: list[dict[str, Any]] = []
     for plan in plans:
-        if failed is not None:
-            not_attempted.append(_issuer_summary(plan))
-            continue
+        # M3: an UNCHANGED plan needs no real-store write, so it is reported
+        # as its unchanged row in ``published`` (same row shape) whether it
+        # comes before OR after the failed issuer; ``not_attempted`` lists
+        # ONLY skipped plans whose outcome is "published".
         if plan.outcome == "unchanged":
             # Equal generation id at L's own clock: NO real-store write for
             # this issuer; latest.json already names the generation.
@@ -1160,6 +1575,9 @@ def _run_publish(args: argparse.Namespace) -> int:
                     admitted_at=plan.admitted_at,
                 )
             )
+            continue
+        if failed is not None:
+            not_attempted.append(_issuer_summary(plan))
             continue
         try:
             publication = publish_production_dataset(store, plan.material)
@@ -1189,12 +1607,25 @@ def _run_publish(args: argparse.Namespace) -> int:
         )
 
     if failed is not None:
+        # MINOR-5: demote coverage before writing the partial report — the
+        # failed issuer's rows are served=False + served_withheld
+        # commit_failed:<code>, the not-attempted issuer's rows are
+        # served=False + commit_not_attempted; committed issuers keep served.
+        coverage = _demote_coverage_after_commit_failure(
+            coverage,
+            failed_cik=str(failed.get("cik") or ""),
+            failed_code=str(failed.get("code") or ""),
+            not_attempted_ciks={
+                str(row.get("cik") or "") for row in not_attempted
+            },
+        )
         partial = {
             **_report_base(recorded_at, registry_clocks),
             "published": published,
             "excluded": excluded,
             "failed": failed,
             "not_attempted": not_attempted,
+            "coverage": coverage,
         }
         if contract_acquire is not None:
             partial["contract_acquire"] = contract_acquire
@@ -1210,11 +1641,14 @@ def _run_publish(args: argparse.Namespace) -> int:
         **_report_base(recorded_at, registry_clocks),
         "published": published,
         "excluded": excluded,
+        "coverage": coverage,
     }
     if contract_acquire is not None:
         report["contract_acquire"] = contract_acquire
     _write_report(report, args.report_path)
     print(json.dumps(report, ensure_ascii=False, sort_keys=True, indent=2), flush=True)
+    # E4: a shortfall never blocks publish, but it is printed loudly.
+    _print_coverage_shortfalls(coverage)
     verify_report(report, store)
     return 0
 
@@ -1222,6 +1656,51 @@ def _run_publish(args: argparse.Namespace) -> int:
 # ---------------------------------------------------------------------------
 # verify
 # ---------------------------------------------------------------------------
+
+
+def project_census_reachability(summary: Mapping[str, Any]) -> dict[str, dict[str, Any]]:
+    """q8's offline acceptance projection over the committed census summary.
+
+    Every contract accession is REACHABLE when its row sits in ``recent``
+    with no covering pages, or under exactly one covering ``filings.files[]``
+    page; anything else is a typed residual (``submissions_page_not_found``
+    for zero covering pages off recent, ``submissions_page_ambiguous`` for
+    more than one covering page — whatever ``location`` says).
+    """
+    residuals = {"submissions_page_not_found", "submissions_page_ambiguous"}
+    projection: dict[str, dict[str, Any]] = {}
+    for issuer in summary.get("issuers") or []:
+        reachable = 0
+        residual_rows: list[dict[str, str]] = []
+        for entry in issuer.get("accessions") or []:
+            covering = entry.get("covering_pages") or []
+            location = entry.get("location")
+            # r4/D2: reachability is PAGE-DERIVED — recent with NO covering
+            # pages, or exactly ONE covering page. A non-empty ``location``
+            # string never rescues a 0-page row (submissions_page_not_found)
+            # or collapses a 2+-page row (submissions_page_ambiguous).
+            if (location == "recent" and not covering) or len(covering) == 1:
+                reachable += 1
+                continue
+            residual_rows.append(
+                {
+                    "accession": str(entry.get("accession") or ""),
+                    "missing_code": (
+                        "submissions_page_ambiguous"
+                        if len(covering) > 1
+                        else "submissions_page_not_found"
+                    ),
+                }
+            )
+        projection[str(issuer.get("ticker") or "")] = {
+            "reachable": reachable,
+            "total": len(issuer.get("accessions") or []),
+            "residuals": residual_rows,
+            "residual_codes": sorted(
+                {row["missing_code"] for row in residual_rows} & residuals
+            ),
+        }
+    return projection
 
 
 def verify_report(report: Mapping[str, Any], store: Any) -> None:
@@ -1248,11 +1727,95 @@ def verify_report(report: Mapping[str, Any], store: Any) -> None:
         lawful = (
             reason == EXCLUSION_IDENTITY_NOT_FROZEN
             or reason == EXCLUSION_NO_RETAINED_PACKAGE
+            or reason == EXCLUSION_ONLY_EVENT_PACKAGES
             or reason.startswith("admission_refused:")
             or reason.startswith("member_capture_failed:")
         )
         if not lawful:
             _fail(f"exclusion reason is outside the closed vocabulary: {reason}", code="verify_failed")
+        # r4/D1 (ERRATA-6 rule 4): the report-only admitted-8-K key is lawful
+        # ONLY on an only_event_packages exclusion and must be a list of
+        # non-empty accession strings.
+        events = row.get("admitted_event_accessions")
+        if events is not None and (
+            reason != EXCLUSION_ONLY_EVENT_PACKAGES
+            or not isinstance(events, list)
+            or not all(isinstance(item, str) and item for item in events)
+        ):
+            _fail(
+                "exclusion admitted_event_accessions is malformed: " f"{reason}",
+                code="verify_failed",
+            )
+    # E4: the coverage block (when present) must cover every contract issuer
+    # exactly once and never count an 8-K as served without being admitted.
+    coverage = report.get("coverage")
+    if coverage is not None:
+        if not isinstance(coverage, list):
+            _fail("publish report coverage block is malformed", code="verify_failed")
+        seen_ciks = set()
+        for issuer_row in coverage:
+            if not isinstance(issuer_row, Mapping) or not isinstance(
+                issuer_row.get("cik"), str
+            ):
+                _fail("coverage issuer row is malformed", code="verify_failed")
+            if issuer_row["cik"] in seen_ciks:
+                _fail(
+                    f"coverage issuer appears more than once: {issuer_row['cik']}",
+                    code="verify_failed",
+                )
+            seen_ciks.add(issuer_row["cik"])
+            for row in issuer_row.get("accessions") or []:
+                if not isinstance(row, Mapping) or not isinstance(
+                    row.get("accession"), str
+                ):
+                    _fail("coverage accession row is malformed", code="verify_failed")
+                if row.get("served") and not row.get("admitted"):
+                    _fail(
+                        "coverage row serves an unadmitted accession",
+                        code="verify_failed",
+                    )
+                # MINOR-5: served_withheld (partial-report demotion marker) is
+                # lawful only as a non-empty string on a NOT-served row.
+                withheld = row.get("served_withheld")
+                if withheld is not None and (
+                    not isinstance(withheld, str)
+                    or not withheld
+                    or row.get("served")
+                ):
+                    _fail(
+                        f"coverage served_withheld is malformed: {withheld!r}",
+                        code="verify_failed",
+                    )
+        # r4/D1 (ERRATA-6 rule 4): every 8-K named admitted on an exclusion
+        # row must appear admitted=True and served=False in its issuer's
+        # coverage row.
+        coverage_by_cik = {str(item["cik"]): item for item in coverage}
+        for row in excluded:
+            events = row.get("admitted_event_accessions") or []
+            if not events:
+                continue
+            issuer_row = coverage_by_cik.get(str(row.get("cik") or ""))
+            if issuer_row is None:
+                _fail(
+                    "coverage block omits an excluded issuer with admitted 8-Ks",
+                    code="verify_failed",
+                )
+            by_accession = {
+                str(item.get("accession")): item
+                for item in issuer_row.get("accessions") or []
+            }
+            for accession in events:
+                accession_row = by_accession.get(str(accession))
+                if (
+                    accession_row is None
+                    or not accession_row.get("admitted")
+                    or accession_row.get("served")
+                ):
+                    _fail(
+                        "coverage row misreports an excluded issuer's admitted "
+                        f"8-K: {accession}",
+                        code="verify_failed",
+                    )
     for row in published:
         generation_id = str(row.get("generation_id") or "")
         entity_id = str(row.get("entity_id") or "")
@@ -1310,9 +1873,27 @@ def _run_verify(args: argparse.Namespace) -> int:
             f"(missing={sorted(missing)}, unknown={sorted(extra)})",
             code="verify_failed",
         )
+    coverage = report.get("coverage") or []
+    coverage_summary = [
+        {
+            "ticker": row.get("ticker"),
+            "cik": row.get("cik"),
+            "captured": row.get("captured"),
+            "admitted": row.get("admitted"),
+            "served": row.get("served"),
+            "contract_accessions": row.get("contract_accessions"),
+        }
+        for row in coverage
+        if isinstance(row, Mapping)
+    ]
     print(
         json.dumps(
-            {"schema": report.get("schema"), "verified": True, "issuers": len(seen)},
+            {
+                "schema": report.get("schema"),
+                "verified": True,
+                "issuers": len(seen),
+                "coverage": coverage_summary,
+            },
             sort_keys=True,
         ),
         flush=True,
@@ -1378,6 +1959,34 @@ def build_parser() -> argparse.ArgumentParser:
         help="Write the JSON summary here (the workflow uploads it)",
     )
 
+    acquire = subparsers.add_parser(
+        "acquire-contract",
+        help="C0-c E1: contract-keyed primary + manifest acquisition for every contract accession",
+    )
+    acquire.add_argument("--coverage-file", type=Path, required=True)
+    acquire.add_argument("--raw-root", type=Path, required=True)
+    acquire.add_argument("--archive-root", type=Path, required=True)
+    acquire.add_argument("--recorded-at", required=True, help="Explicit UTC acquisition clock")
+    acquire.add_argument("--user-agent", default=None, help="SEC user agent override (tests inject one)")
+    acquire.add_argument("--min-interval-seconds", type=float, default=0.12)
+    acquire.add_argument("--max-document-bytes", type=int, default=32 * 1024 * 1024)
+    # E1-c amendment (B): acquire-contract is its own process with its OWN
+    # pre-fetch budget; the single source of the number is the capture
+    # module's constant — no second literal.
+    acquire.add_argument("--run-budget-bytes", type=int, default=DEFAULT_RUN_BUDGET_BYTES)
+    acquire.add_argument(
+        "--contract-acquire-summary",
+        type=Path,
+        default=None,
+        help="Merge this run's report into the contract-acquire summary file as its acquire_contract block",
+    )
+    acquire.add_argument(
+        "--report-path",
+        type=Path,
+        default=None,
+        help="Write the JSON acquisition report here",
+    )
+
     publish = subparsers.add_parser("publish", help="Publish production generations (hard gate)")
     publish.add_argument("--coverage-file", type=Path, required=True)
     publish.add_argument("--raw-root", type=Path, required=True)
@@ -1411,6 +2020,8 @@ def main(argv: list[str] | None = None) -> int:
             return _run_capture_members(args)
         if args.command == "contract-acquire-summary":
             return _run_contract_acquire_summary(args)
+        if args.command == "acquire-contract":
+            return _run_acquire_contract(args)
         if args.command == "publish":
             return _run_publish(args)
         if args.command == "verify":
@@ -1418,7 +2029,9 @@ def main(argv: list[str] | None = None) -> int:
         parser.error(f"unknown command: {args.command}")
         return 2
     except PublisherError as exc:
-        traceback.print_exc(file=sys.stderr)
+        # M2: a TYPED refusal prints exactly its line-start ::error — no raw
+        # traceback noise on stderr (the typed code + message, which names the
+        # underlying exception type, is the evidence).
         _error_annotation(f"fif_production_datasets-{exc.code}", str(exc))
         return 1
     except (
