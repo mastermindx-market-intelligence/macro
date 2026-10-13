@@ -4712,6 +4712,14 @@ CURATED_EXCLUSIVE = {
     # probes return to base exactly (index.html 5,782, build_free_content 5,585,
     # plan_book 5,545); closure findings (); ceilings stay fixed — the #8805 shape.
     "crypto-vector-r2-organs",
+    # 2026-10-13 cx-int engine: crypto-assistant-context. The crypto
+    # assistant-context contract's import closure is the whole Mastermind
+    # chat stack (context compiler, brain gateway, market packet, native
+    # facts). It runs alone under scope: exclusive with that measured
+    # closure instead of widening crypto-vector-r2-organs onto every
+    # chat-stack change; closure findings stay empty and the probes keep their
+    # base readings.
+    "crypto-assistant-context",
     # 2026-10-12 Taxonomy V2 L05-L11: gmi-classification-axes. The geography
     # reader names scripts/build_security_master.py by path (its subprocess
     # call and parquet traversal join the closure) and the registry imports
