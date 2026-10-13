@@ -59,13 +59,15 @@ Within this plan, the current Chairman boundary and operative R4/R12 decisions s
 
 | Release | Tasks | Useful outcome | Build responsibility and prerequisite |
 |---|---|---|---|
-| D1 | T01, T02 | Truthful incumbent supply observation and visible chip | Future dedicated Healthcare Fable coordinates the bounded repair after D1 plan review, actual assignment, source permission and feed custody. Independent of v1.1/private-profile readiness. |
+| D1 | T01, T02 | Truthful incumbent supply observation and visible chip | Future dedicated Healthcare Fable coordinates the bounded repair of the FDA consumer already on main via #7930 (`1c85f27b`, 2026-09-26), after D1 plan review, actual assignment, source permission and feed custody. D1 extends `tests/test_fda_shortages_generation.py` and `tests/test_foresight_cascade.py` in place and does not add another FDA generation test file. Independent of v1.1/private-profile readiness. |
 | D2 | T03, T04, T05 | One real admitted Healthcare assertion reaches the existing protected page through the shared system | Shared owner supplies or accepts the one contract/private/transport extension; new Healthcare Fable consumes it and owns Healthcare integration. Actual shared custody, rights and private binding must clear. |
 | D3 | T06 | Complete GLP-1 five-part economic explanation | D2; D1 wherever misleading legacy output is in the same journey; admitted minimal evidence and independent content review. |
 | D4 | T07 | Real correction and a non-metabolic mechanism through the same system, with honest breadth navigation | D3 and a separately qualified second evidence package; no universal sector-completion claim. |
 | Adjudication | T08 at each release | Exact-head independent review plus authorized real-path proof | Evidence denominator is release-specific; later unexecuted cases are never called passes or used to administratively block D1. |
 
 D1 proof cases are the T01/T02 semantic cases plus the applicable T08 release, rights, no-trade and source-to-chip checks. D2 adds native/private/K1/profile cases. D3 adds the full investor-task cases. D4 adds correction/non-metabolic/coverage. A case spanning tasks is partly exercised at the earlier release only when its relevant behavior exists; the untested remainder stays unexecuted. No single large all-future-test command is the D1 release gate.
+
+D1's acquisition suite is not greenfield. `tests/test_fda_shortages_generation.py` already exists on main via #7930 (commit `1c85f27b`, 2026-09-26). That commit also changed `collectors/fda_shortages.py`, `engine/fda_scarcity.py`, `scripts/build_foresight.py`, `templates/foresight.html.j2` and `tests/test_foresight_cascade.py`, and added `tests/test_fda_supply_probes.py` plus `tests/test_fda_supply_probes_final.py`, `tests/test_fda_supply_probes_mixed.py`, `tests/test_fda_supply_probes_t01r.py`, `tests/test_fda_supply_probes_t02r.py`, `tests/test_fda_supply_probes_t02r2.py` and `tests/test_fda_supply_probes_t02r3.py`. The generation suite already names the late-page, complete-page, empty, first-page-outage, consistency, malformed-row, cap, absent-key, changed-status, disappeared-row, legacy-cache, failed-metadata and interleaved-writer cases. Remaining D1 work is a diff against that landed consumer. Appendix A rows stay NOT_EXECUTED; the merge is not this plan's acceptance receipt.
 
 ### Shared dependency acceptance record — consume, do not fabricate
 
@@ -77,7 +79,7 @@ Before T03–T05 implementation, the original shared owner or its lawfully assig
 |---|---|---|
 | `collectors/fda_shortages.py` | Complete sweep and existing-cache observations | Healthcare D1 writer after reconciliation |
 | `engine/fda_scarcity.py`, `engine/foresight_cascade.py`, `scripts/build_foresight.py` | Incumbent interpretation/visible consumer | D1 only; no schedule or trade-policy expansion |
-| `tests/test_foresight_cascade.py`, proposed `tests/test_fda_shortages_generation.py` | Source meaning, acquisition and forward-history tests | D1 test scope |
+| `tests/test_foresight_cascade.py`, `tests/test_fda_shortages_generation.py` (already on main via #7930, `1c85f27b`) | Source meaning, acquisition and forward-history tests | D1 test scope is these existing suites; do not add another FDA generation test file |
 | `engine/theme_graph/curation_assertion.py`, `contracts/theme_graph/curation_assertion.v1.schema.json` | Existing shared v1 functions/schema | Reuse; do not weaken or re-author in Healthcare |
 | Proposed `contracts/theme_graph/curation_assertion.v1.1.schema.json` | Closed shared extension | Single assigned shared writer, not the active Semiconductor B release by default |
 | `contracts/theme_graph/evidence.v1.schema.json`, `engine/theme_graph/store.py`, `scripts/check_theme_graph_contracts.py` | Native envelope and round-trip | Existing owner and current store custody |
@@ -133,13 +135,13 @@ Add table cases: current+resolved retains mixture; discontinued remains distinct
 
 ## Task T02 — Qualify acquisition and forward history in the existing FDA collector
 
-**Files:** `collectors/fda_shortages.py`, `scripts/build_foresight.py`, new `tests/test_fda_shortages_generation.py`. Existing artifact remains `data/fda/shortages.parquet`; do not publish live cache bytes without the source owner's permission.
+**Files:** `collectors/fda_shortages.py`, `scripts/build_foresight.py`, `tests/test_fda_shortages_generation.py` (already exists on main via #7930, commit `1c85f27b`; D1 extends this suite in place and does not add another FDA generation test file). Existing artifact remains `data/fda/shortages.parquet`; do not publish live cache bytes without the source owner's permission.
 
 **Candidate interfaces:** `collect_shortage_sweep(fetch_page, *, clock, page_size, max_pages) -> dict`; `save_shortage_observation(result, *, path, expected_predecessor) -> dict`; `read_shortage_observation(*, path) -> dict`. The predecessor argument binds the existing writer's receipt/fencing, not a new lock manager. Existing `fetch_shortages` and `load_shortages_cache` wrappers preserve compatible callers over the selected qualified observation.
 
 **Result fields:** `qualified`, `rows`, `capture`, `failure_code`. Capture includes interval, source generation, raw/unique/reported counts, completeness and `atomic_snapshot_proven`. New generation rows and the bounded existing-artifact metadata retain current selection and last refresh; successful zero rows still have a capture receipt. Legacy rows have unknown capture time unless genuinely established.
 
-- [ ] **Step 1 — Write late-page and stale-writer tests.**
+- [ ] **Step 1 — Treat the landed generation cases as the baseline.** `tests/test_fda_shortages_generation.py` already exists on main via #7930 (`1c85f27b`) and already names `test_late_page_failure_is_not_a_current_sweep` plus the complete-page, empty, outage, consistency, malformed, cap, absent-key, changed-status, disappeared-row, legacy-cache, failed-metadata and interleaved-writer cases. The block below remains the requirement illustration. Do not add a second suite that repeats it.
 
 ```python
 from datetime import datetime, timezone
@@ -161,7 +163,7 @@ def test_late_page_failure_is_not_a_current_sweep():
 
 Add complete single page, complete empty, first-page outage, generation/count drift, repeated page, malformed rows, cap before total, absent stable key, changed status, disappeared row, legacy cache and failed metadata-write cases. In an interleaving test, older sweep A starts, newer B becomes current, then A finishes: A must not replace B or its last-refresh evidence. Atomic rename alone does not prove multi-writer fencing.
 
-- [ ] **Step 2 — Establish red:** `python -m pytest tests/test_fda_shortages_generation.py -q`.
+- [ ] **Step 2 — Establish red on the existing suite:** `python -m pytest tests/test_fda_shortages_generation.py -q`. The file already exists on main via #7930 (`1c85f27b`). Add a case only when a still-open T02 requirement is absent from that suite.
 - [ ] **Step 3 — Implement the existing-owner transaction:** validate every page and acquisition bound before promotion; keep the previous qualified capture on failure with original dates; retain only a truthfully persisted failure receipt. Stage then atomically replace under the existing writer fence and verified predecessor. Without an admitted serialization/fencing mechanism, refuse concurrent promotion rather than inventing one. Matching counts describe a complete interval sweep, not snapshot isolation. A content-scoped identity cannot establish cross-generation absence. Disappearance never means resolution by itself. Retention growth stays subject to existing artifact/retention limits; no unbounded new history service.
 - [ ] **Step 4 — Exercise D1's closed proof set:** run T01+T02 tests, incumbent wrappers and actual allowed collector-to-chip path. Record interval, counts, source-generation age, selected capture, failed-refresh behavior and exact visible output. Real-source acquisition and synthetic fault injection are different receipts.
 - [ ] **Step 5 — Commit and seek D1 release review:** `git add collectors/fda_shortages.py scripts/build_foresight.py tests/test_fda_shortages_generation.py && git commit -m "fix(healthcare): qualify FDA sweeps and preserve observed history"`. D1 does not wait for v1.1, the Healthcare private profile or later-sector cases. It still needs its own review, source rights, current integration and authorized source-to-chip proof.

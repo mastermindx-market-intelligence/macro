@@ -1,7 +1,9 @@
 """Check a research plan's consistency. No product or native application tests."""
 from __future__ import annotations
-import argparse, ast, copy, hashlib, json, re
+import argparse, ast, copy, hashlib, json, os, re, tempfile
 from pathlib import Path
+
+ROOT = Path(__file__).resolve().parent
 
 class PlanRefusal(ValueError):
     pass
@@ -70,9 +72,42 @@ def check(text: str, reference: dict) -> dict:
             'python_examples_syntax_checked':len(codes),'application_tests_executed':0,
             'independent_review_accepted':False,'healthcare_worker_started':False}
 
+def build_reference(root: Path) -> dict:
+    """Rebuild the R11 review matrix from R8, R9 and R10. No separate matrix file."""
+    r8=json.loads((root/'HEALTHCARE_R8_ACCEPTANCE_REVIEW_2026-09-23.json').read_text())
+    r9=json.loads((root/'HEALTHCARE_R9_TRACEABILITY_2026-09-23.json').read_text())
+    r10=(root/'HEALTHCARE_R10_SHARED_COMPATIBILITY_REVIEW_2026-09-24.md').read_text()
+    by_id={c['id']:c for c in r8['acceptance_cases']}
+    cases=[]
+    for row in r9['r8_acceptance_cases']:
+        src=by_id[row['id']]
+        cases.append({'id':row['id'],'task':row['implementation_task'],'required_result':src['intended_result'],'execution':row['execution']})
+    for row in r9['new_acceptance_cases']:
+        cases.append({'id':row['id'],'task':row['implementation_task'],'required_result':row['intended_result'],'execution':row['execution']})
+    for line in r10.splitlines():
+        if re.match(r'^\| R10-A\d\d \|', line):
+            cells=[c.strip() for c in line.split('|')[1:-1]]
+            require(len(cells)==3,'r10_case_row_shape')
+            cases.append({'id':cells[0],'task':cells[1],'required_result':cells[2],'execution':'NOT_EXECUTED'})
+    families=[{'id':f['id'],'name':f['name']} for f in r8['coverage_families']]
+    require(len(cases)==60 and len({c['id'] for c in cases})==60,'rebuilt_reference_case_count')
+    require(len(families)==12,'rebuilt_reference_family_count')
+    return {'cases':cases,'coverage_families':families,'source':'R8 acceptance + R9 task map + R10 table'}
+
 def main() -> None:
-    p=argparse.ArgumentParser(); p.add_argument('--plan',type=Path,required=True); p.add_argument('--reference',type=Path,required=True); p.add_argument('--output',type=Path,required=True)
-    args=p.parse_args(); raw=args.plan.read_bytes(); text=raw.decode(); ref=json.loads(args.reference.read_text())
+    p=argparse.ArgumentParser()
+    p.add_argument('--plan',type=Path,default=None)
+    p.add_argument('--reference',type=Path,default=None,help='Optional matrix. Omit to rebuild from R8/R9/R10.')
+    p.add_argument('--output',type=Path,default=None,help='Receipt path. Default is $TMPDIR/r13_plan_verification.json.')
+    args=p.parse_args()
+    plan=args.plan or (ROOT/'HEALTHCARE_IMPLEMENTATION_PLAN_R9_2026-09-23.md')
+    raw=plan.read_bytes(); text=raw.decode()
+    if args.reference is not None:
+        ref_bytes=args.reference.read_bytes(); ref=json.loads(ref_bytes); reference_origin=str(args.reference)
+    else:
+        ref=build_reference(ROOT)
+        ref_bytes=json.dumps(ref,ensure_ascii=False,sort_keys=True,separators=(',',':')).encode()
+        reference_origin='in-process:R8/R9/R10'
     result=check(text,ref)
     mutants={
       'drop_case':text.replace(next(l for l in text.splitlines() if l.startswith('| R8-A05 |'))+'\n',''),
@@ -92,11 +127,16 @@ def main() -> None:
         try:check(mutant,ref)
         except (PlanRefusal,SyntaxError) as exc:rejected[name]=str(exc)
         else:raise PlanRefusal(f'mutant_survived:{name}')
+    output=args.output
+    if output is None:
+        output=Path(os.environ.get('TMPDIR') or tempfile.gettempdir())/'r13_plan_verification.json'
     result.update({'plan_git_blob':blob(raw),'plan_sha256':hashlib.sha256(raw).hexdigest(),'plan_bytes':len(raw),
-                   'reference_sha256':hashlib.sha256(args.reference.read_bytes()).hexdigest(),
+                   'reference_sha256':hashlib.sha256(ref_bytes).hexdigest(),'reference_origin':reference_origin,
                    'rejected_corruptions':rejected,'scope':'Planning consistency and syntax only; no native or product execution.'})
-    args.output.write_text(json.dumps(result,indent=2)+'\n')
+    output.parent.mkdir(parents=True,exist_ok=True)
+    output.write_text(json.dumps(result,indent=2)+'\n')
     print(json.dumps({k:v for k,v in result.items() if k not in {'checks','rejected_corruptions'}},indent=2))
     print('rejected_corruptions',len(rejected))
+    print('output',output)
 
 if __name__=='__main__':main()

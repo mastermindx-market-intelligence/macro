@@ -6,6 +6,126 @@ program: gmi-theme-graph
 repository: mastermindx-market-intelligence/macro
 mission_complete: false
 finalization_classification: CHECKPOINTED_CONTINUATION
+workstream: "WS:GMI-THEME-GRAPH"
+session: claude/healthcare-theme-research-20260923
+model: sol
+ended_because: ci_handoff
+mission: >
+  Checkpoint the Healthcare research preparation at the Chairman-manual
+  handoff boundary. The packet is ready for a NEW Healthcare-specific Fable
+  CEO session. Independent review is still required before product writes,
+  and the Semiconductor Fable is not the Healthcare build receiver.
+state_before: >
+  The frozen corpus input was e5789583de2428b6dbdaa26266e8fc8e0655789a. The
+  operative plan at the stable R9 filename was R13 content, blob
+  23cd3788620c5ad26abb878dddbc29911b2fab6f at that preparation. Review request
+  5808976193 had no verdict. No receiver was assigned and implementation had
+  not STARTed. This file's frontmatter omitted the thirteen fields
+  scripts/agentos.py check_handoff requires.
+changed:
+  - path: agentos/handoffs/GMI-HEALTHCARE-MASTER-FABLE-CEO-HANDOFF-2026-09-24.md
+    what: >
+      Added the Chairman manual launch packet and the thirteen handoff-protocol
+      fields. Prepared, not delivered.
+  - path: research/healthcare/README.md
+    what: >
+      Updated the corpus index to the master handoff and the consolidated plan.
+      That index edit is the R14 preparation, not a later product change.
+  - path: agentos/handoffs/GMI-HEALTHCARE-RESEARCH-2026-09-23.md
+    what: >
+      Recorded the R14 boundary and added the thirteen handoff-protocol fields
+      so validate no longer rejects this checkpoint.
+  - path: research/healthcare/HEALTHCARE_IMPLEMENTATION_PLAN_R9_2026-09-23.md
+    what: >
+      Re-scoped D1. tests/test_fda_shortages_generation.py already exists on
+      main via #7930 (1c85f27b). D1 extends that suite.
+  - path: research/healthcare/validate_r3.py
+    what: >
+      Default validation no longer writes R3_LOCAL_VALIDATION_RECEIPT.json
+      into the repository. Use --out, $TMPDIR, or --write-committed-receipt.
+  - path: research/healthcare/verify_r13_plan.py
+    what: >
+      No-argument planning check rebuilds its matrix from R8, R9 and R10 and
+      writes the receipt outside the repository unless --output is set.
+verified:
+  - claim: >
+      This checkpoint and the master handoff each carry the thirteen required
+      handoff fields, including a present unverified list.
+    command: python3 scripts/agentos.py validate
+    result: >
+      Pre-repair exited 1 with 26 required-field errors on these two files and
+      92 warnings. Post-repair exited 0: 1212 records, 0 error(s), 92
+      warning(s), none of them on these two handoffs.
+  - claim: >
+      Appendix A still has 60 NOT_EXECUTED rows and Appendix B still has 12
+      families, and the plan names commit 1c85f27b for the existing FDA suite.
+    command: >
+      python3 -c "import pathlib,re; t=pathlib.Path('research/healthcare/HEALTHCARE_IMPLEMENTATION_PLAN_R9_2026-09-23.md').read_text(); ids=re.findall(r'^\| (R(?:8|9|10)-A\d\d) \|', t, re.M); fam=re.findall(r'^\| (R8-F\d\d) \|', t, re.M); print(len(ids), len(set(ids)), len(fam), '1c85f27b' in t)"
+    result: >
+      60 unique case IDs and 12 family IDs. Execution cells stay NOT_EXECUTED.
+      This is not a product pass.
+unverified:
+  - claim: >
+      An independent reviewer has accepted the Healthcare plan for bounded
+      implementation.
+    what_would_verify: >
+      An exact-input verdict on #7788 with findings, evidence and an
+      independence declaration. A review request is not that verdict.
+  - claim: >
+      The portable launch ZIP still matches the recorded digest after this
+      plan correction.
+    what_would_verify: >
+      Re-hash HEALTHCARE_NEW_FABLE_MANUAL_LAUNCH_PACKAGE_2026-09-24.zip.
+      Preparation recorded 36 members, 263789 bytes, SHA-256
+      1b377dd2388691b13afe6c453dcb36c27b4c98e8ac6ca5a0c0231673b1477245.
+      That ZIP is not in this worktree.
+  - claim: >
+      The sixty application requirements pass on an implementation carrier.
+    what_would_verify: >
+      Map each requirement ID to a command and a result. They remain
+      NOT_EXECUTED here.
+unresolved:
+  - >
+    Review, manual delivery, ACK and implementation START are all still open.
+    MISSION_COMPLETE stays false.
+  - >
+    D1 on current main starts from #7930 (1c85f27b), which already added
+    tests/test_fda_shortages_generation.py. Uncovered Appendix A rows stay
+    NOT_EXECUTED.
+  - >
+    Shared v1.1, the Healthcare profile, private reader proof and source
+    admission remain separate gates. D1 does not wait on them.
+next_actions:
+  - >
+    Chairman uses the master handoff section 12 to open a new Healthcare
+    Fable session. Do not hand the build to the Semiconductor session.
+  - >
+    That session reconciles effects and review, then may take a D1-scoped
+    acceptance without waiting for D2-D4.
+  - >
+    Implement D1 by extending the landed FDA files. Do not add a second
+    generation-test file and do not implement on this research branch.
+do_not_redo:
+  - >
+    Do not repeat R1-R13 research, unchanged FDA or rights probes, or the
+    acknowledged R4 and R12 decisions.
+  - >
+    Do not create tests/test_fda_shortages_generation.py. It already exists
+    on main via #7930 (1c85f27b).
+  - >
+    Do not build a second hash, publisher, rights registry, auth client, or
+    theme-graph store for Healthcare.
+danger_areas:
+  - >
+    A public copy of protected current research, or a receipt JSON written
+    into research/healthcare by a local validator.
+  - >
+    Ranking, entry, sizing, or trading edits presented as an FDA display fix.
+  - >
+    Running historical R9 blob assertions against the consolidated plan, or
+    treating #7930 as a pass for every D1 acceptance row.
+  - >
+    Assigning Healthcare to #7870 or weakening the public-hostname guard.
 ---
 
 # Healthcare R14 — manual packet prepared, review first
@@ -24,7 +144,7 @@ The packet is REVIEW_FIRST / IMPLEMENTATION_HELD. Earlier author-side wording th
 - Research carrier: Macro #7788, `claude/healthcare-theme-research-20260923`, OPEN/DRAFT/HOLD.
 - Research operation: `gmi-healthcare-deep-research-20260923-sol-001`.
 - R14 pickup/frozen corpus input: `e5789583de2428b6dbdaa26266e8fc8e0655789a`.
-- Current operative R13 plan at the stable R9 filename: `research/healthcare/HEALTHCARE_IMPLEMENTATION_PLAN_R9_2026-09-23.md`, unchanged blob `23cd3788620c5ad26abb878dddbc29911b2fab6f`.
+- Current operative R13 plan at the stable R9 filename: `research/healthcare/HEALTHCARE_IMPLEMENTATION_PLAN_R9_2026-09-23.md`. At R14 preparation its blob was `23cd3788620c5ad26abb878dddbc29911b2fab6f`. A later correction records that `tests/test_fda_shortages_generation.py` already exists on main via #7930 (`1c85f27b`) and re-scopes D1 to extend that suite instead of creating it.
 - New master handoff: `agentos/handoffs/GMI-HEALTHCARE-MASTER-FABLE-CEO-HANDOFF-2026-09-24.md`, commit **`81b67a83ad23d3b02685ea89135ea40c21a21d86`**, blob **`452aba8ec398e6b10f4dcea9b931d21c658afcb6`**, 27005 bytes, SHA-256 `8dc6cad66c82047dc6a60b9d7fa693e4142effecb94beb42c43f0b7e78f2fad9`.
 - Updated corpus index: `research/healthcare/README.md`, commit **`9eaad2ded91ddb387f242df0656f0280b52cf58e`**, blob **`8b08c70152ea6da4c893cfda54793b5df00b5ed4`**, 8188 bytes.
 - In-turn checkpoint: `a046128d266e749f7b746d4a991cc53940ecb559`, blob `bdcc3a2fd7ef990c6b80539229a477ec82bcbeef`, read back before packet creation.
@@ -58,4 +178,4 @@ Pickup-to-content-head comparison showed only new master handoff, existing READM
 Intended resume is the Chairman-selected fresh Healthcare session or a material-review continuation here using this checkpoint, not a replay of old tool history. Finalization is CHECKPOINTED_CONTINUATION; parent mission incomplete. Preparation is ready, review and implementation are not accepted.
 
 ## WHAT MUST NOT BE REDONE
-No R1–R13/Robotics research repetition, unchanged FDA/rights probes, acknowledged R4/R12 decisions, repeated pending reviewer requests or another master handoff merely for a new turn. Do not use the changing consolidated plan as the original R9 audit input. No duplicate shared validator/hash/evidence/identity/rights/history/publication/auth/queue/control plane. No guessed royalty, security bridge, historical observation, public protected-current body or fabricated independent verdict. Do not assign Healthcare to the existing Semiconductor Fable. Same-carrier effect/custody and actual manual-receiver fences remain intact.
+No R1–R13/Robotics research repetition, unchanged FDA/rights probes, acknowledged R4/R12 decisions, repeated pending reviewer requests or another master handoff merely for a new turn. Do not create `tests/test_fda_shortages_generation.py`; it already exists on main via #7930 (`1c85f27b`). D1 extends that suite. Do not use the changing consolidated plan as the original R9 audit input. No duplicate shared validator/hash/evidence/identity/rights/history/publication/auth/queue/control plane. No guessed royalty, security bridge, historical observation, public protected-current body or fabricated independent verdict. Do not assign Healthcare to the existing Semiconductor Fable. Same-carrier effect/custody and actual manual-receiver fences remain intact.

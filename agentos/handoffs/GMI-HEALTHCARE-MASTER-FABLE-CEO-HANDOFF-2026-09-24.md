@@ -6,6 +6,139 @@ program: gmi-theme-graph
 repository: mastermindx-market-intelligence/macro
 mission_complete: false
 finalization_classification: CHECKPOINTED_CONTINUATION
+workstream: "WS:GMI-THEME-GRAPH"
+session: claude/healthcare-theme-research-20260923
+model: sol
+ended_because: ci_handoff
+mission: >
+  Prepare a Chairman-delivered manual packet for a NEW Healthcare-specific
+  Fable CEO session. The session turns the existing Healthcare corpus into a
+  maintained Themes journey: what changed, the economic mechanism, evidenced
+  participants, counterevidence, and the next observation. Do not assign that
+  build to the Semiconductor Fable, and do not start product implementation
+  from this packet.
+state_before: >
+  Research carrier #7788 held the frozen corpus at
+  e5789583de2428b6dbdaa26266e8fc8e0655789a. The operative plan was the
+  consolidated R13 text at the stable R9 filename. Independent review request
+  5808976193 had no verdict. No Healthcare receiver was assigned and no
+  implementation had STARTed. These handoff files omitted the thirteen fields
+  scripts/agentos.py check_handoff requires, so agentos validate exited 1.
+changed:
+  - path: agentos/handoffs/GMI-HEALTHCARE-MASTER-FABLE-CEO-HANDOFF-2026-09-24.md
+    what: >
+      Prepared the manual launch packet and section 12 startup text for a new
+      Healthcare Fable session, and added the thirteen handoff-protocol fields.
+      The packet is not delivered and is not an implementation START.
+  - path: research/healthcare/README.md
+    what: >
+      Pointed the corpus index at this master handoff and at the consolidated
+      R13 plan. This index edit predates the protocol-field repair.
+  - path: agentos/handoffs/GMI-HEALTHCARE-RESEARCH-2026-09-23.md
+    what: >
+      Recorded the R14 preparation boundary, the review-first hold, and the
+      same thirteen handoff-protocol fields.
+  - path: research/healthcare/HEALTHCARE_IMPLEMENTATION_PLAN_R9_2026-09-23.md
+    what: >
+      Re-scoped D1. tests/test_fda_shortages_generation.py already exists on
+      main via #7930 (1c85f27b). D1 extends that suite and does not add
+      another FDA generation test file.
+  - path: research/healthcare/validate_r3.py
+    what: >
+      Stopped the default run from writing R3_LOCAL_VALIDATION_RECEIPT.json
+      into the research directory. The receipt goes to --out or $TMPDIR unless
+      --write-committed-receipt is passed.
+  - path: research/healthcare/verify_r13_plan.py
+    what: >
+      A no-argument run rebuilds the review matrix from R8, R9 and R10 and
+      writes its receipt under $TMPDIR. It no longer requires a matrix file
+      that is absent from git.
+verified:
+  - claim: >
+      Both Healthcare handoffs now carry the thirteen fields
+      scripts/agentos.py check_handoff requires, workstream lines 960-972.
+    command: python3 scripts/agentos.py validate
+    result: >
+      Pre-repair exited 1: 1212 records, 26 error(s), 92 warning(s), every
+      error a required-field miss on these two handoffs. Post-repair exited 0:
+      1212 records, 0 error(s), 92 warning(s), and no finding on either
+      Healthcare handoff. The 92 warnings are pre-existing and elsewhere.
+  - claim: >
+      The operative plan keeps 60 application rows and 12 family IDs, all
+      still NOT_EXECUTED, and names the FDA generation suite already on main.
+    command: >
+      python3 -c "import pathlib,re; t=pathlib.Path('research/healthcare/HEALTHCARE_IMPLEMENTATION_PLAN_R9_2026-09-23.md').read_text(); ids=re.findall(r'^\| (R(?:8|9|10)-A\d\d) \|', t, re.M); fam=re.findall(r'^\| (R8-F\d\d) \|', t, re.M); print(len(ids), len(set(ids)), len(fam), '1c85f27b' in t)"
+    result: >
+      60 unique case IDs, 12 family IDs, and commit 1c85f27b is named. This
+      inventory is not a product pass.
+unverified:
+  - claim: >
+      Independent Healthcare-plan review has returned a verdict that unlocks
+      product writes.
+    what_would_verify: >
+      Read the #7788 review thread for an exact-input verdict and an
+      independence declaration. Request 5808976193 had no verdict when this
+      packet was prepared.
+  - claim: >
+      The sixty Appendix A application requirements have been executed.
+    what_would_verify: >
+      On the Healthcare implementation head, map each R8, R9 and R10 row to a
+      command and a result. The operative plan still marks every row
+      NOT_EXECUTED.
+  - claim: >
+      Commit 1c85f27b (#7930) is an acceptance receipt for R8-A18 through
+      R8-A27 and R10-A07.
+    what_would_verify: >
+      Diff the landed FDA consumer and tests/test_fda_shortages_generation.py
+      on current main against those rows. The merge is not this packet's
+      acceptance receipt.
+unresolved:
+  - >
+    No independent Healthcare-plan verdict, no live receiver, and no
+    implementation START. Delivery, ACK, review and START stay separate events.
+  - >
+    All 60 application requirements remain NOT_EXECUTED. R12 witnesses and R13
+    planning checks are not native product passes.
+  - >
+    D1 extends the FDA collector, the scarcity consumer, and
+    tests/test_fda_shortages_generation.py already on main via #7930
+    (1c85f27b). It does not add a second FDA generation test file.
+next_actions:
+  - >
+    The Chairman may paste section 12 into a new Healthcare Fable session with
+    this handoff attached. Do not paste it into the Semiconductor session.
+  - >
+    That session reconciles the current review, source and effect state, then
+    obtains or consumes an independent release-scoped review before any
+    product write. A D1-scoped verdict can unlock D1 without waiting for D2-D4.
+  - >
+    After those gates, implement from current main against the landed #7930
+    FDA paths. Do not implement on this research branch and do not take #7870.
+do_not_redo:
+  - >
+    Do not assign Healthcare delivery to the existing Semiconductor Fable, and
+    do not duplicate engine/theme_graph, the Research Vault, rights, auth, or
+    a second publisher.
+  - >
+    Do not create tests/test_fda_shortages_generation.py. It already exists on
+    main via #7930 (1c85f27b).
+  - >
+    Do not rerun unchanged R7 defect probes as repaired-product acceptance,
+    and do not mark Appendix A rows PASS because a planning check passed or
+    because #7930 merged.
+danger_areas:
+  - >
+    Publishing protected current house research, paid narrative, or private
+    object keys into Git, HTML, JSON, logs, or browser storage.
+  - >
+    Changing ranking, entry, sizing, or trading behavior while repairing the
+    FDA chip.
+  - >
+    Using this research branch or #7870 as the Healthcare implementation
+    carrier, or weakening a public-hostname guard.
+  - >
+    Calling D1 finished because #7930 merged, or holding D1 until v1.1 and the
+    later sector suites exist.
 ---
 
 # Healthcare: manual launch packet for a NEW Fable CEO
@@ -94,7 +227,7 @@ A reviewer must evaluate economic meaning, real user-task completion, negative/m
 | D3 | T06, relevant T08 checks | Complete GLP-1 change/mechanism/participant/counterevidence/next-observation explanation | Healthcare domain composition and source-qualified synthesis; D1 required where misleading legacy output remains in the journey |
 | D4 | T07–T08 | Real correction, distinct non-metabolic mechanism, honest broad navigation | Same existing correction/evidence/publication owners; no copied second stack |
 
-D1 source paths are `collectors/fda_shortages.py`, `engine/fda_scarcity.py`, `engine/foresight_cascade.py`, `scripts/build_foresight.py`, `tests/test_foresight_cascade.py`, and the planned acquisition-generation tests. Preserve the original R7 probes as characterization evidence, not tests that demand the repaired system retain its defects.
+D1 source paths are `collectors/fda_shortages.py`, `engine/fda_scarcity.py`, `engine/foresight_cascade.py`, `scripts/build_foresight.py`, `tests/test_foresight_cascade.py`, and `tests/test_fda_shortages_generation.py`, which already exists on main via #7930 (`1c85f27b`). D1 extends that suite and does not add another FDA generation test file. Preserve the original R7 probes as characterization evidence, not tests that demand the repaired system retain its defects.
 
 Healthcare-specific candidates are `engine/market_ontology/healthcare_theme_research.py`, `contracts/market_ontology/healthcare_theme_research.v1.schema.json`, the Healthcare partial admitted by the shared mount, and corresponding domain/API/correction tests. These are proposed paths, not confirmed live interfaces. Map any accepted equivalent once and consume it.
 

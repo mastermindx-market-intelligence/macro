@@ -1,5 +1,5 @@
 """Validate research-artifact consistency only; does not run product acceptance cases."""
-import json, pathlib, hashlib, re
+import argparse, json, os, pathlib, hashlib, re, sys, tempfile
 from decimal import Decimal as D
 from datetime import date
 ROOT=pathlib.Path(__file__).parent
@@ -60,5 +60,27 @@ def digest(path):
     b=path.read_bytes()
     return {'name':path.name,'bytes':len(b),'sha256':hashlib.sha256(b).hexdigest(),'git_blob':hashlib.sha1(b'blob '+str(len(b)).encode()+b'\0'+b).hexdigest()}
 report={'kind':'local_research_artifact_validation','as_of':x['as_of'],'records':len(records),'source_ids':len(sources),'counts':{k:len(x[k]) for k in arrays},'structural_checks':'PASS: parsing/roundtrip, unique IDs, source closure, date bounds, null reasons and held-authority flags','deterministic_checks':checks,'application_cases_executed':0,'clinical_validation':False,'production_validation':False,'files':[digest(P),digest(M)]}
-(ROOT/'R3_LOCAL_VALIDATION_RECEIPT.json').write_text(json.dumps(report,indent=2,ensure_ascii=False)+'\n')
-print(json.dumps(report,indent=2))
+
+def receipt_destination(argv=None):
+    parser=argparse.ArgumentParser(description='Validate R3 research artifacts. Does not run product acceptance cases.')
+    parser.add_argument('--out',type=pathlib.Path,default=None,help='Write the validation receipt to this path.')
+    parser.add_argument('--write-committed-receipt',action='store_true',help='Write R3_LOCAL_VALIDATION_RECEIPT.json next to this script. Off by default.')
+    args=parser.parse_args(argv)
+    if args.out is not None and args.write_committed_receipt:
+        parser.error('pass only one of --out and --write-committed-receipt')
+    if args.write_committed_receipt:
+        return ROOT/'R3_LOCAL_VALIDATION_RECEIPT.json'
+    if args.out is not None:
+        return args.out
+    tmp=os.environ.get('TMPDIR') or tempfile.gettempdir()
+    return pathlib.Path(tmp)/'R3_LOCAL_VALIDATION_RECEIPT.json'
+
+def main(argv=None):
+    dest=receipt_destination(argv)
+    dest.parent.mkdir(parents=True,exist_ok=True)
+    dest.write_text(json.dumps(report,indent=2,ensure_ascii=False)+'\n')
+    print(json.dumps(report,indent=2))
+    print(f'receipt={dest}',file=sys.stderr)
+
+if __name__=='__main__':
+    main()
