@@ -2031,3 +2031,36 @@ def test_coverage_matched_rows_counts_present_rows_only():
     assert present_and_absent["counts"]["matched"] == 1
     assert present_and_absent["counts"]["absent"] == 1
     assert present_and_absent["coverage"]["matched_rows"] == 1
+
+
+def test_detail_line_renders_previous_discontinued_with_status_words(monkeypatch):
+    """_detail_line history uses _STATUS_WORDS, not the normalised token.
+
+    Previous To Be Discontinued prints "status changed from discontinued".
+    The stored previous_regulator_status stays the token to_be_discontinued.
+    """
+    import engine.fda_scarcity as fda_module
+    from engine.fda_scarcity import compute_fda_scarcity
+
+    monkeypatch.setattr(fda_module, "MOLECULE_THEME_MAP", {"synthetic theme a": ["glp1_obesity"]})
+    now = datetime(2026, 9, 23, 12, tzinfo=UTC)
+    frame = pd.DataFrame([
+        _d1_row(
+            "Current",
+            availability="Available",
+            previous_status="To Be Discontinued",
+            status_changed_generation="2026-09-23",
+        ),
+    ])
+    frame.attrs["fda_observation"] = {
+        "capture": _capture(now),
+        "last_refresh": {"qualified": True, "failure_code": None,
+                         "attempted_at": now.isoformat()},
+        "legacy": False, "inconsistent": False, "failed_refresh": False,
+    }
+    row = compute_fda_scarcity(frame)["glp1_obesity"]
+    detail = row["details"][0]
+    assert "status changed from discontinued" in detail
+    assert "to_be_discontinued" not in detail
+    assert "status changed from discontinued at 2026-09-23" in row["summary"]["label"]
+    assert row["summary"]["rows"][0]["previous_regulator_status"] == "to_be_discontinued"

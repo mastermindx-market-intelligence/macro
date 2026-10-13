@@ -612,7 +612,8 @@ def _detail_line(row):
     previous = row.get("previous_regulator_status")
     if previous and previous != row.get("regulator_status"):
         when = row.get("status_changed_generation")
-        text += f" status changed from {previous}"
+        english_word, _chinese_word = _STATUS_WORDS.get(previous, ("unclassified", "未分类"))
+        text += f" status changed from {english_word}"
         if when:
             text += f" at {when}"
     return text
