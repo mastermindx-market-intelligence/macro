@@ -84,3 +84,15 @@ html[data-theme="light"] .rrp .rrp-study>div{background:var(--panel);box-shadow:
 @media(max-width:420px){
  .rrp .rrp-signals dl{grid-template-columns:minmax(0,1fr)}
 }
+@media (forced-colors: active){
+ .rrp .rrp-chart .ilx-path,.rrp .rrp-chart .ilx-down{stroke:CanvasText;forced-color-adjust:none}
+ .rrp .rrp-chart .ilx-dot,.rrp .rrp-chart .ilx-dot-down{fill:CanvasText;filter:none;forced-color-adjust:none}
+ .rrp .rrp-chart .ilx-ref,.rrp .rrp-chart .ilx-water,.rrp .rrp-chart .ilx-water-top{stroke:Highlight;opacity:1;forced-color-adjust:none}
+ .rrp .rrp-chart .ilx-area{fill:Mark;opacity:1;forced-color-adjust:none}
+ .rrp .rrp-chart .ilx-tag{color:CanvasText;background:Canvas;border:1px solid CanvasText}
+ .rrp .rrp-metrics,.rrp .rrp-metrics strong,.rrp .rrp-primary,.rrp .rrp-rebound{color:CanvasText}
+ .rrp .rrp-phase-trail,.rrp .rrp-phase-trail li{color:CanvasText}
+ .rrp .rrp-signals,.rrp .rrp-signals dt,.rrp .rrp-signals dd{color:CanvasText}
+ .rrp .rrp-method summary:focus-visible{outline:2px solid Highlight;outline-offset:2px}
+ .rrp .pbx-expiry{color:CanvasText;border-inline-start:4px solid Highlight}
+}
