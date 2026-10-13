@@ -269,6 +269,24 @@ class BEAIndustryContextTests(unittest.TestCase):
                     modified, industry_code="3341", commodity_code="3344"
                 )
 
+    def test_forbidden_history_request_never_touches_lazy_rows(self):
+        class PoisonRows:
+            def __iter__(self):
+                raise AssertionError("forbidden request touched caller iterable")
+
+        for forbidden in (
+            {"purpose": "public_display"},
+            {"purpose": "trade"},
+            {"purpose": "train"},
+            {"as_of": "2020-01-01T00:00:00+00:00"},
+        ):
+            with self.subTest(forbidden=forbidden):
+                with self.assertRaises(BEAContextRefused):
+                    adapt_eight_year_input_history(
+                        PoisonRows(), industry_code="3341",
+                        commodity_code="3344", **forbidden,
+                    )
+
     def test_ninth_row_refused_before_unbounded_generator_continues(self):
         observed = []
 
@@ -820,17 +838,30 @@ class BEAHostBoundQueryTests(unittest.TestCase):
                     )
 
     def test_public_or_asof_call_refuses_before_any_file_access(self):
-        for forbidden in (
-            {"purpose": "public_display"},
-            {"purpose": "trade"},
-            {"purpose": "train"},
-            {"as_of": "2020-01-01T00:00:00+00:00"},
-        ):
-            with self.subTest(forbidden=forbidden), self.assertRaises(BEAContextRefused):
-                read_private_bea_accounting_brief(
-                    object(), industry_code="3341",
-                    commodity_code="3344", **forbidden,
-                )
+        with tempfile.TemporaryDirectory() as name:
+            root = Path(name)
+            self._fixture(root)
+            workspace = self._research_workspace(root)
+            for forbidden in (
+                {"purpose": "public_display"},
+                {"purpose": "trade"},
+                {"purpose": "train"},
+                {"as_of": "2020-01-01T00:00:00+00:00"},
+            ):
+                with self.subTest(forbidden=forbidden):
+                    with (
+                        patch.object(workspace, "describe", side_effect=AssertionError(
+                            "forbidden request reached describe")) as describe,
+                        patch.object(workspace, "read", side_effect=AssertionError(
+                            "forbidden request reached read")) as read,
+                    ):
+                        with self.assertRaises(BEAContextRefused):
+                            read_private_bea_accounting_brief(
+                                workspace, industry_code="3341",
+                                commodity_code="3344", **forbidden,
+                            )
+                        describe.assert_not_called()
+                        read.assert_not_called()
 
 
 class BEAIndustryCohortResearchTests(unittest.TestCase):

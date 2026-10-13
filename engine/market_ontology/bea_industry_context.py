@@ -275,6 +275,10 @@ def adapt_eight_year_input_history(
     as_of: object = None, purpose: str = "private_research"
 ) -> dict[str, Any]:
     """Require exactly eight ordered years; refuse unbounded caller iterables."""
+    if purpose != "private_research" or as_of is not None:
+        raise BEAContextRefused(
+            "history projection is research-only and not PIT-readable"
+        )
     bounded_rows = []
     for row in rows:
         if len(bounded_rows) == 8:
