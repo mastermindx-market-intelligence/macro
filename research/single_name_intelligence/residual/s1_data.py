@@ -17,7 +17,6 @@ manifest builder must request no non-index column).
 """
 from __future__ import annotations
 
-import math
 import subprocess
 import tempfile
 from datetime import date, datetime
@@ -192,33 +191,14 @@ class IndexOnlySpy:
         return self._store.list_dir(prefix)
 
 
-def closes_from_frame(dates: list[date], values: list[float], *,
-                      drops: dict | None = None) -> tuple[list[date], dict[date, float]]:
-    """Align a column to its index as a date -> float map (drop nulls and non-finite; counts via drops=)."""
+def closes_from_frame(dates: list[date], values: list[float]) -> tuple[list[date], dict[date, float]]:
+    """Align a column to its index as a date -> float map (drop nulls)."""
     out: dict[date, float] = {}
-    n_null = 0
-    n_nan = 0
-    n_nonfinite = 0
-    dropped: list[str] = []
     for d, v in zip(dates, values):
-        iso = d.isoformat() if hasattr(d, "isoformat") else str(d)
         if v is None:
-            n_null += 1
-            dropped.append(iso)
             continue
         fv = float(v)
         if fv != fv:  # NaN
-            n_nan += 1
-            dropped.append(iso)
-            continue
-        if not math.isfinite(fv):
-            n_nonfinite += 1
-            dropped.append(iso)
             continue
         out[d] = fv
-    if drops is not None:
-        drops["null"] = n_null
-        drops["nan"] = n_nan
-        drops["nonfinite"] = n_nonfinite
-        drops["dates"] = sorted(dropped)
     return dates, out
