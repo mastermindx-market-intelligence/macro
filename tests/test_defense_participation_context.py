@@ -14,8 +14,9 @@ from engine.government_revenue.defense_economics import _axis
 
 
 @pytest.fixture
-def native_owner(tmp_path):
-    index = pd.bdate_range(end='2026-06-30', periods=230)
+def native_owner(tmp_path, request):
+    last_day = getattr(request, 'param', '2026-06-30')
+    index = pd.bdate_range(end=last_day, periods=230)
     tickers = ['LMT', 'SYN-A', 'SYN-B', 'SYN-C']
     rng = np.random.default_rng(317)
     close = pd.DataFrame(100 * np.cumprod(1 + rng.normal(.0001, .01, (230, 4)), axis=0), index=index, columns=tickers)
@@ -25,13 +26,14 @@ def native_owner(tmp_path):
     basket = {'curated': '2026-06-15', 'members': [{'ticker': t, 'added': '2023-01-01', 'removed': None} for t in tickers]}
     panel = gp.build_member_panel(close, volume, benchmark)
     frames = gp.basket_frames(basket, panel, index[-1])
-    pulse = gp.basket_pulse('defense', basket, panel, index[-1], {}, {}, '2026-07-01T00:00:00Z', frames, [])
+    generated = (index[-1] + pd.Timedelta(days=1)).strftime('%Y-%m-%dT00:00:00Z')
+    pulse = gp.basket_pulse('defense', basket, panel, index[-1], {}, {}, generated, frames, [])
     assert gp.validate_pulse(pulse) == []
     membership = {'version': '2026-06-15', 'baskets': {'defense': basket}}
-    observation = {'effective_as_of': '2026-06-30', 'configured_members': tickers, 'configured_n': 4,
+    observation = {'effective_as_of': last_day, 'configured_members': tickers, 'configured_n': 4,
                    'observed_members': tickers, 'observed_n': 4, 'coverage': 1., 'basis': 'exact_close_at_effective_as_of'}
     owner = {'id': 'defense', 'n_members': 4, 'weighting': 'equal', 'members': [{'symbol': t} for t in tickers], 'observation': observation}
-    for relative, value in zip(ctx.OWNER_PATHS[:3], (membership, {'defense': pulse}, {'as_of': '2026-06-30', 'baskets': [owner]})):
+    for relative, value in zip(ctx.OWNER_PATHS[:3], (membership, {'defense': pulse}, {'as_of': last_day, 'baskets': [owner]})):
         path = tmp_path / relative
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text(json.dumps(value))
@@ -109,6 +111,27 @@ def test_partial_absence_never_becomes_zero_or_procurement_participation(native_
     (root / ctx.OWNER_PATHS[3]).unlink()
     assert ctx.load_participation_inputs(root) is None
     assert qualify(None)['axes_by_ticker'] == {}
+
+
+@pytest.mark.parametrize('native_owner,cutoff,state', [
+    ('2026-06-26', '2026-06-28T12:00:00Z', 'partial'),
+    ('2026-06-26', '2026-06-29T13:00:00Z', 'partial'),
+    ('2026-06-26', '2026-06-29T22:00:00Z', 'stale'),
+    ('2026-07-02', '2026-07-03T22:00:00Z', 'partial'),
+    ('2026-07-02', '2026-07-06T13:00:00Z', 'partial'),
+    ('2026-07-02', '2026-07-06T22:00:00Z', 'stale'),
+], indirect=['native_owner'])
+def test_freshness_counts_completed_sessions_not_civil_days(native_owner, cutoff, state, monkeypatch):
+    clock = datetime.fromisoformat(cutoff.replace('Z', '+00:00'))
+    class FrozenDatetime(datetime):
+        @classmethod
+        def now(cls, tz=None):
+            return clock.astimezone(tz) if tz else clock.replace(tzinfo=None)
+    monkeypatch.setattr(ctx, 'datetime', FrozenDatetime)
+    snapshot = ctx.load_participation_inputs(native_owner[0])
+    result = ctx.qualify_participation_context(snapshot, subject(), generated_at=cutoff)
+    assert result['axes_by_ticker']['LMT']['participation']['state'] == state
+    assert result['axes_by_ticker']['LMT']['participation']['observed_at'] == clock.isoformat()
 
 
 def test_reobserved_current_membership_cannot_be_backdated(native_owner):

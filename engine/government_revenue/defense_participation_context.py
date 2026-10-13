@@ -12,6 +12,7 @@ import json
 import re
 
 from engine.company_intelligence.defense_profiles import defense_issuer
+from lib import nyse_calendar
 
 OWNER_PATHS = (
     'data/baskets/membership.json',
@@ -200,7 +201,7 @@ def qualify_participation_context(inputs, financial_inputs, *, generated_at):
                              'periods': [market_date], 'observed_at': inputs['observed_at'], 'owner_admission_ref': path}
         axes[ticker] = {'participation': {
             'display_scope': 'government_revenue_entitled',
-            'state': 'stale' if market_date < cutoff.date().isoformat() else 'partial',
+            'state': 'stale' if nyse_calendar.sessions_behind(date.fromisoformat(market_date), now=cutoff) else 'partial',
             'summary_en': text_en, 'summary_zh': text_zh, 'owner_ref': refs[1], 'evidence_refs': refs,
             'observed_at': inputs['observed_at'], 'fiscal_period': None, 'facts': [],
             'reason_code': 'current_basket_market_participation',
