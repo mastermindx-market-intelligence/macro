@@ -44,6 +44,10 @@ IX11 = "http://www.xbrl.org/2013/inlineXBRL"
 IX10 = "http://www.xbrl.org/2008/inlineXBRL"
 IX_NAMESPACES = frozenset({IX11})
 LEGACY_IX_NAMESPACES = frozenset({IX10})
+# ix:relationship admits exactly the standard fact-footnote arc and link role
+# in this profile; other roles are refused rather than silently re-labelled.
+FACT_FOOTNOTE_ARCROLE = "http://www.xbrl.org/2003/arcrole/fact-footnote"
+STANDARD_LINK_ROLE = "http://www.xbrl.org/2003/role/link"
 TRR3 = "http://www.xbrl.org/inlineXBRL/transformation/2015-02-26"
 TRR4 = "http://www.xbrl.org/inlineXBRL/transformation/2020-02-12"
 
@@ -60,7 +64,7 @@ SUPPORTED_TRANSFORMS: Mapping[str, str] = {
 
 _HARD_LIMITS = MappingProxyType({
     "max_bytes": 32 * 1024 * 1024,
-    "max_nodes": 100_000,
+    "max_nodes": 200_000,
     "max_depth": 128,
     "max_attributes_per_element": 256,
     "max_total_attributes": 500_000,
@@ -95,6 +99,7 @@ _TOP_FIELDS = frozenset(
 _SAFE_NAME_RE = re.compile(r"^[A-Za-z0-9._/-]+$")
 _INTEGER_RE = re.compile(r"^[+-]?[0-9]+$")
 _NUMERIC_RE = re.compile(r"^(?:[0-9]+(?:\.[0-9]*)?|\.[0-9]+)$")
+_DECIMAL_LEXICAL_RE = re.compile(r"^[+-]?(?:[0-9]+(?:\.[0-9]*)?|\.[0-9]+)$")
 _NCNAME_RE = re.compile(r"^[A-Za-z_][A-Za-z0-9._-]*$")
 _DATE_RE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
 _DATETIME_RE = re.compile(
@@ -1030,14 +1035,21 @@ def _continuation_records(
 
 def _continuation_chains(
     fact_nodes: list[_Node],
+    footnote_nodes: list[_Node],
     records: list[dict[str, Any]],
     by_id: Mapping[str, _Node],
     limits: Mapping[str, int],
-) -> dict[int, list[str]]:
+) -> tuple[dict[int, list[str]], set[str]]:
+    """Link continuation records to facts and footnotes under one shared graph.
+
+    Footnote-owned chains obey the same rules as fact chains (existence, no
+    cycles, exclusivity, bounded length, no ancestor/descendant member pair),
+    but their members are excluded from the emitted continuation records.
+    """
     continued_at_by_id = {item["continuation_id"]: item["continued_at"] for item in records}
     incoming: dict[str, int] = {key: 0 for key in by_id}
     roots: list[tuple[int, str]] = []
-    fact_by_start = {node.start: node for node in fact_nodes}
+    owner_by_start = {node.start: node for node in [*fact_nodes, *footnote_nodes]}
     for node in fact_nodes:
         target = _attr(node, "continuedAt")
         if target is not None:
@@ -1046,6 +1058,14 @@ def _continuation_chains(
             _normalized_identifier(target, field_name="fact continuedAt")
             if target not in by_id:
                 raise SecFilingParseError("fact references a missing continuation")
+            roots.append((node.start, target))
+            incoming[target] += 1
+    for node in footnote_nodes:
+        target = _attr(node, "continuedAt")
+        if target is not None:
+            _normalized_identifier(target, field_name="footnote continuedAt")
+            if target not in by_id:
+                raise SecFilingParseError("footnote references a missing continuation")
             roots.append((node.start, target))
             incoming[target] += 1
     for source, target in continued_at_by_id.items():
@@ -1078,7 +1098,9 @@ def _continuation_chains(
         raise SecFilingParseError("continuation is shared by multiple owners")
     chains: dict[int, list[str]] = {}
     reached: set[str] = set()
-    for fact_start, target in roots:
+    footnote_starts = {node.start for node in footnote_nodes}
+    footnote_owned: set[str] = set()
+    for owner_start, target in roots:
         chain: list[str] = []
         local_seen: set[str] = set()
         current: str | None = target
@@ -1091,14 +1113,16 @@ def _continuation_chains(
             reached.add(current)
             chain.append(current)
             current = continued_at_by_id[current]
-        chain_nodes = [fact_by_start[fact_start], *[by_id[continuation_id] for continuation_id in chain]]
+        chain_nodes = [owner_by_start[owner_start], *[by_id[continuation_id] for continuation_id in chain]]
         for left_index, left in enumerate(chain_nodes):
             if any(
                 _is_descendant(right, left) or _is_descendant(left, right)
                 for right in chain_nodes[left_index + 1 :]
             ):
                 raise SecFilingParseError("continuation chain elements must not be ancestor/descendant related")
-        chains[fact_start] = chain
+        chains[owner_start] = chain
+        if owner_start in footnote_starts:
+            footnote_owned.update(chain)
     # Any disconnected chain is an orphan; detect a cycle in it in linear
     # time rather than starting a new walk from every node.
     state = {key: 0 for key in by_id}  # 0 unseen, 1 visiting, 2 done
@@ -1122,7 +1146,7 @@ def _continuation_chains(
             state[continuation_id] = 2
     if set(by_id) != reached:
         raise SecFilingParseError("orphan continuation is not owned by a fact")
-    return chains
+    return chains, footnote_owned
 
 
 def _fact_nodes(nodes: list[_Node], document_kind: str) -> list[_Node]:
@@ -1456,9 +1480,13 @@ def _inline_ancestor(node: _Node | None, local: str) -> bool:
 
 
 def _nearest_inline_owner(node: _Node | None) -> _Node | None:
-    """Return the nearest Inline XBRL semantic ancestor, if one exists."""
+    """Return the nearest Inline XBRL semantic ancestor, if one exists.
+
+    An ``ix:footnote`` is transparent for ownership: facts and exclusions
+    inside it keep the non-footnote ancestor that encloses the footnote.
+    """
     while node is not None:
-        if node.namespace == IX11:
+        if node.namespace == IX11 and node.local != "footnote":
             return node
         node = node.parent
     return None
@@ -1466,7 +1494,7 @@ def _nearest_inline_owner(node: _Node | None) -> _Node | None:
 
 def _validate_inline_ids(nodes: list[_Node]) -> None:
     """Apply the one-document Inline XBRL id namespace before graph linking."""
-    id_bearing = {"continuation", "fraction", "nonFraction", "nonNumeric", "references"}
+    id_bearing = {"continuation", "fraction", "nonFraction", "nonNumeric", "references", "footnote"}
     seen: set[str] = set()
     for node in nodes:
         identifier = _attr(node, "id")
@@ -1538,12 +1566,95 @@ def _validate_inline_numeric_nesting(candidates: list[_Node], events: list[_Text
             raise SecFilingParseError("nested Inline XBRL numeric facts are unsupported in this parser profile")
 
 
+def _validate_relationship_and_footnote_structure(
+    nodes: list[_Node], events: list[_TextEvent], resource: _Node
+) -> tuple[int, int]:
+    """Admit ``ix:relationship`` and ``ix:footnote`` as non-fact structure.
+
+    Neither element is a fact: they never enter fact records, values, or
+    spans.  Relationships live only as direct (empty) children of the single
+    ``ix:resources``; footnotes live in document content, transparently
+    wrapping any facts inside them, and every footnote must be referenced.
+    """
+    footnotes = [node for node in nodes if node.namespace == IX11 and node.local == "footnote"]
+    relationships = [node for node in nodes if node.namespace == IX11 and node.local == "relationship"]
+    if not footnotes and not relationships:
+        return 0, 0
+    fact_ids = {
+        identifier
+        for identifier in (
+            _attr(node, "id")
+            for node in nodes
+            if node.namespace == IX11 and node.local in {"nonFraction", "nonNumeric", "fraction"}
+        )
+        if identifier is not None
+    }
+    forbidden_footnote_owners = {
+        "nonFraction", "fraction", "numerator", "denominator", "exclude", "footnote", "relationship",
+    }
+    footnote_ids: set[str] = set()
+    for node in footnotes:
+        if _inline_ancestor(node.parent, "header"):
+            raise SecFilingParseError("ix:footnote must not appear in ix:header")
+        for ancestor in _ancestor_nodes(node.parent):
+            if ancestor.namespace == IX11 and ancestor.local in forbidden_footnote_owners:
+                raise SecFilingParseError(
+                    f"ix:footnote cannot be nested inside ix:{ancestor.local}"
+                )
+        if set(node.attrs) - {"id", "footnoteRole", "continuedAt"}:
+            raise SecFilingParseError("ix:footnote has unsupported attributes")
+        footnote_ids.add(_normalized_identifier(_attr(node, "id"), field_name="footnote id"))
+        footnote_role = _attr(node, "footnoteRole")
+        if footnote_role is not None and not footnote_role:
+            raise SecFilingParseError("ix:footnote footnoteRole must be non-empty")
+        continued_at = _attr(node, "continuedAt")
+        if continued_at is not None:
+            _normalized_identifier(continued_at, field_name="footnote continuedAt")
+    referenced: set[str] = set()
+    for node in relationships:
+        if node.parent is not resource:
+            raise SecFilingParseError("ix:relationship must be a direct child of ix:resources")
+        if set(node.attrs) - {"arcrole", "fromRefs", "toRefs", "linkRole", "order"}:
+            raise SecFilingParseError("ix:relationship has unsupported attribute")
+        if node.children or _direct_text(node, events).strip():
+            raise SecFilingParseError("ix:relationship must be empty")
+        arcrole = _attr(node, "arcrole")
+        if arcrole is not None and arcrole != FACT_FOOTNOTE_ARCROLE:
+            raise SecFilingParseError("ix:relationship has unsupported arcrole")
+        link_role = _attr(node, "linkRole")
+        if link_role is not None and link_role != STANDARD_LINK_ROLE:
+            raise SecFilingParseError("ix:relationship has unsupported linkRole")
+        order = _attr(node, "order")
+        if order is not None and not _DECIMAL_LEXICAL_RE.fullmatch(order):
+            raise SecFilingParseError("ix:relationship order is not an xs:decimal")
+        from_refs = _attr(node, "fromRefs")
+        from_tokens = from_refs.split() if from_refs is not None else []
+        if not from_tokens:
+            raise SecFilingParseError("ix:relationship fromRefs is required")
+        if len(from_tokens) != len(set(from_tokens)):
+            raise SecFilingParseError("ix:relationship fromRefs repeats a reference")
+        if any(token not in fact_ids for token in from_tokens):
+            raise SecFilingParseError("ix:relationship fromRefs does not resolve to an inline fact")
+        to_refs = _attr(node, "toRefs")
+        to_tokens = to_refs.split() if to_refs is not None else []
+        if not to_tokens:
+            raise SecFilingParseError("ix:relationship toRefs is required")
+        if len(to_tokens) != len(set(to_tokens)):
+            raise SecFilingParseError("ix:relationship toRefs repeats a reference")
+        if any(token not in footnote_ids for token in to_tokens):
+            raise SecFilingParseError("ix:relationship toRefs does not resolve to an ix:footnote")
+        referenced.update(to_tokens)
+    if footnote_ids != referenced:
+        raise SecFilingParseError("ix:footnote is not referenced by any ix:relationship")
+    return len(relationships), len(footnotes)
+
+
 def _validate_document_structure(
     root: _Node, nodes: list[_Node], events: list[_TextEvent], document_kind: str
-) -> tuple[list[_Node], list[_Node], list[_Node]]:
+) -> tuple[list[_Node], list[_Node], list[_Node], int, int]:
     """Return admitted resources/facts after direct-grammar placement checks."""
     if document_kind == "other_xml":
-        return [], [], []
+        return [], [], [], 0, 0
     if document_kind == "xbrl_instance":
         contexts = [node for node in root.children if node.namespace == XBRLI and node.local == "context"]
         units = [node for node in root.children if node.namespace == XBRLI and node.local == "unit"]
@@ -1552,11 +1663,11 @@ def _validate_document_structure(
         candidates = _fact_nodes(nodes, document_kind)
         if any(node.parent is not root for node in candidates):
             raise SecFilingParseError("native XBRL fact candidate must be a direct xbrl child")
-        return contexts, units, candidates
+        return contexts, units, candidates, 0, 0
 
     if root.namespace != XHTML or root.local != "html":
         raise SecFilingParseError("Inline XBRL 1.1 root must be XHTML html")
-    supported_ix = {"header", "resources", "references", "hidden", "nonFraction", "nonNumeric", "fraction", "numerator", "denominator", "exclude", "continuation"}
+    supported_ix = {"header", "resources", "references", "hidden", "nonFraction", "nonNumeric", "fraction", "numerator", "denominator", "exclude", "continuation", "relationship", "footnote"}
     for node in nodes:
         if node.namespace == IX11 and node.local not in supported_ix:
             raise SecFilingParseError(f"unsupported Inline XBRL semantic structure: ix:{node.local}")
@@ -1576,6 +1687,9 @@ def _validate_document_structure(
     if len(resources) != 1 or resources[0].parent is not header:
         raise SecFilingParseError("ix:resources must be the direct child of the ix:header")
     resource = resources[0]
+    relationship_count, footnote_count = _validate_relationship_and_footnote_structure(
+        nodes, events, resource
+    )
     hidden_nodes = [node for node in nodes if node.namespace == IX11 and node.local == "hidden"]
     if len(hidden_nodes) > 1:
         raise SecFilingParseError("ix:header may contain at most one ix:hidden")
@@ -1614,7 +1728,10 @@ def _validate_document_structure(
         ):
             raise SecFilingParseError("ix:hidden must contain only direct Inline XBRL facts")
     if _direct_text(resource, events).strip() or any(
-        child.namespace != XBRLI or child.local not in {"context", "unit"}
+        not (
+            (child.namespace == XBRLI and child.local in {"context", "unit"})
+            or (child.namespace == IX11 and child.local == "relationship")
+        )
         for child in resource.children
     ):
         raise SecFilingParseError("ix:resources has unsupported direct content in this parser profile")
@@ -1638,7 +1755,7 @@ def _validate_document_structure(
     for continuation in (node for node in nodes if node.namespace == IX11 and node.local == "continuation"):
         if _inline_ancestor(continuation.parent, "header"):
             raise SecFilingParseError("ix:continuation must not appear in ix:header")
-    return contexts, units, candidates
+    return contexts, units, candidates, relationship_count, footnote_count
 
 
 def _ancestor_nodes(node: _Node | None) -> list[_Node]:
@@ -1693,7 +1810,7 @@ def parse_sec_filing_document(content: bytes, *, document_name: str) -> dict[str
     else:
         document_kind = "other_xml"
 
-    context_nodes, unit_nodes, facts_nodes = _validate_document_structure(root, nodes, events, document_kind)
+    context_nodes, unit_nodes, facts_nodes, relationship_count, footnote_count = _validate_document_structure(root, nodes, events, document_kind)
     if len(context_nodes) > limits["max_contexts"]:
         raise SecFilingParseError("context limit exceeded")
     if len(unit_nodes) > limits["max_units"]:
@@ -1712,7 +1829,20 @@ def parse_sec_filing_document(content: bytes, *, document_name: str) -> dict[str
     )
     if len(facts_nodes) > limits["max_facts"]:
         raise SecFilingParseError("fact limit exceeded")
-    chains = _continuation_chains(facts_nodes, continuations, continuation_nodes, limits)
+    footnote_nodes = (
+        [node for node in nodes if node.namespace == IX11 and node.local == "footnote"]
+        if document_kind == "inline_xbrl"
+        else []
+    )
+    chains, footnote_owned = _continuation_chains(
+        facts_nodes, footnote_nodes, continuations, continuation_nodes, limits
+    )
+    if footnote_owned:
+        # Footnote-owned continuations are excluded from the emitted records;
+        # they were still validated by the shared chain graph above.
+        continuations = [
+            item for item in continuations if item["continuation_id"] not in footnote_owned
+        ]
     continuation_by_id = {item["continuation_id"]: item for item in continuations}
     facts: list[dict[str, Any]] = []
     diagnostics: list[dict[str, Any]] = []
@@ -1781,6 +1911,12 @@ def parse_sec_filing_document(content: bytes, *, document_name: str) -> dict[str
         "xbrl_schema_validation_complete": False,
         "taxonomy_validation_complete": False,
     }
+    if relationship_count or footnote_count:
+        # Present only when the document carries relationship/footnote
+        # structure, so every previously admitted output stays byte-identical.
+        coverage["ix_relationship_count"] = relationship_count
+        coverage["ix_footnote_count"] = footnote_count
+        coverage["ix_footnote_continuation_count"] = len(footnote_owned)
     result = {
         "schema": SEC_FILING_PARSER_SCHEMA,
         "parser": _parser_metadata(),
@@ -2410,11 +2546,20 @@ def validate_sec_filing_parse_result(
     )
     if diagnostics != expected_diagnostics:
         raise SecFilingParseError("diagnostics are not derived from parser records")
-    coverage = _exact_dict(
-        result["coverage"],
-        {"document_scope", "fact_inventory_complete", "context_references_complete", "unit_references_complete", "continuation_graph_complete", "canonical_value_complete", "context_count", "unit_count", "continuation_count", "fact_count", "diagnostic_count", "unknown_scenario_content_count", "unknown_segment_content_count", "structural_validation_complete", "ixds_validation_complete", "xbrl_schema_validation_complete", "taxonomy_validation_complete"},
-        field_name="coverage",
-    )
+    coverage_fields = {"document_scope", "fact_inventory_complete", "context_references_complete", "unit_references_complete", "continuation_graph_complete", "canonical_value_complete", "context_count", "unit_count", "continuation_count", "fact_count", "diagnostic_count", "unknown_scenario_content_count", "unknown_segment_content_count", "structural_validation_complete", "ixds_validation_complete", "xbrl_schema_validation_complete", "taxonomy_validation_complete"}
+    ix_coverage_fields = {"ix_relationship_count", "ix_footnote_count", "ix_footnote_continuation_count"}
+    raw_coverage = result["coverage"]
+    if type(raw_coverage) is dict and set(raw_coverage) == coverage_fields:
+        coverage = _exact_dict(raw_coverage, coverage_fields, field_name="coverage")
+    elif type(raw_coverage) is dict and set(raw_coverage) == coverage_fields | ix_coverage_fields:
+        coverage = _exact_dict(raw_coverage, coverage_fields | ix_coverage_fields, field_name="coverage")
+        for key in sorted(ix_coverage_fields):
+            if isinstance(coverage[key], bool) or not isinstance(coverage[key], int) or coverage[key] < 0:
+                raise SecFilingParseError("coverage Inline XBRL counts are invalid")
+        if coverage["ix_relationship_count"] < 1 or coverage["ix_footnote_count"] < 1:
+            raise SecFilingParseError("coverage Inline XBRL counts are invalid")
+    else:
+        coverage = _exact_dict(raw_coverage, coverage_fields, field_name="coverage")
     admitted_inventory = document["kind"] == "inline_xbrl"
     expected_coverage = {
         "document_scope": "single_member",
@@ -2437,7 +2582,7 @@ def validate_sec_filing_parse_result(
         "xbrl_schema_validation_complete": False,
         "taxonomy_validation_complete": False,
     }
-    if coverage != expected_coverage:
+    if {key: coverage[key] for key in coverage_fields} != expected_coverage:
         raise SecFilingParseError("coverage is not derived")
 
     encoded = json.dumps(result, sort_keys=True, separators=(",", ":"), ensure_ascii=False).encode("utf-8")

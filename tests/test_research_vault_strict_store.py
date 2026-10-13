@@ -256,6 +256,217 @@ def test_r2_strict_read_returns_payload_and_propagates_other_failures(monkeypatc
             "snapshots/one.json")
 
 
+def test_r2_strict_read_recovers_new_get_after_ssl_body_failure(monkeypatch):
+    import ssl
+
+    class SequencedClient:
+        def __init__(self):
+            self.calls = []
+            self.bodies = []
+
+        def get_object(self, *, Bucket, Key):
+            self.calls.append((Bucket, Key))
+            outcome = (
+                ssl.SSLError("[SSL] record layer failure")
+                if len(self.calls) == 1 else b"complete corpus bytes"
+            )
+            body = _Body(outcome)
+            self.bodies.append(body)
+            return {"Body": body}
+
+    sleeps = []
+    monkeypatch.setattr(store_mod.time, "sleep", sleeps.append)
+    client = SequencedClient()
+
+    assert R2Store("research", client=client).get_bytes_strict(
+        "research_vault/corpus.sqlite"
+    ) == b"complete corpus bytes"
+    assert len(client.calls) == 2
+    assert all(body.closed for body in client.bodies)
+    assert sleeps == [0.25]
+
+
+def test_r2_strict_read_exhausted_tls_failures_remain_fatal(monkeypatch):
+    import ssl
+
+    class BrokenClient:
+        def __init__(self):
+            self.bodies = []
+
+        def get_object(self, *, Bucket, Key):
+            body = _Body(ssl.SSLError("[SSL] record layer failure"))
+            self.bodies.append(body)
+            return {"Body": body}
+
+    sleeps = []
+    monkeypatch.setattr(store_mod.time, "sleep", sleeps.append)
+    client = BrokenClient()
+    with pytest.raises(ssl.SSLError, match="record layer failure"):
+        R2Store("research", client=client).get_bytes_strict(
+            "research_vault/corpus.sqlite"
+        )
+    assert len(client.bodies) == 3
+    assert all(body.closed for body in client.bodies)
+    assert sleeps == [0.25, 0.75]
+
+
+def test_r2_strict_read_never_retries_nontransport_failures(monkeypatch):
+    class DeniedBodyClient:
+        def __init__(self):
+            self.calls = 0
+            self.body = _Body(PermissionError("access denied"))
+
+        def get_object(self, *, Bucket, Key):
+            self.calls += 1
+            return {"Body": self.body}
+
+    client = DeniedBodyClient()
+    monkeypatch.setattr(store_mod.time, "sleep", lambda x: pytest.fail(
+        "non-transport failures must not consume retry budget"
+    ))
+    with pytest.raises(PermissionError, match="access denied"):
+        R2Store("research", client=client).get_bytes_strict(
+            "research_vault/corpus.sqlite"
+        )
+    assert client.calls == 1
+    assert client.body.closed
+
+
+def test_r2_strict_read_bounded_tls_header_retry_does_not_soften_404(monkeypatch):
+    import ssl
+    ClientError = _install_fake_botocore(monkeypatch)
+
+    class HeaderClient:
+        def __init__(self):
+            self.calls = 0
+
+        def get_object(self, *, Bucket, Key):
+            self.calls += 1
+            if self.calls == 1:
+                raise ssl.SSLError("[SSL] record layer failure")
+            raise ClientError("NoSuchKey")
+
+    client = HeaderClient()
+    monkeypatch.setattr(store_mod.time, "sleep", lambda _: None)
+    assert R2Store("research", client=client).get_bytes_strict(
+        "research_vault/corpus.sqlite"
+    ) is None
+    assert client.calls == 2
+
+
+
+class _VersionedRangeCorpusClient:
+    """A bounded, version-pinned S3 response emulator; no private R2 is touched."""
+
+    def __init__(self, payload: bytes):
+        self.payload = payload
+        self.calls: list[dict] = []
+        self.bodies = []
+        self.bad_range = False
+        self.changed_etag = False
+        self.short_body = False
+        self.once_tls = False
+        self._range_attempts = 0
+
+    def head_object(self, *, Bucket, Key):
+        assert Bucket == "research" and Key == "research_vault/corpus.sqlite"
+        return {"ContentLength": len(self.payload), "ETag": '"v1"'}
+
+    def get_object(self, *, Bucket, Key, Range=None, IfMatch=None):
+        assert Bucket == "research" and Key == "research_vault/corpus.sqlite"
+        self.calls.append({"Range": Range, "IfMatch": IfMatch})
+        if Range is None:
+            import ssl
+            body = _Body(ssl.SSLError("[SSL] record layer failure"))
+            self.bodies.append(body)
+            return {"Body": body}
+        assert IfMatch == '"v1"', "every range must pin the original ETag"
+        first, last = map(int, Range.removeprefix("bytes=").split("-"))
+        self._range_attempts += 1
+        if self.once_tls and self._range_attempts == 1:
+            import ssl
+            body = _Body(ssl.SSLError("[SSL] record layer failure"))
+            self.bodies.append(body)
+            return {
+                "Body": body, "ResponseMetadata": {"HTTPStatusCode": 206},
+                "ContentRange": f"bytes {first}-{last}/{len(self.payload)}",
+                "ContentLength": last - first + 1, "ETag": '"v1"',
+            }
+        fragment = self.payload[first:last + 1]
+        if self.short_body and first:
+            fragment = fragment[:-1]
+        body = _Body(fragment)
+        self.bodies.append(body)
+        crange = f"bytes {first}-{last}/{len(self.payload)}"
+        if self.bad_range and first:
+            crange = f"bytes {first + 1}-{last}/{len(self.payload)}"
+        etag = '"changed"' if self.changed_etag and first else '"v1"'
+        return {
+            "Body": body, "ResponseMetadata": {"HTTPStatusCode": 206},
+            "ContentRange": crange, "ContentLength": last - first + 1,
+            "ETag": etag,
+        }
+
+
+def test_r2_corpus_ssl_recovers_exact_same_version_ranged_bytes(monkeypatch):
+    payload = b"SQLite format 3\\x00" + bytes(range(30))
+    client = _VersionedRangeCorpusClient(payload)
+    monkeypatch.setattr(store_mod, "_STRICT_CORPUS_RANGE_BYTES", 7)
+    monkeypatch.setattr(store_mod.time, "sleep", lambda _: pytest.fail(
+        "successful version-pinned range read must not sleep"
+    ))
+
+    assert R2Store("research", client=client).get_bytes_strict(
+        "research_vault/corpus.sqlite"
+    ) == payload
+    assert len(client.calls) == 1 + (len(payload) + 6) // 7
+    assert client.calls[0]["Range"] is None
+    assert all(call["IfMatch"] == '"v1"' for call in client.calls[1:])
+    assert all(body.closed for body in client.bodies)
+
+
+@pytest.mark.parametrize("fault", ["changed_etag", "bad_range", "short_body"])
+def test_r2_corpus_range_mismatch_refuses_partial_publication(monkeypatch, fault):
+    client = _VersionedRangeCorpusClient(b"SQLite format 3\\x00" + b"abcdefghij")
+    setattr(client, fault, True)
+    monkeypatch.setattr(store_mod, "_STRICT_CORPUS_RANGE_BYTES", 10)
+    with pytest.raises(RuntimeError, match="range|incomplete"):
+        R2Store("research", client=client).get_bytes_strict(
+            "research_vault/corpus.sqlite"
+        )
+    assert all(body.closed for body in client.bodies)
+
+
+def test_r2_corpus_versioned_range_retries_only_failed_chunk(monkeypatch):
+    payload = b"SQLite format 3\\x00" + b"many small chunks"
+    client = _VersionedRangeCorpusClient(payload)
+    client.once_tls = True
+    monkeypatch.setattr(store_mod, "_STRICT_CORPUS_RANGE_BYTES", 12)
+    delays = []
+    monkeypatch.setattr(store_mod.time, "sleep", delays.append)
+
+    assert R2Store("research", client=client).get_bytes_strict(
+        "research_vault/corpus.sqlite"
+    ) == payload
+    assert delays == [0.25]
+    assert all(body.closed for body in client.bodies)
+
+
+def test_r2_corpus_range_refuses_unbounded_source_before_streaming(monkeypatch):
+    client = _VersionedRangeCorpusClient(b"sqlite-header")
+    original_head = client.head_object
+    def too_large(**kwargs):
+        meta = original_head(**kwargs)
+        meta["ContentLength"] = store_mod._STRICT_CORPUS_MAX_BYTES + 1
+        return meta
+    client.head_object = too_large
+    with pytest.raises(RuntimeError, match="bounded length"):
+        R2Store("research", client=client).get_bytes_strict(
+            "research_vault/corpus.sqlite"
+        )
+    assert len(client.calls) == 1
+    assert all(body.closed for body in client.bodies)
+
 def test_r2_strict_read_rejects_unavailable_store(monkeypatch):
     monkeypatch.setattr(store_mod, "_r2_client", lambda: None)
     with pytest.raises(RuntimeError, match="unavailable"):
@@ -2813,3 +3024,174 @@ def test_research_intelligence_cli_rejects_newline_rewritten_receipt_before_io(
     assert result == 2
     assert json.loads(capsys.readouterr().err)["code"] == "source_body_mismatch"
     assert not store_dir.exists()
+
+# ===========================================================================
+# RIO claim-array structural identity
+# ===========================================================================
+
+def _rio_claim_index_case():
+    """Synthetic RIO whose positional links make claim retargeting observable."""
+    from engine.research_intelligence.schema import SCHEMA
+
+    sentences = [
+        "Factory utilization increased sharply.",
+        "Inventory accumulated across distributors.",
+    ]
+    body = " ".join(sentences)
+    obj = {
+        "schema": SCHEMA,
+        "document": {
+            "id": "r26-synthetic-only",
+            "source_type": "institutional_research",
+            "source_name": "Fictional Test Desk",
+            "institution": "Fictional Test Desk",
+            "desk": "",
+            "title": "Synthetic claim-index control",
+            "published_at": "2026-09-19",
+            "content_sha256": hashlib.sha256(body.encode()).hexdigest(),
+        },
+        "claims": [
+            {
+                "statement": sentence,
+                "evidence": [{"quote_span": sentence}],
+                "numbers": [],
+                "entities": [],
+                "horizon": "",
+                "explicit": True,
+            }
+            for sentence in sentences
+        ],
+        "analysis": {
+            "thesis": {
+                "summary": "Operating activity strengthened.",
+                "direction": "neutral",
+                "mechanism": [],
+                "conviction": "",
+                "support_claim_indices": [0],
+            },
+            "assumptions": [],
+            "forecasts": [],
+            "catalysts": [],
+            "falsifiers": [],
+            "counterarguments": [],
+            "implications": [],
+            "belief_delta": {},
+            "consensus_relation": {},
+            "uncertainties": [],
+        },
+        "authority": "descriptive_research_only",
+    }
+    return obj, body
+
+
+@pytest.mark.parametrize("bad", [None, {}, {"statement": "  "}, "not a claim", []])
+@pytest.mark.parametrize("require_grounded", [False, True])
+def test_rio_claim_indices_reject_structural_gaps(bad, require_grounded):
+    from engine.research_intelligence.schema import validate_rio
+
+    obj, _body = _rio_claim_index_case()
+    obj["claims"].insert(0, bad)
+    obj["analysis"]["thesis"]["support_claim_indices"] = [1]
+    with pytest.raises(ValueError, match=r"claims\[0\]"):
+        validate_rio(obj, require_grounded_claims=require_grounded)
+
+
+def test_rio_claim_indices_reject_blank_middle():
+    from engine.research_intelligence.schema import validate_rio
+
+    obj, _body = _rio_claim_index_case()
+    obj["claims"].insert(1, {"statement": ""})
+    obj["analysis"]["thesis"]["support_claim_indices"] = [1]
+    with pytest.raises(ValueError, match=r"claims\[1\]"):
+        validate_rio(obj)
+
+
+def test_rio_claim_indices_reject_trailing_malformed():
+    from engine.research_intelligence.schema import validate_rio
+
+    obj, _body = _rio_claim_index_case()
+    obj["claims"].append(None)
+    with pytest.raises(ValueError, match=r"claims\[2\]"):
+        validate_rio(obj)
+
+
+def test_rio_claim_indices_parser_does_not_retarget_conclusion():
+    from engine.research_intelligence.extractor import parse_model_output
+
+    obj, body = _rio_claim_index_case()
+    obj["claims"].insert(0, None)
+    obj["analysis"]["thesis"]["support_claim_indices"] = [1]
+    with pytest.raises(ValueError, match=r"claims\[0\]"):
+        parse_model_output(
+            json.dumps(obj),
+            expected_document_id=obj["document"]["id"],
+            expected_document=obj["document"],
+            source_body=body,
+        )
+
+
+def test_rio_claim_indices_missing_claim_cannot_gain_real_evidence():
+    from engine.research_intelligence.extractor import parse_model_output
+
+    obj, body = _rio_claim_index_case()
+    obj["claims"].insert(0, {})
+    obj["analysis"]["thesis"]["support_claim_indices"] = [0]
+    with pytest.raises(ValueError, match=r"claims\[0\]"):
+        parse_model_output(
+            json.dumps(obj),
+            expected_document_id=obj["document"]["id"],
+            expected_document=obj["document"],
+            source_body=body,
+        )
+
+
+def test_rio_claim_indices_analyzer_returns_typed_invalid_without_rio():
+    from engine.research_intelligence.extractor import analyze_document
+
+    obj, body = _rio_claim_index_case()
+    obj["claims"].insert(0, None)
+    obj["analysis"]["thesis"]["support_claim_indices"] = [1]
+    calls = []
+
+    def fake_call(*_args, **_kwargs):
+        calls.append(1)
+        return json.dumps(obj), "synthetic-test-provider", "synthetic-test-model"
+
+    result = analyze_document(
+        obj["document"],
+        body,
+        model_id="synthetic-test-model",
+        call=fake_call,
+    )
+    assert len(calls) == 1
+    assert result["state"] == "invalid_model_output"
+    assert result["rio"] is None
+    assert result["error_class"] == "ValueError"
+    assert "error" not in result
+
+
+def test_rio_claim_indices_valid_analysis_keeps_links_and_input_unchanged():
+    from engine.research_intelligence.extractor import parse_model_output
+    from engine.research_intelligence.schema import validate_rio
+
+    obj, body = _rio_claim_index_case()
+    obj["analysis"]["counterarguments"] = [
+        {
+            "statement": "Inventory growth warrants caution.",
+            "support_claim_indices": [1],
+        }
+    ]
+    original = copy.deepcopy(obj)
+    result = parse_model_output(
+        json.dumps(obj),
+        expected_document_id=obj["document"]["id"],
+        expected_document=obj["document"],
+        source_body=body,
+    )
+    assert obj == original
+    assert result["analysis"]["thesis"]["support_claim_indices"] == [0]
+    assert result["analysis"]["counterarguments"][0]["support_claim_indices"] == [1]
+    assert result["claims"][0]["statement"] == original["claims"][0]["statement"]
+    assert result["claims"][1]["statement"] == original["claims"][1]["statement"]
+    assert validate_rio(result) == result
+

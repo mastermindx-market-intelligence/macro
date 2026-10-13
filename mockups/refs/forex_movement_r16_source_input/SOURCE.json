@@ -1,0 +1,686 @@
+{
+  "assets": {
+    "account.js": {
+      "bytes": 60911,
+      "git_blob_sha": "6c5aaabc71c130493474ad27f8a1b2e2f7a22a18",
+      "sha256": "647354a0a53d12648142a44a23b799788919535e2760c581bb6476590a9830be",
+      "source_path": "templates/account.js"
+    },
+    "apple-touch-icon.png": {
+      "bytes": 23722,
+      "git_blob_sha": "7037cccefa7f0099ba70dbff2e747366ce99cfeb",
+      "sha256": "68ad76b7347d7302cea0a8c395c8315714f5972ac021f1fd54726044f3115da6",
+      "source_path": "site/apple-touch-icon.png"
+    },
+    "assets/css/080bfc12.css": {
+      "bytes": 2298,
+      "sha256": "080bfc127fb8001ac95886c154fb716179e0a1407190cdc4f35236f994e2f3e6",
+      "source_path": "generated_by_existing_writer_or_extractor"
+    },
+    "assets/css/8c4d1dea.css": {
+      "bytes": 19833,
+      "sha256": "8c4d1dea7baee260dd47b55b7d14f281acb4950666446257089b8fa6e731dddc",
+      "source_path": "generated_by_existing_writer_or_extractor"
+    },
+    "assets/css/b9b73065.css": {
+      "bytes": 5439,
+      "sha256": "b9b73065256ea260677d35b1212d6a37f8453cee4923e4aefeeb5adb93dffd90",
+      "source_path": "generated_by_existing_writer_or_extractor"
+    },
+    "assets/css/c45789fd.css": {
+      "bytes": 23542,
+      "sha256": "c45789fd45b1faa2c1653af4e7471ddfd85f8e7984525eb435559ffd0cb245aa",
+      "source_path": "generated_by_existing_writer_or_extractor"
+    },
+    "favicon.ico": {
+      "bytes": 6597,
+      "git_blob_sha": "9696249ae949cda445a5dc68994ce1527c19d995",
+      "sha256": "36e823310b67e3c0e12c189e613b31e96b04c4e2ef19fcae8e79810fd3b37c24",
+      "source_path": "site/favicon.ico"
+    },
+    "favicon.svg": {
+      "bytes": 2043,
+      "git_blob_sha": "5e577cafa21db5940f65da9340dadd8968a1929c",
+      "sha256": "a717b918f423c0c3f7c4988cfbf70d4b3c21fc03614800bfb423762cc0fb9aa9",
+      "source_path": "templates/favicon.svg"
+    },
+    "landing.css": {
+      "bytes": 120213,
+      "git_blob_sha": "4866885b4abd7fe2da059392c7bc46a703892970",
+      "sha256": "a44e4256ea9195c0b7055f69c488d3909733ae890c2fc94c3a3243cb5be91d6a",
+      "source_path": "templates/landing.css"
+    },
+    "live.js": {
+      "bytes": 29564,
+      "git_blob_sha": "6c15cdfc1feea10cb86d988af6fcbc6d9e13e275",
+      "sha256": "4c6fe392850ea770bc43fb8cb3f44b4e9d00d15666db41d4375117f188d3cac6",
+      "source_path": "templates/live.js"
+    },
+    "live_config.js": {
+      "bytes": 367,
+      "git_blob_sha": "2ad84da9b70e83cd9825a684d3c846fc81e7366d",
+      "sha256": "52943e92422103557d94066ceb65f4402816322281f95e8bd376293fe14d9c10",
+      "source_path": "site/live_config.js"
+    },
+    "logo_config.js": {
+      "bytes": 202,
+      "git_blob_sha": "523923f9f424a144f4a0cf3e4814e2ea36392474",
+      "sha256": "b37d33d3194c191b1bb64db3f5c33d17c7dc06a74892e4aa8ea4d50320aae215",
+      "source_path": "templates/logo_config.js"
+    },
+    "mm_brain.js": {
+      "bytes": 256822,
+      "git_blob_sha": "d60909e2b19bda050553fd47e481e274cbcb94ea",
+      "sha256": "2a93db87caf50914a82024a985fd20adb6757e36cc05bd005f6b014bfafb7828",
+      "source_path": "templates/mm_brain.js"
+    },
+    "nav_market.js": {
+      "bytes": 75071,
+      "git_blob_sha": "4edee693e1e6d4391de3482b2a618057df686e56",
+      "sha256": "24985e3240b509bfa197a5203b7bd28bb039b82b77a624481393203c74463497",
+      "source_path": "templates/nav_market.js"
+    },
+    "navigation-refresh.css": {
+      "bytes": 93481,
+      "git_blob_sha": "276c1986f2a728ca59e0f9e0bc7fe269869fdff0",
+      "sha256": "ef068fe19adab3779512462c40ab67b3e75a997a2dc6edfae2d5a36dd604eb5c",
+      "source_path": "templates/navigation-refresh.css"
+    },
+    "onboard.css": {
+      "bytes": 64745,
+      "git_blob_sha": "39f81eaa22c458aeae6f2183d6a138231b789055",
+      "sha256": "74613ad9bd018842089750af1af720e4aecf1cd41f65d79b986989a5e0ea9979",
+      "source_path": "templates/onboard.css"
+    },
+    "onboard.js": {
+      "bytes": 181445,
+      "git_blob_sha": "54fefa98acfd87455815fe20bada514aaaf5a2b9",
+      "sha256": "c3718f20974d883a65ccee5e241f15d36dd03a9932a63264f89ac0608b8a3cf2",
+      "source_path": "templates/onboard.js"
+    },
+    "product-nav-icons.css": {
+      "bytes": 40320,
+      "git_blob_sha": "f4595d2c59b0cfb1ba9fffdcfba2587b7e1135c7",
+      "sha256": "093ad1ea5ed74b16894c3939d971db3e957aba3476a7bf8aab2ccd7b3d044d93",
+      "source_path": "templates/product-nav-icons.css"
+    },
+    "stock-logos.js": {
+      "bytes": 16539,
+      "git_blob_sha": "759d78f4dfb11de591d8db5cec36a91ca372fe3c",
+      "sha256": "cc29be531bc08e655464b6c0d384e1a46041aeb31caf7d982e926681fda7cb49",
+      "source_path": "templates/stock-logos.js"
+    },
+    "supabase.js": {
+      "bytes": 110797,
+      "git_blob_sha": "2f320411c9170883b852686132d8e261c9ca8d6a",
+      "sha256": "8596965fe918e656600a1b568d3a168f5c0d3d22a600886bb6f44a6555db01e7",
+      "source_path": "templates/supabase.js"
+    },
+    "terminal_overlay.js": {
+      "bytes": 32753,
+      "git_blob_sha": "8af5d22025d81da7536f2f37f6817e7a6a7c3509",
+      "sha256": "d630e0f3d10106de71375b5a27c6c636997c19c6ae16db388db1c9b367aeb53a",
+      "source_path": "templates/terminal_overlay.js"
+    },
+    "theme.css": {
+      "bytes": 218393,
+      "git_blob_sha": "2c1043b3073041d16d85b61b6290b4fbb8796f9f",
+      "sha256": "4a7e32977b2ccfe6776748d2b4c680b46727a156514de9da428e00c76449911f",
+      "source_path": "templates/theme.css"
+    },
+    "theme.js": {
+      "bytes": 368258,
+      "git_blob_sha": "f9ae6a65236bb8a4ba3f655182c105337bfa1f0a",
+      "sha256": "d08efe725ef9050bcecf3c55621238efd6a93441b059392572a822d443e7d504",
+      "source_path": "templates/theme.js"
+    }
+  },
+  "browser_navigation_performed": false,
+  "cases": {
+    "different_dates": {
+      "component_css_sha256": "b9b73065256ea260677d35b1212d6a37f8453cee4923e4aefeeb5adb93dffd90",
+      "external_direct_resource_urls_not_requested": [],
+      "fixture_not_live_data": true,
+      "html_bytes": 86461,
+      "html_sha256": "eea55eb6b5177d6b1e73c29bbc754f481c4c03e23944443d33b879cbfc37f14d",
+      "unresolved_direct_static_resources": []
+    },
+    "matched": {
+      "component_css_sha256": "b9b73065256ea260677d35b1212d6a37f8453cee4923e4aefeeb5adb93dffd90",
+      "external_direct_resource_urls_not_requested": [],
+      "fixture_not_live_data": true,
+      "html_bytes": 86894,
+      "html_sha256": "3a513b18a69b459140633e6bdc035ee051d90fcfb53834b2805a5e0537a1a48a",
+      "unresolved_direct_static_resources": []
+    },
+    "raw_fallback": {
+      "component_css_sha256": "b9b73065256ea260677d35b1212d6a37f8453cee4923e4aefeeb5adb93dffd90",
+      "external_direct_resource_urls_not_requested": [],
+      "fixture_not_live_data": true,
+      "html_bytes": 86856,
+      "html_sha256": "9a07aa64e135ddfb879a1c9940d9184e764a955508b5bbb52bc213df7cfc4419",
+      "unresolved_direct_static_resources": []
+    },
+    "unavailable": {
+      "component_css_sha256": "b9b73065256ea260677d35b1212d6a37f8453cee4923e4aefeeb5adb93dffd90",
+      "external_direct_resource_urls_not_requested": [],
+      "fixture_not_live_data": true,
+      "html_bytes": 77996,
+      "html_sha256": "8087b6051b44038884e10dce24750e0abe16e5f8487623f5948f319d7f547878",
+      "unresolved_direct_static_resources": []
+    }
+  },
+  "fixed_build_label": "SYNTHETIC REVIEW INPUT / \u5408\u6210\u5ba1\u9605\u8f93\u5165",
+  "fixture_owner": "tests/test_forex_context_bus.py::_r12_build_fixture / _r13_clock_table / _r14_asset",
+  "font_assets_not_bundled": {
+    "fonts/Inter-400.woff2": {
+      "bytes": 23664,
+      "git_blob_sha": "f15b025d666269fb07daf0263e54231481e4289c",
+      "source_path": "templates/fonts/Inter-400.woff2"
+    },
+    "fonts/Inter-500.woff2": {
+      "bytes": 24272,
+      "git_blob_sha": "54f0a595dd3c76344a980109e7517ed42416de93",
+      "source_path": "templates/fonts/Inter-500.woff2"
+    },
+    "fonts/Inter-600.woff2": {
+      "bytes": 24452,
+      "git_blob_sha": "d1897949fda5c7fc5f04622df43a3fcba5b89d84",
+      "source_path": "templates/fonts/Inter-600.woff2"
+    },
+    "fonts/Inter-700.woff2": {
+      "bytes": 24356,
+      "git_blob_sha": "a68fb101cd9224aa7bb6ca80356b5132c40c6f3f",
+      "source_path": "templates/fonts/Inter-700.woff2"
+    },
+    "fonts/Inter-800.woff2": {
+      "bytes": 24400,
+      "git_blob_sha": "74a16d45945264434aa7409e79549c626ebcdfb1",
+      "source_path": "templates/fonts/Inter-800.woff2"
+    },
+    "fonts/Inter-900.woff2": {
+      "bytes": 23900,
+      "git_blob_sha": "4db8333caca3f0c93ff4683fed2d7eaa7ecdc786",
+      "source_path": "templates/fonts/Inter-900.woff2"
+    }
+  },
+  "imported_repo_module_sha256": {
+    "engine/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "engine/commodity_conviction.py": "98769c15ea928c7b45cbd287371abf4f0171f4387e75d2834f9041cdff58c86a",
+    "engine/commodity_mtf.py": "0e0be00ec4224f00ad491aeaeef15a8129d00e508c28a6f1723157c27d781e88",
+    "engine/commodity_signals.py": "6f0f6803899f993d88689c237a2ac75f38f68a80e8980e109e18cb61dfa31161",
+    "engine/cycles.py": "cfffd2a6f349ce7465fcce0106c51471c8cfa6051efed3c3660393f2a1eae7fe",
+    "engine/forex_alerts.py": "e46927228cc2c0eabf49736510ec52422911af769f17ca1534a7169a0b04c6d8",
+    "engine/forex_conviction.py": "2e9acc6406b64b8ea6f1ef19e73b2adffb514b4cb63f7759012ac42d77c457b5",
+    "engine/forex_dollar.py": "83704866ea0ddf152b7cd9ec4f44e290552546ccc142d001b197e2bff6aa9535",
+    "engine/forex_inputs.py": "205ea2dec2aa1136412fb648c43a5853a69a87539c822d233f583031f4a3eeda",
+    "engine/forex_regime.py": "497b975a6bb800f7418b58e2e8970f91c1ce098503308afa05ad406b2a1fe3ed",
+    "engine/forex_scorecards.py": "5c146931646550707f1ae4c52e4418dfa2ec3b0683a9a5063d99d4408424a120",
+    "engine/forex_signals.py": "f33f3b4fc4ef8ae7b6e940ed098ef8c2cf00acdabb9f0a13049c7be3b693811d",
+    "engine/forex_transmission.py": "f876c32d6a09153c7a9d0320a6a2b95e1826d77a80ff265ed60a3a186bb42b2b",
+    "engine/i18n.py": "64e55cf5d0396ae12075eab53e0a838d004fde47f574ffb170b07011b0e6e152",
+    "engine/session_anchor.py": "1da03cb44684e4b0f91710c7279e3fff40d2344e253ab83473a83f7e2afa5c3f",
+    "engine/technicals.py": "83e90996d3f6eb58162cc6005ac292116ae784332700ef5323b381d495269739",
+    "engine/validation.py": "9680d00241fa58ccb504b679d1ee19d64b52b6f46b6bf87a5149969bc7ec4e3b",
+    "lib/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "lib/config.py": "fa22ec934ec5294072b6bb4bf081d787f3f8ad5da4702ce3f4818b1674dbd53f",
+    "lib/forex_kinematics_view.py": "2f57d68e9fc93e0a5a944035168d850bfd2c1fe3038ef8172897555b72858f05",
+    "lib/nyse_calendar.py": "7c9167fd416babb64c3067ae7e6237615011ad79e26d826e57005486496410ce",
+    "lib/pages.py": "2673025c9729d5665936dbe6cafd461e8dff200feacc3e0081f0f378df2fd28b",
+    "lib/store.py": "77051ae1e522e415e2b8c3be51f51187f2571d53a049472a52ca54e9ee1a3c4b",
+    "scripts/__init__.py": "099b906ef95aec83bbfc4d84b5ceb4f050e57a5fd2840e99faa9dc202e90c378",
+    "scripts/build_forex.py": "43c7a906891f2759f3387469bcefe912fac62509bbb184a28009470a201f6901",
+    "scripts/check_template_site_sync.py": "17a092383c66b18875e86de1116816a53b42cf2c784d6015abeb3b6986527ccd",
+    "scripts/externalize_css.py": "fa4fb1e4d7f141694143711f8886bb0add138d76b9dad19e083a2eb3a6f75b3c"
+  },
+  "loaded_template_sha256": {
+    "templates/_forex_movement_evidence.html.j2": "61ea582a46175f0c5e159d123e15440bd3d15c23d3bddd9e36bf386713cb0813",
+    "templates/_interfonts.html.j2": "40ba62a3d1efa51de70993bedd5fb7ec96fcc1190f58515d765b267b2afd32cd",
+    "templates/_navlinks.html.j2": "5318e6f11db80e225707cd02b0776f590c3defcaf6aaca81085e9bd956981242",
+    "templates/_seo_head.html.j2": "eda59eeb5f7cf0fb83a1a6430ff523939ee43cd214fe2b4aebba7ca4561bbbee",
+    "templates/_site_nav.html.j2": "164f3119fd04b8886d2d29703dc9c017e13bceeae1ecc49a36f9842353d9e482",
+    "templates/_state_inks.html.j2": "58e8e0700a66e90fa1b8408bf8eaa0a43b69206af7f30f334ad3706567fc204b",
+    "templates/_vector_polish.html.j2": "356f7ebc8f3da8a6957d7fc4affe416d051d3fd4669e93aa175a6b4d941fbb5e",
+    "templates/forex.html.j2": "75067cf42dcb76f1ce847167f89584c3b5b1db27c6eb662892d18b2200d0641a"
+  },
+  "pipeline": "existing builder context -> actual Forex template -> lib.pages.write_page -> existing externalizer",
+  "production_deployment": false,
+  "purpose": "Controlled complete-route source INPUT, not live readings or visual evidence",
+  "rebuild_command": "python3 mockups/refs/forex_movement_r16_source_input/prepare.py --repo . --output /path/to/new-forex-review-input",
+  "rendered_files": {
+    "cases/different_dates/kinematics.json": {
+      "bytes": 5158,
+      "sha256": "4975b1ecedda6291a41efe03f5aaece66e430326aa8d2f5f7de1773e677bd121"
+    },
+    "cases/different_dates/site/account.js": {
+      "bytes": 60911,
+      "sha256": "647354a0a53d12648142a44a23b799788919535e2760c581bb6476590a9830be"
+    },
+    "cases/different_dates/site/apple-touch-icon.png": {
+      "bytes": 23722,
+      "sha256": "68ad76b7347d7302cea0a8c395c8315714f5972ac021f1fd54726044f3115da6"
+    },
+    "cases/different_dates/site/assets/css/080bfc12.css": {
+      "bytes": 2298,
+      "sha256": "080bfc127fb8001ac95886c154fb716179e0a1407190cdc4f35236f994e2f3e6"
+    },
+    "cases/different_dates/site/assets/css/8c4d1dea.css": {
+      "bytes": 19833,
+      "sha256": "8c4d1dea7baee260dd47b55b7d14f281acb4950666446257089b8fa6e731dddc"
+    },
+    "cases/different_dates/site/assets/css/b9b73065.css": {
+      "bytes": 5439,
+      "sha256": "b9b73065256ea260677d35b1212d6a37f8453cee4923e4aefeeb5adb93dffd90"
+    },
+    "cases/different_dates/site/assets/css/c45789fd.css": {
+      "bytes": 23542,
+      "sha256": "c45789fd45b1faa2c1653af4e7471ddfd85f8e7984525eb435559ffd0cb245aa"
+    },
+    "cases/different_dates/site/data_base.js": {
+      "bytes": 2367,
+      "sha256": "2aaceaf98a0f534aa342bdc6e64c831a2261a04fafebab4becf50f2d7c82620a"
+    },
+    "cases/different_dates/site/favicon.ico": {
+      "bytes": 6597,
+      "sha256": "36e823310b67e3c0e12c189e613b31e96b04c4e2ef19fcae8e79810fd3b37c24"
+    },
+    "cases/different_dates/site/favicon.svg": {
+      "bytes": 2043,
+      "sha256": "a717b918f423c0c3f7c4988cfbf70d4b3c21fc03614800bfb423762cc0fb9aa9"
+    },
+    "cases/different_dates/site/forex.html": {
+      "bytes": 86461,
+      "sha256": "eea55eb6b5177d6b1e73c29bbc754f481c4c03e23944443d33b879cbfc37f14d"
+    },
+    "cases/different_dates/site/landing.css": {
+      "bytes": 120213,
+      "sha256": "a44e4256ea9195c0b7055f69c488d3909733ae890c2fc94c3a3243cb5be91d6a"
+    },
+    "cases/different_dates/site/live.js": {
+      "bytes": 29564,
+      "sha256": "4c6fe392850ea770bc43fb8cb3f44b4e9d00d15666db41d4375117f188d3cac6"
+    },
+    "cases/different_dates/site/live_config.js": {
+      "bytes": 367,
+      "sha256": "52943e92422103557d94066ceb65f4402816322281f95e8bd376293fe14d9c10"
+    },
+    "cases/different_dates/site/logo_config.js": {
+      "bytes": 202,
+      "sha256": "b37d33d3194c191b1bb64db3f5c33d17c7dc06a74892e4aa8ea4d50320aae215"
+    },
+    "cases/different_dates/site/mm_brain.js": {
+      "bytes": 256822,
+      "sha256": "2a93db87caf50914a82024a985fd20adb6757e36cc05bd005f6b014bfafb7828"
+    },
+    "cases/different_dates/site/nav_market.js": {
+      "bytes": 75071,
+      "sha256": "24985e3240b509bfa197a5203b7bd28bb039b82b77a624481393203c74463497"
+    },
+    "cases/different_dates/site/navigation-refresh.css": {
+      "bytes": 93481,
+      "sha256": "ef068fe19adab3779512462c40ab67b3e75a997a2dc6edfae2d5a36dd604eb5c"
+    },
+    "cases/different_dates/site/onboard.css": {
+      "bytes": 64745,
+      "sha256": "74613ad9bd018842089750af1af720e4aecf1cd41f65d79b986989a5e0ea9979"
+    },
+    "cases/different_dates/site/onboard.js": {
+      "bytes": 181445,
+      "sha256": "c3718f20974d883a65ccee5e241f15d36dd03a9932a63264f89ac0608b8a3cf2"
+    },
+    "cases/different_dates/site/product-nav-icons.css": {
+      "bytes": 40320,
+      "sha256": "093ad1ea5ed74b16894c3939d971db3e957aba3476a7bf8aab2ccd7b3d044d93"
+    },
+    "cases/different_dates/site/stock-logos.js": {
+      "bytes": 16539,
+      "sha256": "cc29be531bc08e655464b6c0d384e1a46041aeb31caf7d982e926681fda7cb49"
+    },
+    "cases/different_dates/site/supabase.js": {
+      "bytes": 110797,
+      "sha256": "8596965fe918e656600a1b568d3a168f5c0d3d22a600886bb6f44a6555db01e7"
+    },
+    "cases/different_dates/site/terminal_overlay.js": {
+      "bytes": 32753,
+      "sha256": "d630e0f3d10106de71375b5a27c6c636997c19c6ae16db388db1c9b367aeb53a"
+    },
+    "cases/different_dates/site/theme.css": {
+      "bytes": 218393,
+      "sha256": "4a7e32977b2ccfe6776748d2b4c680b46727a156514de9da428e00c76449911f"
+    },
+    "cases/different_dates/site/theme.js": {
+      "bytes": 368258,
+      "sha256": "d08efe725ef9050bcecf3c55621238efd6a93441b059392572a822d443e7d504"
+    },
+    "cases/matched/kinematics.json": {
+      "bytes": 5166,
+      "sha256": "e8bc46d252ac266d1dd998a0113b1d7c90309192b6682646f3d6bc62f2cc07a9"
+    },
+    "cases/matched/site/account.js": {
+      "bytes": 60911,
+      "sha256": "647354a0a53d12648142a44a23b799788919535e2760c581bb6476590a9830be"
+    },
+    "cases/matched/site/apple-touch-icon.png": {
+      "bytes": 23722,
+      "sha256": "68ad76b7347d7302cea0a8c395c8315714f5972ac021f1fd54726044f3115da6"
+    },
+    "cases/matched/site/assets/css/080bfc12.css": {
+      "bytes": 2298,
+      "sha256": "080bfc127fb8001ac95886c154fb716179e0a1407190cdc4f35236f994e2f3e6"
+    },
+    "cases/matched/site/assets/css/8c4d1dea.css": {
+      "bytes": 19833,
+      "sha256": "8c4d1dea7baee260dd47b55b7d14f281acb4950666446257089b8fa6e731dddc"
+    },
+    "cases/matched/site/assets/css/b9b73065.css": {
+      "bytes": 5439,
+      "sha256": "b9b73065256ea260677d35b1212d6a37f8453cee4923e4aefeeb5adb93dffd90"
+    },
+    "cases/matched/site/assets/css/c45789fd.css": {
+      "bytes": 23542,
+      "sha256": "c45789fd45b1faa2c1653af4e7471ddfd85f8e7984525eb435559ffd0cb245aa"
+    },
+    "cases/matched/site/data_base.js": {
+      "bytes": 2367,
+      "sha256": "2aaceaf98a0f534aa342bdc6e64c831a2261a04fafebab4becf50f2d7c82620a"
+    },
+    "cases/matched/site/favicon.ico": {
+      "bytes": 6597,
+      "sha256": "36e823310b67e3c0e12c189e613b31e96b04c4e2ef19fcae8e79810fd3b37c24"
+    },
+    "cases/matched/site/favicon.svg": {
+      "bytes": 2043,
+      "sha256": "a717b918f423c0c3f7c4988cfbf70d4b3c21fc03614800bfb423762cc0fb9aa9"
+    },
+    "cases/matched/site/forex.html": {
+      "bytes": 86894,
+      "sha256": "3a513b18a69b459140633e6bdc035ee051d90fcfb53834b2805a5e0537a1a48a"
+    },
+    "cases/matched/site/landing.css": {
+      "bytes": 120213,
+      "sha256": "a44e4256ea9195c0b7055f69c488d3909733ae890c2fc94c3a3243cb5be91d6a"
+    },
+    "cases/matched/site/live.js": {
+      "bytes": 29564,
+      "sha256": "4c6fe392850ea770bc43fb8cb3f44b4e9d00d15666db41d4375117f188d3cac6"
+    },
+    "cases/matched/site/live_config.js": {
+      "bytes": 367,
+      "sha256": "52943e92422103557d94066ceb65f4402816322281f95e8bd376293fe14d9c10"
+    },
+    "cases/matched/site/logo_config.js": {
+      "bytes": 202,
+      "sha256": "b37d33d3194c191b1bb64db3f5c33d17c7dc06a74892e4aa8ea4d50320aae215"
+    },
+    "cases/matched/site/mm_brain.js": {
+      "bytes": 256822,
+      "sha256": "2a93db87caf50914a82024a985fd20adb6757e36cc05bd005f6b014bfafb7828"
+    },
+    "cases/matched/site/nav_market.js": {
+      "bytes": 75071,
+      "sha256": "24985e3240b509bfa197a5203b7bd28bb039b82b77a624481393203c74463497"
+    },
+    "cases/matched/site/navigation-refresh.css": {
+      "bytes": 93481,
+      "sha256": "ef068fe19adab3779512462c40ab67b3e75a997a2dc6edfae2d5a36dd604eb5c"
+    },
+    "cases/matched/site/onboard.css": {
+      "bytes": 64745,
+      "sha256": "74613ad9bd018842089750af1af720e4aecf1cd41f65d79b986989a5e0ea9979"
+    },
+    "cases/matched/site/onboard.js": {
+      "bytes": 181445,
+      "sha256": "c3718f20974d883a65ccee5e241f15d36dd03a9932a63264f89ac0608b8a3cf2"
+    },
+    "cases/matched/site/product-nav-icons.css": {
+      "bytes": 40320,
+      "sha256": "093ad1ea5ed74b16894c3939d971db3e957aba3476a7bf8aab2ccd7b3d044d93"
+    },
+    "cases/matched/site/stock-logos.js": {
+      "bytes": 16539,
+      "sha256": "cc29be531bc08e655464b6c0d384e1a46041aeb31caf7d982e926681fda7cb49"
+    },
+    "cases/matched/site/supabase.js": {
+      "bytes": 110797,
+      "sha256": "8596965fe918e656600a1b568d3a168f5c0d3d22a600886bb6f44a6555db01e7"
+    },
+    "cases/matched/site/terminal_overlay.js": {
+      "bytes": 32753,
+      "sha256": "d630e0f3d10106de71375b5a27c6c636997c19c6ae16db388db1c9b367aeb53a"
+    },
+    "cases/matched/site/theme.css": {
+      "bytes": 218393,
+      "sha256": "4a7e32977b2ccfe6776748d2b4c680b46727a156514de9da428e00c76449911f"
+    },
+    "cases/matched/site/theme.js": {
+      "bytes": 368258,
+      "sha256": "d08efe725ef9050bcecf3c55621238efd6a93441b059392572a822d443e7d504"
+    },
+    "cases/raw_fallback/kinematics.json": {
+      "bytes": 5302,
+      "sha256": "57c3f3bd9ca033c35df940fd1cb38eee0f2606ffffbb70028c56ed0ab2a79822"
+    },
+    "cases/raw_fallback/site/account.js": {
+      "bytes": 60911,
+      "sha256": "647354a0a53d12648142a44a23b799788919535e2760c581bb6476590a9830be"
+    },
+    "cases/raw_fallback/site/apple-touch-icon.png": {
+      "bytes": 23722,
+      "sha256": "68ad76b7347d7302cea0a8c395c8315714f5972ac021f1fd54726044f3115da6"
+    },
+    "cases/raw_fallback/site/assets/css/080bfc12.css": {
+      "bytes": 2298,
+      "sha256": "080bfc127fb8001ac95886c154fb716179e0a1407190cdc4f35236f994e2f3e6"
+    },
+    "cases/raw_fallback/site/assets/css/8c4d1dea.css": {
+      "bytes": 19833,
+      "sha256": "8c4d1dea7baee260dd47b55b7d14f281acb4950666446257089b8fa6e731dddc"
+    },
+    "cases/raw_fallback/site/assets/css/b9b73065.css": {
+      "bytes": 5439,
+      "sha256": "b9b73065256ea260677d35b1212d6a37f8453cee4923e4aefeeb5adb93dffd90"
+    },
+    "cases/raw_fallback/site/assets/css/c45789fd.css": {
+      "bytes": 23542,
+      "sha256": "c45789fd45b1faa2c1653af4e7471ddfd85f8e7984525eb435559ffd0cb245aa"
+    },
+    "cases/raw_fallback/site/data_base.js": {
+      "bytes": 2367,
+      "sha256": "2aaceaf98a0f534aa342bdc6e64c831a2261a04fafebab4becf50f2d7c82620a"
+    },
+    "cases/raw_fallback/site/favicon.ico": {
+      "bytes": 6597,
+      "sha256": "36e823310b67e3c0e12c189e613b31e96b04c4e2ef19fcae8e79810fd3b37c24"
+    },
+    "cases/raw_fallback/site/favicon.svg": {
+      "bytes": 2043,
+      "sha256": "a717b918f423c0c3f7c4988cfbf70d4b3c21fc03614800bfb423762cc0fb9aa9"
+    },
+    "cases/raw_fallback/site/forex.html": {
+      "bytes": 86856,
+      "sha256": "9a07aa64e135ddfb879a1c9940d9184e764a955508b5bbb52bc213df7cfc4419"
+    },
+    "cases/raw_fallback/site/landing.css": {
+      "bytes": 120213,
+      "sha256": "a44e4256ea9195c0b7055f69c488d3909733ae890c2fc94c3a3243cb5be91d6a"
+    },
+    "cases/raw_fallback/site/live.js": {
+      "bytes": 29564,
+      "sha256": "4c6fe392850ea770bc43fb8cb3f44b4e9d00d15666db41d4375117f188d3cac6"
+    },
+    "cases/raw_fallback/site/live_config.js": {
+      "bytes": 367,
+      "sha256": "52943e92422103557d94066ceb65f4402816322281f95e8bd376293fe14d9c10"
+    },
+    "cases/raw_fallback/site/logo_config.js": {
+      "bytes": 202,
+      "sha256": "b37d33d3194c191b1bb64db3f5c33d17c7dc06a74892e4aa8ea4d50320aae215"
+    },
+    "cases/raw_fallback/site/mm_brain.js": {
+      "bytes": 256822,
+      "sha256": "2a93db87caf50914a82024a985fd20adb6757e36cc05bd005f6b014bfafb7828"
+    },
+    "cases/raw_fallback/site/nav_market.js": {
+      "bytes": 75071,
+      "sha256": "24985e3240b509bfa197a5203b7bd28bb039b82b77a624481393203c74463497"
+    },
+    "cases/raw_fallback/site/navigation-refresh.css": {
+      "bytes": 93481,
+      "sha256": "ef068fe19adab3779512462c40ab67b3e75a997a2dc6edfae2d5a36dd604eb5c"
+    },
+    "cases/raw_fallback/site/onboard.css": {
+      "bytes": 64745,
+      "sha256": "74613ad9bd018842089750af1af720e4aecf1cd41f65d79b986989a5e0ea9979"
+    },
+    "cases/raw_fallback/site/onboard.js": {
+      "bytes": 181445,
+      "sha256": "c3718f20974d883a65ccee5e241f15d36dd03a9932a63264f89ac0608b8a3cf2"
+    },
+    "cases/raw_fallback/site/product-nav-icons.css": {
+      "bytes": 40320,
+      "sha256": "093ad1ea5ed74b16894c3939d971db3e957aba3476a7bf8aab2ccd7b3d044d93"
+    },
+    "cases/raw_fallback/site/stock-logos.js": {
+      "bytes": 16539,
+      "sha256": "cc29be531bc08e655464b6c0d384e1a46041aeb31caf7d982e926681fda7cb49"
+    },
+    "cases/raw_fallback/site/supabase.js": {
+      "bytes": 110797,
+      "sha256": "8596965fe918e656600a1b568d3a168f5c0d3d22a600886bb6f44a6555db01e7"
+    },
+    "cases/raw_fallback/site/terminal_overlay.js": {
+      "bytes": 32753,
+      "sha256": "d630e0f3d10106de71375b5a27c6c636997c19c6ae16db388db1c9b367aeb53a"
+    },
+    "cases/raw_fallback/site/theme.css": {
+      "bytes": 218393,
+      "sha256": "4a7e32977b2ccfe6776748d2b4c680b46727a156514de9da428e00c76449911f"
+    },
+    "cases/raw_fallback/site/theme.js": {
+      "bytes": 368258,
+      "sha256": "d08efe725ef9050bcecf3c55621238efd6a93441b059392572a822d443e7d504"
+    },
+    "cases/unavailable/kinematics.json": {
+      "bytes": 2979,
+      "sha256": "649fdc5c84a931ba5a2815a092a9f15f3862774edac8eb955e2b318f1eac1220"
+    },
+    "cases/unavailable/site/account.js": {
+      "bytes": 60911,
+      "sha256": "647354a0a53d12648142a44a23b799788919535e2760c581bb6476590a9830be"
+    },
+    "cases/unavailable/site/apple-touch-icon.png": {
+      "bytes": 23722,
+      "sha256": "68ad76b7347d7302cea0a8c395c8315714f5972ac021f1fd54726044f3115da6"
+    },
+    "cases/unavailable/site/assets/css/080bfc12.css": {
+      "bytes": 2298,
+      "sha256": "080bfc127fb8001ac95886c154fb716179e0a1407190cdc4f35236f994e2f3e6"
+    },
+    "cases/unavailable/site/assets/css/8c4d1dea.css": {
+      "bytes": 19833,
+      "sha256": "8c4d1dea7baee260dd47b55b7d14f281acb4950666446257089b8fa6e731dddc"
+    },
+    "cases/unavailable/site/assets/css/b9b73065.css": {
+      "bytes": 5439,
+      "sha256": "b9b73065256ea260677d35b1212d6a37f8453cee4923e4aefeeb5adb93dffd90"
+    },
+    "cases/unavailable/site/assets/css/c45789fd.css": {
+      "bytes": 23542,
+      "sha256": "c45789fd45b1faa2c1653af4e7471ddfd85f8e7984525eb435559ffd0cb245aa"
+    },
+    "cases/unavailable/site/data_base.js": {
+      "bytes": 2367,
+      "sha256": "2aaceaf98a0f534aa342bdc6e64c831a2261a04fafebab4becf50f2d7c82620a"
+    },
+    "cases/unavailable/site/favicon.ico": {
+      "bytes": 6597,
+      "sha256": "36e823310b67e3c0e12c189e613b31e96b04c4e2ef19fcae8e79810fd3b37c24"
+    },
+    "cases/unavailable/site/favicon.svg": {
+      "bytes": 2043,
+      "sha256": "a717b918f423c0c3f7c4988cfbf70d4b3c21fc03614800bfb423762cc0fb9aa9"
+    },
+    "cases/unavailable/site/forex.html": {
+      "bytes": 77996,
+      "sha256": "8087b6051b44038884e10dce24750e0abe16e5f8487623f5948f319d7f547878"
+    },
+    "cases/unavailable/site/landing.css": {
+      "bytes": 120213,
+      "sha256": "a44e4256ea9195c0b7055f69c488d3909733ae890c2fc94c3a3243cb5be91d6a"
+    },
+    "cases/unavailable/site/live.js": {
+      "bytes": 29564,
+      "sha256": "4c6fe392850ea770bc43fb8cb3f44b4e9d00d15666db41d4375117f188d3cac6"
+    },
+    "cases/unavailable/site/live_config.js": {
+      "bytes": 367,
+      "sha256": "52943e92422103557d94066ceb65f4402816322281f95e8bd376293fe14d9c10"
+    },
+    "cases/unavailable/site/logo_config.js": {
+      "bytes": 202,
+      "sha256": "b37d33d3194c191b1bb64db3f5c33d17c7dc06a74892e4aa8ea4d50320aae215"
+    },
+    "cases/unavailable/site/mm_brain.js": {
+      "bytes": 256822,
+      "sha256": "2a93db87caf50914a82024a985fd20adb6757e36cc05bd005f6b014bfafb7828"
+    },
+    "cases/unavailable/site/nav_market.js": {
+      "bytes": 75071,
+      "sha256": "24985e3240b509bfa197a5203b7bd28bb039b82b77a624481393203c74463497"
+    },
+    "cases/unavailable/site/navigation-refresh.css": {
+      "bytes": 93481,
+      "sha256": "ef068fe19adab3779512462c40ab67b3e75a997a2dc6edfae2d5a36dd604eb5c"
+    },
+    "cases/unavailable/site/onboard.css": {
+      "bytes": 64745,
+      "sha256": "74613ad9bd018842089750af1af720e4aecf1cd41f65d79b986989a5e0ea9979"
+    },
+    "cases/unavailable/site/onboard.js": {
+      "bytes": 181445,
+      "sha256": "c3718f20974d883a65ccee5e241f15d36dd03a9932a63264f89ac0608b8a3cf2"
+    },
+    "cases/unavailable/site/product-nav-icons.css": {
+      "bytes": 40320,
+      "sha256": "093ad1ea5ed74b16894c3939d971db3e957aba3476a7bf8aab2ccd7b3d044d93"
+    },
+    "cases/unavailable/site/stock-logos.js": {
+      "bytes": 16539,
+      "sha256": "cc29be531bc08e655464b6c0d384e1a46041aeb31caf7d982e926681fda7cb49"
+    },
+    "cases/unavailable/site/supabase.js": {
+      "bytes": 110797,
+      "sha256": "8596965fe918e656600a1b568d3a168f5c0d3d22a600886bb6f44a6555db01e7"
+    },
+    "cases/unavailable/site/terminal_overlay.js": {
+      "bytes": 32753,
+      "sha256": "d630e0f3d10106de71375b5a27c6c636997c19c6ae16db388db1c9b367aeb53a"
+    },
+    "cases/unavailable/site/theme.css": {
+      "bytes": 218393,
+      "sha256": "4a7e32977b2ccfe6776748d2b4c680b46727a156514de9da428e00c76449911f"
+    },
+    "cases/unavailable/site/theme.js": {
+      "bytes": 368258,
+      "sha256": "d08efe725ef9050bcecf3c55621238efd6a93441b059392572a822d443e7d504"
+    }
+  },
+  "review_input_schema": 1,
+  "runtime_dynamic_network_closure": "NOT_PROVEN: shared scripts/session/data/external services and linked pages require separate admitted review.",
+  "screenshot_acceptance": false,
+  "server_started": false,
+  "source_commit": "ac79e07634ec3903167969d2922d411d3969817d",
+  "source_dependency_sha256": {
+    "config.yml": "78186dd7b079a0d49706bf76a5614327c0c00da51bc6644b11de30d37d86b75c",
+    "engine/forex_regime.py": "497b975a6bb800f7418b58e2e8970f91c1ce098503308afa05ad406b2a1fe3ed",
+    "engine/forex_signals.py": "f33f3b4fc4ef8ae7b6e940ed098ef8c2cf00acdabb9f0a13049c7be3b693811d",
+    "lib/forex_kinematics_view.py": "2f57d68e9fc93e0a5a944035168d850bfd2c1fe3038ef8172897555b72858f05",
+    "lib/pages.py": "2673025c9729d5665936dbe6cafd461e8dff200feacc3e0081f0f378df2fd28b",
+    "scripts/build_forex.py": "43c7a906891f2759f3387469bcefe912fac62509bbb184a28009470a201f6901",
+    "scripts/check_template_site_sync.py": "17a092383c66b18875e86de1116816a53b42cf2c784d6015abeb3b6986527ccd",
+    "scripts/externalize_css.py": "fa4fb1e4d7f141694143711f8886bb0add138d76b9dad19e083a2eb3a6f75b3c",
+    "templates/_forex_movement_evidence.html.j2": "61ea582a46175f0c5e159d123e15440bd3d15c23d3bddd9e36bf386713cb0813",
+    "templates/forex.html.j2": "75067cf42dcb76f1ce847167f89584c3b5b1db27c6eb662892d18b2200d0641a",
+    "tests/test_forex_context_bus.py": "5f920c1240e81d3d8fbff04accb4724d1f1d8c1946a0dfb039a79449f1c72e4b"
+  }
+}

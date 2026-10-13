@@ -615,9 +615,8 @@ def test_a_readable_board_that_publishes_no_stamp_is_a_breach(payload):
     This is the hole that would otherwise switch a market off silently and permanently.
     build_canada_library.py:1093 resolves `as_of = (alpha or {}).get("as_of")`, so one
     missing alpha publishes a null stamp — and Canada, the market this check was written
-    for, would go quiet and read green forever. intl_setups.json proves the failure mode
-    is real: it has shipped `as_of: null` on every commit in main's history and nobody
-    noticed until this PR.
+    for, would go quiet and read green forever. International historically demonstrated
+    the same failure mode; its producer now carries a session stamp and is graded too.
     """
     report = evaluate(D_RUNS, D_INDEX, D_NOW, boards=_boards(ca=payload))
     assert report["ok"] is False
@@ -625,15 +624,15 @@ def test_a_readable_board_that_publishes_no_stamp_is_a_breach(payload):
                for f in report["fail_reasons"]), report
 
 
-def test_only_the_known_unstamped_board_is_exempt():
-    """International has NEVER carried a stamp, so a null there is a standing named blind
-    spot rather than a new fault. Every other market must breach on the same input — an
-    exemption list that grows silently is how a guard dies."""
-    exempt = {s["market"] for s in MARKET_BOARDS if s["stamp_known_absent"]}
-    assert exempt == {"intl"}, exempt
+def test_no_prophet_board_is_exempt_from_a_readable_null_stamp():
+    """Every Prophet board now publishes a usable freshness stamp. A readable null stamp
+    is therefore a positive producer regression for every market, including International."""
+    exempt = {spec["market"] for spec in MARKET_BOARDS if spec["stamp_known_absent"]}
+    assert exempt == set(), exempt
     report = evaluate(D_RUNS, D_INDEX, D_NOW, boards=_boards(intl={"as_of": None}))
-    assert report["ok"] is True
-    assert any("INDETERMINATE [International]" in w for w in report["warnings"]), report
+    assert report["ok"] is False
+    assert any("BOARD PUBLISHED WITHOUT A STAMP [International]" in f
+               for f in report["fail_reasons"]), report
 
 
 def test_a_market_missing_from_the_payload_warns_rather_than_vanishing():
@@ -819,25 +818,34 @@ def test_main_grades_every_market(tmp_path, capsys):
             assert line.startswith("::"), line
 
 
-def test_intl_board_is_a_known_blind_spot_today():
-    """site/factordata/intl_setups.json has carried ``as_of: null`` on every commit in
-    main's history — compute_intl_alpha stamps no as_of on any return path
-    (scripts/build_intl_library.py, adversarial review D1, PR #5674). The guard reports
-    that honestly rather than inventing a verdict.
-
-    This test pins the CURRENT state deliberately: the day the builder starts stamping,
-    this is what tells us International has become gradeable and the registry entry
-    should be re-derived against a real calendar rather than the weekday approximation.
-    """
+def test_intl_board_is_stamped_and_gradeable():
+    """International now publishes a real session anchor, so a readable null stamp is
+    a producer regression rather than accepted blindness. The weekday-union calendar
+    remains intentionally coarse because the board spans disjoint venues."""
     intl = next(s for s in MARKET_BOARDS if s["market"] == "intl")
     assert intl["calendar"] == "weekday"
     assert intl["max_sessions_behind"] == 3, (
         "the weekday approximation buys its +2 tolerance here; changing it needs the "
         "over-count argument in MARKET_BOARDS re-derived"
     )
+    assert intl["stamp_known_absent"] is False
     report = evaluate(D_RUNS, D_INDEX, D_NOW, boards=_boards(intl={"as_of": None}))
-    assert report["ok"] is True
-    assert any("INDETERMINATE [International]" in w for w in report["warnings"])
+    assert report["ok"] is False
+    assert any("BOARD PUBLISHED WITHOUT A STAMP [International]" in f
+               for f in report["fail_reasons"])
+
+
+def test_intl_board_with_session_stamp_is_graded():
+    """A stamped international board participates in ordinary check-D freshness."""
+    now = datetime(2026, 8, 24, 8, 0, tzinfo=timezone.utc)
+    report = evaluate(
+        [_run(created_at="2026-08-21T22:30:00Z")],
+        {"source_asof": "2026-08-21"},
+        now,
+        boards=_boards(intl={"as_of": "2026-08-17"}),
+    )
+    assert report["facts"]["boards"]["intl"]["behind"] == 4
+    assert any("STALE BOARD [International]" in f for f in report["fail_reasons"])
 
 
 # ── GD-4A.1: CN/HK risk-forward-ledger freshness ────────────────────────────

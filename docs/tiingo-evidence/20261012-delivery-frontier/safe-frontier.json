@@ -1,0 +1,167 @@
+{
+  "schema": "tiingo.delivery_frontier.v1",
+  "recorded_at_utc": "2026-10-12T08:54:11.212023+00:00",
+  "programme_complete": false,
+  "producer": {
+    "pr": 8875,
+    "tested_head": "f591bb609b6d55b85366e6a2d1eafbfe52025b5b",
+    "merge_commit": "2c90e1c01d53516c6920e8cb1edd835f82354e28",
+    "hosted_run": 38188184848,
+    "state": "SOURCE_LANDED_AND_HOSTED_ACCEPTED",
+    "producer_checkout_unchanged_for_pending_finite_effect": true
+  },
+  "installed_data_lab": {
+    "source_commit": "2c90e1c01d53516c6920e8cb1edd835f82354e28",
+    "launcher_sha256": "2c8594ad29821982a3d87605509c78fcb6d10c8ffe9dd6280b63cd6bd43923f4",
+    "manifest_sha256": "c3cea6369dd71307caa5d1e1f04cf7913bd2f42b611913eb6b57c6613de1a2eb",
+    "release_sha256": "5c7d1c677d6c0b0dc05384182c0e49f4bdc79d1645634a6aa412a10ff555089b",
+    "actual_capabilities_search_read_passed": true,
+    "registered_tiingo_contracts": 24,
+    "contract_statuses": [
+      "PROPOSED"
+    ],
+    "canonical_lab_compatibility_canary_passed": true,
+    "access_bindings_changed": false,
+    "prior_selector_and_release_retained": true,
+    "acceptance_receipt_sha256": "1c965200b2bf0be022a3be8a0b89b8d6553a735eb362ffe97d1e8cfa5cb33762",
+    "new_eod_consumer_receipt_sha256": "05b2b8bd8bbdd955e6fad206a2d26a6b93a70493789c6b4e1fb068b1ebd4f764",
+    "new_eod_vendor_histories_read": [
+      "EBAY",
+      "DWCH"
+    ],
+    "new_fundamentals_consumer_receipt_sha256": "f4a273fc5f49b425e473f6c7c6ff95a8757e6eb6c9129568cfd4f298dd90de8b",
+    "new_jpm_modes_read": [
+      "asReported=true",
+      "asReported=false",
+      "daily"
+    ]
+  },
+  "eod_archive": {
+    "qualified_nonempty_histories": 9916,
+    "qualified_distinct_bars": 20761012,
+    "eligible_catalogue_candidates": 47689,
+    "captured_empty_candidates": 18,
+    "uncaptured_catalogue_windows": 37755,
+    "uncaptured_does_not_mean_unattempted": true,
+    "all_own_raw_operations_settled": false,
+    "last_continuation_successful_requests": 1,
+    "last_continuation_failed_requests": 1,
+    "last_refused_request": {
+      "ticker": "DVVDF",
+      "http_status": 403,
+      "admitted": false,
+      "retried": false
+    },
+    "earlier_dtv_1_http_404_retried": false,
+    "latest_qualification_sha256": "5f4af7f1fddd706f2ceb91e1af6916048efc7d24d608856436a70cf80691a444",
+    "coverage_receipt_sha256": "7b7257f1f51985b264044d922dff9c2c00f00a82ac89daaefd563570e8317e56",
+    "complete_vendor_history_proven": false,
+    "canonical_identity_admitted": false,
+    "pit_backtest_eligible": false,
+    "running_original_operation": {
+      "id": "eod-wave8-fixed-unattempted-20261012-01a12ab6",
+      "scope_sha256": "38aafc8460af7dead299c92bbafc1b64f3770752a1d86c1e552e474cd005ecda",
+      "method_sha256": "9c4719372609f6cd6df8b4c3904fbe95ecb858010fd3b13bfc923080ddfcf6e6",
+      "untouched_request_cap": 3541,
+      "held_requests_excluded": 12,
+      "max_inflight": 4,
+      "own_maximum_requests_per_hour": 2880,
+      "whole_batch_completion_observed": false
+    },
+    "credential_argument_diagnosis": {
+      "defect": "Temporary continuation counter iterator shadowed its credential argument. Original collector and provisioned credential are unchanged.",
+      "offline_reproduction_sha256": "67d119b08a9fc3bf42fc72edd67f1e425d267b030c3b786e33bcd9fd45658235",
+      "independent_review_stable_id": "tiingo-eod-fixed-harness-review-01a12ab6-v1",
+      "retained_review_stdout_sha256": "661c33130423fd4759c9f9430f8aa3bad9cd2c9085542e343923d81dfd0c1f9b",
+      "reviewer_verdict": "PASS",
+      "parent_code_review_accepted": true,
+      "fabric_ledger_acceptance": "OUTCOME_WRITE_UNCONFIRMED errno 1 at ledger lock; denied write not retried",
+      "four_exact_bad_auth_requests_held": [
+        "DVVDF",
+        "DVXB",
+        "DVYA",
+        "EA"
+      ],
+      "ticker_specific_entitlement_inference_invalidated": true,
+      "new_real_consecutive_captures_observed": true
+    }
+  },
+  "fundamentals": {
+    "served_depth": "Actual ten-company original/revised/daily cohort serves 2023-10-12 through 2026-10-09 despite 1990 requested start.",
+    "original_and_revised_dimensions_preserved": true,
+    "full_account_scope_proven": false,
+    "activation_or_purchase_changed": false,
+    "support_email_sent": false,
+    "new_cohort_successful_requests": 30,
+    "new_cohort_projected_rows": 58501,
+    "unambiguous_original_revised_keys_compared": 9940,
+    "original_revised_changed_values": 518,
+    "qualification_receipt_sha256": "94aa7890f142910655dd9c78876a528be66048dc19c3c52b5767dd0980e53d74"
+  },
+  "terminal": {
+    "pr": 955,
+    "successful_dispatched_run": 38214240947,
+    "successful_jobs": 12,
+    "workflow_file_change": "Complete tablet/mobile 1/2 and 2/2 shard pairs only; existing permissions, limits and tests preserved.",
+    "original_run_approval_executed": false,
+    "approval_control": "Original approval effect remains denied on its carrier. Current original PR run 38214248199 needs maintainer Approve and run; exact human question pending, no approval or protected merge assumed.",
+    "protected_merge_observed": false,
+    "new_deployment_executed": false,
+    "previous_tested_head": "0bc4850632c1496e3e216cac7a25260baa76ed82",
+    "previous_original_pr_run": 38202937001,
+    "current_head": "de8aca83cd6a3072eba861ce494d9e644baca75f",
+    "current_base": "b4095c3debbd8395570c42bf492561472d262f4b",
+    "current_dispatched_run": 38214240947,
+    "current_dispatched_run_status": "completed",
+    "current_original_pr_run": 38214248199,
+    "current_original_pr_run_conclusion": "action_required",
+    "automatic_base_integration": "Protected large-trades/evidence/shared UI integration. Targeted Tiingo/BOATS/extfeed/workflow diff unchanged; TerminalShell chart-focus call now also passes active symbol.",
+    "scope_preservation_receipt_sha256": "5311eeaf7664a0f17e84febaf3802b5934f6ddeca14cb4e4589663f6ba8e5045",
+    "successful_jobs_apply_to_current_head": true,
+    "previous_original_pr_run_conclusion": "action_required",
+    "previous_original_pr_run_event": "pull_request",
+    "current_dispatched_run_conclusion": "success"
+  },
+  "last_observed_vps": {
+    "observed_at_utc": "2026-10-12T05:07:18.061320+00:00",
+    "source_head": "e0c405a09b6897df3b5e4a2f22344f3560b800a4",
+    "deployed_marker": "e0c405a09b6897df3b5e4a2f22344f3560b800a4",
+    "existing_builder_sha256": "7870780dd471076e26e4b9840980414a6ebc59c942f4ac1957c2ad7b770c9ea9",
+    "build_processes": [],
+    "both_services_active": true
+  },
+  "boats_publication": {
+    "finite_invocation_executed": false,
+    "persistent_runtime_or_schedule_installed": false,
+    "earlier_persistent_refusal_preserved": true,
+    "full_raw_relay_hub_api_browser_acceptance": false
+  },
+  "custody": {
+    "existing_collector_unchanged": true,
+    "peer_intraday_partitions_preserved": true,
+    "news_carrier_8697_preserved": true,
+    "blocked_untracked_ceo_handoff_published": false,
+    "new_worker_queue_or_lifecycle": false,
+    "licensed_raw_rows_or_secrets_in_this_receipt": false
+  },
+  "corporate_actions": {
+    "first_cohort_operation": "corporate-actions-eight-20261012-01a12ab6",
+    "result_sha256": "93f40ed6b82d64ad07ef35a7f70cab2ca4ea40be2e5afcfcabb815e38270886c",
+    "attempted": 1,
+    "successful": 0,
+    "failed_path": "/tiingo/corporate-actions/aapl/splits",
+    "http_status": 403,
+    "credential_iterator_collision_absent": true,
+    "retry_or_alternate_account_used": false,
+    "further_requests_stopped": true,
+    "standalone_beta_endpoint_access_not_proven": true,
+    "eod_embedded_actions_remain_distinct_source_evidence": true
+  },
+  "metadata_quota_clock_erratum": {
+    "receipt_sha256": "0e388879ee29975a1362bbdaa182fa5c80e01b95fd87ae6ae472a951a5865999",
+    "old_future_prospective_quota_clock_excluded_from_temporal_acceptance": true,
+    "raw_metadata_capture_clocks_unchanged": true,
+    "corrected_continuation_actual_loaded_browser_clock": "2026-10-12T08:39:22.598Z",
+    "quota_age_enforced_nonnegative_and_maximum_900_seconds": true
+  }
+}

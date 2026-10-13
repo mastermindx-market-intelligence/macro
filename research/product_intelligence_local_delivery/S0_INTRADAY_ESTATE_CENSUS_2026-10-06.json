@@ -1,0 +1,307 @@
+{
+  "main_pin": "0beebb3bd1f246a13396c3bd8f996103a26c3b77",
+  "c0": {
+    "estate": "PARTIAL",
+    "distinct": "DISTINCT",
+    "dec_keys": [
+      "DEC:TREND-PERSISTENCE-STOPS-AT-WAVE-C",
+      "DNR:KILL-TREND-PERSISTENCE-SECTOR-GROUP-PERSISTENCE",
+      "DNR:KILL-TREND-PERSISTENCE-PATH-FEATURE-PROFILE"
+    ]
+  },
+  "estate": [
+    {
+      "source": "polygon_us_equity_hourly",
+      "path": "scripts/build_polygon_intraday.py:1-14",
+      "asset_class": "US equities and US-listed ETFs",
+      "us_single_name": true,
+      "granularity": "1h aggregates (Polygon STANDARD, 15-minute delayed)",
+      "fields": ["open", "high", "low", "close", "volume", "ts"],
+      "adjusted": "adjusted",
+      "session": "scripts/build_polygon_intraday.py:10-14 (vendor session in aggregate timestamps; RTH labeling downstream in engine/intraday_flow.py:43-44)",
+      "storage": "data/intraday/<TICKER>.parquet (gitignored; git ls-tree -r origin/main --name-only data/intraday/ returns empty)",
+      "workflow": ".github/workflows/intraday.yml:55-60; scripts/collect.py:907-913",
+      "rights_marker": "POLYGON_API_KEY | MASSIVE_API_KEY (secrets; collectors/polygon_options.py:221-222)",
+      "cadence": "hourly during US session (.github/workflows/intraday.yml:10-15) plus daily collect accrual"
+    },
+    {
+      "source": "massive_options_opra_minute",
+      "path": "collectors/massive_flatfiles.py:7-8",
+      "asset_class": "US listed options (OPRA)",
+      "us_single_name": false,
+      "granularity": "1m OHLCV per option contract",
+      "fields": ["open", "high", "low", "close", "volume", "transactions"],
+      "adjusted": "UNSTATED",
+      "session": "UNSTATED (grep session_(open|close) collectors/massive_flatfiles.py — no matches)",
+      "storage": "S3 prefix us_options_opra/minute_aggs_v1/ (collectors/massive_flatfiles.py:48)",
+      "workflow": "scripts/collect.py:924-926 (cred probe only); options flow accrual in render/daily band — not minute equity bars",
+      "rights_marker": "MASSIVE_S3_ENDPOINT | MASSIVE_S3_ACCESS_KEY_ID | MASSIVE_S3_SECRET_ACCESS_KEY",
+      "cadence": "daily flatfile drop when creds present"
+    },
+    {
+      "source": "databento_opra_tcbbo",
+      "path": "collectors/databento_tbbo.py:1-8",
+      "asset_class": "US options trades + consolidated NBBO",
+      "us_single_name": false,
+      "granularity": "tick/trade with prevailing BBO",
+      "fields": ["ticker", "ts", "price", "size", "bid", "ask"],
+      "adjusted": "UNSTATED",
+      "session": "collectors/databento_tbbo.py:48-51 (caller-supplied ISO window; whole-day default)",
+      "storage": "NONE (calibration pull; not a committed parquet store)",
+      "workflow": "NONE (manual scripts.calibrate_flow_signing per module docstring)",
+      "rights_marker": "DATABENTO_API_KEY",
+      "cadence": "ad hoc calibration only"
+    },
+    {
+      "source": "thetadata_options",
+      "path": "collectors/thetadata.py:61-68",
+      "asset_class": "US equity options chain",
+      "us_single_name": false,
+      "granularity": "EOD history; intraday trade_quote and live snapshots",
+      "fields": ["greeks", "OI", "trade", "quote", "OHLCV"],
+      "adjusted": "UNSTATED",
+      "session": "collectors/thetadata.py:20-27 (≤7-day windows for bulk history)",
+      "storage": "machine-local thetadata_eod store (engine/thetadata_store.py; .github/workflows/daily.yml:1431)",
+      "workflow": ".github/workflows/daily.yml (options-intel band references engine.thetadata_store)",
+      "rights_marker": "THETA_TERMINAL_URL (local terminal; no cloud key in repo)",
+      "cadence": "nightly options accrual when terminal reachable"
+    },
+    {
+      "source": "tushare_cn_stk_mins",
+      "path": "collectors/tushare_minutes_plane.py:33-36",
+      "asset_class": "China A-share equities",
+      "us_single_name": false,
+      "granularity": "1min/5min/15min/30min/60min",
+      "fields": ["open", "high", "low", "close", "vol", "amount", "bar_class"],
+      "adjusted": "unadjusted",
+      "session": "collectors/tushare_addons.py:321 (09:30 auction bar); A-share session via vendor",
+      "storage": "data/tushare_minutes/<freq>/<ticker>/<year>/part.parquet (collectors/tushare_minutes_plane.py:103)",
+      "workflow": "NONE on main cron (operator backfill scripts/backfill_tushare_minutes.py per receipt)",
+      "rights_marker": "TUSHARE_TOKEN",
+      "cadence": "bulk backfill only after Lane-A probe receipt"
+    },
+    {
+      "source": "yahoo_china_hk_daily_ohlc",
+      "path": "collectors/_stock_ohlc.py:4-10",
+      "asset_class": "China and Hong Kong listed equities",
+      "us_single_name": false,
+      "granularity": "daily",
+      "fields": ["open", "close", "high", "low", "volume"],
+      "adjusted": "both",
+      "session": "collectors/china_stock_prices.py:16-17 (last completed Shanghai session cap)",
+      "storage": "data/china_stocks/<ticker>.parquet; data/hk_stocks/<ticker>.parquet",
+      "workflow": ".github/workflows/daily.yml (china_stocks adapter band via scripts/collect.py)",
+      "rights_marker": "NONE (yfinance public)",
+      "cadence": "nightly"
+    },
+    {
+      "source": "china_stock_prices_adapter",
+      "path": "collectors/china_stock_prices.py:1-9",
+      "asset_class": "China A-share",
+      "us_single_name": false,
+      "granularity": "daily",
+      "fields": ["open", "close", "high", "low", "volume"],
+      "adjusted": "adjusted",
+      "session": "collectors/china_stock_prices.py:16-17",
+      "storage": "data/china_stocks/",
+      "workflow": "daily collect",
+      "rights_marker": "NONE",
+      "cadence": "nightly"
+    },
+    {
+      "source": "coinbase_crypto_candles",
+      "path": "collectors/coinbase.py:4-7",
+      "asset_class": "crypto (BTC/ETH/SOL USD)",
+      "us_single_name": false,
+      "granularity": "daily and 1h",
+      "fields": ["open", "high", "low", "close", "volume"],
+      "adjusted": "UNSTATED",
+      "session": "UNSTATED (UTC candle boundaries)",
+      "storage": "data/coinbase/btc_hourly.parquet (store group coinbase)",
+      "workflow": "daily collect",
+      "rights_marker": "NONE (public REST)",
+      "cadence": "nightly append"
+    },
+    {
+      "source": "okx_crypto",
+      "path": "collectors/okx.py:4-13",
+      "asset_class": "crypto derivatives and spot",
+      "us_single_name": false,
+      "granularity": "daily; funding 8h; taker_volume_hourly intraday timestamps",
+      "fields": ["OHLCV", "funding", "OI", "buy/sell volume"],
+      "adjusted": "UNSTATED",
+      "session": "UNSTATED",
+      "storage": "data/okx/",
+      "workflow": "daily collect",
+      "rights_marker": "NONE (public API)",
+      "cadence": "nightly"
+    },
+    {
+      "source": "cboe_spx_gex_putcall",
+      "path": "collectors/cboe.py:1-14",
+      "asset_class": "US index options context (SPX/SPY chain snapshots)",
+      "us_single_name": false,
+      "granularity": "daily EOD snapshots",
+      "fields": ["put/call ratios", "gamma", "OI", "GEX grid"],
+      "adjusted": "UNSTATED",
+      "session": "collectors/cboe.py:48-50 (write-side session gate on date.today())",
+      "storage": "data/cboe/",
+      "workflow": "daily collect",
+      "rights_marker": "NONE (public CDN endpoints)",
+      "cadence": "nightly"
+    },
+    {
+      "source": "ibkr_borrow_snapshot",
+      "path": "collectors/ibkr_borrow.py:4-28",
+      "asset_class": "US equities borrow fee panel",
+      "us_single_name": true,
+      "granularity": "snapshot (~15m refresh at vendor; one capture per run)",
+      "fields": ["fee_pct", "avail_shares", "snapshot_et"],
+      "adjusted": "UNSTATED",
+      "session": "collectors/ibkr_borrow.py:7 (IBKR stamp US/Eastern)",
+      "storage": "data/ibkr_borrow/daily/<YYYY-MM-DD>.parquet",
+      "workflow": "daily collect when FTP reachable",
+      "rights_marker": "NONE (anonymous FTP)",
+      "cadence": "daily capture; no historical backfill"
+    },
+    {
+      "source": "intraday_flow_ledger",
+      "path": "scripts/build_intraday_flow.py:14-17",
+      "asset_class": "US flow-tracker universe (options-centric leaders)",
+      "us_single_name": true,
+      "granularity": "derived from hourly bars + options context (not raw quote tape)",
+      "fields": ["VWAP", "volume_durability", "forward return stamps"],
+      "adjusted": "inherits polygon intraday adjusted plane",
+      "session": "engine/intraday_flow.py:43-44 (09:30-16:00 ET hourly expectation)",
+      "storage": "data/intraday_flow/ledger.parquet (git ls-tree shows single committed ledger path)",
+      "workflow": ".github/workflows/intraday-fastpath.yml:164; .github/workflows/closing-bell.yml:379",
+      "rights_marker": "POLYGON_API_KEY (upstream bars) + existing options stores",
+      "cadence": "30-min fastpath during session; nightly base"
+    },
+    {
+      "source": "marketdesk_extractor",
+      "path": "collectors/marketdesk_extractor/extractor/docs/MARKETDESK_API.md",
+      "asset_class": "sell-side research documents",
+      "us_single_name": false,
+      "granularity": "N/A",
+      "fields": ["document metadata", "text extracts"],
+      "adjusted": "N/A",
+      "session": "UNSTATED",
+      "storage": "NONE in macro price plane",
+      "workflow": "NONE",
+      "rights_marker": "NONE in collectors (operator credentials out of band)",
+      "cadence": "N/A"
+    }
+  ],
+  "sessions": [
+    {
+      "path": "engine/prophet_entry_policy.py",
+      "line": 58,
+      "definition": "NYSE RTH execution window for B4: 09:30–16:00 ET regular close; 13:00 early close on enumerated dates; pre/post fails closed"
+    },
+    {
+      "path": "lib/nyse_calendar.py",
+      "line": 10,
+      "definition": "NYSE full-day closure rules for expected_last_session; documents early closes NOT modeled (line 11–12)"
+    },
+    {
+      "path": "engine/session_digest.py",
+      "line": 43,
+      "definition": "Regular US options session digest assumes up to 7 hourly buckets for 09:30–16:00 ET"
+    },
+    {
+      "path": "engine/intraday_flow.py",
+      "line": 43,
+      "definition": "Volume-share curve documents regular 9:30–16:00 ET session for hourly bar inputs"
+    },
+    {
+      "path": "engine/prophet_live/live_states.py",
+      "line": 382,
+      "definition": "preopen before 09:30 ET else rth — live state clock split"
+    },
+    {
+      "path": "collectors/tushare_addons.py",
+      "line": 321,
+      "definition": "A-share 09:30 opening call-auction bar contract (China, not US)"
+    }
+  ],
+  "strength_modules": [
+    {
+      "path": "engine/us_board_rank.py",
+      "line": 1954,
+      "windows": "63-session trailing total return cross-sectional z-score (LEADERS_MOMENTUM_SESSIONS)",
+      "benchmark": "implicit cross-section among universe closes (not SPY-relative in total_return_z)",
+      "normalization": "cross-sectional z-score of trailing total returns",
+      "intraday": false
+    },
+    {
+      "path": "engine/index_leadership.py",
+      "line": 45,
+      "windows": "1W=5, 1M=21, 3M=63, 6M=126, 1Y=252 trading-day bars on daily closes",
+      "benchmark": "cross-tab median for acceleration legs; subsector basket RS",
+      "normalization": "percent returns and z-scored rotation metrics",
+      "intraday": false
+    },
+    {
+      "path": "engine/subsector_rotation_alerts.py",
+      "line": 3,
+      "windows": "state-change detection on daily subsector_rotation outputs (no fixed r10/r20 windows)",
+      "benchmark": "engine.subsector_rotation relative strength vs peers",
+      "normalization": "quadrant / turn flags, not intraday bars",
+      "intraday": false
+    },
+    {
+      "path": "engine/theme_context.py",
+      "line": 105,
+      "windows": "consumes rank_row r10 (10-session basket return from narrative_rotation)",
+      "benchmark": "theme basket equal-weight level series vs bench in narrative_rotation allocate path",
+      "normalization": "health bands on breadth + r10 + label/reco",
+      "intraday": false
+    },
+    {
+      "path": "engine/narrative_rotation.py",
+      "line": 851,
+      "windows": "r10 = 10-session cumulative basket return (_cum_ret lvl, 10, skip=0); ranks use residual momentum horizons in allocate()",
+      "benchmark": "bench_close in setup (daily)",
+      "normalization": "rank/score/z_resid_mom on daily closes",
+      "intraday": false
+    },
+    {
+      "path": "engine/rotation_events.py",
+      "line": 48,
+      "windows": "daily PARAMS_V2: runup_window 25, low_lookback 40, peak_within 25, etc.",
+      "benchmark": "pairwise leg ratios on daily close series",
+      "normalization": "z-scores and slope gates on daily sessions",
+      "intraday": false
+    }
+  ],
+  "trend_persistence": {
+    "tested": "Eleven GICS sector, as-of-now-labelled group persistence features vs relative-to-SPY forward return at 20 and 60 sessions on S&P 1500 PIT universe (DEC-TREND-PERSISTENCE-STOPS-AT-WAVE-C; DNR:KILL-TREND-PERSISTENCE-SECTOR-GROUP-PERSISTENCE)",
+    "verdict": "C1-NULL",
+    "package_s": "Frozen decision-time theme-relative intraday strength with explicit US session boundaries, trailing-only beta/vol, and descriptive (non-authority) registration — not sector group rank-linear persistence on daily forward horizons",
+    "distinct": "DISTINCT — different hypothesis grain (intraday/theme vs daily sector group cells), different time axis (decision clock vs formation-date forward sessions), and explicit rejection of reopening Trend Persistence per package text and DNR kills"
+  },
+  "gap_verdict": {
+    "verdict": "CONFIRMED_GAP",
+    "evidence": "No positively recovered US single-name intraday bar store on origin/main: git ls-tree data/intraday empty; engine/stock_identity/replay/registry.py:109 states no U.S. equity intraday bars in-repo; only documented path is gitignored hourly 15-min-delayed adjusted Polygon bars (scripts/build_polygon_intraday.py:1-14) requiring POLYGON_API_KEY/MASSIVE_API_KEY and runner-local cache — insufficient for theme-relative intraday strength study without new registration and estate recovery"
+  },
+  "registration": [
+    {"field": "decision time", "pins": "engine/prophet_entry_policy.py:86-95 (_parse_decision_at offset-aware ISO) | GAP for package-S-specific freeze document"},
+    {"field": "session boundaries", "pins": "engine/prophet_entry_policy.py:58-66 | lib/nyse_calendar.py:10-13 (early-close gap must be resolved)"},
+    {"field": "trailing-only beta/vol", "pins": "GAP — Trend Persistence used member trailing returns/vol in Mastermind B* baseline (DEC-TREND-PERSISTENCE-STOPS-AT-WAVE-C:16-22); no macro engine owner for intraday trailing beta/vol at theme grain"},
+    {"field": "benchmark overlap", "pins": "engine/narrative_rotation.py:843 (bench_close in allocate) | GAP for intraday benchmark overlap rules"},
+    {"field": "self-inclusion", "pins": "GAP — no pre-registration owner for theme basket self-inclusion at intraday decision times"},
+    {"field": "stale/missing/zero returns", "pins": "scripts/build_polygon_intraday.py:171-185 (corrupt/missing file → cold lookback) | GAP for study-level treatment"},
+    {"field": "halts/corporate actions", "pins": "GAP — US equity minute/hour plane documents adjusted=true (scripts/build_polygon_intraday.py:135-136) but no halt/corp-action pin for package S"},
+    {"field": "membership cutoff", "pins": "data/baskets/membership.json consumed in scripts/build_intraday_flow.py:24-25 | engine/theme_scoring.py:659 (membership cached by as-of) — daily theme membership, not intraday PIT pin"},
+    {"field": "baselines", "pins": "engine/narrative_rotation.py:851-854 (r10 descriptive fast-tape) | GAP for intraday residual/raw baselines"},
+    {"field": "costs", "pins": "GAP — no macro registration for observation costs; Databento hard cap collectors/databento_tbbo.py:26-27 is unrelated calibration spend guard only"}
+  ],
+  "gaps": [
+    "US equity minute-bar estate absent on main (registry.py:109; ls-tree data/intraday empty)",
+    "Polygon hourly estate is runner-local/gitignored — not positively recovered from origin/main tree",
+    "Multiple session definitions (nyse_calendar early-close omission vs prophet_entry_policy enumerated early closes)",
+    "No engine consumer for theme-relative intraday strength research (only display/chart/IFT fastpath)",
+    "package-S registration fields mostly GAP pending new prereg document"
+  ]
+}

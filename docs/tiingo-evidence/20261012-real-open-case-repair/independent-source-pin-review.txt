@@ -1,0 +1,19 @@
+Independent reasoning reviewer tiingo_integrity_review: single-row LIVE pin refresh PASS.
+
+Reviewed committed base: 1cea273c72487f1fae77dc579b3e628ec435a55c.
+Qualified producer: 763 lines / SHA256 25e2866a24562e50fe5ba3bf996e83c1c021b9bc9599e7cce98be6cd29877476.
+Qualified test SHA256: 554564e21844e4fa8d3c3cd39d0a5fe5b8123ceba1d0e44dd08733b04a3129da.
+
+PASS for the proposed single-row LIVE source-pin refresh, bound to the reviewed producer and test hashes. The case repair restores the existing BOATS display contract for observed lowercase vendor tickers; it does not expand the classified public object or publication authority.
+
+I independently compared the producer's actual old/new ASTs. Every top-level node except BoatsLastTrade is identical. Within that class, only __init__ and consume change: the constructor error wording distinguishes display coverage keys, and consume validates an ASCII ticker string before mapping its case into those existing uppercase keys. Quotes, breaks, invalidation, and trade watermarks use the same mapped key. Case variants cannot create separate watermarks or let an older trade bypass the existing ordering check. The raw message and decoded vendor ticker remain exact. This is a local display-key mapping, with no canonical security-identity admission.
+
+The public allowlist, publisher/client boundary, default coverage, schema, sale-condition eligibility, clocks, expiry, and freshness logic remain unchanged. Both registered anchors retain their exact bytes and locations: line57 R2_KEY and line373 public_boats_payload.
+
+Retained source tests support the repair: seven failed/thirteen passed before correction; seventy display/chain passes afterward. Classification produced one failed/twenty passed because the receipt still said760lines while qualified source has763. The retained immutable offline replay is bound to the reviewed producer, preserves raw frames, admits only AAPL, verifies raw price/event lineage, excludes odd-lot trades and passes the unchanged public allowlist at the original capture clock. It explicitly records no publication or production-consumer acceptance.
+
+The permitted change is only the existing scripts/build_ext_quotes.py row in tests/fixtures/r2_delivery_macro_evidence_files.v1.tsv: 760/9d477b... to763/25e286.... Preserve historical snapshot identity, anchor rows, category, tier, envelope, classification, rights, provider/runtime permissions and every other receipt row.
+
+This PASS is falsified by any difference in producer/test hashes; non-ASCII/coerced normalization; separate quote/watermark case keys; rewritten raw identity; or changes to public allowlist, eligibility, clocks, coverage, publisher or permission boundaries. After refresh require the unchanged classification suite and applicable exact-head hosted CI.
+
+I made no modifications, reran no tests, inspected no credentials and performed no provider or R2 effects. This review confers no runtime or publication permission.

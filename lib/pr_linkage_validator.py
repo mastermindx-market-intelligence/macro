@@ -731,8 +731,17 @@ def _validate_report(report: dict[str, Any]) -> None:
     authoring_error_rules = {f"R{number:03d}" for number in range(2, 13)} | {"R020", "R022"}
     declaration_field_names = {"workstream":"Workstream", "linear":"Linear", "portfolio_mode":"Portfolio-Mode",
                                "wave":"Wave", "authority":"Authority", "completion":"Completion"}
-    missing_declaration_fields = sorted(name for key, name in declaration_field_names.items() if declaration[key] is None)
-    all_declaration_values = not missing_declaration_fields
+    null_declaration_fields = {name for key, name in declaration_field_names.items() if declaration[key] is None}
+    all_declaration_values = not null_declaration_fields
+    # Null also represents a PRESENT but invalid scalar after normalization.
+    # R001 describes literal omissions, so retain the distinction already carried
+    # by validated per-field findings (including an unresolved compatibility alias).
+    present_invalid_rules = {f"R{number:03d}" for number in range(4, 13)} | {"R020", "R022"}
+    present_invalid_fields = {
+        finding["evidence"].get("field", finding["location"].rsplit(":", 1)[-1])
+        for finding in findings if finding["rule_id"] in present_invalid_rules
+    }
+    missing_declaration_fields = sorted(null_declaration_fields - present_invalid_fields)
     missing_finding_matches = (len(by_rule.get("R001", [])) == 1
                                and by_rule["R001"][0]["evidence"]["missing_fields"] == missing_declaration_fields)
     if ((authoring_state == "CANONICAL" and not all_declaration_values)

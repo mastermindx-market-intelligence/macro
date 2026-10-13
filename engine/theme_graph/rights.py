@@ -62,6 +62,14 @@ NODE_PREFIX_FAMILY: tuple[tuple[str, str], ...] = (
 #: comparison. Deliberately a prefix table and not a parse of the registry's
 #: ``source_route`` prose: a warning derived from prose would drift silently the first
 #: time somebody rewords a note.
+#:
+#: Two boundaries here are deliberate:
+#: * accepted v2 relation-lifecycle evidence is house-curated evidence, so only its
+#:   exact fragment-bearing artifact prefix maps to ``mastermind_curated``; the wider
+#:   probation tree remains unmapped because proposals are not production evidence.
+#: * ``site/factordata/us_standouts.json`` is intentionally absent. Coverage-gap
+#:   tooling may record it as selection-population provenance, but it is not a GMI
+#:   graph-evidence source family and therefore must remain fail-closed at use gates.
 SOURCE_PREFIX_FAMILY: tuple[tuple[str, str], ...] = (
     ("finviz_themes/", "finviz_themes"),
     ("data/themes_heatmap/", "finviz_themes"),
@@ -72,6 +80,10 @@ SOURCE_PREFIX_FAMILY: tuple[tuple[str, str], ...] = (
     ("data/baskets_canada/", "mastermind_curated"),
     ("data/baskets_intl/", "mastermind_curated"),
     ("config/theme_crosswalk.yml", "mastermind_curated"),
+    ("config/theme_graph_identity_breaks.yml#", "mastermind_curated"),
+    ("config/theme_graph_duplicate_mints.yml#", "mastermind_curated"),
+    ("gmi:entity_type_conflict:", "mastermind_curated"),
+    ("data/theme_graph/probation/relation_events.v2.jsonl#", "mastermind_curated"),
 )
 
 
