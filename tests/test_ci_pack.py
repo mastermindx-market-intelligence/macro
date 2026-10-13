@@ -4921,7 +4921,7 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # each number is the docstring of the test below. scripts/check_contract_delta.py
 # reads both names with ast.literal_eval, so keep them plain module-level literals.
 PACKING_PROBES = (
-    ("templates/index.html", 135, 5_800),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("templates/index.html", 135, 5_803),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
     ("scripts/build_free_content.py", 134, 5_600),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
     ("engine/prophet/plan_book.py", 129, 5_600),
 )
@@ -5572,6 +5572,37 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     closure, so the probe reads 5,793 (head) against 5,805 before
     the move. No ceiling moves; no suite, registration, assertion or selector
     is removed or weakened.
+
+    2026-10-13 (SNI INT1, ``sni-public-exposure-scan``): the WEIGHT ceiling
+    on templates/index.html is RATCHETED 5,800 -> 5,803. This is the
+    decision the 2026-09-24 entry said the next entrant would need. The
+    job is already ``scope: exclusive`` with no fallback tier. It enters
+    this probe on its OWN declared subject: it reads templates/** as text
+    to prove that no public template serves, renders or links SNI
+    material, and its test_ci_job_declares_every_scanned_surface reds if
+    that path is dropped. That is the wave-7 ratchet case, not a smear to
+    curate. Its weight is the estimator floor for a one-suite job (two
+    run steps + one tests/ path = 4). Hosted contract-delta run
+    38379913058 / job 115237474626, base 70de9c667b80:
+
+        templates/index.html          134 -> 135 jobs, 5,799 -> 5,803 weight
+        scripts/build_free_content.py 134 -> 134 jobs, 5,602 -> 5,602 weight
+        engine/prophet/plan_book.py   129 -> 129 jobs, 5,562 -> 5,562 weight
+
+    sni-public-exposure-scan is the only newly selected job, and only on
+    the template probe. The ceiling moves to the exact measurement, with
+    no padding. Job ceilings (135 / 134 / 129), the other two weight
+    ceilings (5,600 / 5,600) and the 10-pack ceiling are unchanged.
+    Alternatives rejected:
+    - dropping templates/** from the job would leave template edits
+      unguarded;
+    - folding the suite into an existing template-riding job still adds
+      +2 (5,801);
+    - an OBSERVED_COMMAND_SECONDS entry below the estimator would
+      understate a job that installs packages.
+    In the same run, build_free_content was already at 5,602 against its
+    5,600 ceiling on the base. That was reported as inherited, not
+    introduced, and is left for a separate heal.
     """
     rows = packing_probe_measurements(
         MANIFEST, PACKING_PROBES, max_packs=PACKING_PROBE_MAX_PACKS
