@@ -1,0 +1,188 @@
+diff --git a/scripts/build_vector.py b/scripts/build_vector.py
+index c5a5be0b5be..924cfbc697b 100644
+--- a/scripts/build_vector.py
++++ b/scripts/build_vector.py
+@@ -206,6 +206,9 @@ def emit_risk_strategy_json(site: Path, sig: pd.DataFrame) -> None:
+     alloc, equity, markers = {}, {}, {}
+     hodl = (1 + close.pct_change().fillna(0)).cumprod()
+     for v in variants:
++        # Dense on purpose: vector_chart.js multiplies every equity point and
++        # toFixed's every alloc point, so a withheld NaN becomes 0 or throws.
++        # scorecard() is the path that withholds a missing allocation.
+         a = sig[f"alloc_{v}"].fillna(0.0)
+         alloc[v] = [round(float(x), 3) for x in a]
+         equity[v] = [round(float(x), 4) for x in alloc_equity(close, a)]
+@@ -719,13 +722,60 @@ def emit_crypto_cockpit_json(
+ # --------------------------------------------------------------------------- #
+ # view-model computations
+ # --------------------------------------------------------------------------- #
+-def alloc_equity(close: pd.Series, alloc: pd.Series) -> pd.Series:
++def _index_pos(index: pd.Index, label) -> int:
++    loc = index.get_loc(label)
++    if isinstance(loc, slice):
++        return int(loc.start or 0)
++    if isinstance(loc, (int, np.integer)):
++        return int(loc)
++    return int(np.flatnonzero(np.asarray(loc, dtype=bool))[0])
++
++
++def _observed_alloc_window(close: pd.Series, alloc: pd.Series):
++    """Drop the leading in-index run where the allocation is missing.
++
++    Returns (kept_close, kept_alloc, withheld_days). The kept window starts at
++    the first non-null allocation on ``close.index`` and is scored with the
++    original shift(1) / ffill / fillna(0) one-liner, so the mechanical lag on
++    that first *observed* day stays a flat 0. An all-present series therefore
++    returns the original objects and withheld_days 0. Later holes stay inside
++    the window: ffill carry is unchanged. All-null → empty kept frames.
++    """
++    aligned = alloc.reindex(close.index)
++    first = aligned.first_valid_index()
++    if first is None:
++        return close.iloc[0:0], aligned.iloc[0:0], int(len(close))
++    loc = _index_pos(close.index, first)
++    if loc == 0:
++        return close, alloc, 0
++    return close.iloc[loc:], aligned.iloc[loc:], int(loc)
++
++
++def _equity_one_liner(close: pd.Series, alloc: pd.Series) -> pd.Series:
+     ret = close.pct_change().fillna(0)
+     pos = alloc.shift(1).reindex(ret.index).ffill().fillna(0)
+     return (1 + pos * ret).cumprod()
+ 
+ 
+-def scorecard(close: pd.Series, alloc: pd.Series) -> dict:
++def alloc_equity(close: pd.Series, alloc: pd.Series) -> pd.Series:
++    """Strategy equity. A missing leading allocation is a gap, not a flat 0 position."""
++    kept_close, kept_alloc, n_withheld = _observed_alloc_window(close, alloc)
++    if kept_close.empty:
++        return pd.Series(np.nan, index=close.index, dtype="float64")
++    eq = _equity_one_liner(kept_close, kept_alloc)
++    if n_withheld == 0:
++        return eq
++    gap = pd.Series(np.nan, index=close.index[:n_withheld], dtype="float64")
++    return pd.concat([gap, eq])
++
++
++_SCORECARD_KEYS = (
++    "cagr", "sharpe", "sortino", "maxdd", "in_market",
++    "hodl_cagr", "hodl_sharpe", "hodl_maxdd", "x_hodl",
++)
++
++
++def _scorecard_one_liner(close: pd.Series, alloc: pd.Series) -> dict:
+     ret = close.pct_change().fillna(0)
+     pos = alloc.shift(1).reindex(ret.index).ffill().fillna(0)
+     strat = pos * ret
+@@ -754,6 +804,42 @@ def scorecard(close: pd.Series, alloc: pd.Series) -> dict:
+     }
+ 
+ 
++def _unavailable_scorecard(n_withheld: int) -> dict:
++    card = {k: float("nan") for k in _SCORECARD_KEYS}
++    card["withheld_days"] = int(n_withheld)
++    return card
++
++
++def scorecard(close: pd.Series, alloc: pd.Series) -> dict:
++    """Same metrics as the historical one-liner, on rows with an observed allocation.
++
++    ``withheld_days`` counts leading rows excluded because the allocation was
++    missing. It is 0 when nothing was withheld. An all-null allocation yields
++    unavailable metrics, never zeros.
++    """
++    kept_close, kept_alloc, n_withheld = _observed_alloc_window(close, alloc)
++    if kept_close.empty:
++        return _unavailable_scorecard(n_withheld)
++    card = _scorecard_one_liner(kept_close, kept_alloc)
++    card["withheld_days"] = int(n_withheld)
++    return card
++
++
++def _scorecard_for_json(cards: dict) -> dict:
++    """null for non-finite metrics so cards|tojson survives JSON.parse.
++
++    A finite card is unchanged, including the extra withheld_days key. The
++    inline script reads only data-m attributes and ignores that key.
++    """
++    safe = {}
++    for name, card in cards.items():
++        row = {}
++        for key, value in card.items():
++            row[key] = None if isinstance(value, float) and pd.isna(value) else value
++        safe[name] = row
++    return safe
++
++
+ def alloc_sizing(last: pd.Series, eq: pd.Series, acfg: dict) -> dict:
+     """Decompose the live optimal allocation into the Point-4 factors that now SIZE it,
+     so the % on the page is explained, not a bare number: the conviction multiplier
+@@ -762,10 +848,18 @@ def alloc_sizing(last: pd.Series, eq: pd.Series, acfg: dict) -> dict:
+     This is what closes the old 'conviction is just a label' gap on the dashboard."""
+     from engine import btc_signals
+     cp = float(last["cycle_position"]) if pd.notna(last.get("cycle_position")) else 0.5
+-    dd = float(eq.iloc[-1] / eq.cummax().iloc[-1] - 1.0)
++    # A leading withheld gap is NaN. cummax would poison the whole curve and
++    # round() would raise, which would change the live brake read. Finite
++    # equity (no gap) is unchanged: dropna is a no-op and the formula matches.
++    eq_obs = eq.dropna()
++    dd = (float(eq_obs.iloc[-1] / eq_obs.cummax().iloc[-1] - 1.0)
++          if len(eq_obs) else float("nan"))
+     thr, decay = float(acfg.get("dd_threshold", 0.25)), float(acfg.get("dd_decay", 1.0))
+     floor = float(acfg.get("dd_floor", 0.40))
+-    cap = min(1.0, max(floor, 1.0 - decay * max(0.0, (-dd) - thr)))
++    if pd.isna(dd):
++        cap = float("nan")
++    else:
++        cap = min(1.0, max(floor, 1.0 - decay * max(0.0, (-dd) - thr)))
+     # bottom-detector overlay (adds size at washout lows the brake would otherwise sit out)
+     b_thr = float(acfg.get("bottom_thr", 0.30))
+     b_boost = float(acfg.get("bottom_boost", 0.40))
+@@ -775,9 +869,9 @@ def alloc_sizing(last: pd.Series, eq: pd.Series, acfg: dict) -> dict:
+     return {
+         "tier": btc_signals.conviction_tier(cp, acfg),
+         "mult": round(float(btc_signals.conviction_multiplier(cp, acfg)), 2),
+-        "brake_active": bool(cap < 0.999),
+-        "brake_cap": round(100 * cap),
+-        "dd": round(100 * dd),
++        "brake_active": bool(pd.notna(cap) and cap < 0.999),
++        "brake_cap": round(100 * cap) if pd.notna(cap) else None,
++        "dd": round(100 * dd) if pd.notna(dd) else None,
+         "bottom_pressure": round(100 * bp),
+         "bottom_active": bool(b_add > 0.005),
+         "bottom_add": round(100 * b_add),
+@@ -4098,7 +4192,12 @@ def build_override_shadow(sig: pd.DataFrame, gate: dict, ct: dict, acfg: dict,
+         eq_r = alloc_equity(close, raw["alloc_optimal"])
+         t0 = pd.Timestamp(year=int(asof.year), month=1, day=1)
+         if bool(gate.get("active")) and close.index.min() <= t0:
+-            seg_g, seg_r = eq_g.loc[eq_g.index >= t0], eq_r.loc[eq_r.index >= t0]
++            # dropna: a withheld leading gap must not make iloc[0] NaN and then
++            # `regret or 0` publish a fake 0pp. A fully finite window is unchanged.
++            seg_g = eq_g.loc[eq_g.index >= t0].dropna()
++            seg_r = eq_r.loc[eq_r.index >= t0].dropna()
++            if seg_g.empty or seg_r.empty:
++                raise ValueError("allocation withheld over the gate window")
+             g_ret = 100 * (seg_g.iloc[-1] / seg_g.iloc[0] - 1)
+             r_ret = 100 * (seg_r.iloc[-1] / seg_r.iloc[0] - 1)
+             rebased = pd.DataFrame({"gated": seg_g / seg_g.iloc[0],
+@@ -4111,8 +4210,8 @@ def build_override_shadow(sig: pd.DataFrame, gate: dict, ct: dict, acfg: dict,
+                     continue
+                 rel_y = btc_signals._us_election_date(y) - pd.Timedelta(
+                     days=int(mg_cfg.get("buy_lead_days", 0)))
+-                w = eq_r.loc[(eq_r.index >= j1) & (eq_r.index <= j1 + pd.Timedelta(days=elapsed))]
+-                fw = eq_r.loc[(eq_r.index >= j1) & (eq_r.index <= rel_y)]
++                w = eq_r.loc[(eq_r.index >= j1) & (eq_r.index <= j1 + pd.Timedelta(days=elapsed))].dropna()
++                fw = eq_r.loc[(eq_r.index >= j1) & (eq_r.index <= rel_y)].dropna()
+                 if len(w) < 30 or len(fw) < 30:
+                     continue
+                 prior.append({
+@@ -4836,7 +4935,7 @@ def main() -> int:
+         "scn": scnd,
+         "sizing": sizing,
+         "catalyst": catalyst,
+-        "cards": cards,
++        "cards": _scorecard_for_json(cards),
+         "cross": cross_asset(close),
+         "calib": calib,
+         "timeline": timeline,
