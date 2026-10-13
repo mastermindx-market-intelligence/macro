@@ -1,0 +1,145 @@
+{
+  "module_docstring": "SNI-local DRAFT contract. Consumes owner-supplied values from Data OS identity, Company Event/Earnings, FIF, Capital Structure, Stock Identity, Options, Research Vault, and qledger/Evaluation. Does not re-implement those owners. Identity ids are caller-supplied opaque strings; unknown identity stays UNRESOLVED / null. A01 changes no status, budget, split, horizon, null or retirement rule of the frozen register.",
+  "title": "S0 register amendment A01 — DRAFT",
+  "status": "DRAFT",
+  "applied": false,
+  "amends": "research/single_name_intelligence/protocols/S0_PROTOCOL_REGISTER.md",
+  "amends_blob": "a0b5cc584a4414ac85ff4cd56616fe23254f595f",
+  "drafted_by": "grok-4.6 lane S0D under seat 508c3757",
+  "drafted_at": "2026-10-13T03:11:37Z",
+  "rank_authority": false,
+  "gate_authority": false,
+  "size_authority": false,
+  "signal_authority": false,
+  "escalation_authority": false,
+  "trade_authority": false,
+  "effect": "A01 changes no status, budget, split, horizon, null or retirement rule of the frozen register; it only declares successor pointers and records UNRESOLVED identity facts. It takes effect only when the seat accepts it under register §2.",
+  "successor_rows": [
+    {
+      "protocol_id": "P01",
+      "retired_version": "v1",
+      "split": "TUNE",
+      "retirement_source": "research/single_name_intelligence/protocols/S0_PROTOCOL_REGISTER.md:290 (origin/main §7; information_leak)",
+      "successor_pointer": "P01 v2 — NOT DRAFTED; owner seat/S0",
+      "successor_status": "NOT DRAFTED",
+      "budget_floor_carried": 6,
+      "owner": "seat/S0"
+    },
+    {
+      "protocol_id": "P02",
+      "retired_version": "v1",
+      "split": "n/a (freeze, not a §7 retirement)",
+      "retirement_source": "research/single_name_intelligence/protocols/S0_PROTOCOL_REGISTER.md:303 (origin/main §8 budget freeze: \"frozen before the bridge, so a bridged successor cannot claim a fresh budget\"); also §9 P02 L362",
+      "successor_pointer": "bridged successor — BRIDGE-FROZEN; inherits the carried budget floor 4 per register §8 'Successors'; NOT DRAFTED",
+      "successor_status": "BRIDGE-FROZEN",
+      "budget_floor_carried": 4,
+      "owner": "seat/S0"
+    },
+    {
+      "protocol_id": "P03",
+      "retired_version": "v1",
+      "split": "TUNE",
+      "retirement_source": "research/single_name_intelligence/protocols/S0_PROTOCOL_REGISTER.md:291 (origin/main §7; information_leak)",
+      "successor_pointer": "P03 v2 — NOT DRAFTED; owner seat/S0; still BRIDGE REQUIRED",
+      "successor_status": "NOT DRAFTED",
+      "budget_floor_carried": 4,
+      "owner": "seat/S0"
+    },
+    {
+      "protocol_id": "P04",
+      "retired_version": "v1",
+      "split": "TUNE",
+      "retirement_source": "research/single_name_intelligence/protocols/S0_PROTOCOL_REGISTER.md:324 (claude/sni-s2-ship-20261012 @ 413ea4ad8497f9bd07235fd583b9b67eca085559; information_leak; row not on origin/main)",
+      "successor_pointer": "P04 v2 — DRAFT at research/single_name_intelligence/event_response/P04_V2_PREREG_DRAFT.md (not registered; no outcome)",
+      "successor_status": "DRAFT",
+      "budget_floor_carried": 6,
+      "owner": "seat/S0"
+    }
+  ],
+  "successor_rule": {
+    "citation": "research/single_name_intelligence/protocols/S0_SPLIT_AND_CONTAMINATION_LAW.md §8",
+    "successor_is_new_version": "SL §8 step 5 L189",
+    "nothing_refilled": "SL §8 L144; step 5 L189",
+    "budget_at_least_carried": "SL §8 step 5 L192; register §8 Successors L298",
+    "retired_rows_never_deleted": "SL §8 step 3 L185; register §7 L284"
+  },
+  "us_mag7_pointer": {
+    "family": "sni.us_transfer.RESID-DIR-US",
+    "status": "DRAFT IN FLIGHT — not on main",
+    "successor_status": "DRAFT IN FLIGHT",
+    "path": "research/single_name_intelligence/us_transfer/A8_US_RESIDUAL_TRANSFER_PREREG_DRAFT.md",
+    "exists_on_main": false,
+    "not_p07": "NOT P07 (P07 = EVT-RESPONSE-WINDOW, intraday, procurement-gated)",
+    "cohort": "hindsight-selected cohort: stress of method mechanics only, never transfer evidence"
+  },
+  "tcehy": {
+    "label": "TCEHY",
+    "canonical_issuer_id": null,
+    "security_id": null,
+    "issuer_link": "UNRESOLVED",
+    "admission": "NOT ADMITTED",
+    "facts": [
+      {
+        "fact": "yahoo price file present at data/yahoo/TCEHY.parquet; presence is not admission",
+        "source": "git ls-tree origin/main data/yahoo/TCEHY.parquet blob 0c03b5f83178ddf2ed9c25f39ef7688139ed24be (metadata only)"
+      },
+      {
+        "fact": "TCEHY absent from security_master; issuer_link UNRESOLVED",
+        "source": "research/single_name_intelligence/SNI_U0_COMPANY_INTELLIGENCE_REUSE_MAP.md:15 and :20"
+      },
+      {
+        "fact": "KWEB is a proxy and never a Tencent quote",
+        "source": "research/single_name_intelligence/protocols/S0_PROTOCOL_REGISTER.md:611 (P13); engine/hk_adr_bridge.py:85; S0_INDEPENDENCE_LAW.md:80; SNI_M0_MARKET_DATA_QUALIFICATION_2026-10-11.md:133-134"
+      },
+      {
+        "fact": "no same-issuer ADR counter in Data OS; KWEB is an ETF proxy; yahoo TCEHY price file exists (4,216 rows 2010-01-05..2026-10-08); profile cell UNRESOLVED. A proxy is not a basis; a TCEHY basis would need Data OS admission of the OTC ADR plus a carried ADS ratio.",
+        "source": "config/single_name_intelligence/coverage_profiles/tencent.yml:499-507, :511"
+      },
+      {
+        "fact": "U0 L20 UNRESOLVED (absent from security_master; price only); U0 journey L36 TCEHY absent from the masters; M0 L135 cell UNRESOLVED and presence is not admission; E0 L155 Data OS security UNRESOLVED and presence is not admission; IL L81 Step 0 exclusion; V0 L31 path presence is not admission",
+        "source": "SNI_U0_COMPANY_INTELLIGENCE_REUSE_MAP.md:20; SNI_U0_REFERENCE_JOURNEY_AND_WIRE_CONTRACT_DRAFT.md:36; SNI_M0_MARKET_DATA_QUALIFICATION_2026-10-11.md:135; SNI_E0_ISSUER_EVIDENCE_QUALIFICATION_2026-10-11.md:155; S0_INDEPENDENCE_LAW.md:81; SNI_V0_EVALUATION_SUPPORT_MATRIX.md:31"
+      }
+    ],
+    "blobs_metadata_only": {
+      "data/yahoo/TCEHY.parquet": "0c03b5f83178ddf2ed9c25f39ef7688139ed24be",
+      "data/yahoo/KWEB.parquet": "d42bd75db56f8ad5c2530ee415262a0c68b913bd",
+      "data/reference/security_master.parquet": "85ef75104840b6b5be3aceeac21f1dbfabad6472",
+      "data/reference/issuer_master.parquet": "6643e7eae37940d800659f7b4589f242ec70ef45"
+    },
+    "exit_conditions": [
+      {
+        "order": 1,
+        "condition": "Data OS admits the security",
+        "owner": "Data OS identity / security master"
+      },
+      {
+        "order": 2,
+        "condition": "an ADS-ratio owner exists",
+        "owner": "Capital Structure / corporate actions; register P13 cites M0 gap 3"
+      },
+      {
+        "order": 3,
+        "condition": "FX leg/clock receives Data OS market-data admission",
+        "owner": "Data OS market data; M0 gap 5"
+      },
+      {
+        "order": 4,
+        "condition": "the seat may draft a Tencent leg for a P13-style DIAGNOSTIC only",
+        "owner": "seat/S0"
+      }
+    ],
+    "mint_ban": "No SNI lane may mint, derive or normalise an issuer or security id for this instrument from its ticker, name, CIK, FIGI or ISIN."
+  },
+  "owner_follow_on": {
+    "subject": "stale TCEHY yahoo-store comment in engine/hk_adr_bridge.py L83 (and L26 routing note)",
+    "owner": "the hk_adr_bridge module owner",
+    "sources": [
+      "engine/hk_adr_bridge.py:83",
+      "engine/hk_adr_bridge.py:26",
+      "research/single_name_intelligence/SNI_E0_ISSUER_EVIDENCE_QUALIFICATION_2026-10-11.md:155",
+      "research/single_name_intelligence/SNI_E0_ISSUER_EVIDENCE_QUALIFICATION_2026-10-11.md:190",
+      "research/single_name_intelligence/SNI_U0_COMPANY_INTELLIGENCE_REUSE_MAP.md:31"
+    ],
+    "sni_action": "record only; do not edit engine/"
+  }
+}
