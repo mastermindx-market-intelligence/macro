@@ -191,11 +191,66 @@ def _by_filing_date_desc(rows: Sequence[Mapping[str, Any]]) -> list[Mapping[str,
     )
 
 
+def _selected(row: Mapping[str, Any], selection: str) -> SelectedAccession:
+    return SelectedAccession(
+        accession=str(row["accession"]),
+        form=str(row["form"]),
+        filing_date=str(row["filing_date"]),
+        period_of_report=str(row["period_of_report"]),
+        selection=selection,
+    )
+
+
+def r5_admission_candidates(
+    rows: Sequence[Mapping[str, Any]],
+) -> tuple[SelectedAccession, ...]:
+    """The R5 admission-candidate set: the two latest 10-K and two latest 10-Q.
+
+    Rule-only by construction: its sole input is the issuer's D0 rows, so no
+    operator-supplied extra can reach it. ``select_issuer_accessions`` takes
+    this set as fixed before it looks at any capture-only row.
+    """
+    tens = [row for row in rows if row.get("form") == "10-K"]
+    tens_q = [row for row in rows if row.get("form") == "10-Q"]
+    candidates = [
+        _selected(row, "admission_candidate")
+        for row in _by_filing_date_desc(tens)[:2] + _by_filing_date_desc(tens_q)[:2]
+    ]
+    return tuple(dict((item.accession, item) for item in candidates).values())
+
+
+def _year_ago_comparable(
+    rows: Sequence[Mapping[str, Any]],
+) -> Mapping[str, Any] | None:
+    """The 10-Q whose period_of_report is the latest 10-Q's month, one year back."""
+    tens_q = [row for row in rows if row.get("form") == "10-Q"]
+    latest_ten_q = _by_filing_date_desc(tens_q)[:1]
+    if not latest_ten_q:
+        return None
+    parts = str(latest_ten_q[0].get("period_of_report") or "").split("-")
+    if not (len(parts) == 3 and parts[0].isdigit() and parts[1].isdigit()):
+        return None
+    target = (int(parts[0]) - 1, int(parts[1]))
+    for row in tens_q:
+        q_parts = str(row.get("period_of_report") or "").split("-")
+        if len(q_parts) == 3 and q_parts[0].isdigit() and q_parts[1].isdigit():
+            if (int(q_parts[0]), int(q_parts[1])) == target:
+                return row
+    return None
+
+
 def select_issuer_accessions(
     issuer_row: Mapping[str, Any],
     extra_accessions: Sequence[str] = (),
 ) -> list[SelectedAccession]:
-    """R5 selection over one D0 issuer row. Pure; raises SelectionError."""
+    """R5 selection over one D0 issuer row. Pure; raises SelectionError.
+
+    Admission candidates come from ``r5_admission_candidates`` alone. The
+    year-ago comparable and every operator extra land in a separate
+    capture-only set whose entries are built with ``selection="capture_only"``
+    and never displace a candidate, so an extra cannot become an admission
+    candidate: naming a candidate as an extra leaves the plan unchanged.
+    """
     ticker = str(issuer_row.get("ticker") or "")
     rows = [
         row
@@ -209,66 +264,21 @@ def select_issuer_accessions(
                 f"extra accession is not a D0 row of issuer {ticker}: {extra}",
                 code="extra_accession_not_in_d0",
             )
-    tens = [row for row in rows if row.get("form") == "10-K"]
-    tens_q = [row for row in rows if row.get("form") == "10-Q"]
 
-    selected: dict[str, SelectedAccession] = {}
-    for row in _by_filing_date_desc(tens)[:2]:
-        selected[str(row["accession"])] = SelectedAccession(
-            accession=str(row["accession"]),
-            form=str(row["form"]),
-            filing_date=str(row["filing_date"]),
-            period_of_report=str(row["period_of_report"]),
-            selection="admission_candidate",
-        )
-    latest_ten_q = _by_filing_date_desc(tens_q)[:1]
-    for row in _by_filing_date_desc(tens_q)[:2]:
-        selected.setdefault(
-            str(row["accession"]),
-            SelectedAccession(
-                accession=str(row["accession"]),
-                form=str(row["form"]),
-                filing_date=str(row["filing_date"]),
-                period_of_report=str(row["period_of_report"]),
-                selection="admission_candidate",
-            ),
-        )
+    candidates = r5_admission_candidates(rows)
+    candidate_ids = frozenset(item.accession for item in candidates)
+    capture_only: dict[str, SelectedAccession] = {}
+    comparable = _year_ago_comparable(rows)
+    capture_rows = ([comparable] if comparable is not None else []) + [
+        by_accession[extra] for extra in extra_accessions
+    ]
+    for row in capture_rows:
+        accession = str(row["accession"])
+        if accession in candidate_ids or accession in capture_only:
+            continue
+        capture_only[accession] = _selected(row, "capture_only")
 
-    # Year-ago comparable: the 10-Q whose period_of_report shares month and
-    # year-1 with the latest 10-Q's period_of_report.
-    if latest_ten_q:
-        period = str(latest_ten_q[0].get("period_of_report") or "")
-        parts = period.split("-")
-        if len(parts) == 3 and parts[0].isdigit() and parts[1].isdigit():
-            target = (int(parts[0]) - 1, int(parts[1]))
-            for row in tens_q:
-                q_parts = str(row.get("period_of_report") or "").split("-")
-                if len(q_parts) == 3 and q_parts[0].isdigit() and q_parts[1].isdigit():
-                    if (int(q_parts[0]), int(q_parts[1])) == target:
-                        selected.setdefault(
-                            str(row["accession"]),
-                            SelectedAccession(
-                                accession=str(row["accession"]),
-                                form=str(row["form"]),
-                                filing_date=str(row["filing_date"]),
-                                period_of_report=str(row["period_of_report"]),
-                                selection="capture_only",
-                            ),
-                        )
-                        break
-    for extra in extra_accessions:
-        row = by_accession[extra]
-        selected.setdefault(
-            extra,
-            SelectedAccession(
-                accession=extra,
-                form=str(row["form"]),
-                filing_date=str(row["filing_date"]),
-                period_of_report=str(row["period_of_report"]),
-                selection="capture_only",
-            ),
-        )
-    order = list(selected.values())
+    order = list(candidates) + list(capture_only.values())
     order.sort(key=lambda item: (item.filing_date, item.accession), reverse=True)
     order.sort(
         key=lambda item: (
@@ -276,6 +286,12 @@ def select_issuer_accessions(
             0 if item.form == "10-K" else 1,
         )
     )
+    planned = tuple(item for item in order if item.selection == "admission_candidate")
+    if {item.accession for item in planned} != candidate_ids:
+        raise SelectionError(
+            f"admission candidates of issuer {ticker} diverge from the R5 rule set",
+            code="admission_candidates_not_rule_only",
+        )
     return order
 
 
@@ -978,6 +994,41 @@ def _resolve_sec_user_agent() -> str:
     return _user_agent(_ROOT)
 
 
+def _sec_user_agent_refusal_types() -> tuple[type[BaseException], ...]:
+    """Errors that make the SEC user agent unavailable, as one typed refusal.
+
+    ``yaml.YAMLError`` covers a malformed ``config.yml``. PyYAML is imported
+    only here, when a resolution has already failed, so the capture module
+    stays stdlib-only at import time.
+    """
+    kinds: list[type[BaseException]] = [ImportError, OSError, ValueError]
+    try:
+        import yaml
+    except ImportError:
+        return tuple(kinds)
+    kinds.append(yaml.YAMLError)
+    return tuple(kinds)
+
+
+def admission_counts(rows: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
+    """One issuer's admitted/refused tally, exactly as the capture report prints it.
+
+    Refusals are keyed by the admission code up to its first ``:``, so
+    ``not_admitted:capture_only`` tallies as ``not_admitted``. The committed
+    G-SRC verdict pin is checked against this same rule.
+    """
+    refusals: dict[str, int] = {}
+    for row in rows:
+        if row["admission"] != "ADMITTED":
+            key = row["admission"].split(":", 1)[0]
+            refusals[key] = refusals.get(key, 0) + 1
+    return {
+        "packages": len(rows),
+        "admitted": sum(1 for r in rows if r["admission"] == "ADMITTED"),
+        "refusals": refusals,
+    }
+
+
 def _submissions_failure_rows(
     ticker: str, plan_items: Sequence[SelectedAccession], note: str
 ) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
@@ -1102,7 +1153,7 @@ def main(argv: Sequence[str] | None = None) -> int:
 
     try:
         user_agent = _resolve_sec_user_agent()
-    except (ImportError, OSError, ValueError) as exc:
+    except _sec_user_agent_refusal_types() as exc:
         print(f"gsrc_refusal: sec_user_agent_unavailable: {type(exc).__name__}: {exc}")
         return 2
 
@@ -1163,15 +1214,12 @@ def main(argv: Sequence[str] | None = None) -> int:
             )
             log.close()
         wall_seconds = (datetime.now(timezone.utc) - started_wall).total_seconds()
-        refusals: dict[str, int] = {}
-        for row in rows:
-            if row["admission"] != "ADMITTED":
-                key = row["admission"].split(":", 1)[0]
-                refusals[key] = refusals.get(key, 0) + 1
+        counts = admission_counts(rows)
+        refusals = counts["refusals"]
         summary["issuers"][ticker] = {
             "cik": cik10,
-            "packages": len(rows),
-            "admitted": sum(1 for r in rows if r["admission"] == "ADMITTED"),
+            "packages": counts["packages"],
+            "admitted": counts["admitted"],
             "refusals": refusals,
             "requests": log.count,
             "wall_seconds": round(wall_seconds, 1),
@@ -1179,7 +1227,7 @@ def main(argv: Sequence[str] | None = None) -> int:
             "details": details,
         }
         summary["totals"]["packages"] += len(rows)
-        summary["totals"]["admitted"] += sum(1 for r in rows if r["admission"] == "ADMITTED")
+        summary["totals"]["admitted"] += counts["admitted"]
         for key, count in refusals.items():
             summary["totals"]["refusals"][key] = (
                 summary["totals"]["refusals"].get(key, 0) + count
