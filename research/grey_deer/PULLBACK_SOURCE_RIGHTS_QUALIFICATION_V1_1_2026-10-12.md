@@ -1,16 +1,15 @@
-# Pullback source / clock / basis / rights qualification — manifest v1.1.0 DRAFT (14-ticker panel)
+# Pullback source / clock / basis / rights qualification — manifest v1.1.0 FREEZE-READY DRAFT (14-ticker panel)
 
 **Program:** `WS:GREY-DEER-RISK-INTELLIGENCE` (MAS-258) · **Operation:** `risk-radar-pullback-20261009` ·
 **Carrier key:** `grey-deer-fable-orchestration-20261003-001` · **Parent execution:** `grey-deer-20261003-astra-pickup-001` ·
 **Extends:** manifest `1.0.0` (`research/grey_deer/PULLBACK_SOURCE_RIGHTS_QUALIFICATION_2026-10-11.md`) ·
-**Manifest version:** `1.1.0` DRAFT (2026-10-12) · **Lane:** G-XT-MANIFEST, commissioned by the Grey Deer seat (session `da1ad7ad`).
+**Manifest version:** `1.1.0` FREEZE-READY DRAFT (2026-10-12) · **Lane:** G-XT-MANIFEST, commissioned by the Grey Deer seat (session `da1ad7ad`).
 
-**Status: DRAFT — not frozen; freeze requires SEAT_FILL completion + G7 decision.**
+**Status: FREEZE-READY DRAFT — seat values filled, G7 decided (A1/D14), calendar pinned (A1/D15); frozen only when the seat records the file blob sha.**
 
-This file is a draft eligible-input manifest for the stage-1b panel. It is a projection over v1.0.0
-plus public corporate-action notices. It is not a source store, not a rights grant, not a freeze of
-prereg v1.1, and not a fitting result. It creates no entitlement. Where a per-ticker measurement is
-not on this host, the cell is the literal `SEAT_FILL`. Where a public notice was not found, the cell
+This file is a freeze-ready draft eligible-input manifest for the stage-1b panel. It is a projection over v1.0.0
+plus public corporate-action notices and the seat's store receipts (as_of 2026-10-07). It is not a source store, not a rights grant, not a freeze of
+prereg v1.1, and not a fitting result. It creates no entitlement. Per-ticker missingness, content hash, subframe sha256, row count, and first and last dates in §4 are those measured receipts. Where a public notice was not found, the cell
 is `UNVERIFIED` and names the search. No sentence here is a customer-facing claim.
 
 Read-only parent: v1.0.0, quoted below only for gate wording that this draft is required to keep.
@@ -23,12 +22,14 @@ v1.0.0's non-panel input rows (its §4 rows 2–17) are incorporated by referenc
 | Item | v1.0.0 | v1.1.0 draft |
 |---|---|---|
 | Qualified price universe | US SPY only (§4 row 1, §5) | QQQ, IWM, DIA, XLB, XLC, XLE, XLF, XLI, XLK, XLP, XLRE, XLU, XLV, XLY. SPY is excluded because its stage-1 results have already been seen (seat D2). |
-| Declared window | 2021-07-06 → 2026-10-07 | Same window. A ticker whose first row falls after the window start is a refusal (`BLOCKED / PANEL_COVERAGE`). The runner never trims. Measured first date, last date, and row count are `SEAT_FILL`. |
-| Calendar | One ticker against the NYSE session set | Every ticker must have exactly the same session dates on the panel's common DATE axis. Otherwise `BLOCKED / CALENDAR_MISALIGNED`, listing the symmetric difference. Never forward-fill (seat D3). |
-| Identity pins | SPY subframe sha256 and row count were deferred out of the manifest (v1.0.0 §5) | Per-ticker content hash, subframe sha256, and row count are columns. Every one of those cells is `SEAT_FILL`. |
-| Basis and split guard | RAW `close_raw`. Discontinuity guard is S08 `SPLIT_LIKE_RATIO = 0.75` (refuse, never re-adjust). | RAW closes remain. The panel guard is seat D5: `\|log(close_t / close_{t−1})\| > log(1.25)` refuses `BLOCKED / SPLIT_DISCONTINUITY`. A declared corporate action on that date still refuses `SPLIT_UNADJUSTED`. v1.1 never adjusts silently. Dividends stay unadjusted and that is disclosed. |
-| Gates | G1–G6 open (§8) | G1–G6 remain open. G2's wording is unchanged. G7 (RAW price adjustment policy) is added and is OPEN. |
-| Status | `RECORDED — owner projection` | `DRAFT — not frozen; freeze requires SEAT_FILL completion + G7 decision` |
+| Declared window | 2021-07-06 → 2026-10-07 | Same window. A ticker whose first row falls after the window start is a refusal (`BLOCKED / PANEL_COVERAGE`). The runner never trims. Measured first date is 2021-07-06 and measured last date is 2026-10-07 on every ticker. Raw row counts are 1320 (QQQ, IWM, XLE, XLF, XLI, XLP, XLRE, XLU, XLY) and 1321 (DIA, XLB, XLC, XLK, XLV). Intersection coverage is 1320 common sessions. |
+| Calendar | One ticker against the NYSE session set | Intersection of the 14 tickers' sessions (A1 / D15). Pinned exclusion `{"2026-08-18"}`. Any other symmetric difference is `BLOCKED / CALENDAR_MISALIGNED`. Never forward-fill (seat D3). Expected panel: 1320 common sessions, 2021-07-06 through 2026-10-07. Detail is the D15 row. |
+| Identity pins | SPY subframe sha256 and row count were deferred out of the manifest (v1.0.0 §5) | Per-ticker content hash and subframe sha256 are one digest: the stage-1 normalized-subframe sha256 over IDENTITY_COLUMNS of the raw, unadjusted rows ≤ as_of in the window. Both cells hold that digest. Row counts are filled in §4. |
+| Basis and split guard | RAW `close_raw`. Discontinuity guard is S08 `SPLIT_LIKE_RATIO = 0.75` (refuse, never re-adjust). | Raw unadjusted bytes stay the identity pin. Adjustment is only the pinned D14 table, then the log(1.25) check runs on adjusted closes. Dividends stay unadjusted and that is disclosed. Detail is the D14 row. |
+| Split adjustment (A1 / D14) | v1.0.0 refuses a split-like ratio and does not re-adjust. The pre-amendment v1.1 draft left G7 open between adjust and exclude, and a declared action on a break date refused `SPLIT_UNADJUSTED`. | DECIDED. Pinned table `{(t, "2025-12-05"): 2.0 for t in XLB XLE XLK XLU XLY}`. Rows before 2025-12-05: open, high, low, and close divided by 2.0; volume multiplied by 2.0; transactions unchanged. The observed close ratio on 2025-12-05 must lie within ±10% of 2.0, else `BLOCKED / SPLIT_TABLE_MISMATCH`. Any remaining log(1.25) break on adjusted closes is `BLOCKED / SPLIT_DISCONTINUITY` and is never inferred. Raw subframe sha256 stays the pin. Code, pending merge: `scripts/research/grey_deer_panel_adjust.py`. |
+| Calendar exclusion (A1 / D15) | One series against the NYSE sessions, with no pinned exclusion. The pre-amendment v1.1 draft required equal session sets and refused any symmetric difference. | The panel calendar is the intersection of the 14 tickers' sessions. The pinned exclusion set is exactly `{"2026-08-18"}` (absent for QQQ, IWM, XLE, XLF, XLI, XLP, XLRE, XLU, XLY; present for DIA, XLB, XLC, XLK, XLV). Any other symmetric difference is `BLOCKED / CALENDAR_MISALIGNED`. Expected panel: 1320 common sessions, 2021-07-06 through 2026-10-07. 2026-08-18 is a source gap routed to the `massive_stock_day` collector owner. A diagnosis exists: `research/grey_deer/reviews/MASSIVE_STOCK_DAY_PARTIAL_DAY_DIAGNOSIS_2026-10-12.md`, pending merge. |
+| Gates | G1–G6 open (§8) | G1–G6 remain open. G2's wording is unchanged. G7 is DECIDED by seat amendment A1 / D14. |
+| Status | `RECORDED — owner projection` | `FREEZE-READY DRAFT — seat values filled, G7 decided (A1/D14), calendar pinned (A1/D15); frozen only when the seat records the file blob sha` |
 | Rights | Massive tape pointer for internal SPY fitting; publication undesignated | Same tape, same pointer, no new grant. Publication remains undesignated under G2. |
 | Corporate actions | No per-ETF action table | §6, one row per panel ETF, issuer or exchange URL, or `UNVERIFIED`. |
 | Non-panel inputs | §4 rows 2–17 written in full | Incorporated by reference to v1.0.0. Not reprinted. |
@@ -43,16 +44,17 @@ manifest v1.1.0, or the trial family `grey_deer_pullback_v11`. Seat D11's budget
 ## 1. Determinations this draft relies on
 
 v1.0.0 D1–D8 stand for everything this draft does not reopen. The panel additions are the seat's
-D2, D3, and D5, recorded here and not re-decided.
+D2, D3, D4, and D5, plus amendments A1 / D14 and A1 / D15, recorded here and not re-decided.
 
 | # | Determination | Consequence |
 |---|---|---|
-| P1 | The price store for the panel is the same Massive `us_stocks_sip/day_aggs_v1` tape as v1.0.0 §4 row 1 (`equity.bars.daily.massive`, `adjustment: none` / `close_raw`). This draft did not read `data/` (sparse checkout) and does not assert that any panel parquet is present. | Per-ticker inclusion, coverage, missingness, content hash, and subframe sha256 are `SEAT_FILL`. The rights pointer is the same register pointer as v1.0.0 row 1. This draft does not widen that pointer into a new grant. |
+| P1 | The price store for the panel is the same Massive `us_stocks_sip/day_aggs_v1` tape as v1.0.0 §4 row 1 (`equity.bars.daily.massive`, `adjustment: none` / `close_raw`). This draft did not read `data/` (sparse checkout) and does not assert that any panel parquet is present. | Per-ticker inclusion, coverage, missingness, content hash, and subframe sha256 are the seat's measured receipts in §4 (as_of 2026-10-07). The rights pointer is the same register pointer as v1.0.0 row 1. This draft does not widen that pointer into a new grant. |
 | P2 | SPY is not a panel member (seat D2). The fourteen tickers are QQQ, IWM, DIA, XLB, XLC, XLE, XLF, XLI, XLK, XLP, XLRE, XLU, XLV, XLY. The declared window is 2021-07-06 through 2026-10-07, the same window as v1. | A first row after the window start refuses `BLOCKED / PANEL_COVERAGE`. The sample is never trimmed to the overlap. |
-| P3 | Calendar (seat D3). The fold calendar runs on the panel's common DATE axis. | Unequal session sets refuse `BLOCKED / CALENDAR_MISALIGNED` with the symmetric difference named. No forward-fill. A missing row is `absent`. |
-| P4 | Identity (seat D4). Each ticker is pinned by a normalized-subframe sha256 from stage-1 `normalize_subframe` / `subframe_sha256` over `IDENTITY_COLUMNS` `(date, open, high, low, close, volume, transactions)`, plus row count, first date, and last date. | Until the seat fills them, runner pins hold the literal `PREREG_V11_PENDING` and a real run refuses `BLOCKED / PREREG_V11_PENDING` before any feature, label, or outcome. In **this** file the unfilled measurement cells are the literal `SEAT_FILL`. The two tokens are not interchangeable. This draft fills neither. |
-| P5 | RAW policy (seat D5), which is gate G7 and is OPEN. See §7. | Listed in-window splits are named. This draft does not choose adjust or exclude. |
+| P3 | Calendar (seat D3, as amended by A1 / D15). The fold calendar runs on the panel's common DATE axis, which is the intersection of the 14 tickers' sessions. | A symmetric difference other than the pinned exclusion in P7 refuses `BLOCKED / CALENDAR_MISALIGNED`, and the refusal names that difference. No forward-fill. A missing row is `absent`. |
+| P4 | Identity (seat D4). Each ticker is pinned by a normalized-subframe sha256 from stage-1 `normalize_subframe` / `subframe_sha256` over `IDENTITY_COLUMNS` `(date, open, high, low, close, volume, transactions)`, plus row count, first date, and last date. The pin is the raw, unadjusted rows at or before as_of. | The seat filled those pins in §4. Content hash and subframe sha256 are one digest. A runner that still holds the literal `PREREG_V11_PENDING` refuses `BLOCKED / PREREG_V11_PENDING` before any feature, label, or outcome. That runner token is not a measurement cell in this file. |
+| P5 | Price adjustment (seat D5 amended by A1 / D14), which is gate G7 and is DECIDED. See §7. Raw subframe sha256 stays the pin. | D14 adjusts from the pinned table `{(t, "2025-12-05"): 2.0 for t in XLB XLE XLK XLU XLY}`. Rows dated before the effective date have open, high, low, and close divided by the ratio and volume multiplied by the ratio; transactions are unchanged. Each pinned split is confirmed by the observed close ratio on the effective date lying within ±10% of the ratio, else `BLOCKED / SPLIT_TABLE_MISMATCH`. The log(1.25) break check then runs on adjusted closes, and any remaining break is `BLOCKED / SPLIT_DISCONTINUITY` (never inferred). Dividends stay unadjusted. |
 | P6 | v1.0.0 D4 / gate G2. User-facing publication of a derived pullback probability still needs the feed-specific written designation. | G2 stays OPEN in v1.0.0's words. This lane is not the rights owner. |
+| P7 | Calendar exclusion (seat amendment A1 / D15). The panel calendar is the INTERSECTION of the 14 tickers' sessions in the window. The pinned excluded set is exactly `{"2026-08-18"}`. | 2026-08-18 is absent for QQQ, IWM, XLE, XLF, XLI, XLP, XLRE, XLU, and XLY, and present for DIA, XLB, XLC, XLK, and XLV. It is a source gap routed to the `massive_stock_day` collector owner. A diagnosis exists: `research/grey_deer/reviews/MASSIVE_STOCK_DAY_PARTIAL_DAY_DIAGNOSIS_2026-10-12.md`, pending merge. Any symmetric difference other than that pinned set is `BLOCKED / CALENDAR_MISALIGNED`. Horizons count sessions on the shared intersection calendar, so a ticker that prints 2026-08-18 drops that close before targets are built. Expected panel: 1320 common sessions, 2021-07-06 through 2026-10-07. The constant is `PINNED_CALENDAR_EXCLUSIONS` in `scripts/research/grey_deer_panel_adjust.py` (`prepare_panel`), lane G-ADJ, pending merge. |
 
 Yahoo, breadth, CBOE, intl ETF, basket OHLCV, CN, and FRED rows are unchanged from v1.0.0 and stay
 out of the panel sample. CN remains under `DNR:KILL-CN-ADJUSTED-TAPE-LEGAL-LIMIT`.
@@ -66,7 +68,8 @@ corporate-action facts for 2021-07-06 through 2026-10-07 (splits, reverse splits
 fund mergers, and index-methodology changes that change holdings materially).
 
 **Method for prices and rights.** Rights text is copied by pointer from v1.0.0 §4 row 1 and §8.
-No parquet, no price series, and no vendor extract was read. Counts and hashes are not estimated.
+No parquet, no price series, and no vendor extract was read by this lane. The counts and hashes in §4
+are the seat's store receipts, copied in. They are not estimated and not recomputed here.
 
 **Method for corporate actions.** Issuer and index-provider pages, and exchange notices, are the
 citations. A quote is at most fifteen words. A page that did not state the fact is not cited for it.
@@ -76,29 +79,44 @@ used as citations. Their figures are not copied.
 **Dispositions.** v1.0.0's meanings stand. `recorded` still requires a rights determination on main
 for the stated use, a recorded first-available day, and declared basis, units, market, and cohort.
 The tape-level pointer supports internal fitting and evaluation only in the sense v1.0.0 already
-recorded for that tape. It does not, by itself, record a per-ticker receipt. User-facing publication
-stays `source_unavailable` until G2 is closed by its owner. The panel qualification as a whole is
-not frozen while any identity cell is `SEAT_FILL` or while G7 is OPEN.
+recorded for that tape. It does not, by itself, record a per-ticker rights receipt. User-facing publication
+stays `source_unavailable` until G2 is closed by its owner. The seat's per-ticker measurement
+receipts are in §4, and G7 is DECIDED (A1 / D14). The panel qualification as a whole is
+freeze-ready and is frozen only when the seat records this file's blob sha.
 
 ---
 
 ## 3. Evidence class, clock, calendar, basis
 
 Evidence classes are v1.0.0 §2. The panel is aimed at **HISTORICALLY_AVAILABLE** on the Massive
-tape (as-printed, no re-adjust at read), inside the declared window. That class is not attested
-per ticker until `SEAT_FILL` is replaced with a store receipt. CURRENT_VINTAGE series remain
-ineligible as panel prices. This draft produces no GENUINELY_ISSUED artifact.
+tape (as-printed RAW bytes; the identity pin is those unadjusted rows), inside the declared window.
+The seat's store receipt attests, for each ticker, 0 NaN cells, 0 non-positive closes, first date
+2021-07-06, and last date 2026-10-07 (as_of 2026-10-07). CURRENT_VINTAGE series remain
+ineligible as panel prices. This draft produces no GENUINELY_ISSUED artifact. The D14 adjustment is a
+later runner step on a working copy. It does not re-adjust the stored bytes.
 
 Clock rules are v1.0.0 §3, plus:
 
-1. The common DATE axis is the panel calendar. Folds, purge, and the seat D8 block bootstrap, when
-   a later frozen runner implements them, sit on that axis. This draft does not run them.
-2. Session sets must match exactly. The refusal names the symmetric difference. Nothing is carried
-   forward from a neighboring session.
+1. The common DATE axis is the panel calendar: the intersection of the 14 tickers' sessions in the
+   declared window (A1 / D15, rule P7). Folds, purge, and the seat D8 block bootstrap, when a later
+   frozen runner implements them, sit on that axis. This draft does not run them. Expected panel:
+   1320 common sessions, 2021-07-06 through 2026-10-07.
+2. The pinned exclusion set is exactly `{"2026-08-18"}`. That session is absent for QQQ, IWM, XLE,
+   XLF, XLI, XLP, XLRE, XLU, and XLY, and present for DIA, XLB, XLC, XLK, and XLV. It is a source gap
+   routed to the `massive_stock_day` collector owner. A diagnosis exists:
+   `research/grey_deer/reviews/MASSIVE_STOCK_DAY_PARTIAL_DAY_DIAGNOSIS_2026-10-12.md`, pending merge.
+   A symmetric difference other than that pinned set refuses `BLOCKED / CALENDAR_MISALIGNED` and the
+   refusal names the difference. Nothing is carried forward from a neighboring session. Horizons count
+   sessions on the shared intersection calendar, so a ticker that has 2026-08-18 drops that close
+   before targets are built.
 3. A printed close is data. An absent session is `absent` and is not filled. A legal zero is not
-   absence (v1.0.0 §3.5). Per-ticker missingness counts are `SEAT_FILL`, not copies of SPY's receipt.
-4. Basis is RAW `close_raw` for every panel ticker. A TRADJ or SADJ series is a basis mismatch and
-   is refused, not reconciled (v1.0.0 D5).
+   absence (v1.0.0 §3.5). Per-ticker missingness, measured by the seat: 0 NaN cells and 0 non-positive
+   closes on every ticker. The only session gap inside the window is the pinned exclusion in rule 2.
+   These counts are the seat's receipts, not copies of SPY's receipt.
+4. The stored basis is RAW `close_raw` for every panel ticker. The identity pin is those unadjusted
+   bytes. A TRADJ or SADJ series is a basis mismatch and is refused, not reconciled (v1.0.0 D5). The
+   only adjustment is the pinned D14 table, applied by the runner after the pin check, on a working
+   copy. Dividends are not part of that table.
 5. Dividends are unadjusted. An ex-dividend print stays in the RAW close. That is a disclosure, not
    a repair.
 6. The rolling floor in v1.0.0 D1 still applies. A later floor shrinks the window and is not
@@ -108,8 +126,9 @@ Clock rules are v1.0.0 §3, plus:
 
 ## 4. Source table — panel daily closes
 
-Columns follow v1.0.0 §4 row 1, with three measurement columns added. Those three cells are the
-literal `SEAT_FILL` on every row. They are not guesses.
+Columns follow v1.0.0 §4 row 1. The measurement columns are missingness, content hash, subframe
+sha256, and row count. The seat filled every one of those cells from store receipts (as_of
+2026-10-07). This lane did not recompute them.
 
 **Common producer.** `collectors/massive_stock_day.py` (`load_ticker`). Canonical home is the
 Massive store; this worktree does not hold the parquet bodies.
@@ -125,39 +144,40 @@ draft does not quote the entitlement record and does not add a grant.
 User-facing publication of a derived probability: only under the feed-specific written designation
 (register :20), which is not supplied here.
 
-**Common disposition.** Not a frozen panel row. Internal use follows the v1.0.0 tape pointer.
-Publication is `source_unavailable` while G2 is OPEN. Identity, coverage, and missingness are
-`SEAT_FILL`. G7 is OPEN (§7).
+**Common disposition.** Not a frozen panel row until the seat records this file's blob sha. Internal use follows the v1.0.0 tape pointer.
+Publication is `source_unavailable` while G2 is OPEN. Identity, coverage, and missingness are the seat's receipts in the table below. G7 is DECIDED (§7, A1 / D14).
 
 **Common units / basis / market.** USD · **RAW** (`close_raw`) · US, New York sessions · one ETF,
 no ticker-identity feature (seat D6; features, when a frozen runner exists, are scale-free).
 
 **Common available-at.** Intended class HISTORICALLY_AVAILABLE on the tape whose v1.0.0 receipt
 names coverage 2021-07-06 through 2026-10-07. Declared window for every row: 2021-07-06 through
-2026-10-07. Measured first date, measured last date, and per-ticker coverage: `SEAT_FILL`.
+2026-10-07. Measured first date is 2021-07-06 and measured last date is 2026-10-07 for every panel
+ticker. Raw row counts are in the table (1320 or 1321). The intersection calendar has 1320 common
+sessions (P7). The union of panel sessions in the window is 1321.
 
-**Subframe sha256** means the stage-1 normalized subframe over `IDENTITY_COLUMNS`. **Content hash**
-is the seat's store-object hash for that ticker's subframe inputs. Both are `SEAT_FILL`. If the
-seat treats them as one digest, the seat fills both cells; this draft does not collapse them.
+The seat treats the content hash and the subframe sha256 as one digest: the stage-1 normalized-subframe sha256 over `IDENTITY_COLUMNS` of the raw, unadjusted rows ≤ as_of in the window, and both cells below hold that same value.
 
 | # | Input | Producer | Store / registry | Rights | Available-at / vintage | Units / basis / market / cohort | Missingness | Content hash | Subframe sha256 | Row count | Allowed uses | Disposition |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|
-| 1 | **QQQ daily close (Massive)** | common producer | `data/massive_stock_day/QQQ.parquet` · common registry row | common rights | common available-at | common units · cohort QQQ | SEAT_FILL | SEAT_FILL | SEAT_FILL | SEAT_FILL | common allowed uses | common disposition |
-| 2 | **IWM daily close (Massive)** | common producer | `data/massive_stock_day/IWM.parquet` · common registry row | common rights | common available-at | common units · cohort IWM | SEAT_FILL | SEAT_FILL | SEAT_FILL | SEAT_FILL | common allowed uses | common disposition |
-| 3 | **DIA daily close (Massive)** | common producer | `data/massive_stock_day/DIA.parquet` · common registry row | common rights | common available-at | common units · cohort DIA | SEAT_FILL | SEAT_FILL | SEAT_FILL | SEAT_FILL | common allowed uses | common disposition |
-| 4 | **XLB daily close (Massive)** | common producer | `data/massive_stock_day/XLB.parquet` · common registry row | common rights | common available-at | common units · cohort XLB | SEAT_FILL | SEAT_FILL | SEAT_FILL | SEAT_FILL | common allowed uses | common disposition |
-| 5 | **XLC daily close (Massive)** | common producer | `data/massive_stock_day/XLC.parquet` · common registry row | common rights | common available-at | common units · cohort XLC | SEAT_FILL | SEAT_FILL | SEAT_FILL | SEAT_FILL | common allowed uses | common disposition |
-| 6 | **XLE daily close (Massive)** | common producer | `data/massive_stock_day/XLE.parquet` · common registry row | common rights | common available-at | common units · cohort XLE | SEAT_FILL | SEAT_FILL | SEAT_FILL | SEAT_FILL | common allowed uses | common disposition |
-| 7 | **XLF daily close (Massive)** | common producer | `data/massive_stock_day/XLF.parquet` · common registry row | common rights | common available-at | common units · cohort XLF | SEAT_FILL | SEAT_FILL | SEAT_FILL | SEAT_FILL | common allowed uses | common disposition |
-| 8 | **XLI daily close (Massive)** | common producer | `data/massive_stock_day/XLI.parquet` · common registry row | common rights | common available-at | common units · cohort XLI | SEAT_FILL | SEAT_FILL | SEAT_FILL | SEAT_FILL | common allowed uses | common disposition |
-| 9 | **XLK daily close (Massive)** | common producer | `data/massive_stock_day/XLK.parquet` · common registry row | common rights | common available-at | common units · cohort XLK | SEAT_FILL | SEAT_FILL | SEAT_FILL | SEAT_FILL | common allowed uses | common disposition |
-| 10 | **XLP daily close (Massive)** | common producer | `data/massive_stock_day/XLP.parquet` · common registry row | common rights | common available-at | common units · cohort XLP | SEAT_FILL | SEAT_FILL | SEAT_FILL | SEAT_FILL | common allowed uses | common disposition |
-| 11 | **XLRE daily close (Massive)** | common producer | `data/massive_stock_day/XLRE.parquet` · common registry row | common rights | common available-at | common units · cohort XLRE | SEAT_FILL | SEAT_FILL | SEAT_FILL | SEAT_FILL | common allowed uses | common disposition |
-| 12 | **XLU daily close (Massive)** | common producer | `data/massive_stock_day/XLU.parquet` · common registry row | common rights | common available-at | common units · cohort XLU | SEAT_FILL | SEAT_FILL | SEAT_FILL | SEAT_FILL | common allowed uses | common disposition |
-| 13 | **XLV daily close (Massive)** | common producer | `data/massive_stock_day/XLV.parquet` · common registry row | common rights | common available-at | common units · cohort XLV | SEAT_FILL | SEAT_FILL | SEAT_FILL | SEAT_FILL | common allowed uses | common disposition |
-| 14 | **XLY daily close (Massive)** | common producer | `data/massive_stock_day/XLY.parquet` · common registry row | common rights | common available-at | common units · cohort XLY | SEAT_FILL | SEAT_FILL | SEAT_FILL | SEAT_FILL | common allowed uses | common disposition |
+| 1 | **QQQ daily close (Massive)** | common producer | `data/massive_stock_day/QQQ.parquet` · common registry row | common rights | common available-at | common units · cohort QQQ | 0 NaN cells; 0 non-positive closes; session 2026-08-18 absent (D15 pinned exclusion) | d6bd7575c5db3f0fb5d63e6baa2892a5a9d3610a8885562f8ead677a4444373f | d6bd7575c5db3f0fb5d63e6baa2892a5a9d3610a8885562f8ead677a4444373f | 1320 | common allowed uses | common disposition |
+| 2 | **IWM daily close (Massive)** | common producer | `data/massive_stock_day/IWM.parquet` · common registry row | common rights | common available-at | common units · cohort IWM | 0 NaN cells; 0 non-positive closes; session 2026-08-18 absent (D15 pinned exclusion) | ca2df002ee03ed68c19cd77e73b702c057be11f92435936b1f7d4fd57e218b8b | ca2df002ee03ed68c19cd77e73b702c057be11f92435936b1f7d4fd57e218b8b | 1320 | common allowed uses | common disposition |
+| 3 | **DIA daily close (Massive)** | common producer | `data/massive_stock_day/DIA.parquet` · common registry row | common rights | common available-at | common units · cohort DIA | 0 NaN cells; 0 non-positive closes; no missing sessions vs SPY | f11d142d015fca21c404e4a96524791d17ecaee4eb08f489f620ac47a753d618 | f11d142d015fca21c404e4a96524791d17ecaee4eb08f489f620ac47a753d618 | 1321 | common allowed uses | common disposition |
+| 4 | **XLB daily close (Massive)** | common producer | `data/massive_stock_day/XLB.parquet` · common registry row | common rights | common available-at | common units · cohort XLB | 0 NaN cells; 0 non-positive closes; no missing sessions vs SPY | 0863d459e79a40b0943b2ced0aeea42801e81d9a989b8df07823ee6445055628 | 0863d459e79a40b0943b2ced0aeea42801e81d9a989b8df07823ee6445055628 | 1321 | common allowed uses | common disposition |
+| 5 | **XLC daily close (Massive)** | common producer | `data/massive_stock_day/XLC.parquet` · common registry row | common rights | common available-at | common units · cohort XLC | 0 NaN cells; 0 non-positive closes; no missing sessions vs SPY | 121c9b52c6ef4231540b73ad15362cf5927e7e5ae3c8df073ae231cbd158374d | 121c9b52c6ef4231540b73ad15362cf5927e7e5ae3c8df073ae231cbd158374d | 1321 | common allowed uses | common disposition |
+| 6 | **XLE daily close (Massive)** | common producer | `data/massive_stock_day/XLE.parquet` · common registry row | common rights | common available-at | common units · cohort XLE | 0 NaN cells; 0 non-positive closes; session 2026-08-18 absent (D15 pinned exclusion) | ebf4be8c9f7f53b2472b1a032d5f105f7ed5ce7f439411f468b6435939176ba3 | ebf4be8c9f7f53b2472b1a032d5f105f7ed5ce7f439411f468b6435939176ba3 | 1320 | common allowed uses | common disposition |
+| 7 | **XLF daily close (Massive)** | common producer | `data/massive_stock_day/XLF.parquet` · common registry row | common rights | common available-at | common units · cohort XLF | 0 NaN cells; 0 non-positive closes; session 2026-08-18 absent (D15 pinned exclusion) | da3a5aa47a06f469dd6a99288e7be423ff63e9a8b9dc10d6832dc7a4af5b1491 | da3a5aa47a06f469dd6a99288e7be423ff63e9a8b9dc10d6832dc7a4af5b1491 | 1320 | common allowed uses | common disposition |
+| 8 | **XLI daily close (Massive)** | common producer | `data/massive_stock_day/XLI.parquet` · common registry row | common rights | common available-at | common units · cohort XLI | 0 NaN cells; 0 non-positive closes; session 2026-08-18 absent (D15 pinned exclusion) | d153ab22f333d536bdf7c8ef84c981b9c5614e8f62969687d765f043e35e596c | d153ab22f333d536bdf7c8ef84c981b9c5614e8f62969687d765f043e35e596c | 1320 | common allowed uses | common disposition |
+| 9 | **XLK daily close (Massive)** | common producer | `data/massive_stock_day/XLK.parquet` · common registry row | common rights | common available-at | common units · cohort XLK | 0 NaN cells; 0 non-positive closes; no missing sessions vs SPY | 7dc854d1e340f1619340c1c26c9be4cc17fd0c925a0bbe036c74c058d53d0e63 | 7dc854d1e340f1619340c1c26c9be4cc17fd0c925a0bbe036c74c058d53d0e63 | 1321 | common allowed uses | common disposition |
+| 10 | **XLP daily close (Massive)** | common producer | `data/massive_stock_day/XLP.parquet` · common registry row | common rights | common available-at | common units · cohort XLP | 0 NaN cells; 0 non-positive closes; session 2026-08-18 absent (D15 pinned exclusion) | a480545513732922a2be49c2cf807f7500baf923beb909cdf8d59eae70ef885b | a480545513732922a2be49c2cf807f7500baf923beb909cdf8d59eae70ef885b | 1320 | common allowed uses | common disposition |
+| 11 | **XLRE daily close (Massive)** | common producer | `data/massive_stock_day/XLRE.parquet` · common registry row | common rights | common available-at | common units · cohort XLRE | 0 NaN cells; 0 non-positive closes; session 2026-08-18 absent (D15 pinned exclusion) | c578f88c142f67a237f45a324097fc912c6994abd2aaa355080b5e94ca41fcae | c578f88c142f67a237f45a324097fc912c6994abd2aaa355080b5e94ca41fcae | 1320 | common allowed uses | common disposition |
+| 12 | **XLU daily close (Massive)** | common producer | `data/massive_stock_day/XLU.parquet` · common registry row | common rights | common available-at | common units · cohort XLU | 0 NaN cells; 0 non-positive closes; session 2026-08-18 absent (D15 pinned exclusion) | 238dbbd6d68fa71ae074020ad83a2bbc4ffcd0a45cc087ca1982d56fb4a5b2f1 | 238dbbd6d68fa71ae074020ad83a2bbc4ffcd0a45cc087ca1982d56fb4a5b2f1 | 1320 | common allowed uses | common disposition |
+| 13 | **XLV daily close (Massive)** | common producer | `data/massive_stock_day/XLV.parquet` · common registry row | common rights | common available-at | common units · cohort XLV | 0 NaN cells; 0 non-positive closes; no missing sessions vs SPY | 64f9d9b448b7e93b9e11137db11d9860c1c61d4682b0c685f43a6ff73db5d251 | 64f9d9b448b7e93b9e11137db11d9860c1c61d4682b0c685f43a6ff73db5d251 | 1321 | common allowed uses | common disposition |
+| 14 | **XLY daily close (Massive)** | common producer | `data/massive_stock_day/XLY.parquet` · common registry row | common rights | common available-at | common units · cohort XLY | 0 NaN cells; 0 non-positive closes; session 2026-08-18 absent (D15 pinned exclusion) | 870fa4c0b19e31d5ef33b2d0702b9e9815b89285f3e3eb925434afb36b758ed5 | 870fa4c0b19e31d5ef33b2d0702b9e9815b89285f3e3eb925434afb36b758ed5 | 1320 | common allowed uses | common disposition |
 
 SPY is not row 15. v1.0.0 §4 row 1 remains the SPY record. It is not a member of this panel.
+The seat's positive control on the same normalized-subframe method: the SPY subframe sha256 equals
+the W3 pin `c686f0bc683f3109c1be5431cab99661734f2481fc98e8479320e285507be6fb`.
 
 Launch dates checked because the seat named them: XLC inception is 2018-06-18 and its NYSE Arca
 listing date is 2018-06-19, both before the window
@@ -173,8 +193,8 @@ Neither launch is an in-window corporate action.
 An origin is not eligible for a frozen panel use until this manifest is frozen. The rule, once
 frozen, is v1.0.0 §5 applied on the common DATE axis: every input the use needs is recorded for
 that use, `available_at` is at or before the origin under a HISTORICALLY_AVAILABLE receipt, market
-and basis and units match, and §3 guards pass. Until `SEAT_FILL` is replaced, no panel origin is
-eligible. Pre-2021-07-06 dates stay excluded (v1.0.0 D1). SPY origins stay outside this panel
+and basis and units match, and §3 guards pass. The measurement cells are the seat's receipts in §4.
+No panel origin is eligible until the seat records this file's blob sha. Pre-2021-07-06 dates stay excluded (v1.0.0 D1). SPY origins stay outside this panel
 (seat D2). This draft does not count episodes or event months.
 
 ---
@@ -243,6 +263,8 @@ Record date 2025-12-02, payable after the close on 2025-12-04, post-split tradin
 The notice names five funds, each 2-for-1: **XLK, XLY, XLE, XLU, XLB**. It does not name XLC, XLF,
 XLI, XLP, XLRE, or XLV. Dollar prices printed in that notice are not copied here.
 
+Seat primary sources for amendment A1 / D14, cited here without a new quote: the State Street Investment Management release of 2025-11-20 carried by Business Wire (<https://www.businesswire.com/news/home/20251120957218/en/State-Street-Investment-Management-Announces-Share-Splits-for-Five-Select-Sector-SPDR-ETFs>) and the SSGA Select Sector SPDR Fund Share Splits FAQ (<https://www.ssga.com/library-content/products/fund-docs/etfs/us/information-schedules/select-sector-spdr-fund-share-splits-faq.pdf>). The investors.statestreet.com release above is kept. The seat's raw-byte receipt shows one break above log(1.25) on 2025-12-05 for exactly XLB, XLE, XLK, XLU, and XLY, and no such break for the other nine panel tickers. Observed close ratios are not copied into this file.
+
 ### 6.2 One row per ETF
 
 | # | Ticker | Splits / reverse splits | Ticker change / fund merger | Other in-window event | Citation | Quote | Status |
@@ -271,7 +293,7 @@ special rebalance are the rows above.
 ## 7. Gates
 
 G1–G6 keep v1.0.0 §8's gap, owner, and closing condition. Their v1.1 state is OPEN. This draft
-does not close any of them. G2's wording is the v1.0.0 sentence, unchanged. G7 is new.
+does not close any of them. G2's wording is the v1.0.0 sentence, unchanged. G7 is DECIDED by seat amendment A1 / D14.
 
 | Id | Gap (v1.0.0 wording for G1–G6) | Owner | What closes it | v1.1 state |
 |---|---|---|---|---|
@@ -281,17 +303,24 @@ does not close any of them. G2's wording is the v1.0.0 sentence, unchanged. G7 i
 | G4 | COR1M / CBOE terms (row 7). | data-source owner | A determination recorded in the register; registry row for `data/cboe/`. | OPEN |
 | G5 | `intl_etf`, `breadth`, `baskets/ohlcv` registry rows (rows 6, 8, 9). | dataset-registry owner | Registry rows with producer, basis and rights. | OPEN |
 | G6 | FRED model-use determination (register :100). | rights owner | DETERMINED-FROM-PUBLISHED-TERMS row for model use. | OPEN |
-| G7 | RAW price adjustment policy. The panel uses RAW closes. Seat D5's guard, `\|log(close_t / close_{t−1})\| > log(1.25)`, refusing `BLOCKED / SPLIT_DISCONTINUITY`, is the only split guard. A declared corporate action on that date still refuses `SPLIT_UNADJUSTED`. v1.1 never adjusts silently. Dividends are unadjusted, and that is disclosed. | Grey Deer seat | Seat decision: adjust or exclude, recorded against the listed in-window splits. | OPEN |
+| G7 | Price adjustment policy, decided by seat amendment A1 / D14. Pinned table `{(t, "2025-12-05"): 2.0 for t in XLB XLE XLK XLU XLY}`. Rows dated before the effective date have open, high, low, and close divided by the ratio and volume multiplied by the ratio; transactions are unchanged. Each pinned split is confirmed when the observed close ratio on the effective date lies within ±10% of the ratio (`SPLIT_CONFIRM_TOL = 0.10`, the closed interval from 0.9 times the ratio to 1.1 times the ratio), else `BLOCKED / SPLIT_TABLE_MISMATCH`. The log(1.25) break check then runs on adjusted closes, and any remaining break is `BLOCKED / SPLIT_DISCONTINUITY` (an unpinned split is never inferred). Raw subframe sha256 stays the pin on the unadjusted bytes. Dividends are unadjusted, and that is disclosed. Implementation, pending merge, is `scripts/research/grey_deer_panel_adjust.py` (`prepare_panel`, `PINNED_SPLITS`, `PINNED_CALENDAR_EXCLUSIONS`, `SPLIT_CONFIRM_TOL = 0.10`), lane G-ADJ. | Grey Deer seat | Closed by seat amendment A1 / D14, recorded in this row. | DECIDED |
 
-**In-window splits listed for G7** (issuer notice S6, positive declarations only): **XLB, XLE, XLK,
-XLU, XLY**, each 2-for-1, post-split trading 2025-12-05. This draft does not choose adjust or
-exclude. The other nine ETFs are not listed as split names: no issuer split notice was found for
+**In-window splits under the decided rule** (issuer notice S6, positive declarations only): **XLB, XLE, XLK,
+XLU, XLY**, each 2-for-1, post-split trading 2025-12-05. The rule is the pinned table in the G7 row
+(A1 / D14): adjust those five, confirm, then run the break check on adjusted closes. The adjustment
+is that pinned table only. Primary sources, cited without a new quote, beside the S6
+investors.statestreet.com release that is kept:
+<https://www.businesswire.com/news/home/20251120957218/en/State-Street-Investment-Management-Announces-Share-Splits-for-Five-Select-Sector-SPDR-ETFs>
+and
+<https://www.ssga.com/library-content/products/fund-docs/etfs/us/information-schedules/select-sector-spdr-fund-share-splits-faq.pdf>.
+The other nine ETFs are not listed as split names: no issuer split notice was found for
 them inside the window, and that negative is `UNVERIFIED` in §6 rather than a certificate of absence.
 
 G1–G6 do not become panel-sample blockers beyond the blocks v1.0.0 already stated. G2 still blocks
-user-facing publication. G7 blocks freeze of this draft. `SEAT_FILL` blocks freeze of this draft.
-None of that authorizes a real panel run. Seat D4 / D11 already refuse a real run while pins and
-the trial budget are `PREREG_V11_PENDING`. Seat D13 stands: no panel outcome before prereg v1.1 and
+user-facing publication. G7 is DECIDED (A1 / D14) and the measurement cells are filled, so neither
+blocks this draft. Freeze still waits on the seat recording this file's blob sha.
+None of that authorizes a real panel run. A runner whose trial budget is still
+`PREREG_V11_PENDING` refuses before any feature, label, or outcome (seat D11). Seat D13 stands: no panel outcome before prereg v1.1 and
 manifest v1.1.0 are frozen by the seat, and v1 §14's ceiling carries over (no customer odds, no
 publication, no capital change, nothing written to PR #8721 or PR #8188).
 
@@ -302,12 +331,22 @@ publication, no capital change, nothing written to PR #8721 or PR #8188).
 Carried from v1.0.0 §7, with the panel refusals named. This lane does not implement them.
 
 1. Refuse an input whose manifest row is `source_unavailable` for the declared use.
-2. Refuse before any feature, label, or outcome while identity pins or the trial budget are
-   `PREREG_V11_PENDING` (`BLOCKED / PREREG_V11_PENDING`).
+2. Refuse before any feature, label, or outcome while the runner's identity pins or the trial budget
+   are `PREREG_V11_PENDING` (`BLOCKED / PREREG_V11_PENDING`). The pin values in §4 are the seat's fill
+   for that later freeze. This lane does not copy them into a runner.
 3. Refuse `BLOCKED / PANEL_COVERAGE` when a ticker's first row is after 2021-07-06. Do not trim.
-4. Refuse `BLOCKED / CALENDAR_MISALIGNED` on an unequal session set. Do not forward-fill.
-5. Refuse `BLOCKED / SPLIT_DISCONTINUITY` on the D5 log threshold, and `SPLIT_UNADJUSTED` on a
-   declared corporate action. Do not adjust silently.
+4. Build the panel calendar as the intersection of the 14 tickers' sessions. The pinned exclusion
+   set is exactly `{"2026-08-18"}` (A1 / D15). Refuse `BLOCKED / CALENDAR_MISALIGNED` when the
+   symmetric difference is anything else, and name that difference. Do not forward-fill. Expected
+   panel: 1320 common sessions from 2021-07-06 through 2026-10-07. Horizons count sessions on that
+   intersection, so a ticker that has 2026-08-18 drops that close before targets are built.
+5. Apply the pinned split table before the break check (A1 / D14):
+   `{(t, "2025-12-05"): 2.0 for t in XLB XLE XLK XLU XLY}`. Rows dated before the effective date
+   have open, high, low, and close divided by the ratio and volume multiplied by the ratio;
+   transactions stay unchanged. If the observed close ratio on the effective date is not within
+   ±10% of the ratio, refuse `BLOCKED / SPLIT_TABLE_MISMATCH`. Then refuse
+   `BLOCKED / SPLIT_DISCONTINUITY` on any remaining log(1.25) break in the adjusted closes. Do not
+   infer an unpinned split. The raw subframe sha256 stays the pin. Dividends stay unadjusted.
 6. Record `absent`. Do not fill. Do not treat a printed zero as absent.
 7. Emit manifest version `1.1.0` only after this draft is frozen. A result written against this
    draft would be a draft result. This lane writes no such result.
@@ -316,11 +355,12 @@ Carried from v1.0.0 §7, with the panel refusals named. This lane does not imple
 
 ## 9. Versioning and what this file is not
 
-- **Version `1.1.0` DRAFT.** Not frozen. The seat fills `SEAT_FILL`, decides G7, and freezes.
+- **Version `1.1.0` FREEZE-READY DRAFT — seat values filled, G7 decided (A1/D14), calendar pinned (A1/D15); frozen only when the seat records the file blob sha.**
   A successor re-pins v1.0.0's file-and-line citations before relying on them, as v1.0.0 itself
   requires.
-- **Not done here:** no store read, no hash, no row count, no price download, no label, no metric,
-  no bootstrap, no file under `research/grey_deer/pullback_stage1b/`.
+- **Not done here:** no store read by this lane, no price download, no label, no metric,
+  no bootstrap, no panel outcome, and no file under `research/grey_deer/pullback_stage1b/`.
+  The hashes, row counts, and dates in §4 are the seat's receipts, copied in, not computed here.
 - **Not a rights grant** and not a ratification of the Prophet US register outside the pullback scope.
 - **DO_NOT_REDO:** v1.0.0 is the parent and is not edited. Stage-1 SPY results and the deviation log
   are not edited. The CN adjusted-tape kill still stands (v1.0.0 row 10).
