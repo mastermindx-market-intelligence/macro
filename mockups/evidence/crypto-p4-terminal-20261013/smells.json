@@ -66,7 +66,7 @@
     },
     {
       "metrics": {
-        "asof_present": false,
+        "asof_present": true,
         "by_viewport": {
           "desktop": {
             "document_height_px": 3087,
@@ -100,7 +100,7 @@
           "viewport": "desktop"
         },
         "panel_count": 13,
-        "payload_bytes_total": 1255621,
+        "payload_bytes_total": 1239439,
         "raw_slug_hit_count": 0,
         "raw_slug_hits": [],
         "request_count": 22,
@@ -109,7 +109,7 @@
         "source_present": false,
         "todo_placeholder_hit_count": 0,
         "todo_placeholder_hits": [],
-        "visible_word_count": 508
+        "visible_word_count": 512
       },
       "page_id": "macro:vector",
       "route": "/vector.html"

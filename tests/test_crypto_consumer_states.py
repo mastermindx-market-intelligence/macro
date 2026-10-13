@@ -1022,11 +1022,11 @@ def test_cxp4_n1_flat_cut_off_boundary_is_exact(chg, label, cls, tmp_path, monke
 # L' (R32): /crypto methodology receipts live in the canonical LENS tip (`.qm` + data-tip-*), never
 # at rest on a Tier-1 sensor; observation receipts stay at rest; hover never reveals content.
 _CXP4_METHOD = (
-    ("Farside fund-level net creations and redemptions, in millions of dollars. A bitcoin-ETF "
+    ("Fund-level net creations and redemptions, in millions of dollars. A bitcoin-ETF "
      "subscription measurement, not class capitalization.",
-     "Farside 基金级净申购与赎回，单位为百万美元。这是比特币 ETF 申购测量，不是全市场市值。"),
-    ("DefiLlama aggregate circulating supply. A supply change, not a measured ETF subscription.",
-     "DefiLlama 汇总流通供应量。这是供应量变化，不是已测量的 ETF 申购。"),
+     "基金级净申购与赎回，单位为百万美元。这是比特币 ETF 申购测量，不是全市场市值。"),
+    ("Aggregate circulating supply. A supply change, not a measured ETF subscription.",
+     "汇总流通供应量。这是供应量变化，不是已测量的 ETF 申购。"),
     ("BTC spot-volume percentile is an honest proxy until full class volume accrues.",
      "在全市场成交量积累完成前，以 BTC 现货成交量百分位作为明确标注的代理。"),
     ("An annualized cost needs a qualified interval and source. Predicted funding is not a settled payment.",
@@ -1035,7 +1035,8 @@ _CXP4_METHOD = (
      "ETH/BTC 相对趋势结合 BTC 占比；仅作展示背景。"),
 )
 _CXP4_QM = re.compile(
-    r'<span class="qm" tabindex="0" role="note" data-tip-en="([^"]*)" data-tip-zh="([^"]*)">\?</span>')
+    r'<span class="qm" tabindex="0" role="note" data-tip-en="([^"]*)" data-tip-zh="([^"]*)"'
+    r'(?: data-tip-rc-en="[^"]*")?(?: data-tip-rc-zh="[^"]*")?>\?</span>')
 _CXP4_REVEAL = {"display", "opacity", "visibility", "max-height", "height", "content", "clip", "clip-path"}
 
 
@@ -1086,6 +1087,28 @@ def test_cxp4_l_methodology_lives_in_lens_tips_not_at_rest(tmp_path, monkeypatch
         assert tip_en not in en and tip_zh not in zh
     assert sorted(_cxp4_tips(sensors)) == sorted(_CXP4_METHOD)
     assert sensors.count('class="qm"') == len(_CXP4_METHOD)
+
+
+_R39_RC = re.compile(
+    r'<span class="qm" tabindex="0" role="note" data-tip-en="([^"]*)" data-tip-zh="([^"]*)"'
+    r' data-tip-rc-en="([^"]*)" data-tip-rc-zh="([^"]*)">\?</span>')
+
+
+def test_r39_l_source_names_live_in_the_lens_receipt_line(tmp_path, monkeypatch):
+    from html import unescape
+
+    case = _crypto_case("valid_zero")
+    case["market"]["flows"]["volume"] = _sensor(proxy="fixture", percentile=82, state="Normal")
+    sensors = _cxp4_sensors(tmp_path, monkeypatch, case)
+    rc = [tuple(unescape(g) for g in m) for m in _R39_RC.findall(sensors)]
+    assert rc == [
+        (*_CXP4_METHOD[0], "Source: Farside", "来源：Farside"),
+        (*_CXP4_METHOD[1], "Source: DefiLlama", "来源：DefiLlama"),
+    ]
+    assert sensors.count("data-tip-rc-en=") == sensors.count("data-tip-rc-zh=") == 2
+    for en, zh in _cxp4_tips(sensors):
+        for name in ("Farside", "DefiLlama"):
+            assert name not in en and name not in zh, (name, en, zh)
 
 
 def test_cxp4_l_observation_receipts_stay_at_rest(tmp_path, monkeypatch):
@@ -1208,3 +1231,52 @@ def test_cxp4_m_s3_tip_names_the_state_member_and_the_charted_series(monkeypatch
         assert "it sets the row state" in en and f"The chart and figure follow {series_en}." in en, en
         assert zh.startswith(f"主读数：{row['primary']['label_zh']} — "), zh
         assert "决定本行状态" in zh and f"图表与数字跟随{series_zh}。" in zh, zh
+
+
+# R39 (M' review repair): the figure follows the series the chart draws. When the newest row has no
+# reading the row prints the column's last valid value and dates it; an all-NaN column keeps the dash.
+def _r39_row(pres: dict, row_id: str) -> dict:
+    return next(row for row in pres["axes"] if row["id"] == row_id)
+
+
+def test_r39_m_figure_follows_the_spark_series_when_the_newest_row_has_no_reading(monkeypatch):
+    import numpy as np
+
+    sig = _cxp4_sig()
+    sig.loc[sig.index[-2], "leverage_stress"] = 58.0
+    sig.loc[sig.index[-1], "leverage_stress"] = np.nan
+    pres, seen = _cxp4_presentations(monkeypatch, sig)
+    row = _r39_row(pres, "leverage_derivatives")
+    assert row["micro"] == "58/100"
+    assert row["micro_en"] == "pressure · as of Aug 27"
+    assert row["micro_zh"] == "压力 · 截至8月27日"
+    assert row["spark"]
+    assert row["receipt_en"].endswith(
+        "final allocation. Figure as of Aug 27; the newest row has no reading."), row["receipt_en"]
+    assert row["receipt_zh"].endswith("最终配置。数字截至8月27日；最新一行无读数。"), row["receipt_zh"]
+    ids = [spec["id"] for spec in build_vector.COCKPIT_AXIS_PRESENTATION]
+    assert seen[ids.index("leverage_derivatives")].name == "leverage_stress"
+    for other in pres["axes"]:
+        if other["id"] == "leverage_derivatives":
+            continue
+        _fmt, micro_en, micro_zh, _series_en, _series_zh = build_vector.COCKPIT_AXIS_MICRO[other["id"]]
+        assert (other["micro_en"], other["micro_zh"]) == (micro_en, micro_zh), other["id"]
+        assert "Figure as of" not in other["receipt_en"] and "数字截至" not in other["receipt_zh"], other["id"]
+    html = _w2_vector(monkeypatch, _vector_case("valid_zero"),
+                      presentation={"axes": pres["axes"], "watch": [], "complex": []})
+    s3 = _slice(html, 'data-shelf="S3"', 'data-shelf="S4"')
+    assert "<b>58/100</b>" in s3
+    assert "pressure · as of Aug 27" in _reading("en", s3)
+    assert "压力 · 截至8月27日" in _reading("zh", s3)
+
+
+def test_r39_m_all_nan_column_keeps_the_dash_and_the_null_spark(monkeypatch):
+    import numpy as np
+
+    sig = _cxp4_sig()
+    sig["leverage_stress"] = np.nan
+    pres, _seen = _cxp4_presentations(monkeypatch, sig)
+    row = _r39_row(pres, "leverage_derivatives")
+    assert row["micro"] == "—" and row["spark"] == ""
+    assert (row["micro_en"], row["micro_zh"]) == ("pressure", "压力")
+    assert "Figure as of" not in row["receipt_en"] and "数字截至" not in row["receipt_zh"]

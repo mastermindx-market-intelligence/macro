@@ -544,7 +544,6 @@ def _vector_presentations(
     cycle_thesis: dict,
 ) -> dict:
     """Build Wave-1 display objects from existing engine series only."""
-    last = sig.iloc[-1]
     close = sig["close"]
     cutoff = close.index.max() - pd.Timedelta(days=730)
     price = close.loc[close.index >= cutoff]
@@ -601,9 +600,14 @@ def _vector_presentations(
         col = _axis_source_column(spec)
         fmt, row["micro_en"], row["micro_zh"], series_en, series_zh = COCKPIT_AXIS_MICRO[row["id"]]
         # An absent column still hands _spark_points a Series (empty -> the existing null spark).
-        row["spark"] = _spark_points(sig[col] if col in sig else pd.Series(dtype="float64", name=col))
-        value = last.get(col)
-        row["micro"] = fmt(float(value)) if pd.notna(value) else "—"
+        src = sig[col] if col in sig else pd.Series(dtype="float64", name=col)
+        row["spark"] = _spark_points(src)
+        # The figure follows the series the chart draws: the column's last VALID reading (the newest
+        # point of the dropna'd series _spark_points windows), dated when the newest row has none,
+        # so a live chart never sits beside an unavailable figure. All-NaN/absent keeps the dash.
+        valid = pd.to_numeric(src, errors="coerce").dropna().sort_index()
+        row["micro"] = fmt(float(valid.iloc[-1])) if len(valid) else "—"
+        as_of = pd.Timestamp(valid.index[-1]) if len(valid) and valid.index[-1] < sig.index[-1] else None
         all_receipts = [row["primary"], *row["receipt_members"]]
         row["receipt_en"] = (
             "Primary: "
@@ -619,6 +623,12 @@ def _vector_presentations(
             + "；".join(f"{r['label_zh']} — {r['state_zh']}" for r in all_receipts[1:])
             + "。仅作展示背景；仓位取自最终配置。"
         )
+        if as_of is not None:
+            mon_d = f"{as_of.strftime('%b')} {as_of.day}"
+            row["micro_en"] += f" · as of {mon_d}"
+            row["micro_zh"] += f" · 截至{as_of.month}月{as_of.day}日"
+            row["receipt_en"] += f" Figure as of {mon_d}; the newest row has no reading."
+            row["receipt_zh"] += f"数字截至{as_of.month}月{as_of.day}日；最新一行无读数。"
 
     def _close_series(group: str, name: str) -> pd.Series | None:
         try:
