@@ -923,8 +923,19 @@ def test_recovering_close_above_the_reference_high_charts_the_positive_end():
 # history cell's negative branch nor the chart's unsigned end tag changes
 # for this shape, so the unclipped path keeps this fragment byte-identical.
 # The chart's bilingual accessible name came later and only wraps the chart
-# line, so the pin is checked on the render with that wrapper taken off.
+# line, so the pin is checked on the render with that wrapper taken off. The
+# Chinese 20-close average label was reworded later still; the pin puts the
+# base wording back so it keeps binding the base render.
 _NEVER_EXCEEDS_SHA256 = "05672a5aa1319da1e7f37400d2638c1c8b3b4223484538337be583579b402d34"
+_AVERAGE_LABEL_ZH = ('<span class="l-zh">相对近20个收盘价的均值</span>',
+                     '<span class="l-zh">相对20日收盘均价</span>')
+
+
+def _with_base_average_label(html):
+    """Undo the Chinese average-label rewording, which is the only other change."""
+    new, base = _AVERAGE_LABEL_ZH
+    assert html.count(new) == 1, html.count(new)
+    return html.replace(new, base)
 
 
 def _without_chart_name(html):
@@ -952,7 +963,7 @@ def test_underway_path_that_never_exceeds_the_high_matches_the_base_render():
     assert all(value <= 0 for value in obs["price_path"]["vals"])
     unwrapped = _without_chart_name(html)
     assert unwrapped != html
-    assert hashlib.sha256(unwrapped.encode()).hexdigest() == _NEVER_EXCEEDS_SHA256
+    assert hashlib.sha256(_with_base_average_label(unwrapped).encode()).hexdigest() == _NEVER_EXCEEDS_SHA256
     # A view with no chart name renders the base bytes as they are.
     unnamed = {key: value for key, value in view.items()
                if key not in ("chart_label_en", "chart_label_zh")}
@@ -961,4 +972,4 @@ def test_underway_path_that_never_exceeds_the_high_matches_the_base_render():
     bare = env.from_string(
         '{% import "_risk_radar_pullback_depth.html.j2" as p %}{{ p.detail(market, v) }}'
     ).render(market="us", v=unnamed)
-    assert hashlib.sha256(bare.encode()).hexdigest() == _NEVER_EXCEEDS_SHA256
+    assert hashlib.sha256(_with_base_average_label(bare).encode()).hexdigest() == _NEVER_EXCEEDS_SHA256
