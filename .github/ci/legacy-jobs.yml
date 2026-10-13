@@ -4569,6 +4569,13 @@ jobs:
       # as the step above.
       - name: options + render assertions that read committed data (the data_gate half)
         run: python -m pytest tests/test_options_session_guards.py tests/test_options_unit_seams.py tests/test_render_dead_asset_gate.py -m data_gate -q
+      # The data_gate half of tests/test_fif_p2_evidence_capture.py (FIF P2 #9011,
+      # 2026-10-12): the three tests that build or query the FIF kernel over committed
+      # data/edgar, data/universe, data/breadth and data/reference parquet, so a nightly
+      # commit alone can move their verdict. The other half runs in fif-kernel-guards on
+      # the code gate. Last, after the options/render data_gate half, for the same reason.
+      - name: FIF P2 evidence-capture assertions that read committed data (the data_gate half)
+        run: python -m pytest tests/test_fif_p2_evidence_capture.py -m data_gate -q
 
   c19-wp13-debt-maturity-as-of:
     if: ${{ false }}
@@ -6413,6 +6420,7 @@ jobs:
       - "scripts/build_stock_library.py"
       - "scripts/build_thematic_state.py"
       - "scripts/capture_fif_issuer_packages.py"
+      - "scripts/capture_page_evidence.py"
       - "scripts/check_board_contradictions.py"
       - "scripts/check_signal_gate_coherence.py"
       - "scripts/check_stretch_oracle_contract.py"
@@ -6443,9 +6451,11 @@ jobs:
       - "tests/__init__.py"
       - "tests/conftest.py"
       - "tests/test_fif_gsrc_capture.py"
+      - "tests/test_fif_p2_evidence_capture.py"
       - "tests/test_fif_publication_workflow_shape.py"
       - "tests/test_filing_forensics_broad_sec_lane.py"
       - "tests/test_forensics_api.py"
+      - "tests/tools/fif_p2_evidence_capture.py"
       # Static data-path references the app/ import closure carries (contract-delta, 2026-10-12).
       - "site/basketdata/baskets.json"
       - "site/basketdata/fear_greed.json"
@@ -6552,6 +6562,17 @@ jobs:
           tests/test_fundamental_forensics_ui.py
           tests/test_fundamental_forensics_wave2_operator.py
           -q
+      # tests/test_fif_p2_evidence_capture.py (FIF P2 #9011, 2026-10-12): its tree-only and
+      # fixture-built tests run here on the code gate. The three that build or query the
+      # kernel over nightly-advanced data/edgar, data/universe, data/breadth and
+      # data/reference parquet carry @pytest.mark.data_gate (tests/conftest.py); they are
+      # deselected here and run last in engine-render-guards on the data gate.
+      # test_fence2_app_and_engine_never_import_the_tool scans all of app/** and engine/**
+      # source. Those trees are deliberately not in paths above (they would select this job
+      # on nearly every code PR and breach the PACKING_PROBES), so an app- or engine-only
+      # PR that imports tests.tools is caught by the main ci.yml baseline, not here.
+      - name: FIF P2 evidence-capture suite (code half)
+        run: python -m pytest tests/test_fif_p2_evidence_capture.py -q -m "not data_gate"
   collector-registry:
     if: ${{ false }}
     gate: code
