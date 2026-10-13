@@ -459,7 +459,8 @@ def test_two_close_holiday_gap_inside_an_episode():
     assert reads[gap_at]["phase"] == "underway"
     assert reads[gap_at]["contiguous_closes"] == 1
     assert reads[gap_at]["no_new_low_closes"] == 0
-    assert reads[-1]["history_gap_count"] == 1
+    # Friday 2025-04-11 and Monday 2025-04-14 are two missing sessions, not one break.
+    assert reads[-1]["history_gap_count"] == 2
     assert reads[-1]["phase"] == "stabilizing"
     assert reads[-1]["contiguous_closes"] == 5
     assert reads[-1]["no_new_low_closes"] == 4

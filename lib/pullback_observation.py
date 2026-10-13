@@ -50,6 +50,38 @@ def _next_observation(previous: date, current: date,
     return current > previous and is_session(current)
 
 
+def _missing_expected(previous: date, current: date,
+                      is_session: Callable[[date], bool]) -> int:
+    """Expected sessions strictly between two consecutive close dates.
+
+    Zero when the dates are adjacent sessions. ``is_session`` is the same
+    predicate ``_next_observation`` uses, so weekends and exchange holidays
+    are not missing sessions.
+
+    The walk is bounded by the calendar-day span of the hole, so a
+    multi-year gap cannot loop without a limit. A hole longer than the
+    retained close window — more than ``PATH_MAX_CLOSES`` calendar days
+    strictly between the two closes — is not walked. Its count is that
+    calendar-day span: an upper bound that can include non-sessions. A
+    hole the assessment can draw is shorter than the window and is an
+    exact session count.
+    """
+    if current <= previous:
+        return 0
+    span = (current - previous).days - 1
+    if span <= 0:
+        return 0
+    if span > PATH_MAX_CLOSES:
+        return span
+    missing = 0
+    probe = previous + timedelta(days=1)
+    for _ in range(span):
+        if is_session(probe):
+            missing += 1
+        probe += timedelta(days=1)
+    return missing
+
+
 def _empty(expected: date, reason: str, **extra) -> dict:
     return {"schema": SCHEMA, "rules": asdict(RULES), "available": False,
             "quality": reason, "expected_session": expected.isoformat(),
@@ -133,13 +165,12 @@ def _replay(records: list[tuple[date, float]], is_session: Callable[[date], bool
     prices = [p for _, p in records]
     pending = episode = None
     reference_floor = 0
-    contiguous = above20 = gap_count = 0
+    contiguous = above20 = 0
     view: dict = {}
     for i, (day, price) in enumerate(records):
         joined = i == 0 or _next_observation(records[i - 1][0], day, is_session)
         contiguous = contiguous + 1 if joined else 1
         if not joined:
-            gap_count += 1
             pending = None
             above20 = 0
             if episode:
@@ -236,11 +267,11 @@ def _replay(records: list[tuple[date, float]], is_session: Callable[[date], bool
             view = {"phase": "developing" if pending else "monitoring", "active": False,
                     "event": None, "reference_index": pending["peak_index"] if pending else peak_i,
                     "resolution": None, "reference_floor_index": reference_floor}
-    return _finish(records, view, contiguous, gap_count)
+    return _finish(records, view, contiguous, is_session)
 
 
 def _finish(records: list[tuple[date, float]], view: dict, contiguous: int,
-            gap_count: int) -> dict:
+            is_session: Callable[[date], bool]) -> dict:
     last = len(records) - 1
     price = records[last][1]
     event = view["event"]
@@ -253,6 +284,16 @@ def _finish(records: list[tuple[date, float]], view: dict, contiguous: int,
     chart_start = max(view["reference_floor_index"],
                       min(peak_i, last - (RULES.reference_closes - 1)),
                       last - (PATH_MAX_CLOSES - 1))
+    # chart_start is the first drawn close. The close just before it still
+    # belongs to this assessment, so a hole between that close and the first
+    # windowed close counts. Holes entirely before that edge do not: they
+    # are outside the closes this reading uses. At the start of the series
+    # there is no earlier close.
+    edge = chart_start if chart_start == 0 else chart_start - 1
+    missing_sessions = 0
+    for i in range(edge, last):
+        missing_sessions += _missing_expected(
+            records[i][0], records[i + 1][0], is_session)
     price_path = {"dates": [d.isoformat() for d, _ in records[chart_start:]],
                   "vals": [round(min(0.0, 100.0 * (p / peak - 1.0)), 4)
                            for _, p in records[chart_start:]]}
@@ -280,6 +321,6 @@ def _finish(records: list[tuple[date, float]], view: dict, contiguous: int,
         "below_20_close_average": price < fmean(p for _, p in records[-20:]),
         "loss_recovered_pct": round(recovered, 2) if recovered is not None and event else None,
         "no_new_low_closes": event["no_new_low_closes"] if event else None,
-        "contiguous_closes": contiguous, "history_gap_count": gap_count,
+        "contiguous_closes": contiguous, "history_gap_count": missing_sessions,
         "price_path": price_path, "timeline": timeline, "price_transitions": transitions,
     }
