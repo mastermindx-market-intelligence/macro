@@ -17478,6 +17478,7 @@ jobs:
       - lib/dataos/nulls.py
       - lib/dataos/price.py
       - lib/dataos/quality.py
+      - lib/dataos/read_contract.py
       - lib/dataos/registry.py
       - lib/dataos/temporal.py
       - lib/delisted_symbols.py
@@ -24888,6 +24889,7 @@ jobs:
       - "lib/dataos/nulls.py"
       - "lib/dataos/price.py"
       - "lib/dataos/quality.py"
+      - "lib/dataos/read_contract.py"
       - "lib/dataos/registry.py"
       - "lib/dataos/temporal.py"
       - "lib/delisted_symbols.py"
