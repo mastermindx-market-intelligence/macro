@@ -3549,15 +3549,15 @@ def test_v04_training_fence_refuses_non_complete_even_if_authority_flips(monkeyp
 
     from types import MappingProxyType
 
+    pending = _v04_pending_record()
+    complete = _v04_complete_record()
+    nulled = dict(complete)
+    nulled["net_return_pct"] = None
     monkeypatch.setattr(
         oa3,
         "ALL_FALSE_AUTHORITY",
         MappingProxyType({**oa3.ALL_FALSE_AUTHORITY, "may_train_prophet": True}),
     )
-    pending = _v04_pending_record()
-    complete = _v04_complete_record()
-    nulled = dict(complete)
-    nulled["net_return_pct"] = None
     assert oa3.admitted_training_labels([pending]) == []
     assert oa3.admitted_training_labels([nulled]) == []
     admitted = oa3.admitted_training_labels([complete])
