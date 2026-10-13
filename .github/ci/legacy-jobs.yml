@@ -25989,6 +25989,42 @@ jobs:
       - name: observed-move labels, features and price-basis refusal
         run: python -m pytest tests/test_observed_moves.py -q
 
+  grey-deer-pullback-forward:
+    if: ${{ false }}
+    gate: code
+    # Grey Deer W5 (WS:GREY-DEER-RISK-INTELLIGENCE): pullback forward lane - the
+    # prospective prereg writer, its grader, the nightly entry point and the
+    # readiness reporter. Hermetic: synthetic series and tmp_path logs only; the
+    # writer/grader identity env is monkeypatched by the tests, never set here.
+    timeout-minutes: 10
+    paths:
+      - "engine/grey_deer_pullback_forward.py"
+      - "engine/grey_deer_pullback_forward_grade.py"
+      - "scripts/grey_deer_pullback_nightly.py"
+      - "scripts/research/grey_deer_pullback_readiness.py"
+      - "scripts/research/grey_deer_pullback_stage1.py"
+      - "lib/observed_moves.py"
+      - "lib/nyse_calendar.py"
+      - "tests/test_grey_deer_pullback_forward.py"
+      - "tests/test_grey_deer_pullback_forward_grade.py"
+      - "tests/test_grey_deer_pullback_nightly.py"
+      - "tests/test_grey_deer_pullback_readiness.py"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install minimal deps
+        run: pip install pytest pandas numpy scipy pyarrow pyyaml
+      - name: pullback forward writer, grader, nightly and readiness tests
+        run: >-
+          python -m pytest -q
+          tests/test_grey_deer_pullback_forward.py
+          tests/test_grey_deer_pullback_forward_grade.py
+          tests/test_grey_deer_pullback_nightly.py
+          tests/test_grey_deer_pullback_readiness.py
+
   grey-deer-pullback-stage1:
     if: ${{ false }}
     gate: code
