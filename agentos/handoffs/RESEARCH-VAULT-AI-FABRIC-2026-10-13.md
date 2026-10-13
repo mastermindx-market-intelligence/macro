@@ -22,6 +22,10 @@ changed:
     what: "Truthful catalog/search states and late-response fencing across account/catalog changes; unsupported hourly/full-text promises removed."
   - path: engine/research_vault/sidecar.py
     what: "Display-only calendar-date removal also trims its orphaned terminal comma; raw titles and slugs are preserved, with matching browser behavior."
+  - path: engine/research_intelligence/extractor.py
+    what: "Prompt v2 advertises the canonical direction vocabulary and complete source-context copying. Grounding retains an analysis assertion only when all its referenced claims survive."
+  - path: engine/research_intelligence/schema.py
+    what: "Malformed or over-limit raw support removes the whole assertion instead of silently retaining a subset; the mandatory thesis still requires support."
 verified:
   - claim: "Integrated intelligence source and CI placement are qualified locally."
     command: "Affected suites, source/AST review, unrun-suite audit, trigger closure and packing probe."
@@ -35,20 +39,28 @@ verified:
   - claim: "Coverage UI behavior is qualified with controlled browser inputs."
     command: "Dark/light by EN/ZH by desktop/mobile, three failure cases, and two stale-context races."
     result: "Eight layout cases and the failure/race cases pass; no production or positive full-text coverage claim."
+  - claim: "Two actual development calls exposed a prompt-contract failure and a support-loss defect."
+    command: "Existing analyze_vault_report/default provider path on one hash-bound development PDF; second call captured a private diagnostic."
+    result: "Both v1 calls returned invalid_model_output. The second used an unsupported direction. A direction-only offline diagnostic exposed compound synthesis surviving lost citations; none of these outputs was accepted or written to the production RIO store."
+  - claim: "The assembled v2 correctness repair retains the existing quotation law."
+    command: "Canonical Research Vault CI invocation and affected repair checks."
+    result: "Initial assembled run: 902 passed, 20 failed, one skipped. All 20 failing cases are included in the repaired 307-case passing run. Legacy quote tests still discriminate literal quotation; partial-support thesis fixtures now explicitly prove refusal. Trigger closure: 2474 suites reachable, zero gaps. Packing repair remains pending."
 unverified:
   - claim: "Production current full-text coverage reaches the retained 95 percent prerequisite."
     what_would_verify: "Post-merge incumbent materializer output and a complete generation-bound census validating current receipt and derivative bytes."
   - claim: "Actual ChatGPT and Deep Research consume exact replayable evidence."
     what_would_verify: "Installed qualified runtime, actual Research Auth0 grants and private transport, separate C4 client journeys, correction/revocation and rollback proof."
 unresolved:
-  - "Macro #8622 materializer head 885866cf40d10183480222a998bada9083e6369f awaits its remaining CI job before ordinary protected landing."
+  - "Macro #8622 materializer head 641adeb89ac501579e42632112c338d130bd7203: eleven packs passed; contract-delta and pack zero failed packing limits. Exact-source consolidation repair is in progress; no ceiling waiver or producer dispatch."
   - "Macro #9062 digest/date/H00 source is reviewed, binding CI clean and merge-on-green armed; its existing controller owns capacity-constrained refresh."
-  - "Four interrupted original Fabric operations retain unknown outcomes. The incumbent Fabric Integration owner accepted the authorized collector-only recovery request; no replacement, replay or inferred lease settlement."
+  - "Four interrupted original Fabric operations retain unknown outcomes. The incumbent owner's collector diagnosis ended ORIGINAL_RECOVERY_UNAVAILABLE; no supported original artifact acquisition or settlement exists. No replacement, replay or inferred lease settlement."
   - "F11 implementation and accepted revision/RIO patches are being reconciled, but F11 merge retains the real production 95 percent gate."
-  - "Mastermind #1393 merged at 47aeed6514df522a411005f45297309b12fb1737. Runtime #1397 is a separate source candidate, not installed."
+  - "Mastermind #1393 merged at 47aeed6514df522a411005f45297309b12fb1737; #1397 merged at def93fd69bf45560c4394336c56dbaa1250a9159. Neither is installed. Citation/runtime union #1403 head 3e650a4c67b355cca8f53c87d44619eb285f3229 failed its live-root plugin validation test; the existing writer owns the bounded repair."
+  - "C4 sign-in is at the existing-account password step; macOS Passwords requires the user's OS unlock. The official Linux tunnel-client download returned 403 and remains uninstalled."
 next_actions:
   - "Land the exact reviewed source through ordinary CI/merge controls; root alone dispatches the first post-merge producer run after an active-run check."
-  - "Consume recovered E04/E05/citation/U01 results only through the original assigning parents and qualify exact bytes before integration."
+  - "Resume E04/E05/citation/U01 result consumption only if new supported original-run evidence becomes available, through the original assigning parent and exact retained bytes."
+  - "Finish the measured packing repair, publish v2 on existing #9081, and run one hash-bound development canary; source tests do not establish real extraction success."
   - "Freeze accepted retrieval source before running the separately adjudicated private holdout; correction gold remains pending and candidate outcomes are not yet measured."
   - "Complete actual Research Auth0 resource/client policy and immutable runtime deployment proposal; existing Executive tenant is selected, DCR operation #633 remains frozen."
 do_not_redo:
@@ -59,7 +71,7 @@ do_not_redo:
 danger_areas:
   - "Publication, merge, installation, selection and actual client consumption are distinct. Current runtime readiness intentionally stays false until a qualified producer census exists."
   - "Do not reuse Executive/Workspace audience, Supabase Pro membership, or a tunnel workspace ID as the Research authorization principal."
-prs: [8438, 8622, 9062]
+prs: [8438, 8622, 9062, 9081]
 discoveries: []
 ---
 

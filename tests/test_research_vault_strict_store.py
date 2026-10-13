@@ -1311,7 +1311,7 @@ def test_rio_valid_model_output_is_validated():
     assert out["state"] == "ok"
     assert out["rio"]["authority"] == "descriptive_research_only"
     assert out["requested_model"] == "m"
-    assert out["prompt_version"] == "mastermind.research_intelligence.extractor.v1"
+    assert out["prompt_version"] == "mastermind.research_intelligence.extractor.v2"
     assert len(out["prompt_contract_sha256"]) == 64
     assert len(out["prompt_sha256"]) == 64
 
@@ -1374,6 +1374,16 @@ def test_rio_drops_fabricated_statement_even_with_real_quote():
 
     obj = _rio_sample()
     obj["claims"][0]["statement"] = "GS recommends clients sell ALL equities immediately."
+    # A thesis still citing the rejected claim must not survive with less support.
+    with pytest.raises(ValueError, match="lost referenced grounded claim support"):
+        parse_model_output(
+            json.dumps(obj), expected_document_id="r1",
+            expected_document=obj["document"], source_body=RIO_BODY,
+        )
+    obj["analysis"]["thesis"].update({
+        "summary": "Financial conditions pressure duration-sensitive assets.",
+        "support_claim_indices": [1],
+    })
     out = parse_model_output(
         json.dumps(obj),
         expected_document_id="r1",
@@ -1391,6 +1401,15 @@ def test_rio_drops_statement_backed_by_unrelated_real_evidence():
 
     obj = _rio_sample()
     obj["claims"][0]["statement"] = obj["claims"][1]["statement"]
+    with pytest.raises(ValueError, match="lost referenced grounded claim support"):
+        parse_model_output(
+            json.dumps(obj), expected_document_id="r1",
+            expected_document=obj["document"], source_body=RIO_BODY,
+        )
+    obj["analysis"]["thesis"].update({
+        "summary": "Financial conditions pressure duration-sensitive assets.",
+        "support_claim_indices": [1],
+    })
     out = parse_model_output(
         json.dumps(obj),
         expected_document_id="r1",
@@ -1691,6 +1710,17 @@ def test_rio_drops_uncited_claim_and_remaps_synthesis_support():
     })
     obj["analysis"]["thesis"]["support_claim_indices"] = [0, 1, 2]
     obj["analysis"]["forecasts"][0]["support_claim_indices"] = [0, 2]
+    with pytest.raises(ValueError, match="lost referenced grounded claim support"):
+        parse_model_output(
+            json.dumps(obj), expected_document_id="r1",
+            expected_document=obj["document"], source_body=RIO_BODY,
+        )
+    # Now the bad claim is genuinely uncited by the mandatory thesis. Optional
+    # assertions that cite it drop whole; separately supported assertions remap.
+    obj["analysis"]["thesis"]["support_claim_indices"] = [1, 2]
+    obj["analysis"]["forecasts"].append({
+        **obj["analysis"]["forecasts"][0], "support_claim_indices": [2],
+    })
     raw = json.dumps(obj)
     out = parse_model_output(
         raw,
@@ -1701,6 +1731,7 @@ def test_rio_drops_uncited_claim_and_remaps_synthesis_support():
     assert len(out["claims"]) == 2
     assert all("Fabricated" not in claim["statement"] for claim in out["claims"])
     assert out["analysis"]["thesis"]["support_claim_indices"] == [0, 1]
+    assert len(out["analysis"]["forecasts"]) == 1
     assert out["analysis"]["forecasts"][0]["support_claim_indices"] == [1]
 
 
