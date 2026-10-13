@@ -31,9 +31,11 @@ import math
 import os
 import shutil
 import sys
-from datetime import datetime, timezone
+from dataclasses import dataclass
+from datetime import date, datetime, timezone
+from decimal import Decimal, InvalidOperation
 from pathlib import Path
-from typing import Any, Iterable
+from typing import Any, Iterable, Mapping
 
 import pandas as pd
 from jinja2 import Environment, FileSystemLoader
@@ -45,6 +47,8 @@ from lib import config  # noqa: E402
 from lib.pages import write_page  # noqa: E402
 from engine.fundamental_forensics.private_state import (
     LOCAL_STATE_RELATIVE,
+    MAX_COMPRESSED_BYTES,
+    MAX_DECOMPRESSED_BYTES,
     STATE_SCHEMA,
     decode_state_blob,
     publish_state_blob,
@@ -53,6 +57,18 @@ from engine.fundamental_forensics.disclosure_projection import (
     DisclosureProjectionError,
     read_disclosure_projection_directory,
 )  # noqa: E402
+from engine.fundamental_forensics.detectors import issuer_class_for_sic  # noqa: E402
+from engine.fundamental_forensics.peer_cohort import (  # noqa: E402
+    CohortDefinition,
+    CohortMember,
+    MetricObservation,
+    build_cohort_table,
+)
+from engine.fundamental_forensics.production_datasets import (  # noqa: E402
+    ProductionDatasetError,
+    build_production_dataset_store,
+    load_latest_generation,
+)
 
 log = logging.getLogger("build_fundamental_forensics")
 
@@ -62,6 +78,15 @@ SCHEMA = STATE_SCHEMA
 # print, carried in a committed file because the private state is gitignored.
 PUBLIC_SUMMARY_RELATIVE = Path("data/fundamental_forensics/public_summary.json")
 PUBLIC_SUMMARY_SCHEMA = "fundamental_forensics.public_summary/v1"
+# FIF P1-b: the committed authority tables and the pinned coverage contract
+# that names the peer-cohort members. Both are read at runtime; no ticker,
+# CIK, issuer id, or SIC literal lives in this file.
+ISSUER_MASTER_RELATIVE = Path("data/reference/issuer_master.parquet")
+COVERAGE_CONTRACT_RELATIVE = Path("config/fundamental_forensics/coverage/five_issuer_v1.json")
+# The state payload envelope that carries the peer-cohort projection.
+STATE_PAYLOAD_SCHEMA = "fundamental_forensics_state_payload.v1"
+PEER_COHORT_REASON_DATASET_ABSENT = "production_dataset_absent"
+PEER_COHORT_REASON_OVER_BUDGET = "state_byte_budget_exceeded"
 # How long a committed projection may keep being published. daily.yml's run_py
 # prints an ::error annotation for a failed builder but does NOT exit non-zero,
 # so a broken forensics build leaves the nightly green while build_site keeps
@@ -176,8 +201,12 @@ def _json_number(value: Any) -> float | None:
 
 def _period_label(row: pd.Series) -> str:
     fy = int(row["fiscal_year"])
-    fq = int(row["fiscal_quarter"])
-    return f"FY{fy} Q{fq}"
+    fq = row.get("fiscal_quarter")
+    # Annual period stamps carry a fiscal year and no quarter: the accruals
+    # finding measures ANNUAL rows, so its label must not borrow a quarter.
+    if fq is None or pd.isna(fq):
+        return f"FY{fy}"
+    return f"FY{fy} Q{int(fq)}"
 
 
 def _source_links(cik: int | None, filed: str | None) -> list[dict[str, Any]]:
@@ -262,6 +291,13 @@ def _finding(
         "evidence": _source_links(cik, str(current.get("filed") or "")),
         "limitations_en": list(limitations_en),
         "limitations_zh": list(limitations_zh),
+        # FIF P1-b (I4): the state panel is not accession-coherent and carries
+        # no occurrence ledger, so occurrence provenance is an explicit JSON
+        # null with a basis string — never a fabricated id, span, or "null"
+        # text. Hydrating real ids is a future ledger-join lane.
+        "occurrence_id": None,
+        "source_span": None,
+        "occurrence_basis": "panel_projection_not_occurrence_bound",
         "display_only": True,
         "authority": "review_priority_only",
     }
@@ -295,8 +331,8 @@ def detect_quarterly(current: pd.Series, prior: pd.Series, cik: int | None) -> l
             "margin_compression_despite_revenue_growth", priority, current, prior,
             title_en="Revenue grew. Gross margin did not.",
             title_zh="收入增长，毛利率却下降。",
-            summary_en=f"Revenue rose {rev_g:.1%} year over year while gross margin fell {compression:.1%}.",
-            summary_zh=f"收入同比增长 {rev_g:.1%}，毛利率下降 {compression:.1%}。",
+            summary_en=f"Revenue rose {rev_g:.1%} year over year while gross margin fell {compression*100:.1f} percentage points.",
+            summary_zh=f"收入同比增长 {rev_g:.1%}，毛利率下降 {compression*100:.1f} 个百分点。",
             formula_en="Gross margin = gross profit / revenue; compare the same fiscal quarter year over year.",
             formula_zh="毛利率 = 毛利润 / 收入；对比去年同期季度。",
             threshold_en="Revenue growth ≥ 3% and current gross margin < prior-year quarter.",
@@ -316,8 +352,8 @@ def detect_quarterly(current: pd.Series, prior: pd.Series, cik: int | None) -> l
             "receivables_stretch", "high" if gap >= 0.25 else "watch", current, prior,
             title_en="Receivables are outrunning sales.",
             title_zh="应收账款跑赢销售。",
-            summary_en=f"Receivables grew {gap:.1%} faster than revenue year over year.",
-            summary_zh=f"应收账款增速比收入快 {gap:.1%}。",
+            summary_en=f"Receivables grew {gap*100:.1f} percentage points faster than revenue year over year.",
+            summary_zh=f"应收账款增速比收入快 {gap*100:.1f} 个百分点。",
             formula_en="Receivables growth minus revenue growth.",
             formula_zh="应收账款增速减去收入增速。",
             threshold_en="Spread > 10 percentage points.",
@@ -338,8 +374,8 @@ def detect_quarterly(current: pd.Series, prior: pd.Series, cik: int | None) -> l
             "inventory_build", "high" if gap >= 0.30 else "watch", current, prior,
             title_en="Inventory is building faster than sales.",
             title_zh="库存增长快于销售。",
-            summary_en=f"Inventory grew {gap:.1%} faster than revenue year over year.",
-            summary_zh=f"库存增速比收入快 {gap:.1%}。",
+            summary_en=f"Inventory grew {gap*100:.1f} percentage points faster than revenue year over year.",
+            summary_zh=f"库存增速比收入快 {gap*100:.1f} 个百分点。",
             formula_en="Inventory growth minus revenue growth.",
             formula_zh="库存增速减去收入增速。",
             threshold_en="Spread > 15 percentage points.",
@@ -380,8 +416,8 @@ def detect_quarterly(current: pd.Series, prior: pd.Series, cik: int | None) -> l
             "capital_intensity_rising", "high" if capex_gap >= 0.25 else "watch", current, prior,
             title_en="Capital spending accelerated ahead of output.",
             title_zh="资本开支增速领先产出。",
-            summary_en=f"Capex growth exceeded operating growth by at least {capex_gap:.1%}.",
-            summary_zh=f"资本开支增速至少比经营增长快 {capex_gap:.1%}。",
+            summary_en=f"Capex growth exceeded operating growth by at least {capex_gap*100:.1f} percentage points.",
+            summary_zh=f"资本开支增速至少比经营增长快 {capex_gap*100:.1f} 个百分点。",
             formula_en="Capex growth compared with revenue and operating-income growth.",
             formula_zh="比较资本开支、收入及经营利润增速。",
             threshold_en="Capex growth exceeds both comparators by > 10 percentage points; revenue-only when operating income is non-positive.",
@@ -397,11 +433,29 @@ def detect_quarterly(current: pd.Series, prior: pd.Series, cik: int | None) -> l
     return out
 
 
+def _accrual_rows(annual: pd.DataFrame) -> pd.DataFrame:
+    """The exact three-year row window the accruals detector measures.
+
+    Shared by ``_accrual_inputs`` (the values) and ``detect_accruals`` (the
+    period stamps), so a finding can never cite a row it did not measure.
+    """
+    return annual.sort_values(["fy", "period_end"], na_position="first").tail(3)
+
+
+def _annual_period_row(row: pd.Series, has_filed: bool) -> pd.Series:
+    """An annual period stamp: fiscal year only, never a borrowed quarter."""
+    data: dict[str, Any] = {"fiscal_year": int(row["fy"])}
+    if has_filed:
+        filed = row.get("filed")
+        data["filed"] = "" if filed is None or pd.isna(filed) else str(filed)
+    return pd.Series(data)
+
+
 def _accrual_inputs(annual: pd.DataFrame) -> tuple[list[int], list[float]] | None:
     """Return the exact three-year detector inputs, or None when not evaluable."""
     if annual.empty:
         return None
-    rows = annual.sort_values(["fy", "period_end"], na_position="first").tail(3)
+    rows = _accrual_rows(annual)
     if len(rows) != 3:
         return None
     fys = [int(v) for v in rows["fy"]]
@@ -463,7 +517,13 @@ def detector_evaluability(
 
 
 def detect_accruals(annual: pd.DataFrame, current_q: pd.Series, prior_q: pd.Series, cik: int | None) -> dict[str, Any] | None:
-    """Three-period annual accrual trend using the repository's locked 3pp rule."""
+    """Three-period annual accrual trend using the repository's locked 3pp rule.
+
+    ``current_q``/``prior_q`` are retained for call-site stability only: the
+    finding is measured on ANNUAL rows, so its period stamps and evidence date
+    come from the annual frame's latest and base fiscal years — never from the
+    quarterly rows the surrounding build happens to be standing on.
+    """
     inputs = _accrual_inputs(annual)
     if inputs is None:
         return None
@@ -471,12 +531,16 @@ def detect_accruals(annual: pd.DataFrame, current_q: pd.Series, prior_q: pd.Seri
     delta = vals[-1] - vals[0]
     if delta < 0.03 or vals[-1] <= vals[0]:
         return None
+    rows = _accrual_rows(annual)
+    has_filed = "filed" in annual.columns
+    latest_fy = _annual_period_row(rows.iloc[-1], has_filed)
+    base_fy = _annual_period_row(rows.iloc[0], has_filed)
     return _finding(
-        "accruals_trending_up", "high" if delta >= 0.05 else "watch", current_q, prior_q,
+        "accruals_trending_up", "high" if delta >= 0.05 else "watch", latest_fy, base_fy,
         title_en="Earnings moved further ahead of cash.",
         title_zh="利润进一步领先现金流。",
-        summary_en=f"Accrual intensity rose {delta:.1%} across FY{fys[0]}–FY{fys[-1]}.",
-        summary_zh=f"FY{fys[0]}–FY{fys[-1]} 应计强度上升 {delta:.1%}。",
+        summary_en=f"Accrual intensity rose {delta*100:.1f} percentage points across FY{fys[0]}–FY{fys[-1]}.",
+        summary_zh=f"FY{fys[0]}–FY{fys[-1]} 应计强度上升 {delta*100:.1f} 个百分点。",
         formula_en="Accrual intensity = (net income − operating cash flow) / assets.",
         formula_zh="应计强度 =（净利润 − 经营现金流）/ 资产。",
         threshold_en="Latest minus oldest ≥ 3 percentage points across three consecutive fiscal years.",
@@ -521,6 +585,75 @@ def _metadata(root: Path) -> tuple[dict[str, str], dict[str, str], dict[str, int
     return names, sectors, ciks
 
 
+def _cik10(value: Any) -> str | None:
+    """Normalize a CIK of any common shape onto the zero-padded 10-text form."""
+    if value is None or isinstance(value, bool):
+        return None
+    text = str(value).strip()
+    if not text or text.lower() in {"nan", "none", "<na>", "nat"}:
+        return None
+    if text.endswith(".0") and text[:-2].isdigit():
+        text = text[:-2]
+    if not text.isdigit():
+        return None
+    return text.zfill(10)
+
+
+@dataclass(frozen=True)
+class IssuerMasterIndex:
+    """One read of the committed issuer master, joined by exact CIK only.
+
+    This is a JOIN, never a mint: an issuer id reaches the state only from a
+    committed authority row whose CIK carries exactly one issuer id. Missing,
+    unreadable, absent, and ambiguous all stay null with a machine-readable
+    reason; nothing is ever derived from a ticker or listing guess.
+    """
+
+    available: bool
+    bound: Mapping[str, str]
+    ambiguous: frozenset[str]
+
+    def join(self, cik10: str | None) -> tuple[str | None, str]:
+        if cik10 is None:
+            return None, "cik_absent_in_panel"
+        if not self.available:
+            return None, "issuer_master_unavailable"
+        if cik10 in self.ambiguous:
+            return None, "issuer_master_ambiguous_for_cik"
+        issuer_id = self.bound.get(cik10)
+        if issuer_id is None:
+            return None, "issuer_master_row_absent_for_cik"
+        return issuer_id, "issuer_master_row"
+
+
+def _issuer_master_index(root: Path) -> IssuerMasterIndex:
+    """Read the committed issuer master once per build, fail-soft.
+
+    A missing or unreadable file is a normal state (fresh clone, partial
+    checkout) that mirrors ``_metadata``'s fail-soft shape: every company then
+    reports ``issuer_master_unavailable`` instead of an error.
+    """
+    path = root / ISSUER_MASTER_RELATIVE
+    if not path.exists():
+        return IssuerMasterIndex(available=False, bound={}, ambiguous=frozenset())
+    try:
+        frame = pd.read_parquet(path, columns=["issuer_id", "cik"]).dropna(
+            subset=["issuer_id", "cik"]
+        )
+    except Exception:  # noqa: BLE001 - unreadable authority is a normal state here
+        return IssuerMasterIndex(available=False, bound={}, ambiguous=frozenset())
+    grouped: dict[str, set[str]] = {}
+    for raw_cik, raw_issuer in zip(frame["cik"], frame["issuer_id"]):
+        cik10 = _cik10(raw_cik)
+        issuer_id = str(raw_issuer).strip()
+        if cik10 is None or not issuer_id:
+            continue
+        grouped.setdefault(cik10, set()).add(issuer_id)
+    bound = {cik: ids.pop() for cik, ids in grouped.items() if len(ids) == 1}
+    ambiguous = frozenset(cik for cik, ids in grouped.items() if len(ids) > 1)
+    return IssuerMasterIndex(available=True, bound=bound, ambiguous=ambiguous)
+
+
 def _clean_period(row: pd.Series) -> dict[str, Any]:
     doc: dict[str, Any] = {
         "fiscal_year": int(row["fiscal_year"]),
@@ -528,6 +661,20 @@ def _clean_period(row: pd.Series) -> dict[str, Any]:
         "period_end": str(row.get("period_end") or ""),
         "filed": str(row.get("filed") or ""),
     }
+    # FIF P1-b (I2): the canonical query-period projection, carried alongside
+    # the existing fiscal fields. State rows are fiscal-quarter DURATION
+    # buckets; `start` is the companyfacts duration start retained by the
+    # backfill (rows from a pre-I2 panel carry none) or an explicit null with
+    # its basis — never a derived date and never an empty placeholder.
+    start_raw = row.get("period_start")
+    start = start_raw if isinstance(start_raw, str) and start_raw else None
+    doc["kind"] = "duration"
+    doc["start"] = start
+    doc["end"] = doc["period_end"]
+    doc["label"] = _period_label(row)
+    doc["period_start_basis"] = (
+        "companyfacts_duration_start" if start is not None else "absent_in_projection"
+    )
     for metric in QUARTERLY_METRICS:
         doc[metric] = _json_number(row.get(metric))
     return doc
@@ -610,6 +757,325 @@ def _disclosure_budgeted(
     }
 
 
+# ---------------------------------------------------------------------------
+# FIF P1-b (I5, waves 1+2): the peer-cohort payload projection.
+#
+# Members come ONLY from the pinned coverage contract (read at runtime); their
+# issuer ids come ONLY from the exact-CIK issuer-master join above; their
+# observations come ONLY from the P1 precomputed statement trees in the
+# production dataset store. Every absence is typed in ``member_exclusions``
+# with the closed code set below — never a silent drop, never a fallback to a
+# golden provider or fixture, and never a float: values cross this boundary as
+# ``Decimal`` of the parser's canonical cell text.
+# ---------------------------------------------------------------------------
+
+_PEER_EXCLUSION_SIC = "issuer_sic_unavailable"
+_PEER_EXCLUSION_DATASET = "production_dataset_absent"
+_PEER_EXCLUSION_IDENTITY = "issuer_identity_unresolved"
+
+
+def _read_coverage_contract(root: Path) -> dict[str, Any] | None:
+    """Read the pinned coverage contract, fail-soft to None."""
+    try:
+        raw = json.loads((root / COVERAGE_CONTRACT_RELATIVE).read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return None
+    return raw if isinstance(raw, dict) else None
+
+
+def _pinned_sic(raw: Any) -> str | None:
+    """Return the contract's pinned SIC when it is a parseable code, else None.
+
+    Absent, empty, and unparseable values are indistinguishable for gating
+    purposes: the member is excluded BEFORE any class derivation, so a missing
+    SIC can never leak into a fail-open applicability call.
+    """
+    if raw is None or isinstance(raw, bool):
+        return None
+    text = str(raw).strip()
+    if not text or not text.isdigit():
+        return None
+    return text
+
+
+def _contract_members(contract: Mapping[str, Any]) -> list[dict[str, Any]]:
+    """Project the contract's issuer rows, in contract order."""
+    members: list[dict[str, Any]] = []
+    for issuer in contract.get("issuers") or []:
+        if not isinstance(issuer, dict):
+            continue
+        ticker = str(issuer.get("ticker") or "").upper()
+        cik10 = _cik10(issuer.get("cik"))
+        if not ticker or cik10 is None:
+            continue
+        accessions = [
+            row.get("accession")
+            for row in issuer.get("accessions") or []
+            if isinstance(row, dict) and isinstance(row.get("accession"), str)
+        ]
+        members.append({
+            "ticker": ticker,
+            "cik10": cik10,
+            "sic": issuer.get("sic"),
+            "accessions": accessions,
+        })
+    return members
+
+
+def _contract_metric_ids(contract: Mapping[str, Any]) -> tuple[str, ...]:
+    denominator = contract.get("field_denominator")
+    if not isinstance(denominator, dict):
+        return ()
+    raw = denominator.get("metric_ids")
+    if not isinstance(raw, list):
+        return ()
+    return tuple(item for item in raw if isinstance(item, str) and item)
+
+
+def _contract_not_applicable(contract: Mapping[str, Any]) -> dict[str, frozenset[str]]:
+    """The contract's per-ticker metric exclusions, normalized for lookup."""
+    denominator = contract.get("field_denominator")
+    if not isinstance(denominator, dict):
+        return {}
+    raw = denominator.get("not_applicable")
+    if not isinstance(raw, dict):
+        return {}
+    out: dict[str, frozenset[str]] = {}
+    for ticker, metrics in raw.items():
+        if not isinstance(metrics, dict):
+            continue
+        out[str(ticker).upper()] = frozenset(metrics)
+    return out
+
+
+def _cohort_policy_defaults() -> dict[str, Any]:
+    """The C1 CohortDefinition defaults, imported — never duplicated literals."""
+    probe = CohortDefinition(cohort_id="", anchor_issuer_id="", members=(), metric_ids=())
+    return {
+        "alignment_mode": probe.alignment_mode,
+        "period_tolerance_days": probe.period_tolerance_days,
+        "min_n": probe.min_n,
+    }
+
+
+def _tree_metric_observations(
+    generation: Any,
+    accessions: list[str],
+    metric_ids: tuple[str, ...],
+    not_applicable: Mapping[str, frozenset[str]],
+    ticker: str,
+) -> dict[str, MetricObservation] | None:
+    """Project the latest available cell per metric from the precomputed trees.
+
+    Returns ``None`` when no contract accession's tree is readable — the typed
+    dataset-absent case. A cell whose value is not canonical text contributes
+    nothing (the cohort table then reports that member×metric as a missing
+    observation); no value is converted, scaled, rounded, or floated here.
+    """
+    wanted = set(metric_ids)
+    excluded_metrics = not_applicable.get(ticker, frozenset())
+    latest: dict[str, MetricObservation] = {}
+    latest_end: dict[str, str] = {}
+    readable = False
+    for accession in accessions:
+        try:
+            tree = generation.statement_trees(accession)
+        except ProductionDatasetError:
+            continue
+        readable = True
+        for statement in tree.get("statements") or []:
+            for tree_row in statement.get("rows") or []:
+                metric_id = tree_row.get("standardized_metric_id")
+                if not isinstance(metric_id, str) or metric_id not in wanted:
+                    continue
+                for cell in tree_row.get("cells") or []:
+                    value_text = cell.get("value")
+                    if not isinstance(value_text, str):
+                        continue
+                    period = cell.get("period") or {}
+                    end = period.get("end")
+                    if not isinstance(end, str):
+                        continue
+                    try:
+                        end_date = date.fromisoformat(end)
+                        value = Decimal(value_text)
+                    except (ValueError, InvalidOperation):
+                        continue
+                    if metric_id in latest_end and end <= latest_end[metric_id]:
+                        continue
+                    latest_end[metric_id] = end
+                    latest[metric_id] = MetricObservation(
+                        value=value,
+                        period_end=end_date,
+                        period_basis=str(period.get("kind") or ""),
+                        applicable=metric_id not in excluded_metrics,
+                    )
+    return latest if readable else None
+
+
+@dataclass(frozen=True)
+class _AdmittedPeer:
+    member: Mapping[str, Any]
+    issuer_id: str
+    sic: str
+    issuer_class: str
+    observations: Mapping[str, MetricObservation]
+
+
+def _member_exclusion(
+    member: Mapping[str, Any],
+    issuer_id: str | None,
+    code: str,
+    reason: str,
+) -> dict[str, Any]:
+    return {
+        "ticker": member["ticker"],
+        "cik": member["cik10"],
+        "issuer_id": issuer_id,
+        "code": code,
+        "reason": reason,
+    }
+
+
+def _compose_peer_cohort(
+    root: Path, issuer_master: IssuerMasterIndex
+) -> tuple[dict[str, Any] | None, str | None]:
+    """Build the peer-cohort payload, or a typed null with its reason.
+
+    Evaluation order is fixed: an unavailable store excludes every member
+    (``production_dataset_absent``); otherwise per member, in contract order,
+    identity (exact-CIK join) is resolved before the generation is read, the
+    generation before the SIC gate, and the SIC gate before any class
+    derivation — so a member without a pinned SIC never reaches an
+    applicability call. An excluded member never enters a CohortDefinition.
+    """
+    contract = _read_coverage_contract(root)
+    members = _contract_members(contract) if contract else []
+    if not members:
+        return None, PEER_COHORT_REASON_DATASET_ABSENT
+    contract_id = str(contract.get("contract_id") or "")
+    metric_ids = _contract_metric_ids(contract)
+    not_applicable = _contract_not_applicable(contract)
+
+    exclusions: list[dict[str, Any]] = []
+    admitted: list[_AdmittedPeer] = []
+    store = build_production_dataset_store()
+    if store is None:
+        for member in members:
+            issuer_id, _ = issuer_master.join(member["cik10"])
+            exclusions.append(_member_exclusion(
+                member, issuer_id, _PEER_EXCLUSION_DATASET,
+                "production dataset store is unavailable",
+            ))
+        return None, PEER_COHORT_REASON_DATASET_ABSENT
+
+    for member in members:
+        issuer_id, join_reason = issuer_master.join(member["cik10"])
+        if issuer_id is None:
+            exclusions.append(_member_exclusion(
+                member, None, _PEER_EXCLUSION_IDENTITY,
+                f"issuer id unresolved via issuer master: {join_reason}",
+            ))
+            continue
+        try:
+            generation = load_latest_generation(store, issuer_id)
+        except ProductionDatasetError:
+            generation = None
+        if generation is None:
+            exclusions.append(_member_exclusion(
+                member, issuer_id, _PEER_EXCLUSION_DATASET,
+                "no admitted production dataset generation for the issuer",
+            ))
+            continue
+        sic = _pinned_sic(member["sic"])
+        if sic is None:
+            exclusions.append(_member_exclusion(
+                member, issuer_id, _PEER_EXCLUSION_SIC,
+                "coverage contract carries no parseable pinned sic for the issuer",
+            ))
+            continue
+        observations = _tree_metric_observations(
+            generation, member["accessions"], metric_ids, not_applicable,
+            member["ticker"],
+        )
+        if observations is None:
+            exclusions.append(_member_exclusion(
+                member, issuer_id, _PEER_EXCLUSION_DATASET,
+                "no readable precomputed statement trees for the contract accessions",
+            ))
+            continue
+        admitted.append(_AdmittedPeer(
+            member=member,
+            issuer_id=issuer_id,
+            sic=sic,
+            issuer_class=issuer_class_for_sic(sic),
+            observations=observations,
+        ))
+
+    # Distinct contract CIKs can in principle join to one issuer id; the
+    # cohort kernel requires unique entity ids, so later duplicates stay out
+    # with the identity-plane exclusion rather than a build failure.
+    seen_ids: set[str] = set()
+    unique_admitted: list[_AdmittedPeer] = []
+    for peer in admitted:
+        if peer.issuer_id in seen_ids:
+            exclusions.append(_member_exclusion(
+                peer.member, peer.issuer_id, _PEER_EXCLUSION_IDENTITY,
+                "issuer id collides across contract members",
+            ))
+            continue
+        seen_ids.add(peer.issuer_id)
+        unique_admitted.append(peer)
+    admitted = unique_admitted
+    if not admitted:
+        return None, PEER_COHORT_REASON_DATASET_ABSENT
+
+    observations_by_issuer = {peer.issuer_id: peer.observations for peer in admitted}
+    tables: list[dict[str, Any]] = []
+    for anchor in admitted:
+        definition = CohortDefinition(
+            cohort_id=f"{contract_id}:{anchor.issuer_id}" if contract_id else anchor.issuer_id,
+            anchor_issuer_id=anchor.issuer_id,
+            members=tuple(
+                CohortMember(
+                    issuer_id=peer.issuer_id,
+                    cik=peer.member["cik10"],
+                    tickers=(peer.member["ticker"],),
+                    issuer_class=peer.issuer_class,
+                    sic=peer.sic,
+                )
+                for peer in admitted
+            ),
+            metric_ids=metric_ids,
+        )
+        table = build_cohort_table(definition, observations_by_issuer)
+        # to_dict() passes through unchanged: no re-rank, no re-format, no
+        # invented row — only the anchor identity is attached beside it.
+        tables.append({**table.to_dict(), "anchor_issuer_id": anchor.issuer_id})
+
+    return {
+        "contract_id": contract_id,
+        "policy": _cohort_policy_defaults(),
+        "tables": tables,
+        "member_exclusions": exclusions,
+    }, None
+
+
+def _peer_cohort_within_budget(state: dict[str, Any]) -> bool:
+    """Whether the state carrying its peer-cohort payload fits the transport.
+
+    Same budget the writer enforces (deterministic serialization, 5 MiB
+    gzip / 32 MiB raw); an over-budget payload is dropped whole with a typed
+    reason, never truncated.
+    """
+    encoded = (
+        json.dumps(state, ensure_ascii=False, separators=(",", ":")) + "\n"
+    ).encode("utf-8")
+    if len(encoded) > MAX_DECOMPRESSED_BYTES:
+        return False
+    return len(gzip.compress(encoded, compresslevel=9)) <= MAX_COMPRESSED_BYTES
+
+
 def compose_state(root: Path, *, generated_at: str | None = None) -> dict[str, Any]:
     q_path = root / "data" / "edgar" / "statements_quarterly.parquet"
     a_path = root / "data" / "edgar" / "statements.parquet"
@@ -618,6 +1084,7 @@ def compose_state(root: Path, *, generated_at: str | None = None) -> dict[str, A
     quarterly = pd.read_parquet(q_path)
     annual = pd.read_parquet(a_path) if a_path.exists() else pd.DataFrame()
     names, sectors, ciks = _metadata(root)
+    issuer_master = _issuer_master_index(root)
     disclosure_projections, disclosure_load_issues = _load_disclosure_projections(root)
     disclosure_projections, disclosure_budget = _disclosure_budgeted(disclosure_projections)
 
@@ -694,11 +1161,16 @@ def compose_state(root: Path, *, generated_at: str | None = None) -> dict[str, A
             }
 
         recent = rows.tail(8).iloc[::-1]
+        entity_id, entity_id_reason = issuer_master.join(_cik10(cik))
         company = {
             "symbol": ticker,
             "name": names.get(ticker, ticker),
             "sector": sectors.get(ticker, "Unclassified"),
             "cik": cik,
+            # FIF P1-b (I1): joined from the committed issuer master by exact
+            # CIK only — null with a machine-readable reason otherwise.
+            "entity_id": entity_id,
+            "entity_id_reason": entity_id_reason,
             "latest_period": _period_label(current),
             "latest_filed": latest_filed,
             "action": action,
@@ -745,7 +1217,8 @@ def compose_state(root: Path, *, generated_at: str | None = None) -> dict[str, A
         else (ranked[0]["symbol"] if ranked else next(iter(companies), "AAPL"))
     )
 
-    return {
+    peer_cohort, peer_cohort_reason = _compose_peer_cohort(root, issuer_master)
+    state = {
         "schema": SCHEMA,
         "generated_at": generated,
         "as_of": as_of,
@@ -791,7 +1264,18 @@ def compose_state(root: Path, *, generated_at: str | None = None) -> dict[str, A
         "default_symbol": default_symbol,
         "ranked_findings": ranked,
         "companies": companies,
+        # FIF P1-b (I5): the payload envelope. peer_cohort carries the cohort
+        # tables through unchanged or is null with exactly one reason.
+        "payload": {
+            "schema": STATE_PAYLOAD_SCHEMA,
+            "peer_cohort": peer_cohort,
+            "peer_cohort_reason": peer_cohort_reason,
+        },
     }
+    if peer_cohort is not None and not _peer_cohort_within_budget(state):
+        state["payload"]["peer_cohort"] = None
+        state["payload"]["peer_cohort_reason"] = PEER_COHORT_REASON_OVER_BUDGET
+    return state
 
 
 def render(root: Path, state: dict[str, Any]) -> Path:
@@ -853,6 +1337,33 @@ def public_summary_projection(summary: dict[str, Any]) -> dict[str, int]:
     }
 
 
+def _reusable_public_summary_stamp(path: Path, projection: dict[str, int]) -> str | None:
+    """Return the prior file's stamp when it carries the identical projection.
+
+    A rewrite of unchanged counts must produce byte-identical bytes, never a
+    fresher stamp: ``generated_at`` here is a source-snapshot clock, and a
+    render that only re-projects the same counts has no source event to
+    freshen it with (FIF A21 — no re-render freshness). The wall-clock
+    fallback stays for the genuine no-prior-file case (fresh clone, first
+    build).
+    """
+    try:
+        raw = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return None
+    if not isinstance(raw, dict) or raw.get("schema") != PUBLIC_SUMMARY_SCHEMA:
+        return None
+    try:
+        if public_summary_projection(raw) != projection:
+            return None
+    except (TypeError, ValueError):
+        return None
+    stamped = raw.get("generated_at")
+    if not isinstance(stamped, str) or not stamped:
+        return None
+    return stamped
+
+
 def _write_public_summary(root: Path, summary: dict[str, Any], *, generated_at: str | None = None) -> Path:
     """Persist the counts-only projection so BOTH render paths read one number.
 
@@ -866,11 +1377,16 @@ def _write_public_summary(root: Path, summary: dict[str, Any], *, generated_at: 
     """
     path = root / PUBLIC_SUMMARY_RELATIVE
     path.parent.mkdir(parents=True, exist_ok=True)
-    stamped = generated_at or datetime.now(timezone.utc).isoformat()
+    projection = public_summary_projection(summary)
+    stamped = (
+        generated_at
+        or _reusable_public_summary_stamp(path, projection)
+        or datetime.now(timezone.utc).isoformat()
+    )
     payload = {
         "schema": PUBLIC_SUMMARY_SCHEMA,
         "generated_at": stamped,
-        **public_summary_projection(summary),
+        **projection,
     }
     temp = _temp_sibling(path)
     try:

@@ -962,6 +962,56 @@ console.log(JSON.stringify({passed:true}));
 
 
 # --------------------------------------------------------------------------- #
+# F05 per-family inspection uses the existing producer and card contract.
+def _family_inspection_surface():
+    from engine.chronicle import impact, schema
+    events = []
+    for i in range(6):
+        events.append(schema.new_event(
+            id=schema.make_id("earnings", f"inspect-{i}", "2026-09-07"),
+            ts="2026-09-07T00:00:00Z", date="2026-09-07", source="earnings",
+            source_ref=f"inspect-{i}", kind="earnings", title="Raw title stays private",
+            facts=[], tickers=[f"E{i}"], themes=[], weight_hint=1,
+            links=schema.make_links(site="/x.html")))
+    events.append(schema.new_event(
+        id=schema.make_id("macro_release", "inspect-macro", "2026-09-07"),
+        ts="2026-09-07T00:00:00Z", date="2026-09-07", source="macro_release",
+        source_ref="inspect-macro", kind="print", title="Macro print: claims = 206",
+        facts=[], tickers=[], themes=[], weight_hint=1,
+        links=schema.make_links(site="/x.html")))
+    return impact.glance_consequence_surface(events, limit=1)
+
+
+def test_family_inspection_exposes_capped_records_and_typed_empty_sections():
+    vm = _full_vm()
+    vm["chronicle_impact"] = _family_inspection_surface()
+    html = _env().get_template("news.html.j2").render(**vm)
+    section = html.split('id="nxConsequence"', 1)[1].split("</section>", 1)[0]
+    assert section.count('class="nx-depth nx-family"') == 6
+    assert 'class="nx-depth nx-family" open' not in section
+    assert "Browse by event type" in section and "按事件类型查看" in section
+    assert "Showing 4 of 6 records" in section and "显示6条中的4条" in section
+    assert "No recorded events of this type in this window." in section
+    assert "Recorded events do not name a market exposure." in section
+    assert "该时段没有此类已记录事件。" in section
+    assert "已记录事件未点名市场敞口。" in section
+    earnings = next(v for v in vm["chronicle_impact"]["family_views"] if v["family"] == "earnings")
+    assert len(earnings["rows"]) == 4
+    for row in earnings["rows"]:
+        for ticker in row["direct_tickers"]:
+            assert f'href="stock.html#{ticker}"' in section
+    assert "Raw title stays private" not in section
+    assert "prophet_ledger" not in section
+
+
+def test_family_inspection_absent_for_unavailable_legacy_payload():
+    vm = _full_vm()
+    vm["chronicle_impact"] = {"rows": [], "reason_en": "Source unavailable."}
+    html = _env().get_template("news.html.j2").render(**vm)
+    assert 'class="nx-depth nx-family"' not in html
+    assert "Source unavailable." in html
+
+
 # F05-017 family_tally tip + closed-key row guards
 # --------------------------------------------------------------------------- #
 from engine.chronicle import impact as _impact_mod  # R5 — use the engine's

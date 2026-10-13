@@ -18,7 +18,7 @@ Guards:
 from __future__ import annotations
 
 import json
-from datetime import datetime, timezone
+from datetime import date, datetime, timezone
 from pathlib import Path
 from unittest.mock import patch
 
@@ -517,3 +517,519 @@ def test_latest_asof_missing_file(tmp_path):
     """_latest_asof returns None when file does not exist."""
     result = M._latest_asof(tmp_path / "nonexistent.jsonl")
     assert result is None
+
+
+# ── Stall-marker integrity (Grey Deer O7/T03, 2026-10-11) ────────────────
+# Production replay: on 2026-10-08 the 15:05Z run recorded risk_radar and
+# leadership_crack as stalled since 2026-10-07 (asof 2026-10-06), and the
+# 16:17Z same-day rerun wrote stalled_since=None with the asof unchanged
+# (state-file commits e65335239332^ -> e65335239332). A non-stall branch is
+# not an advance: only a strictly newer asof may clear an open stall.
+
+_RR = "data/risk_radar/forward_log.jsonl"
+_RR_MANIFEST = [{"path": _RR, "label": "risk_radar"}]
+_MON = datetime(2026, 7, 20, 22, 0, 0, tzinfo=timezone.utc)  # next session after _D2
+
+
+def _run(tmp_path, state_path, *, now, render_happened=True):
+    dispatch = _Dispatch()
+    with (
+        patch.object(M, "_LEDGER_MANIFEST", _RR_MANIFEST),
+        patch("engine.alert_triage.push_ops_alert", dispatch),
+    ):
+        stalled = M.run_check(
+            root=tmp_path,
+            state_path=state_path,
+            render_happened=render_happened,
+            _now=now,
+        )
+        M._dispatch_stall_alert(stalled, tmp_path)
+    return stalled, dispatch
+
+
+def test_same_day_rerun_preserves_open_stall(tmp_path):
+    """A same-day rerun with an unchanged ledger keeps the open stall marker."""
+    _write_jsonl(tmp_path / _RR, [{"asof": "2026-07-15"}])
+    state_path = tmp_path / "data" / "ci" / "ledger_heartbeat_state.json"
+    # State as written by today's first run: stall already open since yesterday.
+    _write_state(state_path, {
+        _RR: {"asof": "2026-07-15", "last_check_date": "2026-07-17",
+              "stalled_since": "2026-07-16"},
+    })
+
+    stalled, dispatch = _run(tmp_path, state_path, now=_D2)
+
+    assert stalled == []          # idempotent: no second alert today
+    assert dispatch.calls == []
+    entry = _load_state(state_path)["ledgers"][_RR]
+    assert entry["asof"] == "2026-07-15"
+    assert entry["stalled_since"] == "2026-07-16"   # not erased by the rerun
+
+    # Next session, still unchanged: the stall keeps its original start date.
+    stalled, _ = _run(tmp_path, state_path, now=_MON)
+    assert len(stalled) == 1
+    assert stalled[0]["stalled_since"] == "2026-07-16"
+
+
+def test_same_day_rerun_with_changed_ledger_clears_stall(tmp_path):
+    """Changed issuer data clears the stall, even on a same-day rerun."""
+    _write_jsonl(tmp_path / _RR, [{"asof": "2026-07-15"}, {"asof": "2026-07-17"}])
+    state_path = tmp_path / "data" / "ci" / "ledger_heartbeat_state.json"
+    _write_state(state_path, {
+        _RR: {"asof": "2026-07-15", "last_check_date": "2026-07-17",
+              "stalled_since": "2026-07-16"},
+    })
+
+    stalled, _ = _run(tmp_path, state_path, now=_D2)
+
+    assert stalled == []
+    entry = _load_state(state_path)["ledgers"][_RR]
+    assert entry["asof"] == "2026-07-17"
+    assert entry["stalled_since"] is None
+
+
+def test_no_render_night_preserves_open_stall(tmp_path):
+    """A night without a republish neither alerts nor clears an open stall."""
+    _write_jsonl(tmp_path / _RR, [{"asof": "2026-07-15"}])
+    state_path = tmp_path / "data" / "ci" / "ledger_heartbeat_state.json"
+    _write_state(state_path, {
+        _RR: {"asof": "2026-07-15", "last_check_date": "2026-07-16",
+              "stalled_since": "2026-07-16"},
+    })
+
+    stalled, _ = _run(tmp_path, state_path, now=_D2, render_happened=False)
+
+    assert stalled == []
+    assert _load_state(state_path)["ledgers"][_RR]["stalled_since"] == "2026-07-16"
+
+
+def test_unreadable_ledger_keeps_snapshot_and_open_stall(tmp_path):
+    """An unreadable ledger is not an advance: snapshot and stall marker survive."""
+    state_path = tmp_path / "data" / "ci" / "ledger_heartbeat_state.json"
+    _write_state(state_path, {
+        _RR: {"asof": "2026-07-15", "last_check_date": "2026-07-16",
+              "stalled_since": "2026-07-16"},
+    })
+    # Ledger absent (the reader returns None, same as an unparseable file).
+    stalled, _ = _run(tmp_path, state_path, now=_D2)
+
+    assert stalled == []
+    entry = _load_state(state_path)["ledgers"][_RR]
+    assert entry["asof"] == "2026-07-15"
+    assert entry["stalled_since"] == "2026-07-16"
+
+    # The ledger reappears unchanged: the stall is still reported from its start.
+    _write_jsonl(tmp_path / _RR, [{"asof": "2026-07-15"}])
+    stalled, _ = _run(tmp_path, state_path, now=_MON)
+    assert len(stalled) == 1
+    assert stalled[0]["prev_asof"] == "2026-07-15"
+    assert stalled[0]["stalled_since"] == "2026-07-16"
+
+
+def test_regressed_asof_is_a_stall_and_rerun_keeps_marker(tmp_path):
+    """An out-of-order (older) newest asof is a stall, never an advance.
+
+    It alerts once, a same-day rerun does not alert again, and the open
+    marker keeps its original start date through both runs.
+    """
+    _write_jsonl(tmp_path / _RR, [{"asof": "2026-07-15"}])
+    state_path = tmp_path / "data" / "ci" / "ledger_heartbeat_state.json"
+    _write_state(state_path, {
+        _RR: {"asof": "2026-07-16", "last_check_date": "2026-07-16",
+              "stalled_since": "2026-07-16"},
+    })
+
+    stalled, dispatch = _run(tmp_path, state_path, now=_D2)
+    assert len(stalled) == 1
+    assert stalled[0]["curr_asof"] == "2026-07-15"
+    assert stalled[0]["stalled_since"] == "2026-07-16"
+    assert len(dispatch.calls) == 1
+    assert _load_state(state_path)["ledgers"][_RR]["stalled_since"] == "2026-07-16"
+
+    stalled, dispatch = _run(tmp_path, state_path, now=_D2)
+    assert stalled == []
+    assert dispatch.calls == []
+    assert _load_state(state_path)["ledgers"][_RR]["stalled_since"] == "2026-07-16"
+
+
+# ── Session lag against the expected NYSE session (Grey Deer W4 G-HB) ────
+# Staleness for an opted-in ledger is the number of NYSE sessions in
+# (ledger asof, last session on or before yesterday]. Synthetic rows and
+# injected dates only. Ledgers without max_sessions_behind are untouched.
+
+_LAG_REL = "data/risk_radar/forward_log.jsonl"
+
+
+def _at(day: date, hour: int = 12) -> datetime:
+    """Fixed UTC timestamp on `day` (12:00Z is morning in ET). No wall clock."""
+    return datetime(day.year, day.month, day.day, hour, 0, tzinfo=timezone.utc)
+
+
+def _run_manifest(tmp_path, state_path, manifest, *, now, render_happened=True):
+    dispatch = _Dispatch()
+    with (
+        patch.object(M, "_LEDGER_MANIFEST", manifest),
+        patch("engine.alert_triage.push_ops_alert", dispatch),
+    ):
+        stalled = M.run_check(
+            root=tmp_path,
+            state_path=state_path,
+            render_happened=render_happened,
+            _now=now,
+        )
+        M._dispatch_stall_alert(stalled, tmp_path)
+    return stalled, dispatch
+
+
+def test_friday_asof_is_current_on_weekend_and_monday_morning(tmp_path):
+    """A Friday asof is 0 sessions behind on Sat, Sun, and Monday morning."""
+    friday = date(2026, 7, 17)
+    saturday = date(2026, 7, 18)
+    sunday = date(2026, 7, 19)
+    monday = date(2026, 7, 20)
+    for today in (saturday, sunday, monday):
+        assert M._expected_session(today) == friday
+        assert M._sessions_behind(friday, today) == 0
+
+    manifest = [{"path": _LAG_REL, "label": "risk_radar", "max_sessions_behind": 0}]
+    _write_jsonl(tmp_path / _LAG_REL, [{"asof": "2026-07-17"}])
+    state_path = tmp_path / "data" / "ci" / "ledger_heartbeat_state.json"
+    # Thursday snapshot: the Friday row is an advance, so no_advance stays quiet.
+    _write_state(state_path, {
+        _LAG_REL: {"asof": "2026-07-16", "last_check_date": "2026-07-17",
+                   "stalled_since": None},
+    })
+    before = state_path.read_text(encoding="utf-8")
+
+    for day in (saturday, sunday):
+        stalled, dispatch = _run_manifest(
+            tmp_path, state_path, manifest, now=_at(day),
+        )
+        assert stalled == []
+        assert dispatch.calls == []
+        assert state_path.read_text(encoding="utf-8") == before
+
+    stalled, dispatch = _run_manifest(
+        tmp_path, state_path, manifest, now=_at(monday),
+    )
+    assert stalled == []
+    assert dispatch.calls == []
+    entry = _load_state(state_path)["ledgers"][_LAG_REL]
+    assert entry["asof"] == "2026-07-17"
+    assert entry["sessions_behind"] == 0
+    assert entry["expected_session"] == "2026-07-17"
+    assert entry["lag_stalled_since"] is None
+
+
+def test_expected_session_is_yesterday_even_after_the_close(tmp_path):
+    """The ceiling is last session on or before yesterday, including after the close.
+
+    Friday 22:00Z is 18:00 ET, after the cash close. A Thursday asof is still
+    current: today's own session is not yet required.
+    """
+    friday = date(2026, 7, 17)
+    assert M._expected_session(friday) == date(2026, 7, 16)
+    assert M._sessions_behind(date(2026, 7, 16), friday) == 0
+
+    manifest = [{"path": _LAG_REL, "label": "risk_radar", "max_sessions_behind": 0}]
+    _write_jsonl(tmp_path / _LAG_REL, [{"asof": "2026-07-16"}])
+    state_path = tmp_path / "data" / "ci" / "ledger_heartbeat_state.json"
+    _write_state(state_path, {
+        _LAG_REL: {"asof": "2026-07-15", "last_check_date": "2026-07-16",
+                   "stalled_since": None},
+    })
+    stalled, dispatch = _run_manifest(
+        tmp_path, state_path, manifest,
+        now=datetime(2026, 7, 17, 22, 0, tzinfo=timezone.utc),
+    )
+    assert stalled == []
+    assert dispatch.calls == []
+    entry = _load_state(state_path)["ledgers"][_LAG_REL]
+    assert entry["expected_session"] == "2026-07-16"
+    assert entry["sessions_behind"] == 0
+    assert entry["lag_stalled_since"] is None
+
+
+def test_labor_day_monday_is_not_counted(tmp_path):
+    """2026-09-07 Labor Day is not an NYSE session and does not add lag.
+
+    Thursday 2026-09-03 checked on Tuesday 2026-09-08 is one session behind
+    (Friday 09-04 only). Counting the holiday Monday would make it two.
+    A Friday 09-04 asof is current across that weekend.
+    """
+    assert M._expected_session(date(2026, 9, 8)) == date(2026, 9, 4)
+    assert M._sessions_behind(date(2026, 9, 3), date(2026, 9, 8)) == 1
+    assert M._sessions_behind(date(2026, 9, 4), date(2026, 9, 8)) == 0
+
+    manifest = [{"path": _LAG_REL, "label": "risk_radar", "max_sessions_behind": 0}]
+    state_path = tmp_path / "data" / "ci" / "ledger_heartbeat_state.json"
+    tuesday = datetime(2026, 9, 8, 12, 0, tzinfo=timezone.utc)
+
+    _write_jsonl(tmp_path / _LAG_REL, [{"asof": "2026-09-03"}])
+    _write_state(state_path, {
+        _LAG_REL: {"asof": "2026-09-02", "last_check_date": "2026-09-04",
+                   "stalled_since": None},
+    })
+    stalled, dispatch = _run_manifest(
+        tmp_path, state_path, manifest, now=tuesday,
+    )
+    assert len(stalled) == 1
+    assert stalled[0]["stall_reason"] == "session_lag"
+    assert stalled[0]["stall_reasons"] == ["session_lag"]
+    assert stalled[0]["sessions_behind"] == 1
+    assert stalled[0]["expected_session"] == "2026-09-04"
+    assert len(dispatch.calls) == 1
+
+    _write_jsonl(tmp_path / _LAG_REL, [{"asof": "2026-09-04"}])
+    _write_state(state_path, {
+        _LAG_REL: {"asof": "2026-09-03", "last_check_date": "2026-09-04",
+                   "stalled_since": None},
+    })
+    stalled, dispatch = _run_manifest(
+        tmp_path, state_path, manifest, now=tuesday,
+    )
+    assert stalled == []
+    assert dispatch.calls == []
+    entry = _load_state(state_path)["ledgers"][_LAG_REL]
+    assert entry["sessions_behind"] == 0
+    assert entry["expected_session"] == "2026-09-04"
+    assert entry["lag_stalled_since"] is None
+
+
+def test_three_sessions_behind_max_two_is_session_lag(tmp_path):
+    """An asof that advanced once and is still 3 sessions behind a max of 2 lags.
+
+    Checked Friday 2026-07-17, Monday 2026-07-13 is short of Thursday 2026-07-16
+    by Tue/Wed/Thu. A later one-session advance that is still over the ceiling
+    keeps the original lag_stalled_since.
+    """
+    assert M._sessions_behind(date(2026, 7, 13), date(2026, 7, 17)) == 3
+    manifest = [{"path": _LAG_REL, "label": "risk_radar", "max_sessions_behind": 2}]
+    state_path = tmp_path / "data" / "ci" / "ledger_heartbeat_state.json"
+    _write_jsonl(tmp_path / _LAG_REL, [{"asof": "2026-07-13"}])
+    _write_state(state_path, {
+        _LAG_REL: {"asof": "2026-07-10", "last_check_date": "2026-07-16",
+                   "stalled_since": None},
+    })
+    friday = datetime(2026, 7, 17, 12, 0, tzinfo=timezone.utc)
+    stalled, dispatch = _run_manifest(
+        tmp_path, state_path, manifest, now=friday,
+    )
+    assert len(stalled) == 1
+    assert stalled[0]["stall_reason"] == "session_lag"
+    assert stalled[0]["stall_reasons"] == ["session_lag"]
+    assert stalled[0]["sessions_behind"] == 3
+    assert stalled[0]["expected_session"] == "2026-07-16"
+    assert stalled[0]["lag_stalled_since"] == "2026-07-17"
+    assert stalled[0]["stalled_since"] is None
+    assert len(dispatch.calls) == 1
+    assert dispatch.calls[0]["type_"] == "ledger_stall"
+    assert "session_lag" in dispatch.calls[0]["message"]
+    entry = _load_state(state_path)["ledgers"][_LAG_REL]
+    assert entry["lag_stalled_since"] == "2026-07-17"
+    assert entry["sessions_behind"] == 3
+
+    # One session newer, still 3 behind on Monday morning. Same lag episode.
+    _write_jsonl(tmp_path / _LAG_REL, [{"asof": "2026-07-14"}])
+    assert M._sessions_behind(date(2026, 7, 14), date(2026, 7, 20)) == 3
+    stalled, dispatch = _run_manifest(
+        tmp_path, state_path, manifest, now=_at(date(2026, 7, 20)),
+    )
+    assert len(stalled) == 1
+    assert stalled[0]["stall_reasons"] == ["session_lag"]
+    assert stalled[0]["sessions_behind"] == 3
+    assert stalled[0]["lag_stalled_since"] == "2026-07-17"
+    assert _load_state(state_path)["ledgers"][_LAG_REL]["lag_stalled_since"] == "2026-07-17"
+    assert len(dispatch.calls) == 1
+
+
+def test_sessions_behind_equal_to_the_ceiling_is_not_a_lag(tmp_path):
+    """sessions_behind must be strictly greater than max_sessions_behind."""
+    assert M._sessions_behind(date(2026, 7, 14), date(2026, 7, 17)) == 2
+    manifest = [{"path": _LAG_REL, "label": "risk_radar", "max_sessions_behind": 2}]
+    state_path = tmp_path / "data" / "ci" / "ledger_heartbeat_state.json"
+    _write_jsonl(tmp_path / _LAG_REL, [{"asof": "2026-07-14"}])
+    _write_state(state_path, {
+        _LAG_REL: {"asof": "2026-07-13", "last_check_date": "2026-07-16",
+                   "stalled_since": None},
+    })
+    stalled, dispatch = _run_manifest(
+        tmp_path, state_path, manifest,
+        now=datetime(2026, 7, 17, 12, 0, tzinfo=timezone.utc),
+    )
+    assert stalled == []
+    assert dispatch.calls == []
+    entry = _load_state(state_path)["ledgers"][_LAG_REL]
+    assert entry["sessions_behind"] == 2
+    assert entry["lag_stalled_since"] is None
+
+
+def test_lag_stalled_since_clears_only_on_strictly_newer_asof(tmp_path):
+    """An open lag marker clears only when a strictly newer asof is within the ceiling.
+
+    Same-day rerun, a no-render night, an unreadable ledger, and an asof that
+    has not moved all keep the marker — including when the calendar lag has
+    already fallen to zero. A strictly newer asof inside the ceiling clears it.
+    """
+    manifest = [{"path": _LAG_REL, "label": "risk_radar", "max_sessions_behind": 2}]
+    state_path = tmp_path / "data" / "ci" / "ledger_heartbeat_state.json"
+    _write_jsonl(tmp_path / _LAG_REL, [{"asof": "2026-07-17"}])
+    _write_state(state_path, {
+        _LAG_REL: {
+            "asof": "2026-07-17",
+            "last_check_date": "2026-07-17",
+            "stalled_since": None,
+            "lag_stalled_since": "2026-07-10",
+        },
+    })
+    monday = _at(date(2026, 7, 20))
+
+    stalled, _dispatch = _run_manifest(
+        tmp_path, state_path, manifest, now=monday,
+    )
+    # 0 sessions behind, so this is not a session_lag. The asof did not move,
+    # so the open lag marker stays. The unchanged asof is still a no_advance.
+    assert M._sessions_behind(date(2026, 7, 17), date(2026, 7, 20)) == 0
+    assert len(stalled) == 1
+    assert stalled[0]["stall_reasons"] == ["no_advance"]
+    assert _load_state(state_path)["ledgers"][_LAG_REL]["lag_stalled_since"] == "2026-07-10"
+
+    stalled, dispatch = _run_manifest(
+        tmp_path, state_path, manifest, now=monday,
+    )
+    assert stalled == []
+    assert dispatch.calls == []
+    assert _load_state(state_path)["ledgers"][_LAG_REL]["lag_stalled_since"] == "2026-07-10"
+
+    stalled, dispatch = _run_manifest(
+        tmp_path, state_path, manifest, now=_at(date(2026, 7, 21)),
+        render_happened=False,
+    )
+    assert stalled == []
+    assert dispatch.calls == []
+    assert _load_state(state_path)["ledgers"][_LAG_REL]["lag_stalled_since"] == "2026-07-10"
+    assert _load_state(state_path)["ledgers"][_LAG_REL]["asof"] == "2026-07-17"
+
+    # Friday 07-24 would be 4 sessions behind the Friday 07-17 snapshot.
+    # The file is unreadable, so that must not open a session_lag alert
+    # and must not clear the marker or the last good asof.
+    (tmp_path / _LAG_REL).unlink()
+    assert M._sessions_behind(date(2026, 7, 17), date(2026, 7, 24)) == 4
+    stalled, dispatch = _run_manifest(
+        tmp_path, state_path, manifest, now=_at(date(2026, 7, 24)),
+    )
+    assert stalled == []
+    assert dispatch.calls == []
+    entry = _load_state(state_path)["ledgers"][_LAG_REL]
+    assert entry["asof"] == "2026-07-17"
+    assert entry["lag_stalled_since"] == "2026-07-10"
+
+    _write_jsonl(tmp_path / _LAG_REL, [{"asof": "2026-07-23"}])
+    assert M._sessions_behind(date(2026, 7, 23), date(2026, 7, 27)) == 1
+    stalled, dispatch = _run_manifest(
+        tmp_path, state_path, manifest, now=_at(date(2026, 7, 27)),
+    )
+    assert stalled == []
+    assert dispatch.calls == []
+    entry = _load_state(state_path)["ledgers"][_LAG_REL]
+    assert entry["asof"] == "2026-07-23"
+    assert entry["sessions_behind"] == 1
+    assert entry["lag_stalled_since"] is None
+
+
+def test_legacy_ledger_without_max_sessions_behind_is_unchanged(tmp_path):
+    """No max_sessions_behind key: same decisions and the same state keys as before.
+
+    Three sessions behind but advanced once stays silent. An unchanged asof is
+    still a single no_advance stall, with no session_lag field and no lag marker.
+    """
+    rel = "data/market_state/forward_log.jsonl"
+    manifest = [{"path": rel, "label": "market_state"}]
+    state_path = tmp_path / "data" / "ci" / "ledger_heartbeat_state.json"
+    friday = datetime(2026, 7, 17, 12, 0, tzinfo=timezone.utc)
+    _write_jsonl(tmp_path / rel, [{"asof": "2026-07-13"}])
+
+    _write_state(state_path, {
+        rel: {"asof": "2026-07-10", "last_check_date": "2026-07-16",
+              "stalled_since": None},
+    })
+    stalled, dispatch = _run_manifest(
+        tmp_path, state_path, manifest, now=friday,
+    )
+    assert stalled == []
+    assert dispatch.calls == []
+    entry = _load_state(state_path)["ledgers"][rel]
+    assert set(entry) == {"asof", "last_check_date", "stalled_since"}
+    assert entry["asof"] == "2026-07-13"
+    assert entry["stalled_since"] is None
+
+    _write_state(state_path, {
+        rel: {"asof": "2026-07-13", "last_check_date": "2026-07-16",
+              "stalled_since": None},
+    })
+    stalled, dispatch = _run_manifest(
+        tmp_path, state_path, manifest, now=friday,
+    )
+    assert len(stalled) == 1
+    assert stalled[0]["stall_reason"] == "no_advance"
+    assert stalled[0]["stall_reasons"] == ["no_advance"]
+    assert "session_lag" not in stalled[0]["stall_reasons"]
+    assert "sessions_behind" not in stalled[0]
+    assert "lag_stalled_since" not in stalled[0]
+    assert len(dispatch.calls) == 1
+    assert "session_lag" not in dispatch.calls[0]["message"]
+    entry = _load_state(state_path)["ledgers"][rel]
+    assert set(entry) == {"asof", "last_check_date", "stalled_since"}
+    assert entry["stalled_since"] == "2026-07-16"
+
+
+def test_no_advance_and_session_lag_are_one_alert(tmp_path, capsys):
+    """Both reasons for one ledger are one stall row and one ops alert per day."""
+    manifest = [{"path": _LAG_REL, "label": "risk_radar", "max_sessions_behind": 2}]
+    state_path = tmp_path / "data" / "ci" / "ledger_heartbeat_state.json"
+    _write_jsonl(tmp_path / _LAG_REL, [{"asof": "2026-07-13"}])
+    _write_state(state_path, {
+        _LAG_REL: {"asof": "2026-07-13", "last_check_date": "2026-07-16",
+                   "stalled_since": None},
+    })
+    friday = datetime(2026, 7, 17, 12, 0, tzinfo=timezone.utc)
+    stalled, dispatch = _run_manifest(
+        tmp_path, state_path, manifest, now=friday,
+    )
+    assert len(stalled) == 1
+    assert stalled[0]["stall_reasons"] == ["no_advance", "session_lag"]
+    assert stalled[0]["stall_reason"] == "no_advance,session_lag"
+    assert stalled[0]["sessions_behind"] == 3
+    assert stalled[0]["stalled_since"] == "2026-07-16"
+    assert stalled[0]["lag_stalled_since"] == "2026-07-17"
+    assert len(dispatch.calls) == 1
+    message = dispatch.calls[0]["message"]
+    assert message.count("stall_reason=") == 1
+    assert "no_advance" in message and "session_lag" in message
+    assert dispatch.calls[0]["type_"] == "ledger_stall"
+
+    M._emit_warning_annotation(stalled)
+    notes = capsys.readouterr().out
+    assert notes.count("::warning ") == 1
+    assert "no_advance" in notes and "session_lag" in notes
+
+    entry = _load_state(state_path)["ledgers"][_LAG_REL]
+    assert entry["stalled_since"] == "2026-07-16"
+    assert entry["lag_stalled_since"] == "2026-07-17"
+
+    stalled, dispatch = _run_manifest(
+        tmp_path, state_path, manifest, now=friday,
+    )
+    assert stalled == []
+    assert dispatch.calls == []
+    assert _load_state(state_path)["ledgers"][_LAG_REL]["lag_stalled_since"] == "2026-07-17"
+
+
+def test_risk_radar_and_leadership_crack_opt_in_at_two_sessions():
+    """risk_radar and leadership_crack use a 2-session ceiling; nothing else does."""
+    by_label = {entry["label"]: entry for entry in M._LEDGER_MANIFEST}
+    assert by_label["risk_radar"]["max_sessions_behind"] == 2
+    assert by_label["leadership_crack"]["max_sessions_behind"] == 2
+    for entry in M._LEDGER_MANIFEST:
+        if entry["label"] not in ("risk_radar", "leadership_crack"):
+            assert "max_sessions_behind" not in entry

@@ -1,0 +1,104 @@
+{% macro words(en, zh) -%}<span class="l-en">{{ en|e }}</span><span class="l-zh" lang="zh">{{ zh|e }}</span>{%- endmacro %}
+{% set states = {
+ 'ready': ['Recomputed observations', '重新计算的观测'], 'empty': ['No rows in the source', '来源中没有记录'],
+ 'missing': ['History source missing', '缺少历史来源'], 'failed': ['History source could not be read', '无法读取历史来源'],
+ 'invalid': ['History source is invalid', '历史来源无效'], 'unsupported': ['History source is unsupported', '不支持此历史来源'],
+ 'denied': ['History information withheld', '历史信息未披露'], 'unknown': ['Qualified history unavailable', '暂无符合条件的历史'],
+ 'wrong_market': ['History does not match this market', '历史与此市场不匹配'], 'unbound': ['Select a market', '选择市场'] } %}
+{% set p = history_panel %}
+<section class="intl-history" data-im-panel data-im-history-panel data-view="history"
+ data-horizon="{{ p.context.horizon|e }}" data-basis="{{ p.context.currency_basis|e }}" data-return-basis="price"
+ data-source="{{ p.source_reference|e if p.source_reference is not none else '' }}"{% if p.generation is defined %} data-im-generation="{{ p.generation|e }}"{% endif %}
+ id="im-history" aria-labelledby="im-history-title" hidden>
+  <header class="intl-history__header">
+    <div><p class="intl-history__eyebrow">{{ words('CONTEXT / HISTORY & SCENARIOS','研究范围 / 历史与情景') }}</p>
+      <h2 id="im-history-title">{{ words('What changed — and what if?','发生了什么变化，又会如何？') }}</h2></div>
+    <label>{{ words('Market','市场') }}<select data-im-action="select_market">
+      <option value="" data-im-label-en="Select a market" data-im-label-zh="选择市场">Select a market</option>
+      {% for market in history_registry.markets %}<option value="{{ market.market_id|e }}" data-im-label-en="{{ market.name_en|e }}" data-im-label-zh="{{ market.name_zh|e }}">{{ market.name_en|e }}</option>{% endfor %}
+    </select></label>
+  </header>
+  <aside class="intl-history__notice">
+    <strong>{{ words('What happened is not what was knowable then.','已经发生的事，不等于当时已知的信息。') }}</strong>
+    <p>{{ words('Recomputed history uses the current reconstruction. Manual scenarios use only the assumptions you enter.','历史使用当前重建结果重新计算。手动情景仅使用您输入的假设。') }}</p>
+  </aside>
+  <div class="intl-history__tabs" data-im-history-tabs hidden aria-label="History / 历史 · Scenario / 情景">
+    <button type="button" data-im-scenario-action="set_tab" data-im-scenario-tab="history" aria-pressed="true">{{ words('History','历史') }}</button>
+    <button type="button" data-im-scenario-action="set_tab" data-im-scenario-tab="scenario" aria-pressed="false">{{ words('Scenario','情景') }}</button>
+  </div>
+  <div class="intl-history__columns">
+    <section class="intl-history__record" data-im-history-subview="history" aria-labelledby="im-history-record-title">
+      <h3 id="im-history-record-title">{{ words('Recomputed history','重新计算的历史') }}</h3>
+      <p class="intl-history__muted">{{ words('The complete supplied reconstruction is independent of the return-horizon and currency controls. These are classifier scores, not investment returns.','展示全部已提供的重建记录，不随回报区间或计价币种切换。这些是分类器评分，不是投资回报。') }}</p>
+      <p data-im-history-prompt>{{ words('Select a market to inspect its history.','选择一个市场以查看其历史。') }}</p>
+      {% for s in p.sections %}
+      {% set market = history_registry.markets[loop.index0] %}
+      <article data-im-history-slot="{{ loop.index0 }}" data-im-history-market="{{ s.selected_market|e }}">
+        <h4>{{ words(market.name_en,market.name_zh) }}</h4>
+        {% set label = states.get(s.source_read_status, states.unknown) %}
+        <p data-im-history-status>{{ words(label[0],label[1]) }}</p>
+        {% if s.points %}
+        <details class="intl-history__observations">
+          <summary>{{ words('Inspect dated observations','查看带日期的观测') }} ({{ s.points|length }})</summary>
+          <table><caption>{{ words('Current reconstruction · source dates preserved','当前重建 · 保留来源日期') }}</caption>
+            <thead><tr><th scope="col">{{ words('Observation','观测日期') }}</th><th scope="col">{{ words('Growth score','增长评分') }}</th><th scope="col">{{ words('Inflation score','通胀评分') }}</th></tr></thead>
+            <tbody>{% for point in s.points %}<tr><th scope="row">{{ point.observation_at|e }}</th><td>{{ point.growth_score|e if point.growth_score is not none else words('Unavailable','不可用') }}</td><td>{{ point.inflation_score|e if point.inflation_score is not none else words('Unavailable','不可用') }}</td></tr>{% endfor %}</tbody>
+          </table>
+        </details>
+        {% endif %}
+        {% if s.source_reference or s.acquisition_at %}<details class="intl-history__evidence"><summary>{{ words('Reconstruction evidence','重建依据') }}</summary><dl>
+          {% if s.source_reference %}<div><dt>{{ words('Source reference','来源引用') }}</dt><dd>{{ s.source_reference|e }}</dd></div>{% endif %}
+          {% if s.acquisition_at %}<div><dt>{{ words('Read time · not first-known time','读取时间 · 非首次获知时间') }}</dt><dd>{{ s.acquisition_at|e }}</dd></div>{% endif %}
+          {% if s.method_ref %}<div><dt>{{ words('Method reference','方法引用') }}</dt><dd>{{ s.method_ref|e }}</dd></div>{% endif %}
+        </dl></details>{% endif %}
+        <h4>{{ words('Attached changes','附带的变化记录') }}</h4>
+        {% if s.events.records %}<ol class="intl-history__timeline">
+          {% for event in s.events.records %}<li><time>{{ event.event_date|e }}</time><p>{{ words(event.text_en,event.text_zh) }}</p><small>{{ words('Recomputed change','重新计算的变化') }} · {{ event.evidence_ref|e }}</small></li>{% endfor %}
+        </ol><p class="intl-history__muted">{{ words('Only the changes attached to this market are included. This is not a complete alert history.','仅包含此市场附带的变化记录，并非完整提醒历史。') }}</p>
+        {% else %}<p>{{ words('No qualified changes supplied for this market.','此市场尚未提供符合条件的变化记录。') }}</p>{% endif %}
+        <aside class="intl-history__boundary"><h4>{{ words('Original-known history unavailable','当时已知的历史不可用') }}</h4><p>{{ words('Immutable original vintages and first-known times have not been supplied.','尚未提供不可变的原始版本及首次获知时间。') }}</p>
+          <p>{{ words('No linked revision records are available. This does not establish that the source was never revised.','暂无关联的修订记录。这不代表来源从未修订。') }}</p></aside>
+        <section class="intl-history__track"><h4>{{ words('Forward record','前瞻记录') }}</h4>
+        {% if s.track_record.status == 'available' %}
+          <dl><div><dt>{{ words('Graded observations','已评估观测') }}</dt><dd>{{ s.track_record.graded_count|e }}</dd></div><div><dt>{{ words('Alerts','提醒') }}</dt><dd>{{ s.track_record.alert_count|e }}</dd></div></dl>
+          {% if s.track_record.sample_dates %}<p>{{ words('Sample dates','样本日期') }}: {{ s.track_record.sample_dates|join(' · ')|e }}</p>{% endif %}
+          {% if s.track_record.qualification_notes %}<p>{{ s.track_record.qualification_notes|e }}</p>{% endif %}
+          <p class="intl-history__muted">{{ words('Counts are source-reported. No success rate is inferred.','数量由来源报告，未据此推算成功率。') }}</p>
+        {% else %}<p>{{ words('A qualified forward record is unavailable. A failed read does not establish an empty record.','暂无符合条件的前瞻记录。读取失败不代表记录为空。') }}</p>{% endif %}
+        </section>
+      </article>
+      {% endfor %}
+    </section>
+    <section class="intl-history__scenario" data-im-history-subview="scenario" aria-labelledby="im-scenario-title">
+      <p class="intl-history__eyebrow">{{ words('MANUAL / CONDITIONAL','手动 / 条件情景') }}</p>
+      <h3 id="im-scenario-title">{{ words('Test your assumptions','检验您的假设') }}</h3>
+      <p>{{ words('Enter returns over the selected horizon. These assumptions are not forecasts and do not update source history.','输入所选区间内的回报。这些假设不是预测，也不会更新来源历史。') }}</p>
+      <p class="intl-history__context" data-im-scenario-context></p>
+      <form data-im-scenario-form novalidate>
+        <fieldset data-im-scenario-fields disabled><legend>{{ words('Manual return assumptions','手动回报假设') }}</legend>
+          <label for="im-scenario-local">{{ words('Local-price return (%)','本币价格回报 (%)') }}</label>
+          <input id="im-scenario-local" name="local" data-im-scenario-field="local" type="text" inputmode="decimal" autocomplete="off" maxlength="129" aria-describedby="im-scenario-format im-scenario-local-error">
+          <p id="im-scenario-local-error" data-im-scenario-error="local" class="intl-history__error" hidden></p>
+          <label for="im-scenario-fx">{{ words('Currency return (%) · USD per local unit','汇率回报 (%) · 每单位本币兑美元') }}</label>
+          <input id="im-scenario-fx" name="fx" data-im-scenario-field="fx" type="text" inputmode="decimal" autocomplete="off" maxlength="129" aria-describedby="im-scenario-format im-scenario-fx-error">
+          <p id="im-scenario-fx-error" data-im-scenario-error="fx" class="intl-history__error" hidden></p>
+          <p id="im-scenario-format" class="intl-history__muted">{{ words('Use a decimal point, for example 1.5. A positive currency return means the local currency strengthens against USD.','使用小数点，例如 1.5。汇率回报为正表示本币相对美元升值。') }}</p>
+          <div class="intl-history__actions"><button type="submit" data-im-scenario-action="calculate">{{ words('Calculate','计算') }}</button><button type="button" data-im-scenario-action="request_reset">{{ words('Reset assumptions','重置假设') }}</button></div>
+        </fieldset>
+        <section class="intl-history__confirmation" data-im-scenario-confirm-context hidden aria-labelledby="im-scenario-confirm-title">
+          <h4 id="im-scenario-confirm-title">{{ words('Review assumptions for the proposed context','检查拟用范围的假设') }}</h4>
+          <p data-im-scenario-candidate-context></p><p>{{ words('Your original context and calculation are retained. Review the inputs above before confirming; no return is annualized.','原范围和计算结果已保留。确认前请检查上方输入；不会将回报年化。') }}</p>
+          <div class="intl-history__actions"><button type="button" data-im-scenario-action="confirm_context">{{ words('Confirm context and calculate','确认范围并计算') }}</button><button type="button" data-im-scenario-action="cancel_context">{{ words('Cancel change','取消更改') }}</button></div>
+        </section>
+        <section class="intl-history__confirmation" data-im-scenario-confirm-reset hidden aria-labelledby="im-scenario-reset-title"><h4 id="im-scenario-reset-title">{{ words('Clear these two assumptions?','清除这两个假设？') }}</h4><p>{{ words('Market, horizon, pins and research history will be preserved.','市场、区间、固定项及研究历史将保留。') }}</p>
+          <div class="intl-history__actions"><button type="button" data-im-scenario-action="confirm_reset">{{ words('Clear assumptions','清除假设') }}</button><button type="button" data-im-scenario-action="cancel_reset">{{ words('Keep assumptions','保留假设') }}</button></div></section>
+      </form>
+      <p data-im-scenario-empty>{{ words('Enter both assumptions, then calculate.','输入两个假设后计算。') }}</p>
+      <section class="intl-history__result" data-im-scenario-result hidden aria-labelledby="im-scenario-result-title"><h4 id="im-scenario-result-title">{{ words('Conditional USD return','条件美元回报') }}</h4><strong data-im-scenario-usd></strong><p>{{ words('FX contribution','汇率贡献') }}: <span data-im-scenario-contribution></span></p><p>{{ words('Over the confirmed horizon · price return · unhedged','已确认区间内 · 价格回报 · 未对冲') }}</p>
+        <h4>{{ words('Illustrative FX assumptions','示例汇率假设') }}</h4><ul data-im-scenario-rows></ul><p class="intl-history__muted">{{ words('These rows are illustrations, not a likely range or an optimized outcome.','这些仅为示例，并非可能范围或最优结果。') }}</p></section>
+      <p data-im-scenario-announcement class="intl-history__announcement" role="status" aria-live="polite" aria-atomic="true"></p>
+      <details class="intl-history__method"><summary>{{ words('Calculation method','计算方法') }}</summary><p>{{ words('USD return = (1 + local return) × (1 + currency return) − 1. FX contribution = (1 + local return) × currency return. Percent inputs are divided by 100 before calculation.','美元回报 = (1 + 本币回报) × (1 + 汇率回报) − 1。汇率贡献 = (1 + 本币回报) × 汇率回报。计算前将百分比输入除以 100。') }}</p><p>{{ words('A return quoted in local currency per USD requires reciprocal conversion; changing its sign is not sufficient.','每美元兑本币的反向报价回报必须按倒数换算，不能仅改变正负号。') }}</p></details>
+    </section>
+  </div>
+  <footer class="intl-history__footer"><button type="button" data-im-action="set_view" data-im-view="overview">{{ words('Back to Overview','返回总览') }}</button></footer>
+</section>

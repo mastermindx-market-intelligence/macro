@@ -1,0 +1,23 @@
+{
+ "stage": "baseline",
+ "incumbent": "engine/options_skew.py",
+ "incumbent_sha256": "8f68ad06c29ff9e05d6f4a710912b12a8523344d3b84a22524867e4711b38dce",
+ "function": "compute_skew",
+ "fields": [
+  "otm_put_iv",
+  "atm_call_iv",
+  "skew"
+ ],
+ "tolerance_abs": 0.00010000100000000001,
+ "n_dates": 28,
+ "status_counts": {
+  "ledger_row_missing": 28
+ },
+ "all_match": false,
+ "max_absdiff": {
+  "otm_put_iv": null,
+  "atm_call_iv": null,
+  "skew": null
+ },
+ "lib_config": "in-memory stub (PREREG section 15); no .env read"
+}

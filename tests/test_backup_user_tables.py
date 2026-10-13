@@ -1,8 +1,8 @@
 """MMX-001 / GATE-1 — customer-table backup + restore guards.
 
 These tests prove the repo-side machinery. They do NOT claim a scratch-Supabase
-restore happened; that gate stays OPERATOR-BLOCKED until a real scratch project
-is used. See docs/RESTORE_RUNBOOK.md.
+restore happened. The historical nine-table drill and the separate, still-open
+IW2 recovery gate are recorded in docs/RESTORE_RUNBOOK.md.
 """
 from __future__ import annotations
 
@@ -154,6 +154,49 @@ def test_restore_roundtrip_memory_store_and_receipt(tmp_path, monkeypatch):
     (tmp_path / "receipt.json").write_text(json.dumps(receipt, indent=2) + "\n")
 
 
+def test_gate1_flag_tracks_destination_not_transport():
+    """A psql restore into a real scratch Supabase project still closes GATE-1.
+
+    Regression for the drill of 2026-09-20: the flag was keyed off
+    environment == "scratch-supabase", which is only ever set by the REST path.
+    The runbook prescribes --dest-db-url (the only path that survives the
+    auth.users FKs via session_replication_role=replica), so every correct
+    restore stamped gate1_scratch_supabase: false.
+    """
+    started = datetime(2026, 9, 20, 11, 29, 1, tzinfo=timezone.utc)
+    ended = datetime(2026, 9, 20, 11, 29, 5, tzinfo=timezone.utc)
+    report = {"ok": True, "integrity": "pass", "tables": {}}
+    kw = dict(
+        backup_id="user-tables-20260920T112413Z",
+        started=started,
+        ended=ended,
+        source_as_of=None,
+        verification=report,
+        commands=[],
+    )
+    scratch_dsn = (
+        "postgresql://postgres.hdxmdoodczwrvpobbbqp:pw"
+        "@aws-0-us-west-2.pooler.supabase.com:5432/postgres"
+    )
+    # psql path into a real scratch Supabase project -> closes the gate
+    pg = bak.build_receipt(dest=scratch_dsn, environment="scratch-postgres", **kw)
+    assert pg["gate1_scratch_supabase"] is True
+    # REST path into a real scratch Supabase project -> also closes the gate
+    rest = bak.build_receipt(
+        dest="https://hdxmdoodczwrvpobbbqp.supabase.co",
+        environment="scratch-supabase", **kw)
+    assert rest["gate1_scratch_supabase"] is True
+    # a non-Supabase scratch Postgres does NOT close the gate
+    local = bak.build_receipt(
+        dest="postgresql://u:p@localhost:5432/postgres",
+        environment="scratch-postgres", **kw)
+    assert local["gate1_scratch_supabase"] is False
+    # the in-process fixture never closes the gate, whatever the dest looks like
+    fixture = bak.build_receipt(
+        dest=scratch_dsn, environment="in-process-fixture", **kw)
+    assert fixture["gate1_scratch_supabase"] is False
+
+
 def test_restore_refuses_without_scratch_flag(monkeypatch):
     monkeypatch.setenv("BACKUP_ENCRYPTION_KEY", KEY)
     rc = bak.main([
@@ -274,16 +317,17 @@ def test_update_sh_self_arms_the_backup_lane():
     assert "systemctl is-enabled macro-api.service" in script
 
 
-def test_runbook_names_exact_commands_and_marks_operator_blocked():
+def test_runbook_separates_historical_drill_from_iw2_acceptance():
     runbook = (ROOT / "docs/RESTORE_RUNBOOK.md").read_text()
     assert "python -m scripts.backup_user_tables dump" in runbook
     assert "python -m scripts.backup_user_tables restore" in runbook
     assert "--i-am-restoring-into-scratch" in runbook
     assert "--dest-db-url" in runbook
-    assert "OPERATOR-BLOCKED" in runbook
     assert "RPO" in runbook and "RTO" in runbook
     assert "NEVER restore into production" in runbook
     assert "fsldfzlxyavsuwqbceod" in runbook
     # Gate-1 must not be papered over.
-    assert "scratch-supabase restore: OPERATOR-BLOCKED" in runbook
-    assert "Supabase plan / PITR: OPERATOR-BLOCKED" in runbook
+    assert "PASS 2026-09-20" in runbook
+    assert "original nine tables only" in runbook
+    assert "IW2 recovery\nacceptance remains OPEN" in runbook
+    assert "not independent transport attestation" in runbook

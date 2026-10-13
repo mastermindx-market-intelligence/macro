@@ -21,6 +21,9 @@ PyYAML>=6.0,<7.0
 # hard API startup dependencies, not worker-only packages.
 jsonschema==4.26.0
 referencing>=0.30,<1.0
+# The native Today reader imports stock_score -> i18n on a paid request.
+# MarkupSafe is required by that actual serving closure on a fresh API install.
+MarkupSafe==3.0.3
 # Capital Structure uses the same validator for its canonical observed-filing
 # projection, so this single pin is a hard serving dependency for both desks.
 # Private Research Vault / Filing Forensics object reads. The serving process

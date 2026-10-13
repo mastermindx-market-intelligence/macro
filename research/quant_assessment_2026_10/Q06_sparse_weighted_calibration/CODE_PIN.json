@@ -1,0 +1,8 @@
+{
+  "amendment": "PREREG_AMENDMENT_2.md",
+  "note": "Exact code bytes allowed to produce Q06 results. evaluate.py refuses (exit 2) on any difference or when this file is missing.",
+  "sha256": {
+    "engine/calibration_sparse_weighted.py": "0e0e302d05f0d78fa758ab69b433e1559ab77f6ee081d0daa1bdbf23e01c8682",
+    "research/quant_assessment_2026_10/Q06_sparse_weighted_calibration/evaluate.py": "f7e2bd9441c2c9fc4a007606e16ae3e9f82e6d2fcb4aa73080c9df84fcfe4abd"
+  }
+}

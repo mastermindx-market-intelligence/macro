@@ -1,0 +1,26 @@
+{
+  "status": "ACCEPTED_SCOPED_SOURCE",
+  "root": "01a1101f-2a37-7320-9a9b-5df3ce1b890d",
+  "source_hashes": {
+    "lib/intl_workspace_risk_section.py": "cbc0cc9ae0cc053cb2edf6b073642cc0ad5c19bc4054d36a23a7d266c3818071",
+    "templates/intl_workspace.js": "bf59c34839c28297419067d8a1239964adacd29fd0a39fb9284b2b294e09fb03",
+    "tests/test_intl_workspace_risk_section.py": "2690825b64a6eb7fe0236dcd61ae9e166a0f8ec45cdfeb1e24b5e5367d8c44a7",
+    "tests/test_intl_workspace_risk_section_independent.py": "0b75b058812e1557d846108f7fce00ba404049a79e26f0b3406c1f016c737662",
+    "tests/intl_workspace_risk_controller.test.cjs": "969a7a608796ceebca8841dfe0d50e337cab142158f382acd3f90fb4912ce3c8"
+  },
+  "review": {
+    "run_id": "paper-01a1101f-im05-composition-review-r1",
+    "verdict": "PASS_SCOPED",
+    "artifact_sha256": "c2a22aa8fcb49bc920fc029e9c7905e6b50562621fc8e3f41fec89abb7f9ebd9"
+  },
+  "parent_validation": {
+    "frozen_python": 59,
+    "static_js_review": 6,
+    "behavioral_independent_in_product": 22,
+    "controller_cases": 9,
+    "combined_browser_job": 136
+  },
+  "behavior": "Pure detached Risk assembly reuses accepted currency/pressure/US summary owners; retains six typed research descriptors and explicit issuer-exposure boundary. Existing controller paints only matching context/generation and restores owned state/focus on close, rollback and destroy.",
+  "repair": "Malformed CGL packet types refused after four parent counterexamples; independently reviewed exact corrected source.",
+  "limits": "No source acquisition, new disclosure grant, new financial engine or live/full programme acceptance."
+}

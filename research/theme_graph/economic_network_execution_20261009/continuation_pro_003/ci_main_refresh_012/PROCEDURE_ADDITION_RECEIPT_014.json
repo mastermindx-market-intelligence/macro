@@ -1,0 +1,32 @@
+{
+  "all11_git_blobs_recomputed": true,
+  "direct_files": [
+    {
+      "byte_length": 5500,
+      "path": "ci_main_refresh_012/PROTECTED_SOURCE_RECONCILIATION_014.json",
+      "sha256": "c4f752440609821bc9e1f81874f1b8be5d9bafac16a96ec3bff567f687cd5345"
+    },
+    {
+      "byte_length": 1969,
+      "path": "ci_main_refresh_012/CURRENT_PROCEDURE_READ_014.md",
+      "sha256": "7f1a8eda1d3f651fa824a72e6e195bf0e7f5ff701239071f43434b200433cea9"
+    },
+    {
+      "byte_length": 74856,
+      "path": "ci_main_refresh_012/PROTECTED_SOURCE_EVIDENCE_014.tar.gz",
+      "sha256": "baa6a87bf70e3348a4c9d90dd0baf7a4f0be8ad323b2efe2b33df52611805bc7"
+    },
+    {
+      "byte_length": 4543,
+      "path": "ci_main_refresh_012/PROTECTED_SOURCE_ARCHIVE_MANIFEST_014.json",
+      "sha256": "3c866ba67267f16bbc59b92c2ec9f30e43d52b9a6b95bca17457b730273329ad"
+    }
+  ],
+  "finished_at": "2026-10-09T16:40:47.783126+00:00",
+  "new_expected_protected_revision": "326c8469a21d7f50fc9ecb1848196bf1c6e66685",
+  "source_count": 11,
+  "status": "PROTECTED_SOURCE_ADDITION_PREPARED",
+  "transport_git_blob": "75eabf6602868353099332b315d32f1b9777c2af",
+  "transport_sha256": "a3d6a8e81058b0b563d9915ecce806fef25afc150a2ea4f8473e694d9b66c313",
+  "worktree_or_git_mutation": false
+}

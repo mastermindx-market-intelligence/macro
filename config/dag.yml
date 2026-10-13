@@ -1759,6 +1759,18 @@ lanes:
           step via a shell loop ('for mod in scripts.build_canada_library ...; do python -m
           $mod; done') which the conformance parser cannot extract (variable expansion).
           They are intentionally omitted from declared steps.
+      - id: fif_saved_research_notifications
+        module: scripts.run_fif_saved_research_notifications
+        note: >
+          X2-n FIF saved-research notifications — enqueue-only producer over
+          the designated "Filing Forensics" watchlist (R2) and LOCAL trigger
+          inputs (FIF private state; the broad-sec receipt and production
+          pointer mirrors are R2-only today and read as no-event, R5).
+          Fail-soft (absent creds/tables/inputs -> typed unavailable,
+          0 rows, exit 0). Dormant unless BOTH FIF_SAVED_RESEARCH_ENABLE=1
+          and ALERT_DRAIN_ENABLE=1. Delivery is F08's drain, never this
+          step. Last step of the engine lane: after every render-critical
+          step (census C5).
 
   # ── daily.yml / factor_panel ───────────────────────────────────────────
   - workflow: .github/workflows/daily.yml
@@ -3508,6 +3520,57 @@ lanes:
           scratch root through the exact code path tonight's engine gate runs and
           byte-compares every ticker against this lane's own projection output. A green
           publish with an unreadable bundle would otherwise surface only as a red render.
+      - id: fif_contract_targets_derive
+        module: scripts.publish_fif_production_datasets
+        args: [targets, --coverage-file, config/fundamental_forensics/coverage/five_issuer_v1.json, --targets-file, config/fundamental_forensics/wave2_targets.v1.json, --max-tickers, 15]
+        note: >
+          Derives the contract lane's universe from the SAME pinned target file: the
+          targets subcommand prints one --target TICKER=CIK per five-issuer coverage
+          entry that is not already an incumbent ticker, refusing any union wider
+          than --max-tickers 15. Lives inside the continue-on-error contract step,
+          so a derivation refusal is crash-class, never an incumbent gate.
+      - id: fif_contract_acquire
+        module: scripts.run_fundamental_forensics_wave2
+        args: [--acquire, --reuse-local-archive, --sync, --incremental-sync, --max-tickers, 12]
+        note: >
+          Third wave-2 invocation: the isolated contract acquire over the derived
+          $CONTRACT_TARGETS list into the same warm roots (no --restore, no
+          --require-complete-acquisition, no --build-projections). The step is
+          continue-on-error and non-gating; a crash or step timeout fails the job
+          only after every incumbent step has completed.
+      - id: fif_contract_acquire_summary
+        module: scripts.publish_fif_production_datasets
+        args: [contract-acquire-summary, --result, --report-path]
+        note: >
+          Reads the contract acquire's redirected outcome JSON and writes the run's
+          summary report: a typed partial becomes a line-start ::warning plus the
+          recorded shortfall that the capture and publish reports carry onward; a
+          missing or malformed result is a typed refusal, i.e. crash class.
+      - id: fif_capture_members
+        module: scripts.publish_fif_production_datasets
+        args: [capture-members, --coverage-file, config/fundamental_forensics/coverage/five_issuer_v1.json, --raw-root, --archive-root, --recorded-at, --contract-acquire-report, --report-path]
+        note: >
+          Member capture for the contract issuers, run only when the contract acquire
+          outcome is success (typed partial included). For each contract accession
+          whose primary document the lane retained, fetches the archive index and the
+          five XBRL role members, then writes the package subtree under the
+          fif-packages/ prefix in the warm archive root. No object-store credentials.
+      - id: fif_production_publish
+        module: scripts.publish_fif_production_datasets
+        args: [publish, --coverage-file, config/fundamental_forensics/coverage/five_issuer_v1.json, --raw-root, --archive-root, --recorded-at, --capture-report, --report-path]
+        note: >
+          Publishes one immutable generation per published contract issuer with the
+          CLOCK RULE admitted_at and lineage evidence through the S2-p seam; every
+          other contract issuer gets exactly one typed exclusion row. This is the
+          hard gate: a red publish stops the lane with rc != 0 and a line-start
+          ::error. Runs only when the contract acquire outcome is success.
+      - id: fif_production_verify
+        module: scripts.publish_fif_production_datasets
+        args: [verify, --coverage-file, config/fundamental_forensics/coverage/five_issuer_v1.json, --report-path]
+        note: >
+          Reads back the publish report and proves latest.json NAMES every generation
+          the publish minted; a missing generation fails the lane right after the
+          hard-gated publish.
   # ── filing-forensics-broad-sec.yml / poll_broad_sec ─────────────────────
   - workflow: .github/workflows/filing-forensics-broad-sec.yml
     job: poll_broad_sec

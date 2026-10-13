@@ -1,0 +1,79 @@
+schema: fundamental_forensics.metric_catalog/v1
+catalog_id: fundamental_forensics_qualification_metrics
+catalog_version: 1.0.0
+available_at: "2026-08-02T00:00:00Z"
+content_sha256: f62a2d2db888b55b302327ed25b4a3f25557ac684a645acbd83c69c31e0ed1ec
+
+duration_consolidated: &duration_consolidated
+  period_constraints:
+    kind: duration
+    allowed_forms: [10-K, 10-K/A, 10-Q, 10-Q/A]
+    min_duration_days: 1
+    max_duration_days: 400
+  dimensional_profile:
+    mode: consolidated_only
+    allowed_axes: []
+    require_dimensions: false
+    allow_member_selection: false
+
+income_statement: &income_statement
+  presentation_constraints:
+    statement: income_statement
+    sign_convention: as_reported
+    display_scale: native
+    comparability: same_unit_same_period
+
+derived_presentation: &derived_presentation
+  presentation_constraints:
+    statement: derived
+    sign_convention: formula_defined
+    display_scale: native
+    comparability: same_unit_same_period
+
+direct_review: &direct_review
+  review:
+    required: false
+    triggers: [alias_disagreement, unexpected_unit, unexpected_dimension]
+  no_result:
+    mode: withhold
+    codes: [missing_standard_fact, outside_period_constraint, disallowed_dimension]
+
+derived_review: &derived_review
+  review:
+    required: true
+    triggers: [missing_dependency, dependency_unit_mismatch, dependency_period_mismatch]
+  no_result:
+    mode: withhold
+    codes: [missing_dependency, incompatible_dependencies, division_by_zero]
+
+metrics:
+  - metric_id: revenue
+    label: Revenue
+    category: income_statement
+    rule: {rule_id: metric.revenue/v1, version: 1.0.0, available_at: "2026-08-02T00:00:00Z", confidence: A}
+    units: [USD]
+    formula_dependencies: []
+    <<: [*duration_consolidated, *income_statement, *direct_review]
+    period_basis:
+      calendar: fiscal
+  - metric_id: gross_profit
+    label: Gross profit
+    category: income_statement
+    rule: {rule_id: metric.gross_profit/v1, version: 1.0.0, available_at: "2026-08-02T00:00:00Z", confidence: A}
+    units: [USD]
+    formula_dependencies: []
+    <<: [*duration_consolidated, *income_statement, *direct_review]
+  - metric_id: gross_margin
+    label: Gross margin
+    category: income_statement
+    rule: {rule_id: metric.gross_margin/v1, version: 1.0.0, available_at: "2026-08-02T00:00:00Z", confidence: C}
+    units: [ratio]
+    formula_dependencies: [gross_profit, revenue]
+    <<: [*duration_consolidated, *derived_presentation, *derived_review]
+    applicability:
+      issuer_class_basis: sic
+      applicable_classes: []
+      excluded_classes: [bank]
+      basis_note: "banks report interest-based P&L; no cost-of-revenue concept"
+    period_basis:
+      calendar: fiscal

@@ -1,32 +1,32 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "BNY-BULL-20260810",
-  "asof": "2026-10-07",
+  "asof": "2026-10-09",
   "phase": "overtime",
   "detection_phase": "overtime",
-  "management_confidence": 36.6,
-  "raw_confidence": 36.2,
-  "delta_vs_base": -23.4,
+  "management_confidence": 35.7,
+  "raw_confidence": 35.5,
+  "delta_vs_base": -24.3,
   "recommended_action": "trim",
   "human_state": "Window Elapsed \u2014 Awaiting Close",
   "components": {
-    "validity": 50.9,
+    "validity": 50.7,
     "progress": 0.0,
-    "pace": 15.3,
+    "pace": 12.7,
     "retention": 0.0,
-    "overlay": 56.0
+    "overlay": 59.0
   },
   "geometry": {
-    "dist_to_stop_r": 0.607,
+    "dist_to_stop_r": 0.604,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 124.4,
-    "p1": -0.2622,
-    "p2": -0.1311,
+    "horizon_pct_used": 128.9,
+    "p1": -0.2638,
+    "p2": -0.1319,
     "p3": null,
-    "move_r": -0.393,
+    "move_r": -0.396,
     "mfe_r": 0.045,
-    "mae_r": -0.393
+    "mae_r": -0.414
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
@@ -40,11 +40,11 @@
     "ceiling": "hard cap at 92 \u2014 uncertainty is honest"
   },
   "_mfe": 2.185006713867182,
-  "_mae": -19.170004272460943,
+  "_mae": -20.17999877929688,
   "_max_p1": 0.029886564271196583,
   "_first_trigger_ts": "2026-08-12",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 56,
-  "tau": 1.2444
+  "days_elapsed": 58,
+  "tau": 1.2889
 }

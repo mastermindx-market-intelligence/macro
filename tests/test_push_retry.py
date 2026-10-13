@@ -2556,3 +2556,311 @@ def test_complete_jitter_cycle_is_reproducible_without_disabling_runtime_jitter(
     assert first == _backoff_complete_jitter_cycle("contention", 1, 6)
     assert len(set(first)) == 6
 
+
+
+# ---------------------------------------------------------------------------
+# GH001 is terminal for the current retry operation, with no cleanup authority.
+# All Git state below belongs to temporary synthetic repositories.
+# ---------------------------------------------------------------------------
+
+_GH001_ERROR = (
+    "remote: error: GH001: Large files detected.\n"
+    "error: failed to push some refs to 'synthetic-remote'"
+)
+
+
+def _gh001_env(tmp_path: Path, root: Path, *, rc: int = 42) -> dict[str, str]:
+    """Permit a fake rejected push only; any other Git call or sleep is a tripwire."""
+    bindir = tmp_path / "gh001-bin"
+    bindir.mkdir()
+    (bindir / "git").write_text(
+        r"""#!/bin/bash
+if [ "$(pwd -P)" != "$GH001_FIXTURE_ROOT" ]; then
+  echo "fixture Git escaped its temporary root" >&2
+  exit 97
+fi
+printf '%s\0' "$@" >> "$GH001_GIT_LOG"
+printf '\n' >> "$GH001_GIT_LOG"
+if [ "$1" = push ]; then
+  printf '%s\n' "$GH001_ERROR" >&2
+  exit "$GH001_RC"
+fi
+echo "unexpected Git call after terminal rejection" >&2
+exit 97
+"""
+    )
+    (bindir / "sleep").write_text(
+        '#!/bin/bash\nprintf "%s\\n" "$*" >> "$GH001_SLEEP_LOG"\n'
+        'echo "unexpected sleep after terminal rejection" >&2\nexit 96\n'
+    )
+    for name in ("git", "sleep"):
+        (bindir / name).chmod(0o755)
+    return {
+        "PATH": f"{bindir}:{os.environ['PATH']}",
+        "GH001_FIXTURE_ROOT": str(root.resolve()),
+        "GH001_GIT_LOG": str(tmp_path / "gh001-git.log"),
+        "GH001_SLEEP_LOG": str(tmp_path / "gh001-sleep.log"),
+        "GH001_ERROR": _GH001_ERROR,
+        "GH001_RC": str(rc),
+        "GITHUB_ACTIONS": "true",
+        "GITHUB_STEP_SUMMARY": str(tmp_path / "gh001-summary.md"),
+    }
+
+
+def _gh001_repository(tmp_path: Path, monkeypatch, *, rebase_kind: str) -> Path:
+    """Retain real index/stash objects and opaque interrupted-rebase bytes."""
+    root = tmp_path / "repo"
+    assert REPO_ROOT.resolve() not in root.resolve().parents
+    # Keep synthetic Git independent of the caller's repository, hooks and config.
+    for name in tuple(os.environ):
+        if name.startswith("GIT_"):
+            monkeypatch.delenv(name)
+    monkeypatch.setenv("GIT_CONFIG_NOSYSTEM", "1")
+    monkeypatch.setenv("GIT_CONFIG_GLOBAL", os.devnull)
+    monkeypatch.setenv("GIT_TERMINAL_PROMPT", "0")
+    _init_repo(root)
+    _git_output(root, "config", "core.hooksPath", os.devnull)
+    _git_output(root, "config", "commit.gpgsign", "false")
+    for name in ("staged.txt", "unstaged.txt", "mixed.txt"):
+        (root / name).write_text("base\n")
+    _git_output(root, "add", ".")
+    _git_output(root, "commit", "-qm", "synthetic base")
+    (root / "mixed.txt").write_text("retained autostash bytes\n")
+    _git_output(root, "stash", "push", "-qm", "autostash", "--", "mixed.txt")
+    stash = _git_output(root, "rev-parse", "refs/stash")
+    head = _git_output(root, "rev-parse", "HEAD")
+
+    (root / "staged.txt").write_text("staged suffix\n")
+    (root / "mixed.txt").write_text("staged mixed suffix\n")
+    _git_output(root, "add", "staged.txt", "mixed.txt")
+    (root / "mixed.txt").write_text("unstaged mixed suffix\n")
+    (root / "unstaged.txt").write_text("unstaged suffix\n")
+    (root / "untracked.bin").write_bytes(b"unpublished\x00suffix\n")
+    assert _git_output(root, "diff", "--cached", "--name-only")
+    assert _git_output(root, "diff", "--name-only")
+
+    metadata = root / ".git" / rebase_kind
+    metadata.mkdir()
+    for name, value in {
+        "head-name": "refs/heads/main\n",
+        "orig-head": head + "\n",
+        "onto": head + "\n",
+        "autostash": stash + "\n",
+        "git-rebase-todo": "opaque pending owner work\n",
+    }.items():
+        (metadata / name).write_text(value)
+    (metadata / "retained.bin").write_bytes(b"unknown\x00rebase\xffbytes")
+    return root
+
+
+def _gh001_tree_bytes(root: Path) -> dict[str, tuple]:
+    """Include every fixture file, mode and directory, including Git control state."""
+    return {
+        p.relative_to(root).as_posix(): (
+            p.stat().st_mode,
+            p.read_bytes() if p.is_file() else None,
+        )
+        for p in root.rglob("*")
+    }
+
+
+def _assert_gh001_one_push_and_no_sleep(tmp_path: Path) -> None:
+    assert (tmp_path / "gh001-git.log").read_bytes() == (
+        b"push\0origin\0synthetic-candidate:refs/heads/main\0\n"
+    )
+    assert not (tmp_path / "gh001-sleep.log").exists()
+
+
+@pytest.mark.parametrize("rc", [1, 128, 142])
+@pytest.mark.parametrize(
+    "suffix",
+    [
+        "",
+        "\nhint: Updates were rejected (non-fast-forward; fetch first)",
+        "\nremote: cannot lock ref 'refs/heads/main'",
+    ],
+)
+def test_gh001_retains_first_failure_and_outranks_contention_and_alarm(tmp_path, rc, suffix):
+    error = _GH001_ERROR + suffix
+    r = run_sh(
+        r"""
+        push_retry_init "synthetic rejection"
+        push_classify "$GH001_RC" "$GH001_ERROR"
+        push_classify 1 "remote: cannot lock ref 'refs/heads/main'"
+        printf '%s\0' "$PUSH_FAIL_CLASS" "${PUSH_TERMINAL_RC:-0}" \
+          "${PUSH_TERMINAL_OUTPUT:-}" "$PUSH_STOP" "$PUSH_N_OTHER"
+        """,
+        env={"GH001_RC": str(rc), "GH001_ERROR": error},
+        cwd=tmp_path,
+    )
+    assert r.returncode == 0, r.stderr
+    fields = r.stdout.split("\0")
+    assert fields[:3] == ["push-size-rejected", str(rc), error]
+    assert "GH001" in fields[3] and "automatic retry stopped" in fields[3]
+    assert fields[4:] == ["1", ""]
+
+
+@pytest.mark.parametrize(
+    "message",
+    ["fatal: missing GH001-report.txt", "GH001 appears in a local diagnostic"],
+)
+def test_gh001_word_without_server_error_does_not_latch(tmp_path, message):
+    r = run_sh(
+        r"""
+        push_retry_init "ordinary error"
+        push_classify 1 "$GH001_ERROR"
+        printf '%s\n' "$PUSH_FAIL_CLASS" "${PUSH_TERMINAL_RC:-0}"
+        """,
+        env={"GH001_ERROR": message},
+        cwd=tmp_path,
+    )
+    assert r.returncode == 0, r.stderr
+    assert r.stdout.splitlines() == ["push-error", "0"]
+
+
+def test_gh001_successful_push_output_is_not_a_rejection(tmp_path):
+    env = _gh001_env(tmp_path, tmp_path, rc=0)
+    r = run_sh(
+        """
+        push_retry_init "successful synthetic push"
+        push_attempt
+        push_do origin synthetic-candidate:refs/heads/main
+        push_won
+        push_lost
+        echo "terminal=${PUSH_TERMINAL_RC:-0}"
+        """,
+        env=env,
+        cwd=tmp_path,
+    )
+    assert r.returncode == 0, r.stderr
+    assert "terminal=0" in r.stdout
+    assert "::error" not in r.stderr
+    _assert_gh001_one_push_and_no_sleep(tmp_path)
+
+
+@pytest.mark.parametrize("rebase_kind", ["rebase-merge", "rebase-apply"])
+def test_gh001_standalone_loop_preserves_all_git_and_worktree_bytes(
+    tmp_path, monkeypatch, rebase_kind
+):
+    root = _gh001_repository(tmp_path, monkeypatch, rebase_kind=rebase_kind)
+    before = _gh001_tree_bytes(root)
+    env = _gh001_env(tmp_path, root)
+    r = run_sh(
+        """
+        push_retry_init "synthetic retained suffix"
+        while push_attempt; do
+          if push_do origin synthetic-candidate:refs/heads/main; then
+            push_won
+            exit 0
+          fi
+          # Neither a wider budget nor a later recovery marker permits cleanup.
+          PUSH_MAX_ATTEMPTS=99
+          PUSH_DEADLINE=$((PUSH_DEADLINE + 999))
+          PUSH_ATTEMPT_INHERITED_REBASE=1
+          push_abort_rebase
+          push_backoff
+        done
+        echo "attempts=$PUSH_ATTEMPT recovery=$PUSH_RECOVERY_FAILED"
+        push_lost
+        echo "MASKED TERMINAL FAILURE"
+        """,
+        env=env,
+        cwd=root,
+    )
+    assert r.returncode == 42, (r.stdout, r.stderr)
+    assert "attempts=1 recovery=0" in r.stdout
+    assert "MASKED TERMINAL FAILURE" not in r.stdout
+    assert any(line.startswith("::error") and "GH001" in line for line in r.stderr.splitlines())
+    summary = (tmp_path / "gh001-summary.md").read_text()
+    assert "NOT pushed" in summary and "GH001" in summary and "attempts=1/99" in summary
+    assert "other=1" in summary
+    _assert_gh001_one_push_and_no_sleep(tmp_path)
+    assert _gh001_tree_bytes(root) == before
+
+
+@pytest.mark.parametrize(
+    ("helper", "expected_rc"),
+    [
+        ("push_abort_rebase", 0),
+        ("push_backoff", 0),
+        ("push_autostash_ok", 42),
+        ("push_fetch_main_for_rebase", 42),
+        ("push_prepare_inherited_rebase", 42),
+    ],
+)
+def test_gh001_terminal_helpers_do_not_inspect_or_mutate_retained_state(
+    tmp_path, monkeypatch, helper, expected_rc
+):
+    root = _gh001_repository(tmp_path, monkeypatch, rebase_kind="rebase-merge")
+    before = _gh001_tree_bytes(root)
+    env = _gh001_env(tmp_path, root)
+    r = run_sh(
+        f"""
+        push_retry_init "retained state"
+        push_attempt
+        if push_do origin synthetic-candidate:refs/heads/main; then exit 95; fi
+        PUSH_ATTEMPT_INHERITED_REBASE=1
+        if {helper}; then result=0; else result=$?; fi
+        echo "helper=$result terminal=$PUSH_TERMINAL_RC recovery=$PUSH_RECOVERY_FAILED"
+        if push_do origin different-candidate:refs/heads/main; then exit 95; else
+          echo "second_push=$?"
+        fi
+        """,
+        env=env,
+        cwd=root,
+    )
+    assert r.returncode == 0, (r.stdout, r.stderr)
+    assert f"helper={expected_rc} terminal=42 recovery=0" in r.stdout
+    assert "second_push=42" in r.stdout
+    _assert_gh001_one_push_and_no_sleep(tmp_path)
+    assert _gh001_tree_bytes(root) == before
+
+
+def test_gh001_conditional_function_returns_terminal_failure_without_errexit(tmp_path):
+    env = _gh001_env(tmp_path, tmp_path)
+    r = run_sh(
+        """
+        synthetic_publish() {
+          push_retry_init "conditional synthetic caller"
+          while push_attempt; do
+            if push_do origin synthetic-candidate:refs/heads/main; then return 0; fi
+            push_abort_rebase
+            push_backoff
+          done
+          push_lost
+        }
+        # Bash suppresses errexit inside a function tested by if. Its explicit
+        # final nonzero result still has to reach the caller.
+        if synthetic_publish; then
+          echo "MASKED TERMINAL FAILURE"
+          exit 95
+        else
+          result=$?
+          echo "conditional_result=$result"
+          exit "$result"
+        fi
+        """,
+        env=env,
+        cwd=tmp_path,
+    )
+    assert r.returncode == 42, (r.stdout, r.stderr)
+    assert "conditional_result=42" in r.stdout
+    assert "MASKED TERMINAL FAILURE" not in r.stdout
+    _assert_gh001_one_push_and_no_sleep(tmp_path)
+
+
+def test_gh001_new_explicit_retry_operation_clears_terminal_receipt(tmp_path):
+    r = run_sh(
+        r"""
+        push_retry_init "first operation"
+        push_classify 42 "$GH001_ERROR"
+        push_retry_init "new explicit operation"
+        push_attempt
+        printf '%s\0' "$PUSH_TERMINAL_RC" "$PUSH_TERMINAL_OUTPUT" \
+          "$PUSH_STOP" "$PUSH_N_OTHER" "$PUSH_ATTEMPT"
+        """,
+        env={"GH001_ERROR": _GH001_ERROR},
+        cwd=tmp_path,
+    )
+    assert r.returncode == 0, r.stderr
+    assert r.stdout.split("\0") == ["0", "", "", "0", "1", ""]

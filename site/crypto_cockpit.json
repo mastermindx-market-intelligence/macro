@@ -2,19 +2,28 @@
   "schema": "crypto.cockpit/v1",
   "contract_phase": "w0",
   "display_only": true,
-  "as_of": "2026-10-07",
-  "generated_at": "2026-10-07T09:38:58+00:00",
+  "as_of": "2026-10-13",
+  "generated_at": "2026-10-13T18:51:25+00:00",
   "hero": {
     "asset": "BTC-USD",
-    "price": 83730.5,
-    "change_24h_pct": -2.12,
+    "price": 83492.65,
+    "change_24h_pct": -0.22,
     "stance_en": "RISK-ON",
     "stance_zh": "偏多",
-    "summary_en": "The big picture reads risk-on. Support comes from momentum and fundamentals; the drag comes from the macro backdrop and futures positioning. Day-to-day direction is a coin flip — watch the dip-risk read below.",
-    "summary_zh": "大方向偏多。支撑来自动量与基本面；拖累来自宏观环境与期货持仓。未来几天的涨跌仍近乎抛硬币——先看下方的回撤风险读数。",
-    "master_score": 33,
-    "exposure_pct": 100,
+    "summary_en": "The big picture reads risk-on. Support comes from fundamentals and momentum; the drag comes from the macro backdrop and public attention. Day-to-day direction is a coin flip — watch the dip-risk read below.",
+    "summary_zh": "大方向偏多。支撑来自基本面与动量；拖累来自宏观环境与大众关注度。未来几天的涨跌仍近乎抛硬币——先看下方的回撤风险读数。",
+    "master_score": 21,
+    "exposure_pct": 44,
     "gate_active": false
+  },
+  "decision": {
+    "schema": "btc.decision/v1",
+    "status": "ok",
+    "as_of": "2026-10-13",
+    "integrity_ok": true,
+    "final_exposure_pct": 44,
+    "errors": [],
+    "authority_source": "btc.decision/v1.final.exposure_pct"
   },
   "axes": [
     {
@@ -134,9 +143,9 @@
           "label_en": "Coinbase premium",
           "label_zh": "Coinbase 溢价",
           "source": "master.board.premium",
-          "state_en": "Healthy demand",
-          "state_zh": "健康需求",
-          "tone": "bull",
+          "state_en": "Overheated or absent",
+          "state_zh": "过热或缺位",
+          "tone": "bear",
           "grade": "EXTREMES"
         }
       ]
@@ -153,7 +162,7 @@
         "state_en": "Low",
         "state_zh": "低",
         "tone": "bull",
-        "as_of": "2026-10-07"
+        "as_of": "2026-10-13"
       },
       "spark_source": "signals.oi_mcap_ratio",
       "receipt_members": [
@@ -169,13 +178,13 @@
         },
         {
           "key": "cot",
-          "label_en": "CME positioning",
-          "label_zh": "CME 持仓",
+          "label_en": "Cot",
+          "label_zh": "cot",
           "source": "master.board.cot",
-          "state_en": "Crowded long",
-          "state_zh": "多头拥挤",
-          "tone": "bear",
-          "grade": "EXTREMES"
+          "state_en": "Unavailable",
+          "state_zh": "暂无",
+          "tone": "neutral",
+          "grade": null
         }
       ]
     },
@@ -200,9 +209,9 @@
           "label_en": "Miner economics",
           "label_zh": "矿工经济",
           "source": "master.board.miner",
-          "state_en": "Neutral",
-          "state_zh": "中性",
-          "tone": "neutral",
+          "state_en": "Capitulation (bottoming)",
+          "state_zh": "投降（筑底）",
+          "tone": "bull",
           "grade": "NEW"
         },
         {
@@ -210,9 +219,9 @@
           "label_en": "Holder spread (STH/LTH)",
           "label_zh": "持有者价差",
           "source": "master.board.holders",
-          "state_en": "Distribution",
-          "state_zh": "派发",
-          "tone": "bear",
+          "state_en": "Accumulation",
+          "state_zh": "累积",
+          "tone": "bull",
           "grade": "NEW"
         },
         {
@@ -248,21 +257,22 @@
           "label_en": "Conditional beta",
           "label_zh": "条件贝塔",
           "source": "master.board.beta",
-          "state_en": "Amplifies sell-offs",
-          "state_zh": "放大下跌",
-          "tone": "bear",
+          "state_en": "Neutral",
+          "state_zh": "中性",
+          "tone": "neutral",
           "grade": "CONFIRMED"
         }
       ]
     }
   ],
   "authority": {
-    "sizing_source": "signals.alloc_optimal",
+    "sizing_source": "btc.decision/v1.final.exposure_pct",
     "stance_source": "btc_master.synthesize",
     "axis_contract": "COCKPIT_AXIS_PRESENTATION",
     "no_new_arithmetic": true
   },
   "future_consumers": [
+    "crypto.html:H5",
     "crypto.html:H6",
     "index.html:crypto-product-card",
     "neural-web:crypto-lens"

@@ -1067,6 +1067,7 @@ def glance_consequence_surface(
             "window_label_zh": None,
             "families": {},
             "family_tally": [],
+            "family_views": [],
             "family_tally_tip_en": "",
             "family_tally_tip_zh": "",
             "rows": [],
@@ -1199,6 +1200,21 @@ def glance_consequence_surface(
             "named": named_count,
             "shown": 0,  # filled by the water-fill below
         })
+    # Inspection uses the same eligible, collapsed, sorted rows BEFORE the
+    # overview cap. Counts are display records, not raw event fires; retain
+    # source-event counts separately so an empty family is explained honestly.
+    family_views = [
+        {
+            "family": ft["family"],
+            "label_en": ft["label_en"],
+            "label_zh": ft["label_zh"],
+            "state": ft["state"],
+            "in_window": ft["in_window"],
+            "available_count": len(buckets[ft["family"]]),
+            "rows": buckets[ft["family"]][:4],
+        }
+        for ft in family_tally
+    ]
     # Bucket order for the water-fill: by newest head event_time desc,
     # ties broken by schema.SOURCES index asc. prophet_ledger never
     # appears (typed exclusion above).
@@ -1265,6 +1281,7 @@ def glance_consequence_surface(
             "window_label_zh": label_zh,
             "families": {},
             "family_tally": family_tally,
+            "family_views": family_views,
             "family_tally_tip_en": family_tally_tip_en,
             "family_tally_tip_zh": family_tally_tip_zh,
             "rows": [],
@@ -1284,6 +1301,7 @@ def glance_consequence_surface(
         "window_label_zh": label_zh,
         "families": families,
         "family_tally": family_tally,
+        "family_views": family_views,
         "family_tally_tip_en": family_tally_tip_en,
         "family_tally_tip_zh": family_tally_tip_zh,
         "rows": rows,

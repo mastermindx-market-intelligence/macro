@@ -1,0 +1,4 @@
+interface:
+  display_name: "Mastermind Data and Lab"
+  short_description: "Explore our datasets and run bounded Lab tests"
+  default_prompt: "Use $data-workspace to find our options and stock data, inspect coverage, and prepare a Lab test."

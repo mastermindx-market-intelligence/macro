@@ -1,0 +1,61 @@
+{
+  "author_stdout_matches_frozen_result": true,
+  "current_policy_or_source_native_admission_proved": false,
+  "effects": "New scratch review files only",
+  "independent_checks": {
+    "bytes": 10874,
+    "path": "INDEPENDENT_METHOD_CHECKS.py",
+    "sha256": "8cdcb4984e6eb2b0c4f32b8357b25edd549d8dc134aee58412a02b6d6246e521"
+  },
+  "input_bindings_and_invariants_in": {
+    "bytes": 5380,
+    "path": "INDEPENDENT_METHOD_CHECKS.json",
+    "sha256": "3756543a1e925f1be7abc3b9c5efe44529a927770e7f638180ad2b11771b491d"
+  },
+  "prior_failures_reclassified": false,
+  "production_selector_tests_run": false,
+  "real_source_authority_rights_or_history_verified": false,
+  "receipt_created_at_utc": "2026-10-09T12:04:22.347770+00:00",
+  "runs": [
+    {
+      "command": "PYTHONDONTWRITEBYTECODE=1 python -B lanes/source_diagnostic_policy_review_v2/INDEPENDENT_METHOD_CHECKS.py > lanes/source_diagnostic_policy_review_v2/INDEPENDENT_METHOD_CHECKS.json 2> lanes/source_diagnostic_policy_review_v2/INDEPENDENT_METHOD_CHECKS.stderr",
+      "native_PID": null,
+      "observed_exit_code": 0,
+      "ongoing_session_id": null,
+      "reported_wall_time_seconds": 0.241042175,
+      "stderr": {
+        "bytes": 0,
+        "path": "INDEPENDENT_METHOD_CHECKS.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 5380,
+        "path": "INDEPENDENT_METHOD_CHECKS.json",
+        "sha256": "3756543a1e925f1be7abc3b9c5efe44529a927770e7f638180ad2b11771b491d"
+      },
+      "tool": "exec_command",
+      "tool_chunk_id": "943a77"
+    },
+    {
+      "command": "PYTHONDONTWRITEBYTECODE=1 python -B lanes/source_diagnostic_policy_v2/SYNTHETIC_METHOD_CHECKS.py > lanes/source_diagnostic_policy_review_v2/AUTHOR_SYNTHETIC_REPLAY.json 2> lanes/source_diagnostic_policy_review_v2/AUTHOR_SYNTHETIC_REPLAY.stderr",
+      "native_PID": null,
+      "observed_exit_code": 0,
+      "ongoing_session_id": null,
+      "reported_wall_time_seconds": 3.0261e-05,
+      "stderr": {
+        "bytes": 0,
+        "path": "AUTHOR_SYNTHETIC_REPLAY.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 2827,
+        "path": "AUTHOR_SYNTHETIC_REPLAY.json",
+        "sha256": "6f2b8e7f5ca4dfdf6595286711601dde00e47e53229187f332e0cf5c598f3281"
+      },
+      "tool": "exec_command",
+      "tool_chunk_id": "ea8003"
+    }
+  ],
+  "runtime_scope": "Local scratch Python standard library and explicitly synthetic inputs only; no native or application process",
+  "schema": "research.gmi.wp02.independent_method_execution_receipt/v2"
+}

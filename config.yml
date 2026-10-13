@@ -7085,6 +7085,15 @@ canada:
 # with per-country flags. Taiwan macro is thin on keyless sources -> degrades.
 # ===========================================================================
 intl:
+  # Chairman confirmed permitted user-facing EOD redistribution on 2026-10-09.
+  # This is a source-scoped publication decision, NOT a provider session-clock
+  # attestation, trading authorization, or blanket rights grant to other feeds.
+  # Missing current saved observations/collector receipts still fail closed.
+  eod_publication:
+    status: confirmed
+    scope: intl-index-fx-eod-user-facing-v1
+    decision_ref: chairman-user-facing-redistribution-confirmed-2026-10-09
+
   # -- Plane A: prices (group=intl) — yfinance indices + vol + FX -------------
   yahoo:
     retries: 3
@@ -7602,6 +7611,7 @@ intraday_flow:
 # --------------------------------------------------------------------------- #
 leader_radar:
   enabled: true                    # kill-switch: false → noindex stub, skip JSON
+  recovery_capture_enabled: true   # 2026-10-11 WP5: capture the first-seen recovery observation per (date, ticker) row of state_history.parquet (engine/leader_recovery_observations.py); literal true only — false stops new captures and deletes nothing
   basket_keys:                     # LR-R12 basket keys from data/baskets/membership.json
     - mag7
     - ai_infra

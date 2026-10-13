@@ -677,6 +677,28 @@ def backfill(
     return result
 
 
+def _refresh_manifest_if_stale(processed: set[date]) -> bool:
+    """Already-current runs must still reconcile the committed freshness anchor with the
+    store actually on disk (an R2 restore can hold days a cancelled run fetched but never
+    committed); a stale anchor makes publish_r2 ship an incoherent manifest."""
+    if not processed:
+        return False
+    n = sum(1 for _ in iter_artifact_paths(_store_dir()))
+    want_latest = max(processed).isoformat()
+    try:
+        old = json.loads(_manifest_path().read_text())
+    except (OSError, ValueError):
+        old = None
+    old_n = old.get("n_tickers") if isinstance(old, dict) else None
+    old_latest = old.get("latest_date") if isinstance(old, dict) else None
+    if old_n == n and old_latest == want_latest:
+        return False
+    log.info("massive_stock_day: manifest refreshed on already-current path "
+             "(n_tickers %s->%s, latest %s->%s)", old_n, n, old_latest, want_latest)
+    _write_manifest(n, max(processed), processed)
+    return True
+
+
 def run_incremental(lookback_days: int = 5, pace_s: float = 0.05,
                     max_days: int | None = 40) -> dict:
     """Nightly incremental fetch: capture every trading day not yet processed over the
@@ -720,6 +742,7 @@ def run_incremental(lookback_days: int = 5, pace_s: float = 0.05,
         log.info("massive_stock_day: store empty, priming with last %d days", lookback_days)
 
     if not any(d not in processed for d in _trading_days(start, latest_ent)):
+        _refresh_manifest_if_stale(processed)
         log.info("massive_stock_day: already up to date (%d processed, entitled=%s)",
                  len(processed), latest_ent)
         return {"days_fetched": 0, "already_current": True}

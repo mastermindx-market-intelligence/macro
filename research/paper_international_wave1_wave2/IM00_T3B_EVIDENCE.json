@@ -1,0 +1,41 @@
+{
+  "scope": "IM00-T3b pure macro DOM controller, source plus synthetic browser acceptance",
+  "implementation": {
+    "templates/intl_workspace.js": "61d6e4cb9c78d191d43ab92c9c3bcf2e180a14648fe1559c1972f4f4ffec7836",
+    "tests/intl_workspace_controller.test.cjs": "ea76e45481581c31e317674f5def26852e5b48f15e9e3912a06d7d1974f0255d"
+  },
+  "review": {
+    "verdict": "APPROVE_SCOPED",
+    "session": "01a11057-3134-76d2-bcd1-784d69cc17d3",
+    "artifact_sha256": "6fe10a532dbd30d3a2dfae709a4cb7116726661245194357bbebe993a0561428"
+  },
+  "tests": {
+    "real_browser_cases": 20,
+    "runtime": "Node26 and Chrome154 using Playwright1.63.0 onMini2",
+    "node20_bundled_chromium_ci": "not yet observed"
+  },
+  "behavior": [
+    "Atomic DOM/history changes; invalid queries preserve URL",
+    "Exact source/horizon/basis/payload selection; optional context constraints",
+    "Scoped controls, current-source popstate, private state absent from URLs",
+    "Original nodes/listeners and unrelated legacy owners preserved on failure/destroy",
+    "Idempotent mount, defensive state and malformed accessor rejection",
+    "Progressive full-market disclosure preserves no-JS data/focus/pins"
+  ],
+  "root": "01a1101f-2a37-7320-9a9b-5df3ce1b890d",
+  "worker": "rs_20261006T211612Z_90859",
+  "worker_accepted_as_returned": false,
+  "repair_author": "Astra integration owner; independently reviewed bySol",
+  "limits": [
+    "No product mount or actual visual/rights/auth/publication acceptance",
+    "Tests use locally intercepted isolated HTML fixtures, not a served financial product"
+  ],
+  "evidence_root": "/Volumes/Mastermind/evidence/paper-waves-20261006-01a1101f/controller-seam",
+  "subsequent_integration_delta": {
+    "controller_sha256": "088c7308f98eb519f34b90017be74c75007a53ea728a822fb89a3180975c94f9",
+    "tests_sha256": "4b0a264116e5b52128c763ce8f76040e8836ffac6a24db2e4b0060853e080c71",
+    "changes": "Three user-facing status strings; native button aria-pressed replaces unsupported aria-selected, including owned attribute rollback and2style selectors. Original transactional algorithm unchanged.",
+    "proof": "20controller +7actualpage tests pass; MOUNT_REVIEW and finalsource review",
+    "evidence": "IM01_OVERVIEW_MOUNT_EVIDENCE.json"
+  }
+}

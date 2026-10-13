@@ -1,0 +1,5 @@
+PREREG_FILE=PREREG.md
+PREREG_SHA256=1c9ee1ef6a71a5d4667f8de197b96f1d4bb2bc0c976151ae86411fc0e49d028c
+FROZEN_UTC=Fri Oct  9 10:31:30 UTC 2026
+HASH_COMMAND=shasum -a 256 PREREG.md
+NOTE=frozen before any holdout (>= 2020-01-01) return, correlation or estimator was computed; evaluate.py refuses to run on mismatch

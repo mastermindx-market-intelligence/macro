@@ -92,6 +92,7 @@ class RussellBreadthAdapter(BreadthAdapter):
 
     name = "russell_breadth"
     group = "russell_breadth"
+    session_calendar = "US"  # observation dates follow the cash/Connect session
 
     def __init__(self) -> None:
         self.cfg = config.load()["russell_breadth"]

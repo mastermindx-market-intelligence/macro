@@ -350,6 +350,47 @@ class TestAnnualChainSync:
 
 
 # ---------------------------------------------------------------------------
+# (g) FIF P1-b (I2): companyfacts duration starts are retained through to the
+#     output rows; instant-only concepts contribute no start, ever.
+# ---------------------------------------------------------------------------
+
+def test_period_start_retained_in_output_rows(monkeypatch):
+    """Flow rows carry the duration entry's start; instant-only rows stay None."""
+    flow_entries = [
+        {"fp": "Q1", "form": "10-Q", "fy": 2024, "val": 10e6,
+         "start": "2024-01-01", "end": "2024-03-31", "filed": "2024-04-15"},
+        {"fp": "Q2", "form": "10-Q", "fy": 2024, "val": 11e6,
+         "start": "2024-04-01", "end": "2024-06-30", "filed": "2024-07-15"},
+    ]
+    # a Q3 that exists ONLY as an instant: the row must keep period_start None
+    # rather than inheriting or deriving any date.
+    instant_entries = [
+        {"fp": "Q3", "form": "10-Q", "fy": 2024, "val": 2e6,
+         "end": "2024-09-30", "filed": "2024-10-15"},
+    ]
+    usgaap = {
+        "Revenues": {"units": {"USD": flow_entries}},
+        "InventoryNet": {"units": {"USD": instant_entries}},
+    }
+    facts = {"facts": {"us-gaap": usgaap}}
+    monkeypatch.setattr(bq, "_get_json", lambda *a, **kw: facts)
+    monkeypatch.setattr(bq.time, "sleep", lambda *a, **kw: None)
+
+    rows = bq._statements_quarterly(cik=1, ua="test-agent")
+    by_q = {(r["fiscal_year"], r["fiscal_quarter"]): r for r in rows}
+    assert by_q[(2024, 1)]["period_start"] == "2024-01-01"
+    assert by_q[(2024, 2)]["period_start"] == "2024-04-01"
+    assert by_q[(2024, 3)]["period_start"] is None
+
+    # the retention itself: the merged flow series carries the entry's start,
+    # and the instant series carries None.
+    flow_series = bq._concept_q(usgaap, ["Revenues"], unit="USD", instant=False)
+    assert flow_series[(2024, 1)]["period_start"] == "2024-01-01"
+    instant_series = bq._concept_q(usgaap, ["InventoryNet"], unit="USD", instant=True)
+    assert instant_series[(2024, 3)]["period_start"] is None
+
+
+# ---------------------------------------------------------------------------
 # (f) fp="FY" year-end instants are EXCLUDED (safer false-negative, never a
 #     contaminated Q4 value) — same behavior as cash/debt/shares instants.
 # ---------------------------------------------------------------------------

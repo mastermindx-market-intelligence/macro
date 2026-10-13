@@ -1,0 +1,17 @@
+{
+  "at": "2026-10-12T23:59:33.023197+00:00",
+  "own_pid": 15530,
+  "source_head": "38f6f25f934df1b5c76b358814adb8d86d7471ee",
+  "target_main": "490432d59ff6606e5f90bcc5a87e5a124eb55c6f",
+  "worktree_clean_before_interrupt": true,
+  "index_sha256": "4c08141e5a42ce54484691f27e975ebffeb83b55c2b0af110bc7cf67a9becdd5",
+  "reason": "Git prefetch_cache_entries is scanning all promisor packs after asking origin for a locally valid freshly synthesized merge blob. Exact blob identity independently verified; no checkout writes or MERGE_HEAD yet. Preserve index and interrupt only this owned pre-checkout merge, then verify state before same-target retry.",
+  "object": {
+    "compressed_bytes": 2876,
+    "modified_utc": "2026-10-12T23:51:11.117782+00:00",
+    "object_header": "blob 5979",
+    "object_sha1": "b1dd36a2a526a0572696245dc805a6355c455bda",
+    "matches_requested": true
+  },
+  "post_interrupt_head_index_worktree_unchanged": true
+}

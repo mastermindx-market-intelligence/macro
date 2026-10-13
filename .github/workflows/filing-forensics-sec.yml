@@ -188,3 +188,178 @@ jobs:
               sys.exit(1)
           print(f"restore self-check OK: {len(targets)} projections byte-identical", flush=True)
           PY
+      - name: acquire contract-issuer filings (isolated, non-gating)
+        # D13 isolation: the frozen coverage contract's issuers ride a SEPARATE
+        # acquire, because one contract issuer's recent Submissions window
+        # holds a single 10-K, so its bounded acquire is PARTIAL by
+        # construction and the incumbent hard gate would refuse it nightly.
+        # This step never touches the incumbent invocations above: same warm
+        # RAW/ARCHIVE roots (so retention is identical — its own incremental
+        # sync tonight, the incumbents' root-wide non-pruning sync on later
+        # nights) but a SEPARATE observation root, so incumbent observation
+        # bytes never move. continue-on-error keeps a contract crash or step
+        # timeout from marking incumbents red; the job still ends non-zero via
+        # the last "fail on contract-acquire crash" step, after every
+        # incumbent step has completed. Non-gating: no
+        # --require-complete-acquisition — a typed partial is reported as a
+        # ::warning by contract-acquire-summary, never fatal. No --restore:
+        # the incumbents' root-wide sync already carries these roots forward.
+        # The cap is main's 12 for the acquire itself; 15 appears ONLY on the
+        # targets derivation, which hard-fails if the union exceeds it.
+        id: contract_acquire
+        continue-on-error: true
+        timeout-minutes: 15
+        env:
+          R2_RESEARCH_ENDPOINT: ${{ secrets.R2_RESEARCH_ENDPOINT }}
+          R2_RESEARCH_ACCESS_KEY_ID: ${{ secrets.R2_RESEARCH_ACCESS_KEY_ID }}
+          R2_RESEARCH_SECRET_ACCESS_KEY: ${{ secrets.R2_RESEARCH_SECRET_ACCESS_KEY }}
+          R2_RESEARCH_BUCKET: ${{ secrets.R2_RESEARCH_BUCKET }}
+        run: |
+          set -euo pipefail
+          utc_now() { python -c 'from datetime import datetime, timezone; print(datetime.now(timezone.utc).replace(microsecond=0).isoformat().replace("+00:00", "Z"))'; }
+          as_of="$(utc_now)"        # sampled at THIS step's start: strictly later
+          recorded_at="$(utc_now)"  # than the incumbent sync's snapshot clock, so
+                                    # the contract sync's latest-pointer CAS cannot
+                                    # be refused as a rewind.
+          RAW="$HOME/.cache/mm-ffsec/raw"
+          ARCHIVE="$HOME/.cache/mm-ffsec/archive"
+          OBS_CONTRACT="$HOME/.cache/mm-ffsec/observations-contract"
+          mkdir -p "$RAW" "$ARCHIVE" "$OBS_CONTRACT"
+
+          CONTRACT_TARGETS="$(python -m scripts.publish_fif_production_datasets targets \
+            --coverage-file config/fundamental_forensics/coverage/five_issuer_v1.json \
+            --targets-file config/fundamental_forensics/wave2_targets.v1.json \
+            --max-tickers 15)"
+
+          python -m scripts.run_fundamental_forensics_wave2 \
+            $CONTRACT_TARGETS \
+            --raw-root "$RAW" --archive-root "$ARCHIVE" --observation-root "$OBS_CONTRACT" \
+            --acquire --reuse-local-archive --sync --incremental-sync \
+            --max-tickers 12 --as-of "$as_of" --recorded-at "$recorded_at" --computed-at "$recorded_at" \
+            > "$RUNNER_TEMP/fif-contract-acquire-result-${GITHUB_RUN_ID}.json"
+
+          python -m scripts.publish_fif_production_datasets contract-acquire-summary \
+            --result "$RUNNER_TEMP/fif-contract-acquire-result-${GITHUB_RUN_ID}.json" \
+            --report-path "$RUNNER_TEMP/fif-contract-acquire-summary-${GITHUB_RUN_ID}.json"
+
+          # C0-c E1 (option (i), amendment (A) — the ADD case): acquire-contract
+          # runs AFTER the D13 wave-2 invocation + summary inside this SAME
+          # isolated step. The D13 invocation stays byte-identical above: its
+          # stdout feeds contract-acquire-summary, which capture reads —
+          # consumers beyond member capture — so E1 is ADDED, not a replacement.
+          # It acquires every contract accession's primary + manifest keyed by
+          # ACCESSION (the latest-2 selector never sees 8-Ks or page-window
+          # rows), reusing retained manifests, verified pages, and prior
+          # primary receipts first. Retention is the incumbents' own: pages via
+          # the historical-shard fetch (publish_latest=false) into the warm RAW
+          # root, manifests via retain_filing_manifest into the warm ARCHIVE
+          # root — those bytes live in the warm local RAW/ARCHIVE roots, where
+          # tonight's capture/publish read them (and the next night reuses
+          # them with zero requests); they reach R2 only through the NEXT
+          # night's incumbent root-wide non-pruning --sync, i.e. one night
+          # later. A typed partial is a ::warning; a crash-class failure
+          # (e.g. a retained page failing receipt verification) fails this
+          # step AFTER the incumbents finished, exactly like the D13 crash
+          # path.
+          python -m scripts.publish_fif_production_datasets acquire-contract \
+            --coverage-file config/fundamental_forensics/coverage/five_issuer_v1.json \
+            --raw-root "$RAW" --archive-root "$ARCHIVE" \
+            --recorded-at "$(utc_now)" \
+            --min-interval-seconds 0.5 \
+            --contract-acquire-summary "$RUNNER_TEMP/fif-contract-acquire-summary-${GITHUB_RUN_ID}.json" \
+            --report-path "$RUNNER_TEMP/fif-contract-acquire-acquire-report-${GITHUB_RUN_ID}.json"
+      - name: capture FIF filing packages (contract issuers)
+        # D13 W3: capture/publish run only when the contract acquire state is
+        # KNOWN (outcome success — partial included, since a typed partial is
+        # the expected contract shape). A crashed or timed-out contract step
+        # skips both; the job still ends red via the crash step below.
+        # C0-b D1 member capture: for each contract accession whose primary this
+        # lane retained, fetch the archive index + the five XBRL role members
+        # under the ONE shared SecRequestPacer, mint the acceptance witness from
+        # the retained Submissions bytes, and write the package subtree under a
+        # NEW fif-packages/ prefix in the warm archive root. Hard gate: no
+        # continue-on-error, the script exits non-zero on any failure.
+        # No env block: capture touches only SEC (through the collector) and
+        # the warm archive root — never the object store, so it gets no
+        # credentials at all (D7).
+        if: steps.contract_acquire.outcome == 'success'
+        run: |
+          set -euo pipefail
+          utc_now() { python -c 'from datetime import datetime, timezone; print(datetime.now(timezone.utc).replace(microsecond=0).isoformat().replace("+00:00", "Z"))'; }
+          RAW="$HOME/.cache/mm-ffsec/raw"
+          ARCHIVE="$HOME/.cache/mm-ffsec/archive"
+          CAPTURE_REPORT="$RUNNER_TEMP/fif-member-capture-report-${GITHUB_RUN_ID}.json"
+          # D13 W3: the contract acquire summary (same run id) rides into the
+          # capture report as its contract_acquire block; publish carries the
+          # block onward through this same report path.
+          CONTRACT_ACQUIRE_SUMMARY="$RUNNER_TEMP/fif-contract-acquire-summary-${GITHUB_RUN_ID}.json"
+          python -m scripts.publish_fif_production_datasets capture-members \
+            --coverage-file config/fundamental_forensics/coverage/five_issuer_v1.json \
+            --raw-root "$RAW" --archive-root "$ARCHIVE" \
+            --recorded-at "$(utc_now)" \
+            --min-interval-seconds 0.5 \
+            --contract-acquire-report "$CONTRACT_ACQUIRE_SUMMARY" \
+            --report-path "$CAPTURE_REPORT"
+      - name: publish FIF production datasets (hard gate)
+        # D13 W3: same known-state gate as capture — never publish from a run
+        # whose contract acquisition state is unknown.
+        # C0-b publication: admit retained packages per contract issuer, compute
+        # the CLOCK RULE admitted_at, mint lineage evidence through the S2-p
+        # seam, publish one immutable generation per published issuer, and
+        # verify latest.json NAMES every generation. Every other contract
+        # issuer gets exactly one typed exclusion row — never silence. Hard
+        # gate: a red publish stops the lane with rc != 0 and a line-start
+        # ::error; the schedule stays the only proof path (no dispatch rerun).
+        if: steps.contract_acquire.outcome == 'success'
+        env:
+          R2_RESEARCH_ENDPOINT: ${{ secrets.R2_RESEARCH_ENDPOINT }}
+          R2_RESEARCH_ACCESS_KEY_ID: ${{ secrets.R2_RESEARCH_ACCESS_KEY_ID }}
+          R2_RESEARCH_SECRET_ACCESS_KEY: ${{ secrets.R2_RESEARCH_SECRET_ACCESS_KEY }}
+          R2_RESEARCH_BUCKET: ${{ secrets.R2_RESEARCH_BUCKET }}
+        run: |
+          set -euo pipefail
+          utc_now() { python -c 'from datetime import datetime, timezone; print(datetime.now(timezone.utc).replace(microsecond=0).isoformat().replace("+00:00", "Z"))'; }
+          RAW="$HOME/.cache/mm-ffsec/raw"
+          ARCHIVE="$HOME/.cache/mm-ffsec/archive"
+          REPORT="$RUNNER_TEMP/fif-production-publish-report-${GITHUB_RUN_ID}.json"
+          # D6: the capture step's report (same RUNNER_TEMP path, same run id)
+          # feeds publish so capture failures file as member_capture_failed:<code>.
+          CAPTURE_REPORT="$RUNNER_TEMP/fif-member-capture-report-${GITHUB_RUN_ID}.json"
+          python -m scripts.publish_fif_production_datasets publish \
+            --coverage-file config/fundamental_forensics/coverage/five_issuer_v1.json \
+            --raw-root "$RAW" --archive-root "$ARCHIVE" \
+            --recorded-at "$(utc_now)" \
+            --capture-report "$CAPTURE_REPORT" \
+            --report-path "$REPORT"
+          python -m scripts.publish_fif_production_datasets verify \
+            --coverage-file config/fundamental_forensics/coverage/five_issuer_v1.json \
+            --report-path "$REPORT"
+      - name: upload FIF publication reports (always)
+        # D5 / spec §4: the run report is 'stdout + workflow artifact'. A red
+        # lane's reports are exactly the ones an operator needs, so the upload
+        # runs on `if: always()` — after a failed capture/publish step, not
+        # only after a green one. D13 W4: the contract acquire's result +
+        # summary ride the same always-upload (a crashed contract step leaves
+        # exactly the evidence an operator needs). Pinned to the same
+        # upload-artifact sha the repo's other diagnostics captures use.
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: fif-production-reports-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/fif-production-publish-report-${{ github.run_id }}.json
+            ${{ runner.temp }}/fif-member-capture-report-${{ github.run_id }}.json
+            ${{ runner.temp }}/fif-contract-acquire-result-${{ github.run_id }}.json
+            ${{ runner.temp }}/fif-contract-acquire-summary-${{ github.run_id }}.json
+            ${{ runner.temp }}/fif-contract-acquire-acquire-report-${{ github.run_id }}.json
+      - name: fail on contract-acquire crash
+        # D13 W5: with continue-on-error, a contract crash or step timeout is
+        # outcome=failure while the job is still green — and by construction
+        # every incumbent step above has already completed. Fail the JOB here:
+        # a crash is never swallowed into a warning. A failed incumbent step
+        # skips the contract step entirely (outcome=skipped), so this never
+        # fires and the job is already red from the incumbent.
+        if: always() && steps.contract_acquire.outcome == 'failure'
+        run: |
+          echo "::error title=fif-contract-acquire::contract acquire crashed or timed out; incumbent steps completed"
+          exit 1

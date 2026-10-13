@@ -21,6 +21,7 @@ from lib import config
 class SmallCapBreadthAdapter(BreadthAdapter):
     name = "smallcap_breadth"
     group = "smallcap_breadth"
+    session_calendar = "US"  # observation dates follow the cash/Connect session
 
     def __init__(self) -> None:
         self.cfg = config.load()["smallcap_breadth"]

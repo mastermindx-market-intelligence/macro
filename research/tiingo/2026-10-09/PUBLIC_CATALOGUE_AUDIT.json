@@ -1,0 +1,161 @@
+{
+  "acquisition_candidate_count": 96937,
+  "ambiguous_ticker_strings": 1069,
+  "asset_types": {
+    "ETF": 9791,
+    "Mutual Fund": 49880,
+    "Stock": 49299
+  },
+  "catalogue_is_account_entitlement_proof": false,
+  "catalogue_sha256": "015cda96b828344e26f5937f426cbc40a7b8fe2edc9a023a342a3743799abcf0",
+  "caveat": "Public catalogue includes reservations; confirm individual metadata and actual responses. Old endDate is not proof of delisting.",
+  "compressed_bytes": 797482,
+  "conflicting_catalogue_keys": 1241,
+  "conflicting_duplicate_rows": 1288,
+  "currencies": {
+    "AUD": 5,
+    "CNY": 7147,
+    "HKD": 52,
+    "USD": 101766
+  },
+  "current_adapter_symbol_refused": 186,
+  "downloaded_price_rows": 0,
+  "duplicate_exact_rows": 5,
+  "earliest_advertised_history": "1960-01-29",
+  "exchanges": {
+    "": 176,
+    "AMEX": 383,
+    "BATS": 2060,
+    "EXPM": 926,
+    "LSE": 11,
+    "NASDAQ": 11057,
+    "NMFQS": 49827,
+    "NYSE": 9294,
+    "NYSE ARCA": 1594,
+    "NYSE MKT": 233,
+    "NYSE NAT": 3,
+    "OTCBB": 602,
+    "OTCCE": 389,
+    "OTCD": 55,
+    "OTCGREY": 1558,
+    "OTCMKTS": 2250,
+    "OTCQB": 460,
+    "OTCQX": 206,
+    "PINK": 20548,
+    "SHE": 3801,
+    "SHEB": 42,
+    "SHG": 3451,
+    "SHGB": 44
+  },
+  "execution_authorized": false,
+  "filters": {
+    "asset_types": [],
+    "currencies": [
+      "USD"
+    ]
+  },
+  "historical_survivorship_safe_universe": false,
+  "history_end_after_observation_date": 0,
+  "history_ends_before_requested_end": 44019,
+  "history_requested": {
+    "end": "2026-10-08",
+    "start": "1950-01-01"
+  },
+  "invalid_history_bounds": 0,
+  "latest_advertised_history": "2026-10-09",
+  "missing_history_bounds": 0,
+  "most_common_history_end_dates": [
+    [
+      "2026-10-08",
+      57286
+    ],
+    [
+      "2026-10-09",
+      6811
+    ],
+    [
+      "2026-10-07",
+      1640
+    ],
+    [
+      "2016-07-22",
+      529
+    ],
+    [
+      "2024-10-30",
+      499
+    ],
+    [
+      "2024-07-23",
+      476
+    ],
+    [
+      "2021-12-31",
+      440
+    ],
+    [
+      "2023-05-12",
+      418
+    ],
+    [
+      "2024-02-16",
+      411
+    ],
+    [
+      "2026-05-28",
+      398
+    ]
+  ],
+  "network": false,
+  "next_offset": 3,
+  "observed_at_utc": "2026-10-09T20:38:54.536319+00:00",
+  "offset": 0,
+  "outside_requested_history": 1,
+  "public_source": "https://apimedia.tiingo.com/docs/tiingo/daily/supported_tickers.zip",
+  "rows": 108970,
+  "schema": "mastermind.tiingo.public_reference_audit.v1",
+  "selected": [
+    {
+      "account_access_proven": false,
+      "assetType": "Stock",
+      "canonical_identity_admitted": false,
+      "endDate": "2026-10-09",
+      "exchange": "SHE",
+      "priceCurrency": "USD",
+      "provider_metadata_confirmation_needed": true,
+      "request_end": "2026-10-08",
+      "request_start": "2026-09-30",
+      "startDate": "2026-09-30",
+      "ticker": "001246"
+    },
+    {
+      "account_access_proven": false,
+      "assetType": "Stock",
+      "canonical_identity_admitted": false,
+      "endDate": "2024-02-07",
+      "exchange": "PINK",
+      "priceCurrency": "USD",
+      "provider_metadata_confirmation_needed": true,
+      "request_end": "2024-02-07",
+      "request_start": "2024-02-07",
+      "startDate": "2024-02-07",
+      "ticker": "0A4X"
+    },
+    {
+      "account_access_proven": false,
+      "assetType": "Stock",
+      "canonical_identity_admitted": false,
+      "endDate": "2024-03-07",
+      "exchange": "PINK",
+      "priceCurrency": "USD",
+      "provider_metadata_confirmation_needed": true,
+      "request_end": "2024-03-07",
+      "request_start": "2024-03-07",
+      "startDate": "2024-03-07",
+      "ticker": "0IJU"
+    }
+  ],
+  "unique_catalogue_keys": 107677,
+  "unique_ticker_strings": 106600,
+  "with_valid_history_bounds": 107677
+}

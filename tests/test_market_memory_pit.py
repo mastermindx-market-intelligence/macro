@@ -2,7 +2,9 @@
 
 from __future__ import annotations
 
+import errno
 import json
+import os
 from copy import deepcopy
 from datetime import datetime, timedelta, timezone
 from hashlib import sha256
@@ -443,6 +445,164 @@ def test_existing_create_once_retry_reproves_every_directory_link(
     monkeypatch.setattr(pit, "_directory_fsync", track)
     assert not pit._write_create_once(root, path, body, label="chain artifact")
     assert {root.parent, root, root / "objects", path.parent}.issubset(synced)
+
+
+def _deny_root_parent(monkeypatch, root, *, err):
+    real_sync = pit._directory_fsync
+
+    def deny(directory):
+        if directory == root.parent:
+            raise OSError(err, os.strerror(err), str(directory))
+        real_sync(directory)
+
+    monkeypatch.setattr(pit, "_directory_fsync", deny)
+
+
+def test_foreign_owned_root_parent_denial_is_tolerated_for_an_existing_root(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    root = tmp_path / "store"
+    assert pit._write_create_once(
+        root,
+        root / "objects" / "aa" / "first.json",
+        b'{"value":1}',
+        label="chain artifact",
+    )
+    _deny_root_parent(monkeypatch, root, err=errno.EACCES)
+    monkeypatch.setattr(
+        pit, "_is_foreign_owned_directory", lambda path: path == root.parent
+    )
+    second = root / "objects" / "bb" / "second.json"
+    wrote = pit._write_create_once(root, second, b'{"value":2}', label="chain artifact")
+    assert wrote is True
+    assert second.read_bytes() == b'{"value":2}'
+    retried = pit._write_create_once(root, second, b'{"value":2}', label="chain artifact")
+    assert retried is False
+
+
+def test_owned_root_parent_denial_still_fails_closed(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    root = tmp_path / "store"
+    assert pit._write_create_once(
+        root,
+        root / "objects" / "aa" / "first.json",
+        b'{"value":1}',
+        label="chain artifact",
+    )
+    _deny_root_parent(monkeypatch, root, err=errno.EACCES)
+    second = root / "objects" / "bb" / "second.json"
+    with pytest.raises(PermissionError):
+        pit._write_create_once(root, second, b'{"value":2}', label="chain artifact")
+    assert not second.exists()
+
+
+@pytest.mark.parametrize("err", [errno.EPERM, errno.EIO])
+def test_foreign_root_parent_non_eacces_failure_still_fails_closed(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path, err: int
+) -> None:
+    root = tmp_path / "store"
+    assert pit._write_create_once(
+        root,
+        root / "objects" / "aa" / "first.json",
+        b'{"value":1}',
+        label="chain artifact",
+    )
+    _deny_root_parent(monkeypatch, root, err=err)
+    monkeypatch.setattr(
+        pit, "_is_foreign_owned_directory", lambda path: path == root.parent
+    )
+    second = root / "objects" / "bb" / "second.json"
+    with pytest.raises(OSError) as excinfo:
+        pit._write_create_once(root, second, b'{"value":2}', label="chain artifact")
+    assert excinfo.value.errno == err
+    assert not second.exists()
+
+
+def test_new_root_under_a_denied_foreign_parent_fails_closed(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    root = tmp_path / "store"
+    assert not root.exists()
+    _deny_root_parent(monkeypatch, root, err=errno.EACCES)
+    monkeypatch.setattr(
+        pit, "_is_foreign_owned_directory", lambda path: path == root.parent
+    )
+    first = root / "objects" / "aa" / "first.json"
+    with pytest.raises(PermissionError):
+        pit._write_create_once(root, first, b'{"value":1}', label="chain artifact")
+    assert not first.exists()
+
+
+def test_is_foreign_owned_directory_reads_real_ownership(tmp_path: Path) -> None:
+    assert pit._is_foreign_owned_directory(tmp_path) is False
+    regular = tmp_path / "regular.txt"
+    regular.write_text("marker")
+    assert pit._is_foreign_owned_directory(regular) is False
+    assert pit._is_foreign_owned_directory(Path("/")) is (os.geteuid() != 0)
+
+
+def test_owned_root_parent_is_still_fsynced(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    root = tmp_path / "store"
+    assert pit._write_create_once(
+        root,
+        root / "objects" / "aa" / "first.json",
+        b'{"value":1}',
+        label="chain artifact",
+    )
+    real_sync = pit._directory_fsync
+    synced: list[Path] = []
+
+    def record(directory: Path) -> None:
+        real_sync(directory)
+        synced.append(directory)
+
+    monkeypatch.setattr(pit, "_directory_fsync", record)
+    assert pit._write_create_once(
+        root,
+        root / "objects" / "bb" / "second.json",
+        b'{"value":2}',
+        label="chain artifact",
+    )
+    assert root.parent in synced
+
+
+def test_new_root_whose_post_creation_parent_fsync_is_denied_fails_closed(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    root = tmp_path / "store"
+    assert not root.exists()
+    real_sync = pit._directory_fsync
+    parent_syncs = 0
+
+    def deny_parent_after_first_sync(directory: Path) -> None:
+        nonlocal parent_syncs
+        if directory == root.parent:
+            parent_syncs += 1
+            if parent_syncs > 1:
+                raise OSError(
+                    errno.EACCES, os.strerror(errno.EACCES), str(root.parent)
+                )
+        real_sync(directory)
+
+    monkeypatch.setattr(pit, "_directory_fsync", deny_parent_after_first_sync)
+    monkeypatch.setattr(
+        pit, "_is_foreign_owned_directory", lambda path: path == root.parent
+    )
+    first = root / "objects" / "aa" / "first.json"
+    with pytest.raises(PermissionError):
+        pit._write_create_once(root, first, b'{"value":1}', label="chain artifact")
+    assert not first.exists()
+
+
+def test_is_foreign_owned_directory_uses_the_effective_uid(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    real = os.geteuid()
+    monkeypatch.setattr(pit.os, "geteuid", lambda: real + 1)
+    assert pit._is_foreign_owned_directory(tmp_path) is True
 
 
 def test_pinned_generation_rejects_rewritten_append_history(

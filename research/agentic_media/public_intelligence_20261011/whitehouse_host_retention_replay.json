@@ -1,0 +1,22 @@
+{
+  "kind": "retained_official_feed_replay",
+  "observed_at": "2026-10-11T20:47:31.949858+00:00",
+  "input_feed_sha256": "7062a8e0914fe8fbbd435885b6a55be9e07feac858b4e2accbb337a39009aae4",
+  "parsed_count": 30,
+  "url_matches": 1,
+  "source_url": "https://www.whitehouse.gov/fact-sheets/2026/10/fact-sheet-trump-administration-announces-the-most-ambitious-set-of-science-initiatives-this-century/",
+  "retained_source": {
+    "path": "~/.local/share/mastermind/whitehouse/source_documents/b8b7f02bbbbfd153c9c9f9a2de53de38cd76a39d6d3ff728513e72faf868c6cd.json",
+    "sha256": "b8b7f02bbbbfd153c9c9f9a2de53de38cd76a39d6d3ff728513e72faf868c6cd",
+    "body_sha256": "dbd78e4a97171a4bf6ffb9334f430deefca04d19d68b6abc64835daaea634bf9"
+  },
+  "capture_directory_mode": "0700",
+  "capture_file_mode": "0600",
+  "parser_sha256": "1be31eb229a828aa11554fed50c29c51cdd572e5122469673fb866d9b7fd0c7e",
+  "network_calls": 0,
+  "provider_calls": 0,
+  "staging_writes": 0,
+  "publication_writes": 0,
+  "installed_sentinel_verified": false,
+  "cloud_backup_verified": false
+}

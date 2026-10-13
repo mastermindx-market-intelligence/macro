@@ -1,14 +1,14 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "CASY-BULL-20260727",
-  "asof": "2026-10-07",
-  "phase": "invalidated",
-  "detection_phase": "invalidated",
-  "management_confidence": 12.5,
-  "raw_confidence": 8.0,
-  "delta_vs_base": -47.5,
-  "recommended_action": "invalidated",
-  "human_state": "Invalidated",
+  "asof": "2026-10-09",
+  "phase": "overtime",
+  "detection_phase": "overtime",
+  "management_confidence": 18.9,
+  "raw_confidence": 20.0,
+  "delta_vs_base": -41.1,
+  "recommended_action": "trim",
+  "human_state": "Window Elapsed \u2014 Awaiting Close",
   "components": {
     "validity": 0.0,
     "progress": 0.0,
@@ -17,14 +17,14 @@
     "overlay": 53.0
   },
   "geometry": {
-    "dist_to_stop_r": -0.08,
+    "dist_to_stop_r": 0.012,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 151.1,
-    "p1": -0.7202,
-    "p2": -0.3601,
+    "horizon_pct_used": 155.6,
+    "p1": -0.6584,
+    "p2": -0.3292,
     "p3": null,
-    "move_r": -1.08,
+    "move_r": -0.988,
     "mfe_r": 0.0,
     "mae_r": -1.255
   },
@@ -45,6 +45,6 @@
   "_first_trigger_ts": null,
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 68,
-  "tau": 1.5111
+  "days_elapsed": 70,
+  "tau": 1.5556
 }

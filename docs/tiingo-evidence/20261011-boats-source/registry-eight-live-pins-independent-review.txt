@@ -1,0 +1,108 @@
+Independent qualification of eight inherited LIVE source pins — 2026-10-11
+
+Verdict: PASS for updating these eight source/control receipts and relocating the ten anchors specified below under the existing fixture procedure. No examined pin would misrepresent a changed public/private delivery boundary for its existing referenced family. This is not approval of the unrelated families' publication, data rights, model results or runtime state.
+
+Source and evidence
+
+Carrier: /Volumes/Mastermind/agent-workspaces/sol/tiingo-ingestion-20261009
+Committed source: 6eccb5aa3d3f640b8aea8dc61653bc0b4b5e9bde
+Input: registry-remaining-inherited-drifts.json in the existing tiingo-phase1 artifact directory.
+
+I verified that every current working file below exactly equals its blob at that committed source. I found a locally available historical blob reproducing each old receipted SHA-256, so none of these qualifications depends solely on current HEAD equality or an unchanged anchor string. Git history reads used GIT_NO_LAZY_FETCH=1; no missing old blob or lazy fetch was needed. I inspected the relevant old-to-current diffs and current publishing/privacy boundaries. The review deliberately does not re-adjudicate unrelated statistical or model methodology.
+
+Current receipt values and exact historical matches
+
+engine/fundamental_forensics/attested_history_store.py
+  current lines: 446
+  current SHA-256: 7a28128493357f16187bfd3748d34ce783fdbb9b5f28f96c48a37c37e738a6ec
+  old lines: 444
+  old SHA-256: 42e00f067801fbb329a1a3a5a331289bcbd3a0d3dd4f8b83af296ae28355b969
+  exact old blob found at: 69268b06502cdbfb9cdf9ae24e6e64663b17c8ed
+
+engine/research_vault/ingest.py
+  current lines: 1461
+  current SHA-256: ae2ee2aad7da7f360bac05c05b6484356b6f98ded49d417f61e70e5f2b414491
+  old lines: 1231
+  old SHA-256: 181dd5516aaf4d09e59b0ef68e6bfd47af3cf99a0c764d2034e92b644e59627e
+  exact old blob found at: c37c4e37b20ada935f32516a2a31428d558430c3
+
+engine/research_vault/r2_store.py
+  current lines: 1119
+  current SHA-256: 7ba42eb8f74c034413997707a35156e67342fb9a30ca2b80dde0f11d1dc7e2bd
+  old lines: 1081
+  old SHA-256: fcb6a840e0c399632b53027925a39c4a36ce37265757689f8a4b893ed23aee6c
+  exact old blob found at: 69268b06502cdbfb9cdf9ae24e6e64663b17c8ed
+
+scripts/build_options_hub_nightly.py
+  current lines: 1574
+  current SHA-256: 985ed03ddcac793b020a7af67350c0a5044ab496dd93dd3ce65fc6a304b740c5
+  old lines: 1519
+  old SHA-256: cf32c3e6a83ef0a3a1b2894eb7a5f7d337f67da50a65f24822fd12d17e5feafb
+  exact old blob found at: 69268b06502cdbfb9cdf9ae24e6e64663b17c8ed
+
+scripts/build_stock_library.py
+  current lines: 7127
+  current SHA-256: 483fb7a29c8b68aff292b72ea3860fc87f9966bd6f0e3ea0c29c78fcb6bea2fd
+  old lines: 7103
+  old SHA-256: a68bef17bfa93a953b6b6d95d30e22c5e636dc7d9832a2ffa2495929fd43d870
+  exact old blob found at: 312d3b450da2b1017c9f8497c99d15d2e79df779
+
+scripts/live_flow_poller.py
+  current lines: 4223
+  current SHA-256: 074699c4cd2bf9c3793758a30a514d871f1626b7463ae88666f6fa5b5ad2b45a
+  old lines: 3652
+  old SHA-256: 5e1cb8498805c415e1149c24083771ded1acf83a8671baafbed9dd619ff956a1
+  exact old blob found at: 6a74be0a20eea6ffebc6b4f61ac48faa22992a7c
+
+scripts/ops_train_flow_score.py
+  current lines: 1498
+  current SHA-256: a174315ab9917f9733a995843452c5cd7590f3b3a9c74e5c8b40f794e9e3469e
+  old lines: 1332
+  old SHA-256: c53a4b6239836899c81461e7c76c6abe2e418a000e5fbddb863b998873814ab4
+  exact old blob found at: dbd654edb0fb47449b969b7dcb4fbafc2e0fe3ef
+
+templates/theme.js
+  current lines: 6103
+  current SHA-256: df579ac567bba69f57b77db61b321999a6e1fbe07e9843631f199bb581cb9daf
+  old lines: 6101
+  old SHA-256: d08efe725ef9050bcecf3c55621238efd6a93441b059392572a822d443e7d504
+  exact old blob found at: 10fc49afe17f1d825984ead6e68315d5c29b6ad3
+
+Semantic qualification by referenced family
+
+1. attested_history_store.py: The complete diff changes only commentary describing the now-removed generic credential fallback in the Research Vault client. The dedicated attested-history reader still uses its own scoped credential family and refuses a missing client rather than borrowing Research Vault authority. The fundamental_forensics_product_bundles PREMIUM_PRODUCT/PRO private-store disposition remains supported. This does not prove the live bucket configuration or entitlement middleware.
+
+2. research_vault/ingest.py: The substantive changes strengthen strict corpus restore and SQLite validation, refuse empty-corpus bootstrap over a nonempty published catalog, repair blank/thin text classification, and add bounded backfill of missing corpus rows from canonical vault PDFs. They retain the same inbox, processed-receipt, canonical vault and corpus key families and existing store object. The new backfill writes corpus rows; it does not add a public publication destination. research_inbox_sources remains VENDOR_RAW/OPERATOR_ONLY; research_inbox_receipts remains PRIVATE_OPERATIONAL/OPERATOR_ONLY; research_vault remains PREMIUM_PRODUCT/PRO; research_vault_corpus remains PRIVATE_OPERATIONAL/PRIVATE_SERVICE.
+
+3. research_vault/r2_store.py: This is a real strengthening of the private-store boundary, not a mechanical movement. The client now requires the dedicated R2_RESEARCH endpoint/access-key/secret namespace and no longer inherits generic R2 credentials. build_store refuses a research bucket equal to the configured shared delivery bucket and refuses partial dedicated configuration. Explicit local-store behavior remains. The private research-family claim is preserved and strengthened. This qualification does not establish actual cloud bucket ACLs, does not remove the registry's conservative migration/verification obligation, and does not change any family disposition.
+
+4. build_options_hub_nightly.py: The complete diff introduces an explicit OPTIONS_HUB_INPUT_ROOT for five named local input reads and validates it before effects. It does not move the output directory or change the options_hub R2 namespace. The _upload_r2 function is structurally identical to the old receipted version. options_hub_current remains PREMIUM_PRODUCT/ESSENTIAL and options_hub_deep_history remains PREMIUM_PRODUCT/PRO, with their existing private-plane migration requirements. This is not approval of current input completeness or market quality.
+
+5. build_stock_library.py: The complete diff adds source-availability provenance and a capability-gated W3C source-capture call around the separately generated factordata/us_standouts.json board. It does not alter the three anchored per-ticker intelligence, search-index or calibration blocks. Those existing dispositions remain PREMIUM_PRODUCT/ESSENTIAL for per_ticker_stock_intelligence and stock_search_indices, and PRIVATE_OPERATIONAL/PRIVATE_SERVICE for stockdata_calibration_state. The new board/capture mechanism elsewhere in the file is not qualified for publication by this pin repair; it is outside the existing anchors' claim.
+
+6. live_flow_poller.py: The relevant diff strengthens causal-clock validation, local pending-learning/day-state handling and a bounded incident quarantine/recovery path. The existing R2 client, upload helper and event-stage publisher are structurally identical to the old receipted versions. The current feed/meta upload calls and event/archive key expressions remain exact original fingerprints. The same current-feed and history boundaries remain represented: live_flow_current PREMIUM_PRODUCT/ESSENTIAL, live_flow_history PREMIUM_PRODUCT/PRO, and live_flow_meta_and_manifest UNRESOLVED/HOLD_PRIVATE_PENDING_REVIEW. Current object availability, data completeness and the incident recovery result are not inferred from this source.
+
+7. ops_train_flow_score.py: The trainer has substantial source-admission, population, geometry and calibration changes. These are not characterized as a simple relocation or independently accepted model methodology. Crucially for this receipt, _try_r2_upload is structurally identical to its old receipted version and still targets the configured prefix, default flow_signals/models, through the existing generic R2 client. The new training path refuses model-artifact publication while calibration is unresolved; the retained legacy artifact writer forces deployable false and rejects an FS5 selection receipt. Retaining flow_signal_models as PRIVATE_OPERATIONAL/PRIVATE_SERVICE is conservative and accurate for the remaining artifact-writer capability and existing family. This pin does not claim a current successful training upload, deployable model or live artifact presence.
+
+8. templates/theme.js: The complete diff adds a hashchange listener to close a transient help popover. The anchored market search index mapping is unchanged at line 667. The stock_search_indices delivery/classification claim is unaffected.
+
+Exact anchor relocation qualification
+
+Every one of the twenty existing fingerprint rows referencing these eight files was re-read. Each fingerprint remains exact and occurs once. Ten remain at the same line; ten require only the following line-number relocations. No fingerprint text change is needed.
+
+engine/research_vault/ingest.py 59 -> 61: INBOX_PREFIX = "research_inbox/" (research_inbox_sources)
+engine/research_vault/ingest.py 61 -> 63: PROCESSED_PREFIX = "research_inbox/_processed/" (research_inbox_receipts)
+engine/research_vault/ingest.py 62 -> 64: VAULT_PREFIX = "research_vault/" (research_vault)
+engine/research_vault/ingest.py 63 -> 65: CORPUS_KEY = "research_vault/corpus.sqlite" (research_vault_corpus)
+engine/research_vault/ingest.py 149 -> 151: def _receipt_key(item_id: str) -> str: (research_inbox_receipts)
+scripts/live_flow_poller.py 2089 -> 2519: R2_PREFIX + f"events/{candidate}.jsonl", (live_flow_history)
+scripts/live_flow_poller.py 2171 -> 2601: kw: dict = {"Bucket": bucket, "Prefix": R2_PREFIX + "archive/"} (live_flow_history)
+scripts/live_flow_poller.py 3490 -> 4061: _upload_r2(s3, bucket, feed_path, R2_PREFIX + "feed_current.json") (live_flow_current)
+scripts/live_flow_poller.py 3492 -> 4063: _upload_r2(s3, bucket, meta_path, R2_PREFIX + "meta.json") (live_flow_meta_and_manifest)
+scripts/ops_train_flow_score.py 1259 -> 1424: enabled_env = r2_cfg.get("enabled_env", "R2_ENDPOINT") (flow_signal_models)
+
+Minimal accepted repair and limits
+
+Retain the old receipt/anchor evidence and this dated qualification. Update only these eight LIVE line-count/hash rows and the ten matching registry/anchor-fixture line numbers together. Preserve exact fingerprint text, August census identity/source_snapshot, historical data/site receipts, family classification/tier/key expressions, schemas and existing strict drift/uniqueness/accounting assertions. No waiver, fixture layer, skip or new registry is justified or needed.
+
+I made no source or registry edits, executed no tests, and performed no network/runtime operation. This PASS qualifies the proposed source-pin repair; it does not claim that the repaired registry tests have run successfully or that all registry drift elsewhere has been resolved. It does not expand the BOATS source-only verdict or override the unchanged runtime/scheduling refusal.

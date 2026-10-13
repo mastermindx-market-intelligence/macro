@@ -862,3 +862,91 @@ def test_controlled_configuration_has_no_live_fallback_or_unchecked_bytes(tmp_pa
     (tmp_path / name).write_bytes(b"unqualified replacement")
     with pytest.raises(AssertionError):
         controlled_config_bytes(name)
+
+
+def _live_capture_clock(monkeypatch, *instants):
+    import types
+    values = [dt.datetime.fromisoformat(x.replace('Z', '+00:00')) for x in instants]
+    count = [0]
+    class CaptureClock(dt.datetime):
+        @classmethod
+        def now(cls, tz=None):
+            value = values[min(count[0], len(values) - 1)]
+            count[0] += 1
+            return value.astimezone(tz) if tz else value.replace(tzinfo=None)
+    namespace = {name: getattr(dt, name) for name in dir(dt) if not name.startswith('__')}
+    namespace['datetime'] = CaptureClock
+    monkeypatch.setattr(adapter, 'dt', types.SimpleNamespace(**namespace))
+
+
+def test_live_query_is_bound_before_qualification_and_receives_only_frozen_reads(world, monkeypatch):
+    _live_capture_clock(monkeypatch, '2026-10-04T12:00:00Z', '2026-10-04T12:00:03Z')
+    seen = []
+    class Reader:
+        def read_state_qualification(self, **kwargs):
+            seen.append(copy.deepcopy(kwargs))
+            kwargs['native_reads'].clear()
+            kwargs['query']['known_at'] = '2099-01-01T00:00:00Z'
+            return None
+    bundle = adapter.capture_owner_bundle(world[0], effective_at=EFFECTIVE,
+                                          known_at=None, owner_readers=Reader())
+    snapshot = bundle.snapshot()
+    assert seen
+    assert snapshot['query']['known_at'] == snapshot['observed_at']
+    assert dt.datetime.fromisoformat(snapshot['observed_at'].replace('Z', '+00:00')).second == 3
+    assert all(item['query'] == snapshot['query'] for item in seen)
+    assert all(item['graph_capture_id'] == snapshot['graph_capture_id'] for item in seen)
+    assert all(subject['native_reads'] for subject in snapshot['subjects'].values())
+
+
+def test_explicit_historical_query_remains_earlier_than_actual_observation(world, monkeypatch):
+    _live_capture_clock(monkeypatch, '2026-10-04T12:00:03Z')
+    bundle = adapter.capture_owner_bundle(world[0], effective_at=EFFECTIVE, known_at=KNOWN)
+    snapshot = bundle.snapshot()
+    assert snapshot['query']['known_at'] == KNOWN
+    state = adapter.compose_from_owner_bundle(bundle, generated_at='2026-10-04T12:00:04Z')['state']
+    observed = theme_state.read_theme_state(state, LOCAL, effective_at=EFFECTIVE,
+                                            known_at='2026-10-04T12:00:05Z')
+    assert 'SOURCE_AFTER_CUTOFF' in observed['reason_codes']
+
+
+def test_live_midnight_capture_does_not_return_mixed_date_bundle(world, monkeypatch):
+    _live_capture_clock(monkeypatch, '2026-10-04T23:59:59Z', '2026-10-05T00:00:01Z')
+    with pytest.raises(ValueError, match='day|midnight|date'):
+        adapter.capture_owner_bundle(world[0], effective_at=EFFECTIVE, known_at=None)
+
+
+def test_qualification_mutation_is_refused_after_native_capture(world, monkeypatch):
+    _live_capture_clock(monkeypatch, '2026-10-04T12:00:00Z', '2026-10-04T12:00:03Z')
+    class MutatingReader:
+        def read_state_qualification(self, **kwargs):
+            (world[0] / legacy._NARRATIVE_PATH).write_text('{"as_of":"2026-10-03","narratives":[]}')
+            return None
+    with pytest.raises(ValueError, match='changed'):
+        adapter.capture_owner_bundle(world[0], effective_at=EFFECTIVE,
+                                     known_at=None, owner_readers=MutatingReader())
+
+
+def test_live_clock_regression_is_refused(world, monkeypatch):
+    _live_capture_clock(monkeypatch, "2026-10-04T12:00:03Z", "2026-10-04T12:00:00Z")
+    with pytest.raises(ValueError, match="backwards"):
+        adapter.capture_owner_bundle(world[0], effective_at=EFFECTIVE, known_at=None)
+
+
+@pytest.mark.parametrize("changed_input", ["rights", "producer"])
+def test_qualification_cannot_change_capture_dependencies(world, monkeypatch, changed_input):
+    _live_capture_clock(monkeypatch, "2026-10-04T12:00:00Z", "2026-10-04T12:00:03Z")
+    original_refs = adapter._production_code_refs()
+
+    class MutatingReader:
+        def read_state_qualification(self, **kwargs):
+            if changed_input == "rights":
+                path = world[0] / "config/theme_sources.yml"
+                path.write_bytes(path.read_bytes() + b"\n# capture race\n")
+            else:
+                monkeypatch.setattr(adapter, "_production_code_refs", lambda: {**original_refs, "changed": {}})
+            return None
+
+    with pytest.raises(ValueError, match="changed"):
+        adapter.capture_owner_bundle(world[0], effective_at=EFFECTIVE,
+                                     known_at=None, owner_readers=MutatingReader())

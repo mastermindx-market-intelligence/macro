@@ -3189,6 +3189,7 @@ jobs:
       - name: timings band — builders-parallel (W2)
         run: python3 scripts/nightly_timings.py mark --band builders-parallel || echo "::warning::timings band mark failed (non-fatal)"
       - name: regional + desk builders (parallelised — independent clusters, barrier before the hub)
+        id: regional_desk_builders
         # The ~22 builders between build_site and the landing hub split into mutually
         # INDEPENDENT clusters (each internally ordered by its own data deps). They used
         # to run strictly serially (~75 min of wall-clock); here each cluster runs in the
@@ -3242,6 +3243,15 @@ jobs:
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
         # Body extracted verbatim to scripts/ci/daily_engine_regional_desk_builders.sh (512KB processing-cap diet 2026-08-12 — tests/test_workflow_file_size.py).
         run: bash scripts/ci/daily_engine_regional_desk_builders.sh
+      - name: retain this run's Theme Graph generation witness (advisory)
+        if: ${{ always() && steps.regional_desk_builders.outputs.theme_graph_witness != '' }}
+        continue-on-error: true
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: theme-graph-witness-${{ github.run_id }}-${{ github.run_attempt }}-engine
+          path: ${{ steps.regional_desk_builders.outputs.theme_graph_witness }}
+          if-no-files-found: warn
+          retention-days: 14
       # Durable core checkpoint (incident run 35547644919): the coherent builder
       # band completed, but a later best-effort tail exhausted the 300-minute job
       # cap before the sole broad publisher. Persist the core public tree here;
@@ -4900,6 +4910,45 @@ jobs:
         # continue-on-error above lets unrelated rendering finish; this terminal gate
         # makes any missing/failed build or exact-path publication fail the engine job.
         run: bash scripts/ci/options_signal_nightly.sh assert-integrity
+      - name: fif saved research notifications (X2-n — enqueues only; never sends)
+        # Reads the designated "Filing Forensics" Supabase watchlist (the
+        # subscription surface, R2) service-side and LOCAL FIF trigger inputs,
+        # then enqueues public.alert_outbox rows for users watching an issuer
+        # that changed. Enqueue-only: delivery is F08's drain, never this step.
+        # The broad-sec receipt and the production generation pointer exist
+        # only in the private R2 research vault today (census C6) — the
+        # producer never reads R2, so both triggers are "no event" (R5) until
+        # a local mirror is wired; only engine priority=high findings (the FIF
+        # private state written earlier in this job) can fire.
+        # Fail-soft: absent creds/tables/inputs -> typed unavailable, 0 rows,
+        # exit 0. Dormant unless BOTH FIF_SAVED_RESEARCH_ENABLE=1 AND
+        # ALERT_DRAIN_ENABLE=1 (checked before the producer is even imported).
+        # Placed after every render/publish step of the engine job (census
+        # C5) and immediately AHEAD of the W2 timings finish step, which
+        # tests/test_nightly_timings.py requires to stay the job's last
+        # step. A wedged step can never land ahead of the render/publish
+        # path. `if: always()` is the engine delivery-tail law
+        # (tests/test_push_retry.py: every step after "commit engine
+        # outputs" runs even when that push is lost). On a timeout-cancel
+        # night it therefore runs inside the runner's ~5-min post-cancel
+        # grace ahead of the finish step: dormant (the default) it exits in
+        # well under a second; enabled, timeout-minutes: 3 caps it so it can
+        # never consume the whole grace, and a kill mid-run is safe because
+        # every enqueue is deduped by its frozen key (re-minted next night).
+        # timeout-minutes + continue-on-error are load-bearing: a timeout
+        # kill is a step FAILURE the `||` shape cannot absorb, so
+        # continue-on-error is what keeps it non-fatal.
+        if: always()
+        timeout-minutes: 3
+        continue-on-error: true
+        env:
+          # Recurring-briefs precedent (daily.yml:4248-4253): reuse the
+          # incumbent repo service-role secret; the producer's SUPABASE_URL
+          # has a reviewed project default, so it is NOT injected here.
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+          FIF_SAVED_RESEARCH_ENABLE: ${{ secrets.FIF_SAVED_RESEARCH_ENABLE }}
+          ALERT_DRAIN_ENABLE: ${{ secrets.ALERT_DRAIN_ENABLE }}
+        run: '[ "${{ job.status }}" = "cancelled" ] && { echo "fif saved research notifications: job cancelled, skipping"; exit 0; }; python -m scripts.run_fif_saved_research_notifications || echo "::warning::fif saved research notifications failed (non-fatal)"'
       - name: timings ledger + 85% budget tripwire (W2)
         if: always()   # DELIBERATELY AHEAD of the two delivery steps below — this is the ONLY job where the finish step is not last, and the exception is load-bearing. `if: always()` steps DO run after a timeout-cancel, but only inside the runner's ~5-minute force-termination grace, and this job's tail is the most expensive always() tail in the workflow. Evidence, run 31067383446 (2026-08-06): engine started 10:05:45Z, completed 13:30:46Z = 205.0m = the 200m cap + exactly 5m of grace; steps 117-121 (commit engine outputs → feeds → R2 publish → verify → strip) all ran post-cancel, step 122 "upload pages artifact" burned what was left and ended `failure`, and step 123 — this one — WAS NEVER SCHEDULED AT ALL (the GH jobs API step list jumps straight from 122 to the Post steps). Result: data/ops/nightly_timings/engine.jsonl carried ONE row, source `backfill-gh-api`, while all 15 sibling jobs had native rows — the 85% tripwire was structurally dark for the ONE job whose creep caused the Jul31-Aug6 outage, and dark on exactly the nights it existed to pre-announce. Ordering it here costs a healthy night nothing (both steps still run to completion) and on a cancel night trades an artifact upload that is already failing for the telemetry that explains WHY the night died. The row + the ::warning land in this step's first second; only its bounded commit/push can be cut short. Pinned by tests/test_nightly_timings.py::test_finish_step_is_not_stranded_behind_the_pages_artifact_upload — do not move it back below the upload.
         run: bash scripts/ci/nightly_timings_finish.sh 300

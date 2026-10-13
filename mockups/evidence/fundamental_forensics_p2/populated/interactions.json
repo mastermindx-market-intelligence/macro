@@ -1,0 +1,298 @@
+[
+  {
+    "capture": "viewport: modal open; Chromium's full-page capture drops or under-paints the fixed modal layer, so this cell is the first viewport only",
+    "cell_id": "fundamental_forensics.html?symbol=AAPL|desktop|en|dark|anonymous|drawer_open",
+    "facts": {
+      "after": {
+        "focus_id": "ff-evidence-close",
+        "focus_index": 0,
+        "focus_inside": true,
+        "focus_tag": "button",
+        "focusable": 8,
+        "modal": true,
+        "open": true,
+        "present": true
+      },
+      "before": {
+        "focus_id": null,
+        "focus_index": -1,
+        "focus_inside": false,
+        "focus_tag": "body",
+        "focusable": 7,
+        "modal": false,
+        "open": false,
+        "present": true
+      },
+      "pointer_parked": [
+        1,
+        1
+      ]
+    },
+    "force_state": "drawer_open",
+    "input": "pointer: real click on [data-open-primary-finding]",
+    "interaction": "drawer_open",
+    "locale": "en",
+    "theme": "dark",
+    "verified": true,
+    "viewport": "desktop"
+  },
+  {
+    "capture": "viewport: modal open; Chromium's full-page capture drops or under-paints the fixed modal layer, so this cell is the first viewport only",
+    "cell_id": "fundamental_forensics.html?symbol=AAPL|desktop|en|light|anonymous|drawer_open",
+    "facts": {
+      "after": {
+        "focus_id": "ff-evidence-close",
+        "focus_index": 0,
+        "focus_inside": true,
+        "focus_tag": "button",
+        "focusable": 8,
+        "modal": true,
+        "open": true,
+        "present": true
+      },
+      "before": {
+        "focus_id": null,
+        "focus_index": -1,
+        "focus_inside": false,
+        "focus_tag": "body",
+        "focusable": 7,
+        "modal": false,
+        "open": false,
+        "present": true
+      },
+      "pointer_parked": [
+        1,
+        1
+      ]
+    },
+    "force_state": "drawer_open",
+    "input": "pointer: real click on [data-open-primary-finding]",
+    "interaction": "drawer_open",
+    "locale": "en",
+    "theme": "light",
+    "verified": true,
+    "viewport": "desktop"
+  },
+  {
+    "capture": "viewport: modal open; Chromium's full-page capture drops or under-paints the fixed modal layer, so this cell is the first viewport only",
+    "cell_id": "fundamental_forensics.html?symbol=AAPL|desktop|zh|dark|anonymous|drawer_open",
+    "facts": {
+      "after": {
+        "focus_id": "ff-evidence-close",
+        "focus_index": 0,
+        "focus_inside": true,
+        "focus_tag": "button",
+        "focusable": 8,
+        "modal": true,
+        "open": true,
+        "present": true
+      },
+      "before": {
+        "focus_id": null,
+        "focus_index": -1,
+        "focus_inside": false,
+        "focus_tag": "body",
+        "focusable": 7,
+        "modal": false,
+        "open": false,
+        "present": true
+      },
+      "pointer_parked": [
+        1,
+        1
+      ]
+    },
+    "force_state": "drawer_open",
+    "input": "pointer: real click on [data-open-primary-finding]",
+    "interaction": "drawer_open",
+    "locale": "zh",
+    "theme": "dark",
+    "verified": true,
+    "viewport": "desktop"
+  },
+  {
+    "capture": "viewport: modal open; Chromium's full-page capture drops or under-paints the fixed modal layer, so this cell is the first viewport only",
+    "cell_id": "fundamental_forensics.html?symbol=AAPL|desktop|zh|light|anonymous|drawer_open",
+    "facts": {
+      "after": {
+        "focus_id": "ff-evidence-close",
+        "focus_index": 0,
+        "focus_inside": true,
+        "focus_tag": "button",
+        "focusable": 8,
+        "modal": true,
+        "open": true,
+        "present": true
+      },
+      "before": {
+        "focus_id": null,
+        "focus_index": -1,
+        "focus_inside": false,
+        "focus_tag": "body",
+        "focusable": 7,
+        "modal": false,
+        "open": false,
+        "present": true
+      },
+      "pointer_parked": [
+        1,
+        1
+      ]
+    },
+    "force_state": "drawer_open",
+    "input": "pointer: real click on [data-open-primary-finding]",
+    "interaction": "drawer_open",
+    "locale": "zh",
+    "theme": "light",
+    "verified": true,
+    "viewport": "desktop"
+  },
+  {
+    "capture": "viewport: modal open; Chromium's full-page capture drops or under-paints the fixed modal layer, so this cell is the first viewport only",
+    "cell_id": "fundamental_forensics.html?symbol=AAPL|mobile|en|dark|anonymous|drawer_open",
+    "facts": {
+      "after": {
+        "focus_id": "ff-evidence-close",
+        "focus_index": 0,
+        "focus_inside": true,
+        "focus_tag": "button",
+        "focusable": 8,
+        "modal": true,
+        "open": true,
+        "present": true
+      },
+      "before": {
+        "focus_id": null,
+        "focus_index": -1,
+        "focus_inside": false,
+        "focus_tag": "body",
+        "focusable": 8,
+        "modal": false,
+        "open": false,
+        "present": true
+      },
+      "pointer_parked": [
+        1,
+        1
+      ]
+    },
+    "force_state": "drawer_open",
+    "input": "pointer: real click on [data-open-primary-finding]",
+    "interaction": "drawer_open",
+    "locale": "en",
+    "theme": "dark",
+    "verified": true,
+    "viewport": "mobile"
+  },
+  {
+    "capture": "viewport: modal open; Chromium's full-page capture drops or under-paints the fixed modal layer, so this cell is the first viewport only",
+    "cell_id": "fundamental_forensics.html?symbol=AAPL|mobile|en|light|anonymous|drawer_open",
+    "facts": {
+      "after": {
+        "focus_id": "ff-evidence-close",
+        "focus_index": 0,
+        "focus_inside": true,
+        "focus_tag": "button",
+        "focusable": 8,
+        "modal": true,
+        "open": true,
+        "present": true
+      },
+      "before": {
+        "focus_id": null,
+        "focus_index": -1,
+        "focus_inside": false,
+        "focus_tag": "body",
+        "focusable": 8,
+        "modal": false,
+        "open": false,
+        "present": true
+      },
+      "pointer_parked": [
+        1,
+        1
+      ]
+    },
+    "force_state": "drawer_open",
+    "input": "pointer: real click on [data-open-primary-finding]",
+    "interaction": "drawer_open",
+    "locale": "en",
+    "theme": "light",
+    "verified": true,
+    "viewport": "mobile"
+  },
+  {
+    "capture": "viewport: modal open; Chromium's full-page capture drops or under-paints the fixed modal layer, so this cell is the first viewport only",
+    "cell_id": "fundamental_forensics.html?symbol=AAPL|mobile|zh|dark|anonymous|drawer_open",
+    "facts": {
+      "after": {
+        "focus_id": "ff-evidence-close",
+        "focus_index": 0,
+        "focus_inside": true,
+        "focus_tag": "button",
+        "focusable": 8,
+        "modal": true,
+        "open": true,
+        "present": true
+      },
+      "before": {
+        "focus_id": null,
+        "focus_index": -1,
+        "focus_inside": false,
+        "focus_tag": "body",
+        "focusable": 8,
+        "modal": false,
+        "open": false,
+        "present": true
+      },
+      "pointer_parked": [
+        1,
+        1
+      ]
+    },
+    "force_state": "drawer_open",
+    "input": "pointer: real click on [data-open-primary-finding]",
+    "interaction": "drawer_open",
+    "locale": "zh",
+    "theme": "dark",
+    "verified": true,
+    "viewport": "mobile"
+  },
+  {
+    "capture": "viewport: modal open; Chromium's full-page capture drops or under-paints the fixed modal layer, so this cell is the first viewport only",
+    "cell_id": "fundamental_forensics.html?symbol=AAPL|mobile|zh|light|anonymous|drawer_open",
+    "facts": {
+      "after": {
+        "focus_id": "ff-evidence-close",
+        "focus_index": 0,
+        "focus_inside": true,
+        "focus_tag": "button",
+        "focusable": 8,
+        "modal": true,
+        "open": true,
+        "present": true
+      },
+      "before": {
+        "focus_id": null,
+        "focus_index": -1,
+        "focus_inside": false,
+        "focus_tag": "body",
+        "focusable": 8,
+        "modal": false,
+        "open": false,
+        "present": true
+      },
+      "pointer_parked": [
+        1,
+        1
+      ]
+    },
+    "force_state": "drawer_open",
+    "input": "pointer: real click on [data-open-primary-finding]",
+    "interaction": "drawer_open",
+    "locale": "zh",
+    "theme": "light",
+    "verified": true,
+    "viewport": "mobile"
+  }
+]

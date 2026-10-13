@@ -1,0 +1,19 @@
+schema: fundamental_forensics.metric_mappings/v1
+mapping_pack_id: fundamental_forensics_qualification_mappings
+mapping_pack_version: 1.0.0
+available_at: "2026-08-02T00:00:00Z"
+default_taxonomy_version_start: 2009
+default_taxonomy_version_end: 2026
+content_sha256: 326517b59e49701895b06b957c762c43e17d223f72144be6dc544ad9dae24678
+
+mappings:
+  - metric_id: revenue
+    rule: {rule_id: mapping.revenue/v1, version: 1.0.0, available_at: "2026-08-02T00:00:00Z", confidence: A}
+    taxonomy_concept_aliases:
+      - {taxonomy: us-gaap, concept: RevenueFromContractWithCustomerExcludingAssessedTax, priority: 10}
+      - {taxonomy: us-gaap, concept: SalesRevenueNet, priority: 20, taxonomy_version_start: 2009, taxonomy_version_end: 2017}
+      - {taxonomy: us-gaap, concept: Revenues, priority: 30}
+  - metric_id: gross_profit
+    rule: {rule_id: mapping.gross_profit/v1, version: 1.0.0, available_at: "2026-08-02T00:00:00Z", confidence: A}
+    taxonomy_concept_aliases:
+      - {taxonomy: us-gaap, concept: GrossProfit, priority: 10}

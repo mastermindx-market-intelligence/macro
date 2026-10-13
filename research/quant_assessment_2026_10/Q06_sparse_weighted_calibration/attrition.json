@@ -1,0 +1,246 @@
+{
+ "amendment": "PREREG_AMENDMENT.md #1",
+ "buckets": {
+  "0_7": {
+   "classes": {
+    "graded_ok_end_missing": {
+     "fill_date": {
+      "max": "2026-09-25",
+      "min": "2026-07-14",
+      "n_non_null": 47910
+     },
+     "rows": 47910,
+     "session_date": {
+      "max": "2026-09-24",
+      "min": "2026-07-13",
+      "n_non_null": 47910
+     },
+     "session_month_counts": {
+      "2026-07": 33134,
+      "2026-08": 5252,
+      "2026-09": 9524
+     }
+    },
+    "graded_ok_end_present": {
+     "fill_date": {
+      "max": "2026-09-28",
+      "min": "2026-09-28",
+      "n_non_null": 1636
+     },
+     "rows": 1636,
+     "session_date": {
+      "max": "2026-09-25",
+      "min": "2026-09-25",
+      "n_non_null": 1636
+     },
+     "session_month_counts": {
+      "2026-09": 1636
+     }
+    },
+    "missing_grade_row": {
+     "fill_date": {
+      "max": null,
+      "min": null,
+      "n_non_null": 0
+     },
+     "rows": 0,
+     "session_date": {
+      "max": null,
+      "min": null,
+      "n_non_null": 0
+     },
+     "session_month_counts": {}
+    },
+    "not_graded_ok:no_price_data": {
+     "fill_date": {
+      "max": null,
+      "min": null,
+      "n_non_null": 0
+     },
+     "rows": 18,
+     "session_date": {
+      "max": "2026-08-20",
+      "min": "2026-07-13",
+      "n_non_null": 18
+     },
+     "session_month_counts": {
+      "2026-07": 15,
+      "2026-08": 3
+     }
+    }
+   },
+   "cohort_rows": 49564,
+   "end_column": "outcome_end_session_5",
+   "horizon": 5
+  },
+  "8_90": {
+   "classes": {
+    "graded_ok_end_missing": {
+     "fill_date": {
+      "max": "2026-09-01",
+      "min": "2026-07-14",
+      "n_non_null": 30633
+     },
+     "rows": 30633,
+     "session_date": {
+      "max": "2026-08-31",
+      "min": "2026-07-13",
+      "n_non_null": 30633
+     },
+     "session_month_counts": {
+      "2026-07": 25336,
+      "2026-08": 5297
+     }
+    },
+    "graded_ok_end_present": {
+     "fill_date": {
+      "max": "2026-09-04",
+      "min": "2026-09-03",
+      "n_non_null": 719
+     },
+     "rows": 719,
+     "session_date": {
+      "max": "2026-09-03",
+      "min": "2026-09-02",
+      "n_non_null": 719
+     },
+     "session_month_counts": {
+      "2026-09": 719
+     }
+    },
+    "missing_grade_row": {
+     "fill_date": {
+      "max": null,
+      "min": null,
+      "n_non_null": 0
+     },
+     "rows": 0,
+     "session_date": {
+      "max": null,
+      "min": null,
+      "n_non_null": 0
+     },
+     "session_month_counts": {}
+    },
+    "not_graded_ok:no_price_data": {
+     "fill_date": {
+      "max": null,
+      "min": null,
+      "n_non_null": 0
+     },
+     "rows": 40,
+     "session_date": {
+      "max": "2026-09-24",
+      "min": "2026-07-13",
+      "n_non_null": 40
+     },
+     "session_month_counts": {
+      "2026-07": 18,
+      "2026-08": 18,
+      "2026-09": 4
+     }
+    },
+    "not_graded_ok:not_yet_matured": {
+     "fill_date": {
+      "max": null,
+      "min": null,
+      "n_non_null": 0
+     },
+     "rows": 8700,
+     "session_date": {
+      "max": "2026-09-25",
+      "min": "2026-09-04",
+      "n_non_null": 8700
+     },
+     "session_month_counts": {
+      "2026-09": 8700
+     }
+    }
+   },
+   "cohort_rows": 40092,
+   "end_column": "outcome_end_session_21",
+   "horizon": 21
+  },
+  "90p": {
+   "classes": {
+    "graded_ok_end_missing": {
+     "fill_date": {
+      "max": null,
+      "min": null,
+      "n_non_null": 0
+     },
+     "rows": 0,
+     "session_date": {
+      "max": null,
+      "min": null,
+      "n_non_null": 0
+     },
+     "session_month_counts": {}
+    },
+    "graded_ok_end_present": {
+     "fill_date": {
+      "max": null,
+      "min": null,
+      "n_non_null": 0
+     },
+     "rows": 0,
+     "session_date": {
+      "max": null,
+      "min": null,
+      "n_non_null": 0
+     },
+     "session_month_counts": {}
+    },
+    "missing_grade_row": {
+     "fill_date": {
+      "max": null,
+      "min": null,
+      "n_non_null": 0
+     },
+     "rows": 0,
+     "session_date": {
+      "max": null,
+      "min": null,
+      "n_non_null": 0
+     },
+     "session_month_counts": {}
+    }
+   },
+   "cohort_rows": 0,
+   "end_column": "outcome_end_session_63",
+   "horizon": 63
+  }
+ },
+ "funnel": {
+  "excluded_bucket_unmapped": 0,
+  "excluded_detector_not_live_feed_v1": 0,
+  "excluded_root_missing": 0,
+  "excluded_root_spy": 2918,
+  "excluded_source_not_live_feed": 0,
+  "grade_rows": 92574,
+  "grades_duplicate_event_id": 0,
+  "ledger_duplicate_event_id": 0,
+  "ledger_rows": 92574
+ },
+ "grades_columns_read": [
+  "event_id",
+  "graded_ok",
+  "reason_code",
+  "fill_date",
+  "outcome_end_session_5",
+  "outcome_end_session_21",
+  "outcome_end_session_63",
+  "outcome_end_session_126"
+ ],
+ "ledger_columns_read": [
+  "event_id",
+  "session_date",
+  "root",
+  "source",
+  "detector_version",
+  "dte_bucket"
+ ],
+ "outcome_columns_read": false,
+ "stage": "attrition",
+ "verdict_effect": "none"
+}

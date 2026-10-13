@@ -1,0 +1,29 @@
+{
+  "candidate_head": "ff37582d18cb6b4ac27ae760da76963f1962e287",
+  "installation_executed": false,
+  "source_bindings": 21,
+  "acceptance_pages": 3,
+  "page_rebind_basis": "Verified git show at controller-admitted ff37582: all 21 source and 3 page hashes are identical to reviewed ba599; no hash value changed.",
+  "script_syntax_validated": true,
+  "temporary_file_dependencies": false,
+  "run_requirement": "Supply actual verified protected merge SHA, never this unmerged candidate SHA",
+  "files": {
+    "mmx-8786-runtime-inspect.py": "ca72f5bfead0815f568d0741ad0318f6f5c153ed3c89662155cff468668ca3c7",
+    "mmx-8786-install-check.py": "81a0722c3111a2682fd5a45d2b956ce98f7e855491a652ad0d1cb837438a211c",
+    "mmx-8786-expected-hashes.json": "58de14632f61e98f592fb515671697c623f0620e173c32ca9eb02d927cff609c",
+    "mmx-8786-http-check.py": "3f1b3e558d28235342b7ef3344b207d40c1440d0f1b4c93763f965d1ed94a83d",
+    "mmx-8786-expected-pages.json": "aacb655752064620112cd0db5a66973d88bc3dac3ea33b445ae9b611bf820448",
+    "mmx-8786-installed-ancestry.json": "2b72be372a401a5c8d126972b2389a712c2f31ebbee83379fa15f62c1cb07a31",
+    "mmx_ancestry.py": "7cb386420e9472f38181edf4f3653ff110e69337ace1917133546006b53895d9"
+  },
+  "reviewed_prior_head": "ba599a70fb747290f54abdbd4f1e6acaed9b9d2e",
+  "controller_run": 38313651542,
+  "verified_final_candidate": "eafd88c788adb69052017352f478b8f8841cdfbd",
+  "protected_merge": "4aabf95fd05079bd14b07bbbe554186531d65ddf",
+  "ancestry_method": "Direct merge-base or complete hash-verified canonical commit-object chain bound to stable exact installed HEAD; no production Git mutation",
+  "ancestry_proof_tests": {
+    "valid": 1,
+    "invalid_rejected": 5
+  },
+  "verified_commit_objects": 9
+}

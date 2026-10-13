@@ -1,0 +1,1106 @@
+[
+  {
+    "capture": "full_page",
+    "cell_id": "fundamental_forensics.html?symbol=AAPL|desktop|en|dark|anonymous|tab_keys",
+    "facts": {
+      "after": {
+        "focus_is_tab": true,
+        "focus_tab": "statements",
+        "selected": [
+          "statements"
+        ]
+      },
+      "before": {
+        "focus_is_tab": true,
+        "focus_tab": "radar",
+        "selected": [
+          "radar"
+        ]
+      },
+      "key": "ArrowRight",
+      "walk": {
+        "focus": {
+          "id": "ff-tab-radar",
+          "matches": true,
+          "tab": "radar",
+          "tag": "button"
+        },
+        "reached": true,
+        "tab_presses": 131
+      }
+    },
+    "force_state": "tab_keys",
+    "input": "keyboard: real Tab presses to the selected tab, then ArrowRight",
+    "interaction": "tab_keys",
+    "locale": "en",
+    "theme": "dark",
+    "verified": true,
+    "viewport": "desktop"
+  },
+  {
+    "capture": "viewport: modal open; Chromium's full-page capture drops or under-paints the fixed modal layer, so this cell is the first viewport only",
+    "cell_id": "fundamental_forensics.html?symbol=AAPL|desktop|en|dark|anonymous|drawer_trap",
+    "facts": {
+      "escaped": 0,
+      "focusable": 8,
+      "opened": {
+        "focus_id": "ff-evidence-close",
+        "focus_index": 0,
+        "focus_inside": true,
+        "focus_tag": "button",
+        "focusable": 8,
+        "modal": true,
+        "open": true,
+        "present": true
+      },
+      "tab_presses_inside": 10,
+      "trail": [
+        {
+          "focus_id": null,
+          "focus_index": 1,
+          "focus_tag": "button",
+          "inside": true
+        },
+        {
+          "focus_id": null,
+          "focus_index": 2,
+          "focus_tag": "button",
+          "inside": true
+        },
+        {
+          "focus_id": null,
+          "focus_index": 3,
+          "focus_tag": "button",
+          "inside": true
+        },
+        {
+          "focus_id": null,
+          "focus_index": 4,
+          "focus_tag": "a",
+          "inside": true
+        },
+        {
+          "focus_id": null,
+          "focus_index": 5,
+          "focus_tag": "a",
+          "inside": true
+        },
+        {
+          "focus_id": null,
+          "focus_index": 6,
+          "focus_tag": "summary",
+          "inside": true
+        },
+        {
+          "focus_id": null,
+          "focus_index": 7,
+          "focus_tag": "summary",
+          "inside": true
+        },
+        {
+          "focus_id": "ff-evidence-close",
+          "focus_index": 0,
+          "focus_tag": "button",
+          "inside": true
+        },
+        {
+          "focus_id": null,
+          "focus_index": 1,
+          "focus_tag": "button",
+          "inside": true
+        },
+        {
+          "focus_id": null,
+          "focus_index": 2,
+          "focus_tag": "button",
+          "inside": true
+        }
+      ],
+      "visited": 8,
+      "walk": {
+        "focus": {
+          "id": null,
+          "matches": true,
+          "tab": null,
+          "tag": "button"
+        },
+        "reached": true,
+        "tab_presses": 127
+      },
+      "wrapped": true
+    },
+    "force_state": "drawer_trap",
+    "input": "keyboard: real Tab presses to [data-open-primary-finding], Enter, then Tab through the open drawer",
+    "interaction": "drawer_trap",
+    "locale": "en",
+    "theme": "dark",
+    "verified": true,
+    "viewport": "desktop"
+  },
+  {
+    "capture": "full_page",
+    "cell_id": "fundamental_forensics.html?symbol=AAPL|desktop|en|light|anonymous|tab_keys",
+    "facts": {
+      "after": {
+        "focus_is_tab": true,
+        "focus_tab": "statements",
+        "selected": [
+          "statements"
+        ]
+      },
+      "before": {
+        "focus_is_tab": true,
+        "focus_tab": "radar",
+        "selected": [
+          "radar"
+        ]
+      },
+      "key": "ArrowRight",
+      "walk": {
+        "focus": {
+          "id": "ff-tab-radar",
+          "matches": true,
+          "tab": "radar",
+          "tag": "button"
+        },
+        "reached": true,
+        "tab_presses": 131
+      }
+    },
+    "force_state": "tab_keys",
+    "input": "keyboard: real Tab presses to the selected tab, then ArrowRight",
+    "interaction": "tab_keys",
+    "locale": "en",
+    "theme": "light",
+    "verified": true,
+    "viewport": "desktop"
+  },
+  {
+    "capture": "viewport: modal open; Chromium's full-page capture drops or under-paints the fixed modal layer, so this cell is the first viewport only",
+    "cell_id": "fundamental_forensics.html?symbol=AAPL|desktop|en|light|anonymous|drawer_trap",
+    "facts": {
+      "escaped": 0,
+      "focusable": 8,
+      "opened": {
+        "focus_id": "ff-evidence-close",
+        "focus_index": 0,
+        "focus_inside": true,
+        "focus_tag": "button",
+        "focusable": 8,
+        "modal": true,
+        "open": true,
+        "present": true
+      },
+      "tab_presses_inside": 10,
+      "trail": [
+        {
+          "focus_id": null,
+          "focus_index": 1,
+          "focus_tag": "button",
+          "inside": true
+        },
+        {
+          "focus_id": null,
+          "focus_index": 2,
+          "focus_tag": "button",
+          "inside": true
+        },
+        {
+          "focus_id": null,
+          "focus_index": 3,
+          "focus_tag": "button",
+          "inside": true
+        },
+        {
+          "focus_id": null,
+          "focus_index": 4,
+          "focus_tag": "a",
+          "inside": true
+        },
+        {
+          "focus_id": null,
+          "focus_index": 5,
+          "focus_tag": "a",
+          "inside": true
+        },
+        {
+          "focus_id": null,
+          "focus_index": 6,
+          "focus_tag": "summary",
+          "inside": true
+        },
+        {
+          "focus_id": null,
+          "focus_index": 7,
+          "focus_tag": "summary",
+          "inside": true
+        },
+        {
+          "focus_id": "ff-evidence-close",
+          "focus_index": 0,
+          "focus_tag": "button",
+          "inside": true
+        },
+        {
+          "focus_id": null,
+          "focus_index": 1,
+          "focus_tag": "button",
+          "inside": true
+        },
+        {
+          "focus_id": null,
+          "focus_index": 2,
+          "focus_tag": "button",
+          "inside": true
+        }
+      ],
+      "visited": 8,
+      "walk": {
+        "focus": {
+          "id": null,
+          "matches": true,
+          "tab": null,
+          "tag": "button"
+        },
+        "reached": true,
+        "tab_presses": 127
+      },
+      "wrapped": true
+    },
+    "force_state": "drawer_trap",
+    "input": "keyboard: real Tab presses to [data-open-primary-finding], Enter, then Tab through the open drawer",
+    "interaction": "drawer_trap",
+    "locale": "en",
+    "theme": "light",
+    "verified": true,
+    "viewport": "desktop"
+  },
+  {
+    "capture": "full_page",
+    "cell_id": "fundamental_forensics.html?symbol=AAPL|desktop|zh|dark|anonymous|tab_keys",
+    "facts": {
+      "after": {
+        "focus_is_tab": true,
+        "focus_tab": "statements",
+        "selected": [
+          "statements"
+        ]
+      },
+      "before": {
+        "focus_is_tab": true,
+        "focus_tab": "radar",
+        "selected": [
+          "radar"
+        ]
+      },
+      "key": "ArrowRight",
+      "walk": {
+        "focus": {
+          "id": "ff-tab-radar",
+          "matches": true,
+          "tab": "radar",
+          "tag": "button"
+        },
+        "reached": true,
+        "tab_presses": 131
+      }
+    },
+    "force_state": "tab_keys",
+    "input": "keyboard: real Tab presses to the selected tab, then ArrowRight",
+    "interaction": "tab_keys",
+    "locale": "zh",
+    "theme": "dark",
+    "verified": true,
+    "viewport": "desktop"
+  },
+  {
+    "capture": "viewport: modal open; Chromium's full-page capture drops or under-paints the fixed modal layer, so this cell is the first viewport only",
+    "cell_id": "fundamental_forensics.html?symbol=AAPL|desktop|zh|dark|anonymous|drawer_trap",
+    "facts": {
+      "escaped": 0,
+      "focusable": 8,
+      "opened": {
+        "focus_id": "ff-evidence-close",
+        "focus_index": 0,
+        "focus_inside": true,
+        "focus_tag": "button",
+        "focusable": 8,
+        "modal": true,
+        "open": true,
+        "present": true
+      },
+      "tab_presses_inside": 10,
+      "trail": [
+        {
+          "focus_id": null,
+          "focus_index": 1,
+          "focus_tag": "button",
+          "inside": true
+        },
+        {
+          "focus_id": null,
+          "focus_index": 2,
+          "focus_tag": "button",
+          "inside": true
+        },
+        {
+          "focus_id": null,
+          "focus_index": 3,
+          "focus_tag": "button",
+          "inside": true
+        },
+        {
+          "focus_id": null,
+          "focus_index": 4,
+          "focus_tag": "a",
+          "inside": true
+        },
+        {
+          "focus_id": null,
+          "focus_index": 5,
+          "focus_tag": "a",
+          "inside": true
+        },
+        {
+          "focus_id": null,
+          "focus_index": 6,
+          "focus_tag": "summary",
+          "inside": true
+        },
+        {
+          "focus_id": null,
+          "focus_index": 7,
+          "focus_tag": "summary",
+          "inside": true
+        },
+        {
+          "focus_id": "ff-evidence-close",
+          "focus_index": 0,
+          "focus_tag": "button",
+          "inside": true
+        },
+        {
+          "focus_id": null,
+          "focus_index": 1,
+          "focus_tag": "button",
+          "inside": true
+        },
+        {
+          "focus_id": null,
+          "focus_index": 2,
+          "focus_tag": "button",
+          "inside": true
+        }
+      ],
+      "visited": 8,
+      "walk": {
+        "focus": {
+          "id": null,
+          "matches": true,
+          "tab": null,
+          "tag": "button"
+        },
+        "reached": true,
+        "tab_presses": 127
+      },
+      "wrapped": true
+    },
+    "force_state": "drawer_trap",
+    "input": "keyboard: real Tab presses to [data-open-primary-finding], Enter, then Tab through the open drawer",
+    "interaction": "drawer_trap",
+    "locale": "zh",
+    "theme": "dark",
+    "verified": true,
+    "viewport": "desktop"
+  },
+  {
+    "capture": "full_page",
+    "cell_id": "fundamental_forensics.html?symbol=AAPL|desktop|zh|light|anonymous|tab_keys",
+    "facts": {
+      "after": {
+        "focus_is_tab": true,
+        "focus_tab": "statements",
+        "selected": [
+          "statements"
+        ]
+      },
+      "before": {
+        "focus_is_tab": true,
+        "focus_tab": "radar",
+        "selected": [
+          "radar"
+        ]
+      },
+      "key": "ArrowRight",
+      "walk": {
+        "focus": {
+          "id": "ff-tab-radar",
+          "matches": true,
+          "tab": "radar",
+          "tag": "button"
+        },
+        "reached": true,
+        "tab_presses": 131
+      }
+    },
+    "force_state": "tab_keys",
+    "input": "keyboard: real Tab presses to the selected tab, then ArrowRight",
+    "interaction": "tab_keys",
+    "locale": "zh",
+    "theme": "light",
+    "verified": true,
+    "viewport": "desktop"
+  },
+  {
+    "capture": "viewport: modal open; Chromium's full-page capture drops or under-paints the fixed modal layer, so this cell is the first viewport only",
+    "cell_id": "fundamental_forensics.html?symbol=AAPL|desktop|zh|light|anonymous|drawer_trap",
+    "facts": {
+      "escaped": 0,
+      "focusable": 8,
+      "opened": {
+        "focus_id": "ff-evidence-close",
+        "focus_index": 0,
+        "focus_inside": true,
+        "focus_tag": "button",
+        "focusable": 8,
+        "modal": true,
+        "open": true,
+        "present": true
+      },
+      "tab_presses_inside": 10,
+      "trail": [
+        {
+          "focus_id": null,
+          "focus_index": 1,
+          "focus_tag": "button",
+          "inside": true
+        },
+        {
+          "focus_id": null,
+          "focus_index": 2,
+          "focus_tag": "button",
+          "inside": true
+        },
+        {
+          "focus_id": null,
+          "focus_index": 3,
+          "focus_tag": "button",
+          "inside": true
+        },
+        {
+          "focus_id": null,
+          "focus_index": 4,
+          "focus_tag": "a",
+          "inside": true
+        },
+        {
+          "focus_id": null,
+          "focus_index": 5,
+          "focus_tag": "a",
+          "inside": true
+        },
+        {
+          "focus_id": null,
+          "focus_index": 6,
+          "focus_tag": "summary",
+          "inside": true
+        },
+        {
+          "focus_id": null,
+          "focus_index": 7,
+          "focus_tag": "summary",
+          "inside": true
+        },
+        {
+          "focus_id": "ff-evidence-close",
+          "focus_index": 0,
+          "focus_tag": "button",
+          "inside": true
+        },
+        {
+          "focus_id": null,
+          "focus_index": 1,
+          "focus_tag": "button",
+          "inside": true
+        },
+        {
+          "focus_id": null,
+          "focus_index": 2,
+          "focus_tag": "button",
+          "inside": true
+        }
+      ],
+      "visited": 8,
+      "walk": {
+        "focus": {
+          "id": null,
+          "matches": true,
+          "tab": null,
+          "tag": "button"
+        },
+        "reached": true,
+        "tab_presses": 127
+      },
+      "wrapped": true
+    },
+    "force_state": "drawer_trap",
+    "input": "keyboard: real Tab presses to [data-open-primary-finding], Enter, then Tab through the open drawer",
+    "interaction": "drawer_trap",
+    "locale": "zh",
+    "theme": "light",
+    "verified": true,
+    "viewport": "desktop"
+  },
+  {
+    "capture": "full_page",
+    "cell_id": "fundamental_forensics.html?symbol=AAPL|mobile|en|dark|anonymous|tab_keys",
+    "facts": {
+      "after": {
+        "focus_is_tab": true,
+        "focus_tab": "statements",
+        "selected": [
+          "statements"
+        ]
+      },
+      "before": {
+        "focus_is_tab": true,
+        "focus_tab": "radar",
+        "selected": [
+          "radar"
+        ]
+      },
+      "key": "ArrowRight",
+      "walk": {
+        "focus": {
+          "id": "ff-tab-radar",
+          "matches": true,
+          "tab": "radar",
+          "tag": "button"
+        },
+        "reached": true,
+        "tab_presses": 24
+      }
+    },
+    "force_state": "tab_keys",
+    "input": "keyboard: real Tab presses to the selected tab, then ArrowRight",
+    "interaction": "tab_keys",
+    "locale": "en",
+    "theme": "dark",
+    "verified": true,
+    "viewport": "mobile"
+  },
+  {
+    "capture": "viewport: modal open; Chromium's full-page capture drops or under-paints the fixed modal layer, so this cell is the first viewport only",
+    "cell_id": "fundamental_forensics.html?symbol=AAPL|mobile|en|dark|anonymous|drawer_trap",
+    "facts": {
+      "escaped": 0,
+      "focusable": 8,
+      "opened": {
+        "focus_id": "ff-evidence-close",
+        "focus_index": 0,
+        "focus_inside": true,
+        "focus_tag": "button",
+        "focusable": 8,
+        "modal": true,
+        "open": true,
+        "present": true
+      },
+      "tab_presses_inside": 10,
+      "trail": [
+        {
+          "focus_id": null,
+          "focus_index": 1,
+          "focus_tag": "button",
+          "inside": true
+        },
+        {
+          "focus_id": null,
+          "focus_index": 2,
+          "focus_tag": "button",
+          "inside": true
+        },
+        {
+          "focus_id": null,
+          "focus_index": 3,
+          "focus_tag": "button",
+          "inside": true
+        },
+        {
+          "focus_id": null,
+          "focus_index": 4,
+          "focus_tag": "a",
+          "inside": true
+        },
+        {
+          "focus_id": null,
+          "focus_index": 5,
+          "focus_tag": "a",
+          "inside": true
+        },
+        {
+          "focus_id": null,
+          "focus_index": 6,
+          "focus_tag": "summary",
+          "inside": true
+        },
+        {
+          "focus_id": null,
+          "focus_index": 7,
+          "focus_tag": "summary",
+          "inside": true
+        },
+        {
+          "focus_id": "ff-evidence-close",
+          "focus_index": 0,
+          "focus_tag": "button",
+          "inside": true
+        },
+        {
+          "focus_id": null,
+          "focus_index": 1,
+          "focus_tag": "button",
+          "inside": true
+        },
+        {
+          "focus_id": null,
+          "focus_index": 2,
+          "focus_tag": "button",
+          "inside": true
+        }
+      ],
+      "visited": 8,
+      "walk": {
+        "focus": {
+          "id": null,
+          "matches": true,
+          "tab": null,
+          "tag": "button"
+        },
+        "reached": true,
+        "tab_presses": 20
+      },
+      "wrapped": true
+    },
+    "force_state": "drawer_trap",
+    "input": "keyboard: real Tab presses to [data-open-primary-finding], Enter, then Tab through the open drawer",
+    "interaction": "drawer_trap",
+    "locale": "en",
+    "theme": "dark",
+    "verified": true,
+    "viewport": "mobile"
+  },
+  {
+    "capture": "full_page",
+    "cell_id": "fundamental_forensics.html?symbol=AAPL|mobile|en|light|anonymous|tab_keys",
+    "facts": {
+      "after": {
+        "focus_is_tab": true,
+        "focus_tab": "statements",
+        "selected": [
+          "statements"
+        ]
+      },
+      "before": {
+        "focus_is_tab": true,
+        "focus_tab": "radar",
+        "selected": [
+          "radar"
+        ]
+      },
+      "key": "ArrowRight",
+      "walk": {
+        "focus": {
+          "id": "ff-tab-radar",
+          "matches": true,
+          "tab": "radar",
+          "tag": "button"
+        },
+        "reached": true,
+        "tab_presses": 24
+      }
+    },
+    "force_state": "tab_keys",
+    "input": "keyboard: real Tab presses to the selected tab, then ArrowRight",
+    "interaction": "tab_keys",
+    "locale": "en",
+    "theme": "light",
+    "verified": true,
+    "viewport": "mobile"
+  },
+  {
+    "capture": "viewport: modal open; Chromium's full-page capture drops or under-paints the fixed modal layer, so this cell is the first viewport only",
+    "cell_id": "fundamental_forensics.html?symbol=AAPL|mobile|en|light|anonymous|drawer_trap",
+    "facts": {
+      "escaped": 0,
+      "focusable": 8,
+      "opened": {
+        "focus_id": "ff-evidence-close",
+        "focus_index": 0,
+        "focus_inside": true,
+        "focus_tag": "button",
+        "focusable": 8,
+        "modal": true,
+        "open": true,
+        "present": true
+      },
+      "tab_presses_inside": 10,
+      "trail": [
+        {
+          "focus_id": null,
+          "focus_index": 1,
+          "focus_tag": "button",
+          "inside": true
+        },
+        {
+          "focus_id": null,
+          "focus_index": 2,
+          "focus_tag": "button",
+          "inside": true
+        },
+        {
+          "focus_id": null,
+          "focus_index": 3,
+          "focus_tag": "button",
+          "inside": true
+        },
+        {
+          "focus_id": null,
+          "focus_index": 4,
+          "focus_tag": "a",
+          "inside": true
+        },
+        {
+          "focus_id": null,
+          "focus_index": 5,
+          "focus_tag": "a",
+          "inside": true
+        },
+        {
+          "focus_id": null,
+          "focus_index": 6,
+          "focus_tag": "summary",
+          "inside": true
+        },
+        {
+          "focus_id": null,
+          "focus_index": 7,
+          "focus_tag": "summary",
+          "inside": true
+        },
+        {
+          "focus_id": "ff-evidence-close",
+          "focus_index": 0,
+          "focus_tag": "button",
+          "inside": true
+        },
+        {
+          "focus_id": null,
+          "focus_index": 1,
+          "focus_tag": "button",
+          "inside": true
+        },
+        {
+          "focus_id": null,
+          "focus_index": 2,
+          "focus_tag": "button",
+          "inside": true
+        }
+      ],
+      "visited": 8,
+      "walk": {
+        "focus": {
+          "id": null,
+          "matches": true,
+          "tab": null,
+          "tag": "button"
+        },
+        "reached": true,
+        "tab_presses": 20
+      },
+      "wrapped": true
+    },
+    "force_state": "drawer_trap",
+    "input": "keyboard: real Tab presses to [data-open-primary-finding], Enter, then Tab through the open drawer",
+    "interaction": "drawer_trap",
+    "locale": "en",
+    "theme": "light",
+    "verified": true,
+    "viewport": "mobile"
+  },
+  {
+    "capture": "full_page",
+    "cell_id": "fundamental_forensics.html?symbol=AAPL|mobile|zh|dark|anonymous|tab_keys",
+    "facts": {
+      "after": {
+        "focus_is_tab": true,
+        "focus_tab": "statements",
+        "selected": [
+          "statements"
+        ]
+      },
+      "before": {
+        "focus_is_tab": true,
+        "focus_tab": "radar",
+        "selected": [
+          "radar"
+        ]
+      },
+      "key": "ArrowRight",
+      "walk": {
+        "focus": {
+          "id": "ff-tab-radar",
+          "matches": true,
+          "tab": "radar",
+          "tag": "button"
+        },
+        "reached": true,
+        "tab_presses": 24
+      }
+    },
+    "force_state": "tab_keys",
+    "input": "keyboard: real Tab presses to the selected tab, then ArrowRight",
+    "interaction": "tab_keys",
+    "locale": "zh",
+    "theme": "dark",
+    "verified": true,
+    "viewport": "mobile"
+  },
+  {
+    "capture": "viewport: modal open; Chromium's full-page capture drops or under-paints the fixed modal layer, so this cell is the first viewport only",
+    "cell_id": "fundamental_forensics.html?symbol=AAPL|mobile|zh|dark|anonymous|drawer_trap",
+    "facts": {
+      "escaped": 0,
+      "focusable": 8,
+      "opened": {
+        "focus_id": "ff-evidence-close",
+        "focus_index": 0,
+        "focus_inside": true,
+        "focus_tag": "button",
+        "focusable": 8,
+        "modal": true,
+        "open": true,
+        "present": true
+      },
+      "tab_presses_inside": 10,
+      "trail": [
+        {
+          "focus_id": null,
+          "focus_index": 1,
+          "focus_tag": "button",
+          "inside": true
+        },
+        {
+          "focus_id": null,
+          "focus_index": 2,
+          "focus_tag": "button",
+          "inside": true
+        },
+        {
+          "focus_id": null,
+          "focus_index": 3,
+          "focus_tag": "button",
+          "inside": true
+        },
+        {
+          "focus_id": null,
+          "focus_index": 4,
+          "focus_tag": "a",
+          "inside": true
+        },
+        {
+          "focus_id": null,
+          "focus_index": 5,
+          "focus_tag": "a",
+          "inside": true
+        },
+        {
+          "focus_id": null,
+          "focus_index": 6,
+          "focus_tag": "summary",
+          "inside": true
+        },
+        {
+          "focus_id": null,
+          "focus_index": 7,
+          "focus_tag": "summary",
+          "inside": true
+        },
+        {
+          "focus_id": "ff-evidence-close",
+          "focus_index": 0,
+          "focus_tag": "button",
+          "inside": true
+        },
+        {
+          "focus_id": null,
+          "focus_index": 1,
+          "focus_tag": "button",
+          "inside": true
+        },
+        {
+          "focus_id": null,
+          "focus_index": 2,
+          "focus_tag": "button",
+          "inside": true
+        }
+      ],
+      "visited": 8,
+      "walk": {
+        "focus": {
+          "id": null,
+          "matches": true,
+          "tab": null,
+          "tag": "button"
+        },
+        "reached": true,
+        "tab_presses": 20
+      },
+      "wrapped": true
+    },
+    "force_state": "drawer_trap",
+    "input": "keyboard: real Tab presses to [data-open-primary-finding], Enter, then Tab through the open drawer",
+    "interaction": "drawer_trap",
+    "locale": "zh",
+    "theme": "dark",
+    "verified": true,
+    "viewport": "mobile"
+  },
+  {
+    "capture": "full_page",
+    "cell_id": "fundamental_forensics.html?symbol=AAPL|mobile|zh|light|anonymous|tab_keys",
+    "facts": {
+      "after": {
+        "focus_is_tab": true,
+        "focus_tab": "statements",
+        "selected": [
+          "statements"
+        ]
+      },
+      "before": {
+        "focus_is_tab": true,
+        "focus_tab": "radar",
+        "selected": [
+          "radar"
+        ]
+      },
+      "key": "ArrowRight",
+      "walk": {
+        "focus": {
+          "id": "ff-tab-radar",
+          "matches": true,
+          "tab": "radar",
+          "tag": "button"
+        },
+        "reached": true,
+        "tab_presses": 24
+      }
+    },
+    "force_state": "tab_keys",
+    "input": "keyboard: real Tab presses to the selected tab, then ArrowRight",
+    "interaction": "tab_keys",
+    "locale": "zh",
+    "theme": "light",
+    "verified": true,
+    "viewport": "mobile"
+  },
+  {
+    "capture": "viewport: modal open; Chromium's full-page capture drops or under-paints the fixed modal layer, so this cell is the first viewport only",
+    "cell_id": "fundamental_forensics.html?symbol=AAPL|mobile|zh|light|anonymous|drawer_trap",
+    "facts": {
+      "escaped": 0,
+      "focusable": 8,
+      "opened": {
+        "focus_id": "ff-evidence-close",
+        "focus_index": 0,
+        "focus_inside": true,
+        "focus_tag": "button",
+        "focusable": 8,
+        "modal": true,
+        "open": true,
+        "present": true
+      },
+      "tab_presses_inside": 10,
+      "trail": [
+        {
+          "focus_id": null,
+          "focus_index": 1,
+          "focus_tag": "button",
+          "inside": true
+        },
+        {
+          "focus_id": null,
+          "focus_index": 2,
+          "focus_tag": "button",
+          "inside": true
+        },
+        {
+          "focus_id": null,
+          "focus_index": 3,
+          "focus_tag": "button",
+          "inside": true
+        },
+        {
+          "focus_id": null,
+          "focus_index": 4,
+          "focus_tag": "a",
+          "inside": true
+        },
+        {
+          "focus_id": null,
+          "focus_index": 5,
+          "focus_tag": "a",
+          "inside": true
+        },
+        {
+          "focus_id": null,
+          "focus_index": 6,
+          "focus_tag": "summary",
+          "inside": true
+        },
+        {
+          "focus_id": null,
+          "focus_index": 7,
+          "focus_tag": "summary",
+          "inside": true
+        },
+        {
+          "focus_id": "ff-evidence-close",
+          "focus_index": 0,
+          "focus_tag": "button",
+          "inside": true
+        },
+        {
+          "focus_id": null,
+          "focus_index": 1,
+          "focus_tag": "button",
+          "inside": true
+        },
+        {
+          "focus_id": null,
+          "focus_index": 2,
+          "focus_tag": "button",
+          "inside": true
+        }
+      ],
+      "visited": 8,
+      "walk": {
+        "focus": {
+          "id": null,
+          "matches": true,
+          "tab": null,
+          "tag": "button"
+        },
+        "reached": true,
+        "tab_presses": 20
+      },
+      "wrapped": true
+    },
+    "force_state": "drawer_trap",
+    "input": "keyboard: real Tab presses to [data-open-primary-finding], Enter, then Tab through the open drawer",
+    "interaction": "drawer_trap",
+    "locale": "zh",
+    "theme": "light",
+    "verified": true,
+    "viewport": "mobile"
+  }
+]

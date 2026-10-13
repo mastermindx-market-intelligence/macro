@@ -530,3 +530,18 @@ def test_account_route_survives_a_lazy_import_failure(monkeypatch, blocked):
     assert body["plan_label"] == "Essential"
     assert body["prefs"] == {"lang": "en", "theme": "dark"}
     assert body["plans_url"] == "/plans.html"
+
+
+def test_account_route_returns_the_stable_user_id(monkeypatch):
+    """site-20 S1 follow-up: /api/account carries the Supabase auth user id so account.js
+    can key its pending-preference fence on it; the email is only the fallback."""
+
+    def fake_fetch(*_a, **_kw):
+        return {"status": "ok", "items": [], "truncated": False}
+
+    _patch_account_deps(monkeypatch, fake_fetch)
+    from app.main import account
+
+    body = account(user=USER, authorization=f"Bearer {CALLER_TOKEN}")
+    assert body["id"] == USER_ID
+    assert body["email"] == USER["email"]

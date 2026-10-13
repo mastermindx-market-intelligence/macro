@@ -1,0 +1,19 @@
+{
+  "schema": "tiingo_original_local_canonical_read_reconciliation/v1",
+  "original_session": 23345,
+  "original_error": "Git promisor fetch could not resolve github.com in the default sandbox",
+  "original_owned_read_interrupted_and_settled_exit_code": 130,
+  "acceptance_file_absent_before_recovery": true,
+  "network_security_or_git_configuration_changed": false,
+  "capture_workers_interrupted": false,
+  "recovery": "Canonical checkout completed on the existing admitted Git carrier; local verification used --no-lazy-fetch and ten-second deadlines",
+  "canonical_ci_file_hash_mismatch_retained": true,
+  "actual_affected_peer_jobs": [
+    "company-relationship-candidates",
+    "engine-render-guards",
+    "ticker-news-qbus"
+  ],
+  "owned_tiingo_job_verified_unchanged": true,
+  "initial_guessed_peer_job_names_rejected_before_any_acceptance_write": true,
+  "canonical_acceptance_file_sha256": "97ae5ebd87d671a42e5d9e8b16315187637bff17a294901088a0fb858440aee8"
+}

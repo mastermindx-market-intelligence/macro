@@ -253,3 +253,132 @@ def test_register_trials_rejects_empty_family():
         pass
     else:
         raise AssertionError("empty family must raise")
+
+
+# --------------------------------------------------------------------------- #
+# durability: append-before-memory + counted corruption (C19 WP06 / MAS-269)
+# --------------------------------------------------------------------------- #
+def test_failed_append_leaves_config_unseen(tmp_path, monkeypatch):
+    import pytest
+
+    p = tmp_path / "t.jsonl"
+    led = TrialLedger(p, family="f")
+    original = TrialLedger._append_rows
+    calls = {"n": 0}
+
+    def flaky(self, rows):
+        calls["n"] += 1
+        if calls["n"] == 1:
+            raise OSError("simulated torn write")
+        return original(self, rows)
+
+    monkeypatch.setattr(TrialLedger, "_append_rows", flaky)
+    cfg = {"w": 20}
+    with pytest.raises(OSError):
+        led.log_trial(cfg, family="f")
+    # memory was NOT poisoned by the failed write: the retry is a genuine new trial
+    assert led.log_trial(cfg, family="f") is True
+    assert len(p.read_text().splitlines()) == 1
+    # a fresh handle sees exactly the one persisted row -> the retry dedups
+    assert TrialLedger(p, family="f").log_trial(cfg, family="f") is False
+
+
+def test_failed_append_leaves_declared_floor_unchanged(tmp_path, monkeypatch):
+    import pytest
+
+    p = tmp_path / "t.jsonl"
+    led = TrialLedger(p, family="f")
+    original = TrialLedger._append_rows
+    calls = {"n": 0}
+
+    def flaky(self, rows):
+        calls["n"] += 1
+        if calls["n"] == 1:
+            raise OSError("simulated torn write")
+        return original(self, rows)
+
+    monkeypatch.setattr(TrialLedger, "_append_rows", flaky)
+    before_budget, before_n = led.declared_budget("f"), led.effective_n("f")
+    with pytest.raises(OSError):
+        led.log_declared_budget(50, family="f")
+    # the floor is raised only after a durable append, so a failed write moves nothing
+    assert led.declared_budget("f") == before_budget
+    assert led.effective_n("f") == before_n
+    assert led.log_declared_budget(50, family="f") is True
+    assert led.declared_budget("f") == 50
+
+
+def test_append_fsyncs_each_write(tmp_path, monkeypatch):
+    led = TrialLedger(tmp_path / "t.jsonl", family="f")
+    fsyncs: list[int] = []
+
+    def recorder(fd):
+        fsyncs.append(fd)
+        return None
+
+    monkeypatch.setattr("os.fsync", recorder)
+    led.log_trial({"w": 20}, family="f")
+    assert len(fsyncs) >= 1
+    fsyncs.clear()
+    # a whole grid is ONE append call -> exactly one fsync
+    assert led.log_grid([{"w": w} for w in (40, 60, 80)], family="f") == 3
+    assert len(fsyncs) == 1
+
+
+def test_load_counts_corrupt_lines(tmp_path):
+    p = tmp_path / "t.jsonl"
+    led = TrialLedger(p, family="f")
+    cfg_a, cfg_b = {"w": 20}, {"w": 40}
+    led.log_trial(cfg_a, family="f")
+    led.log_trial(cfg_b, family="f")
+    with p.open("a", encoding="utf-8") as fh:
+        fh.write("not json at all\n")
+        fh.write('{"family": "f", "config_hash": "ab')  # torn final line, no newline
+    fresh = TrialLedger(p, family="f")
+    assert fresh.corrupt_lines == 2
+    assert fresh.load_error is None
+    # corruption did not lose the good rows
+    assert fresh.log_trial(cfg_a, family="f") is False
+    assert fresh.log_trial(cfg_b, family="f") is False
+    assert fresh.literal_n("f") == 2
+
+
+def test_concurrent_same_config_writes_one_row(tmp_path):
+    import threading
+
+    led = TrialLedger(tmp_path / "t.jsonl", family="f")
+    cfg = {"w": 20}
+    barrier = threading.Barrier(16)
+    results: list[bool] = []
+
+    def worker():
+        barrier.wait()
+        results.append(led.log_trial(cfg, family="f"))
+
+    threads = [threading.Thread(target=worker) for _ in range(16)]
+    for t in threads:
+        t.start()
+    for t in threads:
+        t.join()
+    assert results.count(True) == 1                  # the dedup check must not race
+    assert len((tmp_path / "t.jsonl").read_text().splitlines()) == 1
+    assert led.literal_n("f") == 1
+
+
+def test_log_grid_batches_into_one_append(tmp_path, monkeypatch):
+    p = tmp_path / "t.jsonl"
+    led = TrialLedger(p, family="f")
+    original = TrialLedger._append_rows
+    appends = {"n": 0}
+
+    def counting(self, rows):
+        appends["n"] += 1
+        return original(self, rows)
+
+    monkeypatch.setattr(TrialLedger, "_append_rows", counting)
+    grid = [{"w": 20}, {"w": 40}, {"w": 60}, {"w": 20}]  # last is a dup of the first
+    assert led.log_grid(grid, family="f") == 3
+    assert appends["n"] == 1
+    assert len(p.read_text().splitlines()) == 3
+    assert led.log_grid(grid, family="f") == 0
+    assert appends["n"] == 1                         # idempotent re-run: no append at all

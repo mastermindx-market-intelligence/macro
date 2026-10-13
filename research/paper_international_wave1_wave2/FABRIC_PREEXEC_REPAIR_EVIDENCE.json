@@ -1,0 +1,38 @@
+{
+  "scope": "Installed incumbent Fabric transport and exact pre-exec failure reconciliation repair",
+  "root": "01a1101f-2a37-7320-9a9b-5df3ce1b890d",
+  "incident": "Grok prompt argv exceeded Linux per-string argument limit before provider exec; executor had already marked started",
+  "repair": "Grok packet file transport plus narrow immutable-owner recovery; exact failed terminal preserved, host hold reconciled and broker expiry independently verified",
+  "failed_run": {
+    "rc": 76,
+    "reconcile": {
+      "broker": {
+        "lease_id": "f29df7daea02",
+        "read_only": true,
+        "root_id": "01a1101f-2a37-7320-9a9b-5df3ce1b890d",
+        "state": "expired"
+      },
+      "host_settled": true,
+      "original_terminal_preserved": true
+    },
+    "result_available": true,
+    "result_bytes": 32,
+    "run_id": "paper-01a1101f-qualifier-review-r2",
+    "schema": "mastermind.fabric_task_status.v1",
+    "signal": "preexec_failure",
+    "state": "RECONCILED_PREEXEC_FAILURE"
+  },
+  "immutable_recovery_support": "1910384efee9635300628f7c2ede0ef342ac063daaad7b2923db735e7daadb3b",
+  "checks": {
+    "transport_tests": 60,
+    "transport_subtests": 7,
+    "reconciliation_tests": 72
+  },
+  "evidence_root": "/Volumes/Mastermind/evidence/paper-waves-20261006-01a1101f/fabric-stable-id",
+  "not_claimed": [
+    "Generic cleanup of unrelated unknown effects",
+    "Replay or acceptance of failed original work",
+    "Raised capacity or copied credentials",
+    "Complete Paper programme delivery"
+  ]
+}

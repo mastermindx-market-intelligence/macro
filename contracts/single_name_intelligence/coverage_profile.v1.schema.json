@@ -1,0 +1,167 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "contracts/single_name_intelligence/coverage_profile.v1.schema.json",
+  "title": "SNI coverage_profile.v1",
+  "description": "Per-issuer qualification facts: which EXISTING owner carries each evidence/market family for each trading counter, over which span, under which clock, rights and readiness state. Qualification facts only; never a signal, score, rank, gate or forecast. Identity ids are copied from Data OS when it carries them, otherwise UNRESOLVED with the owner that would mint them named.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "as_of", "profile_kind", "issuer_key", "display_name", "canonical_issuer_id",
+               "canonical_issuer_id_owner", "canonical_issuer_id_scope", "observation", "authority", "counters",
+               "family_notes", "families"],
+  "properties": {
+    "schema_version": {"const": "coverage_profile.v1"},
+    "as_of": {"type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}$"},
+    "profile_kind": {"const": "qualification_facts"},
+    "issuer_key": {"type": "string", "pattern": "^[a-z][a-z0-9_]*$", "description": "Profile-local file key, never an identity id."},
+    "display_name": {"type": "string", "minLength": 1},
+    "canonical_issuer_id": {"$ref": "#/$defs/issuer_id"},
+    "canonical_issuer_id_owner": {"type": "string", "minLength": 1},
+    "canonical_issuer_id_scope": {"type": "string", "minLength": 1},
+    "observation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["repo_ref", "data_read", "observed_at_utc", "census"],
+      "properties": {
+        "repo_ref": {"type": "string"},
+        "data_read": {"type": "string"},
+        "observed_at_utc": {"type": "string"},
+        "census": {"type": "string"}
+      }
+    },
+    "authority": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["rank_authority", "gate_authority", "size_authority", "signal_authority",
+                   "escalation_authority", "trade_authority"],
+      "properties": {
+        "rank_authority": {"const": false},
+        "gate_authority": {"const": false},
+        "size_authority": {"const": false},
+        "signal_authority": {"const": false},
+        "escalation_authority": {"const": false},
+        "trade_authority": {"const": false}
+      }
+    },
+    "counters": {
+      "type": "object",
+      "minProperties": 1,
+      "propertyNames": {"pattern": "^[a-z]+_[a-z0-9]+$"},
+      "additionalProperties": {"$ref": "#/$defs/counter"}
+    },
+    "family_notes": {
+      "type": "object",
+      "propertyNames": {"$ref": "#/$defs/family_name"},
+      "additionalProperties": {"type": "string"}
+    },
+    "families": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["identity_listing", "filings_announcements", "financials", "company_events_earnings_calendar",
+                   "market_data_daily", "market_data_intraday", "corporate_actions_adjustment", "sessions_calendar",
+                   "southbound_holdings", "short_positions", "adr_h_basis", "fx", "options", "research_vault",
+                   "news", "themes", "evaluation_qledger", "behavioral_pilot"],
+      "properties": {
+        "identity_listing": {"$ref": "#/$defs/family"},
+        "filings_announcements": {"$ref": "#/$defs/family"},
+        "financials": {"$ref": "#/$defs/family"},
+        "company_events_earnings_calendar": {"$ref": "#/$defs/family"},
+        "market_data_daily": {"$ref": "#/$defs/family"},
+        "market_data_intraday": {"$ref": "#/$defs/family"},
+        "corporate_actions_adjustment": {"$ref": "#/$defs/family"},
+        "sessions_calendar": {"$ref": "#/$defs/family"},
+        "southbound_holdings": {"$ref": "#/$defs/family"},
+        "short_positions": {"$ref": "#/$defs/family"},
+        "adr_h_basis": {"$ref": "#/$defs/family"},
+        "fx": {"$ref": "#/$defs/family"},
+        "options": {"$ref": "#/$defs/family"},
+        "research_vault": {"$ref": "#/$defs/family"},
+        "news": {"$ref": "#/$defs/family"},
+        "themes": {"$ref": "#/$defs/family"},
+        "evaluation_qledger": {"$ref": "#/$defs/family"},
+        "behavioral_pilot": {"$ref": "#/$defs/family"}
+      }
+    }
+  },
+  "$defs": {
+    "family_name": {
+      "enum": ["identity_listing", "filings_announcements", "financials", "company_events_earnings_calendar",
+               "market_data_daily", "market_data_intraday", "corporate_actions_adjustment", "sessions_calendar",
+               "southbound_holdings", "short_positions", "adr_h_basis", "fx", "options", "research_vault",
+               "news", "themes", "evaluation_qledger", "behavioral_pilot"]
+    },
+    "issuer_id": {
+      "description": "An existing Data OS issuer id or UNRESOLVED. Never a bare ticker, local code or CIK.",
+      "oneOf": [
+        {"const": "UNRESOLVED"},
+        {"type": "string", "pattern": "^ISS:[A-Z]{2}-[A-Z]{4}-[A-Z0-9.]+$"}
+      ]
+    },
+    "security_id": {
+      "oneOf": [
+        {"const": "UNRESOLVED"},
+        {"type": "string", "pattern": "^SEC:[A-Z]{2}-[A-Z]{4}-[A-Z0-9.]+$"}
+      ]
+    },
+    "counter": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["label", "venue_mic", "local_code", "currency", "security_id", "security_id_owner",
+                   "issuer_link", "issuer_link_owner", "pooling"],
+      "properties": {
+        "label": {"type": "string"},
+        "venue_mic": {"type": "string", "pattern": "^[A-Z]{4}$"},
+        "local_code": {"type": "string"},
+        "currency": {"enum": ["HKD", "CNH", "CNY", "USD"]},
+        "security_id": {"$ref": "#/$defs/security_id"},
+        "security_id_owner": {"type": "string", "minLength": 1},
+        "issuer_link": {"$ref": "#/$defs/issuer_id"},
+        "issuer_link_owner": {"type": "string", "minLength": 1},
+        "pooling": {"type": "string", "minLength": 1}
+      }
+    },
+    "family": {
+      "type": "object",
+      "minProperties": 1,
+      "propertyNames": {"pattern": "^[a-z]+_[a-z0-9]+$"},
+      "additionalProperties": {"$ref": "#/$defs/cell"}
+    },
+    "cell": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["applicable", "owner", "source", "coverage", "temporal", "rights", "status", "blocks",
+                   "notes", "evidence"],
+      "properties": {
+        "applicable": {"type": "boolean"},
+        "owner": {"type": "array", "items": {"type": "string", "pattern": "^[A-Za-z0-9_./-]+$"}},
+        "evidence": {"type": "array", "items": {"type": "string", "pattern": "^[A-Za-z0-9_./-]+$"}},
+        "would_be_owner": {"type": "string", "minLength": 1},
+        "source": {"type": "string", "minLength": 1},
+        "coverage": {"type": "string", "minLength": 1},
+        "temporal": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["span", "clock", "state"],
+          "properties": {
+            "span": {"type": "string"},
+            "clock": {"type": "string"},
+            "state": {"enum": ["LIVE", "STALE", "HISTORICAL", "NONE"]}
+          }
+        },
+        "rights": {"enum": ["verified-internal", "UNVERIFIED", "BLOCKED-procurement", "BLOCKED-licence"]},
+        "status": {"enum": ["ready", "partial", "UNRESOLVED", "BLOCKED"]},
+        "blocks": {"type": "array", "uniqueItems": true, "items": {"enum": ["C2", "S0"]}},
+        "notes": {"type": "string"}
+      },
+      "allOf": [
+        {"if": {"properties": {"status": {"enum": ["UNRESOLVED", "BLOCKED"]}}},
+         "then": {"required": ["would_be_owner"]}},
+        {"if": {"properties": {"status": {"const": "ready"}, "applicable": {"const": true}}},
+         "then": {"properties": {"rights": {"const": "verified-internal"}, "blocks": {"maxItems": 0}}}},
+        {"if": {"properties": {"rights": {"enum": ["BLOCKED-procurement", "BLOCKED-licence"]}}},
+         "then": {"properties": {"status": {"const": "BLOCKED"}}}},
+        {"if": {"properties": {"applicable": {"const": false}}},
+         "then": {"properties": {"blocks": {"maxItems": 0}}}}
+      ]
+    }
+  }
+}

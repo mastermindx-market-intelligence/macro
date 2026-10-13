@@ -124,8 +124,21 @@ def test_billing_maps_tiers_trials_and_lookup_keys():
         "pro_2026_monthly": "pro", "pro_2026_annual": "pro",
         "pro_monthly": "pro", "pro_annual": "pro",
     }
-    assert billing._tier_features("pro") == ["site_full", "terminal_live_options", "chat_opus"]
+    assert billing._tier_features("pro") == [
+        "site_full", "terminal_live_options", "chat_opus", "company_intelligence_private_read",
+    ]
     assert billing._tier_features("essential") == ["site_full", "terminal_live_options"]
+
+
+def test_company_intelligence_private_read_is_registered_once_and_pro_only():
+    """The existing catalog declares one explicit capability for the Pro product."""
+    cat = _catalog()
+    key = "company_intelligence_private_read"
+    assert [feature["key"] for feature in cat["features"]].count(key) == 1
+    assert next(feature["name"] for feature in cat["features"]
+                if feature["key"] == key) == "Private Company Intelligence access"
+    assert [tier for tier, product in cat["products"].items()
+            if key in product["features"]] == ["pro"]
 
 
 def test_founding_price_anchor_survives_a_future_regular_pro_increase(monkeypatch):

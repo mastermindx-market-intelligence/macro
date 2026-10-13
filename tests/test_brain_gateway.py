@@ -5978,13 +5978,16 @@ def test_contradiction_doctrine_does_not_tell_the_model_to_pick_a_winner():
 # comment promises "the real cause is logged server-side".
 
 def test_degraded_stub_reports_degraded_and_logs_the_cause(tmp_path, caplog):
-    """The exact live shape: a round that stops AT the cap carrying only a thinking
-    block. The stub ships (users must never see a blank bubble), `done` says degraded,
-    and one server-side line carries the cause — lane, model, phase, stop reason,
-    both token counts, and the configured cap."""
+    """If the bounded answer pass also exhausts its cap, report the degraded
+    state, the final phase/cap, and the tokens spent by both calls."""
+    class ExhaustedAgain(_CaptureClient):
+        def _synthesis_stream(self):
+            return _ScriptedStreamCtx(_MockResponse(
+                [_ThinkBlock()], "max_tokens", _MockUsage(51_500, 8000)))
+
     truncated = _MockResponse([_ThinkBlock()], "max_tokens",
                               usage=_MockUsage(input_tokens=51_500, output_tokens=4000))
-    client = _CaptureClient(responses=[truncated])
+    client = ExhaustedAgain(responses=[truncated])
     root = _make_temp_root()
     with caplog.at_level(logging.WARNING, logger="engine.neuralweb.brain_gateway"):
         parsed = _stream_events(client, root, tmp_path, lane="fast")
@@ -5996,9 +5999,9 @@ def test_degraded_stub_reports_degraded_and_logs_the_cause(tmp_path, caplog):
     line = next((r.getMessage() for r in caplog.records
                  if "degraded stub shipped" in r.getMessage()), None)
     assert line is not None, [r.getMessage() for r in caplog.records]
-    for frag in ("lane=fast", "model=deepseek-v4-flash", "phase=tool-round",
-                 "stop=max_tokens", "input_tokens=51500", "output_tokens=4000",
-                 f"max_tokens={gw._FAST_MAX_TOKENS}"):
+    for frag in ("lane=fast", "model=deepseek-v4-flash", "phase=synthesis",
+                 "stop=max_tokens", "input_tokens=103000", "output_tokens=12000",
+                 f"max_tokens={gw._FAST_MAX_TOKENS * 2}"):
         assert frag in line, (frag, line)
 
 
@@ -7097,3 +7100,84 @@ def test_public_ontology_quota_gate_still_precedes_owner_read(tmp_path, monkeypa
     else:
         assert gw.chat("Explain this step", "test-user", context=context, root=tmp_path)["quota_exhausted"] is True
     owner.assert_not_called()
+
+
+def test_thinking_only_token_limit_gets_one_bounded_synthesis(tmp_path):
+    """Live Audit20 shape: completed reads, then all 4000 tokens spent thinking."""
+    truncated = _MockResponse([_ThinkBlock()], "max_tokens", _MockUsage(1399, 4000))
+    client = _CaptureClient([
+        _MockResponse([_MockBlock("tool_use", name="get_quote", input_={"symbol": "AAPL"}, id_="audit20-read")], "tool_use"),
+        truncated,
+    ])
+    events = _stream_events(client, _make_temp_root(), tmp_path, lane="fast")
+    synthesis = [kw for kw in client.stream_kwargs if "tools" not in kw]
+    assert len(synthesis) == 1
+    assert synthesis[0]["max_tokens"] == 8000
+    assert [kw["max_tokens"] for kw in client.stream_kwargs if "tools" in kw] == [4000, 4000]
+    transcript = synthesis[0]["messages"]
+    assert any(isinstance(m["content"], list) and any(isinstance(b, dict) and b.get("tool_use_id") == "audit20-read" for b in m["content"]) for m in transcript)
+    assert not any(isinstance(m["content"], list) and any(getattr(b, "type", "") == "thinking" for b in m["content"]) for m in transcript)
+    done = next(e for e in events if e["type"] == "done")
+    assert done["degraded"] is False
+    assert done["usage"]["input_tokens"] == 1409
+    assert done["usage"]["output_tokens"] == 4020
+    assert "temporarily unavailable" not in "".join(e.get("text", "") for e in events if e["type"] == "delta")
+
+
+def test_thinking_only_recovery_is_not_recursive(tmp_path):
+    class ExhaustedAgain(_CaptureClient):
+        def _synthesis_stream(self):
+            return _ScriptedStreamCtx(_MockResponse([_ThinkBlock()], "max_tokens", _MockUsage(1399, 8000)))
+    client = ExhaustedAgain([_MockResponse([_ThinkBlock()], "max_tokens", _MockUsage(1399, 4000))])
+    events = _stream_events(client, _make_temp_root(), tmp_path, lane="fast")
+    assert len([kw for kw in client.stream_kwargs if "tools" not in kw]) == 1
+    assert next(e for e in events if e["type"] == "done")["degraded"] is True
+
+
+def test_thinking_recovery_does_not_retry_refusal_or_partial_answer(tmp_path):
+    for response in [
+        _MockResponse([_ThinkBlock()], "refusal"),
+        _MockResponse([_MockBlock("text", "A partial answer."), _ThinkBlock()], "max_tokens"),
+        _MockResponse([_MockBlock("tool_use", name="get_quote", id_="unfinished")], "max_tokens"),
+    ]:
+        client = _CaptureClient([response])
+        _stream_events(client, _make_temp_root(), tmp_path, lane="fast")
+        assert not [kw for kw in client.stream_kwargs if "tools" not in kw]
+
+
+def test_sync_thinking_only_recovery_keeps_reads_and_counts_spent_tokens(tmp_path):
+    client = _MockClient([
+        _MockResponse([_MockBlock("tool_use", name="get_quote", input_={"symbol": "AAPL"}, id_="sync-read")], "tool_use"),
+        _MockResponse([_ThinkBlock()], "max_tokens", _MockUsage(1399, 4000)),
+        _MockResponse([_MockBlock("text", "The cached quote is context only.")]),
+    ])
+    answer, _, _, messages, usage, _, _ = gw._run_brain_loop(
+        "How is AAPL doing?", "fast", [], {}, _make_temp_root(), tmp_path,
+        "", client, "deepseek-v4-pro", 4000, 5,
+    )
+    assert answer == "The cached quote is context only."
+    assert [call["max_tokens"] for call in client.calls] == [4000, 4000, 8000]
+    assert client.calls[-1]["tools"] == []
+    assert any(isinstance(m["content"], list) and any(isinstance(b, dict) and b.get("tool_use_id") == "sync-read" for b in m["content"]) for m in messages)
+    assert not any(isinstance(m["content"], list) and any(getattr(b, "type", "") == "thinking" for b in m["content"]) for m in messages)
+    assert usage["input_tokens"] == 1409
+    assert usage["output_tokens"] == 4020
+
+
+def test_sync_exhausted_recovery_does_not_ship_earlier_tool_narration(tmp_path):
+    client = _MockClient([
+        _MockResponse([
+            _MockBlock("text", "Let me check that quote."),
+            _MockBlock("tool_use", name="get_quote", input_={"symbol": "AAPL"}, id_="sync-read"),
+        ], "tool_use"),
+        _MockResponse([_ThinkBlock()], "max_tokens", _MockUsage(1399, 4000)),
+        _MockResponse([_ThinkBlock()], "max_tokens", _MockUsage(1399, 8000)),
+    ])
+    answer, _, _, _, usage, _, _ = gw._run_brain_loop(
+        "How is AAPL doing?", "fast", [], {}, _make_temp_root(), tmp_path,
+        "", client, "deepseek-v4-pro", 4000, 5,
+    )
+    assert answer == ""
+    assert len(client.calls) == 3
+    assert usage["input_tokens"] == 2798
+    assert usage["output_tokens"] == 12000

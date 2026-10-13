@@ -33,6 +33,7 @@ import errno
 import fcntl
 import logging
 import os
+import ssl
 import stat
 import time
 from dataclasses import dataclass
@@ -241,6 +242,50 @@ def _is_authoritative_r2_not_found(error: Exception) -> bool:
     return str(details.get("Code", "")) in {"404", "NoSuchKey", "NotFound"}
 
 
+# Retry ONLY a transport that failed to deliver authoritative bytes. Botocore
+# retries the GET request, but not failures while reading its StreamingBody.
+# Every new attempt must create a NEW GET and close the previous response.
+_STRICT_STREAM_READ_RETRY_DELAYS = (0.25, 0.75)
+
+# A mature, receipt-idempotent search corpus is too large to rely on one TLS
+# response. Use the existing private R2 object's If-Match range semantics to
+# rebuild the EXACT same version after the first interrupted full-body read.
+_STRICT_CORPUS_OBJECT_KEY = "research_vault/corpus.sqlite"
+_STRICT_CORPUS_RANGE_BYTES = 4 * 1024 * 1024
+_STRICT_CORPUS_MAX_BYTES = 1024 * 1024 * 1024
+
+
+def _retryable_strict_stream_error(error: Exception) -> bool:
+    if isinstance(error, ssl.SSLError):
+        return True
+    # These imports stay lazy: LocalStore/tests have no boto3 requirement.
+    try:
+        import botocore.exceptions as botocore_errors
+    except ImportError:
+        botocore_errors = None
+    try:
+        import urllib3.exceptions as urllib3_errors
+    except ImportError:
+        urllib3_errors = None
+    for module, names in (
+        (botocore_errors, (
+            "SSLError", "ReadTimeoutError", "ConnectionClosedError",
+            "ResponseStreamingError", "IncompleteReadError",
+        )),
+        (urllib3_errors, (
+            "SSLError", "ReadTimeoutError", "ProtocolError",
+            "IncompleteRead",
+        )),
+    ):
+        if module is None:
+            continue
+        for name in names:
+            exception_type = getattr(module, name, None)
+            if isinstance(exception_type, type) and isinstance(error, exception_type):
+                return True
+    return False
+
+
 def _is_authoritative_r2_conditional_conflict(error: Exception) -> bool:
     """Whether R2 authoritatively rejected an exact-predecessor PUT."""
     try:
@@ -283,38 +328,145 @@ class R2Store:
             log.debug("r2 get miss %s: %s", key, e)
             return None
 
-    def get_bytes_strict(self, key: str) -> bytes | None:
-        """Read an immutable object without converting operational failure to a miss.
+    def _read_corpus_versioned_ranges(self, key: str) -> bytes:
+        """Reconstruct one immutable R2 corpus from exact same-version GET ranges.
 
-        ``None`` means R2 returned one of its explicit not-found ``ClientError``
-        codes (404, ``NoSuchKey``, or ``NotFound``).  Missing credentials, a
-        permission error, network/service failure, or body read failure all
-        propagate so snapshot publication cannot silently publish from an
-        incomplete view of the object store.
+        HEAD is merely a read-only size/version observation. Every chunk must
+        satisfy If-Match against that ETag, HTTP 206, the exact advertised
+        Content-Range and Content-Length, a complete streamed byte count and
+        a clean body close. Any ambiguity is fatal; never bootstrap from it.
+        """
+        meta = self._s3.head_object(Bucket=self.bucket, Key=key)
+        if not isinstance(meta, dict):
+            raise RuntimeError("R2 corpus HEAD returned a malformed response")
+        size = meta.get("ContentLength")
+        etag = meta.get("ETag")
+        if (
+            type(size) is not int or not 0 < size <= _STRICT_CORPUS_MAX_BYTES
+            or not isinstance(etag, str) or not etag.strip()
+        ):
+            raise RuntimeError("R2 corpus HEAD lacks a bounded length and version")
+        pieces: list[bytes] = []
+        for first in range(0, size, _STRICT_CORPUS_RANGE_BYTES):
+            last = min(size - 1, first + _STRICT_CORPUS_RANGE_BYTES - 1)
+            expected = last - first + 1
+            content_range = f"bytes {first}-{last}/{size}"
+            for retry in range(len(_STRICT_STREAM_READ_RETRY_DELAYS) + 1):
+                try:
+                    response = self._s3.get_object(
+                        Bucket=self.bucket,
+                        Key=key,
+                        Range=f"bytes={first}-{last}",
+                        IfMatch=etag,
+                    )
+                    if not isinstance(response, dict):
+                        raise RuntimeError("R2 range GET response is malformed")
+                    body = response.get("Body")
+                    close = getattr(body, "close", None)
+                    if not callable(close) or not callable(getattr(body, "read", None)):
+                        raise RuntimeError("R2 range GET body is not readable/closeable")
+                    try:
+                        if (
+                            (response.get("ResponseMetadata") or {}).get("HTTPStatusCode") != 206
+                            or response.get("ContentRange") != content_range
+                            or response.get("ContentLength") != expected
+                            or response.get("ETag") != etag
+                        ):
+                            raise RuntimeError(
+                                "R2 ranged corpus response violated version or range"
+                            )
+                        remaining = expected
+                        chunks: list[bytes] = []
+                        calls = 0
+                        while remaining:
+                            calls += 1
+                            if calls > _MAX_STRICT_STREAM_READ_CALLS:
+                                raise RuntimeError("R2 ranged corpus read iteration limit")
+                            data = body.read(min(remaining, 1024 * 1024))
+                            if type(data) is not bytes or not data or len(data) > remaining:
+                                raise RuntimeError("R2 ranged corpus body incomplete")
+                            chunks.append(data)
+                            remaining -= len(data)
+                        if body.read(1) != b"":
+                            raise RuntimeError("R2 ranged corpus body overran announced range")
+                        pieces.append(b"".join(chunks))
+                    finally:
+                        close()
+                    break
+                except Exception as error:
+                    if (
+                        retry >= len(_STRICT_STREAM_READ_RETRY_DELAYS)
+                        or not _retryable_strict_stream_error(error)
+                    ):
+                        raise
+                    log.warning(
+                        "R2 versioned range read transport interrupted; retrying "
+                        "chunk (%d/%d)", retry + 1,
+                        len(_STRICT_STREAM_READ_RETRY_DELAYS),
+                    )
+                    time.sleep(_STRICT_STREAM_READ_RETRY_DELAYS[retry])
+        result = b"".join(pieces)
+        if len(result) != size:
+            raise RuntimeError("R2 versioned corpus read length mismatch")
+        return result
+
+    def get_bytes_strict(self, key: str) -> bytes | None:
+        """Read exact authoritative bytes; never turn transport failure into absence.
+
+        A TLS/stream interruption can occur AFTER S3's GET header succeeded.
+        Retry only that narrow class of transport failure with a fresh GET and
+        deterministic bound; partial bodies are never returned. 404 remains the
+        sole authoritative absent result; permissions, protocol, malformed
+        bodies and exhausted retries still raise (publication stays fail-closed).
         """
         if not self.available:
             raise RuntimeError("R2 store unavailable: missing bucket or credentials")
-        try:
-            response = self._s3.get_object(Bucket=self.bucket, Key=key)
-        except Exception as error:
-            if _is_authoritative_r2_not_found(error):
-                return None
-            raise
-        if not isinstance(response, dict):
-            raise RuntimeError("R2 get_object returned a malformed response")
-        body = response.get("Body")
-        if body is None or not callable(getattr(body, "read", None)):
-            raise RuntimeError("R2 get_object response is missing a readable body")
-        close = getattr(body, "close", None)
-        if not callable(close):
-            raise RuntimeError("R2 get_object response body is not closeable")
-        try:
-            content = body.read()
-        finally:
-            close()
-        if not isinstance(content, bytes):
-            raise RuntimeError("R2 object body returned non-bytes")
-        return content
+        for attempt in range(len(_STRICT_STREAM_READ_RETRY_DELAYS) + 1):
+            try:
+                try:
+                    response = self._s3.get_object(Bucket=self.bucket, Key=key)
+                except Exception as error:
+                    if _is_authoritative_r2_not_found(error):
+                        return None
+                    raise
+                if not isinstance(response, dict):
+                    raise RuntimeError("R2 get_object returned a malformed response")
+                body = response.get("Body")
+                if body is None or not callable(getattr(body, "read", None)):
+                    raise RuntimeError("R2 get_object response is missing a readable body")
+                close = getattr(body, "close", None)
+                if not callable(close):
+                    raise RuntimeError("R2 get_object response body is not closeable")
+                try:
+                    content = body.read()
+                finally:
+                    close()
+                if not isinstance(content, bytes):
+                    raise RuntimeError("R2 object body returned non-bytes")
+                return content
+            except Exception as error:
+                retryable = _retryable_strict_stream_error(error)
+                if (
+                    retryable
+                    and attempt == 0
+                    and key == _STRICT_CORPUS_OBJECT_KEY
+                    and callable(getattr(self._s3, "head_object", None))
+                ):
+                    log.warning(
+                        "R2 corpus full-body TLS read interrupted; "
+                        "reconstructing one version through checked ranges"
+                    )
+                    return self._read_corpus_versioned_ranges(key)
+                if attempt >= len(_STRICT_STREAM_READ_RETRY_DELAYS) or not retryable:
+                    raise
+                log.warning(
+                    "R2 strict read transport interrupted; retrying fresh GET "
+                    "(%d/%d)", attempt + 1,
+                    len(_STRICT_STREAM_READ_RETRY_DELAYS),
+                )
+                time.sleep(_STRICT_STREAM_READ_RETRY_DELAYS[attempt])
+        raise AssertionError("bounded strict read retry loop exhausted")
+
 
     def get_bytes_strict_bounded(
         self,

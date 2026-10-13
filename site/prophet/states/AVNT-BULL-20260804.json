@@ -1,32 +1,32 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "AVNT-BULL-20260804",
-  "asof": "2026-10-07",
+  "asof": "2026-10-09",
   "phase": "triggered_pre_t1",
   "detection_phase": "triggered_pre_t1",
-  "management_confidence": 63.6,
-  "raw_confidence": 62.9,
-  "delta_vs_base": 3.6,
+  "management_confidence": 60.5,
+  "raw_confidence": 59.0,
+  "delta_vs_base": 0.5,
   "recommended_action": "hold",
   "human_state": "Needs Follow-Through",
   "components": {
-    "validity": 100.0,
-    "progress": 3.9,
-    "pace": 98.4,
+    "validity": 97.4,
+    "progress": 0.0,
+    "pace": 90.0,
     "retention": 50.0,
     "overlay": 56.0
   },
   "geometry": {
-    "dist_to_stop_r": 1.033,
-    "dist_to_t1_r": 1.467,
-    "dist_to_t2_r": 2.967,
-    "horizon_pct_used": 11.1,
-    "p1": 0.0219,
-    "p2": 0.0109,
+    "dist_to_stop_r": 0.981,
+    "dist_to_t1_r": 1.5,
+    "dist_to_t2_r": 3.0,
+    "horizon_pct_used": 15.6,
+    "p1": -0.013,
+    "p2": -0.0065,
     "p3": null,
-    "move_r": 0.033,
+    "move_r": -0.019,
     "mfe_r": 0.044,
-    "mae_r": -0.0
+    "mae_r": -0.019
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
@@ -40,11 +40,11 @@
     "ceiling": "hard cap at 92 \u2014 uncertainty is honest"
   },
   "_mfe": 0.42999847412109204,
-  "_mae": -1.8310546892053026e-06,
+  "_mae": -0.19000045776367358,
   "_max_p1": 0.029401605068108856,
   "_first_trigger_ts": "2026-10-06",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 5,
-  "tau": 0.1111
+  "days_elapsed": 7,
+  "tau": 0.1556
 }

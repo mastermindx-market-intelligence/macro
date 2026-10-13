@@ -13,23 +13,33 @@ not rights decisions made by this module.
 from __future__ import annotations
 
 from dataclasses import asdict, dataclass
-from datetime import datetime
+from datetime import datetime, timedelta, timezone
 import hashlib
 import json
 import os
 from pathlib import Path
 import sqlite3
+import urllib.parse
 from collections.abc import Mapping
 from typing import Iterable, Sequence
 
 from engine.qbus_news_contract import NewsRevision
 from engine.qbus_news_cluster import (
+    UNKNOWN_CLUSTER_POLICY_VERSION,
     ClusterCandidate,
     ClusterItem,
     ClusterPolicy,
     cluster_candidates,
+    cluster_policy_version,
 )
 from engine.qbus_news_reducer import NewsState, reduce_revision
+from engine.qbus_news_velocity import (
+    FLOW_COMPARE_RULE,
+    METHOD,
+    SCHEMA as VELOCITY_SCHEMA,
+    compare_to_typical,
+    compute_news_velocity,
+)
 
 SCHEMA = "qbus.news_store.v1"
 
@@ -174,6 +184,11 @@ class StoryDetail:
     members: tuple[StoryRow, ...]
 
 
+# qbus_meta key naming the cluster policy version of the most recent
+# writer; a read-only open with no policy passed reads it to know the
+# policy in force. Absent only in stores written before it existed.
+_META_CLUSTER_POLICY_KEY = "cluster_policy_version"
+
 _SCHEMA_SQL = """
 CREATE TABLE IF NOT EXISTS qbus_meta (
     key TEXT PRIMARY KEY,
@@ -248,7 +263,8 @@ CREATE TABLE IF NOT EXISTS news_clusters (
     anchor_title TEXT NOT NULL,
     anchor_observed_at TEXT NOT NULL,
     subject_ids_json TEXT NOT NULL,
-    event_family TEXT NOT NULL
+    event_family TEXT NOT NULL,
+    cluster_policy_version TEXT
 );
 
 CREATE TABLE IF NOT EXISTS news_cluster_members (
@@ -569,6 +585,22 @@ def _redact_story(
     )
 
 
+def _cluster_policy_label(versions: list[str], in_force: str) -> str:
+    """One string naming every policy that minted the 24h cluster stories.
+
+    An empty list means no stored cluster contributed to stories_24h, so the
+    policy in force is named: ``in_force`` is the open's passed policy
+    stamp, or — when no policy was passed — the version the most recent
+    writer recorded in ``qbus_meta`` (``UNKNOWN_CLUSTER_POLICY_VERSION``
+    only for stores written before that key existed).
+    """
+    if not versions:
+        return in_force
+    if len(versions) == 1:
+        return versions[0]
+    return " + ".join(sorted(versions))
+
+
 class NewsStore:
     """One local transactional store bound to one provider cursor namespace."""
 
@@ -582,6 +614,9 @@ class NewsStore:
         self.path = Path(path)
         self.source_key = _validate_token(source_key, "source_key", 256)
         self.cluster_policy = cluster_policy or ClusterPolicy()
+        # A writer's policy is in force by construction (and is recorded
+        # in qbus_meta by _initialize), passed or not.
+        self._cluster_policy_passed = True
         self._read_only = False
         self.path.parent.mkdir(parents=True, exist_ok=True)
         self._conn = sqlite3.connect(
@@ -609,10 +644,11 @@ class NewsStore:
         obj.path = db
         obj.source_key = _validate_token(source_key, "source_key", 256)
         obj.cluster_policy = cluster_policy or ClusterPolicy()
+        obj._cluster_policy_passed = cluster_policy is not None
         obj._read_only = True
         try:
             obj._conn = sqlite3.connect(
-                f"file:{db}?mode=ro",
+                f"file:{urllib.parse.quote(str(db))}?mode=ro",
                 uri=True,
                 timeout=5.0,
                 isolation_level=None,
@@ -648,6 +684,24 @@ class NewsStore:
             self._conn.close()
             self._conn = None  # type: ignore[assignment]
 
+    def _in_force_cluster_policy_version(self) -> str:
+        """Return the cluster policy version in force for this open.
+
+        The policy is KNOWN iff a policy was passed to this open or the
+        most recent writer recorded its ``cluster_policy_version`` in
+        ``qbus_meta``; otherwise it is ``UNKNOWN_CLUSTER_POLICY_VERSION``
+        — never the default ``ClusterPolicy()`` label for an unpassed
+        policy.
+        """
+        if self._cluster_policy_passed:
+            return cluster_policy_version(self.cluster_policy)
+        row = self._conn.execute(
+            "SELECT value FROM qbus_meta WHERE key=?", (_META_CLUSTER_POLICY_KEY,)
+        ).fetchone()
+        if row is None:
+            return UNKNOWN_CLUSTER_POLICY_VERSION
+        return str(row["value"])
+
     def _configure(self) -> None:
         self._conn.execute("PRAGMA foreign_keys=ON")
         self._conn.execute("PRAGMA synchronous=FULL")
@@ -668,6 +722,49 @@ class NewsStore:
             )
         elif row["value"] != SCHEMA:
             raise StoreSchemaError("qbus_news_store:schema_mismatch")
+        # Additive column for stores created before the policy stamp existed.
+        # Only a writable open runs here; a wrong-schema store was already
+        # refused above. Pre-existing rows stay NULL (never backfilled), so a
+        # reader labels them "unknown (pre-column)".
+        #
+        # The same additive, no-SCHEMA-bump treatment records this writer's
+        # policy version in qbus_meta, so a read-only open with no policy
+        # passed knows the version in force. The upsert names the most
+        # recent writer's policy (a different policy overwrites the key)
+        # and writes nothing when the value is unchanged; a store written
+        # before the key existed keeps reporting "unknown (pre-column)".
+        columns = self._conn.execute(
+            "PRAGMA table_info(news_clusters)"
+        ).fetchall()
+        if not any(str(col[1]) == "cluster_policy_version" for col in columns):
+            # A second concurrent writable open of the same legacy store can
+            # add this column between our PRAGMA and our ALTER; only that race.
+            try:
+                self._conn.execute(
+                    "ALTER TABLE news_clusters"
+                    " ADD COLUMN cluster_policy_version TEXT"
+                )
+            except sqlite3.OperationalError as exc:
+                recheck = self._conn.execute(
+                    "PRAGMA table_info(news_clusters)"
+                ).fetchall()
+                if (
+                    "duplicate column name" not in str(exc).lower()
+                    or not any(
+                        str(col[1]) == "cluster_policy_version"
+                        for col in recheck
+                    )
+                ):
+                    raise
+        self._conn.execute(
+            "INSERT INTO qbus_meta(key,value) VALUES(?,?)"
+            " ON CONFLICT(key) DO UPDATE SET value=excluded.value"
+            " WHERE qbus_meta.value IS NOT excluded.value",
+            (
+                _META_CLUSTER_POLICY_KEY,
+                cluster_policy_version(self.cluster_policy),
+            ),
+        )
         self._backfill_read_projection()
 
     def _backfill_read_projection(self) -> None:
@@ -1009,8 +1106,9 @@ class NewsStore:
                 """
                 INSERT INTO news_clusters(
                     cluster_id, anchor_story_id, anchor_title,
-                    anchor_observed_at, subject_ids_json, event_family
-                ) VALUES(?,?,?,?,?,?)
+                    anchor_observed_at, subject_ids_json, event_family,
+                    cluster_policy_version
+                ) VALUES(?,?,?,?,?,?,?)
                 """,
                 (
                     cluster_id,
@@ -1019,6 +1117,7 @@ class NewsStore:
                     incoming.observed_at.isoformat(),
                     _stable_json(list(incoming.subject_ids)),
                     incoming.event_family,
+                    cluster_policy_version(self.cluster_policy),
                 ),
             )
         self._conn.execute(
@@ -1360,20 +1459,47 @@ class NewsStore:
             return NewsSnapshot(SCHEMA, security_id, (), cursor, False)
 
         placeholders = ",".join("?" for _ in rights.allowed_sources)
-        params: list[object] = [security_id, *sorted(rights.allowed_sources)]
+        params: list[object] = [
+            security_id,
+            *sorted(rights.allowed_sources),
+            security_id,
+            *sorted(rights.allowed_sources),
+        ]
         having_cursor = ""
         if cursor is not None:
-            having_cursor = " HAVING MAX(s.last_sequence) < ?"
+            having_cursor = " HAVING cluster_sequence < ?"
             params.append(cursor)
         params.append(limit + 1)
+        # The cluster watermark is the latest change sequence addressed to THIS
+        # security for that cluster, not MAX over the surviving members.  A
+        # partial withdrawal deletes the withdrawn member's index rows, so a
+        # member-only aggregate would fall back to the survivors and move the
+        # watermark DOWN, re-feeding an already-paged cluster and reporting a
+        # row sequence below the withdrawal upsert the security just received.
+        # The change log is append-only, so the feed watermark can only move
+        # forward, exactly like a correction.  Visibility stays member-based:
+        # the FROM/WHERE still requires at least one active member indexed to
+        # this security, so a fully withdrawn cluster stays invisible.  The
+        # COALESCE fallback to the member aggregate keeps a hand-migrated
+        # store readable if a visible cluster predates its change targets.
         clusters = self._conn.execute(
             f"""
-            SELECT m.cluster_id, MAX(s.last_sequence) AS cluster_sequence
+            SELECT m.cluster_id,
+                   COALESCE(MAX(w.change_sequence), MAX(s.last_sequence))
+                       AS cluster_sequence
             FROM news_security_index i
             JOIN news_states s
               ON s.source=i.source AND s.source_item_id=i.source_item_id
             JOIN news_cluster_members m
               ON m.source=s.source AND m.source_item_id=s.source_item_id
+            LEFT JOIN (
+                SELECT c.cluster_id, MAX(c.sequence) AS change_sequence
+                FROM news_change_targets t
+                JOIN news_changes c ON c.sequence=t.sequence
+                WHERE t.security_id=?
+                  AND c.source IN ({placeholders})
+                GROUP BY c.cluster_id
+            ) w ON w.cluster_id=m.cluster_id
             WHERE i.security_id=?
               AND s.status='active'
               AND s.source IN ({placeholders})
@@ -1458,6 +1584,123 @@ class NewsStore:
             next_cursor=next_cursor,
             has_more=has_more,
         )
+
+    def news_flow(
+        self,
+        security_id: str,
+        *,
+        now: datetime,
+        rights: NewsReadRights,
+    ) -> dict:
+        """Return one security's complete ``ticker_news.flow.v1`` dict.
+
+        Counts are computed on a dedicated read-only connection, never on
+        ``self._conn``, so a store opened writable still serves flow without
+        touching its write path. Failures raise; the API layer maps them.
+        """
+        security_id = _validate_token(security_id, "security_id", 1024)
+        if not isinstance(rights, NewsReadRights):
+            raise StoreValidationError("qbus_news_store:invalid_rights")
+        if (
+            not isinstance(now, datetime)
+            or now.tzinfo is None
+            or now.utcoffset() is None
+        ):
+            raise ValueError("now must be a timezone-aware datetime")
+        if not rights.allowed_sources:
+            flow: dict = {
+                "schema": "ticker_news.flow.v1",
+                "state": "unavailable",
+                "reason": "no_accessible_sources",
+                "coverage": "complete",
+                "as_of": None,
+                "reports_24h": None,
+                "reports_7d": None,
+                "stories_24h": None,
+                "median_daily_28d": None,
+                "daily_counts_28d": None,
+                "history_days_observed": None,
+                "comparison": None,
+                "provenance": None,
+            }
+            return flow
+
+        as_of = now.astimezone(timezone.utc).replace(microsecond=0)
+        conn = self._open_flow_connection()
+        try:
+            velocity = compute_news_velocity(
+                conn,
+                security_id=security_id,
+                now=as_of,
+                allowed_sources=rights.allowed_sources,
+            )
+        finally:
+            conn.close()
+
+        sufficient = bool(velocity["sufficient_history"])
+        median = velocity["median_daily_28d"]
+        as_of_date = as_of.date()
+        provenance = {
+            "velocity_schema": VELOCITY_SCHEMA,
+            "sources_counted": velocity["sources_counted"],
+            "status_counted": "active",
+            "distinct_by": "source + source_item_id",
+            "story_grouping": (
+                "news_cluster_members.cluster_id; "
+                "a report in no cluster is its own story"
+            ),
+            "cluster_policy_version": _cluster_policy_label(
+                velocity["cluster_policy_versions_24h"],
+                self._in_force_cluster_policy_version(),
+            ),
+            "windows": {
+                "reports_24h": (
+                    "rolling, closed at both ends: [as_of - 24h, as_of]"
+                ),
+                "reports_7d": (
+                    "rolling, closed at both ends: [as_of - 7d, as_of]"
+                ),
+                "daily_28d": {
+                    "start_date": (as_of_date - timedelta(days=28)).isoformat(),
+                    "end_date": (as_of_date - timedelta(days=1)).isoformat(),
+                    "unit": "UTC calendar day",
+                    "excludes": "the current UTC day",
+                    "order": "oldest first",
+                },
+            },
+            "calculation": {
+                "method": METHOD,
+                "comparison_rule": FLOW_COMPARE_RULE,
+            },
+            "time_basis_counts_24h": velocity["basis_counts_24h"],
+        }
+        return {
+            "schema": "ticker_news.flow.v1",
+            "state": "ok" if sufficient else "thin_history",
+            "reason": None,
+            "coverage": "complete",
+            "as_of": as_of.strftime("%Y-%m-%dT%H:%M:%SZ"),
+            "reports_24h": velocity["count_24h"],
+            "reports_7d": velocity["count_7d"],
+            "stories_24h": velocity["stories_24h"],
+            "median_daily_28d": median,
+            "daily_counts_28d": velocity["daily_counts_28d"],
+            "history_days_observed": velocity["history_days_observed"],
+            "comparison": compare_to_typical(
+                velocity["count_24h"], median, sufficient, "complete"
+            ),
+            "provenance": provenance,
+        }
+
+    def _open_flow_connection(self) -> sqlite3.Connection:
+        conn = sqlite3.connect(
+            f"file:{urllib.parse.quote(str(self.path))}?mode=ro",
+            uri=True,
+            timeout=5.0,
+            isolation_level=None,
+        )
+        conn.execute("PRAGMA query_only=ON")
+        return conn
 
     def story(
         self,

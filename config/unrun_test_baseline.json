@@ -329,7 +329,6 @@
     "tests/test_fear_greed.py",
     "tests/test_fed_path.py",
     "tests/test_federal_register.py",
-    "tests/test_filing_forensics_sec_lane.py",
     "tests/test_filing_transition.py",
     "tests/test_filing_value_units.py",
     "tests/test_finnhub_altdata.py",

@@ -541,6 +541,81 @@ html[data-lang="zh"] .stage-pill.LEADERSHIP{background:rgba(220,38,38,0.18);colo
 html[data-lang="zh"] .rerating-stage-chip.s-breakaway{background:rgba(239,68,68,0.12);color:#f87171;}
 /* Leg chip green (breakaway context) */
 html[data-lang="zh"] .leg-chip.green{background:rgba(239,68,68,0.12);color:#f87171;}
+/* RS leader watch: observation tier, built from existing radar rows. */
+.rs-highs-panel{margin-top:20px;padding:20px 22px;}
+.rs-highs-description{color:var(--text-secondary);font-size:13px;line-height:1.65;margin:6px 0 16px;}
+.rs-highs-columns{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;}
+.rs-highs-col{padding:15px;border:1px solid var(--border);border-radius:var(--r-card,12px);background:var(--tile);}
+.rs-highs-col-top{display:flex;align-items:baseline;justify-content:space-between;gap:8px;margin-bottom:10px;}
+.rs-highs-col-title{font-size:14px;font-weight:700;color:var(--text-primary);}
+.rs-highs-count{font-family:var(--num);font-size:16px;font-weight:700;color:var(--col-ignition);}
+.rs-highs-tickers{display:flex;flex-wrap:wrap;gap:8px;}
+.rs-highs-ticker{display:inline-flex;align-items:center;gap:5px;border:1px solid var(--border-strong);border-radius:var(--r-ctl,8px);padding:5px 8px;font:600 12px var(--num);color:var(--text-primary);}
+.rs-highs-ticker:hover,.rs-highs-ticker:focus-visible{outline:1px solid var(--col-ignition);color:var(--col-ignition);}
+.rs-highs-leads{color:var(--col-ignition);font:600 10px var(--font-ui);}
+.rs-highs-foot{color:var(--text-secondary);font-size:12px;margin-top:10px;}
+.rs-highs-recents{grid-column:1/-1;}
+.rs-highs-ticker-date{font:500 10px var(--num);color:var(--text-secondary);}
+.rs-highs-entry{font:600 10px var(--font-ui);color:var(--text-secondary);white-space:nowrap;}
+.rs-highs-entry.staged{color:var(--col-ignition);}
+.rs-highs-entry.caution{color:var(--col-crowded);}
+
+
+@media(max-width:680px){.rs-highs-panel{padding:14px}.rs-highs-columns{grid-template-columns:1fr}}
+/* Deep corrections and recovery: descriptive observation tier, leader_recovery.v1 rows joined by ticker. Stage colour via data-stage, no new tokens. */
+.lr-rec-panel{margin-top:20px;padding:20px 22px;}
+.lr-rec-description{color:var(--text-secondary);font-size:13px;line-height:1.65;margin:6px 0 16px;}
+.lr-rec-partial{color:var(--text-muted);font-size:12px;margin:0 0 10px;}
+.lr-rec-tools{display:flex;flex-wrap:wrap;align-items:center;gap:10px 16px;margin-bottom:12px;}
+.lr-rec-tools label{display:inline-flex;align-items:center;gap:8px;font:500 11px var(--font-ui);color:var(--text-muted);}
+.lr-rec-tools label>span{white-space:nowrap;}
+.lr-rec-find,.lr-rec-order{border:1px solid var(--border-strong);border-radius:var(--r-ctl,8px);background:var(--tile);color:var(--text-primary);font:500 12.5px var(--font-ui);padding:6px 9px;min-height:32px;}
+.lr-rec-find{width:180px;max-width:100%;}
+.lr-rec-list{display:flex;flex-direction:column;border:1px solid var(--border);border-radius:var(--r-card,12px);background:var(--tile);overflow:hidden;}
+.lr-rec-list.is-capped .lr-rec-row:nth-child(n+9){display:none;}
+.lr-rec-list.is-open{max-height:640px;overflow-y:auto;}
+.lr-rec-row{display:grid;grid-template-columns:64px minmax(0,1fr);gap:4px 14px;padding:12px 14px;border-top:1px solid var(--border);}
+.lr-rec-row:first-child{border-top:0;}
+.lr-rec-row.is-hidden{display:none;}
+.lr-rec-row>.rs-highs-ticker{grid-column:1;grid-row:1/span 4;justify-self:start;align-self:start;}
+.lr-rec-row>:not(.rs-highs-ticker){grid-column:2;}
+.lr-rec-state{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 10px;}
+.lr-rec-dot{display:inline-block;width:8px;height:8px;border-radius:var(--r-pill,999px);margin-right:6px;}
+.lr-rec-label{font:600 12.5px var(--font-ui);color:var(--text-primary);}
+.lr-rec-stance{font:400 12.5px var(--font-ui);color:var(--text-secondary);}
+.lr-rec-ledger{display:grid;grid-template-columns:auto minmax(80px,1fr) auto auto;align-items:center;gap:10px;margin-top:4px;}
+.lr-rec-end{font:500 11px var(--font-ui);color:var(--text-muted);white-space:nowrap;}
+.lr-rec-end b{font-weight:600;color:var(--text-secondary);}
+.lr-rec-track{position:relative;height:6px;border-radius:var(--r-pill,999px);background:var(--border-strong);overflow:hidden;}
+.lr-rec-fill{position:absolute;inset:0 auto 0 0;border-radius:inherit;}
+.lr-rec-depth{font:600 12.5px var(--font-ui);white-space:nowrap;}
+.lr-rec-facts{display:flex;flex-wrap:wrap;gap:4px 16px;margin-top:4px;}
+.lr-rec-fact{font:400 11px var(--font-ui);color:var(--text-muted);}
+.lr-rec-fact b{font-weight:600;color:var(--text-secondary);}
+.lr-rec-more{margin-top:6px;}
+.lr-rec-more summary{cursor:pointer;font:500 11px var(--font-ui);color:var(--text-muted);}
+.lr-rec-more-body{margin-top:8px;padding:10px 12px;border:1px solid var(--border);border-radius:var(--r-ctl,8px);background:var(--bg-glass-2);}
+[data-theme="light"] .lr-rec-more-body{box-shadow:var(--mx5-glass-shadow);}
+.lr-rec-trail{list-style:none;margin:0;padding:0;display:grid;gap:3px;}
+.lr-rec-trail li{display:grid;grid-template-columns:84px minmax(0,1fr);gap:10px;font:400 11px var(--font-ui);color:var(--text-secondary);}
+.lr-rec-trail time{color:var(--text-muted);}
+.lr-rec-sub{font:600 11px var(--font-ui);color:var(--text-muted);margin:8px 0 4px;}
+.lr-rec-note{font:400 11px var(--font-ui);color:var(--text-muted);line-height:1.5;margin:0;}
+.lr-rec-showall{margin-top:10px;border:1px solid var(--border-strong);border-radius:var(--r-ctl,8px);background:var(--tile);color:var(--text-primary);font:500 12px var(--font-ui);padding:6px 12px;cursor:pointer;}
+.lr-rec-foot{color:var(--text-secondary);font-size:12px;margin-top:10px;}
+.lr-rec-row[data-stage="failed"] .lr-rec-dot,.lr-rec-row[data-stage="failed"] .lr-rec-fill{background:var(--col-failed);}
+.lr-rec-row[data-stage="failed"] .lr-rec-depth{color:var(--col-failed);}
+.lr-rec-row[data-stage="correcting"] .lr-rec-dot,.lr-rec-row[data-stage="correcting"] .lr-rec-fill{background:var(--col-crowded);}
+.lr-rec-row[data-stage="correcting"] .lr-rec-depth{color:var(--col-crowded);}
+.lr-rec-row[data-stage="repairing"] .lr-rec-dot,.lr-rec-row[data-stage="repairing"] .lr-rec-fill{background:var(--col-ignition);}
+.lr-rec-row[data-stage="repairing"] .lr-rec-depth{color:var(--col-ignition);}
+.lr-rec-row[data-stage="price"] .lr-rec-dot,.lr-rec-row[data-stage="price"] .lr-rec-fill{background:var(--col-quiet);}
+.lr-rec-row[data-stage="price"] .lr-rec-depth{color:var(--col-quiet);}
+.lr-rec-row[data-stage="restored"] .lr-rec-dot,.lr-rec-row[data-stage="restored"] .lr-rec-fill{background:var(--col-leading);}
+.lr-rec-row[data-stage="restored"] .lr-rec-depth{color:var(--col-leading);}
+.lr-rec-row[data-stage="none"] .lr-rec-dot,.lr-rec-row[data-stage="none"] .lr-rec-fill{background:var(--text-dim);}
+.lr-rec-row[data-stage="none"] .lr-rec-depth{color:var(--text-dim);}
+@media(max-width:680px){.lr-rec-panel{padding:14px}.lr-rec-row{grid-template-columns:auto minmax(0,1fr);gap:6px;padding:12px}.lr-rec-row>.rs-highs-ticker{grid-row:auto}.lr-rec-row>.lr-rec-ledger,.lr-rec-row>.lr-rec-facts,.lr-rec-row>.lr-rec-more{grid-column:1/-1}.lr-rec-ledger{grid-template-columns:minmax(0,1fr) auto;grid-template-areas:"peak depth" "track track" "trough trough"}.lr-rec-end.is-peak{grid-area:peak}.lr-rec-track{grid-area:track}.lr-rec-depth{grid-area:depth}.lr-rec-end.is-trough{grid-area:trough}.lr-rec-find{width:100%}}
 </style>
 </head>
 <body class="{% if regime.label == 'narrow_leadership' %}rg-narrow{% elif regime.label == 'broad_thrust' %}rg-broad{% else %}rg-mixed{% endif %}">
@@ -868,6 +943,202 @@ html[data-lang="zh"] .leg-chip.green{background:rgba(239,68,68,0.12);color:#f871
   </div>
 </section>
 
+{# RS HIGH WATCH — additive read-only projection, no entry or rank authority. #}
+{% macro _rs_entry_stance(item) -%}
+  {%- set key = item.entry_read_key if item.entry_read_key is defined else none -%}
+  {%- if key == 'staged' -%}<span class="rs-highs-entry staged">{{ t('Staged','待启动') }}</span>
+  {%- elif key == 'building' -%}<span class="rs-highs-entry staged">{{ t('Building','蓄势') }}</span>
+  {%- elif key == 'extended' or key == 'protect' -%}<span class="rs-highs-entry caution">{{ t('Caution','谨慎') }}</span>
+  {%- elif key == 'in_motion' -%}<span class="rs-highs-entry">{{ t('Moving','行进中') }}</span>
+  {%- elif key == 'failed' -%}<span class="rs-highs-entry caution">{{ t('Failed','失效') }}</span>
+  {%- elif key == 'turnaround_watch' -%}<span class="rs-highs-entry">{{ t('Turnaround','反转观察') }}</span>
+  {%- endif -%}
+{%- endmacro %}
+{% set _rsw = lr.rs_high_roster if lr.rs_high_roster is defined and lr.rs_high_roster is not none else {} %}
+{% if _rsw.schema is defined and _rsw.schema == 'leader_rs_high_roster.v1' %}
+<section class="rs-highs-panel glass" aria-label="Relative strength highs">
+  <div class="section-header">
+    <span class="section-title">{{ t('RS highs to watch', '相对强度新高观察') }}</span>
+    <span class="section-rule"></span>
+    {% if _rsw.stale %}<span class="section-note">{{ t('Source stale', '数据陈旧') }}</span>{% endif %}
+    {% if _rsw.additive_clock is defined and _rsw.additive_clock and _rsw.additive_clock.lag_sessions %}<span class="section-note">{{ t('Observed ' ~ _rsw.additive_clock.as_of ~ ' · ' ~ _rsw.additive_clock.lag_sessions ~ ' session behind radar clock', '观察截至 ' ~ _rsw.additive_clock.as_of ~ '，落后雷达时钟 ' ~ _rsw.additive_clock.lag_sessions ~ ' 个交易日') }}</span>{% endif %}
+  </div>
+  <p class="rs-highs-description">
+    {{ t('Strict new SPY-relative closing highs — not necessarily price highs. Leaders can stay on watch while an entry resets; this is not a buy list.', '相对SPY收盘强度创新高，不一定是股价新高。龙头可持续观察，等待回踩形态；这不是买入清单。') }}
+  </p>
+  <div class="rs-highs-columns">
+    {% for horizon, title_en, title_zh in [('daily','Daily · 252 sessions','日线 · 252交易日'),('weekly','Weekly · 52 completed weeks','周线 · 52个完整周')] %}
+    {% set _hs = _rsw[horizon] if _rsw[horizon] is defined and _rsw[horizon] is not none else [] %}
+    <div class="rs-highs-col">
+      <div class="rs-highs-col-top">
+        <span class="rs-highs-col-title">{{ t(title_en, title_zh) }}</span>
+        <span class="rs-highs-count">{{ _hs|length }}</span>
+      </div>
+      {% if _hs|length > 0 %}
+      <div class="rs-highs-tickers">
+      {% for item in _hs[:18] %}
+        <a class="rs-highs-ticker" href="us_stocks.html#{{ item.ticker|e }}" aria-label="View {{ item.ticker|e }} on US stocks board">
+          {{ item.ticker|e }}{% if item.rs_leads_price %}<span class="rs-highs-leads">{{ t('RS first','强度领先') }}</span>{% endif %}{{ _rs_entry_stance(item) }}
+        </a>
+      {% endfor %}
+      {% if _hs|length > 18 %}<span class="rs-highs-ticker">+{{ _hs|length - 18 }}</span>{% endif %}
+      </div>
+      {% else %}
+      <p class="rs-highs-foot">{{ t('No observed highs at this source cut.', '当前数据截点未见新高。') }}</p>
+      {% endif %}
+      <div class="rs-highs-foot">
+        {{ t('Missing:', '缺失：') }} {{ _rsw.unknown[horizon] if _rsw.unknown is defined and horizon in _rsw.unknown else '—' }}
+        {% set _h_asof = _rsw.clock_as_of[horizon] if _rsw.clock_as_of is defined and horizon in _rsw.clock_as_of and _rsw.clock_as_of[horizon] else _rsw.as_of %}
+        · {{ t('Comparison close', '对比收盘') }} {{ _h_asof|e }}
+      </div>
+    </div>
+    {% endfor %}
+    {% set _recent = _rsw.recent if _rsw.recent is defined and _rsw.recent is not none else [] %}
+    <div class="rs-highs-col rs-highs-recents">
+      <div class="rs-highs-col-top">
+        <span class="rs-highs-col-title">{{ t('Recent leaders · monitor the pullback', '近期龙头 · 观察回踩') }}</span>
+        <span class="rs-highs-count">{{ _recent|length }}</span>
+      </div>
+      {% if _recent|length > 0 %}
+      <div class="rs-highs-tickers">
+        {% for item in _recent[:30] %}
+        <a class="rs-highs-ticker" href="us_stocks.html#{{ item.ticker|e }}" data-tip-en="Last RS high {{ item.last_high_as_of|e }} — review entry state, do not chase" data-tip-zh="最近 RS 新高 {{ item.last_high_as_of|e }} — 先看入场状态，不要追高">
+          {{ item.ticker|e }}
+          <span class="rs-highs-ticker-date">{{ item.last_high_as_of|e }}</span>
+          {{ _rs_entry_stance(item) }}
+        </a>
+        {% endfor %}
+        {% if _recent|length > 30 %}<span class="rs-highs-ticker">+{{ _recent|length - 30 }}</span>{% endif %}
+      </div>
+      {% else %}<p class="rs-highs-foot">{{ t('No recently observed highs outside the current highs.', '除了本期新高外，暂无近期强势观察标的。') }}</p>{% endif %}
+      <div class="rs-highs-foot">
+        {{ t('Most recent 21 sessions or 8 completed weeks. Entries require separate pullback evidence. Missing history:', '最近21个交易日或8个完整周。入场仍需独立回踩证据。历史缺失：') }}
+        {{ _rsw.unknown.recent if _rsw.unknown is defined and _rsw.unknown.recent is defined else '—' }}
+      </div>
+    </div>
+  </div>
+</section>
+{% endif %}
+
+{# ── DEEP CORRECTIONS AND RECOVERY (descriptive observation tier; leader_recovery.v1 rows joined by ticker) ── #}
+{% set _rec = lr.recovery_roster if lr.recovery_roster is defined and lr.recovery_roster is not none else {} %}
+{% if _rec.schema is defined and _rec.schema == 'leader_recovery_roster.v1' %}
+{% set _REC_PLAIN_EN = {'UNAVAILABLE': 'Recovery evidence unavailable', 'NO_PRIOR_LEADER': 'No prior leadership observed', 'ACTIVE_LEADER': 'Leadership observed', 'CORRECTING': 'Leader correcting', 'DAMAGED': 'Leadership damaged', 'REBUILDING': 'Recovery attempt', 'REIGNITING': 'Trend and relative strength repairing', 'REPAIR_PAUSED': 'Repair paused; leadership unconfirmed', 'PRICE_RECOVERED_RS_LAGGING': 'Price recovered; relative leadership not restored', 'LEADERSHIP_REESTABLISHED': 'Price and relative leadership restored', 'FAILED_REPAIR': 'Recovery attempt failed'} %}
+{% set _REC_PLAIN_ZH = {'UNAVAILABLE': '修复证据不可用', 'NO_PRIOR_LEADER': '未观察到先前领导地位', 'ACTIVE_LEADER': '观察到领导地位', 'CORRECTING': '领导股回调中', 'DAMAGED': '领导地位受损', 'REBUILDING': '修复尝试中', 'REIGNITING': '趋势与相对强度修复中', 'REPAIR_PAUSED': '修复暂停，领导地位未确认', 'PRICE_RECOVERED_RS_LAGGING': '价格已恢复，相对领导地位未恢复', 'LEADERSHIP_REESTABLISHED': '价格与相对领导地位已恢复', 'FAILED_REPAIR': '修复尝试失败'} %}
+{% set _REC_STAGE = {'DAMAGED': 'failed', 'FAILED_REPAIR': 'failed', 'CORRECTING': 'correcting', 'REBUILDING': 'repairing', 'REIGNITING': 'repairing', 'REPAIR_PAUSED': 'repairing', 'PRICE_RECOVERED_RS_LAGGING': 'price', 'LEADERSHIP_REESTABLISHED': 'restored', 'ACTIVE_LEADER': 'restored'} %}
+{% set _REC_STANCE_EN = {'DAMAGED': 'Stand aside', 'CORRECTING': 'Stand aside', 'FAILED_REPAIR': 'Stand aside'} %}
+{% set _REC_STANCE_ZH = {'DAMAGED': '观望回避', 'CORRECTING': '观望回避', 'FAILED_REPAIR': '观望回避'} %}
+{% set _REC_DIR_EN = {'POSITIVE_OBSERVATIONS': 'rising', 'NEGATIVE_OBSERVATIONS': 'falling', 'FLAT_OBSERVATIONS': 'flat', 'MIXED': 'mixed', 'UNKNOWN': 'unknown'} %}
+{% set _REC_DIR_ZH = {'POSITIVE_OBSERVATIONS': '上调', 'NEGATIVE_OBSERVATIONS': '下调', 'FLAT_OBSERVATIONS': '持平', 'MIXED': '涨跌互现', 'UNKNOWN': '未知'} %}
+{% set _REC_XREASON_EN = {'ticker_not_in_revisions_source': 'no estimate source carries this name', 'ambiguous_duplicate_ticker': 'the estimate source lists this name more than once', 'source_date_unavailable': 'the estimate source has no date', 'source_after_price_cut': 'the estimate snapshot is dated after the price cut', 'all_numeric_readings_missing': 'no numeric readings in the snapshot', 'projection_error': 'the estimate projection did not run'} %}
+{% set _REC_XREASON_ZH = {'ticker_not_in_revisions_source': '预期来源中没有此名称', 'ambiguous_duplicate_ticker': '预期来源中此名称出现多次', 'source_date_unavailable': '预期来源没有日期', 'source_after_price_cut': '预期快照日期晚于价格下跌', 'all_numeric_readings_missing': '快照中没有数值读数', 'projection_error': '预期推算未能运行'} %}
+{% set _recmap = {} %}
+{% for r in rows %}{% if r.display_chips is defined and r.display_chips and r.display_chips.leader_recovery is defined and r.display_chips.leader_recovery %}{% set _ = _recmap.update({r.ticker: r.display_chips.leader_recovery}) %}{% endif %}{% endfor %}
+{% set _rec_rows = _rec.rows if _rec.rows is defined and _rec.rows is not none else [] %}
+{% set _rec_ordered = (_rec_rows|selectattr('episode.max_drawdown', 'number')|sort(attribute='episode.max_drawdown')|list) + (_rec_rows|rejectattr('episode.max_drawdown', 'number')|list) %}
+{% set _rec_n = _rec_ordered|length %}
+{% set _rec_unavail = _rec.counts.UNAVAILABLE if _rec.counts is defined and _rec.counts and _rec.counts.UNAVAILABLE is defined and _rec.counts.UNAVAILABLE else 0 %}
+<section class="lr-rec-panel glass" aria-label="Deep corrections and recovery">
+  <div class="section-header">
+    <span class="section-title">{{ t('Deep corrections and recovery', '深度回调与修复') }}</span>
+    <span class="section-count">{{ _rec_n }}</span>
+    <span class="section-rule"></span>
+    {% if _rec.stale %}<span class="section-note">{{ t('Source stale', '数据陈旧') }}</span>{% endif %}
+    {% if _rec.additive_clock is defined and _rec.additive_clock and _rec.additive_clock.lag_sessions %}<span class="section-note">{{ t('Observed ' ~ _rec.additive_clock.as_of ~ ' · ' ~ _rec.additive_clock.lag_sessions ~ ' session behind radar clock', '观察截至 ' ~ _rec.additive_clock.as_of ~ '，落后雷达时钟 ' ~ _rec.additive_clock.lag_sessions ~ ' 个交易日') }}</span>{% endif %}
+  </div>
+  <p class="lr-rec-description">{{ t("Leaders that fell 10% or more from a leadership high, and where each stands on the way back. Reconstructed from today's data, not first-seen. Order is navigation, not a ranking.", '从领导地位高点下跌10%或以上的领导股，以及各自的修复进度。按今日数据重建，非首次观察。排序仅为导航，不是排名。') }}</p>
+  {% if _rec_unavail %}<p class="lr-rec-partial">{{ t('Recovery evidence unavailable for ' ~ _rec_unavail ~ ' name(s).', '有 ' ~ _rec_unavail ~ ' 个名称的修复证据不可用。') }}</p>{% endif %}
+  {% if _rec_n == 0 %}
+  <div class="mx-empty">
+    <div class="mx-empty-line">{{ t('No deep corrections on record', '暂无深度回调记录') }}</div>
+    <div class="mx-empty-why">{{ t('No current or former leader in this universe has fallen 10% or more from a leadership high in the reconstructed window.', '在重建窗口内，此范围内没有现任或前任领导股从领导地位高点下跌10%或以上。') }}</div>
+  </div>
+  {% else %}
+  <div class="lr-rec-tools">
+    <label><span>{{ t('Find a ticker', '查找代码') }}</span><input class="lr-rec-find" id="lr-rec-find" type="search" autocomplete="off" spellcheck="false"></label>
+    <label><span>{{ t('Order by', '排序') }}</span><select class="lr-rec-order" id="lr-rec-order"><option value="depth" data-en="Deepest correction" data-zh="回调最深">Deepest correction</option><option value="ticker" data-en="Ticker" data-zh="代码">Ticker</option><option value="below200" data-en="Longest below 200-day" data-zh="低于200日线最久">Longest below 200-day</option><option value="last" data-en="Most recent change" data-zh="最近变化">Most recent change</option></select></label>
+  </div>
+  <div class="lr-rec-list is-capped" id="lr-rec-list">
+  {% for item in _rec_ordered %}
+  {% set _d = _recmap.get(item.ticker) %}
+  {% set _ep = item.episode if item.episode is defined and item.episode else {} %}
+  {% set _st = item.state if item.state is defined and item.state else 'UNAVAILABLE' %}
+  {% set _dd = _ep.max_drawdown if _ep.max_drawdown is defined and _ep.max_drawdown is number else none %}
+  {% set _w = ([100, ((_dd|abs) / 0.6 * 100)]|min) if _dd is not none else 0 %}
+  {% set _b200 = _ep.below_200_sessions if _ep.below_200_sessions is defined and _ep.below_200_sessions is number else 0 %}
+  {% set _fr = _ep.failed_repairs if _ep.failed_repairs is defined and _ep.failed_repairs is number else 0 %}
+  {% set _dates = [_ep.opened_on, _ep.trough_on, _ep.repair_started_on, _ep.last_failure_on, _ep.recovered_on]|select('string')|list %}
+  {% set _last = _dates|max if _dates else '' %}
+    <div class="lr-rec-row" data-ticker="{{ item.ticker|e }}" data-state="{{ _st }}" data-stage="{{ _REC_STAGE.get(_st, 'none') }}" data-depth="{{ ('%.4f'|format((_dd|abs) * 100)) if _dd is not none else '' }}" data-below200="{{ _b200 }}" data-last="{{ _last }}">
+      <a class="rs-highs-ticker" href="us_stocks.html#{{ item.ticker|e }}" aria-label="View {{ item.ticker|e }} on US stocks board">{{ item.ticker|e }}</a>
+      <div class="lr-rec-state">
+        <span class="lr-rec-label"><span class="lr-rec-dot" aria-hidden="true"></span>{{ t(_REC_PLAIN_EN.get(_st, 'Recovery evidence unavailable'), _REC_PLAIN_ZH.get(_st, '修复证据不可用')) }}</span>
+        <span class="lr-rec-stance">{{ t(_REC_STANCE_EN.get(_st, "Watch, don't chase"), _REC_STANCE_ZH.get(_st, '观察，不追高')) }}</span>
+        {% if item.entry_context is defined and item.entry_context == 'EXTENDED' %}<span class="lr-rec-stance">{{ t('Extended above its 50-day', '高于50日线过远') }}</span>{% endif %}
+        {% if _ep.history_complete is defined and _ep.history_complete == false %}<span class="lr-rec-stance">{{ t('History incomplete', '历史不完整') }}</span>{% endif %}
+        {% if _ep.status is defined and _ep.status == 'completed' %}<span class="lr-rec-stance">{{ t('Last episode', '上一段回调') }}</span>{% endif %}
+      </div>
+      {% if _dd is not none and _ep.peak_on is defined and _ep.peak_on and _ep.trough_on is defined and _ep.trough_on %}
+      {% set _pk = ('%.2f'|format(_ep.peak_price)) if _ep.peak_price is defined and _ep.peak_price is number else '' %}
+      {% set _tr = ('%.2f'|format(_ep.trough_price)) if _ep.trough_price is defined and _ep.trough_price is number else '' %}
+      {% set _dpct = '%.1f'|format((_dd|abs) * 100) %}
+      <div class="lr-rec-ledger" role="img" aria-label="Fell {{ _dpct }}% from {{ _pk }} on {{ _ep.peak_on }} to {{ _tr }} on {{ _ep.trough_on }}">
+        <span class="lr-rec-end is-peak"><time datetime="{{ _ep.peak_on }}">{{ _ep.peak_on }}</time>{% if _pk %} <b>${{ _pk }}</b>{% endif %}</span>
+        <span class="lr-rec-track"><span class="lr-rec-fill" style="width:{{ '%.1f'|format(_w) }}%"></span></span>
+        <span class="lr-rec-depth">−{{ _dpct }}%</span>
+        <span class="lr-rec-end is-trough"><time datetime="{{ _ep.trough_on }}">{{ _ep.trough_on }}</time>{% if _tr %} <b>${{ _tr }}</b>{% endif %}</span>
+      </div>
+      {% endif %}
+      <div class="lr-rec-facts">
+        <span class="lr-rec-fact">{{ t('Below 200-day:', '低于200日线：') }} <b>{{ _b200 }} {{ t('sessions', '个交易日') }}</b></span>
+        <span class="lr-rec-fact">{{ t('Failed attempts:', '失败尝试：') }} <b>{{ _fr }}</b>{% if _fr and _ep.last_failure_on is defined and _ep.last_failure_on %} ({{ t('last', '最近') }} <time datetime="{{ _ep.last_failure_on }}">{{ _ep.last_failure_on }}</time>){% endif %}</span>
+        <span class="lr-rec-fact">{{ t('Price back:', '价格回到高点：') }} <b>{{ t('yes', '是') if (_ep.price_recovered is defined and _ep.price_recovered) else t('not yet', '尚未') }}</b></span>
+        <span class="lr-rec-fact">{{ t('Relative strength back:', '相对强度恢复：') }} <b>{{ t('yes', '是') if (_ep.rs_recovered is defined and _ep.rs_recovered) else t('not yet', '尚未') }}</b></span>
+        {% if _ep.repair_started_on is defined and _ep.repair_started_on %}<span class="lr-rec-fact">{{ t('Repair since', '修复始于') }} <b><time datetime="{{ _ep.repair_started_on }}">{{ _ep.repair_started_on }}</time></b></span>{% endif %}
+        {% if _ep.recovered_on is defined and _ep.recovered_on %}<span class="lr-rec-fact">{{ t('Recovered', '恢复于') }} <b><time datetime="{{ _ep.recovered_on }}">{{ _ep.recovered_on }}</time></b></span>{% endif %}
+      </div>
+      <details class="lr-rec-more">
+        <summary>{{ t('History and estimates', '历史与预期观察') }}</summary>
+        <div class="lr-rec-more-body">
+          {% set _trs = _d.transitions if _d and _d.transitions is defined and _d.transitions else [] %}
+          {% set _trs_total = _d.transitions_total if _d and _d.transitions_total is defined and _d.transitions_total is number else _trs|length %}
+          {% set _trs_shown = _trs[-6:] %}
+          <p class="lr-rec-sub">{{ t('Recent stage changes', '近期阶段变化') }}</p>
+          {% if _trs_shown %}
+          <ul class="lr-rec-trail">
+            {% for tr in _trs_shown %}<li><time datetime="{{ tr['as_of'] }}">{{ tr['as_of'] }}</time><span>{{ t(_REC_PLAIN_EN.get(tr['to'], tr['to']), _REC_PLAIN_ZH.get(tr['to'], tr['to'])) }}</span></li>{% endfor %}
+          </ul>
+          {% if _trs_total > (_trs_shown|length) %}<p class="lr-rec-note">{{ t('Showing the last ' ~ (_trs_shown|length) ~ ' of ' ~ _trs_total ~ ' recorded changes.', '显示最近 ' ~ (_trs_shown|length) ~ ' 次，共 ' ~ _trs_total ~ ' 次记录变化。') }}</p>{% endif %}
+          {% else %}
+          <p class="lr-rec-note">{{ t('No stage change recorded in the reconstructed window.', '重建窗口内未记录阶段变化。') }}</p>
+          {% endif %}
+          {% if _ep.max_drawdown_peak_on is defined and _ep.max_drawdown_peak_on and _ep.peak_on is defined and _ep.max_drawdown_peak_on != _ep.peak_on and _ep.max_drawdown_from_high_water is defined and _ep.max_drawdown_from_high_water is number and _ep.max_drawdown_trough_on is defined and _ep.max_drawdown_trough_on %}
+          <p class="lr-rec-note">{{ t('Deepest fall from any later high: ' ~ ('%.1f'|format((_ep.max_drawdown_from_high_water|abs) * 100)) ~ '% from ' ~ _ep.max_drawdown_peak_on ~ ' to ' ~ _ep.max_drawdown_trough_on ~ '.', '从后续高点的最大跌幅：' ~ ('%.1f'|format((_ep.max_drawdown_from_high_water|abs) * 100)) ~ '%，' ~ _ep.max_drawdown_peak_on ~ ' 至 ' ~ _ep.max_drawdown_trough_on ~ '。') }}</p>
+          {% endif %}
+          {% set _x = _d.expectations if _d and _d.expectations is defined and _d.expectations else {} %}
+          {% set _xage = _x.source_age_sessions if _x.source_age_sessions is defined and _x.source_age_sessions is number else none %}
+          {% set _xdir = _x.revision_direction if _x.revision_direction is defined and _x.revision_direction else 'UNKNOWN' %}
+          {% set _xdate = _x.source_date if _x.source_date is defined and _x.source_date else '' %}
+          {% set _xreason = _x.reason if _x.reason is defined and _x.reason else '' %}
+          <p class="lr-rec-sub">{{ t('Estimate observations', '预期观察') }}</p>
+          {% if _x.availability is defined and _x.availability == 'SOURCE_DATED_OBSERVATIONS' %}
+          <p class="lr-rec-note">{{ t('Source dated ' ~ _xdate ~ (', ' ~ _xage ~ ' sessions before the radar clock' if _xage is not none else '') ~ '. Direction of the snapshot readings: ' ~ _REC_DIR_EN.get(_xdir, 'unknown') ~ '.', '来源日期 ' ~ _xdate ~ ('，早于雷达时钟 ' ~ _xage ~ ' 个交易日' if _xage is not none else '') ~ '。快照读数方向：' ~ _REC_DIR_ZH.get(_xdir, '未知') ~ '。') }}</p>
+          <p class="lr-rec-note">{{ t('Snapshot observations, not actual reported revenue growth or a thesis verdict.', '快照观察，不是实际公布的营收增长或论点判断。') }}</p>
+          {% else %}
+          <p class="lr-rec-note">{{ t('Estimate observations unavailable: ' ~ _REC_XREASON_EN.get(_xreason, 'not available') ~ '.', '预期观察不可用：' ~ _REC_XREASON_ZH.get(_xreason, '不可用') ~ '。') }}</p>
+          {% endif %}
+          <p class="lr-rec-note">{{ t('Fundamental read not sourced.', '基本面判断未取得来源。') }}</p>
+          <p class="lr-rec-note">{{ t('Reconstructed from the current data vintage; first-seen dates are not yet qualified.', '按当前数据版本重建；首次观察日期尚未核定。') }}</p>
+        </div>
+      </details>
+    </div>
+  {% endfor %}
+  </div>
+  <button type="button" class="lr-rec-showall" id="lr-rec-showall" data-more-en="Show all {{ _rec_n }}" data-more-zh="显示全部 {{ _rec_n }}" data-less-en="Show fewer" data-less-zh="显示较少"{% if _rec_n <= 8 %} hidden{% endif %}>{{ t('Show all ' ~ _rec_n, '显示全部 ' ~ _rec_n) }}</button>
+  {% endif %}
+  <p class="lr-rec-foot">{{ t('Descriptive observation, reconstructed from the current data vintage. It sets no rank, size, alert or entry.', '描述性观察，按当前数据版本重建；不构成排名、仓位、提醒或入场。') }}</p>
+</section>
+{% endif %}
 {# ── CHANGED TONIGHT strip ── #}
 {% set _ct = lr.changed_today if lr.changed_today is defined and lr.changed_today is not none else {} %}
 {% set _ct_entered = _ct.entered if _ct.entered is defined and _ct.entered is not none else [] %}
@@ -2047,6 +2318,66 @@ function toggleBoardGroup(id) {
     document.querySelectorAll('.leg-chip[data-chip-key]').forEach(renderBoardChip);
     renderNearTriggerChips();
   });
+})();
+</script>
+<script>
+(function(){
+  var list = document.getElementById('lr-rec-list');
+  if (!list) return;
+  var find = document.getElementById('lr-rec-find');
+  var order = document.getElementById('lr-rec-order');
+  var showall = document.getElementById('lr-rec-showall');
+  var CAP = 8;
+  function num(el, key){ var v = parseFloat(el.getAttribute('data-' + key)); return isNaN(v) ? -1 : v; }
+  function str(el, key){ return el.getAttribute('data-' + key) || ''; }
+  var KEYS = {
+    depth: function(a, b){ return num(b, 'depth') - num(a, 'depth'); },
+    below200: function(a, b){ return num(b, 'below200') - num(a, 'below200'); },
+    last: function(a, b){ var x = str(a, 'last'), y = str(b, 'last'); return x < y ? 1 : (x > y ? -1 : 0); },
+    ticker: function(a, b){ var x = str(a, 'ticker'), y = str(b, 'ticker'); return x < y ? -1 : (x > y ? 1 : 0); }
+  };
+  function isZh(){ return document.documentElement.getAttribute('data-lang') === 'zh'; }
+  function relabel(){
+    var zh = isZh();
+    if (order) {
+      for (var i = 0; i < order.options.length; i++) {
+        var o = order.options[i];
+        o.textContent = o.getAttribute(zh ? 'data-zh' : 'data-en') || o.textContent;
+      }
+    }
+    if (showall) {
+      var open = list.classList.contains('is-open');
+      showall.textContent = showall.getAttribute((open ? 'data-less-' : 'data-more-') + (zh ? 'zh' : 'en')) || showall.textContent;
+    }
+  }
+  function apply(){
+    var rows = Array.prototype.slice.call(list.querySelectorAll('.lr-rec-row'));
+    var key = (order && KEYS[order.value]) ? order.value : 'depth';
+    rows.sort(KEYS[key]);
+    for (var i = 0; i < rows.length; i++) list.appendChild(rows[i]);
+    var q = find ? find.value.trim().toUpperCase() : '';
+    var shown = 0;
+    for (var j = 0; j < rows.length; j++) {
+      var hit = !q || str(rows[j], 'ticker').indexOf(q) === 0;
+      rows[j].classList.toggle('is-hidden', !hit);
+      if (hit) shown++;
+    }
+    if (q) { list.classList.remove('is-capped'); }
+    else if (!list.classList.contains('is-open')) { list.classList.add('is-capped'); }
+    if (showall) {
+      if (q || shown <= CAP) showall.setAttribute('hidden', '');
+      else showall.removeAttribute('hidden');
+    }
+  }
+  if (find) find.addEventListener('input', apply);
+  if (order) order.addEventListener('change', apply);
+  if (showall) showall.addEventListener('click', function(){
+    var open = list.classList.toggle('is-open');
+    list.classList.toggle('is-capped', !open);
+    relabel();
+  });
+  document.addEventListener('langchange', relabel);
+  relabel();
 })();
 </script>
 <script src="theme.js"></script>

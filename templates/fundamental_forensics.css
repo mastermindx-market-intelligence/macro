@@ -162,6 +162,7 @@ body.ff-page {
 }
 
 .ff-company-picker > label,
+.ff-desk-asof > label,
 .ff-topic-filter > span,
 .ff-period-controls label > span {
   display: block;
@@ -1864,6 +1865,11 @@ a.ff-receipt-link {
   animation: ff-spin .8s linear infinite;
 }
 
+/* The scrim, the analysis drawer and the receipt inspector live INSIDE the workspace,
+   whose z-index: 1 makes it a stacking context below the site header layer (the nav
+   search sits at 110): without this lift the header painted over the open modal. */
+body.ff-modal-open .ff-workspace { z-index: 200; }
+
 .ff-scrim {
   position: fixed;
   z-index: 180;
@@ -1874,7 +1880,8 @@ a.ff-receipt-link {
 }
 
 .ff-modal-open { overflow: hidden !important; }
-body.ff-modal-open #mmb-launch {
+body.ff-modal-open #mmb-launch,
+body.ff-modal-open #mmb-boot {
   opacity: 0 !important;
   pointer-events: none !important;
   visibility: hidden !important;
@@ -1893,6 +1900,7 @@ body.ff-modal-open #mmb-launch {
   .ff-workspace[data-tab="radar"],
   .ff-workspace[data-tab="disclosures"],
   .ff-workspace[data-tab="redlines"],
+  .ff-workspace[data-tab="peers"],
   .ff-workspace[data-tab="trace"][data-source-mode="receipt"] {
     grid-template-columns: minmax(0, 1fr) minmax(370px, 430px);
     align-items: start;
@@ -1901,6 +1909,7 @@ body.ff-modal-open #mmb-launch {
   .ff-workspace[data-tab="radar"] .ff-evidence,
   .ff-workspace[data-tab="disclosures"] .ff-evidence,
   .ff-workspace[data-tab="redlines"] .ff-evidence,
+  .ff-workspace[data-tab="peers"] .ff-evidence,
   .ff-workspace[data-tab="trace"][data-source-mode="receipt"] .ff-receipt-inspector {
     position: sticky;
     top: 18px;
@@ -2262,7 +2271,7 @@ body.ff-modal-open #mmb-launch {
   gap: 10px;
 }
 
-.ff-gate-primary {
+.ff-page .ff-gate-primary {
   min-height: 42px;
   padding: 12px 19px;
   border: 1px solid var(--ff-gate-ink);
@@ -2277,6 +2286,17 @@ body.ff-modal-open #mmb-launch {
 }
 
 .ff-gate-primary:hover { transform: translateY(-1px); filter: brightness(1.06); }
+/* P2 repair item 5: white on the raw gate ink measured 1.83:1 (dark) and
+   2.33:1 (light). The primary is a SOLID fill carrying white text, so it takes
+   theme.css's fill grade (--fill-*, hue mixed toward black), which clears AA in
+   both themes; chip, rule and wash keep the raw --ff-gate-ink. The measured
+   failure was also a cascade bug: `.ff-page button { color: inherit; }` (0,1,1)
+   beat the primary's own white text (0,1,0), so the CTA painted inherited
+   body ink. The primary now carries `.ff-page` too, which restores its white. */
+.ff-gate-state { --ff-gate-fill: var(--fill-info, var(--info)); }
+.ff-gate-state[data-state="upgrade"] { --ff-gate-fill: var(--fill-act, var(--act)); }
+.ff-gate-state[data-state="unavailable"] { --ff-gate-fill: var(--fill-warn, var(--warn)); }
+.ff-page .ff-gate-primary { border-color: var(--ff-gate-fill); background: var(--ff-gate-fill); }
 
 .ff-gate-secondary {
   min-height: 42px;
@@ -2481,7 +2501,9 @@ body.ff-modal-open #mmb-launch {
 .ff-workspace.ff-gated .ff-evidence,
 .ff-workspace.ff-gated .ff-receipt-inspector { display: none; }
 
-.ff-workspace.ff-gated .ff-hero { padding-bottom: 6px; }
+/* The desk header is workbench chrome: it hides with the workbench when the
+   gate replaces it (§1.5) — a stranger never meets issuer controls. */
+.ff-workspace.ff-gated .ff-desk-header { display: none; }
 
 /* Light is a design target, not a token swap. The tint that reads as a soft
    wash on the dark canvas becomes a highlighter smear on white, so it drops to
@@ -2532,7 +2554,7 @@ html[data-theme="light"] .ff-gate-slot-index { background: #fff; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .ff-gate-primary { transition: none; }
+  .ff-page .ff-gate-primary { transition: none; }
   .ff-gate-primary:hover { transform: none; }
 }
 
@@ -2549,11 +2571,13 @@ html[data-theme="light"] .ff-gate-slot-index { background: #fff; }
   --ff-card: color-mix(in srgb, var(--panel) 94%, transparent);
 }
 
+/* P2 R8: the canvas wash rides theme tokens only — the retired indigo/cyan
+   hexes are gone, so light and dark each mix their own canvas. */
 body.ff-page {
   background:
-    radial-gradient(circle at 4% 4%, color-mix(in srgb, var(--ff-indigo) 14%, transparent), transparent 31rem),
-    radial-gradient(circle at 92% 15%, color-mix(in srgb, var(--ff-cyan) 11%, transparent), transparent 30rem),
-    linear-gradient(160deg, color-mix(in srgb, var(--bg) 94%, var(--ff-indigo)), var(--bg) 46%, color-mix(in srgb, var(--bg) 96%, var(--ff-cyan)));
+    radial-gradient(circle at 4% 4%, var(--ff-tint-info-11), transparent 31rem),
+    radial-gradient(circle at 92% 15%, var(--ff-tint-act-8), transparent 30rem),
+    linear-gradient(160deg, var(--ff-tint-bg-94-info), var(--bg) 46%, var(--ff-tint-bg-96-act));
 }
 
 .ff-workspace { width: min(100%, 1540px); gap: 20px; }
@@ -2631,19 +2655,6 @@ body.ff-page {
 .ff-compare-arc { position: absolute; top: 16px; left: 52px; width: 184px; color: var(--ff-cyan); opacity: .7; }
 .ff-visual-caption { position: absolute; right: 21px; bottom: 1px; padding: 5px 9px; border-radius: 999px; color: var(--ff-indigo); background: color-mix(in srgb, var(--ff-indigo) 11%, var(--panel)); font-size: 9px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; }
 
-.ff-run-meta {
-  width: calc(100% - 28px);
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  margin: -16px auto 0;
-  padding: 11px 14px;
-  border: 1px solid var(--ff-border);
-  border-radius: 14px;
-  background: color-mix(in srgb, var(--panel) 93%, transparent);
-  box-shadow: 0 18px 45px -35px rgba(0, 0, 0, .7);
-  backdrop-filter: blur(18px);
-}
-.ff-run-meta > div { padding: 0 14px; border-left: 1px solid var(--ff-border); }
-.ff-run-meta > div:first-child { border-left: 0; }
 .ff-run-meta dd { max-width: 100%; font-family: var(--font-ui); font-size: 10px; font-weight: 650; }
 
 .ff-context-card { margin-top: 16px; grid-template-columns: minmax(260px, .9fr) minmax(260px, 1.25fr) auto; min-height: 96px; padding: 16px 18px; border-radius: 18px; }
@@ -2677,20 +2688,20 @@ body.ff-page {
 .ff-overview-status[data-state="watch"] { border-color: color-mix(in srgb, var(--ff-amber) 44%, var(--ff-border)); color: var(--ff-amber); background: color-mix(in srgb, var(--ff-amber) 8%, var(--panel)); }
 .ff-overview-status[data-state="clear"] { border-color: color-mix(in srgb, var(--ok) 38%, var(--ff-border)); color: var(--ink-ok, var(--ok)); background: color-mix(in srgb, var(--ok) 7%, var(--panel)); }
 
-.ff-quick-signal { position: relative; display: grid; grid-template-columns: 56px minmax(0, 1fr) auto; align-items: center; min-height: 145px; margin-top: 19px; padding: 18px; overflow: hidden; border: 1px solid color-mix(in srgb, var(--ff-indigo) 32%, var(--ff-border)); border-radius: 18px; background: linear-gradient(132deg, color-mix(in srgb, var(--ff-indigo) 11%, var(--panel2)), color-mix(in srgb, var(--ff-cyan) 5%, var(--panel)) 76%); gap: 16px; }
-.ff-quick-signal::after { position: absolute; width: 150px; height: 150px; top: -90px; right: -40px; border: 22px solid color-mix(in srgb, var(--ff-cyan) 8%, transparent); border-radius: 50%; content: ""; }
-.ff-quick-signal[data-priority="high"] { border-color: color-mix(in srgb, var(--ff-coral) 43%, var(--ff-border)); background: linear-gradient(132deg, color-mix(in srgb, var(--ff-coral) 10%, var(--panel2)), color-mix(in srgb, var(--ff-indigo) 5%, var(--panel)) 78%); }
+.ff-quick-signal { position: relative; display: grid; grid-template-columns: 56px minmax(0, 1fr) auto; align-items: center; min-height: 145px; margin-top: 19px; padding: 18px; overflow: hidden; border: 1px solid var(--ff-tint-info-32-border); border-radius: var(--r-panel, 14px); background: linear-gradient(132deg, var(--ff-tint-info-11-panel2), var(--ff-tint-info-5-panel) 76%); gap: 16px; }
+.ff-quick-signal::after { position: absolute; width: 150px; height: 150px; top: -90px; right: -40px; border: 22px solid var(--ff-tint-info-8); border-radius: var(--r-pill, 999px); content: ""; }
+.ff-quick-signal[data-priority="high"] { border-color: var(--ff-tint-act-43-border); background: linear-gradient(132deg, var(--ff-tint-act-10-panel2), var(--ff-tint-info-5-panel) 78%); }
 .ff-quick-signal[data-priority="clear"] { border-color: color-mix(in srgb, var(--ok) 34%, var(--ff-border)); background: linear-gradient(132deg, color-mix(in srgb, var(--ok) 8%, var(--panel2)), var(--panel)); }
-.ff-quick-signal-icon { display: grid; width: 56px; height: 56px; place-items: center; border-radius: 17px; color: var(--ff-indigo); background: color-mix(in srgb, var(--ff-indigo) 12%, var(--panel)); }
-.ff-quick-signal[data-priority="high"] .ff-quick-signal-icon { color: var(--ff-coral); background: color-mix(in srgb, var(--ff-coral) 12%, var(--panel)); }
+.ff-quick-signal-icon { display: grid; width: 56px; height: 56px; place-items: center; border-radius: var(--r-panel, 14px); color: var(--info); background: var(--ff-tint-info-12-panel); }
+.ff-quick-signal[data-priority="high"] .ff-quick-signal-icon { color: var(--act); background: var(--ff-tint-act-12-panel); }
 .ff-quick-signal-icon svg { width: 32px; height: 32px; }
 .ff-quick-signal-copy { position: relative; z-index: 1; min-width: 0; }
-.ff-quick-signal-label { color: var(--ff-indigo); font-size: 9px; font-weight: 850; letter-spacing: .08em; text-transform: uppercase; }
-.ff-quick-signal[data-priority="high"] .ff-quick-signal-label { color: var(--ff-coral); }
+.ff-quick-signal-label { color: var(--info); font-size: 9px; font-weight: 850; letter-spacing: .08em; text-transform: uppercase; }
+.ff-quick-signal[data-priority="high"] .ff-quick-signal-label { color: var(--act); }
 .ff-quick-signal h3 { margin: 4px 0 0; font-size: 18px; line-height: 1.2; letter-spacing: -.02em; }
 .ff-quick-signal p { max-width: 690px; margin: 7px 0 0; color: var(--ff-ink-soft); font-size: 11px; line-height: 1.55; }
-.ff-quick-signal-open { position: relative; z-index: 2; min-height: 42px; padding: 8px 13px; border: 1px solid color-mix(in srgb, var(--ff-indigo) 38%, var(--ff-border)); border-radius: 11px; color: var(--text); background: color-mix(in srgb, var(--ff-indigo) 10%, var(--panel)); font-size: 10px; font-weight: 800; cursor: pointer; white-space: nowrap; }
-.ff-quick-signal-open:hover { background: color-mix(in srgb, var(--ff-indigo) 16%, var(--panel)); }
+.ff-quick-signal-open { position: relative; z-index: 2; min-height: 42px; padding: 8px 13px; border: 1px solid var(--ff-tint-info-38-border); border-radius: var(--r-btn, 10px); color: var(--text); background: var(--ff-tint-info-10-panel); font-size: 10px; font-weight: 800; cursor: pointer; white-space: nowrap; }
+.ff-quick-signal-open:hover { background: var(--ff-tint-info-16-panel); }
 
 .ff-overview-side { display: grid; grid-template-rows: auto 1fr; padding: 18px; border-left: 1px solid var(--ff-border); background: color-mix(in srgb, var(--panel2) 43%, transparent); gap: 13px; }
 .ff-snapshot-stats { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 9px; }
@@ -2712,6 +2723,11 @@ body.ff-page {
 
 .ff-tabs { top: 8px; display: block; padding: 7px; overflow: hidden; border-radius: 17px; background: color-mix(in srgb, var(--panel) 94%, transparent); }
 .ff-tablist { display: grid; grid-template-columns: 1.05fr 1.55fr 1fr; width: 100%; gap: 7px; }
+/* P2 repair item 1: Verify now holds three tabs, so fixed fr tracks cut
+   "Peers"/"同业". Each group track floors at its own max-content and the bar
+   scrolls rather than clips if a locale ever outgrows it. */
+.ff-tabs { overflow-x: auto; overflow-y: hidden; }
+.ff-tablist { grid-template-columns: minmax(max-content, 1.05fr) minmax(max-content, 1.55fr) minmax(max-content, 1fr); }
 .ff-tab-group { position: relative; display: flex; min-width: 0; padding: 17px 4px 3px; border: 1px solid var(--ff-border); border-radius: 12px; background: color-mix(in srgb, var(--panel2) 33%, transparent); gap: 3px; }
 .ff-tab-group-label { position: absolute; top: 3px; left: 9px; color: var(--muted); font-size: 7px; font-weight: 850; letter-spacing: .09em; text-transform: uppercase; }
 .ff-tab { flex: 1 1 auto; justify-content: center; min-height: 39px; padding: 7px 9px; border-radius: 9px; font-size: 9.5px; white-space: nowrap; gap: 5px; }
@@ -2737,7 +2753,7 @@ body.ff-page {
 
 .ff-evidence,
 .ff-receipt-inspector { border-radius: 20px; background: var(--ff-card); }
-.ff-evidence-head { padding: 20px 21px 16px; background: linear-gradient(118deg, color-mix(in srgb, var(--ff-indigo) 7%, transparent), transparent 62%); }
+.ff-evidence-head { padding: 20px 21px 16px; background: linear-gradient(118deg, var(--ff-tint-info-7), transparent 62%); }
 .ff-evidence-head h2 { font-size: 18px; }
 .ff-evidence-body { padding: 18px 21px 24px; }
 .ff-proof-badge { margin-bottom: 12px; }
@@ -2774,12 +2790,11 @@ body.ff-page {
 
 .ff-workspace.ff-gated .ff-overview { display: none; }
 
-html[data-theme="light"] .ff-hero { background: linear-gradient(118deg, #f1f2ff 0%, rgba(255,255,255,.96) 56%, #edfafd 100%); }
 html[data-theme="light"] .ff-overview,
 html[data-theme="light"] .ff-evidence,
-html[data-theme="light"] .ff-panel { background: rgba(255,255,255,.91); }
-html[data-theme="light"] .ff-quick-signal { background: linear-gradient(132deg, #f3f2ff, #f2fbfd 76%); }
-html[data-theme="light"] .ff-quick-signal[data-priority="high"] { background: linear-gradient(132deg, #fff3f2, #f6f4ff 78%); }
+html[data-theme="light"] .ff-panel { background: var(--panel); }
+html[data-theme="light"] .ff-quick-signal { border-color: var(--line); background: var(--panel); }
+html[data-theme="light"] .ff-quick-signal[data-priority="high"] { border-color: var(--ff-tint-act-30-line); background: var(--panel); }
 
 @media (min-width: 1100px) {
   body.ff-page { padding-right: max(28px, calc((100vw - 1540px) / 2)); padding-left: max(28px, calc((100vw - 1540px) / 2)); }
@@ -2790,9 +2805,13 @@ html[data-theme="light"] .ff-quick-signal[data-priority="high"] { background: li
   .ff-workspace[data-tab="redlines"],
   .ff-workspace[data-tab="timeline"],
   .ff-workspace[data-tab="compare"],
-  .ff-workspace[data-tab="trace"] { grid-template-columns: minmax(0, 1fr) minmax(370px, 420px); align-items: start; }
+  .ff-workspace[data-tab="trace"],
+  .ff-workspace[data-tab="peers"] { grid-template-columns: minmax(0, 1fr) minmax(370px, 420px); align-items: start; }
   .ff-main { grid-column: 1; }
   .ff-workspace .ff-evidence { position: sticky; grid-column: 2; grid-row: 1; top: 18px; display: block; max-height: calc(100vh - 36px); overflow-y: auto; }
+  /* The opened analysis drawer is a modal (aria-modal, scrim, inert main): it leaves the
+     docked column and overlays at the right edge instead of widening the grid track. */
+  .ff-workspace .ff-evidence.is-open { position: fixed; top: 12px; right: 12px; bottom: 12px; max-height: none; }
   .ff-workspace[data-tab="trace"][data-source-mode="receipt"] .ff-evidence { display: none; }
   .ff-workspace[data-tab="trace"][data-source-mode="receipt"] .ff-receipt-inspector { position: sticky; grid-column: 2; grid-row: 1; top: 18px; display: block; max-height: calc(100vh - 36px); overflow-y: auto; }
 }
@@ -2865,4 +2884,514 @@ html[data-theme="light"] .ff-quick-signal[data-priority="high"] { background: li
   .ff-evidence-body { padding: 14px 14px 28px; }
   .ff-signal-meaning { padding: 12px; }
   .ff-view-guide { min-height: 280px; }
+}
+
+/* ── P2 desk header + lead brief (spec §1.2–§1.4) ─────────────────────────
+   DARK TREATMENT (command centre): .ff-desk-header sits as a var(--panel)
+   slab on the token-mixed canvas; the active as-of carries a restrained
+   --info fill plus a 1px ring — no drop-shadow bloom, no second aurora.
+   LIGHT TREATMENT (research workspace): white var(--panel) material, a
+   hairline var(--line) edge and the theme's --card-shadow elevation token —
+   shadow instead of glow, and the active as-of drops the ring for a 1px
+   --info hairline with a 4% tint. The two themes intentionally differ in
+   mechanism, not just tokens (R8 / AM2). */
+.ff-desk-header {
+  display: grid;
+  gap: 8px;
+  padding: 12px 16px 10px;
+  border: 1px solid var(--line);
+  border-radius: var(--r-panel, 14px);
+  background: var(--panel);
+}
+.ff-desk-row {
+  display: grid;
+  /* The as-of column is sized to its controls: a fixed 160px floor let the
+     date input overflow into Source status at 1440 (P2 judge repair). */
+  grid-template-columns: minmax(200px, 1fr) minmax(150px, .8fr) max-content minmax(140px, .6fr) auto;
+  align-items: end;
+  gap: 12px;
+}
+.ff-desk-stamp {
+  margin: 0;
+  color: var(--muted);
+  font-size: var(--fs-micro);
+  font-variant-numeric: tabular-nums;
+}
+.ff-desk-asof > label,
+.ff-desk-export { align-self: end; }
+.ff-asof-controls { display: flex; gap: 6px; align-items: center; }
+/* X2-s saved-views row (seat r2 R2-5/R2-6): a governed modifier on the
+   as-of control block. It wraps (at 390 the select, the name and the actions
+   fold onto their own lines), and the select column takes the free row width
+   so a pinned name and the unavailable marker read whole at 1440. */
+.ff-asof-controls--saved {
+  flex-wrap: wrap;
+  margin-top: 8px;
+}
+.ff-asof-controls--saved > .ff-topic-filter {
+  flex: 1 1 260px;
+  width: auto;
+  min-width: 0;
+}
+.ff-asof-latest,
+.ff-export-btn,
+.ff-export-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 36px;
+  padding: 0 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--r-btn, 10px);
+  background: var(--panel2);
+  color: var(--text);
+  font-size: var(--fs-label);
+  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
+}
+.ff-asof-latest.is-active {
+  border-color: var(--ff-tint-info-45-line);
+  color: var(--text);
+  background: var(--ff-tint-info-18-panel);
+  box-shadow: 0 0 0 1px var(--ff-tint-info-35);
+}
+/* P2 r3 item b: the Latest control stays one line at 390 — CJK breaks between
+   glyphs, so a flex-squeezed "最新" wrapped to two lines while "Latest"
+   (one word) never could. No other change to this control. */
+.ff-asof-latest { white-space: nowrap; }
+.ff-asof-input {
+  min-height: 36px;
+  padding: 0 10px;
+  border: 1px solid var(--line);
+  border-radius: var(--r-btn, 10px);
+  background: var(--panel2);
+  color: var(--text);
+}
+/* The disabled export dims and lets hover fall through to .ff-desk-export,
+   which carries the same cause tip (item 11). A disabled source control never
+   dims: its number keeps full --text ink (item 2). */
+.ff-export-btn:disabled {
+  opacity: .46;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+.ff-source-control:disabled { cursor: not-allowed; }
+/* The run-meta strip is desk furniture now: no floating card, no backdrop. */
+.ff-run-meta {
+  display: grid;
+  /* Source status never truncates its one word; Built from takes the ellipsis. */
+  grid-template-columns: max-content minmax(0, 1fr);
+  gap: 8px;
+  width: auto;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+  backdrop-filter: none;
+}
+/* Stacked in the desk row: from 701px the row leaves this column its 140px
+   floor, so a side-by-side pair cut Built from to one letter. Stacked, Source
+   status and Built from each get the full column; at 390 the row collapses and
+   the pair stays side by side (P2 judge repair). */
+@media (min-width: 701px) {
+  .ff-run-meta { grid-template-columns: minmax(0, 1fr); gap: 4px; }
+}
+#ff-overview { margin-top: 12px; }
+.ff-quick-signal {
+  grid-template-columns: 48px minmax(0, 1fr) auto;
+  min-height: 0;
+}
+.ff-quick-signal-magnitude {
+  margin: 6px 0 0;
+  font-family: var(--font-mono);
+  font-size: var(--fs-md);
+  font-variant-numeric: tabular-nums;
+}
+
+/* LIGHT TREATMENT: white material + hairline + elevation token (AM2/R-C —
+   the spec's rgba shadow literal is served by --card-shadow instead). */
+html[data-theme="light"] .ff-desk-header {
+  border: 1px solid var(--line);
+  background: var(--panel);
+  box-shadow: var(--card-shadow);
+}
+html[data-theme="light"] .ff-asof-latest.is-active {
+  border-color: var(--info);
+  background: var(--ff-tint-info-4-panel);
+  box-shadow: none;
+}
+html[data-theme="light"] .ff-quick-signal { box-shadow: none; }
+
+@media (min-width: 1100px) {
+  .ff-overview { grid-template-columns: minmax(0, 1.6fr) minmax(240px, .55fr); }
+}
+@media (max-width: 700px) {
+  .ff-desk-row { grid-template-columns: minmax(0, 1fr); }
+  .ff-run-meta { width: auto; margin: 0; padding: 0; }
+  .ff-desk-export { justify-self: stretch; }
+  .ff-export-btn,
+  .ff-export-link { width: 100%; }
+  .ff-quick-signal { grid-template-columns: 40px minmax(0, 1fr); }
+  .ff-quick-signal-open { grid-column: 1 / -1; width: 100%; }
+}
+
+/* ── P2 source controls (§2, R3) ──────────────────────────────────────────
+   Every number is a control into #ff-evidence. DARK: a ghost button on
+   var(--panel2) with a 1px var(--line) edge; hover adds a restrained --info
+   fill and no bloom. LIGHT: a white chip with a hairline that lifts with the
+   theme's --popover-shadow token on hover (AM2/R-C) — shadow, not glow. An
+   unavailable span is shown, never dimmed (P2 repair item 2, superseding the
+   §2.3 46% opacity): the number keeps full --text ink, the control drops its
+   fill for a dashed --line edge, and the visible "Source span unavailable"
+   label (§2.1) prints once per value row in the evidence rail. */
+.ff-source-control {
+  display: inline-flex;
+  align-items: center;
+  /* safe: a value wider than its control clips at the trailing edge, never the
+     leading one, so a sign (+/−) can never be the part that disappears. */
+  justify-content: safe flex-end;
+  min-height: 26px;
+  padding: 2px 8px;
+  border: 1px solid var(--line);
+  border-radius: var(--r-ctl, 8px);
+  color: var(--text);
+  background: var(--panel2);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-variant-numeric: tabular-nums;
+  cursor: pointer;
+  gap: 6px;
+}
+.ff-source-control:hover {
+  background: var(--ff-tint-info-12-panel2);
+}
+.ff-source-control.is-unavailable,
+.ff-source-control.is-unavailable:hover {
+  border-style: dashed;
+  border-color: var(--line);
+  color: var(--text);
+  background: transparent;
+  box-shadow: none;
+  cursor: not-allowed;
+}
+.ff-value-row-unavail {
+  display: block;
+  margin-top: 3px;
+  color: var(--muted);
+  font-size: 9px;
+  font-weight: 650;
+  line-height: 1.3;
+  white-space: normal;
+}
+.ff-compact.tnum { font-variant-numeric: tabular-nums; white-space: nowrap; }
+.ff-source-unavail {
+  color: var(--muted);
+  font-family: var(--font-ui);
+  font-size: 9px;
+  white-space: nowrap;
+}
+/* Table cells and compare values swap their old <strong> for the control. */
+.ff-table td .ff-source-control,
+.ff-compare-value .ff-source-control,
+.ff-value-cell .ff-source-control {
+  display: inline-flex;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.ff-value-cell .ff-source-control { justify-self: end; }
+/* Narrow sheets stack each value row: the metric spans the row and the three
+   values share the next line. Four tracks in a 362px row left the change track
+   70px wide, and a ZH "+4 个百分点" overflowed it and lost its sign. */
+@media (max-width: 700px) {
+  .ff-value-row { grid-template-columns: repeat(3, minmax(0, 1fr)); row-gap: 6px; }
+  .ff-value-label { grid-column: 1 / -1; }
+  .ff-value-cell small { font-size: 9px; }
+}
+/* Narrow value cells keep the VALUE legible when a span is unavailable:
+   the end-aligned control used to clip its own number and print a
+   left-cut "an unavailable". The notice stays in the accessible name,
+   the muted ink, the not-allowed cursor and the data-tip. */
+.ff-table td .ff-source-control.is-unavailable .ff-source-unavail,
+.ff-compare-value .ff-source-control.is-unavailable .ff-source-unavail,
+.ff-value-cell .ff-source-control.is-unavailable .ff-source-unavail {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+/* The span variant rides inside card buttons; the card keeps the click. */
+.ff-redline-copy .ff-source-control,
+.ff-finding-periods .ff-source-control {
+  padding: 1px 6px;
+  font-size: 9px;
+}
+/* Drawer: exact bytes, compact secondary, bounded excerpt. */
+.ff-exact {
+  display: block;
+  margin: 0;
+  padding: 10px 11px;
+  overflow-wrap: anywhere;
+  border: 1px solid var(--ff-border);
+  border-radius: var(--r-btn, 10px);
+  color: var(--text);
+  background: var(--ff-soft);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  line-height: 1.5;
+}
+.ff-span-excerpt {
+  margin: 0;
+  padding: 9px 10px;
+  border-left: 2px solid var(--ff-tint-info-70-border);
+  color: var(--text);
+  background: var(--ff-tint-info-5-panel);
+  font-size: 10px;
+  line-height: 1.55;
+  overflow-wrap: anywhere;
+}
+.ff-proof-compact-line {
+  margin: 7px 0 0;
+  color: var(--muted);
+  font-size: 10px;
+}
+.ff-proof-compact-line b { color: var(--text); font-size: 9px; letter-spacing: .04em; text-transform: uppercase; }
+
+html[data-theme="light"] .ff-source-control {
+  border-color: var(--line);
+  background: var(--panel);
+}
+html[data-theme="light"] .ff-source-control:hover {
+  background: var(--panel);
+  box-shadow: var(--popover-shadow);
+}
+html[data-theme="light"] .ff-evidence {
+  border-color: var(--line);
+  box-shadow: var(--popover-shadow);
+}
+
+/* ── P2 revisions panel (§3, R4) ───────────────────────────────────────────
+   Same period, three source vintages. DARK: the restated column that moved
+   against its root takes a 6% --warn fill and nothing else. LIGHT: the same
+   tint plus a 1px left hairline — a ruled correction, not a glow. */
+.ff-revisions { padding: 13px 0; border-bottom: 1px solid var(--ff-border); }
+.ff-revisions h3 { margin: 0 0 4px; font-size: 14px; letter-spacing: -.018em; }
+.ff-revisions > p { margin: 0 0 11px; color: var(--muted); font-size: 11px; }
+.ff-revisions-echo { margin: 0 0 8px; color: var(--muted); font-family: var(--font-mono); font-size: 9px; }
+.ff-revisions-absence { color: var(--muted); font-size: 10px; white-space: normal; }
+.ff-revisions-table tr.is-restated td:last-child {
+  background: var(--ff-tint-warn-6);
+}
+html[data-theme="light"] .ff-revisions-table tr.is-restated td:last-child {
+  background: var(--ff-tint-warn-6);
+  border-left: 1px solid var(--ff-tint-warn-40-line);
+}
+.ff-revisions-retry { margin-top: 9px; }
+.ff-revisions-retry button {
+  min-height: 36px;
+  padding: 6px 11px;
+  border: 1px solid var(--gbtn-brd);
+  border-radius: var(--r-btn, 10px);
+  color: var(--text);
+  background: var(--gbtn-bg);
+  font-size: 9px;
+  font-weight: 750;
+  cursor: pointer;
+}
+.ff-revisions-retry button:hover { border-color: var(--gbtn-brd-hover); background: var(--gbtn-bg-hover); }
+
+/* ── P2 statement tree (spec row 6) ────────────────────────────────────────
+   As-reported labels lead, values are source controls, and the normalized
+   state table stays as the honest fallback when the tree cannot be opened. */
+.ff-statement-notice {
+  margin: 0 0 12px;
+  padding: 9px 11px;
+  border: 1px solid var(--ff-border);
+  border-radius: var(--r-btn, 10px);
+  color: var(--muted);
+  background: var(--ff-soft);
+  font-size: 10.5px;
+  line-height: 1.5;
+}
+.ff-statement-block { margin-top: 14px; }
+.ff-statement-block h3 {
+  margin: 0 0 8px;
+  font-size: 13px;
+  letter-spacing: -.015em;
+}
+.ff-statement-table td.ff-statement-label {
+  max-width: 320px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ── P2 peer panel (§4, R5) ────────────────────────────────────────────────
+   DARK: included rows ride var(--panel2); excluded rows take an 8% --muted
+   fill with no strikethrough (struck text reads as deleted data). LIGHT:
+   included rows are white with a hairline; excluded rows keep the 8% fill
+   and gain a dashed hairline — a ruled exclusion, not an erasure. */
+.ff-peer-policy {
+  margin: 12px 0 0;
+  padding: 8px 10px;
+  border: 1px solid var(--ff-border);
+  border-radius: var(--r-btn, 10px);
+  color: var(--muted);
+  background: var(--ff-soft);
+  font-size: 10px;
+}
+.ff-peer-metric { width: min(240px, 100%); margin-top: 12px; }
+.ff-peer-subhead {
+  margin: 16px 0 8px;
+  color: var(--muted);
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+.ff-peer-row {
+  display: flex;
+  align-items: center;
+  margin-top: 6px;
+  padding: 8px 10px;
+  border: 1px solid var(--ff-border);
+  border-radius: var(--r-btn, 10px);
+  background: var(--panel2);
+  gap: 10px;
+}
+.ff-peer-row.is-anchor {
+  border-color: var(--ff-tint-info-40-border);
+}
+.ff-peer-anchor {
+  padding: 2px 6px;
+  border: 1px solid var(--ff-tint-info-40-border);
+  border-radius: var(--r-pill, 999px);
+  color: var(--ink-info, var(--info));
+  font-size: 8px;
+  font-weight: 800;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+.ff-peer-ticker { min-width: 52px; font-family: var(--font-mono); font-size: 11px; font-weight: 800; }
+.ff-peer-value { display: inline-flex; min-width: 0; }
+.ff-peer-period { margin-left: auto; color: var(--muted); font-family: var(--font-mono); font-size: 9px; }
+.ff-peer-rank { color: var(--muted); font-family: var(--font-mono); font-size: 10px; }
+.ff-peer-exclusion {
+  margin-top: 5px;
+  padding: 7px 10px;
+  border: 1px solid var(--ff-border);
+  border-radius: var(--r-btn, 10px);
+  background: var(--ff-tint-muted-8);
+  color: var(--muted);
+  font-size: 10px;
+}
+.ff-peer-exclusion summary { cursor: pointer; list-style: none; }
+.ff-peer-exclusion summary::-webkit-details-marker { display: none; }
+.ff-peer-exclusion code {
+  display: block;
+  margin-top: 4px;
+  color: var(--muted);
+  font-size: 9px;
+}
+html[data-theme="light"] .ff-peer-row {
+  border-color: var(--line);
+  background: var(--panel);
+}
+html[data-theme="light"] .ff-peer-exclusion {
+  border-color: var(--ff-tint-muted-40-line);
+  border-style: dashed;
+}
+
+/* ── P2 export entry (§5, R6) ──────────────────────────────────────────────
+   DARK: a quiet var(--panel2) chip that gains a restrained 1px --info ring
+   on keyboard focus. LIGHT: a white chip with a hairline that lifts with the
+   --popover-shadow token on hover — shadow, not glow. */
+.ff-export-btn:not(:disabled):hover {
+  border-color: var(--ff-tint-info-40-line);
+}
+.ff-export-btn:not(:disabled):focus-visible {
+  outline: none;
+  border-color: var(--info);
+  box-shadow: 0 0 0 1px var(--ff-tint-info-45);
+}
+html[data-theme="light"] .ff-export-btn:not(:disabled):hover {
+  border-color: var(--line);
+  background: var(--panel);
+  box-shadow: var(--popover-shadow);
+}
+
+
+/* ── P2 repair round (seat consolidated list, 2026-10-12) ─────────────────
+   Item 14: the page title is a real h1 on the eyebrow scale. */
+.ff-desk-header h1.ff-eyebrow {
+  margin: 0;
+  font-size: 11px;
+  font-weight: 800;
+  line-height: 1.3;
+  letter-spacing: .12em;
+}
+/* Item 10: the method facts live inside "How this signal was detected". */
+.ff-proof-method {
+  margin: 0 0 10px;
+  color: var(--ff-ink-soft);
+  font-size: 11px;
+  line-height: 1.5;
+}
+/* Item 6 (LIGHT only): amber on cream measured 1.91:1; the watch pill ink
+   takes theme.css's text-grade --ink-warn, keeping the hue at >= 4.5:1. */
+html[data-theme="light"] .ff-overview-status[data-state="watch"] {
+  color: var(--ink-warn, var(--warn));
+}
+/* Item 12 (LIGHT only, spec §1.4): the research workspace is plain material —
+   no lavender canvas wash, no indigo/cyan card gradients, no ring ornament. */
+html[data-theme="light"] body.ff-page { background: var(--bg); }
+html[data-theme="light"] .ff-finding.is-selected,
+html[data-theme="light"] .ff-signal-meaning,
+html[data-theme="light"] .ff-evidence-head,
+html[data-theme="light"] .ff-tab.is-active { background: var(--panel); }
+html[data-theme="light"] .ff-company-mark { background: var(--panel2); }
+html[data-theme="light"] .ff-quick-signal::after { display: none; }
+/* R-a: from 701px the run-meta strip names the source, so the stamp's copy of
+   it is a phone-only fact. */
+@media (min-width: 701px) {
+  .ff-desk-stamp-source { display: none; }
+}
+/* R-a: at <=700px the desk header is one band — picker, company, as-of +
+   export on one row, one stamp line. Labels stay in the accessibility tree;
+   the stamp carries as-of, freshness and source, so the run-meta strip folds
+   away. Item 13: the lead copy reserves the copilot orb's lane. */
+@media (max-width: 700px) {
+  .ff-desk-header { gap: 6px; padding: 10px 12px 9px; }
+  .ff-desk-row { grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 8px; }
+  .ff-company-picker,
+  .ff-company-identity { grid-column: 1 / -1; }
+  .ff-company-picker > label,
+  .ff-desk-asof > label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+  .ff-desk-row > .ff-run-meta { display: none; }
+  .ff-desk-asof { grid-column: 1; min-width: 0; }
+  .ff-asof-controls { min-width: 0; }
+  .ff-asof-input { width: 100%; min-width: 0; }
+  .ff-desk-export { grid-column: 2; justify-self: end; }
+  .ff-export-btn,
+  .ff-export-link { width: auto; padding: 0 10px; }
+  .ff-quick-signal-copy { padding-right: 46px; }
+  /* P2 r3 item c: page-local launcher clearance. The shared copilot stub
+     #mmb-boot is a fixed 54x54 box at right:16/bottom:16(+safe-area); its
+     measured rect at 390 is x 320-374, y 774-828, and the coverage stat sat
+     under it. Reserve 54px launcher + 16px right offset + 8px gap from the
+     viewport edge so the stat row's boxes end at x <= 312. Scoped to this
+     page's <=700px block only; nothing changes at >=701px. */
+  .ff-snapshot-stats { padding-right: 78px; }
 }

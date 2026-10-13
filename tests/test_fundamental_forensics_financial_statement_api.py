@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+from datetime import datetime, timezone
 from pathlib import Path
 
 import pytest
@@ -232,3 +233,170 @@ def test_paid_results_eight_k_is_unknown_filing(paid_client) -> None:
         headers={"content-type": "application/json"},
     )
     _assert_error(response, 400, "unknown filing")
+
+
+# ---------------------------------------------------------------------------
+# FIF P1: production statements serve precomputed trees, never a request-path
+# parse (F1 remainder / A15+A16 at the HTTP seam).
+# ---------------------------------------------------------------------------
+
+from engine.fundamental_forensics import production_datasets as PDS  # noqa: E402
+from engine.fundamental_forensics.financial_intelligence_packet import EntityInput  # noqa: E402
+from engine.fundamental_forensics.ixbrl_raw_ledger import (  # noqa: E402
+    GOLDEN_AAPL_QUERY_ACCESSIONS,
+    parse_and_convert_golden_packages,
+)
+from engine.fundamental_forensics.production_provider import (  # noqa: E402
+    ProductionFinancialStatementProvider,
+)
+from engine.fundamental_forensics.query_service import CanonicalEntityBinding  # noqa: E402
+from engine.fundamental_forensics.statement_graph import load_golden_aapl_package  # noqa: E402
+
+_P1_ADMITTED = datetime(2026, 10, 1, tzinfo=timezone.utc)
+_P1_ACCESSION = "0000320193-25-000079"
+
+
+def _p1_statement_provider() -> ProductionFinancialStatementProvider:
+    packages = [
+        load_golden_aapl_package(ROOT, accession=accession)
+        for accession in GOLDEN_AAPL_QUERY_ACCESSIONS
+    ]
+    ledger, filing_metadata, _report = parse_and_convert_golden_packages(packages)
+    material = PDS.ProductionDatasetMaterial(
+        binding=CanonicalEntityBinding(
+            entity_id="ISS:US-XNAS-AAPL",
+            cik="0000320193",
+            ticker="AAPL",
+            source_entity_id="0000320193",
+        ),
+        entity=EntityInput(
+            entity_id="ISS:US-XNAS-AAPL",
+            cik="0000320193",
+            ticker="AAPL",
+            name="Apple Inc.",
+            identity_basis="sec-cik",
+            source_entity_id="0000320193",
+        ),
+        ledger=ledger,
+        filing_metadata=filing_metadata,
+        registry_payload=PDS.snapshot_core_registry_payload(ROOT),
+        admitted_at=_P1_ADMITTED,
+        packages=tuple(packages),
+        security_id="SEC:US-XNAS-AAPL",
+        listing_key="US-XNAS-AAPL",
+    )
+    store = PDS.InMemoryStrictConditionalStore()
+    PDS.publish_production_dataset(store, material)
+    return ProductionFinancialStatementProvider(store)
+
+
+def _p1_paid_statement_client(router_app, monkeypatch, provider) -> TestClient:
+    monkeypatch.setenv("FIF_FINANCIAL_DATASET_MODE", "production")
+    monkeypatch.setattr(forensics_api, "_production_statement_provider", lambda: provider)
+    router_app.dependency_overrides[forensics_api.require_site_full_user] = lambda: {"id": "paid-user"}
+    return TestClient(router_app, raise_server_exceptions=False)
+
+
+def test_production_statements_serve_precomputed_trees_without_parsing(
+    router_app, monkeypatch
+) -> None:
+    provider = _p1_statement_provider()
+
+    # Prove the golden factory is never constructed in production mode.
+    import engine.fundamental_forensics.statement_service as statement_service_module
+
+    golden_constructions = []
+
+    def _no_golden(*_args, **_kwargs):
+        golden_constructions.append(1)
+        raise AssertionError("production mode must never construct the golden provider")
+
+    monkeypatch.setattr(statement_service_module, "GoldenAaplStatementProvider", _no_golden)
+
+    # Poison EVERY parse surface after publication has done its work.
+    def _forbidden(*_args, **_kwargs):
+        raise AssertionError("the production request path must not parse iXBRL")
+
+    import collectors.sec_filing_parser as parser_module
+    import engine.fundamental_forensics.statement_graph as statement_graph_module
+
+    monkeypatch.setattr(parser_module, "parse_sec_filing_document", _forbidden)
+    monkeypatch.setattr(statement_graph_module, "parse_sec_filing_document", _forbidden)
+
+    with _p1_paid_statement_client(router_app, monkeypatch, provider) as client:
+        response = client.post(
+            _PATH, content=_body(accession=_P1_ACCESSION), headers={"content-type": "application/json"}
+        )
+    assert response.status_code == 200, response.text[:400]
+    _assert_private_headers(response)
+    assert response.headers.get("x-fif-response-sha256") == hashlib.sha256(response.content).hexdigest()
+    payload = response.json()
+    assert payload["delivery"]["kind"] == "production_issuer_dataset"
+    assert payload["delivery"]["attested"] is False
+    assert payload["delivery"]["production_issuer_service"] is True
+    # Identity is the manifest admission-time block, not a live master.
+    assert payload["entity"]["legal_name"] == "Apple Inc."
+    assert payload["entity"]["security_id"] == "SEC:US-XNAS-AAPL"
+    assert payload["entity"]["listing_key"] == "US-XNAS-AAPL"
+    # The trees are the precomputed ones: same three statements the golden
+    # fixture reconstructs for this accession.
+    by_type = {item["statement_type"]: item for item in payload["statements"]}
+    assert by_type["income_statement"]["row_count"] == 24
+    assert by_type["balance_sheet"]["row_count"] == 35
+    assert by_type["cash_flow"]["row_count"] == 35
+    assert golden_constructions == []
+
+
+def test_production_statements_unknown_entity_is_400(router_app, monkeypatch) -> None:
+    provider = _p1_statement_provider()
+    with _p1_paid_statement_client(router_app, monkeypatch, provider) as client:
+        response = client.post(
+            _PATH,
+            content=_body(entity_id="ISS:US-XNAS-NOPE"),
+            headers={"content-type": "application/json"},
+        )
+    _assert_error(response, 400, "unknown entity")
+
+
+def test_production_statement_trees_damage_is_identical_503(router_app, monkeypatch) -> None:
+    def _damaged(mutate):
+        provider = _p1_statement_provider()
+        generation = provider._cached_generation("ISS:US-XNAS-AAPL")
+        assert generation is not None
+        mutate(provider, generation)
+        return provider
+
+    def _drop_trees_object(provider, generation):
+        row = next(
+            r for r in generation.manifest["objects"] if r["role"] == "statement_trees_json"
+        )
+        store = provider._store
+        store.drop(row["object_key"])
+
+    def _tamper_trees_bytes(provider, generation):
+        row = next(
+            r for r in generation.manifest["objects"] if r["role"] == "statement_trees_json"
+        )
+        store = provider._store
+        payload = bytearray(store.get_bytes(row["object_key"]))
+        payload[0] = payload[0] ^ 0x01
+        store.raw_put(row["object_key"], bytes(payload))
+
+    def _legacy_generation_without_role(provider, generation):
+        # A generation published before the role existed (or whose payload
+        # was lost): servable packages, no trees — never a parse fallback.
+        del generation.role_payloads["statement_trees_json"]
+
+    details = set()
+    for mutate in (_drop_trees_object, _tamper_trees_bytes, _legacy_generation_without_role):
+        provider = _damaged(mutate)
+        with _p1_paid_statement_client(router_app, monkeypatch, provider) as client:
+            response = client.post(
+                _PATH,
+                content=_body(accession=_P1_ACCESSION),
+                headers={"content-type": "application/json"},
+            )
+        assert response.status_code == 503, mutate.__name__
+        details.add((response.status_code, response.json()["detail"]))
+    # Identical detail for every damage class: no corpus-state oracle.
+    assert details == {(503, "financial statements temporarily unavailable")}

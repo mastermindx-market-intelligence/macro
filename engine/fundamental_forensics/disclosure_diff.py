@@ -49,6 +49,22 @@ _INLINE_TOKEN_RE = re.compile(
     r"\d+(?:,\d{3})*(?:\.\d+)?%?|[A-Za-z]+(?:[-'][A-Za-z]+)?|[^\s\w]",
     re.UNICODE,
 )
+_NUMERIC_MASK_MIN_TOKENS = 8
+_NUMERIC_MASK_TOKEN = "0"
+# Maximal numeric run: a digit, then digits/commas/dots, optional `$`/`(` prefix and `%`/`)` suffix.
+_NUMERIC_MASK_RE = re.compile(r"[$()]?[0-9][0-9,.]*[%)]?")
+REDLINE_CHANGE_CLASSES = (
+    "unchanged",
+    "moved",
+    "added",
+    "removed",
+    "numeric_only",
+    "wording",
+    "wording_and_numeric",
+    "suppressed",
+)
+_CLAIM_ALLOWED_KEYS = frozenset({"op_id", "change_class", "figures"})
+_ADMITTED_AUTHORITY = {"class": "context_only", "display_only": True}
 
 
 class BlockKind(str, Enum):
@@ -121,6 +137,11 @@ def _compact_text(value: str) -> str:
 
 def _matching_text(value: str) -> str:
     return _compact_text(value).casefold()
+
+
+def _numeric_masked_text(value: str) -> str:
+    """Replace each maximal numeric run with one placeholder token."""
+    return _NUMERIC_MASK_RE.sub(_NUMERIC_MASK_TOKEN, value)
 
 
 def _token_words(value: str) -> tuple[str, ...]:
@@ -1525,6 +1546,95 @@ class DisclosureComparison:
         return canonical_json(self.to_dict())
 
 
+class DisclosureClaimRefused(ValueError):
+    """A proposed disclosure-change claim is not admitted against op evidence."""
+
+    def __init__(self, code: str, message: str = "") -> None:
+        self.code = code
+        super().__init__(message or code)
+
+
+def redline_change_class(op: RedlineOp) -> str:
+    """Map one redline op onto a single deterministic change class."""
+    if op.suppressed or op.operation == "suppressed_boilerplate":
+        return "suppressed"
+    if op.operation in {"unchanged", "moved", "added", "removed"}:
+        return op.operation
+    if op.operation in {"modified", "table_cell_changed"}:
+        if not op.numeric_changed:
+            return "wording"
+        if any(edit.truncated for edit in op.inline_edits):
+            return "wording_and_numeric"
+        if all(
+            _numeric_masked_text(edit.prior_text) == _numeric_masked_text(edit.current_text)
+            for edit in op.inline_edits
+        ):
+            return "numeric_only"
+        return "wording_and_numeric"
+    raise ValueError(f"unknown redline operation: {op.operation!r}")
+
+
+def _figure_in_op_evidence(op: RedlineOp, figure: str) -> bool:
+    needle = figure.strip()
+    if not needle:
+        return False
+    haystacks: list[str] = []
+    for edit in op.inline_edits:
+        haystacks.append(edit.prior_text)
+        haystacks.append(edit.current_text)
+    if op.prior_receipt is not None:
+        haystacks.append(op.prior_receipt.source_excerpt)
+    if op.current_receipt is not None:
+        haystacks.append(op.current_receipt.source_excerpt)
+    return any(needle in text for text in haystacks)
+
+
+def admit_disclosure_change_claim(
+    comparison: DisclosureComparison,
+    claim: Mapping[str, Any],
+) -> dict[str, Any]:
+    """Admit an external change claim only when every quoted figure is in the op's evidence."""
+    if not isinstance(claim, Mapping):
+        raise DisclosureClaimRefused("malformed_claim", "claim must be a mapping")
+    extra = [key for key in claim.keys() if key not in _CLAIM_ALLOWED_KEYS]
+    if extra:
+        raise DisclosureClaimRefused("unexpected_field", f"unexpected field: {extra[0]!r}")
+    if "op_id" not in claim or "change_class" not in claim:
+        raise DisclosureClaimRefused("malformed_claim", "op_id and change_class are required")
+    op_id = claim["op_id"]
+    change_class = claim["change_class"]
+    figures = claim["figures"] if "figures" in claim else []
+    if not isinstance(op_id, str) or not isinstance(change_class, str):
+        raise DisclosureClaimRefused("malformed_claim", "op_id and change_class must be strings")
+    if not isinstance(figures, list) or any(not isinstance(item, str) for item in figures):
+        raise DisclosureClaimRefused("malformed_claim", "figures must be a list of strings")
+    by_id = {item.op_id: item for item in comparison.redline_ops}
+    op = by_id.get(op_id)
+    if op is None:
+        raise DisclosureClaimRefused("unknown_op", f"unknown op_id: {op_id!r}")
+    if op.suppressed:
+        raise DisclosureClaimRefused("suppressed_op", f"op is suppressed: {op_id!r}")
+    actual = redline_change_class(op)
+    if change_class != actual:
+        raise DisclosureClaimRefused(
+            "change_class_mismatch",
+            f"change_class {change_class!r} does not match {actual!r}",
+        )
+    stripped = [item.strip() for item in figures]
+    for figure in stripped:
+        if not _figure_in_op_evidence(op, figure):
+            raise DisclosureClaimRefused(
+                "figure_not_in_evidence",
+                f"figure {figure!r} is not in op evidence",
+            )
+    return {
+        "op_id": op_id,
+        "change_class": change_class,
+        "figures": sorted(stripped),
+        "authority": dict(_ADMITTED_AUTHORITY),
+    }
+
+
 def _block_fingerprint(block: DisclosureBlock) -> str:
     return block.matching_text
 
@@ -1979,6 +2089,71 @@ def _bounded_fuzzy_candidates(
     return tuple(pairs)
 
 
+def _numeric_mask_eligible(block: DisclosureBlock, registry: DisclosureDiffRegistry) -> bool:
+    if block.kind is BlockKind.TABLE:
+        return False
+    if _is_boilerplate(block.text, registry):
+        return False
+    masked = _numeric_masked_text(block.matching_text)
+    return len(_token_words(masked)) >= _NUMERIC_MASK_MIN_TOKENS
+
+
+def _pair_same_section_then_order(
+    old_items: Sequence[DisclosureBlock],
+    new_items: Sequence[DisclosureBlock],
+) -> list[tuple[DisclosureBlock, DisclosureBlock]]:
+    old_sorted = sorted(old_items, key=lambda item: (item.section_key, item.source_order, item.block_id))
+    new_sorted = sorted(new_items, key=lambda item: (item.section_key, item.source_order, item.block_id))
+    pairs: list[tuple[DisclosureBlock, DisclosureBlock]] = []
+    available_new = list(new_sorted)
+    for old in old_sorted:
+        same_section = next((item for item in available_new if item.section_key == old.section_key), None)
+        if same_section is not None:
+            available_new.remove(same_section)
+            pairs.append((old, same_section))
+    remaining_old = [item for item in old_sorted if all(item.block_id != old.block_id for old, _ in pairs)]
+    for old, new in zip(remaining_old, available_new):
+        pairs.append((old, new))
+    return pairs
+
+
+def _residual_numeric_mask_pairs(
+    old_remaining: Mapping[str, DisclosureBlock],
+    new_remaining: Mapping[str, DisclosureBlock],
+    registry: DisclosureDiffRegistry,
+) -> tuple[tuple[DisclosureBlock, DisclosureBlock], ...]:
+    """Pair residual blocks that differ only in numeric runs.
+
+    Groups whose old and new counts differ pair nothing so an ambiguous
+    reprint stays transparent added/removed.
+    """
+    old_groups: dict[tuple[str, str], list[DisclosureBlock]] = {}
+    new_groups: dict[tuple[str, str], list[DisclosureBlock]] = {}
+    for block in old_remaining.values():
+        if not _numeric_mask_eligible(block, registry):
+            continue
+        key = (block.kind.value, _numeric_masked_text(block.matching_text))
+        old_groups.setdefault(key, []).append(block)
+    for block in new_remaining.values():
+        if not _numeric_mask_eligible(block, registry):
+            continue
+        key = (block.kind.value, _numeric_masked_text(block.matching_text))
+        new_groups.setdefault(key, []).append(block)
+    pairs: list[tuple[DisclosureBlock, DisclosureBlock]] = []
+    for key in sorted(set(old_groups) & set(new_groups)):
+        old_items = old_groups[key]
+        new_items = new_groups[key]
+        if len(old_items) != len(new_items):
+            continue
+        for old, new in _pair_same_section_then_order(old_items, new_items):
+            if old.kind is not new.kind:
+                continue
+            if old.matching_text == new.matching_text:
+                continue
+            pairs.append((old, new))
+    return tuple(pairs)
+
+
 def _build_alignment(
     prior_document: DisclosureDocument,
     current_document: DisclosureDocument,
@@ -2033,6 +2208,14 @@ def _build_alignment(
         suppressed = _is_boilerplate(old.text, registry) and _is_boilerplate(new.text, registry)
         relation = "suppressed_boilerplate" if suppressed else "modified"
         aligned.append((_make_comparison(relation, old, new, similarity=similarity, suppressed=suppressed, engine_version=registry.version), old, new))
+
+    for old, new in _residual_numeric_mask_pairs(old_remaining, new_remaining, registry):
+        if old.block_id not in old_remaining or new.block_id not in new_remaining:
+            continue
+        old_remaining.pop(old.block_id)
+        new_remaining.pop(new.block_id)
+        similarity = _block_similarity(old, new)
+        aligned.append((_make_comparison("modified", old, new, similarity=similarity, suppressed=False, engine_version=registry.version), old, new))
 
     for old in sorted(old_remaining.values(), key=lambda item: (item.source_order, item.block_id)):
         suppressed = _is_boilerplate(old.text, registry)
@@ -2787,15 +2970,19 @@ __all__ = [
     "Applicability",
     "BlockKind",
     "DISCLOSURE_DIFF_SCHEMA",
+    "DisclosureClaimRefused",
     "DisclosureComparison",
     "DisclosureDiffRegistry",
     "DisclosureFinding",
     "DisclosureFindingState",
+    "REDLINE_CHANGE_CLASSES",
     "SourceReceipt",
     "SourceSpan",
+    "admit_disclosure_change_claim",
     "compare_filings",
     "evaluate_disclosure_detectors",
     "load_disclosure_diff_registry",
     "normalize_filing",
+    "redline_change_class",
     "registry_from_dict",
 ]

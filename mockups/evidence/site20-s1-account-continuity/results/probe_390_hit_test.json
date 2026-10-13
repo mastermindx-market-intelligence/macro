@@ -1,0 +1,482 @@
+{
+ "label": "ref3",
+ "account_js_sha256": "6c14fe90aab48eb5f2a54284922e55e027411488646c52c36865ad97016d56ca",
+ "rows": [
+  {
+   "theme": "dark",
+   "lang": "en",
+   "viewport": "390x844",
+   "panel": [
+    0,
+    625,
+    390,
+    844
+   ],
+   "target": [
+    16,
+    784,
+    102,
+    814
+   ],
+   "orb": [
+    327,
+    781,
+    365,
+    819
+   ],
+   "target_hit": true,
+   "topmost_at_target": "BUTTON#.mmacc-btn mmacc-ghost",
+   "vw": 390,
+   "vh": 844,
+   "P3": {
+    "ok": true,
+    "acct_reads_before": 1,
+    "acct_reads_after": 2,
+    "state": {
+     "open": true,
+     "unavailable": false,
+     "name": "Pat Fictional",
+     "noReload": "kept"
+    }
+   },
+   "signout_all": {
+    "target": [
+     219,
+     631,
+     374,
+     661
+    ],
+    "target_hit": true,
+    "topmost_at_target": "BUTTON#.mmacc-btn mmacc-ghost"
+   },
+   "show_delete": {
+    "target": [
+     200,
+     750,
+     374,
+     777
+    ],
+    "target_hit": true,
+    "topmost_at_target": "BUTTON#.mmacc-mini mmacc-mini-danger"
+   },
+   "page_errors": []
+  },
+  {
+   "theme": "dark",
+   "lang": "zh",
+   "viewport": "390x844",
+   "panel": [
+    0,
+    643,
+    390,
+    844
+   ],
+   "target": [
+    16,
+    784,
+    71,
+    814
+   ],
+   "orb": [
+    327,
+    781,
+    365,
+    819
+   ],
+   "target_hit": true,
+   "topmost_at_target": "BUTTON#.mmacc-btn mmacc-ghost",
+   "vw": 390,
+   "vh": 844,
+   "P3": {
+    "ok": true,
+    "acct_reads_before": 1,
+    "acct_reads_after": 2,
+    "state": {
+     "open": true,
+     "unavailable": false,
+     "name": "Pat Fictional",
+     "noReload": "kept"
+    }
+   },
+   "signout_all": {
+    "target": [
+     219,
+     631,
+     374,
+     661
+    ],
+    "target_hit": true,
+    "topmost_at_target": "BUTTON#.mmacc-btn mmacc-ghost"
+   },
+   "show_delete": {
+    "target": [
+     200,
+     750,
+     374,
+     777
+    ],
+    "target_hit": true,
+    "topmost_at_target": "BUTTON#.mmacc-mini mmacc-mini-danger"
+   },
+   "page_errors": []
+  },
+  {
+   "theme": "light",
+   "lang": "en",
+   "viewport": "390x844",
+   "panel": [
+    0,
+    625,
+    390,
+    844
+   ],
+   "target": [
+    16,
+    784,
+    102,
+    814
+   ],
+   "orb": [
+    327,
+    781,
+    365,
+    819
+   ],
+   "target_hit": true,
+   "topmost_at_target": "BUTTON#.mmacc-btn mmacc-ghost",
+   "vw": 390,
+   "vh": 844,
+   "P3": {
+    "ok": true,
+    "acct_reads_before": 1,
+    "acct_reads_after": 2,
+    "state": {
+     "open": true,
+     "unavailable": false,
+     "name": "Pat Fictional",
+     "noReload": "kept"
+    }
+   },
+   "signout_all": {
+    "target": [
+     219,
+     631,
+     374,
+     661
+    ],
+    "target_hit": true,
+    "topmost_at_target": "BUTTON#.mmacc-btn mmacc-ghost"
+   },
+   "show_delete": {
+    "target": [
+     200,
+     750,
+     374,
+     777
+    ],
+    "target_hit": true,
+    "topmost_at_target": "BUTTON#.mmacc-mini mmacc-mini-danger"
+   },
+   "page_errors": []
+  },
+  {
+   "theme": "light",
+   "lang": "zh",
+   "viewport": "390x844",
+   "panel": [
+    0,
+    643,
+    390,
+    844
+   ],
+   "target": [
+    16,
+    784,
+    71,
+    814
+   ],
+   "orb": [
+    327,
+    781,
+    365,
+    819
+   ],
+   "target_hit": true,
+   "topmost_at_target": "BUTTON#.mmacc-btn mmacc-ghost",
+   "vw": 390,
+   "vh": 844,
+   "P3": {
+    "ok": true,
+    "acct_reads_before": 1,
+    "acct_reads_after": 2,
+    "state": {
+     "open": true,
+     "unavailable": false,
+     "name": "Pat Fictional",
+     "noReload": "kept"
+    }
+   },
+   "signout_all": {
+    "target": [
+     219,
+     631,
+     374,
+     661
+    ],
+    "target_hit": true,
+    "topmost_at_target": "BUTTON#.mmacc-btn mmacc-ghost"
+   },
+   "show_delete": {
+    "target": [
+     200,
+     750,
+     374,
+     777
+    ],
+    "target_hit": true,
+    "topmost_at_target": "BUTTON#.mmacc-mini mmacc-mini-danger"
+   },
+   "page_errors": []
+  },
+  {
+   "theme": "dark",
+   "lang": "en",
+   "viewport": "1440x900",
+   "panel": [
+    1052,
+    58,
+    1426,
+    277
+   ],
+   "target": [
+    1324,
+    216,
+    1410,
+    247
+   ],
+   "orb": [
+    1225,
+    831,
+    1263,
+    869
+   ],
+   "target_hit": true,
+   "topmost_at_target": "BUTTON#.mmacc-btn mmacc-ghost",
+   "vw": 1440,
+   "vh": 900,
+   "P3": {
+    "ok": true,
+    "acct_reads_before": 1,
+    "acct_reads_after": 2,
+    "state": {
+     "open": true,
+     "unavailable": false,
+     "name": "Pat Fictional",
+     "noReload": "kept"
+    }
+   },
+   "signout_all": {
+    "target": [
+     1255,
+     564,
+     1410,
+     595
+    ],
+    "target_hit": true,
+    "topmost_at_target": "BUTTON#.mmacc-btn mmacc-ghost"
+   },
+   "show_delete": {
+    "target": [
+     1236,
+     684,
+     1410,
+     711
+    ],
+    "target_hit": true,
+    "topmost_at_target": "BUTTON#.mmacc-mini mmacc-mini-danger"
+   },
+   "page_errors": []
+  },
+  {
+   "theme": "dark",
+   "lang": "zh",
+   "viewport": "1440x900",
+   "panel": [
+    1052,
+    58,
+    1426,
+    277
+   ],
+   "target": [
+    1355,
+    216,
+    1410,
+    247
+   ],
+   "orb": [
+    1255,
+    830,
+    1294,
+    870
+   ],
+   "target_hit": true,
+   "topmost_at_target": "BUTTON#.mmacc-btn mmacc-ghost",
+   "vw": 1440,
+   "vh": 900,
+   "P3": {
+    "ok": true,
+    "acct_reads_before": 1,
+    "acct_reads_after": 2,
+    "state": {
+     "open": true,
+     "unavailable": false,
+     "name": "Pat Fictional",
+     "noReload": "kept"
+    }
+   },
+   "signout_all": {
+    "target": [
+     1255,
+     564,
+     1410,
+     595
+    ],
+    "target_hit": true,
+    "topmost_at_target": "BUTTON#.mmacc-btn mmacc-ghost"
+   },
+   "show_delete": {
+    "target": [
+     1236,
+     684,
+     1410,
+     711
+    ],
+    "target_hit": true,
+    "topmost_at_target": "BUTTON#.mmacc-mini mmacc-mini-danger"
+   },
+   "page_errors": []
+  },
+  {
+   "theme": "light",
+   "lang": "en",
+   "viewport": "1440x900",
+   "panel": [
+    1052,
+    58,
+    1426,
+    277
+   ],
+   "target": [
+    1324,
+    216,
+    1410,
+    247
+   ],
+   "orb": [
+    1225,
+    831,
+    1263,
+    869
+   ],
+   "target_hit": true,
+   "topmost_at_target": "BUTTON#.mmacc-btn mmacc-ghost",
+   "vw": 1440,
+   "vh": 900,
+   "P3": {
+    "ok": true,
+    "acct_reads_before": 1,
+    "acct_reads_after": 2,
+    "state": {
+     "open": true,
+     "unavailable": false,
+     "name": "Pat Fictional",
+     "noReload": "kept"
+    }
+   },
+   "signout_all": {
+    "target": [
+     1255,
+     564,
+     1410,
+     595
+    ],
+    "target_hit": true,
+    "topmost_at_target": "BUTTON#.mmacc-btn mmacc-ghost"
+   },
+   "show_delete": {
+    "target": [
+     1236,
+     684,
+     1410,
+     711
+    ],
+    "target_hit": true,
+    "topmost_at_target": "BUTTON#.mmacc-mini mmacc-mini-danger"
+   },
+   "page_errors": []
+  },
+  {
+   "theme": "light",
+   "lang": "zh",
+   "viewport": "1440x900",
+   "panel": [
+    1052,
+    58,
+    1426,
+    277
+   ],
+   "target": [
+    1355,
+    216,
+    1410,
+    247
+   ],
+   "orb": [
+    1256,
+    831,
+    1294,
+    869
+   ],
+   "target_hit": true,
+   "topmost_at_target": "BUTTON#.mmacc-btn mmacc-ghost",
+   "vw": 1440,
+   "vh": 900,
+   "P3": {
+    "ok": true,
+    "acct_reads_before": 1,
+    "acct_reads_after": 2,
+    "state": {
+     "open": true,
+     "unavailable": false,
+     "name": "Pat Fictional",
+     "noReload": "kept"
+    }
+   },
+   "signout_all": {
+    "target": [
+     1255,
+     564,
+     1410,
+     595
+    ],
+    "target_hit": true,
+    "topmost_at_target": "BUTTON#.mmacc-btn mmacc-ghost"
+   },
+   "show_delete": {
+    "target": [
+     1236,
+     684,
+     1410,
+     711
+    ],
+    "target_hit": true,
+    "topmost_at_target": "BUTTON#.mmacc-mini mmacc-mini-danger"
+   },
+   "page_errors": []
+  }
+ ],
+ "all_hit": true,
+ "all_signout_all_hit": true,
+ "all_P3_ok": true,
+ "all_show_delete_hit": true
+}

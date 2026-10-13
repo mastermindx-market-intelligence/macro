@@ -1,0 +1,450 @@
+{
+  "base_commit": "5267c66846e7733bc1eb30edc1524daff51598ca",
+  "determinism_note": "every sealed value is a pure function of the committed tree at base_commit; generated_at is execution metadata and is the only field that varies between runs",
+  "entries": [
+    {
+      "case": "no_lineage_a3_golden",
+      "inputs": "golden AAPL entity, metrics [revenue,total_assets,gross_margin,net_cash_from_operating_activities], periods [FY2025,FY2026Q3,FY2026YTD,2026-06-27 instant], policy latest_known_as_of source 2026-08-01T00:00:00Z recorded 2026-08-23T12:00:00Z, provider without lineage clock",
+      "pins": {
+        "ledger_sha256": "tests/test_fundamental_forensics_cross_filing_lineage.py:48",
+        "query_hash": "tests/test_fundamental_forensics_cross_filing_lineage.py:50",
+        "response_sha256": "tests/test_fundamental_forensics_cross_filing_lineage.py:49"
+      },
+      "sites": {
+        "ledger_sha256": "engine/fundamental_forensics/ixbrl_raw_ledger.py:446-448",
+        "query_hash": "engine/fundamental_forensics/query.py:3439-3441",
+        "response_sha256": "engine/fundamental_forensics/query_service.py:602-607"
+      },
+      "values": {
+        "has_lineage_key": false,
+        "ledger_sha256": "ba149bd55d929d843f353e91bbf68147791fb8b4a20c258426ea2eb7527019d8",
+        "query_hash": "f8f6dc3134592c817001738cbdefb09ee1b71798ef24a8e64dc75685a6f9c7a1",
+        "response_bytes": 137650,
+        "response_sha256": "58972cb88f82483e86acc9d9fc3b1cbce046f466ff8665ae214909d90ab078b0",
+        "sorted_keys_envelope_sha256": "58972cb88f82483e86acc9d9fc3b1cbce046f466ff8665ae214909d90ab078b0"
+      }
+    },
+    {
+      "case": "pre_lineage_source_clock",
+      "inputs": "golden AAPL total_assets @2025-09-27 comparative, policy latest_known_as_of source 2026-07-30T00:00:00Z recorded 2026-09-20T00:00:00Z, provider with lineage clock 2026-08-25T12:00:00Z (receipt not yet source-visible)",
+      "pins": {
+        "source_occurrence_ids": "tests/test_fundamental_forensics_cross_filing_lineage.py:487-489"
+      },
+      "sites": {
+        "query_hash": "engine/fundamental_forensics/query.py:3439-3441",
+        "response_sha256": "engine/fundamental_forensics/query_service.py:602-607",
+        "source_occurrence_ids": "engine/fundamental_forensics/raw_ledger.py:494-497"
+      },
+      "values": {
+        "accession": "0000320193-25-000079",
+        "cell_state": "value",
+        "cell_value": "359241000000",
+        "form": "10-K",
+        "has_lineage_key": false,
+        "query_hash": "fc79516358c6240585c98b072752aa12c46b7a92a7e873a6a2dfafb8db797195",
+        "response_sha256": "e7b001aff29525ea79fbf6e5bf7a5cd73578cc2a99839b66eabc722f4e68ee3c",
+        "source_occurrence_ids": [
+          "rawfact_bc9355a292f06baaaf988b683106b2b02e3dd9c4a9555f1eb160a94643e4feaf"
+        ]
+      }
+    },
+    {
+      "case": "historical_a3_cutoff_preserves_not_evaluable",
+      "inputs": "lineage provider (clock 2026-08-25T12:00:00Z) queried at the historical A3 cutoff source 2026-08-01T00:00:00Z recorded 2026-08-23T12:00:00Z — golden metrics response plus the total_assets @2025-09-27 comparative cell",
+      "pins": {
+        "comparative_cell_reason": "tests/test_fundamental_forensics_cross_filing_lineage.py:289-291",
+        "comparative_cell_state": "tests/test_fundamental_forensics_cross_filing_lineage.py:289-291",
+        "response_sha256": "tests/test_fundamental_forensics_cross_filing_lineage.py:49"
+      },
+      "sites": {
+        "ledger_sha256": "engine/fundamental_forensics/ixbrl_raw_ledger.py:446-448",
+        "query_hash": "engine/fundamental_forensics/query.py:3439-3441",
+        "response_sha256": "engine/fundamental_forensics/query_service.py:602-607"
+      },
+      "values": {
+        "comparative_cell_reason": "unlinked source vintages require an explicit typed revision lineage",
+        "comparative_cell_state": "not_evaluable",
+        "has_lineage_key": false,
+        "ledger_sha256": "ba149bd55d929d843f353e91bbf68147791fb8b4a20c258426ea2eb7527019d8",
+        "query_hash": "f8f6dc3134592c817001738cbdefb09ee1b71798ef24a8e64dc75685a6f9c7a1",
+        "response_sha256": "58972cb88f82483e86acc9d9fc3b1cbce046f466ff8665ae214909d90ab078b0"
+      }
+    },
+    {
+      "case": "latest_known_as_of_a4_comparative",
+      "inputs": "golden AAPL total_assets @2025-09-27 comparative, policy latest_known_as_of source 2026-09-20T00:00:00Z recorded 2026-09-20T00:00:00Z, lineage provider (clock 2026-08-25T12:00:00Z)",
+      "pins": {
+        "cell_value": "tests/test_fundamental_forensics_cross_filing_lineage.py:328-332",
+        "source_occurrence_ids": "tests/test_fundamental_forensics_cross_filing_lineage.py:328-332"
+      },
+      "sites": {
+        "first_confirmation": "engine/fundamental_forensics/query_service.py:583-600",
+        "query_hash": "engine/fundamental_forensics/query.py:3439-3441",
+        "response_sha256": "engine/fundamental_forensics/query_service.py:602-607",
+        "source_occurrence_ids": "engine/fundamental_forensics/raw_ledger.py:494-497"
+      },
+      "values": {
+        "accession": "0000320193-26-000020",
+        "cell_reason": null,
+        "cell_state": "value",
+        "cell_value": "359241000000",
+        "first_confirmation": {
+          "child_occurrence_id": "rawfact_9669446bc8076fa26bca33a3d9a067093bddadbb28e4617318bb3de33a4eca29",
+          "comparison_basis": "exact_parsed_value_and_accuracy_tokens",
+          "evidence_digest": "4b104b86c500968432e5dd09f01eef848a51716755d09d3829d2a10a6f5c6623",
+          "evidence_rule_id": "mmx.fif.xbrl_confirmation",
+          "evidence_rule_version": 1,
+          "logical_key": "rawfact_lineage_4d98b9ff34e62cdab84dd156a0a5a7f580d7618e30ccd3491c2370f5b6c547e6",
+          "parent_occurrence_id": "rawfact_bc9355a292f06baaaf988b683106b2b02e3dd9c4a9555f1eb160a94643e4feaf",
+          "positive_evidence": {
+            "child_accepted_at": "2026-07-31T10:01:02.000000Z",
+            "child_accession": "0000320193-26-000020",
+            "child_document_id": "sec_document_29a36fa46a0bc5309f17bd254c3061f20c4b3de7e05898a2fec9ee58f89e8760",
+            "child_recorded_at": "2026-08-23T07:02:13.000000Z",
+            "child_source_occurrence_keys": [
+              "f-189"
+            ],
+            "child_taxonomy_uri": "http://fasb.org/us-gaap/2025",
+            "concept_qname": "us-gaap:Assets",
+            "decimals": "-6",
+            "dimensions_known": true,
+            "is_nil": false,
+            "parent_accepted_at": "2025-10-31T10:01:26.000000Z",
+            "parent_accession": "0000320193-25-000079",
+            "parent_document_id": "sec_document_d23a609841f9a32489dd7abc952d39622540f8a24905612bda1d43e5577860b8",
+            "parent_recorded_at": "2026-08-23T00:32:31.000000Z",
+            "parent_source_occurrence_keys": [
+              "f-181"
+            ],
+            "parent_taxonomy_uri": "http://fasb.org/us-gaap/2025",
+            "parsed_value": "359241000000",
+            "precision": null
+          },
+          "receipt_id": "lineage_receipt_f58a751950d176fb40ac389181346a295b517df8969307547dcb13907e413fb0",
+          "refusal_reason": null,
+          "relation_type": "xbrl_confirmation",
+          "schema": "fif3a4r.lineage_evidence_receipt/v1",
+          "source_known_at": "2026-07-31T10:01:02.000000Z",
+          "system_available_at": "2026-08-25T12:00:00.000000Z"
+        },
+        "form": "10-Q",
+        "lineage_confirmation_rows": 1,
+        "query_hash": "c857b4767f6d8af44ffb142c9c8d042dd44d792c5813d903f05eaa16c9e0e934",
+        "response_sha256": "74e134907d44731555b9a2db07a2cab42998d63d4f5c6d4bfcd6c2b6efae84a5",
+        "source_occurrence_ids": [
+          "rawfact_9669446bc8076fa26bca33a3d9a067093bddadbb28e4617318bb3de33a4eca29"
+        ]
+      }
+    },
+    {
+      "case": "as_reported_a4_comparative",
+      "inputs": "golden AAPL total_assets @2025-09-27 comparative, policy as_reported source 2026-09-20T00:00:00Z recorded 2026-09-20T00:00:00Z, lineage provider (clock 2026-08-25T12:00:00Z)",
+      "pins": {
+        "cell_value": "tests/test_fundamental_forensics_cross_filing_lineage.py:339-343",
+        "source_occurrence_ids": "tests/test_fundamental_forensics_cross_filing_lineage.py:339-343"
+      },
+      "sites": {
+        "first_confirmation": "engine/fundamental_forensics/query_service.py:583-600",
+        "query_hash": "engine/fundamental_forensics/query.py:3439-3441",
+        "response_sha256": "engine/fundamental_forensics/query_service.py:602-607",
+        "source_occurrence_ids": "engine/fundamental_forensics/raw_ledger.py:494-497"
+      },
+      "values": {
+        "accession": "0000320193-25-000079",
+        "cell_reason": null,
+        "cell_state": "value",
+        "cell_value": "359241000000",
+        "first_confirmation": {
+          "child_occurrence_id": "rawfact_9669446bc8076fa26bca33a3d9a067093bddadbb28e4617318bb3de33a4eca29",
+          "comparison_basis": "exact_parsed_value_and_accuracy_tokens",
+          "evidence_digest": "4b104b86c500968432e5dd09f01eef848a51716755d09d3829d2a10a6f5c6623",
+          "evidence_rule_id": "mmx.fif.xbrl_confirmation",
+          "evidence_rule_version": 1,
+          "logical_key": "rawfact_lineage_4d98b9ff34e62cdab84dd156a0a5a7f580d7618e30ccd3491c2370f5b6c547e6",
+          "parent_occurrence_id": "rawfact_bc9355a292f06baaaf988b683106b2b02e3dd9c4a9555f1eb160a94643e4feaf",
+          "positive_evidence": {
+            "child_accepted_at": "2026-07-31T10:01:02.000000Z",
+            "child_accession": "0000320193-26-000020",
+            "child_document_id": "sec_document_29a36fa46a0bc5309f17bd254c3061f20c4b3de7e05898a2fec9ee58f89e8760",
+            "child_recorded_at": "2026-08-23T07:02:13.000000Z",
+            "child_source_occurrence_keys": [
+              "f-189"
+            ],
+            "child_taxonomy_uri": "http://fasb.org/us-gaap/2025",
+            "concept_qname": "us-gaap:Assets",
+            "decimals": "-6",
+            "dimensions_known": true,
+            "is_nil": false,
+            "parent_accepted_at": "2025-10-31T10:01:26.000000Z",
+            "parent_accession": "0000320193-25-000079",
+            "parent_document_id": "sec_document_d23a609841f9a32489dd7abc952d39622540f8a24905612bda1d43e5577860b8",
+            "parent_recorded_at": "2026-08-23T00:32:31.000000Z",
+            "parent_source_occurrence_keys": [
+              "f-181"
+            ],
+            "parent_taxonomy_uri": "http://fasb.org/us-gaap/2025",
+            "parsed_value": "359241000000",
+            "precision": null
+          },
+          "receipt_id": "lineage_receipt_f58a751950d176fb40ac389181346a295b517df8969307547dcb13907e413fb0",
+          "refusal_reason": null,
+          "relation_type": "xbrl_confirmation",
+          "schema": "fif3a4r.lineage_evidence_receipt/v1",
+          "source_known_at": "2026-07-31T10:01:02.000000Z",
+          "system_available_at": "2026-08-25T12:00:00.000000Z"
+        },
+        "form": "10-K",
+        "lineage_confirmation_rows": 1,
+        "query_hash": "0cf20856e84e123ddda4f6d875d2ae7496591728188b643370f544c934d48700",
+        "response_sha256": "2dbcc0d66b13ed0c8d7c54a00551ccb335086816859957d2ac3bde8e60870b5d",
+        "source_occurrence_ids": [
+          "rawfact_bc9355a292f06baaaf988b683106b2b02e3dd9c4a9555f1eb160a94643e4feaf"
+        ]
+      }
+    },
+    {
+      "case": "latest_restated_a4_comparative",
+      "inputs": "golden AAPL total_assets @2025-09-27 comparative, policy latest_restated source 2026-09-20T00:00:00Z recorded 2026-09-20T00:00:00Z, lineage provider (clock 2026-08-25T12:00:00Z) — a confirmation is not a revision vintage",
+      "pins": {
+        "cell_reason": "tests/test_fundamental_forensics_cross_filing_lineage.py:349-350",
+        "cell_state": "tests/test_fundamental_forensics_cross_filing_lineage.py:349-350"
+      },
+      "sites": {
+        "query_hash": "engine/fundamental_forensics/query.py:3439-3441",
+        "response_sha256": "engine/fundamental_forensics/query_service.py:602-607"
+      },
+      "values": {
+        "cell_reason": "no eligible explicitly typed reported revision vintage",
+        "cell_state": "missing",
+        "cell_value": null,
+        "query_hash": "d1fdead9afcd19d842da765b608086dd17b7c4b32b2c671c932edd166b1da0ff",
+        "response_sha256": "a291e19152579d2daf2a64c5fab3c8c7b5880bd13a83bdbcbac031bd0d46883d"
+      }
+    },
+    {
+      "case": "kernel_fip1_as_reported_t1_t2",
+      "inputs": "FIP1 fixture entity, policy as_reported source 2024-12-31T23:59:59Z recorded 2026-08-03T12:00:00Z, metrics ['revenue', 'gross_margin'], periods [{'kind': 'duration', 'start': '2023-01-01', 'end': '2023-12-31', 'label': 'FY2023'}]",
+      "pins": {
+        "query_hash": "tests/test_fundamental_forensics_financial_revision_service.py:61-65"
+      },
+      "sites": {
+        "query_hash": "engine/fundamental_forensics/query.py:3439-3441",
+        "response_sha256": "engine/fundamental_forensics/query_service.py:602-607"
+      },
+      "values": {
+        "query_hash": "358d44741632d74ff76dd8771bb78b34295a08d62d2a0a8566a6abe5feac1442",
+        "response_sha256": "e7de216a000d16acb6a5804f649561b4eaeef38c19075f855371de4dae4da45e"
+      }
+    },
+    {
+      "case": "kernel_fip1_latest_known_t1_t2",
+      "inputs": "FIP1 fixture entity, policy latest_known_as_of source 2024-12-31T23:59:59Z recorded 2026-08-03T12:00:00Z, metrics ['revenue', 'gross_margin'], periods [{'kind': 'duration', 'start': '2023-01-01', 'end': '2023-12-31', 'label': 'FY2023'}]",
+      "pins": {
+        "query_hash": "tests/test_fundamental_forensics_financial_revision_service.py:61-65"
+      },
+      "sites": {
+        "query_hash": "engine/fundamental_forensics/query.py:3439-3441",
+        "response_sha256": "engine/fundamental_forensics/query_service.py:602-607"
+      },
+      "values": {
+        "query_hash": "191c49a37998052f17eec78113b5bd8bf0dcaaa52239c406cdb4c27cda5ad1a7",
+        "response_sha256": "7de377d711b3a6f78cb560b9278425ea1119b12730de0f780a2580655819a263"
+      }
+    },
+    {
+      "case": "kernel_fip1_latest_known_t3",
+      "inputs": "FIP1 fixture entity, policy latest_known_as_of source 2025-12-31T23:59:59Z recorded 2026-08-05T12:00:02Z, metrics ['revenue', 'gross_margin'], periods [{'kind': 'duration', 'start': '2023-01-01', 'end': '2023-12-31', 'label': 'FY2023'}]",
+      "pins": {
+        "query_hash": "tests/test_fundamental_forensics_financial_revision_service.py:61-65"
+      },
+      "sites": {
+        "query_hash": "engine/fundamental_forensics/query.py:3439-3441",
+        "response_sha256": "engine/fundamental_forensics/query_service.py:602-607"
+      },
+      "values": {
+        "query_hash": "83df03e99f570bacfab94fc9373861f14c1895c9aa9435b7dd7249a13c1e67fa",
+        "response_sha256": "8cd41c14cd3d9e930daf9d1c2ce23f24200487178935a948e2985e548eb564d3"
+      }
+    },
+    {
+      "case": "kernel_fip1_latest_restated_t3",
+      "inputs": "FIP1 fixture entity, policy latest_restated source 2025-12-31T23:59:59Z recorded 2026-08-05T12:00:02Z, metrics ['revenue', 'gross_margin'], periods [{'kind': 'duration', 'start': '2023-01-01', 'end': '2023-12-31', 'label': 'FY2023'}]",
+      "pins": {
+        "query_hash": "tests/test_fundamental_forensics_financial_revision_service.py:61-65"
+      },
+      "sites": {
+        "query_hash": "engine/fundamental_forensics/query.py:3439-3441",
+        "response_sha256": "engine/fundamental_forensics/query_service.py:602-607"
+      },
+      "values": {
+        "query_hash": "c1095c7994c67f11ed602d15c2956bc24271cdce4d39d7869ed642713a6ed549",
+        "response_sha256": "8033d4a793787f26d70ceea33930ad369c5c70d4b2dc7923e1b4c47c920d21b4"
+      }
+    },
+    {
+      "case": "kernel_fip1_mixed_t3",
+      "inputs": "FIP1 fixture entity, policy latest_known_as_of source 2025-12-31T23:59:59Z recorded 2026-08-05T12:00:02Z, metrics ['revenue', 'accounts_receivable_net'], periods [{'kind': 'duration', 'start': '2023-01-01', 'end': '2023-12-31', 'label': 'FY2023'}, {'kind': 'instant', 'start': None, 'end': '2023-12-31', 'label': '2023-12-31'}]",
+      "pins": {
+        "query_hash": "tests/test_fundamental_forensics_financial_revision_service.py:61-65"
+      },
+      "sites": {
+        "query_hash": "engine/fundamental_forensics/query.py:3439-3441",
+        "response_sha256": "engine/fundamental_forensics/query_service.py:602-607"
+      },
+      "values": {
+        "query_hash": "5513f17260f98d261920d658be25bf319ace90a0580ad8f2e94931c518c5a20b",
+        "response_sha256": "f8b07e36182bdadcc391a0aad67cb17fb5c8778274e63dafb5ddce8c86a78069"
+      }
+    },
+    {
+      "case": "statement_service_10k",
+      "inputs": "statement request entity ISS:US-XNAS-AAPL accession 0000320193-25-000079, GoldenAaplStatementProvider over the committed golden filing package",
+      "pins": {
+        "index_sha256": "tests/test_fundamental_forensics_financial_statement_service.py:50-56",
+        "primary_member_sha256": "tests/test_fundamental_forensics_financial_statement_service.py:50-56",
+        "response_bytes": "tests/test_fundamental_forensics_financial_statement_service.py:50-56",
+        "response_sha256": "tests/test_fundamental_forensics_financial_statement_service.py:50-56",
+        "witness_sha256": "tests/test_fundamental_forensics_financial_statement_service.py:50-56"
+      },
+      "sites": {
+        "index_sha256": "engine/fundamental_forensics/statement_service.py:269-283",
+        "primary_member_sha256": "engine/fundamental_forensics/statement_service.py:269-283",
+        "response_sha256": "engine/fundamental_forensics/statement_service.py:304-307",
+        "witness_sha256": "engine/fundamental_forensics/statement_service.py:269-283"
+      },
+      "values": {
+        "index_sha256": "d61dde83df2dde7d63041e443321eab963b245e4c0090ba6240ce1711329de83",
+        "primary_member_sha256": "548ae59778cf08ee0f2ee088e7ece20d947076c3c01f74d2d65db4c2777e436a",
+        "response_bytes": 196310,
+        "response_sha256": "25e5562e81cb80bd42d0feb544c212c4471e11736601aaee418a60981a457184",
+        "sorted_keys_envelope_sha256": "fc5ec24f122969aa354a04754dc048f7ecbf59a2dcbe04e87bbfb37406fa79dd",
+        "witness_bytes": 364,
+        "witness_sha256": "6449489eef577b096abeb79f5375b7df9c95c23e4765a075222a765a19124d83"
+      }
+    },
+    {
+      "case": "statement_service_10q",
+      "inputs": "statement request entity ISS:US-XNAS-AAPL accession 0000320193-26-000020, GoldenAaplStatementProvider over the committed golden filing package",
+      "pins": {
+        "index_sha256": "tests/test_fundamental_forensics_financial_statement_service.py:887-892",
+        "primary_member_sha256": "tests/test_fundamental_forensics_financial_statement_service.py:887-892",
+        "response_bytes": "tests/test_fundamental_forensics_financial_statement_service.py:887-892",
+        "response_sha256": "tests/test_fundamental_forensics_financial_statement_service.py:887-892",
+        "witness_sha256": "tests/test_fundamental_forensics_financial_statement_service.py:887-892"
+      },
+      "sites": {
+        "index_sha256": "engine/fundamental_forensics/statement_service.py:269-283",
+        "primary_member_sha256": "engine/fundamental_forensics/statement_service.py:269-283",
+        "response_sha256": "engine/fundamental_forensics/statement_service.py:304-307",
+        "witness_sha256": "engine/fundamental_forensics/statement_service.py:269-283"
+      },
+      "values": {
+        "index_sha256": "3e5dde4c0403da2358df715608c679d66223c8d716a75fe1136d9257ba812fdc",
+        "primary_member_sha256": "4ad5bea67cedfa7542d623900355cc8d143ef95c1acc135a597f2eedabdb9177",
+        "response_bytes": 190019,
+        "response_sha256": "b98602a299996ff7ea58b842364031547df795d1458b51134eef0e37159b7918",
+        "sorted_keys_envelope_sha256": "5095167f0f0233a78722aa3affb7c131fc4cd2c6b92586e809fce78c54fc4790",
+        "witness_bytes": 364,
+        "witness_sha256": "6727f5eb1815b2b6b580f69caa76fd644ad6fc651c6b7082f9045459f72f370c"
+      }
+    },
+    {
+      "case": "fip1_evidence_witnesses",
+      "inputs": "PacketEvidenceDigests over the committed FIP1 fixture/witness files, plus the packet identity recorded in expected_financial_intelligence_packet_v1.json",
+      "pins": {
+        "golden_fixture_packet_id": "tests/test_fundamental_forensics_financial_statement_service.py:66"
+      },
+      "sites": {
+        "companyfacts_witness_sha256": "engine/fundamental_forensics/revision_service.py:111-119",
+        "filing_package_fixture_sha256": "engine/fundamental_forensics/revision_service.py:111-119",
+        "golden_fixture_packet_id": "tests/fixtures/fundamental_forensics/expected_financial_intelligence_packet_v1.json",
+        "submissions_witness_sha256": "engine/fundamental_forensics/revision_service.py:111-119"
+      },
+      "values": {
+        "companyfacts_witness_sha256": "b3e227f220f9930fe72ff6ea1171ff0aaac13da120af4a3c2d41df0424bedb41",
+        "filing_package_fixture_sha256": "4c83dc4d49d20e07117d742e08992836fadfe0898d184e599be71e6306277b2e",
+        "golden_fixture_content_sha256": "18e2f725f6ba20678d0612bbbac25b44761271bf5dfd705bda41f852686588c7",
+        "golden_fixture_packet_id": "fip_18e2f725f6ba20678d0612bb",
+        "submissions_witness_sha256": "bedfc61b668db1e2d335d143b34cf9221725ba3a3db7e57bddacff30f5d75fa3"
+      }
+    },
+    {
+      "case": "packet_service_fip1_t3",
+      "inputs": "packet request entity mmx.issuer.fip1, policy latest_known_as_of source 2025-12-31T23:59:59Z recorded 2026-08-05T12:00:02Z, metrics ['revenue'], periods [{'kind': 'duration', 'start': '2023-01-01', 'end': '2023-12-31', 'label': 'FY2023'}]",
+      "pins": {},
+      "sites": {
+        "content_sha256": "engine/fundamental_forensics/financial_intelligence_packet.py:1047-1051",
+        "packet_id": "engine/fundamental_forensics/financial_intelligence_packet.py:1047-1051",
+        "response_sha256": "engine/fundamental_forensics/packet_service.py:90-93"
+      },
+      "values": {
+        "content_sha256": "ccb85bd57a2680b2e34034b74bd491721439d97e9c8941d1c006dbf716529c88",
+        "packet_id": "fip_ccb85bd57a2680b2e34034b7",
+        "response_bytes": 5868,
+        "response_sha256": "fe3400b8bcea76cbc10e8289c8c5b22a0cbae9bdb364abd70e0ce1e6c7c99112"
+      }
+    },
+    {
+      "case": "packet_service_fip1_rich_t3",
+      "inputs": "packet request entity mmx.issuer.fip1, policy latest_known_as_of source 2025-12-31T23:59:59Z recorded 2026-08-05T12:00:02Z, metrics ['revenue', 'accounts_receivable_net', 'gross_margin', 'CustomerCount'], periods [{'kind': 'duration', 'start': '2023-01-01', 'end': '2023-12-31', 'label': 'FY2023'}, {'kind': 'instant', 'start': None, 'end': '2023-12-31', 'label': '2023-12-31'}]",
+      "pins": {
+        "content_sha256": "tests/test_fundamental_forensics_financial_statement_service.py:63-65",
+        "packet_id": "tests/test_fundamental_forensics_financial_statement_service.py:63-65",
+        "response_sha256": "tests/test_fundamental_forensics_financial_statement_service.py:63-65"
+      },
+      "sites": {
+        "content_sha256": "engine/fundamental_forensics/financial_intelligence_packet.py:1047-1051",
+        "packet_id": "engine/fundamental_forensics/financial_intelligence_packet.py:1047-1051",
+        "response_sha256": "engine/fundamental_forensics/packet_service.py:90-93"
+      },
+      "values": {
+        "content_sha256": "49718dcaf4c6855592b6ba0a160851c608b4733b44f8ac9a6cf7d907df7565e5",
+        "packet_id": "fip_49718dcaf4c6855592b6ba0a",
+        "response_bytes": 18270,
+        "response_sha256": "310f6579ab0014e6af16a3341f005078eab3fdcc70ebe67ec83cf138b9e6c23a"
+      }
+    },
+    {
+      "case": "revision_service_fip1_t3",
+      "inputs": "revision request entity mmx.issuer.fip1, policy latest_known_as_of source 2025-12-31T23:59:59Z recorded 2026-08-05T12:00:02Z, metrics [revenue], periods [FY2023]",
+      "pins": {},
+      "sites": {
+        "packet_ref.packet_id": "engine/fundamental_forensics/financial_intelligence_packet.py:1047-1051",
+        "response_sha256": "engine/fundamental_forensics/revision_service.py:313-316"
+      },
+      "values": {
+        "packet_ref": {
+          "content_sha256": "ccb85bd57a2680b2e34034b74bd491721439d97e9c8941d1c006dbf716529c88",
+          "governance_bundle_id": "56c0d4a55714901de8e00fa8d65f4536eea5441b8f0e47bbc7519dc7048cd75d",
+          "packet_id": "fip_ccb85bd57a2680b2e34034b7"
+        },
+        "response_bytes": 2058,
+        "response_sha256": "4f2096d356ef54449add0da27e5897a03666d7e8df2a6ca6258a6b9258711c60",
+        "revision_rows": 1
+      }
+    },
+    {
+      "case": "api_transport_query_a4_comparative",
+      "inputs": "POST /api/forensics/v1/financial/query (router-only app, paid-user dependency override), golden AAPL total_assets @2025-09-27 comparative, policy latest_known_as_of source 2026-09-20T00:00:00Z recorded 2026-09-20T00:00:00Z; production default provider clock FIF3A4_LINEAGE_AVAILABLE_AT=2026-09-20T00:00:00Z",
+      "pins": {},
+      "sites": {
+        "body_sha256": "engine/fundamental_forensics/query_service.py:602-607",
+        "header_sha256": "app/forensics.py:870"
+      },
+      "values": {
+        "api_body_equals_service_bytes": true,
+        "body_sha256": "356aac86c9b73fffadf17d8c3a738d5cf5eb8db0fef5c86025cc73c35c1379d3",
+        "direct_service_response_sha256": "356aac86c9b73fffadf17d8c3a738d5cf5eb8db0fef5c86025cc73c35c1379d3",
+        "header_equals_body_sha256": true,
+        "header_sha256": "356aac86c9b73fffadf17d8c3a738d5cf5eb8db0fef5c86025cc73c35c1379d3",
+        "status_code": 200
+      }
+    }
+  ],
+  "expected_base_commit": "5267c66846e7733bc1eb30edc1524daff51598ca",
+  "generated_at": "2026-10-12T05:10:21Z",
+  "schema": "fundamental_forensics.t1_compatibility_seal_manifest/v1",
+  "seal": "fif-t2-compatibility-seal",
+  "tool": "scripts/fif_compatibility_seal.py",
+  "tool_command": "PYTHONDONTWRITEBYTECODE=1 python3 scripts/fif_compatibility_seal.py --out tests/fixtures/fundamental_forensics/t1_compatibility_seal_manifest_v1.json"
+}

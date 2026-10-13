@@ -43,6 +43,8 @@ from .query_service import (
     FinancialQueryResult,
     FinancialQueryUnavailableError,
     admit_financial_request,
+    canonical_financial_delivery,
+    enforce_dataset_admission_floor,
     validate_supplied_dataset,
 )
 from .raw_ledger import canonical_json
@@ -53,6 +55,56 @@ _RESPONSE_SCHEMA = "fundamental_forensics.financial_revision_response/v1"
 _FIP1_CANONICAL_ENTITY_ID = "mmx.issuer.fip1"
 _FIP1_CIK = "0000999999"
 _FIP1_TICKER = "FIP1"
+
+
+def occurrence_keyed_filing_metadata(
+    ledger: Any,
+    filing_metadata: Any,
+) -> dict[str, Any]:
+    """Rekey a filing-metadata mapping onto ledger occurrence ids (pure).
+
+    The golden/FIP1 fixtures key filing metadata by OCCURRENCE ID; the
+    production store keys it by ACCESSION — one entry per admitted filing
+    (``ixbrl_raw_ledger.convert_parsed_filings``). The packet assembler and
+    its entity-isolation assertions resolve metadata by occurrence id only,
+    so the packet-service boundary normalizes accession-keyed input here,
+    with exactly ``query.py`` ``_freeze_filing_metadata``'s keying law:
+
+    * an occurrence-id key binds that occurrence. An input already keyed by
+      occurrence ids returns an equal mapping (same keys, same value
+      objects), so golden/FIP1 bytes never move;
+    * an accession key binds every ledger event filed under that accession;
+    * an occurrence bound twice with DIFFERENT metadata fails closed;
+    * a key that identifies neither an occurrence nor an accession fails
+      closed.
+    """
+    by_occurrence: dict[str, Any] = {}
+    events_by_accession: dict[str, list[Any]] = {}
+    for event in ledger.events:
+        by_occurrence.setdefault(event.occurrence_id, event)
+        events_by_accession.setdefault(event.source.accession, []).append(event)
+    keyed: dict[str, Any] = {}
+    for raw_key, metadata in filing_metadata.items():
+        key = str(raw_key)
+        occurrence = by_occurrence.get(key)
+        candidates = (
+            (occurrence,)
+            if occurrence is not None
+            else tuple(events_by_accession.get(key, ()))
+        )
+        if not candidates:
+            raise ValueError(
+                "filing metadata key does not identify a ledger occurrence or accession: "
+                f"{key}"
+            )
+        for event in candidates:
+            existing = keyed.get(event.occurrence_id)
+            if existing is not None and existing != metadata:
+                raise ValueError(
+                    f"conflicting filing metadata for occurrence {event.occurrence_id}"
+                )
+            keyed[event.occurrence_id] = metadata
+    return keyed
 
 
 @dataclass(frozen=True)
@@ -66,6 +118,13 @@ class FinancialPacketDataset:
     registry: Any
     context: PacketBuildContext
     input_digests: PacketEvidenceDigests
+    # FIF D3: absent keeps the FIP1/golden revisions envelope byte-identical
+    # (no ``delivery`` key). The exact production object is validated by the
+    # shared delivery law and emitted additively.
+    delivery: Any = None
+    # FIF D3 (A12): the dataset's own admission clock, enforced by the
+    # transport before the packet is assembled.
+    dataset_admitted_at: Any = None
 
 
 class FinancialPacketProvider(Protocol):
@@ -190,6 +249,9 @@ def validate_packet_dataset(entity_id: str, dataset: FinancialPacketDataset) -> 
         raise FinancialQueryUnavailableError()
     if dataset.entity.source_entity_id != binding.source_entity_id:
         raise FinancialQueryUnavailableError()
+    # One delivery law across every surface: absent stays absent, the exact
+    # golden or production object passes, anything else is unavailable.
+    canonical_financial_delivery(dataset.delivery)
     return binding
 
 
@@ -263,6 +325,13 @@ def execute_financial_revisions(
         provider = provider_factory()
     dataset = provider.resolve(admitted.entity_id)
     binding = validate_packet_dataset(admitted.entity_id, dataset)
+    # A0 (D-2): the production store keys filing metadata by accession while
+    # the packet assembler resolves it by occurrence id; normalize at this
+    # boundary. Identity for the occurrence-keyed golden/FIP1 fixtures.
+    filing_metadata = occurrence_keyed_filing_metadata(dataset.ledger, dataset.filing_metadata)
+    # A12: the dataset's own admission clock gates the system view. The
+    # admitted QueryPolicy object itself passes through untouched.
+    enforce_dataset_admission_floor(admitted.policy, dataset)
     _refuse_unsupported_metrics(
         binding=binding,
         dataset=dataset,
@@ -272,7 +341,7 @@ def execute_financial_revisions(
         packet = assemble_financial_intelligence_packet(
             entity=dataset.entity,
             ledger=dataset.ledger,
-            filing_metadata=dataset.filing_metadata,
+            filing_metadata=filing_metadata,
             query_request=query_request,
             metric_registry=dataset.registry,
             context=dataset.context,
@@ -309,6 +378,14 @@ def execute_financial_revisions(
         },
         "revisions": packet["revisions"],
     }
+
+    # FIF D3: the delivery block is additive. Absent for FIP1/golden — the
+    # canonical key order simply never gains the key, so every accepted
+    # pre-D3 revisions response stays byte-identical — and the exact
+    # production object for a production dataset.
+    delivery = canonical_financial_delivery(dataset.delivery)
+    if delivery is not None:
+        envelope["delivery"] = delivery
 
     response_body = canonical_json(envelope).encode("utf-8")
     if len(response_body) > MAX_RESPONSE_BYTES:

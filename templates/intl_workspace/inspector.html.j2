@@ -1,0 +1,89 @@
+{# The caller supplies checked context IDs and actual Inspector projections. #}
+{% macro words(en, zh) -%}
+<span class="l-en">{{ en|e }}</span><span class="l-zh" lang="zh">{{ zh|e }}</span>
+{%- endmacro %}
+{% macro copy_items(items) %}
+<ul>{% for item in items %}<li>{{ words(inspector_copy[item.key].en, inspector_copy[item.key].zh) }}</li>{% endfor %}</ul>
+{% endmacro %}
+{% macro number(metric) %}
+{% if metric.value is none %}
+  <span data-im-inspector-missing>{{ words('Unavailable', '不可用') }}</span>
+{% else %}
+  <span data-im-inspector-value>{{ '%+.2f'|format(metric.value) if metric.value > 0 else '%.2f'|format(metric.value) }}{% if metric.unit == 'percentage_points' %} {{ words('pp', '个百分点') }}{% else %}%{% endif %}</span>
+{% endif %}
+{% endmacro %}
+{% set field_labels = {'local': ['Local price return', '本币价格回报'], 'usd': ['USD price return · Unhedged', '美元价格回报 · 未对冲'], 'fx_contribution': ['Currency contribution', '汇率贡献']} %}
+{% set clock_labels = {'observation': ['Observation time', '观测时间'], 'publication': ['Publication time', '发布时间'], 'ingestion': ['Ingestion time', '接收时间'], 'generation': ['Generation time', '生成时间']} %}
+{% set endpoint_labels = {'price_start': ['Price start observation', '价格起点观测'], 'price_end': ['Price end observation', '价格终点观测'], 'fx_start': ['FX start observation', '汇率起点观测'], 'fx_end': ['FX end observation', '汇率终点观测']} %}
+<section class="intl-inspectors" data-im-inspectors aria-labelledby="{{ root_context_id|e }}-inspectors-title">
+  <h2 id="{{ root_context_id|e }}-inspectors-title">{{ words('Inspect a market', '查看市场详情') }}</h2>
+  {% for panel in inspector_panels %}
+    {% set inspector = panel.inspector %}
+    {% set payload_id = root_context_id ~ '-inspector-' ~ loop.index0 %}
+    {% if inspector.market is none %}
+      <p data-im-inspector-unavailable>{{ words('Market details unavailable for this selection.', '此选择暂无市场详情。') }}</p>
+    {% else %}
+      <details class="intl-inspector-disclosure intl-inspector__fallback" data-im-inspector-origin data-im-inspector-context="{{ panel.context_id|e }}"{% if panel.generation|default('') %} data-im-generation="{{ panel.generation|e }}"{% endif %}>
+        <summary data-im-inspector-trigger aria-controls="{{ payload_id|e }}"{% if panel.generation|default('') %} data-im-generation="{{ panel.generation|e }}"{% endif %}>{{ words(inspector.market.name_en, inspector.market.name_zh) }} · {{ words('Read and evidence', '解读与依据') }}</summary>
+        <article class="intl-inspector" data-im-inspector-payload data-im-inspector-context="{{ panel.context_id|e }}" data-market-id="{{ inspector.market.market_id|e }}" data-horizon="{{ inspector.context.horizon|e }}" data-basis="{{ inspector.context.currency_basis|e }}" data-return-basis="{{ inspector.context.return_basis|e }}"{% if inspector.context.source_reference is not none %} data-source="{{ inspector.context.source_reference|e }}"{% endif %}{% if panel.generation|default('') %} data-im-generation="{{ panel.generation|e }}"{% endif %} id="{{ payload_id|e }}" aria-labelledby="{{ payload_id|e }}-title">
+          <header class="intl-inspector__header">
+            <div class="intl-inspector__nav" data-im-inspector-enhancement hidden>
+              <button type="button" data-im-inspector-action="back">{{ words('Back', '返回') }}</button>
+              <button type="button" data-im-inspector-action="close">{{ words('Close', '关闭') }}</button>
+            </div>
+            <h3 id="{{ payload_id|e }}-title" data-im-inspector-title tabindex="-1">{{ words(inspector.market.name_en, inspector.market.name_zh) }}</h3>
+            {% if inspector.market.index_label is not none %}<p data-im-inspector-index>{{ inspector.market.index_label|e }}</p>{% endif %}
+            <p class="intl-inspector__context"><span>{{ inspector.context.horizon|e }}</span> · {% if inspector.context.currency_basis == 'usd_unhedged' %}{{ words('USD · Unhedged', '美元 · 未对冲') }}{% else %}{{ words('Local currency', '本币') }}{% endif %} · {{ words('Price return', '价格回报') }}</p>
+          </header>
+          <section class="intl-inspector__read" data-im-inspector-page="read" aria-labelledby="{{ payload_id|e }}-read-title">
+            <h4 id="{{ payload_id|e }}-read-title">{{ words('What the returns show', '回报所显示的信息') }}</h4>
+            {% if inspector.supports %}{{ copy_items(inspector.supports) }}{% else %}<p>{{ words('Return evidence is not available for this selection.', '此选择暂无回报依据。') }}</p>{% endif %}
+            <dl class="intl-inspector__returns" data-im-inspector-metrics>
+              {% for leg in ['local', 'usd', 'fx_contribution'] %}
+                <div data-im-inspector-metric="{{ leg|e }}"><dt>{{ words(field_labels[leg][0], field_labels[leg][1]) }}</dt><dd>{{ number(inspector.metrics[leg]) }}</dd></div>
+              {% endfor %}
+            </dl>
+            <h4>{{ words('Limits of this read', '本次解读的限制') }}</h4>
+            {{ copy_items(inspector.limits) }}
+            <h4>{{ words('Research next', '下一步研究') }}</h4>
+            {{ copy_items(inspector.research_prompts) }}
+          </section>
+          <details class="intl-inspector__ledger" data-im-inspector-ledger>
+            <summary data-im-inspector-ledger-trigger>{{ words('Evidence ledger', '依据清单') }}</summary>
+            <section data-im-inspector-page="ledger" aria-labelledby="{{ payload_id|e }}-ledger-title">
+              <h4 id="{{ payload_id|e }}-ledger-title" tabindex="-1">{{ words('Evidence ledger', '依据清单') }}</h4>
+              {% if inspector.context.source_reference is not none %}<p data-im-inspector-source>{{ words('Disclosed source reference', '已披露的来源引用') }}: {{ inspector.context.source_reference|e }}</p>{% else %}<p>{{ words('Source reference not supplied for this market.', '未提供此市场的来源引用。') }}</p>{% endif %}
+              {% for evidence in inspector.evidence %}
+                {% set field = evidence.field_id %}
+                <details class="intl-inspector__field" data-im-inspector-field="{{ field|e }}">
+                  <summary data-im-inspector-field-trigger aria-controls="{{ payload_id|e }}-{{ field|e }}">{{ words(field_labels[field][0], field_labels[field][1]) }} · {{ number(evidence.metric) }}</summary>
+                  <section id="{{ payload_id|e }}-{{ field|e }}" data-im-inspector-page="field" aria-labelledby="{{ payload_id|e }}-{{ field|e }}-title">
+                    <h5 id="{{ payload_id|e }}-{{ field|e }}-title" tabindex="-1">{{ words(field_labels[field][0], field_labels[field][1]) }}</h5>
+                    {% if evidence.calculation_window %}
+                      <p data-im-inspector-window>{{ words('Calculation window', '计算区间') }}: <time datetime="{{ evidence.calculation_window.start|e }}">{{ evidence.calculation_window.start|e }}</time>–<time datetime="{{ evidence.calculation_window.end|e }}">{{ evidence.calculation_window.end|e }}</time></p>
+                      <p>{{ words('Calendar policy', '日历规则') }}: {{ evidence.calculation_window.calendar_policy|e }}</p>
+                    {% else %}<p>{{ words('Calculation window unavailable.', '计算区间不可用。') }}</p>{% endif %}
+                    <dl data-im-inspector-observations>
+                      {% for key, label in endpoint_labels.items() %}<div><dt>{{ words(label[0], label[1]) }}</dt><dd>{% if evidence.endpoint_observations and evidence.endpoint_observations[key] is not none %}<time datetime="{{ evidence.endpoint_observations[key]|e }}">{{ evidence.endpoint_observations[key]|e }}</time>{% else %}{{ words('Not supplied', '未提供') }}{% endif %}</dd></div>{% endfor %}
+                    </dl>
+                    <dl data-im-inspector-clocks>
+                      {% for key, label in clock_labels.items() %}<div data-im-inspector-clock="{{ key|e }}"><dt>{{ words(label[0], label[1]) }}</dt><dd>{% if evidence.clocks[key] is not none %}<time datetime="{{ evidence.clocks[key]|e }}">{{ evidence.clocks[key]|e }}</time>{% else %}{{ words('Not supplied', '未提供') }}{% endif %}</dd></div>{% endfor %}
+                    </dl>
+                    <p data-im-inspector-clock-reason>{{ words('Separate source clocks were not supplied; calculation observations do not establish publication or freshness.', '未提供独立来源时间；计算所用观测不能证明发布时间或时效性。') }}</p>
+                  </section>
+                </details>
+              {% endfor %}
+            </section>
+          </details>
+          {% if inspector.deeper_links %}
+            <section class="intl-inspector__deeper" data-im-inspector-page="deeper" aria-labelledby="{{ payload_id|e }}-deeper-title">
+              <h4 id="{{ payload_id|e }}-deeper-title">{{ words('Go deeper', '深入研究') }}</h4>
+              <ul>{% for link in inspector.deeper_links %}<li><a href="{{ link.target.route|e }}{% if link.target.region_id is not none %}#{{ link.target.region_id|e }}{% endif %}">{{ words(link.label_en, link.label_zh) }}</a></li>{% endfor %}</ul>
+            </section>
+          {% endif %}
+        </article>
+      </details>
+    {% endif %}
+  {% endfor %}
+  <dialog class="intl-inspector-shell" data-im-inspector-shell aria-label="Market Inspector" data-im-label-en="Market Inspector" data-im-label-zh="市场详情"></dialog>
+</section>

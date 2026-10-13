@@ -1,0 +1,193 @@
+{
+  "E1": {
+    "missing_input": "independent per-print aggressor-side label for US option prints joined to the same prints' NBBO (e.g. vendor tcbbo `side` in data/options_flow/_dbento_sample.parquet, absent)",
+    "raw_cache_present": false,
+    "verdict": "INSUFFICIENT_DATA"
+  },
+  "H1": {
+    "bar": {
+      "ci_lo_gt": 0.0,
+      "skill_min": 0.05
+    },
+    "bar_met_numerically": true,
+    "contract_disjoint_test_events": 3146,
+    "contract_filter_attrition": 3997,
+    "decision": {
+      "cohort": "decision: test events, contract-disjoint from training",
+      "mse_B0": 0.1426267502,
+      "mse_B1_zero_uncertainty": 0.4816026714,
+      "mse_B2_liquidity_only": 0.1247479182,
+      "mse_M": 0.1247479182,
+      "n_events": 3146,
+      "n_sessions": 3,
+      "skill_B2_vs_B0": {
+        "ci_hi": 0.1539021317,
+        "ci_lo": 0.1068834089,
+        "n_blocks": 3,
+        "n_boot": 2000,
+        "n_rows": 3146,
+        "skill": 0.1253539885
+      },
+      "skill_M_vs_B0": {
+        "ci_hi": 0.1539021317,
+        "ci_lo": 0.1068834089,
+        "n_blocks": 3,
+        "n_boot": 2000,
+        "n_rows": 3146,
+        "skill": 0.1253539885
+      },
+      "skill_M_vs_B1": {
+        "ci_hi": 0.7845391464,
+        "ci_lo": 0.6646935556,
+        "n_blocks": 3,
+        "n_boot": 2000,
+        "n_rows": 3146,
+        "skill": 0.7409733675
+      }
+    },
+    "k_B2": 20.0,
+    "k_M": 20.0,
+    "liquidity_edges_train": [
+      0.0162393333,
+      0.030957
+    ],
+    "loso_mse_B2": {
+      "0.0": 0.0851874049,
+      "20.0": 0.0851838758,
+      "320.0": 0.0853237043,
+      "5.0": 0.0851862888,
+      "80.0": 0.0851866262
+    },
+    "loso_mse_M": {
+      "0.0": 0.0851874049,
+      "20.0": 0.0851838758,
+      "320.0": 0.0853237043,
+      "5.0": 0.0851862888,
+      "80.0": 0.0851866262
+    },
+    "min_honest_n": {
+      "test": 5,
+      "train": 4
+    },
+    "n_test_events": 7143,
+    "n_train_events": 8909,
+    "powered": false,
+    "sensitivity": {
+      "cohort": "sensitivity: all test events",
+      "mse_B0": 0.0990705613,
+      "mse_B1_zero_uncertainty": 0.4972478279,
+      "mse_B2_liquidity_only": 0.0914762073,
+      "mse_M": 0.0914762073,
+      "n_events": 7143,
+      "n_sessions": 3,
+      "skill_B2_vs_B0": {
+        "ci_hi": 0.1116939997,
+        "ci_lo": 0.0494326914,
+        "n_blocks": 3,
+        "n_boot": 2000,
+        "n_rows": 7143,
+        "skill": 0.0766560113
+      },
+      "skill_M_vs_B0": {
+        "ci_hi": 0.1116939997,
+        "ci_lo": 0.0494326914,
+        "n_blocks": 3,
+        "n_boot": 2000,
+        "n_rows": 7143,
+        "skill": 0.0766560113
+      },
+      "skill_M_vs_B1": {
+        "ci_hi": 0.8276163215,
+        "ci_lo": 0.7928513488,
+        "n_blocks": 3,
+        "n_boot": 2000,
+        "n_rows": 7143,
+        "skill": 0.8160349787
+      }
+    },
+    "sidecar_verdict": "SIDECAR_INSUFFICIENT_DATA",
+    "test_sessions": [
+      "2026-09-23",
+      "2026-09-24",
+      "2026-09-25"
+    ],
+    "test_sessions_with_decision_events": 3,
+    "train_mean_U_B0": 0.6680965605,
+    "train_sessions": [
+      "2026-09-17",
+      "2026-09-18",
+      "2026-09-21",
+      "2026-09-22"
+    ]
+  },
+  "attrition": {
+    "cohort_nonpositive_or_null_premium": 0,
+    "cohort_null_at_ask_share": 0,
+    "cohort_null_at_bid_share": 0,
+    "cohort_null_coverage": 0,
+    "cohort_null_spread": 0,
+    "cohort_rows": 16052,
+    "cohort_sessions": 7,
+    "ledger_rows": 92574,
+    "ledger_sessions": 44,
+    "rows_without_microstructure_v1": 76522
+  },
+  "brief": "Q04",
+  "distributions": {
+    "ingest_lag_note": "ingested_at minus ts as recorded; ts offset ambiguous (+00:00 tag on exchange-hours values); no lag constant applied",
+    "ingest_lag_seconds_as_recorded": {
+      "n": 16052,
+      "q": {
+        "max": 157689.433761,
+        "min": 1352.128937,
+        "p10": 16587.883278,
+        "p25": 23978.392193,
+        "p50": 62617.513174,
+        "p75": 146400.234247,
+        "p90": 154471.580994,
+        "p99": 157294.433761
+      }
+    },
+    "label_counts": {
+      "mixed": 7301,
+      "~buy": 4612,
+      "~sell": 4139
+    },
+    "labeled_identified_robust": 1713,
+    "labeled_not_identified": 7038,
+    "quote_age_max_ms": {
+      "n": 16052,
+      "q": {
+        "max": 1127526.0,
+        "min": 0.0,
+        "p10": 50.0,
+        "p25": 202.0,
+        "p50": 624.0,
+        "p75": 1527.0,
+        "p90": 4057.7,
+        "p99": 126651.4699999998
+      }
+    },
+    "quote_age_median_ms": {
+      "n": 16052,
+      "q": {
+        "max": 565818.0,
+        "min": 0.0,
+        "p10": 0.0,
+        "p25": 0.0,
+        "p50": 0.0,
+        "p75": 4.0,
+        "p90": 106.5,
+        "p99": 11621.255
+      }
+    }
+  },
+  "estimand": "E2 identified-set width of the trade sign",
+  "overall_verdict": "INSUFFICIENT_DATA",
+  "time_support": {
+    "frac_outside_0930_1615": 0.3129828059,
+    "threshold": 0.05,
+    "time_segments_identified": false,
+    "ts_offset_note": "recorded ts carries +00:00 while values sit in exchange hours; wall-clock HH:MM used"
+  }
+}

@@ -28,7 +28,7 @@ def _render() -> str:
 
 def test_workbench_renders_seven_functional_views_and_external_assets():
     html = _render()
-    for tab in ("radar", "statements", "disclosures", "redlines", "timeline", "compare", "trace"):
+    for tab in ("radar", "statements", "disclosures", "redlines", "timeline", "compare", "trace", "peers"):
         assert f'id="ff-tab-{tab}"' in html
         assert f'id="ff-panel-{tab}"' in html
     assert 'id="ff-company-search"' in html
@@ -50,16 +50,13 @@ def test_member_experience_leads_with_value_and_explains_the_workflow():
         "ff-overview-status",
         "ff-quick-signal",
         "ff-quick-signal-title",
-        "ff-stat-attention",
-        "ff-stat-watch",
-        "ff-stat-coverage",
-        "ff-stat-sources",
+        "ff-desk-header",
+        "ff-asof-input",
+        "ff-export-btn",
     ):
         assert f'id="{element_id}"' in html
-    assert "Spot the changes that matter." in html
-    assert "Pick a company. We compare its latest filing" in html
-    assert "The important changes, up front" in html
-    assert "Compare the numbers" in html
+    assert "What changed" in html
+    assert "Why it matters" in html
     assert "Read wording changes" in html
     assert "Verify the source" in html
     assert "Needs attention" in html
@@ -74,6 +71,9 @@ def test_disclosure_surfaces_make_the_text_comparison_boundary_and_source_path_p
     assert 'id="ff-timeline"' in html
     assert 'id="ff-disclosure-section"' in html
     assert 'class="ff-lexical-glyph"' in html
+    # AM4: the disclosures tab's visible copy is Wording / 措辞; the glance
+    # heading What changed belongs to the lead brief.
+    assert '<span class="l-en">Wording</span><span class="l-zh">措辞</span>' in html
     assert "This compares language between filings. It shows what changed—not why it changed." in html
     assert "Each row shows matching passages from both SEC filings." in html
     assert "See which filings are being compared" in html
@@ -108,7 +108,7 @@ def test_workbench_dom_ids_are_unique_and_bilingual():
     assert len(ids) == len(set(ids))
     assert html.count('class="l-en"') >= 20
     assert html.count('class="l-zh"') >= 20
-    assert "找出真正重要的财报变化" in html
+    assert "发生了什么变化" in html
     assert "Signal details" in html
 
 
@@ -146,7 +146,20 @@ def test_runtime_contract_accessibility_and_security_guards():
         "renderEvidence",
         "openAnalysisDrawer",
         "data-analysis-open",
-        "Open signal analysis",
+        "Open source",
+        "FINANCIAL_QUERY_URL",
+        "FINANCIAL_REVISIONS_URL",
+        "FINANCIAL_STATEMENTS_URL",
+        "FINANCIAL_QUERY_XLSX_URL",
+        "ff-source-control",
+        "Source span unavailable",
+        "X-FIF-Response-SHA256",
+        "writeUrl",
+        "readUrlParams",
+        "renderRevisions",
+        "renderStatementTree",
+        "renderPeers",
+        "peer_cohort",
         "applyHealth",
         "ATTESTED_HISTORY_URL",
         "historyRequest",
@@ -193,6 +206,9 @@ def test_runtime_contract_accessibility_and_security_guards():
     assert "See why it matters" not in js
     assert "Last refreshed" not in js
     assert "ff-generated-at" not in js
+    # R5: URL state is the desk's only persistence surface.
+    assert "localStorage" not in js
+    assert "sessionStorage" not in js
 
 
 def test_runtime_is_valid_javascript():
@@ -223,8 +239,8 @@ def test_cta_opens_analysis_drawer_on_desktop():
 
 def test_freshness_meta_and_cta_copy_are_explicit():
     html = _render()
-    assert "Open signal analysis" in html
-    assert "打开信号分析" in html
+    assert "Open source" in html
+    assert "打开来源" in html
     assert "See why it matters" not in html
     assert "Last refreshed" not in html
     assert 'id="ff-freshness-status"' in html
@@ -281,6 +297,76 @@ def test_responsive_evidence_lens_has_desktop_drawer_and_mobile_sheet():
     assert ".ff-signal-meaning" in css
     assert ".ff-view-guide" in css
     assert '.ff-workspace[data-tab="statements"]' in css
+    # P2 desk header sits in the first viewport in both themes.
+    assert ".ff-desk-header" in css
+    assert 'html[data-theme="light"] .ff-desk-header' in css
+    assert ".ff-source-control" in css
+    assert ".ff-revisions" in css
+    assert ".ff-peer-row" in css
+    assert '.ff-workspace[data-tab="peers"]' in css
+    assert "--card-shadow" in css
+
+
+def test_source_control_disabled_copy_is_bilingual():
+    """R3: the no-span state is a named, bilingual product state — never a
+    silent blank or a generic EDGAR link."""
+    html = _render()
+    js = (TEMPLATES / "fundamental_forensics.js").read_text(encoding="utf-8")
+    assert "Source span unavailable" in js
+    assert "来源片段不可用" in js
+    assert "data-tip-en=\"Source span unavailable\"" in js
+    assert "Open the source span for this number" in js
+    assert "打开该数字的来源片段" in js
+    assert "edgar/browse" not in js
+
+
+def test_desk_header_has_one_asof_and_export():
+    """A42/R1: one as-of control and one export control; the desk header is
+    the page's only chrome header besides the site nav."""
+    html = _render()
+    assert html.count('id="ff-asof-input"') == 1
+    assert html.count('id="ff-asof-latest"') == 1
+    assert html.count('id="ff-export-btn"') == 1
+    assert html.count('id="ff-export-link"') == 1
+    assert html.count('<header class="ff-desk-header"') == 1
+    assert 'class="ff-hero"' not in html
+    assert 'class="ff-context-card"' not in html
+
+
+def test_js_title_attributes_stay_ascii():
+    """R9 (scripts/check_title_i18n.py companion): a JS-written title= may
+    carry an id string only — never CJK copy."""
+    js = (TEMPLATES / "fundamental_forensics.js").read_text(encoding="utf-8")
+    for match in re.findall(r'title="([^"]*)"', js):
+        assert not re.search(r"[一-鿿]", match), match
+    for match in re.findall(r"title='([^']*)'", js):
+        assert not re.search(r"[一-鿿]", match), match
+
+
+def test_url_state_contract_node_suite():
+    node = shutil.which("node")
+    if node is None:
+        return
+    result = subprocess.run(
+        [node, "--test", str(ROOT / "tests" / "fundamental_forensics_url_state.test.mjs")],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    assert result.returncode == 0, result.stdout + result.stderr
+
+
+def test_a38_exact_value_node_suite():
+    node = shutil.which("node")
+    if node is None:
+        return
+    result = subprocess.run(
+        [node, "--test", str(ROOT / "tests" / "fundamental_forensics_a38_exact.test.mjs")],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    assert result.returncode == 0, result.stdout + result.stderr
 
 
 def test_forensics_browser_state_stays_inside_paid_same_origin_boundary():

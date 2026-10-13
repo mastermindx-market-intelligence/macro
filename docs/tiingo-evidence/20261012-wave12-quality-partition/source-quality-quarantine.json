@@ -1,0 +1,29 @@
+{
+  "schema": "tiingo.safe_original_source_quality_quarantine/v1",
+  "symbol": "WTFNF",
+  "receipt_id": "d7a46db383115e15506af654b925f1161102d4f2278524c35ea2df6e7e505eec",
+  "raw_sha256": "0db1843d1e955139353b2b8478e5cf55d70e6845644cea2d7891efc435671fd2",
+  "reason": "one negative integer in each raw and adjusted share-volume field",
+  "invalid_field_counts": {
+    "volume": 1,
+    "adjVolume": 1
+  },
+  "raw_retained_and_checksum_verified": true,
+  "entire_receipt_excluded_from_projection": true,
+  "nonnegative_int64_validation_unchanged": true,
+  "vendor_values_modified": false,
+  "provider_retry_authorized": false,
+  "original_failed_snapshot_responses": 195,
+  "reconciled_valid_responses": 194,
+  "existing_valid_views_verified_and_reused": 145,
+  "new_valid_views_written": 49,
+  "original_diagnosis_sha256": "2f92952d04711b934f4191baf75dfae236aaffc8bfee299ebaae238d855ed2bb",
+  "original_failed_materialization_scope_sha256": "a8a92a8a9a44f15ab3f743a1b0f97400e5dbd1bed3a84d145cb91311488a710e",
+  "reconciliation_method_sha256": "97674b8b689919ab4c90ae47f6a9805af5d1b64a5451ac810c056c1859c2d2cf",
+  "coverage_method_sha256": "4ddeb4c96fb525e6df89fa4f1e6b15f57164f0b77c025e70c6a552ee5d9ec727",
+  "independent_architecture_review": "PASS",
+  "independent_review_receipt_sha256": "adbc58b112c1a038caf16b96a72e9ecce618535bd7180407e65866146e4f37e8",
+  "quarantine_deduplicated_by_receipt_identity": true,
+  "missing_qualified_windows_are_not_a_retry_queue": true,
+  "licensed_payload_rows_in_this_artifact": false
+}

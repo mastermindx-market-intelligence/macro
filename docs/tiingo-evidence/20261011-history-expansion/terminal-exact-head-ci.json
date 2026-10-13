@@ -1,0 +1,114 @@
+{
+  "schema": "tiingo_terminal_exact_head_ci_observation.v1",
+  "pr": {
+    "number": 945,
+    "head": "7506ef1539c8646e7bf52b65b697a102fd549942",
+    "base": "bc28e47ee54f13eac3094c76a47ec7e71b689330",
+    "state": "open",
+    "draft": true,
+    "merged": false,
+    "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/945"
+  },
+  "checks": [
+    {
+      "name": "Terminal typecheck + tests",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/38161624995/job/114545471653",
+      "completed_at": "2026-10-11T18:42:46Z"
+    },
+    {
+      "name": "CodeQL",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/runs/114535715535",
+      "completed_at": "2026-10-11T17:55:46Z"
+    },
+    {
+      "name": "Terminal e2e tablet (shard)",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/38161624995/job/114535568238",
+      "completed_at": "2026-10-11T18:42:24Z"
+    },
+    {
+      "name": "Terminal e2e serial (shard)",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/38161624995/job/114535568037",
+      "completed_at": "2026-10-11T18:04:22Z"
+    },
+    {
+      "name": "Quote Hub tests",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/38161624995/job/114535568036",
+      "completed_at": "2026-10-11T17:55:24Z"
+    },
+    {
+      "name": "Terminal e2e desktop-2 (shard)",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/38161624995/job/114535568035",
+      "completed_at": "2026-10-11T18:15:12Z"
+    },
+    {
+      "name": "Terminal e2e mobile (shard)",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/38161624995/job/114535568013",
+      "completed_at": "2026-10-11T18:42:41Z"
+    },
+    {
+      "name": "Terminal unit + typecheck (shard)",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/38161624995/job/114535568008",
+      "completed_at": "2026-10-11T17:58:11Z"
+    },
+    {
+      "name": "Terminal e2e desktop-1 (shard)",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/38161624995/job/114535567999",
+      "completed_at": "2026-10-11T18:34:51Z"
+    },
+    {
+      "name": "Ingest + signal-layer tests",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/38161624995/job/114535567994",
+      "completed_at": "2026-10-11T17:56:04Z"
+    },
+    {
+      "name": "Investigation PostgreSQL invariants",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/38161624995/job/114535567885",
+      "completed_at": "2026-10-11T17:55:18Z"
+    },
+    {
+      "name": "Analyze (javascript-typescript)",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/38161623476/job/114535565435",
+      "completed_at": "2026-10-11T17:56:54Z"
+    },
+    {
+      "name": "Analyze (python)",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/38161623476/job/114535565428",
+      "completed_at": "2026-10-11T17:56:01Z"
+    },
+    {
+      "name": "Analyze (actions)",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/38161623476/job/114535565286",
+      "completed_at": "2026-10-11T17:55:53Z"
+    }
+  ],
+  "independent_review_completed": false,
+  "production_deployed": false
+}

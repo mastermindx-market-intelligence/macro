@@ -1,0 +1,3861 @@
+{
+ "calendar": {
+  "first": "2023-08-01",
+  "last": "2026-10-08",
+  "missing_finra_sessions": [],
+  "n_finra_dates": 801,
+  "n_sessions": 801
+ },
+ "cohort": {
+  "n_deep_names": 374,
+  "status_counts": {
+   "eligible": 327,
+   "excluded_share_basis_break": 31,
+   "excluded_short_test": 1,
+   "excluded_short_train": 15
+  },
+  "thresholds": {
+   "min_test_obs": 150,
+   "min_train_obs": 300,
+   "train_end": "2025-06-30"
+  }
+ },
+ "incumbent_tests": {
+  "exit_code": 0,
+  "tail": "29 passed, 8 warnings in 1.51s"
+ },
+ "names": [
+  {
+   "missing_sessions_in_span": 17,
+   "n_obs": 784,
+   "n_test": 304,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "AAL",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "AAPL",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "ABNB",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "ACLS",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "ADBE",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "ADI",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 17,
+   "n_obs": 784,
+   "n_test": 304,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "AEIS",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 47,
+   "n_obs": 708,
+   "n_test": 228,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "AEM",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "AEP",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 47,
+   "n_obs": 708,
+   "n_test": 228,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "AFRM",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 47,
+   "n_obs": 708,
+   "n_test": 228,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "AG",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 47,
+   "n_obs": 708,
+   "n_test": 228,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "AGI",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 47,
+   "n_obs": 548,
+   "n_test": 228,
+   "n_train": 320,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "ALAB",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "ALGT",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "ALHC",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 17,
+   "n_obs": 784,
+   "n_test": 304,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "ALK",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 47,
+   "n_obs": 708,
+   "n_test": 228,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "ALT",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "AMAT",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "AMD",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "AME",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "AMGN",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "AMZN",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": true,
+   "status": "excluded_share_basis_break",
+   "ticker": "ANET",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "APH",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 47,
+   "n_obs": 708,
+   "n_test": 228,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "APLD",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "APP",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 47,
+   "n_obs": 677,
+   "n_test": 228,
+   "n_train": 449,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "ARM",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "ASO",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 47,
+   "n_obs": 708,
+   "n_test": 228,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "ASTS",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 47,
+   "n_obs": 708,
+   "n_test": 228,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "AU",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 17,
+   "n_obs": 784,
+   "n_test": 304,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "AVAV",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": true,
+   "status": "excluded_share_basis_break",
+   "ticker": "AVGO",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "AXP",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 47,
+   "n_obs": 708,
+   "n_test": 228,
+   "n_train": 480,
+   "share_break": true,
+   "status": "excluded_share_basis_break",
+   "ticker": "AZN",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": true,
+   "status": "excluded_share_basis_break",
+   "ticker": "AZO",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "BA",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "BBY",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "BEN",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 17,
+   "n_obs": 784,
+   "n_test": 304,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "BJ",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": true,
+   "status": "excluded_share_basis_break",
+   "ticker": "BKNG",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "BKR",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 17,
+   "n_obs": 714,
+   "n_test": 234,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "BLD",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "BLDR",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "BLK",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 47,
+   "n_obs": 708,
+   "n_test": 228,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "BPOP",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 47,
+   "n_obs": 708,
+   "n_test": 228,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "BTDR",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 47,
+   "n_obs": 708,
+   "n_test": 228,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "BTG",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 17,
+   "n_obs": 784,
+   "n_test": 304,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "BURL",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 17,
+   "n_obs": 784,
+   "n_test": 304,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "BWXT",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 17,
+   "n_obs": 784,
+   "n_test": 304,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "BYD",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 47,
+   "n_obs": 708,
+   "n_test": 228,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "CAMT",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "CARR",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "CAT",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 47,
+   "n_obs": 9,
+   "n_test": 9,
+   "n_train": 0,
+   "share_break": false,
+   "status": "excluded_short_train",
+   "ticker": "CBRS",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "CCL",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "CEG",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "CFG",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 17,
+   "n_obs": 784,
+   "n_test": 304,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "CFR",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 17,
+   "n_obs": 784,
+   "n_test": 304,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "CGNX",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "CHD",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "CI",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "CIEN",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 47,
+   "n_obs": 708,
+   "n_test": 228,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "CIFR",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "CL",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 1,
+   "n_obs": 800,
+   "n_test": 321,
+   "n_train": 479,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "CLSK",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "CLX",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "CME",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "CNC",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "COF",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "COHR",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "COHU",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "COIN",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 17,
+   "n_obs": 784,
+   "n_test": 304,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "COLB",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "COP",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 47,
+   "n_obs": 587,
+   "n_test": 228,
+   "n_train": 359,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "CORZ",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "COST",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 47,
+   "n_obs": 245,
+   "n_test": 228,
+   "n_train": 17,
+   "share_break": false,
+   "status": "excluded_short_train",
+   "ticker": "CRCL",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 47,
+   "n_obs": 708,
+   "n_test": 228,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "CRDO",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "CRM",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": true,
+   "status": "excluded_share_basis_break",
+   "ticker": "CRWD",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 47,
+   "n_obs": 292,
+   "n_test": 228,
+   "n_train": 64,
+   "share_break": false,
+   "status": "excluded_short_train",
+   "ticker": "CRWV",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "CSCO",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "CVS",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "CVX",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 17,
+   "n_obs": 784,
+   "n_test": 304,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "CW",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "CZR",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "D",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "DAL",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "DDOG",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "DE",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "DELL",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "DG",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "DHI",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 47,
+   "n_obs": 708,
+   "n_test": 228,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "DIA",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 17,
+   "n_obs": 784,
+   "n_test": 304,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "DINO",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 47,
+   "n_obs": 708,
+   "n_test": 228,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "DKNG",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 17,
+   "n_obs": 784,
+   "n_test": 304,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "DKS",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "DLTR",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 17,
+   "n_obs": 784,
+   "n_test": 304,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "DOCU",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "DOV",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 47,
+   "n_obs": 708,
+   "n_test": 228,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "DRS",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "DUK",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "DVA",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "DVN",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "DXCM",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 47,
+   "n_obs": 708,
+   "n_test": 228,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "EGO",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "ELV",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "EME",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "EMR",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 17,
+   "n_obs": 784,
+   "n_test": 304,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "ENTG",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "EOG",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "EQT",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 47,
+   "n_obs": 708,
+   "n_test": 228,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "EQX",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 47,
+   "n_obs": 463,
+   "n_test": 228,
+   "n_train": 235,
+   "share_break": false,
+   "status": "excluded_short_train",
+   "ticker": "ETHA",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "ETN",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 17,
+   "n_obs": 784,
+   "n_test": 304,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "EWBC",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "EXPE",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "FANG",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": true,
+   "status": "excluded_share_basis_break",
+   "ticker": "FAST",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 17,
+   "n_obs": 784,
+   "n_test": 304,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "FBIN",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 47,
+   "n_obs": 708,
+   "n_test": 228,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "FCNCA",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 17,
+   "n_obs": 784,
+   "n_test": 304,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "FHN",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 573,
+   "n_test": 93,
+   "n_train": 480,
+   "share_break": false,
+   "status": "excluded_short_test",
+   "ticker": "FI",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "FIS",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "FITB",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 17,
+   "n_obs": 784,
+   "n_test": 304,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "FIVE",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "FIX",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 47,
+   "n_obs": 708,
+   "n_test": 228,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "FLYW",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "FORM",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 17,
+   "n_obs": 784,
+   "n_test": 304,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "FOUR",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "FTNT",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "GD",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "GE",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 633,
+   "n_test": 321,
+   "n_train": 312,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "GEV",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 47,
+   "n_obs": 708,
+   "n_test": 228,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "GFI",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "GIS",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "GLW",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 47,
+   "n_obs": 258,
+   "n_test": 228,
+   "n_train": 30,
+   "share_break": false,
+   "status": "excluded_short_train",
+   "ticker": "GLXY",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "GNRC",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 189,
+   "n_obs": 566,
+   "n_test": 121,
+   "n_train": 445,
+   "share_break": true,
+   "status": "excluded_share_basis_break",
+   "ticker": "GOLD",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "GOOGL",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 47,
+   "n_obs": 708,
+   "n_test": 228,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "GPCR",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "GPN",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 47,
+   "n_obs": 708,
+   "n_test": 228,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "GTLB",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 17,
+   "n_obs": 784,
+   "n_test": 304,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "H",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "HAL",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "HBAN",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "HD",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 47,
+   "n_obs": 708,
+   "n_test": 228,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "HEI",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "HII",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 17,
+   "n_obs": 784,
+   "n_test": 304,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "HIMS",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 17,
+   "n_obs": 784,
+   "n_test": 304,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "HL",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "HLT",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 47,
+   "n_obs": 708,
+   "n_test": 228,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "HMY",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "HON",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "HOOD",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "HPE",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "HPQ",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "HSY",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 800,
+   "n_test": 320,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "HUBB",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 82,
+   "n_obs": 719,
+   "n_test": 239,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "HUBS",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "HUM",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 47,
+   "n_obs": 708,
+   "n_test": 228,
+   "n_train": 480,
+   "share_break": true,
+   "status": "excluded_share_basis_break",
+   "ticker": "HUT",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "HWM",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 47,
+   "n_obs": 708,
+   "n_test": 228,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "IAG",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 47,
+   "n_obs": 595,
+   "n_test": 228,
+   "n_train": 367,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "IBIT",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "IBM",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "IBP",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "ICHR",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 47,
+   "n_obs": 70,
+   "n_test": 70,
+   "n_train": 0,
+   "share_break": false,
+   "status": "excluded_short_train",
+   "ticker": "INFQ",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "INTU",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 47,
+   "n_obs": 708,
+   "n_test": 228,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "IONQ",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "IR",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 47,
+   "n_obs": 708,
+   "n_test": 228,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "IREN",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "ISRG",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "ITW",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 47,
+   "n_obs": 708,
+   "n_test": 228,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "IWM",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "JKHY",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "JNJ",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 17,
+   "n_obs": 784,
+   "n_test": 304,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "KBH",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "KDP",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": true,
+   "status": "excluded_share_basis_break",
+   "ticker": "KEY",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 47,
+   "n_obs": 708,
+   "n_test": 228,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "KGC",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": true,
+   "status": "excluded_share_basis_break",
+   "ticker": "KLAC",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "KLIC",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "KMB",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "KMI",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "KO",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 47,
+   "n_obs": 708,
+   "n_test": 228,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "KRE",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 17,
+   "n_obs": 784,
+   "n_test": 304,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "KTOS",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "KVUE",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 47,
+   "n_obs": 673,
+   "n_test": 228,
+   "n_train": 445,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "KVYO",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "LDOS",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "LEN",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 40,
+   "n_obs": 761,
+   "n_test": 281,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "LEU",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "LHX",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "LII",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "LITE",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "LLY",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "LMT",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 47,
+   "n_obs": 708,
+   "n_test": 228,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "LNG",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "LOW",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": true,
+   "status": "excluded_share_basis_break",
+   "ticker": "LRCX",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "LUV",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "LVS",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "LYV",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "MA",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "MAR",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "MARA",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "MAS",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "MCHP",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 47,
+   "n_obs": 708,
+   "n_test": 228,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "MDB",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "MDLZ",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "META",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "MGM",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "MHK",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "MKC",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 17,
+   "n_obs": 784,
+   "n_test": 304,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "MKSI",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "MO",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "MOH",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "MPC",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "MPWR",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 47,
+   "n_obs": 708,
+   "n_test": 228,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "MQ",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "MRCY",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "MRVL",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "MSFT",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 47,
+   "n_obs": 708,
+   "n_test": 228,
+   "n_train": 480,
+   "share_break": true,
+   "status": "excluded_share_basis_break",
+   "ticker": "MSTR",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "MTB",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": true,
+   "status": "excluded_share_basis_break",
+   "ticker": "MTH",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "MU",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 47,
+   "n_obs": 400,
+   "n_test": 228,
+   "n_train": 172,
+   "share_break": false,
+   "status": "excluded_short_train",
+   "ticker": "NBIS",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "NCLH",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "NDSN",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "NEE",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "NEM",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 47,
+   "n_obs": 708,
+   "n_test": 228,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "NET",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 47,
+   "n_obs": 514,
+   "n_test": 228,
+   "n_train": 286,
+   "share_break": false,
+   "status": "excluded_short_train",
+   "ticker": "NNE",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "NOC",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 17,
+   "n_obs": 784,
+   "n_test": 304,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "NOVT",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": true,
+   "status": "excluded_share_basis_break",
+   "ticker": "NOW",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "NRG",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": true,
+   "status": "excluded_share_basis_break",
+   "ticker": "NVDA",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 47,
+   "n_obs": 708,
+   "n_test": 228,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "NVMI",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 47,
+   "n_obs": 708,
+   "n_test": 228,
+   "n_train": 480,
+   "share_break": true,
+   "status": "excluded_share_basis_break",
+   "ticker": "NVO",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "NVR",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 17,
+   "n_obs": 784,
+   "n_test": 304,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "NVT",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "NXPI",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 17,
+   "n_obs": 784,
+   "n_test": 304,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "NXT",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 17,
+   "n_obs": 784,
+   "n_test": 304,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "OC",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "OKE",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 47,
+   "n_obs": 512,
+   "n_test": 228,
+   "n_train": 284,
+   "share_break": false,
+   "status": "excluded_short_train",
+   "ticker": "OKLO",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 17,
+   "n_obs": 784,
+   "n_test": 304,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "OKTA",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 17,
+   "n_obs": 784,
+   "n_test": 304,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "OLLI",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "ON",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 17,
+   "n_obs": 784,
+   "n_test": 304,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "ONTO",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "ORCL",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": true,
+   "status": "excluded_share_basis_break",
+   "ticker": "ORLY",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 47,
+   "n_obs": 708,
+   "n_test": 228,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "OSCR",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "OXY",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 47,
+   "n_obs": 708,
+   "n_test": 228,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "PAA",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 47,
+   "n_obs": 708,
+   "n_test": 228,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "PAAS",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": true,
+   "status": "excluded_share_basis_break",
+   "ticker": "PANW",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "PCG",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 47,
+   "n_obs": 708,
+   "n_test": 228,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "PCOR",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "PEP",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "PFE",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "PG",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "PH",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "PHM",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "PLTR",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "PM",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "PNC",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": true,
+   "status": "excluded_share_basis_break",
+   "ticker": "POWL",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 17,
+   "n_obs": 784,
+   "n_test": 304,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "PR",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "PSMT",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "PSX",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "PTC",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "PWR",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "PYPL",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 47,
+   "n_obs": 708,
+   "n_test": 228,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "QBTS",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "QCOM",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 17,
+   "n_obs": 784,
+   "n_test": 304,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "QLYS",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 2,
+   "n_test": 2,
+   "n_train": 0,
+   "share_break": false,
+   "status": "excluded_short_train",
+   "ticker": "QNT",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 47,
+   "n_obs": 708,
+   "n_test": 228,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "QQQ",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 47,
+   "n_obs": 708,
+   "n_test": 228,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "QUBT",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 47,
+   "n_obs": 523,
+   "n_test": 228,
+   "n_train": 295,
+   "share_break": false,
+   "status": "excluded_short_train",
+   "ticker": "RBRK",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "RCL",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": true,
+   "status": "excluded_share_basis_break",
+   "ticker": "RF",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 47,
+   "n_obs": 708,
+   "n_test": 228,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "RGTI",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 47,
+   "n_obs": 708,
+   "n_test": 228,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "RIOT",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 47,
+   "n_obs": 708,
+   "n_test": 228,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "RKLB",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "ROK",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "ROST",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "RTX",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 47,
+   "n_obs": 708,
+   "n_test": 228,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "S",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "SHW",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "SLB",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": true,
+   "status": "excluded_share_basis_break",
+   "ticker": "SMCI",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 47,
+   "n_obs": 708,
+   "n_test": 228,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "SMH",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 47,
+   "n_obs": 708,
+   "n_test": 228,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "SMR",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 409,
+   "n_test": 321,
+   "n_train": 88,
+   "share_break": false,
+   "status": "excluded_short_train",
+   "ticker": "SNDK",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 47,
+   "n_obs": 708,
+   "n_test": 228,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "SNOW",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "SO",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 47,
+   "n_obs": 708,
+   "n_test": 228,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "SOFI",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 47,
+   "n_obs": 708,
+   "n_test": 228,
+   "n_train": 480,
+   "share_break": true,
+   "status": "excluded_share_basis_break",
+   "ticker": "SOXX",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 47,
+   "n_obs": 708,
+   "n_test": 228,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "SPY",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "SRE",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 47,
+   "n_obs": 708,
+   "n_test": 228,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "SRRK",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 17,
+   "n_obs": 784,
+   "n_test": 304,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "SSB",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 47,
+   "n_obs": 708,
+   "n_test": 228,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "STM",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "STX",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "SYF",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 47,
+   "n_obs": 708,
+   "n_test": 228,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "SYM",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "TDG",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "TDY",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 47,
+   "n_obs": 708,
+   "n_test": 228,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "TEAM",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "TEL",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 47,
+   "n_obs": 708,
+   "n_test": 228,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "TENB",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "TER",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "TFC",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "TGT",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "TJX",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 17,
+   "n_obs": 548,
+   "n_test": 304,
+   "n_train": 244,
+   "share_break": false,
+   "status": "excluded_short_train",
+   "ticker": "TLN",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 17,
+   "n_obs": 784,
+   "n_test": 304,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "TOL",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 38,
+   "n_obs": 763,
+   "n_test": 283,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "TOST",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "TRGP",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "TRMB",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": true,
+   "status": "excluded_share_basis_break",
+   "ticker": "TSCO",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "TSLA",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "TXN",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "TXT",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "UAL",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "UCTT",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "ULTA",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 17,
+   "n_obs": 784,
+   "n_test": 304,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "UMBF",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "UNH",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 47,
+   "n_obs": 708,
+   "n_test": 228,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "UPST",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "URI",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "USB",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "V",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "VECO",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 47,
+   "n_obs": 519,
+   "n_test": 228,
+   "n_train": 291,
+   "share_break": false,
+   "status": "excluded_short_train",
+   "ticker": "VIK",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 47,
+   "n_obs": 708,
+   "n_test": 228,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "VKTX",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "VLO",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "VRT",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "VST",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 17,
+   "n_obs": 784,
+   "n_test": 304,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "WAL",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 29,
+   "n_obs": 737,
+   "n_test": 257,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "WBS",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "WDAY",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "WDC",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 17,
+   "n_obs": 784,
+   "n_test": 304,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "WH",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "WMB",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": true,
+   "status": "excluded_share_basis_break",
+   "ticker": "WMT",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "WST",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 17,
+   "n_obs": 784,
+   "n_test": 304,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "WTFC",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "WU",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 47,
+   "n_obs": 708,
+   "n_test": 228,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "WULF",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "WYNN",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 47,
+   "n_obs": 708,
+   "n_test": 228,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "XBI",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 47,
+   "n_obs": 708,
+   "n_test": 228,
+   "n_train": 480,
+   "share_break": true,
+   "status": "excluded_share_basis_break",
+   "ticker": "XLB",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 47,
+   "n_obs": 708,
+   "n_test": 228,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "XLC",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 47,
+   "n_obs": 708,
+   "n_test": 228,
+   "n_train": 480,
+   "share_break": true,
+   "status": "excluded_share_basis_break",
+   "ticker": "XLE",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 47,
+   "n_obs": 708,
+   "n_test": 228,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "XLF",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 47,
+   "n_obs": 708,
+   "n_test": 228,
+   "n_train": 480,
+   "share_break": true,
+   "status": "excluded_share_basis_break",
+   "ticker": "XLI",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 47,
+   "n_obs": 708,
+   "n_test": 228,
+   "n_train": 480,
+   "share_break": true,
+   "status": "excluded_share_basis_break",
+   "ticker": "XLK",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 47,
+   "n_obs": 708,
+   "n_test": 228,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "XLP",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 47,
+   "n_obs": 708,
+   "n_test": 228,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "XLRE",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 47,
+   "n_obs": 708,
+   "n_test": 228,
+   "n_train": 480,
+   "share_break": true,
+   "status": "excluded_share_basis_break",
+   "ticker": "XLU",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 47,
+   "n_obs": 708,
+   "n_test": 228,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "XLV",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 47,
+   "n_obs": 708,
+   "n_test": 228,
+   "n_train": 480,
+   "share_break": true,
+   "status": "excluded_share_basis_break",
+   "ticker": "XLY",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "XOM",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 432,
+   "n_test": 321,
+   "n_train": 111,
+   "share_break": false,
+   "status": "excluded_short_train",
+   "ticker": "XYZ",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 0,
+   "n_obs": 801,
+   "n_test": 321,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "ZBRA",
+   "yahoo": true
+  },
+  {
+   "missing_sessions_in_span": 47,
+   "n_obs": 708,
+   "n_test": 228,
+   "n_train": 480,
+   "share_break": false,
+   "status": "eligible",
+   "ticker": "ZS",
+   "yahoo": true
+  }
+ ],
+ "revisions": {
+  "overlap_rows": 548,
+  "overlap_total_vol_differs": 0
+ },
+ "stage": "pre-freeze baseline + eligibility (no challenger output computed)",
+ "streak_reproduction": {
+  "asof": "2026-10-06",
+  "n": 16,
+  "n_exact_match": 16,
+  "rows": [
+   {
+    "published": 12,
+    "reproduced": 12,
+    "ticker": "APH"
+   },
+   {
+    "published": 8,
+    "reproduced": 8,
+    "ticker": "CIEN"
+   },
+   {
+    "published": 12,
+    "reproduced": 12,
+    "ticker": "KEY"
+   },
+   {
+    "published": 0,
+    "reproduced": 0,
+    "ticker": "HL"
+   },
+   {
+    "published": 1,
+    "reproduced": 1,
+    "ticker": "PM"
+   },
+   {
+    "published": 2,
+    "reproduced": 2,
+    "ticker": "LITE"
+   },
+   {
+    "published": 2,
+    "reproduced": 2,
+    "ticker": "MRVL"
+   },
+   {
+    "published": 1,
+    "reproduced": 1,
+    "ticker": "ENTG"
+   },
+   {
+    "published": 12,
+    "reproduced": 12,
+    "ticker": "HD"
+   },
+   {
+    "published": 6,
+    "reproduced": 6,
+    "ticker": "LOW"
+   },
+   {
+    "published": 1,
+    "reproduced": 1,
+    "ticker": "EWBC"
+   },
+   {
+    "published": 2,
+    "reproduced": 2,
+    "ticker": "PTC"
+   },
+   {
+    "published": 7,
+    "reproduced": 7,
+    "ticker": "FIS"
+   },
+   {
+    "published": 1,
+    "reproduced": 1,
+    "ticker": "WMT"
+   },
+   {
+    "published": 4,
+    "reproduced": 4,
+    "ticker": "EXPE"
+   },
+   {
+    "published": 6,
+    "reproduced": 6,
+    "ticker": "ADI"
+   }
+  ]
+ }
+}

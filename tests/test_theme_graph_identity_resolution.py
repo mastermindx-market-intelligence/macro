@@ -273,10 +273,26 @@ class TestSection6HostileCases:
         assert row["resolution_state"] == "RESOLVED"
         assert row["security_id"] == "SEC:US-XNYS-CTRA"
 
+    def test_admitted_bats_name_resolves_from_master(self, master_inputs, etf_symbols):
+        """BATS admission replaces CBOE's former zero-master-row fixture premise."""
+        row = _resolve("co:us:CBOE", master_inputs, etf_symbols)
+        assert row["resolution_state"] == "RESOLVED"
+        assert row["security_id"] == "SEC:US-BATS-CBOE"
+        assert row["issuer_id"] == "ISS:US-BATS-CBOE"
+        assert row["listing_key"] == "US-BATS-CBOE"
+        assert row["join_method"] == "master_inception_exact"
+        assert row["refusal_reason"] is None
+        assert json.loads(row["source_receipts"]) == {
+            "master_inception_code": "CBOE", "security_id": "SEC:US-BATS-CBOE",
+        }
+        assert row["master_generated_at"] == master_inputs.generated_at
+        assert row["master_symbol_directory_snapshot"] == master_inputs.symbol_directory_snapshot
+        assert row["master_code_version"] == master_inputs.code_version
+
     @pytest.mark.parametrize("symbol", [
-        "ANGPY", "BLD", "CBOE", "EA", "GATO", "IMPUY", "MAG", "RHHBY",
+        "ANGPY", "BLD", "EA", "GATO", "IMPUY", "MAG", "RHHBY",
     ])
-    def test_the_eight_not_in_master_names(self, symbol, master_inputs, etf_symbols):
+    def test_remaining_not_in_master_names(self, symbol, master_inputs, etf_symbols):
         row = _resolve(f"co:us:{symbol}", master_inputs, etf_symbols)
         assert row["resolution_state"] == "NOT_IN_MASTER", row
         assert row["security_id"] is None
@@ -439,8 +455,9 @@ class TestMutations:
         MUST land NOT_IN_MASTER, never RESOLVED-by-coincidence."""
         bogus = "ZZZNOSUCHTICKERXYZ"
         assert bogus not in master_inputs.master_by_code
-        assert not any(master_inputs.alias_table.resolve(v, bogus, on=date(2026, 8, 14))
-                       for v in master_inputs.vendors)
+        assert not any(master_inputs.alias_table.resolve(
+            v, bogus, on=date(2026, 8, 14), decision_at="2026-08-14T23:59:59Z")
+            for v in master_inputs.vendors)
         row = _resolve(f"co:us:{bogus}", master_inputs, etf_symbols)
         assert row["resolution_state"] == "NOT_IN_MASTER"
         assert row["security_id"] is None

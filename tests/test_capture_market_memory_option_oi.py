@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import re
 from pathlib import Path
 from types import SimpleNamespace
 
@@ -344,7 +345,370 @@ def test_cli_sanitizes_nested_credential_bearing_failures(
     assert cli.main(["--repository-root", "/tmp/reviewed"]) == 1
     captured = capsys.readouterr()
     assert captured.out == ""
-    assert captured.err == "option-OI canary capture failed closed\n"
+    assert captured.err == (
+        "option-OI canary capture failed closed stage=unknown "
+        "class=MarketMemoryOptionOiObservationError\n"
+    )
+    assert TOKEN not in captured.err
+
+
+def _benign_capture_dependencies(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> tuple[Path, Path]:
+    """Install the wrapper test's benign dependencies; return repo and store."""
+    repository = tmp_path / "repo"
+    repository.mkdir()
+    store = tmp_path / "operator-store"
+    bundle = _bundle()
+    monkeypatch.setattr(cli, "_repository_commit", lambda root: "1" * 40)
+    monkeypatch.setattr(cli, "_read_systemd_bearer_token", lambda: TOKEN)
+    monkeypatch.setattr(
+        cli.option_oi,
+        "read_pinned_option_oi_sources",
+        lambda root, *, pinned_commit: SimpleNamespace(pinned_commit=pinned_commit),
+    )
+    monkeypatch.setattr(
+        cli.option_oi,
+        "build_current_spy_option_oi_observation",
+        lambda root, *, pinned_commit, bearer_token: bundle,
+    )
+    monkeypatch.setattr(
+        cli.option_oi_store,
+        "validate_option_oi_store_root",
+        lambda root, *, repository_root: store.resolve(),
+    )
+    monkeypatch.setattr(
+        cli.option_oi_store, "resume_pending_option_oi_captures", lambda root: ()
+    )
+    monkeypatch.setattr(
+        cli.option_oi_store,
+        "capture_option_oi_observation",
+        lambda root, *, bundle: _stored(bundle),
+    )
+    return repository, store
+
+
+_STAGE_FAILURE_TARGETS = {
+    "commit": (cli, "_repository_commit"),
+    "store_root": (cli.option_oi_store, "validate_option_oi_store_root"),
+    "resume": (cli.option_oi_store, "resume_pending_option_oi_captures"),
+    "pinned_sources": (cli.option_oi, "read_pinned_option_oi_sources"),
+    "credential": (cli, "_read_systemd_bearer_token"),
+    "persist": (cli.option_oi_store, "capture_option_oi_observation"),
+}
+
+_STAGE_FAILURE_MESSAGES = {
+    "commit": (cli.MarketMemoryOptionOiCaptureCliError, "x"),
+    "store_root": (cli.option_oi_store.MarketMemoryOptionOiStoreError, "x"),
+    "resume": (cli.option_oi_store.MarketMemoryOptionOiStoreError, "x"),
+    "pinned_sources": (cli.option_oi.MarketMemoryOptionOiObservationError, "x"),
+    "credential": (cli.MarketMemoryOptionOiCaptureCliError, "x"),
+    "persist": (cli.option_oi_store.MarketMemoryOptionOiStoreError, "x"),
+}
+
+# Build-stage failures the refinement reclassifies from the observation
+# module's own literals and note; None means no status-class note is attached.
+_STAGE_BUILD_FAILURES = {
+    "credential": ("bearer token contains whitespace or control bytes", None),
+    "fetch": (cli._TRANSPORT_FAILURE, None),
+    "http_status_class": ("option-OI source did not return HTTP 200", "403"),
+    "validate": ("option-OI body must be exact nonempty bytes within 4 MiB", None),
+}
+
+
+def _fail_the_named_dependency(monkeypatch: pytest.MonkeyPatch, stage: str) -> None:
+    """Make exactly the dependency named by ``stage`` raise its typed failure."""
+    target, attribute = _STAGE_FAILURE_TARGETS[stage]
+    error_type, message = _STAGE_FAILURE_MESSAGES[stage]
+
+    def fail(*_args: object, **_kwargs: object) -> object:
+        raise error_type(message)
+
+    monkeypatch.setattr(target, attribute, fail)
+
+
+def _fail_the_build_stage(monkeypatch: pytest.MonkeyPatch, stage: str) -> None:
+    """Make build raise the typed failure that ``stage``'s vocabulary names."""
+    message, status_class = _STAGE_BUILD_FAILURES[stage]
+
+    def fail(*_args: object, **_kwargs: object) -> object:
+        failure = cli.option_oi.MarketMemoryOptionOiObservationError(message)
+        if status_class is not None:
+            failure.add_note(
+                cli.option_oi.HTTP_STATUS_CLASS_NOTE_PREFIX + status_class
+            )
+        raise failure
+
+    monkeypatch.setattr(
+        cli.option_oi, "build_current_spy_option_oi_observation", fail
+    )
+
+
+@pytest.mark.parametrize(
+    ("stage", "failure_kind"),
+    (
+        ("commit", "dependency"),
+        ("store_root", "dependency"),
+        ("resume", "dependency"),
+        ("pinned_sources", "dependency"),
+        ("credential", "dependency"),
+        ("persist", "dependency"),
+        ("credential", "build"),
+        ("fetch", "build"),
+        ("http_status_class", "build"),
+        ("validate", "build"),
+    ),
+)
+def test_cli_failure_line_names_the_failed_stage(
+    tmp_path: Path,
+    capsys: pytest.CaptureFixture[str],
+    monkeypatch: pytest.MonkeyPatch,
+    stage: str,
+    failure_kind: str,
+) -> None:
+    repository, store = _benign_capture_dependencies(tmp_path, monkeypatch)
+    if failure_kind == "dependency":
+        _fail_the_named_dependency(monkeypatch, stage)
+        name = _STAGE_FAILURE_MESSAGES[stage][0].__name__
+    else:
+        _fail_the_build_stage(monkeypatch, stage)
+        name = cli.option_oi.MarketMemoryOptionOiObservationError.__name__
+
+    assert (
+        cli.main(["--repository-root", str(repository), "--store-root", str(store)])
+        == 1
+    )
+
+    captured = capsys.readouterr()
+    assert captured.out == ""
+    expected = f"option-OI canary capture failed closed stage={stage} class={name}"
+    if stage == "http_status_class":
+        expected += " status_class=403"
+    assert captured.err == expected + "\n"
+    assert TOKEN not in captured.err
+
+
+def test_cli_failure_line_never_carries_the_exception_message(
+    tmp_path: Path,
+    capsys: pytest.CaptureFixture[str],
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    repository, store = _benign_capture_dependencies(tmp_path, monkeypatch)
+
+    def leaky_build(*_args: object, **_kwargs: object) -> SimpleNamespace:
+        raise cli.option_oi.MarketMemoryOptionOiObservationError(
+            f"provider echoed Bearer {TOKEN}"
+        )
+
+    monkeypatch.setattr(
+        cli.option_oi, "build_current_spy_option_oi_observation", leaky_build
+    )
+
+    assert (
+        cli.main(["--repository-root", str(repository), "--store-root", str(store)])
+        == 1
+    )
+
+    captured = capsys.readouterr()
+    assert captured.err == (
+        "option-OI canary capture failed closed stage=validate "
+        "class=MarketMemoryOptionOiObservationError\n"
+    )
+    assert TOKEN not in captured.err
+    assert "Bearer" not in captured.err
+
+
+def test_failure_stage_rejects_missing_foreign_or_ambiguous_notes() -> None:
+    unnoted = ValueError("no stage note")
+    assert cli._failure_stage(unnoted) == "unknown"
+
+    foreign = ValueError("foreign stage note")
+    foreign.add_note("option-OI capture stage=evil")
+    assert cli._failure_stage(foreign) == "unknown"
+
+    ambiguous = ValueError("two stage notes")
+    ambiguous.add_note("option-OI capture stage=commit")
+    ambiguous.add_note("option-OI capture stage=persist")
+    assert cli._failure_stage(ambiguous) == "unknown"
+
+    unambiguous = ValueError("one stage note")
+    unambiguous.add_note("option-OI capture stage=credential")
+    assert cli._failure_stage(unambiguous) == "credential"
+
+
+def test_capture_function_keeps_the_original_exception_with_one_stage_note(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    repository, store = _benign_capture_dependencies(tmp_path, monkeypatch)
+    _fail_the_build_stage(monkeypatch, "http_status_class")
+
+    with pytest.raises(
+        cli.option_oi.MarketMemoryOptionOiObservationError
+    ) as raised:
+        cli.capture_current_option_oi_availability(repository, store_root=store)
+
+    assert type(raised.value) is cli.option_oi.MarketMemoryOptionOiObservationError
+    assert str(raised.value) == "option-OI source did not return HTTP 200"
+    assert raised.value.__notes__ == [
+        cli.option_oi.HTTP_STATUS_CLASS_NOTE_PREFIX + "403",
+        "option-OI capture stage=http_status_class",
+    ]
+
+
+def test_cli_failure_line_is_secret_free_by_construction(
+    tmp_path: Path,
+    capsys: pytest.CaptureFixture[str],
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    sentinel = "SENTINELtok9f8e7d6c5b4a3"
+    repository, store = _benign_capture_dependencies(tmp_path, monkeypatch)
+    monkeypatch.setattr(cli, "_read_systemd_bearer_token", lambda: sentinel)
+
+    def leaky_build(*_args: object, **_kwargs: object) -> object:
+        failure = cli.option_oi.MarketMemoryOptionOiObservationError(
+            f"hostile {sentinel} Bearer {sentinel}"
+        )
+        failure.add_note(f"echo {sentinel}")
+        raise failure
+
+    monkeypatch.setattr(
+        cli.option_oi, "build_current_spy_option_oi_observation", leaky_build
+    )
+
+    assert (
+        cli.main(["--repository-root", str(repository), "--store-root", str(store)])
+        == 1
+    )
+
+    captured = capsys.readouterr()
+    assert sentinel not in captured.err
+    assert sentinel not in captured.out
+    assert "Bearer" not in captured.err
+    assert "Bearer" not in captured.out
+    assert captured.out == ""
+    assert re.fullmatch(
+        r"option-OI canary capture failed closed "
+        r"stage=(commit|store_root|resume|pinned_sources|credential|fetch|"
+        r"http_status_class|validate|persist|unknown) "
+        r"class=[A-Za-z]+"
+        r"( status_class=(401|403|429|3xx|4xx|5xx|other))?\n",
+        captured.err,
+    )
+
+
+# The 403 response below is constructed exactly the way
+# tests/test_market_memory_option_oi_observation.py builds one in its
+# ``_http_response`` helper and ``ScriptedFetcher``; copied verbatim so the
+# capture test never invents HttpResponse fields.
+_COMPLETED_AT = "2026-08-10T19:00:00.123456Z"
+
+
+def _canonical_entity(value: object) -> bytes:
+    return json.dumps(
+        value,
+        allow_nan=False,
+        ensure_ascii=False,
+        separators=(",", ":"),
+        sort_keys=True,
+    ).encode("utf-8")
+
+
+def _boundary_result(
+    ticker: str, open_interest: object = 17, *, include_oi: bool = True
+) -> dict:
+    value: dict = {
+        "details": {
+            "ticker": ticker,
+            "contract_type": "call",
+            "shares_per_contract": 100,
+        },
+        "greeks": {"gamma": 0.01},
+    }
+    if include_oi:
+        value["open_interest"] = open_interest
+    return value
+
+
+def _boundary_payload() -> dict:
+    return {
+        "status": "OK",
+        "request_id": "safe-request-id",
+        "results": [
+            _boundary_result("O:SPY260821C00600000", 1_234_567),
+            _boundary_result("O:SPY1260821P00500000", None),
+            _boundary_result("O:SPYADJUSTED", include_oi=False),
+        ],
+        "next_url": (
+            "https://api.massive.com/v3/snapshot/options/SPY?"
+            "limit=250&cursor=safe-cursor"
+        ),
+    }
+
+
+def _boundary_http_response(
+    *,
+    status: int = 200,
+    url: str | None = None,
+) -> cli.option_oi.HttpResponse:
+    entity = _canonical_entity(_boundary_payload())
+    return cli.option_oi.HttpResponse(
+        status=status,
+        url=cli.option_oi.SOURCE_URL if url is None else url,
+        headers=(
+            ("Content-Type", "application/json"),
+            ("Content-Length", str(len(entity))),
+        ),
+        body=entity,
+        response_body_completed_at=_COMPLETED_AT,
+    )
+
+
+class BoundaryScriptedFetcher:
+    def __init__(self, response: cli.option_oi.HttpResponse) -> None:
+        self.response = response
+        self.calls: list[tuple[str, str, dict[str, str]]] = []
+
+    def __call__(
+        self,
+        method: str,
+        url: str,
+        headers: dict[str, str],
+    ) -> cli.option_oi.HttpResponse:
+        self.calls.append((method, url, dict(headers)))
+        return self.response
+
+
+def test_cli_http_status_class_survives_from_the_real_fetch_boundary(
+    tmp_path: Path,
+    capsys: pytest.CaptureFixture[str],
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    repository, store = _benign_capture_dependencies(tmp_path, monkeypatch)
+    fetcher = BoundaryScriptedFetcher(_boundary_http_response(status=403))
+
+    def build_via_real_fetch(*_args: object, **_kwargs: object) -> object:
+        return cli.option_oi.fetch_current_spy_option_oi_response(
+            bearer_token=TOKEN,
+            fetcher=fetcher,
+        )
+
+    monkeypatch.setattr(
+        cli.option_oi, "build_current_spy_option_oi_observation", build_via_real_fetch
+    )
+
+    assert (
+        cli.main(["--repository-root", str(repository), "--store-root", str(store)])
+        == 1
+    )
+
+    captured = capsys.readouterr()
+    assert captured.out == ""
+    assert captured.err == (
+        "option-OI canary capture failed closed "
+        "stage=http_status_class class=MarketMemoryOptionOiObservationError "
+        "status_class=403\n"
+    )
+    assert len(fetcher.calls) == 1
     assert TOKEN not in captured.err
 
 

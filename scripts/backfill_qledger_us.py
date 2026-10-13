@@ -212,10 +212,13 @@ def _thesis_ids_with_placebos(root: Path) -> set[str]:
     placebo back to the real thesis.
     """
     claims_path = root / "data" / "qledger" / "claims.jsonl"
-    if not claims_path.exists():
+    from engine.qledger_store import read_raw_lines, uses_native_claims
+
+    if not uses_native_claims(claims_path) and not claims_path.exists():
         return set()
     seen: set[str] = set()
-    for line in claims_path.read_text(encoding="utf-8").splitlines():
+
+    for line in read_raw_lines(claims_path, missing_ok=False):
         line = line.strip()
         if not line:
             continue

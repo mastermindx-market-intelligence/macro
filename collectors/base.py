@@ -176,6 +176,9 @@ class Adapter:
     name: str = "base"
     group: str = "misc"
     stale_after_days: int = 5   # weekly/lagged sources override (COT: 12, H4.1: 10)
+    # Explicit cash-observation clock. Operational receipts and mixed feeds stay opt-out.
+    session_calendar: str | None = None
+    session_completed_only: bool = False
     expected_failure: str | None = None  # set to a reason string when a source is
     # known-broken (e.g. bot-blocked); failures then report status 'blocked'
     overwrite_overlap: bool = False  # True for dividend/split-ADJUSTED series (yfinance
@@ -202,6 +205,10 @@ class Adapter:
         if df.empty:
             raise ValueError(f"{self.name}/{name}: all-NaN after cleaning")
         return df
+
+    def session_calendar_for_series(self, name: str) -> str | None:
+        """Cash venue for this observation series; None preserves its ordinary cadence."""
+        return self.session_calendar
 
     def last_good_date(self) -> date | None:
         dates = [d for d in (store.last_date(self.group, n) for n in self.stored_series()) if d]
@@ -262,18 +269,45 @@ def is_connection_error(exc: Exception) -> bool:
             or "connection aborted" in s or "connection refused" in s)
 
 
+def _series_session_calendar(adapter: Adapter, name: str) -> str | None:
+    resolver = getattr(adapter, "session_calendar_for_series", None)
+    return resolver(name) if callable(resolver) else getattr(adapter, "session_calendar", None)
+
+
+def _unverified_future_calendar(market: str, now: datetime) -> bool:
+    """Identify an unpublished future slate without changing historical observation handling."""
+    from lib.exchange_holidays import calendar_coverage
+    from lib.market_session import market_local_date, session_freshness
+
+    venues = ("CN", "HK") if market.upper() == "CONNECT" else (market.upper(),)
+    years = set.intersection(*(set(calendar_coverage(venue)["verified_years"]) for venue in venues))
+    return (market_local_date(market, now).year > max(years, default=0)
+            and not session_freshness(market, None, now)["calendar_verified"])
+
+
+def _cash_observation_rows(df: pd.DataFrame, market: str, now: datetime,
+                           *, completed_only: bool = False) -> pd.DataFrame:
+    """Use the shared acceptance rule for returned and independently persisted observations."""
+    from lib.market_observations import filter_session_observations
+
+    return filter_session_observations(df, market, now=now, completed_only=completed_only)
+
+
 def detect_stale_series(
     group: str,
     frames: dict[str, pd.DataFrame],
     cadence_days: int,
     *,
     multiplier: float = 3.0,
+    session_calendars: dict[str, str | None] | None = None,
+    now: datetime | None = None,
 ) -> list[dict]:
     """Frozen-tail detector: after a SUCCESSFUL 200-OK fetch, compare each series'
     stored last-observation date against the expected cadence.
 
     A series is "frozen" when its last observation is older than
-    ``cadence_days * multiplier`` days — i.e. multiple release cycles have passed
+    ``cadence_days * multiplier`` days (actual sessions for explicitly opted-in
+    cash observations) — i.e. multiple release cycles have passed
     without any new data. This catches discontinued upstream series that return
     200-OK with stale history (the failure mode that silently killed JP/KR CPI,
     EZ unemployment, and the intl M2 group: FRED kept serving historical data with
@@ -285,7 +319,8 @@ def detect_stale_series(
     by design — the caller writes these to run_status["stale_series"] for the
     health surface.
     """
-    today = datetime.now(timezone.utc).date()
+    instant = now or datetime.now(timezone.utc)
+    today = instant.date()
     threshold = int(cadence_days * multiplier)
     stale: list[dict] = []
     for name, df in frames.items():
@@ -295,7 +330,17 @@ def detect_stale_series(
                 continue
             last_obs: date = pd.Timestamp(df_clean.index.max()).date()
             age = (today - last_obs).days
-            if age > threshold:
+            market = (session_calendars or {}).get(name)
+            lag_sessions = None
+            if market:
+                from lib.market_session import session_freshness
+                freshness = session_freshness(market, last_obs, instant)
+                lag_sessions = freshness["lag_sessions"]
+                frozen = (freshness["state"] in ("missing", "invalid", "unverified")
+                          or lag_sessions is None or lag_sessions > threshold)
+            else:
+                frozen = age > threshold
+            if frozen:
                 log.warning(
                     "stale_series detected: %s/%s last_obs=%s age=%dd (threshold=%dd, "
                     "cadence=%dd×%.1f)",
@@ -307,6 +352,7 @@ def detect_stale_series(
                     "last_obs": str(last_obs),
                     "cadence_days": cadence_days,
                     "age_days": age,
+                    **({"lag_sessions": lag_sessions, "session_calendar": market} if market else {}),
                 })
         except Exception:  # noqa: BLE001 — staleness check must never crash the run
             pass
@@ -567,21 +613,64 @@ def run_adapter(adapter: Adapter, full_history: bool = False,
         rows, last = 0, None
         today = datetime.now(timezone.utc).date()
         dark_found: list[dict] = []
+        observation_notes: list[str] = []
+        session_bad = False
+        wall_last = None
+        health_frames: dict[str, pd.DataFrame] = {}
+        session_calendars: dict[str, str | None] = {}
+        instant = datetime.now(timezone.utc)
         for series_name, df in frames.items():
             df = adapter.validate(series_name, df)
-            merged = store.upsert(adapter.group, series_name, df,
-                                  outlier_col=df.columns[0] if len(df.columns) == 1 else None,
-                                  normalize_index=getattr(adapter, "normalize_index", True),
-                                  overwrite_overlap=getattr(adapter, "overwrite_overlap", False))
-            rows += len(df)
-            last = max(filter(None, [last, merged.index.max()]))
+            market = _series_session_calendar(adapter, series_name)
+            session_calendars[series_name] = market
+            unverified = bool(market and _unverified_future_calendar(market, instant))
+            if unverified:
+                session_bad = True
+                observation_notes.append(
+                    f"{series_name}: unverified calendar; provider-dated past/current weekdays "
+                    "retained without a holiday freshness exemption")
+            if market:
+                accepted = _cash_observation_rows(
+                    df, market, instant,
+                    completed_only=getattr(adapter, "session_completed_only", False))
+                if len(accepted) != len(df):
+                    observation_notes.append(
+                        f"{series_name}: ignored {len(df) - len(accepted)} non-session/future rows; "
+                        "retained last good observations")
+                df = accepted
+            if df.empty:
+                # A holiday snapshot is not an observation. Never upsert an empty frame.
+                merged = store.read(adapter.group, series_name)
+                if merged is not None and not merged.empty:
+                    merged = _cash_observation_rows(merged, market, instant)
+                if merged is None or merged.empty:
+                    session_bad = True
+                    observation_notes.append(f"{series_name}: no retained cash-session observations")
+                    continue
+            else:
+                merged = store.upsert(adapter.group, series_name, df,
+                                      outlier_col=df.columns[0] if len(df.columns) == 1 else None,
+                                      normalize_index=getattr(adapter, "normalize_index", True),
+                                      overwrite_overlap=getattr(adapter, "overwrite_overlap", False))
+                rows += len(df)
+            health_frames[series_name] = merged
+            series_last = merged.dropna(how="all").index.max()
+            last = max(filter(None, [last, series_last]))
+            if market:
+                from lib.market_session import session_freshness
+                freshness = session_freshness(market, series_last.date(), instant)
+                lag = freshness["lag_sessions"]
+                session_bad |= (freshness["state"] in ("missing", "invalid", "unverified")
+                                or lag is None or lag > getattr(adapter, "stale_after_sessions", stale_after_days))
+            else:
+                wall_last = max(filter(None, [wall_last, series_last]))
             # Column-grain contract check on the MERGED frame (store ground truth —
             # the fetch window is a short recent slice and cannot say when a column
             # last had a value). Opt-in: adapters declaring no contracts are untouched.
             dark_found.extend(_contract_entries(adapter, series_name, merged, today))
-        status = "ok"
-        if last is not None:
-            age = (datetime.now(timezone.utc).date() - last.date()).days
+        status = "stale" if session_bad else "ok"
+        if wall_last is not None:
+            age = (instant.date() - wall_last.date()).days
             if age > stale_after_days:
                 status = "stale"
         # fetch_result_status is an OPTIONAL adapter protocol (2 of ~228 define it) —
@@ -591,19 +680,24 @@ def run_adapter(adapter: Adapter, full_history: bool = False,
         if declared_status is not None:
             if declared_status not in {"ok", "stale", "blocked"}:
                 raise ValueError(f"{adapter.name}: unsupported declared fetch status {declared_status!r}")
-            status = declared_status
+            # A source declaration cannot launder a missing/invalid/unverified cash
+            # observation into success. Noncash declared-status behavior stays intact.
+            if declared_status != "ok" or not session_bad:
+                status = declared_status
         # Frozen-tail detector: a 200-OK fetch whose last observation never advances
         # (series discontinued upstream) is invisible to is_connection_error. Compare
         # each fetched series' last observation against cadence. Non-fatal; writes
         # named stale_series entries to run_status.json for the health surface.
         stale_found = detect_stale_series(
-            adapter.group, frames, cadence_days=stale_after_days)
+            adapter.group, health_frames, cadence_days=stale_after_days,
+            session_calendars=session_calendars, now=instant)
         if stale_found:
             _write_stale_series(stale_found)
             notes = [f"frozen tail: {e['series']} last={e['last_obs']} age={e['age_days']}d"
                      for e in stale_found]
         else:
             notes = []
+        notes += observation_notes
         # Column-grain alarms: bare-print annotations + run_status["dark_columns"].
         notes += _emit_dark_columns(dark_found)
         res = FetchResult(adapter.name, status, rows=rows,

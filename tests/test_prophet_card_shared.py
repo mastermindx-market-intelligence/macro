@@ -947,3 +947,38 @@ def test_r22_neutral_status_names_preserve_exact_raw_fields_in_one_disclosure():
             assert text == raw if raw is not None else 'Not supplied' in text
             if raw is not None:
                 assert raw not in human.get_text()
+
+
+@pytest.mark.parametrize('stage,lane,labels', [
+    ('live', 'continuation', ('Active setups', '活跃形态', 'Continuation', '延续')),
+    ('setting_up', 'bottoming', ('Developing', '形态形成中', 'Base formation', '筑底')),
+    ('ran', 'trend', ('Ran — don’t chase', '已启动 — 勿追', 'Trend', '趋势')),
+    ('basing', 'recovery', ('Basing', '筑底中', 'Recovery', '复苏')),
+    ('blocked', 'watch', ('Blocked', '受阻', 'Watch', '观察')),
+])
+@pytest.mark.parametrize('entry_status,headline', [
+    ('buy_soon', 'Buy soon — on confirmation'),
+    ('buy_now', 'Buy zone — entry open now'),
+])
+def test_setup_detail_recognizes_published_board_codes_without_rewriting_entry(
+        stage, lane, labels, entry_status, headline):
+    """Known owner codes need readable labels without becoming entry clearance."""
+    from copy import deepcopy
+    from bs4 import BeautifulSoup
+    row = {'ticker': 'MCK', 'stage': stage, 'lane': lane,
+           'signal_asof': '2026-10-08',
+           'entry_signal': {'status': entry_status, 'headline': headline}}
+    before = deepcopy(row)
+    module = _r18_env().get_template('_prophet_setup_detail.html.j2').module
+    soup = BeautifulSoup(str(module.body(row, 'board', '2026-10-08')), 'html5lib')
+    status = soup.select_one('.pvs-status-read').get_text(' ', strip=True)
+    assert all(label in status for label in labels)
+    assert 'Unmapped status' not in status and '状态未映射' not in status
+    for key in ('stage', 'lane'):
+        assert soup.select_one('[data-source-field="'+key+'"]').dd.get_text() == row[key]
+    entry = soup.select_one('.pvs-read')
+    assert entry['data-entry-status'] == entry_status
+    assert entry.select_one('.l-en').get_text() == headline
+    assert soup.select_one('.pvs-assessment-clock')['data-assessment-asof'] == '2026-10-08'
+    assert 'Selection is not entry permission.' in soup.get_text()
+    assert row == before

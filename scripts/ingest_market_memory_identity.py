@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import os
 import re
@@ -21,6 +22,27 @@ _SNAPSHOT_KEY = re.compile(
 )
 _LISTING_RECEIPT_KEY = re.compile(
     r"data/symbol_directory/receipts/snapshots/(\d{4}-\d{2}-\d{2})\.json\Z"
+)
+# Every checkout input the ingest opens, named by its reader (file:function):
+#   - data/symbol_directory/snapshots is read by
+#     market_memory_identity_observation.build_spy_listing_observation and
+#     byte-verified per key against the pinned commit by this ingest.
+#   - data/symbol_directory/receipts/snapshots is read by
+#     market_memory_identity_observation.build_spy_listing_observation.
+#   - config/market_memory_canary.v1.json is read on every key by
+#     market_memory_identity_observation._load_anchor; the ingest never passes
+#     config_path, so it defaults to market_memory_identity.DEFAULT_CONFIG_PATH.
+#   - contracts/symbol_directory/symbol_directory_completion_receipt.v1.schema.json
+#     is read once per process by symbol_directory_receipts._validator, reached
+#     from market_memory_identity_observation for receipt-bound snapshots.
+# The loaded modules are added at completion time by _loaded_checkout_modules;
+# test_completion_paths_cover_every_checkout_file_the_ingest_opens enforces
+# that every checkout file the ingest opens is covered here.
+_IDENTITY_INPUT_PATHS = (
+    "data/symbol_directory/snapshots",
+    "data/symbol_directory/receipts/snapshots",
+    "config/market_memory_canary.v1.json",
+    "contracts/symbol_directory/symbol_directory_completion_receipt.v1.schema.json",
 )
 
 
@@ -51,6 +73,67 @@ def _repository_commit(root: Path) -> str:
     if not _COMMIT.fullmatch(value):
         raise IdentityIngestError("deployed checkout commit is malformed")
     return value
+
+
+def _loaded_checkout_modules(root: Path) -> tuple[str, ...]:
+    """Repo-relative paths of every imported module living in the checkout."""
+
+    resolved_root = root.resolve()
+    paths: set[str] = set()
+    for module in list(sys.modules.values()):
+        module_file = getattr(module, "__file__", None)
+        if not isinstance(module_file, str) or not module_file:
+            continue
+        try:
+            relative = Path(module_file).resolve().relative_to(resolved_root)
+        except ValueError:
+            continue
+        paths.add(relative.as_posix())
+    return tuple(sorted(paths))
+
+
+def _completion_commit(root: Path, deployed_commit: str) -> str:
+    """Accept a moved HEAD only when no identity input or loaded module differs between the deployed and current trees.
+
+    The deploy pull fetches main at depth 1 and resets the checkout to the tip
+    (app/deploy/update.sh), so the checkout is a shallow clone that only ever holds
+    the deployed tree and the current tree. A net tree diff compares exactly what
+    the run could have read. Commit ancestry is not available to walk.
+    """
+
+    current = _repository_commit(root)
+    if current == deployed_commit:
+        return current
+    paths = (*_IDENTITY_INPUT_PATHS, *_loaded_checkout_modules(root))
+    try:
+        changed = [
+            line
+            for line in str(
+                _git(
+                    root,
+                    "diff",
+                    "--name-only",
+                    "--no-renames",
+                    deployed_commit,
+                    current,
+                    "--",
+                    *paths,
+                    text=True,
+                )
+            ).splitlines()
+            if line
+        ]
+    except IdentityIngestError as exc:
+        raise IdentityIngestError(
+            "deployed checkout changed during identity intake"
+        ) from exc
+    if changed:
+        raise IdentityIngestError(
+            "deployed checkout changed during identity intake: "
+            f"{len(changed)} identity path(s) differ between "
+            f"{deployed_commit[:12]} and {current[:12]}"
+        )
+    return current
 
 
 def _tracked_snapshot_keys(root: Path, commit: str) -> list[str]:
@@ -147,10 +230,18 @@ def ingest_identity_observations(
         raise IdentityIngestError(
             "tracked listing completion receipt has no matching snapshot"
         )
-    state = market_memory_identity_store.initialize_identity_observation_store(
+    market_memory_identity_store.initialize_identity_observation_store(
         store,
         repository_root=root,
     )
+    snapshot = market_memory_identity_store.load_identity_observation_store(
+        store, repository_root=root
+    )
+    stored_by_date = {
+        capture.observation["date_partition"]: capture
+        for capture in snapshot.captures
+    }
+    divergences: list[dict[str, str]] = []
     published = 0
     idempotent = 0
     operational = 0
@@ -192,6 +283,20 @@ def ingest_identity_observations(
             raise IdentityIngestError(
                 f"completion receipt {receipt_key} is not Git-owned"
             )
+        stored = stored_by_date.get(bundle.observation["date_partition"])
+        if (
+            stored is not None
+            and stored.observation["source_observation_id"]
+            != bundle.observation["source_observation_id"]
+        ):
+            divergence = _upstream_rewrite_receipt(key, stored, bundle)
+            divergences.append(divergence)
+            print(
+                "::warning title=upstream_rewrite_after_capture::"
+                + json.dumps(divergence, sort_keys=True, separators=(",", ":")),
+                flush=True,
+            )
+            continue
         result = market_memory_identity_store.capture_spy_listing_observation(
             store,
             bundle,
@@ -210,15 +315,17 @@ def ingest_identity_observations(
         else:
             raise IdentityIngestError("captured observation has an unknown PIT basis")
 
-    if _repository_commit(root) != deployed_commit:
-        raise IdentityIngestError("deployed checkout changed during identity intake")
-    head = last_result.head if last_result is not None else state["head"]
+    completion_commit = _completion_commit(root, deployed_commit)
+    head = last_result.head if last_result is not None else snapshot.head
     return {
         "schema": "market_memory.identity_ingest_result.v1",
         "deployed_commit": deployed_commit,
+        "completion_commit": completion_commit,
         "tracked_snapshot_count": len(keys),
         "published_count": published,
         "idempotent_count": idempotent,
+        "divergence_count": len(divergences),
+        "divergences": divergences,
         "reconstruction_count": reconstruction,
         "operational_count": operational,
         "generation_id": head["generation_id"],
@@ -227,6 +334,21 @@ def ingest_identity_observations(
             "training_eligible": False,
             "promotion_eligible": False,
         },
+    }
+
+
+def _upstream_rewrite_receipt(key: str, stored: object, bundle: object) -> dict[str, str]:
+    """Describe a tracked snapshot rewritten after its date was captured."""
+
+    return {
+        "kind": "upstream_rewrite_after_capture",
+        "snapshot_key": key,
+        "date_partition": stored.observation["date_partition"],
+        "authoritative": "stored",
+        "stored_source_observation_id": stored.observation["source_observation_id"],
+        "candidate_source_observation_id": bundle.observation["source_observation_id"],
+        "stored_source_sha256": hashlib.sha256(stored.source_artifact_bytes).hexdigest(),
+        "candidate_source_sha256": hashlib.sha256(bundle.snapshot_bytes).hexdigest(),
     }
 
 

@@ -1,0 +1,15 @@
+{
+ "bid_ask_levels_present": false,
+ "file": "data/flow_signals/ledger.parquet",
+ "n_events": 92574,
+ "n_keys_with_call_and_put": 7611,
+ "nearest_call_put_gap_seconds_quantiles": {
+  "p10": 0.01,
+  "p25": 0.024,
+  "p50": 0.073,
+  "p75": 1.139,
+  "p90": 6.601
+ },
+ "note": "descriptive only (PREREG D1); one-sided trade-print events, never a verdict input",
+ "share_keys_gap_le_1s": 0.7427407699382472
+}

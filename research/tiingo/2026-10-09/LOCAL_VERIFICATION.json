@@ -1,0 +1,46 @@
+{
+  "all_tiingo_contracts_status": "PROPOSED",
+  "authenticated_vendor_reads_performed": false,
+  "base_published_revision": "c7c719ea5e882398f4d197443e0467e565ef8871",
+  "changed_code_sha256": {
+    "config/dataset_registry.yml": "b9b4c00ec6ddb10a3342d34f4c54098805bcfa67964918433f3e71f889f3a964",
+    "lib/dataos/tiingo_views.py": "9477ff6c2b10f086c6791207ed948197db37d14895871e55a7eb82c75a35d251",
+    "scripts/tiingo_corpus_audit.py": "873a5c81719710367a46eb0cadfe6e8397fa1566caca734ae06ef2b82ccb421c",
+    "scripts/tiingo_ingest.py": "1364af1c3ce08c2c91b57a6415e0a099064918306dfbf4fc2729e55b72e11797",
+    "scripts/tiingo_reference_audit.py": "99982367eeb176842673bdb73fff18cc27b9b3b86e747dcb886dbe73d05f9683"
+  },
+  "ci_owning_job": "dataos-prospective-reference",
+  "core_collector_sha256": "1932ff35a5b2d0eff3204253c51924e945db10df07b7f05858d2f3ea3290e86d",
+  "full_ci_acceptance": false,
+  "independent_review_complete": false,
+  "inferred_dependency_count": 46,
+  "live_collector_started": false,
+  "mission_complete": false,
+  "new_historical_projection_sources": [
+    "boats-bars",
+    "iex-bars",
+    "equity-intraday-bars",
+    "forex-bars",
+    "crypto-bars",
+    "splits",
+    "distributions",
+    "fund-fee-history",
+    "distribution-yield"
+  ],
+  "production_proven": false,
+  "pytest_all_tiingo_and_registry": {
+    "exit_code": 1,
+    "failed": 11,
+    "passed": 187,
+    "process_id": 93812
+  },
+  "registered_tiingo_contracts": 24,
+  "schema": "mastermind.tiingo.local_verification.v1",
+  "script_import_guard": {
+    "failed": 0,
+    "passed": 11,
+    "process_id": 97370
+  },
+  "uncovered_dependency_paths": [],
+  "unwired_tiingo_suites": []
+}
