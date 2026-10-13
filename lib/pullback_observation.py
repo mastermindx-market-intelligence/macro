@@ -59,20 +59,15 @@ def _missing_expected(previous: date, current: date,
     are not missing sessions.
 
     The walk is bounded by the calendar-day span of the hole, so a
-    multi-year gap cannot loop without a limit. A hole longer than the
-    retained close window — more than ``PATH_MAX_CLOSES`` calendar days
-    strictly between the two closes — is not walked. Its count is that
-    calendar-day span: an upper bound that can include non-sessions. A
-    hole the assessment can draw is shorter than the window and is an
-    exact session count.
+    multi-year gap cannot loop without a limit. The count is always an
+    exact session count, however long the hole: the evidence line prints
+    it as missing sessions, so it must never include weekends or holidays.
     """
     if current <= previous:
         return 0
     span = (current - previous).days - 1
     if span <= 0:
         return 0
-    if span > PATH_MAX_CLOSES:
-        return span
     missing = 0
     probe = previous + timedelta(days=1)
     for _ in range(span):

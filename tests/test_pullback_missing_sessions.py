@@ -229,3 +229,28 @@ def test_t8_break_counter_fails_the_three_session_hole(monkeypatch):
     with pytest.raises(AssertionError):
         assert read["history_gap_count"] == 3
     assert read["history_gap_count"] == 1
+
+
+@pytest.mark.parametrize("calendar", (nyse_calendar, cn_calendar), ids=("us", "cn"))
+def test_t9_a_hole_longer_than_the_path_counts_sessions_not_calendar_days(calendar):
+    # A hole wider than PATH_MAX_CLOSES calendar days used to return its
+    # calendar-day span, so weekends and holidays were printed as missing
+    # sessions. The count must be the sessions the calendar expected.
+    before_hole = date(2024, 1, 2)
+    after_hole = date(2024, 9, 12)
+    assert calendar.is_session(before_hole) and calendar.is_session(after_hole)
+    head = _sessions_ending(calendar.is_session, before_hole, 80)
+    tail = []
+    day = after_hole
+    for _ in range(40):
+        if calendar.is_session(day):
+            tail.append((day.isoformat(), 94.0))
+        if len(tail) == 5:
+            break
+        day += timedelta(days=1)
+    assert tail[0][0] == after_hole.isoformat() and len(tail) == 5
+    read = _read(head + tail, calendar.is_session)
+    expected = _sessions_between(before_hole, after_hole, calendar.is_session)
+    span = (after_hole - before_hole).days - 1
+    assert observation.PATH_MAX_CLOSES < span
+    assert read["history_gap_count"] == len(expected) < span
