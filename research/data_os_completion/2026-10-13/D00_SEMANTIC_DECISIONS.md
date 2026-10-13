@@ -138,3 +138,10 @@ generation ids, code version) · `coverage` · `refusal_reasons[]`. All of it is
 implementation results are seen; the specification signature in the masterplan
 (`canonical_price_view(request, *, server_context, supplied_original_receipts)`) is a
 composition of existing readers, not a new store, registry, allocator or evaluator (D11).
+
+## Amendments
+
+- **D00.A1 (2026-10-13)** — venue-local `as_at` day for action admission (D00.D3), declared currency units on
+  price rows (D00.D3 / D00.01), consumer-A venues `[XNYS, XNAS, XASE, ARCX]` and the `TRADJ`-labelled v1
+  witness with its readout obligation (D00.D6). Full text: `D00_A1_AMENDMENT.md`;
+  decision `DEC:DATAOS-D00-A1-VENUE-CLOCK-UNITS-SCOPE`.
