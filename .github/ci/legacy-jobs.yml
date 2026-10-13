@@ -4497,6 +4497,8 @@ jobs:
           tests/test_pullback_expiry_owner_js_mutants.py
           tests/test_pullback_missing_sessions.py
           tests/test_pullback_no_forecast_invariant.py
+          tests/test_pullback_depth_copy_v2.py
+          tests/test_pullback_expiry_deadline.py
           tests/test_risk_state_live_copy_sync.py
           tests/test_build_china_risk_state.py
           tests/test_china_connect_leaderboard_render.py
