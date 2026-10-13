@@ -4732,6 +4732,12 @@ CURATED_EXCLUSIVE = {
     # exclusive pins it to that measured closure (46 paths), so inference never
     # unions the research/ fallback roots onto the packing probes.
     "grey-deer-pullback-stage1",
+    # 2026-10-13 FIF X2-n saved-research notifications (seat R3): the three
+    # hermetic suites reach engine.fundamental_forensics and the research-vault
+    # store, so inference unioned the whole-tree fallback roots and selected the
+    # job on the PACKING_PROBES (check_contract_delta: 3 introduced findings).
+    # scope: exclusive pins it to its derived import closure.
+    "fif-saved-research-notifications",
 }
 
 
