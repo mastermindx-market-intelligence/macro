@@ -15282,12 +15282,35 @@ jobs:
           python-version: "3.12"
       - name: install BioCatalyst test deps
         run: pip install pytest fastapi httpx requests pyyaml jsonschema jinja2 boto3
-      - name: Deployment self-heal, private bootstrap and Git history contracts
+      - name: BioCatalyst deployment self-heal integration contracts
         run: >
           python -m pytest
-          tests/test_deploy_update_self_heal.py
-          tests/test_deploy_bootstrap_private.py
-          tests/test_deploy_git_history.py -q
+          tests/test_deploy_update_self_heal.py -q
+
+  deploy-git-history:
+    if: ${{ false }}
+    gate: code
+    # This real-Git suite reads only these three deploy scripts. Keeping it
+    # separate preserves the self-heal job's broad inferred closure without
+    # charging unrelated site-builder probes for the new history coverage.
+    # Private bootstrap coverage remains in unrun-dark-guards.
+    scope: exclusive
+    paths:
+      - "app/deploy/update.sh"
+      - "app/deploy/bootstrap_repo.sh"
+      - "app/deploy/setup.sh"
+      - "tests/test_deploy_git_history.py"
+    timeout-minutes: 12
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install Git history test dependencies
+        run: pip install pytest
+      - name: Connected deployment Git history contracts
+        run: python -m pytest tests/test_deploy_git_history.py -q
 
   biocatalyst-regulatory:
     if: ${{ false }}

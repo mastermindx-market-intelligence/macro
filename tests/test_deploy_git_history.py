@@ -635,8 +635,9 @@ def test_updater_fetch_failure_stays_fail_closed_before_reset(
 # ---------------------------------------------------------------------------
 
 
+@pytest.mark.parametrize("remote_default", [PROTECTED_BRANCH, "unselected", "unborn"])
 def test_bootstrap_fresh_clone_acquires_connected_selected_branch_history(
-    fixture: HistoryFixture,
+    fixture: HistoryFixture, remote_default: str,
 ):
     fixture.advance("C1")
     fixture.advance("C2")
@@ -649,6 +650,11 @@ def test_bootstrap_fresh_clone_acquires_connected_selected_branch_history(
     # A real second remote branch makes the single-branch check discriminating.
     git(fixture.publisher, "branch", "unselected", fixture.genesis, env=fixture.env)
     git(fixture.publisher, "push", "-q", "origin", "unselected", env=fixture.env)
+    # --branch must select main even if the remote's default names another
+    # branch or an unborn ref. The remote-tracking HEAD alias is advisory;
+    # Git versions need not create it for an explicitly selected branch.
+    git(fixture.origin, "symbolic-ref", "HEAD", f"refs/heads/{remote_default}",
+        env=fixture.env)
     target = fixture.root / "fresh"
     proc = run_bootstrap(fixture, target, fixture.origin_url)
     assert proc.returncode == 0, proc.stderr
@@ -666,10 +672,12 @@ def test_bootstrap_fresh_clone_acquires_connected_selected_branch_history(
     )
     refs = git(target, "for-each-ref", "refs/remotes/origin",
                "--format=%(refname)", env=fixture.env).stdout.split()
-    assert set(refs) == {"refs/remotes/origin/HEAD",
-                         f"refs/remotes/origin/{PROTECTED_BRANCH}"}
-    assert git(target, "symbolic-ref", "refs/remotes/origin/HEAD",
-               env=fixture.env).stdout.strip() == f"refs/remotes/origin/{PROTECTED_BRANCH}"
+    selected_ref = f"refs/remotes/origin/{PROTECTED_BRANCH}"
+    assert set(refs) - {"refs/remotes/origin/HEAD"} == {selected_ref}
+    assert fixture.rev(selected_ref, repo=target) == expected_tip
+    if "refs/remotes/origin/HEAD" in refs:
+        assert git(target, "symbolic-ref", "refs/remotes/origin/HEAD",
+                   env=fixture.env).stdout.strip() == selected_ref
     # Deploy-key plumbing persisted into the new checkout, exactly as before.
     ssh_command = git(target, "config", "--get", "core.sshCommand",
                       env=fixture.env).stdout.strip()

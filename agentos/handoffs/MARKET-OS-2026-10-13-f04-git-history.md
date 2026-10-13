@@ -19,9 +19,11 @@ changed:
   - path: app/deploy/setup.sh
     what: "Align the authenticated bootstrap recipe and description with connected main history."
   - path: tests/test_deploy_git_history.py
-    what: "Exercise real local Git acquisition, two later updates, unchanged tick, refusal and historical-object preservation."
+    what: "Exercise real local Git acquisition, later updates, refusal and historical-object preservation; pin selected-branch behavior with remote defaults main, unselected and unborn without requiring an advisory remote HEAD alias."
   - path: .github/ci/legacy-jobs.yml
-    what: "Enroll private-bootstrap and history suites in the existing deployment integration job; retain self-heal coverage."
+    what: "Use one exclusive deploy-git-history code job for its three deploy inputs and test; preserve all original job definitions, including self-heal and existing private-bootstrap coverage."
+  - path: tests/test_ci_pack.py
+    what: "Register the new curated job in the existing exact-set guard without changing packing ceilings."
 verified:
   - claim: "Installed ancestry refusal and canonical ancestry disagree at the observed source pair."
     command: "Original read-only Git v4 exec48214; exact GitHub compare a13962ee...82c29a6a; later inventory exec13689 and exact a13962ee...ff11a33f comparison"
@@ -38,24 +40,55 @@ verified:
       yielded10fail/7pass, including actual disconnected ancestry. Tests execute
       acquisition in temporary local repositories, never the production updater.
       Git-input checks are not full native application acceptance.
-  - claim: "The affected deployment job executes the tests and is selected by each relevant source/test path."
+  - claim: "The original candidate enrollment was checked before hosted CI exposed its packing regression."
     command: "load_legacy_jobs, infer_job_scopes and select_jobs against actual .github/ci/legacy-jobs.yml; bash -n on three scripts; git diff --check"
     result: >-
-      Same290 logical jobs as c754 protected base; only existing
+      Historical52002125 had290 logical jobs as c754 protected base; only existing
       biocatalyst-deploy-integration definition changes. All six relevant paths
       select it. Three shell syntax checks and whitespace validation pass.
+  - claim: "Original hosted CI identified two candidate test/enrollment defects; the local clone assertion repair passes."
+    command: "Original run38337802132 contract-delta115101754893, pack0/115102694176 and pack7/115102694272 logs; python3 -m pytest tests/test_deploy_git_history.py -q"
+    result: >-
+      Hosted tested merge3ba873064 of52002125 into9977280d exceeded the unchanged
+      build_free_content packing weight5600 with5602 versus base5598. Pack7
+      had1fail/296pass solely because the connected single-branch clone lacked
+      optional origin/HEAD. Its fixture already pinned remote HEAD to main;
+      a default-master explanation is superseded. The revised selected-ref,
+      exact-refspec, tip and ancestry assertions pass19cases locally in74.19s.
+      The earlier290job enrollment evidence is historical, not acceptance of
+      the revised291job design or its current CI.
+  - claim: "The revised enrollment preserves all existing jobs and the new resource flags compose with the retained graph fixture."
+    command: "Retained enrollment-proof.json; curated exact-set guard; parent test_resource_graph_composition.py; test_owned_settlement.py"
+    result: >-
+      All290 base job definitions are conserved and deploy-git-history is the
+      sole new job. The c754 and997 manifests have identical Git blob334d4d6a.
+      Four positive inputs select it and three ordinary probes do not; exact-set
+      guard1pass. Changed resource/graph composition1pass49.09s on local Git2.46.1
+      removes30cuts under configured FSIZE while preserving HEAD, both indices
+      and a persistent reader. It adds pack/idx despite zero new object IDs.
+      Existing supervisor tests3pass21.39s prove local bounded capture and lock
+      retention through natural, residual-child and timeout settlement. These
+      are local fixtures, not Linux installation or production admission.
+  - claim: "The final revised enrollment passes the complete curated import-closure and ordinary-code packing checks."
+    command: "python3 -u -m pytest tests/test_ci_pack.py -vv -k 'curated_exclusive_scopes_cover_their_own_import_closure or exclusive_curation_narrows_ordinary_code_prs'"
+    result: >-
+      Original resumed local exec21350 completed naturally at04:38:57UTC with
+      2pass/166deselected in1259.24s; all four source/runner pins stayed identical.
+      Log17a89fa46f48 retains both actual pass records. This closes the remaining
+      local packing uncertainty; new-head hosted CI and release are still required.
 unverified:
   - claim: "This prevention change is released and installed."
     what_would_verify: "Exact current candidate checks, independent review, protected merge and actual next-invocation updater bytes."
   - claim: "The existing production shallow graph is repaired and F04 works live."
     what_would_verify: "Separately reviewed bounded additive operation with real resource/writer admission and retained readers, then fresh native, authenticated API and Terminal proof."
 unresolved:
-  - "Original additive experiment mo-a-f04-additive-git-floor-offline-v1/exec91208 remains pending at this source checkpoint; no live command follows from its commission."
+  - "Original additive91208 and resource46040 returns are accepted within their recorded bounded scopes. Resource root9695faf8 binds delivered code/report and changed local composition; worker12PASS Linux2.43 remains reported scope. Local settlement supplemente30ca0ef is separate. Aggregate storage, exact Linux application and live writer/resource admission remain open."
+  - "The local correction is validated; original9060 was still armed and merge-blocked at52002125 at04:43UTC. Original GMI red-handback clarificationc4d8e632/root04e965fa ends its earlier waiting-phase no-toggle rule. Fresh custody/head checks and visible disarm readback must precede one same-branch publication; keep the new head unarmed until current executable arming and required proof qualify. No merge-blocked removal or release bypass."
   - "Audit20 reports no own active Macro Git maintenance reservation, not global writer absence. Existing destructive store exchange/history-expiry hold remains."
   - "Original Terminal944 awaits lawful shared CI repair through existing955/E20 owners. Preserve B/J1 and shared-host custody."
 next_actions:
   - "Finish exact-source review and protected CI/release for this prevention patch, then qualify installed updater before repairing the existing graph."
-  - "Consume original91208 artifacts, review finite-depth behavior and resource bounds, and coordinate the existing updater lock and other writers before any live additive operation."
+  - "Complete aggregate receiver bounds and exact installed applicability for the accepted resource/graph mechanisms; coordinate the existing updater lock and other writers before any live additive operation."
   - "Keep original accepted publication immutable; verify actual native/private API and Terminal consumer only after required runtime gates."
 do_not_redo:
   - "Do not reuse merged8842, adopt open7992 disk-maintenance work, or infer permission for destructive Git-store replacement."
@@ -64,7 +97,8 @@ do_not_redo:
 danger_areas:
   - "Old depth-one cron can re-truncate a repaired graph unless accepted prevention bytes are installed first."
   - "Finite depth bounds commits, not bytes. Current free-space totals and process silence are not resource or writer admission."
-prs: []
+prs:
+  - "https://github.com/mastermindx-market-intelligence/macro/pull/9060"
 ---
 
 # F04 Git-history prevention
