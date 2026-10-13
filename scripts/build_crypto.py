@@ -51,10 +51,14 @@ def _payload(series: pd.Series, days: int = 90) -> dict:
     }
 
 
-def _money(value, *, compact: bool = False) -> str:
+def _money(value, *, compact: bool = False, signed: bool = False) -> str:
     if value is None or pd.isna(value):
         return "—"
     value = float(value)
+    if signed:
+        # Sign before the currency symbol (-$505M, +$2.5B); ASCII minus like the unsigned path.
+        sign = "+" if value > 0 else ("-" if value < 0 else "")
+        return sign + _money(abs(value), compact=compact)
     if compact:
         if abs(value) >= 1e12:
             return f"${value / 1e12:,.2f}T"
@@ -67,6 +71,15 @@ def _money(value, *, compact: bool = False) -> str:
     if abs(value) < 100:
         return f"${value:,.2f}"
     return f"${value:,.0f}"
+
+
+def _signed_musd(value) -> str:
+    """Signed millions of US dollars, sign before the symbol: +$505M / -$505M."""
+    if value is None or pd.isna(value):
+        return "—"
+    value = float(value)
+    sign = "+" if value > 0 else ("-" if value < 0 else "")
+    return f"{sign}${abs(value):,.0f}M"
 
 
 def _pct(value, digits: int = 1, signed: bool = True) -> str:
@@ -109,6 +122,9 @@ def _state_zh(state: str) -> str:
         "Alt participation broad": "山寨参与广泛",
         "Bitcoin-led": "比特币主导",
         "Mixed participation": "参与度混合",
+        "ETH leading on relative trend": "相对趋势上以太坊领先",
+        "BTC leading on relative trend": "相对趋势上比特币领先",
+        "Mixed relative trend": "相对趋势混合",
         "Broad": "广泛",
         "Narrow": "狭窄",
         "Mixed": "混合",
@@ -556,6 +572,7 @@ def build(site_dir: Path | None = None) -> Path:
             "listed": len(universe),
             "requested": universe_snapshot["requested"],
             "excluded": universe_snapshot["excluded"],
+            "coverage": universe_snapshot.get("coverage"),
             "breadth": breadth,
         },
         "market": {
@@ -564,9 +581,19 @@ def build(site_dir: Path | None = None) -> Path:
             "dominance_state": market.get("dominance_state"),
             "fear_state": market.get("fear_state"),
             "breadth_state": breadth.get("state"),
+            "cap_move": (market.get("cap_attribution") or {}).get("kind"),
+            "cap_splices": (market.get("cap_basis") or {}).get("splices") or [],
         },
         "flows": {
             key: value.get("state") for key, value in (market.get("flows") or {}).items()
+        },
+        "flow_kinds": {
+            key: {
+                "kind": value.get("kind"),
+                "observation": value.get("observation"),
+                "expected_cadence": value.get("expected_cadence"),
+            }
+            for key, value in (market.get("flows") or {}).items()
         },
         "heat": {
             key: value.get("state") for key, value in (market.get("heat") or {}).items()
@@ -604,8 +631,8 @@ def build(site_dir: Path | None = None) -> Path:
         height=218,
         accent="var(--crypto)",
         value_fmt="${:,.2f}T",
-        aria_en="Derived total crypto market cap with descriptive class-regime bands",
-        aria_zh="衍生加密总市值及描述性市场阶段",
+        aria_en="Total crypto market capitalization. Regime bands skip a basis-splice level gap.",
+        aria_zh="加密总市值。阶段带不计口径切换造成的水平跳变。",
     )
     for flow in market["flows"].values():
         flow["state_zh"] = _state_zh(flow["state"])
@@ -641,6 +668,7 @@ def build(site_dir: Path | None = None) -> Path:
         "equities": _equities(rendered_ticker_pages(site)),
         "calendar": _calendar(market["as_of"]),
         "fmt_money": _money,
+        "fmt_signed_musd": _signed_musd,
         "fmt_pct": _pct,
     }
 
