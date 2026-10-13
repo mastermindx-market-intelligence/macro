@@ -281,6 +281,16 @@ def test_two_evaluations_match_except_run_utc_and_ledger_calls_match(tmp_path, m
     stub.load_ticker = lambda *_a, **_k: frame.copy()
     monkeypatch.setitem(sys.modules, "collectors.massive_stock_day", stub)
 
+    # The incumbent replay reads the risk-radar store and the SPY closes from
+    # data/. Since the RT-02 repair it scores the evaluation-origin union and so
+    # no longer refuses a synthetic series by itself; on a full checkout it
+    # would score the live store against the synthetic closes. Pin the absent
+    # source so the run stays hermetic and its blocked path stays typed.
+    def _no_incumbent_store(_deviations=None):
+        raise OSError("synthetic run: incumbent store not read")
+
+    monkeypatch.setattr(stage1, "_inc_replay_inputs", _no_incumbent_store)
+
     ledger_before = _ledger_snapshot()
     calls_a: list = []
     calls_b: list = []
