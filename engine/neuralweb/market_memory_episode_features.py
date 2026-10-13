@@ -185,6 +185,27 @@ def read_episode_feature_capability(
                 "generation_sha256": generation.generation_sha256,
                 "query_id": query_id, "subject_id": subject_id, "query_cutoff": query_cutoff}
     policy_id = _policy(policy, "read_retained_macro_feature", resource)
+    # Requested subject is not authority over the capture's actual subject.
+    # Admit only receipt metadata first, then authenticate actual identities and
+    # source rights before the public owner loads any packet/feature payload.
+    metadata_resource = {key: value for key, value in resource.items() if key != "subject_id"}
+    metadata_resource["requested_subject_id"] = subject_id
+    _policy(policy, "read_retained_macro_capture_metadata", metadata_resource)
+    try:
+        metadata = reader.read_pinned_capture_receipt(generation, query_id=query_id)
+    except pit.MarketMemoryPITError as exc:
+        raise EpisodeFeatureSourceError("owner_source_qualification_failed") from exc
+    if (metadata["query_id"] != query_id or metadata["store_id"] != generation.store_id
+            or metadata["profile"] != trusted.TRUSTED_STORE_PROFILE
+            or metadata["observed_feature_ids"] != ["macro.regime_state"]):
+        raise EpisodeFeatureSourceError("owner_identity_or_allowlist_mismatch")
+    resource = {**metadata_resource, "subject_id": metadata["subject"]["subject_id"],
+                "capture_id": metadata["capture_id"], "context_id": metadata["context_id"],
+                "source_receipt_ids": list(metadata["source_receipt_ids"]),
+                "packet_sha256": metadata["packet_sha256"]}
+    _policy(policy, "read_retained_macro_feature", resource)
+    if resource["subject_id"] != subject_id:
+        raise EpisodeFeatureSourceError("owner_identity_or_allowlist_mismatch")
     try:
         values = reader.read_pinned_capture_projections(generation, query_ids=(query_id,))
     except pit.MarketMemoryPITError as exc:
@@ -193,6 +214,8 @@ def read_episode_feature_capability(
         raise EpisodeFeatureSourceError("owner_projection_shape_invalid")
     owner = values[0]
     receipt, packet = owner.receipt, owner.stored.packet
+    if receipt != metadata:
+        raise EpisodeFeatureSourceError("owner_receipt_changed_during_projection_read")
     if (receipt["query_id"] != query_id or receipt["store_id"] != generation.store_id
             or receipt["subject"]["subject_id"] != subject_id
             or packet["subject"]["subject_id"] != subject_id
