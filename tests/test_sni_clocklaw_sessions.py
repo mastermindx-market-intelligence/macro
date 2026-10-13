@@ -145,7 +145,7 @@ def test_clk_02_hk_holidays(holiday: dt.date) -> None:
     assert got != holiday or holiday not in published
 
 
-@pytest.mark.xfail(strict=True, reason="A12-GAP half-day sessions not modelled")
+@pytest.mark.xfail(strict=True, reason="A12-GAP: half days now honoured via lib.exchange_holidays.early_close, but the owner publishes no 2024 HK notice (2024-02-09 returns None); flips when the owner adds it")
 def test_clk_03_hk_half_days() -> None:
     # HKEX 2024-02-09 is Lunar New Year's Eve (morning-only session).
     # Clock-law session_part is wall-clock only and labels 14:00 HKT in_session.
