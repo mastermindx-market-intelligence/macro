@@ -10,7 +10,7 @@ Direct principal reason: `PRINCIPAL_JUDGMENT`.
 
 This tranche advances two frozen R10 mechanism cases:
 
-- `R10-IN-RBI-CONSUMER-NBFC-RISK-WEIGHTS-20231116`
+- `R10-IN-RBI-CONSUMER-CREDIT-RISKWEIGHTS-20231116`
 - `R10-AU-APRA-SERVICEABILITY-BUFFER-20211006`
 
 It preserves the R10 retrospective-design amendment and the R10B price-basis law. Formal causal outcome labels remain `UNMEASURED`. The purpose is to understand how two superficially similar “credit tightening” actions transmit through very different financial business models.

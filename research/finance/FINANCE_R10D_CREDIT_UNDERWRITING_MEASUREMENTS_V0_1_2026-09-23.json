@@ -27,7 +27,7 @@
     "cohort_selection": "frozen before return computation within this tranche"
   },
   "rbi": {
-    "case_id": "R10-IN-RBI-CONSUMER-NBFC-RISK-WEIGHTS-20231116",
+    "case_id": "R10-IN-RBI-CONSUMER-CREDIT-RISKWEIGHTS-20231116",
     "information_date": "2023-11-16",
     "effect_state": "immediate for risk-weight action; board subsegment limits due by 2024-02-29",
     "direct_mechanisms": [

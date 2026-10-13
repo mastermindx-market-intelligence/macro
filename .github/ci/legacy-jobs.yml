@@ -16589,7 +16589,9 @@ jobs:
       # tests/test_ci_pack.py::test_exclusive_curation_narrows_ordinary_code_prs
       # (templates/index.html 134/133), which turned integration-baseline red on main.
       - name: finance intelligence site-builder wiring (build_site carries the render hook)
-        run: python -m pytest tests/test_finance_intelligence_site_wiring.py -q
+        # R10 fixture ids and witness resolution. Same run: JSON and markdown
+        # reads only, so this job gains no Python import closure.
+        run: python -m pytest tests/test_finance_intelligence_site_wiring.py tests/test_finance_r10_witness.py -q
 
   press-lane:
     if: ${{ false }}  # executed inside ci-pack; keep the legacy status definition runner-free

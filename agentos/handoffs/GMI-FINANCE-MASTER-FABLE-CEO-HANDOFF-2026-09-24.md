@@ -19,8 +19,10 @@ mission: >
   The implementation mission has not ended: placement is WAITING_CAPACITY,
   mission_complete is false, and this file does not record PICKUP_ACK or START.
   ended_because is blocked because no eligible Fable session is assigned.
-  No agentos workstream key exists for the Finance sector program. workstream
-  cites WS:GMI-THEME-GRAPH, the shared theme-graph owner this operation must
+  WS:GMI-FINANCE-INTELLIGENCE already exists (key GMI-FINANCE-INTELLIGENCE,
+  agentos/workstreams/WS-GMI-FINANCE-INTELLIGENCE.md, present at pinned main
+  9a47ac7f944442c6d6830df9ef25b3529a39888b). workstream still cites
+  WS:GMI-THEME-GRAPH, the shared theme-graph owner this operation must
   consume and must not fork. That citation is not a claim that the theme-graph
   mission ended and it is not a Fable session record.
 state_before: >
@@ -73,6 +75,22 @@ changed:
     what: >
       Pointed the Create list at the receipt that classifies every Create path
       with a quoted ls-tree line.
+  - path: research/finance/FINANCE_R10D_CREDIT_UNDERWRITING_MEASUREMENTS_V0_1_2026-09-23.json
+    what: >
+      The RBI case_id now cites the fixture id. The previous string remains
+      only inside the synthesis alias array.
+  - path: research/finance/FINANCE_R10D_CREDIT_UNDERWRITING_RERATING_2026-09-23.md
+    what: >
+      The RBI bullet cites the same fixture id.
+  - path: agentos/handoffs/GMI-FINANCE-MASTER-FABLE-CEO-HANDOFF-2026-09-24.md
+    what: >
+      The mission names WS:GMI-FINANCE-INTELLIGENCE, already on pinned main
+      9a47ac7f944442c6d6830df9ef25b3529a39888b. workstream stays
+      WS:GMI-THEME-GRAPH.
+  - path: tests/test_finance_r10_witness.py
+    what: >
+      One pytest on the existing public-render-fastlane run line. It checks
+      fixture ids, the R10D cite, and the 11 first-vertical witnesses.
 verified:
   - claim: >
       All 12 fixture case ids resolve to one synthesis row. The three renamed
@@ -85,17 +103,22 @@ verified:
       fx=json.load(open("research/finance/FINANCE_R10_GLOBAL_REGIONAL_CASEBOOK_FIXTURE_V0_1_2026-09-23.json"))
       sy=json.load(open("research/finance/FINANCE_R10_CASE_SYNTHESIS_MATRIX_V0_1_2026-09-23.json"))
       rows=sy["cases"]
-      alias={"R10-JP-BOJ-NIRP-EXIT-20240319":"R10-JP-BOJ-NIRP-END-20240319","R10-IN-RBI-CONSUMER-NBFC-RISK-WEIGHTS-20231116":"R10-IN-RBI-CONSUMER-CREDIT-RISKWEIGHTS-20231116","R10-IN-PAYTM-PAYMENTS-BANK-RESTRICTIONS-20240131":"R10-IN-PAYMENTS-BANK-RESTRICTION-20240131"}
       def hits(cid):
           return [r for r in rows if cid==r["canonical_case_id"] or cid in r["aliases"]]
       assert len(rows)==12 and len(sy["archetypes"])==12 and set(sy["archetypes"])=={c["archetype"] for c in fx["cases"]}
+      fixture_ids={c["id"] for c in fx["cases"]}
+      alias_n=0
       for c in fx["cases"]:
           got=hits(c["id"])
-          assert len(got)==1 and got[0]["anchor_date"]==c["anchor_date"] and got[0]["archetype"]==c["archetype"] and got[0]["formal_causal_outcome"]=="UNMEASURED" and got[0]["witness"]
+          assert len(got)==1 and got[0]["canonical_case_id"]==c["id"] and got[0]["anchor_date"]==c["anchor_date"] and got[0]["archetype"]==c["archetype"] and got[0]["formal_causal_outcome"]=="UNMEASURED" and got[0]["witness"]
       wit={"R10-JP-BOJ-NIRP-END-20240319":"MUFG","R10-IN-RBI-CONSUMER-CREDIT-RISKWEIGHTS-20231116":"Bajaj / SBI Cards + cohorts","R10-IN-PAYMENTS-BANK-RESTRICTION-20240131":"One97/Paytm"}
-      for old,canon in alias.items():
-          got=hits(old)
-          assert len(got)==1 and got[0]["canonical_case_id"]==canon and got[0]["witness"]==wit[canon] and got[0]["anchor_date"]==next(c["anchor_date"] for c in fx["cases"] if c["id"]==canon)
+      for row in rows:
+          for old in row["aliases"]:
+              alias_n+=1
+              assert old not in fixture_ids
+              got=hits(old)
+              assert len(got)==1 and got[0] is row and got[0]["witness"]==wit[row["canonical_case_id"]] and got[0]["anchor_date"]==next(c["anchor_date"] for c in fx["cases"] if c["id"]==row["canonical_case_id"])
+      assert alias_n==3
       print("12/12 fixture ids resolve; 3 aliases share anchor and witness; formal_causal_outcome UNMEASURED")
       PY
     result: >
@@ -149,14 +172,20 @@ verified:
       agentos: 1211 records (69 workstreams, 342 decisions, 303 discoveries,
       497 handoffs) — 0 error(s), 92 warning(s). Exit 0. No error line names
       this handoff.
+  - claim: >
+      WS:GMI-FINANCE-INTELLIGENCE is present at pinned main
+      9a47ac7f944442c6d6830df9ef25b3529a39888b. The R10 witness suite passes
+      on this tree: fixture ids, the R10D cite, and 11 witnesses.
+    command: |
+      git cat-file -e 9a47ac7f944442c6d6830df9ef25b3529a39888b:agentos/workstreams/WS-GMI-FINANCE-INTELLIGENCE.md
+      MM_DATA_GUARD=off PYTHONDONTWRITEBYTECODE=1 python3 -m pytest -q -p no:cacheprovider -o addopts="" tests/test_finance_r10_witness.py
+    result: >
+      The pin exists. pytest: 4 passed in 1.26s.
 unverified:
   - claim: >
-      R10 id drift remains a records crosswalk, not a measured causal result.
-      Three synthesis ids were renamed relative to the fixture
-      (R10-JP-BOJ-NIRP-EXIT-20240319, R10-IN-RBI-CONSUMER-NBFC-RISK-WEIGHTS-20231116,
-      R10-IN-PAYTM-PAYMENTS-BANK-RESTRICTIONS-20240131). They are aliases now.
-      Downstream measurement files can still cite the renamed strings, including
-      research/finance/FINANCE_R10D_CREDIT_UNDERWRITING_MEASUREMENTS_V0_1_2026-09-23.json.
+      R10 id alignment is a records crosswalk, not a measured causal result.
+      The three synthesis aliases are not fixture ids. A measurement case_id
+      that matches a fixture id is still a retrospective description.
       Every formal_causal_outcome stays UNMEASURED.
     what_would_verify: >
       Read each measurement file case_id through the alias table and a fresh
