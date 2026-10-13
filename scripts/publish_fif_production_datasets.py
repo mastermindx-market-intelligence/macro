@@ -60,7 +60,7 @@ import shutil
 import sys
 import tempfile
 import traceback
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Mapping, Sequence
@@ -78,6 +78,7 @@ from engine.fundamental_forensics.admitted_filing_package import (  # noqa: E402
     AdmittedFilingPackageError,
     admit_retained_filing_package,
 )
+from engine.fundamental_forensics.sec_document_spine import canonical_cik  # noqa: E402
 from engine.fundamental_forensics.fif_member_capture import (  # noqa: E402
     DEFAULT_RUN_BUDGET_BYTES,
     RETAINED_PACKAGE_INTEGRITY_CODES,
@@ -1086,6 +1087,34 @@ def _stage_contract_issuers(
             except AdmittedFilingPackageError as exc:
                 refusals.append(f"admission_refused:{exc.code}")
                 continue
+            # A0 (R-1): bind the admitted package to the staged issuer BEFORE
+            # it can reach the store material. The capture manifest carries
+            # no entity identity, while the served statement path binds at
+            # the issuer level and refuses a package whose manifest
+            # entity_id/cik disagree with the issuer binding — so the binding
+            # is stamped here, once, at the only publisher seam, from the
+            # SAME binding the issuer is staged with (never derived from a
+            # ticker). A package whose own identity cross-claims another
+            # issuer is refused, never relabelled. No digest inside
+            # AdmittedFilingPackage covers the manifest mapping (the index,
+            # member, and witness digests bind bytes that this stamp does not
+            # touch), so the frozen-dataclass replace is integrity-neutral.
+            if canonical_cik(admitted_package.manifest.get("cik")) != binding.cik:
+                refusals.append("admission_refused:issuer_cik_mismatch")
+                continue
+            manifest_entity_id = admitted_package.manifest.get("entity_id")
+            if (
+                isinstance(manifest_entity_id, str)
+                and manifest_entity_id
+                and manifest_entity_id != binding.entity_id
+            ):
+                refusals.append("admission_refused:issuer_entity_mismatch")
+                continue
+            if manifest_entity_id != binding.entity_id:
+                admitted_package = replace(
+                    admitted_package,
+                    manifest={**admitted_package.manifest, "entity_id": binding.entity_id},
+                )
             # ERRATA-6 rule 1: an admitted 8-K is counted but NEVER passed
             # into the build_production_dataset_store material (the false R6
             # premise: production_datasets._statement_trees_role_payload
