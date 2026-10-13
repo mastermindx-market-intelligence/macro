@@ -1126,8 +1126,15 @@ def test_copy_guard_keeps_details_summary() -> None:
 
 
 def test_declared_cells_minus_captured_is_gaps() -> None:
-    from scripts.capture_macro_command_p5 import declared_cells
-    declared = declared_cells()
+    from scripts.capture_macro_command_p5 import (
+        HUB_PAGE, WORKSPACE_PAGES, declared_cells,
+    )
+    appl = {
+        HUB_PAGE: {"fragments": True, "template": True},
+    }
+    for page in WORKSPACE_PAGES:
+        appl[page] = {"fragments": False, "template": False}
+    declared = declared_cells(e5_applicability=appl)
     captured = set(declared)
     assert sorted(set(declared) - captured) == []
     assert "01-dark-en-1440-full.png" in declared
