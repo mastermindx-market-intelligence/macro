@@ -12,6 +12,7 @@ from typing import Any
 import numpy as np
 import pandas as pd
 
+from engine import btc_signals
 from lib import config
 
 
@@ -180,3 +181,106 @@ def breadth_read(rows: list[dict]) -> dict:
     return {**receipt, "available": True, "value": pct,
             "state": "Broad" if pct >= 60 else ("Narrow" if pct <= 40 else "Mixed"),
             "tone": "bull" if pct >= 60 else ("bear" if pct <= 40 else "neutral")}
+
+
+# Coinbase listing-era floors (config.yml coinbase.eth_earliest / sol_earliest).
+# BTC-native legs stay off this path. Allocation is not a transfer output.
+_PRICE_PATH_ASSETS = {"ETH": "eth_earliest", "SOL": "sol_earliest"}
+_PRICE_PATH_COLUMNS = (
+    "asset", "tier", "authority",
+    "momentum", "momentum_state",
+    "risk_index", "risk_oscillator", "risk_regime",
+)
+
+
+def price_path_listing_floor(asset: str) -> pd.Timestamp:
+    """Calendar date before which an ETH or SOL close is not a listing observation."""
+    key = _PRICE_PATH_ASSETS.get(str(asset).strip().upper())
+    if key is None:
+        raise ValueError("listing floor is defined for ETH and SOL only")
+    floor = pd.Timestamp(config.load()["coinbase"][key])
+    if floor.tzinfo is not None:
+        floor = floor.tz_convert("UTC").tz_localize(None)
+    return floor.normalize()
+
+
+def _daily_close(close: pd.Series) -> pd.Series:
+    """A unique, increasing, midnight daily close. Non-numeric cells become missing."""
+    if not isinstance(close, pd.Series):
+        raise TypeError("close must be a Series")
+    if not isinstance(close.index, pd.DatetimeIndex):
+        raise TypeError("close index must be a DatetimeIndex")
+    out = pd.to_numeric(close, errors="coerce").astype(float)
+    idx = out.index
+    if idx.tz is not None:
+        idx = idx.tz_convert("UTC").tz_localize(None)
+        out = pd.Series(out.to_numpy(), index=idx)
+    if not idx.is_monotonic_increasing or idx.has_duplicates:
+        raise ValueError("daily close index must be unique and increasing")
+    if len(idx) and not idx.equals(idx.normalize()):
+        raise ValueError("daily close timestamps must be normalized to midnight")
+    return out
+
+
+def display_price_path(close: pd.Series, asset: str) -> pd.DataFrame:
+    """Display-tier momentum and risk for one ETH or SOL daily close.
+
+    Calls `btc_signals.momentum` and `btc_signals.risk` on the price path only.
+    SOPR, short-term cost basis, intraday vol, ETF flow, and funding are not
+    passed, so those votes are not created. No allocation, size, or exposure
+    column is returned.
+
+    A close before the asset's Coinbase listing floor, a missing close, and a
+    non-positive close are unavailable. They are not filled, not replaced with
+    zero, and not fed to the signal functions. The signal functions carry a
+    state across gaps and park a quiet risk oscillator at 0.5; this frame
+    still publishes unavailable on a row that had no usable close.
+    """
+    label = str(asset).strip().upper()
+    if label not in _PRICE_PATH_ASSETS:
+        raise ValueError("display price path is ETH or SOL only")
+    series = _daily_close(close)
+    floor = price_path_listing_floor(label)
+    values = series.to_numpy(dtype=float)
+    usable_row = (series.index >= floor) & np.isfinite(values) & (values > 0)
+    usable = series.loc[usable_row]
+
+    momentum = pd.Series(np.nan, index=series.index, dtype=float)
+    risk_index = pd.Series(np.nan, index=series.index, dtype=float)
+    risk_oscillator = pd.Series(np.nan, index=series.index, dtype=float)
+    momentum_state = pd.Series("unavailable", index=series.index, dtype=object)
+    risk_regime = pd.Series("unavailable", index=series.index, dtype=object)
+
+    if not usable.empty:
+        # Price only. Omitting the Bitcoin-native keys keeps those legs off.
+        inputs = {"price": pd.DataFrame({"close": usable})}
+        vector = config.load()["vector"]
+        mom = btc_signals.momentum(inputs, vector["momentum"])
+        rk = btc_signals.risk(inputs, mom["momentum"], vector["risk"])
+        momentum.loc[usable.index] = mom["momentum"].to_numpy(dtype=float)
+        risk_index.loc[usable.index] = rk["risk_index"].to_numpy(dtype=float)
+        risk_oscillator.loc[usable.index] = rk["risk_oscillator"].to_numpy(dtype=float)
+        momentum_state.loc[usable.index] = mom["momentum_state"].astype(object).to_numpy()
+        risk_regime.loc[usable.index] = rk["risk_regime"].astype(object).to_numpy()
+
+    blocked = ~usable_row
+    momentum.loc[blocked] = np.nan
+    risk_index.loc[blocked] = np.nan
+    risk_oscillator.loc[blocked] = np.nan
+    momentum_state.loc[blocked] = "unavailable"
+    risk_regime.loc[blocked] = "unavailable"
+
+    frame = pd.DataFrame(
+        {
+            "asset": label,
+            "tier": "display",
+            "authority": "none",
+            "momentum": momentum,
+            "momentum_state": momentum_state,
+            "risk_index": risk_index,
+            "risk_oscillator": risk_oscillator,
+            "risk_regime": risk_regime,
+        },
+        index=series.index,
+    )
+    return frame.loc[:, list(_PRICE_PATH_COLUMNS)]

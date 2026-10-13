@@ -3180,7 +3180,16 @@ def test_c0c_q11_over_budget_primary_refused_before_storage(tmp_path) -> None:
 # Base pins captured at the P1 head (9cc2bdb7cf8) over the standard AAPL lane
 # and re-confirmed identical at the P3 head (c149c5c1e64): the 10-K/10-Q
 # capture/publish paths must not move through C0-c.
-_BASE_GENERATION_ID = "ffprods_dacae5538dd6e3351fe52ec55f12629c665a2f63f6ac950fd58397e76578ab78"
+# A0 (R-4 re-pin): the publisher now stamps binding.entity_id into every
+# admitted package manifest (admission-loop issuer bind), so the
+# statement_packages_index_json role payload — which embeds each package
+# manifest — changes bytes, hence the manifest core digest, hence the
+# generation id. Cause proof (A0_ENTITY_REPORT.md): the BASE publisher bytes
+# at 7ef20577c078 over the same staging lane re-derive the old pin
+# ffprods_dacae5538dd6e3351fe52ec55f12629c665a2f63f6ac950fd58397e76578ab78,
+# while the retained package_manifest.json sha256 pins below are byte-identical
+# under both publishers (the stamp is in-memory, never written to the archive).
+_BASE_GENERATION_ID = "ffprods_5aec3b7a0adaa6ae4e752a7c9ced3dc3e9bd7ee4dd6bfa2f49a21262be1a556a"
 _BASE_MANIFEST_SHA = {
     "0000320193-25-000079": "4d9242653aa977a24b5bba955d3d695d4762042ca094ae742fad4453e984b4a8",
     "0000320193-26-000020": "3a9c046f500d542998e4fa7b02a42562e51b28647eb508c68c2a740f693d7f03",
