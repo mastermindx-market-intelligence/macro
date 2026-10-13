@@ -8622,7 +8622,7 @@ jobs:
         with:
           python-version: "3.12"
       - name: install minimal deps
-        run: pip install pytest pyyaml pandas pyarrow
+        run: pip install pytest pyyaml pandas pyarrow requests
       - name: push-retry policy tests (classification, budgets, jitter, real git races)
         run: python -m pytest tests/test_push_retry.py -q
       - name: QLedger explicit publication checks and publisher preservation boundaries
