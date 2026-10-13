@@ -4284,6 +4284,10 @@ def test_workspace_runtime_contracts_can_start_the_ci_that_validates_them() -> N
 # ---------------------------------------------------------------------------
 
 CURATED_EXCLUSIVE = {
+    # R2 original-intent context producer: the ten Agent OS knowledge suites
+    # share their measured 43-file import/read closure plus the Agent OS corpus.
+    # Source/fence execution remains in the existing self-mod job.
+    "agentos-knowledge-contracts",
     # PR #7861: Options matrix source/session/retention checks are hermetic.
     # The exclusive manifest scope retains both suites, their concrete import
     # closure, config.yml fallback and the retention-fixture wildcard. This

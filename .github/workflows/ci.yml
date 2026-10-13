@@ -25,6 +25,7 @@ on:
       # non-code artifacts and special cross-root contracts.
       - "app/**"
       - "admin/**"
+      - "agentos/**"
       - "collectors/**"
       - "config/**"
       - "content/**"
