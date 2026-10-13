@@ -24,15 +24,41 @@ def nuclear_registration():
     def load_bundle(query, *, rights_snapshot=None):
         return nuclear_bundle(N04, X02)
 
+    def build_query(
+        *,
+        anchor_theme_id,
+        slice_key,
+        view,
+        time_mode,
+        source_cutoff,
+        recorded_cutoff,
+        offset,
+        limit,
+        expected_generation,
+    ):
+        return nuclear.ResearchQuery(
+            anchor_theme_id=anchor_theme_id,
+            slice_key=slice_key,
+            view=view,
+            time_mode=time_mode,
+            source_cutoff=source_cutoff,
+            recorded_cutoff=recorded_cutoff,
+            offset=offset,
+            limit=limit,
+            expected_generation=expected_generation,
+        )
+
     return VerticalRegistration(
         anchor_theme_id=nuclear.ANCHOR_THEME_ID,
         slice_keys=nuclear.SLICES,
+        view_keys=nuclear.VIEWS,
         schema_id=nuclear.SCHEMA_ID,
         evidence_schema_id=nuclear.EVIDENCE_SCHEMA_ID,
         definition_version=nuclear.DEFINITION_VERSION,
         compose=nuclear.compose_nuclear_research,
         select_evidence=nuclear.select_authorized_evidence,
         load_bundle=load_bundle,
+        build_query=build_query,
         title_en="Nuclear value capture",
         title_zh="核电价值捕获",
         note_en="This module reports public evidence without entry authority.",

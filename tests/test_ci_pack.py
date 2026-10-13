@@ -4414,6 +4414,9 @@ CURATED_EXCLUSIVE = {
     # the transport suites import app.main, whose closure smears whole-tree
     # scan roots onto all three packing probes (+1 job each) when inferred.
     "semiconductor-b-boundary",
+    # Nuclear research boundary: the route suite imports app.theme_research,
+    # so inference would smear whole-tree roots onto the packing probes.
+    "energy-nuclear-boundary",
     # 2026-08-19 wave 5. #6027 moved #5984's three dossier suites into
     # conviction-profile — the right call, because their #6023 home
     # (unrun-publish-ops) is `gate: data`, which ci.yml never plans, so they

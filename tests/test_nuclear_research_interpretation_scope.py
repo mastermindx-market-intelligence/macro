@@ -166,8 +166,9 @@ def test_the_review_guard_never_swallows_a_malformed_replay_cutoff(recorded_cuto
     block = interpretation([elsewhere["curation_revision"]])
     for assertions in ((elsewhere,), ()):
         assert counted_absent(compose(REPLAY, *assertions, blocks=[block])) == [ABSENT]
-        with pytest.raises(ValueError):
+        with pytest.raises(nuclear.ResearchRefusal) as refusal:
             compose(malformed, *assertions, blocks=[block])
+        assert refusal.value.code == "cutoff_unreadable"
 
 
 def test_a_replay_reads_an_instant_review_time():

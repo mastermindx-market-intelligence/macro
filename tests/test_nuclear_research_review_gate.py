@@ -140,8 +140,9 @@ def test_the_expiry_gate_never_swallows_a_malformed_recorded_cutoff(time_mode, r
     query = nuclear_query("nuclear_components", "economics", time_mode=time_mode)
     assert nuclear.compose_nuclear_research(query, bundle)["authorized_coverage"]["selected"] == 1
     malformed = dataclasses.replace(query, recorded_cutoff=recorded_cutoff)
-    with pytest.raises(ValueError):
+    with pytest.raises(nuclear.ResearchRefusal) as refusal:
         nuclear.compose_nuclear_research(malformed, bundle)
+    assert refusal.value.code == "cutoff_unreadable"
 
 
 def test_latest_with_an_early_recorded_cutoff_still_expires_the_review():
@@ -218,3 +219,33 @@ def test_swapped_interpretations_keep_their_own_why_it_matters():
     assert "FRESH mechanism." in forward
     assert "[stale interpretation] STALE mechanism." in forward
     assert "[stale interpretation] FRESH mechanism." not in forward
+
+
+def test_two_stale_blocks_prefix_the_assertion_derived_coverage():
+    """Every matching block stale: the shared coverage line is prefixed too."""
+    revision = X01["curation_revision"]
+    coverage = X01["limitations"]["coverage"]
+    payload = compose(X01, blocks=[
+        _paired_block("a-stale", "stale", "A mechanism.", revision),
+        _paired_block("z-stale", "stale", "Z mechanism.", revision),
+    ])
+    summary = payload["summary"]
+    texts = [item["text"] for item in summary["why_it_matters"]]
+    assert "[stale interpretation] " + coverage in texts
+    assert coverage not in texts
+    assert summary["status"] == "degraded"
+    assert summary["reason"] == "interpretation_stale"
+
+
+def test_a_fresh_before_z_stale_leaves_mixed_coverage_unmarked():
+    """Fresh sorts first. A mixed pair still leaves the coverage line bare."""
+    revision = X01["curation_revision"]
+    coverage = X01["limitations"]["coverage"]
+    fresh = _paired_block("a-fresh", "current", "FRESH mechanism.", revision)
+    stale = _paired_block("z-stale", "stale", "STALE mechanism.", revision)
+    payload = compose(X01, blocks=[fresh, stale])
+    texts = [item["text"] for item in payload["summary"]["why_it_matters"]]
+    assert coverage in texts
+    assert "[stale interpretation] " + coverage not in texts
+    assert "FRESH mechanism." in texts
+    assert "[stale interpretation] STALE mechanism." in texts

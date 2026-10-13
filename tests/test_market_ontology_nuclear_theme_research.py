@@ -10,6 +10,7 @@ import pytest
 from jsonschema import FormatChecker
 
 from engine.market_ontology import nuclear_theme_research as nuclear
+from engine.market_ontology.theme_research_binding import parse_day
 from engine.theme_graph.curation_assertion import source_ref_for
 from engine.market_ontology.theme_research_mounts import MountFacts
 from engine.market_ontology.theme_research_registry import VerticalRegistration
@@ -28,9 +29,9 @@ def validate(payload):
     jsonschema.Draft202012Validator(CONTRACT, format_checker=FormatChecker()).validate(payload)
 
 
-# One list for the schema validator and for nuclear._parse_day. The four
-# impossible values are the ones $defs/when must refuse; the naive instant is
-# a form _parse_day accepts and the schema must accept too.
+# One list for the schema validator and for theme_research_binding.parse_day.
+# The four impossible values are the ones $defs/when must refuse; the naive
+# instant is a form parse_day accepts and the schema must accept too.
 WHEN_VALUES = (
     "2026-09-01",
     "2026-4-1",
@@ -81,12 +82,34 @@ WHEN_VALUES = (
     "2026-13-01T00:00:00Z",
     "1900-02-29T00:00:00Z",
     "0000-01-01T00:00:00Z",
+    # Parser-accepted leftovers the instant pattern must also accept:
+    # week instants, an empty fraction mark before the zone, and an offset
+    # whose minute or second is 60-99 while the total stays inside ±24h.
+    "2024-W01-1T00:00:00Z",
+    "2020-W53-4T00:00:00Z",
+    "2024W011T000000Z",
+    "2024-02-29T00:00:00.Z",
+    "2024-02-29T00:00:00,Z",
+    "2024-02-29T00:00:00+00:60",
+    "2024-02-29T00:00:00+00:00:60",
+    "2024-02-29T00:00:00-00:60",
+    # These stay refused: a 24h offset, an invalid ISO week, and a week
+    # instant that would land outside datetime's year range.
+    "2024-02-29T00:00:00+23:60",
+    "2024-02-29T00:00:00+23:59:60",
+    "2024-W53-1T00:00:00Z",
+    "9999-W52-6T00:00:00Z",
 )
 WHEN_REFUSED = (
     "2026-02-31",
     "2026-13-45",
     "2026-09-01T24:00:00Z",
     "2026-09-01T00:00:00+99:99",
+    "2026-09-01T00:00:00+24:00",
+    "2024-02-29T00:00:00+23:60",
+    "2024-02-29T00:00:00+23:59:60",
+    "2024-W53-1T00:00:00Z",
+    "9999-W52-6T00:00:00Z",
 )
 _WHEN_VALIDATOR = jsonschema.Draft202012Validator(
     CONTRACT["$defs"]["when"], format_checker=FormatChecker())
@@ -94,7 +117,7 @@ _WHEN_VALIDATOR = jsonschema.Draft202012Validator(
 
 def _parse_day_accepts(value):
     try:
-        nuclear._parse_day(value)
+        parse_day(value)
     except ValueError:
         return False
     return True
@@ -102,7 +125,7 @@ def _parse_day_accepts(value):
 
 @pytest.mark.parametrize("value", WHEN_VALUES)
 def test_when_schema_matches_parse_day(value):
-    """$defs/when agrees with nuclear_theme_research._parse_day on one list."""
+    """$defs/when agrees with theme_research_binding.parse_day on one list."""
     assert set(WHEN_REFUSED) <= set(WHEN_VALUES)
     accepted = _parse_day_accepts(value)
     errors = list(_WHEN_VALIDATOR.iter_errors(value))
@@ -179,15 +202,41 @@ def test_nuclear_registration_entry_validates():
         from engine.market_ontology.nuclear_owner_bundle import load_nuclear_owner_bundle
         return load_nuclear_owner_bundle(query, rights_snapshot=rights_snapshot)
 
+    def build_query(
+        *,
+        anchor_theme_id,
+        slice_key,
+        view,
+        time_mode,
+        source_cutoff,
+        recorded_cutoff,
+        offset,
+        limit,
+        expected_generation,
+    ):
+        return nuclear.ResearchQuery(
+            anchor_theme_id=anchor_theme_id,
+            slice_key=slice_key,
+            view=view,
+            time_mode=time_mode,
+            source_cutoff=source_cutoff,
+            recorded_cutoff=recorded_cutoff,
+            offset=offset,
+            limit=limit,
+            expected_generation=expected_generation,
+        )
+
     entry = VerticalRegistration(
         anchor_theme_id=nuclear.ANCHOR_THEME_ID,
         slice_keys=nuclear.SLICES,
+        view_keys=nuclear.VIEWS,
         schema_id=nuclear.SCHEMA_ID,
         evidence_schema_id=nuclear.EVIDENCE_SCHEMA_ID,
         definition_version=nuclear.DEFINITION_VERSION,
         compose=nuclear.compose_nuclear_research,
         select_evidence=nuclear.select_authorized_evidence,
         load_bundle=load_bundle,
+        build_query=build_query,
         title_en="Nuclear value capture",
         title_zh="核电价值捕获",
         note_en="This module reports public evidence without entry authority.",
@@ -196,8 +245,10 @@ def test_nuclear_registration_entry_validates():
     mount = MountFacts(
         anchor_theme_id=nuclear.ANCHOR_THEME_ID,
         slice_keys=nuclear.SLICES,
+        view_keys=nuclear.VIEWS,
         schema_id=nuclear.SCHEMA_ID,
         evidence_schema_id=nuclear.EVIDENCE_SCHEMA_ID,
+        definition_version=nuclear.DEFINITION_VERSION,
         slice_labels={
             "reactor_technology": ("Reactor technology", "反应堆技术"),
             "nuclear_components": ("Nuclear components & services", "核电部件与服务"),

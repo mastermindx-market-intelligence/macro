@@ -159,6 +159,24 @@ def test_system_replay_uses_recorded_cutoff():
     assert payload["request"]["recorded_cutoff"] == "2026-12-31"
 
 
+def test_an_unreadable_business_valid_to_is_withheld_and_the_sibling_is_served():
+    """2026-13-45 is contract-admitted and must not take down the composition."""
+    bad = variant("N03C", "BADEND", temporal={"business_valid_to": "2026-13-45"})
+    payload = nuclear.compose_nuclear_research(
+        nuclear_query("reactor_technology", "commercial"),
+        nuclear_bundle(bad, N03D),
+    )
+    assert "undatable_excluded" in payload["limitations"]
+    revisions = [
+        row["curation_revision"]
+        for row in payload["industrial_views"]["commercial"]["rows"]
+    ]
+    assert bad["curation_revision"] not in revisions
+    assert N03D["curation_revision"] in revisions
+    assert bad["curation_revision"] not in payload["authorized_coverage"]["input_refs"]
+    assert N03D["curation_revision"] in payload["authorized_coverage"]["input_refs"]
+
+
 def test_archival_record_of_an_open_target_stays_next_evidence():
     payload = nuclear.compose_nuclear_research(
         nuclear_query("reactor_technology", "commercial",

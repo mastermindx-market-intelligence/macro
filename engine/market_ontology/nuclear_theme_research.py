@@ -3,22 +3,22 @@
 from __future__ import annotations
 
 import copy
-import hashlib
 from collections.abc import Mapping
-from typing import Any
+from dataclasses import dataclass
+from typing import Any, Literal
 
-from engine.market_ontology.semiconductor_theme_research import (
-    AUTHORITY,
-    OwnerBundle,
-    ResearchQuery,
+from engine.market_ontology.theme_research_binding import (
     ResearchRefusal,
-    _canonical_text,
-    _parse_day,
-    _is_retrospective,
-    _le,
-    _passes_time_mode,
-    _row_sort_key,
-    _validate_query,
+    generation_fingerprint,
+    is_instant,
+    le,
+    parse_clock,
+    parse_day,
+    readable,
+    validate_cutoff_format,
+    validate_pagination,
+    validate_replay_cutoffs,
+    within,
 )
 from engine.theme_graph.curation_assertion import (
     CurationAssertionError,
@@ -85,6 +85,141 @@ LIMITATION_CODES = (
     "omitted:",
 )
 
+#: Authority is structurally absent. Nuclear owns the five flags; the kernel
+#: does not export them.
+AUTHORITY: dict[str, bool] = {
+    "can_rank": False,
+    "can_gate": False,
+    "can_size": False,
+    "can_originate": False,
+    "can_open_entry": False,
+}
+
+_MIN_LIMIT, _MAX_LIMIT = 1, 100
+_ROW_ORDER = (
+    "selector", "source_business_label", "configuration", "stage",
+    "curation_revision",
+)
+
+
+@dataclass(frozen=True)
+class ResearchQuery:
+    anchor_theme_id: str
+    slice_key: Literal["reactor_technology", "nuclear_components", "fuel_cycle"]
+    view: Literal["composition", "manufacturing", "commercial", "capacity", "economics"]
+    time_mode: Literal["latest", "source_history", "system_replay"]
+    source_cutoff: str | None
+    recorded_cutoff: str | None
+    offset: int = 0
+    limit: int = 50
+    expected_generation: str | None = None
+
+
+@dataclass(frozen=True)
+class OwnerBundle:
+    revision_tuple: tuple[tuple[str, str], ...]
+    rights_revision: str
+    assertions: tuple[Mapping[str, Any], ...]
+    identity_results: tuple[Mapping[str, Any], ...]
+    event_workspaces: tuple[Mapping[str, Any], ...]
+    financial_packets: tuple[Mapping[str, Any], ...]
+    interpretation_blocks: tuple[Mapping[str, Any], ...]
+    native_refs: tuple[Mapping[str, Any], ...]
+    omissions: tuple[str, ...]
+
+
+def _validate_query(query: ResearchQuery) -> None:
+    """Nuclear page bounds and replay rule, via the shared validators."""
+    validate_pagination(
+        limit=query.limit,
+        offset=query.offset,
+        expected_generation=query.expected_generation,
+        min_limit=_MIN_LIMIT,
+        max_limit=_MAX_LIMIT,
+    )
+    validate_replay_cutoffs(
+        time_mode=query.time_mode,
+        source_cutoff=query.source_cutoff,
+        recorded_cutoff=query.recorded_cutoff,
+    )
+    validate_cutoff_format(query.source_cutoff, query.recorded_cutoff)
+
+
+def _passes_time_mode(
+    assertion: Mapping[str, Any], query: ResearchQuery, limitations: set[str],
+) -> bool:
+    """Nuclear time gate. Unreadable owner clocks are withheld, never fatal."""
+    source = assertion["source"]
+
+    if query.time_mode == "latest":
+        return True
+
+    if query.time_mode == "source_history":
+        if query.source_cutoff is None:
+            return True
+        comparable = False
+        published = source.get("published_at")
+        if published is not None and readable(published):
+            comparable = True
+            if within(published, query.source_cutoff):
+                return True
+        available = source.get("available_at")
+        if isinstance(available, str) and available != "unknown" and readable(available):
+            comparable = True
+            if within(available, query.source_cutoff):
+                return True
+        if not comparable:
+            limitations.add("undatable_excluded")
+        return False
+
+    available = source.get("available_at")
+    if not isinstance(available, str) or available == "unknown" or not readable(available):
+        limitations.add("availability_unknown_excluded")
+        return False
+    if not within(available, query.source_cutoff):
+        return False
+    retained = source.get("retained_at")
+    if not readable(retained):
+        limitations.add("undatable_excluded")
+        return False
+    if not within(retained, query.recorded_cutoff):
+        return False
+    published = source.get("published_at")
+    if published is not None:
+        grain = source.get("published_at_grain")
+        if grain == "date":
+            if is_instant(query.source_cutoff) and readable(published) \
+                    and parse_day(published) == parse_clock(query.source_cutoff).date():
+                limitations.add("same_day_grain_ambiguous")
+                return False
+        if not readable(published):
+            limitations.add("undatable_excluded")
+            return False
+        if not within(published, query.source_cutoff):
+            return False
+    return True
+
+
+def _is_retrospective(assertion: Mapping[str, Any], query: ResearchQuery) -> bool:
+    """source_history only: an archival source recorded later than publication."""
+    if query.time_mode != "source_history":
+        return False
+    source = assertion["source"]
+    published = source.get("published_at")
+    if published is None:
+        return False
+    retained = source.get("retained_at")
+    if not readable(retained) or not readable(published):
+        return False
+    return parse_day(retained) > parse_day(published)
+
+
+def _row_sort_key(row: dict[str, Any]) -> tuple:
+    return tuple(
+        (row.get(key) or "") if isinstance(row.get(key), str) else ""
+        for key in _ROW_ORDER
+    )
+
 
 def _selector(label: str | None, prefix: str) -> str | None:
     return f"{prefix}:{label}" if isinstance(label, str) and label else None
@@ -130,34 +265,48 @@ def _reference_day(
     return max(days, default=None)
 
 
-def _is_passed_target(
-        assertion: Mapping[str, Any], reference_day: str | None,
-        query: ResearchQuery | None = None) -> bool:
+def _target_window_unreadable(
+        assertion: Mapping[str, Any], reference_day: str | None) -> bool:
+    """A forward deployment target whose business_valid_to cannot be read."""
     end = (assertion.get("temporal") or {}).get("business_valid_to")
-    return (
+    return bool(
         assertion.get("predicate") == "DEPLOYMENT_TARGET"
         and assertion.get("statement_mode") == "FORWARD_TARGET"
         and isinstance(end, str) and end
         and isinstance(reference_day, str) and reference_day
-        and _parse_day(end) <= _parse_day(reference_day)
-    ) or (query is not None and _is_retrospective(assertion, query))
+        and not readable(end)
+    )
+
+
+def _is_passed_target(
+        assertion: Mapping[str, Any], reference_day: str | None,
+        query: ResearchQuery | None = None) -> bool:
+    end = (assertion.get("temporal") or {}).get("business_valid_to")
+    passed = (
+        assertion.get("predicate") == "DEPLOYMENT_TARGET"
+        and assertion.get("statement_mode") == "FORWARD_TARGET"
+        and isinstance(end, str) and end
+        and isinstance(reference_day, str) and reference_day
+        and readable(end) and readable(reference_day)
+        and parse_day(end) <= parse_day(reference_day)
+    )
+    return bool(passed) or (query is not None and _is_retrospective(assertion, query))
 
 
 def _generation(query: ResearchQuery, bundle: OwnerBundle) -> str:
-    payload = {
-        "definition_version": DEFINITION_VERSION,
-        "rights_revision": bundle.rights_revision,
-        "revision_tuple": sorted(list(pair) for pair in bundle.revision_tuple),
-        "slice_key": query.slice_key,
-        "view": query.view,
-        "time_mode": query.time_mode,
-        "source_cutoff": query.source_cutoff,
-        "recorded_cutoff": query.recorded_cutoff,
-        "anchor_theme_id": query.anchor_theme_id,
-    }
-    digest = hashlib.sha256(
-        _canonical_text(payload).encode("utf-8")).hexdigest()[:32]
-    return "gen_" + digest
+    return generation_fingerprint(
+        definition_version=DEFINITION_VERSION,
+        rights_revision=bundle.rights_revision,
+        revision_tuple=bundle.revision_tuple,
+        fields={
+            "slice_key": query.slice_key,
+            "view": query.view,
+            "time_mode": query.time_mode,
+            "source_cutoff": query.source_cutoff,
+            "recorded_cutoff": query.recorded_cutoff,
+            "anchor_theme_id": query.anchor_theme_id,
+        },
+    )
 
 
 class _Selection:
@@ -228,6 +377,21 @@ class _Selection:
                 and any(assertion.get("predicate") == "DEPLOYMENT_TARGET"
                         for assertion in self.current):
             self.limitations.add(f"target_windows_judged_at:{self.reference_day}")
+        undatable = {
+            assertion["curation_revision"]
+            for assertion in self.current
+            if _target_window_unreadable(assertion, self.reference_day)
+        }
+        if undatable:
+            self.limitations.add("undatable_excluded")
+            self.current = [
+                assertion for assertion in self.current
+                if assertion["curation_revision"] not in undatable
+            ]
+            self.review_ok = [
+                assertion for assertion in self.review_ok
+                if assertion["curation_revision"] not in undatable
+            ]
         self.row_assertions = [
             assertion for assertion in self.current
             if assertion.get("statement_mode") != "ATTRIBUTED_INTERPRETATION"
@@ -276,7 +440,7 @@ class _Selection:
         if self.query.time_mode == "system_replay":
             return self.query.recorded_cutoff
         if self.query.recorded_cutoff is not None:
-            _parse_day(self.query.recorded_cutoff)
+            parse_day(self.query.recorded_cutoff)
         stamps = [
             (assertion.get("review") or {}).get("reviewed_at")
             for assertion in self.assertions
@@ -293,7 +457,7 @@ class _Selection:
             return True
         due = review.get("review_due_at")
         now = self._now_of_query()
-        if isinstance(due, str) and due and now is not None and _le(due, now):
+        if isinstance(due, str) and due and now is not None and le(due, now):
             self.limitations.add("review_expired_present")
             return True
         return False
@@ -337,12 +501,12 @@ class _Selection:
         if not isinstance(reviewed, str):
             return False
         try:
-            _parse_day(reviewed)
+            parse_day(reviewed)
         except ValueError:
             # An unreadable review time is withheld like a missing one. Only the
             # block's clock is read here, so a bad query cutoff still surfaces.
             return False
-        return _le(reviewed, self.query.recorded_cutoff)
+        return le(reviewed, self.query.recorded_cutoff)
 
     def _inputs_known(self, block: Mapping[str, Any]) -> bool:
         refs = block.get("input_revisions") or []
@@ -357,7 +521,7 @@ class _Selection:
                 continue
             learned = result.get("mapping_learned_at")
             if self.query.time_mode == "system_replay" and learned \
-                    and not _le(learned, self.query.recorded_cutoff):
+                    and not le(learned, self.query.recorded_cutoff):
                 return {"company_node_id": None,
                         "reason": "identity_not_yet_learned", "security": None}
             node = result.get("company_node_id")
@@ -651,9 +815,11 @@ def _summary(selection: _Selection, response_limitations: set[str]) -> dict[str,
                 block for block in blocks
                 if item["input_refs"] == list(block.get("input_revisions") or [])
             ]
-            stale = (
-                len(matches) == 1
-                and matches[0].get("interpretation_id") in stale_ids
+            # Mark the assertion-derived line only when every block that
+            # carries this revision list is stale. One fresh block among them
+            # leaves the line unmarked; list order is not a producer.
+            stale = bool(matches) and all(
+                block.get("interpretation_id") in stale_ids for block in matches
             )
         if stale:
             item["stale"] = True
