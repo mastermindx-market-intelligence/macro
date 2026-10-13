@@ -11,6 +11,12 @@ from engine.press import desk_planner as P
 from tests import press_fixtures as F
 
 HERE = Path(__file__).resolve().parents[1] / 'research/agentic_media/public_intelligence_20261011'
+NEWS_FEED = 'https://www.whitehouse.gov/news/feed/'
+FACT_FEED = 'https://www.whitehouse.gov/fact-sheets/feed/'
+RESEARCH_URL = (
+    'https://www.whitehouse.gov/research/2026/10/'
+    'fact-sheet-trump-administration-announces-the-most-ambitious-set-of-science-initiatives-this-century/'
+)
 
 
 def dump(path, value):
@@ -135,6 +141,22 @@ def republish(inputs, published):
         published=d['published'], id=d['id']))
 
 
+def retarget(inputs, url, section, feed_url):
+    from engine.whitehouse_feed import _slug_id
+    def patch_document(d):
+        d['url'] = url
+        d['section'] = section
+        d['id'] = _slug_id(url, d['published'])
+    mutate(inputs, 'document', patch_document)
+    d = json.loads(inputs['document_path'].read_text())
+    def patch_qualification(q):
+        q['existing_feed_ingress']['url'] = feed_url
+        q['existing_feed_ingress']['candidate'].update(
+            url=d['url'], section=d['section'], id=d['id'])
+        q['external_planning']['feed_url'] = feed_url
+    mutate(inputs, 'qualification', patch_qualification)
+
+
 def test_later_publication_retains_reviewed_event_clock(inputs):
     # The source event remains October 8 even when the page is published later.
     republish(inputs, '2026-10-09T15:05:06+00:00')
@@ -157,4 +179,95 @@ def test_later_publication_cannot_refresh_expired_event(inputs):
 def test_invalid_or_postpublication_event_date_rejected(inputs, event_date):
     mutate(inputs, 'qualification', lambda q: q.update(event_date=event_date))
     with pytest.raises(ValueError):
+        P.plan_external_candidate(**inputs)
+
+
+def test_aggregate_feed_fact_sheet_is_planning_only(inputs):
+    url = json.loads(inputs['document_path'].read_text())['url']
+    retarget(inputs, url=url, section='news', feed_url=NEWS_FEED)
+    result = P.plan_external_candidate(**inputs)
+    assert result['operation'] == 'planning_only'
+    assert result['allow_stage'] is result['allow_emit'] is result['publication_approved'] is False
+    assert result['cadence_consumed'] is False
+    assert '/fact-sheets/' in result['validation_context']['primary_source']['url']
+    assert result['validation_context']['facts'][-1]['values'] == ['62.5']
+
+
+def test_aggregate_research_route_keeps_reviewed_fixture_identity(inputs):
+    retarget(inputs, url=RESEARCH_URL, section='news', feed_url=NEWS_FEED)
+    result = P.plan_external_candidate(**inputs)
+    assert result['allow_stage'] is result['allow_emit'] is result['publication_approved'] is False
+    assert '/research/' in result['validation_context']['primary_source']['url']
+    assert result['validation_context']['allowed_links'] == ['https://www.mastermind-x.com/stocks/NVDA.html']
+    assert result['source_ref'].endswith(
+        'fact-sheet-trump-administration-announces-the-most-ambitious-set-of-science-init')
+
+
+def test_section_specific_feed_rejects_other_canonical_path(inputs):
+    retarget(inputs, url=RESEARCH_URL, section='fact-sheets', feed_url=FACT_FEED)
+    with pytest.raises(ValueError, match='canonical White House document'):
+        P.plan_external_candidate(**inputs)
+
+
+def test_unknown_aggregate_route_rejected(inputs):
+    retarget(inputs, url=(
+        'https://www.whitehouse.gov/administration/2026/10/'
+        'fact-sheet-trump-administration-announces-the-most-ambitious-set-of-science-initiatives-this-century/'
+    ), section='news', feed_url=NEWS_FEED)
+    with pytest.raises(ValueError, match='canonical White House document'):
+        P.plan_external_candidate(**inputs)
+
+
+@pytest.mark.parametrize('url', [
+    'https://www.whitehouse.gov/news/../fact-sheets/secret/',
+    'https://www.whitehouse.gov/news/%2e%2e/fact-sheets/secret/',
+    'https://www.whitehouse.gov/news/%2ffact-sheets/secret/',
+    'https://www.whitehouse.gov/fact-sheets%2f2026/10/slug/',
+    'https://www.whitehouse.gov/news//fact-sheets/secret/',
+    'https://www.whitehouse.gov/news/./fact-sheets/secret/',
+    'https://www.whitehouse.gov/news/2026/10/slu\ng/',
+    '\thttps://www.whitehouse.gov/news/2026/10/slug/',
+    'https://www.whitehouse.gov/news/2026/10/slug/?',
+])
+def test_malformed_or_encoded_separator_routes_rejected(inputs, url):
+    retarget(inputs, url=url, section='news', feed_url=NEWS_FEED)
+    with pytest.raises(ValueError, match='canonical White House document'):
+        P.plan_external_candidate(**inputs)
+
+
+def test_aggregate_feed_identity_mismatch_rejected(inputs):
+    url = json.loads(inputs['document_path'].read_text())['url']
+    retarget(inputs, url=url, section='news', feed_url=NEWS_FEED)
+    mutate(inputs, 'qualification', lambda q: q['external_planning'].update(feed_url=FACT_FEED))
+    with pytest.raises(ValueError, match='feed identity'):
+        P.plan_external_candidate(**inputs)
+
+
+def test_unknown_section_cannot_match_a_missing_feed(inputs):
+    retarget(inputs, url='https://www.whitehouse.gov/unknown/2026/10/slug/',
+             section='unknown', feed_url=None)
+    with pytest.raises(ValueError, match='feed identity'):
+        P.plan_external_candidate(**inputs)
+
+
+def test_aggregate_body_requires_its_own_qualification(inputs):
+    url = json.loads(inputs['document_path'].read_text())['url']
+    retarget(inputs, url=url, section='news', feed_url=NEWS_FEED)
+    def change_body(document):
+        document['body'] = 'Different aggregate heading\n' + document['body']
+        document['body_sha256'] = hashlib.sha256(document['body'].encode()).hexdigest()
+    mutate(inputs, 'document', change_body)
+    with pytest.raises(ValueError, match='source body hash mismatch'):
+        P.plan_external_candidate(**inputs)
+
+
+def test_aggregate_admission_does_not_bypass_freshness_or_rights(inputs):
+    url = json.loads(inputs['document_path'].read_text())['url']
+    retarget(inputs, url=url, section='news', feed_url=NEWS_FEED)
+    inputs['as_of'] = '2026-10-12T00:00:00Z'
+    with pytest.raises(ValueError, match='event.*window'):
+        P.plan_external_candidate(**inputs)
+    inputs['as_of'] = '2026-10-11T23:00:00Z'
+    mutate(inputs, 'qualification', lambda q: q['rights_basis'].update(qualification='unqualified'))
+    with pytest.raises(ValueError, match='rights qualification'):
         P.plan_external_candidate(**inputs)
