@@ -23620,6 +23620,15 @@ jobs:
       # V4-D2B2-US: same shape — the us_gmi_admission receipt block names its
       # binding contract path as a string.
       - research/prophet_v4/d2/D2B2_US_FROZEN_CONTRACT_2026-08-21.md
+      # Data OS completion R00 (#9150): tests/test_dataos_registry_consumers.py
+      # names D00 and the DataWorkspace consumer (lib/dataos/web_workspace.py) as
+      # string literals, so the inferred closure reaches these four tracked paths;
+      # contract-delta requires the declared scope to cover them (widening is the
+      # safe direction — this job is still pytest + pyyaml only).
+      - research/data_os_completion/2026-10-13/D00_SEMANTIC_DECISIONS.md
+      - scripts/data_workspace.py
+      - site/factordata/factors.json
+      - site/factordata/insider_signals.json
       - .github/ci/legacy-jobs.yml
       - .github/workflows/ci.yml
       - config/dataset_registry.yml
