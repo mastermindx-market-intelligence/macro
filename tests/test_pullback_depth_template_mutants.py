@@ -275,7 +275,7 @@ _ZH = {
     "Unavailable": "暂无",
     "Rebound from the low": "自低点回升",
     "Not recovery odds": "并非修复概率",
-    "Against the 20-close average": "相对20日收盘均价",
+    "Against the 20-close average": "相对近20个收盘价的均值",
     "Below": "低于",
     "Above or at": "不低于",
     "The observed path": "已观测走势",

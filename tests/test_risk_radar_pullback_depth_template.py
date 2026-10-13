@@ -476,7 +476,7 @@ def test_evidence_rows_are_bilingual_and_the_verdict_matches_the_phase(phase, en
     assert recovered.find_next_sibling("dd").get_text(strip=True) == "8%"
     side = _signal(soup, "ma20")
     assert side.select_one(".l-en").get_text() == "Against the 20-close average"
-    assert side.select_one(".l-zh").get_text() == "相对20日收盘均价"
+    assert side.select_one(".l-zh").get_text() == "相对近20个收盘价的均值"
     value = side.find_next_sibling("dd")
     assert value.select_one(".l-en").get_text() == "Below"
     assert value.select_one(".l-zh").get_text() == "低于"
