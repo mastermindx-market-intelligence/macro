@@ -41,9 +41,10 @@ waves:
     status: in_progress
     depends_on: [P3-RENDERER-LIBRARY]
     next_action: >
-      Harvest the M01/M02/M03 lane branches (claude/ce-m01-1012, -m02-, -m03-), review each
-      docs/chart-engine/migration/M0x_*.patch, apply by hand onto ChartPanel.tsx in a worktree,
-      then recapture the six ChartPanel evidence crops before running npm test.
+      In flight as wave 4 lane OPUS-MIG (branch claude/ce-migration-1013): a grok-4.6 operator lane
+      rebases M01->M02->M03 onto the current master ChartPanel.tsx and wires the opt-in ?engine=mm
+      selector, qwen3.8-max reviews the head, then the six evidence crops are recaptured on the Mac
+      and the full npm test plus the responsive e2e contract run before the seat opens the PR.
   - id: P4-ACCEPTANCE-DARK-LAUNCH
     title: Conformance corpus green on "mm", engine selector dark launch, production crops, rollback drill
     status: todo
@@ -71,11 +72,14 @@ artifacts:
   - docs/chart-engine/
   - terminal/lib/chart-engine/
 next_action: >
-  Confirm Terminal PR 969 merged, then open PR2 from claude/ce-integrate2-1012 (cc140a0b3: decor,
-  ACCEPT, M01/M02/M03 tests+patches, REVIEW) with merge-on-green and native auto-merge; deploy each
-  merged master with the git-gated build. Then fan out a Grok/GLM wave for the four P1 review
-  findings (F-01..F-04) and the ACCEPT gaps, and hand-rebase the M01 -> M02 -> M03 ChartPanel
-  patches with the six-crop recapture as a separate PR.
+  Terminal PR 969 (head f2b5d2c0a after the G01 ratchet allowlisted the master #929 type-only
+  LargeTradesOverlay import) is armed with merge-on-green and native auto-merge; once it merges,
+  open PR2 from claude/ce-integrate2-1012 (cc140a0b3) the same way and deploy each merged master
+  with the git-gated build. Wave 4 (2026-10-12) is already running as two Opus suborchestrators
+  over the m2 agent-pools fabric (OPUS-P1: PAINT/MODEL/LWCPRIM/ACCEPT2 lanes for review findings
+  F-01..F-16 plus the ACCEPT gaps, integrating on claude/ce-integrate3-1013; OPUS-MIG: M01->M02->M03
+  rebase, ?engine=mm opt-in selector and the six-crop recapture on claude/ce-migration-1013); do not
+  launch a parallel wave for the same findings - consume those two branches when they are pushed.
 ---
 
 # Native Chart Engine
@@ -85,6 +89,11 @@ from the Chairman's masterplan archive of 2026-10-11. The renderer is replaced b
 contract, never the product: `ChartPanel.tsx` keeps every workflow and the `lwc` engine
 stays selectable as the rollback path throughout.
 
-Delivery runs as fabric lanes (grok-4.6 and glm-5.3, never native Claude subagents) that each
-own a bounded package, commit to `claude/ce-<pkg>-1012`, prove a mutant falsifier RED→GREEN,
-and return a RESULT.md that the integration session digests before merging `--no-ff`.
+Delivery runs as m2 agent-pools fabric lanes that each own a bounded package, commit to
+`claude/ce-<pkg>-<wave>`, prove a mutant falsifier RED→GREEN, and return a RESULT.md that the
+integration session digests before merging `--no-ff`. Waves 1-3 (2026-10-12, suffix `-1012`)
+ran under a two-hour Grok/GLM burn directive that the Chairman ended the same day; from wave 4
+(suffix `-1013`) routing follows the normal law: `pool plan` sizes every fan-out, operator-class
+commissions go to grok-4.6/glm-5.3 operators that dispatch MiniMax/Qwen executors with
+qwen3.8-max review, and Opus suborchestrators (ROUTE: ORCHESTRATION) coordinate multi-lane
+commissions under the Fable seat, which keeps PR, merge, deploy and live verification.

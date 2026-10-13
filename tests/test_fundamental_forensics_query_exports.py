@@ -5,8 +5,10 @@ import csv
 import hashlib
 import io
 import json
+import zipfile
 from decimal import Decimal
 from pathlib import Path
+from xml.etree import ElementTree as ET
 
 import pytest
 from fastapi import FastAPI
@@ -14,10 +16,17 @@ from fastapi.testclient import TestClient
 
 import app.forensics as forensics_api
 from engine.fundamental_forensics.excel_export import response_query_id, to_xlsx_bytes
-from engine.fundamental_forensics.query import MetricMatrix, _csv_safe
+from engine.fundamental_forensics.metric_registry import load_metric_registry
+from engine.fundamental_forensics.query import (
+    BitemporalMetricQueryEngine,
+    MetricMatrix,
+    QueryEntity,
+    _csv_safe,
+)
 from engine.fundamental_forensics.query_exports import (
     CSV_MEDIA_TYPE,
     PARQUET_MEDIA_TYPE,
+    SERIALIZATION_DIFFERENCES,
     QueryExportError,
     export_query_envelope,
     matrix_from_envelope,
@@ -28,6 +37,11 @@ from engine.fundamental_forensics.query_service import (
     fip1_fixture_dataset,
 )
 from engine.fundamental_forensics.query_snapshots import _encode_cells_parquet
+from engine.fundamental_forensics.raw_ledger import (
+    FactUnit,
+    RawFactLedger,
+    canonical_json,
+)
 from tests.test_fundamental_forensics_query import PERIOD, _engine, _fact, _policy
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -419,3 +433,904 @@ def test_xlsx_payload_bytes_equal_encoder_output(fip1_paid_client) -> None:
     envelope = json_response.json()
     envelope["sha256"] = hashlib.sha256(json_response.content).hexdigest()
     assert xlsx_response.content == to_xlsx_bytes(envelope)
+
+
+# ---------------------------------------------------------------------------
+# X1-p (A38/A40): per-cell export parity and the explicit
+# SERIALIZATION_DIFFERENCES declaration.
+#
+# The fixture matrices below are hermetic: they are built with the same
+# helpers the rest of this file already imports from
+# tests/test_fundamental_forensics_query.py (``_engine``, ``_fact``,
+# ``_policy``, ``PERIOD``) over the committed core registry, plus the
+# committed qualification registry fixture for the not_applicable cell.
+#
+# Cell-state coverage: reported direct cells, a derived formula cell with
+# dependency_cell_ids, missing cells with reasons, a not_evaluable cell
+# (filing form outside the governed contract), an unexpected-unit
+# not_evaluable cell (the one reachable state where cell.unit and
+# provenance.unit diverge), a not_applicable cell with issuer_class
+# provenance, a negative value, and a >15-significant-digit value that does
+# not round-trip IEEE-754.
+#
+# Formula-lead probes: entity_id / accession / document_id are the free-text
+# fields through which a leading ``=``, ``+``, ``-`` or ``@`` survives the
+# kernel's bounded-text validators end to end.  A leading TAB or CR is
+# stripped by ``_require_text``/``_bounded_text`` before export on every
+# text field, and ticker is ``[A-Z0-9.-]`` by regex, so those prefixes are
+# pinned at the ``_csv_safe`` unit level (see
+# test_a40_csv_payload_is_csv_safe_guarded_encoder above) rather than
+# end-to-end; test_a40_x1p_no_unguarded_formula_leads below scans every
+# text cell of every fixture export regardless.
+# ---------------------------------------------------------------------------
+
+_SSML_NS = "http://schemas.openxmlformats.org/spreadsheetml/2006/main"
+_DANGEROUS_PREFIXES = ("=", "+", "-", "@", "\t", "\r")
+
+_X1P_REVENUE_CONCEPT = "RevenueFromContractWithCustomerExcludingAssessedTax"
+_X1P_GROSS_PROFIT_CONCEPT = "GrossProfit"
+_X1P_QUALIFICATION_ROOT = (
+    ROOT / "tests" / "fixtures" / "fundamental_forensics" / "metric_registry_qualification"
+)
+
+# The JSON cell-node leaf paths (CellNode.to_dict / CellProvenance.to_dict /
+# PeriodRequest.to_dict in engine/fundamental_forensics/query.py).
+_X1P_CELL_FIELDS = (
+    "cell_id",
+    "governance_bundle_id",
+    "ticker",
+    "entity_id",
+    "metric_id",
+    "state",
+    "status",
+    "value",
+    "unit",
+    "reason",
+)
+_X1P_PERIOD_FIELDS = (
+    "kind",
+    "start",
+    "end",
+    "fiscal_year",
+    "fiscal_quarter",
+    "calendar_kind",
+    "fiscal_year_weeks",
+    "week_count",
+    "inferred_week_count",
+    "semantics",
+    "label",
+)
+_X1P_PROVENANCE_FIELDS = (
+    "kind",
+    "evaluation_policy",
+    "policy",
+    "source_snapshot_at",
+    "recorded_cutoff_at",
+    "source_entity_id",
+    "source",
+    "accession",
+    "document_id",
+    "source_url",
+    "source_body_sha256",
+    "form",
+    "filed_at",
+    "filing_metadata_available_at",
+    "filing_metadata_content_sha256",
+    "accepted_at",
+    "recorded_at",
+    "mapping_available_at",
+    "governance_available_at",
+    "computed_at",
+    "published_at",
+    "source_ready_at",
+    "system_ready_at",
+    "concept_qname",
+    "taxonomy",
+    "concept",
+    "unit",
+    "metric_rule_id",
+    "metric_rule_version",
+    "metric_rule_digest",
+    "mapping_rule_id",
+    "mapping_rule_version",
+    "mapping_digest",
+    "mapping_rule_ids",
+    "mapping_rule_versions",
+    "mapping_digests",
+    "formula_rule_id",
+    "formula_rule_version",
+    "formula_digest",
+    "catalog_id",
+    "catalog_version",
+    "catalog_digest",
+    "mapping_pack_version",
+    "mapping_pack_digest",
+    "formula_pack_version",
+    "formula_pack_digest",
+    "confidence",
+    "alias_priority",
+    "source_occurrence_ids",
+    "dependency_cell_ids",
+    "selected_raw_fact",
+    "reason",
+    # Conditional keys: present in JSON only on metric-qualification refusals.
+    "issuer_class",
+    "issuer_class_basis",
+)
+_X1P_FIELD_INVENTORY = frozenset(
+    _X1P_CELL_FIELDS
+    + tuple(f"period.{name}" for name in _X1P_PERIOD_FIELDS)
+    + tuple(f"provenance.{name}" for name in _X1P_PROVENANCE_FIELDS)
+)
+
+# JSON field path -> column of the format's per-root-cell rows.  A field with
+# no entry here is not carried by that format.  ``status`` maps onto the
+# state column and ``provenance.reason`` onto the reason column because
+# CellNode emits them as exact duplicates (state/status by construction,
+# reason/provenance.reason enforced equal by CellNode.__post_init__).
+_X1P_CSV_XLSX_COLUMN_BY_FIELD = {
+    "cell_id": "root_cell_id",
+    "governance_bundle_id": "governance_bundle_id",
+    "ticker": "ticker",
+    "entity_id": "entity_id",
+    "metric_id": "metric_id",
+    "period.kind": "period_kind",
+    "period.start": "period_start",
+    "period.end": "period_end",
+    "period.fiscal_year": "period_fiscal_year",
+    "period.fiscal_quarter": "period_fiscal_quarter",
+    "state": "state",
+    "status": "state",
+    "value": "value",
+    "unit": "unit",
+    "reason": "reason",
+    "provenance.reason": "reason",
+    "provenance.kind": "provenance_kind",
+    "provenance.accession": "accession",
+    "provenance.document_id": "document_id",
+    "provenance.form": "form",
+    "provenance.filed_at": "filed_at",
+    "provenance.filing_metadata_content_sha256": "filing_metadata_content_sha256",
+    "provenance.accepted_at": "accepted_at",
+    "provenance.recorded_at": "recorded_at",
+    "provenance.mapping_available_at": "mapping_available_at",
+    "provenance.governance_available_at": "governance_available_at",
+    "provenance.source_ready_at": "source_ready_at",
+    "provenance.system_ready_at": "system_ready_at",
+    "provenance.concept_qname": "concept_qname",
+    "provenance.mapping_rule_id": "mapping_rule_id",
+    "provenance.mapping_rule_version": "mapping_rule_version",
+    "provenance.mapping_digest": "mapping_digest",
+    "provenance.formula_rule_id": "formula_rule_id",
+    "provenance.formula_rule_version": "formula_rule_version",
+    "provenance.formula_digest": "formula_digest",
+    "provenance.confidence": "confidence",
+    "provenance.source_occurrence_ids": "source_occurrence_ids",
+    "provenance.dependency_cell_ids": "dependency_cell_ids",
+}
+_X1P_PARQUET_COLUMN_BY_FIELD = {
+    "cell_id": "root_cell_id",
+    "ticker": "ticker",
+    "entity_id": "entity_id",
+    "metric_id": "metric_id",
+    "period.kind": "period_kind",
+    "period.start": "period_start",
+    "period.end": "period_end",
+    "period.fiscal_year": "period_fiscal_year",
+    "period.fiscal_quarter": "period_fiscal_quarter",
+    "state": "state",
+    "status": "state",
+    "value": "value",
+    "unit": "unit",
+    "reason": "reason",
+    "provenance.reason": "reason",
+    "provenance.kind": "provenance_kind",
+    "provenance.accession": "accession",
+    "provenance.document_id": "document_id",
+    "provenance.concept_qname": "concept_qname",
+    "provenance.mapping_rule_id": "mapping_rule_id",
+    "provenance.mapping_rule_version": "mapping_rule_version",
+    "provenance.formula_rule_id": "formula_rule_id",
+    "provenance.formula_rule_version": "formula_rule_version",
+    "provenance.accepted_at": "accepted_at",
+    "provenance.recorded_at": "recorded_at",
+    "provenance.source_ready_at": "source_ready_at",
+    "provenance.system_ready_at": "system_ready_at",
+    "provenance.source_occurrence_ids": "source_occurrence_ids_json",
+    "provenance.dependency_cell_ids": "dependency_cell_ids_json",
+}
+_X1P_COLUMN_MAPS = {
+    "csv": _X1P_CSV_XLSX_COLUMN_BY_FIELD,
+    "xlsx": _X1P_CSV_XLSX_COLUMN_BY_FIELD,
+    "parquet": _X1P_PARQUET_COLUMN_BY_FIELD,
+}
+
+
+def _x1p_fact(concept: str = _X1P_REVENUE_CONCEPT, **kwargs):
+    return _fact(concept=concept, **kwargs)
+
+
+def _x1p_parity_matrix() -> MetricMatrix:
+    """Every reachable cell state, negative and non-IEEE values, one matrix."""
+    facts = [
+        _x1p_fact(entity_id="x1p-a", value="100"),
+        _x1p_fact(_X1P_GROSS_PROFIT_CONCEPT, entity_id="x1p-a", value="40"),
+        _x1p_fact(entity_id="x1p-b", value="-42"),
+        _x1p_fact(entity_id="x1p-c", value="123456789012345678"),
+        _x1p_fact(
+            entity_id="x1p-d",
+            value="7",
+            accession="0000000009-26-000009",
+            document_id="x1p-8k.htm",
+        ),
+        _x1p_fact(entity_id="x1p-e", value="-0.1"),
+        _x1p_fact(entity_id="x1p-f", value="5", unit=FactUnit("EUR", ["iso4217:EUR"])),
+    ]
+    entities = {
+        "AAA": "x1p-a",
+        "BBB": "x1p-b",
+        "CCC": "x1p-c",
+        "DDD": "x1p-d",
+        "EEE": "x1p-e",
+        "FFF": "x1p-f",
+    }
+    metadata = {
+        fact.occurrence_id: {
+            "accession": fact.source.accession,
+            "document_id": fact.source.document_id,
+            "source_body_sha256": fact.source.body_sha256,
+            "available_at": fact.recorded_at,
+            "form": "8-K" if fact.source.entity_id == "x1p-d" else "10-K",
+        }
+        for fact in facts
+    }
+    engine = _engine(*facts, entities=entities, filing_metadata=metadata)
+    return engine.query_matrix(
+        tickers=tuple(entities),
+        metrics=("revenue", "gross_profit", "gross_margin"),
+        periods=(PERIOD,),
+        policy=_policy(),
+    )
+
+
+def _x1p_probe_matrix() -> MetricMatrix:
+    """Free-text fields whose values begin with a formula-injection lead."""
+    probes = {"P1": "=", "P2": "+", "P3": "-", "P4": "@"}
+    facts = []
+    entities = {}
+    for ticker, lead in probes.items():
+        entity_id = f"{lead}x1p-entity"
+        facts.append(
+            _x1p_fact(
+                entity_id=entity_id,
+                value="11",
+                accession=f"{lead}x1p-acc",
+                document_id=f"{lead}x1p-doc.htm",
+            )
+        )
+        entities[ticker] = entity_id
+    engine = _engine(*facts, entities=entities)
+    return engine.query_matrix(
+        tickers=tuple(entities),
+        metrics=("revenue",),
+        periods=(PERIOD,),
+        policy=_policy(),
+    )
+
+
+def _x1p_not_applicable_matrix() -> MetricMatrix:
+    """A metric-qualification refusal with issuer_class provenance.
+
+    Uses the committed qualification registry fixture (bank SIC + a
+    bank-excluded gross_margin contract) exactly as
+    tests/test_fundamental_forensics_query_metric_qualification.py drives it.
+    """
+    registry = load_metric_registry(
+        _X1P_QUALIFICATION_ROOT / "metric_catalog.yaml",
+        _X1P_QUALIFICATION_ROOT / "mappings.yaml",
+        _X1P_QUALIFICATION_ROOT / "formulas.yaml",
+        enforce_core_v1_inventory=False,
+    )
+    engine = BitemporalMetricQueryEngine(
+        RawFactLedger(()),
+        registry,
+        entities=[QueryEntity(ticker="AAA", entity_id="0000000001", issuer_sic="6020")],
+        filing_metadata=None,
+    )
+    return engine.query_matrix(
+        tickers=["AAA"],
+        metrics=["gross_margin"],
+        periods=[PERIOD],
+        policy=_policy(),
+    )
+
+
+def _x1p_matrices() -> list[MetricMatrix]:
+    return [
+        _x1p_parity_matrix(),
+        _x1p_probe_matrix(),
+        _x1p_not_applicable_matrix(),
+    ]
+
+
+def _x1p_root_nodes(matrix: MetricMatrix) -> list[dict]:
+    receipt = matrix.to_dict()
+    nodes = {node["cell_id"]: node for node in receipt["nodes"]}
+    return [nodes[cell_id] for cell_id in receipt["root_cell_ids"]]
+
+
+def _x1p_json_leaf(node: dict, path: str):
+    """Leaf value of a dotted JSON path; a conditional absent key is None."""
+    value = node
+    for part in path.split("."):
+        if not isinstance(value, dict) or part not in value:
+            return None
+        value = value[part]
+    return value
+
+
+def _x1p_wire_text(leaf, *, csv_safe: bool) -> str | None:
+    """The exact wire spelling of a JSON leaf in an export column."""
+    if leaf is None:
+        return None
+    if isinstance(leaf, bool):
+        leaf = "true" if leaf else "false"
+    elif isinstance(leaf, int):
+        leaf = str(leaf)
+    if isinstance(leaf, (list, tuple)):
+        leaf = canonical_json(list(leaf))
+    text = str(leaf)
+    return _csv_safe(text) if csv_safe else text
+
+
+def _x1p_csv_rows(matrix: MetricMatrix) -> list[dict[str, str]]:
+    return list(csv.DictReader(io.StringIO(matrix.to_csv_bytes().decode("utf-8"))))
+
+
+def _x1p_parquet_rows(matrix: MetricMatrix) -> list[dict[str, str | None]]:
+    """Decode the exact bytes the parquet export route returns.
+
+    The route payload is ``_encode_cells_parquet(matrix)[0]``
+    (query_exports.export_query_envelope -> query_snapshots), and
+    ``_decode_cells_parquet`` (query_snapshots.py) re-validates those rows
+    against the authoritative matrix projection.
+    """
+    import pyarrow.parquet as pq
+
+    payload, _projection = _encode_cells_parquet(matrix)
+    table = pq.read_table(io.BytesIO(payload))
+    return [
+        {name: table.column(name)[index].as_py() for name in table.column_names}
+        for index in range(table.num_rows)
+    ]
+
+
+def _x1p_xlsx_response(matrix: MetricMatrix) -> dict:
+    return {
+        "schema": "fundamental_forensics.financial_query_response/v1",
+        "receipt": matrix.to_dict(),
+        "query_hash": matrix.query_hash,
+        "sha256": hashlib.sha256(matrix.to_json_bytes()).hexdigest(),
+    }
+
+
+def _x1p_xlsx_sheet(matrix: MetricMatrix) -> tuple[list[str], list[dict[str, str]], dict[str, set[str]]]:
+    """Header, per-root-cell records, and which cells are numeric (<v>)."""
+    payload = to_xlsx_bytes(_x1p_xlsx_response(matrix))
+    with zipfile.ZipFile(io.BytesIO(payload)) as archive:
+        root = ET.fromstring(archive.read("xl/worksheets/sheet1.xml"))
+    row_elements = root.findall(f"{{{_SSML_NS}}}sheetData/{{{_SSML_NS}}}row")
+    header: list[str] = []
+    records: list[dict[str, str]] = []
+    numeric_by_id: dict[str, set[str]] = {}
+    for row_index, row_element in enumerate(row_elements):
+        by_column: dict[int, tuple[str, bool]] = {}
+        for cell in row_element.findall(f"{{{_SSML_NS}}}c"):
+            ref = cell.get("r") or ""
+            letters = ref[: len(ref) - len(ref.lstrip("ABCDEFGHIJKLMNOPQRSTUVWXYZ"))]
+            column = 0
+            for character in letters:
+                column = column * 26 + ord(character) - 64
+            if cell.get("t") == "inlineStr":
+                text_element = cell.find(f"{{{_SSML_NS}}}is/{{{_SSML_NS}}}t")
+                by_column[column] = (
+                    "" if text_element is None else (text_element.text or ""),
+                    False,
+                )
+            else:
+                value_element = cell.find(f"{{{_SSML_NS}}}v")
+                by_column[column] = (
+                    "" if value_element is None else (value_element.text or ""),
+                    True,
+                )
+        width = max(by_column, default=0)
+        cells = [by_column.get(index, ("", False)) for index in range(1, width + 1)]
+        if row_index == 0:
+            header = [text for text, _is_numeric in cells]
+            continue
+        record: dict[str, str] = {name: "" for name in header}
+        numeric_columns: set[str] = set()
+        for name, (text, is_numeric) in zip(header, cells):
+            record[name] = text
+            if is_numeric:
+                numeric_columns.add(name)
+        cell_id = record.get("root_cell_id", "")
+        records.append(record)
+        numeric_by_id[cell_id] = numeric_columns
+    return header, records, numeric_by_id
+
+
+def _x1p_xlsx_meta(payload: bytes) -> dict[str, str]:
+    """Meta sheet key/value rows, parsed as the excel-export tests do."""
+    with zipfile.ZipFile(io.BytesIO(payload)) as archive:
+        root = ET.fromstring(archive.read("xl/worksheets/sheet2.xml"))
+    meta: dict[str, str] = {}
+    for row_element in root.findall(f"{{{_SSML_NS}}}sheetData/{{{_SSML_NS}}}row"):
+        cells = row_element.findall(f"{{{_SSML_NS}}}c")
+        if len(cells) < 2:
+            continue
+        key = cells[0].findtext(f"{{{_SSML_NS}}}is/{{{_SSML_NS}}}t") or ""
+        value = cells[1].findtext(f"{{{_SSML_NS}}}is/{{{_SSML_NS}}}t")
+        if value is not None:
+            meta[key] = value
+    return meta
+
+
+def _x1p_ref_row(ref: str) -> int:
+    letters = len(ref) - len(ref.lstrip("ABCDEFGHIJKLMNOPQRSTUVWXYZ"))
+    return int(ref[letters:])
+
+
+def _x1p_xlsx_value_text_cells(matrix: MetricMatrix) -> dict[str, str]:
+    """A1 ref -> inlineStr text of every Response value cell written as text."""
+    payload = to_xlsx_bytes(_x1p_xlsx_response(matrix))
+    with zipfile.ZipFile(io.BytesIO(payload)) as archive:
+        root = ET.fromstring(archive.read("xl/worksheets/sheet1.xml"))
+    value_column: int | None = None
+    text_cells: dict[str, str] = {}
+    for row_element in root.findall(f"{{{_SSML_NS}}}sheetData/{{{_SSML_NS}}}row"):
+        row_number = int(row_element.get("r"))
+        for cell in row_element.findall(f"{{{_SSML_NS}}}c"):
+            if cell.get("t") != "inlineStr":
+                continue
+            ref = cell.get("r") or ""
+            letters = ref[: len(ref) - len(ref.lstrip("ABCDEFGHIJKLMNOPQRSTUVWXYZ"))]
+            column = 0
+            for character in letters:
+                column = column * 26 + ord(character) - 64
+            text = cell.findtext(f"{{{_SSML_NS}}}is/{{{_SSML_NS}}}t")
+            if text is None:
+                text = ""
+            if row_number == 1:
+                if text == "value":
+                    value_column = column
+                continue
+            if column == value_column:
+                text_cells[ref] = text
+    return text_cells
+
+
+def _x1p_rows(fmt: str, matrix: MetricMatrix) -> list[dict]:
+    if fmt == "csv":
+        return _x1p_csv_rows(matrix)
+    if fmt == "xlsx":
+        return _x1p_xlsx_sheet(matrix)[1]
+    if fmt == "parquet":
+        return _x1p_parquet_rows(matrix)
+    raise AssertionError(f"unknown format {fmt!r}")
+
+
+def _x1p_field_carried(fmt: str, field: str, leaf, row: dict, numeric_columns: set[str]) -> bool:
+    """Does the format's row carry the JSON leaf exactly, per its encoding?"""
+    if fmt == "parquet":
+        return row.get(_X1P_PARQUET_COLUMN_BY_FIELD.get(field, "")) == _x1p_wire_text(
+            leaf, csv_safe=False
+        )
+    column = _X1P_CSV_XLSX_COLUMN_BY_FIELD.get(field, "")
+    expected = _x1p_wire_text(leaf, csv_safe=field != "value")
+    expected_text = "" if expected is None else expected
+    if fmt == "csv":
+        return row.get(column, "") == expected_text
+    # XLSX: the value column is a numeric cell with the exact decimal text,
+    # or (non-IEEE-754 values only) an inlineStr cell carrying that exact
+    # decimal text verbatim — no _csv_safe apostrophe (excel_export
+    # _ExactText), ref listed in the Meta sheet exact_text_cells.
+    if field == "value":
+        if leaf is None:
+            return row.get(column, "") == ""
+        if column in numeric_columns:
+            return row.get(column, "") == _x1p_wire_text(leaf, csv_safe=False)
+        return row.get(column, "") == expected_text
+    return row.get(column, "") == expected_text
+
+
+def _x1p_rows_by_id(fmt: str, matrix: MetricMatrix) -> dict[str, dict]:
+    return {row["root_cell_id"]: row for row in _x1p_rows(fmt, matrix)}
+
+
+@pytest.mark.parametrize("fmt", ("csv", "xlsx", "parquet"))
+def test_a38_x1p_every_carried_field_is_identical_per_cell(fmt: str) -> None:
+    """(a) JSON vs CSV vs XLSX vs Parquet: exact value, cutoff, basis,
+    provenance for EVERY field the format carries."""
+    for matrix in _x1p_matrices():
+        rows = _x1p_rows_by_id(fmt, matrix)
+        numeric_by_id = _x1p_xlsx_sheet(matrix)[2] if fmt == "xlsx" else {}
+        assert set(rows) == {node["cell_id"] for node in _x1p_root_nodes(matrix)}
+        for node in _x1p_root_nodes(matrix):
+            row = rows[node["cell_id"]]
+            numeric_columns = numeric_by_id.get(node["cell_id"], set())
+            for field in _X1P_FIELD_INVENTORY:
+                column = _X1P_COLUMN_MAPS[fmt].get(field)
+                if column is None:
+                    continue
+                leaf = _x1p_json_leaf(node, field)
+                assert _x1p_field_carried(fmt, field, leaf, row, numeric_columns), (
+                    fmt,
+                    field,
+                    node["cell_id"],
+                    leaf,
+                    row.get(column, "<missing>"),
+                )
+
+
+def test_a38_x1p_decimal_value_exact_roundtrip_all_formats() -> None:
+    """(a) The normalized value compares as an exact Decimal everywhere."""
+    for matrix in _x1p_matrices():
+        csv_rows = _x1p_rows_by_id("csv", matrix)
+        parquet_rows = _x1p_rows_by_id("parquet", matrix)
+        _, xlsx_records, numeric_by_id = _x1p_xlsx_sheet(matrix)
+        xlsx_rows = {row["root_cell_id"]: row for row in xlsx_records}
+        for node in _x1p_root_nodes(matrix):
+            cell_id = node["cell_id"]
+            json_value = node["value"]
+            csv_value = csv_rows[cell_id]["value"]
+            parquet_value = parquet_rows[cell_id]["value"]
+            xlsx_value = xlsx_rows[cell_id]["value"]
+            if json_value is None:
+                assert csv_value == ""
+                assert parquet_value is None
+                assert xlsx_value == ""
+                continue
+            assert Decimal(csv_value) == Decimal(json_value)
+            assert Decimal(parquet_value) == Decimal(json_value)
+            assert csv_value == json_value == parquet_value
+            if "value" in numeric_by_id[cell_id]:
+                assert xlsx_value == json_value
+            else:
+                # Exact-text value cells carry the same exact decimal with
+                # no _csv_safe apostrophe (excel_export._ExactText).
+                assert xlsx_value == json_value
+
+
+def test_a38_x1p_omitted_cell_fields_declaration_is_exact() -> None:
+    """(b) Undeclared omissions fail; declared fields that are carried fail."""
+    for fmt in ("csv", "xlsx", "parquet"):
+        column_map = _X1P_COLUMN_MAPS[fmt]
+        omitted: set[str] = set()
+        for field in _X1P_FIELD_INVENTORY:
+            column = column_map.get(field)
+            if column is None:
+                omitted.add(field)
+                continue
+            carried_everywhere = True
+            for matrix in _x1p_matrices():
+                rows = _x1p_rows_by_id(fmt, matrix)
+                numeric_by_id = _x1p_xlsx_sheet(matrix)[2] if fmt == "xlsx" else {}
+                for node in _x1p_root_nodes(matrix):
+                    if not _x1p_field_carried(
+                        fmt,
+                        field,
+                        _x1p_json_leaf(node, field),
+                        rows[node["cell_id"]],
+                        numeric_by_id.get(node["cell_id"], set()),
+                    ):
+                        carried_everywhere = False
+                        break
+                if not carried_everywhere:
+                    break
+            if not carried_everywhere:
+                omitted.add(field)
+        declared = set(SERIALIZATION_DIFFERENCES[fmt]["omitted_cell_fields"])
+        assert omitted == declared, (
+            fmt,
+            "undeclared omissions: " + repr(sorted(omitted - declared)),
+            "declared but carried: " + repr(sorted(declared - omitted)),
+            "unknown declared paths: "
+            + repr(sorted(declared - _X1P_FIELD_INVENTORY)),
+        )
+
+
+def test_a38_x1p_field_inventory_matches_json_wire_keys() -> None:
+    """The test inventory is the JSON cell wire surface, no drift."""
+    conditional = {"issuer_class", "issuer_class_basis"}
+    refusal_seen = False
+    for matrix in _x1p_matrices():
+        for node in _x1p_root_nodes(matrix):
+            assert set(_X1P_CELL_FIELDS) == {
+                key for key in node if key not in ("period", "provenance")
+            }
+            assert set(_X1P_PERIOD_FIELDS) == set(node["period"])
+            provenance_keys = set(node["provenance"])
+            inventory_keys = set(_X1P_PROVENANCE_FIELDS)
+            assert provenance_keys - inventory_keys == set()
+            assert inventory_keys - provenance_keys <= conditional
+            if "issuer_class" in provenance_keys:
+                refusal_seen = True
+    assert refusal_seen, "fixture set must include the conditional-key refusal cell"
+
+
+def test_a40_x1p_no_unguarded_formula_leads_in_csv_or_xlsx() -> None:
+    """(c) No text cell begins with a formula lead unless apostrophe-prefixed."""
+    for matrix in _x1p_matrices():
+        raw_rows = list(csv.reader(io.StringIO(matrix.to_csv_bytes().decode("utf-8"))))
+        header = raw_rows[0]
+        value_index = header.index("value")
+        for row in raw_rows[1:]:
+            for index, text in enumerate(row):
+                if index == value_index:
+                    assert not text.startswith("'"), (row[0], text)
+                    if text:
+                        assert Decimal(text).is_finite()
+                    continue
+                assert not text or text[0] not in _DANGEROUS_PREFIXES or text.startswith("'")
+        _, xlsx_records, numeric_by_id = _x1p_xlsx_sheet(matrix)
+        for record in xlsx_records:
+            for name, text in record.items():
+                if name in numeric_by_id[record["root_cell_id"]]:
+                    continue
+                if name == "value":
+                    # Same exemption as the CSV loop above: the exact
+                    # decimal text of a non-IEEE value is written verbatim
+                    # (excel_export._ExactText, no _csv_safe apostrophe).
+                    assert not text.startswith("'"), (record["root_cell_id"], text)
+                    if text:
+                        assert Decimal(text).is_finite()
+                    continue
+                assert not text or text[0] not in _DANGEROUS_PREFIXES or text.startswith("'")
+
+
+def test_a40_x1p_negative_and_non_ieee_values() -> None:
+    """(c) Negatives stay numeric; non-IEEE values become exact text cells."""
+    matrix = _x1p_parity_matrix()
+    csv_rows = {
+        (row["ticker"], row["metric_id"]): row for row in _x1p_csv_rows(matrix)
+    }
+    parquet_rows = _x1p_parquet_rows(matrix)
+    parquet_by_key = {
+        (row["ticker"], row["metric_id"]): row for row in parquet_rows
+    }
+    _, xlsx_records, numeric_by_id = _x1p_xlsx_sheet(matrix)
+    xlsx_by_key = {(row["ticker"], row["metric_id"]): row for row in xlsx_records}
+
+    # IEEE-754-exact negative: numeric everywhere, never apostrophe-prefixed.
+    assert csv_rows[("BBB", "revenue")]["value"] == "-42"
+    assert parquet_by_key[("BBB", "revenue")]["value"] == "-42"
+    bbb_xlsx = xlsx_by_key[("BBB", "revenue")]
+    assert "value" in numeric_by_id[bbb_xlsx["root_cell_id"]]
+    assert bbb_xlsx["value"] == "-42"
+
+    # Non-IEEE positive (>15 significant digits): exact text cell, no prefix.
+    ccc_xlsx = xlsx_by_key[("CCC", "revenue")]
+    assert "value" not in numeric_by_id[ccc_xlsx["root_cell_id"]]
+    assert ccc_xlsx["value"] == "123456789012345678"
+
+    # Declared exception: a negative non-IEEE value is an inlineStr cell
+    # carrying the exact decimal text verbatim — no _csv_safe apostrophe,
+    # same spelling as the exempt CSV value column and Parquet — and its
+    # A1 reference is listed in the Meta sheet exact_text_cells.
+    assert csv_rows[("EEE", "revenue")]["value"] == "-0.1"
+    assert parquet_by_key[("EEE", "revenue")]["value"] == "-0.1"
+    eee_xlsx = xlsx_by_key[("EEE", "revenue")]
+    assert "value" not in numeric_by_id[eee_xlsx["root_cell_id"]]
+    assert eee_xlsx["value"] == "-0.1"
+    value_texts = _x1p_xlsx_value_text_cells(matrix)
+    eee_row = (
+        next(
+            index
+            for index, record in enumerate(xlsx_records)
+            if record["ticker"] == "EEE" and record["metric_id"] == "revenue"
+        )
+        + 2
+    )
+    eee_ref = next(ref for ref in value_texts if _x1p_ref_row(ref) == eee_row)
+    meta = _x1p_xlsx_meta(to_xlsx_bytes(_x1p_xlsx_response(matrix)))
+    assert eee_ref in (meta.get("exact_text_cells") or "").split(",")
+    joined = " ".join(SERIALIZATION_DIFFERENCES["xlsx"]["encoding"])
+    assert "no `'` prefix, negative included" in joined
+    assert "exact_text_cells" in joined
+
+
+def test_a40_x1p_exact_text_cells_list_every_non_ieee_value_cell() -> None:
+    """(b) Meta exact_text_cells == the value cells written as exact text."""
+    matrix = _x1p_parity_matrix()
+    value_texts = _x1p_xlsx_value_text_cells(matrix)
+    assert value_texts, "fixture must carry at least one non-IEEE value"
+    meta = _x1p_xlsx_meta(to_xlsx_bytes(_x1p_xlsx_response(matrix)))
+    listed = (meta.get("exact_text_cells") or "").split(",")
+    assert meta.get("exact_text_cells")
+    assert set(listed) == set(value_texts)
+    raw_rows = list(csv.reader(io.StringIO(matrix.to_csv_bytes().decode("utf-8"))))
+    value_index = raw_rows[0].index("value")
+    for ref, text in value_texts.items():
+        # Byte-for-byte the CSV value-column spelling of the same row, and
+        # a parseable Decimal.
+        assert text == raw_rows[_x1p_ref_row(ref) - 1][value_index]
+        Decimal(text)
+
+
+def test_a40_x1p_direct_non_ieee_paths_are_exact_text_cells() -> None:
+    """(c) Direct int/Decimal paths: exact text, no apostrophe, Meta-listed."""
+    response = {
+        "schema": "fundamental_forensics.financial_query_response/v1",
+        "query_id": "q-x1p-r1",
+        "query_hash": "ab" * 32,
+        "sha256": "cd" * 32,
+        "rows": [
+            ["neg_int", "neg_decimal", "nan", "neg_inf"],
+            [
+                -123456789012345678,
+                Decimal("-0.1"),
+                Decimal("NaN"),
+                Decimal("-Infinity"),
+            ],
+        ],
+    }
+    payload = to_xlsx_bytes(response)
+    with zipfile.ZipFile(io.BytesIO(payload)) as archive:
+        root = ET.fromstring(archive.read("xl/worksheets/sheet1.xml"))
+    grid: dict[str, tuple[str, str]] = {}
+    for cell in root.iter(f"{{{_SSML_NS}}}c"):
+        if cell.get("t") == "inlineStr":
+            text = cell.findtext(f"{{{_SSML_NS}}}is/{{{_SSML_NS}}}t") or ""
+            grid[cell.get("r") or ""] = ("inlineStr", text)
+        else:
+            text = cell.findtext(f"{{{_SSML_NS}}}v") or ""
+            grid[cell.get("r") or ""] = ("v", text)
+    assert grid["A2"] == ("inlineStr", "-123456789012345678")
+    assert grid["B2"] == ("inlineStr", "-0.1")
+    # Non-finite Decimals keep the _csv_safe form (unchanged path).
+    assert grid["C2"] == ("inlineStr", _csv_safe(str(Decimal("NaN"))))
+    assert grid["D2"] == ("inlineStr", _csv_safe("-Infinity"))
+    assert grid["D2"] == ("inlineStr", "'-Infinity")
+    meta = _x1p_xlsx_meta(payload)
+    assert set((meta.get("exact_text_cells") or "").split(",")) == {"A2", "B2"}
+
+
+def test_a40_x1p_probe_leads_apostrophe_guarded_end_to_end() -> None:
+    """(c) The four survivable leads are guarded in CSV/XLSX, verbatim in Parquet."""
+    matrix = _x1p_probe_matrix()
+    for fmt in ("csv", "xlsx"):
+        for row in _x1p_rows(fmt, matrix):
+            stored = row["entity_id"]
+            assert stored.startswith("'"), stored
+            lead = stored[1]
+            assert row["entity_id"] == _csv_safe(f"{lead}x1p-entity")
+            assert row["accession"] == _csv_safe(f"{lead}x1p-acc")
+            assert row["document_id"] == _csv_safe(f"{lead}x1p-doc.htm")
+    for row in _x1p_parquet_rows(matrix):
+        # Declared difference: Parquet stores text verbatim (no _csv_safe).
+        assert row["entity_id"] in {
+            "=x1p-entity",
+            "+x1p-entity",
+            "-x1p-entity",
+            "@x1p-entity",
+        }
+        assert row["accession"] in {"=x1p-acc", "+x1p-acc", "-x1p-acc", "@x1p-acc"}
+    for probe in ("=1+1", "+lead", "-lead", "@cmd", "\tled", "\rled"):
+        assert _csv_safe(probe) == f"'{probe}"
+
+
+def test_a40_x1p_csv_appends_three_provenance_columns_last() -> None:
+    """(d) The three S1 columns close the header, in order, carrying JSON."""
+    for matrix in _x1p_matrices():
+        raw_rows = list(csv.reader(io.StringIO(matrix.to_csv_bytes().decode("utf-8"))))
+        header = raw_rows[0]
+        assert header[-3:] == [
+            "provenance_kind",
+            "document_id",
+            "filing_metadata_content_sha256",
+        ]
+        assert header.index("value") == 15
+        rows_by_id = {row[header.index("root_cell_id")]: row for row in raw_rows[1:]}
+        for node in _x1p_root_nodes(matrix):
+            row = rows_by_id[node["cell_id"]]
+            provenance = node["provenance"]
+            assert row[-3] == _csv_safe(provenance["kind"])
+            assert row[-2] == _csv_safe(provenance["document_id"] or "")
+            assert row[-1] == _csv_safe(provenance["filing_metadata_content_sha256"] or "")
+
+
+def test_a40_x1p_every_csv_column_is_mapped_or_receipt_scalar() -> None:
+    """(d) A carried CSV column with no column-map entry fails the pin."""
+    # Excluded by design: the four receipt-level scalar columns
+    # MetricMatrix.to_csv_bytes repeats on every row from the receipt
+    # itself (query.py:3859-3862 header, :3909-3912 row values) — they are
+    # not per-root-cell JSON fields, so they hold no
+    # _X1P_CSV_XLSX_COLUMN_BY_FIELD entry.
+    receipt_scalars = {
+        "query_hash",
+        "receipt_authority",
+        "proof_scope",
+        "selection_proof",
+    }
+    mapped = set(_X1P_CSV_XLSX_COLUMN_BY_FIELD.values())
+    for matrix in _x1p_matrices():
+        header = next(csv.reader(io.StringIO(matrix.to_csv_bytes().decode("utf-8"))))
+        unmapped = set(header) - receipt_scalars - mapped
+        assert not unmapped, f"CSV columns with no column-map entry: {sorted(unmapped)}"
+        phantom = mapped - set(header)
+        assert not phantom, f"mapped columns absent from the CSV header: {sorted(phantom)}"
+
+
+def test_a38_x1p_kernel_exports_are_deterministic() -> None:
+    """(e) Two exports of the same matrix are byte-identical."""
+    for matrix in _x1p_matrices():
+        assert matrix.to_csv_bytes() == matrix.to_csv_bytes()
+        response = _x1p_xlsx_response(matrix)
+        assert to_xlsx_bytes(response) == to_xlsx_bytes(response)
+        assert _encode_cells_parquet(matrix)[0] == _encode_cells_parquet(matrix)[0]
+
+
+def test_a38_x1p_not_applicable_issuer_class_is_json_only() -> None:
+    """The conditional refusal provenance appears in no export column."""
+    matrix = _x1p_not_applicable_matrix()
+    node = _x1p_root_nodes(matrix)[0]
+    assert node["state"] == "not_applicable"
+    assert node["provenance"]["issuer_class"] == "bank"
+    assert node["provenance"]["issuer_class_basis"] == "sic"
+    for fmt in ("csv", "xlsx", "parquet"):
+        for row in _x1p_rows(fmt, matrix):
+            assert "bank" not in {str(value) for value in row.values()}
+        assert "provenance.issuer_class" in SERIALIZATION_DIFFERENCES[fmt][
+            "omitted_cell_fields"
+        ]
+        assert "provenance.issuer_class_basis" in SERIALIZATION_DIFFERENCES[fmt][
+            "omitted_cell_fields"
+        ]
+
+
+def test_a38_x1p_provenance_unit_omission_is_genuine() -> None:
+    """cell.unit != provenance.unit is reachable; the unit column is the cell's."""
+    matrix = _x1p_parity_matrix()
+    node = next(
+        node
+        for node in _x1p_root_nodes(matrix)
+        if node["ticker"] == "FFF" and node["metric_id"] == "revenue"
+    )
+    assert node["state"] == "not_evaluable"
+    assert node["unit"] == "USD"
+    assert node["provenance"]["unit"] is None
+    for fmt in ("csv", "xlsx", "parquet"):
+        row = _x1p_rows_by_id(fmt, matrix)[node["cell_id"]]
+        assert row["unit"] == "USD"
+        assert "provenance.unit" in SERIALIZATION_DIFFERENCES[fmt]["omitted_cell_fields"]
+
+
+def test_x1p_serialization_differences_declaration_shape() -> None:
+    """The declaration is immutable, machine-readable, and covers the laws."""
+    assert set(SERIALIZATION_DIFFERENCES) == {"csv", "xlsx", "parquet"}
+    required_notes = {
+        "csv": ("_csv_safe", "canonical-JSON", "nulls are the empty string"),
+        "xlsx": (
+            "_csv_safe",
+            "canonical-JSON",
+            "nulls are the empty string",
+            "_fits_ieee754",
+        ),
+        "parquet": ("STRING", "canonical-JSON", "null STRING", "no _csv_safe"),
+    }
+    for fmt, notes in required_notes.items():
+        entry = SERIALIZATION_DIFFERENCES[fmt]
+        assert set(entry) == {"omitted_cell_fields", "encoding"}
+        fields = entry["omitted_cell_fields"]
+        assert isinstance(fields, tuple)
+        assert all(isinstance(item, str) for item in fields)
+        assert len(set(fields)) == len(fields)
+        assert set(fields) <= _X1P_FIELD_INVENTORY
+        encoding = entry["encoding"]
+        assert isinstance(encoding, tuple)
+        joined = " ".join(encoding)
+        for note in notes:
+            assert note in joined, (fmt, note)
+    with pytest.raises(TypeError):
+        SERIALIZATION_DIFFERENCES["csv"] = {}  # type: ignore[index]

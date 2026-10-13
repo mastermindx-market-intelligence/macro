@@ -1,0 +1,11 @@
+{
+  "schema": "tiingo.actual_canonical_join_terminal_parent/v1",
+  "root": "01a12ab6-92cb-7c42-a711-42673ebb6b50",
+  "recorded_at_utc": "2026-10-13T02:44:18.147166+00:00",
+  "original_tool_session": 38750,
+  "original_exit_code": 0,
+  "actual_original_terminal_return_consumed": true,
+  "actual_join_sha256": "9e93769bf6e3d1e74204e57a10e029dcc7c3c5c907ae1ba40d9f4ee05717d51d",
+  "pr": 9053,
+  "deployment_claimed": false
+}

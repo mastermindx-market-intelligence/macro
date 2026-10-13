@@ -34,16 +34,16 @@ FFXBRL_ID_PREFIX = "ffxbrl_"
 # envelope than a generic XML parser.  Do not loosen one of these values in
 # isolation: `_parser_api` proves that the selected parser profile has been
 # configured no wider than this wrapper can faithfully seal.
-HARD_MAX_FFXBRL_BYTES = 64 * 1024 * 1024
-HARD_MAX_PARSER_OUTPUT_BYTES = 24 * 1024 * 1024
-HARD_MAX_JSON_NODES = 1_200_000
+HARD_MAX_FFXBRL_BYTES = 96 * 1024 * 1024
+HARD_MAX_PARSER_OUTPUT_BYTES = 64 * 1024 * 1024
+HARD_MAX_JSON_NODES = 1_800_000
 HARD_MAX_JSON_DEPTH = 64
-HARD_MAX_JSON_TOKENS = 1_500_000
-HARD_MAX_JSON_SCALARS = 900_000
-HARD_MAX_JSON_OBJECT_KEYS = 600_000
-HARD_MAX_JSON_DECODED_STRING_BYTES = 48 * 1024 * 1024
+HARD_MAX_JSON_TOKENS = 1_800_000
+HARD_MAX_JSON_SCALARS = 1_800_000
+HARD_MAX_JSON_OBJECT_KEYS = 900_000
+HARD_MAX_JSON_DECODED_STRING_BYTES = 64 * 1024 * 1024
 HARD_MAX_JSON_NUMBER_TOKEN_BYTES = 128
-MAX_TEXT_BYTES = 1 * 1024 * 1024
+MAX_TEXT_BYTES = 2 * 1024 * 1024
 MAX_METADATA_BYTES = 16 * 1024
 HARD_MAX_JSON_STRING_TOKEN_BYTES = MAX_TEXT_BYTES
 FFXBRL_LIMITS = MappingProxyType(
@@ -51,8 +51,8 @@ FFXBRL_LIMITS = MappingProxyType(
         "max_contexts": 5_000,
         "max_units": 2_000,
         "max_continuations": 10_000,
-        "max_facts": 10_000,
-        "max_continuation_chain": 16,
+        "max_facts": 12_000,
+        "max_continuation_chain": 32,
         "max_diagnostics": 15_000,
         "max_parser_output_bytes": HARD_MAX_PARSER_OUTPUT_BYTES,
         "max_artifact_bytes": HARD_MAX_FFXBRL_BYTES,
@@ -316,6 +316,14 @@ def _copy_json(
                 raise IxbrlExtractionError(f"{field} string exceeds bounded text length")
         except UnicodeError as exc:
             raise IxbrlExtractionError(f"{field} string is not valid UTF-8 text") from exc
+        # mint ⊆ read: the read preflight bounds the raw JSON string token (both quotes
+        # plus every escape) at HARD_MAX_JSON_STRING_TOKEN_BYTES, and canonical_json escapes
+        # exactly like json.dumps(value, ensure_ascii=False).  One UTF-8 byte escapes to at
+        # most 6 bytes, so the first operand only skips strings that cannot exceed the cap.
+        if len(encoded) * 6 + 2 > HARD_MAX_JSON_STRING_TOKEN_BYTES and (
+            len(json.dumps(value, ensure_ascii=False).encode("utf-8")) > HARD_MAX_JSON_STRING_TOKEN_BYTES
+        ):
+            raise IxbrlExtractionError(f"{field} string exceeds bounded text length")
         string_budget[0] -= len(encoded)
         if string_budget[0] < 0:
             raise IxbrlExtractionError(f"{field} exceeds decoded-string safety limit")
@@ -349,6 +357,10 @@ def _copy_json(
                     raise IxbrlExtractionError(f"{field} object key exceeds bounded text length")
             except UnicodeError as exc:
                 raise IxbrlExtractionError(f"{field} object key is not valid UTF-8 text") from exc
+            if len(encoded_key) * 6 + 2 > HARD_MAX_JSON_STRING_TOKEN_BYTES and (
+                len(json.dumps(key, ensure_ascii=False).encode("utf-8")) > HARD_MAX_JSON_STRING_TOKEN_BYTES
+            ):
+                raise IxbrlExtractionError(f"{field} object key exceeds bounded text length")
             string_budget[0] -= len(encoded_key)
             if string_budget[0] < 0:
                 raise IxbrlExtractionError(f"{field} exceeds decoded-string safety limit")

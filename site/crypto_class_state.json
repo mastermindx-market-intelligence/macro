@@ -3,12 +3,184 @@
   "tier": "display",
   "display_only": true,
   "as_of": "2026-10-09",
+  "universe_coverage": {
+    "as_of": "2026-10-09",
+    "listed": 50,
+    "requested": 50,
+    "excluded": [
+      {
+        "file": "market_aster.parquet",
+        "symbol": "ASTER",
+        "id": "aster-2",
+        "source": "CoinGecko",
+        "as_of": "2026-09-24",
+        "reason": "OLDER_SNAPSHOT"
+      },
+      {
+        "file": "market_cbbtc.parquet",
+        "symbol": "CBBTC",
+        "id": "cbbtc-coinbase-wrapped-btc",
+        "source": "CoinPaprika",
+        "as_of": "2026-09-22",
+        "reason": "OLDER_SNAPSHOT"
+      },
+      {
+        "file": "market_dark.parquet",
+        "symbol": "DARK",
+        "id": "dark-dark-frontiers",
+        "source": "CoinPaprika",
+        "as_of": "2026-09-01",
+        "reason": "OLDER_SNAPSHOT"
+      },
+      {
+        "file": "market_dot.parquet",
+        "symbol": "DOT",
+        "id": "polkadot",
+        "source": "CoinGecko",
+        "as_of": "2026-09-26",
+        "reason": "OLDER_SNAPSHOT"
+      },
+      {
+        "file": "market_mnt.parquet",
+        "symbol": "MNT",
+        "id": "mantle",
+        "source": "CoinGecko",
+        "as_of": "2026-10-01",
+        "reason": "OLDER_SNAPSHOT"
+      },
+      {
+        "file": "market_paxg.parquet",
+        "symbol": "PAXG",
+        "id": "paxg-pax-gold",
+        "source": "CoinPaprika",
+        "as_of": "2026-09-19",
+        "reason": "OLDER_SNAPSHOT"
+      },
+      {
+        "file": "market_pepe.parquet",
+        "symbol": "PEPE",
+        "id": "pepe",
+        "source": "CoinGecko",
+        "as_of": "2026-09-23",
+        "reason": "OLDER_SNAPSHOT"
+      },
+      {
+        "file": "market_polydoge.parquet",
+        "symbol": "POLYDOGE",
+        "id": "polydoge-polydoge",
+        "source": "CoinPaprika",
+        "as_of": "2026-09-05",
+        "reason": "OLDER_SNAPSHOT"
+      },
+      {
+        "file": "market_steth.parquet",
+        "symbol": "STETH",
+        "id": "steth-lido-staked-ether",
+        "source": "CoinPaprika",
+        "as_of": "2026-09-22",
+        "reason": "OLDER_SNAPSHOT"
+      },
+      {
+        "file": "market_susde.parquet",
+        "symbol": "SUSDE",
+        "id": "susde-ethena-staked-usde",
+        "source": "CoinPaprika",
+        "as_of": "2026-08-21",
+        "reason": "OLDER_SNAPSHOT"
+      },
+      {
+        "file": "market_susds.parquet",
+        "symbol": "SUSDS",
+        "id": "susds-susds",
+        "source": "CoinPaprika",
+        "as_of": "2026-09-22",
+        "reason": "OLDER_SNAPSHOT"
+      },
+      {
+        "file": "market_usdb.parquet",
+        "symbol": "USDB",
+        "id": "blockchain-usd",
+        "source": "CoinGecko",
+        "as_of": "2026-10-02",
+        "reason": "OLDER_SNAPSHOT"
+      },
+      {
+        "file": "market_usdf.parquet",
+        "symbol": "USDF",
+        "id": "usdf-falcon-finance",
+        "source": "CoinPaprika",
+        "as_of": "2026-08-19",
+        "reason": "OLDER_SNAPSHOT"
+      },
+      {
+        "file": "market_wbtc.parquet",
+        "symbol": "WBTC",
+        "id": "wbtc-wrapped-bitcoin",
+        "source": "CoinPaprika",
+        "as_of": "2026-09-22",
+        "reason": "OLDER_SNAPSHOT"
+      },
+      {
+        "file": "market_weeth.parquet",
+        "symbol": "WEETH",
+        "id": "weeth-wrapped-eeth",
+        "source": "CoinPaprika",
+        "as_of": "2026-09-22",
+        "reason": "OLDER_SNAPSHOT"
+      },
+      {
+        "file": "market_weth.parquet",
+        "symbol": "WETH",
+        "id": "weth-weth",
+        "source": "CoinPaprika",
+        "as_of": "2026-09-22",
+        "reason": "OLDER_SNAPSHOT"
+      },
+      {
+        "file": "market_wld.parquet",
+        "symbol": "WLD",
+        "id": "worldcoin-wld",
+        "source": "CoinGecko",
+        "as_of": "2026-10-03",
+        "reason": "OLDER_SNAPSHOT"
+      },
+      {
+        "file": "market_wlfi.parquet",
+        "symbol": "WLFI",
+        "id": "wlfi-official-world-liberty-financial",
+        "source": "CoinPaprika",
+        "as_of": "2026-09-17",
+        "reason": "OLDER_SNAPSHOT"
+      },
+      {
+        "file": "market_wsteth.parquet",
+        "symbol": "WSTETH",
+        "id": "wsteth-wrapped-liquid-staked-ether-20",
+        "source": "CoinPaprika",
+        "as_of": "2026-09-22",
+        "reason": "OLDER_SNAPSHOT"
+      }
+    ],
+    "breadth": {
+      "as_of": "2026-10-09",
+      "eligible": 3,
+      "required": 10,
+      "excluded": 47,
+      "positive": 2,
+      "basis": "reported_30d_return_positive",
+      "available": false,
+      "value": null,
+      "state": "Building history",
+      "tone": "neutral",
+      "state_zh": "积累历史中"
+    }
+  },
   "market": {
     "stance": "Advancing, led by Bitcoin",
     "total_state": "Rising",
     "dominance_state": "Steady",
     "fear_state": "Greedy",
-    "breadth_state": "Narrow"
+    "breadth_state": "Building history"
   },
   "flows": {
     "etf": "Falling",
@@ -17,8 +189,8 @@
   },
   "heat": {
     "funding": "Unavailable",
-    "open_interest": "Leverage light",
-    "volatility": "Volatility compressed",
+    "open_interest": "Unavailable",
+    "volatility": "Unavailable",
     "altseason": "Mixed participation"
   },
   "assets": {

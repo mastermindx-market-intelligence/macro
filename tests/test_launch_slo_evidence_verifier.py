@@ -752,6 +752,54 @@ def test_verifier_rejects_symlinked_artifact_and_noncanonical_bytes(tmp_path: Pa
         verify_biocatalyst_launch_slo_evidence(manifest, evidence_root=store, repo_root=ROOT)
 
 
+_FIFO_STAGE_MARKER = "biocatalyst_fifo_stage"
+_FIFO_STAGES = (
+    "startup",
+    "import_entered",
+    "import_complete",
+    "verifier_entered",
+    "completed",
+)
+_FIFO_DIAGNOSTIC_BOUND = 2000
+
+
+def _fifo_stage_view(stream: object) -> str:
+    """Bounded sanitized tail of one captured child stream (bytes or str)."""
+    if isinstance(stream, bytes):
+        text = stream.decode("utf-8", errors="backslashreplace")
+    elif isinstance(stream, str):
+        text = stream
+    else:
+        text = ""
+    return text[-_FIFO_DIAGNOSTIC_BOUND:]
+
+
+def _fifo_stage_reached(stream: object) -> str:
+    """Last fixed child stage marker actually captured; never invents one."""
+    for line in reversed(_fifo_stage_view(stream).splitlines()):
+        candidate = line.strip()
+        if candidate.startswith(_FIFO_STAGE_MARKER + " "):
+            stage = candidate[len(_FIFO_STAGE_MARKER) + 1 :].strip()
+            if stage in _FIFO_STAGES:
+                return stage
+    return "pre-startup"
+
+
+def _fifo_stage_diagnostic(reason: str, captured: object) -> str:
+    """Bounded stage diagnostic for a timed-out or nonzero fifo leaf probe."""
+    stdout = getattr(captured, "stdout", None)
+    stderr = getattr(captured, "stderr", None)
+    origin = getattr(getattr(launch_slo_verifier, "__spec__", None), "origin", None)
+    return (
+        f"fifo evidence leaf probe failed ({reason}); "
+        f"reached_stage={_fifo_stage_reached(stdout or stderr)}; "
+        f"python={sys.version.split()[0]}; "
+        f"verifier_origin={origin}; "
+        f"captured_stage_stdout={_fifo_stage_view(stdout)!r}; "
+        f"captured_stage_stderr={_fifo_stage_view(stderr)!r}"
+    )
+
+
 @pytest.mark.skipif(not hasattr(os, "mkfifo"), reason="platform has no FIFO support")
 @pytest.mark.parametrize("target", ["sentinel", "artifact"])
 def test_fifo_evidence_leaf_fails_closed_in_timed_subprocess(
@@ -773,10 +821,26 @@ import json
 from pathlib import Path
 import sys
 
+
+def _mark(stage: str) -> None:
+    print(f"biocatalyst_fifo_stage {stage}", flush=True)
+
+
+_mark("startup")
+_mark("import_entered")
 import engine.sector_intelligence.launch_slo_verifier as verifier
+
+_mark("import_complete")
+print(
+    "biocatalyst_fifo_fact "
+    f"python={sys.version.split()[0]} "
+    f"verifier_origin={Path(verifier.__file__).name}",
+    flush=True,
+)
 
 verifier._trusted_utc_now = lambda: datetime(2026, 8, 19, tzinfo=timezone.utc)
 manifest = json.loads(Path(sys.argv[1]).read_text(encoding="utf-8"))
+_mark("verifier_entered")
 try:
     verifier.verify_biocatalyst_launch_slo_evidence(
         manifest,
@@ -784,30 +848,85 @@ try:
         repo_root=Path(sys.argv[3]),
     )
 except verifier.LaunchSloEvidenceError as exc:
+    _mark("completed")
     print(exc)
     raise SystemExit(0 if "launch_slo.evidence.file" in str(exc) else 2)
+_mark("completed")
 raise SystemExit(3)
 """
     started = time.monotonic()
-    completed = subprocess.run(
-        [
-            sys.executable,
-            "-c",
-            verifier_script,
-            str(manifest_path),
-            str(store),
-            str(ROOT),
-        ],
-        cwd=ROOT,
-        capture_output=True,
-        text=True,
-        timeout=5,
-        check=False,
-    )
+    try:
+        completed = subprocess.run(
+            [
+                sys.executable,
+                "-c",
+                verifier_script,
+                str(manifest_path),
+                str(store),
+                str(ROOT),
+            ],
+            cwd=ROOT,
+            capture_output=True,
+            text=True,
+            timeout=5,
+            check=False,
+        )
+    except subprocess.TimeoutExpired as exc:
+        raise AssertionError(
+            _fifo_stage_diagnostic("timeout after 5s", exc)
+        ) from exc
     elapsed = time.monotonic() - started
-    assert completed.returncode == 0, completed.stdout + completed.stderr
+    assert completed.returncode == 0, _fifo_stage_diagnostic(
+        f"returncode={completed.returncode}", completed
+    )
     assert "launch_slo.evidence.file" in completed.stdout
     assert elapsed < 5
+
+
+def test_fifo_stage_diagnostic_retains_captured_stages_and_chains_timeout(
+    tmp_path: Path,
+) -> None:
+    """Controlled TimeoutExpired discrimination for the fifo stage diagnostics.
+
+    A child blocked inside its import must surface one bounded failure that
+    retains the captured stage output, chains the original TimeoutExpired, and
+    still fails closed — without touching the pinned fifo probes above.
+    """
+    (tmp_path / "blocking_module.py").write_text("import time\ntime.sleep(60)\n")
+    blocked_import_script = "\n".join(
+        (
+            "import sys, time",
+            f"print({_FIFO_STAGE_MARKER!r} + ' startup', flush=True)",
+            f"sys.path.insert(0, {str(tmp_path)!r})",
+            f"print({_FIFO_STAGE_MARKER!r} + ' import_entered', flush=True)",
+            "import blocking_module",
+            f"print({_FIFO_STAGE_MARKER!r} + ' import_complete', flush=True)",
+            "time.sleep(60)",
+        )
+    )
+    started = time.monotonic()
+    with pytest.raises(AssertionError) as failure:
+        try:
+            subprocess.run(
+                [sys.executable, "-c", blocked_import_script],
+                capture_output=True,
+                text=True,
+                timeout=2,
+                check=False,
+            )
+        except subprocess.TimeoutExpired as exc:
+            raise AssertionError(
+                _fifo_stage_diagnostic("timeout after 2s", exc)
+            ) from exc
+    assert time.monotonic() - started < 30
+    message = str(failure.value)
+    assert isinstance(failure.value.__cause__, subprocess.TimeoutExpired)
+    assert "reached_stage=import_entered" in message
+    assert f"{_FIFO_STAGE_MARKER} startup" in message
+    assert f"{_FIFO_STAGE_MARKER} import_entered" in message
+    assert f"{_FIFO_STAGE_MARKER} import_complete" not in message
+    assert "captured_stage_stdout=" in message
+    assert len(message) < 2 * _FIFO_DIAGNOSTIC_BOUND + 400
 
 
 def test_verifier_refuses_relative_evidence_root_and_nonpass_state(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
