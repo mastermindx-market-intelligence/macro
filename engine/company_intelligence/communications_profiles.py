@@ -21,8 +21,11 @@ Grounded fields, read from this tree (no EDGAR call):
 * Listing floor ``2023-05-09`` — coverage ``security_master_binding.effective_at``
   for the GOOGL security-master row, applied to both listings. No separate
   GOOG floor is in the tree. This is an evidence floor, not ``ALIAS_EPOCH``.
-* ``share_class`` ``listing`` — the submissions object has no share-class
-  field. The literal is a placeholder, not a class election.
+* ``share_class`` ``A`` on GOOGL and ``C`` on GOOG —
+  ``tests/fixtures/company_intelligence/golden_corpus_issuers.v1.json``
+  Alphabet listings (``share_class``). The submissions object has no
+  share-class field. That fixture's ``is_primary`` and synthetic CIK are
+  not copied.
 * ``is_primary`` false on both listings. ``IssuerIdentity.primary_listing_at``
   falls back to the first covering listing when none is primary; that
   fallback is not a share-class election.
@@ -66,7 +69,7 @@ def alphabet_issuer() -> IssuerIdentity:
             ListingAlias(
                 ticker="GOOGL",
                 mic="XNAS",
-                share_class="listing",
+                share_class="A",
                 trading_currency="USD",
                 is_primary=False,
                 valid_from=ALPHABET_LISTING_VALID_FROM,
@@ -74,7 +77,7 @@ def alphabet_issuer() -> IssuerIdentity:
             ListingAlias(
                 ticker="GOOG",
                 mic="XNAS",
-                share_class="listing",
+                share_class="C",
                 trading_currency="USD",
                 is_primary=False,
                 valid_from=ALPHABET_LISTING_VALID_FROM,

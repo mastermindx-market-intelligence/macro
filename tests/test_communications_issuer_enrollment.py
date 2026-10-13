@@ -17,6 +17,10 @@ from engine.company_intelligence.issuer_profiles import (
 _ALPHABET_COMPANY_ID = "cik:0001652044"
 _LISTING_FLOOR = date(2023, 5, 9)
 _DAY_BEFORE_FLOOR = date(2023, 5, 8)
+# tests/fixtures/company_intelligence/golden_corpus_issuers.v1.json
+# Alphabet listings: GOOGL share_class "A", GOOG share_class "C".
+# That fixture's is_primary is not copied.
+_ALPHABET_SHARE_CLASS = {"GOOGL": "A", "GOOG": "C"}
 
 
 def _assert_alphabet_identity(issuer) -> None:
@@ -29,7 +33,7 @@ def _assert_alphabet_identity(issuer) -> None:
     for listing in issuer.listings:
         assert listing.mic == "XNAS"
         assert listing.is_primary is False
-        assert listing.share_class == "listing"
+        assert listing.share_class == _ALPHABET_SHARE_CLASS[listing.ticker]
         assert listing.valid_from == _LISTING_FLOOR
 
 
