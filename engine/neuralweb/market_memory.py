@@ -2734,3 +2734,41 @@ def symbol_context(
         "authority": dict(AUTHORITY),
         "context_note": _CONTEXT_NOTE,
     }
+
+
+def retained_macro_context(reader, *, policy, query_id: str, generation_id: str,
+                           generation_sha256: str, subject_id: str,
+                           query_cutoff: str, method, limit: int) -> dict:
+    """Consume exact retained owners through R2/N0, with no history fallback."""
+    from engine.neuralweb import brain_analogues as brain
+    from engine.neuralweb import market_memory_episode_features as features
+    from engine.neuralweb import market_memory_episode_retrieval as retrieval
+    from engine.neuralweb import market_memory_operating_cortex_service as evidence
+    from engine.neuralweb import market_memory_retained_context_cohort as cohort
+    from engine.neuralweb import market_memory_pit as pit
+    from engine.neuralweb import market_memory_trusted as trusted
+
+    if type(reader) is not trusted.TrustedFileAsKnownAtReader:
+        raise pit.MarketMemoryQueryError("exact_trusted_owner_required")
+    if type(limit) is not int or not 1 <= limit <= 8:
+        raise pit.MarketMemoryQueryError("retained_context_limit_must_be_1_to_8")
+    policy.check("read_retained_generation_metadata", policy.expected)
+    with pit.bounded_owner_reads(maximum_bytes=64 * 1024 * 1024):
+        generation = reader.read_pinned_generation(
+            generation_id=generation_id, maximum_capture_count=256)
+        if (generation.generation_sha256 != generation_sha256
+                or generation.store_id != policy.expected["store_id"]):
+            raise pit.MarketMemoryQueryError("exact_retained_generation_mismatch")
+        if not any(row.query_id == query_id for row in generation.captures):
+            raise pit.MarketMemoryContextNotFound("exact retained query is unavailable")
+        query = features.read_episode_feature_capability(
+            reader, generation, query_id=query_id, subject_id=subject_id,
+            query_cutoff=query_cutoff, policy=policy)
+        population = cohort.read_retained_context_cohort(
+            reader, generation, subject_id=subject_id,
+            query_cutoff=query_cutoff, policy=policy)
+        selection = retrieval.retrieve_retained_contexts(
+            population, query, policy=policy, k=limit, method=method)
+        packet = evidence.build_real_evidence_packet(
+            selection, reader, generation, policy=policy)
+        return brain.get_retained_market_context(selection, packet, policy=policy)
