@@ -88,6 +88,12 @@ DEFAULT_SUITES = (
     "tests/test_government_revenue_candidate_projection.py",
     "tests/test_government_revenue_candidate_fixture.py",
 )
+PARTICIPATION_SOURCE_PATHS = (
+    "engine/__init__.py", "engine/baskets.py", "engine/coiled.py",
+    "engine/equity_factors.py", "engine/group_flow.py", "engine/group_pulse.py",
+    "engine/indicators.py", "engine/ledger_lane.py", "engine/session_anchor.py",
+    "engine/technicals.py", "config.yml",
+)
 #: Source documents the suites read DIRECTLY (live-probe tests open them from
 #: the repo root), plus every code path that could change their outcome.  A
 #: witness that binds only outputs would wave through a republished
@@ -129,7 +135,8 @@ MATERIAL_PREFIXES = (
     "data/company_intelligence/event_workspaces/manifest.json",
     "data/massive_stock_day/", "data/reference/",
     "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md", "engine/stock_technicals.py",
-)
+    "data/baskets/", "data/yahoo/SPY.parquet", "site/basketdata/",
+) + PARTICIPATION_SOURCE_PATHS
 _SUMMARY_LINE = re.compile(
     r"^\s*(?:(?P<count>\d+) (?P<kind>passed|failed|error|errors|skipped|deselected|"
     r"xfailed|xpassed|warnings?)(?:,\s*)?)+\s+in\s+\d+(?:\.\d+)?s(?:\s+\([0-9:]+\))?\s*$"
@@ -215,9 +222,30 @@ MARKET_INPUT_PATHS = (
     "engine/stock_technicals.py",
 )
 
+PARTICIPATION_OWNER_PATHS = (
+    "data/baskets/membership.json", "site/basketdata/pulse.json",
+    "site/basketdata/baskets.json", "data/yahoo/SPY.parquet",
+)
+
 
 def _market_input_paths(root: Path) -> tuple[str, ...]:
-    for relative in MARKET_INPUT_PATHS:
+    # The current defense roster selects its exact raw dependencies. This is
+    # an inventory only; GroupPulse and the consuming adapter own validation.
+    paths = set(MARKET_INPUT_PATHS) | set(PARTICIPATION_OWNER_PATHS)
+    marker = root / PARTICIPATION_OWNER_PATHS[0]
+    for part in (marker, *marker.parents):
+        if part == root:
+            break
+        if part.is_symlink():
+            raise ValueError("market input symlink refused")
+    if marker.is_file():
+        membership = json.loads(marker.read_bytes())
+        for member in membership['baskets']['defense']['members']:
+            ticker = member['ticker']
+            if not isinstance(ticker, str) or not re.fullmatch(r'[A-Z0-9][A-Z0-9.-]{0,15}', ticker):
+                raise ValueError("participation member path invalid")
+            paths.add(f"data/baskets/ohlcv/{ticker}.parquet")
+    for relative in paths:
         path = root / relative
         for part in (path, *path.parents):
             if part == root:
@@ -226,7 +254,7 @@ def _market_input_paths(root: Path) -> tuple[str, ...]:
                 raise ValueError("market input symlink refused")
         if path.exists() and not path.is_file():
             raise ValueError("market input is not a regular file")
-    return MARKET_INPUT_PATHS
+    return tuple(sorted(paths))
 
 
 OWNER_MANIFEST_PATH = "data/company_intelligence/event_workspaces/manifest.json"
@@ -286,6 +314,7 @@ def _source_dependency_paths(root: Path) -> list[str]:
                 relatives.add(path.relative_to(root).as_posix())
     relatives.update(_owner_generation_paths(root))
     relatives.update(_market_input_paths(root))
+    relatives.update(PARTICIPATION_SOURCE_PATHS)
     return sorted(relatives)
 
 

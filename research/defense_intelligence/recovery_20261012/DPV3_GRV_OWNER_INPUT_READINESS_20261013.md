@@ -15,3 +15,25 @@ The registration remains **grv-fa1 4.1.0, 545 independent draws, expiry 2029-08-
 Future enrollment requires original Q3 same-carrier recovery, qualified source/security/calendar/rights inputs, a genuinely fresh non-late action, conservative pre-entry publication headroom and authenticated server observation of the exact published ledger prefix. Phase two projects state and repeats the whole-generation proof; there is one issuance effect. Old display rows and the isolated 407/469 diagnostic generation cannot be re-clocked. The existing research-state contract has closed paths and disclosures, so this receipt is documentation, not a newly installed API field.
 
 This advances an actual input gate now. It leaves zero issued observations, natural h5/h21/h63/h126 accrual, scientific coverage/independence and registered verdict obligations open. Stage signed-case denominators remain unidentified; the separate completed AI DEV pilot does not establish human workflow efficacy or predictive alpha.
+
+## Subsequent exact-source qualification
+
+The bounded price adapter is now independently accepted as an **unwired current-vintage technical projection**. It pins the actual retained source packet, validates raw/action receipt bytes and canonical calendar sessions, and seals the complete public qualification closure into the returned price-basis identity. All committed tests create synthetic inputs; licensed raw packets remain external. Eighteen targeted synthetic checks passed, with independent review SHA256 `bef295893f3c64b678e5473bb36cb6929bd1dc0279f27847c5889bb3f8aea5fd`. The integrated source-binding and CI replay suites passed 117 checks.
+
+The registered adjusted-close ratio convention is supported for seven factor witnesses and 37 complete SPY/ITA sessions, August19–October9. It does not claim exact cash reinvestment. The original wider ITA vintage still refuses August18, and the adapter remains unwired to grading and issuance. A plain PricePanel has no admission fence: descriptive permission fields do not supply runtime admission. No historical availability, identity continuity, rights admission, issuer-panel coverage or empirical efficacy follows.
+
+A subsequent bounded same-feed source read at October13 10:31UTC returned HTTP200, a complete 319805-byte compressed body, and exactly one native ITA row for August18. Body SHA256 `7b777cd697b2f0d4eef2da69afe638976aa4e85723337cf09664bb6b8d4f32b0`; native row SHA256 `399cce57e44cdea30204348b011217a1c0d48bedf36f83d688bd4bdddf078ce5`. The incumbent parser read that retained body without a second source request. Thus the source row exists; the inspected canonical vintage is incomplete. **No canonical market-store write occurred.** The read is observed now, not retroactively on August18.
+
+The next owner action is a narrow preservation-qualified canonical repair through the incumbent collector/store writer. Preserve current complete history, global resume state, current manifest and competing-writer exclusion. A one-date `--force` replay is unsuitable because it resets global processed state. The old missing vintage remains evidence; subsequent adjustment qualification must bind a new actual owner receipt, never hand-restamp this one. Original Q3 and P2 effects remain on their existing carriers.
+
+The normal incumbent publisher subsequently completed the canonical repair at
+11:37 UTC after a complete 21,712-object mirror, an exact one-object dry run and
+current collector/publisher custody checks. Read-back verifies ITA SHA256
+`621da7044552efdadf76b8618984299d85e42b1f57b09010b73ceb9b680e8f04`: 1,323 rows,
+all 1,322 prior rows unchanged and the single native August18 row added. The
+full manifest is byte-identical, and global resume/collector state is unchanged.
+Publication receipt SHA256 `52bb5e13926219209a77d299a68fc061e9733338c0309977b0edc1be167617c2`. This supersedes
+the earlier no-write frontier; it does not alter the retained missing vintage.
+A new current-observation receipt and independent wider-window qualification are
+still required before changing the adapter's pinned technical packet. No grading,
+issuance, historical-availability or efficacy admission follows from this repair.

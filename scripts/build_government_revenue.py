@@ -1313,6 +1313,10 @@ def build(
 ) -> tuple[Path, Path, Path]:
     """Build canonical JSON, its site twin, and the HTML page."""
     root = root.resolve()
+    from engine.government_revenue.defense_participation_context import load_participation_inputs
+    # Retain the actual read clock before generation; current membership must
+    # never be backdated into historical fixtures or the research ledger.
+    participation_inputs = load_participation_inputs(root)
     payload = _validate_payload(build_payload(root=root, as_of=as_of))
     recipient_coverage = _validate_recipient_activation(root, payload)
     dossier = _validate_dossier_payload(
@@ -1401,6 +1405,7 @@ def build(
     defense_economics = build_defense_economics_payload(
         root, generated_at=sbir_cutoff, as_of=sbir_cutoff,
         require_market_owner=live_materialization,
+        participation_inputs=participation_inputs,
         government_inputs=({
             "dossier": dossier,
             "recipient_graph": json.loads(government_graph_raw),

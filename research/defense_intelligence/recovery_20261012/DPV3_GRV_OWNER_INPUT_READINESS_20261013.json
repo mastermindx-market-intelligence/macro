@@ -9,6 +9,38 @@
     "historical_security_continuity_admitted": false,
     "reference_receipt_sha256": "f15f02b0a30be6653af7f83fc4c7fb1223f313cc42fcf33f073419be4cf8a21e"
   },
+  "current_vintage_projection": {
+    "adapter": "engine/government_revenue/price_panel_adapter.py",
+    "adapter_sha256": "5b29b51bf136c1a00e74a9523191ff88928c19d71f75fe2d5fc053576a3df8a3",
+    "complete_window": [
+      "2026-08-19",
+      "2026-10-09"
+    ],
+    "convention": "backward split-and-dividend-adjusted close ratio; not exact cash reinvestment",
+    "factor_witnesses": 7,
+    "licensed_raw_sources_in_git": false,
+    "not_admitted": [
+      "historical_availability",
+      "identity_continuity",
+      "runtime_rights",
+      "issuer_panel",
+      "prospective_cohort",
+      "grading",
+      "issuance",
+      "scientific_efficacy"
+    ],
+    "price_vintage_id": "grv-price-19fed4ba5f8ade22fe3e4843c68886f416d8f9d4417ed08ce8138541237473c6",
+    "review_sha256": "bef295893f3c64b678e5473bb36cb6929bd1dc0279f27847c5889bb3f8aea5fd",
+    "reviewed_packet_sha256": "35f1c0e2d0ac590b3457240f48984bb3e28100621a0085885552039e2d86989c",
+    "sessions": 37,
+    "state": "independently_accepted_unwired_technical_projection",
+    "symbols": [
+      "SPY",
+      "ITA"
+    ],
+    "synthetic_tests_passed": 18,
+    "wired_to_grading_or_issuance": false
+  },
   "enrollment": {
     "bound_is_not_empirical_power_or_event_forecast": true,
     "current20issuer_fixed_universe_optimistic_max_draws": 220,
@@ -39,6 +71,24 @@
     "sha256": "90b6b079ed6a7784eaa552232474fcea2dca161d51af57b8080d19ff011f97c3",
     "verified_input_artifacts": 10
   },
+  "ita_canonical_repair": {
+    "canonical_manifest_sha256": "f8d87f2642ba14be4357ea035981ad08335be59c805ed1663b9c9f37937cad5d",
+    "changed_market_objects": [
+      "massive_stock_day/ITA.parquet"
+    ],
+    "complete_mirror_objects": 21712,
+    "global_state_preserved": true,
+    "grading_or_issuance_effect": false,
+    "new_ita_sha256": "621da7044552efdadf76b8618984299d85e42b1f57b09010b73ceb9b680e8f04",
+    "new_rows": 1323,
+    "new_technical_vintage_qualified": false,
+    "observed_at": "2026-10-13T11:37:25.120632+00:00",
+    "old_rows_preserved": 1322,
+    "prior_missing_vintage_preserved": true,
+    "published_at": "2026-10-13T11:37:10+00:00",
+    "receipt_sha256": "52bb5e13926219209a77d299a68fc061e9733338c0309977b0edc1be167617c2",
+    "state": "CANONICAL_REPAIR_VERIFIED"
+  },
   "method": {
     "bar_reads": 0,
     "canonical_writes": 0,
@@ -54,7 +104,22 @@
     "transport": "Existing engine.close_pass.massive_close._default_fetch; exact existing same-account provisioned credential, no redirects",
     "transport_attempt_counts_not_instrumented_for_default_fetch": true
   },
-  "minimum_next_owner_step": "Adopt a bounded immutable factor-backed adjustment projection at the incumbent price-owner boundary, with exact documented distribution/reinvestment convention and independent actual basis checks. Supply existing GRV PricePanel; no new store, global engine, family, ledger or threshold.",
+  "minimum_next_owner_step": "Qualify incumbent canonical-store custody and full-history preservation for the observed ITA August18 source row. Retain original missing vintage; acquire a fresh canonical receipt only after actual owner repair. Separately qualify security, rights, availability and issuer-panel inputs before any original Q3 enrollment.",
+  "missing_ita_session_source_qualification": {
+    "actual_observed_at": "2026-10-13T10:31:05.779230+00:00",
+    "canonical_store_repaired": false,
+    "complete_source_body_bytes": 319805,
+    "complete_source_body_sha256": "7b777cd697b2f0d4eef2da69afe638976aa4e85723337cf09664bb6b8d4f32b0",
+    "http_status": 200,
+    "native_row_sha256": "399cce57e44cdea30204348b011217a1c0d48bedf36f83d688bd4bdddf078ce5",
+    "native_target_rows": 1,
+    "next_action": "Current incumbent canonical-store writer must qualify preservation and publish through its existing guarded owner. Do not force date replay, replace global resume state, or call this source read a canonical repair.",
+    "original_missing_vintage_preserved": true,
+    "read_receipt_sha256": "dd0e05d8140c6b3882e6fe99075fd15ddc6e7bab29c62f06c6e7b579fc8abc30",
+    "source_date": "2026-08-18",
+    "source_date_matches_native_window": true,
+    "source_key": "us_stocks_sip/day_aggs_v1/2026/08/2026-08-18.csv.gz"
+  },
   "observations": [
     {
       "all_retained_rows_have_finite_positive_historical_adjustment_factor": true,

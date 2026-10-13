@@ -19,6 +19,7 @@ from engine.earnings_release.figures import parse_numeric
 from engine.government_revenue.defense_economics import compose_defense_economics
 from engine.government_revenue.defense_interpretation import build_defense_interpretation
 from engine.government_revenue.defense_government_context import load_government_context_inputs,qualify_government_context
+from engine.government_revenue.defense_participation_context import qualify_participation_context
 from engine.government_revenue.defense_market_context import (
     load_defense_market_inputs, compose_defense_market_context,
 )
@@ -120,7 +121,7 @@ def _project_fact(fact, workspace, source, *, owner_ref):
 
 
 def build_defense_economics_payload(root, *, generated_at=None, as_of=None, owner_inputs=None,
-                                    require_market_owner=False, government_inputs=None):
+                                    require_market_owner=False, government_inputs=None, participation_inputs=None):
     """Compose from a verified local owner mirror, or explicit owner snapshot.
 
     Explicit inputs have the exact same owner manifest+row receipt shape; this
@@ -225,6 +226,11 @@ def build_defense_economics_payload(root, *, generated_at=None, as_of=None, owne
     if set(bindings).intersection(government['source_bindings']):raise ValueError('government_owner_binding_collision')
     bindings.update(government['source_bindings'])
     for ticker,axes in government['axes_by_ticker'].items():
+        inputs[ticker]['axes'].update(axes)
+    participation=qualify_participation_context(participation_inputs,inputs,generated_at=clock)
+    if set(bindings).intersection(participation['source_bindings']):raise ValueError('participation_owner_binding_collision')
+    bindings.update(participation['source_bindings'])
+    for ticker,axes in participation['axes_by_ticker'].items():
         inputs[ticker]['axes'].update(axes)
     for ticker,data in inputs.items():
         interpretation=build_defense_interpretation(ticker,data['axes']['economics']['facts'])

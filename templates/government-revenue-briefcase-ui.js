@@ -34,6 +34,7 @@
     function render(message,warn){
       var select=get('savedViewSelect'),toggle=get('toggleLocalAlert'),remove=get('deleteView');
       if(!select||!toggle||!remove)return;
+      ['savedViewName','saveView','alertType','localInbox'].forEach(function(id){get(id).disabled=!briefcase});
       if(!briefcase){
         select.innerHTML='';select.value='';get('savedViewName').value='';get('localInboxCount').textContent='0';
         select.disabled=true;toggle.disabled=true;remove.disabled=true;get('exportViewJson').disabled=true;get('exportViewCsv').disabled=true;

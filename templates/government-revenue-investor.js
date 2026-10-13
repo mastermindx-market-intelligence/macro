@@ -4,7 +4,7 @@
 (function(global){
   'use strict';
   var TICKERS=['LMT','RTX','NOC','LHX'],AXES=['participation','demand','economics','recognition'];
-  var LABELS={participation:['Company role','公司角色'],demand:['Demand evidence','需求证据'],economics:['Issuer economics','公司收益'],recognition:['Market recognition','市场认知']};
+  var LABELS={participation:['Market participation','市场参与度'],demand:['Demand evidence','需求证据'],economics:['Issuer economics','公司收益'],recognition:['Market recognition','市场认知']};
   var STATES={supported:['Reviewed source context','已复核来源背景'],partial:['Partial evidence','部分证据'],stale:['Last observed evidence','最后观测证据'],missing_owner:['Required source evidence missing','缺少所需来源证据'],unreviewed:['Evidence not qualified','证据尚未核验'],contradictory:['Contrary evidence remains','仍存在相反证据'],not_comparable:['Evidence is not comparable','证据不可比较'],unavailable:['Source unavailable','来源不可用']};
   var FACTS={reported_segment_sales:['Reported segment sales','已披露分部销售额'],reported_segment_operating_profit:['Reported segment profit','已披露分部利润'],reported_segment_margin:['Reported segment margin','已披露分部利润率'],reported_backlog:['Reported backlog','已披露积压订单'],reported_guidance:['Reported guidance','已披露指引'],reported_cashflow:['Reported cash flow','已披露现金流'],reported_eac:['Reported estimate adjustment','已披露估计调整'],reported_shareholder_terms:['Shareholder terms','股东条款'],reported_financing:['Financing terms','融资条款'],company_forward:['Company forward disclosure','公司前瞻披露'],derived_scenario:['Derived scenario','推导情景']};
   function obj(x){return !!x&&typeof x==='object'&&!Array.isArray(x);}

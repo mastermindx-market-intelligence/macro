@@ -565,3 +565,50 @@ unfiltered publication proof. Scientific source-binding repair remains under
 independent review; licensed raw source packets stay outside Git. Protected
 release, original Terminal receiver custody and installed acceptance remain open.
 **MISSION_COMPLETE=false.**
+
+
+## Market participation and owner-preserving repair — 2026-10-13 11:38 UTC
+
+The next source phase corrects a substantive contract mismatch: participation
+now means existing defense-basket market breadth. Exact reviewed recipient paths
+remain under demand. The recurring reader replays the incumbent GroupPulse fields
+from the exact current roster, member tapes and root-local SPY input; it introduces
+no price, group, ranking or flow algorithm. It captures its actual read before the
+consumer generation, binds qualified issuer/security subjects, and refuses changed
+bytes, future curation, inconsistent denominators and unqualified benchmark input.
+Current membership is explicitly not historical first-seen membership.
+
+The retained actual replay is October8 market context assembled by GroupPulse on
+October13: four active out of twenty-one covered/configured members, LDOS activity
+leader, zero percent above the reported 50/200-day means, each with denominator 21.
+Activity is unusual SPY-adjusted absolute return OR elevated available volume,
+with the owner's 63-session return-coverage requirement. This is neither capital
+flow, market-cap concentration nor an alpha-leader claim. The generated investor
+artifact and browser still need rebuilding for this material change.
+
+The synthetic owner replay, economics reader, government-context and complete
+publication-proof guard suites pass 129 checks in 85.36 seconds. The existing CI
+closure check reports 2553 reachable suites and zero gaps. Independent source
+acceptance is `efb7bc2e98dfb6f26459adc6ccb1e58dfd223f384b8e2c7abf39a0af8646b0e7`.
+The proof now binds the exact roster-selected tapes (including explicit absence),
+SPY, both owner projections and the native GroupPulse import/configuration closure.
+The baseline's current prover hash changes; its 33 historical reconciliations do not.
+
+The science adapter accepted earlier remains unwired. A complete isolated native
+market-owner mirror has now preserved all 1,322 existing ITA rows and inserted the
+single source-proven August18 row. Its global backfill state and collector manifest
+are unchanged. The normal incumbent publisher's dry run verifies exactly one
+changed object among 21,712 files and an unchanged logical full-store manifest.
+The same-carrier normal publication then succeeded at 11:37 UTC. Canonical
+read-back verifies the repaired ITA hash and all prior rows; the full manifest is
+byte-identical. The owner-readiness record binds that receipt. A new scientific
+technical vintage still needs independent qualification.
+
+The logout control repair has passed nine affected checks. A separate browser
+coordinator owns isolated loading-order work: source/race checks pass, but actual
+cold 390-wide first-finance timing remains above the unchanged three-second target
+under both HTTP/1.1 and HTTP/2. The next bounded repair moves the existing inline
+page controller out of the critical document path without changing shared auth.
+All browser matrices must use the next built bytes. No sealed final proof,
+protected merge, installed acceptance, Terminal custody transfer, scientific
+issuance or efficacy is claimed. **MISSION_COMPLETE=false.**

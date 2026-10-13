@@ -26,8 +26,8 @@ def test_actual_exact_native_prime_paths_all_four_are_dated_and_not_program_capt
     assert set(out['axes_by_ticker'])=={'LMT','RTX','NOC','LHX'}
     assert out['local_proof']['source_as_of']=='2026-09-01'
     assert out['local_proof']['current_graph_review_clock'].startswith('2026-10-13')
-    assert all(v['demand']['state']=='stale' and v['participation']['state']=='stale' for v in out['axes_by_ticker'].values())
-    assert all('not new orders' in v['demand']['summary_en'] and 'deobligations' in v['demand']['summary_en'] and 'remain unknown' in v['participation']['summary_en'] for v in out['axes_by_ticker'].values())
+    assert all(v['demand']['state']=='stale' and set(v)=={'demand'} for v in out['axes_by_ticker'].values())
+    assert all('not new orders' in v['demand']['summary_en'] and 'deobligations' in v['demand']['summary_en'] and 'remain unknown' in v['demand']['summary_en'] for v in out['axes_by_ticker'].values())
     assert not out['local_proof']['did_use_collection_ticker'] and not out['local_proof']['did_allocate_amounts']
     for t,row in out['local_proof']['selected'].items():
         assert row['resolution']['source_identity_stable'] and row['resolution']['issuer']['ticker']==t

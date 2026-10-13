@@ -788,6 +788,27 @@ def _market_module():
     return module
 
 
+def test_participation_owner_dependencies_follow_roster_and_bind_absence(tmp_path):
+    module = _market_module()
+    root = tmp_path
+    marker = root / 'data/baskets/membership.json'
+    marker.parent.mkdir(parents=True)
+    marker.write_text(json.dumps({'baskets': {'defense': {'members': [{'ticker': 'SYN-A'}, {'ticker': 'SYN-B'}]}}}))
+    paths = module._market_input_paths(root)
+    from engine.government_revenue.defense_participation_context import participation_input_paths
+    assert set(participation_input_paths(root)) <= set(paths)
+    inventory = module._hash_files(root, paths)
+    assert inventory['data/baskets/ohlcv/SYN-A.parquet'] == 'absent'
+    assert inventory['data/yahoo/SPY.parquet'] == 'absent'
+    tape = root / 'data/baskets/ohlcv/SYN-A.parquet'
+    tape.parent.mkdir(parents=True)
+    tape.write_bytes(b'synthetic-owner-bytes')
+    assert inventory != module._hash_files(root, paths)
+    marker.write_text(json.dumps({'baskets': {'defense': {'members': [{'ticker': '../escape'}]}}}))
+    with pytest.raises(ValueError, match='member path'):
+        module._market_input_paths(root)
+
+
 @pytest.mark.parametrize("relative", [
     "data/massive_stock_day/LMT.parquet", "data/massive_stock_day/RTX.parquet",
     "data/massive_stock_day/NOC.parquet", "data/massive_stock_day/LHX.parquet",

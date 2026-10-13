@@ -17839,6 +17839,11 @@ jobs:
       - "engine/government_revenue/defense_government_context.py"
       - "tests/test_defense_interpretation.py"
       - "tests/test_defense_government_context.py"
+      - "tests/test_defense_participation_context.py"
+      - "config.yml"
+      - "data/baskets/membership.json"
+      - "data/baskets/ohlcv/**"
+      - "data/yahoo/SPY.parquet"
       - "tests/fixtures/defense_government_context.json"
       - "tests/fixtures/defense_government_context_inputs.json"
       - "tests/test_theme_economic_interpretation.py"
@@ -17909,7 +17914,7 @@ jobs:
       - name: Adverse evidence, ownership terms and complete source retention
         run: python -m pytest tests/test_noc_adverse.py tests/test_gd_profile.py tests/test_issuer_supplements.py tests/test_industrial_refresh.py tests/test_complete_owner_refresh.py tests/test_f2_composition.py tests/test_lhx_reported_income.py -q
       - name: Defense economics source binding and entitled read boundary
-        run: python -m pytest tests/test_government_revenue_defense_economics.py tests/test_defense_recognition_owner_guards.py tests/test_defense_recognition_market_clocks.py tests/test_government_revenue_asset_publication.py tests/test_defense_interpretation.py tests/test_defense_government_context.py -q
+        run: python -m pytest tests/test_government_revenue_defense_economics.py tests/test_defense_recognition_owner_guards.py tests/test_defense_recognition_market_clocks.py tests/test_government_revenue_asset_publication.py tests/test_defense_interpretation.py tests/test_defense_government_context.py tests/test_defense_participation_context.py -q
       - name: Registered research state and durable acknowledgement boundaries
         run: python -m pytest tests/test_government_revenue_research_state.py tests/test_government_revenue_research_report_clock.py tests/test_government_revenue_publication_ack.py tests/test_government_revenue_price_source_binding.py -q
       - name: Program filter and URL state regression
