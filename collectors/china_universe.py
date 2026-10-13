@@ -41,6 +41,8 @@ BOUND until the panel is re-accrued append-only.
 from __future__ import annotations
 
 import logging
+from concurrent.futures import ThreadPoolExecutor, as_completed, TimeoutError as FutureTimeout
+from datetime import datetime
 import time
 from io import BytesIO
 
@@ -97,6 +99,132 @@ def _overwrite_overlap(fresh: pd.DataFrame, prev: pd.DataFrame) -> pd.DataFrame:
             # forward untouched (append-only, no retroactive deletion).
             out[col] = pcol
     return out.sort_index()
+
+
+
+def repair_settled_search_closes(
+    closes: pd.DataFrame,
+    tickers: list[str],
+    *,
+    now: datetime | None = None,
+    fetcher=None,
+    min_coverage: float = 0.95,
+    max_workers: int = 16,
+    max_wait_s: float = 600.0,
+) -> pd.DataFrame:
+    """Close the existing China search panel with source-verified Tencent qfq tails.
+
+    Yahoo owns the historical adjusted panel, but can return a completely empty
+    current-session row. The collector must NOT commit that row as proof of a
+    settled close. Reuse the incumbent China stock Tencent qfq fetcher and its
+    adjustment-basis overlap validator. Never use a current intraday tick as a
+    daily bar, replay an old close as today's, or modify stored bytes on failure.
+
+    A failed/partial repair raises, so the normal single-owner collector never
+    publishes the unqualified panel or overwrites its previously committed store.
+    """
+    from lib import cn_calendar
+    from collectors import china_stock_tencent as tencent
+
+    now = now or datetime.now(tencent._SHANGHAI)
+    expected = pd.Timestamp(cn_calendar.expected_last_session(now))
+    df = closes.copy().sort_index()
+    df.index = pd.to_datetime(df.index).tz_localize(None).normalize()
+    df = df.loc[:, ~df.columns.duplicated(keep="last")]
+    df = df.dropna(axis=0, how="all")
+    if df.empty:
+        raise RuntimeError("china_search close panel has no observed price history")
+
+    # The union may contain dropped historical names; grade the CURRENT exact
+    # member universe, never the width of the historical append-only panel.
+    current = list(dict.fromkeys(str(t) for t in tickers))
+    if not current:
+        raise RuntimeError("china_search current membership is empty")
+    present = [t for t in current if t in df.columns]
+    if expected in df.index:
+        row = pd.to_numeric(df.loc[expected, present], errors="coerce")
+        valid = {t for t, value in row.items() if pd.notna(value) and float(value) > 0}
+    else:
+        valid = set()
+    count = len(current)
+    if len(valid) / count >= min_coverage:
+        return df
+
+    # Sources with post-settle data need a completed-session repair, not a new
+    # analysis store. A single quote is insufficient: require a real daily
+    # vendor bar and matching adjusted historical overlaps.
+    candidates = [t for t in current if t not in valid and t in df.columns]
+    observed: dict[str, float] = {}
+    skipped_basis = skipped_source = 0
+    supplier = fetcher or tencent.fetch_tencent
+    pool = ThreadPoolExecutor(max_workers=max(1, min(max_workers, 16)))
+    futures = {pool.submit(supplier, ticker, 12, 1): ticker for ticker in candidates}
+    try:
+        try:
+            completed = as_completed(futures, timeout=max_wait_s)
+            for future in completed:
+                ticker = futures[future]
+                try:
+                    candle = future.result()
+                except Exception:
+                    skipped_source += 1
+                    continue
+                if candle is None or candle.empty:
+                    skipped_source += 1
+                    continue
+                recent = candle.copy()
+                recent.index = pd.to_datetime(recent.index).tz_localize(None).normalize()
+                if expected not in recent.index:
+                    skipped_source += 1
+                    continue
+                px = pd.to_numeric(pd.Series([recent.at[expected, "close"]]), errors="coerce").iloc[0]
+                if pd.isna(px) or float(px) <= 0:
+                    skipped_source += 1
+                    continue
+                historical = pd.to_numeric(df[ticker], errors="coerce").dropna()
+                historical = historical.loc[historical.index < expected]
+                overlap = historical.index.intersection(recent.index)
+                if len(overlap) == 0:
+                    skipped_basis += 1
+                    continue
+                overlap = overlap.sort_values()[-3:]
+                yahoo_basis = historical.loc[overlap].to_frame("close")
+                vendor_basis = recent.loc[overlap, ["close"]]
+                if not tencent._compatible_overlap(yahoo_basis, vendor_basis, 0.005):
+                    skipped_basis += 1
+                    continue
+                observed[ticker] = float(px)
+        except FutureTimeout:
+            skipped_source += sum(not future.done() for future in futures)
+    finally:
+        # Cancel queued work immediately after the bounded scan. Already running
+        # provider calls remain bounded by the existing Tencent per-request
+        # timeout; no extra permanent worker or background scheduler exists.
+        pool.shutdown(wait=False, cancel_futures=True)
+
+    total_valid = len(valid) + len(observed)
+    coverage = total_valid / count
+    log.info(
+        "china_search settled qfq repair: session=%s Yahoo=%d Tencent=%d "
+        "current=%d/%d (%.1f%%), basis_rejected=%d unresolved=%d",
+        expected.date(), len(valid), len(observed), total_valid, count,
+        100 * coverage, skipped_basis, skipped_source,
+    )
+    if coverage < min_coverage:
+        raise RuntimeError(
+            f"china_search current close coverage {total_valid}/{count} "
+            f"({coverage:.1%}) below {min_coverage:.0%} for "
+            f"{expected.date()}; retaining last-good source"
+        )
+    # The entire mutation is done only AFTER coverage succeeds. Keep all
+    # historical adjusted observations, overwrite only missing completed-session
+    # endpoints, and never create a fabricated day for suspended stocks.
+    if observed:
+        if expected not in df.index:
+            df.loc[expected, :] = float("nan")
+        for ticker, value in observed.items():
+            df.at[expected, ticker] = value
+    return df.sort_index().dropna(axis=0, how="all")
 
 
 def _to_ticker(sina_symbol: str) -> str | None:
@@ -763,6 +891,8 @@ class ChinaUniverseAdapter(Adapter):
         else:
             closes = self._download_closes(tickers, period)
         closes = closes.dropna(axis=1, how="all")
+        if not full_history:
+            closes = repair_settled_search_closes(closes, tickers)
 
         # APPEND-ONLY history (do NOT retroactively trim to the current top-N — that
         # physically deleted dropped names' history every run, erasing exactly the

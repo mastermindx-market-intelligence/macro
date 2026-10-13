@@ -112,6 +112,11 @@ def test_fetch_unions_extra_tickers(monkeypatch, tmp_path):
     closes = pd.DataFrame(1.0, index=idx, columns=cols).cumsum()
     monkeypatch.setattr(ad, "_download_closes",
                         lambda tickers, period: closes[[t for t in tickers if t in closes.columns]])
+    from lib import cn_calendar
+    # Synthetic 400-bar 2020/2021 fixture is complete only under its own test
+    # exchange clock; a test run years later must not request Tencent prices.
+    monkeypatch.setattr(cn_calendar, "expected_last_session",
+                        lambda now=None: idx[-1].date())
 
     ad.fetch()
     mb = pd.read_parquet(ad.members_path)
@@ -160,6 +165,11 @@ def test_sina_outage_reuses_cached_membership_and_advances_closes(monkeypatch, t
         index=idx,
     )
     monkeypatch.setattr(ad, "_download_closes", lambda tickers, period: fresh[list(tickers)])
+    # Synthetic Sep 11 2026 prices are a completed session only under their
+    # original exchange clock, not the wall clock on the CI runner in October.
+    from lib import cn_calendar
+    monkeypatch.setattr(cn_calendar, "expected_last_session",
+                        lambda now=None: dt.date(2026, 9, 11))
 
     ad.fetch()
 
@@ -379,3 +389,102 @@ def test_cached_membership_refuses_below_width_floor(tmp_path):
     ).to_parquet(ad.members_path)
     with pytest.raises(RuntimeError, match="too small"):
         ad._cached_universe()
+
+
+# ── Settled close repair: 2026-10-12 phantom all-null Yahoo row ──────────────
+
+def _wide_settled_fixture(n=100, current=0):
+    members = [f"{i:06d}.SS" for i in range(600000, 600000 + n)]
+    idx = pd.to_datetime(["2026-10-08", "2026-10-09", "2026-10-12"])
+    data = {t: [9.0, 10.0, 11.0 if i < current else float("nan")]
+            for i, t in enumerate(members)}
+    return pd.DataFrame(data, index=idx), members
+
+
+def _settled_qfq_frame(close=11.0, prior=10.0, session="2026-10-12"):
+    return pd.DataFrame({"close": [9.0, prior, close]}, index=pd.to_datetime([
+        "2026-10-08", "2026-10-09", session,
+    ]))
+
+
+def test_settled_china_search_cannot_accept_a_phantom_all_null_day():
+    """The Oct 12 all-NaN timestamp must NOT count as collected market truth."""
+    closes, members = _wide_settled_fixture(100, 0)
+    calls = []
+
+    def blank(ticker, count, retries):
+        calls.append(ticker)
+        return None
+
+    with pytest.raises(RuntimeError, match="coverage 0/100"):
+        cu.repair_settled_search_closes(
+            closes, members, now=dt.datetime(2026, 10, 12, 12,
+                                            tzinfo=dt.timezone.utc),
+            fetcher=blank, max_workers=4,
+        )
+    assert len(calls) == 100
+    assert closes.loc["2026-10-12"].isna().all(), "failure must not mutate caller data"
+
+
+def test_settled_china_search_accepts_basis_checked_real_candles_only():
+    """One adjusted-basis mismatch and an unobserved suspended name stay null."""
+    closes, members = _wide_settled_fixture(100, 0)
+    def qualified(ticker, count, retries):
+        assert count == 12 and retries == 1
+        if ticker == members[96]:
+            return _settled_qfq_frame(prior=10.2)  # >0.5% basis mismatch
+        if ticker in (members[97], members[98], members[99]):
+            return None
+        return _settled_qfq_frame()
+
+    fixed = cu.repair_settled_search_closes(
+        closes, members, now=dt.datetime(2026, 10, 12, 12,
+                                        tzinfo=dt.timezone.utc),
+        fetcher=qualified, max_workers=8,
+    )
+    assert int(fixed.loc["2026-10-12"].notna().sum()) == 96
+    assert fixed.at[pd.Timestamp("2026-10-12"), members[0]] == 11
+    for t in members[96:]:
+        assert pd.isna(fixed.at[pd.Timestamp("2026-10-12"), t])
+    assert (fixed.loc["2026-10-09"].dropna() == 10).all()
+    assert closes.loc["2026-10-12"].isna().all()
+
+
+def test_settled_china_search_fails_when_95pct_cannot_be_source_verified():
+    closes, members = _wide_settled_fixture(100, 0)
+
+    def partial(ticker, *_):
+        return _settled_qfq_frame() if ticker in members[:94] else None
+
+    with pytest.raises(RuntimeError, match="94/100"):
+        cu.repair_settled_search_closes(
+            closes, members, now=dt.datetime(2026, 10, 12, 12,
+                                            tzinfo=dt.timezone.utc),
+            fetcher=partial, max_workers=8,
+        )
+    assert closes.loc["2026-10-12"].isna().all()
+
+
+def test_settled_china_search_ignores_future_and_preclose_vendor_candles():
+    closes, members = _wide_settled_fixture(10, 0)
+    def future_only(_ticker, *_):
+        return _settled_qfq_frame(session="2026-10-13")
+    with pytest.raises(RuntimeError, match="0/10"):
+        cu.repair_settled_search_closes(
+            closes, members, now=dt.datetime(2026, 10, 12, 12,
+                                            tzinfo=dt.timezone.utc),
+            fetcher=future_only, max_workers=4,
+        )
+
+
+def test_settled_china_search_skips_secondary_provider_for_healthy_source():
+    closes, members = _wide_settled_fixture(100, 96)
+    def should_not_call(*_args):
+        raise AssertionError("current Yahoo data must not trigger another collector")
+    out = cu.repair_settled_search_closes(
+        closes, members, now=dt.datetime(2026, 10, 12, 12,
+                                        tzinfo=dt.timezone.utc),
+        fetcher=should_not_call,
+    )
+    assert int(out.loc["2026-10-12"].notna().sum()) == 96
+    assert (out.loc["2026-10-09"].dropna() == 10).all()
