@@ -213,7 +213,36 @@ _NUCLEAR = MountFacts(
     note_zh="会员研究内容。此处内容不构成排序、准入、仓位或时机判断。",
 )
 
-_ENTRIES: tuple[MountFacts, ...] = (_SEMICONDUCTOR, _NUCLEAR)
+_URANIUM = MountFacts(
+    anchor_theme_id="uranium_miners",
+    slice_keys=("fuel_cycle",),
+    # The nuclear five. This anchor admits only fuel_cycle; the view set is
+    # still the composer's, copied as literals the way the semiconductor mount
+    # copies its own.
+    view_keys=(
+        "composition",
+        "manufacturing",
+        "commercial",
+        "capacity",
+        "economics",
+    ),
+    schema_id="nuclear_theme_research.v1",
+    evidence_schema_id="nuclear_theme_research.evidence.v1",
+    definition_version="2026-09-25.1",
+    slice_labels=MappingProxyType({
+        "fuel_cycle": ("Fuel cycle", "核燃料循环"),
+    }),
+    title_en="Uranium miners research",
+    title_zh="铀矿研究",
+    # The nuclear mount's reviewed disclaimer, verbatim. Not a new promise.
+    note_en=(
+        "Paid research context for members. Nothing here ranks, gates, sizes "
+        "or times anything."
+    ),
+    note_zh="会员研究内容。此处内容不构成排序、准入、仓位或时机判断。",
+)
+
+_ENTRIES: tuple[MountFacts, ...] = (_SEMICONDUCTOR, _NUCLEAR, _URANIUM)
 
 
 def _assert_unique_anchors(entries: tuple[MountFacts, ...]) -> None:

@@ -3507,6 +3507,7 @@ jobs:
       # suites and fixtures. Verified against the closure audit.
       - "engine/market_ontology/nuclear_owner_bundle.py"
       - "engine/market_ontology/nuclear_theme_research.py"
+      - "engine/market_ontology/uranium_miners_anchor.py"
       - "engine/market_ontology/semiconductor_theme_research.py"
       # Shared hook 1 (Sol #7780 issuecomment-5813801605): the closed vertical
       # registration the transport dispatches through, and its suite.
@@ -3922,6 +3923,7 @@ jobs:
       # app.theme_research, whose composer joins the shared app/* import closure.
       - "engine/market_ontology/nuclear_owner_bundle.py"
       - "engine/market_ontology/nuclear_theme_research.py"
+      - "engine/market_ontology/uranium_miners_anchor.py"
       - "engine/market_ontology/semiconductor_theme_research.py"
       - "engine/market_ontology/theme_research_registry.py"  # app.main -> app.theme_research -> closed vertical registration (shared hook 1, #7870)
       # Shared hook 2 (#7780): the leaf module that owns what a theme-research
@@ -6894,6 +6896,7 @@ jobs:
       - "engine/market_ontology/exposure_map.py"
       - "engine/market_ontology/nuclear_owner_bundle.py"
       - "engine/market_ontology/nuclear_theme_research.py"
+      - "engine/market_ontology/uranium_miners_anchor.py"
       - "engine/market_ontology/semiconductor_owner_bundle.py"
       - "engine/market_ontology/semiconductor_theme_research.py"
       - "engine/market_ontology/semiconductor_witness_scope.py"
@@ -14540,6 +14543,7 @@ jobs:
       # app.theme_research, whose composer joins the shared app/* import closure.
       - "engine/market_ontology/nuclear_owner_bundle.py"
       - "engine/market_ontology/nuclear_theme_research.py"
+      - "engine/market_ontology/uranium_miners_anchor.py"
       - "engine/market_ontology/semiconductor_theme_research.py"
       - "engine/market_ontology/theme_research_registry.py"  # app.main -> app.theme_research -> closed vertical registration (shared hook 1, #7870)
       # Shared hook 2 (#7780): the leaf module that owns what a theme-research
@@ -15252,6 +15256,7 @@ jobs:
       # app.theme_research, whose composer joins the shared app/* import closure.
       - "engine/market_ontology/nuclear_owner_bundle.py"
       - "engine/market_ontology/nuclear_theme_research.py"
+      - "engine/market_ontology/uranium_miners_anchor.py"
       - "engine/market_ontology/semiconductor_theme_research.py"
       - "engine/market_ontology/theme_research_registry.py"  # app.main -> app.theme_research -> closed vertical registration (shared hook 1, #7870)
       # Shared hook 2 (#7780): the leaf module that owns what a theme-research
@@ -17935,6 +17940,7 @@ jobs:
       # app.theme_research, whose composer joins the shared app/* import closure.
       - "engine/market_ontology/nuclear_owner_bundle.py"
       - "engine/market_ontology/nuclear_theme_research.py"
+      - "engine/market_ontology/uranium_miners_anchor.py"
       - "engine/market_ontology/semiconductor_theme_research.py"
       - "engine/market_ontology/theme_research_registry.py"  # app.main -> app.theme_research -> closed vertical registration (shared hook 1, #7870)
       # Shared hook 2 (#7780): the leaf module that owns what a theme-research
@@ -18380,6 +18386,7 @@ jobs:
       # app.theme_research, whose composer joins the shared app/* import closure.
       - "engine/market_ontology/nuclear_owner_bundle.py"
       - "engine/market_ontology/nuclear_theme_research.py"
+      - "engine/market_ontology/uranium_miners_anchor.py"
       - "engine/market_ontology/semiconductor_theme_research.py"
       - "engine/market_ontology/theme_research_registry.py"  # app.main -> app.theme_research -> closed vertical registration (shared hook 1, #7870)
       # Shared hook 2 (#7780): the leaf module that owns what a theme-research
@@ -22512,6 +22519,7 @@ jobs:
       # app.theme_research, whose composer joins the shared app/* import closure.
       - "engine/market_ontology/nuclear_owner_bundle.py"
       - "engine/market_ontology/nuclear_theme_research.py"
+      - "engine/market_ontology/uranium_miners_anchor.py"
       - "engine/market_ontology/semiconductor_theme_research.py"
       - "engine/market_ontology/theme_research_registry.py"  # app.main -> app.theme_research -> closed vertical registration (shared hook 1, #7870)
       # Shared hook 2 (#7780): the leaf module that owns what a theme-research
@@ -24129,6 +24137,7 @@ jobs:
       - "engine/market_ontology/exposure_map.py"
       - "engine/market_ontology/nuclear_owner_bundle.py"
       - "engine/market_ontology/nuclear_theme_research.py"
+      - "engine/market_ontology/uranium_miners_anchor.py"
       - "engine/market_ontology/semiconductor_owner_bundle.py"
       - "engine/market_ontology/semiconductor_theme_research.py"
       - "engine/market_ontology/semiconductor_witness_scope.py"
@@ -26857,6 +26866,7 @@ jobs:
       - "engine/analyst_revisions.py"
       - "engine/anticipation.py"
       - "engine/basket_breadth_divergence.py"
+      - "engine/basket_history.py"
       - "engine/basket_index.py"
       - "engine/basket_membership_pit.py"
       - "engine/basket_mtf.py"
@@ -26960,6 +26970,7 @@ jobs:
       - "engine/cross_asset.py"
       - "engine/cross_asset_trend.py"
       - "engine/crowding.py"
+      - "engine/cycle_ontology.py"
       - "engine/cycles.py"
       - "engine/dannytrades.py"
       - "engine/dannytrades_chip.py"
@@ -27059,6 +27070,7 @@ jobs:
       - "engine/greeks.py"
       - "engine/group_flow.py"
       - "engine/guidance_gap.py"
+      - "engine/hazard_score.py"
       - "engine/hold.py"
       - "engine/htf_durability.py"
       - "engine/hysteresis.py"
@@ -27086,6 +27098,7 @@ jobs:
       - "engine/intelligence_workspace/resolver.py"
       - "engine/intelligence_workspace/runtime.py"
       - "engine/k3e_expectation_surface.py"
+      - "engine/leadership_receipt.py"
       - "engine/ledger_identity.py"
       - "engine/ledger_lane.py"
       - "engine/liquidity_chip.py"
@@ -27100,6 +27113,7 @@ jobs:
       - "engine/market_ontology/exposure_map.py"
       - "engine/market_ontology/nuclear_owner_bundle.py"
       - "engine/market_ontology/nuclear_theme_research.py"
+      - "engine/market_ontology/uranium_miners_anchor.py"
       - "engine/market_ontology/semiconductor_owner_bundle.py"
       - "engine/market_ontology/semiconductor_theme_research.py"
       - "engine/market_ontology/semiconductor_witness_scope.py"
@@ -27255,6 +27269,7 @@ jobs:
       - "engine/risk_sizing.py"
       - "engine/roc_blowoff.py"
       - "engine/seasonality/contracts.py"
+      - "engine/sector_cycles.py"
       - "engine/sector_intelligence/__init__.py"
       - "engine/sector_intelligence/contracts.py"
       - "engine/sector_intelligence/launch_slo_verifier.py"
@@ -27291,6 +27306,7 @@ jobs:
       - "engine/sue.py"
       - "engine/t0_indicator.py"
       - "engine/technicals.py"
+      - "engine/theme_alerts.py"
       - "engine/theme_context.py"
       - "engine/theme_crowding.py"
       - "engine/theme_graph/__init__.py"
@@ -27387,6 +27403,7 @@ jobs:
       - "scripts/build_security_master.py"
       - "scripts/build_stock_library.py"
       - "scripts/build_thematic_state.py"
+      - "scripts/build_theme_detail.py"
       - "scripts/check_board_contradictions.py"
       - "scripts/check_signal_gate_coherence.py"
       - "scripts/check_stretch_oracle_contract.py"
@@ -27443,11 +27460,13 @@ jobs:
       - "tests/test_nuclear_research_inputs.py"
       - "tests/test_nuclear_research_interpretation_scope.py"
       - "tests/test_nuclear_research_lineage.py"
+      - "tests/test_nuclear_research_publication.py"
       - "tests/test_nuclear_research_review_gate.py"
       - "tests/test_nuclear_research_route.py"
       - "tests/test_nuclear_research_sections.py"
       - "tests/test_nuclear_research_temporal.py"
       - "tests/test_nuclear_shell_import_names.py"
+      - "tests/test_uranium_miners_anchor.py"
     timeout-minutes: 10
     runs-on: ubuntu-latest
     steps:
@@ -27458,4 +27477,4 @@ jobs:
       - name: install deps for the nuclear research boundary
         run: pip install pytest jsonschema fastapi httpx pydantic pyyaml
       - name: nuclear research boundary
-        run: python -m pytest tests/test_market_ontology_nuclear_theme_research.py tests/test_nuclear_owner_bundle.py tests/test_nuclear_research_codes.py tests/test_nuclear_research_composition.py tests/test_nuclear_research_inputs.py tests/test_nuclear_research_interpretation_scope.py tests/test_nuclear_research_lineage.py tests/test_nuclear_research_review_gate.py tests/test_nuclear_research_route.py tests/test_nuclear_research_sections.py tests/test_nuclear_research_temporal.py tests/test_nuclear_shell_import_names.py -q -p no:cacheprovider
+        run: python -m pytest tests/test_market_ontology_nuclear_theme_research.py tests/test_nuclear_owner_bundle.py tests/test_nuclear_research_codes.py tests/test_nuclear_research_composition.py tests/test_nuclear_research_inputs.py tests/test_nuclear_research_interpretation_scope.py tests/test_nuclear_research_lineage.py tests/test_nuclear_research_publication.py tests/test_nuclear_research_review_gate.py tests/test_nuclear_research_route.py tests/test_nuclear_research_sections.py tests/test_nuclear_research_temporal.py tests/test_nuclear_shell_import_names.py tests/test_uranium_miners_anchor.py -q -p no:cacheprovider

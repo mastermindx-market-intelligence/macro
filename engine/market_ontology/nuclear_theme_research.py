@@ -29,6 +29,8 @@ from engine.theme_graph.identity import theme_node_id
 from engine.theme_graph.rights import family_for_source_ref
 
 ANCHOR_THEME_ID = "nuclear_power"
+#: Fuel-cycle-only anchor. It composes through this module; it is not a second schema.
+URANIUM_MINERS_ANCHOR_ID = "uranium_miners"
 SCHEMA_ID = "nuclear_theme_research.v1"
 EVIDENCE_SCHEMA_ID = "nuclear_theme_research.evidence.v1"
 DEFINITION_VERSION = "2026-09-25.1"
@@ -320,7 +322,7 @@ class _Selection:
         if query.slice_key == "fuel_cycle":
             self.limitations.add("supplemental_basket_witnesses")
         self.assertions: list[dict[str, Any]] = []
-        canonical_theme = theme_node_id(query.anchor_theme_id)
+        admitted_themes = _admitted_scope_themes(query)
         cohort = WITNESS_COHORT[query.slice_key]
         slug_keyed = 0
         cohort_excluded = 0
@@ -333,9 +335,13 @@ class _Selection:
                 continue
             scope = assertion.get("scope") or {}
             theme = scope.get("canonical_theme_id")
-            if theme not in (canonical_theme, query.anchor_theme_id):
+            if theme not in admitted_themes:
                 continue
-            if scope.get("technology_facet") != query.slice_key:
+            # uranium_miners reads the nuclear corpus, and only its fuel-cycle rows.
+            if query.anchor_theme_id == URANIUM_MINERS_ANCHOR_ID:
+                if scope.get("technology_facet") != "fuel_cycle":
+                    continue
+            elif scope.get("technology_facet") != query.slice_key:
                 continue
             if theme == query.anchor_theme_id:
                 slug_keyed += 1
@@ -895,11 +901,34 @@ def _refuse_unsupported_identity_vintage(selection: _Selection) -> None:
             raise ResearchRefusal("identity_vintage_unsupported")
 
 
+def _admitted_scope_themes(query: ResearchQuery) -> set[str]:
+    """Themes whose rows this anchor may read.
+
+    ``nuclear_power`` keeps its canonical node and its slug. ``uranium_miners``
+    reads ``theme:nuclear_power`` (the corpus is the nuclear theme) and
+    ``theme_node_id("uranium_miners")``, and then only ``fuel_cycle``.
+    """
+    canonical = theme_node_id(query.anchor_theme_id)
+    if query.anchor_theme_id == URANIUM_MINERS_ANCHOR_ID:
+        return {canonical, theme_node_id(ANCHOR_THEME_ID)}
+    return {canonical, query.anchor_theme_id}
+
+
+def _admit_anchor(query: ResearchQuery) -> None:
+    """``nuclear_power`` keeps every slice. ``uranium_miners`` is fuel_cycle only."""
+    if query.anchor_theme_id == ANCHOR_THEME_ID:
+        if query.slice_key not in SLICES:
+            raise ResearchRefusal("slice_not_supported")
+        return
+    if query.anchor_theme_id == URANIUM_MINERS_ANCHOR_ID:
+        if query.slice_key != "fuel_cycle":
+            raise ResearchRefusal("slice_not_supported")
+        return
+    raise ResearchRefusal("not_available")
+
+
 def _compose(query: ResearchQuery, bundle: OwnerBundle) -> dict[str, Any]:
-    if query.anchor_theme_id != ANCHOR_THEME_ID:
-        raise ResearchRefusal("not_available")
-    if query.slice_key not in SLICES:
-        raise ResearchRefusal("slice_not_supported")
+    _admit_anchor(query)
     if query.view not in VIEWS:
         raise ResearchRefusal("view_not_supported")
     _validate_query(query)
@@ -1007,10 +1036,7 @@ def _correction_lineage(assertion: Mapping[str, Any],
 
 def select_authorized_evidence(query: ResearchQuery, bundle: OwnerBundle,
                                assertion_ref: str) -> dict[str, Any]:
-    if query.anchor_theme_id != ANCHOR_THEME_ID:
-        raise ResearchRefusal("not_available")
-    if query.slice_key not in SLICES:
-        raise ResearchRefusal("slice_not_supported")
+    _admit_anchor(query)
     if query.view not in VIEWS:
         raise ResearchRefusal("view_not_supported")
     _validate_query(query)

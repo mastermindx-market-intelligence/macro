@@ -184,7 +184,7 @@ def test_unknown_anchor_mounts_nothing(anchor):
 
 
 def test_registry_of_mounts_is_closed_and_read_only():
-    assert set(MOUNTS) == {ANCHOR, "nuclear_power"}
+    assert set(MOUNTS) == {ANCHOR, "nuclear_power", "uranium_miners"}
     with pytest.raises(TypeError):
         MOUNTS["another_vertical"] = MOUNTS[ANCHOR]
 

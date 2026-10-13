@@ -6,7 +6,7 @@ and evidence selector ... Unknown/mismatched schema/anchor/slice fails."
 Pinned here:
 
 * the registry is a read-only mapping with EXACTLY the admitted anchors
-  (``ai_semiconductors``, ``nuclear_power``); adding a vertical is one additive entry;
+  (``ai_semiconductors``, ``nuclear_power``, ``uranium_miners``); adding a vertical is one additive entry;
 * the semiconductor entry binds the composer's own exact constants and
   callables — no restatement can drift;
 * lookup is exact-string: no case/whitespace normalisation, no prefix, no
@@ -97,12 +97,12 @@ def _valid_kwargs(**overrides):
 
 def test_registry_is_a_read_only_mapping_with_exactly_one_entry():
     assert isinstance(REGISTRY, MappingProxyType)
-    assert list(REGISTRY) == ["ai_semiconductors", "nuclear_power"]
+    assert list(REGISTRY) == ["ai_semiconductors", "nuclear_power", "uranium_miners"]
     with pytest.raises(TypeError):
         REGISTRY["robotics_automation"] = REGISTRY["ai_semiconductors"]  # type: ignore[index]
     with pytest.raises(TypeError):
         del REGISTRY["ai_semiconductors"]  # type: ignore[attr-defined]
-    assert list(REGISTRY) == ["ai_semiconductors", "nuclear_power"]
+    assert list(REGISTRY) == ["ai_semiconductors", "nuclear_power", "uranium_miners"]
 
 
 def _vertical_module(anchor, bound, field):
@@ -343,7 +343,8 @@ def test_nuclear_power_stays_unloaded_until_its_lazy_target_or_loader():
         "assert not loaded_at_import, 'a vertical loaded at registry import: ' + repr(loaded_at_import)\n"
         "entry = registry.registration_for('nuclear_power')\n"
         "assert entry is not None, 'nuclear_power is unregistered'\n"
-        "assert registry.registration_for('uranium_miners') is None\n"
+        "assert registry.registration_for('uranium_miners') is not None\n"
+        "assert 'engine.market_ontology.uranium_miners_anchor' not in sys.modules\n"
         "entry.build_query.lazy_target()\n"
         "entry.compose.lazy_target()\n"
         "entry.select_evidence.lazy_target()\n"
@@ -446,7 +447,7 @@ def test_registration_is_frozen():
 def test_synthetic_registration_constructs_without_touching_the_registry():
     entry = VerticalRegistration(**_valid_kwargs())
     assert entry.anchor_theme_id == "synthetic_vertical"
-    assert list(REGISTRY) == ["ai_semiconductors", "nuclear_power"]
+    assert list(REGISTRY) == ["ai_semiconductors", "nuclear_power", "uranium_miners"]
     assert registration_for("synthetic_vertical") is None
 
 
