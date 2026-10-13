@@ -862,11 +862,14 @@ function renderHeader() {
   const m = SUMMARY.meta || {};
   const hh = SUMMARY.health || {};
   const sv = SUMMARY.services || {};
-  const { healthKnown, serviceKnown } = adminOverviewModel(SUMMARY);
-  const allOk = healthKnown && hh.healthy && serviceKnown && sv.healthy;
-  const hasIssue = (healthKnown && !hh.healthy) || (serviceKnown && !sv.healthy);
+  const { healthKnown, serviceKnown, notices } = adminOverviewModel(SUMMARY);
+  // One triage model owns both the global summary and the overview's red notices.
+  // Otherwise memory/disk pressure could render a red warning below a green "Healthy" pill.
+  const criticalNotice = notices.some(notice => notice.tone === "bad");
+  const allOk = healthKnown && hh.healthy && serviceKnown && sv.healthy && !criticalNotice;
+  const hasIssue = (healthKnown && !hh.healthy) || (serviceKnown && !sv.healthy) || criticalNotice;
   const hhDown = hh.down_count != null ? hh.down_count : ((hh.sources && hh.sources.down) || 0);
-  const led = allOk ? "ok" : ((hh.broad_outage || hhDown > 0 || (sv.available && !sv.healthy)) ? "bad" : "warn");
+  const led = allOk ? "ok" : ((hh.broad_outage || hhDown > 0 || (sv.available && !sv.healthy) || criticalNotice) ? "bad" : "warn");
   const el = $("#hmeta"); el.innerHTML = "";
   el.appendChild(h(`<span class="pill" id="adminHealthStatus"><span class="led ${led}"></span>${allOk ? "Healthy" : hasIssue ? "Attention" : "Incomplete"}</span>`));
   const sysMeta = [

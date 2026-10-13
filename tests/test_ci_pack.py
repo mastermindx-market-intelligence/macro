@@ -4896,7 +4896,7 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 PACKING_PROBES = (
     ("templates/index.html", 135, 5_800),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
     ("scripts/build_free_content.py", 134, 5_600),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("engine/prophet/plan_book.py", 129, 5_600),
+    ("engine/prophet/plan_book.py", 130, 5_600),
 )
 # Twelve packs per shape was the pre-curation measurement.
 PACKING_PROBE_MAX_PACKS = 10
@@ -5545,6 +5545,24 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     closure, so the probe reads 5,793 (head) against 5,805 before
     the move. No ceiling moves; no suite, registration, assertion or selector
     is removed or weakened.
+
+    2026-10-13 (#9074 admin task workspace): adding the separately tested
+    workspace model to the existing admin-js-no-undef CODE job broadened that
+    job's inferred dependency closure. Hosted contract-delta on tested merge
+    0df562cf7ae5ad1e9cbdfc043c49f98b76f267c0 measured the
+    engine/prophet/plan_book.py probe moving 129 -> 130 jobs and
+    5,558 -> 5,574 weight-seconds. It remains within 5,600 seconds
+    and 10 packs. The extra selection is admin-js-no-undef; the five
+    pre-existing admin guard steps and all assertions remain wired.
+    Attempted exclusive curation was rejected: inference on the available
+    sparse source tree already found 1,013 concrete closure inputs, of which
+    an admin-only path declaration would omit 943. This is a lower bound;
+    full-tree closure verification remains a hosted-CI responsibility.
+    Shrinking the job would silently drop dependency-sensitive coverage.
+    Accept only the one measured job
+    increment (129 -> 130), with zero padding and no weight/pack ceiling
+    changes. Full-closure curation can be considered separately only after
+    a proven safe split of the existing guard and its imported source tree.
     """
     rows = packing_probe_measurements(
         MANIFEST, PACKING_PROBES, max_packs=PACKING_PROBE_MAX_PACKS

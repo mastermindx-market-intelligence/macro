@@ -394,6 +394,35 @@ assert.equal(model({...baseline,system:{available:false,memory:{used_pct:99}}}).
 """)
 
 
+def test_header_cannot_show_healthy_during_observed_critical_resource_pressure():
+    _node_assert("""
+const source = block('function renderHeader() {', 'function renderBanner()') +
+  block('function adminOverviewModel(', 'function adminOverviewMetric(');
+function pillFor(snapshot) {
+  let pill = null;
+  const meta = {innerHTML:'',appendChild(node) {if (pill === null) pill = node.html;}};
+  const lookup = selector => {assert.equal(selector, '#hmeta');return meta;};
+  const create = html => ({html,style:{}});
+  new Function('SUMMARY','SESSION','$','h','esc','go',source+';renderHeader();')(
+    snapshot,{auth_enabled:false},lookup,create,value=>String(value),()=>{});
+  return pill;
+}
+const baseline = {health:{healthy:true,age_hours:1},services:{available:true,healthy:true}};
+assert.match(pillFor(baseline), /led ok/);
+assert.match(pillFor(baseline), />Healthy<\\/span>/);
+for (const [type,pct] of [['memory',94],['disk',90]]) {
+  const result = pillFor({...baseline,system:{available:true,[type]:{used_pct:pct}}});
+  assert.match(result, /led bad/);
+  assert.match(result, />Attention<\\/span>/);
+  assert.doesNotMatch(result, />Healthy<\\/span>/);
+}
+for (const invalid of [null,Infinity,101,'95']) {
+  assert.match(pillFor({...baseline,system:{available:true,memory:{used_pct:invalid}}}), /led ok/);
+}
+assert.match(pillFor({...baseline,system:{available:false,memory:{used_pct:98}}}), /led ok/);
+""")
+
+
 def test_status_refresh_keeps_last_good_data_and_discards_obsolete_success():
     _node_assert("""
 const pending = [], state = [];
