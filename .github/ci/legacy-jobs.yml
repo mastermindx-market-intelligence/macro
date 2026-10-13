@@ -26064,7 +26064,7 @@ jobs:
         with:
           python-version: "3.12"
       - name: install minimal deps
-        run: pip install pytest pandas numpy scipy pyarrow pyyaml
+        run: pip install pytest pandas numpy scipy pyarrow pyyaml requests
       - name: pullback forward writer, grader, nightly and readiness tests
         run: >-
           python -m pytest -q
