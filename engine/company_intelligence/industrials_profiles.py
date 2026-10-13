@@ -6,8 +6,9 @@ financial extraction and does not place either issuer into the #7870 discovery
 population.
 
 Listing validity starts are evidence bounds, not incorporation/history claims:
-the selected SEC filings establish EXPO/Nasdaq no later than their 2026-02-27
-filing and PNR/NYSE no later than its 2026-02-24 filing. Those floors cite
+the selected SEC filings are a 10-K for CIK 0000851520 filed 2026-02-27 and a
+10-K for CIK 0000077360 filed 2026-02-24. Those companyfacts rows carry form,
+filed, and accession, and they do not carry a listing MIC. Those floors cite
 10-K accession 0001193125-26-082508 (EXPO, filed 2026-02-27) and 10-K accession
 0000077360-26-000007 (PNR, filed 2026-02-24) from companyfacts rows in
 data/debt_maturity/cache/CIK0000851520.json and CIK0000077360.json. CIKs are
