@@ -381,6 +381,69 @@ def test_shared_module_import_is_lazy_only():
     assert not any("theme_graph" in name for name in top_level)
 
 
+def _assigned_string_constant(tree: ast.AST, name: str) -> str:
+    for node in tree.body:
+        if not isinstance(node, ast.Assign):
+            continue
+        for target in node.targets:
+            if isinstance(target, ast.Name) and target.id == name:
+                value = node.value
+                if isinstance(value, ast.Constant) and isinstance(value.value, str):
+                    return value.value
+                break
+    raise AssertionError(f"{name} is not a module-level string constant")
+
+
+def _import_module_string_literals(tree: ast.AST) -> list[str]:
+    found: list[str] = []
+    for node in ast.walk(tree):
+        if not isinstance(node, ast.Call) or not node.args:
+            continue
+        func = node.func
+        label = func.attr if isinstance(func, ast.Attribute) else getattr(func, "id", "")
+        if label != "import_module":
+            continue
+        arg = node.args[0]
+        # A Name is an opaque dynamic import (scripts/ci_scope_dependencies.py)
+        # and smears CI scope. The target stays a literal bound to the constant.
+        assert isinstance(arg, ast.Constant) and isinstance(arg.value, str), (
+            "import_module target must stay a string literal equal to SHARED_CONTRACT_MODULE"
+        )
+        found.append(arg.value)
+    return found
+
+
+def _shared_contract_module_path_literals(tree: ast.AST) -> list[str]:
+    """Whole-value module-path literals, not docstring mentions of the path."""
+    found: list[str] = []
+    for node in ast.walk(tree):
+        if not isinstance(node, ast.Constant) or not isinstance(node.value, str):
+            continue
+        value = node.value
+        if value.startswith("engine.") and " " not in value and "curation_assertion" in value:
+            found.append(value)
+    return found
+
+
+def test_lazy_import_literal_equals_shared_contract_module():
+    """Bind the lazy import literal to ``SHARED_CONTRACT_MODULE`` (audit N1).
+
+    The loader keeps a string literal so CI scope can resolve the target. Nothing
+    else may carry a divergent copy of that path: if the constant moves and the
+    literal does not, the loader keeps importing the old name and stays
+    ``shared_contract_unavailable``. The strict xfail hardcodes the same literal,
+    so it is included here and would not catch that drift on its own.
+    """
+    module_tree = ast.parse(MODULE_PATH.read_text(encoding="utf-8"))
+    assigned = _assigned_string_constant(module_tree, "SHARED_CONTRACT_MODULE")
+    assert assigned == tech.SHARED_CONTRACT_MODULE
+    assert _import_module_string_literals(module_tree) == [assigned]
+    assert set(_shared_contract_module_path_literals(module_tree)) == {assigned}
+    test_tree = ast.parse(Path(__file__).read_text(encoding="utf-8"))
+    assert _import_module_string_literals(test_tree) == [assigned]
+    assert set(_shared_contract_module_path_literals(test_tree)) == {assigned}
+
+
 def test_shared_contract_unavailable_on_carrier_base():
     assert tech._load_shared_curation_contract() is None
 
