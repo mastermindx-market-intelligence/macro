@@ -28827,6 +28827,26 @@ jobs:
         run: pip install pytest pandas numpy pyarrow pyyaml requests
       - name: c19-wp24-superseded-generations
         run: python -m pytest tests/test_c19_wp24_superseded_generations.py -q -p no:cacheprovider
+  c19-wp24-consumer-states:
+    if: ${{ false }}
+    gate: code
+    # C19 WP24 DQ3 (MAS-263): named short-data consumer states (unavailable / parse_error / no_observation / partial / observed_zero) and the censored 999.99 days-to-cover flag. Hermetic: tmp_path only, no data/ reads, no network.
+    timeout-minutes: 10
+    paths:
+      - "collectors/finra.py"
+      - "engine/short_volume.py"
+      - "engine/stock_fundamentals.py"
+      - "tests/test_c19_wp24_consumer_states.py"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install minimal deps
+        run: pip install pytest pandas numpy pyarrow pyyaml requests
+      - name: c19-wp24-consumer-states
+        run: python -m pytest tests/test_c19_wp24_consumer_states.py -q -p no:cacheprovider
   c19-wp29-hk-southbound-two-period:
     if: ${{ false }}
     gate: code
