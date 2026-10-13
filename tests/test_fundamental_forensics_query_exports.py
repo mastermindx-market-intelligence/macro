@@ -860,6 +860,56 @@ def _x1p_xlsx_sheet(matrix: MetricMatrix) -> tuple[list[str], list[dict[str, str
     return header, records, numeric_by_id
 
 
+def _x1p_xlsx_meta(payload: bytes) -> dict[str, str]:
+    """Meta sheet key/value rows, parsed as the excel-export tests do."""
+    with zipfile.ZipFile(io.BytesIO(payload)) as archive:
+        root = ET.fromstring(archive.read("xl/worksheets/sheet2.xml"))
+    meta: dict[str, str] = {}
+    for row_element in root.findall(f"{{{_SSML_NS}}}sheetData/{{{_SSML_NS}}}row"):
+        cells = row_element.findall(f"{{{_SSML_NS}}}c")
+        if len(cells) < 2:
+            continue
+        key = cells[0].findtext(f"{{{_SSML_NS}}}is/{{{_SSML_NS}}}t") or ""
+        value = cells[1].findtext(f"{{{_SSML_NS}}}is/{{{_SSML_NS}}}t")
+        if value is not None:
+            meta[key] = value
+    return meta
+
+
+def _x1p_ref_row(ref: str) -> int:
+    letters = len(ref) - len(ref.lstrip("ABCDEFGHIJKLMNOPQRSTUVWXYZ"))
+    return int(ref[letters:])
+
+
+def _x1p_xlsx_value_text_cells(matrix: MetricMatrix) -> dict[str, str]:
+    """A1 ref -> inlineStr text of every Response value cell written as text."""
+    payload = to_xlsx_bytes(_x1p_xlsx_response(matrix))
+    with zipfile.ZipFile(io.BytesIO(payload)) as archive:
+        root = ET.fromstring(archive.read("xl/worksheets/sheet1.xml"))
+    value_column: int | None = None
+    text_cells: dict[str, str] = {}
+    for row_element in root.findall(f"{{{_SSML_NS}}}sheetData/{{{_SSML_NS}}}row"):
+        row_number = int(row_element.get("r"))
+        for cell in row_element.findall(f"{{{_SSML_NS}}}c"):
+            if cell.get("t") != "inlineStr":
+                continue
+            ref = cell.get("r") or ""
+            letters = ref[: len(ref) - len(ref.lstrip("ABCDEFGHIJKLMNOPQRSTUVWXYZ"))]
+            column = 0
+            for character in letters:
+                column = column * 26 + ord(character) - 64
+            text = cell.findtext(f"{{{_SSML_NS}}}is/{{{_SSML_NS}}}t")
+            if text is None:
+                text = ""
+            if row_number == 1:
+                if text == "value":
+                    value_column = column
+                continue
+            if column == value_column:
+                text_cells[ref] = text
+    return text_cells
+
+
 def _x1p_rows(fmt: str, matrix: MetricMatrix) -> list[dict]:
     if fmt == "csv":
         return _x1p_csv_rows(matrix)
@@ -882,13 +932,15 @@ def _x1p_field_carried(fmt: str, field: str, leaf, row: dict, numeric_columns: s
     if fmt == "csv":
         return row.get(column, "") == expected_text
     # XLSX: the value column is a numeric cell with the exact decimal text,
-    # or (non-IEEE-754 values only) a text cell carrying _csv_safe of it.
+    # or (non-IEEE-754 values only) an inlineStr cell carrying that exact
+    # decimal text verbatim — no _csv_safe apostrophe (excel_export
+    # _ExactText), ref listed in the Meta sheet exact_text_cells.
     if field == "value":
         if leaf is None:
             return row.get(column, "") == ""
         if column in numeric_columns:
             return row.get(column, "") == _x1p_wire_text(leaf, csv_safe=False)
-        return row.get(column, "") == _csv_safe(expected_text)
+        return row.get(column, "") == expected_text
     return row.get(column, "") == expected_text
 
 
@@ -945,7 +997,9 @@ def test_a38_x1p_decimal_value_exact_roundtrip_all_formats() -> None:
             if "value" in numeric_by_id[cell_id]:
                 assert xlsx_value == json_value
             else:
-                assert xlsx_value == _csv_safe(json_value)
+                # Exact-text value cells carry the same exact decimal with
+                # no _csv_safe apostrophe (excel_export._ExactText).
+                assert xlsx_value == json_value
 
 
 def test_a38_x1p_omitted_cell_fields_declaration_is_exact() -> None:
@@ -1024,6 +1078,14 @@ def test_a40_x1p_no_unguarded_formula_leads_in_csv_or_xlsx() -> None:
             for name, text in record.items():
                 if name in numeric_by_id[record["root_cell_id"]]:
                     continue
+                if name == "value":
+                    # Same exemption as the CSV loop above: the exact
+                    # decimal text of a non-IEEE value is written verbatim
+                    # (excel_export._ExactText, no _csv_safe apostrophe).
+                    assert not text.startswith("'"), (record["root_cell_id"], text)
+                    if text:
+                        assert Decimal(text).is_finite()
+                    continue
                 assert not text or text[0] not in _DANGEROUS_PREFIXES or text.startswith("'")
 
 
@@ -1052,16 +1114,86 @@ def test_a40_x1p_negative_and_non_ieee_values() -> None:
     assert "value" not in numeric_by_id[ccc_xlsx["root_cell_id"]]
     assert ccc_xlsx["value"] == "123456789012345678"
 
-    # Declared difference: a negative non-IEEE value is a text cell carrying
-    # _csv_safe of the exact decimal in XLSX, while the CSV value column and
-    # Parquet keep the bare decimal.
+    # Declared exception: a negative non-IEEE value is an inlineStr cell
+    # carrying the exact decimal text verbatim — no _csv_safe apostrophe,
+    # same spelling as the exempt CSV value column and Parquet — and its
+    # A1 reference is listed in the Meta sheet exact_text_cells.
     assert csv_rows[("EEE", "revenue")]["value"] == "-0.1"
     assert parquet_by_key[("EEE", "revenue")]["value"] == "-0.1"
     eee_xlsx = xlsx_by_key[("EEE", "revenue")]
     assert "value" not in numeric_by_id[eee_xlsx["root_cell_id"]]
-    assert eee_xlsx["value"] == "'-0.1"
+    assert eee_xlsx["value"] == "-0.1"
+    value_texts = _x1p_xlsx_value_text_cells(matrix)
+    eee_row = (
+        next(
+            index
+            for index, record in enumerate(xlsx_records)
+            if record["ticker"] == "EEE" and record["metric_id"] == "revenue"
+        )
+        + 2
+    )
+    eee_ref = next(ref for ref in value_texts if _x1p_ref_row(ref) == eee_row)
+    meta = _x1p_xlsx_meta(to_xlsx_bytes(_x1p_xlsx_response(matrix)))
+    assert eee_ref in (meta.get("exact_text_cells") or "").split(",")
     joined = " ".join(SERIALIZATION_DIFFERENCES["xlsx"]["encoding"])
-    assert "negative non-IEEE-exact decimal" in joined
+    assert "no `'` prefix, negative included" in joined
+    assert "exact_text_cells" in joined
+
+
+def test_a40_x1p_exact_text_cells_list_every_non_ieee_value_cell() -> None:
+    """(b) Meta exact_text_cells == the value cells written as exact text."""
+    matrix = _x1p_parity_matrix()
+    value_texts = _x1p_xlsx_value_text_cells(matrix)
+    assert value_texts, "fixture must carry at least one non-IEEE value"
+    meta = _x1p_xlsx_meta(to_xlsx_bytes(_x1p_xlsx_response(matrix)))
+    listed = (meta.get("exact_text_cells") or "").split(",")
+    assert meta.get("exact_text_cells")
+    assert set(listed) == set(value_texts)
+    raw_rows = list(csv.reader(io.StringIO(matrix.to_csv_bytes().decode("utf-8"))))
+    value_index = raw_rows[0].index("value")
+    for ref, text in value_texts.items():
+        # Byte-for-byte the CSV value-column spelling of the same row, and
+        # a parseable Decimal.
+        assert text == raw_rows[_x1p_ref_row(ref) - 1][value_index]
+        Decimal(text)
+
+
+def test_a40_x1p_direct_non_ieee_paths_are_exact_text_cells() -> None:
+    """(c) Direct int/Decimal paths: exact text, no apostrophe, Meta-listed."""
+    response = {
+        "schema": "fundamental_forensics.financial_query_response/v1",
+        "query_id": "q-x1p-r1",
+        "query_hash": "ab" * 32,
+        "sha256": "cd" * 32,
+        "rows": [
+            ["neg_int", "neg_decimal", "nan", "neg_inf"],
+            [
+                -123456789012345678,
+                Decimal("-0.1"),
+                Decimal("NaN"),
+                Decimal("-Infinity"),
+            ],
+        ],
+    }
+    payload = to_xlsx_bytes(response)
+    with zipfile.ZipFile(io.BytesIO(payload)) as archive:
+        root = ET.fromstring(archive.read("xl/worksheets/sheet1.xml"))
+    grid: dict[str, tuple[str, str]] = {}
+    for cell in root.iter(f"{{{_SSML_NS}}}c"):
+        if cell.get("t") == "inlineStr":
+            text = cell.findtext(f"{{{_SSML_NS}}}is/{{{_SSML_NS}}}t") or ""
+            grid[cell.get("r") or ""] = ("inlineStr", text)
+        else:
+            text = cell.findtext(f"{{{_SSML_NS}}}v") or ""
+            grid[cell.get("r") or ""] = ("v", text)
+    assert grid["A2"] == ("inlineStr", "-123456789012345678")
+    assert grid["B2"] == ("inlineStr", "-0.1")
+    # Non-finite Decimals keep the _csv_safe form (unchanged path).
+    assert grid["C2"] == ("inlineStr", _csv_safe(str(Decimal("NaN"))))
+    assert grid["D2"] == ("inlineStr", _csv_safe("-Infinity"))
+    assert grid["D2"] == ("inlineStr", "'-Infinity")
+    meta = _x1p_xlsx_meta(payload)
+    assert set((meta.get("exact_text_cells") or "").split(",")) == {"A2", "B2"}
 
 
 def test_a40_x1p_probe_leads_apostrophe_guarded_end_to_end() -> None:
@@ -1106,6 +1238,28 @@ def test_a40_x1p_csv_appends_three_provenance_columns_last() -> None:
             assert row[-3] == _csv_safe(provenance["kind"])
             assert row[-2] == _csv_safe(provenance["document_id"] or "")
             assert row[-1] == _csv_safe(provenance["filing_metadata_content_sha256"] or "")
+
+
+def test_a40_x1p_every_csv_column_is_mapped_or_receipt_scalar() -> None:
+    """(d) A carried CSV column with no column-map entry fails the pin."""
+    # Excluded by design: the four receipt-level scalar columns
+    # MetricMatrix.to_csv_bytes repeats on every row from the receipt
+    # itself (query.py:3859-3862 header, :3909-3912 row values) — they are
+    # not per-root-cell JSON fields, so they hold no
+    # _X1P_CSV_XLSX_COLUMN_BY_FIELD entry.
+    receipt_scalars = {
+        "query_hash",
+        "receipt_authority",
+        "proof_scope",
+        "selection_proof",
+    }
+    mapped = set(_X1P_CSV_XLSX_COLUMN_BY_FIELD.values())
+    for matrix in _x1p_matrices():
+        header = next(csv.reader(io.StringIO(matrix.to_csv_bytes().decode("utf-8"))))
+        unmapped = set(header) - receipt_scalars - mapped
+        assert not unmapped, f"CSV columns with no column-map entry: {sorted(unmapped)}"
+        phantom = mapped - set(header)
+        assert not phantom, f"mapped columns absent from the CSV header: {sorted(phantom)}"
 
 
 def test_a38_x1p_kernel_exports_are_deterministic() -> None:

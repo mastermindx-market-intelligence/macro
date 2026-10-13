@@ -102,11 +102,11 @@ SERIALIZATION_DIFFERENCES: Mapping[str, Mapping[str, tuple[str, ...]]] = Mapping
                     "(excel_export._rows_from_csv_bytes); _CSV_VALUE_INDEX "
                     "stays 15",
                     "a value that round-trips an IEEE-754 double "
-                    "(excel_export._fits_ieee754) is a numeric cell; any "
-                    "other value is a TEXT cell carrying _csv_safe of the "
-                    "exact decimal, so a negative non-IEEE-exact decimal "
-                    "carries the leading apostrophe unlike the exempt CSV "
-                    "value column",
+                    "(excel_export._fits_ieee754) is a numeric cell; a "
+                    "finite value that does not is an inlineStr cell "
+                    "holding the exact decimal text verbatim (no `'` "
+                    "prefix, negative included) and its A1 reference is "
+                    "listed in the Meta sheet exact_text_cells",
                     "the null value column is an omitted cell (no <c> "
                     "element); other empty fields are empty inlineStr text "
                     "cells",
