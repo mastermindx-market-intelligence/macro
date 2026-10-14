@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-10-14T15:10:45.206308+00:00",
-  "count": 2903,
+  "generated_at": "2026-10-14T15:44:14.796465+00:00",
+  "count": 2904,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -148,6 +148,25 @@
       "tickers": [],
       "top_pick": false,
       "pages": 7,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-810sqguhx8x-b2e5e5",
+      "title": "GS Armbrust What Matters Today HF Exposure to Mag 7 at the Highs Large Bank Earnings ASML and Anthropic Today US Equity Positioning is a Tailwind HF Performance in September 14 Oct 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-14T13:44:19Z",
+      "summary_points": [
+        "HF Exposure to Mag 7 at Highs: Elevated net Mag 7 exposure amid 3-month implied volatility near lows creates a tactical hedging opportunity for long positions despite low overall net risk.",
+        "Foreign Investor Flow Strength: Current foreign investor net demand percentile near 100 confirms structural strength, aligning with midterm-driven patterns (1.75% AUM inflows historically) as a critical flow catalyst.",
+        "ASML Q3 Beat & AI Sentiment Risks: Strong Q3 results with 2027 capacity concerns; AI sentiment weakened by power/funding constraints, model competition, and reduced GPU reliance (2pm call critical)."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 6,
       "language": "en",
       "needs_metadata": false
     },
