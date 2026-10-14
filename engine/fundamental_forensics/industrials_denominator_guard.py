@@ -26,8 +26,11 @@ def denominator_refusal(cell: Mapping[str, Any]) -> str | None:
     """Return ``mislabeled_denominator`` when a share cell is not an agreed pair.
 
     ``None`` means the metric is not ``revenue_share_pct``, or the cell is one
-    of the two agreed pairs. Callers that skip this guard can still pass a
-    number through derivation; this function does not call it.
+    of the two agreed pairs. ``industrials_result_cash.qualify_operands``
+    calls this guard for every parsed operand — unconditionally, never
+    conditioned on a comparison receipt — so ``derive_result_cash`` refuses a
+    mislabeled denominator with ``mislabeled_denominator`` before any formula
+    code is reached.
     """
     if cell.get("metric") != _SHARE_METRIC:
         return None
