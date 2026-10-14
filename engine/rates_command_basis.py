@@ -1072,12 +1072,23 @@ def solve_reference_average(
         if obs.value_state == ValueState.PRESENT and obs.value is not None:
             avg = float(obs.value)
             break
+    monthly_from_realised = False
     if avg is None and assumptions.realised_average is not None:
-        avg = float(assumptions.realised_average)
+        # A realised average may stand in for the monthly average only on
+        # full-month coverage; a partial window is a pre-rate at best and
+        # never the month's average.
+        if (
+            assumptions.realised_through is not None
+            and assumptions.realised_through >= end_iso
+        ):
+            avg = float(assumptions.realised_average)
+            monthly_from_realised = True
     if avg is None:
         return PathIdentification(
             PathStatus.MISSING_INPUTS, None, (), None, base_used, ("monthly_average",)
         )
+    if monthly_from_realised:
+        base_used = base_used + ("monthly_average_source=realised_average",)
 
     inside = sorted({d for d in assumptions.effective_dates if start_iso <= d <= end_iso})
 
@@ -1101,16 +1112,24 @@ def solve_reference_average(
             (),
         )
 
+    realised_ok = False
+    if len(inside) == 1:
+        # The realised average is a pre-change rate only when its window is a
+        # strict prefix of the pre segment [month_start, eff): a window that
+        # reaches or passes the effective date (or ends before the month
+        # began) carries no pre-change information at all.
+        realised_ok = assumptions.realised_average is not None and (
+            assumptions.realised_through is None
+            or start_iso <= assumptions.realised_through < inside[0]
+        )
     if len(inside) == 1 and (
-        assumptions.pre_change_rate is not None or assumptions.realised_average is not None
+        assumptions.pre_change_rate is not None or realised_ok
     ):
         eff = inside[0]
         r_pre = assumptions.pre_change_rate
         d_pre = (date.fromisoformat(eff) - start).days
         if r_pre is None:
             r_pre = float(assumptions.realised_average)
-            through = assumptions.realised_through or eff
-            d_pre = (date.fromisoformat(through) - start).days + 1
         if d_pre < 0:
             d_pre = 0
         d_post = n_days - d_pre
@@ -1121,12 +1140,19 @@ def solve_reference_average(
             "segments": [[start_iso, eff, float(r_pre)], [eff, end_iso, float(r_post)]],
             "end_rate": float(r_post),
         }
+        used = base_used + (
+            "effective_date=%s" % eff, "pre_change_rate=%g" % float(r_pre),
+        )
+        if assumptions.pre_change_rate is None:
+            used = used + ("pre_change_rate_source=realised_average",)
+            if assumptions.realised_through is not None:
+                used = used + ("realised_through=%s" % assumptions.realised_through,)
         return PathIdentification(
             PathStatus.IDENTIFIED_CONDITIONAL,
             identified,
             (),
             (r_post - tol_pct, r_post + tol_pct),
-            base_used + ("effective_date=%s" % eff, "pre_change_rate=%g" % float(r_pre)),
+            used,
             (),
         )
 
@@ -1137,6 +1163,11 @@ def solve_reference_average(
         used = base_used + (
             "effective_date=%s" % inside[0], "pre_change_rate_unknown", "grid_enumeration",
         )
+        if (
+            assumptions.realised_average is not None
+            and assumptions.pre_change_rate is None
+        ):
+            used = used + ("realised_average_unusable_as_pre_rate",)
     else:
         paths, best_bp = _grid_multi_segment(
             start_iso, end_iso, inside, n_days, avg, assumptions, tol_pct
