@@ -85,7 +85,7 @@ next_actions:
   DONE 2026-10-14: ORCH-REPAIR return consumed; #9380 merged exact-head → c55b54dab056; baseline 38627611213
   SUCCESS → MEASURED_PRODUCT_COMPLETE = COMPLETE; T12R SIZED 42/42; T13R all NOT_EXECUTABLE; V3 not
   triggered by V2 rules. The #9380 merged head is CI-authority-frozen until one green main ci.yml run on a
-  descendant (baseline dispatch chained by one seat watcher behind live main run 38642010515, which predates the merge; id and verdict recorded on conclusion); never re-dispatch over a live run.
+  descendant (baseline 38648008782 @51865d51 completed SUCCESS 2026-10-14T23:20:01Z — freeze CLEARED); never re-dispatch over a live run.
 - >-
   Follow-on LR-W6 (not in this masterplan): author PREREG V3 (own blob pin) re-registering H1 (statistic
   not T_a ≡ 5 by construction) and H2/H3 effect scales vs margins; re-run size+power; only SIZED+POWERED
