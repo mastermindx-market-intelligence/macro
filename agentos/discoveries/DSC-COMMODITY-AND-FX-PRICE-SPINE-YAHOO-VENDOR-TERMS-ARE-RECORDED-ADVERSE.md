@@ -24,7 +24,7 @@ kind: constraint
 verified_at: 2026-09-07
 verified_by: >-
   engine/forex_inputs.py:66-67,157; engine/commodity_inputs.py:49-53; scripts/collect.py:298;
-  config/dataset_registry.yml:63 and :104 (`licensing: vendor_terms_personal_use` on
+  config/dataset_registry.yml:63 and :124 (`licensing: vendor_terms_personal_use` on
   `vendor: yahoo`); research/MASTERMIND_DATA_CONTRACTS.md:103 (yfinance-sourced stores
   republished to a paid product; the contracts line names
   `licensing: vendor_terms_personal_use`); research/IMCE_ROUND3_ARCHITECTURE_FREEZE_BY_FABLE.md:189
