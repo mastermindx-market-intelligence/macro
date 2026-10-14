@@ -1,0 +1,124 @@
+"""Fabric lane sparse-root admission: opt-in, no incumbent worktree mutation.
+
+Tests use short-lived Git repos under tmp_path only; no live lane is changed.
+"""
+from __future__ import annotations
+
+import os
+import subprocess
+from pathlib import Path
+
+import pytest
+
+from scripts import worktree_sparse as ws
+
+
+def _git(root: Path, *args: str) -> str:
+    result = subprocess.run(
+        ["git", "-C", str(root), *args],
+        capture_output=True, text=True, timeout=20, check=True,
+    )
+    return result.stdout.strip()
+
+
+@pytest.fixture
+def checkouts(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
+    home = tmp_path / "home"
+    home.mkdir()
+    monkeypatch.setenv("HOME", str(home))
+    monkeypatch.delenv("MASTERMIND_FABRIC_SPARSE_NEW", raising=False)
+
+    repo = home / "project"
+    repo.mkdir()
+    _git(repo, "init", "-q")
+    _git(repo, "config", "user.name", "Fixture")
+    _git(repo, "config", "user.email", "fixture@example.test")
+    (repo / "config").mkdir()
+    (repo / "config" / "sparse_worktree.json").write_text(
+        '{"enabled":true,"exclude_dirs":["data","site","mockups","verify_shots"]}\n'
+    )
+    (repo / "scripts").mkdir()
+    (repo / "scripts" / "keep.py").write_text("print(1)\n")
+    for name in ("data", "site", "mockups", "verify_shots"):
+        (repo / name).mkdir()
+        (repo / name / "tracked.txt").write_text(name + "\n")
+    _git(repo, "add", "-A")
+    _git(repo, "commit", "-qm", "seed")
+
+    lane = home / "lanes" / "wt" / "new-worker"
+    lane.parent.mkdir(parents=True)
+    _git(repo, "worktree", "add", "--detach", str(lane), "HEAD")
+    operator = home / "operator-root"
+    _git(repo, "worktree", "add", "--detach", str(operator), "HEAD")
+    return repo, lane, operator, home
+
+
+def test_fabric_lane_default_off_preserves_full(checkouts):
+    _, lane, _, _ = checkouts
+    assert ws.is_linked_worktree(lane)
+    assert not ws.path_under_session_root(lane)
+    assert not ws.is_session_worktree(lane)
+    assert ws.auto_profile(lane) == 0
+    assert (lane / "data" / "tracked.txt").exists()
+    assert (_git(lane, "config", "--get", "core.sparseCheckout") != "true")
+
+
+def test_qualified_new_fabric_lane_uses_existing_profile(checkouts, monkeypatch):
+    _, lane, _, _ = checkouts
+    before = _git(lane, "rev-parse", "HEAD")
+    monkeypatch.setenv("MASTERMIND_FABRIC_SPARSE_NEW", "1")
+    assert ws.path_under_session_root(lane)
+    assert ws.is_session_worktree(lane)
+    assert ws.auto_profile(lane) == 0
+    assert _git(lane, "config", "--get", "core.sparseCheckout") == "true"
+    assert _git(lane, "rev-parse", "HEAD") == before
+    assert _git(lane, "status", "--porcelain") == ""
+    for name in ("data", "site", "mockups", "verify_shots"):
+        assert not (lane / name / "tracked.txt").exists()
+    assert (lane / "scripts" / "keep.py").exists()
+
+
+def test_user_explicit_materialization_survives_auto(checkouts, monkeypatch):
+    _, lane, _, _ = checkouts
+    monkeypatch.setenv("MASTERMIND_FABRIC_SPARSE_NEW", "1")
+    assert ws.auto_profile(lane) == 0
+    _git(lane, "sparse-checkout", "add", "data")
+    assert (lane / "data" / "tracked.txt").exists()
+    assert ws.auto_profile(lane) == 0
+    assert (lane / "data" / "tracked.txt").exists()
+
+
+def test_opt_in_does_not_touch_operator_checkout(checkouts, monkeypatch):
+    _, lane, operator, home = checkouts
+    monkeypatch.setenv("MASTERMIND_FABRIC_SPARSE_NEW", "1")
+    assert ws.is_linked_worktree(operator)
+    assert not ws.path_under_session_root(operator)
+    assert not ws.is_session_worktree(operator)
+    assert ws.auto_profile(operator) == 0
+    assert (operator / "data" / "tracked.txt").exists()
+
+    nested = home / "lanes" / "wt" / "group" / "child"
+    assert not ws.path_under_session_root(nested)
+
+
+def test_primary_checkout_and_bad_opt_in_not_enrolled(checkouts, monkeypatch):
+    _, lane, _, home = checkouts
+    monkeypatch.setenv("MASTERMIND_FABRIC_SPARSE_NEW", "true")
+    assert not ws.path_under_session_root(lane)
+    monkeypatch.setenv("MASTERMIND_FABRIC_SPARSE_NEW", "1")
+
+    primary = home / "lanes" / "wt" / "primary-repository"
+    primary.mkdir()
+    _git(primary, "init", "-q")
+    assert ws.path_under_session_root(primary)
+    assert not ws.is_session_worktree(primary)
+    assert ws.auto_profile(primary) == 0
+
+
+def test_new_path_requires_exact_immediate_child(checkouts, monkeypatch):
+    _, _, _, home = checkouts
+    uncreated = home / "lanes" / "wt" / "future-worker"
+    monkeypatch.setenv("MASTERMIND_FABRIC_SPARSE_NEW", "1")
+    assert ws.path_under_session_root(uncreated)
+    assert not ws.path_under_session_root(home / "lanes" / "wt")
+    assert not ws.path_under_session_root(home / "lanes" / "wt" / "nested" / "future-worker")
