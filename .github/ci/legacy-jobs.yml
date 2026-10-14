@@ -29366,6 +29366,10 @@ jobs:
       # engine/market_ontology/mining_theme_research.py is too, and the only stdlib import
       # is ``dataclasses.replace``).
       - "tests/test_mining_witness_expectations.py"
+      # W10-3 company-card typed-absence helper. The composer
+      # (engine/market_ontology/mining_theme_research.py, companies loop) now
+      # imports it, so the suite's import closure requires the path here.
+      - "engine/market_ontology/mining_company_card.py"
     timeout-minutes: 8
     runs-on: ubuntu-latest
     steps:
