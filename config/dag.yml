@@ -1417,6 +1417,24 @@ lanes:
                    data/treasury/tga.parquet,
                    data/treasury_auctions/auctions.parquet]
           outputs: [data/neuralweb/liquidity_plumbing.json]
+      - id: build_global_liquidity_transmission
+        module: scripts.build_global_liquidity_transmission
+        note: >
+          non-fatal; W-LIQ.1 global liquidity transmission producer
+          (global_liquidity_transmission.v1, frozen #6296) — pure local reads, no
+          network calls, display tier, validated=False. Wired 2026-10-13 (GLT T06):
+          before this no workflow invoked the producer (its only .github reference
+          was a CI test lane's paths filter), so the published state never
+          advanced. Runs AFTER the plumbing step so
+          data/regime/latest.json is present.
+          inputs: [data/fred/BUSLOANS.parquet,
+                   data/china_credit/tsf.parquet,
+                   data/regime/latest.json,
+                   config/global_liquidity_transmission_v1.yml]
+          outputs: [site/liquiditydata/global_liquidity_transmission.json,
+                    data/global_liquidity_transmission/state_history.parquet,
+                    data/global_liquidity_transmission/state_history_meta.json,
+                    data/global_liquidity_transmission/factor_comparison_btc_4w.json]
       - id: build_price_pressure
         module: scripts.build_price_pressure
         note: >
