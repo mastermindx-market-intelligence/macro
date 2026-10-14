@@ -5,9 +5,8 @@ model: fable
 ended_because: ci_handoff
 mission: Deliver the accepted T12, T5 and T6 source interfaces through existing protected source, CI and
   actual consumer adoption. This is a continuity checkpoint; the active root continues.
-state_before: A1 PR6651 OPEN05a; main479 introduced five more additive scope conflicts and invalidated
-  unpublisheda8d9. Revised single-parent1b7916353dd4 preserves309jobs and22path entries across9lists and
-  merges cleanly with observedmain. Follow-on final runtimefa9 locally qualified; release still gated.
+state_before: A1 source05a was blocked by shared CI-list conflicts; follow-on f573 had nine analogous
+  conflicts against observed main. Capacity then admitted the ordinary source correction.
 changed:
 - path: engine/intelligence_registry.py
   what: Expose exact registered-producer evaluation requirements without claiming earned evaluation.
@@ -16,8 +15,8 @@ changed:
 - path: engine/postmortem.py
   what: Classify supported source/data observations from one supplied output-health view.
 - path: engine/neuralweb/response_eval.py
-  what: Admit twelve bounded supplied-text cases with explicit callbacks; newest six are root-adjudicated
-    without independent review. Preserve original six and legacy bear bytes.
+  what: Admit thirteen bounded supplied-text cases with explicit callbacks. Preserve prior cases and legacy
+    bear; no independent model observation or historical byte-custody claim.
 - path: .github/ci/legacy-jobs.yml
   what: Preserve incumbent owners and declare the combined source dependencies.
 - path: research/evidence/eval-os-tier-query-20261014/release-probe/project_served_asset_identity.py
@@ -94,6 +93,20 @@ verified:
     counts preserved and merge-treePASS against479. Moves22existing readiness entries across9lists. No
     source branch/remote update or base refresh. Canonical a1-conflict-v2-20261014 retains both RED and
     GREEN.
+- claim: A1 source-only correction was published on the original carrier after capacity and exact-main
+    preview passed.
+  command: Retained capacity census, sole-parent/source custody checks, git merge-tree, ordinary fast-forward/push
+    and git ls-remote.
+  result: Published1b7916353dd4, soleparent05a; six active proofs/cap8 with no lease, preview against
+    b4a515 passed. New CI38568750084 started; authority/main and fences passed while plan/contract remained
+    pending. No base refresh or merge by root.
+- claim: Follow-on source-only path relocation resolves observed conflicts without weakening execution
+    or selection.
+  command: Full normalized-YAML equality, incumbent bounded-manifest classifier, four canonical controls
+    and exact-current-main merge-tree.
+  result: Local62c077fce230, soleparentf573:103existing entries across9lists, all314 definitions/order/path
+    multisets retained. Four testsPASS; preview against29e383PASS. Reuse unchanged e2 static and fa9 runtime
+    proof explicitly. No hostedCI/release/adoption claim.
 unverified:
 - claim: Combined follow-on actual-HEAD CI and protected landing.
   what_would_verify: After A1 landing, reconcile final main, obtain hosted selection/execution on the
@@ -107,15 +120,14 @@ unresolved:
 - QLedger real Discovery adoption needs a rights-qualified finding and actual existing admission payload.
 - 'Blind six-case model request eval-t6-blind-six-01a1333d-c2 refused before launch: no_pool_available/statusNOT_FOUND.
   No model observation or replacement; original CLI-review and experience uncertainty remain separate.'
-- At12:41:10 A1 remains05a;9active PR CI proofs/cap8 and no refresh lease. Latest incumbent38565699943
-  is pending. Earlier12:35 census was unreadable after TCP timeouts, not an empty pool. No A1 source publication,
-  base refresh or merge by root.
 - Official May2024 source labels and PDF Last-Modified support provenance but are not a contemporaneous
   byte-custody witness. All model, historical availability and adoption obligations remain open.
+- A1 newsource1b791 freshCI38568750084 is pending at the initial observation before13:08:15. Incumbent
+  alone may refresh base or merge; old05a proof is insufficient.
 next_actions:
-- When shared CI capacity admits, revalidate current A1/main/custody and publish only source correction1b7916353dd4609e2e092e16d466e93ca1597fd1
-  (soleparent05a) on original6651 carrier. Olda8d9 is superseded by new observed conflicts. No main merge,
-  force push or duplicate PR; incumbent alone refreshes base and merges with fresh checks.
+- Reconcile incumbent refresh/merge and fresh checks on publishedA1 source1b791. No manual main merge,
+  force push or duplicate controller. Observe CI no more often than300s and only for a real source/dependency
+  frontier.
 - After controller refresh, fresh checks and A1 merge, bind both original A1 tools to the final qualified
   source and verify normal installation, served bytes, authenticated UI and genuine owner progression.
 - Continue the same follow-on through final-main reconciliation, capacity-admitted PR and protected release.
@@ -138,7 +150,11 @@ prs:
 
 The active Chairman assignment is end-to-end programme ownership by Fable with bounded Sol coordination and the existing M2 Fabric. The current original root is `01a1333d-b0c0-7f33-9259-dd718391d9e4`. Historical receiver restrictions describe their retired operations; they do not assign another writer. This record is continuity, not a runtime queue or release grant.
 
-## Current carriers
+## Latest source correction and release state
+
+A1 source1b791 was published to its original6651 branch at13:04UTC after current capacity admitted it and exact-main merge preview passed. FreshCI38568750084 is running; incumbent-only base refresh/merge and all production gates remain. Follow-on source-only62c077 repairs nine analogous conflicts, preserves all314 job definitions/path memberships and passes four canonical controls plus a current-main preview. It remains separate and unreleased. Canonical evidence: `research/evidence/eval-os-tier-query-20261014/source-conflict-release-20261014/`. Earlier carrier paragraphs below are retained historical proof and do not override this state.
+
+## Historical carrier evidence
 
 - A1 retains PR #6651, branch `claude/eval-os-a1-evidence-view-20260828`. Chris explicitly released HOLD-FOR-SOL and authorized the ordinary repository controller, fresh checks, deployment and production verification. Release decision: https://github.com/mastermindx-market-intelligence/macro/pull/6651#issuecomment-6158644348.
 - Published A1 `05a75a4131f5e695a1d31616ac9e2ecca6059c67` merges main c3ade with four exact CI path unions and one RED-proved required config input. All 17 qualified runtime hashes are unchanged. Actual committed A1 closure is 1175/1175; the repaired coverage/selection checks both pass. CI38519419675 completed successfully. Its native final semantic artifact validates CLEAR with all124 selected jobs and every recorded step passed; testedbb3e/base2fafe/head05a and planf03d match the retained source binding. Fences38519419558 and authority38519415967 passed. At06:59UTC, controller38525237090 required a fresh base update because mainec6e changed check definitions, then deferred it with13 indexed PR CI runs against cap8. The completed old-base run does not override this freshness/capacity gate. See `research/evidence/eval-os-tier-query-20261014/a1-05a75a-hosted-complete-acceptance.json`. The Ready PR remains armed and controller-owned; no merge or live claim is made. Retained local evidence: `research/evidence/eval-os-tier-query-20261014/a1-05a75a-local-acceptance.json`.
