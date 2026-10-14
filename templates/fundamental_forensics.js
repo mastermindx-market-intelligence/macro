@@ -81,7 +81,14 @@
     // current health request was issued for (race guard + no duplicate
     // fetches for one selection).
     datasetMode: '',
-    healthRequestedFor: ''
+    healthRequestedFor: '',
+    // FIF PF r1 (R1): every health request ISSUED increments healthSeq and
+    // remembers its own seq; healthAnswer holds the accepted answer — the one
+    // whose seq is still current AND whose entity is the selected company —
+    // so the compare chain waits for the SELECTED issuer's answer even after
+    // a company switch, and an older answer can never overwrite a newer one.
+    healthSeq: 0,
+    healthAnswer: null
   };
 
   var ui = {};
@@ -1228,6 +1235,10 @@
     // clocks and the generation).
     if (entityId && state.healthRequestedFor === entityId) return Promise.resolve();
     state.healthRequestedFor = entityId;
+    // PF r1 (R1): this request's sequence token — only an answer whose seq is
+    // still the newest ISSUED one may touch the desk.
+    var seq = state.healthSeq + 1;
+    state.healthSeq = seq;
     return withAuth({ Accept: 'application/json' })
       .then(function (headers) {
         return fetch(entityId ? HEALTH_URL + '?entity_id=' + encodeURIComponent(entityId) : HEALTH_URL, {
@@ -1243,31 +1254,44 @@
         // request. Annotated onto the client-side copy, not the wire contract.
         // PF-3: the generation is stored with the entity it belongs to, and
         // the dataset mode header rides the same answer into state.
+        // PF r1 (R2): the names-only dataset pointer rides the same answer.
         var generation = {
           id: String(response.headers.get('X-FIF-Dataset-Generation-Id') || ''),
           admitted_at: String(response.headers.get('X-FIF-Dataset-Admitted-At') || ''),
           entity_id: entityId
         };
         var mode = String(response.headers.get('X-FIF-Financial-Dataset-Mode') || '');
+        var pointer = String(response.headers.get('X-FIF-Dataset-Pointer') || '');
         return response.json().then(function (payload) {
           if (generation.id) payload.generation = generation;
-          return { payload: payload, mode: mode, entityId: entityId };
+          return { payload: payload, mode: mode, entityId: entityId, pointer: pointer };
         });
       })
       .then(function (answer) {
-        // PF-3 race guard: a health answer for a company that is no longer
-        // selected is dropped — it must not become the desk's clocks or
-        // generation.
+        // PF r1 (R1) race guard: an answer is current only when its seq is
+        // still the newest issued one AND its entity is the selected company.
+        // Anything older is dropped whole — it must not become the desk's
+        // clocks, generation or pointer, even when its entity matches.
         var current = company();
         var currentId = current && current.entity_id ? String(current.entity_id) : '';
+        if (seq !== state.healthSeq) return;
         if (answer.entityId && currentId !== answer.entityId) return;
+        state.healthAnswer = { entity_id: answer.entityId, seq: seq, ok: true, pointer: answer.pointer };
         state.datasetMode = answer.mode;
         applyHealth(answer.payload);
       })
       .catch(function () {
         var current = company();
         var currentId = current && current.entity_id ? String(current.entity_id) : '';
+        if (seq !== state.healthSeq) return;
         if (entityId && currentId !== entityId) return;
+        // PF r1 (R2/R5): a failed health fetch is an availability fact, never
+        // "not published": record the failed answer for the current seq only,
+        // reset the mode and clear the fetch lock so the same issuer can be
+        // retried; the honest 503 copy follows from the failed answer.
+        state.healthAnswer = { entity_id: entityId, seq: seq, ok: false, pointer: '' };
+        state.datasetMode = '';
+        state.healthRequestedFor = '';
         applyHealth({ status: 'unavailable', clocks: {} });
       });
   }
@@ -1858,26 +1882,56 @@
   // source_snapshot_at is broad_source_at when present, else recorded_at. An
   // empty result means no lawful cutoff exists and the honest no-clocks copy
   // shows. Shared by policyClocks (Latest branch) and reResolveSavedView.
+  // PF r1 (R6): an UNPARSEABLE value counts as absent — including
+  // broad_source_at in the source_snapshot_at seat, which then falls back to
+  // recorded_at. Instants compare at FULL precision (fractional seconds are
+  // parsed here beyond Date.parse's milliseconds); on an exact tie the
+  // preference order is the generation admitted_at, then
+  // composed_state_at, then broad_source_at.
+  function parseInstantParts(value) {
+    if (typeof value !== 'string') return null;
+    var match = /^(\d{4})-(\d{2})-(\d{2})[T ](\d{2}):(\d{2}):(\d{2})(?:\.(\d+))?(Z|[+-]\d{2}:?\d{2})?$/.exec(value);
+    if (!match) return null;
+    var base = Date.parse(
+      match[1] + '-' + match[2] + '-' + match[3] + 'T' +
+      match[4] + ':' + match[5] + ':' + match[6] + (match[8] || 'Z')
+    );
+    if (!Number.isFinite(base)) return null;
+    var fraction = match[7] || '';
+    while (fraction.length < 9) fraction += '0';
+    return { ms: base, fraction: fraction };
+  }
+
+  function instantAfter(candidate, winner) {
+    if (candidate.ms !== winner.ms) return candidate.ms > winner.ms;
+    return candidate.fraction > winner.fraction;
+  }
+
   function latestCutoffs() {
     var clocks = (state.health && state.health.clocks) || {};
-    var candidates = [];
-    if (clocks.composed_state_at) candidates.push(String(clocks.composed_state_at));
     var generation = state.datasetMode === 'production' ? selectedGeneration() : null;
-    if (generation && generation.admitted_at) candidates.push(String(generation.admitted_at));
-    if (clocks.broad_source_at) candidates.push(String(clocks.broad_source_at));
+    // Tie preference (R6) is the iteration order: admitted_at first, then
+    // composed_state_at, then broad_source_at; only a strictly later instant
+    // replaces the winner.
+    var candidates = [
+      generation && generation.admitted_at ? String(generation.admitted_at) : '',
+      clocks.composed_state_at ? String(clocks.composed_state_at) : '',
+      clocks.broad_source_at ? String(clocks.broad_source_at) : ''
+    ];
     var winner = '';
-    var winnerInstant = NaN;
+    var winnerParts = null;
     candidates.forEach(function (value) {
-      var instant = Date.parse(value);
-      if (!Number.isFinite(instant)) return;
-      if (!Number.isFinite(winnerInstant) || instant > winnerInstant) {
-        winnerInstant = instant;
-        winner = value;
-      }
+      if (!value) return;
+      var parts = parseInstantParts(value);
+      if (!parts) return;
+      if (winnerParts && !instantAfter(parts, winnerParts)) return;
+      winner = value;
+      winnerParts = parts;
     });
     if (!winner) return { source_snapshot_at: '', recorded_at: '' };
+    var broadParts = clocks.broad_source_at ? parseInstantParts(String(clocks.broad_source_at)) : null;
     return {
-      source_snapshot_at: clocks.broad_source_at ? String(clocks.broad_source_at) : winner,
+      source_snapshot_at: broadParts ? String(clocks.broad_source_at) : winner,
       recorded_at: winner
     };
   }
@@ -2040,23 +2094,49 @@
       renderRevisions();
       return;
     }
-    // PF-3: the cutoff policy reads the health answer. A compare chain that
-    // arrives before the FIRST health answer parks in loading and is
-    // re-driven by applyHealth — a cutoff is never built from clocks that
-    // simply have not arrived yet.
-    if (state.health === undefined) {
+    // PF-3 / PF r1 (R1): the cutoff policy reads the health answer FOR THE
+    // SELECTED ISSUER, and only the answer that is still CURRENT — its seq is
+    // the newest issued one, exactly the acceptance rule that recorded it. A
+    // compare chain that arrives before that answer — including right after
+    // a company switch, or a re-select that re-issued health after a failure,
+    // while the previous answer is still on the desk — parks in loading and
+    // is re-driven by applyHealth; a cutoff is never built from another
+    // issuer's clocks or a superseded answer.
+    var answer = state.healthAnswer;
+    if (!answer ||
+        String(answer.entity_id || '') !== String(target.entity_id || '') ||
+        answer.seq !== state.healthSeq) {
       state.financial = { phase: 'loading', awaitingHealth: true };
       renderRevisions();
       return;
     }
-    // PF-4: in production mode the issuer's published generation is the
-    // floor of everything the desk can serve; no pointer means no records
-    // were ever published for this company, so no query can be honest.
-    var generation = state.datasetMode === 'production' ? selectedGeneration() : null;
-    if (state.datasetMode === 'production' && !generation) {
-      state.financial = { phase: 'no-records' };
+    // PF r1 (R2): a failed health fetch is an availability fact in ANY mode —
+    // the honest 503 copy with its Retry button, never a guess and never a
+    // query.
+    if (!answer.ok) {
+      state.financial = { phase: 'error', healthRetry: true };
       renderRevisions();
       return;
+    }
+    // PF-4 / PF r1 (R2): in production mode the names-only pointer header
+    // tells the three cases apart. 'none': the store was built and this
+    // issuer genuinely has no published records — no query can be honest.
+    // 'admitted' with a generation for this issuer: proceed as before.
+    // Anything else — a missing pointer header, 'unavailable' (the store is
+    // down or damaged), or 'admitted' without a generation — is a temporary
+    // availability failure, not "not published": the 503 copy with Retry.
+    var generation = state.datasetMode === 'production' ? selectedGeneration() : null;
+    if (state.datasetMode === 'production') {
+      if (answer.pointer === 'none') {
+        state.financial = { phase: 'no-records' };
+        renderRevisions();
+        return;
+      }
+      if (answer.pointer !== 'admitted' || !generation) {
+        state.financial = { phase: 'error', healthRetry: true };
+        renderRevisions();
+        return;
+      }
     }
     // PF-4: a picked day whose end-of-day cutoff precedes the generation's
     // admission cannot be served by this store (the API's own floor answers
@@ -5411,6 +5491,17 @@
     }
     ui.workspace.addEventListener('click', function (event) {
       if (!event.target.closest('[data-financial-retry]')) return;
+      // PF r1 (R2): the 503 copy shown because of HEALTH retries the health
+      // fetch itself — the chain resumes from applyHealth once the answer
+      // lands. Without healthRetry the button behaves exactly as before.
+      if (state.financial && state.financial.healthRetry) {
+        state.healthRequestedFor = '';
+        state.healthAnswer = null;
+        state.financial = { phase: 'loading', awaitingHealth: true };
+        renderRevisions();
+        loadHealth();
+        return;
+      }
       state.financial = { phase: 'idle' };
       ensureFinancialData();
     });
@@ -5594,6 +5685,7 @@
       policyClocks: policyClocks,
       latestCutoffs: latestCutoffs,
       selectedGeneration: selectedGeneration,
+      setCompany: setCompany,
       loadHealth: loadHealth,
       ensureFinancialData: ensureFinancialData,
       ensureStatements: ensureStatements,

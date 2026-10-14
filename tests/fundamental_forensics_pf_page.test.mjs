@@ -290,6 +290,15 @@ function financialPosts(drive) {
   return drive.fetchCalls.filter((call) => call.url.indexOf('/api/forensics/v1/financial/') >= 0);
 }
 
+// PF r1 (R1/R2): the compare chain now waits for the SELECTED issuer's
+// accepted health answer (state.healthAnswer) rather than any state.health.
+// Direct-injection tests seed the answer the loadHealth they skip would have
+// recorded: the selected issuer, the harness-start seq, ok, and the pointer
+// header value that matches the injected mode/generation world.
+function seedAcceptedHealth(pointer) {
+  return { entity_id: AAPL_ENTITY, seq: 0, ok: true, pointer: pointer || '' };
+}
+
 // ── PF-1 ────────────────────────────────────────────────────────────────────
 
 test('PF-1: shared periods across statements collapse to one column, first label, first order', async () => {
@@ -315,6 +324,7 @@ test('PF-1: shared periods across statements collapse to one column, first label
 test('PF-1: the revisions request body carries no repeated period', async () => {
   const drive = harness();
   drive.api.state.health = { status: 'current', clocks: { broad_source_at: '2026-10-11T23:59:59Z' } };
+  drive.api.state.healthAnswer = seedAcceptedHealth('');
   drive.api.setTab('statements', false);
   await settle();
   drive.api.setTab('compare', false);
@@ -332,6 +342,7 @@ test('PF-1: the revisions request body carries no repeated period', async () => 
 test('PF-2: financialPost attaches the parsed JSON detail to the thrown error', async () => {
   const drive = harness({ queryStatus: 400, queryBody: '{"detail":"duplicate period"}' });
   drive.api.state.health = { status: 'current', clocks: { broad_source_at: '2026-10-11T23:59:59Z' } };
+  drive.api.state.healthAnswer = seedAcceptedHealth('');
   drive.api.setTab('compare', false);
   await settle();
   assert.equal(drive.api.state.financial.phase, 'error');
@@ -342,6 +353,7 @@ test('PF-2: financialPost attaches the parsed JSON detail to the thrown error', 
 test('PF-2: a non-JSON error body leaves detail empty and parsing never throws twice', async () => {
   const drive = harness({ queryStatus: 502, queryBody: 'gateway teapot' });
   drive.api.state.health = { status: 'current', clocks: { broad_source_at: '2026-10-11T23:59:59Z' } };
+  drive.api.state.healthAnswer = seedAcceptedHealth('');
   drive.api.setTab('compare', false);
   await settle();
   assert.equal(drive.api.state.financial.phase, 'error');
@@ -597,6 +609,7 @@ test('PF-4: a picked day before the admitted day sends NO query and shows the ea
     clocks: { broad_source_at: '2026-10-13T02:05:00Z' },
     generation: { id: 'ffprods_gen2', admitted_at: '2026-10-13T02:00:00.000000Z', entity_id: AAPL_ENTITY },
   };
+  drive.api.state.healthAnswer = seedAcceptedHealth('admitted');
   drive.api.state.asOfDate = '2026-10-12';
   drive.api.setTab('compare', false);
   await settle();
@@ -615,6 +628,7 @@ test('PF-4: the earlier-dates fact precedes the period check — a state without
     clocks: { broad_source_at: '2026-10-13T02:05:00Z' },
     generation: { id: 'ffprods_gen2', admitted_at: '2026-10-13T02:00:00.000000Z', entity_id: AAPL_ENTITY },
   };
+  drive.api.state.healthAnswer = seedAcceptedHealth('admitted');
   // The state projection genuinely carries no period start (absent_in_projection).
   drive.api.state.payload.companies.AAPL.periods = [{ fiscal_year: 2024, start: null, end: '2024-09-28' }];
   drive.api.state.asOfDate = '2026-10-12';
@@ -633,6 +647,7 @@ test('PF-4: the admitted day itself sends the query', async () => {
     clocks: { broad_source_at: '2026-10-13T02:05:00Z' },
     generation: { id: 'ffprods_gen2', admitted_at: '2026-10-13T02:00:00.000000Z', entity_id: AAPL_ENTITY },
   };
+  drive.api.state.healthAnswer = seedAcceptedHealth('admitted');
   drive.api.state.asOfDate = '2026-10-13';
   drive.api.setTab('compare', false);
   await settle();
@@ -667,10 +682,14 @@ test('PF-4: the picker min is the admitted day in production and clears otherwis
   assert.equal(golden.nodes['ff-asof-input'].getAttribute('min'), null);
 });
 
-test('PF-4: production with no generation sends NO query and shows the no-records copy', async () => {
+test('PF-4: production with pointer none sends NO query and shows the no-records copy', async () => {
   const drive = harness();
   drive.api.state.datasetMode = 'production';
   drive.api.state.health = { status: 'current', clocks: { broad_source_at: '2026-10-13T02:05:00Z' } };
+  // PF r1 (R2): the server's names-only pointer header now carries this fact;
+  // a bare missing generation in production is the 503 case instead (pinned
+  // in fundamental_forensics_pf_health.test.mjs).
+  drive.api.state.healthAnswer = seedAcceptedHealth('none');
   drive.api.state.asOfDate = '';
   drive.api.setTab('compare', false);
   await settle();
@@ -686,6 +705,7 @@ test('PF-4: golden mode and a missing mode header keep today’s behaviour', asy
   const golden = harness();
   golden.api.state.datasetMode = 'golden';
   golden.api.state.health = { status: 'current', clocks: { broad_source_at: '2026-10-11T23:59:59Z' } };
+  golden.api.state.healthAnswer = seedAcceptedHealth('');
   golden.api.state.asOfDate = '2026-01-15';
   golden.api.setTab('compare', false);
   await settle();
@@ -697,6 +717,7 @@ test('PF-4: golden mode and a missing mode header keep today’s behaviour', asy
     clocks: { broad_source_at: '2026-10-11T23:59:59Z' },
     generation: { id: 'ffprods_gen2', admitted_at: '2099-01-01T00:00:00Z', entity_id: AAPL_ENTITY },
   };
+  missingMode.api.state.healthAnswer = seedAcceptedHealth('');
   missingMode.api.state.asOfDate = '2026-01-15';
   missingMode.api.setTab('compare', false);
   await settle();

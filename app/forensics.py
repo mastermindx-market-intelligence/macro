@@ -76,7 +76,10 @@ _ROOT_CELL_ID_RE = re.compile(r"\Ametric_cell_[a-f0-9]{64}\Z")
 # whose production generation headers are wanted. Only a full match may reach
 # a store key; anything else answers with no generation headers, never an
 # error and never the raw value in a log line.
-_HEALTH_ENTITY_ID_RE = re.compile(r"ISS:[A-Z]{2}-[A-Z0-9]{4}-[A-Z0-9][A-Z0-9.]{0,11}")
+# FIF PF r1 (R3): the code tail follows the canonical issuer grammar
+# (lib/dataos/identity.py ``_CODE_RE`` — '.' and '-' are real US class
+# suffixes, 'BRK-B' included) and the length is bounded separately.
+_HEALTH_ENTITY_ID_RE = re.compile(r"ISS:[A-Z]{2}-[A-Z0-9]{4}-[A-Z0-9][A-Z0-9.\-]*")
 _MAX_QUERY_VALUE_BYTES = 128
 # Bounded receipt reads do not automatically bound response construction.  A
 # valid sealed receipt can name many selected leaves; never turn it into a
@@ -187,7 +190,7 @@ def forensics_state(_user: dict = Depends(require_site_full_user)) -> Response:
 
 @router.get("/api/forensics/health")
 def forensics_health(
-    entity_id: str | None = None,
+    request: Request,
     _user: dict = Depends(require_site_full_user),
 ) -> JSONResponse:
     """Return operational/source freshness, never private rows or storage keys.
@@ -206,6 +209,17 @@ def forensics_health(
     matching issuer with no pointer: no generation headers, the same 200 body,
     never a 4xx/5xx — and the raw value is never logged or passed anywhere
     near a store key. Golden mode never emits generation headers.
+
+    FIF PF r1 (R2): with exactly one well-formed ``entity_id`` in production
+    mode the answer also carries ONE names-only pointer header,
+    ``X-FIF-Dataset-Pointer``: ``admitted`` (a summary was returned, headers as
+    today), ``none`` (the store was built, the lookup did not raise, and the
+    pointer is absent) or ``unavailable`` (the store is None, or building it
+    or reading the summary raised — the provider's own contract: a damaged
+    store is temporarily unavailable, not "not published"). A malformed,
+    repeated or over-length id gets no pointer header and no generation
+    headers. The absent-parameter path and golden mode stay byte for byte
+    unchanged; the JSON body is identical in every case.
     """
     headers = dict(_PRIVATE_HEADERS)
     # A15: an invalid dataset mode refuses health with the same private 503
@@ -221,34 +235,50 @@ def forensics_health(
     headers["X-FIF-Financial-Dataset-Mode"] = mode
     if mode == "production":
         # PF-3: an absent parameter keeps the D3 default issuer; a present
-        # parameter must full-match the entity grammar before it may name a
-        # store key; anything else simply reports no generation.
-        summary_issuer = "ISS:US-XNAS-AAPL"
-        if entity_id is not None:
-            summary_issuer = (
-                entity_id if _HEALTH_ENTITY_ID_RE.fullmatch(entity_id) else None
-            )
+        # parameter must be the ONLY value and full-match the entity grammar
+        # (under the byte bound) before it may name a store key; anything
+        # else simply reports no generation. R4: a repeated key is malformed
+        # — the module's own rule refuses duplicates rather than choosing one
+        # silently — and this route never raises because of the parameter.
+        values = request.query_params.getlist("entity_id")
+        summary_issuer: str | None = "ISS:US-XNAS-AAPL"
+        pointer_reported = False
+        if not values:
+            pass
+        elif len(values) == 1 and len(values[0].encode("utf-8")) <= _MAX_QUERY_VALUE_BYTES:
+            if _HEALTH_ENTITY_ID_RE.fullmatch(values[0]):
+                summary_issuer = values[0]
+                pointer_reported = True
+            else:
+                summary_issuer = None
+        else:
+            summary_issuer = None
         if summary_issuer is not None:
             from engine.fundamental_forensics.production_datasets import (  # noqa: PLC0415
                 build_production_dataset_store,
                 latest_generation_summary,
             )
 
+            summary = None
+            store_readable = False
             try:
                 store = build_production_dataset_store()
-                summary = (
-                    latest_generation_summary(store, summary_issuer)
-                    if store is not None
-                    else None
-                )
+                if store is not None:
+                    summary = latest_generation_summary(store, summary_issuer)
+                    store_readable = True
             except Exception as exc:  # noqa: BLE001 - names-only; never leak the cause
                 log.warning(
                     "production dataset health summary unavailable (%s)", type(exc).__name__
                 )
-                summary = None
             if summary is not None:
                 headers["X-FIF-Dataset-Generation-Id"] = summary["dataset_generation_id"]
                 headers["X-FIF-Dataset-Admitted-At"] = summary["admitted_at"]
+                if pointer_reported:
+                    headers["X-FIF-Dataset-Pointer"] = "admitted"
+            elif pointer_reported:
+                headers["X-FIF-Dataset-Pointer"] = (
+                    "none" if store_readable else "unavailable"
+                )
     payload = evaluate_health(REPO, now=datetime.now(timezone.utc))
     return JSONResponse(payload, headers=headers)
 
