@@ -23,6 +23,18 @@ changed:
     and Clear/context.
 - path: research/paper_international_wave1_wave2/J08_SEARCH_ANNOUNCEMENT_ACCEPTANCE.json
   what: Bind reproduced J08 defect, source hashes, local verification and independent review with explicit limits.
+- path: templates/intl.html.j2
+  what: Make generic legacy summary wrapping available without risk-desk data, and give descriptions a full second
+    row below640px.
+- path: tests/intl_workspace_page.test.cjs
+  what: Add four EN/ZH Dark/Light320px native Library navigation regressions that reject overflow and collapsed
+    descriptions.
+- path: tests/test_intl_mobile_layout.py
+  what: Resolve actual local linked generated CSS within site/ when checking projection containment; keep inline
+    coverage.
+- path: research/paper_international_wave1_wave2/J08_LEGACY_REFLOW_ACCEPTANCE.json
+  what: Bind final responsive source, reproduced overflow, rejected zero-width intermediate, browser evidence and
+    accepted review.
 verified:
 - claim: Fresh main had two actual conflicting files against the existing repair branch.
   command: git fetch origin main; git merge-tree --write-tree --messages HEAD origin/main.
@@ -72,6 +84,25 @@ verified:
   command: announcement_visual.py; check_template_site_sync.py; git diff --check.
   result: Eight full-page cases pass. At320, status font measured14px before and28px after text scaling. Initial
     root-font-only attempt is retained and not counted as200percent text proof. All115 template/site pairs match.
+- claim: Library native navigation exposes and now repairs a missing-data EN narrow summary overflow.
+  command: node --test --test-name-pattern="Library legacy links reflow" tests/intl_workspace_page.test.cjs; retained
+    reflow_acceptance.py.
+  result: Original source has two actual EN324px overflow failures; two separate Chinese test assumptions were corrected.
+    Final four permanent regressions and eight freshly rendered cases/16 anchors pass, with242px description width
+    at320px and wider641/1440 controls. The intermediate0px description is retained as rejected evidence.
+- claim: Generated-site containment check supports current content-addressed CSS.
+  command: python3 -m pytest -q tests/test_intl_mobile_layout.py.
+  result: Four pass after resolving actual linked local CSS; generated HTML and current data are unchanged. Earlier15PASS1FAIL
+    was an inline-only test assumption, not missing CSS.
+- claim: Final reflow has a distinct consumed and accepted source review.
+  command: fabric_task.py result and accept --by reviewer for paper-01a1101f-legacy-reflow-layout-review-20261014-r1.
+  result: 7492B retained result85175e99; rc0/REMOTE_CLEANED and ACCEPTED/VALIDATED_OUTCOME. Parent corrects cascade/scope/width/state
+    claims. Usage receipt missing. Earlier move-only review remains consumed and not adapter-accepted.
+- claim: Published search repair entered fresh product CI.
+  command: One admitted gh run view38500271186 at completed navigation/causal diagnosis boundary.
+  result: Head81026574, plan andpack1 passed; contract-delta and11 packs in progress at observation. Authority38500267716
+    andfences38500271017 terminalSUCCESS, retired. Inactive pilot explicitlyinactive_base_context. No full product
+    acceptance.
 unverified:
 - claim: Fresh hosted candidate product CI and deployed reset/asset behavior.
   what_would_verify: Genuinely new exact-head hosted product checks after publication; then lawful release and actual
@@ -92,19 +123,23 @@ unresolved:
   unknown; no timer or alternate-carrier retry.
 - New J08 source review paper-01a1101f-j08-announcement-review-20261014-r1 completed rc0/REMOTE_CLEANED; bounded
   parent review accepts the source conclusion with explicit corrections. Usage receipt missing.
+- Generic legacy summary overflow is source-repaired; inherited compass clipping and floating launcher overlap remain
+  outside this bounded acceptance.
 next_actions:
-- Finish committing and normally publishing the accepted J08 repair on this same carrier, then qualify only genuinely
-  new admitted CI for its exact head.
-- Reuse accepted source/test evidence at its original scope; follow the current local evidence checkpoint for run
-  identities and observation admission.
-- Advance independent complete journeys while preserving all original release, source rights, Saved, frozen effects
-  and IW2 custody limits.
+- Publish the accepted legacy reflow repair on this same carrier, qualify only genuinely new CI against the resulting
+  exact head, and retain all release holds.
+- Advance the Library-to-international-stocks-and-return complete journey from its actual existing destination;
+  do not substitute synthetic Saved context or assume unavailable catalogue entries are accessible.
+- Use the latest local evidence checkpoint for exact CI identities and admission; never replay accepted unchanged
+  checks or poll retired runs.
 do_not_redo:
 - Do not rerun accepted1714/50 tests or24 browser cases unless a relevant input changes; unchanged earlier184 controller
   tests remain historical accepted evidence.
 - Do not regenerate the completed mission-acceptance preparation package or consume any accepted Fabric result again.
 - Never query, log, rerun or cancel retired Macro authority runs38486994932/38487009366, older38128192510, or any
   retired Terminal CI.
+- Do not reconsume or reaccept any closed Fabric result. Final reflow4 permanent/8 rendered/4 projection checks
+  overlap; the initial13-case page closure predates final CSS.
 danger_areas:
 - IW2 alone owns all Terminal PR804 execution surfaces; no direct human handback occurred.
 - No PR ready, GitHub merge, auto-arm or deployment is authorized by this integration.
@@ -123,3 +158,5 @@ The broad staged whitespace check returned2 with9,590 warning lines across896 fi
 is byte-identical to upstream7f1e4ede; the two explicit conflict resolutions pass a scoped whitespace
 check. AgentOS validation returned0 with zero errors and146 inherited warnings. Neither result is
 represented as a completely warning-free repository.
+
+Additional J08 evidence: `/Volumes/Mastermind/evidence/paper-waves-20261006-01a1101f/j08-legacy-reflow-20261014-r1` and sibling `j08-search-announcement-20261014-r1`.

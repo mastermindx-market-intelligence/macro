@@ -276,6 +276,12 @@
   details.ref-fold[open] .rf-caret { transform:rotate(180deg); }
   details.ref-fold[open] > summary { border-bottom:1px solid var(--hair); border-radius:14px 14px 0 0; }
   details.ref-fold > .panel { border:none; box-shadow:none; background:transparent; margin:6px 6px 10px; }
+  @media(max-width:640px){
+    body.page-intl details.ref-fold > summary{flex-wrap:wrap;}
+    body.page-intl .rf-t{flex:1;min-width:0;}
+    body.page-intl .rf-s{flex-basis:100%;order:1;}
+    body.page-intl .rf-s{overflow-wrap:anywhere;}
+  }
 
   /* verdict / stance band (reusable, macro.html idiom) */
   .stance { margin:12px 0 2px; padding:11px 13px; border-radius:10px; border:1px solid var(--hair); border-left:3px solid var(--muted); background:var(--panel2); }
@@ -1255,7 +1261,6 @@
     body.page-intl .te-strip{grid-template-columns:minmax(0,1fr);}
     body.page-intl .seg{flex-wrap:wrap;max-width:100%;}
     body.page-intl .ird-tx-row{flex-wrap:wrap;}
-    body.page-intl .rf-s{overflow-wrap:anywhere;}
   }
   /* §15: this row is a fixed-size dial + a text column and it never wrapped, so its
      intrinsic floor (653px) set the whole panel's width and the page was 82% wider

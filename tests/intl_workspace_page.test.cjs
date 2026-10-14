@@ -67,6 +67,54 @@ test('real macro entry mounts one panel, changes exact context, returns with bro
   });
 });
 
+for (const theme of ['dark','light']) for (const lang of ['en','zh']) {
+  test(`Library legacy links reflow without risk-desk data at 320px ${theme} ${lang}`,async()=>{
+    await pageFixture(async page=>{
+      await page.evaluate(({theme,lang})=>{window.setTheme(theme);window.setLang(lang);},{theme,lang});
+      await page.selectOption('select[data-im-action="set_view"]','library');
+      await page.selectOption('[data-im-action="set_horizon"]','3m');
+      await page.selectOption('[data-im-action="set_basis"]','local');
+      const panel=page.locator('[data-im-library-static]:visible');
+      const catalogue=JSON.parse(await panel.locator('[data-im-library-catalogue]').textContent());
+      const input=panel.locator('[data-im-library-search]');
+      for (const key of ['cross_country','growth_inflation']) {
+        const query=catalogue.find(tool=>tool.presentation_key===key)['label_'+lang];
+        await input.fill(query);
+        const anchor=panel.locator(`[data-im-library-results] [data-im-library-tool="${key}"] a`);
+        const hash=await anchor.getAttribute('href');
+        await anchor.click();
+        assert.equal(await page.locator(hash).isVisible(),true);
+        assert.equal(await page.locator(hash).evaluate(node=>{
+          for(let parent=node.parentElement;parent;parent=parent.parentElement) {
+            if(parent.tagName==='DETAILS'&&!parent.open)return false;
+          }
+          return true;
+        }),true);
+        const sizes=await page.evaluate(()=>({viewport:innerWidth,page:document.documentElement.scrollWidth}));
+        assert.ok(sizes.page<=sizes.viewport,JSON.stringify({key,theme,lang,...sizes}));
+        const summaries=await page.locator('details.ref-fold > summary:visible').evaluateAll(nodes=>nodes.map(node=>({
+          summary:node.getBoundingClientRect().width,
+          description:node.querySelector('.rf-s').getBoundingClientRect().width
+        })));
+        assert.ok(summaries.every(row=>row.description>row.summary*0.7),JSON.stringify(summaries));
+        assert.equal(new URL(page.url()).searchParams.get('horizon'),'3m');
+        assert.equal(new URL(page.url()).searchParams.get('basis'),'local');
+        if(key==='cross_country') {
+          const table=await page.locator(hash).locator('..').locator('.gridwrap').evaluate(node=>
+            ({scrollWidth:node.scrollWidth,clientWidth:node.clientWidth,overflowX:getComputedStyle(node).overflowX}));
+          assert.ok(['auto','scroll'].includes(table.overflowX),JSON.stringify(table));
+          if(table.scrollWidth>table.clientWidth) {
+            assert.ok(await page.locator(hash).locator('..').locator('.gridwrap').evaluate(node=>{node.scrollLeft=30;return node.scrollLeft;})>0);
+          }
+        }
+        await page.goBack();
+        assert.equal(new URL(page.url()).hash,'');
+        assert.equal(await input.inputValue(),query);
+      }
+    },{width:320});
+  });
+}
+
 for (const options of [{javaScriptEnabled:false},{broken:true}]) {
   test(options.broken?'failed enhancement restores readable page':'no JavaScript retains every roster and legacy research', async()=>{
     await pageFixture(async page=>{
