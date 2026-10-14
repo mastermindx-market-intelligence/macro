@@ -116,7 +116,7 @@ danger_areas:
   - The witness is canonical only because ties break lexicographically on total use, then on the stated route preference order; changing that order changes the witness, never the optimum.
   - Exclusive groups are enumerated, not relaxed; more than 4096 branches raises JointModelError by design.
   - decimal_floor floors to cents; rounding to nearest can overstate a binding pool.
-prs: []
+prs: [9374]
 decisions:
   - DEC:CS-V2-JOINT-KERNEL-IN-C1
 ---
