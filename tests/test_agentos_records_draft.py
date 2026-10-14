@@ -1263,6 +1263,12 @@ def test_seat_string_fields_are_refused_or_quoted(
                     # is a YAML key (``<key>:``, optionally after ``- ``) the
                     # value does not occur outside quotes.
                     def _raw_has_value(line: str) -> bool:
+                        # The parity scan below flips inside/outside at each
+                        # boundary quote; a ``"`` in the value makes it ambiguous.
+                        assert '"' not in value, (
+                            "value carries a double quote: the quote-parity scan "
+                            "cannot distinguish a boundary from the quoted text"
+                        )
                         # Escape-aware: ``_q`` renders a literal double quote
                         # inside a quoted scalar as \" and a literal backslash
                         # as \\. A one-character lookbehind cannot tell \"
@@ -1289,12 +1295,13 @@ def test_seat_string_fields_are_refused_or_quoted(
                         return any(value in segment for segment in outside)
 
                     def _is_yaml_key_line(line: str) -> bool:
-                        # Structural: the first non-space token is ``<key>:``
-                        # or ``- <key>:``. ``\w`` excludes ``/``, so a raw
-                        # path such as ``lib/x.py`` is not a key line. No
-                        # module wording is pinned.
+                        # Lexical (a key-name charset), not structural: the
+                        # first token must match [A-Za-z_][\w.-]* then a colon
+                        # that is followed by whitespace or end-of-line (YAML's
+                        # implicit-key ": "). ``/`` ends a candidate, so a raw
+                        # path such as ``lib/x.py`` is not a key line.
                         return re.match(
-                            r"^\s*(?:-\s+)?[A-Za-z_]\w*:", line
+                            r"^\s*(?:-\s+)?[A-Za-z_][\w.-]*:(?=\s|$)", line
                         ) is not None
 
                     raw_lines = [
