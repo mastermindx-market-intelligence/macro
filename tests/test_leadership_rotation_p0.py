@@ -1918,3 +1918,68 @@ def test_summary_md_power_curve_table(tmp_path: Path):
         (100, "G2"),
         (104, "G2"),
     }
+
+
+# MUTATION: scripts/leadership_rotation_p0.py:write_size_gate_artifact rename the row key "passes" so the P1 reader in leadership_rotation_run cannot recompute the two-part rule
+def test_size_gate_artifact_round_trips_through_the_p1_reader(tmp_path: Path):
+    """Writer (p0 ``size --out``) and reader (run ``assert_size_gate_passed``)
+    were built by separate lanes against shared constants; this is the
+    integration proof that a SIZED V2_OPTION_A population written by one is
+    accepted by the other, and that the same population under the superseded
+    V1 bootstrap null is refused by method, not by an accident of shape."""
+    from scripts.leadership_rotation_p0 import harness_identity, main
+    from scripts.leadership_rotation_run import (
+        SIZE_GATE_PATH,
+        SizeGateNotPassed,
+        assert_size_gate_passed,
+    )
+
+    repo = _tmp_harness_repo(tmp_path)
+    ident = harness_identity(repo)
+
+    def _population(method: str) -> list[dict]:
+        recs = _stamped(
+            [
+                _sim_record(cid, k, pass_paths=_ALL_PASS_PATHS if k < 5 else None)
+                for cid in (0, 1, 2, 3, 4, 48)
+                for k in range(400)
+            ],
+            ident["id"],
+        )
+        for rec in recs:
+            rec["h1_null_method"] = method
+        return recs
+
+    def _write_and_commit(method: str) -> None:
+        src = tmp_path / f"sims_{method}.jsonl"
+        _write_jsonl(src, _population(method))
+        out = repo / SIZE_GATE_PATH
+        rc = main(
+            [
+                "size",
+                "--in",
+                str(src),
+                "--min-m",
+                "400",
+                "--require-cells",
+                "0,1,2,3,4,48",
+                "--out",
+                str(out),
+                "--repo-root",
+                str(repo),
+            ]
+        )
+        assert rc == 0
+        _git(repo, "add", "--", SIZE_GATE_PATH)
+        _git(repo, "commit", "-q", "-m", f"size gate {method}")
+
+    _write_and_commit("V2_OPTION_A")
+    gate = assert_size_gate_passed(str(repo), runtime_root=str(repo))
+    assert gate["h1_null_method"] == "V2_OPTION_A"
+    assert gate["required_cells"] == [0, 1, 2, 3, 4, 48]
+    assert gate["harness_head"] == ident["head"]
+
+    _write_and_commit("V1_BOOTSTRAP_SUPERSEDED")
+    with pytest.raises(SizeGateNotPassed) as exc:
+        assert_size_gate_passed(str(repo), runtime_root=str(repo))
+    assert exc.value.reason == "SIZE_GATE_NULL_METHOD_MISMATCH"
