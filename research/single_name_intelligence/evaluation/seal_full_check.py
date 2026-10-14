@@ -98,6 +98,13 @@ S2_V1_TRIAL_LEDGER_PATH = (
 S2_V1_1_TRIAL_LEDGER_PATH = (
     "research/single_name_intelligence/runs/s2_event_response_v1_1/trial_ledger.jsonl"
 )
+# XREP-05 (2026-10-13 seat defect, X7-01 repair round): the committed S1 v1.1
+# LANE_MANIFEST.json seal_commit_sha is the PRE-squash branch commit that
+# carried the seal. After PR 9120 was squash-merged, run_s1.seal_commit_sha()
+# (git log -n 1 -- <runs_rel>/SEAL_AND_BUDGET.json) answers the squash commit,
+# so a regeneration differs in exactly that field while the seal blob is
+# byte-identical at both commits.
+S1_V1_1_SEAL_COMMIT_PRE_SQUASH = "5ebab11da1f80b754a4047fb87f06eadf37edfb6"
 
 KIND_MISSING = "missing-in-produced"
 KIND_EXTRA = "extra-in-produced"
@@ -381,6 +388,97 @@ def XREP04_S2_SEAL_V1_LEDGER_PATH(committed_dir: Path) -> list[Diff]:
     return diffs
 
 
+_HEX40 = re.compile(r"^[0-9a-f]{40}$")
+
+
+def XREP05_S1_MANIFEST_SEAL_COMMIT(committed: Path, produced: Path) -> list[Diff]:
+    """XREP-05: squash-tolerant S1 v1.1 LANE_MANIFEST.json seal_commit_sha.
+
+    Seat-diagnosed 2026-10-13 (X7-01 repair round): the committed manifest
+    carries seal_commit_sha = S1_V1_1_SEAL_COMMIT_PRE_SQUASH, the PRE-squash
+    branch commit of PR 9120. residual/run_s1.py seal_commit_sha() derives
+    the field from ``git log -n 1 -- <runs_rel>/SEAL_AND_BUDGET.json``,
+    which answers the squash commit on any post-merge clone, so a
+    regeneration differs in exactly that field while the seal blob is
+    byte-identical at both commits.
+
+    Passes ONLY when: both sides parse as JSON; every key other than
+    seal_commit_sha is equal (same key set, same values); the COMMITTED
+    seal_commit_sha equals S1_V1_1_SEAL_COMMIT_PRE_SQUASH exactly; the
+    PRODUCED value is a 40-char lowercase hex commit sha; and, when the
+    pre-squash commit object is present locally, both commits resolve the
+    run's SEAL_AND_BUDGET.json path to the SAME git blob (never fetches; a
+    missing pre-squash commit passes with the XREP-03 attestation note).
+    Any other difference is a KIND_DIFFER Diff naming the changed keys.
+    """
+    refuse_nonfalse_authority(AUTHORITY_FLAGS)
+    rel = committed.name
+    try:
+        c_obj = json.loads(committed.read_text(encoding="utf-8"))
+        p_obj = json.loads(produced.read_text(encoding="utf-8"))
+    except (json.JSONDecodeError, OSError) as e:
+        return [Diff(KIND_DIFFER, rel, f"LANE_MANIFEST.json parse failed: {e}")]
+    diffs: list[Diff] = []
+    c_rest = {k: v for k, v in c_obj.items() if k != "seal_commit_sha"}
+    p_rest = {k: v for k, v in p_obj.items() if k != "seal_commit_sha"}
+    if c_rest != p_rest:
+        extra = sorted(set(c_rest) ^ set(p_rest))
+        changed = sorted(k for k in c_rest if k in p_rest and c_rest[k] != p_rest[k])
+        diffs.append(Diff(
+            KIND_DIFFER, rel,
+            "LANE_MANIFEST.json differs in a key other than seal_commit_sha "
+            f"(XREP-05); extra_or_missing={extra} changed={changed}",
+        ))
+    c_sha = c_obj.get("seal_commit_sha")
+    p_sha = p_obj.get("seal_commit_sha")
+    if c_sha != S1_V1_1_SEAL_COMMIT_PRE_SQUASH:
+        diffs.append(Diff(
+            KIND_DIFFER, rel,
+            f"committed seal_commit_sha {c_sha!r} != pinned pre-squash "
+            f"{S1_V1_1_SEAL_COMMIT_PRE_SQUASH!r} (XREP-05)",
+        ))
+    if not (isinstance(p_sha, str) and _HEX40.match(p_sha)):
+        diffs.append(Diff(
+            KIND_DIFFER, rel,
+            f"produced seal_commit_sha {p_sha!r} is not a 40-char lowercase "
+            "hex commit sha (XREP-05)",
+        ))
+    if diffs:
+        return diffs
+
+    # Provenance: the same seal bytes at the pre-squash and produced commits.
+    # Repo root from this module's location, never from the /tmp compare dirs.
+    repo_root = Path(__file__).resolve().parents[3]
+    present = subprocess.run(
+        ["git", "cat-file", "-e", f"{S1_V1_1_SEAL_COMMIT_PRE_SQUASH}^{{commit}}"],
+        cwd=repo_root, capture_output=True,
+    ).returncode == 0
+    if not present:
+        print(
+            f"XREP-05 {rel}: pre-squash provenance commit not present locally; "
+            "seal bytes attested by XREP-03")
+        return []
+    seal_rel = f"{S1_V1_1_REL}/SEAL_AND_BUDGET.json"
+
+    def blob_at(rev: str) -> str | None:
+        r = subprocess.run(
+            ["git", "rev-parse", f"{rev}:{seal_rel}"],
+            cwd=repo_root, capture_output=True, text=True,
+        )
+        return r.stdout.strip() if r.returncode == 0 else None
+
+    c_blob = blob_at(S1_V1_1_SEAL_COMMIT_PRE_SQUASH)
+    p_blob = blob_at(p_sha)
+    if c_blob is None or p_blob is None or c_blob != p_blob:
+        diffs.append(Diff(
+            KIND_DIFFER, rel,
+            "seal blob provenance differs (XREP-05): "
+            f"{S1_V1_1_SEAL_COMMIT_PRE_SQUASH}:{seal_rel} -> {c_blob!r}, "
+            f"{p_sha}:{seal_rel} -> {p_blob!r}",
+        ))
+    return diffs
+
+
 def _s1_ledger_exception(committed: Path, produced: Path) -> list[Diff]:
     """S1 trial_ledger.jsonl: import run_s1._ledger_equal (drops wall-clock ts).
 
@@ -424,6 +522,7 @@ def s1_exceptions() -> dict[str, ExceptionFn]:
     return {
         "SEAL_AND_BUDGET.json": XREP03_S1_SEAL_LEDGER_PATH,
         "SEAL_AND_BUDGET.md": XREP03_S1_SEAL_LEDGER_PATH,
+        "LANE_MANIFEST.json": XREP05_S1_MANIFEST_SEAL_COMMIT,
         "trial_ledger.jsonl": _s1_ledger_exception,
     }
 
