@@ -1473,6 +1473,7 @@ class BEAManifestResearchQualificationTests(unittest.TestCase):
         response["result"]["scanned_rows"] = 1112
         response["result"]["scan_complete"] = True
         response["result"]["next_offset"] = None
+        response["source"]["file_bytes"] = len(source)
         return response
 
     def _run_workspace_view_binding(self, source, receipts, response):
@@ -1534,6 +1535,24 @@ class BEAManifestResearchQualificationTests(unittest.TestCase):
         ):
             with self.subTest(key=key):
                 self.assertFalse(result[key])
+
+    def test_workspace_file_size_mismatch_never_attested(self):
+        source, receipts = self._synthetic_supplied_industry_view()
+        response = self._selected_workspace_response_from_supplied_view(source)
+        response["source"]["file_bytes"] += 1
+        with self.assertRaisesRegex(BEAContextRefused, "source byte length"):
+            self._run_workspace_view_binding(source, receipts, response)
+
+    def test_decoded_json_types_cannot_impersonate_original_source(self):
+        source, receipts = self._synthetic_supplied_industry_view()
+        response = self._selected_workspace_response_from_supplied_view(source)
+        # The following field is an original integer with value 1.
+        # Plain dict equality considers True == 1, which is not JSON-identical.
+        original = response["result"]["rows"][0]
+        self.assertEqual(original["source_rounding_difference_million_USD"], 1)
+        original["source_rounding_difference_million_USD"] = True
+        with self.assertRaisesRegex(BEAContextRefused, "row differs"):
+            self._run_workspace_view_binding(source, receipts, response)
 
     def test_changed_row_or_position_never_becomes_byte_attested(self):
         source, receipts = self._synthetic_supplied_industry_view()

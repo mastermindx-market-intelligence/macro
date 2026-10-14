@@ -1049,6 +1049,10 @@ def attest_workspace_bea_selection_against_supplied_view(
         response, industry_code=industry_code, commodity_code=commodity_code,
         purpose="private_research", as_of=None,
     )
+    if response["source"]["file_bytes"] != provenance["supplied_view_bytes"]:
+        raise BEAContextRefused(
+            "workspace source byte length differs from pinned research view"
+        )
     result = response["result"]
     positions = result["row_positions"]
     returned = result["rows"]
@@ -1064,7 +1068,19 @@ def attest_workspace_bea_selection_against_supplied_view(
         # The view's entire original JSONL was strictly parsed and verified
         # above. Repeating only eight decoded rows cannot grant L0 authority.
         raw_row = json.loads(lines[position].decode("utf-8"))
-        if raw_row != workspace_row:
+        try:
+            identical_json = (
+                json.dumps(raw_row, sort_keys=True, separators=(",", ":"),
+                           ensure_ascii=False, allow_nan=False)
+                == json.dumps(workspace_row, sort_keys=True,
+                              separators=(",", ":"), ensure_ascii=False,
+                              allow_nan=False)
+            )
+        except (TypeError, ValueError) as exc:
+            raise BEAContextRefused(
+                "unserializable workspace row differs from research view"
+            ) from exc
+        if not identical_json:
             raise BEAContextRefused("workspace row differs from authenticated research view")
         if (raw_row.get("accounting_year") != year
                 or raw_row.get("industry_code_exact") != industry_code
