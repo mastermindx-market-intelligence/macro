@@ -21,7 +21,7 @@ waves:
     title: Verify publication, signup and explicit follow continuation
     status: in_progress
     depends_on: [qualified-story]
-next_action: Consume controller-admitted repairs 9227 or 9229 and complete PR 9209 protected installation. Close issuer-context review for application frontier 1989dd89 through the admitted original path before accepting the prepared 28-source manifest and 18 portable control groups; then ship one follow-on. Continue primary-source qualification without rewriting held drafts or padding receipt credit.
+next_action: Consume the controller-admitted healed-main refresh for PR 9209 after repair 9227, complete protected landing and install, then integrate and ship the reviewed validator/writer/DOJ follow-on through one PR. Use its current 24-source bundle and 15 portable control groups. Preserve the optional issuer prototype and failed review separately; continue relevant source qualification without receipt padding.
 artifacts:
   - https://github.com/mastermindx-market-intelligence/macro/pull/9209
   - https://github.com/mastermindx-market-intelligence/macro/pull/9041
@@ -403,3 +403,49 @@ installed_brief_eligibility.json, installed_chronicle_readonly.json,
 research_shortlist_0431.json, research_browser_qualification.json and
 review_gate_diagnosis.json. Canonical checkpoint is recoverable in this existing
 SSD worktree; heartbeat remains active and mission incomplete.
+
+## 2026-10-14 04:54 UTC — reviewed release scope ready; inherited red remains controller-gated
+
+PR9209 exact head8f705cb32a77987f7e5c025e99194f3b479a6382 now has terminal CI
+38508325200 FAILURE:11packs passed; pack4/ci-gate failed solely on the inherited
+main path-pruning defect. Existing repair9227 protected-merged at04:29:28UTC as
+a806d09ec47aadb9ca40de42b056752422bb477f. The controller owns healed-main refresh.
+The one admission read this wake found29active PR proofs against cap8 and a
+populated durable lease register for8920 with no corresponding open lease issue.
+Latest main baseline was pending. No manual refresh, label mutation, new CI,
+duplicate repair or attempt to reconcile another controller's lease occurred.
+
+Root narrowed the NEXT release to reviewed validator/writer/DOJ source. The
+optional historical issuer-context extension does not earn first-party receipt
+credit and no longer holds up that release. Its exact source at1989dd890273 and
+all evidence remain recoverable, including a hash-bound deferred patch. Its
+failed review identity remains unchanged, unaccepted and unreplayed. No worker,
+policy change, carrier switch or substitute review was used to obtain acceptance.
+
+Active engine/scripts/tests exactly match accepted70d9b7e08337. Four reviewed
+source/test hashes were verified. The sole later CI change keeps beautifulsoup4
+in the existing Press job, matching runtime requirements.335 affected tests pass
+with1 existing sparse-site skip22.03s. The reviewed-source portable probe passes
+5groups and the staging-integrity probe10groups; a wrong manifest hash refuses
+before import. Zero real provider calls or production writes. The24-source
+manifest is explicitly rebound to2already-reviewed changed hashes,22unchanged;
+all3reviewed page hashes remain equal.305CI jobs validate with5435/5435 local
+packing totals and0trigger-closure gaps. This is prepared LOCAL acceptance,
+not hosted CI, protected landing, install, browser verification or publication.
+
+Next: leave the original armed carrier for controller-admitted refresh after the
+existing main repair; complete exact-head protected landing/install of9209. Then
+integrate landed main into this SAME follow-on, preserve reviewed application
+hashes, create its ONE PR and complete protected CI/install using the24-source
+bundle plus15portable control groups. Continue genuinely qualified source work;
+do not wait on the deferred optional issuer review. The current CVS government
+source-only plan still lacks relevant first-party receipts. No new Press draft,
+signup/follow write, publication or cutover; D14credit0/10. Preserve original
+Oct11 12:07 EFFECT_UNKNOWN, BAC/Research holds, Commission19,Catalyst8678,
+all worktrees and shared dirty accounting. Mission and heartbeat remain active.
+
+verified: doj_source_phase/release_scope/decision.json, affected_tests.txt,
+local_doj_source_probe.json, local_staging_integrity_probe.json,
+wrong_manifest_control.json, page_identity.json, ci_manifest_validation.txt,
+trigger_closure.txt, release_admission.json and pr9209_observation.json;
+release_scope_binding.json records exact accepted-byte and archive hashes.

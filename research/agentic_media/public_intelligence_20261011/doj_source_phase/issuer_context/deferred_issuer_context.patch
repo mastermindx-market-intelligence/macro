@@ -1,0 +1,335 @@
+diff --git a/engine/press/issuer_baseline.py b/engine/press/issuer_baseline.py
+new file mode 100644
+index 000000000000..b101c84cf374
+--- /dev/null
++++ b/engine/press/issuer_baseline.py
+@@ -0,0 +1,135 @@
++"""Historical issuer comparisons over the incumbent SEC cash/debt read models.
++
++No collection, provider or publication effect. Reported values remain third
++party, including arithmetic derived solely from those figures. Period clocks never become the
++date of the new event or the date this consumer runs.
++"""
++from __future__ import annotations
++
++import hashlib
++import json
++import re
++from datetime import datetime, timezone
++from decimal import Decimal, ROUND_HALF_UP
++from pathlib import Path
++
++from engine.capital_need import assemble_capital_need
++from engine.cash_runway import extract_cash_runway
++from engine.debt_maturity import extract_maturity_ladder
++from engine.press.external_candidate import _read_bound
++
++
++def issuer_baseline_context(review: dict, *, root: Path, as_of: datetime,
++                            reviewed_tickers: dict, reviewed_claims: list) -> tuple[list, dict]:
++    if not isinstance(as_of, datetime) or as_of.tzinfo is None:
++        raise ValueError('issuer-baseline evaluation requires an explicit instant')
++    now = as_of.astimezone(timezone.utc)
++    as_of = now.date()
++    fields = {'ticker', 'cik', 'cache_sha256', 'identity_sha256',
++              'event_quantity_literal', 'relevance'}
++    if not isinstance(review, dict) or set(review) != fields:
++        raise ValueError('explicit issuer-baseline review required')
++    ticker, cik, literal = (review[k] for k in ('ticker', 'cik', 'event_quantity_literal'))
++    if (not isinstance(ticker, str) or ticker not in reviewed_tickers
++            or not isinstance(cik, str) or not re.fullmatch(r'\d{10}', cik) or int(cik) == 0
++            or not isinstance(review['relevance'], str) or not 1 <= len(review['relevance'].strip()) <= 500
++            or not isinstance(literal, str)
++            or literal not in [c.get('quantity_literal') for c in reviewed_claims]):
++        raise ValueError('issuer-baseline identity or event comparison is unqualified')
++    amount = re.fullmatch(r'\$(\d+(?:\.\d+)?) (million|billion)', literal)
++    if amount is None:
++        raise ValueError('issuer baseline supports explicit positive USD event amounts only')
++    event_usd = Decimal(amount[1]) * (10**6 if amount[2] == 'million' else 10**9)
++    if not event_usd.is_finite() or event_usd <= 0:
++        raise ValueError('issuer-baseline event amount must be positive')
++
++    root = Path(root).resolve()
++    cache_rel = f'data/debt_maturity/cache/CIK{cik}.json'
++    identity_rel = 'data/edgar/ticker_cik_ledger.json'
++    revisions = {}
++    payloads = []
++    for rel, digest in ((cache_rel, review['cache_sha256']),
++                        (identity_rel, review['identity_sha256'])):
++        path = root / rel
++        if path.resolve() != path:
++            raise ValueError('issuer-baseline evidence may not traverse symlinks')
++        payloads.append(json.loads(_read_bound(path, digest, 8_000_000)))
++        revisions['artifact:' + rel] = 'sha256:' + digest
++    cache, ledger = payloads
++    if not isinstance(cache, dict) or not isinstance(ledger, dict):
++        raise ValueError('issuer-baseline evidence must be objects')
++    entries = ledger.get('tickers', ledger)
++    entry = entries.get(ticker) if isinstance(entries, dict) else None
++    mapped = entry.get('cik') if isinstance(entry, dict) else entry
++    if isinstance(mapped, bool) or not str(mapped).isdigit() or str(mapped).zfill(10) != cik:
++        raise ValueError('issuer-baseline ticker and CIK mismatch')
++    embedded = cache.get('cik')
++    if isinstance(embedded, bool) or not str(embedded).isdigit() or str(embedded).zfill(10) != cik:
++        raise ValueError('issuer-baseline embedded CIK mismatch')
++    try:
++        fetched = datetime.fromisoformat(cache['fetched_at'].replace('Z', '+00:00'))
++        if fetched.tzinfo is None or fetched.astimezone(timezone.utc) > now:
++            raise ValueError('invalid acquisition clock')
++    except (KeyError, TypeError, AttributeError, ValueError) as exc:
++        raise ValueError('issuer-baseline acquisition clock required') from exc
++
++    debt = extract_maturity_ladder(cache, cik=cik, as_of=as_of)
++    cash = extract_cash_runway(cache, cik=cik, as_of=as_of, ladder=debt)
++    for block in (debt, cash):
++        block['fetched_at'] = cache['fetched_at']
++    view = assemble_capital_need(debt, cash, issuer_id='CIK' + cik,
++                                 security_id=ticker, as_of=as_of)
++    if view['status'] != 'complete' or view['coverage']['reasons']:
++        raise ValueError('issuer-baseline read model is incomplete or stale')
++    period = cash['period']
++    if debt['period']['accn'] != period['accn'] or debt['period']['end'] != period['end']:
++        raise ValueError('issuer-baseline requires one matched annual filing')
++    reported = view['reported']
++    cash_usd = Decimal(str(reported['cash']['value']))
++    ocf = Decimal(str(reported['operating_cash_flow']['value']))
++    capex = Decimal(str(reported['capex']['value']))
++    fcf = Decimal(str(view['derived']['free_cash_flow']['value']))
++    due = next((Decimal(str(b['value'])) for b in reported['debt_due']['buckets']
++                if b['key'] == 'y1' and b['state'] == 'observed'), None)
++    total = Decimal(str(reported['debt_due']['total_reported_usd']))
++    if due is None or any(not x.is_finite() or x <= 0 for x in (cash_usd, fcf, due, total)):
++        raise ValueError('issuer-baseline comparison denominators must be positive')
++
++    ref = 'artifact:' + cache_rel
++    receipt = revisions[ref]
++    base = {'ref': ref, 'dated': period['end'], 'receipt': receipt,
++            'source_name': 'Issuer SEC annual filing',
++            'period': dict(period), 'evaluation_as_of': as_of.isoformat(),
++            'context_relevance': review['relevance'].strip()}
++    def number(x):
++        return format(x, 'f')
++    def pct(n, d):
++        return (n / d * 100).quantize(Decimal('.01'), rounding=ROUND_HALF_UP)
++    facts = []
++    def add(fid, text, value, *, derived):
++        facts.append({**base, 'id': f'issuer_{ticker}_{fid}', 'text': text,
++                      'values': [number(value)], 'tier': 'third_party', 'derived_from_external': derived})
++    stamp = f"{ticker}'s fiscal year ended {period['end']} (filed {period['filed']})"
++    for fid, label, value in [('cash', 'year-end cash', cash_usd),
++                              ('ocf', 'annual operating cash flow', ocf),
++                              ('capex', 'annual capital expenditure', capex),
++                              ('due', 'principal due in the first 12 months AFTER that fiscal year end', due),
++                              ('total', 'total disclosed maturity principal', total)]:
++        add(fid, f'For {stamp}, reported {label} was ${number(value)}.', value, derived=False)
++    add('fcf', f'For {stamp}, our subtraction of capital expenditure from operating cash flow gives '
++        f'${number(fcf)} of historical free cash flow.', fcf, derived=True)
++    cover, share = pct(cash_usd, due), pct(due, total)
++    add('cover', f'For {stamp}, our historical cash-to-first-bucket principal ratio is {cover}%. '
++        'The maturity interval begins at fiscal year end, not today.', cover, derived=True)
++    add('near_share', f'For {stamp}, our first-bucket share of total disclosed principal is {share}%.',
++        share, derived=True)
++    for fid, label, denominator in [('event_cash', 'year-end cash', cash_usd), ('event_fcf', 'annual free cash flow', fcf)]:
++        value = pct(event_usd, denominator)
++        add(fid, f'The reviewed event amount is {value}% of {stamp} {label}, by our arithmetic. '
++            'This is a historical scale comparison, not current liquidity, a payment schedule or a price-effect estimate.',
++            value, derived=True)
++    for rel in ('engine/press/issuer_baseline.py', 'engine/debt_maturity.py',
++                'engine/cash_runway.py', 'engine/capital_need.py'):
++        module_root = Path(__file__).resolve().parents[2]
++        revisions['implementation:' + rel] = 'sha256:' + hashlib.sha256((module_root / rel).read_bytes()).hexdigest()
++    return facts, revisions
+diff --git a/engine/press/official_feed_candidate.py b/engine/press/official_feed_candidate.py
+index 37aee8b95652..7aa99c40ffed 100644
+--- a/engine/press/official_feed_candidate.py
++++ b/engine/press/official_feed_candidate.py
+@@ -111,7 +111,10 @@ def plan_official_feed_candidate(*, feed_path: Path, feed_sha256: str,
+         raise ValueError('explicit official feed qualification required')
+     source = {'occ_news': _OCC, 'doj_news': _DOJ}.get(q.get('source_key'))
+     required = _REQUIRED | (_DOJ_FIELDS if source is _DOJ else set())
+-    if source is None or set(q) not in (required, required | {'first_party_context'}):
++    optional = {'first_party_context'}
++    if source is _DOJ:
++        optional.add('issuer_baseline_context')
++    if source is None or not required <= set(q) <= required | optional:
+         raise ValueError('explicit official feed qualification required')
+     for key in ('source_key', 'feed_url', 'feed_sha256', 'item_url', 'published_at', 'event_date', 'observed_at'):
+         if not isinstance(q[key], str) or not q[key].strip():
+@@ -223,6 +226,13 @@ def plan_official_feed_candidate(*, feed_path: Path, feed_sha256: str,
+                                                       as_of=now.date(), window_days=window)
+         facts.extend(context)
+         revisions.update(context_revisions)
++    if 'issuer_baseline_context' in q:
++        from engine.press.issuer_baseline import issuer_baseline_context
++        baseline, baseline_revisions = issuer_baseline_context(
++            q['issuer_baseline_context'], root=Path(root), as_of=now,
++            reviewed_tickers=tickers, reviewed_claims=claims)
++        facts.extend(baseline)
++        revisions.update(baseline_revisions)
+     published_refs, _ = P.published_refs(root, cfg)
+     staged_refs, _ = P.staged_refs(root, cfg)
+     context = {key: desk[key] for key in ('publication', 'byline', 'min_words', 'max_words', 'min_anchored_receipts')}
+diff --git a/tests/test_press_issuer_baseline.py b/tests/test_press_issuer_baseline.py
+new file mode 100644
+index 000000000000..b42ef0f1999b
+--- /dev/null
++++ b/tests/test_press_issuer_baseline.py
+@@ -0,0 +1,113 @@
++"""Historical SEC comparisons remain external context, never receipt credit."""
++from datetime import datetime, timezone
++import hashlib
++import json
++from pathlib import Path
++import pytest
++from engine.debt_maturity import BUCKETS
++from engine.press.issuer_baseline import issuer_baseline_context
++
++
++def dump(path, obj):
++    path.parent.mkdir(parents=True, exist_ok=True)
++    path.write_text(json.dumps(obj))
++    return hashlib.sha256(path.read_bytes()).hexdigest()
++
++
++def baseline_inputs(root):
++    period = dict(end="2025-12-31", accn="0000064803-26-000010", fy=2025,
++                  fp="FY", form="10-K", filed="2026-02-10")
++    facts = {}
++    def add(tag, value, duration=False):
++        row = dict(period, val=value)
++        if duration: row["start"] = "2025-01-01"
++        facts[tag] = {"units": {"USD": [row]}}
++    add("CashAndCashEquivalentsAtCarryingValue", 8453000000)
++    add("NetCashProvidedByUsedInOperatingActivities", 10639000000, True)
++    add("PaymentsToAcquirePropertyPlantAndEquipment", 2832000000, True)
++    for (_, tag, _, _), value in zip(BUCKETS, [4007, 3379, 5008, 3758, 4258, 43299]):
++        add(tag, value * 1000000)
++    cache = {"cik": 64803, "fetched_at": "2026-09-23T08:01:58+00:00",
++             "facts": {"us-gaap": facts}}
++    cache_path = root / "data/debt_maturity/cache/CIK0000064803.json"
++    identity = root / "data/edgar/ticker_cik_ledger.json"
++    review = dict(ticker="CVS", cik="0000064803", cache_sha256=dump(cache_path, cache),
++                  identity_sha256=dump(identity, {"tickers": {"CVS": {"cik": "0000064803"}}}),
++                  event_quantity_literal="$315 million",
++                  relevance="Historical scale comparison only, not current liquidity or price impact.")
++    return dict(review=review, root=root, as_of=datetime(2026, 10, 14, 4, tzinfo=timezone.utc),
++                reviewed_tickers={"CVS": "CVS Pharmacy Inc."},
++                reviewed_claims=[{"quantity_literal": "$315 million"}])
++
++
++@pytest.fixture
++def inputs(tmp_path):
++    return baseline_inputs(tmp_path)
++
++
++def invoke(inputs):
++    return issuer_baseline_context(**inputs)
++
++
++def test_exact_arithmetic_keeps_external_tier_and_filing_clocks(inputs):
++    before = {str(p): p.read_bytes() for p in inputs['root'].rglob('*') if p.is_file()}
++    facts, revisions = invoke(inputs)
++    by_id = {f['id']: f for f in facts}
++    assert by_id['issuer_CVS_fcf']['values'] == ['7807000000.0']
++    assert by_id['issuer_CVS_cover']['values'] == ['210.96']
++    assert by_id['issuer_CVS_near_share']['values'] == ['6.29']
++    assert by_id['issuer_CVS_event_cash']['values'] == ['3.73']
++    assert by_id['issuer_CVS_event_fcf']['values'] == ['4.03']
++    assert all(f['tier'] == 'third_party' for f in facts)
++    assert sum(f['derived_from_external'] for f in facts) == 5
++    assert all(f['dated'] == '2025-12-31' and f['period']['filed'] == '2026-02-10' for f in facts)
++    assert all('2025-12-31' in f['text'] and '2026-02-10' in f['text'] for f in facts)
++    assert 'not current liquidity' in by_id['issuer_CVS_event_cash']['text']
++    assert len(revisions) == 6
++    assert before == {str(p): p.read_bytes() for p in inputs['root'].rglob('*') if p.is_file()}
++
++
++@pytest.mark.parametrize('field,value', [('ticker','BAC'), ('cik','../64803'),
++    ('event_quantity_literal','$315 billion'), ('event_quantity_literal',None),
++    ('relevance',''), ('cache_sha256','0'*64), ('identity_sha256','0'*64)])
++def test_unqualified_review_refuses(inputs, field, value):
++    inputs['review'][field] = value
++    with pytest.raises(ValueError): invoke(inputs)
++
++
++@pytest.mark.parametrize('mutation', ['missing_cik','wrong_cik','bool_cik','future_fetch','same_day_future_fetch',
++    'naive_fetch','missing_fetch','foreign_currency','zero_cash','negative_fcf','mismatched_period'])
++def test_rebound_invalid_companyfacts_refuse(inputs, mutation):
++    p = inputs['root'] / 'data/debt_maturity/cache/CIK0000064803.json'
++    d = json.loads(p.read_text()); tags = d['facts']['us-gaap']
++    if mutation == 'missing_cik': del d['cik']
++    elif mutation == 'wrong_cik': d['cik'] = 123
++    elif mutation == 'bool_cik': d['cik'] = True
++    elif mutation == 'future_fetch': d['fetched_at'] = '2026-10-15T00:00:00Z'
++    elif mutation == 'same_day_future_fetch': d['fetched_at'] = '2026-10-14T23:00:00Z'
++    elif mutation == 'naive_fetch': d['fetched_at'] = '2026-10-14T00:00:00'
++    elif mutation == 'missing_fetch': del d['fetched_at']
++    elif mutation == 'foreign_currency':
++        units = tags['CashAndCashEquivalentsAtCarryingValue']['units']
++        units['EUR'] = units.pop('USD')
++    elif mutation == 'zero_cash': tags['CashAndCashEquivalentsAtCarryingValue']['units']['USD'][0]['val'] = 0
++    elif mutation == 'negative_fcf': tags['PaymentsToAcquirePropertyPlantAndEquipment']['units']['USD'][0]['val'] = 20000000000
++    elif mutation == 'mismatched_period': tags['NetCashProvidedByUsedInOperatingActivities']['units']['USD'][0]['accn'] = 'different'
++    inputs['review']['cache_sha256'] = dump(p, d)
++    with pytest.raises(ValueError): invoke(inputs)
++
++
++def test_wrong_ticker_ledger_and_symlink_refuse(inputs, tmp_path):
++    p = inputs['root'] / 'data/edgar/ticker_cik_ledger.json'
++    inputs['review']['identity_sha256'] = dump(p, {'CVS': '0000000001'})
++    with pytest.raises(ValueError, match='mismatch'): invoke(inputs)
++    inputs['review']['identity_sha256'] = dump(p, {'CVS': '0000064803'})
++    target = tmp_path / 'outside.json'; target.write_bytes(p.read_bytes())
++    p.unlink(); p.symlink_to(target)
++    with pytest.raises(ValueError, match='symlink'): invoke(inputs)
++
++
++def test_stale_and_not_yet_filed_baselines_refuse(inputs):
++    for asof in [datetime(2026, 1, 1, tzinfo=timezone.utc), datetime(2028, 10, 14, tzinfo=timezone.utc)]:
++        inputs['as_of'] = asof
++        with pytest.raises(ValueError): invoke(inputs)
+diff --git a/tests/test_press_official_feed_candidate.py b/tests/test_press_official_feed_candidate.py
+index 0e2bae1f5bf4..450c6ba09f82 100644
+--- a/tests/test_press_official_feed_candidate.py
++++ b/tests/test_press_official_feed_candidate.py
+@@ -227,3 +227,40 @@ def test_doj_candidate_alone_refuses_before_checkpoint_or_provider(doj_inputs, m
+     assert r['staged'] is False and r['public_article_approved'] is False
+     assert 'first-party' in r['reason']
+     assert before == {str(p): p.read_bytes() for p in root.rglob('*') if p.is_file()}
++
++
++def test_doj_historical_issuer_context_keeps_external_tier_and_source_vintage(doj_inputs):
++    from tests.test_press_issuer_baseline import baseline_inputs
++    b = baseline_inputs(doj_inputs['root'])
++    change(doj_inputs, lambda q: q.update(issuer_baseline_context=b['review']))
++    r = invoke(doj_inputs)
++    facts = r['validation_context']['facts']
++    assert len(facts) == 12 and all(f['tier'] == 'third_party' for f in facts)
++    assert len(r['source_revisions']) == 9
++    assert all(f['dated'] == '2025-12-31' for f in facts if f.get('id','').startswith('issuer_'))
++    assert r['allow_stage'] is r['allow_emit'] is False
++
++
++def test_doj_baseline_cannot_supply_first_party_writer_admission(doj_inputs, monkeypatch):
++    from tests.test_press_issuer_baseline import baseline_inputs
++    from scripts.stage_official_feed_press import stage_official_feed_candidate
++    from engine.press import desk_planner as P
++    from engine.press import writer
++    from datetime import datetime, timezone
++    b = baseline_inputs(doj_inputs['root'])
++    change(doj_inputs, lambda q: q.update(issuer_baseline_context=b['review']))
++    before = {str(p): p.read_bytes() for p in doj_inputs['root'].rglob('*') if p.is_file()}
++    def forbidden(*a, **kw): raise AssertionError('provider must never be called')
++    monkeypatch.setattr(writer, 'write', forbidden)
++    args = {k:v for k,v in doj_inputs.items() if k not in ('as_of', 'root')}
++    result = stage_official_feed_candidate(doj_inputs['root'], P.load_config(doj_inputs['root']), **args, now=datetime(2026,10,14,4,tzinfo=timezone.utc))
++    assert result['staged'] is False and result['public_article_approved'] is False
++    assert 'first-party' in str(result)
++    assert before == {str(p): p.read_bytes() for p in doj_inputs['root'].rglob('*') if p.is_file()}
++
++
++def test_occ_does_not_gain_a_new_retry_route_through_issuer_context(inputs):
++    from tests.test_press_issuer_baseline import baseline_inputs
++    b = baseline_inputs(inputs['root'])
++    change(inputs, lambda q: q.update(issuer_baseline_context=b['review']))
++    with pytest.raises(ValueError): invoke(inputs)

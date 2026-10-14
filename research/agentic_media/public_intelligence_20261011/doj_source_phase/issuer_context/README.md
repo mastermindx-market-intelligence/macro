@@ -1,3 +1,5 @@
+> Deferred prototype: this directory describes application commit `1989dd890273164b728e462a49121fe74a0bf3c1`. It is excluded from the upcoming release. `deferred_issuer_context.patch` preserves the exact four-file implementation against reviewed source `70d9b7e08337`; later reinstatement requires lawful independent review and fresh integration. Its 28-source manifest and issuer probe do not apply to the narrowed release. The active 24-source bundle is `../../validator_integrity_phase/postlanding/`.
+
 # Historical issuer context: built, review pending
 
 The DOJ source-only contract was accepted at70d9b7e08337. This later extension is
