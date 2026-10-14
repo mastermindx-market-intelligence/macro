@@ -13263,6 +13263,25 @@ jobs:
       - name: SA-W4 standout review test suite
         run: python -m pytest tests/test_standout_review.py -v
 
+  lr-rotation-evidence-modes:
+    if: ${{ false }}
+    gate: code
+    # LEADERSHIP-ROTATION T06: retained-vs-reconstructed evidence-mode fences.
+    # Covers: past-asof reconstructed RS history is labelled (mode, naturally_observed=false,
+    # as_of) and never built from later prices; retained ledger receipts are never rewritten
+    # or deduplicated; reconstructed and retained vocabularies stay disjoint.
+    # Network-free: synthetic panels + temp ledgers.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install deps
+        run: pip install pytest pandas numpy scipy pyyaml pyarrow jinja2
+      - name: LR-T06 rotation evidence-mode fences
+        run: python -m pytest tests/test_rotation_evidence_modes.py -q
+
   rc-r14-china-rotation-events:
     if: ${{ false }}
     gate: code
