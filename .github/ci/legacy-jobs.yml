@@ -20587,6 +20587,7 @@ jobs:
       - "engine/qledger_store_sources.py"
       - "engine/qledger_validity.py"
       - "engine/rate_inflation_transmission.py"
+      - "engine/rates_command_basis.py"
       - "engine/rates_inflation_command.py"
       - "engine/rebalance_calendar.py"
       - "engine/regime.py"
@@ -21361,6 +21362,8 @@ jobs:
       # E0-G (#8373): tests/test_dashboard_template_render.py renders the Fed dialog's Inflation Read
       # through the owner (engine.rates_inflation_command._build_inflation_row), so the dashboard
       # suite pulls that module into this job's closure (contract-delta: widen, never narrow).
+      # T0: the owner now imports the B0 basis contract, so that module joins the closure too.
+      - "engine/rates_command_basis.py"
       - "engine/rates_inflation_command.py"
       - scripts/build_ticker_pages.py
       - scripts/capture_debt_maturity_evidence.py
