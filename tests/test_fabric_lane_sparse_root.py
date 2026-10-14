@@ -124,3 +124,45 @@ def test_new_path_requires_exact_immediate_child(checkouts, monkeypatch):
     assert ws.path_under_session_root(uncreated)
     assert not ws.path_under_session_root(home / "lanes" / "wt")
     assert not ws.path_under_session_root(home / "lanes" / "wt" / "nested" / "future-worker")
+
+
+def test_original_sparse_minter_avoids_full_checkout_and_rejects_reuse(
+    checkouts, monkeypatch,
+):
+    """The incumbent Git sparse mint—not a new Fabric scheduler—creates a clean lane."""
+    repo, _, _, home = checkouts
+    destination = home / "lanes" / "wt" / "new-qualified-worker"
+    monkeypatch.setenv("MASTERMIND_FABRIC_SPARSE_NEW", "1")
+    assert ws.mint_session_worktree(
+        repo, destination, branch="lane/new-qualified-worker",
+        base="HEAD", fetch=False, reuse_existing=False, strict=True,
+    ) == 0
+    original = _git(repo, "rev-parse", "HEAD")
+    assert _git(destination, "rev-parse", "HEAD") == original
+    assert _git(destination, "branch", "--show-current") == "lane/new-qualified-worker"
+    assert _git(destination, "config", "--get", "core.sparseCheckout") == "true"
+    assert _git(destination, "status", "--porcelain") == ""
+    assert (destination / "scripts" / "keep.py").is_file()
+    for name in ("data", "site", "mockups", "verify_shots"):
+        assert not (destination / name / "tracked.txt").exists()
+    # No unqualified resumption of this same worktree; existing branch is preserved.
+    assert ws.mint_session_worktree(
+        repo, destination, branch="lane/new-qualified-worker",
+        base="HEAD", fetch=False, reuse_existing=False, strict=True,
+    ) == 1
+    assert _git(destination, "rev-parse", "HEAD") == original
+    assert _git(destination, "status", "--porcelain") == ""
+
+
+def test_original_sparse_minter_refuses_unqualified_fabric_destination(
+    checkouts, monkeypatch,
+):
+    repo, _, _, home = checkouts
+    destination = home / "lanes" / "wt" / "unqualified-worker"
+    monkeypatch.delenv("MASTERMIND_FABRIC_SPARSE_NEW", raising=False)
+    assert ws.mint_session_worktree(
+        repo, destination, branch="lane/unqualified-worker",
+        base="HEAD", fetch=False, reuse_existing=False, strict=True,
+    ) == 1
+    assert not destination.exists()
+    assert _git(repo, "branch", "--list", "lane/unqualified-worker") == ""
