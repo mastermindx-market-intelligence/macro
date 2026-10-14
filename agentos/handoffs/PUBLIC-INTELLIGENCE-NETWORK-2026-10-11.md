@@ -2329,3 +2329,43 @@ repair commit d85258e89e0a at research/agentic_media/public_intelligence_2026101
 AgentOS1734records/0errors/164advisorywarnings. The previous63,176-character
 GitHub evidence comment is preserved verbatim in github_evidence_history_before_20261014_0805.md
 before its current frontier is compacted with a permanent commit link.
+
+## 2026-10-14 08:58 UTC — existing controller consumes repair; tail publication failure identified
+
+One current-wake read at08:57:52 confirms9209 remains OPEN8f705cb3. Full controller
+38538521970 at08:55 recognized9288 as the sole main-red repair and waited for its13
+running checks;9209 stays armed behind the main-red breaker.13 indexed PR proofs,
+cap8,zero slots. The newer baseline38535064540 at78f644879c26 failed the SAME
+homepage136>135/planbook130>129 regression (1failed825passed), so no duplicate
+repair or different failure is inferred. Repair9288 remains exactd85258e89e0a,
+CI38537927444; no further CI polling/manual refresh/release bypass.
+
+The original daily38495183073 collection tail115696591188 is now terminal CANCELLED
+at08:48:30. Its retained log proves the backfill hit the200-minute budget and the
+final tail push was rejected GH001: data/qledger/claims.jsonl126.64MB exceeds100MB;
+the existing guard stopped automatic retry. This is neither a successful data
+publication nor permission to replay. A same-endpoint raw-to-private-file/log
+sanitization recovery resolved gh's terminal-escape display filter without a
+carrier/authentication change. Raw log hash466641b581ca94c4d80b77add56fa0e9d27e2feb617ad707f9f89e6739065175.
+
+Existing QLedger8756 at818e0504 remains DRAFT/HOLD, pure conversion preview only;
+its source custody, migration and prior8042 acceptance gates remain. Collector
+headroom9256 atd78ddc54 also remains DRAFT/HOLD. Do not duplicate or release them.
+Original outage receipt8748/comment6161661655 reports lossless archival/retirement
+of the exact cancelled collector worker. It explicitly preserves unresolved
+remote/R2 effects; this session has not reverified its private archives and does
+not adopt them as current data. Existing engine115696591645 remains live and has
+advanced to regional/desk builders. Consume only actual committed/installed output
+and real event dates after settlement; no fresh own receipt is yet established.
+
+Accepted Press application8eb467112b83 and all prior tests/bundles remain unchanged.
+No producer/runner mutations, new provider calls, source admissions, publication,
+cutover or D14credit. Original Oct11 effect/refused issuer review remain unreplayed.
+The single existing heartbeat is ACTIVE and points to9288 -> admitted9209 release
+and installed proof -> SAME reviewed follow-on release. This is durable execution
+running, not mission completion. Local continuation cannot advance the protected
+merge before that result, and no reviewed source qualifies for generation now.
+
+verified: source_qualification_20261014_0851/{release_observation.json,
+producer_settlement.json}; existing GitHub comment6107930181 compacted with a
+permanent link to its verbatim63176-character prior body at27244e867c8d.
