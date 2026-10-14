@@ -1,3 +1,34 @@
+## 2026-10-14 06:54 UTC — current government auction lead verified, not admitted
+
+One PR/controller read at06:44:29Z: #9209 OPEN8f705cb32a77987f7e5c025e99194f3b479a6382,
+CI38508325200 remains inherited pack4 red/11packs pass. Capacity16/cap8,
+8920 lease populated, mainbaseline38520655830 running. Existing9227 repair preserved;
+no refresh, duplicate CI/observer, waiver or merge action.
+
+Used the actual browser-rendered TreasuryDirect table to retain the currentOct13
+91-day bill result912797VT1, SHA0ad062476c13afdb6678c68dc7a79dfcef9f50fcef9ebde0e953a9df32fd2fbc.
+Recomputed2.68 bid-to-cover and competitive bidder totals; distinguished discount vs
+investment yield and announcement/auction/issue dates. No listed issuer is named;
+no fabricated OCC/DOJ identity, unrelated stock association or generation followed.
+Private PDF retained outsideGit. Rights/publication remain separately unqualified.
+
+Pure installed source build at06:49 found42 current Research events and zero own
+Brief events, with stableHEADabbded0de82ffe2d2841ba8372db3c0608304e5f and all input
+hashes unchanged. No collector/producer/staging write. DHI/JPM dossier files exist;
+SPY does not. Paths alone are not editorial issuer associations. Commerce403 is
+unretried. Fed calendar has a futureOct14 Beige Book lead, not released evidence.
+
+Six source retention/arithmetic/read-integrity controls pass; all24 accepted local
+runtime hashes unchanged. Reuse application8eb467112b83 proof:429tests/1sparse skip,
+1real-data check,31portable groups,24-source/3-page bundle. No follow-on PR/install.
+Next: admitted9209 protected release/install, then same reviewed follow-on; qualify
+actual upcoming permitted releases without time-shifting or changing source ownership.
+Publication/cutover false, credit0/10; all prior holds, refused issuer review,
+Commission19/Catalyst8678 andOct11 12:07EFFECT_UNKNOWN preserved.
+
+verified: source_qualification_20261014_0639/{README.md,pr9209_observation.json,
+installed_source_discovery.json,treasury_bill_review.json,review_verification.json}.
+
 ## 2026-10-14 06:35 UTC — alternate source review and cumulative exclusions
 
 The single PR/controller read at06:23:49Z still finds #9209 OPEN at8f705cb32a77987f7e5c025e99194f3b479a6382,
