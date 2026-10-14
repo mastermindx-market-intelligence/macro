@@ -1371,3 +1371,267 @@ test('fromInvestigationManifestV2 refuses non-manifest and carrier-less shapes',
   delete manifest.fif_saved_research;
   assert.equal(Briefcase.fromInvestigationManifestV2(manifest), null);
 });
+
+// ── X2-b+c r2 MAJOR-1: an edit in another tab must REFUSE the active view,
+// never keep serving stale pinned bytes behind a "latest" badge ─────────────
+
+test('T-MAJOR1-a: another tab unpinning the active view refuses it as changed', () => {
+  const { drive, row } = restoredPinnedDrive();
+  assert.equal(drive.nodes['ff-saved-badge'].hidden, false, 'the pinned badge is shown after the restore');
+  assert.ok(drive.api.state.pinnedRequest, 'the pinned request bytes are held');
+  const tabB = freshBriefcase(drive.storage, 0).create({ now: () => '2026-10-12T00:00:00Z' });
+  assert.equal(tabB.update(row.id, { pinned: false }).ok, true, 'tab B unpins the view');
+  const afterEdit = drive.storage.getItem(STORE_KEY);
+  drive.api.renderSavedUI();
+  assert.equal(drive.api.state.savedRefusal, 'changed', 'the pinned-to-latest edit refuses as changed');
+  assert.equal(drive.api.state.pinnedRequest, null, 'the stale pinned bytes are dropped');
+  assert.equal(drive.api.activePinnedRequest(), null, 'no pinned bytes are served');
+  assert.equal(drive.nodes['ff-saved-badge'].hidden, true, 'the badge never says latest');
+  assert.equal(drive.nodes['ff-saved-notice'].hidden, false, 'the refusal notice shows');
+  assert.match(drive.nodes['ff-saved-notice'].innerHTML, /changed in another tab/);
+  assert.match(drive.nodes['ff-saved-notice'].innerHTML, /Reopen it to continue/);
+  assert.ok(drive.nodes['ff-saved-notice'].innerHTML.indexOf('此已保存视图已在另一个标签页中更改。请重新打开以继续。') >= 0,
+    'the bilingual pair carries the Chinese copy');
+  assert.equal(drive.storage.getItem(STORE_KEY), afterEdit, 'the render itself wrote nothing');
+});
+
+test('T-MAJOR1-b: another tab changing the stored request refuses it as changed, even before any render', () => {
+  const { drive, row } = restoredPinnedDrive();
+  const tabB = freshBriefcase(drive.storage, 0).create({ now: () => '2026-10-12T00:00:00Z' });
+  const revised = JSON.parse(JSON.stringify(row.request));
+  revised.policy.source_snapshot_at = '2026-10-11T23:59:59Z';
+  revised.policy.recorded_at = '2026-10-11T23:59:59Z';
+  assert.equal(tabB.update(row.id, { request: revised }).ok, true, 'tab B re-cuts the stored request');
+  // No renderSavedUI() first: the pinned-read path itself reconciles.
+  assert.equal(drive.api.activePinnedRequest(), null, 'the changed request bytes are not served');
+  assert.equal(drive.api.state.savedRefusal, 'changed');
+  assert.equal(drive.api.state.pinnedRequest, null);
+  drive.api.renderSavedUI();
+  assert.equal(drive.nodes['ff-saved-badge'].hidden, true, 'no badge renders for the refused view');
+});
+
+test('T-MAJOR1-c: another tab pinning a latest view refuses it as changed too', () => {
+  const container = fixtureContainer('saved_latest.json');
+  const row = container.saved_views[0];
+  const drive = harness();
+  drive.storage.setItem(STORE_KEY, JSON.stringify(container));
+  drive.api.initSavedBriefcase();
+  assert.equal(drive.api.restoreSavedView(row.id).ok, true, 'the latest fixture view restores');
+  assert.equal(drive.api.state.pinnedRequest, null, 'a latest view serves no pinned bytes');
+  const tabB = freshBriefcase(drive.storage, 0).create({ now: () => '2026-10-12T00:00:00Z' });
+  assert.equal(tabB.update(row.id, { pinned: true }).ok, true, 'tab B pins the view');
+  drive.api.renderSavedUI();
+  assert.equal(drive.api.state.savedRefusal, 'changed', 'the latest-to-pinned edit refuses as changed');
+  assert.equal(drive.nodes['ff-saved-badge'].hidden, true, 'the badge never claims latest for a now-pinned view');
+});
+
+// ── X2-b+c r2 MINOR-1: a read-only store stops serving pinned bytes ─────────
+
+test('T-MINOR1: a read-only store refuses the active view as store and serves no pinned bytes', () => {
+  const { drive } = restoredPinnedDrive();
+  assert.ok(drive.api.state.pinnedRequest, 'the pinned request bytes are held');
+  // The container's own bytes go unreadable behind this tab's back.
+  drive.storage.setItem(STORE_KEY, '{"contract":');
+  assert.equal(drive.api.activePinnedRequest(), null, 'no pinned bytes are served from a read-only store');
+  assert.equal(drive.api.state.savedRefusal, 'store', 'the existing store refusal is set');
+  assert.equal(drive.api.state.pinnedRequest, null);
+  drive.api.renderSavedUI();
+  assert.match(drive.nodes['ff-saved-notice'].innerHTML, /could not be read/);
+});
+
+// ── X2-b+c r2 MINOR-2: grapheme-safe free text, never-cut identifiers ───────
+
+test('T-MINOR2-name: the repro name saves with its emoji whole and still exports', () => {
+  const Briefcase = freshBriefcase(memoryStorage(), 0);
+  const store = Briefcase.create({ now: () => '2026-10-12T00:00:00Z' });
+  const view = fixtureContainer('saved_single_issuer.json').saved_views[0];
+  const emoji = String.fromCodePoint(0x1f600);
+  const reproName = 'a'.repeat(119) + emoji; // 120 code points, 121 UTF-16 units
+  const saved = store.save(Object.assign({}, view, { name: reproName }));
+  assert.equal(saved.ok, true, saved.reason || 'the repro name saves');
+  assert.equal(saved.view.name, reproName, 'the name keeps the whole emoji — no lone surrogate is minted');
+  assert.equal(Array.from(saved.view.name).length, 120);
+  const emitted = Briefcase.emitInvestigationManifestV2(saved.view);
+  assert.ok(emitted.ok, 'the saved view exports');
+  assert.equal(emitted.manifest.intent.title, reproName);
+
+  // The page's own save path stores the same exportable name.
+  const drive = harness();
+  drive.api.initSavedBriefcase();
+  drive.api.state.asOfDate = '2026-09-30';
+  drive.api.state.policy = 'latest_known_as_of';
+  const result = drive.api.performSavedSave(reproName);
+  assert.equal(result.ok, true, result.reason || 'the page saves the repro name');
+  assert.ok(Briefcase.emitInvestigationManifestV2(result.view).ok, 'the page-saved view exports');
+});
+
+test('T-MINOR2-ids: identifiers are never cut — over-limit or lone-surrogate ids refuse and nothing is stored', () => {
+  const lone = String.fromCharCode(0xd800);
+  const view = fixtureContainer('saved_single_issuer.json').saved_views[0];
+  const refuseCase = (label, patch, reason) => {
+    const storage = memoryStorage();
+    const store = freshBriefcase(storage, 0).create({ now: () => '2026-10-12T00:00:00Z' });
+    const refused = store.save(Object.assign({}, view, patch));
+    assert.equal(refused.ok, false, label + ' refuses');
+    assert.equal(refused.reason, reason, label + ' uses ' + reason);
+    assert.equal(store.list().length, 0, label + ': nothing is stored');
+    assert.equal(storage.getItem(STORE_KEY), null, label + ': no bytes were written');
+  };
+  refuseCase('a 161-code-point entity_id', {
+    issuer: { entity_id: 'I'.repeat(161), cik: view.issuer.cik, ticker: view.issuer.ticker }
+  }, 'text_too_long');
+  refuseCase('a lone-surrogate entity_id', {
+    issuer: { entity_id: 'ISS:' + lone, cik: view.issuer.cik, ticker: view.issuer.ticker }
+  }, 'invalid_unicode');
+  refuseCase('a 129-char occurrence_id', {
+    evidence_refs: [{ accession: 'A', occurrence_id: 'o'.repeat(129), source_span: [0, 1] }]
+  }, 'text_too_long');
+  refuseCase('a 65-char accession', {
+    evidence_refs: [{ accession: 'a'.repeat(65), occurrence_id: 'o', source_span: [0, 1] }]
+  }, 'text_too_long');
+  refuseCase('a lone-surrogate occurrence_id', {
+    evidence_refs: [{ accession: 'A', occurrence_id: 'o' + lone, source_span: [0, 1] }]
+  }, 'invalid_unicode');
+  refuseCase('a name that already contains a lone surrogate', {
+    name: 'x' + lone + 'y'
+  }, 'invalid_unicode');
+  // Accepted: the identifier limits keep storing verbatim at their bounds.
+  const store = freshBriefcase(memoryStorage(), 0).create({ now: () => '2026-10-12T00:00:00Z' });
+  const saved = store.save(Object.assign({}, view, {
+    issuer: { entity_id: 'I'.repeat(160), cik: view.issuer.cik, ticker: view.issuer.ticker },
+    evidence_refs: [{ accession: 'a'.repeat(64), occurrence_id: 'o'.repeat(128), source_span: [0, 1] }]
+  }));
+  assert.equal(saved.ok, true, saved.reason || 'the at-limit ids save');
+  assert.equal(saved.view.issuer.entity_id, 'I'.repeat(160));
+  assert.equal(saved.view.evidence_refs[0].occurrence_id, 'o'.repeat(128));
+  assert.equal(saved.view.evidence_refs[0].accession, 'a'.repeat(64));
+});
+
+test('T-MINOR2-update: rename cuts at a grapheme boundary and a lone-surrogate rename refuses', () => {
+  const Briefcase = freshBriefcase(memoryStorage(), 0);
+  const store = Briefcase.create({ now: () => '2026-10-12T00:00:00Z' });
+  const view = fixtureContainer('saved_single_issuer.json').saved_views[0];
+  const saved = store.save(Object.assign({}, view));
+  assert.equal(saved.ok, true, saved.reason || 'the base view saves');
+  const emoji = String.fromCodePoint(0x1f600);
+  const renamed = store.update(saved.view.id, { name: 'a'.repeat(119) + emoji });
+  assert.equal(renamed.ok, true, renamed.reason || 'the repro rename works');
+  assert.equal(renamed.view.name, 'a'.repeat(119) + emoji, 'the whole emoji survives the rename');
+  assert.ok(Briefcase.emitInvestigationManifestV2(renamed.view).ok, 'the renamed view exports');
+  const refused = store.update(saved.view.id, { name: 'x' + String.fromCharCode(0xd800) });
+  assert.equal(refused.ok, false);
+  assert.equal(refused.reason, 'invalid_unicode');
+  assert.equal(store.load(saved.view.id).view.name, 'a'.repeat(119) + emoji, 'the stored name is unchanged');
+});
+
+// ── X2-b+c r2 NIT-3: the duplicate-seen map must survive __proto__ ids ──────
+
+test('T-NIT3: two rows with id __proto__ re-key the second like any duplicate, and remove pins down', () => {
+  const good = fixtureContainer('saved_single_issuer.json').saved_views[0];
+  const first = clonedRow(good, '__proto__', 'proto first');
+  const second = clonedRow(good, '__proto__', 'proto second');
+  const storage = memoryStorage([[STORE_KEY, seedBytes([first, second])]]);
+  const store = freshBriefcase(storage, 0).create({ now: () => '2026-10-12T00:00:00Z' });
+  const listing = store.list();
+  assert.equal(listing.length, 2);
+  assert.equal(listing[0].id, '__proto__', 'the first __proto__ row keeps its id');
+  assert.equal(listing[0].available, true);
+  assert.match(listing[1].id, /^row:1:[0-9a-f]{8}$/,
+    'the second __proto__ row is re-keyed like an ordinary duplicate');
+  assert.equal(listing[1].available, false);
+  assert.equal(listing[1].reason, 'id');
+  // An ordinary duplicate shows exactly the same shape.
+  const dupStorage = memoryStorage([[STORE_KEY,
+    seedBytes([clonedRow(good, 'dup', 'dup first'), clonedRow(good, 'dup', 'dup second')])]]);
+  const dupListing = freshBriefcase(dupStorage, 0).create({ now: () => '2026-10-12T00:00:00Z' }).list();
+  assert.equal(dupListing[0].id, 'dup');
+  assert.match(dupListing[1].id, /^row:1:[0-9a-f]{8}$/, 'an ordinary duplicate is re-keyed the same way');
+  // remove('__proto__') deletes the FIRST row; the survivor is then keyed by id.
+  const removed = store.remove('__proto__');
+  sameJson(removed, { ok: true, deleted: true });
+  sameJson(store.list().map((entry) => entry.id), ['__proto__'],
+    'the surviving row is now the first __proto__ row, keyed by id');
+  assert.equal(store.list()[0].available, true);
+});
+
+// ── X2-b+c r2 NIT-4: leading-zero indexes are refused, and a 32-bit
+// fingerprint never names a row on its own — full canonical bytes decide ────
+
+function idLessRow(name) {
+  const row = JSON.parse(JSON.stringify(fixtureContainer('saved_single_issuer.json').saved_views[0]));
+  delete row.id;
+  row.name = name;
+  return row;
+}
+
+test('T-NIT4-ambiguous: a 32-bit fingerprint collision never names the wrong row', () => {
+  // These two names were found by a birthday search over random names: their
+  // id-less rows collide in 32-bit FNV-1a while differing in bytes. The
+  // suite's own fnv1aHex guard re-proves the collision.
+  const a = idLessRow('xwoucicfayo');
+  const b = idLessRow('xbtihxnaogo');
+  assert.equal(fnv1aHex(a), fnv1aHex(b), 'guard: the rows collide in the 32-bit fingerprint');
+  assert.equal(fnv1aHex(a), '5ef27944');
+  assert.notEqual(JSON.stringify(a), JSON.stringify(b), 'guard: the rows differ in bytes');
+  const storage = memoryStorage([[STORE_KEY, seedBytes([a, b])]]);
+  const store = freshBriefcase(storage, 0).create({ now: () => '2026-10-12T00:00:00Z' });
+  const before = storage.getItem(STORE_KEY);
+  const listing = store.list();
+  assert.match(listing[0].id, /^row:0:[0-9a-f]{8}$/);
+  assert.equal(listing[0].id.split(':')[2], listing[1].id.split(':')[2],
+    'both collision rows address under the same fingerprint');
+  // The fingerprint alone is ambiguous — two different byte shapes carry it —
+  // so the address resolves to nothing rather than the wrong row.
+  assert.equal(store.load('row:0:' + fnv1aHex(a)).reason, 'missing');
+  sameJson(store.remove('row:0:' + fnv1aHex(a)), { ok: true, deleted: false });
+  assert.equal(storage.getItem(STORE_KEY), before, 'nothing was deleted');
+});
+
+test('T-NIT4-identical: byte-identical rows under one fingerprint stay addressable', () => {
+  const a = idLessRow('same bytes twice');
+  const b = JSON.parse(JSON.stringify(a));
+  const storage = memoryStorage([[STORE_KEY, seedBytes([a, b])]]);
+  const store = freshBriefcase(storage, 0).create({ now: () => '2026-10-12T00:00:00Z' });
+  const addr = store.list()[0].id;
+  assert.match(addr, /^row:0:[0-9a-f]{8}$/);
+  // One canonical byte shape carries the fingerprint, so the address names
+  // it unambiguously (either row is the same bytes).
+  sameJson(store.remove(addr), { ok: true, deleted: true });
+  sameJson(store.list().map((entry) => entry.id), [addr],
+    'the surviving identical row keeps the same address');
+});
+
+test('T-NIT4-index: a row:01:<fp> address with a leading-zero index is refused', () => {
+  const { good, junk1, junk2 } = junkRows();
+  const storage = memoryStorage([[STORE_KEY, seedBytes([good, junk1, junk2])]]);
+  const store = freshBriefcase(storage, 0).create({ now: () => '2026-10-12T00:00:00Z' });
+  const before = storage.getItem(STORE_KEY);
+  const addr = store.list()[1].id; // row:1:<fp of junk1>
+  assert.match(addr, /^row:1:[0-9a-f]{8}$/);
+  const zeroPadded = 'row:01:' + addr.split(':')[2];
+  assert.equal(zeroPadded.indexOf('row:01:'), 0);
+  assert.equal(store.load(zeroPadded).reason, 'missing');
+  assert.equal(store.update(zeroPadded, { name: 'x' }).reason, 'missing');
+  sameJson(store.remove(zeroPadded), { ok: true, deleted: false });
+  assert.equal(storage.getItem(STORE_KEY), before, 'nothing was deleted by the malformed address');
+});
+
+// ── X2-b+c r2 NIT-2 (store side): a stored row with an unknown key refuses ──
+
+test('T-NIT2-store: a stored row carrying an unknown key stays listed but refuses load as schema', () => {
+  const base = fixtureContainer('saved_single_issuer.json').saved_views[0];
+  const row = JSON.parse(JSON.stringify(base));
+  row.evil_extra = 1;
+  const storage = memoryStorage([[STORE_KEY, containerBytes(row)]]);
+  const store = freshBriefcase(storage, 0).create({ now: () => '2026-10-12T00:00:00Z' });
+  const listing = store.list();
+  assert.equal(listing.length, 1, 'the row stays listed');
+  assert.equal(listing[0].available, false);
+  assert.equal(listing[0].reason, 'schema');
+  const loaded = store.load(row.id);
+  assert.equal(loaded.ok, false);
+  assert.equal(loaded.reason, 'schema');
+  // The refused row stays deletable.
+  sameJson(store.remove(row.id), { ok: true, deleted: true });
+});
+

@@ -83,6 +83,12 @@
       "event_workspace"
     ],
     "object_types_closed": true,
+    "optional_keys": [
+      "version_ref",
+      "fingerprint",
+      "selection"
+    ],
+    "optional_keys_source": "api/investigation_contracts.py:119",
     "owners": [
       "earnings.workspace_generation"
     ],
@@ -149,12 +155,26 @@
         "type": "string"
       },
       "role": {
+        "enum": [
+          "primary",
+          "supporting"
+        ],
         "pattern": null,
         "required": true,
         "type": "string"
       }
     },
-    "max_items": 4
+    "max_items": 4,
+    "role_enum_source": "api/investigation_contracts.py:108; supabase/migrations/0028_investigations.sql:126"
+  },
+  "manifest_size": {
+    "max_bytes": 131072,
+    "measure": "compact canonical JSON, UTF-8 octet length; key order is byte-neutral, so the py insertion-order dump (investigation_contracts.py:169), the ts JSON.stringify byte length and the sql octet_length of the canonical sorted jsonb text (0028_investigations.sql:93) all measure the same total",
+    "source": "api/investigation_contracts.py:169; supabase/migrations/0028_investigations.sql:93"
+  },
+  "reference_totals": {
+    "max_combined": 128,
+    "source": "api/investigation_contracts.py:162; supabase/migrations/0028_investigations.sql:120"
   },
   "schema": {
     "field": "schema",
@@ -198,6 +218,22 @@
       "min_length": 1,
       "pattern": null
     },
+    "owner_kinds": [
+      {
+        "kinds": [
+          "security"
+        ],
+        "owner": "terminal.analysis_symbol"
+      },
+      {
+        "kinds": [
+          "security",
+          "issuer"
+        ],
+        "owner": "data_os.security_master"
+      }
+    ],
+    "owner_kinds_source": "terminal/lib/investigations.ts:9-10",
     "owners": [
       "terminal.analysis_symbol",
       "data_os.security_master"
@@ -206,9 +242,24 @@
     "unknown_key_policy": "reject"
   },
   "terminal_commit": "c799ba7e64e2d0861228c9977cc12ed4a5d91982",
+  "text_checks": {
+    "nul_code": "unsupported_code_point",
+    "per_code_point_order": [
+      "invalid_unicode",
+      "unsupported_code_point",
+      "text_too_long",
+      "invalid_control"
+    ],
+    "source": "api/investigation_contracts.py:42-47; terminal/lib/investigationContracts.ts:143-157"
+  },
   "thesis_refs": {
     "item_shape": {
       "role": {
+        "enum": [
+          "primary",
+          "alternative",
+          "context"
+        ],
         "pattern": null,
         "required": true,
         "type": "string"
@@ -224,7 +275,9 @@
         "type": "string"
       }
     },
-    "max_items": 16
+    "max_items": 16,
+    "must_be_empty": true,
+    "must_be_empty_source": "supabase/migrations/0028_investigations.sql:131; terminal/lib/investigations.ts:52"
   },
   "top_level": {
     "fields": {

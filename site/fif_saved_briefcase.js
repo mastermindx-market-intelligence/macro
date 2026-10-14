@@ -42,6 +42,11 @@
   var POLICY_KEYS = ['selection', 'source_snapshot_at', 'recorded_at'];
   var PERIOD_KEYS = ['kind', 'start', 'end', 'label'];
   var SELECTIONS = ['as_reported', 'latest_known_as_of', 'latest_restated'];
+  // X2-b+c r2 NIT-2: the exact stored-view key set. A row carrying anything
+  // else refuses as schema drift — an unknown key never passes through
+  // checkView into the page or a manifest carrier.
+  var VIEW_KEYS = ['schema', 'request_contract', 'id', 'name', 'created_at', 'updated_at',
+    'issuer', 'request', 'peers', 'view', 'pinned', 'saved_against', 'evidence_refs', 'watch'];
   // The declared refusal set: every reason a stored view (or the container
   // itself) can refuse with. tests/test_fundamental_forensics_saved_store_schema.py
   // pins this list exactly, both directions, and the Node suites pin each
@@ -74,9 +79,55 @@
     return JSON.parse(JSON.stringify(value));
   }
 
+  // X2-b+c r2 MINOR-2: a text cut never mints a lone surrogate, and an
+  // identifier is never cut at all. codePointPrefix is the base cut (whole
+  // code points); freeText (names) prefers the emitter's own whole-grapheme
+  // helper when Intl.Segmenter exists; idText refuses typed instead of
+  // trimming an identifier to fit.
+  function codePointPrefix(value, limit) {
+    var out = '';
+    var count = 0;
+    for (var index = 0; index < value.length && count < limit; ) {
+      var unit = value.charCodeAt(index);
+      var size = unit >= 0xd800 && unit <= 0xdbff &&
+        value.charCodeAt(index + 1) >= 0xdc00 && value.charCodeAt(index + 1) <= 0xdfff ? 2 : 1;
+      out += value.slice(index, index + size);
+      index += size;
+      count += 1;
+    }
+    return out;
+  }
+
   function text(value, limit) {
     if (typeof value !== 'string') return '';
-    return value.trim().slice(0, limit == null ? 1000 : limit);
+    return codePointPrefix(value.trim(), limit == null ? 1000 : limit);
+  }
+
+  function freeText(value, limit) {
+    if (typeof value !== 'string') return '';
+    var trimmed = value.trim();
+    if (!trimmed) return '';
+    var count = codePoints(trimmed);
+    if (count >= 0 && count <= limit) return trimmed;
+    if (typeof Intl !== 'undefined' && typeof Intl.Segmenter === 'function') {
+      var cut = wholeGraphemePrefix(trimmed, limit);
+      if (cut !== null) return cut;
+    }
+    return text(trimmed, limit);
+  }
+
+  // Identifiers (issuer ids, evidence ids — anything the manifest projects
+  // as object_id/version_ref) are NEVER cut: an over-limit id, or one
+  // holding a lone surrogate, refuses with the emitter's own codes
+  // (text_too_long / invalid_unicode) and nothing is stored.
+  function idText(value, limit) {
+    if (typeof value !== 'string') return { ok: true, value: '' };
+    var trimmed = value.trim();
+    if (!trimmed) return { ok: true, value: '' };
+    var count = codePoints(trimmed);
+    if (count < 0) return { ok: false, reason: 'invalid_unicode' };
+    if (count > limit) return { ok: false, reason: 'text_too_long' };
+    return { ok: true, value: trimmed };
   }
 
   function exactKeys(value, keys) {
@@ -198,6 +249,7 @@
   function checkView(raw) {
     if (!object(raw)) return { ok: false, reason: 'schema' };
     if (raw.schema !== SAVED_SCHEMA) return { ok: false, reason: 'schema' };
+    if (!exactKeys(raw, VIEW_KEYS)) return { ok: false, reason: 'schema' };
     if (raw.request_contract !== REQUEST_CONTRACT) return { ok: false, reason: 'request_contract' };
     if (!object(raw.request)) return { ok: false, reason: 'request_schema' };
     if (raw.request.schema !== raw.request_contract) return { ok: false, reason: 'request_schema' };
@@ -234,21 +286,28 @@
 
   function normalEvidenceRefs(values) {
     var out = [];
-    array(values).forEach(function (entry) {
-      if (out.length >= MAX_EVIDENCE_REFS) return;
-      if (!object(entry)) return;
+    var entries = Array.isArray(values) ? values : [];
+    for (var index = 0; index < entries.length; index += 1) {
+      if (out.length >= MAX_EVIDENCE_REFS) break;
+      var entry = entries[index];
+      if (!object(entry)) continue;
       var span = Array.isArray(entry.source_span) && entry.source_span.length === 2 &&
         typeof entry.source_span[0] === 'number' && typeof entry.source_span[1] === 'number' &&
         Number.isFinite(entry.source_span[0]) && Number.isFinite(entry.source_span[1])
         ? [Math.trunc(entry.source_span[0]), Math.trunc(entry.source_span[1])] : null;
-      if (!span) return; // no invented spans (AM1): a ref without a real span is dropped
+      if (!span) continue; // no invented spans (AM1): a ref without a real span is dropped
+      // r2 MINOR-2b: evidence ids are identifiers — never cut, refused typed.
+      var accession = idText(entry.accession, 64);
+      if (!accession.ok) return accession;
+      var occurrence = idText(entry.occurrence_id, 128);
+      if (!occurrence.ok) return occurrence;
       out.push({
-        accession: text(entry.accession, 64),
-        occurrence_id: text(entry.occurrence_id, 128),
+        accession: accession.value,
+        occurrence_id: occurrence.value,
         source_span: span
       });
-    });
-    return out;
+    }
+    return { ok: true, value: out };
   }
 
   function normalPeers(value) {
@@ -276,11 +335,18 @@
   function normalIssuer(value) {
     value = object(value) ? value : {};
     // Display/index metadata only; the query identity is request.entity_id
-    // and is never inferred from the ticker.
+    // and is never inferred from the ticker. The entity id is an identifier
+    // (r2 MINOR-2b): never cut — an over-limit or lone-surrogate id refuses
+    // typed and nothing is stored.
+    var entityId = idText(value.entity_id, 160);
+    if (!entityId.ok) return entityId;
     return {
-      entity_id: text(value.entity_id, 160) || null,
-      cik: text(value.cik, 32) || null,
-      ticker: text(value.ticker, 32) || null
+      ok: true,
+      value: {
+        entity_id: entityId.value || null,
+        cik: text(value.cik, 32) || null,
+        ticker: text(value.ticker, 32) || null
+      }
     };
   }
 
@@ -426,7 +492,10 @@
     // refused on load, removable by exactly that key, never silently
     // dropped.
     function rowAddresses() {
-      var seen = {};
+      // X2-b+c r2 NIT-3: a null-prototype map, so an id of '__proto__' is an
+      // ordinary duplicate key instead of a silent write to Object.prototype
+      // (which made every later '__proto__' row look first-seen).
+      var seen = Object.create(null);
       return container.saved_views.map(function (row, index) {
         var id = rowId(row);
         if (id && !isAddressKey(id) && !Object.prototype.hasOwnProperty.call(seen, id)) {
@@ -437,25 +506,40 @@
       });
     }
 
+    // X2-b+c r2 NIT-4: the index refuses leading zeros (row:01:<fp> never
+    // names a row), and a 32-bit fingerprint match alone never names a row
+    // either. Every fingerprint carrier is compared by its FULL canonical row
+    // bytes: byte-identical carriers are interchangeable (any one is the row
+    // the caller saw), but two DIFFERENT byte shapes sharing the 32-bit hash
+    // leave the address ambiguous, so it resolves to nothing rather than the
+    // wrong row.
     function pseudoRowAddress(id) {
-      var match = /^row:(\d+):([0-9a-f]{8})$/.exec(text(id, 64));
+      var match = /^row:(0|[1-9]\d*):([0-9a-f]{8})$/.exec(text(id, 64));
       if (!match) return null;
       var index = Number(match[1]);
       var fingerprint = match[2];
       var addresses = rowAddresses();
+      var resolved = null;
+      var canonical = null;
+      for (var scan = 0; scan < addresses.length; scan += 1) {
+        if (!addresses[scan].idProblem || rowFingerprint(addresses[scan].row) !== fingerprint) continue;
+        var bytes = canonicalJson(addresses[scan].row);
+        if (bytes === null) return null;
+        if (canonical === null) {
+          canonical = bytes;
+          resolved = addresses[scan];
+        } else if (canonical !== bytes) {
+          return null; // ambiguous: two byte shapes share the 32-bit hash
+        }
+      }
+      if (resolved === null) return null;
+      // The index the caller saw names the row when it is one of the
+      // carriers (no slide); otherwise the first carrier does.
       if (addresses[index] && addresses[index].idProblem &&
         rowFingerprint(addresses[index].row) === fingerprint) {
         return addresses[index];
       }
-      // Another tab may have removed rows so the index slid onto a
-      // neighbour: the fingerprint still names the row the caller saw, so
-      // fall back to the FIRST id-problem row whose bytes carry it.
-      for (var scan = 0; scan < addresses.length; scan += 1) {
-        if (addresses[scan].idProblem && rowFingerprint(addresses[scan].row) === fingerprint) {
-          return addresses[scan];
-        }
-      }
-      return null;
+      return resolved;
     }
 
     function rowById(id) {
@@ -500,10 +584,18 @@
       if (readOnly) return { ok: false, reason: 'unavailable' };
       input = object(input) ? input : {};
       if (container.saved_views.length >= MAX_VIEWS) return { ok: false, reason: 'limit' };
-      var name = text(input.name, MAX_NAME_LENGTH);
+      // r2 MINOR-2a: free text cuts at a whole-grapheme boundary (code-point
+      // without a Segmenter), never minting a lone surrogate; a name that
+      // already contains one refuses invalid_unicode and nothing is stored.
+      var name = freeText(input.name, MAX_NAME_LENGTH);
       if (!name) return { ok: false, reason: 'name' };
+      if (codePoints(name) < 0) return { ok: false, reason: 'invalid_unicode' };
       var request = canonicalRequest(input.request);
       if (!request) return { ok: false, reason: 'request' };
+      var issuer = normalIssuer(input.issuer);
+      if (!issuer.ok) return { ok: false, reason: issuer.reason };
+      var evidenceRefs = normalEvidenceRefs(input.evidence_refs);
+      if (!evidenceRefs.ok) return { ok: false, reason: evidenceRefs.reason };
       var pinned = input.pinned === true;
       if (pinned && (!request.policy.source_snapshot_at || !request.policy.recorded_at)) {
         return { ok: false, reason: 'pinned_cutoffs' };
@@ -516,13 +608,13 @@
         name: name,
         created_at: stamped,
         updated_at: stamped,
-        issuer: normalIssuer(input.issuer),
+        issuer: issuer.value,
         request: request,
         peers: normalPeers(input.peers),
         view: normalViewMeta(input.view),
         pinned: pinned,
         saved_against: normalSavedAgainst(input.saved_against),
-        evidence_refs: normalEvidenceRefs(input.evidence_refs),
+        evidence_refs: evidenceRefs.value,
         watch: { issuer: input.watch && object(input.watch) ? input.watch.issuer === true : false }
       };
       container.saved_views.push(view);
@@ -549,8 +641,11 @@
       if (!current.ok) return { ok: false, reason: current.reason };
       var next = copy(row);
       if (Object.prototype.hasOwnProperty.call(input, 'name')) {
-        var name = text(input.name, MAX_NAME_LENGTH);
+        // r2 MINOR-2a: the rename cut is grapheme-safe; a name holding a
+        // lone surrogate refuses invalid_unicode and the row is unchanged.
+        var name = freeText(input.name, MAX_NAME_LENGTH);
         if (!name) return { ok: false, reason: 'name' };
+        if (codePoints(name) < 0) return { ok: false, reason: 'invalid_unicode' };
         next.name = name;
       }
       var pinned = Object.prototype.hasOwnProperty.call(input, 'pinned')
@@ -637,7 +732,52 @@
   // Order-insensitive canonical serialization (Postgres jsonb reorders object
   // keys, so key order must never decide equality): arrays keep their order,
   // object keys sort, primitives render as plain JSON.
+  // X2-b+c r2 NIT-1: canonicalJson compares bytes, so a value JSON cannot
+  // round-trip must refuse BEFORE the comparison — a non-plain prototype
+  // (Date, Map, Set, a class instance), a non-finite number, -0, a sparse
+  // array, a getter/setter or a symbol/private key all serialize to
+  // something else under JSON and would silently compare as that something
+  // (a Date has no enumerable keys and rendered as '{}'). Terminal's own
+  // dataOnly law refuses the same class of values
+  // (investigationContracts.ts:89-131).
+  function plainJsonValue(value) {
+    if (value === null) return true;
+    var type = typeof value;
+    if (type === 'string' || type === 'boolean') return true;
+    if (type === 'number') {
+      return Number.isFinite(value) && (value !== 0 || 1 / value > 0);
+    }
+    if (type !== 'object') return false;
+    var prototype = Object.getPrototypeOf(value);
+    if (Array.isArray(value)) {
+      // Realm-tolerant on purpose (the vm test realms hand the module objects
+      // from other realms): Array.isArray is realm-blind, and the plain-array
+      // law that matters here is the own-index law — a sparse array or one
+      // carrying extra keys is refused.
+      if (Object.keys(value).length !== value.length) return false; // sparse or keyed
+      for (var element = 0; element < value.length; element += 1) {
+        if (!plainJsonValue(value[element])) return false;
+      }
+      return true;
+    }
+    // A plain object's prototype is a realm's standard Object.prototype.
+    // The vm test realms give objects a FOREIGN prototype object, so compare
+    // by shape — a standard Object.prototype sits at the root of its chain —
+    // while Date/Map/Set/class prototypes all sit below one and are refused.
+    if (prototype !== null && Object.getPrototypeOf(prototype) !== null) return false;
+    var keys = Object.keys(value);
+    if (Reflect.ownKeys(value).length !== keys.length) return false;
+    for (var keyIndex = 0; keyIndex < keys.length; keyIndex += 1) {
+      var descriptor = Object.getOwnPropertyDescriptor(value, keys[keyIndex]);
+      if (!descriptor || descriptor.enumerable !== true ||
+        !Object.prototype.hasOwnProperty.call(descriptor, 'value')) return false;
+      if (!plainJsonValue(value[keys[keyIndex]])) return false;
+    }
+    return true;
+  }
+
   function canonicalJson(value) {
+    if (!plainJsonValue(value)) return null;
     if (Array.isArray(value)) return '[' + value.map(canonicalJson).join(',') + ']';
     if (object(value)) {
       return '{' + Object.keys(value).sort().map(function (key) {
@@ -659,17 +799,27 @@
   // the carrier always keeps the full saved view. ──────────────────────────
   var MANIFEST_TITLE_LIMIT = 160;
   var MANIFEST_ID_LIMIT = 256;
+  // X2-b+c r2 MINOR-3: the added codes are Terminal's own —
+  // unsupported_code_point (NUL, investigation_contracts.py:45 /
+  // investigationContracts.ts:150), too_many_items (py :139 via :161) and
+  // manifest_too_large (py :169 / 0028_investigations.sql:93).
   var MANIFEST_REFUSAL_REASONS = Object.freeze([
     'invalid_type', 'empty_text', 'invalid_control', 'invalid_unicode',
-    'text_too_long', 'invalid_date', 'duplicate_reference'
+    'unsupported_code_point', 'text_too_long', 'invalid_date',
+    'duplicate_reference', 'too_many_items', 'manifest_too_large'
   ]);
   // Blank = made only of characters in the UNION of the three trim sets: py
   // TRIM (investigation_contracts.py:14), ECMAScript String.prototype.trim,
   // and the sql btrim list (0028_investigations.sql:70).
   var MANIFEST_BLANK = /^[\t\n\u000b\u000c\r \u00a0\u1680\u2000-\u200a\u2028\u2029\u202f\u205f\u3000\ufeff]*$/;
-  // Every emitted text field is single-line: tab, LF and CR are refused, and
-  // so is every other C0 character (NUL included) and DEL.
-  var MANIFEST_CONTROL = /[\u0000-\u001f\u007f]/;
+  // Every emitted text field is single-line. The control scan mirrors
+  // Terminal exactly (ts CONTROL investigationContracts.ts:77; py :47-48):
+  // C0 without tab/LF/CR plus DEL refuse as invalid_control AFTER the
+  // per-character pass, and tab/LF/CR refuse there too because every emitter
+  // field is single-line (py text(..., single=True)). NUL is NOT here — the
+  // per-character pass reports it as unsupported_code_point first.
+  var MANIFEST_CONTROL = /[\u0001-\u0008\u000b\u000c\u000e-\u001f\u007f]/;
+  var MANIFEST_SINGLE_LINE = /[\t\n\r]/;
   var MONTH_DAYS = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
 
   function manifestRefusal(reason, path) {
@@ -694,15 +844,37 @@
   }
 
   // The typed refusal for one text field, or null when the value may be
-  // emitted verbatim. A null limit leaves the over-length decision to the
-  // caller (the title cut).
+  // emitted verbatim. Mirrors Terminal's per-character loop exactly
+  // (investigation_contracts.py:42-48, investigationContracts.ts:143-157):
+  // each character, in order, is checked for a lone surrogate
+  // (invalid_unicode), NUL (unsupported_code_point — never invalid_control)
+  // and the running length (text_too_long); the control scan runs only after
+  // the whole string passed, so an over-limit id reports text_too_long even
+  // when its tail holds a lone surrogate or a tab. A null limit leaves the
+  // over-length decision to the caller (the title cut).
   function manifestTextRefusal(value, path, limit) {
     if (typeof value !== 'string') return manifestRefusal('invalid_type', path);
     if (MANIFEST_BLANK.test(value)) return manifestRefusal('empty_text', path);
-    var count = codePoints(value);
-    if (count < 0) return manifestRefusal('invalid_unicode', path);
-    if (MANIFEST_CONTROL.test(value)) return manifestRefusal('invalid_control', path);
-    if (limit !== null && count > limit) return manifestRefusal('text_too_long', path);
+    var count = 0;
+    for (var index = 0; index < value.length; ) {
+      var unit = value.charCodeAt(index);
+      var size = 1;
+      if (unit >= 0xd800 && unit <= 0xdbff) {
+        var next = value.charCodeAt(index + 1);
+        if (next >= 0xdc00 && next <= 0xdfff) size = 2;
+        else return manifestRefusal('invalid_unicode', path);
+      } else if (unit >= 0xdc00 && unit <= 0xdfff) {
+        return manifestRefusal('invalid_unicode', path);
+      } else if (unit === 0) {
+        return manifestRefusal('unsupported_code_point', path);
+      }
+      count += 1;
+      if (limit !== null && count > limit) return manifestRefusal('text_too_long', path);
+      index += size;
+    }
+    if (MANIFEST_CONTROL.test(value) || MANIFEST_SINGLE_LINE.test(value)) {
+      return manifestRefusal('invalid_control', path);
+    }
     return null;
   }
 
@@ -812,6 +984,15 @@
     }
     var refs = saved.evidence_refs == null ? [] : saved.evidence_refs;
     if (!Array.isArray(refs)) return manifestRefusal('invalid_type', '$.evidence_refs');
+    // Terminal checks the list length before any item (refs(),
+    // investigation_contracts.py:139, called with the evidence maximum of
+    // 128 at :161): an over-cap list is too_many_items at the list path. The
+    // combined cap of :162 (0028_investigations.sql:120) rides the same
+    // guard on this emitter's shape — it mints exactly zero layout and zero
+    // thesis refs (sql :131 / terminal/lib/investigations.ts:52), so
+    // layout + thesis + evidence IS the evidence count, and the mapping
+    // suite's T-M7 pins the emitted total against the snapshot rule.
+    if (refs.length > 128) return manifestRefusal('too_many_items', '$.evidence_refs');
     var evidenceRefs = [];
     var seen = {};
     for (var index = 0; index < refs.length; index += 1) {
@@ -842,7 +1023,31 @@
     // is lossless by construction (a cut title included); the mapped fields
     // above are Terminal's native projection.
     manifest[CARRIER_KEY] = copy(saved);
+    // The v2 size cap (investigation_contracts.py:169,
+    // 0028_investigations.sql:93): the manifest's compact canonical JSON,
+    // measured in UTF-8 octets, may not exceed 131072 — the same total py's
+    // json.dumps, ts's TextEncoder (investigationContracts.ts:278-282) and
+    // the sql octet_length compute, because key order never changes a byte
+    // count.
+    if (utf8Length(canonicalJson(manifest)) > 131072) {
+      return manifestRefusal('manifest_too_large', '$');
+    }
     return { ok: true, manifest: manifest, notices: notices };
+  }
+
+  // UTF-8 octet length of a canonical string (the r2 size-cap measure): a
+  // BMP character is 1-3 octets, a surrogate pair 4, a lone surrogate 3 (the
+  // replacement TextEncoder emits — investigationContracts.ts:281).
+  function utf8Length(value) {
+    var bytes = 0;
+    for (var index = 0; index < value.length; index += 1) {
+      var unit = value.charCodeAt(index);
+      if (unit < 0x80) bytes += 1;
+      else if (unit < 0x800) bytes += 2;
+      else if (unit >= 0xd800 && unit <= 0xdbff) { bytes += 4; index += 1; }
+      else bytes += 3;
+    }
+    return bytes;
   }
 
   // The X2-b surface, kept: the manifest, or null on any refusal (callers
@@ -861,7 +1066,10 @@
     // own carrier. A manifest whose projected fields were changed after
     // export is a contract mismatch: refused, never repaired.
     var again = emitInvestigationManifestV2(carried);
-    if (!again.ok || canonicalJson(again.manifest) !== canonicalJson(manifest)) return null;
+    if (!again.ok) return null;
+    var mine = canonicalJson(again.manifest);
+    var theirs = canonicalJson(manifest);
+    if (mine === null || theirs === null || mine !== theirs) return null;
     return copy(carried);
   }
 

@@ -2420,6 +2420,12 @@
       'This saved view is no longer on this device — it may have been deleted in another tab.',
       '此已存视图已不在本设备上——可能已在其他标签页中删除。'
     ],
+    // X2-b+c r2 MAJOR-1: an edit in another tab (unpinned, re-cut request)
+    // refuses the active view. Never re-derived here — the user reopens it.
+    unavailableChangedCopy: [
+      'This saved view was changed in another tab. Reopen it to continue.',
+      '此已保存视图已在另一个标签页中更改。请重新打开以继续。'
+    ],
     unavailableStoreCopy: [
       'Saved views on this device could not be read, so they are left untouched. Saving is paused here.',
       '无法读取本设备上的已存视图，因此保持原样不作改动。此处暂停保存。'
@@ -2565,16 +2571,36 @@
     });
   }
 
-  // X2-b (r2 MINOR 2): another tab can delete or break the active view.
-  // The next read notices it: the view turns into its own refusal, so the
-  // notice shows, no pinned badge renders, and no pinned bytes are served.
+  // X2-b r2 MINOR-1 + X2-b+c r2 MAJOR-1: another tab can delete or break the
+  // active view, CHANGE it (unpin it, re-cut its request), or break the whole
+  // store. The next read notices every one: the view turns into its own
+  // refusal ('store' for a read-only store, 'changed' for an edit), so the
+  // notice shows, no badge renders, and no stale pinned bytes are served.
   function reconcileSavedActive() {
     if (!savedBriefcase || !state.savedActiveId || state.savedRefusal) return;
-    if (savedBriefcase.readOnly()) return;
+    if (savedBriefcase.readOnly()) {
+      state.savedRefusal = 'store';
+      state.pinnedRequest = null;
+      return;
+    }
     var result = savedBriefcase.load(state.savedActiveId);
-    if (result.ok) return;
-    state.savedRefusal = result.reason;
-    state.pinnedRequest = null;
+    if (!result.ok) {
+      state.savedRefusal = result.reason;
+      state.pinnedRequest = null;
+      return;
+    }
+    // MAJOR-1: compare what this tab is serving against what the store now
+    // holds — the loaded view's pinned flag, and its canonical request bytes
+    // (a canonical request carries a fixed key order, so JSON.stringify IS
+    // its canonical JSON). Any mismatch — pinned->latest, latest->pinned, a
+    // changed request — refuses as 'changed'; never silently re-derived.
+    var view = result.view;
+    var servingPinned = !!state.pinnedRequest;
+    if (view.pinned !== servingPinned ||
+      (servingPinned && JSON.stringify(view.request) !== JSON.stringify(state.pinnedRequest))) {
+      state.savedRefusal = 'changed';
+      state.pinnedRequest = null;
+    }
   }
 
   function savedActiveView() {
@@ -2606,6 +2632,7 @@
   function savedNoticeHtml(kind) {
     var copy = kind === 'issuer' ? SAVED_COPY.unavailableIssuerCopy
       : kind === 'missing' ? SAVED_COPY.unavailableMissingCopy
+      : kind === 'changed' ? SAVED_COPY.unavailableChangedCopy
       : kind === 'store' ? SAVED_COPY.unavailableStoreCopy
       : SAVED_COPY.unavailableContractCopy;
     // Existing classes only: the notice is an icon span plus a title element

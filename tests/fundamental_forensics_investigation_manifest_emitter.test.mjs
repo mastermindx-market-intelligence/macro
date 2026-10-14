@@ -157,13 +157,16 @@ test('empty_text: blank and all-whitespace text is refused, never treated as abs
 
 test('invalid_control: tab, LF, CR, any other C0 and DEL anywhere in a field', () => {
   const Briefcase = freshBriefcase(memoryStorage(), 0);
+  // r2 MINOR-3: NUL moved out of this list -- Terminal reports NUL as
+  // unsupported_code_point (investigation_contracts.py:45,
+  // investigationContracts.ts:150), not invalid_control; the dedicated NUL
+  // test below pins the new code.
   for (const name of [
     'Apple\tbaseline',
     'Apple\nbaseline',
     'Apple\rbaseline',
     'Apple\u0001',
     'Apple\u007f',
-    'Apple\u0000',
     '\tApple' // a leading tab: the old emitter trimmed this away
   ]) {
     const view = clone(fixtureView('saved_single_issuer.json'));
@@ -429,11 +432,142 @@ test('no-Segmenter fail-closed: without Intl.Segmenter an over-limit title refus
   assertNoNetwork(Briefcase);
 });
 
+// ── X2-b+c r2 MINOR-3: the Terminal checks the emitter was missing ─────────
+
+test('unsupported_code_point: NUL refuses with Terminal code, never invalid_control', () => {
+  const Briefcase = freshBriefcase(memoryStorage(), 0);
+  // Terminal refuses NUL inside the per-character loop as
+  // unsupported_code_point (investigation_contracts.py:45,
+  // investigationContracts.ts:150); the sql scalar cannot store it at all.
+  const NUL = String.fromCharCode(0);
+  const nulName = clone(fixtureView('saved_single_issuer.json'));
+  nulName.name = 'Apple' + NUL + 'baseline';
+  assertRefusal(Briefcase, nulName, 'unsupported_code_point', '$.intent.title');
+  const nulIssuer = clone(fixtureView('saved_single_issuer.json'));
+  nulIssuer.issuer.entity_id = 'ISS:' + NUL + 'X';
+  assertRefusal(Briefcase, nulIssuer, 'unsupported_code_point', '$.intent.subjects[0].object_id');
+  const nulOccurrence = clone(fixtureView('saved_with_evidence.json'));
+  nulOccurrence.evidence_refs[0].occurrence_id = 'raw' + NUL + 'fact';
+  assertRefusal(Briefcase, nulOccurrence, 'unsupported_code_point', '$.evidence_refs[0].object_id');
+  // Accepted case: the same values without the NUL emit.
+  const cleanName = clone(fixtureView('saved_single_issuer.json'));
+  cleanName.name = 'Apple baseline';
+  emitOk(Briefcase, cleanName, 'the same name without NUL');
+  assertNoNetwork(Briefcase);
+});
+
+test('refusal order matches Terminal: length fires before the control scan, surrogate by position', () => {
+  const Briefcase = freshBriefcase(memoryStorage(), 0);
+  // Terminal checks each character in order (py :42-47, ts :143-157): a
+  // 300-code-point id is text_too_long at position 257, so a trailing lone
+  // surrogate or tab is never reached; an early lone surrogate or NUL fires
+  // first. The old emitter scanned the whole string for surrogates and
+  // controls before the length, which reported the wrong code.
+  const loneHigh = String.fromCharCode(0xd800);
+  const TAB = String.fromCharCode(9);
+  const NUL = String.fromCharCode(0);
+  const trailingSurrogate = clone(fixtureView('saved_single_issuer.json'));
+  trailingSurrogate.issuer.entity_id = 'I'.repeat(300) + loneHigh;
+  assertRefusal(Briefcase, trailingSurrogate, 'text_too_long', '$.intent.subjects[0].object_id');
+  const trailingTab = clone(fixtureView('saved_single_issuer.json'));
+  trailingTab.issuer.entity_id = 'I'.repeat(300) + TAB;
+  assertRefusal(Briefcase, trailingTab, 'text_too_long', '$.intent.subjects[0].object_id');
+  const earlySurrogate = clone(fixtureView('saved_single_issuer.json'));
+  earlySurrogate.issuer.entity_id = 'ISS:' + loneHigh + 'I'.repeat(300);
+  assertRefusal(Briefcase, earlySurrogate, 'invalid_unicode', '$.intent.subjects[0].object_id');
+  const earlyNul = clone(fixtureView('saved_single_issuer.json'));
+  earlyNul.issuer.entity_id = 'ISS:' + NUL + 'I'.repeat(300);
+  assertRefusal(Briefcase, earlyNul, 'unsupported_code_point', '$.intent.subjects[0].object_id');
+  // Accepted case: the id at exactly the 256-code-point limit emits.
+  const atLimit = clone(fixtureView('saved_single_issuer.json'));
+  atLimit.issuer.entity_id = 'I'.repeat(256);
+  emitOk(Briefcase, atLimit, 'the 256-code-point id');
+  assertNoNetwork(Briefcase);
+});
+
+test('too_many_items: evidence_refs above 128 refuse with Terminal per-list code; 128 emit', () => {
+  const Briefcase = freshBriefcase(memoryStorage(), 0);
+  const refsOf = (count) => Array.from({ length: count }, (_, index) => ({
+    accession: 'A' + index,
+    occurrence_id: 'occurrence-' + index,
+    source_span: [index, index + 1]
+  }));
+  // Terminal's refs() checks the list length before any item
+  // (investigation_contracts.py:139 via :161): an all-evidence manifest over
+  // 128 items is too_many_items at $.evidence_refs, and the combined cap of
+  // :162 (sql :120) can only fire past it, never instead of it.
+  const over = clone(fixtureView('saved_with_evidence.json'));
+  over.evidence_refs = refsOf(129);
+  assertRefusal(Briefcase, over, 'too_many_items', '$.evidence_refs');
+  const atLimit = clone(fixtureView('saved_with_evidence.json'));
+  atLimit.evidence_refs = refsOf(128);
+  const emitted = emitOk(Briefcase, atLimit, 'the 128-ref view');
+  assert.equal(emitted.manifest.evidence_refs.length, 128);
+  assert.equal(emitted.manifest.layout_refs.length + emitted.manifest.thesis_refs.length +
+    emitted.manifest.evidence_refs.length, 128, 'layout+thesis+evidence is exactly the combined cap');
+  assertNoNetwork(Briefcase);
+});
+
+test('manifest_too_large: the 131072-byte canonical cap, boundary pair', () => {
+  const Briefcase = freshBriefcase(memoryStorage(), 0);
+  const byteLength = (text) => new TextEncoder().encode(text).length;
+  // Terminal caps the manifest at 131072 UTF-8 bytes of its compact JSON
+  // (py :169 json.dumps separators=(',',':') ensure_ascii=False;
+  // sql :93 octet_length of the canonical jsonb text; ts :278-282
+  // TextEncoder over JSON.stringify). Key order never changes the byte
+  // total, so all three measure alike.
+  //
+  // For a name over 160 code points the title is cut to 160 and only the
+  // carrier keeps the full name, so every added ASCII name character adds
+  // exactly one byte: measure once at 200 and solve the boundary.
+  const probe = clone(fixtureView('saved_single_issuer.json'));
+  probe.name = 'q'.repeat(200);
+  const probeEmitted = emitOk(Briefcase, probe, 'the 200-character probe');
+  const probeBytes = byteLength(JSON.stringify(probeEmitted.manifest));
+  assert.ok(probeBytes <= 131072);
+  const atCap = 200 + (131072 - probeBytes);
+  const capped = clone(fixtureView('saved_single_issuer.json'));
+  capped.name = 'q'.repeat(atCap);
+  const cappedEmitted = emitOk(Briefcase, capped, 'the manifest at the 131072-byte cap');
+  assert.equal(byteLength(JSON.stringify(cappedEmitted.manifest)), 131072);
+  const over = clone(fixtureView('saved_single_issuer.json'));
+  over.name = 'q'.repeat(atCap + 1);
+  assertRefusal(Briefcase, over, 'manifest_too_large', '$');
+  // Accepted case: every committed fixture manifest is far under the cap.
+  for (const name of ['saved_single_issuer.json', 'saved_pinned.json', 'saved_with_evidence.json']) {
+    const emitted = emitOk(Briefcase, fixtureView(name), name);
+    assert.ok(byteLength(JSON.stringify(emitted.manifest)) <= 131072, name + ' is under the cap');
+  }
+  assertNoNetwork(Briefcase);
+});
+
+test('no-Segmenter free-text cut: the code-point fallback never splits a surrogate pair', () => {
+  // r2 MINOR-2a: without Intl.Segmenter free text cuts at a code-point
+  // boundary, so the 121-code-point name (119 a's + emoji + b) keeps the
+  // whole emoji and drops only the b — the old UTF-16 slice left a lone
+  // surrogate that made the stored view unexportable.
+  const Briefcase = noSegmenterBriefcase(memoryStorage(), 0);
+  const store = Briefcase.create({ now: () => '2026-10-12T00:00:00Z' });
+  const view = fixtureView('saved_single_issuer.json');
+  const emoji = String.fromCodePoint(0x1f600);
+  const saved = store.save(Object.assign({}, view, { name: 'a'.repeat(119) + emoji + 'b' }));
+  assert.equal(saved.ok, true, saved.reason || 'the repro name saves without a Segmenter');
+  assert.equal(saved.view.name, 'a'.repeat(119) + emoji,
+    'the fallback cut keeps the whole surrogate pair and drops only the b');
+  const emitted = Briefcase.emitInvestigationManifestV2(saved.view);
+  assert.ok(emitted.ok, 'the saved view still exports without a Segmenter');
+  assert.equal(emitted.manifest.intent.title, saved.view.name);
+});
+
 test('reason sets: the declared refusal codes, and emit never throws', () => {
   const Briefcase = freshBriefcase(memoryStorage(), 0);
+  // r2 MINOR-3: the declared set gains the Terminal codes the emitter now
+  // returns -- unsupported_code_point (py :45), too_many_items (py :139 via
+  // :161) and manifest_too_large (py :169) -- and this suite exercises each.
   sameJson(Briefcase.MANIFEST_REFUSAL_REASONS, [
     'invalid_type', 'empty_text', 'invalid_control', 'invalid_unicode',
-    'text_too_long', 'invalid_date', 'duplicate_reference'
+    'unsupported_code_point', 'text_too_long', 'invalid_date',
+    'duplicate_reference', 'too_many_items', 'manifest_too_large'
   ]);
   // Non-views never throw; each is a typed refusal at the carrier path.
   for (const input of [undefined, 0, 'x', [], {}]) {

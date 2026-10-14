@@ -138,25 +138,25 @@ const FIXTURES = [
   'saved_with_finding.json'
 ].map((name) => ({ label: name, view: fixtureView(name) })).concat(derivedVariants());
 
-// X2-c pin P-ORACLE-TEXTOF: trim + UTF-16 slice -> verbatim code points with a whole-grapheme cut.
-// The X2-c emitter's text semantics, restated for the oracle: a non-string is
-// the empty string; a value that fits in `limit` CODE POINTS is kept VERBATIM
-// (never trimmed); an over-limit value keeps the longest prefix of whole
-// grapheme clusters (Intl.Segmenter, granularity 'grapheme') whose code-point
-// total is within the limit.
-function textOf(value, limit) {
-  if (typeof value !== 'string') return '';
-  if (Array.from(value).length <= limit) return value;
-  let prefix = '';
-  let count = 0;
-  for (const { segment } of new Intl.Segmenter('en', { granularity: 'grapheme' }).segment(value)) {
-    const size = Array.from(segment).length;
-    if (count + size > limit) break;
-    prefix += segment;
-    count += size;
-  }
-  return prefix;
-}
+// X2-c r2 TEST-INDEPENDENCE ruling: the old textOf oracle re-implemented the
+// emitter's own Intl.Segmenter cut, so it proved nothing. The oracle now pins
+// one LITERAL title per fixture label — no algorithm, no Segmenter. A fixture
+// without a pinned literal fails the lookup, so a new fixture cannot slip in
+// unpinned. (A ZWJ-emoji literal and a combining-mark literal are pinned by
+// the dedicated test at the bottom of this suite.) derived d2 is the only cut
+// fixture: its title is the first 160 code points of its name.
+const TITLE_LITERALS = Object.freeze({
+  'saved_single_issuer.json': 'Apple baseline',
+  'saved_cohort.json': 'Apple vs mega-cap peers',
+  'saved_pinned.json': 'Apple pinned at September cutoff',
+  'saved_latest.json': 'Apple latest check',
+  'saved_with_evidence.json': 'Apple revenue evidence',
+  'saved_with_finding.json': 'Apple receivables signal',
+  'derived d1 (padded name)': '  Apple revenue evidence  ',
+  'derived d2 (name over 160 code points)': 'Apple revenue evidence xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx',
+  'derived d3 (empty occurrence_id)': 'Apple revenue evidence',
+  'derived d4 (pinned with evidence)': 'Apple revenue evidence'
+});
 
 // The pinned 1:1 mapping TABLE: one row per top-level B key plus the intent
 // sub-fields. `from` states the A-side rule in plain words; expectedManifest
@@ -207,12 +207,14 @@ function isRealDate(year, month, day) {
   return day <= monthDays[month - 1];
 }
 
-function expectedManifest(view) {
+function expectedManifest(view, label) {
   const pinned = view.pinned === true;
+  assert.ok(typeof TITLE_LITERALS[label] === 'string',
+    'no pinned title literal for fixture ' + label);
   const manifest = {
     schema: MANIFEST_V2_SCHEMA,
     intent: {
-      title: textOf(view.name, 160),
+      title: TITLE_LITERALS[label],
       question: 'Filing forensics saved view',
       subjects: [{ kind: 'issuer', owner: 'fif', object_id: view.issuer.entity_id }]
     },
@@ -455,7 +457,7 @@ test('T-M2: the mapping table — the module output equals the independent oracl
   for (const { label, view } of FIXTURES) {
     const manifest = Briefcase.toInvestigationManifestV2(view);
     assert.ok(manifest, label + ' maps');
-    assert.equal(canon(manifest), canon(expectedManifest(view)), label + ' equals the oracle');
+    assert.equal(canon(manifest), canon(expectedManifest(view, label)), label + ' equals the oracle');
     sameJson(Object.keys(manifest).sort(), topLevelKeys, label + ': top-level keys are exactly the table rows');
     const intentKeys = MAPPING_INTENT_KEYS
       .filter((key) => key !== 'research_as_of' || emitsResearchAsOf(view))
@@ -622,3 +624,277 @@ test('T-M7: contract conformance against the committed Terminal snapshot', () =>
     'terminal gap set differs — computed ' + JSON.stringify(computed));
   assertNoNetwork(Briefcase);
 });
+
+// ── X2-b+c r2: NIT-1, NIT-2, the T-M7 added-rule assertions and the
+// ZWJ/combining-mark title literals ─────────────────────────────────────────
+
+test('NIT-1: from() refuses a manifest carrying a value JSON cannot round-trip', () => {
+  const Briefcase = freshBriefcase(memoryStorage(), 0);
+  const manifest = Briefcase.toInvestigationManifestV2(fixtureView('saved_with_evidence.json'));
+  assert.ok(manifest);
+  // A Date (and a Map or Set) has no enumerable own keys, so the old
+  // canonicalJson rendered it as '{}' — byte-identical to the re-emitted
+  // empty continuation — and the non-plain value slipped through the
+  // comparison. A plain-value law (Terminal dataOnly,
+  // investigationContracts.ts:89-131) refuses all of these first.
+  const edits = [
+    ['a Date continuation', (m) => { m.continuation = new Date(0); }],
+    ['a Map continuation', (m) => { m.continuation = new Map(); }],
+    ['a Set continuation', (m) => { m.continuation = new Set(); }],
+    ['a sparse-array continuation', (m) => { m.continuation = ['a', , 'c']; }],
+    ['a -0 continuation value', (m) => { m.continuation = { next_question: -0 }; }],
+    ['a getter continuation', (m) => { m.continuation = {}; Object.defineProperty(m.continuation, 'next_question', { enumerable: true, get: () => 'x' }); }]
+  ];
+  for (const [name, edit] of edits) {
+    const edited = JSON.parse(JSON.stringify(manifest));
+    edit(edited);
+    assert.equal(Briefcase.fromInvestigationManifestV2(edited), null, name + ' is refused');
+  }
+  // Accepted case: the plain manifest still maps back.
+  assert.ok(Briefcase.fromInvestigationManifestV2(JSON.parse(JSON.stringify(manifest))));
+  assertNoNetwork(Briefcase);
+});
+
+test('NIT-2: a carrier with an unknown key is refused — the stored-view key set is fixed', () => {
+  const Briefcase = freshBriefcase(memoryStorage(), 0);
+  const manifest = Briefcase.toInvestigationManifestV2(fixtureView('saved_with_evidence.json'));
+  assert.ok(manifest);
+  const edit = (mutate) => {
+    const edited = JSON.parse(JSON.stringify(manifest));
+    mutate(edited);
+    return edited;
+  };
+  // Row-level unknown key: passed straight through before r2.
+  assert.equal(Briefcase.fromInvestigationManifestV2(edit((m) => { m[CARRIER_KEY].evil_extra = 1; })), null,
+    'a carrier with an unknown top-level key is refused');
+  // Nested unknown keys refuse through their own normalisers.
+  assert.equal(Briefcase.fromInvestigationManifestV2(edit((m) => { m[CARRIER_KEY].peers.evil_extra = 1; })), null,
+    'a carrier with an unknown peers key is refused');
+  assert.equal(Briefcase.fromInvestigationManifestV2(edit((m) => { m[CARRIER_KEY].view.evil_extra = 1; })), null,
+    'a carrier with an unknown view key is refused');
+  // Type swaps refuse with their own reasons.
+  assert.equal(Briefcase.fromInvestigationManifestV2(edit((m) => { m[CARRIER_KEY].pinned = 'true'; })), null,
+    'a string pinned is refused');
+  assert.equal(Briefcase.fromInvestigationManifestV2(edit((m) => { m[CARRIER_KEY].view = 'radar'; })), null,
+    'a string view is refused');
+  // Accepted case: the untouched carrier still maps back.
+  assert.ok(Briefcase.fromInvestigationManifestV2(JSON.parse(JSON.stringify(manifest))));
+  assertNoNetwork(Briefcase);
+});
+
+test('T-M7 r2: layout/thesis role enums and thesis emptiness (py :108/:115, sql :126/:131, investigations.ts:52)', () => {
+  const snapshot = JSON.parse(readFileSync(CONTRACT_SNAPSHOT, 'utf8'));
+  assert.equal(snapshot.terminal_commit, 'c799ba7e64e2d0861228c9977cc12ed4a5d91982');
+  // The added rules carry their citations.
+  assert.deepEqual(snapshot.layout_refs.item_shape.role.enum.slice().sort(), ['primary', 'supporting']);
+  assert.ok(snapshot.layout_refs.role_enum_source.includes('investigation_contracts.py:108'));
+  assert.ok(snapshot.layout_refs.role_enum_source.includes('0028_investigations.sql:126'));
+  assert.deepEqual(snapshot.thesis_refs.item_shape.role.enum.slice().sort(), ['alternative', 'context', 'primary']);
+  assert.ok(snapshot.thesis_refs.item_shape.role.enum !== undefined);
+  assert.equal(snapshot.thesis_refs.must_be_empty, true);
+  assert.ok(snapshot.thesis_refs.must_be_empty_source.includes('0028_investigations.sql:131'));
+  assert.ok(snapshot.thesis_refs.must_be_empty_source.includes('investigations.ts:52'));
+
+  const Briefcase = freshBriefcase(memoryStorage(), 0);
+  // Accepted case: every emitted manifest carries no layout and no thesis
+  // refs — the G1 emptiness law holds on the emitter's whole output surface.
+  for (const { label, view } of FIXTURES) {
+    const manifest = Briefcase.toInvestigationManifestV2(view);
+    assert.ok(manifest, label + ' maps');
+    sameJson(manifest.layout_refs, [], label + ': no layout refs');
+    sameJson(manifest.thesis_refs, [], label + ': no thesis refs');
+  }
+  // Refused case: from() refuses a manifest carrying a thesis ref — a role
+  // inside the enum and a role outside it alike (Terminal G1 admits no
+  // unverified Thesis rows, whatever the role).
+  const base = Briefcase.toInvestigationManifestV2(fixtureView('saved_single_issuer.json'));
+  for (const role of ['primary', 'alternative', 'context', 'bogus']) {
+    const withThesis = JSON.parse(JSON.stringify(base));
+    withThesis.thesis_refs = [{
+      thesis_id: '01234567-89ab-cdef-0123-456789abcdef',
+      version_id: '01234567-89ab-cdef-0123-456789abcdef',
+      role: role
+    }];
+    assert.equal(Briefcase.fromInvestigationManifestV2(withThesis), null,
+      'a manifest with a thesis ref (role ' + role + ') is refused');
+  }
+  assertNoNetwork(Briefcase);
+});
+
+test('T-M7 r2: the combined reference cap (py :162, sql :120)', () => {
+  const snapshot = JSON.parse(readFileSync(CONTRACT_SNAPSHOT, 'utf8'));
+  assert.equal(snapshot.reference_totals.max_combined, 128);
+  assert.ok(snapshot.reference_totals.source.includes('investigation_contracts.py:162'));
+  assert.ok(snapshot.reference_totals.source.includes('0028_investigations.sql:120'));
+
+  const Briefcase = freshBriefcase(memoryStorage(), 0);
+  const refsOf = (count) => Array.from({ length: count }, (_, index) => ({
+    accession: 'A' + index,
+    occurrence_id: 'occurrence-' + index,
+    source_span: [index, index + 1]
+  }));
+  // Refused case at the emitter's reachable boundary (an all-evidence
+  // manifest): 129 refs refuse with Terminal's first code for this shape —
+  // the per-list too_many_items of py :161, which fires before :162.
+  const over = fixtureView('saved_with_evidence.json');
+  over.evidence_refs = refsOf(129);
+  sameJson(Briefcase.emitInvestigationManifestV2(over),
+    { ok: false, reason: 'too_many_items', path: '$.evidence_refs' });
+  // Accepted case: 128 refs emit, and the emitted total (layout + thesis +
+  // evidence) is exactly the snapshot's combined cap.
+  const atLimit = fixtureView('saved_with_evidence.json');
+  atLimit.evidence_refs = refsOf(128);
+  const emitted = Briefcase.emitInvestigationManifestV2(atLimit);
+  assert.ok(emitted.ok);
+  assert.equal(emitted.manifest.layout_refs.length + emitted.manifest.thesis_refs.length +
+    emitted.manifest.evidence_refs.length, snapshot.reference_totals.max_combined);
+  // Refused case past the emitter's shape: a manifest whose layout ref pushes
+  // the combined total to 129 is refused by from().
+  const combined = JSON.parse(JSON.stringify(emitted.manifest));
+  combined.layout_refs = [{
+    layout_id: '01234567-89ab-cdef-0123-456789abcdef',
+    layout_revision_id: '01234567-89ab-cdef-0123-456789abcdef',
+    digest: 'a'.repeat(64),
+    role: 'primary'
+  }];
+  assert.equal(Briefcase.fromInvestigationManifestV2(combined), null,
+    '129 combined refs are refused at from()');
+  assertNoNetwork(Briefcase);
+});
+
+test('T-M7 r2: the manifest size cap (py :169, sql :93)', () => {
+  const snapshot = JSON.parse(readFileSync(CONTRACT_SNAPSHOT, 'utf8'));
+  assert.equal(snapshot.manifest_size.max_bytes, 131072);
+  assert.ok(snapshot.manifest_size.source.includes('investigation_contracts.py:169'));
+  assert.ok(snapshot.manifest_size.source.includes('0028_investigations.sql:93'));
+  assert.ok(snapshot.manifest_size.measure.includes('UTF-8 octet length'));
+
+  const Briefcase = freshBriefcase(memoryStorage(), 0);
+  const byteLength = (text) => new TextEncoder().encode(text).length;
+  // Accepted case: every fixture manifest sits under the cap by the suite's
+  // own canonical measure. (The 131072/131073 boundary pair is pinned by the
+  // emitter suite's manifest_too_large test.)
+  for (const { label, view } of FIXTURES) {
+    const manifest = Briefcase.toInvestigationManifestV2(view);
+    assert.ok(manifest, label + ' maps');
+    assert.ok(byteLength(canon(manifest)) <= snapshot.manifest_size.max_bytes,
+      label + ' is under the size cap');
+  }
+  assertNoNetwork(Briefcase);
+});
+
+test('T-M7 r2: the NUL code and the per-code-point order (py :42-47, ts :143-157)', () => {
+  const snapshot = JSON.parse(readFileSync(CONTRACT_SNAPSHOT, 'utf8'));
+  assert.equal(snapshot.text_checks.nul_code, 'unsupported_code_point');
+  sameJson(snapshot.text_checks.per_code_point_order,
+    ['invalid_unicode', 'unsupported_code_point', 'text_too_long', 'invalid_control']);
+  assert.ok(snapshot.text_checks.source.includes('investigation_contracts.py:42-47'));
+
+  const Briefcase = freshBriefcase(memoryStorage(), 0);
+  const NUL = String.fromCharCode(0);
+  // Refused case: NUL reports Terminal's code, not invalid_control.
+  const nulName = fixtureView('saved_single_issuer.json');
+  nulName.name = 'Apple' + NUL + 'baseline';
+  sameJson(Briefcase.emitInvestigationManifestV2(nulName),
+    { ok: false, reason: snapshot.text_checks.nul_code, path: '$.intent.title' });
+  // Accepted case: the same name without the NUL emits.
+  const cleanName = fixtureView('saved_single_issuer.json');
+  cleanName.name = 'Apple baseline';
+  assert.ok(Briefcase.emitInvestigationManifestV2(cleanName).ok);
+  assertNoNetwork(Briefcase);
+});
+
+test('T-M7 r2: the owner-to-kind pairing (investigations.ts:9-10)', () => {
+  const snapshot = JSON.parse(readFileSync(CONTRACT_SNAPSHOT, 'utf8'));
+  assert.equal(canon(snapshot.subjects.owner_kinds), canon([
+    { owner: 'terminal.analysis_symbol', kinds: ['security'] },
+    { owner: 'data_os.security_master', kinds: ['security', 'issuer'] }
+  ]), 'the pairing matches investigations.ts:9-10 exactly');
+  assert.ok(snapshot.subjects.owner_kinds_source.includes('investigations.ts:9-10'));
+  const admitted = (owner, kind) =>
+    snapshot.subjects.owner_kinds.some((pair) => pair.owner === owner && pair.kinds.includes(kind));
+  // Accepted cases: each admitted owner/kind pair of the G1 adapters.
+  assert.equal(admitted('terminal.analysis_symbol', 'security'), true);
+  assert.equal(admitted('data_os.security_master', 'security'), true);
+  assert.equal(admitted('data_os.security_master', 'issuer'), true);
+  // Refused case: a kind under the wrong owner is not admitted.
+  assert.equal(admitted('terminal.analysis_symbol', 'issuer'), false);
+  assert.equal(admitted('fif', 'issuer'), false);
+  // Against the emitter's output: the emitted subject (owner 'fif', kind
+  // 'issuer') is not admitted by the pairing — the recorded Terminal-side
+  // gap (census GATE TEXT), never silently repaired here.
+  const Briefcase = freshBriefcase(memoryStorage(), 0);
+  const manifest = Briefcase.toInvestigationManifestV2(fixtureView('saved_single_issuer.json'));
+  assert.ok(manifest);
+  assert.equal(admitted(manifest.intent.subjects[0].owner, manifest.intent.subjects[0].kind), false,
+    'the emitted subject is honestly outside the admitted pairs');
+  // Refused at from(): a manifest whose subject was edited to an admitted
+  // pair is an edited projection all the same.
+  const edited = JSON.parse(JSON.stringify(manifest));
+  edited.intent.subjects[0].owner = 'data_os.security_master';
+  assert.equal(Briefcase.fromInvestigationManifestV2(edited), null);
+  assertNoNetwork(Briefcase);
+});
+
+test('T-M7 r2: the optional evidence keys version_ref, fingerprint, selection (py :119)', () => {
+  const snapshot = JSON.parse(readFileSync(CONTRACT_SNAPSHOT, 'utf8'));
+  sameJson(snapshot.evidence_refs.optional_keys, ['version_ref', 'fingerprint', 'selection']);
+  assert.ok(snapshot.evidence_refs.optional_keys_source.includes('investigation_contracts.py:119'));
+
+  const Briefcase = freshBriefcase(memoryStorage(), 0);
+  // Accepted case: across every fixture, a pinned ref carries version_ref
+  // (an optional key lawfully present) and a follow_head ref carries neither
+  // version_ref nor fingerprint (py :130, ts :233-235).
+  let sawPinned = false;
+  let sawFollowHead = false;
+  for (const { label, view } of FIXTURES) {
+    const manifest = Briefcase.toInvestigationManifestV2(view);
+    assert.ok(manifest, label + ' maps');
+    for (const ref of manifest.evidence_refs) {
+      if (ref.mode === 'pinned') {
+        sawPinned = true;
+        assert.ok(Object.prototype.hasOwnProperty.call(ref, 'version_ref'), label + ': pinned carries version_ref');
+        assert.equal('fingerprint' in ref, false, label + ': the emitter sets no fingerprint');
+        assert.equal('selection' in ref, false, label + ': the emitter sets no selection');
+      } else {
+        sawFollowHead = true;
+        assert.equal('version_ref' in ref || 'fingerprint' in ref, false,
+          label + ': follow_head carries neither version_ref nor fingerprint');
+      }
+    }
+  }
+  assert.ok(sawPinned && sawFollowHead, 'both ref modes appear across the fixtures');
+  // Refused case: from() refuses a manifest whose follow_head ref gained a
+  // fingerprint — Terminal refuses that shape, and the exact-image law
+  // refuses it here.
+  const manifest = Briefcase.toInvestigationManifestV2(fixtureView('saved_with_evidence.json'));
+  const edited = JSON.parse(JSON.stringify(manifest));
+  edited.evidence_refs[0].fingerprint = 'a'.repeat(64);
+  assert.equal(Briefcase.fromInvestigationManifestV2(edited), null);
+  assertNoNetwork(Briefcase);
+});
+
+test('oracle literals: a ZWJ emoji sequence and a combining-mark title are pinned as literals', () => {
+  const Briefcase = freshBriefcase(memoryStorage(), 0);
+  // One ZWJ family (4 astral emoji + 3 ZWJs = 7 code points, 11 UTF-16
+  // units, ONE grapheme) and one combining-mark e-acute, each sized so the
+  // 160-code-point title keeps them WHOLE. The expectations are the literal
+  // strings themselves — no Segmenter, no algorithm, nothing derived.
+  const family = String.fromCodePoint(0x1f468, 0x200d, 0x1f469, 0x200d, 0x1f467, 0x200d, 0x1f466);
+  const acute = 'e' + String.fromCharCode(0x301);
+  for (const [label, name, literal] of [
+    ['the ZWJ family title', 'a'.repeat(153) + family, 'a'.repeat(153) + family],
+    ['the combining-mark title', 'x'.repeat(158) + acute, 'x'.repeat(158) + acute]
+  ]) {
+    const view = fixtureView('saved_single_issuer.json');
+    view.name = name;
+    const emitted = Briefcase.emitInvestigationManifestV2(view);
+    assert.ok(emitted.ok, label + ' emits');
+    assert.equal(emitted.manifest.intent.title, literal, label + ' is the literal, grapheme whole');
+    sameJson(emitted.notices, [], label + ' needs no cut');
+    assert.ok(Briefcase.fromInvestigationManifestV2(JSON.parse(JSON.stringify(emitted.manifest))),
+      label + ' maps back');
+  }
+  assertNoNetwork(Briefcase);
+});
+
