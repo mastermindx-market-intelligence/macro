@@ -8,6 +8,10 @@ mission: Complete the International programme on its existing carriers while pre
 state_before: Macro PR8754 published the J07 reset-control repair at 943ee54; only hosted authority checks were
   observed and retired. Terminal PR804 execution belonged solely to IW2.
 changed:
+- path: templates/intl.html.j2; tests/test_intl_rates_dates_render.py; tests/intl_workspace_page.test.cjs
+  what: Expose supplied10y/CPI observation months and US10y date with explicit field scope, honest missing clocks and escaped date strings.
+- path: research/paper_international_wave1_wave2/RATES_OBSERVATION_DATES_ACCEPTANCE.json; mockups/evidence/paper-international-library/rates-observation-dates/
+  what: Bind causal date failures, corrected escaping and settled dual-theme evidence; no live or freshness qualification.
 - path: templates/intl.html.j2; tests/test_intl_rates_render.py; tests/intl_workspace_page.test.cjs
   what: Separate maturity endpoints, preserve supplied signed yields on one shared vertical scale and prevent label overlap; bound fixture optimizer cleanup.
 - path: research/paper_international_wave1_wave2/RATES_CURVE_GEOMETRY_ACCEPTANCE.json; mockups/evidence/paper-international-library/rates-curve-geometry/
@@ -139,6 +143,9 @@ changed:
   what: Record8short-height source-fixture cases with32modal modes and560native keyboard observations; no Inspector
     product change.
 verified:
+- claim: Rates clocks retain their independent owner scope and absent fields.
+  command: pytest tests/test_intl_rates_dates_render.py; Node Rates observation dates; rates-observation-dates-20261014-r1/capture.py and inspect_cards.py.
+  result: 4PythonPASS14inheritedwarnings;4browserPASS8width states;8canonical captures and4settled focused images. Final escaping keeps benign optimized HTML byte-identical; malicious strings cannot add script nodes. Independent review pending.
 - claim: Rates negative/high/near/equal endpoints retain numerical order and readable labels.
   command: pytest tests/test_intl_rates_render.py tests/test_intl_workspace_integration.py; Node Rates endpoint geometry and missing endpoints; rates-curve-geometry-20261014-r1/capture.py.
   result: 47PythonPASS14inheritedwarnings;8browserPASS including64endpoint-pair observations. Functional green precedes only an equivalent canonical circle token repair;8final captures remade on final source;4final geometry browser cases also pass. Independent review pending.

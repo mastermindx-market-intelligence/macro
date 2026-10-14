@@ -1023,6 +1023,9 @@
     <span style="flex:1"></span>
     {% if AN.y10 is not none %}<span class="sub">{{ t('US anchor', '美国锚') }}: <b style="color:var(--text)">{{ AN.y10 }}%</b> 10y · {% if AN.y2 is not none %}{{ AN.y2 }}%{% else %}—{% endif %} 2y · {{ t('curve', '曲线') }} {{ '%+.2f'|format(AN.curve) if AN.curve is not none else '—' }}</span>{% endif %}
   </div>
+  {% if AN.y10 is not none %}
+  <p class="muted small" data-rates-anchor-date>{{ t('US 10y observation date:', '美国10年观测日：') }} {{ AN.get('asof')|e if AN.get('asof') else t('Unavailable', '不可用') }} · {{ t('US 2y date unavailable', '美国2年日期不可用') }}</p>
+  {% endif %}
   {% set scale = namespace(values=[0]) %}
   {% for r in rates.rows %}
     {% if r.short is not none and r.y10 is not none %}
@@ -1077,6 +1080,8 @@
       {% else %}
       <p class="muted small" style="margin:6px 0">{{ t('No keyless yield curve for this market — read leans on the equity tape.', '该市场无免密钥收益率曲线 — 读数依赖股市行情。') }}</p>
       {% endif %}
+      <p class="muted small" data-rates-dates>{{ t('10y observation month:', '10年观测月：') }} {{ r.get('y10_asof')|e if r.get('y10_asof') else t('Unavailable', '不可用') }}<br>
+        {{ t('CPI observation month:', 'CPI观测月：') }} {{ r.get('cpi_asof')|e if r.get('cpi_asof') else t('Unavailable', '不可用') }}{% if r.short is not none %}<br>{{ t('3m date unavailable', '3月日期不可用') }}{% endif %}</p>
     </div>
     {% endfor %}
   </div>

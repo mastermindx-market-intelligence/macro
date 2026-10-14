@@ -55,6 +55,36 @@ const coldLocaleHtml = execFileSync(process.env.INTL_TEST_PYTHON || 'python3', [
   {cwd:root,env:{...process.env,PYTHONPATH:root},encoding:'utf8',maxBuffer:4*1024*1024});
 
 for (const theme of ['dark','light']) for (const lang of ['en','zh']) {
+  test(`Rates observation dates preserve independent clocks ${theme} ${lang}`,async()=>{
+    const ratesHtml=execFileSync(process.env.INTL_TEST_PYTHON || 'python3',['-c',
+      'from tests.test_intl_rates_dates_render import rates_dates_fixture; from tests.test_intl_workspace_integration import render_fixture; print(render_fixture(rates=rates_dates_fixture()))'],
+      {cwd:root,env:{...process.env,PYTHONPATH:root},encoding:'utf8',maxBuffer:4*1024*1024});
+    await pageFixture(async page=>{
+      await page.evaluate(({theme,lang})=>{window.setTheme(theme);window.setLang(lang);},{theme,lang});
+      for(const width of [320,1440]) {
+        await page.setViewportSize({width,height:900});
+        const panel=page.locator('#intl-rates-curves').locator('xpath=ancestor::div[contains(concat(" ",normalize-space(@class)," ")," panel ")][1]');
+        const anchor=panel.locator('[data-rates-anchor-date]');assert.equal(await anchor.isVisible(),true);
+        assert.match(await anchor.innerText(),/2026-09-29/);
+        assert.match(await anchor.innerText(),lang==='zh'?/美国10年观测日/:/US 10y observation date/);
+        assert.match(await anchor.innerText(),lang==='zh'?/美国2年日期不可用/:/US 2y date unavailable/);
+        const dates=panel.locator('[data-rates-dates]');assert.equal(await dates.count(),4);
+        assert.match(await dates.nth(0).innerText(),/2026-08[\s\S]*2019-12/);
+        assert.match(await dates.nth(0).innerText(),lang==='zh'?/10年观测月[\s\S]*CPI观测月/:/10y observation month[\s\S]*CPI observation month/);
+        assert.match(await dates.nth(1).innerText(),lang==='zh'?/不可用[\s\S]*2026-06[\s\S]*3月日期不可用/:/Unavailable[\s\S]*2026-06[\s\S]*3m date unavailable/);
+        assert.ok(!(await dates.nth(1).innerText()).includes('2026-08'),'never borrow another market clock');
+        for(const el of [anchor,...await dates.all()]) {
+          assert.equal(await el.isVisible(),true);
+          assert.ok(await el.evaluate(n=>n.scrollWidth<=n.clientWidth+1),'date text stays within its own container');
+        }
+        assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1));
+      }
+    },{htmlOverride:ratesHtml,published:true,bootLanguage:lang,
+      initialSearch:'?view=library&market=JP&horizon=3m&basis=local&return_basis=price#intl-rates-curves'});
+  });
+}
+
+for (const theme of ['dark','light']) for (const lang of ['en','zh']) {
   test(`Rates endpoint geometry stays readable and truthful ${theme} ${lang}`,async()=>{
     const ratesHtml=execFileSync(process.env.INTL_TEST_PYTHON || 'python3',['-c',
       'from tests.test_intl_rates_render import rates_geometry_fixture; from tests.test_intl_workspace_integration import render_fixture; print(render_fixture(rates=rates_geometry_fixture()))'],
