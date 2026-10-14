@@ -54,6 +54,39 @@ const coldLocaleHtml = execFileSync(process.env.INTL_TEST_PYTHON || 'python3', [
   'from tests.test_intl_workspace_integration import render_history_fixture; print(render_history_fixture())'],
   {cwd:root,env:{...process.env,PYTHONPATH:root},encoding:'utf8',maxBuffer:4*1024*1024});
 
+for (const theme of ['dark','light']) for (const lang of ['en','zh']) {
+  test(`Trade method keyboard read ${theme} ${lang}`,async()=>{
+    const h=execFileSync('python3',['-c',"from tests.test_intl_trade_pressure_method_render import method_fixture; from tests.test_intl_workspace_integration import render_fixture; print(render_fixture(cgl=method_fixture()))"],{cwd:root,env:{...process.env,PYTHONPATH:root},encoding:'utf8',maxBuffer:4*1024*1024});
+    await pageFixture(async page=>{
+      for(const width of [320,1440]) {
+        await page.setViewportSize({width,height:900});
+        await page.goto('http://intl.test/intl.html?view=library&market=JP&horizon=3m&basis=local&return_basis=price');
+        await page.evaluate(({theme,lang})=>{setTheme(theme);setLang(lang);},{theme,lang});
+        const input=page.locator('[data-im-library-search]');const query=lang==='zh'?'贸易':'trade';await input.fill(query);
+        const link=page.locator('[data-im-library-results] a[href="#intl-trade-supply-links"]');assert.equal(await link.count(),1);
+        await link.focus();await page.keyboard.press('Enter');
+        const heading=page.locator('#intl-trade-supply-links');assert.equal(await heading.evaluate(n=>n===document.activeElement),true);
+        const panel=heading.locator('xpath=ancestor::div[contains(concat(" ",normalize-space(@class)," ")," panel ")][1]');
+        const text=await panel.innerText();
+        assert.ok(text.includes(lang==='zh'?'来源百分比是关联权重，并非压力占比。':'Source percentages are linkage weights, not shares of pressure.'));
+        assert.ok(text.includes(lang==='zh'?'等级是历史区间，并非趋势。':'Levels are historical bands, not a trend.'));
+        assert.ok(text.includes('35%'));
+        await page.keyboard.press('Tab');const lens=page.locator('.lens-pop.open');await lens.waitFor({state:'visible'});
+        const method=await lens.innerText();
+        for(const term of (lang==='zh'?['ETF波动率','21期','10期','最多采用504','至少需要252','并非因果','不是预测']:['ETF volatility','21-observation','10-observation','up to 504','at least 252','not causal','not a forecast']))assert.ok(method.includes(term),method);
+        assert.doesNotMatch(method,/actually falling|真实下跌市场/);
+        assert.ok(await lens.evaluate(n=>{const r=n.getBoundingClientRect();return r.left>=0&&r.right<=innerWidth+1&&n.scrollWidth<=n.clientWidth+1;}));
+        await page.keyboard.press('Escape');await lens.waitFor({state:'hidden'});
+        await page.goBack();assert.equal(new URL(page.url()).hash,'');
+        assert.equal(await input.inputValue(),query);assert.equal(new URL(page.url()).searchParams.get('market'),'JP');
+        assert.equal(new URL(page.url()).searchParams.get('horizon'),'3m');assert.equal(new URL(page.url()).searchParams.get('basis'),'local');
+        assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1));
+      }
+    },{htmlOverride:h,published:true,bootLanguage:lang,width:320,
+      initialSearch:'?view=library&market=JP&horizon=3m&basis=local&return_basis=price'});
+  });
+}
+
 test('Trade pressure bars survive absent Risk desk',async()=>{
   for(const withRisk of [false,true]) {
     const h=execFileSync('python3',['-c',`from tests.test_intl_trade_pressure_absence_render import mixed_pressure_fixture; from tests.test_intl_workspace_integration import render_fixture; print(render_fixture(cgl=mixed_pressure_fixture(),risk_desk=${withRisk?"{'built':'synthetic:fixture'}":"None"}))`],{cwd:root,env:{...process.env,PYTHONPATH:root},encoding:'utf8',maxBuffer:4*1024*1024});

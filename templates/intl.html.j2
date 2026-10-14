@@ -1868,7 +1868,7 @@
 {% endif %}{# end risk_desk section #}
 
 {# ── CGL Directed Pressure Table (CGL W1, 2026-07-17).
-   Shows who is pressing on whom right now — one row per market, sorted by
+   Shows supplied model pressure — one row per market, sorted by
    pressure pct descending. Outer guard: CGL is defined AND non-empty. Renders
    NOTHING when the artifact is absent (progressive enhancement; zero visual
    change to existing layout). Plain-word glance tier only: no "GFEVD", "VAR",
@@ -1905,12 +1905,13 @@
 {%- set _cgl_sorted = _cgl_rows.v | sort(attribute='pct', reverse=true) -%}
 <div class="panel">
   <div class="sec-h">
-    <h2 id="intl-trade-supply-links">{{ t('Supplied crash-pressure readings', '所提供的冲击压力读数') }}
-      {{ help('How much inbound pressure each market is absorbing from markets that are actually falling — measured from economic linkages and current crash depth. Low / Building / High reflects the severity relative to the past two years. Top sources show which markets are driving the pressure. Source: trade, financial and supply-chain linkages blended with recent price action. Display only — not a signal to trade.', '每个市场正在吸收多少来自真实下跌市场的输入压力——由经济联系与当前跌幅共同衡量。低/升温/高反映过去两年的相对严重程度。压力来源显示哪些市场是主要驱动力。数据来源：贸易、金融与供应链联系，结合近期价格走势。仅作展示，非交易信号。') }}</h2>
-    <span class="sub">{{ t('Measured from market connections and who is actually falling', '由市场关联与实际下跌方共同衡量') }}</span>
+    <h2 id="intl-trade-supply-links" tabindex="-1">{{ t('Supplied crash-pressure readings', '所提供的冲击压力读数') }}
+      {{ help('The model combines preset linkage weights with ETF volatility-model weights where available, then applies a score from each source’s 21-observation drawdown and 10-observation loss. A rebound can still carry pressure. Historical bands use up to 504 pressure observations and need at least 252. Source percentages are linkage weights; source order uses weight × loss score. These are model estimates, not causal transmission shares and not a forecast. Inputs may cover different dates; missing inputs can reduce coverage.', '模型结合预设关联权重与可用的ETF波动率模型权重，再应用各来源的21期回撤和10期跌幅评分。反弹时仍可能保留压力。历史区间最多采用504期压力观测，至少需要252期。来源百分比是关联权重；来源顺序按权重乘以跌幅评分排列。这些是模型估计，并非因果传导占比，也不是预测。输入日期可能不同；缺失输入会限制覆盖。') }}</h2>
+    <span class="sub">{{ t('Modelled pressure from linked markets’ recent drawdowns and losses', '关联市场近期回撤与跌幅的模型压力') }}</span>
   </div>
   {%- if _cgl_sorted %}
   <p class="muted small">{{ t('Levels compare pressure with its history. A missing historical comparison is not a low reading.', '等级将压力与其历史比较。缺少历史比较不代表压力低。') }}</p>
+  <p class="muted small">{{ t('Source percentages are linkage weights, not shares of pressure. Levels are historical bands, not a trend.', '来源百分比是关联权重，并非压力占比。等级是历史区间，并非趋势。') }}</p>
   <div style="margin-top:8px;">
     {%- for row in _cgl_sorted %}
     {%- set mkt = row.mkt -%}

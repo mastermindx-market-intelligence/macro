@@ -8,6 +8,8 @@ mission: Complete the International programme on its existing carriers while pre
 state_before: Macro PR8754 published the J07 reset-control repair at 943ee54; only hosted authority checks were
   observed and retired. Terminal PR804 execution belonged solely to IW2.
 changed:
+- path: templates/intl.html.j2; tests/test_intl_trade_pressure_method_render.py; tests/intl_workspace_page.test.cjs
+  what: Scope Trade model explanations to actual owner construction and restore native keyboard access; distinguish rebound pressure and linkage weights from causal shares.
 - path: templates/intl.html.j2; tests/test_intl_trade_pressure_absence_render.py; tests/intl_workspace_page.test.cjs
   what: Keep Trade pressure missing history unavailable; preserve valid states and exporters, independent Risk-free rendering and narrow source-chip containment.
 - path: templates/intl.html.j2; tests/test_intl_fragility_disclosure_render.py; tests/intl_workspace_page.test.cjs
@@ -193,6 +195,9 @@ changed:
   what: Record8short-height source-fixture cases with32modal modes and560native keyboard observations; no Inspector
     product change.
 verified:
+- claim: Trade method has five unique render and four browser cases across eight width states; actual owner calculations unchanged and source not deployed.
+  command: python3 -m pytest -q tests/test_intl_trade_pressure_method_render.py; targeted -k method_explains; node --test --test-name-pattern="Trade method keyboard read" tests/intl_workspace_page.test.cjs; targeted Chinese cases.
+  result: trade-pressure-method-20261014-r1/GREEN_RENDER.log and GREEN_RENDER_TARGETED.log; node --test --test-name-pattern="Trade method keyboard read" tests/intl_workspace_page.test.cjs plus targeted Chinese passes; OWNER_PRESERVATION.json and TRADE_PRESSURE_METHOD_ACCEPTANCE.json. Initial selector and substring harness failures retained; counts overlap.
 - claim: Trade pressure10render and5new browser cases pass, plus4affected Library returns;8finalcanonical and8focused views, with4desktop pixel reuse. Counts overlap.
   command: python3 -m pytest -q tests/test_intl_trade_pressure_absence_render.py; node --test --test-name-pattern="^Trade pressure" tests/intl_workspace_page.test.cjs
 - claim: Fragility disclosure4render cases and4browser cases across8width states pass, with8canonical and8expanded source views.
