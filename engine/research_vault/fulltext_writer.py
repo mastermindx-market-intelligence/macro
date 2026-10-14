@@ -295,7 +295,12 @@ def materialize_pending(
     """Bounded create-only pass over catalog items. Never raises.
 
     Writes nothing except derivative objects, and only through ``materialize``.
-    The result is metadata counters — never text.
+    The result is metadata counters — never text. Additive timing evidence:
+    ``pre_pass_elapsed_s`` (run wall already consumed when the pass opened),
+    ``budget_s`` (the exact effective budget the in-loop stop checks compare
+    against) and ``pass_elapsed_s`` (one trailing sample taken after the loop);
+    each is reported only on paths that actually reach it, so a missing field
+    means the pass never got that far.
     """
     out = _empty_pass()
     try:
@@ -315,14 +320,19 @@ def materialize_pending(
         derivs = fulltext_store.list_derivatives(store)
         if derivs is None:
             out["aborted"] = "store_unavailable"
+            out["pre_pass_elapsed_s"] = clock() - run_started
             return out
         pending = _candidates(cat, shas, derivs)
         out["candidates"] = len(pending)
         pass_start = clock()
-        budget = min(float(budget_s), max(0.0, float(run_wall_s) - (pass_start - run_started)))
+        pre_pass_elapsed = pass_start - run_started
+        out["pre_pass_elapsed_s"] = pre_pass_elapsed
+        budget = min(float(budget_s), max(0.0, float(run_wall_s) - pre_pass_elapsed))
+        out["budget_s"] = budget
 
         if pending and not tool_available():
             out["aborted"] = "tool_unavailable"
+            out["pass_elapsed_s"] = clock() - pass_start
             out["remaining"] = len(pending)
             return out
         if pending:
@@ -335,6 +345,7 @@ def materialize_pending(
                 validator()
             except Exception:
                 out["aborted"] = "store_unavailable"
+                out["pass_elapsed_s"] = clock() - pass_start
                 out["remaining"] = len(pending)
                 return out
 
@@ -382,6 +393,7 @@ def materialize_pending(
                 break
             else:
                 out["failed"] += 1
+        out["pass_elapsed_s"] = clock() - pass_start
         out["remaining"] = len(pending) - processed
         return out
     except Exception:

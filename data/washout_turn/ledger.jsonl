@@ -390,3 +390,5 @@
 {"session": "2026-10-02", "symbol": "UUUU", "state": "NONE", "prior_state": "WASHOUT_TURN", "since": null, "depth_pctile": null, "line": null, "hist": null, "data_through": "2026-10-02", "reason": "failed"}
 {"session": "2026-10-02", "symbol": "VMC", "state": "TURN_WATCH", "prior_state": "NONE", "since": null, "depth_pctile": 6.7, "line": -7.624, "hist": -1.235, "data_through": "2026-10-02", "reason": null}
 {"session": "2026-10-02", "symbol": "XLI", "state": "TURN_WATCH", "prior_state": "NONE", "since": null, "depth_pctile": 13.2, "line": -6.055, "hist": -2.187, "data_through": "2026-10-02", "reason": null}
+{"session": "2026-10-08", "symbol": "BE", "state": "WASHOUT_TURN", "prior_state": "NONE", "since": "2026-09-18", "depth_pctile": 13.4, "line": -4.265, "hist": 0.694, "data_through": "2026-10-08", "reason": null}
+{"session": "2026-10-13", "symbol": "XLU", "state": "TURN_WATCH", "prior_state": "NONE", "since": null, "depth_pctile": 2.2, "line": -9.373, "hist": -0.814, "data_through": "2026-10-13", "reason": null}
