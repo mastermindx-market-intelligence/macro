@@ -1,0 +1,12 @@
+{
+  "shared_dependency_diff.txt": {
+    "raw_sha256": "c76521e259e680c1d13c3a47b7ba4cd2e14dffca1c96171c0b06aa91e8e62c0b",
+    "display_sha256": "bb1bb38bb794a7af83b0207decc0ad43eb4c560697a11fb6a66f40b131ce7a78",
+    "normalization": "Trailing whitespace removed for review display; canonical Git refs and raw output hash retained. Not an apply-ready patch."
+  },
+  "check_definition_delta.txt": {
+    "raw_sha256": "de521ac11ebb75c74bacce7d3687c6fee24303df9f4b57f7c01b1fb1017ca629",
+    "display_sha256": "027f83157c511ab5f3a16d774a46aaf1ab6b3d1013887cb5a57b6a4c0744eebc",
+    "normalization": "Trailing whitespace removed for review display; canonical Git refs and raw output hash retained. Not an apply-ready patch."
+  }
+}

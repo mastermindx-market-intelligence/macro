@@ -21,7 +21,7 @@ waves:
     title: Verify publication, signup and explicit follow continuation
     status: in_progress
     depends_on: [qualified-story]
-next_action: Exact-head CI38553111016 passed at a18ec982. Consume protected9209 landing, then actual-merge-SHA normal-updater installed acceptance; afterward SAME reviewed follow-on PR/install31groups. Continue fresh permitted source qualification; DOE lead has no qualified ingress/issuer/context yet. Preserve all rights, held/refused/unknown effects and capacity/controller controls.
+next_action: Controller38562307470 marks9209 a18ec982 proof stale after main84b28 CI definition change; refresh deferred9proofs/cap8. Consume admitted refresh/exact-head CI/protected landing/install, then SAME reviewed follow-on PR/install31groups. Reuse1219 prospective24-source and67Node dependency review only for exact bytes; continue permitted dated source qualification and preserve all gates.
 artifacts:
   - https://github.com/mastermindx-market-intelligence/macro/pull/9288
   - https://github.com/mastermindx-market-intelligence/macro/pull/9209
@@ -977,3 +977,61 @@ integrate landed main into SAME reviewed follow-on and ship its ownPR/install.
 Preserve original3dirty accounting histories, all worktrees, held/refused/unknown
 effects, rights/editorial,10unedited mixed-desk passes,Commission19,Catalyst8678.
 Publication/cutoverfalse,D140/10. No human action is presently required.
+
+## 2026-10-14 12:19 wake — protected proof stale; shared dependency reviewed
+
+Single release snapshot at12:20:10Z confirms9209 OPEN/merge-on-green at
+**a18ec9825dd9756fcdc1421c466bb5c769a69883**, with no protected merge SHA.
+CI38553111016 passed all12packs/contract/gate at11:40:42Z, but full controller
+**38562307470** marks that proof stale: protected main84b28baacc48 (#9298)
+changed CI definitions. At12:15:49 it deferred refresh with9indexed PR proofs,
+0reservations, cap8 and0slots. Main breaker is GREEN; no new repair is needed.
+The earlier full38560365547 had the same decision at11proofs/cap8. Existing
+controller remains the sole refresh/landing owner. No manual refresh, new CI,
+observer, gate waiver or admin merge. Old green is historical for landing.
+
+Independent exact-main preflight against **7f1dbbd1bddb4480b68f79e257a26ab92fea5597**
+is conflict-free: git merge-tree produced126c994d1aba0070c6e4c7d73f0b76b137b54e1c
+without changing any branch/worktree. All24Press source hashes are unchanged.
+The three prospective pages only change the shared theme.js version from09627b2d
+tobd0a93b3. Root reviewed protected #9300/51c844305071: global sign-in now freezes
+Market Memory's current reference before opening/lazy-loading its sheet and refuses
+ambiguous stale intent. The added branch is restricted to /market_memory.html;
+theme.css and onboard.js are unchanged. Exact-source tests **67PASS/0FAIL**:
+54auth/owner-wire cases and13independent state cases. A proof-wrapper reporter
+mismatch was corrected to explicit TAP after the initial54tests already passed;
+original output is retained. No application assertion/source was changed.
+
+Prospective hashes and input closure are retained, not rebound into candidate or
+installed manifests. This is local dependency acceptance, not installed/browser
+or design approval. Original prepared13-file bundle remains at postlanding-9209/
+a18ec9825dd9756fcdc1421c466bb5c769a69883 under the external acceptance evidence root.
+After controller-admitted refresh and protected landing, review actual source/page
+drift, use the verified squash SHA and normal updater, then canonical raw-object
+ancestry plus stable source/site/site.served, four probes, staging and HTTP/browser.
+After9209 installed acceptance, integrate landed main into the SAME reviewed
+follow-on and deliver its own protected PR/install31groups. Application8eb467
+and accepted429tests+1real-data remain unchanged; no follow-on PR/install.
+
+Source qualification advanced through documented Federal Reserve feeds. Board
+reuse policy provides a basis for Board-authored information with attribution,
+subject to non-Board material and seal/logo exceptions; it is not a blanket license
+for linked datasets, regional Fed material or figures. Public FEDS Notes RSS read
+returned200 and binds newest items toOctober9, despite a research directory updated
+October13. Oil-futures and financial-flow notes are Research leads only: historical
+inputs, author-view limitations, no qualified issuer/catalog admission; no widening
+of Brief's3day window. The configured Fed press feed's October13 entry releases
+minutes of August/September meetings, not a fresh rate decision; AXP enforcement
+isOctober8. NYFed's October13repo notice concerns anOctober20operational test,
+not current liquidity injection. No event or issuer was invented from these leads.
+The web reader's unsupported-XML limitation was resolved by a normal read of the
+same documented URL (HTTP200), not by bypassing an access denial.
+
+verified: source_qualification_20261014_1219 retains the release snapshot,
+controller log hash/excerpt, exact merge-tree result,24-source comparison, reviewed
+page hashes, shared-source diff, reproducible verify_shared_dependency.py and all
+Node outputs; source_screen.json and the two feed inventories retain dates/URLs/
+hashes and exclusions. The proof fixture was isolated and removed after use; its
+input bytes and release-carrier HEAD remained unchanged. Publication/cutoverfalse,
+D140/10. All prior source holds, refused/unknown effects, dirty accounting,
+Commission19 andCatalyst8678 are preserved. No human action currently required.

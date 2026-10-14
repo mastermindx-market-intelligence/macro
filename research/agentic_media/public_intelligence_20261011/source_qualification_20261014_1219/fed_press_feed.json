@@ -1,0 +1,72 @@
+{
+  "observed_at_utc": "2026-10-14T12:28:30.187098+00:00",
+  "feed_url": "https://www.federalreserve.gov/feeds/press_all.xml",
+  "http_status": 200,
+  "body_sha256": "8b554322d8c85c2659506fd41d0c5bfd673fb8804bf4c277a35ba3f5eeff654b",
+  "body_bytes": 14778,
+  "configured_source": "config/marketing.yml breaking.sources fed_press",
+  "items": [
+    {
+      "title": "Minutes of the Board's discount rate meetings on August 17, September 9, and September 16, 2026",
+      "link": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20261013a.htm",
+      "pubDate": "Tue, 13 Oct 2026 18:00:00 GMT"
+    },
+    {
+      "title": "Federal Reserve Board releases results of the 2025 Survey of Consumer Finances, which provides the public and policymakers with detailed insights into the economic condition of American families",
+      "link": "https://www.federalreserve.gov/newsevents/pressreleases/other20261009a.htm",
+      "pubDate": "Fri, 9 Oct 2026 14:00:00 GMT"
+    },
+    {
+      "title": "Federal Reserve Board announces enforcement action against American Express Company to address, among other things, the firm\u2019s failure to sufficiently detect and report certain suspicious activity related to money laundering",
+      "link": "https://www.federalreserve.gov/newsevents/pressreleases/enforcement20261008a.htm",
+      "pubDate": "Thu, 8 Oct 2026 20:30:00 GMT"
+    },
+    {
+      "title": "Minutes of the Federal Open Market Committee, September 15-16, 2026",
+      "link": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20261007a.htm",
+      "pubDate": "Wed, 7 Oct 2026 18:00:00 GMT"
+    },
+    {
+      "title": "Federal Reserve Board announces approval of application by Isabella Bank Corporation",
+      "link": "https://www.federalreserve.gov/newsevents/pressreleases/orders20261005a.htm",
+      "pubDate": "Mon, 5 Oct 2026 20:30:00 GMT"
+    },
+    {
+      "title": "Federal Reserve Board announces approval of application by Fleur Capital Corporation",
+      "link": "https://www.federalreserve.gov/newsevents/pressreleases/orders20261002a.htm",
+      "pubDate": "Fri, 2 Oct 2026 20:45:00 GMT"
+    },
+    {
+      "title": "Federal Reserve Board announces it will extend, until November 4, the comment period on its proposal to modernize Regulation O",
+      "link": "https://www.federalreserve.gov/newsevents/pressreleases/bcreg20261002a.htm",
+      "pubDate": "Fri, 2 Oct 2026 20:00:00 GMT"
+    },
+    {
+      "title": "Federal Reserve Board issues enforcement action with Ontario Bancorporation, Inc.",
+      "link": "https://www.federalreserve.gov/newsevents/pressreleases/enforcement20261002a.htm",
+      "pubDate": "Fri, 2 Oct 2026 15:00:00 GMT"
+    },
+    {
+      "title": "Federal Reserve Board finalizes changes to enhance the transparency and public accountability of its stress test and reduce volatility in its stress test-related capital requirements",
+      "link": "https://www.federalreserve.gov/newsevents/pressreleases/bcreg20260930a.htm",
+      "pubDate": "Wed, 30 Sep 2026 13:00:00 GMT"
+    },
+    {
+      "title": "Agencies publish resolution plan feedback letters for 15 banking organizations",
+      "link": "https://www.federalreserve.gov/newsevents/pressreleases/bcreg20260929a.htm",
+      "pubDate": "Tue, 29 Sep 2026 20:00:00 GMT"
+    },
+    {
+      "title": "Federal Reserve Board announces approval of application by Peoples Bancorp Inc.",
+      "link": "https://www.federalreserve.gov/newsevents/pressreleases/orders20260925a.htm",
+      "pubDate": "Fri, 25 Sep 2026 20:30:00 GMT"
+    },
+    {
+      "title": "Federal Reserve Board requests public comment on two proposals related to establishing a regulatory framework for Board-supervised payment stablecoin issuers under the GENIUS Act",
+      "link": "https://www.federalreserve.gov/newsevents/pressreleases/bcreg20260924a.htm",
+      "pubDate": "Thu, 24 Sep 2026 18:30:00 GMT"
+    }
+  ],
+  "producer_called": false,
+  "source_admitted": false
+}

@@ -1,0 +1,17 @@
+{
+  "run_id": 38562307470,
+  "log_sha256": "2a7d5b1ec8c9d1445484c5b03d20d04ebac6b0e7d332ed6df234f0f92a3d0950",
+  "excerpt": "controller_9209_excerpt.txt",
+  "candidate_head": "a18ec9825dd9756fcdc1421c466bb5c769a69883",
+  "binding_status": "STALE_PROOF_REFRESH_DEFERRED",
+  "triggering_main_commit": "84b28baacc489b7a2ab6b9b419dfd497d55e2961",
+  "triggering_pr": 9298,
+  "active_indexed_pr_proofs": 9,
+  "unindexed_reservations": 0,
+  "global_cap": 8,
+  "available_slots": 0,
+  "main_breaker": "GREEN",
+  "protected_merge_observed": false,
+  "controller_dispatched": false,
+  "manual_refresh_performed": false
+}

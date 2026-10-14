@@ -1,0 +1,334 @@
+TAP version 13
+# Subtest: explicit latest invalid input survives login destination: ""
+ok 1 - explicit latest invalid input survives login destination: ""
+  ---
+  duration_ms: 30.047333
+  type: 'test'
+  ...
+# Subtest: explicit latest invalid input survives login destination: "a/b"
+ok 2 - explicit latest invalid input survives login destination: "a/b"
+  ---
+  duration_ms: 5.82425
+  type: 'test'
+  ...
+# Subtest: explicit latest invalid input survives login destination: "A APL"
+ok 3 - explicit latest invalid input survives login destination: "A APL"
+  ---
+  duration_ms: 3.034458
+  type: 'test'
+  ...
+# Subtest: new valid intent preserves exact raw marker and canonical ticker through 401 and retry
+ok 4 - new valid intent preserves exact raw marker and canonical ticker through 401 and retry
+  ---
+  duration_ms: 8.16425
+  type: 'test'
+  ...
+# Subtest: retained reference survives issuer and language changes without recursive ret
+ok 5 - retained reference survives issuer and language changes without recursive ret
+  ---
+  duration_ms: 3.534834
+  type: 'test'
+  ...
+# Subtest: oversized intent clears stale ret and refuses old-symbol retry
+ok 6 - oversized intent clears stale ret and refuses old-symbol retry
+  ---
+  duration_ms: 5.121583
+  type: 'test'
+  ...
+# Subtest: missing OAuth capsule stops both implicit AAPL and initial private reads
+ok 7 - missing OAuth capsule stops both implicit AAPL and initial private reads
+  ---
+  duration_ms: 2.454709
+  type: 'test'
+  ...
+# Subtest: OAuth callback restores invalid issuer before legacy fetch or default fallback
+ok 8 - OAuth callback restores invalid issuer before legacy fetch or default fallback
+  ---
+  duration_ms: 6.243125
+  type: 'test'
+  ...
+# Subtest: actual Google launcher preserves a same-origin exact Market Memory fallback target
+ok 9 - actual Google launcher preserves a same-origin exact Market Memory fallback target
+  ---
+  duration_ms: 1.521583
+  type: 'test'
+  ...
+# Subtest: Google launcher does not propagate an off-origin return target
+ok 10 - Google launcher does not propagate an off-origin return target
+  ---
+  duration_ms: 1.11275
+  type: 'test'
+  ...
+# Subtest: signin resume waits for incumbent session exchange before leaving the callback
+ok 11 - signin resume waits for incumbent session exchange before leaving the callback
+  ---
+  duration_ms: 1.62175
+  type: 'test'
+  ...
+# Subtest: failed provider exchange keeps the callback and exposes signin recovery
+ok 12 - failed provider exchange keeps the callback and exposes signin recovery
+  ---
+  duration_ms: 1.074292
+  type: 'test'
+  ...
+# Subtest: failed provider exchange keeps the callback and exposes signin recovery
+ok 13 - failed provider exchange keeps the callback and exposes signin recovery
+  ---
+  duration_ms: 0.822541
+  type: 'test'
+  ...
+# Subtest: shared lazy signin error preserves exact Market Memory fallback intent
+ok 14 - shared lazy signin error preserves exact Market Memory fallback intent
+  ---
+  duration_ms: 4.324625
+  type: 'test'
+  ...
+# Subtest: shared lazy signin timeout preserves exact Market Memory fallback intent
+ok 15 - shared lazy signin timeout preserves exact Market Memory fallback intent
+  ---
+  duration_ms: 1.223125
+  type: 'test'
+  ...
+# Subtest: shared signin fallback refuses ambiguous or off-origin target: ?ret=https%3A%2F%2Fother.invalid%2F
+ok 16 - shared signin fallback refuses ambiguous or off-origin target: ?ret=https%3A%2F%2Fother.invalid%2F
+  ---
+  duration_ms: 1.335542
+  type: 'test'
+  ...
+# Subtest: shared signin fallback refuses ambiguous or off-origin target: ?ret=%2Fone&ret=%2Ftwo
+ok 17 - shared signin fallback refuses ambiguous or off-origin target: ?ret=%2Fone&ret=%2Ftwo
+  ---
+  duration_ms: 0.679416
+  type: 'test'
+  ...
+# Subtest: global Settings sign-in preserves the current exact source before lazy loading the sheet
+ok 18 - global Settings sign-in preserves the current exact source before lazy loading the sheet
+  ---
+  duration_ms: 5.499625
+  type: 'test'
+  ...
+# Subtest: global Settings sign-in preserves the current exact source before opening an existing sheet
+ok 19 - global Settings sign-in preserves the current exact source before opening an existing sheet
+  ---
+  duration_ms: 3.27425
+  type: 'test'
+  ...
+# Subtest: Settings lazy error fallback retains an exact source even without an incoming ret
+ok 20 - Settings lazy error fallback retains an exact source even without an incoming ret
+  ---
+  duration_ms: 1.356875
+  type: 'test'
+  ...
+# Subtest: Settings lazy timeout fallback retains an exact source even without an incoming ret
+ok 21 - Settings lazy timeout fallback retains an exact source even without an incoming ret
+  ---
+  duration_ms: 1.035042
+  type: 'test'
+  ...
+# Subtest: Settings cannot reuse an older capsule when the current source is ambiguous
+ok 22 - Settings cannot reuse an older capsule when the current source is ambiguous
+  ---
+  duration_ms: 0.824667
+  type: 'test'
+  ...
+# Subtest: actual owner catalog catalog_historical
+ok 23 - actual owner catalog catalog_historical
+  ---
+  duration_ms: 4.815209
+  type: 'test'
+  ...
+# Subtest: actual owner catalog catalog_current
+ok 24 - actual owner catalog catalog_current
+  ---
+  duration_ms: 0.441875
+  type: 'test'
+  ...
+# Subtest: actual owner catalog catalog_page_one
+ok 25 - actual owner catalog catalog_page_one
+  ---
+  duration_ms: 2.532917
+  type: 'test'
+  ...
+# Subtest: actual owner catalog catalog_page_two
+ok 26 - actual owner catalog catalog_page_two
+  ---
+  duration_ms: 0.873583
+  type: 'test'
+  ...
+# Subtest: actual owner comparison retained_historical
+ok 27 - actual owner comparison retained_historical
+  ---
+  duration_ms: 2.017875
+  type: 'test'
+  ...
+# Subtest: actual owner comparison retained_current
+ok 28 - actual owner comparison retained_current
+  ---
+  duration_ms: 2.4
+  type: 'test'
+  ...
+# Subtest: actual owner comparison retained_valid_empty
+ok 29 - actual owner comparison retained_valid_empty
+  ---
+  duration_ms: 0.415125
+  type: 'test'
+  ...
+# Subtest: reject changed or missing owner query_id
+ok 30 - reject changed or missing owner query_id
+  ---
+  duration_ms: 3.35025
+  type: 'test'
+  ...
+# Subtest: reject changed or missing owner subject_id
+ok 31 - reject changed or missing owner subject_id
+  ---
+  duration_ms: 0.268458
+  type: 'test'
+  ...
+# Subtest: reject changed or missing owner requested_subject_id
+ok 32 - reject changed or missing owner requested_subject_id
+  ---
+  duration_ms: 0.46375
+  type: 'test'
+  ...
+# Subtest: reject changed or missing owner context_id
+ok 33 - reject changed or missing owner context_id
+  ---
+  duration_ms: 0.214208
+  type: 'test'
+  ...
+# Subtest: reject changed or missing owner generation_id
+ok 34 - reject changed or missing owner generation_id
+  ---
+  duration_ms: 0.152958
+  type: 'test'
+  ...
+# Subtest: reject changed or missing owner generation_sha256
+ok 35 - reject changed or missing owner generation_sha256
+  ---
+  duration_ms: 0.134667
+  type: 'test'
+  ...
+# Subtest: reject changed or missing owner query_cutoff
+ok 36 - reject changed or missing owner query_cutoff
+  ---
+  duration_ms: 0.592708
+  type: 'test'
+  ...
+# Subtest: missing, incomplete and disjoint accounting must reconcile
+ok 37 - missing, incomplete and disjoint accounting must reconcile
+  ---
+  duration_ms: 1.16525
+  type: 'test'
+  ...
+# Subtest: reject unmatched source cards, invented quote values, duplicate cases and numeric distances
+ok 38 - reject unmatched source cards, invented quote values, duplicate cases and numeric distances
+  ---
+  duration_ms: 4.9825
+  type: 'test'
+  ...
+# Subtest: catalog continuation is exact generation and contiguous offset
+ok 39 - catalog continuation is exact generation and contiguous offset
+  ---
+  duration_ms: 2.128459
+  type: 'test'
+  ...
+# Subtest: date-only source session is not promoted to an invented instant
+ok 40 - date-only source session is not promoted to an invented instant
+  ---
+  duration_ms: 0.305583
+  type: 'test'
+  ...
+# Subtest: deep link binds one exact capture tuple in cold and cached catalogs
+ok 41 - deep link binds one exact capture tuple in cold and cached catalogs
+  ---
+  duration_ms: 0.396042
+  type: 'test'
+  ...
+# Subtest: actual owner saved envelope preserves five original values and citations
+ok 42 - actual owner saved envelope preserves five original values and citations
+  ---
+  duration_ms: 1.11575
+  type: 'test'
+  ...
+# Subtest: saved output rejects mismatched selection, refs, projection and quote identity
+ok 43 - saved output rejects mismatched selection, refs, projection and quote identity
+  ---
+  duration_ms: 2.287583
+  type: 'test'
+  ...
+# Subtest: saved cutoff retains microsecond precision
+ok 44 - saved cutoff retains microsecond precision
+  ---
+  duration_ms: 1.011333
+  type: 'test'
+  ...
+# Subtest: catalog missing fields follow owner unavailable enum
+ok 45 - catalog missing fields follow owner unavailable enum
+  ---
+  duration_ms: 0.11375
+  type: 'test'
+  ...
+# Subtest: saved output accepts exact gzip representation tag
+ok 46 - saved output accepts exact gzip representation tag
+  ---
+  duration_ms: 0.579
+  type: 'test'
+  ...
+# Subtest: saved output accepts exact zstd representation tag
+ok 47 - saved output accepts exact zstd representation tag
+  ---
+  duration_ms: 0.429708
+  type: 'test'
+  ...
+# Subtest: reject nonmatching encoded saved validator gzip/null
+ok 48 - reject nonmatching encoded saved validator gzip/null
+  ---
+  duration_ms: 0.145917
+  type: 'test'
+  ...
+# Subtest: reject nonmatching encoded saved validator gzip/zstd
+ok 49 - reject nonmatching encoded saved validator gzip/zstd
+  ---
+  duration_ms: 0.094958
+  type: 'test'
+  ...
+# Subtest: reject nonmatching encoded saved validator zstd/gzip
+ok 50 - reject nonmatching encoded saved validator zstd/gzip
+  ---
+  duration_ms: 0.083125
+  type: 'test'
+  ...
+# Subtest: reject nonmatching encoded saved validator gzip/gzip, br
+ok 51 - reject nonmatching encoded saved validator gzip/gzip, br
+  ---
+  duration_ms: 0.074458
+  type: 'test'
+  ...
+# Subtest: reject nonmatching encoded saved validator br/br
+ok 52 - reject nonmatching encoded saved validator br/br
+  ---
+  duration_ms: 0.108042
+  type: 'test'
+  ...
+# Subtest: reject nonmatching encoded saved validator gzip-extra/gzip
+ok 53 - reject nonmatching encoded saved validator gzip-extra/gzip
+  ---
+  duration_ms: 0.079583
+  type: 'test'
+  ...
+# Subtest: encoding cannot excuse a different digest or weak/malformed validator
+ok 54 - encoding cannot excuse a different digest or weak/malformed validator
+  ---
+  duration_ms: 0.189958
+  type: 'test'
+  ...
+1..54
+# tests 54
+# suites 0
+# pass 54
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 307.285125
