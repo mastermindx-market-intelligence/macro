@@ -3,82 +3,92 @@ workstream: WS:EVAL-OS-EVIDENCE-VIEW
 session: claude/eval-os-required-tier-20261014
 model: fable
 ended_because: ci_handoff
-mission: Deliver the accepted T12, T5 and T6 source interfaces through existing protected
-  source, CI and actual consumer adoption. This is a continuity checkpoint; the active
-  root continues.
-state_before: A1 release approved on sole PR6651; follow-on published at 820c9d1101f9,
-  separate carrier with no PR.
+mission: Deliver the accepted T12, T5 and T6 source interfaces through existing protected source,
+  CI and actual consumer adoption. This is a continuity checkpoint; the active root continues.
+state_before: A1 release approved on sole PR6651; follow-on published at 820c9d1101f9, separate
+  carrier with no PR.
 changed:
 - path: engine/intelligence_registry.py
-  what: Expose exact registered-producer evaluation requirements without claiming
-    earned evaluation.
+  what: Expose exact registered-producer evaluation requirements without claiming earned evaluation.
 - path: engine/qledger_validity.py
   what: Project supported validity findings into the existing typed Discovery contract.
 - path: engine/postmortem.py
-  what: Classify supported source/data observations from one supplied output-health
-    view.
+  what: Classify supported source/data observations from one supplied output-health view.
 - path: engine/neuralweb/response_eval.py
-  what: Admit six bounded source-bound historical supplied-text replay cases with
-    explicit callbacks; latest two are root-adjudicated, not independently reviewed.
+  what: Admit six bounded source-bound historical supplied-text replay cases with explicit callbacks;
+    latest two are root-adjudicated, not independently reviewed.
 - path: .github/ci/legacy-jobs.yml
   what: Preserve incumbent owners and declare the combined source dependencies.
+- path: research/evidence/eval-os-tier-query-20261014/release-probe/project_served_asset_identity.py
+  what: Bind expected served assets to an explicit qualified revision with reviewed source contracts
+    and no production effects.
 verified:
 - claim: Follow-on integration preserved the owned source and passed its affected checks.
   command: python3 -m pytest -q tests/test_agentos_schema.py tests/test_qledger_validity.py
-  result: 213 PASS, zero failures/errors/skips on 820c9d11; actual tracked A1 dependency
-    closure 1189 of 1189 with no omissions. Source and acceptance receipts are retained
-    under the programme evidence integration directory.
+  result: 213 PASS, zero failures/errors/skips on 820c9d11; actual tracked A1 dependency closure
+    1189 of 1189 with no omissions. Source and acceptance receipts are retained under the programme
+    evidence integration directory.
 - claim: Supported browser capture can bind real authenticated responses to rendered data.
-  command: Ordinary Chrome page navigation with supported CDP Network response capture
-    and DOM comparison.
-  result: Actual overview 200 and engine detail 200/no-store matched rendered counts,
-    null state and reason. This is the old T4 contract, not installed A1 acceptance.
-    See research/evidence/eval-os-tier-query-20261014/browser-capture-path-20261014.json.
+  command: Ordinary Chrome page navigation with supported CDP Network response capture and DOM
+    comparison.
+  result: Actual overview 200 and engine detail 200/no-store matched rendered counts, null state
+    and reason. This is the old T4 contract, not installed A1 acceptance. See research/evidence/eval-os-tier-query-20261014/browser-capture-path-20261014.json.
 - claim: T5 bounded source/data behavior passed its final affected suite before integration.
   command: python -m pytest tests/test_output_health.py -q
   result: 125 PASS; receipt research/evidence/eval-os-tier-query-20261014/t5-regression.xml.
 - claim: T6 first two cases passed existing response evaluation suite before integration.
   command: python -m pytest tests/test_response_eval.py -q
   result: 96 PASS; receipt research/evidence/eval-os-tier-query-20261014/t6-regression.xml.
-- claim: Chris released the reserved A1 hold and authorized the existing merge controller
-    and production verification.
+- claim: Chris released the reserved A1 hold and authorized the existing merge controller and
+    production verification.
   command: Read direct Chairman approval and existing GitHub release record.
   result: Recorded at https://github.com/mastermindx-market-intelligence/macro/pull/6651#issuecomment-6158644348.
-- claim: Integrated source interfaces and latest two historical text cases passed
-    affected checks.
-  command: Retained combined regression, repaired Agent OS nodes and runner/adversarial
-    checks.
-  result: Combined 709 PASS plus all 15 repaired nodes PASS; latest text tranche 171
-    PASS, zero failures/errors/skips. Exact HEAD 9c18 dependency inventory had 1184
-    inputs and none missing.
+- claim: Integrated source interfaces and latest two historical text cases passed affected checks.
+  command: Retained combined regression, repaired Agent OS nodes and runner/adversarial checks.
+  result: Combined 709 PASS plus all 15 repaired nodes PASS; latest text tranche 171 PASS, zero
+    failures/errors/skips. Exact HEAD 9c18 dependency inventory had 1184 inputs and none missing.
+- claim: Final follow-on CI scope preserves existing execution and actual dependencies.
+  command: Retained actual-head tracked inventory, canonical closure and strict packing helpers,
+    focused controls and original qledger commands.
+  result: Source3adb0b0bfd16:3 focused PASS, zero closure misses,134/134/128 jobs and10/10/9packs
+    within older limits. Earlierf095 six canonical PASS and unchanged qledger nine-command Python3.12
+    sequence1252PASS/0skip plus7selftests. All314job execution definitions and24protected source
+    files preserved. Canonical ci-integration-20261014 receipts retain RED evidence and review
+    corrections.
+- claim: Final-source offline probe and public-asset bindings are reproducible.
+  command: Explicit-revision binders and retained positive/refusal selfchecks.
+  result: Asset projector reproduces all4assets and rewrittenHTML for05a/f095; refuses symbolic
+    refs, existing destinations and unreviewed rewrite contracts. This proves verifier source
+    behavior only.
 unverified:
 - claim: Combined follow-on actual-HEAD CI and protected landing.
-  what_would_verify: Verify actual committed closure after the latest two-case tranche,
-    then fresh hosted selection/execution and the existing controller.
-- claim: Installed source, live consumer adoption, subsequent normal owner update
-    and operator comprehension.
-  what_would_verify: Normal deployment followed by installed identity, authenticated
-    actual consumers, natural update receipts and the real operator response.
+  what_would_verify: After A1 landing, reconcile final main, obtain hosted selection/execution
+    on the actual followon PR revision and release through the existing controls. Local source3adb
+    scope checks are now qualified.
+- claim: Installed source, live consumer adoption, subsequent normal owner update and operator
+    comprehension.
+  what_would_verify: Normal deployment followed by installed identity, authenticated actual
+    consumers, natural update receipts and the real operator response.
 unresolved:
 - Original historical20/15 objective and historical source availability remain open.
-- QLedger real Discovery adoption needs a rights-qualified finding and actual existing
-  admission payload.
+- QLedger real Discovery adoption needs a rights-qualified finding and actual existing admission
+  payload.
 next_actions:
-- Preserve the published six-case source tranche and the separate A1 release carrier.
-  Reconcile current main after A1 landing before the follow-on PR and fresh hosted checks.
-- Let existing PR6651 controller finish binding checks and merge; verify the normal
-  updater and authenticated production surface.
-- Complete the separate follow-on carrier with fresh main and actual owner CI, then
-  verify installed consumers.
+- Preserve qualified followon source3adb and its retained review corrections; no duplicate main-baseline
+  repair PR.
+- Consume incumbent PR6651 capacity-admitted refresh/fresh checks/merge. Then bind both verification
+  tools to that qualified A1 source and verify normal installation, served bytes, authenticated
+  UI and natural owner progression.
+- After A1 landing, reconcile main on the existing followon carrier, create its single lawful
+  PR when capacity admits, qualify hosted checks, and verify real consumer adoption.
 do_not_redo:
 - Do not rebuild accepted A1 or create a second A1 PR.
-- Do not reinterpret source requirements as earned tiers or snapshot counts as independent
-  trials.
+- Do not reinterpret source requirements as earned tiers or snapshot counts as independent trials.
 - Do not replay original unresolved Fabric operation eval-experience-01a1335a-a1.
 danger_areas:
 - Keep A1 release source separate from follow-on changes.
-- Reserved Prophet outcomes, source rights, actual admission and human operator acceptance
-  remain distinct.
+- Reserved Prophet outcomes, source rights, actual admission and human operator acceptance remain
+  distinct.
 - Six historical text cases are distinct fixtures, not six independent empirical observations
   or completed model-performance acceptance.
 prs:
@@ -167,3 +177,16 @@ At09:45 the fresh main integration baseline38542393269 on eb7cae75aa7f was in pr
 Normally triggered integration-baseline38542393269 on eb7cae75aa7f7c6633bdd4fc843c34fecc2197d2 completed SUCCESS09:47:38. Every recorded step passed, including hosted-runner packing/merge-train contracts and both skip-only controls. Local Git ancestry confirms repaired merge152f5018 is an ancestor of that tested source. Native run state was consumed09:50; the canonical receipt is main-baseline-green-38542393269.json. The09:33 scheduled controller log38543165976 predates this success and describes the old breaker, not a current red verdict.
 
 PR6651 was stillOpen05a with no merge at09:50. Incumbent controller must admit its base update under current shared capacity and obtain fresh checks; the repaired-main pass does not itself refresh or merge A1. Keep the sole controller and original carrier. Follow-on runtime remains985346-qualified with canonical evidence/probe tooling added throughb2a5b53f7ea5. No repair PR, CI rerun, production mutation, clock reset or outcome read was introduced. Next live observation must respect the300-second cadence, no earlier than09:55:35UTC.
+
+
+## Main integration and CI scope repair — 2026-10-14
+
+The existing follow-on carrier integrates maincf8905 at faed2a591b7a. Four manifest conflicts retained both input lists; 24 protected product/test files stayed identical. The integrated run retained268 passing updater regressions but found63 missing dependency entries across11 curated jobs and a135-vs134 freecontent packing failure. These RED receipts are preserved.
+
+The repair adds the63 actual inputs and curates the existing qledger owner. Its full nine-command sequence passed in separate Python3.12 processes:1252 tests, no failures/errors/skips, plus seven selftest controls. The initial sparse run's21 failures came from a missing tracked static phrase-book seed; restoring exact committed bytes made all32 affected tests pass. No outcome corpus or production clock was opened or changed.
+
+Independent Fabric review eval-qledger-scope-01a1333d-c2 ran through the original root/parent01a1333d on admitted Qwen/bailian/mb. Its retained13858B result SHA d3d12d08d245fdfc7f20d9a75d6f2ef97c1bf0ee8aae5134ea17731a6068dc5b reported BLOCKED, with two real missing preregistration inputs and some incorrect assumptions about packed execution and checkout materialization. Root adjudication corrected those inputs, added the complete shared-fixture and observed reader closures, and preserved the existing tracked clock namespace invariant. The final qledger scope has906 entries. Root accepted the useful review through the SAME adapter after validation; this is not a clean independent PASS on final source and does not settle the original CLI semantic review or experience effect.
+
+Qualified local source3adb0b0bfd163abf86069ab65f20601ef3df5bec passes its three focused controls, every curated closure has zero misses, and the older strict probes remain134/134/128jobs with10/10/9packs. All314job commands/steps/dependencies/gates and ceilings are preserved. Priorf095 six canonical controls and unchanged runtime tests are reused with explicit source bindings. The source of truth is ci-integration-20261014/followon-scope-final-adjudication.json and its evidence manifest.
+
+The final-source release directory now includes a served-asset projector alongside the17-file probe binder. Both require an explicit qualified source; their receipts do not claim deployment. A1 remainedOPEN05a at10:53, with no merge. The incumbent controller alone owns its capacity-admitted freshness update and protected release. No new PR or hosted CI was created for this repair. Remote publication identity and subsequent effects belong in the execution frontier. SCOPED_COMMISSION_COMPLETE, LEGACY_PROGRAMME_COMPLETE and PRODUCTION_PROVEN remain false.

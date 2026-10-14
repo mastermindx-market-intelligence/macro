@@ -1,0 +1,747 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="2" skipped="0" tests="273" time="494.401" timestamp="2026-10-14T03:03:02.607400-07:00" hostname="m2studio"><testcase classname="tests.test_ci_pack" name="test_the_curated_exclusive_set_is_actually_declared" time="2.472" /><testcase classname="tests.test_ci_pack" name="test_curated_exclusive_scopes_cover_their_own_import_closure" time="285.229"><failure message="AssertionError: curated exclusive scope(s) no longer cover their own import closure:&#10;    biocatalyst-history: ['research/CASE_STUDY_GOLD_REAL_RATE_PEAK_2026_08.md', 'research/POSTMORTEM_20260714_ROTATION_MISS_BY_FABLE.md', 'research/POSTMORTEM_20260716_DEFENSIVE_ROTATION_MISS_BY_FABLE.md', 'research/POSTMORTEM_20260722_CROSSOVERS_VS_CAPEX_BIND_BY_FABLE.md', 'research/POSTMORTEM_20260723_MAG7_FORCED_CALL_BY_FABLE.md', 'research/POSTMORTEM_20260803_MAG7_RALLY_SILENCE_BY_FABLE.md']&#10;    biocatalyst-serving: ['research/CASE_STUDY_GOLD_REAL_RATE_PEAK_2026_08.md', 'research/POSTMORTEM_20260714_ROTATION_MISS_BY_FABLE.md', 'research/POSTMORTEM_20260716_DEFENSIVE_ROTATION_MISS_BY_FABLE.md', 'research/POSTMORTEM_20260722_CROSSOVERS_VS_CAPEX_BIND_BY_FABLE.md', 'research/POSTMORTEM_20260723_MAG7_FORCED_CALL_BY_FABLE.md', 'research/POSTMORTEM_20260803_MAG7_RALLY_SILENCE_BY_FABLE.md']&#10;    crypto-assistant-context: ['research/CASE_STUDY_GOLD_REAL_RATE_PEAK_2026_08.md', 'research/POSTMORTEM_20260714_ROTATION_MISS_BY_FABLE.md', 'research/POSTMORTEM_20260716_DEFENSIVE_ROTATION_MISS_BY_FABLE.md', 'research/POSTMORTEM_20260722_CROSSOVERS_VS_CAPEX_BIND_BY_FABLE.md', 'research/POSTMORTEM_20260723_MAG7_FORCED_CALL_BY_FABLE.md', 'research/POSTMORTEM_20260803_MAG7_RALLY_SILENCE_BY_FABLE.md']&#10;    defense-rail-laws: ['research/CASE_STUDY_GOLD_REAL_RATE_PEAK_2026_08.md', 'research/POSTMORTEM_20260714_ROTATION_MISS_BY_FABLE.md', 'research/POSTMORTEM_20260716_DEFENSIVE_ROTATION_MISS_BY_FABLE.md', 'research/POSTMORTEM_20260722_CROSSOVERS_VS_CAPEX_BIND_BY_FABLE.md', 'research/POSTMORTEM_20260723_MAG7_FORCED_CALL_BY_FABLE.md', 'research/POSTMORTEM_20260803_MAG7_RALLY_SILENCE_BY_FABLE.md']&#10;    eval-os-a1: ['engine/neuralweb/market_memory_retained_catalog.py', 'engine/neuralweb/market_memory_retained_legacy_guard.py', 'engine/neuralweb/market_memory_retained_saved.py']&#10;    fif-kernel-guards: ['research/CASE_STUDY_GOLD_REAL_RATE_PEAK_2026_08.md', 'research/POSTMORTEM_20260714_ROTATION_MISS_BY_FABLE.md', 'research/POSTMORTEM_20260716_DEFENSIVE_ROTATION_MISS_BY_FABLE.md', 'research/POSTMORTEM_20260722_CROSSOVERS_VS_CAPEX_BIND_BY_FABLE.md', 'research/POSTMORTEM_20260723_MAG7_FORCED_CALL_BY_FABLE.md', 'research/POSTMORTEM_20260803_MAG7_RALLY_SILENCE_BY_FABLE.md']&#10;    flow-surface: ['research/CASE_STUDY_GOLD_REAL_RATE_PEAK_2026_08.md', 'research/POSTMORTEM_20260714_ROTATION_MISS_BY_FABLE.md', 'research/POSTMORTEM_20260716_DEFENSIVE_ROTATION_MISS_BY_FABLE.md', 'research/POSTMORTEM_20260722_CROSSOVERS_VS_CAPEX_BIND_BY_FABLE.md', 'research/POSTMORTEM_20260723_MAG7_FORCED_CALL_BY_FABLE.md', 'research/POSTMORTEM_20260803_MAG7_RALLY_SILENCE_BY_FABLE.md']&#10;    research-price-panel: ['research/CASE_STUDY_GOLD_REAL_RATE_PEAK_2026_08.md', 'research/POSTMORTEM_20260714_ROTATION_MISS_BY_FABLE.md', 'research/POSTMORTEM_20260716_DEFENSIVE_ROTATION_MISS_BY_FABLE.md', 'research/POSTMORTEM_20260722_CROSSOVERS_VS_CAPEX_BIND_BY_FABLE.md', 'research/POSTMORTEM_20260723_MAG7_FORCED_CALL_BY_FABLE.md', 'research/POSTMORTEM_20260803_MAG7_RALLY_SILENCE_BY_FABLE.md']&#10;    ticker-news-qbus: ['research/CASE_STUDY_GOLD_REAL_RATE_PEAK_2026_08.md', 'research/POSTMORTEM_20260714_ROTATION_MISS_BY_FABLE.md', 'research/POSTMORTEM_20260716_DEFENSIVE_ROTATION_MISS_BY_FABLE.md', 'research/POSTMORTEM_20260722_CROSSOVERS_VS_CAPEX_BIND_BY_FABLE.md', 'research/POSTMORTEM_20260723_MAG7_FORCED_CALL_BY_FABLE.md', 'research/POSTMORTEM_20260803_MAG7_RALLY_SILENCE_BY_FABLE.md']&#10;    unrun-government-revenue-candidate-projection: ['research/CASE_STUDY_GOLD_REAL_RATE_PEAK_2026_08.md', 'research/POSTMORTEM_20260714_ROTATION_MISS_BY_FABLE.md', 'research/POSTMORTEM_20260716_DEFENSIVE_ROTATION_MISS_BY_FABLE.md', 'research/POSTMORTEM_20260722_CROSSOVERS_VS_CAPEX_BIND_BY_FABLE.md', 'research/POSTMORTEM_20260723_MAG7_FORCED_CALL_BY_FABLE.md', 'research/POSTMORTEM_20260803_MAG7_RALLY_SILENCE_BY_FABLE.md']&#10;    unrun-government-revenue-grader: ['research/CASE_STUDY_GOLD_REAL_RATE_PEAK_2026_08.md', 'research/POSTMORTEM_20260714_ROTATION_MISS_BY_FABLE.md', 'research/POSTMORTEM_20260716_DEFENSIVE_ROTATION_MISS_BY_FABLE.md', 'research/POSTMORTEM_20260722_CROSSOVERS_VS_CAPEX_BIND_BY_FABLE.md', 'research/POSTMORTEM_20260723_MAG7_FORCED_CALL_BY_FABLE.md', 'research/POSTMORTEM_20260803_MAG7_RALLY_SILENCE_BY_FABLE.md']&#10;  &#10;  A new import reached a tree the declaration does not name, so that job silently stopped running for edits to it. Widen the job's `paths:` in .github/ci/legacy-jobs.yml to cover the listed files — widening is always the safe direction.&#10;assert not {'biocatalyst-history': ['research/CASE_STUDY_GOLD_REAL_RATE_PEAK_2026_08.md', 'research/POSTMORTEM_20260714_ROTATION_...POSTMORTEM_20260723_MAG7_FORCED_CALL_BY_FABLE.md', 'research/POSTMORTEM_20260803_MAG7_RALLY_SILENCE_BY_FABLE.md'], ...}">def test_curated_exclusive_scopes_cover_their_own_import_closure() -&gt; None:
+        """Zero MISS: every file a curated job imports must still select it.
+    
+        `scope: exclusive` REPLACES inference, so the declared paths are the whole
+        scope — a closure file with no matching pattern is a job that stops running
+        when its own dependency changes, and reports green forever. The manifest's
+        load-time coverage audit only reaches the paths a job's COMMANDS name; the
+        transitive import closure is one layer deeper and is checked here.
+    
+        The computation itself is ``scripts.run_ci_pack.curated_exclusive_closure_findings``
+        — the same function ``scripts/check_contract_delta.py`` calls for the head side
+        of its PR-vs-base delta, so this test and that gate can never quietly diverge on
+        what "covered" means.
+        """
+        misses_full = curated_exclusive_closure_findings(MANIFEST)
+        misses = {job_id: list(paths[:8]) for job_id, paths in misses_full.items()}
+&gt;       assert not misses, (
+            "curated exclusive scope(s) no longer cover their own import closure:\n  "
+            + "\n  ".join(f"{k}: {v}" for k, v in misses.items())
+            + "\n\nA new import reached a tree the declaration does not name, so that "
+            "job silently stopped running for edits to it. Widen the job's `paths:` "
+            "in .github/ci/legacy-jobs.yml to cover the listed files — widening is "
+            "always the safe direction."
+        )
+E       AssertionError: curated exclusive scope(s) no longer cover their own import closure:
+E           biocatalyst-history: ['research/CASE_STUDY_GOLD_REAL_RATE_PEAK_2026_08.md', 'research/POSTMORTEM_20260714_ROTATION_MISS_BY_FABLE.md', 'research/POSTMORTEM_20260716_DEFENSIVE_ROTATION_MISS_BY_FABLE.md', 'research/POSTMORTEM_20260722_CROSSOVERS_VS_CAPEX_BIND_BY_FABLE.md', 'research/POSTMORTEM_20260723_MAG7_FORCED_CALL_BY_FABLE.md', 'research/POSTMORTEM_20260803_MAG7_RALLY_SILENCE_BY_FABLE.md']
+E           biocatalyst-serving: ['research/CASE_STUDY_GOLD_REAL_RATE_PEAK_2026_08.md', 'research/POSTMORTEM_20260714_ROTATION_MISS_BY_FABLE.md', 'research/POSTMORTEM_20260716_DEFENSIVE_ROTATION_MISS_BY_FABLE.md', 'research/POSTMORTEM_20260722_CROSSOVERS_VS_CAPEX_BIND_BY_FABLE.md', 'research/POSTMORTEM_20260723_MAG7_FORCED_CALL_BY_FABLE.md', 'research/POSTMORTEM_20260803_MAG7_RALLY_SILENCE_BY_FABLE.md']
+E           crypto-assistant-context: ['research/CASE_STUDY_GOLD_REAL_RATE_PEAK_2026_08.md', 'research/POSTMORTEM_20260714_ROTATION_MISS_BY_FABLE.md', 'research/POSTMORTEM_20260716_DEFENSIVE_ROTATION_MISS_BY_FABLE.md', 'research/POSTMORTEM_20260722_CROSSOVERS_VS_CAPEX_BIND_BY_FABLE.md', 'research/POSTMORTEM_20260723_MAG7_FORCED_CALL_BY_FABLE.md', 'research/POSTMORTEM_20260803_MAG7_RALLY_SILENCE_BY_FABLE.md']
+E           defense-rail-laws: ['research/CASE_STUDY_GOLD_REAL_RATE_PEAK_2026_08.md', 'research/POSTMORTEM_20260714_ROTATION_MISS_BY_FABLE.md', 'research/POSTMORTEM_20260716_DEFENSIVE_ROTATION_MISS_BY_FABLE.md', 'research/POSTMORTEM_20260722_CROSSOVERS_VS_CAPEX_BIND_BY_FABLE.md', 'research/POSTMORTEM_20260723_MAG7_FORCED_CALL_BY_FABLE.md', 'research/POSTMORTEM_20260803_MAG7_RALLY_SILENCE_BY_FABLE.md']
+E           eval-os-a1: ['engine/neuralweb/market_memory_retained_catalog.py', 'engine/neuralweb/market_memory_retained_legacy_guard.py', 'engine/neuralweb/market_memory_retained_saved.py']
+E           fif-kernel-guards: ['research/CASE_STUDY_GOLD_REAL_RATE_PEAK_2026_08.md', 'research/POSTMORTEM_20260714_ROTATION_MISS_BY_FABLE.md', 'research/POSTMORTEM_20260716_DEFENSIVE_ROTATION_MISS_BY_FABLE.md', 'research/POSTMORTEM_20260722_CROSSOVERS_VS_CAPEX_BIND_BY_FABLE.md', 'research/POSTMORTEM_20260723_MAG7_FORCED_CALL_BY_FABLE.md', 'research/POSTMORTEM_20260803_MAG7_RALLY_SILENCE_BY_FABLE.md']
+E           flow-surface: ['research/CASE_STUDY_GOLD_REAL_RATE_PEAK_2026_08.md', 'research/POSTMORTEM_20260714_ROTATION_MISS_BY_FABLE.md', 'research/POSTMORTEM_20260716_DEFENSIVE_ROTATION_MISS_BY_FABLE.md', 'research/POSTMORTEM_20260722_CROSSOVERS_VS_CAPEX_BIND_BY_FABLE.md', 'research/POSTMORTEM_20260723_MAG7_FORCED_CALL_BY_FABLE.md', 'research/POSTMORTEM_20260803_MAG7_RALLY_SILENCE_BY_FABLE.md']
+E           research-price-panel: ['research/CASE_STUDY_GOLD_REAL_RATE_PEAK_2026_08.md', 'research/POSTMORTEM_20260714_ROTATION_MISS_BY_FABLE.md', 'research/POSTMORTEM_20260716_DEFENSIVE_ROTATION_MISS_BY_FABLE.md', 'research/POSTMORTEM_20260722_CROSSOVERS_VS_CAPEX_BIND_BY_FABLE.md', 'research/POSTMORTEM_20260723_MAG7_FORCED_CALL_BY_FABLE.md', 'research/POSTMORTEM_20260803_MAG7_RALLY_SILENCE_BY_FABLE.md']
+E           ticker-news-qbus: ['research/CASE_STUDY_GOLD_REAL_RATE_PEAK_2026_08.md', 'research/POSTMORTEM_20260714_ROTATION_MISS_BY_FABLE.md', 'research/POSTMORTEM_20260716_DEFENSIVE_ROTATION_MISS_BY_FABLE.md', 'research/POSTMORTEM_20260722_CROSSOVERS_VS_CAPEX_BIND_BY_FABLE.md', 'research/POSTMORTEM_20260723_MAG7_FORCED_CALL_BY_FABLE.md', 'research/POSTMORTEM_20260803_MAG7_RALLY_SILENCE_BY_FABLE.md']
+E           unrun-government-revenue-candidate-projection: ['research/CASE_STUDY_GOLD_REAL_RATE_PEAK_2026_08.md', 'research/POSTMORTEM_20260714_ROTATION_MISS_BY_FABLE.md', 'research/POSTMORTEM_20260716_DEFENSIVE_ROTATION_MISS_BY_FABLE.md', 'research/POSTMORTEM_20260722_CROSSOVERS_VS_CAPEX_BIND_BY_FABLE.md', 'research/POSTMORTEM_20260723_MAG7_FORCED_CALL_BY_FABLE.md', 'research/POSTMORTEM_20260803_MAG7_RALLY_SILENCE_BY_FABLE.md']
+E           unrun-government-revenue-grader: ['research/CASE_STUDY_GOLD_REAL_RATE_PEAK_2026_08.md', 'research/POSTMORTEM_20260714_ROTATION_MISS_BY_FABLE.md', 'research/POSTMORTEM_20260716_DEFENSIVE_ROTATION_MISS_BY_FABLE.md', 'research/POSTMORTEM_20260722_CROSSOVERS_VS_CAPEX_BIND_BY_FABLE.md', 'research/POSTMORTEM_20260723_MAG7_FORCED_CALL_BY_FABLE.md', 'research/POSTMORTEM_20260803_MAG7_RALLY_SILENCE_BY_FABLE.md']
+E         
+E         A new import reached a tree the declaration does not name, so that job silently stopped running for edits to it. Widen the job's `paths:` in .github/ci/legacy-jobs.yml to cover the listed files — widening is always the safe direction.
+E       assert not {'biocatalyst-history': ['research/CASE_STUDY_GOLD_REAL_RATE_PEAK_2026_08.md', 'research/POSTMORTEM_20260714_ROTATION_...POSTMORTEM_20260723_MAG7_FORCED_CALL_BY_FABLE.md', 'research/POSTMORTEM_20260803_MAG7_RALLY_SILENCE_BY_FABLE.md'], ...}
+
+tests/test_ci_pack.py:4891: AssertionError</failure></testcase><testcase classname="tests.test_ci_pack" name="test_curated_exclusivity_drops_only_the_opaque_fallback_tier" time="83.531" /><testcase classname="tests.test_ci_pack" name="test_exclusive_curation_narrows_ordinary_code_prs" time="69.218"><failure message="AssertionError: [(('scripts/build_free_content.py', 'jobs', 135, 134), 'scoped to 1 changed file(s): 135/314 jobs (1 unscoped always-on, 134 scoped matches)')]&#10;assert not [('scripts/build_free_content.py', 'jobs', 135, 134)]">def test_exclusive_curation_narrows_ordinary_code_prs() -&gt; None:
+        """The measured before/after this wave exists to produce.
+    
+        Baselines on the pre-curation manifest (PR #5585 planner, 188 jobs):
+        templates/index.html 129 jobs / 6,677 weight-seconds; build_free_content.py
+        129 / 6,430; engine/prophet/plan_book.py 123 / 6,416. Bounds below carry
+        headroom so an unrelated job gaining or losing a scope does not red this,
+        while a regression that gives the fallback tier back to the curated nine
+        (~1,550 weight-seconds and three of twelve packs per shape) does.
+    
+        The templates/index.html job ceiling is 128 rather than 126 because
+        `engine-render-guards` split into three lanes (#5587 on top of #5586): the
+        sweep still owned-matches this probe, and the two sibling lanes
+        (`express-render-guards`, `attested-history-guards`) still fallback-match
+        it. That is +2 jobs / +210 weight-seconds vs the single pre-split job, not
+        a return of the curated eight. Weight and pack ceilings are unchanged.
+    
+        JOB COUNTS RE-BASED +1 (129/127/121) for #5620, which added ONE new job,
+        `intelligence-registry` (Eval OS T1). Measured against the pre-#5620
+        manifest, it is the sole newcomer on all three probes and the ONLY delta:
+    
+            templates/index.html          128 -&gt; 129 jobs, 5,253 -&gt; 5,266 weight
+            scripts/build_free_content.py 126 -&gt; 127 jobs, 5,016 -&gt; 5,029 weight
+            engine/prophet/plan_book.py   120 -&gt; 121 jobs, 5,002 -&gt; 5,015 weight
+    
+        +13 weight-seconds per probe. The WEIGHT and PACK ceilings are deliberately
+        NOT moved: they are what bound the incident this wave exists to prevent, and
+        a regression that gave the fallback tier back to the curated eight would be
+        ~1,550 weight-seconds and three of twelve packs — two orders of magnitude
+        above this, so it still reds here. What moved is only the job count, and only
+        because the previous bounds carried zero headroom on that axis: 128/126/120
+        were the exact pre-#5620 measurements, so the very first honest new job
+        breached all three. The docstring above promises headroom "so an unrelated
+        job gaining or losing a scope does not red this"; `intelligence-registry` is
+        exactly such a job, and that promise was not funded. Re-based to the new
+        measurement rather than padded, so the next new job is again a visible event.
+    
+        This re-base is the same change carried by PR #5669 (authored there first).
+        It is duplicated here because both fixes land in the SAME `workflow-yaml`
+        job: run_ci_pack abandons a job's remaining steps on the first non-zero
+        exit, so this assertion (step 5) masks `audit_unrun_tests.py` (step 12).
+        A PR that healed only one of the two would leave `ci-pack-1` red and neither
+        PR could ever merge — the two-partial-heals deadlock. Whichever lands second
+        resolves to an identical tree.
+    
+        JOB COUNTS LOWERED to 127/124/119 (wave 3, 2026-08-14). The re-base above
+        absorbed TWO newcomers on the two code probes, and only one of them was
+        evidence. `intelligence-registry` matched on the DECLARED tier and stands.
+        `options-estate-guards` matched on the FALLBACK tier: #5634 gave it
+        tests/test_options_gap_discipline.py, an opaque construct in that suite's
+        closure widened it to whole-tree scan roots, and it began selecting on
+        files it does not read. That is smear, so it is curated away at the source
+        (`scope: exclusive` in the manifest) rather than paid for here.
+    
+        Re-measured on the curated manifest, `options-estate-guards` is the sole
+        delta and the ONLY job that leaves any probe:
+    
+            templates/index.html          127 -&gt; 126 jobs, 5,259 -&gt; 5,235 weight
+            scripts/build_free_content.py 124 -&gt; 123 jobs, 5,009 -&gt; 4,985 weight
+            engine/prophet/plan_book.py   119 -&gt; 118 jobs, 5,001 -&gt; 4,977 weight
+    
+        The ceilings are set at measurement + 1, not at measurement. The #5620
+        re-base note above diagnosed zero headroom as the defect — "the very first
+        honest new job breached all three" — and then re-based exact, funding the
+        docstring's headroom promise with nothing again. One job of slack absorbs
+        the next honest newcomer and still makes the second a visible event. Note
+        the pre-curation measurements had already drifted BELOW the 129/127/121
+        ceilings as later curation waves landed, so those bounds carried accidental
+        slack of 2-3 jobs; this restores a ratchet that is tight on purpose.
+    
+        WEIGHT and PACK ceilings are again deliberately NOT moved, for the reason
+        given above: they bound the incident, and a fallback-tier regression is
+        ~1,550 weight-seconds — two orders of magnitude above the 24 removed here.
+    
+        JOB COUNT RE-BASED +2 on templates/index.html only (129, 2026-08-15).
+        ``engine/china_intel_interest.py`` lazy-imports ``china_intel_hub``, and
+        that hub's opaque constructs smear ``templates/**`` onto two inferred
+        jobs that already imported ``build_china_library`` /
+        ``china_standout_track`` (``cn-standout-audit``,
+        ``coiled-mtf-anchor-era``). Measured 126 → 128 on this probe; the other
+        two probes are unchanged. Weight and pack ceilings stay. Exclusive
+        curation of those two jobs is the smear-at-source fix, but their
+        closures run through ``build_china_library`` and would be a third
+        exclusive-scope wave, not this packing-contract heal.
+    
+        THAT DEFERRAL IS NOW PAID (wave 4, 2026-08-15). Both jobs are curated
+        ``scope: exclusive`` in the manifest, and the ceiling above comes back
+        DOWN from 129 to 127. Neither job had an owned tier at all before this —
+        every one of their 28 inferred patterns was opaque fallback, so they
+        selected on ``*`` and on whole trees no suite in them reads. Re-measured
+        on the curated manifest, they are the ONLY delta and NOTHING was added to
+        any probe:
+    
+            templates/index.html          128 -&gt; 126 jobs, 5,310 -&gt; 5,292 weight
+            scripts/build_free_content.py 123 -&gt; 122 jobs, 5,044 -&gt; 5,038 weight
+            engine/prophet/plan_book.py   118 -&gt; 118 jobs, 5,040 -&gt; 5,040 weight
+    
+        Both jobs leave templates/index.html; only ``coiled-mtf-anchor-era``
+        leaves build_free_content.py, because ``cn-standout-audit`` KEEPS
+        ``scripts/**`` on the declared tier — two of its suites rglob that tree
+        and AST-scan every hit for unlaned CN sink calls, so the tree is their
+        subject and narrowing it would be the silent-stop failure this file's
+        coverage test exists to prevent. Both keep ``engine/**`` for the same
+        kind of reason, which is why plan_book.py does not move at all. That is
+        the shape a correct curation has: it removes the fallback claims and
+        keeps every earned one.
+    
+        The ceiling is set at measurement + 1 per the wave-3 note above, so 126
+        measured -&gt; 127. Note this lands exactly where wave 3 had it before
+        #5754, which is the confirmation that these two jobs were the whole of
+        that +2 and that no other drift hid inside the re-base. WEIGHT and PACK
+        ceilings are again NOT moved: the 18 weight-seconds removed here are two
+        orders of magnitude below the ~1,550 a fallback-tier regression costs,
+        and packs were 9 on every probe before and after.
+    
+        JOB COUNT RE-BASED +1 on engine/prophet/plan_book.py only (120, wave 6,
+        2026-08-20 main-red-repair). Measured against the last lane-green main
+        commit (d972484c6474): baseline selects 119/195 jobs for this probe;
+        the current manifest selects 120/196, and diffing the two selected-job
+        NAME sets (not just counts) isolates the entire delta to one job,
+        ``reference-integrity`` — present in both manifests, but newly matching
+        this probe. #6122 (XPV2-SC-R3A, commit f4305a4485f6) added a third step
+        to that already-existing job (`tests/test_xpv2_sector_r3_fixture.py`,
+        over the frozen Sector Central fixture), and that suite's import closure
+        carries several ``dynamic import`` / ``subprocess invocation``
+        ambiguities several hops deep (engine/alert_triage.py,
+        engine/codex_lane/runner.py) that resolve to CODE_SCAN_ROOTS/
+        SUBPROCESS_ROOTS, which include ``engine/**`` — hence the new match on
+        engine/prophet/plan_book.py specifically, not anything Sector Central or
+        Prophet actually share.
+    
+        This is NOT curated away like serving-observability's smear (2026-08-20
+        main-red-repair, same wave) or curated like dataos-identity-seams was
+        REJECTED (wave 2 note above): reference-integrity's own header comment
+        documents it as deliberately unscoped — "Unscoped on purpose: L7/L8/L9
+        are namespace and coupling closures over mockups/design_system,
+        research/migration_packets and the page registry, so a diff that adds a
+        file anywhere in those roots must re-run this" — a whole-tree RIG V1
+        reference-integrity gate that already existed pre-#6122 and is meant to
+        fire broadly. Declaring `scope: exclusive` on a job whose real purpose is
+        "catch reference laundering anywhere in these wide namespaces" would
+        either lie about coverage or degenerate straight back to the fallback
+        breadth it already carries — the identical failure mode
+        dataos-identity-seams was rejected for. One extra match on an
+        already-broad, already-reviewed, always-on gate costs nothing over the
+        ~1,550 weight-seconds/3-pack fallback-regression bound this file guards;
+        ratcheting the ceiling is the correct-risk response, not curation.
+        WEIGHT and PACK ceilings stay unmoved (5,600 / 9 packs, unchanged).
+    
+        JOB COUNTS RE-BASED to 129/125/121 (wave 7, 2026-08-21) — a ratchet on the
+        templates probe, and the wave-3 headroom promise re-funded on all three.
+        Measured against the last commit at which this job's own lane was green
+        (48bfd3c97e8a, data-health run 32380507121), diffing the selected-job NAME
+        sets isolates one sole entrant per probe and nothing leaves:
+    
+            templates/index.html          127 -&gt; 128 jobs, 5,390 -&gt; 5,420 weight
+            scripts/build_free_content.py 123 -&gt; 124 jobs, 5,141 -&gt; 5,173 weight
+            engine/prophet/plan_book.py   119 -&gt; 120 jobs, 5,143 -&gt; 5,175 weight
+    
+        Only templates/index.html BREACHED (128 &gt; 127). Its sole entrant is
+        ``regwall-boundary``, the new ``gate: code`` job #6141 added so that
+        tests/test_regwall_json_gate.py — whose only CI home had been the
+        ``gate: data`` job ``tier-gate``, i.e. off the merge gate entirely — can
+        actually block a merge. It matches on the DECLARED tier, not fallback:
+        #6141 gave it an explicit ``scope: exclusive`` + ``paths:`` precisely
+        because that suite names its subjects as segment literals
+        (``REPO_ROOT / "templates" / "index.html"``, tests/test_regwall_json_gate.py:102),
+        which SCOPE_REFERENCE_RE cannot see. So this is the ``intelligence-registry``
+        case verbatim (wave 3 note above), not the ``options-estate-guards`` smear:
+        there is no fallback claim to curate away, because the job arrived already
+        curated to the narrowest honest scope it has. Narrowing it further would
+        drop ``templates/index.html`` from the declaration of the one job whose
+        entire purpose is to assert the regwall boundary inside that file — a
+        silent false green, and ``curated_exclusive_closure_findings`` would hard-
+        fail the manifest for it anyway. Ratcheting is the correct-risk response.
+    
+        The other two probes did NOT breach — but both sat at EXACTLY their
+        ceiling (124/124 and 120/120), which is the zero-headroom defect the #5620
+        note above already diagnosed once ("the very first honest new job breached
+        all three") and which wave 6 re-introduced by re-basing plan_book exact.
+        That is how this red reached main unseen: ``workflow-yaml`` is itself
+        ``gate: data``, so under W2 of
+        research/CI_MERGE_GATE_RELIABILITY_ROOT_CAUSE_2026_08_19.md this assertion
+        is packed only by data-health.yml, which has no ``pull_request`` trigger —
+        no PR can be blocked by it, so a zero-headroom ceiling does not red the
+        newcomer's PR, it reds MAIN, silently, one commit later. All three are
+        therefore set at measurement + 1 per the wave-3 rule, restoring the one
+        job of slack that makes the NEXT newcomer a visible event rather than a
+        fait accompli. WEIGHT and PACK ceilings stay unmoved (5,800 / 5,600 /
+        5,600 and 10 packs): weights are 5,420 / 5,173 / 5,175, and a fallback-
+        tier regression is still ~1,550 weight-seconds above them, so the bound
+        this file exists to hold is untouched.
+    
+        JOB COUNTS RE-BASED to 131/127/122 (wave 8, 2026-08-28, TP-1 repair edge
+        theme-parity-tp1-canada-20260828-sol-001). Measured on main a8075391fa89,
+        diffing selected-job NAME sets per probe against the wave-7 green
+        baseline manifest (48bfd3c97e8a):
+    
+            templates/index.html          130 jobs / 5,560 weight (was ceiling 129)
+              entrants: regwall-boundary (declared — wave 7's own funded entrant),
+                        design-governance (fallback, w16),
+                        board-shadow-substrate (fallback, w7)
+            scripts/build_free_content.py 126 jobs / 5,313 weight (was ceiling 125)
+              entrants: design-governance, board-shadow-substrate,
+                        reference-integrity (all fallback)
+            engine/prophet/plan_book.py   121 jobs / 5,299 weight (AT ceiling —
+              the zero-headroom defect again)
+              entrants: board-shadow-substrate, reference-integrity
+    
+        Every unfunded entrant is a DELIBERATELY-UNSCOPED always-on gate, i.e.
+        the ``reference-integrity`` class wave 6 already adjudicated ("ratcheting
+        the ceiling is the correct-risk response, not curation"):
+        ``design-governance`` is TP-0's forward-only design ratchet (#6579) —
+        a diff gate over user-facing templates/site whose entire purpose is to
+        run on exactly the PRs these probes model, so its match on
+        templates/index.html is its subject, not smear; ``board-shadow-substrate``
+        documents itself "Left UNSCOPED … always-on is correct for this job, not
+        lazy" (its K6 kill is a repo-wide string walk inference cannot narrow);
+        ``reference-integrity``'s breadth was adjudicated in wave 6 and its
+        growth onto build_free_content.py is the same mockups/research/registry
+        namespace closure firing as designed. Curating any of the three
+        ``scope: exclusive`` would lie about coverage or degenerate back to
+        fallback breadth — the dataos-identity-seams rejection, verbatim. The
+        non-smear finding is affirmative: TP-1's own manifest edit (adding
+        tests/test_stock_dashboard_css.py to the render-guard step, merge
+        e2091032ad1f) adds ZERO probe matches — the selected-name-set delta
+        across that merge is empty on all three probes, so the earned Canada CSS
+        coverage rides a job that already owned-matched its subjects and costs
+        these ceilings nothing.
+    
+        Ceilings are set at measurement + 1 per the wave-3 rule (131/127/122),
+        re-funding the headroom promise on all three axes — plan_book.py sat AT
+        its ceiling again, the exact silent-main-red mechanism the wave-7 note
+        describes. WEIGHT and PACK ceilings stay unmoved (5,800 / 5,600 / 5,600
+        and 10 packs): measured weights are 5,560 / 5,313 / 5,299 and a
+        fallback-tier regression is still ~1,550 weight-seconds above them.
+        The companion test below pins all three always-on gates so the OPPOSITE
+        regression — a future curation silently narrowing a deliberate whole-tree
+        gate off its subject — reds loudly instead of shipping a false green.
+    
+        JOB COUNTS RE-BASED to 132/129/125 (wave 9, 2026-09-13,
+        B-HEAL-CI-PACK-CEILING-1). Measured on main 021b2ae3a4a6, diffing
+        selected-job NAME sets per probe against the wave-8 baseline manifest
+        (a8075391fa89); that baseline manifest re-measured on today's tree gives
+        130/126/121 at 5,560/5,313/5,299 — the wave-8 figures above to the job
+        and the weight-second — so the whole delta is manifest-side:
+    
+            templates/index.html          131 jobs / 5,703 weight (AT ceiling 131 —
+              the zero-headroom defect again)
+              entrants: market-os-macro-workspaces (fallback, w39)
+            scripts/build_free_content.py 128 jobs / 5,460 weight (was ceiling 127)
+              entrants: market-os-macro-workspaces (fallback, w39),
+                        public-render-fastlane (fallback, w17)
+            engine/prophet/plan_book.py   124 jobs / 5,454 weight (was ceiling 122)
+              entrants: ccw-w3-credit-momentum (fallback, w10),
+                        market-os-macro-workspaces (fallback, w39),
+                        public-render-fastlane (fallback, w17)
+    
+        Nothing leaves any probe. Unlike wave 8, NONE of the three entrants is a
+        deliberately-unscoped always-on gate: no block text claims whole-tree
+        breadth on purpose, and every match is an inferred opaque-fallback claim
+        that its own block does not justify. Each is therefore a CURATION
+        CANDIDATE with a named follow-on; all three are ratcheted here so main
+        goes green today, and the ceiling keeps flagging them until curated:
+    
+        ``ccw-w3-credit-momentum`` (legacy-jobs.yml ~6299; no ``paths:``, no
+        ``scope:``; its header is a coverage inventory — "CCW-W3 credit momentum
+        organ: engine/credit_momentum.py …" — with no self-justification for
+        breadth). Present at wave 8 with ZERO probe-relevant ambiguities; #6904
+        (merge 49451c5148c4) appended tests/test_credit_window.py to its step,
+        and that suite carries five opaque constructs (:173/:175 tmp_path
+        rglobs, :187 a ``root / "engine"`` ``.glob("*.py")`` AST scan in
+        ``test_not_imported_by_any_scoring_module``, :196, :452 a
+        ``git ls-files data/…`` subprocess) that resolve to ``engine/**`` and
+        ``engine/**/*.py``. The one honest claim is on top-level ``engine/*.py``
+        whose names contain score/regime/axis, which inference widens to the
+        whole engine tree — the ``options-estate-guards`` shape, not the
+        ``reference-integrity`` one. Follow-on: B-CUR-CCW-W3-1.
+    
+        ``public-render-fastlane`` (legacy-jobs.yml ~9033; no ``paths:``, no
+        ``scope:``; block text describes "Public fast-path contract … Renders to
+        a tmp dir; network-free", no always-on justification). Present at wave 8
+        matching only templates/index.html (already funded). #6828 (F13-X1,
+        8431aeafcc39) appended tests/test_help_directory.py + its contract suite
+        to its step, B-F13-3 (dcd0eee135cc) added the ``--deselect``, and #6909
+        (F13-1) appended three glossary suites. test_help_directory.py's closure is 543
+        files because of ``import scripts.build_site as bs`` at :67 — inside the
+        body of ``test_build_site_renders_help_page_with_the_full_view_model``,
+        the ONE test the job's own command ``--deselect``s (inference does not
+        read ``--deselect``); that closure reaches engine/alert_triage.py:639
+        (dynamic import), engine/codex_lane/runner.py:531/:748 (subprocess
+        invocation) and collectors/sec_document_spine.py:776 (filesystem glob),
+        i.e. ``engine/**`` + ``scripts/**``. The contract sibling's closure is 9
+        files. Smear from a test the job never runs. Follow-on:
+        B-CUR-PUBLIC-RENDER-FASTLANE-1.
+    
+        ``market-os-macro-workspaces`` (legacy-jobs.yml ~14122; born after wave 8,
+        Market Ontology F01 R1A). Declares 21 ``paths:`` (its contract schema,
+        ``engine/market_os/**``, scripts/build_macro_workspaces.py and its 18
+        suites) but NOT ``scope: exclusive``, so the declaration is unioned
+        under inference and none of the declared paths covers any probe; every
+        probe match is fallback: scripts/build_macro_workspaces.py:52
+        (subprocess invocation → ``engine/**``, ``scripts/**``,
+        ``templates/**``), tests/test_macro_workspace_build.py:69 (filesystem
+        roots=scripts) and tests/test_macro_workspace_prior_publication.py:301/
+        :470 (dynamic import → ``engine/**``, ``scripts/**``). Its block text is
+        a NARROW self-description — "All four suites are offline and
+        synthetic-fixture driven; the only real input ever read at build time
+        is data/regime/latest.json" — and its sibling
+        ``market-os-macro-suite-pages`` was curated ``scope: exclusive`` at
+        birth. Follow-on: B-CUR-MARKET-OS-MACRO-WORKSPACES-1.
+    
+        Ceilings are set at measurement + 1 per the wave-3 rule (132/129/125),
+        re-funding the headroom promise on all three axes — templates/index.html
+        sat AT its ceiling again. WEIGHT and PACK ceilings stay unmoved (5,800 /
+        5,600 / 5,600 and 10 packs): measured weights are 5,703 / 5,460 / 5,454;
+        packs are 10 / 10 / 10 (the two code probes were 9 at wave 8), and with
+        PACK_TARGET_SECONDS = 600 an 11th pack needs &gt; 6,000 weight-seconds,
+        above every weight ceiling, so the weight axis still reds first. This
+        nodeid lives only in a ``gate: data`` job (``workflow-yaml``), so PR
+        packs (``--gate code``) never run it; it runs only on push to main via
+        integration-baseline.yml (direct pytest, :197) and in data-health.yml's
+        ``--gate data`` packs — so the two breaches reached main unseen: the runner
+        reproduces 131/128/124 exactly (integration-baseline run 34716383790 at
+        c78d5a4f), the last fully green integration-baseline run on main is
+        34290518926 at 4603d7bb392d (2026-09-08 23:24Z) — none of the 54
+        non-cancelled runs since it was green as of this measurement — and the
+        seat's finding places this step's own last green at 4b2f97f196d5
+        (2026-09-09 00:20Z, 690 passed).
+    
+        WAVE 2026-09-23 (B-HEAL-CI-PACK-CEILING-2): the WEIGHT ceiling reds.
+        Main's integration-baseline lane failed this nodeid alone (run
+        35923703447 at 6ffa33740a49, "1 failed, 712 passed") at
+        templates/index.html 132 jobs / 5,810 weight — the job ceiling met
+        exactly, the weight ceiling breached by 10 — and the two code probes
+        were over their JOB ceilings behind it (the loop asserts the first probe
+        first): build_free_content.py 130 &gt; 129, plan_book.py 127 &gt; 125. The
+        manifest had grown 212 → 227 jobs since the previous wave's baseline
+        (021b2ae3a4a6). Diffing that baseline manifest RE-MEASURED on today's
+        tree (133 / 5,713 on templates/index.html — inference drift accounts for
+        +2 jobs / +10 weight of the delta) against the current manifest, the
+        weight breach is NOT one entrant: it is +105 weight-seconds spread over
+        ~20 already-selected fallback-tier jobs whose step lists grew
+        (washout-turn-organ 31 → 52, unrun-page-guards 34 → 50, unrun-brain-gateway
+        40 → 47, self-mod-fence 46 → 53, billing-emails 16 → 22, design-governance
+        18 → 23, …), plus two 4-weight entrants on templates/index.html
+        (uk-policy-desk #7771, options-payoff-lab-consumer #7763), one 8-weight
+        entrant on both code probes (options-catalyst-links #7774), and
+        design-governance newly riding engine/prophet/plan_book.py (23). Three
+        small jobs left (am-edition-producer, ftr-tape-surfaces,
+        unrun-government-revenue-candidate-projection).
+    
+        Every entrant matched on the FALLBACK tier and no block text claims
+        whole-tree breadth on purpose, so — per the standing convention — the
+        ceiling is not raised; the smear is curated at the source. FOUR jobs are
+        curated ``scope: exclusive`` in the manifest, every declared path earned
+        by the inferred import closure or by a read-as-text the suite performs
+        (closure-coverage audit: zero misses; contract-delta: 0 introduced):
+    
+        ``market-os-macro-workspaces`` — the follow-on named at the previous
+        wave (B-CUR-MARKET-OS-MACRO-WORKSPACES-1), now paid: 21 ``paths:``
+        declared at birth WITHOUT ``scope: exclusive`` were unioned under
+        inference, and scripts/build_macro_workspaces.py:52 (subprocess) plus
+        test_macro_workspace_prior_publication.py:341 (jinja FileSystemLoader)
+        minted engine/scripts/templates/site/data claims on all three probes.
+        Declared: the 48-file closure (composers, lib/macro_suite_*,
+        scripts/build_macro_suite_pages.py), the shell template it renders by
+        name, and its committed fixture. Weight 39, leaves all three probes.
+    
+        ``uk-policy-desk`` (#7771) — "the suite imports nothing further" was
+        true of the file and false of the closure (engine/uk_policy_brain.py
+        reaches 133 first-party files). Its ``test_no_scoring_path_imports_this_desk``
+        rglobs engine/ and scripts/ for ``*.py``, so ``engine/**/*.py`` and
+        ``scripts/**/*.py`` are EARNED and declared — this job KEEPS both code
+        probes on purpose (the cn-standout-audit shape) — and it sheds only the
+        ``templates/**`` claim its jinja loader minted. Weight 4, leaves
+        templates/index.html only.
+    
+        ``options-payoff-lab-consumer`` (#7763) — hermetic per its block; the
+        ``templates/**`` claim came from scripts/build_options_command.py's
+        jinja loader. Declared: the 14-file closure, templates/options.html.j2
+        (read as text), .github/workflows/engine-render.yml (read as text for
+        its R2-restore pins). Weight 4, leaves templates/index.html.
+    
+        ``options-catalyst-links`` (#7774) — hermetic per its block; the
+        engine/**, scripts/**, data/** claims came from ledger-lane /
+        session-digest opaque edges in the closure. Declared: the 19-file
+        closure plus daily.yml and this manifest, which its nightly-shape suite
+        reads as text. Weight 8, leaves both code probes.
+    
+        Re-measured on the curated manifest — the four curated jobs are the
+        ONLY delta and NOTHING entered any probe:
+    
+            templates/index.html          132 -&gt; 129 jobs, 5,810 -&gt; 5,763 weight
+            scripts/build_free_content.py 130 -&gt; 128 jobs, 5,577 -&gt; 5,530 weight
+            engine/prophet/plan_book.py   127 -&gt; 125 jobs, 5,583 -&gt; 5,536 weight
+    
+        JOB ceilings re-based to measurement + 1 per the wave-3 rule
+        (130 / 129 / 126): templates/index.html comes DOWN from 132, the
+        build_free_content.py bound is unchanged, and plan_book.py goes UP by
+        one — said explicitly: its measurement sits AT the old 125 bound
+        because ``design-governance`` (w23) now fallback-matches it through
+        scripts/check_p0b_receipt_closure.py:100's ``evidence.glob`` (the p0b
+        receipt-closure step added 2026-09-23), a claim that is NOT earned
+        (the design ratchets diff user-facing trees, never engine/) but that
+        cannot be curated: ``test_deliberately_unscoped_gates_stay_always_on``
+        pins that gate unscoped by design. Its fix is at the glob source, not in
+        the manifest — follow-on: B-CUR-DESIGN-GOVERNANCE-P0B-1. Re-basing to
+        125 would restore the zero-headroom defect this wave and the last both
+        diagnosed. WEIGHT and PACK ceilings stay unmoved (5,800 / 5,600 / 5,600
+        and 10 packs; measured 5,763 / 5,530 / 5,536, packs 10 / 10 / 10) —
+        they bound the incident, and this wave's 47-weight cut on the index
+        probe is the honest size of four small smears, not a re-base.
+    
+        2026-09-24 (#6872 postmortem — the p0b receipt-closure gate moves out of
+        ``design-governance`` into its own curated job ``p0b-receipt-closure``,
+        w7, ``scope: exclusive`` over templates/**, site/**, engine/i18n.py, the
+        recipe, the verifier and mockups/evidence/prophet-p0b-zero-fouc/**).
+        B-CUR-DESIGN-GOVERNANCE-P0B-1 above is thereby resolved at the source:
+        with the gate gone from ``design-governance`` its closure no longer
+        carries check_p0b_receipt_closure.py:100's ``evidence.glob`` root claim,
+        so the unearned engine/** fallback disappears and design-governance
+        stops riding the plan_book probe (w23 -&gt; w18). Re-measured, full
+        manifest, inference on:
+    
+            templates/index.html          131 -&gt; 132 jobs, 5,790 -&gt; 5,792 weight
+                        (+1: p0b-receipt-closure rides templates/** by design)
+            scripts/build_free_content.py 129 -&gt; 129 jobs, 5,543 -&gt; 5,538 weight
+            engine/prophet/plan_book.py   126 -&gt; 125 jobs, 5,549 -&gt; 5,526 weight
+    
+        JOB ceilings re-based to measurement + 1 (133 / 130 / 126): the index
+        probe's +1 is a gate entering on the PRs that are its subject, which the
+        wave-7 note names as the correct-risk response ("ratcheting the ceiling
+        is the correct-risk response, not curation"). Said explicitly: the
+        PRE-change tree already measured 131 / 129 / 126 — over, at, and at the
+        old bounds — and that is not this PR's doing. #6872 (merged 2026-09-24
+        17:54Z) added ``ontology-explorer`` (w11) with an INFERRED scope: 614
+        owned paths plus a whole-tree fallback smear (admin/**, app/**,
+        collectors/**, config/**, ...), so it rides all three probes. Measured
+        on main's manifest with that one job removed: 130 / 128 / 125, i.e. the
+        old bounds' exact headroom. Nobody saw it because this suite's host job
+        ``workflow-yaml`` is ``gate: data`` — off the merge gate — and the
+        data-health lane had not run a post-#6872 tree by 2026-09-25 00:55Z
+        (its last run, 17:54:26Z, predates the merge). Identical under Python
+        3.12 and 3.14, full checkout. Curating ontology-explorer's smear is a
+        follow-on (B-CUR-ONTOLOGY-EXPLORER-1); re-basing here keeps the ratchet
+        honest instead of leaving it red-on-arrival. WEIGHT and PACK ceilings
+        stay unmoved (5,800 / 5,600 / 5,600 and 10 packs; measured 5,792 /
+        5,538 / 5,526, packs 10 / 10 / 10).
+    
+        2026-09-25 (BC-2 merge gate: #7998, then the page-builder root).
+        ``validated-claims-source`` (w2, ``gate: code``, ``scope: exclusive``)
+        grades the display copy of the PR-authored roots, so it rides the PRs
+        that ARE its subject, on the DECLARED tier: templates/** and engine/**
+        since #7998 (templates/index.html and plan_book.py, +1 job / +2 weight
+        each — already on main, which had left both probes AT their bounds),
+        and the top-level page builders scripts/build_*.py /
+        scripts/render_*.py since this change (build_free_content.py, +1 / +2;
+        nothing else under scripts/ selects it). That is the wave-7
+        "ratcheting the ceiling is the correct-risk response, not curation"
+        case. Main's other drift since #7971 is no manifest entrant:
+        biocatalyst-contracts grew 50 -&gt; 52 weight on all three probes, and
+        #7971's own manifest re-measured on today's tree already selects
+        130 jobs / 5,577 weight for build_free_content.py (+1 / +39 against its
+        129 / 5,538) — an inferred scope widened as the tree moved (the
+        selection code did not change), which left that probe AT its bound too.
+        Re-measured, full manifest, inference on, before #8010:
+    
+            templates/index.html          133 jobs, 5,796 weight
+            scripts/build_free_content.py 130 -&gt; 131 jobs, 5,579 -&gt; 5,581 weight
+            engine/prophet/plan_book.py   126 jobs, 5,530 weight
+    
+        JOB ceilings re-based to measurement + 1 (134 / 132 / 127). WEIGHT and
+        PACK ceilings stay unmoved (5,800 / 5,600 / 5,600 and 10 packs) — the
+        builder root adds 2 weight-seconds to one probe and none to the other
+        two.
+    
+        #8010 then landed ``finance-intelligence-site-wiring`` (w4, ``gate:
+        code``, no declared scope). Its one suite reads scripts/build_site.py
+        as text, and inference follows that file's import closure: 560 owned
+        paths, none of them a probe, plus a whole-tree fallback smear
+        (admin/**, app/**, collectors/**, config/**, ...). It rides all three
+        probes on that FALLBACK tier only, +1 job / +4 weight each. On its own,
+        that put main one job over all three ceilings as they stood (133 / 130
+        / 126). Nothing in the merge gate runs this file, so the breach showed
+        only in the data lane. Re-measured on main 7c22f6c5b79 with this change:
+    
+            templates/index.html          134 jobs, 5,800 weight
+            scripts/build_free_content.py 132 jobs, 5,585 weight
+            engine/prophet/plan_book.py   127 jobs, 5,534 weight
+    
+        The ceilings above are NOT raised for it. They are this change's
+        measurement + 1, and the #8010 entrant fills that headroom exactly. All
+        three probes now sit AT their job bound, and templates/index.html sits
+        AT its 5,800 weight bound. Said explicitly: no headroom is left, so the
+        next entrant on any of the three needs a decision recorded here, not a
+        reflexive bump. The rule this file already follows: curate a
+        fallback-tier smear away (a declared ``scope: exclusive`` for the job
+        that caused it); ratchet a job that enters on its own declared subject
+        (wave 7). By that rule finance-intelligence-site-wiring's own smear is
+        a curation candidate, left to its owner. An exclusive declaration for it
+        would have to cover that closure (#8010's manifest comment: 538
+        uncovered paths), which is why it has none.
+    
+        2026-09-25: this test now runs on the PR code gate. Until today its host
+        job, ``workflow-yaml``, was ``gate: data``, and ci.yml's ci-pack runs
+        only ``gate: code`` jobs. That is how #8010's breach above merged green:
+        the breach was a function of the PR tree, but nothing that ran on the
+        PR measured it. The control plane's own contracts, this test included,
+        moved to ``ci-control-plane-contracts`` (``gate: code``, ``scope:
+        exclusive``, weight 1,400). Being exclusive, that job rides none of the
+        three probes. ``workflow-yaml`` became ``gate: code`` with what was left
+        (weight 438 -&gt; 90), and ``engine-render-guards`` took the data-reading
+        half of its suites (860 -&gt; 875). Both still ride all three probes, and
+        no job enters or leaves any of them. Re-measured, full manifest,
+        inference on, main 9f5fa770022 before -&gt; after:
+    
+            templates/index.html          134 jobs, 5,800 -&gt; 5,467 weight
+            scripts/build_free_content.py 132 jobs, 5,585 -&gt; 5,252 weight
+            engine/prophet/plan_book.py   127 jobs, 5,534 -&gt; 5,201 weight
+    
+        No ceiling moves. The job bounds are still full, so the rule above for
+        the next entrant stands. What changed is where a MANIFEST entrant reds.
+        Adding or re-scoping a job edits .github/ci/legacy-jobs.yml, which is
+        one of ci-control-plane-contracts' declared paths, so the #8010 shape
+        now reds its own PR, where it can still be curated, instead of main. A
+        probe can also drift with no manifest edit: an inferred scope widens as
+        the tree moves (build_free_content.py's +1 above). That PR touches
+        none of the job's paths, so it merges without running this test, and
+        the drift surfaces after merge, on integration-baseline.yml. That lane
+        runs this file on every source push to main and every 4 hours, and
+        merge-on-green pauses ordinary merges while it is red.
+    
+        PR #8322 round 2 (2026-10-03): ``live-flow-recovery-guards`` (w1,
+        ``gate: code``, 12 declared paths) joins the manifest with ordinary
+        ``paths:`` inference — NOT ``scope: exclusive``, per the META-CEO
+        ruling for this round ("Ordinary paths inference, not scope:exclusive
+        until closure verified"). Its declared subject (engine/live_flow.py,
+        engine/session_digest.py, lib/{__init__,config.py,nyse_calendar.py},
+        scripts/live_flow_poller.py + build_flow_archive.py + build_flow_surface.py,
+        tests/test_flow_archive.py + test_live_flow_recovery.py + test_live_flow_tiering.py,
+        ops/LIVE_FLOW_RUNBOOK.md) touches NONE of the three probes directly,
+        but ordinary inference widens its fallback tier to the directory globs
+        the declared files live under (engine/**, scripts/**, templates/**).
+        Re-measured, full manifest, inference on, before this entry:
+    
+            templates/index.html          134 -&gt; 135 jobs, 5,800 weight (AT)
+            scripts/build_free_content.py 132 -&gt; 133 jobs, 5,585 weight
+            engine/prophet/plan_book.py   127 -&gt; 128 jobs, 5,534 weight
+    
+        JOB ceilings re-based to measurement + 1 (135 / 133 / 128) per the
+        standing rule. The decision recorded here follows the wave-9 re-frame
+        exactly: the job enters all three on its OWN inferred FALLBACK tier
+        (templates/**, scripts/**, engine/**), so it is a curation candidate
+        — its closure is small (one production source, one new test file,
+        three path helpers; closure-coverage audit: zero misses) and ``scope:
+        exclusive`` would cover it cleanly. The ruling pins that to round 3,
+        not this round; this entry funds the headroom so the PR lands green,
+        and the curation follow-on is named live-flow-recovery-guards-scope
+        (must run before the next entrant). WEIGHT and PACK ceilings stay
+        unmoved (5,800 / 5,600 / 5,600 and 10 packs): weights are 5,800 /
+        5,585 / 5,534, packs are 10 / 10 / 10, and templates/index.html sits
+        AT its 5,800 weight bound — the next weight delta is the same kind
+        of decision this entry makes.
+    
+        2026-09-27: that drift now reds its own PR. The measurement and the
+        verdict moved to scripts/run_ci_pack.py (packing_probe_measurements,
+        packing_probe_breaches) and the ceilings to PACKING_PROBES above, so
+        this test and ci.yml's contract-delta job share one copy. contract-delta
+        runs on every PR, whatever it touches. It measures the probes on the
+        PR's tested merge and on that merge's base, and reds when the PR takes
+        a probe over its ceiling, or further over a ceiling the base already
+        breaches. The case the #8033 review measured is now caught before
+        merge: a suite edited to read templates/index.html puts a job on this
+        probe (134 -&gt; 135) without selecting ci-control-plane-contracts.
+        Nothing was re-measured and no ceiling moved. integration-baseline.yml
+        still runs this file on main.
+    
+        PR #8596 (2026-10-07): ``integrated-answer-v0`` (w4, ``gate: code``,
+        Package I v0 composer, default-off) joins the manifest with ordinary
+        ``paths:`` inference. Its one suite imports app.integrated_answer,
+        app.forensics and tests.test_company_theme_exposure; the declared
+        closure is 628 owned paths, none of them a probe, plus the whole-tree
+        fallback smear (admin/**, app/**, collectors/**, config/**, ...). It
+        rides all three probes on that FALLBACK tier only, +1 job / +4..7
+        weight each. Re-measured, full manifest, inference on, on the PR's
+        merge with main 96261883bee:
+    
+            templates/index.html          134 -&gt; 135 jobs, 5,673 weight
+            scripts/build_free_content.py 132 -&gt; 133 jobs, 5,419 weight
+            engine/prophet/plan_book.py   127 -&gt; 128 jobs, 5,379 weight
+    
+        JOB ceilings re-based to measurement (135 / 133 / 128), the #8322
+        shape: the entrant is a fallback-tier smear, so by the standing rule
+        it is a curation candidate, and this entry funds the headroom so the
+        default-off composer lands green. The curation follow-on is named
+        integrated-answer-v0-scope (a ``scope: exclusive`` declaration must
+        cover the 628-path closure, which is why it has none here). WEIGHT and
+        PACK ceilings stay unmoved (5,800 / 5,600 / 5,600 and 10 packs):
+        weights are 5,673 / 5,419 / 5,379, packs are 10 / 10 / 9. All three
+        job bounds are full again, so the next entrant needs a decision
+        recorded here, not a reflexive bump.
+    
+        PR #8656 (2026-10-08): the entire M0D v2 suite now runs in the existing
+        CODE job ``research-price-panel``, including its static source/deployment
+        contracts. Its bash harnesses run temporary helper copies and its v1-store
+        scans use temporary roots. The selector conservatively attaches the
+        module-wide engine/scripts path-literal roots to those subprocess and
+        unpatterned rglob calls. The job therefore enters plan_book.py and
+        build_free_content.py on engine/** and scripts/** FALLBACK claims, not
+        because those two modules are directly read or exercised by M0D.
+    
+        Preserve the whole-file command and ordinary inference while funding this
+        measured coverage cost, following the #8322/#8596 decisions above. Hosted
+        contract-delta run 37857396564 / job 113584769049 measured head 1384a72307a
+        on tested merge 742e4cbfce2 against base 7e6ce338a9f8:
+    
+            templates/index.html          135 -&gt; 135 jobs, 5,725 -&gt; 5,729 weight
+            scripts/build_free_content.py 133 -&gt; 134 jobs, 5,480 -&gt; 5,524 weight
+            engine/prophet/plan_book.py   128 -&gt; 129 jobs, 5,440 -&gt; 5,484 weight
+    
+        All three stay at 10 packs. research-price-panel is the sole newly
+        selected job on the two changed probes. JOB ceilings move only to the
+        exact measurements (135 / 134 / 129), with no padding. All WEIGHT and
+        PACK ceilings remain 5,800 / 5,600 / 5,600 and 10; the template job ceiling
+        also stays 135. No suite, DATA registration, assertion, or selector is
+        removed or weakened to reduce selection.
+    
+        Scope-curation follow-on: research-price-panel-m0d-scope. Before any
+        ``scope: exclusive`` declaration, audit the complete original-plus-M0D
+        job closure and retain every source, fixture, deployment, and registration
+        owner. A M0D-only path list cannot safely replace that whole-job closure.
+        The fallback claims remain conservative until that audit; these two
+        count changes do not assert direct ownership of the probe modules.
+    
+        2026-10-11 (#8805, EVAL-1 partition clock receipt): the fifth
+        Information-to-Price receipt suite registered in unrun-factor-research
+        took templates/index.html from 5,802 (already over the ceiling; main run
+        38139442230 failed this test) to 5,805. The five ITP steps now live in the
+        exclusive information-to-price-eval-receipts job with their measured
+        closure, so the probe reads 5,793 (head) against 5,805 before
+        the move. No ceiling moves; no suite, registration, assertion or selector
+        is removed or weakened.
+    
+        2026-10-13 (SNI INT1, ``sni-public-exposure-scan``): the WEIGHT ceiling
+        on templates/index.html is RATCHETED 5,800 -&gt; 5,803. This is the
+        decision the 2026-09-24 entry said the next entrant would need. The
+        job is already ``scope: exclusive`` with no fallback tier. It enters
+        this probe on its OWN declared subject: it reads templates/** as text
+        to prove that no public template serves, renders or links SNI
+        material, and its test_ci_job_declares_every_scanned_surface reds if
+        that path is dropped. That is the wave-7 ratchet case, not a smear to
+        curate. Its weight is the estimator floor for a one-suite job (two
+        run steps + one tests/ path = 4). Hosted contract-delta run
+        38379913058 / job 115237474626, base 70de9c667b80:
+    
+            templates/index.html          134 -&gt; 135 jobs, 5,799 -&gt; 5,803 weight
+            scripts/build_free_content.py 134 -&gt; 134 jobs, 5,602 -&gt; 5,602 weight
+            engine/prophet/plan_book.py   129 -&gt; 129 jobs, 5,562 -&gt; 5,562 weight
+    
+        sni-public-exposure-scan is the only newly selected job, and only on
+        the template probe. The ceiling moves to the exact measurement, with
+        no padding. Job ceilings (135 / 134 / 129), the other two weight
+        ceilings (5,600 / 5,600) and the 10-pack ceiling are unchanged.
+        Alternatives rejected:
+        - dropping templates/** from the job would leave template edits
+          unguarded;
+        - folding the suite into an existing template-riding job still adds
+          +2 (5,801);
+        - an OBSERVED_COMMAND_SECONDS entry below the estimator would
+          understate a job that installs packages.
+        In the same run, build_free_content was already at 5,602 against its
+        5,600 ceiling on the base. That was reported as inherited, not
+        introduced, and is left for a separate heal.
+    
+        2026-10-14 (Market Memory UI integration with Leadership Rotation):
+        hosted run 38530236436 on merge 2d524d3e1 of b3f9739 into
+        703477f0 reproduced two JOB-only breaches. Full inference on current
+        main union 44cc567d1edf (base 05bcc762fb16; all 313 jobs retained)
+        measures 136 / 134 / 130 jobs and 5,678 / 5,475 / 5,441 weight,
+        with ten packs for every probe. The two genuine main entrants are
+        lr-rotation-evidence-modes on templates/index.html (its imported
+        sector-cycle suites conservatively own templates/**), and
+        leadership-rotation-contract on plan_book.py (engine/** fallback).
+        Each weighs four; neither selects build_free_content.py.
+    
+        Fund only those measured counts: 135 -&gt; 136 and 129 -&gt; 130.
+        Keep every suite and conservative dependency claim, the build-script
+        count ceiling 134, all weight ceilings, and the ten-pack limit.
+        Narrowing either job without a complete closure audit would discard
+        coverage, while padding counts beyond the exact measured entrants
+        would hide the next change. No selector or runtime source is edited.
+        """
+        rows = packing_probe_measurements(
+            MANIFEST, PACKING_PROBES, max_packs=PACKING_PROBE_MAX_PACKS
+        )
+        breaches = packing_probe_breaches(rows)
+&gt;       assert not breaches, [
+            (breach, row["reason"])
+            for breach in breaches
+            for row in rows
+            if row["probe"] == breach[0]
+        ]
+E       AssertionError: [(('scripts/build_free_content.py', 'jobs', 135, 134), 'scoped to 1 changed file(s): 135/314 jobs (1 unscoped always-on, 134 scoped matches)')]
+E       assert not [('scripts/build_free_content.py', 'jobs', 135, 134)]
+
+tests/test_ci_pack.py:5715: AssertionError</failure></testcase><testcase classname="tests.test_ci_pack" name="test_eval_os_acceptance_runs_on_ordinary_code_prs" time="3.999" /><testcase classname="tests.test_deploy_update_self_heal" name="test_full_site_builder_guards_help_as_an_additive_public_page" time="0.226" /><testcase classname="tests.test_deploy_update_self_heal" name="test_deployed_regwall_keeps_help_public" time="0.006" /><testcase classname="tests.test_deploy_update_self_heal" name="test_update_script_has_valid_shell_syntax" time="0.054" /><testcase classname="tests.test_deploy_update_self_heal" name="test_codex_runtime_setup_has_valid_shell_syntax" time="0.035" /><testcase classname="tests.test_deploy_update_self_heal" name="test_live_setup_installs_press_scoring_backend" time="0.033" /><testcase classname="tests.test_deploy_update_self_heal" name="test_deployed_services_share_root_only_codex_state" time="0.008" /><testcase classname="tests.test_deploy_update_self_heal" name="test_update_reconciles_codex_runtime_and_admin_unit" time="0.003" /><testcase classname="tests.test_deploy_update_self_heal" name="test_admin_import_closure_generation_forces_same_cycle_restart" time="0.004" /><testcase classname="tests.test_deploy_update_self_heal" name="test_update_reconciles_api_requirements_with_retryable_content_stamp" time="0.002" /><testcase classname="tests.test_deploy_update_self_heal" name="test_repository_noop_does_not_skip_reconciliation" time="0.005" /><testcase classname="tests.test_deploy_update_self_heal" name="test_caddy_source_is_validated_before_install" time="0.005" /><testcase classname="tests.test_deploy_update_self_heal" name="test_changed_systemd_unit_forces_api_restart" time="0.004" /><testcase classname="tests.test_deploy_update_self_heal" name="test_api_restart_transaction_precedes_w2c_runtime_attestation" time="0.004" /><testcase classname="tests.test_deploy_update_self_heal" name="test_admin_adopts_before_unrelated_w2c_failure[True--True-True]" time="0.108" /><testcase classname="tests.test_deploy_update_self_heal" name="test_admin_adopts_before_unrelated_w2c_failure[False-config/plans.yml-True-True]" time="0.107" /><testcase classname="tests.test_deploy_update_self_heal" name="test_admin_adopts_before_unrelated_w2c_failure[False-app/billing.py-True-True]" time="0.103" /><testcase classname="tests.test_deploy_update_self_heal" name="test_admin_adopts_before_unrelated_w2c_failure[False-site/news.html-True-False]" time="0.085" /><testcase classname="tests.test_deploy_update_self_heal" name="test_admin_adopts_before_unrelated_w2c_failure[True--False-False]" time="0.091" /><testcase classname="tests.test_deploy_update_self_heal" name="test_import_cached_module_triggers_api_restart[app/main.py]" time="0.036" /><testcase classname="tests.test_deploy_update_self_heal" name="test_import_cached_module_triggers_api_restart[app/research.py]" time="0.038" /><testcase classname="tests.test_deploy_update_self_heal" name="test_import_cached_module_triggers_api_restart[app/regwall.py]" time="0.051" /><testcase classname="tests.test_deploy_update_self_heal" name="test_import_cached_module_triggers_api_restart[app/paywall.py]" time="0.031" /><testcase classname="tests.test_deploy_update_self_heal" name="test_import_cached_module_triggers_api_restart[app/tape.py]" time="0.042" /><testcase classname="tests.test_deploy_update_self_heal" name="test_import_cached_module_triggers_api_restart[app/biocatalyst.py]" time="0.029" /><testcase classname="tests.test_deploy_update_self_heal" name="test_import_cached_module_triggers_api_restart[app/requirements.txt]" time="0.027" /><testcase classname="tests.test_deploy_update_self_heal" name="test_import_cached_module_triggers_api_restart[app/deploy/macro-api.service]" time="0.032" /><testcase classname="tests.test_deploy_update_self_heal" name="test_import_cached_module_triggers_api_restart[config/site_access.yml]" time="0.040" /><testcase classname="tests.test_deploy_update_self_heal" name="test_import_cached_module_triggers_api_restart[config/plans.yml]" time="0.081" /><testcase classname="tests.test_deploy_update_self_heal" name="test_import_cached_module_triggers_api_restart[engine/neuralweb/market_memory_playback.py]" time="0.096" /><testcase classname="tests.test_deploy_update_self_heal" name="test_import_cached_module_triggers_api_restart[engine/neuralweb/market_memory_retained_catalog.py]" time="0.026" /><testcase classname="tests.test_deploy_update_self_heal" name="test_import_cached_module_triggers_api_restart[engine/neuralweb/market_memory_retained_saved.py]" time="0.034" /><testcase classname="tests.test_deploy_update_self_heal" name="test_import_cached_module_triggers_api_restart[engine/neuralweb/market_memory_retained_legacy_guard.py]" time="0.024" /><testcase classname="tests.test_deploy_update_self_heal" name="test_import_cached_module_triggers_api_restart[engine/options_issue_desk.py]" time="0.090" /><testcase classname="tests.test_deploy_update_self_heal" name="test_import_cached_module_triggers_api_restart[contracts/options/options.issue_desk.v1.schema.json]" time="0.031" /><testcase classname="tests.test_deploy_update_self_heal" name="test_import_cached_module_triggers_api_restart[contracts/options/options.issue_desk_proposal.v1.schema.json]" time="0.021" /><testcase classname="tests.test_deploy_update_self_heal" name="test_import_cached_module_triggers_api_restart[contracts/options/options.issue_desk_decision.v1.schema.json]" time="0.022" /><testcase classname="tests.test_deploy_update_self_heal" name="test_import_cached_module_triggers_api_restart[contracts/options/options.issue_receipt.v1.schema.json]" time="0.031" /><testcase classname="tests.test_deploy_update_self_heal" name="test_import_cached_module_triggers_api_restart[lib/nyse_calendar.py]" time="0.022" /><testcase classname="tests.test_deploy_update_self_heal" name="test_import_cached_module_triggers_api_restart[lib/us_cash_calendar.py]" time="0.071" /><testcase classname="tests.test_deploy_update_self_heal" name="test_import_cached_module_triggers_api_restart[engine/research_vault/download_quota.py]" time="0.034" /><testcase classname="tests.test_deploy_update_self_heal" name="test_import_cached_module_triggers_api_restart[engine/research_vault/view_ratelimit.py]" time="0.035" /><testcase classname="tests.test_deploy_update_self_heal" name="test_import_cached_module_triggers_api_restart[engine/research_vault/watermark.py]" time="0.027" /><testcase classname="tests.test_deploy_update_self_heal" name="test_import_cached_module_triggers_api_restart[engine/research_vault/catalog.py]" time="0.019" /><testcase classname="tests.test_deploy_update_self_heal" name="test_import_cached_module_triggers_api_restart[engine/research_vault/corpus.py]" time="0.017" /><testcase classname="tests.test_deploy_update_self_heal" name="test_import_cached_module_triggers_api_restart[engine/research_vault/r2_store.py]" time="0.019" /><testcase classname="tests.test_deploy_update_self_heal" name="test_import_cached_module_triggers_api_restart[engine/research_vault/sidecar.py]" time="0.019" /><testcase classname="tests.test_deploy_update_self_heal" name="test_import_cached_module_triggers_api_restart[engine/biocatalyst/publication.py]" time="0.020" /><testcase classname="tests.test_deploy_update_self_heal" name="test_import_cached_module_triggers_api_restart[engine/biocatalyst/trials.py]" time="0.018" /><testcase classname="tests.test_deploy_update_self_heal" name="test_import_cached_module_triggers_api_restart[engine/sector_intelligence/__init__.py]" time="0.020" /><testcase classname="tests.test_deploy_update_self_heal" name="test_import_cached_module_triggers_api_restart[engine/sector_intelligence/contracts.py]" time="0.015" /><testcase classname="tests.test_deploy_update_self_heal" name="test_import_cached_module_triggers_api_restart[engine/capital_structure/__init__.py]" time="0.015" /><testcase classname="tests.test_deploy_update_self_heal" name="test_import_cached_module_triggers_api_restart[engine/capital_structure/event_spine.py]" time="0.020" /><testcase classname="tests.test_deploy_update_self_heal" name="test_import_cached_module_triggers_api_restart[engine/capital_structure/projection.py]" time="0.021" /><testcase classname="tests.test_deploy_update_self_heal" name="test_import_cached_module_triggers_api_restart[engine/government_revenue/budget_program.py]" time="0.019" /><testcase classname="tests.test_deploy_update_self_heal" name="test_import_cached_module_triggers_api_restart[engine/government_revenue/candidates.py]" time="0.020" /><testcase classname="tests.test_deploy_update_self_heal" name="test_import_cached_module_triggers_api_restart[engine/government_revenue/idv_dossiers.py]" time="0.018" /><testcase classname="tests.test_deploy_update_self_heal" name="test_import_cached_module_triggers_api_restart[engine/government_revenue/subaward_dossiers.py]" time="0.018" /><testcase classname="tests.test_deploy_update_self_heal" name="test_import_cached_module_triggers_api_restart[contracts/government_revenue/government_revenue_candidate.v1.schema.json]" time="0.019" /><testcase classname="tests.test_deploy_update_self_heal" name="test_import_cached_module_triggers_api_restart[contracts/government_revenue/government_revenue_candidate_historical_suppressions.v1.schema.json]" time="0.022" /><testcase classname="tests.test_deploy_update_self_heal" name="test_import_cached_module_triggers_api_restart[contracts/government_revenue/government_revenue_candidate_issuance_corrections.v1.schema.json]" time="0.021" /><testcase classname="tests.test_deploy_update_self_heal" name="test_import_cached_module_triggers_api_restart[contracts/government_revenue/government_revenue_candidate_queue.v1.schema.json]" time="0.017" /><testcase classname="tests.test_deploy_update_self_heal" name="test_import_cached_module_triggers_api_restart[contracts/government_revenue/government_revenue_dossiers.v1.schema.json]" time="0.017" /><testcase classname="tests.test_deploy_update_self_heal" name="test_import_cached_module_triggers_api_restart[contracts/government_revenue/government_idv_dossiers.v1.schema.json]" time="0.036" /><testcase classname="tests.test_deploy_update_self_heal" name="test_import_cached_module_triggers_api_restart[contracts/government_revenue/government_subaward_dossiers.v1.schema.json]" time="0.026" /><testcase classname="tests.test_deploy_update_self_heal" name="test_import_cached_module_triggers_api_restart[contracts/government_revenue/government_procurement_event.v2.schema.json]" time="0.023" /><testcase classname="tests.test_deploy_update_self_heal" name="test_import_cached_module_triggers_api_restart[contracts/government_revenue/government_procurement_workspace.v2.schema.json]" time="0.019" /><testcase classname="tests.test_deploy_update_self_heal" name="test_import_cached_module_triggers_api_restart[contracts/government_revenue/government_entity_coverage.v1.schema.json]" time="0.016" /><testcase classname="tests.test_deploy_update_self_heal" name="test_import_cached_module_triggers_api_restart[contracts/government_revenue/government_recipient_resolution_coverage.v1.schema.json]" time="0.017" /><testcase classname="tests.test_deploy_update_self_heal" name="test_import_cached_module_triggers_api_restart[engine/neuralweb/company_intelligence_reader.py]" time="0.015" /><testcase classname="tests.test_deploy_update_self_heal" name="test_import_cached_module_triggers_api_restart[engine/company_intelligence/__init__.py]" time="0.019" /><testcase classname="tests.test_deploy_update_self_heal" name="test_import_cached_module_triggers_api_restart[engine/company_intelligence/contracts.py]" time="0.017" /><testcase classname="tests.test_deploy_update_self_heal" name="test_import_cached_module_triggers_api_restart[engine/company_intelligence/health.py]" time="0.015" /><testcase classname="tests.test_deploy_update_self_heal" name="test_import_cached_module_triggers_api_restart[engine/company_intelligence/views.py]" time="0.018" /><testcase classname="tests.test_deploy_update_self_heal" name="test_import_cached_module_triggers_api_restart[engine/neuralweb/ask_brain.py]" time="0.016" /><testcase classname="tests.test_deploy_update_self_heal" name="test_import_cached_module_triggers_api_restart[engine/neuralweb/chat_plain_words.py]" time="0.016" /><testcase classname="tests.test_deploy_update_self_heal" name="test_import_cached_module_triggers_api_restart[engine/neuralweb/brain_gateway.py]" time="0.015" /><testcase classname="tests.test_deploy_update_self_heal" name="test_import_cached_module_triggers_api_restart[engine/risk_envelope.py]" time="0.016" /><testcase classname="tests.test_deploy_update_self_heal" name="test_import_cached_module_triggers_api_restart[engine/neuralweb/brain_native_inputs.py]" time="0.018" /><testcase classname="tests.test_deploy_update_self_heal" name="test_import_cached_module_triggers_api_restart[engine/neuralweb/native_facts.py]" time="0.017" /><testcase classname="tests.test_deploy_update_self_heal" name="test_import_cached_module_triggers_api_restart[engine/intelligence_workspace/runtime.py]" time="0.018" /><testcase classname="tests.test_deploy_update_self_heal" name="test_import_cached_module_triggers_api_restart[engine/intelligence_workspace/resolver.py]" time="0.013" /><testcase classname="tests.test_deploy_update_self_heal" name="test_import_cached_module_triggers_api_restart[engine/intelligence_workspace/registry.py]" time="0.021" /><testcase classname="tests.test_deploy_update_self_heal" name="test_import_cached_module_triggers_api_restart[engine/intelligence_workspace/adapters/quote.py]" time="0.015" /><testcase classname="tests.test_deploy_update_self_heal" name="test_import_cached_module_triggers_api_restart[config/intelligence_workspace/datapoints.v1.json]" time="0.023" /><testcase classname="tests.test_deploy_update_self_heal" name="test_import_cached_module_triggers_api_restart[contracts/intelligence_workspace/datapoint_registry.schema.json]" time="0.015" /><testcase classname="tests.test_deploy_update_self_heal" name="test_import_cached_module_triggers_api_restart[contracts/intelligence_workspace/datapoint_value.schema.json]" time="0.015" /><testcase classname="tests.test_deploy_update_self_heal" name="test_import_cached_module_triggers_api_restart[engine/intelligence_workspace/context_compiler.py]" time="0.015" /><testcase classname="tests.test_deploy_update_self_heal" name="test_import_cached_module_triggers_api_restart[contracts/intelligence_workspace/ai_context_envelope.v1.schema.json]" time="0.018" /><testcase classname="tests.test_deploy_update_self_heal" name="test_import_cached_module_triggers_api_restart[lib/dataos/__init__.py]" time="0.019" /><testcase classname="tests.test_deploy_update_self_heal" name="test_import_cached_module_triggers_api_restart[lib/dataos/identity.py]" time="0.018" /><testcase classname="tests.test_deploy_update_self_heal" name="test_import_cached_module_triggers_api_restart[lib/dataos/registry.py]" time="0.018" /><testcase classname="tests.test_deploy_update_self_heal" name="test_import_cached_module_triggers_api_restart[config/dataset_registry.yml]" time="0.016" /><testcase classname="tests.test_deploy_update_self_heal" name="test_import_cached_module_triggers_api_restart[engine/theme_graph/store.py]" time="0.023" /><testcase classname="tests.test_deploy_update_self_heal" name="test_import_cached_module_triggers_api_restart[engine/theme_graph/rights.py]" time="0.039" /><testcase classname="tests.test_deploy_update_self_heal" name="test_import_cached_module_triggers_api_restart[config/theme_sources.yml]" time="0.050" /><testcase classname="tests.test_deploy_update_self_heal" name="test_import_cached_module_triggers_api_restart[collectors/equity_earnings.py]" time="0.024" /><testcase classname="tests.test_deploy_update_self_heal" name="test_import_cached_module_triggers_api_restart[engine/earnings_catalyst.py]" time="0.022" /><testcase classname="tests.test_deploy_update_self_heal" name="test_import_cached_module_triggers_api_restart[config.yml]" time="0.018" /><testcase classname="tests.test_deploy_update_self_heal" name="test_import_cached_module_triggers_api_restart[engine/neuralweb/cortex.py]" time="0.016" /><testcase classname="tests.test_deploy_update_self_heal" name="test_import_cached_module_triggers_api_restart[engine/neuralweb/earnings_context_reader.py]" time="0.020" /><testcase classname="tests.test_deploy_update_self_heal" name="test_import_cached_module_triggers_api_restart[engine/neuralweb/chart_perception.py]" time="0.015" /><testcase classname="tests.test_deploy_update_self_heal" name="test_import_cached_module_triggers_api_restart[engine/neuralweb/doctrine.py]" time="0.014" /><testcase classname="tests.test_deploy_update_self_heal" name="test_import_cached_module_triggers_api_restart[engine/neuralweb/envelope.py]" time="0.014" /><testcase classname="tests.test_deploy_update_self_heal" name="test_import_cached_module_triggers_api_restart[engine/neuralweb/synapse.py]" time="0.016" /><testcase classname="tests.test_deploy_update_self_heal" name="test_import_cached_module_triggers_api_restart[engine/neuralweb/key_pool.py]" time="0.016" /><testcase classname="tests.test_deploy_update_self_heal" name="test_import_cached_module_triggers_api_restart[engine/codex_lane/runner.py]" time="0.013" /><testcase classname="tests.test_deploy_update_self_heal" name="test_import_cached_module_triggers_api_restart[engine/llm_auth.py]" time="0.013" /><testcase classname="tests.test_deploy_update_self_heal" name="test_import_cached_module_triggers_api_restart[engine/portfolio_brief.py]" time="0.017" /><testcase classname="tests.test_deploy_update_self_heal" name="test_import_cached_module_triggers_api_restart[engine/tushare_freshness.py]" time="0.015" /><testcase classname="tests.test_deploy_update_self_heal" name="test_import_cached_module_triggers_api_restart[engine/earnings_narrative/__init__.py]" time="0.031" /><testcase classname="tests.test_deploy_update_self_heal" name="test_import_cached_module_triggers_api_restart[engine/earnings_narrative/context_packets.py]" time="0.018" /><testcase classname="tests.test_deploy_update_self_heal" name="test_import_cached_module_triggers_api_restart[engine/earnings_narrative/contracts.py]" time="0.021" /><testcase classname="tests.test_deploy_update_self_heal" name="test_import_cached_module_triggers_api_restart[engine/earnings_narrative/digest.py]" time="0.019" /><testcase classname="tests.test_deploy_update_self_heal" name="test_import_cached_module_triggers_api_restart[engine/earnings_narrative/private_publication.py]" time="0.019" /><testcase classname="tests.test_deploy_update_self_heal" name="test_import_cached_module_triggers_api_restart[engine/earnings_narrative/promotion.py]" time="0.019" /><testcase classname="tests.test_deploy_update_self_heal" name="test_import_cached_module_triggers_api_restart[engine/earnings_narrative/public_wire.py]" time="0.013" /><testcase classname="tests.test_deploy_update_self_heal" name="test_import_cached_module_triggers_api_restart[engine/earnings_narrative/story.py]" time="0.016" /><testcase classname="tests.test_deploy_update_self_heal" name="test_import_cached_module_triggers_api_restart[engine/earnings_narrative/story_packets.py]" time="0.016" /><testcase classname="tests.test_deploy_update_self_heal" name="test_import_cached_module_triggers_api_restart[engine/press/__init__.py]" time="0.014" /><testcase classname="tests.test_deploy_update_self_heal" name="test_import_cached_module_triggers_api_restart[engine/press/earnings_adapter.py]" time="0.025" /><testcase classname="tests.test_deploy_update_self_heal" name="test_import_cached_module_triggers_api_restart[engine/context_index/packet.py]" time="0.016" /><testcase classname="tests.test_deploy_update_self_heal" name="test_import_cached_module_triggers_api_restart[engine/context_index/fusion.py]" time="0.017" /><testcase classname="tests.test_deploy_update_self_heal" name="test_import_cached_module_triggers_api_restart[engine/context_index/gitinfo.py]" time="0.016" /><testcase classname="tests.test_deploy_update_self_heal" name="test_import_cached_module_triggers_api_restart[engine/context_index/lexical.py]" time="0.017" /><testcase classname="tests.test_deploy_update_self_heal" name="test_import_cached_module_triggers_api_restart[engine/context_index/structured.py]" time="0.015" /><testcase classname="tests.test_deploy_update_self_heal" name="test_import_cached_module_triggers_api_restart[engine/marketing/chart_render.py]" time="0.026" /><testcase classname="tests.test_deploy_update_self_heal" name="test_import_cached_module_triggers_api_restart[engine/marketing/confluence_source.py]" time="0.022" /><testcase classname="tests.test_deploy_update_self_heal" name="test_import_cached_module_triggers_api_restart[engine/marketing/__init__.py]" time="0.023" /><testcase classname="tests.test_deploy_update_self_heal" name="test_import_cached_module_triggers_api_restart[engine/marketing/state.py]" time="0.033" /><testcase classname="tests.test_deploy_update_self_heal" name="test_import_cached_module_triggers_api_restart[engine/marketing/authority.py]" time="0.028" /><testcase classname="tests.test_deploy_update_self_heal" name="test_import_cached_module_triggers_api_restart[engine/marketing/charter.py]" time="0.026" /><testcase classname="tests.test_deploy_update_self_heal" name="test_import_cached_module_triggers_api_restart[engine/marketing/claims.py]" time="0.034" /><testcase classname="tests.test_deploy_update_self_heal" name="test_import_cached_module_triggers_api_restart[engine/marketing/cmo.py]" time="0.020" /><testcase classname="tests.test_deploy_update_self_heal" name="test_import_cached_module_triggers_api_restart[engine/marketing/departments.py]" time="0.020" /><testcase classname="tests.test_deploy_update_self_heal" name="test_import_cached_module_triggers_api_restart[engine/marketing/economics.py]" time="0.027" /><testcase classname="tests.test_deploy_update_self_heal" name="test_import_cached_module_triggers_api_restart[engine/marketing/events.py]" time="0.023" /><testcase classname="tests.test_deploy_update_self_heal" name="test_import_cached_module_triggers_api_restart[engine/marketing/ledgers.py]" time="0.017" /><testcase classname="tests.test_deploy_update_self_heal" name="test_import_cached_module_triggers_api_restart[engine/marketing/opportunity_bus.py]" time="0.020" /><testcase classname="tests.test_deploy_update_self_heal" name="test_import_cached_module_triggers_api_restart[engine/marketing/publication.py]" time="0.015" /><testcase classname="tests.test_deploy_update_self_heal" name="test_import_cached_module_triggers_api_restart[engine/live_quotes.py]" time="0.020" /><testcase classname="tests.test_deploy_update_self_heal" name="test_import_cached_module_triggers_api_restart[lib/config.py]" time="0.013" /><testcase classname="tests.test_deploy_update_self_heal" name="test_import_cached_module_triggers_api_restart[lib/ai_costs.py]" time="0.016" /><testcase classname="tests.test_deploy_update_self_heal" name="test_import_cached_module_triggers_api_restart[lib/mastermind_response_log.py]" time="0.017" /><testcase classname="tests.test_deploy_update_self_heal" name="test_non_api_path_does_not_trigger_api_restart[engine/neuralweb/doctrine/00_identity.md]" time="0.018" /><testcase classname="tests.test_deploy_update_self_heal" name="test_non_api_path_does_not_trigger_api_restart[site/index.html]" time="0.015" /><testcase classname="tests.test_deploy_update_self_heal" name="test_non_api_path_does_not_trigger_api_restart[site/feeds/risk_radar.json]" time="0.014" /><testcase classname="tests.test_deploy_update_self_heal" name="test_non_api_path_does_not_trigger_api_restart[data/qbus/items.parquet]" time="0.015" /><testcase classname="tests.test_deploy_update_self_heal" name="test_non_api_path_does_not_trigger_api_restart[research/DO_NOT_REBUILD.md]" time="0.015" /><testcase classname="tests.test_deploy_update_self_heal" name="test_non_api_path_does_not_trigger_api_restart[docs/DESIGN_DOCTRINE.md]" time="0.014" /><testcase classname="tests.test_deploy_update_self_heal" name="test_non_api_path_does_not_trigger_api_restart[engine/master_brain.py]" time="0.015" /><testcase classname="tests.test_deploy_update_self_heal" name="test_non_api_path_does_not_trigger_api_restart[engine/ai_desk.py]" time="0.015" /><testcase classname="tests.test_deploy_update_self_heal" name="test_non_api_path_does_not_trigger_api_restart[engine/qledger.py]" time="0.037" /><testcase classname="tests.test_deploy_update_self_heal" name="test_non_api_path_does_not_trigger_api_restart[engine/china_radar.py]" time="0.019" /><testcase classname="tests.test_deploy_update_self_heal" name="test_non_api_path_does_not_trigger_api_restart[engine/neuralweb/constitution.py]" time="0.017" /><testcase classname="tests.test_deploy_update_self_heal" name="test_non_api_path_does_not_trigger_api_restart[engine/context_index/ingest.py]" time="0.014" /><testcase classname="tests.test_deploy_update_self_heal" name="test_non_api_path_does_not_trigger_api_restart[engine/context_index/chunking.py]" time="0.013" /><testcase classname="tests.test_deploy_update_self_heal" name="test_non_api_path_does_not_trigger_api_restart[engine/context_index/health.py]" time="0.015" /><testcase classname="tests.test_deploy_update_self_heal" name="test_non_api_path_does_not_trigger_api_restart[contracts/government_revenue/government_budget_program_graph.v1.schema.json]" time="0.017" /><testcase classname="tests.test_deploy_update_self_heal" name="test_non_api_path_does_not_trigger_api_restart[contracts/government_revenue/government_procurement_event.v1.schema.json]" time="0.015" /><testcase classname="tests.test_deploy_update_self_heal" name="test_non_api_path_does_not_trigger_api_restart[config/government_revenue/candidate_historical_suppressions.v1.json]" time="0.023" /><testcase classname="tests.test_deploy_update_self_heal" name="test_non_api_path_does_not_trigger_api_restart[config/government_revenue/candidate_issuance_corrections.v1.json]" time="0.019" /><testcase classname="tests.test_deploy_update_self_heal" name="test_non_api_path_does_not_trigger_api_restart[engine/marketing/seo_director.py]" time="0.021" /><testcase classname="tests.test_deploy_update_self_heal" name="test_non_api_path_does_not_trigger_api_restart[engine/marketing/social_publisher.py]" time="0.018" /><testcase classname="tests.test_deploy_update_self_heal" name="test_non_api_path_does_not_trigger_api_restart[engine/marketing/outbox.py]" time="0.018" /><testcase classname="tests.test_deploy_update_self_heal" name="test_non_api_path_does_not_trigger_api_restart[engine/marketing/rejections.py]" time="0.014" /><testcase classname="tests.test_deploy_update_self_heal" name="test_non_api_path_does_not_trigger_api_restart[scripts/build_site.py]" time="0.019" /><testcase classname="tests.test_deploy_update_self_heal" name="test_non_api_path_does_not_trigger_api_restart[scripts/marketing_publisher.py]" time="0.017" /><testcase classname="tests.test_deploy_update_self_heal" name="test_non_api_path_does_not_trigger_api_restart[engine/spine.py]" time="0.019" /><testcase classname="tests.test_deploy_update_self_heal" name="test_non_api_path_does_not_trigger_api_restart[admin/server.py]" time="0.017" /><testcase classname="tests.test_deploy_update_self_heal" name="test_non_api_path_does_not_trigger_api_restart[templates/index.html.j2]" time="0.017" /><testcase classname="tests.test_deploy_update_self_heal" name="test_non_api_path_does_not_trigger_api_restart[config/intelligence_workspace/datapoints.v1.json.bak]" time="0.014" /><testcase classname="tests.test_deploy_update_self_heal" name="test_non_api_path_does_not_trigger_api_restart[contracts/intelligence_workspace/datapoint_value.schema.json.bak]" time="0.019" /><testcase classname="tests.test_deploy_update_self_heal" name="test_non_api_path_does_not_trigger_api_restart[contracts/intelligence_workspace/ai_context_envelope.v1.schema.json.bak]" time="0.029" /><testcase classname="tests.test_deploy_update_self_heal" name="test_non_api_path_does_not_trigger_api_restart[engine/intelligence_workspaces/resolver.py]" time="0.021" /><testcase classname="tests.test_deploy_update_self_heal" name="test_non_api_path_does_not_trigger_api_restart[lib/dataoses/registry.py]" time="0.015" /><testcase classname="tests.test_deploy_update_self_heal" name="test_non_api_path_does_not_trigger_api_restart[config/dataset_registry.yml.bak]" time="0.020" /><testcase classname="tests.test_deploy_update_self_heal" name="test_non_api_path_does_not_trigger_api_restart[config/theme_sources.yml.bak]" time="0.014" /><testcase classname="tests.test_deploy_update_self_heal" name="test_non_api_path_does_not_trigger_api_restart[engine/theme_graph/stores.py]" time="0.015" /><testcase classname="tests.test_deploy_update_self_heal" name="test_non_api_path_does_not_trigger_api_restart[engine/theme_graph/materialize.py]" time="0.015" /><testcase classname="tests.test_deploy_update_self_heal" name="test_non_api_path_does_not_trigger_api_restart[collectors/equity_earnings.py.bak]" time="0.020" /><testcase classname="tests.test_deploy_update_self_heal" name="test_non_api_path_does_not_trigger_api_restart[engine/earnings_catalysts.py]" time="0.022" /><testcase classname="tests.test_deploy_update_self_heal" name="test_import_cached_module_triggers_admin_restart[admin/server.py]" time="0.018" /><testcase classname="tests.test_deploy_update_self_heal" name="test_import_cached_module_triggers_admin_restart[templates/theme.css]" time="0.023" /><testcase classname="tests.test_deploy_update_self_heal" name="test_import_cached_module_triggers_admin_restart[engine/qledger_store.py]" time="0.022" /><testcase classname="tests.test_deploy_update_self_heal" name="test_import_cached_module_triggers_admin_restart[admin/marketing.py]" time="0.023" /><testcase classname="tests.test_deploy_update_self_heal" name="test_import_cached_module_triggers_admin_restart[admin/metabolism_panel.py]" time="0.019" /><testcase classname="tests.test_deploy_update_self_heal" name="test_import_cached_module_triggers_admin_restart[admin/neural_web.py]" time="0.017" /><testcase classname="tests.test_deploy_update_self_heal" name="test_import_cached_module_triggers_admin_restart[admin/orchestrator_chat.py]" time="0.019" /><testcase classname="tests.test_deploy_update_self_heal" name="test_import_cached_module_triggers_admin_restart[admin/ai_cost.py]" time="0.015" /><testcase classname="tests.test_deploy_update_self_heal" name="test_import_cached_module_triggers_admin_restart[admin/mastermind_logs.py]" time="0.024" /><testcase classname="tests.test_deploy_update_self_heal" name="test_import_cached_module_triggers_admin_restart[admin/prophet.py]" time="0.014" /><testcase classname="tests.test_deploy_update_self_heal" name="test_import_cached_module_triggers_admin_restart[admin/trade_memory.py]" time="0.012" /><testcase classname="tests.test_deploy_update_self_heal" name="test_import_cached_module_triggers_admin_restart[app/billing.py]" time="0.020" /><testcase classname="tests.test_deploy_update_self_heal" name="test_import_cached_module_triggers_admin_restart[config/plans.yml]" time="0.015" /><testcase classname="tests.test_deploy_update_self_heal" name="test_import_cached_module_triggers_admin_restart[engine/marketing/outbox.py]" time="0.014" /><testcase classname="tests.test_deploy_update_self_heal" name="test_import_cached_module_triggers_admin_restart[engine/marketing/rejections.py]" time="0.020" /><testcase classname="tests.test_deploy_update_self_heal" name="test_import_cached_module_triggers_admin_restart[engine/marketing/__init__.py]" time="0.013" /><testcase classname="tests.test_deploy_update_self_heal" name="test_import_cached_module_triggers_admin_restart[engine/marketing/state.py]" time="0.013" /><testcase classname="tests.test_deploy_update_self_heal" name="test_import_cached_module_triggers_admin_restart[engine/marketing/authority.py]" time="0.015" /><testcase classname="tests.test_deploy_update_self_heal" name="test_import_cached_module_triggers_admin_restart[engine/marketing/charter.py]" time="0.014" /><testcase classname="tests.test_deploy_update_self_heal" name="test_import_cached_module_triggers_admin_restart[engine/marketing/claims.py]" time="0.015" /><testcase classname="tests.test_deploy_update_self_heal" name="test_import_cached_module_triggers_admin_restart[engine/marketing/cmo.py]" time="0.046" /><testcase classname="tests.test_deploy_update_self_heal" name="test_import_cached_module_triggers_admin_restart[engine/marketing/departments.py]" time="0.015" /><testcase classname="tests.test_deploy_update_self_heal" name="test_import_cached_module_triggers_admin_restart[engine/marketing/economics.py]" time="0.014" /><testcase classname="tests.test_deploy_update_self_heal" name="test_import_cached_module_triggers_admin_restart[engine/marketing/events.py]" time="0.016" /><testcase classname="tests.test_deploy_update_self_heal" name="test_import_cached_module_triggers_admin_restart[engine/marketing/ledgers.py]" time="0.016" /><testcase classname="tests.test_deploy_update_self_heal" name="test_import_cached_module_triggers_admin_restart[engine/marketing/opportunity_bus.py]" time="0.027" /><testcase classname="tests.test_deploy_update_self_heal" name="test_import_cached_module_triggers_admin_restart[engine/marketing/publication.py]" time="0.016" /><testcase classname="tests.test_deploy_update_self_heal" name="test_import_cached_module_triggers_admin_restart[scripts/marketing_publisher.py]" time="0.024" /><testcase classname="tests.test_deploy_update_self_heal" name="test_import_cached_module_triggers_admin_restart[engine/marketing/social_publisher.py]" time="0.019" /><testcase classname="tests.test_deploy_update_self_heal" name="test_import_cached_module_triggers_admin_restart[engine/codex_provider.py]" time="0.015" /><testcase classname="tests.test_deploy_update_self_heal" name="test_import_cached_module_triggers_admin_restart[engine/codex_lane/runner.py]" time="0.014" /><testcase classname="tests.test_deploy_update_self_heal" name="test_import_cached_module_triggers_admin_restart[engine/llm_auth.py]" time="0.014" /><testcase classname="tests.test_deploy_update_self_heal" name="test_import_cached_module_triggers_admin_restart[engine/neuralweb/trade_memory.py]" time="0.014" /><testcase classname="tests.test_deploy_update_self_heal" name="test_import_cached_module_triggers_admin_restart[engine/neuralweb/support_map.py]" time="0.019" /><testcase classname="tests.test_deploy_update_self_heal" name="test_import_cached_module_triggers_admin_restart[engine/neuralweb/orchestrator_log.py]" time="0.015" /><testcase classname="tests.test_deploy_update_self_heal" name="test_import_cached_module_triggers_admin_restart[engine/neuralweb/ask_brain.py]" time="0.015" /><testcase classname="tests.test_deploy_update_self_heal" name="test_import_cached_module_triggers_admin_restart[lib/ai_costs.py]" time="0.024" /><testcase classname="tests.test_deploy_update_self_heal" name="test_import_cached_module_triggers_admin_restart[engine/neuralweb/key_pool.py]" time="0.014" /><testcase classname="tests.test_deploy_update_self_heal" name="test_import_cached_module_triggers_admin_restart[engine/metabolism/throttle.py]" time="0.014" /><testcase classname="tests.test_deploy_update_self_heal" name="test_import_cached_module_triggers_admin_restart[engine/metabolism/budget_gate.py]" time="0.015" /><testcase classname="tests.test_deploy_update_self_heal" name="test_import_cached_module_triggers_admin_restart[lib/mastermind_response_log.py]" time="0.014" /><testcase classname="tests.test_deploy_update_self_heal" name="test_import_cached_module_triggers_admin_restart[lib/project_runtime_state.py]" time="0.018" /><testcase classname="tests.test_deploy_update_self_heal" name="test_non_admin_path_does_not_trigger_admin_restart[site/index.html]" time="0.015" /><testcase classname="tests.test_deploy_update_self_heal" name="test_non_admin_path_does_not_trigger_admin_restart[data/qbus/items.parquet]" time="0.015" /><testcase classname="tests.test_deploy_update_self_heal" name="test_non_admin_path_does_not_trigger_admin_restart[engine/neuralweb/doctrine/00_identity.md]" time="0.016" /><testcase classname="tests.test_deploy_update_self_heal" name="test_non_admin_path_does_not_trigger_admin_restart[engine/neuralweb/cortex.py]" time="0.019" /><testcase classname="tests.test_deploy_update_self_heal" name="test_non_admin_path_does_not_trigger_admin_restart[engine/master_brain.py]" time="0.018" /><testcase classname="tests.test_deploy_update_self_heal" name="test_non_admin_path_does_not_trigger_admin_restart[engine/china_radar.py]" time="0.017" /><testcase classname="tests.test_deploy_update_self_heal" name="test_non_admin_path_does_not_trigger_admin_restart[engine/marketing/seo_director.py]" time="0.017" /><testcase classname="tests.test_deploy_update_self_heal" name="test_non_admin_path_does_not_trigger_admin_restart[engine/marketing/breaking_feed.py]" time="0.018" /><testcase classname="tests.test_deploy_update_self_heal" name="test_non_admin_path_does_not_trigger_admin_restart[engine/marketing/chart_render.py]" time="0.018" /><testcase classname="tests.test_deploy_update_self_heal" name="test_non_admin_path_does_not_trigger_admin_restart[engine/marketing/confluence_source.py]" time="0.029" /><testcase classname="tests.test_deploy_update_self_heal" name="test_non_admin_path_does_not_trigger_admin_restart[app/main.py]" time="0.025" /><testcase classname="tests.test_deploy_update_self_heal" name="test_non_admin_path_does_not_trigger_admin_restart[app/research.py]" time="0.018" /><testcase classname="tests.test_deploy_update_self_heal" name="test_non_admin_path_does_not_trigger_admin_restart[lib/config.py]" time="0.029" /><testcase classname="tests.test_deploy_update_self_heal" name="test_non_admin_path_does_not_trigger_admin_restart[scripts/build_site.py]" time="0.044" /><testcase classname="tests.test_deploy_update_self_heal" name="test_non_admin_path_does_not_trigger_admin_restart[templates/index.html.j2]" time="0.078" /><testcase classname="tests.test_deploy_update_self_heal" name="test_api_and_admin_regexes_are_distinct" time="0.005" /><testcase classname="tests.test_deploy_update_self_heal" name="test_update_reconciles_only_an_installed_press_unit" time="0.002" /><testcase classname="tests.test_deploy_update_self_heal" name="test_press_import_cached_path_triggers_daemon_restart[app/deploy/marketing-press-feeds.service]" time="0.029" /><testcase classname="tests.test_deploy_update_self_heal" name="test_press_import_cached_path_triggers_daemon_restart[scripts/marketing_fastlane_daemon.py]" time="0.021" /><testcase classname="tests.test_deploy_update_self_heal" name="test_press_import_cached_path_triggers_daemon_restart[engine/news_translate.py]" time="0.049" /><testcase classname="tests.test_deploy_update_self_heal" name="test_press_import_cached_path_triggers_daemon_restart[engine/marketing/breaking_feed.py]" time="0.056" /><testcase classname="tests.test_deploy_update_self_heal" name="test_press_import_cached_path_triggers_daemon_restart[engine/marketing/press_providers.py]" time="0.041" /><testcase classname="tests.test_deploy_update_self_heal" name="test_press_import_cached_path_triggers_daemon_restart[engine/marketing/press_lane.py]" time="0.049" /><testcase classname="tests.test_deploy_update_self_heal" name="test_press_import_cached_path_triggers_daemon_restart[engine/marketing/story_spine.py]" time="0.020" /><testcase classname="tests.test_deploy_update_self_heal" name="test_press_import_cached_path_triggers_daemon_restart[engine/marketing/sentinel.py]" time="0.035" /><testcase classname="tests.test_deploy_update_self_heal" name="test_press_import_cached_path_triggers_daemon_restart[engine/marketing/__init__.py]" time="0.021" /><testcase classname="tests.test_deploy_update_self_heal" name="test_press_import_cached_path_triggers_daemon_restart[engine/codex_provider.py]" time="0.020" /><testcase classname="tests.test_deploy_update_self_heal" name="test_press_import_cached_path_triggers_daemon_restart[engine/llm_auth.py]" time="0.022" /><testcase classname="tests.test_deploy_update_self_heal" name="test_press_import_cached_path_triggers_daemon_restart[engine/codex_lane/runner.py]" time="0.017" /><testcase classname="tests.test_deploy_update_self_heal" name="test_press_import_cached_path_triggers_daemon_restart[lib/ai_costs.py]" time="0.027" /><testcase classname="tests.test_deploy_update_self_heal" name="test_press_import_cached_path_triggers_daemon_restart[lib/config.py]" time="0.029" /><testcase classname="tests.test_deploy_update_self_heal" name="test_non_press_path_does_not_restart_daemon[config/marketing.yml]" time="0.030" /><testcase classname="tests.test_deploy_update_self_heal" name="test_non_press_path_does_not_restart_daemon[config/press_sources.yml]" time="0.028" /><testcase classname="tests.test_deploy_update_self_heal" name="test_non_press_path_does_not_restart_daemon[site/news.html]" time="0.016" /><testcase classname="tests.test_deploy_update_self_heal" name="test_non_press_path_does_not_restart_daemon[templates/news.html.j2]" time="0.019" /><testcase classname="tests.test_deploy_update_self_heal" name="test_non_press_path_does_not_restart_daemon[data/qbus/items.parquet]" time="0.026" /><testcase classname="tests.test_deploy_update_self_heal" name="test_non_press_path_does_not_restart_daemon[scripts/build_site.py]" time="0.015" /><testcase classname="tests.test_deploy_update_self_heal" name="test_non_press_path_does_not_restart_daemon[admin/server.py]" time="0.016" /><testcase classname="tests.test_deploy_update_self_heal" name="test_api_load_time_import_closure_is_covered_by_restart_regex" time="13.163" /><testcase classname="tests.test_deploy_update_self_heal" name="test_load_time_closure_probe_is_not_vacuous" time="2.938" /><testcase classname="tests.test_deploy_update_self_heal" name="test_contract_schema_pinned_by_api_closure_triggers_restart" time="9.295" /><testcase classname="tests.test_deploy_update_self_heal" name="test_pinned_schema_probe_is_not_vacuous" time="9.629" /><testcase classname="tests.test_deploy_update_self_heal" name="test_admin_load_time_import_closure_is_covered_by_restart_regex" time="4.152" /><testcase classname="tests.test_deploy_update_self_heal" name="test_admin_closure_probe_is_not_vacuous" time="2.175" /><testcase classname="tests.test_deploy_update_self_heal" name="test_dotted_import_still_reaches_the_package_init" time="0.003" /></testsuite></testsuites>
