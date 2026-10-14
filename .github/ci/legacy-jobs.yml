@@ -2344,6 +2344,8 @@ jobs:
     # suites read can still start this job.
     scope: exclusive
     paths:
+      # RIC Y1 (2026-10-14): engine/yield_momentum.py imports the B0 basis contract.
+      - "engine/rates_command_basis.py"
       # Rotation/risk context extends this owner's actual transitive read closure.
       - "engine/neuralweb/rotation_risk_context.py"
       - "lib/us_cash_calendar.py"
@@ -3621,6 +3623,8 @@ jobs:
     # 846 tracked / 127 concrete. Subject packages stay globbed.
     scope: exclusive
     paths:
+      # RIC Y1 (2026-10-14): engine/yield_momentum.py imports the B0 basis contract.
+      - "engine/rates_command_basis.py"
       - research/licenses/MARKET_MEMORY_HOUSE_MACRO_REUSE_2026-10-13.md
       # Native DailyBrief registration/producer import closure (PR #9037).
       - "engine/prophet_candidate_state.py"
@@ -4709,6 +4713,8 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      # RIC Y1 (2026-10-14): engine/yield_momentum.py imports the B0 basis contract.
+      - "engine/rates_command_basis.py"
       - "lib/intl_history_mount.py"
       - "tests/test_intl_history_mount.py"
       - "lib/intl_workspace_history.py"
@@ -5010,6 +5016,8 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      # RIC Y1 (2026-10-14): engine/yield_momentum.py imports the B0 basis contract.
+      - "engine/rates_command_basis.py"
       - "lib/intl_history_mount.py"
       - "lib/intl_workspace_history.py"
       - "tests/test_intl_history_mount.py"
@@ -5834,6 +5842,8 @@ jobs:
     # every concrete static import-closure path (curated_exclusive_closure_findings
     # gates it) plus the measured runtime in-tree reads of every class-A suite.
     paths:
+      # RIC Y1 (2026-10-14): engine/yield_momentum.py imports the B0 basis contract.
+      - "engine/rates_command_basis.py"
       - engine/neuralweb/market_memory_brain_citations.py
       - engine/neuralweb/market_memory_retained_catalog.py
       - engine/neuralweb/market_memory_retained_saved.py
@@ -7243,6 +7253,8 @@ jobs:
     # fails if a future import is not covered by this declaration.
     scope: exclusive
     paths:
+      # RIC Y1 (2026-10-14): engine/yield_momentum.py imports the B0 basis contract.
+      - "engine/rates_command_basis.py"
       - "lib/us_cash_calendar.py"
       - "lib/cn_calendar.py"
       - "lib/exchange_holidays.py"
@@ -8744,6 +8756,8 @@ jobs:
     # dynamic resource families; never fund unrelated matches by raising caps.
     scope: exclusive
     paths:
+      # RIC Y1 (2026-10-14): engine/yield_momentum.py imports the B0 basis contract.
+      - "engine/rates_command_basis.py"
       # Rotation/risk context extends this owner's actual transitive read closure.
       - "engine/neuralweb/rotation_risk_context.py"
       - "engine/risk_envelope.py"
@@ -11522,6 +11536,8 @@ jobs:
     # Static closure plus observed runtime config/test-support reads and package
     # initializers; AST/render fallbacks do not make the packing probes inputs.
     paths:
+      # RIC Y1 (2026-10-14): engine/yield_momentum.py imports the B0 basis contract.
+      - "engine/rates_command_basis.py"
       - "collectors/__init__.py"
       - "collectors/base.py"
       - "collectors/fred.py"
@@ -11620,6 +11636,8 @@ jobs:
     # the observed runtime test-support reads; widen it, never narrow it.
     scope: exclusive
     paths:
+      # RIC Y1 (2026-10-14): engine/yield_momentum.py imports the B0 basis contract.
+      - "engine/rates_command_basis.py"
       - ".github/ci/legacy-jobs.yml"
       - "collectors/__init__.py"
       - "collectors/base.py"
@@ -12095,6 +12113,8 @@ jobs:
     # Explicit measured closure: avoid unrelated opaque fallback selection.
     scope: exclusive
     paths:
+      # RIC Y1 (2026-10-14): engine/yield_momentum.py imports the B0 basis contract.
+      - "engine/rates_command_basis.py"
       - lib/intl_eod_publication.py
       - "lib/intl_history_mount.py"
       - "lib/intl_workspace_history.py"
@@ -12402,6 +12422,8 @@ jobs:
     # Curated named closure: integrity fixtures scan only pytest tmp_path;
     # opaque artifact traversal must not claim unrelated template ownership.
     paths:
+      # RIC Y1 (2026-10-14): engine/yield_momentum.py imports the B0 basis contract.
+      - "engine/rates_command_basis.py"
       - engine/neuralweb/market_memory_lineage.py
       - config/market_memory_canary.v1.json
       - engine/neuralweb/market_memory_episode_comparison.py
@@ -13462,6 +13484,8 @@ jobs:
     # Static closure plus observed runtime config/test-support reads and package
     # initializers; AST/render fallbacks do not make the packing probes inputs.
     paths:
+      # RIC Y1 (2026-10-14): engine/yield_momentum.py imports the B0 basis contract.
+      - "engine/rates_command_basis.py"
       - "collectors/__init__.py"
       - "collectors/base.py"
       - "collectors/fred.py"
@@ -14809,6 +14833,8 @@ jobs:
     # genuine import edges.
     scope: exclusive
     paths:
+      # RIC Y1 (2026-10-14): engine/yield_momentum.py imports the B0 basis contract.
+      - "engine/rates_command_basis.py"
       - research/licenses/MARKET_MEMORY_HOUSE_MACRO_REUSE_2026-10-13.md
       # Native DailyBrief registration/producer import closure (PR #9037).
       - "engine/prophet_candidate_state.py"
@@ -15528,6 +15554,8 @@ jobs:
     # 846 tracked / 74 concrete.
     scope: exclusive
     paths:
+      # RIC Y1 (2026-10-14): engine/yield_momentum.py imports the B0 basis contract.
+      - "engine/rates_command_basis.py"
       - research/licenses/MARKET_MEMORY_HOUSE_MACRO_REUSE_2026-10-13.md
       # Native DailyBrief registration/producer import closure (PR #9037).
       - "engine/prophet_candidate_state.py"
@@ -17504,6 +17532,8 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      # RIC Y1 (2026-10-14): engine/yield_momentum.py imports the B0 basis contract.
+      - "engine/rates_command_basis.py"
       - engine/neuralweb/market_memory_brain_citations.py
       - engine/neuralweb/market_memory_retained_catalog.py
       - engine/neuralweb/market_memory_retained_saved.py
@@ -18266,6 +18296,8 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      # RIC Y1 (2026-10-14): engine/yield_momentum.py imports the B0 basis contract.
+      - "engine/rates_command_basis.py"
       # cx-int engine (2026-10-13): the engine stream's five contract suites and their measured import closure.
       - engine/crypto_market_state.py
       - engine/crypto_universe.py
@@ -19438,6 +19470,8 @@ jobs:
     # no named closure file was removed.
     scope: exclusive
     paths:
+      # RIC Y1 (2026-10-14): engine/yield_momentum.py imports the B0 basis contract.
+      - "engine/rates_command_basis.py"
       - research/licenses/MARKET_MEMORY_HOUSE_MACRO_REUSE_2026-10-13.md
       # Native DailyBrief registration/producer import closure (PR #9037).
       - "engine/prophet_candidate_state.py"
@@ -23407,6 +23441,25 @@ jobs:
       - name: ric-y0-yield-momentum
         run: python -m pytest tests/test_yield_momentum.py -q -p no:cacheprovider
 
+  ric-y1-curve-accounting:
+    if: ${{ false }}
+    gate: code
+    # RIC Y1 (A22/A23/A24, 2026-10-14): engine/yield_momentum.build_curve_accounting qualifies the 10y nominal/real/KW-term-premium inputs as B0 basis records and runs the canonical rates_command_basis comparison rules; ACM stays explicitly missing. Listed on engine/rates_command_basis.py too because the suite pins B0 rule outcomes. Hermetic: synthetic frames, no data/ reads or writes, no network.
+    timeout-minutes: 10
+    paths:
+      - "engine/yield_momentum.py"
+      - "engine/rates_command_basis.py"
+      - "tests/test_ric_y1_curve_accounting.py"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install minimal deps
+        run: pip install pytest pandas numpy pyarrow pyyaml
+      - name: ric-y1-curve-accounting
+        run: python -m pytest tests/test_ric_y1_curve_accounting.py -q -p no:cacheprovider
   unrun-macro-panels:
     # commodities / forex / rates / news / policy panels and their calibration guards.
     if: ${{ false }}
@@ -24462,6 +24515,8 @@ jobs:
     # 846 tracked / 74 concrete. Subject packages stay globbed.
     scope: exclusive
     paths:
+      # RIC Y1 (2026-10-14): engine/yield_momentum.py imports the B0 basis contract.
+      - "engine/rates_command_basis.py"
       - research/licenses/MARKET_MEMORY_HOUSE_MACRO_REUSE_2026-10-13.md
       # Native DailyBrief registration/producer import closure (PR #9037).
       - "engine/prophet_candidate_state.py"
@@ -24938,6 +24993,8 @@ jobs:
     # contract-delta closure on 673a0a5a (a sparse worktree omits those trees).
     scope: exclusive
     paths:
+      # RIC Y1 (2026-10-14): engine/yield_momentum.py imports the B0 basis contract.
+      - "engine/rates_command_basis.py"
       - engine/neuralweb/market_memory_brain_citations.py
       - scripts/initialize_market_memory_w1a.py
       - engine/neuralweb/market_memory_retained_catalog.py
@@ -27026,6 +27083,8 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      # RIC Y1 (2026-10-14): engine/yield_momentum.py imports the B0 basis contract.
+      - "engine/rates_command_basis.py"
       - engine/neuralweb/market_memory_brain_citations.py
       - engine/neuralweb/market_memory_retained_catalog.py
       - engine/neuralweb/market_memory_retained_saved.py
@@ -28601,6 +28660,8 @@ jobs:
     # the nightly engine shell). No data/** fallback.
     scope: exclusive
     paths:
+      # RIC Y1 (2026-10-14): engine/yield_momentum.py imports the B0 basis contract.
+      - "engine/rates_command_basis.py"
       - "lib/us_cash_calendar.py"
       - "lib/cn_calendar.py"
       - "lib/exchange_holidays.py"
@@ -29574,6 +29635,8 @@ jobs:
     # below therefore replace inference and list the whole import closure.
     timeout-minutes: 10
     paths:
+      # RIC Y1 (2026-10-14): engine/yield_momentum.py imports the B0 basis contract.
+      - "engine/rates_command_basis.py"
       - "engine/grey_deer_pullback_forward.py"
       - "engine/grey_deer_pullback_forward_grade.py"
       - "scripts/__init__.py"
@@ -29657,6 +29720,8 @@ jobs:
     # W7 adds the T12 episode-sample / negative-control builder. Still hermetic.
     timeout-minutes: 10
     paths:
+      # RIC Y1 (2026-10-14): engine/yield_momentum.py imports the B0 basis contract.
+      - "engine/rates_command_basis.py"
       - "scripts/research/grey_deer_pullback_stage1.py"
       - "scripts/research/grey_deer_panel_adjust.py"
       - "scripts/research/grey_deer_pullback_stage1_schema.py"
