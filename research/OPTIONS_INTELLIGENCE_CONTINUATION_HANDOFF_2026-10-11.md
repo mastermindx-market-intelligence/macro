@@ -581,10 +581,12 @@ minimax, grok, cursor, glm) → optional bounded workers. No native leaf swarm; 
 
 ## Lane matrix
 
-(D80 2026-10-14T04:05Z snapshot.) Rows superseding older rows below:
+(D81 2026-10-14T04:15Z snapshot.) Rows superseding older rows below:
 
 | lane | state |
 |---|---|
+| F02-Q2 (live flow unknown expiry) | REQUEST_REPAIR round 1, RUNNING on Cursor. Round 0 (`f02-q2c`, rc=0, 04:00:59–04:05:18Z) DELIVERED commits `42415b1a` (tests) and `ab5bb1be` (fix), pushed. The seat verified 9 RED + 2 GREEN at base and 11 GREEN after; pc gate 358 passed + `test_flow_signals` 99 passed; the 12 API tests pass on ubuntu2. Three defects: (1) `_classify_expiry` raises `TypeError` on a tz-aware expiry (ruling 1); (2) the ruling-6 vocabulary search was not reported; (3) the PR-body draft overstates the live reach. Repair lane `f02-q2c-r1` (mastermind-pc, `gpt-5.3-codex-high`, `timeout 5400`, started 04:11:50Z, same worktree and branch); watcher `bg5mdwbbz` (D81) |
+| F02-Q2 live reach | Defense-in-depth. `process_batch` filters `expirations_valid` (#5102, `engine/live_flow.py:808-812`; `_is_canonical_date` requires a canonical `YYYY-MM-DD` str `>= session_day`) before `_accumulate_tide` (only caller, line 1013) and `_enrich_contract_row` (only caller, line 1073). Today's live path therefore never reaches the unknown branch, and `unclassified` stays 0. The repair lane confirms this with citations (D81) |
 | F02-Q2 (live flow unknown expiry) | RUNNING on Cursor CLI (operator carrier decision, D80). Lane `f02-q2c`, mastermind-pc, `cursor-agent` 2026.10.12, model `gpt-5.3-codex-high`. Worktree `~/lanes/wt/f02-q2c` on `claude/f02q2-unknown-expiry-not-0dte-20261013` at `42415b1a`. Launched 2026-10-14T04:01:00Z with an 18000 s kill. Return dir `~/lanes/returns/f02-q2c/`; watcher `b8023y7gq`. The ubuntu3 `~/lanes/wt/f02-q2` is dead and left untouched; f02-q2c is the only writer on the branch (D80) |
 | Lane carrier (external) | Cursor CLI replaces Grok for new external lanes when `pool hosts` shows no eligible Fabric host (operator, D80). Logged in: mastermind-pc, ubuntu2 (never its push-disabled macro repo), m2studio (load 65–79, avoid). Not logged in: ubuntu0, ubuntu3. mb: keychain locked. m1: not installed. Grok is still exhausted for the week (D78) |
 | #985 OATRUTH (+N02-U2) / #983 M03T | PRODUCTION_PROOF. #985 merged 2026-10-14T03:03:16Z `5fa856bf`. The git-gated release `--target-sha 5fa856bfad4819f5befc7af66488965abdc01c75` (forward from live `afae6020`) ended DONE/healthy at 03:17:28Z. Identity triple agrees (`.deployment-id`, `.gitsrc` HEAD, wire `data-dpl-id`). Edge chunks carry the new literals and not the removed ones. CI e2e at three viewports ran on byte-identical trees. Proof comments 6160113742 (#985) and 6160113968 (#983). ACCEPTANCE stays open on one operator step: the entitled, signed-in real-data render (D79) |
@@ -1917,3 +1919,41 @@ NEXT:
 3. Wed 2026-10-14 15–19Z: read-only measurement of the `/live/flow_pulse.json` `source_asof` and `/live/intraday_quotes.json` `meta.source_asof` ages (D04-A2 release precondition).
 4. #8920 watcher `bqitfw30c` event → R04-B2 and the M04 red specs (M04 is also gated on #8684).
 5. Operator-only: the sign-in for the entitled render (ruling 3).
+
+### D81 (2026-10-14T04:15Z) — F02-Q2 round 0 judged by artifact: two commits accepted, REQUEST_REPAIR round 1 for a tz-aware raise, an unreported search and an overstated live reach
+
+Facts observed this cycle (each re-run or read by the seat):
+- Lane `f02-q2c` (mastermind-pc, Cursor `gpt-5.3-codex-high`) ran 04:00:59–04:05:18Z and ended rc=0. Return `~/lanes/returns/f02-q2c/return.md` is STATUS: PARTIAL. Watcher `b8023y7gq` ended state=ENDED at 04:09:13Z.
+- Commits on `claude/f02q2-unknown-expiry-not-0dte-20261013`:
+  - `42415b1ae3e7` (tests);
+  - `ab5bb1bec54f516c47ca8c5fd839905c5fe8aa14` (fix: `_classify_expiry` helper, used by `_enrich_contract_row` and the tide DTE split; `build_dte_tide_current` adds `unclassified {ncp, npp}`; schema `live_flow.dte_tide/v1` unchanged).
+  - Pushed; local HEAD equals the remote. Custody clean (#9080 MERGED `f1fc07bf`).
+- Seat re-runs:
+  - Against base `a0fa9004`: 9 RED + 2 GREEN. After the fix: 11 GREEN.
+  - mastermind-pc: `test_live_flow.py` + `test_flow_enrich.py` = 358 passed (12 API tests skipped; no fastapi there); `test_flow_signals.py` = 99 passed.
+  - ubuntu2 venv (fastapi 0.143): the 12 `TestAPIRoutes`/`TestAPIParamSanitization` tests pass at `ab5bb1be`.
+  - The snapshot-only failures on ubuntu2 come from the missing `scripts/` dir and are identical at base and fix.
+- Diff `a0fa9004..ab5bb1be -- engine/live_flow.py`: hunks only at the helper, `_enrich_contract_row`, the tide split and `build_dte_tide_current`. `diff --check` is clean.
+- Edge probe of `_classify_expiry` (ubuntu2, session `2026-07-02`):
+  - Unknown → `(None, "unknown")`: None, NaN, `""`, `"nan"`, `"None"`, `"not-a-date"`, past `"2026-07-01"`, NaT, `20260705.0`, `1`, bytes, `object()`.
+  - `"2026-07-02"` → `(0, "0d")`; `"20260705"` and int 20260705 → `(3, "1_7d")`; naive `2026-07-12` → `(10, "8_30d")`; `"9999-12-31"` → `90p`.
+  - **Raises** `TypeError: Cannot subtract tz-naive and tz-aware datetime-like objects.` for `pd.Timestamp("2026-07-12", tz="UTC")` and `"2026-07-12T00:00:00Z"`. The subtraction sits outside the `try`. Because the fix also removed the tide split's `try/except: pass`, such a value would now raise where it was swallowed before.
+- Reach: `process_batch` filters on `expirations_valid` (`engine/live_flow.py:808-812`, from #5102 `4b42c6f5d99`, 2026-08-09). `_is_canonical_date` (line 243) accepts only a `str` that matches the canonical date regex and round-trips through isoformat, and the filter also requires `>= session_day`. Unreadable, past, compact and tz-aware expiries are therefore dropped before `_accumulate_tide` (only caller: line 1013) and `_enrich_contract_row` (only caller: line 1073). The fix hardens the helper contract; it does not change today's live output.
+- Dependency: F02-Q2T (Terminal #986) is live (ledger D60, line 1800). The "no PR until F02-Q2T is live" gate is met.
+
+Rulings:
+1. ACCEPT `42415b1a` and `ab5bb1be` as delivered work; they are not rewritten.
+2. REQUEST_REPAIR round 1, one lane `f02-q2c-r1` on the same carrier, worktree and branch (single writer preserved). Packet: seat scratch `leads/F02Q2C_R1/prompt.md` (pc `~/lanes/returns/f02-q2c-r1/prompt.md`). Defects and their re-checks:
+   1. The tz-aware raise. Fix: `tz_localize(None)` on tz-aware `exp_ts`/`sess_ts`, which keeps the wall-clock date. Tests first, in a new commit: the two tz-aware cases must be RED at `ab5bb1be`; a never-raises parametrization over every probed value, each asserting its exact tuple.
+   2. The ruling-6 published-vocabulary search, cited, GAP only.
+   3. The PR-body reach correction (defense-in-depth; `unclassified` stays 0 on the live path; #5102 named).
+
+   Gates: the commission's full suites, a diff limited to `_classify_expiry` and the test class, `diff --check`, a clean tree, push, and local equals remote.
+3. After the round-1 return the seat re-runs the tz probe and the targeted tests itself. On ACCEPT it opens the Macro PR with the `merge-on-green` label only (never `--auto`). A second round without observable delta bans a third identical one (O.11).
+
+NEXT:
+1. Watcher `bg5mdwbbz` event → judge `f02-q2c-r1` by artifact (ruling 3).
+2. #8923 watcher `b6y5c7v9y` → on MERGED: `pool hosts`, then Fabric or Cursor per D80 ruling 1, overlap scans, then R04-B1 and D04-A2.
+3. Wed 2026-10-14 15–19Z: the D04-A2 read-only source-clock measurement.
+4. #8920/#9079/#9083 watcher `bp9y00b9l` (re-armed after `bqitfw30c` timed out) → R04-B2 and the M04 red specs (M04 is also gated on #8684).
+5. Operator-only: the sign-in for the entitled render (D80 ruling 3).
