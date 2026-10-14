@@ -1127,9 +1127,16 @@ class TestT0FixAContract:
         )
         a = build_board(root=tmp_path)
         b = build_board(root=tmp_path, cutoff="2026-10-12")
-        assert self._strip_volatile(a, strip_countdown=True) == self._strip_volatile(
-            b, strip_countdown=True
-        )
+        # T0-B amendment: each row's basis carries its cutoff BY DESIGN, so
+        # the basis records are stripped too before the unchanged-input
+        # comparison (the basis cutoff law is pinned by TestT0FixBBasisContract).
+        strips = [self._strip_volatile(art, strip_countdown=True) for art in (a, b)]
+        for snap in strips:
+            snap["board"]["rate_path_row"].pop("basis", None)
+            nc = snap["board"]["inflation_row"].get("nearest_cpi")
+            if isinstance(nc, dict):
+                nc.pop("basis", None)
+        assert strips[0] == strips[1]
         # and the countdown really did move
         assert (
             a["board"]["inflation_row"]["nearest_cpi"]["countdown"]["state"] == "historical"
@@ -1298,3 +1305,216 @@ class TestT0FixAContract:
         assert (
             "build_board(cutoff=datetime.now(timezone.utc).date().isoformat())" in text
         )
+
+
+# ---------------------------------------------------------------------------
+# T0-FIX-B: board rows carry rates_command_basis.v1 QualifiedObservations
+# ---------------------------------------------------------------------------
+
+class TestT0FixBBasisContract:
+    """T0-B contract: both quantitative board rows carry their basis as a
+    frozen rates_command_basis.v1 QualifiedObservation (`.to_dict()`), so the
+    C0 comparison layer can refuse cross-basis gaps (ZQ≠SR3, CPI≠PCE,
+    forecast≠first print) from the row itself. All fixtures synthetic."""
+
+    @staticmethod
+    def _schema():
+        import jsonschema
+
+        schema = json.loads(
+            (
+                Path(__file__).resolve().parents[1]
+                / "contracts"
+                / "rates_command_basis.v1.schema.json"
+            ).read_text(encoding="utf-8")
+        )
+        return jsonschema.Draft202012Validator(
+            {"$ref": "#/$defs/QualifiedObservation", "$defs": schema["$defs"]}
+        )
+
+    @staticmethod
+    def _fed_path(label="ZQ fed-funds futures", m12=3.2, asof="2026-10-08"):
+        fp = {
+            "asof": asof,
+            "policy_rate": 3.88,
+            "implied": {"m1": 3.85, "m3": 3.7, "m6": 3.5, "m12": m12},
+            "implied_bp_12m": -68,
+            "implied_cuts_12m": -3,
+        }
+        if label is not None:
+            fp["implied_source_en"] = label
+            fp["implied_source_zh"] = "ZQ 联邦基金期货"
+        return fp
+
+    @staticmethod
+    def _write(root, *, fed_path=None, artefact=None):
+        if fed_path is not None:
+            _t0_write_json(root / "bonds" / "bond_health.json", {"fed_path": fed_path})
+        if artefact is not None:
+            _t0_write_json(root / "release_forecast" / "latest.json", artefact)
+        return root
+
+    # 1. ZQ round trip ----------------------------------------------------
+    def test_zq_basis_round_trips(self, tmp_path):
+        from engine.rates_command_basis import QualifiedObservation
+
+        root = self._write(tmp_path / "zq", fed_path=self._fed_path())
+        b = build_board(root=root)["board"]["rate_path_row"]["basis"]
+        assert b is not None
+        self._schema().validate(b)
+        assert b["rate_index"] == "EFFR"
+        assert b["averaging_law"] == "arithmetic_calendar_day"
+        assert b["evidence_class"] == "market_implied_expectation"
+        assert b["value"] == 3.2 and b["value_state"] == "present"
+        assert QualifiedObservation.from_dict(b).to_dict() == b
+
+    # 2. SR3 vs ZQ refused from the row itself ----------------------------
+    def test_sr3_vs_zq_refused_from_board_rows(self, tmp_path):
+        from engine import rates_command_basis as rcb
+
+        zq_root = self._write(
+            tmp_path / "zq", fed_path=self._fed_path("ZQ fed-funds futures")
+        )
+        sr3_root = self._write(
+            tmp_path / "sr3", fed_path=self._fed_path("SR3 SOFR futures")
+        )
+        zq = build_board(root=zq_root)["board"]["rate_path_row"]["basis"]
+        sr3 = build_board(root=sr3_root)["board"]["rate_path_row"]["basis"]
+        assert zq["rate_index"] == "EFFR" and sr3["rate_index"] == "SOFR"
+        result = rcb.compare_qualified(
+            rcb.QualifiedObservation.from_dict(sr3),
+            rcb.QualifiedObservation.from_dict(zq),
+            rcb.RULES["sr3_vs_zq.v1"],
+        )
+        assert result.status.value == "not_comparable"
+        assert result.difference is None
+
+    # 3. Unknown source stays UNKNOWN --------------------------------------
+    def test_unknown_source_basis_is_unknown(self, tmp_path):
+        root = self._write(tmp_path / "nosrc", fed_path=self._fed_path(label=None))
+        b = build_board(root=root)["board"]["rate_path_row"]["basis"]
+        assert b is not None
+        self._schema().validate(b)
+        assert b["rate_index"] is None
+        assert b["averaging_law"] is None
+        assert b["source"] is None
+        assert "source_unknown" in b["limitations"]
+
+    # 4. Missing m12 is missing, never zero --------------------------------
+    def test_missing_m12_is_missing_not_zero(self, tmp_path):
+        for name, m12 in (("absent", None), ("nonnum", "abc")):
+            root = self._write(
+                tmp_path / name, fed_path=self._fed_path(m12=m12)
+            )
+            b = build_board(root=root)["board"]["rate_path_row"]["basis"]
+            assert b["value"] is None, (name, b)
+            assert b["value_state"] == "missing", (name, b)
+
+    # 5. first_print suffix only when declared ------------------------------
+    def test_cpi_first_print_only_when_declared(self, tmp_path):
+        import copy
+
+        undeclared = _t0_release_forecast_artifact()
+        root1 = self._write(tmp_path / "undecl", artefact=undeclared)
+        b1 = build_board(root=root1)["board"]["inflation_row"]["nearest_cpi"]["basis"]
+        assert b1 is not None
+        assert not b1["target"].endswith("_first_print")
+        assert "first_print_basis_undeclared" in b1["limitations"]
+
+        declared = copy.deepcopy(undeclared)
+        declared["upcoming"][0]["first_print_basis"] = "first_print"
+        root2 = self._write(tmp_path / "decl", artefact=declared)
+        b2 = build_board(root=root2)["board"]["inflation_row"]["nearest_cpi"]["basis"]
+        assert b2["target"].endswith("_first_print")
+        assert b2["obs_id"] != b1["obs_id"]
+
+    # 6. Model status carries into quality flags ---------------------------
+    def test_cpi_quality_flags(self, tmp_path):
+        root = self._write(tmp_path / "q", artefact=_t0_release_forecast_artifact())
+        b = build_board(root=root)["board"]["inflation_row"]["nearest_cpi"]["basis"]
+        assert b is not None
+        assert {"experimental", "accuracy_withheld"} <= set(b["quality"])
+
+    # 7. Unknown target ⇒ no basis at all ----------------------------------
+    def test_cpi_unknown_target_has_no_basis(self, tmp_path):
+        artefact = _t0_release_forecast_artifact()
+        del artefact["upcoming"][0]["target"]
+        root = self._write(tmp_path / "notarget", artefact=artefact)
+        nc = build_board(root=root)["board"]["inflation_row"]["nearest_cpi"]
+        assert nc is not None
+        assert nc["basis"] is None
+
+    # 8. Late evidence refused at the cutoff, row untouched -----------------
+    def test_late_input_refused_at_cutoff(self, tmp_path):
+        root = self._write(tmp_path / "late", fed_path=self._fed_path(asof="2026-10-08"))
+        board = build_board(root=root, cutoff="2026-10-07")["board"]
+        b = board["rate_path_row"]["basis"]
+        assert b["value"] is None and b["value_state"] == "refused"
+        assert "after_cutoff" in b["limitations"]
+        # The basis never edits the row's display fields.
+        assert board["rate_path_row"]["implied_bp_12m"] == -68
+        assert board["rate_path_row"]["implied_path"]["m12"] == 3.2
+        assert board["rate_path_row"]["implied_cuts_12m"] == -3
+
+    # 9. Determinism and cutoff binding ------------------------------------
+    def test_basis_deterministic_and_cutoff_bound(self, tmp_path):
+        root = self._write(tmp_path / "det", fed_path=self._fed_path())
+        a = build_board(root=root, cutoff="2026-10-12")["board"]["rate_path_row"]["basis"]
+        b = build_board(root=root, cutoff="2026-10-12")["board"]["rate_path_row"]["basis"]
+        assert a == b
+        c = build_board(root=root, cutoff="2026-10-13")["board"]["rate_path_row"]["basis"]
+        assert c["obs_id"] != a["obs_id"]
+
+    # 10. Top-level contract version + old-artefact compat ------------------
+    def test_top_level_contract_version(self, tmp_path):
+        import copy
+
+        root = self._write(
+            tmp_path / "top",
+            fed_path=self._fed_path(),
+            artefact=_t0_release_forecast_artifact(),
+        )
+        board = build_board(root=root)
+        assert board["basis_contract_version"] == "rates_command_basis.v1"
+        assert board["qualified_comparisons"] == []
+        old = copy.deepcopy(board)
+        old["board"]["rate_path_row"].pop("basis", None)
+        old["board"]["inflation_row"]["nearest_cpi"].pop("basis", None)
+        old.pop("basis_contract_version", None)
+        old.pop("qualified_comparisons", None)
+        assert compact_state(old) == compact_state(board)
+
+    # 11. Empty / malformed inputs never raise -------------------------------
+    def test_empty_and_malformed_inputs(self, tmp_path):
+        board = build_board(root=tmp_path / "empty")
+        assert board["board"]["rate_path_row"]["basis"] is None
+        assert board["board"]["inflation_row"]["nearest_cpi"] is None
+        root = self._write(
+            tmp_path / "mal", fed_path=self._fed_path(asof="not-a-date")
+        )
+        b = build_board(root=root)["board"]["rate_path_row"]["basis"]
+        assert b is not None
+        assert b["observation_precision"] == "unknown"
+        self._schema().validate(b)
+
+    # 12. ZH caption: missing cuts are unknown, never zero -------------------
+    def test_zh_caption_missing_cuts_is_unknown_not_zero(self):
+        import jinja2
+
+        src = (
+            Path(__file__).resolve().parents[1] / "templates" / "dashboard.html.j2"
+        ).read_text(encoding="utf-8")
+        i = src.index("{# ZH mirrors the EN preference order")
+        j = src.index("{# Gap chip (Fed vs market divergence) #}")
+        block = src[i:j]
+        env = jinja2.Environment()
+        out_empty = env.from_string(block).render(_dfp={})
+        assert "来源未记录" in out_empty
+        assert "次" not in out_empty
+        out_two = env.from_string(block).render(
+            _dfp={"implied_cuts_12m": 2.0, "implied_source_zh": "ZQ联邦基金期货"}
+        )
+        assert "约2次降息" in out_two
+        assert "（ZQ联邦基金期货）" in out_two
+        out_none = env.from_string(block).render(_dfp={"implied_cuts_12m": None})
+        assert "0次" not in out_none
