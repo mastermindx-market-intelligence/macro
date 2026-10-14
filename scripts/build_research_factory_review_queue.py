@@ -143,6 +143,30 @@ def _render_packet(lines: list[str], i: int, pkt: dict) -> None:
         lines.extend([f"### {i}. {pkt['diagnostic_id']}", "", pkt["note"], ""])
         metrics = pkt["frozen_gate_metrics"]
         lines.extend(_render_metric_line(k, metrics[k]) for k in PUBLIC_AGGREGATE_KEYS)
+        if "engineering_evidence" in pkt:
+            # Recompile before rendering caller-owned packet data. The exact
+            # compiled shape rejects extra fields and altered authority flags.
+            from engine.research_factory.review_queue import diagnostic_review_packet
+            attached = pkt["engineering_evidence"]
+            keys = ("schema", "identity", "accounting", "attempts", "controls")
+            flags = {"authority": "display_only", "scope": "SYNTHETIC_ENGINEERING_ONLY",
+                     "physical_acceptance": False, "scientific_acceptance": "UNQUALIFIED"}
+            if (type(attached) is not dict or len(attached) != len(keys) + len(flags)
+                    or not all(type(key) is str for key in attached)
+                    or set(attached) != set(keys) | set(flags)
+                    or any(type(attached[key]) is not type(value) or attached[key] != value
+                           for key, value in flags.items())):
+                raise ValueError("INVALID_DIAGNOSTIC_ENGINEERING_EVIDENCE")
+            checked = diagnostic_review_packet(pkt["diagnostic"],
+                engineering_evidence={key: attached[key] for key in keys})["engineering_evidence"]
+            lines.extend(["", "**Engineering controls — synthetic receipts only**", "",
+                          "| Control | Observation | Evidence SHA-256 |",
+                          "| --- | --- | --- |"])
+            for control in checked["controls"]:
+                evidence = control["evidence_sha256"] or "none"
+                lines.append(f"| {control['id']} | {control['status']} | {evidence} |")
+            lines.extend(["", f"Retained attempts: {len(checked['attempts'])}.",
+                          "Physical acceptance: unqualified. Scientific acceptance: unqualified."])
         lines.append("")
         return
     cid = pkt.get("candidate_id", "?")

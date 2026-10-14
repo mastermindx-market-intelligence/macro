@@ -1,7 +1,7 @@
 {
   "schema": "research_codegen.fixed_canary_source.v1",
   "original_root": "01a1333c-a475-7052-95a8-72a88eb8c17b",
-  "state": "SOURCE_QUALIFIED_PHYSICAL_RESULT_PENDING",
+  "state": "SOURCE_QUALIFIED_PHYSICAL_CLI_GATE_STOPPED_EXACT_ARTIFACT_RECOVERY_PENDING",
   "source_sha256": {
     "cli29_anonymous_config.py": "447aa266eb3b853528ca5d2538fcdd516d65989d1f32d7e98703a40abcab2c13",
     "fixed_canary.py": "3354ce906cbe4f7492e03bb21ae3f61da463d4c7db097f1d0d45956742ae1ce6",
