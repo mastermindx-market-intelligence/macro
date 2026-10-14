@@ -30,6 +30,7 @@ from __future__ import annotations
 import json
 import logging
 import re
+import textwrap
 from datetime import date
 from typing import Any
 
@@ -159,9 +160,26 @@ def _provider_usage(response: object) -> dict[str, Any] | None:
 # Every rule below is enforced downstream by a DETERMINISTIC validator.  The
 # prompt states them so a compliant draft is the cheap path, not so the model
 # is trusted to obey them.
+#
+# W4 follow-on (2026-10-14) — the two places the constant used to state the
+# gate IMPRECISELY, both behind a 2026-10-13 quarantine:
+#   * The own-value share and the receipt floor credit sentences anchored to
+#     [first_party] facts ONLY (validators.check_our_value and
+#     check_receipts both pool first_party tiers).  The old SOURCING text said
+#     "a number from SOURCE FACTS", which a [third_party] fact also satisfies —
+#     a draft written to that reading anchors fine on fact_anchor and still
+#     fails the floor.  The stated floor is now the configured
+#     validators.our_value_min, not a hardcoded 40%.
+#   * The banned vocabulary is RENDERED, not sampled: the configured
+#     validators.ai_tell_phrases plus the SAME five copywriter lexicons
+#     check_banned_lexicon / check_cheese_test import through
+#     engine.press.validators — never forked here.  "the backdrop" rejected a
+#     draft while absent from the old hand-written sample.  Rendering is
+#     bounded and deterministic: the finite configured/imported terms, sorted,
+#     and nothing else from config (no model, provider or path settings).
 # ─────────────────────────────────────────────────────────────────────────────
 
-_HOUSE_STYLE = """\
+_HOUSE_STYLE_HEAD = """\
 HOUSE STYLE — every rule here is checked by a deterministic validator after you
 write.  A draft that breaks one is regenerated at most twice and then dropped.
 
@@ -172,12 +190,17 @@ NUMBERS
 - Small counts in prose ("three drivers", "two sessions") are fine.
 
 SOURCING
-- At least 40% of the piece by word count must sit in SENTENCES that carry a
-  number from SOURCE FACTS. Measured per sentence, not per paragraph: a
-  paragraph does not inherit credit from one number buried in it.
+- At least {floor_pct} of the piece by word count must sit in SENTENCES that
+  carry a number anchored to a SOURCE FACT tagged [first_party]. A number that
+  appears only in a [third_party] fact still has to anchor, but its sentence
+  earns NO share credit. Measured per sentence, not per paragraph: a paragraph
+  does not inherit credit from one number buried in it. Small prose counts
+  ("three drivers") earn no credit of their own.
 - Carry at least the MINIMUM RECEIPTS stated below — that many DISTINCT
-  numbers from SOURCE FACTS, spread through the piece. Restating someone
-  else's report is not coverage; our read of it, with our numbers, is.
+  numbers anchored to [first_party] facts, spread through the piece.
+  [third_party] numbers may still be used where supplied, but cannot satisfy
+  the share or the receipt floor. Restating someone else's report is not
+  coverage; our read of it, with our numbers, is.
 - LINKS: you may link ONLY the URLs listed under LINKING below. Most of our
   site is behind a login wall, and a citation the reader cannot open is worse
   than no citation. If LINKING says "none", write the piece with no links at
@@ -195,17 +218,10 @@ VOICE
 - Say what happened, why it matters, and what to watch. Where the honest answer
   is "watch, do not chase", write that.
 - No advice. Never tell the reader to buy, sell, or size anything.
-- Forbidden as jargon: study/indicator names (RSI, MACD, VWAP, Bollinger,
-  stochastic, Ichimoku, point of control, value area, volume profile), the
-  words "regime", "narrative", "vertical", "goldilocks", "de-rating",
-  "validated", "guaranteed".
-- Forbidden as machine tells: "delve", "it's important to note", "it's worth
-  noting", "in conclusion", "game-changer", "a testament to", "in the realm
-  of", "navigate the complexities", "underscores the importance", "in today's
-  fast-paced landscape", "in the ever-evolving landscape". Never open a
-  paragraph with "Moreover,". Use "not only ... but also" at most once.
 - No meme voice, no sitcom beats, no emoji.
+"""
 
+_HOUSE_STYLE_TAIL = """\
 FORMAT
 - body_html is an HTML FRAGMENT: <p>, <h2>, <ul>/<li>, <a>, <strong>, <em>.
   No <script>, no <html>/<body>, no markdown.
@@ -219,6 +235,100 @@ FORMAT
   this story: a number from SOURCE FACTS, a named institution, or the exact
   question this piece settles.
 """
+
+_BANNED_HEADER = (
+    "BANNED LANGUAGE — the validator rejects every term below anywhere it "
+    "appears in the title, description or body. Complete list for this run, "
+    "not a sample."
+)
+
+
+def _pct_text(fraction: float) -> str:
+    """0.4 -> "40%", 0.375 -> "37.5%" — the stated floor gains no precision."""
+    return f"{fraction * 100:.2f}".rstrip("0").rstrip(".") + "%"
+
+
+def _bullet(text: str) -> str:
+    return textwrap.fill(text, width=78, subsequent_indent="  ")
+
+
+def _clean_terms(terms) -> list[str]:
+    """Stripped, order-preserving, case-insensitively deduplicated terms."""
+    out: list[str] = []
+    seen: set[str] = set()
+    for term in terms or ():
+        term = str(term).strip()
+        if term and term.lower() not in seen:
+            seen.add(term.lower())
+            out.append(term)
+    return out
+
+
+def _banned_language_lines(cfg: dict) -> list[str]:
+    """The banned vocabulary the validators will actually enforce, for the
+    trusted zone (it rides in the system prompt, above the evidence fence).
+
+    Two sources, both already owned downstream — nothing is invented here:
+      * cfg validators.ai_tell_phrases, enforced by check_ai_tells;
+      * the copywriter lexicons IMPORTED through
+        engine.press.validators._copywriter_lexicons — the same five lists
+        check_banned_lexicon and check_cheese_test scan with.
+    Both phrase lists match as case-insensitive substrings (a hit anywhere,
+    even inside a larger word); the word lists match on word boundaries.
+    A list that cannot be read is omitted, never guessed at: the validator
+    still owns the ban, and the regeneration feedback names the phrase that
+    failed.  Bounded by construction — these are the finite configured and
+    imported terms, and no other config reaches this block.
+    """
+    v = (cfg.get("validators") or {}) if isinstance(cfg, dict) else {}
+    phrases = _clean_terms(v.get("ai_tell_phrases") or ())
+    ban_words: list[str] = []
+    try:
+        from engine.press import validators as _validators  # noqa: PLC0415
+        vocab, ban_substrings, word_boundary, cheese_substrings, cheese_words = (
+            _validators._copywriter_lexicons())
+        phrases += _clean_terms(ban_substrings) + _clean_terms(cheese_substrings)
+        ban_words = (_clean_terms(vocab) + _clean_terms(word_boundary)
+                     + _clean_terms(cheese_words))
+    except Exception as exc:  # noqa: BLE001 - a missing lexicon is not a prompt
+        log.warning("press.writer: copywriter lexicons unavailable to prompt: %s", exc)
+    phrases = sorted(set(phrases), key=lambda t: (t.lower(), t))
+    ban_words = sorted(set(ban_words), key=lambda t: (t.lower(), t))
+
+    lines = [_bullet(_BANNED_HEADER), ""]
+    if phrases:
+        lines.append(_bullet(
+            "- Phrases — a hit anywhere, even inside a larger word: "
+            + ", ".join(f'"{t}"' for t in phrases)))
+        lines.append("")
+    if ban_words:
+        lines.append(_bullet(
+            "- Words — rejected as whole words: "
+            + ", ".join(f'"{t}"' for t in ban_words)))
+        lines.append("")
+    pattern_bits: list[str] = []
+    if bool(v.get("ai_tell_moreover_opener_banned", True)):
+        pattern_bits.append('never open a paragraph with "Moreover,"')
+    budget = int(v.get("ai_tell_not_only_but_also_budget", 1))
+    budget_text = "at most once" if budget == 1 else f"at most {budget} times"
+    pattern_bits.append(f'"not only ... but also" {budget_text}.')
+    lines.append(_bullet("- Pattern rules — " + "; ".join(pattern_bits)))
+    return lines
+
+
+def _house_style(cfg: dict) -> str:
+    """The house style for THIS run: the static contract plus the configured
+    own-value floor and the rendered banned vocabulary.  Same rule everywhere
+    else: the prompt states what the validators enforce, and the validators
+    stay the gate."""
+    v = (cfg.get("validators") or {}) if isinstance(cfg, dict) else {}
+    # Mirrors validators.check_our_value's own default for an absent floor.
+    floor = float(v.get("our_value_min") or 0.40)
+    return (
+        _HOUSE_STYLE_HEAD.format(floor_pct=_pct_text(floor))
+        + "\n" + "\n".join(_banned_language_lines(cfg))
+        + "\n" + _HOUSE_STYLE_TAIL
+    )
 
 _ENVELOPE = """\
 Return ONE JSON object and nothing else — no prose before or after, no code
@@ -375,7 +485,7 @@ def build_prompt(slot: dict, cfg: dict, *, attempt: int = 0,
 
     system_prompt = (
         contract
-        + "\n" + _HOUSE_STYLE
+        + "\n" + _house_style(cfg)
         + "\n" + _ENVELOPE
     )
 
@@ -386,7 +496,7 @@ def build_prompt(slot: dict, cfg: dict, *, attempt: int = 0,
     parts.append(f"WORD BUDGET: {slot.get('min_words')}–{slot.get('max_words')} words "
                  f"in the body, byline and footer excluded.")
     parts.append(f"MINIMUM RECEIPTS: {slot.get('min_anchored_receipts') or 0} distinct "
-                 f"numbers drawn from SOURCE FACTS.")
+                 f"numbers anchored to [first_party] SOURCE FACTS.")
     if approved_claim_ids:
         parts.append(
             "CLAIM SCOPE: this earnings slot is closed to the approved claim IDs "
