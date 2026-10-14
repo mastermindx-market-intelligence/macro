@@ -55,3 +55,37 @@ The synthetic integration in `tests/test_qledger_validity.py` exercises actual r
 construction, the metric owner, projection, the existing draft, YAML and record
 validation with I/O refused. The source interface does not establish empirical T2–T4
 findings, actual protected publication, installed behavior or consumer adoption.
+
+## Bounded CLI consumer
+
+`scripts/check_qledger_metric_validity.py --project-findings INPUT.json` is the bounded
+caller route for the projection above. It reads one caller-supplied regular JSON file,
+`qledger.research_findings_input.v1`, holding exactly `schema`, `claims`, `grades`,
+`reported_metrics` (family → metric-name arrays, converted to sets at the boundary),
+`registry` (the canonical supplied snapshot) and `evidence_link` (the caller's locator).
+It prints `qledger.research_findings_cli.v1`: the input's byte length and SHA-256 plus
+the pure owner's unchanged result. `--json` is accepted but redundant; the mode only
+speaks JSON.
+
+The mode is a snapshot computation. It never reads the live claim or grade stores,
+fetches registry inputs, calls providers, dereferences `evidence_link`, writes a
+Discovery, or changes a gate, clock or production state, and it never verifies the
+evidence link, scientific validity, rights, or Discovery admission. Incompatible
+`--strict`, `--selftest` and explicit `--root` are refused before the input is opened.
+The file is bounded at 16 MiB and must be a regular file; missing, unreadable,
+oversized, or moving inputs, malformed UTF-8, malformed or duplicate-keyed or
+non-finite JSON and wrong schema/shapes exit 2 with a bounded structured error and a
+null result — "could not read" is never rendered as a clean projection, a traceback or
+echoed input. The payload records the bytes the read saw; the pre/post-read descriptor and pathname
+comparisons refuse observed changes or replacement and claim no atomicity. Descriptors
+close on every refusal, numeric overflow is refused alongside non-finite constants,
+and malformed row identities or duplicate keys cannot leak file content in errors.
+
+Metric scope, the exact unique canonical engine binding and every other semantic stay
+with `engine.qledger_validity.project_research_findings`; the CLI mode adds no
+scheduler, store, evaluator or authority surface. A caller that independently supplies
+normal Discovery admission may still pass one emitted issue to
+`scripts.agentos.draft_discovery` exactly as for the pure function; the CLI itself
+writes nothing. The synthetic CLI integration in `tests/test_qledger_validity.py`
+pins the projection pass-through, the Discovery draft/validator leg, the refusals and
+the absence of live-store or registry I/O with local synthetic data only.
