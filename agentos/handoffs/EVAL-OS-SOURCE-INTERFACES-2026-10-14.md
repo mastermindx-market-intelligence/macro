@@ -318,3 +318,13 @@ changed-source qualification and new hosted checks remain required; incumbent al
 still owns final merge. Do not repeatedly poll capacity or re-ask the release question.
 Follow-on runtime/product proof and all original Fabric effects stay unchanged. The
 programme remains incomplete; real production and consumer adoption remain owed.
+
+
+### Chairman exception approved — 2026-10-14T15:54Z
+
+Chris directly approved the one-time base integration and repair. This supersedes
+the pending decision immediately above. Root proceeds on the same PR6651 carrier,
+preserving local26 and applying the bounded correction; ordinary merge only, no
+rebase/force push. Exact source/custody and shared-capacity controls still gate
+publication/new CI. Fresh checks remain mandatory and the incumbent alone owns
+final merge. No second release question or controller replacement is authorized.
