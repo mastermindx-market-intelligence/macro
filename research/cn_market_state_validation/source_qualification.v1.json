@@ -1,0 +1,51 @@
+{
+  "authority_note": "This record qualifies sources and reconstruction limits. It contains no forward-outcome statistic and grants no production authority.",
+  "base_sha": "d5eb16f3b3a093afb053efe275be62778729dcf4",
+  "benchmark": {
+    "exact_csi300_cash_available": false,
+    "primary": "000001.SS",
+    "proxy": "510300.SS"
+  },
+  "classification": "RECONSTRUCTED_HISTORICAL_ONLY",
+  "coverage_facts": {
+    "ah_premium_usable_first": "2026-09-08",
+    "breadth_first": "1997-09-23",
+    "breadth_roster": {
+      "current_rows": 82,
+      "first_ge_40": "2007-02-05",
+      "first_ge_60": "2011-09-28",
+      "first_ge_70": "2015-06-26",
+      "first_ge_80": "2022-08-12",
+      "n_members_latest": 81,
+      "n_members_median": 46,
+      "n_members_min": 2
+    },
+    "risk_first": "1997-09-26",
+    "six_top_level_first": "2012-03-05",
+    "stress_first": "2003-06-16",
+    "stress_qvix_subleg_first": "2020-06-15",
+    "three_index_tape_first": "2012-08-14",
+    "trend_any_first": "1997-09-24",
+    "vol_any_first": "2012-03-05",
+    "vol_two_sublegs_first": "2020-03-18"
+  },
+  "current_artifact": {
+    "asof": "2026-09-24",
+    "blob_sha": "d900b0ebccebb70d6c910e3c1f2cc2c8e2ec38a7",
+    "capped": false,
+    "path": "data/china_market_state/latest.json",
+    "raw_score": 38,
+    "score_source": "blend"
+  },
+  "known_methodological_seams": [
+    "Current breadth history is reconstructed from the present curated large-cap roster; historical membership is unavailable.",
+    "Generic Eastmoney China macro stores are reference-date/current-vintage histories, not published-at/revision vintages.",
+    "Current Market State trend path calls cycles.mtf_snapshot without market=CN, so its 3-session leg uses the default US session anchor; exact-production and CN-anchor sensitivity must be reported separately.",
+    "Slowdown information is carried in both liquidity and stress, and stress drawdown construction itself includes slowdown; component independence must not be assumed.",
+    "Top-level availability and subleg composition change over history; renormalized early history is not the exact current issued model.",
+    "HG_F and GC_F blobs contain rows through 2026-09-25 at preregistration, but P3 sample_end is frozen to 2026-09-24 and later rows are excluded."
+  ],
+  "operation": "cn-risk-p3-market-state-validation-20260923-solpro-001",
+  "sample_end": "2026-09-24",
+  "schema": "cn_market_state_p3_source_qualification.v1"
+}

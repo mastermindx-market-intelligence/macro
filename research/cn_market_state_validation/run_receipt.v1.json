@@ -1,0 +1,66 @@
+{
+  "schema": "cn_market_state_p3_run_receipt.v1",
+  "operation": "cn-risk-p3-market-state-validation-20260923-solpro-001",
+  "repository": "mastermindx-market-intelligence/macro",
+  "base_sha": "d5eb16f3b3a093afb053efe275be62778729dcf4",
+  "prereg_commit": "ddd62442e14b682612a4bc5ebde4cc02e6f03bbf",
+  "prereg_payload_sha256": "0533cb7add838e65553756e9f21b59b9ff1ae058f347dac0d946da4e977671d8",
+  "skillpack_sha": "63555e1f9405c79405fc30682aa502a68d8abf80",
+  "sample_end": "2026-09-24",
+  "bootstrap": {
+    "method": "paired circular moving-block",
+    "draws": 800,
+    "seed": 7,
+    "blocks_sessions": [
+      21,
+      42
+    ]
+  },
+  "artifacts": {
+    "results_summary_v1_json": "9427843f2809827ba1ea9866500f28ffbe1f93808ff758d4e11ad531d75a2843",
+    "adjudication_v1_json": "9cb562e75dab1e7d0ee5901795f28227e42720034291fefe70c33411c7aca634",
+    "results_and_adjudication_md": "d40b0c8113b27075d1350e9a3a18d683f2e0b0bd3dd79ae1fd426a3704b668dc",
+    "harness": "570ed402487476ac3134581403a9c1348cf844d874364ec1cff2afdb22b86506",
+    "focused_tests": "9769b176c8eb7f8cb05a0b8981df0fd6ff9b9d2597832ce45156d5b288c8876c"
+  },
+  "tests": [
+    {
+      "argv": "python3 -m pytest tests/test_cn_market_state_validation.py -q",
+      "result": "7 passed",
+      "note": "warnings only from pre-existing pytest temp browser cleanup"
+    },
+    {
+      "argv": "python3 -m pytest tests/test_china_market_state.py tests/test_china_conditions.py tests/test_build_china_risk_state.py -q",
+      "result": "48 passed",
+      "note": "warnings only from pre-existing pytest temp browser cleanup"
+    },
+    {
+      "argv": "python3 -m py_compile scripts/research/cn_market_state_validation.py",
+      "result": "pass"
+    },
+    {
+      "argv": "git diff --check",
+      "result": "pass"
+    }
+  ],
+  "negative_proof": {
+    "protected_production_diff": [],
+    "production_behavior_changed": false,
+    "pr_merge_authority": false,
+    "effect_unknown": "none"
+  },
+  "headline_rulings": {
+    "CURRENT_WEIGHTS": "INSUFFICIENT",
+    "CUT_42": "PRODUCT_ONLY",
+    "CUT_60": "PRODUCT_ONLY",
+    "SCORE_0_100": "DESCRIPTIVE_ONLY",
+    "components": {
+      "trend": "NEED_MORE_DATA",
+      "risk": "KEEP",
+      "vol": "DISPLAY_ONLY",
+      "breadth": "DISPLAY_ONLY",
+      "liquidity": "NEED_MORE_DATA",
+      "stress": "DISPLAY_ONLY"
+    }
+  }
+}
