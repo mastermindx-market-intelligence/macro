@@ -8965,6 +8965,7 @@ jobs:
           tests/test_research_factory_market_memory.py
           tests/test_market_memory_e0_control_records.py
           tests/test_research_factory_market_memory_evidence.py
+          tests/test_research_factory_contextual_only.py
           tests/test_research_codegen_accounting_contract.py
           tests/test_research_codegen_evaluation.py
           tests/test_research_codegen_transport.py
