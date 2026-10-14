@@ -5,7 +5,7 @@ model: opus
 ended_because: ci_handoff
 decisions: ["DEC:NEWS-IMPACT-ROUTING-GATES-1-MISS-PATH"]
 discoveries: ["DSC:NEWS-IMPACT-ROUTING-GATES-1-VALIDATION"]
-prs: []
+prs: [9349]
 mission: >
   Build the three routing gates registered by DEC:NEWS-IMPACT-CONTINUATION-ROUTING-GATES
   (non-event headline filter, issuer-resolution guard, body-to-event match), freeze them in
