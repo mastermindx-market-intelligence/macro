@@ -564,6 +564,11 @@ def _classify_expiry(exp: Any, session_date: str) -> tuple[int | None, str]:
     if pd.isna(exp_ts) or pd.isna(sess_ts):
         return None, "unknown"
 
+    if exp_ts.tzinfo is not None:
+        exp_ts = exp_ts.tz_localize(None)
+    if sess_ts.tzinfo is not None:
+        sess_ts = sess_ts.tz_localize(None)
+
     dte_int = int((exp_ts - sess_ts).days)
     if dte_int < 0:
         return None, "unknown"
