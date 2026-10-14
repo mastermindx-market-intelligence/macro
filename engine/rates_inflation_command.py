@@ -962,6 +962,32 @@ def _t0b_basis_contract_version() -> str:
     return rcb.SCHEMA_VERSION
 
 
+# Exact fed_path implied_source_en labels -> the D0 provenance strip key
+# (engine/fed_path.py _selected_strip). Rights are read from that strip only.
+_RATE_SOURCE_STRIP = {
+    "ZQ fed-funds futures": "zq",
+    "SR3 SOFR futures": "sofr",
+    "ZQ front (30d) only": "zq_front",
+}
+
+
+def _rate_path_rights(fed_path: dict, label: Any) -> str:
+    """Rights of the selected futures strip, from D0 `implied_source_meta`.
+
+    Never asserted here: an absent provenance block, an unmapped label, a
+    strip without a rights field or a value outside the B0 vocabulary all
+    stay "unknown" (which B0 refuses for export purposes).
+    """
+    from engine import rates_command_basis as rcb
+
+    strip_key = _RATE_SOURCE_STRIP.get(label) if isinstance(label, str) else None
+    meta = fed_path.get("implied_source_meta")
+    strips = meta.get("strips") if isinstance(meta, dict) else None
+    strip = strips.get(strip_key) if isinstance(strips, dict) and strip_key else None
+    rights = strip.get("rights") if isinstance(strip, dict) else None
+    return rights if rights in rcb.RIGHTS_VALUES else "unknown"
+
+
 def _rate_path_basis(fed_path: dict, cutoff: Any) -> dict | None:
     """Qualify the m12 implied-path value as a rates_command_basis.v1 record.
 
@@ -1003,7 +1029,7 @@ def _rate_path_basis(fed_path: dict, cutoff: Any) -> dict | None:
         "observation_precision": _t0b_precision(asof_stamp),
         "first_public_evidence": asof_stamp,
         "first_public_precision": _t0b_precision(asof_stamp),
-        "rights": "redistribution_limited",
+        "rights": _rate_path_rights(fed_path, label),
     }
     if source_keys is None:
         limitations.append("source_unknown")

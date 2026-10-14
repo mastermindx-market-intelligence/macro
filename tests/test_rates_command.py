@@ -1400,6 +1400,46 @@ class TestT0FixBBasisContract:
         assert b["source"] is None
         assert "source_unknown" in b["limitations"]
 
+    # 3b. Rights come from the D0 strip provenance, never asserted ----------
+    def test_rate_path_rights_follow_d0_provenance(self, tmp_path):
+        def rights_for(name, label, meta):
+            fp = self._fed_path(label)
+            if meta is not None:
+                fp["implied_source_meta"] = meta
+            root = self._write(tmp_path / name, fed_path=fp)
+            return build_board(root=root)["board"]["rate_path_row"]["basis"]["rights"]
+
+        def strips(**by_key):
+            return {"strips": {k: {"rights": v} for k, v in by_key.items()}}
+
+        zq = "ZQ fed-funds futures"
+        # The collector default today (collectors/rate_futures.py RIGHTS).
+        assert rights_for("none", zq, None) == "unknown"
+        assert rights_for("d0unk", zq, strips(zq="unknown")) == "unknown"
+        assert rights_for("known", zq, strips(zq="display_only")) == "display_only"
+        # Only the selected strip's rights count.
+        assert rights_for("other", zq, strips(sofr="public_official")) == "unknown"
+        assert rights_for("bad", zq, strips(zq="licensed")) == "unknown"
+        assert rights_for("front", "ZQ front (30d) only", strips(zq="display_only")) == "unknown"
+        assert rights_for("nolabel", None, strips(zq="display_only")) == "unknown"
+
+    def test_unknown_rate_path_rights_refuse_export(self, tmp_path):
+        import dataclasses
+
+        from engine import rates_command_basis as rcb
+
+        root = self._write(tmp_path / "exp", fed_path=self._fed_path())
+        b = build_board(root=root)["board"]["rate_path_row"]["basis"]
+        assert b["rights"] == "unknown"
+        obs = rcb.QualifiedObservation.from_dict(b)
+        export_rule = dataclasses.replace(
+            rcb.RULES["same_basis_level_change.v1"], purpose="export"
+        )
+        result = rcb.compare_qualified(obs, obs, export_rule)
+        assert result.status.value == "not_comparable"
+        assert result.reason == "rights_unknown"
+        assert result.difference is None
+
     # 4. Missing m12 is missing, never zero --------------------------------
     def test_missing_m12_is_missing_not_zero(self, tmp_path):
         for name, m12 in (("absent", None), ("nonnum", "abc")):
