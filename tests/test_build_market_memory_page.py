@@ -3,9 +3,12 @@
 from __future__ import annotations
 
 import json
+import hashlib
+from html.parser import HTMLParser
 from pathlib import Path
 import shutil
 import subprocess
+from urllib.parse import parse_qs, urlsplit
 
 import pytest
 
@@ -71,6 +74,38 @@ def test_market_memory_assets_are_template_owned_and_byte_identical() -> None:
         assert (ROOT / "templates" / name).read_bytes() == (
             ROOT / "site" / name
         ).read_bytes()
+
+
+def test_market_memory_page_loads_current_owned_asset_versions() -> None:
+    """A new emitted bundle must not leave returning browsers on an immutable old URL."""
+    owned = {
+        "market_memory.css", "market_memory.js", "market_memory_intent.js",
+        "market_memory_retained.js", "market_memory_retained.css",
+    }
+    refs: dict[str, list[str]] = {name: [] for name in owned}
+
+    class LoadedAssets(HTMLParser):
+        def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
+            attributes = dict(attrs)
+            if tag == "script":
+                reference = attributes.get("src")
+            elif tag == "link" and "stylesheet" in (attributes.get("rel") or "").split():
+                reference = attributes.get("href")
+            else:
+                return
+            if not reference:
+                return
+            parsed = urlsplit(reference)
+            if not parsed.scheme and not parsed.netloc and parsed.path in owned:
+                refs[parsed.path].append(reference)
+
+    LoadedAssets().feed((ROOT / "site" / "market_memory.html").read_text(encoding="utf-8"))
+    for name in sorted(owned):
+        assert len(refs[name]) == 1, (name, refs[name])
+        parsed = urlsplit(refs[name][0])
+        expected = hashlib.sha256((ROOT / "site" / name).read_bytes()).hexdigest()[:8]
+        assert parse_qs(parsed.query) == {"v": [expected]}, (name, refs[name][0], expected)
+        assert not parsed.fragment
 
 
 def test_market_memory_is_wired_into_build_router_and_navigation() -> None:

@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-10-14T14:26:01.431586+00:00",
-  "count": 2901,
+  "generated_at": "2026-10-14T16:56:00.188519+00:00",
+  "count": 2909,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -97,6 +97,7 @@
     "The Punchline",
     "Trump Xi Preview",
     "U.S. Department of Agriculture",
+    "U.S. Department of Agriculture, National Agricultural Statistics Service",
     "UBS",
     "Vanda Research",
     "Vontobel",
@@ -111,6 +112,25 @@
     "Zero Hedge"
   ],
   "items": [
+    {
+      "id": "marketdesk-vkqr7ns1tbk-88ffc3",
+      "title": "GS Soria Higher Rates = Bid for Quality 14 Oct 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-14T14:14:12Z",
+      "summary_points": [
+        "Quality Factor Momentum Overextension: GSP1QUAL up 20% in 3 months (12m high), RSI 83, driven by short leg selloff (GSX1BFQS); softer CPI/rate peak may trigger reversal in lower-quality names (GSX1BFQS 105% call at 1.38%, 25d).",
+        "Crisis-Driven Quality Flight: GSP1QUAL outperforms USGG10YR during crises (Covid/Regional Banking), capital flows to quality as rates price risk-off sentiment.",
+        "Critical Quality-Momentum Risk: Negative correlation (-0.6433) between GSP1QUAL and AI/momentum/beta trades signals potential underperformance in quality portfolios during momentum regimes, requiring strategic adjustments."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 9,
+      "language": "en",
+      "needs_metadata": false
+    },
     {
       "id": "marketdesk-pk35lyapk08-713b6b",
       "title": "GS Jee GS KOREA FINAL EXTENDS LOSSES 14 Oct 2026",
@@ -132,6 +152,45 @@
       "needs_metadata": false
     },
     {
+      "id": "marketdesk-hmlv6utzbiy-0241df",
+      "title": "GS Novak GS U.S. Industrials & Materials CPI HVAC changes pickup analysis 14 Oct 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-14T13:44:23Z",
+      "summary_points": [
+        "China Inflation Revisions: Headline CPI +0.9% yoy (vs +0.8% Aug), PPI +5.0% yoy (vs +3.8% Aug); 2026/27 PPI forecasts revised up to 2.8%/3.3% (vs 2.0%/0.0%), signaling persistent manufacturing demand and revised inflation trajectory.",
+        "Geopolitical Oil Shock: Middle East attacks spike crude 100bps (Brent $106, WTI $95); IEA warns diesel constrained until 2027, amplifying energy risk and supply chain volatility.",
+        "PPI Surge Signals Manufacturing Rebound: Recent PPI spike (2023-24) indicates industrial activity recovery, critical for global trade flows and commodity pricing, with Thursday’s PPI release pivotal for market positioning.",
+        "Trade Surplus Acceleration: Exports +36.3% yoy, imports +31.0% yoy; trade surplus widens to $133.5bn (record monthly), driven by strong container shipping and energy imports, reflecting export-driven economic momentum."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 7,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-810sqguhx8x-b2e5e5",
+      "title": "GS Armbrust What Matters Today HF Exposure to Mag 7 at the Highs Large Bank Earnings ASML and Anthropic Today US Equity Positioning is a Tailwind HF Performance in September 14 Oct 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-14T13:44:19Z",
+      "summary_points": [
+        "HF Exposure to Mag 7 at Highs: Elevated net Mag 7 exposure amid 3-month implied volatility near lows creates a tactical hedging opportunity for long positions despite low overall net risk.",
+        "Foreign Investor Flow Strength: Current foreign investor net demand percentile near 100 confirms structural strength, aligning with midterm-driven patterns (1.75% AUM inflows historically) as a critical flow catalyst.",
+        "ASML Q3 Beat & AI Sentiment Risks: Strong Q3 results with 2027 capacity concerns; AI sentiment weakened by power/funding constraints, model competition, and reduced GPU reliance (2pm call critical)."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 6,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-zidfbw2dhyr-90424e",
       "title": "GS Bartlett GS TMT TODAY 10.14.26 14 Oct 2026",
       "institution": "S&T",
@@ -148,6 +207,46 @@
       "tickers": [],
       "top_pick": true,
       "pages": 6,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-0fedukpfmue-7f080b",
+      "title": "GS Privorotsky GS Basics Rates Calm. Cost of Capital. TTF new Highs 14 Oct 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-14T13:44:09Z",
+      "summary_points": [
+        "Fed Policy Signal: Fed signaling hold on 2027 hikes unless forced; CPI (0.6% headline) as key test driving bond rally and rate volatility compression.",
+        "Energy Geopolitical Shock: TTF at new highs (86), distillate shortage unresolved, Saudi escalation (Aramco HQ attack) elevating immediate energy risk.",
+        "Credit Spread Crisis: CCC spreads widened 1,250bp since September; HY widening driven by sovereign deficits and AI capital needs, risking credit stress spillover to SMEs/consumers."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 3,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-75qspjfpqxs-b7f945",
+      "title": "GS Crook GS MORNING 1 FX Trader Call Today, 2 September CPI Preview, 3 Hybrids Stretched Equity Rates Correlation, 4 5 Key Charts and 5 GS Energy Webcast 14 Oct 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-14T13:44:00Z",
+      "summary_points": [
+        "US CPI Forecast: Core CPI +0.24% (vs +0.2% consensus), headline +0.59% (vs +0.6% consensus), driven by autos (used cars +0.5%, new cars +0.2%) and energy; September MoM SA Core CPI dips to 0.24% from August’s 0.29%, with Transportation services ex-public (-0.3pp) offsetting rent pressures.",
+        "AI-Driven Inflation Impact: Core PCE inflation boosted by ~45bp from AI demand (half genuine), peaking at 50bp by end-2026; monthly core CPI forecasted at 0.24% in September, signaling near-term inflation moderation but sustained rent pressure.",
+        "Energy Geopolitical Risks: GS Webcast highlights Middle East tensions and winter weather impacts on oil/nat gas forecasts, critical for energy portfolio positioning amid Europe’s energy shock (SX5E <95%, 9% EUR costs).",
+        "UK-EU Rejoining Sentiment Shift: UK polling shows rising support for full EU rejoining (vs customs union), signaling potential policy shifts that could reshape trade, investment flows, and market access for UK assets.",
+        "Equity-Rate Correlation Fragmentation: RTY vs 2y SOFR shows negative correlation (2023-2024), while STOXX50E vs 2y EUR remains positive, indicating regional market divergence and asymmetric risk exposure between US and EU equities vs rates."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 9,
       "language": "en",
       "needs_metadata": false
     },
@@ -677,6 +776,36 @@
       "needs_metadata": false
     },
     {
+      "id": "usda-nass-2026-10-13-crop-progress",
+      "title": "Crop Progress, October 13, 2026",
+      "institution": "U.S. Department of Agriculture, National Agricultural Statistics Service",
+      "side": "independent",
+      "desk": "Agriculture",
+      "published_at": "2026-10-13",
+      "summary_points": [
+        "USDA NASS reports corn harvest at 33% for the week ending 2026-10-11 across 18 selected states, versus 23% a week earlier and a 39% average for 2021-2025. Those states harvested 93% of the 2025 corn acreage.",
+        "USDA NASS estimates soybean harvest at 46% across 18 selected states, compared with 25% a week earlier and a 50% average for 2021-2025. Those states harvested 96% of the 2025 soybean acreage.",
+        "Adding the USDA NASS corn condition estimates of 44% good and 12% excellent gives 56%, versus a calculated 54% the previous week. This corn panel covers 18 states that planted 91% of the 2025 corn acreage.",
+        "Adding the USDA NASS soybean condition estimates of 46% good and 11% excellent gives 57%, unchanged from the previous week. This soybean panel covers 18 states that planted 96% of the 2025 soybean acreage.",
+        "Iowa corn harvest is 14%, compared with a 34% five-year average; Iowa soybean harvest is 31%, compared with 59%. Harvest completion and condition estimates do not measure yield, prices or company earnings.",
+        "Publication was 2026-10-13 and observations ended 2026-10-11. Corresponding prior-year estimates are unavailable because reports were cancelled during the October-November 2025 federal funding lapse. All cited 2021-2025 averages combine published 2021-2024 and imputed 2025 estimates.",
+        "NASS describes a non-probability survey of approximately 3,600 respondents making subjective observations. The estimates are acreage-weighted and subject to revision the following week; early responses may project weekend changes.",
+        "Corn and soybeans use different 18-state panels. NASS weights harvest progress by average harvested acreage over the preceding three crop years, and condition by average planted acreage; the aggregates are not simple state averages."
+      ],
+      "tags": [
+        "agriculture",
+        "corn",
+        "soybeans",
+        "harvest",
+        "crop-condition"
+      ],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 16,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-vwu0m6jvedw-616840",
       "title": "weekly 12oct26",
       "institution": "Ashmore",
@@ -838,6 +967,27 @@
       "needs_metadata": false
     },
     {
+      "id": "marketdesk-cucjl2nrsal-fbd798",
+      "title": "Equities Tactical Top Picks",
+      "institution": "UBS",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-12T22:57:58Z",
+      "summary_points": [
+        "Regional Disparity: Asia-Pacific underperformed (-6.2% abs, -4.1% rel) vs.",
+        "Switzerland (5.8% abs) and Europe (0.5% abs), signaling sector-specific risks requiring active rebalancing.",
+        "Nenuvio & FDA Catalyst: $1bn sales target (2026) backed by channel demand; Relifeds FDA refiling timeline (Q3 results) is critical near-term catalyst for aesthetics growth.",
+        "Dental Market Growth: World's largest dental implants company with fastest-growing med tech market (2030); China pricing pressure offset by volume growth, restocking, and share gains.",
+        "Valuation Gap: Relative valuation below historical premiums supports material rating; price target $180 vs."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 26,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-xjuuyadj9qu-e30850",
       "title": "October 12 House View full set 2026",
       "institution": "UBS",
@@ -855,6 +1005,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 14,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-sbvpc1qbqzo-090bad",
+      "title": "UBS Equity Preference List UK 2026 10 12",
+      "institution": "UBS",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-12T22:56:05Z",
+      "summary_points": [
+        "UK Equity Fundamentals: Attractive 12x forward P/E (vs 12.8x median) with robust earnings growth, though lagging global peers; near-term rate risk offset by resilient activity (e.g., energy prices supporting earnings).",
+        "Anglo American Copper Pivot: Strategic shift to copper via asset spin-offs (Valterra, nickel) and Teck merger (62% stake), targeting 30%+ copper volume growth by 2030; key catalysts include $4.5bn dividend and Quellaveco/Woodsmith projects.",
+        "China Demand Risk: Systemic threat across holdings (e.g., 13% revenue exposure for key firms); slower industrial metals demand or Teck merger delays could negatively impact outlook.",
+        "GBP Policy Exposure: All holdings GBP-denominated; critical to monitor UK interest rates, fiscal policies, and Brexit impacts on energy/finance sectors amid currency volatility.",
+        "Sector Growth Catalysts: Favor cyclical/structural areas (Eurozone IT, industrials, banks) via \"European Leaders\" theme; energy transition tailwinds (copper for EVs) and high-margin oncology assets (13% CAGR) drive growth."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 19,
       "language": "en",
       "needs_metadata": false
     },
