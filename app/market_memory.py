@@ -5,6 +5,8 @@ from __future__ import annotations
 import copy
 import ipaddress
 import json
+import itertools
+import logging
 import os
 import socket
 import threading
@@ -14,7 +16,7 @@ from collections import deque
 from collections.abc import Awaitable, Callable, Mapping
 from concurrent.futures import CancelledError, Future, ThreadPoolExecutor
 from concurrent.futures import TimeoutError as FutureTimeoutError
-from contextlib import suppress
+from contextlib import contextmanager, suppress
 from pathlib import Path
 from threading import BoundedSemaphore, Lock
 from typing import Any
@@ -82,6 +84,80 @@ _symbol_fetch_executor = ThreadPoolExecutor(
     max_workers=_SYMBOL_FETCH_MAX_INFLIGHT,
     thread_name_prefix="market-memory-stockdata",
 )
+
+
+# Diagnostics observe the existing two permits; they never admit a read.
+# Inherit the server INFO handler; the unconfigured root drops INFO records.
+_read_observation_log = logging.getLogger("uvicorn.error.market_memory")
+_read_observation_lock = Lock()
+_read_observation_active: dict[int, tuple[str, float]] = {}
+_read_observation_sequence = itertools.count(1)
+_READ_OBSERVATION_TAGS = frozenset({
+    "legacy_playback_catalog", "retained_macro", "retained_catalog", "retained_saved",
+})
+
+
+def _read_observation_emit(event: str, **fields: Any) -> None:
+    try:
+        _read_observation_log.info("market_memory.read.%s %s", event, fields)
+    except Exception:
+        pass  # Instrumentation failure must not change a response or permit.
+
+
+def _read_observation_start(tag: str) -> int | None:
+    if tag not in _READ_OBSERVATION_TAGS:
+        return None
+    try:
+        started = time.monotonic()
+        with _read_observation_lock:
+            if len(_read_observation_active) >= _PLAYBACK_MAX_INFLIGHT:
+                return None
+            seq = next(_read_observation_sequence)
+            _read_observation_active[seq] = (tag, started)
+        _read_observation_emit("start", tag=tag, seq=seq)
+        return seq
+    except Exception:
+        return None
+
+
+def _read_observation_finish(seq: int | None, success: bool) -> None:
+    if seq is None:
+        return
+    try:
+        with _read_observation_lock:
+            entry = _read_observation_active.pop(seq, None)
+        if entry is not None:
+            tag, started = entry
+            _read_observation_emit("finish", tag=tag, seq=seq, success=success,
+                                   elapsed_ms=round((time.monotonic() - started) * 1000, 3))
+    except Exception:
+        pass
+
+
+@contextmanager
+def _observe_admitted_read(tag: str):
+    seq = _read_observation_start(tag)
+    success = False
+    try:
+        yield
+        success = True
+    finally:
+        _read_observation_finish(seq, success)
+
+
+def _read_observation_busy(tag: str) -> None:
+    if tag not in _READ_OBSERVATION_TAGS:
+        return
+    try:
+        with _read_observation_lock:
+            holders = tuple(_read_observation_active.items())
+        now = time.monotonic()
+        _read_observation_emit("busy", tag=tag, holders=[
+            {"seq": seq, "tag": entry[0], "age_ms": round((now - entry[1]) * 1000, 3)}
+            for seq, entry in holders
+        ])
+    except Exception:
+        pass
 
 
 def _shutdown_symbol_fetch_executor() -> None:
@@ -862,18 +938,20 @@ def operational_playback_catalog(
         raise HTTPException(status_code=400, detail=str(exc)) from exc
 
     if not _playback_slots.acquire(blocking=False):
+        _read_observation_busy('legacy_playback_catalog')
         raise HTTPException(
             status_code=503,
             detail="Market Memory playback is busy. Please retry shortly.",
             headers={"Retry-After": str(_SYMBOL_FETCH_BUSY_RETRY_SECONDS)},
         )
     try:
-        from engine.neuralweb.market_memory_retained_legacy_guard import guard_trusted_legacy_reader
-        with guard_trusted_legacy_reader(_pit_reader(), root=_repo_root(), user_id=str(_user.get("id") or "")) as guard:
-            payload = market_memory_playback.read_operational_playback_catalog(
-                reader=guard.reader, **params
-            )
-            guard.final_authorize()
+        with _observe_admitted_read('legacy_playback_catalog'):
+            from engine.neuralweb.market_memory_retained_legacy_guard import guard_trusted_legacy_reader
+            with guard_trusted_legacy_reader(_pit_reader(), root=_repo_root(), user_id=str(_user.get("id") or "")) as guard:
+                payload = market_memory_playback.read_operational_playback_catalog(
+                    reader=guard.reader, **params
+                )
+                guard.final_authorize()
     except PermissionError as exc:
         raise HTTPException(403, detail={"state": "SOURCE_USE_NOT_ADMITTED"}) from exc
     except (
@@ -1011,28 +1089,30 @@ def retained_macro_for_user(root: Path, user_id: str, request_spec: dict,
     if not allowed:
         raise HTTPException(429, detail={"state": "RATE_LIMITED"}, headers={"Retry-After": "60"})
     if not _playback_slots.acquire(blocking=False):
+        _read_observation_busy('retained_macro')
         raise HTTPException(503, detail={"state": "BUSY"}, headers={"Retry-After": "2"})
     try:
-        registered, _digest = use.load_registration(root)
-        methods = retained_method_catalog(root)
-        matches = [m for m in methods if m["method_spec_id"] == spec["method_spec_id"]]
-        if len(matches) != 1:
-            raise HTTPException(400, detail={"state": "REGISTERED_METHOD_REQUIRED"})
-        selected = matches[0]
-        policy = use.RetainedHouseUsePolicy(
-            root, user_id=user_id, store_id=registered["store_id"],
-            generation_id=spec["generation_id"], generation_sha256=spec["generation_sha256"],
-            subject_id=spec["subject_id"], query_cutoff=spec["query_cutoff"], mode=selected["mode"])
-        # Authorize metadata before resolving or opening the owner store.
-        policy.check("read_retained_generation_metadata", policy.expected)
-        reader = market_memory_trusted.TrustedFileAsKnownAtReader(
-            market_memory_trusted.default_trusted_store_root(root))
-        method = retrieval.RetainedContextMethodSpec(
-            selected["purge_calendar_days"], selected["embargo_calendar_days"], selected["mode"])
-        return market_memory.retained_macro_context(
-            reader, policy=policy, query_id=spec["query_id"],
-            generation_id=spec["generation_id"], generation_sha256=spec["generation_sha256"],
-            subject_id=spec["subject_id"], query_cutoff=spec["query_cutoff"], method=method, limit=limit)
+        with _observe_admitted_read('retained_macro'):
+            registered, _digest = use.load_registration(root)
+            methods = retained_method_catalog(root)
+            matches = [m for m in methods if m["method_spec_id"] == spec["method_spec_id"]]
+            if len(matches) != 1:
+                raise HTTPException(400, detail={"state": "REGISTERED_METHOD_REQUIRED"})
+            selected = matches[0]
+            policy = use.RetainedHouseUsePolicy(
+                root, user_id=user_id, store_id=registered["store_id"],
+                generation_id=spec["generation_id"], generation_sha256=spec["generation_sha256"],
+                subject_id=spec["subject_id"], query_cutoff=spec["query_cutoff"], mode=selected["mode"])
+            # Authorize metadata before resolving or opening the owner store.
+            policy.check("read_retained_generation_metadata", policy.expected)
+            reader = market_memory_trusted.TrustedFileAsKnownAtReader(
+                market_memory_trusted.default_trusted_store_root(root))
+            method = retrieval.RetainedContextMethodSpec(
+                selected["purge_calendar_days"], selected["embargo_calendar_days"], selected["mode"])
+            return market_memory.retained_macro_context(
+                reader, policy=policy, query_id=spec["query_id"],
+                generation_id=spec["generation_id"], generation_sha256=spec["generation_sha256"],
+                subject_id=spec["subject_id"], query_cutoff=spec["query_cutoff"], method=method, limit=limit)
     except (use.RetainedUseError, features.EpisodeFeatureAccessError,
             cohort.RetainedContextAccessError) as exc:
         raise HTTPException(403, detail={"state": "SOURCE_USE_NOT_ADMITTED"}) from exc
@@ -1106,11 +1186,13 @@ def retained_catalog_for_user(root: Path, user_id: str, request_spec: dict,
     if not allowed:
         raise HTTPException(429, detail={"state": "RATE_LIMITED"}, headers={"Retry-After": "60"})
     if not _playback_slots.acquire(blocking=False):
+        _read_observation_busy('retained_catalog')
         raise HTTPException(503, detail={"state": "BUSY"}, headers={"Retry-After": "2"})
     try:
-        return catalog.read_catalog(root, user_id=user_id, mode=mode, **parsed,
-            generation_id=spec.get("generation_id"), generation_sha256=spec.get("generation_sha256"),
-            query_id=spec.get("query_id"), context_id=spec.get("context_id"))
+        with _observe_admitted_read('retained_catalog'):
+            return catalog.read_catalog(root, user_id=user_id, mode=mode, **parsed,
+                generation_id=spec.get("generation_id"), generation_sha256=spec.get("generation_sha256"),
+                query_id=spec.get("query_id"), context_id=spec.get("context_id"))
     except use.RetainedUseError as exc:
         raise HTTPException(403, detail={"state": "SOURCE_USE_NOT_ADMITTED"}) from exc
     except market_memory_pit.MarketMemoryContextNotFound as exc:
@@ -1155,12 +1237,14 @@ def retained_saved_for_user(root: Path, user_id: str, request_spec: dict,
     if not allowed:
         raise HTTPException(429, detail={"state": "RATE_LIMITED"}, headers={"Retry-After": "60"})
     if not _playback_slots.acquire(blocking=False):
+        _read_observation_busy('retained_saved')
         raise HTTPException(503, detail={"state": "BUSY"}, headers={"Retry-After": "2"})
     try:
-        # Both capability admission and final owner re-read share this allowance.
-        with market_memory_pit.bounded_owner_reads(maximum_bytes=cohort.MAX_OWNER_BYTES):
-            capability = saved.read_retained_saved(root, user_id=user_id, **request_spec)
-            return saved.disclose_retained_saved(capability)
+        with _observe_admitted_read('retained_saved'):
+            # Both capability admission and final owner re-read share this allowance.
+            with market_memory_pit.bounded_owner_reads(maximum_bytes=cohort.MAX_OWNER_BYTES):
+                capability = saved.read_retained_saved(root, user_id=user_id, **request_spec)
+                return saved.disclose_retained_saved(capability)
     except (use.RetainedUseError, saved.RetainedSavedAccessError) as exc:
         raise HTTPException(403, detail={"state": "SOURCE_USE_NOT_ADMITTED"}) from exc
     except saved.RetainedSavedCutoffUnsupported as exc:
