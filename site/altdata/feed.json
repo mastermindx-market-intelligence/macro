@@ -1,5 +1,5 @@
 {
-  "generated_utc": "2026-10-14T20:21:02.281207+00:00",
+  "generated_utc": "2026-10-14T21:43:33.068199+00:00",
   "as_of": "2026-10-14",
   "schema": "altdata.feed.v1",
   "source": "Quiver Quantitative (Trader plan)",
@@ -28470,14 +28470,6 @@
           "sellers": 51
         },
         {
-          "ticker": "CRWV",
-          "buy_usd": 0.0,
-          "sell_usd": 1121049898.0,
-          "net_usd": -1121049898.0,
-          "buyers": 0,
-          "sellers": 680
-        },
-        {
           "ticker": "BIRK",
           "buy_usd": 0.0,
           "sell_usd": 1102769135.0,
@@ -28492,6 +28484,14 @@
           "net_usd": -1098352961.0,
           "buyers": 0,
           "sellers": 983
+        },
+        {
+          "ticker": "CRWV",
+          "buy_usd": 0.0,
+          "sell_usd": 1096172848.0,
+          "net_usd": -1096172848.0,
+          "buyers": 0,
+          "sellers": 664
         },
         {
           "ticker": "PRMB",
