@@ -889,7 +889,7 @@ def test_degenerate_design_not_identified(tmp_path):
         assert needle in reasons
 
 
-def test_budget_declared_only_with_flag_once(tmp_path):
+def test_budget_declared_only_with_flag_once(tmp_path, monkeypatch):
     world = _big_world()
     events: list[tuple] = []
     ledger = _Recorder()
@@ -907,8 +907,14 @@ def test_budget_declared_only_with_flag_once(tmp_path):
             events.append(("rt", series_id, period))
         return orig_rt(series_id, period)
 
+    def _no_default():
+        raise AssertionError("default TrialLedger must never be constructed "
+                             "in a test run")
+
+    monkeypatch.setattr(x0, "default_trial_ledger", _no_default)
     loaders = dict(world["loaders"])
     loaders["release_target"] = rt
+    loaders["trial_ledger"] = lambda: ordered  # injected from the first run on
     root = tmp_path / "root"
     ppi_path, gdp_path = _write_receipts(root)
 
@@ -920,7 +926,6 @@ def test_budget_declared_only_with_flag_once(tmp_path):
         "family": x0.TRIAL_FAMILY, "budget": 8, "declared": False,
     }
 
-    loaders["trial_ledger"] = lambda: ordered
     events.clear()
     receipt2 = x0.run(root, tmp_path / "out2", declare_budget=True,
                       loaders=loaders, ppi_dates_path=ppi_path,
