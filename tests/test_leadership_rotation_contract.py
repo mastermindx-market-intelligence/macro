@@ -1449,3 +1449,84 @@ def test_matrix_cases_each_have_a_test():
         # a case with no pinning test is a FAIL, not a skip
         assert callable(fn), f"matrix case {key} has no pinning test {test_name}"
         assert fn.__name__.startswith("test_")
+
+
+# ---------------------------------------------------------------------------
+# LR-MEAS-R2 review fixes: totality of numeric functions + T08 reason letter
+# (spec addendum LR-MEAS-SPEC-1-A-R2). R1: un-floatable ints never raise.
+# R1b: finite-float overflow is Unmeasured("non_finite_input"), never inf.
+# R2: an unmeasured INPUT to a T08/carry function is missing_input.
+# ---------------------------------------------------------------------------
+
+
+def _no_nonfinite(x):
+    """Assert no bare non-finite float escapes as a value (Unmeasured skipped)."""
+    if isinstance(x, Unmeasured):
+        return
+    if isinstance(x, dict):
+        for value in x.values():
+            _no_nonfinite(value)
+    elif isinstance(x, (list, tuple)):
+        for value in x:
+            _no_nonfinite(value)
+    elif isinstance(x, float):
+        assert math.isfinite(x), f"non-finite float escaped as a value: {x}"
+
+
+def test_r1_unfloatable_int_never_raises():
+    big = 10 ** 400
+    assert is_measured(big) is False
+    assert relative_wealth(big, 0.05) == Unmeasured("non_finite_input")
+    assert return_difference(big, 0.05) == Unmeasured("non_finite_input")
+    assert normalize_weights({"a": big}) == Unmeasured("missing_input")
+    assert isinstance(overlap({"a": big}, {"a": 1.0}), Unmeasured)
+    assert isinstance(concentration({"a": big}), Unmeasured)
+    zs = cohort_zscores({"a": big, "b": 1.0, "c": 2.0}, cohort_id="t")
+    assert zs["state"] == "ok"
+    assert zs["n_reference"] == 2
+    assert zs["z"]["a"] == Unmeasured("missing_input")
+    assert beta_only_residual(big, 0.1, 1.0) == Unmeasured("missing_input")
+    assert pair_interpretation(big, 0.1) == Unmeasured("missing_input")
+    assert decompose_trailing_change([big], [0.01]) == Unmeasured("missing_input")
+
+
+def test_r1b_finite_overflow_is_unmeasured_never_inf():
+    assert relative_wealth(1e308, -0.5) == Unmeasured("non_finite_input")
+    assert return_difference(1e308, -1e308) == Unmeasured("non_finite_input")
+    assert normalize_weights({"a": 1e308, "b": 1e308}) == Unmeasured("non_finite_input")
+    assert concentration({"a": 1e308, "b": 1e308}) == Unmeasured("non_finite_input")
+    assert overlap({"a": 1e308, "b": 1e308}, {"a": 1.0}) == Unmeasured("non_finite_input")
+    coverage = weight_coverage({"a": 1e308, "b": 1e308}, ["a"])
+    assert coverage["measured_weight_share"] == Unmeasured("non_finite_input")
+    zs = cohort_zscores({"a": 1e308, "b": -1e308, "c": 0.0}, cohort_id="t")
+    assert zs["state"] == "non_finite"
+    assert zs["sd"] == Unmeasured("non_finite_input")
+    assert zs["mean"] == pytest.approx(0.0)
+    assert zs["n_reference"] == 3
+    for value in zs["z"].values():
+        assert value == Unmeasured("non_finite_input")
+    zs2 = cohort_zscores({"a": 1e308, "b": 1e308, "m": None}, cohort_id="t")
+    assert zs2["state"] == "non_finite"
+    assert zs2["mean"] == Unmeasured("non_finite_input")
+    assert zs2["z"]["m"] == Unmeasured("missing_input")
+    d = decompose_z_change(
+        "a", {"a": 1e308, "b": -1e308, "c": 0.0}, {"a": 1.0, "b": 2.0, "c": 3.0},
+        cohort_id_before="t", cohort_id_after="t",
+    )
+    assert isinstance(d["raw_move_component"], Unmeasured)
+    assert beta_only_residual(1e308, -1e308, 10.0) == Unmeasured("non_finite_input")
+    assert decompose_trailing_change([1e308, 1e308], [0.0]) == Unmeasured("non_finite_input")
+    _no_nonfinite(zs)
+    _no_nonfinite(zs2)
+    _no_nonfinite(d)
+    _no_nonfinite(coverage)
+
+
+def test_r2_t08_unmeasured_input_reason_is_missing_input():
+    assert decompose_trailing_change([0.01, float("nan")], [0.01]) == Unmeasured("missing_input")
+    assert decompose_trailing_change([0.01], [float("inf")]) == Unmeasured("missing_input")
+    assert beta_only_residual(float("nan"), 0.1, 1.0) == Unmeasured("missing_input")
+    assert beta_only_residual(0.1, 0.1, float("inf")) == Unmeasured("missing_input")
+    assert pair_interpretation(float("nan"), 0.1) == Unmeasured("missing_input")
+    # counter-pin: T05 comparables keep the section 3.1 reason letter unchanged
+    assert relative_wealth(float("nan"), 0.1) == Unmeasured("non_finite_input")

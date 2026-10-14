@@ -175,10 +175,20 @@ def _value_or_reason(x):
     """(value, None) when *x* is a finite real, else (None, reason)."""
     if x is None or isinstance(x, bool) or not isinstance(x, numbers.Real):
         return None, "missing_input"
-    v = float(x)
+    try:
+        v = float(x)
+    except (OverflowError, ValueError):
+        # e.g. the legal int 10**400 cannot become a float: unmeasurable, not a crash.
+        return None, "non_finite_input"
     if not math.isfinite(v):
         return None, "non_finite_input"
     return v, None
+
+
+def _finite(v) -> bool:
+    """True iff *v* is a finite float (private): an overflowed arithmetic result
+    is an unmeasurable outcome, never a value."""
+    return isinstance(v, float) and math.isfinite(v)
 
 
 def _is_count(x) -> bool:
@@ -215,7 +225,10 @@ def relative_wealth(r_g, r_b):
         return Unmeasured("benchmark_wealth_nonpositive")
     if 1.0 + vg < 0.0:
         return Unmeasured("group_wealth_negative")
-    return (1.0 + vg) / (1.0 + vb) - 1.0
+    value = (1.0 + vg) / (1.0 + vb) - 1.0
+    if not _finite(value):
+        return Unmeasured("non_finite_input")
+    return value
 
 
 def return_difference(r_g, r_b):
@@ -226,7 +239,10 @@ def return_difference(r_g, r_b):
         return Unmeasured(rg)
     if vb is None:
         return Unmeasured(rb)
-    return vg - vb
+    value = vg - vb
+    if not _finite(value):
+        return Unmeasured("non_finite_input")
+    return value
 
 
 class Breadth(NamedTuple):
@@ -350,8 +366,28 @@ def cohort_zscores(values, *, cohort_id: str) -> dict:
             "z": {key: Unmeasured("insufficient_reference") for key in ids},
             "state": "insufficient_reference",
         }
-    mean = sum(measured.values()) / n_reference
-    sd = math.sqrt(sum((v - mean) ** 2 for v in measured.values()) / n_reference)
+    mean = None
+    overflow = False
+    try:
+        mean = sum(measured.values()) / n_reference
+        sd = math.sqrt(sum((v - mean) ** 2 for v in measured.values()) / n_reference)
+    except OverflowError:
+        # e.g. (1e308 - 0.0)**2 overflows: the dispersion is unmeasurable.
+        overflow = True
+    if overflow or not (math.isfinite(mean) and math.isfinite(sd)):
+        mean_out = (mean if (mean is not None and math.isfinite(mean))
+                    else Unmeasured("non_finite_input"))
+        return {
+            "cohort_id": cohort_id,
+            "reference_ids": sorted(measured),
+            "n_reference": n_reference,
+            "mean": mean_out,
+            "sd": Unmeasured("non_finite_input"),
+            "z": {key: (Unmeasured("non_finite_input") if key in measured
+                        else Unmeasured("missing_input"))
+                  for key in ids},
+            "state": "non_finite",
+        }
     if sd <= EPS:
         # All at origin is a tie, not Leading: every measured z is unmeasured.
         z = {
@@ -368,10 +404,13 @@ def cohort_zscores(values, *, cohort_id: str) -> dict:
             "z": z,
             "state": "neutral_tie",
         }
-    z = {
-        key: ((measured[key] - mean) / sd if key in measured else Unmeasured("missing_input"))
-        for key in ids
-    }
+    z = {}
+    for key in ids:
+        if key not in measured:
+            z[key] = Unmeasured("missing_input")
+            continue
+        value = (measured[key] - mean) / sd
+        z[key] = value if _finite(value) else Unmeasured("non_finite_input")
     return {
         "cohort_id": cohort_id,
         "reference_ids": sorted(measured),
@@ -449,6 +488,8 @@ def normalize_weights(w):
             return Unmeasured("invalid_weights")
         values[key] = v
         total += v
+    if not math.isfinite(total):
+        return Unmeasured("non_finite_input")
     if total <= EPS:
         return Unmeasured("invalid_weights")
     return {key: v / total for key, v in values.items()}
@@ -727,15 +768,15 @@ def decompose_trailing_change(window_before, new_returns):
         return Unmeasured("empty_population")
     before = []
     for raw in before_values:
-        v, reason = _value_or_reason(raw)
+        v, _reason = _value_or_reason(raw)
         if v is None:
-            return Unmeasured(reason)
+            return Unmeasured("missing_input")
         before.append(v)
     new = []
     for raw in new_returns:
-        v, reason = _value_or_reason(raw)
+        v, _reason = _value_or_reason(raw)
         if v is None:
-            return Unmeasured(reason)
+            return Unmeasured("missing_input")
         new.append(v)
     L = len(before)
     h = len(new)
@@ -751,6 +792,9 @@ def decompose_trailing_change(window_before, new_returns):
     expiry_component = -sum_expired
     new_return_component = sum_after - sum_before + sum_expired
     trailing_change = sum_after - sum_before
+    if not (_finite(expiry_component) and _finite(new_return_component)
+            and _finite(trailing_change)):
+        return Unmeasured("non_finite_input")
     return {
         "window_sessions": L,
         "step_sessions": h,
@@ -1290,16 +1334,17 @@ def beta_only_residual(r_g, r_m, beta):
     vg, rg = _value_or_reason(r_g)
     vm, rm = _value_or_reason(r_m)
     vb, rb = _value_or_reason(beta)
-    if vg is None:
-        return Unmeasured(rg)
-    if vm is None:
-        return Unmeasured(rm)
-    if vb is None:
-        return Unmeasured(rb)
+    if vg is None or vm is None or vb is None:
+        # An unmeasured INPUT is missing_input (the T08 reason letter), whatever
+        # sub-reason the value probe produced.
+        return Unmeasured("missing_input")
     residual = vg - vb * vm
+    excess = vg - vm
+    if not (_finite(residual) and _finite(excess) and _finite(vb)):
+        return Unmeasured("non_finite_input")
     explained = abs(residual) <= EPS
     return {
-        "arithmetic_excess": vg - vm,
+        "arithmetic_excess": excess,
         "stated_beta": vb,
         "beta_residual": residual,
         "explained_by_stated_beta": explained,
@@ -1311,15 +1356,17 @@ def beta_only_residual(r_g, r_m, beta):
 
 def pair_interpretation(r_receiver, r_donor):
     """Label a receiver/donor pair WITHOUT claiming flows, recovery or causality."""
-    vr, rr = _value_or_reason(r_receiver)
-    vd, rd = _value_or_reason(r_donor)
-    if vr is None:
-        return Unmeasured(rr)
-    if vd is None:
-        return Unmeasured(rd)
+    vr, _rr = _value_or_reason(r_receiver)
+    vd, _rd = _value_or_reason(r_donor)
+    if vr is None or vd is None:
+        # An unmeasured INPUT is missing_input (the T08 reason letter).
+        return Unmeasured("missing_input")
     rw = relative_wealth(vr, vd)
     if isinstance(rw, Unmeasured):
         return rw
+    difference = return_difference(vr, vd)
+    if isinstance(difference, Unmeasured):
+        return difference
     if vr < 0 and vd < 0:
         direction = "both_down"
     elif vr > 0 and vd > 0:
@@ -1340,7 +1387,7 @@ def pair_interpretation(r_receiver, r_donor):
         "receiver_return": vr,
         "donor_return": vd,
         "relative_wealth": rw,
-        "return_difference": vr - vd,
+        "return_difference": difference,
         "absolute_direction": direction,
         "interpretation": interpretation,
         "not_claimed": ["absolute_recovery", "measured_inflow", "causal_handoff"],
@@ -1357,7 +1404,10 @@ def decompose_z_change(member_id, ref_before, ref_after, *, cohort_id_before, co
     raw_after = _num(ref_after.get(member_id)) if ref_after is not None else None
 
     if raw_after is not None and zb["state"] == "ok":
-        z_holding_reference = (raw_after - zb["mean"]) / zb["sd"]
+        held = (raw_after - zb["mean"]) / zb["sd"]
+        z_holding_reference = held if _finite(held) else Unmeasured("non_finite_input")
+    elif raw_after is not None and zb["state"] == "non_finite":
+        z_holding_reference = Unmeasured("non_finite_input")
     elif raw_after is not None and zb["state"] == "neutral_tie":
         z_holding_reference = Unmeasured("degenerate_dispersion")
     elif raw_after is not None and zb["state"] == "insufficient_reference":
