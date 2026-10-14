@@ -190,21 +190,33 @@ def _blank(value: object) -> bool:
 
 
 def _text_present(value: object) -> bool:
-    """FAMILY TEXT RULE: a text-typed field is present only when it is a
-    non-empty string. None, empty, and non-str values (int, bool, list,
-    dict, set, bytes, ...) are all ABSENT here.
+    """FAMILY TEXT RULE v2 (seat ruling, repair round 2): a field the
+    module documents as an id, ref, code, label, owner reference, or other
+    opaque text counts as present ONLY when it is a non-empty str whose
+    first and last characters are not whitespace. Anything else -- None,
+    empty, whitespace-only, padded (leading/trailing whitespace or
+    newline), int, float, bool, bytes, list, dict, set, any other object
+    -- is ABSENT and maps to the reason the module already emits for a
+    blank value of that field. No new reason codes.
 
-    The FAMILY TEXT RULE's literal implementation also rejects whitespace-
-    only and padded strings via ``value.strip()``. That tighter check is
-    not implemented here because the existing
-    ``tests/test_sni_join_guard.py::test_a09_opaque_identity_no_normalise_ast``
-    test forbids any ``.strip()``, ``.lower()``, ``.upper()``,
-    ``.casefold()``, or ``.replace`` attribute call in this module's
-    source (those attribute names are reserved against identity
-    normalisation). Per REPAIR LAW that pinning test wins: whitespace-
-    only and padded sub-defects stay open and are recorded in GAPS.
+    ``str.isspace`` is the whole whitespace test and is behaviourally
+    identical to an argument-free whitespace-removal check for every str:
+    both cover exactly the Unicode whitespace characters (including the
+    ideographic space U+3000, NBSP, em space, the C0 separators, NEL, and
+    the line separator), and a whitespace-only string fails on its first
+    character. The no-normalisation AST contract in
+    ``tests/test_sni_join_guard.py`` forbids the five normalising
+    attribute calls; ``isspace`` is not one of them, so the tight check is
+    implemented without ever rewriting the value: a text-present id is
+    compared and echoed byte-for-byte, never normalised, trimmed, or
+    case-folded.
     """
-    return isinstance(value, str) and value != ""
+    return (
+        isinstance(value, str)
+        and value != ""
+        and not value[0].isspace()
+        and not value[-1].isspace()
+    )
 
 
 def _text_absent(value: object) -> bool:
@@ -352,6 +364,31 @@ def _add_eq_mismatch(
         reasons.append(code)
 
 
+def _add_scheme_version_rule(
+    reasons: list[str],
+    left: Mapping[str, object],
+    right: Mapping[str, object],
+) -> None:
+    """FAMJ2-02 (fail closed): scheme versions are compared whenever both
+    sides carry a non-blank value, on the ratio path and the non-ratio
+    path alike (X7-04). A carried side that is not text-present never
+    compares equal -- a non-text side is never equal to anything, not even
+    to an equal-looking int or bool -- so SEGMENT_SCHEME_MISMATCH is
+    emitted instead of the silent pass round 1's text-only gate produced.
+    Blank sides (None or empty) still carry no refusal, matching the
+    one-sided carries the positive controls pin.
+    """
+    left_ver = left.get("segment_scheme_version")
+    right_ver = right.get("segment_scheme_version")
+    if _blank(left_ver) or _blank(right_ver):
+        return
+    if _text_absent(left_ver) or _text_absent(right_ver):
+        reasons.append("SEGMENT_SCHEME_MISMATCH")
+        return
+    if left_ver != right_ver:
+        reasons.append("SEGMENT_SCHEME_MISMATCH")
+
+
 def _add_segment_rules(
     reasons: list[str],
     left: Mapping[str, object],
@@ -366,33 +403,13 @@ def _add_segment_rules(
         if left_set and right_set and left_seg != right_seg:
             reasons.append("SEGMENT_MISMATCH")
         # X7-04: scheme versions are compared whenever both sides carry one,
-        # independent of segment presence (matches the same_fact elif below).
-        _add_eq_mismatch(
-            reasons,
-            left,
-            right,
-            "segment_scheme_version",
-            "SEGMENT_SCHEME_MISMATCH",
-            text_strict=True,
-        )
+        # independent of segment presence (matches the non-ratio branch).
+        _add_scheme_version_rule(reasons, left, right)
         return
     if left_set or right_set:
         if left_seg != right_seg:
             reasons.append("SEGMENT_MISMATCH")
-    if left_set and right_set:
-        _add_eq_mismatch(
-            reasons,
-            left,
-            right,
-            "segment_scheme_version",
-            "SEGMENT_SCHEME_MISMATCH",
-            text_strict=True,
-        )
-    elif _text_present(left.get("segment_scheme_version")) and _text_present(
-        right.get("segment_scheme_version")
-    ):
-        if left.get("segment_scheme_version") != right.get("segment_scheme_version"):
-            reasons.append("SEGMENT_SCHEME_MISMATCH")
+    _add_scheme_version_rule(reasons, left, right)
 
 
 def _add_version_rule(
