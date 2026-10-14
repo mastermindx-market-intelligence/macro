@@ -61,6 +61,19 @@ datasets:
     quality_checks: [uniqueness, validity, freshness, continuity]
     version: "1.0.0"
     licensing: vendor_terms_personal_use
+    # ── R00 consumer declarations (D00.D6 consumer B, 2026-10-13) ─────────────
+    basis: tradj                       # row-level, agrees with schema close (R00)
+    clocks: [ingested_at]              # no per-row published_at is captured; first
+                                       # system observation is the nightly collect (D00.D1)
+    point_in_time_corporate_actions: false   # no action revision set bound to this store
+    rights:                            # separately stated; never inferred (K01.02)
+      purchase_access: unverified
+      internal_computation: unverified
+      redistribution: not_granted
+    code_consumers:                    # DataWorkspace canonical read (D00.D6 consumer B)
+      - lib/dataos/web_workspace.py
+      - lib/dataos/web_api.py
+      - lib/dataos/web_readers.py
     schema:
       close:
         dtype: float64
@@ -80,6 +93,13 @@ datasets:
       history, which is how 30/231 names came to be stranded on a stale adjustment basis
       (measured 2026-07-19, healed by scripts/heal_stocks_basis.py) — the concrete cost of
       an adjusted series whose adjustment vintage is not recorded (§D4).
+      R00 POPULATION (2026-10-13, D00.D6 consumer B): market US. No `population:`
+      block is declared because venues are NOT measurable from the producer or any
+      in-repo source without reading `data/` (the yfinance fetch exposes no per-row
+      venue; the fetch universe is the union of top-N holdings per
+      collectors/sector_holdings.py plus every stored name, and holdings may include
+      foreign shares per that adapter's own session-routing comment) — an honest
+      partial stays in this note rather than guessing a MIC list.
 
   - dataset_id: equity.bars.daily.yahoo
     layer: L1
@@ -372,6 +392,16 @@ datasets:
       canonical reader. The general pending-transition fence (§5) that prevents a
       RECURRENCE of this class lives in the receipt's `pending_transition_refusals`
       and `listing_continuity` blocks, not in this schema.
+    # ── R00 consumer declarations (D00.D6 consumer B, 2026-10-13) ─────────────
+    basis: not_applicable              # no schema column carries a price basis
+    rights:                            # separately stated; never inferred (K01.02)
+      purchase_access: unverified
+      internal_computation: unverified
+      redistribution: not_granted
+    code_consumers:                    # DataWorkspace canonical read (D00.D6 consumer B)
+      - lib/dataos/web_workspace.py
+      - lib/dataos/web_api.py
+      - lib/dataos/web_readers.py
 
   - dataset_id: reference.vendor_aliases
     layer: L2
@@ -455,6 +485,16 @@ datasets:
       DISPLAY TIER: nothing reads it as authority yet; lib/ticker_aliases.py remains the
       live seam until spec §11.4.
     supersedes: lib/ticker_aliases.py   # the `yahoo_fetch`/`store` rows only — see notes
+    # ── R00 consumer declarations (D00.D6 consumer B, 2026-10-13) ─────────────
+    basis: not_applicable              # no schema column carries a price basis
+    rights:                            # separately stated; never inferred (K01.02)
+      purchase_access: unverified
+      internal_computation: unverified
+      redistribution: not_granted
+    code_consumers:                    # DataWorkspace canonical read (D00.D6 consumer B)
+      - lib/dataos/web_workspace.py
+      - lib/dataos/web_api.py
+      - lib/dataos/web_readers.py
 
   # ── V4-D2B1 issuer axis (2026-08-19) — produced by the SAME builder, SAME era ────
   - dataset_id: reference.issuer_master
@@ -574,6 +614,16 @@ datasets:
       general pending-transition fence that prevents a RECURRENCE of this class (§5) is
       disclosed in _receipt.json's `pending_transition_refusals`/`listing_continuity`
       blocks, not written here — this dataset records only a REALIZED correction.
+    # ── R00 consumer declarations (D00.D6 consumer B, 2026-10-13) ─────────────
+    basis: not_applicable              # no schema column carries a price basis
+    rights:                            # separately stated; never inferred (K01.02)
+      purchase_access: unverified
+      internal_computation: unverified
+      redistribution: not_granted
+    code_consumers:                    # DataWorkspace canonical read (D00.D6 consumer B)
+      - lib/dataos/web_workspace.py
+      - lib/dataos/web_api.py
+      - lib/dataos/web_readers.py
 
   # ── China physical-gold source plane — PRODUCED after live source proof ────────
   # Promoted 2026-09-20 after the protected-main gold_china_basis backfill landed
@@ -1554,3 +1604,191 @@ datasets:
       availability, exact source context, dated identity and actual upstream clocks
       remain unqualified. Vendor prices/units are not executable or canonical price
       bases; dates and intact files do not prove complete history or PIT eligibility.
+
+  # ── R00 consumer A (D00.D6, 2026-10-13): Terminal daily OHLC JSON ───────────
+  # Cross-repo producer (repo mastermind-terminal @ 06a49a6104f6): status stays
+  # PROPOSED — this registry does not pretend an in-repo pipeline evidences a
+  # store another repo writes (R00.01), so the producer, basis and population
+  # below are cited, not claimed as produced here.
+  - dataset_id: terminal.bars.daily.ohlc_json
+    layer: L3
+    status: PROPOSED
+    owner: charting-app       # outside the in-repo owner vocabulary: the Terminal
+                              # app owns its own published output (R00 note)
+    producer: mastermind-terminal@06a49a6104f6:ingest/build_universe.py::build_ohlc_json
+    storage: mastermind-terminal:terminal/public/data/{ticker}.json   # OUT = $TERMINAL_DATA_DIR
+                              # override; manifest.json beside it (see notes)
+    format: json
+    grain: [ticker, date]
+    identity:
+      id_column: ticker
+      id_type: symbol         # storage key = vendor spelling frozen at write (D00.D2),
+                              # resolved through the alias table — never an identity
+    temporal_profile: DERIVED
+    frequency: 1d
+    version: "0.1.0"
+    basis: tradj
+    population:
+      market: US
+      venues: [XNYS, XNAS, XASE, ARCX]
+      universe: US tickers present in the Macro deep store data/stocks/<T>.parquet
+        (this registry's equity.bars.daily.stocks universe), last MAX_BARS=3900
+        (~15y) daily bars kept per ticker
+    clocks: [derived]          # a DERIVED profile carries no clock of its own (D00.D1)
+    point_in_time_corporate_actions: false
+    rights:
+      purchase_access: unverified
+      internal_computation: unverified
+      redistribution: not_granted
+    notes: >
+      PROPOSED, never PRODUCED on this registry's evidence: the producer lives in
+      another repo (R00.01) — mastermind-terminal@06a49a6104f6:ingest/
+      build_universe.py::build_ohlc_json (def at :142), US input = the Macro deep
+      store data/stocks/<T>.parquet via MACRO_REPO/ohlc_rel (:376-384, :423-428),
+      i.e. this registry's equity.bars.daily.stocks (tradj close). Output written
+      per ticker at :429 under OUT = $TERMINAL_DATA_DIR or terminal/public/data
+      (:54), manifest.json at :450 (:56); MAX_BARS=3900 (~15y daily, :58/:145).
+      BASIS (R00 ruling): mixed per-ticker vendor-adjusted sources selected by
+      `src` (deep = Macro equity.bars.daily.stocks tradj close with synthetic
+      open; polygon = adjusted=true aggs; yahoo = auto_adjust); vendor-adjusted,
+      not house SADJ (D00.D3), not executable; per-ticker basis is not declared
+      in the output -> GAP. One row label may never claim LESS adjustment than a
+      constituent may carry, and `sadj` would claim a house qualification D00.D3
+      reserves for qualified split events. The `o` field is SYNTHETIC (= prior
+      close, :147-149) with high/low clamped to include it (:152-153) and
+      bar_quality synthetic_open_deepstore — displayed, never a traded open
+      (D00.D4). Never-clobber (:415-421): an existing per-ticker JSON whose src
+      is polygon or yahoo is kept; those files come from other producers —
+      ingest/refresh_ohlc.py:40-41 (Polygon grouped daily aggs, adjusted=true)
+      and ingest/refresh_ohlc_intl.py:86 (yfinance auto_adjust). CN/HK/Intl
+      inputs (:23-26) are outside the D00.D6 positive witness (identity-only).
+      POPULATION: market US; venues measured from the Polygon primary_exchange
+      MIC map (:89-91, :211) — XNYS/XNAS/XASE/ARCX; D00.D6 names XNAS/XNYS/ARCX,
+      the XASE difference is recorded as a GAP. No lineage edge in `inputs:`: the
+      in-repo DAG is in-repo lineage, and a cross-repo build is named here, not
+      graphed as an in-repo pipeline.
+
+  # ── R00 consumer C (D00.D6, 2026-10-13): basket membership PIT histories ────
+  # One row per suite — three suites, two lanes (engine/basket_membership_pit.py
+  # SUITE_LANE): the US `baskets` suite is the D00.D6 positive witness; the two
+  # CN suites are identity-only. All three stores are append-only parquets,
+  # keep-FIRST on (snapshot_date, basket_id, ticker), advanced only by their one
+  # declared collection lane; content-dedup means a snapshot_date is stamped only
+  # when membership actually differs.
+  - dataset_id: basket.membership.history.baskets
+    layer: L1
+    status: PRODUCED
+    owner: macro-dashboard
+    producer: engine/basket_membership_pit.py::append_all
+    storage: data/baskets/membership_history.parquet
+    format: parquet
+    grain: [snapshot_date, basket_id, ticker]
+    identity:
+      id_column: ticker
+      id_type: symbol         # the repo's own membership key space (D00.D2), not an identity
+    temporal_profile: SNAPSHOT_SERIES
+    timezone: UTC
+    frequency: 1d            # nightly advance with content-dedup — most nights stamp nothing
+    conflict_policy: PRIMARY_ONLY
+    quality_checks: [uniqueness, temporal_integrity]
+    version: "0.1.0"
+    basis: not_applicable     # membership: no price column carries a basis
+    clocks: [ingested_at]    # snapshot_date is stamped at lane observation; collection
+                             # receipts carry the collection clock (D00.D1)
+    point_in_time_corporate_actions: false
+    rights:
+      purchase_access: unverified
+      internal_computation: unverified
+      redistribution: not_granted
+    code_consumers:
+      - engine/basket_membership_pit.py::members_asof   # the PIT read seam (pit flag travels with the answer)
+      - scripts/research/freeze_mi_s2_theme_relative_intraday_registration.py
+    notes: >
+      US suite (SUITE_US = "baskets"): the 49 hand-curated US thematic baskets of
+      data/baskets/membership.json, snapshotted append-only by
+      engine/basket_membership_pit.py (producer driven by scripts/build_baskets.py
+      via append_all(suites=SUITES_US), lane "nightly" per SUITE_LANE — the only
+      lane allowed to advance this store). D00.D6 consumer C positive witness:
+      population market US. No `population:` block is declared — venues are not a
+      measurable property of an index-membership store and no in-repo source
+      enumerates them without reading `data/` (R00 gap). PRODUCED evidence: the
+      parquet is a committed blob at HEAD (last advanced by "engine: regime
+      update 2026-09-04", 297b3e6f16) and config/dag.yml wires
+      scripts.build_baskets --snapshot into the US nightly. name_zh is empty on
+      US rows — one reader, not two.
+
+  - dataset_id: basket.membership.history.baskets_china
+    layer: L1
+    status: PRODUCED
+    owner: macro-dashboard
+    producer: engine/basket_membership_pit.py::append_all
+    storage: data/baskets_china/membership_history.parquet
+    format: parquet
+    grain: [snapshot_date, basket_id, ticker]
+    identity:
+      id_column: ticker
+      id_type: symbol         # CN vendor spelling (D00.D2); identity-only normalization (D00.D6)
+    temporal_profile: SNAPSHOT_SERIES
+    timezone: UTC
+    frequency: 1d            # asia-lane advance with content-dedup
+    conflict_policy: PRIMARY_ONLY
+    quality_checks: [uniqueness, temporal_integrity]
+    version: "0.1.0"
+    basis: not_applicable
+    clocks: [ingested_at]
+    point_in_time_corporate_actions: false
+    rights:
+      purchase_access: unverified
+      internal_computation: unverified
+      redistribution: not_granted
+    code_consumers:
+      - engine/basket_membership_pit.py::members_asof
+    notes: >
+      Curated CN suite (SUITE_CURATED = "baskets_china"), advanced only by the
+      asia collection lane (SUITE_LANE; scripts/build_baskets_china_ths.py ->
+      append_all). IDENTITY-ONLY (D00.D6): no CN price-view positive witness is
+      claimed in v1; population market CN, venues not measurable in-repo (no
+      `population:` block — R00 gap). PRODUCED evidence: committed blob at HEAD
+      (last advanced by "engine: asia dashboards 2026-08-06", 8e8ce5ec7b);
+      content-dedup makes advance recency a cadence-stamp question, not a
+      staleness claim.
+
+  - dataset_id: basket.membership.history.baskets_china_ths
+    layer: L1
+    status: PRODUCED
+    owner: macro-dashboard
+    producer: engine/basket_membership_pit.py::append_all
+    storage: data/baskets_china_ths/membership_history.parquet
+    format: parquet
+    grain: [snapshot_date, basket_id, ticker]
+    identity:
+      id_column: ticker
+      id_type: symbol         # CN vendor spelling (D00.D2); identity-only normalization (D00.D6)
+    temporal_profile: SNAPSHOT_SERIES
+    timezone: UTC
+    frequency: 1d            # asia-lane advance with content-dedup
+    conflict_policy: PRIMARY_ONLY
+    quality_checks: [uniqueness, temporal_integrity]
+    version: "0.1.0"
+    basis: not_applicable
+    clocks: [ingested_at]
+    point_in_time_corporate_actions: false
+    rights:
+      purchase_access: unverified
+      internal_computation: unverified
+      redistribution: not_granted
+    code_consumers:
+      - engine/basket_membership_pit.py::read_history
+      - engine/basket_membership_pit.py::members_asof
+      - scripts/build_theme_graph.py
+      - engine/theme_graph/materialize.py
+    notes: >
+      Machine CN suite (SUITE_THS = "baskets_china_ths", THS concept boards),
+      advanced only by the asia collection lane (SUITE_LANE). IDENTITY-ONLY
+      (D00.D6): no CN price-view positive witness in v1; population market CN,
+      venues not measurable in-repo (no `population:` block — R00 gap). Rows
+      carry source_shape: the earliest side-car is the raw vendor concept dump
+      (ths_concept_dump) whose concept -> basket mapping is today's — the honest
+      bound on how PIT it is. PRODUCED evidence: committed blob at HEAD (last
+      advanced by "engine: asia dashboards 2026-10-04", 63df61aa9a; re-scrape
+      d337c379a3 the day before).

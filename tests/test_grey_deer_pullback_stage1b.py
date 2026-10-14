@@ -4,13 +4,22 @@ Seat decisions D1–D13. Synthetic frames only: no price download, no read of
 ``data/``, no write under ``research/`` or ``data/``. Every ``main`` call
 receives an explicit ``--out-dir`` under ``tmp_path``.
 
+The shipped module is frozen with prereg v1.1. The autouse fixture
+``_pending_by_default`` puts every pin back to ``PREREG_V11_PENDING`` and
+replaces the trial-ledger scope with a probe, so the refusal tests keep their
+meaning and no test can append to the checkout's ``data/trial_ledger.jsonl``.
+The frozen values are tested through the ``SHIPPED_*`` and ``REAL_*`` names.
+
 Run:
     ~/lanes/venv/bin/python -m pytest -q tests/test_grey_deer_pullback_stage1b.py
 """
 from __future__ import annotations
 
+import contextlib
+import hashlib
 import json
 import math
+import re
 import sys
 from pathlib import Path
 
@@ -23,6 +32,58 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 import scripts.research.grey_deer_pullback_stage1 as stage1  # noqa: E402
 import scripts.research.grey_deer_pullback_stage1b as s1b  # noqa: E402
 from scripts.research.grey_deer_panel_adjust import AdjustResult  # noqa: E402
+from engine import trial_ledger  # noqa: E402
+
+# The frozen (prereg v1.1) values, captured before any fixture patches them.
+SHIPPED_TRIAL_BUDGET = s1b.TRIAL_BUDGET
+SHIPPED_IDENTITY_PINS = {ticker: dict(pin) for ticker, pin in s1b.IDENTITY_PINS.items()}
+SHIPPED_MANIFEST_BLOB_SHA = s1b.MANIFEST_BLOB_SHA
+SHIPPED_PREREG_BLOB_SHA = s1b.PREREG_BLOB_SHA
+REAL_LEDGER_SCOPE = s1b.trial_ledger_scope
+REAL_REGISTER = trial_ledger.register_trials
+
+
+@pytest.fixture(autouse=True)
+def _pending_by_default(monkeypatch):
+    """Start every test from the pending pins and a probe ledger scope.
+
+    Returns the probe's event list: ``"enter"`` and ``"exit"`` around the
+    scope. The real registrar raises if any test reaches it unpatched.
+    """
+    monkeypatch.setattr(
+        s1b, "IDENTITY_PINS", {ticker: s1b._pending_pin() for ticker in s1b.PANEL_TICKERS}
+    )
+    monkeypatch.setattr(s1b, "TRIAL_BUDGET", s1b.PIN_PENDING)
+    monkeypatch.setattr(s1b, "MANIFEST_BLOB_SHA", s1b.PIN_PENDING)
+    monkeypatch.setattr(s1b, "PREREG_BLOB_SHA", s1b.PIN_PENDING)
+    events: list[str] = []
+
+    @contextlib.contextmanager
+    def _probe_scope(ledger_path=None):
+        events.append("enter")
+        try:
+            yield
+        finally:
+            events.append("exit")
+
+    def _no_register(*_args, **_kwargs):
+        raise AssertionError("a test reached the real trial-ledger registrar")
+
+    monkeypatch.setattr(s1b, "trial_ledger_scope", _probe_scope)
+    monkeypatch.setattr(trial_ledger, "register_trials", _no_register)
+    return events
+
+
+def _ship_frozen(monkeypatch) -> None:
+    monkeypatch.setattr(s1b, "IDENTITY_PINS", {t: dict(p) for t, p in SHIPPED_IDENTITY_PINS.items()})
+    monkeypatch.setattr(s1b, "TRIAL_BUDGET", SHIPPED_TRIAL_BUDGET)
+    monkeypatch.setattr(s1b, "MANIFEST_BLOB_SHA", SHIPPED_MANIFEST_BLOB_SHA)
+    monkeypatch.setattr(s1b, "PREREG_BLOB_SHA", SHIPPED_PREREG_BLOB_SHA)
+
+
+def _git_blob_sha(path: Path) -> str:
+    data = path.read_bytes()
+    return hashlib.sha1(b"blob %d\0" % len(data) + data).hexdigest()
 
 
 WINDOW_ENDS = ["2021-07-06", "2026-10-07"]
@@ -549,8 +610,8 @@ def test_loeo_removes_the_episode_dates_from_all_tickers():
 
 def test_constants_match_the_seat_decisions():
     assert s1b.TRIAL_FAMILY == "grey_deer_pullback_v11"
-    assert s1b.TRIAL_BUDGET == "PREREG_V11_PENDING"
-    assert isinstance(s1b.TRIAL_BUDGET, str)
+    assert SHIPPED_TRIAL_BUDGET == 66 == s1b.TRIALS_TOTAL
+    assert isinstance(SHIPPED_TRIAL_BUDGET, int)
     assert s1b.TRIALS_PER_HORIZON == 22
     assert s1b.TRIALS_TOTAL == 66
     assert s1b.SCHEMA == "grey_deer_pullback_stage1b/v1"
@@ -580,8 +641,8 @@ def test_constants_match_the_seat_decisions():
     assert "PREREG_V11_PENDING" in s1b.freeze_block_reason()
     assert s1b.EXPECTED_COMMON_SESSIONS == 1320
     assert s1b.MANIFEST_VERSION == "1.1.0"
-    assert s1b.MANIFEST_BLOB_SHA == "PREREG_V11_PENDING"
-    assert s1b.PREREG_BLOB_SHA == "PREREG_V11_PENDING"
+    assert SHIPPED_MANIFEST_BLOB_SHA != s1b.PIN_PENDING
+    assert SHIPPED_PREREG_BLOB_SHA != s1b.PIN_PENDING
     assert "grey_deer_panel_adjust.PINNED_SPLITS" in s1b.DIVIDEND_DISCLOSURE
     assert "2026-08-18" in s1b.DIVIDEND_DISCLOSURE
     assert s1b.build_parser().get_default("blocks_only") is False
@@ -885,7 +946,9 @@ def test_payload_bootstrap_record_and_fold_block_table():
     assert "block_length_rule=stage-1 block_length(h, variant)" in note
 
 
-def test_blocks_only_prints_table_and_pins_without_a_fit(tmp_path, monkeypatch, capsys):
+def test_blocks_only_prints_table_and_pins_without_a_fit(
+    tmp_path, monkeypatch, capsys, _pending_by_default
+):
     n = 340
     dates = [day.strftime("%Y-%m-%d") for day in pd.bdate_range("2021-07-06", periods=n)]
     panel = tmp_path / "panel"
@@ -913,6 +976,7 @@ def test_blocks_only_prints_table_and_pins_without_a_fit(tmp_path, monkeypatch, 
         raw = stage1.normalize_subframe(pd.read_parquet(panel / f"{ticker}.parquet"))
         assert sha == stage1.subframe_sha256(raw)
         assert ticker in s1b.PANEL_TICKERS
+    assert _pending_by_default == []
 
 
 def test_pending_manifest_and_prereg_blob_pins_are_in_the_freeze_reason():
@@ -925,3 +989,160 @@ def test_pending_manifest_and_prereg_blob_pins_are_in_the_freeze_reason():
     assert s1b.PIN_PENDING in reason
     assert s1b.MANIFEST_BLOB_SHA == s1b.PIN_PENDING
     assert s1b.PREREG_BLOB_SHA == s1b.PIN_PENDING
+
+
+# ── 10. prereg v1.1 freeze: shipped pins, blob pins, ledger registration ─────
+
+
+_PIN_ROW = re.compile(
+    r"^\| (?P<ticker>[A-Z]+) \| `(?P<sha>[0-9a-f]{64})` \| (?P<rows>\d+) \| "
+    r"(?P<first>\d{4}-\d{2}-\d{2}) \| (?P<last>\d{4}-\d{2}-\d{2}) \|$"
+)
+_BLOCK_ROW = re.compile(
+    r"^\| (?P<block>[1-8]) \| (?P<s>\d+) \| (?P<sd>\d{4}-\d{2}-\d{2}) \| "
+    r"(?P<e>[\d /]+) \| (?P<ed>[\d /-]+) \|$"
+)
+
+
+def test_shipped_constants_clear_the_freeze_gate(monkeypatch):
+    assert s1b.freeze_block_reason() is not None
+    _ship_frozen(monkeypatch)
+    assert s1b.freeze_block_reason() is None
+    assert set(SHIPPED_IDENTITY_PINS) == set(s1b.PANEL_TICKERS)
+    for ticker, pin in SHIPPED_IDENTITY_PINS.items():
+        assert set(pin) == {"subframe_sha256", "rows", "first_date", "last_date"}, ticker
+        assert re.fullmatch(r"[0-9a-f]{64}", pin["subframe_sha256"]), ticker
+        assert pin["rows"] in (1320, 1321), ticker
+        assert pin["first_date"] == s1b.WINDOW_START, ticker
+        assert pin["last_date"] == s1b.AS_OF == "2026-10-07", ticker
+    with_0818 = {t for t, p in SHIPPED_IDENTITY_PINS.items() if p["rows"] == 1321}
+    assert with_0818 == _HAVE_0818
+    assert len({pin["subframe_sha256"] for pin in SHIPPED_IDENTITY_PINS.values()}) == 14
+
+
+def test_prereg_pin_table_equals_the_shipped_pins():
+    text = (s1b.ROOT / s1b.PREREG_PATH).read_text(encoding="utf-8")
+    section = text.split("## 4.")[0].split("## 3.")[1]
+    pending_rows = [
+        line for line in section.splitlines() if line.startswith("| ") and s1b.PIN_PENDING in line
+    ]
+    assert pending_rows == []
+    table: dict[str, dict] = {}
+    for line in text.splitlines():
+        match = _PIN_ROW.match(line)
+        if match:
+            assert match["ticker"] not in table
+            table[match["ticker"]] = {
+                "subframe_sha256": match["sha"],
+                "rows": int(match["rows"]),
+                "first_date": match["first"],
+                "last_date": match["last"],
+            }
+    assert table == SHIPPED_IDENTITY_PINS
+
+
+def test_prereg_block_table_equals_the_fold_calendar():
+    text = (s1b.ROOT / s1b.PREREG_PATH).read_text(encoding="utf-8")
+    rows = [m for m in map(_BLOCK_ROW.match, text.splitlines()) if m]
+    assert [int(m["block"]) for m in rows] == list(range(1, 9))
+    for h_pos, h in enumerate(stage1.HORIZONS):
+        calendar = s1b.panel_fold_calendar(s1b.EXPECTED_COMMON_SESSIONS, h)
+        assert len(calendar) == 8
+        for match, (start, end) in zip(rows, calendar):
+            assert int(match["s"]) == start
+            ends = [int(part) for part in match["e"].split("/")]
+            assert ends[h_pos if len(ends) == 3 else 0] == end
+
+
+def test_blob_pins_are_the_frozen_manifest_and_prereg_blobs():
+    assert SHIPPED_MANIFEST_BLOB_SHA == _git_blob_sha(s1b.ROOT / s1b.MANIFEST_PATH)
+    assert SHIPPED_PREREG_BLOB_SHA == _git_blob_sha(s1b.ROOT / s1b.PREREG_PATH)
+    for rel in (s1b.MANIFEST_PATH, s1b.PREREG_PATH):
+        head = (s1b.ROOT / rel).read_text(encoding="utf-8").splitlines()[:12]
+        assert any("FROZEN" in line for line in head), rel
+        assert not any("NOT FROZEN" in line or "DRAFT" in line for line in head), rel
+
+
+def test_main_registers_the_family_before_outcomes(tmp_path, monkeypatch, _pending_by_default):
+    events = _pending_by_default
+    panel = tmp_path / "panel"
+    _write_governed(panel)
+    _arm_calendar(monkeypatch, _COMMON)
+    _freeze_runtime(monkeypatch, _pins_from_dir(panel))
+    monkeypatch.setattr(s1b, "block_table", lambda _calendar: [])
+    monkeypatch.setattr(s1b, "_print_block_table", lambda _table: None)
+
+    def _execute(*_args, **_kwargs):
+        events.append("execute")
+        return {"status": "OK"}
+
+    monkeypatch.setattr(s1b, "execute_panel", _execute)
+    monkeypatch.setattr(s1b, "write_payload", lambda _out, _payload: events.append("write"))
+    assert _run(panel, tmp_path / "out") == 0
+    assert events == ["enter", "execute", "exit", "write"]
+
+
+def test_pending_refusal_never_enters_the_ledger_scope(tmp_path, monkeypatch, _pending_by_default):
+    panel = tmp_path / "panel"
+    _write_governed(panel)
+    _arm_calendar(monkeypatch, _COMMON)
+    assert _run(panel, tmp_path / "out") == 2
+    assert _blocked(tmp_path / "out")["type"] == "PREREG_V11_PENDING"
+    assert _pending_by_default == []
+
+
+def test_real_scope_registers_one_v11_row(tmp_path, monkeypatch):
+    _ship_frozen(monkeypatch)
+    monkeypatch.setattr(trial_ledger, "register_trials", REAL_REGISTER)
+    ledger = tmp_path / "trial_ledger.jsonl"
+    ledger.write_text("", encoding="utf-8")
+    with REAL_LEDGER_SCOPE(ledger):
+        pass
+    with REAL_LEDGER_SCOPE(ledger):
+        pass
+    rows = [json.loads(line) for line in ledger.read_text(encoding="utf-8").splitlines() if line]
+    assert len(rows) == 1
+    row = rows[0]
+    assert row["family"] == "grey_deer_pullback_v11"
+    assert row["kind"] == "declared_budget"
+    assert row["n"] == 66
+
+
+def test_real_scope_refuses_a_checkout_without_the_ledger(tmp_path, monkeypatch):
+    _ship_frozen(monkeypatch)
+    monkeypatch.setattr(trial_ledger, "register_trials", REAL_REGISTER)
+    ledger = tmp_path / "data" / "trial_ledger.jsonl"
+    with pytest.raises(RuntimeError, match="worktree_sparse.py add data"):
+        REAL_LEDGER_SCOPE(ledger)
+    assert not ledger.exists()
+    assert not ledger.parent.exists()
+
+
+def test_real_scope_refuses_while_pending(tmp_path, monkeypatch):
+    monkeypatch.setattr(trial_ledger, "register_trials", REAL_REGISTER)
+    ledger = tmp_path / "trial_ledger.jsonl"
+    ledger.write_text("", encoding="utf-8")
+    with pytest.raises(stage1.Blocked) as caught:
+        REAL_LEDGER_SCOPE(ledger)
+    assert caught.value.type == "PREREG_V11_PENDING"
+    assert ledger.read_text(encoding="utf-8") == ""
+
+
+def test_shipped_pins_refuse_a_synthetic_panel(tmp_path, monkeypatch, capsys, _pending_by_default):
+    called = {"n": 0}
+
+    def _boom(*_args, **_kwargs):
+        called["n"] += 1
+        raise AssertionError("feature or label construction ran")
+
+    monkeypatch.setattr(stage1, "build_features", _boom)
+    monkeypatch.setattr(stage1, "build_labels", _boom)
+    _ship_frozen(monkeypatch)
+    panel = tmp_path / "panel"
+    _write_governed(panel)
+    _arm_calendar(monkeypatch, _COMMON)
+    assert _run(panel, tmp_path / "out") == 2
+    assert capsys.readouterr().out.splitlines()[0] == "BLOCKED / SAMPLE_IDENTITY_MISMATCH"
+    assert _blocked(tmp_path / "out")["type"] == "SAMPLE_IDENTITY_MISMATCH"
+    assert called["n"] == 0
+    assert _pending_by_default == []
