@@ -55,6 +55,42 @@ const coldLocaleHtml = execFileSync(process.env.INTL_TEST_PYTHON || 'python3', [
   {cwd:root,env:{...process.env,PYTHONPATH:root},encoding:'utf8',maxBuffer:4*1024*1024});
 
 for (const theme of ['dark','light']) for (const lang of ['en','zh']) {
+  test(`Rates missing endpoints never draw a zero curve ${theme} ${lang}`,async()=>{
+    const ratesHtml=execFileSync(process.env.INTL_TEST_PYTHON || 'python3',['-c',
+      'from tests.test_intl_rates_render import rates_render_fixture; from tests.test_intl_workspace_integration import render_fixture; print(render_fixture(rates=rates_render_fixture()))'],
+      {cwd:root,env:{...process.env,PYTHONPATH:root},encoding:'utf8',maxBuffer:4*1024*1024});
+    await pageFixture(async page=>{
+      await page.evaluate(({theme,lang})=>{window.setTheme(theme);window.setLang(lang);},{theme,lang});
+      const query=lang==='zh'?'利率、曲线与息差':'Rates, curves & carry';
+      const input=page.locator('[data-im-library-search]:visible');await input.fill(query);
+      const link=page.locator('[data-im-library-tool="rates_curves_carry"] a');const origin=page.url();
+      for(const width of [320,1440]) {
+        await page.setViewportSize({width,height:900});
+        await link.focus();await page.keyboard.press('Enter');
+        const heading=page.locator('#intl-rates-curves');
+        assert.equal(new URL(page.url()).hash,'#intl-rates-curves');
+        assert.equal(await heading.isVisible(),true);
+        const panel=heading.locator('xpath=ancestor::div[contains(concat(" ",normalize-space(@class)," ")," panel ")][1]');
+        const cards=panel.locator('.rdesk > .rcard');assert.equal(await cards.count(),4);
+        assert.equal(await cards.nth(0).locator('.curve .d').count(),0,'absent3m must not become a zero endpoint');
+        assert.equal(await cards.nth(0).locator('.curve .ln').count(),0);
+        assert.match(await cards.nth(0).innerText(),lang==='zh'?/3月数据不可用/:/3m unavailable/);
+        assert.match(await cards.nth(0).innerText(),/10y 2\.6/);
+        assert.equal(await cards.nth(1).locator('.curve .d').count(),2,'genuine zero remains plotted');
+        assert.match(await cards.nth(1).innerText(),/3m 0\.0/);
+        assert.equal(await cards.nth(2).locator('.curve .d').count(),2,'negative supplied values remain plotted');
+        assert.match(await cards.nth(2).innerText(),/3m -0\.4/);
+        assert.equal(await cards.nth(3).locator('.curve .d').count(),0);
+        const anchor=await heading.locator('..').innerText();assert.ok(anchor.includes('— 2y'));assert.ok(!anchor.includes('None'));
+        assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1));
+        await page.goBack();assert.equal(page.url(),origin);assert.equal(await input.inputValue(),query);
+      }
+    },{htmlOverride:ratesHtml,published:true,bootLanguage:lang,
+      initialSearch:'?view=library&market=JP&horizon=3m&basis=local&return_basis=price'});
+  });
+}
+
+for (const theme of ['dark','light']) for (const lang of ['en','zh']) {
   test(`Market turns full reads are keyboard reachable ${theme} ${lang}`,async()=>{
     const turnsHtml=execFileSync(process.env.INTL_TEST_PYTHON || 'python3',['-c',
       'from tests.test_intl_workspace_integration import render_fixture,library_recovery_fixture; print(render_fixture(turn_board=library_recovery_fixture()))'],

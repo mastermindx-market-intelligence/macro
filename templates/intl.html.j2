@@ -1017,7 +1017,7 @@
 <div class="panel">
   <div class="sec-h"><h2 id="intl-rates-curves">{{ t('Rates & curve desk', '利率与曲线室') }} {{ help('Compares yield curves, real yields, 10-year yield drift, and carry vs the US.', '比较收益率曲线、实际利率、10年利率变化，以及相对美国的套息。') }}</h2>
     <span style="flex:1"></span>
-    {% if AN.y10 is not none %}<span class="sub">{{ t('US anchor', '美国锚') }}: <b style="color:var(--text)">{{ AN.y10 }}%</b> 10y · {{ AN.y2 }}% 2y · {{ t('curve', '曲线') }} {{ '%+.2f'|format(AN.curve) if AN.curve is not none else '—' }}</span>{% endif %}
+    {% if AN.y10 is not none %}<span class="sub">{{ t('US anchor', '美国锚') }}: <b style="color:var(--text)">{{ AN.y10 }}%</b> 10y · {% if AN.y2 is not none %}{{ AN.y2 }}%{% else %}—{% endif %} 2y · {{ t('curve', '曲线') }} {{ '%+.2f'|format(AN.curve) if AN.curve is not none else '—' }}</span>{% endif %}
   </div>
   <div class="rdesk">
     {% for r in rates.rows %}
@@ -1025,13 +1025,17 @@
       <div class="rh"><span class="flg">{{ r.flag }}</span><b>{{ t(r.name, r.name_zh) }}</b>
         <span class="shape {{ r.shape }}">{{ t(r.shape_en, r.shape_zh) }}</span></div>
       {% if r.y10 is not none %}
+      {% if r.short is not none %}
       <div class="curve" style="--c:{% if r.shape=='inverted' %}var(--down){% elif r.shape=='flat' %}var(--warn){% else %}var(--link){% endif %}">
-        {% set sx = [[(r.short or 0) / 7 * 100, 4]|max, 96]|min %}
+        {% set sx = [[r.short / 7 * 100, 4]|max, 96]|min %}
         {% set tx = [[r.y10 / 7 * 100, 4]|max, 96]|min %}
         <div class="ln" style="left:{{ '%.0f'|format([sx, tx]|min) }}%;width:{{ '%.0f'|format((sx - tx)|abs) }}%"></div>
         <div class="d" style="left:{{ '%.0f'|format(sx) }}%"></div><div class="lab" style="left:{{ '%.0f'|format(sx) }}%">3m {{ num(r.short,'',1) }}</div>
         <div class="d" style="left:{{ '%.0f'|format(tx) }}%"></div><div class="lab" style="left:{{ '%.0f'|format(tx) }}%">10y {{ num(r.y10,'',1) }}</div>
       </div>
+      {% else %}
+      <p class="muted small">{{ t('3m unavailable', '3月数据不可用') }} · 10y {{ num(r.y10,'%',1) }}</p>
+      {% endif %}
       <div class="rgrid">
         <span class="rk">{{ t('Curve 10y−3m', '曲线 10年−3月') }}</span><span class="rv {{ 'neg' if r.curve is not none and r.curve < 0 }}">{{ num(r.curve,'',2) }}</span>
         <span class="rk">{{ t('Real 10y', '实际10年') }}</span><span class="rv {{ 'neg' if r.real_yield is not none and r.real_yield < 0 }}">{{ num(r.real_yield,'',2) }}</span>

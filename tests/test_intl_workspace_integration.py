@@ -55,7 +55,7 @@ def synthetic_qualified_workspace(state="qualified"):
     return result
 
 
-def render_fixture(mode="macro", workspace=True, state="unknown", perf=None, cgl=None, turn_board=None):
+def render_fixture(mode="macro", workspace=True, state="unknown", perf=None, cgl=None, turn_board=None, rates=None):
     """Public synthetic empty-owner fixture; never a qualification receipt."""
     summary = {"n": 0, "dominant_quad": "unknown", "recession_watch": 0, "drawdown_watch": 0}
     vm = {"latest": {"date": "fixture", "records": [], "summary": summary},
@@ -68,6 +68,8 @@ def render_fixture(mode="macro", workspace=True, state="unknown", perf=None, cgl
         vm["CGL"] = cgl
     if turn_board is not None:
         vm["turn_board"] = turn_board
+    if rates is not None:
+        vm["rates"] = rates
     if workspace:
         vm["intl_workspace"] = _workspace_overviews(None) if state == "unknown" else synthetic_qualified_workspace(state)
     env = Environment(loader=FileSystemLoader(str(ROOT / "templates")), autoescape=False)

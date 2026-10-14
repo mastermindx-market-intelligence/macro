@@ -140,13 +140,13 @@ waves:
   - IM04
   - IM08
   - IM09
-next_action: Reproduce the distinct existing Rates template hypothesis that absent3m may draw at zero when10y exists;
-  use supplied-owner fixtures, distinguish None from genuine0, and repair only a demonstrated false datum.
-  Resume the original live Library Stock Back only after Chris completes/dismisses the Chrome extension UI.
-  Market-turns keyboard reading, Recovery-quality disclosure, Trade-link binding and prior accessibility repairs are locally verified; independent review, served
-  publication and real owner qualification/Saved admission remain held. Preserve original review refusal, IW2 custody
-  and all release/frozen-effect boundaries; no repeated accepted checks or speculative contracts.
+next_action: Investigate the newly evidenced Rates negative/near-equal endpoint collapse and overlapping labels;
+  missing-endpoint repair, Market-turns keyboard reading and Recovery/Trade destinations are locally verified.
+  Original live Library Stock Back awaits Chris completing/dismissing the Chrome extension UI; preserve its tab.
+  Independent review, served publication, genuine owner qualification and Saved admission remain held.
+  No repeated accepted checks, invented contracts or transferred IW2 work.
 artifacts:
+- research/paper_international_wave1_wave2/RATES_MISSING_ENDPOINTS_ACCEPTANCE.json
 - research/paper_international_wave1_wave2/MARKET_TURNS_KEYBOARD_ACCEPTANCE.json
 - research/paper_international_wave1_wave2/LIBRARY_RECOVERY_QUALITY_ACCEPTANCE.json
 - research/paper_international_wave1_wave2/LIBRARY_TRADE_LINKS_ACCEPTANCE.json
