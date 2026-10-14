@@ -1,0 +1,285 @@
+{
+  "schema": "news_impact.cost_cascade.v1",
+  "authority": "context_only",
+  "status": "DESIGN",
+  "ceiling_authority": "proposed_not_authorized",
+  "enforce_proposed_default": true,
+  "worktree_head_short": "295e76c6a0",
+  "frozen_event_schema_sha256_prefix": "3edc7139",
+  "proposed_ceilings": {
+    "incremental_usd_per_utc_day": 10.0,
+    "incremental_usd_per_calendar_month": 250.0,
+    "development_tranches_usd": [
+      150,
+      350,
+      250
+    ],
+    "development_total_usd": 750,
+    "note": "PROPOSED, not authorized. MASTERPLAN.md section 10."
+  },
+  "model_tier_class": [
+    "deterministic",
+    "cheap",
+    "stronger",
+    "frontier"
+  ],
+  "stage_order": [
+    "ingestion",
+    "deterministic_screen_dedup",
+    "compact_extraction",
+    "validation",
+    "issuer_exposure_lookup",
+    "deterministic_mechanism",
+    "stronger_adjudication",
+    "frontier_thesis_review",
+    "consumers"
+  ],
+  "lanes_require_operator_tap": [
+    "news-impact-extract",
+    "news-impact-adjudicate",
+    "news-impact-frontier",
+    "news-impact-audit"
+  ],
+  "owners": {
+    "queue": "engine/qbus.py",
+    "item_id": "engine/qkernel.py:item_id",
+    "screen": "engine/news_common.py:is_low_value",
+    "reject_ledger": "engine/news_event_ledger.py",
+    "router_in_process": "engine/llm_auth.py:make_call",
+    "model_class_filter": "Mastermind control_plane/model_router.py (other repo; DEC-EXECUTIVE-CAPACITY-FABRIC)",
+    "lane_admission": "engine/neuralweb/capability_broker.py:resolve",
+    "concurrency_cooling": "engine/neuralweb/key_pool.py",
+    "budget_admission": "engine/metabolism/budget_gate.py",
+    "metering": "lib/ai_costs.py:record_usage",
+    "capacity_projection": "engine/provider_capacity.py",
+    "retry_telemetry": "engine/provider_health.py",
+    "identity": "engine/company_intelligence/identity.py:company_id_for_cik",
+    "evidence": "engine/company_intelligence/documents.py:SourceSpan"
+  },
+  "audit_reserve": {
+    "rate_min": 0.1,
+    "rate_max": 0.15,
+    "rate_default": 0.12,
+    "seed_default": 20261012,
+    "denominator": "stronger_slot_cap",
+    "rank": "sha256(seed|stratum|item_id) lexicographic smallest",
+    "miss_rate_metric": "reject_audit_miss_rate",
+    "eval_endpoint": "MASTERPLAN.md section 11 routing quality: reject-audit miss rate",
+    "weights": {
+      "rejected_low_value": 0.25,
+      "stop_duplicate": 0.1,
+      "stop_not_material_delta": 0.25,
+      "extracted_not_escalated": 0.25,
+      "validate_reject": 0.1,
+      "deferred_any": 0.05
+    }
+  },
+  "escalation_reason": [
+    "none",
+    "material_issuer_relative_change",
+    "disputed_high_consequence_fact",
+    "unfamiliar_mechanism",
+    "contradiction_to_active_thesis",
+    "time_sensitive_adverse_information",
+    "audit_reserve_draw"
+  ],
+  "token_envelopes": {
+    "compact_extraction": {
+      "input": 2200,
+      "output": 250
+    },
+    "stronger_adjudication": {
+      "input": 4500,
+      "output": 700
+    },
+    "frontier_thesis_review": {
+      "input": 12000,
+      "output": 1500
+    }
+  },
+  "illustrative_slot_caps_live": {
+    "stronger_slot_cap": 100,
+    "frontier_slot_cap": 5,
+    "note": "illustrative live; 600-case run uses stronger_slot_cap=24, frontier_slot_cap=2"
+  },
+  "measurement_run_slot_caps": {
+    "stronger_slot_cap": 24,
+    "frontier_slot_cap": 2
+  },
+  "scale_gates": {
+    "accounting_identity": true,
+    "stage_order_violation_max": 0,
+    "material_event_recall_min": 0.95,
+    "critical_numeric_correctness_min": 0.98,
+    "unsupported_ticker_to_supplier_max": 0,
+    "reject_audit_miss_rate_max": 0.05,
+    "reduction_ratio_min": 4.0
+  },
+  "budget_exhaustion": {
+    "preserve_inputs": true,
+    "mark_inference_deferred": true,
+    "keep_basic_factual_visibility": true,
+    "unprocessed_becomes_neutral": false,
+    "truncate_tape": false,
+    "no_second_queue": true,
+    "no_per_chat_budget": true,
+    "reoffer_next_utc_day": true
+  },
+  "cache_key_fields": [
+    "document_id",
+    "document_revision",
+    "news_revision_id",
+    "content_hash",
+    "body_sha256",
+    "event_facts_hash",
+    "baseline_id",
+    "relationship_generation",
+    "model_id",
+    "prompt_version",
+    "schema_version",
+    "rights_profile",
+    "stage_id"
+  ],
+  "source_correction_invalidation": "new cache_key from new document_revision or content_hash; old packets retained; novelty=corrected_fact requires supersedes_fact_id",
+  "model_update_rewrites_old_predictions": false,
+  "relationship_generation_while_6514_held": 0,
+  "forbidden_fields": [
+    "confidence",
+    "probability",
+    "score",
+    "llm_importance",
+    "llm_tone",
+    "price_target",
+    "fair_value",
+    "rating",
+    "expected_move"
+  ],
+  "stages": [
+    {
+      "stage_index": 0,
+      "stage_id": "ingestion",
+      "input": "collector/qbus news revision qbus.news_revision.v1",
+      "output": "qbus row with item_id, body_sha256, capture stamps",
+      "model_tier_class": "deterministic",
+      "volume_formula": "n_raw",
+      "token_envelope": {
+        "input": 0,
+        "output": 0
+      },
+      "ceiling": "none",
+      "at_ceiling": "keep writing; never drop"
+    },
+    {
+      "stage_index": 1,
+      "stage_id": "deterministic_screen_dedup",
+      "input": "qbus row",
+      "output": "routing_disposition plus optional event_key/cluster id",
+      "model_tier_class": "deterministic",
+      "volume_formula": "n_raw",
+      "token_envelope": {
+        "input": 0,
+        "output": 0
+      },
+      "ceiling": "none",
+      "at_ceiling": "n/a"
+    },
+    {
+      "stage_index": 2,
+      "stage_id": "compact_extraction",
+      "input": "distinct material-delta packet (body + template id + prior fact ids)",
+      "output": "news_impact_event.v1 candidate or field_absence.v1",
+      "model_tier_class": "cheap",
+      "volume_formula": "n_extract = n_material_delta",
+      "token_envelope": {
+        "input": 2200,
+        "output": 250
+      },
+      "ceiling": "min(remaining proposed day usd, remaining month usd, envelope, key_pool not cooling)",
+      "at_ceiling": "defer_budget or defer_capacity; inputs preserved; inference_state=deferred"
+    },
+    {
+      "stage_index": 3,
+      "stage_id": "validation",
+      "input": "candidate packet",
+      "output": "accept or validate_reject with closed reason",
+      "model_tier_class": "deterministic",
+      "volume_formula": "n_extract_complete",
+      "token_envelope": {
+        "input": 0,
+        "output": 0
+      },
+      "ceiling": "none",
+      "at_ceiling": "n/a"
+    },
+    {
+      "stage_index": 4,
+      "stage_id": "issuer_exposure_lookup",
+      "input": "accepted packet",
+      "output": "company_id cik: + 10 digits, issuer_role, exposure facts or typed absence",
+      "model_tier_class": "deterministic",
+      "volume_formula": "n_validate_complete",
+      "token_envelope": {
+        "input": 0,
+        "output": 0
+      },
+      "ceiling": "none",
+      "at_ceiling": "n/a; D12 ladder; no web search"
+    },
+    {
+      "stage_index": 5,
+      "stage_id": "deterministic_mechanism",
+      "input": "accepted packet plus lookup",
+      "output": "channel_hint from closed 7-enum or mechanism_absence",
+      "model_tier_class": "deterministic",
+      "volume_formula": "n_lookup_terminal",
+      "token_envelope": {
+        "input": 0,
+        "output": 0
+      },
+      "ceiling": "none",
+      "at_ceiling": "n/a"
+    },
+    {
+      "stage_index": 6,
+      "stage_id": "stronger_adjudication",
+      "input": "news_impact.review_packet.v1",
+      "output": "adjudicated packet or abstention; never a score",
+      "model_tier_class": "stronger",
+      "volume_formula": "n_escalate + n_audit <= stronger_slot_cap",
+      "token_envelope": {
+        "input": 4500,
+        "output": 700
+      },
+      "ceiling": "usd ceilings plus slot cap",
+      "at_ceiling": "remain at last deterministic output; defer_budget; not rewritten as no-change"
+    },
+    {
+      "stage_index": 7,
+      "stage_id": "frontier_thesis_review",
+      "input": "review packet plus alternative mechanisms",
+      "output": "thesis-review note (describe/cite/abstain)",
+      "model_tier_class": "frontier",
+      "volume_formula": "n_frontier <= frontier_slot_cap",
+      "token_envelope": {
+        "input": 12000,
+        "output": 1500
+      },
+      "ceiling": "usd ceilings plus slot cap",
+      "at_ceiling": "defer; keep deterministic/cheap outputs visible"
+    },
+    {
+      "stage_index": 8,
+      "stage_id": "consumers",
+      "input": "terminal packet with inference_state in completed|deferred|rejected",
+      "output": "Prophet context_only read; B4 unchanged",
+      "model_tier_class": "deterministic",
+      "volume_formula": "n_terminal",
+      "token_envelope": {
+        "input": 0,
+        "output": 0
+      },
+      "ceiling": "none",
+      "at_ceiling": "render deferred as deferred with window; never as silence"
+    }
+  ]
+}

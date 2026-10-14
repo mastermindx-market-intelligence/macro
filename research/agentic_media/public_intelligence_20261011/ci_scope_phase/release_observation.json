@@ -1,0 +1,52 @@
+{
+  "observed_at": "2026-10-14T08:06:19.544236+00:00",
+  "pr9209": {
+    "headRefOid": "8f705cb32a77987f7e5c025e99194f3b479a6382",
+    "state": "OPEN",
+    "labels": [
+      {
+        "id": "LA_kwDOS4LjIs8AAAACtokuPQ",
+        "name": "merge-on-green",
+        "description": "Sweeper squash-merges this PR when its checks conclude with no genuine red",
+        "color": "0e8a16"
+      },
+      {
+        "id": "LA_kwDOS4LjIs8AAAACtokucA",
+        "name": "merge-blocked",
+        "description": "Sweeper found a genuine red or merge conflict \u2014 needs a session/operator",
+        "color": "d93f0b"
+      }
+    ],
+    "mergeCommit": null,
+    "mergedAt": null,
+    "mergeStateStatus": "UNSTABLE"
+  },
+  "refresh_lease": "m1 p=9266 h=2cdbf5d9497dc3dd65eaf8e5f32de694362c538e t=1791962805 g=53d3516dc5e3",
+  "active_pr_proofs": 12,
+  "capacity_cap": 8,
+  "integration_baseline": {
+    "run": 38530059577,
+    "head": "703477f0a822dfca41d42ce13b51c27f29830d44",
+    "conclusion": "FAILURE",
+    "tests": "1 failed, 825 passed",
+    "failing_test": "tests/test_ci_pack.py::test_exclusive_curation_narrows_ordinary_code_prs"
+  },
+  "controller": {
+    "run": 38532540975,
+    "kind": "full sweep",
+    "pr9209_verdict": "source main baseline is red; leaving armed behind circuit breaker"
+  },
+  "daily": {
+    "run": 38495183073,
+    "engine_job": 115696591645,
+    "tail_job": 115696591188,
+    "state": "live original jobs, no replay",
+    "collector_cause_and_push_effect": "unproved"
+  },
+  "source_head": "73669c7df21485fa3299df0a982ff10c5e25c87c",
+  "effect": "local manifest repair only; no release or publication",
+  "retained_log_hashes": {
+    "/tmp/mmx-integration-red-0805.log": "8061f6390270dced82f836ef3eb55a444ba2820c14f6f0b6b79e86447eedce1f",
+    "/tmp/mmx-controller-38532540975.log": "6331463c14e93a6a7f9ec55bf4c643f5af3252bc432ffd37c8701e38b0b29948"
+  }
+}
