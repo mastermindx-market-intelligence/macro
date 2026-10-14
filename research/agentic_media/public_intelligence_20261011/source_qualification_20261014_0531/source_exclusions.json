@@ -1,0 +1,11 @@
+{
+  "source_review_parent": "../research_intake_phase/installed_discovery.json",
+  "preserve_parent_held_refs": true,
+  "additional_blocked_refs": [
+    "research_vault:marketdesk-stzblc3lgcn-40b123",
+    "research_vault:marketdesk-qvymtn8aohk-00548d",
+    "research_vault:marketdesk-arbvfsvswas-96701d"
+  ],
+  "jpm_b50195_remains_hold": true,
+  "purpose": "Evidence input for existing extra_blocked_refs parameter, not a new runtime gate or producer mutation."
+}

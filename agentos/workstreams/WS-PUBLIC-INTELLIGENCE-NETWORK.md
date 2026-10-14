@@ -508,3 +508,15 @@ verified: research_intake_phase/{installed_discovery.json,regression_red.txt,
 affected_tests.txt,preserved_input_hygiene.txt,reviewed_tests.txt,review_binding.json,
 review_status.json,local_pool_probe.json,local_integrity_probe.json,local_doj_probe.json,
 wrong_manifest_control.json,release_admission.json,jpm_source_corroboration.json}.
+
+
+Source qualification, October 14 05:45 UTC: existing member access supplied private
+BofA and JPM source PDFs without a new login. BofA 40b123 has an October/November
+Treasury-survey date contradiction; JPM replay 00548d has an explicit
+institutional/professional distribution and reproduction-consent restriction.
+Public BlackRock primary commentary supports an October12 Treasury upgrade, but
+house summary 96701d reverses the long-end direction and splits U.S. into fragments.
+All three are retained as unedited source exclusions, with exact hashes and reasons
+in source_qualification_20261014_0531/primary_source_review.json. No provider or
+producer write, new Press stage, publication, cutover or D14 credit occurred.
+Accepted application 2c23601ff0f5 and its test/probe evidence remain unchanged.

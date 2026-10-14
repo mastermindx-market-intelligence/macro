@@ -2054,3 +2054,54 @@ verified: research_intake_phase/{installed_discovery.json,regression_red.txt,
 affected_tests.txt,preserved_input_hygiene.txt,reviewed_tests.txt,review_binding.json,
 review_status.json,local_pool_probe.json,local_integrity_probe.json,local_doj_probe.json,
 wrong_manifest_control.json,release_admission.json,jpm_source_corroboration.json}.
+
+## 2026-10-14 05:45 UTC — private primary-source review rejects two inaccurate summaries
+
+This wake advanced source qualification while PR 9209 awaited admitted refresh.
+Using the existing Chrome member reader, root opened and downloaded one private
+copy each of BofA Rates 40b123 and JPM replay 00548d. Both retained PDFs are
+hash-bound under the existing private agent-evidence directory. The first download
+event timed out, but its actual file, timestamp, PDF identity and quota decrement
+established completion; it was not repeated. No credentials were read/exported,
+new login performed, raw report committed, or denied JPM b50195 page retried.
+
+BofA's source page 5 dates the Treasury survey October 16; the summary says
+November 16. The JPM replay's page 7 requires consent for reproduction or
+redistribution and limits its audience to institutional/professional customers;
+member access does not qualify public Press rights. Its positioning menu is
+separately dated October 5. Both remain unedited, excluded from generation.
+
+A third lead, BlackRock's October 12 public corporate commentary, is retained
+separately from the restricted regional page. Read-only installed catalog review
+at 05:41 bound catalog SHA 05b2b5d39d132f7b9855fbebc5852fdf7a81615ea970756e38e2004c5e550805
+and stable installed HEAD 72f8c6ac333fc243b825e7c8f2d07e3b8b16b02d.
+Its stored 96701d summary reverses the long-Treasury upgrade into a trim and
+splits one sentence at U.S. into three points. The issuer's primary account is a
+useful lead; the stored summary is not admitted, rewritten or given independent
+receipt credit. Public-distribution wording does not grant reproduction or
+publication authority. Three retained source hashes and eight consistency checks
+passed. These are source-review checks, not application tests or D14 passes.
+
+The single PR/controller read at 05:32 still found OPEN 8f705cb32a77987f7e5c025e99194f3b479a6382,
+CI 38508325200 FAILURE on inherited pack 4, with 11 other packs passing.
+Existing repair 9227 remains the repair carrier. Admission counted 27 active PR
+proofs against cap 8; the durable 8920 lease register remained populated, and
+main baseline 38516669582 on e1770f91 was running. No manual refresh, lease
+mutation, duplicate CI/repair, or release bypass occurred.
+
+Application remains accepted 2c23601ff0f5492b0a4d0dd7f663ab7bf4dca3e9. Reuse
+243 tests/one existing sparse skip and 24 portable groups for unchanged bytes;
+no redundant suite run and no follow-on PR yet. Three acceptance pages and
+24-source manifest stay unchanged. Provider/stage/producer writes zero;
+publication and cutover false; D14 credit 0/10. Original Oct11 12:07 EFFECT_UNKNOWN,
+all held history, refused issuer review, Commission19 and Catalyst8678 persist.
+
+Next: carry the three hash-bound source exclusions alongside the earlier holds
+in the next existing read-only plan. Pursue an untouched, corroborated candidate;
+BlackRock's public primary event requires relevant own receipts and rights/editorial
+qualification, not reuse of its inaccurate house summary. Complete controller-admitted
+9209 release/install, then integrate landed main into this SAME reviewed follow-on
+and deliver its single protected PR with installed 24-group acceptance.
+
+verified: source_qualification_20261014_0531/{primary_source_review.json,
+source_exclusions.json,pr9209_observation.json,release_admission.json}.
