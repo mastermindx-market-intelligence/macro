@@ -1,6 +1,9 @@
 # Annotation guide — news-to-business-impact labelers (600-case benchmark)
 
-Version: prompt-v1 / guide-v1 (2026-10-12, lane A6_labeler, seat 0e739467 Wave 2).
+Version: prompt-v1 / guide-v1.1 (guide-v1 2026-10-12, lane A6_labeler, seat 0e739467 Wave 2;
+guide-v1.1 2026-10-14, section 6 absence-reason rules from the w2 absent-slot audit,
+DEC:NEWS-IMPACT-ABSENCE-REASON-SCHEDULED-EXECUTION). guide-v1.1 is not the w2 lane
+packet prompt-v1.1.
 Audience: the two independent labeler families drafting critical fields for the benchmark
 (masterplan §11: 200 capital-allocation + 200 demand/guidance/contract + 200 strategic
 product/partnership cases), and the third family used for disagreement resolution.
@@ -268,6 +271,19 @@ Rules:
   documents.py ABSENCE_REASONS) — otherwise omit it.
 - A typed absence where the source states nothing is itself a correct label (Gate 4
   "absence_correct"); a wrong absence (source states a number, you write absent) is a miss.
+- Scheduled, planned or pending execution (guide-v1.1). When the source states that the
+  slot's execution or money is scheduled, planned or pending but gives no amount for the
+  slot, the reason is `stated_without_number` and `detail` cites that sentence. Examples:
+  a dividend declared with a payable date and nothing paid yet, a plan to execute
+  repurchases, an intent to offer notes that are not yet priced. When the source says
+  nothing about execution, the reason is `not_stated`.
+- Qualitative claims (guide-v1.1). A statement about the slot's own quantity that gives a
+  direction or an expected effect but no figure is `stated_without_number`. A mention of
+  the topic that says nothing about the quantity is `not_stated`.
+- Boilerplate is never a claim (guide-v1.1). Risk factors, the cover-page table of
+  registered securities, unchanged balance-sheet or treasury lines and other
+  capital-structure boilerplate never support `stated_without_number`. If nothing else in
+  the source speaks to the slot, the reason is `not_stated`.
 - If you cannot complete the case within 5:00 (Gate 4 budget), stop, return what you have
   with the unfilled critical fields as `parse_failed` absences, and add a `notes` entry
   `kind: template_defect` naming what in the template cost the time.

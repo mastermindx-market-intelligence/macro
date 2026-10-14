@@ -1,0 +1,16 @@
+{
+  "created_at": "2026-10-14T13:28:13.617668+00:00",
+  "original_pr": 9066,
+  "pushed_head": "9d8c7ce9f1729cbff8fbe34fbee949a8bb545bd2",
+  "observed_ci_run": 38564650554,
+  "observed_ci_checkout": "d1c3b2fe23f58172d3e25f2da2c7978f3bf03171",
+  "observed_ci_base": "f1d8347968272bb5b2b1da14cf5ad12f9d7242ab",
+  "new_protected_main": "29e383bc0ded2c3d3dae819fd5b7647ab6fea229",
+  "demonstrated_failure": "leadership-rotation-science exclusive scope omitted engine/rates_command_basis.py imported by engine/yield_momentum.py",
+  "repair": "Only add the exact missing dependency path; retain existing job, selector, tests and ceilings",
+  "local_ci_verification": "running; update after terminal result",
+  "source_proof": "V15 retained but cannot prove changed source dependencies; full new proof required",
+  "outputs": "all109 match V15 byte-for-byte",
+  "canonical_capacity_input_changed": false,
+  "financial_cas_or_production_effect": false
+}

@@ -831,3 +831,53 @@ source-contract amendment and the original unsettled capacity code review remain
 necessary. GAOaccess, originalQ3/P2 effects, Terminal778 custody and second-real-
 subject acceptance remain open. Root continues the correctedPR9066 checks and
 protected release sequence; no financial CAS or production publication occurred.
+
+### October 14 13:26 UTC — CI compatibility and source preparation
+
+PR9066 remains the original delivery carrier at pushed head9d8c7ce9f172.
+Its hosted run38564650554 tested synthetic merge d1c3b2fe23f5 against
+base f1d834796827. Pack9 passed the handoff repair. Pack0 demonstrated a
+missing exclusive CI dependency: leadership-rotation-science imports
+engine/rates_command_basis.py through engine/yield_momentum.py, but the
+job's declared paths omitted it. The current continuation integrates fixed
+protected main29e383bc0ded, preserves sibling implementation, and adds only
+that missing path to the job. No ceiling, selector or test is weakened.
+Local compatibility verification is pending at this checkpoint; the old
+hosted failure remains evidence, not a release pass.
+
+All109 outputs in the V15 proof remain byte-identical after the main
+integration. Several source dependencies changed, so V15 is not restamped:
+the complete prover must qualify the next committed source. Existing visual
+and timing evidence remains bounded to its recorded source and test principal.
+The local redundant red probe was interrupted after309seconds; it is not a
+test result. Its shared pytest temporary-directory cleanup warning is retained;
+the final compatibility run uses a fresh, isolated SSD basetemp. No shared
+temporary files or Git objects were removed.
+
+Capacity preparation is saved separately at94b49f94ff78, after6df319e83206.
+It admits a precise Army publisher form only in unreleased1.2/1.3, rejects
+literal URL control characters, and retains legacy policy. Forty-five focused
+checks pass. The real retained PAC3 worksheet passed isolated curator, graph,
+dossier and EN/ZH JavaScript-consumer checks: two targets, one reported
+throughput observation, no installed-capacity observation. All original rows
+and graph identity remain intact; the new facts are absent at the October13
+historical cutoff. Canonical inputs and production were not changed.
+Fabric defense-army-source-review-01a13300-a returned and was accepted for its
+bounded static review after parent adjudication. The parent disproved one
+fixture finding and fixed a URL-normalization gap the reviewer missed.
+Original defense-capacity-contract-review-01a13300-a remains uncertain on its
+original carrier; neither the new review nor this save replaces it.
+
+Legacy Daily38495183073 is now authenticated terminal/cancelled, with
+publisher job115696593472 completed/skipped and zero steps. The conditional
+runtime-entrypoint drift did not occur in that job. The post-merge publisher
+must still execute its complete normal preflight. No cancellation was issued
+by this continuation. Evidence is retained under the original O7 release
+directory and v16-ci-compatibility; no financial CAS or release occurred.
+
+Production browser sign-in on the existing Mastermind origin used populated
+saved credentials, then Chrome refused further automation while another
+extension UI was open. One human dismissal/completion request is pending;
+the sign-in result is not asserted. GAO, SBIR, Terminal778, second-subject and
+research-owner gates remain distinct. Continue the CI repair, full proof,
+same-carrier protected release and installed independent acceptance.

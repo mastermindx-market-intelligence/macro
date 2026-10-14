@@ -1,0 +1,34 @@
+{
+  "merge.log": {
+    "sha256": "16c64c40c550856dc85e36644c2448a651283dc006ecf274df9d52f10cd9e8a4",
+    "bytes": 141
+  },
+  "hosted-pack0.exact.log.gz": {
+    "sha256": "7c0453ca8130d2a5caa76f1ecf806580898f8ea8f4bd1a241ac5678fd38a4459",
+    "bytes": 12968
+  },
+  "LEGACY_DAILY_TERMINAL_ADJUDICATION_20261014.json": {
+    "sha256": "fb4ccbdff4d126572b3a978e10b40789b5f07e35b44b79e990fb4f3cf216db2b",
+    "bytes": 1106
+  },
+  "local-redundant-probe.interrupted.log.gz": {
+    "sha256": "7c8e66926dbb2ec5b25ff298ae35b643e6c9933722ee963d4938be497c1fe6c8",
+    "bytes": 769
+  },
+  "OUTPUT_PARITY.json": {
+    "sha256": "4cdb1ccd8b400027b8c017d945a4fc8024ba3720bacb91040d0c484d033a1fc0",
+    "bytes": 423
+  },
+  "LEGACY_DAILY_20261014_1310.json": {
+    "sha256": "46826dc532c0666f0c7ca7f8cba3690229ef8118648e20ae08bc486e99b5d3d8",
+    "bytes": 86048
+  },
+  "INTEGRATION_CHECKPOINT.json": {
+    "sha256": "8c1ef6a5059b4bcfbfff46332cb3365192ee86fea9d4f14e81ccaf89dcb689f9",
+    "bytes": 945
+  },
+  "PROOF_REUSE_BOUNDARY.json": {
+    "sha256": "69123aac4f27889788762641fa36e34c84d8cba8ebc5cdb3a0a4f5f527fcc4d9",
+    "bytes": 1354
+  }
+}

@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-10-14T11:40:44.219130+00:00",
-  "count": 2892,
+  "generated_at": "2026-10-14T12:57:52.474659+00:00",
+  "count": 2895,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -275,6 +275,25 @@
       "needs_metadata": false
     },
     {
+      "id": "marketdesk-mpkigavygok-1da158",
+      "title": "Last Man Standing",
+      "institution": "BTIG",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-13T15:29:53Z",
+      "summary_points": [
+        "Mag7 as SPX Weakness Catalyst: Mag7 (last SPX cohort without weakness) widely owned; trend reversal likely triggers sustained SPX weakness, per SOX 2000 analog (semis low within 24h, sell-off accelerates late October).",
+        "SOX 2000 Analog & Timing: SOX 2000 pattern holds; expect 24h low, final rally before October sell-off (CPI catalyst).",
+        "IGV/SMH Ratio Inflection: IGV/SMH ratio above 200 DMA (first in 16 months, crossing summer highs) confirms software outperformance over semis, signaling potential major inflation with software semis outperforming."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 7,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-oaxnrqnwjao-dd397c",
       "title": "Orsted A S (ORSTED.CO) Downgrading to Neutral",
       "institution": "Goldman Sachs",
@@ -472,6 +491,25 @@
       "tickers": [],
       "top_pick": false,
       "pages": 15,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-yaadjp5qoz0-bcf414",
+      "title": "Early Morning Reid Macro Strategy",
+      "institution": "Deutsche Bank",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-13T07:39:54Z",
+      "summary_points": [
+        "Earnings Season Growth Expectation Gap: S&P 500 growth expected at 34% YoY (vs consensus 27%) amid Q3 earnings season start, but tech sell-off driven by Chinese AI competition fears.",
+        "Chinese AI Competition Catalyst: South China Morning Post report on China’s CXMT memory chip progress triggered 4th consecutive drop in Philly semiconductor index (-2.67%), with Micron (-3.88%), Samsung (-7.98%), SK Hynix (-8.72%) declining.",
+        "Geopolitical Energy Shock: Houthi attack on Riyadh + Russia-Ukraine ceasefire uncertainty amplified Brent crude to $106/bbl, spiking European inflation fears (Euro 1yr swaps +4.7bps, Franco-German 10yr spread at 142bps post-2022 high)."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 3,
       "language": "en",
       "needs_metadata": false
     },
@@ -817,6 +855,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 22,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-bzgskvj5yjx-69e301",
+      "title": "Global daily my word is my bond",
+      "institution": "Rabobank",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-12T14:14:48Z",
+      "summary_points": [
+        "US/EU equity & bond yields: S&P500 +46 (7811) on 10-yr yield dip (7bps), CAC40 +0.95% driven by French yield decline and Renault gains from EU’s 350k Chinese hybrid quota avoiding tariffs.",
+        "Geopolitical trade tensions: EU safeguard measure cutting Chinese imports >50% (no retaliation risk), Germany pushing UK tariffs on Chinese EVs for EU access amid Canada’s 68,300 job losses (unemployment 6.5%).",
+        "Geopolitical escalation: Houthi strikes on Saudi Khalid airport, Strait of Hormuz incidents, and broken Ukraine-Russia energy ceasefire threaten oil markets, energy supply chains, and regional stability.",
+        "US core CPI data: 2.4%→2.5% core CPI (pivotal for Fed policy) dominates inflation narrative ahead of Fed Beige Book and key US retail sales/jobless claims data.",
+        "EU protectionism: Risk of blanket tariffs on Chinese EVs/chemicals disrupts trade flows and sectoral exposure, compounding US-China tech race straining fiscal space."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 7,
       "language": "en",
       "needs_metadata": false
     },
