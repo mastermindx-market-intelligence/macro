@@ -18,7 +18,19 @@ The law it enforces (masterplan L84/L98/L102, acceptance A19):
 * Values from different instants are never combined.  The answer is taken at the
   latest instant where BOTH authorized and issued are clean; if the reserve is
   unreported at that instant the answer is a ceiling, not a number.
-* Everything is exact ``Decimal`` arithmetic.  There is no float anywhere.
+* Everything is exact ``Decimal`` arithmetic under a context that traps any
+  inexact result.  There is no float anywhere, and every number is published as
+  canonical plain decimal text (``1E+9`` is ``1000000000``; ``100.0`` is ``100``).
+* Point in time: a record is visible only once it is available and filed on or
+  before ``as_of``.  A visible correction supersedes its predecessor even when
+  the correction itself reports a later instant.
+* Corporate actions arrive as either the ``corporate_actions`` family (dated
+  stage records) or the ``events`` family (filed 8-K event candidates).  An
+  effective split after the instant, or an unconfirmed charter-amendment event
+  filed after it, makes the answer ``unknown``; a vote or authorization event is
+  only a note.  Event candidates never confirm that no split took effect, so
+  without corporate-action stages the answer stays stated with the condition
+  ``corporate_actions_unobserved_since:<instant>``.
 
 Statuses: ``known`` (exact signed headroom), ``shortfall`` (negative headroom —
 the reservation exceeds the unissued authorized pool), ``ceiling_only``
@@ -30,7 +42,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from datetime import date, datetime, timezone
-from decimal import Decimal, InvalidOperation
+from decimal import Decimal, Inexact, InvalidOperation, localcontext
 from typing import Any, Mapping, Sequence
 
 from engine.capital_structure.issuer_state_contracts import (
@@ -40,7 +52,10 @@ from engine.capital_structure.issuer_state_contracts import (
 from engine.capital_structure.share_basis import (
     AUTHORIZED_CAPITAL_KINDS,
     MAX_BASIS_AGE_DAYS,
+    ShareBasisInputError,
+    _assert_context_only,
     _available_instant,
+    _event_notes,
     _get,
     _nonneg_decimal,
     _parse_date,
@@ -137,6 +152,27 @@ def _exact_decimal(text: Any, label: str) -> None:
         raise AuthorizedSharesInputError(f"{label}: not a finite decimal: {text!r}")
 
 
+def _decimal_text(value: Decimal) -> str:
+    """Canonical plain decimal text: no exponent, no trailing zeros, never ``-0``."""
+
+    if value == 0:
+        return "0"
+    # ``normalize()`` would round to the context precision; plain formatting never does.
+    text = format(value, "f")
+    if "." in text:
+        text = text.rstrip("0").rstrip(".")
+    return text
+
+
+def _exact(operation: Any) -> Decimal:
+    """Run one subtraction in a context where any rounding raises."""
+
+    with localcontext() as ctx:
+        ctx.prec = 60
+        ctx.traps[Inexact] = True
+        return operation()
+
+
 def _issuer_of_record(record: Mapping[str, Any]) -> str | None:
     issuer = record.get("issuer_id")
     if isinstance(issuer, str) and issuer:
@@ -174,11 +210,15 @@ def headroom_from_records(
     *,
     issuer_id: str,
     as_of: str,
+    events: Sequence[Mapping[str, Any]] | None = None,
 ) -> AuthorizedHeadroom:
     """Judge authorized-capital records against one instant.  Pure; never reads a clock.
 
-    ``actions=None`` means corporate actions were not observed at all, which is a
-    stated condition on the answer rather than a clean "no split" finding.
+    ``actions`` are ``corporate_actions``-family stage records and ``events`` are
+    ``events``-family filing candidates.  Without corporate-action stages the
+    answer carries the condition ``corporate_actions_unobserved_since:<instant>``
+    rather than a clean "no split" finding; events can only refuse or annotate.  Every authorized-capital record must name
+    its issuer and be context-only; one that claims any authority is refused.
     """
 
     as_of_at = _parse_ts(as_of)
@@ -198,7 +238,7 @@ def headroom_from_records(
 
         def _text(kind: str) -> str | None:
             value = resolved.get(kind)
-            return None if value is None else str(value)
+            return None if value is None else _decimal_text(value)
 
         return AuthorizedHeadroom(
             issuer_id=issuer_id,
@@ -209,8 +249,8 @@ def headroom_from_records(
             authorized=_text(AUTHORIZED_KIND),
             issued=_text(ISSUED_KIND),
             reserved=_text(RESERVED_KIND),
-            headroom=None if headroom is None else str(headroom),
-            ceiling=None if ceiling is None else str(ceiling),
+            headroom=None if headroom is None else _decimal_text(headroom),
+            ceiling=None if ceiling is None else _decimal_text(ceiling),
             observation_ids=tuple(sorted(observation_ids)),
             conditions=tuple(sorted(conditions)),
             notes=tuple(sorted(set(notes))),
@@ -224,15 +264,31 @@ def headroom_from_records(
         if named is not None and named != issuer_id:
             raise AuthorizedSharesInputError(f"records[{index}]: issuer {named!r} differs from {issuer_id!r}")
         if _get(record, "metric", "kind") in AUTHORIZED_CAPITAL_KINDS:
+            if named is None:
+                raise AuthorizedSharesInputError(f"records[{index}]: an authorized-capital record must name its issuer")
+            try:
+                _assert_context_only(record, f"records[{index}]")
+            except ShareBasisInputError as exc:
+                raise AuthorizedSharesInputError(str(exc)) from exc
             scoped.append(record)
 
-    eligible: list[Mapping[str, Any]] = []
+    visible: list[Mapping[str, Any]] = []
     for record in scoped:
         kind = str(_get(record, "metric", "kind"))
         available = _available_instant(record)
-        if available is None or available > as_of_at:
+        filed = _parse_date(_get(record, "filing", "filed"))
+        if available is None or available > as_of_at or (filed is not None and filed > as_of_at.date()):
             notes.append(f"not_yet_available:{kind}")
             continue
+        visible.append(record)
+
+    # A visible correction supersedes its predecessor even when the correction
+    # itself is later excluded for its instant, so supersession is computed over
+    # every visible record before the instant filter.
+    superseded = _superseded_ids(visible)
+    eligible: list[Mapping[str, Any]] = []
+    for record in visible:
+        kind = str(_get(record, "metric", "kind"))
         instant = _parse_date(_get(record, "period", "period_end"))
         if instant is None:
             notes.append(f"unclean:{kind}:no_instant")
@@ -242,7 +298,6 @@ def headroom_from_records(
             continue
         eligible.append(record)
 
-    superseded = _superseded_ids(eligible)
     clean: dict[str, dict[date, list[tuple[str, Decimal]]]] = {kind: {} for kind in AUTHORIZED_CAPITAL_KINDS}
     for record in eligible:
         observation_id = _observation_id_of(record)
@@ -295,24 +350,35 @@ def headroom_from_records(
         return _result("unknown", instant=instant, values=values, observation_ids=used_ids)
 
     if actions is None:
+        # Event candidates can refuse an answer but never confirm that no split
+        # took effect, so only the dated corporate-action stages clear this.
         conditions.append(f"corporate_actions_unobserved_since:{instant.isoformat()}")
-    else:
-        decision = evaluate_split_actions(
-            actions, issuer_id=issuer_id, security_class_id=security_class_id,
-            count_instant=instant, as_of=as_of_at,
-        )
-        # A19: a split is never applied to authorized, issued or reserved shares.
-        labels = ([decision.action_id] if decision.action_id is not None else []) + list(decision.refusals)
-        for label in labels:
-            notes.append(f"split_since_instant_unscaled:{label}")
-        if labels:
-            return _result("unknown", instant=instant, values=values, observation_ids=used_ids)
+    labels: list[str] = []
+    try:
+        if actions is not None:
+            decision = evaluate_split_actions(
+                actions, issuer_id=issuer_id, security_class_id=security_class_id,
+                count_instant=instant, as_of=as_of_at,
+            )
+            # A19: a split is never applied to authorized, issued or reserved shares.
+            labels.extend(([decision.action_id] if decision.action_id is not None else []) + list(decision.refusals))
+        if events is not None:
+            event_refusals, event_notes = _event_notes(events, issuer_id=issuer_id, count_instant=instant, as_of=as_of_at)
+            labels.extend(event_refusals)
+            notes.extend(event_notes)
+    except ShareBasisInputError as exc:
+        raise AuthorizedSharesInputError(str(exc)) from exc
+    for label in labels:
+        notes.append(f"split_since_instant_unscaled:{label}")
+    if labels:
+        return _result("unknown", instant=instant, values=values, observation_ids=used_ids)
 
     authorized = values[AUTHORIZED_KIND]
     issued = values[ISSUED_KIND]
     reserved = values[RESERVED_KIND]
     assert authorized is not None and issued is not None
-    if authorized - issued < 0:
+    unissued = _exact(lambda: authorized - issued)
+    if unissued < 0:
         # Issued shares can never exceed authorized shares, so the facts disagree.
         notes.append(f"issued_exceeds_authorized:{instant.isoformat()}")
         return _result("contradicted", instant=instant, values=values, observation_ids=used_ids)
@@ -320,9 +386,9 @@ def headroom_from_records(
         conditions.append(f"reserved_unobserved_at_instant:{instant.isoformat()}")
         return _result(
             "ceiling_only", instant=instant, values=values,
-            ceiling=authorized - issued, observation_ids=used_ids,
+            ceiling=unissued, observation_ids=used_ids,
         )
-    headroom = authorized - issued - reserved
+    headroom = _exact(lambda: unissued - reserved)
     if headroom < 0:
         conditions.append(f"reservation_exceeds_unissued_authorized:{instant.isoformat()}")
     return _result(
@@ -360,9 +426,12 @@ def select_authorized_headroom(
             f"actions: corporate actions come from events or corporate_actions, not {action_family!r}",
         )
     issuer_id = _resolve_issuer_id(observations.observations)
+    records = tuple(actions.actions)
     return headroom_from_records(
-        observations.observations, tuple(actions.actions) or None,
+        observations.observations,
+        records if action_family == "corporate_actions" and records else None,
         issuer_id=issuer_id, as_of=as_of,
+        events=records if action_family == "events" and records else None,
     )
 
 

@@ -58,6 +58,8 @@ from tests.test_capital_structure_share_basis import (
     GEN,
     ISSUER,
     SECURITY,
+    _event,
+    _events,
     _four,
     _no_actions,
     _obs,
@@ -823,6 +825,138 @@ def test_select_authorized_headroom_rejects_wrong_types() -> None:
             _no_actions(),
             AS_OF,
         )
+
+
+# ---------------------------------------------------------------------------
+# Review regressions (independent Opus audit of PR #9400)
+# ---------------------------------------------------------------------------
+
+
+def test_review_events_family_does_not_raise_and_keeps_the_unobserved_condition() -> None:
+    records = _cap(INSTANT, authorized="500000000", issued="120000000", reserved="8000000")
+    observations = _shares(*records)
+    # One event filed before the instant (ignored) and one vote after it (a note only).
+    events = _events(
+        _event("old-charter", "charter_amendment_candidate", "2026-01-15"),
+        _event("vote", "shareholder_vote_candidate", "2026-03-20"),
+    )
+    result = select_authorized_headroom(observations, events, AS_OF)
+    assert result.status == "known"
+    assert Decimal(result.headroom) == Decimal(372000000)
+    # Event candidates never confirm that no split took effect.
+    assert f"corporate_actions_unobserved_since:{INSTANT}" in result.conditions
+    assert "rejected:event:vote:vote_or_authorization_is_not_an_effective_split" in result.notes
+    assert result.as_record() == headroom_from_records(
+        records, None, issuer_id=ISSUER, as_of=AS_OF, events=tuple(events.actions),
+    ).as_record()
+
+
+def test_review_unconfirmed_charter_amendment_after_the_instant_refuses() -> None:
+    records = _cap(INSTANT, authorized="500000000", issued="120000000", reserved="8000000")
+    events = _events(_event("charter", "charter_amendment_candidate", "2026-03-20"))
+    result = select_authorized_headroom(_shares(*records), events, AS_OF)
+    assert result.status == "unknown"
+    assert result.headroom is None and result.ceiling is None
+    assert (
+        "split_since_instant_unscaled:unconfirmed:charter_amendment_candidate:event:charter:2026-03-20"
+        in result.notes
+    )
+    # The facts themselves are still reported, unscaled (A19).
+    assert Decimal(result.authorized) == Decimal(500000000)
+
+
+def test_review_events_filed_after_as_of_are_invisible() -> None:
+    records = _cap(INSTANT, authorized="500000000", issued="120000000", reserved="8000000")
+    events = _events(_event("late-charter", "charter_amendment_candidate", "2026-04-20"))
+    result = select_authorized_headroom(_shares(*records), events, AS_OF)
+    assert result.status == "known"
+    assert Decimal(result.headroom) == Decimal(372000000)
+
+
+def test_review_a_record_claiming_authority_is_refused() -> None:
+    records = _cap(INSTANT, authorized="500000000", issued="120000000", reserved="8000000")
+    for flag in ("capacity_authority", "share_count_ledger_authority", "sizing_authority"):
+        granted = deepcopy(records)
+        granted[0]["authority"][flag] = True
+        with pytest.raises(AuthorizedSharesInputError, match=flag):
+            _headroom(granted)
+    not_context = deepcopy(records)
+    not_context[2]["authority"]["is_context_only"] = False
+    with pytest.raises(AuthorizedSharesInputError, match="context-only"):
+        _headroom(not_context)
+    missing = deepcopy(records)
+    missing[1].pop("authority")
+    with pytest.raises(AuthorizedSharesInputError):
+        _headroom(missing)
+
+
+def test_review_an_authorized_capital_record_must_name_its_issuer() -> None:
+    records = _cap(INSTANT, authorized="500000000", issued="120000000", reserved="8000000")
+    anonymous = deepcopy(records)
+    anonymous[0].pop("issuer_id")
+    anonymous[0].pop("issuer", None)
+    with pytest.raises(AuthorizedSharesInputError, match="must name its issuer"):
+        _headroom(anonymous)
+
+
+def test_review_a_visible_correction_supersedes_even_when_its_instant_is_excluded() -> None:
+    original = _authorized_obs("reserved-v1", INSTANT, "8000000", kind=RESERVED_KIND)
+    # The correction is available before as_of but reports an instant after it.
+    corrected = _authorized_obs(
+        "reserved-v2", "2026-05-31", "9000000", kind=RESERVED_KIND,
+        supersedes=(original["observation_id"],), correction_of=original["observation_id"],
+    )
+    records = [*_cap(INSTANT, authorized="500000000", issued="120000000"), original, corrected]
+    result = _headroom(records)
+    assert f"instant_after_as_of:{RESERVED_KIND}" in result.notes
+    assert original["observation_id"] not in result.observation_ids
+    # The withdrawn reservation is never used, so only a ceiling is stated.
+    assert result.status == "ceiling_only"
+    assert Decimal(result.ceiling) == Decimal(380000000)
+    assert result.reserved is None
+
+
+def test_review_a_record_filed_after_as_of_is_not_yet_available() -> None:
+    records = _cap(INSTANT, authorized="500000000", issued="120000000")
+    late = _authorized_obs(
+        "reserved-late", INSTANT, "8000000", kind=RESERVED_KIND,
+        filed="2026-04-20", available_at="2026-03-10T21:00:00Z",
+    )
+    result = _headroom([*records, late])
+    assert f"not_yet_available:{RESERVED_KIND}" in result.notes
+    assert late["observation_id"] not in result.observation_ids
+    assert result.status == "ceiling_only"
+    assert Decimal(result.ceiling) == Decimal(380000000)
+
+
+def test_review_output_text_is_canonical_and_equal_values_do_not_conflict() -> None:
+    records = _cap(INSTANT, authorized="1E+9", issued="120000000.0")
+    reserved = [
+        _authorized_obs("reserved-a", INSTANT, "8000000", kind=RESERVED_KIND),
+        _authorized_obs("reserved-b", INSTANT, "8000000.00", kind=RESERVED_KIND),
+    ]
+    result = _headroom([*records, *reserved])
+    assert result.status == "known"
+    assert result.authorized == "1000000000"
+    assert result.issued == "120000000"
+    assert result.reserved == "8000000"
+    assert result.headroom == "872000000"
+    assert not any(note.startswith("conflict:") for note in result.notes)
+
+    exact_zero = _headroom(_cap(INSTANT, authorized="120000000.00", issued="120000000", reserved="0.0"))
+    assert exact_zero.status == "known"
+    assert exact_zero.headroom == "0"
+    assert exact_zero.reserved == "0"
+
+
+def test_review_arithmetic_is_exact_at_every_magnitude() -> None:
+    authorized = "123456789012345678901234567890123"
+    issued = "0.000000000000000000000000001"
+    result = _headroom(_cap(INSTANT, authorized=authorized, issued=issued, reserved="0"))
+    assert result.status == "known"
+    # 60 significant digits; the default 28-digit context would round this.
+    assert result.headroom == "123456789012345678901234567890122.999999999999999999999999999"
+    assert result.authorized == authorized
 
 
 def test_headroom_result_is_deterministic_and_json_safe() -> None:
