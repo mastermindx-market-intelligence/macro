@@ -581,10 +581,15 @@ minimax, grok, cursor, glm) → optional bounded workers. No native leaf swarm; 
 
 ## Lane matrix
 
-(D72 13:00Z snapshot.) Rows superseding older rows below:
+(D73 01:05Z snapshot.) Rows superseding older rows below:
 
 | lane | state |
 |---|---|
+| #723 writer | Codex coordinator `01a137a5` holds the serialized #723 writer (UI-b repair integrated at `906573f9`; PP1-D run 2 on `fa4e8f92`; independent review `d3a3bc33..906573f9` on normal route); root `01a10340` keeps merge/deploy/production parity; this seat stands down from #723 and retracts rep1/PP1-D/PP2REV2 launches (D73) |
+| Macro #9079 / #9083 | hold RELEASED 01:03Z → `merge-on-green` (D57 condition met by Macro #9189); source-only merge, no install (D73) |
+| Matrix natural proof | ACCEPTED by root: Macro #9189 merged 00:37:35Z (2 natural sessions + withholding); runtime `6361f5e0` unchanged (D73) |
+| #985 / #983 / #948 | held runs approved 00:47Z, CI running; auto-merge + label armed; watcher `b47qdbn4g`; deploy + live verify owed by this seat (D73) |
+| Macro #8920 | CI (label); watcher `bqitfw30c` (D73) |
 | PP2REV | ACCEPTED 13:00Z: `fable-pp2rev-r1-20261013` APPROVE of `bd76f2c9..d3a3bc33`, 0 defects; NP1–NP3 test gaps carried to the next serialized #723 writer packet; never reuse this ID (D72) |
 | PP2REV | `fable-pp2rev-r1-20261013` RUNNING on mb since 12:48:36Z (range `bd76f2c9..d3a3bc33`; LEASE_OK); watcher `bwfrzes4t`; hard end ~14:03Z (D71) |
 | PP1-D | FROZEN: ubuntu2 `/` 99% (14G free at 12:49Z, not our fill); no reroute, no deletion; watcher `bfcmghmnb` (D71) |
@@ -1583,3 +1588,49 @@ INTENDED_RESUME_SURFACE: this Claude Code session; successor reads this file + #
   - PP2-UI-b: RUNNING (`be1h3mr4m`, elapsed 914s at 12:58Z).
   - PP1-D: FROZEN (`bfcmghmnb`).
   - #948/#983, #985, Macro #9080/#8920 and #9097: watchers armed, no new event.
+
+### D73 (2026-10-14T01:05Z) — seat resumed after the weekly-limit block; the Codex root's coordinator holds the #723 writer; this seat stands down from #723; Macro #9079/#9083 holds released
+
+- FACT: the seat was blocked by the weekly usage limit from 13:44:32Z on 2026-10-13. Nothing was launched, posted or written by this seat between 13:44Z and 00:47Z.
+- FACT (custody, by artifact): the Codex root `01a10340` assigned a bounded coordinator, `01a137a5-c53f-7242-aed1-45415d299852` (`/root/paper_custody_recovery`, sol-coordinator).
+  - Its recovery ruling is `PAPER_CUSTODY_RECOVERY_20261013.md`, SHA256 `cd4fc4dc…`, in the root's evidence directory. It recovered this seat's D1–D7 repair judgment on `a32936ea` from the transcript.
+  - It ran `fable-pp2uib-rep1-20261013` on the normal route (GLM, ubuntu0). Adjudication: `PP2UIB_REPAIR_ADJUDICATION_20261014.md`.
+    - D1 (the parked→final-close refocus) is fixed.
+    - The parent tightened the tests (D3/D4/k5 FULL detent) and added NP1–NP3, with each mutation RED and then restored. The focused suite is 62/62.
+    - The integration head is `906573f97d49a360e4055aae9b8e72da63be49d2` on `claude/ssd-pr-723-c89a753150e1dbd6`, by ordinary fast-forward.
+  - PP1-D run 1 ran on ubuntu2 at 00:17Z, after ubuntu2's own git gc/repack raised free space from 157.8 to 181.6 GB. No deletion was made by any programme lane.
+    - Run 1 delivered the map-first hierarchy; tablet passes.
+    - Desktop and phone geometry are owed by run 2, which runs on the combined base `fa4e8f92`.
+  - The independent review `d3a3bc33..906573f9` runs on the normal router (ubuntu1/Bailian). This is the operation this seat had planned as PP2REV2.
+  - Current-master composition finding, #723 issuecomment-6158447652:
+    - frozen master `14089430`, merge base `abea23b1`;
+    - five ChartPanel conflict blocks;
+    - `syncOptionsPricePin` must receive `priceSeriesHandleRef.current`;
+    - the explicit pin census term is kept.
+- RULING (O.16/O.17): the coordinator `01a137a5` is the single serialized #723 writer and integrator. The root `01a10340` keeps the protected merge, the #599-coordinated git-gated deploy and authenticated production parity (`PR723_FINAL_INTEGRATION_CHECKLIST_20261014.md`).
+  - This seat RETRACTS its planned launches of `fable-pp2uib-rep1-20261013`, PP1-D run 1/2 and `fable-pp2rev2-r1-20261013`. All three are now the coordinator's operations; DO_NOT_REDO.
+  - This seat makes no write, worker or comment on the #723 carrier, and posts no re-ACK.
+  - The mb worktree `~/lanes/wt/pp2uia-20261013` stays clean at `a32936ea`; it is untouched.
+- FACT: the Matrix natural proof is accepted by the root and recorded in Macro #9189, merged 00:37:35Z (`a3f3afa1`).
+  - Two advancing natural sessions: Oct 8→9 and Oct 9→12, all 12 roots, plus the genuine withholding test.
+  - The output-binding drift was repaired reversibly; its cause is unproven.
+  - The deployed m1 runtime stays at `6361f5e0`.
+- ACT: Macro #9079 (D03-R1) and #9083 (D16b) were moved from `hold` to `merge-on-green` at 01:03Z, because their D57 condition is met.
+  - Comments: #9079 issuecomment-6158538892 and #9083 issuecomment-6158540068.
+  - The merge changes source only. No installer, producer or launchd reload was run; installing the bytes stays with the Matrix runtime owner.
+- FACT: Macro #9080 MERGED 16:45:37Z (`f1fc07bf`); #9097 MERGED 17:43:23Z (`9424deaa`).
+- FACT: Macro #8920 is OPEN with `merge-on-green`. `ci-pack-8` was running at 01:00Z; the `ci-authority/codex/merge-queue-pilot` failure is another owner's context.
+- FACT: Terminal held `pull_request` runs were approved at 00:47Z and are running:
+  - #985 run 38485384065;
+  - #983 run 38481933012;
+  - #948 run 38481324737. #948's earlier red was the `drawing-system.spec.ts` flake.
+  - All three PRs have native auto-merge armed and carry `merge-on-green`.
+- Watchers (fresh; every watcher from before the block has died):
+  - `b47qdbn4g`: Terminal #985/#983/#948, 3 h.
+  - `bqitfw30c`: Macro #8920/#9079/#9083, 3 h.
+- OWED by this seat: the git-gated deploy and live verification of merged #985/#983/#948. Each uses `--target-sha` (never an ancestor of live) and the NODE_OPTIONS heap. Coordinate with the root's #723 release so that no two deploys overlap.
+- Rungs at 01:05Z:
+  - #723 Paper parity: RUNNING (coordinator `01a137a5`; not this seat).
+  - #985/#983/#948: CI.
+  - Macro #8920/#9079/#9083: CI (label).
+  - Matrix natural proof: ACCEPTANCE (root).
