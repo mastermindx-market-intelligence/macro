@@ -735,3 +735,252 @@ class TestForwardLogLane:
         log_path = out_dir / "forward_log.jsonl"
         lines = [l for l in log_path.read_text().strip().splitlines() if l.strip()]
         assert len(lines) == 1, f"Expected 1 line (keep-FIRST), got {len(lines)}"
+
+
+# ---------------------------------------------------------------------------
+# 8. T0 basis/countdown contract — A03/A04/A05 acceptance pins (RED until T0-FIX)
+# ---------------------------------------------------------------------------
+
+def _t0_write_json(path: Path, payload) -> None:
+    """Write a T0 fixture JSON file (UTF-8 so ZH strings round-trip)."""
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(payload, ensure_ascii=False), encoding="utf-8")
+
+
+def _t0_release_forecast_artifact() -> dict:
+    """Synthetic release_forecast.v2 artefact for the A04/A05 pins.
+
+    Every value is synthetic — never copied from data/. The cpi_headline item
+    carries full qualification metadata (target/epochs/bases/maturity/
+    benchmarks) exactly as the v2 artefact declares it.
+    """
+    return {
+        "schema": "release_forecast.v2",
+        "asof": "2026-10-09T15:17:19Z",
+        "methodology_status": {
+            "forecast_epoch": "legacy_cross_vintage_training_target_experimental",
+            "accuracy_claim": "withheld_until_clean_aligned_forward_evidence",
+            "street_consensus": "unavailable",
+        },
+        "upcoming": [
+            {
+                "release_type": "cpi_headline",
+                "period": "2026-09",
+                "release_date": "2026-10-14",
+                "days_to": 5,
+                "target": "mom_sa_pct",
+                "model_epoch": "champion_legacy_target_v1",
+                "target_epoch": "legacy_cross_vintage_initial_levels_v0",
+                "primary_forecast_basis": "combined_v1_benchmark_augmented",
+                "context_metrics_basis": "champion_legacy_target_v1",
+                "coverage_flags": {"weight_coverage": 1.0, "model_maturity": 0},
+                "benchmark_set": {
+                    "naive_prior": {},
+                    "trailing_3m": {},
+                    "ar_model": {},
+                    "cleveland_nowcast": {},
+                    "market_implied": {},
+                },
+                "projection": {"point": 0.37},
+                "surprise_skew": {"tag": "inline", "sigma": -0.14},
+            }
+        ],
+    }
+
+
+class TestT0BasisCountdownContract:
+    """Executable contract for RIC acceptance cases A03/A04/A05.
+
+    These tests are the contract the T0-FIX lane is judged against: the
+    unmodified engine fails all three with AssertionError. The engine must be
+    repaired to make them pass — the fixture values and expectations here are
+    an orchestrator ruling and are never weakened.
+    """
+
+    def test_missing_path_has_no_named_source(self, tmp_path):
+        """A03: no fed_path evidence ⇒ no named source; never a fabricated default."""
+        # 1. Empty root (no files at all): no named source is allowed to appear.
+        rp = build_board(root=tmp_path)["board"]["rate_path_row"]
+        assert rp["source_en"] is None
+        assert rp["source_zh"] is None
+
+        # 2. fed_path present with numbers but NO implied_source_* keys: the
+        #    numbers survive and the source stays unnamed.
+        r2 = tmp_path / "present_without_source"
+        _t0_write_json(r2 / "bonds" / "bond_health.json", {"fed_path": {
+            "asof": "2026-10-08",
+            "policy_rate": 3.88,
+            "implied": {"m1": 3.85, "m3": 3.7, "m6": 3.5, "m12": 3.2},
+            "implied_bp_12m": -68,
+            "implied_cuts_12m": -3,
+        }})
+        rp2 = build_board(root=r2)["board"]["rate_path_row"]
+        assert rp2["source_en"] is None
+        assert rp2["source_zh"] is None
+        assert rp2["policy_rate"] == 3.88
+        assert rp2["implied_path"]["m12"] == 3.2
+        assert rp2["implied_bp_12m"] == -68
+
+        # 3. CONTROL: an explicit implied_source_* passes through verbatim
+        #    (no relabelling to ZQ).
+        r3 = tmp_path / "explicit_source"
+        _t0_write_json(r3 / "bonds" / "bond_health.json", {"fed_path": {
+            "asof": "2026-10-08",
+            "policy_rate": 3.88,
+            "implied": {"m1": 3.85, "m3": 3.7, "m6": 3.5, "m12": 3.2},
+            "implied_bp_12m": -68,
+            "implied_cuts_12m": -3,
+            "implied_source_en": "SR3 SOFR futures",
+            "implied_source_zh": "SR3 SOFR期货",
+        }})
+        rp3 = build_board(root=r3)["board"]["rate_path_row"]
+        assert rp3["source_en"] == "SR3 SOFR futures"
+        assert rp3["source_zh"] == "SR3 SOFR期货"
+
+    def test_cpi_summary_preserves_target_epoch_and_maturity(self, tmp_path):
+        """A04: nearest_cpi carries the artefact's target/epoch/basis/maturity
+        qualifications verbatim; missing qualification is None, never a default."""
+        _t0_write_json(
+            tmp_path / "release_forecast" / "latest.json",
+            _t0_release_forecast_artifact(),
+        )
+        nc = build_board(root=tmp_path)["board"]["inflation_row"]["nearest_cpi"]
+        # 1. The model's target identity survives.
+        assert nc.get("target") == "mom_sa_pct"
+        # 2. Model/target epoch and bases travel with the value.
+        assert nc.get("model_epoch") == "champion_legacy_target_v1"
+        assert nc.get("target_epoch") == "legacy_cross_vintage_initial_levels_v0"
+        assert nc.get("primary_forecast_basis") == "combined_v1_benchmark_augmented"
+        assert nc.get("context_metrics_basis") == "champion_legacy_target_v1"
+        # 3. Maturity zero is zero, not missing.
+        assert "model_maturity" in nc and nc["model_maturity"] == 0 \
+            and nc["model_maturity"] is not None
+        # 4. Artefact-level methodology status is surfaced, not dropped.
+        assert nc.get("forecast_epoch") == "legacy_cross_vintage_training_target_experimental"
+        assert nc.get("accuracy_claim") == "withheld_until_clean_aligned_forward_evidence"
+        # 5. Benchmark family is the sorted key set of benchmark_set.
+        assert nc.get("benchmark_ids") == [
+            "ar_model", "cleveland_nowcast", "market_implied", "naive_prior", "trailing_3m",
+        ]
+        # 6. First-print basis is UNKNOWN because the artefact declares none —
+        #    never inferred.
+        assert "first_print_basis" in nc and nc["first_print_basis"] is None
+        # 7. Existing display fields are unchanged.
+        assert nc["point"] == 0.37
+        assert nc["days_to"] == 5
+        assert nc["release_date"] == "2026-10-14"
+        assert nc["surprise_skew_tag"] == "inline"
+
+        # 8. MISSING-QUALIFICATION case: a bare artefact yields every
+        #    qualification key present with value None — never a default string.
+        r2 = tmp_path / "bare"
+        _t0_write_json(r2 / "release_forecast" / "latest.json", {
+            "schema": "release_forecast.v2",
+            "asof": "2026-10-09T15:17:19Z",
+            "upcoming": [{
+                "release_type": "cpi_headline",
+                "period": "2026-09",
+                "release_date": "2026-10-14",
+                "days_to": 5,
+                "projection": {"point": 0.2},
+            }],
+        })
+        nc2 = build_board(root=r2)["board"]["inflation_row"]["nearest_cpi"]
+        for key in (
+            "target", "model_epoch", "target_epoch", "primary_forecast_basis",
+            "context_metrics_basis", "model_maturity", "forecast_epoch",
+            "accuracy_claim", "benchmark_ids", "first_print_basis",
+        ):
+            assert key in nc2, key
+            assert nc2[key] is None, (key, nc2[key])
+
+        # 9. EXPLICIT first-print case: passes through verbatim.
+        r3 = tmp_path / "first_print"
+        artefact = _t0_release_forecast_artifact()
+        artefact["upcoming"][0]["first_print_basis"] = "first_print"
+        _t0_write_json(r3 / "release_forecast" / "latest.json", artefact)
+        nc3 = build_board(root=r3)["board"]["inflation_row"]["nearest_cpi"]
+        assert nc3["first_print_basis"] == "first_print"
+
+    def test_countdown_binds_display_cutoff_without_restamping_evidence(self, tmp_path):
+        """A05: countdown binds the display cutoff to the calendar release date
+        while the source snapshot fields stay untouched (never restamped)."""
+        _t0_write_json(
+            tmp_path / "release_forecast" / "latest.json",
+            _t0_release_forecast_artifact(),
+        )
+        # 1. No explicit cutoff — must be a dict (first call, no cutoff kwarg).
+        r0 = build_board(root=tmp_path)
+        nc0 = r0["board"]["inflation_row"]["nearest_cpi"]
+        cd0 = nc0.get("countdown")
+        assert isinstance(cd0, dict), cd0
+        # 2. No explicit cutoff ⇒ historical at the source snapshot, never
+        #    current; the evidence fields stay verbatim.
+        assert cd0.get("source_cutoff") == "2026-10-09T15:17:19Z"
+        assert cd0.get("source_days_to") == 5
+        assert cd0.get("display_cutoff") is None
+        assert cd0.get("days_to") is None
+        assert cd0.get("state") == "historical"
+        assert cd0.get("method") == "source_snapshot"
+        assert nc0["days_to"] == 5
+        # 3. Re-render stability: no wall-clock dependence.
+        cd0_again = build_board(
+            root=tmp_path
+        )["board"]["inflation_row"]["nearest_cpi"].get("countdown")
+        assert cd0_again == cd0
+        # 4. Explicit display cutoff recomputes from the artefact's calendar
+        #    release date; source snapshot fields are NOT restamped.
+        nc_cut = build_board(
+            root=tmp_path, cutoff="2026-10-12",
+        )["board"]["inflation_row"]["nearest_cpi"]
+        cd = nc_cut.get("countdown")
+        assert cd.get("display_cutoff") == "2026-10-12"
+        assert cd.get("days_to") == 2
+        assert cd.get("state") == "current"
+        assert cd.get("method") == "release_forecast_release_date"
+        assert cd.get("source_cutoff") == "2026-10-09T15:17:19Z"
+        assert cd.get("source_days_to") == 5
+        assert nc_cut["days_to"] == 5
+        # 5. Same day as the source snapshot.
+        cd5 = build_board(
+            root=tmp_path, cutoff="2026-10-09",
+        )["board"]["inflation_row"]["nearest_cpi"].get("countdown")
+        assert cd5.get("state") == "current"
+        assert cd5.get("days_to") == 5
+        # 6. Release day.
+        cd6 = build_board(
+            root=tmp_path, cutoff="2026-10-14",
+        )["board"]["inflation_row"]["nearest_cpi"].get("countdown")
+        assert cd6.get("state") == "current"
+        assert cd6.get("days_to") == 0
+        # 7. After release.
+        cd7 = build_board(
+            root=tmp_path, cutoff="2026-10-15",
+        )["board"]["inflation_row"]["nearest_cpi"].get("countdown")
+        assert cd7.get("state") == "released"
+        assert cd7.get("days_to") is None
+        # 8. Display cutoff BEFORE the evidence existed (late evidence).
+        cd8 = build_board(
+            root=tmp_path, cutoff="2026-10-08",
+        )["board"]["inflation_row"]["nearest_cpi"].get("countdown")
+        assert cd8.get("state") == "source_after_display_cutoff"
+        assert cd8.get("days_to") is None
+        # 9. Malformed calendar date: no exception, state unknown.
+        r2 = tmp_path / "bad_date"
+        artefact = _t0_release_forecast_artifact()
+        artefact["upcoming"][0]["release_date"] = "not-a-date"
+        _t0_write_json(r2 / "release_forecast" / "latest.json", artefact)
+        cd_bad = build_board(
+            root=r2, cutoff="2026-10-12",
+        )["board"]["inflation_row"]["nearest_cpi"].get("countdown")
+        assert isinstance(cd_bad, dict), cd_bad
+        assert cd_bad.get("state") == "unknown"
+        assert cd_bad.get("days_to") is None
+        assert cd_bad.get("source_days_to") == 5
+        # 10. Malformed display cutoff: no exception, state unknown.
+        cd_garbage = build_board(
+            root=tmp_path, cutoff="garbage",
+        )["board"]["inflation_row"]["nearest_cpi"].get("countdown")
+        assert isinstance(cd_garbage, dict), cd_garbage
+        assert cd_garbage.get("state") == "unknown"
+        assert cd_garbage.get("days_to") is None
