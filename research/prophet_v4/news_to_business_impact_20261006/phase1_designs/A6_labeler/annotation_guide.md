@@ -1,9 +1,12 @@
 # Annotation guide — news-to-business-impact labelers (600-case benchmark)
 
-Version: prompt-v1 / guide-v1.1 (guide-v1 2026-10-12, lane A6_labeler, seat 0e739467 Wave 2;
+Version: prompt-v1 / guide-v1.2 (guide-v1 2026-10-12, lane A6_labeler, seat 0e739467 Wave 2;
 guide-v1.1 2026-10-14, section 6 absence-reason rules from the w2 absent-slot audit,
-DEC:NEWS-IMPACT-ABSENCE-REASON-SCHEDULED-EXECUTION). guide-v1.1 is not the w2 lane
-packet prompt-v1.1.
+DEC:NEWS-IMPACT-ABSENCE-REASON-SCHEDULED-EXECUTION; guide-v1.2 2026-10-14, section 5.4 T1
+amount rules plus the bound words in section 4 rule 2 and plus-or-minus guidance in
+section 5.1, from the w2 malformed-slot audit, DEC:NEWS-IMPACT-GUIDE-V12-T1-AMOUNT-RULES).
+Guide versions and lane packet versions are separate series: the w2 lanes ran prompt-v1.0
+and prompt-v1.1 under guide-v1, and the packet that carries guide-v1.2 is prompt-v1.2.
 Audience: the two independent labeler families drafting critical fields for the benchmark
 (masterplan §11: 200 capital-allocation + 200 demand/guidance/contract + 200 strategic
 product/partnership cases), and the third family used for disagreement resolution.
@@ -52,8 +55,8 @@ frozen schema.
 | 4 | `action_type` | inline enum (schema prop) | `share_repurchase, dividend, special_dividend, equity_issuance, debt_issuance, other_allocation`. |
 | 5 | `commitment_status` | `$defs/commitment_status` | `authorized, announced, planned, executed, completed, withdrawn, conditional`. Board authorization language → `authorized` (W1); "plans to" → `planned` (W2). Schema allOf[7]: `executed`/`completed` force `executed_amount` to a point/range. |
 | 6 | `primary_amount_role` | inline enum (schema prop) | `incremental_authorization, remaining_authorization, executed, dividend, issuance` — which slot carries the headline number (W1: `incremental_authorization`). |
-| 7 | `incremental_amount` | `$defs/quantity` | The NEW money added by this action. `basis` CONST `incremental` (allOf[0]). |
-| 8 | `remaining_authorization` | `$defs/quantity` | Authorization left after the action. `basis` CONST `total` (allOf[1]). |
+| 7 | `incremental_amount` | `$defs/quantity` | The NEW money added by this action (which amount fills it: §5.4). `basis` CONST `incremental` (allOf[0]). |
+| 8 | `remaining_authorization` | `$defs/quantity` | Authorization left after the action; never undrawn borrowing capacity (§5.4 rule 6). `basis` CONST `total` (allOf[1]). |
 | 9 | `executed_amount` | `$defs/quantity` | Money actually spent so far. `basis` CONST `total` (allOf[2]); present as point/range only when `commitment_status ∈ {executed, completed}` or the source states it. |
 | 10 | `horizon_period` | oneOf `$defs/fiscal_period` \| `$defs/absence_union` | The stated completion window of the program, only if the source states one (W1 "through fiscal 2028"); otherwise typed absence `not_stated`. |
 | 11 | `negated` | boolean | True only if the source negates the action itself (§4). |
@@ -175,7 +178,9 @@ to", "if approved"; never combine with `negated: true` for the same condition).
 2. Hedge words map to `quantity_point.bound`, never to negation: "approximately/about/
    roughly" → `approximately`; "up to/as much as" → `up_to` (R4: "authorized a repurchase
    program of up to $10 billion" → bound `up_to`); "at least/no less than" → `at_least`;
-   none of these → `exact` (W1).
+   none of these → `exact` (W1). guide-v1.2: a stated maximum, cap, ceiling or "not to
+   exceed" (a program, facility or offering sized as a limit) → `up_to`; a stated minimum,
+   floor or "not less than" → `at_least`.
 3. Conditionality ("subject to regulatory approval", "if the merger closes") →
    `commitment_status: conditional` (freeze §4.1 F5: the closed enum carries the category,
    never a second free condition field).
@@ -209,6 +214,12 @@ period and negation are all equal after normalisation. Normalisation = the rules
   award is stated_amount 400000000 incremental + option_ceiling 2000000000, NOT 2.4B — W4),
   convert currency, or average to a midpoint (a range is a range; Gate 4: "a guidance range is
   correct only if both bounds match").
+- Plus-or-minus guidance (guide-v1.2). "C plus or minus T", where T is in the same unit as
+  C, is range notation: emit `form: range` with `low` = C − T, `high` = C + T and
+  `bound: exact`. This is the one subtraction the guide allows; it reads the stated range,
+  it does not average one, and it needs no `notes` entry. When T is a percentage of C, do
+  not multiply: emit the point C with `bound: approximately` and a `notes` entry
+  (`kind: ambiguity`) quoting the tolerance.
 
 ### 5.2 Basis (never free)
 Slot-fixed consts, enforced by schema allOf:
@@ -246,6 +257,45 @@ freeze §4.1 F3).
   stated").
 - Never convert fiscal→calendar. If the fiscal-year convention is unstated, that is fine:
   record the year as the source writes it.
+
+### 5.4 T1 amount slots (guide-v1.2)
+The w2 audits found the families splitting on which T1 slot a stated amount fills. These
+rules decide it. None of them lets you compute a slot value: a slot holds a number the
+source states for that slot, or a typed absence. `notes` entries use the closed kinds of
+label_return.v1 (`template_defect`, `ambiguity`).
+
+1. New program. "Authorized a new $X program", "a program of up to $X", "approved $X for
+   repurchases" → `incremental_amount` = X (W1, R4). An issuance program sized as a cap
+   (an at-the-market program, a commercial paper program) is the same, with `bound: up_to`.
+2. Increase BY an amount. "Increased the authorization by $X", "an additional $X", "an
+   incremental $X" → `incremental_amount` = X.
+3. Increase TO an amount. "Increased the authorization to $X", "bringing the total to $X",
+   "for a total authorization of $X" → X is a new total, not new money.
+   `incremental_amount` is a typed absence `stated_without_number` whose `detail` cites the
+   sentence, unless the source separately states the increment; never subtract the old
+   total from X. `remaining_authorization` = X only when the source says X remains or is
+   available; otherwise `not_stated`. Add a `notes` entry (`kind: template_defect`): new
+   total stated; T1 v1 has no total-authorization slot.
+4. Ambiguous increase. "Approved an increase in the authorization up to $X", with no "by"
+   or "to" that says whether X is the increment or the new total → label it as rule 3 and
+   add a `notes` entry (`kind: ambiguity`) quoting the sentence. Never guess the increment
+   (§7: record the ambiguity, never a guess).
+5. Per-share dividend. A T1 dividend stated only per share → `incremental_amount` is
+   `stated_without_number` with `detail` "per-share amount only"; add a `notes` entry
+   (`kind: template_defect`): the slot's basis is const `incremental` and has no per-share
+   form. A stated aggregate dividend (the total cash to be paid) fills `incremental_amount`.
+6. Capacity is not authorization. Undrawn borrowing capacity under a credit facility,
+   term loan or revolver is never `remaining_authorization`. `remaining_authorization` is
+   what is left of a board or program authorization for the case's own action type: a
+   repurchase authorization, a dividend program, or an issuance program such as an
+   at-the-market program.
+7. Amendments. An amendment to an existing facility, loan or indenture that adds no new
+   money → `incremental_amount` `not_stated`. An amendment that increases commitments by
+   $X → X (rule 2); one that increases them to $X → rule 3.
+8. Preferred stock and other non-note securities. The new money of a preferred offering is
+   its aggregate liquidation amount in currency, the analogue of a note's principal. A
+   share count never fills a money slot: when only a share count is stated, the slot is
+   `stated_without_number` with `detail` "share count only".
 
 ## 6. Abstention — when to emit a typed absence
 
