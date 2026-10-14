@@ -4757,6 +4757,11 @@ CURATED_EXCLUSIVE = {
     # probe selected it (templates/index.html 5815 > 5800). It declares its
     # scanned surfaces instead and pins them in its own test.
     "sni-public-exposure-scan",
+    # 2026-10-13 SNI INT2: the acceptance-evidence suite (A03/A04/A07/A10/A12,
+    # copy guard, A33, A36, A39, P03 ULP, register consistency) imports the
+    # acceptance/, residual/, event_response/ and us_stress/ modules through
+    # sys.path inserts; pinned to its measured closure like sni-program-guards.
+    "sni-acceptance-evidence",
     # 2026-10-13 Grey Deer W3 (#8938): the stage-1 pullback runner suite reads
     # its own research tree, lib.nyse_calendar and the trial ledger. scope:
     # exclusive pins it to that measured closure (57 paths once W4 added the
