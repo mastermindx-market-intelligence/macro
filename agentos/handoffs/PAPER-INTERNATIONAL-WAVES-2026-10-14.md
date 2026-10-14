@@ -53,6 +53,12 @@ changed:
 - path: research/paper_international_wave1_wave2/J06_HISTORY_JOURNEY_ACCEPTANCE.json
   what: Bind eight full-page source-reader/History/Back journeys on isolated Parquet with explicit synthetic permission
     and no-grant modes.
+- path: templates/intl_workspace/history.html.j2; templates/intl_workspace_history.css; site/intl_workspace_history.css
+  what: Retain exact dated History cells in the canonical in-container table scroller, with localized accessible
+    name and visible keyboard focus.
+- path: research/paper_international_wave1_wave2/J06_HISTORY_TABLE_REFLOW_ACCEPTANCE.json
+  what: Bind actual fragmentation red proof, nested-wrapper causal correction, final keyboard geometry and settled
+    dual-theme captures.
 verified:
 - claim: Fresh main had two actual conflicting files against the existing repair branch.
   command: git fetch origin main; git merge-tree --write-tree --messages HEAD origin/main.
@@ -146,6 +152,11 @@ verified:
     -q tests/test_intl_workspace_integration.py.
   result: Three fail-before exact-name assertions;3 new browser tests/9 EN-ZH-EN name assertions and20 integration
     tests pass.5 unrelated pytest temp-cleanup warnings retained. Final full page closure20PASS0FAIL; counts overlap.
+- claim: Dated History cells preserve exact strings and permit keyboard scrolling inside the page.
+  command: node --test --test-name-pattern="History dated table" tests/intl_workspace_page.test.cjs; history-table-reflow-20261014-r1/render_acceptance.py;
+    check_template_site_sync.py.
+  result: 4 fail-before cases;4 focused tests/32states and12 actual-page cases/24settled capture positions pass.115assetpairs
+    match. Full closure counts in final receipt. No live rights or nativezoom inference.
 unverified:
 - claim: Fresh hosted candidate product CI and deployed reset/asset behavior.
   what_would_verify: Genuinely new exact-head hosted product checks after publication; then lawful release and actual
@@ -171,15 +182,15 @@ unresolved:
   No retry, replacement, result acceptance or manual release.'
 - Independent review of unavailable-reading and accessible-name changes remains outstanding; no source-level or
   browser test result substitutes for it.
-- At320px the exact History timestamps wrap densely. No clipped character or source-date mutation was observed;
-  visual usability and native zoom remain open.
+- Dated History table now scrolls inside its labelled region; at320px doubled text a long exact timestamp can exceed
+  one viewport. Independent visual/accessibility review and nativezoom remain open.
 next_actions:
-- Resume in this same Paper chat and existing Macro carrier from CHECKPOINT.md; qualify only new admitted CI for
-  the latest published source.
-- Advance the incomplete Macro/Policy-to-Risk-to-History full workflow with independent-clock and unavailable-state
-  checks, or diagnose narrow History timestamp readability before a bounded causal repair.
-- Keep original Fabric review prelaunch policy mismatch frozen; independent review requires a genuine new policy/admission
-  resolution. Preserve native-zoom control, release, rights, Saved, frozen-effect and IW2 boundaries.
+- Resume from the cumulative CHECKPOINT and exact Macro carrier; qualify only new admitted CI for the latest published
+  source.
+- Advance incomplete Macro/Policy -> Risk -> History full workflow with independent-clock, absence and return-context
+  proof. Reuse accepted History and compass evidence within its source scope.
+- Independent review of missing compass, localized accessible name and History table remains pending under the retained
+  Fabric policy refusal. Preserve no retry, nativezoom, release, rights, Saved, frozen-effect and IW2 boundaries.
 do_not_redo:
 - Do not rerun accepted1714/50 tests or24 browser cases unless a relevant input changes; unchanged earlier184 controller
   tests remain historical accepted evidence.
@@ -192,6 +203,8 @@ do_not_redo:
   review request75 and NOT_FOUND means no worker launched, not an accepted Fabric return.
 - Do not repeat8 J06 journeys or9 computed accessible-name checks unless their source/input/acceptance changes.
   Their synthetic permissions never become current rights.
+- Do not repeat final32 History table geometry states or12 settled rendered cases without a changed source/input/acceptance
+  requirement; initial unsettled captures are not final evidence.
 danger_areas:
 - IW2 alone owns all Terminal PR804 execution surfaces; no direct human handback occurred.
 - No PR ready, GitHub merge, auto-arm or deployment is authorized by this integration.
@@ -220,3 +233,5 @@ Unavailable-reading evidence: `/Volumes/Mastermind/evidence/paper-waves-20261006
 History and accessible-name evidence: `/Volumes/Mastermind/evidence/paper-waves-20261006-01a1101f/j06-history-journey-20261014-r1` and `/Volumes/Mastermind/evidence/paper-waves-20261006-01a1101f/compass-accessibility-20261014-r1`.
 
 Final accessible-name source retains an explicit CSS semicolon after its existing templated color: design guard and diff check pass. Three focused browser tests pass on these final bytes; the20-case browser/Python closures precede only this CSS-equivalent terminator. Original scanner and missing-NODE_PATH setup failures are retained in evidence.
+
+Final History table source/evidence: `/Volumes/Mastermind/evidence/paper-waves-20261006-01a1101f/history-table-reflow-20261014-r1`.

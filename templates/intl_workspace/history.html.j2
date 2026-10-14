@@ -40,10 +40,12 @@
         {% if s.points %}
         <details class="intl-history__observations">
           <summary>{{ words('Inspect dated observations','查看带日期的观测') }} ({{ s.points|length }})</summary>
-          <table><caption>{{ words('Current reconstruction · source dates preserved','当前重建 · 保留来源日期') }}</caption>
+          <div class="tbl-scroll intl-history__observations-scroll" role="region" tabindex="0" aria-labelledby="im-history-table-caption-{{ loop.index0 }}">
+          <table><caption id="im-history-table-caption-{{ loop.index0 }}">{{ words('Current reconstruction · source dates preserved','当前重建 · 保留来源日期') }}</caption>
             <thead><tr><th scope="col">{{ words('Observation','观测日期') }}</th><th scope="col">{{ words('Growth score','增长评分') }}</th><th scope="col">{{ words('Inflation score','通胀评分') }}</th></tr></thead>
             <tbody>{% for point in s.points %}<tr><th scope="row">{{ point.observation_at|e }}</th><td>{{ point.growth_score|e if point.growth_score is not none else words('Unavailable','不可用') }}</td><td>{{ point.inflation_score|e if point.inflation_score is not none else words('Unavailable','不可用') }}</td></tr>{% endfor %}</tbody>
           </table>
+          </div>
         </details>
         {% endif %}
         {% if s.source_reference or s.acquisition_at %}<details class="intl-history__evidence"><summary>{{ words('Reconstruction evidence','重建依据') }}</summary><dl>

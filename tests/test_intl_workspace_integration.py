@@ -73,6 +73,23 @@ def render_fixture(mode="macro", workspace=True, state="unknown", perf=None):
     return pages[1] if mode == "stocks" else pages[0]
 
 
+def render_history_fixture():
+    """Real page with isolated synthetic EOD and explicit test-only History permissions."""
+    from tempfile import TemporaryDirectory
+    from unittest.mock import patch
+    from scripts import build_intl
+    from tests.test_intl_eod_publication import _setup, EVALUATED
+    from tests.test_intl_history_mount import fixture as history_fixture
+    _, args = history_fixture()
+    with TemporaryDirectory(prefix="intl-history-layout-") as directory:
+        data_root = Path(directory)
+        frame, _ = _setup(data_root)
+        workspace = build_intl._publication_workspace(
+            frame, data_root=data_root, evaluated_at=EVALUATED, history_sources=args["sources"])
+        with patch(__name__ + "._workspace_overviews", return_value=workspace):
+            return render_fixture()
+
+
 @pytest.fixture(autouse=True)
 def no_collector_or_store_reads(monkeypatch):
     def forbidden(*args, **kwargs):

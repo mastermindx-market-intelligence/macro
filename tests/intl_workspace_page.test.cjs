@@ -287,3 +287,62 @@ for (const reading of [null,0,54]) {
     },{width:320,htmlOverride});
   });
 }
+
+
+for (const theme of ['dark','light']) for (const lang of ['en','zh']) {
+  test(`History dated table preserves readable cells and keyboard scrolling ${theme} ${lang}`,async()=>{
+    const htmlOverride=execFileSync(process.env.INTL_TEST_PYTHON||'python3',[
+      '-c','from tests.test_intl_workspace_integration import render_history_fixture; print(render_history_fixture())'],
+      {cwd:root,env:{...process.env,PYTHONPATH:root},encoding:'utf8',maxBuffer:4*1024*1024});
+    await pageFixture(async page=>{
+      await page.evaluate(({theme,lang})=>{setTheme(theme);setLang(lang);},{theme,lang});
+      await page.selectOption('select[data-im-action="set_view"]','history');
+      await page.selectOption('[data-im-history-panel] select[data-im-action="select_market"]','JP');
+      const observations=page.locator('[data-im-history-market="JP"] .intl-history__observations');
+      await observations.locator('summary').click();
+      const dates=await observations.locator('tbody th').allTextContents();
+      assert.ok(dates.some(date=>date.includes('.123456789+09:00')));
+      const baseFont=await observations.locator('table').evaluate(n=>parseFloat(getComputedStyle(n).fontSize));
+      for(const width of [320,390,768,1440]) for(const scale of [1,2]) {
+        await page.setViewportSize({width,height:900});
+        await observations.locator('table').evaluate((n,size)=>n.style.fontSize=size+'px',baseFont*scale);
+        const lines=await observations.locator('tbody th').evaluateAll(nodes=>nodes.map(n=>{
+          const range=document.createRange();range.selectNodeContents(n);return range.getClientRects().length;
+        }));
+        assert.deepEqual(lines,[1,1,1],JSON.stringify({width,scale,theme,lang,lines}));
+        assert.deepEqual(await observations.locator('tbody th').allTextContents(),dates);
+        assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
+        const name=lang==='zh'?'当前重建 · 保留来源日期':'Current reconstruction · source dates preserved';
+        const region=observations.getByRole('region',{name,exact:true});
+        await observations.locator('summary').focus();await page.keyboard.press('Tab');
+        assert.equal(await region.evaluate(n=>n===document.activeElement),true);
+        assert.ok(await region.evaluate(n=>parseFloat(getComputedStyle(n).outlineWidth)>=2));
+        const overflow=await region.evaluate(async n=>{
+          n.scrollTo({left:0,behavior:'instant'});
+          // Commit the resize/scroll reset before testing a new native key scroll.
+          await new Promise(requestAnimationFrame);await new Promise(requestAnimationFrame);
+          return n.scrollWidth>n.clientWidth;
+        });
+        if(overflow){
+          await page.keyboard.press('ArrowRight');
+          try {await page.waitForFunction(()=>{
+            const n=document.activeElement;return n?.getAttribute('role')==='region'&&n.scrollLeft>0;
+          });} catch(error) {
+            throw new Error(JSON.stringify({width,scale,theme,lang,scroll:await region.evaluate(n=>({left:n.scrollLeft,client:n.clientWidth,total:n.scrollWidth,active:n===document.activeElement}))}),{cause:error});
+          }
+        }
+        await region.evaluate(n=>n.scrollLeft=n.scrollWidth);
+        const bounds=await region.evaluate(n=>{
+          const r=n.getBoundingClientRect(),last=n.querySelector('tbody tr td:last-child').getBoundingClientRect();
+          return {left:r.left,right:r.right,lastLeft:last.left,lastRight:last.right,scroll:n.scrollLeft,max:n.scrollWidth-n.clientWidth};
+        });
+        assert.ok(bounds.lastRight<=bounds.right+1&&bounds.lastLeft>=bounds.left-1,JSON.stringify({width,scale,...bounds}));
+        assert.equal(await observations.locator('.tbl-scroll').count(),1);
+
+      }
+      await page.locator('[data-im-history-panel] footer button[data-im-view="overview"]').click();
+      assert.equal(new URL(page.url()).searchParams.get('market'),'JP');
+      assert.equal(await page.locator('[data-im-history-panel]').isVisible(),false);
+    },{width:320,htmlOverride});
+  });
+}
