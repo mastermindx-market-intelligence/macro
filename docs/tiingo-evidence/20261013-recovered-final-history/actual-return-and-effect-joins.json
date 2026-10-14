@@ -1648,5 +1648,240 @@
       "root": "01a12ab6-92cb-7c42-a711-42673ebb6b50",
       "deployment_writes": 0
     }
+  },
+  "fourteen_later_diagnostic_and_QA": {
+    "tiingo-fourteen-diagnostic-capture-actual-parent-consumption.json": {
+      "sha256": "f30f3579d44dec5a97fc710d528a02f9766c51e9174d783c42bfe6091809c0b3",
+      "actual_record": {
+        "schema": "tiingo.actual_separate_finite_technical_repair_capture_terminal_parent_consumption/v1",
+        "root": "01a12ab6-92cb-7c42-a711-42673ebb6b50",
+        "recorded_at_utc": "2026-10-14T04:46:16.697806+00:00",
+        "run_id": "eod-fourteen-settled-transport-later-diagnostic01-20261014-01a12ab6",
+        "original_tool_session": 83517,
+        "original_exit_code": 0,
+        "actual_original_terminal_chunk": "c27e64",
+        "actual_original_terminal_return_consumed": true,
+        "actual_result_sha256": "6a58cb292c0e70108eb52b5020ce9608e7b6e913cb28b5593fe30d515bc25a60",
+        "actual_scope_sha256": "37eba6b7326041799ef306f377eaa9d027c9ed7b4474d0055039cbae51e8c30f",
+        "capture_method_sha256": "da26100f39e78fd35f842ab62032444b9c490f662b83a94b7f6525e622bf4c7f",
+        "actual_ready_parent_sha256": "c30f9b75da1f045a23d2f0293d98706a0a324afd0e271a0596fd8dc2843eb692",
+        "actual_fresh_quota_sha256": "e6de92a23b7887412b98ad8d4d2f45f1c25b126cfdacb2516cd7e2316d5c5eba",
+        "attempted": 14,
+        "successful": 14,
+        "failed": 0,
+        "never_in_new_repair_scope": 0,
+        "new_row_hints": 34423,
+        "new_raw_bytes": 7647396,
+        "original_fourteen_failed_attempts_and_old_unknown_causes_unchanged": true,
+        "original_six_phase_conservation_unchanged": true,
+        "original_preadmission90730_terminal_unknown_not_reconstructed": true,
+        "actual_admission_ledger_and_exact_window_partition_verified": true,
+        "maximum_additional_attempts_per_request": 1,
+        "normalization_and_QA_yet": false,
+        "automatic_successor_repair": false,
+        "programme_acceptance_claimed": false
+      }
+    },
+    "eod-fourteen-settled-transport-later-diagnostic-prefix01-preflight-parent-consumption02.json": {
+      "sha256": "f5cc1380320b5b7814083d76fc2ec45c06dff9809ab3a015104b15a3ad8b8138",
+      "actual_record": {
+        "schema": "tiingo.preflight_actual_root_acceptance/v1",
+        "root": "01a12ab6-92cb-7c42-a711-42673ebb6b50",
+        "recorded_at_utc": "2026-10-14T05:01:27.292126+00:00",
+        "original_tool_session": 44723,
+        "original_preflight_exit_code": 0,
+        "actual_terminal_chunk": "7ae296",
+        "actual_preflight_return_consumed": true,
+        "preflight_sha256": "8af4cb0372c70962a67e09c93636c4021c6f6229ad0595230532fb33a98511cc",
+        "method_sha256": "fb027fc3bae4fedd5b3b7ff70842a7f66ce4468fd99ca580ce2d063ef19104c3",
+        "observed_wait_sha256": "b94b371e9e1422aa5dc07ca560e97e354cd3b0d7678cfdcedcad9eb42b347bb5",
+        "validation_sha256": "05e32be9b1886919076eb103f33b62a16b3f85881123037e4771e3fcd62d5d06",
+        "valid": 14,
+        "quality": 0,
+        "rows": 34423,
+        "raw_bytes": 7647396,
+        "normalization_slots_verified_absent": 56,
+        "original_failed_preflight01_preserved": true,
+        "normalization_or_programme_acceptance": false
+      }
+    },
+    "tiingo-fourteen-diagnostic-prefix01-qualify01-actual-root-acceptance.json": {
+      "sha256": "c1b6cf26273129c94a7e219f0dd9951615a8b9ca45cacecf099e9ca9272aa6be",
+      "actual_record": {
+        "schema": "tiingo.finite_qualification_actual_root_acceptance/v1",
+        "root": "01a12ab6-92cb-7c42-a711-42673ebb6b50",
+        "recorded_at_utc": "2026-10-14T05:03:21.342567+00:00",
+        "original_tool_session": 29316,
+        "original_exit_code": 0,
+        "actual_original_terminal_chunk": "f97a7d",
+        "actual_original_terminal_return_consumed": true,
+        "method_sha256": "fb027fc3bae4fedd5b3b7ff70842a7f66ce4468fd99ca580ce2d063ef19104c3",
+        "observed_wait_sha256": "091973ed408273ea75713439b1663df7f6c10d14421e5ec09be7de9b89aead46",
+        "validation_sha256": "e6da1ced438b09b6647e150b82f4f3367427997d5a25d73ef87e4616ff2eab4e",
+        "qualification_file": "eod-fourteen-settled-transport-later-diagnostic-prefix01-qualified.json",
+        "qualification_sha256": "f9f108d427ad62b574e7da123e1be40366b0ecca673b22822f367393ad0f36c1",
+        "valid": 14,
+        "quality": 0,
+        "new_bars": 34423,
+        "all_new_full_reader_results_equal_normalized_raw": true,
+        "original_failed_attempts_and_QA01_failure_retained": true,
+        "programme_acceptance_claimed": false
+      }
+    },
+    "tiingo-fourteen-later-diagnostic-actual-final-parent-consumption.json": {
+      "sha256": "470dc7fabd1d8eed9ef054f3f9aa9695b4da4fab0328e9f025295829dfc30a4d",
+      "actual_record": {
+        "schema": "tiingo.fourteen_later_diagnostic_actual_pipeline_parent_consumption/v1",
+        "root": "01a12ab6-92cb-7c42-a711-42673ebb6b50",
+        "recorded_at_utc": "2026-10-14T05:04:40.471051+00:00",
+        "run_id": "eod-fourteen-settled-transport-later-diagnostic01-20261014-01a12ab6",
+        "method_sha256": "fb027fc3bae4fedd5b3b7ff70842a7f66ce4468fd99ca580ce2d063ef19104c3",
+        "input_sha256": {
+          "tiingo-fourteen-diagnostic-capture-actual-parent-consumption.json": "f30f3579d44dec5a97fc710d528a02f9766c51e9174d783c42bfe6091809c0b3",
+          "eod-fourteen-settled-transport-later-diagnostic-prefix01-preflight-parent-consumption02.json": "f5cc1380320b5b7814083d76fc2ec45c06dff9809ab3a015104b15a3ad8b8138",
+          "tiingo-fourteen-diagnostic-prefix01-qualify01-actual-root-acceptance.json": "c1b6cf26273129c94a7e219f0dd9951615a8b9ca45cacecf099e9ca9272aa6be",
+          "tiingo-fourteen-diagnostic-prefix01-coverage01-launch-packet.json": "00cc881b9e1269223ade7d41183ea490c36feeace07f1e3e27b980876f25142c",
+          "tiingo-fourteen-diagnostic-prefix01-coverage01-observed-wait.json": "b66744b64c15db2cb316929930256fe437d10d286e5c47d6033edb4d7e1af78d",
+          "tiingo-fourteen-diagnostic-prefix01-coverage01-validation.json": "a03fc8b8f2b7ae8c998b35d854329190f9b0b53e7d8ae940a4903425865246c5",
+          "eod-qualified-catalogue-coverage-fourteen-settled-transport-later-diagnostic-prefix01-delta.json": "e28d1918ed3d0ed2446c3bdb2849bcb60890243415257f7193e843139798fd2b",
+          "eod-fourteen-settled-transport-later-diagnostic-prefix01-qualified.json": "f9f108d427ad62b574e7da123e1be40366b0ecca673b22822f367393ad0f36c1",
+          "tiingo-fourteen-preflight01-actual-failure-and-day-directory-remedy01.json": "eacacc40f8d11145cb6c49139cfb8509b2c32b5d9bfc564d702f1137556e9249",
+          "tiingo-fourteen-original-validation-expiry-same-operation-reconciliation01.json": "ef53c54aeba4d2134bac51b27b841d3a1a8f2c76ef6e3153e8d113897842df74",
+          "eod-wave15-original-six-phase-final-disposition-partition-accounting.json": "78974f63c410f4e39b176a487a1e790f4c78ba6f725ec240b0ab75d7b5b62d69"
+        },
+        "actual_capture_session": 83517,
+        "actual_capture_exit_code": 0,
+        "actual_capture_return_consumed": true,
+        "actual_failed_preflight01_session": 2419,
+        "actual_failed_preflight01_exit_code": 1,
+        "actual_failed_preflight01_return_consumed_and_effect_reconciled": true,
+        "actual_preflight02_session": 44723,
+        "actual_preflight02_exit_code": 0,
+        "actual_preflight02_return_consumed": true,
+        "actual_qualifier_session": 29316,
+        "actual_qualifier_exit_code": 0,
+        "actual_qualifier_return_consumed": true,
+        "actual_coverage_tool_session": null,
+        "actual_coverage_exit_code": 0,
+        "actual_coverage_terminal_chunk": "d9e393",
+        "immediate_coverage_terminal_no_session_allocated": true,
+        "actual_coverage_terminal_return_consumed": true,
+        "qualified_successes": 14,
+        "new_bars": 34423,
+        "new_raw_bytes": 7647396,
+        "failed_new_provider_requests": 0,
+        "never_admitted_new_requests": 0,
+        "new_quality_quarantines": 0,
+        "current_histories": 47564,
+        "current_distinct_bars": 100626945,
+        "current_candidate_status": {
+          "NONEMPTY_DESIRED_REQUEST_WINDOWS_CAPTURED": 47564,
+          "CAPTURED_EMPTY_RESPONSE": 117,
+          "UNCAPTURED_CATALOGUE_WINDOW": 5,
+          "CAPTURED_SOURCE_QUALITY_QUARANTINED": 3
+        },
+        "remaining_explicit_provider_and_quality_holds": [
+          "DTV_1",
+          "DVVDF",
+          "DVXB",
+          "DVYA",
+          "EA",
+          "RBGPF",
+          "SCNG",
+          "WTFNF"
+        ],
+        "all_current_repair_QA_effects_verified_and_accepted": true,
+        "all_current_repair_capture_and_QA_returns_consumed": true,
+        "original4392_six_phase_accounting_unchanged": true,
+        "original14_failures_and11_unknown_causes_preserved": true,
+        "original_validation90730_terminal_unknown_and_not_reconstructed": true,
+        "original_QA22925_91287_terminals_unknown_and_not_reconstructed": true,
+        "provider_retries_after_this_success_authorized": false,
+        "PIT_or_canonical_identity_admitted": false,
+        "full_programme_acceptance": false,
+        "current_census_sha256": "e28d1918ed3d0ed2446c3bdb2849bcb60890243415257f7193e843139798fd2b"
+      }
+    },
+    "tiingo-fourteen-preflight01-actual-failure-and-day-directory-remedy01.json": {
+      "sha256": "eacacc40f8d11145cb6c49139cfb8509b2c32b5d9bfc564d702f1137556e9249",
+      "actual_record": {
+        "schema": "tiingo.actual_preflight_failure_and_owned_missing_directory_remedy/v1",
+        "root": "01a12ab6-92cb-7c42-a711-42673ebb6b50",
+        "recorded_at_utc": "2026-10-14T04:56:45.406998+00:00",
+        "run_id": "eod-fourteen-settled-transport-later-diagnostic01-20261014-01a12ab6",
+        "original_preflight_native_session": 2419,
+        "original_exit_code": 1,
+        "actual_terminal_chunk": "1e6929",
+        "actual_terminal_consumed": true,
+        "original_wait_sha256": "9ef45415b60d4ee5395fe4b6f13c98dcb16db9da3fbed8e7a3e7e261c22369f9",
+        "original_validation_sha256": "9630d7bd765e45634126f1ef2a5c94e38653d392d419033d40d1713ea3169b74",
+        "original_unvalidated_snapshot_sha256": "812408d0ffdee48037bc52f85a200b85919392ffdcf24076bcee0bc29d9a74aa",
+        "missing_archive_day": "2026-10-14",
+        "failed_stage_archive_projection_writes": 0,
+        "created_empty_directories": [
+          {
+            "path": "/Volumes/Mastermind/market-data/tiingo/manifests/eod-bars/2026-10-14",
+            "identity": [
+              16777252,
+              222673201,
+              16832
+            ]
+          },
+          {
+            "path": "/Volumes/Mastermind/market-data/tiingo/normalized/eod-bars/2026-10-14",
+            "identity": [
+              16777252,
+              222673202,
+              16832
+            ]
+          }
+        ],
+        "existing_ancestor_identities_preserved": true,
+        "raw_and_original_control_files_preserved": true,
+        "no_source_integrity_assertion_weakened": true,
+        "provider_requests": 0,
+        "credentials_read": false,
+        "automatic_retry": false,
+        "same_operation_continuation_review_owed": true
+      }
+    },
+    "tiingo-fourteen-original-validation-expiry-same-operation-reconciliation01.json": {
+      "sha256": "ef53c54aeba4d2134bac51b27b841d3a1a8f2c76ef6e3153e8d113897842df74",
+      "actual_record": {
+        "schema": "tiingo.same_operation_pre_admission_terminal_unavailable_reconciliation/v1",
+        "recorded_at_utc": "2026-10-14T04:33:30.714538+00:00",
+        "root": "01a12ab6-92cb-7c42-a711-42673ebb6b50",
+        "run_id": "eod-fourteen-settled-transport-later-diagnostic01-20261014-01a12ab6",
+        "original_native_tool_session": 90730,
+        "original_process_id": 33370,
+        "actual_READY_consumed_chunk": "9606fb",
+        "original_ready_sha256": "873d5c748ca315e20fbb819ef6e680b9ef0a97d2799f28ea8175dd6821cf9d47",
+        "original_ready_validated_at_utc": "2026-10-14T04:08:19.420490+00:00",
+        "original_quota_wait_seconds": 300,
+        "binding_prepared_at_utc": "2026-10-14T04:12:22Z",
+        "first_binding_write_attempt_at_utc": "2026-10-14T04:32:05.749Z",
+        "first_binding_tool_response": "Unknown process id 90730",
+        "binding_delivery": false,
+        "scoped_original_pid_read_exit_code": 1,
+        "original_source_scoped_lsof_exit_code": 1,
+        "scoped_stdout_stderr_empty": true,
+        "effect_slots_lstat_absent": [
+          "eod-fourteen-settled-transport-later-diagnostic01-20261014-01a12ab6-scope.json",
+          "eod-fourteen-settled-transport-later-diagnostic01-20261014-01a12ab6-result.json",
+          "eod-fourteen-settled-transport-later-diagnostic01-20261014-01a12ab6-execution.log"
+        ],
+        "loaded_method_sha256": "4f81f872366953974eb2b73f9661b405dc4583fba27a2d8701d37b54b0677489",
+        "source_effect_ordering": "Complete binding and its hashchecks, freshnamespace/source/account checks -> exclusive execution log -> exclusive capture scope -> read_key -> finiteadmission. No provider or key access is reachable before these exclusive scope/log publications. No binding accepted and both slots absent.",
+        "provider_attempts_reachable": 0,
+        "original_terminal_exit_code": null,
+        "original_terminal_return_consumed": false,
+        "missing_terminal_not_reconstructed": true,
+        "old_ready_and_bindings_preserved": true,
+        "permission_or_safety_refusal_observed": false,
+        "universal_process_absence_claimed": false,
+        "provider_retry_started": false,
+        "rearm_review_still_owed": true
+      }
+    }
   }
 }
