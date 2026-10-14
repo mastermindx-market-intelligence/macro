@@ -345,30 +345,37 @@ def test_routing_reads_only_the_admitted_rows() -> None:
 
 
 def test_placement_is_all_or_nothing_across_slices(monkeypatch) -> None:
-    """A placement that raises on the second slice leaves the first untouched.
+    """A WATCHING refusal on the LAST grouped slice leaves every slice untouched.
 
-    apply_page_signal pre-validates every slice's falsifier list through a
-    throwaway slice before writing any real slice, so a
-    :func:`_attach_falsifiers` that fails part-way through the slice loop
-    cannot leave an earlier slice rewritten. The monkeypatched helper fails
-    on its second call; both grouped slices come from the ordinary two-row
-    fixture (card_networks, exchanges_trading_venues).
+    The refusal comes from the real path, not a patched-out helper: the row
+    routed to the last slice in grouping order projects a falsifier whose
+    state is not ``NOT_YET_EVALUABLE``, so the real :func:`_attach_falsifiers`
+    refuses it with ``watching_not_emitted``. The dry pass must cover every
+    grouped slice, not only the first, or an earlier slice is rewritten
+    before the refusal lands. ``project_falsifier`` is patched on
+    ``finance_page_signal``, the name the module calls from ``_admit_pairs``.
     """
+    document = _document()
+    order: list[str] = []
+    for row in document["cases"]:
+        if row["slice_id"] not in order:
+            order.append(row["slice_id"])
+    last_slice = order[-1]
+    real_project = finance_case_signal.project_falsifier
+
+    def watching_on_last_row(row):
+        falsifier = real_project(row)
+        if row.get("slice_id") == last_slice:
+            falsifier = {**falsifier, "state": "WATCHING"}
+        return falsifier
+
+    monkeypatch.setattr(finance_page_signal, "project_falsifier", watching_on_last_row)
     page = _page()
     before = _ids(page)
-    real = finance_page_signal._attach_falsifiers
-    calls: list[object] = []
-
-    def flaky(slice_doc, falsifiers):
-        calls.append(slice_doc.get("slice_id"))
-        if len(calls) == 2:
-            raise finance_case_signal.FinanceCaseSignalRefusal("boom")
-        return real(slice_doc, falsifiers)
-
-    monkeypatch.setattr(finance_page_signal, "_attach_falsifiers", flaky)
-    with pytest.raises(finance_case_signal.FinanceCaseSignalRefusal) as caught:
-        apply_page_signal(_document(), page)
-    assert str(caught.value) == "boom"
+    with pytest.raises(
+        finance_case_signal.FinanceCaseSignalRefusal, match="watching_not_emitted"
+    ):
+        apply_page_signal(document, page)
     assert _ids(page) == before
 
 
