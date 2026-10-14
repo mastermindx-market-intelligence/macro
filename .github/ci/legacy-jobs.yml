@@ -8965,6 +8965,8 @@ jobs:
           tests/test_holdout_vault.py
           tests/test_promotion_gate.py
           -q
+      - name: fixed runtime qualification source tests (no Docker or host effects)
+        run: python -m pytest -q scripts/research_codegen_qualification/runtime/tests
 
   cycle-pattern-authority:
     if: ${{ false }}

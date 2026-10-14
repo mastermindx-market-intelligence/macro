@@ -1,0 +1,27 @@
+{
+  "schema": "research_codegen.fixed_canary_source.v1",
+  "original_root": "01a1333c-a475-7052-95a8-72a88eb8c17b",
+  "state": "SOURCE_QUALIFIED_PHYSICAL_RESULT_PENDING",
+  "source_sha256": {
+    "cli29_anonymous_config.py": "447aa266eb3b853528ca5d2538fcdd516d65989d1f32d7e98703a40abcab2c13",
+    "fixed_canary.py": "3354ce906cbe4f7492e03bb21ae3f61da463d4c7db097f1d0d45956742ae1ce6",
+    "fixed_image_phase.py": "b674d9075d77f912eff0ef18a6718e5938145c3dbfaee5e2701a94cd1fcecbf8",
+    "fixed_smoke_probe.py": "92fad6f371419f4cbb4bafba83257846429eae2df77feead83678905a9988cf7",
+    "image_preparation_gate.py": "5f03635d02fbf75e30e1b8c5c0912dc26decb208a3dea94f9eb22c44ed48b699",
+    "phase_budget.py": "3b6436f1a7bd102a6cf4f46178b4a2b2fb72e985177cdd8cc61dfb3be89e9010",
+    "pinned_archive_phase.py": "c684c986e54ca8de2c548036a04a5e100b7cc099105ee2fce0c9d35a9b9b755e",
+    "qualification_manifest.py": "634108fd1e4b793311bdb480c16203e26232d136b864c36db701ccd32230a7a4",
+    "qualification_runsc_smoke.py": "683d20116e79890544fc989eb05ff88409a694b1627c411d51c6c4d69b3de545",
+    "qualification_smoke.py": "9282af4c442432e812db43948fe4e56116d9b92e3982e1fc76504240cdca545f",
+    "runsc_install.py": "19a12afc55dbb6b7610aeba3fa0194c697b8a07a3502e6a70302bc0f2270cba0",
+    "canary_bootstrap.py": "d48e8342eff81f1cf1d5bed9e59220baaaf455c6e02592acc11888816cd02aba",
+    "canary_carrier.py": "72b4f9af823df71aaa25987e73ecc123fa2a67d1c0e3c08483fd0126a2c370b5",
+    "verify_canary_return.py": "3e75d61f3368b52dac2a246406ef974d038b5ceb6d51a6d797cfb7355e76ee46"
+  },
+  "transport_source": "engine/research_codegen/transport.py",
+  "transport_sha256": "b6d36717ad3630d127b16fe9e117d9401bea1136880e28d19f0d18061933c633",
+  "physical_capsule_sha256": "e54c53fb0665ea46c2ebcc0e6d624e550b476c18a6727f6f88c927fccc12b809",
+  "original_unknown_preserved": "rf-codegen-contracts-impl-01a1333c-v1",
+  "candidate_admission": false,
+  "containment_qualified": false
+}

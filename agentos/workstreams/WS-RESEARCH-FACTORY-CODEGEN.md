@@ -17,6 +17,7 @@ ambiguity: scoped
 owns_paths:
 - engine/research_codegen/
 - research/research_factory_codegen/
+- scripts/research_codegen_qualification/runtime/
 waves:
 - id: SOURCE
   title: Contracts, Trial/Vault, prefix, diagnostic review and admin integration
@@ -30,10 +31,12 @@ waves:
 - id: ACCEPTANCE
   title: Physical, scientific and prospective acceptance with original limits
   status: todo
-next_action: Consume and adjudicate the exact focused installer audit; finish the
-  reviewed trusted canary composition. Existing PR9099 conflict repair is pushed and
-  owned by the normal release controller. After capture landing, integrate main into
-  the same combined source carrier and create its normal PR.
+next_action: Consume the exact launched rf-fixed-smoke-runsc-01a1333c-v1 result through
+  its existing Fabric carrier and adjudicate precheck, installation and fixed smoke
+  separately. Finish source delivery of the pinned runtime package. The normal
+  controller owns stale-proof refresh for PR9099 and PR9190 at shared CI capacity;
+  after dependencies land, integrate main into the same combined source carrier
+  and create its one normal PR.
 artifacts:
 - research/research_factory_codegen/2026-10-14/PROGRAMME_CONTINUATION.md
 - research/research_factory_codegen/2026-10-14/CONNECTED_DIAGNOSTIC_SOURCE_ACCEPTANCE.md
@@ -49,8 +52,9 @@ landmines:
 - Native runtime/programme coordinators became notLoaded/interrupted; do not claim
   they remain running. Root retains integration ownership and uses existing admitted
   Fabric for new bounded labor.
-- The broad installer review returned incomplete unverifiable prose and was rejected
-  despite rc0. The focused audit and root v2 repair are not physical acceptance.
+- Review process success is not acceptance. Root reproduced focused installer
+  findings and repaired the new join failure-retention path; the installed canary
+  source package and tests still do not prove physical execution or containment.
 - G00 administrator identity is Chris-supplied collaborator evidence; earlier settings
   denial remains closed. User directed continuation with a documented gap and actual
   execution/publisher separation.
@@ -58,4 +62,4 @@ landmines:
 
 This record carries work identity and continuity only. Existing source, runtime and release owners retain their actual authority. It neither dispatches work nor grants execution.
 
-Provenance: PR #9096 merged as `472317fd5b996527e8b88c44766c8ac44293948c`; source checkpoint `506522a8e301768c7f488246323db5ec0aee3ddd`; PR #9099 repaired at `485389766602cb75390b99aad9ad4d7d9651d5d7`. Exact local receipts and limits are indexed in the programme continuation.
+Provenance: PR #9096 merged as `472317fd5b996527e8b88c44766c8ac44293948c`; source checkpoint `506522a8e301768c7f488246323db5ec0aee3ddd`; PR #9099 current repaired head `944790254d1caa6e41f8ea19f6b5e738706a769f` passed its CI, then the controller deferred newly required proof refresh at shared capacity. Runtime capsule `e54c53fb0665ea46c2ebcc0e6d624e550b476c18a6727f6f88c927fccc12b809` is bound to its original physical commission. Exact local receipts and limits are indexed in the programme continuation.
