@@ -16,17 +16,19 @@ verified:
     result: "402 distinct passes, no remaining skips; the returned worker's wrong generation keyword fails the real-signature discriminator before root correction."
   - claim: "The new suite has reachable CI coverage."
     command: "scripts/check_ci_trigger_closure.py"
-    result: "2744 suites reachable; zero trigger gaps. Real CI curation and hosted exact-head checks remain separate gates."
+    result: "2744 suites reachable; zero trigger gaps. Both real CI curation tests pass (574.57 seconds); hosted exact-head checks remain separate."
   - claim: "The numeric full-text threshold is observed on the whole cohort."
     command: "Read-only full receipt/derivative census and bounded verification on the production store."
     result: "2761/2888 full (95.6025 percent), 105 digest_unknown, 10 thin, 12 none; all members verified; unchanged catalog fence. No writer-exclusion or producer-generation qualification is asserted."
-still_unproven:
+unverified:
   - "All-writer settlement, supported original-epoch recovery, recurring source/run identity and producer-published qualified generation."
   - "Final selected corpus/runtime installation, Auth0 resource/grants, official tunnel availability, citation edge, C4 connector and actual ChatGPT/Deep Research journeys."
   - "Original E04/E05/citation/U01 returns, semantic RIO acceptance and held-out evaluation remain on their existing carriers."
-next:
+unresolved:
+  - "Production adoption and client acceptance remain gated by the exact obligations listed under unverified; no new authority is inferred from this checkpoint."
+next_actions:
   - "Complete current CLI source checks and ordinary gated publication; no generation activation follows from source merge."
-  - "Consume rv-generation-recovery-design-01a13301-r1 through its existing M2 Fabric owner; root adjudicates its artifact before implementation."
+  - "The design operator ended on provider quota 4291310 with no design artifact; its retained failure is consumed, not accepted or retried. Root continues permitted architecture directly."
   - "Preserve original rv-selected-factory-review-01a13301-r1. Fabric owner confirmed no supported retroactive capture binding; no replacement or acceptance is inferred."
   - "Resume Auth0 only when the already-reported Chrome extension-popup control is cleared."
 do_not_redo:
@@ -37,7 +39,7 @@ danger_areas:
   - "Observed 95.60 percent does not clear F11's qualified-generation release gate."
   - "Never remove the generation marker or restore an old COMPLETE to recover BUILDING. Never replace an uncertain Fabric operation."
   - "Private per-report observation metadata stays in the existing completion evidence root, outside GitHub."
-prs: [8438, 8871, 9081, 9177, 9255]
+prs: [8438, 8871, 9081, 9177, 9255, 9302]
 ---
 
 The complete read-only observation retained all 2888 member metadata records at
