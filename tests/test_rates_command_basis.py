@@ -966,3 +966,108 @@ def test_module_is_pure_ast():
                 assert node.func.id not in ("open", "eval", "exec", "__import__"), node.func.id
         elif isinstance(node, ast.Attribute):
             assert node.attr not in ("now", "utcnow", "today", "system", "popen"), node.attr
+
+
+def _realised_assumptions(**over):
+    base = dict(
+        month_start="2026-09-01",
+        month_end="2026-09-30",
+        effective_dates=("2026-09-16",),
+        rate_step_bp=50.0,
+    )
+    base.update(over)
+    return PathAssumptions(**base)
+
+
+def test_realised_pre_rate_counts_days_up_to_the_effective_date():
+    # R1/R2/R3: a realised average over any pre-change prefix IS the pre rate
+    # on the whole pre segment [month_start, eff). ZQ 4.375 is the
+    # truth-weighted average of 15d @ 4.50 + 15d @ 4.25, so the identified
+    # end rate must be 4.25 whatever prefix the realised window covers.
+    for through, tag in (
+        (None, None),
+        ("2026-09-15", "2026-09-15"),
+        ("2026-09-10", "2026-09-10"),
+    ):
+        result = solve_reference_average(
+            (_zq_obs(4.375),),
+            _realised_assumptions(realised_through=through, realised_average=4.50),
+        )
+        assert result.status is PathStatus.IDENTIFIED_CONDITIONAL
+        assert abs(result.identified["end_rate"] - 4.25) < 1e-9
+        assert "pre_change_rate_source=realised_average" in result.assumptions_used
+        if tag is None:
+            assert not any(
+                a.startswith("realised_through=") for a in result.assumptions_used
+            )
+        else:
+            assert "realised_through=%s" % tag in result.assumptions_used
+
+
+def test_realised_pre_rate_with_month_end_effective_date():
+    # R4: an effective date on the month end still leaves a one-day post
+    # segment; the old d_post <= 0 fallback returned the average itself.
+    obs_value = (4.50 * 29 + 3.50) / 30
+    result = solve_reference_average(
+        (_zq_obs(obs_value),),
+        _realised_assumptions(effective_dates=("2026-09-30",), realised_average=4.50),
+    )
+    assert result.status is PathStatus.IDENTIFIED_CONDITIONAL
+    assert abs(result.identified["end_rate"] - 3.50) < 1e-9
+    assert result.identified["segments"][-1][0] == "2026-09-30"
+    assert "no_intra_month_change" not in result.assumptions_used
+
+
+def test_realised_window_reaching_the_effective_date_is_not_a_pre_rate():
+    # A realised window that reaches or passes the effective date carries no
+    # pre-change information: the input falls back to the unknown-pre-rate
+    # grid and is tagged unusable.
+    fields = [
+        f for f in PathIdentification.__dataclass_fields__ if f != "assumptions_used"
+    ]
+    without = solve_reference_average((_zq_obs(4.375),), _realised_assumptions())
+    for through in ("2026-09-16", "2026-09-20"):
+        with_realised = solve_reference_average(
+            (_zq_obs(4.375),),
+            _realised_assumptions(realised_through=through, realised_average=4.50),
+        )
+        for field in fields:
+            assert getattr(with_realised, field) == getattr(without, field), field
+        assert "realised_average_unusable_as_pre_rate" in with_realised.assumptions_used
+
+
+def test_partial_realised_average_is_not_a_monthly_average():
+    # F7a/F7b: a realised average over part of the month is not the month's
+    # average -- with no present observation the result is missing_inputs,
+    # never an identified path (and never an identified "no change").
+    cases = (
+        _realised_assumptions(realised_through="2026-09-15", realised_average=4.50),
+        _realised_assumptions(
+            effective_dates=("2026-10-28",),
+            realised_through="2026-09-15",
+            realised_average=4.50,
+        ),
+        _realised_assumptions(realised_through=None, realised_average=4.50),
+    )
+    for assumptions in cases:
+        result = solve_reference_average((), assumptions)
+        assert result.status is PathStatus.MISSING_INPUTS
+        assert result.missing == ("monthly_average",)
+        assert result.identified is None
+
+
+def test_full_month_realised_average_stands_in_for_the_monthly_average():
+    # Only full-month coverage lets the realised average stand in for the
+    # monthly average, and the stand-in is recorded in the assumptions.
+    result = solve_reference_average(
+        (),
+        _realised_assumptions(
+            effective_dates=("2026-10-28",),
+            realised_through="2026-09-30",
+            realised_average=4.50,
+        ),
+    )
+    assert result.status is PathStatus.IDENTIFIED_CONDITIONAL
+    assert result.identified["end_rate"] == pytest.approx(4.50)
+    assert "monthly_average_source=realised_average" in result.assumptions_used
+    assert "no_intra_month_change" in result.assumptions_used
