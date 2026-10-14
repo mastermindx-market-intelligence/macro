@@ -2,6 +2,28 @@
   "schema": "marketing.radar_plan_history/v1",
   "plans": [
     {
+      "as_of": "2026-10-13",
+      "tickers": [
+        "ATR",
+        "CCOI",
+        "DEI",
+        "ECG",
+        "GAP",
+        "INGR",
+        "JLL",
+        "KRC",
+        "LLY",
+        "LOPE",
+        "NVDA",
+        "OLN",
+        "PPL",
+        "RYAN",
+        "SBRA",
+        "SFM",
+        "VNO"
+      ]
+    },
+    {
       "as_of": "2026-10-12",
       "tickers": [
         "AMG",
@@ -172,38 +194,6 @@
         "VMI",
         "WH",
         "WWD"
-      ]
-    },
-    {
-      "as_of": "2026-10-06",
-      "tickers": [
-        "ACCV",
-        "ACMR",
-        "AMG",
-        "ATR",
-        "AZZ",
-        "BKE",
-        "BURL",
-        "CENT",
-        "COHU",
-        "CRI",
-        "CTVA",
-        "ECG",
-        "GAP",
-        "HLNE",
-        "ITW",
-        "JPM",
-        "LFUS",
-        "MD",
-        "MTUS",
-        "N",
-        "PAGS",
-        "PLUS",
-        "SYF",
-        "UTHR",
-        "VCIG",
-        "WING",
-        "WS"
       ]
     }
   ]

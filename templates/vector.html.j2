@@ -11,6 +11,8 @@
 {{- 'tone-up' if tone == 'bull' else ('tone-down' if tone == 'bear' else 'tone-flat') -}}
 {%- endmacro %}
 <!DOCTYPE html>
+{# Shared brain label lives after DOCTYPE: fragment tests compile the macro prelude without a loader. #}
+{% from "_crypto_brain_labels.html.j2" import BRAIN_ASK_EN, BRAIN_ASK_ZH, BRAIN_DOWN_EN, BRAIN_DOWN_ZH %}
 <html lang="en">
 <head>
 <meta charset="utf-8">
@@ -43,7 +45,7 @@ body.page-vector::before{opacity:.46}
 .site-nav .nav-links>.nav-dd:nth-last-child(3) .nav-sub::after{left:auto;right:100%}
 .vector-wrap{width:min(1320px,calc(100% - 48px));margin:0 auto;padding:4px 0 76px}
 .vector-sectionbar{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:stretch;border-bottom:1px solid var(--line)}
-.vector-tabs{display:flex;align-items:center;gap:26px;min-width:0;min-height:48px;overflow-x:auto;scrollbar-width:none}
+.vector-tabs{display:flex;align-items:center;gap:26px;min-width:0;min-height:48px;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain;scroll-padding-inline:12px}
 .vector-tabs::-webkit-scrollbar{display:none}
 .vector-tabs a{position:relative;display:flex;align-items:center;min-height:48px;color:var(--muted);
   font-size:12.5px;font-weight:560;text-decoration:none;white-space:nowrap}
@@ -190,7 +192,7 @@ a{color:var(--ink-link, var(--link))}
 .complex-name{margin-top:5px;font-weight:680;font-size:12px}
 .complex-value{font:740 13px/1 var(--num);font-variant-numeric:tabular-nums;white-space:nowrap}
 .complex-chart{margin:7px 0 3px}
-.complex-context{min-height:28px;color:var(--muted);font-size:9.5px;line-height:1.4}
+.complex-context{min-height:28px;color:var(--muted);font-size:9.5px;line-height:1.4}.complex-null{grid-column:1/-1;margin:0;padding:16px;color:var(--muted);font-size:12.5px;line-height:1.5}
 
 /* S6 — study shelf */
 .study-list{border-top:1px solid var(--line)}
@@ -293,7 +295,7 @@ a{color:var(--ink-link, var(--link))}
 }
 @media(max-width:780px){
   .vector-wrap{width:min(100% - 24px,1320px)}.shelf-inner{padding:18px 0}
-  .vector-tabs{gap:20px}
+  .vector-tabs{gap:20px;padding-inline-end:28px;-webkit-mask-image:linear-gradient(90deg,black calc(100% - 28px),transparent);mask-image:linear-gradient(90deg,black calc(100% - 28px),transparent)}
   .hero{padding:22px 0}.hero-read{grid-template-columns:1fr;gap:20px}
   .hero-position{border-left:none;border-top:1px solid var(--line);padding:18px 0 0}
   .overview-instrument{grid-template-columns:1fr}.overview-side{display:grid;grid-template-columns:repeat(2,1fr);align-items:start}
@@ -334,7 +336,13 @@ a{color:var(--ink-link, var(--link))}
 <main class="vector-wrap">
   {# Overview is a read-only projection of the same canonical decision. Keep the
      detailed decision fragment independently renderable below, without hero data. #}
-  {% set overview_decision = decision if decision and decision.status == 'ok' and decision.integrity.ok and decision.final else none %}
+  {% set overview_decision = decision if decision and decision.status == 'ok' and decision.integrity.ok and decision.final and (decision_page_as_of is not defined or decision.as_of == decision_page_as_of) else none %}
+  {% set overview_as_of = decision.as_of if decision and decision.as_of else '' %}
+  {% set overview_date_mismatch = (decision_page_as_of is defined) and decision and (overview_as_of != decision_page_as_of) %}
+  {% set overview_decision_state = 'available' if overview_decision else ('date-mismatch' if overview_date_mismatch else 'unavailable') %}
+  {% set overview_decision_reason = 'CANONICAL_DECISION_AS_OF_MISMATCH' if overview_date_mismatch else ((decision.integrity.errors[0] if decision and decision.integrity and decision.integrity.errors else ('' if overview_decision else 'CANONICAL_DECISION_UNAVAILABLE'))) %}
+  {% set overview_decision_errors = decision.integrity.errors|join(' ') if decision and decision.integrity and decision.integrity.errors else '' %}
+  {% set overview_decision_freshness = 'fresh' if overview_decision else overview_decision_state %}
 
   <div class="vector-sectionbar">
     <nav class="vector-tabs" aria-label="Bitcoin research sections / 比特币研究分区">
@@ -347,8 +355,8 @@ a{color:var(--ink-link, var(--link))}
     </nav>
     <button class="vector-brain-entry" type="button" data-vector-brain aria-haspopup="dialog" aria-controls="mmb-panel">
       <span aria-hidden="true">✦</span>
-      <span class="vector-brain-ready">{{ t('Ask Mastermind','询问操盘大脑') }}</span>
-      <span class="vector-brain-error">{{ t('Mastermind unavailable','操盘大脑暂不可用') }}</span>
+      <span class="vector-brain-ready">{{ t(BRAIN_ASK_EN, BRAIN_ASK_ZH) }}</span>
+      <span class="vector-brain-error" role="status">{{ t(BRAIN_DOWN_EN, BRAIN_DOWN_ZH) }}</span>
     </button>
   </div>
 
@@ -357,10 +365,10 @@ a{color:var(--ink-link, var(--link))}
       <div class="hero-line">
         <div class="wordmark"><span class="mark">₿</span><span>Bitcoin Vector</span></div>
         <div class="live-quote">
-          <span class="live-price" data-sym="BTC-USD">${{ "{:,.0f}".format(price) }}</span>
-          <span class="live-change {{ 'pos' if chg24 >= 0 else 'neg' }}" data-sym-chg="BTC-USD">{{ "%+.1f"|format(chg24) }}%</span>
+          <span class="live-price" data-sym="BTC-USD">{% if price is not none %}${{ "{:,.0f}".format(price) }}{% else %}—{% endif %}</span>
+          <span class="live-change{% if chg24 is not none %} {{ 'pos' if chg24 >= 0 else 'neg' }}{% endif %}" data-sym-chg="BTC-USD">{% if chg24 is not none %}{{ "%+.1f"|format(chg24) }}%{% else %}—{% endif %}</span>
         </div>
-        <span class="asof-chip"><i></i>{{ t('Daily close','日线收盘') }} · {{ as_of }}</span>
+        <span class="asof-chip"><i></i>{{ t('Daily close','日线收盘') }} · {{ t(as_of, as_of_zh) }}</span>
       </div>
       {% set hero_tone = master.tone if master and master.ok else 'neutral' %}
       <div class="hero-read">
@@ -389,7 +397,7 @@ a{color:var(--ink-link, var(--link))}
             {% if overview_decision %}{{ t(overview_decision.final.action_en, overview_decision.final.action_zh) }}
             {% else %}{{ t('Decision unavailable','决策暂不可用') }}{% endif %}
           </div>
-          <div class="hero-position-value">
+          <div class="hero-position-value" data-decision-state="{{ overview_decision_state }}" data-decision-freshness="{{ overview_decision_freshness }}" data-decision-reason="{{ overview_decision_reason }}" data-decision-errors="{{ overview_decision_errors }}" data-decision-as-of="{{ overview_as_of }}">
             {% if overview_decision %}{{ overview_decision.final.exposure_pct }}% <span>BTC</span>{% else %}—{% endif %}
           </div>
           <div class="hero-position-rail">{% if overview_decision %}<i style="width:{{ overview_decision.final.exposure_pct }}%"></i>{% endif %}</div>
@@ -432,7 +440,7 @@ a{color:var(--ink-link, var(--link))}
           </div>
           <div class="overview-evidence">
             <div class="k">{{ t('Model allocation','模型仓位') }}</div>
-            <div class="v">{% if overview_decision %}{{ overview_decision.final.exposure_pct }}% <span style="font:500 11px/1 var(--font-ui);color:var(--muted)">BTC</span>{% else %}—{% endif %}</div>
+            <div class="v" data-decision-state="{{ overview_decision_state }}" data-decision-freshness="{{ overview_decision_freshness }}" data-decision-reason="{{ overview_decision_reason }}" data-decision-errors="{{ overview_decision_errors }}" data-decision-as-of="{{ overview_as_of }}">{% if overview_decision %}{{ overview_decision.final.exposure_pct }}% <span style="font:500 11px/1 var(--font-ui);color:var(--muted)">BTC</span>{% else %}—{% endif %}</div>
             <div class="sub">{% if overview_decision %}{{ t(overview_decision.final.action_en, overview_decision.final.action_zh) }}{% else %}{{ t('Decision unavailable until integrity checks pass.','完整性检查通过前，决策暂不可用。') }}{% endif %}</div>
           </div>
           <details class="overview-source">
@@ -467,12 +475,18 @@ a{color:var(--ink-link, var(--link))}
 
   {# This decision fragment needs only the canonical decision and risk context;
      it must not depend on the Overview's market, chart or quote variables. #}
-  {% set decision_ok = decision and decision.status == 'ok' and decision.integrity.ok and decision.final %}
+  {% set decision_ok = decision and decision.status == 'ok' and decision.integrity.ok and decision.final and (decision_page_as_of is not defined or decision.as_of == decision_page_as_of) %}
+  {% set decision_as_of = decision.as_of if decision and decision.as_of else '' %}
+  {% set decision_date_mismatch = (decision_page_as_of is defined) and decision and (decision_as_of != decision_page_as_of) %}
+  {% set decision_state = 'available' if decision_ok else ('date-mismatch' if decision_date_mismatch else 'unavailable') %}
+  {% set decision_reason = 'CANONICAL_DECISION_AS_OF_MISMATCH' if decision_date_mismatch else ((decision.integrity.errors[0] if decision and decision.integrity and decision.integrity.errors else ('' if decision_ok else 'CANONICAL_DECISION_UNAVAILABLE'))) %}
+  {% set decision_errors = decision.integrity.errors|join(' ') if decision and decision.integrity and decision.integrity.errors else '' %}
+  {% set decision_freshness = 'fresh' if decision_ok else decision_state %}
   {% set action_code = decision.final.action_code if decision_ok else none %}
   {% set decision_tone = 'bull' if action_code == 'INCREASE_EXPOSURE' else ('bear' if action_code in ['REDUCE_EXPOSURE','STAY_OUT'] else 'neutral') %}
   {% set target_pct = decision.final.exposure_pct if decision_ok else none %}
   {% set L = decision.advisory.levels if decision and decision.advisory and decision.advisory.levels else {} %}
-  <section class="shelf {{ tone_class(decision_tone) }}" data-shelf="S2" data-verdict data-decision-schema="{{ decision.schema }}" data-decision-status="{{ decision.status }}"{% if decision_ok %} data-decision-exposure="{{ target_pct }}"{% endif %}>
+  <section class="shelf {{ tone_class(decision_tone) }}" data-shelf="S2" data-verdict data-decision-schema="{{ decision.schema }}" data-decision-status="{{ decision.status }}" data-decision-state="{{ decision_state }}" data-decision-freshness="{{ decision_freshness }}" data-decision-reason="{{ decision_reason }}" data-decision-errors="{{ decision_errors }}" data-decision-as-of="{{ decision_as_of }}"{% if decision_ok %} data-decision-exposure="{{ target_pct }}"{% endif %}>
     <div class="shelf-inner">
       <div class="shelf-head"><span class="shelf-kicker">S2</span><h2 class="shelf-title">{{ t('Decision & levels','决策与关键价位') }}</h2><span class="shelf-sub">{{ t('one final target · explicit review levels','一个最终目标 · 明确复核价位') }}</span></div>
     </div>
@@ -491,7 +505,7 @@ a{color:var(--ink-link, var(--link))}
       <div class="decision-detail">
         <div class="exposure-top">
           <div><div class="decision-eyebrow">{{ t('Final BTC exposure','最终 BTC 仓位') }}</div><div class="exposure-band">{% if decision_ok %}{{ target_pct }}%{% else %}—{% endif %}</div></div>
-          <div class="risk-context">{{ t('Risk level','风险程度') }}<b>{{ risk_index }}/100</b>{{ t(risk_label, '低风险' if risk_on else '高风险') }}</div>
+          <div class="risk-context">{{ t('Risk level','风险程度') }}<b>{% if risk_index is not none %}{{ risk_index }}/100{% else %}—{% endif %}</b>{% if risk_index is not none %}{{ t(risk_label, '低风险' if risk_on else '高风险') }}{% else %}{{ t('Unavailable','暂无') }}{% endif %}</div>
         </div>
         <div class="exposure-rail">
           {% if decision_ok %}<i class="model" style="left:{{ target_pct }}%" data-tip-en="Final model exposure" data-tip-zh="最终模型仓位"></i>{% endif %}
@@ -556,8 +570,10 @@ a{color:var(--ink-link, var(--link))}
           <div class="complex-value">{{ c.value }}</div>
         </div>
         <div class="complex-chart">{{ c.chart|safe }}</div>
-        <div class="complex-context {{ 'pos' if c.tone=='up' else ('neg' if c.tone=='down' else '') }}">{{ t(c.context_en,c.context_zh) }}</div>
+        <div class="complex-context">{% if c.context_en %}{{ t(c.context_en,c.context_zh) }}{% else %}{{ t('No context on file today','今日暂无背景') }}{% endif %}</div>
       </div>
+      {% else %}
+      <p class="complex-null">{{ t('No context on file today','今日暂无背景') }}</p>
       {% endfor %}
     </div>
   </section>
@@ -568,7 +584,7 @@ a{color:var(--ink-link, var(--link))}
     </div>
     <div class="study-list">
       <details class="study-fold" id="cycle-lab">
-        <summary><span class="fold-title">{{ t('Cycle Lab','周期实验室') }}</span><span class="fold-hint">{{ t('Rewind every point-in-time read','回看每个历史时点的完整判断') }}</span><span class="fold-stat">{{ cycle_stage }} · {{ cycle_pos }}%</span></summary>
+        <summary><span class="fold-title">{{ t('Cycle Lab','周期实验室') }}</span><span class="fold-hint">{{ t('Rewind every point-in-time read','回看每个历史时点的完整判断') }}</span><span class="fold-stat">{{ td(cycle_stage) }} · {{ cycle_pos }}%</span></summary>
         <div class="study-body">
           <div id="vtm" class="vtm-wrap">
             <canvas id="vtm-canvas" class="vtm-canvas"></canvas>
@@ -676,7 +692,7 @@ a{color:var(--ink-link, var(--link))}
       </details>
 
       <details class="study-fold" id="strategy-track-record">
-        <summary><span class="fold-title">{{ t('Strategy & Track Record','策略与历史表现') }}</span><span class="fold-hint">{{ t('Two rule sets, dual timing metrics and honest leverage outcomes','两套规则、双口径计时指标与真实杠杆结果') }}</span><span class="fold-stat">{{ strategy.as_of if strategy.as_of else as_of }}</span></summary>
+        <summary><span class="fold-title">{{ t('Strategy & Track Record','策略与历史表现') }}</span><span class="fold-hint">{{ t('Two rule sets, dual timing metrics and honest leverage outcomes','两套规则、双口径计时指标与真实杠杆结果') }}</span><span class="fold-stat">{% if strategy.as_of %}{{ t(strategy.as_of, strategy.as_of_zh) }}{% else %}{{ t(as_of, as_of_zh) }}{% endif %}</span></summary>
         <div class="study-body">
           <div class="strategy-tabs" role="tablist">
             {% for s in strategy.strategies %}
@@ -740,7 +756,7 @@ a{color:var(--ink-link, var(--link))}
       </details>
 
       <details class="study-fold" id="signal-health">
-        <summary><span class="fold-title">{{ t('Signal Health','信号健康度') }}</span><span class="fold-hint">{{ t('Historical measurement and coverage receipts','历史测量与覆盖明细') }}</span><span class="fold-stat">{{ calib.meta.span if calib and calib.meta else as_of }}</span></summary>
+        <summary><span class="fold-title">{{ t('Signal Health','信号健康度') }}</span><span class="fold-hint">{{ t('Historical measurement and coverage receipts','历史测量与覆盖明细') }}</span><span class="fold-stat">{% if calib and calib.meta %}{{ calib.meta.span }}{% else %}{{ t(as_of, as_of_zh) }}{% endif %}</span></summary>
         <div class="study-body">
           <table class="data-table">
             <thead><tr><th>{{ t('Signal','信号') }}</th><th>{{ t('Measurement band','测量级别') }}</th><th>{{ t('What is checked','检查内容') }}</th></tr></thead>
@@ -757,7 +773,7 @@ a{color:var(--ink-link, var(--link))}
     </div>
   </section>
 
-  <div class="page-foot">Bitcoin Vector · {{ t('built','生成于') }} {{ built }} · {{ t('data through','数据截至') }} {{ as_of }}<br>© 2026 MastermindX Inc</div>
+  <div class="page-foot">Bitcoin Vector · {{ t('built','生成于') }} {{ built }} · {{ t('data through','数据截至') }} {{ t(as_of, as_of_zh) }}<br>© 2026 MastermindX Inc</div>
 </main>
 
 <script defer src="illus.js"></script>
@@ -774,24 +790,62 @@ a{color:var(--ink-link, var(--link))}
     panels.forEach(function(x){x.hidden=x.getAttribute('data-strategy-panel')!==id});
   })});
   var brain=document.querySelector('[data-vector-brain]');
-  if(brain){brain.addEventListener('click',function(){
-    brain.removeAttribute('data-state');
-    brain.setAttribute('aria-busy','true');
-    var bootClicked=false,tries=0,timer=null;
-    function ready(){brain.removeAttribute('aria-busy')}
-    function openBrain(){
-      if(window.MMBrain&&typeof window.MMBrain.open==='function'){window.MMBrain.open();ready();return true}
-      var boot=document.getElementById('mmb-boot');
-      if(boot&&!bootClicked){bootClicked=true;boot.click()}
-      return false;
+  if(brain){
+    var pageArmed=false;
+    // Attach after theme.js initChatLauncher; do not replace MM_BRAIN_CFG.
+    function armVectorPage(){
+      if(pageArmed)return;
+      var cfg=window.MM_BRAIN_CFG;
+      if(!cfg)return;
+      pageArmed=true;
+      var prior=cfg.getAiContext;
+      cfg.getAiContext=function(){
+        var block=null;
+        if(typeof prior==='function'){try{block=prior()}catch(e){block=null}}
+        if(!block||typeof block!=='object'){
+          var symbol='';
+          try{symbol=(typeof cfg.symbol==='function'?cfg.symbol():'')||''}catch(e){}
+          symbol=String(symbol||'').toUpperCase().slice(0,24);
+          return {
+            schema:'ai_context_client.v1',
+            origin_id:'vector-page',
+            context_revision:0,
+            captured_at:new Date().toISOString(),
+            pinned:[],
+            active:symbol?{type:'security',id:symbol}:null,
+            ambient:{page:'vector',panel:'vector-sectionbar'}
+          };
+        }
+        var ambient=block.ambient&&typeof block.ambient==='object'?block.ambient:{};
+        ambient.page='vector';
+        if(!ambient.panel)ambient.panel='vector-sectionbar';
+        block.ambient=ambient;
+        return block;
+      };
     }
-    if(openBrain())return;
-    timer=setInterval(function(){
-      tries+=1;
-      if(openBrain()){clearInterval(timer);return}
-      if(tries>=60){clearInterval(timer);ready();brain.setAttribute('data-state','error')}
-    },50);
-  })}
+    document.addEventListener('DOMContentLoaded',armVectorPage);
+    brain.addEventListener('click',function(){
+      if(!window.MM_BRAIN_CFG){document.addEventListener('DOMContentLoaded',function(){brain.click()},{once:true});return}
+      armVectorPage();
+      brain.removeAttribute('data-state');
+      brain.setAttribute('aria-busy','true');
+      var bootClicked=false,tries=0,timer=null;
+      function ready(){brain.removeAttribute('aria-busy')}
+      function openBrain(){
+        armVectorPage();
+        if(window.MMBrain&&typeof window.MMBrain.open==='function'){window.MMBrain.open();ready();return true}
+        var boot=document.getElementById('mmb-boot');
+        if(boot&&!bootClicked){bootClicked=true;boot.click()}
+        return false;
+      }
+      if(openBrain())return;
+      timer=setInterval(function(){
+        tries+=1;
+        if(openBrain()){clearInterval(timer);return}
+        if(tries>=60){clearInterval(timer);ready();brain.setAttribute('data-state','error')}
+      },50);
+    });
+  }
   var el=document.getElementById('vec-risk-chart'),sc=document.getElementById('vrc-score'),lab=document.getElementById('vrc-variant-label');
   if(!el||!window.VectorChart)return;
   var cards={};if(sc){try{cards=JSON.parse(sc.getAttribute('data-cards'))}catch(e){}}
