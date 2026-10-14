@@ -1,6 +1,6 @@
 {
   "n": 4,
-  "built": "2026-10-13 16:23 UTC",
+  "built": "2026-10-14 15:50 UTC",
   "cards": [
     {
       "key": "income_vector",
@@ -13,7 +13,7 @@
     {
       "key": "cn_credit_vol",
       "name": "Credit-Impulse + Vol-Managed",
-      "cagr": 6.93,
+      "cagr": 6.9,
       "sharpe": 0.59,
       "maxdd": -23.3,
       "experimental": true
@@ -21,8 +21,8 @@
     {
       "key": "cn_volmanaged",
       "name": "Volatility-Managed CSI 300",
-      "cagr": 6.58,
-      "sharpe": 0.56,
+      "cagr": 6.5,
+      "sharpe": 0.55,
       "maxdd": -31.1,
       "experimental": true
     },
