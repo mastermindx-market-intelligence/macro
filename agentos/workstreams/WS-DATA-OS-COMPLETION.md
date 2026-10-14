@@ -49,13 +49,13 @@ waves:
     depends_on: [d00-freeze]
   - id: math-registry-rights
     title: Baseline and discriminators, dataset registry matrix, rights/leakage matrix, action projection and split/distribution views (Q00, R00, K01, P01-P04)
-    status: awaiting_ci
+    status: done
     pr: [9147, 9148, 9150, 9152, 9154, 9156, 9168]
-    next_action: "Heal #9168's own contract-delta red (widen the nine legacy-jobs.yml paths lists whose import closure now reaches lib/dataos/price_views.py), merge at the exact head on concluded green, then dispatch ONE main baseline; every other wave-2 PR is merged and landed."
     depends_on: [d00-freeze]
   - id: consumers
     title: Retained views, D00.A1 venue clock + declared units, price-ladder opt-in canonical read, coverage, agreement inspector, view-contract sidecar emitter, Terminal / DataWorkspace / basket reads, support matrix (P05, P06, C01-C04, U01-U04, M01)
     status: in_progress
+    pr: [9179, 9184]
     depends_on: [identity-time, math-registry-rights]
   - id: verification-acceptance
     title: Independent oracle, adversarial access, matched workload, end-to-end journey, corrections, recovery, source review, install and cycle plans (Q01-Q03, F01, A01-A03, R01-R03)
@@ -66,12 +66,13 @@ waves:
     status: todo
     depends_on: [verification-acceptance]
 next_action: >-
-  Merge the seat export wiring #9168 at its exact head on concluded green, dispatch ONE main
-  ci.yml baseline (preflight for an in-flight run first), then consume the consumer-wave
-  orchestrator return (P05, P06, C01-C03, U03-U04, M01): judge each DRAFT PR by artifact,
-  one watcher per PR, hand-merge at the exact head, verify every landing against freshly
-  fetched origin/main; commission C04 (nightly sidecar emitter) after C01 lands, then
-  commission verification + acceptance (ORCH-4) and run the seat-owned R01-R03 / C00 closeout.
+  Hand-merge wire-2 #9185 (exact head 69443b58c1ec, exports the P05 + P06 names) on concluded
+  green and prove the landing; consume the second main ci.yml baseline 38486134436 (a
+  descendant of 0d6e05ec49f2; never dispatch another over a live run); consume the rest of the consumer-wave
+  orchestrator return (C01-C03, U03-U04, M01): judge each DRAFT PR by artifact, one watcher
+  per PR, hand-merge at the exact head, verify every landing against freshly fetched
+  origin/main; commission C04 (nightly sidecar emitter) after C01 lands, then commission
+  verification + acceptance (ORCH-4) and run the seat-owned R01-R03 / C00 closeout.
 landmines:
   - "WS:TIINGO-DATA-OS owns lib/dataos/tiingo_*.py, collectors/tiingo_archive.py, scripts/tiingo_*, docs/tiingo-evidence/ and the twenty PROPOSED Tiingo registry rows; this workstream never touches them."
   - "lib/dataos/__init__.py has exactly one writer per wave (the identity+time orchestrator in wave 1; the seat from the wave-2 wiring #9168 on); parallel export wiring collides on the shared export list."
