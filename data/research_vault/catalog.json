@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-10-14T16:56:00.188519+00:00",
-  "count": 2909,
+  "generated_at": "2026-10-14T17:11:10.365982+00:00",
+  "count": 2910,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -547,6 +547,27 @@
       "tickers": [],
       "top_pick": true,
       "pages": 30,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-vwvc6q8j2nr-66921c",
+      "title": "JPM Semiconductors Semi",
+      "institution": "J.P. Morgan",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-13T11:56:40Z",
+      "summary_points": [
+        "GPU Supply Constraint: Supply constraints (not demand) gate near-term growth, favoring AVGO, MRVL, and NVDA amid sustained AI infrastructure investment and acute supply tightness.",
+        "AI Cloud Capex Surge: Consensus cloud capex at $950B/$1.42T/$1.55T (CY26/CY27/CY28; +97%/+47%/+99% Y/Y), with key risk being CY27+ supply-chain sustainability (foundry, HBM, packaging).",
+        "Memory SCA/LTA Framework: 26 SCAs with $150B RPO and >75% FY27 output committed re-anchor through-cycle GM floor, driving upside despite valuation disconnect.",
+        "Critical EPS Deviations: AMAT Q3 EPS 13.8% below consensus (material negative), QNT Q3 estimate 29.7% below consensus (severe downside risk), AMKR Q4 estimate 15.4% above consensus (strong positive).",
+        "DC SSD Catalyst: MU’s F4Q26 DC SSD revenue ~$10B (10x Y/Y, two-thirds of NAND) marks step-change in NAND profitability, accelerating data center SSD growth."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 31,
       "language": "en",
       "needs_metadata": false
     },
