@@ -2,6 +2,7 @@
 import ast
 import hashlib
 import inspect
+import json
 import logging
 import subprocess
 import sys
@@ -118,12 +119,34 @@ with api._observe_admitted_read('retained_catalog'):
                for event in ('start', 'busy', 'finish'))
 
 
-# Frozen by the assigning parent before worker return or implementation.
+# Frozen from pre-implementation bbfd64b2ba58b5c44ad8ba38a05bcd319f13708c.
+# Original source bytes:469222d2112d524ceea2d29124434d74a2e1b5ec7bb6bf4a0f84e8f3b31fb00a.
+# Re-serialized structurally after CI exposed ast.dump version drift.
+def _ast_digest(node):
+    """Stable structural hash; ast.dump formatting changed in Python 3.13.
+
+    Omit only empty list fields (including version-added type_params). Keep
+    semantic None, False and zero distinct, along with node/field identities
+    and list ordering. No source locations or printer formatting enter it.
+    """
+    def canonical(value):
+        if isinstance(value, ast.AST):
+            return {"node": type(value).__name__, "fields": {
+                name: canonical(field) for name, field in ast.iter_fields(value)
+                if not (isinstance(field, list) and not field)
+            }}
+        if isinstance(value, list):
+            return [canonical(item) for item in value]
+        return {"type": type(value).__name__, "value": value}
+    body = json.dumps(canonical(node), sort_keys=True, separators=(',', ':'))
+    return hashlib.sha256(body.encode()).hexdigest()
+
+
 ORIGINAL_AST = {
-    'operational_playback_catalog': 'a092fa93c347826a79320e2476303fa5760c91fea291e5d4a87ab7abf8cfa592',
-    'retained_macro_for_user': 'b2437de891eaf68fe3f5c5e21695221657f4e8ee5fb1de03520e196cdf6fbe1c',
-    'retained_catalog_for_user': '9fd543ef2f8491566bed9f7bc6e040597615d4f84434974e37087e606e32d755',
-    'retained_saved_for_user': '58ef4907d193a5df84ff2046c6c10bb53215b8bbb248612ad6cfd7f25a6677fe',
+    'operational_playback_catalog': '8184ee9f2de3d5c57495bd78dd8424ef26f5c2171e53ac718f82c8332fbb018d',
+    'retained_macro_for_user': '26f2f39c90ce7d53998e88a4c41c2b2b4cace30acdb5d6df81e67e4f30176302',
+    'retained_catalog_for_user': '553c88cc52a3e6c725de5f42a1c3294040b8c1463b694904599143d9ed0e1382',
+    'retained_saved_for_user': 'ee67f3f9dd582c9aaf0b135fc6e1f02ef47e16bb6c4343e0750e248482e18fb1',
 }
 
 
@@ -147,4 +170,14 @@ class StripObserver(ast.NodeTransformer):
 def test_routes_preserve_exact_original_authorization_limits_and_payloads(name, digest):
     node = ast.parse(inspect.getsource(getattr(api, name))).body[0]
     actual = StripObserver().visit(node)
-    assert hashlib.sha256(ast.dump(actual, include_attributes=False).encode()).hexdigest() == digest
+    assert _ast_digest(actual) == digest
+
+
+@pytest.mark.parametrize('left,right', [
+    ('allowed = True', 'allowed = False'),
+    ('limit = 0', 'limit = False'),
+    ('payload = None', 'payload = 0'),
+    ('value > 10', 'value > 11'),
+])
+def test_route_oracle_keeps_semantic_changes_visible(left, right):
+    assert _ast_digest(ast.parse(left)) != _ast_digest(ast.parse(right))
