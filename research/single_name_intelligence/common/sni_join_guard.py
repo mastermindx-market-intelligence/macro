@@ -286,7 +286,9 @@ def validate_fact(
     for key in sorted(unknown_keys, key=str):
         found.append("SCHEMA_UNKNOWN_FIELD:" + str(key))
     level = fact.get("level")
-    if _blank(level) or level not in _LEVELS:
+    # isinstance before membership: a frozenset lookup hashes its operand,
+    # so an unhashable level (list/dict/set) must refuse, never raise (JGP-01).
+    if not isinstance(level, str) or level not in _LEVELS:
         found.append("LEVEL_UNKNOWN")
     if _text_absent(fact.get("issuer_id")):
         found.append("ISSUER_UNRESOLVED")
@@ -457,7 +459,7 @@ def check_join(
         reasons.append("LEFT:" + code)
     for code in validate_fact(right, as_of=as_of):
         reasons.append("RIGHT:" + code)
-    if join_kind not in _JOIN_KIND_SET:
+    if not isinstance(join_kind, str) or join_kind not in _JOIN_KIND_SET:
         reasons.append("JOIN_KIND_UNKNOWN")
         frozen = _freeze_reasons(reasons)
         return JoinVerdict(
