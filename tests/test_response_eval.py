@@ -1098,6 +1098,7 @@ HISTORICAL_TEXT_CASES = [
     "benchmark_mag7_flow_calibration_2026-07-11.json",
     "benchmark_mag7_narrative_denominator_2026-07-11.json",
     "benchmark_fomc_qt_clock_2024-05-01.json",
+    "benchmark_snb_floor_rate_2015-01-15.json",
 ]
 
 

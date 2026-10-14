@@ -50,3 +50,20 @@ The first three bind the July12 risk-on reconstruction; the latter three bind th
 The assigning root adjudicated these readings; independent review is not claimed. Twelve new controls reproduced unadmitted-source and missing-metadata fallback failures before registration. The runner still requires explicit answer and judge callbacks and reads only eight named regular research files, each bounded to64KiB. Its executable function bodies, original six fixtures, legacy bear case and scientific scoring/authority behavior are unchanged.
 
 The collection now contains twelve supplied-text cases plus the unchanged legacy bear case. Cases within and across the June-July groups may overlap; neither counts nor labels prove statistical independence. Historical PIT availability, the original20/15 objective, actual model reasoning acceptance and production adoption remain open. A distinct blind-answer Fabric request, eval-t6-blind-six-01a1333d-c2, returned no_pool_available before launch; no model answer, acceptance, replacement or alternate carrier followed. Source tests with injected callbacks prove plumbing only.
+
+
+## SNB quotation, rate-unit and commitment case
+
+The January15,2015 SNB release supplies a fourteenth bounded text case beside
+the earlier thirteen and unchanged legacy bear case. It separates CHF-per-euro
+quotation, withdrawal of the specific floor, possible future FX intervention,
+exemption-limited deposit interest, basis-point arithmetic and unchanged Libor
+interval width. The supplied facts exclude subsequent prices, execution and
+returns. Interpretation remains in the separate judge-only adjudication.
+
+The [official SNB release](https://www.snb.ch/en/publications/communication/press-releases/2015/pre_20150115)
+is retrieved now and hashed; neither its publication label nor retrieval proves
+historical byte custody. Current-doctrine supplied-text replay, explicit model
+callbacks and internal-QA limits remain unchanged. Root source adjudication is
+not an independent model evaluation. The20/15 historical objective, PIT custody,
+model-performance acceptance and real adoption remain open.

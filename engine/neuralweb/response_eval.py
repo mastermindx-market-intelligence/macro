@@ -1052,10 +1052,12 @@ _HISTORICAL_TEXT_CASE_IDS = frozenset({"gold_real_rate_2026-08-09", "capex_bind_
                                       'mag7_flow_calibration_2026-07-11',
                                       'mag7_narrative_denominator_2026-07-11',
                                       "fomc_qt_clock_2024-05-01",
+                                      "snb_floor_rate_2015-01-15",
                                       })
 _HISTORICAL_TEXT_CASE_NAMES = frozenset(f"benchmark_{case_id}.json" for case_id in _HISTORICAL_TEXT_CASE_IDS)
 _HISTORICAL_TEXT_SOURCES = frozenset({
     "research/FOMC_QT_CLOCK_CASE_2024_05_01.md",
+    "research/SNB_FLOOR_RATE_CASE_2015_01_15.md",
     "research/CASE_STUDY_GOLD_REAL_RATE_PEAK_2026_08.md",
     "research/POSTMORTEM_20260722_CROSSOVERS_VS_CAPEX_BIND_BY_FABLE.md",
     "research/POSTMORTEM_20260723_MAG7_FORCED_CALL_BY_FABLE.md",
