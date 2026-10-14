@@ -1,11 +1,19 @@
 """Issuer 8-K body minting for the wave-w2 news-impact benchmark.
 
 For each drawn benchmark case (a headline about one issuer on one date) this
-module finds the issuer's own 8-K filed within one trading session of the
+module finds the issuer's own 8-K filed inside a session band around the
 headline, fetches the 8-K primary document and its EX-99 exhibits through the
 existing SEC collectors, turns them into plain text, mints a byte-replayable
 citation for each text, and reports per case whether a body is available or
 why not.
+
+Two band versions exist.  ``ni-edgar-body-1`` uses one session either side of
+the seen session and is the default; its output is unchanged.
+``ni-edgar-body-2`` keeps one session before and reaches four sessions after,
+because a Form 8-K is due within four business days of the event it reports.
+Version 2 requires an ``as_of`` date: a window whose last session is not
+strictly before it may still gain filings and is refused as ``window_open``.
+Version 2 also tags each filing with its session offset from the seen session.
 
 Bytes reach this module only through the injected
 ``SecForensicsCollector`` and ``SecFilingArchiveCollector`` (S14).  All
@@ -51,6 +59,13 @@ from engine.company_intelligence.documents import (
 # ---------------------------------------------------------------------------
 
 EDGAR_BODY_VERSION = "ni-edgar-body-1"
+EDGAR_BODY_VERSION_2 = "ni-edgar-body-2"
+EDGAR_BODY_VERSIONS: tuple[str, ...] = (EDGAR_BODY_VERSION, EDGAR_BODY_VERSION_2)
+# Sessions before and after the seen session that a qualifying 8-K may carry.
+BODY_BANDS: dict[str, tuple[int, int]] = {
+    EDGAR_BODY_VERSION: (1, 1),
+    EDGAR_BODY_VERSION_2: (1, 4),
+}
 QUALIFYING_ITEMS: tuple[str, ...] = ("1.01", "2.02", "7.01", "8.01")
 BODY_FORMS: tuple[str, ...] = ("8-K",)
 EXHIBIT_TYPE_RE = re.compile(r"^EX-99(\.[0-9A-Z]+)?$", re.IGNORECASE)
@@ -72,11 +87,22 @@ REASON_ORDER: tuple[str, ...] = (
     "empty_text",
     "span_failed",
 )
+REASON_ORDER_V2: tuple[str, ...] = (
+    REASON_ORDER[:2] + ("window_open",) + REASON_ORDER[2:]
+)
+REASON_ORDERS: dict[str, tuple[str, ...]] = {
+    EDGAR_BODY_VERSION: REASON_ORDER,
+    EDGAR_BODY_VERSION_2: REASON_ORDER_V2,
+}
 _REASON_RE = re.compile(r"^[a-z0-9_]+$")
-for _reason in REASON_ORDER:
+for _reason in REASON_ORDER_V2:
     if not _REASON_RE.fullmatch(_reason):
         raise AssertionError(f"reason { _reason!r } does not match ^[a-z0-9_]+$")
 _REASON_TO_INDEX = {name: idx for idx, name in enumerate(REASON_ORDER)}
+_REASON_INDEXES: dict[str, dict[str, int]] = {
+    version: {name: idx for idx, name in enumerate(order)}
+    for version, order in REASON_ORDERS.items()
+}
 _MARKET_ZONE = ZoneInfo(MARKET_TZ)
 _FILENAME_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]*$")
 _ACCESSION_RE = re.compile(r"^\d{10}-\d{2}-\d{6}$")
@@ -178,18 +204,56 @@ def _coerce_seendate(value: Any) -> datetime:
     return parsed
 
 
-def session_window(
-    seendate: Any, sessions: Sequence[date]
-) -> tuple[date, date, date] | None:
-    """Map a seendate to the three-session window ``(prev, this, next)``."""
-    sessions_t = validate_sessions(sessions)
+def _seen_index(seendate: Any, sessions_t: Sequence[date]) -> int:
+    """Index of the seen session: the first session on or after the market date."""
     parsed = _coerce_seendate(seendate)
     market = parsed.astimezone(_MARKET_ZONE)
-    d = market.date()
-    a = bisect_left(sessions_t, d)
-    if a - 1 < 0 or a + 1 >= len(sessions_t):
+    return bisect_left(sessions_t, market.date())
+
+
+def _check_band(band: Any) -> tuple[int, int]:
+    if (
+        not isinstance(band, tuple)
+        or len(band) != 2
+        or not all(isinstance(n, int) and not isinstance(n, bool) for n in band)
+        or band[0] < 1
+        or band[1] < 1
+    ):
+        raise EdgarBodyError(f"band must be a pair of positive ints: {band!r}")
+    return band
+
+
+def session_window(
+    seendate: Any, sessions: Sequence[date], band: tuple[int, int] = (1, 1)
+) -> tuple[date, date, date] | None:
+    """Map a seendate to the window ``(start, seen, end)``.
+
+    ``band=(before, after)`` counts sessions either side of the seen session;
+    the default ``(1, 1)`` is the version-1 window ``(prev, this, next)``.
+    """
+    before, after = _check_band(band)
+    sessions_t = validate_sessions(sessions)
+    a = _seen_index(seendate, sessions_t)
+    if a - before < 0 or a + after >= len(sessions_t):
         return None
-    return (sessions_t[a - 1], sessions_t[a], sessions_t[a + 1])
+    return (sessions_t[a - before], sessions_t[a], sessions_t[a + after])
+
+
+def filing_session_offset(
+    filing_date: date, seendate: Any, sessions: Sequence[date]
+) -> int:
+    """Sessions from the seen session to the filing (a non-session date rolls forward)."""
+    sessions_t = validate_sessions(sessions)
+    return bisect_left(sessions_t, filing_date) - _seen_index(seendate, sessions_t)
+
+
+def filing_relation(offset: int) -> str:
+    """Name the filing's position relative to the seen session."""
+    if offset < 0:
+        return "filed_before_seen"
+    if offset == 0:
+        return "filed_same_session"
+    return "filed_after_seen"
 
 
 # ---------------------------------------------------------------------------
@@ -975,8 +1039,25 @@ def fetch_bodies(
     out_dir: Path,
     retrieved_at: str | None = None,
     max_document_bytes: int | None = None,
+    version: str = EDGAR_BODY_VERSION,
+    as_of: date | None = None,
 ) -> tuple[dict[str, str], list[dict[str, Any]], dict[str, Any]]:
-    """Mint per-case 8-K body receipts (or refusal reasons) and a run report."""
+    """Mint per-case 8-K body receipts (or refusal reasons) and a run report.
+
+    ``version`` picks the session band (``BODY_BANDS``).  Version 2 needs
+    ``as_of``: a case whose window ends on or after it is ``window_open``.
+    """
+    if version not in BODY_BANDS:
+        raise EdgarBodyError(f"unknown edgar body version: {version!r}")
+    is_v2 = version == EDGAR_BODY_VERSION_2
+    if is_v2:
+        if not isinstance(as_of, date) or isinstance(as_of, datetime):
+            raise EdgarBodyError(f"{version} requires an as_of date")
+    elif as_of is not None:
+        raise EdgarBodyError(f"{version} takes no as_of")
+    band = BODY_BANDS[version]
+    reason_order = REASON_ORDERS[version]
+    reason_index = _REASON_INDEXES[version]
     sessions = validate_sessions(session_dates)
     out_dir = Path(out_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
@@ -1024,10 +1105,15 @@ def fetch_bodies(
             filing_record: list[dict[str, Any]] = []
             truncated = 0
         else:
-            window = session_window(seendate, sessions)
+            window = session_window(seendate, sessions, band)
             if window is None:
                 reasons.add("calendar_gap")
                 window_value = None
+                filing_record = []
+                truncated = 0
+            elif is_v2 and as_of is not None and window[2] >= as_of:
+                reasons.add("window_open")
+                window_value = [_iso_date(d) for d in window]
                 filing_record = []
                 truncated = 0
             else:
@@ -1058,6 +1144,12 @@ def fetch_bodies(
                                 "reason": None,
                                 "documents": [],
                             }
+                            if is_v2:
+                                offset = filing_session_offset(
+                                    row.filing_date, seendate, sessions
+                                )
+                                filing_entry["session_offset"] = offset
+                                filing_entry["relation"] = filing_relation(offset)
                             (
                                 index_outcome,
                                 index_docs,
@@ -1129,9 +1221,7 @@ def fetch_bodies(
                                         for doc in filing_entry["documents"]
                                         if doc["status"] != "available"
                                     },
-                                    key=lambda name: _REASON_TO_INDEX.get(
-                                        name, -1
-                                    ),
+                                    key=lambda name: reason_index.get(name, -1),
                                 )
                                 filing_entry["reason"] = (
                                     filing_reasons[-1] if filing_reasons else None
@@ -1141,9 +1231,7 @@ def fetch_bodies(
             status = "available"
             reason_value: str | None = None
         else:
-            top_reason = max(
-                reasons, key=lambda name: _REASON_TO_INDEX.get(name, -1)
-            )
+            top_reason = max(reasons, key=lambda name: reason_index.get(name, -1))
             status = f"body_unavailable:{top_reason}"
             reason_value = top_reason
         status_map[item_id] = status
@@ -1159,7 +1247,7 @@ def fetch_bodies(
         }
         records.append(record)
     records.sort(key=lambda entry: entry["item_id"])
-    reason_counts: dict[str, int] = {name: 0 for name in REASON_ORDER}
+    reason_counts: dict[str, int] = {name: 0 for name in reason_order}
     for entry in records:
         if entry["status"] == "available":
             continue
@@ -1169,7 +1257,7 @@ def fetch_bodies(
     available = sum(1 for entry in records if entry["status"] == "available")
     body_unavailable = sum(1 for entry in records if entry["status"] != "available")
     report = {
-        "version": EDGAR_BODY_VERSION,
+        "version": version,
         "cases": len(records),
         "available": available,
         "body_unavailable": body_unavailable,
@@ -1211,6 +1299,19 @@ def _load_sessions(path: Path) -> list[date]:
     return [date.fromisoformat(entry) for entry in raw_sessions]
 
 
+def _parse_as_of(raw: str | None, version: str) -> date | None:
+    if version != EDGAR_BODY_VERSION_2:
+        if raw is not None:
+            raise EdgarBodyError(f"--as-of applies only to {EDGAR_BODY_VERSION_2}")
+        return None
+    if raw is None:
+        raise EdgarBodyError(f"{EDGAR_BODY_VERSION_2} requires --as-of YYYY-MM-DD")
+    try:
+        return date.fromisoformat(raw)
+    except ValueError as exc:
+        raise EdgarBodyError(f"bad --as-of {raw!r}: {exc}") from exc
+
+
 def main(
     argv: Sequence[str] | None = None,
     *,
@@ -1229,8 +1330,20 @@ def main(
     )
     parser.add_argument("--limit", type=int, default=None)
     parser.add_argument("--max-document-bytes", type=int, default=None)
+    parser.add_argument(
+        "--version",
+        choices=EDGAR_BODY_VERSIONS,
+        default=EDGAR_BODY_VERSION,
+        help="session band version (default: %(default)s)",
+    )
+    parser.add_argument(
+        "--as-of",
+        default=None,
+        help="YYYY-MM-DD; required by ni-edgar-body-2 (windows ending on or after it are window_open)",
+    )
     args = parser.parse_args(list(argv) if argv is not None else None)
     try:
+        as_of = _parse_as_of(args.as_of, args.version)
         cases = _load_cases(args.cases)
         sessions = _load_sessions(args.sessions)
     except EdgarBodyError as exc:
@@ -1260,6 +1373,8 @@ def main(
         session_dates=sessions,
         out_dir=out_dir,
         max_document_bytes=args.max_document_bytes,
+        version=args.version,
+        as_of=as_of,
     )
     bodies_path = out_dir / "bodies.jsonl"
     with bodies_path.open("w", encoding="utf-8") as handle:

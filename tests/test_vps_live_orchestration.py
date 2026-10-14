@@ -816,7 +816,7 @@ def test_schedule_coverage_is_explicit_and_fails_visible_at_exhaustion():
     assert current["next_by_type"]["NFP"] == "2026-08-07"
     assert current["next_by_type"]["FOMC"] == "2026-09-16"
 
-    exhausted = wrp.schedule_coverage(datetime(2026, 12, 31).date())
+    exhausted = wrp.schedule_coverage(datetime(2027, 12, 31).date())
     assert exhausted["status"] == "incomplete"
     assert {"FOMC", "CPI", "NFP", "GDP", "PCE"}.issubset(
         exhausted["missing_or_too_distant"]
