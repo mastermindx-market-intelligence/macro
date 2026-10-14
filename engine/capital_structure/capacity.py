@@ -655,6 +655,7 @@ class _Builder:
         self.infeasible: dict[str, set[str]] = {branch: set() for branch in BRANCHES}
         self.contradiction: str | None = None
         self.branch_infeasible_on_one = False
+        self.pessimistic_infeasible = False
         self.branching = False
         self.branch_reasons: tuple[str, ...] = ()
 
@@ -2290,6 +2291,7 @@ class _Builder:
             branch: self.infeasible[branch] - both for branch in BRANCHES
         }
         self.branch_infeasible_on_one = any(single[branch] for branch in BRANCHES)
+        self.pessimistic_infeasible = bool(single["pessimistic"])
         for constraint_id in sorted(both):
             self.blockers.append(f"asserted_actions_infeasible:{constraint_id}")
         if both:
@@ -2552,12 +2554,18 @@ class _Builder:
                 provenance=self._aggregate_provenance(),
                 note=f"gross dollars; the joint ceiling call agrees at {ceiling_text}",
             )
-        floor_text = _floor_text(
-            fixed_pessimistic
-            + (
-                pessimistic.value
-                if pessimistic.determined
-                else pessimistic.floor_when_unknowns_zero
+        # Review R1: a floor is a guarantee, so it is unstated when the
+        # pessimistic branch cannot carry the asserted actions at all.
+        floor_text = (
+            "unstated"
+            if self.pessimistic_infeasible
+            else _floor_text(
+                fixed_pessimistic
+                + (
+                    pessimistic.value
+                    if pessimistic.determined
+                    else pessimistic.floor_when_unknowns_zero
+                )
             )
         )
         if self.price_branch_routes and (self.branch_infeasible_on_one or not agree):

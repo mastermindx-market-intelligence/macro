@@ -918,7 +918,7 @@ def test_review_action_infeasible_on_one_price_branch_never_gives_a_number() -> 
     assert envelope.aggregate_bound.status == "unknown"
     assert envelope.aggregate_bound.value is None
     assert envelope.aggregate_bound.note == (
-        "floor 7000000.00 / ceiling 7000000.00 under stated unknowns"
+        "floor unstated / ceiling 7000000.00 under stated unknowns"
     )
     assert (
         f"asserted_actions_infeasible_on_price_branch:pessimistic:{NASDAQ_POOL}"
@@ -938,7 +938,7 @@ def test_review_usage_branch_infeasibility_is_not_labelled_a_price_branch() -> N
     assert envelope.aggregate_bound.status == "unknown"
     assert envelope.aggregate_bound.value is None
     assert envelope.aggregate_bound.note == (
-        "floor 14000000.00 / ceiling 16000000.00 under stated unknowns"
+        "floor unstated / ceiling 16000000.00 under stated unknowns"
     )
     assert f"asserted_actions_infeasible_on_branch:pessimistic:{ATM_A}" in envelope.blockers
     assert not any("on_price_branch" in blocker for blocker in envelope.blockers)
