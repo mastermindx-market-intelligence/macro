@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-10-14T09:24:56.871356+00:00",
-  "count": 2885,
+  "generated_at": "2026-10-14T09:40:36.238868+00:00",
+  "count": 2886,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -450,6 +450,25 @@
       "tickers": [],
       "top_pick": true,
       "pages": 10,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-nlfajva2icx-3325ef",
+      "title": "GS DeGrasse Desk Bank Fins EPS Preview 7 Oct 2026",
+      "institution": "Bank Earnings Previews",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-13T02:00:05Z",
+      "summary_points": [
+        "Capital Markets/NII Dynamics: Rising rates pressure NII amid fixed-rate asset repricing delays and deposit cost competition, creating near-term earnings headwinds despite strong 2Q26 IB outlook.",
+        "AI/credit deployment trajectory: Strategic pivot on AI (competition vs. margin expansion) and credit deployment pace into 2027 are critical for sector growth, with financial institutions facing strategic trade-offs.",
+        "US Consumer Finance Underperformance: -9.9% return since last EPS season (vs. sector -3.9%), driven by macro/oil tail risks and constrained multiples, signaling significant sector-specific risk."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 11,
       "language": "en",
       "needs_metadata": false
     },
