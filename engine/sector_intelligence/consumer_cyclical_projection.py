@@ -925,6 +925,12 @@ def _emit_result(result: Mapping[str, Any]) -> dict[str, Any]:
         result, basis=basis, definition=definition, display_quantum=quantum
     )
     if not key.endswith("_pct") and not filled.get("withheld_reason"):
+        # BACKSTOP: ``_screen_stated_definition`` has already withheld every
+        # contradicting row in ``project_economic_change`` before the
+        # availability verdict and the explanation lead were computed, so a
+        # row reaching this branch with no ``withheld_reason`` matches the
+        # stated definition and the check no-ops; it is kept as a
+        # no-op-safe guard for this emit path itself.
         # The USD-thousands family only. The ratio describes itself as a
         # percentage and says nothing about a currency, so it is unaffected.
         source = filled.get("current_period_fact")
@@ -946,6 +952,80 @@ def _emit_result(result: Mapping[str, Any]) -> dict[str, Any]:
     if isinstance(refs, list):
         filled["input_refs"] = list(dict.fromkeys(refs))
     return {k: v for k, v in filled.items() if k in _CONTRACT_RESULT_KEYS}
+
+
+def _stated_definition_contradicted(result: Mapping[str, Any]) -> bool:
+    """Does one USD-thousands result contradict the definition it states?
+
+    The row's own ``unit`` / ``scale_power10`` against the stated-definition
+    constants, AND BOTH envelope sides -- ``current_period_fact`` and
+    ``prior_period_fact``, each built by ``_fact_to_envelope`` and carrying
+    ``unit``, ``scale_power10`` and ``display_quantum``. The trigger that
+    lived only in ``_emit_result`` read only the current side, so a
+    prior-side contradiction published (independent PR #9285 review,
+    defect D2); the row's own ``display_quantum`` is minted per key by
+    ``_emit_result``, so the quantum claim is checked on the envelopes.
+    """
+    if (
+        result.get("unit") != _STATED_DEFINITION_UNIT
+        or result.get("scale_power10") != _STATED_DEFINITION_SCALE
+    ):
+        return True
+    for side_key in ("current_period_fact", "prior_period_fact"):
+        side = result.get(side_key)
+        if isinstance(side, Mapping) and (
+            side.get("unit") != _STATED_DEFINITION_UNIT
+            or side.get("scale_power10") != _STATED_DEFINITION_SCALE
+            or side.get("display_quantum") != _STATED_DEFINITION_QUANTUM
+        ):
+            return True
+    return False
+
+
+def _screen_stated_definition(results: list[dict[str, Any]]) -> None:
+    """Withhold contradicting internal results IN PLACE, before the verdicts.
+
+    Sets the module's existing withheld state literal ``"WITHHELD"`` (the
+    one ``_withheld_result`` builds), ``value_text``/``value_decimal`` to
+    ``None`` and the existing ``_DEFINITION_CONTRADICTED`` reason -- no new
+    vocabulary. The ``_pct`` ratio stays exempt exactly as the check in
+    ``_emit_result`` exempted it (the ratio describes itself as a
+    percentage and says nothing about a currency); which ratio cases
+    withhold does not change. A row already withheld keeps its own reason.
+
+    ``advertising_net_change`` is arithmetic on the two advertising change
+    ROWS: when one of them is withheld here while the net row's own
+    envelopes are clean, the net value derives from a withheld row and
+    cannot publish. It is then withheld with the build branch's own
+    existing reason, ``dependency_suppressed`` -- the same verdict the net
+    derivation reaches when a constituent is not READY at build time
+    (review defect D1: the emitted expense row was withheld while ``-4``
+    computed from it still published).
+    """
+    for result in results:
+        key = str(result.get("key") or "")
+        if key.endswith("_pct") or result.get("withheld_reason"):
+            continue
+        if _stated_definition_contradicted(result):
+            result["state"] = "WITHHELD"
+            result["value_text"] = None
+            result["value_decimal"] = None
+            result["withheld_reason"] = _DEFINITION_CONTRADICTED
+
+    by_key = {str(r.get("key")): r for r in results}
+    net = by_key.get(RESULT_KEY_ADVERTISING_NET_CHANGE)
+    if net is not None and not net.get("withheld_reason"):
+        for constituent_key in (
+            RESULT_KEY_ADVERTISING_REVENUE_CHANGE,
+            RESULT_KEY_ADVERTISING_EXPENSE_CHANGE,
+        ):
+            constituent = by_key.get(constituent_key)
+            if constituent is not None and constituent.get("withheld_reason"):
+                net["state"] = "WITHHELD"
+                net["value_text"] = None
+                net["value_decimal"] = None
+                net["withheld_reason"] = "dependency_suppressed"
+                break
 
 
 def _make_change_result(
@@ -1699,6 +1779,14 @@ def project_economic_change(case: Mapping[str, Any]) -> dict[str, Any]:
     all_results: list[dict[str, Any]] = [
         results_by_key[k] for k in sorted(results_by_key.keys())
     ]
+
+    # ---- Stated-definition screen ---------------------------------------
+    # Runs on the internal rows AFTER all derived rows are built and BEFORE
+    # the availability verdict and the explanation below are computed from
+    # ``state``, so availability, the lead and the emitted rows agree
+    # (independent PR #9285 review, defects D1/D2: the check used to live
+    # only inside ``_emit_result``, which runs after both).
+    _screen_stated_definition(all_results)
 
     # ---- Availability ----------------------------------------------------
     has_any_ready = any(r.get("state") == "READY" for r in all_results)

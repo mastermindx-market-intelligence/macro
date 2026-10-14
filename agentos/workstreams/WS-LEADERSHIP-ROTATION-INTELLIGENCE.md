@@ -43,24 +43,24 @@ waves:
   - id: LR-W1
     title: T01 frontier + T02 source qualification + T03–T05/T08 contract projection + T06 evidence modes + T16 replay isolation
     status: in_progress
-    next_action: Judge ORCH-SRC and ORCH-MEAS returns; arm merge-on-green on each DRAFT PR after review; land and blob-verify.
+    prs: [9224, 9225, 9240]
+    next_action: PRs #9224 (T16), #9225 (T06), #9240 (T03–T05/T08) are READY and armed merge-on-green; on merge blob-verify against origin/main, run ONE main ci.yml baseline over a clear field, close #8412/#8476 as superseded.
   - id: LR-W2
     title: T07 early-context receipt + T09–T14 science protocol, baselines, adjudications (O3/O4/O5)
-    status: todo
+    status: in_progress
     depends_on: [LR-W1]
   - id: LR-W3
     title: T17 bounded measured read + T18 journey + T21 asset adoption + T22 access/interface states (O7)
-    status: todo
+    status: in_progress
     depends_on: [LR-W1]
   - id: LR-W4
     title: T19/T20/T23 independent challenge + T24 conditional prospective + T25 release/natural consumption + T26 closeout
     status: todo
     depends_on: [LR-W2, LR-W3]
 next_action: >
-  Consume the two wave-1 Opus orchestrator returns (ORCH-SRC: T02/T06/T16;
-  ORCH-MEAS: T03–T05/T08), review each DRAFT PR against the acceptance matrix,
-  arm merge-on-green last, land, blob-verify against origin/main, then open
-  wave 2 (science) and wave 3 (product) orchestrators.
+  Land wave 1 (#9224/#9225/#9240 armed), blob-verify, one main baseline; consume the running
+  wave-2 (science) and wave-3 (product) orchestrator returns; then challenge wave (T19/T20/T23),
+  T24 conditional, T25 release/natural-consumption proof, T26 four-state closeout.
 ---
 
 # Leadership Migration & Sector/Theme Rotation Intelligence
