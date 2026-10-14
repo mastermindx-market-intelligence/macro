@@ -12916,7 +12916,7 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
           {% if _h10 is not none %}{% set _odds_ns.mx = [_odds_ns.mx, _h10]|max %}{% endif %}
           {% if _bn is not none %}{% set _odds_ns.mx = [_odds_ns.mx, _bn]|max %}{% endif %}
           {% set _span = _odds_ns.mx if _odds_ns.mx > 0 else none %}{% if _us_pb_active %}
-          <div class="riskdlg-odds-k">{{ t('Pre-pullback odds are not shown while a measured pullback is underway.','回撤进行中，不显示回撤前的概率。') }}</div>{% else %}
+          <div class="riskdlg-odds-k">{{ t('Forward pullback odds are not shown during a measured pullback.','实测回撤期间，不显示回撤前的概率。') }}</div>{% else %}
           <div class="riskdlg-odds">
             <div class="riskdlg-odds-k">{{ t('Pullback odds ≥5%','回撤概率 ≥5%') }}</div>
             <div class="riskdlg-odds-h">
