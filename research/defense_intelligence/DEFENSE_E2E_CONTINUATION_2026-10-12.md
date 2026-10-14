@@ -968,3 +968,38 @@ The optional buffered server request journal was not retained on SIGTERM; uvicor
 re-emitted the signal before the wrapper finally block. Browser network/geometry
 records, source/data pins and all capture results remain independently retained.
 REQUEST_JOURNAL_LIMITATION.json preserves the gap and the exact used harness.
+
+
+### October 14 V9 complete candidate proof and current-main integration
+
+Source 7b87fd8fe32a4c35075a76ec07e51c95ec3f28ae was integrated with protected
+main 1816da2f46babe6e6a47c5fb7b6e7060bff86b34 in
+8c1850a47249dd7f5a4f681775962e19684689cb. The additive CI declarations and
+API restart dependency list retain both parents. All browser-bound source, input
+and static bytes stayed unchanged; MAIN_INTEGRATION_BINDING records this check.
+
+The unfiltered immutable proof at that source passed 104 cases with one existing
+conditional skip (no unaccounted rows to exercise), from the full 105-case
+collection. Receipt 2a4d4fa0b17c168817083c62c9707e1e4949da44446b2d8c0df3fbc32f20bf2d
+binds 7,444 source dependencies, 109 outputs and the unchanged 642-row ledger.
+Sealed JUnit, collection and execution logs are copied byte-exact in the V9 proof
+folder. CI trigger reachability passed all 2,692 suites. The separate stricter
+head import-closure audit found 105 exact path declarations missing across 21
+existing jobs; the additive repair now yields no closure gaps or unwired suites.
+No tests, guard criteria or excluded product implementation were weakened.
+
+A new bounded independent startup-ordering review is admitted on the existing
+Fabric: defense-v9-startup-review-01a13300-a, author codex-native, routed reviewer
+minimax, ubuntu1. It has launched; its return and acceptance are pending. Original
+Q3/P2 effects remain on their existing identities and are not replayed.
+
+The original Daily run 38495183073 is overall queued, but its exact Government
+Revenue projection job 115696593472 is terminal/skipped without steps. The existing
+preflight already recognizes this case; no new runtime whitelist is needed. This
+observation does not settle the other jobs or authorize a duplicate publication.
+
+Next: verify the sealed generation in the saved commit, consume the startup review,
+push this original PR #9066 once, obtain exact-head CI/protected merge, then perform
+fresh financial CAS and natural publication in their existing gated order. Installed
+identity, two entitled subjects, Terminal #778 and independent acceptance remain
+outstanding. No production or financial-owner write has occurred in this phase.
