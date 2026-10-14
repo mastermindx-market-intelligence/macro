@@ -5,7 +5,7 @@ model: opus
 ended_because: ci_handoff
 decisions: ["DEC:NEWS-IMPACT-ROUTING-GATES-2-MISS-PATH"]
 discoveries: ["DSC:NEWS-IMPACT-ROUTING-GATES-2-VALIDATION"]
-prs: []
+prs: [9361]
 mission: >
   Under DEC:NEWS-IMPACT-ROUTING-GATES-1-MISS-PATH item 3, build a revised gate set for the
   failure kinds the gates-1 validation found, freeze it in a commit as a new gates version,
