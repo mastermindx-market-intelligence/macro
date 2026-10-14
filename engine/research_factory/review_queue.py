@@ -475,6 +475,7 @@ def _extract_come_back_on(transitions_jsonl: list[dict], candidate_id: str) -> s
 
 def build_queue(
     rf_dir: Path | None = None,
+    *, trusted_codegen_artifacts: tuple = (), synthetic_commission=None,
 ) -> list[dict]:
     """Build the cross-domain review queue.
 
@@ -489,6 +490,13 @@ def build_queue(
         "authority": "display_only".  Queue is ordered by category bin then
         created_at (RF-16 — never by a numeric score).
     """
+    # Explicit owner attachment only. Default path performs no diagnostic I/O.
+    if type(trusted_codegen_artifacts) is not tuple:
+        raise ValueError("immutable diagnostic bindings required")
+    diagnostics = ()
+    if trusted_codegen_artifacts:
+        from engine.research_codegen.bridge import load_diagnostics, public_diagnostic
+        diagnostics = load_diagnostics(trusted_codegen_artifacts, commission=synthetic_commission)
     _dir = Path(rf_dir) if rf_dir else DEFAULT_RF_DIR
     candidates_path = _dir / "candidates.jsonl"
     transitions_path = _dir / "transitions.jsonl"
@@ -596,6 +604,9 @@ def build_queue(
         }
         packets.append(packet)
 
+    for diagnostic in diagnostics:
+        packets.append(diagnostic_review_packet(public_diagnostic(diagnostic)))
+
     # Order: category bins then created_at (RF-16 — never by numeric score)
     packets.sort(
         key=lambda p: (
@@ -605,3 +616,20 @@ def build_queue(
     )
 
     return packets
+
+
+def diagnostic_review_packet(public: dict) -> dict:
+    """Closed compiled display attachment; never a canonical candidate row."""
+    from engine.research_codegen.bridge import validate_public_projection
+    public = validate_public_projection(public)
+    return {
+        "schema": "research_factory.review_packet.v1", "authority": "display_only",
+        "is_research_diagnostic": True, "diagnostic_id": public["diagnostic_id"],
+        "candidate_id": public["candidate_id"], "created_at": public["created_at"],
+        "current_status": "unregistered_synthetic_diagnostic", "candidate_type": None,
+        "domain": "research_engineering", "allowed_decisions": [],
+        "frozen_gate_metrics": public["aggregates"], "diagnostic": public,
+        "note": "Synthetic engineering only; no candidate lifecycle or promotion authority. "
+                "Equal-date 25-session single-entry adverse excursion, including four post-exit sessions. "
+                "INFERENCE_UNQUALIFIED / NO_QUALIFIED_PROCEDURE.",
+    }

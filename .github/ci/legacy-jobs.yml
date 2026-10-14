@@ -8953,6 +8953,10 @@ jobs:
           tests/test_research_codegen_transport.py
           tests/test_research_codegen_contracts.py
           tests/test_research_codegen_input_contract.py
+          tests/test_research_codegen_bridge.py
+          tests/test_research_codegen_review_projection.py
+          tests/test_research_codegen_admin_projection.py
+          tests/test_research_codegen_admin_tokens.py
           -q
 
   cycle-pattern-authority:
