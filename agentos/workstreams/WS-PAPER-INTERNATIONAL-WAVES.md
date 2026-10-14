@@ -140,7 +140,7 @@ waves:
   - IM04
   - IM08
   - IM09
-next_action: Discriminate the newly identified missing Trade/supply historical percentile against its actual owner before a bounded display repair; preserve original Chrome UI handoff and all data, review and release dependencies.
+next_action: Resume the original live Library-to-Stock return only after Chris completes or dismisses the recorded Chrome extension UI; otherwise consume genuine new qualification, Compare/Saved contract or original review-owner input without inventing contracts, replaying accepted cases or polling held surfaces.
 artifacts:
 - research/paper_international_wave1_wave2/FRAGILITY_COVERAGE_SCOPE_ACCEPTANCE.json
 - research/paper_international_wave1_wave2/CONTAGION_KEYBOARD_ACCEPTANCE.json

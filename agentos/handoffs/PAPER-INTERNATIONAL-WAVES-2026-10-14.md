@@ -2,12 +2,14 @@
 workstream: WS:PAPER-INTERNATIONAL-WAVES
 session: sol/manual-paper-waves-01a1101f-release-r2
 model: codex
-ended_because: context_budget
+ended_because: blocked
 mission: Complete the International programme on its existing carriers while preserving custody, release and frozen-effect
   holds.
 state_before: Macro PR8754 published the J07 reset-control repair at 943ee54; only hosted authority checks were
   observed and retired. Terminal PR804 execution belonged solely to IW2.
 changed:
+- path: templates/intl.html.j2; tests/test_intl_trade_pressure_absence_render.py; tests/intl_workspace_page.test.cjs
+  what: Keep Trade pressure missing history unavailable; preserve valid states and exporters, independent Risk-free rendering and narrow source-chip containment.
 - path: templates/intl.html.j2; tests/test_intl_fragility_disclosure_render.py; tests/intl_workspace_page.test.cjs
   what: Preserve per-country warning details in expanded Fragility rows and correct a duplicated Chinese character; source only.
 - path: templates/intl.html.j2; tests/test_intl_fragility_scope_render.py; tests/intl_workspace_page.test.cjs
@@ -191,6 +193,8 @@ changed:
   what: Record8short-height source-fixture cases with32modal modes and560native keyboard observations; no Inspector
     product change.
 verified:
+- claim: Trade pressure10render and5new browser cases pass, plus4affected Library returns;8finalcanonical and8focused views, with4desktop pixel reuse. Counts overlap.
+  command: python3 -m pytest -q tests/test_intl_trade_pressure_absence_render.py; node --test --test-name-pattern="^Trade pressure" tests/intl_workspace_page.test.cjs
 - claim: Fragility disclosure4render cases and4browser cases across8width states pass, with8canonical and8expanded source views.
   command: python3 -m pytest -q tests/test_intl_fragility_disclosure_render.py; node --test --test-name-pattern="^Fragility disclosure warning details" tests/intl_workspace_page.test.cjs
 - claim: Fragility partial and flagged source samples preserve supplied coverage and honest years.
@@ -631,3 +635,7 @@ Contagion keyboard: original Enter left BODY focused, then heading-only repair e
 Fragility coverage: actual owner can return a partially populated unflagged row and summarizes latest input year per country, including projection fallback. Nine causal render failures and one native-focus failure are repaired without owner or enrichment edits. Final nine render and eight browser cases pass; eight canonical and eight focused parent images were refreshed after plain-language copy refinement. `FRAGILITY_COVERAGE_SCOPE_ACCEPTANCE.json` retains exact source limits. Contagion preceding commit83e027b initially met remote commit_refs technical failure; exact branch ref remained854a and one same-origin nonforce recovery succeeded. No CI status inferred. Resume the original live Library-to-Stock return only after Chris completes or dismisses its recorded Chrome extension UI; otherwise assess genuinely new owner qualification, Compare/Saved contract or review input without replaying accepted source cases or polling held surfaces.
 
 Fragility disclosure continuation: actual vulnerability_table over synthetic distinct IMF inputs reproduces the fourth/fifth-country missing warning details. Existing tag markup restores those details without changing any engine, flags or enrichment. Three initial render selector errors remain separate from the corrected two causal missing-tag failures and independent browser failure. Receipt FRAGILITY_DISCLOSURE_ACCEPTANCE.json binds source/captures; independent review pending and source not deployed.
+
+Trade pressure continuation: actual compute() missing-history artifacts preserve nonzero raw linkage pressure and a default low label. Source now requires supplied history for a displayed level, preserves actual zero and supplied level enums, and hides absent bars. Existing row/bar CSS moved out of the Risk-only condition; native bars no longer collapse to0height when Risk is absent. Parent visual read caught a source chip crossing its320px row; new child-boundary red/green and120px flex basis correct it. Build time and generic gaps no longer imply live observations or structural-only gaps. Receipt TRADE_PRESSURE_ABSENCE_ACCEPTANCE.json retains all causal failures and intermediate captures. Source not deployed; independent review pending; original Chrome human step, all contracts and release controls remain.
+
+The changed-line design guard stopped publication on two relocated literal3px radii. Both now use the registered pill token; fresh final captures retain6pixel-identical focused views and two visually checked English320views differing only around the floating launcher. Prior behavioral checks are reused for this radius-only correction. No commit/push preceded successful final guards.

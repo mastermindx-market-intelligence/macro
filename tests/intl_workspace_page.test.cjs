@@ -54,6 +54,50 @@ const coldLocaleHtml = execFileSync(process.env.INTL_TEST_PYTHON || 'python3', [
   'from tests.test_intl_workspace_integration import render_history_fixture; print(render_history_fixture())'],
   {cwd:root,env:{...process.env,PYTHONPATH:root},encoding:'utf8',maxBuffer:4*1024*1024});
 
+test('Trade pressure bars survive absent Risk desk',async()=>{
+  for(const withRisk of [false,true]) {
+    const h=execFileSync('python3',['-c',`from tests.test_intl_trade_pressure_absence_render import mixed_pressure_fixture; from tests.test_intl_workspace_integration import render_fixture; print(render_fixture(cgl=mixed_pressure_fixture(),risk_desk=${withRisk?"{'built':'synthetic:fixture'}":"None"}))`],{cwd:root,env:{...process.env,PYTHONPATH:root},encoding:'utf8',maxBuffer:4*1024*1024});
+    await pageFixture(async page=>{
+      const panel=page.locator('#intl-trade-supply-links').locator('xpath=ancestor::div[contains(concat(" ",normalize-space(@class)," ")," panel ")][1]');
+      const bars=panel.locator('.ird-tx-bar-wrap');assert.equal(await bars.count(),3);
+      const geometry=await bars.evaluateAll(ns=>ns.map(n=>({track:n.getBoundingClientRect().toJSON(),fill:n.firstElementChild.getBoundingClientRect().toJSON()})));
+      assert.ok(geometry.every(g=>g.track.height>=6&&g.track.width>=40),JSON.stringify({withRisk,geometry}));
+      assert.ok(geometry[0].fill.width>0&&geometry[1].fill.width>0&&geometry[2].fill.width===0);
+    },{htmlOverride:h,published:true,width:320,initialSearch:'?view=library#intl-trade-supply-links'});
+  }
+});
+
+for (const theme of ['dark','light']) for (const lang of ['en','zh']) {
+  test(`Trade pressure missing history ${theme} ${lang}`,async()=>{
+    const h=execFileSync('python3',['-c',"from tests.test_intl_trade_pressure_absence_render import mixed_pressure_fixture; from tests.test_intl_workspace_integration import render_fixture; print(render_fixture(cgl=mixed_pressure_fixture()))"],{cwd:root,env:{...process.env,PYTHONPATH:root},encoding:'utf8',maxBuffer:4*1024*1024});
+    await pageFixture(async page=>{
+      for(const width of [320,1440]) {
+        await page.setViewportSize({width,height:900});
+        await page.goto('http://intl.test/intl.html?view=library&market=JP&horizon=3m&basis=local&return_basis=price#intl-trade-supply-links');
+        await page.evaluate(({theme,lang})=>{setTheme(theme);setLang(lang);},{theme,lang});
+        const panel=page.locator('#intl-trade-supply-links').locator('xpath=ancestor::div[contains(concat(" ",normalize-space(@class)," ")," panel ")][1]');
+        const rows=panel.locator('.ird-tx-row');assert.equal(await rows.count(),11);
+        const labels=await rows.locator('span.chip').allInnerTexts();
+        assert.deepEqual(labels.slice(0,3),lang==='zh'?['高','升温','低']:['High','Building','Low']);
+        assert.deepEqual(labels.slice(3).filter(t=>t!==(lang==='zh'?'风险输出方':'exporting risk')),Array(8).fill(lang==='zh'?'不可用':'Unavailable'));
+        assert.equal(await panel.locator('.ird-tx-bar-wrap').count(),3);
+        assert.ok((await panel.innerText()).includes(lang==='zh'?'缺少历史比较不代表压力低。':'A missing historical comparison is not a low reading.'));
+        assert.ok((await panel.innerText()).includes('35%'));
+        assert.ok((await panel.innerText()).includes(lang==='zh'?'已报告数据缺口：42':'Reported data gaps: 42'));
+        assert.ok(!(await panel.innerText()).includes(lang==='zh'?'今晚':'tonight'));
+        for(let i=0;i<11;i++) {
+          const row=rows.nth(i);await row.scrollIntoViewIfNeeded();assert.equal(await row.isVisible(),true);
+          assert.ok(await row.evaluate(n=>{const r=n.getBoundingClientRect();return r.left>=0&&r.right<=innerWidth+1;}));
+          assert.equal(await row.locator('.rrx-rec-chip').evaluateAll(ns=>ns.every(n=>{const r=n.getBoundingClientRect(),p=n.closest('.ird-tx-row').getBoundingClientRect();return r.left>=p.left&&r.right<=p.right+1&&n.scrollWidth<=n.clientWidth+1;})),true,'source chips stay inside their row');
+        }
+        assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1));
+        assert.equal(new URL(page.url()).searchParams.get('market'),'JP');
+      }
+    },{htmlOverride:h,published:true,bootLanguage:lang,width:320,
+      initialSearch:'?view=library&market=JP&horizon=3m&basis=local&return_basis=price#intl-trade-supply-links'});
+  });
+}
+
 for (const theme of ['dark','light']) for (const lang of ['en','zh']) {
   test(`Fragility disclosure warning details ${theme} ${lang}`,async()=>{
     const fixture=JSON.parse(execFileSync('python3',['-c',"import json; from tests.test_intl_fragility_disclosure_render import disclosure_fixture; from tests.test_intl_workspace_integration import render_fixture; p=disclosure_fixture(); print(json.dumps({'html':render_fixture(risk_desk=p),'countries':p['vulnerability']['countries']}))"],{cwd:root,env:{...process.env,PYTHONPATH:root},encoding:'utf8',maxBuffer:4*1024*1024}));
@@ -850,7 +894,7 @@ for (const theme of ['dark','light']) for (const lang of ['en','zh']) {
         const panel=target.locator('..').locator('..');
         const text=await panel.innerText();
         assert.match(text,lang==='zh'?/升温/:/Building/);
-        assert.match(text,lang==='zh'?/结构权重/:/structural weights/);
+        assert.match(text,lang==='zh'?/已报告数据缺口：1/:/Reported data gaps: 1/);
         assert.match(text,/38%/);
         assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1));
         await page.goBack();

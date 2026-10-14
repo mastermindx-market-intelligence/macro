@@ -37,6 +37,12 @@
 {% if mode == 'stocks' %}<link rel="stylesheet" href="dashboard-icons.css">{% endif %}
 {% if mode == 'stocks' %}<script defer src="dashboard-icons.js"></script>{% endif %}
 <style>
+  /* Shared by Risk and Trade; keep available when either source is absent. */
+  .ird-tx-row{display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid var(--line);font-size:12.5px;}
+  .ird-tx-row:last-child{border-bottom:none;}
+  .ird-tx-bar-wrap{width:132px;height:6px;background:var(--panel);border-radius:var(--r-pill,999px);overflow:hidden;}
+  .ird-tx-bar{height:100%;border-radius:var(--r-pill,999px);background:var(--warn);}
+  @media(max-width:640px){body.page-intl .ird-tx-row{flex-wrap:wrap;}}
   * { box-sizing: border-box; }
   /* ── design tokens ported from macro.html (deep command-center canvas + mono numerals) ── */
   body {
@@ -1276,7 +1282,6 @@
   @media(max-width:640px){
     body.page-intl .te-strip{grid-template-columns:minmax(0,1fr);}
     body.page-intl .seg{flex-wrap:wrap;max-width:100%;}
-    body.page-intl .ird-tx-row{flex-wrap:wrap;}
   }
   /* §15: this row is a fixed-size dial + a text column and it never wrapped, so its
      intrinsic floor (653px) set the whole panel's width and the page was 82% wider
@@ -1289,13 +1294,9 @@
     background:color-mix(in srgb,var(--warn) 8%,var(--panel2));flex-shrink:0;}
   .ird-dial-circle .dc-num{font-size:24px;font-weight:800;color:var(--ink-warn, var(--warn));line-height:1;}
   .ird-dial-circle .dc-of{font-size:10px;color:var(--muted);font-weight:600;}
-  .ird-tx-row{display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid var(--line);font-size:12.5px;}
-  .ird-tx-row:last-child{border-bottom:none;}
   .ird-tx-rank{width:18px;font-size:11px;color:var(--muted);font-weight:700;}
   .ird-tx-flag{font-size:16px;}
   .ird-tx-name{flex:1;font-weight:600;}
-  .ird-tx-bar-wrap{width:132px;height:6px;background:var(--panel);border-radius:3px;overflow:hidden;}
-  .ird-tx-bar{height:100%;border-radius:3px;background:var(--warn);}
   .ird-us-recv{display:flex;align-items:center;gap:10px;margin:10px 0 12px;padding:8px 12px;
     background:var(--panel2);border-radius:9px;border:1px solid var(--line);}
   .ird-us-recv .ur-num{font-size:20px;font-weight:800;color:var(--ink-info, var(--info));}
@@ -1897,28 +1898,28 @@
 {%- set _cgl_rows = namespace(v=[]) -%}
 {%- for mkt, blk in _cgl_pressure.items() -%}
   {%- if blk -%}
-    {%- set _pct = blk.pct if (blk.pct is defined and blk.pct is not none) else 0 -%}
+    {%- set _pct = blk.pct if (blk.pct is defined and blk.pct is number and blk.pct is not boolean and 0 <= blk.pct <= 1) else -1 -%}
     {%- set _cgl_rows.v = _cgl_rows.v + [{'mkt': mkt, 'blk': blk, 'pct': _pct}] -%}
   {%- endif -%}
 {%- endfor -%}
 {%- set _cgl_sorted = _cgl_rows.v | sort(attribute='pct', reverse=true) -%}
 <div class="panel">
   <div class="sec-h">
-    <h2 id="intl-trade-supply-links">{{ t('Where crash pressure is flowing now', '冲击压力的实时流向') }}
+    <h2 id="intl-trade-supply-links">{{ t('Supplied crash-pressure readings', '所提供的冲击压力读数') }}
       {{ help('How much inbound pressure each market is absorbing from markets that are actually falling — measured from economic linkages and current crash depth. Low / Building / High reflects the severity relative to the past two years. Top sources show which markets are driving the pressure. Source: trade, financial and supply-chain linkages blended with recent price action. Display only — not a signal to trade.', '每个市场正在吸收多少来自真实下跌市场的输入压力——由经济联系与当前跌幅共同衡量。低/升温/高反映过去两年的相对严重程度。压力来源显示哪些市场是主要驱动力。数据来源：贸易、金融与供应链联系，结合近期价格走势。仅作展示，非交易信号。') }}</h2>
     <span class="sub">{{ t('Measured from market connections and who is actually falling', '由市场关联与实际下跌方共同衡量') }}</span>
   </div>
   {%- if _cgl_sorted %}
+  <p class="muted small">{{ t('Levels compare pressure with its history. A missing historical comparison is not a low reading.', '等级将压力与其历史比较。缺少历史比较不代表压力低。') }}</p>
   <div style="margin-top:8px;">
     {%- for row in _cgl_sorted %}
     {%- set mkt = row.mkt -%}
     {%- set blk = row.blk -%}
     {%- set _names = _cgl_mkt_names.get(mkt, (mkt, mkt)) -%}
-    {%- set _lv = blk.level if (blk.level is defined and blk.level) else 'low' -%}
-    {%- set _lv_chip = 'warn' if _lv == 'high' else ('caut' if _lv == 'moderate' else 'ok') -%}
+    {%- set _lv = blk.level if (row.pct >= 0 and blk.level is defined and blk.level in ['low', 'moderate', 'high']) else 'unknown' -%}
+    {%- set _lv_chip = 'warn' if _lv == 'high' else ('caut' if _lv == 'moderate' else ('ok' if _lv == 'low' else '')) -%}
     {%- set _svr = _cgl_severity.get(mkt, {}) -%}
     {%- set _is_source = _svr and (_svr.sigma is defined) and (_svr.sigma is not none) and (_svr.sigma >= 0.5) -%}
-    {%- set _pct_bar = ((blk.pct if blk.pct is not none else 0) * 100) | round | int -%}
     <div class="ird-tx-row" style="align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid var(--line);">
       <span style="min-width:120px;font-size:12.5px;font-weight:600;">
         <span class="l-en">{{ _names[0] }}</span><span class="l-zh">{{ _names[1] }}</span>
@@ -1926,14 +1927,17 @@
       <span class="chip {{ _lv_chip }}" style="font-size:10px;padding:1px 6px;white-space:nowrap;">
         {%- if _lv == 'high' %}<span class="l-en">High</span><span class="l-zh">高</span>
         {%- elif _lv == 'moderate' %}<span class="l-en">Building</span><span class="l-zh">升温</span>
-        {%- else %}<span class="l-en">Low</span><span class="l-zh">低</span>
+        {%- elif _lv == 'low' %}<span class="l-en">Low</span><span class="l-zh">低</span>
+        {%- else %}<span class="l-en">Unavailable</span><span class="l-zh">不可用</span>
         {%- endif %}
       </span>
+      {%- if row.pct >= 0 %}
       <div class="ird-tx-bar-wrap" style="flex:1;min-width:40px;max-width:90px;">
-        <div class="ird-tx-bar" style="width:{{ _pct_bar }}%"></div>
+        <div class="ird-tx-bar" style="width:{{ (row.pct * 100) | round | int }}%"></div>
       </div>
+      {%- endif %}
       {%- if blk.top_exporters is defined and blk.top_exporters %}
-      <span style="display:flex;flex-wrap:wrap;gap:3px;flex:1;min-width:0;">
+      <span style="display:flex;flex-wrap:wrap;gap:3px;flex:1 1 120px;min-width:0;">
         {%- for exp in blk.top_exporters[:3] %}
         {%- set _en = exp.name_en if (exp.name_en is defined and exp.name_en) else (exp.market if exp.market is defined else '?') -%}
         {%- set _zh = exp.name_zh if (exp.name_zh is defined and exp.name_zh) else _en -%}
@@ -1958,8 +1962,8 @@
   {%- endif %}
   {%- if _cgl_gaps %}
   <p class="caveat ird-asof" style="margin-top:8px;">
-    <span class="l-en">Some links running on structural weights only tonight ({{ _cgl_gaps | length }} data gaps).</span>
-    <span class="l-zh">今晚部分联系仅依靠结构权重运行（{{ _cgl_gaps | length }} 项数据缺口）。</span>
+    <span class="l-en">Reported data gaps: {{ _cgl_gaps | length }}. Input dates and coverage may differ; gaps do not establish calm conditions.</span>
+    <span class="l-zh">已报告数据缺口：{{ _cgl_gaps | length }}。输入日期和覆盖范围可能不同；数据缺口不代表情况平静。</span>
   </p>
   {%- endif %}
 </div><!-- /cgl-directed-pressure -->
