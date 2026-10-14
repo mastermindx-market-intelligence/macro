@@ -4298,6 +4298,9 @@ CURATED_EXCLUSIVE = {
     # the code gate, closure audit and packing ceilings remain unchanged.
     "options-matrix-code",
     "push-retry-policy",
+    # 2026-10-14 LR T17: the measured-group-read suite is pure-synthetic; the
+    # exclusive scope is its measured literal closure (no fallback smear).
+    "leadership-measured-read",
     # Paper International: retain the measured ITR closure, dropping opaque fallback.
     "itr-turn-rotation",
     # 2026-10-05 GMI #8455: remove transmission's opaque code fallback.
