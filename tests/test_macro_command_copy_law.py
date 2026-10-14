@@ -784,7 +784,51 @@ def test_clearance_probe_js_binds_locator_element_then_arg() -> None:
 
 
 def test_capture_relocated_needles_are_locale_visible_and_must_be_inside() -> None:
-    """M2 / B3: probe strings exist on the rates page and live in details."""
+    """M2 / B3: probe strings exist on the rates page and live in details.
+
+    The committed page is not part of this law. A rates snapshot rendered
+    through _render_workspace_html keeps the verdict off site/ (precedent
+    1f2b713e37, #8032). Confidence basis is emitted once per implication
+    entry; the stale fixture has none, so this plants one descriptive entry.
+    """
+    import json
+    from scripts.capture_macro_command_p5 import RELOCATED_EN, RELOCATED_ZH
+    fixture = json.loads(
+        (ROOT / "tests" / "fixtures" / "macro_command_p5"
+         / "rates_e2_stale.json").read_text(encoding="utf-8"))
+    fixture["implications"] = {"items": [{
+        "implication_id": "curve_shape",
+        "text": {"en": "The curve is steeper.", "zh": "曲线更陡。"},
+        "evidence_class": "DESCRIPTIVE",
+        "horizon": "ONE_MONTH",
+        "channels": [],
+        "confidence": {
+            "data_coverage": "HIGH",
+            "source_health": "HIGH",
+            "revision_risk": "LOW",
+            "method_stability": "HIGH",
+            "evidence_breadth": "MEDIUM",
+            "contradiction_state": "NONE",
+        },
+    }]}
+    html = _render_workspace_html("rates_curves", fixture)
+    assert "mc-producer-receipt" not in html
+    for needle in RELOCATED_EN:
+        assert needle in html
+        assert needle not in guard.reading_path_text(html)
+    for needle in RELOCATED_ZH:
+        assert needle in html
+        assert needle not in guard.reading_path_text(html)
+
+
+@pytest.mark.needs_full_checkout("site")
+def test_committed_rates_page_keeps_relocated_needles_inside_details() -> None:
+    """Companion site guard: the rebaked rates page keeps the same law.
+
+    Separate from the fixture test above on purpose (1f2b713e37, #8032): the
+    fixture render is the code law, this reads the committed artifact only
+    and skips via needs_full_checkout when site/ is absent.
+    """
     from scripts.capture_macro_command_p5 import RELOCATED_EN, RELOCATED_ZH
     html = (ROOT / "site" / "macro_rates_curves.html").read_text(encoding="utf-8")
     assert "mc-producer-receipt" not in html
@@ -1101,8 +1145,17 @@ def test_copy_guard_keeps_details_summary() -> None:
 
 
 def test_declared_cells_minus_captured_is_gaps() -> None:
-    from scripts.capture_macro_command_p5 import declared_cells
-    declared = declared_cells()
+    from scripts.capture_macro_command_p5 import (
+        HUB_PAGE, WORKSPACE_PAGES, declared_cells,
+    )
+    appl = {
+        HUB_PAGE: {"fragments": True, "template": True},
+    }
+    for page in WORKSPACE_PAGES:
+        appl[page] = {"fragments": False, "template": False}
+    declared = declared_cells(e5_applicability=appl)
+    assert any(n.startswith("e5-") for n in declared)
+    assert not any(n.startswith("e5-macro_rates_curves") for n in declared)
     captured = set(declared)
     assert sorted(set(declared) - captured) == []
     assert "01-dark-en-1440-full.png" in declared
@@ -1913,6 +1966,10 @@ def _assert_one_lineage_kind(html: str, kind: str) -> None:
     from lib.macro_suite_disclosure import (
         LINEAGE_NOTE_KIND_FACTS, LINEAGE_NOTE_KIND_SENTENCES,
     )
+    assert set(LINEAGE_NOTE_KIND_FACTS) == set(LINEAGE_NOTE_KIND_SENTENCES), (
+        "FACTS and SENTENCES must cover the same lineage kinds: the helpers "
+        "below filter on one dict and index the other by kind"
+    )
     for other, fact in LINEAGE_NOTE_KIND_FACTS.items():
         zh = LINEAGE_NOTE_KIND_SENTENCES[other]["zh"]
         if other == kind:
@@ -1925,18 +1982,31 @@ def _assert_one_lineage_kind(html: str, kind: str) -> None:
     assert "cannot summarise the correction note yet" not in html
 
 
-def _assert_live_lineage_matches_note(workspace_id: str, page_name: str) -> None:
-    """The committed page says the sentence its corrections.note actually is."""
-    import json
-    from lib.macro_suite_disclosure import classify_lineage_kind
-    snap = json.loads(
-        (DATA_ROOT / "workspaces" / workspace_id / "US" / "latest.json")
-        .read_text(encoding="utf-8"))
-    note = (snap.get("corrections") or {}).get("note")
-    kind = classify_lineage_kind(note)
-    html = (ROOT / "site" / page_name).read_text(encoding="utf-8")
-    print(f"lineage branch={kind} page={page_name}")
+def _assert_page_states_one_lineage_kind(html: str) -> str:
+    """Return the one lineage kind the page states, proved page-internally.
+
+    This never reads data/, DATA_ROOT or any snapshot and never calls
+    classify_lineage_kind, because a committed page's corrections.note moves
+    with the nightly snapshot while the HTML is rebaked separately, so a
+    note-vs-page comparison goes red with no code change (1f2b713e37, #8032).
+    """
+    from lib.macro_suite_disclosure import (
+        LINEAGE_NOTE_KIND_FACTS, LINEAGE_NOTE_KIND_SENTENCES,
+    )
+    assert set(LINEAGE_NOTE_KIND_FACTS) == set(LINEAGE_NOTE_KIND_SENTENCES), (
+        "FACTS and SENTENCES must cover the same lineage kinds: the helpers "
+        "below filter on one dict and index the other by kind"
+    )
+    stated = [kind for kind, fact in LINEAGE_NOTE_KIND_FACTS.items()
+              if kind in LINEAGE_NOTE_KIND_SENTENCES and fact in html]
+    assert len(stated) == 1, (
+        "page must state exactly one lineage kind, got",
+        {kind: fact in html
+         for kind, fact in LINEAGE_NOTE_KIND_FACTS.items()},
+    )
+    kind = stated[0]
     _assert_one_lineage_kind(html, kind)
+    return kind
 
 
 def _assert_axes_resolve_by_id(items: list, vector: dict, snap: dict) -> None:
@@ -2409,10 +2479,15 @@ def _assert_restored_row_family(html: str) -> None:
     assert "A correction note is on file for this reading." not in html
 
 
-@pytest.mark.needs_full_checkout("site")
 def test_restored_row_families_on_non_composite_page() -> None:
-    """Value-correction rows are a fixture scenario. The committed page
-    keeps the row family and the sentence its own note classifies as."""
+    """Value-correction rows are a fixture scenario.
+
+    The committed page is not part of this law. Its corrections.note moves
+    with the nightly snapshot and the HTML is rebaked separately, so
+    requiring the page to match today's kind goes red on main (precedent
+    1f2b713e37, #8032). The row family and the value-correction sentence
+    are pinned by _render_workspace_html on mp_value_correction.json.
+    """
     import json
     fixture = json.loads(
         (ROOT / "tests" / "fixtures" / "macro_command_p5"
@@ -2420,6 +2495,16 @@ def test_restored_row_families_on_non_composite_page() -> None:
     baked = _render_workspace_html("monetary_policy", fixture)
     _assert_restored_row_family(baked)
     _assert_one_lineage_kind(baked, "value_correction")
+
+
+@pytest.mark.needs_full_checkout("site")
+def test_committed_monetary_policy_page_keeps_restored_rows() -> None:
+    """Companion site guard for the committed monetary page.
+
+    Static row family plus _assert_page_states_one_lineage_kind: the page is
+    proved internally consistent on one lineage kind. It does NOT compare
+    against corrections.note — that coupling is deleted on purpose (#8032).
+    """
     live = (ROOT / "site" / "macro_monetary_policy.html").read_text(
         encoding="utf-8")
     assert "mq-axis-method" not in live
@@ -2428,8 +2513,7 @@ def test_restored_row_families_on_non_composite_page() -> None:
         assert zh in live, zh
     assert "Definition version" in live
     assert "A correction note is on file for this reading." not in live
-    _assert_live_lineage_matches_note(
-        "monetary_policy", "macro_monetary_policy.html")
+    _assert_page_states_one_lineage_kind(live)
 
 
 @pytest.mark.needs_full_checkout("mockups")

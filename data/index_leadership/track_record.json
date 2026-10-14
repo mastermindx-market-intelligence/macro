@@ -1,18 +1,18 @@
 {
   "schema": "index_leadership.track_record.v1",
-  "as_of": "2026-10-08",
-  "generated_at": "2026-10-13T07:08:14.126471+00:00",
+  "as_of": "2026-10-13",
+  "generated_at": "2026-10-14T17:57:46.625691+00:00",
   "is_context_only": true,
-  "n_snapshots": 1191,
-  "n_days": 40,
+  "n_snapshots": 1215,
+  "n_days": 41,
   "horizons": {
     "5": {
-      "n_matured": 1084,
+      "n_matured": 1191,
       "by_stage": {
         "running": {
-          "n": 1010,
-          "mean_fwd_rel": -0.006,
-          "hit_rate": 0.415
+          "n": 1114,
+          "mean_fwd_rel": -0.0064,
+          "hit_rate": 0.401
         },
         "coiling": {
           "n": 36,
@@ -20,23 +20,23 @@
           "hit_rate": 0.472
         },
         "coiling_primed": {
-          "n": 38,
-          "mean_fwd_rel": 0.0117,
-          "hit_rate": 0.579
+          "n": 41,
+          "mean_fwd_rel": 0.0105,
+          "hit_rate": 0.561
         }
       },
-      "running_ic": -0.0029,
-      "running_ic_t_hac": -0.041,
+      "running_ic": -0.0258,
+      "running_ic_t_hac": -0.374,
       "coiling_ic": null,
       "coiling_ic_t_hac": null
     },
     "10": {
-      "n_matured": 976,
+      "n_matured": 1084,
       "by_stage": {
         "running": {
-          "n": 902,
-          "mean_fwd_rel": -0.0105,
-          "hit_rate": 0.379
+          "n": 1010,
+          "mean_fwd_rel": -0.0122,
+          "hit_rate": 0.361
         },
         "coiling": {
           "n": 36,
@@ -49,18 +49,18 @@
           "hit_rate": 0.474
         }
       },
-      "running_ic": -0.0066,
-      "running_ic_t_hac": -0.101,
+      "running_ic": -0.0443,
+      "running_ic_t_hac": -0.797,
       "coiling_ic": null,
       "coiling_ic_t_hac": null
     },
     "21": {
-      "n_matured": 818,
+      "n_matured": 891,
       "by_stage": {
         "running": {
-          "n": 744,
-          "mean_fwd_rel": -0.027,
-          "hit_rate": 0.305
+          "n": 817,
+          "mean_fwd_rel": -0.0269,
+          "hit_rate": 0.307
         },
         "coiling": {
           "n": 36,
@@ -73,18 +73,18 @@
           "hit_rate": 0.605
         }
       },
-      "running_ic": 0.0195,
-      "running_ic_t_hac": 0.48,
+      "running_ic": 0.0275,
+      "running_ic_t_hac": 0.661,
       "coiling_ic": null,
       "coiling_ic_t_hac": null
     },
     "63": {
-      "n_matured": 177,
+      "n_matured": 223,
       "by_stage": {
         "running": {
-          "n": 165,
-          "mean_fwd_rel": -0.0491,
-          "hit_rate": 0.309
+          "n": 204,
+          "mean_fwd_rel": -0.0462,
+          "hit_rate": 0.304
         },
         "coiling": {
           "n": 10,
@@ -92,12 +92,12 @@
           "hit_rate": 0.2
         },
         "coiling_primed": {
-          "n": 2,
-          "mean_fwd_rel": -0.0446,
-          "hit_rate": 0.0
+          "n": 9,
+          "mean_fwd_rel": 0.0246,
+          "hit_rate": 0.556
         }
       },
-      "running_ic": null,
+      "running_ic": 0.0567,
       "running_ic_t_hac": null,
       "coiling_ic": null,
       "coiling_ic_t_hac": null
@@ -116,67 +116,67 @@
   "note": "Accruing forward observations; no horizon clears the Newey-West significance bar yet. Early numbers are provisional, context-only.",
   "recent_misses": [
     {
-      "date": "2026-09-17",
-      "id": "baskets:silver-miners",
-      "name": "Silver Miners",
+      "date": "2026-09-22",
+      "id": "baskets:ai-neoclouds",
+      "name": "AI Neoclouds & HPC Hosting",
       "stage": "running",
-      "fwd_rel": -0.1396,
+      "fwd_rel": -0.245,
       "horizon_d": 21
     },
     {
-      "date": "2026-09-17",
-      "id": "baskets:gold-miners",
-      "name": "Gold Miners",
-      "stage": "running",
-      "fwd_rel": -0.1278,
-      "horizon_d": 21
-    },
-    {
-      "date": "2026-09-17",
-      "id": "subsectors:agricultural-inputs",
-      "name": "Agricultural Inputs",
-      "stage": "running",
-      "fwd_rel": -0.1008,
-      "horizon_d": 21
-    },
-    {
-      "date": "2026-09-17",
+      "date": "2026-09-22",
       "id": "baskets:crypto",
       "name": "Crypto & Digital Assets",
       "stage": "running",
-      "fwd_rel": -0.069,
+      "fwd_rel": -0.1947,
       "horizon_d": 21
     },
     {
-      "date": "2026-09-17",
-      "id": "russell:reit-healthcare-facilities",
-      "name": "REIT - Healthcare Facilities",
+      "date": "2026-09-22",
+      "id": "baskets:memory-storage",
+      "name": "Memory, HBM & Storage",
       "stage": "running",
-      "fwd_rel": -0.0689,
+      "fwd_rel": -0.1841,
       "horizon_d": 21
     },
     {
-      "date": "2026-09-17",
-      "id": "subsectors:auto-manufacturers",
-      "name": "Auto Manufacturers",
+      "date": "2026-09-22",
+      "id": "russell:gold",
+      "name": "Gold",
       "stage": "running",
-      "fwd_rel": -0.0595,
+      "fwd_rel": -0.1335,
       "horizon_d": 21
     },
     {
-      "date": "2026-09-17",
-      "id": "russell:building-products-equipment",
-      "name": "Building Products & Equipment",
+      "date": "2026-09-22",
+      "id": "subsectors:capital-markets",
+      "name": "Capital Markets",
       "stage": "running",
-      "fwd_rel": -0.0557,
+      "fwd_rel": -0.0767,
       "horizon_d": 21
     },
     {
-      "date": "2026-09-17",
+      "date": "2026-09-22",
+      "id": "baskets:ai-semiconductors",
+      "name": "AI Semiconductors",
+      "stage": "running",
+      "fwd_rel": -0.0765,
+      "horizon_d": 21
+    },
+    {
+      "date": "2026-09-22",
+      "id": "nasdaq:semiconductors",
+      "name": "Semiconductors",
+      "stage": "running",
+      "fwd_rel": -0.0585,
+      "horizon_d": 21
+    },
+    {
+      "date": "2026-09-22",
       "id": "subsectors:farm-heavy-construction-machinery",
       "name": "Farm & Heavy Construction Machinery",
       "stage": "running",
-      "fwd_rel": -0.0556,
+      "fwd_rel": -0.0574,
       "horizon_d": 21
     }
   ],
