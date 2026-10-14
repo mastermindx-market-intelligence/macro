@@ -4793,6 +4793,10 @@ CURATED_EXCLUSIVE = {
     # pins each to its measured static closure plus its fixture globs.
     "research-price-panel",
     "washout-turn-organ",
+    # 2026-10-14: rotation AST/render fallback curation; retain full static
+    # closure plus observed runtime inputs. Assertions and probe limits stay fixed.
+    "leadership-rotation-contract",
+    "lr-rotation-evidence-modes",
 }
 
 
@@ -4960,9 +4964,9 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # each number is the docstring of the test below. scripts/check_contract_delta.py
 # reads both names with ast.literal_eval, so keep them plain module-level literals.
 PACKING_PROBES = (
-    ("templates/index.html", 135, 5_803),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("templates/index.html", 136, 5_803),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
     ("scripts/build_free_content.py", 134, 5_600),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("engine/prophet/plan_book.py", 129, 5_600),
+    ("engine/prophet/plan_book.py", 130, 5_600),
 )
 # Twelve packs per shape was the pre-curation measurement.
 PACKING_PROBE_MAX_PACKS = 10
@@ -5642,6 +5646,24 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     In the same run, build_free_content was already at 5,602 against its
     5,600 ceiling on the base. That was reported as inherited, not
     introduced, and is left for a separate heal.
+
+    2026-10-14 (Market Memory UI integration with Leadership Rotation):
+    hosted run 38530236436 on merge 2d524d3e1 of b3f9739 into
+    703477f0 reproduced two JOB-only breaches. Full inference on current
+    main union 44cc567d1edf (base 05bcc762fb16; all 313 jobs retained)
+    measures 136 / 134 / 130 jobs and 5,678 / 5,475 / 5,441 weight,
+    with ten packs for every probe. The two genuine main entrants are
+    lr-rotation-evidence-modes on templates/index.html (its imported
+    sector-cycle suites conservatively own templates/**), and
+    leadership-rotation-contract on plan_book.py (engine/** fallback).
+    Each weighs four; neither selects build_free_content.py.
+
+    Fund only those measured counts: 135 -> 136 and 129 -> 130.
+    Keep every suite and conservative dependency claim, the build-script
+    count ceiling 134, all weight ceilings, and the ten-pack limit.
+    Narrowing either job without a complete closure audit would discard
+    coverage, while padding counts beyond the exact measured entrants
+    would hide the next change. No selector or runtime source is edited.
     """
     rows = packing_probe_measurements(
         MANIFEST, PACKING_PROBES, max_packs=PACKING_PROBE_MAX_PACKS
