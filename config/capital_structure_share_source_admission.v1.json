@@ -72,7 +72,7 @@
     }
   },
   "unadmitted_share_bases": {
-    "weighted_average_eps": "No admitted producer. us-gaap WeightedAverageNumberOfSharesOutstandingBasic/Diluted are not in share_count_truth.SUPPORTED_FACTS; a period-average EPS denominator is never an outstanding count (A16).",
+    "weighted_average_eps": "No admitted producer. us-gaap WeightedAverageNumberOfSharesOutstandingBasic/Diluted are not in share_count_truth.SUPPORTED_FACTS. The Fundamental Forensics catalog (config/fundamental_forensics/metrics/v1/metric_catalog.yaml) carries basic_weighted_average_shares and diluted_weighted_average_shares, but FIF is not an A17 share-source owner and is not admitted here; admitting it is a separate seat decision. A period-average EPS denominator is never an outstanding count (A16).",
     "non_affiliate_public_float": "No admitted producer of a non-affiliate share count; dei:EntityPublicFloat is USD and is not converted to shares by price.",
     "assumed_as_converted": "Owned by instrument terms (O1/O3), not by the share-count source.",
     "scenario_incremental_issuance": "Owned by scenarios, not by the share-count source.",
@@ -277,5 +277,17 @@
     "inspect credentials or secrets",
     "add a collector or spend SEC request reserves (500/20/20 under 540)",
     "describe a unit test, schema or this record as provider proof"
+  ],
+  "not_admitted_owners": [
+    {
+      "owner": "fundamental_forensics",
+      "path": "config/fundamental_forensics/metrics/v1/metric_catalog.yaml",
+      "metrics": [
+        "common_shares_outstanding",
+        "basic_weighted_average_shares",
+        "diluted_weighted_average_shares"
+      ],
+      "reason": "Not in the A17 owner list. Its records are not share_count_observations and cannot bind through ShareInputs; a FIF share metric never selects or substitutes for a share basis without a separate admission decision."
+    }
   ]
 }
