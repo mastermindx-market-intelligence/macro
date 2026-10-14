@@ -35,6 +35,13 @@ def test_installer_requests_configuration_projection():
     assert observed == [(TEMPLATE, 'runtimes', 'rollback')]
 
 
+def test_empty_runtime_projection_refuses_before_use():
+    installer = mod.InstallEngine.__new__(mod.InstallEngine)
+    installer._info_field = lambda *_: '{  }'
+    with pytest.raises(mod.InstallError, match='DOCKER_FACT_UNPARSEABLE'):
+        installer._runtime_mapping()
+
+
 @pytest.mark.parametrize('field,value', [
     ('path', 'changed'), ('runtimeArgs', ['--different']),
     ('runtimeType', 'io.containerd.changed.v2'), ('options', {'BinaryName': 'changed'}),
@@ -123,8 +130,14 @@ def test_actual_cli_projects_large_status_without_losing_configuration(record_pr
                             for name, config in runtimes.items()}
                 assert projected == expected
                 assert len(json.dumps(projected).encode()) < 1024
-                assert server.requests.count('/info') == 2
-                assert set(server.requests) <= {'/_ping', '/info'} and len(server.requests) <= 4
+                # Both a nil and an empty daemon map render as an empty JSON
+                # object under the projection. Neither is a usable runtime fact.
+                for missing in (None, {}):
+                    server.runtimes = missing
+                    with pytest.raises(mod.InstallError, match='DOCKER_FACT_UNPARSEABLE'):
+                        installer._runtime_mapping()
+                assert server.requests.count('/info') == 4
+                assert set(server.requests) <= {'/_ping', '/info'} and len(server.requests) <= 8
                 record_property('legacy_output_bytes', len(legacy))
                 record_property('projected_configuration_bytes', len(json.dumps(projected).encode()))
             finally:

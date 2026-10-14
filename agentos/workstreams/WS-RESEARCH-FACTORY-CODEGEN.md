@@ -31,11 +31,10 @@ waves:
 - id: ACCEPTANCE
   title: Physical, scientific and prospective acceptance with original limits
   status: todo
-next_action: Consume the existing Fabric projection review and systemd parser return,
-  integrate qualified bounded preflight repairs, then prepare a distinct reviewed
-  physical commission. V2 exact recovery is complete and proves a known pre-config
-  output-budget stop, not successful installation or containment. Normal dependency
-  controller owns landing; the calendar's existing CN writer retains shared custody.
+next_action: Finalize the adjudicated v3 exact commission and dispatch one fixed
+  engineering canary through normal Fabric admission. Independent projection review
+  and parser are accepted; empty-map finding repaired. Continue normal release
+  carrier qualification while retaining all original unknown/refused operations.
 artifacts:
 - research/research_factory_codegen/2026-10-14/PROGRAMME_CONTINUATION.md
 - research/research_factory_codegen/2026-10-14/CONNECTED_DIAGNOSTIC_SOURCE_ACCEPTANCE.md
@@ -60,6 +59,17 @@ landmines:
   denial remains closed. User directed continuation with a documented gap and actual
   execution/publisher separation.
 ---
+
+## Current adjudicated frontier — 2026-10-14 15:54 UTC
+
+The original projection review has returned and been consumed through the installed Fabric adapter:101123bytes, SHA256 `b6cd1a56d0b9a3ad15516896f4f013def14f613780aecf69262ec5185fe396c6`. Root reproduced its missing-runtime-map finding, added the explicit empty-map refusal, and checked the nil/empty cases through the actual local CLI against an owned fake API. The speculative Path-field concern is disproved by the pinned Docker29.1.3 source (`json:"path,omitempty"`). The bounded review is accepted on its original carrier; it does not cover unrelated installer changes or physical behavior. The systemd parser is separately reviewed and accepted.
+
+Final v3 installer SHA256 `538b28ce06ef5f5285a33553cf73f870f552873c35221d3dad2c1c3726b41e5c`; capsule SHA256 `99a7c0845e75b854d154c23aabd8c1a3505ccc9f637800168a38565dd784cb6e`. Runtime checks pass456 tests and67subtests with3Linux-only skips in3.27seconds. The fixed physical precheck now has127tests and must have zero skips on the admitted Linux host. No v3 physical request has yet been issued. The next act is to finalize the exact commission and dispatch once through normal admission, preserving original v2 and all limits. Receipt: `runtime-release/physical-qualification/ROOT_RUNTIME_PROJECTION_REVIEW_ADJUDICATION.json` under the programme evidence root.
+
+The original fence PR9077's one real CI-manifest conflict was repaired on its own carrier, preserving the five main-side Market Memory tests and the fence test. Head `9c9189d933e2d376a2c650cfbdd597d0e7fefbef` is pushed and current CI is running;690 affected tests,317manifestjobs and4authority selftests passed locally. This is not a merge or current-head CI acceptance. Capture9099 and cleanup9190 remain under the normal release controller. The combined branch has no merge-tree conflict with pinned main `a07b1c3005ef83416ad3be1bbb69d91ab7c40a70`, but no integration or dependency landing is claimed.
+
+The chronological sections below preserve earlier observations. Current statements in this section supersede their pending-review/recovery wording; recovery is complete, no Chris-only gate remains, and candidate/containment admission stays false.
+
 
 ## V2 recovery and bounded preflight repair — 2026-10-14
 

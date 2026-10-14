@@ -1156,7 +1156,7 @@ class InstallEngine:
                '{{json $name}}:{{json $runtime.Runtime}}{{end}} }')
         raw = self._info_field(fmt, "runtimes", role)
         mapping = json_loads_strict(raw, "docker-info-runtimes")
-        if not isinstance(mapping, dict) or not all(isinstance(v, dict)
+        if not isinstance(mapping, dict) or not mapping or not all(isinstance(v, dict)
                                                     for v in mapping.values()):
             raise InstallError("DOCKER_FACT_UNPARSEABLE")
         return mapping
