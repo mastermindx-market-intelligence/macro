@@ -184,7 +184,7 @@ Run from the lane worktree; `PY` = the lane venv interpreter;
 `PYTHONDONTWRITEBYTECODE=1` and `-q -p no:cacheprovider` on every pytest.
 
 - **P1** `PY -m pytest tests/verification/test_access_q02.py -rs` (twice):
-  `72 passed, 1 xfailed in 10.95s` then `72 passed, 1 xfailed in 10.87s` —
+  `72 passed, 1 xfailed in 12.03s` then `72 passed, 1 xfailed in 12.30s` —
   identical summaries, 73 collected items, 0 skipped.
 - **P2** `git diff --name-only ed1497887c99101bd1b8bc5438e281f02466371b HEAD` →
   exactly the three owned paths (`tests/verification/__init__.py`,
@@ -211,9 +211,9 @@ P5 quoted tail (last 8 lines):
 contract-delta: probe templates/index.html: head 134 jobs / 5,650 s / 10 packs; base 134 jobs / 5,650 s / 10 packs; ceilings 135 / 5,803 / 10
 contract-delta: probe scripts/build_free_content.py: head 133 jobs / 5,451 s / 10 packs; base 133 jobs / 5,451 s / 10 packs; ceilings 134 / 5,600 / 10
 contract-delta: probe engine/prophet/plan_book.py: head 128 jobs / 5,413 s / 10 packs; base 128 jobs / 5,413 s / 10 packs; ceilings 129 / 5,600 / 10
-contract-delta: head census seconds: closure_and_suites 168.4, probes 62.7, skip_only 14.2, trigger_gaps 22.0
-contract-delta: base census seconds: closure_and_suites 170.6, probes 69.3, skip_only 14.2, trigger_gaps 21.8
+contract-delta: head census seconds: closure_and_suites 157.9, probes 61.4, skip_only 13.0, trigger_gaps 21.1
+contract-delta: base census seconds: closure_and_suites 166.8, probes 68.3, skip_only 13.1, trigger_gaps 21.0
 ::error title=contract-delta::tests/verification/test_access_q02.py is a new pytest suite named by no run: step in any workflow — wire it into the job that owns its subject in .github/ci/legacy-jobs.yml, or add a reasoned row to config/unrun_test_waivers.yml
 contract-delta: 1 introduced, 0 inherited (base ed1497887c99101bd1b8bc5438e281f02466371b)
-contract-delta: wall 303.3 s
+contract-delta: wall 292.7 s
 ```
