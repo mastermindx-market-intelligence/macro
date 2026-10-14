@@ -1828,3 +1828,143 @@ def test_gates2_source_has_no_clock_network_or_proxy_cell_read():
     for needle in ("datetime.now", "utcnow", "date.today", "time.time(", "import requests", "urllib",
                    '"proxy_cell"', "'proxy_cell'"):
         assert needle not in text, f"forbidden source fragment: {needle!r}"
+
+
+# ----------------------------------------------------------- fallback ledger
+
+
+def _write_fallback_pair(tmp_path):
+    primary = tmp_path / "ledger.json"
+    primary.write_text(json.dumps({"note": "p", "tickers": {"F": 37996, "DUP": [111, 222]}}))
+    fallback = tmp_path / "fallback.json"
+    fallback.write_text(
+        json.dumps({"note": "fb", "tickers": {"F": 99999, "DUP": 333, "NEWT": 444, "BRK.B": 1067983}})
+    )
+    return primary, fallback
+
+
+def test_fill_only_ledger_keeps_primary_entries_and_refusals(tmp_path):
+    primary_path, fallback_path = _write_fallback_pair(tmp_path)
+    primary, fallback = load_ledger(str(primary_path)), load_ledger(str(fallback_path))
+    combined = TD.fill_only_ledger(primary, fallback)
+    assert sorted(combined) == ["BRK-B", "DUP", "F", "NEWT"]
+    assert combined["F"] == primary["F"] and combined["DUP"] == primary["DUP"]
+    assert combined["NEWT"] == fallback["NEWT"]
+    assert combined.has_validity_dates is False
+    asof = date(2026, 9, 1)
+    assert TD._resolve_entities(["F"], "Ford", asof, combined)[0] == "cik:0000037996"
+    assert TD._resolve_entities(["DUP"], "Dup", asof, combined)[0] == "unresolved:ambiguous_ticker"
+    assert TD._resolve_entities(["NEWT"], "Newt", asof, combined)[0] == "cik:0000000444"
+    assert TD._resolve_entities(["BRK.B"], "Brk", asof, combined)[:2] == ("cik:0001067983", "BRK-B")
+    with pytest.raises(TD.TapeDrawError):
+        TD.fill_only_ledger({"F": ()}, fallback)
+    with pytest.raises(TD.TapeDrawError):
+        TD.fill_only_ledger(primary, None)
+
+
+def _fallback_inputs(tmp_path):
+    tickers = ["F", "F", "NEWT", "NEWT", "DUP", "ZZZZ", "BRK.B"]
+    tape_rows = [
+        _row(
+            f"fb{i}",
+            f"Company {t.lower()} stock buyback item {i}",
+            f"2026-08-{i + 1:02d}T00:00:00+00:00",
+            entities=t,
+        )
+        for i, t in enumerate(tickers)
+    ]
+    tape_path = tmp_path / "items.parquet"
+    _write_tape_parquet(tape_path, tape_rows)
+    el_path = tmp_path / "event_log.parquet"
+    _write_event_log_parquet(el_path, [])
+    rej_path = tmp_path / "reject.parquet"
+    _write_reject_parquet(rej_path, [])
+    primary, fallback = _write_fallback_pair(tmp_path)
+    return (tape_path, el_path, rej_path, primary), fallback
+
+
+def _jsonl(path):
+    return [json.loads(l) for l in path.read_text().splitlines() if l.strip()]
+
+
+def test_fallback_ledger_off_leaves_every_output_unchanged(tmp_path):
+    paths, _ = _fallback_inputs(tmp_path)
+    assert _cli(paths, tmp_path / "a", "--candidates-out", str(tmp_path / "a.jsonl")) == 0
+    report = json.loads((tmp_path / "a" / "draw_report.json").read_text())
+    assert "fallback_ledger" not in report
+    assert "fallback_resolved" not in report["issuers"]
+    assert all("issuer_ledger" not in m for m in _jsonl(tmp_path / "a" / "candidates_meta.jsonl"))
+    assert _cli(paths, tmp_path / "b", "--candidates-out", str(tmp_path / "b.jsonl")) == 0
+    for name in ("cases.jsonl", "manifest.json", "draw_report.json", "candidates_meta.jsonl"):
+        assert (tmp_path / "a" / name).read_bytes() == (tmp_path / "b" / name).read_bytes()
+
+
+def test_fallback_ledger_fills_only_rows_the_primary_leaves_unresolved(tmp_path):
+    import hashlib
+
+    paths, fallback = _fallback_inputs(tmp_path)
+    assert _cli(paths, tmp_path / "off", "--candidates-out", str(tmp_path / "off.jsonl")) == 0
+    assert _cli(
+        paths, tmp_path / "on", "--candidates-out", str(tmp_path / "on.jsonl"),
+        "--fallback-ledger", str(fallback),
+    ) == 0
+    off = {r["item_id"]: r for r in _jsonl(tmp_path / "off.jsonl")}
+    on = {r["item_id"]: r for r in _jsonl(tmp_path / "on.jsonl")}
+    assert set(off) == set(on) and len(on) == 7
+
+    # rows the primary resolves keep their issuer and ticker exactly
+    for item_id, row in off.items():
+        if not row["issuer"].startswith("unresolved:"):
+            assert on[item_id]["issuer"] == row["issuer"]
+            assert on[item_id]["ticker"] == row["ticker"]
+            assert on[item_id]["tags"] == row["tags"]
+
+    by_ticker = {}
+    for i, t in enumerate(["F", "F", "NEWT", "NEWT", "DUP", "ZZZZ", "BRK.B"]):
+        by_ticker.setdefault(t, []).append(f"fb{i}")
+    for i in by_ticker["NEWT"]:
+        assert off[i]["issuer"] == "unresolved:unknown_ticker"
+        assert on[i]["issuer"] == "cik:0000000444"
+    assert on[by_ticker["BRK.B"][0]]["issuer"] == "cik:0001067983"
+    # a primary refusal stands: the fallback never overrides an ambiguous primary key
+    assert on[by_ticker["DUP"][0]]["issuer"] == "unresolved:ambiguous_ticker"
+    assert on[by_ticker["ZZZZ"][0]]["issuer"] == "unresolved:unknown_ticker"
+
+    r_off = json.loads((tmp_path / "off" / "draw_report.json").read_text())
+    r_on = json.loads((tmp_path / "on" / "draw_report.json").read_text())
+    assert r_on["issuers"]["fallback_resolved"] == 3
+    assert r_on["issuers"]["resolved"] == r_off["issuers"]["resolved"] + 3
+    assert r_on["issuers"]["unresolved"] == r_off["issuers"]["unresolved"] - 3
+    assert r_on["issuers"]["unresolved_by_reason"]["ambiguous_ticker"] == 1
+    assert r_on["fallback_ledger"] == {
+        "tickers": 4,
+        "fill_only_tickers": 2,
+        "primary_tickers": 2,
+        "sha256": hashlib.sha256(fallback.read_bytes()).hexdigest(),
+    }
+    ledgers = {m["item_id"]: m["issuer_ledger"] for m in _jsonl(tmp_path / "on" / "candidates_meta.jsonl")}
+    for i in by_ticker["F"]:
+        assert ledgers[i] == "primary"
+    for i in by_ticker["NEWT"] + by_ticker["BRK.B"]:
+        assert ledgers[i] == "fallback"
+    for i in by_ticker["DUP"] + by_ticker["ZZZZ"]:
+        assert ledgers[i] is None
+
+    # the on run replays byte-identically, from a byte-copy of the fallback ledger at
+    # another path: inputs are recorded by sha256, never by path
+    moved = tmp_path / "elsewhere" / "fb_copy.json"
+    moved.parent.mkdir()
+    moved.write_bytes(fallback.read_bytes())
+    assert _cli(paths, tmp_path / "on2", "--fallback-ledger", str(moved)) == 0
+    for name in ("cases.jsonl", "manifest.json", "draw_report.json", "candidates_meta.jsonl"):
+        assert (tmp_path / "on" / name).read_bytes() == (tmp_path / "on2" / name).read_bytes()
+
+
+def test_fallback_ledger_malformed_file_fails_before_any_output(tmp_path):
+    from engine.news_impact.issuer import LedgerError
+
+    paths, fallback = _fallback_inputs(tmp_path)
+    fallback.write_text('{"note": "no tickers"}')
+    with pytest.raises(LedgerError):
+        _cli(paths, tmp_path / "out", "--fallback-ledger", str(fallback))
+    assert not (tmp_path / "out" / "cases.jsonl").exists()
