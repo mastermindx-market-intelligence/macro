@@ -1,19 +1,19 @@
 {
   "schema": "stage_context.v1",
-  "asof": "2026-10-09",
+  "asof": "2026-10-14",
   "data_session": "2026-10-08",
-  "built": "2026-10-09T13:58:28Z",
+  "built": "2026-10-14T08:38:08Z",
   "is_context_only": true,
   "display_only": true,
   "disclaimer": "Context only — stage classification display, never a signal or sizing input.",
   "target_stage_week": "2026-10-02",
-  "target_week_source": "spy_benchmark",
+  "target_week_source": "population_mode_benchmark_ahead",
   "stage_week_end": "2026-10-02",
   "population": {
-    "status": "ready",
+    "status": "warn",
     "target_stage_week": "2026-10-02",
-    "target_week_source": "spy_benchmark",
-    "spy_stage_week": "2026-10-02",
+    "target_week_source": "population_mode_benchmark_ahead",
+    "spy_stage_week": "2026-10-09",
     "population_modal_week": "2026-10-02",
     "current": 2710,
     "stale": 41,
@@ -56,7 +56,9 @@
         "n": 4
       }
     ],
-    "issues": []
+    "issues": [
+      "benchmark_week_divergence"
+    ]
   },
   "counts": {
     "total": 2710,
@@ -73,7 +75,7 @@
     "pct_stage4": 37.1,
     "weather": "mixed",
     "spy_stage": 2,
-    "spy_weeks": 23
+    "spy_weeks": 24
   },
   "top_stage2": [
     {
@@ -177,56 +179,6 @@
       "industry_percentile": 89.5
     },
     {
-      "ticker": "AFRM",
-      "company": "Affirm Holdings, Inc.",
-      "sector": "Financials",
-      "stage_source_asof": "2026-10-08",
-      "stage_week_end": "2026-10-02",
-      "stage_current": true,
-      "stage": 2,
-      "weeks_in_stage": 6,
-      "fresh": true,
-      "sga_score": 67,
-      "ma30_slope_pct5w": 5.226,
-      "pct_vs_ma30": 4.73,
-      "mansfield_rs": -3.23,
-      "vol_ratio": 0.84,
-      "event": null,
-      "gate_tier": "T2",
-      "blackout": false,
-      "arc_pos": 0.325,
-      "earnings": {
-        "present": true,
-        "sentiment": 0.5,
-        "performance": 8.5,
-        "tone_word": "confident",
-        "tags": [
-          "guidance_raised",
-          "demand_acceleration",
-          "new_product"
-        ],
-        "quarter": "Q4",
-        "summary": "Affirm reported its most profitable quarter ever, even without a tax allowance release, with strong growth across products including 41% growth in Pay in X and robust card adoption. The company guided to fiscal 2027 revenue less transaction costs above the midterm target at 4.…"
-      },
-      "why": [
-        "Early in its climb — 6 weeks up so far",
-        "Trading above its 30-week line — the trend is with it",
-        "Also shows a strong confirmation from our other checks"
-      ],
-      "why_zh": [
-        "上升初期 — 已上行 6 周",
-        "位于 30 周均线之上 — 趋势向好",
-        "其他多项验证同样给出强确认"
-      ],
-      "atr_14w": 7.9654,
-      "atr_ext": 0.401,
-      "atr_pct_price": 0.11255,
-      "sata_score": 5,
-      "sata_change_1w": 0,
-      "stage_detailed": "2X_catch_price_above_ma",
-      "industry_percentile": 67.5
-    },
-    {
       "ticker": "URBN",
       "company": "Urban Outfitters, Inc.",
       "sector": "Consumer Discretionary",
@@ -279,55 +231,6 @@
       "industry_percentile": 82.6
     },
     {
-      "ticker": "GCT",
-      "company": "GigaCloud Technology Inc",
-      "sector": "Technology",
-      "stage_source_asof": "2026-10-08",
-      "stage_week_end": "2026-10-02",
-      "stage_current": true,
-      "stage": 2,
-      "weeks_in_stage": 8,
-      "fresh": true,
-      "sga_score": 64,
-      "ma30_slope_pct5w": 5.42,
-      "pct_vs_ma30": 24.49,
-      "mansfield_rs": 22.4,
-      "vol_ratio": 0.92,
-      "event": null,
-      "gate_tier": "T1",
-      "blackout": false,
-      "arc_pos": 0.35,
-      "earnings": {
-        "present": true,
-        "sentiment": 0.85,
-        "performance": 9.2,
-        "tone_word": "confident",
-        "tags": [
-          "beat_and_raise",
-          "demand_acceleration"
-        ],
-        "quarter": "Q2",
-        "summary": "GigaCloud reported record Q2 FY26 revenue of $412 million (up 28% YoY) and record diluted EPS of $1.16 (up 28%). The company delivered strong organic growth in the U.S. marketplace despite broader industry softness, while Europe expanded GMV by 66%. Management raised Q3 guidan…"
-      },
-      "why": [
-        "Early in its climb — 8 weeks up so far",
-        "Already stretched well above its 30-week line — may need a rest",
-        "Also shows a strong confirmation from our other checks"
-      ],
-      "why_zh": [
-        "上升初期 — 已上行 8 周",
-        "已明显高于 30 周均线 — 可能需要回踩",
-        "其他多项验证同样给出强确认"
-      ],
-      "atr_14w": 5.2594,
-      "atr_ext": 2.01,
-      "atr_pct_price": 0.09785,
-      "sata_score": 8,
-      "sata_change_1w": 0,
-      "stage_detailed": "2A_strong_breakout",
-      "industry_percentile": 100.0
-    },
-    {
       "ticker": "GHC",
       "company": "Graham Holdings",
       "sector": "Consumer Discretionary",
@@ -372,102 +275,6 @@
       "sata_change_1w": 1,
       "stage_detailed": "2X_catch_price_above_ma",
       "industry_percentile": null
-    },
-    {
-      "ticker": "FIGS",
-      "company": "Figs Inc",
-      "sector": "Consumer Cyclical",
-      "stage_source_asof": "2026-10-08",
-      "stage_week_end": "2026-10-02",
-      "stage_current": true,
-      "stage": 2,
-      "weeks_in_stage": 7,
-      "fresh": true,
-      "sga_score": 61,
-      "ma30_slope_pct5w": 0.941,
-      "pct_vs_ma30": 3.07,
-      "mansfield_rs": 2.57,
-      "vol_ratio": 0.88,
-      "event": null,
-      "gate_tier": "T1",
-      "blackout": false,
-      "arc_pos": 0.3375,
-      "earnings": {
-        "present": true,
-        "sentiment": 0.8,
-        "performance": 9.5,
-        "tone_word": "confident",
-        "tags": [
-          "beat_and_raise",
-          "margin_expansion",
-          "demand_acceleration"
-        ],
-        "quarter": "Q2",
-        "summary": "FIGS reported Q2 FY26 net revenues of $197 million (up 29% YoY), beating the prior guidance range and marking a third consecutive quarter with growth above 25%. Adjusted EBITDA margin surged to 18.6%, driven by pricing power, lower returns, and tariff refunds, while active cus…"
-      },
-      "why": [
-        "Early in its climb — 7 weeks up so far",
-        "Trading above its 30-week line — the trend is with it",
-        "Also shows a strong confirmation from our other checks"
-      ],
-      "why_zh": [
-        "上升初期 — 已上行 7 周",
-        "位于 30 周均线之上 — 趋势向好",
-        "其他多项验证同样给出强确认"
-      ],
-      "atr_14w": 1.6636,
-      "atr_ext": 0.242,
-      "atr_pct_price": 0.12305,
-      "sata_score": 5,
-      "sata_change_1w": 0,
-      "stage_detailed": "2X_catch_price_above_ma",
-      "industry_percentile": 87.5
-    },
-    {
-      "ticker": "RZLT",
-      "company": "Rezolute Inc",
-      "sector": "Healthcare",
-      "stage_source_asof": "2026-10-08",
-      "stage_week_end": "2026-10-02",
-      "stage_current": true,
-      "stage": 2,
-      "weeks_in_stage": 10,
-      "fresh": true,
-      "sga_score": 61,
-      "ma30_slope_pct5w": 3.441,
-      "pct_vs_ma30": 0.56,
-      "mansfield_rs": -21.9,
-      "vol_ratio": 0.86,
-      "event": "trendline_recapture",
-      "gate_tier": "T2",
-      "blackout": false,
-      "arc_pos": 0.375,
-      "earnings": {
-        "present": false,
-        "sentiment": null,
-        "performance": null,
-        "tone_word": null,
-        "tags": [],
-        "quarter": null,
-        "summary": null
-      },
-      "why": [
-        "Early in its climb — 10 weeks up so far",
-        "Trading above its 30-week line — the trend is with it",
-        "Also shows a strong confirmation from our other checks"
-      ],
-      "why_zh": [
-        "上升初期 — 已上行 10 周",
-        "位于 30 周均线之上 — 趋势向好",
-        "其他多项验证同样给出强确认"
-      ],
-      "atr_14w": 0.6479,
-      "atr_ext": 0.034,
-      "atr_pct_price": 0.16156,
-      "sata_score": 4,
-      "sata_change_1w": 0,
-      "stage_detailed": "2X_catch_price_above_ma",
-      "industry_percentile": 29.0
     },
     {
       "ticker": "HRMY",
@@ -539,27 +346,16 @@
       "arc_pos": 0.3625,
       "earnings": {
         "present": true,
-        "sentiment": 0.5555555555555556,
-        "performance": 6.666666666666667,
+        "sentiment": 0.5,
+        "performance": 7.5,
         "tone_word": "confident",
         "tags": [
-          "nanoknife",
-          "mechanical_thrombectomy",
-          "auryon",
-          "clinical_trials",
-          "reimbursement",
-          "tariffs",
-          "guidance",
-          "medical_devices",
-          "cardiovascular_devices",
-          "interventional_oncology",
-          "atherectomy",
-          "thrombectomy",
-          "electroporation",
-          "surgical_tools"
+          "beat_and_raise",
+          "margin_expansion",
+          "demand_acceleration"
         ],
-        "quarter": "Q4",
-        "summary": "Total NanoKnife revenue was $11.8 million, an increase of 64.5%... primarily driven by demand for NanoKnife in prostate care."
+        "quarter": "Q1",
+        "summary": "AngioDynamics reported Q1 FY2027 revenue of $80.9 million, a 6.9% increase year-over-year driven by strong Med Tech growth (13.2%) and NanoKnife disposables (29%). Gross margin expanded 410 bps to 59.4%, aided by tariff refunds, with management maintaining full-year guidance o…"
       },
       "why": [
         "Early in its climb — 9 weeks up so far",
@@ -872,52 +668,6 @@
       "sata_score": 7,
       "sata_change_1w": 1,
       "stage_detailed": "2X_fallback_bullish",
-      "industry_percentile": null
-    },
-    {
-      "ticker": "LAW",
-      "company": "CS Disco Inc",
-      "sector": "Technology",
-      "stage_source_asof": "2026-10-08",
-      "stage_week_end": "2026-10-02",
-      "stage_current": true,
-      "stage": 2,
-      "weeks_in_stage": 1,
-      "fresh": true,
-      "sga_score": 54,
-      "ma30_slope_pct5w": 1.631,
-      "pct_vs_ma30": 4.25,
-      "mansfield_rs": -23.6,
-      "vol_ratio": 0.63,
-      "event": null,
-      "gate_tier": "T1",
-      "blackout": false,
-      "arc_pos": 0.2625,
-      "earnings": {
-        "present": false,
-        "sentiment": null,
-        "performance": null,
-        "tone_word": null,
-        "tags": [],
-        "quarter": null,
-        "summary": null
-      },
-      "why": [
-        "Early in its climb — 1 weeks up so far",
-        "Trading above its 30-week line — the trend is with it",
-        "Also shows a strong confirmation from our other checks"
-      ],
-      "why_zh": [
-        "上升初期 — 已上行 1 周",
-        "位于 30 周均线之上 — 趋势向好",
-        "其他多项验证同样给出强确认"
-      ],
-      "atr_14w": 0.4771,
-      "atr_ext": 0.357,
-      "atr_pct_price": 0.11413,
-      "sata_score": 4,
-      "sata_change_1w": 0,
-      "stage_detailed": "2X_catch_price_above_ma",
       "industry_percentile": null
     },
     {
@@ -3069,15 +2819,249 @@
       "sata_change_1w": 0,
       "stage_detailed": "2D_extended_run",
       "industry_percentile": 78.4
+    },
+    {
+      "ticker": "WAT",
+      "company": "Waters Corporation",
+      "sector": "Health Care",
+      "stage_source_asof": "2026-10-08",
+      "stage_week_end": "2026-10-02",
+      "stage_current": true,
+      "stage": 2,
+      "weeks_in_stage": 6,
+      "fresh": true,
+      "sga_score": 47,
+      "ma30_slope_pct5w": 4.179,
+      "pct_vs_ma30": 16.77,
+      "mansfield_rs": 7.02,
+      "vol_ratio": 0.78,
+      "event": null,
+      "gate_tier": null,
+      "blackout": false,
+      "arc_pos": 0.325,
+      "earnings": {
+        "present": true,
+        "sentiment": 0.85,
+        "performance": 8.5,
+        "tone_word": "confident",
+        "tags": [
+          "guidance_raised",
+          "beat_and_raise",
+          "demand_acceleration",
+          "margin_expansion",
+          "new_product"
+        ],
+        "quarter": "Q2",
+        "summary": "Waters delivered Q2 FY2026 organic revenue of $828 million, up 9% constant currency, exceeding guidance by ~100 bps, with total revenue of $1.645 billion including $817 million from acquired BD businesses that grew 4% as reported, a 400 bps acceleration from Q1. Adjusted EPS g…"
+      },
+      "why": [
+        "Early in its climb — 6 weeks up so far",
+        "Already stretched well above its 30-week line — may need a rest"
+      ],
+      "why_zh": [
+        "上升初期 — 已上行 6 周",
+        "已明显高于 30 周均线 — 可能需要回踩"
+      ],
+      "atr_14w": 23.7714,
+      "atr_ext": 2.569,
+      "atr_pct_price": 0.05591,
+      "sata_score": 8,
+      "sata_change_1w": 0,
+      "stage_detailed": "2D_extended_run",
+      "industry_percentile": 22.7
+    },
+    {
+      "ticker": "BETA",
+      "company": "BETA Technologies Inc",
+      "sector": "Industrials",
+      "stage_source_asof": "2026-10-08",
+      "stage_week_end": "2026-10-02",
+      "stage_current": true,
+      "stage": 2,
+      "weeks_in_stage": 4,
+      "fresh": true,
+      "sga_score": 46,
+      "ma30_slope_pct5w": 3.638,
+      "pct_vs_ma30": 19.5,
+      "mansfield_rs": null,
+      "vol_ratio": 1.92,
+      "event": null,
+      "gate_tier": null,
+      "blackout": false,
+      "arc_pos": 0.3,
+      "earnings": {
+        "present": true,
+        "sentiment": 0.8,
+        "performance": 9.5,
+        "tone_word": "confident",
+        "tags": [
+          "beat_and_raise",
+          "guidance_raised"
+        ],
+        "quarter": "Q2",
+        "summary": "BETA Technologies reported Q2 FY2026 revenue of $14.7 million, significantly beating the guidance range of $8-$11 million and showing year-over-year growth of 146%. The company raised its full-year revenue guidance to a new high-end range of $42-$50 million following strong ex…"
+      },
+      "why": [
+        "Early in its climb — 4 weeks up so far",
+        "Already stretched well above its 30-week line — may need a rest"
+      ],
+      "why_zh": [
+        "上升初期 — 已上行 4 周",
+        "已明显高于 30 周均线 — 可能需要回踩"
+      ],
+      "atr_14w": 3.3865,
+      "atr_ext": 1.068,
+      "atr_pct_price": 0.15275,
+      "sata_score": 6,
+      "sata_change_1w": -1,
+      "stage_detailed": "2X_fallback_bullish",
+      "industry_percentile": null
+    },
+    {
+      "ticker": "CBLL",
+      "company": "Ceribell Inc",
+      "sector": "Healthcare",
+      "stage_source_asof": "2026-10-08",
+      "stage_week_end": "2026-10-02",
+      "stage_current": true,
+      "stage": 2,
+      "weeks_in_stage": 5,
+      "fresh": true,
+      "sga_score": 46,
+      "ma30_slope_pct5w": 4.031,
+      "pct_vs_ma30": 17.39,
+      "mansfield_rs": 13.32,
+      "vol_ratio": 1.02,
+      "event": null,
+      "gate_tier": null,
+      "blackout": false,
+      "arc_pos": 0.3125,
+      "earnings": {
+        "present": true,
+        "sentiment": 0.85,
+        "performance": 9.2,
+        "tone_word": "confident",
+        "tags": [
+          "guidance_raised",
+          "margin_expansion",
+          "demand_acceleration",
+          "new_product"
+        ],
+        "quarter": "Q2",
+        "summary": "Ceribell reported Q2 FY2026 revenue of $28.1 million (33% YoY growth) and a record growth margin of 92%. Management raised the commercial launch timeline for their Delirium solution to Q4 2026, citing positive pilot feedback and new CMS reimbursement rules as key drivers."
+      },
+      "why": [
+        "Early in its climb — 5 weeks up so far",
+        "Already stretched well above its 30-week line — may need a rest"
+      ],
+      "why_zh": [
+        "上升初期 — 已上行 5 周",
+        "已明显高于 30 周均线 — 可能需要回踩"
+      ],
+      "atr_14w": 2.0014,
+      "atr_ext": 1.754,
+      "atr_pct_price": 0.08448,
+      "sata_score": 8,
+      "sata_change_1w": 0,
+      "stage_detailed": "2X_fallback_bullish",
+      "industry_percentile": 82.1
+    },
+    {
+      "ticker": "IMMR",
+      "company": "Immersion Corp",
+      "sector": "Technology",
+      "stage_source_asof": "2026-10-08",
+      "stage_week_end": "2026-10-02",
+      "stage_current": true,
+      "stage": 2,
+      "weeks_in_stage": 10,
+      "fresh": true,
+      "sga_score": 46,
+      "ma30_slope_pct5w": 3.413,
+      "pct_vs_ma30": 11.05,
+      "mansfield_rs": 3.87,
+      "vol_ratio": 0.69,
+      "event": "pullback_resume",
+      "gate_tier": null,
+      "blackout": false,
+      "arc_pos": 0.375,
+      "earnings": {
+        "present": false,
+        "sentiment": null,
+        "performance": null,
+        "tone_word": null,
+        "tags": [],
+        "quarter": null,
+        "summary": null
+      },
+      "why": [
+        "Early in its climb — 10 weeks up so far",
+        "Trading above its 30-week line — the trend is with it"
+      ],
+      "why_zh": [
+        "上升初期 — 已上行 10 周",
+        "位于 30 周均线之上 — 趋势向好"
+      ],
+      "atr_14w": 0.5457,
+      "atr_ext": 1.348,
+      "atr_pct_price": 0.07385,
+      "sata_score": 7,
+      "sata_change_1w": 1,
+      "stage_detailed": "2X_fallback_bullish",
+      "industry_percentile": 33.3
+    },
+    {
+      "ticker": "SIBN",
+      "company": "SI-BONE Inc",
+      "sector": "Healthcare",
+      "stage_source_asof": "2026-10-08",
+      "stage_week_end": "2026-10-02",
+      "stage_current": true,
+      "stage": 2,
+      "weeks_in_stage": 6,
+      "fresh": true,
+      "sga_score": 46,
+      "ma30_slope_pct5w": 3.434,
+      "pct_vs_ma30": 13.33,
+      "mansfield_rs": 0.82,
+      "vol_ratio": 0.92,
+      "event": null,
+      "gate_tier": null,
+      "blackout": false,
+      "arc_pos": 0.325,
+      "earnings": {
+        "present": true,
+        "sentiment": 0.7,
+        "performance": 8.0,
+        "tone_word": "confident",
+        "tags": [
+          "guidance_raised",
+          "margin_expansion",
+          "demand_acceleration",
+          "new_product",
+          "regulatory_headwind"
+        ],
+        "quarter": "Q2",
+        "summary": "SI-BONE reported Q2 2026 revenue of $56 million, up 15.2% globally and 14.7% in the U.S., with strong procedure volume growth and 178% improvement in adjusted EBITDA to $2.8 million. The company submitted a 510(k) for a third breakthrough device expected to launch as early as …"
+      },
+      "why": [
+        "Early in its climb — 6 weeks up so far",
+        "Trading above its 30-week line — the trend is with it"
+      ],
+      "why_zh": [
+        "上升初期 — 已上行 6 周",
+        "位于 30 周均线之上 — 趋势向好"
+      ],
+      "atr_14w": 1.4036,
+      "atr_ext": 1.515,
+      "atr_pct_price": 0.07763,
+      "sata_score": 7,
+      "sata_change_1w": -1,
+      "stage_detailed": "2X_fallback_bullish",
+      "industry_percentile": 62.7
     }
   ],
   "warnings_stage3": [
-    {
-      "ticker": "PANL",
-      "company": "Pangaea Logistics Solutions Ltd",
-      "weeks_in_stage": 5,
-      "sga_score": 35
-    },
     {
       "ticker": "EVRG",
       "company": "Evergy",
@@ -3088,12 +3072,6 @@
       "ticker": "BKH",
       "company": "Black Hills Corporation",
       "weeks_in_stage": 6,
-      "sga_score": 29
-    },
-    {
-      "ticker": "FC",
-      "company": "Franklin Covey Co",
-      "weeks_in_stage": 5,
       "sga_score": 29
     },
     {
@@ -3133,12 +3111,6 @@
       "sga_score": 25
     },
     {
-      "ticker": "GTN",
-      "company": "Gray Media Inc",
-      "weeks_in_stage": 1,
-      "sga_score": 25
-    },
-    {
       "ticker": "MCK",
       "company": "McKesson Corporation",
       "weeks_in_stage": 5,
@@ -3163,18 +3135,6 @@
       "sga_score": 25
     },
     {
-      "ticker": "CSTM",
-      "company": "Constellium SE",
-      "weeks_in_stage": 1,
-      "sga_score": 23
-    },
-    {
-      "ticker": "LXU",
-      "company": "LSB Industries Inc",
-      "weeks_in_stage": 1,
-      "sga_score": 18
-    },
-    {
       "ticker": "ENS",
       "company": "EnerSys",
       "weeks_in_stage": 3,
@@ -3190,6 +3150,36 @@
       "ticker": "ACGL",
       "company": "Arch Capital Group",
       "weeks_in_stage": 5,
+      "sga_score": 15
+    },
+    {
+      "ticker": "ALEC",
+      "company": "Alector Inc",
+      "weeks_in_stage": 1,
+      "sga_score": 15
+    },
+    {
+      "ticker": "BCBP",
+      "company": "BCB Bancorp Inc (NJ)",
+      "weeks_in_stage": 1,
+      "sga_score": 15
+    },
+    {
+      "ticker": "GTY",
+      "company": "Getty Realty Corp.",
+      "weeks_in_stage": 2,
+      "sga_score": 15
+    },
+    {
+      "ticker": "HRI",
+      "company": "Herc Holdings Inc",
+      "weeks_in_stage": 11,
+      "sga_score": 15
+    },
+    {
+      "ticker": "MHK",
+      "company": "Mohawk Industries",
+      "weeks_in_stage": 3,
       "sga_score": 15
     }
   ],

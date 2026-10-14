@@ -66,9 +66,9 @@
         },
         "engagement_trend": {
           "metric": "engagement_trend",
-          "n_baseline": 48,
+          "n_baseline": 52,
           "n_recent": 0,
-          "reason": "recent n=0, baseline n=48 — need 5 of each",
+          "reason": "recent n=0, baseline n=52 — need 5 of each",
           "value": null,
           "verdict": "null"
         },
@@ -86,7 +86,7 @@
           "unmeasured": 2,
           "value": 9,
           "verdict": "warn",
-          "with_receipt": 4
+          "with_receipt": 3
         },
         "rejection_reason_mix": {
           "metric": "rejection_reason_mix",
@@ -97,7 +97,7 @@
           "verdict": "null"
         }
       },
-      "n_rows": 124,
+      "n_rows": 128,
       "nulls": [
         "approval_rate",
         "rejection_reason_mix",
@@ -224,9 +224,9 @@
         },
         "engagement_trend": {
           "metric": "engagement_trend",
-          "n_baseline": 53,
+          "n_baseline": 57,
           "n_recent": 0,
-          "reason": "recent n=0, baseline n=53 — need 5 of each",
+          "reason": "recent n=0, baseline n=57 — need 5 of each",
           "value": null,
           "verdict": "null"
         },
@@ -234,18 +234,17 @@
           "metric": "last_nine",
           "n": 9,
           "problems": [
-            "only 0/9 of the visible grid carries a receipt (floor 3)",
-            "6 near-repeat(s) in the visible grid"
+            "7 near-repeat(s) in the visible grid"
           ],
-          "repeats": 6,
+          "repeats": 7,
           "thresholds": {
             "receipt_floor": 3,
             "unmeasured_ceiling": 6
           },
-          "unmeasured": 1,
+          "unmeasured": 0,
           "value": 9,
           "verdict": "warn",
-          "with_receipt": 0
+          "with_receipt": 4
         },
         "rejection_reason_mix": {
           "metric": "rejection_reason_mix",
@@ -256,7 +255,7 @@
           "verdict": "null"
         }
       },
-      "n_rows": 104,
+      "n_rows": 108,
       "nulls": [
         "approval_rate",
         "rejection_reason_mix",
@@ -377,7 +376,7 @@
     }
   ],
   "apply_halts": true,
-  "as_of": "2026-10-13T14:03:51Z",
+  "as_of": "2026-10-14T09:55:53Z",
   "halted": [],
   "metrics": [
     "approval_rate",
