@@ -581,10 +581,12 @@ minimax, grok, cursor, glm) → optional bounded workers. No native leaf swarm; 
 
 ## Lane matrix
 
-(D83 2026-10-14T05:25Z snapshot.) Rows superseding older rows below:
+(D84 2026-10-14T10:20Z snapshot.) Rows superseding older rows below:
 
 | lane | state |
 |---|---|
+| Macro controller queue | All five watched PRs (#8920, #8923, #9079, #9083, #9231) are checks-clean but proof-stale: main `7fbda8074623` (#9280) changed the check definitions again. Sweep `38547080295` (10:05–10:08Z): "Merging main into the head; its fresh checks decide on a later sweep", 13 indexed PR CI runs vs a global cap of 8, 0 slots. The controller refreshes the heads itself; the seat does not, so the governor stays unforced (D84) |
+| D04-A2 source-clock measurement | GATED on #8923 MERGED and deployed (commission release precondition). Off-window baseline at 10:10Z: `www.mastermind-x.com/live/flow_pulse.json` has no `source_asof` (last-modified 2026-10-13T21:38Z) and `/live/intraday_quotes.json` has no `meta.source_asof` (last-modified 10:10Z). A 15–19Z read before #8923 deploys measures nothing and is not run (D84) |
 | F02-Q2 (live flow unknown expiry) | ACCEPTED (D82). PR [macro#9231](https://github.com/mastermindx-market-intelligence/macro/pull/9231) went `merge-blocked` on head `cf557978` because of a red inherited from main (path-prune-lint on `tests/test_sni_injection_safety_ext.py:601`, from #9213 at base `35124402`; main fixed it in #9227/#9234). The seat refreshed the head with a merge of main `6d781a39fa4` (32 commits, no F02-Q2 file touched) → head `ae2ee5552c73`, pushed. Re-run: 380 + 99 + path-prune 3 passed. Label `merge-on-green` only; the controller clears `merge-blocked` after green. Head-bound watcher `bcv1tises` (D83) |
 | Macro #8923 | OPEN `03b168ab9d74`, unchanged since 01:50Z. Watcher `b6y5c7v9y` TIMEOUT (10841 s). Controller: proof stale (main `c699e92784eb` changed check definitions); 30 indexed PR CI runs vs a global cap of 8, 0 slots free. Governor not forced. Re-armed `b2r8913lb` (28800 s) (D83) |
 | F02-Q2 (live flow unknown expiry) | DELIVERED → ACCEPTED by artifact → PR [macro#9231](https://github.com/mastermindx-market-intelligence/macro/pull/9231) OPEN, label `merge-on-green` only (no `--auto`), head `cf557978ff17`, CI running. Repair round 1 (`f02-q2c-r1`, rc=0, 04:11:50–04:15:45Z) added `1281456b` (tests) and `cf557978` (fix). Seat re-runs: a 39-value probe raises 7× at `ab5bb1be` and 0× at `cf557978`; 380 + 99 passed (pc); 41 API/unknown-expiry tests passed (ubuntu2, fastapi); custody clean; merge-tree clean vs main. Watcher `bcqwff2a0`. Production proof after merge is a natural cycle: `/api/flow/dte` carries `unclassified` (D82) |
@@ -2020,3 +2022,21 @@ NEXT:
 3. Wed 2026-10-14 15–19Z: the D04-A2 read-only source-clock measurement.
 4. `bp9y00b9l` (#8920/#9079/#9083) → R04-B2 and the M04 red specs (M04 also gated on #8684).
 5. Operator-only: the sign-in for the entitled render (D80 ruling 3).
+
+### D84 (2026-10-14T10:20Z) — Macro controller holds all watched PRs on a stale proof; D04-A2 measurement gated on #8923 deployed
+
+Facts observed this cycle:
+- #9231 head `ae2ee5552c73`: `ci-gate` SUCCESS since 05:49Z; every `ci-pack-*` passes; only the non-required `ci-authority/codex/merge-queue-pilot` fails. The `merge-blocked` label from the old head is still there because the controller has not re-proved the PR.
+- Controller sweep `38547080295` (10:05–10:08Z) says, for each of #8920/#8923/#9079/#9083/#9231: "checks are clean but the proof is stale — main commit 7fbda8074623 changed the check definitions themselves … Merging main into the head; its fresh checks decide on a later sweep". The same sweep reports 13 indexed PR CI runs vs a global cap of 8 and 0 slots available. Main is moving: #9280 `7fbda807` and #9274 `4908edbf` merged at 10:04–10:05Z.
+- Watcher `bp9y00b9l` (#8920/#9079/#9083) TIMEOUT at 21741 s, all OPEN and unchanged. Re-armed as `bjx08cksy` (28800 s).
+- Off-window read at 10:10Z (both edge MISS): `/live/flow_pulse.json` has no `source_asof` (last-modified 2026-10-13T21:38:11Z); `/live/intraday_quotes.json` has no `meta.source_asof` (last-modified 2026-10-14T10:10:21Z). This is consistent with #8923 being unmerged.
+
+Rulings:
+1. The seat does not refresh the heads of #9231 or #8923 itself. The controller has announced that it will merge main into each head when a slot frees, so a seat refresh would spend a CI slot outside the governor's allocation (DNR: forcing/bypassing the refresh governor). The head-bound watcher `bcv1tises` will report HEAD_MOVED when the controller refreshes #9231. The seat then confirms the new head's author is the controller and re-arms.
+2. The D04-A2 release measurement needs #8923 deployed (commission §release). A 15–19Z read taken before that measures absent fields and is not run. If #8923 merges and deploys before 15Z today, today's window applies; otherwise the next weekday window does.
+
+NEXT:
+1. `bcv1tises` (#9231): on HEAD_MOVED, verify the controller authored it and re-arm; on MERGED, the natural `/api/flow/dte` proof (D82 ruling 3).
+2. `b2r8913lb` (#8923): on MERGED, the deploy check, then R04-B1/D04-A2 launch (D80 carrier rule) and the source-clock measurement in the next weekday 15–19Z window.
+3. `bjx08cksy` (#8920/#9079/#9083): R04-B2 and the M04 red specs (M04 also gated on #8684).
+4. Operator-only: the sign-in for the entitled render (D80 ruling 3).
