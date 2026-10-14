@@ -12848,7 +12848,7 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
       <div class="mx5-dlg-header">
         <span class="mx5-dlg-title"><span class="l-en">Risk Radar</span><span class="l-zh">风险雷达</span>
         {% set _rk_asof = (latest.date if (latest is defined and latest.date is defined and latest.date) else none) %}
-        {% if _rk_asof %}<span class="riskdlg-asof">{{ _rk_asof }}</span>{% endif %}</span>
+        {% if _rk_asof %}<span class="riskdlg-asof">{{ _rk_asof|e }}</span>{% endif %}</span>
         <button class="mx5-dlg-close" type="button" onclick="mx5CloseDlg()" aria-label="Close">&#xd7;</button>
       </div>
       <div class="mx5-dlg-body">
@@ -13660,14 +13660,14 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
         {% if _rot or _show_lc %}
         {% set _lc = leadership_crack if _show_lc else none %}
         <div class="riskdlg-leadership">
-        <div class="riskdlg-sec-h">{{ t('Leadership context','领涨背景') }}{% if sector_heat is defined and sector_heat and sector_heat.get('as_of') %}<small>{{ t('as of','截至') }} {{ sector_heat.as_of }}</small>{% endif %}</div>
+        <div class="riskdlg-sec-h">{{ t('Leadership context','领涨背景') }}{% if sector_heat is defined and sector_heat and sector_heat.get('as_of') %}<small>{{ t('as of','截至') }} {{ sector_heat.as_of|e }}</small>{% endif %}</div>
         <div class="rsx-leaders">
           {# Current theme pulse: this is today's rotation read. It is deliberately separate from
              the tracked damage cohort below, which preserves continuity through a washout. #}
           {% if _rot %}
           <div class="rkc-rot-head">
             <span>{{ t('Current theme pulse','当前主题脉搏') }}</span>
-            {% if sector_heat.get('as_of') %}<small>{{ t('as of','截至') }} {{ sector_heat.as_of }}</small>{% endif %}
+            {% if sector_heat.get('as_of') %}<small>{{ t('as of','截至') }} {{ sector_heat.as_of|e }}</small>{% endif %}
           </div>
           <div class="riskdlg-rot">
             {% for rt in _rot %}
@@ -13675,8 +13675,8 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
             <details class="riskdlg-fold" id="riskdlg-themes-more">
               <summary>{{ t('View all 7 themes','查看全部 7 个主题') }}</summary>
             {% endif %}
-            <a class="riskdlg-theme{% if loop.index > 3 %} riskdlg-theme-more{% endif %}" href="basket/{{ rt.id }}.html">
-              <span class="riskdlg-tn"><span class="l-en">{{ rt.short_name }}</span><span class="l-zh">{{ rt.short_name_zh or rt.short_name }}</span></span>
+            <a class="riskdlg-theme{% if loop.index > 3 %} riskdlg-theme-more{% endif %}" href="basket/{{ rt.id|e }}.html">
+              <span class="riskdlg-tn"><span class="l-en">{{ rt.short_name|e }}</span><span class="l-zh">{{ (rt.short_name_zh or rt.short_name)|e }}</span></span>
               <span class="riskdlg-tm"><span class="riskdlg-rank">#{{ rt.rank if rt.rank is not none else '—' }}</span>{% if rt.rank_delta_5d is not none %}{% set _rt_delta_tone = 'up' if rt.rank_delta_5d > 0 else ('down' if rt.rank_delta_5d < 0 else 'flat') %}<span class="riskdlg-rank-delta {{ _rt_delta_tone }}"> · {{ '▲' if rt.rank_delta_5d > 0 else ('▼' if rt.rank_delta_5d < 0 else '•') }}{{ rt.rank_delta_5d|abs }} 5d</span>{% endif %}</span>
             </a>
             {% if loop.last and (_rot|length) > 3 %}
@@ -13694,7 +13694,7 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
           </p>
           <details class="riskdlg-fold" id="riskdlg-damage-more">
           <summary>{{ t('Residual hardware damage','残余硬件受损') }}{% if _lc.med_dd is defined and _lc.med_dd is not none %}{{ t(' — median ','——中位数回撤 ') }}{{ (_lc.med_dd * 100)|abs|round|int }}%{{ t(' below ','较过去 ') }}{{ _lc.high_window_sessions if (_lc.high_window_sessions is defined and _lc.high_window_sessions) else 63 }}{{ t('-session high',' 个交易日高点') }}{% endif %}</summary>
-          <div class="rkc-cohort-kicker">{{ t('Tracked AI-hardware damage cohort','跟踪中的 AI 硬件受损群组') }}{% if _lc.asof is defined and _lc.asof %}<small>{{ t('as of','截至') }} {{ _lc.asof }}</small>{% endif %}</div>
+          <div class="rkc-cohort-kicker">{{ t('Tracked AI-hardware damage cohort','跟踪中的 AI 硬件受损群组') }}{% if _lc.asof is defined and _lc.asof %}<small>{{ t('as of','截至') }} {{ _lc.asof|e }}</small>{% endif %}</div>
           {# Header row: engine state line (verbatim) + count chip (N names 30%+ off) #}
           {% set _lc_n30h = ((_lc.share30 * _lc.n_total) | round | int) if (_lc.share30 is defined and _lc.share30 is not none and _lc.n_total is defined) else none %}
           <div class="rkc-ldr-head">
@@ -13719,7 +13719,7 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
             {% for wm in _lc.worst_members[:6] %}
             {% set _wm_dd_pct = ((wm.dd * -100) | round | int) if (wm.dd is defined and wm.dd is not none) else none %}
             <div class="rkc-ldr-row">
-              <div class="rkc-ldr-tkr">{{ wm.ticker }}</div>
+              <div class="rkc-ldr-tkr">{{ wm.ticker|e }}</div>
               <div class="rkc-ldr-track">
                 {% if _wm_dd_pct is not none %}
                 <div class="rkc-ldr-fill" style="width:{{ [_wm_dd_pct, 100] | min }}%"></div>
@@ -13747,10 +13747,13 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
             <span class="l-zh">{{ _lc.n_total }} 个跟踪标的中有 <b>{{ _lc_n10 }}</b> 个较过去 {{ _lc.high_window_sessions if (_lc.high_window_sessions is defined and _lc.high_window_sessions) else 63 }} 个交易日高点下跌逾 10%——这是群组残余受损，并非当前大盘广度。</span>
           </div>
           {% endif %}
-          {# Receipt fields in data-tip-en/zh #}
+          {# Receipt fields in data-tip-en/zh. The strings in this leadership block (theme
+             ids/names, as-of dates, cohort tickers, these tips) pass through |e explicitly:
+             a no-op under the production env's autoescape, real escaping under the dev
+             fast renderer (scripts/render_macro_fast.py), which runs with autoescape OFF. #}
           {% set _lc_tip_en %}State since {{ _lc.state_since if (_lc.state_since is defined and _lc.state_since) else '—' }}. Velocity z={{ ((_lc.z_vel)|round(1)) if (_lc.z_vel is defined and _lc.z_vel is not none) else '—' }}. Carnage share EMA {{ ((_lc.carnage_share_ema * 100)|round|int ~ '%') if (_lc.carnage_share_ema is defined and _lc.carnage_share_ema is not none) else '—' }}. Accrual-only display — see pick-lab for forward grading.{% endset %}
           {% set _lc_tip_zh %}自{{ _lc.state_since if (_lc.state_since is defined and _lc.state_since) else '—' }}起。速度 z={{ ((_lc.z_vel)|round(1)) if (_lc.z_vel is defined and _lc.z_vel is not none) else '—' }}。灾情份额 EMA {{ ((_lc.carnage_share_ema * 100)|round|int ~ '%') if (_lc.carnage_share_ema is defined and _lc.carnage_share_ema is not none) else '—' }}。仅积累展示，前瞻评分见选股实验室。{% endset %}
-          <div class="rkc-ldr-sub" style="margin-top:5px" data-tip-en="{{ _lc_tip_en | trim }}" data-tip-zh="{{ _lc_tip_zh | trim }}">
+          <div class="rkc-ldr-sub" style="margin-top:5px" data-tip-en="{{ _lc_tip_en | trim | e }}" data-tip-zh="{{ _lc_tip_zh | trim | e }}">
             <span class="l-en">Continuity monitor — compare with the current rotation pulse above.</span>
             <span class="l-zh">连续性监测——请与上方当前轮动脉搏对照。</span>
           </div>
