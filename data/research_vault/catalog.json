@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-10-14T13:56:50.200380+00:00",
-  "count": 2899,
+  "generated_at": "2026-10-14T14:09:22.982824+00:00",
+  "count": 2900,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -111,6 +111,26 @@
     "Zero Hedge"
   ],
   "items": [
+    {
+      "id": "marketdesk-zidfbw2dhyr-90424e",
+      "title": "GS Bartlett GS TMT TODAY 10.14.26 14 Oct 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-14T13:44:15Z",
+      "summary_points": [
+        "Geopolitical Energy Impact: Houthi strikes on Saudi Aramco HQ and Iran tanker attacks drive WTI crude up 1.25% to $95.30, highlighting acute supply risk and energy market volatility.",
+        "ASML Fundamentals & Supply Risk: Upgraded 2026 revenue guidance (€44bn-€45bn) and 56% gross margin, but targeted 30% EUV capacity increase deemed insufficient amid surging demand, signaling critical supply chain constraints.",
+        "TMT Sector Divergence: TMT hardware outperforms S&P 500 by +66.96% YTD (+80.98% vs S&P +14.02%), contrasting with China Internet’s -28.15% decline, revealing high-risk allocation opportunities and geopolitical exposure.",
+        "Fed Policy & Earnings Flow Catalyst: Dovish Fed remarks (William’s) precede key speakers, with pre-market earnings (PGR, BLK, BAC) and ASML’s mixed reaction (beat/raise but capacity concerns) driving sector-specific capital flows."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": true,
+      "pages": 6,
+      "language": "en",
+      "needs_metadata": false
+    },
     {
       "id": "marketdesk-k5gzbnlti7v-bb4677",
       "title": "Market Update US, Europe & Asia",
