@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-10-14T13:11:14.018956+00:00",
-  "count": 2896,
+  "generated_at": "2026-10-14T13:27:15.186797+00:00",
+  "count": 2897,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -793,6 +793,26 @@
       "tickers": [],
       "top_pick": false,
       "pages": 14,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-g9izgbzute3-9281fa",
+      "title": "JPM JPM PI Weekly Wrap",
+      "institution": "J.P. Morgan",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-12T22:53:11Z",
+      "summary_points": [
+        "HF Positioning Shifts: HFs bought US Banks (Large Caps > Regionals) for 2nd straight week, sold Semis (most net sold), EU Banks sold despite high positioning (+3z vs LT).",
+        "EU vs US Positioning Gap: EU positioning down to ~13th %-tile vs US steady at 46th %-tile, bearishness building in Europe.",
+        "EU Banks as Key Risk Factor: EU Banks identified as critical risk factor amid high positioning and selling pressure.",
+        "Sector Sentiment Divergence: Biotech stabilizing but weak; EU Banks bearishness contrasts with US bank buying flows."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 2,
       "language": "en",
       "needs_metadata": false
     },
