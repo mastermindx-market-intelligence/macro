@@ -1091,6 +1091,12 @@ HISTORICAL_TEXT_CASES = [
     "benchmark_mag7_narration_2026-08-03.json",
     "benchmark_healthcare_coherence_2026-07-13.json",
     "benchmark_rotation_wiring_2026-07-16.json",
+    "benchmark_risk_breadth_2026-07-08.json",
+    "benchmark_treasury_liquidity_2026-07-02.json",
+    "benchmark_semiconductor_divergence_2026-07-08.json",
+    "benchmark_mag7_organ_causality_2026-07-11.json",
+    "benchmark_mag7_flow_calibration_2026-07-11.json",
+    "benchmark_mag7_narrative_denominator_2026-07-11.json",
 ]
 
 

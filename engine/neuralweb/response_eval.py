@@ -4,7 +4,7 @@ The scoring half of the W2 evaluation harness (masterplan §3 row 14, rubric §9
 Reads nothing and writes nothing on its own: the corpus reader/writer lives in
 scripts/run_brain_eval.py and admin/mastermind_logs.py, the LLM judge is INJECTED
 as a callable. The module opens its frozen benchmark fixtures under
-engine/neuralweb/eval/; optional historical text cases additionally verify their two
+engine/neuralweb/eval/; optional historical text cases additionally verify their eight
 explicitly admitted, bounded canonical research documents. No outcome store is read.
 
 CONSTRAINT: scores produced here are INTERNAL QA TELEMETRY ONLY. Nothing in this
@@ -1044,7 +1044,14 @@ def _benchmark_extra_context(case: dict) -> str:
 
 _HISTORICAL_TEXT_CASE_IDS = frozenset({"gold_real_rate_2026-08-09", "capex_bind_2026-07-22",
                                       "mag7_forced_override_2026-07-11", "mag7_narration_2026-08-03",
-                                      "healthcare_coherence_2026-07-13", "rotation_wiring_2026-07-16"})
+                                      "healthcare_coherence_2026-07-13", "rotation_wiring_2026-07-16",
+                                      'risk_breadth_2026-07-08',
+                                      'treasury_liquidity_2026-07-02',
+                                      'semiconductor_divergence_2026-07-08',
+                                      'mag7_organ_causality_2026-07-11',
+                                      'mag7_flow_calibration_2026-07-11',
+                                      'mag7_narrative_denominator_2026-07-11',
+                                      })
 _HISTORICAL_TEXT_CASE_NAMES = frozenset(f"benchmark_{case_id}.json" for case_id in _HISTORICAL_TEXT_CASE_IDS)
 _HISTORICAL_TEXT_SOURCES = frozenset({
     "research/CASE_STUDY_GOLD_REAL_RATE_PEAK_2026_08.md",
@@ -1053,6 +1060,8 @@ _HISTORICAL_TEXT_SOURCES = frozenset({
     "research/POSTMORTEM_20260803_MAG7_RALLY_SILENCE_BY_FABLE.md",
     "research/POSTMORTEM_20260714_ROTATION_MISS_BY_FABLE.md",
     "research/POSTMORTEM_20260716_DEFENSIVE_ROTATION_MISS_BY_FABLE.md",
+    "research/RISK_ON_REGIME_SHIFT_POSTMORTEM_2026-06-29_TO_2026-07-08.md",
+    "research/MAG7_TURN_POSTMORTEM_BY_FABLE.md",
 })
 _HISTORICAL_SCOPE_LIMITS = [
     "Supplied adjudication text only; historical source availability is unverified.",
@@ -1076,7 +1085,7 @@ def historical_text_digest(meta: dict) -> str:
 def _historical_text_case_error(case: dict, root: Path) -> str | None:
     """Validate the optional frozen text contract before any answer/judge call.
 
-    Reads only the six named canonical documents, bounded and regular-file-only. Full
+    Reads only the eight named canonical documents, bounded and regular-file-only. Full
     bytes and exact excerpts bind input and adjudication separately. No historical
     stores, model defaults, rights escalation or claim/grade reads are involved.
     """

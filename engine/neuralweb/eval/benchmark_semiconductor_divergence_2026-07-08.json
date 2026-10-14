@@ -1,0 +1,65 @@
+{
+  "benchmark_id": "semiconductor_divergence_2026-07-08",
+  "frozen": true,
+  "source": "research/RISK_ON_REGIME_SHIFT_POSTMORTEM_2026-06-29_TO_2026-07-08.md",
+  "historical_case": {
+    "schema": "response_eval.historical_text_case.v1",
+    "replay_scope": "supplied_adjudication_text",
+    "doctrine_scope": "current_doctrine_replay",
+    "cutoff_date": "2026-07-08",
+    "session_label": "date only",
+    "adjudication_date": "2026-07-12",
+    "historical_source_availability": "unverified",
+    "dependence_group": "june-july-2026-risk-on",
+    "source": {
+      "path": "research/RISK_ON_REGIME_SHIFT_POSTMORTEM_2026-06-29_TO_2026-07-08.md",
+      "sha256": "5c593990c373e2a14ff77e33824536d55b8c9f33c3dfdd40a995be7dda9c8568"
+    },
+    "input_facts": [
+      {
+        "event_date": "2026-07-08",
+        "source_lines": [
+          39,
+          44
+        ],
+        "text": "| Asset | Actual local floor | June 29 | July 8 | What the sequence says |\n|---|---:|---:|---:|---|\n| Alibaba 9988.HK | Jun 26 low HK$88.65 | Close HK$93.00, +3.91% | Close HK$107.50, +12.21% | Capitulation first; later earnings/flow reprice |\n| Alibaba ADR | Jun 26 low $91.99 | Close $95.51 | Close $108.98, +11.05% | Same company reset in US hours |\n| Nvidia | Jun 29 low $189.80 | Close $194.97, +1.27% | Close $204.12, +3.65% | Stock-specific divergence, then China optionality |\n| SOXX | Jun 26-June 29 floor area | Close $614.35 | +1.87% on the day | Fell to $551.69 on Jul 7; no Jun 29 group bottom |",
+        "sha256": "ac503fff92b1c416d69d0d409b276f82ec55fc74825b84daa2266e10bbac0363"
+      }
+    ],
+    "adjudication_excerpt": {
+      "source_lines": [
+        31,
+        37
+      ],
+      "text": "## 1. Tape correction: the move was not one synchronized bottom\n\nThe premise needs two corrections.\n\nFirst, Alibaba 9988.HK made its actual low on **June 26**, not June 29. June 29 was its first forceful reversal day.\n\nSecond, broad semiconductors did not bottom on June 29. The semiconductor ETFs continued falling through **July 7**. Nvidia was an important positive divergence from a still-weak group.",
+      "sha256": "c98944a706e3f02f12177229f189c351f726dbacd27febcf41367a1cf20af20a"
+    }
+  },
+  "question_en": "Using only the supplied floor and price table through July 8, evaluate the claim that Alibaba, Nvidia and the whole semiconductor group bottomed together on June 29. Preserve the populations and horizons.",
+  "packet_digest_fixture": "FROZEN SUPPLIED HISTORICAL TEXT — cutoff date 2026-07-08 (date only). Historical source availability is unverified; this is not a live dashboard or a proved historically served snapshot.\n[2026-07-08] | Asset | Actual local floor | June 29 | July 8 | What the sequence says |\n|---|---:|---:|---:|---|\n| Alibaba 9988.HK | Jun 26 low HK$88.65 | Close HK$93.00, +3.91% | Close HK$107.50, +12.21% | Capitulation first; later earnings/flow reprice |\n| Alibaba ADR | Jun 26 low $91.99 | Close $95.51 | Close $108.98, +11.05% | Same company reset in US hours |\n| Nvidia | Jun 29 low $189.80 | Close $194.97, +1.27% | Close $204.12, +3.65% | Stock-specific divergence, then China optionality |\n| SOXX | Jun 26-June 29 floor area | Close $614.35 | +1.87% on the day | Fell to $551.69 on Jul 7; no Jun 29 group bottom |",
+  "expected_properties": [
+    {
+      "tag": "chronology",
+      "check": "Alibaba HK and ADR lows are June 26; Nvidia local low is June 29; SOXX fell further to 551.69 on July 7."
+    },
+    {
+      "tag": "population",
+      "check": "Distinguish an individual stock from a sector ETF; Nvidia strength cannot establish a June 29 semiconductor group bottom."
+    },
+    {
+      "tag": "table_tension",
+      "check": "Reconcile the SOXX floor-area label with its explicitly later lower reading instead of silently taking the label as final."
+    },
+    {
+      "tag": "limits",
+      "check": "Do not invent later prices, synchronized causality or an executable position."
+    }
+  ],
+  "known_failure_modes": [
+    "Treat retrospective supplied diagnostic text as a historically served point-in-time snapshot.",
+    "Turn a distinct population, selected anecdote or failed calibration into a validated execution signal.",
+    "Import later observations absent from the supplied cutoff slice or count related cases as independent trials."
+  ],
+  "gold_standard_sentence": "The table does not support one synchronized June 29 bottom: Alibaba bottomed earlier, Nvidia diverged on June 29, and SOXX fell further by July 7. A stock move does not establish a sector-wide floor.",
+  "rubric_weights_ref": "existing response_eval RUBRIC; internal QA only"
+}

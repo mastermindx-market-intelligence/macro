@@ -30,3 +30,23 @@ Two further cases cover the simultaneous healthcare buy/Reduce readings on July 
 The existing guard admits six named documents and six case identities; all function bodies are unchanged. Four red controls reproduced unadmitted-source and missing-metadata/default-model failures before registration. The affected runner/adversarial/admission suite passes 171 tests with no failures, errors or skips. The assigning root verified exact source bytes, excerpt lines, dates and limits; an independent review is not claimed. Fabric refused support publication before the extraction worker launched.
 
 These cases share a July US-rotation context and may also overlap earlier Mag7 cases. Dependence-group labels do not prove independence across labels. Six new supplied-text cases plus the unchanged bear case remain below the original twenty/fifteen objective; injected callbacks prove execution plumbing only. See the t6-third receipts.
+
+
+## Breadth, liquidity, population and diagnostic-causality tranche
+
+Six further frozen supplied-text cases extend the incumbent runner:
+
+| Case | Input cutoff | Diagnostic distinction |
+|---|---|---|
+| risk_breadth | July 8 | Index rebound versus breadth; a broad July 2 does not turn selective July 8 into an all-clear |
+| treasury_liquidity | July 2 | $148.56B TGA drawdown versus the approximately $162B proxy change; Treasury cash spending is distinct from QE |
+| semiconductor_divergence | July 8 | Alibaba and Nvidia individual floors versus SOXX's later lower reading |
+| mag7_organ_causality | July 11 | Absent organs, unsynthesized existing signals and chosen cohort blindness need different remedies |
+| mag7_flow_calibration | July 11 | Around-turn visibility does not establish predictive leadership or repair failed signing calibration |
+| mag7_narrative_denominator | July 11 | Selected statements without a false-positive denominator cannot establish a repeatable entry rule |
+
+The first three bind the July12 risk-on reconstruction; the latter three bind the July11 adjudicated Mag7 postmortem. Cutoffs bound the supplied text, not an inferred original publication time. The July11 cases are explicitly retrospective diagnostics. The liquidity input excludes the undated RRP-collapse statement and later July9 balances. Sources, exact excerpts, expectations and assembled prompts are hashed separately. These documents are evidence, not authority to execute their historical remediation prose.
+
+The assigning root adjudicated these readings; independent review is not claimed. Twelve new controls reproduced unadmitted-source and missing-metadata fallback failures before registration. The runner still requires explicit answer and judge callbacks and reads only eight named regular research files, each bounded to64KiB. Its executable function bodies, original six fixtures, legacy bear case and scientific scoring/authority behavior are unchanged.
+
+The collection now contains twelve supplied-text cases plus the unchanged legacy bear case. Cases within and across the June-July groups may overlap; neither counts nor labels prove statistical independence. Historical PIT availability, the original20/15 objective, actual model reasoning acceptance and production adoption remain open. A distinct blind-answer Fabric request, eval-t6-blind-six-01a1333d-c2, returned no_pool_available before launch; no model answer, acceptance, replacement or alternate carrier followed. Source tests with injected callbacks prove plumbing only.

@@ -3621,6 +3621,8 @@ jobs:
     # 846 tracked / 127 concrete. Subject packages stay globbed.
     scope: exclusive
     paths:
+      - research/RISK_ON_REGIME_SHIFT_POSTMORTEM_2026-06-29_TO_2026-07-08.md
+      - research/MAG7_TURN_POSTMORTEM_BY_FABLE.md
       - research/CASE_STUDY_GOLD_REAL_RATE_PEAK_2026_08.md
       - research/POSTMORTEM_20260714_ROTATION_MISS_BY_FABLE.md
       - research/POSTMORTEM_20260716_DEFENSIVE_ROTATION_MISS_BY_FABLE.md
@@ -5843,6 +5845,8 @@ jobs:
     # every concrete static import-closure path (curated_exclusive_closure_findings
     # gates it) plus the measured runtime in-tree reads of every class-A suite.
     paths:
+      - research/RISK_ON_REGIME_SHIFT_POSTMORTEM_2026-06-29_TO_2026-07-08.md
+      - research/MAG7_TURN_POSTMORTEM_BY_FABLE.md
       - research/CASE_STUDY_GOLD_REAL_RATE_PEAK_2026_08.md
       - research/POSTMORTEM_20260714_ROTATION_MISS_BY_FABLE.md
       - research/POSTMORTEM_20260716_DEFENSIVE_ROTATION_MISS_BY_FABLE.md
@@ -7509,6 +7513,14 @@ jobs:
     # The qledger-cluster-honest-ci code owner retains grader/readiness suites.
     scope: exclusive
     paths:
+      - research/RISK_ON_REGIME_SHIFT_POSTMORTEM_2026-06-29_TO_2026-07-08.md
+      - research/MAG7_TURN_POSTMORTEM_BY_FABLE.md
+      - engine/neuralweb/eval/benchmark_risk_breadth_2026-07-08.json
+      - engine/neuralweb/eval/benchmark_treasury_liquidity_2026-07-02.json
+      - engine/neuralweb/eval/benchmark_semiconductor_divergence_2026-07-08.json
+      - engine/neuralweb/eval/benchmark_mag7_organ_causality_2026-07-11.json
+      - engine/neuralweb/eval/benchmark_mag7_flow_calibration_2026-07-11.json
+      - engine/neuralweb/eval/benchmark_mag7_narrative_denominator_2026-07-11.json
       - engine/neuralweb/market_memory_retained_catalog.py
       - engine/neuralweb/market_memory_retained_legacy_guard.py
       - engine/neuralweb/market_memory_retained_saved.py
@@ -16721,6 +16733,8 @@ jobs:
     # genuine import edges.
     scope: exclusive
     paths:
+      - research/RISK_ON_REGIME_SHIFT_POSTMORTEM_2026-06-29_TO_2026-07-08.md
+      - research/MAG7_TURN_POSTMORTEM_BY_FABLE.md
       - research/CASE_STUDY_GOLD_REAL_RATE_PEAK_2026_08.md
       - research/POSTMORTEM_20260714_ROTATION_MISS_BY_FABLE.md
       - research/POSTMORTEM_20260716_DEFENSIVE_ROTATION_MISS_BY_FABLE.md
@@ -17449,6 +17463,8 @@ jobs:
     # 846 tracked / 74 concrete.
     scope: exclusive
     paths:
+      - research/RISK_ON_REGIME_SHIFT_POSTMORTEM_2026-06-29_TO_2026-07-08.md
+      - research/MAG7_TURN_POSTMORTEM_BY_FABLE.md
       - research/CASE_STUDY_GOLD_REAL_RATE_PEAK_2026_08.md
       - research/POSTMORTEM_20260714_ROTATION_MISS_BY_FABLE.md
       - research/POSTMORTEM_20260716_DEFENSIVE_ROTATION_MISS_BY_FABLE.md
@@ -19434,6 +19450,8 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - research/RISK_ON_REGIME_SHIFT_POSTMORTEM_2026-06-29_TO_2026-07-08.md
+      - research/MAG7_TURN_POSTMORTEM_BY_FABLE.md
       - research/CASE_STUDY_GOLD_REAL_RATE_PEAK_2026_08.md
       - research/POSTMORTEM_20260714_ROTATION_MISS_BY_FABLE.md
       - research/POSTMORTEM_20260716_DEFENSIVE_ROTATION_MISS_BY_FABLE.md
@@ -20962,6 +20980,8 @@ jobs:
     # the five scripts are closure imports, not tree scans.
     scope: exclusive
     paths:
+      - research/RISK_ON_REGIME_SHIFT_POSTMORTEM_2026-06-29_TO_2026-07-08.md
+      - research/MAG7_TURN_POSTMORTEM_BY_FABLE.md
       - research/CASE_STUDY_GOLD_REAL_RATE_PEAK_2026_08.md
       - research/POSTMORTEM_20260714_ROTATION_MISS_BY_FABLE.md
       - research/POSTMORTEM_20260716_DEFENSIVE_ROTATION_MISS_BY_FABLE.md
@@ -21382,6 +21402,8 @@ jobs:
     # no named closure file was removed.
     scope: exclusive
     paths:
+      - research/RISK_ON_REGIME_SHIFT_POSTMORTEM_2026-06-29_TO_2026-07-08.md
+      - research/MAG7_TURN_POSTMORTEM_BY_FABLE.md
       - research/CASE_STUDY_GOLD_REAL_RATE_PEAK_2026_08.md
       - research/POSTMORTEM_20260714_ROTATION_MISS_BY_FABLE.md
       - research/POSTMORTEM_20260716_DEFENSIVE_ROTATION_MISS_BY_FABLE.md
@@ -26412,6 +26434,8 @@ jobs:
     # 846 tracked / 74 concrete. Subject packages stay globbed.
     scope: exclusive
     paths:
+      - research/RISK_ON_REGIME_SHIFT_POSTMORTEM_2026-06-29_TO_2026-07-08.md
+      - research/MAG7_TURN_POSTMORTEM_BY_FABLE.md
       - research/CASE_STUDY_GOLD_REAL_RATE_PEAK_2026_08.md
       - research/POSTMORTEM_20260714_ROTATION_MISS_BY_FABLE.md
       - research/POSTMORTEM_20260716_DEFENSIVE_ROTATION_MISS_BY_FABLE.md
@@ -26897,6 +26921,8 @@ jobs:
     # contract-delta closure on 673a0a5a (a sparse worktree omits those trees).
     scope: exclusive
     paths:
+      - research/RISK_ON_REGIME_SHIFT_POSTMORTEM_2026-06-29_TO_2026-07-08.md
+      - research/MAG7_TURN_POSTMORTEM_BY_FABLE.md
       - research/CASE_STUDY_GOLD_REAL_RATE_PEAK_2026_08.md
       - research/POSTMORTEM_20260714_ROTATION_MISS_BY_FABLE.md
       - research/POSTMORTEM_20260716_DEFENSIVE_ROTATION_MISS_BY_FABLE.md
@@ -28993,6 +29019,8 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - research/RISK_ON_REGIME_SHIFT_POSTMORTEM_2026-06-29_TO_2026-07-08.md
+      - research/MAG7_TURN_POSTMORTEM_BY_FABLE.md
       - research/CASE_STUDY_GOLD_REAL_RATE_PEAK_2026_08.md
       - research/POSTMORTEM_20260714_ROTATION_MISS_BY_FABLE.md
       - research/POSTMORTEM_20260716_DEFENSIVE_ROTATION_MISS_BY_FABLE.md
