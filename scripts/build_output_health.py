@@ -57,6 +57,7 @@ Usage
 -----
   python3 scripts/build_output_health.py                 # the whole view as JSON
   python3 scripts/build_output_health.py --summary        # counts + top reason codes
+  python3 scripts/build_output_health.py --source-findings # T5 source/data observations
   python3 scripts/build_output_health.py --now 2026-08-14T00:00:00+00:00 --root <path>
 """
 from __future__ import annotations
@@ -971,7 +972,11 @@ def main(argv: list[str] | None = None) -> int:
         default=None,
         help="comma-separated artifact ids to OBSERVE (debug; the rest stay unobserved)",
     )
+    parser.add_argument("--source-findings", action="store_true",
+                        help="project T5 source/data findings from this same health snapshot")
     args = parser.parse_args(argv)
+    if args.source_findings and (args.summary or args.json):
+        parser.error("--source-findings cannot be combined with --summary or --json")
 
     now = (
         datetime.fromisoformat(args.now)
@@ -995,6 +1000,10 @@ def main(argv: list[str] | None = None) -> int:
             else None
         ),
     )
+    if args.source_findings:
+        from engine.postmortem import classify_source_findings
+        print(json.dumps(classify_source_findings(view), indent=1, ensure_ascii=False), flush=True)
+        return 0
     if args.summary:
         print(render_summary(view), flush=True)
         return 0

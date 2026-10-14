@@ -1169,9 +1169,13 @@ def test_22_the_resolver_imports_no_ranking_gating_or_sizing_module():
     cli_allowed = {
         "__future__", "argparse", "json", "subprocess", "sys", "datetime", "pathlib",
         "typing", "yaml", "engine.output_health", "scripts.build_intelligence_registry",
-        "scripts.freshness_sentinel",
+        "scripts.freshness_sentinel", "engine.postmortem",
     }
     assert _imported_modules(REPO / "scripts" / "build_output_health.py") <= cli_allowed
+    cli_tree = ast.parse((REPO / "scripts" / "build_output_health.py").read_text())
+    postmortem_imports = [n for n in ast.walk(cli_tree)
+                         if isinstance(n, ast.ImportFrom) and n.module == "engine.postmortem"]
+    assert [[a.name for a in n.names] for n in postmortem_imports] == [["classify_source_findings"]]
 
 
 # ---------------------------------------------------------------------------
@@ -1586,3 +1590,137 @@ def test_every_state_bearing_record_names_the_plane_that_decided_it():
             assert row["decided_by"] is None
         else:
             assert row["decided_by"] in OH.DECIDED_BY_VALUES, row
+
+
+# T5 source/data findings consume the canonical T4 view; no outcome ledger.
+def _finding_view(doc, observations):
+    return OH.resolve_output_health(synapse=doc, registry=registry_for(doc),
+                                    observations=observations, now=NOW)
+
+
+def _source_findings(view):
+    from engine.postmortem import classify_source_findings
+    return classify_source_findings(view)
+
+
+def test_source_findings_malformed_content_is_data_issue_with_blindness_preserved():
+    view = _finding_view(two_artifact_estate(), {"a": obs(), "b": obs(parse_error="content does not parse (JSONDecodeError)")})
+    result = _source_findings(view)
+    finding = next(x for x in result["observations"] if x["artifact_id"] == "b")
+    assert finding["classification"] == "data_issue"
+    assert finding["output"]["assessment_status"] == "could_not_look"
+    assert finding["output"]["state"] is None
+    assert result["evaluation_status"] == "not_assessed"
+    assert result["count_unit"] == "health_observations"
+
+
+@pytest.mark.parametrize("detail", [
+    "content is 99999999 bytes (cap 8388608) — not read", "permission denied",
+    "watermark_unreadable_format", "jsonl store has no rows", "unknown error",
+])
+def test_source_findings_parse_code_alone_does_not_prove_bad_data(detail):
+    view = _finding_view(two_artifact_estate(), {"a": obs(), "b": obs(parse_error=detail)})
+    result = _source_findings(view)
+    assert not any(x["classification"] == "data_issue" for x in result["observations"])
+    assert any(x["classification"] == "unclassified" for x in result["observations"])
+
+
+def test_source_findings_exact_stale_input_retains_both_source_clocks():
+    view = _finding_view(two_artifact_estate(), {"a": obs(), "b": obs(asof=OLD)})
+    result = _source_findings(view)
+    finding = next(x for x in result["observations"] if x["classification"] == "stale_feature")
+    assert (finding["artifact_id"], finding["source_artifact_id"]) == ("a", "b")
+    assert finding["reason_code"] == "required_input_stale:b"
+    assert finding["source"]["source_asof"] == OLD
+    assert finding["source"]["age_hours"] > finding["source"]["freshness_sla_hours"]
+    assert finding["output"]["source_asof"] == FRESH
+    own = [x for x in result["observations"] if x["artifact_id"] == "b"]
+    assert own and all(x["classification"] == "unclassified" for x in own)
+
+
+@pytest.mark.parametrize("change", ["upper", "missing_source", "duplicate_source", "unowned", "no_sla", "unassessed", "clock_mismatch"])
+def test_source_findings_stale_relationship_requires_exact_observed_source(change):
+    view = _finding_view(two_artifact_estate(), {"a": obs(), "b": obs(asof=OLD)})
+    a, b = sorted(view["outputs"], key=lambda r: r["artifact_id"])
+    if change == "upper": a["dependency_bound"] = "upper"
+    elif change == "missing_source": view["outputs"].remove(b)
+    elif change == "duplicate_source": view["outputs"].append(dict(b))
+    elif change == "unowned": b["engine_id"] = None
+    elif change == "no_sla": b["freshness_sla_hours"] = None
+    elif change == "unassessed": b["state"] = None
+    elif change == "clock_mismatch": b["observed_at"] = "2026-08-13T12:00:00+00:00"
+    result = _source_findings(view)
+    assert not any(x["classification"] == "stale_feature" for x in result["observations"])
+    assert any(x["classification"] == "unclassified" for x in result["observations"])
+
+
+def test_source_findings_healthy_empty_and_unavailable_remain_distinct():
+    assert _source_findings(_finding_view(two_artifact_estate(), {"a": obs(), "b": obs()}))["observations"] == []
+    result = _source_findings(_finding_view(two_artifact_estate(), {"a": obs(), "b": obs(exists=False)}))
+    assert result["unavailable_output_count"] == 2
+    assert result["unclassified_observation_count"] > 0
+    assert all(x["classification"] == "unclassified" for x in result["observations"])
+
+
+def test_source_findings_group_members_do_not_become_independent_trials():
+    import copy
+    view = _finding_view(two_artifact_estate(), {"a": obs(), "b": obs(asof=OLD)})
+    before = copy.deepcopy(view)
+    result = _source_findings(view)
+    assert view == before
+    assert sum(x["observation_count"] for x in result["groups"]) == len(result["observations"])
+    assert all(x["count_unit"] == "health_observations" for x in result["groups"])
+    assert "failure_rate" not in result
+    assert "authority" not in json.dumps(result)
+
+
+def test_source_findings_cli_uses_single_existing_build(monkeypatch, capsys):
+    view = _finding_view(two_artifact_estate(), {"a": obs(), "b": obs(asof=OLD)})
+    calls = []
+    def build(*args, **kwargs):
+        calls.append(kwargs)
+        return view
+    monkeypatch.setattr(CLI, "build", build)
+    assert CLI.main(["--source-findings", "--now", NOW.isoformat()]) == 0
+    result = json.loads(capsys.readouterr().out)
+    assert result == _source_findings(view)
+    assert len(calls) == 1
+    assert any(x["classification"] == "stale_feature" for x in result["observations"])
+
+
+def test_source_findings_cli_rejects_summary_combination():
+    with pytest.raises(SystemExit) as exc:
+        CLI.main(["--source-findings", "--summary"])
+    assert exc.value.code == 2
+
+
+@pytest.mark.parametrize("field,value", [
+    ("source_asof", "not-a-clock"), ("source_asof", "2026-08-01T06:00:00"),
+    ("age_hours", float("inf")), ("age_hours", True),
+    ("freshness_sla_hours", float("nan")), ("freshness_sla_hours", True),
+])
+def test_source_findings_rejects_unusable_content_clock(field, value):
+    view = _finding_view(two_artifact_estate(), {"a": obs(), "b": obs(asof=OLD)})
+    next(r for r in view["outputs"] if r["artifact_id"] == "b")[field] = value
+    assert not any(x["classification"] == "stale_feature" for x in _source_findings(view)["observations"])
+
+
+def test_source_findings_rejects_non_timestamp_observation_epoch():
+    view = _finding_view(two_artifact_estate(), {"a": obs(), "b": obs(asof=OLD)})
+    view["generated"]["observed_at"] = "not-an-epoch"
+    for row in view["outputs"]: row["observed_at"] = "not-an-epoch"
+    with pytest.raises(ValueError, match="observation time"):
+        _source_findings(view)
+
+
+def test_source_findings_preserves_owner_naive_clock_coercion():
+    view = _finding_view(two_artifact_estate(), {"a": obs(), "b": obs(asof="2026-08-01T06:00:00")})
+    item = next(x for x in _source_findings(view)["observations"] if x["classification"] == "stale_feature")
+    assert item["source"]["source_asof"] == "2026-08-01T06:00:00"
+    assert "naive_watermark_coerced_utc" in item["source"]["reason_codes"]
+
+
+def test_source_findings_rejects_malformed_source_reason_collection():
+    view = _finding_view(two_artifact_estate(), {"a": obs(), "b": obs(asof="2026-08-01T06:00:00")})
+    next(r for r in view["outputs"] if r["artifact_id"] == "b")["reason_codes"] = "prefix_naive_watermark_coerced_utc_suffix"
+    assert not any(x["classification"] == "stale_feature" for x in _source_findings(view)["observations"])

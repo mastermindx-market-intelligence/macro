@@ -7679,6 +7679,8 @@ jobs:
       - "scripts/build_market_memory_page.py"
       - "scripts/build_market_structure_page.py"
       - "scripts/build_output_health.py"
+      - "engine/postmortem.py"
+      - "research/MASTERMIND_INTELLIGENCE_EVALUATION_ARCHITECTURE.md"
       - "scripts/build_risk_envelope.py"
       - "scripts/build_rr_banner.py"
       - "scripts/build_site.py"
