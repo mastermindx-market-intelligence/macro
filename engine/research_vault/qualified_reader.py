@@ -10,8 +10,10 @@ from __future__ import annotations
 import contextvars
 from dataclasses import dataclass
 import json
+import math
 import sqlite3
 import threading
+import time
 from typing import Any, Callable
 
 from engine.research_vault import catalog, corpus, producer_generation as generation
@@ -29,12 +31,15 @@ class GuardedRead:
 
 
 class _LimitedStore:
-    def __init__(self, store, byte_budget):
+    def __init__(self, store, byte_budget, *, before_corpus_read=None):
         self.store, self.byte_budget = store, byte_budget
+        self.before_corpus_read = before_corpus_read
 
     def get_bytes_strict_bounded(self, key, bound):
         if key == generation.CORPUS_KEY:
             bound = min(bound, self.byte_budget)
+            if self.before_corpus_read is not None:
+                self.before_corpus_read()
         raw = self.store.get_bytes_strict_bounded(key, bound)
         if raw is not None and (type(raw) is not bytes or len(raw) > bound):
             raise SelectedReadUnavailable("bounded_store_contract_failed")
@@ -99,6 +104,8 @@ def _open_image(selected):
     except BaseException:
         conn.close()
         raise
+    finally:
+        selected = None  # an exception traceback must not pin a retired image
 
 
 class QualifiedReadProvider:
@@ -132,10 +139,26 @@ class QualifiedReadProvider:
         self._selected = None
         self._prepared_at = None
         self._lock = threading.RLock()
+        self._drained = threading.Condition(self._lock)
         self._prepare_lock = threading.Lock()
         self._inflight_bytes = 0
         self._active = 0
+        self._guard_active = 0
+        self._live_retained_bytes = 0
+        self._refresh_reserved = 0
+        self._refresh_exclusive = False
+        self._policy_revision = 0
         self._current = contextvars.ContextVar("research_selected_operation", default=None)
+
+    def _writer_qualified(self):
+        try:
+            qualified = self.writer_policy() is True
+        except Exception:
+            qualified = False
+        if not qualified:
+            with self._lock:
+                self._policy_revision += 1
+        return qualified
 
     def prepare(self):
         """Full qualification once, explicitly outside the hot request path."""
@@ -143,7 +166,7 @@ class QualifiedReadProvider:
             raise SelectedReadUnavailable("preparation_in_progress")
         try:
             with self._lock:
-                if self._active:
+                if self._active or self._guard_active:
                     raise SelectedReadUnavailable("operation_in_progress")
                 self._selected = None
                 self._prepared_at = None
@@ -151,7 +174,7 @@ class QualifiedReadProvider:
                 _LimitedStore(self.store, self.corpus_byte_budget),
                 expected_producer_commit=self.expected_producer_commit,
                 now=self.clock(), max_age_seconds=self.max_age_seconds,
-                writer_protocol_qualified=self.writer_policy())
+                writer_protocol_qualified=self._writer_qualified())
             if selected is None:
                 raise SelectedReadUnavailable(reason["code"])
             if len(selected.catalog_bytes) + 4 * len(selected.corpus_bytes) > self.image_admission_bytes:
@@ -169,32 +192,99 @@ class QualifiedReadProvider:
         finally:
             self._prepare_lock.release()
 
+    def refresh(self, *, drain_timeout_seconds=5.0):
+        """Full owner-driven requalification, preserving a still-valid old cut.
+
+        The metadata census can overlap reads. Corpus acquisition and SQLite
+        verification need an accounted, bounded transition with readers drained.
+        No request, readiness check or delivery guard initiates this operation.
+        """
+        if self._current.get() is not None:
+            raise SelectedReadUnavailable("nested_selected_operation")
+        if (type(drain_timeout_seconds) not in (int, float)
+                or not math.isfinite(drain_timeout_seconds)
+                or not 0 < drain_timeout_seconds <= 5):
+            raise SelectedReadUnavailable("invalid_refresh_drain_bound")
+        if not self._prepare_lock.acquire(blocking=False):
+            raise SelectedReadUnavailable("preparation_in_progress")
+        previous = selected = None
+        catalog_reserve = 2 * generation.CATALOG_MAX_BYTES
+        corpus_started = False
+        try:
+            with self._lock:
+                previous = self._selected
+                policy_revision = self._policy_revision
+                old_retained = max(self._live_retained_bytes,
+                    0 if previous is None else len(previous.catalog_bytes) + len(previous.corpus_bytes))
+                if old_retained + self._inflight_bytes + catalog_reserve > self.image_admission_bytes:
+                    raise SelectedReadUnavailable("image_admission_exceeded")
+                self._refresh_reserved = catalog_reserve
+
+            def before_corpus_read():
+                nonlocal corpus_started
+                if corpus_started:
+                    raise SelectedReadUnavailable("duplicate_candidate_corpus_read")
+                corpus_started = True
+                deadline = time.monotonic() + drain_timeout_seconds
+                with self._drained:
+                    self._refresh_exclusive = True
+                    self._drained.notify_all()
+                    while self._active or self._guard_active:
+                        remaining = deadline - time.monotonic()
+                        if remaining <= 0:
+                            raise SelectedReadUnavailable("refresh_drain_timeout")
+                        self._drained.wait(remaining)
+                    charge = catalog_reserve + self.corpus_byte_budget
+                    if old_retained + charge > self.image_admission_bytes:
+                        raise SelectedReadUnavailable("image_admission_exceeded")
+                    self._refresh_reserved = charge
+
+            selected, reason = generation.explained_selection(
+                _LimitedStore(self.store, self.corpus_byte_budget,
+                              before_corpus_read=before_corpus_read),
+                expected_producer_commit=self.expected_producer_commit,
+                now=self.clock(), max_age_seconds=self.max_age_seconds,
+                writer_protocol_qualified=self._writer_qualified())
+            if selected is None:
+                raise SelectedReadUnavailable(reason["code"])
+            if not corpus_started:
+                raise SelectedReadUnavailable("candidate_corpus_not_admitted")
+            with self._lock:
+                charge = catalog_reserve + 4 * len(selected.corpus_bytes)
+                if old_retained + charge > self.image_admission_bytes:
+                    raise SelectedReadUnavailable("image_admission_exceeded")
+                self._refresh_reserved = charge
+            conn = _open_image(selected)
+            conn.close()
+            conn = None
+            # A fresh exact fence read follows the full sweep and SQLite check.
+            stamp = self._verify_selection(selected, self.clock(), require_current=False)
+            with self._drained:
+                if self._policy_revision != policy_revision:
+                    raise SelectedReadUnavailable("refresh_policy_changed")
+                self._selected, self._prepared_at = selected, stamp
+                previous = selected = None
+                self._refresh_reserved = 0
+                self._refresh_exclusive = False
+                self._drained.notify_all()
+        except SelectedReadUnavailable:
+            raise
+        except Exception:
+            raise SelectedReadUnavailable("refresh_unavailable") from None
+        finally:
+            previous = selected = None
+            conn = None
+            with self._drained:
+                self._refresh_reserved = 0
+                self._refresh_exclusive = False
+                self._drained.notify_all()
+            self._prepare_lock.release()
+
     def _check(self, selected):
         try:
             with self._lock:
                 prepared_at = self._prepared_at
-            current = self.clock()
-            if (self.writer_policy() is not True or type(current) is not int
-                    or type(prepared_at) is not int or current < prepared_at
-                    or current < selected.qualified_at or current < selected.completed_at
-                    or current - selected.completed_at > self.max_age_seconds
-                    or current - prepared_at > self.max_reuse_seconds):
-                raise SelectedReadUnavailable("selection_policy_or_age_refused")
-            observed = self.store.get_bytes_strict_bounded_versioned(
-                catalog.CATALOG_KEY, generation.CATALOG_MAX_BYTES)
-            with self._lock:
-                if (self._selected is not selected or observed is None
-                        or observed.data != selected.catalog_bytes
-                        or observed.version != selected.catalog_version):
-                    raise SelectedReadUnavailable("selection_fence_moved")
-            # The fence read can block. Recheck custody and time after that I/O,
-            # including the final delivery guard after the last auth await.
-            latest = self.clock()
-            if (self.writer_policy() is not True or type(latest) is not int
-                    or latest < current or latest < selected.qualified_at
-                    or latest - selected.completed_at > self.max_age_seconds
-                    or latest - prepared_at > self.max_reuse_seconds):
-                raise SelectedReadUnavailable("selection_policy_or_age_refused")
+            self._verify_selection(selected, prepared_at, require_current=True)
         except Exception as exc:
             with self._lock:
                 if self._selected is selected:
@@ -203,6 +293,37 @@ class QualifiedReadProvider:
             if isinstance(exc, SelectedReadUnavailable):
                 raise
             raise SelectedReadUnavailable("selection_fence_unavailable") from None
+        finally:
+            selected = None
+
+    def _verify_selection(self, selected, prepared_at, *, require_current):
+        try:
+            current = self.clock()
+            if (self._writer_qualified() is not True or type(current) is not int
+                    or type(prepared_at) is not int or current < prepared_at
+                    or current < selected.qualified_at or current < selected.completed_at
+                    or current - selected.completed_at > self.max_age_seconds
+                    or current - prepared_at > self.max_reuse_seconds):
+                raise SelectedReadUnavailable("selection_policy_or_age_refused")
+            observed = self.store.get_bytes_strict_bounded_versioned(
+                catalog.CATALOG_KEY, generation.CATALOG_MAX_BYTES)
+            with self._lock:
+                if ((require_current and self._selected is not selected) or observed is None
+                        or observed.data != selected.catalog_bytes
+                        or observed.version != selected.catalog_version):
+                    raise SelectedReadUnavailable("selection_fence_moved")
+            # The fence read can block. Recheck custody and time after that I/O,
+            # including the final delivery guard after the last auth await.
+            latest = self.clock()
+            if (self._writer_qualified() is not True or type(latest) is not int
+                    or latest < current or latest < selected.qualified_at
+                    or latest - selected.completed_at > self.max_age_seconds
+                    or latest - prepared_at > self.max_reuse_seconds):
+                raise SelectedReadUnavailable("selection_policy_or_age_refused")
+            return latest
+        finally:
+            selected = None
+            observed = None
 
     def _operation(self):
         state = self._current.get()
@@ -223,10 +344,23 @@ class QualifiedReadProvider:
 
     def _guard(self, key):
         with self._lock:
+            if self._refresh_exclusive:
+                raise SelectedReadUnavailable("refresh_image_transition")
             selected = self._selected
-        if selected is None or self._key(selected) != key:
-            raise SelectedReadUnavailable("selection_replaced")
-        self._check(selected)
+            if selected is None or self._key(selected) != key:
+                selected = None
+                raise SelectedReadUnavailable("selection_replaced")
+            self._guard_active += 1
+            self._live_retained_bytes = len(selected.corpus_bytes) + len(selected.catalog_bytes)
+        try:
+            self._check(selected)
+        finally:
+            selected = None
+            with self._drained:
+                self._guard_active -= 1
+                if not self._active and not self._guard_active:
+                    self._live_retained_bytes = 0
+                self._drained.notify_all()
 
     @staticmethod
     def _key(selected):
@@ -237,15 +371,20 @@ class QualifiedReadProvider:
         if self._current.get() is not None:
             raise SelectedReadUnavailable("nested_selected_operation")
         with self._lock:
+            if self._refresh_exclusive:
+                raise SelectedReadUnavailable("refresh_image_transition")
             selected = self._selected
             if selected is None:
                 raise SelectedReadUnavailable("selection_not_prepared")
             charge = 3 * len(selected.corpus_bytes)
             retained = len(selected.corpus_bytes) + len(selected.catalog_bytes)
-            if self._active >= 4 or retained + self._inflight_bytes + charge > self.image_admission_bytes:
+            if (self._active >= 4 or retained + self._inflight_bytes + charge
+                    + self._refresh_reserved > self.image_admission_bytes):
+                selected = None
                 raise SelectedReadUnavailable("image_admission_exceeded")
             self._active += 1
             self._inflight_bytes += charge
+            self._live_retained_bytes = retained
         state = [selected, None]
         token = self._current.set(state)
         try:
@@ -262,6 +401,11 @@ class QualifiedReadProvider:
                     state[1].close()
             finally:
                 self._current.reset(token)
-                with self._lock:
+                selected = None
+                state.clear()
+                with self._drained:
                     self._active -= 1
                     self._inflight_bytes -= charge
+                    if not self._active and not self._guard_active:
+                        self._live_retained_bytes = 0
+                    self._drained.notify_all()

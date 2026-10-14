@@ -478,3 +478,49 @@ controller-recovery patch; no original Research return is inferred. Auth0 sign-i
 using the existing MastermindX Google account reached a Chrome extension-popup
 automation block. Root asked Chris once to complete/dismiss that popup and kept
 the tab. No provider API/grant modification occurred. Source integration continued.
+
+
+## Continuation update — 2026-10-14 13:25 UTC
+
+PR9311 now publishes journal repaircd3adb41f093: exact frozen catalog capture
+plus pre-batch evidence reservation.671affected tests and2CI-curation checks
+pass. The focused Qwen publication review is consumed and accepted after root
+adjudication; root verified the later repair. The exact82e131negative test
+writes corpus before catalog-budget failure, while the repair refuses before
+that effect. The initial overly tight test passed both and is not causal proof.
+A stale, unowned zero-byte Git index lock was preserved and removed after owner
+inspection; index contents were not changed. Protected merge-on-green is armed;
+no hosted success or merge is claimed here. CLI9302 remains open on d5ff0c and
+its protected controller owns admission of the stale-check refresh.
+
+Root implemented full reader refresh in the existing F11 provider after the
+original implementation worker ended with a quota failure and no code. The
+provider has167passing relevant tests. Its new Mastermind application lifecycle
+has563MCP tests accounted passing, including the environment-corrected child
+transport check. Actual source-union synthetic HTTP proof restores an expired
+reader through the same background owner/store/service, with no request-triggered
+source sweep. A149MBsynthetic SQLite measurement on M2 peaked at610MiBRSS;
+Linux production memory remains unqualified. Independent original-run reviews
+rv-selected-refresh-review-01a13301-r1 and
+rv-selected-lifecycle-review-01a13301-r1 are running and unaccepted.
+See research/RESEARCH_VAULT_SELECTED_REFRESH_20261014.md for behavior and limits.
+
+The original evidence-CLI worker's patch is unavailable. Fabric Integration
+proved its announced/tmp/FILEpath was refused by the existing local validator
+before transport; no renamed/re-homed retry or retroactive capture is authorized.
+Root independently built a36-test staged-source CLI candidate, awaiting canonical
+9302/9311 landing for source integration. Auth0's existing extension-popup human
+boundary, the frozen DCR operation, the tunnel HTTP403 and the five-call RIO
+semantic hold remain unchanged. No production writer/runtime/grant was enabled.
+
+
+A later root discriminator found an observed policy withdrawal during metadata
+verification could be hidden by restoration before candidate publication. The
+candidate now binds a local withdrawal-observation revision and refuses that
+interrupted qualification. A subsequent full sweep succeeds; old cache expiry
+alone still permits refresh. The new test failed on the review snapshot, then
+161provider/selection/service tests passed after repair. The6HTTP runtime tests
+remain applicable. The original independent review packet remains bound to its
+preceding source; root will adjudicate the later repair separately. Linux memory
+preflight at13:25UTC had only282752KiBavailable; no large-memory test or service
+change was attempted there.
