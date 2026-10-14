@@ -339,3 +339,21 @@ A reviewable, unenabled deployment proposal uses192MiB corpus and768MiB image
 admission budgets (one simultaneous selected image at the measured size), with
 actual complete-generation and final service UID/sandbox qualification still due.
 Do not hand-enable writer policy or restore a moved/withdrawn selection.
+
+
+### 06:50Z correction: Macro merge controller
+
+Root used gh pr merge --auto on #9255 while full hosted CI remained pending.
+The ordinary API merged immediately. Main has no classic branch protection or
+effective ruleset; merge-on-green.yml explicitly owns the account-side concluded-
+checks gate and documents why --auto is not a wait. This was a root process error,
+not a protected gated merge. No new materialize-only dispatch or generation
+adoption occurred. Their activation remains held until exact-head full CI or the
+incumbent qualified inherited-red decision is complete. Future Macro releases
+must use the existing merge-on-green controller, without changing its gates.
+
+A separate real-store read-only100-member timing sample completed in10.118s
+with an unchanged catalog fence and72824KiB peak RSS. The catalog had2877 rows;
+the fixed first50/last50 lexical sample contained44 full,55 missing and1 none.
+These are sample classifications, not whole-cohort coverage or95-percent proof.
+No source, catalog, corpus, receipt, derivative or service mutation occurred.
