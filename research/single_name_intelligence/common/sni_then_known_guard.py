@@ -210,6 +210,63 @@ def _has_supersedes_cycle(edges: Mapping[str, str]) -> bool:
     return False
 
 
+def _fact_id_absent(value: object) -> bool:
+    """True for ABSENT fact_id per X8BREP FAMILY TEXT RULE v2 (the unpinned
+    cases): None, a non-``str`` (int, float, bool, bytes, list, dict,
+    set, or any other object), an empty ``str``, or a whitespace-only
+    ``str``.
+
+    Whitespace-only is detected via ``str.isspace()`` so the rejection
+    covers every Unicode whitespace character -- including ``"　"``
+    ideographic space, ``" "`` no-break space, ``" "`` em
+    space, ``"\x1c"`` file separator, ``"\u0085"`` NEL, and ``" "``
+    line separator -- not just the ASCII subset.
+
+    Padded ``str`` values (e.g. ``"SYN-FACT-1 "``, ``" SYN-FACT-1"``)
+    are PRESERVED as PRESENT: ``test_a07g_duplicate_exact_only_no_folding``
+    in ``tests/test_sni_then_known_guard.py`` (lines 528-534) pins the
+    permissive behaviour for padded ids, so X8B-02's padded half stays
+    open. Only the unpinned cases (None, non-str, empty, whitespace-only)
+    are closed here.
+
+    The implementation never calls ``.strip`` / ``.lower`` / ``.upper`` /
+    ``.casefold`` / ``.replace`` on the value: those attribute names are
+    forbidden by ``test_a07g_static_scan_no_normalisation_ast``. Calling
+    ``.isspace()`` on a single character is allowed by the same scan.
+    """
+    if value is None:
+        return True
+    if not isinstance(value, str):
+        return True
+    if value == "":
+        return True
+    # Whitespace-only (e.g. " ", "　", "\t") is ABSENT regardless of
+    # whether the first/last symbol is also whitespace. Any character
+    # with symbol.isspace() counts (str.isspace covers Unicode).
+    for symbol in value:
+        if not symbol.isspace():
+            # At least one non-whitespace char -> PRESENT (possibly
+            # padded; the PINNED case preserves the value).
+            return False
+    return True  # all-whitespace: ABSENT
+
+
+def _supersedes_unknown(value: object) -> bool:
+    """True for a non-None, non-``""`` supersedes that is not a
+    caller-supplied opaque ``str`` (e.g. int, bool, list, dict, set, or
+    any other object). These used to raise ``TypeError`` from the
+    ``supersedes not in known_ids`` membership test; under the X8BREP
+    FAMILY TEXT RULE v2 they are now ABSENT and emit ``SUPERSEDES_UNKNOWN``
+    instead of raising. The empty-string form stays PRESERVED (pinned by
+    ``test_a07g_blank_supersedes_treated_as_absent`` and the mut7_b
+    default fixtures)."""
+    if value is None or value == "":
+        return False
+    if isinstance(value, str):
+        return False
+    return True
+
+
 def then_known_view(
     items: Iterable[Mapping[str, object]],
     *,
@@ -239,10 +296,21 @@ def then_known_view(
     reasons: list[str] = []
 
     # Pass 1: fact ids (exact strings; a variant spelling is a different id).
+    # _fact_id_absent catches the unpinned cases (None, non-str, empty,
+    # whitespace-only -- via str.isspace so Unicode whitespace counts)
+    # and leaves padded strings as PRESENT (X8B-02 padded half stays
+    # open per the pinning test_a07g_duplicate_exact_only_no_folding).
     known_ids: set[str] = set()
     for item in item_list:
         fact_id = item.get("fact_id")
-        if _blank(fact_id):
+        if _fact_id_absent(fact_id):
+            reasons.append("FACT_ID_MISSING")
+            continue
+        # _fact_id_absent returned False: the value is a non-empty,
+        # non-whitespace-only str (possibly padded). The padded form is
+        # a distinct, PRESENT id; the unpadded form is also PRESENT.
+        # Both flow into the duplicate check below as opaque strings.
+        if not isinstance(fact_id, str):  # defensive; the helper already gated
             reasons.append("FACT_ID_MISSING")
             continue
         if fact_id in known_ids:
@@ -274,8 +342,17 @@ def then_known_view(
             if retrieved < published:
                 reasons.append("RETRIEVED_BEFORE_PUBLISHED")
         supersedes = item.get("supersedes")
-        if not _blank(supersedes):
-            if supersedes not in known_ids:
+        # X8BREP FAMILY TEXT RULE v2: a non-None, non-"" supersedes that
+        # is not a caller-supplied opaque ``str`` (int, bool, list, dict,
+        # set, etc.) is ABSENT and emits SUPERSEDES_UNKNOWN instead of
+        # raising TypeError. None and "" remain the "no supersedes"
+        # short-circuit per test_a07g_blank_supersedes_treated_as_absent.
+        if _supersedes_unknown(supersedes):
+            reasons.append("SUPERSEDES_UNKNOWN")
+        elif supersedes is not None and supersedes != "":
+            if not isinstance(supersedes, str):  # defensive
+                reasons.append("SUPERSEDES_UNKNOWN")
+            elif supersedes not in known_ids:
                 reasons.append("SUPERSEDES_UNKNOWN")
             elif not _blank(fact_id):
                 edges[fact_id] = supersedes

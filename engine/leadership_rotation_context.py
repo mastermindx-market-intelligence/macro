@@ -1495,3 +1495,299 @@ def dedupe_source_roots(evidence) -> dict:
         "unrooted_ids": sorted(item_id for item_id, roots in items if not roots),
         "independent_count_rule": "one family = one vote; aliases add no evidence",
     }
+
+
+# ---------------------------------------------------------------------------
+# 9. T17 -- one bounded measured group read (display-tier; ORCH-PROD frozen spec)
+# ---------------------------------------------------------------------------
+# APPEND-ONLY section (LR-T17-1, COMMON_LAWS §3 sanctioned candidate module):
+# everything above this line stays byte-identical to the #9240 body. This is a
+# bounded READ over the existing owners (a sector_cycles payload + a
+# rotation_events payload): not a source, evaluator, event owner, store,
+# publisher or schedule; no state, no I/O, no clock, never mutates an input.
+# Current measurement, reconstructed history, early context, confirmed events
+# and the research estimate stay DISTINCT objects; generations are never joined
+# silently (a mismatched as-of withholds, it never merges); unknown stays null
+# (never 0, never ranked); duplicate event ids count once; the reconstructed
+# trail is referenced, never copied; and no combined entry score exists.
+
+MEASURED_READ_SCHEMA = "leadership_rotation_context.measured_group_read/v1"
+MEASURED_READ_MAX_EVENT_ROWS = 12
+_MEASURED_READ_HORIZON_SESSIONS = {"rs_21d": 21, "rs_63d": 63}
+_MEASURED_READ_EVENT_KEYS = ("id", "event_type", "sector", "from_key", "to_key",
+                             "started", "day_n", "asof", "severity")
+_MEASURED_READ_HISTORY_SOURCE = "/sectordata/sector_cycles.json#sectors[].rs_history"
+_MEASURED_READ_EVENTS_SOURCE = "/marketdata/rotation_events.json#active"
+_MEASURED_READ_EARLY_SOURCE = "/marketdata/rotation_events.json#early_context"
+
+
+def _measured_read_event_row(ev) -> dict:
+    """Tolerant projection of one rotation_events active row (private).
+
+    Both owner shapes are read: the v1 in-sector rows (``from_leg``/``to_leg``)
+    and the v2 cross rows (``event_type``/``donor``/``receiver``). Absent owner
+    fields project to ``None`` -- a value is never invented.
+    """
+    from_leg = ev.get("from_leg") or {}
+    to_leg = ev.get("to_leg") or {}
+    donor = ev.get("donor") or {}
+    receiver = ev.get("receiver") or {}
+    sector = ev.get("sector")
+    if sector is None:
+        sector = ev.get("from_sector")
+    return {
+        "id": ev.get("id"),
+        "event_type": ev.get("event_type"),
+        "sector": sector,
+        "from_key": from_leg.get("key") if from_leg.get("key") is not None else donor.get("key"),
+        "to_key": to_leg.get("key") if to_leg.get("key") is not None else receiver.get("key"),
+        "started": ev.get("started"),
+        "day_n": ev.get("day_n"),
+        "asof": ev.get("asof"),
+        "severity": ev.get("severity"),
+    }
+
+
+def _measured_read_reconstruction(rec, *, generation_mismatch: bool) -> dict:
+    """Reconstruction sub-object for one sector record (private).
+
+    The trail itself lives in the owner payload and is REFERENCED, never
+    copied -- only its point count and endpoint dates are printed, so the read
+    stays bounded and never double counts the owner's history.
+    """
+    block = {
+        "mode": "reconstructed_price_history",
+        "naturally_observed": False,
+        "status": "unavailable",
+        "reason": "missing_input",
+        "points": 0,
+        "first": None,
+        "last": None,
+        "source": _MEASURED_READ_HISTORY_SOURCE,
+    }
+    if generation_mismatch:
+        # Never join across generations: a history trail stamped with a
+        # different as-of is withheld whole, points included.
+        block["status"] = "incompatible_generation"
+        block["reason"] = "history_as_of_mismatch"
+        return block
+    if not isinstance(rec, Mapping):
+        return block
+    now = _as_mapping(rec.get("now"))
+    hist = rec.get("rs_history")
+    hist = hist if isinstance(hist, list) else []
+    if now.get("thin_history") is True:
+        block["reason"] = "thin_history"
+        return block
+    if not hist:
+        return block
+    first = hist[0].get("date") if isinstance(hist[0], Mapping) else None
+    last = hist[-1].get("date") if isinstance(hist[-1], Mapping) else None
+    block.update(status="available", reason=None, points=len(hist), first=first, last=last)
+    return block
+
+
+def measured_group_read(cycles_payload, *, rotation_payload=None, research_estimate=None,
+                        horizon: str = "rs_63d") -> dict:
+    """One bounded measured group read over the us_sectors_11 cohort (T17).
+
+    Pure and total: malformed mapping inputs (None, non-mapping, missing keys)
+    degrade to ``unavailable`` sub-objects, never raise; ``horizon`` outside
+    ``{rs_21d, rs_63d}`` is a programmer error (ValueError).
+    """
+    if horizon not in _MEASURED_READ_HORIZON_SESSIONS:
+        raise ValueError(
+            f"horizon must be one of {sorted(_MEASURED_READ_HORIZON_SESSIONS)}, got {horizon!r}"
+        )
+    payload = _as_mapping(cycles_payload)
+    meta = _as_mapping(payload.get("meta"))
+    hist_meta = _as_mapping(meta.get("rs_history"))
+    session_end = meta.get("asOf")
+    benchmark = meta.get("benchmark")
+    history_schema = hist_meta.get("schema")
+    history_as_of = hist_meta.get("as_of")
+    history_mismatch = bool(
+        history_as_of is not None and session_end is not None and history_as_of != session_end
+    )
+
+    expected = us_sector_cohort()
+    records = {}
+    for rec in payload.get("sectors") or []:
+        ticker = rec.get("ticker") if isinstance(rec, Mapping) else None
+        if isinstance(ticker, str):
+            records[ticker] = rec
+    outside_cohort = sorted(set(records) - set(expected))
+
+    values = {}
+    measured = []
+    missing = []
+    for ticker in expected:
+        rec = records.get(ticker)
+        if rec is None:
+            missing.append([ticker, "missing_input"])
+            values[ticker] = Unmeasured("missing_input")
+            continue
+        value = _sector_record_value(rec, horizon)
+        if is_measured(value):
+            values[ticker] = float(value)
+            measured.append(ticker)
+        else:
+            missing.append([ticker, value.reason])
+            values[ticker] = value
+    measured_n = len(measured)
+    positives = sum(1 for t in measured if values[t] > 0)
+    if not payload or measured_n == 0:
+        status = "unavailable"
+    elif measured_n == len(expected):
+        status = "available"
+    else:
+        status = "partial"
+
+    generation_id = (
+        f"{session_end}|{benchmark}|{US_SECTOR_COHORT_ID}"
+        if session_end is not None and benchmark is not None else None
+    )
+
+    ranked = rank_measured(values)
+    rank_of = {ticker: i + 1 for i, ticker in enumerate(ranked["ranked"])}
+    zs = cohort_zscores(values, cohort_id=US_SECTOR_COHORT_ID)
+
+    from engine import sector_cycles
+
+    groups = []
+    for ticker in expected:
+        info = sector_cycles.SECTORS.get(ticker) or {}
+        rec = records.get(ticker)
+        v21 = _sector_record_value(rec, "rs_21d") if rec is not None else Unmeasured("missing_input")
+        v63 = _sector_record_value(rec, "rs_63d") if rec is not None else Unmeasured("missing_input")
+        selected = values[ticker]
+        z = zs["z"].get(ticker)
+        groups.append({
+            "group_id": ticker,
+            "group_kind": "sector",
+            "name_en": info.get("name"),
+            "name_zh": info.get("name_zh"),
+            "current": {
+                "status": "measured" if is_measured(selected) else "unmeasured",
+                "reason": None if is_measured(selected) else selected.reason,
+                "rs_21d": float(v21) if is_measured(v21) else None,
+                "rs_63d": float(v63) if is_measured(v63) else None,
+                "units": "pct",
+                "metric": "relative_wealth_pct",
+                "rank": rank_of.get(ticker),
+                "z": float(z) if is_measured(z) else None,
+            },
+            "reconstruction": _measured_read_reconstruction(rec, generation_mismatch=history_mismatch),
+        })
+
+    early_context = {
+        "context_only": True,
+        "status": "unavailable",
+        "reason": "missing_input",
+        "as_of": None,
+        "state": None,
+        "reason_codes": [],
+        "coverage": None,
+        "source": _MEASURED_READ_EARLY_SOURCE,
+    }
+    confirmed_events = {
+        "status": "unavailable",
+        "reason": "missing_input",
+        "as_of": None,
+        "n_active": None,
+        "truncated": False,
+        "rows": [],
+        "source": _MEASURED_READ_EVENTS_SOURCE,
+    }
+    rotation_usable = (
+        isinstance(rotation_payload, Mapping)
+        and rotation_payload.get("schema") == "rotation_events.v1"
+        and rotation_payload.get("ok") is True
+    )
+    if rotation_payload is not None and not rotation_usable:
+        early_context["reason"] = "invalid_payload"
+        confirmed_events["reason"] = "invalid_payload"
+    elif rotation_usable:
+        ec = rotation_payload.get("early_context")
+        if isinstance(ec, Mapping):
+            ec_as_of = ec.get("as_of")
+            ec_coverage = ec.get("coverage") if isinstance(ec.get("coverage"), Mapping) else None
+            if ec_as_of is not None and session_end is not None and ec_as_of != session_end:
+                early_context.update(
+                    status="incompatible_generation", reason="as_of_mismatch", as_of=ec_as_of,
+                    state=None, reason_codes=list(ec.get("reason_codes") or []),
+                    coverage=ec_coverage,
+                )
+            else:
+                early_context.update(
+                    status="available", reason=None, as_of=ec_as_of, state=ec.get("state"),
+                    reason_codes=list(ec.get("reason_codes") or []), coverage=ec_coverage,
+                )
+        rot_as_of = rotation_payload.get("as_of")
+        if rot_as_of is not None and session_end is not None and rot_as_of != session_end:
+            confirmed_events.update(
+                status="incompatible_generation", reason="as_of_mismatch", as_of=rot_as_of,
+            )
+        else:
+            seen = set()
+            deduped = []
+            for ev in rotation_payload.get("active") or []:
+                if not isinstance(ev, Mapping):
+                    continue
+                ev_id = ev.get("id")
+                if ev_id in seen:
+                    continue  # duplicate ids count once: first wins
+                seen.add(ev_id)
+                deduped.append(ev)
+            n_active = len(deduped)
+            confirmed_events.update(
+                status="none" if n_active == 0 else "available",
+                reason=None,
+                as_of=rot_as_of,
+                n_active=n_active,
+                truncated=n_active > MEASURED_READ_MAX_EVENT_ROWS,
+                rows=[_measured_read_event_row(ev)
+                      for ev in deduped[:MEASURED_READ_MAX_EVENT_ROWS]],
+            )
+
+    if isinstance(research_estimate, ResearchEstimate):
+        research_block = research_estimate.to_dict()
+    else:
+        research_block = {"status": "unavailable", "reason": "no_admitted_model"}
+
+    roots = {"engine.sector_cycles"}
+    if rotation_payload is not None:
+        roots.add("engine.rotation_events")
+
+    return {
+        "schema": MEASURED_READ_SCHEMA,
+        "definition_id": DEFINITION_ID,
+        "status": status,
+        "authority": {"tier": "display", "may_rank": False, "may_gate": False,
+                      "may_size": False, "may_trade": False, "may_escalate": False},
+        "generation": {
+            "id": generation_id,
+            "cohort_id": US_SECTOR_COHORT_ID,
+            "session_end": session_end,
+            "benchmark": benchmark,
+            "price_basis": "total_return",
+            "history_schema": history_schema,
+            "history_as_of": history_as_of,
+        },
+        "cohort": {
+            "horizon": horizon,
+            "window_sessions": _MEASURED_READ_HORIZON_SESSIONS[horizon],
+            "expected_n": len(expected),
+            "measured_n": measured_n,
+            "missing": sorted(missing),
+            "outside_cohort": outside_cohort,
+            "positive_breadth": breadth(positives, measured_n, len(expected)).to_dict(),
+            "bounds_note": ("breadth bounds are whole-population bounds over unmeasured "
+                            "members, not confidence intervals"),
+        },
+        "groups": groups,
+        "early_context": early_context,
+        "confirmed_events": confirmed_events,
+        "research_estimate": research_block,
+        "source_roots": sorted(roots),
+    }

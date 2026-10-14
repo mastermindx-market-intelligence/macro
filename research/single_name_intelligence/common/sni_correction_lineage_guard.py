@@ -115,6 +115,31 @@ class LineageVerdict:
         return AUTHORITY_FLAGS
 
 
+def _text_present(value: object) -> bool:
+    """An opaque-text id / ref is present iff it is a non-empty string
+    that does not begin or end with whitespace. None, ``""``, ``"  "``, ``1``, ``True``,
+    ``1.0``, ``b"id"``, ``["id"]``, and any other object are ABSENT and
+    never match each other. Applied to ``record_id``, ``version_id`` and
+    ``supersedes_version_id``; numbers (the ``version`` int), timestamps
+    parsed by ``_aware_datetime``, the SHA-256 hex string checked by
+    ``_is_sha256_hex``, and the record container itself keep their
+    existing checks and are NOT routed through this helper.
+
+    FAMILY TEXT RULE v2 (seat ruling): a string that begins or ends with
+    whitespace is ABSENT, exactly like a whitespace-only string, so a
+    padded id can never pass as a different valid id. The check uses no
+    normalisation method (``.strip()`` / ``.lower()`` / ``.upper()`` /
+    ``.casefold()`` / ``.replace()``), which keeps the family's
+    no-normalisation static scans green.
+    """
+    return (
+        isinstance(value, str)
+        and value != ""
+        and not value[0].isspace()
+        and not value[-1].isspace()
+    )
+
+
 def _blank(value: object) -> bool:
     if value is None:
         return True
@@ -145,7 +170,7 @@ def _aware_datetime(text: object) -> datetime | None:
 
 
 def _nonblank_str(value: object) -> bool:
-    return isinstance(value, str) and not _blank(value)
+    return _text_present(value)
 
 
 def _version_number(value: object) -> int | None:
@@ -176,14 +201,14 @@ def _valid_record(record: object) -> bool:
     body = _as_mapping(record)
     if set(body) != _RECORD_FIELD_SET:
         return False
-    if not _nonblank_str(body.get("record_id")):
+    if not _text_present(body.get("record_id")):
         return False
-    if not _nonblank_str(body.get("version_id")):
+    if not _text_present(body.get("version_id")):
         return False
     if _version_number(body.get("version")) is None:
         return False
     supersedes = body.get("supersedes_version_id")
-    if supersedes is not None and not _nonblank_str(supersedes):
+    if supersedes is not None and not _text_present(supersedes):
         return False
     if not _is_sha256_hex(body.get("content_sha256")):
         return False
@@ -196,7 +221,7 @@ def _readable_field(records: tuple[Mapping[str, object], ...], key: str) -> list
     out: list[str] = []
     for record in records:
         value = record.get(key)
-        if _nonblank_str(value):
+        if _text_present(value):
             out.append(value)
     return out
 
