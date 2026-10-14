@@ -414,3 +414,96 @@ def test_r11_missing_http_status_is_not_recorded_as_observed_success(tmp_path,mo
                              '2026-01-01T01:00:00Z',endpoint=o.SOURCES['okx_funding'][1])
     assert result['status']=='unavailable'
     assert not o.capture_path('okx_funding').exists()
+
+
+# CXP2-OBS: failures that happen BEFORE a response exists (skip-before-request,
+# request exception) must also reach source_capture_status so fetch_result_status
+# reports 'stale' instead of silently reporting a fresh-looking run.
+def _cxp2_bgeo(monkeypatch,tmp_path,metrics,budget=None):
+    from collectors import bgeo,_crypto_observations as o
+    monkeypatch.setattr(o.config,'data_dir',lambda:tmp_path)
+    monkeypatch.setattr(bgeo.time,'sleep',lambda _:None)
+    monkeypatch.setattr(o,'now_utc',lambda:'2026-01-03T00:00:00Z')
+    a=bgeo.BgeoAdapter()
+    cfg={**a.cfg,'metrics':metrics}
+    if budget is not None:cfg['daily_request_budget']=budget
+    a.cfg=cfg
+    return a
+
+
+def test_cxp2_bgeo_funding_request_raises_is_stale(monkeypatch,tmp_path):
+    import requests
+    from collectors import bgeo
+    a=_cxp2_bgeo(monkeypatch,tmp_path,{'other-metric':'other','funding-rate':'funding_rate'})
+    rows=[{'d':'2026-01-01','other':'1.5'}]
+    def get(url,**kw):
+        if url.endswith('/funding-rate'):raise requests.ConnectionError('cxp2-network-down')
+        return _R11Response(rows)
+    monkeypatch.setattr(bgeo.requests,'get',get)
+    out=a.fetch()
+    assert list(out)==['other']
+    assert a.fetch_result_status(out)=='stale'
+    unavail=[x for x in a.source_capture_status if x['status']=='unavailable']
+    assert len(unavail)==1,unavail
+    assert unavail[0]['source_id']=='bgeo_funding' and unavail[0]['error_type']=='ConnectionError'
+
+
+def test_cxp2_bgeo_funding_skipped_before_request_is_stale(monkeypatch,tmp_path):
+    from collectors import bgeo
+    a=_cxp2_bgeo(monkeypatch,tmp_path,{'other-metric':'other','funding-rate':'funding_rate'},budget=1)
+    rows=[{'d':'2026-01-01','other':'1.5'}]
+    calls=[]
+    def get(url,**kw):calls.append(url);return _R11Response(rows)
+    monkeypatch.setattr(bgeo.requests,'get',get)
+    out=a.fetch()
+    assert list(out)==['other']
+    assert a.fetch_result_status(out)=='stale'
+    assert not any(c.endswith('/funding-rate') for c in calls),calls
+    unavail=[x for x in a.source_capture_status if x['status']=='unavailable']
+    assert len(unavail)==1,unavail
+    assert unavail[0]['source_id']=='bgeo_funding' and unavail[0]['error_type']=='skipped'
+
+
+def test_cxp2_bgeo_funding_failure_after_response_is_not_double_recorded(monkeypatch,tmp_path):
+    import pytest
+    from collectors import bgeo,_crypto_observations as o
+    a=_cxp2_bgeo(monkeypatch,tmp_path,{'funding-rate':'funding_rate'})
+    rows=[{'unixTs':'1767283200','fundingRate':'.0001'}]  # capturable, but no 'd' -> schema ValueError
+    monkeypatch.setattr(bgeo.requests,'get',lambda *arg,**kw:_R11Response(rows))
+    with pytest.raises(ValueError):a.fetch()
+    assert len(a.source_capture_status)==1,a.source_capture_status
+    assert a.source_capture_status[0]['source_id']=='bgeo_funding'
+    assert a.source_capture_status[0]['status']=='stored'
+    assert len(o.load_asof('bgeo_funding','2026-01-04T00:00:00Z',root=tmp_path))==1
+
+
+def test_cxp2_okx_taker_hourly_raises_is_stale_funding_unaffected(monkeypatch,tmp_path):
+    import requests
+    a,calls=_r11_okx(monkeypatch,tmp_path)
+    base=a.http_get
+    def get(url,**kw):
+        if kw['params'].get('period')=='1H':raise requests.ConnectionError('cxp2-hourly-down')
+        return base(url,**kw)
+    a.http_get=get
+    out=a.fetch()
+    assert 'funding_rate' in out and 'taker_volume' in out
+    assert a.fetch_result_status(out)=='stale'
+    unavail=[x for x in a.source_capture_status if x['status']=='unavailable']
+    assert len(unavail)==1,unavail
+    assert unavail[0]['source_id']=='okx_taker' and unavail[0]['error_type']=='ConnectionError'
+    funding=[x for x in a.source_capture_status if x['source_id']=='okx_funding']
+    assert len(funding)==1 and funding[0]['status']=='stored'
+
+
+def test_cxp2_record_unavailable_inactive_is_pure():
+    from types import SimpleNamespace
+    from collectors import _crypto_observations as o
+    class Bare:pass
+    bare=Bare()
+    assert o.record_unavailable(bare,'bgeo_funding','ConnectionError')=={'status':'inactive'}
+    assert not hasattr(bare,'source_capture_status')
+    existing=[{'status':'stored','source_id':'okx_funding'}]
+    off=SimpleNamespace(_crypto_capture_active=False,source_capture_status=existing)
+    assert o.record_unavailable(off,'okx_taker','OSError')=={'status':'inactive'}
+    assert off.source_capture_status is existing
+    assert existing==[{'status':'stored','source_id':'okx_funding'}]
