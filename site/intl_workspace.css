@@ -136,6 +136,7 @@ html[data-lang="zh"] .intl-workspace__deeper-title { letter-spacing:0; text-tran
 .intl-library__search { display:grid; grid-template-columns:minmax(0,1fr) auto; gap:calc(var(--fs-body) / 2); align-items:end; margin-block:var(--fs-body); padding:var(--fs-body); background:var(--panel2); border:1px solid var(--line); border-radius:var(--r-card,12px); }
 .intl-library__search-label { grid-column:1 / -1; color:var(--muted); }
 .intl-library__search input { grid-column:1; width:100%; min-inline-size:0; font:inherit; color:var(--text); background:var(--panel); border:1px solid var(--line); border-radius:var(--r-ctl,8px); padding:calc(var(--fs-body) / 2) var(--fs-body); min-block-size:calc(var(--fs-num-lg) * 2); overflow-wrap:anywhere; }
+.intl-library__search input::placeholder { color:var(--muted); opacity:1; }
 .intl-library__search button { grid-column:2; }
 .intl-library__status { grid-column:1 / -1; margin:0; min-inline-size:0; overflow-wrap:anywhere; }
 .intl-library__status:empty { margin:0; }

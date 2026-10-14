@@ -55,6 +55,80 @@ const coldLocaleHtml = execFileSync(process.env.INTL_TEST_PYTHON || 'python3', [
   {cwd:root,env:{...process.env,PYTHONPATH:root},encoding:'utf8',maxBuffer:4*1024*1024});
 
 for (const theme of ['dark','light']) for (const lang of ['en','zh']) {
+  test(`Library placeholder text contrast ${theme} ${lang}`,async t=>{
+    await pageFixture(async page=>{
+      await page.evaluate(theme=>window.setTheme(theme),theme);
+      await page.selectOption('[data-im-controls] select[data-im-action="set_view"]','library');
+      const input=page.locator('[data-im-library-search]:visible');
+      for(const width of [320,1440]) {
+        await page.setViewportSize({width,height:900});
+        const m=await input.evaluate(node=>{
+          const style=getComputedStyle(node),placeholder=getComputedStyle(node,'::placeholder');
+          const rgb=value=>value.match(/[\d.]+/g).map(Number);
+          const ink=rgb(placeholder.color),background=rgb(style.backgroundColor);
+          const luminance=c=>c.slice(0,3).map(v=>v/255).map(v=>v<=.04045?v/12.92:((v+.055)/1.055)**2.4)
+            .reduce((sum,v,i)=>sum+v*[.2126,.7152,.0722][i],0);
+          const a=luminance(ink),b=luminance(background);
+          return {shown:node.matches(':placeholder-shown'),text:node.placeholder,ink,background,opacity:placeholder.opacity,inputOpacity:style.opacity,backgroundImage:style.backgroundImage,ratio:(Math.max(a,b)+.05)/(Math.min(a,b)+.05)};
+        });
+        assert.equal(m.shown,true);
+        assert.equal(m.text,lang==='en'?'Tool name, question or alias':'工具名称、问题或别名');
+        assert.equal(m.opacity,'1');assert.equal(m.inputOpacity,'1');assert.equal(m.backgroundImage,'none');
+        assert.equal(m.ink.length,3);assert.equal(m.background.length,3);
+        assert.ok(m.ratio>=4.5,JSON.stringify({theme,lang,width,...m}));
+        t.diagnostic(JSON.stringify({theme,lang,width,ratio:m.ratio}));
+      }
+    },{published:true,htmlOverride:coldLocaleHtml,bootLanguage:lang,width:320});
+  });
+  test(`Risk return text contrast ${theme} ${lang}`,async t=>{
+    await pageFixture(async page=>{
+      await page.evaluate(theme=>window.setTheme(theme),theme);
+      await page.selectOption('[data-im-controls] select[data-im-action="set_view"]','risk');
+      await page.selectOption('[data-im-panel][data-view="risk"]:visible select[data-im-action="select_market"]','JP');
+      const allValues=page.locator('[data-im-panel][data-view="risk"]:visible .intl-risk__value');
+      const values=allValues.filter({visible:true});
+      const before=await allValues.allTextContents();
+      assert.ok(before.length>=3,'fixture must expose actual currency-channel values');
+      const context=new URL(page.url()).search;
+      for(const width of [320,1440]) {
+        await page.setViewportSize({width,height:900});
+        const metrics=await values.evaluateAll(nodes=>{
+          const canvas=document.createElement('canvas');canvas.width=canvas.height=1;
+          const ctx=canvas.getContext('2d',{willReadFrequently:true});
+          const rgb=value=>{ctx.clearRect(0,0,1,1);ctx.fillStyle=value;ctx.fillRect(0,0,1,1);return [...ctx.getImageData(0,0,1,1).data];};
+          const luminance=c=>c.slice(0,3).map(v=>v/255).map(v=>v<=.04045?v/12.92:((v+.055)/1.055)**2.4)
+            .reduce((sum,v,i)=>sum+v*[.2126,.7152,.0722][i],0);
+          return nodes.map(node=>{
+            const style=getComputedStyle(node),ink=rgb(style.color);
+            // Current Risk values sit on opaque card/section surfaces. Fail if
+            // this changes; do not silently measure against the wrong ancestor.
+            let background=null;
+            for(let p=node;p;p=p.parentElement) {
+              const s=getComputedStyle(p),color=rgb(s.backgroundColor);
+              if(s.opacity!=='1'||s.backgroundImage!=='none')throw Error('unsupported value surface');
+              if(color[3]===255){background=color;break;}
+              if(color[3]!==0)throw Error('translucent value surface');
+            }
+            if(!background||ink[3]!==255)throw Error('missing opaque value pair');
+            const a=luminance(ink),b=luminance(background);
+            return {text:node.textContent.trim(),direction:node.classList.contains('intl-risk__value--up')?'up':node.classList.contains('intl-risk__value--down')?'down':'flat',ink,background,ratio:(Math.max(a,b)+.05)/(Math.min(a,b)+.05)};
+          });
+        });
+        assert.ok(metrics.some(m=>m.direction==='up')&&metrics.some(m=>m.direction==='down'),'fixture must cover both direction hues');
+        assert.ok(metrics.every(m=>m.ratio>=4.5),JSON.stringify({theme,lang,width,metrics}));
+        for(const m of metrics.filter(m=>m.direction!=='flat')) {
+          const green=(m.direction==='up')===(lang==='en');
+          assert.ok(green?m.ink[1]>m.ink[0]:m.ink[0]>m.ink[1],`${lang}: lost directional colour convention`);
+        }
+        assert.deepEqual(await allValues.allTextContents(),before);
+        assert.equal(new URL(page.url()).search,context);
+        t.diagnostic(JSON.stringify({theme,lang,width,values:metrics.length,minContrast:Math.min(...metrics.map(m=>m.ratio))}));
+      }
+    },{published:true,htmlOverride:coldLocaleHtml,bootLanguage:lang,width:320});
+  });
+}
+
+for (const theme of ['dark','light']) for (const lang of ['en','zh']) {
   test(`Compare calculation-window links keep a full touch target ${theme} ${lang}`,async t=>{
     await pageFixture(async page=>{
       await page.evaluate(theme=>window.setTheme(theme),theme);

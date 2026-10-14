@@ -94,6 +94,14 @@ changed:
 - path: research/paper_international_wave1_wave2/COMPARE_WINDOW_TARGET_ACCEPTANCE.json; mockups/evidence/paper-international-compare/window-targets/
   what: Bind new source repair, four red/green tests and eight real canonical captures; independent review remains
     pending under original policy refusal.
+- path: templates/intl_workspace_risk.css and site/intl_workspace_risk.css
+  what: Use existing directional text inks; Light green return text rises from3.61 to5.60 contrast, with Dark hues retained.
+- path: templates/intl_workspace.css and site/intl_workspace.css
+  what: Give the Library search placeholder its existing muted token and opacity1; Dark contrast rises from3.85 to5.73.
+- path: tests/intl_workspace_page.test.cjs
+  what: Add eight actual-page contrast regressions across Dark/Light, EN/ZH and320/1440, with causal fail-before evidence.
+- path: research/paper_international_wave1_wave2/TEXT_CONTRAST_ACCEPTANCE.json
+  what: Bind both source repairs, bounded contrast census, tests,16 canonical captures and explicit pending independent/live acceptance.
 verified:
 - claim: Fresh main had two actual conflicting files against the existing repair branch.
   command: git fetch origin main; git merge-tree --write-tree --messages HEAD origin/main.
@@ -258,6 +266,22 @@ verified:
   result: Original4FAIL on link height; repaired4PASS,12width states/84link observations and4Enter activations.
     Eight canonical1440/390 dark/light EN/ZH captures. Isolated fixture live_config.js404 retained. Design0blocking
     and115assetpairs match. Parent visual scope only; independent review pending.
+- claim: Risk and Library contrast repairs have causal parent source-fixture proof; no independent or live acceptance follows.
+  evidence: research/paper_international_wave1_wave2/TEXT_CONTRAST_ACCEPTANCE.json
+  command: >-
+    NODE_PATH=/Users/chriswong/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules
+    PLAYWRIGHT_CHROMIUM_CHANNEL=chrome INTL_TEST_PYTHON=/opt/homebrew/opt/python@3.14/bin/python3.14
+    node --test --test-name-pattern='Risk return text contrast' tests/intl_workspace_page.test.cjs;
+    same environment with --test-name-pattern='Library placeholder text contrast';
+    python3 -m pytest tests/test_intl_workspace_risk_render.py tests/test_intl_workspace_risk_ui_independent.py -q
+  result: >-
+    Each four-case browser run passes0fail0skip at320/1440. Each original-source run fails its two affected theme/language cases.
+    Risk113Python pass14 inherited cleanup warnings.40state direct-text census4864 observations found5 Risk failures;
+    four affected final states428 observations have0failures. Separate placeholder probe exposed default-grey defect.
+    Risk and Library each captured8canonical1440/390 Dark/Light EN/ZH states; parent viewed4 per panel.
+    Final added-line design0blocking,115template/site pairs match and visual guardexit0.
+    Isolated live_config404 and launcher overlap retained. Risk evidence predates only the hidden Library placeholder rule;
+    exact input hashes preserved and scope-equivalence documented. Review remains pending under the original refusal.
 unverified:
 - claim: Fresh hosted candidate product CI and deployed reset/asset behavior.
   what_would_verify: Genuinely new exact-head hosted product checks after publication; then lawful release and actual
@@ -266,6 +290,7 @@ unverified:
   what_would_verify: Complete journey and theme/locale/accessibility evidence, native200percent zoom, original-owner
     trusted Saved context, and current lawful qualified inputs.
 unresolved:
+- Risk and Library contrast source repairs await independent review and lawful deployment/live acceptance; parent tests and captures do not clear them.
 - The historical cause of no candidate product CI after943ee54 remains unproved; current merge conflicts are independently
   verified source blockers, not proof of that historical cause.
 - Original qualifier/proc2217592/environ EFFECT_UNKNOWN, three pre-START reviews, T03k fifth refusal, release5989604142,
@@ -296,11 +321,12 @@ next_actions:
   source.
 - Original live Library Stock return still awaits Chris completing/dismissing the Chrome extension UI; preserve
   original tab and no alternate control. Source Auto boundary/reapplication and narrow form-control geometry are
-  now recorded. Advance only a genuinely new owner input or independent acceptance gap; do not repeat completed
+  now recorded, as are the Risk/Library contrast repairs. Advance only a genuinely new owner input or independent acceptance gap; do not repeat completed
   journeys. Compare interior-point/benchmark needs its real qualification/disclosure contract.
 - Independent review of missing compass, localized accessible name and History table remains pending under the retained
   Fabric policy refusal. Preserve no retry, nativezoom, release, rights, Saved, frozen-effect and IW2 boundaries.
 do_not_redo:
+- Reuse contrast proof until relevant source/input/browser/acceptance changes. Do not repeat40state direct-text census, eight browser regressions or16captures unchanged. Risk captures precede only hidden Library placeholder CSS; retain original hashes.
 - Do not rerun accepted1714/50 tests or24 browser cases unless a relevant input changes; unchanged earlier184 controller
   tests remain historical accepted evidence.
 - Do not regenerate the completed mission-acceptance preparation package or consume any accepted Fabric result again.

@@ -141,10 +141,11 @@ waves:
   - IM08
   - IM09
 next_action: Resume the original live Library Stock return after Chris completes/dismisses the Chrome extension
-  UI. Auto clock-boundary/reapplication and narrow form-control geometry now have scoped source-fixture proof. Other
+  UI. Auto, geometry and Risk/Library contrast repairs now have scoped source-fixture proof. Independent review and live publication remain held. Other
   advances require a genuinely new acceptance gap or actual owner contract/admission; preserve all IW2, qualification,
   review, rights, Saved, migration and release holds. No repeated journeys or speculative contracts.
 artifacts:
+- research/paper_international_wave1_wave2/TEXT_CONTRAST_ACCEPTANCE.json
 - research/paper_international_wave1_wave2/README.md
 - research/paper_international_wave1_wave2/INPUTS.json
 - research/paper_international_wave1_wave2/J07_RESET_ROLLBACK_ACCEPTANCE.json
@@ -252,3 +253,10 @@ Two new time-boundary source-fixture cases show the current Auto implementation 
 Twenty dark320 EN/ZH state observations measure310 rendered form controls/disclosures, including repeated toolbar/inert background controls. Minimum width58.5625px and height44px; zero undersized. This excludes links, physical touch usability, overlap and unvisited states. Receipts are AUTO_TIME_BOUNDARY_OBSERVATION.json and NARROW_CONTROL_GEOMETRY_ACCEPTANCE.json in the existing research package; full logs/manifests remain in the corresponding external evidence packages. Prior accepted evidence is reused. No live browser, worker, PR/CI observation or release action occurred; all original holds persist.
 
 A separate anchor census then exposed14undersized Compare calculation-window links across the two narrow locale states. The existing block rule now adds min-block-size44px; its canonical/plain-copy assets match. Four permanent regressions fail before and pass after, covering12width/theme/locale states and four native Enter destinations with unchanged analytical context. Eight new canonical1440/390 Dark/Light EN/ZH captures bind final CSS. Parent viewed three cells; retained isolated-fixture live_config.js404 and shared-launcher limitation. This later source repair supersedes only the assertion that the whole continuation made no product change; earlier Auto/form-census receipts remain tied to2aae. Independent review and release remain held.
+
+
+### Risk and Library text contrast, 2026-10-14
+
+A new40state direct-text contrast census on the actual optimized page found five low-contrast green Risk value observations in Light. They were22px/600 text at3.61:1 on white. The two Risk declarations now consume the existing --ink-up/--ink-down tokens, preserving Dark hues and EN/ZH directional conventions; Light green becomes5.60:1. A separate shown-placeholder probe found Chromium default grey at3.85:1 on the dark Library input. The owned placeholder now uses existing --muted with opacity1, reaching5.73:1 Dark and7.03:1 Light.
+
+Eight permanent actual-page browser cases have valid fail-before/pass-after proof across two widths, both themes and languages. Risk113Python checks pass with14 inherited temporary cleanup warnings. Sixteen fresh canonical full-page captures cover1440/390, Dark/Light, EN/ZH; parent viewed four per panel. Risk captures precede only the later hidden-Library placeholder rule and retain their original input hashes. Final design, asset parity and evidence guards pass. The isolated fixture still records live_config.js404 and shared-launcher overlap. No source qualification, whole accessibility/Paper parity, independent review or deployment acceptance follows. Existing review-policy refusal, original Chrome extension handoff and all release/custody holds persist.

@@ -1,0 +1,207 @@
+{
+  "scope": "PARENT_VERIFIED_SOURCE_FIXTURE; independent review and live acceptance pending",
+  "source": {
+    "base_head": "bc44fe0031f3ca14049f299bfc7454aad0cf01d4",
+    "carrier_branch": "sol/manual-paper-waves-01a1101f-release-r2",
+    "pr": 8754,
+    "candidate_sha256": {
+      "templates/intl_workspace.css": "585bb762f5d3b6bf0270853b99aca0d145f36a4b5764c9795198043e433565ca",
+      "site/intl_workspace.css": "585bb762f5d3b6bf0270853b99aca0d145f36a4b5764c9795198043e433565ca",
+      "templates/intl_workspace_risk.css": "1a9857cb564768d1df39452ad59d168d409ee56db7a4123cfb2c1868c05e92b1",
+      "site/intl_workspace_risk.css": "1a9857cb564768d1df39452ad59d168d409ee56db7a4123cfb2c1868c05e92b1",
+      "templates/theme.css": "311f121e4d748b917aaa3ce8ca6dae411782a02571fc39f551e3516a4e0a2ab2",
+      "templates/intl_workspace.js": "0a5299a6083b03aef9b5796f3161ccacd5c291ad2f251808d9a6848e6028b24f",
+      "tests/intl_workspace_page.test.cjs": "f188a8d921429610324d142e0b44770929317feb29c5a172ec980d37a11d2a17"
+    }
+  },
+  "changes": [
+    {
+      "surface": "Risk directional return text",
+      "cause": "Raw semantic fill hues were used as text; Light green on white failed normal text contrast at22px weight600. EN positive and ZH negative were affected.",
+      "repair": "Use existing --ink-up/--ink-down with existing raw-hue fallbacks. Dark text retains its existing hues; Light uses governed deeper inks.",
+      "before_green_ratio": 3.613414760247038,
+      "after_green_ratio": 5.602860438953242,
+      "after_all_values_light_minimum": 5.589858264997862,
+      "dark_minimum_unchanged": 4.850900878840633
+    },
+    {
+      "surface": "Library search shown placeholder",
+      "cause": "No owned placeholder rule; Chromium default rgb(117,117,117) on dark rgb(21,24,32) failed normal text contrast.",
+      "repair": "Use existing --muted and opacity1 on the Library input::placeholder, consistent with existing shared search treatment.",
+      "before_dark_ratio": 3.8514300321671215,
+      "after_dark_ratio": 5.7342770734687685,
+      "before_light_ratio": 4.607518093747377,
+      "after_light_ratio": 7.032095431287493
+    }
+  ],
+  "standard": {
+    "url": "https://www.w3.org/WAI/WCAG22/Understanding/contrast-minimum.html",
+    "normal_text_minimum": 4.5,
+    "measurement": "Unrounded WCAG relative luminance from actual Chromium computed foreground/background. Risk CSS color() normalized through 8-bit RGBA canvas; placeholder opaque rgb measured directly. These are stable rendered samples, not a complete accessibility audit."
+  },
+  "baseline_census": {
+    "states": 40,
+    "direct_text_observations": 4864,
+    "recorded_exclusions": 0,
+    "failed_observations": 5,
+    "themes": [
+      "dark",
+      "light"
+    ],
+    "languages": [
+      "en",
+      "zh"
+    ],
+    "width": 320,
+    "views": [
+      "Overview",
+      "Inspector read",
+      "Inspector ledger",
+      "Inspector field",
+      "Compare",
+      "Macro",
+      "Risk",
+      "History",
+      "Scenario",
+      "Library"
+    ],
+    "limits": "Repeated toolbar observations are not distinct controls; only direct DOM text and resolvable flat backgrounds. Does not include pseudo-elements/placeholders, input values, SVG, occlusion or complete viewport visibility. Placeholder was measured separately after this census."
+  },
+  "verification": {
+    "risk_red": {
+      "command": "node --test --test-name-pattern=\"Risk return text contrast\" tests/intl_workspace_page.test.cjs",
+      "pass": 2,
+      "fail": 2,
+      "cause": "Both Light language cases fail real3.6134 contrast; Dark passes."
+    },
+    "risk_green": {
+      "command": "same scoped Risk command after Risk CSS repair",
+      "pass": 4,
+      "fail": 0,
+      "skip": 0,
+      "width_states": 8,
+      "value_observations": 64,
+      "assertions": "Both directional hues, ratio>=4.5, EN/ZH hue convention, unchanged full DOM values and URL across320/1440."
+    },
+    "library_red": {
+      "command": "node --test --test-name-pattern=\"Library placeholder text contrast\" tests/intl_workspace_page.test.cjs",
+      "pass": 2,
+      "fail": 2,
+      "cause": "Both Dark language cases fail real3.8514 contrast; Light passes."
+    },
+    "library_green": {
+      "command": "same scoped Library command after placeholder CSS repair",
+      "pass": 4,
+      "fail": 0,
+      "skip": 0,
+      "width_states": 8,
+      "assertions": "Shown genuine localized placeholder, opaque foreground/background, opacity1 and contrast>=4.5 at320/1440."
+    },
+    "node_environment": {
+      "NODE_PATH": "/Users/chriswong/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules",
+      "PLAYWRIGHT_CHROMIUM_CHANNEL": "chrome",
+      "INTL_TEST_PYTHON": "/opt/homebrew/opt/python@3.14/bin/python3.14"
+    },
+    "risk_final_census": {
+      "states": 4,
+      "text_observations": 428,
+      "failed_observations": 0,
+      "unchanged_other_states_reused": 36
+    },
+    "python": {
+      "command": "python3 -m pytest tests/test_intl_workspace_risk_render.py tests/test_intl_workspace_risk_ui_independent.py -q",
+      "passed": 113,
+      "warnings": 14,
+      "warning_scope": "Inherited pytest temporary-directory cleanup OSError warnings."
+    },
+    "final_added_line_design_guard": {
+      "command": "python3 scripts/check_design_system.py --mode enforce-added --diff-file FINAL_UI.diff",
+      "exit": 0,
+      "blocking": 0,
+      "inherited_findings": 25368
+    },
+    "final_asset_parity": {
+      "command": "python3 scripts/check_template_site_sync.py",
+      "exit": 0,
+      "matching_pairs": 115
+    },
+    "final_visual_evidence_guard": {
+      "command": "python3 scripts/check_ui_visual_evidence.py --diff-file FINAL_UI.diff",
+      "exit": 0
+    },
+    "counting": "The two final four-case browser runs are distinct tests; together eight cases and16 width states. Census, rendered captures, Python and prior journey counts are different/overlapping scopes and must not be summed into a coverage total."
+  },
+  "visual_evidence": {
+    "canonical_manifests": {
+      "risk": {
+        "path": "mockups/evidence/paper-international-risk/text-contrast/manifest.json",
+        "sha256": "0546766b1c78c375ab9061528310746a01f97301edf1cbfbcb9edb3440674469",
+        "states": 8,
+        "capture_inputs": "/Volumes/Mastermind/evidence/paper-waves-20261006-01a1101f/text-contrast-20261014-r1/CAPTURE_INPUT.json"
+      },
+      "library": {
+        "path": "mockups/evidence/paper-international-library/text-contrast/manifest.json",
+        "sha256": "6156a8e5e826fe081cf3ed249c9af912369acc86659f779eb1b5bf6a049086bb",
+        "states": 8,
+        "capture_inputs": "/Volumes/Mastermind/evidence/paper-waves-20261006-01a1101f/text-contrast-20261014-r1/LIBRARY_CAPTURE_INPUT.json"
+      }
+    },
+    "axes": "Each panel:1440x900/390x844 x dark/light x EN/ZH;16 fresh full-page screenshots total. Tests separately cover320px.",
+    "parent_viewed": {
+      "risk": [
+        "light en desktop",
+        "light zh mobile",
+        "dark en mobile",
+        "dark zh desktop"
+      ],
+      "library": [
+        "dark en desktop",
+        "dark zh mobile",
+        "light en desktop",
+        "light zh mobile"
+      ]
+    },
+    "finding": "Owned labels/values remain readable with retained graphite versus white material and directional conventions. Parent inspected eight cells; no independent taste or whole-Paper-parity acceptance.",
+    "retained_limitations": [
+      "Both isolated manifests honestly record missing live_config.js404/console error.",
+      "Shared launcher remains a transient overlapping overlay; this change does not repair or accept it.",
+      "No horizontal document overflow measured in reference desktop/mobile capture metrics; wider-element heuristic still reports4 mobile elements."
+    ]
+  },
+  "evidence_reuse": [
+    "Risk green tests/census/captures preceded Library-only placeholder rule. Their exact original inputs remain retained, not restamped. Later rule affects only hidden Library input::placeholder while Risk is active. Risk CSS, shared tokens, controller, math and layout unchanged. Whole intl_workspace.css file bytes do differ; Library capture inventory binds final bytes.",
+    "Risk test block is unchanged after insertion of independent Library test block. Prior journey cases were not rerun; affected contrast checks and final guards cover actual changes.",
+    "Other36 direct-text census states remain applicable to that narrow direct-text claim; Library placeholder is a separately identified and verified gap."
+  ],
+  "rejected_harness_attempts": {
+    "HARNESS_SELECT_SCOPE.log": "Incorrect assumption that market select is in toolbar; corrected to actual Risk select before valid red proof.",
+    "INITIAL_CONTRAST_AND_RESPONSIVE_SCOPE.log": "Initial visible-count equality assertion ignored intentional responsive5-to11 values. Two actual Light contrast failures plus two Dark harness failures; not four product defects."
+  },
+  "limits": [
+    "Synthetic source fixtures only; no market qualification/rights/financial conclusion.",
+    "No authenticated original-tab interaction, native zoom, screen-reader speech, physical touch, current entitlement or deployed repair proof.",
+    "Independent review pending under original SUPPORT_PUBLICATION_REFUSED; no retry/replacement/alternate reviewer/carrier.",
+    "Current hosted CI unobserved; no retired/superseded run read or watcher retry.",
+    "All IW2PR804, frozen effects, qualification, genuine Saved, migration and release holds persist. No ready/merge/autoarm/deploy or cross-chat messages."
+  ],
+  "evidence_package": "/Volumes/Mastermind/evidence/paper-waves-20261006-01a1101f/text-contrast-20261014-r1",
+  "evidence_sha256": {
+    "BEFORE.json": "29d1128f58962f1c289290a25ff05fd75e7c0f29bf8894a91a2e484633fccee0",
+    "LIBRARY_BEFORE.json": "d16aceb28567ab80c467cfeed5ac5fbfd8529768030240966502459751d624fe",
+    "BASELINE.json": "0287e24c29ced1a7f56645d68d36ae9a2a57a0d2887577466b63baff4b92b8b9",
+    "RISK_FINAL.json": "bf7aadd37baee3d1b3ee815502a48207a65708d3884ddf1b8d4774cb40787996",
+    "PLACEHOLDER_BASELINE.json": "558e3eb702c336f05297a3fd30ad29bcae36b4f6a5dc13d38666aa00892be73b",
+    "RED.log": "52fd9d65473e0ba16d5205f29ab614c86c316d2e645bc43d061b5e6b0cb83a0b",
+    "GREEN.log": "3ed98d3d1ddad3e8b98ea1d77ff8d7d7cbd93b2cafeebc4f5a35dd04617d794c",
+    "LIBRARY_RED.log": "7d2a42aee5aa7c96341ea485cd8cf40d6a975ebb406fdeb7fbbd0b3ad26fe328",
+    "LIBRARY_GREEN.log": "27bfbca078b36dcc72e1c73c2cd17c72fc318a31309394f33603a1f32e8adbbd",
+    "PYTHON.log": "d58759b5587b5b88a2421ec3fe74fcb072ca5442cd437b00cd044dab4bb20464",
+    "FINAL_UI.diff": "972d76f31ebf1f9533918a898099d9f704bd822af23745e6fb83d4889bed795c",
+    "FINAL_DESIGN_GUARD.log": "2ebc31876be9497677a3913b4f73c1f6ea697ef5c904404f14f60d51d0244c40",
+    "FINAL_ASSET_PARITY.log": "c19954ce729e34c84461941c5a6df4754de47995b49f3230c6fe361409603c8c",
+    "FINAL_VISUAL_GUARD.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "CAPTURE_INPUT.json": "581375eabe244c56f44d32a751c658804db620a54283eea886fa3874ef313b5f",
+    "LIBRARY_CAPTURE_INPUT.json": "4944393b467ae6723c67b2b9e04b56cfa4d58b8c5eb0a38464aa240e875b56c4",
+    "DESIGN.md": "6b142834f35ff1db71c6796e88bc54f87007d0dee0cb4005e90335d79d5a8276"
+  }
+}
