@@ -30,6 +30,18 @@ verified:
     tests/test_ci_pack.py::test_exclusive_curation_narrows_ordinary_code_prs -q
   result: 4PASS, zero failures/errors/skips; retained baseline-scope-repair-tests.xml. Independent
     source review and containing-head tracked-tree proof remain separate.
+- claim: The actual committed repair covers every curated dependency and restores all packing
+    probes.
+  command: Canonical closure audit and packing_probe_measurements under tracked-tree inventory
+    at eaf1d95acf281d5016c4c16bb9a3732a0c2c023f.
+  result: Zero closure misses and zero limit breaches; template135/5674, free-content134/5475,
+    Prophet129/5437 jobs/weight; all10packs. Every42/68 own dependency still selects its owner.
+- claim: The existing synthetic rotation suites pass and do not open the removed sample surfaces.
+  command: Run the two unchanged rotation suites with a Python open-audit hook recording repository
+    paths only.
+  result: 68PASS/0failure/error/skip in4.53s; no packing-probe, data/ or site/ open attempts observed.
+    The hook does not attest native extension reads. Fourteen pre-existing pytest temporary-directory
+    cleanup warnings were retained; no manual cleanup performed.
 unverified:
 - claim: The repaired containing-head checks and main baseline pass after protected landing.
   what_would_verify: Exact-head hosted CI, incumbent controller merge, fresh main source/blob
@@ -42,7 +54,8 @@ unresolved:
 - Separate T12 CLI review and original experience operation retain unresolved effects; no replay
   or replacement.
 next_actions:
-- Adjudicate the scope audit, consume local checks and bind proof to the final source commit.
+- Consume and adjudicate the same-run independent scope audit; preserve final source/evidence
+  and open the single repair PR when shared capacity admits it.
 - Use the existing main-red-repair/controller route with binding checks and shared-capacity admission;
   no manual/admin merge.
 - Resume PR6651 normal deployment and real consumer verification after its own protected landing.
