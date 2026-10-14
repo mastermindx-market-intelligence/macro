@@ -3591,17 +3591,14 @@ INCIDENT_4607_FILES = [
 ]
 PROVEN_AT_0742 = "2026-08-05T07:42:00Z"
 MAIN_MOVED_AT_1026 = "2026-08-05T10:26:00Z"
-#: The #7958 footprint as a records-only pull request. As filed (2026-09-24) it
-#: also carried two `mockups/evidence/` captures; since #8287 (2026-10-02) ci.yml
-#: owns `mockups/evidence/**` ON PURPOSE — an evidence-only diff must run the
-#: receipt-corpus gate (#8278 landed a malformed receipt through that gap) — so
-#: those captures no longer model "owned by no path-filtered gate". The exemplar
-#: keeps only the handoff records, which no workflow path filter owns;
-#: `test_incident_7958_a_records_only_pull_request_merges_on_its_concluded_green`
-#: asserts exactly that and is what demanded this change.
+#: #7958 originally changed only records, without owning a tested surface.
+#: Both historical locations are now intentionally gated: mockups/evidence/**
+#: since #8287, and agentos/** with the R2 knowledge contracts. Preserve the
+#: incident's unowned-record shape with notes/ instead of exempting Agent OS.
+#: The end-to-end test checks this exemplar against the actual workflow gates.
 INCIDENT_7958_FILES = [
-    "agentos/handoffs/WS-F04-X1-2026-09-24.md",
-    "agentos/handoffs/WS-F04-X1-2026-09-24-R2.md",
+    "notes/WS-F04-X1-2026-09-24.md",
+    "notes/WS-F04-X1-2026-09-24-R2.md",
 ]
 
 
@@ -4198,8 +4195,8 @@ def test_incident_7958_a_records_only_pull_request_merges_on_its_concluded_green
 ):
     """#7958 (2026-09-24), against the REAL workflow gates.
 
-    Files only under `agentos/handoffs/` (the `mockups/evidence/` captures the
-    real #7958 carried are a gated surface since #8287, 2026-10-02 — see
+    An unowned records-only exemplar under `notes/` (both historical
+    `agentos/handoffs/` and `mockups/evidence/` are now gated — see
     INCIDENT_7958_FILES); main takes product commits inside `engine/**` and
     `scripts/` after the head's proof concluded green. The sweeper refreshed
     this shape three times
@@ -4228,7 +4225,7 @@ def test_incident_7958_a_records_only_pull_request_merges_on_its_concluded_green
     freshness = MOG.ProofFreshness.build("acme/widgets", "read")
     assert freshness.surface_of(4242) == set(), (
         "the #7958 shape must own no entry of any real path-filtered gate; if a "
-        "workflow now owns agentos/ or mockups/evidence/, this incident shape has "
+        "workflow now owns notes/, this incident shape has "
         "changed and the test — not the sweeper — needs a new exemplar"
     )
 
@@ -4245,6 +4242,18 @@ def test_incident_7958_a_records_only_pull_request_merges_on_its_concluded_green
     assert any(call[0] == "PUT" and call[1].endswith("/merge") for call in calls)
     out = capsys.readouterr().out
     assert "own no path-filtered gate entry" in out, out
+
+
+def test_agentos_records_have_a_real_workflow_gate(monkeypatch):
+    """R2 handoffs can no longer use the historical unowned-record shortcut."""
+    _fake_api(
+        monkeypatch,
+        check_pages={1: {"total_count": 0, "check_runs": []}},
+        main_commits=[],
+        pr_files=["agentos/handoffs/WS-F04-X1-2026-09-24.md"],
+    )
+    freshness = MOG.ProofFreshness.build("acme/widgets", "read")
+    assert "agentos/**" in freshness.surface_of(4242)
 
 
 def test_incident_7958_shape_with_unreadable_files_still_re_proves(monkeypatch):
