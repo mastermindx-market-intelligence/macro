@@ -58,9 +58,9 @@ permissions:
   contents: write
 
 concurrency:
-  # Only the latest ingest matters — cancel any in-flight run.
+  # Let the active publication writer settle; newer pending cycles may coalesce.
   group: research-ingest
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
   ingest:

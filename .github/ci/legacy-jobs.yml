@@ -5881,6 +5881,7 @@ jobs:
       - "engine/government_revenue/research_state.py"
       - "engine/government_revenue/sbir_progression.py"
       - "research/GOVERNMENT_REVENUE_CANDIDATE_GRADER_PREREG.md"
+      - config/market_memory_factory_bindings.v1.json
       - config/market_memory_retained_use.v1.json
       - engine/neuralweb/market_memory_episode_comparison.py
       - engine/neuralweb/market_memory_episode_features.py
@@ -6856,6 +6857,7 @@ jobs:
           tests/test_collect_staging_globs.py
           tests/test_capital_structure_compiler.py
           tests/test_capital_structure_contracts.py
+          tests/test_capital_structure_issuer_state_contracts.py
           tests/test_capital_structure_sec_discovery_clock.py
           tests/test_capital_structure_document_terms.py
           tests/test_capital_structure_instrument_candidates.py
@@ -6887,6 +6889,7 @@ jobs:
           tests/test_sec_capital_structure.py
           tests/test_sec_capital_structure_companyfacts.py
           tests/test_capital_structure_evidence_identity.py
+          tests/test_capital_structure_reference_qualification.py
           tests/test_capital_structure_closed_bundle.py
           tests/test_nwqs_c_dilution.py
           tests/test_compile_capital_structure_registration_lifecycles.py
@@ -8994,7 +8997,7 @@ jobs:
         with:
           python-version: "3.12"
       - name: install minimal deps
-        run: pip install pytest pyyaml pandas numpy
+        run: pip install pytest pandas numpy pyarrow pyyaml requests jsonschema fastapi httpx
       - name: authority guard (hard fail on Article-2 forbidden reads)
         run: python scripts/check_research_factory_authority.py
       - name: authority guard selftest (gate fires on planted violation)
@@ -9005,6 +9008,7 @@ jobs:
           tests/test_research_factory_state.py
           tests/test_research_factory_schema.py
           tests/test_research_factory_market_memory.py
+          tests/test_research_factory_market_memory_evidence.py
           tests/test_research_codegen_accounting_contract.py
           tests/test_research_codegen_evaluation.py
           tests/test_research_codegen_transport.py
@@ -9396,6 +9400,18 @@ jobs:
       - "tests/test_finance_overlap.py"
       - "engine/sector_intelligence/contracts.py"
       - "engine/sector_intelligence/finance_projection.py"
+      # FIN-1 case falsifier. Pure projector; the composer still emits [].
+      - "engine/sector_intelligence/finance_case_signal.py"
+      - "tests/test_finance_case_signal.py"
+      - "tests/fixtures/finance_case_signal/synthesis_v0.json"
+      # W8-FIN-1 page signal. The review gate writes falsifiers onto the named slice.
+      - "engine/sector_intelligence/finance_page_signal.py"
+      - "tests/test_finance_page_signal.py"
+      # FIN-2 witness hints. Closed roster; not an issuer_profiles writer.
+      - "engine/sector_intelligence/finance_witness_hints.py"
+      - "tests/test_finance_witness_hints.py"
+      # FIN-3 review gate. Descriptive MEASURED is not a cause.
+      - "tests/test_finance_r10_signal_gate.py"
       # FIN-T10 registration adapter — fixture-only, §8 sector_profile pending.
       # Once §8 is adjudicated the same factory pattern (technology @ #7891)
       # will be applied here.
@@ -9474,7 +9490,7 @@ jobs:
       - name: finance intelligence page + hydration tests
         run: python -m pytest tests/test_finance_intelligence_page.py tests/test_finance_intelligence_hydration.py -q
       - name: finance intelligence contract tests
-        run: python -m pytest tests/test_finance_intelligence_contract.py tests/test_finance_overlap.py tests/test_finance_intelligence_projection.py tests/test_finance_entry_points.py tests/test_finance_research_registration.py -q
+        run: python -m pytest tests/test_finance_intelligence_contract.py tests/test_finance_overlap.py tests/test_finance_intelligence_projection.py tests/test_finance_entry_points.py tests/test_finance_research_registration.py tests/test_finance_case_signal.py tests/test_finance_witness_hints.py tests/test_finance_r10_signal_gate.py tests/test_finance_page_signal.py -q
 
 
   consumer-cyclical-economic-change:
@@ -9491,6 +9507,10 @@ jobs:
       - "tests/test_consumer_cyclical_intelligence_read_model_contract.py"
       - "engine/sector_intelligence/consumer_cyclical_projection.py"
       - "tests/test_consumer_cyclical_projection.py"
+      - "engine/sector_intelligence/consumer_cyclical_shared_contract.py"
+      - "tests/test_consumer_cyclical_shared_contract.py"
+      - "engine/sector_intelligence/consumer_cyclical_display.py"
+      - "tests/test_consumer_cyclical_display.py"
       - "engine/sector_intelligence/contracts.py"
       - "contracts/sector_intelligence/**"
       - "data/sector_intelligence/fixtures/**"
@@ -9530,7 +9550,7 @@ jobs:
       - name: install minimal deps
         run: pip install pytest jsonschema referencing pyyaml
       - name: consumer cyclical economic change contract + projection tests
-        run: python -m pytest tests/test_consumer_cyclical_intelligence_read_model_contract.py tests/test_consumer_cyclical_projection.py -q
+        run: python -m pytest tests/test_consumer_cyclical_intelligence_read_model_contract.py tests/test_consumer_cyclical_projection.py tests/test_consumer_cyclical_shared_contract.py tests/test_consumer_cyclical_display.py -q
 
   flow-signals-ledger:
     if: ${{ false }}
@@ -11142,12 +11162,15 @@ jobs:
     # sentinel is required by that runner; it prevents duplicate GitHub jobs.
     if: ${{ false }}
     gate: code
-    # These ten whole-file suites exercise the knowledge compiler and its
+    # These eleven whole-file suites exercise the knowledge compiler and its
     # committed records. Audit: 43 concrete transitive files plus the complete
     # Agent OS store and runtime-read source documents. The Git/subprocess and
     # glob edges use temporary fixture repositories or those same declared
     # sources. Ship-capture and F01 retain their broad closure in self-mod-fence.
     # No suite or security step is removed; no packing ceiling is raised.
+    # test_agentos_records_draft.py drives scripts/agentos_records_draft.py,
+    # which imports scripts/agentos.py; its git subprocess builds fixture
+    # repositories under tmp_path and reads only this checkout's HEAD.
     scope: exclusive
     paths:
       - agentos/**
@@ -11176,6 +11199,7 @@ jobs:
       - research/market_intelligence_productization/receipts/supabase_receipt_0012_thesis_objects_2026-09-06.json
       - scripts/__init__.py
       - scripts/agentos.py
+      - scripts/agentos_records_draft.py
       - scripts/agentos_ship_capture.py
       - scripts/audit_stranded_work.py
       - scripts/linear_portfolio_plan.py
@@ -11187,6 +11211,7 @@ jobs:
       - tests/linear_portfolio_plan_live_cases.py
       - tests/test_agentos_acceptance_basis.py
       - tests/test_agentos_compile.py
+      - tests/test_agentos_records_draft.py
       - tests/test_agentos_schema.py
       - tests/test_agentos_status.py
       - tests/test_b_rec2_wave_boundary_records.py
@@ -11208,7 +11233,7 @@ jobs:
           # This direct invocation fails when a sparse store would skip pytest.
           python3 scripts/agentos.py validate
           python -m pytest tests/test_agentos_schema.py tests/test_agentos_status.py \
-            tests/test_agentos_compile.py tests/test_agentos_acceptance_basis.py tests/test_f02_owner_map_receipts.py \
+            tests/test_agentos_compile.py tests/test_agentos_records_draft.py tests/test_agentos_acceptance_basis.py tests/test_f02_owner_map_receipts.py \
             tests/test_b_rec2_wave_boundary_records.py tests/test_b_rec3_wave_boundary_records.py \
             tests/test_f00c_terminal_reconciliation.py tests/test_mo_b_ledger_reconciliation_2026_09_18.py tests/test_w9b_rec_ns.py -q
 
@@ -14227,7 +14252,7 @@ jobs:
       # suites with the ingestion/page tests while preserving their full inferred
       # dependency ownership. No extra interpreter is needed.
       - name: research vault typing, ingestion-spine and page unit tests (F3/F5-M)
-        run: python -m pytest tests/test_research_vault_blank_text.py tests/test_research_vault_fulltext_store.py tests/test_research_vault.py tests/test_research_vault_strict_store.py tests/test_research_vault_page.py tests/test_research_pages.py tests/test_research_vault_subjects.py tests/test_research_vault_backfill.py tests/test_research_intelligence_vault_head.py tests/test_research_vault_retrieval_eval.py tests/test_research_vault_read_port.py tests/test_research_vault_read_service.py tests/test_research_vault_read_adapters.py -q
+        run: python -m pytest tests/test_research_vault_producer_timing.py tests/test_research_vault_processed_index_concurrency.py tests/test_research_vault_blank_text.py tests/test_research_vault_fulltext_store.py tests/test_research_vault.py tests/test_research_vault_strict_store.py tests/test_research_vault_page.py tests/test_research_pages.py tests/test_research_vault_subjects.py tests/test_research_vault_backfill.py tests/test_research_intelligence_vault_head.py tests/test_research_vault_retrieval_eval.py tests/test_research_vault_read_port.py tests/test_research_vault_read_service.py tests/test_research_vault_read_adapters.py -q
 
 
   research-vault-source-lineage:
@@ -17059,6 +17084,7 @@ jobs:
       - "site/government-revenue-data/research-state.json"
       - "site/government-revenue-data/sbir-progression.json"
       - "site/government-revenue-data/theme-context.json"
+      - config/market_memory_factory_bindings.v1.json
       - config/market_memory_retained_use.v1.json
       - engine/neuralweb/market_memory_episode_comparison.py
       - engine/neuralweb/market_memory_episode_features.py
@@ -20265,7 +20291,7 @@ jobs:
       # progressive-enhancement client, and the date-scoped Release Radar
       # selector join the producer lane that owns the release-forecast estate.
       - name: CPI bridge + official-event live client + Release Radar date selection
-        run: python -m pytest tests/test_release_cpi_bridge.py tests/test_release_publications_live_client.py tests/test_release_radar_date_selection.py -q
+        run: python -m pytest tests/test_release_cpi_bridge.py tests/test_release_publications_live_client.py tests/test_release_radar_date_selection.py tests/test_release_radar_ui.py -q
       # Unrun backfill 2026-08-09: Release Radar canonical inflation truth
       # (#5153) landed five suites named by no run: step — the unrun-suite gate
       # reds main on them.  They join the producer lane that owns the
@@ -24854,6 +24880,7 @@ jobs:
       - "site/government-revenue-data/research-state.json"
       - "site/government-revenue-data/sbir-progression.json"
       - "site/government-revenue-data/theme-context.json"
+      - config/market_memory_factory_bindings.v1.json
       - config/market_memory_retained_use.v1.json
       - engine/neuralweb/market_memory_forward.py
       - engine/neuralweb/market_memory_operating_cortex.py
@@ -25698,6 +25725,7 @@ jobs:
       - "tests/test_market_memory_population.py"
       - "tests/test_market_memory_retained_context_cohort.py"
       - "tests/test_market_memory_technical_store.py"
+      - "tests/test_market_memory_retained_source_metadata.py"
       - "tests/test_market_memory_trusted.py"
       - "tests/test_options_signal_episode.py"
       - "tests/test_ptse_action_context.py"
@@ -25902,6 +25930,7 @@ jobs:
           tests/test_market_memory_breadth_deploy.py
           tests/test_market_memory_technical_observation.py
           tests/test_market_memory_technical_store.py
+          tests/test_market_memory_retained_source_metadata.py
           tests/test_capture_market_memory_technicals.py
           tests/test_market_memory_technicals_deploy.py
           tests/test_market_memory_experience_accrual.py
@@ -26964,6 +26993,7 @@ jobs:
       - "engine/government_revenue/research_state.py"
       - "engine/government_revenue/sbir_progression.py"
       - "research/GOVERNMENT_REVENUE_CANDIDATE_GRADER_PREREG.md"
+      - config/market_memory_factory_bindings.v1.json
       - config/market_memory_retained_use.v1.json
       - engine/neuralweb/market_memory_episode_comparison.py
       - engine/neuralweb/market_memory_episode_features.py
@@ -28999,6 +29029,19 @@ jobs:
       - "tests/test_industrials_financial_dossier.py"
       # IND-T05: edition selection and dossier comparison. Same exclusive job.
       - "tests/test_industrials_source_history.py"
+      # W6-A: stated cell end. A matcher tolerance must not rewrite it.
+      - "engine/company_intelligence/industrials_fiscal.py"
+      - "tests/test_industrials_fiscal_period.py"
+      # W6-B: native SourceDocument editions from the synthetic fixtures.
+      - "engine/company_intelligence/industrials_source_facts.py"
+      - "tests/test_industrials_source_facts.py"
+      # W8-A: stated fiscal label on the native document. Tolerance does not
+      # rewrite the cell end.
+      - "engine/company_intelligence/industrials_period_enrollment.py"
+      - "tests/test_industrials_period_enrollment.py"
+      # W8-B: hold the source-edition section until a selector ruling.
+      - "engine/company_intelligence/industrials_edition_record.py"
+      - "tests/test_industrials_edition_record.py"
     timeout-minutes: 6
     runs-on: ubuntu-latest
     steps:
@@ -29016,7 +29059,7 @@ jobs:
         # Stated identically in clean-venv proof below.
         run: pip install pytest pyyaml requests
       - name: Industrials synthetic dependency binding (T01)
-        run: python -m pytest tests/test_industrials_dependency_binding.py tests/test_industrials_result_cash.py tests/test_industrials_financial_dossier.py tests/test_industrials_source_history.py -q
+        run: python -m pytest tests/test_industrials_dependency_binding.py tests/test_industrials_result_cash.py tests/test_industrials_financial_dossier.py tests/test_industrials_source_history.py tests/test_industrials_fiscal_period.py tests/test_industrials_source_facts.py tests/test_industrials_period_enrollment.py tests/test_industrials_edition_record.py -q
 
   house-law-registry-code:
     if: ${{ false }}
