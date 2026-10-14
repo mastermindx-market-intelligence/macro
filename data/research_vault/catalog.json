@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-10-14T15:44:14.796465+00:00",
-  "count": 2904,
+  "generated_at": "2026-10-14T19:26:21.003157+00:00",
+  "count": 2917,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -97,6 +97,8 @@
     "The Punchline",
     "Trump Xi Preview",
     "U.S. Department of Agriculture",
+    "U.S. Department of Agriculture, National Agricultural Statistics Service",
+    "U.S. International Trade Commission",
     "UBS",
     "Vanda Research",
     "Vontobel",
@@ -111,6 +113,46 @@
     "Zero Hedge"
   ],
   "items": [
+    {
+      "id": "marketdesk-c0hubv6rxqd-061033",
+      "title": "JPM US Market Intelligence | Morning Briefing",
+      "institution": "J.P. Morgan",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-14T18:52:00Z",
+      "summary_points": [
+        "CPI & Fed Policy Shift: Headline CPI MoM 0.55% (3.6% YoY) vs Core MoM 0.18% (2.4% YoY) implies skip on Oct Fed hike, December hike likely; bond market avoids repricing, supporting rate-sensitive baskets.",
+        "Geopolitical Oil Volatility: Houthi escalation + Iran tactics drive WTI +0.7% amid oil volatility; US indices mixed (SPX +0.2%, NDX -0.1%) with bond yields lower into CPI.",
+        "Consumer Spending Resilience: Wage growth (4.7-3.7%) supports broad-based spending; card spending +10-13% YoY, delinquencies falling, credit quality at historic lows (WFC/JPM/C).",
+        "ASML 2027 Capacity Risk: Uncertainty on 2027 capacity delivery overshadows fundamental strength (LSD print revisions vs prior -30%), key risk factor for semiconductors.",
+        "Bank Earnings Fundamentals: JPM card growth +10-13% YoY, WFC stable NIM/NII growth; weakness driven by quant/passive flows (not 2s10s curve), signaling market sentiment shift."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": true,
+      "pages": 16,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-vkqr7ns1tbk-88ffc3",
+      "title": "GS Soria Higher Rates = Bid for Quality 14 Oct 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-14T14:14:12Z",
+      "summary_points": [
+        "Quality Factor Momentum Overextension: GSP1QUAL up 20% in 3 months (12m high), RSI 83, driven by short leg selloff (GSX1BFQS); softer CPI/rate peak may trigger reversal in lower-quality names (GSX1BFQS 105% call at 1.38%, 25d).",
+        "Crisis-Driven Quality Flight: GSP1QUAL outperforms USGG10YR during crises (Covid/Regional Banking), capital flows to quality as rates price risk-off sentiment.",
+        "Critical Quality-Momentum Risk: Negative correlation (-0.6433) between GSP1QUAL and AI/momentum/beta trades signals potential underperformance in quality portfolios during momentum regimes, requiring strategic adjustments."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 9,
+      "language": "en",
+      "needs_metadata": false
+    },
     {
       "id": "marketdesk-pk35lyapk08-713b6b",
       "title": "GS Jee GS KOREA FINAL EXTENDS LOSSES 14 Oct 2026",
@@ -191,6 +233,25 @@
       "needs_metadata": false
     },
     {
+      "id": "marketdesk-0fedukpfmue-7f080b",
+      "title": "GS Privorotsky GS Basics Rates Calm. Cost of Capital. TTF new Highs 14 Oct 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-14T13:44:09Z",
+      "summary_points": [
+        "Fed Policy Signal: Fed signaling hold on 2027 hikes unless forced; CPI (0.6% headline) as key test driving bond rally and rate volatility compression.",
+        "Energy Geopolitical Shock: TTF at new highs (86), distillate shortage unresolved, Saudi escalation (Aramco HQ attack) elevating immediate energy risk.",
+        "Credit Spread Crisis: CCC spreads widened 1,250bp since September; HY widening driven by sovereign deficits and AI capital needs, risking credit stress spillover to SMEs/consumers."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 3,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-75qspjfpqxs-b7f945",
       "title": "GS Crook GS MORNING 1 FX Trader Call Today, 2 September CPI Preview, 3 Hybrids Stretched Equity Rates Correlation, 4 5 Key Charts and 5 GS Energy Webcast 14 Oct 2026",
       "institution": "S&T",
@@ -208,6 +269,26 @@
       "tickers": [],
       "top_pick": false,
       "pages": 9,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-ftuozl3okjq-c3d98f",
+      "title": "GS Xholi USD Swaps Trade Idea Receive 10y10y rate the term premium leg has run ahead of fundamentals 13 Oct 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-14T03:47:56Z",
+      "summary_points": [
+        "Fundamental Mismatch: Term premium leg (10y10y SOFR forward) has surged ahead of fundamentals, evidenced by long-end sell-off and forward curve divergence vs 1y1y/5y5y, driven by energy inflation (Brent >$105), fiscal deficits (AI debt), and global contagion (Japan 10y JGB >3%, Europe Bund 3.65%).",
+        "Term Premium Surge: 10y10y at 5.38% (highest since 2024), with 47bp term premium spike in 10 days (vs flat 2y swap), not Fed policy; fueled by energy-driven inflation and global yield rises.",
+        "Near-Term Reversal Catalysts: September CPI soft print, 28-Oct FOMC pricing no October hike, Treasury refunding supply response, and midterm election pricing (Democrats likely to lower yields via slower growth/AI slowdown).",
+        "Critical Risk: CPI surprise (upside risk to term premium) and Fed hiking beyond December (72% odds priced), with global long-end yields rising (e.g., OATs widening on French budget stalls)."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 4,
       "language": "en",
       "needs_metadata": false
     },
@@ -290,6 +371,26 @@
       "tickers": [],
       "top_pick": false,
       "pages": 23,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-xtr3psvcwid-76ada8",
+      "title": "WMM 13 Oct 2026 Pricing fiscal risk",
+      "institution": "Other",
+      "side": "independent",
+      "desk": "",
+      "published_at": "2026-10-14T02:28:21Z",
+      "summary_points": [
+        "Fiscal Risk Spike: French government bond term premiums hit 2000s highs amid budget talks, with UK/US/Germany showing elevated premiums (C.O.T.W. chart), signaling systemic sovereign debt concerns.",
+        "Gold ETF Flows: European investors continue allocating to gold ETFs despite YTD price weakness (-4.2%), reflecting risk aversion to fiscal sustainability issues (per YTD % change bar chart).",
+        "Gold Forward Returns: Gold’s negative YTD (-4.16%) contrasts with strong forward returns (54% 4w/61% 12w), indicating tactical rebound potential amid current underperformance.",
+        "Key Data Releases: US Sept Core CPI easing may strengthen October rate hold expectations; US PPI climb signals sustained inflation pressures (policy risk)."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 25,
       "language": "en",
       "needs_metadata": false
     },
@@ -474,6 +575,26 @@
       "needs_metadata": false
     },
     {
+      "id": "marketdesk-na3aw28nwyx-8f1249",
+      "title": "GCC Energy Mapping export strength into year end earnings delivery",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-13T14:44:19Z",
+      "summary_points": [
+        "ADNOC Gas EBITDA Recovery: 85% Habshan gas supply restored by June 2026, domestic volumes shielded from Hormuz risks (70% sales), driving sequential earnings improvement; full restoration on track for 2027.",
+        "Market Shift to Earnings Leverage: Focus moves from disruption absorption to near-term earnings upside (e.g., ADNOC L&S/ADG defensive exposure), supported by GCC export normalization and tight freight markets.",
+        "ADNOC L&S Valuation Gap: Buy-rated with 12m price target AED8.80 (up from AED7.70), trading below 3Y average EV/EBITDA (8.8x vs. 4x), despite strong 3Q26 shipping/ILSP recovery and FY26 guidance upgrade.",
+        "LNG Flow Normalization Delay: Hormuz LNG exports to normalize only to 83% of pre-war levels by Feb 2027 (vs."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 35,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-yzhyfari9wt-013b93",
       "title": "Americas Payment Technology 3Q26 Preview Expect strong spending trends and more constructive thematics to sustain recent st...",
       "institution": "Goldman Sachs",
@@ -508,6 +629,27 @@
       "tickers": [],
       "top_pick": true,
       "pages": 30,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-vwvc6q8j2nr-66921c",
+      "title": "JPM Semiconductors Semi",
+      "institution": "J.P. Morgan",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-13T11:56:40Z",
+      "summary_points": [
+        "GPU Supply Constraint: Supply constraints (not demand) gate near-term growth, favoring AVGO, MRVL, and NVDA amid sustained AI infrastructure investment and acute supply tightness.",
+        "AI Cloud Capex Surge: Consensus cloud capex at $950B/$1.42T/$1.55T (CY26/CY27/CY28; +97%/+47%/+99% Y/Y), with key risk being CY27+ supply-chain sustainability (foundry, HBM, packaging).",
+        "Memory SCA/LTA Framework: 26 SCAs with $150B RPO and >75% FY27 output committed re-anchor through-cycle GM floor, driving upside despite valuation disconnect.",
+        "Critical EPS Deviations: AMAT Q3 EPS 13.8% below consensus (material negative), QNT Q3 estimate 29.7% below consensus (severe downside risk), AMKR Q4 estimate 15.4% above consensus (strong positive).",
+        "DC SSD Catalyst: MU’s F4Q26 DC SSD revenue ~$10B (10x Y/Y, two-thirds of NAND) marks step-change in NAND profitability, accelerating data center SSD growth."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 31,
       "language": "en",
       "needs_metadata": false
     },
@@ -676,6 +818,26 @@
       "needs_metadata": false
     },
     {
+      "id": "marketdesk-2rk8r0eb4ch-4ee2fe",
+      "title": "Americas Insurance 3Q26 Preview Expect Mixed Results as The Cycle Softens Further",
+      "institution": "Bank Earnings Previews",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-13T01:59:25Z",
+      "summary_points": [
+        "Middle East conflict risk: ACGL, AIG, CB, HIG, RNR, PLGO face commercial loss ratio misses and pricing pressures; TRV Sell rating linked to Street expectations and reporting deceleration.",
+        "Pricing deterioration: IVANS data shows sequential pricing decline (-50bps QTD avg), led by Commercial Auto (-110bps) and General Liability (-85bps), signaling significant rate compression risk.",
+        "AIG underwriting strength: AIG's underlying combined ratio at 88.1% (Q22E) with marginal YoY improvement (-0.1%) indicates strong core underwriting performance amid sector headwinds.",
+        "EPS consensus divergence: GS vs. consensus EPS estimates reveal material misalignment (e.g., AIG P&C: 5.4% diff, ALL: 12.4% upward revision), signaling potential re-rating opportunities for key names."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 65,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-lzmltel3teb-9a2d70",
       "title": "Americas Brokers & Crypto First quarter of crypto estimate upgrades since 4Q25 EPS",
       "institution": "Bank Earnings Previews",
@@ -733,6 +895,66 @@
       "tickers": [],
       "top_pick": false,
       "pages": 59,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "usda-nass-2026-10-13-crop-progress",
+      "title": "Crop Progress, October 13, 2026",
+      "institution": "U.S. Department of Agriculture, National Agricultural Statistics Service",
+      "side": "independent",
+      "desk": "Agriculture",
+      "published_at": "2026-10-13",
+      "summary_points": [
+        "USDA NASS reports corn harvest at 33% for the week ending 2026-10-11 across 18 selected states, versus 23% a week earlier and a 39% average for 2021-2025. Those states harvested 93% of the 2025 corn acreage.",
+        "USDA NASS estimates soybean harvest at 46% across 18 selected states, compared with 25% a week earlier and a 50% average for 2021-2025. Those states harvested 96% of the 2025 soybean acreage.",
+        "Adding the USDA NASS corn condition estimates of 44% good and 12% excellent gives 56%, versus a calculated 54% the previous week. This corn panel covers 18 states that planted 91% of the 2025 corn acreage.",
+        "Adding the USDA NASS soybean condition estimates of 46% good and 11% excellent gives 57%, unchanged from the previous week. This soybean panel covers 18 states that planted 96% of the 2025 soybean acreage.",
+        "Iowa corn harvest is 14%, compared with a 34% five-year average; Iowa soybean harvest is 31%, compared with 59%. Harvest completion and condition estimates do not measure yield, prices or company earnings.",
+        "Publication was 2026-10-13 and observations ended 2026-10-11. Corresponding prior-year estimates are unavailable because reports were cancelled during the October-November 2025 federal funding lapse. All cited 2021-2025 averages combine published 2021-2024 and imputed 2025 estimates.",
+        "NASS describes a non-probability survey of approximately 3,600 respondents making subjective observations. The estimates are acreage-weighted and subject to revision the following week; early responses may project weekend changes.",
+        "Corn and soybeans use different 18-state panels. NASS weights harvest progress by average harvested acreage over the preceding three crop years, and condition by average planted acreage; the aggregates are not simple state averages."
+      ],
+      "tags": [
+        "agriculture",
+        "corn",
+        "soybeans",
+        "harvest",
+        "crop-condition"
+      ],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 16,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "usitc-2026-10-13-337-ta-1473",
+      "title": "Certain Skid-Steer Loaders and Other Equipment: Notice of Partial Termination of Patent Claims",
+      "institution": "U.S. International Trade Commission",
+      "side": "independent",
+      "desk": "Industrials",
+      "published_at": "2026-10-13",
+      "summary_points": [
+        "USITC voted on 2026-10-13 not to review Orders 25 and 26, partially ending specified patent claims in the existing Bobcat complaint against Caterpillar. This notice does not terminate the entire investigation.",
+        "Investigation 337-TA-1473 began on 2026-01-07 following a complaint by Doosan Bobcat North America. Caterpillar is the named respondent. The complaint alleges infringement involving imported construction equipment; the notice is not a finding that infringement occurred.",
+        "Bobcat filed withdrawal motions on 2026-08-31 and 2026-09-04 and said both were unopposed by Caterpillar. The administrative law judge granted them on 2026-09-10. No party petitioned for review of either initial determination.",
+        "The October determination removes claims 3-6 and 11 of patent 8,364,356; claims 3-5 of patent 8,047,760; claims 3 and 15 of patent 10,934,684; and claims 1, 4 and 17-19 of patent 7,831,364.",
+        "The notice separately describes earlier claim withdrawals on 2026-08-26. Those earlier withdrawals must not be counted as a new October determination or confused with the specified claims in Orders 25 and 26.",
+        "The initial determinations found no other written or oral agreements between the parties concerning the investigation and no extraordinary circumstances warranting denial of the withdrawal motions. This does not establish a commercial settlement or licence.",
+        "The Commission vote and notice issue date are both 2026-10-13. The notice supplies no publication time, company revenue impact, share-price response or valuation estimate; none is inferred here."
+      ],
+      "tags": [
+        "industrials",
+        "construction-equipment",
+        "patents",
+        "trade"
+      ],
+      "tickers": [
+        "CAT"
+      ],
+      "top_pick": false,
+      "pages": 2,
       "language": "en",
       "needs_metadata": false
     },
@@ -818,6 +1040,26 @@
       "needs_metadata": false
     },
     {
+      "id": "marketdesk-yfmzhgjtnxe-d89894",
+      "title": "Mi weekly market brief",
+      "institution": "J.P. Morgan",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-12T23:17:54Z",
+      "summary_points": [
+        "AI Stock Concentration: Top 10 S&P 500 (AI-heavy) firms now constitute ~40% of index cap, with passive investors holding >50% exposure to AI stocks, severely undermining diversification.",
+        "Key Macro Data: China CPI (Sep), US Core CPI (Sep), UK GDP (Aug), Eurozone industrial production (Aug), US retail sales (Sep), and US PPI (Sep) drive near-term volatility.",
+        "Flow Divergence: S&P 500’s 2.4% YTD gain vs.",
+        "DAX’s 2.4% YTD reflects divergent capital flows amid concentrated AI exposure."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 2,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-arbvfsvswas-96701d",
       "title": "Weekly investment commentary en us 20261012 upgrading us treasuries to lock in income",
       "institution": "BlackRock",
@@ -898,6 +1140,27 @@
       "needs_metadata": false
     },
     {
+      "id": "marketdesk-cucjl2nrsal-fbd798",
+      "title": "Equities Tactical Top Picks",
+      "institution": "UBS",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-12T22:57:58Z",
+      "summary_points": [
+        "Regional Disparity: Asia-Pacific underperformed (-6.2% abs, -4.1% rel) vs.",
+        "Switzerland (5.8% abs) and Europe (0.5% abs), signaling sector-specific risks requiring active rebalancing.",
+        "Nenuvio & FDA Catalyst: $1bn sales target (2026) backed by channel demand; Relifeds FDA refiling timeline (Q3 results) is critical near-term catalyst for aesthetics growth.",
+        "Dental Market Growth: World's largest dental implants company with fastest-growing med tech market (2030); China pricing pressure offset by volume growth, restocking, and share gains.",
+        "Valuation Gap: Relative valuation below historical premiums supports material rating; price target $180 vs."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 26,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-xjuuyadj9qu-e30850",
       "title": "October 12 House View full set 2026",
       "institution": "UBS",
@@ -915,6 +1178,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 14,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-sbvpc1qbqzo-090bad",
+      "title": "UBS Equity Preference List UK 2026 10 12",
+      "institution": "UBS",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-12T22:56:05Z",
+      "summary_points": [
+        "UK Equity Fundamentals: Attractive 12x forward P/E (vs 12.8x median) with robust earnings growth, though lagging global peers; near-term rate risk offset by resilient activity (e.g., energy prices supporting earnings).",
+        "Anglo American Copper Pivot: Strategic shift to copper via asset spin-offs (Valterra, nickel) and Teck merger (62% stake), targeting 30%+ copper volume growth by 2030; key catalysts include $4.5bn dividend and Quellaveco/Woodsmith projects.",
+        "China Demand Risk: Systemic threat across holdings (e.g., 13% revenue exposure for key firms); slower industrial metals demand or Teck merger delays could negatively impact outlook.",
+        "GBP Policy Exposure: All holdings GBP-denominated; critical to monitor UK interest rates, fiscal policies, and Brexit impacts on energy/finance sectors amid currency volatility.",
+        "Sector Growth Catalysts: Favor cyclical/structural areas (Eurozone IT, industrials, banks) via \"European Leaders\" theme; energy transition tailwinds (copper for EVs) and high-margin oncology assets (13% CAGR) drive growth."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 19,
       "language": "en",
       "needs_metadata": false
     },

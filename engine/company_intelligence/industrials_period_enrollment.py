@@ -97,7 +97,8 @@ def _with_stated_end(
     is refused as ``cell period.end must be a YYYY-MM-DD string``, naming the
     field instead of leaking ``date.fromisoformat``'s bare message. Chaining
     differs per branch: a non-mapping ``period`` and a non-``str`` end are
-    each a bare ``raise`` and chain nothing (``__cause__`` is ``None``);
+    each a bare ``raise`` and chain nothing (``__cause__`` and
+    ``__context__`` are both ``None``);
     the shape gate below chains a SYNTHETIC shape error whose text begins
     ``expected exactly YYYY-MM-DD``, not a parse error; only the parser
     branch chains ``date.fromisoformat``'s own

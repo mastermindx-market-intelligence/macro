@@ -1828,8 +1828,8 @@
       "status": "ok",
       "n_leaders": 116,
       "base_json": "site/flowtracker/base.json",
-      "as_of": "2026-10-14T08:58:52.234408+00:00",
-      "checked_at": "2026-10-14T08:58:52.234408+00:00"
+      "as_of": "2026-10-14T18:36:37.337811+00:00",
+      "checked_at": "2026-10-14T18:36:37.337811+00:00"
     },
     "broad_flows": {
       "source": "broad_flows",
@@ -3861,53 +3861,53 @@
     "health": {
       "valuation": {
         "table": "valuation",
-        "asof": "2026-10-13",
+        "asof": "2026-10-14",
         "lag_days": 0,
         "state": "fresh",
         "lag_sessions": 0,
-        "expected_session": "2026-10-13",
+        "expected_session": "2026-10-14",
         "calendar_verified": true
       },
       "margin": {
         "table": "margin",
-        "asof": "2026-10-12",
+        "asof": "2026-10-13",
         "lag_days": 1,
         "state": "fresh",
         "lag_sessions": 1,
-        "expected_session": "2026-10-13",
+        "expected_session": "2026-10-14",
         "calendar_verified": true
       },
       "moneyflow": {
         "table": "moneyflow",
-        "asof": "2026-10-13",
+        "asof": "2026-10-14",
         "lag_days": 0,
         "state": "fresh",
         "lag_sessions": 0,
-        "expected_session": "2026-10-13",
+        "expected_session": "2026-10-14",
         "calendar_verified": true
       },
       "chips": {
         "table": "chips",
-        "asof": "2026-10-13",
+        "asof": "2026-10-14",
         "lag_days": 0,
         "state": "fresh",
         "lag_sessions": 0,
-        "expected_session": "2026-10-13",
+        "expected_session": "2026-10-14",
         "calendar_verified": true
       },
       "broker": {
         "table": "broker",
-        "asof": "2026-10-13",
+        "asof": "2026-10-14",
         "lag_days": 0,
         "state": "fresh"
       },
       "forecast": {
         "table": "forecast",
-        "asof": "2026-10-14",
+        "asof": "2026-10-15",
         "lag_days": -1,
         "state": "fresh"
       }
     },
-    "asof": "2026-10-13 16:01:26.039898+00:00"
+    "asof": "2026-10-14 15:27:05.235534+00:00"
   }
 }

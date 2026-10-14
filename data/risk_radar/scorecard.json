@@ -1,12 +1,12 @@
 {
   "schema": "risk_radar_scorecard.v1",
-  "generated_at": "2026-10-14T06:03:00+00:00",
+  "generated_at": "2026-10-14T16:07:14+00:00",
   "markets": {
     "us": {
       "asof_last_row": "2026-10-13",
       "monitoring": {
         "log_fresh": true,
-        "last_logged_days_ago": 0,
+        "last_logged_days_ago": 1,
         "ungraded_backlog": 0,
         "awaiting_maturity": 18,
         "backlog_cutoff_bd": 28,
@@ -68,7 +68,7 @@
       },
       "probability_audit": {
         "definition": "us_issued_probability_audit.v1",
-        "as_of": "2026-10-13",
+        "as_of": "2026-10-14",
         "target": "SPY close-relative loss >=5%; future 5/10/21 closing observations",
         "input_rows": 66,
         "min_display_n": 5,
@@ -421,22 +421,22 @@
       }
     },
     "cn": {
-      "asof_last_row": "2026-10-13",
+      "asof_last_row": "2026-10-14",
       "monitoring": {
         "log_fresh": true,
-        "last_logged_days_ago": 0,
+        "last_logged_days_ago": 1,
         "ungraded_backlog": 0,
         "awaiting_maturity": 18,
         "backlog_cutoff_bd": 28,
-        "graded_n": 22
+        "graded_n": 23
       },
       "windows": {
         "full": {
           "alerts": {
-            "n": 7,
+            "n": 8,
             "tp": 2,
-            "fp": 5,
-            "hit_rate": 0.286
+            "fp": 6,
+            "hit_rate": 0.25
           },
           "watch_caution": {
             "n": 15,
@@ -452,20 +452,20 @@
           },
           "by_scare": {
             "breadth": {
-              "n": 7,
+              "n": 8,
               "tp": 2,
-              "fp": 5,
-              "hit_rate": 0.286
+              "fp": 6,
+              "hit_rate": 0.25
             }
           },
           "recovery": null
         },
         "y1": {
           "alerts": {
-            "n": 7,
+            "n": 8,
             "tp": 2,
-            "fp": 5,
-            "hit_rate": 0.286
+            "fp": 6,
+            "hit_rate": 0.25
           },
           "watch_caution": {
             "n": 15,
@@ -481,10 +481,10 @@
           },
           "by_scare": {
             "breadth": {
-              "n": 7,
+              "n": 8,
               "tp": 2,
-              "fp": 5,
-              "hit_rate": 0.286
+              "fp": 6,
+              "hit_rate": 0.25
             }
           },
           "recovery": null
@@ -492,14 +492,14 @@
       }
     },
     "hk": {
-      "asof_last_row": "2026-10-13",
+      "asof_last_row": "2026-10-14",
       "monitoring": {
         "log_fresh": true,
-        "last_logged_days_ago": 0,
+        "last_logged_days_ago": 1,
         "ungraded_backlog": 0,
         "awaiting_maturity": 18,
         "backlog_cutoff_bd": 28,
-        "graded_n": 27
+        "graded_n": 28
       },
       "windows": {
         "full": {
@@ -510,10 +510,10 @@
             "hit_rate": null
           },
           "watch_caution": {
-            "n": 11,
+            "n": 12,
             "tp": 1,
-            "tn": 10,
-            "precursor_rate": 0.091
+            "tn": 11,
+            "precursor_rate": 0.083
           },
           "calm": {
             "n": 13,
@@ -539,10 +539,10 @@
             "hit_rate": null
           },
           "watch_caution": {
-            "n": 11,
+            "n": 12,
             "tp": 1,
-            "tn": 10,
-            "precursor_rate": 0.091
+            "tn": 11,
+            "precursor_rate": 0.083
           },
           "calm": {
             "n": 13,
@@ -566,7 +566,7 @@
       "asof_last_row": "2026-10-08",
       "monitoring": {
         "log_fresh": false,
-        "last_logged_days_ago": 5,
+        "last_logged_days_ago": 6,
         "ungraded_backlog": 0,
         "awaiting_maturity": 14,
         "backlog_cutoff_bd": 28,
@@ -623,7 +623,7 @@
       "asof_last_row": "2026-10-08",
       "monitoring": {
         "log_fresh": false,
-        "last_logged_days_ago": 5,
+        "last_logged_days_ago": 6,
         "ungraded_backlog": 0,
         "awaiting_maturity": 13,
         "backlog_cutoff_bd": 28,
@@ -680,7 +680,7 @@
       "asof_last_row": "2026-10-09",
       "monitoring": {
         "log_fresh": false,
-        "last_logged_days_ago": 4,
+        "last_logged_days_ago": 5,
         "ungraded_backlog": 0,
         "awaiting_maturity": 15,
         "backlog_cutoff_bd": 28,
@@ -751,7 +751,7 @@
       "asof_last_row": "2026-10-08",
       "monitoring": {
         "log_fresh": false,
-        "last_logged_days_ago": 5,
+        "last_logged_days_ago": 6,
         "ungraded_backlog": 0,
         "awaiting_maturity": 15,
         "backlog_cutoff_bd": 28,
@@ -846,7 +846,7 @@
       "asof_last_row": "2026-10-08",
       "monitoring": {
         "log_fresh": false,
-        "last_logged_days_ago": 5,
+        "last_logged_days_ago": 6,
         "ungraded_backlog": 0,
         "awaiting_maturity": 15,
         "backlog_cutoff_bd": 28,
@@ -917,7 +917,7 @@
       "asof_last_row": "2026-10-09",
       "monitoring": {
         "log_fresh": false,
-        "last_logged_days_ago": 4,
+        "last_logged_days_ago": 5,
         "ungraded_backlog": 0,
         "awaiting_maturity": 15,
         "backlog_cutoff_bd": 28,
@@ -974,7 +974,7 @@
       "asof_last_row": "2026-10-08",
       "monitoring": {
         "log_fresh": false,
-        "last_logged_days_ago": 5,
+        "last_logged_days_ago": 6,
         "ungraded_backlog": 0,
         "awaiting_maturity": 14,
         "backlog_cutoff_bd": 28,
@@ -1031,7 +1031,7 @@
       "asof_last_row": "2026-10-08",
       "monitoring": {
         "log_fresh": false,
-        "last_logged_days_ago": 5,
+        "last_logged_days_ago": 6,
         "ungraded_backlog": 0,
         "awaiting_maturity": 14,
         "backlog_cutoff_bd": 28,

@@ -14,6 +14,7 @@ import ast
 import importlib.util
 import json
 import os
+import re
 import shlex
 import shutil
 import subprocess
@@ -1121,6 +1122,16 @@ _SEAT_FIELD_PARAMS = [
         id="pr.files",
     ),
     pytest.param(
+        # Entry in the two-space bullet shape the handoff/append render
+        # themselves (accepted by ``_pr_fields`` today); the bare-value
+        # mutant then produces a line equal to the value that still
+        # starts with "  - ", so the third positional clause is what
+        # fails. Chosen as its own param so the id reads standalone.
+        "pr.files", lambda h: _payload(pr={"files": [f"  - lib/x{h}.py"]}),
+        "mixed", "pr.files entries must be single-line repo-relative paths",
+        id="pr.files-bullet-form",
+    ),
+    pytest.param(
         "model", lambda h: _payload(model=f"opus{h}"),
         "refused", "model must be one of",
         id="model",
@@ -1170,8 +1181,13 @@ def test_seat_string_fields_are_refused_or_quoted(
     U+2028 or ESC byte, (iv) has no line starting with `````` ``` ```` (a fence
     cannot open at column 0), and (v) contains the field's full value in
     ``_q``-escaped form -- so the hostile input survived only inside a quoted
-    scalar. "No raw hostile character" is read as "no raw structural escape":
-    legitimate printable backticks necessarily survive inside quotes.
+    scalar; for ``pr.files`` (v) is POSITIONAL instead, because that field
+    renders raw outside ``_q``: every line with a not-inside-quotes
+    occurrence of the value must carry the two-space bullet prefix,
+    at least one such line must exist, and no line may equal the
+    bare value (in-quotes occurrences ride (i)-(iv)). "No raw hostile
+    character" is read as "no raw structural escape": legitimate printable
+    backticks necessarily survive inside quotes.
     """
     for hostile_name, h in _HOSTILE_CHARS.items():
         case = f"{field_id} x {hostile_name}"
@@ -1220,9 +1236,52 @@ def test_seat_string_fields_are_refused_or_quoted(
             assert "\x1b" not in text, case
             assert not any(line.startswith("```") for line in lines), case
             if record_key in ("handoff", "ws_append") or field_id == "title":
-                assert _escaped_form(value) in text, (
-                    f"{case}: value did not survive in {_escaped_form(value)!r} form"
-                )
+                if field_id == "pr.files":
+                    # (v), positional. ``pr.files`` entries are the only
+                    # seat strings rendered RAW into record bodies that
+                    # can carry a hostile character (``pr.merged_at`` is
+                    # also raw -- module :556 handoff, :605 ws_append --
+                    # but ``_MERGED_RE`` :73 pins it to ASCII). The
+                    # :562/:611 files rows are unpinned, so a substring
+                    # test is vacuous there: the path survives on SOME
+                    # line whether or not its "  - " bullet prefix does.
+                    # Pin the shape instead. Occurrences INSIDE a
+                    # double-quoted scalar (``- path: "..."``,
+                    # ``result: "...absent: ..."``) ride ``_q`` and keep
+                    # (i)-(iv); positional law binds the raw occurrences:
+                    # every line with an occurrence outside the quotes
+                    # starts with the two-space bullet, at least one such
+                    # line exists, and no line equals the bare value.
+                    def _raw_has_value(line: str) -> bool:
+                        # Escape-aware: ``_q`` renders a literal double
+                        # quote inside a quoted scalar as ``\"``; a naive
+                        # ``split('"')`` counts that escaped quote as a
+                        # boundary and flips the inside/outside parity for
+                        # every later occurrence on the same line.
+                        parts = re.split(r'(?<!\\)"', line)
+                        return any(
+                            value in part for part in parts[0::2]
+                        )
+
+                    raw_lines = [
+                        line for line in lines
+                        if value in line and _raw_has_value(line)
+                    ]
+                    assert raw_lines, (
+                        f"{case}: {record_key} renders no raw line with the"
+                        f" value (occurrences: {[l for l in lines if value in l]!r})"
+                    )
+                    assert all(
+                        line.startswith("  - ") for line in raw_lines
+                    ), f"{case}: {record_key} unbulleted line {raw_lines!r}"
+                    assert value not in lines, (
+                        f"{case}: {record_key} renders a bare-value line"
+                    )
+                else:
+                    assert _escaped_form(value) in text, (
+                        f"{case}: value did not survive in "
+                        f"{_escaped_form(value)!r} form"
+                    )
 
 
 # --- item 4: trailing separators are refused by the category clause ---------
