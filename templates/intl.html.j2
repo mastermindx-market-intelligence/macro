@@ -1434,26 +1434,35 @@
       <div class="hc-stance" style="margin-top:5px;">{{ t('Model classification · not a causal verdict', '模型分类·不代表因果结论') }}</div>
     </div>
 
-    {# CHIP 4: Dollar Funding (swap lines + money-market corridor) #}
+    {# CHIP 4: independent corridor threshold and supplied swap-line balance #}
     {%- set sofr_iorb = ((TTR.get('tier2') or {}).get('legs') or {}).get('sofr_iorb_corridor') or {} %}
-    {%- set fund_hot = sofr_iorb.get('hot', false) %}
-    <div class="ird-hchip state-{{ 'warn' if fund_hot else 'ok' }}">
+    {%- set fund_hot = sofr_iorb.get('hot') %}
+    {%- set fund_known = fund_hot is sameas true or fund_hot is sameas false %}
+    <div class="ird-hchip state-{{ 'caut' if fund_hot is sameas true else 'ok' if fund_known else 'unknown' }}">
       <div class="hc-lbl">{{ t('Dollar Funding', '美元融资') }}</div>
-      <div class="hc-state {{ 'red' if fund_hot else 'green' }}">{{ t('Under stress' if fund_hot else 'Calm', '压力中' if fund_hot else '平静') }}</div>
+      <div class="hc-state {{ 'info' if fund_known else '' }}">{{ t('Threshold triggered' if fund_hot is sameas true else 'Not triggered' if fund_known else 'Unavailable', '阈值已触发' if fund_hot is sameas true else '未触发' if fund_known else '不可用') }}</div>
       <div class="hc-detail">
-        {%- if SWAP is not none %}
-          {{ t('Swap lines ~$' + ('%.1f' | format(SWAP)) + 'bn outstanding · money-market spreads normal', '互换额度余额约' + ('%.1f' | format(SWAP)) + '亿美元·货币市场息差正常') }}
+        {{ t('SOFR − IORB: ', 'SOFR − IORB：') }}
+        {%- if sofr_iorb.get('value') is not none %}
+          {{ '%+.1f bp' | format(sofr_iorb.get('value') * 100) }}
         {%- else %}
-          {{ t('Money-market spreads normal', '货币市场息差正常') }}
+          {{ t('Unavailable', '不可用') }}
         {%- endif %}
       </div>
-      <div class="hc-stance"><b>{{ t('Ignore' if not fund_hot else 'Watch', '忽略' if not fund_hot else '关注') }}</b> {{ t('— no funding stress' if not fund_hot else '— funding stress building', '——无融资压力' if not fund_hot else '——融资压力积累中') }}</div>
+      <div class="hc-detail">
+        {%- if SWAP is not none %}
+          {{ t('Fed swap lines: $' + ('%.1f' | format(SWAP)) + 'bn', '美联储互换余额：' + ('%.1f' | format(SWAP * 10)) + '亿美元') }}
+        {%- else %}
+          {{ t('Fed swap lines: Unavailable', '美联储互换余额：不可用') }}
+        {%- endif %}
+      </div>
+      <div class="hc-stance">{{ t('Rule: spread > 0 for 5 observations; quarter-end effects may be technical.', '规则：利差连续5个观测值大于0；季末影响可能属于技术因素。') }}</div>
     </div>
 
   </div><!-- /hero chips -->
 
   <div class="ird-asof" style="margin-top:14px;">
-    {{ t('As of ' + (RD.get('built', '')[:10] or '—') + ' · context only, not a forecast', '截至 ' + (RD.get('built', '')[:10] or '—') + ' · 仅供参考，非预测') }}
+    {{ t('Desk built: ' + ((RD.get('built') or 'Unavailable')|string|e) + ' · context only, not a forecast', '风险台生成：' + ((RD.get('built') or '不可用')|string|e) + ' · 仅供参考，非预测') }}
   </div>
 </div><!-- /ird-stage -->
 

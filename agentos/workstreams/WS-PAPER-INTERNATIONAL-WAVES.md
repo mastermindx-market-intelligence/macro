@@ -140,10 +140,11 @@ waves:
   - IM04
   - IM08
   - IM09
-next_action: Repair the reproduced Dollar Funding summary gap from actual owner counterexamples.
-  Missing corridor data is not Calm, a triggered corridor is not normal, and swap-line availability is independent.
-  Preserve thresholds, caveats, units and absent clocks; do not invent qualification or cross any retained hold.
+next_action: Repair the identified mobile LENS boot-launcher overlap through the existing sheet rule.
+  Reproduce actual stub visibility on open and restoration on close; preserve loaded-widget behavior and shrink runtime styling.
+  Do not activate the assistant or touch the original signed-in browser; all review, CI, release and IW2 holds persist.
 artifacts:
+- research/paper_international_wave1_wave2/DOLLAR_FUNDING_SCOPE_ACCEPTANCE.json
 - research/paper_international_wave1_wave2/DOLLAR_METHOD_SCOPE_ACCEPTANCE.json
 - research/paper_international_wave1_wave2/CREDIT_OBSERVATION_DATES_ACCEPTANCE.json
 - research/paper_international_wave1_wave2/DOLLAR_UNAVAILABLE_REGIME_ACCEPTANCE.json

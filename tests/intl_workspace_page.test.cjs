@@ -55,6 +55,35 @@ const coldLocaleHtml = execFileSync(process.env.INTL_TEST_PYTHON || 'python3', [
   {cwd:root,env:{...process.env,PYTHONPATH:root},encoding:'utf8',maxBuffer:4*1024*1024});
 
 for (const theme of ['dark','light']) for (const lang of ['en','zh']) {
+  test(`Funding header retains corridor and swap scope ${theme} ${lang}`,async()=>{
+    const kind=theme==='dark'?'absent':'triggered';
+    const fundingHtml=execFileSync(process.env.INTL_TEST_PYTHON || 'python3',['-c',
+      `from tests.test_intl_dollar_funding_render import funding_fixture; from tests.test_intl_workspace_integration import render_fixture; print(render_fixture(risk_desk=funding_fixture('${kind}',1.2)))`],
+      {cwd:root,env:{...process.env,PYTHONPATH:root},encoding:'utf8',maxBuffer:4*1024*1024});
+    await pageFixture(async page=>{
+      await page.evaluate(({theme,lang})=>{setTheme(theme);setLang(lang);},{theme,lang});
+      for(const width of [320,1440]) {
+        await page.setViewportSize({width,height:900});
+        const chip=page.locator('.ird-hchip').nth(3);
+        assert.ok(await chip.isVisible(),'funding summary is rendered in the opened reference view');
+        const text=await chip.innerText();
+        assert.ok(text.includes(kind==='absent'?(lang==='zh'?'不可用':'Unavailable'):(lang==='zh'?'阈值已触发':'Threshold triggered')),JSON.stringify({kind,lang,text}));
+        assert.ok(!/Calm|spreads normal|no funding stress|平静|息差正常/.test(text));
+        assert.ok(text.includes(lang==='zh'?'12.0亿美元':'$1.2bn'));
+        if(kind==='triggered'){
+          assert.ok(text.includes('+2.0 bp'));
+          assert.ok((await chip.getAttribute('class')).includes('state-caut'));
+          assert.equal(await chip.locator('.hc-state').getAttribute('class'),'hc-state info');
+        }
+        assert.ok(await chip.evaluate(n=>n.scrollWidth<=n.clientWidth+1 && n.scrollHeight<=n.clientHeight+1),'funding header fits');
+        assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1));
+      }
+    },{htmlOverride:fundingHtml,published:true,bootLanguage:lang,
+      initialSearch:'?view=library&market=JP&horizon=3m&basis=local&return_basis=price#intl-dollar-conditions'});
+  });
+}
+
+for (const theme of ['dark','light']) for (const lang of ['en','zh']) {
   test(`Dollar five-day flag shows index points ${theme} ${lang}`,async()=>{
     const dollarHtml=execFileSync(process.env.INTL_TEST_PYTHON || 'python3',['-c',
       "from tests.test_intl_dollar_method_render import five_day_fixture; from tests.test_intl_workspace_integration import render_fixture; print(render_fixture(risk_desk=five_day_fixture()))"],

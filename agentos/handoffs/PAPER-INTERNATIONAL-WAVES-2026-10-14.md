@@ -8,6 +8,10 @@ mission: Complete the International programme on its existing carriers while pre
 state_before: Macro PR8754 published the J07 reset-control repair at 943ee54; only hosted authority checks were
   observed and retired. Terminal PR804 execution belonged solely to IW2.
 changed:
+- path: templates/intl.html.j2; tests/test_intl_dollar_funding_render.py; tests/intl_workspace_page.test.cjs
+  what: Keep missing funding corridor unknown, scope supplied threshold results, correct independent swap units and label the shared desk build clock.
+- path: research/paper_international_wave1_wave2/DOLLAR_FUNDING_SCOPE_ACCEPTANCE.json; mockups/evidence/paper-international-library/dollar-funding-scope/
+  what: Bind actual-owner counterexamples, retained test-anchor error, corrected visible browser proof and final source captures.
 - path: templates/intl.html.j2; tests/test_intl_dollar_method_render.py; tests/test_intl_dollar_absence_render.py; tests/intl_workspace_page.test.cjs
   what: Correct Dollar residual-model explanations, computation versus observation clocks, and the separate five-day flag index-point units while preserving owner calculations and fields.
 - path: research/paper_international_wave1_wave2/DOLLAR_METHOD_SCOPE_ACCEPTANCE.json; mockups/evidence/paper-international-library/dollar-method-scope/
@@ -167,6 +171,9 @@ changed:
   what: Record8short-height source-fixture cases with32modal modes and560native keyboard observations; no Inspector
     product change.
 verified:
+- claim: Funding summary preserves corridor absence, threshold scope, swap units and build-clock meaning.
+  command: pytest tests/test_intl_dollar_funding_render.py; selected Funding Node cases; dollar-funding-scope-20261014-r1/capture.py and inspect_cards.py
+  result: 13uniquePythonPASS14warnings per run;4unique corrected browsercases8widthstatesPASS after retaining4wrong-anchor failures;8canonicalcaptures8focusedparentviews. Source not deployed or independently reviewed.
 - claim: Dollar model categories, clock scope and separate five-day units follow their actual owner fields.
   command: pytest tests/test_intl_dollar_method_render.py tests/test_intl_dollar_absence_render.py; selected Dollar Node cases; dollar-method-scope-20261014-r1/capture.py and inspect_cards.py
   result: 24uniquePython cases covered by22PASS then4targetedPASS with14inheritedwarnings per run;12browser cases24widthstates PASS;8finalcanonicalcaptures12focusedviews including4LENS Enter/Escape interactions. Counts overlap. Source fixtures only.
@@ -550,3 +557,8 @@ Both bounded repairs reuse the existing carrier and owner contracts. Credit cloc
 ## Dollar model scope and units — 2026-10-14
 
 Actual smile_decomp counterexamples refute causal dominance and dual-window confirmation wording. Build time and observation time remain distinct, and the independent two-tier flag supplies index-point change, not percent return. DOLLAR_METHOD_SCOPE_ACCEPTANCE.json binds the source repair and evidence. The prior unavailable tooltip retained a nightly promise; this change removes it explicitly. NEXT_DOLLAR_FUNDING.json now reproduces missing-corridor Calm and triggered-corridor normal-spread contradictions through actual owner fixtures. Continue that distinct bounded repair without changing owner thresholds or fabricating dates/qualification. Review, live, CI and all retained holds remain open.
+
+
+## Dollar funding scope — 2026-10-14
+
+The existing owner omits an unmeasured corridor and can return the same last spread with different five-observation threshold outcomes. The header now preserves this distinction, independent swap balance and correct display units. Shared build time is labelled as such. DOLLAR_FUNDING_SCOPE_ACCEPTANCE.json retains original failures and corrected route proof. The prior Dollar panels remain byte-identical. The next causal repair is the retained mobile LENS overlap: the existing lens-lock rule hides loaded mmb-root but omits resting mmb-boot. Extend canonical presentation and verify open/close restoration without assistant activation or changing the signed-in browser. All original holds persist.
