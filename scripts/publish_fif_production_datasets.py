@@ -113,6 +113,7 @@ from engine.fundamental_forensics.production_datasets import (  # noqa: E402
     snapshot_core_registry_payload,
 )
 from engine.fundamental_forensics.query_service import CanonicalEntityBinding  # noqa: E402
+from engine.fundamental_forensics.statement_graph import StatementGraphError  # noqa: E402
 from collectors.sec_filing_parser import (  # noqa: E402
     SecFilingParseError,
     parse_sec_filing_document,
@@ -127,6 +128,19 @@ EXCLUSION_NO_RETAINED_PACKAGE = "no_retained_package"
 # packages publishes nothing new for that issuer — one typed exclusion row,
 # never silence, never a generation write.
 EXCLUSION_ONLY_EVENT_PACKAGES = "only_event_packages"
+# A0 repair (2026-10-14): an issuer whose DISPLAYED primary-statement layout the
+# statement reconstructor refuses is excluded for this run with a typed slug —
+# one issuer's unsupported filing layout never aborts every other issuer's
+# publication. Only the three adjudicated input-layout families below are
+# per-issuer exclusions; any other StatementGraphError is an unadjudicated
+# engine fault and still fails the WHOLE run (fail closed).
+EXCLUSION_STATEMENT_RECONSTRUCTION_REFUSED = "statement_reconstruction_refused"
+_STATEMENT_REFUSAL_SLUGS: tuple[tuple[str, str], ...] = (
+    ("displayed statement layout unsupported:", "displayed_layout_unsupported"),
+    ("displayed statement table is absent", "displayed_table_absent"),
+    ("displayed statement columns are absent", "displayed_columns_absent"),
+)
+STATEMENT_REFUSAL_SLUGS = frozenset(slug for _, slug in _STATEMENT_REFUSAL_SLUGS)
 PUBLISHER_ERROR_CODES = frozenset(
     {
         "contract_malformed",
@@ -151,6 +165,10 @@ PUBLISHER_ERROR_CODES = frozenset(
         # unreadable, or outside the closed shape — the acquisition state is
         # UNKNOWN, so capture/publish must refuse rather than guess.
         "contract_acquire_result_unreadable",
+        # A0 repair: EVERY staged issuer was excluded as
+        # statement_reconstruction_refused — the run published nothing, so it
+        # fails loudly after writing its report rather than going green empty.
+        "statement_reconstruction_refused",
     }
 )
 
@@ -165,8 +183,24 @@ class PublisherError(RuntimeError):
         self.code = code
 
 
+def statement_refusal_slug(exc: BaseException) -> str | None:
+    """Map a StatementGraphError to its closed exclusion slug, or None when the
+    refusal is outside the adjudicated input-layout families (fail closed)."""
+    message = str(exc)
+    for prefix, slug in _STATEMENT_REFUSAL_SLUGS:
+        if message.startswith(prefix):
+            return slug
+    return None
+
+
 def _fail(message: str, *, code: str) -> None:
     raise PublisherError(message, code=code)
+
+
+def _annotation_message(text: str) -> str:
+    """Escape free text for a GitHub workflow-command message: ``%``, CR and
+    LF would otherwise end or corrupt the annotation."""
+    return text.replace("%", "%25").replace("\r", "%0D").replace("\n", "%0A")
 
 
 def _error_annotation(title: str, message: str) -> None:
@@ -1088,11 +1122,13 @@ def _stage_contract_issuers(
                 refusals.append(f"admission_refused:{exc.code}")
                 continue
             # A0 (R-1): bind the admitted package to the staged issuer BEFORE
-            # it can reach the store material. The capture manifest carries
-            # no entity identity, while the served statement path binds at
-            # the issuer level and refuses a package whose manifest
-            # entity_id/cik disagree with the issuer binding — so the binding
-            # is stamped here, once, at the only publisher seam, from the
+            # it can reach the store material. A capture manifest carries an
+            # entity_id only when the capture was handed an identity (the
+            # member capture writes it only as a non-empty string), while the
+            # served statement path binds at the issuer level and refuses a
+            # package whose manifest entity_id/cik disagree with the issuer
+            # binding — so an absent entity_id is stamped here, once, at the
+            # only publisher seam, from the
             # SAME binding the issuer is staged with (never derived from a
             # ticker). A package whose own identity cross-claims another
             # issuer is refused, never relabelled. No digest inside
@@ -1102,15 +1138,24 @@ def _stage_contract_issuers(
             if canonical_cik(admitted_package.manifest.get("cik")) != binding.cik:
                 refusals.append("admission_refused:issuer_cik_mismatch")
                 continue
-            manifest_entity_id = admitted_package.manifest.get("entity_id")
-            if (
-                isinstance(manifest_entity_id, str)
-                and manifest_entity_id
-                and manifest_entity_id != binding.entity_id
-            ):
-                refusals.append("admission_refused:issuer_entity_mismatch")
-                continue
-            if manifest_entity_id != binding.entity_id:
+            # A0-h1 (MINOR-1): a PRESENT entity_id that is not exactly the
+            # binding's entity string — a foreign string, an empty string,
+            # or any non-string value (None, int, list, dict) — is a
+            # disagreeing package: refused, never relabelled. Only an ABSENT
+            # key is stamped with the binding's entity (the capture manifest
+            # writes entity_id only as a non-empty string, so a
+            # present-but-malformed value never comes from the real capture
+            # path and refusing it costs nothing real). A present value
+            # exactly equal to the binding keeps the package unchanged.
+            if "entity_id" in admitted_package.manifest:
+                manifest_entity_id = admitted_package.manifest["entity_id"]
+                if not (
+                    isinstance(manifest_entity_id, str)
+                    and manifest_entity_id == binding.entity_id
+                ):
+                    refusals.append("admission_refused:issuer_entity_mismatch")
+                    continue
+            else:
                 admitted_package = replace(
                     admitted_package,
                     manifest={**admitted_package.manifest, "entity_id": binding.entity_id},
@@ -1460,6 +1505,16 @@ def _demote_coverage_after_commit_failure(
         demoted[failed_cik] = f"commit_failed:{failed_code}"
     for cik in not_attempted_ciks:
         demoted.setdefault(cik, "commit_not_attempted")
+    return _withhold_coverage(coverage, demoted)
+
+
+def _withhold_coverage(
+    coverage: Sequence[Mapping[str, Any]], demoted: Mapping[str, str]
+) -> list[dict[str, Any]]:
+    """Mark every accession row of each issuer in ``demoted`` (cik -> marker)
+    served=False plus ``served_withheld: <marker>`` and recompute that
+    issuer's ``served`` count. Other issuers are copied unchanged. REPORT
+    ONLY — this never enters manifest or generation bytes."""
     if not demoted:
         return [dict(row) for row in coverage]
     out: list[dict[str, Any]] = []
@@ -1534,22 +1589,65 @@ def _run_publish(args: argparse.Namespace) -> int:
     # tempdir local store — no engine "pure plan" split; production_datasets
     # stays unowned and untouched). No real write begins until EVERY issuer's
     # plan succeeds; publish order is deterministic by entity_id.
+    # A0 repair: an issuer whose displayed statement layout is refused is
+    # excluded (typed reason + ::warning), never written; every other issuer's
+    # plan stays all-or-nothing exactly as before.
+    plans: list[_IssuerPlan] = []
+    refused: dict[str, str] = {}
     scratch_dir = tempfile.mkdtemp(prefix="fif-production-plan-")
     try:
         scratch_store = build_production_dataset_store(local_dir=Path(scratch_dir))
-        plans = [
-            _plan_issuer(
-                staged_row,
-                real_store=store,
-                scratch_store=scratch_store,
-                registry_payload=registry_payload,
-                registry_clocks=registry_clocks,
-                recorded_at=recorded_at,
-            )
-            for staged_row in sorted(staged, key=lambda item: item.binding.entity_id)
-        ]
+        for staged_row in sorted(staged, key=lambda item: item.binding.entity_id):
+            try:
+                plans.append(
+                    _plan_issuer(
+                        staged_row,
+                        real_store=store,
+                        scratch_store=scratch_store,
+                        registry_payload=registry_payload,
+                        registry_clocks=registry_clocks,
+                        recorded_at=recorded_at,
+                    )
+                )
+            except StatementGraphError as exc:
+                slug = statement_refusal_slug(exc)
+                if slug is None:
+                    raise
+                ticker = str(staged_row.issuer["ticker"])
+                cik = str(staged_row.binding.cik)
+                reason = f"{EXCLUSION_STATEMENT_RECONSTRUCTION_REFUSED}:{slug}"
+                excluded.append(
+                    {"ticker": ticker, "cik": cik, "reason": reason, "detail": str(exc)}
+                )
+                refused[cik] = reason
+                print(
+                    "::warning title=fif_production_datasets-"
+                    f"{EXCLUSION_STATEMENT_RECONSTRUCTION_REFUSED}::"
+                    + _annotation_message(f"{ticker} ({slug}): {exc}"),
+                    flush=True,
+                )
     finally:
         shutil.rmtree(scratch_dir, ignore_errors=True)
+    coverage = _withhold_coverage(coverage, refused)
+    if refused and not plans:
+        # Every staged issuer was refused: nothing can publish. Write the
+        # report (it names each typed exclusion), then fail typed.
+        report = {
+            **_report_base(recorded_at, registry_clocks),
+            "published": [],
+            "excluded": excluded,
+            "coverage": coverage,
+        }
+        if contract_acquire is not None:
+            report["contract_acquire"] = contract_acquire
+        _write_report(report, args.report_path)
+        print(json.dumps(report, ensure_ascii=False, sort_keys=True, indent=2), flush=True)
+        _fail(
+            "every staged issuer was excluded as "
+            f"{EXCLUSION_STATEMENT_RECONSTRUCTION_REFUSED}: "
+            + ", ".join(sorted(refused.values())),
+            code="statement_reconstruction_refused",
+        )
 
     # COMMIT (ERRATA-3 2): publish each planned non-unchanged issuer to the
     # REAL store at its chosen clock, then read-back-verify the pointer NAMES
@@ -1730,6 +1828,10 @@ def verify_report(report: Mapping[str, Any], store: Any) -> None:
             or reason == EXCLUSION_ONLY_EVENT_PACKAGES
             or reason.startswith("admission_refused:")
             or reason.startswith("member_capture_failed:")
+            or (
+                reason.startswith(f"{EXCLUSION_STATEMENT_RECONSTRUCTION_REFUSED}:")
+                and reason.split(":", 1)[1] in STATEMENT_REFUSAL_SLUGS
+            )
         )
         if not lawful:
             _fail(f"exclusion reason is outside the closed vocabulary: {reason}", code="verify_failed")
@@ -1790,6 +1892,19 @@ def verify_report(report: Mapping[str, Any], store: Any) -> None:
         # row must appear admitted=True and served=False in its issuer's
         # coverage row.
         coverage_by_cik = {str(item["cik"]): item for item in coverage}
+        # A0 repair: an EXCLUDED issuer published nothing this run, so none of
+        # its coverage accessions may claim served.
+        for row in excluded:
+            issuer_row = coverage_by_cik.get(str(row.get("cik") or ""))
+            if issuer_row is not None and any(
+                isinstance(item, Mapping) and item.get("served")
+                for item in issuer_row.get("accessions") or []
+            ):
+                _fail(
+                    "coverage row serves an accession of an excluded issuer: "
+                    f"{row.get('cik')}",
+                    code="verify_failed",
+                )
         for row in excluded:
             events = row.get("admitted_event_accessions") or []
             if not events:
