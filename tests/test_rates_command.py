@@ -1518,3 +1518,68 @@ class TestT0FixBBasisContract:
         assert "（ZQ联邦基金期货）" in out_two
         out_none = env.from_string(block).render(_dfp={"implied_cuts_12m": None})
         assert "0次" not in out_none
+
+    # 13. Unknown string label stays UNKNOWN, never silently ZQ --------------
+    def test_unknown_string_source_is_unknown_not_zq(self, tmp_path):
+        labels = ("mystery feed", "zq fed-funds futures", "ZQ fed-funds futures ", "")
+        for i, label in enumerate(labels):
+            root = self._write(tmp_path / f"u{i}", fed_path=self._fed_path(label=label))
+            b = build_board(root=root)["board"]["rate_path_row"]["basis"]
+            assert b is not None, (label, b)
+            self._schema().validate(b)
+            assert b["rate_index"] is None, (label, b)
+            assert b["averaging_law"] is None, (label, b)
+            assert b["source"] is None, (label, b)
+            assert "source_unknown" in b["limitations"], (label, b)
+            assert "degraded_front_month_only" not in b["limitations"], (label, b)
+
+    # 14. Front-month-only label: declared ZQ, degraded, m12 missing ----------
+    def test_front_month_only_label_is_degraded_zq_and_m12_missing(self, tmp_path):
+        root = self._write(
+            tmp_path / "front",
+            fed_path=self._fed_path(label="ZQ front (30d) only", m12=None),
+        )
+        b = build_board(root=root)["board"]["rate_path_row"]["basis"]
+        assert b is not None
+        self._schema().validate(b)
+        assert b["rate_index"] == "EFFR"
+        assert b["averaging_law"] == "arithmetic_calendar_day"
+        assert b["source"] == "rate_futures:ZQ"
+        assert "degraded_front_month_only" in b["limitations"]
+        assert "source_unknown" not in b["limitations"]
+        assert b["value"] is None
+        assert b["value_state"] == "missing"
+
+    # 15. CPI target gate is byte-exact to the producer string ----------------
+    def test_cpi_target_gate_is_byte_exact(self, tmp_path):
+        import copy
+
+        variants = ("Mom_sa_pct", "MOM_SA_PCT", "mom_sa_pct ")
+        for i, target in enumerate(variants):
+            artefact = copy.deepcopy(_t0_release_forecast_artifact())
+            artefact["upcoming"][0]["target"] = target
+            root = self._write(tmp_path / f"g{i}", artefact=artefact)
+            nc = build_board(root=root)["board"]["inflation_row"]["nearest_cpi"]
+            assert nc is not None, (target, nc)
+            assert nc["basis"] is None, (target, nc)
+        control_root = self._write(
+            tmp_path / "gc", artefact=_t0_release_forecast_artifact()
+        )
+        nc = build_board(root=control_root)["board"]["inflation_row"]["nearest_cpi"]
+        assert nc is not None and nc["basis"] is not None
+
+    # 16. CPI row late evidence refused at the cutoff, display untouched ------
+    def test_cpi_late_input_refused_at_cutoff(self, tmp_path):
+        root = self._write(tmp_path / "cpilate", artefact=_t0_release_forecast_artifact())
+        board = build_board(root=root, cutoff="2026-10-08")["board"]
+        nc = board["inflation_row"]["nearest_cpi"]
+        b = nc["basis"]
+        assert b is not None
+        assert b["value"] is None and b["value_state"] == "refused"
+        assert "after_cutoff" in b["limitations"]
+        # The basis never edits the row's display field.
+        assert nc["point"] == 0.37
+        fresh = build_board(root=root, cutoff="2026-10-10")["board"]
+        b2 = fresh["inflation_row"]["nearest_cpi"]["basis"]
+        assert b2 is not None
+        assert b2["value"] == 0.37 and b2["value_state"] == "present"
