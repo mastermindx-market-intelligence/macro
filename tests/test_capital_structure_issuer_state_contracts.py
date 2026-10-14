@@ -749,6 +749,61 @@ def test_authority_is_context_only_and_frozen():
         c.validate_state_record("state", record)
 
 
+def test_forbidden_property_pattern_is_the_state_schema_pattern_byte_for_byte():
+    schema_pattern = c.load_state_schema()["$defs"]["safe_property_name"]["not"]["pattern"]
+    assert c.FORBIDDEN_PROPERTY_PATTERN.pattern == schema_pattern
+
+
+@pytest.mark.parametrize(
+    "key, forbidden",
+    [
+        ("prophet_authority", False),
+        ("prophet", True),
+        ("prophet_score", True),
+        ("prophet_authority_override", True),
+        ("prophet_authorityx", True),
+        ("rank_authority", False),
+        ("sizing_authority", False),
+        ("entry_authority", False),
+    ],
+)
+def test_prophet_authority_is_the_only_exempt_prophet_name(key, forbidden):
+    assert bool(c.FORBIDDEN_PROPERTY_PATTERN.match(key)) is forbidden
+
+
+@pytest.mark.parametrize("value", [True, 1, 0, "false", None, {"granted": False}])
+def test_prophet_authority_must_be_the_literal_false_denial_at_every_depth(value):
+    nested = {"schema": "capital_structure.projection_bundle.v1", "authority": {"prophet_authority": value}}
+    with pytest.raises(c.ContractViolation):
+        c.FamilyState("identity", family_provenance("identity"), records=(nested,))
+    with pytest.raises(c.ContractViolation):
+        c.ResolutionInputs(decisions=({"prophet_authority": value},), decided_by="owner", as_of=AS_OF)
+    denial = {"schema": "capital_structure.projection_bundle.v1", "authority": {"prophet_authority": False}}
+    assert c.FamilyState("identity", family_provenance("identity"), records=(denial,)).records == (denial,)
+
+
+def test_candidate_bundle_and_capital_inputs_accept_compiled_candidate_rows():
+    from engine.capital_structure.instrument_candidates import compile_candidate_term_records
+    from tests.test_capital_structure_instrument_candidates import _direct_authority
+
+    source, manifests, reader = _direct_authority()
+    rows = compile_candidate_term_records(
+        source, source_manifests=manifests, source_reader=reader, generated_at="2026-08-04T00:00:00Z"
+    )["observations"]
+    assert len(rows) == 5
+    assert all(row["authority"]["prophet_authority"] is False for row in rows)
+    binding = bindings()["instrument_candidate_terms"]
+    bundle = c.CandidateBundle(binding=binding, candidate_terms=tuple(rows), as_of=AS_OF)
+    assert len(bundle.candidate_terms) == 5
+    inputs = c.CapitalInputs(bindings=(binding,), candidate_terms=tuple(rows))
+    assert len(inputs.candidate_terms) == 5
+    granted = [dict(row, authority=dict(row["authority"], prophet_authority=True)) for row in rows]
+    with pytest.raises(c.ContractViolation):
+        c.CandidateBundle(binding=binding, candidate_terms=tuple(granted), as_of=AS_OF)
+    with pytest.raises(c.ContractViolation):
+        c.CapitalInputs(bindings=(binding,), candidate_terms=tuple(granted))
+
+
 # ---------------------------------------------------------------------------
 # Receipts and interface ownership
 # ---------------------------------------------------------------------------
