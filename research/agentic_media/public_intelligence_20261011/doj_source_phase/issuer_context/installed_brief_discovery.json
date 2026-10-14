@@ -1,0 +1,28 @@
+{
+  "observed_at": "2026-10-14T04:24:14.598764+00:00",
+  "installed_head": "c699e92784ebb379026b51b2d3dd8a863828118d",
+  "extra_blocked_refs": [
+    "artifact:data/gex/latest.json",
+    "artifact:data/market_state/latest.json",
+    "artifact:data/risk_radar/forward_log.jsonl",
+    "artifact:site/basketdata/breadth_split.json",
+    "artifact:site/basketdata/fear_greed.json",
+    "official_feed:99354c7bd7561bf9356a1193875243a72ff1d000",
+    "official_feed:url:cd2747adeed2",
+    "research_vault:marketdesk-ergkmhwhsow-e05c9a"
+  ],
+  "input_sha256": {
+    "config/press.yml": "95d87920e15d12131ef40462c7329b1c8076abe7d11c9d48782e98193af9f4bc",
+    "data/chronicle/events.jsonl": "5bdf658c0b71c8236cb25772bd58553eafea4cc8de7648def87dff64fb7ba5eb",
+    "data/press/published.jsonl": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "data/market_state/latest.json": "fa0222d02ff577463efbe6e843a835cc9dfaa6ad08131b95d6e4f68838cbcb29",
+    "data/gex/latest.json": "4b8fbd2592f981ec77d2d33ea4cb8504ebff237d4f448969f3f4a0d40939dec2",
+    "site/basketdata/breadth_split.json": "b8efef380bf96ee40e298df79e390797ebc425c88d708b1d5b135c90c688dc24",
+    "site/basketdata/fear_greed.json": "ed2f50885514346ca0ba8d1f54148e844dfecba24f93c986f7186c381ad20730",
+    "data/risk_radar/forward_log.jsonl": "86c136153424be8907189fcf06847ccd0f2d812b7d0a76832baa00651a5701f0"
+  },
+  "inputs_unchanged": true,
+  "slots": [],
+  "provider_calls": 0,
+  "runtime_writes": 0
+}

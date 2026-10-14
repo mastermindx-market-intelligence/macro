@@ -1,3 +1,72 @@
+## October 14 04:26 UTC — DOJ source delivered locally; inherited CI red and issuer-context review gate
+
+Original PR9209 remains OPEN at8f705cb32a77987f7e5c025e99194f3b479a6382,
+merge-on-green armed. The real conditional-import defect was repaired on its own
+carrier: adversarial path-order regression reproduced, then106tests passed41.77s.
+Fresh CI38508325200 passes pack6 (the repaired proof), contract-delta and fences.
+At this wake pack4 fails path-prune-lint on tests/test_sni_injection_safety_ext.py:601.
+That file is absent from our head and comes from the synthetic merge's newer main.
+Existing repairs9227/9229 own it. No duplicate repair, new CI, manual refresh or
+admin merge was issued. Other packs were still running; do not claim terminal CI.
+Original24-source acceptance manifest changes only the staging-entrypoint hash
+523005e2e0f2c60b3229973a7a17cc4abb2f3d94dbbfd243ee5918b7e2583840.
+Original9209 has not landed or installed. Its three reviewed pages stay unchanged.
+
+The follow-on DOJ route is committed70d9b7e08337, independently reviewed PASS
+before the next extension, with346tests passed/1existing sparse-site skip195.56s.
+It requires retained feed, complete canonical release and reuse policy, exact
+publisher clock, literal claims and legal limitations. Current candidate is the
+Oct13 CVS settlement announcement; allegations only, no liability determination.
+Existing canonical CVS dossier and Terminal link were observed in Chrome. This
+proves neither a new signup/follow nor a published Press article.
+
+A later historical-issuer-context extension is implemented and locally tested:
+359affected tests pass/1existing sparse-site skip23.26s; focused114pass7.99s;
+new integration2tests failed before implementation. Exact SEC cache/CIK, fiscal
+period, filing date, acquisition instant and incumbent pure-engine revisions are
+bound. ALL raw and derived figures stay third_party. The initial uncommitted
+first-party classification idea was rejected before any generation. This follows
+the existing external-derived arithmetic rule and cannot manufacture receipt credit.
+Actual preflight at04:22UTC used original canonical private history; it refuses
+with12third-party/0first-party facts before any provider or slot reservation.
+Inputs and held drafts are byte-unchanged. The code is not independently accepted:
+Fabric review mmx-press-issuer-context-review-20261014-001 terminated before
+launch with rc75 ROUTING_CRITICAL_POLICY_MISMATCH/SUPPORT_PUBLICATION_REFUSED.
+No result/quality verdict, no retry or alternate review carrier. Review remains open.
+
+The existing Press CI job now includes the new test and beautifulsoup4 (already
+in production requirements) so a local installed dependency cannot hide CI failure.
+No new job, trigger scope, packing ceiling or waiver. Trigger closure has0gaps.
+The follow-on postlanding bundle still binds558ca source and is STALE for the
+new DOJ/context code: review current bytes, then rebind before any use. Do not
+silently apply those hashes to production. No follow-on PR exists yet.
+
+Adjacent installed Brief discovery at04:24UTC, HEADc699e92784ebb379026b51b2d3dd8a863828118d,
+carried all8original held-source refs and returned zero slots. Inputs unchanged,
+zero provider/staging writes. Source catalog freshness does not confer eligibility.
+Latest White House fact sheet remainsOct8, outside Brief window. Fed Oct13 release
+covers Aug17/Sep9/Sep16 meetings and explicitly distinguishes discount from FOMC
+rate-setting; do not relabel old meeting decisions as a new Oct13 rate change.
+The Q4 bond outlook excerpt says500bn is the summer tally, not August alone, and
+24bp belongs to cable/satellite, not the combined tech/media line in its summary.
+Keep that candidate held alongside the prior China PE and fund-flow mismatches.
+
+Next: consume controller-admitted existing main repair and exact9209 protected
+landing/install; reconcile the bounded Fabric review's support-policy failure via
+its incumbent owner without replay, complete issuer-context review and current
+acceptance bundle, then ship this single follow-on. Continue qualified source work
+without earnings credentials. No generation until relevant first-party inputs
+and the existing budget/replay/editorial gates all qualify. Publication/cutover
+false; D14credit0/10. Preserve originalOct11 12:07 EFFECT_UNKNOWN, BAC/Research
+holds, Commission19,Catalyst8678, every worktree and shared dirty accounting.
+
+verified: doj_source_phase/expanded_green.txt, independent_review.md;
+doj_source_phase/issuer_context/{validation.json,combined_green.txt,actual_preflight_refusal.json,
+review_status.json,installed_brief_discovery.json}; PR wake/log evidence retained below.
+Current protected procedure pin1ffe6b566b9addb58d13893bfb78e8505dce1752,
+skillpack1.0.1 compatible. Root retains integration judgment and uses admitted
+Fabric for independent bounded review; its actual prelaunch refusal is preserved.
+
 ## Writer accepted and complete installation binding — October 14 03:33 UTC
 
 The isolated follow-on application frontier is 558ca0a6cdeddf48fbbedc9f0d7f178882ef68e8.

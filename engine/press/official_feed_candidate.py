@@ -111,7 +111,10 @@ def plan_official_feed_candidate(*, feed_path: Path, feed_sha256: str,
         raise ValueError('explicit official feed qualification required')
     source = {'occ_news': _OCC, 'doj_news': _DOJ}.get(q.get('source_key'))
     required = _REQUIRED | (_DOJ_FIELDS if source is _DOJ else set())
-    if source is None or set(q) not in (required, required | {'first_party_context'}):
+    optional = {'first_party_context'}
+    if source is _DOJ:
+        optional.add('issuer_baseline_context')
+    if source is None or not required <= set(q) <= required | optional:
         raise ValueError('explicit official feed qualification required')
     for key in ('source_key', 'feed_url', 'feed_sha256', 'item_url', 'published_at', 'event_date', 'observed_at'):
         if not isinstance(q[key], str) or not q[key].strip():
@@ -223,6 +226,13 @@ def plan_official_feed_candidate(*, feed_path: Path, feed_sha256: str,
                                                       as_of=now.date(), window_days=window)
         facts.extend(context)
         revisions.update(context_revisions)
+    if 'issuer_baseline_context' in q:
+        from engine.press.issuer_baseline import issuer_baseline_context
+        baseline, baseline_revisions = issuer_baseline_context(
+            q['issuer_baseline_context'], root=Path(root), as_of=now,
+            reviewed_tickers=tickers, reviewed_claims=claims)
+        facts.extend(baseline)
+        revisions.update(baseline_revisions)
     published_refs, _ = P.published_refs(root, cfg)
     staged_refs, _ = P.staged_refs(root, cfg)
     context = {key: desk[key] for key in ('publication', 'byline', 'min_words', 'max_words', 'min_anchored_receipts')}

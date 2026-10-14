@@ -1,0 +1,15 @@
+{
+  "acceptance_reason": "EXECUTION_NOT_ELIGIBLE",
+  "acceptance_state": "UNVERIFIED",
+  "accepted": null,
+  "accepted_by": null,
+  "parent_run_id": null,
+  "rc": 75,
+  "result_available": false,
+  "result_bytes": null,
+  "root_id": null,
+  "run_id": "mmx-press-issuer-context-review-20261014-001",
+  "schema": "mastermind.fabric_task_status.v1",
+  "signal": "prelaunch_failure",
+  "state": "TERMINAL_FAILURE"
+}

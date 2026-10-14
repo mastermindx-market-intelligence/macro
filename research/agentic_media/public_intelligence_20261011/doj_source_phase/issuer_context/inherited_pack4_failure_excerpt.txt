@@ -1,0 +1,24 @@
+E       AssertionError: these walks prune on the ABSOLUTE path, so they also match anything above the scan root — in a `.claude/worktrees/<name>/` checkout that silently skips every file (#3802):
+2026-10-14T04:01:42.5968880Z E           tests/test_sni_injection_safety_ext.py:601  `'__pycache__' in path.parts`
+2026-10-14T04:01:42.5969290Z E         
+2026-10-14T04:01:42.5969812Z E         Use the path relative to the scan root instead:
+2026-10-14T04:01:42.5970215Z E             rel = path.relative_to(root)
+2026-10-14T04:01:42.5970575Z E             if "<token>" in rel.parts:
+2026-10-14T04:01:42.5970871Z E                 continue
+2026-10-14T04:01:42.5971396Z E       assert not ["tests/test_sni_injection_safety_ext.py:601  `'__pycache__' in path.parts`"]
+2026-10-14T04:01:42.5971767Z 
+2026-10-14T04:01:42.5972022Z tests/test_no_absolute_path_part_prunes.py:114: AssertionError
+2026-10-14T04:01:42.5972533Z =========================== short test summary info ============================
+2026-10-14T04:01:42.5974229Z FAILED tests/test_no_absolute_path_part_prunes.py::test_no_walk_prunes_on_absolute_path_parts - AssertionError: these walks prune on the ABSOLUTE path, so they also match anything above the scan root — in a `.claude/worktrees/<name>/` checkout that silently skips every file (#3802):
+2026-10-14T04:01:42.5975532Z     tests/test_sni_injection_safety_ext.py:601  `'__pycache__' in path.parts`
+2026-10-14T04:01:42.5975930Z   
+2026-10-14T04:01:42.5976372Z   Use the path relative to the scan root instead:
+2026-10-14T04:01:42.5976731Z       rel = path.relative_to(root)
+2026-10-14T04:01:42.5977027Z       if "<token>" in rel.parts:
+2026-10-14T04:01:42.5977284Z           continue
+2026-10-14T04:01:42.5977753Z assert not ["tests/test_sni_injection_safety_ext.py:601  `'__pycache__' in path.parts`"]
+2026-10-14T04:01:42.5978218Z 1 failed, 2 passed in 56.34s
+2026-10-14T04:01:42.6300080Z ##[endgroup]
+2026-10-14T04:01:42.6343926Z ##[error]path-prune-lint: step 'walks must prune on the path RELATIVE to their scan root' exited 1
+2026-10-14T04:01:42.8931507Z HEAD is now at 7abc49211 Merge 8f705cb32a77987f7e5c025e99194f3b479a6382 into 8ac92e12036539821df05ffece245cbd596247be
+2026-10-14T04:01:43.2621835Z HEAD is now at 7abc49211 Merge 8f705cb32a77987f7e5c025e99194f3b479a6382 into 8a
