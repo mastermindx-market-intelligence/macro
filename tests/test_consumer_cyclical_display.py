@@ -90,6 +90,65 @@ def test_synthetic_packet_shows_the_r6_lead_and_refuses_a_filing_claim() -> None
     assert packet["facts"] == projected["facts"]
     assert packet["facts"]
     assert all(fact["native_admitted"] is False for fact in packet["facts"])
+    assert packet["availability"] == projected["availability"] == "ready"
+    assert packet["advertising_net_change_status"] == "ready"
+    assert packet["advertising_net_change_withheld_reason"] is None
+    assert set(packet) == {
+        "availability",
+        "lead",
+        "advertising_net_change",
+        "advertising_net_change_status",
+        "advertising_net_change_withheld_reason",
+        "filing_claim",
+        "provenance",
+        "shared_contract_status",
+        "facts",
+    }
+
+
+def _patch_projection(monkeypatch: pytest.MonkeyPatch, document: dict) -> None:
+    monkeypatch.setattr(
+        "engine.sector_intelligence.consumer_cyclical_display.project_economic_change",
+        lambda case: document,
+    )
+
+
+def test_unavailable_document_and_withheld_row_stay_visible(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    case = _committed_synthetic_case()
+    document = project_economic_change(case)
+    rows = [dict(row) for row in document["results"]]
+    target = [row for row in rows if row["key"] == "advertising_net_change"]
+    assert len(target) == 1
+    target[0]["value_text"] = None
+    target[0]["withheld_reason"] = "definition_contradicted"
+    _patch_projection(
+        monkeypatch, {**document, "results": rows, "availability": "unavailable"}
+    )
+    packet = display_packet(case)
+    assert packet["availability"] == "unavailable"
+    assert packet["advertising_net_change"] is None
+    assert packet["advertising_net_change_status"] == "withheld"
+    assert packet["advertising_net_change_withheld_reason"] == "definition_contradicted"
+
+
+def test_absent_row_and_unknown_verdict_read_unavailable(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    case = _committed_synthetic_case()
+    document = project_economic_change(case)
+    rows = [
+        dict(row)
+        for row in document["results"]
+        if row["key"] != "advertising_net_change"
+    ]
+    _patch_projection(monkeypatch, {**document, "results": rows, "availability": "READY"})
+    packet = display_packet(case)
+    assert packet["availability"] == "unavailable"
+    assert packet["advertising_net_change"] is None
+    assert packet["advertising_net_change_status"] == "absent"
+    assert packet["advertising_net_change_withheld_reason"] is None
 
 
 def test_native_admitted_true_raises_and_emits_nothing() -> None:
