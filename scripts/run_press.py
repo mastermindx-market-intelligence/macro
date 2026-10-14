@@ -169,6 +169,8 @@ def _is_private_official_stage(item: object) -> bool:
     slot = item.get("slot")
     holders = [item] + ([slot] if isinstance(slot, dict) else [])
     for holder in holders:
+        if str(holder.get("id") or "").startswith("press-official-"):
+            return True
         provenance = holder.get("provenance")
         if not isinstance(provenance, dict):
             continue

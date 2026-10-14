@@ -656,3 +656,30 @@ def test_staging_path_cannot_escape_canonical_root(candidate, monkeypatch, tmp_p
     with pytest.raises(ValueError, match='canonical'):
         _stage(candidate, monkeypatch)
     assert calls['n'] == 0
+
+
+def test_emit_refusal_survives_source_metadata_strip(candidate, monkeypatch):
+    _stub_writer(monkeypatch)
+    out = _stage(candidate, monkeypatch)
+    path = candidate['root'] / out['staging_path']
+    record = json.loads(path.read_text())
+    assert record['status'] == 'passed'
+    for holder in (record, record['slot']):
+        for key in ('provenance', 'sources', 'seed_refs', 'source_revisions'):
+            holder.pop(key, None)
+    path.write_text(json.dumps(record))
+    before = _emit_snapshot(candidate['root'])
+    result = R.run_emit(candidate['root'], candidate['cfg'])
+    assert result['emitted'] == 0
+    assert json.loads(path.read_text())['status'] == 'approval_required'
+    assert _emit_snapshot(candidate['root']) == before
+
+
+def test_published_slot_identity_blocks_replay_without_source_refs(candidate, monkeypatch):
+    calls = _stub_writer(monkeypatch)
+    slot_id = S._stable_slot_id(_plan_offline(candidate))
+    row = {'id': slot_id, 'desk': 'brief', 'ts': '2026-10-13T21:00:00Z',
+           'sources': [], 'seed_refs': [], 'slug': 'prior-official'}
+    (candidate['root'] / 'data/press/published.jsonl').write_text(json.dumps(row)+'\n')
+    out = _stage(candidate, monkeypatch)
+    assert out['staged'] is False and calls['n'] == 0

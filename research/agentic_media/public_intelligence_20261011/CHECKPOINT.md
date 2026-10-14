@@ -1,3 +1,33 @@
+## Draft release and final identity guard — October 14 02:08 UTC
+
+Draft PR #9209 is created and attached at initial head
+`81e258a9b263800a4237664f4b178c5aa5c4bf32`; its ordinary initial CI is
+`38498766587`. No merge-on-green label or native auto-merge is armed. This initial
+head is followed by a genuine parent repair, not a proof-only refresh: two
+new regressions showed that stripping source/provenance metadata could bypass
+emit and published-source replay fences while the stable official-slot id still
+identified the same story. Both now refuse by stable identity; **114 affected
+tests pass in 31.79 seconds** after two red controls. A standalone isolated probe
+also passes the full metadata-strip refusal. It calls one mock writer and no
+real provider, and writes no production/public content.
+
+The contract scan versus protected main 1e9364 completed with **0 introduced,
+0 inherited**, weights 5654/5455/5417 under its protected ceilings 5803/5600/5600,
+in 936.7 seconds. It began before the final identity tightening in existing files;
+no manifest, path scope, gate or ceiling changed during the scan. Preserve this
+as local structural evidence, not final exact-head hosted CI. The new authored
+repair must be pushed to the same draft PR and get its own binding proof.
+Independent review `mmx-press-private-ingress-review-20261014-001` remains pending;
+consume that same return and adjudicate against the separately recorded repair.
+
+The existing Research editorial hold is now recorded in the canonical private
+stage as `quarantined`, with its exact draft and original validator report
+unchanged. Original record SHA ec140345fab45fa876fceff6884577ebfead9740876d493afed2e477dfb2d971
+remains retained; held-record SHA is 2aef46759c72b4621e772d0da04d2eeee4025b525988f8dd7f1ae1f207206c0a.
+This is a status/evidence write only, not a regeneration or public write. Read-only
+inspection reports one blocked record, zero current validation acceptances,
+publication false and cutover false. No BAC draft has been generated yet.
+
 ## Current official-source ingress — October 14 01:54 UTC
 
 The qualified OCC/BAC route has advanced into implemented private staging, with

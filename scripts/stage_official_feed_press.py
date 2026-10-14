@@ -198,6 +198,8 @@ def _brief_attempts_today(staged: list[dict], ledger: list[dict],
 
 
 def _same_source(row: dict, plan: dict) -> bool:
+    if row.get("id") == _stable_slot_id(plan):
+        return True
     refs = set(row.get("sources", [])) | set(row.get("seed_refs", []))
     if refs.intersection({plan["source_ref"], _stable_source_ref(plan)}):
         return True

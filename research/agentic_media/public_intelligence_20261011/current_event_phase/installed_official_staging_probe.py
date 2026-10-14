@@ -95,7 +95,9 @@ with tempfile.TemporaryDirectory(prefix='mmx-official-staging-') as temporary:
         # A mutable saved PASS/provenance toggle cannot grant a public release.
         record['status'] = 'passed'
         record['validator_report'] = {'ok':True,'failed':[]}
-        record.pop('provenance',None)
+        for holder in (record, record['slot']):
+            for key in ('provenance','sources','seed_refs','source_revisions'):
+                holder.pop(key,None)
         path.write_text(json.dumps(record))
         public_before = {str(p):p.read_bytes() for p in fixture.rglob('*')
                          if p.is_file() and 'data/press/staging' not in str(p)}
@@ -105,7 +107,7 @@ with tempfile.TemporaryDirectory(prefix='mmx-official-staging-') as temporary:
         assert json.loads(path.read_text())['status'] == 'approval_required'
         assert public_before == {str(p):p.read_bytes() for p in fixture.rglob('*')
                                   if p.is_file() and 'data/press/staging' not in str(p)}
-        controls.append('emit-refused-after-provenance-strip')
+        controls.append('emit-refused-after-provenance-and-source-metadata-strip')
     finally:
         W.write = original_writer
 assert before == snapshot() and before_head == head()
