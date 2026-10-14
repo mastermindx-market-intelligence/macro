@@ -902,7 +902,14 @@
     renderCatalogDependentControls();
     ui.status.setAttribute('data-mmr-state', 'error');
     ui.status.textContent = copy('Saved evidence unavailable', '已保存依据不可用');
-    if (kind === 'missing_exact_capture') {
+    if (kind === 'oauth_return_unavailable') {
+      ui.status.textContent = copy('Selection unavailable after sign-in', '登录后无法恢复选择');
+      ui.resultBody.innerHTML = banner('missing_exact_capture',
+        'Choose your saved capture again', '请重新选择已保存记录',
+        'This tab could not restore the previous selection. Browse available captures to continue.',
+        '此标签页无法恢复先前选择。请浏览可用记录以继续。',
+        actionLink('Browse available captures', '浏览可用记录', 'focus-capture-select'));
+    } else if (kind === 'missing_exact_capture') {
       ui.resultBody.innerHTML = banner('missing_exact_capture',
         'This saved capture is unavailable', '这条确切记录不可用',
         'Choose an available capture; this exact reference cannot be opened.',
@@ -940,8 +947,8 @@
       ui.status.textContent = copy('Sign in required', '需要登录');
       ui.resultBody.innerHTML = banner('auth_required',
         'Sign in to open saved evidence', '登录以查看已保存依据',
-        'Use your existing account to continue.',
-        '请使用现有账户继续。',
+        'Use your existing account to continue.' + oauthStorageWarning(false),
+        '请使用现有账户继续。' + oauthStorageWarning(true),
         '<a class="gbtn gbtn-quiet mmr-action" href="' + esc(retainedSigninHref()) + '" data-mmr-action="signin">' + esc(copy('Sign in', '登录')) + ' →</a>');
       return;
     }
@@ -1508,6 +1515,10 @@
     var result = window.MarketMemoryIntent.signinHref();
     return result.ok ? result.href : '#mmr-status';
   }
+  function oauthStorageWarning(zh) {
+    if (!window.MarketMemoryIntent || window.MarketMemoryIntent.oauthPreservation().ok) return '';
+    return zh ? ' 此标签页无法在 Google 登录后保留当前选择。' : ' This tab cannot preserve your selection through Google sign-in.';
+  }
   function onActionClick(event) {
     var target = event.target && event.target.closest ? event.target.closest('[data-mmr-action]') : null;
     if (!target || !ui.root.contains(target)) return;
@@ -1635,6 +1646,10 @@
     }
 
     state.booted = true;
+    if (window.MarketMemoryIntent && !window.MarketMemoryIntent.resumeStatus().ok) {
+      renderTypedUnavailable('oauth_return_unavailable', 'oauth_return_selection_unavailable');
+      return;
+    }
     var parsed = parseUrlIntent(location.search);
     if (!parsed.ok) {
       renderTypedUnavailable('missing_exact_capture', parsed.reason);

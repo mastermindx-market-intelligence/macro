@@ -5,14 +5,16 @@ const path = require('node:path');
 const vm = require('node:vm');
 const sourcePath = path.resolve(__dirname, '../../templates/market_memory_intent.js');
 const source = fs.existsSync(sourcePath) ? fs.readFileSync(sourcePath, 'utf8') : '';
-function setup(search) {
+function setup(search, saved, unavailable) {
   const location = {origin:'https://macro.example',href:'https://macro.example/market_memory.html'+(search||'')};
   const history = {state:{preserve:'history'},calls:[],replaceState(state,unused,target) {
     this.calls.push({state,target}); location.href = new URL(target,location.origin).href;
   }};
-  const window = {location,history};
+  const backing = saved || {};
+  const sessionStorage = {getItem:k=>backing[k]||null,removeItem:k=>{delete backing[k];},setItem:(k,v)=>{if(unavailable)throw new Error("storage unavailable");backing[k]=v;}};
+  const window = {location,history,sessionStorage};
   vm.runInNewContext(source,{window,URL,URLSearchParams});
-  return {api:window.MarketMemoryIntent,location,history};
+  return {api:window.MarketMemoryIntent,location,history,saved:backing};
 }
 let count=0;
 function test(name,fn) {fn();count++;process.stdout.write('PASS '+name+'\n');}
@@ -50,3 +52,42 @@ test('catalog offset absent remains absent and null removes it without pin subst
   x.api.replace({catalogOffset:'40'});x.api.replace({catalogOffset:null});const r=x.api.read().intent;assert.equal(Object.hasOwn(r,'catalogOffset'),false);assert.equal(r.gen,'old');assert.equal(r.context,'missing');
 });
 process.stdout.write('PASS '+count+' codec cases\n');
+
+const CAPSULE='market_memory.intent.oauth.v1';
+test('OAuth resume restores only the latest same-tab intent and keeps SDK controls live',()=>{
+ const before=setup('?mm_mode=saved&ticker=AAPL'); before.api.replace({issuerInput:' nvda ',ticker:'NVDA',mode:'historical',gen:'exact-generation',gen_sha:'a'.repeat(64),cutoff:'2026-10-13T12:00:00.123456Z',language:'zh'});
+ const capsule=JSON.parse(before.saved[CAPSULE]);assert.deepEqual(Object.keys(capsule).sort(),['savedAt','schema','target']);
+ const after=setup('?onboard=resume&code=synthetic-code#access_token=synthetic-token',before.saved);
+ assert.equal(after.api.resumeStatus().ok,true);assert.equal(after.api.resumeStatus().restored,true);
+ assert.equal(after.api.read().intent.issuerInput,' nvda ');assert.equal(after.api.read().intent.gen,'exact-generation');
+ assert.equal(after.api.read().intent.cutoff,'2026-10-13T12:00:00.123456Z');assert.equal(before.saved[CAPSULE],undefined);
+ after.api.syncReturn();const url=new URL(after.location.href);assert.equal(url.searchParams.get('code'),'synthetic-code');assert.equal(url.searchParams.get('onboard'),'resume');assert.equal(url.hash,'#access_token=synthetic-token');
+ const stored=before.saved[CAPSULE];assert.equal(stored.includes('synthetic-code'),false);assert.equal(stored.includes('synthetic-token'),false);assert.equal(stored.includes('onboard'),false);
+ const ret=url.searchParams.get('ret');assert.equal(ret.includes('code='),false);assert.equal(ret.includes('#'),false);
+});
+test('ordinary navigation never restores a stale capsule',()=>{
+ const old=setup('?ticker=AAPL');old.api.syncReturn();const fresh=setup('?ticker=NVDA',old.saved);assert.equal(fresh.history.calls.length,0);assert.equal(fresh.api.read().intent.ticker,'NVDA');assert.equal(fresh.api.resumeStatus().restored,false);
+});
+test('callback without a same-tab capsule refuses implicit defaults',()=>{const x=setup('?onboard=resume');assert.equal(x.api.resumeStatus().ok,false);assert.equal(x.history.calls.length,0);});
+test('invalid expired external and noncanonical capsules refuse and are consumed',()=>{
+ for(const corrupt of [v=>v.target='https://other.invalid/market_memory.html?ticker=AAPL',v=>v.target='/market_memory.html?ticker=AAPL&access_token=secret',v=>v.target+='&ticker=NVDA',v=>v.savedAt=Date.now()-31*60*1000,v=>v.savedAt=Date.now()+60000,v=>v.extra='private',v=>v.schema='wrong']){
+  const before=setup('?ticker=AAPL');before.api.syncReturn();let v=JSON.parse(before.saved[CAPSULE]);corrupt(v);before.saved[CAPSULE]=JSON.stringify(v);
+  const after=setup('?onboard=resume',before.saved);assert.equal(after.api.resumeStatus().ok,false);assert.equal(after.history.calls.length,0);assert.equal(before.saved[CAPSULE],undefined);
+ }
+});
+test('invalid replacement clears old capsule and storage refusal is explicit',()=>{
+ const x=setup('?ticker=AAPL');x.api.syncReturn();assert.ok(x.saved[CAPSULE]);assert.equal(x.api.syncReturn({issuerInput:'x'.repeat(2049)}).ok,false);assert.equal(x.saved[CAPSULE],undefined);
+ const y=setup('?ticker=NVDA',{},true);const result=y.api.syncReturn();assert.equal(result.ok,true);assert.equal(result.oauthPreserved,false);assert.equal(y.api.oauthPreservation().reason,'intent_session_storage_unavailable');
+});
+test('callback with conflicting explicit intent refuses instead of overwriting it',()=>{
+ const x=setup('?ticker=AAPL');x.api.syncReturn();const y=setup('?onboard=resume&mm_mode=current',x.saved);assert.equal(y.api.resumeStatus().ok,false);assert.equal(y.history.calls.length,0);
+});
+test('empty invalid issuer and incomplete exact pin survive OAuth without reinterpretation',()=>{
+ for(const raw of ['', 'a/b']){const x=setup('?ticker=AAPL');x.api.replace({issuerInput:raw,gen:'old',gen_sha:'invalid',language:'zh'});const y=setup('?onboard=resume',x.saved);assert.equal(y.api.resumeStatus().ok,true);assert.equal(y.api.read().intent.issuerInput,raw);assert.equal(y.api.read().intent.gen_sha,'invalid');}
+});
+process.stdout.write(count+' total intent and OAuth tests passed\n');
+test('reload of already restored callback uses current exact URL without stale recovery',()=>{
+ const x=setup('?ticker=NVDA&mm_mode=saved');x.api.syncReturn();const y=setup('?onboard=resume',x.saved);y.api.syncReturn();
+ const query=new URL(y.location.href).search;const z=setup(query,{});assert.equal(z.api.resumeStatus().ok,true);assert.equal(z.api.resumeStatus().restored,false);assert.equal(z.api.read().intent.ticker,'NVDA');assert.equal(z.history.calls.length,0);
+});
+process.stdout.write(count+' final intent and OAuth tests passed\n');

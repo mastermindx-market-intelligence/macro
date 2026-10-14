@@ -99,6 +99,9 @@
     var upgradeRequired = error && (error.status === 402 || error.status === 403);
     if (error && error.status === 401) {
       action = ' <a href="' + esc(signinHref()) + '" data-mm-action="signin">' + esc(copy('Sign in', '登录')) + ' →</a>';
+      if (window.MarketMemoryIntent && !window.MarketMemoryIntent.oauthPreservation().ok) {
+        action += ' ' + esc(copy('This tab cannot preserve your selection through Google sign-in.', '此标签页无法在 Google 登录后保留当前选择。'));
+      }
     } else if (upgradeRequired) {
       action = ' <a href="plans.html">' + esc(copy('View plans', '查看方案')) + ' →</a>';
     }
@@ -422,6 +425,15 @@
 
     var initial = '', explicitInput = false;
     if (window.MarketMemoryIntent) {
+      var resumed = window.MarketMemoryIntent.resumeStatus();
+      if (!resumed.ok) {
+        state.ticker = '';
+        ui.symbolSummary.innerHTML = empty('Selection unavailable after sign-in', '登录后无法恢复选择',
+          'This tab could not restore the previous selection. Choose a ticker or saved capture again.',
+          '此标签页无法恢复先前选择。请重新选择代码或已保存记录。');
+        ui.gridList.innerHTML = '';
+        return;
+      }
       var restored = window.MarketMemoryIntent.read();
       if (!restored.ok) {
         state.ticker = ''; invalidTickerFeedback(); syncIntent(); return;

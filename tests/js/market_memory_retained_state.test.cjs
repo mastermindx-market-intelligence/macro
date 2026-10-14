@@ -12,7 +12,7 @@ function element(){return {innerHTML:'',textContent:'',hidden:false,classList:{a
 function setup(){
  const requests=[],published=[];let responsePayload=null;
  const location={href:'https://example.test/market_memory.html',search:''};
- const window={location:{origin:'https://example.test'},addEventListener(){},MarketMemoryIntent:{signinHref(){return {ok:true,href:'/?signin=1&ret=%2Fmarket_memory.html'};},replace(patch){published.push(JSON.parse(JSON.stringify(patch)));return {ok:true};}}};
+ const window={location:{origin:'https://example.test'},addEventListener(){},MarketMemoryIntent:{resumeStatus(){return {ok:true};},oauthPreservation(){return {ok:true};},signinHref(){return {ok:true,href:'/?signin=1&ret=%2Fmarket_memory.html'};},replace(patch){published.push(JSON.parse(JSON.stringify(patch)));return {ok:true};}}};
  const locale=/document\.addEventListener\('langchange', function \(\) \{([\s\S]*?)\n    \}\);/.exec(original);
  assert.ok(locale,'Actual locale callback must be available for this regression');
  const anchor='var ui = {};';assert.equal(original.split(anchor).length,2,'Review anchor must be unique');

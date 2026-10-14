@@ -3,7 +3,7 @@ const test=require('node:test'),assert=require('node:assert/strict'),fs=require(
 const root=path.resolve(__dirname,'../..');
 const script=n=>fs.readFileSync(path.join(root,'templates',n),'utf8');
 const tick=()=>new Promise(r=>setImmediate(r));
-function setup(query) {
+function setup(query, capsule) {
  const ids=['mm-macro-state','mm-macro-query','mm-macro-episodes','mm-macro-note','mm-symbol-form','mm-symbol-input','mm-symbol-summary','mm-grid-list'];
  const elements=Object.fromEntries(ids.map(id=>[id,{innerHTML:'',textContent:'',value:'',events:{},addEventListener(t,f){this.events[t]=f;}}]));
  const events={},windowEvents={},pending=[],stored={market_memory_ticker:'AAPL'};
@@ -11,10 +11,12 @@ function setup(query) {
  const location=new URL('https://mastermind-x.com/market_memory.html'+query);
  const history={state:{},replaceState(_a,_b,url){location.href=new URL(url,location).href;}};
  const document={readyState:'complete',documentElement:{getAttribute:()=>lang},getElementById:id=>elements[id],addEventListener(t,f){events[t]=f;}};
- const window={location,history,addEventListener(t,f){windowEvents[t]=f;},setLang(v){lang=v;},MDXAuth:{onChange(f){authChanged=f;},open(){opened++;}}};
+ const saved=capsule||{};
+ const sessionStorage={getItem:k=>saved[k]||null,setItem:(k,v)=>{saved[k]=v;},removeItem:k=>{delete saved[k];}};
+ const window={location,history,sessionStorage,addEventListener(t,f){windowEvents[t]=f;},setLang(v){lang=v;},MDXAuth:{onChange(f){authChanged=f;},open(){opened++;}}};
  const context={window,document,location,history,URL,URLSearchParams,console,localStorage:{getItem:k=>stored[k],setItem(k,v){stored[k]=v;}},fetch:url=>new Promise(resolve=>pending.push({url,resolve}))};
  vm.createContext(context);vm.runInContext(script('market_memory_intent.js'),context);vm.runInContext(script('market_memory.js'),context);
- return {elements,events,pending,stored,window,location,auth:u=>authChanged(u),get opened(){return opened;},setLang(v){lang=v;events.langchange();},submit(raw){elements['mm-symbol-input'].value=raw;elements['mm-symbol-form'].events.submit({preventDefault(){}});}};
+ return {elements,events,pending,stored,window,location,saved,auth:u=>authChanged(u),get opened(){return opened;},setLang(v){lang=v;events.langchange();},submit(raw){elements['mm-symbol-input'].value=raw;elements['mm-symbol-form'].events.submit({preventDefault(){}});}};
 }
 for (const raw of ['', 'a/b', 'A APL']) test('explicit latest invalid input survives login destination: '+JSON.stringify(raw),async()=>{
  const x=setup('?ticker=AAPL&mm_issuer_input='+encodeURIComponent(raw)+'&mm_lang=zh');await tick();
@@ -49,3 +51,6 @@ test('oversized intent clears stale ret and refuses old-symbol retry',async()=>{
  assert.match(x.elements['mm-symbol-summary'].innerHTML,/Cannot preserve this link/);
  x.auth({id:'fixture'});await tick();assert.equal(x.pending.length,n);
 });
+
+test('missing OAuth capsule stops both implicit AAPL and initial private reads',async()=>{const x=setup('?onboard=resume');await tick();assert.equal(x.pending.length,0);assert.match(x.elements['mm-symbol-summary'].innerHTML,/Selection unavailable after sign-in/);});
+test('OAuth callback restores invalid issuer before legacy fetch or default fallback',async()=>{const before=setup('?ticker=AAPL&mm_issuer_input=a%2Fb&mm_lang=zh');await tick();const x=setup('?onboard=resume&code=synthetic',before.saved);await tick();assert.equal(x.pending.some(p=>p.url.includes('/symbol/')),false);assert.equal(x.elements['mm-symbol-input'].value,'a/b');assert.equal(x.location.searchParams.get('code'),'synthetic');assert.match(x.elements['mm-symbol-summary'].innerHTML,/请检查代码/);});
