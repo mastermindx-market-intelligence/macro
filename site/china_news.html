@@ -312,18 +312,678 @@
   <header class="cn-hero">
     <p class="cn-eyebrow"><span class="cn-live"></span><span class="cn-brand">📡 <span class="gn"><span class="l-en">China Tape</span><span class="l-zh">中国快讯</span></span></span></p>
     
-      <p class="cn-lead"><span class="l-en">The China macro tape is quiet right now.</span><span class="l-zh">当前中国宏观新闻流较安静。</span></p>
+      
+      
+      
+      
+      <p class="cn-lead">
+        <span class="l-en"><b>24</b> stories cleared the macro filter; official policy tone leans supportive. <b>15</b> rated high-impact, led by <b>equity market</b>.</span>
+        <span class="l-zh"><b>24</b> 条通过宏观筛选；官方政策基调偏积极。其中 <b>15</b> 条高影响，主导<b>股票市场</b>。</span>
+      </p>
       <p class="cn-asof"><span class="l-en">As of</span><span class="l-zh">截至</span>  · <span class="l-en">context, not trade calls</span><span class="l-zh">仅供参考，非交易信号</span></p>
+      <div class="cn-glance">
+        
+        
+        <span class="cn-gchip st-supportive"><span class="dot"></span><span class="l-en">Policy tone</span><span class="l-zh">政策基调</span> <b><span class="l-en">leans supportive</span><span class="l-zh">偏积极</span></b></span>
+        
+        <span class="cn-gchip hot"><span class="dot"></span><b>15</b> <span class="l-en">high-impact</span><span class="l-zh">高影响</span></span>
+        <span class="cn-gchip led th-markets"><span class="dot"></span><span class="l-en">Led by</span><span class="l-zh">主导</span> <b><span class="l-en">equity market</span><span class="l-zh">股票市场</span></b></span>
+        <span class="cn-gchip"><b>24</b> <span class="l-en">on the tape</span><span class="l-zh">条在流</span></span>
+        <span class="cn-gchip hidden" id="fresh"><span class="dot" style="background:var(--up)"></span><span id="fresh-t"></span></span>
+      </div>
     
   </header>
 
   
-  <!-- ===================== EMPTY STATE ===================== -->
-  <div class="cn-empty">
-    <h2><span class="l-en">No filtered China headlines on this pull.</span><span class="l-zh">本次抓取暂无筛选中国头条。</span></h2>
-    <p><span class="l-en">This can happen when official pages are quiet, the flash-wire fetch is unavailable, or no macro-relevant item cleared the gate. Policy tone and scheduled catalysts remain live.</span><span class="l-zh">当官方页面安静、快讯抓取不可用，或没有宏观相关条目通过筛选时会出现这种情况。政策基调与排定催化仍保持更新。</span></p>
-  </div>
-  <p class="cn-disc"><span class="l-en">Context only — not a signal. The policy-tone read is a z-score of a crude lexicon proxy on the CCTV 新闻联播 broadcast (relative, never an absolute sentiment); the headlines are deterministically filtered (macro themes only, each tagged) Eastmoney flash-wire items. Nothing here is an input to any score, signal, regime or allocation, and the mechanical model never sees it.</span><span class="l-zh">仅作背景，非信号。政策基调读数是对央视《新闻联播》文本的粗略词典代理的 z 标准化（相对值，并非绝对情绪）；头条为东方财富快讯经确定性筛选（仅宏观主题，逐条标注）的条目。这里没有任何内容会进入任何评分、信号、区制或配置，机械模型也从不读取它们。</span></p>
+  <!-- ===================== OVERVIEW 3-UP ===================== -->
+  <section class="cn-rail3">
+
+    <!-- policy tone -->
+    <article class="ov-card ov-tone st-supportive" style="--ac:#3bb277">
+      <p class="ov-h"><span class="ic">🏛️</span><span class="l-en">Policy tone</span><span class="l-zh">政策基调</span></p>
+      
+      
+      <div class="tg-top">
+        <div class="tg-state"><span class="l-en">leans supportive</span><span class="l-zh">偏积极</span></div>
+        <div class="tg-z">+0.8</div>
+      </div>
+      
+      
+      <div class="tg-track"><span class="mid"></span>
+        <span class="tg-fill" style="left:50%;width:16.0%"></span>
+      </div>
+      <div class="tg-scale"><span><span class="l-en">cautious</span><span class="l-zh">谨慎</span></span><span><span class="l-en">neutral</span><span class="l-zh">中性</span></span><span><span class="l-en">supportive</span><span class="l-zh">积极</span></span></div>
+      <p class="ov-foot"><span class="l-en">CCTV 新闻联播 tone · against the last</span><span class="l-zh">央视《新闻联播》基调 · 对比过去</span> 124<span class="l-en">d baseline</span><span class="l-zh">天基线</span> · 2026-10-14</p>
+      
+    </article>
+
+    <!-- what's on the tape -->
+    <article class="ov-card ov-mix">
+      <p class="ov-h"><span class="ic">🌡️</span><span class="l-en">What's on the tape</span><span class="l-zh">快讯结构</span></p>
+      
+        
+        
+        
+        
+        <div class="mx-row th-markets">
+          <span class="mx-name"><span class="l-en">Markets</span><span class="l-zh">市场</span></span>
+          <span class="mx-bar"><i style="width:100%"></i></span>
+          <span class="mx-n">9</span>
+        </div>
+        
+        
+        <div class="mx-row th-monetary">
+          <span class="mx-name"><span class="l-en">Monetary policy</span><span class="l-zh">货币政策</span></span>
+          <span class="mx-bar"><i style="width:89%"></i></span>
+          <span class="mx-n">8</span>
+        </div>
+        
+        
+        <div class="mx-row th-inflation">
+          <span class="mx-name"><span class="l-en">Inflation</span><span class="l-zh">物价</span></span>
+          <span class="mx-bar"><i style="width:33%"></i></span>
+          <span class="mx-n">3</span>
+        </div>
+        
+        
+        <div class="mx-row th-policy">
+          <span class="mx-name"><span class="l-en">Policy</span><span class="l-zh">政策</span></span>
+          <span class="mx-bar"><i style="width:22%"></i></span>
+          <span class="mx-n">2</span>
+        </div>
+        
+        
+        <div class="mx-row th-growth">
+          <span class="mx-name"><span class="l-en">Growth</span><span class="l-zh">增长</span></span>
+          <span class="mx-bar"><i style="width:22%"></i></span>
+          <span class="mx-n">2</span>
+        </div>
+        
+      
+      
+      <p class="ov-foot"><span class="l-en">Sources</span><span class="l-zh">来源</span>: <span class="l-en">Chinese financial press</span><span class="l-zh">中国财经媒体</span> 20 · <span class="l-en">global wire</span><span class="l-zh">国际通讯社</span> 2 · <span class="l-en">official releases</span><span class="l-zh">官方发布</span> 2</p>
+      
+    </article>
+
+    <!-- next catalyst -->
+    <article class="ov-card ov-next">
+      <p class="ov-h"><span class="ic">📅</span><span class="l-en">Next catalyst</span><span class="l-zh">下一催化</span></p>
+      
+      
+      <div class="nx-when">
+        
+          <span class="nx-days">2</span><span class="nx-unit"><span class="l-en">days out</span><span class="l-zh">天后</span></span>
+        
+      </div>
+      <p class="nx-name"><span class="l-en">CPI (consumer prices)</span><span class="l-zh">CPI（居民消费价格）</span></p>
+      <p class="nx-date"><span class="l-en">Oct 16</span><span class="l-zh">10月16日</span> · <span style="color:#d0554f;font-weight:700"><span class="l-en">high-impact print</span><span class="l-zh">高影响数据</span></span></p>
+      
+    </article>
+  </section>
+
+  <!-- ===================== THE TAPE + RAIL ===================== -->
+  <section class="cn-main">
+    <div class="cn-feed-col">
+      <div class="cn-toolbar">
+        <div class="cn-search"><span class="mag">⌕</span><input id="q" type="search" autocomplete="off" placeholder="Search headlines, channels or tickers…" data-ph-en="Search headlines, channels or tickers…" data-ph-zh="搜索头条、通道或标的…"></div>
+        <div class="cn-filters" id="filters">
+          <button class="fbtn on" data-theme="all"><span class="l-en">All</span><span class="l-zh">全部</span></button>
+          <button class="fbtn" data-importance="high"><span class="l-en">High impact</span><span class="l-zh">高影响</span></button>
+          <button class="fbtn" data-theme="monetary"><span class="l-en">Monetary policy</span><span class="l-zh">货币政策</span><span class="fc" data-fc="monetary"></span></button><button class="fbtn" data-theme="inflation"><span class="l-en">Inflation</span><span class="l-zh">物价</span><span class="fc" data-fc="inflation"></span></button><button class="fbtn" data-theme="growth"><span class="l-en">Growth</span><span class="l-zh">增长</span><span class="fc" data-fc="growth"></span></button><button class="fbtn" data-theme="credit"><span class="l-en">Credit</span><span class="l-zh">信用</span><span class="fc" data-fc="credit"></span></button><button class="fbtn" data-theme="fiscal"><span class="l-en">Fiscal/Trade</span><span class="l-zh">财政/贸易</span><span class="fc" data-fc="fiscal"></span></button><button class="fbtn" data-theme="policy"><span class="l-en">Policy</span><span class="l-zh">政策</span><span class="fc" data-fc="policy"></span></button><button class="fbtn" data-theme="politics"><span class="l-en">Politics</span><span class="l-zh">政治/地缘</span><span class="fc" data-fc="politics"></span></button><button class="fbtn" data-theme="tech"><span class="l-en">Tech</span><span class="l-zh">科技</span><span class="fc" data-fc="tech"></span></button><button class="fbtn" data-theme="markets"><span class="l-en">Markets</span><span class="l-zh">市场</span><span class="fc" data-fc="markets"></span></button><button class="fbtn" data-theme="macro"><span class="l-en">Macro</span><span class="l-zh">宏观</span><span class="fc" data-fc="macro"></span></button>
+        </div>
+        <span class="cn-count" id="count"></span>
+      </div>
+
+      <div class="tp-feed" id="feed">
+        
+        
+        <a class="tp-item th-monetary lead" href="https://wallstreetcn.com/livenews/3178730" target="_blank" rel="noopener"
+           data-theme="monetary" data-importance="high"
+           data-search="周三美股盘前你需要了解的全球要闻 global news you need to know before wednesday's u.s. stock market open 周三美股盘前你需要了解的全球要闻 中国9月社融新增3.55万亿元，人民币贷款新增1.08万亿，环比双双大幅回升。 上观：中国极紫外光源样机国产化率达90%，目前距离量产还需3—5年。 通胀全面走热！美国9月cpi同比增长3.7%，核心cpi同比增长2.6%超预期，10月加息预期飙升。 特朗普称格陵兰岛将开始”大规模”石油、天然气和矿产勘探。 美联储理事鲍曼：不认为美联储有必要进一步加息。 中欧就混动、电动汽车贸易达成磋商共识，中汽协发布声明。 日本银行保险五个月净买5.4万亿日元日债，资金回流信号升温。 iea月报：柴油供应紧张局面将持续至2027年，oecd石油库存降至1989年以来最 china's september aggregate social financing increased by 3.55 trillion yuan, and rmb loans increased by 1.08 trillion, both rebounding sharply month-on-month. shangguan: china's extreme ultraviolet light source prototype has reached a 90% domestic content rate, and it is still 3-5 years away from mass production. inflation is heating up across the board! us september cpi rose 3.7% year-on-year, while core cpi rose 2.6% year-on-year, exceeding expectations, and october rate hike expectations surged. trump said greenland will begin "large-scale" oil, natural gas and mineral exploration. federal reserve governor bowman: does not believe the fed needs to raise rates further. china and europe reached a consensus in consultations on hybrid and electric vehicle trade, and the china association of automobile manufacturers issued a statement. japanese banks and insurers net bought 5.4 trillion yen of japanese bonds over five months, with signs of capital repatriation heating up. iea monthly report: tight diesel supply will persist until 2027, and oecd oil inventories fell to the lowest since 1989. 中国9月社融新增3.55万亿元，人民币贷款新增1.08万亿，环比双双大幅回升。 上观：中国极紫外光源样机国产化率达90%，目前距离量产还需3—5年。 通胀全面走热！美国9月cpi同比增长3.7%，核心cpi同比增长2.6%超预期，10月加息预期飙升。 特朗普称格陵兰岛将开始”大规模”石油、天然气和矿产勘探。 美联储理事鲍曼：不认为美联储有必要进一步加息。 中欧就混动、电动汽车贸易达成磋商共识，中汽协发布声明。 日本银行保险五个月净买5.4万亿日元日债，资金回流信号升温。 iea月报：柴油供应紧张局面将持续至2027年，oecd石油库存降至1989年以来最 华尔街见闻 credit_impulse consumer yuan credit & financing 信贷与社融 consumer 消费 yuan & fx 人民币与汇率 cny 512800.ss">
+          <time class="tp-when" data-t="2026-10-14T12:56:34+00:00" datetime="2026-10-14T12:56:34+00:00">10-14<br>12:56</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-10-14T12:56:34+00:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Monetary policy</span><span class="l-zh">货币政策</span></span>
+              <span class="cn-src">华尔街见闻</span>
+              <span class="cn-imp imp-high"><b>90</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Global news you need to know before Wednesday's U.S. stock market open</span><span class="l-zh">周三美股盘前你需要了解的全球要闻</span></h2>
+            <p class="tp-sum"><span class="l-en">China's September aggregate social financing increased by 3.55 trillion yuan, and RMB loans increased by 1.08 trillion, both rebounding sharply month-on-month. Shangguan: China's extreme ultraviolet light source prototype has reached a 90% domestic content rate, and it is still 3-5 years away from mass production. Inflation is heating up across the board! US September CPI rose 3.7% year-on-year, while core CPI rose 2.6% year-on-year, exceeding expectations, and October rate hike expectations surged. Trump said Greenland will begin "large-scale" oil, natural gas and mineral exploration. Federal Reserve Governor Bowman: does not believe the Fed needs to raise rates further. China and Europe reached a consensus in consultations on hybrid and electric vehicle trade, and the China Association of Automobile Manufacturers issued a statement. Japanese banks and insurers net bought 5.4 trillion yen of Japanese bonds over five months, with signs of capital repatriation heating up. IEA monthly report: tight diesel supply will persist until 2027, and OECD oil inventories fell to the lowest since 1989.</span><span class="l-zh">中国9月社融新增3.55万亿元，人民币贷款新增1.08万亿，环比双双大幅回升。 上观：中国极紫外光源样机国产化率达90%，目前距离量产还需3—5年。 通胀全面走热！美国9月CPI同比增长3.7%，核心CPI同比增长2.6%超预期，10月加息预期飙升。 特朗普称格陵兰岛将开始”大规模”石油、天然气和矿产勘探。 美联储理事鲍曼：不认为美联储有必要进一步加息。 中欧就混动、电动汽车贸易达成磋商共识，中汽协发布声明。 日本银行保险五个月净买5.4万亿日元日债，资金回流信号升温。 IEA月报：柴油供应紧张局面将持续至2027年，OECD石油库存降至1989年以来最</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">credit & financing</span><span class="l-zh">信贷与社融</span></span><span class="cn-cchip"><span class="l-en">consumer</span><span class="l-zh">消费</span></span><span class="cn-cchip"><span class="l-en">yuan & FX</span><span class="l-zh">人民币与汇率</span></span><span class="cn-tk">CNY</span><span class="cn-tk">512800.SS</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-monetary" href="https://www.stcn.com/article/detail/4218610.html" target="_blank" rel="noopener"
+           data-theme="monetary" data-importance="high"
+           data-search="央行，最新发布！前三季度社融增量超27万亿元，债券、股票融资加快 pboc, latest release! social financing increment in the first three quarters exceeds 27 trillion yuan, bond and stock financing accelerate 央行，最新发布！前三季度社融增量超27万亿元，债券、股票融资加快    证券时报 pboc_liquidity credit_impulse pboc & liquidity 央行与流动性 credit & financing 信贷与社融 512880.ss">
+          <time class="tp-when" data-t="" >—</time>
+          <div class="tp-spine"><span class="tp-node" data-t=""></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Monetary policy</span><span class="l-zh">货币政策</span></span>
+              <span class="cn-src">证券时报</span>
+              <span class="cn-imp imp-high"><b>82</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">PBOC, latest release! Social financing increment in the first three quarters exceeds 27 trillion yuan, bond and stock financing accelerate</span><span class="l-zh">央行，最新发布！前三季度社融增量超27万亿元，债券、股票融资加快</span></h2>
+            
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">PBOC & liquidity</span><span class="l-zh">央行与流动性</span></span><span class="cn-cchip"><span class="l-en">credit & financing</span><span class="l-zh">信贷与社融</span></span><span class="cn-tk">512880.SS</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-monetary" href="https://www.stcn.com/article/detail/4218367.html" target="_blank" rel="noopener"
+           data-theme="monetary" data-importance="high"
+           data-search="央行：​债券和股票融资在社会融资增量占比超过贷款约7个百分点 pboc: bond and stock financing account for about 7 percentage points more than loans in social financing increment 央行：​债券和股票融资在社会融资增量占比超过贷款约7个百分点    证券时报 pboc_liquidity credit_impulse pboc & liquidity 央行与流动性 credit & financing 信贷与社融 512800.ss 512880.ss">
+          <time class="tp-when" data-t="" >—</time>
+          <div class="tp-spine"><span class="tp-node" data-t=""></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Monetary policy</span><span class="l-zh">货币政策</span></span>
+              <span class="cn-src">证券时报</span>
+              <span class="cn-imp imp-high"><b>82</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">PBOC: Bond and stock financing account for about 7 percentage points more than loans in social financing increment</span><span class="l-zh">央行：​债券和股票融资在社会融资增量占比超过贷款约7个百分点</span></h2>
+            
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">PBOC & liquidity</span><span class="l-zh">央行与流动性</span></span><span class="cn-cchip"><span class="l-en">credit & financing</span><span class="l-zh">信贷与社融</span></span><span class="cn-tk">512800.SS</span><span class="cn-tk">512880.SS</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-inflation" href="https://www.scmp.com/economy/china-economy/article/3370796/growth-chinas-factory-gate-prices-accelerates-consumer-inflation-subdued?utm_source=rss_feed" target="_blank" rel="noopener"
+           data-theme="inflation" data-importance="high"
+           data-search="growth in china’s factory-gate prices accelerates, but consumer inflation subdued  中国出厂价格增长加速，但消费者通胀低迷 growth in chinese factory-gate prices continued to accelerate last month, while consumer price growth remained subdued despite beijing’s efforts to shore up domestic demand and support the economy in meeting its annual growth target.
+the producer price index (ppi) rose 5 per cent year on year in september, the highest rate since mid-2022, according to data released by the national bureau of statistics on wednesday. it rose by 3.8 per cent in august.
+the reading beat a projection of 4.3 per cent...  上月中国工业生产者出厂价格继续加速上涨，而尽管北京方面努力提振国内需求并支持经济实现年度增长目标，居民消费价格涨幅仍然低迷。
+数据显示，9月生产者价格指数（ppi）同比上涨5%，为2022年年中以来的最高水平。 scmp - china economy consumer consumer 消费 ">
+          <time class="tp-when" data-t="2026-10-14T02:01:22+00:00" datetime="2026-10-14T02:01:22+00:00">10-14<br>02:01</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-10-14T02:01:22+00:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Inflation</span><span class="l-zh">物价</span></span>
+              <span class="cn-src">SCMP - China Economy</span>
+              <span class="cn-imp imp-high"><b>90</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Growth in China’s factory-gate prices accelerates, but consumer inflation subdued</span><span class="l-zh">中国出厂价格增长加速，但消费者通胀低迷</span></h2>
+            <p class="tp-sum"><span class="l-en">Growth in Chinese factory-gate prices continued to accelerate last month, while consumer price growth remained subdued despite Beijing’s efforts to shore up domestic demand and support the economy in meeting its annual growth target.
+The producer price index (PPI) rose 5 per cent year on year in September, the highest rate since mid-2022, according to data released by the National Bureau of Statistics on Wednesday. It rose by 3.8 per cent in August.
+The reading beat a projection of 4.3 per cent...</span><span class="l-zh">上月中国工业生产者出厂价格继续加速上涨，而尽管北京方面努力提振国内需求并支持经济实现年度增长目标，居民消费价格涨幅仍然低迷。
+数据显示，9月生产者价格指数（PPI）同比上涨5%，为2022年年中以来的最高水平。</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">consumer</span><span class="l-zh">消费</span></span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-inflation" href="https://wallstreetcn.com/livenews/3178711" target="_blank" rel="noopener"
+           data-theme="inflation" data-importance="high"
+           data-search="提醒：北京时间20:30，将公布美国9月cpi数据 reminder: at 20:30 beijing time, us september cpi data will be released 提醒：北京时间20:30，将公布美国9月cpi数据 提醒：北京时间20:30，将公布美国9月cpi数据。 reminder: at 20:30 beijing time, us september cpi data will be released. 提醒：北京时间20:30，将公布美国9月cpi数据。 华尔街见闻 consumer consumer 消费 ">
+          <time class="tp-when" data-t="2026-10-14T12:20:44+00:00" datetime="2026-10-14T12:20:44+00:00">10-14<br>12:20</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-10-14T12:20:44+00:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Inflation</span><span class="l-zh">物价</span></span>
+              <span class="cn-src">华尔街见闻</span>
+              <span class="cn-imp imp-high"><b>76</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Reminder: At 20:30 Beijing time, US September CPI data will be released</span><span class="l-zh">提醒：北京时间20:30，将公布美国9月CPI数据</span></h2>
+            <p class="tp-sum"><span class="l-en">Reminder: At 20:30 Beijing time, US September CPI data will be released.</span><span class="l-zh">提醒：北京时间20:30，将公布美国9月CPI数据。</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">consumer</span><span class="l-zh">消费</span></span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-monetary" href="https://finance.sina.com.cn/roll/2026-10-14/doc-inivchzz8618445.shtml" target="_blank" rel="noopener"
+           data-theme="monetary" data-importance="high"
+           data-search="央行批准visa在境内筹备银行卡清算机构 pboc approves visa to prepare for a bank card clearing institution in china 央行批准visa在境内筹备银行卡清算机构    新浪财经股票 pboc_liquidity pboc & liquidity 央行与流动性 512800.ss">
+          <time class="tp-when" data-t="2026-10-14" datetime="2026-10-14">10-14</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-10-14"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Monetary policy</span><span class="l-zh">货币政策</span></span>
+              <span class="cn-src">新浪财经股票</span>
+              <span class="cn-imp imp-high"><b>68</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">PBOC approves Visa to prepare for a bank card clearing institution in China</span><span class="l-zh">央行批准Visa在境内筹备银行卡清算机构</span></h2>
+            
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">PBOC & liquidity</span><span class="l-zh">央行与流动性</span></span><span class="cn-tk">512800.SS</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-markets" href="https://wallstreetcn.com/livenews/3178792" target="_blank" rel="noopener"
+           data-theme="markets" data-importance="high"
+           data-search="茶百道：全力配合香港证监会处理其任何关注事项 业务营运维持正常 chapanda: fully cooperating with the hong kong securities and futures commission on any concerns, business operations remain normal 茶百道：全力配合香港证监会处理其任何关注事项 业务营运维持正常 茶百道在港交所公告，本公司董事会董事会注意到，香港证监会已于10月13日上午九时正起暂停本公司h股买卖。香港证监会表示，其关注本公司的首次公开发售可能曾被人为操纵，以营造对股份需求的假象。本公司董事会高度重视此事，并坚信遵守所有适用于本公司的法律及法规至关重要。因此，本公司正就该指令紧急寻求法律意见，并将努力处理及解决香港证监会关注的事项。本公司承诺全力配合香港证监会处理其任何关注事项，并将适时另行刊发公告。本公司确认，本集团的业务营运维持正常，且截至本公告日期，本集团的业务营运并无发生重大变动。 chapanda announced on the hong kong stock exchange that the company's board of directors has noted that the hong kong securities and futures commission has suspended trading in the company's h shares from 9:00 a.m. on october 13. the hong kong securities and futures commission said it is concerned that the company's initial public offering may have been artificially manipulated to create a false appearance of demand for the shares. the company's board of directors attaches great importance to this matter and firmly believes that compliance with all laws and regulations applicable to the company is crucial. therefore, the company is urgently seeking legal advice regarding the directive and will work to address and resolve the concerns of the hong kong securities and futures commission. the company is committed to fully cooperating with the hong kong securities and futures commission in handling any of its concerns and will publish further announcements in due course. the company confirms that the group's business operations remain normal, and as of the date of this announcement, there have been no material changes in the group's business operations. 茶百道在港交所公告，本公司董事会董事会注意到，香港证监会已于10月13日上午九时正起暂停本公司h股买卖。香港证监会表示，其关注本公司的首次公开发售可能曾被人为操纵，以营造对股份需求的假象。本公司董事会高度重视此事，并坚信遵守所有适用于本公司的法律及法规至关重要。因此，本公司正就该指令紧急寻求法律意见，并将努力处理及解决香港证监会关注的事项。本公司承诺全力配合香港证监会处理其任何关注事项，并将适时另行刊发公告。本公司确认，本集团的业务营运维持正常，且截至本公告日期，本集团的业务营运并无发生重大变动。 华尔街见闻 markets equity market 股票市场 ">
+          <time class="tp-when" data-t="2026-10-14T14:42:21+00:00" datetime="2026-10-14T14:42:21+00:00">10-14<br>14:42</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-10-14T14:42:21+00:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Markets</span><span class="l-zh">市场</span></span>
+              <span class="cn-src">华尔街见闻</span>
+              <span class="cn-imp imp-high"><b>68</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">ChaPanda: Fully cooperating with the Hong Kong Securities and Futures Commission on any concerns, business operations remain normal</span><span class="l-zh">茶百道：全力配合香港证监会处理其任何关注事项 业务营运维持正常</span></h2>
+            <p class="tp-sum"><span class="l-en">ChaPanda announced on the Hong Kong Stock Exchange that the company's board of directors has noted that the Hong Kong Securities and Futures Commission has suspended trading in the company's H shares from 9:00 a.m. on October 13. The Hong Kong Securities and Futures Commission said it is concerned that the company's initial public offering may have been artificially manipulated to create a false appearance of demand for the shares. The company's board of directors attaches great importance to this matter and firmly believes that compliance with all laws and regulations applicable to the company is crucial. Therefore, the company is urgently seeking legal advice regarding the directive and will work to address and resolve the concerns of the Hong Kong Securities and Futures Commission. The company is committed to fully cooperating with the Hong Kong Securities and Futures Commission in handling any of its concerns and will publish further announcements in due course. The company confirms that the group's business operations remain normal, and as of the date of this announcement, there have been no material changes in the group's business operations.</span><span class="l-zh">茶百道在港交所公告，本公司董事会董事会注意到，香港证监会已于10月13日上午九时正起暂停本公司H股买卖。香港证监会表示，其关注本公司的首次公开发售可能曾被人为操纵，以营造对股份需求的假象。本公司董事会高度重视此事，并坚信遵守所有适用于本公司的法律及法规至关重要。因此，本公司正就该指令紧急寻求法律意见，并将努力处理及解决香港证监会关注的事项。本公司承诺全力配合香港证监会处理其任何关注事项，并将适时另行刊发公告。本公司确认，本集团的业务营运维持正常，且截至本公告日期，本集团的业务营运并无发生重大变动。</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">equity market</span><span class="l-zh">股票市场</span></span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-markets" href="https://wallstreetcn.com/livenews/3178742" target="_blank" rel="noopener"
+           data-theme="markets" data-importance="high"
+           data-search="平安电工：拟定增募资不超过13亿元用于泰国基地及高性能电子布项目 ping an electric: plans private placement to raise no more than 1.3 billion yuan for thailand base and high-performance electronic cloth project 平安电工：拟定增募资不超过13亿元用于泰国基地及高性能电子布项目 平安电工公告，公司拟向特定对象发行a股股票，募资总额不超过13亿元，发行对象不超过三十五名符合条件的特定对象，最终发行对象将根据竞价结果协商确定。募集资金拟用于泰国云母绝缘材料生产基地建设项目2.22亿元、泰国电子布生产基地建设项目4.25亿元、高性能电子布生产基地建设项目3.52亿元及补充流动资金3亿元。方案已获董事会审议通过，尚需股东会审议、深交所审核及中国证监会同意注册。 ping an electric announced that the company plans to issue a-shares to specific targets, with total fundraising not exceeding 1.3 billion yuan, and no more than 35 eligible specific targets, with the final issuance targets to be determined through negotiation based on bidding results. the proceeds are intended for the thailand mica insulation material production base construction project at 222 million yuan, the thailand electronic fabric production base construction project at 425 million yuan, the high-performance electronic fabric production base construction project at 352 million yuan, and 300 million yuan to supplement working capital. the plan has been approved by the board of directors and still requires shareholder meeting review, shenzhen stock exchange review, and registration approval from the china securities regulatory commission. 平安电工公告，公司拟向特定对象发行a股股票，募资总额不超过13亿元，发行对象不超过三十五名符合条件的特定对象，最终发行对象将根据竞价结果协商确定。募集资金拟用于泰国云母绝缘材料生产基地建设项目2.22亿元、泰国电子布生产基地建设项目4.25亿元、高性能电子布生产基地建设项目3.52亿元及补充流动资金3亿元。方案已获董事会审议通过，尚需股东会审议、深交所审核及中国证监会同意注册。 华尔街见闻 markets equity market 股票市场 ">
+          <time class="tp-when" data-t="2026-10-14T13:10:21+00:00" datetime="2026-10-14T13:10:21+00:00">10-14<br>13:10</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-10-14T13:10:21+00:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Markets</span><span class="l-zh">市场</span></span>
+              <span class="cn-src">华尔街见闻</span>
+              <span class="cn-imp imp-high"><b>68</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Ping An Electric: Plans private placement to raise no more than 1.3 billion yuan for Thailand base and high-performance electronic cloth project</span><span class="l-zh">平安电工：拟定增募资不超过13亿元用于泰国基地及高性能电子布项目</span></h2>
+            <p class="tp-sum"><span class="l-en">Ping An Electric announced that the company plans to issue A-shares to specific targets, with total fundraising not exceeding 1.3 billion yuan, and no more than 35 eligible specific targets, with the final issuance targets to be determined through negotiation based on bidding results. The proceeds are intended for the Thailand mica insulation material production base construction project at 222 million yuan, the Thailand electronic fabric production base construction project at 425 million yuan, the high-performance electronic fabric production base construction project at 352 million yuan, and 300 million yuan to supplement working capital. The plan has been approved by the board of directors and still requires shareholder meeting review, Shenzhen Stock Exchange review, and registration approval from the China Securities Regulatory Commission.</span><span class="l-zh">平安电工公告，公司拟向特定对象发行A股股票，募资总额不超过13亿元，发行对象不超过三十五名符合条件的特定对象，最终发行对象将根据竞价结果协商确定。募集资金拟用于泰国云母绝缘材料生产基地建设项目2.22亿元、泰国电子布生产基地建设项目4.25亿元、高性能电子布生产基地建设项目3.52亿元及补充流动资金3亿元。方案已获董事会审议通过，尚需股东会审议、深交所审核及中国证监会同意注册。</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">equity market</span><span class="l-zh">股票市场</span></span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-markets" href="https://finance.sina.com.cn/stock/hkstock/2026-10-14/doc-inivevcf7736000.shtml" target="_blank" rel="noopener"
+           data-theme="markets" data-importance="high"
+           data-search="香港证监会：保荐人工作有所改善，前三季叫停65宗上市申请 hong kong securities and futures commission: sponsor work has improved, 65 listing applications halted in first three quarters 香港证监会：保荐人工作有所改善，前三季叫停65宗上市申请    新浪财经股票 markets equity market 股票市场 ">
+          <time class="tp-when" data-t="2026-10-14" datetime="2026-10-14">10-14</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-10-14"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Markets</span><span class="l-zh">市场</span></span>
+              <span class="cn-src">新浪财经股票</span>
+              <span class="cn-imp imp-high"><b>68</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Hong Kong Securities and Futures Commission: Sponsor work has improved, 65 listing applications halted in first three quarters</span><span class="l-zh">香港证监会：保荐人工作有所改善，前三季叫停65宗上市申请</span></h2>
+            
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">equity market</span><span class="l-zh">股票市场</span></span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-policy" href="https://wallstreetcn.com/livenews/3178757" target="_blank" rel="noopener"
+           data-theme="policy" data-importance="medium"
+           data-search="北京市委书记尹力会见美国沃尔玛公司全球总裁兼首席执行官 beijing municipal party committee secretary yin li meets with walmart global president and ceo 北京市委书记尹力会见美国沃尔玛公司全球总裁兼首席执行官 10月14日，北京市委书记尹力会见美国沃尔玛公司全球总裁兼首席执行官约翰·弗纳。尹力说，近年来，我们加快建设国际消费中心城市，不断优化商贸资源空间布局，出台一刻钟便民生活圈、超市业态提质升级、现代商贸流通体系建设等专项政策，为各类零售企业发展创造良好环境。 on october 14, yin li, secretary of the beijing municipal party committee, met with john furner, global president and chief executive officer of walmart. yin li said that in recent years, we have accelerated the building of an international consumption center city, continuously optimized the spatial layout of commercial resources, and introduced special policies such as the 15-minute convenient living circle, the quality upgrading of supermarket formats, and the construction of a modern commercial circulation system, creating a favorable environment for the development of various retail enterprises. 10月14日，北京市委书记尹力会见美国沃尔玛公司全球总裁兼首席执行官约翰·弗纳。尹力说，近年来，我们加快建设国际消费中心城市，不断优化商贸资源空间布局，出台一刻钟便民生活圈、超市业态提质升级、现代商贸流通体系建设等专项政策，为各类零售企业发展创造良好环境。 华尔街见闻 consumer consumer 消费 ">
+          <time class="tp-when" data-t="2026-10-14T13:38:34+00:00" datetime="2026-10-14T13:38:34+00:00">10-14<br>13:38</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-10-14T13:38:34+00:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Policy</span><span class="l-zh">政策</span></span>
+              <span class="cn-src">华尔街见闻</span>
+              <span class="cn-imp imp-medium"><b>66</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Beijing Municipal Party Committee Secretary Yin Li meets with Walmart Global President and CEO</span><span class="l-zh">北京市委书记尹力会见美国沃尔玛公司全球总裁兼首席执行官</span></h2>
+            <p class="tp-sum"><span class="l-en">On October 14, Yin Li, Secretary of the Beijing Municipal Party Committee, met with John Furner, global president and chief executive officer of Walmart. Yin Li said that in recent years, we have accelerated the building of an international consumption center city, continuously optimized the spatial layout of commercial resources, and introduced special policies such as the 15-minute convenient living circle, the quality upgrading of supermarket formats, and the construction of a modern commercial circulation system, creating a favorable environment for the development of various retail enterprises.</span><span class="l-zh">10月14日，北京市委书记尹力会见美国沃尔玛公司全球总裁兼首席执行官约翰·弗纳。尹力说，近年来，我们加快建设国际消费中心城市，不断优化商贸资源空间布局，出台一刻钟便民生活圈、超市业态提质升级、现代商贸流通体系建设等专项政策，为各类零售企业发展创造良好环境。</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">consumer</span><span class="l-zh">消费</span></span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-inflation" href="https://www.stcn.com/article/detail/4218852.html" target="_blank" rel="noopener"
+           data-theme="inflation" data-importance="high"
+           data-search="美国9月cpi同比上涨3.7% us september cpi rose 3.7% year-on-year 美国9月cpi同比上涨3.7%    证券时报 consumer consumer 消费 512880.ss">
+          <time class="tp-when" data-t="" >—</time>
+          <div class="tp-spine"><span class="tp-node" data-t=""></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Inflation</span><span class="l-zh">物价</span></span>
+              <span class="cn-src">证券时报</span>
+              <span class="cn-imp imp-high"><b>68</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">US September CPI rose 3.7% year-on-year</span><span class="l-zh">美国9月CPI同比上涨3.7%</span></h2>
+            
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">consumer</span><span class="l-zh">消费</span></span><span class="cn-tk">512880.SS</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-markets" href="https://www.cnstock.com/topicDetail/797461" target="_blank" rel="noopener"
+           data-theme="markets" data-importance="high"
+           data-search="专题 | “十五五”资本市场高质量发展座谈会 special topic | symposium on high-quality development of the capital market during the 15th five-year plan 专题 | “十五五”资本市场高质量发展座谈会    上海证券报 markets equity market 股票市场 512880.ss">
+          <time class="tp-when" data-t="" >—</time>
+          <div class="tp-spine"><span class="tp-node" data-t=""></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Markets</span><span class="l-zh">市场</span></span>
+              <span class="cn-src">上海证券报</span>
+              <span class="cn-imp imp-high"><b>68</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Special topic | Symposium on high-quality development of the capital market during the 15th Five-Year Plan</span><span class="l-zh">专题 | “十五五”资本市场高质量发展座谈会</span></h2>
+            
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">equity market</span><span class="l-zh">股票市场</span></span><span class="cn-tk">512880.SS</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-policy" href="https://www.cnstock.com/commonDetail/802034" target="_blank" rel="noopener"
+           data-theme="policy" data-importance="high"
+           data-search="中国证监会期货监管司王颖：持续优化品种布局、丰富交易工具、完善制度规则 wang ying of the csrc futures supervision department: continuously optimize product layout, enrich trading tools, and improve rules and regulations 中国证监会期货监管司王颖：持续优化品种布局、丰富交易工具、完善制度规则    上海证券报 markets equity market 股票市场 512880.ss">
+          <time class="tp-when" data-t="" >—</time>
+          <div class="tp-spine"><span class="tp-node" data-t=""></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Policy</span><span class="l-zh">政策</span></span>
+              <span class="cn-src">上海证券报</span>
+              <span class="cn-imp imp-high"><b>68</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Wang Ying of the CSRC Futures Supervision Department: Continuously optimize product layout, enrich trading tools, and improve rules and regulations</span><span class="l-zh">中国证监会期货监管司王颖：持续优化品种布局、丰富交易工具、完善制度规则</span></h2>
+            
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">equity market</span><span class="l-zh">股票市场</span></span><span class="cn-tk">512880.SS</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-monetary" href="https://www.pbc.gov.cn/en/3688110/3688172/2026/2026093015565447786/index.html" target="_blank" rel="noopener"
+           data-theme="monetary" data-importance="high"
+           data-search="pbocâ adjusts and improvesâ several monetary policy tools  中国人民银行调整和完善多项货币政策工具    pboc pboc_liquidity pboc & liquidity 央行与流动性 ">
+          <time class="tp-when" data-t="2026-09-29" datetime="2026-09-29">09-29</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-09-29"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Monetary policy</span><span class="l-zh">货币政策</span></span>
+              <span class="cn-src">PBoC</span>
+              <span class="cn-imp imp-high"><b>76</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">PBOCÂ Adjusts and ImprovesÂ Several Monetary Policy Tools</span><span class="l-zh">中国人民银行调整和完善多项货币政策工具</span></h2>
+            
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">PBOC & liquidity</span><span class="l-zh">央行与流动性</span></span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-monetary" href="https://www.yicai.com/news/103394007.html" target="_blank" rel="noopener"
+           data-theme="monetary" data-importance="high"
+           data-search="能源惹的祸！美国9月cpi爆表，美联储本月就会加息？ 汽油价格占月涨幅超过一半。 energy is to blame! us september cpi blows out, will the fed raise rates this month? gasoline prices account for more than half of the monthly increase. 能源惹的祸！美国9月cpi爆表，美联储本月就会加息？ 汽油价格占月涨幅超过一半。    第一财经 consumer consumer 消费 ">
+          <time class="tp-when" data-t="" >—</time>
+          <div class="tp-spine"><span class="tp-node" data-t=""></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Monetary policy</span><span class="l-zh">货币政策</span></span>
+              <span class="cn-src">第一财经</span>
+              <span class="cn-imp imp-high"><b>68</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Energy is to blame! US September CPI blows out, will the Fed raise rates this month? Gasoline prices account for more than half of the monthly increase.</span><span class="l-zh">能源惹的祸！美国9月CPI爆表，美联储本月就会加息？ 汽油价格占月涨幅超过一半。</span></h2>
+            
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">consumer</span><span class="l-zh">消费</span></span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-growth" href="https://www.scmp.com/economy/china-economy/article/3370586/imf-revises-down-projection-chinas-gdp-year-cautions-export-reliance?utm_source=rss_feed" target="_blank" rel="noopener"
+           data-theme="growth" data-importance="high"
+           data-search="imf revises china gdp projection down this year, cautions on export reliance  国际货币基金组织下调今年中国gdp增长预测，并对出口依赖发出警告 the international monetary fund has trimmed its projection of china’s economic growth in 2026 by 0.1 percentage point to 4.5 per cent, cautioning that resilient exports are no longer sufficient to fully offset persistent weakness in domestic demand.
+the revised projection sits at the lower end of beijing’s annual growth target for this year, down from the previous forecast of 4.6 per cent in july, according to the organisation’s latest world economic outlook, released on tuesday.
+“sluggishness...  国际货币基金组织已将中国2026年的经济增长预测下调0.1个百分点至4.5%，并警告称，尽管出口保持韧性，但已不足以完全抵消国内需求持续疲软的影响。
+修正后的预测处于北京今年年度增长目标区间的低端，低于此前的 scmp - china economy growth growth 增长 ">
+          <time class="tp-when" data-t="2026-10-13T02:00:16+00:00" datetime="2026-10-13T02:00:16+00:00">10-13<br>02:00</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-10-13T02:00:16+00:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Growth</span><span class="l-zh">增长</span></span>
+              <span class="cn-src">SCMP - China Economy</span>
+              <span class="cn-imp imp-high"><b>70</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">IMF revises China GDP projection down this year, cautions on export reliance</span><span class="l-zh">国际货币基金组织下调今年中国GDP增长预测，并对出口依赖发出警告</span></h2>
+            <p class="tp-sum"><span class="l-en">The International Monetary Fund has trimmed its projection of China’s economic growth in 2026 by 0.1 percentage point to 4.5 per cent, cautioning that resilient exports are no longer sufficient to fully offset persistent weakness in domestic demand.
+The revised projection sits at the lower end of Beijing’s annual growth target for this year, down from the previous forecast of 4.6 per cent in July, according to the organisation’s latest World Economic Outlook, released on Tuesday.
+“Sluggishness...</span><span class="l-zh">国际货币基金组织已将中国2026年的经济增长预测下调0.1个百分点至4.5%，并警告称，尽管出口保持韧性，但已不足以完全抵消国内需求持续疲软的影响。
+修正后的预测处于北京今年年度增长目标区间的低端，低于此前的</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">Growth</span><span class="l-zh">增长</span></span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-markets" href="https://flash.jin10.com/detail/20261014225134533800" target="_blank" rel="noopener"
+           data-theme="markets" data-importance="medium"
+           data-search="sc crude 2611 fell 3.62% intraday to 728.8 yuan/barrel; open interest dropped by more than  sc原油2611盘中下跌3.62%，至728.8元/桶；未平仓合约减少超过 sc crude 2611 fell 3.62% intraday to 728.8 yuan/barrel; open interest dropped by more than 900 contracts intraday, with positions easing.  sc原油2611合约盘中下跌3.62%，至728.8元/桶；盘中持仓量减少逾900手，头寸有所缓解。 金十数据 yuan yuan & fx 人民币与汇率 cny">
+          <time class="tp-when" data-t="2026-10-14T22:51:34+08:00" datetime="2026-10-14T22:51:34+08:00">10-14<br>22:51</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-10-14T22:51:34+08:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Markets</span><span class="l-zh">市场</span></span>
+              <span class="cn-src">金十数据</span>
+              <span class="cn-imp imp-medium"><b>62</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">SC crude 2611 fell 3.62% intraday to 728.8 yuan/barrel; open interest dropped by more than</span><span class="l-zh">SC原油2611盘中下跌3.62%，至728.8元/桶；未平仓合约减少超过</span></h2>
+            <p class="tp-sum"><span class="l-en">SC crude 2611 fell 3.62% intraday to 728.8 yuan/barrel; open interest dropped by more than 900 contracts intraday, with positions easing.</span><span class="l-zh">SC原油2611合约盘中下跌3.62%，至728.8元/桶；盘中持仓量减少逾900手，头寸有所缓解。</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">yuan & FX</span><span class="l-zh">人民币与汇率</span></span><span class="cn-tk">CNY</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-growth" href="https://wallstreetcn.com/livenews/3178735" target="_blank" rel="noopener"
+           data-theme="growth" data-importance="medium"
+           data-search="中小银行收债券投资提示？知情人士：并非全国统一安排 small and medium banks receive bond investment tips? people familiar with the matter: it is not a nationwide unified arrangement 中小银行收债券投资提示？知情人士：并非全国统一安排 近日，有市场消息称，部分省份中小银行收到监管提示，要求金融投资增速不得高于贷款增速、新增债券久期不得高于存量久期。 对此，知情人士在记者求证时表示，金融管理部门并未就中小银行金融投资增速和新增债券久期作出全国统一安排。在市场化原则下，中小银行基于自身资产负债状况进行的债券投资决策，属于其自主经营权范畴。 recently, market news claimed that small and medium-sized banks in some provinces received regulatory reminders requiring that the growth rate of financial investment must not exceed the growth rate of loans, and the duration of newly added bonds must not exceed the duration of existing holdings. in response, when asked for verification by reporters, people familiar with the matter said that financial management authorities have not made a nationwide unified arrangement regarding the growth rate of financial investment and the duration of newly added bonds for small and medium-sized banks. under market-based principles, bond investment decisions made by small and medium-sized banks based on their own asset-liability conditions fall within the scope of their independent operating rights. 近日，有市场消息称，部分省份中小银行收到监管提示，要求金融投资增速不得高于贷款增速、新增债券久期不得高于存量久期。 对此，知情人士在记者求证时表示，金融管理部门并未就中小银行金融投资增速和新增债券久期作出全国统一安排。在市场化原则下，中小银行基于自身资产负债状况进行的债券投资决策，属于其自主经营权范畴。 华尔街见闻 credit_impulse credit & financing 信贷与社融 512800.ss">
+          <time class="tp-when" data-t="2026-10-14T13:06:00+00:00" datetime="2026-10-14T13:06:00+00:00">10-14<br>13:06</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-10-14T13:06:00+00:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Growth</span><span class="l-zh">增长</span></span>
+              <span class="cn-src">华尔街见闻</span>
+              <span class="cn-imp imp-medium"><b>54</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Small and medium banks receive bond investment tips? People familiar with the matter: It is not a nationwide unified arrangement</span><span class="l-zh">中小银行收债券投资提示？知情人士：并非全国统一安排</span></h2>
+            <p class="tp-sum"><span class="l-en">Recently, market news claimed that small and medium-sized banks in some provinces received regulatory reminders requiring that the growth rate of financial investment must not exceed the growth rate of loans, and the duration of newly added bonds must not exceed the duration of existing holdings. In response, when asked for verification by reporters, people familiar with the matter said that financial management authorities have not made a nationwide unified arrangement regarding the growth rate of financial investment and the duration of newly added bonds for small and medium-sized banks. Under market-based principles, bond investment decisions made by small and medium-sized banks based on their own asset-liability conditions fall within the scope of their independent operating rights.</span><span class="l-zh">近日，有市场消息称，部分省份中小银行收到监管提示，要求金融投资增速不得高于贷款增速、新增债券久期不得高于存量久期。 对此，知情人士在记者求证时表示，金融管理部门并未就中小银行金融投资增速和新增债券久期作出全国统一安排。在市场化原则下，中小银行基于自身资产负债状况进行的债券投资决策，属于其自主经营权范畴。</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">credit & financing</span><span class="l-zh">信贷与社融</span></span><span class="cn-tk">512800.SS</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-markets" href="https://www.cnstock.com/commonDetail/802135" target="_blank" rel="noopener"
+           data-theme="markets" data-importance="medium"
+           data-search="加仓银行！北向资金持仓大“换血” increase holdings in banks! northbound capital holdings undergo major "reshuffle" 加仓银行！北向资金持仓大“换血”    上海证券报 markets equity market 股票市场 512800.ss 512880.ss">
+          <time class="tp-when" data-t="" >—</time>
+          <div class="tp-spine"><span class="tp-node" data-t=""></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Markets</span><span class="l-zh">市场</span></span>
+              <span class="cn-src">上海证券报</span>
+              <span class="cn-imp imp-medium"><b>60</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Increase holdings in banks! Northbound capital holdings undergo major "reshuffle"</span><span class="l-zh">加仓银行！北向资金持仓大“换血”</span></h2>
+            
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">equity market</span><span class="l-zh">股票市场</span></span><span class="cn-tk">512800.SS</span><span class="cn-tk">512880.SS</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-monetary" href="https://finance.sina.com.cn/stock/newstock/2026-10-14/doc-inivezmn1246912.shtml" target="_blank" rel="noopener"
+           data-theme="monetary" data-importance="medium"
+           data-search="毛利率承压，这家芯片检测企业迎ipo大考 gross margin under pressure, this chip testing company faces a major ipo test 毛利率承压，这家芯片检测企业迎ipo大考    新浪财经股票 markets tech_policy equity market 股票市场 tech policy 科技政策 ">
+          <time class="tp-when" data-t="2026-10-14" datetime="2026-10-14">10-14</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-10-14"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Monetary policy</span><span class="l-zh">货币政策</span></span>
+              <span class="cn-src">新浪财经股票</span>
+              <span class="cn-imp imp-medium"><b>54</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Gross margin under pressure, this chip testing company faces a major IPO test</span><span class="l-zh">毛利率承压，这家芯片检测企业迎IPO大考</span></h2>
+            
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">equity market</span><span class="l-zh">股票市场</span></span><span class="cn-cchip"><span class="l-en">tech policy</span><span class="l-zh">科技政策</span></span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-monetary" href="https://www.pbc.gov.cn/en/3688110/3688172/2026/2026100817112550958/index.html" target="_blank" rel="noopener"
+           data-theme="monetary" data-importance="medium"
+           data-search="pbocâs view on the rmb exchange rate  中国人民银行对人民币汇率的看法    pboc pboc_liquidity yuan pboc & liquidity 央行与流动性 yuan & fx 人民币与汇率 cny">
+          <time class="tp-when" data-t="2026-10-08" datetime="2026-10-08">10-08</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-10-08"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Monetary policy</span><span class="l-zh">货币政策</span></span>
+              <span class="cn-src">PBoC</span>
+              <span class="cn-imp imp-medium"><b>62</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">PBOCâs View on the RMB Exchange Rate</span><span class="l-zh">中国人民银行对人民币汇率的看法</span></h2>
+            
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">PBOC & liquidity</span><span class="l-zh">央行与流动性</span></span><span class="cn-cchip"><span class="l-en">yuan & FX</span><span class="l-zh">人民币与汇率</span></span><span class="cn-tk">CNY</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-markets" href="https://finance.sina.com.cn/roll/2026-10-14/doc-inivezmc7655773.shtml" target="_blank" rel="noopener"
+           data-theme="markets" data-importance="medium"
+           data-search="大跌35％只是开始？国盛证券核心业务突遭“封印”，底牌何在 a 35% plunge is just the beginning? guosheng securities' core business suddenly "sealed off," where is its hidden card? 大跌35％只是开始？国盛证券核心业务突遭“封印”，底牌何在    新浪财经股票 markets equity market 股票市场 512880.ss">
+          <time class="tp-when" data-t="2026-10-14" datetime="2026-10-14">10-14</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-10-14"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Markets</span><span class="l-zh">市场</span></span>
+              <span class="cn-src">新浪财经股票</span>
+              <span class="cn-imp imp-medium"><b>54</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">A 35% plunge is just the beginning? Guosheng Securities' core business suddenly "sealed off," where is its hidden card?</span><span class="l-zh">大跌35％只是开始？国盛证券核心业务突遭“封印”，底牌何在</span></h2>
+            
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">equity market</span><span class="l-zh">股票市场</span></span><span class="cn-tk">512880.SS</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-markets" href="https://finance.sina.com.cn/jjxw/2026-10-14/doc-inivchzv7280880.shtml" target="_blank" rel="noopener"
+           data-theme="markets" data-importance="medium"
+           data-search="北交所做市商扩容提速 多家券商加入排队行列 beijing stock exchange market maker expansion accelerates, multiple securities firms join the queue 北交所做市商扩容提速 多家券商加入排队行列    新浪财经股票 markets equity market 股票市场 512880.ss">
+          <time class="tp-when" data-t="2026-10-14" datetime="2026-10-14">10-14</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-10-14"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Markets</span><span class="l-zh">市场</span></span>
+              <span class="cn-src">新浪财经股票</span>
+              <span class="cn-imp imp-medium"><b>54</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Beijing Stock Exchange market maker expansion accelerates, multiple securities firms join the queue</span><span class="l-zh">北交所做市商扩容提速 多家券商加入排队行列</span></h2>
+            
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">equity market</span><span class="l-zh">股票市场</span></span><span class="cn-tk">512880.SS</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-markets" href="https://finance.sina.com.cn/jjxw/2026-10-14/doc-inivchzu0508314.shtml" target="_blank" rel="noopener"
+           data-theme="markets" data-importance="medium"
+           data-search="银行卡清算机构扩容 visa获批筹备独资公司 bank card clearing market opens wider as visa gets approval to prepare wholly-owned company 银行卡清算机构扩容 visa获批筹备独资公司    新浪财经股票 markets equity market 股票市场 512800.ss">
+          <time class="tp-when" data-t="2026-10-14" datetime="2026-10-14">10-14</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-10-14"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Markets</span><span class="l-zh">市场</span></span>
+              <span class="cn-src">新浪财经股票</span>
+              <span class="cn-imp imp-medium"><b>54</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Bank card clearing market opens wider as Visa gets approval to prepare wholly-owned company</span><span class="l-zh">银行卡清算机构扩容 Visa获批筹备独资公司</span></h2>
+            
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">equity market</span><span class="l-zh">股票市场</span></span><span class="cn-tk">512800.SS</span></div>
+          </div>
+        </a>
+        
+      </div>
+      <div class="cn-none hidden" id="none"><h3><span class="l-en">No stories match that view.</span><span class="l-zh">没有符合当前视图的新闻。</span></h3><p><span class="l-en">Clear the search or switch back to All.</span><span class="l-zh">清空搜索或切回全部。</span></p></div>
+
+      <p class="cn-disc"><span class="l-en">Context only — not a signal. The policy-tone read is a z-score of a crude lexicon proxy on the CCTV 新闻联播 broadcast (relative, never an absolute sentiment); the headlines are deterministically filtered (macro themes only, each tagged) Eastmoney flash-wire items. Nothing here is an input to any score, signal, regime or allocation, and the mechanical model never sees it.</span><span class="l-zh">仅作背景，非信号。政策基调读数是对央视《新闻联播》文本的粗略词典代理的 z 标准化（相对值，并非绝对情绪）；头条为东方财富快讯经确定性筛选（仅宏观主题，逐条标注）的条目。这里没有任何内容会进入任何评分、信号、区制或配置，机械模型也从不读取它们。</span></p>
+    </div>
+
+    <aside class="cn-side">
+      <section class="side-card">
+        <h2 class="sc-h"><span class="l-en">Scheduled catalysts</span><span class="l-zh">排定催化</span></h2>
+        
+        
+        <div class="cal-row">
+          <div class="cal-when soon">
+            <span class="cd">1</span><span class="cu"><span class="l-en">days</span><span class="l-zh">天</span></span>
+          </div>
+          <div class="cal-name"><span class="cal-tag ">MLF</span><span class="l-en">MLF operation (PBoC)</span><span class="l-zh">MLF 操作（央行中期借贷便利）</span></div>
+        </div>
+        
+        
+        <div class="cal-row">
+          <div class="cal-when soon">
+            <span class="cd">2</span><span class="cu"><span class="l-en">days</span><span class="l-zh">天</span></span>
+          </div>
+          <div class="cal-name"><span class="cal-tag hi">CPI</span><span class="l-en">CPI (consumer prices)</span><span class="l-zh">CPI（居民消费价格）</span></div>
+        </div>
+        
+        
+        <div class="cal-row">
+          <div class="cal-when soon">
+            <span class="cd">2</span><span class="cu"><span class="l-en">days</span><span class="l-zh">天</span></span>
+          </div>
+          <div class="cal-name"><span class="cal-tag hi">PPI</span><span class="l-en">PPI (producer prices)</span><span class="l-zh">PPI（工业生产者价格）</span></div>
+        </div>
+        
+        
+        <div class="cal-row">
+          <div class="cal-when ">
+            <span class="cd">5</span><span class="cu"><span class="l-en">days</span><span class="l-zh">天</span></span>
+          </div>
+          <div class="cal-name"><span class="cal-tag hi">ACTIVITY</span><span class="l-en">IP, FAI & retail sales</span><span class="l-zh">工业增加值、固投与社零</span></div>
+        </div>
+        
+        
+        <div class="cal-row">
+          <div class="cal-when ">
+            <span class="cd">5</span><span class="cu"><span class="l-en">days</span><span class="l-zh">天</span></span>
+          </div>
+          <div class="cal-name"><span class="cal-tag hi">GDP</span><span class="l-en">GDP (quarterly)</span><span class="l-zh">GDP（季度）</span></div>
+        </div>
+        
+        
+        <div class="cal-row">
+          <div class="cal-when ">
+            <span class="cd">6</span><span class="cu"><span class="l-en">days</span><span class="l-zh">天</span></span>
+          </div>
+          <div class="cal-name"><span class="cal-tag hi">LPR</span><span class="l-en">LPR fix (loan prime rate)</span><span class="l-zh">LPR 报价（贷款市场报价利率）</span></div>
+        </div>
+        
+      </section>
+
+      
+      <section class="side-card">
+        <h2 class="sc-h"><span class="l-en">Exposures on the tape</span><span class="l-zh">相关标的</span></h2>
+        <div class="exp-pills">
+          
+          
+          <span class="exp-pill"><span class="tk">512880.SS</span><span class="nm"><span class="l-en">brokers</span><span class="l-zh">券商</span></span><span class="ct">×8</span></span>
+          
+          
+          <span class="exp-pill"><span class="tk">512800.SS</span><span class="nm"><span class="l-en">banks</span><span class="l-zh">银行</span></span><span class="ct">×6</span></span>
+          
+          
+          <span class="exp-pill"><span class="tk">CNY</span><span class="nm"><span class="l-en">yuan</span><span class="l-zh">人民币</span></span><span class="ct">×3</span></span>
+          
+        </div>
+      </section>
+      
+    </aside>
+  </section>
+
   
 </main>
 

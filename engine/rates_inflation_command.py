@@ -49,6 +49,30 @@ from typing import Any
 
 log = logging.getLogger(__name__)
 
+
+def _curve_accounting_board_shell(reason: str) -> dict:
+    """curve_accounting.v1 "unavailable" shell for a missing/malformed
+    transmission contract (RIC Y1b). Never a fabricated read."""
+    return {
+        "schema": "curve_accounting.v1",
+        "calculation_version": "ric_y1_curve_accounting.v1",
+        "basis_schema": None,
+        "cutoff": None,
+        "asof": None,
+        "status": "unavailable",
+        "reason": reason,
+        "display_only": True,
+        "authority": False,
+        "can_score": False,
+        "can_size": False,
+        "can_trade": False,
+        "law": [],
+        "observations": {},
+        "comparisons": {},
+        "accounting_views": [],
+        "views_are_alternatives_never_summed": True,
+    }
+
 # ---------------------------------------------------------------------------
 # Frozen thresholds (module-level constants — unit-tested exhaustively)
 # ---------------------------------------------------------------------------
@@ -1612,6 +1636,19 @@ def build_board(root=None, *, cutoff=None) -> dict:
         "series": {},
     }
 
+    # RIC Y1b: curve accounting passes through VERBATIM from the transmission
+    # snapshot (no recomputation, basis/vintage/rights carried as produced);
+    # a missing or malformed contract gets the "unavailable" shell.
+    _ca = tx.get("curve_accounting")
+    if isinstance(_ca, dict):
+        curve_accounting = _ca
+    elif _ca is None:
+        curve_accounting = _curve_accounting_board_shell(
+            "transmission_contract_missing_curve_accounting")
+    else:
+        curve_accounting = _curve_accounting_board_shell(
+            "transmission_contract_malformed_curve_accounting")
+
     # zq_path.parquet -> H1 d20
     zq_d20_bp: float | None = None
     try:
@@ -1815,6 +1852,15 @@ def build_board(root=None, *, cutoff=None) -> dict:
     # list means "not yet compared", NOT "no basis gaps" — the gaps live on
     # each row's own basis record.
     artifact["qualified_comparisons"] = []
+    # RIC Y1b: display-only curve accounting (A22-A24), attached AFTER the
+    # stance is composed so compose_stance's input is unchanged. Export stays
+    # closed until the E1 ruling.
+    artifact["curve_accounting"] = curve_accounting
+    artifact["curve_accounting_export"] = {
+        "export_allowed": False,
+        "reason": "awaiting_e1_ruling",
+        "display_only": True,
+    }
 
     return artifact
 

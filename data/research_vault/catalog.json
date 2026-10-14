@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-10-14T14:56:15.468758+00:00",
-  "count": 2902,
+  "generated_at": "2026-10-14T16:40:58.792840+00:00",
+  "count": 2907,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -152,6 +152,25 @@
       "needs_metadata": false
     },
     {
+      "id": "marketdesk-810sqguhx8x-b2e5e5",
+      "title": "GS Armbrust What Matters Today HF Exposure to Mag 7 at the Highs Large Bank Earnings ASML and Anthropic Today US Equity Positioning is a Tailwind HF Performance in September 14 Oct 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-14T13:44:19Z",
+      "summary_points": [
+        "HF Exposure to Mag 7 at Highs: Elevated net Mag 7 exposure amid 3-month implied volatility near lows creates a tactical hedging opportunity for long positions despite low overall net risk.",
+        "Foreign Investor Flow Strength: Current foreign investor net demand percentile near 100 confirms structural strength, aligning with midterm-driven patterns (1.75% AUM inflows historically) as a critical flow catalyst.",
+        "ASML Q3 Beat & AI Sentiment Risks: Strong Q3 results with 2027 capacity concerns; AI sentiment weakened by power/funding constraints, model competition, and reduced GPU reliance (2pm call critical)."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 6,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-zidfbw2dhyr-90424e",
       "title": "GS Bartlett GS TMT TODAY 10.14.26 14 Oct 2026",
       "institution": "S&T",
@@ -168,6 +187,46 @@
       "tickers": [],
       "top_pick": true,
       "pages": 6,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-0fedukpfmue-7f080b",
+      "title": "GS Privorotsky GS Basics Rates Calm. Cost of Capital. TTF new Highs 14 Oct 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-14T13:44:09Z",
+      "summary_points": [
+        "Fed Policy Signal: Fed signaling hold on 2027 hikes unless forced; CPI (0.6% headline) as key test driving bond rally and rate volatility compression.",
+        "Energy Geopolitical Shock: TTF at new highs (86), distillate shortage unresolved, Saudi escalation (Aramco HQ attack) elevating immediate energy risk.",
+        "Credit Spread Crisis: CCC spreads widened 1,250bp since September; HY widening driven by sovereign deficits and AI capital needs, risking credit stress spillover to SMEs/consumers."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 3,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-75qspjfpqxs-b7f945",
+      "title": "GS Crook GS MORNING 1 FX Trader Call Today, 2 September CPI Preview, 3 Hybrids Stretched Equity Rates Correlation, 4 5 Key Charts and 5 GS Energy Webcast 14 Oct 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-14T13:44:00Z",
+      "summary_points": [
+        "US CPI Forecast: Core CPI +0.24% (vs +0.2% consensus), headline +0.59% (vs +0.6% consensus), driven by autos (used cars +0.5%, new cars +0.2%) and energy; September MoM SA Core CPI dips to 0.24% from August’s 0.29%, with Transportation services ex-public (-0.3pp) offsetting rent pressures.",
+        "AI-Driven Inflation Impact: Core PCE inflation boosted by ~45bp from AI demand (half genuine), peaking at 50bp by end-2026; monthly core CPI forecasted at 0.24% in September, signaling near-term inflation moderation but sustained rent pressure.",
+        "Energy Geopolitical Risks: GS Webcast highlights Middle East tensions and winter weather impacts on oil/nat gas forecasts, critical for energy portfolio positioning amid Europe’s energy shock (SX5E <95%, 9% EUR costs).",
+        "UK-EU Rejoining Sentiment Shift: UK polling shows rising support for full EU rejoining (vs customs union), signaling potential policy shifts that could reshape trade, investment flows, and market access for UK assets.",
+        "Equity-Rate Correlation Fragmentation: RTY vs 2y SOFR shows negative correlation (2023-2024), while STOXX50E vs 2y EUR remains positive, indicating regional market divergence and asymmetric risk exposure between US and EU equities vs rates."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 9,
       "language": "en",
       "needs_metadata": false
     },
@@ -858,6 +917,27 @@
       "needs_metadata": false
     },
     {
+      "id": "marketdesk-cucjl2nrsal-fbd798",
+      "title": "Equities Tactical Top Picks",
+      "institution": "UBS",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-12T22:57:58Z",
+      "summary_points": [
+        "Regional Disparity: Asia-Pacific underperformed (-6.2% abs, -4.1% rel) vs.",
+        "Switzerland (5.8% abs) and Europe (0.5% abs), signaling sector-specific risks requiring active rebalancing.",
+        "Nenuvio & FDA Catalyst: $1bn sales target (2026) backed by channel demand; Relifeds FDA refiling timeline (Q3 results) is critical near-term catalyst for aesthetics growth.",
+        "Dental Market Growth: World's largest dental implants company with fastest-growing med tech market (2030); China pricing pressure offset by volume growth, restocking, and share gains.",
+        "Valuation Gap: Relative valuation below historical premiums supports material rating; price target $180 vs."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 26,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-xjuuyadj9qu-e30850",
       "title": "October 12 House View full set 2026",
       "institution": "UBS",
@@ -875,6 +955,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 14,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-sbvpc1qbqzo-090bad",
+      "title": "UBS Equity Preference List UK 2026 10 12",
+      "institution": "UBS",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-10-12T22:56:05Z",
+      "summary_points": [
+        "UK Equity Fundamentals: Attractive 12x forward P/E (vs 12.8x median) with robust earnings growth, though lagging global peers; near-term rate risk offset by resilient activity (e.g., energy prices supporting earnings).",
+        "Anglo American Copper Pivot: Strategic shift to copper via asset spin-offs (Valterra, nickel) and Teck merger (62% stake), targeting 30%+ copper volume growth by 2030; key catalysts include $4.5bn dividend and Quellaveco/Woodsmith projects.",
+        "China Demand Risk: Systemic threat across holdings (e.g., 13% revenue exposure for key firms); slower industrial metals demand or Teck merger delays could negatively impact outlook.",
+        "GBP Policy Exposure: All holdings GBP-denominated; critical to monitor UK interest rates, fiscal policies, and Brexit impacts on energy/finance sectors amid currency volatility.",
+        "Sector Growth Catalysts: Favor cyclical/structural areas (Eurozone IT, industrials, banks) via \"European Leaders\" theme; energy transition tailwinds (copper for EVs) and high-margin oncology assets (13% CAGR) drive growth."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 19,
       "language": "en",
       "needs_metadata": false
     },
