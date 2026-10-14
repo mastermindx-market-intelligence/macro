@@ -468,6 +468,7 @@ def test_complete_generation_covers_new_derived_bytes(tmp_path, path):
     "templates/govrev.html", "tests/test_proof_gate_suite.py",
     "site/theme.js",
     "tests/fixtures/government_revenue/issuance_incident_5fc18d5/candidate_queue.json",
+    "tests/defense_o2_source_contracts/fixtures/noc_siaw_theme_fact.json",
     "tests/test_government_revenue_priority.cjs",
 ])
 def test_source_and_public_mutations_during_prove_refuse(tmp_path, target):

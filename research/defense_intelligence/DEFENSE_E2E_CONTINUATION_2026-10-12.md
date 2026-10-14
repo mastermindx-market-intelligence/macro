@@ -797,3 +797,17 @@ Sentinel incentive offset.125 root theme checks pass. No manufacturing
 capacity, throughput, cash loss or future profitability is inferred. The
 six-symbol source and37 root tests pass after correcting sibling test imports
 for the real repository package and enrolling the new suite in CI.
+
+
+### October13 19:28 PDT source integration checkpoint (not release acceptance)
+
+Current protected main advanced to a0fa900488db2f9270a2ce5cda6f7418a87eb86f
+and PR9066 reports a merge conflict. Root preserves the existing v2 generated
+bytes as a local checkpoint before integrating main and rebuilding v3. These
+bytes are explicitly unaccepted: the v2 theme regression is repaired in source
+but not yet regenerated. Private company-owner material remains external to Git.
+A direct old-source probe also demonstrated that nested theme JSON fixtures
+were omitted from the proof source seal. The broader nested-fixture inventory
+includes those actual bytes; source closure is updated without rewriting any
+of the33 original failed-publication reconciliation records. The executable
+mutation guard is being verified against the repaired inventory.

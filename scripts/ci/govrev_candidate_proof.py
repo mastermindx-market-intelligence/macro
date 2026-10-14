@@ -103,7 +103,7 @@ SOURCE_DEPENDENCY_GLOBS = (
     "config/**/*", "contracts/**/*", "engine/government_revenue/**/*.py", "engine/company_intelligence/**/*.py", "engine/earnings_release/**/*.py",
     "scripts/**/*.py", "scripts/**/*.sh", "lib/**/*.py", "collectors/**/*.py",
     "app/**/*.py", "app/requirements*.txt", "templates/**/*", "tests/**/*.py",
-    "tests/**/*.js", "tests/**/*.cjs", "tests/fixtures/government_revenue/**/*",
+    "tests/**/*.js", "tests/**/*.cjs", "tests/**/fixtures/**/*",
     "data/usaspending/**/*", "requirements*.txt", "pytest.ini", "pyproject.toml",
     "setup.cfg", "conftest.py", ".github/workflows/government-revenue-live.yml",
     "research/GOVERNMENT_REVENUE_CANDIDATE_GRADER_PREREG.md",

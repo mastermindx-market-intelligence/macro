@@ -8,7 +8,7 @@
   },
   "source_closure": {
     "scripts/ci/govrev_publisher_preflight.py": "3f24c2e2139ea6f11103997bd07a1e69ec938e1012856f5112557ba2d65948f9",
-    "scripts/ci/govrev_candidate_proof.py": "00114099e682596089aa4ebba3c6585edc9a1e88021078882c01bccafd3fb4cf",
+    "scripts/ci/govrev_candidate_proof.py": "43267a7a3352810d7dd3751d3c4e6150dbc6e274a0ceb6d129c627a5ba26e299",
     ".github/workflows/government-revenue-live.yml": "5e9b2f1ef9350cea660d57ee828e975737659024a94c19b0ad8e8acb47fcf60e",
     ".github/workflows/daily.yml": "b8f98575df9d73762f3650cd1c79cefb2cfc43a040218bf07caa6821200c4732",
     ".github/workflows/fms-acquire.yml": "5995f83b35c5a39ea663e5e802f6431c9cd805a69d557be06596041dcd16175e"
