@@ -275,3 +275,31 @@ def test_nested_foreign_hooks_are_rejected_before_use(tmp_path, monkeypatch):
         b.public_diagnostic(replace(read, aggregates=(IterBomb(),)))
     with pytest.raises(b.BridgeRefused):
         b.compute_synthetic_diagnostic(run, commission=replace(commission, original_root_id=EqBomb()))
+
+
+def test_prepare_synthetic_inputs_is_a_pure_narrow_seam(tmp_path, monkeypatch):
+    """The public preparer reuses the accepted checks exactly and carries no label."""
+    run, commission = make_case(tmp_path, monkeypatch)
+    before = b.compute_synthetic_diagnostic(run, commission=commission)
+    prepared = b.prepare_synthetic_inputs(run, commission=commission)
+    assert b.compute_synthetic_diagnostic(run, commission=commission) == before
+    assert [len(task.trailing_session_dates) for task in prepared.decisions] == [63] * 6
+    assert all(task.complete_trailing for task in prepared.decisions)
+    assert [list(group.decision_ids) for group in prepared.schedules] == [
+        json.loads(item.raw)["decision_ids"] for item in run.schedules]
+    # Narrow: no SourcePath, retained output, capture image or staging path is carried.
+    for name in ("paths", "outputs", "positions", "manifest", "trial_readback"):
+        assert not hasattr(prepared, name), name
+    assert not hasattr(prepared.identity, "artifact_path")
+    assert not any(hasattr(task, "capture") for task in prepared.decisions)
+    # Exact: every task reproduces the accepted per-decision causal input bytes.
+    for task, decision in zip(prepared.decisions, run.decisions):
+        request = json.loads(decision.request.raw)
+        trigger = run.session_dates.index(run.positions[decision.calendar_index].trigger_date)
+        trailing = run.session_dates[max(0, trigger - 62):trigger + 1]
+        assert task.input_bytes.raw == encoded(b._capture_input(decision, request, trailing))
+        assert task.cutoff == request["cutoff"]
+        assert task.request is decision.request
+    # Structural admission still refuses; it is never authority.
+    with pytest.raises(b.BridgeRefused, match="PREREQUISITES_INVALID"):
+        b.prepare_synthetic_inputs(replace(run, owner_references=bound({})), commission=commission)

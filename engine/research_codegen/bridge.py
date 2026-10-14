@@ -147,6 +147,61 @@ class SyntheticRun:
     session_dates: tuple[str, ...]
 
 
+@dataclass(frozen=True)
+class PreparedIdentity:
+    """The nine immutable identity fields; never an artifact or staging path."""
+
+    diagnostic_id: str
+    original_root_id: str
+    candidate_id: str
+    source_sha256: str
+    config_sha256: str
+    protocol_sha256: str
+    input_policy_sha256: str
+    runtime_sha256: str
+    evaluator_sha256: str
+
+
+@dataclass(frozen=True)
+class PreparedDecisionInput:
+    """One owner decision's exact causal prefix; no label, path or capture image."""
+
+    fold_id: str
+    entity_id: str
+    decision_id: str
+    calendar_index: int
+    node: str
+    request: BoundBytes
+    input_bytes: BoundBytes
+    cutoff: str
+    trailing_session_dates: tuple[str, ...]
+    complete_trailing: bool
+
+
+@dataclass(frozen=True)
+class PreparedOwnerSchedule:
+    """The owner's fixed per-entity decision order, retained exactly."""
+
+    fold_id: str
+    entity_id: str
+    decision_ids: tuple[str, ...]
+
+
+@dataclass(frozen=True)
+class PreparedSyntheticInputs:
+    """Frozen per-decision preparation consumed by the connected prefix driver.
+
+    Narrow by construction: no SourcePath, no label, no raw capture image and no
+    staging path is carried.  Structural admission here is not authentication and
+    grants no generation, execution, evaluation or authority.
+    """
+
+    identity: PreparedIdentity
+    decisions: tuple[PreparedDecisionInput, ...]
+    schedules: tuple[PreparedOwnerSchedule, ...]
+    session_dates: tuple[str, ...]
+
+
 def _require(condition, reason):
     if not condition:
         raise BridgeRefused(reason)
@@ -342,11 +397,11 @@ def _positions(value):
     return tuple(excluded), tuple(supplied)
 
 
-def compute_synthetic_diagnostic(run, *, commission=None):
-    """Connect trusted retained fixtures; return bytes for the owner's staging writer.
+def _admission(run, *, commission):
+    """Shared structural admission prologue for the evaluator and the preparer.
 
-    Candidate failures yield whole-run refusal. Malformed owner bindings raise
-    BridgeRefused. The method has no filesystem or candidate execution effect.
+    Factored out of compute_synthetic_diagnostic with identical checks in the
+    identical order.  ``admitted`` is a fixed structural gate, never authority.
     """
     _require(type(run) is SyntheticRun, "EXACT_SYNTHETIC_RUN_REQUIRED")
     identity = _identity(run.identity)
@@ -361,8 +416,6 @@ def compute_synthetic_diagnostic(run, *, commission=None):
                  and run.session_dates[anchor + 26 * p.calendar_index] == p.trigger_date
                  for p in run.positions), "FULL_SCHEDULE_ANCHOR_MISMATCH")
     coverage = dict(scheduled=len(run.positions), excluded=len(excluded), qualified=len(supplied))
-    known_coverage = tuple(evaluation.CoveragePosition(p.calendar_index, p.trigger_date, len(p.eligible_nodes)) for p in supplied)
-    result = evaluation.EvaluationResult("REFUSED", ("PREREQUISITES_INVALID",), known_coverage, ())
     manifest, protocol = _bound(run.manifest), _bound(run.protocol)
     _require(not contracts.validate_manifest(manifest, trusted_protocol=protocol), "MANIFEST_INVALID")
     _require(all(manifest[k] == identity[k] for k in _IDENTITY if k in manifest)
@@ -377,13 +430,26 @@ def compute_synthetic_diagnostic(run, *, commission=None):
                         and any(v.get("source_sha256") == identity["source_sha256"]
                                 and v.get("config_sha256") == identity["config_sha256"]
                                 for v in expected.get("variants", []) if type(v) is dict))
-    if (owner["status"] == account["status"] == "STRUCTURALLY_COMPLETE_DISABLED" and accounting_bound):
+    admitted = bool(owner["status"] == account["status"] == "STRUCTURALLY_COMPLETE_DISABLED"
+                    and accounting_bound)
+    return identity, supplied, coverage, admitted
+
+
+def compute_synthetic_diagnostic(run, *, commission=None):
+    """Connect trusted retained fixtures; return bytes for the owner's staging writer.
+
+    Candidate failures yield whole-run refusal. Malformed owner bindings raise
+    BridgeRefused. The method has no filesystem or candidate execution effect.
+    """
+    identity, supplied, coverage, admitted = _admission(run, commission=commission)
+    known_coverage = tuple(evaluation.CoveragePosition(p.calendar_index, p.trigger_date, len(p.eligible_nodes)) for p in supplied)
+    result = evaluation.EvaluationResult("REFUSED", ("PREREQUISITES_INVALID",), known_coverage, ())
+    if admitted:
         try:
             result = _evaluate(run, supplied, identity)
         except BridgeRefused:
             # Never expose candidate text or salvage successful cells.
-            result = evaluation.EvaluationResult("REFUSED", ("INPUT_OR_OUTPUT_REFUSED",),
-                tuple(evaluation.CoveragePosition(p.calendar_index, p.trigger_date, len(p.eligible_nodes)) for p in supplied), ())
+            result = evaluation.EvaluationResult("REFUSED", ("INPUT_OR_OUTPUT_REFUSED",), known_coverage, ())
     artifact = dict(schema="research_codegen.synthetic_diagnostic.v1", identity=identity,
                     created_at=run.created_at, coverage=coverage, evaluation=asdict(result), flags=_FLAGS)
     raw = json.dumps(artifact, sort_keys=True, separators=(",", ":"), allow_nan=False).encode()
@@ -391,11 +457,17 @@ def compute_synthetic_diagnostic(run, *, commission=None):
     return raw
 
 
-def _evaluate(run, supplied, identity):
-    _require(type(run.decisions) is tuple and type(run.schedules) is tuple and type(run.outputs) is tuple
-             and len(run.schedules) == len(run.outputs), "IMMUTABLE_DECISIONS_REQUIRED")
+def _prepare_decisions(run, supplied, identity):
+    """Exact per-decision causal prefix, factored out of _evaluate unchanged.
+
+    Returns the request map, the populated flag map and one narrow preparation
+    record per decision in owner order.  No semantic change and no new checks; the
+    retained-schedule/output arity guard stays on the whole-run path so that a run
+    with stale or absent outputs can still be prepared.
+    """
+    _require(type(run.decisions) is tuple, "IMMUTABLE_DECISIONS_REQUIRED")
     wanted = {(p.calendar_index, n) for p in supplied for n in p.eligible_nodes}
-    requests, populated, keys = {}, {}, set()
+    requests, populated, keys, tasks = {}, {}, set(), []
     for d in run.decisions:
         _require(type(d) is DecisionBinding and type(d.calendar_index) is int and type(d.node) is str,
                  "EXACT_DECISION_REQUIRED")
@@ -419,11 +491,19 @@ def _evaluate(run, supplied, identity):
         _require(rid not in requests, "DUPLICATE_REQUEST")
         requests[rid] = key
         trailing = run.session_dates[max(0, trigger_index - 62):trigger_index + 1]
-        observations = _capture_input(d, request, trailing)["observations"]
-        populated[rid] = (len(trailing) == len(observations) == 63
-                          and tuple(_timestamp(r["event_time"]).date().isoformat() for r in observations) == trailing
-                          and all(_finite(r["value"]) for r in observations))
+        causal = _capture_input(d, request, trailing)
+        observations = causal["observations"]
+        complete = (len(trailing) == len(observations) == 63
+                    and tuple(_timestamp(r["event_time"]).date().isoformat() for r in observations) == trailing
+                    and all(_finite(r["value"]) for r in observations))
+        populated[rid] = complete
+        tasks.append((rid, d, request, causal, cutoff, trailing, complete))
     _require(keys == wanted, "MISSING_DECISION")
+    return requests, populated, tasks
+
+
+def _consume_outputs(run, requests, populated, identity):
+    """Whole-run output consumption, factored out of _evaluate unchanged."""
     scores, seen = [], set()
     for sb, ob in zip(run.schedules, run.outputs):
         schedule, output = _bound(sb, contracts.MAX_BYTES), _bound(ob, contracts.MAX_BYTES)
@@ -440,9 +520,69 @@ def _evaluate(run, supplied, identity):
             index, node = requests[rid]
             scores.append(evaluation.FeatureScore(index, node, row["value"]))
     _require(seen == set(requests), "MISSING_OUTPUT")
+    return scores
+
+
+def _evaluate(run, supplied, identity):
+    _require(type(run.decisions) is tuple and type(run.schedules) is tuple and type(run.outputs) is tuple
+             and len(run.schedules) == len(run.outputs), "IMMUTABLE_DECISIONS_REQUIRED")
+    requests, populated, _ = _prepare_decisions(run, supplied, identity)
+    scores = _consume_outputs(run, requests, populated, identity)
     formations = tuple(evaluation.Formation(p.calendar_index, p.trigger_date, p.eligible_nodes) for p in supplied)
     return evaluation.evaluate_feature_ordering(paths=run.paths, formations=formations,
         scores=tuple(scores), expected_session_dates=run.session_dates)
+
+
+def _canonical_bytes(value):
+    return json.dumps(value, sort_keys=True, separators=(",", ":"), allow_nan=False).encode()
+
+
+def prepare_synthetic_inputs(run, *, commission=None):
+    """Public preparation seam: exact per-decision causal prefixes, zero effects.
+
+    Reuses the accepted manifest/identity/owner/accounting checks and the exact
+    full-position, source-exclusion, next-session-cutoff and trailing-63 logic of
+    compute_synthetic_diagnostic.  The returned shape is narrow: no SourcePath, no
+    label, no raw capture image and no staging path.  Nothing here runs a
+    candidate, grants admission or releases a label, and malformed owner bindings
+    raise BridgeRefused exactly as the whole-run path does.
+    """
+    _require(type(run) is SyntheticRun, "EXACT_SYNTHETIC_RUN_REQUIRED")
+    _require(type(run.schedules) is tuple, "IMMUTABLE_DECISIONS_REQUIRED")
+    identity, supplied, _, admitted = _admission(run, commission=commission)
+    _require(admitted, "PREREQUISITES_INVALID")
+    requests, _, tasks = _prepare_decisions(run, supplied, identity)
+    prepared = []
+    for rid, decision, request, causal, cutoff, trailing, complete in tasks:
+        raw = _canonical_bytes(causal)
+        prepared.append(PreparedDecisionInput(
+            rid[0], decision.node, rid[2], decision.calendar_index, decision.node, decision.request,
+            BoundBytes(raw, hashlib.sha256(raw).hexdigest(), len(raw)), request["cutoff"],
+            tuple(trailing), complete))
+    schedules, schedule_keys = [], set()
+    for sb in run.schedules:
+        schedule = _bound(sb, contracts.MAX_BYTES)
+        _require(type(schedule) is dict and type(schedule.get("decision_ids")) is list
+                 and all(type(x) is str for x in schedule["decision_ids"]), "INVALID_OWNER_SCHEDULE")
+        # Existing output validator owns the exact closed schedule schema. These
+        # inert reference rows validate its shape without admitting any output.
+        reference = {k: schedule.get(k) for k in ("candidate_id", "fold_id", "entity_id", "input_policy_sha256")}
+        reference.update(schema="research_codegen.output.v1", rows=[
+            dict(decision_id=d, status="refused", value=None, reason="OWNER_SCHEDULE_REFERENCE")
+            for d in schedule["decision_ids"]])
+        _require(not validate_output_envelope(reference, trusted_schedule=schedule), "INVALID_OWNER_SCHEDULE")
+        group_key = (schedule["fold_id"], schedule["entity_id"])
+        _require(group_key not in schedule_keys, "DUPLICATE_OWNER_SCHEDULE")
+        schedule_keys.add(group_key)
+        _require(schedule["candidate_id"] == identity["candidate_id"]
+                 and schedule["input_policy_sha256"] == identity["input_policy_sha256"], "OUTPUT_IDENTITY_MISMATCH")
+        ordered = [r[2] for r in requests if r[:2] == (schedule["fold_id"], schedule["entity_id"])]
+        _require(schedule["decision_ids"] == ordered, "OUTPUT_ORDER_MISMATCH")
+        schedules.append(PreparedOwnerSchedule(schedule["fold_id"], schedule["entity_id"], tuple(ordered)))
+    _require(set(requests) == {(s.fold_id, s.entity_id, d) for s in schedules for d in s.decision_ids},
+             "INCOMPLETE_OWNER_SCHEDULE")
+    return PreparedSyntheticInputs(PreparedIdentity(**{k: identity[k] for k in _IDENTITY}),
+                                   tuple(prepared), tuple(schedules), run.session_dates)
 
 
 def _restore_result(value):
