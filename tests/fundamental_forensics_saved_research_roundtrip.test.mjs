@@ -1108,7 +1108,7 @@ test('T-R2-3c: a refused restore clears a previously pinned request', () => {
   assert.equal(drive.api.state.pinnedRequest, null, 'the refused restore cleared the pinned request');
 });
 
-test('id-problem rows stay listed under row:<index>, refuse load, and are removable by that key', () => {
+test('id-problem rows stay listed under row:<index>:<fingerprint>, refuse load, and are removable by that key', () => {
   const good = fixtureContainer('saved_single_issuer.json').saved_views[0];
   const noId = JSON.parse(JSON.stringify(good));
   delete noId.id;
@@ -1122,23 +1122,176 @@ test('id-problem rows stay listed under row:<index>, refuse load, and are remova
   assert.equal(listing.length, 3, 'every row stays listed — nothing is dropped');
   assert.equal(listing[0].id, good.id);
   assert.equal(listing[0].available, true);
-  assert.equal(listing[1].id, 'row:1');
+  assert.match(listing[1].id, /^row:1:[0-9a-f]{8}$/, 'the id-less row is addressed by index + fingerprint');
   assert.equal(listing[1].available, false);
   assert.equal(listing[1].reason, 'id');
-  assert.equal(listing[2].id, 'row:2');
+  assert.match(listing[2].id, /^row:2:[0-9a-f]{8}$/, 'the duplicate-id row is addressed by index + fingerprint');
   assert.equal(listing[2].available, false);
   assert.equal(listing[2].reason, 'id');
-  assert.equal(store.load('row:1').reason, 'id');
-  assert.equal(store.load('row:2').reason, 'id');
-  assert.equal(store.update('row:2', { name: 'Renamed anyway' }).reason, 'id');
+  assert.equal(store.load(listing[1].id).reason, 'id');
+  assert.equal(store.load(listing[2].id).reason, 'id');
+  assert.equal(store.update(listing[2].id, { name: 'Renamed anyway' }).reason, 'id');
   // A real id acts on the FIRST row carrying it.
   const byId = store.load(good.id);
   assert.equal(byId.ok, true);
   sameJson(byId.view, good);
-  const removed = store.remove('row:2');
+  const removed = store.remove(listing[2].id);
   sameJson(removed, { ok: true, deleted: true });
-  assert.equal(store.list().map((entry) => entry.id).join(','), good.id + ',row:1',
-    'the duplicate row is gone; renumbered addresses follow the surviving rows');
+  sameJson(store.list().map((entry) => entry.id), [good.id, listing[1].id],
+    'the duplicate row is gone; the surviving rows keep their listing ids');
+});
+
+// ── X2-b r2 MINOR 1: an index-only row address can point at a DIFFERENT row
+// after another tab writes. The address now carries a fingerprint of the
+// row's bytes, so it keeps naming the row the user saw. ─────────────────────
+
+function junkRows() {
+  const good = fixtureContainer('saved_single_issuer.json').saved_views[0];
+  const junk1 = JSON.parse(JSON.stringify(good));
+  delete junk1.id;
+  const junk2 = JSON.parse(JSON.stringify(good));
+  delete junk2.id;
+  junk2.name = 'A different name entirely';
+  return { good, junk1, junk2 };
+}
+
+// The test's own FNV-1a copy: a listing id for an id-problem row must be
+// exactly 'row:<index>:' + this fingerprint of the row's bytes.
+function fnv1aHex(value) {
+  let serialized = JSON.stringify(value);
+  if (serialized === undefined) serialized = 'undefined';
+  let hash = 0x811c9dc5;
+  for (let index = 0; index < serialized.length; index += 1) {
+    hash = Math.imul(hash ^ serialized.charCodeAt(index), 0x01000193) >>> 0;
+  }
+  return hash.toString(16).padStart(8, '0');
+}
+
+test('T-X2B-1a: a stale row address deletes the row the user saw, never its new neighbour', () => {
+  const { good, junk1, junk2 } = junkRows();
+  const shared = memoryStorage([[STORE_KEY, seedBytes([good, junk1, junk2])]]);
+  const A = freshBriefcase(shared, 0).create({ now: () => '2026-10-12T00:00:00Z' });
+  const B = freshBriefcase(shared, 7).create({ now: () => '2026-10-12T00:00:00Z' });
+  const addr = B.list()[1].id;
+  assert.match(addr, /^row:1:[0-9a-f]{8}$/, 'tab B addresses junk1 by index + fingerprint');
+  // Tab A deletes the lawful row, so index 1 now holds junk2.
+  sameJson(A.remove(good.id), { ok: true, deleted: true });
+  // The stale address must still delete junk1 (the row the user saw), never
+  // its new neighbour junk2.
+  sameJson(B.remove(addr), { ok: true, deleted: true });
+  const stored = JSON.parse(shared.rows.get(STORE_KEY));
+  sameJson(stored.saved_views, [junk2], 'junk1 was deleted and junk2 survived');
+});
+
+test('T-X2B-1b: a row address whose row is gone deletes nothing', () => {
+  const { good, junk1, junk2 } = junkRows();
+  const shared = memoryStorage([[STORE_KEY, seedBytes([good, junk1, junk2])]]);
+  const A = freshBriefcase(shared, 0).create({ now: () => '2026-10-12T00:00:00Z' });
+  const B = freshBriefcase(shared, 7).create({ now: () => '2026-10-12T00:00:00Z' });
+  const addr = B.list()[1].id;
+  // Tab A deletes junk1 through ITS OWN listing address for the same bytes.
+  sameJson(A.remove(A.list()[1].id), { ok: true, deleted: true });
+  const before = shared.rows.get(STORE_KEY);
+  sameJson(B.remove(addr), { ok: true, deleted: false });
+  assert.equal(shared.rows.get(STORE_KEY), before, 'the stored bytes are unchanged by the stale remove');
+});
+
+test('T-X2B-1c: a bare legacy row:<index> address is inert', () => {
+  const { good, junk1, junk2 } = junkRows();
+  const shared = memoryStorage([[STORE_KEY, seedBytes([good, junk1, junk2])]]);
+  const store = freshBriefcase(shared, 0).create({ now: () => '2026-10-12T00:00:00Z' });
+  const before = shared.rows.get(STORE_KEY);
+  assert.equal(store.load('row:1').reason, 'missing');
+  assert.equal(store.update('row:1', { name: 'x' }).reason, 'missing');
+  sameJson(store.remove('row:1'), { ok: true, deleted: false });
+  assert.equal(shared.rows.get(STORE_KEY), before, 'the stored bytes are unchanged');
+});
+
+test('T-X2B-1d: the row: id namespace is reserved', () => {
+  const good = fixtureContainer('saved_single_issuer.json').saved_views[0];
+  const reserved = JSON.parse(JSON.stringify(good));
+  reserved.id = 'row:0:00000000';
+  const storage = memoryStorage([[STORE_KEY, seedBytes([reserved])]]);
+  const store = freshBriefcase(storage, 0).create({ now: () => '2026-10-12T00:00:00Z' });
+  const listing = store.list();
+  assert.equal(listing.length, 1);
+  assert.equal(listing[0].available, false);
+  assert.equal(listing[0].reason, 'id');
+  const fingerprint = fnv1aHex(reserved);
+  assert.notEqual(fingerprint, '00000000', 'guard: the fixture bytes do not hash to the reserved literal');
+  assert.equal(listing[0].id, 'row:0:' + fingerprint,
+    'the listing id is the index plus the row\'s own fingerprint, never its literal stored id');
+  // A literal id inside the reserved namespace never names the row by id:
+  // 'row:0:00000000' does not carry the row's real fingerprint, so it
+  // resolves to no address at all.
+  assert.equal(store.load(reserved.id).reason, 'missing');
+});
+
+test('T-X2B-1e: two tabs derive the same row address for the same bytes', () => {
+  const { good, junk1, junk2 } = junkRows();
+  const shared = memoryStorage([[STORE_KEY, seedBytes([good, junk1, junk2])]]);
+  const A = freshBriefcase(shared, 0).create({ now: () => '2026-10-12T00:00:00Z' });
+  const B = freshBriefcase(shared, 7).create({ now: () => '2026-10-12T00:00:00Z' });
+  const a = A.list();
+  const b = B.list();
+  assert.equal(a.length, b.length);
+  for (let index = 0; index < a.length; index += 1) {
+    assert.equal(a[index].id, b[index].id, 'row ' + index + ' carries the same address in both tabs');
+  }
+});
+
+// ── X2-b r2 MINOR 2: a view deleted in ANOTHER tab after this tab restored
+// it must turn into its own refusal on the next read — the missing notice
+// shows, no pinned badge renders, no pinned bytes are served. ──────────────
+
+function restoredPinnedDrive() {
+  const container = fixtureContainer('saved_pinned.json');
+  const row = container.saved_views[0];
+  const drive = harness();
+  drive.storage.setItem(STORE_KEY, JSON.stringify(container));
+  drive.api.initSavedBriefcase();
+  const restored = drive.api.restoreSavedView(row.id);
+  assert.equal(restored.ok, true, restored.reason || 'the pinned fixture view restores');
+  return { drive, row };
+}
+
+test('T-X2B-2a: an active pinned view deleted in another tab shows the missing notice and stops serving pinned bytes', () => {
+  const { drive, row } = restoredPinnedDrive();
+  assert.equal(drive.nodes['ff-saved-badge'].hidden, false, 'the pinned badge is shown after the restore');
+  assert.ok(drive.api.state.pinnedRequest, 'the pinned request bytes are held');
+  // Tab A: a SECOND briefcase instance on the same storage deletes the view.
+  const tabA = freshBriefcase(drive.storage, 0).create({ now: () => '2026-10-12T00:00:00Z' });
+  sameJson(tabA.remove(row.id), { ok: true, deleted: true });
+  drive.api.renderSavedUI();
+  assert.equal(drive.api.state.savedRefusal, 'missing');
+  assert.equal(drive.api.state.pinnedRequest, null);
+  assert.equal(drive.nodes['ff-saved-notice'].hidden, false, 'the missing notice shows');
+  assert.match(drive.nodes['ff-saved-notice'].innerHTML, /no longer on this device/);
+  assert.equal(drive.nodes['ff-saved-badge'].hidden, true, 'the badge is hidden');
+  assert.equal(drive.nodes['ff-saved-rename'].hidden, true, 'the rename button is hidden');
+  assert.equal(drive.api.activePinnedRequest(), null, 'no pinned bytes are served');
+});
+
+test('T-X2B-2b: activePinnedRequest notices the deletion even before any render', () => {
+  const { drive, row } = restoredPinnedDrive();
+  const tabA = freshBriefcase(drive.storage, 0).create({ now: () => '2026-10-12T00:00:00Z' });
+  sameJson(tabA.remove(row.id), { ok: true, deleted: true });
+  // No renderSavedUI() first: the pinned-read path itself must reconcile.
+  assert.equal(drive.api.activePinnedRequest(), null, 'no pinned bytes are served');
+  assert.equal(drive.api.state.savedRefusal, 'missing');
+  assert.equal(drive.api.state.pinnedRequest, null);
+});
+
+test('T-X2B-2c: a present active view is never refused by the reconcile', () => {
+  const { drive, row } = restoredPinnedDrive();
+  const before = drive.storage.getItem(STORE_KEY);
+  drive.api.renderSavedUI();
+  assert.equal(drive.api.state.savedRefusal, '', 'a present view is never refused');
+  assert.equal(drive.nodes['ff-saved-badge'].hidden, false, 'the badge is shown');
+  const request = drive.api.activePinnedRequest();
+  assert.ok(request, 'the pinned request is still served');
+  sameJson(request, row.request);
+  assert.equal(drive.storage.getItem(STORE_KEY), before, 'the stored bytes are unchanged by the two calls');
 });
 
 test('the evidence harness seed loads rows 1-2 and refuses the drift row as schema', () => {

@@ -2546,6 +2546,7 @@
   // while the desk still matches the view's subject, policy and cutoff day.
   // Any manual navigation away makes the override inert by itself.
   function activePinnedRequest() {
+    if (state.pinnedRequest) reconcileSavedActive();
     var request = state.pinnedRequest;
     if (!request || typeof request !== 'object') return null;
     var target = company() || {};
@@ -2562,6 +2563,18 @@
     return Object.assign({}, request, {
       policy: Object.assign({}, request.policy, { selection: selection })
     });
+  }
+
+  // X2-b (r2 MINOR 2): another tab can delete or break the active view.
+  // The next read notices it: the view turns into its own refusal, so the
+  // notice shows, no pinned badge renders, and no pinned bytes are served.
+  function reconcileSavedActive() {
+    if (!savedBriefcase || !state.savedActiveId || state.savedRefusal) return;
+    if (savedBriefcase.readOnly()) return;
+    var result = savedBriefcase.load(state.savedActiveId);
+    if (result.ok) return;
+    state.savedRefusal = result.reason;
+    state.pinnedRequest = null;
   }
 
   function savedActiveView() {
@@ -2631,6 +2644,7 @@
     // stay disabled and Rename/Delete stay hidden through attributes only,
     // and the notice names the paused store instead of a contract drift.
     var storeReadOnly = savedBriefcase.readOnly();
+    reconcileSavedActive();
     var phase = savedSavePhase();
     var name = nameInput && nameInput.value ? String(nameInput.value).trim() : '';
     if (saveBtn) {
@@ -5377,6 +5391,7 @@
       buildSavedViewInput: buildSavedViewInput,
       backfillSavedAgainst: backfillSavedAgainst,
       activePinnedRequest: activePinnedRequest,
+      reconcileSavedActive: reconcileSavedActive,
       savedSavePhase: savedSavePhase,
       savedGenerationStale: savedGenerationStale,
       exportQueryBody: exportQueryBody
