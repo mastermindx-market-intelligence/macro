@@ -1165,6 +1165,18 @@ _REFUSED_NEEDLES = {
 }
 
 
+def _is_yaml_key_line(line: str) -> bool:
+    # Lexical, not structural. Optional "- " bullet, then the key candidate
+    # [A-Za-z_][\w.:-]*: ``/`` is outside the class, so it still ends a
+    # candidate and keeps raw paths such as ``lib/x.py`` out. The lookahead
+    # tests the FINAL colon of the candidate, which must be followed by
+    # whitespace or end-of-line: ``DEC:KEY: v`` is a key line, ``DEC:KEY``
+    # alone is not. No module wording is pinned.
+    return re.match(
+        r"^\s*(?:-\s+)?[A-Za-z_][\w.:-]*:(?=\s|$)", line
+    ) is not None
+
+
 @pytest.mark.parametrize("field_id,builder,outcome,needle", _SEAT_FIELD_PARAMS)
 def test_seat_string_fields_are_refused_or_quoted(
     tmp_path: Path, field_id: str, builder, outcome: str, needle
@@ -1263,12 +1275,6 @@ def test_seat_string_fields_are_refused_or_quoted(
                     # is a YAML key (``<key>:``, optionally after ``- ``) the
                     # value does not occur outside quotes.
                     def _raw_has_value(line: str) -> bool:
-                        # The parity scan below flips inside/outside at each
-                        # boundary quote; a ``"`` in the value makes it ambiguous.
-                        assert '"' not in value, (
-                            "value carries a double quote: the quote-parity scan "
-                            "cannot distinguish a boundary from the quoted text"
-                        )
                         # Escape-aware: ``_q`` renders a literal double quote
                         # inside a quoted scalar as \" and a literal backslash
                         # as \\. A one-character lookbehind cannot tell \"
@@ -1294,16 +1300,13 @@ def test_seat_string_fields_are_refused_or_quoted(
                             outside.append(line[pos:])
                         return any(value in segment for segment in outside)
 
-                    def _is_yaml_key_line(line: str) -> bool:
-                        # Lexical (a key-name charset), not structural: the
-                        # first token must match [A-Za-z_][\w.-]* then a colon
-                        # that is followed by whitespace or end-of-line (YAML's
-                        # implicit-key ": "). ``/`` ends a candidate, so a raw
-                        # path such as ``lib/x.py`` is not a key line.
-                        return re.match(
-                            r"^\s*(?:-\s+)?[A-Za-z_][\w.-]*:(?=\s|$)", line
-                        ) is not None
-
+                    # The parity scan in _raw_has_value flips inside/outside
+                    # at each boundary quote; a ``"`` in the value makes it
+                    # ambiguous. Assert the value once, not per scanned line.
+                    assert '"' not in value, (
+                        "value carries a double quote: the quote-parity scan "
+                        "cannot distinguish a boundary from the quoted text"
+                    )
                     raw_lines = [
                         line for line in lines
                         if value in line and _raw_has_value(line)
@@ -1331,6 +1334,33 @@ def test_seat_string_fields_are_refused_or_quoted(
                         f"{case}: value did not survive in "
                         f"{_escaped_form(value)!r} form"
                     )
+
+
+_YAML_KEY_LINE_CASES = [
+    pytest.param("  - DEC:SRC-FILE: x", True, id="embedded-colon-key"),
+    pytest.param("  - src-file: x", True, id="kebab-key"),
+    pytest.param("  file.path: x", True, id="dotted-key"),
+    pytest.param("merged-at: 2026-01-01", True, id="merged-at-date"),
+    pytest.param('  - path: "lib/x.py"', True, id="quoted-value"),
+    pytest.param("title:", True, id="bare-key-eol"),
+    pytest.param("  - lib_x:y.py", False, id="colon-in-word"),
+    pytest.param("  - C:/x.py", False, id="colon-then-slash"),
+    pytest.param("  - a:b", False, id="colon-no-space"),
+    pytest.param("  - lib/x.py - not named", False, id="raw-path-note"),
+    pytest.param("  - DEC:KEY", False, id="citation-alone"),
+    pytest.param("  - WS:AGENT-OS", False, id="ws-key-alone"),
+]
+
+
+@pytest.mark.parametrize("line,expected", _YAML_KEY_LINE_CASES)
+def test_yaml_key_line_classifier_cases(line: str, expected: bool) -> None:
+    """The lifted classifier is pinned on the twelve probe lines.
+
+    An embedded-colon citation key such as ``  - DEC:SRC-FILE: x`` is a
+    mapping to PyYAML and must classify as a key line; the same citation
+    alone (``  - DEC:KEY``) is a scalar and must not.
+    """
+    assert _is_yaml_key_line(line) is expected
 
 
 # --- item 4: trailing separators are refused by the category clause ---------
