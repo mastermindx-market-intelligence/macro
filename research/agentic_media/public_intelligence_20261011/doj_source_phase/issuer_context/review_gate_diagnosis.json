@@ -1,0 +1,16 @@
+{
+  "run_id": "mmx-press-issuer-context-review-20261014-001",
+  "operation": "local_read_only_diagnosis",
+  "publication_refusal": "ROUTING_CRITICAL_POLICY_MISMATCH",
+  "finding": "fabric_policy_snapshot.compatible compares exact critical routing fingerprints, excluding only explicitly advisory Grok weekly fields and priority. Refusal preserves the remote incumbent policy. Remote policy differences are not yet observed.",
+  "supported_observation": "run_observation_delivery.request_for is explicitly scope-admitted; this Press run is not present. No observe-run invocation or raw SSH workaround was attempted.",
+  "files_sha256": {
+    "fabric_policy_snapshot.py": "a711a79f89f135d0434bea1161da3cd0d786522998904e692f316b5e5628ba20",
+    "run_observation_delivery.py": "479e6c50947f6961c1cb6e50fec0e8390c0eaf824ac455b24c2b06b9d7d33d92",
+    "remote_sub.sh": "e2ec7dfe2efa0680b4bf961ac73ce916adf5f1dc90e510f6c8ff6ed50e069deb",
+    "fabric_task.py": "bfa5fcdc3df04d76d6c3b0b2dda2dac17ab4539253ec3ffb86fca4e2c4c13207"
+  },
+  "retry": false,
+  "policy_mutation": false,
+  "independent_review": "NOT_ESTABLISHED"
+}

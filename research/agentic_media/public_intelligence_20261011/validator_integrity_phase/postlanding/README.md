@@ -1,3 +1,5 @@
+> Current-source warning (October 14): this accepted 558ca manifest is stale for the later DOJ and issuer-context additions. Do not use it to claim their installed acceptance. Candidate preparation is in `../../doj_source_phase/issuer_context/`; independent review and explicit manifest acceptance remain required.
+
 # Validator and writer follow-on acceptance bundle
 
 Prepared only; never executed against production. This directory keeps the prior accepted three-page binding and a distinct 24-source manifest for the follow-on. The four changed source hashes are validators.py, writer.py, run_press.py and stage_official_feed_press.py; the original PR 9209 manifest is unchanged.

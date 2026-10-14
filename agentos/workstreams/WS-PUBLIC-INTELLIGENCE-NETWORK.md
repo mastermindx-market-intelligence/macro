@@ -21,7 +21,7 @@ waves:
     title: Verify publication, signup and explicit follow continuation
     status: in_progress
     depends_on: [qualified-story]
-next_action: Consume controller-admitted main repair 9227 or 9229 and complete PR 9209 protected installation; preserve accepted DOJ source 70d9b7e08337, close the later issuer-context independent-review gate without replay, refresh its source-bound acceptance bundle, and ship one follow-on. Continue source qualification with original history and zero receipt padding.
+next_action: Consume controller-admitted repairs 9227 or 9229 and complete PR 9209 protected installation. Close issuer-context review for application frontier 1989dd89 through the admitted original path before accepting the prepared 28-source manifest and 18 portable control groups; then ship one follow-on. Continue primary-source qualification without rewriting held drafts or padding receipt credit.
 artifacts:
   - https://github.com/mastermindx-market-intelligence/macro/pull/9209
   - https://github.com/mastermindx-market-intelligence/macro/pull/9041
@@ -345,3 +345,61 @@ review_status.json,installed_brief_discovery.json}; PR wake/log evidence retaine
 Current protected procedure pin1ffe6b566b9addb58d13893bfb78e8505dce1752,
 skillpack1.0.1 compatible. Root retains integration judgment and uses admitted
 Fabric for independent bounded review; its actual prelaunch refusal is preserved.
+
+## October 14 04:43 UTC — portable consumer proof and source qualification advanced
+
+Follow-on application frontier is 1989dd890273164b728e462a49121fe74a0bf3c1.
+Its359 affected tests pass with1 existing sparse-site skip; independent review
+of the later issuer-context extension remains NOT ESTABLISHED. Earlier DOJ
+source review at70d9b7e08337 remains valid only for those unchanged reviewed bytes.
+
+Prepared and executed a standalone no-pytest DOJ/issuer-context consumer probe
+against the current local source:8 control groups pass. The existing10 staging
+integrity groups also pass against the same28-source CANDIDATE manifest. A
+separate corrupted-manifest control refuses before imports/effects. The probe
+checks government source/policy/clock/qualifier binding, canonical CVS linking,
+historical external arithmetic, issuer identity, future acquisition, symlinks,
+and refusal before provider/reservation. Real provider calls0; public/staging
+production writes0; actual input snapshots and Git HEAD unchanged. These are
+historical isolated fixtures, not installation, independent review or D14 credit.
+The accepted558ca install bundle remains untouched and stale for later source;
+the new candidate manifest is explicit preparation, NOT an accepted rebind.
+
+Installed source diagnosis explains empty Brief plans: committed Chronicle has
+16,841 events, newestOct11;13 current candidates are all Research, excluded from
+Brief. Pure incumbent build_events, without build_and_write, yielded25 current
+candidates, again all Research, and no fresh own event. Input hashes unchanged,
+provider0/producer writes0. Daily.yml retains producer ownership. Current Research
+catalog has2860 reports and SHA7d9987fff26615f88d4e69da3d4461c8ba5cbd61100f746dd296f6e0a3ec33af.
+The next shortlist retained all8 original-history exclusions and5 source-review
+exclusions without changing the original ledger. Actual Chrome source review
+found KBH's16% reduction belongs to F4Q, not full-year3.55 to3.40 (4.23%). The
+Reid source describes a September session; its visible excerpt does not qualify
+the summary's75bp-by-June claim. That claim remains unverified, not proven false.
+Both candidates remain unedited and ungenerated. Fresh ingestion is not event time.
+
+Read-only Fabric diagnosis confirms critical local/remote routing policy
+incompatibility caused the prelaunch refusal. No remote policy read or change,
+retry, alternate carrier or acceptance occurred. The installed observe-run
+command is scoped to specific unrelated runs and does not admit this Press run;
+do not amend that allowlist or use raw SSH as a workaround. Preserve exact failed
+review mmx-press-issuer-context-review-20261014-001 for incumbent reconciliation.
+
+PR9209 was read once this wake:8f705cb32a77987f7e5c025e99194f3b479a6382,
+CI38508325200 pack6/import repair and contract-delta passed; pack4 has inherited
+main path-prune failure already served by repairs9227/9229. Other packs were
+running at observation. No second poll, manual refresh or duplicate repair.
+Next admitted wake: read controller once, consume existing repair/protected landing
+and install9209 with actual merge SHA; close issuer-context review lawfully, then
+rebind and run prepared consumer acceptance for the single follow-on PR. Keep
+pursuing a genuinely new, corroborated source with relevant first-party context.
+Publication/cutover false; D14credit0/10. No new signup/follow write. Preserve the
+Oct11 12:07 EFFECT_UNKNOWN, held BAC/Research drafts and shared dirty accounting.
+
+verified: doj_source_phase/issuer_context/installed_doj_context_probe.py run with
+python3 -B and candidate-source-hashes.json; local_doj_portable_probe.json,
+local_integrity_candidate_probe.json, portable_manifest_negative.json,
+installed_brief_eligibility.json, installed_chronicle_readonly.json,
+research_shortlist_0431.json, research_browser_qualification.json and
+review_gate_diagnosis.json. Canonical checkpoint is recoverable in this existing
+SSD worktree; heartbeat remains active and mission incomplete.
