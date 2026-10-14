@@ -36,7 +36,7 @@ unresolved:
   - Publication is not approved; cutover remains false, News TLS and Research CNAME failures remain, and paired cutover is unreleased.
   - Incoming named Chairman handoff file was not accessible; direct commission supplies scope.
 next_actions:
-  - Consume admitted9209 exact-head protected install then SAME reviewed follow-on31groups; existing USDA renderer remains active. New OCC90 official report is distinct from held BAC; ten source checks pass, but full-document intake, reuse and relevant first-party receipts remain unqualified. Do not generate from a thin RSS summary or widen grammar/rights gates.
+  - Consume admitted9209 exact-head protected install then SAME reviewed follow-on31groups; existing USDA renderer remains active. New OCC90 official report is distinct from held BAC; ten source checks pass, but full-document intake, reuse and relevant first-party receipts remain unqualified. Do not generate from a thin RSS summary or bypass source/rights review. The literal-parser limit is a technical constraint, not a permission refusal.
   - The tested next phase includes single-attempt staging 2343aaec13bb and audit discovery b6428b419058, integrated with protected main as 1c7b997f92fb. See SINGLE_ATTEMPT_QUALIFICATION.md and STORY_DISCOVERY.md.
   - Consume a successful existing full-audit discovery artifact after landing, qualify the actual packet and rights directly, and use scripts/stage_earnings_story_press.py when its real read-only credential/release gates are available. Do not create a second compiler or substitute publisher credentials.
   - Complete D14 mixed-desk and editorial acceptance before publishing a story or enabling paired property cutover.

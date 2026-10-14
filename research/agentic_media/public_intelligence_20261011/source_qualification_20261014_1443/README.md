@@ -42,3 +42,8 @@ Next: consume the incumbent USDA renderer and admitted9209 release. Preserve thi
 new OCC source as a scoped lead; a lawful full-document intake and relevant
 first-party measurements are prerequisites, not an excuse to regenerate BAC/CVS
 or to reuse a refused issuer review. Publication/cutoverfalse; D140/10.
+
+The quantity-parser limit is an ordinary technical constraint, not a new authority
+or consent gate. An in-scope reviewed repair remains permitted if it unlocks a
+qualified consumer; adding nine alone cannot supply the missing full-document
+qualifiers, reuse decision or relevant first-party measurements.
