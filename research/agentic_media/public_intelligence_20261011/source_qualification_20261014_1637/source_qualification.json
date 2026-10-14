@@ -1,0 +1,33 @@
+{
+  "as_of": "2026-10-14",
+  "imf": {
+    "url": "https://mediacenter.imf.org/news/imf---world-economic-outlook-annual-meetings--2026/s/22f94667-d194-473b-87b2-34c692b5a5a3",
+    "policy": "https://www.imf.org/en/About/copyright-and-terms",
+    "event_date": "2026-10-13",
+    "disposition": "HOLD commercial reuse unqualified; October14 posting does not redatethe October13 briefing. No request, ingress or generation."
+  },
+  "world_bank": {
+    "url": "https://www.worldbank.org/en/publication/east-asia-and-pacific-economic-update",
+    "pdf": "https://openknowledge.worldbank.org/bitstreams/ef37116c-4a2a-437b-a342-e84817e7b9dc/download",
+    "event_date": "2026-10-06",
+    "disposition": "PDF403; no retry or alternative carrier. Actual per-report license/fulltext unverified. Generic open-access policy not substituted.",
+    "horizon_note": "Landing4.4% is average2026-2028; release4.5% is2026. Different horizons, not contradiction."
+  },
+  "census": {
+    "url": "https://www.census.gov/econ/bfs/current/index.html",
+    "release": "CB26-163",
+    "event_date": "2026-10-14",
+    "observation_period": "2026-09",
+    "disposition": "Official web text available; direct raw HTML acquisition403, no retry/alternate carrier. No bound source bytes, ingress, provider or source adapter.",
+    "semantic_caveat": "Applications are distinct from projected employer formations within four quarters; projections are not realized monthly business startups.",
+    "ticker": null
+  },
+  "nass": {
+    "landing": "https://esmis.nal.usda.gov/publication/crop-progress",
+    "report": "https://esmis.nal.usda.gov/sites/default/release-files/796104/prog4126.pdf",
+    "disposition": "Actual16-page PDF acquired; distinct event and local intake31checks pass; see crop_progress_intake_phase. No canonicalwrite yet."
+  },
+  "prior_holds": "All existing source refusals/held drafts remain binding, including EIA cover-photo hold; no duplicate or replacement events.",
+  "publication": false,
+  "provider_calls": 0
+}

@@ -36,7 +36,7 @@ unresolved:
   - Publication is not approved; cutover remains false, News TLS and Research CNAME failures remain, and paired cutover is unreleased.
   - Incoming named Chairman handoff file was not accessible; direct commission supplies scope.
 next_actions:
-  - USDA source page/viewer accepted; single draft held unchanged, no retry/edit/credit. Date review consumed, parser rejected and restored to e711 validator. Conservative ISO Research writer passes434tests/33portable groups locally. Consume admitted9209 protected install then SAME follow-on PR/install33groups; pursue distinct permitted sources.
+  - Crop Progress private source consumed with exact final receipt/PDF/sidecar/fulltext; never reupload. Verify normal committed/installed catalog and public report/browser, then fresh governed selection preserving five held peers. Original9209 protected install then SAME follow-on PR/install33groups; source61b2cd38 verified locally only.
   - The tested next phase includes single-attempt staging 2343aaec13bb and audit discovery b6428b419058, integrated with protected main as 1c7b997f92fb. See SINGLE_ATTEMPT_QUALIFICATION.md and STORY_DISCOVERY.md.
   - Consume a successful existing full-audit discovery artifact after landing, qualify the actual packet and rights directly, and use scripts/stage_earnings_story_press.py when its real read-only credential/release gates are available. Do not create a second compiler or substitute publisher credentials.
   - Complete D14 mixed-desk and editorial acceptance before publishing a story or enabling paired property cutover.
@@ -3012,3 +3012,29 @@ Next consume controller-admitted9209 proof/landing and actual install, then one
 SAME follow-onPR/install33groups. Continue distinct permitted source qualification;
 IMF commercial reuse unqualified, WorldBank report403 and Census raw release403
 remain unretried. Publication/cutoverfalse, original effects/holds preserved.
+
+## 2026-10-14 17:00 continuation — distinct Crop Progress source consumed
+
+Canonical private intake for usda-nass-2026-10-13-crop-progress is KNOWN_COMPLETE:
+two conditional creates at16:57 and both exact readbacks PASS. NEVER reupload or
+alias. PDFecdbbb59/16pages; final8point sidecar0ab7784c. The sole Fabric factual
+review is consumed/ACCEPTED with execution limitations retained; parent reviewed
+actual PDF, statutory government-work basis and final caveats. Observations end
+Oct11, publication date-onlyOct13; no invented clock, ticker or yield/price claim.
+This is distinct from the held Oct9WASDE, whose draft remains untouched.
+
+Read-only installed consumer at16:59 verifies canonical receipt, one catalog row,
+PDF, sidecar and97441character fulltext; stablec2e685a0. Separate installed-file
+probe still lacks catalog row/excerpts/dedicatedpage: PENDING_NORMAL_COMMIT_INSTALL_RENDER.
+Existing ingest38602255888 owns consumption; no dispatch.31localintake+bad-hash
+refusal,10consumer controls,20renderer checks and19installed-probe controls PASS.
+The latter are fixtures, not public or Press acceptance. Commands/receipts live
+under crop_progress_intake_phase/. Next consume actual committed/installed bytes,
+run portable report probe and publicHTTP/browser/viewer; only then fresh governed
+selection against original runtime and all5held peers. Do not blind-generate.
+
+Application61b2cd38/434tests/33portablegroups unchanged; follow-on has no PR/install.
+9209/controller remains once-read15:09 a18ec982/oldgreenstale, mainGREEN8/cap8;
+no duplicate read/CI/observer/manualrefresh. Protected9209install precedes SAME
+reviewed follow-onPR/install. Publication/cutoverfalse,D140/10; all source holds,
+original dirty histories, refused/unknown effects and existing ownership preserved.

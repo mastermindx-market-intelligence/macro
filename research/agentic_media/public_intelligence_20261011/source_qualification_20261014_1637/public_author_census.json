@@ -1,0 +1,14 @@
+{
+  "head": "1302e876d406fc84552fd56c4d5edae2696da023",
+  "catalog_sha256": "e53f5d6509c096781dee987386cda02b7826c59a8ac8c60db18dbd6ffb6f2eb7",
+  "total": 2906,
+  "matched_public_author_leads": [
+    {
+      "id": "usda-2026-10-09-wasde-676",
+      "title": "World Agricultural Supply and Demand Estimates, October 2026 (WASDE 676)",
+      "institution": "U.S. Department of Agriculture",
+      "published_at": "2026-10-09T16:00:00Z"
+    }
+  ],
+  "scope": "Author-name screen only; not rights/freshness/admission"
+}

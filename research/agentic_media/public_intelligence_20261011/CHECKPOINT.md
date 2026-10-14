@@ -1,3 +1,29 @@
+## 2026-10-14 17:00 continuation — distinct Crop Progress source consumed
+
+Canonical private intake for usda-nass-2026-10-13-crop-progress is KNOWN_COMPLETE:
+two conditional creates at16:57 and both exact readbacks PASS. NEVER reupload or
+alias. PDFecdbbb59/16pages; final8point sidecar0ab7784c. The sole Fabric factual
+review is consumed/ACCEPTED with execution limitations retained; parent reviewed
+actual PDF, statutory government-work basis and final caveats. Observations end
+Oct11, publication date-onlyOct13; no invented clock, ticker or yield/price claim.
+This is distinct from the held Oct9WASDE, whose draft remains untouched.
+
+Read-only installed consumer at16:59 verifies canonical receipt, one catalog row,
+PDF, sidecar and97441character fulltext; stablec2e685a0. Separate installed-file
+probe still lacks catalog row/excerpts/dedicatedpage: PENDING_NORMAL_COMMIT_INSTALL_RENDER.
+Existing ingest38602255888 owns consumption; no dispatch.31localintake+bad-hash
+refusal,10consumer controls,20renderer checks and19installed-probe controls PASS.
+The latter are fixtures, not public or Press acceptance. Commands/receipts live
+under crop_progress_intake_phase/. Next consume actual committed/installed bytes,
+run portable report probe and publicHTTP/browser/viewer; only then fresh governed
+selection against original runtime and all5held peers. Do not blind-generate.
+
+Application61b2cd38/434tests/33portablegroups unchanged; follow-on has no PR/install.
+9209/controller remains once-read15:09 a18ec982/oldgreenstale, mainGREEN8/cap8;
+no duplicate read/CI/observer/manualrefresh. Protected9209install precedes SAME
+reviewed follow-onPR/install. Publication/cutoverfalse,D140/10; all source holds,
+original dirty histories, refused/unknown effects and existing ownership preserved.
+
 ## 2026-10-14 16:37 continuation — parser rejected; conservative writer repair verified
 
 Independent date-anchor review is consumed and accepted as a useful diagnosis,

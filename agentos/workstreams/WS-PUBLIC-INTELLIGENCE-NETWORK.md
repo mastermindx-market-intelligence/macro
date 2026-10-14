@@ -21,7 +21,7 @@ waves:
     title: Verify publication, signup and explicit follow continuation
     status: in_progress
     depends_on: [qualified-story]
-next_action: Public USDA source accepted; single Press draft held unchanged, five held peers and complete accounting preserved. Date parser rejected after consumed review; conservative ISO Research writer passes434tests/33groups locally. Await admitted9209 protected install then SAME follow-on PR/install. Continue distinct source qualification; publication0of10.
+next_action: Crop Progress private source consumed; never repeat two known-complete inbox writes. Consume normal committed/installed catalog and public report, then governed selection with five held peers. Original9209 protected install precedes SAME follow-on PR/install33groups; application61b2cd38 locally verified, publication0of10.
 artifacts:
   - https://github.com/mastermindx-market-intelligence/macro/pull/9334
   - https://github.com/mastermindx-market-intelligence/macro/pull/9288
@@ -1316,3 +1316,29 @@ Next consume controller-admitted9209 proof/landing and actual install, then one
 SAME follow-onPR/install33groups. Continue distinct permitted source qualification;
 IMF commercial reuse unqualified, WorldBank report403 and Census raw release403
 remain unretried. Publication/cutoverfalse, original effects/holds preserved.
+
+## 2026-10-14 17:00 continuation — distinct Crop Progress source consumed
+
+Canonical private intake for usda-nass-2026-10-13-crop-progress is KNOWN_COMPLETE:
+two conditional creates at16:57 and both exact readbacks PASS. NEVER reupload or
+alias. PDFecdbbb59/16pages; final8point sidecar0ab7784c. The sole Fabric factual
+review is consumed/ACCEPTED with execution limitations retained; parent reviewed
+actual PDF, statutory government-work basis and final caveats. Observations end
+Oct11, publication date-onlyOct13; no invented clock, ticker or yield/price claim.
+This is distinct from the held Oct9WASDE, whose draft remains untouched.
+
+Read-only installed consumer at16:59 verifies canonical receipt, one catalog row,
+PDF, sidecar and97441character fulltext; stablec2e685a0. Separate installed-file
+probe still lacks catalog row/excerpts/dedicatedpage: PENDING_NORMAL_COMMIT_INSTALL_RENDER.
+Existing ingest38602255888 owns consumption; no dispatch.31localintake+bad-hash
+refusal,10consumer controls,20renderer checks and19installed-probe controls PASS.
+The latter are fixtures, not public or Press acceptance. Commands/receipts live
+under crop_progress_intake_phase/. Next consume actual committed/installed bytes,
+run portable report probe and publicHTTP/browser/viewer; only then fresh governed
+selection against original runtime and all5held peers. Do not blind-generate.
+
+Application61b2cd38/434tests/33portablegroups unchanged; follow-on has no PR/install.
+9209/controller remains once-read15:09 a18ec982/oldgreenstale, mainGREEN8/cap8;
+no duplicate read/CI/observer/manualrefresh. Protected9209install precedes SAME
+reviewed follow-onPR/install. Publication/cutoverfalse,D140/10; all source holds,
+original dirty histories, refused/unknown effects and existing ownership preserved.
