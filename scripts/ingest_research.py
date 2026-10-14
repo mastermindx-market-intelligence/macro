@@ -75,6 +75,34 @@ def _repo_snapshot_dir(override: str | None = None) -> Path:
     return Path(raw).expanduser() if raw else _REPO_SNAPSHOT_DIR
 
 
+def _public_mirror_bytes(catalog_bytes: bytes) -> bytes | None:
+    """The repo-mirror copy of the canonical catalog: producer_generation stripped.
+
+    The committed ``data/research_vault/catalog.json`` is a PUBLIC snapshot the
+    nightly render bakes into the site, while ``summary['catalog_bytes']`` (what
+    was published to R2) stays the canonical PRIVATE document carrying the
+    internal ``producer_generation`` block (producer/report cohort + content
+    hashes). Only that ONE top-level field is removed here: key order and the
+    engine's serializer conventions (``ensure_ascii=False``, ``indent=2``,
+    trailing newline) are preserved, a same-named key nested inside an item is
+    catalog content and is left alone, and when the field is absent the EXACT
+    input bytes are returned untouched so a legacy mirror never churns
+    whitespace or order.
+
+    Returns None when the canonical bytes are not valid JSON: no safe stripped
+    mirror can be derived, so the caller keeps the existing failing-mirror
+    semantics (warn, do not advance) instead of publishing fabricated output.
+    """
+    try:
+        doc = json.loads(catalog_bytes.decode("utf-8"))
+    except Exception:
+        return None
+    if not isinstance(doc, dict) or "producer_generation" not in doc:
+        return catalog_bytes
+    doc.pop("producer_generation", None)
+    return (json.dumps(doc, ensure_ascii=False, indent=2) + "\n").encode("utf-8")
+
+
 def _report_measured(summary: dict, dry_run: bool = False) -> None:
     """Print the per-field fill rate + the engine-measured tripwires.
 
@@ -243,11 +271,25 @@ def main() -> int:
         # newer than the catalog it mirrors — exactly the split that let a failed
         # catalog PUT still ship a "newer" generation to git (Defect 4).
         if catalog_bytes and plane_ok:
-            try:
-                repo_catalog.parent.mkdir(parents=True, exist_ok=True)
-                repo_catalog.write_bytes(catalog_bytes)
-            except Exception as exc:  # noqa: BLE001
-                log.warning("ingest_research: repo snapshot write failed: %s", exc)
+            # The mirror is a PUBLIC projection of the canonical catalog: strip
+            # the internal producer_generation block on the way out. The bytes
+            # PUT to R2 (summary['catalog_bytes']) are not touched — the mirror
+            # is a projection, never a second authority.
+            mirror_bytes = _public_mirror_bytes(catalog_bytes)
+            if mirror_bytes is None:
+                # Unparseable canonical bytes: keep the last fully published
+                # mirror rather than advancing it with output nobody vouched
+                # for — the same failing-mirror semantics as a write error,
+                # never a fake clean publication.
+                log.warning("ingest_research: repo catalog mirror NOT advanced — "
+                            "canonical catalog bytes are not valid JSON, so no "
+                            "stripped public mirror could be derived")
+            else:
+                try:
+                    repo_catalog.parent.mkdir(parents=True, exist_ok=True)
+                    repo_catalog.write_bytes(mirror_bytes)
+                except Exception as exc:  # noqa: BLE001
+                    log.warning("ingest_research: repo snapshot write failed: %s", exc)
         elif not plane_ok:
             print(f"::warning title=research-ingest::repo catalog mirror NOT advanced "
                   f"— canonical publish did not complete (corpus_published="

@@ -483,6 +483,10 @@ def _catalog_preview(catalog: dict, limit: int = _PUBLIC_PREVIEW_COUNT) -> dict:
     items = list(catalog.get("items") or [])
     preview = catalog_mod.preview_items(catalog, limit)
     public = dict(catalog)
+    # Internal-only generation block (producer/report cohort + content hashes):
+    # popped from the SHALLOW copy so it can never leave through a public
+    # preview; the canonical catalog this was copied from keeps the field.
+    public.pop("producer_generation", None)
     public["items"] = preview
     public["count"] = len(items)
     public["preview"] = True
@@ -506,6 +510,11 @@ def research_catalog(
     prior copy exists; 503 only if never fetched. No PDF bytes are returned.
     """
     catalog = dict(_load_catalog())
+    # Same internal-only block _catalog_preview strips: the authenticated FULL
+    # catalog is still a public API response, so it is popped here for BOTH
+    # tiers, from this per-request copy — the cached canonical keeps its exact
+    # field and bytes.
+    catalog.pop("producer_generation", None)
     catalog["preview"] = False
     catalog["summary"] = catalog_mod.public_summary(catalog)
     return catalog if _can_view(_optional_tier(authorization)) else _catalog_preview(catalog)
