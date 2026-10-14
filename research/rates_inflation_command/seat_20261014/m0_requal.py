@@ -37,6 +37,8 @@ PROTOCOL_SHA256 = "87b51dcad66c6f84989675e9cce91eb5b46b3888d60b2e599a8736d87e230
 
 TRIAL_FAMILY = "ric_mri_coherent_requal_v1"
 TRIAL_N = 13
+# SF1: owner_actual/target median scale ratio outside this band blocks.
+UNITS_RATIO_BAND = (0.5, 2.0)
 ALPHA = 0.05
 BOOT_BLOCK = 6
 BOOT_DRAWS = 10000
@@ -118,6 +120,7 @@ PIT_LEGS: dict[str, tuple[dict, ...]] = {
         ("gasoline_mom", "pit_vintage", "research/release_forecast/PREREG_V1.md:50"),
         ("shelter_cpi_cusr0000sah1", "revision_optimistic", "research/release_forecast/PREREG_V2.md:57"),
         ("zori_shelter", "approximate_pit_lag", "research/release_forecast/PREREG_V2.md:41"),
+        ("zori_values", "revision_optimistic", "research/release_forecast/PREREG_V2.md:44"),
     ),
     "cpi_core.v2": _legs(
         ("cpi_own_lags", "pit_vintage", "research/release_forecast/PREREG_V1.md:22"),
@@ -127,21 +130,23 @@ PIT_LEGS: dict[str, tuple[dict, ...]] = {
         ("ppi_mom_lag1", "pit_vintage", "research/release_forecast/PREREG_V2.md:150"),
         ("shelter_cpi_cusr0000sah1", "revision_optimistic", "research/release_forecast/PREREG_V2.md:57"),
         ("zori_shelter", "approximate_pit_lag", "research/release_forecast/PREREG_V2.md:92"),
+        ("zori_values", "revision_optimistic", "research/release_forecast/PREREG_V2.md:44"),
     ),
     "cpi_headline.v3_factor": _legs(
         ("cpi_own_lags", "pit_vintage", "research/release_forecast/PREREG_V3_FACTOR.md:45"),
         ("sticky_mom_lag1", "pit_vintage", "research/release_forecast/PREREG_V3_FACTOR.md:47"),
-        ("ppi_fis_mom_lag1", "pit_vintage", "research/release_forecast/PREREG_V3_FACTOR.md:48"),
+        ("ppi_fis_mom_lag1", "revision_optimistic", "research/release_forecast/PREREG_V3_FACTOR.md:64"),
         ("ppi_fes_mom_lag1", "revision_optimistic", "research/release_forecast/PREREG_V3_FACTOR.md:63"),
         ("dollar_mom_dtwexbgs", "revision_optimistic", "research/release_forecast/PREREG_V3_FACTOR.md:61"),
         ("shelter_nowcast", "revision_optimistic", "research/release_forecast/PREREG_V2.md:57"),
         ("zori_shelter", "approximate_pit_lag", "research/release_forecast/PREREG_V2.md:41"),
+        ("zori_values", "revision_optimistic", "research/release_forecast/PREREG_V2.md:44"),
         ("gasoline_mom", "pit_vintage", "research/release_forecast/PREREG_V3_FACTOR.md:50"),
     ),
     "cpi_core.v3_factor": _legs(
         ("cpi_own_lags", "pit_vintage", "research/release_forecast/PREREG_V3_FACTOR.md:54"),
         ("sticky_mom_lag1", "pit_vintage", "research/release_forecast/PREREG_V3_FACTOR.md:56"),
-        ("ppi_fis_mom_lag1", "pit_vintage", "research/release_forecast/PREREG_V3_FACTOR.md:57"),
+        ("ppi_fis_mom_lag1", "revision_optimistic", "research/release_forecast/PREREG_V3_FACTOR.md:64"),
         ("ppi_fes_mom_lag1", "revision_optimistic", "research/release_forecast/PREREG_V3_FACTOR.md:63"),
         ("dollar_mom_dtwexbgs", "revision_optimistic", "research/release_forecast/PREREG_V3_FACTOR.md:61"),
         ("shelter_nowcast", "revision_optimistic", "research/release_forecast/PREREG_V2.md:57"),
@@ -149,17 +154,20 @@ PIT_LEGS: dict[str, tuple[dict, ...]] = {
     "cpi_headline.cpi_bridge": _legs(
         ("bridge_weights_frozen", "revision_optimistic", "research/release_forecast/PREREG_CPI_BRIDGE_V1.md:70"),
         ("gasoline_gasregw", "pit_vintage", "research/release_forecast/PREREG_CPI_BRIDGE_V1.md:89"),
-        ("electricity_cusr0000saf11", "revision_optimistic", "research/release_forecast/PREREG_CPI_BRIDGE_V1.md:97"),
+        ("electricity_apu000072610", "revision_optimistic", "research/release_forecast/PREREG_CPI_BRIDGE_V1.md:294"),
         ("food_cusr0000saf11", "revision_optimistic", "research/release_forecast/PREREG_CPI_BRIDGE_V1.md:143"),
         ("wpu01", "revision_optimistic", "research/release_forecast/PREREG_CPI_BRIDGE_V1.md:143"),
         ("shelter_cusr0000sah1", "revision_optimistic", "research/release_forecast/PREREG_CPI_BRIDGE_V1.md:121"),
         ("zori_shelter", "approximate_pit_lag", "research/release_forecast/PREREG_CPI_BRIDGE_V1.md:119"),
+        ("zori_values", "revision_optimistic", "research/release_forecast/PREREG_CPI_BRIDGE_V1.md:296"),
+        ("core_services_cusr0000sasle", "revision_optimistic", "research/release_forecast/PREREG_CPI_BRIDGE_V1.md:190"),
         ("ppifis_vintages", "pit_vintage", "research/release_forecast/PREREG_CPI_BRIDGE_V1.md:161"),
     ),
     "cpi_headline.mf_energy_t1": _legs(
         ("gasoline_gasregw", "pit_vintage", "research/release_forecast/PREREG_MF_ENERGY_V1.md:44"),
         ("wti_dcoilwtico", "pit_vintage", "research/release_forecast/PREREG_MF_ENERGY_V1.md:58"),
         ("cpiaucsl_vintages", "pit_vintage", "research/release_forecast/PREREG_MF_ENERGY_V1.md:69"),
+        ("cpi_ri_weights", "revision_optimistic", "research/release_forecast/PREREG_MF_ENERGY_V1.md:78"),
     ),
     "cpi_headline.coherent_ridge_v1": _legs(
         ("cpi_target_vintages", "pit_vintage", "research/release_forecast/PREREG_COHERENT_RIDGE_V1.md:75"),
@@ -648,7 +656,8 @@ def default_adapters(root: Path, decision_asof: str) -> dict[str, Callable]:
             ).hexdigest()
             for row in rows:
                 row["coherent_model_receipt_sha256"] = identity
-            return rows, []
+            # E0:87-91 — every owner-excluded row is listed by (period, reason).
+            return rows, [], list(_excluded)
 
         return adapter
 
@@ -1139,6 +1148,7 @@ def run(
             reasons.append("naive_prior_absent")
 
         units_check = "ok"
+        units_ratio: float | None = None
         pairs = [
             (float(e["owner_actual"]), float(e["target"]))
             for e in episodes
@@ -1151,12 +1161,22 @@ def run(
                     f"{eval_rec.eval_id}: units guard not_checkable (no owner_actual values)"
                 )
             else:
-                med_diff = _median([abs(a - b) for a, b in pairs])
+                # Scale-ratio guard: owner_actual is a mixed-vintage change, so a
+                # difference test false-blocks on revision noise (PCE). Only a
+                # scale mismatch (x100, x1000, level vs change) blocks.
+                med_actual = _median([abs(a) for a, _ in pairs])
                 med_target = _median([abs(b) for _, b in pairs])
-                if med_target and med_diff > 0.5 * med_target:
-                    status = "blocked"
-                    reasons.append("units_mismatch")
-                    units_check = "mismatch"
+                if not med_target:
+                    units_check = "not_checkable"
+                    gaps.append(
+                        f"{eval_rec.eval_id}: units guard not_checkable (zero median target)"
+                    )
+                else:
+                    units_ratio = med_actual / med_target
+                    if not (UNITS_RATIO_BAND[0] <= units_ratio <= UNITS_RATIO_BAND[1]):
+                        status = "blocked"
+                        reasons.append("units_mismatch")
+                        units_check = "mismatch"
 
         windows = {window: _window_stats(episodes, window) for window, _ in WINDOWS}
         # n_rows is the COVERAGE row count per window: every model row whose
@@ -1179,6 +1199,7 @@ def run(
                 "reasons": reasons,
                 "labels": [],
                 "units_check": units_check,
+                "units_ratio": _round(units_ratio),
                 "pit_legs": [dict(leg) for leg in PIT_LEGS.get(eval_rec.eval_id, ())],
                 "n_rows": {w: windows[w]["n_rows"] for w in windows},
                 "honest_n": {w: windows[w]["honest_n"] for w in windows},
@@ -1223,6 +1244,7 @@ def run(
         replaced[eval_id] = 1.0 if p_t_map[eval_id] is None else p_t_map[eval_id]
         adjusted_t[eval_id] = holm_adjusted(replaced).get(eval_id)
 
+    deviations: list[dict] = []
     for receipt in eval_receipts:
         eval_id = receipt["eval_id"]
         episodes = episode_cache[eval_id]
@@ -1244,7 +1266,11 @@ def run(
             "R": tested["vs_strongest"]["R"],
         }
         if receipt["status"] != "ok":
-            receipt["verdict"] = None
+            # E0 vocabulary is exhaustive; §7: a deviation demotes to
+            # NOT_DEMONSTRATED with the deviation recorded.
+            receipt["verdict"] = "NOT_DEMONSTRATED"
+            receipt["reasons"] = list(receipt["reasons"]) + ["deviation_blocked_evaluation"]
+            deviations.append({"eval_id": eval_id, "reasons": list(receipt["reasons"])})
             continue
         has_ro = any(leg["pit_class"] == "revision_optimistic" for leg in receipt["pit_legs"])
         if any(leg["pit_class"] == "approximate_pit_lag" for leg in receipt["pit_legs"]):
@@ -1418,6 +1444,7 @@ def run(
         },
         "evaluations": eval_receipts,
         "h4": {"contrasts": h4_contrasts, "intervals": h4_intervals, "family_coverage": family_coverage},
+        "deviations": deviations,
         "gaps": gaps,
     }
     _write_receipt(out_dir, decision_asof, receipt)
@@ -1456,6 +1483,7 @@ def _blocked_evaluation(eval_rec: _Eval, *, reasons: list[str], message: str | N
         "reasons": list(reasons),
         "labels": [],
         "units_check": "not_checkable",
+        "units_ratio": None,
         "pit_legs": [dict(leg) for leg in PIT_LEGS.get(eval_rec.eval_id, ())],
         "n_rows": {w: 0 for w, _ in WINDOWS},
         "honest_n": {w: 0 for w, _ in WINDOWS},
@@ -1602,6 +1630,11 @@ def _markdown(receipt: Mapping) -> str:
         if entries:
             lines.append(f"- {ev['eval_id']}: " + "; ".join(entries))
     lines.append("")
+    if receipt.get("deviations"):
+        lines.append("## DEVIATIONS")
+        for dev in receipt["deviations"]:
+            lines.append(f"- {dev['eval_id']}: " + ", ".join(dev["reasons"]))
+        lines.append("")
     if receipt.get("gaps"):
         lines.append("## Gaps")
         for gap in receipt["gaps"]:

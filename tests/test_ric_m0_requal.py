@@ -348,10 +348,33 @@ def test_units_mismatch_blocks_the_evaluation(m0, tmp_path):
     result = world.run(m0)
     ev = _first_ok(result)
     assert ev["status"] == "blocked"
-    assert ev["verdict"] is None
+    # E0 §7: a blocked evaluation is a recorded deviation, never verdict None
+    assert ev["verdict"] == "NOT_DEMONSTRATED"
     assert "units_mismatch" in ev["reasons"]
+    assert "deviation_blocked_evaluation" in ev["reasons"]
+    assert ev["units_ratio"] == pytest.approx(100.0)
+    assert any(d["eval_id"] == ev["eval_id"] for d in result["deviations"])
     # the Holm family still has 13 members, this one at 1.0
     assert result["holm"]["raw"]["cpi_headline.coherent_ridge_v1"] == 1.0
+
+
+def test_units_guard_tolerates_revision_noise(m0, tmp_path):
+    # owner_actual is a mixed-vintage change: revision noise near the old
+    # 0.5*median|target| difference threshold must not block (SF1).
+    world = World(tmp_path)
+    world.owner_actual_fn = lambda eid, p: world.target[p] * 1.6
+    result = world.run(m0)
+    ev = _eval(result, "cpi_headline.coherent_ridge_v1")
+    assert ev["status"] == "ok"
+    assert ev["units_check"] == "ok"
+    assert ev["units_ratio"] == pytest.approx(1.6)
+    assert "units_mismatch" not in ev["reasons"]
+
+
+def test_mf_energy_carries_its_prereg_revision_optimistic_leg(m0):
+    legs = m0.PIT_LEGS["cpi_headline.mf_energy_t1"]
+    assert any(l["pit_class"] == "revision_optimistic" for l in legs)
+    assert any(l["leg"] == "cpi_ri_weights" for l in legs)
 
 
 def test_release_date_mismatch_is_listed_and_target_date_keys_the_episode(m0, tmp_path):
