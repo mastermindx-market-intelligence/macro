@@ -1530,3 +1530,154 @@ def test_r2_t08_unmeasured_input_reason_is_missing_input():
     assert pair_interpretation(float("nan"), 0.1) == Unmeasured("missing_input")
     # counter-pin: T05 comparables keep the section 3.1 reason letter unchanged
     assert relative_wealth(float("nan"), 0.1) == Unmeasured("non_finite_input")
+
+
+# ---------------------------------------------------------------------------
+# LR-FIX-A repairs (ORCH-CHAL #9240 R1/R2, acceptance case A26): set-based
+# coverage and owner adapters that stay total over NESTED malformed payloads.
+# ---------------------------------------------------------------------------
+
+_GM_KW = dict(group_id="XLK", group_kind="sector", cohort_id=US_SECTOR_COHORT_ID,
+              metric="relative_wealth_pct", units="pct")
+
+_MEMBER_ALPHABET = ("A", "B", "C")
+
+
+def _member_tuples(max_len: int = 3) -> list:
+    """Every member tuple over the alphabet with length 0..max_len (sweep)."""
+    level = [()]
+    out = [()]
+    for _ in range(max_len):
+        level = [prefix + (member,) for prefix in level for member in _MEMBER_ALPHABET]
+        out = out + level
+    return out
+
+
+def test_fix_a1_coverage_counts_distinct_expected_ids():
+    # MUTATION: list-length coverage (len(measured_members) / len(expected_members))
+    dupes = GroupMeasurement(**{**_GM_KW, "expected_members": ("A", "A"),
+                                "measured_members": ("A", "A", "A")})
+    assert dupes.coverage == pytest.approx(1.0)          # was 1.5 on list length
+    assert dupes.unexpected_members == ()
+    partial = GroupMeasurement(**{**_GM_KW, "expected_members": ("A", "A", "B"),
+                                  "measured_members": ("A", "A")})
+    assert partial.coverage == pytest.approx(0.5)        # |{A}| / |{A, B}|
+    outside = GroupMeasurement(**{**_GM_KW, "expected_members": ("A", "B"),
+                                  "measured_members": ("A", "Z")})
+    assert outside.coverage == pytest.approx(0.5)        # an UNEXPECTED id never raises it
+    assert outside.unexpected_members == ("Z",)
+    over = GroupMeasurement(**{**_GM_KW, "expected_n": 2, "measured_n": 3})
+    assert over.coverage == Unmeasured("invalid_counts")
+    assert GroupMeasurement(**_GM_KW).unexpected_members == ()
+    # to_dict() carries the set-based coverage AND the outside ids
+    assert dupes.to_dict()["coverage"] == pytest.approx(1.0)
+    assert dupes.to_dict()["unexpected_members"] == []
+    assert outside.to_dict()["coverage"] == pytest.approx(0.5)
+    assert outside.to_dict()["unexpected_members"] == ["Z"]
+    assert over.to_dict()["coverage"] == {"status": "unmeasured", "reason": "invalid_counts"}
+    json.dumps(outside.to_dict(), allow_nan=False)       # still JSON-safe
+
+
+def test_fix_a1_coverage_bound_sweep():
+    # MUTATION: unbounded ratio (a coverage value outside [0.0, 1.0])
+    tuples = _member_tuples(3)
+    assert len(tuples) == 40 and len(set(tuples)) == 40   # 1 + 3 + 9 + 27, no repeats
+    for expected in tuples:
+        for measured in tuples:
+            cov = GroupMeasurement(**{**_GM_KW, "expected_members": expected,
+                                      "measured_members": measured}).coverage
+            if isinstance(cov, Unmeasured):
+                assert expected == ()                  # only an empty expected set is unknown
+                assert cov == Unmeasured("empty_population")
+            else:
+                assert isinstance(cov, float)
+                assert 0.0 <= cov <= 1.0, f"coverage out of bounds: {expected} {measured} {cov}"
+    for expected_n in range(0, 4):
+        for measured_n in range(0, 5):
+            cov = GroupMeasurement(**{**_GM_KW, "expected_n": expected_n,
+                                      "measured_n": measured_n}).coverage
+            assert not (isinstance(cov, float) and cov > 1.0), (
+                f"count coverage exceeded 1: n={expected_n} k={measured_n} -> {cov!r}"
+            )
+            if expected_n >= 1 and measured_n > expected_n:
+                assert cov == Unmeasured("invalid_counts")
+            elif expected_n >= 1:
+                assert isinstance(cov, float) and 0.0 <= cov <= 1.0
+            else:
+                assert cov == Unmeasured("empty_population")
+
+
+def test_fix_a26_duplicate_members_count_once():
+    # MUTATION: duplicate double count (a repeated measured id counted twice)
+    gm = GroupMeasurement(**{**_GM_KW, "expected_members": ("A", "B"),
+                             "measured_members": ("A", "A")})
+    assert gm.coverage == pytest.approx(0.5)             # one distinct id of two expected
+    assert gm.to_dict()["coverage"] == pytest.approx(0.5)
+    assert gm.unexpected_members == ()                   # a duplicate is not an outside id
+    assert gm.to_dict()["unexpected_members"] == []
+    dup_expected = GroupMeasurement(**{**_GM_KW, "expected_members": ("A", "A", "B"),
+                                       "measured_members": ("B", "B", "B")})
+    assert dup_expected.coverage == pytest.approx(0.5)   # |{B}| / |{A, B}|
+
+
+def test_fix_a2_adapters_total_on_nested_malformed_payloads():
+    # MUTATION: `x.get(k) or {}` on a truthy non-mapping (AttributeError, not a total adapter)
+    hostile_snapshots = (
+        ({"sectors": [None]}, 1, False),
+        ({"sectors": {"XLK": {}}}, 0, True),             # a dict is never iterated by key
+        ({"sectors": ["XLK"]}, 1, False),
+        ({"sectors": 42}, 0, True),
+        ({"meta": "x", "sectors": [{"ticker": "XLK", "now": "x"}]}, 0, False),
+        ({"sectors": [None, {"ticker": "XLK", "now": {}}]}, 1, False),
+    )
+    for payload, rows, container in hostile_snapshots:
+        frozen = copy.deepcopy(payload)
+        snap = sector_cohort_snapshot(payload)
+        assert payload == frozen                         # read-only over a hostile payload
+        assert snap["malformed_rows"] == rows, payload
+        assert snap["malformed_container"] is container, payload
+        assert snap["cohort_id"] == US_SECTOR_COHORT_ID
+        assert len(snap["expected"]) == 11
+        assert len(snap["missing"]) == 11 - len(snap["measured"])
+        assert all(m["metric"] == "relative_wealth_pct" for m in snap["measurements"])
+        assert snap["ranking"]["ranked"] == []           # nothing hostile ever ranks
+    # a clean / None / non-mapping payload carries no flags (base equality holds)
+    assert sector_cohort_snapshot(None)["malformed_rows"] == 0
+    assert sector_cohort_snapshot(None)["malformed_container"] is False
+    assert sector_cohort_snapshot(42) == sector_cohort_snapshot(None)
+    clean = {"meta": {"asOf": ASOF, "benchmark": "SPY"},
+             "sectors": [{"ticker": "XLK", "now": {"rs_63d": 1.0, "thin_history": False}}]}
+    assert sector_cohort_snapshot(clean)["malformed_rows"] == 0
+    assert sector_cohort_snapshot(clean)["malformed_container"] is False
+
+    for rec in ({"ticker": "XLK", "now": "x"}, {"ticker": "XLK", "now": [1]}):
+        frozen = copy.deepcopy(rec)
+        gm = from_sector_record(rec)
+        assert rec == frozen
+        assert isinstance(gm, GroupMeasurement)
+        assert gm.value == Unmeasured("missing_input")   # typed unknown, never a crash
+        assert gm.price_basis == "total_return"          # the declared literal stays
+
+    for receipt in ({"benchmark": "x", "sample": [1]}, {"benchmark": 1, "sample": "s"}):
+        frozen = copy.deepcopy(receipt)
+        g = from_leadership_receipt(receipt, group_id="g", cohort_id="c")
+        assert receipt == frozen
+        assert isinstance(g, GroupMeasurement)
+        assert g.value == Unmeasured("missing_input")
+        assert g.benchmark is None
+        assert g.expected_n is None and g.measured_n is None
+
+    rows_payload = {"asof": ASOF, "subsectors": [None, "x", {"perf": "x"}]}
+    frozen = copy.deepcopy(rows_payload)
+    diag = diagnose_rotation_payload(rows_payload, cohort_id="c")
+    assert rows_payload == frozen
+    assert diag["malformed_rows"] == 2                   # None and "x" are not rows
+    assert diag["malformed_container"] is False
+    assert len(diag["rows"]) == 1                        # the mapping row still projects
+    assert diag["rows"][0]["flags"] == ["missing_coerced_to_zero"]
+    assert diag["owner_fields_modified"] is False
+    keyed = diagnose_rotation_payload({"subsectors": {"a": 1}}, cohort_id="c")
+    assert keyed["malformed_container"] is True
+    assert keyed["rows"] == [] and keyed["malformed_rows"] == 0
+    assert diagnose_rotation_payload(None, cohort_id="c")["malformed_rows"] == 0
+    assert diagnose_rotation_payload(None, cohort_id="c")["malformed_container"] is False
