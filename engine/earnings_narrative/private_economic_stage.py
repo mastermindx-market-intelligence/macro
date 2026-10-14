@@ -15,8 +15,10 @@ from __future__ import annotations
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
 from hashlib import sha256
+import os
 from pathlib import Path
 import re
+import stat
 from typing import Any
 
 from engine.company_intelligence import pg_profile
@@ -248,15 +250,32 @@ def augment_private_stage(
     )
 
 
+def _plain_str(value: str) -> str:
+    """An exact ``str`` copy, so a hostile ``str`` subclass cannot fake equality.
+
+    ``str.__str__`` is the base implementation reached without the MRO: a
+    subclass overriding ``__eq__``/``__hash__``/``__str__`` still yields a plain
+    ``str`` whose identity, hash and equality are the genuine ones. Behaviour for
+    a plain ``str`` is unchanged (``str.__str__`` returns the same object).
+    """
+    copy = str.__str__(value)
+    if type(copy) is not str:  # defensive: never trust an overridden copy path
+        copy = "".join(copy)
+    return copy
+
+
 def _carries_private_profile(value: Any, depth: int) -> bool:
     """True when private PG metric ids or the private rights profile are present."""
     if depth > 32:
         raise PrivateEconomicStageError("over_limit")
     if isinstance(value, Mapping):
         metric = value.get("metric")
-        if isinstance(metric, str) and metric in _PRIVATE_METRICS:
+        if isinstance(metric, str) and _plain_str(metric) in _PRIVATE_METRICS:
             return True
-        if value.get("rights_profile") == pg_profile.PG_PRIVATE_RIGHTS_PROFILE:
+        rights_profile = value.get("rights_profile")
+        if isinstance(rights_profile, str) and (
+            _plain_str(rights_profile) == pg_profile.PG_PRIVATE_RIGHTS_PROFILE
+        ):
             return True
         return any(_carries_private_profile(item, depth + 1) for item in value.values())
     if isinstance(value, (str, bytes, bytearray)):
@@ -377,6 +396,37 @@ def _admit_slug(slug: object) -> str:
     return slug
 
 
+def _write_stage_file(path: Path, body: bytes) -> None:
+    """Publish stage bytes by inode swap, never by truncating an existing inode.
+
+    ``Path.write_bytes`` opens the target with ``O_TRUNC`` and reuses its inode,
+    so a hardlink planted at a stage path lets this writer rewrite the victim
+    under its other name. A stage file must be owned by one name: refuse a
+    symlink or any target whose ``st_nlink`` is above 1, then write an exclusive
+    private temp file beside the target and ``os.replace`` it onto the path.
+    Callers keep their own ``_confined_file`` confinement; this only owns the
+    write mechanism.
+    """
+    try:
+        status = os.lstat(path)
+    except FileNotFoundError:
+        status = None
+    if status is not None and (
+        stat.S_ISLNK(status.st_mode) or status.st_nlink > 1
+    ):
+        raise PrivateEconomicStageError("hardlinked_stage_file")
+    temp = path.parent / f".{path.name}.tmp-{os.getpid()}-{os.urandom(4).hex()}"
+    fd = os.open(temp, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
+    try:
+        with os.fdopen(fd, "wb", closefd=True) as handle:
+            handle.write(body)
+            handle.flush()
+            os.fsync(handle.fileno())
+        os.replace(temp, path)
+    finally:
+        temp.unlink(missing_ok=True)
+
+
 def _confined_file(stage_root: Path, directory: Path, name: str) -> Path:
     """One child of directory whose resolved path stays under the stage root."""
     if type(name) is not str or not name or name != Path(name).name:
@@ -457,10 +507,10 @@ def _write_stage(
     for item in chain:
         workspace_body = canonical_json_bytes(item["workspace"])
         generation_id = _admit_generation_id(item["workspace"]["generation_id"])
-        _confined_file(root, workspaces, f"{generation_id}.json").write_bytes(workspace_body)
+        _write_stage_file(_confined_file(root, workspaces, f"{generation_id}.json"), workspace_body)
         document_body = canonical_json_bytes(item["document"])
         document_digest = sha256(document_body).hexdigest()
-        (documents / f"{document_digest}.json").write_bytes(document_body)
+        _write_stage_file(documents / f"{document_digest}.json", document_body)
         text_body = item["text"].encode("utf-8")
         content_digest = sha256(text_body).hexdigest()
         if content_digest != item["document"].get("content_sha256"):
@@ -468,7 +518,7 @@ def _write_stage(
         body_path = bodies / f"{content_digest}.txt"
         if body_path.exists() and body_path.read_bytes() != text_body:
             raise PrivateEconomicStageError("mismatched_source")
-        body_path.write_bytes(text_body)
+        _write_stage_file(body_path, text_body)
         received[content_digest] = {
             "sha256": content_digest,
             "length": len(text_body),
@@ -497,9 +547,10 @@ def _write_stage(
         "economic_slots": {company_id: {"slug": slug, "event_id": event_id}},
         "received": received,
     }
-    (native / "latest.json").write_bytes(canonical_json_bytes(stage_manifest))
-    _confined_file(root, root / "records", f"{_admit_slug(slug)}.json").write_bytes(
-        canonical_json_bytes(dossier)
+    _write_stage_file(native / "latest.json", canonical_json_bytes(stage_manifest))
+    _write_stage_file(
+        _confined_file(root, root / "records", f"{_admit_slug(slug)}.json"),
+        canonical_json_bytes(dossier),
     )
     return {
         "wrote": True,

@@ -244,3 +244,56 @@ def test_cli_economic_refresh_with_offline_returns_1(
     assert "offline public wire build cannot apply an economic refresh" in caplog.text
     assert _snapshot(public) == before
     assert marker.read_text(encoding="utf-8") == "marker"
+
+
+def test_cli_economic_refresh_stage_error_returns_1(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, caplog: pytest.LogCaptureFixture,
+) -> None:
+    """A verified-prior refusal exits 1 with a log line, not a traceback."""
+    from engine.earnings_narrative.private_economic_stage import PriorClosureUnavailable
+
+    # The patch models reality: this is what the unpatched resolver does with a
+    # refresh whose store cannot be verified, and PriorClosureUnavailable is a
+    # ValueError, not a PublicWireBuildError.
+    with pytest.raises(PriorClosureUnavailable, match="prior_unverified"):
+        wire_builder._resolve_economic_refresh({"store": {}})
+
+    refresh = tmp_path / "refresh.json"
+    refresh.write_text(json.dumps({"store": {}}), encoding="utf-8")
+
+    def _boom(**_kwargs: object) -> BuildResult:
+        raise PriorClosureUnavailable()
+
+    monkeypatch.setattr(wire_builder, "build", _boom)
+    with caplog.at_level(logging.ERROR, logger="build_earnings_public_wire"):
+        code = wire_builder.main(["--economic-refresh", str(refresh)])
+    assert code == 1
+    assert "earnings public wire failed" in caplog.text
+    assert "prior_unverified" in caplog.text
+
+
+def test_cli_economic_refresh_file_diagnostics(
+    tmp_path: Path, caplog: pytest.LogCaptureFixture,
+) -> None:
+    """An unreadable refresh names the path; malformed bytes say not valid JSON."""
+    missing = tmp_path / "absent" / "refresh.json"
+    with caplog.at_level(logging.ERROR, logger="build_earnings_public_wire"):
+        code = wire_builder.main(["--economic-refresh", str(missing)])
+    assert code == 1
+    assert "economic refresh file unreadable" in caplog.text
+    assert str(missing) in caplog.text
+
+    malformed = tmp_path / "refresh.json"
+    malformed.write_bytes(b"{\"store\": [")
+    with caplog.at_level(logging.ERROR, logger="build_earnings_public_wire"):
+        code = wire_builder.main(["--economic-refresh", str(malformed)])
+    assert code == 1
+    assert "economic refresh file is not valid JSON" in caplog.text
+    assert str(malformed) in caplog.text
+
+    undecodable = tmp_path / "undecodable.json"
+    undecodable.write_bytes(b"\xff\xfe\x00b")
+    with caplog.at_level(logging.ERROR, logger="build_earnings_public_wire"):
+        code = wire_builder.main(["--economic-refresh", str(undecodable)])
+    assert code == 1
+    assert "economic refresh file is not valid JSON" in caplog.text

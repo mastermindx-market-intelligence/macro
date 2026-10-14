@@ -458,6 +458,53 @@ def test_public_admission_refuses_str_subclass_private_metric_id() -> None:
     assert_public_workspace_admission(public_metric)
 
 
+
+def test_public_admission_refuses_hostile_str_subclass() -> None:
+    """A str subclass faking equality cannot smuggle the private profile past admission.
+
+    ``Lie`` returns False from ``__eq__`` and a constant hash, so both the metric
+    membership test and the rights-profile comparison are evaded unless the guard
+    compares a plain-str copy.
+    """
+    from engine.company_intelligence.pg_profile import PG_PRIVATE_RIGHTS_PROFILE
+    from engine.earnings_narrative import private_economic_stage as stage_module
+
+    class Lie(str):
+        def __eq__(self, other: object) -> bool:
+            return False
+
+        def __hash__(self) -> int:
+            return 12345
+
+    assert Lie("pg_diluted_eps") not in stage_module._PRIVATE_METRICS
+    assert str.__str__(Lie("pg_diluted_eps")) == "pg_diluted_eps"
+    assert type(str.__str__(Lie("pg_diluted_eps"))) is str
+
+    with_metric = {"private": False, "facts": [{"metric": Lie("pg_diluted_eps")}]}
+    with pytest.raises(PrivateEconomicStageError, match="private_workspace_refused"):
+        assert_public_workspace_admission(with_metric)
+
+    with_profile = {
+        "private": False,
+        "facts": [{
+            "metric": "revenue",
+            "source_span": {"rights_profile": Lie(PG_PRIVATE_RIGHTS_PROFILE)},
+        }],
+    }
+    with pytest.raises(PrivateEconomicStageError, match="private_workspace_refused"):
+        assert_public_workspace_admission(with_profile)
+
+    # CONTROL: a hostile type carrying public content stays admitted.
+    public = {
+        "issuer": {"company_id": "cik:0000320193", "ticker": "AAPL"},
+        "facts": [{
+            "metric": Lie("revenue"),
+            "source_span": {"rights_profile": Lie("rp_public_primary_v1")},
+        }],
+        "authority": "context_only",
+    }
+    assert_public_workspace_admission(public)
+
 def test_clean_v1_baseline_has_no_native_stage(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     _permit(monkeypatch, tmp_path)
     receipt = run_economic_wire_fixture(tmp_path, wire="w1", source=None)
@@ -675,3 +722,54 @@ def test_generation_id_and_slug_must_stay_inside_the_stage(
                 f"leaked={leaked.exists()} path={leaked}"
             )
     assert not failures, "\n".join(failures)
+
+
+def test_stage_refuses_a_hardlinked_stage_file(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """A hardlink planted at a stage write path is refused, never truncated in place.
+
+    ``records/<slug>.json`` is the stage path that pre-exists on a re-stage:
+    ``_reset_native`` unlinks everything under ``native/`` before the native
+    writes, and ``_stage_root`` only requires ``records/`` to be a directory.
+    ``Path.write_bytes`` opens O_TRUNC on the existing inode, so a second name
+    linked to it would be rewritten by the stage.
+    """
+    import os
+
+    _permit(monkeypatch, tmp_path)
+    receipt = run_economic_wire_fixture(tmp_path, wire="w1", source="pg1", observed_at=OBSERVED_AT)
+    closure = receipt.closure
+    assert closure is not None
+    slug = closure["record"]["slug"]
+    stage = tmp_path / "stage-hardlink"
+    shutil.copytree(receipt.private_dir, stage)
+
+    record = stage / "records" / f"{slug}.json"
+    assert record.is_file()
+    victim = tmp_path / "victim-outside-stage.json"
+    os.link(record, victim)
+    original = victim.read_bytes()
+    assert os.lstat(victim).st_ino == os.lstat(record).st_ino
+    assert os.lstat(record).st_nlink == 2
+
+    with pytest.raises(PrivateEconomicStageError, match="hardlinked_stage_file"):
+        augment_private_stage(
+            stage,
+            acquisition=None,
+            prior_closure=closure,
+            observed_at=LATER_OBSERVED_AT,
+        )
+    assert victim.read_bytes() == original
+    assert victim.stat().st_nlink == 2
+
+    # CONTROL: the same re-stage over a plain (single-link) record still writes.
+    victim.unlink()
+    written = augment_private_stage(
+        stage,
+        acquisition=None,
+        prior_closure=closure,
+        observed_at=LATER_OBSERVED_AT,
+    )
+    assert written["wrote"] is True
+    assert record.read_bytes() == original
+    assert json.loads(record.read_bytes())["slug"] == slug
+    assert not [path for path in stage.rglob(".*") if path.is_file()], "temp residue left in the stage"

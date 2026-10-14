@@ -67,6 +67,7 @@ from lib.seo import BRAND_NAME, SITE_BASE, page_url  # noqa: E402
 from engine.neuralweb import company_intelligence_reader as _company_reader  # noqa: E402
 from engine.earnings_narrative.private_economic_stage import (  # noqa: E402
     PrivateEconomicStageError,
+    PriorClosureUnavailable,
     assert_public_workspace_admission,
     augment_private_stage,
     load_verified_prior,
@@ -1835,13 +1836,25 @@ def main(argv: list[str] | None = None) -> int:
         if args.economic_refresh is not None:
             try:
                 loaded = json.loads(Path(args.economic_refresh).read_text(encoding="utf-8"))
-            except (OSError, UnicodeError, json.JSONDecodeError) as exc:
-                raise PublicWireBuildError("economic refresh inputs must be a mapping") from exc
+            except OSError as exc:
+                raise PublicWireBuildError(
+                    f"economic refresh file unreadable: {args.economic_refresh}"
+                ) from exc
+            except (UnicodeError, json.JSONDecodeError) as exc:
+                raise PublicWireBuildError(
+                    f"economic refresh file is not valid JSON: {args.economic_refresh}"
+                ) from exc
             if type(loaded) is not dict:
                 raise PublicWireBuildError("economic refresh inputs must be a mapping")
             build_kwargs["economic_refresh"] = loaded
         result = build(**build_kwargs)
-    except PublicWireBuildError as exc:
+    except (
+        PublicWireBuildError,
+        PriorClosureUnavailable,
+        PrivateEconomicStageError,
+    ) as exc:
+        # PriorClosureUnavailable is a ValueError, so it used to escape as a
+        # traceback; the economic stage owns the same diagnostic exit.
         log.error("earnings public wire failed: %s", exc)
         return 1
     print(json.dumps({
