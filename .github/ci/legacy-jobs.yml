@@ -3621,6 +3621,8 @@ jobs:
     # 846 tracked / 127 concrete. Subject packages stay globbed.
     scope: exclusive
     paths:
+      # RIC Y1 (2026-10-14): engine/yield_momentum.py imports the B0 basis contract.
+      - "engine/rates_command_basis.py"
       - research/licenses/MARKET_MEMORY_HOUSE_MACRO_REUSE_2026-10-13.md
       # Native DailyBrief registration/producer import closure (PR #9037).
       - "engine/prophet_candidate_state.py"
@@ -5847,6 +5849,9 @@ jobs:
     # every concrete static import-closure path (curated_exclusive_closure_findings
     # gates it) plus the measured runtime in-tree reads of every class-A suite.
     paths:
+      # RIC Y1 (2026-10-14): engine/yield_momentum.py imports the B0 basis contract.
+      - "engine/rates_command_basis.py"
+      - engine/neuralweb/market_memory_brain_citations.py
       - engine/neuralweb/market_memory_retained_catalog.py
       - engine/neuralweb/market_memory_retained_saved.py
       - engine/neuralweb/market_memory_retained_legacy_guard.py
@@ -16739,6 +16744,8 @@ jobs:
     # genuine import edges.
     scope: exclusive
     paths:
+      # RIC Y1 (2026-10-14): engine/yield_momentum.py imports the B0 basis contract.
+      - "engine/rates_command_basis.py"
       - research/licenses/MARKET_MEMORY_HOUSE_MACRO_REUSE_2026-10-13.md
       # Native DailyBrief registration/producer import closure (PR #9037).
       - "engine/prophet_candidate_state.py"
@@ -17471,6 +17478,8 @@ jobs:
     # 846 tracked / 74 concrete.
     scope: exclusive
     paths:
+      # RIC Y1 (2026-10-14): engine/yield_momentum.py imports the B0 basis contract.
+      - "engine/rates_command_basis.py"
       - research/licenses/MARKET_MEMORY_HOUSE_MACRO_REUSE_2026-10-13.md
       # Native DailyBrief registration/producer import closure (PR #9037).
       - "engine/prophet_candidate_state.py"
@@ -19460,6 +19469,9 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      # RIC Y1 (2026-10-14): engine/yield_momentum.py imports the B0 basis contract.
+      - "engine/rates_command_basis.py"
+      - engine/neuralweb/market_memory_brain_citations.py
       - engine/neuralweb/market_memory_retained_catalog.py
       - engine/neuralweb/market_memory_retained_saved.py
       - engine/neuralweb/market_memory_retained_legacy_guard.py
@@ -21416,6 +21428,8 @@ jobs:
     # no named closure file was removed.
     scope: exclusive
     paths:
+      # RIC Y1 (2026-10-14): engine/yield_momentum.py imports the B0 basis contract.
+      - "engine/rates_command_basis.py"
       - research/licenses/MARKET_MEMORY_HOUSE_MACRO_REUSE_2026-10-13.md
       # Native DailyBrief registration/producer import closure (PR #9037).
       - "engine/prophet_candidate_state.py"
@@ -26450,6 +26464,8 @@ jobs:
     # 846 tracked / 74 concrete. Subject packages stay globbed.
     scope: exclusive
     paths:
+      # RIC Y1 (2026-10-14): engine/yield_momentum.py imports the B0 basis contract.
+      - "engine/rates_command_basis.py"
       - research/licenses/MARKET_MEMORY_HOUSE_MACRO_REUSE_2026-10-13.md
       # Native DailyBrief registration/producer import closure (PR #9037).
       - "engine/prophet_candidate_state.py"
@@ -26939,6 +26955,9 @@ jobs:
     # contract-delta closure on 673a0a5a (a sparse worktree omits those trees).
     scope: exclusive
     paths:
+      # RIC Y1 (2026-10-14): engine/yield_momentum.py imports the B0 basis contract.
+      - "engine/rates_command_basis.py"
+      - engine/neuralweb/market_memory_brain_citations.py
       - scripts/initialize_market_memory_w1a.py
       - engine/neuralweb/market_memory_retained_catalog.py
       - engine/neuralweb/market_memory_retained_saved.py
@@ -29040,6 +29059,9 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      # RIC Y1 (2026-10-14): engine/yield_momentum.py imports the B0 basis contract.
+      - "engine/rates_command_basis.py"
+      - engine/neuralweb/market_memory_brain_citations.py
       - engine/neuralweb/market_memory_retained_catalog.py
       - engine/neuralweb/market_memory_retained_saved.py
       - engine/neuralweb/market_memory_retained_legacy_guard.py
