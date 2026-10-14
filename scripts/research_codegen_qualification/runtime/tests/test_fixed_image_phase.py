@@ -14,7 +14,7 @@ class Fixture:
         self.missing=missing;self.calls=[];self.intents=[];self.events=[]
         self.overrides={};self.observations=[]
         self.installer=NS(status='OK_INSTALLED',frozen=False,
-            binding=NS(operation_id='rf-fixed-smoke-runsc-01a1333c-v1'),
+            binding=NS(operation_id='rf-fixed-smoke-runsc-01a1333c-v2'),
             docker_config_path='/invented/own/client',
             _verify_client_config=lambda:None,
             socket_inspector=lambda *_:{'dev':1,'ino':2},

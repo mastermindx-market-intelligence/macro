@@ -31,11 +31,11 @@ waves:
 - id: ACCEPTANCE
   title: Physical, scientific and prospective acceptance with original limits
   status: todo
-next_action: Consume the qualified same-operation two-file recovery command from the
-  existing Fabric owner, then read original fixed-canary evidence once and diagnose
-  its CLI version gate. Finish the U01 compiled engineering-control attachment on
-  the same source carrier. Normal controller owns dependency proof refresh; after
-  PR9099 and PR9190 land, integrate main and create one combined normal PR.
+next_action: Consume the same-ID corrected trusted canary rf-fixed-smoke-runsc-01a1333c-v2
+  and its two declared artifacts; verify commission, source pins, all phase receipts,
+  cleanup and original bounds. Preserve failures and uncertain effects without replay.
+  Normal controller owns dependency proof refresh; after PR9099 and PR9190 land,
+  integrate main and create one combined normal PR.
 artifacts:
 - research/research_factory_codegen/2026-10-14/PROGRAMME_CONTINUATION.md
 - research/research_factory_codegen/2026-10-14/CONNECTED_DIAGNOSTIC_SOURCE_ACCEPTANCE.md
@@ -63,4 +63,4 @@ This record carries work identity and continuity only. Existing source, runtime 
 
 Provenance: PR #9096 merged as `472317fd5b996527e8b88c44766c8ac44293948c`; runtime source checkpoint `f6e8a8e56116e3639c3c00bd078c4d83bf9df82d`; PR #9099 current repaired head `944790254d1caa6e41f8ea19f6b5e738706a769f` passed its CI, then the controller deferred newly required proof refresh at shared capacity. Runtime capsule `e54c53fb0665ea46c2ebcc0e6d624e550b476c18a6727f6f88c927fccc12b809` is bound to its original physical commission. Exact local receipts and limits are indexed in the programme continuation.
 
-Current physical limit: retained Linux precheck 92PASS/2subtests; one canary stopped at first CLI gate, original delivery rc65. Exact artifact retrieval is under existing-owner qualification; no install or containment acceptance. U01 root-derived packet and renderer passed40tests/24subtests after independent review and two actual repairs.
+Current physical limit: original canary v1 stopped at the first CLI gate; delivery rc65 remains unaccepted. Its one guarded current read recovered both artifacts and is complete. Separate CLI leaf settled rc0 but omitted detailed machine evidence and remains unaccepted. Parser and actual create-label defects were reproduced and corrected; final source348tests/67subtests pass with2Linux-onlyskips. Corrected trusted canary v2 submitted on normal Fabric, retained result pending. No archive/install/image/smoke or containment acceptance. U01 packet/renderer source at90c052 passed40tests/24subtests after independent review and two reproduced repairs.

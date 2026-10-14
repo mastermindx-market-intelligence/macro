@@ -32,6 +32,19 @@ WALL = 60
 RAW_CAP = 16384
 
 
+def expected_client_version(raw):
+    """Parse only the pinned client version and a bounded package build token."""
+    if type(raw) is not bytes or len(raw) > 256:
+        raise RuntimeError("actual_client_not_29_1_3")
+    try:
+        text = raw.decode("ascii")
+    except UnicodeDecodeError:
+        raise RuntimeError("actual_client_not_29_1_3") from None
+    if not re.fullmatch(r"Docker version 29\.1\.3, build [A-Za-z0-9][A-Za-z0-9_.~-]{0,127}\n?", text):
+        raise RuntimeError("actual_client_not_29_1_3")
+    return text.removesuffix("\n")
+
+
 def private_file(path, data, mode=0o600):
     fd = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW, mode)
     try:
@@ -218,9 +231,7 @@ def execute(operation_dir, *, absolute_deadline=None, raw_cap=RAW_CAP):
         for directory, content in ((control, b"{}\n"), (anon, ANON)):
             directory.mkdir(mode=0o700)
             private_file(directory / "config.json", content)
-        version = run(anon, "--version").decode("ascii").strip()
-        if not re.fullmatch(r"Docker version 29\.1\.3, build [A-Za-z0-9_.-]+", version):
-            raise RuntimeError("actual_client_not_29_1_3")
+        version = expected_client_version(run(anon, "--version"))
         run(control, "image", "pull", IMAGE)
         observed = log.read_bytes() if log.exists() else b""
         if observed != b"get\n":

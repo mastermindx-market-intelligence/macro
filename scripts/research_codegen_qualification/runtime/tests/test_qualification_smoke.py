@@ -1452,6 +1452,26 @@ def test_runsc_runtime_policy_format_requests_hostconfig_runtime():
     assert '"Runtime"' not in qsm._POLICY_FORMAT
 
 
+def test_runsc_create_labels_preserve_root_and_match_inspected_policy(runsc_comp):
+    engine = qrs.RunscQualificationEngine(runsc_comp.t, runsc_comp.plan,
+                                         executor=None)
+    argv = engine.effective_create_argv()
+    pairs = [argv[i + 1].split("=", 1) for i, value in enumerate(argv)
+             if value == "--label"]
+    # Model Docker's final key/value map from the actual create arguments,
+    # rather than supplying an independent idealized inspect fixture.
+    actual_labels = dict(pairs)
+    assert len(actual_labels) == len(pairs) == 2
+    assert actual_labels == {
+        ROOT_LABEL_KEY: ROOT_ID,
+        RUN_LABEL_KEY: engine.operation_id,
+    }
+    policy = runsc_policy_doc_ok(runsc_comp)
+    policy["Cfg"]["Labels"] = actual_labels
+    assert qsm._policy_mismatch(runsc_comp.plan, policy,
+                                **engine._policy_expectations()) is None
+
+
 def test_runsc_exact_create_and_inspected_runtime(runsc_comp):
     collector = FakeCollector(runsc_comp, runsc_policy_doc_ok(runsc_comp),
                               state_doc=state_doc_ok(CID),

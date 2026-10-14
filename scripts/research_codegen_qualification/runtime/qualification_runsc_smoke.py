@@ -30,9 +30,9 @@ import sys
 
 import qualification_smoke as qsm
 
-OPERATION_ID = "rf-fixed-smoke-runsc-01a1333c-v1"
-CONTAINER_NAME = "rf-fixed-smoke-runsc-01a1333c-v1"
-RUN_LABEL = qsm.ROOT_LABEL_KEY + "=" + OPERATION_ID
+OPERATION_ID = "rf-fixed-smoke-runsc-01a1333c-v2"
+CONTAINER_NAME = "rf-fixed-smoke-runsc-01a1333c-v2"
+RUN_LABEL = qsm.RUN_LABEL_KEY + "=" + OPERATION_ID
 RUNTIME_NAME = "rf-runsc"
 RUNTIME_FLAG = "--runtime=" + RUNTIME_NAME
 RUNTIME_ARGS = ("--platform=systrap", "--network=none", "--oci-seccomp")
