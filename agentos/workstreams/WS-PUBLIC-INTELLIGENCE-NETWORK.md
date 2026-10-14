@@ -224,7 +224,7 @@ met. Original October 11 12:07 EFFECT_UNKNOWN remains unreplayed. Earlier
 #8786/#9041 installation and scoped browser acceptance remain historical accepted
 capabilities; this new source is not yet installed or publicly available.
 
-## Writer accepted and complete installation binding — October 14 03:36 UTC
+## Writer accepted and complete installation binding — October 14 03:33 UTC
 
 The isolated follow-on application frontier is 558ca0a6cdeddf48fbbedc9f0d7f178882ef68e8.
 The same Fabric writer-contract run mmx-press-writer-contract-followon-20261014-001
@@ -276,4 +276,3 @@ missing earnings credentials are not the sole waiting condition.
 verified: writer_contract_phase/combined_green.txt, independent_review.md and
 validation.json; validator_integrity_phase/local_portable_probe.json,
 install_bundle_coverage_repair.json and research_source_qualification/review.json.
-
