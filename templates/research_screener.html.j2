@@ -57,7 +57,7 @@
   </div>
 
   <p class="rs-theme-null" id="rs-theme-hint" data-rs-theme-null>{{ t("Theme lens isn't available yet.", "主题视角尚未提供。") }}</p>
-  <p class="rs-exposure-null" data-rs-exposure-null hidden>{{ t('Sign in to see which of these you hold.', '登录后即可看到你持有其中哪些。') }}</p>
+  <p class="rs-exposure-null" data-rs-exposure-null data-state="signedout" hidden><span class="l-en">Sign in to see which of these you hold.</span><span class="l-zh">登录后即可看到你持有其中哪些。</span> <a class="rs-portfolio-link" data-rs-portfolio-link href="watchlist.html" hidden><span class="l-en">Open Portfolio</span><span class="l-zh">打开投资组合</span></a></p>
   <p class="rs-empty" data-rs-empty hidden>{{ t('No names match these lenses right now.', '目前没有公司符合这些视角。') }}</p>
 
   <ol class="rs-list" data-rs-list>
@@ -108,17 +108,127 @@
   var exposureNull = document.querySelector("[data-rs-exposure-null]");
   var lenses = { catalyst: false, exposure: false, valuation: false };
   var order = "name";
-  var held = {};
 
-  function signedIn() {
+  /* ---- Exposure integrity (B-F06-4 repair) ------------------------------
+     An MDXAuth session alone is NOT authority for "you hold this".
+     WatchStore's init is deliberately dormant without a sync host, and its
+     public portfolio.list() then answers with the ANONYMOUS local book — the
+     old loadHoldings() labeled that book (and every null/error/loading
+     answer) as known holdings. Each read below captures the owner id, the
+     WatchStore instance and a monotonically increasing generation, and a
+     completion publishes holdings only while ALL of these still hold at
+     settle time: still signed in, same store instance, same owner, CLOUD
+     authority, a ready readState and an Array answer. Anything else —
+     local/unknown/degraded/error/null/malformed/superseded — paints an
+     honest notice state and never a known zero. No polling, no timers, no
+     writes, no sync host of our own: readiness arrives through the page's
+     existing wl-auth event and MDXAuth.onChange.
+     ----------------------------------------------------------------------- */
+  var NOTICE_COPY = {
+    signedout: { en: 'Sign in to see which of these you hold.',
+                 zh: '登录后即可看到你持有其中哪些。', link: false },
+    loading: { en: 'Loading your holdings…', zh: '正在读取你的持仓…', link: false },
+    unavailable: { en: 'Holdings are unavailable here.',
+                   zh: '此处暂时无法读取持仓。', link: true },
+    degraded: { en: 'Current holdings could not be verified.',
+                zh: '暂时无法确认当前持仓。', link: true }
+  };
+  var verified = null;    // { owner, store, held } — only ever a
+                          // verified cloud-ready read; unknown stays null, never {}
+  var gen = 0;            // increasing request generation
+  var current = null;     // { gen, owner, store } — the only read allowed to publish
+  var inFlight = false;
+  var lastReadState = ""; // unavailable | loading | degraded after a settled read
+  var wired = false;
+
+  function sessionOn() {
     try {
       return !!(window.MDXAuth && window.MDXAuth.hasSession && window.MDXAuth.hasSession());
-    } catch (e) {
-      return false;
+    } catch (e) { return false; }
+  }
+  function storeUser() {
+    try {
+      var s = window.WatchStore;
+      if (s && typeof s.user === "function") return s.user();
+    } catch (e) {}
+    return null;
+  }
+  function ownerId() {
+    var u = storeUser();
+    if (!u) return "";
+    try { return String(u.id == null ? "" : u.id); } catch (e) { return ""; }
+  }
+  function portfolioApi() {
+    var s = window.WatchStore;
+    if (!s || !s.portfolio || typeof s.portfolio !== "object") return null;
+    if (typeof s.portfolio.list !== "function" ||
+        typeof s.portfolio.readState !== "function") return null;
+    return s.portfolio;
+  }
+  function readStateOf(api) {
+    try {
+      return (api && typeof api.readState === "function") ? api.readState() : null;
+    } catch (e) { return null; }
+  }
+  function verifiedHere() {
+    if (!verified || !sessionOn() || verified.owner !== ownerId() ||
+        verified.store !== window.WatchStore) return false;
+    var rs = readStateOf(portfolioApi());
+    return rs && rs.authority === "cloud" && rs.state === "ready";
+  }
+
+  function clearMarks() {
+    rows.forEach(function (row) {
+      row.setAttribute("data-has-exposure", "0");
+      var line = row.querySelector("[data-rs-hold]");
+      if (line) line.hidden = true;
+    });
+  }
+  function applyHeld(held) {
+    rows.forEach(function (row) {
+      var on = !!(held && held[(row.getAttribute("data-ticker") || "").toUpperCase()]);
+      row.setAttribute("data-has-exposure", on ? "1" : "0");
+      var line = row.querySelector("[data-rs-hold]");
+      if (line) line.hidden = !on;
+    });
+  }
+
+  /* Exposure never filters on an unverified answer: while the lens is on but
+     the holdings are not verified-ready, every row keeps its ordinary
+     (other-lens) visibility and the notice names the state instead. */
+  function noticeState() {
+    if (!lenses.exposure) return "";
+    if (!sessionOn()) return "signedout";
+    if (!ownerId() || !portfolioApi()) return "unavailable";
+    if (verifiedHere()) return "ready";
+    if (inFlight) return "loading";
+    return lastReadState || "degraded";
+  }
+  function paintNotice(state) {
+    if (!exposureNull) return;
+    if (!state) {
+      exposureNull.hidden = true;
+      exposureNull.setAttribute("data-state", "");
+      return;
     }
+    var copy = NOTICE_COPY[state] || null;
+    exposureNull.hidden = false;
+    exposureNull.setAttribute("data-state", state);
+    if (copy) {
+      var en = exposureNull.querySelector(".l-en");
+      var zh = exposureNull.querySelector(".l-zh");
+      if (en) en.textContent = copy.en;
+      if (zh) zh.textContent = copy.zh;
+    }
+    var link = exposureNull.querySelector("[data-rs-portfolio-link]");
+    if (link) link.hidden = !(copy && copy.link);
   }
 
   function apply() {
+    if (verified && !verifiedHere()) {
+      verified = null;
+      clearMarks();
+    }
     var vis = 0;
     rows.sort(function (a, b) {
       if (order === "next_catalyst_date") {
@@ -132,55 +242,109 @@
       }
       return (a.getAttribute("data-name") || "").localeCompare(b.getAttribute("data-name") || "");
     });
+    var gate = noticeState();
+    var held = (verified && verified.held) || {};
     rows.forEach(function (row) {
       list.appendChild(row);
       var ok = true;
       if (lenses.catalyst && row.getAttribute("data-has-catalyst") !== "1") ok = false;
       if (lenses.valuation && row.getAttribute("data-has-valuation") !== "1") ok = false;
-      if (lenses.exposure) {
-        if (!signedIn()) ok = false;
-        else if (row.getAttribute("data-has-exposure") !== "1") ok = false;
-      }
+      if (lenses.exposure && gate === "ready" &&
+          !held[(row.getAttribute("data-ticker") || "").toUpperCase()]) ok = false;
       row.hidden = !ok;
       if (ok) vis += 1;
     });
     if (empty) empty.hidden = vis !== 0;
-    if (exposureNull) {
-      exposureNull.hidden = !(lenses.exposure && !signedIn());
-    }
+    paintNotice(gate === "ready" ? "" : gate);
   }
 
-  function markHeld(tickers) {
-    held = tickers || {};
-    rows.forEach(function (row) {
-      var ticker = (row.getAttribute("data-ticker") || "").toUpperCase();
-      var on = !!held[ticker];
-      row.setAttribute("data-has-exposure", on ? "1" : "0");
-      var line = row.querySelector("[data-rs-hold]");
-      if (line) line.hidden = !on;
-    });
+  function fail(meta, kind) {
+    if (!current || current.gen !== meta.gen) return;   // superseded
+    current = null;
+    inFlight = false;
+    lastReadState = kind;
+    verified = null;
+    clearMarks();          // a failed read confirms nothing; never keep its marks
     apply();
   }
-
-  function loadHoldings() {
-    if (!signedIn()) {
-      markHeld({});
+  function publish(meta, items) {
+    if (!current || current.gen !== meta.gen) return;   // superseded completion
+    if (!sessionOn() || ownerId() !== meta.owner || !meta.owner ||
+        window.WatchStore !== meta.store) { fail(meta, "unavailable"); return; }
+    var rs = readStateOf(portfolioApi());
+    if (rs && rs.authority === "cloud" && rs.state === "loading") {
+      fail(meta, "loading"); return;
+    }
+    // Cloud authority + a ready readState + an Array answer, or nothing is claimed.
+    if (!rs || rs.authority !== "cloud" || rs.state !== "ready" || !Array.isArray(items)) {
+      fail(meta, "degraded"); return;
+    }
+    var heldMap = Object.create(null);
+    for (var i = 0; i < items.length; i++) {
+      var item = items[i];
+      if (!item || typeof item !== "object" || typeof item.ticker !== "string" ||
+          !item.ticker.trim()) { fail(meta, "degraded"); return; }
+      if (item.status === "closed") continue;           // closed lots are not holdings
+      heldMap[item.ticker.trim().toUpperCase()] = true;
+    }
+    current = null;
+    inFlight = false;
+    lastReadState = "";
+    verified = { owner: meta.owner, store: meta.store, held: heldMap };
+    applyHeld(heldMap);
+    apply();
+  }
+  function attempt() {
+    if (verifiedHere()) { apply(); return; }
+    gen += 1;
+    current = null;
+    inFlight = false;
+    verified = null;
+    lastReadState = "";
+    clearMarks();
+    if (!sessionOn() || !ownerId() || !portfolioApi()) {
+      apply();
       return;
     }
-    var store = window.WatchStore && window.WatchStore.portfolio;
-    if (!store || typeof store.list !== "function") {
-      markHeld({});
-      return;
-    }
-    store.list().then(function (items) {
-      var map = {};
-      (items || []).forEach(function (item) {
-        if (!item || !item.ticker) return;
-        if (item.status === "closed") return;
-        map[String(item.ticker).toUpperCase()] = true;
-      });
-      markHeld(map);
-    }).catch(function () { markHeld({}); });
+    var uid = ownerId();
+    var meta = { gen: gen, owner: uid, store: window.WatchStore };
+    current = meta;
+    inFlight = true;
+    apply();                                           // paints the loading state
+    var pending;
+    try { pending = portfolioApi().list(); }
+    catch (e) { fail(meta, "degraded"); return; }      // synchronous throw
+    Promise.resolve(pending).then(
+      function (items) { publish(meta, items); },
+      function () { fail(meta, "degraded"); }          // promise rejection
+    );
+  }
+  function onAuthEvent() {
+    // Readiness can change without a new owner id. Revalidate a published book
+    // as well as a pending one, clearing its marks before the replacement read.
+    verified = null;
+    attempt();               // re-read when eligible; wl-auth also carries readiness
+  }
+  function wire() {
+    if (wired) return;
+    wired = true;
+    document.addEventListener("wl-auth", onAuthEvent);
+    try {
+      if (window.MDXAuth && typeof window.MDXAuth.onChange === "function") {
+        window.MDXAuth.onChange(function () { onAuthEvent(); });
+      }
+    } catch (e) {}
+  }
+  function boot() {
+    wire();
+    attempt();
+  }
+  // Scripts later in the page (watchstore.js) must load first: always wait for
+  // DOMContentLoaded while the document is still loading, whatever MDXAuth says.
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", boot);
+  } else {
+    boot();
   }
 
   document.querySelectorAll(".rs-chip[data-lens]").forEach(function (btn) {
@@ -191,7 +355,8 @@
       lenses[lens] = !lenses[lens];
       btn.classList.toggle("is-on", lenses[lens]);
       btn.setAttribute("aria-pressed", lenses[lens] ? "true" : "false");
-      apply();
+      if (lens === "exposure" && lenses.exposure) attempt();
+      else apply();
     });
   });
   document.querySelectorAll(".rs-order-btn").forEach(function (btn) {
@@ -205,15 +370,6 @@
       apply();
     });
   });
-
-  function boot() {
-    loadHoldings();
-    if (window.MDXAuth && typeof window.MDXAuth.onChange === "function") {
-      window.MDXAuth.onChange(function () { loadHoldings(); });
-    }
-  }
-  if (window.MDXAuth) boot();
-  else document.addEventListener("DOMContentLoaded", function () { setTimeout(boot, 0); });
 })();
 </script>
 <script src="theme.js"></script>
