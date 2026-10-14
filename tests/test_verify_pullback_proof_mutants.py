@@ -26,6 +26,12 @@ from scripts.verify_risk_radar_pullback_served import (
 
 EM = EM_DASH
 NOW = datetime(2026, 10, 1, 8, 0, tzinfo=timezone.utc)
+# The served page inlines the expiry owner; --require-active needs it there.
+OWNER_SCRIPT = (
+    "<script>"
+    + (ROOT / "templates/_risk_radar_pullback_depth.js.j2").read_text(encoding="utf-8")
+    + "</script>"
+)
 SOURCE = {"file": "synthetic.html"}
 
 
@@ -47,6 +53,8 @@ def _build(
     strongs=None,
     second_forecast=False,
     copies=1,
+    script="",
+    section_class="rrp pbx",
 ):
     if times is None:
         times = (asof, valid_until)
@@ -76,7 +84,7 @@ def _build(
     modal_attr = "" if modal is None else f' aria-modal="{modal}"'
     label_attr = "" if labelledby is None else f' aria-labelledby="{labelledby}"'
     section = (
-        f'<section class="rrp pbx" data-pb-phase="{phase}" data-pb-asof="{asof}" '
+        f'<section class="{section_class}" data-pb-phase="{phase}" data-pb-asof="{asof}" '
         f'data-pb-valid-until="{valid_until}">'
         f'<div class="rrp-stamp">{stamp}</div>'
         f'<span data-metric="current">{current}</span>'
@@ -89,7 +97,7 @@ def _build(
         f'<div id="cnx-dlg-risk" role="{role}"{modal_attr}{label_attr}>{section}</div>'
     )
     label = f'<h2 id="{labelledby}">Risk</h2>' if emit_label and labelledby else ""
-    return "<!DOCTYPE html><html><body>" + label + (dialog * copies) + "</body></html>"
+    return "<!DOCTYPE html><html><body>" + label + (dialog * copies) + script + "</body></html>"
 
 
 def _run(html, **kwargs):
@@ -257,7 +265,7 @@ def test_kill_A20_duplicate_dialog_fails_c1():
 
 def test_kill_A23_twenty_minutes_of_life_stays_current():
     now = datetime(2026, 10, 1, 8, 40, tzinfo=timezone.utc)
-    bad, _detail, ok = _run(_build(), require_active=True, now=now)
+    bad, _detail, ok = _run(_build(script=OWNER_SCRIPT), require_active=True, now=now)
     assert ok is True
     assert "C7" not in bad
 

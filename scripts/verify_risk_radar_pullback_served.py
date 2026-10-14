@@ -35,6 +35,15 @@ ACTIVE_PHASES = frozenset({"underway", "stabilizing", "recovering"})
 # expires a valid_until further than this ahead of the viewer's clock, so the
 # served bytes are not current there either.
 MAX_AHEAD = timedelta(days=400)
+# The page script's STAMP, verbatim. It reads data-pb-valid-until with this
+# pattern and nothing else: no trimming, whole seconds (a zero fraction is the
+# same second), and a Z or +HH:MM offset. Any other value expires the panel at
+# once, so C3 and C7 read the attribute through the same pattern, and C7 needs
+# the served script to carry it.
+PAGE_STAMP = r"^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})(\.0{1,6})?(Z|[+-](\d{2}):(\d{2}))$"
+# The page script only expires sections that match this selector.
+PAGE_EXPIRY_SELECTOR = ".rrp.pbx[data-pb-valid-until]"
+_PAGE_CAP_RE = re.compile(r"MAX_AHEAD_MS\s*=\s*(\d+)\s*\*\s*24\s*\*\s*60\s*\*\s*60\s*\*\s*1000\s*;")
 VOID_TAGS = frozenset({
     "area", "base", "br", "col", "embed", "hr", "img", "input",
     "link", "meta", "param", "source", "track", "wbr",
@@ -108,9 +117,8 @@ CURRENT_METRIC_RE = re.compile("^\u2212?\\d+\\.\\d%$")
 OTHER_PERCENT_RE = re.compile("^[+\u2212-]?\\d+\\.\\d%$")
 PERCENT_ANY_RE = re.compile(r"\d+(?:\.\d+)?%")
 ISO_DATE_RE = re.compile(r"\d{4}-\d{2}-\d{2}")
-VALID_UNTIL_RE = re.compile(
-    r"(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2})(\.\d+)?(Z|[+-]\d{2}:\d{2}|[+-]\d{4})\Z"
-)
+# JavaScript's \d is ASCII only; fullmatch stands in for the ^ and $ anchors.
+VALID_UNTIL_RE = re.compile(PAGE_STAMP[1:-1], re.ASCII)
 # A CSS or JS function call such as polygon(...) is not the banned word.
 # The word still matches in text, attributes, and comments.
 VENDOR_RE = re.compile(
@@ -319,30 +327,26 @@ def _is_iso_date(value: str) -> bool:
 
 
 def _parse_valid_until(value: str) -> datetime | None:
+    """The deadline the page script's deadline() reads, or None where it expires."""
     match = VALID_UNTIL_RE.fullmatch(value)
     if match is None:
         return None
-    date_s, time_s, frac, offset = match.groups()
+    year, month, day, hour, minute, second = (int(part) for part in match.groups()[:6])
+    # Date.UTC maps years below 100 onto the 1900s, so the script refuses them.
+    if year < 100:
+        return None
     try:
-        parsed = datetime.strptime(f"{date_s}T{time_s}", "%Y-%m-%dT%H:%M:%S")
+        parsed = datetime(year, month, day, hour, minute, second)
     except ValueError:
         return None
-    if frac:
-        digits = frac[1:7].ljust(6, "0")
-        try:
-            parsed = parsed.replace(microsecond=int(digits))
-        except ValueError:
-            return None
+    offset = match.group(8)
     if offset == "Z":
-        tz = timezone.utc
-    else:
-        sign = 1 if offset[0] == "+" else -1
-        clock = offset[1:].replace(":", "")
-        hours, minutes = int(clock[:2]), int(clock[2:])
-        if hours > 23 or minutes > 59:
-            return None
-        tz = timezone(sign * timedelta(hours=hours, minutes=minutes))
-    return parsed.replace(tzinfo=tz)
+        return parsed.replace(tzinfo=timezone.utc)
+    hours, minutes = int(match.group(9)), int(match.group(10))
+    if hours > 14 or minutes > 59:
+        return None
+    sign = -1 if offset[0] == "-" else 1
+    return parsed.replace(tzinfo=timezone(sign * timedelta(hours=hours, minutes=minutes)))
 
 
 def _is_unavailable_label(text: str) -> bool:
@@ -417,12 +421,15 @@ def _c3_problems(section: Node) -> list[str]:
         return []
     problems: list[str] = []
     asof = section.attrs.get("data-pb-asof", "").strip()
-    valid_until = section.attrs.get("data-pb-valid-until", "").strip()
+    valid_until = section.attrs.get("data-pb-valid-until", "")
     if not _is_iso_date(asof):
         problems.append(f"data-pb-asof is not an ISO date ({asof or '<missing>'})")
     parsed_until = _parse_valid_until(valid_until)
     if parsed_until is None:
-        problems.append("data-pb-valid-until lacks an explicit UTC offset")
+        problems.append(
+            "data-pb-valid-until is not a stamp the page script reads "
+            "(whole seconds with a Z or +HH:MM offset)"
+        )
     elif _is_iso_date(asof):
         asof_dt = datetime.strptime(asof, "%Y-%m-%d").replace(tzinfo=timezone.utc)
         if not parsed_until > asof_dt:
@@ -857,10 +864,41 @@ def _check_c6(dialog: Node | None, html: str) -> tuple[bool, str]:
 def _parse_now(value: str | None) -> datetime:
     if not value:
         return datetime.now(timezone.utc)
-    parsed = _parse_valid_until(value.strip())
-    if parsed is None:
+    try:
+        parsed = datetime.fromisoformat(value.strip())
+    except ValueError:
+        parsed = None
+    if parsed is None or parsed.tzinfo is None:
         raise InputError(f"--now is not an ISO-8601 timestamp with a UTC offset ({value})")
     return parsed
+
+
+def _expiry_owner_problem(root: Node, section: Node | None) -> str | None:
+    """None when the served page carries the script that expires this section.
+
+    C7 says the bytes are current now. They stay honest after valid_until only
+    if the page script that hides the figures is served and reads the stamp the
+    way this verifier does."""
+    if section is None or not (_has_class(section, "rrp") and _has_class(section, "pbx")):
+        return f"section does not match {PAGE_EXPIRY_SELECTOR}; the page script never expires it"
+    owners = [
+        text
+        for text in (
+            "".join(child for child in node.children if isinstance(child, str))
+            for node in _descendants(root)
+            if node.tag == "script"
+        )
+        if PAGE_EXPIRY_SELECTOR in text
+    ]
+    if not owners:
+        return "the page expiry script is not served"
+    for text in owners:
+        if f"/{PAGE_STAMP}/" not in text:
+            return "the served expiry script reads valid_until with a different pattern"
+        cap = _PAGE_CAP_RE.search(text)
+        if cap is None or timedelta(days=int(cap.group(1))) != MAX_AHEAD:
+            return "the served expiry script caps valid_until at a different horizon"
+    return None
 
 
 def _check_c7(
@@ -868,18 +906,21 @@ def _check_c7(
     valid_until: str | None,
     require_active: bool,
     now: datetime,
+    owner_problem: str | None = None,
 ) -> tuple[bool, str]:
     if not require_active:
         return True, "require-active not set"
     if phase not in ACTIVE_PHASES:
         return False, f"phase {phase or '<missing>'} is not underway|stabilizing|recovering"
-    parsed = _parse_valid_until((valid_until or "").strip())
+    parsed = _parse_valid_until(valid_until or "")
     if parsed is None:
         return False, "valid_until missing or unparseable"
     if parsed <= now:
         return False, "expired: valid_until <= now"
     if parsed - now > MAX_AHEAD:
         return False, "valid_until is more than 400 days ahead; the page script expires it"
+    if owner_problem is not None:
+        return False, owner_problem
     return True, f"phase {phase} is active"
 
 
@@ -904,7 +945,7 @@ def _evaluate(
     dialog = dialogs[0] if len(dialogs) == 1 else None
     sections = _sections(dialogs[0]) if dialogs else []
     phase = sections[0].attrs.get("data-pb-phase", "").strip() if sections else None
-    valid_until = sections[0].attrs.get("data-pb-valid-until", "").strip() if sections else None
+    valid_until = sections[0].attrs.get("data-pb-valid-until", "") if sections else None
     if len(dialogs) == 1:
         c1 = _check_c1(dialog, sections, ids, market)
     elif len(dialogs) == 0:
@@ -918,7 +959,10 @@ def _evaluate(
         ("C4", _check_c4(sections)),
         ("C5", _check_c5(sections, html, dialog, ids, root)),
         ("C6", _check_c6(dialogs[0] if dialogs else None, html)),
-        ("C7", _check_c7(phase, valid_until, require_active, now)),
+        ("C7", _check_c7(
+            phase, valid_until, require_active, now,
+            _expiry_owner_problem(root, sections[0] if sections else None),
+        )),
     ]
     return [{"id": check_id, "pass": ok, "detail": detail} for check_id, (ok, detail) in pairs]
 

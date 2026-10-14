@@ -12,6 +12,8 @@ import sys
 import types
 from pathlib import Path
 
+import pytest
+
 
 def _allow_dashboard_render_without_plotly() -> None:
     """scripts/build_site.py imports plotly at module load. The dashboard
@@ -500,3 +502,191 @@ def test_altered_allow_listed_sentence_fails_c5(tmp_path):
     rc, receipt, _page = _run(tmp_path, html, "cn")
     detail = _assert_c5(rc, receipt)
     assert "forecast language" in detail
+
+
+# The page script decides what a viewer sees as current. C3 and C7 have to read
+# every data-pb-valid-until the way it does, or --require-active can pass bytes
+# the page has already expired. Stamps the script reads:
+STAMPS_READ = [
+    "2026-10-01T09:00:00Z",
+    "2026-10-01T09:00:00+00:00",
+    "2026-10-01T09:00:00-00:00",
+    "2026-10-01T17:00:00+08:00",
+    "2026-10-01T05:00:00-04:00",
+    "2026-10-01T23:00:00+14:00",
+    "2026-09-30T19:00:00-14:00",
+    "2026-10-01T23:59:00+14:59",
+    "2026-10-01T09:00:00.0Z",
+    "2026-10-01T09:00:00.000000+00:00",
+    "2028-02-29T00:00:00Z",
+    "0100-03-01T00:00:00Z",
+]
+# Stamps it expires at once, each with a clock at which a looser reading
+# (rolled-over fields, years mapped onto the 1900s) would still be current.
+STAMPS_REFUSED = [
+    ("2026-10-01T09:00:00.001Z", "2026-09-30T09:00:00Z"),
+    ("2026-10-01T09:00:00.0000000Z", "2026-09-30T09:00:00Z"),
+    ("2026-10-01T17:00:00+0800", "2026-09-30T09:00:00Z"),
+    ("2026-10-01T09:00:00+15:00", "2026-09-30T09:00:00Z"),
+    ("2026-10-01T09:00:00+08:60", "2026-09-30T09:00:00Z"),
+    ("2026-10-01T09:00:00z", "2026-09-30T09:00:00Z"),
+    (" 2026-10-01T09:00:00Z", "2026-09-30T09:00:00Z"),
+    ("2026-10-01T09:00:00Z ", "2026-09-30T09:00:00Z"),
+    ("2026-10-01T09:00:00Z\n", "2026-09-30T09:00:00Z"),
+    ("２026-10-01T09:00:00Z", "2026-09-30T09:00:00Z"),
+    ("2026-10-01 09:00:00Z", "2026-09-30T09:00:00Z"),
+    ("2026-10-01T09:00Z", "2026-09-30T09:00:00Z"),
+    ("2026-10-01T09:00:00", "2026-09-30T09:00:00Z"),
+    ("2026-13-01T09:00:00Z", "2026-09-30T09:00:00Z"),
+    ("2026-02-29T09:00:00Z", "2026-02-27T00:00:00Z"),
+    ("2026-10-01T24:00:00Z", "2026-09-30T09:00:00Z"),
+    ("2026-10-01T09:60:00Z", "2026-09-30T09:00:00Z"),
+    ("2026-10-01T09:00:60Z", "2026-09-30T09:00:00Z"),
+    ("0099-10-01T09:00:00Z", "1999-09-30T09:00:00Z"),
+    ("0099-10-01T09:00:00Z", "0099-09-30T09:00:00Z"),
+]
+
+
+def _stamp_cases():
+    from datetime import datetime, timedelta
+
+    from scripts.verify_risk_radar_pullback_served import MAX_AHEAD, _parse_valid_until
+
+    second = timedelta(seconds=1)
+    cases = []
+    for stamp in STAMPS_READ:
+        instant = _parse_valid_until(stamp)
+        assert instant is not None, stamp
+        for now in (instant - second, instant, instant - MAX_AHEAD, instant - MAX_AHEAD - second):
+            cases.append((stamp, now))
+    for stamp, clock in STAMPS_REFUSED:
+        cases.append((stamp, datetime.fromisoformat(clock)))
+    return cases
+
+
+def test_c7_reads_every_stamp_as_the_shipped_page_script_does():
+    """Run the shipped expiry owner in Node on each stamp and clock; C7 agrees."""
+    from datetime import datetime, timedelta, timezone
+
+    from scripts.verify_risk_radar_pullback_served import _check_c7
+    from tests.test_pullback_expiry_owner_js_edge import _run_json
+
+    epoch = datetime(1970, 1, 1, tzinfo=timezone.utc)
+    cases = _stamp_cases()
+    wire = [[stamp, (now - epoch) // timedelta(milliseconds=1)] for stamp, now in cases]
+    body = (
+        "const cases = " + json.dumps(wire) + ";\n"
+        "const out = cases.map(([stamp, ms]) => {\n"
+        "  now = ms; const sec = section(stamp); boot([sec]);\n"
+        "  return !sec.classes.has('pb-expired');\n"
+        "});\n"
+        "console.log(JSON.stringify({current: out}));\n"
+    )
+    page = _run_json(body, "UTC")["current"]
+    verifier = [_check_c7("underway", stamp, True, now)[0] for stamp, now in cases]
+    disagree = [
+        (stamp, now.isoformat(), page_current, ours)
+        for (stamp, now), page_current, ours in zip(cases, page, verifier)
+        if page_current != ours
+    ]
+    assert disagree == []
+    # Both directions are exercised: the four clocks per read stamp give two
+    # current and two expired verdicts, and every refused stamp is expired.
+    assert sum(verifier) == 2 * len(STAMPS_READ)
+
+
+def _with_stamp(html: str, stamp: str) -> str:
+    old = "2026-10-01T09:00:00+00:00"
+    attr = f'data-pb-valid-until="{old}"'
+    time = f'<time datetime="{old}">'
+    assert html.count(attr) == 1 and html.count(time) == 1
+    html = html.replace(attr, f'data-pb-valid-until="{stamp}"', 1)
+    return html.replace(time, f'<time datetime="{stamp}">', 1)
+
+
+
+@pytest.mark.parametrize("stamp", [
+    "2026-10-01T09:00:00.001+00:00",
+    "2026-10-01T09:00:00+0000",
+    "2026-10-01T09:00:00+15:00",
+])
+def test_stamp_the_page_expires_fails_c3_and_c7(tmp_path, stamp):
+    """A fraction, a colonless offset or an offset past +14:00 expires the
+    panel in the page, so the served bytes are neither a receipt nor current."""
+    html = _with_stamp(_active_cn(), stamp)
+    rc, receipt, _page = _run(tmp_path, html, "cn")
+    assert rc == 1
+    assert _failed(receipt) == ["C3"]
+    detail = next(item["detail"] for item in receipt["checks"] if item["id"] == "C3")
+    assert "not a stamp the page script reads" in detail
+    rc, receipt, _page = _run(tmp_path, html, "cn", "--require-active", "--now", STILL_CURRENT)
+    assert rc == 1
+    assert _failed(receipt) == ["C3", "C7"]
+    detail = next(item["detail"] for item in receipt["checks"] if item["id"] == "C7")
+    assert detail == "valid_until missing or unparseable"
+
+
+def test_zero_fraction_stamp_stays_current(tmp_path):
+    """The page reads a zero fraction as the same second; so does the verifier."""
+    html = _with_stamp(_active_cn(), "2026-10-01T09:00:00.000+00:00")
+    rc, receipt, _page = _run(tmp_path, html, "cn", "--require-active", "--now", STILL_CURRENT)
+    assert rc == 0, [(c["id"], c["detail"]) for c in receipt["checks"] if not c["pass"]]
+
+
+_OWNER_RE = re.compile(r"<script>/\* Observation expiry owner.*?</script>", re.DOTALL)
+
+
+def _c7_detail(receipt: dict) -> str:
+    return next(item["detail"] for item in receipt["checks"] if item["id"] == "C7")
+
+
+@pytest.mark.parametrize("market", ["us", "cn"])
+def test_require_active_needs_the_served_expiry_script(tmp_path, market):
+    """Without the page script nothing hides the figures after valid_until."""
+    html = _active_us() if market == "us" else _active_cn()
+    assert len(_OWNER_RE.findall(html)) == 1
+    stripped = _OWNER_RE.sub("", html)
+    rc, receipt, _page = _run(tmp_path, stripped, market)
+    assert rc == 0, [(c["id"], c["detail"]) for c in receipt["checks"] if not c["pass"]]
+    rc, receipt, _page = _run(tmp_path, stripped, market, "--require-active", "--now", STILL_CURRENT)
+    assert rc == 1
+    assert _failed(receipt) == ["C7"]
+    assert _c7_detail(receipt) == "the page expiry script is not served"
+
+
+def test_require_active_needs_the_section_the_script_selects(tmp_path):
+    html = _active_cn()
+    old = '<section class="rrp pbx"'
+    assert html.count(old) == 1
+    html = html.replace(old, '<section class="pbx"', 1)
+    rc, receipt, _page = _run(tmp_path, html, "cn", "--require-active", "--now", STILL_CURRENT)
+    assert rc == 1
+    assert "C7" in _failed(receipt)
+    assert _c7_detail(receipt) == (
+        "section does not match .rrp.pbx[data-pb-valid-until]; the page script never expires it"
+    )
+
+
+@pytest.mark.parametrize("old,new,detail", [
+    (r"(\.0{1,6})?", r"(\.\d{1,6})?",
+     "the served expiry script reads valid_until with a different pattern"),
+    ("var MAX_AHEAD_MS = 400 *", "var MAX_AHEAD_MS = 401 *",
+     "the served expiry script caps valid_until at a different horizon"),
+])
+def test_require_active_needs_the_served_script_to_read_stamps_as_c7_does(tmp_path, old, new, detail):
+    html = _active_cn()
+    script = _OWNER_RE.search(html).group(0)
+    assert script.count(old) == 1
+    html = html.replace(script, script.replace(old, new, 1), 1)
+    rc, receipt, _page = _run(tmp_path, html, "cn", "--require-active", "--now", STILL_CURRENT)
+    assert rc == 1
+    assert _failed(receipt) == ["C7"]
+    assert _c7_detail(receipt) == detail
+
+
+def test_c7_stamp_pattern_is_the_page_script_pattern():
+    from scripts.verify_risk_radar_pullback_served import PAGE_STAMP
+
+    js = (Path(__file__).resolve().parents[1]
+          / "templates/_risk_radar_pullback_depth.js.j2").read_text(encoding="utf-8")
+    assert f"var STAMP = /{PAGE_STAMP}/;" in js
