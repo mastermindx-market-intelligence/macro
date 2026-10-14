@@ -151,6 +151,7 @@ danger_areas:
   - verify_gold_fixtures resolves paths against the repository root; in a sparse worktree every gold path is under tests/fixtures and present, but a fixture edit anywhere changes a hash the pack pins.
   - The C&DI spans are exact text extracted from the 2026-09-25 edition; whitespace normalisation in the extractor is part of the span identity, so a re-extraction must use the same normalisation to compare hashes.
   - IdentityBinding.label_drift is derived from normalised names (casefold, punctuation stripped); a registrant that changes only punctuation is not drift, a suffix change is.
+prs: [9244]
 ---
 
 # Capital Structure V2 — E0 reference qualification handoff

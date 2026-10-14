@@ -8,8 +8,8 @@
   "source_unknown": false,
   "source_basis": "panel_majority",
   "source_mixed_vintage": true,
-  "source_board_sha256": "1ea2503cc680ec13712cc70f18b1c4d672b00cd7833d1b64420c64505c6eabc5",
-  "source_board_snapshot_path": "data/prophet/origination_sources/1ea2503cc680ec13712cc70f18b1c4d672b00cd7833d1b64420c64505c6eabc5.json.gz",
+  "source_board_sha256": "78c29d5a08f27078a217b87c8c8a708adee9b646bf9758410abdd03b23e95feb",
+  "source_board_snapshot_path": "data/prophet/origination_sources/78c29d5a08f27078a217b87c8c8a708adee9b646bf9758410abdd03b23e95feb.json.gz",
   "source_board_snapshot_encoding": "gzip",
   "cadence": "nightly-EOD",
   "authority_tier": "display",
@@ -136,12 +136,13 @@
   "intake": {
     "sort_key": "us_prophet_v1 priority score desc, act_level desc, ticker asc",
     "mode": "lossless",
-    "reorigination_blocked": 10,
+    "reorigination_blocked": 11,
     "reorigination_blocked_keys": [
       "AMSF-BULL",
       "BILI-BULL",
       "DD-BULL",
       "ELV-BULL",
+      "HST-BULL",
       "LRN-BULL",
       "TSN-BULL",
       "ULS-BULL",
@@ -150,25 +151,14 @@
       "ZTO-BULL"
     ],
     "open_plan_keys": 247,
-    "admitted": 66,
-    "duplicate_id_blocked": 37,
-    "eligible_after_skips": 19,
+    "admitted": 68,
+    "duplicate_id_blocked": 36,
+    "eligible_after_skips": 21,
     "cap": null,
     "cap_applied": false,
     "truncated": 0,
-    "validation_failed": 19,
+    "validation_failed": 21,
     "validation_failures": [
-      {
-        "ticker": "CBOE",
-        "id": "CBOE-BULL-20261008",
-        "stage": "clock_provenance",
-        "errors": [
-          "price_basis_date '2026-10-08' is not the last completed NYSE session for recorded_at '2026-10-14' (2026-10-13); stale boards cannot originate plans",
-          "us_standouts staleness.inputs.panel.mixed_vintage is true; mixed-vintage boards cannot originate plans",
-          "us_standouts staleness.delayed must be explicitly false; a delayed or undisclosed ranked-price vintage cannot originate plans",
-          "formation_date '2026-10-08' postdates tier_event_date '2026-10-07'"
-        ]
-      },
       {
         "ticker": "SO",
         "id": "SO-BULL-20261008",
@@ -237,6 +227,17 @@
         ]
       },
       {
+        "ticker": "CBOE",
+        "id": "CBOE-BULL-20261008",
+        "stage": "clock_provenance",
+        "errors": [
+          "price_basis_date '2026-10-08' is not the last completed NYSE session for recorded_at '2026-10-14' (2026-10-13); stale boards cannot originate plans",
+          "us_standouts staleness.inputs.panel.mixed_vintage is true; mixed-vintage boards cannot originate plans",
+          "us_standouts staleness.delayed must be explicitly false; a delayed or undisclosed ranked-price vintage cannot originate plans",
+          "formation_date '2026-10-08' postdates tier_event_date '2026-10-07'"
+        ]
+      },
+      {
         "ticker": "LNT",
         "id": "LNT-BULL-20261008",
         "stage": "clock_provenance",
@@ -281,6 +282,16 @@
         ]
       },
       {
+        "ticker": "LH",
+        "id": "LH-BULL-20261008",
+        "stage": "clock_provenance",
+        "errors": [
+          "price_basis_date '2026-10-08' is not the last completed NYSE session for recorded_at '2026-10-14' (2026-10-13); stale boards cannot originate plans",
+          "us_standouts staleness.inputs.panel.mixed_vintage is true; mixed-vintage boards cannot originate plans",
+          "us_standouts staleness.delayed must be explicitly false; a delayed or undisclosed ranked-price vintage cannot originate plans"
+        ]
+      },
+      {
         "ticker": "APOG",
         "id": "APOG-BULL-20261008",
         "stage": "clock_provenance",
@@ -299,6 +310,17 @@
           "price_basis_date '2026-10-08' is not the last completed NYSE session for recorded_at '2026-10-14' (2026-10-13); stale boards cannot originate plans",
           "us_standouts staleness.inputs.panel.mixed_vintage is true; mixed-vintage boards cannot originate plans",
           "us_standouts staleness.delayed must be explicitly false; a delayed or undisclosed ranked-price vintage cannot originate plans"
+        ]
+      },
+      {
+        "ticker": "GGG",
+        "id": "GGG-BULL-20261008",
+        "stage": "clock_provenance",
+        "errors": [
+          "price_basis_date '2026-10-08' is not the last completed NYSE session for recorded_at '2026-10-14' (2026-10-13); stale boards cannot originate plans",
+          "us_standouts staleness.inputs.panel.mixed_vintage is true; mixed-vintage boards cannot originate plans",
+          "us_standouts staleness.delayed must be explicitly false; a delayed or undisclosed ranked-price vintage cannot originate plans",
+          "formation_date '2026-10-08' postdates tier_event_date '2026-10-05'"
         ]
       },
       {
@@ -386,7 +408,7 @@
     ],
     "buy_rows": 107,
     "admitted_by_class": {
-      "patience": 47,
+      "patience": 49,
       "confirmation": 19
     },
     "originated_by_class": {
@@ -403,7 +425,7 @@
       "down": 14
     },
     "refused_no_entry_signal": 0,
-    "refused_band_low": 17,
+    "refused_band_low": 15,
     "refused_tier": {
       "T4": 4
     },
@@ -434,20 +456,12 @@
           "en": "Cleared every check \u2014 no entry plan came together tonight",
           "zh": "\u5404\u9879\u68c0\u67e5\u90fd\u901a\u8fc7 \u2014 \u4f46\u4eca\u665a\u6ca1\u80fd\u5f62\u6210\u5b8c\u6574\u8ba1\u5212",
           "near": true,
-          "n": 21,
+          "n": 23,
           "names": [
-            {
-              "ticker": "CBOE",
-              "name": "Cboe Global Markets",
-              "score": 66.0,
-              "why": [
-                "plan_not_built"
-              ]
-            },
             {
               "ticker": "SO",
               "name": "Southern Co/The",
-              "score": 63.3,
+              "score": 63.4,
               "why": [
                 "plan_not_built"
               ]
@@ -455,7 +469,7 @@
             {
               "ticker": "ADSK",
               "name": "Autodesk",
-              "score": 62.4,
+              "score": 62.5,
               "why": [
                 "plan_not_built"
               ]
@@ -471,7 +485,7 @@
             {
               "ticker": "HAS",
               "name": "Hasbro",
-              "score": 58.8,
+              "score": 58.9,
               "why": [
                 "plan_not_built"
               ]
@@ -479,7 +493,7 @@
             {
               "ticker": "ABBV",
               "name": "Abbvie Inc",
-              "score": 57.8,
+              "score": 57.9,
               "why": [
                 "plan_not_built"
               ]
@@ -493,9 +507,17 @@
               ]
             },
             {
+              "ticker": "CBOE",
+              "name": "Cboe Global Markets",
+              "score": 55.9,
+              "why": [
+                "plan_not_built"
+              ]
+            },
+            {
               "ticker": "LNT",
               "name": "Alliant Energy",
-              "score": 54.6,
+              "score": 54.7,
               "why": [
                 "plan_not_built"
               ]
@@ -503,7 +525,7 @@
             {
               "ticker": "YUMC",
               "name": "Yum China",
-              "score": 53.2,
+              "score": 53.3,
               "why": [
                 "plan_not_built"
               ]
@@ -519,7 +541,15 @@
             {
               "ticker": "GFI",
               "name": "Gold Fields",
-              "score": 52.7,
+              "score": 52.9,
+              "why": [
+                "plan_not_built"
+              ]
+            },
+            {
+              "ticker": "LH",
+              "name": "Labcorp",
+              "score": 52.4,
               "why": [
                 "plan_not_built"
               ]
@@ -535,15 +565,7 @@
             {
               "ticker": "ACI",
               "name": "Albertsons",
-              "score": 51.8,
-              "why": [
-                "plan_not_built"
-              ]
-            },
-            {
-              "ticker": "PAHC",
-              "name": "Phibro Animal Health",
-              "score": 49.2,
+              "score": 51.9,
               "why": [
                 "plan_not_built"
               ]
@@ -560,7 +582,7 @@
             {
               "ticker": "URBN",
               "name": "Urban Outfitters, Inc.",
-              "score": 71.0,
+              "score": 71.1,
               "why": [
                 "already_open"
               ]
@@ -576,7 +598,7 @@
             {
               "ticker": "AVGO",
               "name": "Broadcom Inc",
-              "score": 65.0,
+              "score": 65.1,
               "why": [
                 "already_open"
               ]
@@ -584,7 +606,7 @@
             {
               "ticker": "ELV",
               "name": "Elevance Health Inc",
-              "score": 61.2,
+              "score": 61.4,
               "why": [
                 "already_open"
               ]
@@ -600,7 +622,7 @@
             {
               "ticker": "LPG",
               "name": "Dorian LPG Ltd.",
-              "score": 60.7,
+              "score": 60.8,
               "why": [
                 "already_open"
               ]
@@ -608,7 +630,7 @@
             {
               "ticker": "LFST",
               "name": "Lifestance Health",
-              "score": 57.2,
+              "score": 57.5,
               "why": [
                 "already_open"
               ]
@@ -616,7 +638,7 @@
             {
               "ticker": "PPL",
               "name": "Ppl Corp",
-              "score": 56.8,
+              "score": 56.9,
               "why": [
                 "already_open"
               ]
@@ -632,7 +654,7 @@
             {
               "ticker": "WLY",
               "name": "John Wiley & Sons",
-              "score": 55.4,
+              "score": 55.6,
               "why": [
                 "already_open"
               ]
@@ -640,7 +662,7 @@
             {
               "ticker": "NWSA",
               "name": "News Corp   Class A",
-              "score": 54.1,
+              "score": 54.4,
               "why": [
                 "already_open"
               ]
@@ -648,7 +670,7 @@
             {
               "ticker": "PG",
               "name": "Procter + Gamble Co/The",
-              "score": 53.8,
+              "score": 53.9,
               "why": [
                 "already_open"
               ]
@@ -656,7 +678,7 @@
             {
               "ticker": "ZTS",
               "name": "Zoetis",
-              "score": 53.4,
+              "score": 53.5,
               "why": [
                 "already_open"
               ]
@@ -681,7 +703,7 @@
             {
               "ticker": "MSCI",
               "name": "MSCI",
-              "score": 68.3,
+              "score": 68.4,
               "why": [
                 "not_ready"
               ]
@@ -689,7 +711,7 @@
             {
               "ticker": "FOX",
               "name": "Fox Corp   Class B",
-              "score": 52.7,
+              "score": 52.9,
               "why": [
                 "not_ready"
               ]
@@ -705,7 +727,7 @@
             {
               "ticker": "EXK",
               "name": "Endeavour Silver",
-              "score": 47.7,
+              "score": 48.0,
               "why": [
                 "not_ready",
                 "pointing_down"
@@ -714,7 +736,7 @@
             {
               "ticker": "CME",
               "name": "Cme Group Inc",
-              "score": 47.6,
+              "score": 47.8,
               "why": [
                 "not_ready",
                 "grade_low"
@@ -723,7 +745,7 @@
             {
               "ticker": "DVN",
               "name": "Devon Energy Corp",
-              "score": 46.6,
+              "score": 46.7,
               "why": [
                 "not_ready",
                 "grade_low"
@@ -732,7 +754,7 @@
             {
               "ticker": "APA",
               "name": "APA Corporation",
-              "score": 45.4,
+              "score": 45.6,
               "why": [
                 "not_ready",
                 "grade_low"
@@ -749,7 +771,7 @@
             {
               "ticker": "PEGA",
               "name": "Pegasystems",
-              "score": 36.0,
+              "score": 36.1,
               "why": [
                 "not_ready"
               ]
@@ -757,7 +779,7 @@
             {
               "ticker": "CRK",
               "name": "Comstock Resources, Inc.",
-              "score": 33.0,
+              "score": 33.2,
               "why": [
                 "not_ready"
               ]
@@ -772,18 +794,9 @@
           "n": 5,
           "names": [
             {
-              "ticker": "CEG",
-              "name": "Constellation Energy",
-              "score": 64.4,
-              "why": [
-                "ran_too_far",
-                "conviction_low"
-              ]
-            },
-            {
               "ticker": "VZ",
               "name": "Verizon Communications Inc",
-              "score": 56.8,
+              "score": 57.0,
               "why": [
                 "ran_too_far",
                 "conviction_low"
@@ -799,9 +812,18 @@
               ]
             },
             {
+              "ticker": "CEG",
+              "name": "Constellation Energy",
+              "score": 54.5,
+              "why": [
+                "ran_too_far",
+                "conviction_low"
+              ]
+            },
+            {
               "ticker": "OPCH",
               "name": "Option Care Health",
-              "score": 47.3,
+              "score": 47.4,
               "why": [
                 "ran_too_far",
                 "conviction_low"
@@ -810,7 +832,7 @@
             {
               "ticker": "BSY",
               "name": "Bentley Systems",
-              "score": 46.0,
+              "score": 46.1,
               "why": [
                 "ran_too_far",
                 "conviction_low"
@@ -828,7 +850,7 @@
             {
               "ticker": "ADC",
               "name": "Agree Realty",
-              "score": 56.7,
+              "score": 56.8,
               "why": [
                 "stood_down",
                 "conviction_low",
@@ -838,87 +860,7 @@
             {
               "ticker": "ADAM",
               "name": "Adamas Trust, Inc.",
-              "score": 52.0,
-              "why": [
-                "stood_down",
-                "conviction_low",
-                "pointing_down"
-              ]
-            },
-            {
-              "ticker": "FCPT",
-              "name": "Four Corners Property Trust, Inc.",
-              "score": 47.5,
-              "why": [
-                "stood_down",
-                "conviction_low",
-                "pointing_down"
-              ]
-            },
-            {
-              "ticker": "MAA",
-              "name": "Mid-America Apartment Communities",
-              "score": 45.2,
-              "why": [
-                "stood_down",
-                "conviction_low",
-                "pointing_down"
-              ]
-            },
-            {
-              "ticker": "XRAY",
-              "name": "Dentsply Sirona",
-              "score": 45.2,
-              "why": [
-                "stood_down",
-                "conviction_low",
-                "pointing_down"
-              ]
-            },
-            {
-              "ticker": "INGR",
-              "name": "Ingredion",
-              "score": 42.5,
-              "why": [
-                "stood_down",
-                "conviction_low",
-                "pointing_down"
-              ]
-            },
-            {
-              "ticker": "NB",
-              "name": "NioCorp Developments",
-              "score": 41.9,
-              "why": [
-                "stood_down",
-                "conviction_low",
-                "pointing_down"
-              ]
-            },
-            {
-              "ticker": "DBD",
-              "name": "Diebold Nixdorf",
-              "score": 40.6,
-              "why": [
-                "stood_down",
-                "conviction_low",
-                "pointing_down"
-              ]
-            },
-            {
-              "ticker": "WLK",
-              "name": "Westlake Corporation",
-              "score": 38.8,
-              "why": [
-                "stood_down",
-                "conviction_low",
-                "pointing_down"
-              ]
-            },
-            {
-              "ticker": "CHTR",
-              "name": "Charter Communications Inc A",
-              "score": 37.9,
+              "score": 52.2,
               "why": [
                 "stood_down",
                 "conviction_low",
@@ -928,7 +870,87 @@
             {
               "ticker": "SOFI",
               "name": "SoFi Technologies",
-              "score": 37.2,
+              "score": 50.1,
+              "why": [
+                "stood_down",
+                "conviction_low",
+                "pointing_down"
+              ]
+            },
+            {
+              "ticker": "FCPT",
+              "name": "Four Corners Property Trust, Inc.",
+              "score": 47.6,
+              "why": [
+                "stood_down",
+                "conviction_low",
+                "pointing_down"
+              ]
+            },
+            {
+              "ticker": "XRAY",
+              "name": "Dentsply Sirona",
+              "score": 45.6,
+              "why": [
+                "stood_down",
+                "conviction_low",
+                "pointing_down"
+              ]
+            },
+            {
+              "ticker": "MAA",
+              "name": "Mid-America Apartment Communities",
+              "score": 45.3,
+              "why": [
+                "stood_down",
+                "conviction_low",
+                "pointing_down"
+              ]
+            },
+            {
+              "ticker": "INGR",
+              "name": "Ingredion",
+              "score": 42.6,
+              "why": [
+                "stood_down",
+                "conviction_low",
+                "pointing_down"
+              ]
+            },
+            {
+              "ticker": "NB",
+              "name": "NioCorp Developments",
+              "score": 42.1,
+              "why": [
+                "stood_down",
+                "conviction_low",
+                "pointing_down"
+              ]
+            },
+            {
+              "ticker": "DBD",
+              "name": "Diebold Nixdorf",
+              "score": 40.7,
+              "why": [
+                "stood_down",
+                "conviction_low",
+                "pointing_down"
+              ]
+            },
+            {
+              "ticker": "WLK",
+              "name": "Westlake Corporation",
+              "score": 39.1,
+              "why": [
+                "stood_down",
+                "conviction_low",
+                "pointing_down"
+              ]
+            },
+            {
+              "ticker": "CHTR",
+              "name": "Charter Communications Inc A",
+              "score": 38.1,
               "why": [
                 "stood_down",
                 "conviction_low",
@@ -947,7 +969,7 @@
             {
               "ticker": "VAL",
               "name": "Valaris",
-              "score": 38.0,
+              "score": 38.2,
               "why": [
                 "grade_low"
               ]
@@ -959,12 +981,12 @@
           "en": "No setup yet",
           "zh": "\u6682\u65e0\u4e70\u70b9",
           "near": false,
-          "n": 12,
+          "n": 10,
           "names": [
             {
               "ticker": "ADM",
               "name": "Archer Daniels Midland Co",
-              "score": 77.2,
+              "score": 77.4,
               "why": [
                 "conviction_low"
               ]
@@ -972,7 +994,7 @@
             {
               "ticker": "CSCO",
               "name": "Cisco Systems Inc",
-              "score": 69.8,
+              "score": 69.9,
               "why": [
                 "conviction_low"
               ]
@@ -980,7 +1002,7 @@
             {
               "ticker": "ETR",
               "name": "Entergy Corp",
-              "score": 64.1,
+              "score": 64.2,
               "why": [
                 "conviction_low"
               ]
@@ -988,7 +1010,7 @@
             {
               "ticker": "MCY",
               "name": "Mercury General",
-              "score": 60.0,
+              "score": 60.1,
               "why": [
                 "conviction_low"
               ]
@@ -996,7 +1018,7 @@
             {
               "ticker": "EVRG",
               "name": "Evergy",
-              "score": 59.2,
+              "score": 59.3,
               "why": [
                 "conviction_low"
               ]
@@ -1012,7 +1034,7 @@
             {
               "ticker": "HP",
               "name": "Helmerich & Payne, Inc.",
-              "score": 53.4,
+              "score": 53.7,
               "why": [
                 "conviction_low"
               ]
@@ -1020,15 +1042,7 @@
             {
               "ticker": "ATO",
               "name": "Atmos Energy Corp",
-              "score": 53.2,
-              "why": [
-                "conviction_low"
-              ]
-            },
-            {
-              "ticker": "LH",
-              "name": "Labcorp",
-              "score": 52.2,
+              "score": 53.3,
               "why": [
                 "conviction_low"
               ]
@@ -1036,7 +1050,7 @@
             {
               "ticker": "BCPC",
               "name": "Balchem Corporation",
-              "score": 50.5,
+              "score": 50.8,
               "why": [
                 "conviction_low"
               ]
@@ -1044,15 +1058,7 @@
             {
               "ticker": "OUT",
               "name": "Outfront Media",
-              "score": 50.3,
-              "why": [
-                "conviction_low"
-              ]
-            },
-            {
-              "ticker": "HST",
-              "name": "Host Hotels + Resorts Inc",
-              "score": 49.5,
+              "score": 50.4,
               "why": [
                 "conviction_low"
               ]
@@ -1069,7 +1075,7 @@
             {
               "ticker": "MTUS",
               "name": "Metallus Inc",
-              "score": 55.5,
+              "score": 55.6,
               "why": [
                 "pointing_down"
               ]
@@ -1077,7 +1083,7 @@
             {
               "ticker": "AESI",
               "name": "Atlas Energy Solutions, Inc.",
-              "score": 40.3,
+              "score": 40.4,
               "why": [
                 "pointing_down"
               ]
@@ -1102,7 +1108,7 @@
       "admitted": 26,
       "would_have_planned": 12,
       "cap": 12,
-      "rows_in_part": 26,
+      "rows_in_part": 27,
       "authority": "none"
     },
     "basis": "Admission is a STATUS CLASS (ANTICIPATION A1): an entry status in admitted_statuses, a signal tone in admitted_directions, conviction band above low, and a T1-T3 signal tier. The prior act-level gate is frozen with zero authority and keeps accruing a legacy shadow ledger so the two selections can be compared on the same tape. Ranking is unchanged. Every admitted candidate that is neither a duplicate ID nor blocked by an open plan is attempted; there is no positional plan-origination cap. Any candidate that cannot produce a plan is listed under validation_failures. Every plan carries a structure-anchored entry zone; the disclosed entry price remains the point-in-time price-basis close. Featured-board, sector, alert and portfolio-risk controls are separate and unchanged.",
@@ -2264,10 +2270,10 @@
             "source": "us_stock_library"
           },
           "lane": {
-            "value": "watch",
-            "state": "available",
-            "reason": null,
-            "source": "us_standouts"
+            "value": null,
+            "state": "not_applicable",
+            "reason": "not_on_board",
+            "source": null
           },
           "spark": {
             "value": "board_read_sparks.json#DAR",
@@ -2560,7 +2566,7 @@
       "closed": false,
       "pulse": "40d \u00b7 triggered \u00b7 stalling",
       "pulse_zh": "40\u5929 \u00b7 \u5df2\u89e6\u53d1 \u00b7 \u505c\u6ede",
-      "management_confidence": 35.5,
+      "management_confidence": 35.6,
       "recommended_action": null,
       "management_status": "available",
       "management_error": null,
@@ -2575,7 +2581,7 @@
       },
       "state": {
         "phase": "triggered_pre_t1",
-        "management_confidence": 35.5,
+        "management_confidence": 35.6,
         "recommended_action": null,
         "components": {
           "validity": 82.2,
@@ -4756,7 +4762,7 @@
       "closed": true,
       "pulse": "closed",
       "pulse_zh": "\u5df2\u7ed3",
-      "management_confidence": 21.3,
+      "management_confidence": 20.9,
       "recommended_action": null,
       "management_status": "available",
       "management_error": null,
@@ -4771,7 +4777,7 @@
       },
       "state": {
         "phase": "overtime",
-        "management_confidence": 21.3,
+        "management_confidence": 20.9,
         "recommended_action": null,
         "components": {
           "validity": 11.4,
@@ -4999,7 +5005,7 @@
       "closed": true,
       "pulse": "closed \u00b7 timed out",
       "pulse_zh": "\u5df2\u7ed3 \u00b7 \u5230\u671f\u672a\u8fbe\u6807",
-      "management_confidence": 21.5,
+      "management_confidence": 21.1,
       "recommended_action": null,
       "management_status": "available",
       "management_error": null,
@@ -5014,7 +5020,7 @@
       },
       "state": {
         "phase": "overtime",
-        "management_confidence": 21.5,
+        "management_confidence": 21.1,
         "recommended_action": null,
         "components": {
           "validity": 15.4,
@@ -6321,7 +6327,7 @@
       "closed": true,
       "pulse": "closed",
       "pulse_zh": "\u5df2\u7ed3",
-      "management_confidence": 28.9,
+      "management_confidence": 28.1,
       "recommended_action": null,
       "management_status": "available",
       "management_error": null,
@@ -6336,7 +6342,7 @@
       },
       "state": {
         "phase": "overtime",
-        "management_confidence": 28.9,
+        "management_confidence": 28.1,
         "recommended_action": null,
         "components": {
           "validity": 34.7,
@@ -7259,7 +7265,7 @@
           "mfe_r": 0.345,
           "mae_r": -0.001
         },
-        "change_reason": "Moving Away from Stop",
+        "change_reason": "",
         "price_frame": {
           "state": "stale",
           "last_close_date": "2026-10-08",
@@ -8557,7 +8563,7 @@
       "closed": true,
       "pulse": "closed \u00b7 timed out",
       "pulse_zh": "\u5df2\u7ed3 \u00b7 \u5230\u671f\u672a\u8fbe\u6807",
-      "management_confidence": 23.3,
+      "management_confidence": 22.8,
       "recommended_action": null,
       "management_status": "available",
       "management_error": null,
@@ -8572,7 +8578,7 @@
       },
       "state": {
         "phase": "overtime",
-        "management_confidence": 23.3,
+        "management_confidence": 22.8,
         "recommended_action": null,
         "components": {
           "validity": 20.9,
@@ -9353,7 +9359,7 @@
       "closed": true,
       "pulse": "closed",
       "pulse_zh": "\u5df2\u7ed3",
-      "management_confidence": 35.6,
+      "management_confidence": 34.9,
       "recommended_action": null,
       "management_status": "available",
       "management_error": null,
@@ -9368,7 +9374,7 @@
       },
       "state": {
         "phase": "overtime",
-        "management_confidence": 35.6,
+        "management_confidence": 34.9,
         "recommended_action": null,
         "components": {
           "validity": 58.0,
@@ -10800,10 +10806,10 @@
             "source": "us_stock_library"
           },
           "lane": {
-            "value": null,
-            "state": "not_applicable",
-            "reason": "not_on_board",
-            "source": null
+            "value": "watch",
+            "state": "available",
+            "reason": null,
+            "source": "us_standouts"
           },
           "spark": {
             "value": "board_read_sparks.json#HCC",
@@ -12235,7 +12241,7 @@
       "closed": true,
       "pulse": "closed \u00b7 timed out",
       "pulse_zh": "\u5df2\u7ed3 \u00b7 \u5230\u671f\u672a\u8fbe\u6807",
-      "management_confidence": 32.3,
+      "management_confidence": 31.5,
       "recommended_action": null,
       "management_status": "available",
       "management_error": null,
@@ -12250,7 +12256,7 @@
       },
       "state": {
         "phase": "overtime",
-        "management_confidence": 32.3,
+        "management_confidence": 31.5,
         "recommended_action": null,
         "components": {
           "validity": 44.2,
@@ -14754,7 +14760,7 @@
       "closed": true,
       "pulse": "closed \u00b7 timed out",
       "pulse_zh": "\u5df2\u7ed3 \u00b7 \u5230\u671f\u672a\u8fbe\u6807",
-      "management_confidence": 38.2,
+      "management_confidence": 37.6,
       "recommended_action": null,
       "management_status": "available",
       "management_error": null,
@@ -14769,7 +14775,7 @@
       },
       "state": {
         "phase": "overtime",
-        "management_confidence": 38.2,
+        "management_confidence": 37.6,
         "recommended_action": null,
         "components": {
           "validity": 60.4,
@@ -15490,7 +15496,7 @@
       "closed": true,
       "pulse": "closed \u00b7 timed out",
       "pulse_zh": "\u5df2\u7ed3 \u00b7 \u5230\u671f\u672a\u8fbe\u6807",
-      "management_confidence": 35.3,
+      "management_confidence": 34.2,
       "recommended_action": null,
       "management_status": "available",
       "management_error": null,
@@ -15505,7 +15511,7 @@
       },
       "state": {
         "phase": "overtime",
-        "management_confidence": 35.3,
+        "management_confidence": 34.2,
         "recommended_action": null,
         "components": {
           "validity": 51.4,
@@ -16304,7 +16310,7 @@
       "closed": false,
       "pulse": "40d \u00b7 pre-trigger \u00b7 approaching trigger",
       "pulse_zh": "40\u5929 \u00b7 \u89e6\u53d1\u524d \u00b7 \u63a5\u8fd1\u89e6\u53d1",
-      "management_confidence": 35.3,
+      "management_confidence": 35.4,
       "recommended_action": null,
       "management_status": "available",
       "management_error": null,
@@ -16319,7 +16325,7 @@
       },
       "state": {
         "phase": "pre_trigger",
-        "management_confidence": 35.3,
+        "management_confidence": 35.4,
         "recommended_action": null,
         "components": {
           "validity": 26.0,
@@ -16796,7 +16802,7 @@
       "closed": false,
       "pulse": "26d \u00b7 triggered \u00b7 needs follow-through",
       "pulse_zh": "26\u5929 \u00b7 \u5df2\u89e6\u53d1 \u00b7 \u9700\u8981\u8ddf\u8fdb\u786e\u8ba4",
-      "management_confidence": 56.4,
+      "management_confidence": 54.6,
       "recommended_action": null,
       "management_status": "available",
       "management_error": null,
@@ -16811,7 +16817,7 @@
       },
       "state": {
         "phase": "triggered_pre_t1",
-        "management_confidence": 56.4,
+        "management_confidence": 54.6,
         "recommended_action": null,
         "components": {
           "validity": 100.0,
@@ -16832,7 +16838,7 @@
           "mfe_r": 0.935,
           "mae_r": -0.275
         },
-        "change_reason": "Moving Away from Stop",
+        "change_reason": "",
         "price_frame": {
           "state": "stale",
           "last_close_date": "2026-10-08",
@@ -17290,7 +17296,7 @@
       "closed": true,
       "pulse": "closed \u00b7 stopped out",
       "pulse_zh": "\u5df2\u7ed3 \u00b7 \u6b62\u635f\u79bb\u573a",
-      "management_confidence": 33.3,
+      "management_confidence": 32.6,
       "recommended_action": null,
       "management_status": "available",
       "management_error": null,
@@ -17305,7 +17311,7 @@
       },
       "state": {
         "phase": "overtime",
-        "management_confidence": 33.3,
+        "management_confidence": 32.6,
         "recommended_action": null,
         "components": {
           "validity": 50.9,
@@ -19621,7 +19627,7 @@
           "mfe_r": 0.072,
           "mae_r": -0.041
         },
-        "change_reason": "Moving Away from Stop",
+        "change_reason": "",
         "price_frame": {
           "state": "stale",
           "last_close_date": "2026-10-08",
@@ -21267,7 +21273,7 @@
           "mfe_r": 0.016,
           "mae_r": -0.353
         },
-        "change_reason": "Window Elapsed \u2014 Awaiting Close",
+        "change_reason": "",
         "price_frame": {
           "state": "stale",
           "last_close_date": "2026-10-08",
@@ -21866,7 +21872,7 @@
       "closed": true,
       "pulse": "closed \u00b7 timed out",
       "pulse_zh": "\u5df2\u7ed3 \u00b7 \u5230\u671f\u672a\u8fbe\u6807",
-      "management_confidence": 31.0,
+      "management_confidence": 30.1,
       "recommended_action": null,
       "management_status": "available",
       "management_error": null,
@@ -21881,7 +21887,7 @@
       },
       "state": {
         "phase": "overtime",
-        "management_confidence": 31.0,
+        "management_confidence": 30.1,
         "recommended_action": null,
         "components": {
           "validity": 35.8,
@@ -22349,7 +22355,7 @@
       "closed": true,
       "pulse": "closed \u00b7 timed out",
       "pulse_zh": "\u5df2\u7ed3 \u00b7 \u5230\u671f\u672a\u8fbe\u6807",
-      "management_confidence": 30.6,
+      "management_confidence": 30.4,
       "recommended_action": null,
       "management_status": "available",
       "management_error": null,
@@ -22364,7 +22370,7 @@
       },
       "state": {
         "phase": "overtime",
-        "management_confidence": 30.6,
+        "management_confidence": 30.4,
         "recommended_action": null,
         "components": {
           "validity": 40.1,
@@ -22924,7 +22930,7 @@
       "closed": true,
       "pulse": "closed",
       "pulse_zh": "\u5df2\u7ed3",
-      "management_confidence": 29.5,
+      "management_confidence": 28.8,
       "recommended_action": null,
       "management_status": "available",
       "management_error": null,
@@ -22939,7 +22945,7 @@
       },
       "state": {
         "phase": "overtime",
-        "management_confidence": 29.5,
+        "management_confidence": 28.8,
         "recommended_action": null,
         "components": {
           "validity": 42.3,
@@ -23969,7 +23975,7 @@
           "mfe_r": 0.0,
           "mae_r": -1.34
         },
-        "change_reason": "Weakening",
+        "change_reason": "",
         "price_frame": {
           "state": "stale",
           "last_close_date": "2026-10-08",
@@ -26269,7 +26275,7 @@
       "closed": true,
       "pulse": "closed",
       "pulse_zh": "\u5df2\u7ed3",
-      "management_confidence": 24.9,
+      "management_confidence": 24.5,
       "recommended_action": null,
       "management_status": "available",
       "management_error": null,
@@ -26284,7 +26290,7 @@
       },
       "state": {
         "phase": "overtime",
-        "management_confidence": 24.9,
+        "management_confidence": 24.5,
         "recommended_action": null,
         "components": {
           "validity": 13.6,
@@ -26514,7 +26520,7 @@
       "closed": true,
       "pulse": "closed \u00b7 timed out",
       "pulse_zh": "\u5df2\u7ed3 \u00b7 \u5230\u671f\u672a\u8fbe\u6807",
-      "management_confidence": 26.5,
+      "management_confidence": 26.3,
       "recommended_action": null,
       "management_status": "available",
       "management_error": null,
@@ -26529,7 +26535,7 @@
       },
       "state": {
         "phase": "overtime",
-        "management_confidence": 26.5,
+        "management_confidence": 26.3,
         "recommended_action": null,
         "components": {
           "validity": 32.5,
@@ -27014,7 +27020,7 @@
       "closed": false,
       "pulse": "12d \u00b7 triggered \u00b7 needs follow-through",
       "pulse_zh": "12\u5929 \u00b7 \u5df2\u89e6\u53d1 \u00b7 \u9700\u8981\u8ddf\u8fdb\u786e\u8ba4",
-      "management_confidence": 51.8,
+      "management_confidence": 49.7,
       "recommended_action": null,
       "management_status": "available",
       "management_error": null,
@@ -27029,7 +27035,7 @@
       },
       "state": {
         "phase": "triggered_pre_t1",
-        "management_confidence": 51.8,
+        "management_confidence": 49.7,
         "recommended_action": null,
         "components": {
           "validity": 71.8,
@@ -27050,7 +27056,7 @@
           "mfe_r": 0.0,
           "mae_r": -0.218
         },
-        "change_reason": "Weakening",
+        "change_reason": "",
         "price_frame": {
           "state": "stale",
           "last_close_date": "2026-10-08",
@@ -27265,7 +27271,7 @@
       "closed": true,
       "pulse": "closed",
       "pulse_zh": "\u5df2\u7ed3",
-      "management_confidence": 23.8,
+      "management_confidence": 23.2,
       "recommended_action": null,
       "management_status": "available",
       "management_error": null,
@@ -27280,7 +27286,7 @@
       },
       "state": {
         "phase": "overtime",
-        "management_confidence": 23.8,
+        "management_confidence": 23.2,
         "recommended_action": null,
         "components": {
           "validity": 25.1,
@@ -28382,7 +28388,7 @@
           "mfe_r": 0.59,
           "mae_r": -0.353
         },
-        "change_reason": "Moving Away from Stop",
+        "change_reason": "",
         "price_frame": {
           "state": "stale",
           "last_close_date": "2026-10-08",
@@ -28927,7 +28933,7 @@
       "closed": false,
       "pulse": "26d \u00b7 triggered \u00b7 needs follow-through",
       "pulse_zh": "26\u5929 \u00b7 \u5df2\u89e6\u53d1 \u00b7 \u9700\u8981\u8ddf\u8fdb\u786e\u8ba4",
-      "management_confidence": 53.8,
+      "management_confidence": 52.8,
       "recommended_action": null,
       "management_status": "available",
       "management_error": null,
@@ -28942,7 +28948,7 @@
       },
       "state": {
         "phase": "triggered_pre_t1",
-        "management_confidence": 53.8,
+        "management_confidence": 52.8,
         "recommended_action": null,
         "components": {
           "validity": 100.0,
@@ -28963,7 +28969,7 @@
           "mfe_r": 0.431,
           "mae_r": 0.0
         },
-        "change_reason": "Moving Away from Stop",
+        "change_reason": "",
         "price_frame": {
           "state": "stale",
           "last_close_date": "2026-10-08",
@@ -29415,7 +29421,7 @@
       "closed": true,
       "pulse": "closed \u00b7 hit first target",
       "pulse_zh": "\u5df2\u7ed3 \u00b7 \u8fbe\u5230\u9996\u4e2a\u76ee\u6807",
-      "management_confidence": 65.7,
+      "management_confidence": 65.6,
       "recommended_action": null,
       "management_status": "available",
       "management_error": null,
@@ -29430,7 +29436,7 @@
       },
       "state": {
         "phase": "between_t1_t2",
-        "management_confidence": 65.7,
+        "management_confidence": 65.6,
         "recommended_action": null,
         "components": {
           "validity": 100.0,
@@ -29688,7 +29694,7 @@
           "mfe_r": 0.031,
           "mae_r": -0.413
         },
-        "change_reason": "Window Elapsed \u2014 Awaiting Close",
+        "change_reason": "",
         "price_frame": {
           "state": "stale",
           "last_close_date": "2026-10-08",
@@ -31706,7 +31712,7 @@
       "closed": false,
       "pulse": "12d \u00b7 pre-trigger \u00b7 approaching trigger",
       "pulse_zh": "12\u5929 \u00b7 \u89e6\u53d1\u524d \u00b7 \u63a5\u8fd1\u89e6\u53d1",
-      "management_confidence": 47.8,
+      "management_confidence": 46.1,
       "recommended_action": null,
       "management_status": "available",
       "management_error": null,
@@ -31721,7 +31727,7 @@
       },
       "state": {
         "phase": "pre_trigger",
-        "management_confidence": 47.8,
+        "management_confidence": 46.1,
         "recommended_action": null,
         "components": {
           "validity": 30.1,
@@ -31742,7 +31748,7 @@
           "mfe_r": 0.0,
           "mae_r": -0.589
         },
-        "change_reason": "Weakening",
+        "change_reason": "",
         "price_frame": {
           "state": "stale",
           "last_close_date": "2026-10-08",
@@ -31995,7 +32001,7 @@
           "mfe_r": 0.142,
           "mae_r": -0.021
         },
-        "change_reason": "Moving Away from Stop",
+        "change_reason": "",
         "price_frame": {
           "state": "stale",
           "last_close_date": "2026-10-08",
@@ -32544,7 +32550,7 @@
       "closed": true,
       "pulse": "closed",
       "pulse_zh": "\u5df2\u7ed3",
-      "management_confidence": 30.1,
+      "management_confidence": 29.6,
       "recommended_action": null,
       "management_status": "available",
       "management_error": null,
@@ -32559,7 +32565,7 @@
       },
       "state": {
         "phase": "overtime",
-        "management_confidence": 30.1,
+        "management_confidence": 29.6,
         "recommended_action": null,
         "components": {
           "validity": 38.0,
@@ -32791,7 +32797,7 @@
       "closed": true,
       "pulse": "closed \u00b7 timed out",
       "pulse_zh": "\u5df2\u7ed3 \u00b7 \u5230\u671f\u672a\u8fbe\u6807",
-      "management_confidence": 30.4,
+      "management_confidence": 29.1,
       "recommended_action": null,
       "management_status": "available",
       "management_error": null,
@@ -32806,7 +32812,7 @@
       },
       "state": {
         "phase": "overtime",
-        "management_confidence": 30.4,
+        "management_confidence": 29.1,
         "recommended_action": null,
         "components": {
           "validity": 37.7,
@@ -32966,7 +32972,7 @@
       "closed": false,
       "pulse": "9d \u00b7 triggered \u00b7 needs follow-through",
       "pulse_zh": "9\u5929 \u00b7 \u5df2\u89e6\u53d1 \u00b7 \u9700\u8981\u8ddf\u8fdb\u786e\u8ba4",
-      "management_confidence": 57.6,
+      "management_confidence": 56.6,
       "recommended_action": null,
       "management_status": "available",
       "management_error": null,
@@ -32981,7 +32987,7 @@
       },
       "state": {
         "phase": "triggered_pre_t1",
-        "management_confidence": 57.6,
+        "management_confidence": 56.6,
         "recommended_action": null,
         "components": {
           "validity": 89.9,
@@ -33002,7 +33008,7 @@
           "mfe_r": 0.0,
           "mae_r": -0.118
         },
-        "change_reason": "Moving Away from Stop",
+        "change_reason": "",
         "price_frame": {
           "state": "stale",
           "last_close_date": "2026-10-08",
@@ -33559,7 +33565,7 @@
       "closed": false,
       "pulse": "14d \u00b7 triggered \u00b7 stalling",
       "pulse_zh": "14\u5929 \u00b7 \u5df2\u89e6\u53d1 \u00b7 \u505c\u6ede",
-      "management_confidence": 52.3,
+      "management_confidence": 50.3,
       "recommended_action": null,
       "management_status": "available",
       "management_error": null,
@@ -33574,7 +33580,7 @@
       },
       "state": {
         "phase": "triggered_pre_t1",
-        "management_confidence": 52.3,
+        "management_confidence": 50.3,
         "recommended_action": null,
         "components": {
           "validity": 85.6,
@@ -33595,7 +33601,7 @@
           "mfe_r": 0.352,
           "mae_r": -0.109
         },
-        "change_reason": "Moving Away from Stop",
+        "change_reason": "",
         "price_frame": {
           "state": "stale",
           "last_close_date": "2026-10-08",
@@ -33813,7 +33819,7 @@
       "closed": false,
       "pulse": "8d \u00b7 triggered \u00b7 needs follow-through",
       "pulse_zh": "8\u5929 \u00b7 \u5df2\u89e6\u53d1 \u00b7 \u9700\u8981\u8ddf\u8fdb\u786e\u8ba4",
-      "management_confidence": 57.5,
+      "management_confidence": 56.8,
       "recommended_action": null,
       "management_status": "available",
       "management_error": null,
@@ -33828,7 +33834,7 @@
       },
       "state": {
         "phase": "triggered_pre_t1",
-        "management_confidence": 57.5,
+        "management_confidence": 56.8,
         "recommended_action": null,
         "components": {
           "validity": 87.6,
@@ -33849,7 +33855,7 @@
           "mfe_r": 0.0,
           "mae_r": -0.222
         },
-        "change_reason": "Moving Away from Stop",
+        "change_reason": "",
         "price_frame": {
           "state": "stale",
           "last_close_date": "2026-10-08",
@@ -34104,7 +34110,7 @@
           "mfe_r": 0.025,
           "mae_r": -0.014
         },
-        "change_reason": "Moving Away from Stop",
+        "change_reason": "",
         "price_frame": {
           "state": "stale",
           "last_close_date": "2026-10-08",
@@ -34357,7 +34363,7 @@
           "mfe_r": 0.243,
           "mae_r": -0.921
         },
-        "change_reason": "Window Elapsed \u2014 Awaiting Close",
+        "change_reason": "",
         "price_frame": {
           "state": "stale",
           "last_close_date": "2026-10-08",
@@ -34604,7 +34610,7 @@
           "mfe_r": 0.0,
           "mae_r": -0.526
         },
-        "change_reason": "Weakening",
+        "change_reason": "",
         "price_frame": {
           "state": "stale",
           "last_close_date": "2026-10-08",
@@ -36029,7 +36035,7 @@
       "closed": true,
       "pulse": "closed \u00b7 timed out",
       "pulse_zh": "\u5df2\u7ed3 \u00b7 \u5230\u671f\u672a\u8fbe\u6807",
-      "management_confidence": 36.1,
+      "management_confidence": 36.2,
       "recommended_action": null,
       "management_status": "available",
       "management_error": null,
@@ -36044,7 +36050,7 @@
       },
       "state": {
         "phase": "overtime",
-        "management_confidence": 36.1,
+        "management_confidence": 36.2,
         "recommended_action": null,
         "components": {
           "validity": 48.4,
@@ -37131,7 +37137,7 @@
           "mfe_r": 0.554,
           "mae_r": 0.0
         },
-        "change_reason": "Moving Away from Stop",
+        "change_reason": "",
         "price_frame": {
           "state": "stale",
           "last_close_date": "2026-10-08",
@@ -38009,7 +38015,7 @@
       "closed": true,
       "pulse": "closed",
       "pulse_zh": "\u5df2\u7ed3",
-      "management_confidence": 25.9,
+      "management_confidence": 25.3,
       "recommended_action": null,
       "management_status": "available",
       "management_error": null,
@@ -38024,7 +38030,7 @@
       },
       "state": {
         "phase": "overtime",
-        "management_confidence": 25.9,
+        "management_confidence": 25.3,
         "recommended_action": null,
         "components": {
           "validity": 31.2,
@@ -38184,7 +38190,7 @@
       "closed": false,
       "pulse": "40d \u00b7 pre-trigger \u00b7 approaching trigger",
       "pulse_zh": "40\u5929 \u00b7 \u89e6\u53d1\u524d \u00b7 \u63a5\u8fd1\u89e6\u53d1",
-      "management_confidence": 41.3,
+      "management_confidence": 41.5,
       "recommended_action": null,
       "management_status": "available",
       "management_error": null,
@@ -38199,7 +38205,7 @@
       },
       "state": {
         "phase": "pre_trigger",
-        "management_confidence": 41.3,
+        "management_confidence": 41.5,
         "recommended_action": null,
         "components": {
           "validity": 49.0,
@@ -38465,7 +38471,7 @@
           "mfe_r": 0.504,
           "mae_r": -0.951
         },
-        "change_reason": "Window Elapsed \u2014 Awaiting Close",
+        "change_reason": "",
         "price_frame": {
           "state": "stale",
           "last_close_date": "2026-10-08",
@@ -38676,7 +38682,7 @@
       "closed": false,
       "pulse": "50d \u00b7 window elapsed \u00b7 window elapsed \u2014 awaiting close",
       "pulse_zh": "50\u5929 \u00b7 \u7a97\u53e3\u5df2\u5230\u671f \u00b7 \u7a97\u53e3\u5df2\u5230\u671f \u2014 \u5f85\u6536\u76d8\u786e\u8ba4",
-      "management_confidence": 31.8,
+      "management_confidence": 32.3,
       "recommended_action": null,
       "management_status": "available",
       "management_error": null,
@@ -38691,7 +38697,7 @@
       },
       "state": {
         "phase": "overtime",
-        "management_confidence": 31.8,
+        "management_confidence": 32.3,
         "recommended_action": null,
         "components": {
           "validity": 33.4,
@@ -38712,7 +38718,7 @@
           "mfe_r": 0.083,
           "mae_r": -0.634
         },
-        "change_reason": "Window Elapsed \u2014 Awaiting Close",
+        "change_reason": "",
         "price_frame": {
           "state": "stale",
           "last_close_date": "2026-10-08",
@@ -39913,7 +39919,7 @@
       "closed": true,
       "pulse": "closed",
       "pulse_zh": "\u5df2\u7ed3",
-      "management_confidence": 27.0,
+      "management_confidence": 26.6,
       "recommended_action": null,
       "management_status": "available",
       "management_error": null,
@@ -39928,7 +39934,7 @@
       },
       "state": {
         "phase": "overtime",
-        "management_confidence": 27.0,
+        "management_confidence": 26.6,
         "recommended_action": null,
         "components": {
           "validity": 20.0,
@@ -40156,7 +40162,7 @@
       "closed": false,
       "pulse": "9d \u00b7 triggered \u00b7 needs follow-through",
       "pulse_zh": "9\u5929 \u00b7 \u5df2\u89e6\u53d1 \u00b7 \u9700\u8981\u8ddf\u8fdb\u786e\u8ba4",
-      "management_confidence": 57.6,
+      "management_confidence": 56.3,
       "recommended_action": null,
       "management_status": "available",
       "management_error": null,
@@ -40171,7 +40177,7 @@
       },
       "state": {
         "phase": "triggered_pre_t1",
-        "management_confidence": 57.6,
+        "management_confidence": 56.3,
         "recommended_action": null,
         "components": {
           "validity": 88.4,
@@ -40192,7 +40198,7 @@
           "mfe_r": 0.07,
           "mae_r": -0.087
         },
-        "change_reason": "Moving Away from Stop",
+        "change_reason": "",
         "price_frame": {
           "state": "stale",
           "last_close_date": "2026-10-08",
@@ -40827,7 +40833,7 @@
       "closed": true,
       "pulse": "closed",
       "pulse_zh": "\u5df2\u7ed3",
-      "management_confidence": 24.1,
+      "management_confidence": 23.9,
       "recommended_action": null,
       "management_status": "available",
       "management_error": null,
@@ -40842,7 +40848,7 @@
       },
       "state": {
         "phase": "overtime",
-        "management_confidence": 24.1,
+        "management_confidence": 23.9,
         "recommended_action": null,
         "components": {
           "validity": 14.4,
@@ -41070,7 +41076,7 @@
       "closed": true,
       "pulse": "closed",
       "pulse_zh": "\u5df2\u7ed3",
-      "management_confidence": 25.9,
+      "management_confidence": 25.1,
       "recommended_action": null,
       "management_status": "available",
       "management_error": null,
@@ -41085,7 +41091,7 @@
       },
       "state": {
         "phase": "overtime",
-        "management_confidence": 25.9,
+        "management_confidence": 25.1,
         "recommended_action": null,
         "components": {
           "validity": 30.6,
@@ -41771,7 +41777,7 @@
           "mfe_r": 0.0,
           "mae_r": -0.246
         },
-        "change_reason": "Window Elapsed \u2014 Awaiting Close",
+        "change_reason": "",
         "price_frame": {
           "state": "stale",
           "last_close_date": "2026-10-08",
@@ -42064,7 +42070,7 @@
       "closed": false,
       "pulse": "12d \u00b7 pre-trigger \u00b7 approaching trigger",
       "pulse_zh": "12\u5929 \u00b7 \u89e6\u53d1\u524d \u00b7 \u63a5\u8fd1\u89e6\u53d1",
-      "management_confidence": 42.3,
+      "management_confidence": 39.7,
       "recommended_action": null,
       "management_status": "available",
       "management_error": null,
@@ -42079,7 +42085,7 @@
       },
       "state": {
         "phase": "pre_trigger",
-        "management_confidence": 42.3,
+        "management_confidence": 39.7,
         "recommended_action": null,
         "components": {
           "validity": 3.2,
@@ -42100,7 +42106,7 @@
           "mfe_r": 0.0,
           "mae_r": -0.877
         },
-        "change_reason": "Nearing Invalidation",
+        "change_reason": "",
         "price_frame": {
           "state": "stale",
           "last_close_date": "2026-10-08",
@@ -42599,7 +42605,7 @@
           "mfe_r": 0.0,
           "mae_r": -0.406
         },
-        "change_reason": "Weakening",
+        "change_reason": "",
         "price_frame": {
           "state": "stale",
           "last_close_date": "2026-10-08",
@@ -43147,7 +43153,7 @@
       "closed": false,
       "pulse": "9d \u00b7 pre-trigger \u00b7 approaching trigger",
       "pulse_zh": "9\u5929 \u00b7 \u89e6\u53d1\u524d \u00b7 \u63a5\u8fd1\u89e6\u53d1",
-      "management_confidence": 55.7,
+      "management_confidence": 54.6,
       "recommended_action": null,
       "management_status": "available",
       "management_error": null,
@@ -43162,7 +43168,7 @@
       },
       "state": {
         "phase": "pre_trigger",
-        "management_confidence": 55.7,
+        "management_confidence": 54.6,
         "recommended_action": null,
         "components": {
           "validity": 56.6,
@@ -43183,7 +43189,7 @@
           "mfe_r": 0.0,
           "mae_r": -0.344
         },
-        "change_reason": "Ahead of Schedule",
+        "change_reason": "",
         "price_frame": {
           "state": "stale",
           "last_close_date": "2026-10-08",
@@ -44921,7 +44927,7 @@
           "mfe_r": 0.396,
           "mae_r": -0.092
         },
-        "change_reason": "Window Elapsed \u2014 Awaiting Close",
+        "change_reason": "",
         "price_frame": {
           "state": "stale",
           "last_close_date": "2026-10-08",
@@ -45130,7 +45136,7 @@
       "closed": true,
       "pulse": "closed \u00b7 timed out",
       "pulse_zh": "\u5df2\u7ed3 \u00b7 \u5230\u671f\u672a\u8fbe\u6807",
-      "management_confidence": 31.3,
+      "management_confidence": 30.7,
       "recommended_action": null,
       "management_status": "available",
       "management_error": null,
@@ -45145,7 +45151,7 @@
       },
       "state": {
         "phase": "overtime",
-        "management_confidence": 31.3,
+        "management_confidence": 30.7,
         "recommended_action": null,
         "components": {
           "validity": 45.9,
@@ -45720,7 +45726,7 @@
       "closed": false,
       "pulse": "8d \u00b7 triggered \u00b7 needs follow-through",
       "pulse_zh": "8\u5929 \u00b7 \u5df2\u89e6\u53d1 \u00b7 \u9700\u8981\u8ddf\u8fdb\u786e\u8ba4",
-      "management_confidence": 65.3,
+      "management_confidence": 65.5,
       "recommended_action": null,
       "management_status": "available",
       "management_error": null,
@@ -45735,7 +45741,7 @@
       },
       "state": {
         "phase": "triggered_pre_t1",
-        "management_confidence": 65.3,
+        "management_confidence": 65.5,
         "recommended_action": null,
         "components": {
           "validity": 100.0,
@@ -46304,7 +46310,7 @@
       "closed": false,
       "pulse": "40d \u00b7 pre-trigger \u00b7 approaching trigger",
       "pulse_zh": "40\u5929 \u00b7 \u89e6\u53d1\u524d \u00b7 \u63a5\u8fd1\u89e6\u53d1",
-      "management_confidence": 37.9,
+      "management_confidence": 37.8,
       "recommended_action": null,
       "management_status": "available",
       "management_error": null,
@@ -46319,7 +46325,7 @@
       },
       "state": {
         "phase": "pre_trigger",
-        "management_confidence": 37.9,
+        "management_confidence": 37.8,
         "recommended_action": null,
         "components": {
           "validity": 34.4,
@@ -46552,7 +46558,7 @@
       "closed": false,
       "pulse": "6d \u00b7 pre-trigger \u00b7 awaiting trigger",
       "pulse_zh": "6\u5929 \u00b7 \u89e6\u53d1\u524d \u00b7 \u7b49\u5f85\u89e6\u53d1",
-      "management_confidence": 67.5,
+      "management_confidence": 67.3,
       "recommended_action": null,
       "management_status": "available",
       "management_error": null,
@@ -46567,7 +46573,7 @@
       },
       "state": {
         "phase": "pre_trigger",
-        "management_confidence": 67.5,
+        "management_confidence": 67.3,
         "recommended_action": null,
         "components": {
           "validity": 100.0,
@@ -47666,7 +47672,7 @@
           "mfe_r": 0.0,
           "mae_r": -0.261
         },
-        "change_reason": "Ahead of Schedule",
+        "change_reason": "",
         "price_frame": {
           "state": "stale",
           "last_close_date": "2026-10-08",
@@ -48164,7 +48170,7 @@
           "mfe_r": 0.0,
           "mae_r": -0.255
         },
-        "change_reason": "Moving Away from Stop",
+        "change_reason": "",
         "price_frame": {
           "state": "stale",
           "last_close_date": "2026-10-08",
@@ -48373,7 +48379,7 @@
       "closed": false,
       "pulse": "12d \u00b7 triggered \u00b7 needs follow-through",
       "pulse_zh": "12\u5929 \u00b7 \u5df2\u89e6\u53d1 \u00b7 \u9700\u8981\u8ddf\u8fdb\u786e\u8ba4",
-      "management_confidence": 58.0,
+      "management_confidence": 55.2,
       "recommended_action": null,
       "management_status": "available",
       "management_error": null,
@@ -48388,7 +48394,7 @@
       },
       "state": {
         "phase": "triggered_pre_t1",
-        "management_confidence": 58.0,
+        "management_confidence": 55.2,
         "recommended_action": null,
         "components": {
           "validity": 91.3,
@@ -48409,7 +48415,7 @@
           "mfe_r": 0.542,
           "mae_r": -0.065
         },
-        "change_reason": "Moving Away from Stop",
+        "change_reason": "",
         "price_frame": {
           "state": "stale",
           "last_close_date": "2026-10-08",
@@ -48747,7 +48753,7 @@
           "mfe_r": 0.0,
           "mae_r": -0.215
         },
-        "change_reason": "Weakening",
+        "change_reason": "",
         "price_frame": {
           "state": "stale",
           "last_close_date": "2026-10-08",
@@ -49207,7 +49213,7 @@
       "closed": true,
       "pulse": "closed",
       "pulse_zh": "\u5df2\u7ed3",
-      "management_confidence": 33.9,
+      "management_confidence": 33.3,
       "recommended_action": null,
       "management_status": "available",
       "management_error": null,
@@ -49222,7 +49228,7 @@
       },
       "state": {
         "phase": "overtime",
-        "management_confidence": 33.9,
+        "management_confidence": 33.3,
         "recommended_action": null,
         "components": {
           "validity": 36.7,
@@ -49451,7 +49457,7 @@
       "closed": true,
       "pulse": "closed",
       "pulse_zh": "\u5df2\u7ed3",
-      "management_confidence": 21.2,
+      "management_confidence": 20.8,
       "recommended_action": null,
       "management_status": "available",
       "management_error": null,
@@ -49466,7 +49472,7 @@
       },
       "state": {
         "phase": "overtime",
-        "management_confidence": 21.2,
+        "management_confidence": 20.8,
         "recommended_action": null,
         "components": {
           "validity": 5.7,
@@ -50272,7 +50278,7 @@
       "closed": false,
       "pulse": "12d \u00b7 triggered \u00b7 needs follow-through",
       "pulse_zh": "12\u5929 \u00b7 \u5df2\u89e6\u53d1 \u00b7 \u9700\u8981\u8ddf\u8fdb\u786e\u8ba4",
-      "management_confidence": 58.6,
+      "management_confidence": 57.7,
       "recommended_action": null,
       "management_status": "available",
       "management_error": null,
@@ -50287,7 +50293,7 @@
       },
       "state": {
         "phase": "triggered_pre_t1",
-        "management_confidence": 58.6,
+        "management_confidence": 57.7,
         "recommended_action": null,
         "components": {
           "validity": 97.4,
@@ -50308,7 +50314,7 @@
           "mfe_r": 0.006,
           "mae_r": -0.076
         },
-        "change_reason": "Moving Away from Stop",
+        "change_reason": "",
         "price_frame": {
           "state": "stale",
           "last_close_date": "2026-10-08",
@@ -50523,7 +50529,7 @@
       "closed": false,
       "pulse": "8d \u00b7 triggered \u00b7 on track",
       "pulse_zh": "8\u5929 \u00b7 \u5df2\u89e6\u53d1 \u00b7 \u6309\u8ba1\u5212\u63a8\u8fdb",
-      "management_confidence": 73.6,
+      "management_confidence": 74.4,
       "recommended_action": null,
       "management_status": "available",
       "management_error": null,
@@ -50538,7 +50544,7 @@
       },
       "state": {
         "phase": "triggered_pre_t1",
-        "management_confidence": 73.6,
+        "management_confidence": 74.4,
         "recommended_action": null,
         "components": {
           "validity": 100.0,
@@ -50776,7 +50782,7 @@
       "closed": false,
       "pulse": "8d \u00b7 pre-trigger \u00b7 approaching trigger",
       "pulse_zh": "8\u5929 \u00b7 \u89e6\u53d1\u524d \u00b7 \u63a5\u8fd1\u89e6\u53d1",
-      "management_confidence": 54.1,
+      "management_confidence": 53.2,
       "recommended_action": null,
       "management_status": "available",
       "management_error": null,
@@ -50791,7 +50797,7 @@
       },
       "state": {
         "phase": "pre_trigger",
-        "management_confidence": 54.1,
+        "management_confidence": 53.2,
         "recommended_action": null,
         "components": {
           "validity": 49.0,
@@ -51204,7 +51210,7 @@
       "closed": false,
       "pulse": "40d \u00b7 pre-trigger \u00b7 approaching trigger",
       "pulse_zh": "40\u5929 \u00b7 \u89e6\u53d1\u524d \u00b7 \u63a5\u8fd1\u89e6\u53d1",
-      "management_confidence": 41.0,
+      "management_confidence": 41.2,
       "recommended_action": null,
       "management_status": "available",
       "management_error": null,
@@ -51219,7 +51225,7 @@
       },
       "state": {
         "phase": "pre_trigger",
-        "management_confidence": 41.0,
+        "management_confidence": 41.2,
         "recommended_action": null,
         "components": {
           "validity": 47.2,
@@ -52228,7 +52234,7 @@
           "mfe_r": 0.048,
           "mae_r": -0.474
         },
-        "change_reason": "Window Elapsed \u2014 Awaiting Close",
+        "change_reason": "",
         "price_frame": {
           "state": "stale",
           "last_close_date": "2026-10-08",
@@ -52965,7 +52971,7 @@
           "mfe_r": 0.0,
           "mae_r": -1.123
         },
-        "change_reason": "Window Elapsed \u2014 Awaiting Close",
+        "change_reason": "",
         "price_frame": {
           "state": "stale",
           "last_close_date": "2026-10-08",
@@ -53265,7 +53271,7 @@
       "closed": false,
       "pulse": "9d \u00b7 triggered \u00b7 needs follow-through",
       "pulse_zh": "9\u5929 \u00b7 \u5df2\u89e6\u53d1 \u00b7 \u9700\u8981\u8ddf\u8fdb\u786e\u8ba4",
-      "management_confidence": 64.6,
+      "management_confidence": 64.1,
       "recommended_action": null,
       "management_status": "available",
       "management_error": null,
@@ -53280,7 +53286,7 @@
       },
       "state": {
         "phase": "triggered_pre_t1",
-        "management_confidence": 64.6,
+        "management_confidence": 64.1,
         "recommended_action": null,
         "components": {
           "validity": 100.0,
@@ -53301,7 +53307,7 @@
           "mfe_r": 0.145,
           "mae_r": -0.161
         },
-        "change_reason": "Moving Away from Stop",
+        "change_reason": "",
         "price_frame": {
           "state": "stale",
           "last_close_date": "2026-10-08",
@@ -53516,7 +53522,7 @@
       "closed": false,
       "pulse": "40d \u00b7 triggered \u00b7 stalling",
       "pulse_zh": "40\u5929 \u00b7 \u5df2\u89e6\u53d1 \u00b7 \u505c\u6ede",
-      "management_confidence": 32.4,
+      "management_confidence": 31.2,
       "recommended_action": null,
       "management_status": "available",
       "management_error": null,
@@ -53531,7 +53537,7 @@
       },
       "state": {
         "phase": "triggered_pre_t1",
-        "management_confidence": 32.4,
+        "management_confidence": 31.2,
         "recommended_action": null,
         "components": {
           "validity": 58.2,
@@ -53761,7 +53767,7 @@
       "closed": false,
       "pulse": "26d \u00b7 triggered \u00b7 stalling",
       "pulse_zh": "26\u5929 \u00b7 \u5df2\u89e6\u53d1 \u00b7 \u505c\u6ede",
-      "management_confidence": 49.6,
+      "management_confidence": 47.6,
       "recommended_action": null,
       "management_status": "available",
       "management_error": null,
@@ -53776,7 +53782,7 @@
       },
       "state": {
         "phase": "triggered_pre_t1",
-        "management_confidence": 49.6,
+        "management_confidence": 47.6,
         "recommended_action": null,
         "components": {
           "validity": 100.0,
@@ -53797,7 +53803,7 @@
           "mfe_r": 0.646,
           "mae_r": -0.0
         },
-        "change_reason": "Moving Away from Stop",
+        "change_reason": "",
         "price_frame": {
           "state": "stale",
           "last_close_date": "2026-10-08",
@@ -54008,7 +54014,7 @@
       "closed": false,
       "pulse": "8d \u00b7 triggered \u00b7 needs follow-through",
       "pulse_zh": "8\u5929 \u00b7 \u5df2\u89e6\u53d1 \u00b7 \u9700\u8981\u8ddf\u8fdb\u786e\u8ba4",
-      "management_confidence": 59.4,
+      "management_confidence": 58.4,
       "recommended_action": null,
       "management_status": "available",
       "management_error": null,
@@ -54023,7 +54029,7 @@
       },
       "state": {
         "phase": "triggered_pre_t1",
-        "management_confidence": 59.4,
+        "management_confidence": 58.4,
         "recommended_action": null,
         "components": {
           "validity": 93.8,
@@ -54044,7 +54050,7 @@
           "mfe_r": 0.0,
           "mae_r": -0.046
         },
-        "change_reason": "Moving Away from Stop",
+        "change_reason": "",
         "price_frame": {
           "state": "stale",
           "last_close_date": "2026-10-08",
@@ -54872,7 +54878,7 @@
           "mfe_r": 0.123,
           "mae_r": -0.198
         },
-        "change_reason": "Window Elapsed \u2014 Awaiting Close",
+        "change_reason": "",
         "price_frame": {
           "state": "stale",
           "last_close_date": "2026-10-08",
@@ -55081,7 +55087,7 @@
       "closed": true,
       "pulse": "closed \u00b7 stopped out",
       "pulse_zh": "\u5df2\u7ed3 \u00b7 \u6b62\u635f\u79bb\u573a",
-      "management_confidence": 36.2,
+      "management_confidence": 36.5,
       "recommended_action": null,
       "management_status": "available",
       "management_error": null,
@@ -55096,7 +55102,7 @@
       },
       "state": {
         "phase": "overtime",
-        "management_confidence": 36.2,
+        "management_confidence": 36.5,
         "recommended_action": null,
         "components": {
           "validity": 44.4,
@@ -55117,7 +55123,7 @@
           "mfe_r": 1.409,
           "mae_r": -1.148
         },
-        "change_reason": "Window Elapsed \u2014 Awaiting Close",
+        "change_reason": "",
         "price_frame": {
           "state": "stale",
           "last_close_date": "2026-10-08",
@@ -55660,7 +55666,7 @@
       "closed": true,
       "pulse": "closed \u00b7 timed out",
       "pulse_zh": "\u5df2\u7ed3 \u00b7 \u5230\u671f\u672a\u8fbe\u6807",
-      "management_confidence": 35.6,
+      "management_confidence": 35.0,
       "recommended_action": null,
       "management_status": "available",
       "management_error": null,
@@ -55675,7 +55681,7 @@
       },
       "state": {
         "phase": "overtime",
-        "management_confidence": 35.6,
+        "management_confidence": 35.0,
         "recommended_action": null,
         "components": {
           "validity": 45.9,
@@ -55997,7 +56003,7 @@
       "closed": false,
       "pulse": "9d \u00b7 triggered \u00b7 needs follow-through",
       "pulse_zh": "9\u5929 \u00b7 \u5df2\u89e6\u53d1 \u00b7 \u9700\u8981\u8ddf\u8fdb\u786e\u8ba4",
-      "management_confidence": 56.0,
+      "management_confidence": 54.7,
       "recommended_action": null,
       "management_status": "available",
       "management_error": null,
@@ -56012,7 +56018,7 @@
       },
       "state": {
         "phase": "triggered_pre_t1",
-        "management_confidence": 56.0,
+        "management_confidence": 54.7,
         "recommended_action": null,
         "components": {
           "validity": 80.6,
@@ -56033,7 +56039,7 @@
           "mfe_r": 0.008,
           "mae_r": -0.161
         },
-        "change_reason": "Moving Away from Stop",
+        "change_reason": "",
         "price_frame": {
           "state": "stale",
           "last_close_date": "2026-10-08",
@@ -56201,10 +56207,10 @@
             "source": "us_stock_library"
           },
           "lane": {
-            "value": null,
-            "state": "not_applicable",
-            "reason": "not_on_board",
-            "source": null
+            "value": "watch",
+            "state": "available",
+            "reason": null,
+            "source": "us_standouts"
           },
           "spark": {
             "value": "board_read_sparks.json#HCC",
@@ -56287,7 +56293,7 @@
           "mfe_r": 0.015,
           "mae_r": 0.0
         },
-        "change_reason": "Moving Away from Stop",
+        "change_reason": "",
         "price_frame": {
           "state": "stale",
           "last_close_date": "2026-10-08",
@@ -56502,7 +56508,7 @@
       "closed": false,
       "pulse": "26d \u00b7 triggered \u00b7 stalling",
       "pulse_zh": "26\u5929 \u00b7 \u5df2\u89e6\u53d1 \u00b7 \u505c\u6ede",
-      "management_confidence": 37.3,
+      "management_confidence": 36.9,
       "recommended_action": null,
       "management_status": "available",
       "management_error": null,
@@ -56517,7 +56523,7 @@
       },
       "state": {
         "phase": "triggered_pre_t1",
-        "management_confidence": 37.3,
+        "management_confidence": 36.9,
         "recommended_action": null,
         "components": {
           "validity": 79.1,
@@ -56538,7 +56544,7 @@
           "mfe_r": 0.045,
           "mae_r": -0.325
         },
-        "change_reason": "Moving Away from Stop",
+        "change_reason": "",
         "price_frame": {
           "state": "stale",
           "last_close_date": "2026-10-08",
@@ -57373,7 +57379,7 @@
       "closed": false,
       "pulse": "19d \u00b7 triggered \u00b7 needs follow-through",
       "pulse_zh": "19\u5929 \u00b7 \u5df2\u89e6\u53d1 \u00b7 \u9700\u8981\u8ddf\u8fdb\u786e\u8ba4",
-      "management_confidence": 63.8,
+      "management_confidence": 61.8,
       "recommended_action": null,
       "management_status": "available",
       "management_error": null,
@@ -57388,7 +57394,7 @@
       },
       "state": {
         "phase": "triggered_pre_t1",
-        "management_confidence": 63.8,
+        "management_confidence": 61.8,
         "recommended_action": null,
         "components": {
           "validity": 100.0,
@@ -57409,7 +57415,7 @@
           "mfe_r": 0.49,
           "mae_r": -0.0
         },
-        "change_reason": "Moving Away from Stop",
+        "change_reason": "",
         "price_frame": {
           "state": "stale",
           "last_close_date": "2026-10-08",
@@ -57624,7 +57630,7 @@
       "closed": true,
       "pulse": "closed",
       "pulse_zh": "\u5df2\u7ed3",
-      "management_confidence": 27.7,
+      "management_confidence": 27.0,
       "recommended_action": null,
       "management_status": "available",
       "management_error": null,
@@ -57639,7 +57645,7 @@
       },
       "state": {
         "phase": "overtime",
-        "management_confidence": 27.7,
+        "management_confidence": 27.0,
         "recommended_action": null,
         "components": {
           "validity": 25.2,
@@ -58121,7 +58127,7 @@
       "closed": true,
       "pulse": "closed \u00b7 stopped out",
       "pulse_zh": "\u5df2\u7ed3 \u00b7 \u6b62\u635f\u79bb\u573a",
-      "management_confidence": 21.9,
+      "management_confidence": 21.7,
       "recommended_action": null,
       "management_status": "available",
       "management_error": null,
@@ -58136,7 +58142,7 @@
       },
       "state": {
         "phase": "overtime",
-        "management_confidence": 21.9,
+        "management_confidence": 21.7,
         "recommended_action": null,
         "components": {
           "validity": 3.6,
@@ -58366,7 +58372,7 @@
       "closed": false,
       "pulse": "14d \u00b7 pre-trigger \u00b7 approaching trigger",
       "pulse_zh": "14\u5929 \u00b7 \u89e6\u53d1\u524d \u00b7 \u63a5\u8fd1\u89e6\u53d1",
-      "management_confidence": 54.0,
+      "management_confidence": 53.3,
       "recommended_action": null,
       "management_status": "available",
       "management_error": null,
@@ -58381,7 +58387,7 @@
       },
       "state": {
         "phase": "pre_trigger",
-        "management_confidence": 54.0,
+        "management_confidence": 53.3,
         "recommended_action": null,
         "components": {
           "validity": 56.9,
@@ -58402,7 +58408,7 @@
           "mfe_r": 0.0,
           "mae_r": -0.38
         },
-        "change_reason": "Weakening",
+        "change_reason": "",
         "price_frame": {
           "state": "stale",
           "last_close_date": "2026-10-08",
@@ -59157,7 +59163,7 @@
           "mfe_r": 0.671,
           "mae_r": -0.001
         },
-        "change_reason": "Moving Away from Stop",
+        "change_reason": "",
         "price_frame": {
           "state": "stale",
           "last_close_date": "2026-10-08",
@@ -59967,7 +59973,7 @@
       "closed": false,
       "pulse": "14d \u00b7 triggered \u00b7 needs follow-through",
       "pulse_zh": "14\u5929 \u00b7 \u5df2\u89e6\u53d1 \u00b7 \u9700\u8981\u8ddf\u8fdb\u786e\u8ba4",
-      "management_confidence": 64.1,
+      "management_confidence": 62.9,
       "recommended_action": null,
       "management_status": "available",
       "management_error": null,
@@ -59982,7 +59988,7 @@
       },
       "state": {
         "phase": "triggered_pre_t1",
-        "management_confidence": 64.1,
+        "management_confidence": 62.9,
         "recommended_action": null,
         "components": {
           "validity": 100.0,
@@ -60003,7 +60009,7 @@
           "mfe_r": 0.227,
           "mae_r": -0.093
         },
-        "change_reason": "Moving Away from Stop",
+        "change_reason": "",
         "price_frame": {
           "state": "stale",
           "last_close_date": "2026-10-08",
@@ -60218,7 +60224,7 @@
       "closed": true,
       "pulse": "closed \u00b7 timed out",
       "pulse_zh": "\u5df2\u7ed3 \u00b7 \u5230\u671f\u672a\u8fbe\u6807",
-      "management_confidence": 33.8,
+      "management_confidence": 33.2,
       "recommended_action": null,
       "management_status": "available",
       "management_error": null,
@@ -60233,7 +60239,7 @@
       },
       "state": {
         "phase": "overtime",
-        "management_confidence": 33.8,
+        "management_confidence": 33.2,
         "recommended_action": null,
         "components": {
           "validity": 36.3,
@@ -60461,7 +60467,7 @@
       "closed": false,
       "pulse": "8d \u00b7 triggered \u00b7 advancing cleanly",
       "pulse_zh": "8\u5929 \u00b7 \u5df2\u89e6\u53d1 \u00b7 \u987a\u5229\u63a8\u8fdb",
-      "management_confidence": 78.4,
+      "management_confidence": 79.9,
       "recommended_action": null,
       "management_status": "available",
       "management_error": null,
@@ -60476,7 +60482,7 @@
       },
       "state": {
         "phase": "triggered_pre_t1",
-        "management_confidence": 78.4,
+        "management_confidence": 79.9,
         "recommended_action": null,
         "components": {
           "validity": 100.0,
@@ -60712,7 +60718,7 @@
       "closed": false,
       "pulse": "8d \u00b7 triggered \u00b7 needs follow-through",
       "pulse_zh": "8\u5929 \u00b7 \u5df2\u89e6\u53d1 \u00b7 \u9700\u8981\u8ddf\u8fdb\u786e\u8ba4",
-      "management_confidence": 66.1,
+      "management_confidence": 65.9,
       "recommended_action": null,
       "management_status": "available",
       "management_error": null,
@@ -60727,7 +60733,7 @@
       },
       "state": {
         "phase": "triggered_pre_t1",
-        "management_confidence": 66.1,
+        "management_confidence": 65.9,
         "recommended_action": null,
         "components": {
           "validity": 100.0,
@@ -61534,7 +61540,7 @@
       "closed": false,
       "pulse": "40d \u00b7 pre-trigger \u00b7 approaching trigger",
       "pulse_zh": "40\u5929 \u00b7 \u89e6\u53d1\u524d \u00b7 \u63a5\u8fd1\u89e6\u53d1",
-      "management_confidence": 32.7,
+      "management_confidence": 32.8,
       "recommended_action": null,
       "management_status": "available",
       "management_error": null,
@@ -61549,7 +61555,7 @@
       },
       "state": {
         "phase": "pre_trigger",
-        "management_confidence": 32.7,
+        "management_confidence": 32.8,
         "recommended_action": null,
         "components": {
           "validity": 16.6,
@@ -61780,7 +61786,7 @@
       "closed": false,
       "pulse": "26d \u00b7 pre-trigger \u00b7 approaching trigger",
       "pulse_zh": "26\u5929 \u00b7 \u89e6\u53d1\u524d \u00b7 \u63a5\u8fd1\u89e6\u53d1",
-      "management_confidence": 49.3,
+      "management_confidence": 48.5,
       "recommended_action": null,
       "management_status": "available",
       "management_error": null,
@@ -61795,7 +61801,7 @@
       },
       "state": {
         "phase": "pre_trigger",
-        "management_confidence": 49.3,
+        "management_confidence": 48.5,
         "recommended_action": null,
         "components": {
           "validity": 67.7,
@@ -62688,7 +62694,7 @@
       "closed": false,
       "pulse": "12d \u00b7 triggered \u00b7 needs follow-through",
       "pulse_zh": "12\u5929 \u00b7 \u5df2\u89e6\u53d1 \u00b7 \u9700\u8981\u8ddf\u8fdb\u786e\u8ba4",
-      "management_confidence": 53.6,
+      "management_confidence": 51.4,
       "recommended_action": null,
       "management_status": "available",
       "management_error": null,
@@ -62703,7 +62709,7 @@
       },
       "state": {
         "phase": "triggered_pre_t1",
-        "management_confidence": 53.6,
+        "management_confidence": 51.4,
         "recommended_action": null,
         "components": {
           "validity": 78.1,
@@ -62724,7 +62730,7 @@
           "mfe_r": 0.01,
           "mae_r": -0.167
         },
-        "change_reason": "Moving Away from Stop",
+        "change_reason": "",
         "price_frame": {
           "state": "stale",
           "last_close_date": "2026-10-08",
@@ -63185,7 +63191,7 @@
       "closed": false,
       "pulse": "26d \u00b7 triggered \u00b7 on track",
       "pulse_zh": "26\u5929 \u00b7 \u5df2\u89e6\u53d1 \u00b7 \u6309\u8ba1\u5212\u63a8\u8fdb",
-      "management_confidence": 57.7,
+      "management_confidence": 57.3,
       "recommended_action": null,
       "management_status": "available",
       "management_error": null,
@@ -63200,7 +63206,7 @@
       },
       "state": {
         "phase": "triggered_pre_t1",
-        "management_confidence": 57.7,
+        "management_confidence": 57.3,
         "recommended_action": null,
         "components": {
           "validity": 100.0,
@@ -63221,7 +63227,7 @@
           "mfe_r": 0.452,
           "mae_r": -0.212
         },
-        "change_reason": "Moving Away from Stop",
+        "change_reason": "",
         "price_frame": {
           "state": "stale",
           "last_close_date": "2026-10-08",
@@ -64498,7 +64504,7 @@
       "closed": true,
       "pulse": "closed \u00b7 timed out",
       "pulse_zh": "\u5df2\u7ed3 \u00b7 \u5230\u671f\u672a\u8fbe\u6807",
-      "management_confidence": 34.9,
+      "management_confidence": 33.4,
       "recommended_action": null,
       "management_status": "available",
       "management_error": null,
@@ -64513,7 +64519,7 @@
       },
       "state": {
         "phase": "overtime",
-        "management_confidence": 34.9,
+        "management_confidence": 33.4,
         "recommended_action": null,
         "components": {
           "validity": 46.2,
@@ -65085,7 +65091,7 @@
       "closed": false,
       "pulse": "9d \u00b7 triggered \u00b7 needs follow-through",
       "pulse_zh": "9\u5929 \u00b7 \u5df2\u89e6\u53d1 \u00b7 \u9700\u8981\u8ddf\u8fdb\u786e\u8ba4",
-      "management_confidence": 67.8,
+      "management_confidence": 68.0,
       "recommended_action": null,
       "management_status": "available",
       "management_error": null,
@@ -65100,7 +65106,7 @@
       },
       "state": {
         "phase": "triggered_pre_t1",
-        "management_confidence": 67.8,
+        "management_confidence": 68.0,
         "recommended_action": null,
         "components": {
           "validity": 100.0,
@@ -65338,7 +65344,7 @@
       "closed": false,
       "pulse": "9d \u00b7 triggered \u00b7 needs follow-through",
       "pulse_zh": "9\u5929 \u00b7 \u5df2\u89e6\u53d1 \u00b7 \u9700\u8981\u8ddf\u8fdb\u786e\u8ba4",
-      "management_confidence": 63.4,
+      "management_confidence": 63.1,
       "recommended_action": null,
       "management_status": "available",
       "management_error": null,
@@ -65353,7 +65359,7 @@
       },
       "state": {
         "phase": "triggered_pre_t1",
-        "management_confidence": 63.4,
+        "management_confidence": 63.1,
         "recommended_action": null,
         "components": {
           "validity": 100.0,
@@ -65374,7 +65380,7 @@
           "mfe_r": 0.098,
           "mae_r": 0.0
         },
-        "change_reason": "Moving Away from Stop",
+        "change_reason": "",
         "price_frame": {
           "state": "stale",
           "last_close_date": "2026-10-08",
@@ -65835,7 +65841,7 @@
       "closed": false,
       "pulse": "12d \u00b7 triggered \u00b7 advancing cleanly",
       "pulse_zh": "12\u5929 \u00b7 \u5df2\u89e6\u53d1 \u00b7 \u987a\u5229\u63a8\u8fdb",
-      "management_confidence": 78.7,
+      "management_confidence": 80.1,
       "recommended_action": null,
       "management_status": "available",
       "management_error": null,
@@ -65850,7 +65856,7 @@
       },
       "state": {
         "phase": "triggered_pre_t1",
-        "management_confidence": 78.7,
+        "management_confidence": 80.1,
         "recommended_action": null,
         "components": {
           "validity": 100.0,
@@ -66214,7 +66220,7 @@
           "mfe_r": 0.081,
           "mae_r": -0.893
         },
-        "change_reason": "Window Elapsed \u2014 Awaiting Close",
+        "change_reason": "",
         "price_frame": {
           "state": "stale",
           "last_close_date": "2026-10-08",
@@ -66426,7 +66432,7 @@
       "closed": true,
       "pulse": "closed \u00b7 hit first target",
       "pulse_zh": "\u5df2\u7ed3 \u00b7 \u8fbe\u5230\u9996\u4e2a\u76ee\u6807",
-      "management_confidence": 86.2,
+      "management_confidence": 86.7,
       "recommended_action": null,
       "management_status": "available",
       "management_error": null,
@@ -66441,7 +66447,7 @@
       },
       "state": {
         "phase": "between_t1_t2",
-        "management_confidence": 86.2,
+        "management_confidence": 86.7,
         "recommended_action": null,
         "components": {
           "validity": 100.0,
@@ -66762,7 +66768,7 @@
       "closed": true,
       "pulse": "closed \u00b7 hit first target",
       "pulse_zh": "\u5df2\u7ed3 \u00b7 \u8fbe\u5230\u9996\u4e2a\u76ee\u6807",
-      "management_confidence": 74.3,
+      "management_confidence": 73.4,
       "recommended_action": null,
       "management_status": "available",
       "management_error": null,
@@ -66777,7 +66783,7 @@
       },
       "state": {
         "phase": "between_t1_t2",
-        "management_confidence": 74.3,
+        "management_confidence": 73.4,
         "recommended_action": null,
         "components": {
           "validity": 100.0,
@@ -67344,7 +67350,7 @@
       "closed": false,
       "pulse": "47d \u00b7 window elapsed \u00b7 window elapsed \u2014 awaiting close",
       "pulse_zh": "47\u5929 \u00b7 \u7a97\u53e3\u5df2\u5230\u671f \u00b7 \u7a97\u53e3\u5df2\u5230\u671f \u2014 \u5f85\u6536\u76d8\u786e\u8ba4",
-      "management_confidence": 38.2,
+      "management_confidence": 38.8,
       "recommended_action": null,
       "management_status": "available",
       "management_error": null,
@@ -67359,7 +67365,7 @@
       },
       "state": {
         "phase": "overtime",
-        "management_confidence": 38.2,
+        "management_confidence": 38.8,
         "recommended_action": null,
         "components": {
           "validity": 51.3,
@@ -67380,7 +67386,7 @@
           "mfe_r": 0.145,
           "mae_r": -0.39
         },
-        "change_reason": "Window Elapsed \u2014 Awaiting Close",
+        "change_reason": "",
         "price_frame": {
           "state": "stale",
           "last_close_date": "2026-10-08",
@@ -67928,7 +67934,7 @@
       "closed": false,
       "pulse": "48d \u00b7 window elapsed \u00b7 window elapsed \u2014 awaiting close",
       "pulse_zh": "48\u5929 \u00b7 \u7a97\u53e3\u5df2\u5230\u671f \u00b7 \u7a97\u53e3\u5df2\u5230\u671f \u2014 \u5f85\u6536\u76d8\u786e\u8ba4",
-      "management_confidence": 34.4,
+      "management_confidence": 35.1,
       "recommended_action": null,
       "management_status": "available",
       "management_error": null,
@@ -67943,7 +67949,7 @@
       },
       "state": {
         "phase": "overtime",
-        "management_confidence": 34.4,
+        "management_confidence": 35.1,
         "recommended_action": null,
         "components": {
           "validity": 40.4,
@@ -67964,7 +67970,7 @@
           "mfe_r": 0.135,
           "mae_r": -0.865
         },
-        "change_reason": "Window Elapsed \u2014 Awaiting Close",
+        "change_reason": "",
         "price_frame": {
           "state": "stale",
           "last_close_date": "2026-10-08",
@@ -68173,7 +68179,7 @@
       "closed": false,
       "pulse": "8d \u00b7 triggered \u00b7 needs follow-through",
       "pulse_zh": "8\u5929 \u00b7 \u5df2\u89e6\u53d1 \u00b7 \u9700\u8981\u8ddf\u8fdb\u786e\u8ba4",
-      "management_confidence": 68.5,
+      "management_confidence": 69.3,
       "recommended_action": null,
       "management_status": "available",
       "management_error": null,
@@ -68188,7 +68194,7 @@
       },
       "state": {
         "phase": "triggered_pre_t1",
-        "management_confidence": 68.5,
+        "management_confidence": 69.3,
         "recommended_action": null,
         "components": {
           "validity": 100.0,
@@ -69204,7 +69210,7 @@
           "mfe_r": 1.166,
           "mae_r": -1.985
         },
-        "change_reason": "Window Elapsed \u2014 Awaiting Close",
+        "change_reason": "",
         "price_frame": {
           "state": "stale",
           "last_close_date": "2026-10-08",
@@ -70042,7 +70048,7 @@
           "mfe_r": 0.0,
           "mae_r": -0.174
         },
-        "change_reason": "Moving Away from Stop",
+        "change_reason": "",
         "price_frame": {
           "state": "stale",
           "last_close_date": "2026-10-08",
@@ -70781,7 +70787,7 @@
           "mfe_r": 0.173,
           "mae_r": -1.577
         },
-        "change_reason": "Window Elapsed \u2014 Awaiting Close",
+        "change_reason": "",
         "price_frame": {
           "state": "stale",
           "last_close_date": "2026-10-08",
@@ -71361,7 +71367,7 @@
           "mfe_r": 0.336,
           "mae_r": -0.573
         },
-        "change_reason": "Falling Behind Schedule",
+        "change_reason": "",
         "price_frame": {
           "state": "stale",
           "last_close_date": "2026-10-08",
@@ -71659,7 +71665,7 @@
       "closed": false,
       "pulse": "40d \u00b7 triggered \u00b7 needs follow-through",
       "pulse_zh": "40\u5929 \u00b7 \u5df2\u89e6\u53d1 \u00b7 \u9700\u8981\u8ddf\u8fdb\u786e\u8ba4",
-      "management_confidence": 51.6,
+      "management_confidence": 51.4,
       "recommended_action": null,
       "management_status": "available",
       "management_error": null,
@@ -71674,7 +71680,7 @@
       },
       "state": {
         "phase": "triggered_pre_t1",
-        "management_confidence": 51.6,
+        "management_confidence": 51.4,
         "recommended_action": null,
         "components": {
           "validity": 100.0,
@@ -71994,7 +72000,7 @@
       "closed": false,
       "pulse": "14d \u00b7 triggered \u00b7 stalling",
       "pulse_zh": "14\u5929 \u00b7 \u5df2\u89e6\u53d1 \u00b7 \u505c\u6ede",
-      "management_confidence": 59.4,
+      "management_confidence": 57.3,
       "recommended_action": null,
       "management_status": "available",
       "management_error": null,
@@ -72009,7 +72015,7 @@
       },
       "state": {
         "phase": "triggered_pre_t1",
-        "management_confidence": 59.4,
+        "management_confidence": 57.3,
         "recommended_action": null,
         "components": {
           "validity": 100.0,
@@ -72030,7 +72036,7 @@
           "mfe_r": 0.151,
           "mae_r": -0.011
         },
-        "change_reason": "Moving Away from Stop",
+        "change_reason": "",
         "price_frame": {
           "state": "stale",
           "last_close_date": "2026-10-08",
@@ -72498,7 +72504,7 @@
       "closed": false,
       "pulse": "33d \u00b7 triggered \u00b7 needs follow-through",
       "pulse_zh": "33\u5929 \u00b7 \u5df2\u89e6\u53d1 \u00b7 \u9700\u8981\u8ddf\u8fdb\u786e\u8ba4",
-      "management_confidence": 52.4,
+      "management_confidence": 50.9,
       "recommended_action": null,
       "management_status": "available",
       "management_error": null,
@@ -72513,7 +72519,7 @@
       },
       "state": {
         "phase": "triggered_pre_t1",
-        "management_confidence": 52.4,
+        "management_confidence": 50.9,
         "recommended_action": null,
         "components": {
           "validity": 100.0,
@@ -73242,7 +73248,7 @@
       "closed": false,
       "pulse": "14d \u00b7 triggered \u00b7 needs follow-through",
       "pulse_zh": "14\u5929 \u00b7 \u5df2\u89e6\u53d1 \u00b7 \u9700\u8981\u8ddf\u8fdb\u786e\u8ba4",
-      "management_confidence": 66.2,
+      "management_confidence": 64.4,
       "recommended_action": null,
       "management_status": "available",
       "management_error": null,
@@ -73257,7 +73263,7 @@
       },
       "state": {
         "phase": "triggered_pre_t1",
-        "management_confidence": 66.2,
+        "management_confidence": 64.4,
         "recommended_action": null,
         "components": {
           "validity": 100.0,
@@ -73278,7 +73284,7 @@
           "mfe_r": 0.505,
           "mae_r": -0.161
         },
-        "change_reason": "Moving Away from Stop",
+        "change_reason": "",
         "price_frame": {
           "state": "stale",
           "last_close_date": "2026-10-08",
@@ -74358,7 +74364,7 @@
       "closed": false,
       "pulse": "14d \u00b7 triggered \u00b7 stalling",
       "pulse_zh": "14\u5929 \u00b7 \u5df2\u89e6\u53d1 \u00b7 \u505c\u6ede",
-      "management_confidence": 50.3,
+      "management_confidence": 47.9,
       "recommended_action": null,
       "management_status": "available",
       "management_error": null,
@@ -74373,7 +74379,7 @@
       },
       "state": {
         "phase": "triggered_pre_t1",
-        "management_confidence": 50.3,
+        "management_confidence": 47.9,
         "recommended_action": null,
         "components": {
           "validity": 73.5,
@@ -74394,7 +74400,7 @@
           "mfe_r": 0.237,
           "mae_r": -0.204
         },
-        "change_reason": "Weakening",
+        "change_reason": "",
         "price_frame": {
           "state": "stale",
           "last_close_date": "2026-10-08",
@@ -75134,7 +75140,7 @@
           "mfe_r": 0.292,
           "mae_r": -0.001
         },
-        "change_reason": "Moving Away from Stop",
+        "change_reason": "",
         "price_frame": {
           "state": "stale",
           "last_close_date": "2026-10-08",
@@ -76091,7 +76097,7 @@
       "closed": true,
       "pulse": "closed",
       "pulse_zh": "\u5df2\u7ed3",
-      "management_confidence": 40.4,
+      "management_confidence": 40.1,
       "recommended_action": null,
       "management_status": "available",
       "management_error": null,
@@ -76106,7 +76112,7 @@
       },
       "state": {
         "phase": "overtime",
-        "management_confidence": 40.4,
+        "management_confidence": 40.1,
         "recommended_action": null,
         "components": {
           "validity": 64.1,
@@ -76667,7 +76673,7 @@
       "closed": false,
       "pulse": "19d \u00b7 triggered \u00b7 needs follow-through",
       "pulse_zh": "19\u5929 \u00b7 \u5df2\u89e6\u53d1 \u00b7 \u9700\u8981\u8ddf\u8fdb\u786e\u8ba4",
-      "management_confidence": 59.8,
+      "management_confidence": 58.4,
       "recommended_action": null,
       "management_status": "available",
       "management_error": null,
@@ -76682,7 +76688,7 @@
       },
       "state": {
         "phase": "triggered_pre_t1",
-        "management_confidence": 59.8,
+        "management_confidence": 58.4,
         "recommended_action": null,
         "components": {
           "validity": 100.0,
@@ -76703,7 +76709,7 @@
           "mfe_r": 0.281,
           "mae_r": 0.0
         },
-        "change_reason": "Moving Away from Stop",
+        "change_reason": "",
         "price_frame": {
           "state": "stale",
           "last_close_date": "2026-10-08",
@@ -76918,7 +76924,7 @@
       "closed": false,
       "pulse": "33d \u00b7 triggered \u00b7 stalling",
       "pulse_zh": "33\u5929 \u00b7 \u5df2\u89e6\u53d1 \u00b7 \u505c\u6ede",
-      "management_confidence": 35.4,
+      "management_confidence": 33.1,
       "recommended_action": null,
       "management_status": "available",
       "management_error": null,
@@ -76933,7 +76939,7 @@
       },
       "state": {
         "phase": "triggered_pre_t1",
-        "management_confidence": 35.4,
+        "management_confidence": 33.1,
         "recommended_action": null,
         "components": {
           "validity": 59.2,
@@ -78880,7 +78886,7 @@
       "closed": false,
       "pulse": "6d \u00b7 triggered \u00b7 needs follow-through",
       "pulse_zh": "6\u5929 \u00b7 \u5df2\u89e6\u53d1 \u00b7 \u9700\u8981\u8ddf\u8fdb\u786e\u8ba4",
-      "management_confidence": 61.2,
+      "management_confidence": 60.9,
       "recommended_action": null,
       "management_status": "available",
       "management_error": null,
@@ -78895,7 +78901,7 @@
       },
       "state": {
         "phase": "triggered_pre_t1",
-        "management_confidence": 61.2,
+        "management_confidence": 60.9,
         "recommended_action": null,
         "components": {
           "validity": 100.0,
@@ -79421,7 +79427,7 @@
           "mfe_r": 0.816,
           "mae_r": 0.0
         },
-        "change_reason": "Moving Away from Stop",
+        "change_reason": "",
         "price_frame": {
           "state": "stale",
           "last_close_date": "2026-10-08",
@@ -79668,7 +79674,7 @@
           "mfe_r": 0.194,
           "mae_r": -0.038
         },
-        "change_reason": "Moving Away from Stop",
+        "change_reason": "",
         "price_frame": {
           "state": "stale",
           "last_close_date": "2026-10-08",
@@ -79887,7 +79893,7 @@
       "closed": false,
       "pulse": "12d \u00b7 triggered \u00b7 needs follow-through",
       "pulse_zh": "12\u5929 \u00b7 \u5df2\u89e6\u53d1 \u00b7 \u9700\u8981\u8ddf\u8fdb\u786e\u8ba4",
-      "management_confidence": 65.7,
+      "management_confidence": 65.0,
       "recommended_action": null,
       "management_status": "available",
       "management_error": null,
@@ -79902,7 +79908,7 @@
       },
       "state": {
         "phase": "triggered_pre_t1",
-        "management_confidence": 65.7,
+        "management_confidence": 65.0,
         "recommended_action": null,
         "components": {
           "validity": 100.0,
@@ -79923,7 +79929,7 @@
           "mfe_r": 0.226,
           "mae_r": -0.0
         },
-        "change_reason": "Moving Away from Stop",
+        "change_reason": "",
         "price_frame": {
           "state": "stale",
           "last_close_date": "2026-10-08",
@@ -80724,7 +80730,7 @@
       "closed": true,
       "pulse": "closed \u00b7 timed out",
       "pulse_zh": "\u5df2\u7ed3 \u00b7 \u5230\u671f\u672a\u8fbe\u6807",
-      "management_confidence": 37.5,
+      "management_confidence": 37.7,
       "recommended_action": null,
       "management_status": "available",
       "management_error": null,
@@ -80739,7 +80745,7 @@
       },
       "state": {
         "phase": "overtime",
-        "management_confidence": 37.5,
+        "management_confidence": 37.7,
         "recommended_action": null,
         "components": {
           "validity": 53.7,
@@ -80969,7 +80975,7 @@
       "closed": false,
       "pulse": "12d \u00b7 triggered \u00b7 needs follow-through",
       "pulse_zh": "12\u5929 \u00b7 \u5df2\u89e6\u53d1 \u00b7 \u9700\u8981\u8ddf\u8fdb\u786e\u8ba4",
-      "management_confidence": 57.3,
+      "management_confidence": 55.6,
       "recommended_action": null,
       "management_status": "available",
       "management_error": null,
@@ -80984,7 +80990,7 @@
       },
       "state": {
         "phase": "triggered_pre_t1",
-        "management_confidence": 57.3,
+        "management_confidence": 55.6,
         "recommended_action": null,
         "components": {
           "validity": 97.4,
@@ -81005,7 +81011,7 @@
           "mfe_r": 0.044,
           "mae_r": -0.019
         },
-        "change_reason": "Moving Away from Stop",
+        "change_reason": "",
         "price_frame": {
           "state": "stale",
           "last_close_date": "2026-10-08",
@@ -81512,10 +81518,10 @@
             "source": "us_stock_library"
           },
           "lane": {
-            "value": "bottoming",
-            "state": "available",
-            "reason": null,
-            "source": "us_standouts"
+            "value": null,
+            "state": "not_applicable",
+            "reason": "not_on_board",
+            "source": null
           },
           "spark": {
             "value": "board_read_sparks.json#IR",
@@ -82175,7 +82181,7 @@
           "mfe_r": 0.0,
           "mae_r": -0.211
         },
-        "change_reason": "Moving Away from Stop",
+        "change_reason": "",
         "price_frame": {
           "state": "stale",
           "last_close_date": "2026-10-08",
@@ -82825,7 +82831,7 @@
       "closed": true,
       "pulse": "closed \u00b7 timed out",
       "pulse_zh": "\u5df2\u7ed3 \u00b7 \u5230\u671f\u672a\u8fbe\u6807",
-      "management_confidence": 37.6,
+      "management_confidence": 37.0,
       "recommended_action": null,
       "management_status": "available",
       "management_error": null,
@@ -82840,7 +82846,7 @@
       },
       "state": {
         "phase": "overtime",
-        "management_confidence": 37.6,
+        "management_confidence": 37.0,
         "recommended_action": null,
         "components": {
           "validity": 53.3,
@@ -83070,7 +83076,7 @@
       "closed": false,
       "pulse": "12d \u00b7 triggered \u00b7 needs follow-through",
       "pulse_zh": "12\u5929 \u00b7 \u5df2\u89e6\u53d1 \u00b7 \u9700\u8981\u8ddf\u8fdb\u786e\u8ba4",
-      "management_confidence": 61.2,
+      "management_confidence": 60.1,
       "recommended_action": null,
       "management_status": "available",
       "management_error": null,
@@ -83085,7 +83091,7 @@
       },
       "state": {
         "phase": "triggered_pre_t1",
-        "management_confidence": 61.2,
+        "management_confidence": 60.1,
         "recommended_action": null,
         "components": {
           "validity": 100.0,
@@ -83106,7 +83112,7 @@
           "mfe_r": 0.128,
           "mae_r": -0.055
         },
-        "change_reason": "Moving Away from Stop",
+        "change_reason": "",
         "price_frame": {
           "state": "stale",
           "last_close_date": "2026-10-08",
@@ -84059,7 +84065,7 @@
       "closed": true,
       "pulse": "closed \u00b7 hit first target",
       "pulse_zh": "\u5df2\u7ed3 \u00b7 \u8fbe\u5230\u9996\u4e2a\u76ee\u6807",
-      "management_confidence": 35.5,
+      "management_confidence": 35.6,
       "recommended_action": null,
       "management_status": "available",
       "management_error": null,
@@ -84074,7 +84080,7 @@
       },
       "state": {
         "phase": "between_t1_t2",
-        "management_confidence": 35.5,
+        "management_confidence": 35.6,
         "recommended_action": null,
         "components": {
           "validity": 82.6,
@@ -84305,7 +84311,7 @@
       "closed": false,
       "pulse": "19d \u00b7 triggered \u00b7 stalling",
       "pulse_zh": "19\u5929 \u00b7 \u5df2\u89e6\u53d1 \u00b7 \u505c\u6ede",
-      "management_confidence": 42.6,
+      "management_confidence": 40.8,
       "recommended_action": null,
       "management_status": "available",
       "management_error": null,
@@ -84320,7 +84326,7 @@
       },
       "state": {
         "phase": "triggered_pre_t1",
-        "management_confidence": 42.6,
+        "management_confidence": 40.8,
         "recommended_action": null,
         "components": {
           "validity": 71.0,
@@ -84341,7 +84347,7 @@
           "mfe_r": 0.0,
           "mae_r": -0.43
         },
-        "change_reason": "Falling Behind Schedule",
+        "change_reason": "",
         "price_frame": {
           "state": "stale",
           "last_close_date": "2026-10-08",
@@ -84799,7 +84805,7 @@
       "closed": true,
       "pulse": "closed \u00b7 timed out",
       "pulse_zh": "\u5df2\u7ed3 \u00b7 \u5230\u671f\u672a\u8fbe\u6807",
-      "management_confidence": 34.4,
+      "management_confidence": 33.9,
       "recommended_action": null,
       "management_status": "available",
       "management_error": null,
@@ -84814,7 +84820,7 @@
       },
       "state": {
         "phase": "overtime",
-        "management_confidence": 34.4,
+        "management_confidence": 33.9,
         "recommended_action": null,
         "components": {
           "validity": 39.3,
@@ -85324,7 +85330,7 @@
           "mfe_r": 0.529,
           "mae_r": -0.031
         },
-        "change_reason": "Moving Away from Stop",
+        "change_reason": "",
         "price_frame": {
           "state": "stale",
           "last_close_date": "2026-10-08",
@@ -86276,7 +86282,7 @@
       "closed": false,
       "pulse": "6d \u00b7 pre-trigger \u00b7 awaiting trigger",
       "pulse_zh": "6\u5929 \u00b7 \u89e6\u53d1\u524d \u00b7 \u7b49\u5f85\u89e6\u53d1",
-      "management_confidence": 67.4,
+      "management_confidence": 67.2,
       "recommended_action": null,
       "management_status": "available",
       "management_error": null,
@@ -86291,7 +86297,7 @@
       },
       "state": {
         "phase": "pre_trigger",
-        "management_confidence": 67.4,
+        "management_confidence": 67.2,
         "recommended_action": null,
         "components": {
           "validity": 100.0,
@@ -86902,7 +86908,7 @@
           "mfe_r": 0.0,
           "mae_r": -0.247
         },
-        "change_reason": "Ahead of Schedule",
+        "change_reason": "",
         "price_frame": {
           "state": "stale",
           "last_close_date": "2026-10-08",
@@ -87363,7 +87369,7 @@
       "closed": false,
       "pulse": "19d \u00b7 triggered \u00b7 stalling",
       "pulse_zh": "19\u5929 \u00b7 \u5df2\u89e6\u53d1 \u00b7 \u505c\u6ede",
-      "management_confidence": 38.6,
+      "management_confidence": 36.7,
       "recommended_action": null,
       "management_status": "available",
       "management_error": null,
@@ -87378,7 +87384,7 @@
       },
       "state": {
         "phase": "triggered_pre_t1",
-        "management_confidence": 38.6,
+        "management_confidence": 36.7,
         "recommended_action": null,
         "components": {
           "validity": 53.9,
@@ -87399,7 +87405,7 @@
           "mfe_r": 0.209,
           "mae_r": -0.5
         },
-        "change_reason": "Falling Behind Schedule",
+        "change_reason": "",
         "price_frame": {
           "state": "stale",
           "last_close_date": "2026-10-08",
@@ -87994,7 +88000,7 @@
           "mfe_r": 0.0,
           "mae_r": -0.193
         },
-        "change_reason": "Moving Away from Stop",
+        "change_reason": "",
         "price_frame": {
           "state": "stale",
           "last_close_date": "2026-10-08",
@@ -88212,7 +88218,7 @@
       "closed": false,
       "pulse": "26d \u00b7 triggered \u00b7 on track",
       "pulse_zh": "26\u5929 \u00b7 \u5df2\u89e6\u53d1 \u00b7 \u6309\u8ba1\u5212\u63a8\u8fdb",
-      "management_confidence": 56.8,
+      "management_confidence": 57.0,
       "recommended_action": null,
       "management_status": "available",
       "management_error": null,
@@ -88227,7 +88233,7 @@
       },
       "state": {
         "phase": "triggered_pre_t1",
-        "management_confidence": 56.8,
+        "management_confidence": 57.0,
         "recommended_action": null,
         "components": {
           "validity": 100.0,
@@ -88248,7 +88254,7 @@
           "mfe_r": 0.463,
           "mae_r": -0.151
         },
-        "change_reason": "Moving Away from Stop",
+        "change_reason": "",
         "price_frame": {
           "state": "stale",
           "last_close_date": "2026-10-08",
@@ -88459,7 +88465,7 @@
       "closed": false,
       "pulse": "6d \u00b7 pre-trigger \u00b7 awaiting trigger",
       "pulse_zh": "6\u5929 \u00b7 \u89e6\u53d1\u524d \u00b7 \u7b49\u5f85\u89e6\u53d1",
-      "management_confidence": 67.4,
+      "management_confidence": 67.2,
       "recommended_action": null,
       "management_status": "available",
       "management_error": null,
@@ -88474,7 +88480,7 @@
       },
       "state": {
         "phase": "pre_trigger",
-        "management_confidence": 67.4,
+        "management_confidence": 67.2,
         "recommended_action": null,
         "components": {
           "validity": 100.0,
@@ -88710,7 +88716,7 @@
       "closed": false,
       "pulse": "48d \u00b7 window elapsed \u00b7 window elapsed \u2014 awaiting close",
       "pulse_zh": "48\u5929 \u00b7 \u7a97\u53e3\u5df2\u5230\u671f \u00b7 \u7a97\u53e3\u5df2\u5230\u671f \u2014 \u5f85\u6536\u76d8\u786e\u8ba4",
-      "management_confidence": 31.0,
+      "management_confidence": 31.2,
       "recommended_action": null,
       "management_status": "available",
       "management_error": null,
@@ -88725,7 +88731,7 @@
       },
       "state": {
         "phase": "overtime",
-        "management_confidence": 31.0,
+        "management_confidence": 31.2,
         "recommended_action": null,
         "components": {
           "validity": 26.4,
@@ -88746,7 +88752,7 @@
           "mfe_r": 0.074,
           "mae_r": -0.719
         },
-        "change_reason": "Window Elapsed \u2014 Awaiting Close",
+        "change_reason": "",
         "price_frame": {
           "state": "stale",
           "last_close_date": "2026-10-08",
@@ -89942,7 +89948,7 @@
       "closed": true,
       "pulse": "closed",
       "pulse_zh": "\u5df2\u7ed3",
-      "management_confidence": 24.7,
+      "management_confidence": 24.6,
       "recommended_action": null,
       "management_status": "available",
       "management_error": null,
@@ -89957,7 +89963,7 @@
       },
       "state": {
         "phase": "overtime",
-        "management_confidence": 24.7,
+        "management_confidence": 24.6,
         "recommended_action": null,
         "components": {
           "validity": 11.7,
@@ -92761,7 +92767,7 @@
       "closed": false,
       "pulse": "9d \u00b7 pre-trigger \u00b7 approaching trigger",
       "pulse_zh": "9\u5929 \u00b7 \u89e6\u53d1\u524d \u00b7 \u63a5\u8fd1\u89e6\u53d1",
-      "management_confidence": 60.8,
+      "management_confidence": 60.2,
       "recommended_action": null,
       "management_status": "available",
       "management_error": null,
@@ -92776,7 +92782,7 @@
       },
       "state": {
         "phase": "pre_trigger",
-        "management_confidence": 60.8,
+        "management_confidence": 60.2,
         "recommended_action": null,
         "components": {
           "validity": 74.6,
@@ -93593,7 +93599,7 @@
       "closed": false,
       "pulse": "9d \u00b7 triggered \u00b7 needs follow-through",
       "pulse_zh": "9\u5929 \u00b7 \u5df2\u89e6\u53d1 \u00b7 \u9700\u8981\u8ddf\u8fdb\u786e\u8ba4",
-      "management_confidence": 54.4,
+      "management_confidence": 52.2,
       "recommended_action": null,
       "management_status": "available",
       "management_error": null,
@@ -93608,7 +93614,7 @@
       },
       "state": {
         "phase": "triggered_pre_t1",
-        "management_confidence": 54.4,
+        "management_confidence": 52.2,
         "recommended_action": null,
         "components": {
           "validity": 66.5,
@@ -93629,7 +93635,7 @@
           "mfe_r": 0.239,
           "mae_r": -0.261
         },
-        "change_reason": "Ahead of Schedule",
+        "change_reason": "",
         "price_frame": {
           "state": "stale",
           "last_close_date": "2026-10-08",
@@ -93883,7 +93889,7 @@
           "mfe_r": 0.743,
           "mae_r": 0.0
         },
-        "change_reason": "Moving Away from Stop",
+        "change_reason": "",
         "price_frame": {
           "state": "stale",
           "last_close_date": "2026-10-08",
@@ -94341,7 +94347,7 @@
       "closed": false,
       "pulse": "9d \u00b7 triggered \u00b7 needs follow-through",
       "pulse_zh": "9\u5929 \u00b7 \u5df2\u89e6\u53d1 \u00b7 \u9700\u8981\u8ddf\u8fdb\u786e\u8ba4",
-      "management_confidence": 57.4,
+      "management_confidence": 55.9,
       "recommended_action": null,
       "management_status": "available",
       "management_error": null,
@@ -94356,7 +94362,7 @@
       },
       "state": {
         "phase": "triggered_pre_t1",
-        "management_confidence": 57.4,
+        "management_confidence": 55.9,
         "recommended_action": null,
         "components": {
           "validity": 84.1,
@@ -94377,7 +94383,7 @@
           "mfe_r": 0.203,
           "mae_r": -0.241
         },
-        "change_reason": "Moving Away from Stop",
+        "change_reason": "",
         "price_frame": {
           "state": "stale",
           "last_close_date": "2026-10-08",
@@ -94883,7 +94889,7 @@
           "mfe_r": 0.246,
           "mae_r": -0.231
         },
-        "change_reason": "Window Elapsed \u2014 Awaiting Close",
+        "change_reason": "",
         "price_frame": {
           "state": "stale",
           "last_close_date": "2026-10-08",
@@ -95373,7 +95379,7 @@
           "mfe_r": 0.045,
           "mae_r": -0.512
         },
-        "change_reason": "Window Elapsed \u2014 Awaiting Close",
+        "change_reason": "",
         "price_frame": {
           "state": "stale",
           "last_close_date": "2026-10-08",
@@ -95618,7 +95624,7 @@
           "mfe_r": 0.056,
           "mae_r": -0.629
         },
-        "change_reason": "Window Elapsed \u2014 Awaiting Close",
+        "change_reason": "",
         "price_frame": {
           "state": "stale",
           "last_close_date": "2026-10-08",
@@ -96110,7 +96116,7 @@
           "mfe_r": 0.352,
           "mae_r": -0.676
         },
-        "change_reason": "Window Elapsed \u2014 Awaiting Close",
+        "change_reason": "",
         "price_frame": {
           "state": "stale",
           "last_close_date": "2026-10-08",
@@ -97087,7 +97093,7 @@
           "mfe_r": 0.0,
           "mae_r": -0.396
         },
-        "change_reason": "Ahead of Schedule",
+        "change_reason": "",
         "price_frame": {
           "state": "stale",
           "last_close_date": "2026-10-08",
@@ -97765,7 +97771,7 @@
       "closed": false,
       "pulse": "9d \u00b7 triggered \u00b7 needs follow-through",
       "pulse_zh": "9\u5929 \u00b7 \u5df2\u89e6\u53d1 \u00b7 \u9700\u8981\u8ddf\u8fdb\u786e\u8ba4",
-      "management_confidence": 63.2,
+      "management_confidence": 61.9,
       "recommended_action": null,
       "management_status": "available",
       "management_error": null,
@@ -97780,7 +97786,7 @@
       },
       "state": {
         "phase": "triggered_pre_t1",
-        "management_confidence": 63.2,
+        "management_confidence": 61.9,
         "recommended_action": null,
         "components": {
           "validity": 100.0,
@@ -97801,7 +97807,7 @@
           "mfe_r": 0.363,
           "mae_r": -0.0
         },
-        "change_reason": "Moving Away from Stop",
+        "change_reason": "",
         "price_frame": {
           "state": "stale",
           "last_close_date": "2026-10-08",
@@ -98261,7 +98267,7 @@
       "closed": false,
       "pulse": "9d \u00b7 triggered \u00b7 needs follow-through",
       "pulse_zh": "9\u5929 \u00b7 \u5df2\u89e6\u53d1 \u00b7 \u9700\u8981\u8ddf\u8fdb\u786e\u8ba4",
-      "management_confidence": 63.0,
+      "management_confidence": 62.2,
       "recommended_action": null,
       "management_status": "available",
       "management_error": null,
@@ -98276,7 +98282,7 @@
       },
       "state": {
         "phase": "triggered_pre_t1",
-        "management_confidence": 63.0,
+        "management_confidence": 62.2,
         "recommended_action": null,
         "components": {
           "validity": 100.0,
@@ -98297,7 +98303,7 @@
           "mfe_r": 0.072,
           "mae_r": -0.025
         },
-        "change_reason": "Moving Away from Stop",
+        "change_reason": "",
         "price_frame": {
           "state": "stale",
           "last_close_date": "2026-10-08",
@@ -98601,7 +98607,7 @@
       "closed": false,
       "pulse": "6d \u00b7 pre-trigger \u00b7 awaiting trigger",
       "pulse_zh": "6\u5929 \u00b7 \u89e6\u53d1\u524d \u00b7 \u7b49\u5f85\u89e6\u53d1",
-      "management_confidence": 67.2,
+      "management_confidence": 67.0,
       "recommended_action": null,
       "management_status": "available",
       "management_error": null,
@@ -98616,7 +98622,7 @@
       },
       "state": {
         "phase": "pre_trigger",
-        "management_confidence": 67.2,
+        "management_confidence": 67.0,
         "recommended_action": null,
         "components": {
           "validity": 100.0,
@@ -99103,7 +99109,7 @@
       "closed": false,
       "pulse": "7d \u00b7 triggered \u00b7 needs follow-through",
       "pulse_zh": "7\u5929 \u00b7 \u5df2\u89e6\u53d1 \u00b7 \u9700\u8981\u8ddf\u8fdb\u786e\u8ba4",
-      "management_confidence": 57.1,
+      "management_confidence": 56.2,
       "recommended_action": null,
       "management_status": "available",
       "management_error": null,
@@ -99118,7 +99124,7 @@
       },
       "state": {
         "phase": "triggered_pre_t1",
-        "management_confidence": 57.1,
+        "management_confidence": 56.2,
         "recommended_action": null,
         "components": {
           "validity": 81.5,
@@ -99139,7 +99145,7 @@
           "mfe_r": 0.001,
           "mae_r": -0.14
         },
-        "change_reason": "Moving Away from Stop",
+        "change_reason": "",
         "price_frame": {
           "state": "stale",
           "last_close_date": "2026-10-08",
@@ -99599,7 +99605,7 @@
       "closed": true,
       "pulse": "closed \u00b7 timed out",
       "pulse_zh": "\u5df2\u7ed3 \u00b7 \u5230\u671f\u672a\u8fbe\u6807",
-      "management_confidence": 32.9,
+      "management_confidence": 32.7,
       "recommended_action": null,
       "management_status": "available",
       "management_error": null,
@@ -99614,7 +99620,7 @@
       },
       "state": {
         "phase": "overtime",
-        "management_confidence": 32.9,
+        "management_confidence": 32.7,
         "recommended_action": null,
         "components": {
           "validity": 41.1,
@@ -100343,7 +100349,7 @@
       "closed": false,
       "pulse": "6d \u00b7 pre-trigger \u00b7 awaiting trigger",
       "pulse_zh": "6\u5929 \u00b7 \u89e6\u53d1\u524d \u00b7 \u7b49\u5f85\u89e6\u53d1",
-      "management_confidence": 67.5,
+      "management_confidence": 67.3,
       "recommended_action": null,
       "management_status": "available",
       "management_error": null,
@@ -100358,7 +100364,7 @@
       },
       "state": {
         "phase": "pre_trigger",
-        "management_confidence": 67.5,
+        "management_confidence": 67.3,
         "recommended_action": null,
         "components": {
           "validity": 99.7,
@@ -100632,7 +100638,7 @@
           "mfe_r": 0.001,
           "mae_r": -0.174
         },
-        "change_reason": "Moving Away from Stop",
+        "change_reason": "",
         "price_frame": {
           "state": "stale",
           "last_close_date": "2026-10-08",
@@ -100847,7 +100853,7 @@
       "closed": false,
       "pulse": "9d \u00b7 triggered \u00b7 needs follow-through",
       "pulse_zh": "9\u5929 \u00b7 \u5df2\u89e6\u53d1 \u00b7 \u9700\u8981\u8ddf\u8fdb\u786e\u8ba4",
-      "management_confidence": 52.1,
+      "management_confidence": 50.8,
       "recommended_action": null,
       "management_status": "available",
       "management_error": null,
@@ -100862,7 +100868,7 @@
       },
       "state": {
         "phase": "triggered_pre_t1",
-        "management_confidence": 52.1,
+        "management_confidence": 50.8,
         "recommended_action": null,
         "components": {
           "validity": 65.5,
@@ -100883,7 +100889,7 @@
           "mfe_r": 0.0,
           "mae_r": -0.269
         },
-        "change_reason": "Ahead of Schedule",
+        "change_reason": "",
         "price_frame": {
           "state": "stale",
           "last_close_date": "2026-10-07",
@@ -101978,7 +101984,7 @@
           "mfe_r": 0.237,
           "mae_r": -0.153
         },
-        "change_reason": "Moving Away from Stop",
+        "change_reason": "",
         "price_frame": {
           "state": "stale",
           "last_close_date": "2026-10-08",
@@ -102439,7 +102445,7 @@
       "closed": false,
       "pulse": "12d \u00b7 triggered \u00b7 needs follow-through",
       "pulse_zh": "12\u5929 \u00b7 \u5df2\u89e6\u53d1 \u00b7 \u9700\u8981\u8ddf\u8fdb\u786e\u8ba4",
-      "management_confidence": 50.9,
+      "management_confidence": 49.3,
       "recommended_action": null,
       "management_status": "available",
       "management_error": null,
@@ -102454,7 +102460,7 @@
       },
       "state": {
         "phase": "triggered_pre_t1",
-        "management_confidence": 50.9,
+        "management_confidence": 49.3,
         "recommended_action": null,
         "components": {
           "validity": 61.1,
@@ -102475,7 +102481,7 @@
           "mfe_r": 0.031,
           "mae_r": -0.306
         },
-        "change_reason": "Ahead of Schedule",
+        "change_reason": "",
         "price_frame": {
           "state": "stale",
           "last_close_date": "2026-10-08",
@@ -102690,7 +102696,7 @@
       "closed": false,
       "pulse": "12d \u00b7 triggered \u00b7 needs follow-through",
       "pulse_zh": "12\u5929 \u00b7 \u5df2\u89e6\u53d1 \u00b7 \u9700\u8981\u8ddf\u8fdb\u786e\u8ba4",
-      "management_confidence": 55.5,
+      "management_confidence": 52.5,
       "recommended_action": null,
       "management_status": "available",
       "management_error": null,
@@ -102705,7 +102711,7 @@
       },
       "state": {
         "phase": "triggered_pre_t1",
-        "management_confidence": 55.5,
+        "management_confidence": 52.5,
         "recommended_action": null,
         "components": {
           "validity": 79.3,
@@ -102726,7 +102732,7 @@
           "mfe_r": 0.546,
           "mae_r": -0.158
         },
-        "change_reason": "Moving Away from Stop",
+        "change_reason": "",
         "price_frame": {
           "state": "stale",
           "last_close_date": "2026-10-08",
@@ -102941,7 +102947,7 @@
       "closed": true,
       "pulse": "closed \u00b7 stopped out",
       "pulse_zh": "\u5df2\u7ed3 \u00b7 \u6b62\u635f\u79bb\u573a",
-      "management_confidence": 33.7,
+      "management_confidence": 34.4,
       "recommended_action": null,
       "management_status": "available",
       "management_error": null,
@@ -102956,7 +102962,7 @@
       },
       "state": {
         "phase": "overtime",
-        "management_confidence": 33.7,
+        "management_confidence": 34.4,
         "recommended_action": null,
         "components": {
           "validity": 46.3,
@@ -103309,7 +103315,7 @@
           "mfe_r": 0.392,
           "mae_r": -0.123
         },
-        "change_reason": "Moving Away from Stop",
+        "change_reason": "",
         "price_frame": {
           "state": "stale",
           "last_close_date": "2026-10-08",
@@ -103524,7 +103530,7 @@
       "closed": false,
       "pulse": "12d \u00b7 triggered \u00b7 needs follow-through",
       "pulse_zh": "12\u5929 \u00b7 \u5df2\u89e6\u53d1 \u00b7 \u9700\u8981\u8ddf\u8fdb\u786e\u8ba4",
-      "management_confidence": 66.0,
+      "management_confidence": 64.8,
       "recommended_action": null,
       "management_status": "available",
       "management_error": null,
@@ -103539,7 +103545,7 @@
       },
       "state": {
         "phase": "triggered_pre_t1",
-        "management_confidence": 66.0,
+        "management_confidence": 64.8,
         "recommended_action": null,
         "components": {
           "validity": 100.0,
@@ -103560,7 +103566,7 @@
           "mfe_r": 0.473,
           "mae_r": -0.052
         },
-        "change_reason": "Moving Away from Stop",
+        "change_reason": "",
         "price_frame": {
           "state": "stale",
           "last_close_date": "2026-10-08",
@@ -104766,7 +104772,7 @@
       "closed": false,
       "pulse": "9d \u00b7 triggered \u00b7 needs follow-through",
       "pulse_zh": "9\u5929 \u00b7 \u5df2\u89e6\u53d1 \u00b7 \u9700\u8981\u8ddf\u8fdb\u786e\u8ba4",
-      "management_confidence": 70.6,
+      "management_confidence": 70.7,
       "recommended_action": null,
       "management_status": "available",
       "management_error": null,
@@ -104781,7 +104787,7 @@
       },
       "state": {
         "phase": "triggered_pre_t1",
-        "management_confidence": 70.6,
+        "management_confidence": 70.7,
         "recommended_action": null,
         "components": {
           "validity": 100.0,
@@ -105056,7 +105062,7 @@
           "mfe_r": 0.062,
           "mae_r": -0.366
         },
-        "change_reason": "Ahead of Schedule",
+        "change_reason": "",
         "price_frame": {
           "state": "stale",
           "last_close_date": "2026-10-08",
@@ -105557,7 +105563,7 @@
           "mfe_r": 0.494,
           "mae_r": 0.0
         },
-        "change_reason": "Moving Away from Stop",
+        "change_reason": "",
         "price_frame": {
           "state": "stale",
           "last_close_date": "2026-10-08",
@@ -106024,7 +106030,7 @@
       "closed": false,
       "pulse": "19d \u00b7 triggered \u00b7 needs follow-through",
       "pulse_zh": "19\u5929 \u00b7 \u5df2\u89e6\u53d1 \u00b7 \u9700\u8981\u8ddf\u8fdb\u786e\u8ba4",
-      "management_confidence": 65.5,
+      "management_confidence": 63.4,
       "recommended_action": null,
       "management_status": "available",
       "management_error": null,
@@ -106039,7 +106045,7 @@
       },
       "state": {
         "phase": "triggered_pre_t1",
-        "management_confidence": 65.5,
+        "management_confidence": 63.4,
         "recommended_action": null,
         "components": {
           "validity": 100.0,
@@ -106060,7 +106066,7 @@
           "mfe_r": 0.679,
           "mae_r": -0.0
         },
-        "change_reason": "Moving Away from Stop",
+        "change_reason": "",
         "price_frame": {
           "state": "stale",
           "last_close_date": "2026-10-08",
@@ -106854,7 +106860,7 @@
       "closed": false,
       "pulse": "19d \u00b7 triggered \u00b7 stalling",
       "pulse_zh": "19\u5929 \u00b7 \u5df2\u89e6\u53d1 \u00b7 \u505c\u6ede",
-      "management_confidence": 45.5,
+      "management_confidence": 44.2,
       "recommended_action": null,
       "management_status": "available",
       "management_error": null,
@@ -106869,7 +106875,7 @@
       },
       "state": {
         "phase": "triggered_pre_t1",
-        "management_confidence": 45.5,
+        "management_confidence": 44.2,
         "recommended_action": null,
         "components": {
           "validity": 87.7,
@@ -106890,7 +106896,7 @@
           "mfe_r": 0.004,
           "mae_r": -0.489
         },
-        "change_reason": "Moving Away from Stop",
+        "change_reason": "",
         "price_frame": {
           "state": "stale",
           "last_close_date": "2026-10-08",
@@ -107108,7 +107114,7 @@
       "closed": false,
       "pulse": "8d \u00b7 pre-trigger \u00b7 approaching trigger",
       "pulse_zh": "8\u5929 \u00b7 \u89e6\u53d1\u524d \u00b7 \u63a5\u8fd1\u89e6\u53d1",
-      "management_confidence": 55.3,
+      "management_confidence": 53.7,
       "recommended_action": null,
       "management_status": "available",
       "management_error": null,
@@ -107123,7 +107129,7 @@
       },
       "state": {
         "phase": "pre_trigger",
-        "management_confidence": 55.3,
+        "management_confidence": 53.7,
         "recommended_action": null,
         "components": {
           "validity": 49.6,
@@ -107693,7 +107699,7 @@
       "closed": false,
       "pulse": "14d \u00b7 triggered \u00b7 stalling",
       "pulse_zh": "14\u5929 \u00b7 \u5df2\u89e6\u53d1 \u00b7 \u505c\u6ede",
-      "management_confidence": 59.6,
+      "management_confidence": 57.6,
       "recommended_action": null,
       "management_status": "available",
       "management_error": null,
@@ -107708,7 +107714,7 @@
       },
       "state": {
         "phase": "triggered_pre_t1",
-        "management_confidence": 59.6,
+        "management_confidence": 57.6,
         "recommended_action": null,
         "components": {
           "validity": 100.0,
@@ -107729,7 +107735,7 @@
           "mfe_r": 0.303,
           "mae_r": -0.0
         },
-        "change_reason": "Moving Away from Stop",
+        "change_reason": "",
         "price_frame": {
           "state": "stale",
           "last_close_date": "2026-10-08",
@@ -108857,7 +108863,7 @@
           "mfe_r": 0.859,
           "mae_r": -0.105
         },
-        "change_reason": "Moving Away from Stop",
+        "change_reason": "",
         "price_frame": {
           "state": "stale",
           "last_close_date": "2026-10-08",
@@ -110450,7 +110456,7 @@
       "closed": true,
       "pulse": "closed \u00b7 hit first target",
       "pulse_zh": "\u5df2\u7ed3 \u00b7 \u8fbe\u5230\u9996\u4e2a\u76ee\u6807",
-      "management_confidence": 84.1,
+      "management_confidence": 84.2,
       "recommended_action": null,
       "management_status": "available",
       "management_error": null,
@@ -110465,7 +110471,7 @@
       },
       "state": {
         "phase": "between_t1_t2",
-        "management_confidence": 84.1,
+        "management_confidence": 84.2,
         "recommended_action": null,
         "components": {
           "validity": 100.0,
@@ -111230,7 +111236,7 @@
           "mfe_r": 0.9,
           "mae_r": -0.874
         },
-        "change_reason": "Weakening",
+        "change_reason": "",
         "price_frame": {
           "state": "stale",
           "last_close_date": "2026-10-08",
@@ -113309,7 +113315,7 @@
       "closed": false,
       "pulse": "40d \u00b7 triggered \u00b7 stalling",
       "pulse_zh": "40\u5929 \u00b7 \u5df2\u89e6\u53d1 \u00b7 \u505c\u6ede",
-      "management_confidence": 40.8,
+      "management_confidence": 39.8,
       "recommended_action": null,
       "management_status": "available",
       "management_error": null,
@@ -113324,7 +113330,7 @@
       },
       "state": {
         "phase": "triggered_pre_t1",
-        "management_confidence": 40.8,
+        "management_confidence": 39.8,
         "recommended_action": null,
         "components": {
           "validity": 95.7,
@@ -114052,7 +114058,7 @@
       "closed": true,
       "pulse": "closed \u00b7 hit first target",
       "pulse_zh": "\u5df2\u7ed3 \u00b7 \u8fbe\u5230\u9996\u4e2a\u76ee\u6807",
-      "management_confidence": 77.9,
+      "management_confidence": 78.2,
       "recommended_action": null,
       "management_status": "available",
       "management_error": null,
@@ -114067,7 +114073,7 @@
       },
       "state": {
         "phase": "between_t1_t2",
-        "management_confidence": 77.9,
+        "management_confidence": 78.2,
         "recommended_action": null,
         "components": {
           "validity": 100.0,
@@ -114636,7 +114642,7 @@
       "closed": false,
       "pulse": "6d \u00b7 triggered \u00b7 needs follow-through",
       "pulse_zh": "6\u5929 \u00b7 \u5df2\u89e6\u53d1 \u00b7 \u9700\u8981\u8ddf\u8fdb\u786e\u8ba4",
-      "management_confidence": 61.1,
+      "management_confidence": 60.7,
       "recommended_action": null,
       "management_status": "available",
       "management_error": null,
@@ -114651,7 +114657,7 @@
       },
       "state": {
         "phase": "triggered_pre_t1",
-        "management_confidence": 61.1,
+        "management_confidence": 60.7,
         "recommended_action": null,
         "components": {
           "validity": 100.0,
@@ -115877,7 +115883,7 @@
       "closed": false,
       "pulse": "8d \u00b7 pre-trigger \u00b7 awaiting trigger",
       "pulse_zh": "8\u5929 \u00b7 \u89e6\u53d1\u524d \u00b7 \u7b49\u5f85\u89e6\u53d1",
-      "management_confidence": 64.0,
+      "management_confidence": 63.2,
       "recommended_action": null,
       "management_status": "available",
       "management_error": null,
@@ -115892,7 +115898,7 @@
       },
       "state": {
         "phase": "pre_trigger",
-        "management_confidence": 64.0,
+        "management_confidence": 63.2,
         "recommended_action": null,
         "components": {
           "validity": 84.3,
@@ -116415,7 +116421,7 @@
           "mfe_r": 0.0,
           "mae_r": -0.857
         },
-        "change_reason": "Window Elapsed \u2014 Awaiting Close",
+        "change_reason": "",
         "price_frame": {
           "state": "stale",
           "last_close_date": "2026-10-08",
@@ -116626,7 +116632,7 @@
       "closed": false,
       "pulse": "19d \u00b7 triggered \u00b7 stalling",
       "pulse_zh": "19\u5929 \u00b7 \u5df2\u89e6\u53d1 \u00b7 \u505c\u6ede",
-      "management_confidence": 44.3,
+      "management_confidence": 40.4,
       "recommended_action": null,
       "management_status": "available",
       "management_error": null,
@@ -116641,7 +116647,7 @@
       },
       "state": {
         "phase": "triggered_pre_t1",
-        "management_confidence": 44.3,
+        "management_confidence": 40.4,
         "recommended_action": null,
         "components": {
           "validity": 60.0,
@@ -116662,7 +116668,7 @@
           "mfe_r": 0.55,
           "mae_r": -0.315
         },
-        "change_reason": "Falling Behind Schedule",
+        "change_reason": "",
         "price_frame": {
           "state": "stale",
           "last_close_date": "2026-10-08",
@@ -117462,7 +117468,7 @@
       "closed": false,
       "pulse": "14d \u00b7 triggered \u00b7 stalling",
       "pulse_zh": "14\u5929 \u00b7 \u5df2\u89e6\u53d1 \u00b7 \u505c\u6ede",
-      "management_confidence": 47.2,
+      "management_confidence": 44.4,
       "recommended_action": null,
       "management_status": "available",
       "management_error": null,
@@ -117477,7 +117483,7 @@
       },
       "state": {
         "phase": "triggered_pre_t1",
-        "management_confidence": 47.2,
+        "management_confidence": 44.4,
         "recommended_action": null,
         "components": {
           "validity": 56.8,
@@ -117498,7 +117504,7 @@
           "mfe_r": 0.477,
           "mae_r": -0.342
         },
-        "change_reason": "Weakening",
+        "change_reason": "",
         "price_frame": {
           "state": "stale",
           "last_close_date": "2026-10-08",
@@ -119037,7 +119043,7 @@
       "closed": true,
       "pulse": "closed",
       "pulse_zh": "\u5df2\u7ed3",
-      "management_confidence": 25.9,
+      "management_confidence": 24.9,
       "recommended_action": null,
       "management_status": "available",
       "management_error": null,
@@ -119052,7 +119058,7 @@
       },
       "state": {
         "phase": "overtime",
-        "management_confidence": 25.9,
+        "management_confidence": 24.9,
         "recommended_action": null,
         "components": {
           "validity": 18.3,
@@ -119530,7 +119536,7 @@
       "closed": false,
       "pulse": "8d \u00b7 pre-trigger \u00b7 approaching trigger",
       "pulse_zh": "8\u5929 \u00b7 \u89e6\u53d1\u524d \u00b7 \u63a5\u8fd1\u89e6\u53d1",
-      "management_confidence": 64.2,
+      "management_confidence": 64.6,
       "recommended_action": null,
       "management_status": "available",
       "management_error": null,
@@ -119545,7 +119551,7 @@
       },
       "state": {
         "phase": "pre_trigger",
-        "management_confidence": 64.2,
+        "management_confidence": 64.6,
         "recommended_action": null,
         "components": {
           "validity": 96.3,
@@ -120035,7 +120041,7 @@
       "closed": true,
       "pulse": "closed \u00b7 stopped out",
       "pulse_zh": "\u5df2\u7ed3 \u00b7 \u6b62\u635f\u79bb\u573a",
-      "management_confidence": 64.1,
+      "management_confidence": 64.9,
       "recommended_action": null,
       "management_status": "available",
       "management_error": null,
@@ -120050,7 +120056,7 @@
       },
       "state": {
         "phase": "triggered_pre_t1",
-        "management_confidence": 64.1,
+        "management_confidence": 64.9,
         "recommended_action": null,
         "components": {
           "validity": 100.0,
@@ -120071,7 +120077,7 @@
           "mfe_r": 0.768,
           "mae_r": -0.823
         },
-        "change_reason": "Moving Away from Stop",
+        "change_reason": "",
         "price_frame": {
           "state": "stale",
           "last_close_date": "2026-10-08",
@@ -121198,7 +121204,7 @@
       "closed": false,
       "pulse": "33d \u00b7 triggered \u00b7 stalling",
       "pulse_zh": "33\u5929 \u00b7 \u5df2\u89e6\u53d1 \u00b7 \u505c\u6ede",
-      "management_confidence": 38.5,
+      "management_confidence": 36.4,
       "recommended_action": null,
       "management_status": "available",
       "management_error": null,
@@ -121213,7 +121219,7 @@
       },
       "state": {
         "phase": "triggered_pre_t1",
-        "management_confidence": 38.5,
+        "management_confidence": 36.4,
         "recommended_action": null,
         "components": {
           "validity": 74.3,
@@ -123093,7 +123099,7 @@
       "closed": false,
       "pulse": "12d \u00b7 triggered \u00b7 needs follow-through",
       "pulse_zh": "12\u5929 \u00b7 \u5df2\u89e6\u53d1 \u00b7 \u9700\u8981\u8ddf\u8fdb\u786e\u8ba4",
-      "management_confidence": 65.1,
+      "management_confidence": 64.4,
       "recommended_action": null,
       "management_status": "available",
       "management_error": null,
@@ -123108,7 +123114,7 @@
       },
       "state": {
         "phase": "triggered_pre_t1",
-        "management_confidence": 65.1,
+        "management_confidence": 64.4,
         "recommended_action": null,
         "components": {
           "validity": 100.0,
@@ -123129,7 +123135,7 @@
           "mfe_r": 0.283,
           "mae_r": -0.636
         },
-        "change_reason": "Moving Away from Stop",
+        "change_reason": "",
         "price_frame": {
           "state": "stale",
           "last_close_date": "2026-10-08",
@@ -124536,7 +124542,7 @@
           "mfe_r": 0.169,
           "mae_r": -0.186
         },
-        "change_reason": "Moving Away from Stop",
+        "change_reason": "",
         "price_frame": {
           "state": "stale",
           "last_close_date": "2026-10-08",
@@ -124751,7 +124757,7 @@
       "closed": false,
       "pulse": "40d \u00b7 triggered \u00b7 needs follow-through",
       "pulse_zh": "40\u5929 \u00b7 \u5df2\u89e6\u53d1 \u00b7 \u9700\u8981\u8ddf\u8fdb\u786e\u8ba4",
-      "management_confidence": 51.4,
+      "management_confidence": 51.7,
       "recommended_action": null,
       "management_status": "available",
       "management_error": null,
@@ -124766,7 +124772,7 @@
       },
       "state": {
         "phase": "triggered_pre_t1",
-        "management_confidence": 51.4,
+        "management_confidence": 51.7,
         "recommended_action": null,
         "components": {
           "validity": 100.0,
@@ -125248,7 +125254,7 @@
       "closed": true,
       "pulse": "closed \u00b7 hit first target",
       "pulse_zh": "\u5df2\u7ed3 \u00b7 \u8fbe\u5230\u9996\u4e2a\u76ee\u6807",
-      "management_confidence": 84.5,
+      "management_confidence": 84.8,
       "recommended_action": null,
       "management_status": "available",
       "management_error": null,
@@ -125263,7 +125269,7 @@
       },
       "state": {
         "phase": "between_t1_t2",
-        "management_confidence": 84.5,
+        "management_confidence": 84.8,
         "recommended_action": null,
         "components": {
           "validity": 100.0,
@@ -126601,7 +126607,7 @@
           "mfe_r": 0.505,
           "mae_r": -0.473
         },
-        "change_reason": "Window Elapsed \u2014 Awaiting Close",
+        "change_reason": "",
         "price_frame": {
           "state": "stale",
           "last_close_date": "2026-10-08",
@@ -127648,7 +127654,7 @@
       "closed": true,
       "pulse": "closed \u00b7 stopped out",
       "pulse_zh": "\u5df2\u7ed3 \u00b7 \u6b62\u635f\u79bb\u573a",
-      "management_confidence": 68.1,
+      "management_confidence": 68.2,
       "recommended_action": null,
       "management_status": "available",
       "management_error": null,
@@ -127663,7 +127669,7 @@
       },
       "state": {
         "phase": "between_t1_t2",
-        "management_confidence": 68.1,
+        "management_confidence": 68.2,
         "recommended_action": null,
         "components": {
           "validity": 100.0,
@@ -127891,7 +127897,7 @@
       "closed": false,
       "pulse": "47d \u00b7 window elapsed \u00b7 window elapsed \u2014 awaiting close",
       "pulse_zh": "47\u5929 \u00b7 \u7a97\u53e3\u5df2\u5230\u671f \u00b7 \u7a97\u53e3\u5df2\u5230\u671f \u2014 \u5f85\u6536\u76d8\u786e\u8ba4",
-      "management_confidence": 28.3,
+      "management_confidence": 28.6,
       "recommended_action": null,
       "management_status": "available",
       "management_error": null,
@@ -127906,7 +127912,7 @@
       },
       "state": {
         "phase": "overtime",
-        "management_confidence": 28.3,
+        "management_confidence": 28.6,
         "recommended_action": null,
         "components": {
           "validity": 17.7,
@@ -127927,7 +127933,7 @@
           "mfe_r": 0.144,
           "mae_r": -0.8
         },
-        "change_reason": "Window Elapsed \u2014 Awaiting Close",
+        "change_reason": "",
         "price_frame": {
           "state": "stale",
           "last_close_date": "2026-10-08",
@@ -129307,7 +129313,7 @@
       "closed": true,
       "pulse": "closed \u00b7 timed out",
       "pulse_zh": "\u5df2\u7ed3 \u00b7 \u5230\u671f\u672a\u8fbe\u6807",
-      "management_confidence": 21.7,
+      "management_confidence": 21.4,
       "recommended_action": null,
       "management_status": "available",
       "management_error": null,
@@ -129322,7 +129328,7 @@
       },
       "state": {
         "phase": "overtime",
-        "management_confidence": 21.7,
+        "management_confidence": 21.4,
         "recommended_action": null,
         "components": {
           "validity": 17.4,
@@ -134339,7 +134345,7 @@
       "closed": true,
       "pulse": "closed \u00b7 stopped out",
       "pulse_zh": "\u5df2\u7ed3 \u00b7 \u6b62\u635f\u79bb\u573a",
-      "management_confidence": 48.1,
+      "management_confidence": 48.0,
       "recommended_action": null,
       "management_status": "available",
       "management_error": null,
@@ -134354,7 +134360,7 @@
       },
       "state": {
         "phase": "between_t1_t2",
-        "management_confidence": 48.1,
+        "management_confidence": 48.0,
         "recommended_action": null,
         "components": {
           "validity": 100.0,
@@ -135513,7 +135519,7 @@
       "closed": true,
       "pulse": "closed \u00b7 stopped out",
       "pulse_zh": "\u5df2\u7ed3 \u00b7 \u6b62\u635f\u79bb\u573a",
-      "management_confidence": 21.9,
+      "management_confidence": 21.2,
       "recommended_action": null,
       "management_status": "available",
       "management_error": null,
@@ -135528,7 +135534,7 @@
       },
       "state": {
         "phase": "overtime",
-        "management_confidence": 21.9,
+        "management_confidence": 21.2,
         "recommended_action": null,
         "components": {
           "validity": 15.9,
@@ -137031,7 +137037,7 @@
       "closed": true,
       "pulse": "closed \u00b7 timed out",
       "pulse_zh": "\u5df2\u7ed3 \u00b7 \u5230\u671f\u672a\u8fbe\u6807",
-      "management_confidence": 34.4,
+      "management_confidence": 34.2,
       "recommended_action": null,
       "management_status": "available",
       "management_error": null,
@@ -137046,7 +137052,7 @@
       },
       "state": {
         "phase": "overtime",
-        "management_confidence": 34.4,
+        "management_confidence": 34.2,
         "recommended_action": null,
         "components": {
           "validity": 57.8,
@@ -137203,7 +137209,7 @@
       "closed": true,
       "pulse": "closed \u00b7 hit first target",
       "pulse_zh": "\u5df2\u7ed3 \u00b7 \u8fbe\u5230\u9996\u4e2a\u76ee\u6807",
-      "management_confidence": 81.4,
+      "management_confidence": 81.2,
       "recommended_action": null,
       "management_status": "available",
       "management_error": null,
@@ -137218,7 +137224,7 @@
       },
       "state": {
         "phase": "between_t1_t2",
-        "management_confidence": 81.4,
+        "management_confidence": 81.2,
         "recommended_action": null,
         "components": {
           "validity": 100.0,
@@ -137699,7 +137705,7 @@
       "closed": true,
       "pulse": "closed \u00b7 stopped out",
       "pulse_zh": "\u5df2\u7ed3 \u00b7 \u6b62\u635f\u79bb\u573a",
-      "management_confidence": 30.9,
+      "management_confidence": 31.0,
       "recommended_action": null,
       "management_status": "available",
       "management_error": null,
@@ -137714,7 +137720,7 @@
       },
       "state": {
         "phase": "overtime",
-        "management_confidence": 30.9,
+        "management_confidence": 31.0,
         "recommended_action": null,
         "components": {
           "validity": 48.1,
@@ -138215,7 +138221,7 @@
       "closed": true,
       "pulse": "closed",
       "pulse_zh": "\u5df2\u7ed3",
-      "management_confidence": 76.2,
+      "management_confidence": 76.6,
       "recommended_action": null,
       "management_status": "available",
       "management_error": null,
@@ -138230,7 +138236,7 @@
       },
       "state": {
         "phase": "between_t1_t2",
-        "management_confidence": 76.2,
+        "management_confidence": 76.6,
         "recommended_action": null,
         "components": {
           "validity": 100.0,
