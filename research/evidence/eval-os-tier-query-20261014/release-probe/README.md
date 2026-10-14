@@ -18,3 +18,35 @@ The asset-projector selfcheck reproduces all four assets and rewritten HTML for 
 After actual A1 landing, verify the normal updater, installation identity and admin process with the bound read-only probe. Independently compare observed public response bodies against the asset manifest. Then bind authenticated overview/detail API responses to rendered DOM, required dark/light and EN/ZH states at desktop/mobile widths, performance/degraded states, and genuine subsequent normal owner progression. Preserve content-generation clocks, null/unknown results and unresolved effects. Neither tool launches a producer, writes a grade, changes a clock, restarts a service, handles credentials or grants acceptance.
 
 The canonical execution frontier remains `/Volumes/Mastermind/evidence/intelligence-evaluation-os-20261012-01a1333d/EXECUTION_FRONTIER.md`. It records exact source, installed/served observations, original Fabric operations and remaining gates. All completion flags remain false until the assigned evidence is actually established.
+
+## Separate follow-on consumers
+
+The follow-on has a different source identity and delivery obligation. After its final
+source is independently qualified, `bind_followon_adoption_probe.py --repo REPO
+--source-commit FULL_SHA --destination NEW_BINDING_JSON` binds seven direct files from
+that commit. It does not substitute for the A1 seventeen-file or served-asset bindings.
+The new destination must not exist. A symbolic revision or Git symlink is refused.
+
+After lawful follow-on landing and normal installation, the original parent can run
+`followon_adoption_probe.py --root INSTALLED_ROOT --binding BINDING_JSON
+--producer EXACT_REGISTERED_PRODUCER_PATH --python INSTALLED_PYTHON`. Repeat `--producer`
+for the actual planned change being assessed. This invokes only the existing T12
+required-tier CLI and T5 source-findings CLI, without overrides of clocks or artifacts.
+It records the seven file hashes and installed HEAD before and after observation.
+The installed HEAD may differ from the qualified branch SHA because of squash merge;
+direct file hashes, not commit-name equality, are the stated identity check.
+
+Both child streams are drained within16MiB/180seconds each. The probe reaps its own
+process group on failure, retains output hashes/counts, and prints only allowlisted
+contract summaries. It refuses wrong query identity, malformed contracts, observed
+source changes, nonzero execution, special/symlink files and excessive output. Null
+requirements remain null and all evaluation states remain `not_assessed`. It does not
+export raw observations, source reports, errors or credentials. Test consumers are
+local fakes only; they do not run the actual product or create production evidence.
+
+This is a bounded observation of two real command consumers when actually run after
+release. It is not full dependency closure, an atomic data snapshot, empirical model
+acceptance, earned tiers, natural owner progression or a complete adoption verdict.
+The rights-qualified QLedger packet, real Agent OS Discovery admission and subsequent
+consumer use remain separate obligations; this probe cannot fabricate them. Its three
+completion/adoption flags always remain false.

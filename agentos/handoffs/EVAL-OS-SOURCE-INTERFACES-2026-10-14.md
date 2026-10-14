@@ -5,8 +5,8 @@ model: fable
 ended_because: ci_handoff
 mission: Deliver the accepted T12, T5 and T6 source interfaces through existing protected source, CI and
   actual consumer adoption. This is a continuity checkpoint; the active root continues.
-state_before: A1 release approved on sole PR6651 and still OPEN05a at11:31; follow-on previously published30117,
-  separate carrier with no PR.
+state_before: A1 PR6651 remains OPEN05a and is now CONFLICTING against main; controller declined refresh
+  at11:56. Follow-on published0302 before this evidence-tool change.
 changed:
 - path: engine/intelligence_registry.py
   what: Expose exact registered-producer evaluation requirements without claiming earned evaluation.
@@ -22,6 +22,9 @@ changed:
 - path: research/evidence/eval-os-tier-query-20261014/release-probe/project_served_asset_identity.py
   what: Bind expected served assets to an explicit qualified revision with reviewed source contracts and
     no production effects.
+- path: research/evidence/eval-os-tier-query-20261014/release-probe/followon_adoption_probe.py
+  what: Observe two installed follow-on CLI consumers after lawful release, with direct source identity
+    and bounded subprocess evidence; no acceptance authority.
 verified:
 - claim: Follow-on integration preserved the owned source and passed its affected checks.
   command: python3 -m pytest -q tests/test_agentos_schema.py tests/test_qledger_validity.py
@@ -64,6 +67,14 @@ verified:
   result: 12RED before registration;179PASS and2chronologyPASS;3CIcontrolsPASS/zero closure misses/134-134-128jobs.
     All314 execution definitions preserved. Canonical t6-fourth-20261014/qualification.json and lossless
     evidence manifest.
+- claim: Prepared source-only A1 CI collision repair preserves all execution and selection semantics,
+    and follow-on observation tools pass fake-consumer controls.
+  command: Retained normalized full-YAML comparison/selector review and git merge-tree on a8d9 versus
+    a5a548; standalone test_followon_adoption_probe.py.
+  result: All309 A1 job definitions/order/path memberships/counts preserved; only12 existing path entries
+    relocated across4jobs. Proposed single-parent head merges cleanly. Not published or hosted-qualified.
+    Probe13testsPASS after4identityRED witnesses; seven-blob offline binding matches0302. No product CLI
+    or production action.
 unverified:
 - claim: Combined follow-on actual-HEAD CI and protected landing.
   what_would_verify: After A1 landing, reconcile final main, obtain hosted selection/execution on the
@@ -77,14 +88,19 @@ unresolved:
 - QLedger real Discovery adoption needs a rights-qualified finding and actual existing admission payload.
 - 'Blind six-case model request eval-t6-blind-six-01a1333d-c2 refused before launch: no_pool_available/statusNOT_FOUND.
   No model observation or replacement; original CLI-review and experience uncertainty remain separate.'
+- 'At12:04:40,11 indexed PR proofs/cap8: A1 source-repair publication remains unadmitted. Fabric probe
+  task eval-followon-adoption-probe-01a1333d-c1 refused before launch for remote host/mode capacity; no
+  retry or replacement.'
 next_actions:
-- Preserve qualified followon8453 and retained3adb CI-scope adjudication; no duplicate main-baseline repair
-  PR or redo of accepted runtime suites.
-- Consume incumbent PR6651 capacity-admitted refresh/fresh checks/merge. Then bind both verification tools
-  to that qualified A1 source and verify normal installation, served bytes, authenticated UI and natural
-  owner progression.
-- After A1 landing, reconcile main on the existing followon carrier, create its single lawful PR when
-  capacity admits, qualify hosted checks, and verify real consumer adoption.
+- When shared CI capacity admits a source repair, revalidate exact current A1/main and publish only the
+  prepared semantic-preserving path-list relocation on the original A1 carrier; no base merge, force push
+  or duplicate PR. The incumbent alone continues base refresh and merge. Proposal a8d9f1952dd621a80e30525374145aee71ff3a7f
+  is a single-parent child of05a, and must be invalidated if source custody/head changes.
+- After controller refresh, fresh checks and A1 merge, bind both original A1 tools to the final qualified
+  source and verify normal installation, served bytes, authenticated UI and genuine owner progression.
+- Continue the same follow-on through final-main reconciliation, capacity-admitted PR and protected release.
+  Then use its separately bound two-CLI observation tool and obtain real rights-qualified Discovery adoption;
+  no synthetic substitute.
 do_not_redo:
 - Do not rebuild accepted A1 or create a second A1 PR.
 - Do not reinterpret source requirements as earned tiers or snapshot counts as independent trials.
@@ -202,3 +218,12 @@ Qualified source8453d2a9051956a9dca49babe5db75201fa00666 adds six diagnostic cas
 A separate blind response request eval-t6-blind-six-01a1333d-c2 returned75/no_pool_available before launch. Same adapter statusNOT_FOUND confirms no retained run/result, not permission to replay or switch carriers. Its packet targeted the previously published six cases, withheld their expected readings, and remains bound to30117. No model-response acceptance is claimed.
 
 Latest A1 source read11:31 remainsOPEN05a. Consumed incumbent full sweep38553142558 deferred refresh at10:59 with8 indexed PR CI runs/cap8/0slots; those are historical counts. The11:15 controller result38555325794 was only a lease reconciliation pass. Root performed no A1refresh, merge, deployment or forced owner run. Final flags remain false.
+
+
+## A1 conflict repair and follow-on consumer observation — 2026-10-14T12:05Z
+
+Controller38559944080 exposed a genuine A1 merge conflict at11:56; it made no update-branch write. Read-only merge-tree locates four additive path-list collisions in the sole legacy CI manifest. A prepared source-only commit, a8d9f1952dd621a80e30525374145aee71ff3a7f, moves the same three readiness dependencies to the tail of each affected list. It has only05a as parent, changes no base, and preserves all309 job definitions, job order and every path count/membership. Exact selector source uses an order-independent any-match. The proposed head merges cleanly with observed maina5a5482b1d64. It is not on either source branch or remote; publication waits for lawful shared capacity and current identity revalidation. This is an ordinary source collision repair, not permission for the root to perform the incumbent controller's base refresh or merge.
+
+The separate follow-on now has a bounded observation tool for its two installed CLI consumers. Its13 fake-consumer tests pass after four reproduced identity defects were corrected. It rejects changed source, wrong query identity, invalid JSON/contracts, excessive output and hung children, while preserving unknown/null requirements and output-health count units. It records seven direct source files and actual CLI stdout/stderr hashes without exporting raw observations, source reports or exception strings. No actual production invocation occurred. QLedger rights, Discovery admission/adoption, natural owner progression and operator comprehension remain distinct obligations. Canonical qualification and the prepared A1 patch are in research/evidence/eval-os-tier-query-20261014/adoption-probe-20261014/.
+
+Fabric eval-followon-adoption-probe-01a1333d-c1 returned75 before launch: no eligible remote mode, with disk/thermal/lane capacity blockers. Root performed permitted bounded source work directly, without changing host policy, retrying the refused request or replacing any original operation. Original experience and CLI-review effects remain unresolved. One read-only CI capacity diagnosis at11:48 occurred only163seconds after the prior observation; that cadence lapse is recorded, not described as compliant. Later observations at11:57 and12:04 respect the300second boundary.
