@@ -12,6 +12,16 @@
       "events": [
         {
           "date": "2026-10-14",
+          "id": "cev-research_vault-5c4104d034c2",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-zidfbw2dhyr-90424e",
+          "tickers": [],
+          "title": "S&T: GS Bartlett GS TMT TODAY 10.14.26 14 Oct 2026",
+          "weight_hint": 3
+        },
+        {
+          "date": "2026-10-14",
           "id": "cev-research_vault-6b5616e57697",
           "kind": "report",
           "source": "research_vault",
@@ -178,18 +188,6 @@
     {
       "date": "2026-10-06",
       "events": [
-        {
-          "date": "2026-10-06",
-          "id": "cev-earnings_call-5c03a593df20",
-          "kind": "earnings",
-          "source": "earnings_call",
-          "source_ref": "defeatbeta:NEOG:2027Q1",
-          "tickers": [
-            "NEOG"
-          ],
-          "title": "Earnings call: NEOG Q1 FY2027 — confident",
-          "weight_hint": 2
-        },
         {
           "date": "2026-10-06",
           "id": "cev-earnings_call-b10fd2b46755",

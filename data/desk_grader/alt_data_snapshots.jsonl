@@ -5482,3 +5482,8 @@
 {"date":"2026-10-14","ticker":"BWXT","rank":null,"score":13,"lean":1,"entry_tier":"T2","broken":true}
 {"date":"2026-10-14","ticker":"A","departed":true,"left_desk":"2026-10-14","last_rank":23,"last_score":33}
 {"date":"2026-10-14","ticker":"IONQ","departed":true,"left_desk":"2026-10-14","last_rank":null,"last_score":21}
+{"date":"2026-10-14","ticker":"DDOG","rank":29,"score":28,"lean":1,"broken":false}
+{"date":"2026-10-14","ticker":"AVGO","rank":30,"score":27,"lean":1,"entry_tier":"T2","broken":false}
+{"date":"2026-10-14","ticker":"WDAY","rank":null,"score":25,"lean":1,"broken":true}
+{"date":"2026-10-14","ticker":"PSKY","rank":null,"score":23,"lean":1,"broken":true}
+{"date":"2026-10-14","ticker":"IONQ","rank":null,"score":21,"lean":1,"broken":true}

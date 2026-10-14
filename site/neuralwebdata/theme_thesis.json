@@ -1,7 +1,7 @@
 {
   "schema": "neuralweb.theme_thesis.v1",
   "as_of": "2026-10-14",
-  "generated_at": "2026-10-14T09:25:31Z",
+  "generated_at": "2026-10-14T19:35:02Z",
   "authority": {
     "is_context_only": true,
     "may_rank": false,
@@ -932,8 +932,8 @@
       "schema": "neuralweb.theme_thesis.v1",
       "as_of": "2026-10-14",
       "thesis_id": "defense_aerospace.v1",
-      "content_hash": "sha256:f7556127cd8cc9e689e178b985f964b4824e8a2a4a6a610f2391b6343b750f6f",
-      "prev_content_hash": "sha256:035e813e3df24d8ef60274c01bccc7c5b47dd0f5bcb47b2bcf53368e80185f05",
+      "content_hash": "sha256:b82cd70e7d075d87b395901de73df7409a37dd58533ec415d85c7a6e856e669c",
+      "prev_content_hash": "sha256:f7556127cd8cc9e689e178b985f964b4824e8a2a4a6a610f2391b6343b750f6f",
       "authority": {
         "is_context_only": true,
         "may_rank": false,
@@ -991,7 +991,7 @@
           "rule_en": "If revision_breadth for defense_aerospace falls below 0.0, budget headwinds or program cancellations are spreading through earnings revisions.\n",
           "state": "ARMED",
           "fired": false,
-          "detail": "threshold check: 'revision_breadth' lt 0.0 → value=0.031"
+          "detail": "threshold check: 'revision_breadth' lt 0.0 → value=0.006"
         },
         {
           "id": "def_f2",
@@ -1189,8 +1189,8 @@
       "schema": "neuralweb.theme_thesis.v1",
       "as_of": "2026-10-14",
       "thesis_id": "diagnostics_lifesci.v1",
-      "content_hash": "sha256:35f1462659dfa85bcd2d3c039f9345213d6f4471858c588cf5a1acddbced07a9",
-      "prev_content_hash": "sha256:ee649840c2b6e1fed8889e9e5158092aedd4d45b2f0504102874b2c749e1b5d6",
+      "content_hash": "sha256:9a7038449b535ff987ba1107eead0c2a911a13de2fa96a288ac95d61026173e6",
+      "prev_content_hash": "sha256:35f1462659dfa85bcd2d3c039f9345213d6f4471858c588cf5a1acddbced07a9",
       "authority": {
         "is_context_only": true,
         "may_rank": false,
@@ -1244,7 +1244,7 @@
           "rule_en": "If revision_breadth for diagnostics_lifesci remains below 0.1 for two consecutive months, biopharma R&D capex recovery is not yet flowing through to tools demand.\n",
           "state": "ARMED",
           "fired": false,
-          "detail": "threshold check: 'revision_breadth' lt 0.1 → value=0.535"
+          "detail": "threshold check: 'revision_breadth' lt 0.1 → value=0.431"
         },
         {
           "id": "diag_f2",
@@ -1495,10 +1495,10 @@
     },
     {
       "schema": "neuralweb.theme_thesis.v1",
-      "as_of": "2026-10-13",
+      "as_of": "2026-10-14",
       "thesis_id": "space_satellite.v1",
-      "content_hash": "sha256:6805104c823d41837fa74bec5de0f040ff90e80ba44cff1cd6648555f2a775d0",
-      "prev_content_hash": "sha256:b18c3036898193c1f8c41fd189b47cb69805ee50203d6f3f850ccd42c7d11496",
+      "content_hash": "sha256:729d64e4c0239c844c77f0322c08fa35964d71de3810f6b65a060f01d1b244f3",
+      "prev_content_hash": "sha256:6805104c823d41837fa74bec5de0f040ff90e80ba44cff1cd6648555f2a775d0",
       "authority": {
         "is_context_only": true,
         "may_rank": false,
@@ -1552,7 +1552,7 @@
           "rule_en": "If revision_breadth for space_satellite falls below 0.0, earnings estimates are cutting — commercial ramp is not meeting expectations.\n",
           "state": "ARMED",
           "fired": false,
-          "detail": "threshold check: 'revision_breadth' lt 0.0 → value=0.083"
+          "detail": "threshold check: 'revision_breadth' lt 0.0 → value=0.0"
         },
         {
           "id": "sat_f2",
@@ -1573,7 +1573,7 @@
   ],
   "schema_version": 1,
   "produced_by": "scripts/build_thematic_state.py",
-  "produced_at": "2026-10-14T09:25:31Z",
-  "inputs_hash": "sha256:a37a37e0f077c8e0104f41c5edf2d5dea0d569aa9649203f8f0a34ac235ff7ed",
+  "produced_at": "2026-10-14T19:35:02Z",
+  "inputs_hash": "sha256:61a76ad55e40ada49ea00c483b73070e46485433261a91d104e4b07c69a76cd8",
   "tier": "display"
 }
