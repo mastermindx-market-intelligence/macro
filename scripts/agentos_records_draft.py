@@ -81,8 +81,18 @@ class DraftSchemaError(Exception):
 
 
 def _q(value: str) -> str:
-    """YAML double-quoted scalar. Newlines stay inside the scalar."""
-    return json.dumps(value, ensure_ascii=False)
+    """YAML double-quoted scalar. Newlines stay inside the scalar.
+
+    Python's ``json`` module with ``ensure_ascii=False`` leaves U+2028, U+2029
+    and U+0085 as raw characters, which YAML double-quoted scalars treat as
+    line breaks and which Python's ``str.splitlines`` splits on. Escape them
+    so the rendered scalar stays on one physical line.
+    """
+    encoded = json.dumps(value, ensure_ascii=False)
+    encoded = encoded.replace("\u2028", "\\u2028")
+    encoded = encoded.replace("\u2029", "\\u2029")
+    encoded = encoded.replace("\u0085", "\\u0085")
+    return encoded
 
 
 def _walk_refused(value: object) -> None:
@@ -104,7 +114,17 @@ def _git(
     root = _ROOT if repo is None else repo
     try:
         return subprocess.run(
-            ["git", "-C", str(root), subcommand, *git_args],
+            [
+                "git",
+                "-c",
+                "core.fsmonitor=",
+                "-c",
+                "core.hooksPath=",
+                "-C",
+                str(root),
+                subcommand,
+                *git_args,
+            ],
             capture_output=True,
             text=True,
             check=False,
@@ -192,6 +212,16 @@ def _pr_fields(document: dict) -> dict:
         raise DraftError(
             "pr.merged_at must be YYYY-MM-DD or YYYY-MM-DDTHH:MM:SSZ"
         ) from None
+    # The regex permits any digit pairs in the time component; reject impossible
+    # wall-clock times like 2026-10-13T99:99:99Z when the ``T...Z`` part is
+    # present.
+    if len(merged_at) > 10 and merged_at[10] == "T":
+        try:
+            _dt.datetime.strptime(merged_at, "%Y-%m-%dT%H:%M:%SZ")
+        except ValueError:
+            raise DraftError(
+                "pr.merged_at must be YYYY-MM-DD or YYYY-MM-DDTHH:MM:SSZ"
+            ) from None
     return {
         "number": number,
         "title": title,
